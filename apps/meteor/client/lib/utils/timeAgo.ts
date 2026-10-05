@@ -1,5 +1,5 @@
-import { getUserPreference } from '../../../app/utils/client';
 import { t } from '../../../app/utils/lib/i18n';
+import { getUserPreference } from '../getUserPreference';
 import { settings } from '../settings';
 import { getUserId } from '../user';
 import { formatTimeAgo } from './dateFormat';

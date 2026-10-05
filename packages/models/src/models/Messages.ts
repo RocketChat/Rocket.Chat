@@ -798,6 +798,26 @@ export class MessagesRaw extends BaseRaw<IMessage> implements IMessagesModel {
 		return this.find<T, O>(query, options);
 	}
 
+	findDiscussionRoomIdsContainingTypes(types: MessageTypesValues[]): Promise<IRoom['_id'][]> {
+		return this.col
+			.aggregate<{ _id: IRoom['_id'] }>([
+				{ $match: { t: { $in: types } } },
+				{ $group: { _id: '$rid' } },
+				{
+					$lookup: {
+						from: 'rocketchat_room',
+						localField: '_id',
+						foreignField: '_id',
+						pipeline: [{ $match: { prid: { $exists: true } } }, { $project: { _id: 1 } }],
+						as: 'discussion',
+					},
+				},
+				{ $match: { discussion: { $ne: [] } } },
+			])
+			.map(({ _id }) => _id)
+			.toArray();
+	}
+
 	countVisibleByRoomIdContainingTypes(roomId: string, types: MessageTypesValues[]): Promise<number> {
 		const query: Filter<IMessage> = {
 			_hidden: {
@@ -1042,6 +1062,22 @@ export class MessagesRaw extends BaseRaw<IMessage> implements IMessagesModel {
 		const query = {
 			rid,
 			_id: messageId,
+		};
+
+		return this.findOne<T, O>(query, options);
+	}
+
+	findOneVisibleByRoomIdAndMessageId<T extends Document = IMessage, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(
+		rid: string,
+		messageId: string,
+		options?: O,
+	): Promise<DocumentWithProjection<T, O> | null> {
+		const query = {
+			rid,
+			_id: messageId,
+			_hidden: {
+				$ne: true,
+			},
 		};
 
 		return this.findOne<T, O>(query, options);
@@ -1649,6 +1685,23 @@ export class MessagesRaw extends BaseRaw<IMessage> implements IMessagesModel {
 					...(dlm && { dlm }),
 				},
 			},
+			{ returnDocument: 'after' },
+		);
+	}
+
+	async incDiscussionMetadata(room: Pick<IRoom, '_id' | 'lm'>, dcountInc: number): Promise<null | WithId<IMessage>> {
+		const { _id: drid, lm: dlm } = room;
+
+		return this.findOneAndUpdate(
+			{ drid },
+			[
+				{
+					$set: {
+						dcount: { $max: [0, { $add: [{ $ifNull: ['$dcount', 0] }, dcountInc] }] },
+						...(dlm && { dlm: { $max: ['$dlm', dlm] } }),
+					},
+				},
+			],
 			{ returnDocument: 'after' },
 		);
 	}

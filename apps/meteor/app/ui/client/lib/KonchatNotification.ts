@@ -1,1 +1,0 @@
-// KonchatNotification in memoriam

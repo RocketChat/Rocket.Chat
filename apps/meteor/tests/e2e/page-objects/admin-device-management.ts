@@ -1,6 +1,6 @@
 import type { Locator, Page } from '@playwright/test';
 
-import { Admin } from './admin';
+import { Admin, AdminSectionsHref } from './admin';
 import { MenuOptions, DevicesTable } from './fragments';
 import { DeviceInfoFlexTab } from './fragments/flextabs';
 import { ConfirmLogoutModal } from './fragments/modals';
@@ -22,25 +22,25 @@ export class AdminDeviceManagement extends Admin {
 		this.logoutModal = new ConfirmLogoutModal(page.getByRole('dialog', { name: 'Log out device' }));
 	}
 
-	get adminPageContent(): Locator {
-		return this.page.getByRole('main').filter({ has: this.page.getByRole('heading', { name: 'Device management' }) });
-	}
+	protected readonly route = AdminSectionsHref.deviceManagement;
 
-	get notAuthorizedMessage(): Locator {
-		return this.page.getByRole('main').getByText('You are not authorized to view this page');
+	protected readonly title = 'Device management';
+
+	get upsellModal(): Locator {
+		return this.page.getByRole('dialog', { name: 'Device management' });
 	}
 
 	get emptyState(): Locator {
-		return this.adminPageContent.getByRole('heading', { name: 'No results found', exact: true });
+		return this.pageContent.getByRole('heading', { name: 'No results found', exact: true });
 	}
 
 	async searchUserDevice(user: string): Promise<void> {
-		await this.adminPageContent.getByRole('textbox', { name: 'Search devices or users' }).fill(user);
+		await this.pageContent.getByRole('textbox', { name: 'Search devices or users' }).fill(user);
 	}
 
 	async getUsersDeviceId(username: string): Promise<string> {
 		await this.searchUserDevice(username);
-		const deviceId = await this.adminPageContent
+		const deviceId = await this.pageContent
 			.getByRole('row')
 			.filter({ has: this.page.getByRole('cell', { name: username }) })
 			.first()

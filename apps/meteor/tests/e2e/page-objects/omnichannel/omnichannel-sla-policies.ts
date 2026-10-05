@@ -1,6 +1,6 @@
 import type { Locator, Page } from '@playwright/test';
 
-import { OmnichannelAdmin } from './omnichannel-admin';
+import { OmnichannelAdmin, OmnichannelSectionsHref } from './omnichannel-admin';
 import { FlexTab } from '../fragments/flextabs/flextab';
 
 class OmnichannelManageSlaPolicyFlexTab extends FlexTab {
@@ -18,7 +18,7 @@ class OmnichannelManageSlaPolicyFlexTab extends FlexTab {
 }
 
 export class OmnichannelSlaPolicies extends OmnichannelAdmin {
-	protected readonly route = 'sla-policies';
+	protected readonly route = OmnichannelSectionsHref.slaPolicies;
 
 	protected readonly title = 'SLA Policies';
 

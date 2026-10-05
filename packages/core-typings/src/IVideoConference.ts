@@ -52,10 +52,66 @@ export type LivechatInstructions = {
 
 export type VideoConferenceType = DirectCallInstructions['type'] | ConferenceInstructions['type'] | LivechatInstructions['type'] | 'voip';
 
+/**
+ * A conference **member**, which is not the same as someone currently in the call. Membership authorizes
+ * joining and never expires.
+ */
+/** How a departure was recorded: the member's own client, or their presence lease running out. */
+export type VideoConferenceLeaveReason = 'reported' | 'timeout';
+
 export interface IVideoConferenceUser extends Pick<Required<IUser>, '_id' | 'username' | 'name'> {
 	avatarETag: string | null;
+	/** When the user became a member of the conference. */
 	ts: Date;
+	joined?: boolean;
+	joinedAt?: Date;
+	/** The member dismissed the call. Not exclusive with `joined` — they can decline and join later. */
+	declined?: boolean;
+	declinedAt?: Date;
+	/** When they left the call. Cleared if they rejoin, so it only ever describes the latest departure. */
+	leftAt?: Date;
+	/** How the departure was learned. Absent means reported, which is how pre-existing entries read. */
+	leftReason?: VideoConferenceLeaveReason;
+	/** When there was last evidence this member was still in the call. */
+	lastSeenAt?: Date;
+	/** When they were last rung. Tells a phone ringing now from one rung and ignored. */
+	ringingAt?: Date;
 }
+
+/** Absent `joined` predates the flag, and entries were only written on join then — so absent reads as joined. */
+export const hasJoinedVideoConference = (user: Pick<IVideoConferenceUser, 'joined'>): boolean => user.joined !== false;
+
+/** Whether a member is in the call right now. `joined` never returns to false, so `leftAt` is the other half. */
+export const isInVideoConference = (user: Pick<IVideoConferenceUser, 'joined' | 'leftAt'>): boolean =>
+	hasJoinedVideoConference(user) && !user.leftAt;
+
+/** How long a ring is assumed to still be ringing. The callee's client aborts at 10s; this covers the trip. */
+export const VIDEO_CONF_RINGING_WINDOW_MS = 15_000;
+
+/**
+ * How many people one ring may reach — a property of the broadcast, not of the conference.
+ *
+ * `add-participants` caps its batch at the same number, which is what stops an add from silently ringing only
+ * part of itself.
+ */
+export const RING_RECIPIENTS_LIMIT = 10;
+
+/** Whether this member's phone is ringing right now — as opposed to having been rung and done nothing. */
+export const isRingingVideoConferenceMember = (
+	user: Pick<IVideoConferenceUser, 'ringingAt' | 'declined' | 'declinedAt'>,
+	now = Date.now(),
+): boolean => {
+	if (!user.ringingAt) {
+		return false;
+	}
+
+	// Answering by declining stops the ringing, even inside the window.
+	if (user.declined && user.declinedAt && user.declinedAt.getTime() >= user.ringingAt.getTime()) {
+		return false;
+	}
+
+	return now - user.ringingAt.getTime() < VIDEO_CONF_RINGING_WINDOW_MS;
+};
 
 export interface IVideoConference extends IRocketChatRecord {
 	type: VideoConferenceType;
@@ -113,6 +169,46 @@ export interface IVoIPVideoConference extends IVideoConference {
 		answer?: boolean;
 	};
 }
+
+/**
+ * Where a conference's chat lives and who cannot read it.
+ *
+ * Conference membership grants no room access, so a member added from outside takes part without seeing it.
+ */
+export type VideoConferenceChatAccess = {
+	rid: IRoom['_id'];
+	/** Display name of the room the chat lives in — the history that would be exposed by inviting. */
+	name: string;
+	type: IRoom['t'];
+	membersWithoutAccess: IUser['_id'][];
+	/** Whether that room can take the missing members in: a DM can't, so its chat has to move instead. */
+	canInvite: boolean;
+};
+
+/**
+ * A running call the reader may join, as the sidebar and navbar list it.
+ *
+ * Deliberately not the conference record: a list needs only enough to decide whether to walk in.
+ */
+export type JoinableVideoConference = {
+	callId: IVideoConference['_id'];
+	/** What to call it: the conference's own title, or the room's name. */
+	name: string;
+	createdAt: Date;
+	/** How many people are in it right now. Never zero — an empty call isn't offered. */
+	usersCount: number;
+	/** A few of the people in it, for faces in a list. Capped on the server; `usersCount` is the whole truth. */
+	participants: Pick<IVideoConferenceUser, '_id' | 'username' | 'name'>[];
+	/** Whether the reader is one of them, which is what makes joining another call a matter of leaving this one. */
+	joined: boolean;
+	/** Whether the reader already turned this call down. The sidebar hides those. */
+	declined: boolean;
+	/** When this reader was last rung. Whether it is still live is the reader's to decide. */
+	ringingAt?: Date;
+};
+
+/** How to give the missing members access: bring them into the room, or move the chat to a discussion. */
+export type VideoConferenceChatAccessMode = 'invite' | 'discussion';
 
 export type ExternalVideoConference = IDirectVideoConference | IGroupVideoConference | ILivechatVideoConference;
 

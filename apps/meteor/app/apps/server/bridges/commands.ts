@@ -112,8 +112,7 @@ export class AppCommandsBridge extends CommandBridge {
 			providesPreview: command.providesPreview,
 			previewer: command.providesPreview ? this._appCommandPreviewer.bind(this) : undefined,
 			previewCallback: (command.providesPreview ? this._appCommandPreviewExecutor.bind(this) : undefined) as
-				| (typeof slashCommands.commands)[string]['previewCallback']
-				| undefined,
+				(typeof slashCommands.commands)[string]['previewCallback'] | undefined,
 		} as SlashCommand;
 
 		slashCommands.commands[command.command.toLowerCase()] = item;

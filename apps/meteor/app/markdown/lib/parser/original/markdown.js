@@ -1,4 +1,5 @@
 import { addAsToken, isToken, validateAllowedTokens } from './token';
+import { getMarkdownLinkRegexes } from '../linkRegexes';
 
 const validateUrl = (url, message) => {
 	// Don't render markdown inside links
@@ -31,7 +32,11 @@ const getTextWrapper = (marker, tagName) => (textPrepend, wrappedText, textAppen
 
 const getRegexReplacer = (replaceFunction, getRegex) => (marker, tagName) => {
 	const wrapper = getTextWrapper(marker, tagName);
-	return (msg) => msg.replace(getRegex(marker), (...args) => replaceFunction(wrapper, ...args));
+	// The regex only depends on the marker, so build it once when the parser is
+	// created instead of on every message. Safe with /g because
+	// String.prototype.replace resets lastIndex on each call.
+	const regex = getRegex(marker);
+	return (msg) => msg.replace(regex, (...args) => replaceFunction(wrapper, ...args));
 };
 
 const getParserWithCustomMarker = getRegexReplacer(
@@ -68,6 +73,7 @@ const parseNotEscaped = (message, { supportSchemesForLink, headers, rootUrl }) =
 	}
 
 	const schemes = (supportSchemesForLink || '').split(',').join('|');
+	const linkRegexes = getMarkdownLinkRegexes(schemes);
 
 	if (headers) {
 		// Support # Text for h1
@@ -130,7 +136,7 @@ const parseNotEscaped = (message, { supportSchemesForLink, headers, rootUrl }) =
 	msg = msg.replace(/<\/blockquote>\n<blockquote/gm, '</blockquote><blockquote');
 
 	// Support ![alt text](http://image url)
-	msg = msg.replace(new RegExp(`!\\[([^\\]]+)\\]\\(((?:${schemes}):\\/\\/[^\\s]+)\\)`, 'gm'), (match, title, url) => {
+	msg = msg.replace(linkRegexes.image, (match, title, url) => {
 		if (!validateUrl(url, message)) {
 			return match;
 		}
@@ -148,7 +154,7 @@ const parseNotEscaped = (message, { supportSchemesForLink, headers, rootUrl }) =
 	});
 
 	// Support [Text](http://link)
-	msg = msg.replace(new RegExp(`\\[([^\\]]+)\\]\\(((?:${schemes}):\\/\\/[^\\s]+)\\)`, 'gm'), (match, title, url) => {
+	msg = msg.replace(linkRegexes.link, (match, title, url) => {
 		if (!validateUrl(url, message)) {
 			return match;
 		}
@@ -168,7 +174,7 @@ const parseNotEscaped = (message, { supportSchemesForLink, headers, rootUrl }) =
 	});
 
 	// Support <http://link|Text>
-	msg = msg.replace(new RegExp(`(?:<|&lt;)((?:${schemes}):\\\/\\\/[^\\|]+)\\|(.+?)(?=>|&gt;)(?:>|&gt;)`, 'gm'), (match, url, title) => {
+	msg = msg.replace(linkRegexes.pipedLink, (match, url, title) => {
 		if (!validateUrl(url, message)) {
 			return match;
 		}

@@ -29,6 +29,24 @@ describe('AI Search', () => {
 			expect(response.body).to.have.property('meta');
 			expect(response.body.meta).to.include.keys(['intelligentSearchEnabled', 'intelligentSearchConfigured', 'answerGenerationConfigured']);
 		});
+
+		it('should accept every supported searchType', async () => {
+			for (const searchType of ['semantic', 'keyword', 'hybrid']) {
+				const response = await request.get(api('ai.search')).query({ query: adminUsername, searchType }).set(credentials);
+
+				expect(response.status, searchType).to.equal(200);
+				expect(response.body, searchType).to.have.property('success', true);
+				expect(response.body, searchType).to.have.property('intelligent').that.is.an('array');
+			}
+		});
+
+		it('should reject an unsupported searchType', async () => {
+			const response = await request.get(api('ai.search')).query({ query: adminUsername, searchType: 'bogus' }).set(credentials);
+
+			expect(response.status).to.equal(400);
+			expect(response.body).to.have.property('success', false);
+			expect(response.body).to.have.property('error');
+		});
 	});
 
 	describe('[/ai.search.answer]', () => {

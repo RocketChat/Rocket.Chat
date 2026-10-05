@@ -32,18 +32,16 @@ const AuditLogTable = () => {
 			});
 			// the REST payload serializes Date fields to strings; deserialize back to Date so the entry
 			// components can keep their IAuditLog (Date) typings instead of force-casting per row
-			return auditions.map(
-				(audition): IAuditLog => ({
-					...audition,
-					ts: new Date(audition.ts),
-					_updatedAt: new Date(audition._updatedAt),
-					fields: {
-						...audition.fields,
-						startDate: audition.fields.startDate ? new Date(audition.fields.startDate) : undefined,
-						endDate: audition.fields.endDate ? new Date(audition.fields.endDate) : undefined,
-					},
-				}),
-			);
+			return auditions.map((audition): IAuditLog => ({
+				...audition,
+				ts: new Date(audition.ts),
+				_updatedAt: new Date(audition._updatedAt),
+				fields: {
+					...audition.fields,
+					startDate: audition.fields.startDate ? new Date(audition.fields.startDate) : undefined,
+					endDate: audition.fields.endDate ? new Date(audition.fields.endDate) : undefined,
+				},
+			}));
 		},
 		meta: {
 			apiErrorToastMessage: true,

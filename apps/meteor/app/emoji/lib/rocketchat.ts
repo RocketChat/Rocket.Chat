@@ -1,6 +1,6 @@
 import type { TranslationKey } from '@rocket.chat/ui-contexts';
 
-export type EmojiPackage = {
+type EmojiPackage = {
 	emojiCategories: Array<{ key: string; i18n: TranslationKey }>;
 	categoryIndex?: number;
 	emojisByCategory: Record<string, string[]>;
@@ -15,34 +15,32 @@ export type EmojiPackage = {
 };
 
 export type EmojiPackages = {
-	packages: {
-		[key: string]: EmojiPackage;
-	};
-	list: {
-		[key: keyof NonNullable<EmojiPackages['packages']>]:
-			| {
-					name?: string;
-					category: string;
-					emojiPackage: string;
-					shortnames: string[];
-					uc_base: string;
-					uc_greedy: string;
-					uc_match: string;
-					uc_output: string;
-					aliases?: string[];
-					aliasOf?: undefined;
-					extension?: string;
-					etag?: string;
-					unicode?: string;
-			  }
-			| {
-					name?: undefined;
-					emojiPackage: string;
-					aliasOf: string;
-					extension?: undefined;
-					aliases?: undefined;
-					shortnames?: undefined;
-					etag?: string;
-			  };
-	};
+	packages: Record<string, EmojiPackage>;
+	list: Record<
+		string,
+		| {
+				name?: string;
+				category: string;
+				emojiPackage: string;
+				shortnames: string[];
+				uc_base: string;
+				uc_greedy: string;
+				uc_match: string;
+				uc_output: string;
+				aliases?: string[];
+				aliasOf?: undefined;
+				extension?: string;
+				etag?: string;
+				unicode?: string;
+		  }
+		| {
+				name?: undefined;
+				emojiPackage: string;
+				aliasOf: string;
+				extension?: undefined;
+				aliases?: undefined;
+				shortnames?: undefined;
+				etag?: string;
+		  }
+	>;
 };

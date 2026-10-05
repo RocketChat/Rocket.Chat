@@ -69,6 +69,7 @@ export async function findChatHistory({
 			sort: sort || { ts: -1 },
 			skip: offset,
 			limit: count,
+			projection: { 'v.token': 0, 'lastMessage.token': 0 },
 		},
 		extraQuery,
 	);

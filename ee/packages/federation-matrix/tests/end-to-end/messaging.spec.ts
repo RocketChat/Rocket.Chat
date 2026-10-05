@@ -9,7 +9,7 @@ import {
 } from '../../../../../apps/meteor/tests/data/file.helper';
 import { sendMessage } from '../../../../../apps/meteor/tests/data/messages.helper';
 import { createRoom, loadHistory } from '../../../../../apps/meteor/tests/data/rooms.helper';
-import { getRequestConfig, createUser } from '../../../../../apps/meteor/tests/data/users.helper';
+import { getRequestConfig } from '../../../../../apps/meteor/tests/data/users.helper';
 import { IS_EE } from '../../../../../apps/meteor/tests/e2e/config/constants';
 import { federationConfig } from '../helper/config';
 import { SynapseClient } from '../helper/synapse-client';
@@ -25,17 +25,6 @@ import { SynapseClient } from '../helper/synapse-client';
 			federationConfig.rc1.url,
 			federationConfig.rc1.adminUser,
 			federationConfig.rc1.adminPassword,
-		);
-
-		// Create user1 in RC1 using federation config values
-		await createUser(
-			{
-				username: federationConfig.rc1.additionalUser1.username,
-				password: federationConfig.rc1.additionalUser1.password,
-				email: `${federationConfig.rc1.additionalUser1.username}@rocket.chat`,
-				name: federationConfig.rc1.additionalUser1.username,
-			},
-			rc1AdminRequestConfig,
 		);
 
 		// Create admin Synapse client for HS1

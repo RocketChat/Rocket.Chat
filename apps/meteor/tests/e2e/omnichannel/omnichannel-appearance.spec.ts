@@ -11,7 +11,7 @@ test.describe.serial('OC - Livechat Appearance - EE', () => {
 
 	test.beforeEach(async ({ page }) => {
 		poLivechatAppearance = new OmnichannelLivechatAppearance(page);
-		await poLivechatAppearance.goTo();
+		await poLivechatAppearance.goto();
 	});
 
 	test.afterAll(async ({ api }) => {
@@ -73,7 +73,7 @@ test.describe('OC - Livechat Appearance - CE', () => {
 
 	test.beforeEach(async ({ page }) => {
 		poLivechatAppearance = new OmnichannelLivechatAppearance(page);
-		await poLivechatAppearance.goTo();
+		await poLivechatAppearance.goto();
 	});
 
 	test.afterAll(async ({ api }) => {

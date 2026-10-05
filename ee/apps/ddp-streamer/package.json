@@ -1,13 +1,13 @@
 {
 	"name": "@rocket.chat/ddp-streamer",
-	"version": "0.4.1",
+	"version": "0.4.2-rc.0",
 	"private": true,
 	"description": "Rocket.Chat DDP-Streamer service",
 	"keywords": [
 		"rocketchat"
 	],
 	"author": "Rocket.Chat",
-	"main": "./dist/service.js",
+	"main": "./dist/ee/apps/ddp-streamer/src/service.js",
 	"files": [
 		"/dist"
 	],
@@ -29,6 +29,7 @@
 		"@rocket.chat/models": "workspace:^",
 		"@rocket.chat/network-broker": "workspace:^",
 		"@rocket.chat/rest-typings": "workspace:^",
+		"@rocket.chat/streamer": "workspace:^",
 		"@rocket.chat/tracing": "workspace:^",
 		"colorette": "^1.4.0",
 		"ejson": "^2.2.3",
@@ -42,7 +43,7 @@
 		"polka": "^0.5.2",
 		"prom-client": "^14.2.0",
 		"prometheus-gc-stats": "^1.1.0",
-		"sharp": "^0.35.3",
+		"sharp": "^0.35.4",
 		"underscore": "^1.13.8",
 		"uuid": "^11.1.1",
 		"ws": "~8.21.3"
@@ -53,7 +54,7 @@
 		"@rocket.chat/jest-presets": "workspace:*",
 		"@types/ejson": "^2.2.2",
 		"@types/jest": "~30.0.0",
-		"@types/node": "~22.19.21",
+		"@types/node": "~24.13.2",
 		"@types/polka": "^0.5.8",
 		"@types/prometheus-gc-stats": "^0.6.4",
 		"@types/underscore": "^1.13.0",

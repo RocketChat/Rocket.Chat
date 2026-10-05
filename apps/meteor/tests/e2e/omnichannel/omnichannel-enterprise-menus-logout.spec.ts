@@ -2,14 +2,15 @@ import type { Page } from '@playwright/test';
 
 import { ADMIN_CREDENTIALS, IS_EE } from '../config/constants';
 import injectInitialData from '../fixtures/inject-initial-data';
+import { Login } from '../page-objects';
 import { test, expect } from '../utils/test';
 
+// TODO: Replace this test with a unit test
 test.describe('OC - Enterprise Menu Items After Relogin', () => {
 	// Create page object and redirect to home
 	test.beforeEach(async ({ page }: { page: Page }) => {
-		await page.goto('/omnichannel/current');
+		await new Login(page).goto('/omnichannel/current');
 
-		await page.locator('role=textbox[name=/username/i]').waitFor({ state: 'visible' });
 		await page.locator('role=textbox[name=/username/i]').fill(ADMIN_CREDENTIALS.email);
 		await page.locator('[name=password]').fill(ADMIN_CREDENTIALS.password);
 		await page.locator('role=button[name="Login"]').click();

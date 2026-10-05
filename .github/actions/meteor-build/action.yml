@@ -15,9 +15,6 @@ inputs:
   NPM_TOKEN:
     required: false
     description: 'NPM token'
-  deno-version:
-    required: true
-    description: 'Deno version'
   source-hash:
     required: true
     description: 'RC cache id (e.g. packages-build-cache-key + meteor apps/meteor archive hash from CI)'
@@ -53,7 +50,6 @@ runs:
       if: steps.cache-build.outputs.cache-hit != 'true'
       with:
         node-version: ${{ inputs.node-version }}
-        deno-version: ${{ inputs.deno-version }}
         cache-modules: true
         install: true
         type: 'production'

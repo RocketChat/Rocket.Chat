@@ -1,3 +1,4 @@
+import { AuthorizationUtils } from '@rocket.chat/authorization/dist/AuthorizationUtils';
 import type { IRole } from '@rocket.chat/core-typings';
 import { Margins, Box, CheckBox, Throbber } from '@rocket.chat/fuselage';
 import { useStableCallback } from '@rocket.chat/fuselage-hooks';
@@ -6,7 +7,7 @@ import { useSetModal } from '@rocket.chat/ui-contexts';
 import { useState, memo } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { AuthorizationUtils, confirmationRequiredPermissions } from '../../../../../app/authorization/lib';
+import { confirmationRequiredPermissions } from '../../../../../app/authorization/lib';
 
 export type RoleCellProps = {
 	_id: IRole['_id'];

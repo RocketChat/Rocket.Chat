@@ -2,7 +2,7 @@ import type { IRoom, ITeam, Serialized } from '@rocket.chat/core-typings';
 import { useEndpoint, useUserId } from '@rocket.chat/ui-contexts';
 import type { UseQueryOptions } from '@tanstack/react-query';
 import { useQuery } from '@tanstack/react-query';
-import { minutesToMilliseconds } from 'date-fns';
+import { minutesToMilliseconds } from 'date-fns/minutesToMilliseconds';
 
 import { roomsQueryKeys } from '../lib/queryKeys';
 

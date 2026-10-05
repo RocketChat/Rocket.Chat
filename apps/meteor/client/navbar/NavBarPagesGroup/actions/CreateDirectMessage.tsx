@@ -19,9 +19,9 @@ import { useForm, Controller } from 'react-hook-form';
 import UserAutoCompleteMultiple from '../../../components/UserAutoCompleteMultiple';
 import { useGoToRoom } from '../../../views/room/hooks/useGoToRoom';
 
-export type CreateDirectMessageProps = { onClose: () => void };
+export type CreateDirectMessageProps = { onClose: () => void; onSuccess?: (rid: string) => void | Promise<void> };
 
-const CreateDirectMessage = ({ onClose }: CreateDirectMessageProps) => {
+const CreateDirectMessage = ({ onClose, onSuccess }: CreateDirectMessageProps) => {
 	const t = useTranslation();
 	const directMaxUsers = useSetting('DirectMesssage_maxUsers', 1);
 	const createDMFormId = useId();
@@ -39,8 +39,9 @@ const CreateDirectMessage = ({ onClose }: CreateDirectMessageProps) => {
 
 	const mutateDirectMessage = useMutation({
 		mutationFn: createDirectAction,
-		onSuccess: ({ room: { rid } }) => {
-			goToRoom(rid);
+		onSuccess: ({ room }) => {
+			goToRoom(room.rid);
+			void onSuccess?.(room.rid);
 		},
 		onError: (error) => {
 			dispatchToastMessage({ type: 'error', message: error });

@@ -10,19 +10,29 @@ import { createNpmFile } from './createNpmFile';
 import { fixWorkspaceVersionsBeforePublish } from './fixWorkspaceVersionsBeforePublish';
 import { checkoutBranch, commitChanges, createTag, getCurrentBranch, mergeBranch, pushChanges } from './gitUtils';
 import { setupOctokit } from './setupOctokit';
-import { bumpFileVersions, createBumpFile, getChangelogEntry, getEngineVersionsMd, isPreRelease, readPackageJson } from './utils';
+import {
+	bumpFileVersions,
+	createBumpFile,
+	getChangelogEntry,
+	getEngineVersionsMd,
+	getReleaseName,
+	isPreRelease,
+	readPackageJson,
+} from './utils';
 
 export async function publishRelease({
 	githubToken,
 	mainPackagePath,
 	mergeFinal = false,
 	baseRef,
+	ltsVersions = [],
 	cwd = process.cwd(),
 }: {
 	githubToken: string;
 	mainPackagePath: string;
 	baseRef?: string;
 	mergeFinal?: boolean;
+	ltsVersions?: string[];
 	cwd?: string;
 }) {
 	const octokit = setupOctokit(githubToken);
@@ -117,7 +127,7 @@ export async function publishRelease({
 
 	core.info('create release');
 	await octokit.rest.repos.createRelease({
-		name: newVersion,
+		name: getReleaseName(newVersion, ltsVersions),
 		tag_name: newVersion,
 		body: releaseBody,
 		prerelease,

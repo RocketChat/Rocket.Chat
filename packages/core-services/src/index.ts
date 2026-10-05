@@ -7,6 +7,7 @@ import type {
 	AISearchModelOption,
 	AISearchResult,
 	AISearchStatus,
+	AISearchType,
 } from './types/IAISearchService';
 import type { IAbacService } from './types/IAbacService';
 import type { IAccount, ILoginResult } from './types/IAccount';
@@ -164,6 +165,7 @@ export type {
 	AISearchModelOption,
 	AISearchResult,
 	AISearchStatus,
+	AISearchType,
 	ICallHistoryService,
 	IOmnichannelTranscriptService,
 	IQueueWorkerService,

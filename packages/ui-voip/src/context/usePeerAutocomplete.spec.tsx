@@ -100,6 +100,26 @@ describe('hook', () => {
 		});
 	});
 
+	it('should not add first option when an option already reads as the filter', async () => {
+		const mockOptions: PeerAutocompleteOptions[] = [
+			{ value: 'user1', label: 'User 1', avatarUrl: '' },
+			{ value: 'user2', label: 'user2', avatarUrl: '' },
+		];
+		mockGetAutocompleteOptions.mockImplementation(async (filter: string) => (filter === 'user2' ? mockOptions : []));
+
+		const { result } = renderHook(() => usePeerAutocomplete(mockOnSelectPeer, undefined), {
+			wrapper: appRoot(),
+		});
+
+		act(() => {
+			result.current.onChangeFilter('user2');
+		});
+
+		await waitFor(() => {
+			expect(result.current.options).toEqual(mockOptions);
+		});
+	});
+
 	it('should return value when peerInfo has userId', () => {
 		mockGetAutocompleteOptions.mockResolvedValue([]);
 		const peerInfo: PeerInfo = { userId: 'user1', displayName: 'User 1' };

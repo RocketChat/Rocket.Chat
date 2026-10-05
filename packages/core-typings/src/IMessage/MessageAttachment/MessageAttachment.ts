@@ -6,11 +6,7 @@ import type { MessageAttachmentDefault } from './MessageAttachmentDefault';
 import type { MessageQuoteAttachment } from './MessageQuoteAttachment';
 
 export type MessageAttachment =
-	| MessageAttachmentAction
-	| MessageAttachmentDefault
-	| FileAttachmentProps
-	| MessageQuoteAttachment
-	| RemovedFileAttachmentProps;
+	MessageAttachmentAction | MessageAttachmentDefault | FileAttachmentProps | MessageQuoteAttachment | RemovedFileAttachmentProps;
 
 export type FilesAndAttachments = {
 	files: FileProp[];

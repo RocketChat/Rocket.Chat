@@ -2,7 +2,7 @@ import { Box } from '@rocket.chat/fuselage';
 
 const WebdavFilePickerGridItem = ({ ...props }) => (
 	<Box
-		borderRadius='x4'
+		borderRadius='medium'
 		width='33.33%'
 		display='flex'
 		flexDirection='column'

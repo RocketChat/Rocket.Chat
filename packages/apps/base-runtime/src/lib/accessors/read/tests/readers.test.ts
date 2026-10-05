@@ -3,6 +3,7 @@ import * as assert from 'node:assert';
 import { describe, it } from 'node:test';
 
 import { createRecordingSender } from '../../tests/helpers/parityHarness';
+import { CallHistoryRead } from '../CallHistoryRead';
 import { CloudWorkspaceRead } from '../CloudWorkspaceRead';
 import { ContactRead } from '../ContactRead';
 import { LivechatRead } from '../LivechatRead';
@@ -123,6 +124,40 @@ describe('Reader family (base-runtime)', () => {
 			const b = setup();
 			await new UserRead(b.senderFn).getAppUser('another-app');
 			assert.deepStrictEqual(b.rec.emitted()[0], { method: 'bridges:getUserBridge:doGetAppUser', params: ['another-app'] });
+		});
+	});
+
+	describe('CallHistoryRead', () => {
+		it('getById forwards to getCallHistoryBridge:doGetById with the uid and the APP_ID sentinel', async () => {
+			const { rec, senderFn } = setup({ 'bridges:getCallHistoryBridge:doGetById': { id: 'h1' } });
+			const result = await new CallHistoryRead(senderFn).getById('h1', 'u1');
+
+			assert.deepStrictEqual(rec.emitted(), [{ method: 'bridges:getCallHistoryBridge:doGetById', params: ['h1', 'u1', 'APP_ID'] }]);
+			assert.deepStrictEqual(result, { id: 'h1' });
+		});
+
+		it('getByCallId forwards to getCallHistoryBridge:doGetByCallId with the uid and the APP_ID sentinel', async () => {
+			const { rec, senderFn } = setup({ 'bridges:getCallHistoryBridge:doGetByCallId': { id: 'h1' } });
+			const result = await new CallHistoryRead(senderFn).getByCallId('c1', 'u1');
+
+			assert.deepStrictEqual(rec.emitted(), [{ method: 'bridges:getCallHistoryBridge:doGetByCallId', params: ['c1', 'u1', 'APP_ID'] }]);
+			assert.deepStrictEqual(result, { id: 'h1' });
+		});
+
+		it('search forwards the filters and the pagination positionally, undefined included', async () => {
+			const withArgs = setup({ 'bridges:getCallHistoryBridge:doSearch': { items: [], total: 0 } });
+			await new CallHistoryRead(withArgs.senderFn).search('u1', { direction: 'inbound' }, { count: 10 });
+			assert.deepStrictEqual(withArgs.rec.emitted()[0], {
+				method: 'bridges:getCallHistoryBridge:doSearch',
+				params: ['u1', { direction: 'inbound' }, { count: 10 }, 'APP_ID'],
+			});
+
+			const bare = setup({ 'bridges:getCallHistoryBridge:doSearch': { items: [], total: 0 } });
+			await new CallHistoryRead(bare.senderFn).search('u1');
+			assert.deepStrictEqual(bare.rec.emitted()[0], {
+				method: 'bridges:getCallHistoryBridge:doSearch',
+				params: ['u1', undefined, undefined, 'APP_ID'],
+			});
 		});
 	});
 

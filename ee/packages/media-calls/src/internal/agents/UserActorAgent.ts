@@ -1,6 +1,6 @@
 import type { IMediaCall, MediaCallSignedContact } from '@rocket.chat/core-typings';
-import { isBusyState } from '@rocket.chat/media-signaling';
-import type { ClientMediaSignal, ServerMediaSignal, CallFeature } from '@rocket.chat/media-signaling';
+import { isBusyState, isCallHangupReason } from '@rocket.chat/media-signaling';
+import type { ClientMediaSignal, ServerMediaSignal, CallFeature, CallHangupReason } from '@rocket.chat/media-signaling';
 import { MediaCallNegotiations, MediaCalls } from '@rocket.chat/models';
 
 import { UserActorSignalProcessor } from './CallSignalProcessor';
@@ -54,7 +54,29 @@ export class UserActorAgent extends BaseMediaCallAgent {
 			callId,
 			type: 'notification',
 			notification: 'hangup',
+			hangupReason: await this.getCallHangupReasonForClient(callId).catch(() => 'remote' as const),
 		});
+	}
+
+	private async getCallHangupReasonForClient(callId: string): Promise<CallHangupReason> {
+		const call = await MediaCalls.findOneById<Pick<IMediaCall, '_id' | 'endedBy' | 'hangupReason'>>(callId, {
+			projection: { endedBy: 1, hangupReason: 1 },
+		});
+		if (!call) {
+			return 'remote';
+		}
+
+		const { endedBy, hangupReason } = call;
+
+		if (endedBy?.type !== this.actorType || endedBy?.id !== this.actorId) {
+			return 'remote';
+		}
+
+		if (hangupReason && isCallHangupReason(hangupReason)) {
+			return hangupReason;
+		}
+
+		return 'remote';
 	}
 
 	public async onCallActive(callId: string): Promise<void> {

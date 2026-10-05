@@ -122,8 +122,7 @@ const AuthenticationProvider = ({ children }: AuthenticationProviderProps) => {
 			loginWithCustomOauth: (service: string, options: { redirectUrl: string }, callback) => {
 				const methodName = `loginWith${capitalizeService(service, true)}`;
 				const method = (Meteor as any)[methodName] as
-					| ((options: { redirectUrl: string }, cb?: (response: unknown) => void) => void)
-					| undefined;
+					((options: { redirectUrl: string }, cb?: (response: unknown) => void) => void) | undefined;
 				if (!method) {
 					return;
 				}

@@ -15,7 +15,7 @@ test.describe.serial('admin-rooms', () => {
 
 	test.beforeEach(async ({ page }) => {
 		adminRooms = new AdminRooms(page);
-		await page.goto('/admin/rooms');
+		await adminRooms.goto();
 	});
 
 	test.beforeAll(async ({ api }) => {
@@ -81,11 +81,11 @@ test.describe.serial('admin-rooms', () => {
 
 		await page.locator('text=Private channels').click();
 
-		const workspaceButton = await adminRooms.adminSectionButton(AdminSectionsHref.Workspace);
+		const workspaceButton = await adminRooms.adminSectionButton(AdminSectionsHref.workspace);
 		await workspaceButton.click();
-		await expect(adminInfo.adminPageContent).toBeVisible();
+		await expect(adminInfo.pageContent).toBeVisible();
 
-		const roomsButton = await adminRooms.adminSectionButton(AdminSectionsHref.Rooms);
+		const roomsButton = await adminRooms.adminSectionButton(AdminSectionsHref.rooms);
 		await roomsButton.click();
 
 		const selectDropdown = await adminRooms.dropdownFilterRoomType('All rooms');

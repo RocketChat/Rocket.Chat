@@ -92,7 +92,7 @@ test.describe('OC - Livechat API', () => {
 			const { page: pageCtx } = await createAuxContext(browser, Users.user1);
 			poAuxContext = { page: pageCtx, poHomeOmnichannel: new HomeOmnichannel(pageCtx) };
 
-			await page.goto('/packages/rocketchat_livechat/assets/demo.html');
+			await poLiveChat.goto();
 		});
 
 		test.afterAll(async () => {
@@ -271,7 +271,7 @@ test.describe('OC - Livechat API', () => {
 				await poAuxContext.poHomeOmnichannel.navbar.changeUserStatus('online');
 			}
 
-			await page.goto('/packages/rocketchat_livechat/assets/demo.html');
+			await poLiveChat.goto();
 		});
 
 		test.afterEach(async () => {
@@ -498,7 +498,7 @@ test.describe('OC - Livechat API', () => {
 			await test.step('Expect registerGuest to log in an existing guest and load chat history', async () => {
 				({ page: pageContext } = await createAuxContext(browser, Users.user1));
 
-				await pageContext.goto('/packages/rocketchat_livechat/assets/demo.html');
+				await new OmnichannelLiveChatEmbedded(pageContext).goto();
 
 				await pageContext.evaluate(() => window.RocketChat.livechat.maximizeWidget());
 				await expect(pageContext.frameLocator('#rocketchat-iframe').getByText('Start Chat')).toBeVisible();
@@ -681,7 +681,7 @@ test.describe('OC - Livechat API', () => {
 			await test.step('Expect setGuestToken to log in an existing guest and load chat history', async () => {
 				({ page: pageContext } = await createAuxContext(browser, Users.user1));
 
-				await pageContext.goto('/packages/rocketchat_livechat/assets/demo.html');
+				await new OmnichannelLiveChatEmbedded(pageContext).goto();
 
 				await pageContext.evaluate(() => window.RocketChat.livechat.maximizeWidget());
 				await expect(pageContext.frameLocator('#rocketchat-iframe').getByText('Start Chat')).toBeVisible();
@@ -726,7 +726,7 @@ test.describe('OC - Livechat API', () => {
 				await poAuxContext.poHomeOmnichannel.navbar.changeUserStatus('online');
 			}
 
-			await page.goto('/packages/rocketchat_livechat/assets/demo.html');
+			await poLiveChat.goto();
 		});
 
 		test.afterEach(async () => {
