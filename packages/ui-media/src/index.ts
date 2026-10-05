@@ -7,3 +7,6 @@ export { deviceMenuSelection } from './devices/deviceMenuRows';
 export { DeviceSelectionProvider, useDeviceSelection } from './devices/DeviceSelectionContext';
 export type { DeviceSelection } from './devices/DeviceSelectionContext';
 export { createRequiredContext } from './createRequiredContext';
+export { usePlayMediaStream } from './streams/usePlayMediaStream';
+export { default as StreamVideo } from './streams/StreamVideo';
+export type { StreamVideoProps } from './streams/StreamVideo';
