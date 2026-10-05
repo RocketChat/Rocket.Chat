@@ -94,14 +94,7 @@ const ConferenceWindow = () => {
 	// Kept true as each ring lapses, which is what stops the dialler sounding for a call nobody is being asked about.
 	const ringingMembers = useRinging(otherMembers);
 	const someoneRinging = ringingMembers.length > 0;
-	useEffect(() => {
-		if (someoneRinging) {
-			callSounds.playDialer();
-		} else {
-			callSounds.stopDialer();
-		}
-		return () => callSounds.stopDialer();
-	}, [someoneRinging, callSounds]);
+	useEffect(() => (someoneRinging ? callSounds.playDialer() : undefined), [someoneRinging, callSounds]);
 
 	const [bannerDismissed, setBannerDismissed] = useState(false);
 
