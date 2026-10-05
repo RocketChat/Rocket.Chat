@@ -19,6 +19,7 @@ import {
 import { contextWithPlainText, contextWithMrkdwn, contextWithImage, contextWithAllElements } from './context';
 import { divider } from './divider';
 import { header } from './header';
+import { markdown } from './markdown';
 import { imageWithTitle, imageWithoutTitle } from './image';
 import { infoCardPlain, infoCardMultipleRows } from './infoCard';
 import {
@@ -336,6 +337,15 @@ const BlocksTree: Item = [
 			{
 				label: 'Plain',
 				payload: header,
+			},
+		],
+	},
+	{
+		label: 'markdown',
+		branches: [
+			{
+				label: 'Release notes',
+				payload: markdown,
 			},
 		],
 	},

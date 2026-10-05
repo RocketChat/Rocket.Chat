@@ -8,6 +8,7 @@ export const LayoutBlockType = {
 	ACTIONS: 'actions',
 	CONTEXT: 'context',
 	INPUT: 'input',
+	MARKDOWN: 'markdown',
 	CONDITIONAL: 'conditional',
 	PREVIEW: 'preview',
 	VIDEO_CONF: 'video_conf',
