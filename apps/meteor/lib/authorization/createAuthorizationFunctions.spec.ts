@@ -248,9 +248,8 @@ describe('createAuthorizationFunctions', () => {
 		});
 
 		it('makes the same decisions with hasPermission as with hasAllPermission', () => {
-			const restrictedRole = createRestrictedRole(['create-d']);
 			const { hasAllPermission, hasPermission } = setup({
-				userRoles: { 'current-user': ['user'], 'restricted-user': [restrictedRole] },
+				userRoles: { 'current-user': ['user'] },
 				permissions: { 'create-c': ['user'], 'view-logs': ['admin'], 'edit-message': ['owner'] },
 				roleScopes: { owner: 'Subscriptions' },
 				subscriptionRoles: { 'room-1': ['owner'] },
@@ -265,10 +264,10 @@ describe('createAuthorizationFunctions', () => {
 				['edit-message', 'room-2', ['owner']],
 			];
 
-			for (const args of cases) {
-				expect(hasPermission(...args)).toBe(hasAllPermission(...args));
-			}
-			expect(cases.map((args) => hasPermission(...args))).toEqual([true, false, false, false, true, false, true]);
+			const expected = [true, false, false, false, true, false, true];
+
+			expect(cases.map((args) => hasAllPermission(...args))).toEqual(expected);
+			expect(cases.map((args) => hasPermission(...args))).toEqual(expected);
 		});
 	});
 });
