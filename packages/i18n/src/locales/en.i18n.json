@@ -2772,7 +2772,7 @@
   "Exchange_Graph_Tenant_Id": "Directory (tenant) ID",
   "Exchange_Graph_Tenant_Id_Description": "The tenant ID or a verified domain of your Microsoft 365 organization.",
   "Exchange_Mode": "Integration mode",
-  "Exchange_Mode_Description": "Legacy asks each user to sign in to Exchange from the desktop app. Server-to-server uses one administrator-configured connection and covers every platform. Only one can be active: both write to the same calendar, so running them together would duplicate every meeting.",
+  "Exchange_Mode_Description": "Legacy asks each user to sign in to Exchange from the desktop app. Server-to-server uses one administrator-configured connection and covers every platform.",
   "Exchange_Mode_Legacy": "Legacy (per user, desktop app only)",
   "Exchange_Mode_Server": "Server-to-server (all platforms)",
   "Exchange_Server_Sync": "Server-to-server (all platforms)",
