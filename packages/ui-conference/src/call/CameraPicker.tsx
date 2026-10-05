@@ -1,12 +1,9 @@
-import { refreshMediaDevices } from '@rocket.chat/ui-media';
-import { stopTracks } from '@rocket.chat/ui-voip';
+import { DeviceMenu, refreshMediaDevices, useDeviceSelection } from '@rocket.chat/ui-media';
+import { DeviceMenuButton, stopTracks } from '@rocket.chat/ui-voip';
 import { useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import CallDeviceMenuButton from './CallDeviceMenuButton';
 import { useCallState } from './context';
-import DeviceMenu from '../devices/DeviceMenu';
-import { useDeviceSelection } from '../devices/DeviceSelectionContext';
 
 /** The camera of a call running in this window. */
 const CameraPicker = () => {
@@ -31,7 +28,7 @@ const CameraPicker = () => {
 			title={t('Camera')}
 			placement='top-end'
 			beforeOpen={askForCameras}
-			button={<CallDeviceMenuButton label={t('Camera_options')} danger={!self.cameraOn} />}
+			button={<DeviceMenuButton secondary large menuIcon='chevron-up' label={t('Camera_options')} danger={!self.cameraOn} />}
 		/>
 	);
 };

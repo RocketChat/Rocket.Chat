@@ -1,10 +1,10 @@
 import { mockAppRoot } from '@rocket.chat/mock-providers';
+import { DeviceSelectionProvider } from '@rocket.chat/ui-media';
 import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 
 import CameraPicker from './CameraPicker';
 import { CallStateProvider } from './context';
-import { DeviceSelectionProvider } from '../devices/DeviceSelectionContext';
 import { buildCallState, buildDeviceSelection, fakeDevices } from '../fixtures/callFixtures';
 
 const getUserMedia = jest.fn();

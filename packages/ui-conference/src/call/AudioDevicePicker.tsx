@@ -1,12 +1,10 @@
 import { useSelectedDevices } from '@rocket.chat/ui-contexts';
-import { refreshMediaDevices } from '@rocket.chat/ui-media';
-import { stopTracks, useDevicePermissionPrompt2 } from '@rocket.chat/ui-voip';
+import { DeviceMenu, refreshMediaDevices } from '@rocket.chat/ui-media';
+import { DeviceMenuButton, stopTracks, useDevicePermissionPrompt2 } from '@rocket.chat/ui-voip';
 import { useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import CallDeviceMenuButton from './CallDeviceMenuButton';
 import { useCallState } from './context';
-import DeviceMenu from '../devices/DeviceMenu';
 
 /** The microphone and speaker of a call running in this window. */
 const AudioDevicePicker = () => {
@@ -36,7 +34,7 @@ const AudioDevicePicker = () => {
 			title={t('Device_settings_lowercase')}
 			placement='top-end'
 			beforeOpen={askForDevices}
-			button={<CallDeviceMenuButton label={t('Audio_device_options')} danger={self.muted} />}
+			button={<DeviceMenuButton secondary large menuIcon='chevron-up' label={t('Audio_device_options')} danger={self.muted} />}
 		/>
 	);
 };

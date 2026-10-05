@@ -1,4 +1,4 @@
-import { createRequiredContext } from '../lib/createRequiredContext';
+import { createRequiredContext } from '../createRequiredContext';
 
 /**
  * The devices on offer and which one is in use for each kind, for the device menus. The preflight fills it with the
