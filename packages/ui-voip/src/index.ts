@@ -23,4 +23,3 @@ export * from './views/MediaCallHistoryTable';
 
 export { ActionButton, DeviceMenuButton, ToggleButton } from './components';
 export { useDevicePermissionPrompt2, stopTracks, useRevealDeviceLabels } from './hooks';
-export { usePlayMediaStream } from './providers/usePlayMediaStream';
