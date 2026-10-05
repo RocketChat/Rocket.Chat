@@ -2,7 +2,7 @@ import { Box, Button, IconButton } from '@rocket.chat/fuselage';
 import { Field, FieldLabel, FieldError, FieldHint, FieldRow, TextInput } from '@rocket.chat/fuselage-forms';
 import { useVisuallyHidden } from 'react-aria';
 import type { ArrayPath, Control, FieldValues, Path } from 'react-hook-form';
-import { Controller } from 'react-hook-form';
+import { Controller, get } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 
 import { E164_PHONE_REGEX } from './e164PhoneRegex';
@@ -35,6 +35,8 @@ const PhoneNumberFieldList = <T extends FieldValues>({
 	const { t } = useTranslation();
 	const { visuallyHiddenProps } = useVisuallyHidden();
 
+	const isUntouchedSoleRow = (formValues: T, index: number) => phones.length === 1 && !get(formValues, `${name}.${index}.label`)?.trim();
+
 	return (
 		<Box is='fieldset' className={className} display='flex' flexDirection='column' width='100%'>
 			<legend {...visuallyHiddenProps}>{t('Phone_Numbers')}</legend>
@@ -46,9 +48,14 @@ const PhoneNumberFieldList = <T extends FieldValues>({
 							name={`${name}.${index}.number` as Path<T>}
 							rules={{
 								validate: {
-									required: (value: string) => (value.trim() ? true : t('Required_field', { field: `${t('Phone_number')} ${index + 1}` })),
-									valid: (value: string) =>
-										E164_PHONE_REGEX.test(value) ? true : t('__field__is_invalid', { field: `${t('Phone_number')} ${index + 1}` }),
+									required: (value: string, formValues: T) =>
+										value.trim() || isUntouchedSoleRow(formValues, index)
+											? true
+											: t('Required_field', { field: `${t('Phone_number')} ${index + 1}` }),
+									valid: (value: string, formValues: T) =>
+										E164_PHONE_REGEX.test(value) || (!value.trim() && isUntouchedSoleRow(formValues, index))
+											? true
+											: t('__field__is_invalid', { field: `${t('Phone_number')} ${index + 1}` }),
 								},
 							}}
 							// TODO: add back type='tel' to the Input
