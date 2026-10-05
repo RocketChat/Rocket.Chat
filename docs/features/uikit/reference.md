@@ -139,7 +139,7 @@ Source: [`packages/ui-kit/src/blocks/layout/SectionBlock.ts`](../../../packages/
 | `type` | `'section'` | yes |  |
 | `text` | `TextObject` | no |  |
 | `fields` | `readonly TextObject[]` | no |  |
-| `accessory` | `ButtonElement \| DatePickerElement \| ImageElement \| MultiStaticSelectElement \| OverflowElement \| StaticSelectElement` | no |  |
+| `accessory` | `ButtonElement \| ChannelsSelectElement \| CheckboxElement \| ConversationsSelectElement \| DatePickerElement \| ImageElement \| MultiChannelsSelectElement \| MultiConversationsSelectElement \| MultiStaticSelectElement \| MultiUsersSelectElement \| OverflowElement \| RadioButtonElement \| StaticSelectElement \| TimePickerElement \| UsersSelectElement` | no |  |
 | `appId` | `string` | no |  |
 | `blockId` | `string` | no |  |
 

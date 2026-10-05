@@ -106,6 +106,8 @@ export const SectionWithOverflowMenuAccessory = createStory(payloads.sectionWith
 
 export const SectionWithDatePickerAccessory = createStory(payloads.sectionWithDatePickerAccessory);
 
+export const SectionWithRadioButtonAccessory = createStory(payloads.sectionWithRadioButtonAccessory);
+
 export const ImageWithTitle = createStory(payloads.imageWithTitle);
 
 export const ImageWithoutTitle = createStory(payloads.imageWithoutTitle);

@@ -44,9 +44,9 @@ Container columns come from the block types; renderer columns tell whether a met
 | Element | actions | input | section accessory | context | callout accessory | info_card row | info_card action | tab_navigation | Fuselage renders | Livechat renders |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
 | `button` | ✅ | — | ✅ | — | ✅ | — | — | — | ✅ | ✅ |
-| `channels_select` | ✅ | ✅ | — | — | — | — | — | — | ✅ | — |
-| `checkbox` | ✅ | ✅ | — | — | — | — | — | — | ✅ | — |
-| `conversations_select` | ✅ | ✅ | — | — | — | — | — | — | ✅ | — |
+| `channels_select` | ✅ | ✅ | ✅ | — | — | — | — | — | ✅ | — |
+| `checkbox` | ✅ | ✅ | ✅ | — | — | — | — | — | ✅ | — |
+| `conversations_select` | ✅ | ✅ | ✅ | — | — | — | — | — | ✅ | — |
 | `datepicker` | ✅ | ✅ | ✅ | — | — | — | — | — | ✅ | ✅ |
 | `datetimepicker` | ✅ | ✅ | — | — | — | — | — | — | ✅ | — |
 | `email_text_input` | — | ✅ | — | — | — | — | — | — | ✅ | — |
@@ -54,17 +54,17 @@ Container columns come from the block types; renderer columns tell whether a met
 | `icon_button` | — | — | — | — | — | — | ✅ | — | ✅ | — |
 | `image` | — | — | ✅ | ✅ | — | — | — | — | ✅ | ✅ |
 | `linear_scale` | ✅ | ✅ | — | — | — | — | — | — | ✅ | — |
-| `multi_channels_select` | ✅ | ✅ | — | — | — | — | — | — | ✅ | — |
-| `multi_conversations_select` | ✅ | ✅ | — | — | — | — | — | — | ✅ | — |
+| `multi_channels_select` | ✅ | ✅ | ✅ | — | — | — | — | — | ✅ | — |
+| `multi_conversations_select` | ✅ | ✅ | ✅ | — | — | — | — | — | ✅ | — |
 | `multi_static_select` | ✅ | ✅ | ✅ | — | — | — | — | — | ✅ | — (returns `null`) |
-| `multi_users_select` | ✅ | ✅ | — | — | — | — | — | — | ✅ | — |
+| `multi_users_select` | ✅ | ✅ | ✅ | — | — | — | — | — | ✅ | — |
 | `number_input` | — | ✅ | — | — | — | — | — | — | ✅ | — |
 | `overflow` | ✅ | — | ✅ | — | ✅ | — | — | — | ✅ | ✅ |
 | `plain_text_input` | — | ✅ | — | — | — | — | — | — | ✅ | — |
-| `radio_button` | ✅ | ✅ | — | — | — | — | — | — | ✅ | — |
+| `radio_button` | ✅ | ✅ | ✅ | — | — | — | — | — | ✅ | — |
 | `static_select` | ✅ | ✅ | ✅ | — | — | — | — | — | ✅ | ✅ |
 | `tab` (via `tab_navigation`) | — | — | — | — | — | — | — | ✅ | ✅ | — |
-| `time_picker` | ✅ | ✅ | — | — | — | — | — | — | ✅ | — |
+| `time_picker` | ✅ | ✅ | ✅ | — | — | — | — | — | ✅ | — |
 | `toggle_switch` | ✅ | ✅ | — | — | — | — | — | — | ✅ | — |
 | `url_text_input` | — | ✅ | — | — | — | — | — | — | ✅ | — |
-| `users_select` | ✅ | ✅ | — | — | — | — | — | — | ✅ | — |
+| `users_select` | ✅ | ✅ | ✅ | — | — | — | — | — | ✅ | — |
