@@ -1,0 +1,1665 @@
+packages/ui-client/src/hooks/useFormatTime.ts
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 4
+packages/ui-composer/CHANGELOG.md
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 3-15,22,31,40,49,58,67,76,85,98,107,116,129
+packages/ui-client/src/components/Header/HeaderToolbar/HeaderToolbar.spec.tsx
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 1-58
+.changeset/hide-self-moderation-actions.md
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 1-5
+apps/meteor/tests/unit/server/modules/apps/converters.golden.spec.ts
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 4-14
+apps/uikit-playground/package.json
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 3,18,21,23,27,33,39,47,49
+docs/features/uikit/interactions.md
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 1-72
+apps/meteor/client/views/navigation/sidebar/RoomList/RoomList.tsx
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 11,70
+apps/meteor/server/modules/apps/converters/codecs/rooms.ts
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 1-462
+packages/ui-conference/src/call/stage/OverflowTile.spec.tsx
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 1-42
+apps/meteor/client/views/room/composer/messageBox/createComposerAPI.ts
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 10,54
+apps/meteor/tests/unit/server/modules/apps/codecs/rooms.spec.ts
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 21
+packages/i18n/src/locales/ms-MY.i18n.json
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 773,863,2058,2347,2410,2505-2507
+packages/ui-conference/src/call/tile/SelfTile.tsx
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 1-16
+packages/ui-conference/src/preflight/useCallDevicePreview.ts
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 1-66
+packages/ui-livekit/tsconfig.json
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 1-10
+apps/meteor/server/modules/apps/converters/codecs/enums.ts
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 1-123
+ee/packages/federation-matrix/package.json
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 3,25,46-48
+packages/agenda/package.json
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 26
+packages/fuselage-toastbar/CHANGELOG.md
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 1-63
+ee/apps/authorization-service/package.json
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 3,33,37,49
+packages/i18n/src/locales/ro.i18n.json
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 773,862,2044,2333,2397,2492-2496
+apps/meteor/client/sidebar/categories/hooks/useUserSidebarCategories.spec.ts
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 5,11-12,16,19,66-67
+packages/logo/package.json
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 1-66
+packages/stylis-logical-props-middleware/src/operations.spec.ts
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 187-189
+packages/ui-client/src/lib/index.ts
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 3
+.changeset/quiet-rows-return.md
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 1-5
+apps/meteor/client/views/marketplace/AppDetailsPage/tabs/AppReleases/AppReleasesItem.tsx
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 2
+apps/meteor/client/views/room/hooks/useUserInfoActions/useUserInfoActions.ts
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 98-100,153
+apps/meteor/ee/server/lib/livekit/config.ts
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 1-35
+apps/meteor/tests/end-to-end/api/livechat/00-rooms.ts
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 2731,2741,2756,2762
+packages/storybook-dark-mode/CHANGELOG.md
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 3-10
+apps/meteor/ee/server/index.ts
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 17
+apps/meteor/server/modules/apps/bridges/thread.ts
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 1-15
+packages/ui-conference/src/call/stage/GridLayout.tsx
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 1-93
+packages/jest-presets/package.json
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 33,44
+packages/ui-voip/CHANGELOG.md
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 3-31,48,72,87,102,121,132,149,168,187,206,218,231,243,255,274,296,308,320,332,344,366,378,392,404,416,430,442,460,472,535,547,559,572,584,596,617,628,639,663,674,685,709,730,747,758,769,780,791,808,827,838,849,860,871,882,903,922,933,954,965,1006,1017,1028,1075,1086,1097,1114,1135,1146,1157,1168,1179,1190,1201,1212,1223,1234,1245,1259,1312,1329,1340,1351,1362,1373,1384,1395,1412,1423,1434,1453,1464,1475,1486,1497,1508,1519,1530,1541,1560,1571,1586,1597,1608,1619,1630,1641,1656,1667,1680,1691,1702,1723,1734,1747,1758,1769,1780,1791,1802,1813,1824,1835,1846,1857,1868,1887,1898,1909,1920,1939,1950,1961,1972,1983,1994,2011,2022,2033,2044,2055,2066,2077,2094
+packages/authorization/package.json
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 3,31-32
+packages/core-typings/package.json
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 16,32
+packages/ui-conference/src/fixtures/callFixtures.tsx
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 1-96
+packages/ui-voip/src/index.ts
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 10,23-26
+packages/ui-conference/src/devices/deviceMenuRows.spec.ts
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 1-61
+packages/fuselage-toastbar/src/ToastBarZone.tsx
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 1-48
+packages/ui-livekit/src/PreviewVideoProvider.tsx
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 1-16
+apps/meteor/ee/server/api/apps/endpoints/appGeneralLogsHandler.ts
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 1-72
+apps/meteor/ee/server/cron/appRequests.ts
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 7-8
+ee/apps/ddp-streamer/CHANGELOG.md
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 3-20,37,57,76,95,110,125,140,155,172,187,202,217,232,249,268,283,298,313,328,347,362,377,392,407,422,437,452,467,482,497,512,530,545,560,575,590,605,623,640,655,670,685,714,743,760,775,790,805,820,837,852,867,882,897,912,927,956,971,1014,1029,1086,1101,1174,1203,1247,1262,1279,1294,1309,1324,1339,1356,1371,1386,1401,1432,1461,1478,1493,1508,1523,1538,1553,1568,1597,1612,1655,1670,1685,1700,1715,1730,1745,1760,1775,1790,1805,1820,1835,1850,1865,1880,1895,1910,1925,1944,1959,1974,2003,2018,2037,2066,2081,2098,2113,2128,2143,2158,2173,2190,2205,2222,2237,2254,2269,2284,2301,2316,2331,2346,2363,2380,2395,2410,2427,2442,2457,2472,2487,2501,2515,2529,2543,2557,2571,2585,2599,2613,2627,2641,2655,2669,2683,2697,2711,2725,2740,2755,2772,2787,2802,2817,2832,2847,2862,2879,2902,2917,2936,2951,2966,2981,2996,3011,3026,3041,3073,3088,3103,3118,3133,3148,3163,3182,3201,3216,3244,3259,3278,3293,3308,3323,3340,3357,3372,3387,3402,3417,3434,3449,3469,3484,3499,3514
+packages/ui-voip/src/context/usePeekMediaSessionHidden.ts
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 1-34
+packages/i18n/src/locales/nb.i18n.json
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 1740,2003,5294,6084,6243,6521-6536
+packages/ui-voip/src/views/MediaCallWidget/__snapshots__/MediaCallWidget.spec.tsx.snap
+  ai_agent 354,383,494-652,2053-2212,2241
+packages/ui-voip/src/views/MediaCallWidget/IncomingCallTransfer.stories.tsx
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 4,11,17-18,21-27,29-30,32-38
+packages/fuselage-toastbar/src/ToastBarContext.ts
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 1-25
+packages/ui-conference/src/hooks/useCallDevicesInitialState.ts
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 14-28,55-61,125-130,138,143-153,168-169,182-186,194-199
+packages/core-typings/CHANGELOG.md
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 3-51,83,126,179,234,273,300,325,347,377,396,417,430,439,472,505,526,547,802,827,1036,1077,1094,1123,1132,1159,1198,1220,1250,1286,1322,1343,1362,1383,1410,1437,1468,1497
+apps/meteor/client/sidebar/categories/hooks/useCategoryModals.tsx
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 7,15-16
+.changeset/shiny-buttons-attack.md
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 1-5
+apps/meteor/client/views/omnichannel/components/Info.tsx
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 3
+apps/meteor/tests/e2e/avatar-settings.ts
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 93
+packages/ui-conference/src/views/ConferencePreflight.spec.tsx
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 1-62
+.github/actions/update-version-durability/package-lock.json
+  ai_agent 15,327-329,333,702-704
+packages/i18n/src/locales/zh-HK.i18n.json
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 794,882,2069,2361,2425,2517-2519
+packages/release-action/src/utils.ts
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 8,149-154
+packages/ui-conference/src/call/hooks/useTileGridLayout.spec.tsx
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 1-48
+packages/i18n/src/locales/id.i18n.json
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 773,861,2056,2344,2407,2503-2505
+apps/meteor/ee/server/lib/livekit/capabilities.ts
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 1-18
+packages/mp3-encoder/src/lame/GainAnalysis.spec.ts
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 1-19
+packages/ui-conference/src/call/CallDeviceMenuButton.tsx
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 1-20
+packages/ui-conference/src/call/CallStageArea.tsx
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 1-2,5-6,8-9,11,13-24,27-39,43
+apps/meteor/client/views/room/contextualBar/UserInfo/UserInfoWithData.tsx
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 8-12
+apps/meteor/server/modules/apps/bridges/callHistory.ts
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 1-76
+apps/meteor/client/lib/messageStateHandler.spec.ts
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 1-2,5-6
+apps/meteor/client/views/admin/users/AdminUserInfoWithData.tsx
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 4
+apps/meteor/ee/server/lib/livekit/callConfig.spec.ts
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 1-92
+apps/meteor/server/modules/apps/bridges/router.ts
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 1-9
+apps/meteor/server/modules/apps/converters/codecs/visitors.ts
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 1-49
+apps/meteor/tests/unit/server/modules/apps/codecs/settings.spec.ts
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 5
+ee/packages/federation-matrix/tests/end-to-end/room.spec.ts
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 138-148,157-167,176-186,224-231,257,826,928,1063,1228,1329,1462,1622-1627,1632-1637,1714,1750
+ee/packages/presence/CHANGELOG.md
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 3-14,24,36,48,60,75,90,101,112,123,134,145,156,167,178,191,202,213,224,235,248,259,270,281,292,303,314,325,336,357,380,391,402,413,424,435,448,461,472,483,494,515,526,537,548,559,570,581,592,603,614,625,636,647,658,669,690,713,734,745,813,834,845,866,877,888,899,910,921,932,943,954,965,976,986,1008,1019,1044,1055,1066,1077,1088,1119,1130,1161,1172,1183,1194,1205,1216,1227,1238,1249,1260,1271,1282,1293,1304,1315,1326,1337,1348,1359,1370,1381,1392,1413,1424,1435,1456,1467,1478,1489,1500,1511,1522,1533,1544,1555,1566,1577,1588,1599,1610,1621,1632,1643,1654,1665,1676,1687,1698,1709,1720,1731,1742,1753,1764,1775,1786,1797,1808,1819,1830,1841,1852,1863,1874,1885,1896,1907,1918,1929,1940,1951,1962,1975,1986,1997,2008,2019,2030,2041,2054,2073,2084,2099,2110,2121,2132,2143,2154,2165,2176,2200,2211,2222,2233,2244,2255,2266,2281,2296,2307,2327,2338,2349,2360,2371,2382,2393,2404,2415,2426,2437,2448,2459,2470,2483,2494,2505,2516
+packages/i18n/src/locales/el.i18n.json
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 779,867,2054,2343,2406,2501-2504
+packages/cas-validate/package.json
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 22
+packages/i18n/src/locales/hi-IN.i18n.json
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 1464,1693,4443,5134,5261,5497-5512
+packages/logo/src/TaggedRocketChatLogo/TaggedRocketChatLogo.spec.tsx
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 1-7
+packages/stylis-logical-props-middleware/src/operations.ts
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 51,56,65
+packages/ui-client/src/components/UserInfo/index.ts
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 1-4
+packages/ui-conference/src/preflight/PreflightDevices.tsx
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 1-31
+packages/ui-voip/src/views/MediaCallWidget/MediaCallWidgetViewRouter.tsx
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 1,7
+eslint.config.mjs
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 477
+apps/meteor/server/modules/apps/converters/index.ts
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 1-23
+packages/ui-conference/src/call/lib/mediaDevicesStore.spec.ts
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 1-96
+packages/mp3-encoder/src/lame/PsyModel.ts
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 9,521,948,1359,1422
+ee/packages/omni-core-ee/CHANGELOG.md
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 3-13,22,33,44,55,66,77,88,99,110,121,132,143,154,165,179,190,201,212,223,237,248,259,270,281,292,303,314,325,346,357,369,380,391,402,413,424,436,447,458,469,480,501,512,523,534,545,556,567,578,589,600,611,622,633,644,655,676,687,697,716,726,736,746,756,766,776,786
+apps/meteor/client/hooks/useFormatDateAndTime.ts
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 1
+ee/apps/account-service/package.json
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 3,32,37,50
+packages/fuselage-toastbar/src/ToastBarProvider.spec.tsx
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 1-37
+packages/password-policies/src/PasswordPolicy.spec.ts
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 2,190-202,229-289
+apps/meteor/server/modules/apps/bridges/roles.ts
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 1-36
+packages/fuselage-toastbar/jest.config.ts
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 1-7
+packages/ui-conference/src/call/hooks/useTileGridLayout.ts
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 1-28
+apps/meteor/server/modules/apps/bridges/bridges.js
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 1-183
+apps/meteor/client/views/account/profile/AccountProfileForm.tsx
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 2,29,49,140-145,175-186,188-194,208-212,214-215
+.changeset/logo-published-files.md
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 1-5
+packages/gazzodown-alt/jest.config.ts
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 1-11
+apps/meteor/ee/tests/unit/server/lib/apps/disableAppsWithAddonsCallback.spec.ts
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 4,7
+apps/meteor/server/modules/apps/bridges/index.ts
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 1
+packages/i18n/src/locales/be-BY.i18n.json
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 791,881,2077,2368,2431,2526-2531
+packages/i18n/src/locales/lo.i18n.json
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 790,879,2084,2372,2435,2530-2532
+apps/meteor/client/views/omnichannel/contactInfo/tabs/ContactInfoDetails/ContactInfoPhoneEntry.tsx
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 3
+apps/meteor/client/lib/createRichTextComposerAPI.ts
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 15,82
+packages/fuselage-toastbar/tsconfig.cjs.json
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 1-14
+apps/meteor/ee/server/api/apps/uikit.ts
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 14
+packages/ddp-client/CHANGELOG.md
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 3-34,43,56,67,78,98,118,130,141,153,164,175,187,201,212,223,234,245,259,270,283,294,305,318,329,340,351,362,373,384,417,428,439,451,462,473,506,517,528,540,551,562,574,585,596,607,618,629,640,651,662,673,684,695,706,717,728,749,760,771,792,803,844,855,866,909,920,931,944,955,966,977,988,999,1010,1021,1032,1043,1054,1065,1076,1099,1120,1131,1142,1153,1164,1175,1186,1204,1215,1226,1255,1266,1277,1288,1299,1310,1321,1332,1343,1354,1365,1378,1389,1400,1411,1422,1433,1446,1457,1468,1479,1490,1511,1522,1533,1544,1555,1566,1577,1588,1599,1610,1621,1632,1643,1654,1665,1676,1687,1698,1709,1720,1731,1742,1753,1764,1777,1788,1799,1810,1821,1832,1843,1856,1867,1878,1889,1900,1911,1922,1933,1944,1955,1966,1977,1988,1999,2010,2021,2032,2043,2053,2063,2073,2083,2093,2103,2113,2123,2133,2143,2153,2163,2177,2187,2197,2207,2217,2227,2237,2247,2269,2279,2289,2299,2309,2319,2329,2339,2349,2358,2375,2383,2397,2407,2417,2427,2437,2451,2461,2473,2483,2493,2505,2515,2529,2539,2549,2559
+packages/i18n/src/locales/cy.i18n.json
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 771,861,2046,2335,2398,2493-2500
+packages/i18n/src/locales/nl.i18n.json
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 1245,1426,3597,4163,4264,4448-4451
+packages/mock-providers/CHANGELOG.md
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 3-32,40,51,61,71,81,91,101,111,123,132,141,150,159,171,183,192,201,210,219,231,240,250,259,268,278,287,297,306,324,333,345,354,363,372,381,390,402,411,420,432,441,450,462,471,480,490,499,508,517,526,536,550,559,568,577,586,595,612,626,635,658,667,700,709,724,749,759,776,793,802,811,821,830,839,848,857,866,875,884,893,930,948,958,967,976,985,994,1011,1028,1052,1061,1070,1079,1088,1097,1106,1115,1124,1140,1149,1158,1167,1176,1187,1198,1209,1224,1233,1242,1253,1264,1273,1282,1291,1300,1309,1320,1331,1344,1357,1366,1375,1384,1393,1402,1411,1422
+packages/mp3-encoder/src/lame/arrays.ts
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 20
+ee/packages/abac/package.json
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 3,43-44
+.changeset/fuselage-toastbar-monorepo-migration.md
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 1-5
+packages/server-fetch/package.json
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 3,32
+packages/streamer/package.json
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 3,39-40
+apps/meteor/client/sidebar/categories/hooks/useRoomCategoryItems.spec.tsx
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 8,13,18,27,67-76
+packages/i18n/src/locales/en.i18n.json
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 47,1007,1213,1256,1258,1950,2220,2713,2715-2716,3076,3869,4109,5083-5086,5726,6350,6429,6487,6609,6776,7077-7100,7300-7308,7664
+packages/ui-client/src/components/UserCard/UserCard.stories.tsx
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 1-110
+apps/meteor/tests/end-to-end/apps/app-logs-nested-requests.ts
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 2,6,28-29,31
+packages/gazzodown-alt/src/renderComposerMarkup.spec.tsx
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 1-366
+packages/ui-conference/src/call/stage/OverflowTile.tsx
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 1-50
+packages/ui-livekit/src/useCallDeviceSwitching.ts
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 1-73
+packages/ui-voip/src/views/MediaCallWidget/OutgoingCall.tsx
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 2,5,8-19,24,36,39
+turbo.json
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 4,22
+packages/logo/jest.config.ts
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 1-7
+packages/ui-conference/src/context/definitions.ts
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 3,5,156-163
+packages/logo/src/TaggedRocketChatLogo/index.ts
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 1
+apps/meteor/server/modules/apps/bridges/experimental.ts
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 1-8
+packages/streamer/CHANGELOG.md
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 1-12
+packages/ui-client/src/components/UserInfo/UserInfo.spec.tsx
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 2,19-39
+apps/meteor/client/views/room/contextualBar/Discussions/DiscussionsListRow.tsx
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 2
+packages/release-changelog/package.json
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 16-17
+packages/ui-client/src/hooks/useTimeAgo.ts
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 3,5,10,26,31,45
+apps/meteor/client/views/admin/moderation/UserReports/UserReportInfo.tsx
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 13
+packages/cron/CHANGELOG.md
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 3-13,21,32,42,52,62,72,82,92,102,112,122,132,142,152,167,177,187,197,207,222,232,242,252,262,272,282,292,302,341,351,361,371,381,391,401,411,421,431,441,460,470,480,490,500,510,520,530,540,550,560,570,580,590,600,619,639,659,669,679,707,717,727,746,765,775,785,812,822,832,842,852,862,872,882,892,902,912,952,972,982,992,1002,1012,1040,1050,1069,1079,1089,1099,1109,1119,1129,1139,1149,1159,1169,1179,1189,1199,1209,1219,1229,1239,1249,1259,1269,1279,1289,1308,1318,1328,1338,1348,1358,1368,1378,1388,1398,1408,1418,1428,1438,1448,1458,1468,1478,1488,1498,1508,1518,1528,1538,1548,1558,1568,1578,1588,1598,1608,1618,1628,1638,1648,1658,1668,1678,1688,1698,1708,1718,1728,1738,1748,1758,1768,1778,1788,1798,1808,1818,1828,1838,1848,1858,1868,1878,1888,1898,1908,1922,1932,1942,1952,1962,1972,1982,1992,2014,2024,2034,2044,2054,2064,2074,2085,2095,2105,2124,2134,2145,2155,2165,2175,2185,2196,2206,2216,2226,2236,2246,2256,2270,2280,2290,2300
+packages/i18n/src/locales/de-IN.i18n.json
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 876,997,2287,2596,2676,2786-2789
+apps/meteor/client/sidebar/categories/hooks/useRoomCategoryItems.tsx
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 10,15,43,57
+apps/meteor/server/modules/apps/converters/codecs/videoConferences.ts
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 1-14
+packages/i18n/src/locales/zh-TW.i18n.json
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 1231,1408,3471,3930,4025,4187-4189
+packages/logo/CHANGELOG.md
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 1-143
+packages/ui-conference/src/call/tile/ParticipantTile.tsx
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 1-16
+packages/ui-conference/src/call/lib/deviceLabels.ts
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 1-49
+apps/meteor/server/meteor-methods/messages/createDirectMessage.ts
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 4,13,38-42,48-73,86
+apps/meteor/server/modules/apps/bridges/commands.ts
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 9
+apps/meteor/client/components/message/MessageHeader.tsx
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 13,26-27,38-39,49-50,53-62,65-66
+ee/packages/federation-matrix/tests/end-to-end/presence.spec.ts
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 7,57,96
+packages/ui-conference/src/call/hooks/useMediaDevices.ts
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 1-15
+apps/meteor/tests/unit/server/modules/apps/codecs/mappedData.spec.ts
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 5
+packages/gazzodown-alt/src/sourceOf.spec.ts
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 1-161
+apps/meteor/client/views/room/composer/messageBox/hooks/useDraft.ts
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 75-76,81
+apps/meteor/tests/unit/server/modules/apps/messages.tests.js
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 10
+docs/features/uikit/support-matrix.md
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 1-140
+.changeset/young-ties-rest.md
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 6
+.changeset/file-upload-proxy-byte-ranges.md
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 1-5
+ee/packages/network-broker/package.json
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 3,21,28,31
+packages/i18n/src/locales/ku.i18n.json
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 772,860,2037,2326,2389,2484-2487
+docs/backend-folder-structure.md
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 22,53,84,123
+packages/fuselage-toastbar/src/ToastBarPortal.spec.tsx
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 1-59
+packages/stylis-logical-props-middleware/package.json
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 3,39
+packages/ui-conference/src/call/lib/tileGrid.spec.ts
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 1-52
+packages/ui-conference/src/preflight/preflightStories.spec.tsx
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 1-27
+packages/i18n/src/locales/ar.i18n.json
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 1245,1422,3604,4166,4267,4450-4457
+packages/ui-client/src/components/Wizard/useWizardSteps.spec.ts
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 31,33,35-39,43-48
+apps/meteor/server/modules/apps/bridges/messages.ts
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 10-14
+packages/i18n/package.json
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 3,40
+packages/logo/tsconfig.json
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 1-9
+packages/message-types/package.json
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 19,22,27
+apps/meteor/server/lib/premiumAuthDeprecation.ts
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 10
+apps/meteor/client/views/conference/providers/OngoingCallsProvider.tsx
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 1
+apps/meteor/server/modules/apps/bridges/scheduler.ts
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 1-2,4-27,29-34,36,38-46,49-90,92-93,98,100-107,111-114,118-134,136-140,142,146-156,158-163,166-169,173-187,191-195,198-199
+packages/ui-conference/src/call/CameraPicker.tsx
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 1-39
+apps/meteor/client/components/message/variants/ThreadMessage.tsx
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 31,57,59-60,62-63
+.changeset/roles-live-updates.md
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 1-5
+apps/meteor/client/lib/videoConference/embeddedCallProviders.ts
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 1-27
+.changeset/abac-audit-room-name.md
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 1-6
+packages/ui-conference/src/preflight/PreflightPreview.tsx
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 1-64
+packages/ui-conference/src/components/CallMemberItem/CallMemberItem.spec.tsx
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 31-32,38
+packages/rest-typings/CHANGELOG.md
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 3-39,44-48,50-98,100,138,147,195,243,252,261,270,279,288,297,344,376,385,394,403,435,444,462,471,480,497,506,515,547,556,567,576,592,601,610,619,628,644,707,716,725,734,743,806,815,831,840,849,865,874,890,900,911,924,933,984,993,1002,1011,1020,1029,1080,1089,1098,1112,1121,1158,1173,1182,1191,1200,1209,1224,1259,1268,1277,1286,1295,1304,1321,1356,1365,1374,1408,1417,1450,1459,1493,1534,1551,1583,1592,1609,1618,1627,1636,1645,1654,1663,1674,1683,1706,1723,1734,1745,1762,1771,1780,1789,1806,1815,1860,1869,1878,1887,1896,1905,1914,1923,1932,1945,1954,1976,1985,1994,2003,2016,2025,2045,2054,2071,2080,2089,2106,2115,2132,2149,2158,2177,2186,2195,2204,2213,2222,2239,2248,2269,2278,2287,2296,2317,2339,2348,2357,2366,2388,2432,2441,2460,2469,2478,2487,2496,2532,2556,2565,2574,2583,2592,2601,2610,2634,2644,2660,2669,2678,2687,2704,2713,2729,2738,2747,2763,2772,2781,2790,2799,2808,2817,2833,2850,2859,2879,2888,2897,2906,2915,2924,2933,2942,2969,2978,2987,3001,3010,3019,3033,3058,3071,3080,3106,3115,3137,3146,3155,3164,3173,3195,3204,3213,3222,3231,3240,3249,3273,3282,3291,3300
+yarn.lock
+  ai_agent 2863-2869,3940-3941,3949,3952,4016-4041,4151-4152,4156,4246-4248,4250,4258-4260,4262,4270-4272,4274,4279-4281,4286-4288,4293-4295,4300-4302,4307-4309,4314-4316,4321-4323,4328-4330,4335-4337,4342-4344,4349-4351,4353,4361-4363,4365,4373-4375,4377,4385-4387,4389,4397-4399,4401,4409-4411,4413,4421-4423,4425,4433-4435,4437,4445-4447,4450,4454-4456,4458,4463-4465,4470-4472,4477-4479,5396-5398,5401,5434-5485,6119-6121,6124-6127,6130,6144-6153,6165-6167,6169-6170,6172,6190-6196,6240-6242,6244-6245,6249-6251,6253-6257,6259,6295-6303,9174-9175,9201,9206,9209,9225,9238,9253,9269,9285-9286,9306,9312,9316,9344,9348,9351,9373-9374,9388,9399,9411,9423,9439,9458,9464,9479,9481,9494,9511-9512,9542,9547,9550,9555,9563,9576,9589,9612,9615,9626,9639,9646-9647,9650,9668-9670,9684,9714-9716,9718-9732,9734-9736,9742-9743,9759,9776,9778,9780,9782,9788-9789,9833-9854,9859,9862-9869,9874,9885,9899,9904,9906-9907,9917-9919,9950,9952,9967,9991,10008,10026,10041,10049-10050,10055,10079,10100,10126,10128,10138,10153,10180,10186-10188,10190-10204,10208-10209,10224,10239,10251,10264-10265,10285,10288,10292,10317,10352-10353,10356,10371,10411,10420,10422,10468,10470,10486,10488,10503,10514,10542,10549,10564,10568,10591,10597,10600,10605-10606,10633,10656,10658,10662-10663,10667,10729,10733-10734,10739,10755,10777,10789,10807,10822,10826,10828,10846,10864,10889,10892,10924,10929,10934,10959,10964,10967,10969,10975,10997,11011,11024,11043,11047,11051,11054,11059,11069-11070,11103,11107,11110,11133-11134,11155,11159,11162,11182,11195,11197,11199,11214,11216,11233,11244,11260,11276,11287,11299,11302,11314-11327,11336-11337,11365-11366,11374,11391,11407,11421,11439,11445-11446,11449,11462,11467,11473,11484,11488-11491,11500-11501,11527,11537,11539,11542-11543,11547,11569,11584,11587,11591-11592,11599,11616,11631,11642-11643,11649,11670,11680-11718,11726,11741-11742,11747,11775,11793,11795,11798,11800,11802,11809-11810,11837,11841,11843,11847,11854,11857,11859,11865,11879,11885,11894,11897-11899,11904-11905,14098,14171,14222-14224,14229-14231,14236-14239,14243-14246,14250-14252,14257-14259,15466-15468,15471,15484-15486,15489,15674,15702,15760-15762,15764-15765,16064-16066,16069,16082-16090,17072-17074,17076-17079,17217-17220,17944-17946,17951,17955-17957,17960,17963,18579-18599,18650-18652,18656,18660-18662,18665,18669-18671,18674,19608-19614,19966-19969,21539-21541,21547,21845-21848,22732,22744-22755,22882,23334-23342,24509-24512,24831-24834,24998,25010,27553-27559,27581-27583,27589,27593-27595,27600,27732-27738,28091-28094,28098-28100,28102,28104-28106,28110-28113,28313-28332,28573-28579,28710-28716,28744-28746,28748-28749,28753,28755,28758,29163-29165,29191,29379,29607-29609,29692,29705,29712-29718,29882-29890,30156-30163,30254,32267-32277,32349-32351,32354,33169-33171,33178,33191-33193,33209,33415-33417,33421,33432,34214,34216,34220,34283,34406,34641-34647,34877-34879,34882-34906,34963,36854-36855,36867,36889,37000-37006,37073-37082,37098,37263-37274,37448-37451,37884-37894,38512-38517
+apps/meteor/server/modules/apps/bridges/settings.ts
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 7-8
+apps/meteor/ee/server/lib/apps/marketplace/isTesting.ts
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 1-8
+packages/fuselage-toastbar/tsconfig.json
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 1-9
+packages/base64/package.json
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 19
+.changeset/livekit-server-provider.md
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 1-8
+apps/meteor/client/views/account/profile/AccountProfilePage.tsx
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 34,38,40-41,84
+packages/mp3-encoder/package.json
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 44
+packages/gazzodown/package.json
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 3,25,27,33,47,52-53,62-63
+apps/meteor/ee/server/api/apps/endpoints/lib/makeAppLogsQuery.ts
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 1-63
+packages/ai-search/src/intelligentSearch.spec.ts
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 397
+packages/ui-conference/src/call/VoiceActivity.tsx
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 1-87
+.github/actions/build-docker/action.yml
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 43,52,59,74,225,231
+packages/ui-client/src/hooks/useTimezoneTime.ts
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 1-20
+apps/meteor/client/sidebar/components/SidebarVirtualList/SidebarVirtualList.tsx
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 77
+apps/meteor/client/views/room/Header/icons/RoomGroupingMenu.tsx
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 6,11,17
+apps/meteor/ee/server/api/videoConferenceCallConfig.ts
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 1-66
+apps/meteor/server/lib/auth-providers/custom-oauth/customOAuth.ts
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 5,17,375-379
+packages/css-in-js/src/tags.ts
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 67-69,83,92-99,118-119,121-122,124,126-129
+apps/meteor/server/modules/apps/bridges/moderation.ts
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 7
+packages/gazzodown-alt/src/sourceOf.ts
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 92-98
+packages/http-router/CHANGELOG.md
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 3-12,20,30,40,50,60,70,83,93,103,113,123,136,146,158,168,178,190,200,212,222,232,244,254,265,275,285,295,305,315,326,336,346,356,366,393,403,413,423,433,443,453,463,473,483,493,503,513,523,542,562,584,594,631,641,690,709,719,729,739,749,759,769,779,789,799,809,819,829,839,849,859
+apps/meteor/client/views/room/contextualBar/UserInfo/UserInfoActions.tsx
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 3
+apps/meteor/client/views/omnichannel/installation/Installation.tsx
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 5,28-34
+apps/meteor/client/hooks/useFormattedRelativeTime.ts
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 1
+packages/ui-conference/src/devices/deviceMenuRows.ts
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 1-33
+packages/ui-livekit/src/callParticipants.spec.ts
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 1-87
+packages/apps-engine/CHANGELOG.md
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 3-10
+packages/ui-conference/src/call/lib/screenShares.spec.ts
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 1-18
+apps/meteor/ee/server/cron/apps.ts
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 10
+apps/meteor/client/hooks/useExpirationText.ts
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 1
+apps/meteor/client/hooks/useTimeFromNow.ts
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 1
+packages/ui-client/src/hooks/useUTCClock.ts
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 1,3-6
+apps/meteor/server/modules/apps/converters/visitors.ts
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 1-53
+apps/meteor/client/views/room/contextualBar/Info/EditRoomInfo/EditRoomInfo.tsx
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 34,42,543-545
+apps/meteor/ee/server/lib/apps/storage/index.ts
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 1-6
+apps/meteor/server/modules/apps/converters/messages.ts
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 1-378
+ee/packages/federation-matrix/CHANGELOG.md
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 3-34,52,75,93,111,130,144,159,171,184,197,214,229,244,259,274,291,314,329,344,359,374,397,412,429,444,459,476,491,506,521,536,551,566,585,600,615,630,645,660,679,694,709,724,739,768,783,798,813,828,843,858,873,888,903,918,933,948,963,978,993,1008,1023
+ee/packages/omnichannel-services/package.json
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 3,31,46
+ee/packages/federation-matrix/docker-compose.test.yml
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 106-108
+ee/packages/network-broker/CHANGELOG.md
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 3-11,18,27,36,45,54,63,72,81,90,99,108,117,126,135,146,155,164,173,182,193,202,211,220,229,238,247,256,265,282,291,300,309,318,327,336,345,354,363,372,381,390,414,423,432,441,450,459,468,477,486,495,504,513,522,531,540,549,558,567,576,585,594,627,636,645,654,679,696,712,721,730,739,748,757,766,775,784,793,802,811,854,863,872,881,890,899,932,949,962,971,980,989,998,1007,1016,1025,1034,1047,1056,1065,1074,1083,1092,1101,1110,1127,1138,1147,1156,1173,1182,1193,1210,1219,1228,1237,1246,1255,1264,1273,1282,1291,1300,1309,1318,1327,1336,1345,1354,1363,1372,1381,1390,1399,1408,1417,1426,1435,1444,1453
+apps/meteor/ee/server/configuration/videoConference.ts
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 9,11-13,16-27,63-67
+packages/ui-conference/src/call/lib/mediaDevicesStore.ts
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 1-61
+packages/ui-conference/src/views/ConferenceWindow.tsx
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 10-13,131-133,152,168-208,213-218,220-227,231,242-244
+apps/meteor/client/views/room/hooks/useMessageListNavigation.spec.tsx
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 1-133
+apps/meteor/ee/server/lib/apps/storage/AppRealLogStorage.ts
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 7
+packages/ui-contexts/CHANGELOG.md
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 3-14,24,38,49,60,72,84,96,108,120,131,142,153,164,176,193,204,215,226,237,254,265,277,288,299,311,322,334,345,356,368,379,395,406,417,428,439,450,466,477,488,507,518,529,548,559,570,584,595,606,617,628,642,660,671,682,693,704,715,736,754,765,792,803,844,855,882,914,935,966,977,989,1000,1011,1022,1033,1044,1055,1066,1077,1120,1142,1154,1165,1176,1187,1218,1269,1280,1291,1302,1313,1324,1335,1346,1357,1378,1389,1403,1414,1425,1436,1447,1458,1472,1483,1495,1506,1517,1538,1549,1561,1572,1583,1594,1608,1619,1630,1641,1652,1663,1677,1688,1708,1719,1732,1743,1761,1773,1784,1795,1806,1818,1830,1841,1852,1863,1874,1885,1896,1908,1920,1931,1942,1953,1964,1975,1987,1999,2010,2022,2033,2044,2055,2066,2077,2088,2100,2111,2122,2141,2152,2163,2174,2185,2196,2207,2226,2237,2248,2264,2275,2286,2297,2308,2319,2330,2341,2366,2377,2388,2400,2411,2422,2434,2450,2461,2472,2497,2508,2520,2531,2542,2553,2564,2576,2587,2598,2609,2620,2631,2642,2661,2672,2683,2694
+packages/ui-livekit/package.json
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 1-59
+.changeset/user-actions-menu-groups.md
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 1-6
+apps/meteor/client/components/GazzodownText.tsx
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 32,79-92,141
+apps/meteor/client/views/omnichannel/agents/AgentEdit.tsx
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 7,10-11
+apps/meteor/server/modules/apps/bridges/rooms.ts
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 12-18
+apps/meteor/server/modules/apps/converters/codecs/users.ts
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 1-77
+.changeset/quiet-lints-align.md
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 1-5
+apps/meteor/client/components/message/variants/RoomMessage.spec.tsx
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 33-34
+apps/meteor/client/hooks/useRoomRolesQuery.ts
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 19,36,45,52,59,82
+apps/meteor/server/services/video-conference/expirePresenceLeases.spec.ts
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 67-69,123,133
+packages/emitter/src/index.ts
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 57-61,68,87,95,101,109,121-123,137-141,143,145-146,149-168
+apps/meteor/server/modules/apps/bridges/internal.ts
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 7
+packages/cron/package.json
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 3,26
+ee/packages/omnichannel-services/CHANGELOG.md
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 3-17,34,54,68,83,97,111,125,139,156,171,186,201,216,233,253,268,283,298,313,333,348,364,379,394,410,425,441,456,471,487,502,520,535,550,565,580,595,613,628,643,659,674,717,732,748,763,778,793,808,824,840,855,870,885,900,915,944,960,974,1002,1016,1069,1083,1098,1153,1180,1221,1235,1249,1263,1277,1291,1305,1319,1333,1347,1361,1374,1402,1416,1430,1444,1458,1472,1486,1500,1527,1541,1555,1582,1596,1610,1624,1638,1652,1666,1680,1694,1708,1722,1736,1750,1764,1778,1792,1806,1820,1834,1848,1864,1878,1892,1906,1920,1934,1950,1966,1980,1994,2014,2028,2042,2056,2070,2084,2104,2124,2138,2152,2166,2180,2194,2208,2222,2236,2250,2264,2278,2292,2306,2320,2334,2348,2362,2376,2390,2404,2418,2432,2446,2460,2474,2488,2502,2516,2530,2544,2558,2572,2586,2600,2614,2628,2642,2665,2679,2693,2707,2721,2735,2749,2772,2786,2800,2820,2834,2848,2862,2876,2890,2904,2918,2950,2964,2978,2996,3010,3024,3042,3056,3070,3085,3112,3126,3140,3154,3168,3182,3196,3210,3224,3238,3252,3266,3280,3294,3312,3326,3340,3354
+ee/packages/abac/src/pdp/LocalPDP.ts
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 54,64,73
+ee/packages/pdf-worker/package.json
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 25,28,37,41,44
+packages/account-utils/package.json
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 17
+packages/mp3-encoder/src/lame/Takehiro.ts
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 9,298,344-346,961
+packages/ui-client/src/components/UserCard/UserCardDialog.tsx
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 4,6-20
+apps/meteor/ee/tests/unit/server/api/apps/endpoints/lib/makeAppLogsQuery.spec.ts
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 4
+apps/meteor/ee/server/lib/apps/marketplace/marketplaceErrors.ts
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 1-17
+.changeset/young-parents-smash.md
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 1-5
+apps/meteor/client/views/room/providers/UserCardProvider.spec.tsx
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 1-397
+packages/i18n/src/locales/tr.i18n.json
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 909,1042,2446,2774,2856,2976-2979
+packages/ui-conference/src/call/lib/audioLevelStore.ts
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 1-113
+apps/meteor/CHANGELOG.md
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 3-273,287,468,480,502,687,709,891,903,915,929,941,953,965,1133,1160,1329,1341,1352,1375,1528,1676,1688,1700,1711,1724,1736,1748,1887,1915,1941,2066,2108,2151,2197,2242,2361,2556,2597,2638,2679,2720,2903,2951,3062,3104,3146,3251,3296,3396,3438,3481,3900,3941,3982,4024,4067,4108,4381,4428,4473,4608,4649,4690,4819,4867,4915,5014,5055,5100,5141,5182,5269,5435,5476,5517,5558,5599,5640,5683,5725,5912,6098,6138,6213,6253,6291,6329,6522,6684,6729,6765,6916,6954,6996,7128,7164,7203,7239,7275,7313,7349,7389,7425,7459,7598,7633,7720,7851,7886,7921,7958,7994,8028,8067,8210,8252,8416,8455,8490,8525,8560,8595,8632,8667,8702,8842,8879,9022,9057,9099,9134,9173,9212,9331,9370,9520,9555,9590,9624,9661,9696,9832,9869,9910,9953,10065,10100,10135,10170,10207,10244,10336,10381,10527,10562,10602,10637,10772,10889,10924,10959,10994,11103,11413,11448,11503,11540,11575,11610,11645,11923,12044,12075,12107,12139,12173,12205,12244,12345,12386,12521,12553,12587,12619,12659,12695,12729,12840,12880,12916,13059,13091,13123,13155,13187,13219,13251,13426,13468,13638,13670,13704,13736,13770,13802,13840,13872,14052,14090,14128,14234,14268,14304,14398,14552,14590,14622,14792,14846,15055,15087,15121,15153,15187,15382,15418,15456,15494,15528,15566,15606,15821,15851,15883,15915
+.changeset/move-user-card-info-ui-client.md
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 1-6
+docs/features/native-video-conference/deployment.md
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 1-152
+packages/ai-search/src/intelligentSearch.ts
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 1,315
+packages/fuselage-toastbar/src/ToastBarProvider.tsx
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 1-51
+packages/i18n/src/locales/cs.i18n.json
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 1050,1202,2956,3381,3473,3625-3630
+packages/i18n/src/locales/fr.i18n.json
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 1248,1427,3593,4163,4265,4448-4452
+apps/meteor/client/views/conference/lib/conferencePreflightMedia.ts
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 1-10
+packages/i18n/src/locales/it.i18n.json
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 985,1121,2576,2926,2998,3112-3131
+packages/i18n/src/locales/uk.i18n.json
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 987,1129,2583,2885,2953,3064-3069
+packages/logo/scripts/buildAssets.mjs
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 1-19
+apps/meteor/client/views/navigation/sidebar/RoomList/RoomListGroupWrapper.tsx
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 1-14
+ee/apps/presence-service/CHANGELOG.md
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 3-17,32,50,69,88,106,124,138,152,166,180,194,208,222,236,254,268,282,296,310,328,342,356,370,384,398,412,426,440,467,495,509,523,537,551,565,580,594,608,622,636,663,677,691,705,719,733,747,761,775,789,803,817,831,845,859,886,914,942,956,1009,1023,1037,1090,1117,1156,1170,1184,1198,1212,1226,1240,1254,1268,1282,1296,1325,1352,1366,1380,1394,1408,1422,1436,1477,1491,1518,1532,1546,1560,1574,1588,1602,1616,1630,1644,1658,1672,1686,1700,1714,1728,1742,1756,1770,1784,1802,1816,1830,1844,1858,1872,1917,1931,1947,1961,1975,1989,2003,2017,2033,2047,2063,2077,2093,2107,2121,2137,2151,2165,2179,2195,2209,2223,2237,2251,2265,2279,2293,2307,2320,2333,2346,2359,2372,2385,2398,2411,2424,2437,2450,2463,2476,2501,2514,2527,2540,2553,2566,2579,2592,2605,2618,2631,2644,2657,2670,2683,2700,2713,2726,2739,2752,2765,2778,2791,2819,2832,2845,2858,2871,2884,2897,2910,2923,2936,2972,2985,2998,3011,3024,3037,3050,3063,3076,3089,3102,3115,3128,3143,3156,3169,3182
+packages/fuselage-toastbar/src/ToastBar.stories.tsx
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 1-123
+packages/logo/src/TaggedRocketChatLogo/TaggedRocketChatLogo.tsx
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 1-24
+packages/rest-typings/src/v1/users/UsersListParamsGET.ts
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 8,20
+packages/storybook-config/CHANGELOG.md
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 3-11
+packages/ui-avatar/CHANGELOG.md
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 3,8-14,16,18,27,36,45,54,63,72,81,90,99,108,133,144,153,162,171,180,191,200,209,218,227,236,245,254,263,298,307,316,325,334,343,352,361,370,379,388,397,406,415,424,433,442,451,460,469,478,489,498,507,516,525,534,551,571,589,598,631,640,649,674,683,692,701,710,719,728,737,746,755,764,773,782,791,800,809,818,869,878,887,896,905,922,931,940,965,974,983,992,1001,1010,1019,1028,1037,1046,1055,1066,1075,1084,1093,1102,1111,1122,1131,1140,1149,1158,1175,1184,1193,1202,1211,1220,1229,1238,1247,1256,1265,1274,1283,1292,1307,1316,1325,1334,1349,1358,1367,1376,1385,1394,1407,1416,1425,1434,1443,1452,1461,1474,1487,1496,1505,1514,1523,1532,1541,1562,1573,1582,1591,1600,1617,1626,1637,1646,1655,1664,1673,1682,1691,1700,1709,1718,1727,1736,1745,1758,1767,1776,1785,1794,1803,1812,1821,1841,1850,1859,1868,1877,1886,1895,1904,1913,1922,1938,1947,1956,1965,1974,1983,1992,2001
+packages/ui-client/src/components/UserInfo/UserInfoABACAttributes.tsx
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 1-26
+apps/meteor/client/lib/messageStateHandler.ts
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 1
+packages/fuselage-ui-kit/src/elements/TextElement.spec.tsx
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 1-67
+packages/mp3-encoder/src/lame/WavHeader.spec.ts
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 1-32
+packages/ui-conference/src/preflight/PreflightPreview.spec.tsx
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 1-41
+packages/ui-livekit/src/usePreviewVideoTrack.ts
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 1-72
+apps/meteor/server/modules/apps/bridges/persistence.ts
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 1-138
+packages/web-ui-registration/CHANGELOG.md
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 3-13,21,31,58,85,94,103,112,137,147,156,165,174,183,193,207,216,225,234,243,257,266,275,284,293,302,311,320,329,346,355,369,378,387,396,405,414,428,437,446,455,464,481,498,507,516,525,534,543,552,563,572,581,590,599,608,625,636,645,654,663,672,697,706,715,724,741,750,762,771,780,792,801,810,819,830,839,848,857,866,875,884,893,902,921,938,955,966,975,984,993,1002,1019,1030,1039,1048,1057,1066,1075,1084,1093,1102,1111,1120,1129,1138,1147,1158,1167,1176,1185,1194,1203,1214,1223,1232,1241,1250,1267,1276,1285,1294,1303,1312,1321,1330,1339,1348,1357,1366,1375,1384,1393,1402,1411,1420,1429,1438,1447,1456,1465,1474,1487,1496,1505,1514,1523,1532,1541,1554,1563,1572,1581,1590,1599,1608,1617,1634,1645,1654,1663,1672,1681,1690,1699,1710,1719,1728,1740,1749,1758,1767,1776,1785,1794,1810,1819,1828,1841,1850,1859,1868,1877,1886,1895,1904,1924,1933,1942,1951,1960,1969,1978,1987,1996,2005,2021,2030,2045,2054,2063,2072,2081,2096,2105,2114,2123,2132,2141,2150,2166,2175,2184,2193
+apps/meteor/client/components/UrlChangeModal.tsx
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 3,16-29
+packages/i18n/src/locales/es.i18n.json
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 1278,1465,3725,4324,4435,4641-4645
+packages/i18n/src/locales/sl-SI.i18n.json
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 769,857,2040,2330,2393,2488-2493
+packages/gazzodown/CHANGELOG.md
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 3-14,23,34,58,82,93,104,119,134,146,157,168,179,190,202,216,227,238,249,260,274,285,297,308,319,331,342,354,366,387,412,423,434,445,456,467,482,493,504,515,526,547,568,579,590,601,612,623,634,651,662,673,684,695,706,727,744,755,776,787,828,839,850,893,914,927,938,949,960,971,982,993,1004,1015,1026,1037,1048,1059,1080,1101,1112,1123,1136,1147,1158,1169,1200,1213,1234,1245,1256,1267,1278,1289,1300,1311,1322,1333,1344,1355,1369,1380,1391,1402,1413,1424,1438,1449,1460,1471,1482,1503,1514,1525,1536,1547,1558,1569,1580,1591,1602,1613,1624,1635,1646,1663,1674,1685,1696,1713,1724,1735,1746,1757,1768,1783,1794,1805,1816,1827,1838,1849,1864,1880,1890,1901,1912,1923,1934,1945,1961,1973,1986,1997,2008,2019,2030,2041,2052,2065,2086,2097,2108,2119,2130,2141,2152,2163,2174,2185,2196,2213,2224,2235,2246,2257,2268,2279,2290,2316,2327,2338,2349,2360,2371,2382,2394,2405,2416,2437,2448,2460,2471,2482,2493,2504,2516,2527,2538,2549,2560,2571,2582,2597,2608,2619,2630
+docs/features/uikit/README.md
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 1-34
+packages/patch-injection/package.json
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 23
+packages/release-action/src/index.ts
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 35-39,47,49
+packages/ui-conference/src/call/lib/deviceLabels.spec.ts
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 1-121
+apps/meteor/client/lib/renderComposerMarkup.spec.tsx
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 1,30,42-57,87,98,100-104,109-120
+apps/meteor/client/views/room/providers/useHoverCardDismissal.ts
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 1-76
+packages/logo/src/TaggedRocketChatLogo/TaggedRocketChatLogo.styles.tsx
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 1-30
+apps/meteor/server/modules/apps/converters/codecs/mappedData.ts
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 1-181
+apps/meteor/tests/unit/server/modules/apps/converters.threads.spec.ts
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 13
+packages/css-in-js/src/tags.spec.ts
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 67-74,105-119,188-201
+apps/meteor/ee/server/lib/apps/marketplace/getMarketplaceHeaders.ts
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 1
+apps/meteor/ee/server/lib/apps/marketplace/appInstall.ts
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 3-5
+packages/ui-voip/package.json
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 3,27,34,50,52,55,57,59,66
+packages/tracing/package.json
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 14,23
+packages/ui-client/src/components/UserInfo/UserInfo.stories.tsx
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 4,30
+apps/meteor/client/lib/messageBoxFormatting.ts
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 69
+apps/meteor/client/views/room/contextualBar/VideoConference/VideoConfList/VideoConfListItem.tsx
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 21
+packages/i18n/src/locales/de-AT.i18n.json
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 773,864,2050,2338,2401,2497-2500
+packages/i18n/src/locales/hr.i18n.json
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 860,978,2175,2467,2530,2625-2629
+packages/i18n/src/locales/nn.i18n.json
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 1597,1847,4801,5419,5528,5737-5752
+packages/mongo-adapter/package.json
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 20
+packages/ui-client/src/components/UserInfo/UserInfoABACAttribute.tsx
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 1-11
+packages/ui-conference/src/components/CallMemberItem/CallMemberItem.tsx
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 18,30,63
+packages/ui-kit/package.json
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 3,25,39
+packages/ui-conference/src/call/context.ts
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 1-44
+apps/meteor/server/modules/apps/bridges/api.ts
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 12
+apps/meteor/server/services/video-conference/service.ts
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 215-228,230-241,1705
+packages/favicon/package.json
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 17
+packages/rest-typings/src/v1/videoConference/index.ts
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 60-70
+packages/ui-client/src/components/UserCard/UserCardAction.tsx
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 1-8
+apps/meteor/tests/end-to-end/api/file-upload-image-rotation.ts
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 60
+packages/ui-conference/src/call/CameraPicker.stories.tsx
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 1-46
+ee/apps/presence-service/package.json
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 3,32,36,48
+packages/ui-conference/src/call/lib/tileGrid.ts
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 1-97
+apps/meteor/client/hooks/useUserRolesByScope.spec.ts
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 1-56
+packages/instance-status/package.json
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 3,23
+packages/gazzodown-alt/src/renderComposerMarkup.tsx
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 4-5,7-12
+apps/meteor/client/sidebar/Item/Extended.tsx
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 12,56
+packages/fuselage-toastbar/.storybook/preview.tsx
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 1-19
+packages/i18n/src/locales/he.i18n.json
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 360,380-381,410,1327,1389-1393
+packages/storybook-dark-mode/package.json
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 3,36-37
+apps/meteor/client/components/message/list/MessageListContext.tsx
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 2
+apps/meteor/client/providers/MeteorProvider.tsx
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 1,23,31-75
+.changeset/user-card-context-contract.md
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 1-6
+apps/meteor/ee/server/api/apps/endpoints/actionButtonsHandler.ts
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 1-15
+ee/apps/ddp-streamer/package.json
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 3,39,46,57,62-63
+packages/ui-conference/src/call/VoiceActivity.stories.tsx
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 1-37
+packages/ui-livekit/src/useLiveKitTransport.ts
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 1-41
+ee/packages/federation-matrix/tests/end-to-end/ban.spec.ts
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 446
+docs/proposals/apps-converters-zod/README.md
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 10,94,227
+apps/meteor/client/views/omnichannel/agents/AgentInfo.tsx
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 7,10-11
+apps/meteor/client/views/room/UserCard/UserCardWithData.tsx
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 4,29-30,62
+packages/media-signaling/CHANGELOG.md
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 3-10,27
+docs/features/uikit/surfaces.md
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 1-22
+packages/release-action/action.yml
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 11-13
+apps/meteor/server/modules/apps/bridges/email.ts
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 5-6
+packages/livechat/CHANGELOG.md
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 3-13,20,33,43,53,62,71,81,91,101,110,119,128,137,147,165,174,183,192,201,219,228,238,247,256,266,275,285,295,312,321,337,346,355,364,373,382,398,407,416,426,435,453,470,479,488,497,506,515,524,533,542,551,560,569,578,595,613,631,640,673,682,691,716,725,742,758,767,776,790,799,808,817,826,835,844,853,862,918,927,936,945,954,987,996,1012,1021,1030,1039,1048,1057,1066,1075,1084,1093,1102,1120,1129,1138,1147,1156,1165,1183,1192,1203,1212,1221,1238,1247,1258,1267,1276,1285,1298,1307,1316,1325,1334,1343,1356,1365,1382,1391,1400,1409,1426,1443,1452,1461,1470,1487,1499,1508,1517,1526,1535,1544,1553,1565,1582,1591,1600,1609,1618,1627,1636,1651,1661,1673,1682,1691,1700,1709,1718,1727,1739,1748,1757,1777,1786,1795,1804,1813,1822,1831,1858,1868,1882,1891,1900,1909,1918,1927,1936,1945,1972,1981,1990,2004,2013,2022,2036,2054,2063,2072,2097,2106,2158,2169,2180,2189,2198,2246,2255,2266,2275,2284,2293,2304,2323,2332,2341,2350
+apps/meteor/client/providers/TranslationProvider.spec.tsx
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 1-61
+apps/meteor/client/views/room/composer/messageBox/RichTextMessageBox.tsx
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 146,171,187,221
+packages/gazzodown-alt/src/index.ts
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 4
+ee/apps/queue-worker/package.json
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 3,31,35,49
+apps/meteor/ee/server/lib/apps/websockets.ts
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 1-46
+packages/sha256/package.json
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 20
+apps/meteor/client/views/room/providers/UserCardProvider.tsx
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 1-3,7,9,14-21,28-39,59-112,114,118-120,122,129-144
+.yarnrc.yml
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 22
+packages/i18n/src/locales/de.i18n.json
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 1815,2079,5467,6284,6448,6745-6760
+packages/i18n/src/locales/ca.i18n.json
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 1237,1414,3468,4003,4104,4279-4283
+apps/meteor/server/modules/apps/converters/roles.ts
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 1-22
+packages/ui-client/src/lib/dateFormat.ts
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 1-267
+packages/ui-conference/src/call/tile/ParticipantTile.stories.tsx
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 1-45
+ee/packages/abac/src/pdp/VirtruPDP.spec.ts
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 385,390,396-397,408
+apps/meteor/server/lib/videoConfProviders.ts
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 5-7
+packages/model-typings/CHANGELOG.md
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 3-43,52,71,90,127,173,186,199,218,251,264,275,294,303,312,321,330,349,364,373,382,391,400,415,424,443,452,461,480,489,504,513,536,545,568,577,586,595,604,613,636,645,654,667,676,697,714,723,732,741,750,759,768,781,790,799,808,817,826,843,865,892,901,934,943,1003,1012,1021,1040,1059,1068,1081,1090,1099,1108,1117,1126,1135,1144,1153,1176,1193,1202,1213,1224,1233,1242,1251,1276,1287,1304,1330,1339,1348,1357,1366,1375,1384,1393,1402,1428,1437,1452,1461,1470,1479,1488,1497,1512,1521,1542,1551,1560,1577,1586,1607,1616,1625,1638,1657,1666,1675,1684,1693,1702,1719,1728,1767,1776,1785,1794,1833,1855,1864,1873,1882,1904,1924,1933,1942,1951,1960,1969,1978,2003,2022,2031,2040,2049,2058,2067,2076,2095,2104,2121,2130,2139,2148,2157,2166,2175,2184,2201,2225,2234,2243,2252,2261,2270,2279,2302,2311,2320,2337,2346,2355,2364,2373,2382,2391,2400,2424,2433,2442,2451,2460,2469,2478,2491,2500,2509,2529,2538,2549,2558,2567,2576,2585,2596,2605,2614,2623,2632,2641,2650,2673,2682,2691,2700
+apps/meteor/tests/end-to-end/api/users.ts
+  ai_agent 26,696,702-707,981,1028,1052,1152,1216,1994-2068,4265,4331,4419,4469-4472,5492-5493
+apps/meteor/server/modules/apps/converters/uploads.ts
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 1-49
+apps/meteor/ee/server/lib/apps/redactor.ts
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 1-42
+ee/packages/license/package.json
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 3,31
+packages/i18n/src/locales/pt-BR.i18n.json
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 1810,2074,5437,6245,6409,6703-6727
+packages/i18n/src/locales/ru.i18n.json
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 1345,1544,3753,4326,4432,4618-4623
+packages/i18n/src/locales/fa.i18n.json
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 964,1086,2368,2679,2741,2836-2839
+apps/meteor/client/views/room/body/MediaCallRoom.tsx
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 4-9,35,39
+ee/apps/omnichannel-transcript/package.json
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 3,35,41,57
+apps/meteor/client/views/admin/users/AdminUserInfoActions.tsx
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 2
+.changeset/bump-patch-1790633991897.md
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 1-5
+packages/logo/tsconfig.cjs.json
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 1-12
+apps/meteor/client/views/room/contextualBar/PruneMessages/PruneMessagesWithData.tsx
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 3
+apps/meteor/server/lib/oauth/addOAuthService.ts
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 16
+apps/meteor/client/views/account/profile/AccountProfilePage.spec.tsx
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 1-108
+apps/meteor/server/api/v1/users.ts
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 726-729
+.changeset/perky-hairs-sort.md
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 1-5
+apps/meteor/client/views/room/Header/icons/RoomGroupingMenu.spec.tsx
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 7,13,21,40
+apps/meteor/ee/server/api/apps/endpoints/appLogsHandler.ts
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 1-80
+apps/meteor/ee/server/lib/apps/marketplace/fetchMarketplaceCategories.ts
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 6-8
+apps/meteor/tests/data/messages.helper.ts
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 3,13,15,17,28-30
+apps/meteor/tests/unit/server/modules/apps/mocks/models/Rooms.mock.js
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 1-147
+packages/mp3-encoder/src/lame/Encoder.ts
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 9,277
+packages/ui-client/src/components/UserCard/UserCard.tsx
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 5,8-9,51
+apps/meteor/tests/unit/server/ee/lib/apps/marketplace/MarketplaceAPIClient.spec.ts
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 11-18
+packages/models/CHANGELOG.md
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 3-46,57,83,111,154,208,223,238,263,316,329,354,365,376,386,396,421,444,454,464,474,484,507,517,539,549,559,581,591,609,619,629,647,657,681,691,701,711,721,731,755,765,775,791,801,811,827,837,849,859,869,879,889,899,909,925,935,945,955,965,975,985,995,1011,1021,1049,1059,1096,1106,1125,1172,1182,1192,1232,1242,1258,1268,1278,1288,1298,1308,1318,1328,1338,1365,1384,1394,1406,1424,1434,1444,1454,1473,1483,1501,1520,1551,1561,1571,1581,1591,1601,1611,1621,1631,1662,1672,1692,1702,1712,1722,1736,1746,1764,1774,1796,1806,1816,1835,1845,1867,1886,1900,1919,1929,1939,1949,1959,1969,1986,1995,2010,2019,2030,2039,2052,2061,2070,2079,2088,2097,2111,2120,2129,2138,2147,2156,2165,2179,2192,2201,2210,2219,2228,2237,2246,2259,2268,2277,2286,2295,2304,2313,2322,2331,2340,2349,2358,2372,2381,2390,2399,2408,2417,2439,2454,2467,2476,2485,2494,2503,2512,2521,2530,2550,2559,2568,2577,2586,2595,2604,2613,2622,2631,2647,2656,2667,2676,2685,2694,2703,2714,2725,2734,2743,2752,2761,2770,2781,2790,2799,2808
+packages/ui-client/src/hooks/useUserCustomFields.ts
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 1-47
+packages/ui-conference/src/views/ConferenceWindow.spec.tsx
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 2,6-7,10-11,14-48,70-72,102-171
+packages/ui-livekit/tsconfig.build.json
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 1-5
+apps/meteor/client/components/message/content/attachments/QuoteAttachment.tsx
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 4
+apps/meteor/server/modules/apps/converters/users.ts
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 1-56
+packages/gazzodown-alt/src/sanitizeUrl.spec.ts
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 1-113
+apps/meteor/tests/e2e/message-composer.spec.ts
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 27
+packages/random/CHANGELOG.md
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 3-8
+packages/ui-conference/src/index.ts
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 15,37-44,74-83
+apps/meteor/tests/unit/server/lib/dataExport/exportRoomMessagesToFile.spec.ts
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 8
+ee/apps/account-service/CHANGELOG.md
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 3-16,31,49,67,85,99,113,127,141,156,170,184,198,212,227,246,260,274,288,302,321,335,349,363,377,391,405,419,433,447,461,475,493,509,523,537,551,565,581,595,609,623,637,651,677,691,705,719,733,747,761,775,789,803,817,831,845,859,886,900,914,941,955,1008,1022,1036,1090,1117,1157,1171,1185,1199,1213,1227,1241,1255,1269,1283,1297,1326,1353,1367,1381,1395,1409,1423,1437,1478,1492,1532,1546,1560,1574,1588,1602,1616,1630,1644,1658,1672,1686,1700,1714,1728,1742,1756,1770,1784,1802,1816,1830,1857,1871,1889,1916,1930,1946,1960,1974,1988,2002,2016,2032,2046,2062,2076,2092,2106,2120,2136,2150,2164,2178,2194,2208,2222,2236,2250,2264,2278,2292,2306,2319,2332,2345,2358,2371,2384,2397,2410,2423,2436,2449,2462,2475,2500,2513,2526,2539,2552,2568,2581,2594,2607,2620,2633,2646,2673,2686,2703,2716,2729,2742,2755,2768,2787,2800,2822,2835,2848,2861,2874,2887,2900,2913,2926,2941,2977,2990,3003,3016,3029,3042,3055,3068,3081,3094,3107,3120,3133,3148,3161,3174,3187
+packages/ai-search/package.json
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 3,24
+packages/ui-conference/src/preflight/PreflightDevices.stories.tsx
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 1-48
+ee/packages/abac/src/pdp/types.ts
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 55
+packages/i18n/src/locales/ug.i18n.json
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 269,285-286,307,1045,1078,1118-1121
+packages/i18n/src/locales/vi-VN.i18n.json
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 866,956,2149,2437,2502,2598-2600
+packages/message-parser/package.json
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 35,50-51
+apps/meteor/ee/server/lib/livekit/token.ts
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 1-51
+packages/ui-conference/src/call/lib/backdropTint.spec.ts
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 1-14
+apps/meteor/client/components/InvitationBadge/InvitationBadge.tsx
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 2
+apps/meteor/client/views/room/contextualBar/RoomMembers/InviteUsers/InviteLink.tsx
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 2
+apps/meteor/tests/end-to-end/api/rooms.ts
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 33,1620-1767,1787-1788,1795-1797,2977-2980,4631
+packages/omni-core/CHANGELOG.md
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 3-11,18,28,37,46,55,64,73,82,97,106,115,124,133,148,160,169,178,187,196,208,217,226,235,244,253,262,271,280,289,316,325,334,343,352,361,370,379,388,397,406,423,432,441,450,459,468,477,486,495,504,513,522,531,540,549,566,575,584,593,602,611,620,629,638,647,656,665
+apps/meteor/client/views/oauth/components/CurrentUserDisplay.tsx
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 3,39
+packages/i18n/src/locales/hu.i18n.json
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 1344,1555,3936,4556,4667,4860-4871
+apps/meteor/ee/server/api/v1/omnichannel/tags.ts
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 83,105
+apps/meteor/tests/unit/server/meteor-methods/messages/createDirectMessage.spec.ts
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 1-146
+apps/meteor/ee/server/lib/livekit/capabilities.spec.ts
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 1-48
+packages/ui-conference/src/preflight/PreflightDeviceMenu.tsx
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 1-29
+.github/workflows/release.yml
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 77
+apps/meteor/client/views/admin/engagementDashboard/users/ContentForDays.tsx
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 4
+packages/gazzodown-alt/src/sourceLines.ts
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 1-48
+packages/i18n/src/locales/zh.i18n.json
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 1738,2000,5280,6064,6222,6499-6510
+apps/meteor/tests/end-to-end/api/autotranslate.ts
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 401-402,454-455,563,565
+apps/meteor/ee/server/lib/apps/orchestrator.ts
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 20,22-24,36-41
+apps/meteor/tests/end-to-end/api/channels.ts
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 1197,1532,2111,2319-2337,2529,3611,4564
+packages/i18n/src/locales/sv.i18n.json
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 1801,2063,5417,6218,6381,6672-6687
+packages/ui-conference/src/call/CameraPicker.spec.tsx
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 1-70
+packages/web-ui-registration/package.json
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 3,20,26,32,41,44-45,50-51
+apps/meteor/tests/data/api-data.ts
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 58-81
+ee/packages/federation-matrix/tests/end-to-end/dms.spec.ts
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 8,164,277,612,681-683,799,842,1154,1159-1161,1552,1719-1725,1764-1770,1888
+packages/fuselage-toastbar/package.json
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 1-77
+packages/jwt/src/index.ts
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 30-60
+apps/meteor/client/views/room/hooks/useUserInfoActions/actions/useRedirectModerationConsole.ts
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 25
+apps/meteor/client/views/room/MessageList/providers/MessageListProvider.tsx
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 2
+apps/meteor/tests/e2e/user-card-info-actions-by-member.spec.ts
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 32,63
+apps/meteor/tests/data/users.helper.ts
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 7,106-136,139-142,145-155,157-164
+packages/password-policies/package.json
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 23
+packages/ui-conference/src/lib/createRequiredContext.ts
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 1-17
+packages/i18n/src/locales/th-TH.i18n.json
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 771,859,2039,2388,2483-2485
+packages/ui-voip/src/views/MediaCallWidget/OutgoingCallTransfer.stories.tsx
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 4,11,16-17,20-21,26-27,29-37
+packages/ui-client/src/components/MarkdownTextContext.tsx
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 1-18
+packages/i18n/src/locales/lt.i18n.json
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 824,912,2100,2389,2454,2549-2554
+apps/meteor/client/views/admin/subscription/components/cards/PlanCard/PlanCardLicenseDetails.tsx
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 3
+packages/media-signaling/src/definition/call/callStates/ITempMediaCallData.ts
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 6
+packages/gazzodown-alt/tsconfig.json
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 6
+ee/packages/presence/package.json
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 3,29-30
+.github/actions/update-version-durability/package.json
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 14,22
+.github/workflows/ui-preview.yml
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 1-198
+apps/meteor/tests/e2e/user-card-info-actions-by-room-owner.spec.ts
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 31,63
+packages/apps/CHANGELOG.md
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 3-19,34,51,70,89,104,119,136,153,164,174,184,195,205,216,229,239,249,259,269,282,292,303,313,323,334,344,355,365,375,386,396,411,421,431,441,451,461,476,486,496,507,517,537,547,558,569,579,589,599,609,620,631,641,651,661,671,681,691,701,712,722,733,744,754,783,802,851,862,872,883,894,904,914,925,935,946,956,966,976,986,996,1006,1038,1066,1077,1087,1097,1107,1126,1136,1147,1157,1168,1183,1193,1203,1213,1223,1233,1243,1253,1263,1278,1288,1303,1313,1324,1334,1344,1354,1369,1379,1396,1406,1416,1435,1445,1462,1472,1482,1492,1503,1513,1523,1533,1543,1553,1564,1574,1585,1595,1606,1616,1627,1638,1648,1658,1668,1679,1690,1700,1710,1720,1730,1740,1750,1766,1776,1786,1796,1806,1816,1826,1836,1846,1856,1866,1876,1886,1896,1906,1916,1926,1936,1946,1956,1968,1978,1988,1998,2008,2018,2028,2040,2058,2068,2082,2092,2102,2112,2122,2134,2144,2154,2176,2186,2196,2206,2216,2226,2236,2250,2264,2274,2301,2311,2321,2331,2341,2351,2361
+packages/fuselage-toastbar/src/ToastBarPortal.ts
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 1-63
+packages/onboarding-ui/package.json
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 49,54,57,59,63
+packages/server-fetch/CHANGELOG.md
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 3-11,19,29,38,47,56,65,74,83,97,106,115,124,133,147,160,169,178,187,196,209,218,231,240,249,262
+packages/ui-client/src/components/GenericMenu/GenericMenuItem.tsx
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 17-21
+packages/ui-client/src/hooks/useUserCustomFields.spec.ts
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 1-22
+packages/ui-livekit/src/index.ts
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 1-5
+apps/meteor/tests/end-to-end/api/commands.ts
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 395
+.github/actions/docker-image-size-tracker/action.yml
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 60
+packages/ui-conference/src/components/CallBar.tsx
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 1-2,5-8,10-15,19-32,36
+packages/ui-livekit/jest.config.ts
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 1-12
+packages/ui-kit/CHANGELOG.md
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 3-24
+packages/i18n/src/locales/ko.i18n.json
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 1117,1280,3040,3469,3563,3715-3717
+apps/meteor/client/startup/index.ts
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 2-3
+ee/packages/media-calls/CHANGELOG.md
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 3-26,39,55,65,75,86,97,111,125,142,152,163,173,183,200,218,228,238,248,258,276,286,296,306,316,326,336,346,356,375,402,412,422,433,443,453,471,481,491,508,518,544,563,573,583,593,603,613,623,633,643,653,663,673,683,693,703,713
+packages/fuselage-ui-kit/src/elements/MarkdownTextElement.tsx
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 15
+packages/fuselage-toastbar/src/ToastBarPersistent.tsx
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 1-14
+packages/css-supports/package.json
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 3,38
+ee/packages/license/CHANGELOG.md
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 3-13,28,45,54,63,72,81,90,99,112,121,130,139,148,161,170,179,188,197,206,215,226,235,254,263,274,283,292,301,310,319,330,339,348,357,366,383,392,401,410,419,428,437,446,455,468,477,486,495,504,513,530,543,552,569,578,611,620,629,654,663,680,689,706,715,724,733,766,783,792,801,810,819,836,845,854,871,880,889,898,907,916,925,934,943,952,961,970,979,988,997,1006,1015,1024,1033,1042,1051,1060,1069,1086,1095,1104,1113,1122,1131,1140,1149,1158,1167,1176,1185,1194,1203,1212,1221,1230,1239,1248,1257,1266,1275,1284,1293,1310,1319,1328,1337,1346,1355,1364,1381,1390,1399,1408,1417,1426,1435,1444,1453,1462,1471,1480,1489,1498,1507,1516,1525,1534,1543,1552,1561,1570,1579,1588,1597,1606,1615,1624,1633,1642,1655,1664,1673,1682,1691,1700,1709,1718,1738,1747,1756,1765,1774,1783,1792,1801,1810,1819,1835,1844,1853,1862,1871,1880,1889,1898,1907,1916,1925,1934,1943,1952,1965,1974,1983,1992
+packages/logo/src/index.ts
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 1-2
+packages/ui-conference/src/call/hooks/useStreamHasLiveVideo.ts
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 1-67
+apps/meteor/server/modules/apps/bridges/activation.ts
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 1-42
+packages/mp3-encoder/src/index.spec.ts
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 1-6,11-39,45-57,60-67,70-78
+packages/mock-providers/package.json
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 3,23,33,37-38
+apps/meteor/client/lib/utils/timeAgo.ts
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 1-2
+packages/ui-conference/src/preflight/useCallDevicePreview.spec.ts
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 1-73
+apps/meteor/tests/unit/server/modules/apps/codecs/uploads.spec.ts
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 7
+packages/ui-conference/src/call/AudioDevicePicker.tsx
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 1-44
+apps/meteor/ee/server/api/apps/endpoints/appLogsDistinctInstanceHandler.ts
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 1-65
+apps/meteor/server/modules/apps/bridges/cloud.ts
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 5
+apps/meteor/server/modules/apps/bridges/uiInteraction.ts
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 1-24
+.changeset/fuselage-toastbar-portal-anchor.md
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 1-5
+apps/meteor/ee/server/api/apps/endpoints/appsCountHandler.ts
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 1-28
+apps/meteor/server/modules/apps/converters/contacts.ts
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 1-41
+apps/meteor/tests/e2e/messaging.spec.ts
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 7-8,17-26,45-48,50,52-53,55-58,60,62,65-69,71,111-115,118-122,131,140,142-143
+apps/meteor/tests/e2e/file-upload.spec.ts
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 125-127,130,132
+packages/ui-conference/src/call/stage/MainTile.tsx
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 1-29
+packages/layout/package.json
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 32-33,38,50-51,56
+packages/ui-conference/src/preflight/PreflightDeviceMenuButton.tsx
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 1-67
+apps/meteor/client/views/room/contextualBar/Threads/components/ThreadListMetrics.tsx
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 3
+packages/fuselage-ui-kit/CHANGELOG.md
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 3-37,49,64,78,92,106,120,135,150,164,177,190,204,217,231,252,265,278,291,304,325,338,352,365,378,392,405,419,432,458,491,504,517,530,543,556,577,590,603,622,635,677,691,705,718,731,744,757,771,787,800,813,826,839,852,865,878,907,920,934,947,985,1010,1024,1074,1088,1101,1115,1129,1142,1155,1169,1182,1196,1209,1222,1235,1248,1261,1274,1300,1314,1339,1352,1366,1379,1392,1405,1443,1457,1470,1483,1496,1509,1522,1535,1548,1561,1575,1588,1604,1617,1631,1644,1657,1670,1686,1699,1717,1730,1743,1768,1781,1799,1812,1825,1838,1854,1867,1880,1893,1906,1919,1935,1948,1970,1983,1999,2012,2032,2046,2059,2072,2085,2099,2118,2131,2144,2157,2170,2183,2196,2215,2236,2249,2262,2275,2288,2301,2314,2335,2348,2364,2377,2390,2403,2428,2441,2457,2470,2483,2501,2514,2527,2540,2553,2566,2579,2597,2618,2631,2651,2664,2677,2690,2703,2716,2729,2742,2773,2786,2799,2819,2832,2845,2865,2883,2899,2911,2946,2960,2972,2984,2996,3008,3022,3033,3044,3055,3066,3077,3088,3103,3114,3125,3136
+.changeset/logo-monorepo-migration.md
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 1-5
+apps/meteor/server/modules/apps/converters/convertMessageFiles.ts
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 1-23
+packages/ui-conference/src/call/VoiceActivity.spec.tsx
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 1-69
+packages/gazzodown/src/mentions/UserMentionElement.tsx
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 17,22,50-51
+apps/meteor/package.json
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 83,116-117,120,133,170,179,186,207,227,231,251,257,260,264-265,299,301,305-306,310,355,357,402,404,420,422,447,458
+packages/fuselage-toastbar/src/index.ts
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 1-4
+apps/meteor/client/sidebar/hooks/useCategoryList.spec.ts
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 5,12-13,18,86,91,95,107
+apps/meteor/client/views/room/hooks/useUserInfoActions/actions/useMuteUserAction.tsx
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 11,45,104,123,126
+packages/desktop-api/CHANGELOG.md
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 3-8
+.changeset/quiet-users-search.md
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 1-6
+apps/meteor/server/modules/apps/converters/codecs/contacts.ts
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 1-103
+packages/peggy-loader/package.json
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 30,34-35
+packages/ai-search/CHANGELOG.md
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 3-8
+packages/ui-client/src/hooks/index.ts
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 1,7,15-18
+packages/i18n/src/locales/fi.i18n.json
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 1394,1620,4177,4830,4953,5157-5172
+packages/logo/tsconfig.esm.json
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 1-4
+apps/meteor/server/modules/apps/README.md
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 1-11
+apps/meteor/server/lib/media/file-upload/lib/FileUpload.spec.ts
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 1-4,475-574
+packages/ui-conference/src/fixtures/preflightFixtures.tsx
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 1-27
+apps/meteor/ee/server/settings/video-conference.ts
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 55-93
+apps/meteor/ee/server/lib/apps/marketplace/appRequestNotifyUsers.ts
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 4-6
+packages/ui-conference/src/devices/DeviceSelectionContext.ts
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 1-15
+ee/packages/federation-matrix/tests/end-to-end/messaging.spec.ts
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 11,88,95,109,116,149,156,185,192,215,225,238,245,288,295,324,331,409,427,461,493,519,536,583,616,717-718,768,795-796,844,871-872,922,949-950,1000,1027-1028,1075,1136-1137,1157,1184-1185,1203,1230-1231,1249,1276-1277,1295,1322-1323,1341
+packages/i18n/src/locales/ka-GE.i18n.json
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 993,1144,2759,3148,3235,3373-3376
+packages/tools/package.json
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 24
+packages/ui-client/src/components/UserInfo/UserInfoAction.tsx
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 1-21
+apps/meteor/client/views/room/hooks/useUserInfoActions/actions/useRemoveUserAction.tsx
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 12,42,133,144
+apps/meteor/server/api/experimental/rooms.setCategory.ts
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 2,56-59
+apps/meteor/tests/unit/server/modules/apps/mocks/models/Messages.mock.js
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 1-36
+packages/ui-conference/CHANGELOG.md
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 1-15
+packages/eslint-config/package.json
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 35,38
+ee/packages/federation-matrix/tests/end-to-end/first-contact.spec.ts
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 6,24-25,30-31,143
+apps/meteor/client/views/room/composer/messageBox/MessageBox.spec.tsx
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 150-174
+docs/features/uikit/reference.md
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 1-574
+packages/ui-livekit/src/useActiveDevice.ts
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 1-18
+packages/ui-conference/src/preflight/PreviewMediaProvider.tsx
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 1-53
+packages/ui-livekit/src/usePreviewVideoTrack.spec.ts
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 1-120
+packages/logger/package.json
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 21
+apps/meteor/client/views/navigation/sidebar/RoomList/RoomListGroupWrapper.spec.tsx
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 1-44
+packages/ui-client/src/components/UserCard/UserCardSkeleton.tsx
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 1-33
+packages/i18n/src/locales/ja.i18n.json
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 1233,1410,3557,4115,4216,4394-4396
+packages/ui-conference/src/devices/DeviceMenu.tsx
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 1-107
+packages/gazzodown-alt/src/ComposerInlineElements.spec.tsx
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 1-139
+apps/meteor/server/modules/apps/converters/codecs/uploads.ts
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 1-97
+.github/actions/meteor-build/action.yml
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 133,209
+packages/authorization/CHANGELOG.md
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 1-12
+apps/meteor/server/modules/apps/bridges/uploads.ts
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 7-9
+.changeset/emitter-past-reviews.md
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 1-7
+packages/i18n/src/locales/mn.i18n.json
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 770,860,2043,2332,2393,2488-2491
+packages/i18n/src/locales/pl.i18n.json
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 1379,1591,3948,4568,4679,4870-4881
+ee/apps/queue-worker/CHANGELOG.md
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 3-16,28,43,61,79,93,107,121,135,149,163,177,191,205,219,237,251,265,279,293,311,325,339,353,367,381,395,409,423,437,451,479,493,507,521,535,549,564,578,592,606,620,647,674,688,702,716,730,744,758,772,786,800,814,828,842,869,883,897,924,938,991,1005,1072,1099,1113,1127,1141,1155,1169,1183,1197,1211,1225,1239,1253,1267,1281,1310,1324,1338,1352,1366,1380,1394,1408,1422,1462,1515,1529,1543,1557,1571,1585,1599,1613,1627,1641,1655,1669,1683,1697,1711,1725,1739,1753,1767,1785,1799,1813,1827,1841,1855,1873,1887,1901,1915,1931,1945,1959,1973,1987,2001,2017,2031,2047,2061,2077,2091,2105,2121,2135,2149,2163,2179,2193,2207,2221,2235,2249,2263,2277,2291,2304,2317,2330,2343,2356,2369,2382,2395,2408,2421,2434,2447,2460,2473,2486,2499,2512,2525,2538,2551,2564,2577,2590,2603,2616,2629,2642,2655,2668,2685,2698,2711,2724,2737,2750,2763,2776,2804,2817,2830,2843,2856,2869,2882,2895,2908,2921,2945,2958,2971,2984,2997,3010,3023,3036,3049,3062,3075,3088,3101,3114,3130,3143,3156,3169
+packages/mp3-encoder/src/index.ts
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 14-15,17-18,33
+packages/media-signaling/package.json
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 4,38
+packages/jwt/package.json
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 26
+packages/ui-client/src/components/GenericMenu/GenericMenu.tsx
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 79,98
+packages/ui-client/src/components/UTCClock.tsx
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 1-15
+packages/emitter/package.json
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 41
+packages/ui-client/src/components/UserInfo/UserInfoAvatar.tsx
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 1-6
+packages/fuselage-toastbar/tsconfig.esm.json
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 1-9
+packages/ui-conference/package.json
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 3,25,40,43,47-48,55,73
+packages/ui-video-conf/package.json
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 3,26,41-42,47
+packages/ui-voip/src/generate-landing-view.tsx
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 114,116
+apps/meteor/.mocharc.js
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 25
+apps/meteor/server/modules/apps/converters/settings.ts
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 1-22
+apps/meteor/client/sidebar/hooks/useCategoryList.ts
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 6,76,90,171,180,208
+packages/ui-conference/src/call/lib/stageTiles.spec.ts
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 1-117
+packages/ui-conference/src/components/CallBar.stories.tsx
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 1-29
+packages/ui-conference/src/call/lib/stageTiles.ts
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 1-102
+apps/meteor/client/components/message/content/ThreadMetrics.tsx
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 10
+packages/gazzodown-alt/tsconfig.build.json
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 6-7
+packages/apps/package.json
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 3,14,37,51,55
+packages/fuselage-ui-kit/src/elements/PlainTextElement.tsx
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 11
+packages/ui-conference/src/call/previewVideo.ts
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 1-25
+.changeset/twelve-brooms-obey.md
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 1-5
+apps/meteor/client/views/conference/providers/ConferenceProvider.tsx
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 2,6,11,24,42,107-116,188,204,218,235-247
+packages/ui-client/src/components/UserCard/UserCardUsername.tsx
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 1-31
+packages/ui-client/src/lib/dateFormat.spec.ts
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 1-172
+packages/ui-livekit/src/LiveKitCallProvider.spec.tsx
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 1-110
+.changeset/bump-patch-1790773988351.md
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 1-5
+.changeset/fuselage-toastbar-stable-context.md
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 1-5
+apps/meteor/server/modules/apps/bridges/livechat.ts
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 19-30
+packages/api-client/CHANGELOG.md
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 3-12,20,30,40,50,60,70,82,92,102,112,122,134,144,154,164,174,184,194,204,214,224,234,244,254,264,274,284,294,304,314,324,334,344,354,373,392,402,412,422,432,442,452,462,472,482,492,502,512,531,551,571,581,618,628,675,685,695,722,732,742,752,762,772,782,792,802,812,822,862,882,892,902,912,922,950,960,979,989,999,1009,1019,1029,1039,1049,1059,1069,1079,1089,1099,1109,1119,1129,1139,1149,1159,1169,1179,1189,1199,1218,1228,1238,1248,1258,1268,1278,1288,1298,1308,1318,1328,1338,1348,1358,1368,1378,1388,1398,1408,1418,1428,1438,1448,1458,1468,1478,1488,1498,1508,1518,1528,1538,1548,1558,1568,1578,1588,1598,1608,1618,1628,1638,1648,1658,1677,1687,1697,1707,1717,1727,1737,1747,1757,1767,1777,1787,1797,1807,1817,1831,1841,1851,1861,1871,1881,1891,1901,1923,1933,1943,1953,1963,1973,1983,1993,2003,2013,2031,2039,2049,2059,2069,2079,2089,2099,2109,2119,2129,2139,2149,2159,2171,2181,2191,2201
+apps/meteor/client/views/room/contextualBar/Threads/components/ThreadListMessage.tsx
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 15
+packages/logo/src/RocketChatLogo/index.ts
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 1
+packages/ai-search/src/constants.ts
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 12
+.changeset/user-card-hover.md
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 1-7
+apps/meteor/tests/unit/server/modules/apps/mocks/models/BaseModel.mock.js
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 1-5
+packages/ui-client/tests/environments/timezone.ts
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 1-25
+ee/packages/abac/src/pdp/VirtruPDP.ts
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 372,375,390,397,411,431,436
+packages/ui-client/src/components/UserCard/UserCardInfo.tsx
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 1-8
+apps/meteor/tests/unit/server/modules/apps/codecs/enums.spec.ts
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 13
+apps/meteor/client/components/UserAndRoomAutoCompleteMultiple/UserAndRoomAutoCompleteMultiple.tsx
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 3,6,29-37,49-61,68-69,75,79-97
+apps/meteor/client/sidebar/RoomList/RoomListCollapser.tsx
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 6,25,47
+packages/models/package.json
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 3,36
+packages/stylis-logical-props-middleware/src/middleware.spec.ts
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 80
+packages/ui-client/src/components/UserInfo/UserInfoUsername.tsx
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 1-16
+packages/ui-livekit/src/LiveKitCallProvider.tsx
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 1-178
+packages/css-in-js/src/sheet.ts
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 145-147
+apps/meteor/client/views/admin/moderation/helpers/ContextMessage.tsx
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 19
+packages/livechat/package.json
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 3,17,40,51,63,82,88
+.github/CODEOWNERS
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 18,23,32-38
+apps/meteor/client/components/message/variants/SystemMessage.tsx
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 20,50,65-66,91-102,107-113
+packages/ui-client/src/components/UserInfo/UserInfo.tsx
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 3-11,21-22,86,140,158
+apps/meteor/server/startup/migrations/xrun.ts
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 6,102
+apps/meteor/client/providers/TranslationProvider.tsx
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 66,85-88,121-126
+apps/meteor/client/components/message/variants/RoomMessage.tsx
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 80,129,131-132,134-135
+apps/meteor/client/views/admin/integrations/incoming/IncomingWebhookForm.tsx
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 20
+apps/meteor/tests/unit/server/modules/apps/converters.lookup.spec.ts
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 24
+packages/emitter/src/emitter.spec.ts
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 70-120,135-140
+docs/features/ai-search-hybrid.md
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 105-111
+packages/ui-client/src/hooks/useClipboardWithToast.ts
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 6
+apps/meteor/server/modules/apps/converters/codecs/roles.ts
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 1-19
+packages/ui-avatar/package.json
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 3,21,27-28,31
+packages/ui-contexts/package.json
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 3,26,36-37,43
+apps/meteor/vite/vite.config.mts
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 145,148-153
+packages/fuselage-toastbar/src/ToastBarTimed.tsx
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 1-31
+apps/meteor/client/hooks/useRoomRolesQuery.spec.ts
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 1-57
+CLAUDE.md
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 55
+apps/meteor/tests/end-to-end/apps/installation.ts
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 89
+apps/meteor/ee/server/lib/livekit/config.spec.ts
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 1-62
+apps/meteor/tests/end-to-end/api/livechat/contacts.ts
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 841,850,857,881,890,909,941
+ee/apps/omnichannel-transcript/CHANGELOG.md
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 3-18,33,51,70,90,105,120,135,150,167,182,197,212,227,244,265,280,295,310,325,346,361,377,392,407,423,438,454,469,499,514,532,547,562,577,592,607,625,640,655,671,686,716,731,746,762,777,792,807,822,838,854,869,884,899,914,929,958,974,989,1019,1034,1092,1107,1123,1183,1212,1242,1257,1272,1288,1303,1318,1333,1348,1363,1378,1393,1408,1469,1500,1516,1531,1546,1561,1604,1620,1663,1678,1693,1708,1723,1738,1753,1768,1783,1798,1813,1828,1843,1858,1873,1888,1903,1918,1933,1952,1967,1982,1997,2012,2027,2046,2061,2076,2091,2108,2123,2138,2153,2168,2183,2200,2215,2232,2247,2264,2279,2294,2311,2326,2341,2356,2373,2388,2403,2418,2433,2448,2463,2478,2493,2507,2521,2535,2549,2563,2577,2591,2605,2619,2633,2647,2661,2675,2689,2703,2717,2731,2745,2759,2774,2788,2802,2816,2830,2844,2858,2873,2887,2901,2919,2933,2947,2961,2975,2989,3003,3017,3047,3061,3075,3089,3103,3117,3131,3145,3159,3173,3212,3226,3240,3254,3268,3282,3296,3310,3324,3338,3352,3366,3380,3398,3412,3426,3440
+packages/i18n/src/locales/eo.i18n.json
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 772,860,2048,2337,2400,2495-2498
+apps/meteor/tests/end-to-end/apps/video-conferences.ts
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 372-453
+packages/ui-client/src/components/UserCard/UserCardRole.tsx
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 1-12
+apps/meteor/client/components/message/content/DiscussionMetrics.tsx
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 9
+packages/model-typings/package.json
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 3,21
+apps/meteor/server/modules/apps/bridges/http.ts
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 8
+apps/meteor/ee/server/lib/apps/storage/ConfigurableAppSourceStorage.ts
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 1-57
+docs/features/video-conference.md
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 185-189
+.changeset/local-time-utc0.md
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 1-6
+apps/meteor/ee/server/lib/apps/storage/AppGridFSSourceStorage.ts
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 1-85
+packages/core-services/package.json
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 3,21,36
+apps/meteor/tests/unit/server/modules/apps/mocks/models/Users.mock.js
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 1-43
+packages/emitter/CHANGELOG.md
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 22,28,34,38,45,49,53,59,65,71,77,87,91,95,109
+packages/i18n/src/locales/af.i18n.json
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 772,862,2051,2340,2403,2498-2501
+packages/logo/src/RocketChatLogo/RocketChatLogo.tsx
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 1-33
+.changeset/deprecate-community-custom-oauth.md
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 1-5
+apps/meteor/tests/data/uploads.helper.ts
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 333-336
+apps/meteor/server/lib/oauth/addCustomOAuthPremiumAlert.ts
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 1-9
+.yarn/releases/yarn-4.18.1.cjs
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 4,9,12-21,28-29,32,44,46,53,58-60,94,96,100,103-104,106-107,115,121,132,134-136,141-144,148-150,166,169,171-172,177,182,189-191,193-194,200,204-211,214,217,221,228,236-238,241,245,249,251-254,256,260-261,265,268,271-273,286,288,292,296,300-301,304,310,312-313,317,324,348,365,367,373,375,384,386,390,393,405,409-413,415-417,424,426,428,430,433-434,440,454,456,458,460,474-475,488,496,513-514,522,540,550,552,556,561,565,567,573,575,595,607,611,613-616,619,624,643,645,670,690,701-702,711,713,715-717,719-721,735,737,747,749,751,753,755,757,760,762,766,768,773
+apps/meteor/client/views/omnichannel/contactHistory/MessageList/ContactHistoryMessage.tsx
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 21
+apps/meteor/server/modules/apps/converters/departments.ts
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 1-46
+packages/css-in-js/rollup.config.mjs
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 1,12-32,34
+apps/meteor/server/modules/apps/converters/videoConferences.ts
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 1-32
+packages/css-supports/CHANGELOG.md
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 1-7
+packages/ui-client/src/components/index.ts
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 28-31
+apps/meteor/client/sidebar/hooks/useRoomList.ts
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 10,55,140,142,173,179
+apps/meteor/tests/unit/server/modules/apps/mocks/orchestrator.mock.js
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 1-108
+apps/meteor/tests/end-to-end/api/groups.ts
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 1048,2135,2469
+packages/gazzodown/src/MarkupInteractionContext.ts
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 3,16,25
+packages/mp3-encoder/src/lame/assert.ts
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 1-9
+apps/meteor/client/components/message/hooks/useCollapse.ts
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 8-10,16-19,23,26-27,29
+apps/meteor/client/views/admin/settings/groups/OAuthGroupPage/OAuthGroupPage.tsx
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 7,119-122
+apps/meteor/ee/server/api/apps/endpoints/appLogsExportHandler.ts
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 1-134
+apps/meteor/server/modules/apps/converters/callHistory.ts
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 1-34
+packages/i18n/src/locales/sq.i18n.json
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 773,863,2049,2340,2403,2498-2501
+apps/meteor/vite/workspacePackages.mjs
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 12-13
+ee/packages/abac/src/index.ts
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 923
+packages/i18n/src/locales/ta-IN.i18n.json
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 773,861,2051,2403,2498-2501
+packages/apps-engine/package.json
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 3,43,72-73
+packages/ui-conference/src/call/CallControls.tsx
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 1-87
+packages/ui-voip/src/views/MediaCallWidget/IncomingCall.tsx
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 2,5,8-19,24,36,39
+packages/ui-composer/package.json
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 3,26,36,38,41-42,46
+apps/meteor/client/views/room/hooks/useUserInfoActions/useUserInfoActions.spec.ts
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 1-36
+packages/ui-conference/src/call/callStories.spec.tsx
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 1-51
+docs/features/uikit/text-objects.md
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 1-25
+apps/meteor/tests/unit/server/services/ai-search/service.tests.ts
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 242
+apps/meteor/client/lib/createRichTextComposerAPI.spec.ts
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 2,63,284,345,356,372,465-489
+apps/meteor/ee/server/lib/apps/marketplace/fetchMarketplaceApps.ts
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 6-8
+packages/i18n/src/locales/bs.i18n.json
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 771,861,2044,2333,2396,2491-2495
+apps/meteor/client/sidebar/RoomMenu.tsx
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 7,24,29
+apps/meteor/client/views/room/composer/messageBox/createComposerAPI.spec.ts
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 2-3,13-14,19,65-104
+packages/fuselage-toastbar/src/ToastBar.spec.tsx
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 1-69
+apps/meteor/server/modules/apps/bridges/contact.ts
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 5-6
+packages/i18n/src/locales/pt.i18n.json
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 914,1039,2386,2707,2786,2895-2899
+packages/random/package.json
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 3,21
+packages/gazzodown-alt/src/testUtils.tsx
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 1-37
+apps/meteor/client/sidebar/categories/hooks/useUserSidebarCategories.ts
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 6,13,19-20
+.changeset/logo-tokens-dependency.md
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 1-5
+apps/meteor/server/modules/apps/bridges/environmental.ts
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 1-45
+packages/mp3-encoder/src/lame/BitStream.ts
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 10,325-326,384-385,393,492,496
+docs/features/uikit/adding-a-block.md
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 1-38
+apps/meteor/server/modules/apps/bridges/outboundCommunication.ts
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 9
+apps/meteor/ee/server/lib/apps/storage/AppFileSystemSourceStorage.ts
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 1-69
+packages/gazzodown-alt/src/ComposerMarkup.tsx
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 10-11,36,61,63-64,108,114,124-129
+apps/meteor/server/modules/apps/bridges/videoConferences.ts
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 7
+packages/logo/src/RocketChatLogo/RocketChatLogo.spec.tsx
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 1-7
+apps/meteor/ee/tests/unit/server/lib/apps/storage/AppRealStorage.spec.ts
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 8
+apps/meteor/tests/data/rooms.helper.ts
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 2,5,19-22,52,61-62,106-121,124-125,127,149-151,156-157,159,161-162,169,171,173,182-190,194-195,197,199,218-219,222-225,227-228,232,234,238-240,244,246,250-252,256-257,259,274-282,290,292,296-298,301,305,307,311,313,316,318,321,323,327-329
+apps/meteor/ee/server/api/index.ts
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 7,12
+packages/ui-conference/src/call/hooks/useAudioLevel.ts
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 1-21
+apps/meteor/server/modules/apps/bridges/listeners.ts
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 1-564
+apps/meteor/client/hooks/useFormatDate.ts
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 1
+packages/fuselage-ui-kit/package.json
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 3,27,47,63,65,67,69,75-76
+packages/i18n/src/locales/az.i18n.json
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 772,862,2054,2344,2407,2502-2505
+ee/apps/authorization-service/CHANGELOG.md
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 3-18,33,51,70,89,104,119,134,149,168,183,198,213,228,247,266,281,296,311,326,345,360,375,390,405,420,435,450,465,480,495,510,530,545,560,575,590,605,625,639,653,667,681,708,722,736,750,764,778,792,806,820,834,848,862,876,890,904,931,945,959,986,1000,1053,1067,1081,1134,1161,1175,1189,1203,1217,1231,1245,1259,1273,1287,1301,1315,1329,1343,1372,1399,1413,1427,1441,1455,1469,1483,1510,1524,1538,1578,1592,1606,1620,1634,1648,1662,1676,1690,1704,1718,1732,1746,1760,1774,1788,1802,1816,1830,1848,1862,1876,1903,1917,1935,1962,1976,1992,2006,2020,2034,2048,2062,2078,2092,2108,2122,2138,2152,2166,2182,2196,2210,2224,2240,2254,2268,2282,2296,2310,2324,2338,2352,2365,2378,2391,2404,2417,2430,2443,2456,2469,2482,2495,2508,2521,2534,2547,2560,2573,2586,2599,2612,2625,2638,2651,2664,2677,2690,2703,2716,2729,2746,2759,2772,2785,2798,2817,2830,2843,2865,2878,2891,2904,2917,2930,2943,2956,2969,2982,3006,3019,3032,3045,3058,3071,3084,3097,3110,3123,3136,3149,3162,3175,3190,3203,3216,3229
+packages/i18n/src/locales/sk-SK.i18n.json
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 778,866,2343,2406,2501-2506
+packages/media-signaling/src/lib/Call.ts
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 265
+packages/memo/package.json
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 38
+packages/mp3-encoder/src/lame/Quantize.ts
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 15,57,293
+packages/release-action/package.json
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 15,24,26
+apps/meteor/client/sidebar/RoomMenu.spec.tsx
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 59
+packages/ui-client/src/components/UserCard/index.ts
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 1-9
+packages/ui-client/src/hooks/useClipboardWithToast.spec.ts
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 1-42
+packages/ui-conference/src/call/CallHeader.tsx
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 1-44
+packages/gazzodown-alt/package.json
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 15,19,22-29,34-35
+.changeset/cuddly-ghosts-spend.md
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 1-5
+apps/meteor/ee/server/startup/apps.ts
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 1-2,7
+ee/packages/media-calls/package.json
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 3,32
+apps/meteor/client/providers/TranslationProvider.formatters.spec.tsx
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 1-41
+apps/meteor/client/hooks/useUserRolesByScope.ts
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 5-9,11-16,18,21,23,26-28,30-33
+apps/meteor/server/lib/media/file-upload/lib/FileUpload.ts
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 699,704-722,729-740,746-747
+packages/mp3-encoder/src/lame/Mp3Encoder.spec.ts
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 29,46,66,83-104
+packages/omni-core/package.json
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 3,29
+.changeset/i18n-formatters-english.md
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 1-5
+apps/meteor/tests/end-to-end/api/direct-message.ts
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 1220-1277
+packages/http-router/package.json
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 3,25,34
+packages/stylis-logical-props-middleware/CHANGELOG.md
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 1-20
+packages/ui-client/CHANGELOG.md
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 3-45,60,77,91,105,115,125,140,155,169,179,189,199,209,223,235,245,255,265,275,287,297,307,317,327,337,347,363,373,406,426,436,446,456,466,476,496,506,516,532,542,552,568,578,588,600,610,620,630,640,652,670,680,690,700,710,720,739,757,767,795,805,833,843,853,872,882,892,902,912,931,941,960,970,980,990,1000,1010,1020,1030,1040,1050,1060,1087,1108,1118,1132,1142,1152,1162,1172,1191,1213,1247,1257,1267,1277,1287,1297,1307,1317,1327,1352,1362,1374,1384,1394,1404,1414,1424,1436,1446,1458,1468,1478,1497,1507,1519,1529,1539,1549,1561,1571,1581,1591,1601,1611,1623,1633,1653,1663,1675,1685,1703,1713,1723,1733,1743,1753,1771,1781,1791,1801,1811,1821,1831,1849,1869,1879,1889,1899,1909,1923,1941,1950,1961,1970,1979,1988,2005,2014,2025,2034,2043,2058,2067,2076,2085,2094,2103,2112,2127,2136,2145,2158,2167,2176,2185,2194,2203,2212,2221,2241,2250,2259,2268,2277,2286,2295,2304,2313,2322,2336,2345,2354,2363,2372,2381,2390,2399,2408,2417,2426,2435,2444,2453,2472,2481,2490,2499
+apps/meteor/server/modules/apps/converters/rooms.ts
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 1-73
+packages/ui-conference/src/call/CallHeader.stories.tsx
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 1-31
+apps/meteor/server/modules/apps/converters/cachedFunction.ts
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 1-17
+apps/meteor/client/views/conference/hooks/useConferenceEmbedded.ts
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 294-295
+packages/ui-conference/src/call/CallStageArea.stories.tsx
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 1-34
+packages/ui-conference/src/call/lib/backdropTint.ts
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 1-11
+packages/ui-voip/src/context/index.ts
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 8
+apps/meteor/client/views/admin/users/hooks/useDeleteUserAction.tsx
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 23,52,61
+apps/meteor/client/views/room/hooks/useUserInfoActions/actions/useBanUserAction.ts
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 2,25,33,44
+apps/meteor/server/api/v1/rooms.ts
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 55,547-553,1776-1778
+packages/desktop-api/package.json
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 4,19,24
+packages/mp3-encoder/src/lame/arrays.spec.ts
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 1-9
+packages/ui-client/src/components/UserCard/UserCard.spec.tsx
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 1-23
+packages/ui-client/src/components/UserCard/UserCardRoles.tsx
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 1-16
+apps/meteor/client/lib/createComposerAPICore.ts
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 8,38,75,108,204
+packages/storybook-config/package.json
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 3,31,36,40
+packages/ui-client/package.json
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 3,21,24-25,32,38,47,51-52,61-62
+apps/meteor/tests/unit/server/modules/apps/rooms.tests.ts
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 12
+apps/meteor/server/modules/apps/bridges/internalFederation.ts
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 1-12
+apps/meteor/server/modules/apps/bridges/oauthApps.ts
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 1-81
+packages/mp3-encoder/src/lame/GainAnalysis.ts
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 307
+packages/ui-conference/src/call/CallControls.stories.tsx
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 1-41
+packages/ui-conference/src/call/hooks/useStreamHasLiveVideo.spec.ts
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 1-133
+.yarn/patches/eslint-plugin-storybook-npm-9.1.20-b86b9c5e4d.patch
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 1-119
+apps/meteor/tests/unit/server/modules/apps/mocks/models/index.js
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 1-7
+.changeset/bump-patch-1790891915006.md
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 1-5
+apps/meteor/client/views/room/body/JumpToRecentMessageButton.tsx
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 18-20,24-27,30-31,33-34,39-45
+packages/css-in-js/package.json
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 3,52,54
+packages/instance-status/CHANGELOG.md
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 3-11,18,27,36,45,54,63,72,81,90,99,108,117,126,135,147,156,165,174,183,195,204,213,222,231,240,249,258,267,284,293,302,311,320,329,338,347,356,365,374,383,392,401,410,419,428,437,446,455,464,473,482,491,500,509,518,527,536,553,571,589,598,631,640,649,674,683,700,724,733,742,751,760,769,778,787,796,805,814,833,850,859,868,877,886,895,904,921,930,939,956,965,974,983,992,1001,1010,1019,1028,1037,1046,1055,1064,1073,1082,1091,1100,1109,1118,1127,1136,1145,1154,1163,1172,1181,1190,1199,1208,1217,1226,1235,1244,1253,1262,1271,1280,1289,1304,1313,1322,1331,1346,1355,1364,1373,1382,1391,1400,1409,1418,1427,1436,1445,1454,1463,1472,1481,1490,1499,1508,1517,1526,1535,1544,1553,1562,1571,1580,1589,1598,1607,1616,1625,1635,1644,1653,1662,1671,1680,1689,1706,1716,1725,1738,1747,1756,1765,1774,1783,1792,1801,1821,1830,1839,1848,1857,1866,1875,1884,1893,1902,1911,1920,1929,1938,1947,1956,1965,1974,1983,1992,2001,2010,2019,2028,2037,2048,2057,2066,2075
+ee/packages/federation-matrix/tests/end-to-end/permissions.spec.ts
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 4,145-155,161,196-200,205-212,272,274-281,369-370,424-431,488-498,513-522,528-538,566-576,591-600,628-638,653-662,829,860-867
+apps/meteor/client/components/message/hooks/useCollapse.spec.ts
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 1-50
+apps/meteor/server/modules/apps/converters/codecs/index.ts
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 1-9
+packages/ui-conference/src/call/CallStage.tsx
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 1-30
+packages/ui-conference/src/components/PreflightCameraPlaceholder.tsx
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 1-43
+apps/meteor/client/views/navigation/sidepanel/SidepanelItem/SidepanelItem.tsx
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 12
+apps/meteor/tests/end-to-end/api/abac.ts
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 3094-3156
+packages/release-action/src/publishRelease.ts
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 13-21,28,35,130
+apps/meteor/tests/end-to-end/api/livechat/24-routing.ts
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 10,54-55,120-121,177-178,279-285,290-291,493,622
+apps/meteor/client/sidebar/Item/Medium.tsx
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 26
+apps/meteor/server/modules/apps/bridges/router.spec.ts
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 1-95
+packages/ui-conference/src/call/tile/TileFrame.tsx
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 1-94
+packages/ui-conference/src/components/CallTopBar.tsx
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 23-27,36,53-56,59-74
+packages/ui-conference/src/call/__snapshots__/callStories.spec.tsx.snap
+  ai_agent 3,7,10,12-78,81-82,85,88-126,129,132,134-142,144-146,148-165,167-169,172-245,247,249-255,257-263,265-268,270,272-280,282-307,310-338,341-354,356-357,360-475,483,487,490,493-494,497,500,502-518,521,523-529,531-533,535-655,658,660-666,668-674,676-679,681,683-691,693-718,721-749,752-765,767,769-783,791,795,798,801-831,834,837,840-865,867-890,892,895-896,899,902,904-906,908-917,919-922,924,926-928,930-931,933,935,937-939,941-944,946,948-953,955,957,960,963-964,966-968,970-976,979-989,991-992,994,996,999-1011,1013-1018,1021,1024-1025,1029,1031,1034,1036,1045,1047-1069,1071-1077,1084,1088-1152,1155-1195,1197-1205,1208-1211,1214,1217-1219,1221,1224-1226,1228-1236,1239,1242,1244-1246,1248-1253,1256,1258-1259,1261-1266,1268-1270,1272-1286,1288,1291-1292,1294-1295,1297-1298,1300-1305,1307-1315,1318-1407,1410,1413-1414,1416-1421,1423-1426,1429-1462,1464,1467-1468,1470-1475,1477-1480,1486-1499,1501-1536,1538-1578,1580-1582,1585-1597,1600-1614,1616-1635
+apps/meteor/client/sidebar/hooks/useRoomList.spec.tsx
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 121,245,308,324,379
+.changeset/bump-patch-1790135238850.md
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 1-3,5
+packages/ui-conference/src/hooks/useCallDevicesInitialState.spec.tsx
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 1-20
+packages/ui-livekit/src/callParticipants.ts
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 1-67
+packages/ui-conference/src/preflight/__snapshots__/preflightStories.spec.tsx.snap
+  ai_agent 1-628
+apps/meteor/ee/server/lib/apps/storage/AppRealStorage.ts
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 1-102
+ee/packages/abac/CHANGELOG.md
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 3-14,27,42,54,66,88,110,124,138,155,167,179,190,201,218,232,243,254,265,276,290,301,312,323,334,345,356,367,378,399,425,436,447,458,469,480,496
+packages/ui-conference/src/call/AudioDevicePicker.stories.tsx
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 1-32
+apps/meteor/tests/unit/server/modules/apps/converters.edge.spec.ts
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 6-7
+apps/meteor/client/components/LocalTime.tsx
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 1
+apps/meteor/client/views/room/composer/messageBox/MessageBox.tsx
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 92,103-106,119
+apps/uikit-playground/CHANGELOG.md
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 3-15,27,41,53,65,77,89,101,113,125,137,149,161,173,185,199,211,223,235,247,261,273,285,297,309,321,333,345,357,369,381,404,416,428,440,452,464,476,488,500,516,528,576,588,600,612,624,636,648,662,674,686,698,710,722,734,746,760,772,795,807,852,864,876,921,944,978,990,1002,1014,1026,1038,1050,1062,1074,1086,1098,1146,1158,1170,1182,1194,1206,1218,1252,1264,1298,1310,1322,1334,1346,1358,1370,1382,1394,1406,1418,1432,1444,1456,1468,1480,1492,1506,1518,1530,1542,1554,1577,1589,1601,1624,1636,1650,1662,1674,1686,1698,1710,1724,1736,1756,1768,1782,1794,1812,1824,1836,1848,1860,1872,1888,1900,1912,1924,1936,1948,1960,1976,1992,2004,2016,2028,2040,2052,2064,2080,2091,2108,2119,2130,2141,2162,2173,2190,2201,2212,2223,2234,2245,2256,2267,2278,2289,2300,2311,2322,2339,2350,2361,2372,2383,2394,2405,2416,2442,2453,2464,2475,2486,2497,2508,2519,2530,2541,2561,2572,2583,2594,2605,2616,2627,2638,2648,2658,2668,2678,2688,2698,2710,2720,2730,2740
+apps/meteor/client/hooks/useUserRolesQuery.spec.ts
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 1-60
+fuselage.sh
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 112,119
+packages/i18n/src/locales/da.i18n.json
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 1126,1286,3057,3490,3582,3735-3738
+packages/ui-conference/src/call/hooks/useAudioLevel.spec.ts
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 1-113
+packages/ui-conference/src/call/stage/ScreenViewer.tsx
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 1-26
+packages/ui-conference/src/fixtures/storyFixtures.tsx
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 298-300
+apps/meteor/server/modules/apps/bridges/details.ts
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 1-19
+.changeset/bump-patch-1790995042820.md
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 1-5
+apps/meteor/tests/unit/server/modules/apps/converters.messages.spec.ts
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 7,14
+docs/frontend/i18n.md
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 19,44-67,96,99-101
+package.json
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 37-39,54-60,67-71,99,103-109,143-144,220-221,224,227,230,234
+packages/i18n/src/locales/sr.i18n.json
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 761,2155,2218,2311-2315
+packages/ui-conference/src/preflight/PreviewMediaContext.ts
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 1-11
+packages/ui-conference/src/views/ConferencePreflight.stories.tsx
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 22
+packages/ui-contexts/src/UserCardContext.ts
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 1,6,8-14,19
+.changeset/mp3-encoder-past-reviews.md
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 1-5
+packages/ui-livekit/src/useCallDeviceSwitching.spec.ts
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 1-64
+apps/meteor/tests/end-to-end/api/sidebar-custom-categories.ts
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 211,215,293
+packages/ui-video-conf/CHANGELOG.md
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 3-13,21,32,42,52,62,72,82,92,102,112,122,132,142,152,164,174,184,194,204,216,226,236,246,256,266,276,286,296,315,334,344,354,364,374,384,394,404,414,424,434,444,454,464,474,484,494,504,514,524,534,546,556,566,576,586,596,615,627,637,656,666,694,704,714,724,743,762,772,782,809,819,829,839,849,859,869,879,889,899,909,966,976,986,996,1006,1043,1053,1071,1081,1091,1101,1111,1121,1131,1141,1151,1161,1171,1183,1193,1203,1213,1223,1233,1245,1255,1269,1279,1289,1308,1318,1332,1342,1352,1362,1372,1382,1392,1402,1412,1422,1432,1442,1458,1468,1478,1488,1504,1514,1524,1534,1544,1554,1568,1578,1588,1598,1608,1618,1628,1642,1656,1666,1676,1686,1696,1706,1716,1730,1740,1752,1762,1772,1782,1792,1802,1812,1824,1834,1844,1859,1869,1879,1889,1899,1909,1919,1934,1944,1954,1968,1978,1988,1998,2008,2018,2028,2038,2060,2070,2080,2090,2100,2110,2120,2130,2140,2150,2177,2187,2197,2207,2217,2227,2237,2246,2255,2264,2273,2282,2291,2302,2311,2320,2329
+apps/meteor/tests/data/livechat/rooms.ts
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 431-449
+packages/i18n/src/locales/km.i18n.json
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 937,1057,2355,2652,2728,2833-2835
+ee/packages/omni-core-ee/package.json
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 3,31
+packages/ui-conference/src/call/lib/screenShares.ts
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 1-14
+apps/meteor/server/modules/apps/converters/codecs/settings.ts
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 1-36
+packages/ui-conference/src/views/ConferencePreflight.tsx
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 3,12-13,16-18,52-56,71,87-89,92-141,180,182-188
+docs/features/uikit/rendering.md
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 1-44
+.changeset/fuselage-toastbar-published-files.md
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 1-5
+packages/ui-livekit/src/useLiveKitTransport.spec.tsx
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 1-53
+packages/ui-voip/src/views/MediaCallWidget/MediaCallWidget.stories.tsx
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 12-15,93-100,121-125
+apps/meteor/client/startup/embeddedCallProviders.tsx
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 1-7
+packages/ui-livekit/src/useActiveDevice.spec.ts
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 1-52
+apps/meteor/server/api/v1/videoConference.ts
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 256-263
+packages/ui-client/src/components/UserCard/UserCardActions.tsx
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 1-15
+docs/features/video-conference-persistent-chat/README.md
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 268-270,292,506-515,612,1175,1182,1187
+apps/meteor/ee/server/api/apps/rest.ts
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 35-44
+packages/rest-typings/package.json
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 31
+apps/meteor/server/modules/apps/converters/codecs/departments.ts
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 1-56
+packages/core-services/CHANGELOG.md
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 3-40,54,73,89,105,121,137,149,161,183,195,208,220,232,254,272,284,296,308,320,338,350,371,383,395,416,428,443,456,468,482,494,520,532,544,557,569,581,607,621,633,651,663,692,704,716,728,740,752,764,776,788,802,814,826,838,850,862,885,911,937,948,979,990,1001,1017,1048,1061,1072,1083,1096,1107,1118,1129,1140,1151,1162,1173,1184,1195,1206,1217,1228,1251,1272,1283,1294,1305,1316,1327,1338,1369,1380,1417,1428,1439,1450,1461,1472,1483,1494,1505,1522,1533,1549,1560,1571,1582,1597,1608,1620,1631,1642,1653,1664,1685,1696,1707,1718,1729,1740,1751,1762,1773,1784,1795,1806,1817,1828,1839,1850,1861,1872,1883,1896,1907,1918,1929,1942,1958,1969,1980,1991,2002,2013,2024,2040,2060,2071,2082,2093,2104,2115,2126,2146,2158,2174,2185,2196,2207,2218,2229,2240,2256,2277,2302,2313,2324,2335,2346,2357,2368,2393,2412,2423,2439,2450,2461,2472,2483,2494,2505,2516,2541,2552,2563,2579,2590,2601,2617,2636,2651,2662,2686,2697,2712,2723,2734,2745,2756,2771,2782,2793,2806,2817,2828,2839,2857,2868,2879,2890
+apps/meteor/ee/server/lib/apps/marketplace/MarketplaceAPIClient.ts
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 5
+docs/features/native-video-conference/README.md
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 1-86
+apps/meteor/client/components/TextCopy.tsx
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 2
+packages/css-in-js/CHANGELOG.md
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 3-14
+apps/meteor/server/modules/apps/converters/threads.ts
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 1-209
+packages/server-cloud-communication/package.json
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 17
+packages/ui-conference/src/call/tile/TilePicture.tsx
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 1-70
+.changeset/pre.json
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 1-170
+.github/actions/update-version-durability/action.yml
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 25
+apps/meteor/ee/server/lib/apps/disableAppsWithAddonsCallback.ts
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 4
+packages/i18n/src/locales/bg.i18n.json
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 772,862,2046,2335,2398,2493-2496
+packages/ui-conference/src/call/stage/stageStyles.ts
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 1-70
+.changeset/calm-admins-read.md
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 1-5
+apps/meteor/client/views/conference/ConferenceStartPage.tsx
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 8,48
+packages/fuselage-toastbar/.storybook/main.ts
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 1-3
+apps/meteor/ee/server/lib/livekit/callConfig.ts
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 1-64
+apps/meteor/client/views/room/composer/ComposerUserActionIndicator/ComposerUserActionIndicator.tsx
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 67-83
+packages/api-client/package.json
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 3,35
+packages/i18n/CHANGELOG.md
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 3-42,69,102,267,286,311,334,395,428,561,584
+apps/meteor/client/hooks/useUserRolesQuery.ts
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 19,45,59
+packages/i18n/src/locales/lv.i18n.json
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 780,868,2061,2346,2407,2498-2502
+packages/mp3-encoder/src/lame/WavHeader.ts
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 55
+packages/ddp-client/package.json
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 3,33-34
+.changeset/tender-zebras-smash.md
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 1-5
+apps/meteor/tests/e2e/page-objects/login.ts
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 51-55,57-61
+packages/passport-x/package.json
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 24
+apps/meteor/tests/end-to-end/api/teams.ts
+  s_76a6d4fa2354e3::t_9007542a8b0e6f 688-691,950-953,1031-1034,1151-1154,2154
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.2",
+  "base_commit_sha": "588b17bbe8eeb8df3789a5e6f00f1e296aae832a",
+  "prompts": {},
+  "sessions": {
+    "s_76a6d4fa2354e3": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "723f7219-53de-48cf-8130-237fd2a307bd",
+        "model": "claude-opus-5-5"
+      },
+      "human_author": "Ricardo Garim <rswarovsky@gmail.com>"
+    }
+  }
+}
