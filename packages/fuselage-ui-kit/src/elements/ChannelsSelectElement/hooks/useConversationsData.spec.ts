@@ -7,7 +7,8 @@ import { useConversationsData } from './useConversationsData';
 const subscriptions = [
 	{ rid: 'general', name: 'general', fname: 'General', t: 'c' },
 	{ rid: 'secret', name: 'secret-group', t: 'p' },
-	{ rid: 'dm', name: 'john.doe', fname: 'John Doe', t: 'd' },
+	{ rid: 'dm', name: 'john.doe', fname: 'Jonathan Smith', t: 'd' },
+	{ rid: 'livechat', name: 'visitor', fname: 'Visitor', t: 'l' },
 ] as ISubscription[];
 
 const getSubscriptions = jest.fn(() => ({ update: subscriptions, remove: [] }) as any);
@@ -19,22 +20,39 @@ beforeEach(() => {
 	wrapper = mockAppRoot().withEndpoint('GET', '/v1/subscriptions.get', getSubscriptions).build();
 });
 
-it('lists every conversation the user belongs to, direct messages included', async () => {
+it('lists every conversation the user belongs to, direct messages included and livechat rooms left out', async () => {
 	const { result } = renderHook(() => useConversationsData({ filter: '' }), { wrapper });
 
 	await waitFor(() =>
 		expect(result.current).toEqual([
 			{ value: 'general', label: { name: 'General', avatarETag: undefined, type: 'c' } },
 			{ value: 'secret', label: { name: 'secret-group', avatarETag: undefined, type: 'p' } },
-			{ value: 'dm', label: { name: 'John Doe', avatarETag: undefined, type: 'd' } },
+			{ value: 'dm', label: { name: 'Jonathan Smith', avatarETag: undefined, type: 'd' } },
 		]),
 	);
 });
 
-it('matches the filter against the name and the display name, ignoring case', async () => {
-	const { result } = renderHook(() => useConversationsData({ filter: 'JOHN' }), { wrapper });
+it.each([
+	['the name', 'JOHN'],
+	['the display name', 'SMITH'],
+])('matches the filter against %s, ignoring case', async (_field, filter) => {
+	const { result } = renderHook(() => useConversationsData({ filter }), { wrapper });
 
 	await waitFor(() => expect(result.current?.map(({ value }) => value)).toEqual(['dm']));
+});
+
+it.each([
+	[['public'], ['general']],
+	[['private'], ['secret']],
+	[['im', 'mpim'], ['dm']],
+	[
+		['public', 'private'],
+		['general', 'secret'],
+	],
+] as const)('lists only the kinds in filter.include %j', async (include, expected) => {
+	const { result } = renderHook(() => useConversationsData({ filter: '', include: [...include] }), { wrapper });
+
+	await waitFor(() => expect(result.current?.map(({ value }) => value)).toEqual(expected));
 });
 
 it('fetches nothing while disabled', () => {
