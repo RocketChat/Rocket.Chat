@@ -6,4 +6,6 @@ export type MultiChannelsSelectElement = Actionable<{
 	placeholder?: PlainText;
 	/** Ids of the rooms selected when the view opens. */
 	initial_channels?: string[];
+	/** Most rooms that can be selected. */
+	max_selected_items?: number;
 }>;

@@ -343,6 +343,7 @@ Source: [`packages/ui-kit/src/blocks/elements/MultiChannelsSelectElement.ts`](..
 | `type` | `'multi_channels_select'` | yes |  |
 | `placeholder` | `PlainText` | no |  |
 | `initial_channels` | `string[]` | no | Ids of the rooms selected when the view opens. |
+| `max_selected_items` | `number` | no | Most rooms that can be selected. |
 | `appId` | `string` | yes |  |
 | `blockId` | `string` | yes |  |
 | `actionId` | `string` | yes |  |
@@ -358,6 +359,7 @@ Source: [`packages/ui-kit/src/blocks/elements/MultiConversationsSelectElement.ts
 | `type` | `'multi_conversations_select'` | yes | Picks several conversations the user belongs to; the value is the list of room ids. |
 | `placeholder` | `PlainText` | no |  |
 | `initial_conversations` | `string[]` | no | Ids of the rooms selected when the view opens. |
+| `max_selected_items` | `number` | no | Most conversations that can be selected. |
 | `appId` | `string` | yes |  |
 | `blockId` | `string` | yes |  |
 | `actionId` | `string` | yes |  |
@@ -392,6 +394,7 @@ Source: [`packages/ui-kit/src/blocks/elements/MultiUsersSelectElement.ts`](../..
 | `type` | `'multi_users_select'` | yes |  |
 | `placeholder` | `PlainText` | no |  |
 | `initial_users` | `string[]` | no | Usernames of the users selected when the view opens. |
+| `max_selected_items` | `number` | no | Most users that can be selected. |
 | `appId` | `string` | yes |  |
 | `blockId` | `string` | yes |  |
 | `actionId` | `string` | yes |  |
