@@ -1,0 +1,32 @@
+ee/packages/xmpp-server/docs/compliance.md
+  s_e3be77173bfc57::t_654094dc53d979 8-9,34-39
+ee/packages/xmpp-server/docs/specs/chat-states.md
+  s_e3be77173bfc57::t_c52600b855e68f 2
+ee/packages/xmpp-server/docs/specs/delivery-receipts.md
+  s_e3be77173bfc57::t_d5d4a4db9bfe3b 2
+ee/packages/xmpp-server/docs/specs/file-transfer.md
+  s_e3be77173bfc57::t_263c0c83c415a0 2
+ee/packages/xmpp-server/docs/specs/message-retraction.md
+  s_e3be77173bfc57::t_c381fbca5b6e20 2
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.4",
+  "base_commit_sha": "a4f8eaf5378d0d37857f27a4722baf48e3453a35",
+  "prompts": {},
+  "humans": {
+    "h_4c386397e672f4": {
+      "author": "Diego Sampaio <chinello@gmail.com>"
+    }
+  },
+  "sessions": {
+    "s_e3be77173bfc57": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "260790bd-e0fd-4a75-a152-6a1ada9fde97",
+        "model": "claude-fable-5-1"
+      },
+      "human_author": "Diego Sampaio <chinello@gmail.com>"
+    }
+  }
+}

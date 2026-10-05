@@ -1,0 +1,24 @@
+ee/packages/xmpp-server/docs/compliance.md
+  s_676495b213565f::t_ffc57c390b933d 1-49
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.4",
+  "base_commit_sha": "fa8144521aac5f6e205ce377ec586bf38c1b7216",
+  "prompts": {},
+  "humans": {
+    "h_4c386397e672f4": {
+      "author": "Diego Sampaio <chinello@gmail.com>"
+    }
+  },
+  "sessions": {
+    "s_676495b213565f": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "46ea97c3-903d-414e-8881-8ae44ea9dd77",
+        "model": "claude-fable-5-1"
+      },
+      "human_author": "Diego Sampaio <chinello@gmail.com>"
+    }
+  }
+}

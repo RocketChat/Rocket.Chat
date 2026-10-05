@@ -1,0 +1,72 @@
+apps/meteor/server/services/messages/service.ts
+  s_7450cd3c8912b1::t_34d79caeb8a26f 96,108,126
+apps/meteor/server/settings/federation-service.ts
+  s_7450cd3c8912b1::t_8346021c62a2e9 2
+  s_7450cd3c8912b1::t_9c74e36b17d41a 229-235
+ee/packages/xmpp-server/src/service/helpers/messageId.spec.ts
+  s_7450cd3c8912b1::t_7baff5dbc3928e 1-31
+ee/packages/xmpp-server/src/muc/MucRoom.spec.ts
+  s_7450cd3c8912b1::t_0644309cfa0ba1 94-107
+ee/packages/xmpp-server/docs/architecture.md
+  s_7450cd3c8912b1::t_3c69ddb180bc39 139-142,199-201
+  s_7450cd3c8912b1::t_431f0456dcf382 120-121
+ee/packages/xmpp-server/src/muc/MucRoom.ts
+  s_7450cd3c8912b1::t_a347d74f7a3268 13,30,185-192
+ee/packages/xmpp-server/src/service/XMPPServerService.ts
+  s_7450cd3c8912b1::t_88464d6efba7b2 23,57-71,131-132,200-201,499-508,606,663-666,671-682,692-693,709-719,722-724,733-736,742-770,772-773
+  s_7450cd3c8912b1::t_312b4bcff9042c 24,771
+  s_7450cd3c8912b1::t_6b7e0fb39988e5 774
+ee/packages/xmpp-server/src/muc/MucService.ts
+  s_7450cd3c8912b1::t_a347d74f7a3268 147
+ee/packages/xmpp-server/docs/compliance.md
+  s_7450cd3c8912b1::t_431f0456dcf382 31-32
+ee/packages/xmpp-server/docs/specs/message-deduplication.md
+  s_7450cd3c8912b1::t_431f0456dcf382 76-78
+ee/packages/xmpp-server/src/events.ts
+  s_7450cd3c8912b1::t_a347d74f7a3268 12,52,68-71
+ee/packages/xmpp-server/docs/specs/message-retraction.md
+  s_7450cd3c8912b1::t_431f0456dcf382 68-78
+ee/packages/xmpp-server/src/service/helpers/messageId.ts
+  s_7450cd3c8912b1::t_c172b34e1c0600 1-21,25-33
+  s_7450cd3c8912b1::t_eeb0b0a0187852 22-24
+ee/packages/xmpp-server/tests/end-to-end/remote-muc.spec.ts
+  s_7450cd3c8912b1::t_582b9a9ab62230 113
+ee/packages/xmpp-server/tests/end-to-end/hosted-muc.spec.ts
+  s_7450cd3c8912b1::t_582b9a9ab62230 93,161-171
+  s_7450cd3c8912b1::t_0cacbb6e747b93 172-173
+ee/packages/xmpp-server/src/muc/RemoteMucSession.ts
+  s_7450cd3c8912b1::t_a347d74f7a3268 7,26-35,133-142
+ee/packages/xmpp-server/tests/end-to-end/direct-messages.spec.ts
+  s_7450cd3c8912b1::t_582b9a9ab62230 90
+ee/packages/xmpp-server/docs/specs/direct-messages.md
+  s_7450cd3c8912b1::t_431f0456dcf382 82
+ee/packages/xmpp-server/src/service/configuration.ts
+  s_7450cd3c8912b1::t_94a33cb9b73d8e 10,22,51
+ee/packages/xmpp-server/src/muc/RemoteMucSession.spec.ts
+  s_7450cd3c8912b1::t_0644309cfa0ba1 73-82,86-87
+  s_7450cd3c8912b1::t_eeb0b0a0187852 83-85
+packages/core-services/src/types/IMessageService.ts
+  s_7450cd3c8912b1::t_43dbbaab958ca0 13,25-26
+ee/packages/xmpp-server/docs/adr/0014-inbound-message-id-is-derived-from-room-author-and-sender-id.md
+  s_7450cd3c8912b1::t_57426fb15bd171 1-76
+ee/packages/xmpp-server/docs/specs/message-corrections.md
+  s_7450cd3c8912b1::t_377d99fdb8af36 3-4,14,16,20,23,36-37,53-57,62-64,70-85,93-95,110,112-115,119,121
+ee/packages/xmpp-server/src/xml/namespaces.ts
+  s_7450cd3c8912b1::t_9a00d8af0bd8a0 19-20
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.4",
+  "base_commit_sha": "bd60411fc14a8a154d335d010b4daf477e6da2a5",
+  "prompts": {},
+  "sessions": {
+    "s_7450cd3c8912b1": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "e6070b81-0c61-4987-a919-fd6769f9f921",
+        "model": "claude-opus-5-5"
+      },
+      "human_author": "Diego Sampaio <chinello@gmail.com>"
+    }
+  }
+}

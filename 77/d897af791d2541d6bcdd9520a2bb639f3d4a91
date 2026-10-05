@@ -1,0 +1,72 @@
+ee/packages/xmpp-server/src/XMPPServer.ts
+  s_35ff60f1f47ba0::t_6203e96f59f5eb 9
+  s_35ff60f1f47ba0::t_906212328a5f6c 313,315-321
+ee/packages/xmpp-server/src/muc/MucService.ts
+  s_35ff60f1f47ba0::t_e2db5c2c6e2bcf 131-138
+  s_35ff60f1f47ba0::t_9284ea82b6afe2 7
+ee/packages/xmpp-server/docs/adr/0008-only-dedicated-xmpp-rooms-are-exposed.md
+  s_35ff60f1f47ba0::t_698148ee585647 5
+  s_35ff60f1f47ba0::t_373ae3374a99c8 43-44
+  s_35ff60f1f47ba0::t_ffe34a984c149a 45-46
+  s_35ff60f1f47ba0::t_dbff36afa5b3f1 47-54
+ee/packages/xmpp-server/src/jid/normalize.ts
+  s_35ff60f1f47ba0::t_b825220cdd010b 35-41
+ee/packages/xmpp-server/src/jid/normalize.spec.ts
+  s_35ff60f1f47ba0::t_5c5a13391210a3 17-28
+  s_35ff60f1f47ba0::t_2d292827673178 2
+ee/packages/xmpp-server/src/muc/MucService.spec.ts
+  s_35ff60f1f47ba0::t_3f1fe1b8758481 1-45,49-53
+  s_35ff60f1f47ba0::t_767f508401e24e 46-48
+ee/packages/xmpp-server/src/service/helpers/remoteRoom.spec.ts
+  s_35ff60f1f47ba0::t_c477deeb685a42 2-3,6-7,23-24
+  s_35ff60f1f47ba0::t_4bb5e32d47118a 1,16-22
+  s_35ff60f1f47ba0::t_9a0b76b48d86d8 4-5,8-15
+ee/packages/xmpp-server/tests/end-to-end/remote-muc.spec.ts
+  s_35ff60f1f47ba0::t_67a2a850cfcd11 87
+  s_35ff60f1f47ba0::t_17d81ca3054045 43
+  s_35ff60f1f47ba0::t_824bf3452760ac 107
+  s_35ff60f1f47ba0::t_aed1ffb8d11c07 2
+  s_35ff60f1f47ba0::t_6caa8349031d9e 58-59
+ee/packages/xmpp-server/docs/specs/remote-muc.md
+  s_35ff60f1f47ba0::t_30c807525d7646 4,10,13,17-26
+  s_35ff60f1f47ba0::t_11d23fc3589916 130-132
+  s_35ff60f1f47ba0::t_599a495df36c36 48-58
+  s_35ff60f1f47ba0::t_acbca19ba835df 129
+ee/packages/xmpp-server/docs/operations.md
+  s_35ff60f1f47ba0::t_6e9813ac4a53ec 143-144
+ee/packages/xmpp-server/src/service/XMPPServerService.ts
+  s_35ff60f1f47ba0::t_10d2e47ef1d3ec 26
+  s_35ff60f1f47ba0::t_f3901e6bd4d5c2 798
+  s_35ff60f1f47ba0::t_c90c74bc9e070a 795
+ee/packages/xmpp-server/docs/adr/0011-domain-normalization-is-idna-and-lowercase.md
+  s_35ff60f1f47ba0::t_6318e599ec67b3 27-33
+  s_35ff60f1f47ba0::t_02d89234a6d203 5,12-17
+  s_35ff60f1f47ba0::t_032c82ac70b5a3 43
+ee/packages/xmpp-server/docs/architecture.md
+  s_35ff60f1f47ba0::t_cf02713ef6f154 185-186
+ee/packages/xmpp-server/src/service/helpers/remoteRoom.ts
+  s_35ff60f1f47ba0::t_30e7f96addd88a 3-4,9-13
+  s_35ff60f1f47ba0::t_4df12876795145 6,14
+  s_35ff60f1f47ba0::t_69f1363c42e544 1-2,5,7-8
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.4",
+  "base_commit_sha": "77d897af791d2541d6bcdd9520a2bb639f3d4a91",
+  "prompts": {},
+  "humans": {
+    "h_4c386397e672f4": {
+      "author": "Diego Sampaio <chinello@gmail.com>"
+    }
+  },
+  "sessions": {
+    "s_35ff60f1f47ba0": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "bbf28915-4ee9-4f6e-9a30-affdb5395610",
+        "model": "claude-opus-5-5"
+      },
+      "human_author": "Diego Sampaio <chinello@gmail.com>"
+    }
+  }
+}

@@ -1,0 +1,40 @@
+.gitignore
+  s_91444e14c3c12c::t_8138efcf8377ba 19
+ee/packages/xmpp-server/tests/fixtures/a.localhost.cert.pem
+  s_bad883804e82a0::t_3cf0818910933b 1-20
+ee/packages/xmpp-server/tests/fixtures/a.localhost.key.pem
+  s_bad883804e82a0::t_92c3ced60ce75e 1-28
+ee/packages/xmpp-server/tests/fixtures/b.localhost.cert.pem
+  s_bad883804e82a0::t_2f54475fac9bf6 1-20
+ee/packages/xmpp-server/tests/fixtures/b.localhost.key.pem
+  s_bad883804e82a0::t_0a715adc9699af 1-28
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.4",
+  "base_commit_sha": "c04ca99f7a0884f658e36601d84f39a8e7e48c5c",
+  "prompts": {},
+  "humans": {
+    "h_4c386397e672f4": {
+      "author": "Diego Sampaio <chinello@gmail.com>"
+    }
+  },
+  "sessions": {
+    "s_91444e14c3c12c": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "0605de84-4bb8-4e54-9fe6-3a5bdde4dfcc",
+        "model": "claude-opus-5-5"
+      },
+      "human_author": "Diego Sampaio <chinello@gmail.com>"
+    },
+    "s_bad883804e82a0": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "a354fdcd-e60e-4bc9-bcd7-4f077c472420",
+        "model": "unknown"
+      },
+      "human_author": "Diego Sampaio <chinello@gmail.com>"
+    }
+  }
+}

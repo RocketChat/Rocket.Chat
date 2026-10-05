@@ -1,0 +1,38 @@
+ee/packages/xmpp-server/docs/templates/intent.md
+  s_676495b213565f::t_da200938aae463 1-26
+ee/packages/xmpp-server/docs/plans/README.md
+  s_676495b213565f::t_bbe27ac5cec041 1
+ee/packages/xmpp-server/docs/templates/plan.md
+  s_676495b213565f::t_22de4711cc2b3e 1-25
+ee/packages/xmpp-server/docs/README.md
+  s_676495b213565f::t_661d4be0557843 1-98
+ee/packages/xmpp-server/docs/templates/adr.md
+  s_676495b213565f::t_7d1459a4821b78 1-22
+ee/packages/xmpp-server/docs/intents/README.md
+  s_676495b213565f::t_3281332d20681c 1
+ee/packages/xmpp-server/CLAUDE.md
+  s_676495b213565f::t_477e8ca4994dc8 1-51
+ee/packages/xmpp-server/docs/templates/spec.md
+  s_676495b213565f::t_ce9ed3355f3aef 1-56
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.4",
+  "base_commit_sha": "041d50e85d21e9bad6c110e376b2a1e99dfcb096",
+  "prompts": {},
+  "humans": {
+    "h_4c386397e672f4": {
+      "author": "Diego Sampaio <chinello@gmail.com>"
+    }
+  },
+  "sessions": {
+    "s_676495b213565f": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "46ea97c3-903d-414e-8881-8ae44ea9dd77",
+        "model": "claude-fable-5-1"
+      },
+      "human_author": "Diego Sampaio <chinello@gmail.com>"
+    }
+  }
+}

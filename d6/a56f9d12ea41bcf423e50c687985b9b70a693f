@@ -1,0 +1,27 @@
+ee/packages/xmpp-server/docs/README.md
+  s_b63eca7aac6d96::t_8a524c7321f500 253
+  s_b63eca7aac6d96::t_328eb01b74a594 276,278
+  s_b63eca7aac6d96::t_ebf0f1a2a3fe84 13-54,74,76-78,80-150,153,159-161,164-166,171,192-234,246-252,254-255,264-275,277,279-286,288-295,297,299-305
+  s_b63eca7aac6d96::t_e35b89bd0a90a2 151-152,154-158,162-163,167-170,172-174
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.4",
+  "base_commit_sha": "d6a56f9d12ea41bcf423e50c687985b9b70a693f",
+  "prompts": {},
+  "humans": {
+    "h_4c386397e672f4": {
+      "author": "Diego Sampaio <chinello@gmail.com>"
+    }
+  },
+  "sessions": {
+    "s_b63eca7aac6d96": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "329ccefa-21e0-486e-ad7b-f9fb57bf8e11",
+        "model": "claude-opus-5-5"
+      },
+      "human_author": "Diego Sampaio <chinello@gmail.com>"
+    }
+  }
+}

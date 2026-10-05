@@ -1,0 +1,34 @@
+ee/packages/xmpp-server/.claude/skills/xmpp-spec/SKILL.md
+  s_e3be77173bfc57::t_16e35498466345 1-72
+ee/packages/xmpp-server/docs/examples.md
+  s_e3be77173bfc57::t_2cfc83805b1cf0 1-219
+ee/packages/xmpp-server/.claude/skills/xmpp-spec/references/requirement-checklist.md
+  s_e3be77173bfc57::t_d076864a439009 1-46
+ee/packages/xmpp-server/.claude/skills/xmpp-intent/SKILL.md
+  s_e3be77173bfc57::t_724295171010bf 1-61
+ee/packages/xmpp-server/.claude/skills/xmpp-plan/SKILL.md
+  s_e3be77173bfc57::t_56eddfc38c0e2c 1-61
+ee/packages/xmpp-server/CLAUDE.md
+  s_e3be77173bfc57::t_c5384e425e6dba 25-26,55-56
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.4",
+  "base_commit_sha": "97b0daaf4a45730785d7803578336e8f38e4f9e8",
+  "prompts": {},
+  "humans": {
+    "h_4c386397e672f4": {
+      "author": "Diego Sampaio <chinello@gmail.com>"
+    }
+  },
+  "sessions": {
+    "s_e3be77173bfc57": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "260790bd-e0fd-4a75-a152-6a1ada9fde97",
+        "model": "claude-fable-5-1"
+      },
+      "human_author": "Diego Sampaio <chinello@gmail.com>"
+    }
+  }
+}
