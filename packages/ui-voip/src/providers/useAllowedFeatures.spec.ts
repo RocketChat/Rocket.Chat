@@ -20,7 +20,7 @@ describe('useAllowedFeatures', () => {
 
 		renderHook(() => useAllowedFeatures(['screen-share']));
 
-		expect(usePermissionMock).toHaveBeenCalledWith('allow-screenShare-voice-calls');
+		expect(usePermissionMock).toHaveBeenCalledWith('allow-screen-share-voice-calls');
 	});
 
 	it('keeps non screen-share features regardless of the permission', () => {
