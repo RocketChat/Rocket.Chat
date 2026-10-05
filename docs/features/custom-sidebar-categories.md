@@ -27,7 +27,7 @@ export interface ISidebarCategory {
     default?: boolean;         // true for system-group entries managed by the platform
     showUnreads?: boolean;     // when collapsed, keep listing unread rooms (default: false)
     keepUnreadsOnTop?: boolean; // when expanded, sort unread rooms to the top (default: false)
-    activityFilterHours?: number; // accepted by the server; the client keeps the filter in localStorage for now
+    activityFilterHours?: number; // when expanded, hide read rooms with no activity in this many hours (default: none)
 }
 
 // A whole number of hours, 1 to SIDEBAR_CATEGORY_ACTIVITY_FILTER_MAX_HOURS (24 × 365). Absent means "All".
@@ -53,7 +53,7 @@ category a room belongs to; the category record only carries display metadata an
 The preference `sidebarCategories: ISidebarCategory[]` is the **single source of truth** for both the
 ordered list of all visible groups and the metadata of custom categories. It contains entries for custom
 categories *and* for any system group whose metadata has been touched (show-unreads, keep-unreads-on-top,
-or position).
+activity filter, or position).
 
 **Invariant enforced on every write:** all five dynamic groups (`Incoming_Calls`, `Incoming_Livechats`,
 `Open_Livechats`, `On_Hold_Chats`, `Unread`) are always stored first, in the order prescribed by
@@ -144,19 +144,11 @@ calls `withDynamicFirst` before persisting when it creates one.
 
 ### Activity filter — `useActivityFilter`
 
-A per-group setting, for custom categories and static system groups alike: a whole number of hours.
-
-**Where it lives (for now): this browser's `localStorage`**, not the user's preferences —
-`useLocalStorage('sidebarActivityFilters')`, a map of group id → hours, so the UI runs against servers that do
-not accept `activityFilterHours` yet. Choosing "All" removes the group's key. Consequences: the filter is per
-browser (not synced across devices or sessions), shared by every account signed in to the same browser, and a
-deleted category's entry lingers harmlessly. Values that are not a positive whole number are ignored.
-
-**The server is ready for it already**: `ISidebarCategory.activityFilterHours` exists, the
+A per-group setting, for custom categories and static system groups alike, stored as `activityFilterHours` on
+the group's `sidebarCategories` entry through the same `upsertGroupEntry`. Choosing "All" writes
+`activityFilterHours: undefined`, which the JSON payload drops, so the field disappears from the entry. The
 `users.setPreferences` schema accepts an integer from 1 to `SIDEBAR_CATEGORY_ACTIVITY_FILTER_MAX_HOURS`, and
-`validateSidebarCategories` enforces the same range. Moving the setting onto `sidebarCategories` is a
-client-only change in `useActivityFilter` — write through `useUpsertGroupEntry` and read from
-`useUserSidebarCategories` — once the servers it must run against include that validation.
+`validateSidebarCategories` enforces the same range on the server.
 
 What it does, in `makeGroup` (`useRoomList.ts`):
 
