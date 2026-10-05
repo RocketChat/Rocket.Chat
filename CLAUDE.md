@@ -52,4 +52,5 @@ Read the doc that matches the task instead of scanning `docs/` wholesale.
 
 - [docs/adr/](docs/adr/) — architecture decision records
 - [docs/features/](docs/features/) — per-feature notes
+  - [uikit/](docs/features/uikit/README.md) — UiKit blocks, surfaces, rendering, interactions; generated reference and support matrix (`yarn workspace @rocket.chat/ui-kit docs`)
 - [docs/proposals/](docs/proposals/) — design proposals, not yet implemented

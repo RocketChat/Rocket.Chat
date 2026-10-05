@@ -23,10 +23,12 @@
 	],
 	"scripts": {
 		"build": "ts-patch install && typia patch && rm -rf dist && tsc -p tsconfig.build.json",
+		"docs": "node scripts/generate-docs.mts",
+		"docs:check": "node scripts/generate-docs.mts --check",
 		"lint": "eslint .",
 		"test": "jest",
 		"testunit": "jest",
-		"typecheck": "tsc --noEmit"
+		"typecheck": "tsc --noEmit && tsc -p scripts --noEmit"
 	},
 	"dependencies": {
 		"typia": "patch:typia@npm%3A9.7.2#~/.yarn/patches/typia-npm-9.7.2-5c5d9c80b4.patch"

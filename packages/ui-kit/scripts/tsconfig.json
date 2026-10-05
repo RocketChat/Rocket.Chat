@@ -1,0 +1,12 @@
+{
+	"extends": "@rocket.chat/tsconfig/base.json",
+	"compilerOptions": {
+		"target": "es2024",
+		"module": "nodenext",
+		"moduleResolution": "nodenext",
+		"lib": ["ES2023"],
+		"types": ["node"],
+		"noEmit": true
+	},
+	"include": ["./*.mts"]
+}

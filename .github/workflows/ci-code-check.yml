@@ -116,6 +116,10 @@ jobs:
         if: matrix.check == 'lint'
         run: yarn lint
 
+      - name: UiKit docs up to date
+        if: matrix.check == 'lint'
+        run: yarn workspace @rocket.chat/ui-kit docs:check
+
       - name: Save ESLint cache
         if: matrix.check == 'lint' && github.ref == 'refs/heads/develop' && github.event_name == 'push'
         uses: actions/cache/save@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
