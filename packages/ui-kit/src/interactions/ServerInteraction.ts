@@ -22,6 +22,8 @@ type CloseModalServerInteraction = {
 	type: 'modal.close';
 	triggerId: string;
 	appId: string;
+	viewId?: ModalView['id'];
+	view?: ModalView;
 };
 
 type OpenBannerServerInteraction = {
