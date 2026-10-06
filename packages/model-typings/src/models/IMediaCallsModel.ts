@@ -47,7 +47,7 @@ export interface IMediaCallsModel extends IBaseModel<IMediaCall> {
 		options?: O,
 	): FindCursor<DocumentWithProjection<T, O>>;
 	hasUnfinishedCalls(): Promise<boolean>;
-	hasUnfinishedCallsByUid(uid: IUser['_id'], exceptCallId?: string): Promise<boolean>;
+	hasUnfinishedCallsByUid(uid: IUser['_id'], exceptCallIds?: string | string[]): Promise<boolean>;
 	isUserInCallIds(uid: IUser['_id'], callIds: string[]): Promise<boolean>;
 	findAllPendingEscalationByUidAndCallIds<
 		T extends Document = IMediaCall,

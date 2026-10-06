@@ -25,6 +25,7 @@ import type { IMediaCallAgent } from '../../definition/IMediaCallAgent';
 import type { SignalProcessingOptions } from '../../definition/common';
 import { logger } from '../../logger';
 import { mediaCallDirector } from '../../server/CallDirector';
+import { getCallRoleForUser } from '../../server/getCallRoleForUser';
 import { getMediaCallServer } from '../../server/injection';
 import { stripSensitiveDataFromSignal } from '../../server/stripSensitiveData';
 
@@ -133,6 +134,8 @@ export class UserActorSignalProcessor {
 				return this.processCallTransfer(signal.to);
 			case 'attended-transfer':
 				return this.processAttendedTransfer(signal.to, signal.requestedCallId);
+			case 'complete-attended-transfer':
+				return this.processCompleteAttendedTransfer();
 			case 'dtmf':
 				return this.processDTMF(signal.dtmf, signal.duration);
 			case 'mute':
@@ -332,8 +335,55 @@ export class UserActorSignalProcessor {
 			requestedBy: self,
 			parentCallId: this.call._id,
 			attended: true,
+			// Both legs of an attended transfer must be of the same type for them to be bridged together
+			requiredCalleeType: this.call[this.role === 'caller' ? 'callee' : 'caller'].type,
 			features: this.call.features as CallFeature[],
 		});
+	}
+
+	private async processCompleteAttendedTransfer(): Promise<void> {
+		logger.debug({ msg: 'UserActorSignalProcessor.processCompleteAttendedTransfer' });
+		const { parentCallId } = this.call;
+		if (!this.call.attended || !parentCallId || this.role !== 'caller' || !isBusyState(this.call.state)) {
+			return;
+		}
+
+		const heldCall = await MediaCalls.findOneById(parentCallId);
+		if (!heldCall || heldCall.ended || !isBusyState(heldCall.state)) {
+			return;
+		}
+
+		const heldRole = getCallRoleForUser(heldCall, this.actor.id);
+		if (!heldRole || !heldCall[heldRole].contractId) {
+			return;
+		}
+
+		const heldActor = heldCall[heldRole === 'caller' ? 'callee' : 'caller'];
+		const consultedActor = this.call.callee;
+
+		// Bridging two sip legs is not supported yet
+		if (heldActor.type !== 'user' || consultedActor.type !== 'user' || !heldActor.contractId) {
+			return;
+		}
+
+		const self: MediaCallSignedContact = {
+			...this.agent.getMyCallActor(this.call),
+			...this.actor,
+		};
+
+		// The actor on the held call calls the consulted one; both stay with the user until that call is active
+		await getMediaCallServer()
+			.requestCall({
+				caller: heldActor as MediaCallSignedContact,
+				callee: consultedActor,
+				requestedService: 'webrtc',
+				requestedBy: self,
+				parentCallId: heldCall._id,
+				replacedCallIds: [heldCall._id, this.call._id],
+				requiredCalleeType: 'user',
+				features: this.call.features as CallFeature[],
+			})
+			.catch((err) => logger.error({ msg: 'Failed to bridge the calls of an attended transfer', err, callId: this.call._id }));
 	}
 
 	private async processDTMF(dtmf: string, duration?: number): Promise<void> {

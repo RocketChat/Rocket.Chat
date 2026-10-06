@@ -12,7 +12,6 @@ Scope:
 - Outgoing calls only. A user with any unfinished call, held or not, is busy for incoming calls.
 - One session per user. The consultation call is requested from the session holding the first call.
 - The UI shows one call, the "most active" one. Showing held calls is later work.
-- Completing the transfer (connecting the held party to the consulted one) is **not implemented yet**.
 
 ## How it works
 
@@ -46,6 +45,34 @@ party is handed over and the call ends.
 - A refused request sends `rejected-call-request` with the `requestedCallId`, which ends only the
   consultation call on the client, as for any outgoing call.
 
+### Completing the transfer
+
+While the consultation call and the held call are both in progress, the widget shows a **Complete
+transfer** button. It sends the `complete-attended-transfer` signal on the consultation call.
+
+The consultation call is always placed to an actor of the same type as the held call's other party
+(`requiredCalleeType`), so the two legs are either both internal or both SIP.
+
+**Both legs internal.** `CallSignalProcessor.processCompleteAttendedTransfer` creates a new call from the
+actor on the held call to the consulted actor. The call:
+
+- has `parentCallId` set to the held call, so the caller's `new` signal carries `replacingCallId` and its
+  client treats the call as an outbound call it requested, as in a blind transfer;
+- stores `replacedCallIds` (the held call and the consultation call), which let both users be in the
+  new call while still in the old ones;
+- reaches the consulted actor with the `replaces-call` flag, so their client accepts it right away,
+  never reports it as ringing, and no push notification is sent;
+- ends the replaced calls once it becomes active (`MediaCallDirector.hangupReplacedCalls`), so both
+  actors keep talking to the transferring user until they are connected to each other.
+
+Both clients share the session's input track, so the microphone is not requested again.
+
+If the new call fails, the replaced calls are left alone and no `rejected-call-request` is sent for
+them.
+
+**Both legs SIP.** Not implemented yet. It is meant to send a REFER with `Replaces` on the held call's
+dialog.
+
 ### Client (`@rocket.chat/media-signaling`, `ui-voip`)
 
 - `getMainCall` prefers a busy call that is not held, then ringing, then pending, then a held busy
@@ -53,6 +80,8 @@ party is handed over and the call ends.
   consultation call becomes the main call as soon as it exists, and the held call returns to being
   the main call when the consultation ends.
 - Controls still act on `instance.getState()`, so they always act on the main call.
+- A **Switch call** button shows while two calls are in progress. `swapCalls` holds the main call and
+  resumes the other one.
 
 ## Known gaps
 
