@@ -44,7 +44,7 @@ The app returns one of these from its handler, usually built with `UIKitInteract
 | --- | --- |
 | `modal.open` | Opens a modal. |
 | `modal.update` | Replaces the open modal's view (matched by `view.id`). |
-| `modal.close` | **Nothing.** The handler is empty. A modal closes only when a `viewSubmit` or `viewClosed` response is anything other than an update or `errors`. |
+| `modal.close` | Closes the modal named by `view.id` (what apps-engine sends) or `viewId` (what core apps send). With neither, nothing happens. |
 | `banner.open` | Opens a banner. The view fields are spread at the top level of the payload instead of under `view`. |
 | `banner.update` / `banner.close` | Replaces or disposes the banner (matched by `viewId`). |
 | `contextual_bar.open` | Stores the view and navigates the room to `tab=app&context=<view.id>`. |
