@@ -1,0 +1,155 @@
+---
+status: partial
+standards: [XEP-0045, XEP-0249]
+adrs: [0006, 0007, 0008, 0009, 0011, 0012, 0015]
+code:
+  [
+    src/muc/RemoteMucSession.ts,
+    src/muc/MucService.ts,
+    src/muc/stanzas.ts,
+    src/jid/normalize.ts,
+    src/XMPPServer.ts,
+    src/service/XMPPServerService.ts,
+    src/service/helpers/remoteRoom.ts,
+    src/service/helpers/xmppUser.ts,
+    apps/meteor/ee/server/hooks/xmpp/index.ts,
+  ]
+tests:
+  [
+    src/muc/RemoteMucSession.spec.ts,
+    src/muc/MucService.spec.ts,
+    src/muc/stanzas.spec.ts,
+    src/jid/normalize.spec.ts,
+    src/service/helpers/remoteRoom.spec.ts,
+    tests/integration/muc.spec.ts,
+    tests/end-to-end/remote-muc.spec.ts,
+  ]
+---
+
+# Spec: Remote rooms
+
+## Summary
+
+A room hosted on another XMPP server is mirrored into Rocket.Chat as a channel after a
+remote user invites a local user. Each local member of the mirrored channel is joined into
+the remote room as their own occupant, and messages flow both ways.
+
+## Motivation
+
+The other half of group chat: Rocket.Chat users taking part in rooms the rest of the XMPP
+network already uses. Entry is by invitation only ([ADR 0008](../adr/0008-only-dedicated-xmpp-rooms-are-exposed.md)).
+
+## Behaviour
+
+**Entry**
+
+- **R1** A MUC invitation addressed to a local user, mediated (XEP-0045 §7.8.2) or direct
+  (XEP-0249), creates the inviter's user record and, when no room mirrors that MUC yet, a
+  private group (`t: 'p'`) with the invitee as its first member, whatever the remote room's
+  configuration, so only invitees and the members they add can see it. The room JID is
+  taken as a bare JID with its localpart lowercased and its domain normalized
+  ([ADR 0011](../adr/0011-domain-normalization-is-idna-and-lowercase.md)); an invitation
+  whose room JID names no room is dropped. The group
+  ([ADR 0008](../adr/0008-only-dedicated-xmpp-rooms-are-exposed.md)):
+  - is shown as `<room localpart>:<room domain>` (`fname`, the form Matrix rooms use), with
+    the globe icon;
+  - is named the room JID with every character outside `[0-9a-zA-Z-_.]` replaced by `_`,
+    followed by `-` and the first 8 hex digits of the SHA-256 of the room JID;
+  - is stamped `xmppFederation: { role: 'remote-muc', muc: <room JID>, origin: <room domain> }`.
+
+  An invitation into a MUC that is already mirrored, in any spelling of its JID, adds the
+  invitee as a member of the existing channel.
+- **R2** The invitee is then joined into the remote room with their own session: occupant
+  JID `<username>@<domain>/rocketchat`, nick `<username>`
+  ([ADR 0009](../adr/0009-one-remote-muc-session-per-local-member.md)).
+- **R3** Every local member added to the mirrored channel later is joined the same way; a
+  member who leaves or is removed leaves the remote room.
+- **R4** On service start every member of every mirrored channel is rejoined.
+- **R5** A join the room refuses (an error presence while joining) drops the session and
+  emits `muc.remoteJoinFailed` with the error condition. Nothing is retried.
+
+**Messages**
+
+- **R6** A `groupchat` message with a body from the room, from a nick other than the
+  session's own, is stored in the mirrored channel once, authored by a user record for that
+  occupant, renamed to the nick ([addressing R10](addressing.md),
+  [ADR 0015](../adr/0015-remote-room-occupants-are-the-user-their-disclosed-jid-names.md)):
+  - when the room disclosed the real JID of the occupant now holding the nick to any of our
+    sessions in the room, the record of that bare JID, the same one their DMs and hosted
+    rooms use ([addressing R9](addressing.md));
+  - otherwise, and when the disclosed JID is on our own domain or MUC domain or has no
+    localpart, a record keyed `<nick>#<room JID>`, which belongs to that room alone. A
+    semi-anonymous room, which shows real JIDs only to moderators, so yields one record per
+    room for the same person.
+- **R7** The id used for storage and deduplication is the room's XEP-0359 `<stanza-id/>`
+  when present, otherwise the stanza id ([message-deduplication](message-deduplication.md)).
+- **R8** A message saved by a local member is sent to the room as a `groupchat` from their
+  occupant JID with the message `_id` as id, after joining when the member has no session.
+  Edits are sent as corrections ([message-corrections](message-corrections.md)).
+- **R9** The room's reflection of our own message is not stored again: the session skips its
+  own nick, and the service skips a message whose replace id or sender-given id is a stored
+  Rocket.Chat message id ([message-deduplication R3](message-deduplication.md)).
+- **R10** The discussion history the room replays on join is stored like any other message
+  and deduplicated by R7, which is how messages sent while the service was down are caught
+  up. In decode-only mode no history is requested.
+
+**Occupants**
+
+- **R11** The session tracks the room's occupants from their presence, with the real JID
+  when the room includes one, forgets an occupant on their `unavailable` presence, and emits
+  `muc.remoteJoined` (with the roster), `muc.remoteOccupantJoined` and
+  `muc.remoteOccupantLeft`. These are counted by the service and have no effect on the
+  mirrored channel's membership.
+
+## Design
+
+`MucService.handlePossibleInvite` parses both invitation forms for stanzas addressed to a
+local user. `XMPPServer` keeps the session map and routes any message or presence whose
+`from` is a room we hold a session for to that `RemoteMucSession`, before anything else.
+The session is the client-side state machine (`joining`, `joined`, `leaving`, `closed`) and
+keeps the occupant roster by nick. When a session reports a message, `XMPPServer` looks the
+nick up in every session it holds for that room, so a moderator session's view serves the
+others, and puts the normalized bare JID in `muc.remoteMessage` as `fromJid`, leaving out
+JIDs on its own domains (R6). The service creates the shadow room on invite, joins and
+leaves on membership hooks, rejoins on start, and persists `muc.remoteMessage`, upserting
+the author from `fromJid` or the per-room key.
+
+## Out of scope
+
+- Joining or searching a remote room from the Rocket.Chat UI; bookmarks (XEP-0048, XEP-0402).
+- Showing remote occupants as members of the mirrored channel (R11 counts only).
+- Affiliations, roles, moderation, subject changes, room configuration on the remote room.
+- Nick conflicts: the nick is the username; a conflict is a failed join (R5).
+- Linking a person across semi-anonymous rooms. Nothing the room sends a participant
+  identifies them outside that room ([ADR 0015](../adr/0015-remote-room-occupants-are-the-user-their-disclosed-jid-names.md)).
+- The XEP-0033 `ofrom` address a non-anonymous room MAY put on replayed history (XEP-0045,
+  discussion history). A live message can carry the same element from its sender, so it is
+  not trusted; history from an occupant who has left gets the per-room record.
+- Reconnecting a session the room dropped: `muc.remoteSessionLost` is declared but never
+  emitted, and `RemoteMucSession.markStale` is never called.
+- Direct invitations sent by Rocket.Chat; the hosted-room side sends mediated invites only.
+- A channel-name validation setting stricter than R1's character set: the channel cannot
+  be created and the invitation is dropped.
+- Full RFC 7622 PRECIS for room localparts: R1 lowercases, nothing more.
+- Unescaping XEP-0106 localparts (`team\20room`) for the displayed name.
+
+## Known defects
+
+Defects that show in remote rooms but are owned elsewhere:
+
+- messages without any id: [message-deduplication D3](message-deduplication.md#d3-copies-without-any-id-are-never-deduplicated)
+
+## Open questions
+
+- Should a remote room that is public and open (disco#info `muc_public` and `muc_open`) be
+  mirrored as a public channel, the way Matrix maps join rules, following later
+  configuration changes (status 104)?
+- Should remote occupants become members of the mirrored channel, so the member list is
+  truthful, or stay as authors only?
+- When the remote room drops a session (room destroyed, kick, server restart), should the
+  service rejoin, and after how long?
+
+## References
+
+- XEP-0045 §4.2 (room types), §7.2 (entering), §7.4 (exiting), §7.8 (invitations); XEP-0249; XEP-0359
+- [ADR 0009](../adr/0009-one-remote-muc-session-per-local-member.md)

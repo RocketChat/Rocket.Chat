@@ -1,8 +1,15 @@
 import { AppEvents, Apps } from '@rocket.chat/apps';
 import { AppsEngineException } from '@rocket.chat/apps-engine/definition/exceptions';
-import { FederationMatrix, Message, Room, Team } from '@rocket.chat/core-services';
+import { FederationMatrix, Message, Room, Team, XMPPServer } from '@rocket.chat/core-services';
 import type { ICreateRoomParams, ISubscriptionExtraData } from '@rocket.chat/core-services';
-import { type ICreatedRoom, type IUser, type IRoom, type RoomType, isUserNativeFederated } from '@rocket.chat/core-typings';
+import {
+	type ICreatedRoom,
+	type IUser,
+	type IRoom,
+	type RoomType,
+	isRoomXMPPHostedMuc,
+	isUserNativeFederated,
+} from '@rocket.chat/core-typings';
 import { Rooms, Subscriptions, Users } from '@rocket.chat/models';
 import { Meteor } from 'meteor/meteor';
 
@@ -79,6 +86,14 @@ async function createUsersSubscriptions({
 		}
 
 		return;
+	}
+
+	// Hosted XMPP MUCs take remote members as bare JIDs, which have no local user record yet
+	if (isRoomXMPPHostedMuc(room)) {
+		const jids = members.filter((member) => member.includes('@') && !member.includes(':'));
+		if (jids.length) {
+			await XMPPServer.ensureXMPPUsersExistLocally(jids);
+		}
 	}
 
 	const subs = [];

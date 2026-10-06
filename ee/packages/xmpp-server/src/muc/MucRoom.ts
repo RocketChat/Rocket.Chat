@@ -1,0 +1,246 @@
+import type Element from 'ltx/lib/Element';
+
+import type { MucJoinDecision } from '../config';
+import {
+	buildGroupchatMessage,
+	buildMediatedInvite,
+	buildOccupantPresence,
+	buildSubjectMessage,
+	parseJoinPresence,
+	splitOccupantJid,
+} from './stanzas';
+import type { MucRole } from './stanzas';
+import { parseReplaceId } from '../xml/correction';
+import { buildStanzaError } from '../xml/errors';
+
+export type MucOccupant = {
+	nick: string;
+	/** Real JID of the occupant. */
+	realJid: string;
+	role: MucRole;
+	/** Local (Rocket.Chat) occupants receive copies as events, not stanzas. */
+	isLocal: boolean;
+};
+
+type BroadcastMessage = { fromNick: string; body: string; id?: string; replaceId?: string };
+
+export type MucRoomEvents = {
+	occupantJoined: (occupant: MucOccupant) => void;
+	occupantLeft: (occupant: MucOccupant, reason: 'left' | 'kicked') => void;
+	message: (params: { fromNick: string; fromJid: string; body: string; id?: string; replaceId?: string; raw: Element }) => void;
+};
+
+export type MucRoomDeps = {
+	/** Full room JID: `<localpart>@<mucSubdomain>.<domain>`. */
+	roomJid: string;
+	/** Mirrors the Rocket.Chat room topic; sent to close every join. */
+	subject?: string;
+	send: (stanza: Element) => void;
+	emit: <K extends keyof MucRoomEvents>(event: K, ...args: Parameters<MucRoomEvents[K]>) => void;
+	authorizeJoin?: (params: { roomId: string; occupantJid: string; nick: string }) => Promise<MucJoinDecision>;
+};
+
+/**
+ * Hosted MUC room state machine (XEP-0045 subset). Tracks occupants, resolves
+ * nick conflicts, broadcasts presence and messages, and reflects groupchat
+ * messages. Rocket.Chat members are registered as "local" virtual occupants:
+ * visible in the roster, but their inbound copies are delivered via events.
+ */
+export class MucRoom {
+	private readonly occupants = new Map<string, MucOccupant>();
+
+	private subject: string;
+
+	constructor(private readonly deps: MucRoomDeps) {
+		this.subject = deps.subject ?? '';
+	}
+
+	get roomJid(): string {
+		return this.deps.roomJid;
+	}
+
+	get currentSubject(): string {
+		return this.subject;
+	}
+
+	setSubject(subject: string): void {
+		this.subject = subject;
+	}
+
+	get roomId(): string {
+		return this.deps.roomJid.split('@')[0];
+	}
+
+	listOccupants(): MucOccupant[] {
+		return [...this.occupants.values()];
+	}
+
+	/** Occupants are keyed by nick; removals coming from Rocket.Chat only know the JID. */
+	findOccupantByJid(bareJid: string): MucOccupant | undefined {
+		return [...this.occupants.values()].find((occupant) => occupant.realJid.split('/')[0] === bareJid);
+	}
+
+	/** Registers a Rocket.Chat member as a virtual occupant (roster-visible, event-delivered). */
+	addLocalOccupant(params: { nick: string; realJid: string; role?: MucRole }): void {
+		const occupant: MucOccupant = { nick: params.nick, realJid: params.realJid, role: params.role ?? 'participant', isLocal: true };
+		this.occupants.set(params.nick, occupant);
+		this.broadcastPresence(occupant);
+	}
+
+	/** Sends a mediated invitation (XEP-0045 §7.8.2) on behalf of a room member. */
+	invite(params: { inviteeJid: string; inviterJid: string; reason?: string }): void {
+		this.deps.send(
+			buildMediatedInvite({
+				roomJid: this.roomJid,
+				inviterJid: params.inviterJid,
+				to: params.inviteeJid,
+				reason: params.reason,
+			}),
+		);
+	}
+
+	removeLocalOccupant(nick: string): void {
+		const occupant = this.occupants.get(nick);
+		if (occupant) {
+			this.occupants.delete(nick);
+			this.broadcastPresence(occupant, 'unavailable');
+		}
+	}
+
+	async handleJoin(presence: Element): Promise<void> {
+		const parsed = parseJoinPresence(presence);
+		const realJid = presence.attrs.from;
+		if (!parsed || !realJid) {
+			return;
+		}
+
+		const existing = this.occupants.get(parsed.nick);
+		if (existing && existing.realJid !== realJid) {
+			// Nick already taken by a different JID → 409 conflict
+			this.deps.send(buildStanzaError(presence, 'conflict', 'cancel'));
+			return;
+		}
+
+		let role: MucRole = 'participant';
+		if (this.deps.authorizeJoin) {
+			const decision = await this.deps.authorizeJoin({ roomId: this.roomId, occupantJid: realJid, nick: parsed.nick });
+			if (!decision.allow) {
+				this.deps.send(buildStanzaError(presence, decision.reason === 'banned' ? 'forbidden' : 'registration-required', 'auth'));
+				return;
+			}
+			role = decision.role ?? role;
+		}
+
+		const occupant: MucOccupant = { nick: parsed.nick, realJid, role, isLocal: false };
+
+		// Send the current roster to the newcomer, then announce the newcomer to everyone
+		for (const other of this.occupants.values()) {
+			this.deps.send(
+				buildOccupantPresence({ roomJid: this.roomJid, nick: other.nick, to: realJid, realJid: other.realJid, role: other.role }),
+			);
+		}
+
+		this.occupants.set(parsed.nick, occupant);
+		this.broadcastPresence(occupant);
+
+		// Self-presence, status 110. Never 201: the room is always created on the Rocket.Chat
+		// side before anyone can join, and 201 would send clients into the room-configuration flow.
+		this.deps.send(
+			buildOccupantPresence({
+				roomJid: this.roomJid,
+				nick: occupant.nick,
+				to: realJid,
+				realJid,
+				role: occupant.role,
+				statusCodes: [110],
+			}),
+		);
+
+		this.deps.send(buildSubjectMessage({ roomJid: this.roomJid, to: realJid, subject: this.subject }));
+
+		this.deps.emit('occupantJoined', occupant);
+	}
+
+	handleLeave(presence: Element): void {
+		const [, nick] = splitOccupantJid(presence.attrs.to ?? '');
+		const occupant = nick && this.occupants.get(nick);
+		if (!occupant || occupant.realJid !== presence.attrs.from) {
+			return;
+		}
+		this.occupants.delete(occupant.nick);
+		this.broadcastPresence(occupant, 'unavailable');
+		this.deps.emit('occupantLeft', occupant, 'left');
+	}
+
+	handleGroupchatMessage(message: Element): void {
+		// A participant addresses the room with their real JID as `from`; identify the occupant by it.
+		const from = message.attrs.from ?? '';
+		const body = message.getChildText('body');
+		const occupant = [...this.occupants.values()].find((o) => o.realJid === from);
+		if (!occupant || !body) {
+			return;
+		}
+
+		this.broadcastMessage({ fromNick: occupant.nick, body, id: message.attrs.id });
+		this.deps.emit('message', {
+			fromNick: occupant.nick,
+			fromJid: occupant.realJid,
+			body,
+			id: message.attrs.id,
+			replaceId: parseReplaceId(message),
+			raw: message,
+		});
+	}
+
+	/** Broadcasts a message authored on the Rocket.Chat side into the room. */
+	broadcastFromLocal(message: BroadcastMessage): void {
+		this.broadcastMessage(message);
+	}
+
+	kick(nick: string, _reason?: string): void {
+		const occupant = this.occupants.get(nick);
+		if (!occupant) {
+			return;
+		}
+		this.occupants.delete(nick);
+		// Status 307: the occupant was kicked
+		for (const recipient of this.remoteOccupants()) {
+			this.deps.send(
+				buildOccupantPresence({
+					roomJid: this.roomJid,
+					nick: occupant.nick,
+					to: recipient.realJid,
+					role: occupant.role,
+					type: 'unavailable',
+					statusCodes: [307],
+				}),
+			);
+		}
+		this.deps.emit('occupantLeft', occupant, 'kicked');
+	}
+
+	private broadcastPresence(occupant: MucOccupant, type?: 'unavailable'): void {
+		for (const recipient of this.remoteOccupants()) {
+			this.deps.send(
+				buildOccupantPresence({
+					roomJid: this.roomJid,
+					nick: occupant.nick,
+					to: recipient.realJid,
+					realJid: occupant.realJid,
+					role: occupant.role,
+					type,
+				}),
+			);
+		}
+	}
+
+	private broadcastMessage(message: BroadcastMessage): void {
+		for (const recipient of this.remoteOccupants()) {
+			this.deps.send(buildGroupchatMessage({ ...message, roomJid: this.roomJid, to: recipient.realJid }));
+		}
+	}
+
+	private remoteOccupants(): MucOccupant[] {
+		return [...this.occupants.values()].filter((occupant) => !occupant.isLocal);
+	}
+}

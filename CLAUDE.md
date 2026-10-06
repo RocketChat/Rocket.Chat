@@ -57,6 +57,7 @@ Read the doc that matches the task instead of scanning `docs/` wholesale.
 ### Other
 
 - [docs/adr/](docs/adr/) — architecture decision records
+- [ee/packages/xmpp-server/docs/](ee/packages/xmpp-server/docs/README.md) — the XMPP server is developed spec-first; its specs, ADRs, plans and compliance matrix live in the package, not here
 - [docs/features/](docs/features/) — per-feature notes
   - [uikit/](docs/features/uikit/README.md) — UiKit blocks, surfaces, rendering, interactions; field reference and per-surface support matrix
 - [docs/proposals/](docs/proposals/) — design proposals, not yet implemented
