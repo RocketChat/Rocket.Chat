@@ -41,7 +41,7 @@ const PhoneNumberFieldList = <T extends { phones?: IUserPhoneNumber[] }>({ contr
 			<legend {...visuallyHiddenProps}>{t('Phone_Numbers')}</legend>
 			<Box is='ul' id={listId} display='flex' flexDirection='column' gap={16}>
 				{fields.map((field, index) => (
-					<PhoneNumberFieldRow key={field.id} control={phonesControl} index={index} onRemove={handleRemove} />
+					<PhoneNumberFieldRow key={field.id} control={phonesControl} index={index} onRemove={handleRemove} className={className} />
 				))}
 			</Box>
 			<Box>
