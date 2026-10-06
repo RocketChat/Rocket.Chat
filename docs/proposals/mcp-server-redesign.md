@@ -180,6 +180,8 @@ The MCP endpoint is behind an alpha alert today (`MCP_Alpha_Alert`), so step 5 c
 
 ## Sources
 
+The raw research output is in [mcp-server-redesign-research/](mcp-server-redesign-research/): [Mattermost](mcp-server-redesign-research/mattermost.md), [other chat servers](mcp-server-redesign-research/other-chat-servers.md), and [the current Rocket.Chat state](mcp-server-redesign-research/rocket-chat-current-state.md).
+
 - Mattermost: `github.com/mattermost/mattermost-plugin-agents` — `mcpserver/tools/provider.go`, `mcpserver/tools/classification_test.go`, `mcpserver/plugin_handlers.go`, `mcpserver/oauth_metadata.go`, `docs/admin_guide.md`.
 - Slack: `github.com/slackapi/slack-skills-plugin`; `github.com/modelcontextprotocol/servers-archived/tree/main/src/slack`; `github.com/korotovsky/slack-mcp-server`; `docs.slack.dev/ai/slack-mcp-server/` (not reachable during research).
 - Zulip: `github.com/akougkas/zulipchat-mcp`, `github.com/Monadical-SAS/zulip-mcp`.
