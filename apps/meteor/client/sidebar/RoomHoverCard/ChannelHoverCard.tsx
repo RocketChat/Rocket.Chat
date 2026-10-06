@@ -122,7 +122,13 @@ const ChannelHoverCard = ({ room, subscription, onClose }: ChannelHoverCardProps
 				</Box>
 			</Box>
 			<RoomHoverCardLastMessage message={room.lastMessage} subscription={subscription} />
-			<RoomHoverCardThreads subscription={subscription} onOpenThread={openThread} onOpenThreads={openThreads} />
+			<RoomHoverCardThreads
+				room={room}
+				subscription={subscription}
+				roomName={roomName}
+				onOpenThread={openThread}
+				onOpenThreads={openThreads}
+			/>
 			<RoomHoverCardFooter>
 				<Button small primary icon={room.t === 'd' ? 'balloon' : 'arrow-forward'} onClick={openRoom}>
 					{t(room.t === 'd' ? 'Open_conversation' : 'Open_channel')}

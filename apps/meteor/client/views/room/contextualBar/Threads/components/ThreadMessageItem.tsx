@@ -11,7 +11,7 @@ import { useDateRef } from '../../../providers/DateListProvider';
 
 type ThreadMessageProps = {
 	message: IThreadMessage | IThreadMainMessage;
-	previous: IThreadMessage | IThreadMainMessage;
+	previous?: IThreadMessage | IThreadMainMessage;
 	sequential: boolean;
 	shouldShowAsSequential: boolean;
 	showUserAvatar: boolean;

@@ -2283,6 +2283,10 @@
   "E2EE_alert": "<b>Enabling E2EE affects other functionalities</b> <ul><li> - Encrypted content cannot be found by search</li> <li> - Encrypted content cannot be audited</li> <li> - Bot interactions may not work with encrypted messages</li></ul>",
   "E2EE_Composer_Unencrypted_Message": "You're sending an unencrypted message",
   "E2EE_password_reset": "E2EE password reset",
+  "Earlier_replies_count": {
+    "one": "{{count}} earlier reply",
+    "other": "{{count}} earlier replies"
+  },
   "ECDH_Enabled": "Enable second layer encryption for data transport",
   "Edit": "Edit",
   "Edit_Business_Hour": "Edit business hour",
@@ -4550,8 +4554,8 @@
   "More_options": "More options",
   "More_unreads": "More unreads",
   "More_unread_threads": {
-    "one": "{{count}} more unread thread",
-    "other": "{{count}} more unread threads"
+    "one": "+{{count}} more thread",
+    "other": "+{{count}} more threads"
   },
   "Most_popular_channels_top_5": "Most popular channels (top 5)",
   "Most_recent_requested": "Most recent requested",
@@ -6708,6 +6712,10 @@
   "This_server_will_be_available_while_your_session_is_active": "This server will be available while your session is active",
   "This_week": "This week",
   "This_year": "This year",
+  "Thread_preview_context": {
+    "one": "in {{roomName}} · {{count}} reply",
+    "other": "in {{roomName}} · {{count}} replies"
+  },
   "Thread": "Thread",
   "thread": "thread",
   "Thread_composer": "Thread composer",
@@ -7306,6 +7314,7 @@
   "videoconf-ring-users": "Ring other users when calling",
   "videoconf-ring-users_description": "Permission to ring other users when calling",
   "Videos": "Videos",
+  "View_all_threads": "View all threads",
   "View_All": "View all members",
   "View_all_results": "View all results",
   "View_channels": "View channels",

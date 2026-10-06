@@ -127,7 +127,13 @@ const DirectMessageHoverCard = ({ uid, room, subscription, onClose }: DirectMess
 				</Box>
 			</Box>
 			<RoomHoverCardLastMessage message={room.lastMessage} subscription={subscription} />
-			<RoomHoverCardThreads subscription={subscription} onOpenThread={openThread} onOpenThreads={openThreads} />
+			<RoomHoverCardThreads
+				room={room}
+				subscription={subscription}
+				roomName={displayName}
+				onOpenThread={openThread}
+				onOpenThreads={openThreads}
+			/>
 			<RoomHoverCardFooter>
 				<Button small primary icon='balloon' onClick={openRoom}>
 					{t('Open_conversation')}
