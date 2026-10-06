@@ -12,7 +12,7 @@ jest.mock('@rocket.chat/ui-contexts', () => ({
 
 jest.mock('../../../navbar', () => () => <div>NavBar</div>);
 jest.mock('../../../sidebar/SidebarRail', () => () => <div>SidebarRail</div>);
-jest.mock('../../../sidebar/SidebarRail/SidebarRailHeader', () => () => <div>SidebarRailHeader</div>);
+jest.mock('../../../sidebar/SidebarRail/SidebarRailSearchPanel', () => () => <div>SidebarRailSearchPanel</div>);
 jest.mock('./AccessibilityShortcut', () => () => <div>AccessibilityShortcut</div>);
 jest.mock('../../navigation/providers/RoomsNavigationProvider', () => () => <div>Navigationprovider</div>);
 jest.mock('../../navigation', () => () => <div>NavigationRegion</div>);
@@ -137,11 +137,11 @@ describe('LayoutWithSidebar - sidebarRail feature preview', () => {
 		});
 
 		expect(screen.getByText('NavBar')).toBeInTheDocument();
-		expect(screen.queryByText('SidebarRailHeader')).not.toBeInTheDocument();
 		expect(screen.queryByText('SidebarRail')).not.toBeInTheDocument();
+		expect(screen.queryByText('SidebarRailSearchPanel')).not.toBeInTheDocument();
 	});
 
-	it('renders SidebarRailHeader and SidebarRail when the sidebarRail feature preview is on', () => {
+	it('renders SidebarRail without the top NavBar when the sidebarRail feature preview is on', () => {
 		render(<LayoutWithSidebar>content</LayoutWithSidebar>, {
 			wrapper: mockAppRoot()
 				.withSetting('Accounts_AllowFeaturePreview', true)
@@ -149,8 +149,8 @@ describe('LayoutWithSidebar - sidebarRail feature preview', () => {
 				.build(),
 		});
 
-		expect(screen.getByText('SidebarRailHeader')).toBeInTheDocument();
 		expect(screen.getByText('SidebarRail')).toBeInTheDocument();
+		expect(screen.getByText('SidebarRailSearchPanel')).toBeInTheDocument();
 		expect(screen.queryByText('NavBar')).not.toBeInTheDocument();
 	});
 });
