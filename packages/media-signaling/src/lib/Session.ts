@@ -228,6 +228,40 @@ export class MediaSignalingSession extends Emitter<MediaSignalingEvents> {
 		return (lastMainCall && heldCalls.includes(lastMainCall) ? lastMainCall : heldCalls[0]) ?? null;
 	}
 
+	private getAlternateCall(mainCall: ClientMediaCall): ClientMediaCall | null {
+		if (!mainCall.busy || mainCall.hidden) {
+			return null;
+		}
+
+		for (const call of this.knownCalls.values()) {
+			if (call !== mainCall && call.busy && !call.hidden && !call.ignored && call.initialized) {
+				return call;
+			}
+		}
+
+		return null;
+	}
+
+	/** Whether there is another call in progress that could be swapped with the main one */
+	public hasAlternateCall(): boolean {
+		const mainCall = this.getMainCall(false);
+		return Boolean(mainCall && this.getAlternateCall(mainCall));
+	}
+
+	/** Puts the main call on hold and takes the other call in progress off hold */
+	public swapCalls(): void {
+		const mainCall = this.getMainCall(false);
+		const alternateCall = mainCall && this.getAlternateCall(mainCall);
+		if (!mainCall || !alternateCall) {
+			throw new Error('No call to switch to.');
+		}
+
+		if (!mainCall.held) {
+			mainCall.setHeld(true);
+		}
+		alternateCall.setHeld(false);
+	}
+
 	public async processSignal(signal: ServerMediaSignal): Promise<void> {
 		if (this.sessionEnded) {
 			return;
