@@ -31,6 +31,7 @@ export type UsersTableProps = {
 	isSuccess: boolean;
 	onReload: () => void;
 	setUserFilters: Dispatch<SetStateAction<UsersFilters>>;
+	canFilterByUserStatus?: boolean;
 	paginationData: ReturnType<typeof usePagination>;
 	sortData: ReturnType<typeof useSort<UsersTableSortingOption>>;
 	isSeatsCapExceeded: boolean;
@@ -43,6 +44,7 @@ const UsersTable = ({
 	isError,
 	isSuccess,
 	setUserFilters,
+	canFilterByUserStatus = false,
 	roleData,
 	tab,
 	onReload,
@@ -59,6 +61,11 @@ const UsersTable = ({
 
 	const showVoipExtension = useShowVoipExtension();
 	const { current, itemsPerPage, setCurrent, setItemsPerPage, ...paginationProps } = paginationData;
+
+	const handleUsersFiltersChange = useStableCallback((filters: SetStateAction<UsersFilters>) => {
+		setCurrent(0);
+		setUserFilters(filters);
+	});
 
 	const isKeyboardEvent = (event: MouseEvent<HTMLElement> | KeyboardEvent<HTMLElement>): event is KeyboardEvent<HTMLElement> => {
 		return (event as KeyboardEvent<HTMLElement>).key !== undefined;
@@ -157,7 +164,11 @@ const UsersTable = ({
 
 	return (
 		<>
-			<UsersTableFilters roleData={roleData} setUsersFilters={setUserFilters} />
+			<UsersTableFilters
+				roleData={roleData}
+				setUsersFilters={handleUsersFiltersChange}
+				showStatusManagementFilter={canFilterByUserStatus}
+			/>
 			{isLoading && (
 				<GenericTable>
 					<GenericTableHeader>{headers}</GenericTableHeader>
