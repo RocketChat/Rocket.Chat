@@ -79,45 +79,46 @@ function ComposerBoxPopup<
 	}, [focused]);
 
 	return (
-		<Box position='relative'>
-			<Tile
-				ref={composerBoxPopupRef}
-				padding={0}
-				role='menu'
-				marginBlockEnd={8}
-				overflow='hidden'
-				aria-labelledby={id}
-				name='ComposerBoxPopup'
-			>
-				{title && (
-					<Box backgroundColor='tint' paddingInline={16} paddingBlock={8} id={id}>
-						{title}
-					</Box>
-				)}
-				<CustomScrollbars>
-					<Box paddingBlock={8} maxHeight='x320'>
-						{!isLoading && itemsFlat.length === 0 && <Option>{t('No_results_found')}</Option>}
-						{isLoading && <OptionSkeleton />}
-						{itemsFlat.map((item, index) => {
-							return (
-								<Option
-									title={getOptionTitle(item)}
-									onClick={() => select(item)}
-									selected={item === focused}
-									key={index}
-									id={`popup-item-${item._id}`}
-									tabIndex={item === focused ? 0 : -1}
-									aria-selected={item === focused}
-									disabled={item.disabled}
-								>
-									{renderItem({ item: { ...item, variant } })}
-								</Option>
-							);
-						})}
-					</Box>
-				</CustomScrollbars>
-			</Tile>
-		</Box>
+		<Tile
+			ref={composerBoxPopupRef}
+			padding={0}
+			role='menu'
+			display='flex'
+			flexDirection='column'
+			minHeight='x80'
+			marginBlockEnd={8}
+			overflow='hidden'
+			aria-labelledby={id}
+			name='ComposerBoxPopup'
+		>
+			{title && (
+				<Box backgroundColor='tint' paddingInline={16} paddingBlock={8} id={id}>
+					{title}
+				</Box>
+			)}
+			<CustomScrollbars style={{ minHeight: 0 }}>
+				<Box paddingBlock={8} maxHeight='x320'>
+					{!isLoading && itemsFlat.length === 0 && <Option>{t('No_results_found')}</Option>}
+					{isLoading && <OptionSkeleton />}
+					{itemsFlat.map((item, index) => {
+						return (
+							<Option
+								title={getOptionTitle(item)}
+								onClick={() => select(item)}
+								selected={item === focused}
+								key={index}
+								id={`popup-item-${item._id}`}
+								tabIndex={item === focused ? 0 : -1}
+								aria-selected={item === focused}
+								disabled={item.disabled}
+							>
+								{renderItem({ item: { ...item, variant } })}
+							</Option>
+						);
+					})}
+				</Box>
+			</CustomScrollbars>
+		</Tile>
 	);
 }
 
