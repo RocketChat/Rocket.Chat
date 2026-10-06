@@ -6,6 +6,10 @@ import { roomAccessAttributes } from '../authorization';
 import { canAccessRoomAsync } from '../authorization/canAccessRoom';
 
 export async function filterMessagesByRoomAccess(messages: IMessage[], user: IUser | Pick<IUser, '_id'>): Promise<IMessage[]> {
+	if (!messages.length) {
+		return messages;
+	}
+
 	const rids = [...new Set(messages.map(({ rid }) => rid))];
 	const rooms = await Rooms.findByIds(rids, { projection: roomAccessAttributes }).toArray();
 
