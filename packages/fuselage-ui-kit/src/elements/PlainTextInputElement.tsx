@@ -1,5 +1,6 @@
 import { TextAreaInput, TextInput } from '@rocket.chat/fuselage';
-import type * as UiKit from '@rocket.chat/ui-kit';
+import { TextAreaInput as FieldTextAreaInput, TextInput as FieldTextInput } from '@rocket.chat/fuselage-forms';
+import * as UiKit from '@rocket.chat/ui-kit';
 import { memo } from 'react';
 
 import { useStringFromTextObject } from '../hooks/useStringFromTextObject';
@@ -11,10 +12,13 @@ export type PlainTextInputElementProps = BlockProps<UiKit.PlainTextInputElement>
 const PlainTextInputElement = ({ block, context }: PlainTextInputElementProps) => {
 	const [{ loading, value, error }, action] = useUiKitState(block, context);
 	const fromTextObjectToString = useStringFromTextObject();
+	const inField = context === UiKit.BlockContext.FORM;
 
 	if (block.multiline) {
+		const Input = inField ? FieldTextAreaInput : TextAreaInput;
+
 		return (
-			<TextAreaInput
+			<Input
 				disabled={loading}
 				id={block.actionId}
 				name={block.actionId}
@@ -27,8 +31,10 @@ const PlainTextInputElement = ({ block, context }: PlainTextInputElementProps) =
 		);
 	}
 
+	const Input = inField ? FieldTextInput : TextInput;
+
 	return (
-		<TextInput
+		<Input
 			disabled={loading}
 			id={block.actionId}
 			name={block.actionId}
