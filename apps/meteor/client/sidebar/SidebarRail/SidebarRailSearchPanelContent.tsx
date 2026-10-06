@@ -1,5 +1,5 @@
 import { useFocusManager } from '@react-aria/focus';
-import { Box, Icon, IconButton, SidepanelHeader, TextInput } from '@rocket.chat/fuselage';
+import { Box, Icon, IconButton, TextInput } from '@rocket.chat/fuselage';
 import { VirtualizedScrollbars } from '@rocket.chat/ui-client';
 import type { KeyboardEvent as ReactKeyboardEvent } from 'react';
 import { useEffect, useRef } from 'react';
@@ -23,17 +23,18 @@ const SidebarRailSearchPanelContent = () => {
 
 	const searchText = useSidebarRailStore((state) => state.searchText);
 	const setSearchText = useSidebarRailStore((state) => state.setSearchText);
+	const setPanel = useSidebarRailStore((state) => state.setPanel);
 
 	const { items, isLoading } = useSearchItems(searchText);
 
 	const placeholder = [t('Search_rooms'), getShortcutLabel()].filter(Boolean).join(' ');
 
 	useEffect(() => {
-		inputRef.current?.focus();
+		inputRef.current?.select();
 
 		const focusInput = (event: KeyboardEvent) => {
 			event.preventDefault();
-			inputRef.current?.focus();
+			inputRef.current?.select();
 		};
 
 		return tinykeys(window, {
@@ -73,7 +74,7 @@ const SidebarRailSearchPanelContent = () => {
 
 	return (
 		<>
-			<SidepanelHeader>
+			<Box padding={16}>
 				<TextInput
 					ref={inputRef}
 					value={searchText}
@@ -83,7 +84,6 @@ const SidebarRailSearchPanelContent = () => {
 					placeholder={placeholder}
 					aria-label={t('Search_rooms')}
 					aria-keyshortcuts='Control+K Meta+K Control+P Meta+P'
-					small
 					endAddon={
 						searchText ? (
 							<IconButton mini icon='cross' aria-label={t('Clear')} onClick={handleClear} />
@@ -92,14 +92,9 @@ const SidebarRailSearchPanelContent = () => {
 						)
 					}
 				/>
-			</SidepanelHeader>
+			</Box>
 			<ResultsLiveRegion shouldAnnounce={!isLoading} itemCount={items.length} isLoading={isLoading} />
 			{items.length === 0 && !isLoading && <NavBarSearchNoResults />}
-			{items.length > 0 && (
-				<Box color='titles-labels' fontScale='c1' fontWeight='bold' paddingInline={16} paddingBlock={8} role='presentation' aria-hidden>
-					{searchText ? t('Results') : t('Recent')}
-				</Box>
-			)}
 			<Box
 				role='listbox'
 				aria-label={t('Results')}
@@ -110,7 +105,11 @@ const SidebarRailSearchPanelContent = () => {
 				onKeyDown={handleListKeyDown}
 			>
 				<VirtualizedScrollbars>
-					<Virtuoso data={items} computeItemKey={(_, item) => item._id} itemContent={(_, item) => <NavBarSearchRow room={item} />} />
+					<Virtuoso
+						data={items}
+						computeItemKey={(_, item) => item._id}
+						itemContent={(_, item) => <NavBarSearchRow room={item} avatarSize='x28' onClick={() => setPanel('inbox')} />}
+					/>
 				</VirtualizedScrollbars>
 			</Box>
 			{isLoading && Array.from({ length: 4 }, (_, index) => <NavBarSearchItemSkeleton key={`skeleton-${index}`} />)}

@@ -65,18 +65,12 @@ const SidebarRail = () => {
 					<Box is='img' src='/images/logo/icon.svg' alt='Rocket.Chat' size='x28' />
 				</Box>
 				<SidebarRailDivider />
-				<NavBarGroup vertical aria-label={t('Navigation')}>
-					<SidebarRailSearch />
-					<NavBarItem title={t('Back_in_history')} icon='arrow-back' onClick={() => navigate(-1)} />
-					<NavBarItem title={t('Forward_in_history')} icon='arrow-forward' onClick={() => navigate(1)} />
-				</NavBarGroup>
-				<SidebarRailDivider />
 				<NavBarGroup vertical aria-label={t('Pages_and_actions')}>
+					<SidebarRailSearch />
 					<SidebarRailInbox />
 					<SidebarRailCreateNew />
 					{showMarketplace && <NavBarItemMarketPlaceMenu />}
 				</NavBarGroup>
-				<SidebarRailDivider />
 				<NavBarGroup vertical aria-label={t('Voice_Call')}>
 					<SidebarRailPhone />
 					{user && showOngoingCalls && <NavBarItemOngoingCalls />}
@@ -89,6 +83,10 @@ const SidebarRail = () => {
 				)}
 			</Box>
 			<Box padding={8}>
+				<NavBarGroup vertical aria-label={t('History_navigation')}>
+					<NavBarItem title={t('Back_in_history')} icon='chevron-left' onClick={() => navigate(-1)} />
+					<NavBarItem title={t('Forward_in_history')} icon='chevron-right' onClick={() => navigate(1)} />
+				</NavBarGroup>
 				<NavBarGroup vertical aria-label={t('Workspace_and_user_preferences')}>
 					<NavBarItemAdministrationMenu />
 					{user ? <UserMenu user={user} /> : <SidebarRailLoginPage />}

@@ -3,6 +3,7 @@ import type { HTMLAttributes } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { useSidebarRailStore } from './useSidebarRailStore';
+import { getShortcutLabel } from '../../navbar/NavBarSearch/getShortcutLabel';
 
 type SidebarRailSearchProps = Omit<HTMLAttributes<HTMLElement>, 'is'>;
 
@@ -14,7 +15,7 @@ const SidebarRailSearch = (props: SidebarRailSearchProps) => {
 	return (
 		<NavBarItem
 			{...props}
-			title={t('Search')}
+			title={[t('Search'), getShortcutLabel()].filter(Boolean).join(' ')}
 			icon='magnifier'
 			pressed={isActive}
 			aria-keyshortcuts='Control+K Meta+K Control+P Meta+P'

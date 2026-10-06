@@ -3350,6 +3350,7 @@
   "Inbound": "Inbound",
   "Inbox": "Inbox",
   "Inbox_Info": "Inbox info",
+  "Inbox_with_unread": "Inbox, {{unreadTitle}}",
   "Include_Offline_Agents": "Include offline agents",
   "Includes": "Includes",
   "Inclusive": "Inclusive",
