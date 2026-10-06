@@ -50,7 +50,7 @@ API.v1.post(
 		} catch (err) {
 			SystemLogger.error({ err });
 			if (isMeteorError(err)) {
-				return API.v1.failure(String(err.error), undefined, undefined, { details: err.details });
+				return API.v1.failure({ error: String(err.error), details: err.details });
 			}
 
 			return API.v1.failure('Connection_failed');
@@ -89,7 +89,7 @@ API.v1.post(
 		} catch (err) {
 			SystemLogger.error({ err });
 			if (isMeteorError(err)) {
-				return API.v1.failure(String(err.error), undefined, undefined, { details: err.details });
+				return API.v1.failure({ error: String(err.error), details: err.details });
 			}
 
 			return API.v1.failure('LDAP_search_failed');

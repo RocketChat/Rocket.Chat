@@ -107,12 +107,9 @@ export class LDAPManager {
 
 	private static async connectAndBind(ldap: LDAPConnection): Promise<void> {
 		await ldap.connect();
-
-		try {
-			await ldap.bindAuthenticationUserOrFail();
-		} catch (err) {
-			throw new MeteorError('LDAP_Bind_failed', undefined, { error: err instanceof Error ? err.message : String(err) });
-		}
+		await ldap.bindAuthenticationUserOrFail().catch((err: Error) => {
+			throw new MeteorError('LDAP_Bind_failed', undefined, { error: err.message });
+		});
 	}
 
 	public static async testConnection(): Promise<void> {
