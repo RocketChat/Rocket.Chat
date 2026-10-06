@@ -7,6 +7,7 @@
 	"files": [
 		"/dist"
 	],
+	"translations": "@rocket.chat/i18n",
 	"scripts": {
 		"build": "tsc -p tsconfig.build.json && cp -r src/public dist/public",
 		"dev": "tsc -p tsconfig.build.json --watch --preserveWatchOutput",

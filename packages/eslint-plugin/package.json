@@ -1,0 +1,32 @@
+{
+	"name": "@rocket.chat/eslint-plugin",
+	"version": "0.0.0",
+	"description": "Rocket.Chat's custom ESLint rules",
+	"repository": {
+		"type": "git",
+		"url": "git+https://github.com/RocketChat/Rocket.Chat.git",
+		"directory": "packages/eslint-plugin"
+	},
+	"type": "module",
+	"main": "./index.js",
+	"exports": {
+		".": "./index.js"
+	},
+	"files": [
+		"/index.js",
+		"/rules"
+	],
+	"scripts": {
+		"lint": "eslint .",
+		"lint:fix": "eslint --fix ."
+	},
+	"devDependencies": {
+		"eslint": "~10.7.0"
+	},
+	"peerDependencies": {
+		"eslint": "*"
+	},
+	"volta": {
+		"extends": "../../package.json"
+	}
+}

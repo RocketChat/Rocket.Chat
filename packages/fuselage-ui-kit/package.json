@@ -22,6 +22,7 @@
 	"files": [
 		"/dist"
 	],
+	"translations": "@rocket.chat/i18n",
 	"scripts": {
 		".:build-preview-move": "mkdir -p ../../.preview/ && cp -r ./storybook-static ../../.preview/fuselage-ui-kit",
 		"build": "rm -rf dist && tsc -p tsconfig.build.json",

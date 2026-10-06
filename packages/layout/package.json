@@ -22,6 +22,7 @@
 	"files": [
 		"/dist"
 	],
+	"translations": "@rocket.chat/onboarding-ui",
 	"scripts": {
 		"build": "rm -rf dist && tsc -p tsconfig.esm.json && tsc -p tsconfig.cjs.json",
 		"build-storybook": "storybook build",

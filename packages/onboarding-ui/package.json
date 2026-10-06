@@ -25,6 +25,9 @@
   "files": [
     "/dist"
   ],
+  "translations": {
+    "file": "./.i18n/en.i18n.json"
+  },
   "scripts": {
     "build": "rm -rf dist && tsc -p tsconfig.esm.json && tsc -p tsconfig.cjs.json",
     "build-storybook": "storybook build",

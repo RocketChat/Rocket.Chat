@@ -9590,6 +9590,7 @@ __metadata:
   resolution: "@rocket.chat/eslint-config@workspace:packages/eslint-config"
   dependencies:
     "@eslint/js": "npm:~10.0.1"
+    "@rocket.chat/eslint-plugin": "workspace:~"
     "@types/eslint": "npm:~9.6.1"
     eslint: "npm:~10.7.0"
     eslint-config-prettier: "npm:~10.1.8"
@@ -9608,6 +9609,16 @@ __metadata:
     storybook: "npm:^9.1.20"
     typescript: "npm:~5.9.3"
     typescript-eslint: "npm:~8.64.0"
+  languageName: unknown
+  linkType: soft
+
+"@rocket.chat/eslint-plugin@workspace:packages/eslint-plugin, @rocket.chat/eslint-plugin@workspace:~":
+  version: 0.0.0-use.local
+  resolution: "@rocket.chat/eslint-plugin@workspace:packages/eslint-plugin"
+  dependencies:
+    eslint: "npm:~10.7.0"
+  peerDependencies:
+    eslint: "*"
   languageName: unknown
   linkType: soft
 
