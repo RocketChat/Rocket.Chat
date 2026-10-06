@@ -41,11 +41,7 @@ import PasswordFieldSkeleton from './PasswordFieldSkeleton';
 import { useSmtpQuery } from './hooks/useSmtpQuery';
 import { useShowVoipExtension } from './useShowVoipExtension';
 import { parseCSV } from '../../../../lib/utils/parseCSV';
-import PhoneNumberFieldList, {
-	getInitialPhones,
-	getPersistedPhones,
-	usePhoneNumberFieldArray,
-} from '../../../components/PhoneNumberFieldList';
+import PhoneNumberFieldList, { getInitialPhones, getPersistedPhones } from '../../../components/PhoneNumberFieldList';
 import UserAvatarEditor from '../../../components/avatar/UserAvatarEditor';
 import { useEndpointMutation } from '../../../hooks/useEndpointMutation';
 import { useUpdateAvatar } from '../../../hooks/useUpdateAvatar';
@@ -130,8 +126,6 @@ const AdminUserForm = ({ userData, onReload, context, refetchUserFormData, roleD
 	});
 
 	const showVoipExtension = useShowVoipExtension();
-
-	const { phones: phoneFields, onAddPhone, onRemovePhone } = usePhoneNumberFieldArray<UserFormProps>(control, 'phones');
 
 	const { avatar, username, setRandomPassword, password, name: userFullName } = watch();
 
@@ -546,13 +540,7 @@ const AdminUserForm = ({ userData, onReload, context, refetchUserFormData, roleD
 					</Field>
 
 					<Divider marginBlockStart={24} marginBlockEnd={0} />
-					<PhoneNumberFieldList
-						name='phones'
-						control={control}
-						phones={phoneFields}
-						onAddPhone={onAddPhone}
-						onRemovePhone={onRemovePhone}
-					/>
+					<PhoneNumberFieldList control={control} />
 					<Divider marginBlockStart={24} marginBlockEnd={0} />
 					{!!customFieldsMetadata.length && (
 						<>

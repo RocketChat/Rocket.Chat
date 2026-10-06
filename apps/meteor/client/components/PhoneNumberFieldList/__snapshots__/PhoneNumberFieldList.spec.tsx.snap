@@ -13,14 +13,91 @@ exports[`PhoneNumberFieldList snapshots matches snapshot with no phones 1`] = `
       </legend>
       <ul
         class="rcx-box rcx-box--full rcx-css-bgtdl9"
-        id="phones-phones-list"
-      />
+        id="_r_0_"
+      >
+        <li
+          class="rcx-box rcx-box--full rcx-css-vhjf5t"
+          id="_r_1_"
+        >
+          <div
+            class="rcx-box rcx-box--full rcx-field"
+          >
+            <label
+              class="rcx-box rcx-box--full rcx-field__label rcx-label"
+              for="react-aria-_r_2_-label"
+            >
+              Phone number
+            </label>
+            <span
+              class="rcx-box rcx-box--full rcx-field__row"
+            >
+              <input
+                aria-describedby=""
+                aria-invalid="false"
+                aria-label="Phone number 1"
+                class="rcx-box rcx-box--full rcx-box--animated rcx-input-box--type-text rcx-input-box rcx-css-t3n91h"
+                id="react-aria-_r_2_-label"
+                name="phones.0.number"
+                size="1"
+                type="text"
+                value=""
+              />
+              <button
+                aria-controls="_r_1_"
+                aria-label="Remove number 1"
+                class="rcx-box rcx-box--full rcx-button--large-square rcx-button--square rcx-button--icon rcx-button rcx-css-ws1yyr"
+                title="Remove"
+                type="button"
+              >
+                <i
+                  aria-hidden="true"
+                  class="rcx-box rcx-box--full rcx-icon--name-trash rcx-icon rcx-css-1x2l7ts"
+                >
+                  
+                </i>
+              </button>
+            </span>
+          </div>
+          <div
+            class="rcx-box rcx-box--full rcx-field"
+          >
+            <label
+              class="rcx-box rcx-box--full rcx-field__label rcx-label"
+              for="react-aria-_r_3_-label"
+            >
+              Label
+            </label>
+            <span
+              class="rcx-box rcx-box--full rcx-field__row"
+            >
+              <input
+                aria-describedby="react-aria-_r_3_-hint"
+                aria-invalid="false"
+                aria-label="Label for phone number 1"
+                class="rcx-box rcx-box--full rcx-box--animated rcx-input-box--type-text rcx-input-box rcx-css-t3n91h"
+                id="react-aria-_r_3_-label"
+                name="phones.0.label"
+                placeholder="Label"
+                size="1"
+                type="text"
+                value=""
+              />
+            </span>
+            <span
+              class="rcx-box rcx-box--full rcx-field__hint"
+              id="react-aria-_r_3_-hint"
+            >
+              Others can see name alongside number
+            </span>
+          </div>
+        </li>
+      </ul>
       <div
         class="rcx-box rcx-box--full"
       >
         <button
-          aria-controls="phones-phones-list"
-          class="rcx-box rcx-box--full rcx-button rcx-css-1fczwx8"
+          aria-controls="_r_0_"
+          class="rcx-box rcx-box--full rcx-button rcx-css-p7cq8l"
           type="button"
         >
           <span
@@ -54,18 +131,18 @@ exports[`PhoneNumberFieldList snapshots matches snapshot with phones 1`] = `
       </legend>
       <ul
         class="rcx-box rcx-box--full rcx-css-bgtdl9"
-        id="phones-phones-list"
+        id="_r_4_"
       >
         <li
           class="rcx-box rcx-box--full rcx-css-vhjf5t"
-          id="mock-phone-0"
+          id="_r_5_"
         >
           <div
             class="rcx-box rcx-box--full rcx-field"
           >
             <label
               class="rcx-box rcx-box--full rcx-field__label rcx-label"
-              for="react-aria-_r_0_-label"
+              for="react-aria-_r_6_-label"
             >
               Phone number
             </label>
@@ -77,14 +154,14 @@ exports[`PhoneNumberFieldList snapshots matches snapshot with phones 1`] = `
                 aria-invalid="false"
                 aria-label="Phone number 1"
                 class="rcx-box rcx-box--full rcx-box--animated rcx-input-box--type-text rcx-input-box rcx-css-t3n91h"
-                id="react-aria-_r_0_-label"
+                id="react-aria-_r_6_-label"
                 name="phones.0.number"
                 size="1"
                 type="text"
                 value="+15551234567"
               />
               <button
-                aria-controls="mock-phone-0"
+                aria-controls="_r_5_"
                 aria-label="Remove number Home"
                 class="rcx-box rcx-box--full rcx-button--large-square rcx-button--square rcx-button--icon rcx-button rcx-css-ws1yyr"
                 title="Remove"
@@ -104,7 +181,7 @@ exports[`PhoneNumberFieldList snapshots matches snapshot with phones 1`] = `
           >
             <label
               class="rcx-box rcx-box--full rcx-field__label rcx-label"
-              for="react-aria-_r_1_-label"
+              for="react-aria-_r_7_-label"
             >
               Label
             </label>
@@ -112,11 +189,11 @@ exports[`PhoneNumberFieldList snapshots matches snapshot with phones 1`] = `
               class="rcx-box rcx-box--full rcx-field__row"
             >
               <input
-                aria-describedby="react-aria-_r_1_-hint"
+                aria-describedby="react-aria-_r_7_-hint"
                 aria-invalid="false"
                 aria-label="Label for phone number 1"
                 class="rcx-box rcx-box--full rcx-box--animated rcx-input-box--type-text rcx-input-box rcx-css-t3n91h"
-                id="react-aria-_r_1_-label"
+                id="react-aria-_r_7_-label"
                 name="phones.0.label"
                 placeholder="Label"
                 size="1"
@@ -126,7 +203,7 @@ exports[`PhoneNumberFieldList snapshots matches snapshot with phones 1`] = `
             </span>
             <span
               class="rcx-box rcx-box--full rcx-field__hint"
-              id="react-aria-_r_1_-hint"
+              id="react-aria-_r_7_-hint"
             >
               Others can see name alongside number
             </span>
@@ -134,14 +211,14 @@ exports[`PhoneNumberFieldList snapshots matches snapshot with phones 1`] = `
         </li>
         <li
           class="rcx-box rcx-box--full rcx-css-vhjf5t"
-          id="mock-phone-1"
+          id="_r_8_"
         >
           <div
             class="rcx-box rcx-box--full rcx-field"
           >
             <label
               class="rcx-box rcx-box--full rcx-field__label rcx-label"
-              for="react-aria-_r_2_-label"
+              for="react-aria-_r_9_-label"
             >
               Phone number
             </label>
@@ -153,14 +230,14 @@ exports[`PhoneNumberFieldList snapshots matches snapshot with phones 1`] = `
                 aria-invalid="false"
                 aria-label="Phone number 2"
                 class="rcx-box rcx-box--full rcx-box--animated rcx-input-box--type-text rcx-input-box rcx-css-t3n91h"
-                id="react-aria-_r_2_-label"
+                id="react-aria-_r_9_-label"
                 name="phones.1.number"
                 size="1"
                 type="text"
                 value="+15559876543"
               />
               <button
-                aria-controls="mock-phone-1"
+                aria-controls="_r_8_"
                 aria-label="Remove number 2"
                 class="rcx-box rcx-box--full rcx-button--large-square rcx-button--square rcx-button--icon rcx-button rcx-css-ws1yyr"
                 title="Remove"
@@ -180,7 +257,7 @@ exports[`PhoneNumberFieldList snapshots matches snapshot with phones 1`] = `
           >
             <label
               class="rcx-box rcx-box--full rcx-field__label rcx-label"
-              for="react-aria-_r_3_-label"
+              for="react-aria-_r_a_-label"
             >
               Label
             </label>
@@ -188,11 +265,11 @@ exports[`PhoneNumberFieldList snapshots matches snapshot with phones 1`] = `
               class="rcx-box rcx-box--full rcx-field__row"
             >
               <input
-                aria-describedby="react-aria-_r_3_-hint"
+                aria-describedby="react-aria-_r_a_-hint"
                 aria-invalid="false"
                 aria-label="Label for phone number 2"
                 class="rcx-box rcx-box--full rcx-box--animated rcx-input-box--type-text rcx-input-box rcx-css-t3n91h"
-                id="react-aria-_r_3_-label"
+                id="react-aria-_r_a_-label"
                 name="phones.1.label"
                 placeholder="Label"
                 size="1"
@@ -202,7 +279,7 @@ exports[`PhoneNumberFieldList snapshots matches snapshot with phones 1`] = `
             </span>
             <span
               class="rcx-box rcx-box--full rcx-field__hint"
-              id="react-aria-_r_3_-hint"
+              id="react-aria-_r_a_-hint"
             >
               Others can see name alongside number
             </span>
@@ -213,7 +290,7 @@ exports[`PhoneNumberFieldList snapshots matches snapshot with phones 1`] = `
         class="rcx-box rcx-box--full"
       >
         <button
-          aria-controls="phones-phones-list"
+          aria-controls="_r_4_"
           class="rcx-box rcx-box--full rcx-button rcx-css-p7cq8l"
           type="button"
         >
