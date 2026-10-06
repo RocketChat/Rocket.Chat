@@ -1,8 +1,8 @@
 import type { IRoom, ISubscription } from '@rocket.chat/core-typings';
 import { css } from '@rocket.chat/css-in-js';
-import { Box, Button, Icon, IconButton, Palette } from '@rocket.chat/fuselage';
+import { Box, Button, Icon, Palette } from '@rocket.chat/fuselage';
 import { RoomAvatar, UserAvatar } from '@rocket.chat/ui-avatar';
-import { useEndpoint, useSetting } from '@rocket.chat/ui-contexts';
+import { useEndpoint } from '@rocket.chat/ui-contexts';
 import { useQuery } from '@tanstack/react-query';
 import type { TFunction } from 'i18next';
 import { useId } from 'react';
@@ -14,7 +14,9 @@ import RoomHoverCardKind from './RoomHoverCardKind';
 import RoomHoverCardLastMessage from './RoomHoverCardLastMessage';
 import { useRoomHoverCardActions } from './useRoomHoverCardActions';
 import MarkdownText from '../../components/MarkdownText';
+import { useOpenedRoom } from '../../lib/RoomManager';
 import { roomCoordinator } from '../../lib/rooms/roomCoordinator';
+import RoomMenu from '../RoomMenu';
 import { useUnreadDisplay } from '../hooks/useUnreadDisplay';
 
 const MEMBER_AVATARS = 3;
@@ -57,16 +59,15 @@ export type ChannelHoverCardProps = {
 const ChannelHoverCard = ({ room, subscription, onClose }: ChannelHoverCardProps) => {
 	const { t } = useTranslation();
 	const titleId = useId();
-	const canFavorite = useSetting('Favorite_Rooms', true);
+	const openedRoom = useOpenedRoom();
 
 	const roomName = roomCoordinator.getRoomName(room.t, room);
-	const isFavorite = Boolean(subscription.f);
 	const isMuted = Boolean(subscription.disableNotifications);
 
 	const unread = useUnreadDisplay(subscription);
 	const isUnread = Boolean(subscription.alert || subscription.unread || unread.unreadCount.threads);
 
-	const { openRoom, markAsRead, toggleFavorite, toggleNotifications } = useRoomHoverCardActions({ subscription, roomName, onClose });
+	const { openRoom, markAsRead, toggleNotifications } = useRoomHoverCardActions({ subscription, roomName, onClose });
 
 	const getMembers = useEndpoint('GET', '/v1/rooms.membersOrderedByRole');
 	const { data: members = [] } = useQuery({
@@ -88,16 +89,17 @@ const ChannelHoverCard = ({ room, subscription, onClose }: ChannelHoverCardProps
 							<RoomHoverCardKind room={room} onNavigate={onClose} />
 						</Box>
 					</Box>
-					{canFavorite && (
-						<IconButton
-							small
-							icon={isFavorite ? 'star-filled' : 'star'}
-							pressed={isFavorite}
-							title={t(isFavorite ? 'Unfavorite' : 'Favorite')}
-							aria-label={t(isFavorite ? 'Unfavorite' : 'Favorite')}
-							onClick={toggleFavorite}
-						/>
-					)}
+					<RoomMenu
+						rid={room._id}
+						alert={subscription.alert}
+						unread={Boolean(subscription.unread)}
+						threadUnread={unread.unreadCount.threads > 0}
+						roomOpen={openedRoom === room._id}
+						type={room.t}
+						cl={room.cl}
+						name={roomName}
+						hideDefaultOptions={false}
+					/>
 				</Box>
 				{room.topic && (
 					<Box fontScale='p2' color='font-secondary-info' marginBlockStart={12} className={topicStyle}>

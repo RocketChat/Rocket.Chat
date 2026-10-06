@@ -2,7 +2,6 @@ import type { IRoom, ISubscription, IUser } from '@rocket.chat/core-typings';
 import { getUserDisplayName } from '@rocket.chat/core-typings';
 import { css } from '@rocket.chat/css-in-js';
 import { Box, Button, Icon, Skeleton, Tag } from '@rocket.chat/fuselage';
-import { GenericMenu } from '@rocket.chat/ui-client';
 import { useRolesDescription, useSetting, useUserAvatarPath } from '@rocket.chat/ui-contexts';
 import { useId } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -15,11 +14,11 @@ import { useRoomHoverCardActions } from './useRoomHoverCardActions';
 import LocalTime from '../../components/LocalTime';
 import { ReactiveUserStatus } from '../../components/UserStatus';
 import { ReactiveUserStatusText } from '../../components/UserStatusText';
-import { useRoomMenuActions } from '../../hooks/useRoomMenuActions';
 import { useUserInfoQuery } from '../../hooks/useUserInfoQuery';
 import { useOpenedRoom } from '../../lib/RoomManager';
 import { useUserMediaCallAction } from '../../views/room/hooks/useUserInfoActions/actions/useUserMediaCallAction';
 import { useVideoCallAction } from '../../views/room/hooks/useUserInfoActions/actions/useVideoCallAction';
+import RoomMenu from '../RoomMenu';
 import { useUnreadDisplay } from '../hooks/useUnreadDisplay';
 
 const avatarStyle = css`
@@ -65,16 +64,6 @@ const DirectMessageHoverCard = ({ uid, room, subscription, onClose }: DirectMess
 	const videoCall = useVideoCallAction(callee);
 	const voiceCall = useUserMediaCallAction(callee, room._id);
 
-	const menuSections = useRoomMenuActions({
-		rid: room._id,
-		type: room.t,
-		name: displayName,
-		isUnread,
-		cl: room.cl,
-		roomOpen: openedRoom === room._id,
-		hideDefaultOptions: false,
-	});
-
 	return (
 		<RoomHoverCardDialog aria-labelledby={titleId}>
 			<Box display='flex' paddingInline={18} paddingBlockStart={18} paddingBlockEnd={16}>
@@ -91,9 +80,17 @@ const DirectMessageHoverCard = ({ uid, room, subscription, onClose }: DirectMess
 					<Box display='flex' marginBlockStart={10}>
 						{videoCall && <RoomHoverCardQuickAction action={videoCall} />}
 						{voiceCall && <RoomHoverCardQuickAction action={voiceCall} />}
-						{menuSections.length > 0 && (
-							<GenericMenu mini icon='kebab' title={t('More')} sections={menuSections} placement='bottom-start' callbackAction={onClose} />
-						)}
+						<RoomMenu
+							rid={room._id}
+							alert={subscription.alert}
+							unread={Boolean(subscription.unread)}
+							threadUnread={unread.unreadCount.threads > 0}
+							roomOpen={openedRoom === room._id}
+							type={room.t}
+							cl={room.cl}
+							name={displayName}
+							hideDefaultOptions={false}
+						/>
 					</Box>
 				</Box>
 				<Box display='flex' flexDirection='column' flexGrow={1} minWidth={0} marginInlineStart={14}>
