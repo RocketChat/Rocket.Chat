@@ -40,7 +40,7 @@ const Medium = ({
 	const { mounted: menuVisibility, requestMount, mountNow } = useDeferredMenuMount();
 
 	return (
-		<Item {...props} size='medium' selected={selected} highlighted={unread} onFocus={mountNow} onPointerEnter={requestMount}>
+		<Item {...props} selected={selected} highlighted={unread} onFocus={mountNow} onPointerEnter={requestMount}>
 			{avatar && <ItemMedia>{avatar}</ItemMedia>}
 			{icon}
 			<ItemContent>

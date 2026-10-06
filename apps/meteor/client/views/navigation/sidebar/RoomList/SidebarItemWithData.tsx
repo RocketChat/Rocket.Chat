@@ -64,7 +64,7 @@ const SidebarItemWithData = ({ room, id, style, t, videoConfActions }: RoomListR
 	return (
 		<RoomListItem
 			id={id}
-			size='condensed'
+			viewMode='condensed'
 			data-unread={highlighted}
 			highlighted={highlighted}
 			selected={selected}

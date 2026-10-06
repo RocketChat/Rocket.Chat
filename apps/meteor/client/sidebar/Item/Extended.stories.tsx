@@ -1,5 +1,5 @@
 import { Box, IconButton, Badge } from '@rocket.chat/fuselage';
-import { UserAvatar } from '@rocket.chat/ui-avatar';
+import { ITEM_MEDIA_SIZE, UserAvatar } from '@rocket.chat/ui-avatar';
 import type { Meta, StoryFn } from '@storybook/react';
 import { action } from 'storybook/actions';
 
@@ -44,7 +44,7 @@ const Template: StoryFn<typeof Extended> = (args) => (
 				<Status.Online />
 			</Box>
 		}
-		avatar={<UserAvatar username='john.doe' size='x16' url='https://via.placeholder.com/16' />}
+		avatar={<UserAvatar username='john.doe' size={ITEM_MEDIA_SIZE.extended} url='https://via.placeholder.com/36' />}
 	/>
 );
 

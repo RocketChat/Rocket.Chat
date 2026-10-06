@@ -1,7 +1,5 @@
-import type { ItemSize } from '@rocket.chat/fuselage';
 import {
 	IconButton,
-	ITEM_MEDIA_SIZE,
 	Item,
 	ItemActions,
 	ItemContent,
@@ -13,13 +11,16 @@ import {
 	ItemRow,
 	ItemTitle,
 } from '@rocket.chat/fuselage';
-import { RoomAvatar } from '@rocket.chat/ui-avatar';
+import { ITEM_MEDIA_SIZE, RoomAvatar } from '@rocket.chat/ui-avatar';
+import type { ItemMediaSizeName } from '@rocket.chat/ui-avatar';
 import { useShortTimeAgo } from '@rocket.chat/ui-client';
 import type { SubscriptionWithRoom } from '@rocket.chat/ui-contexts';
 import type { AriaAttributes, HTMLAttributes, MouseEventHandler, ReactNode } from 'react';
 import { memo } from 'react';
 
 import { useDeferredMenuMount } from '../../../../sidebar/Item/useDeferredMenuMount';
+
+export type RoomListItemViewMode = ItemMediaSizeName;
 
 type RoomListItemIconProps =
 	| {
@@ -34,7 +35,7 @@ export type RoomListItemProps = {
 	'room': SubscriptionWithRoom;
 	'title': string;
 	/** `condensed` and `medium` render a single line; `extended` adds the time and the `subtitle` line. */
-	'size'?: ItemSize;
+	'viewMode'?: RoomListItemViewMode;
 	/** Navigates to the room. Without it, the title renders as a button that runs `onClick`. */
 	'href'?: string;
 	'onClick'?: MouseEventHandler<HTMLElement>;
@@ -54,7 +55,7 @@ export type RoomListItemProps = {
 const RoomListItem = ({
 	room,
 	title,
-	size = 'condensed',
+	viewMode = 'condensed',
 	href,
 	onClick,
 	subtitle,
@@ -74,7 +75,7 @@ const RoomListItem = ({
 	const formatDate = useShortTimeAgo();
 	const { mounted: menuVisibility, requestMount, mountNow } = useDeferredMenuMount();
 
-	const isExtended = size === 'extended';
+	const isExtended = viewMode === 'extended';
 
 	const itemIcon = icon && <ItemIcon label={iconLabel}>{icon}</ItemIcon>;
 
@@ -93,9 +94,9 @@ const RoomListItem = ({
 	);
 
 	return (
-		<Item {...props} size={size} selected={selected} highlighted={highlighted} onFocus={mountNow} onPointerEnter={requestMount}>
+		<Item {...props} selected={selected} highlighted={highlighted} onFocus={mountNow} onPointerEnter={requestMount}>
 			<ItemMedia>
-				<RoomAvatar size={ITEM_MEDIA_SIZE[size]} room={{ ...room, _id: room.rid || room._id, type: room.t }} />
+				<RoomAvatar size={ITEM_MEDIA_SIZE[viewMode]} room={{ ...room, _id: room.rid || room._id, type: room.t }} />
 			</ItemMedia>
 			{isExtended ? (
 				<ItemContent>
