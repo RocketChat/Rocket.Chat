@@ -12,9 +12,10 @@ type PhoneNumberFieldRowProps = {
 	control: Control<PhoneNumbersFormValues>;
 	index: number;
 	onRemove: (index: number) => void;
+	className?: string;
 };
 
-const PhoneNumberFieldRow = ({ control, index, onRemove }: PhoneNumberFieldRowProps) => {
+const PhoneNumberFieldRow = ({ control, index, onRemove, className }: PhoneNumberFieldRowProps) => {
 	const { t } = useTranslation();
 	const id = useId();
 	const label = useWatch({ control, name: `phones.${index}.label` });
@@ -29,7 +30,7 @@ const PhoneNumberFieldRow = ({ control, index, onRemove }: PhoneNumberFieldRowPr
 				}}
 				// TODO: add back type='tel' to the Input
 				render={({ field, fieldState: { error } }) => (
-					<Field>
+					<Field className={className}>
 						<FieldLabel>{t('Phone_number')}</FieldLabel>
 						<FieldRow>
 							<TextInput {...field} aria-label={`${t('Phone_number')} ${index + 1}`} flexGrow={1} error={error?.message} />
@@ -58,7 +59,7 @@ const PhoneNumberFieldRow = ({ control, index, onRemove }: PhoneNumberFieldRowPr
 					},
 				}}
 				render={({ field, fieldState: { error } }) => (
-					<Field>
+					<Field className={className}>
 						<FieldLabel>{t('Label')}</FieldLabel>
 						<FieldRow>
 							<TextInput
