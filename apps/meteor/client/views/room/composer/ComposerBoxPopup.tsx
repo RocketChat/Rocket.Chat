@@ -1,5 +1,6 @@
 import { Box, Item, ItemContent, ItemGroup, ItemGroupHeader, ItemGroupTitle, ItemSkeleton, ItemTitle, Tile } from '@rocket.chat/fuselage';
 import { useContentBoxSize } from '@rocket.chat/fuselage-hooks';
+import { ITEM_MEDIA_SIZE } from '@rocket.chat/ui-avatar';
 import { CustomScrollbars } from '@rocket.chat/ui-client';
 import type { UseQueryResult } from '@tanstack/react-query';
 import type { ReactNode } from 'react';
@@ -91,20 +92,19 @@ function ComposerBoxPopup<
 				<CustomScrollbars>
 					<Box paddingBlock={8} maxHeight='x320'>
 						{!isLoading && itemsFlat.length === 0 && (
-							<Item size='medium' inset='md' role='status'>
+							<Item inset='md' role='status'>
 								<ItemContent>
 									<ItemTitle>{t('No_results_found')}</ItemTitle>
 								</ItemContent>
 							</Item>
 						)}
-						{isLoading && <ItemSkeleton size='medium' inset='md' />}
+						{isLoading && <ItemSkeleton mediaSize={ITEM_MEDIA_SIZE.medium} inset='md' />}
 						<ItemGroup role='listbox' aria-labelledby={title ? id : undefined} aria-busy={isLoading}>
 							{itemsFlat.map((item, index) => (
 								<Item
 									key={index}
 									id={`popup-item-${item._id}`}
 									role='option'
-									size='medium'
 									inset='md'
 									title={getOptionTitle(item)}
 									focused={item === focused}
