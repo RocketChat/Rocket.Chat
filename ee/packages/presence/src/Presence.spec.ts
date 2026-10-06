@@ -108,6 +108,7 @@ describe('Presence', () => {
 		jest.clearAllMocks();
 		settings.values.clear();
 		listener.received = [];
+		statusVisibility.disabledFor.clear();
 		usersModel.findOneById.mockResolvedValue(alice());
 		usersModel.updatePresenceAndStatus.mockImplementation(async (_id: string, values: Partial<IUser>) => ({ _id, ...values }));
 
