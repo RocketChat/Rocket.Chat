@@ -1,0 +1,14 @@
+ee/packages/network-broker/package.json
+  h_4c386397e672f4 22
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "d5f5be941fd5c98045756bd7d96479d8ec5741eb",
+  "prompts": {},
+  "humans": {
+    "h_4c386397e672f4": {
+      "author": "Diego Sampaio <chinello@gmail.com>"
+    }
+  }
+}
