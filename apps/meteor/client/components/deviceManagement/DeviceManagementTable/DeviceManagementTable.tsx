@@ -1,12 +1,10 @@
 import type { DeviceManagementSession, DeviceManagementPopulatedSession, Serialized } from '@rocket.chat/core-typings';
 import { Box, Pagination, States, StatesAction, StatesActions, StatesIcon, StatesSubtitle, StatesTitle } from '@rocket.chat/fuselage';
 import type { PaginatedResult } from '@rocket.chat/rest-typings';
-import { GenericTable, GenericTableHeader, GenericTableBody, GenericTableLoadingTable } from '@rocket.chat/ui-client';
+import { GenericTable, GenericTableHeader, GenericTableBody, GenericTableLoadingTable, GenericNoResults } from '@rocket.chat/ui-client';
 import type { UseQueryResult } from '@tanstack/react-query';
 import type { ComponentProps, ReactNode } from 'react';
 import { useTranslation } from 'react-i18next';
-
-import GenericNoResults from '../../GenericNoResults/GenericNoResults';
 
 // FIXME: this tight coupling with the query result is not ideal; it indicates visual components should not be tightly
 // coupled with data fetching logic.
