@@ -195,6 +195,8 @@ export class OutgoingSipCall extends BaseSipCall {
 			void this.handleDialogModify(req, res);
 		});
 
+		await this.saveDialogIdentity();
+
 		logger.debug({ msg: 'OutgoingSipCall.createDialog - remote data', data: this.sipDialog.remote });
 
 		// This will not do anything if the call is no longer waiting to be accepted.

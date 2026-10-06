@@ -365,6 +365,19 @@ export abstract class BaseSipCall extends BaseCallProvider {
 		});
 	}
 
+	/** Saves what other calls need to know to refer someone to replace this call's dialog */
+	protected async saveDialogIdentity(): Promise<void> {
+		const dialogIdentity = this.sipDialog?.sip;
+		if (!dialogIdentity) {
+			return;
+		}
+
+		const { callId, localTag, remoteTag } = dialogIdentity;
+		await MediaCalls.setSipDialogById(this.callId, { callId, localTag, remoteTag }).catch((err) => {
+			logger.error({ msg: 'Failed to save the sip dialog identity', err, callId: this.callId, type: this.constructor.name });
+		});
+	}
+
 	protected async processTransferredCall(call: IMediaCall): Promise<void> {
 		if (this.lastCallState === 'hangup' || !call.transferredTo || !call.transferredBy) {
 			return;
@@ -381,9 +394,12 @@ export abstract class BaseSipCall extends BaseCallProvider {
 		this.processedTransfer = true;
 
 		try {
+			const replacesDialog = await this.getReplacedDialog(call);
+
 			await this.session.sendReferRequest(this.sipDialog, {
 				transferredTo: call.transferredTo,
 				transferredBy: call.transferredBy,
+				...(replacesDialog && { replacesDialog }),
 			});
 		} catch (err) {
 			logger.error({ msg: 'REFER failed', method: 'processTransferredCall', err, callId: call._id, type: this.constructor.name });
@@ -392,6 +408,22 @@ export abstract class BaseSipCall extends BaseCallProvider {
 			}
 			return this.processEndedCall(call);
 		}
+	}
+
+	/** For an attended transfer, the dialog of the consultation call that the transfer target is to replace */
+	private async getReplacedDialog(call: IMediaCall): Promise<IMediaCall['sipDialog'] | null> {
+		if (!call.transferReplacesCallId) {
+			return null;
+		}
+
+		const replacedCall = await MediaCalls.findOneById<Pick<IMediaCall, '_id' | 'sipDialog'>>(call.transferReplacesCallId, {
+			projection: { sipDialog: 1 },
+		});
+		if (!replacedCall?.sipDialog) {
+			throw new Error('invalid-transfer');
+		}
+
+		return replacedCall.sipDialog;
 	}
 
 	protected async getPendingInboundNegotiation(): Promise<SipCallNegotiation | null> {

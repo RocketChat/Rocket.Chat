@@ -92,6 +92,8 @@ export interface IMediaCall extends IRocketChatRecord {
 	transferredBy?: MediaCallSignedContact;
 	transferredTo?: MediaCallContact;
 	transferredAt?: Date;
+	/** For an attended transfer: the call the transfer target is to replace, rather than being called anew */
+	transferReplacesCallId?: string;
 
 	/** The party whose line was diverted at the SIP level (from the Diversion header) */
 	divertedBy?: MediaCallContact;
@@ -108,6 +110,8 @@ export interface IMediaCall extends IRocketChatRecord {
 	features: string[];
 
 	sipCallId?: string;
+	/** The identity of the SIP dialog of a call with a SIP actor, as needed to refer someone to replace it */
+	sipDialog?: { callId: string; localTag: string; remoteTag: string };
 
 	/** For `cti` calls: identifies which of the user's external endpoints/devices handles the call (opaque to Rocket.Chat, resolved by the app). */
 	device?: string;

@@ -31,7 +31,11 @@ export interface IMediaCallsModel extends IBaseModel<IMediaCall> {
 	activateCallById(callId: string, expiresAt: Date): Promise<IMediaCall | null>;
 	setExpiresAtById(callId: string, expiresAt: Date): Promise<UpdateResult>;
 	hangupCallById(callId: string, params: { endedBy?: IMediaCall['endedBy']; reason?: string } | undefined): Promise<IMediaCall | null>;
-	transferCallById(callId: string, params: { by: MediaCallSignedContact; to: MediaCallContact }): Promise<UpdateResult>;
+	transferCallById(
+		callId: string,
+		params: { by: MediaCallSignedContact; to: MediaCallContact; replacesCallId?: string },
+	): Promise<UpdateResult>;
+	setSipDialogById(callId: string, sipDialog: NonNullable<IMediaCall['sipDialog']>): Promise<UpdateResult>;
 	findAllExpiredCalls<T extends Document = IMediaCall, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(
 		options?: O,
 	): FindCursor<DocumentWithProjection<T, O>>;

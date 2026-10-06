@@ -2,6 +2,7 @@ import type {
 	IMediaCall,
 	MediaCallActorType,
 	MediaCallNegotiationStream,
+	MediaCallContact,
 	MediaCallSignedActor,
 	MediaCallSignedContact,
 } from '@rocket.chat/core-typings';
@@ -361,15 +362,18 @@ export class UserActorSignalProcessor {
 		const heldActor = heldCall[heldRole === 'caller' ? 'callee' : 'caller'];
 		const consultedActor = this.call.callee;
 
-		// Bridging two sip legs is not supported yet
-		if (heldActor.type !== 'user' || consultedActor.type !== 'user' || !heldActor.contractId) {
-			return;
-		}
-
 		const self: MediaCallSignedContact = {
 			...this.agent.getMyCallActor(this.call),
 			...this.actor,
 		};
+
+		if (heldActor.type === 'sip' && consultedActor.type === 'sip') {
+			return this.bridgeSipCalls(heldCall, heldRole, consultedActor);
+		}
+
+		if (heldActor.type !== 'user' || consultedActor.type !== 'user' || !heldActor.contractId) {
+			return;
+		}
 
 		// The actor on the held call calls the consulted one; both stay with the user until that call is active
 		await getMediaCallServer()
@@ -384,6 +388,20 @@ export class UserActorSignalProcessor {
 				features: this.call.features as CallFeature[],
 			})
 			.catch((err) => logger.error({ msg: 'Failed to bridge the calls of an attended transfer', err, callId: this.call._id }));
+	}
+
+	/** Refers the sip actor on the held call to replace the consultation call's dialog with the sip actor it is consulting */
+	private async bridgeSipCalls(heldCall: IMediaCall, heldRole: CallRole, consultedActor: MediaCallContact): Promise<void> {
+		// Without the dialog of the consultation call there is nothing for the other actor to replace
+		if (!this.call.sipDialog) {
+			logger.error({ msg: 'The consultation call has no sip dialog to be replaced', callId: this.call._id });
+			return;
+		}
+
+		const heldAgent = (await mediaCallDirector.cast.getAgentsFromCall(heldCall))[heldRole];
+		const by = { ...heldAgent.getMyCallActor(heldCall), ...heldCall[heldRole] } as MediaCallSignedContact;
+
+		await mediaCallDirector.transferCall(heldCall, consultedActor, by, heldAgent, { replacesCallId: this.call._id });
 	}
 
 	private async processDTMF(dtmf: string, duration?: number): Promise<void> {

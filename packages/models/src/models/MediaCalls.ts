@@ -189,7 +189,10 @@ export class MediaCallsRaw extends BaseRaw<IMediaCall> implements IMediaCallsMod
 		);
 	}
 
-	public async transferCallById(callId: string, params: { by: MediaCallSignedContact; to: MediaCallContact }): Promise<UpdateResult> {
+	public async transferCallById(
+		callId: string,
+		params: { by: MediaCallSignedContact; to: MediaCallContact; replacesCallId?: string },
+	): Promise<UpdateResult> {
 		return this.updateOne(
 			{
 				_id: callId,
@@ -205,6 +208,7 @@ export class MediaCallsRaw extends BaseRaw<IMediaCall> implements IMediaCallsMod
 					transferredAt: new Date(),
 					transferredBy: params.by,
 					transferredTo: params.to,
+					...(params.replacesCallId && { transferReplacesCallId: params.replacesCallId }),
 				},
 			},
 		);
@@ -257,6 +261,10 @@ export class MediaCallsRaw extends BaseRaw<IMediaCall> implements IMediaCallsMod
 			},
 			options,
 		);
+	}
+
+	public async setSipDialogById(callId: string, sipDialog: NonNullable<IMediaCall['sipDialog']>): Promise<UpdateResult> {
+		return this.updateOne({ _id: callId }, { $set: { sipDialog } });
 	}
 
 	public async hasUnfinishedCalls(): Promise<boolean> {
