@@ -8,6 +8,7 @@ import type { ReactNode, UIEvent } from 'react';
 import { Suspense, lazy, useEffect, useMemo, useRef, useState } from 'react';
 
 import { RoomHoverCardContext } from './RoomHoverCardContext';
+import { RoomHoverCardSurfaceContext } from './RoomHoverCardSurfaceContext';
 
 const loadRoomHoverCard = () => import('./RoomHoverCardWithData');
 const RoomHoverCard = lazy(loadRoomHoverCard);
@@ -181,11 +182,13 @@ const RoomHoverCardProvider = ({ children }: RoomHoverCardProviderProps) => {
 				// Keyed by room so handing the card to another room repositions it next to the new one.
 				<Popover key={rid} isNonModal placement='end top' offset={getPopoverOffset()} triggerRef={triggerRef} state={popoverState}>
 					<Box ref={cardRef} tabIndex={-1}>
-						<UserCardContext.Provider value={userCardContextValue}>
-							<Suspense fallback={null}>
-								<RoomHoverCard rid={rid} onClose={dismissRoomHoverCard} />
-							</Suspense>
-						</UserCardContext.Provider>
+						<RoomHoverCardSurfaceContext.Provider value={cardRef}>
+							<UserCardContext.Provider value={userCardContextValue}>
+								<Suspense fallback={null}>
+									<RoomHoverCard rid={rid} onClose={dismissRoomHoverCard} />
+								</Suspense>
+							</UserCardContext.Provider>
+						</RoomHoverCardSurfaceContext.Provider>
 					</Box>
 				</Popover>
 			)}

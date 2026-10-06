@@ -29,11 +29,42 @@ orange with group mentions).
 
 When the room has threads with unread replies (`subscription.tunread`), a section lists them below the last
 message, one row per thread showing the start of its parent message: threads mentioning the user first (red border
-and "@", orange for group mentions), then by last reply. At most four are listed; a last row says how many more there
-are and opens the room's thread list. A row opens its thread (`/…/thread/<tmid>`). The rows come from
-`GET /v1/chat.getThreadsList` (`type: 'unread'`), fetched when the card opens and refetched when `tunread` changes; once
-loaded, the server's list sets the count, since `tunread` can still hold threads read elsewhere. Nothing in the card
-marks anything as read except its button. The section is hidden when threads are disabled (`Threads_enabled`).
+and dot, orange for group mentions), then by last reply. At most four are listed; past that, a line says how many
+more there are (and how many of those mention the user) next to a "View all threads" button that opens the room's
+thread list. A row opens its thread (`/…/thread/<tmid>`). The rows come from `GET /v1/chat.getThreadsList`
+(`type: 'unread'`), fetched when the card opens and refetched when `tunread` changes; once loaded, the server's list
+sets the count, since `tunread` can still hold threads read elsewhere. The section is hidden when threads are
+disabled (`Threads_enabled`).
+
+### Thread preview
+
+Resting the pointer on a thread row for 300 ms opens a second popover next to the card (`RoomHoverCardThreadPreview`)
+with the thread itself: its parent message, "N earlier replies" (opens the thread), the latest four replies, and
+"Reply in thread" (opens the thread), "Mark as read" (`POST /v1/chat.readThread`, that thread only) and a follow toggle
+(`useToggleFollowingThreadMutation`). Moving to another row swaps it after the same delay; the pointer can cross to
+it, and leaving both closes it after 300 ms.
+
+The messages are rendered by the thread view's own components: `ThreadMessageItem` (and through it `ThreadMessage`,
+the date divider and the "unread messages" line), inside `RoomContext`, `MessageListProvider` and
+`DateListProvider`, as the thread view has them. The room context is built from the card's room and subscription;
+there is no `ChatContext`, so the message toolbar doesn't show, as in the audit page. Grouping follows the thread
+list's rule, `isThreadMessageSequential`, moved out of `ThreadMessageList` so both share it. The list is styled as the
+thread list (`overflow: hidden auto`, `hide-usernames` when that preference is on) on the room's background
+(`surface-room`), which the date pills are drawn for; it opens on the latest replies and stays there as it grows,
+with the room's `useKeepAtBottom`, until the user scrolls up. It is narrower than the thread list, so the message
+header's name container, which Fuselage keeps from shrinking, is let shrink: a long name and username truncate
+instead of pushing the time out.
+
+Replies come from REST `GET /v1/chat.getThreadMessages` (newest four), which unlike the `getThreadMessages` method does
+not mark the thread read, so hovering never reads anything. Where the "unread messages" line goes is approximate:
+nothing records when a single thread was last read, so it goes before the first reply posted after the user last saw
+the room (`subscription.ls`) or last replied in the thread, whichever is later, and before the last reply at least,
+since the thread is unread.
+
+The preview is portaled outside the card, so the card would close as the pointer moved onto it. The provider hands
+the card's hover tracking (`useHoverCardDismissal`'s callback ref) down through `RoomHoverCardSurfaceContext`, and
+the preview attaches it too, so it counts as part of the card. The previewed row is `aria-expanded`, which also makes
+the card stay while the preview is open, the same way it stays for an open menu.
 
 "Mark as read" only shows while the room has something unread (`alert`, `unread`, or unread threads), and reads
 "Mark all as read" when there are unread threads, since it reads them too (`readThreads: true`).
@@ -76,6 +107,7 @@ The card is not keyboard-reachable; everything in it is also available from the 
 | Team name | `GET /v1/teams.info` via `useTeamInfoQuery`, only for rooms in a team that aren't its main room |
 | Member avatars | `GET /v1/rooms.membersOrderedByRole` (`count: 3`), fetched when the card opens, cached 60 s |
 | Unread threads | `GET /v1/chat.getThreadsList` (`type: 'unread'`, `count: 50`), keyed by `subscription.tunread` |
+| Thread preview | `GET /v1/chat.getThreadMessages` (`count: 4`, newest first), when a row is previewed, keyed by the thread's last reply |
 | Calls | `useVideoCallAction`, `useUserMediaCallAction` from the user info actions; the provider supplies a `UserCardContext` whose `closeUserCard` closes the hover card |
 
 ## Endpoints used by actions
@@ -84,6 +116,8 @@ The card is not keyboard-reachable; everything in it is also available from the 
 |--------|----------|
 | Mark as read | `POST /v1/subscriptions.read` (`readThreads: true`) |
 | Open a thread, or the thread list | client routing (`roomCoordinator.openRouteLink` with `tab: 'thread'`) |
+| Mark one thread as read | `POST /v1/chat.readThread` |
+| Follow / unfollow a thread | `POST /v1/chat.followMessage` / `chat.unfollowMessage` (`useToggleFollowingThreadMutation`) |
 | Mute / Unmute | `POST /v1/rooms.saveNotification` (`useToggleNotificationAction`) |
 | Open / team link | client routing (`roomCoordinator.openRouteLink`) |
 
@@ -111,10 +145,11 @@ The card is not keyboard-reachable; everything in it is also available from the 
 | Room card | `apps/meteor/client/sidebar/RoomHoverCard/ChannelHoverCard.tsx`, `RoomHoverCardKind.tsx` |
 | Grouping button | `apps/meteor/client/views/room/Header/icons/RoomGroupingButton.tsx`, shared with the room header (`RoomGroupingMenu.tsx` adds the subscribed check) |
 | Unread threads | `apps/meteor/client/sidebar/RoomHoverCard/RoomHoverCardThreads.tsx` |
+| Thread preview | `apps/meteor/client/sidebar/RoomHoverCard/RoomHoverCardThreadPreview.tsx`, `RoomHoverCardSurfaceContext.ts`; reuses `views/room/contextualBar/Threads/components/ThreadMessageItem.tsx` and `views/room/contextualBar/Threads/lib/isThreadMessageSequential.ts` |
 | Shared pieces | `RoomHoverCardDialog.tsx`, `RoomHoverCardLastMessage.tsx`, `RoomHoverCardSectionLabel.tsx`, `RoomHoverCardFooter.tsx`, `RoomHoverCardQuickAction.tsx`, `getHoverCardMessagePreview.ts` |
 | Actions | `apps/meteor/client/sidebar/RoomHoverCard/useRoomHoverCardActions.ts` |
 | Trigger | `apps/meteor/client/sidebar/RoomList/SidebarItemTemplateWithData.tsx` |
 | Mount point | `apps/meteor/client/sidebar/RoomList/RoomList.tsx` |
-| Tests | `RoomHoverCardProvider.spec.tsx` (hover delays and hand-over), `RoomHoverCardWithData.spec.tsx` (room cache fallback, empty room), `RoomHoverCardThreads.spec.tsx` (order, limit, navigation) |
+| Tests | `RoomHoverCardProvider.spec.tsx` (hover delays and hand-over), `RoomHoverCardWithData.spec.tsx` (room cache fallback, empty room), `RoomHoverCardThreads.spec.tsx` (order, limit, navigation, preview without reading) |
 | Stories | `RoomHoverCard.stories.tsx` (made-up data; reads the source locale) |
-| Strings | `packages/i18n/src/locales/en.i18n.json` (`Open_conversation`, `Open_channel`, `Members_count`, `Notifications_off`, `Mute_room_notifications`, `Unmute_room_notifications`, `Public_channel_in_team`, `Private_channel_in_team`, `Unread_threads_count`, `More_unread_threads`, `Mark_messages_and_threads_as_read`) |
+| Strings | `packages/i18n/src/locales/en.i18n.json` (`Open_conversation`, `Open_channel`, `Members_count`, `Notifications_off`, `Mute_room_notifications`, `Unmute_room_notifications`, `Public_channel_in_team`, `Private_channel_in_team`, `Unread_threads_count`, `More_unread_threads`, `Mark_messages_and_threads_as_read`, `View_all_threads`, `Thread_preview_context`, `Earlier_replies_count`) |

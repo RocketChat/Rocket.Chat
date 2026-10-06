@@ -40,7 +40,13 @@ const alex = createFakeUser({
 });
 const sam = createFakeUser({ _id: 'sam', username: 'sam.carter', name: 'Sam Carter', status: UserStatus.AWAY });
 const priya = createFakeUser({ _id: 'priya', username: 'priya.nair', name: 'Priya Nair', status: UserStatus.ONLINE });
-const users = [me, alex, sam, priya];
+const morgan = createFakeUser({
+	_id: 'morgan',
+	username: 'morgan.delacroix.fontaine',
+	name: 'Morgan Delacroix-Fontaine',
+	status: UserStatus.ONLINE,
+});
+const users = [me, alex, sam, priya, morgan];
 
 const rooms: IRoom[] = [
 	createFakeRoom({
@@ -93,7 +99,7 @@ const threadParent = (_id: string, msg: string, author: IUser, lastReplyMinutesA
 		rid: 'design-system',
 		msg,
 		u: { _id: author._id, username: author.username ?? '', name: author.name },
-		tcount: 4,
+		tcount: 14,
 		tlm: minutesAgo(lastReplyMinutesAgo),
 		ts: minutesAgo(lastReplyMinutesAgo + 120),
 	});
@@ -106,6 +112,26 @@ const designSystemThreads = [
 	threadParent('th-figma', 'Library publish is failing again', priya, 260),
 	threadParent('th-docs', 'Docs search ranks deprecated components first', alex, 400),
 ];
+
+const replyTexts = [
+	'Agreed. Can we keep the old names as aliases for one release?',
+	'Aliases are fine, the codemod handles the rest.',
+	'I updated the proposal with the migration table.',
+	'Looks good to me, merging after the design review.',
+];
+
+const threadReplies = (thread: (typeof designSystemThreads)[number]) =>
+	replyTexts.map((msg, index) => {
+		const author = [alex, morgan, sam, alex][index];
+		return createFakeMessage({
+			_id: `${thread._id}-reply-${index}`,
+			rid: 'design-system',
+			tmid: thread._id,
+			msg,
+			u: { _id: author._id, username: author.username ?? '', name: author.name },
+			ts: new Date((thread.tlm as Date).getTime() - (replyTexts.length - 1 - index) * 9 * 60_000),
+		});
+	});
 
 const subscriptions: ISubscription[] = [
 	createFakeSubscription({
@@ -134,6 +160,7 @@ const subscriptions: ISubscription[] = [
 		groupMentions: 0,
 		tunread: designSystemThreads.map(({ _id }) => _id),
 		tunreadUser: ['th-sbom'],
+		ls: minutesAgo(32),
 		tunreadGroup: [],
 		f: true,
 		desktopNotifications: 'mentions',
@@ -249,6 +276,7 @@ const workspace: Decorator = (Story) => (
 
 const appRoot = mockAppRoot()
 	.withSetting('UI_Use_Real_Name', true)
+	.withUserPreference('displayAvatars', true)
 	.withSetting('Favorite_Rooms', true)
 	.withSetting('VideoConf_Enable_DMs', true)
 	.withPermission('call-management')
@@ -266,6 +294,11 @@ const appRoot = mockAppRoot()
 		count: designSystemThreads.length,
 		offset: 0,
 	}))
+	.withEndpoint('GET', '/v1/chat.getThreadMessages', ({ tmid }) => {
+		const thread = designSystemThreads.find(({ _id }) => _id === tmid) ?? designSystemThreads[0];
+		const replies = threadReplies(thread).reverse();
+		return { messages: serialize(replies), count: replies.length, offset: 0, total: replies.length };
+	})
 	.withEndpoint('GET', '/v1/teams.info', () => ({ teamInfo: { _id: 'team-product', name: 'Product', roomId: 'product', type: 0 } }))
 	.withEndpoint(
 		'GET',
