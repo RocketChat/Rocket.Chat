@@ -89,6 +89,11 @@ const CallMemberItem = ({
 					<ItemTitle>
 						{nameOrUsername} {displayUsername && <ItemDescription inline>{displayUsername}</ItemDescription>}
 					</ItemTitle>
+				</ItemRow>
+				{status !== 'joined' && <ItemDescription>{t(ringing ? 'Ringing' : statusLabel[status])}</ItemDescription>}
+			</ItemContent>
+			{(canMute || showActivity || (canRingUsers && canRing) || controls || !hasChatAccess || handRaised) && (
+				<ItemActions>
 					{/* What a provider running in its own frame says about them. */}
 					{controls && <CallParticipantStatus participant={controls.participant} />}
 					{!hasChatAccess && (
@@ -101,11 +106,6 @@ const CallMemberItem = ({
 							<span aria-hidden>✋</span>
 						</ItemIcon>
 					)}
-				</ItemRow>
-				{status !== 'joined' && <ItemDescription>{t(ringing ? 'Ringing' : statusLabel[status])}</ItemDescription>}
-			</ItemContent>
-			{(canMute || showActivity || (canRingUsers && canRing) || controls) && (
-				<ItemActions>
 					{/* A live microphone, and for anyone but the reader a way to ask it for silence. A muted one says nothing:
 					    silence is what everyone already hears. */}
 					{canMute && (
