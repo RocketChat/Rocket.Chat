@@ -14,9 +14,8 @@ import RoomHoverCardKind from './RoomHoverCardKind';
 import RoomHoverCardLastMessage from './RoomHoverCardLastMessage';
 import { useRoomHoverCardActions } from './useRoomHoverCardActions';
 import MarkdownText from '../../components/MarkdownText';
-import { useOpenedRoom } from '../../lib/RoomManager';
 import { roomCoordinator } from '../../lib/rooms/roomCoordinator';
-import RoomMenu from '../RoomMenu';
+import RoomGroupingButton from '../../views/room/Header/icons/RoomGroupingButton';
 import { useUnreadDisplay } from '../hooks/useUnreadDisplay';
 
 const MEMBER_AVATARS = 3;
@@ -59,8 +58,6 @@ export type ChannelHoverCardProps = {
 const ChannelHoverCard = ({ room, subscription, onClose }: ChannelHoverCardProps) => {
 	const { t } = useTranslation();
 	const titleId = useId();
-	const openedRoom = useOpenedRoom();
-
 	const roomName = roomCoordinator.getRoomName(room.t, room);
 	const isMuted = Boolean(subscription.disableNotifications);
 
@@ -89,17 +86,7 @@ const ChannelHoverCard = ({ room, subscription, onClose }: ChannelHoverCardProps
 							<RoomHoverCardKind room={room} onNavigate={onClose} />
 						</Box>
 					</Box>
-					<RoomMenu
-						rid={room._id}
-						alert={subscription.alert}
-						unread={Boolean(subscription.unread)}
-						threadUnread={unread.unreadCount.threads > 0}
-						roomOpen={openedRoom === room._id}
-						type={room.t}
-						cl={room.cl}
-						name={roomName}
-						hideDefaultOptions={false}
-					/>
+					<RoomGroupingButton room={{ ...room, f: subscription.f, category: subscription.category }} />
 				</Box>
 				{room.topic && (
 					<Box fontScale='p2' color='font-secondary-info' marginBlockStart={12} className={topicStyle}>
