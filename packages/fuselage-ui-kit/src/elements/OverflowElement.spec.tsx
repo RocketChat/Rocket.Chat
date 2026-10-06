@@ -5,6 +5,7 @@ import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 
 import OverflowElement from './OverflowElement';
+import { UiKitContext } from '../contexts/UiKitContext';
 import { messageParser } from '../surfaces';
 
 const selectOption = async (url: string) => {
@@ -16,14 +17,20 @@ const selectOption = async (url: string) => {
 		options: [{ value: 'open', text: { type: 'plain_text', text: 'Open' }, url }],
 	};
 
+	const action = jest.fn();
+
 	render(
 		<MockedServerContext>
-			<OverflowElement index={0} block={block} context={BlockContext.ACTION} surfaceRenderer={messageParser} />
+			<UiKitContext.Provider value={{ action, values: {} }}>
+				<OverflowElement index={0} block={block} context={BlockContext.ACTION} surfaceRenderer={messageParser} />
+			</UiKitContext.Provider>
 		</MockedServerContext>,
 	);
 
 	await userEvent.click(screen.getByRole('button'));
 	await userEvent.click(await screen.findByRole('option', { name: 'Open' }));
+
+	return action;
 };
 
 beforeEach(() => {
@@ -41,7 +48,8 @@ it('opens a safe url without an opener', async () => {
 });
 
 it('ignores an unsafe url', async () => {
-	await selectOption('javascript:alert(1)');
+	const action = await selectOption('javascript:alert(1)');
 
 	expect(window.open).not.toHaveBeenCalled();
+	expect(action).toHaveBeenCalledWith(expect.objectContaining({ actionId: 'test', value: 'open' }), expect.anything());
 });
