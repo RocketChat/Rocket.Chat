@@ -19,7 +19,6 @@ import {
 import { contextWithPlainText, contextWithMrkdwn, contextWithImage, contextWithAllElements } from './context';
 import { divider } from './divider';
 import { header } from './header';
-import { markdown } from './markdown';
 import { imageWithTitle, imageWithoutTitle } from './image';
 import { infoCardPlain, infoCardMultipleRows } from './infoCard';
 import {
@@ -36,6 +35,7 @@ import {
 	inputWithConversationsSelect,
 	inputWithMultiConversationsSelect,
 } from './input';
+import { markdown } from './markdown';
 import { previewPlain, previewWithImage, previewWithUrl, previewWithImageAndUrl } from './preview';
 import {
 	sectionWithPlainText,
