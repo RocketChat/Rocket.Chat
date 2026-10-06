@@ -1,4 +1,5 @@
 import { Box, Button, ButtonGroup } from '@rocket.chat/fuselage';
+import { ActionButton } from '@rocket.chat/ui-media';
 import { useTranslation } from 'react-i18next';
 
 import {
@@ -10,7 +11,6 @@ import {
 	WidgetHeader,
 	WidgetContent,
 	DevicePicker,
-	ActionButton,
 	Keypad,
 	useDraggableWidget,
 } from '../../components';

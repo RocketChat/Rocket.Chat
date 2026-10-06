@@ -176,6 +176,10 @@ export class ActionManager implements IActionManager {
 			}
 
 			case 'modal.close': {
+				const viewId = interaction.viewId ?? interaction.view?.id;
+				if (viewId) {
+					this.disposeView(viewId);
+				}
 				break;
 			}
 

@@ -125,6 +125,8 @@ interface IAPIDefaultFieldsToExclude {
 	_updatedAt: number;
 	settings: number;
 	inviteToken: number;
+	statusVisibilityDeniedByAdmin: number;
+	presenceDisabledByAdmin: number;
 }
 
 export const defaultRateLimiterOptions: RateLimiterOptions = {
@@ -182,8 +184,10 @@ export class APIClass<TBasePath extends string = '', TOperations extends Record<
 	public limitedUserFieldsToExclude: IAPIDefaultFieldsToExclude;
 
 	public limitedUserFieldsToExcludeIfIsPrivilegedUser: {
-		services: number;
-		inviteToken: number;
+		'services': number;
+		'inviteToken': number;
+		'statusVisibilityDeniedByAdmin': number;
+		'settings.preferences.statusVisibilityDenied': number;
 	};
 
 	readonly router: Router<any, any, any>;
@@ -215,11 +219,15 @@ export class APIClass<TBasePath extends string = '', TOperations extends Record<
 			_updatedAt: 0,
 			settings: 0,
 			inviteToken: 0,
+			statusVisibilityDeniedByAdmin: 0,
+			presenceDisabledByAdmin: 0,
 		};
 		this.limitedUserFieldsToExclude = this.defaultLimitedUserFieldsToExclude;
 		this.limitedUserFieldsToExcludeIfIsPrivilegedUser = {
-			services: 0,
-			inviteToken: 0,
+			'services': 0,
+			'inviteToken': 0,
+			'statusVisibilityDeniedByAdmin': 0,
+			'settings.preferences.statusVisibilityDenied': 0,
 		};
 		this.router = new RocketChatAPIRouter(`/${this.apiPath}`.replace(/\/$/, '').replaceAll('//', '/'));
 

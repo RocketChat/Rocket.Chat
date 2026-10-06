@@ -47,8 +47,11 @@ jest.mock('@rocket.chat/ui-conference', () => ({
 		actions = value;
 		return children;
 	},
-	DeviceSelectionProvider: ({ children }: { children: ReactNode }) => children,
 	useUpdateCallPreferences: () => jest.fn(),
+}));
+
+jest.mock('@rocket.chat/ui-media', () => ({
+	DeviceSelectionProvider: ({ children }: { children: ReactNode }) => children,
 }));
 
 jest.mock('./useLiveKitTransport', () => ({

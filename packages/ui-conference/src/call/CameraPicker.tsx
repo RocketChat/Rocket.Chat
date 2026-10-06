@@ -1,37 +1,23 @@
-import { stopTracks } from '@rocket.chat/ui-voip';
-import { useCallback } from 'react';
+import { DeviceMenu, DeviceMenuButton, useDeviceSelection, useRevealDeviceLabels } from '@rocket.chat/ui-media';
 import { useTranslation } from 'react-i18next';
 
-import CallDeviceMenuButton from './CallDeviceMenuButton';
 import { useCallState } from './context';
-import { refreshMediaDevices } from './lib/mediaDevicesStore';
-import DeviceMenu from '../devices/DeviceMenu';
-import { useDeviceSelection } from '../devices/DeviceSelectionContext';
 
 /** The camera of a call running in this window. */
 const CameraPicker = () => {
 	const { t } = useTranslation();
 	const { self } = useCallState();
 	const { devices } = useDeviceSelection();
-
-	// Asked on opening, like the audio menu: a call joined with the camera off may not have the permission that
-	// names the cameras yet, and unnamed they are indistinguishable.
-	const askForCameras = useCallback(async () => {
-		if (devices.every((device) => device.kind !== 'videoinput' || device.label)) {
-			return;
-		}
-		// A refused or absent camera still opens the menu, with whatever the browser lists.
-		await navigator.mediaDevices.getUserMedia({ video: true }).then(stopTracks, () => undefined);
-		refreshMediaDevices();
-	}, [devices]);
+	const revealDeviceLabels = useRevealDeviceLabels();
 
 	return (
 		<DeviceMenu
 			kinds={['videoinput']}
 			title={t('Camera')}
 			placement='top-end'
-			beforeOpen={askForCameras}
-			button={<CallDeviceMenuButton label={t('Camera_options')} danger={!self.cameraOn} />}
+			// A call joined with the camera off may not have the permission that names the cameras yet.
+			beforeOpen={() => revealDeviceLabels(['videoinput'], devices)}
+			button={<DeviceMenuButton secondary large menuIcon='chevron-up' label={t('Camera_options')} danger={!self.cameraOn} />}
 		/>
 	);
 };
