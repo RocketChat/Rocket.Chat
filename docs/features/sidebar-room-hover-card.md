@@ -23,22 +23,37 @@ The grouping button, top right, is the room header's own (`RoomGroupingButton`):
 license it picks the room's category (Favorites being one of them), without it it toggles favorite. The card has no
 room menu; hiding, leaving and marking unread stay in the sidebar's kebab.
 
-Both end with the room's last message: author, time, preview (videoconf, E2EE and attachment messages get the
-same placeholders as the sidebar preview) and the room's unread summary as a badge.
+Both continue with the room's last message: author, time, preview (videoconf, E2EE and attachment messages get the
+same placeholders as the sidebar preview) and a badge with the room's own unread messages (red with user mentions,
+orange with group mentions).
 
-"Mark as read" only shows while the room has something unread (`alert`, `unread`, or unread threads).
+When the room has threads with unread replies (`subscription.tunread`), a section lists them below the last
+message, one row per thread showing the start of its parent message: threads mentioning the user first (red border
+and "@", orange for group mentions), then by last reply. At most four are listed; a last row says how many more there
+are and opens the room's thread list. A row opens its thread (`/…/thread/<tmid>`). The rows come from
+`GET /v1/chat.getThreadsList` (`type: 'unread'`), fetched when the card opens and refetched when `tunread` changes; once
+loaded, the server's list sets the count, since `tunread` can still hold threads read elsewhere. Nothing in the card
+marks anything as read except its button. The section is hidden when threads are disabled (`Threads_enabled`).
+
+"Mark as read" only shows while the room has something unread (`alert`, `unread`, or unread threads), and reads
+"Mark all as read" when there are unread threads, since it reads them too (`readThreads: true`).
 "Mute" toggles `disableNotifications`, the same as the "Turn on" switch of the notification preferences.
 
 ## Hover behaviour
 
 `RoomHoverCardProvider` wraps the room list and owns a single non-modal `Popover`, placed at the `end top` of the
-hovered room, 0.75rem away. It follows the user card's hover pattern (`views/room/providers/UserCardProvider.tsx`):
-`useTooltipTriggerState` with a 500 ms open delay and a 300 ms close delay, and `useHoverCardDismissal` on the
-card for keep-open, Escape and open-menu handling.
+hovered room, 0.75rem away. It keeps its own hover timers (500 ms to open, 300 ms to close) and uses
+`useHoverCardDismissal` on the card for keep-open, Escape and open-menu handling. It does not use react-stately's
+`useTooltipTriggerState`, like the user card does: that one shares a global warm-up between all its users, so once
+any card had shown, the next ones opened with no delay.
 
-- Once a card is showing, moving to another room hands it over immediately.
-- Sweeping across the list doesn't open anything: entering a room while an open is still pending restarts the delay.
-- Leaving the card for its room, or another room, keeps a card open; leaving the list closes it.
+- Every card waits 500 ms of the pointer resting on its room, including right after another card closed.
+- Moving from a room with a card to another room keeps the current card until the new room's delay elapses, then
+  swaps it, so there's no gap and no flicker.
+- Reaching the card keeps it and cancels any swap still pending, so crossing other rooms on the way to the card
+  (moving diagonally to its lower half) doesn't replace it.
+- Sweeping across the list opens nothing: entering a room restarts the delay.
+- Leaving the room and the card closes it after 300 ms.
 - Pointer down on the room (navigating, or opening its kebab), a scroll of the list, Escape, and any card action
   close it at once.
 - Never opens on devices without hover (`(hover: hover)`), since taps also emit mouse events.
@@ -46,9 +61,8 @@ card for keep-open, Escape and open-menu handling.
 **Why the leave handling looks unusual.** Rooms sit edge to edge. React synthesizes `onMouseEnter` of the next room
 while handling the previous room's `mouseout`, so it runs *before* the previous room's native `mouseleave` (and before
 the card's, when coming back from the card). A naive "close on leave" therefore hands the card to the next room and
-then schedules its close. The provider ignores a leave from any room other than the current trigger, and a card
-leave while the pointer is on the current trigger. `RoomHoverCardProvider.spec.tsx` reproduces the browser's event
-order.
+then schedules its close. The provider ignores a leave from any room other than the one the pointer is on, and a
+card leave while the pointer is on a room. `RoomHoverCardProvider.spec.tsx` reproduces the browser's event order.
 
 The card is not keyboard-reachable; everything in it is also available from the room menu or the room itself.
 
@@ -61,6 +75,7 @@ The card is not keyboard-reachable; everything in it is also available from the 
 | User profile (DM) | `GET /v1/users.info` via `useUserInfoQuery` |
 | Team name | `GET /v1/teams.info` via `useTeamInfoQuery`, only for rooms in a team that aren't its main room |
 | Member avatars | `GET /v1/rooms.membersOrderedByRole` (`count: 3`), fetched when the card opens, cached 60 s |
+| Unread threads | `GET /v1/chat.getThreadsList` (`type: 'unread'`, `count: 50`), keyed by `subscription.tunread` |
 | Calls | `useVideoCallAction`, `useUserMediaCallAction` from the user info actions; the provider supplies a `UserCardContext` whose `closeUserCard` closes the hover card |
 
 ## Endpoints used by actions
@@ -68,6 +83,7 @@ The card is not keyboard-reachable; everything in it is also available from the 
 | Action | Endpoint |
 |--------|----------|
 | Mark as read | `POST /v1/subscriptions.read` (`readThreads: true`) |
+| Open a thread, or the thread list | client routing (`roomCoordinator.openRouteLink` with `tab: 'thread'`) |
 | Mute / Unmute | `POST /v1/rooms.saveNotification` (`useToggleNotificationAction`) |
 | Open / team link | client routing (`roomCoordinator.openRouteLink`) |
 
@@ -94,9 +110,11 @@ The card is not keyboard-reachable; everything in it is also available from the 
 | DM card | `apps/meteor/client/sidebar/RoomHoverCard/DirectMessageHoverCard.tsx` |
 | Room card | `apps/meteor/client/sidebar/RoomHoverCard/ChannelHoverCard.tsx`, `RoomHoverCardKind.tsx` |
 | Grouping button | `apps/meteor/client/views/room/Header/icons/RoomGroupingButton.tsx`, shared with the room header (`RoomGroupingMenu.tsx` adds the subscribed check) |
-| Shared pieces | `RoomHoverCardDialog.tsx`, `RoomHoverCardLastMessage.tsx`, `RoomHoverCardFooter.tsx`, `RoomHoverCardQuickAction.tsx` |
+| Unread threads | `apps/meteor/client/sidebar/RoomHoverCard/RoomHoverCardThreads.tsx` |
+| Shared pieces | `RoomHoverCardDialog.tsx`, `RoomHoverCardLastMessage.tsx`, `RoomHoverCardSectionLabel.tsx`, `RoomHoverCardFooter.tsx`, `RoomHoverCardQuickAction.tsx`, `getHoverCardMessagePreview.ts` |
 | Actions | `apps/meteor/client/sidebar/RoomHoverCard/useRoomHoverCardActions.ts` |
 | Trigger | `apps/meteor/client/sidebar/RoomList/SidebarItemTemplateWithData.tsx` |
 | Mount point | `apps/meteor/client/sidebar/RoomList/RoomList.tsx` |
-| Tests | `RoomHoverCardProvider.spec.tsx` (hover hand-over), `RoomHoverCardWithData.spec.tsx` (room cache fallback, empty room) |
-| Strings | `packages/i18n/src/locales/en.i18n.json` (`Open_conversation`, `Open_channel`, `Members_count`, `Notifications_off`, `Mute_room_notifications`, `Unmute_room_notifications`, `Public_channel_in_team`, `Private_channel_in_team`) |
+| Tests | `RoomHoverCardProvider.spec.tsx` (hover delays and hand-over), `RoomHoverCardWithData.spec.tsx` (room cache fallback, empty room), `RoomHoverCardThreads.spec.tsx` (order, limit, navigation) |
+| Stories | `RoomHoverCard.stories.tsx` (made-up data; reads the source locale) |
+| Strings | `packages/i18n/src/locales/en.i18n.json` (`Open_conversation`, `Open_channel`, `Members_count`, `Notifications_off`, `Mute_room_notifications`, `Unmute_room_notifications`, `Public_channel_in_team`, `Private_channel_in_team`, `Unread_threads_count`, `More_unread_threads`, `Mark_messages_and_threads_as_read`) |

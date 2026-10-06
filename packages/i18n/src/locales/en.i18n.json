@@ -4267,6 +4267,7 @@
   "MapView_GMapsAPIKey_Description": "This can be obtained from the Google developers console for free.",
   "Mark_all_as_read": "`{{shortcut}}` - Mark all messages (in all channels) as read",
   "Mark_as_read": "Mark as read",
+  "Mark_messages_and_threads_as_read": "Mark all as read",
   "Mark_as_unread": "Mark as unread",
   "Mark_email_as_verified": "Mark email as verified",
   "Mark_read": "Mark read",
@@ -4642,6 +4643,10 @@
   "More_groups": "More private groups",
   "More_options": "More options",
   "More_unreads": "More unreads",
+  "More_unread_threads": {
+    "one": "{{count}} more unread thread",
+    "other": "{{count}} more unread threads"
+  },
   "More_unreads_above": "More unreads above",
   "More_unreads_below": "More unreads below",
   "Most_popular_channels_top_5": "Most popular channels (top 5)",
@@ -7090,6 +7095,10 @@
   "Unread_mentions_above": "Unread mentions above",
   "Unread_mentions_below": "Unread mentions below",
   "Unread_Messages": "Unread messages",
+  "Unread_threads_count": {
+    "one": "{{count}} unread thread",
+    "other": "{{count}} unread threads"
+  },
   "unread_messages_counter": {
     "one": "{{count}} unread message",
     "other": "{{count}} unread messages"
