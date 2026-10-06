@@ -84,7 +84,7 @@ export class UsersRaw extends BaseRaw<IUser, DefaultFields<IUser>> implements IU
 			{ key: { 'services.saml.inResponseTo': 1 } },
 			{ key: { openBusinessHours: 1 }, sparse: true },
 			{ key: { statusLivechat: 1 }, sparse: true },
-			{ key: { freeSwitchExtension: 1 }, sparse: true, unique: true },
+			{ key: { sipExtension: 1 }, sparse: true, unique: true },
 			{ key: { language: 1 }, sparse: true },
 			{ key: { 'active': 1, 'services.email2fa.enabled': 1 }, sparse: true }, // used by statistics
 			{ key: { 'active': 1, 'services.totp.enabled': 1 }, sparse: true }, // used by statistics
@@ -2726,13 +2726,13 @@ export class UsersRaw extends BaseRaw<IUser, DefaultFields<IUser>> implements IU
 		);
 	}
 
-	findOneByFreeSwitchExtension<T extends Document = IUser, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(
-		freeSwitchExtension: string,
+	findOneBySipExtension<T extends Document = IUser, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(
+		sipExtension: string,
 		options?: O,
 	): Promise<DocumentWithProjection<T, O> | null> {
 		return this.findOne<T, O>(
 			{
-				freeSwitchExtension,
+				sipExtension,
 			},
 			options,
 		);

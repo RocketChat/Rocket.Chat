@@ -33,20 +33,7 @@ export type UsersTableRowProps = {
 const UsersTableRow = ({ user, tab, isMobile, isLaptop, isSeatsCapExceeded, showVoipExtension, onClick, onReload }: UsersTableRowProps) => {
 	const { t } = useTranslation();
 
-	const {
-		_id,
-		emails,
-		username = '',
-		name = '',
-		roles,
-		status,
-		active,
-		avatarETag,
-		lastLogin,
-		type,
-		freeSwitchExtension,
-		federated,
-	} = user;
+	const { _id, emails, username = '', name = '', roles, status, active, avatarETag, lastLogin, type, sipExtension, federated } = user;
 
 	const registrationStatusText = useMemo(() => {
 		const usersExcludedFromPending = ['bot', 'app'];
@@ -176,7 +163,7 @@ const UsersTableRow = ({ user, tab, isMobile, isLaptop, isSeatsCapExceeded, show
 
 			{tab === 'all' && showVoipExtension && (
 				<GenericTableCell fontScale='p2' color='hint' withTruncatedText>
-					{freeSwitchExtension || t('Not_assigned')}
+					{sipExtension || t('Not_assigned')}
 				</GenericTableCell>
 			)}
 

@@ -125,7 +125,7 @@ export type DefaultUserInfo = Pick<
 	| 'lastLogin'
 	| 'type'
 	| 'federated'
-	| 'freeSwitchExtension'
+	| 'sipExtension'
 >;
 
 export type UsersEndpoints = {
