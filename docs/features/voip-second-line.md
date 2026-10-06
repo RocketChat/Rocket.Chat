@@ -70,8 +70,20 @@ Both clients share the session's input track, so the microphone is not requested
 If the new call fails, the replaced calls are left alone and no `rejected-call-request` is sent for
 them.
 
-**Both legs SIP.** Not implemented yet. It is meant to send a REFER with `Replaces` on the held call's
-dialog.
+**Both legs SIP.** The media does not go through Rocket.Chat, so the two SIP parties are connected to
+each other with an attended transfer as defined by SIP:
+
+- Each SIP leg saves the identity of its dialog (`IMediaCall.sipDialog`: Call-ID and both tags) when the
+  dialog is created, so any server instance can use it, whichever one owns the leg.
+- `processCompleteAttendedTransfer` flags the held call as transferred to the consulted actor, with
+  `transferReplacesCallId` set to the consultation call. This is the same flag a blind transfer uses, so
+  the instance that owns the held leg reacts to it.
+- That leg sends a `REFER` whose `Refer-To` is the consulted actor's URI with a `Replaces` header built
+  from the consultation call's dialog (`SipServerSession.sendReferRequest`). The referred party calls the
+  consulted party, who replaces the dialog with Rocket.Chat by it and ends the consultation call.
+- Rocket.Chat does not hang up anything itself. The calls end when the SIP parties end their dialogs,
+  as for a blind transfer. If the consultation call has no saved dialog, the transfer is not attempted;
+  if the `REFER` fails, the held call is ended, as in a blind transfer.
 
 ### Client (`@rocket.chat/media-signaling`, `ui-voip`)
 
