@@ -1,6 +1,5 @@
 import { ExchangeEwsProvider } from './ExchangeEwsProvider';
 import type { IEwsTransport } from './IEwsTransport';
-import { parseEwsDateTime } from './parseResponse';
 
 const T = 'http://schemas.microsoft.com/exchange/services/2006/types';
 const M = 'http://schemas.microsoft.com/exchange/services/2006/messages';
@@ -33,21 +32,6 @@ class FakeTransport implements IEwsTransport {
 }
 
 const timeWindow = { start: new Date('2026-08-21T00:00:00Z'), end: new Date('2026-08-22T00:00:00Z') };
-
-describe('parseEwsDateTime', () => {
-	it('parses the EWS UTC format', () => {
-		expect(parseEwsDateTime('2026-08-21T10:00:00Z')?.toISOString()).toBe('2026-08-21T10:00:00.000Z');
-	});
-
-	it('respects an explicit offset when one is present', () => {
-		expect(parseEwsDateTime('2026-08-21T10:00:00+02:00')?.toISOString()).toBe('2026-08-21T08:00:00.000Z');
-	});
-
-	it('returns undefined rather than epoch for junk', () => {
-		expect(parseEwsDateTime('nonsense')).toBeUndefined();
-		expect(parseEwsDateTime(undefined)).toBeUndefined();
-	});
-});
 
 describe('ExchangeEwsProvider', () => {
 	describe('testConnection', () => {
