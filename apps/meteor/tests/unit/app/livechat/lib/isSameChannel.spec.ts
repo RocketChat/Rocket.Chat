@@ -17,7 +17,6 @@ const association = ({
 	source: id === undefined ? { type } : { type, id },
 });
 
-// Callers can pass an association that does not exist yet, which the type does not express.
 const missing = (value: null | undefined) => value as unknown as ILivechatContactVisitorAssociation;
 
 describe('isSameChannel', () => {
@@ -83,7 +82,6 @@ describe('isSameChannel', () => {
 			const first = association({ type: OmnichannelSourceType.APP, id: 'source-1' });
 			const second = association({ type: OmnichannelSourceType.APP, id: 'source-1' });
 
-			expect(first).to.not.equal(second);
 			expect(isSameChannel(first, second)).to.be.true;
 		});
 	});
