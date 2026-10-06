@@ -16,6 +16,10 @@ export type InternalCallParams = {
 	parentCallId?: string;
 	/** The call is a consultation before an attended transfer, so the parent call is neither replaced nor hung up */
 	attended?: boolean;
+	/** Resolves the callee as this actor type, regardless of how the routing settings would reach them */
+	requiredCalleeType?: MediaCallActorType;
+	/** The call takes over for these calls, which stay in progress until it is active */
+	replacedCallIds?: string[];
 	requestedBy?: MediaCallSignedContact;
 	features: CallFeature[];
 	divertedBy?: MediaCallContact;

@@ -33,13 +33,15 @@ const MediaCallPopoutView = ({ user, onClickClosePopout }: MediaCallPopoutViewPr
 		onHold,
 		onForward,
 		onSwapCalls,
+		onCompleteTransfer,
 		onEndCall,
 		onToggleScreenSharing,
 		onRequestVideoCall,
 		streams: { localScreen },
 	} = useMediaCallView();
 
-	const { muted, held, peerInfo, connectionState, startedAt, escalated, supportedFeatures, hasAlternateCall } = sessionState;
+	const { muted, held, peerInfo, connectionState, startedAt, escalated, supportedFeatures, hasAlternateCall, canCompleteTransfer } =
+		sessionState;
 
 	const { ref, borderBoxSize } = useResizeObserver<HTMLDivElement>();
 
@@ -120,6 +122,9 @@ const MediaCallPopoutView = ({ user, onClickClosePopout }: MediaCallPopoutViewPr
 				)}
 				{hasAlternateCall && (
 					<ActionButton disabled={connecting || reconnecting} label={t('Switch_call')} icon='arrow-loop' onClick={onSwapCalls} />
+				)}
+				{canCompleteTransfer && (
+					<ActionButton disabled={connecting || reconnecting} label={t('Complete_transfer')} icon='check' onClick={onCompleteTransfer} />
 				)}
 				{allowedFeatures.includes('transfer') && (
 					<ActionButton disabled={connecting || reconnecting} label={t('Forward')} icon='arrow-forward' onClick={onForward} />
