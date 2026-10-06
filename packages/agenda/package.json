@@ -11,7 +11,8 @@
 	"scripts": {
 		"build": "rm -rf dist && tsc -p tsconfig.json",
 		"lint": "eslint .",
-		"lint:fix": "eslint --fix ."
+		"lint:fix": "eslint --fix .",
+		"typecheck": "tsc --noEmit"
 	},
 	"dependencies": {
 		"cron": "~1.8.2",
@@ -23,7 +24,7 @@
 	},
 	"devDependencies": {
 		"@types/debug": "^4.1.13",
-		"eslint": "~10.7.0",
+		"eslint": "~10.11.0",
 		"typescript": "~5.9.3"
 	},
 	"volta": {

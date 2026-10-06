@@ -21,22 +21,21 @@
 	},
 	"dependencies": {
 		"@eslint/js": "~10.0.1",
-		"@types/eslint": "~9.6.1",
-		"eslint": "~10.7.0",
+		"eslint": "~10.11.0",
 		"eslint-config-prettier": "~10.1.8",
 		"eslint-import-resolver-typescript": "~4.4.5",
 		"eslint-plugin-anti-trojan-source": "~1.1.7",
 		"eslint-plugin-import-x": "~4.17.1",
-		"eslint-plugin-jest": "~29.15.5",
+		"eslint-plugin-jest": "~29.16.6",
 		"eslint-plugin-jsx-a11y": "~6.10.2",
 		"eslint-plugin-prettier": "~5.5.6",
 		"eslint-plugin-react": "patch:eslint-plugin-react@npm%3A7.37.5#~/.yarn/patches/eslint-plugin-react-npm-7.37.5-d03f6b6543.patch",
 		"eslint-plugin-react-hooks": "~7.1.1",
 		"eslint-plugin-storybook": "patch:eslint-plugin-storybook@npm%3A9.1.20#~/.yarn/patches/eslint-plugin-storybook-npm-9.1.20-b86b9c5e4d.patch",
 		"eslint-plugin-testing-library": "~7.16.2",
-		"globals": "~17.7.0",
+		"globals": "~17.13.0",
 		"prettier": "~3.9.9",
-		"typescript-eslint": "~8.64.0"
+		"typescript-eslint": "~8.71.0"
 	},
 	"devDependencies": {
 		"storybook": "^9.1.20",
