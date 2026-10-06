@@ -16,8 +16,12 @@ Only the default sidebar (`client/sidebar`, with or without the `sidebarRail` fe
 
 | Room | Card | Header | Footer actions |
 |------|------|--------|----------------|
-| 1:1 direct message (and the self DM) | `DirectMessageHoverCard` | avatar, video / voice call, room menu (kebab), presence, `@username` · status text, roles, local time, bio | Open conversation, Mark as read |
-| Any other room, group DMs included | `ChannelHoverCard` | room avatar, name, kind (public/private channel, team, discussion, DM; "… in **Team**" linking to the team), favorite toggle, topic, member avatars and count, desktop notification level | Open channel (Open conversation for group DMs), Mark as read, Mute / Unmute |
+| 1:1 direct message (and the self DM) | `DirectMessageHoverCard` | avatar, video / voice call, room menu, presence, `@username` · status text, roles, local time, bio | Open conversation, Mark as read |
+| Any other room, group DMs included | `ChannelHoverCard` | room avatar, name, kind (public/private channel, team, discussion, DM; "… in **Team**" linking to the team), room menu, topic, member avatars and count, desktop notification level | Open channel (Open conversation for group DMs), Mark as read, Mute / Unmute |
+
+The room menu is the sidebar's own `RoomMenu`, so it matches the list: with the custom categories license it offers
+"Move to" a category (Favorites being one of them) instead of a favorite toggle. That's why the card has no favorite
+button of its own.
 
 Both end with the room's last message: author, time, preview (videoconf, E2EE and attachment messages get the
 same placeholders as the sidebar preview) and the room's unread summary as a badge.
@@ -52,7 +56,8 @@ The card is not keyboard-reachable; everything in it is also available from the 
 
 | Field | Source |
 |-------|--------|
-| Room, subscription | `useUserRoom(rid)`, `useUserSubscription(rid)` (reactive, so the card updates after its own actions) |
+| Subscription | `useUserSubscription(rid)` (reactive, so the card updates after its own actions) |
+| Room | `useUserRoom(rid)`; when the client's room cache doesn't have it, `GET /v1/rooms.info` (mapped with `mapRoomFromApi`, cached 60 s, not live) |
 | User profile (DM) | `GET /v1/users.info` via `useUserInfoQuery` |
 | Team name | `GET /v1/teams.info` via `useTeamInfoQuery`, only for rooms in a team that aren't its main room |
 | Member avatars | `GET /v1/rooms.membersOrderedByRole` (`count: 3`), fetched when the card opens, cached 60 s |
@@ -63,11 +68,14 @@ The card is not keyboard-reachable; everything in it is also available from the 
 | Action | Endpoint |
 |--------|----------|
 | Mark as read | `POST /v1/subscriptions.read` (`readThreads: true`) |
-| Favorite | `POST /v1/rooms.favorite` (`useToggleFavoriteAction`) |
 | Mute / Unmute | `POST /v1/rooms.saveNotification` (`useToggleNotificationAction`) |
 | Open / team link | client routing (`roomCoordinator.openRouteLink`) |
 
 ## Known gaps
+
+- The client's `Rooms` cache can miss rooms the user is subscribed to (seen in a dev workspace: 90 of 163 sidebar
+  rooms), and those rooms then also lack `lastMessage`, `topic` and the other room fields merged into their
+  subscription. The card falls back to `rooms.info` for them, but that copy doesn't update while the card is open.
 
 - Desktop notification level reads the subscription's `desktopNotifications`; when unset it shows "Default" rather
   than resolving the user's global preference.
@@ -85,9 +93,10 @@ The card is not keyboard-reachable; everything in it is also available from the 
 | DM vs room selection | `apps/meteor/client/sidebar/RoomHoverCard/RoomHoverCardWithData.tsx` |
 | DM card | `apps/meteor/client/sidebar/RoomHoverCard/DirectMessageHoverCard.tsx` |
 | Room card | `apps/meteor/client/sidebar/RoomHoverCard/ChannelHoverCard.tsx`, `RoomHoverCardKind.tsx` |
+| Room menu | `apps/meteor/client/sidebar/RoomMenu.tsx` (reused as is) |
 | Shared pieces | `RoomHoverCardDialog.tsx`, `RoomHoverCardLastMessage.tsx`, `RoomHoverCardFooter.tsx`, `RoomHoverCardQuickAction.tsx` |
 | Actions | `apps/meteor/client/sidebar/RoomHoverCard/useRoomHoverCardActions.ts` |
 | Trigger | `apps/meteor/client/sidebar/RoomList/SidebarItemTemplateWithData.tsx` |
 | Mount point | `apps/meteor/client/sidebar/RoomList/RoomList.tsx` |
-| Hover tests | `apps/meteor/client/sidebar/RoomHoverCard/RoomHoverCardProvider.spec.tsx` |
+| Tests | `RoomHoverCardProvider.spec.tsx` (hover hand-over), `RoomHoverCardWithData.spec.tsx` (room cache fallback, empty room) |
 | Strings | `packages/i18n/src/locales/en.i18n.json` (`Open_conversation`, `Open_channel`, `Members_count`, `Notifications_off`, `Mute_room_notifications`, `Unmute_room_notifications`, `Public_channel_in_team`, `Private_channel_in_team`) |
