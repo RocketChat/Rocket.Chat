@@ -6,6 +6,7 @@ import { axe } from 'jest-axe';
 import RoomMembersItem from './RoomMembersItem';
 
 jest.mock('@rocket.chat/ui-avatar', () => ({
+	...jest.requireActual('@rocket.chat/ui-avatar'),
 	UserAvatar: () => null,
 }));
 

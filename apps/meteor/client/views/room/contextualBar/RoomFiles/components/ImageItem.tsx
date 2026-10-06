@@ -1,4 +1,5 @@
 import { Avatar, ItemContent, ItemDescription, ItemLink, ItemMedia, ItemMeta, ItemRow, ItemTitle } from '@rocket.chat/fuselage';
+import { ITEM_MEDIA_SIZE } from '@rocket.chat/ui-avatar';
 
 export type ImageItemProps = {
 	id: string;
@@ -14,7 +15,7 @@ const ImageItem = ({ id, url, name, timestamp, username, alt = '' }: ImageItemPr
 		<>
 			{url && (
 				<ItemMedia>
-					<Avatar objectFit='cover' size='x36' url={url} alt={alt} />
+					<Avatar objectFit='cover' size={ITEM_MEDIA_SIZE.extended} url={url} alt={alt} />
 				</ItemMedia>
 			)}
 			<ItemContent>

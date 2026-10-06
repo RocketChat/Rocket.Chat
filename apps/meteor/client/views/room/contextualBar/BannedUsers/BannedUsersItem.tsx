@@ -1,5 +1,5 @@
 import { Box, Icon, Item, ItemActions, ItemContent, ItemDescription, ItemIcon, ItemMedia, ItemTitle } from '@rocket.chat/fuselage';
-import { UserAvatar } from '@rocket.chat/ui-avatar';
+import { ITEM_MEDIA_SIZE, UserAvatar } from '@rocket.chat/ui-avatar';
 import { GenericMenu } from '@rocket.chat/ui-client';
 import { useUserPresence } from '@rocket.chat/ui-contexts';
 import { useMemo } from 'react';
@@ -39,9 +39,9 @@ const BannedUsersItem = ({ user, useRealName, onClickUnban }: BannedUsersItemPro
 	);
 
 	return (
-		<Item role='listitem' size='medium' inset='lg'>
+		<Item role='listitem' inset='lg'>
 			<ItemMedia>
-				<UserAvatar username={normalizeUsername(user.username)} size='x28' />
+				<UserAvatar username={normalizeUsername(user.username)} size={ITEM_MEDIA_SIZE.medium} />
 			</ItemMedia>
 			<ItemIcon label={iconLabel}>{federated ? <Icon name='globe' size='x16' /> : <ReactiveUserStatus uid={user._id} />}</ItemIcon>
 			<ItemContent>

@@ -40,7 +40,7 @@ const ContactInfoHistoryItem = ({ source, lastMessage, verified, onClick }: Cont
 	const isVerified = hasLicense && verified;
 
 	return (
-		<Item role='listitem' size='extended' inset='lg'>
+		<Item role='listitem' inset='lg'>
 			{source && (
 				<ItemMedia variant='icon'>
 					<OmnichannelRoomIcon source={source} size='x18' placement='default' />

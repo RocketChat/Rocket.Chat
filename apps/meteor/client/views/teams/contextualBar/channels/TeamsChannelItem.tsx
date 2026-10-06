@@ -13,7 +13,7 @@ import {
 	ItemTitle,
 	Tag,
 } from '@rocket.chat/fuselage';
-import { RoomAvatar } from '@rocket.chat/ui-avatar';
+import { ITEM_MEDIA_SIZE, RoomAvatar } from '@rocket.chat/ui-avatar';
 import { usePermission } from '@rocket.chat/ui-contexts';
 import { useTranslation } from 'react-i18next';
 
@@ -42,13 +42,13 @@ const TeamsChannelItem = ({ room, mainRoom, onClickView, reload }: TeamsChannelI
 	const canDelete = canDeleteChannel && canDeleteTeamChannel;
 
 	if (!room) {
-		return <ItemSkeleton size='medium' inset='lg' />;
+		return <ItemSkeleton mediaSize={ITEM_MEDIA_SIZE.medium} inset='lg' />;
 	}
 
 	return (
-		<Item role='listitem' size='medium' inset='lg' id={room._id} data-rid={room._id} onFocus={mountNow} onPointerEnter={requestMount}>
+		<Item role='listitem' inset='lg' id={room._id} data-rid={room._id} onFocus={mountNow} onPointerEnter={requestMount}>
 			<ItemMedia>
-				<RoomAvatar room={room} size='x28' />
+				<RoomAvatar room={room} size={ITEM_MEDIA_SIZE.medium} />
 			</ItemMedia>
 			<ItemIcon label={room.t === 'c' ? t('Public_Channel') : t('Private_Channel')}>
 				<Icon name={room.t === 'c' ? 'hash' : 'hashtag-lock'} size='x16' />

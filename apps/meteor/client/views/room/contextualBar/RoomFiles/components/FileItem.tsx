@@ -37,7 +37,7 @@ const FileItem = ({ rid, fileData, onClickDelete }: FileItemProps) => {
 	const extension = getFileExtension(name);
 
 	return (
-		<Item size='extended' inset='lg'>
+		<Item inset='lg'>
 			{shouldDisplayPreview ? (
 				<ImageItem id={_id} url={path} name={name} username={normalizedUsername} timestamp={format(uploadedAt)} alt={description} />
 			) : (

@@ -1,5 +1,6 @@
 import type { IRoom } from '@rocket.chat/core-typings';
 import { ItemSkeleton } from '@rocket.chat/fuselage';
+import { ITEM_MEDIA_SIZE } from '@rocket.chat/ui-avatar';
 import type { MouseEvent } from 'react';
 import { memo } from 'react';
 
@@ -19,7 +20,7 @@ export type RoomMembersRowProps = {
 
 const RoomMembersRow = ({ user, data: { onClickView, rid }, index, reload, useRealName }: RoomMembersRowProps) => {
 	if (!user?._id) {
-		return <ItemSkeleton size='medium' inset='lg' />;
+		return <ItemSkeleton mediaSize={ITEM_MEDIA_SIZE.medium} inset='lg' />;
 	}
 
 	return (
