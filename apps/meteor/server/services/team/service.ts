@@ -223,7 +223,7 @@ export class TeamService extends ServiceClassInternal implements ITeamService {
 	async list(
 		uid: string,
 		{ offset, count }: IPaginationOptions = { offset: 0, count: 50 },
-		{ sort }: Pick<IQueryOptions<ITeam>, 'sort'> = { sort: {} },
+		{ sort }: IQueryOptions<ITeam> = { sort: {} },
 	): Promise<IRecordsWithTotal<ITeamInfo>> {
 		const userTeams = await TeamMember.findByUserId<Pick<ITeamMember, 'teamId'>>(uid, {
 			projection: { teamId: 1 },

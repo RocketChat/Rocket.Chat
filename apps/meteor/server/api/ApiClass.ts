@@ -168,8 +168,6 @@ export class APIClass<TBasePath extends string = '', TOperations extends Record<
 
 	protected helperMethods: Map<string, () => any> = new Map();
 
-	public fieldSeparator: string;
-
 	public defaultFieldsToExclude: {
 		joinCode: number;
 		members: number;
@@ -193,7 +191,6 @@ export class APIClass<TBasePath extends string = '', TOperations extends Record<
 
 		this.apiPath = [properties.apiPath, properties.version].filter(Boolean).join('/').replaceAll('//', '/');
 		this.authMethods = [];
-		this.fieldSeparator = '.';
 		this.defaultFieldsToExclude = {
 			joinCode: 0,
 			members: 0,
