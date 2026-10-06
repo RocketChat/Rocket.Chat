@@ -110,7 +110,11 @@ describe('Presence', () => {
 		listener.received = [];
 		statusVisibility.disabledFor.clear();
 		usersModel.findOneById.mockResolvedValue(alice());
-		usersModel.updatePresenceAndStatus.mockImplementation(async (_id: string, values: Partial<IUser>) => ({ _id, ...values }));
+		usersModel.updatePresenceAndStatus.mockImplementation(async (_id: string, values: Partial<IUser>, clear: string[] = []) => {
+			const updated: Record<string, unknown> = { ...(await usersModel.findOneById(_id)), ...values };
+			clear.forEach((field) => delete updated[field]);
+			return updated;
+		});
 
 		presence = new Presence();
 		api.registerService(presence);
@@ -154,15 +158,14 @@ describe('Presence', () => {
 			]);
 		});
 
-		it('should clear the message when an empty one is given, and keep it when none is given', async () => {
+		it('should keep the message when none is given, and clear it when an empty one is given', async () => {
 			usersModel.findOneById.mockResolvedValue(alice({ statusText: 'Old text' }));
 			aliceIsConnected();
 
-			await presence.setStatus('alice', UserStatus.BUSY, '');
 			await presence.setStatus('alice', UserStatus.BUSY);
+			await presence.setStatus('alice', UserStatus.BUSY, '');
 
-			expect(listener.received[0]).toMatchObject({ statusText: '' });
-			expect(listener.received[1]).not.toHaveProperty('statusText');
+			expect(listener.received.map(({ statusText }) => statusText)).toEqual(['Old text', '']);
 		});
 
 		it('should change nothing for an unknown user', async () => {
