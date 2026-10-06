@@ -1,0 +1,21 @@
+ee/apps/ddp-streamer/src/DDPStreamer.ts
+  s_2f1eb2976e708c::t_a3e9e19d016b7c 94-98,102-130,134,139,156,158
+ee/apps/ddp-streamer/src/DDPStreamer.spec.ts
+  s_2f1eb2976e708c::t_be0057751c49c7 111-123
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.4",
+  "base_commit_sha": "77d983a2e293a3e4fcdf6d10684ec3802fd16536",
+  "prompts": {},
+  "sessions": {
+    "s_2f1eb2976e708c": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "69a34187-23fb-458b-8b99-8e645b839152",
+        "model": "claude-opus-5-5"
+      },
+      "human_author": "Diego Sampaio <chinello@gmail.com>"
+    }
+  }
+}
