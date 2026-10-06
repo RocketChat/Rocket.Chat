@@ -1,22 +1,15 @@
 import type { IUser } from '@rocket.chat/core-typings';
 import { useStableCallback } from '@rocket.chat/fuselage-hooks';
 import { GenericModal } from '@rocket.chat/ui-client';
-import {
-	useSetModal,
-	useToastMessageDispatch,
-	useRoute,
-	useSetting,
-	usePermission,
-	useEndpoint,
-	useTranslation,
-} from '@rocket.chat/ui-contexts';
+import { useSetModal, useToastMessageDispatch, useRoute, useSetting, usePermission, useEndpoint } from '@rocket.chat/ui-contexts';
 import { useMemo } from 'react';
+import { useTranslation } from 'react-i18next';
 
 import type { AdminUserAction } from './useAdminUserInfoActions';
 import { useConfirmOwnerChanges } from './useConfirmOwnerChanges';
 
 export const useDeleteUserAction = (userId: IUser['_id'], onChange: () => void, onReload: () => void): AdminUserAction | undefined => {
-	const t = useTranslation();
+	const { t } = useTranslation();
 	const setModal = useSetModal();
 	const userRoute = useRoute('admin-users');
 	const canDeleteUser = usePermission('delete-user');
@@ -40,13 +33,9 @@ export const useDeleteUserAction = (userId: IUser['_id'], onChange: () => void, 
 					deleteUserQuery.confirmRelinquish = confirm;
 				}
 
-				try {
-					await deleteUserEndpoint(deleteUserQuery);
-					dispatchToastMessage({ type: 'success', message: t('User_has_been_deleted') });
-					handleDeletedUser();
-				} catch (error) {
-					throw error;
-				}
+				await deleteUserEndpoint(deleteUserQuery);
+				dispatchToastMessage({ type: 'success', message: t('User_has_been_deleted') });
+				handleDeletedUser();
 			},
 			{
 				contentTitle: t('Delete_User_Warning', { context: erasureType }),
