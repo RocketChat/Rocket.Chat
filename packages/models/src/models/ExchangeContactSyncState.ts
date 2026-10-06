@@ -24,7 +24,7 @@ export class ExchangeContactSyncStateRaw extends BaseRaw<IExchangeContactSyncSta
 	}
 
 	public async hasFolderSyncedSince(uid: IUser['_id'], since: Date): Promise<boolean> {
-		return Boolean(await this.findOne({ uid, lastSyncAt: { $gte: since } }));
+		return Boolean(await this.findOne({ uid, lastSyncAt: { $gte: since } }, { projection: { _id: 1 } }));
 	}
 
 	public async saveCursor(
