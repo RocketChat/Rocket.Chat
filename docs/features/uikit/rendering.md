@@ -32,12 +32,14 @@ The guard lists are also shorter than the types. For example, `isInputBlockEleme
 
 ## Which allowlist applies
 
-There are two families of renderer, and they get their allowlists from different places:
+Each surface's allowlist is a constant exported by `@rocket.chat/ui-kit` (for example `modalSurfaceLayoutBlockTypes`), and the surface layout type is derived from it. Both families of renderer use the same constant:
 
-- **Livechat** (`MessageParser`) extends `UiKitParserMessage`, so it uses the allowlist declared in `packages/ui-kit`.
-- **Fuselage** renderers extend `FuselageSurfaceRenderer`, which extends `SurfaceRenderer` directly. They never use the `UiKitParser*` allowlists. Each one passes its own list, and `BannerSurfaceRenderer` falls back to the default in `FuselageSurfaceRenderer`.
+- **Livechat** (`MessageParser`) extends `UiKitParserMessage`, which passes `messageSurfaceLayoutBlockTypes`.
+- **Fuselage** renderers extend `FuselageSurfaceRenderer`, which extends `SurfaceRenderer` directly rather than the `UiKitParser*` classes. Each surface renderer passes its surface's constant to `super()`.
 
-As a result the web client and the types disagree about several surfaces. [support-matrix.md](support-matrix.md) lists each disagreement.
+A renderer still needs a method for every block in its list. Fuselage has a spec that checks this; Livechat does not, and the gaps are listed in [support-matrix.md](support-matrix.md#divergences).
+
+`FuselageSurfaceRenderer` keeps a default list for subclasses that pass none. Only internal surfaces should rely on it.
 
 ## Links
 

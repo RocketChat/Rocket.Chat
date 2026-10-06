@@ -1,10 +1,10 @@
 import type { OverlayTriggerState } from '@react-stately/overlays';
-import { useTooltipTriggerState } from '@react-stately/tooltip';
+import { useOverlayTriggerState } from '@react-stately/overlays';
 import { Box, Popover } from '@rocket.chat/fuselage';
-import { useStableCallback } from '@rocket.chat/fuselage-hooks';
+import { useDebouncedCallback, useStableCallback } from '@rocket.chat/fuselage-hooks';
 import { useRoomToolbox, UserCardContext } from '@rocket.chat/ui-contexts';
 import type { ComponentProps, ReactNode, UIEvent } from 'react';
-import { Suspense, lazy, useMemo, useRef, useState } from 'react';
+import { Suspense, lazy, useEffect, useMemo, useRef, useState } from 'react';
 
 import { useHoverCardDismissal } from './useHoverCardDismissal';
 import { useRoom } from '../contexts/RoomContext';
@@ -26,11 +26,7 @@ const UserCardProvider = ({ children }: UserCardProviderProps) => {
 	const [userCardData, setUserCardData] = useState<ComponentProps<typeof UserCard> | null>(null);
 	const triggerRef = useRef<Element | null>(null);
 
-	// Hover intent: opens after a delay and lingers briefly after the pointer leaves. Once a card has been shown, the
-	// next one opens right away, so moving from one author to another hands the card over.
-	const state = useTooltipTriggerState({
-		delay: HOVER_OPEN_DELAY,
-		closeDelay: HOVER_CLOSE_DELAY,
+	const state = useOverlayTriggerState({
 		onOpenChange: (open) => {
 			if (!open) {
 				setUserCardData(null);
@@ -56,14 +52,46 @@ const UserCardProvider = ({ children }: UserCardProviderProps) => {
 		}
 	});
 
-	// The pointer left: close after the linger delay, or cancel an open still waiting on the hover delay.
-	const closeUserCard = useStableCallback(() => state.close());
+	const showUserCard = useStableCallback((trigger: Element | null, username: string) => {
+		triggerRef.current = trigger;
+		setUserCardData({
+			username,
+			rid: room._id,
+			onOpenUserInfo: () => openUserInfo(username),
+			onClose: dismissUserCard,
+		});
+		state.open();
+	});
+
+	// Hover intent: every card waits out the full delay, including the next author's while one is showing, so sweeping
+	// the pointer across the conversation doesn't pop cards; once open, a card lingers briefly after the pointer leaves.
+	const openLater = useDebouncedCallback(showUserCard, HOVER_OPEN_DELAY, []);
+	const closeLater = useDebouncedCallback(() => state.close(), HOVER_CLOSE_DELAY, []);
+	useEffect(
+		() => () => {
+			openLater.cancel();
+			closeLater.cancel();
+		},
+		[openLater, closeLater],
+	);
+
+	// The pointer left the trigger or the card: drop a pending open, and close an open card after the linger delay.
+	const closeUserCard = useStableCallback(() => {
+		openLater.cancel();
+		if (state.isOpen) {
+			closeLater();
+		}
+	});
 
 	// The pointer is back on the card or its trigger: keep it open.
-	const keepUserCardOpen = useStableCallback(() => state.open(true));
+	const keepUserCardOpen = useStableCallback(() => closeLater.cancel());
 
-	// The user asked for no card (Escape, the card's own close, an action, a scroll): close now.
-	const dismissUserCard = useStableCallback(() => state.close(true));
+	// The user asked for no card (Escape, the card's own close, an action, a scroll): close now, pending open included.
+	const dismissUserCard = useStableCallback(() => {
+		openLater.cancel();
+		closeLater.cancel();
+		state.close();
+	});
 
 	const handleOpenUserInfo = useStableCallback((username: string) => {
 		dismissUserCard();
@@ -84,16 +112,13 @@ const UserCardProvider = ({ children }: UserCardProviderProps) => {
 			return;
 		}
 
-		triggerRef.current = trigger;
-		setUserCardData({
-			username,
-			rid: room._id,
-			onOpenUserInfo: () => openUserInfo(username),
-			onClose: dismissUserCard,
-		});
+		if (viaClick) {
+			openLater.cancel();
+			showUserCard(trigger, username);
+			return;
+		}
 
-		// A click, or a card already showing for another author, switches right away; otherwise hover waits.
-		state.open(viaClick || state.isOpen);
+		openLater(trigger, username);
 	});
 
 	const cardRef = useHoverCardDismissal({
@@ -102,13 +127,12 @@ const UserCardProvider = ({ children }: UserCardProviderProps) => {
 		onDismiss: dismissUserCard,
 	});
 
-	// The popover's own dismissals (a scroll of the list holding the trigger) are explicit, so they close right away.
+	// The popover's own dismissals (a scroll of the list holding the trigger) are explicit, so they also drop a pending open.
 	const popoverState: OverlayTriggerState = {
-		isOpen: state.isOpen,
-		setOpen: (open) => (open ? state.open(true) : dismissUserCard()),
-		open: () => state.open(true),
+		...state,
+		setOpen: (open) => (open ? state.open() : dismissUserCard()),
 		close: dismissUserCard,
-		toggle: () => (state.isOpen ? dismissUserCard() : state.open(true)),
+		toggle: () => (state.isOpen ? dismissUserCard() : state.open()),
 	};
 
 	// Every entry is identity-stable, so the message headers, avatars and mentions subscribed to the context don't re-render when a card opens or closes.
