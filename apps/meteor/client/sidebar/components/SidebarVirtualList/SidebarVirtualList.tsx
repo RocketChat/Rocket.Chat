@@ -116,6 +116,11 @@ function SidebarVirtualList<TGroup, TItem>({
 			const observer = new ResizeObserver(reportRange);
 			observer.observe(node);
 
+			// Rows resizing (e.g. a view mode change) move what sits in the viewport without any scroll happening.
+			if (node.firstElementChild) {
+				observer.observe(node.firstElementChild);
+			}
+
 			return () => {
 				observer.disconnect();
 				viewportRef.current = null;
