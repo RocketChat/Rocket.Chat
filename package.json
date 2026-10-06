@@ -97,7 +97,7 @@
 		"@grpc/proto-loader/protobufjs": "7.6.5",
 		"@opentelemetry/otlp-transformer/protobufjs": "7.6.5",
 		"webdav/axios": "0.34.0",
-		"wait-on/joi": "17.13.7",
+		"wait-on/joi": "17.13.8",
 		"webpack-dev-server/launch-editor": "2.14.1",
 		"webpack-dev-server/http-proxy-middleware": "2.0.10",
 		"@changesets/parse/js-yaml": "4.3.2",
@@ -206,14 +206,8 @@
 		"tsx/esbuild": "0.28.1",
 		"qs": "6.16.0",
 		"uuid@npm:13": "13.0.1",
-		"uuid@npm:^8.3.2": "11.1.1",
-		"uuid@npm:^9.0.0": "11.1.1",
-		"uuid@npm:^9.0.1": "11.1.1",
 		"moment-timezone/moment": "^2.31.0",
 		"@types/chart.js/moment": "^2.31.0",
-		"@storybook/builder-webpack5/webpack-dev-middleware": "^7.4.6",
-		"webpack-dev-server/webpack-dev-middleware": "^7.4.6",
-		"storybook/@vitest/mocker": "patch:@vitest/mocker@npm%3A4.1.11#~/.yarn/patches/@vitest-mocker-npm-4.1.11-2317440d17.patch",
 		"@react-pdf/layout@npm:^4.6.1": "patch:@react-pdf/layout@npm%3A4.6.1#~/.yarn/patches/@react-pdf-layout-npm-4.6.1-b12fdb71f4.patch"
 	},
 	"dependencies": {

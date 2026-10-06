@@ -11,7 +11,7 @@ function createFakeUser(overrides?: Partial<IUser>): IUser {
 	return {
 		_id: faker.database.mongodbObjectId(),
 		_updatedAt: faker.date.recent(),
-		username: faker.internet.username(),
+		username: faker.internet.userName(),
 		name: faker.person.fullName(),
 		createdAt: faker.date.recent(),
 		roles: ['user'],

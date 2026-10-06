@@ -85,7 +85,7 @@ test.describe.parallel('administration', () => {
 			await poAdminUsers.btnNewUser.click();
 			await poAdminUsers.editUser.inputEmail.fill(faker.internet.email());
 			await poAdminUsers.editUser.inputName.fill(faker.person.firstName());
-			await poAdminUsers.editUser.inputUserName.fill(faker.internet.username());
+			await poAdminUsers.editUser.inputUserName.fill(faker.internet.userName());
 			await poAdminUsers.editUser.inputSetManually.click();
 			await poAdminUsers.editUser.inputPassword.fill('P@ssw0rd1234.!');
 			await poAdminUsers.editUser.inputConfirmPassword.fill('P@ssw0rd1234.!');
@@ -100,7 +100,7 @@ test.describe.parallel('administration', () => {
 		});
 
 		test('expect to show join default channels option only when creating new users, not when editing users', async () => {
-			const username = faker.internet.username();
+			const username = faker.internet.userName();
 
 			await poAdminUsers.btnNewUser.click();
 			await poAdminUsers.editUser.inputName.fill(faker.person.firstName());
@@ -136,7 +136,7 @@ test.describe.parallel('administration', () => {
 					email: faker.internet.email(),
 					name: faker.person.fullName(),
 					password: faker.internet.password(),
-					username: faker.internet.username(),
+					username: faker.internet.userName(),
 				});
 
 				user = (await createUserResponse.json()).user;
@@ -145,7 +145,7 @@ test.describe.parallel('administration', () => {
 					email: faker.internet.email(),
 					name: faker.person.fullName(),
 					password: faker.internet.password(),
-					username: faker.internet.username(),
+					username: faker.internet.userName(),
 				});
 
 				ownerUser = (await createOwnerUserResponse.json()).user;

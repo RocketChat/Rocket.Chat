@@ -11,7 +11,7 @@ const makeFakeActor = (): Omit<IAuditServerUserActor, 'type'> => {
 		ip: faker.internet.ip(),
 		useragent: faker.internet.userAgent(),
 		_id: faker.database.mongodbObjectId(),
-		username: faker.internet.username(),
+		username: faker.internet.userName(),
 	};
 };
 
@@ -113,7 +113,7 @@ describe('userChanged audit module', () => {
 
 		const store = new UserChangedAuditStore(actor);
 
-		const [newUsername, newName] = [faker.internet.username(), faker.person.fullName()];
+		const [newUsername, newName] = [faker.internet.userName(), faker.person.fullName()];
 
 		updater.set('username', newUsername);
 		updater.set('name', newName);

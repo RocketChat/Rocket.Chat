@@ -30,7 +30,7 @@ test.describe.parallel('register', () => {
 			await test.step('expect trigger a validation error if different password is provided on register', async () => {
 				await poRegistration.inputName.fill(faker.person.firstName());
 				await poRegistration.inputEmail.fill(faker.internet.email());
-				await poRegistration.username.fill(faker.internet.username());
+				await poRegistration.username.fill(faker.internet.userName());
 				await poRegistration.inputPassword.fill('P@ssw0rd1234.!');
 				await poRegistration.inputPasswordConfirm.fill('Password1235.!');
 				await poRegistration.btnRegister.click();
@@ -73,7 +73,7 @@ test.describe.parallel('register', () => {
 				await test.step('expect to found no errors after submit the form', async () => {
 					await poRegistration.inputName.fill(faker.person.firstName());
 					await poRegistration.inputEmail.fill(faker.internet.email());
-					await poRegistration.username.fill(faker.internet.username());
+					await poRegistration.username.fill(faker.internet.userName());
 					await poRegistration.inputPassword.fill('P@ssw0rd1234.!');
 
 					await poRegistration.btnRegister.click();
@@ -149,7 +149,7 @@ test.describe.parallel('register', () => {
 			await request.post('/api/v1/users.register').set('Content-Type', 'application/json').send({
 				name: faker.person.firstName(),
 				email,
-				username: faker.internet.username(),
+				username: faker.internet.userName(),
 				pass: 'P@ssw0rd1234.!',
 			});
 
@@ -158,7 +158,7 @@ test.describe.parallel('register', () => {
 				await poRegistration.goToRegister.click();
 				await poRegistration.inputName.fill(faker.person.firstName());
 				await poRegistration.inputEmail.fill(email);
-				await poRegistration.username.fill(faker.internet.username());
+				await poRegistration.username.fill(faker.internet.userName());
 				await poRegistration.inputPassword.fill('P@ssw0rd1234.!');
 				await poRegistration.inputPasswordConfirm.fill('P@ssw0rd1234.!');
 				await poRegistration.btnRegister.click();
@@ -200,7 +200,7 @@ test.describe.parallel('register', () => {
 			await poRegistration.gotoWithSecret('secret', poRegistration.inputName);
 			await poRegistration.inputName.fill(faker.person.firstName());
 			await poRegistration.inputEmail.fill(faker.internet.email());
-			await poRegistration.username.fill(faker.internet.username());
+			await poRegistration.username.fill(faker.internet.userName());
 			await poRegistration.inputPassword.fill('P@ssw0rd1234.!');
 			await poRegistration.inputPasswordConfirm.fill('P@ssw0rd1234.!');
 			await poRegistration.btnRegister.click();

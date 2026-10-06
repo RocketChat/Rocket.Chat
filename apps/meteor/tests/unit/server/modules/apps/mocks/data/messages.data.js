@@ -118,7 +118,7 @@ export const appMessageInvalidRoomMock = {
 	},
 };
 
-const testUsername = faker.internet.username();
+const testUsername = faker.internet.userName();
 const testUserId = faker.database.mongodbObjectId();
 export const exportMessagesMock = [
 	createFakeMessage({ t: 'uj', u: { _id: testUserId, username: testUsername }, msg: testUsername }),
