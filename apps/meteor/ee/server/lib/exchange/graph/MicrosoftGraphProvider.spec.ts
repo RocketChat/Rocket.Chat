@@ -35,8 +35,6 @@ const graphResponse = (payload: unknown, status = 200) => ({
 
 const timeWindow = { start: new Date('2026-08-21T00:00:00Z'), end: new Date('2026-08-22T00:00:00Z') };
 
-const MAILBOX = 'user@contoso.com';
-
 // Token request first, then the Graph call
 const mockTokenThen = (...responses: unknown[]) => {
 	serverFetch.mockResolvedValueOnce(tokenResponse);
