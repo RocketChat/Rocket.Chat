@@ -30,6 +30,7 @@ const renderView = (Component: ComponentType, { peerInfo, inline = false, localS
 		remoteHeld: false,
 		confirmed: false,
 		hasAlternateCall: false,
+		canCompleteTransfer: false,
 		callId: 'call-1',
 		supportedFeatures: ['audio', 'screen-share', 'hold', 'transfer'],
 	} as SessionState;
@@ -44,6 +45,7 @@ const renderView = (Component: ComponentType, { peerInfo, inline = false, localS
 		onDeviceChange: jest.fn(),
 		onForward: jest.fn(),
 		onSwapCalls: jest.fn(),
+		onCompleteTransfer: jest.fn(),
 		onTone: jest.fn(),
 		onEndCall: jest.fn(),
 		onCall: jest.fn(),

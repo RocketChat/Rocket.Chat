@@ -17,6 +17,11 @@ function getCallFlags(call: IMediaCall, role: CallRole): CallFlag[] {
 		}
 	}
 
+	// The actor already is in a call that this one takes over for, so there is nothing to answer
+	if (role === 'callee' && call.replacedCallIds?.length) {
+		flags.push('replaces-call');
+	}
+
 	return flags;
 }
 

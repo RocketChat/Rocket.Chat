@@ -21,6 +21,7 @@ export type MediaCallViewContextValue = {
 	onDeviceChange: (device: Device) => void;
 	onForward: () => void;
 	onSwapCalls: () => void;
+	onCompleteTransfer: () => void;
 	onTone: (tone: string) => void;
 	onEndCall: () => void;
 	onCall: () => Promise<void>;
@@ -52,6 +53,7 @@ export const defaultSessionState: SessionState = {
 	supportedFeatures: ['audio', 'transfer', 'hold'],
 	confirmed: false,
 	hasAlternateCall: false,
+	canCompleteTransfer: false,
 };
 
 export const defaultMediaCallContextValue: MediaCallViewContextValue = {
@@ -64,6 +66,7 @@ export const defaultMediaCallContextValue: MediaCallViewContextValue = {
 	onDeviceChange: () => undefined,
 	onForward: () => undefined,
 	onSwapCalls: () => undefined,
+	onCompleteTransfer: () => undefined,
 	onTone: () => undefined,
 	onEndCall: () => undefined,
 	onCall: () => Promise.resolve(undefined),
