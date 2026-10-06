@@ -11,7 +11,7 @@ import {
 	ItemRow,
 	ItemTitle,
 } from '@rocket.chat/fuselage';
-import { UserAvatar } from '@rocket.chat/ui-avatar';
+import { ITEM_MEDIA_SIZE, UserAvatar } from '@rocket.chat/ui-avatar';
 import type { ReactNode } from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -79,9 +79,9 @@ const CallMemberItem = ({
 	const showActivity = isLive && !!activity;
 
 	return (
-		<Item role='listitem' size='medium' inset='lg'>
+		<Item role='listitem' inset='lg'>
 			<ItemMedia>
-				<UserAvatar username={member.username} size='x28' />
+				<UserAvatar username={member.username} size={ITEM_MEDIA_SIZE.medium} />
 			</ItemMedia>
 			{renderMemberStatus && <ItemIcon>{renderMemberStatus(member._id)}</ItemIcon>}
 			<ItemContent>
