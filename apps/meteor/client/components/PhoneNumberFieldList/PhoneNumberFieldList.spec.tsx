@@ -1,18 +1,17 @@
+import type { IUserPhoneNumber } from '@rocket.chat/core-typings';
 import { mockAppRoot } from '@rocket.chat/mock-providers';
 import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { axe } from 'jest-axe';
-import { useFieldArray, useForm } from 'react-hook-form';
+import { useForm } from 'react-hook-form';
 
-import type { PhoneFieldType } from './PhoneNumberFieldList';
 import PhoneNumberFieldList from './PhoneNumberFieldList';
+import { getInitialPhones } from './phoneNumbers';
 
-type PhoneFormValues = { phones: PhoneFieldType[] };
+type PhoneFormValues = { phones: IUserPhoneNumber[] };
 
 type TestComponentProps = {
-	initialPhones?: PhoneFieldType[];
-	onAddPhone: jest.Mock;
-	onRemovePhone: jest.Mock;
+	initialPhones?: IUserPhoneNumber[];
 };
 
 const appRoot = mockAppRoot()
@@ -31,25 +30,18 @@ const appRoot = mockAppRoot()
 	})
 	.build();
 
-const TestComponent = ({ initialPhones = [], onAddPhone, onRemovePhone }: TestComponentProps) => {
-	const { control } = useForm<PhoneFormValues>({ defaultValues: { phones: initialPhones }, mode: 'onBlur' });
-	const { fields } = useFieldArray<PhoneFormValues, 'phones'>({ control, name: 'phones' });
+const TestComponent = ({ initialPhones = [] }: TestComponentProps) => {
+	const { control } = useForm<PhoneFormValues>({ defaultValues: { phones: getInitialPhones(initialPhones) }, mode: 'onBlur' });
 
-	return (
-		<PhoneNumberFieldList
-			name='phones'
-			phones={fields.map((field, index) => ({ ...field, id: `mock-phone-${index}` }))}
-			control={control}
-			onAddPhone={onAddPhone}
-			onRemovePhone={onRemovePhone}
-		/>
-	);
+	return <PhoneNumberFieldList control={control} />;
 };
+
+const getNumberInputs = () => screen.getAllByRole('textbox', { name: /^Phone number \d+$/ });
 
 describe('PhoneNumberFieldList', () => {
 	describe('snapshots', () => {
 		it('matches snapshot with no phones', () => {
-			const { baseElement } = render(<TestComponent onAddPhone={jest.fn()} onRemovePhone={jest.fn()} />, { wrapper: appRoot });
+			const { baseElement } = render(<TestComponent />, { wrapper: appRoot });
 			expect(baseElement).toMatchSnapshot();
 		});
 
@@ -57,11 +49,9 @@ describe('PhoneNumberFieldList', () => {
 			const { baseElement } = render(
 				<TestComponent
 					initialPhones={[
-						{ id: 'phone-1', number: '+15551234567', label: 'Home' },
-						{ id: 'phone-2', number: '+15559876543', label: '' },
+						{ number: '+15551234567', label: 'Home' },
+						{ number: '+15559876543', label: '' },
 					]}
-					onAddPhone={jest.fn()}
-					onRemovePhone={jest.fn()}
 				/>,
 				{ wrapper: appRoot },
 			);
@@ -71,61 +61,60 @@ describe('PhoneNumberFieldList', () => {
 
 	describe('accessibility', () => {
 		it('should have no a11y violations with no phones', async () => {
-			const { container } = render(<TestComponent onAddPhone={jest.fn()} onRemovePhone={jest.fn()} />, { wrapper: appRoot });
+			const { container } = render(<TestComponent />, { wrapper: appRoot });
 			expect(await axe(container)).toHaveNoViolations();
 		});
 
 		it('should have no a11y violations with phones', async () => {
-			const { container } = render(
-				<TestComponent
-					initialPhones={[{ id: 'phone-1', number: '+15551234567', label: 'Home' }]}
-					onAddPhone={jest.fn()}
-					onRemovePhone={jest.fn()}
-				/>,
-				{ wrapper: appRoot },
-			);
+			const { container } = render(<TestComponent initialPhones={[{ number: '+15551234567', label: 'Home' }]} />, { wrapper: appRoot });
 			expect(await axe(container)).toHaveNoViolations();
 		});
 	});
 
 	describe('interactions', () => {
-		it('calls onAddPhone with empty phone defaults when clicking Add number', async () => {
-			const onAddPhone = jest.fn();
-			render(<TestComponent onAddPhone={onAddPhone} onRemovePhone={jest.fn()} />, { wrapper: appRoot });
+		it('adds a blank row when clicking Add number', async () => {
+			render(<TestComponent initialPhones={[{ number: '+15551234567', label: 'Home' }]} />, { wrapper: appRoot });
 
 			await userEvent.click(screen.getByRole('button', { name: 'Add number' }));
 
-			expect(onAddPhone).toHaveBeenCalledTimes(1);
-			expect(onAddPhone).toHaveBeenCalledWith({ number: '', label: '' });
+			const inputs = getNumberInputs();
+			expect(inputs).toHaveLength(2);
+			expect(inputs[1]).toHaveValue('');
 		});
 
-		it('calls onRemovePhone with the correct index when clicking a remove button', async () => {
-			const onRemovePhone = jest.fn();
+		it('removes the row whose remove button was clicked', async () => {
 			render(
 				<TestComponent
 					initialPhones={[
-						{ id: 'phone-1', number: '+15551234567', label: 'Home' },
-						{ id: 'phone-2', number: '+15559876543', label: 'Work' },
+						{ number: '+15551234567', label: 'Home' },
+						{ number: '+15559876543', label: 'Work' },
 					]}
-					onAddPhone={jest.fn()}
-					onRemovePhone={onRemovePhone}
 				/>,
 				{ wrapper: appRoot },
 			);
 
-			await userEvent.click(screen.getAllByRole('button', { name: /remove number/i })[0]);
+			await userEvent.click(screen.getByRole('button', { name: 'Remove number Home' }));
 
-			expect(onRemovePhone).toHaveBeenCalledTimes(1);
-			expect(onRemovePhone).toHaveBeenCalledWith(0);
+			const inputs = getNumberInputs();
+			expect(inputs).toHaveLength(1);
+			expect(inputs[0]).toHaveValue('+15559876543');
+		});
+
+		it('clears the last row instead of removing it', async () => {
+			render(<TestComponent initialPhones={[{ number: '+15551234567', label: 'Home' }]} />, { wrapper: appRoot });
+
+			await userEvent.click(screen.getByRole('button', { name: 'Remove number Home' }));
+
+			const inputs = getNumberInputs();
+			expect(inputs).toHaveLength(1);
+			expect(inputs[0]).toHaveValue('');
+			expect(screen.getByRole('textbox', { name: 'Label for phone number 1' })).toHaveValue('');
 		});
 	});
 
 	describe('validation', () => {
 		it('does not show an error for a single blank row', async () => {
-			render(
-				<TestComponent initialPhones={[{ id: 'phone-1', number: '', label: '' }]} onAddPhone={jest.fn()} onRemovePhone={jest.fn()} />,
-				{ wrapper: appRoot },
-			);
+			render(<TestComponent />, { wrapper: appRoot });
 			const input = screen.getByRole('textbox', { name: 'Phone number 1' });
 			await userEvent.click(input);
 			await userEvent.tab();
@@ -134,12 +123,18 @@ describe('PhoneNumberFieldList', () => {
 		});
 
 		it('shows a required error for an empty phone number when its label is filled', async () => {
-			render(
-				<TestComponent initialPhones={[{ id: 'phone-1', number: '', label: 'Home' }]} onAddPhone={jest.fn()} onRemovePhone={jest.fn()} />,
-				{ wrapper: appRoot },
-			);
+			render(<TestComponent initialPhones={[{ number: '', label: 'Home' }]} />, { wrapper: appRoot });
 			const input = screen.getByRole('textbox', { name: 'Phone number 1' });
 			await userEvent.click(input);
+			await userEvent.tab();
+
+			await waitFor(() => expect(input).toHaveAccessibleDescription('Phone number 1 required'));
+		});
+
+		it('shows a required error on the phone number after filling its label', async () => {
+			render(<TestComponent />, { wrapper: appRoot });
+			const input = screen.getByRole('textbox', { name: 'Phone number 1' });
+			await userEvent.type(screen.getByRole('textbox', { name: 'Label for phone number 1' }), 'Home');
 			await userEvent.tab();
 
 			await waitFor(() => expect(input).toHaveAccessibleDescription('Phone number 1 required'));
@@ -149,11 +144,9 @@ describe('PhoneNumberFieldList', () => {
 			render(
 				<TestComponent
 					initialPhones={[
-						{ id: 'phone-1', number: '+15551234567', label: '' },
-						{ id: 'phone-2', number: '', label: '' },
+						{ number: '+15551234567', label: '' },
+						{ number: '', label: '' },
 					]}
-					onAddPhone={jest.fn()}
-					onRemovePhone={jest.fn()}
 				/>,
 				{ wrapper: appRoot },
 			);
@@ -164,11 +157,26 @@ describe('PhoneNumberFieldList', () => {
 			await waitFor(() => expect(input).not.toHaveAccessibleDescription());
 		});
 
+		it('does not show an error when both number and label are filled', async () => {
+			render(<TestComponent initialPhones={[{ number: '+15551234567', label: 'Home' }]} />, { wrapper: appRoot });
+			const input = screen.getByRole('textbox', { name: 'Phone number 1' });
+			await userEvent.click(input);
+			await userEvent.tab();
+
+			await waitFor(() => expect(input).not.toHaveAccessibleDescription());
+		});
+
+		it('validates a stored phone without a label', async () => {
+			render(<TestComponent initialPhones={[{ number: '+15551234567' }]} />, { wrapper: appRoot });
+			const input = screen.getByRole('textbox', { name: 'Phone number 1' });
+			await userEvent.click(input);
+			await userEvent.tab();
+
+			await waitFor(() => expect(input).not.toHaveAccessibleDescription());
+		});
+
 		it('shows an invalid format error for a non-E164 phone number on blur', async () => {
-			render(
-				<TestComponent initialPhones={[{ id: 'phone-1', number: '', label: '' }]} onAddPhone={jest.fn()} onRemovePhone={jest.fn()} />,
-				{ wrapper: appRoot },
-			);
+			render(<TestComponent />, { wrapper: appRoot });
 			const input = screen.getByRole('textbox', { name: 'Phone number 1' });
 			await userEvent.type(input, 'not-a-phone');
 			await userEvent.tab();
@@ -177,14 +185,7 @@ describe('PhoneNumberFieldList', () => {
 		});
 
 		it('shows a max length error when the label exceeds 50 characters on blur', async () => {
-			render(
-				<TestComponent
-					initialPhones={[{ id: 'phone-1', number: '+15551234567', label: '' }]}
-					onAddPhone={jest.fn()}
-					onRemovePhone={jest.fn()}
-				/>,
-				{ wrapper: appRoot },
-			);
+			render(<TestComponent initialPhones={[{ number: '+15551234567', label: '' }]} />, { wrapper: appRoot });
 			const labelInput = screen.getByRole('textbox', { name: 'Label for phone number 1' });
 			await userEvent.type(labelInput, 'a'.repeat(51));
 			await userEvent.tab();
@@ -193,14 +194,7 @@ describe('PhoneNumberFieldList', () => {
 		});
 
 		it('only shows the hint when the label is exactly 50 characters', async () => {
-			render(
-				<TestComponent
-					initialPhones={[{ id: 'phone-1', number: '+15551234567', label: '' }]}
-					onAddPhone={jest.fn()}
-					onRemovePhone={jest.fn()}
-				/>,
-				{ wrapper: appRoot },
-			);
+			render(<TestComponent initialPhones={[{ number: '+15551234567', label: '' }]} />, { wrapper: appRoot });
 			const labelInput = screen.getByRole('textbox', { name: 'Label for phone number 1' });
 			await userEvent.type(labelInput, 'a'.repeat(50));
 			await userEvent.tab();
