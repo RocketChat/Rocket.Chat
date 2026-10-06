@@ -319,7 +319,9 @@ export const FileUpload = {
 		const width = settings.get('Message_Attachments_Thumbnails_Width') as number;
 		const height = settings.get('Message_Attachments_Thumbnails_Height') as number;
 
-		if (fileParam.identify?.size && fileParam.identify.size.height < height && fileParam.identify?.size.width < width) {
+		const isHeic = fileParam.type ? ['image/heic', 'image/heic-sequence', 'image/heif', 'image/heif-sequence'].includes(fileParam.type) : false;
+
+		if (!isHeic && fileParam.identify?.size && fileParam.identify.size.height < height && fileParam.identify?.size.width < width) {
 			return;
 		}
 
@@ -338,6 +340,8 @@ export const FileUpload = {
 
 		if (file.type === 'image/svg+xml') {
 			transformer = transformer.png();
+		} else if (file.type === 'image/heic' || file.type === 'image/heic-sequence' || file.type === 'image/heif' || file.type === 'image/heif-sequence') {
+			transformer = transformer.jpeg();
 		}
 		// pageHeight is the per-frame height; info.height is the full stacked height for animated input.
 		const result = transformer.toBuffer({ resolveWithObject: true }).then(({ data, info: { width, height, pageHeight, format } }) => ({
@@ -376,7 +380,7 @@ export const FileUpload = {
 	},
 
 	async uploadsOnValidate(this: Store, file: IUpload, options?: { session?: ClientSession }) {
-		if (!file.type || !/^image\/((x-windows-)?bmp|p?jpeg|png|gif|webp)$/.test(file.type)) {
+		if (!file.type || !/^image\/((x-windows-)?bmp|p?jpeg|png|gif|webp|heic|heif|heic-sequence|heif-sequence)$/.test(file.type)) {
 			return;
 		}
 
