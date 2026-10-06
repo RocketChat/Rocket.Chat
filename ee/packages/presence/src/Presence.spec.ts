@@ -1,276 +1,418 @@
-import type { IUser } from '@rocket.chat/core-typings';
+import type { ISettingsService, IStatusVisibilityService } from '@rocket.chat/core-services';
+import { LocalBroker, MeteorError, ServiceClass, api } from '@rocket.chat/core-services';
+import type { IUser, SettingValue } from '@rocket.chat/core-typings';
 import { UserStatus } from '@rocket.chat/core-typings';
+import { cronJobs } from '@rocket.chat/cron';
 import { registerModel } from '@rocket.chat/models';
 
 import { Presence } from './Presence';
 
-const findUserMock = jest.fn();
-const updatePresenceMock = jest.fn();
-const findSessionMock = jest.fn();
-
-registerModel('IUsersModel', {
-	findOneById: findUserMock,
-	updatePresenceAndStatus: updatePresenceMock,
+const usersModel = {
+	findOneById: jest.fn(),
+	updatePresenceAndStatus: jest.fn(),
 	findExpiredStatuses: jest.fn(),
 	findNextStatusExpiration: jest.fn().mockResolvedValue(null),
-} as any);
+};
 
-registerModel('IUsersSessionsModel', {
-	findOneById: findSessionMock,
+const sessionsModel = {
+	findOneById: jest.fn(),
 	addConnectionById: jest.fn(),
 	removeConnectionByConnectionId: jest.fn(),
+	updateOne: jest.fn(),
 	updateConnectionStatusById: jest.fn(),
-} as any);
+	findByInstanceId: jest.fn(),
+	removeConnectionsFromInstanceId: jest.fn(),
+	findByOtherInstanceIds: jest.fn(),
+	removeConnectionsFromOtherInstanceIds: jest.fn(),
+};
 
-const user = (o: Partial<IUser> = {}): IUser =>
+registerModel('IUsersModel', usersModel as any);
+registerModel('IUsersSessionsModel', sessionsModel as any);
+
+class SettingsService extends ServiceClass implements Pick<ISettingsService, 'set'> {
+	protected name = 'settings';
+
+	values = new Map<string, SettingValue>();
+
+	async set<T extends SettingValue>(settingId: string, value: T): Promise<void> {
+		this.values.set(settingId, value);
+	}
+}
+
+class StatusVisibilityService extends ServiceClass implements Pick<IStatusVisibilityService, 'isPresenceDisabledFor'> {
+	protected name = 'status-visibility';
+
+	disabledFor = new Set<string>();
+
+	async isPresenceDisabledFor(targetId: string): Promise<boolean> {
+		return this.disabledFor.has(targetId);
+	}
+}
+
+class PresenceStatusListener extends ServiceClass {
+	protected name = 'presence-status-listener';
+
+	received: Partial<IUser>[] = [];
+
+	constructor() {
+		super();
+		this.onEvent('presence.status', ({ user }) => {
+			this.received.push(user);
+		});
+	}
+}
+
+const settings = new SettingsService();
+const statusVisibility = new StatusVisibilityService();
+const listener = new PresenceStatusListener();
+const fakes = [settings, statusVisibility, listener];
+
+const alice = (fields: Partial<IUser> = {}): IUser =>
 	({
-		_id: 'u1',
-		username: 'test',
+		_id: 'alice',
+		username: 'alice',
 		roles: ['user'],
 		status: UserStatus.ONLINE,
 		statusDefault: UserStatus.ONLINE,
 		statusConnection: UserStatus.ONLINE,
 		statusText: '',
-		...o,
+		...fields,
 	}) as IUser;
 
-const withOnlineSession = () =>
-	findSessionMock.mockResolvedValue({ connections: [{ id: 's1', instanceId: 'i1', status: UserStatus.ONLINE }] });
+const aliceIsConnected = (status = UserStatus.ONLINE) =>
+	sessionsModel.findOneById.mockResolvedValue({ connections: [{ id: 'alice-desktop', instanceId: 'instance-a', status }] });
+const aliceIsDisconnected = () => sessionsModel.findOneById.mockResolvedValue(null);
 
-const withNoSessions = () => findSessionMock.mockResolvedValue(null);
+const broadcastStatuses = () => listener.received.map(({ status }) => status);
+const settle = () => new Promise((resolve) => setImmediate(resolve));
+const emit: typeof api.broadcast = async (event, ...args) => {
+	await api.broadcast(event, ...args);
+	await settle();
+};
+const instanceConnections = (instanceId: string, conns: number) =>
+	emit('watch.instanceStatus', { clientAction: 'updated', id: instanceId, diff: { 'extraInformation.conns': conns } });
 
-describe('Presence class', () => {
+describe('Presence', () => {
 	let presence: Presence;
+
+	beforeAll(() => {
+		api.setBroker(new LocalBroker());
+		fakes.forEach((fake) => api.registerService(fake));
+	});
+
+	afterAll(async () => {
+		await Promise.all(fakes.map((fake) => api.destroyService(fake)));
+	});
 
 	beforeEach(() => {
 		jest.clearAllMocks();
+		settings.values.clear();
+		listener.received = [];
+		usersModel.findOneById.mockResolvedValue(alice());
+		usersModel.updatePresenceAndStatus.mockImplementation(async (_id: string, values: Partial<IUser>) => ({ _id, ...values }));
+
 		presence = new Presence();
-		(presence as any).broadcastEnabled = true;
-		(presence as any).api = { broadcast: jest.fn(), nodeList: jest.fn().mockResolvedValue([]) };
-		updatePresenceMock.mockResolvedValue(user());
+		api.registerService(presence);
 	});
 
-	describe('setActiveState', () => {
-		it('should apply claim and write combined result when user is online', async () => {
-			findUserMock.mockResolvedValue(user());
-			withOnlineSession();
+	afterEach(async () => {
+		await api.destroyService(presence);
+	});
 
-			await presence.setActiveState('u1', {
-				statusDefault: UserStatus.BUSY,
-				statusSource: 'manual',
-				statusText: 'Focus',
-			});
+	describe('status chosen by the user', () => {
+		it('should apply a manual status with its message and expiration', async () => {
+			const expiresAt = new Date(Date.now() + 3600_000);
+			aliceIsConnected();
 
-			expect(updatePresenceMock).toHaveBeenCalledWith(
-				'u1',
-				expect.objectContaining({ statusDefault: UserStatus.BUSY, statusSource: 'manual', status: UserStatus.BUSY }),
-				expect.any(Array),
-				undefined,
-			);
+			await presence.setStatus('alice', UserStatus.BUSY, 'Focus', expiresAt);
+
+			expect(listener.received).toEqual([
+				expect.objectContaining({
+					status: UserStatus.BUSY,
+					statusSource: 'manual',
+					statusText: 'Focus',
+					statusExpiresAt: expiresAt,
+				}),
+			]);
 		});
 
-		it('should not write when claim is rejected (offline + external)', async () => {
-			findUserMock.mockResolvedValue(user({ statusDefault: UserStatus.OFFLINE }));
-			withNoSessions();
+		it('should go back to connection-driven presence when online is chosen without a message, and keep a message', async () => {
+			usersModel.findOneById.mockResolvedValue(
+				alice({ status: UserStatus.BUSY, statusDefault: UserStatus.BUSY, statusSource: 'manual', statusText: 'Focus' }),
+			);
+			aliceIsConnected();
 
-			await presence.setActiveState('u1', {
+			await presence.setStatus('alice', UserStatus.ONLINE);
+			await presence.setStatus('alice', UserStatus.ONLINE, '');
+			await presence.setStatus('alice', UserStatus.ONLINE, 'brb');
+
+			expect(listener.received.map(({ statusSource, statusText }) => ({ statusSource, statusText }))).toEqual([
+				{ statusSource: undefined, statusText: '' },
+				{ statusSource: undefined, statusText: '' },
+				{ statusSource: 'manual', statusText: 'brb' },
+			]);
+		});
+
+		it('should clear the message when an empty one is given, and keep it when none is given', async () => {
+			usersModel.findOneById.mockResolvedValue(alice({ statusText: 'Old text' }));
+			aliceIsConnected();
+
+			await presence.setStatus('alice', UserStatus.BUSY, '');
+			await presence.setStatus('alice', UserStatus.BUSY);
+
+			expect(listener.received[0]).toMatchObject({ statusText: '' });
+			expect(listener.received[1]).not.toHaveProperty('statusText');
+		});
+
+		it('should change nothing for an unknown user', async () => {
+			usersModel.findOneById.mockResolvedValue(null);
+
+			await expect(presence.setStatus('ghost', UserStatus.BUSY)).resolves.toBe(false);
+			expect(listener.received).toEqual([]);
+		});
+
+		it('should refuse the change when an admin disabled presence and presence is licensed', async () => {
+			await emit('license.module', { module: 'unlimited-presence', valid: true });
+			statusVisibility.disabledFor.add('alice');
+			aliceIsConnected();
+
+			await expect(presence.setStatus('alice', UserStatus.BUSY, 'Focus')).rejects.toThrow(
+				new MeteorError('error-presence-disabled', 'Presence is disabled for this user'),
+			);
+			expect(listener.received).toEqual([]);
+		});
+
+		it('should ignore the admin switch without a presence license', async () => {
+			statusVisibility.disabledFor.add('alice');
+			aliceIsConnected();
+
+			await expect(presence.setStatus('alice', UserStatus.BUSY, 'Focus')).resolves.toBe(true);
+			expect(broadcastStatuses()).toEqual([UserStatus.BUSY]);
+		});
+	});
+
+	describe('claims from integrations', () => {
+		it('should apply a claim with its expiration and a trimmed message', async () => {
+			const expiresAt = new Date(Date.now() + 3600_000);
+			aliceIsConnected();
+
+			await presence.setActiveState('alice', {
 				statusDefault: UserStatus.BUSY,
 				statusSource: 'external',
-			});
-
-			expect(updatePresenceMock).not.toHaveBeenCalled();
-		});
-
-		it('should store claim but show offline status when user has no sessions', async () => {
-			findUserMock.mockResolvedValue(user({ statusDefault: UserStatus.ONLINE }));
-			withNoSessions();
-
-			await presence.setActiveState('u1', {
-				statusDefault: UserStatus.BUSY,
-				statusSource: 'manual',
-				statusText: 'Working',
-			});
-
-			expect(updatePresenceMock).toHaveBeenCalledWith(
-				'u1',
-				expect.objectContaining({ status: UserStatus.OFFLINE, statusConnection: UserStatus.OFFLINE, statusDefault: UserStatus.BUSY }),
-				expect.any(Array),
-				undefined,
-			);
-		});
-
-		it('should pass expiresAt when provided', async () => {
-			const expiresAt = new Date(Date.now() + 3600_000);
-			findUserMock.mockResolvedValue(user());
-			withOnlineSession();
-
-			await presence.setActiveState('u1', {
-				statusDefault: UserStatus.BUSY,
-				statusSource: 'manual',
-				statusText: 'Focus',
+				statusText: '  In a meeting  ',
 				statusExpiresAt: expiresAt,
 			});
 
-			expect(updatePresenceMock).toHaveBeenCalledWith(
-				'u1',
-				expect.objectContaining({ statusExpiresAt: expiresAt }),
-				expect.arrayContaining(['previousState']),
-				undefined,
-			);
+			expect(listener.received).toEqual([
+				expect.objectContaining({
+					status: UserStatus.BUSY,
+					statusSource: 'external',
+					statusText: 'In a meeting',
+					statusExpiresAt: expiresAt,
+				}),
+			]);
 		});
 
-		it('should reject a past statusExpiresAt', async () => {
-			await expect(
-				presence.setActiveState('u1', {
+		it('should reject an expiration that is not in the future', async () => {
+			const claim = { statusDefault: UserStatus.BUSY, statusSource: 'external' as const, statusText: 'In a meeting' };
+
+			await expect(presence.setActiveState('alice', { ...claim, statusExpiresAt: new Date(Date.now() - 3600_000) })).rejects.toThrow(
+				'statusExpiresAt must be a future date',
+			);
+			await expect(presence.setActiveState('alice', { ...claim, statusExpiresAt: new Date('not a date') })).rejects.toThrow(
+				'statusExpiresAt must be a future date',
+			);
+			expect(listener.received).toEqual([]);
+		});
+
+		it('should restore the displaced status when a claim ends, unless that claim is no longer active', async () => {
+			usersModel.findOneById.mockResolvedValue(
+				alice({
+					status: UserStatus.BUSY,
+					statusSource: 'internal',
 					statusDefault: UserStatus.BUSY,
+					statusText: 'On a call',
+					statusId: 'call-1',
+					previousState: { statusDefault: UserStatus.ONLINE, statusText: '', statusSource: 'manual' },
+				}),
+			);
+			aliceIsConnected();
+
+			await presence.endActiveState('alice', 'call-2');
+			expect(listener.received).toEqual([]);
+
+			await presence.endActiveState('alice', 'call-1');
+			expect(listener.received).toEqual([expect.objectContaining({ status: UserStatus.ONLINE, statusSource: 'manual', statusText: '' })]);
+		});
+
+		it('should drop every claim and go back to online when cleared', async () => {
+			usersModel.findOneById.mockResolvedValue(
+				alice({
+					status: UserStatus.BUSY,
 					statusSource: 'manual',
+					statusDefault: UserStatus.BUSY,
 					statusText: 'Focus',
-					statusExpiresAt: new Date(Date.now() - 3600_000),
+					previousState: { statusDefault: UserStatus.BUSY, statusText: 'In a meeting', statusSource: 'external' },
 				}),
-			).rejects.toThrow('statusExpiresAt must be a future date');
+			);
+			aliceIsConnected();
 
-			expect(updatePresenceMock).not.toHaveBeenCalled();
-		});
+			await presence.clearActiveState('alice');
 
-		it('should reject an invalid statusExpiresAt', async () => {
-			await expect(
-				presence.setActiveState('u1', {
-					statusDefault: UserStatus.BUSY,
-					statusSource: 'manual',
-					statusText: 'Focus',
-					statusExpiresAt: new Date('not a date'),
-				}),
-			).rejects.toThrow('statusExpiresAt must be a future date');
-
-			expect(updatePresenceMock).not.toHaveBeenCalled();
+			expect(listener.received).toEqual([
+				expect.objectContaining({ status: UserStatus.ONLINE, statusDefault: UserStatus.ONLINE, statusText: '' }),
+			]);
 		});
 	});
 
-	describe('endActiveState', () => {
-		it('should restore previous state and write', async () => {
-			findUserMock.mockResolvedValue(
-				user({
-					statusSource: 'manual',
-					statusDefault: UserStatus.BUSY,
-					previousState: { statusDefault: UserStatus.BUSY, statusText: 'Meeting', statusSource: 'external' },
-				}),
-			);
-			withOnlineSession();
+	describe('connections', () => {
+		it('should bring a user online on a new connection and offline when the last one closes', async () => {
+			usersModel.findOneById.mockResolvedValue(alice({ status: UserStatus.OFFLINE, statusConnection: UserStatus.OFFLINE }));
+			aliceIsConnected();
 
-			await presence.endActiveState('u1');
+			await expect(presence.newConnection('alice', 'alice-desktop', 'instance-a')).resolves.toEqual({
+				uid: 'alice',
+				connectionId: 'alice-desktop',
+			});
 
-			expect(updatePresenceMock).toHaveBeenCalledWith(
-				'u1',
-				expect.objectContaining({ statusSource: 'external', statusText: 'Meeting' }),
-				expect.arrayContaining(['previousState']),
-				undefined,
-			);
+			usersModel.findOneById.mockResolvedValue(alice());
+			aliceIsDisconnected();
+
+			await expect(presence.removeConnection('alice', 'alice-desktop')).resolves.toEqual({ uid: 'alice', session: 'alice-desktop' });
+			expect(broadcastStatuses()).toEqual([UserStatus.ONLINE, UserStatus.OFFLINE]);
+		});
+
+		it('should ignore connections without a user or a session', async () => {
+			await expect(presence.newConnection(undefined, 'anonymous-session', 'instance-a')).resolves.toBeUndefined();
+			await expect(presence.newConnection('alice', undefined, 'instance-a')).resolves.toBeUndefined();
+			await expect(presence.removeConnection(undefined, 'anonymous-session')).resolves.toBeUndefined();
+
+			expect(sessionsModel.addConnectionById).not.toHaveBeenCalled();
+			expect(listener.received).toEqual([]);
+		});
+
+		it('should refresh only a connection it knows', async () => {
+			sessionsModel.updateOne.mockResolvedValueOnce({ modifiedCount: 0 }).mockResolvedValueOnce({ modifiedCount: 1 });
+
+			await expect(presence.updateConnection('alice', 'unknown-session')).resolves.toBeUndefined();
+			await expect(presence.updateConnection('alice', 'alice-desktop')).resolves.toEqual({ uid: 'alice', connectionId: 'alice-desktop' });
+		});
+
+		it('should mark the user away when their connection reports away', async () => {
+			aliceIsConnected(UserStatus.AWAY);
+			sessionsModel.updateConnectionStatusById.mockResolvedValueOnce({ modifiedCount: 1 }).mockResolvedValueOnce({ modifiedCount: 0 });
+
+			await expect(presence.setConnectionStatus('alice', UserStatus.AWAY, 'alice-desktop')).resolves.toBe(true);
+			await expect(presence.setConnectionStatus('alice', UserStatus.AWAY, 'unknown-session')).resolves.toBe(false);
+			expect(broadcastStatuses()[0]).toBe(UserStatus.AWAY);
 		});
 	});
 
-	describe('clearActiveState', () => {
-		it('should reset to online and write', async () => {
-			findUserMock.mockResolvedValue(user({ statusDefault: UserStatus.BUSY, statusSource: 'manual' }));
-			withOnlineSession();
+	describe('lost instances', () => {
+		it('should take offline the users of an instance that went away, unless its connections were already removed', async () => {
+			sessionsModel.findByInstanceId.mockReturnValue({ toArray: async () => [{ _id: 'alice' }] });
+			sessionsModel.removeConnectionsFromInstanceId.mockImplementation(async (instanceId: string) => ({
+				modifiedCount: instanceId === 'instance-already-cleaned' ? 0 : 1,
+			}));
+			aliceIsDisconnected();
 
-			await presence.clearActiveState('u1');
+			await emit('watch.instanceStatus', { clientAction: 'removed', id: 'instance-already-cleaned' });
+			expect(listener.received).toEqual([]);
 
-			expect(updatePresenceMock).toHaveBeenCalledWith(
-				'u1',
-				expect.objectContaining({ statusDefault: UserStatus.ONLINE, statusText: '', status: UserStatus.ONLINE }),
-				expect.arrayContaining(['statusSource', 'previousState']),
-				undefined,
-			);
+			await emit('watch.instanceStatus', { clientAction: 'removed', id: 'instance-a' });
+			expect(broadcastStatuses()).toEqual([UserStatus.OFFLINE]);
+
+			await presence.onNodeDisconnected({ node: { id: 'instance-b', available: false } });
+			await settle();
+			expect(broadcastStatuses()).toEqual([UserStatus.OFFLINE, UserStatus.OFFLINE]);
+		});
+
+		it('should drop connections held by instances that are no longer alive', async () => {
+			sessionsModel.findByOtherInstanceIds.mockImplementation((liveInstanceIds: string[]) => ({
+				toArray: async () => (liveInstanceIds.join() === 'instance-a' ? [{ _id: 'bob' }] : []),
+			}));
+			sessionsModel.removeConnectionsFromOtherInstanceIds.mockResolvedValue({ modifiedCount: 1 });
+
+			const nodeList = jest.spyOn(api, 'nodeList').mockResolvedValue([
+				{ id: 'instance-a', available: true },
+				{ id: 'instance-b', available: false },
+			]);
+			await expect(presence.removeLostConnections()).resolves.toEqual(['bob']);
+
+			sessionsModel.removeConnectionsFromOtherInstanceIds.mockResolvedValueOnce({ modifiedCount: 0 });
+			await expect(presence.removeLostConnections()).resolves.toEqual([]);
+
+			nodeList.mockResolvedValue([]);
+			sessionsModel.removeConnectionsFromOtherInstanceIds.mockClear();
+			await expect(presence.removeLostConnections()).resolves.toEqual([]);
+			expect(sessionsModel.removeConnectionsFromOtherInstanceIds).not.toHaveBeenCalled();
 		});
 	});
 
-	describe('setStatus', () => {
-		it('should apply a manual claim when status changes', async () => {
-			findUserMock.mockResolvedValue(user());
-			withOnlineSession();
+	describe('broadcast limit', () => {
+		it('should stop broadcasting above 200 connections without a license', async () => {
+			aliceIsConnected();
+			await instanceConnections('instance-a', 150);
+			await instanceConnections('instance-b', 50);
+			expect(settings.values.has('Presence_broadcast_disabled')).toBe(false);
 
-			await presence.setStatus('u1', UserStatus.BUSY, 'Working');
+			await instanceConnections('instance-b', 51);
+			expect(settings.values.get('Presence_broadcast_disabled')).toBe(true);
 
-			expect(updatePresenceMock).toHaveBeenCalledWith(
-				'u1',
-				expect.objectContaining({ statusDefault: UserStatus.BUSY, statusSource: 'manual' }),
-				expect.any(Array),
-				undefined,
-			);
+			await presence.setStatus('alice', UserStatus.BUSY, 'Focus');
+			expect(listener.received).toEqual([]);
+			await expect(presence.toggleBroadcast(true)).rejects.toThrow('Cannot enable broadcast when there are more than 200 connections');
 		});
 
-		it('should trigger clearActive when status is ONLINE with no text', async () => {
-			findUserMock.mockResolvedValue(user({ statusDefault: UserStatus.BUSY, statusSource: 'manual' }));
-			withOnlineSession();
+		it('should resume broadcasting when a presence or scalability license arrives', async () => {
+			aliceIsConnected();
+			await instanceConnections('instance-a', 201);
+			await emit('license.module', { module: 'livechat-enterprise', valid: true });
+			expect(settings.values.get('Presence_broadcast_disabled')).toBe(true);
 
-			await presence.setStatus('u1', UserStatus.ONLINE);
+			await emit('license.module', { module: 'scalability', valid: true });
+			await instanceConnections('instance-a', 300);
 
-			expect(updatePresenceMock).toHaveBeenCalledWith(
-				'u1',
-				expect.objectContaining({ statusDefault: UserStatus.ONLINE }),
-				expect.arrayContaining(['statusSource', 'previousState']),
-				undefined,
-			);
+			expect(settings.values.get('Presence_broadcast_disabled')).toBe(false);
+			await presence.setStatus('alice', UserStatus.BUSY, 'Focus');
+			expect(broadcastStatuses()).toEqual([UserStatus.BUSY]);
 		});
+	});
 
-		it('should trigger clearActive when status is ONLINE with empty string text', async () => {
-			findUserMock.mockResolvedValue(user({ statusDefault: UserStatus.BUSY, statusSource: 'manual' }));
-			withOnlineSession();
+	it('should report current, max and peak connections across instances', async () => {
+		await instanceConnections('instance-a', 120);
+		await instanceConnections('instance-b', 50);
+		await instanceConnections('instance-a', 10);
+		expect(presence.getConnectionCount()).toEqual({ current: 60, max: 200 });
 
-			await presence.setStatus('u1', UserStatus.ONLINE, '');
+		sessionsModel.findByInstanceId.mockReturnValue({ toArray: async () => [] });
+		sessionsModel.removeConnectionsFromInstanceId.mockResolvedValue({ modifiedCount: 0 });
+		await emit('watch.instanceStatus', { clientAction: 'removed', id: 'instance-b' });
 
-			expect(updatePresenceMock).toHaveBeenCalledWith(
-				'u1',
-				expect.objectContaining({ statusDefault: UserStatus.ONLINE }),
-				expect.arrayContaining(['statusSource', 'previousState']),
-				undefined,
-			);
+		expect(presence.getConnectionCount()).toEqual({ current: 10, max: 200 });
+		expect(presence.getPeakConnections(true)).toBe(170);
+		expect(presence.getPeakConnections()).toBe(0);
+	});
+
+	it('should end expired statuses on startup, once per expiration, and keep the next one scheduled', async () => {
+		const expiredAt = new Date(Date.now() - 1000);
+		usersModel.findExpiredStatuses.mockReturnValue([
+			alice({ status: UserStatus.BUSY, statusDefault: UserStatus.BUSY, statusSource: 'manual', statusExpiresAt: expiredAt }),
+		]);
+		usersModel.findNextStatusExpiration.mockResolvedValue({ statusExpiresAt: new Date(Date.now() + 3600_000) });
+		aliceIsConnected();
+
+		await presence.started();
+
+		expect(broadcastStatuses()).toEqual([UserStatus.ONLINE]);
+		expect(usersModel.updatePresenceAndStatus).toHaveBeenCalledWith('alice', expect.anything(), expect.anything(), {
+			statusExpiresAt: expiredAt,
+			previousState: { $exists: false },
 		});
+		await expect(cronJobs.has('presence-status-expiration')).resolves.toBe(true);
 
-		it('should trigger setActive when status is ONLINE with text', async () => {
-			findUserMock.mockResolvedValue(user());
-			withOnlineSession();
-
-			await presence.setStatus('u1', UserStatus.ONLINE, 'brb');
-
-			expect(updatePresenceMock).toHaveBeenCalledWith(
-				'u1',
-				expect.objectContaining({ statusDefault: UserStatus.ONLINE, statusSource: 'manual', statusText: 'brb' }),
-				expect.any(Array),
-				undefined,
-			);
-		});
-
-		it('should write empty string statusText when explicitly provided', async () => {
-			findUserMock.mockResolvedValue(user({ statusText: 'Old text' }));
-			withOnlineSession();
-
-			await presence.setStatus('u1', UserStatus.BUSY, '');
-
-			expect(updatePresenceMock).toHaveBeenCalledWith(
-				'u1',
-				expect.objectContaining({ statusDefault: UserStatus.BUSY, statusText: '' }),
-				expect.any(Array),
-				undefined,
-			);
-		});
-
-		it('should not include statusText when undefined', async () => {
-			findUserMock.mockResolvedValue(user({ statusText: 'Old text' }));
-			withOnlineSession();
-
-			await presence.setStatus('u1', UserStatus.BUSY);
-
-			const updateArg = updatePresenceMock.mock.calls[0][1];
-			expect(updateArg).not.toHaveProperty('statusText');
-		});
-
-		it('should not write when user is not found', async () => {
-			findUserMock.mockResolvedValue(null);
-
-			await presence.setStatus('u1', UserStatus.BUSY);
-
-			expect(updatePresenceMock).not.toHaveBeenCalled();
-		});
+		usersModel.findNextStatusExpiration.mockResolvedValue(null);
+		await presence.clearActiveState('alice');
+		await expect(cronJobs.has('presence-status-expiration')).resolves.toBe(false);
 	});
 });
