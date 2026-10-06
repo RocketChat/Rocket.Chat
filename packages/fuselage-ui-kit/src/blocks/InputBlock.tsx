@@ -1,3 +1,4 @@
+// TODO: migrate to @rocket.chat/fuselage-forms (and its wrapped inputs in the elements) so the hint and error are announced with the field, not just the label
 import { Field, FieldLabel, FieldRow, FieldError, FieldHint } from '@rocket.chat/fuselage';
 import * as UiKit from '@rocket.chat/ui-kit';
 import { memo, useMemo } from 'react';
