@@ -1,12 +1,11 @@
 import type { IMessage } from '@rocket.chat/core-typings';
 import type { ServerMethods } from '@rocket.chat/ddp-client';
 import { Messages } from '@rocket.chat/models';
-import { isTruthy } from '@rocket.chat/tools';
 import { check } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
 
-import { canAccessRoomIdAsync } from '../../lib/authorization/canAccessRoom';
 import { methodDeprecationLogger } from '../../lib/deprecationWarningLogger';
+import { filterMessagesByRoomAccess } from '../../lib/messages/filterMessagesByRoomAccess';
 
 declare module '@rocket.chat/ddp-client' {
 	// eslint-disable-next-line @typescript-eslint/naming-convention
@@ -28,11 +27,6 @@ Meteor.methods<ServerMethods>({
 
 		const msgs = await Messages.findVisibleByIds(messages).toArray();
 
-		const rids = [...new Set(msgs.map((m) => m.rid))];
-		const accessibleRids = new Set(
-			(await Promise.all(rids.map(async (rid) => ((await canAccessRoomIdAsync(rid, user._id)) ? rid : null)))).filter(isTruthy),
-		);
-
-		return msgs.filter((m) => accessibleRids.has(m.rid));
+		return filterMessagesByRoomAccess(msgs, user);
 	},
 });
