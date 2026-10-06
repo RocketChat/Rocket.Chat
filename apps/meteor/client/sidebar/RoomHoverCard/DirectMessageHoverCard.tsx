@@ -10,6 +10,7 @@ import RoomHoverCardDialog from './RoomHoverCardDialog';
 import RoomHoverCardFooter from './RoomHoverCardFooter';
 import RoomHoverCardLastMessage from './RoomHoverCardLastMessage';
 import RoomHoverCardQuickAction from './RoomHoverCardQuickAction';
+import RoomHoverCardThreads from './RoomHoverCardThreads';
 import { useRoomHoverCardActions } from './useRoomHoverCardActions';
 import LocalTime from '../../components/LocalTime';
 import { ReactiveUserStatus } from '../../components/UserStatus';
@@ -18,7 +19,6 @@ import { useUserInfoQuery } from '../../hooks/useUserInfoQuery';
 import RoomGroupingButton from '../../views/room/Header/icons/RoomGroupingButton';
 import { useUserMediaCallAction } from '../../views/room/hooks/useUserInfoActions/actions/useUserMediaCallAction';
 import { useVideoCallAction } from '../../views/room/hooks/useUserInfoActions/actions/useVideoCallAction';
-import { useUnreadDisplay } from '../hooks/useUnreadDisplay';
 
 const avatarStyle = css`
 	object-fit: cover;
@@ -53,10 +53,10 @@ const DirectMessageHoverCard = ({ uid, room, subscription, onClose }: DirectMess
 	const displayName = getUserDisplayName(user?.name ?? subscription.fname, username, showRealNames) ?? username;
 	const roles = user?.roles ? getRoles(user.roles) : [];
 
-	const unread = useUnreadDisplay(subscription);
-	const isUnread = Boolean(subscription.alert || subscription.unread || unread.unreadCount.threads);
+	const hasUnreadThreads = Boolean(subscription.tunread?.length);
+	const isUnread = Boolean(subscription.alert || subscription.unread || hasUnreadThreads);
 
-	const { openRoom, markAsRead } = useRoomHoverCardActions({ subscription, roomName: displayName, onClose });
+	const { openRoom, openThread, openThreads, markAsRead } = useRoomHoverCardActions({ subscription, roomName: displayName, onClose });
 
 	const callee = { _id: uid, username, name: user?.name };
 	const videoCall = useVideoCallAction(callee);
@@ -126,14 +126,21 @@ const DirectMessageHoverCard = ({ uid, room, subscription, onClose }: DirectMess
 					<RoomGroupingButton room={{ ...room, f: subscription.f, category: subscription.category }} />
 				</Box>
 			</Box>
-			<RoomHoverCardLastMessage message={room.lastMessage} unread={unread} />
+			<RoomHoverCardLastMessage message={room.lastMessage} subscription={subscription} />
+			<RoomHoverCardThreads
+				room={room}
+				subscription={subscription}
+				roomName={displayName}
+				onOpenThread={openThread}
+				onOpenThreads={openThreads}
+			/>
 			<RoomHoverCardFooter>
 				<Button small primary icon='balloon' onClick={openRoom}>
 					{t('Open_conversation')}
 				</Button>
 				{isUnread && (
 					<Button small secondary icon='check-double' onClick={markAsRead}>
-						{t('Mark_as_read')}
+						{t(hasUnreadThreads ? 'Mark_messages_and_threads_as_read' : 'Mark_as_read')}
 					</Button>
 				)}
 			</RoomHoverCardFooter>

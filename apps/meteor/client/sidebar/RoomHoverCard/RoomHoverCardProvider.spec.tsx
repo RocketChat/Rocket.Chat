@@ -64,9 +64,7 @@ beforeEach(() => {
 	jest.useFakeTimers();
 });
 
-afterEach(async () => {
-	// Lets the shared hover warm-up cool down, so one test's open card doesn't make the next one open instantly.
-	await advance(2000);
+afterEach(() => {
 	jest.useRealTimers();
 });
 
@@ -85,11 +83,28 @@ it('waits for the pointer to rest on a room before opening its card', async () =
 	await advance(400);
 
 	expect(shownRoom()).toBe('c');
-
-	movePointer(c, outside);
 });
 
-it('hands the card over to the next room instead of closing it', async () => {
+it('waits again after a card closed, instead of opening the next one right away', async () => {
+	const { outside, a, b } = renderList();
+
+	movePointer(outside, a);
+	await advance(600);
+	expect(shownRoom()).toBe('a');
+
+	movePointer(a, outside);
+	await advance(1000);
+	expect(shownRoom()).toBeNull();
+
+	movePointer(outside, b);
+	await advance(200);
+	expect(shownRoom()).toBeNull();
+
+	await advance(400);
+	expect(shownRoom()).toBe('b');
+});
+
+it('keeps the card while the pointer moves to the next room, and switches once it rests there', async () => {
 	const { outside, a, b } = renderList();
 
 	movePointer(outside, a);
@@ -97,14 +112,14 @@ it('hands the card over to the next room instead of closing it', async () => {
 	expect(shownRoom()).toBe('a');
 
 	movePointer(a, b);
-	await advance(1000);
+	await advance(200);
+	expect(shownRoom()).toBe('a');
 
+	await advance(400);
 	expect(shownRoom()).toBe('b');
-
-	movePointer(b, outside);
 });
 
-it('keeps the card while the pointer crosses over to it, and hands it over when the pointer comes back on another room', async () => {
+it('keeps the card when the pointer crosses other rooms on its way to it', async () => {
 	const { outside, a, b } = renderList();
 
 	movePointer(outside, a);
@@ -114,15 +129,18 @@ it('keeps the card while the pointer crosses over to it, and hands it over when 
 	// eslint-disable-next-line testing-library/no-node-access
 	const card = screen.getByTestId('room-hover-card').parentElement as Element;
 
-	movePointer(a, card);
+	movePointer(a, b);
+	await advance(200);
+	movePointer(b, card);
 	await advance(1000);
 	expect(shownRoom()).toBe('a');
 
 	movePointer(card, b);
-	await advance(1000);
-	expect(shownRoom()).toBe('b');
+	await advance(200);
+	expect(shownRoom()).toBe('a');
 
-	movePointer(b, outside);
+	await advance(400);
+	expect(shownRoom()).toBe('b');
 });
 
 it('closes once the pointer leaves the list', async () => {

@@ -18,6 +18,11 @@ jest.mock('../../views/room/Header/icons/RoomGroupingButton', () => ({
 	default: () => null,
 }));
 
+jest.mock('./RoomHoverCardThreadPreview', () => ({
+	__esModule: true,
+	default: () => null,
+}));
+
 const serialize = (room: IRoom) => JSON.parse(JSON.stringify(room)) as Serialized<IRoom>;
 
 const subscribedTo = (room: IRoom) =>

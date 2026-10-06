@@ -12,11 +12,11 @@ import RoomHoverCardDialog from './RoomHoverCardDialog';
 import RoomHoverCardFooter from './RoomHoverCardFooter';
 import RoomHoverCardKind from './RoomHoverCardKind';
 import RoomHoverCardLastMessage from './RoomHoverCardLastMessage';
+import RoomHoverCardThreads from './RoomHoverCardThreads';
 import { useRoomHoverCardActions } from './useRoomHoverCardActions';
 import MarkdownText from '../../components/MarkdownText';
 import { roomCoordinator } from '../../lib/rooms/roomCoordinator';
 import RoomGroupingButton from '../../views/room/Header/icons/RoomGroupingButton';
-import { useUnreadDisplay } from '../hooks/useUnreadDisplay';
 
 const MEMBER_AVATARS = 3;
 
@@ -61,10 +61,14 @@ const ChannelHoverCard = ({ room, subscription, onClose }: ChannelHoverCardProps
 	const roomName = roomCoordinator.getRoomName(room.t, room);
 	const isMuted = Boolean(subscription.disableNotifications);
 
-	const unread = useUnreadDisplay(subscription);
-	const isUnread = Boolean(subscription.alert || subscription.unread || unread.unreadCount.threads);
+	const hasUnreadThreads = Boolean(subscription.tunread?.length);
+	const isUnread = Boolean(subscription.alert || subscription.unread || hasUnreadThreads);
 
-	const { openRoom, markAsRead, toggleNotifications } = useRoomHoverCardActions({ subscription, roomName, onClose });
+	const { openRoom, openThread, openThreads, markAsRead, toggleNotifications } = useRoomHoverCardActions({
+		subscription,
+		roomName,
+		onClose,
+	});
 
 	const getMembers = useEndpoint('GET', '/v1/rooms.membersOrderedByRole');
 	const { data: members = [] } = useQuery({
@@ -117,14 +121,21 @@ const ChannelHoverCard = ({ room, subscription, onClose }: ChannelHoverCardProps
 					</Box>
 				</Box>
 			</Box>
-			<RoomHoverCardLastMessage message={room.lastMessage} unread={unread} />
+			<RoomHoverCardLastMessage message={room.lastMessage} subscription={subscription} />
+			<RoomHoverCardThreads
+				room={room}
+				subscription={subscription}
+				roomName={roomName}
+				onOpenThread={openThread}
+				onOpenThreads={openThreads}
+			/>
 			<RoomHoverCardFooter>
 				<Button small primary icon={room.t === 'd' ? 'balloon' : 'arrow-forward'} onClick={openRoom}>
 					{t(room.t === 'd' ? 'Open_conversation' : 'Open_channel')}
 				</Button>
 				{isUnread && (
 					<Button small secondary icon='check-double' onClick={markAsRead}>
-						{t('Mark_as_read')}
+						{t(hasUnreadThreads ? 'Mark_messages_and_threads_as_read' : 'Mark_as_read')}
 					</Button>
 				)}
 				<Button small secondary icon={isMuted ? 'bell' : 'bell-off'} onClick={toggleNotifications}>
