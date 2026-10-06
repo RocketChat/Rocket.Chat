@@ -7,7 +7,6 @@ import {
 	FieldDescription,
 	FieldError,
 	Icon,
-	ITEM_MEDIA_SIZE,
 	Item,
 	ItemContent,
 	ItemIcon,
@@ -15,6 +14,7 @@ import {
 	ItemTitle,
 	StatusBullet,
 } from '@rocket.chat/fuselage';
+import { ITEM_MEDIA_SIZE } from '@rocket.chat/ui-avatar';
 import { useId } from 'react';
 import { useTranslation } from 'react-i18next';
 

@@ -1,5 +1,5 @@
-import { AutoComplete, Box, ITEM_MEDIA_SIZE, Item, ItemContent, ItemMedia, ItemTitle } from '@rocket.chat/fuselage';
-import { RoomAvatar } from '@rocket.chat/ui-avatar';
+import { AutoComplete, Box, Item, ItemContent, ItemMedia, ItemTitle } from '@rocket.chat/fuselage';
+import { ITEM_MEDIA_SIZE, RoomAvatar } from '@rocket.chat/ui-avatar';
 import { useEndpoint } from '@rocket.chat/ui-contexts';
 import { useQuery } from '@tanstack/react-query';
 import type { ComponentProps } from 'react';

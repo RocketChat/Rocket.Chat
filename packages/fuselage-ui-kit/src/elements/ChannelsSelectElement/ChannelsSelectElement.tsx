@@ -1,6 +1,6 @@
-import { AutoComplete, Box, Chip, ITEM_MEDIA_SIZE, Item, ItemContent, ItemMedia, ItemTitle } from '@rocket.chat/fuselage';
+import { AutoComplete, Box, Chip, Item, ItemContent, ItemMedia, ItemTitle } from '@rocket.chat/fuselage';
 import { useDebouncedValue } from '@rocket.chat/fuselage-hooks';
-import { RoomAvatar } from '@rocket.chat/ui-avatar';
+import { ITEM_MEDIA_SIZE, RoomAvatar } from '@rocket.chat/ui-avatar';
 import type * as UiKit from '@rocket.chat/ui-kit';
 import { memo, useCallback, useState } from 'react';
 

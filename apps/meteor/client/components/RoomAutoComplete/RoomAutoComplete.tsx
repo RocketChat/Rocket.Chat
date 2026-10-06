@@ -1,9 +1,9 @@
 import type { IRoom } from '@rocket.chat/core-typings';
-import { Box, ITEM_MEDIA_SIZE, Item, ItemContent, ItemMedia, ItemMeta, ItemTitle } from '@rocket.chat/fuselage';
+import { Box, Item, ItemContent, ItemMedia, ItemMeta, ItemTitle } from '@rocket.chat/fuselage';
 import type { AutoCompleteProps } from '@rocket.chat/fuselage';
 import { AutoComplete } from '@rocket.chat/fuselage-forms';
 import { useDebouncedValue } from '@rocket.chat/fuselage-hooks';
-import { RoomAvatar } from '@rocket.chat/ui-avatar';
+import { ITEM_MEDIA_SIZE, RoomAvatar } from '@rocket.chat/ui-avatar';
 import { useEndpoint } from '@rocket.chat/ui-contexts';
 import { keepPreviousData, useQuery } from '@tanstack/react-query';
 import type { ReactNode } from 'react';
@@ -91,7 +91,7 @@ const RoomAutoComplete = forwardRef<HTMLInputElement, RoomAutoCompleteProps>(fun
 				const roomIcon = renderRoomIcon?.({ encrypted: label?.encrypted, type: label?.type });
 
 				return (
-					<Item {...props} is='li' inset='md' selected={selected} focused={focus} aria-selected={selected}>
+					<Item {...props} is='li' inset='sm' selected={selected} focused={focus} aria-selected={selected}>
 						<ItemMedia>
 							<RoomAvatar size={ITEM_MEDIA_SIZE.condensed} room={{ _id: value, ...label }} />
 						</ItemMedia>

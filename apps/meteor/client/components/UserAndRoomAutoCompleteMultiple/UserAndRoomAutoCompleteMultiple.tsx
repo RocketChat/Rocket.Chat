@@ -1,8 +1,8 @@
 import { type RoomType, isDirectMessageRoom } from '@rocket.chat/core-typings';
-import { AutoComplete, Box, Chip, ITEM_MEDIA_SIZE, Item, ItemContent, ItemMedia, ItemTitle } from '@rocket.chat/fuselage';
+import { AutoComplete, Box, Chip, Item, ItemContent, ItemMedia, ItemTitle } from '@rocket.chat/fuselage';
 import { useDebouncedValue, useStableArray } from '@rocket.chat/fuselage-hooks';
 import { escapeRegExp } from '@rocket.chat/tools';
-import { RoomAvatar } from '@rocket.chat/ui-avatar';
+import { ITEM_MEDIA_SIZE, RoomAvatar } from '@rocket.chat/ui-avatar';
 import type { SubscriptionWithRoom } from '@rocket.chat/ui-contexts';
 import { useUser, useUserSubscriptions } from '@rocket.chat/ui-contexts';
 import type { ComponentProps } from 'react';
