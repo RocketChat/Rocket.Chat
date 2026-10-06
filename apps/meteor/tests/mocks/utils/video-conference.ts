@@ -12,7 +12,7 @@ export function createFakeVideoConfCall({ type, rid }: { type: VideoConferenceTy
 		status: 0,
 		createdBy: {
 			_id: uid,
-			username: faker.internet.userName(),
+			username: faker.internet.username(),
 			name: faker.person.fullName(),
 		},
 		_updatedAt: faker.date.recent(),
