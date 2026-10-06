@@ -15,10 +15,9 @@ import LocalTime from '../../components/LocalTime';
 import { ReactiveUserStatus } from '../../components/UserStatus';
 import { ReactiveUserStatusText } from '../../components/UserStatusText';
 import { useUserInfoQuery } from '../../hooks/useUserInfoQuery';
-import { useOpenedRoom } from '../../lib/RoomManager';
+import RoomGroupingButton from '../../views/room/Header/icons/RoomGroupingButton';
 import { useUserMediaCallAction } from '../../views/room/hooks/useUserInfoActions/actions/useUserMediaCallAction';
 import { useVideoCallAction } from '../../views/room/hooks/useUserInfoActions/actions/useVideoCallAction';
-import RoomMenu from '../RoomMenu';
 import { useUnreadDisplay } from '../hooks/useUnreadDisplay';
 
 const avatarStyle = css`
@@ -46,7 +45,6 @@ const DirectMessageHoverCard = ({ uid, room, subscription, onClose }: DirectMess
 	const getRoles = useRolesDescription();
 	const getUserAvatarPath = useUserAvatarPath();
 	const showRealNames = useSetting('UI_Use_Real_Name', false);
-	const openedRoom = useOpenedRoom();
 
 	const { data, isLoading } = useUserInfoQuery({ userId: uid }, { placeholderData: undefined });
 	const user = data?.user;
@@ -77,21 +75,12 @@ const DirectMessageHoverCard = ({ uid, room, subscription, onClose }: DirectMess
 						borderRadius='default'
 						className={avatarStyle}
 					/>
-					<Box display='flex' marginBlockStart={10}>
-						{videoCall && <RoomHoverCardQuickAction action={videoCall} />}
-						{voiceCall && <RoomHoverCardQuickAction action={voiceCall} />}
-						<RoomMenu
-							rid={room._id}
-							alert={subscription.alert}
-							unread={Boolean(subscription.unread)}
-							threadUnread={unread.unreadCount.threads > 0}
-							roomOpen={openedRoom === room._id}
-							type={room.t}
-							cl={room.cl}
-							name={displayName}
-							hideDefaultOptions={false}
-						/>
-					</Box>
+					{(videoCall || voiceCall) && (
+						<Box display='flex' marginBlockStart={10}>
+							{videoCall && <RoomHoverCardQuickAction action={videoCall} />}
+							{voiceCall && <RoomHoverCardQuickAction action={voiceCall} />}
+						</Box>
+					)}
 				</Box>
 				<Box display='flex' flexDirection='column' flexGrow={1} minWidth={0} marginInlineStart={14}>
 					<Box display='flex' alignItems='center'>
@@ -132,6 +121,9 @@ const DirectMessageHoverCard = ({ uid, room, subscription, onClose }: DirectMess
 							{user.bio}
 						</Box>
 					)}
+				</Box>
+				<Box flexShrink={0} marginInlineStart={8}>
+					<RoomGroupingButton room={{ ...room, f: subscription.f, category: subscription.category }} />
 				</Box>
 			</Box>
 			<RoomHoverCardLastMessage message={room.lastMessage} unread={unread} />

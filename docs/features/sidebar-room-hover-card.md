@@ -16,12 +16,12 @@ Only the default sidebar (`client/sidebar`, with or without the `sidebarRail` fe
 
 | Room | Card | Header | Footer actions |
 |------|------|--------|----------------|
-| 1:1 direct message (and the self DM) | `DirectMessageHoverCard` | avatar, video / voice call, room menu, presence, `@username` · status text, roles, local time, bio | Open conversation, Mark as read |
-| Any other room, group DMs included | `ChannelHoverCard` | room avatar, name, kind (public/private channel, team, discussion, DM; "… in **Team**" linking to the team), room menu, topic, member avatars and count, desktop notification level | Open channel (Open conversation for group DMs), Mark as read, Mute / Unmute |
+| 1:1 direct message (and the self DM) | `DirectMessageHoverCard` | avatar, video / voice call, grouping button, presence, `@username` · status text, roles, local time, bio | Open conversation, Mark as read |
+| Any other room, group DMs included | `ChannelHoverCard` | room avatar, name, kind (public/private channel, team, discussion, DM; "… in **Team**" linking to the team), grouping button, topic, member avatars and count, desktop notification level | Open channel (Open conversation for group DMs), Mark as read, Mute / Unmute |
 
-The room menu is the sidebar's own `RoomMenu`, so it matches the list: with the custom categories license it offers
-"Move to" a category (Favorites being one of them) instead of a favorite toggle. That's why the card has no favorite
-button of its own.
+The grouping button, top right, is the room header's own (`RoomGroupingButton`): under the custom categories
+license it picks the room's category (Favorites being one of them), without it it toggles favorite. The card has no
+room menu; hiding, leaving and marking unread stay in the sidebar's kebab.
 
 Both end with the room's last message: author, time, preview (videoconf, E2EE and attachment messages get the
 same placeholders as the sidebar preview) and the room's unread summary as a badge.
@@ -93,7 +93,7 @@ The card is not keyboard-reachable; everything in it is also available from the 
 | DM vs room selection | `apps/meteor/client/sidebar/RoomHoverCard/RoomHoverCardWithData.tsx` |
 | DM card | `apps/meteor/client/sidebar/RoomHoverCard/DirectMessageHoverCard.tsx` |
 | Room card | `apps/meteor/client/sidebar/RoomHoverCard/ChannelHoverCard.tsx`, `RoomHoverCardKind.tsx` |
-| Room menu | `apps/meteor/client/sidebar/RoomMenu.tsx` (reused as is) |
+| Grouping button | `apps/meteor/client/views/room/Header/icons/RoomGroupingButton.tsx`, shared with the room header (`RoomGroupingMenu.tsx` adds the subscribed check) |
 | Shared pieces | `RoomHoverCardDialog.tsx`, `RoomHoverCardLastMessage.tsx`, `RoomHoverCardFooter.tsx`, `RoomHoverCardQuickAction.tsx` |
 | Actions | `apps/meteor/client/sidebar/RoomHoverCard/useRoomHoverCardActions.ts` |
 | Trigger | `apps/meteor/client/sidebar/RoomList/SidebarItemTemplateWithData.tsx` |

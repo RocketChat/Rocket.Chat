@@ -13,7 +13,7 @@ jest.mock('../../lib/rooms/roomCoordinator', () => ({
 	},
 }));
 
-jest.mock('../RoomMenu', () => ({
+jest.mock('../../views/room/Header/icons/RoomGroupingButton', () => ({
 	__esModule: true,
 	default: () => null,
 }));
