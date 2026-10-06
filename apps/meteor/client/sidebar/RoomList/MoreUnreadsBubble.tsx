@@ -24,9 +24,22 @@ const bubbleWrapperStyle = css`
 const MoreUnreadsBubble = ({ direction, mention = false, onClick }: MoreUnreadsBubbleProps) => {
 	const { t } = useTranslation();
 
+	const getAccessibleName = () => {
+		if (mention) {
+			return direction === 'up' ? t('Unread_mentions_above') : t('Unread_mentions_below');
+		}
+
+		return direction === 'up' ? t('More_unreads_above') : t('More_unreads_below');
+	};
+
 	return (
 		<Box className={bubbleWrapperStyle} {...(direction === 'up' ? { insetBlockStart: 8 } : { insetBlockEnd: 8 })}>
-			<Bubble small icon={direction === 'up' ? 'arrow-up' : 'arrow-down'} onClick={onClick}>
+			<Bubble
+				small
+				icon={direction === 'up' ? 'arrow-up' : 'arrow-down'}
+				onClick={onClick}
+				contentProps={{ 'aria-label': getAccessibleName() }}
+			>
 				{mention ? t('Unread_mentions') : t('More_unreads')}
 			</Bubble>
 		</Box>
