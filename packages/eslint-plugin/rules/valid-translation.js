@@ -1,11 +1,6 @@
 import { readFileSync, statSync } from 'node:fs';
-import { dirname, join } from 'node:path';
-import { fileURLToPath } from 'node:url';
+import { basename } from 'node:path';
 
-const baseResourcePath = join(dirname(fileURLToPath(import.meta.url)), '..', 'src', 'locales', 'en.i18n.json');
-
-const defaultNamespace = 'core';
-const knownNamespaces = [defaultNamespace, 'onboarding', 'registration', 'cloud', 'subscription'];
 const pluralSuffixes = ['zero', 'one', 'two', 'few', 'many', 'other'];
 
 // Options that configure i18next itself rather than feeding an interpolation placeholder
@@ -35,15 +30,33 @@ const reservedOptions = new Set([
 // Options that make the final params unpredictable at lint time
 const opaqueOptions = new Set(['replace', 'postProcess', 'sprintf', 'skipInterpolation']);
 
-let cache = { mtimeMs: -1, resource: new Map() };
+const isPluralObject = (value) => Object.keys(value).every((key) => pluralSuffixes.includes(key));
 
-/** Loads the base (English) resource, reloading it when the file changes so long-lived editor servers stay accurate */
-const loadResource = () => {
-	const { mtimeMs } = statSync(baseResourcePath);
-	if (mtimeMs === cache.mtimeMs) return cache.resource;
+/** Flattens nested keys into `a.b.c` entries, keeping `{ one, other }` plural objects as the value of their key */
+const flattenResource = (value, prefix = '', entries = new Map()) => {
+	for (const [key, child] of Object.entries(value)) {
+		const path = `${prefix}${key}`;
+		if (child !== null && typeof child === 'object' && !Array.isArray(child) && !isPluralObject(child)) {
+			flattenResource(child, `${path}.`, entries);
+			continue;
+		}
+		entries.set(path, child);
+	}
+	return entries;
+};
 
-	const resource = new Map(Object.entries(JSON.parse(readFileSync(baseResourcePath, 'utf8'))));
-	cache = { mtimeMs, resource };
+const cache = new Map();
+
+/** Loads a base-language resource, reloading it when the file changes so long-lived editor servers stay accurate */
+const loadResource = (localeFile, root) => {
+	const { mtimeMs } = statSync(localeFile);
+	const cacheKey = `${localeFile}\0${root ?? ''}`;
+	const cached = cache.get(cacheKey);
+	if (cached?.mtimeMs === mtimeMs) return cached.resource;
+
+	const content = JSON.parse(readFileSync(localeFile, 'utf8'));
+	const resource = flattenResource(root ? content[root] : content);
+	cache.set(cacheKey, { mtimeMs, resource });
 	return resource;
 };
 
@@ -57,29 +70,30 @@ const collectStrings = (value) => {
 };
 
 /**
- * Lists the base-language keys a lookup of `key` can resolve to. The unqualified key only belongs to the `core`
- * namespace, so it's a candidate only when `core` is being looked up.
+ * Lists the base-language keys a lookup of `key` can resolve to. The unqualified key only belongs to the default
+ * namespace, so it's a candidate only when the default namespace is being looked up.
  */
-const lookupCandidates = (key, namespaces) => {
+const lookupCandidates = (locale, key, namespaces) => {
 	let lookupKey = key;
 	let lookupNamespaces = namespaces;
 
-	const qualifier = knownNamespaces.find((ns) => key.startsWith(`${ns}.`));
+	const qualifier = locale.namespaces.find((ns) => key.startsWith(`${ns}.`));
 	if (qualifier) {
 		lookupNamespaces = [qualifier];
 		lookupKey = key.slice(qualifier.length + 1);
 	}
 
-	return lookupNamespaces.map((ns) => (ns === defaultNamespace ? lookupKey : `${ns}.${lookupKey}`));
+	return lookupNamespaces.map((ns) => (ns === locale.defaultNamespace ? lookupKey : `${ns}.${lookupKey}`));
 };
 
 /**
  * Finds every base-language entry a lookup of `key` can resolve to: the entry itself, its plural forms and the
  * namespaced variants. Returns the translations of all of them.
  */
-const resolveEntries = (resource, key, namespaces) => {
+const resolveEntries = (locale, key, namespaces) => {
+	const { resource } = locale;
 	const found = [];
-	for (const candidate of lookupCandidates(key, namespaces)) {
+	for (const candidate of lookupCandidates(locale, key, namespaces)) {
 		if (resource.has(candidate)) found.push({ key: candidate, value: resource.get(candidate) });
 		for (const suffix of pluralSuffixes) {
 			const pluralKey = `${candidate}_${suffix}`;
@@ -90,11 +104,11 @@ const resolveEntries = (resource, key, namespaces) => {
 };
 
 /** Finds the `${key}_${context}` variants of a key, leaving out its plural forms */
-const resolveContextVariants = (resource, key, namespaces) => {
+const resolveContextVariants = (locale, key, namespaces) => {
 	const pluralSuffixPattern = new RegExp(`^(${pluralSuffixes.join('|')})$`);
 	const variants = [];
-	for (const candidate of lookupCandidates(key, namespaces)) {
-		for (const [resourceKey, value] of resource) {
+	for (const candidate of lookupCandidates(locale, key, namespaces)) {
+		for (const [resourceKey, value] of locale.resource) {
 			if (!resourceKey.startsWith(`${candidate}_`)) continue;
 			if (pluralSuffixPattern.test(resourceKey.slice(candidate.length + 1))) continue;
 			variants.push({ key: resourceKey, value });
@@ -103,7 +117,7 @@ const resolveContextVariants = (resource, key, namespaces) => {
 	return variants;
 };
 
-const collectPlaceholders = (resource, entries, namespaces, visited = new Set()) => {
+const collectPlaceholders = (locale, entries, namespaces, visited = new Set()) => {
 	const placeholders = new Set();
 
 	for (const entry of entries) {
@@ -117,7 +131,7 @@ const collectPlaceholders = (resource, entries, namespaces, visited = new Set())
 
 			// Nested translations (`$t(other.key)`) receive the options of their parent
 			for (const match of text.matchAll(nestingRegex)) {
-				for (const name of collectPlaceholders(resource, resolveEntries(resource, match[1], namespaces), namespaces, visited)) {
+				for (const name of collectPlaceholders(locale, resolveEntries(locale, match[1], namespaces), namespaces, visited)) {
 					placeholders.add(name);
 				}
 			}
@@ -207,7 +221,7 @@ const findVariable = (scope, name) => {
 };
 
 /** Reads the namespaces handed to a `useTranslation(ns)` call */
-const namespacesOf = (callNode) => {
+const namespacesOf = (callNode, defaultNamespace) => {
 	const namespaces = staticStrings(callNode.arguments[0]);
 	return namespaces?.length ? namespaces : [defaultNamespace];
 };
@@ -218,7 +232,7 @@ const isUseTranslationCall = (node) =>
 /**
  * Tells what a variable stands for: the `t` function, the `i18n` instance, or none of them.
  */
-const classifyVariable = (variable) => {
+const classifyVariable = (variable, defaultNamespace) => {
 	const definition = variable?.defs.at(-1);
 	if (!definition) return undefined;
 
@@ -234,7 +248,7 @@ const classifyVariable = (variable) => {
 
 	const declarator = definition.node;
 	if (!isUseTranslationCall(declarator.init)) return undefined;
-	const namespaces = namespacesOf(declarator.init);
+	const namespaces = namespacesOf(declarator.init, defaultNamespace);
 
 	if (declarator.id.type === 'Identifier') return { kind: 't', namespaces };
 
@@ -259,16 +273,34 @@ const validTranslation = {
 		docs: {
 			description: 'Ensure translation keys exist in the base language and are called with exactly the parameters they declare',
 		},
-		schema: [],
+		schema: [
+			{
+				type: 'object',
+				properties: {
+					// Absolute path of the base-language file the keys are checked against
+					localeFile: { type: 'string' },
+					// Property of the file that holds the keys, when they aren't at its top level
+					root: { type: 'string' },
+					// Namespace of `useTranslation()` without arguments; its keys are stored unprefixed
+					defaultNamespace: { type: 'string' },
+					// Every namespace stored in the file, the others as `${ns}.${key}`
+					namespaces: { type: 'array', items: { type: 'string' } },
+				},
+				required: ['localeFile'],
+				additionalProperties: false,
+			},
+		],
 		messages: {
-			unknownKey: 'Translation key {{key}} does not exist in en.i18n.json.',
+			unknownKey: 'Translation key {{key}} does not exist in {{file}}.',
 			missingParams: 'Translation key {{key}} requires the missing parameter(s): {{params}}.',
 			extraParams: 'Translation key {{key}} does not use the parameter {{param}}.',
 		},
 	},
 	create(context) {
 		const { sourceCode } = context;
-		const resource = loadResource();
+		const [{ localeFile, root, defaultNamespace = 'translation', namespaces: fileNamespaces = [defaultNamespace] }] = context.options;
+		const locale = { resource: loadResource(localeFile, root), defaultNamespace, namespaces: fileNamespaces };
+		const file = basename(localeFile);
 
 		const validate = ({ keyNode, optionsNode, hasExtraArguments, hasDefaults, namespaces, explicitCount, reportNode }) => {
 			const keys = staticKeys(keyNode);
@@ -282,17 +314,17 @@ const validTranslation = {
 				// App translations are registered at runtime and can't be known from the base language
 				if (/^app-[^.]+\./.test(key)) continue;
 
-				let entries = resolveEntries(resource, key, namespaces);
+				let entries = resolveEntries(locale, key, namespaces);
 				let selectedByContext = false;
 
 				if (hasContext) {
 					// i18next prefers the `${key}_${context}` variant and falls back to the plain key
 					const contextValues = staticKeys(parsed.options.get('context').value);
 					if (contextValues) {
-						const variants = contextValues.flatMap((value) => resolveEntries(resource, `${key}_${value}`, namespaces));
+						const variants = contextValues.flatMap((value) => resolveEntries(locale, `${key}_${value}`, namespaces));
 						if (variants.length) entries = variants;
 					} else {
-						const variants = resolveContextVariants(resource, key, namespaces);
+						const variants = resolveContextVariants(locale, key, namespaces);
 						if (variants.length) {
 							// Which variant applies is unknown, so params can only be checked for extras
 							selectedByContext = true;
@@ -303,7 +335,7 @@ const validTranslation = {
 
 				if (!entries.length) {
 					if (!hasDefaultValue) {
-						context.report({ node: keyNode, messageId: 'unknownKey', data: { key: JSON.stringify(key) } });
+						context.report({ node: keyNode, messageId: 'unknownKey', data: { key: JSON.stringify(key), file } });
 					}
 					continue;
 				}
@@ -313,7 +345,7 @@ const validTranslation = {
 				if (optionsNode && !parsed) continue;
 				if (parsed && [...opaqueOptions].some((name) => parsed.options.has(name))) continue;
 
-				const declared = collectPlaceholders(resource, entries, namespaces);
+				const declared = collectPlaceholders(locale, entries, namespaces);
 				if (isPluralEntry(entries)) declared.add('count');
 
 				const provided = new Set(parsed?.options.keys() ?? []);
@@ -341,7 +373,7 @@ const validTranslation = {
 			}
 		};
 
-		const classify = (identifier) => classifyVariable(findVariable(sourceCode.getScope(identifier), identifier.name));
+		const classify = (identifier) => classifyVariable(findVariable(sourceCode.getScope(identifier), identifier.name), defaultNamespace);
 
 		return {
 			CallExpression(node) {
@@ -418,9 +450,4 @@ const validTranslation = {
 	},
 };
 
-export default {
-	meta: { name: '@rocket.chat/i18n/eslint-plugin' },
-	rules: {
-		'valid-translation': validTranslation,
-	},
-};
+export default validTranslation;

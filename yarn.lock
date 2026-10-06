@@ -9619,6 +9619,16 @@ __metadata:
   languageName: unknown
   linkType: soft
 
+"@rocket.chat/eslint-plugin@workspace:packages/eslint-plugin, @rocket.chat/eslint-plugin@workspace:~":
+  version: 0.0.0-use.local
+  resolution: "@rocket.chat/eslint-plugin@workspace:packages/eslint-plugin"
+  dependencies:
+    eslint: "npm:~10.7.0"
+  peerDependencies:
+    eslint: "*"
+  languageName: unknown
+  linkType: soft
+
 "@rocket.chat/favicon@workspace:^, @rocket.chat/favicon@workspace:packages/favicon":
   version: 0.0.0-use.local
   resolution: "@rocket.chat/favicon@workspace:packages/favicon"
@@ -34209,6 +34219,7 @@ __metadata:
   dependencies:
     "@changesets/cli": "npm:^2.27.12"
     "@rocket.chat/eslint-config": "workspace:~"
+    "@rocket.chat/eslint-plugin": "workspace:~"
     "@types/chart.js": "npm:^2.9.41"
     "@types/js-yaml": "npm:^4.0.9"
     "@types/node": "npm:~24.13.6"
