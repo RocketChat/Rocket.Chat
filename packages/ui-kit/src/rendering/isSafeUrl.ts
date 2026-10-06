@@ -1,15 +1,13 @@
-const allowedProtocols = ['http:', 'https:', 'mailto:', 'tel:'];
+// Schemes that run code in the page instead of navigating; everything else (deep links included) stays allowed.
+const blockedProtocols = ['javascript:', 'data:', 'vbscript:'];
 
-const rootRelativePattern = /^\/(?![/\\])\S*$/;
+// Resolves relative URLs the way an anchor would, so they are checked by the scheme they end up with.
+const base = 'https://rocket.chat/';
 
 /** Whether a URL sent by an app is safe to open from a button or menu option. */
 export const isSafeUrl = (url: string): boolean => {
-	if (rootRelativePattern.test(url)) {
-		return true;
-	}
-
 	try {
-		return allowedProtocols.includes(new URL(url).protocol);
+		return !blockedProtocols.includes(new URL(url, base).protocol);
 	} catch {
 		return false;
 	}
