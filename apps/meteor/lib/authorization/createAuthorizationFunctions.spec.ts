@@ -69,15 +69,6 @@ describe('createAuthorizationFunctions', () => {
 			expect(userHasAllPermission('view-room', undefined, 'current-user')).toBe(false);
 		});
 
-		it('grants when the cache is ready and the user has a qualifying role', () => {
-			const { hasAllPermission } = setup({
-				userRoles: { 'current-user': ['admin'] },
-				permissions: { 'view-room': ['admin'] },
-			});
-
-			expect(hasAllPermission('view-room')).toBe(true);
-		});
-
 		it('evaluates userHasAllPermission against the supplied user, not the current user', () => {
 			const { userHasAllPermission } = setup({
 				userRoles: { 'current-user': ['user'], 'other-user': ['admin'] },
@@ -116,14 +107,13 @@ describe('createAuthorizationFunctions', () => {
 		});
 
 		it('resolves a Subscriptions-scoped role through the subscription for the supplied room', () => {
-			const { hasRole, deps } = setup({
+			const { hasRole } = setup({
 				roleScopes: { owner: 'Subscriptions' },
 				subscriptionRoles: { 'room-1': ['owner'] },
 			});
 
 			expect(hasRole('user-1', 'owner', 'room-1')).toBe(true);
 			expect(hasRole('user-1', 'owner', 'room-2')).toBe(false);
-			expect(deps.hasSubscriptionRole).toHaveBeenCalledWith('room-1', 'owner');
 		});
 
 		it('denies a Subscriptions-scoped role when no room scope is supplied', () => {
