@@ -376,13 +376,14 @@ class MediaCallDirector {
 		to: MediaCallContact,
 		by: MediaCallSignedContact,
 		agent: IMediaCallAgent,
+		options: { replacesCallId?: string } = {},
 	): Promise<void> {
 		if (!agent.oppositeAgent) {
 			logger.error({ msg: 'Unable to transfer calls without a reference to the opposite agent.' });
 			return;
 		}
 
-		const updateResult = await MediaCalls.transferCallById(call._id, { by, to });
+		const updateResult = await MediaCalls.transferCallById(call._id, { by, to, ...options });
 		if (!updateResult.modifiedCount) {
 			return;
 		}
