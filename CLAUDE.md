@@ -8,6 +8,11 @@ Comments state the **intent** of a function, never the mechanism, and never expl
 code that lives in another file — that belongs in `docs/features/`. Full rules:
 [docs/code-comments.md](docs/code-comments.md).
 
+Each pull request carries one classification and one concern, and can be reverted alone.
+Fixes and enabling refactors are their own commits, ordered below the feature so
+they can be extracted, even in a POC. Full rules:
+[docs/change-organization.md](docs/change-organization.md).
+
 ## Documentation index
 
 Read the doc that matches the task instead of scanning `docs/` wholesale.
@@ -15,6 +20,7 @@ Read the doc that matches the task instead of scanning `docs/` wholesale.
 ### Cross-cutting
 
 - [docs/code-comments.md](docs/code-comments.md) — what a comment may say, and where reasoning goes when it is not a comment
+- [docs/change-organization.md](docs/change-organization.md) — one concern per pull request, fixes → refactors → feature as a stack (POCs included), rebasing stacks after squash merges
 - [docs/i18n.md](docs/i18n.md) — translation keys: where they live, naming, namespaces, interpolation, plurals, server-side `lng`, what the i18n linter enforces
 
 ### Frontend

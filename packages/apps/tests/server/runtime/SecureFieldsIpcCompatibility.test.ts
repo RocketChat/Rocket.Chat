@@ -15,14 +15,15 @@ import type { IAppStorageItem } from '../../../src/server/storage';
 import { TestInfastructureSetup } from '../../test-data/utilities';
 
 /**
- * These tests verify end-to-end codec compatibility between the controller and the app
+ * These tests verify end-to-end compatibility between the controller and the app
  * subprocess, specifically the '@@SecureFields' mechanism introduced to guard access to
  * sensitive room fields (e.g. abacAttributes) behind app permissions.
  *
  * The flow being tested:
- *  1. The controller encodes a room object that includes a '@@SecureFields' descriptor for
- *     abacAttributes using the SECURE_FIELDS_HANDLER_EXT msgpack extension type.
- *  2. The subprocess receives and decodes the message. Its codec calls applySecureFields(), which:
+ *  1. The controller sends a room object that includes a '@@SecureFields' descriptor for
+ *     abacAttributes over the IPC channel.
+ *  2. The subprocess walks the incoming message and calls applySecureFields() on the marked
+ *     room object, which:
  *       - Checks the running app's declared permissions.
  *       - If the app has 'abac.read', it merges abacAttributes into the plain room object.
  *       - Otherwise it strips the field entirely.
@@ -33,7 +34,7 @@ import { TestInfastructureSetup } from '../../test-data/utilities';
  *   - secure-fields-test-with-abac_0.0.1.zip  → declares { name: 'abac.read' }
  *   - secure-fields-test-no-abac_0.0.1.zip    → declares no permissions
  */
-describe('@@SecureFields codec compatibility (controller → subprocess)', () => {
+describe('@@SecureFields IPC compatibility (controller → subprocess)', () => {
 	/** A minimal room that carries abacAttributes as a secure field. */
 	const roomWithSecureField = {
 		id: 'room-secure-fields-test',
@@ -152,7 +153,7 @@ describe('@@SecureFields codec compatibility (controller → subprocess)', () =>
 			/**
 			 * Plain rooms (without @@SecureFields) must still be decodable and routable
 			 * to the handler.  abacAttributes will be absent, so the handler returns false,
-			 * but no codec error should be raised.
+			 * but no transport error should be raised.
 			 */
 			const plainRoom = {
 				id: 'plain-room',
@@ -228,7 +229,7 @@ describe('@@SecureFields codec compatibility (controller → subprocess)', () =>
 				params: [roomWithMixedFields],
 			});
 
-			assert.strictEqual(result, false, 'Regular room fields should survive the codec round-trip even when a secure field is withheld');
+			assert.strictEqual(result, false, 'Regular room fields should survive the IPC round-trip even when a secure field is withheld');
 		});
 	});
 });

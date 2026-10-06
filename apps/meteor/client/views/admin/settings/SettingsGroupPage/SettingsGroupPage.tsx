@@ -135,7 +135,7 @@ const SettingsGroupPage = ({
 		return <Page>{children}</Page>;
 	}
 
-	const isTranslationKey = (key: string): key is TranslationKey => (key as TranslationKey) !== undefined;
+	const isTranslationKey = (key: string): key is TranslationKey => key !== undefined;
 
 	return (
 		<Page is='form' action='#' method='post' onSubmit={handleSubmit}>
