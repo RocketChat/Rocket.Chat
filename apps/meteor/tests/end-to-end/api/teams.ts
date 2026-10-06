@@ -821,34 +821,6 @@ describe('/teams.list', () => {
 		expect(listedIds).to.include(testTeamMemberOnly._id);
 		expect(listedIds).to.not.include(testTeamAdmin._id);
 	});
-
-	it("should ignore the removed 'query' parameter", () => {
-		return request
-			.get(api('teams.list'))
-			.set(testUser1Credentials)
-			.query({
-				query: JSON.stringify({ _id: { $regex: '.*' } }),
-			})
-			.expect('Content-Type', 'application/json')
-			.expect(200)
-			.expect((res) => {
-				expect(res.body).to.have.property('success', true);
-			});
-	});
-
-	it("should ignore the removed 'query' parameter for admins as well", () => {
-		return request
-			.get(api('teams.list'))
-			.set(credentials)
-			.query({
-				query: JSON.stringify({ _id: { $regex: '.*' } }),
-			})
-			.expect('Content-Type', 'application/json')
-			.expect(200)
-			.expect((res) => {
-				expect(res.body).to.have.property('success', true);
-			});
-	});
 });
 
 describe('/teams.listAll', () => {

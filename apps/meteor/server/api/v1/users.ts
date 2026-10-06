@@ -654,8 +654,6 @@ API.v1.get(
 	},
 );
 
-// Filtering here is limited to `email`: the raw `query` parameter was removed in 9.0.0.
-// Use `users.listByStatus` for roles, type, active/deactivated and search-term filtering.
 API.v1.addRoute(
 	'users.list',
 	{
