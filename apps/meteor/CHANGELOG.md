@@ -1,5 +1,35 @@
 # @rocket.chat/meteor
 
+## 8.9.0-rc.5
+
+### Patch Changes
+
+- Bump @rocket.chat/meteor version.
+
+- <details><summary>Updated dependencies []:</summary>
+  - @rocket.chat/core-typings@8.9.0-rc.5
+  - @rocket.chat/rest-typings@8.9.0-rc.5
+
+  </details>
+
+## 8.9.0-rc.4
+
+### Minor Changes
+
+- ([#42476](https://github.com/RocketChat/Rocket.Chat/pull/42476)) Deprecates Custom OAuth authentication on workspaces without a Premium plan. Custom OAuth services keep working as they are today, but their admin settings now warn that version 9.0.0 will require a license including the `oauth-enterprise` module, and a warning is logged when an unlicensed workspace authenticates a user through one of them.
+
+### Patch Changes
+
+- Bump @rocket.chat/meteor version.
+
+- ([#42429](https://github.com/RocketChat/Rocket.Chat/pull/42429)) Fixes audio and video attachments served through the Amazon S3 or Google Cloud Storage proxy not showing their duration or progress until playback ended, and not being seekable, by honoring byte-range requests in the proxy.
+
+- <details><summary>Updated dependencies []:</summary>
+  - @rocket.chat/core-typings@8.9.0-rc.4
+  - @rocket.chat/rest-typings@8.9.0-rc.4
+
+  </details>
+
 ## 8.9.0-rc.3
 
 ### Patch Changes

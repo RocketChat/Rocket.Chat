@@ -38,20 +38,8 @@ const VideoConfPopups = ({ children }: VideoConfPopupsProps) => {
 		[incomingCalls, listedInsteadOfPopped],
 	);
 
-	useEffect(() => {
-		if (isRinging) {
-			callSounds.playRinger();
-		}
-
-		if (isCalling) {
-			callSounds.playDialer();
-		}
-
-		return (): void => {
-			callSounds.stopRinger();
-			callSounds.stopDialer();
-		};
-	}, [isRinging, isCalling, callSounds]);
+	useEffect(() => (isRinging ? callSounds.playRinger() : undefined), [isRinging, callSounds]);
+	useEffect(() => (isCalling ? callSounds.playDialer() : undefined), [isCalling, callSounds]);
 
 	return (
 		<>

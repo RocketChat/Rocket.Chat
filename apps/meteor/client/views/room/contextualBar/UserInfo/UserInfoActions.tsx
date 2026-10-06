@@ -1,10 +1,9 @@
 import type { IRoom, IUser } from '@rocket.chat/core-typings';
 import { ButtonGroup, IconButton, Skeleton } from '@rocket.chat/fuselage';
-import { GenericMenu } from '@rocket.chat/ui-client';
+import { GenericMenu, UserInfoAction } from '@rocket.chat/ui-client';
 import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { UserInfoAction } from '../../../../components/UserInfo';
 import { useMemberExists } from '../../../hooks/useMemberExists';
 import type { UserInfoAction as UserInfoActionType } from '../../hooks/useUserInfoActions';
 import { useUserInfoActions } from '../../hooks/useUserInfoActions';

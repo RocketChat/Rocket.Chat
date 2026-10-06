@@ -1,12 +1,14 @@
 import { Box, ButtonGroup } from '@rocket.chat/fuselage';
 import { useResizeObserver } from '@rocket.chat/fuselage-hooks';
+import { ActionButton, ToggleButton } from '@rocket.chat/ui-media';
 import { memo } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { ToggleButton, Timer, DevicePicker, ActionButton, useShouldWrapCards, ActionStrip } from '../components';
+import { Timer, DevicePicker, useShouldWrapCards, ActionStrip } from '../components';
 import MediaCallCardList from './MediaCallCardList';
 import { useFullscreenToggle } from './useFullscreenToggle';
 import { useMediaCallView } from '../context/MediaCallViewContext';
+import { isExternalPeer } from '../utils/isExternalPeer';
 
 export type MediaCallPopoutViewProps = {
 	user: {
@@ -41,7 +43,7 @@ const MediaCallPopoutView = ({ user, onClickClosePopout }: MediaCallPopoutViewPr
 	const connecting = connectionState === 'CONNECTING';
 	const reconnecting = connectionState === 'RECONNECTING';
 
-	if (!peerInfo || 'number' in peerInfo) {
+	if (!peerInfo || isExternalPeer(peerInfo)) {
 		return null;
 	}
 

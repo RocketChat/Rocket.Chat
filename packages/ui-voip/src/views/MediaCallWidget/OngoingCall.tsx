@@ -1,10 +1,10 @@
 import { ButtonGroup } from '@rocket.chat/fuselage';
+import { ActionButton, ToggleButton } from '@rocket.chat/ui-media';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import Dialpad from './Dialpad';
 import {
-	ToggleButton,
 	PeerInfo,
 	Widget,
 	WidgetFooter,
@@ -14,7 +14,6 @@ import {
 	WidgetInfo,
 	Timer,
 	DevicePicker,
-	ActionButton,
 	useInfoSlots,
 	useDraggableWidget,
 } from '../../components';
@@ -47,7 +46,7 @@ const OngoingCall = () => {
 		throw new Error('Peer info is required');
 	}
 
-	const isSip = 'number' in peerInfo;
+	const isSip = isExternalPeer(peerInfo);
 
 	return (
 		<Widget>

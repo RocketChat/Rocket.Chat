@@ -1,9 +1,9 @@
 import { Box, Button, ButtonGroup } from '@rocket.chat/fuselage';
+import { ActionButton, StreamVideo, ToggleButton } from '@rocket.chat/ui-media';
 import { useTranslation } from 'react-i18next';
 
 import Dialpad from './Dialpad';
 import {
-	ToggleButton,
 	PeerInfo,
 	Widget,
 	WidgetFooter,
@@ -13,7 +13,6 @@ import {
 	WidgetInfo,
 	Timer,
 	DevicePicker,
-	ActionButton,
 	useInfoSlots,
 	useDraggableWidget,
 	CardWidgetContainer,
@@ -21,7 +20,6 @@ import {
 } from '../../components';
 import { useMediaCallInstance } from '../../context';
 import { useMediaCallView } from '../../context/MediaCallViewContext';
-import { usePlayMediaStream } from '../../providers/usePlayMediaStream';
 import { isExternalPeer } from '../../utils/isExternalPeer';
 
 const OngoingCall = () => {
@@ -51,9 +49,6 @@ const OngoingCall = () => {
 
 	const { localScreen, remoteScreen } = streams;
 
-	const [remoteStreamRefCallback] = usePlayMediaStream(remoteScreen?.stream ?? null);
-	const [localStreamRefCallback] = usePlayMediaStream(localScreen?.stream ?? null);
-
 	const slots = useInfoSlots(muted, held, connectionState);
 	const remoteSlots = useInfoSlots(remoteMuted, remoteHeld);
 
@@ -65,7 +60,7 @@ const OngoingCall = () => {
 		throw new Error('Peer info is required');
 	}
 
-	const isSip = 'number' in peerInfo;
+	const isSip = isExternalPeer(peerInfo);
 
 	return (
 		<Widget>
@@ -109,17 +104,13 @@ const OngoingCall = () => {
 						<>
 							{remoteScreen?.active && (
 								<StreamCard autoHeight maxHeight={120} onClickOpenInRoom={onClickDirectMessage}>
-									<video preload='metadata' style={{ objectFit: 'contain', height: '100%', width: '100%' }} ref={remoteStreamRefCallback}>
-										<track kind='captions' />
-									</video>
+									<StreamVideo stream={remoteScreen.stream} />
 								</StreamCard>
 							)}
 							{localScreen?.active && (
 								<Box display='flex' flexDirection='column'>
 									<StreamCard own autoHeight maxHeight={120} onClickStopSharing={onToggleScreenSharing}>
-										<video preload='metadata' style={{ objectFit: 'contain', height: '100%', width: '100%' }} ref={localStreamRefCallback}>
-											<track kind='captions' />
-										</video>
+										<StreamVideo stream={localScreen.stream} />
 									</StreamCard>
 									<WidgetInfo slots={[{ text: t('You_are_sharing_your_screen'), type: 'warning' }]} variant='card-content' />
 								</Box>

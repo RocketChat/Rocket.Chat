@@ -1,20 +1,13 @@
 import { Box, ButtonGroup } from '@rocket.chat/fuselage';
+import { ActionButton, ToggleButton } from '@rocket.chat/ui-media';
 import { memo } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import {
-	ToggleButton,
-	Timer,
-	DevicePicker,
-	ActionButton,
-	useShouldWrapCards,
-	CARD_LIST_SECTION_MAX_HEIGHT,
-	ActionStrip,
-	ActionToggleChat,
-} from '../../components';
+import { Timer, DevicePicker, useShouldWrapCards, CARD_LIST_SECTION_MAX_HEIGHT, ActionStrip, ActionToggleChat } from '../../components';
 import { useMediaCallInstance } from '../../context/MediaCallInstanceContext';
 import { useMediaCallView } from '../../context/MediaCallViewContext';
 import useRegisterView from '../../context/useRegisterView';
+import { isExternalPeer } from '../../utils/isExternalPeer';
 import MediaCallCardList from '../MediaCallCardList';
 import PopoutDockPrompt from '../PopoutDockPrompt';
 
@@ -74,7 +67,7 @@ const MediaCallRoomSection = ({ showChat, onToggleChat, user, containerHeight }:
 	const holdAvailable = allowedFeatures.includes('hold');
 	const transferAvailable = allowedFeatures.includes('transfer');
 
-	if (!peerInfo || 'number' in peerInfo) {
+	if (!peerInfo || isExternalPeer(peerInfo)) {
 		return null;
 	}
 

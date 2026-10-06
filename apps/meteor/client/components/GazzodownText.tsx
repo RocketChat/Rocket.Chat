@@ -29,7 +29,7 @@ const GazzodownText = ({ mentions, channels, searchText, children }: GazzodownTe
 	const [userLanguage] = useLocalStorage('userLanguage', 'en');
 
 	const highlights = useMessageListHighlights();
-	const { triggerProps, openUserCard } = useUserCard();
+	const { openUserCard, openUserInfo } = useUserCard();
 
 	const highlightRegex = useMemo(() => {
 		if (!highlights?.length) {
@@ -83,6 +83,20 @@ const GazzodownText = ({ mentions, channels, searchText, children }: GazzodownTe
 
 			return (event: UIEvent): void => {
 				event.stopPropagation();
+				openUserInfo(username);
+			};
+		},
+		[openUserInfo],
+	);
+
+	const onUserMentionHover = useCallback(
+		({ username }: UserMention) => {
+			if (!username) {
+				return;
+			}
+
+			return (event: UIEvent): void => {
+				event.stopPropagation();
 				openUserCard(event, username);
 			};
 		},
@@ -124,6 +138,7 @@ const GazzodownText = ({ mentions, channels, searchText, children }: GazzodownTe
 				markRegex,
 				resolveUserMention,
 				onUserMentionClick,
+				onUserMentionHover,
 				resolveChannelMention,
 				onChannelMentionClick,
 				convertAsciiToEmoji,
@@ -132,7 +147,6 @@ const GazzodownText = ({ mentions, channels, searchText, children }: GazzodownTe
 				isMobile,
 				ownUserId,
 				showMentionSymbol,
-				triggerProps,
 				language: userLanguage,
 			}}
 		>

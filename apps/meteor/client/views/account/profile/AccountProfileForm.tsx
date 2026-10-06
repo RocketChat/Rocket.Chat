@@ -1,4 +1,5 @@
 import { VisuallyHidden } from '@react-aria/visually-hidden';
+import type { AvatarObject } from '@rocket.chat/core-typings';
 import { UserStatus } from '@rocket.chat/core-typings';
 import { css } from '@rocket.chat/css-in-js';
 import type { SelectOption } from '@rocket.chat/fuselage';
@@ -25,7 +26,7 @@ import {
 	useLayout,
 	useSetting,
 } from '@rocket.chat/ui-contexts';
-import { useMutation } from '@tanstack/react-query';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
 import type { AllHTMLAttributes, ChangeEvent } from 'react';
 import { useCallback, useEffect, useMemo } from 'react';
 import { Controller, useFormContext } from 'react-hook-form';
@@ -34,6 +35,8 @@ import type { AccountProfileFormValues } from './getProfileInitialValues';
 import { useAccountProfileSettings } from './useAccountProfileSettings';
 import { getUserEmailAddress } from '../../../../lib/getUserEmailAddress';
 import UserAutoCompleteMultiple from '../../../components/UserAutoCompleteMultiple';
+import { UserStatus as UserStatusIndicator } from '../../../components/UserStatus';
+import UserStatusDisabledInfo from '../../../components/UserStatusDisabledInfo';
 import UserStatusMenu from '../../../components/UserStatusMenu';
 import UserAvatarEditor from '../../../components/avatar/UserAvatarEditor';
 import { useUpdateAvatar } from '../../../hooks/useUpdateAvatar';
@@ -43,11 +46,16 @@ import { STATUS_DURATION_OPTIONS, validateStatusExpiration } from '../../../lib/
 const AccountProfileForm = (props: AllHTMLAttributes<HTMLFormElement>) => {
 	const t = useTranslation();
 	const user = useUser();
+	const queryClient = useQueryClient();
 	const dispatchToastMessage = useToastMessageDispatch();
 	const { isMobile } = useLayout();
 
 	const setPreferences = useEndpoint('POST', '/v1/users.setPreferences');
-	const statusVisibilityEnabled = useSetting('Accounts_StatusVisibility_Enabled', false);
+	const workspacePresenceDisabled = useSetting('Accounts_UserStatus_Enabled', true) === false;
+	const adminStatusHidingEnabled = useSetting('Accounts_StatusVisibility_Admin_Enabled', false);
+	const presenceDisabledByAdmin = (user?.presenceDisabledByAdmin === true && adminStatusHidingEnabled) || workspacePresenceDisabled;
+	const statusVisibilityEnabled =
+		useSetting('Accounts_StatusVisibility_Enabled', false) && adminStatusHidingEnabled && !presenceDisabledByAdmin;
 	const checkUsernameAvailability = useEndpoint('GET', '/v1/users.checkUsernameAvailability');
 	const sendConfirmationEmail = useEndpoint('POST', '/v1/users.sendConfirmationEmail');
 
@@ -74,7 +82,7 @@ const AccountProfileForm = (props: AllHTMLAttributes<HTMLFormElement>) => {
 
 	const { email, avatar, username, name: userFullName, statusDuration, statusType, statusText } = watch();
 
-	const isExpirationDisabled = statusType === UserStatus.ONLINE && !statusText?.trim();
+	const isExpirationDisabled = presenceDisabledByAdmin || (statusType === UserStatus.ONLINE && !statusText?.trim());
 
 	useEffect(() => {
 		if (isExpirationDisabled) {
@@ -129,6 +137,12 @@ const AccountProfileForm = (props: AllHTMLAttributes<HTMLFormElement>) => {
 
 	const updateAvatar = useUpdateAvatar(avatar, user?._id || '');
 
+	// Refresh the user card, full profile and admin panel views of this user.
+	const refreshUserViews = async () => {
+		await queryClient.invalidateQueries({ queryKey: ['users.info'] });
+		await queryClient.invalidateQueries({ queryKey: ['users'] });
+	};
+
 	const handleSave = async (values: AccountProfileFormValues) => {
 		const {
 			email,
@@ -158,23 +172,32 @@ const AccountProfileForm = (props: AllHTMLAttributes<HTMLFormElement>) => {
 			dirtyFields.statusCustomDate ||
 			dirtyFields.statusCustomTime;
 
+		// Untouched fields are left out so a save never rewrites what the user did not change.
+		const emailChanged = Boolean(dirtyFields.email) && (!user || getUserEmailAddress(user) !== email);
+		const basicInfoData = {
+			...(dirtyFields.name && { name }),
+			...(emailChanged && { email }),
+			...(dirtyFields.username && { username }),
+			...(dirtyFields.nickname && { nickname }),
+			...(dirtyFields.bio && { bio }),
+		};
+		const customFieldsDirty = Boolean(dirtyFields.customFields);
+		const basicInfoDirty = Object.keys(basicInfoData).length > 0 || customFieldsDirty;
+
 		try {
-			await updateOwnBasicInfo({
-				data: {
-					name,
-					...(user ? getUserEmailAddress(user) !== email && { email } : {}),
-					username,
-					nickname,
-					bio,
-				},
-				customFields,
-			});
+			if (basicInfoDirty) {
+				await updateOwnBasicInfo({
+					data: basicInfoData,
+					...(customFieldsDirty && { customFields }),
+				});
+				await refreshUserViews();
+			}
 
 			if (dirtyFields.statusVisibilityDenied) {
 				await setPreferences({ data: { statusVisibilityDenied } });
 			}
 
-			if (statusDirty) {
+			if (statusDirty && !presenceDisabledByAdmin) {
 				await setUserStatus({
 					status: statusType,
 					...(allowUserStatusMessageChange && { message: statusText }),
@@ -182,9 +205,14 @@ const AccountProfileForm = (props: AllHTMLAttributes<HTMLFormElement>) => {
 				});
 			}
 
-			await updateAvatar();
+			if (dirtyFields.avatar) {
+				await updateAvatar();
+				await refreshUserViews();
+			}
+
 			dispatchToastMessage({ type: 'success', message: t('Profile_saved_successfully') });
-			reset(values);
+			// A submitted avatar must not become the default, or picking another one would not dirty the form.
+			reset({ ...values, avatar: '' as AvatarObject });
 		} catch (error) {
 			dispatchToastMessage({ type: 'error', message: error });
 		}
@@ -270,15 +298,20 @@ const AccountProfileForm = (props: AllHTMLAttributes<HTMLFormElement>) => {
 								<TextInput
 									{...field}
 									placeholder={t('StatusMessage_Placeholder')}
-									disabled={!allowUserStatusMessageChange}
+									disabled={!allowUserStatusMessageChange || presenceDisabledByAdmin}
 									flexGrow={1}
 									error={errors.statusText?.message}
+									endAddon={presenceDisabledByAdmin ? <UserStatusDisabledInfo workspace={workspacePresenceDisabled} /> : undefined}
 									startAddon={
-										<Controller
-											control={control}
-											name='statusType'
-											render={({ field: { value, onChange } }) => <UserStatusMenu onChange={onChange} initialStatus={value} />}
-										/>
+										presenceDisabledByAdmin ? (
+											<UserStatusIndicator status={UserStatus.OFFLINE} />
+										) : (
+											<Controller
+												control={control}
+												name='statusType'
+												render={({ field: { value, onChange } }) => <UserStatusMenu onChange={onChange} initialStatus={value} />}
+											/>
+										)
 									}
 								/>
 							)}
@@ -286,7 +319,7 @@ const AccountProfileForm = (props: AllHTMLAttributes<HTMLFormElement>) => {
 					</FieldRow>
 					{errors.statusText && <FieldError>{errors.statusText.message}</FieldError>}
 					{!allowUserStatusMessageChange && <FieldHint>{t('StatusMessage_Change_Disabled')}</FieldHint>}
-					{allowUserStatusMessageChange && <FieldHint>{t('Status_you_can_use_emoji')}</FieldHint>}
+					{allowUserStatusMessageChange && !presenceDisabledByAdmin && <FieldHint>{t('Status_you_can_use_emoji')}</FieldHint>}
 				</Field>
 				<Field>
 					<FieldLabel>{t('Status_clear_after')}</FieldLabel>
