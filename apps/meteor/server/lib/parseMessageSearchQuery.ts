@@ -2,6 +2,8 @@ import type { IMessage, IUser } from '@rocket.chat/core-typings';
 import { escapeRegExp } from '@rocket.chat/tools';
 import type { Filter, FindOptions } from 'mongodb';
 
+const MS_PER_HOUR = 60 * 60 * 1000;
+
 class MessageSearchQueryParser {
 	private query: Exclude<Filter<IMessage>, Partial<IMessage>> = {};
 
@@ -165,17 +167,19 @@ class MessageSearchQueryParser {
 		});
 	}
 
+	private startOfUserDay(year: string, month: string, day: string, daysLater = 0): Date {
+		const utcMidnight = Date.UTC(parseInt(year, 10), parseInt(month, 10) - 1, parseInt(day, 10) + daysLater);
+		return new Date(utcMidnight - (this.user?.utcOffset ?? 0) * MS_PER_HOUR);
+	}
+
 	/**
 	 * Filter on messages that have been sent before a date.
 	 */
 	private consumeBefore(text: string) {
 		return text.replace(/before:(\d{1,2})[\/\.-](\d{1,2})[\/\.-](\d{4})/g, (_: string, day: string, month: string, year: string) => {
-			const beforeDate = new Date(parseInt(year, 10), parseInt(month, 10) - 1, parseInt(day, 10));
-			beforeDate.setUTCHours(beforeDate.getUTCHours() + beforeDate.getTimezoneOffset() / 60 + (this.user?.utcOffset ?? 0));
-
 			this.query.ts = {
 				...this.query.ts,
-				$lte: beforeDate,
+				$lte: this.startOfUserDay(year, month, day),
 			};
 
 			return '';
@@ -187,12 +191,9 @@ class MessageSearchQueryParser {
 	 */
 	private consumeAfter(text: string) {
 		return text.replace(/after:(\d{1,2})[\/\.-](\d{1,2})[\/\.-](\d{4})/g, (_: string, day: string, month: string, year: string) => {
-			const afterDate = new Date(parseInt(year, 10), parseInt(month, 10) - 1, parseInt(day, 10) + 1);
-			afterDate.setUTCHours(afterDate.getUTCHours() + afterDate.getTimezoneOffset() / 60 + (this.user?.utcOffset ?? 0));
-
 			this.query.ts = {
 				...this.query.ts,
-				$gte: afterDate,
+				$gte: this.startOfUserDay(year, month, day, 1),
 			};
 
 			return '';
@@ -204,14 +205,9 @@ class MessageSearchQueryParser {
 	 */
 	private consumeOn(text: string) {
 		return text.replace(/on:(\d{1,2})[\/\.-](\d{1,2})[\/\.-](\d{4})/g, (_: string, day: string, month: string, year: string) => {
-			const date = new Date(parseInt(year, 10), parseInt(month, 10) - 1, parseInt(day, 10));
-			date.setUTCHours(date.getUTCHours() + date.getTimezoneOffset() / 60 + (this.user?.utcOffset ?? 0));
-			const dayAfter = new Date(date);
-			dayAfter.setDate(dayAfter.getDate() + 1);
-
 			this.query.ts = {
-				$gte: date,
-				$lt: dayAfter,
+				$gte: this.startOfUserDay(year, month, day),
+				$lt: this.startOfUserDay(year, month, day, 1),
 			};
 
 			return '';
