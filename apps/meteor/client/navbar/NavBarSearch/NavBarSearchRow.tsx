@@ -7,7 +7,7 @@ import NavBarSearchUserRow from './NavBarSearchUserRow';
 
 export type NavBarSearchRowProps = {
 	room: SubscriptionWithRoom;
-	onClick: () => void;
+	onClick?: () => void;
 };
 
 const NavBarSearchRow = ({ room, onClick }: NavBarSearchRowProps) => {
