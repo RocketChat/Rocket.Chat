@@ -3,4 +3,4 @@
 '@rocket.chat/meteor': patch
 ---
 
-Fixes UiKit input block labels not being associated with their fields, so screen readers announced text, date and time inputs without a name and clicking the label did not focus the field.
+Fixes UiKit input block labels not being associated with text, date and time inputs, so screen readers announced those fields without a name and clicking the label did not focus them.
