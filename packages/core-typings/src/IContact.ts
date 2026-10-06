@@ -33,3 +33,5 @@ export interface IContact extends IRocketChatRecord {
 	folderId?: string;
 	lastSyncAt?: Date;
 }
+
+export type IContactPublic = Omit<IContact, 'uid' | 'externalId' | 'folderId' | 'lastSyncAt'>;
