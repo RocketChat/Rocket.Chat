@@ -55,7 +55,7 @@ export type SaveUserData = {
 	presenceDisabledByAdmin?: boolean;
 	statusVisibilityDeniedByAdmin?: string[];
 
-	freeSwitchExtension?: string;
+	sipExtension?: string;
 };
 export type UpdateUserData = RequiredField<SaveUserData, '_id'>;
 export const isUpdateUserData = (params: SaveUserData): params is UpdateUserData => '_id' in params && !!params._id;
@@ -207,11 +207,11 @@ const _saveUser = (session?: ClientSession) =>
 			}
 		}
 
-		if (typeof userData.freeSwitchExtension === 'string' && userData.freeSwitchExtension !== (oldUserData?.freeSwitchExtension ?? '')) {
-			if (userData.freeSwitchExtension.trim() === '') {
-				updater.unset('freeSwitchExtension');
+		if (typeof userData.sipExtension === 'string' && userData.sipExtension !== (oldUserData?.sipExtension ?? '')) {
+			if (userData.sipExtension.trim() === '') {
+				updater.unset('sipExtension');
 			} else {
-				updater.set('freeSwitchExtension', userData.freeSwitchExtension);
+				updater.set('sipExtension', userData.sipExtension);
 			}
 		}
 

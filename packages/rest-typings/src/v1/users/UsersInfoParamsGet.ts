@@ -1,7 +1,7 @@
 import { ajvQuery } from '../Ajv';
 
 export type UsersInfoParamsGet = (
-	{ userId: string } | { username: string } | { importId: string } | { email: string } | { freeSwitchExtension: string }
+	{ userId: string } | { username: string } | { importId: string } | { email: string } | { sipExtension: string }
 ) & {
 	fields?: string;
 	includeUserRooms?: string;
@@ -95,11 +95,11 @@ const UsersInfoParamsGetSchema = {
 		},
 		{
 			type: 'object',
-			description: 'Get information about a user by their FreeSwitch extension.',
+			description: 'Get information about a user by their SIP extension.',
 			properties: {
-				freeSwitchExtension: {
+				sipExtension: {
 					type: 'string',
-					description: 'The FreeSwitch extension.',
+					description: 'The SIP extension.',
 				},
 				includeUserRooms: {
 					type: 'string',
@@ -111,7 +111,7 @@ const UsersInfoParamsGetSchema = {
 					description: 'JSON string describing which fields to include or exclude from the response.',
 				},
 			},
-			required: ['freeSwitchExtension'],
+			required: ['sipExtension'],
 			additionalProperties: false,
 		},
 	],

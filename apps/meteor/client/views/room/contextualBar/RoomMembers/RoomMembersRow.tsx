@@ -6,7 +6,7 @@ import RoomMembersItem from './RoomMembersItem';
 import type { RoomMember } from '../../../hooks/useMembersList';
 
 export type RoomMembersRowProps = {
-	user: Pick<RoomMember, 'federated' | 'username' | 'name' | '_id' | 'freeSwitchExtension' | 'subscription'>;
+	user: Pick<RoomMember, 'federated' | 'username' | 'name' | '_id' | 'sipExtension' | 'subscription'>;
 	data: {
 		onClickView: (e: MouseEvent<HTMLElement>) => void;
 		rid: IRoom['_id'];
@@ -30,7 +30,7 @@ const RoomMembersRow = ({ user, data: { onClickView, rid }, index, reload, useRe
 			rid={rid}
 			name={user.name}
 			federated={user.federated}
-			freeSwitchExtension={user.freeSwitchExtension}
+			sipExtension={user.sipExtension}
 			subscription={user.subscription}
 			onClickView={onClickView}
 			reload={reload}
