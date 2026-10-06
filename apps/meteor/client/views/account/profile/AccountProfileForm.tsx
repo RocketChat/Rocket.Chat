@@ -475,11 +475,11 @@ const AccountProfileForm = (props: AllHTMLAttributes<HTMLFormElement>) => {
 					{!allowEmailChange && <FieldHint>{t('Email_Change_Disabled')}</FieldHint>}
 				</Field>
 
-				<Divider marginBlockStart={24} marginBlockEnd={0} />
+				<Divider marginBlockEnd={0} />
 				<PhoneNumberFieldList control={control} />
+				<Divider marginBlockEnd={0} />
 				{!!customFieldsMetadata.length && (
 					<>
-						<Divider marginBlockStart={24} marginBlockEnd={0} />
 						<CustomFieldsForm formName='customFields' formControl={control} metadata={customFieldsMetadata} />
 					</>
 				)}
