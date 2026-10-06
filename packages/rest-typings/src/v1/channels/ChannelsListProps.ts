@@ -3,7 +3,6 @@ import { ajvQuery } from '../Ajv';
 
 export type ChannelsListProps = PaginatedRequest<{
 	_id?: string;
-	/* deprecated */
 }>;
 
 const channelsListPropsSchema = {

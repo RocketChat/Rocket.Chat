@@ -59,8 +59,6 @@ export class RocketchatSdkLegacyImpl extends DDPSDK implements RocketchatSDKLega
 	get users() {
 		const self = this;
 		return {
-			// These three map to `GET /v1/users.list`, which has no projection parameter — read the fields you need
-			// (`name`, `_id`) from the response. It filters by `email`; for roles, type or a search term use `users.listByStatus`.
 			all(): Promise<Serialized<OperationResult<'GET', '/v1/users.list'>>> {
 				return self.rest.get('/v1/users.list', {});
 			},
@@ -70,8 +68,6 @@ export class RocketchatSdkLegacyImpl extends DDPSDK implements RocketchatSDKLega
 			allIDs(): Promise<Serialized<OperationResult<'GET', '/v1/users.list'>>> {
 				return self.rest.get('/v1/users.list', {});
 			},
-			// These three map to `GET /v1/users.presence` — with no params it returns every non-offline user, narrowed
-			// with `ids` or `from`. Its projection is fixed, so read the fields you need from the response.
 			online(): Promise<Serialized<OperationResult<'GET', '/v1/users.list'>>> {
 				return self.rest.get('/v1/users.list', {});
 			},
