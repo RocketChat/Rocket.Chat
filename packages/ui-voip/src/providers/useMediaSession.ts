@@ -111,6 +111,7 @@ export const useMediaSession = (instance?: MediaSignalingSession): SessionState 
 						startedAt: undefined,
 						supportedFeatures: [],
 						confirmed: instanceState.confirmed,
+						hasAlternateCall: false,
 						escalated: false,
 					},
 				});
@@ -163,6 +164,7 @@ export const useMediaSession = (instance?: MediaSignalingSession): SessionState 
 					startedAt,
 					supportedFeatures,
 					confirmed: instanceState.confirmed,
+					hasAlternateCall: instance.hasAlternateCall(),
 					escalated,
 					ringing,
 				},

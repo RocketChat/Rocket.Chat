@@ -194,6 +194,10 @@ const MediaCallViewProvider = ({ children }: MediaCallViewProviderProps) => {
 		setModal(<TransferModal onCancel={onCancel} onConfirm={onConfirm} onConsult={canHold ? onConsult : undefined} />);
 	};
 
+	const onSwapCalls = () => {
+		controls.swapCalls();
+	};
+
 	const playTone = useTonePlayer(audioOutput?.id);
 
 	const onTone = (tone: string) => {
@@ -266,6 +270,7 @@ const MediaCallViewProvider = ({ children }: MediaCallViewProviderProps) => {
 		onHold,
 		onDeviceChange,
 		onForward,
+		onSwapCalls,
 		onTone,
 		onEndCall,
 		onCall,
