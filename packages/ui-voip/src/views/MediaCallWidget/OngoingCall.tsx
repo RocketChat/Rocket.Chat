@@ -26,9 +26,19 @@ import { isUnknownPeer } from '../../utils/isUnknownPeer';
 const OngoingCall = () => {
 	const { t } = useTranslation();
 
-	const { sessionState, isRequestingVideoCall, onRequestVideoCall, onMute, onHold, onForward, onEndCall, onClickDirectMessage } =
-		useMediaCallView();
-	const { muted, held, remoteMuted, remoteHeld, peerInfo, connectionState, supportedFeatures, startedAt, escalated } = sessionState;
+	const {
+		sessionState,
+		isRequestingVideoCall,
+		onRequestVideoCall,
+		onMute,
+		onHold,
+		onForward,
+		onSwapCalls,
+		onEndCall,
+		onClickDirectMessage,
+	} = useMediaCallView();
+	const { muted, held, remoteMuted, remoteHeld, peerInfo, connectionState, supportedFeatures, startedAt, escalated, hasAlternateCall } =
+		sessionState;
 	const isInline = !useDraggableWidget();
 
 	// The floating widget keeps a collapsible DTMF dialpad in the footer.
@@ -89,6 +99,9 @@ const OngoingCall = () => {
 							onToggle={onHold}
 							disabled={connecting || reconnecting}
 						/>
+					)}
+					{hasAlternateCall && (
+						<ActionButton disabled={connecting || reconnecting} label={t('Switch_call')} icon='arrow-loop' onClick={onSwapCalls} />
 					)}
 					{transferAvailable && (
 						<ActionButton disabled={connecting || reconnecting} label={t('Forward')} icon='arrow-forward' onClick={onForward} />

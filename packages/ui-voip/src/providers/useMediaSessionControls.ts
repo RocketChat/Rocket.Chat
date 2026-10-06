@@ -12,6 +12,7 @@ export type MediaSessionControls = {
 	acceptCall: (micless: boolean) => void;
 	changeDevice: (deviceId: string) => Promise<void>;
 	forwardCall: (type: 'user' | 'sip', id: string) => void;
+	swapCalls: () => void;
 	consultBeforeTransfer: (type: 'user' | 'sip', id: string) => Promise<void>;
 	sendTone: (tone: string) => void;
 	toggleScreenSharing: () => void;
@@ -107,6 +108,14 @@ export const useMediaSessionControls = (instance?: MediaSignalingSession): Media
 			instanceState.call.transfer({ type, id });
 		};
 
+		const swapCalls = () => {
+			try {
+				instance?.swapCalls();
+			} catch (error) {
+				console.error('Error switching calls', error);
+			}
+		};
+
 		const consultBeforeTransfer = async (type: 'user' | 'sip', id: string) => {
 			if (!instance) {
 				return;
@@ -161,6 +170,7 @@ export const useMediaSessionControls = (instance?: MediaSignalingSession): Media
 			acceptCall,
 			changeDevice,
 			forwardCall,
+			swapCalls,
 			consultBeforeTransfer,
 			sendTone,
 		};

@@ -35,6 +35,7 @@ const OngoingCall = () => {
 		onMute,
 		onHold,
 		onForward,
+		onSwapCalls,
 		onEndCall,
 		onClickDirectMessage,
 		onOpenPopout,
@@ -42,7 +43,8 @@ const OngoingCall = () => {
 		onToggleScreenSharing,
 		onClosePopout,
 	} = useMediaCallView();
-	const { muted, held, remoteMuted, remoteHeld, peerInfo, connectionState, startedAt, escalated, supportedFeatures } = sessionState;
+	const { muted, held, remoteMuted, remoteHeld, peerInfo, connectionState, startedAt, escalated, supportedFeatures, hasAlternateCall } =
+		sessionState;
 	const { currentViews } = useMediaCallInstance();
 	const isPopout = currentViews.has('popout');
 	const isInline = !useDraggableWidget();
@@ -149,6 +151,9 @@ const OngoingCall = () => {
 							pressed={localScreen?.active ?? false}
 							onToggle={onToggleScreenSharing}
 						/>
+					)}
+					{hasAlternateCall && (
+						<ActionButton disabled={connecting || reconnecting} label={t('Switch_call')} icon='arrow-loop' onClick={onSwapCalls} />
 					)}
 					{transferAvailable && (
 						<ActionButton disabled={connecting || reconnecting} label={t('Forward')} icon='arrow-forward' onClick={onForward} />
