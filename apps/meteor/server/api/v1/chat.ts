@@ -30,11 +30,11 @@ import {
 	validateUnauthorizedErrorResponse,
 	validateForbiddenErrorResponse,
 } from '@rocket.chat/rest-typings';
-import { escapeRegExp } from '@rocket.chat/tools';
+import { escapeRegExp, isTruthy } from '@rocket.chat/tools';
 import { Meteor } from 'meteor/meteor';
 
 import { roomAccessAttributes } from '../../lib/authorization';
-import { canAccessRoomAsync, canAccessRoomIdAsync, canAccessRoomIdsAsync } from '../../lib/authorization/canAccessRoom';
+import { canAccessRoomAsync, canAccessRoomIdAsync } from '../../lib/authorization/canAccessRoom';
 import { hasPermissionAsync } from '../../lib/authorization/hasPermission';
 import { callbacks } from '../../lib/callbacks';
 import { applyAirGappedRestrictionsValidation } from '../../lib/cloud/license/airGappedRestrictionsWrapper';
@@ -1505,18 +1505,19 @@ const chatEndpoints = API.v1
 			const { messageIds } = this.bodyParams;
 
 			const messages = await Messages.findVisibleByIds(messageIds).toArray();
-			if (!messages.length) {
-				return API.v1.notFound();
-			}
 
 			const rids = [...new Set(messages.map(({ rid }) => rid))];
 
-			// The batch spans rooms, so one unreadable room rejects the whole request.
-			if (!(await canAccessRoomIdsAsync(rids, this.user))) {
-				return API.v1.forbidden();
+			const accessibleRids = new Set(
+				(await Promise.all(rids.map(async (rid) => ((await canAccessRoomIdAsync(rid, this.userId)) ? rid : null)))).filter(isTruthy),
+			);
+
+			const visibleMessages = messages.filter((message) => accessibleRids.has(message.rid));
+			if (!visibleMessages.length) {
+				return API.v1.notFound();
 			}
 
-			return API.v1.success({ messages: await normalizeMessagesForUser(messages, this.userId) });
+			return API.v1.success({ messages: await normalizeMessagesForUser(visibleMessages, this.userId) });
 		},
 	);
 

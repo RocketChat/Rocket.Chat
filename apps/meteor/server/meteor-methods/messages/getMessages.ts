@@ -1,10 +1,11 @@
 import type { IMessage } from '@rocket.chat/core-typings';
 import type { ServerMethods } from '@rocket.chat/ddp-client';
 import { Messages } from '@rocket.chat/models';
+import { isTruthy } from '@rocket.chat/tools';
 import { check } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
 
-import { canAccessRoomIdsAsync } from '../../lib/authorization/canAccessRoom';
+import { canAccessRoomIdAsync } from '../../lib/authorization/canAccessRoom';
 import { methodDeprecationLogger } from '../../lib/deprecationWarningLogger';
 
 declare module '@rocket.chat/ddp-client' {
@@ -27,19 +28,11 @@ Meteor.methods<ServerMethods>({
 
 		const msgs = await Messages.findVisibleByIds(messages).toArray();
 
-		if (!msgs.length) {
-			return msgs;
-		}
+		const rids = [...new Set(msgs.map((m) => m.rid))];
+		const accessibleRids = new Set(
+			(await Promise.all(rids.map(async (rid) => ((await canAccessRoomIdAsync(rid, user._id)) ? rid : null)))).filter(isTruthy),
+		);
 
-		if (
-			!(await canAccessRoomIdsAsync(
-				msgs.map((m) => m.rid),
-				user,
-			))
-		) {
-			throw new Meteor.Error('error-not-allowed', 'Not allowed', { method: 'getMessages' });
-		}
-
-		return msgs;
+		return msgs.filter((m) => accessibleRids.has(m.rid));
 	},
 });
