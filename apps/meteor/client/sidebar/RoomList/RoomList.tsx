@@ -1,6 +1,6 @@
 import { Box } from '@rocket.chat/fuselage';
 import { useUserPreference, useUserId } from '@rocket.chat/ui-contexts';
-import { useMemo } from 'react';
+import { useCallback, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import RoomListCollapser from './RoomListCollapser';
@@ -41,7 +41,13 @@ const RoomList = () => {
 	const isAnonymous = !userId;
 
 	const { collapsedGroups, handleClick, handleKeyDown } = useCollapsedGroups();
-	const { groups } = useRoomList({ collapsedGroups });
+	// Lifting a group's activity filter from its chip lasts for this session only.
+	const [groupsShowingInactive, setGroupsShowingInactive] = useState<string[]>([]);
+	const toggleShowingInactive = useCallback(
+		(key: string) => setGroupsShowingInactive((keys) => (keys.includes(key) ? keys.filter((k) => k !== key) : [...keys, key])),
+		[],
+	);
+	const { groups } = useRoomList({ collapsedGroups, groupsShowingInactive });
 	const moveCategory = useMoveCategoryPosition();
 	const avatarTemplate = useAvatarTemplate();
 	const sideBarItemTemplate = useTemplateByViewMode();
@@ -94,6 +100,7 @@ const RoomList = () => {
 						canMoveDown={canMoveGroup(groups, index, 'down')}
 						onMoveUp={() => moveCategory(allGroupKeys, group.key, 'up')}
 						onMoveDown={() => moveCategory(allGroupKeys, group.key, 'down')}
+						onToggleInactive={() => toggleShowingInactive(group.key)}
 						onClick={() => handleClick(group.key)}
 						onKeyDown={(e) => handleKeyDown(e, group.key)}
 					/>

@@ -1,5 +1,5 @@
 import type { ISidebarCategory } from '@rocket.chat/core-typings';
-import { Menu, MenuItem, MenuItemContent, MenuItemIcon, MenuSection, MenuSubmenuTrigger, ToggleSwitch } from '@rocket.chat/fuselage';
+import { Box, Menu, MenuItem, MenuItemContent, MenuItemIcon, MenuSection, MenuSubmenuTrigger, ToggleSwitch } from '@rocket.chat/fuselage';
 import { useToggle } from '@rocket.chat/fuselage-hooks';
 import { GenericMenuItem, useHandleMenuAction } from '@rocket.chat/ui-client';
 import type { GenericMenuItemProps } from '@rocket.chat/ui-client';
@@ -7,6 +7,8 @@ import { useUserPreference } from '@rocket.chat/ui-contexts';
 import { memo } from 'react';
 import { useTranslation } from 'react-i18next';
 
+import { isActivityFilterable } from './hooks/useActivityFilter';
+import { useActivityFilterItems, useActivityFilterLabel } from './hooks/useActivityFilterItems';
 import { useCategoryModals } from './hooks/useCategoryModals';
 import { useMoveRoomCategory } from './hooks/useMoveRoomCategory';
 import { useToggleUnreads } from './hooks/useToggleUnreads';
@@ -17,6 +19,7 @@ type CategoryMenuProps = {
 	groupKey: string;
 	showUnreads: boolean;
 	keepUnreadsOnTop: boolean;
+	activityFilterHours?: number;
 	canMoveUp: boolean;
 	canMoveDown: boolean;
 	onMoveUp: () => void;
@@ -28,6 +31,7 @@ const CategoryMenu = ({
 	groupKey,
 	showUnreads,
 	keepUnreadsOnTop,
+	activityFilterHours,
 	canMoveUp,
 	canMoveDown,
 	onMoveUp,
@@ -124,7 +128,11 @@ const CategoryMenu = ({
 		},
 	];
 
-	const allItems = [...orderItems, ...(category ? manageItems : []), ...createItems, ...unreadItems];
+	const activityFilterLabel = useActivityFilterLabel(activityFilterHours);
+	const filterItems = useActivityFilterItems(category?._id ?? groupKey, activityFilterHours, close);
+	const activityFilterItems = isActivityFilterable(groupKey) ? filterItems : [];
+
+	const allItems = [...orderItems, ...(category ? manageItems : []), ...createItems, ...activityFilterItems, ...unreadItems];
 	const disabledKeys = allItems.filter(({ disabled }) => disabled).map(({ id }) => id);
 
 	const handleAction = useHandleMenuAction(allItems);
@@ -169,6 +177,26 @@ const CategoryMenu = ({
 									<GenericMenuItem {...item} />
 								</MenuItem>
 							))}
+						{activityFilterItems.length > 0 && (
+							<MenuSubmenuTrigger key='activity-filter' textValue={t('Filter')}>
+								<MenuItem aria-label={`${t('Filter')}: ${activityFilterLabel}`}>
+									<MenuItemIcon name='clock' />
+									<MenuItemContent>
+										{t('Filter')}
+										<Box fontScale='c1' color='hint'>
+											{activityFilterLabel}
+										</Box>
+									</MenuItemContent>
+								</MenuItem>
+								<MenuSection items={activityFilterItems}>
+									{(item) => (
+										<MenuItem key={item.id}>
+											<GenericMenuItem {...item} />
+										</MenuItem>
+									)}
+								</MenuSection>
+							</MenuSubmenuTrigger>
+						)}
 					</>
 				</MenuSection>,
 				<MenuSection key='unreads' title={t('Unreads')} items={unreadItems}>

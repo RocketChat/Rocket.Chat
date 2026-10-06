@@ -186,12 +186,17 @@ export type SidebarSystemGroupKey = (typeof SIDEBAR_SYSTEM_GROUP_KEYS)[number];
 export const isSidebarSystemGroupKey = (key: string): key is SidebarSystemGroupKey =>
 	SIDEBAR_SYSTEM_GROUP_KEYS.includes(key as SidebarSystemGroupKey);
 
+/** The longest activity filter a group may have, in hours. */
+export const SIDEBAR_CATEGORY_ACTIVITY_FILTER_MAX_HOURS = 24 * 365;
+
 export interface ISidebarCategory {
 	_id: string;
 	name: string;
 	default?: boolean;
 	showUnreads?: boolean;
 	keepUnreadsOnTop?: boolean;
+	/** An expanded group stops listing read rooms with no activity in this many hours. */
+	activityFilterHours?: number;
 }
 
 /**
