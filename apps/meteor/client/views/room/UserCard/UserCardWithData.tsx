@@ -49,7 +49,7 @@ const UserCardWithData = ({ username, rid, onOpenUserInfo, onClose }: UserCardWi
 			utcOffset = defaultValue,
 			nickname,
 			avatarETag,
-			freeSwitchExtension,
+			sipExtension,
 		} = data?.user || {};
 
 		return {
@@ -63,7 +63,7 @@ const UserCardWithData = ({ username, rid, onOpenUserInfo, onClose }: UserCardWi
 			status: _id && <ReactiveUserStatus uid={_id} />,
 			customStatus: _id && <ReactiveUserStatusText uid={_id} />,
 			nickname,
-			freeSwitchExtension,
+			sipExtension,
 		};
 	}, [data, username, showRealNames, isLoading, getRoles]);
 
@@ -74,7 +74,7 @@ const UserCardWithData = ({ username, rid, onOpenUserInfo, onClose }: UserCardWi
 
 	const { actions: actionsDefinition, menuActions: menuOptions } = useUserInfoActions({
 		rid,
-		user: { _id: user._id ?? '', username: user.username, name: user.name, freeSwitchExtension: user.freeSwitchExtension },
+		user: { _id: user._id ?? '', username: user.username, name: user.name, sipExtension: user.sipExtension },
 		size: 3,
 		isMember,
 		reload: refetch,

@@ -567,7 +567,7 @@ const dmMembersAction = <Path extends string>(_path: Path): TypedAction<typeof d
 				statusText: 1,
 				utcOffset: 1,
 				federated: 1,
-				freeSwitchExtension: 1,
+				sipExtension: 1,
 			},
 			skip: offset,
 			limit: count,

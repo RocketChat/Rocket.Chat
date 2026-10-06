@@ -22,7 +22,7 @@ export type UsersUpdateParamsPOST = {
 		settings?: IUserSettings;
 		language?: string;
 		status?: string;
-		freeSwitchExtension?: string;
+		sipExtension?: string;
 	};
 	confirmRelinquish?: boolean;
 };
@@ -103,7 +103,7 @@ const UsersUpdateParamsPostSchema = {
 					type: 'string',
 					nullable: true,
 				},
-				freeSwitchExtension: {
+				sipExtension: {
 					type: 'string',
 					nullable: true,
 				},

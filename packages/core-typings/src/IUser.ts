@@ -231,7 +231,7 @@ export interface IUser extends IRocketChatRecord {
 	settings?: IUserSettings;
 	defaultRoom?: string;
 	ldap?: boolean;
-	freeSwitchExtension?: string;
+	sipExtension?: string;
 	inviteToken?: string;
 	canViewAllInfo?: boolean;
 	phone?: string;

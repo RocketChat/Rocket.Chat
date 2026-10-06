@@ -52,7 +52,7 @@ export type UserMenuAction = {
 }[];
 
 type UserInfoActionsParams = {
-	user: Pick<IUser, '_id' | 'username' | 'name' | 'freeSwitchExtension'>;
+	user: Pick<IUser, '_id' | 'username' | 'name' | 'sipExtension'>;
 	rid: IRoom['_id'];
 	reload?: () => void;
 	size?: number;

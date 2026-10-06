@@ -393,7 +393,7 @@ API.v1
 				validateCustomFields(this.bodyParams.customFields);
 			}
 
-			if (this.bodyParams.freeSwitchExtension && !(await canEditExtension(this.bodyParams.freeSwitchExtension))) {
+			if (this.bodyParams.sipExtension && !(await canEditExtension(this.bodyParams.sipExtension))) {
 				return API.v1.failure('Setting user voice call extension is not allowed', 'error-action-not-allowed');
 			}
 
@@ -607,13 +607,12 @@ API.v1.get(
 		},
 	},
 	async function action() {
-		const searchTerms: [string, 'id' | 'username' | 'importId' | 'email' | 'freeSwitchExtension'] | false =
+		const searchTerms: [string, 'id' | 'username' | 'importId' | 'email' | 'sipExtension'] | false =
 			('userId' in this.queryParams && !!this.queryParams.userId && [this.queryParams.userId, 'id']) ||
 			('username' in this.queryParams && !!this.queryParams.username && [this.queryParams.username, 'username']) ||
 			('importId' in this.queryParams && !!this.queryParams.importId && [this.queryParams.importId, 'importId']) ||
 			('email' in this.queryParams && !!this.queryParams.email && [this.queryParams.email, 'email']) ||
-			('freeSwitchExtension' in this.queryParams &&
-				!!this.queryParams.freeSwitchExtension && [this.queryParams.freeSwitchExtension, 'freeSwitchExtension']);
+			('sipExtension' in this.queryParams && !!this.queryParams.sipExtension && [this.queryParams.sipExtension, 'sipExtension']);
 
 		if (!searchTerms) {
 			return API.v1.failure('Invalid search query.');

@@ -55,7 +55,7 @@ export type AdminUserFormProps = {
 };
 
 export type UserFormProps = Omit<
-	UserCreateParamsPOST & { avatar: AvatarObject; passwordConfirmation: string; freeSwitchExtension?: string },
+	UserCreateParamsPOST & { avatar: AvatarObject; passwordConfirmation: string; sipExtension?: string },
 	'fields'
 >;
 
@@ -84,7 +84,7 @@ const getInitialValue = ({
 	requirePasswordChange: isNewUserPage && isSmtpEnabled && (data?.requirePasswordChange ?? true),
 	customFields: data?.customFields ?? {},
 	statusText: data?.statusText ?? '',
-	freeSwitchExtension: data?.freeSwitchExtension ?? '',
+	sipExtension: data?.sipExtension ?? '',
 	...(isNewUserPage && { joinDefaultChannels: true }),
 	sendWelcomeEmail: isSmtpEnabled,
 	avatar: '' as AvatarObject,
@@ -360,7 +360,7 @@ const AdminUserForm = ({ userData, onReload, context, refetchUserFormData, roleD
 							<FieldRow>
 								<Controller
 									control={control}
-									name='freeSwitchExtension'
+									name='sipExtension'
 									render={({ field }) => <TextInput {...field} id={voiceExtensionId} flexGrow={1} />}
 								/>
 							</FieldRow>
