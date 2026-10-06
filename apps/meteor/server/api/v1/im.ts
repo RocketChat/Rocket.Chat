@@ -504,7 +504,7 @@ const dmFilesAction = <Path extends string>(_path: Path): TypedAction<typeof dmF
 
 const dmMembersResponseSchema = ajv.compile<
 	PaginatedResult<{
-		members: (Pick<IUser, '_id' | 'status' | 'statusText' | 'name' | 'username' | 'utcOffset' | 'federated' | 'freeSwitchExtension'> & {
+		members: (Pick<IUser, '_id' | 'status' | 'statusText' | 'name' | 'username' | 'utcOffset' | 'federated' | 'sipExtension'> & {
 			subscription: Partial<Pick<ISubscription, '_id' | 'status' | 'ts' | 'roles'>>;
 		})[];
 	}>
@@ -570,7 +570,7 @@ const dmMembersAction = <Path extends string>(_path: Path): TypedAction<typeof d
 				statusText: 1,
 				utcOffset: 1,
 				federated: 1,
-				freeSwitchExtension: 1,
+				sipExtension: 1,
 			},
 			skip: offset,
 			limit: count,

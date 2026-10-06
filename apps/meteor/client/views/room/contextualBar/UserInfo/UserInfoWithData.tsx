@@ -66,7 +66,7 @@ const UserInfoWithData = ({ uid, username, rid, invitationDate, onClose, onClick
 			nickname,
 			createdAt,
 			canViewAllInfo,
-			freeSwitchExtension,
+			sipExtension,
 			federated,
 		} = data.user;
 
@@ -91,7 +91,7 @@ const UserInfoWithData = ({ uid, username, rid, invitationDate, onClose, onClick
 			status: <ReactiveUserStatus uid={_id} />,
 			customStatus: <ReactiveUserStatusText uid={_id} />,
 			nickname,
-			freeSwitchExtension,
+			sipExtension,
 			federated,
 		};
 	}, [data, workspaceRoles, roomRoles]);

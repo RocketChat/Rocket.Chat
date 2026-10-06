@@ -12,14 +12,14 @@ import { getUserPreference } from '../../../lib/utils/lib/getUserPreference';
 import { settings } from '../../../settings';
 import { logger } from '../logger';
 
-async function getActorUser(actor: MediaCallContact): Promise<Pick<IUser, '_id' | 'name' | 'username' | 'freeSwitchExtension'> | null> {
-	const options = { projection: { name: 1, username: 1, freeSwitchExtension: 1 } };
+async function getActorUser(actor: MediaCallContact): Promise<Pick<IUser, '_id' | 'name' | 'username' | 'sipExtension'> | null> {
+	const options = { projection: { name: 1, username: 1, sipExtension: 1 } };
 
 	switch (actor.type) {
 		case 'user':
 			return Users.findOneById(actor.id, options);
 		case 'sip':
-			return Users.findOneByFreeSwitchExtension(actor.id, options);
+			return Users.findOneBySipExtension(actor.id, options);
 	}
 }
 
@@ -42,7 +42,7 @@ async function getActorUserData(
 
 		return {
 			...data,
-			name: user.name || user.username || user.freeSwitchExtension || data.name,
+			name: user.name || user.username || user.sipExtension || data.name,
 			...(username && { username, avatarUrl: getUserAvatarURL(username) }),
 		};
 	}

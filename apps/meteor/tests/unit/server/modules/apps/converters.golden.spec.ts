@@ -102,7 +102,7 @@ describe('apps converters — golden snapshots (pre-codec behaviour)', () => {
 				customFields: { foo: 'bar' },
 				federated: false,
 				federation: undefined,
-				freeSwitchExtension: '1001',
+				sipExtension: '1001',
 				settings: { preferences: { language: 'en' } },
 			};
 
@@ -169,7 +169,7 @@ describe('apps converters — golden snapshots (pre-codec behaviour)', () => {
 				lastLogin: '2024-01-01T00:00:00.000Z',
 				appId: 'app-1',
 				federated: false,
-				freeSwitchExtension: '1001',
+				sipExtension: '1001',
 			});
 		});
 	});
