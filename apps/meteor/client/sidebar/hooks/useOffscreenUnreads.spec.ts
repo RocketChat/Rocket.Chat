@@ -41,11 +41,12 @@ describe('getUnreadRows', () => {
 				room({ unread: 2, userMentions: 1 }),
 				room({ unread: 1, tunreadUser: ['tmid'] }),
 				room({ unread: 1, groupMentions: 1 }),
+				room({ unread: 1, tunreadGroup: ['tmid'] }),
 				room({ unread: 1 }),
 			]),
 		];
 
-		expect(getUnreadRows(groups).mentions).toEqual([1, 2, 3]);
+		expect(getUnreadRows(groups).mentions).toEqual([1, 2, 3, 4]);
 	});
 
 	it('ignores mentions in rooms with the mention status hidden', () => {
