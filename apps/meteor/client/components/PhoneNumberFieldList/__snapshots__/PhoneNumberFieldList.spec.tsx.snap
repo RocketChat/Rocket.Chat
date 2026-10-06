@@ -20,7 +20,7 @@ exports[`PhoneNumberFieldList snapshots matches snapshot with no phones 1`] = `
       >
         <button
           aria-controls="phones-phones-list"
-          class="rcx-box rcx-box--full rcx-button--small rcx-button rcx-css-1fczwx8"
+          class="rcx-box rcx-box--full rcx-button rcx-css-1fczwx8"
           type="button"
         >
           <span
@@ -86,13 +86,13 @@ exports[`PhoneNumberFieldList snapshots matches snapshot with phones 1`] = `
               <button
                 aria-controls="mock-phone-0"
                 aria-label="Remove number Home"
-                class="rcx-box rcx-box--full rcx-button--small-square rcx-button--square rcx-button--icon rcx-button"
+                class="rcx-box rcx-box--full rcx-button--large-square rcx-button--square rcx-button--icon rcx-button rcx-css-ws1yyr"
                 title="Remove"
                 type="button"
               >
                 <i
                   aria-hidden="true"
-                  class="rcx-box rcx-box--full rcx-icon--name-trash rcx-icon rcx-css-4pvxx3"
+                  class="rcx-box rcx-box--full rcx-icon--name-trash rcx-icon rcx-css-1x2l7ts"
                 >
                   
                 </i>
@@ -162,13 +162,13 @@ exports[`PhoneNumberFieldList snapshots matches snapshot with phones 1`] = `
               <button
                 aria-controls="mock-phone-1"
                 aria-label="Remove number 2"
-                class="rcx-box rcx-box--full rcx-button--small-square rcx-button--square rcx-button--icon rcx-button"
+                class="rcx-box rcx-box--full rcx-button--large-square rcx-button--square rcx-button--icon rcx-button rcx-css-ws1yyr"
                 title="Remove"
                 type="button"
               >
                 <i
                   aria-hidden="true"
-                  class="rcx-box rcx-box--full rcx-icon--name-trash rcx-icon rcx-css-4pvxx3"
+                  class="rcx-box rcx-box--full rcx-icon--name-trash rcx-icon rcx-css-1x2l7ts"
                 >
                   
                 </i>
@@ -214,7 +214,7 @@ exports[`PhoneNumberFieldList snapshots matches snapshot with phones 1`] = `
       >
         <button
           aria-controls="phones-phones-list"
-          class="rcx-box rcx-box--full rcx-button--small rcx-button rcx-css-p7cq8l"
+          class="rcx-box rcx-box--full rcx-button rcx-css-p7cq8l"
           type="button"
         >
           <span
