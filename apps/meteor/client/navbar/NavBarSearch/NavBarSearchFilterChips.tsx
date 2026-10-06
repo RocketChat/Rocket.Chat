@@ -1,5 +1,5 @@
 import type { AppliedFilter } from '@rocket.chat/ai-search';
-import { getAppliedFilterLabel, getAppliedFilterTitle } from '@rocket.chat/ai-search';
+import { getAppliedFilterLabel, getSearchFilterConfig } from '@rocket.chat/ai-search';
 import { Box, Chip, Icon } from '@rocket.chat/fuselage';
 import type { ReactElement } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -27,6 +27,7 @@ const NavBarSearchFilterChips = ({ filters, onRemove, wrap = false }: NavBarSear
 		>
 			{filters.map((filter) => {
 				const label = getAppliedFilterLabel(filter);
+				const { title } = getSearchFilterConfig(filter.key);
 
 				return (
 					<Chip
@@ -35,7 +36,7 @@ const NavBarSearchFilterChips = ({ filters, onRemove, wrap = false }: NavBarSear
 						minHeight='x20'
 						value={label}
 						onClick={() => onRemove(filter.id)}
-						title={getAppliedFilterTitle(filter, t)}
+						title={t(title, { value: filter.value })}
 						aria-label={t('Remove_filter', { filter: label })}
 						renderDismissSymbol={() => <Icon name='cross' size='x12' />}
 					>

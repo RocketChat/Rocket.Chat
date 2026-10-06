@@ -56,7 +56,7 @@ type SearchFilterConfig = {
 	pillLabel: string;
 	normalize(rawValue: string): string | undefined;
 	label(value: string): string;
-	title(value: string, t: TranslateFn): string;
+	title: string;
 };
 
 const ISO_DATE_PATTERN = /^\d{4}-\d{2}-\d{2}$/;
@@ -81,7 +81,7 @@ export const SEARCH_FILTERS: Record<SearchFilterKey, SearchFilterConfig> = {
 		pillLabel: 'Search_filter_in',
 		normalize: normalizeName,
 		label: (value) => `#${value}`,
-		title: (value, t) => t('Search_filter_in_rooms', { rooms: `#${value}` }),
+		title: 'Search_filter_in_rooms',
 	},
 	from: {
 		group: 'users',
@@ -90,7 +90,7 @@ export const SEARCH_FILTERS: Record<SearchFilterKey, SearchFilterConfig> = {
 		pillLabel: 'Search_filter_from',
 		normalize: normalizeName,
 		label: (value) => `@${value}`,
-		title: (value, t) => t('Search_filter_from_users', { users: `@${value}` }),
+		title: 'Search_filter_from_users',
 	},
 	after: {
 		group: 'dates',
@@ -99,7 +99,7 @@ export const SEARCH_FILTERS: Record<SearchFilterKey, SearchFilterConfig> = {
 		pillLabel: 'Search_filter_after',
 		normalize: normalizeDate,
 		label: (value) => `after:${value}`,
-		title: (value, t) => t('Search_filter_after_date', { date: value }),
+		title: 'Search_filter_after_date',
 	},
 	before: {
 		group: 'dates',
@@ -108,7 +108,7 @@ export const SEARCH_FILTERS: Record<SearchFilterKey, SearchFilterConfig> = {
 		pillLabel: 'Search_filter_before',
 		normalize: normalizeDate,
 		label: (value) => `before:${value}`,
-		title: (value, t) => t('Search_filter_before_date', { date: value }),
+		title: 'Search_filter_before_date',
 	},
 };
 
@@ -119,8 +119,6 @@ export const isSearchFilterKey = (value: string): value is SearchFilterKey => va
 export const getSearchFilterConfig = (key: SearchFilterKey): SearchFilterConfig => SEARCH_FILTERS[key];
 
 export const getAppliedFilterLabel = ({ key, value }: AppliedFilter): string => SEARCH_FILTERS[key].label(value);
-
-export const getAppliedFilterTitle = ({ key, value }: AppliedFilter, t: TranslateFn): string => SEARCH_FILTERS[key].title(value, t);
 
 export const createAppliedFilter = (key: SearchFilterKey, rawValue: string, meta?: SearchFilterMeta): AppliedFilter | undefined => {
 	const value = SEARCH_FILTERS[key].normalize(rawValue);
