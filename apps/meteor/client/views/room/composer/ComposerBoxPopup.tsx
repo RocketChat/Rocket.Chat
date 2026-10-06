@@ -94,52 +94,50 @@ function ComposerBoxPopup<
 	}, [focused]);
 
 	return (
-		<Box position='relative'>
-			<Tile ref={composerBoxPopupRef} padding={0} marginBlockEnd={8} overflow='hidden'>
-				{title && (
-					<Box backgroundColor='tint'>
-						<ItemGroupHeader inset='md'>
-							<ItemGroupTitle id={id}>{title}</ItemGroupTitle>
-						</ItemGroupHeader>
-					</Box>
-				)}
-				<CustomScrollbars>
-					<Box paddingBlock={8} maxHeight='x320'>
-						{!isLoading && itemsFlat.length === 0 && (
-							<Item inset='md' role='status'>
-								<ItemContent>
-									<ItemTitle>{t('No_results_found')}</ItemTitle>
-								</ItemContent>
+		<Tile ref={composerBoxPopupRef} padding={0} display='flex' flexDirection='column' minHeight='x80' marginBlockEnd={8} overflow='hidden'>
+			{title && (
+				<Box backgroundColor='tint'>
+					<ItemGroupHeader inset='md'>
+						<ItemGroupTitle id={id}>{title}</ItemGroupTitle>
+					</ItemGroupHeader>
+				</Box>
+			)}
+			<CustomScrollbars style={{ minHeight: 0 }}>
+				<Box paddingBlock={8} maxHeight='x320'>
+					{!isLoading && itemsFlat.length === 0 && (
+						<Item inset='md' role='status'>
+							<ItemContent>
+								<ItemTitle>{t('No_results_found')}</ItemTitle>
+							</ItemContent>
+						</Item>
+					)}
+					{isLoading && <ItemSkeleton mediaSize={ITEM_MEDIA_SIZE.medium} inset='md' />}
+					<ItemGroup
+						id={listboxId}
+						role='listbox'
+						aria-labelledby={title ? id : undefined}
+						aria-label={title ? undefined : t('Results')}
+						aria-busy={isLoading}
+					>
+						{itemsFlat.map((item, index) => (
+							<Item
+								key={index}
+								id={`popup-item-${item._id}`}
+								role='option'
+								inset='md'
+								title={getOptionTitle(item)}
+								{...getActiveDescendantOptionProps(item === focused, focusVisible, () => !item.disabled && hover?.(item))}
+								disabled={item.disabled}
+								aria-disabled={item.disabled || undefined}
+								onClick={() => select(item)}
+							>
+								{renderItem({ item: { ...item, variant } })}
 							</Item>
-						)}
-						{isLoading && <ItemSkeleton mediaSize={ITEM_MEDIA_SIZE.medium} inset='md' />}
-						<ItemGroup
-							id={listboxId}
-							role='listbox'
-							aria-labelledby={title ? id : undefined}
-							aria-label={title ? undefined : t('Results')}
-							aria-busy={isLoading}
-						>
-							{itemsFlat.map((item, index) => (
-								<Item
-									key={index}
-									id={`popup-item-${item._id}`}
-									role='option'
-									inset='md'
-									title={getOptionTitle(item)}
-									{...getActiveDescendantOptionProps(item === focused, focusVisible, () => !item.disabled && hover?.(item))}
-									disabled={item.disabled}
-									aria-disabled={item.disabled || undefined}
-									onClick={() => select(item)}
-								>
-									{renderItem({ item: { ...item, variant } })}
-								</Item>
-							))}
-						</ItemGroup>
-					</Box>
-				</CustomScrollbars>
-			</Tile>
-		</Box>
+						))}
+					</ItemGroup>
+				</Box>
+			</CustomScrollbars>
+		</Tile>
 	);
 }
 
