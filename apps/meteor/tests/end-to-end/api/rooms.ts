@@ -1287,6 +1287,73 @@ describe('[Rooms]', () => {
 			expect(res.body).to.have.property('success', false);
 			expect(res.body).to.have.property('errorType', 'error-not-allowed');
 		});
+
+		describe('with a limit', () => {
+			const pruneFirstMessage = () =>
+				request
+					.post(api('rooms.cleanHistory'))
+					.set(credentials)
+					.send({
+						roomId: publicChannel._id,
+						latest: '9999-12-31T23:59:59.000Z',
+						oldest: '0001-01-01T00:00:00.000Z',
+						ignoreDiscussion: false,
+						limit: 1,
+					})
+					.expect(200)
+					.expect((res) => {
+						expect(res.body).to.have.property('count', 1);
+					});
+
+			const remainingMessages = async (): Promise<IMessage[]> =>
+				(await request.get(api('channels.messages')).set(credentials).query({ roomId: publicChannel._id }).expect(200)).body.messages;
+
+			it('should keep the files of messages it does not prune', async () => {
+				await sendSimpleMessage({ roomId: publicChannel._id });
+				for await (const msg of ['first file', 'second file']) {
+					const { body } = await request
+						.post(api(`rooms.media/${publicChannel._id}`))
+						.set(credentials)
+						.attach('file', imgURL)
+						.expect(200);
+					await request
+						.post(api(`rooms.mediaConfirm/${publicChannel._id}/${body.file._id}`))
+						.set(credentials)
+						.send({ msg })
+						.expect(200);
+				}
+
+				await pruneFirstMessage();
+
+				const remainingFileIds = (await remainingMessages()).flatMap((message) => (message.file ? [message.file._id] : []));
+				expect(remainingFileIds).to.not.be.empty;
+
+				const { body } = await request.get(api('channels.files')).set(credentials).query({ roomId: publicChannel._id }).expect(200);
+				expect(body.files.map((file: IUpload) => file._id)).to.include.members(remainingFileIds);
+			});
+
+			it('should keep the discussions of messages it does not prune', async () => {
+				await sendSimpleMessage({ roomId: publicChannel._id });
+				for await (const name of ['first', 'second']) {
+					await request
+						.post(api('rooms.createDiscussion'))
+						.set(credentials)
+						.send({ prid: publicChannel._id, t_name: `${name}-discussion-${Date.now()}` })
+						.expect(200);
+				}
+
+				await pruneFirstMessage();
+
+				const discussionMessages = (await remainingMessages()).filter((message) => message.t === 'discussion-created');
+				expect(discussionMessages).to.not.be.empty;
+
+				for await (const message of discussionMessages) {
+					expect(message).to.have.property('drid');
+					await request.get(api('rooms.info')).set(credentials).query({ roomId: message.drid }).expect(200);
+				}
+			});
+		});
+
 		describe('test user is not part of room', async () => {
 			beforeEach(async () => {
 				await updatePermission('clean-channel-history', ['admin', 'user']);
