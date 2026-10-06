@@ -42,7 +42,7 @@ const Condensed = ({
 	const { mounted: menuVisibility, requestMount, mountNow } = useDeferredMenuMount();
 
 	return (
-		<Item {...props} size='condensed' selected={selected} highlighted={unread} onFocus={mountNow} onPointerEnter={requestMount}>
+		<Item {...props} selected={selected} highlighted={unread} onFocus={mountNow} onPointerEnter={requestMount}>
 			{avatar && <ItemMedia>{avatar}</ItemMedia>}
 			{icon}
 			<ItemContent>
