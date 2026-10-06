@@ -1,4 +1,4 @@
-import type { IContact } from '@rocket.chat/core-typings';
+import type { IContactPublic } from '@rocket.chat/core-typings';
 import { License } from '@rocket.chat/license';
 import { Contacts } from '@rocket.chat/models';
 import {
@@ -43,10 +43,10 @@ API.v1.get(
 		authRequired: true,
 		query: isContactsListProps,
 		response: {
-			200: ajv.compile<PaginatedResult<{ items: IContact[]; syncedTotal: number; success: true }>>({
+			200: ajv.compile<PaginatedResult<{ items: IContactPublic[]; syncedTotal: number; success: true }>>({
 				type: 'object',
 				properties: {
-					items: { type: 'array' },
+					items: { type: 'array', items: { $ref: '#/components/schemas/IContactPublic' } },
 					count: { type: 'integer' },
 					offset: { type: 'integer' },
 					total: { type: 'integer' },
@@ -81,6 +81,7 @@ API.v1.get(
 				sort: sort ?? { displayName: 1 },
 				skip: offset,
 				limit: count,
+				projection: { uid: 0, externalId: 0, folderId: 0, lastSyncAt: 0 },
 			},
 			licensed ? undefined : 'local',
 		);
@@ -99,10 +100,10 @@ API.v1.post(
 		authRequired: true,
 		body: isContactsCreateProps,
 		response: {
-			200: ajv.compile<{ contact: IContact; success: true }>({
+			200: ajv.compile<{ contact: IContactPublic; success: true }>({
 				type: 'object',
 				properties: {
-					contact: { type: 'object' },
+					contact: { $ref: '#/components/schemas/IContactPublic' },
 					success: { type: 'boolean', enum: [true] },
 				},
 				required: ['contact', 'success'],
