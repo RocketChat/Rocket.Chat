@@ -55,6 +55,7 @@ const MediaCallRoomSection = ({ showChat, onToggleChat, user, containerHeight }:
 		onHold,
 		onForward,
 		onSwapCalls,
+		onCompleteTransfer,
 		onEndCall,
 		onToggleScreenSharing,
 		onOpenPopout,
@@ -66,7 +67,8 @@ const MediaCallRoomSection = ({ showChat, onToggleChat, user, containerHeight }:
 
 	const isPopout = currentViews.has('popout');
 
-	const { muted, held, peerInfo, connectionState, startedAt, escalated, supportedFeatures, hasAlternateCall } = sessionState;
+	const { muted, held, peerInfo, connectionState, startedAt, escalated, supportedFeatures, hasAlternateCall, canCompleteTransfer } =
+		sessionState;
 
 	const shouldWrapCards = useShouldWrapCards(showChat, containerHeight);
 
@@ -161,6 +163,9 @@ const MediaCallRoomSection = ({ showChat, onToggleChat, user, containerHeight }:
 				)}
 				{hasAlternateCall && (
 					<ActionButton disabled={connecting || reconnecting} label={t('Switch_call')} icon='arrow-loop' onClick={onSwapCalls} />
+				)}
+				{canCompleteTransfer && (
+					<ActionButton disabled={connecting || reconnecting} label={t('Complete_transfer')} icon='check' onClick={onCompleteTransfer} />
 				)}
 				{transferAvailable && (
 					<ActionButton disabled={connecting || reconnecting} label={t('Forward')} icon='arrow-forward' onClick={onForward} />

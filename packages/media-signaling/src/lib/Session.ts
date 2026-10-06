@@ -262,6 +262,35 @@ export class MediaSignalingSession extends Emitter<MediaSignalingEvents> {
 		alternateCall.setHeld(false);
 	}
 
+	private getAttendedTransferCall(): ClientMediaCall | null {
+		for (const call of this.knownCalls.values()) {
+			if (!call.busy || call.hidden || call.ignored || !call.transferringCallId) {
+				continue;
+			}
+
+			if (this.knownCalls.get(call.transferringCallId)?.busy) {
+				return call;
+			}
+		}
+
+		return null;
+	}
+
+	/** Whether there is an attended transfer waiting to be completed */
+	public canCompleteTransfer(): boolean {
+		return Boolean(this.getAttendedTransferCall());
+	}
+
+	/** Drops out of the calls so the actor on the held call and the actor that was consulted talk to each other */
+	public completeTransfer(): void {
+		const call = this.getAttendedTransferCall();
+		if (!call) {
+			throw new Error('No transfer to complete.');
+		}
+
+		call.completeAttendedTransfer();
+	}
+
 	public async processSignal(signal: ServerMediaSignal): Promise<void> {
 		if (this.sessionEnded) {
 			return;

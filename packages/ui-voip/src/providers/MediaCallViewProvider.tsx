@@ -199,6 +199,10 @@ const MediaCallViewProvider = ({ children }: MediaCallViewProviderProps) => {
 		controls.swapCalls();
 	};
 
+	const onCompleteTransfer = () => {
+		controls.completeTransfer();
+	};
+
 	const playTone = useTonePlayer(audioOutput?.id);
 
 	const onTone = (tone: string) => {
@@ -272,6 +276,7 @@ const MediaCallViewProvider = ({ children }: MediaCallViewProviderProps) => {
 		onDeviceChange,
 		onForward,
 		onSwapCalls,
+		onCompleteTransfer,
 		onTone,
 		onEndCall,
 		onCall,

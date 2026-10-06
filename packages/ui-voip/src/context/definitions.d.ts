@@ -46,6 +46,8 @@ interface IBaseSession {
 	confirmed: boolean;
 	/** There is another call in progress, so this one can be swapped with it */
 	hasAlternateCall: boolean;
+	/** An attended transfer is waiting to be completed */
+	canCompleteTransfer: boolean;
 }
 
 interface IEmptySession extends IBaseSession {

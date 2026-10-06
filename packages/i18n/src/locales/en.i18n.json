@@ -1526,6 +1526,7 @@
   "Community_cap_description": "Community workspaces have a limit of 200 concurrent connections. If this limit is exceeded it will no longer be possible for users to see each others status. This does not affect sending and receiving of messages.",
   "Community_Private_apps_limit_exceeded": "Community app limit has been exceeded.",
   "Compare_plans": "Compare plans",
+  "Complete_transfer": "Complete transfer",
   "Completed": "Completed",
   "Composer_readonly_airgapped": "<0>Workspace in read-only mode.</0> Admins can restore full functionality by connecting it to the internet or upgrading to a Premium plan.",
   "Computer": "Computer",

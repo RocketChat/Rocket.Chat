@@ -264,12 +264,13 @@ export class MediaCallsRaw extends BaseRaw<IMediaCall> implements IMediaCallsMod
 		return count > 0;
 	}
 
-	public async hasUnfinishedCallsByUid(uid: IUser['_id'], exceptCallId?: string): Promise<boolean> {
+	public async hasUnfinishedCallsByUid(uid: IUser['_id'], exceptCallIds?: string | string[]): Promise<boolean> {
+		const exceptions = [exceptCallIds ?? []].flat();
 		const count = await this.countDocuments(
 			{
 				ended: false,
 				uids: uid,
-				...(exceptCallId && { _id: { $ne: exceptCallId } }),
+				...(exceptions.length && { _id: { $nin: exceptions } }),
 			},
 			{ limit: 1 },
 		);

@@ -2,6 +2,10 @@ import { Ajv, type JSONSchemaType } from 'ajv';
 
 import { clientMediaSignalAnswerSchema, type ClientMediaSignalAnswer } from './answer';
 import { clientMediaSignalAttendedTransferSchema, type ClientMediaSignalAttendedTransfer } from './attended-transfer';
+import {
+	clientMediaSignalCompleteAttendedTransferSchema,
+	type ClientMediaSignalCompleteAttendedTransfer,
+} from './complete-attended-transfer';
 import { clientMediaSignalDTMFSchema, type ClientMediaSignalDTMF } from './dtmf';
 import { clientMediaSignalErrorSchema, type ClientMediaSignalError } from './error';
 import { clientMediaSignalHangupSchema, type ClientMediaSignalHangup } from './hangup';
@@ -28,6 +32,7 @@ export type ClientMediaSignal =
 	| ClientMediaSignalNegotiationNeeded
 	| ClientMediaSignalTransfer
 	| ClientMediaSignalAttendedTransfer
+	| ClientMediaSignalCompleteAttendedTransfer
 	| ClientMediaSignalMute
 	| ClientMediaSignalHold;
 
@@ -48,6 +53,7 @@ export const clientMediaSignalSchema: JSONSchemaType<ClientMediaSignal> = {
 		clientMediaSignalNegotiationNeededSchema,
 		clientMediaSignalTransferSchema,
 		clientMediaSignalAttendedTransferSchema,
+		clientMediaSignalCompleteAttendedTransferSchema,
 		clientMediaSignalMuteSchema,
 		clientMediaSignalHoldSchema,
 	],

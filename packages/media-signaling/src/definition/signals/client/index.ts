@@ -1,5 +1,6 @@
 export * from './answer';
 export * from './attended-transfer';
+export * from './complete-attended-transfer';
 export * from './dtmf';
 export * from './error';
 export * from './hangup';

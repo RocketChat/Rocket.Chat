@@ -13,6 +13,7 @@ export type MediaSessionControls = {
 	changeDevice: (deviceId: string) => Promise<void>;
 	forwardCall: (type: 'user' | 'sip', id: string) => void;
 	swapCalls: () => void;
+	completeTransfer: () => void;
 	consultBeforeTransfer: (type: 'user' | 'sip', id: string) => Promise<void>;
 	sendTone: (tone: string) => void;
 	toggleScreenSharing: () => void;
@@ -116,6 +117,14 @@ export const useMediaSessionControls = (instance?: MediaSignalingSession): Media
 			}
 		};
 
+		const completeTransfer = () => {
+			try {
+				instance?.completeTransfer();
+			} catch (error) {
+				console.error('Error completing transfer', error);
+			}
+		};
+
 		const consultBeforeTransfer = async (type: 'user' | 'sip', id: string) => {
 			if (!instance) {
 				return;
@@ -171,6 +180,7 @@ export const useMediaSessionControls = (instance?: MediaSignalingSession): Media
 			changeDevice,
 			forwardCall,
 			swapCalls,
+			completeTransfer,
 			consultBeforeTransfer,
 			sendTone,
 		};
