@@ -33,7 +33,7 @@ const OverflowElement = ({ block, context }: OverflowElementProps) => {
 	}, [show]);
 
 	const handleSelection = useCallback(
-		([value, _label, _selected, _type, url]: OptionType) => {
+		([value, _label, _selected, _disabled, _type, url]: OptionType) => {
 			if (url && UiKit.isSafeUrl(url)) {
 				window.open(url, '_blank', 'noopener');
 			}
