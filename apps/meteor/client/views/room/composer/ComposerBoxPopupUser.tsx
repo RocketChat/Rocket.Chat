@@ -1,5 +1,5 @@
-import { ITEM_MEDIA_SIZE, ItemContent, ItemDescription, ItemIcon, ItemMedia, ItemMeta, ItemTitle } from '@rocket.chat/fuselage';
-import { UserAvatar } from '@rocket.chat/ui-avatar';
+import { ItemContent, ItemDescription, ItemIcon, ItemMedia, ItemMeta, ItemTitle } from '@rocket.chat/fuselage';
+import { ITEM_MEDIA_SIZE, UserAvatar } from '@rocket.chat/ui-avatar';
 import { useSetting, useUserPresence } from '@rocket.chat/ui-contexts';
 import { useTranslation } from 'react-i18next';
 
