@@ -479,9 +479,12 @@ const AccountProfileForm = (props: AllHTMLAttributes<HTMLFormElement>) => {
 
 				<Divider marginBlockStart={24} marginBlockEnd={0} />
 				<PhoneNumberFieldList control={control} name='phones' phones={phoneFields} onAddPhone={onAddPhone} onRemovePhone={onRemovePhone} />
-				<Divider marginBlockStart={24} marginBlockEnd={0} />
-
-				{customFieldsMetadata && <CustomFieldsForm formName='customFields' formControl={control} metadata={customFieldsMetadata} />}
+				{!!customFieldsMetadata.length && (
+					<>
+						<Divider marginBlockStart={24} marginBlockEnd={0} />
+						<CustomFieldsForm formName='customFields' formControl={control} metadata={customFieldsMetadata} />
+					</>
+				)}
 			</FieldGroup>
 		</Box>
 	);
