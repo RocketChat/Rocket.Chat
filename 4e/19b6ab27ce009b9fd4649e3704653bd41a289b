@@ -1,0 +1,19 @@
+ee/apps/ddp-streamer/src/service.ts
+  s_5e2461318f0899::t_246bd0d31b7289 49
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "4e19b6ab27ce009b9fd4649e3704653bd41a289b",
+  "prompts": {},
+  "sessions": {
+    "s_5e2461318f0899": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "a5034872-a2b3-4d9b-b749-b62f625adc6a",
+        "model": "claude-opus-5-5"
+      },
+      "human_author": "Diego Sampaio <chinello@gmail.com>"
+    }
+  }
+}
