@@ -9598,6 +9598,7 @@ __metadata:
   resolution: "@rocket.chat/eslint-config@workspace:packages/eslint-config"
   dependencies:
     "@eslint/js": "npm:~10.0.1"
+    "@rocket.chat/eslint-plugin": "workspace:~"
     "@types/eslint": "npm:~9.6.1"
     eslint: "npm:~10.7.0"
     eslint-config-prettier: "npm:~10.1.8"
@@ -34219,7 +34220,6 @@ __metadata:
   dependencies:
     "@changesets/cli": "npm:^2.27.12"
     "@rocket.chat/eslint-config": "workspace:~"
-    "@rocket.chat/eslint-plugin": "workspace:~"
     "@types/chart.js": "npm:^2.9.41"
     "@types/js-yaml": "npm:^4.0.9"
     "@types/node": "npm:~24.13.6"

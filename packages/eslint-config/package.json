@@ -21,6 +21,7 @@
 	},
 	"dependencies": {
 		"@eslint/js": "~10.0.1",
+		"@rocket.chat/eslint-plugin": "workspace:~",
 		"@types/eslint": "~9.6.1",
 		"eslint": "~10.7.0",
 		"eslint-config-prettier": "~10.1.8",

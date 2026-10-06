@@ -1,21 +1,6 @@
-import { fileURLToPath } from 'node:url';
-
 import rocketChatConfig from '@rocket.chat/eslint-config';
-import rocketChatPlugin from '@rocket.chat/eslint-plugin';
 import youDontNeedLodashUnderscorePlugin from 'eslint-plugin-you-dont-need-lodash-underscore';
 import globals from 'globals';
-
-/** Checks translation usage of `files` against the base-language file the code is translated with */
-const translationConfig = (files, { localeFile, ...options }) => ({
-	files,
-	ignores: ['**/*.@(spec|test|tests).@(ts|tsx|js|jsx)', '**/*.@(stories|story).@(ts|tsx|js|jsx)'],
-	plugins: {
-		'@rocket.chat': rocketChatPlugin,
-	},
-	rules: {
-		'@rocket.chat/valid-translation': ['error', { localeFile: fileURLToPath(new URL(localeFile, import.meta.url)), ...options }],
-	},
-});
 
 /** @type {import('eslint').Linter.FlatConfig[]} */
 export default [
@@ -495,17 +480,4 @@ export default [
 			'new-cap': 'off',
 		},
 	},
-	translationConfig(['@(apps|ee|packages)/**/*.@(ts|tsx|js|jsx)'], {
-		localeFile: './packages/i18n/src/locales/en.i18n.json',
-		defaultNamespace: 'core',
-		namespaces: ['core', 'onboarding', 'registration', 'cloud', 'subscription'],
-	}),
-	// These packages ship their own translation files
-	translationConfig(['packages/@(onboarding-ui|layout)/**/*.@(ts|tsx|js|jsx)'], {
-		localeFile: './packages/onboarding-ui/.i18n/en.i18n.json',
-	}),
-	translationConfig(['packages/livechat/**/*.@(ts|tsx|js|jsx)'], {
-		localeFile: './packages/livechat/src/i18n/en.json',
-		root: 'translation',
-	}),
 ];

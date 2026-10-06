@@ -11,6 +11,10 @@
 	"files": [
 		"/build"
 	],
+	"translations": {
+		"file": "./src/i18n/en.json",
+		"root": "translation"
+	},
 	"scripts": {
 		"build": "yarn clean && cross-env TS_NODE_PROJECT=\"tsconfig.webpack.json\" webpack-cli --mode production",
 		"build-storybook": "storybook build",

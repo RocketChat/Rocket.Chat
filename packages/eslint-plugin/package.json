@@ -1,7 +1,6 @@
 {
 	"name": "@rocket.chat/eslint-plugin",
 	"version": "0.0.0",
-	"private": true,
 	"description": "Rocket.Chat's custom ESLint rules",
 	"repository": {
 		"type": "git",

@@ -7,6 +7,7 @@
 	"files": [
 		"/dist"
 	],
+	"translations": "@rocket.chat/i18n",
 	"scripts": {
 		"build": "rm -rf dist && tsc -p tsconfig.build.json && yarn build:post",
 		"build:post": "node --no-warnings dist/generate-landing-view.js && rm -f dist/generate-landing-view.*",

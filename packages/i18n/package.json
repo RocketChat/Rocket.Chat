@@ -23,6 +23,17 @@
 	"files": [
 		"/dist"
 	],
+	"translations": {
+		"file": "./src/locales/en.i18n.json",
+		"defaultNamespace": "core",
+		"namespaces": [
+			"core",
+			"onboarding",
+			"registration",
+			"cloud",
+			"subscription"
+		]
+	},
 	"scripts": {
 		"build": "rm -rf dist && tsc -p tsconfig.build.json && node --experimental-transform-types ./src/scripts/build.mts",
 		"check": "node --experimental-transform-types ./src/scripts/check.mts",

@@ -215,7 +215,6 @@
 	"devDependencies": {
 		"@changesets/cli": "^2.27.12",
 		"@rocket.chat/eslint-config": "workspace:~",
-		"@rocket.chat/eslint-plugin": "workspace:~",
 		"@types/chart.js": "^2.9.41",
 		"@types/js-yaml": "^4.0.9",
 		"@types/node": "~24.13.6",

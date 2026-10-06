@@ -1,5 +1,5 @@
-import { readFileSync, statSync } from 'node:fs';
-import { basename } from 'node:path';
+import { existsSync, readFileSync, statSync } from 'node:fs';
+import { basename, dirname, join, resolve } from 'node:path';
 
 const pluralSuffixes = ['zero', 'one', 'two', 'few', 'many', 'other'];
 
@@ -58,6 +58,54 @@ const loadResource = (localeFile, root) => {
 	const resource = flattenResource(root ? content[root] : content);
 	cache.set(cacheKey, { mtimeMs, resource });
 	return resource;
+};
+
+const packageCache = new Map();
+
+/** Finds the directory of the package a file belongs to */
+const findPackageDir = (directory) => {
+	if (packageCache.has(directory)) return packageCache.get(directory);
+
+	const parent = dirname(directory);
+	const packageDir = existsSync(join(directory, 'package.json')) ? directory : parent !== directory && findPackageDir(parent);
+	packageCache.set(directory, packageDir || undefined);
+	return packageDir || undefined;
+};
+
+const readPackageJson = (packageDir) => JSON.parse(readFileSync(join(packageDir, 'package.json'), 'utf8'));
+
+/** Finds an installed package the way Node.js does, without going through its `exports` */
+const findDependencyDir = (fromDir, name) => {
+	for (let directory = fromDir; ; directory = dirname(directory)) {
+		const candidate = join(directory, 'node_modules', name);
+		if (existsSync(join(candidate, 'package.json'))) return candidate;
+		if (dirname(directory) === directory) return undefined;
+	}
+};
+
+/**
+ * Reads the translations a package is written against, from the `translations` field of its `package.json`: either
+ * the description of its own base-language file, or the name of the package whose translations it uses.
+ */
+const readTranslations = (packageDir) => {
+	const { name, translations } = readPackageJson(packageDir);
+	if (translations === undefined) return undefined;
+
+	let ownerDir = packageDir;
+	let description = translations;
+
+	if (typeof translations === 'string') {
+		ownerDir = findDependencyDir(packageDir, translations);
+		if (!ownerDir) throw new Error(`${name}: the translations package ${translations} is not installed.`);
+		description = readPackageJson(ownerDir).translations;
+	}
+
+	if (typeof description?.file !== 'string') {
+		throw new Error(`${name}: \`translations\` must describe a base-language \`file\` or name a package that does.`);
+	}
+
+	const { file, root, defaultNamespace = 'translation', namespaces = [defaultNamespace] } = description;
+	return { localeFile: resolve(ownerDir, file), root, defaultNamespace, namespaces };
 };
 
 const placeholderRegex = /\{\{\s*-?\s*([^,}\s]+?)\s*(?:,[^}]*)?\}\}/g;
@@ -266,6 +314,13 @@ const classifyVariable = (variable, defaultNamespace) => {
 	return undefined;
 };
 
+const translationsCache = new Map();
+
+const translationsOf = (packageDir) => {
+	if (!translationsCache.has(packageDir)) translationsCache.set(packageDir, readTranslations(packageDir));
+	return translationsCache.get(packageDir);
+};
+
 /** @type {import('eslint').Rule.RuleModule} */
 const validTranslation = {
 	meta: {
@@ -273,23 +328,7 @@ const validTranslation = {
 		docs: {
 			description: 'Ensure translation keys exist in the base language and are called with exactly the parameters they declare',
 		},
-		schema: [
-			{
-				type: 'object',
-				properties: {
-					// Absolute path of the base-language file the keys are checked against
-					localeFile: { type: 'string' },
-					// Property of the file that holds the keys, when they aren't at its top level
-					root: { type: 'string' },
-					// Namespace of `useTranslation()` without arguments; its keys are stored unprefixed
-					defaultNamespace: { type: 'string' },
-					// Every namespace stored in the file, the others as `${ns}.${key}`
-					namespaces: { type: 'array', items: { type: 'string' } },
-				},
-				required: ['localeFile'],
-				additionalProperties: false,
-			},
-		],
+		schema: [],
 		messages: {
 			unknownKey: 'Translation key {{key}} does not exist in {{file}}.',
 			missingParams: 'Translation key {{key}} requires the missing parameter(s): {{params}}.',
@@ -298,7 +337,11 @@ const validTranslation = {
 	},
 	create(context) {
 		const { sourceCode } = context;
-		const [{ localeFile, root, defaultNamespace = 'translation', namespaces: fileNamespaces = [defaultNamespace] }] = context.options;
+		const packageDir = findPackageDir(dirname(context.physicalFilename));
+		const translations = packageDir && translationsOf(packageDir);
+		if (!translations) return {};
+
+		const { localeFile, root, defaultNamespace, namespaces: fileNamespaces } = translations;
 		const locale = { resource: loadResource(localeFile, root), defaultNamespace, namespaces: fileNamespaces };
 		const file = basename(localeFile);
 

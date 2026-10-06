@@ -1,4 +1,5 @@
 import eslint from '@eslint/js';
+import rocketChatPlugin from '@rocket.chat/eslint-plugin';
 import { defineConfig } from 'eslint/config';
 import { createTypeScriptImportResolver } from 'eslint-import-resolver-typescript';
 import antiTrojanSourcePlugin from 'eslint-plugin-anti-trojan-source';
@@ -564,6 +565,18 @@ export default defineConfig(
 		rules: {
 			'react/display-name': 'off',
 			'react/no-multi-comp': 'off',
+		},
+	},
+	{
+		// Only checks packages that declare their translations in the `translations` field of their package.json
+		name: 'rocket.chat/translations',
+		files: ['**/*.@(ts|tsx|js|jsx)'],
+		ignores: ['**/*.@(spec|test|tests).@(ts|tsx|js|jsx)', '**/*.@(stories|story).@(ts|tsx|js|jsx)'],
+		plugins: {
+			'@rocket.chat': rocketChatPlugin,
+		},
+		rules: {
+			'@rocket.chat/valid-translation': 'warn',
 		},
 	},
 );
