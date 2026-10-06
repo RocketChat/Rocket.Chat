@@ -1,4 +1,4 @@
-import type { IContact, IUser, RocketChatRecordDeleted } from '@rocket.chat/core-typings';
+import type { IContact, IContactPublic, IUser, RocketChatRecordDeleted } from '@rocket.chat/core-typings';
 import type {
 	ContactBulkUpsertResult,
 	FindPaginated,
@@ -69,18 +69,25 @@ export class ContactsRaw extends BaseRaw<IContact> implements IContactsModel {
 	}
 
 	/** Sorted so a number saved on more than one contact always answers with the same name. */
-	public findOneByUserIdAndPhone(uid: IUser['_id'], e164: string, source?: IContact['source']): Promise<IContact | null> {
-		return this.findOne({ uid, 'phones.e164': e164, ...(source && { source }) }, { sort: { displayName: 1 } });
+	public findOneByUserIdAndPhone(
+		uid: IUser['_id'],
+		e164: string,
+		source?: IContact['source'],
+	): Promise<Pick<IContact, '_id' | 'displayName'> | null> {
+		return this.findOne(
+			{ uid, 'phones.e164': e164, ...(source && { source }) },
+			{ sort: { displayName: 1 }, projection: { _id: 1, displayName: 1 } },
+		);
 	}
 
 	public countImportedByUserId(uid: IUser['_id']): Promise<number> {
 		return this.countDocuments({ uid, source: OUTLOOK, externalId: { $exists: true } });
 	}
 
-	public async createLocal(contact: LocalContact): Promise<IContact | null> {
+	public async createLocal(contact: LocalContact): Promise<IContactPublic | null> {
 		const { insertedId } = await this.insertOne({ ...contact, source: LOCAL });
 
-		return this.findOneById(insertedId);
+		return this.findOneById(insertedId, { projection: { uid: 0, externalId: 0, folderId: 0, lastSyncAt: 0 } });
 	}
 
 	public async updateLocal(uid: IUser['_id'], contactId: IContact['_id'], contact: LocalContactUpdate): Promise<UpdateResult> {
