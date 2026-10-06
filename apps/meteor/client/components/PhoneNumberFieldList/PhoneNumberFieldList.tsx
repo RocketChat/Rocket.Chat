@@ -35,7 +35,13 @@ const PhoneNumberFieldList = <T extends FieldValues>({
 	const { t } = useTranslation();
 	const { visuallyHiddenProps } = useVisuallyHidden();
 
-	const isUntouchedSoleRow = (formValues: T, index: number) => phones.length === 1 && !get(formValues, `${name}.${index}.label`)?.trim();
+	const isCleanRow = <T,>(formValues: T, index: number) => {
+		const value = get(formValues, `${name}.${index}.label`);
+		if (typeof value !== 'string') {
+			throw new Error('PhoneNumberFieldList - something went wrong');
+		}
+		return !value.trim();
+	};
 
 	return (
 		<Box is='fieldset' className={className} display='flex' flexDirection='column' width='100%'>
@@ -43,17 +49,18 @@ const PhoneNumberFieldList = <T extends FieldValues>({
 			<Box is='ul' id={`${name}-phones-list`} display='flex' flexDirection='column' gap={16}>
 				{phones.map((phone, index) => (
 					<Box is='li' id={phone.id} key={phone.id} display='flex' flexDirection='column' gap={4}>
-						<Controller<T>
+						<Controller
 							control={control}
 							name={`${name}.${index}.number` as Path<T>}
 							rules={{
+								deps: [`${name}.${index}.label` as Path<T>],
 								validate: {
 									required: (value: string, formValues: T) =>
-										value.trim() || isUntouchedSoleRow(formValues, index)
+										value.trim() && isCleanRow(formValues, index)
 											? true
 											: t('Required_field', { field: `${t('Phone_number')} ${index + 1}` }),
 									valid: (value: string, formValues: T) =>
-										E164_PHONE_REGEX.test(value) || (!value.trim() && isUntouchedSoleRow(formValues, index))
+										E164_PHONE_REGEX.test(value) || (!value.trim() && isCleanRow(formValues, index))
 											? true
 											: t('__field__is_invalid', { field: `${t('Phone_number')} ${index + 1}` }),
 								},
@@ -68,7 +75,7 @@ const PhoneNumberFieldList = <T extends FieldValues>({
 											aria-controls={phone.id}
 											title={t('Remove')}
 											aria-label={t('Remove_number__label__', { label: phone.label || index + 1 })}
-											small
+											marginInlineStart={8}
 											icon='trash'
 											onClick={() => onRemovePhone(index)}
 										/>
@@ -109,7 +116,6 @@ const PhoneNumberFieldList = <T extends FieldValues>({
 			</Box>
 			<Box>
 				<Button
-					small
 					icon='plus'
 					aria-controls={`${name}-phones-list`}
 					onClick={() => onAddPhone({ number: '', label: '' })}
