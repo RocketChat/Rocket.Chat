@@ -145,7 +145,7 @@ describe('PhoneNumberFieldList', () => {
 			await waitFor(() => expect(input).toHaveAccessibleDescription('Phone number 1 required'));
 		});
 
-		it('shows a required error for an empty phone number when there are multiple rows', async () => {
+		it('does not show an error for a blank row when there are multiple rows', async () => {
 			render(
 				<TestComponent
 					initialPhones={[
@@ -161,7 +161,7 @@ describe('PhoneNumberFieldList', () => {
 			await userEvent.click(input);
 			await userEvent.tab();
 
-			await waitFor(() => expect(input).toHaveAccessibleDescription('Phone number 2 required'));
+			await waitFor(() => expect(input).not.toHaveAccessibleDescription());
 		});
 
 		it('shows an invalid format error for a non-E164 phone number on blur', async () => {
