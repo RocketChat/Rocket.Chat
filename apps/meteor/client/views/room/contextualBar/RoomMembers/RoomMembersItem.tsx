@@ -11,7 +11,7 @@ import {
 	ItemMedia,
 	ItemTitle,
 } from '@rocket.chat/fuselage';
-import { UserAvatar } from '@rocket.chat/ui-avatar';
+import { ITEM_MEDIA_SIZE, UserAvatar } from '@rocket.chat/ui-avatar';
 import type { MouseEvent } from 'react';
 
 import UserActions from './RoomMembersActions';
@@ -51,7 +51,6 @@ const RoomMembersItem = ({
 	return (
 		<Item
 			role='listitem'
-			size='medium'
 			inset='lg'
 			data-username={username}
 			data-userid={_id}
@@ -60,7 +59,7 @@ const RoomMembersItem = ({
 			{...statusTooltipHandlers}
 		>
 			<ItemMedia>
-				<UserAvatar username={username || ''} size='x28' />
+				<UserAvatar username={username || ''} size={ITEM_MEDIA_SIZE.medium} />
 			</ItemMedia>
 			<ItemIcon>{federated ? <Icon name='globe' size='x16' /> : <ReactiveUserStatus uid={_id} />}</ItemIcon>
 			<ItemContent data-qa={`MemberItem-${username}`}>

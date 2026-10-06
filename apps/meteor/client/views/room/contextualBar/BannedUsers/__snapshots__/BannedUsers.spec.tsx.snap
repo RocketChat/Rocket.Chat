@@ -84,7 +84,7 @@ exports[`renders Default without crashing 1`] = `
                         style="overflow-anchor: none;"
                       >
                         <div
-                          class="rcx-item rcx-item--medium rcx-item--inset-lg"
+                          class="rcx-item rcx-item--inset-lg"
                           role="listitem"
                         >
                           <div
@@ -133,6 +133,7 @@ exports[`renders Default without crashing 1`] = `
                           >
                             <div
                               class="rcx-item__title"
+                              id="_r_2_"
                             >
                               john.doe
                                
@@ -149,7 +150,7 @@ exports[`renders Default without crashing 1`] = `
                                 aria-haspopup="true"
                                 aria-label="More"
                                 class="rcx-box rcx-box--full rcx-button--small-square rcx-button--square rcx-button--icon rcx-button"
-                                id="react-aria-_r_2_"
+                                id="react-aria-_r_3_"
                                 title="More"
                                 type="button"
                               >
@@ -171,7 +172,7 @@ exports[`renders Default without crashing 1`] = `
                         style="overflow-anchor: none;"
                       >
                         <div
-                          class="rcx-item rcx-item--medium rcx-item--inset-lg"
+                          class="rcx-item rcx-item--inset-lg"
                           role="listitem"
                         >
                           <div
@@ -193,7 +194,7 @@ exports[`renders Default without crashing 1`] = `
                           <div
                             aria-label="Federated"
                             class="rcx-item__icon"
-                            id="_r_4_"
+                            id="_r_5_"
                             role="img"
                           >
                             <i
@@ -208,6 +209,7 @@ exports[`renders Default without crashing 1`] = `
                           >
                             <div
                               class="rcx-item__title"
+                              id="_r_6_"
                             >
                               jane.smith:matrix.org
                                
@@ -224,7 +226,7 @@ exports[`renders Default without crashing 1`] = `
                                 aria-haspopup="true"
                                 aria-label="More"
                                 class="rcx-box rcx-box--full rcx-button--small-square rcx-button--square rcx-button--icon rcx-button"
-                                id="react-aria-_r_5_"
+                                id="react-aria-_r_7_"
                                 title="More"
                                 type="button"
                               >
@@ -246,7 +248,7 @@ exports[`renders Default without crashing 1`] = `
                         style="overflow-anchor: none;"
                       >
                         <div
-                          class="rcx-item rcx-item--medium rcx-item--inset-lg"
+                          class="rcx-item rcx-item--inset-lg"
                           role="listitem"
                         >
                           <div
@@ -268,7 +270,7 @@ exports[`renders Default without crashing 1`] = `
                           <div
                             aria-hidden="true"
                             class="rcx-item__icon"
-                            id="_r_7_"
+                            id="_r_9_"
                           >
                             <svg
                               aria-hidden="true"
@@ -295,6 +297,7 @@ exports[`renders Default without crashing 1`] = `
                           >
                             <div
                               class="rcx-item__title"
+                              id="_r_a_"
                             >
                               rocket.cat
                                
@@ -311,7 +314,7 @@ exports[`renders Default without crashing 1`] = `
                                 aria-haspopup="true"
                                 aria-label="More"
                                 class="rcx-box rcx-box--full rcx-button--small-square rcx-button--square rcx-button--icon rcx-button"
-                                id="react-aria-_r_8_"
+                                id="react-aria-_r_b_"
                                 title="More"
                                 type="button"
                               >
@@ -813,7 +816,7 @@ exports[`renders WithRealNames without crashing 1`] = `
                         style="overflow-anchor: none;"
                       >
                         <div
-                          class="rcx-item rcx-item--medium rcx-item--inset-lg"
+                          class="rcx-item rcx-item--inset-lg"
                           role="listitem"
                         >
                           <div
@@ -835,7 +838,7 @@ exports[`renders WithRealNames without crashing 1`] = `
                           <div
                             aria-hidden="true"
                             class="rcx-item__icon"
-                            id="_r_e_"
+                            id="_r_h_"
                           >
                             <svg
                               aria-hidden="true"
@@ -862,6 +865,7 @@ exports[`renders WithRealNames without crashing 1`] = `
                           >
                             <div
                               class="rcx-item__title"
+                              id="_r_i_"
                             >
                               John Doe
                                
@@ -884,7 +888,7 @@ exports[`renders WithRealNames without crashing 1`] = `
                                 aria-haspopup="true"
                                 aria-label="More"
                                 class="rcx-box rcx-box--full rcx-button--small-square rcx-button--square rcx-button--icon rcx-button"
-                                id="react-aria-_r_f_"
+                                id="react-aria-_r_j_"
                                 title="More"
                                 type="button"
                               >
@@ -906,7 +910,7 @@ exports[`renders WithRealNames without crashing 1`] = `
                         style="overflow-anchor: none;"
                       >
                         <div
-                          class="rcx-item rcx-item--medium rcx-item--inset-lg"
+                          class="rcx-item rcx-item--inset-lg"
                           role="listitem"
                         >
                           <div
@@ -928,7 +932,7 @@ exports[`renders WithRealNames without crashing 1`] = `
                           <div
                             aria-label="Federated"
                             class="rcx-item__icon"
-                            id="_r_h_"
+                            id="_r_l_"
                             role="img"
                           >
                             <i
@@ -943,6 +947,7 @@ exports[`renders WithRealNames without crashing 1`] = `
                           >
                             <div
                               class="rcx-item__title"
+                              id="_r_m_"
                             >
                               Jane Smith
                                
@@ -965,7 +970,7 @@ exports[`renders WithRealNames without crashing 1`] = `
                                 aria-haspopup="true"
                                 aria-label="More"
                                 class="rcx-box rcx-box--full rcx-button--small-square rcx-button--square rcx-button--icon rcx-button"
-                                id="react-aria-_r_i_"
+                                id="react-aria-_r_n_"
                                 title="More"
                                 type="button"
                               >
@@ -987,7 +992,7 @@ exports[`renders WithRealNames without crashing 1`] = `
                         style="overflow-anchor: none;"
                       >
                         <div
-                          class="rcx-item rcx-item--medium rcx-item--inset-lg"
+                          class="rcx-item rcx-item--inset-lg"
                           role="listitem"
                         >
                           <div
@@ -1009,7 +1014,7 @@ exports[`renders WithRealNames without crashing 1`] = `
                           <div
                             aria-hidden="true"
                             class="rcx-item__icon"
-                            id="_r_k_"
+                            id="_r_p_"
                           >
                             <svg
                               aria-hidden="true"
@@ -1036,6 +1041,7 @@ exports[`renders WithRealNames without crashing 1`] = `
                           >
                             <div
                               class="rcx-item__title"
+                              id="_r_q_"
                             >
                               Rocket.Cat
                                
@@ -1058,7 +1064,7 @@ exports[`renders WithRealNames without crashing 1`] = `
                                 aria-haspopup="true"
                                 aria-label="More"
                                 class="rcx-box rcx-box--full rcx-button--small-square rcx-button--square rcx-button--icon rcx-button"
-                                id="react-aria-_r_l_"
+                                id="react-aria-_r_r_"
                                 title="More"
                                 type="button"
                               >

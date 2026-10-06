@@ -71,7 +71,7 @@ const ContactInfoChannelsItem = ({
 	}, [blocked, canSendOutboundMessage, contact?._id, contact?.unknown, details.id, handleBlockContact, outboundMessageModal, t]);
 
 	return (
-		<Item role='listitem' size='extended' inset='lg'>
+		<Item role='listitem' inset='lg'>
 			{details && (
 				<ItemMedia variant='icon'>
 					<OmnichannelRoomIcon source={details} size='x18' placement='default' />
