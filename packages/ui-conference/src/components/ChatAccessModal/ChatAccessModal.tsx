@@ -11,14 +11,13 @@ import {
 	ModalHeader,
 	ModalHeaderText,
 	ModalTitle,
-	ITEM_MEDIA_SIZE,
 	Item,
 	ItemContent,
 	ItemGroup,
 	ItemMedia,
 	ItemTitle,
 } from '@rocket.chat/fuselage';
-import { UserAvatar } from '@rocket.chat/ui-avatar';
+import { ITEM_MEDIA_SIZE, UserAvatar } from '@rocket.chat/ui-avatar';
 import { useToastMessageDispatch } from '@rocket.chat/ui-contexts';
 import { useId, useState } from 'react';
 import { Trans, useTranslation } from 'react-i18next';
@@ -104,7 +103,7 @@ const ChatAccessModal = ({ access, onClose }: ChatAccessModalProps) => {
 				<ItemGroup is='ul' aria-labelledby={membersDescriptionId}>
 					{/* Named from the conference's own record — there may be no shared room to look them up in. */}
 					{access.members.map((member) => (
-						<Item key={member._id} is='li' size='medium'>
+						<Item key={member._id} is='li'>
 							<ItemMedia>
 								<UserAvatar username={member.username} size={ITEM_MEDIA_SIZE.medium} />
 							</ItemMedia>

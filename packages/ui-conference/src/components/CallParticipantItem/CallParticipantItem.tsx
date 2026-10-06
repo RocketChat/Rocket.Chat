@@ -23,7 +23,7 @@ const CallParticipantItem = (props: CallParticipantItemProps) => {
 	const name = participant.displayName || t('External_participant');
 
 	return (
-		<Item role='listitem' size='medium' inset='lg'>
+		<Item role='listitem' inset='lg'>
 			<ItemMedia>
 				{/* No avatar to show, and a blank circle would read as one still loading. */}
 				<Icon name='user-rounded' size='x20' color='hint' />
