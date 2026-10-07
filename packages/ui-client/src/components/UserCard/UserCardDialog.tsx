@@ -7,14 +7,17 @@ export type UserCardDialogProps = ComponentProps<typeof Box>;
 const UserCardDialog = (props: UserCardDialogProps) => (
 	<Box
 		role='dialog'
-		minHeight='x214'
 		rcx-user-card
 		backgroundColor='surface'
 		elevation='2'
-		padding={24}
+		paddingBlockStart='x24'
+		paddingBlockEnd='x16'
+		paddingInline='x16'
 		display='flex'
-		borderRadius='medium'
-		width='439px'
+		flexDirection='column'
+		borderRadius='large'
+		overflow='hidden'
+		width='x400'
 		{...props}
 	/>
 );
