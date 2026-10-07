@@ -238,6 +238,7 @@ export class LDAPEEManager extends LDAPManager {
 			}
 		} catch (err) {
 			logger.error({ err });
+			throw err;
 		}
 	}
 

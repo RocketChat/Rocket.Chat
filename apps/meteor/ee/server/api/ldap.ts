@@ -50,10 +50,10 @@ API.v1.post(
 
 		try {
 			await LDAPEnterprise.sync();
+			await LDAPEnterprise.syncAvatarAndAbacAttributes();
 		} catch (err) {
 			return API.v1.failure({ error: 'LDAP_Sync_failed', details: { error: err instanceof Error ? err.message : String(err) } });
 		}
-		await LDAPEnterprise.syncAvatarAndAbacAttributes();
 
 		return API.v1.success({
 			message: 'Sync_in_progress' as const,

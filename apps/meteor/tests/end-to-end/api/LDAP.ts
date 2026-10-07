@@ -139,6 +139,24 @@ const waitForLdapConnection = () =>
 				expect(res.body).to.have.property('success', true);
 				expect(res.body).to.have.property('message', 'Sync_in_progress');
 			});
+
+			describe('when the LDAP server is unreachable', () => {
+				before(async () => {
+					await updateSetting('LDAP_Port', 1);
+				});
+
+				after(async () => {
+					await updateSetting('LDAP_Port', 1389);
+					await waitForLdapConnection();
+				});
+
+				it('should report the error that stopped the sync', async () => {
+					const res = await request.post(api('ldap.syncNow')).set(credentials).expect('Content-Type', 'application/json').expect(400);
+
+					expect(res.body).to.have.property('success', false);
+					expect(res.body).to.have.property('error', 'LDAP_Sync_failed');
+				});
+			});
 		});
 
 		describe('when LDAP is enabled', () => {
