@@ -10,16 +10,16 @@ import { memo, useMemo } from 'react';
 
 import SidebarItemTemplateWithData from './SidebarItemTemplateWithData';
 import type { useAvatarTemplate } from '../hooks/useAvatarTemplate';
-import type { useTemplateByViewMode } from '../hooks/useTemplateByViewMode';
+import type { SidebarAvatarSize, SidebarViewMode } from '../hooks/useSidebarDisplayPreferences';
 
 export type RoomListRowProps = {
 	data: {
-		extended: boolean;
 		t: TFunction;
-		SidebarItemTemplate: ReturnType<typeof useTemplateByViewMode>;
 		AvatarTemplate: ReturnType<typeof useAvatarTemplate>;
 		openedRoom: string;
-		sidebarViewMode: 'extended' | 'condensed' | 'medium';
+		viewMode: SidebarViewMode;
+		avatarSize?: SidebarAvatarSize;
+		displayPreview: boolean;
 		isAnonymous: boolean;
 		userId?: string;
 	};
@@ -27,7 +27,7 @@ export type RoomListRowProps = {
 };
 
 const RoomListRow = ({ data, item }: RoomListRowProps) => {
-	const { extended, t, SidebarItemTemplate, AvatarTemplate, openedRoom, sidebarViewMode, userId } = data;
+	const { t, AvatarTemplate, openedRoom, viewMode, avatarSize, displayPreview, userId } = data;
 
 	const acceptCall = useVideoConfAcceptCall();
 	const rejectCall = useVideoConfRejectIncomingCall();
@@ -50,12 +50,12 @@ const RoomListRow = ({ data, item }: RoomListRowProps) => {
 
 	return (
 		<SidebarItemTemplateWithData
-			sidebarViewMode={sidebarViewMode}
+			viewMode={viewMode}
+			avatarSize={avatarSize}
+			displayPreview={displayPreview}
 			selected={item.rid === openedRoom}
 			t={t}
 			room={item}
-			extended={extended}
-			SidebarItemTemplate={SidebarItemTemplate}
 			AvatarTemplate={AvatarTemplate}
 			videoConfActions={videoConfActions}
 			userId={userId}

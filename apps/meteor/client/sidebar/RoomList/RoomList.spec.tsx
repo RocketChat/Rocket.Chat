@@ -133,10 +133,6 @@ jest.mock('../hooks/useShortcutOpenMenu', () => ({
 	useShortcutOpenMenu: (ref: unknown) => mockUseShortcutOpenMenu(ref),
 }));
 
-jest.mock('../hooks/useTemplateByViewMode', () => ({
-	useTemplateByViewMode: () => 'SidebarItemTemplate',
-}));
-
 jest.mock('./RoomListCollapser', () => ({
 	__esModule: true,
 	default: ({ group, onToggleInactive }: { group: SidebarRoomListGroup; onToggleInactive: () => void }) => (
@@ -179,7 +175,7 @@ describe('RoomList', () => {
 					{ key: 'Direct_Messages', group: groups[1], items: [rooms[2]] },
 					{ key: 'Empty_Group', group: groups[2], items: [] },
 				],
-				bufferSize: 240,
+				bufferSize: 220,
 			}),
 		);
 		expect(screen.getAllByTestId('group-header').map((element) => element.textContent)).toEqual([
