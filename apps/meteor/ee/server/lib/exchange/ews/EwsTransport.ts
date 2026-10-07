@@ -45,6 +45,22 @@ const splitDomainAndUser = (username: string): { domain: string; user: string } 
 	return { domain: '', user: username };
 };
 
+export const captureCertificate = (socket: TLSSocket, store: (raw: Buffer) => void): void => {
+	const read = (): boolean => {
+		const raw = socket.getPeerCertificate?.(false)?.raw;
+		if (!raw?.length) {
+			return false;
+		}
+
+		store(raw);
+		return true;
+	};
+
+	if (!read()) {
+		socket.once('secureConnect', read);
+	}
+};
+
 /**
  * The air-gap invariant, enforced where connections are actually opened rather than where URLs are built.
  */
@@ -117,23 +133,6 @@ export class EwsTransport implements IEwsTransport {
 		}
 
 		return { endpoint: this.endpoint, agent: this.agent };
-	}
-
-	/** A reused keep-alive socket is already secure; a fresh one has to wait for `secureConnect`. */
-	private captureCertificateFrom(socket: TLSSocket): void {
-		const read = (): void => {
-			const certificate = socket.getPeerCertificate?.(false);
-			if (certificate?.raw?.length) {
-				this.lastPeerCertificate = certificate.raw;
-			}
-		};
-
-		if (socket.getProtocol?.()) {
-			read();
-			return;
-		}
-
-		socket.once('secureConnect', read);
 	}
 
 	public async post(soapEnvelope: string): Promise<string> {
@@ -245,7 +244,11 @@ export class EwsTransport implements IEwsTransport {
 				},
 			);
 
-			req.on('socket', (socket: TLSSocket) => this.captureCertificateFrom(socket));
+			req.on('socket', (socket: TLSSocket) =>
+				captureCertificate(socket, (raw) => {
+					this.lastPeerCertificate = raw;
+				}),
+			);
 
 			req.on('timeout', () => {
 				req.destroy();
