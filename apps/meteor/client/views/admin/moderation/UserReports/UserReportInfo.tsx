@@ -10,7 +10,7 @@ import {
 	FieldLabel,
 	FieldRow,
 } from '@rocket.chat/fuselage';
-import { ContextualbarFooter, ContextualbarScrollableContent, UserCardRole } from '@rocket.chat/ui-client';
+import { ContextualbarFooter, ContextualbarScrollableContent, UserCardRole, GenericNoResults } from '@rocket.chat/ui-client';
 import { useEndpoint } from '@rocket.chat/ui-contexts';
 import { useQuery } from '@tanstack/react-query';
 import { useMemo } from 'react';
@@ -18,7 +18,6 @@ import { useTranslation } from 'react-i18next';
 
 import UserContextFooter from './UserContextFooter';
 import { normalizeUsername } from '../../../../../lib/utils/normalizeUsername';
-import GenericNoResults from '../../../../components/GenericNoResults';
 import { FormSkeleton } from '../../../../components/Skeleton';
 import { useFormatDate } from '../../../../hooks/useFormatDate';
 import ReportReason from '../helpers/ReportReason';

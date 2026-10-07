@@ -388,16 +388,18 @@ exports[`renders WithText without crashing 1`] = `
             
 
           </span>
-          <span
-            style="border-inline-start: 2px solid var(--rcx-color-stroke-light, #ccc); padding-inline-start: 8px; color: var(--rcx-color-font-secondary-info, #666);"
-          >
-            <span>
+          <span>
+            <span
+              style="border-inline-start: 2px solid var(--rcx-color-stroke-light, #ccc); padding-inline-start: 8px; color: var(--rcx-color-font-secondary-info, #666);"
+            >
               &gt; 
               Quote line one
               
 
             </span>
-            <span>
+            <span
+              style="border-inline-start: 2px solid var(--rcx-color-stroke-light, #ccc); padding-inline-start: 8px; color: var(--rcx-color-font-secondary-info, #666);"
+            >
               &gt; 
               Quote line two
               
@@ -408,19 +410,24 @@ exports[`renders WithText without crashing 1`] = `
             
 
           </span>
-          <span
-            style="background-color: var(--rcx-color-surface-tint, rgba(0, 0, 0, 0.08)); border-radius: 2px; padding: 0px 2px;"
-          >
-            <span>
-              Spoiler block line one
-              
+          <span>
+            ||
 
-            </span>
-            <span>
-              Spoiler block line two
-              
+            <span
+              style="background-color: var(--rcx-color-surface-tint, rgba(0, 0, 0, 0.08)); border-radius: 2px; padding: 0px 2px;"
+            >
+              <span>
+                Spoiler block line one
+                
 
+              </span>
+              <span>
+                Spoiler block line two
+                
+
+              </span>
             </span>
+            ||
           </span>
           <span>
             
