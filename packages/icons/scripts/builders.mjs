@@ -1,7 +1,7 @@
 import { createSvgBuffer, createTtfBuffer, createWoffBuffer, createWoff2Buffer, createEotBuffer } from './font.mjs';
 import { getMappedGlyphs } from './glyphs.mjs';
 import { createSvgSprite, createSvgIcons } from './svg.mjs';
-import { encodeJson, runEslint, runStylelint, writeBinary, writeSource } from './utils.mjs';
+import { encodeJson, runEslint, writeBinary, writeSource } from './utils.mjs';
 
 const filterOtherIconsOut = (icons) => icons.filter(({ type }) => type !== 'other');
 
@@ -14,26 +14,21 @@ export const buildSvgImages = (icons) =>
 	);
 
 export const buildCss = () =>
-	Promise.resolve(
-		`
-      @font-face {
-        font-family: 'RocketChat';
-        font-style: normal;
-        font-weight: 400;
-        font-display: auto;
+	writeSource('dist/rocketchat.css')(`@font-face {
+	font-family: 'RocketChat';
+	font-weight: 400;
+	font-style: normal;
+	font-display: auto;
 
-        src: url('./font/rocketchat.eot');
-        src:
-          url('./font/rocketchat.eot?#iefix') format('embedded-opentype'),
-          url('./font/rocketchat.woff2') format('woff2'),
-          url('./font/rocketchat.woff') format('woff'),
-          url('./font/rocketchat.ttf') format('truetype'),
-          url('./font/rocketchat.svg#RocketChat') format('svg');
-      }
-    `,
-	)
-		.then(runStylelint('rocketchat.css'))
-		.then(writeSource('dist/rocketchat.css'));
+	src: url('./font/rocketchat.eot');
+	src:
+		url('./font/rocketchat.eot?#iefix') format('embedded-opentype'),
+		url('./font/rocketchat.woff2') format('woff2'),
+		url('./font/rocketchat.woff') format('woff'),
+		url('./font/rocketchat.ttf') format('truetype'),
+		url('./font/rocketchat.svg#RocketChat') format('svg');
+}
+`);
 
 const fromIconDescriptorsToCharacters = (icons) =>
 	getMappedGlyphs()

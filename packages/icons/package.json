@@ -28,10 +28,6 @@
 	"devDependencies": {
 		"eslint": "~10.11.0",
 		"prettier": "~3.9.9",
-		"stylelint": "~17.14.1",
-		"stylelint-order": "~8.1.1",
-		"stylelint-prettier": "~5.0.3",
-		"stylelint-scss": "~7.2.0",
 		"svg2ttf": "~6.1.0",
 		"svgicons2svgfont": "~16.0.0",
 		"ttf2eot": "~3.1.0",

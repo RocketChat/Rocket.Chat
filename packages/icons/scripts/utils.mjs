@@ -2,7 +2,6 @@ import { glob, mkdir, readFile, rm, writeFile } from 'fs/promises';
 import { dirname } from 'path';
 
 import { ESLint } from 'eslint';
-import stylelint from 'stylelint';
 
 export const encodeJson = (data) =>
 	JSON.stringify(data, null, 2).replace(/[\u007f-￿]/g, (c) => `\\u${`0000${c.charCodeAt(0).toString(16)}`.slice(-4)}`);
@@ -51,14 +50,4 @@ export const runEslint = (path) => async (source) => {
 	const [result] = results;
 
 	return result.output ?? source;
-};
-
-export const runStylelint = (path) => async (source) => {
-	const results = await stylelint.lint({
-		code: source,
-		codeFilename: path,
-		fix: true,
-	});
-
-	return results.code;
 };
