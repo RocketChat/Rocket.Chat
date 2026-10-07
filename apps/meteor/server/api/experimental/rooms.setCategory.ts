@@ -1,5 +1,4 @@
 import { SIDEBAR_SYSTEM_GROUP_KEYS } from '@rocket.chat/core-typings';
-import { License } from '@rocket.chat/license';
 import { Subscriptions, Users } from '@rocket.chat/models';
 import {
 	ajv,
@@ -10,6 +9,7 @@ import {
 
 import { notifyOnSubscriptionsChangedByRoomIdsAndUserId } from '../../lib/notifyListener';
 import { API } from '../api';
+import { hasEnterpriseLicense } from '../api.helpers';
 
 const isRoomsSetCategoryParamsPOST = ajv.compile<{ roomIds: string[]; category: string | null }>({
 	type: 'object',
@@ -53,8 +53,7 @@ API.experimental.post(
 		const { roomIds, category } = this.bodyParams;
 		const { userId } = this;
 
-		// TODO: implement api helper/api to enforce license
-		if (!License.hasValidLicense()) {
+		if (!hasEnterpriseLicense()) {
 			return API.experimental.failure('This is an enterprise feature [error-action-not-allowed]', 'error-action-not-allowed');
 		}
 
