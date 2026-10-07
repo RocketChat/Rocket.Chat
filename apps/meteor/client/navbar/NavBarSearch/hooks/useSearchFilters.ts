@@ -9,7 +9,7 @@ import { createAppliedFilter, mergeAppliedFilters, parseSearchInput, removeAppli
 import { useStableCallback } from '@rocket.chat/fuselage-hooks';
 import { useFormContext, useWatch } from 'react-hook-form';
 
-export const useSearchFilters = () => {
+export const useSearchFilters = ({ aiSearchActive = false }: { aiSearchActive?: boolean } = {}) => {
 	const { control, getValues, setValue, setFocus } = useFormContext<NavBarSearchFormValues>();
 	const filters = useWatch({ control, name: 'filters' });
 
@@ -64,6 +64,11 @@ export const useSearchFilters = () => {
 	});
 
 	const handleTextChange = useStableCallback((input: string) => {
+		if (!aiSearchActive) {
+			setValue('filterText', input, { shouldDirty: true });
+			return;
+		}
+
 		const { text, filters } = parseSearchInput(input, { keepDraft: true });
 
 		applyFilters(filters);

@@ -26,10 +26,6 @@ const NavBarAISearchInput = () => {
 
 	const { control, register, setFocus } = useFormContext<NavBarSearchFormValues>();
 	const filterText = useWatch({ control, name: 'filterText' });
-	const { filters, removeFilter, removeLastFilter, clearQuery, handleTextChange } = useSearchFilters();
-	const [filtersRequested, setFiltersRequested] = useState(false);
-	const filtersOpen = filtersRequested && filters.length > 0;
-
 	const { ref: filterRef, onChange: registerOnChange, ...rest } = register('filterText');
 
 	const triggerRef = useRef(null);
@@ -43,7 +39,10 @@ const NavBarAISearchInput = () => {
 	const handleFocus = useSearchFocus(state);
 	const handleClick = useSearchClick(state);
 
-	const { aiSearchActive, canSearchWithAIFromTopBar, handleToggleAISearch } = useNavBarAISearch({ setFocus, state, t });
+	const { aiSearchActive, canSearchWithAIFromTopBar, handleToggleAISearch: toggleAISearch } = useNavBarAISearch({ setFocus, state, t });
+	const { filters, removeFilter, removeLastFilter, clearFilters, clearQuery, handleTextChange } = useSearchFilters({ aiSearchActive });
+	const [filtersRequested, setFiltersRequested] = useState(false);
+	const filtersOpen = filtersRequested && filters.length > 0;
 
 	const searchLabel = aiSearchActive ? t('Search_rooms_or_ask_AI') : t('Search_rooms');
 	const placeholder = [searchLabel, shortcut].filter(Boolean).join(' ');
@@ -69,6 +68,14 @@ const NavBarAISearchInput = () => {
 		setFiltersRequested(false);
 		state.close();
 	}, [clearQuery, state]);
+
+	const handleToggleAISearch = useStableCallback(() => {
+		if (aiSearchActive) {
+			clearFilters();
+		}
+
+		toggleAISearch();
+	});
 
 	const handleToggleFilters = useStableCallback(() => {
 		setFiltersRequested((current) => !current);
