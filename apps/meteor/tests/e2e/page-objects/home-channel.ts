@@ -144,10 +144,6 @@ export class HomeChannel extends RoutedPage {
 		return this.page.locator('[data-qa="ContextualbarActionClose"]');
 	}
 
-	get userCardToolbar(): Locator {
-		return this.page.locator('[role=toolbar][aria-label="User card actions"]');
-	}
-
 	getRoomHeaderFavoriteBtn(isEnterprise: boolean): Locator {
 		return isEnterprise ? this.btnCategorySelector : this.roomHeaderFavoriteBtn;
 	}
@@ -166,11 +162,11 @@ export class HomeChannel extends RoutedPage {
 	}
 
 	get roomHeaderToolbar(): Locator {
-		return this.page.locator('[role=toolbar][aria-label="Primary Room actions"]');
+		return this.page.locator('[role=toolbar][aria-label="Primary room actions"]');
 	}
 
 	get markUnread(): Locator {
-		return this.page.locator('role=menuitem[name="Mark Unread"]');
+		return this.page.locator('role=menuitem[name="Mark unread"]');
 	}
 
 	get dialogEnterE2EEPassword(): Locator {

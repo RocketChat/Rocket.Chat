@@ -12,7 +12,7 @@ import {
 	createMarkdownNotificationRenderer,
 	markup,
 } from './markdown.mocks';
-import hljs from '../../../../app/markdown/lib/hljs';
+import hljs from '../../../../lib/markdown/hljs';
 
 const { bold, inlineCode, anchor, image, blockquote } = markup;
 
@@ -47,7 +47,6 @@ describe('Markdown entry points', () => {
 	});
 
 	it('should strip the markdown syntax when filtering', () => {
-		expect(Markdown.filterMarkdownFromMessage('*Hello* `there`')).to.equal('Hello there');
 		expect(filterMarkdown('*Hello* `there`')).to.equal('Hello there');
 	});
 });

@@ -1,6 +1,6 @@
 {
 	"name": "@rocket.chat/ddp-client",
-	"version": "1.1.2",
+	"version": "1.2.0-rc.0",
 	"repository": {
 		"type": "git",
 		"url": "git+https://github.com/RocketChat/Rocket.Chat.git",
@@ -29,10 +29,9 @@
 	"devDependencies": {
 		"@rocket.chat/jest-presets": "workspace:~",
 		"@rocket.chat/tsconfig": "workspace:*",
-		"@types/jest": "~30.0.0",
-		"@types/ws": "^8.18.1",
-		"eslint": "~9.39.5",
-		"jest": "~30.2.0",
+		"@types/ws": "^8.18.2",
+		"eslint": "~10.11.0",
+		"jest": "~30.5.2",
 		"jest-websocket-mock": "~2.5.0",
 		"typescript": "~5.9.3",
 		"ws": "~8.21.3"

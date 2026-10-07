@@ -11,7 +11,6 @@ import type {
 import type { Method, PathFor, OperationParams, OperationResult, UrlParams, PathPattern } from '@rocket.chat/rest-typings';
 import type { UploadResult, ServerContextValue } from '@rocket.chat/ui-contexts';
 import { ServerContext } from '@rocket.chat/ui-contexts';
-import { Meteor } from 'meteor/meteor';
 import { compile } from 'path-to-regexp';
 import { useMemo, useSyncExternalStore, type ReactNode } from 'react';
 
@@ -20,6 +19,12 @@ import { sdk } from '../lib/SDKClient';
 import { absoluteUrl } from '../lib/absoluteUrl';
 import { ensureConnectedAndAuthenticated, getDdpSdk } from '../lib/sdk/ddpSdk';
 import { isSdkTransportEnabled } from '../lib/sdk/sdkTransportEnabled';
+import {
+	type ConnectionStatus,
+	disconnect as disconnectMeteor,
+	getConnectionStatus,
+	reconnect as reconnectMeteor,
+} from '../meteor/connection';
 
 const sdkTransportEnabled = isSdkTransportEnabled();
 
@@ -90,26 +95,26 @@ const writeStream = <N extends StreamNames, K extends StreamKeys<N>>(streamName:
 
 const disconnect = sdkTransportEnabled
 	? () => {
-			Meteor.disconnect();
+			disconnectMeteor();
 			try {
 				getDdpSdk().connection.close();
 			} catch {
 				// no-op — DDPSDK may not be connected yet
 			}
 		}
-	: () => Meteor.disconnect();
+	: () => disconnectMeteor();
 
 const reconnect = sdkTransportEnabled
 	? () => {
-			Meteor.reconnect();
+			reconnectMeteor();
 			// ensureConnectedAndAuthenticated handles both 'connect' and loginWithToken,
 			// so reconnecting here also re-establishes the DDPSDK session with the
 			// same token Meteor resumes with.
 			void ensureConnectedAndAuthenticated();
 		}
-	: () => Meteor.reconnect();
+	: () => reconnectMeteor();
 
-type CombinedStatus = ReturnType<typeof Meteor.status>;
+type CombinedStatus = ConnectionStatus;
 
 const sdkStatusToMeteor = (sdkStatus: string, meteor: CombinedStatus): CombinedStatus => {
 	const retry = { retryCount: meteor.retryCount, retryTime: meteor.retryTime };
@@ -139,8 +144,8 @@ const sdkStatusToMeteor = (sdkStatus: string, meteor: CombinedStatus): CombinedS
 // `sdk.connection.on('connection')`, so the same subscription works in both
 // modes.
 const computeStatus: () => CombinedStatus = sdkTransportEnabled
-	? () => sdkStatusToMeteor(getDdpSdk().connection.status, Meteor.status())
-	: () => ({ ...Meteor.status() });
+	? () => sdkStatusToMeteor(getDdpSdk().connection.status, getConnectionStatus())
+	: () => getConnectionStatus();
 
 const isStatusEqual = (a: CombinedStatus, b: CombinedStatus): boolean =>
 	a.status === b.status && a.connected === b.connected && a.retryCount === b.retryCount && a.retryTime === b.retryTime;

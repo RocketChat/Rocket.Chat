@@ -1,0 +1,179 @@
+import {
+	RoomAudioRenderer,
+	useConnectionState,
+	useLiveKitRoom,
+	useLocalParticipant,
+	useParticipants,
+	useTracks,
+} from '@livekit/components-react';
+import { useStableCallback } from '@rocket.chat/fuselage-hooks';
+import { useUserDisplayName } from '@rocket.chat/ui-client';
+import type { CallActions, CallSelf, CallState, RemoteParticipantInfo } from '@rocket.chat/ui-conference';
+import { CallActionsProvider, CallStateProvider, useUpdateCallPreferences } from '@rocket.chat/ui-conference';
+import { useToastMessageDispatch, useUser, useUserAvatarPath } from '@rocket.chat/ui-contexts';
+import { DeviceSelectionProvider } from '@rocket.chat/ui-media';
+import { ConnectionState, Room, Track } from 'livekit-client';
+import type { ReactNode } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
+
+import { connectionStateFor, otherPeople, toRemoteParticipantInfo } from './callParticipants';
+import { useCallDeviceSwitching } from './useCallDeviceSwitching';
+import { useLiveKitTransport } from './useLiveKitTransport';
+
+export type LiveKitCallProviderProps = {
+	callId: string;
+	/** Whether to be in the call. The provider is mounted before the join, so this flips while its tree stays put. */
+	connect: boolean;
+	/** How the preflight left the devices, read as the call connects. */
+	preferences?: { mic?: boolean; cam?: boolean; micId?: string; camId?: string; speakerId?: string };
+	/** The call ended for this user, whoever ended it. */
+	onEnded: () => void;
+	children: ReactNode;
+};
+
+/** The preflight's choices as they stood when the call connected: what changes during the call is the room's to apply. */
+const useArrivalPreferences = (preferences: LiveKitCallProviderProps['preferences'], connect: boolean) => {
+	const [arrival, setArrival] = useState(preferences);
+	if (!connect && arrival !== preferences) {
+		setArrival(preferences);
+	}
+	return arrival;
+};
+
+/**
+ * A LiveKit call running in the conference window. Meant to be loaded lazily, so the SDK is fetched for a call
+ * rather than on every page load.
+ *
+ * Mounted around the window before the join: the room exists from the first render and `connect` is what flips,
+ * so nothing it wraps remounts when the call starts.
+ */
+export const LiveKitCallProvider = ({ callId, connect, preferences, onEnded, children }: LiveKitCallProviderProps) => {
+	const dispatchToastMessage = useToastMessageDispatch();
+	const { data: credentials, error: transportError } = useLiveKitTransport(callId, connect);
+	const [room] = useState(() => new Room());
+
+	// Failing before the call is up leaves no call to sit in; failing inside one, as a device refusing to publish
+	// does, leaves the call as it was.
+	const onCallError = useStableCallback((error: Error) => {
+		dispatchToastMessage({ type: 'error', message: error });
+		if (room.state === ConnectionState.Disconnected) {
+			onEnded();
+		}
+	});
+
+	useEffect(() => {
+		if (transportError) {
+			onCallError(transportError);
+		}
+	}, [transportError, onCallError]);
+
+	// A picker or permission prompt the reader dismissed is them changing their mind, not something to report.
+	const onToggleError = useStableCallback((error: unknown) => {
+		if (error instanceof Error && error.name === 'NotAllowedError') {
+			return;
+		}
+		dispatchToastMessage({ type: 'error', message: error });
+	});
+
+	const arrival = useArrivalPreferences(preferences, connect);
+	const [startedAt, setStartedAt] = useState(() => new Date());
+	const onConnected = useCallback(() => setStartedAt(new Date()), []);
+
+	useLiveKitRoom({
+		room,
+		token: credentials?.token,
+		serverUrl: credentials?.serverUrl,
+		connect: connect && Boolean(credentials),
+		// Whether to arrive with each track published; which device each opens is `arrival`, below.
+		audio: arrival?.mic ?? true,
+		video: arrival?.cam ?? false,
+		onConnected,
+		onDisconnected: onEnded,
+		onError: onCallError,
+	});
+
+	const connectionState = connectionStateFor(useConnectionState(room));
+
+	const persistDevicePreference = useUpdateCallPreferences();
+	const {
+		localParticipant,
+		isMicrophoneEnabled: micEnabled,
+		isCameraEnabled: camEnabled,
+		isScreenShareEnabled: screenEnabled,
+	} = useLocalParticipant({ room });
+	const allParticipants = useParticipants({ room });
+
+	const remotes = useMemo(() => otherPeople(allParticipants, localParticipant.identity), [allParticipants, localParticipant.identity]);
+	const remoteCameraTracks = useTracks([Track.Source.Camera], { room, onlySubscribed: true });
+	const remoteScreenTracks = useTracks([Track.Source.ScreenShare], { room, onlySubscribed: true });
+
+	// A participant's identity is their user id, which is what names their avatar.
+	const getUserAvatarPath = useUserAvatarPath();
+
+	const remoteParticipants = useMemo(
+		(): RemoteParticipantInfo[] =>
+			remotes.map((p) =>
+				toRemoteParticipantInfo(p, { camera: remoteCameraTracks, screen: remoteScreenTracks }, getUserAvatarPath({ userId: p.identity })),
+			),
+		[remotes, remoteCameraTracks, remoteScreenTracks, getUserAvatarPath],
+	);
+
+	const localCameraPub = localParticipant.getTrackPublication(Track.Source.Camera);
+	const localScreenPub = localParticipant.getTrackPublication(Track.Source.ScreenShare);
+	const cameraStream = camEnabled ? localCameraPub?.track?.mediaStream : undefined;
+	const screenStream = screenEnabled ? localScreenPub?.track?.mediaStream : undefined;
+
+	const deviceSelection = useCallDeviceSwitching(room, arrival);
+
+	const user = useUser();
+	const selfDisplayName = useUserDisplayName({ name: user?.name, username: user?.username });
+
+	const self = useMemo(
+		(): CallSelf => ({
+			id: user?._id || localParticipant.identity,
+			displayName: selfDisplayName || '',
+			avatarUrl: getUserAvatarPath({ userId: user?._id || '' }),
+			muted: !micEnabled,
+			cameraOn: Boolean(cameraStream),
+			screenSharing: Boolean(screenStream),
+			cameraStream,
+			screenStream,
+		}),
+		[user?._id, localParticipant.identity, selfDisplayName, getUserAvatarPath, micEnabled, cameraStream, screenStream],
+	);
+
+	const state = useMemo(
+		(): CallState => ({ self, remoteParticipants, startedAt, connectionState }),
+		[self, remoteParticipants, startedAt, connectionState],
+	);
+
+	const actions = useMemo(
+		(): CallActions => ({
+			// Remembered only once the device switched, so a refused prompt is not stored as the next call's choice.
+			toggleMic: () => {
+				localParticipant.setMicrophoneEnabled(!micEnabled).then(() => persistDevicePreference({ mic: !micEnabled }), onToggleError);
+			},
+			toggleCamera: () => {
+				localParticipant.setCameraEnabled(!camEnabled).then(() => persistDevicePreference({ cam: !camEnabled }), onToggleError);
+			},
+			toggleScreenShare: () => {
+				localParticipant.setScreenShareEnabled(!screenEnabled).catch(onToggleError);
+			},
+			leave: onEnded,
+		}),
+		[persistDevicePreference, micEnabled, camEnabled, screenEnabled, localParticipant, onEnded, onToggleError],
+	);
+
+	return (
+		<CallStateProvider value={state}>
+			<CallActionsProvider value={actions}>
+				<DeviceSelectionProvider value={deviceSelection}>
+					{children}
+					<RoomAudioRenderer room={room} />
+				</DeviceSelectionProvider>
+			</CallActionsProvider>
+		</CallStateProvider>
+	);
+};
+
+export default LiveKitCallProvider;

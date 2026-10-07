@@ -4,7 +4,7 @@ import { memo } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import CategoryRoomMenu from './categories/CategoryRoomMenu';
-import { useHasLicenseModule } from '../hooks/useHasLicenseModule';
+import { useIsEnterprise } from '../hooks/useIsEnterprise';
 import { useRoomMenuActions } from '../hooks/useRoomMenuActions';
 
 export type RoomMenuProps = {
@@ -21,12 +21,12 @@ export type RoomMenuProps = {
 
 const RoomMenu = ({ rid, unread, threadUnread, alert, roomOpen, type, cl, name = '', hideDefaultOptions = false }: RoomMenuProps) => {
 	const { t } = useTranslation();
-	const { data: hasLicenseModule = false } = useHasLicenseModule('experimental-enterprise-features');
+	const { data: { isEnterprise = false } = {} } = useIsEnterprise();
 
 	const isUnread = alert || unread || threadUnread;
 	const sections = useRoomMenuActions({ rid, type, name, isUnread, cl, roomOpen, hideDefaultOptions });
 
-	if (hasLicenseModule && !hideDefaultOptions && type !== 'l') {
+	if (isEnterprise && !hideDefaultOptions && type !== 'l') {
 		return <CategoryRoomMenu rid={rid} name={name} sections={sections} />;
 	}
 

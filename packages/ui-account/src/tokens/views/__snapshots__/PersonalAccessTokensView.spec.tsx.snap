@@ -1,0 +1,3021 @@
+// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
+
+exports[`renders ConfirmRegenerate without crashing 1`] = `
+<body>
+  <div>
+    <form
+      class="rcx-box rcx-box--full"
+    >
+      <fieldset
+        class="rcx-box rcx-box--full rcx-field-group rcx-css-cnkcl9"
+        role="group"
+      >
+        <div
+          class="rcx-box rcx-box--full rcx-field rcx-field-group__item"
+        >
+          <span
+            class="rcx-box rcx-box--full rcx-field__row"
+          >
+            <input
+              aria-describedby="_r_0_"
+              aria-label="Personal access token name"
+              class="rcx-box rcx-box--full rcx-box--animated rcx-input-box--type-text rcx-input-box rcx-css-sdt442"
+              data-qa="PersonalTokenField"
+              name="name"
+              placeholder="Add new personal access token"
+              size="1"
+              type="text"
+              value=""
+            />
+            <div
+              class="rcx-box rcx-box--full rcx-css-cz9l1k rcx-css-sdt442"
+            >
+              <div
+                class="rcx-box rcx-box--full rcx-css-1mbgoc8"
+              >
+                <div
+                  aria-hidden="true"
+                  data-a11y-ignore="aria-hidden-focus"
+                  data-react-aria-prevent-focus="true"
+                  data-testid="hidden-select-container"
+                  style="border: 0px; clip-path: inset(50%); height: 1px; margin: -1px; overflow: hidden; padding: 0px; position: absolute; width: 1px; white-space: nowrap;"
+                >
+                  <label>
+                    <select
+                      name="bypassTwoFactor"
+                      tabindex="-1"
+                    >
+                      <option />
+                      <option
+                        value="require"
+                      >
+                        require
+                      </option>
+                      <option
+                        value="bypass"
+                      >
+                        bypass
+                      </option>
+                    </select>
+                  </label>
+                </div>
+              </div>
+              <button
+                aria-expanded="false"
+                aria-haspopup="listbox"
+                aria-label="Two factor authentication"
+                aria-labelledby="react-aria-_r_8_ react-aria-_r_3_"
+                class="rcx-box rcx-box--full rcx-box--animated rcx-select rcx-css-1vw6rc6"
+                type="button"
+              >
+                <span
+                  class="rcx-box rcx-box--full rcx-css-1ah8hdc"
+                  id="react-aria-_r_8_"
+                >
+                  Require two-factor authentication
+                </span>
+                <i
+                  aria-hidden="true"
+                  class="rcx-box rcx-box--full rcx-icon--name-chevron-down rcx-icon rcx-css-l5txo2"
+                >
+                  
+                </i>
+              </button>
+            </div>
+            <button
+              class="rcx-box rcx-box--full rcx-button--primary rcx-button"
+              type="submit"
+            >
+              <span
+                class="rcx-button--content"
+              >
+                Add
+              </span>
+            </button>
+          </span>
+        </div>
+      </fieldset>
+    </form>
+    <div
+      class="rcx-box rcx-box--full rcx-css-qcmk2x"
+    >
+      <div
+        class="rcx-box rcx-box--full rcx-css-1pd039f rcx-css-1cb6i7s"
+        data-overlayscrollbars="host"
+      >
+        <div
+          class="os-size-observer"
+        >
+          <div
+            class="os-size-observer-listener"
+          />
+        </div>
+        <div
+          class=""
+          data-overlayscrollbars-viewport="scrollbarHidden overflowXHidden overflowYHidden"
+          style="margin-right: 0px; margin-bottom: 0px; margin-left: 0px; top: 0px; left: 0px; width: calc(100% + 0px); padding: 0px 0px 0px 0px;"
+          tabindex="-1"
+        >
+          <div
+            class="rcx-box rcx-box--full rcx-table__wrapper"
+          >
+            <table
+              class="rcx-box rcx-box--full rcx-table--sticky rcx-table--fixed rcx-table"
+            >
+              <thead
+                class="rcx-box rcx-box--full rcx-table__head"
+              >
+                <tr
+                  class="rcx-box rcx-box--full rcx-table__row"
+                >
+                  <th
+                    class="rcx-box rcx-box--full rcx-table__cell--header rcx-table__cell"
+                  >
+                    <div
+                      class="rcx-box rcx-box--full rcx-css-127j9mz"
+                      wrap="no-wrap"
+                    >
+                      Personal access token name
+                    </div>
+                  </th>
+                  <th
+                    class="rcx-box rcx-box--full rcx-table__cell--header rcx-table__cell"
+                  >
+                    <div
+                      class="rcx-box rcx-box--full rcx-css-127j9mz"
+                      wrap="no-wrap"
+                    >
+                      Created at
+                    </div>
+                  </th>
+                  <th
+                    class="rcx-box rcx-box--full rcx-table__cell--header rcx-table__cell"
+                  >
+                    <div
+                      class="rcx-box rcx-box--full rcx-css-127j9mz"
+                      wrap="no-wrap"
+                    >
+                      Last token part
+                    </div>
+                  </th>
+                  <th
+                    class="rcx-box rcx-box--full rcx-table__cell--header rcx-table__cell"
+                  >
+                    <div
+                      class="rcx-box rcx-box--full rcx-css-127j9mz"
+                      wrap="no-wrap"
+                    >
+                      Two factor authentication
+                    </div>
+                  </th>
+                  <th
+                    class="rcx-box rcx-box--full rcx-table__cell--header rcx-table__cell"
+                  >
+                    <div
+                      class="rcx-box rcx-box--full rcx-css-127j9mz"
+                      wrap="no-wrap"
+                    />
+                  </th>
+                </tr>
+              </thead>
+              <tbody
+                class="rcx-box rcx-box--full rcx-table__body"
+              >
+                <tr
+                  class="rcx-box rcx-box--full rcx-table__row"
+                  qa-token-name="ci-pipeline"
+                  role="link"
+                  tabindex="0"
+                >
+                  <td
+                    class="rcx-box rcx-box--full rcx-table__cell rcx-css-1k07nwm"
+                  >
+                    ci-pipeline
+                  </td>
+                  <td
+                    class="rcx-box rcx-box--full rcx-table__cell rcx-css-1te28na"
+                  >
+                    January 10th, 2026 12:00 PM
+                  </td>
+                  <td
+                    class="rcx-box rcx-box--full rcx-table__cell rcx-css-1te28na"
+                  >
+                    ...
+                    a1b2c3
+                  </td>
+                  <td
+                    class="rcx-box rcx-box--full rcx-table__cell rcx-css-1te28na"
+                  >
+                    Require
+                  </td>
+                  <td
+                    class="rcx-box rcx-box--full rcx-table__cell rcx-css-1te28na"
+                  >
+                    <div
+                      class="rcx-button-group rcx-button-group--align-start"
+                      role="group"
+                    >
+                      <button
+                        class="rcx-box rcx-box--full rcx-button--small-square rcx-button--icon-secondary rcx-button--square rcx-button--icon rcx-button"
+                        title="Refresh"
+                        type="button"
+                      >
+                        <i
+                          aria-hidden="true"
+                          class="rcx-box rcx-box--full rcx-icon--name-refresh rcx-icon rcx-css-4pvxx3"
+                        >
+                          
+                        </i>
+                      </button>
+                      <button
+                        class="rcx-box rcx-box--full rcx-button--small-square rcx-button--icon-secondary rcx-button--square rcx-button--icon rcx-button"
+                        title="Remove"
+                        type="button"
+                      >
+                        <i
+                          aria-hidden="true"
+                          class="rcx-box rcx-box--full rcx-icon--name-trash rcx-icon rcx-css-4pvxx3"
+                        >
+                          
+                        </i>
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+                <tr
+                  class="rcx-box rcx-box--full rcx-table__row"
+                  qa-token-name="backup-script"
+                  role="link"
+                  tabindex="0"
+                >
+                  <td
+                    class="rcx-box rcx-box--full rcx-table__cell rcx-css-1k07nwm"
+                  >
+                    backup-script
+                  </td>
+                  <td
+                    class="rcx-box rcx-box--full rcx-table__cell rcx-css-1te28na"
+                  >
+                    March 2nd, 2026 8:30 AM
+                  </td>
+                  <td
+                    class="rcx-box rcx-box--full rcx-table__cell rcx-css-1te28na"
+                  >
+                    ...
+                    d4e5f6
+                  </td>
+                  <td
+                    class="rcx-box rcx-box--full rcx-table__cell rcx-css-1te28na"
+                  >
+                    Ignore
+                  </td>
+                  <td
+                    class="rcx-box rcx-box--full rcx-table__cell rcx-css-1te28na"
+                  >
+                    <div
+                      class="rcx-button-group rcx-button-group--align-start"
+                      role="group"
+                    >
+                      <button
+                        class="rcx-box rcx-box--full rcx-button--small-square rcx-button--icon-secondary rcx-button--square rcx-button--icon rcx-button"
+                        title="Refresh"
+                        type="button"
+                      >
+                        <i
+                          aria-hidden="true"
+                          class="rcx-box rcx-box--full rcx-icon--name-refresh rcx-icon rcx-css-4pvxx3"
+                        >
+                          
+                        </i>
+                      </button>
+                      <button
+                        class="rcx-box rcx-box--full rcx-button--small-square rcx-button--icon-secondary rcx-button--square rcx-button--icon rcx-button"
+                        title="Remove"
+                        type="button"
+                      >
+                        <i
+                          aria-hidden="true"
+                          class="rcx-box rcx-box--full rcx-icon--name-trash rcx-icon rcx-css-4pvxx3"
+                        >
+                          
+                        </i>
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+        <div
+          class="os-scrollbar os-scrollbar-horizontal os-theme-dark os-scrollbar-auto-hide os-scrollbar-auto-hide-hidden os-scrollbar-handle-interactive os-scrollbar-cornerless os-scrollbar-unusable"
+          style="--os-scroll-percent: 0; --os-viewport-percent: 0; --os-scroll-direction: 0;"
+        >
+          <div
+            class="os-scrollbar-track"
+          >
+            <div
+              class="os-scrollbar-handle"
+            />
+          </div>
+        </div>
+        <div
+          class="os-scrollbar os-scrollbar-vertical os-theme-dark os-scrollbar-auto-hide os-scrollbar-auto-hide-hidden os-scrollbar-handle-interactive os-scrollbar-cornerless os-scrollbar-unusable"
+          style="--os-scroll-percent: 0; --os-viewport-percent: 0; --os-scroll-direction: 0;"
+        >
+          <div
+            class="os-scrollbar-track"
+          >
+            <div
+              class="os-scrollbar-handle"
+            />
+          </div>
+        </div>
+      </div>
+    </div>
+    <nav
+      aria-label="Pagination Navigation"
+      class="rcx-box rcx-box--full rcx-pagination rcx-pagination--divider"
+    >
+      <div
+        class="rcx-pagination__left"
+      >
+        <span
+          class="rcx-pagination__label"
+          id="_r_a_"
+        >
+          Items_per_page:
+        </span>
+        <ol
+          aria-labelledby="_r_a_"
+          class="rcx-box rcx-box--full rcx-pagination__list"
+        >
+          <li
+            class="rcx-pagination__list-item"
+          >
+            <button
+              aria-label="Show 25 items per page"
+              class="rcx-box rcx-box--full rcx-pagination__link"
+              disabled=""
+              tabindex="-1"
+            >
+              25
+            </button>
+          </li>
+          <li
+            class="rcx-pagination__list-item"
+          >
+            <button
+              aria-label="Show 50 items per page"
+              class="rcx-box rcx-box--full rcx-pagination__link"
+              tabindex="0"
+            >
+              50
+            </button>
+          </li>
+          <li
+            class="rcx-pagination__list-item"
+          >
+            <button
+              aria-label="Show 100 items per page"
+              class="rcx-box rcx-box--full rcx-pagination__link"
+              tabindex="0"
+            >
+              100
+            </button>
+          </li>
+        </ol>
+      </div>
+      <div
+        class="rcx-pagination__right"
+      >
+        <span
+          class="rcx-pagination__label"
+          id="_r_9_"
+        >
+          Showing_results_of
+        </span>
+        <ol
+          aria-labelledby="_r_9_"
+          class="rcx-box rcx-box--full rcx-pagination__list"
+        >
+          <li
+            class="rcx-pagination__list-item"
+          >
+            <button
+              aria-label="Previous page"
+              class="rcx-box rcx-box--full rcx-pagination__back"
+              disabled=""
+            >
+              <span
+                class="rcx-box rcx-box--full rcx-chevron--left rcx-chevron"
+              >
+                <i
+                  aria-hidden="true"
+                  class="rcx-box rcx-box--full rcx-icon--name-chevron-down rcx-icon rcx-css-1g87xs3"
+                >
+                  
+                </i>
+              </span>
+            </button>
+          </li>
+          <li
+            class="rcx-pagination__list-item"
+          >
+            <button
+              aria-label="Page 1"
+              class="rcx-box rcx-box--full rcx-pagination__link"
+              disabled=""
+            >
+              1
+            </button>
+          </li>
+          <li
+            class="rcx-pagination__list-item"
+          >
+            <button
+              aria-label="Next page"
+              class="rcx-box rcx-box--full rcx-pagination__forward"
+              disabled=""
+            >
+              <span
+                class="rcx-box rcx-box--full rcx-chevron--right rcx-chevron"
+              >
+                <i
+                  aria-hidden="true"
+                  class="rcx-box rcx-box--full rcx-icon--name-chevron-down rcx-icon rcx-css-1g87xs3"
+                >
+                  
+                </i>
+              </span>
+            </button>
+          </li>
+        </ol>
+      </div>
+    </nav>
+    <dialog
+      aria-labelledby="_r_b_-title"
+      aria-modal="true"
+      class="rcx-box rcx-box--full rcx-modal"
+      open=""
+    >
+      <div
+        class="rcx-box rcx-box--full rcx-modal__inner rcx-css-qtwduz"
+      >
+        <header
+          class="rcx-box rcx-box--full rcx-modal__header"
+        >
+          <div
+            class="rcx-box rcx-box--full rcx-modal__header-inner"
+          >
+            <div
+              class="rcx-box rcx-box--full rcx-css-trljwa rcx-css-1kjeq0v"
+            >
+              <i
+                aria-hidden="true"
+                class="rcx-box rcx-box--full rcx-icon--name-modal-warning rcx-icon rcx-css-zozvgz"
+              >
+                
+              </i>
+            </div>
+            <div
+              class="rcx-box rcx-box--full rcx-modal__header-text rcx-css-trljwa rcx-css-lma364"
+            >
+              <h2
+                class="rcx-box rcx-box--full rcx-modal__title"
+                id="_r_b_-title"
+              >
+                Are_you_sure
+              </h2>
+            </div>
+            <button
+              aria-label="Close"
+              class="rcx-box rcx-box--full rcx-button--small-square rcx-button--square rcx-button--icon rcx-button rcx-css-trljwa rcx-css-lma364"
+              tabindex="-1"
+              type="button"
+            >
+              <i
+                aria-hidden="true"
+                class="rcx-box rcx-box--full rcx-icon--name-cross rcx-icon rcx-css-4pvxx3"
+              >
+                
+              </i>
+            </button>
+          </div>
+        </header>
+        <div
+          class="rcx-box rcx-box--full rcx-modal__content rcx-css-1vw7itl"
+        >
+          <div
+            class="rcx-box rcx-box--full rcx-modal__content-wrapper rcx-css-r1bpeb"
+          >
+            If you lost or forgot your token, you can regenerate it, but remember that all applications that use this token should be updated
+          </div>
+        </div>
+        <div
+          class="rcx-box rcx-box--full rcx-modal__footer rcx-css-17mu816"
+        >
+          <div
+            class="rcx-button-group rcx-button-group--align-end"
+            role="group"
+          >
+            <button
+              class="rcx-box rcx-box--full rcx-button--secondary rcx-button"
+              type="button"
+            >
+              <span
+                class="rcx-button--content"
+              >
+                Cancel
+              </span>
+            </button>
+            <button
+              class="rcx-box rcx-box--full rcx-button--primary rcx-button"
+              type="button"
+            >
+              <span
+                class="rcx-button--content"
+              >
+                Regenerate token
+              </span>
+            </button>
+          </div>
+        </div>
+      </div>
+    </dialog>
+  </div>
+</body>
+`;
+
+exports[`renders ConfirmRemove without crashing 1`] = `
+<body>
+  <div>
+    <form
+      class="rcx-box rcx-box--full"
+    >
+      <fieldset
+        class="rcx-box rcx-box--full rcx-field-group rcx-css-cnkcl9"
+        role="group"
+      >
+        <div
+          class="rcx-box rcx-box--full rcx-field rcx-field-group__item"
+        >
+          <span
+            class="rcx-box rcx-box--full rcx-field__row"
+          >
+            <input
+              aria-describedby="_r_c_"
+              aria-label="Personal access token name"
+              class="rcx-box rcx-box--full rcx-box--animated rcx-input-box--type-text rcx-input-box rcx-css-sdt442"
+              data-qa="PersonalTokenField"
+              name="name"
+              placeholder="Add new personal access token"
+              size="1"
+              type="text"
+              value=""
+            />
+            <div
+              class="rcx-box rcx-box--full rcx-css-cz9l1k rcx-css-sdt442"
+            >
+              <div
+                class="rcx-box rcx-box--full rcx-css-1mbgoc8"
+              >
+                <div
+                  aria-hidden="true"
+                  data-a11y-ignore="aria-hidden-focus"
+                  data-react-aria-prevent-focus="true"
+                  data-testid="hidden-select-container"
+                  style="border: 0px; clip-path: inset(50%); height: 1px; margin: -1px; overflow: hidden; padding: 0px; position: absolute; width: 1px; white-space: nowrap;"
+                >
+                  <label>
+                    <select
+                      name="bypassTwoFactor"
+                      tabindex="-1"
+                    >
+                      <option />
+                      <option
+                        value="require"
+                      >
+                        require
+                      </option>
+                      <option
+                        value="bypass"
+                      >
+                        bypass
+                      </option>
+                    </select>
+                  </label>
+                </div>
+              </div>
+              <button
+                aria-expanded="false"
+                aria-haspopup="listbox"
+                aria-label="Two factor authentication"
+                aria-labelledby="react-aria-_r_k_ react-aria-_r_f_"
+                class="rcx-box rcx-box--full rcx-box--animated rcx-select rcx-css-1vw6rc6"
+                type="button"
+              >
+                <span
+                  class="rcx-box rcx-box--full rcx-css-1ah8hdc"
+                  id="react-aria-_r_k_"
+                >
+                  Require two-factor authentication
+                </span>
+                <i
+                  aria-hidden="true"
+                  class="rcx-box rcx-box--full rcx-icon--name-chevron-down rcx-icon rcx-css-l5txo2"
+                >
+                  
+                </i>
+              </button>
+            </div>
+            <button
+              class="rcx-box rcx-box--full rcx-button--primary rcx-button"
+              type="submit"
+            >
+              <span
+                class="rcx-button--content"
+              >
+                Add
+              </span>
+            </button>
+          </span>
+        </div>
+      </fieldset>
+    </form>
+    <div
+      class="rcx-box rcx-box--full rcx-css-qcmk2x"
+    >
+      <div
+        class="rcx-box rcx-box--full rcx-css-1pd039f rcx-css-1cb6i7s"
+        data-overlayscrollbars="host"
+      >
+        <div
+          class="os-size-observer"
+        >
+          <div
+            class="os-size-observer-listener"
+          />
+        </div>
+        <div
+          class=""
+          data-overlayscrollbars-viewport="scrollbarHidden overflowXHidden overflowYHidden"
+          style="margin-right: 0px; margin-bottom: 0px; margin-left: 0px; top: 0px; left: 0px; width: calc(100% + 0px); padding: 0px 0px 0px 0px;"
+          tabindex="-1"
+        >
+          <div
+            class="rcx-box rcx-box--full rcx-table__wrapper"
+          >
+            <table
+              class="rcx-box rcx-box--full rcx-table--sticky rcx-table--fixed rcx-table"
+            >
+              <thead
+                class="rcx-box rcx-box--full rcx-table__head"
+              >
+                <tr
+                  class="rcx-box rcx-box--full rcx-table__row"
+                >
+                  <th
+                    class="rcx-box rcx-box--full rcx-table__cell--header rcx-table__cell"
+                  >
+                    <div
+                      class="rcx-box rcx-box--full rcx-css-127j9mz"
+                      wrap="no-wrap"
+                    >
+                      Personal access token name
+                    </div>
+                  </th>
+                  <th
+                    class="rcx-box rcx-box--full rcx-table__cell--header rcx-table__cell"
+                  >
+                    <div
+                      class="rcx-box rcx-box--full rcx-css-127j9mz"
+                      wrap="no-wrap"
+                    >
+                      Created at
+                    </div>
+                  </th>
+                  <th
+                    class="rcx-box rcx-box--full rcx-table__cell--header rcx-table__cell"
+                  >
+                    <div
+                      class="rcx-box rcx-box--full rcx-css-127j9mz"
+                      wrap="no-wrap"
+                    >
+                      Last token part
+                    </div>
+                  </th>
+                  <th
+                    class="rcx-box rcx-box--full rcx-table__cell--header rcx-table__cell"
+                  >
+                    <div
+                      class="rcx-box rcx-box--full rcx-css-127j9mz"
+                      wrap="no-wrap"
+                    >
+                      Two factor authentication
+                    </div>
+                  </th>
+                  <th
+                    class="rcx-box rcx-box--full rcx-table__cell--header rcx-table__cell"
+                  >
+                    <div
+                      class="rcx-box rcx-box--full rcx-css-127j9mz"
+                      wrap="no-wrap"
+                    />
+                  </th>
+                </tr>
+              </thead>
+              <tbody
+                class="rcx-box rcx-box--full rcx-table__body"
+              >
+                <tr
+                  class="rcx-box rcx-box--full rcx-table__row"
+                  qa-token-name="ci-pipeline"
+                  role="link"
+                  tabindex="0"
+                >
+                  <td
+                    class="rcx-box rcx-box--full rcx-table__cell rcx-css-1k07nwm"
+                  >
+                    ci-pipeline
+                  </td>
+                  <td
+                    class="rcx-box rcx-box--full rcx-table__cell rcx-css-1te28na"
+                  >
+                    January 10th, 2026 12:00 PM
+                  </td>
+                  <td
+                    class="rcx-box rcx-box--full rcx-table__cell rcx-css-1te28na"
+                  >
+                    ...
+                    a1b2c3
+                  </td>
+                  <td
+                    class="rcx-box rcx-box--full rcx-table__cell rcx-css-1te28na"
+                  >
+                    Require
+                  </td>
+                  <td
+                    class="rcx-box rcx-box--full rcx-table__cell rcx-css-1te28na"
+                  >
+                    <div
+                      class="rcx-button-group rcx-button-group--align-start"
+                      role="group"
+                    >
+                      <button
+                        class="rcx-box rcx-box--full rcx-button--small-square rcx-button--icon-secondary rcx-button--square rcx-button--icon rcx-button"
+                        title="Refresh"
+                        type="button"
+                      >
+                        <i
+                          aria-hidden="true"
+                          class="rcx-box rcx-box--full rcx-icon--name-refresh rcx-icon rcx-css-4pvxx3"
+                        >
+                          
+                        </i>
+                      </button>
+                      <button
+                        class="rcx-box rcx-box--full rcx-button--small-square rcx-button--icon-secondary rcx-button--square rcx-button--icon rcx-button"
+                        title="Remove"
+                        type="button"
+                      >
+                        <i
+                          aria-hidden="true"
+                          class="rcx-box rcx-box--full rcx-icon--name-trash rcx-icon rcx-css-4pvxx3"
+                        >
+                          
+                        </i>
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+                <tr
+                  class="rcx-box rcx-box--full rcx-table__row"
+                  qa-token-name="backup-script"
+                  role="link"
+                  tabindex="0"
+                >
+                  <td
+                    class="rcx-box rcx-box--full rcx-table__cell rcx-css-1k07nwm"
+                  >
+                    backup-script
+                  </td>
+                  <td
+                    class="rcx-box rcx-box--full rcx-table__cell rcx-css-1te28na"
+                  >
+                    March 2nd, 2026 8:30 AM
+                  </td>
+                  <td
+                    class="rcx-box rcx-box--full rcx-table__cell rcx-css-1te28na"
+                  >
+                    ...
+                    d4e5f6
+                  </td>
+                  <td
+                    class="rcx-box rcx-box--full rcx-table__cell rcx-css-1te28na"
+                  >
+                    Ignore
+                  </td>
+                  <td
+                    class="rcx-box rcx-box--full rcx-table__cell rcx-css-1te28na"
+                  >
+                    <div
+                      class="rcx-button-group rcx-button-group--align-start"
+                      role="group"
+                    >
+                      <button
+                        class="rcx-box rcx-box--full rcx-button--small-square rcx-button--icon-secondary rcx-button--square rcx-button--icon rcx-button"
+                        title="Refresh"
+                        type="button"
+                      >
+                        <i
+                          aria-hidden="true"
+                          class="rcx-box rcx-box--full rcx-icon--name-refresh rcx-icon rcx-css-4pvxx3"
+                        >
+                          
+                        </i>
+                      </button>
+                      <button
+                        class="rcx-box rcx-box--full rcx-button--small-square rcx-button--icon-secondary rcx-button--square rcx-button--icon rcx-button"
+                        title="Remove"
+                        type="button"
+                      >
+                        <i
+                          aria-hidden="true"
+                          class="rcx-box rcx-box--full rcx-icon--name-trash rcx-icon rcx-css-4pvxx3"
+                        >
+                          
+                        </i>
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+        <div
+          class="os-scrollbar os-scrollbar-horizontal os-theme-dark os-scrollbar-auto-hide os-scrollbar-auto-hide-hidden os-scrollbar-handle-interactive os-scrollbar-cornerless os-scrollbar-unusable"
+          style="--os-scroll-percent: 0; --os-viewport-percent: 0; --os-scroll-direction: 0;"
+        >
+          <div
+            class="os-scrollbar-track"
+          >
+            <div
+              class="os-scrollbar-handle"
+            />
+          </div>
+        </div>
+        <div
+          class="os-scrollbar os-scrollbar-vertical os-theme-dark os-scrollbar-auto-hide os-scrollbar-auto-hide-hidden os-scrollbar-handle-interactive os-scrollbar-cornerless os-scrollbar-unusable"
+          style="--os-scroll-percent: 0; --os-viewport-percent: 0; --os-scroll-direction: 0;"
+        >
+          <div
+            class="os-scrollbar-track"
+          >
+            <div
+              class="os-scrollbar-handle"
+            />
+          </div>
+        </div>
+      </div>
+    </div>
+    <nav
+      aria-label="Pagination Navigation"
+      class="rcx-box rcx-box--full rcx-pagination rcx-pagination--divider"
+    >
+      <div
+        class="rcx-pagination__left"
+      >
+        <span
+          class="rcx-pagination__label"
+          id="_r_m_"
+        >
+          Items_per_page:
+        </span>
+        <ol
+          aria-labelledby="_r_m_"
+          class="rcx-box rcx-box--full rcx-pagination__list"
+        >
+          <li
+            class="rcx-pagination__list-item"
+          >
+            <button
+              aria-label="Show 25 items per page"
+              class="rcx-box rcx-box--full rcx-pagination__link"
+              disabled=""
+              tabindex="-1"
+            >
+              25
+            </button>
+          </li>
+          <li
+            class="rcx-pagination__list-item"
+          >
+            <button
+              aria-label="Show 50 items per page"
+              class="rcx-box rcx-box--full rcx-pagination__link"
+              tabindex="0"
+            >
+              50
+            </button>
+          </li>
+          <li
+            class="rcx-pagination__list-item"
+          >
+            <button
+              aria-label="Show 100 items per page"
+              class="rcx-box rcx-box--full rcx-pagination__link"
+              tabindex="0"
+            >
+              100
+            </button>
+          </li>
+        </ol>
+      </div>
+      <div
+        class="rcx-pagination__right"
+      >
+        <span
+          class="rcx-pagination__label"
+          id="_r_l_"
+        >
+          Showing_results_of
+        </span>
+        <ol
+          aria-labelledby="_r_l_"
+          class="rcx-box rcx-box--full rcx-pagination__list"
+        >
+          <li
+            class="rcx-pagination__list-item"
+          >
+            <button
+              aria-label="Previous page"
+              class="rcx-box rcx-box--full rcx-pagination__back"
+              disabled=""
+            >
+              <span
+                class="rcx-box rcx-box--full rcx-chevron--left rcx-chevron"
+              >
+                <i
+                  aria-hidden="true"
+                  class="rcx-box rcx-box--full rcx-icon--name-chevron-down rcx-icon rcx-css-1g87xs3"
+                >
+                  
+                </i>
+              </span>
+            </button>
+          </li>
+          <li
+            class="rcx-pagination__list-item"
+          >
+            <button
+              aria-label="Page 1"
+              class="rcx-box rcx-box--full rcx-pagination__link"
+              disabled=""
+            >
+              1
+            </button>
+          </li>
+          <li
+            class="rcx-pagination__list-item"
+          >
+            <button
+              aria-label="Next page"
+              class="rcx-box rcx-box--full rcx-pagination__forward"
+              disabled=""
+            >
+              <span
+                class="rcx-box rcx-box--full rcx-chevron--right rcx-chevron"
+              >
+                <i
+                  aria-hidden="true"
+                  class="rcx-box rcx-box--full rcx-icon--name-chevron-down rcx-icon rcx-css-1g87xs3"
+                >
+                  
+                </i>
+              </span>
+            </button>
+          </li>
+        </ol>
+      </div>
+    </nav>
+    <dialog
+      aria-labelledby="_r_n_-title"
+      aria-modal="true"
+      class="rcx-box rcx-box--full rcx-modal"
+      open=""
+    >
+      <div
+        class="rcx-box rcx-box--full rcx-modal__inner rcx-css-qtwduz"
+      >
+        <header
+          class="rcx-box rcx-box--full rcx-modal__header"
+        >
+          <div
+            class="rcx-box rcx-box--full rcx-modal__header-inner"
+          >
+            <div
+              class="rcx-box rcx-box--full rcx-css-trljwa rcx-css-v4jgyn"
+            >
+              <i
+                aria-hidden="true"
+                class="rcx-box rcx-box--full rcx-icon--name-modal-warning rcx-icon rcx-css-zozvgz"
+              >
+                
+              </i>
+            </div>
+            <div
+              class="rcx-box rcx-box--full rcx-modal__header-text rcx-css-trljwa rcx-css-lma364"
+            >
+              <h2
+                class="rcx-box rcx-box--full rcx-modal__title"
+                id="_r_n_-title"
+              >
+                Are_you_sure
+              </h2>
+            </div>
+            <button
+              aria-label="Close"
+              class="rcx-box rcx-box--full rcx-button--small-square rcx-button--square rcx-button--icon rcx-button rcx-css-trljwa rcx-css-lma364"
+              tabindex="-1"
+              type="button"
+            >
+              <i
+                aria-hidden="true"
+                class="rcx-box rcx-box--full rcx-icon--name-cross rcx-icon rcx-css-4pvxx3"
+              >
+                
+              </i>
+            </button>
+          </div>
+        </header>
+        <div
+          class="rcx-box rcx-box--full rcx-modal__content rcx-css-1vw7itl"
+        >
+          <div
+            class="rcx-box rcx-box--full rcx-modal__content-wrapper rcx-css-r1bpeb"
+          >
+            Are you sure you wish to remove this personal access token?
+          </div>
+        </div>
+        <div
+          class="rcx-box rcx-box--full rcx-modal__footer rcx-css-17mu816"
+        >
+          <div
+            class="rcx-button-group rcx-button-group--align-end"
+            role="group"
+          >
+            <button
+              class="rcx-box rcx-box--full rcx-button--secondary rcx-button"
+              type="button"
+            >
+              <span
+                class="rcx-button--content"
+              >
+                Cancel
+              </span>
+            </button>
+            <button
+              class="rcx-box rcx-box--full rcx-button--danger rcx-button"
+              type="button"
+            >
+              <span
+                class="rcx-button--content"
+              >
+                Remove
+              </span>
+            </button>
+          </div>
+        </div>
+      </div>
+    </dialog>
+  </div>
+</body>
+`;
+
+exports[`renders Empty without crashing 1`] = `
+<body>
+  <div>
+    <form
+      class="rcx-box rcx-box--full"
+    >
+      <fieldset
+        class="rcx-box rcx-box--full rcx-field-group rcx-css-cnkcl9"
+        role="group"
+      >
+        <div
+          class="rcx-box rcx-box--full rcx-field rcx-field-group__item"
+        >
+          <span
+            class="rcx-box rcx-box--full rcx-field__row"
+          >
+            <input
+              aria-describedby="_r_o_"
+              aria-label="Personal access token name"
+              class="rcx-box rcx-box--full rcx-box--animated rcx-input-box--type-text rcx-input-box rcx-css-sdt442"
+              data-qa="PersonalTokenField"
+              name="name"
+              placeholder="Add new personal access token"
+              size="1"
+              type="text"
+              value=""
+            />
+            <div
+              class="rcx-box rcx-box--full rcx-css-cz9l1k rcx-css-sdt442"
+            >
+              <div
+                class="rcx-box rcx-box--full rcx-css-1mbgoc8"
+              >
+                <div
+                  aria-hidden="true"
+                  data-a11y-ignore="aria-hidden-focus"
+                  data-react-aria-prevent-focus="true"
+                  data-testid="hidden-select-container"
+                  style="border: 0px; clip-path: inset(50%); height: 1px; margin: -1px; overflow: hidden; padding: 0px; position: absolute; width: 1px; white-space: nowrap;"
+                >
+                  <label>
+                    <select
+                      name="bypassTwoFactor"
+                      tabindex="-1"
+                    >
+                      <option />
+                      <option
+                        value="require"
+                      >
+                        require
+                      </option>
+                      <option
+                        value="bypass"
+                      >
+                        bypass
+                      </option>
+                    </select>
+                  </label>
+                </div>
+              </div>
+              <button
+                aria-expanded="false"
+                aria-haspopup="listbox"
+                aria-label="Two factor authentication"
+                aria-labelledby="react-aria-_r_10_ react-aria-_r_r_"
+                class="rcx-box rcx-box--full rcx-box--animated rcx-select rcx-css-1vw6rc6"
+                type="button"
+              >
+                <span
+                  class="rcx-box rcx-box--full rcx-css-1ah8hdc"
+                  id="react-aria-_r_10_"
+                >
+                  Require two-factor authentication
+                </span>
+                <i
+                  aria-hidden="true"
+                  class="rcx-box rcx-box--full rcx-icon--name-chevron-down rcx-icon rcx-css-l5txo2"
+                >
+                  
+                </i>
+              </button>
+            </div>
+            <button
+              class="rcx-box rcx-box--full rcx-button--primary rcx-button"
+              type="submit"
+            >
+              <span
+                class="rcx-button--content"
+              >
+                Add
+              </span>
+            </button>
+          </span>
+        </div>
+      </fieldset>
+    </form>
+    <div
+      aria-label="No results found"
+      class="rcx-box rcx-box--full rcx-css-16js560"
+      role="group"
+    >
+      <div
+        class="rcx-states"
+      >
+        <i
+          aria-hidden="true"
+          class="rcx-box rcx-box--full rcx-states__icon rcx-icon--name-magnifier rcx-icon rcx-css-d884y5"
+        >
+          
+        </i>
+        <h3
+          class="rcx-states__title"
+        >
+          No results found
+        </h3>
+      </div>
+    </div>
+  </div>
+</body>
+`;
+
+exports[`renders LoadError without crashing 1`] = `
+<body>
+  <div>
+    <div
+      class="rcx-box rcx-box--full rcx-css-8l5csc"
+    >
+      <div
+        class="rcx-states"
+      >
+        <i
+          aria-hidden="true"
+          class="rcx-box rcx-box--full rcx-states__icon rcx-icon--name-warning rcx-icon rcx-states__icon--danger rcx-css-d884y5"
+        >
+          
+        </i>
+        <h3
+          class="rcx-states__title"
+        >
+          Something went wrong
+        </h3>
+        <div
+          class="rcx-states__subtitle"
+        >
+          We couldn't retrive any data
+        </div>
+        <div
+          class="rcx-states__subtitle"
+        >
+          Network request failed
+        </div>
+        <div
+          class="rcx-button-group rcx-button-group--align-start"
+          role="group"
+        >
+          <button
+            class="rcx-box rcx-box--full rcx-button--primary rcx-button"
+            type="button"
+          >
+            <span
+              class="rcx-button--content"
+            >
+              Retry
+            </span>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</body>
+`;
+
+exports[`renders Loading without crashing 1`] = `
+<body>
+  <div>
+    <form
+      class="rcx-box rcx-box--full"
+    >
+      <fieldset
+        class="rcx-box rcx-box--full rcx-field-group rcx-css-cnkcl9"
+        role="group"
+      >
+        <div
+          class="rcx-box rcx-box--full rcx-field rcx-field-group__item"
+        >
+          <span
+            class="rcx-box rcx-box--full rcx-field__row"
+          >
+            <input
+              aria-describedby="_r_11_"
+              aria-label="Personal access token name"
+              class="rcx-box rcx-box--full rcx-box--animated rcx-input-box--type-text rcx-input-box rcx-css-sdt442"
+              data-qa="PersonalTokenField"
+              name="name"
+              placeholder="Add new personal access token"
+              size="1"
+              type="text"
+              value=""
+            />
+            <div
+              class="rcx-box rcx-box--full rcx-css-cz9l1k rcx-css-sdt442"
+            >
+              <div
+                class="rcx-box rcx-box--full rcx-css-1mbgoc8"
+              >
+                <div
+                  aria-hidden="true"
+                  data-a11y-ignore="aria-hidden-focus"
+                  data-react-aria-prevent-focus="true"
+                  data-testid="hidden-select-container"
+                  style="border: 0px; clip-path: inset(50%); height: 1px; margin: -1px; overflow: hidden; padding: 0px; position: absolute; width: 1px; white-space: nowrap;"
+                >
+                  <label>
+                    <select
+                      name="bypassTwoFactor"
+                      tabindex="-1"
+                    >
+                      <option />
+                      <option
+                        value="require"
+                      >
+                        require
+                      </option>
+                      <option
+                        value="bypass"
+                      >
+                        bypass
+                      </option>
+                    </select>
+                  </label>
+                </div>
+              </div>
+              <button
+                aria-expanded="false"
+                aria-haspopup="listbox"
+                aria-label="Two factor authentication"
+                aria-labelledby="react-aria-_r_19_ react-aria-_r_14_"
+                class="rcx-box rcx-box--full rcx-box--animated rcx-select rcx-css-1vw6rc6"
+                type="button"
+              >
+                <span
+                  class="rcx-box rcx-box--full rcx-css-1ah8hdc"
+                  id="react-aria-_r_19_"
+                >
+                  Require two-factor authentication
+                </span>
+                <i
+                  aria-hidden="true"
+                  class="rcx-box rcx-box--full rcx-icon--name-chevron-down rcx-icon rcx-css-l5txo2"
+                >
+                  
+                </i>
+              </button>
+            </div>
+            <button
+              class="rcx-box rcx-box--full rcx-button--primary rcx-button"
+              type="submit"
+            >
+              <span
+                class="rcx-button--content"
+              >
+                Add
+              </span>
+            </button>
+          </span>
+        </div>
+      </fieldset>
+    </form>
+    <div
+      class="rcx-box rcx-box--full rcx-css-qcmk2x"
+    >
+      <div
+        class="rcx-box rcx-box--full rcx-css-1pd039f rcx-css-1cb6i7s"
+        data-overlayscrollbars="host"
+      >
+        <div
+          class="os-size-observer"
+        >
+          <div
+            class="os-size-observer-listener"
+          />
+        </div>
+        <div
+          class=""
+          data-overlayscrollbars-viewport="scrollbarHidden overflowXHidden overflowYHidden"
+          style="margin-right: 0px; margin-bottom: 0px; margin-left: 0px; top: 0px; left: 0px; width: calc(100% + 0px); padding: 0px 0px 0px 0px;"
+          tabindex="-1"
+        >
+          <div
+            class="rcx-box rcx-box--full rcx-table__wrapper"
+          >
+            <table
+              aria-busy="true"
+              class="rcx-box rcx-box--full rcx-table--sticky rcx-table--fixed rcx-table"
+            >
+              <thead
+                class="rcx-box rcx-box--full rcx-table__head"
+              >
+                <tr
+                  class="rcx-box rcx-box--full rcx-table__row"
+                >
+                  <th
+                    class="rcx-box rcx-box--full rcx-table__cell--header rcx-table__cell"
+                  >
+                    <div
+                      class="rcx-box rcx-box--full rcx-css-127j9mz"
+                      wrap="no-wrap"
+                    >
+                      Personal access token name
+                    </div>
+                  </th>
+                  <th
+                    class="rcx-box rcx-box--full rcx-table__cell--header rcx-table__cell"
+                  >
+                    <div
+                      class="rcx-box rcx-box--full rcx-css-127j9mz"
+                      wrap="no-wrap"
+                    >
+                      Created at
+                    </div>
+                  </th>
+                  <th
+                    class="rcx-box rcx-box--full rcx-table__cell--header rcx-table__cell"
+                  >
+                    <div
+                      class="rcx-box rcx-box--full rcx-css-127j9mz"
+                      wrap="no-wrap"
+                    >
+                      Last token part
+                    </div>
+                  </th>
+                  <th
+                    class="rcx-box rcx-box--full rcx-table__cell--header rcx-table__cell"
+                  >
+                    <div
+                      class="rcx-box rcx-box--full rcx-css-127j9mz"
+                      wrap="no-wrap"
+                    >
+                      Two factor authentication
+                    </div>
+                  </th>
+                  <th
+                    class="rcx-box rcx-box--full rcx-table__cell--header rcx-table__cell"
+                  >
+                    <div
+                      class="rcx-box rcx-box--full rcx-css-127j9mz"
+                      wrap="no-wrap"
+                    />
+                  </th>
+                </tr>
+              </thead>
+              <tbody
+                class="rcx-box rcx-box--full rcx-table__body"
+              >
+                <tr
+                  class="rcx-box rcx-box--full rcx-table__row"
+                >
+                  <td
+                    class="rcx-box rcx-box--full rcx-table__cell"
+                  >
+                    <div
+                      class="rcx-box rcx-box--full rcx-css-1qvl0ud"
+                    >
+                      <span
+                        class="rcx-skeleton rcx-skeleton--rect rcx-css-1oezft"
+                      />
+                      <div
+                        class="rcx-box rcx-box--full rcx-css-1eminnr"
+                      >
+                        <span
+                          class="rcx-skeleton rcx-skeleton--text rcx-css-1qcz93u"
+                        />
+                        <span
+                          class="rcx-skeleton rcx-skeleton--text rcx-css-1qcz93u"
+                        />
+                      </div>
+                    </div>
+                  </td>
+                  <td
+                    class="rcx-box rcx-box--full rcx-table__cell"
+                  >
+                    <span
+                      class="rcx-skeleton rcx-skeleton--text rcx-css-1qcz93u"
+                    />
+                  </td>
+                  <td
+                    class="rcx-box rcx-box--full rcx-table__cell"
+                  >
+                    <span
+                      class="rcx-skeleton rcx-skeleton--text rcx-css-1qcz93u"
+                    />
+                  </td>
+                  <td
+                    class="rcx-box rcx-box--full rcx-table__cell"
+                  >
+                    <span
+                      class="rcx-skeleton rcx-skeleton--text rcx-css-1qcz93u"
+                    />
+                  </td>
+                  <td
+                    class="rcx-box rcx-box--full rcx-table__cell"
+                  >
+                    <span
+                      class="rcx-skeleton rcx-skeleton--text rcx-css-1qcz93u"
+                    />
+                  </td>
+                </tr>
+                <tr
+                  class="rcx-box rcx-box--full rcx-table__row"
+                >
+                  <td
+                    class="rcx-box rcx-box--full rcx-table__cell"
+                  >
+                    <div
+                      class="rcx-box rcx-box--full rcx-css-1qvl0ud"
+                    >
+                      <span
+                        class="rcx-skeleton rcx-skeleton--rect rcx-css-1oezft"
+                      />
+                      <div
+                        class="rcx-box rcx-box--full rcx-css-1eminnr"
+                      >
+                        <span
+                          class="rcx-skeleton rcx-skeleton--text rcx-css-1qcz93u"
+                        />
+                        <span
+                          class="rcx-skeleton rcx-skeleton--text rcx-css-1qcz93u"
+                        />
+                      </div>
+                    </div>
+                  </td>
+                  <td
+                    class="rcx-box rcx-box--full rcx-table__cell"
+                  >
+                    <span
+                      class="rcx-skeleton rcx-skeleton--text rcx-css-1qcz93u"
+                    />
+                  </td>
+                  <td
+                    class="rcx-box rcx-box--full rcx-table__cell"
+                  >
+                    <span
+                      class="rcx-skeleton rcx-skeleton--text rcx-css-1qcz93u"
+                    />
+                  </td>
+                  <td
+                    class="rcx-box rcx-box--full rcx-table__cell"
+                  >
+                    <span
+                      class="rcx-skeleton rcx-skeleton--text rcx-css-1qcz93u"
+                    />
+                  </td>
+                  <td
+                    class="rcx-box rcx-box--full rcx-table__cell"
+                  >
+                    <span
+                      class="rcx-skeleton rcx-skeleton--text rcx-css-1qcz93u"
+                    />
+                  </td>
+                </tr>
+                <tr
+                  class="rcx-box rcx-box--full rcx-table__row"
+                >
+                  <td
+                    class="rcx-box rcx-box--full rcx-table__cell"
+                  >
+                    <div
+                      class="rcx-box rcx-box--full rcx-css-1qvl0ud"
+                    >
+                      <span
+                        class="rcx-skeleton rcx-skeleton--rect rcx-css-1oezft"
+                      />
+                      <div
+                        class="rcx-box rcx-box--full rcx-css-1eminnr"
+                      >
+                        <span
+                          class="rcx-skeleton rcx-skeleton--text rcx-css-1qcz93u"
+                        />
+                        <span
+                          class="rcx-skeleton rcx-skeleton--text rcx-css-1qcz93u"
+                        />
+                      </div>
+                    </div>
+                  </td>
+                  <td
+                    class="rcx-box rcx-box--full rcx-table__cell"
+                  >
+                    <span
+                      class="rcx-skeleton rcx-skeleton--text rcx-css-1qcz93u"
+                    />
+                  </td>
+                  <td
+                    class="rcx-box rcx-box--full rcx-table__cell"
+                  >
+                    <span
+                      class="rcx-skeleton rcx-skeleton--text rcx-css-1qcz93u"
+                    />
+                  </td>
+                  <td
+                    class="rcx-box rcx-box--full rcx-table__cell"
+                  >
+                    <span
+                      class="rcx-skeleton rcx-skeleton--text rcx-css-1qcz93u"
+                    />
+                  </td>
+                  <td
+                    class="rcx-box rcx-box--full rcx-table__cell"
+                  >
+                    <span
+                      class="rcx-skeleton rcx-skeleton--text rcx-css-1qcz93u"
+                    />
+                  </td>
+                </tr>
+                <tr
+                  class="rcx-box rcx-box--full rcx-table__row"
+                >
+                  <td
+                    class="rcx-box rcx-box--full rcx-table__cell"
+                  >
+                    <div
+                      class="rcx-box rcx-box--full rcx-css-1qvl0ud"
+                    >
+                      <span
+                        class="rcx-skeleton rcx-skeleton--rect rcx-css-1oezft"
+                      />
+                      <div
+                        class="rcx-box rcx-box--full rcx-css-1eminnr"
+                      >
+                        <span
+                          class="rcx-skeleton rcx-skeleton--text rcx-css-1qcz93u"
+                        />
+                        <span
+                          class="rcx-skeleton rcx-skeleton--text rcx-css-1qcz93u"
+                        />
+                      </div>
+                    </div>
+                  </td>
+                  <td
+                    class="rcx-box rcx-box--full rcx-table__cell"
+                  >
+                    <span
+                      class="rcx-skeleton rcx-skeleton--text rcx-css-1qcz93u"
+                    />
+                  </td>
+                  <td
+                    class="rcx-box rcx-box--full rcx-table__cell"
+                  >
+                    <span
+                      class="rcx-skeleton rcx-skeleton--text rcx-css-1qcz93u"
+                    />
+                  </td>
+                  <td
+                    class="rcx-box rcx-box--full rcx-table__cell"
+                  >
+                    <span
+                      class="rcx-skeleton rcx-skeleton--text rcx-css-1qcz93u"
+                    />
+                  </td>
+                  <td
+                    class="rcx-box rcx-box--full rcx-table__cell"
+                  >
+                    <span
+                      class="rcx-skeleton rcx-skeleton--text rcx-css-1qcz93u"
+                    />
+                  </td>
+                </tr>
+                <tr
+                  class="rcx-box rcx-box--full rcx-table__row"
+                >
+                  <td
+                    class="rcx-box rcx-box--full rcx-table__cell"
+                  >
+                    <div
+                      class="rcx-box rcx-box--full rcx-css-1qvl0ud"
+                    >
+                      <span
+                        class="rcx-skeleton rcx-skeleton--rect rcx-css-1oezft"
+                      />
+                      <div
+                        class="rcx-box rcx-box--full rcx-css-1eminnr"
+                      >
+                        <span
+                          class="rcx-skeleton rcx-skeleton--text rcx-css-1qcz93u"
+                        />
+                        <span
+                          class="rcx-skeleton rcx-skeleton--text rcx-css-1qcz93u"
+                        />
+                      </div>
+                    </div>
+                  </td>
+                  <td
+                    class="rcx-box rcx-box--full rcx-table__cell"
+                  >
+                    <span
+                      class="rcx-skeleton rcx-skeleton--text rcx-css-1qcz93u"
+                    />
+                  </td>
+                  <td
+                    class="rcx-box rcx-box--full rcx-table__cell"
+                  >
+                    <span
+                      class="rcx-skeleton rcx-skeleton--text rcx-css-1qcz93u"
+                    />
+                  </td>
+                  <td
+                    class="rcx-box rcx-box--full rcx-table__cell"
+                  >
+                    <span
+                      class="rcx-skeleton rcx-skeleton--text rcx-css-1qcz93u"
+                    />
+                  </td>
+                  <td
+                    class="rcx-box rcx-box--full rcx-table__cell"
+                  >
+                    <span
+                      class="rcx-skeleton rcx-skeleton--text rcx-css-1qcz93u"
+                    />
+                  </td>
+                </tr>
+                <tr
+                  class="rcx-box rcx-box--full rcx-table__row"
+                >
+                  <td
+                    class="rcx-box rcx-box--full rcx-table__cell"
+                  >
+                    <div
+                      class="rcx-box rcx-box--full rcx-css-1qvl0ud"
+                    >
+                      <span
+                        class="rcx-skeleton rcx-skeleton--rect rcx-css-1oezft"
+                      />
+                      <div
+                        class="rcx-box rcx-box--full rcx-css-1eminnr"
+                      >
+                        <span
+                          class="rcx-skeleton rcx-skeleton--text rcx-css-1qcz93u"
+                        />
+                        <span
+                          class="rcx-skeleton rcx-skeleton--text rcx-css-1qcz93u"
+                        />
+                      </div>
+                    </div>
+                  </td>
+                  <td
+                    class="rcx-box rcx-box--full rcx-table__cell"
+                  >
+                    <span
+                      class="rcx-skeleton rcx-skeleton--text rcx-css-1qcz93u"
+                    />
+                  </td>
+                  <td
+                    class="rcx-box rcx-box--full rcx-table__cell"
+                  >
+                    <span
+                      class="rcx-skeleton rcx-skeleton--text rcx-css-1qcz93u"
+                    />
+                  </td>
+                  <td
+                    class="rcx-box rcx-box--full rcx-table__cell"
+                  >
+                    <span
+                      class="rcx-skeleton rcx-skeleton--text rcx-css-1qcz93u"
+                    />
+                  </td>
+                  <td
+                    class="rcx-box rcx-box--full rcx-table__cell"
+                  >
+                    <span
+                      class="rcx-skeleton rcx-skeleton--text rcx-css-1qcz93u"
+                    />
+                  </td>
+                </tr>
+                <tr
+                  class="rcx-box rcx-box--full rcx-table__row"
+                >
+                  <td
+                    class="rcx-box rcx-box--full rcx-table__cell"
+                  >
+                    <div
+                      class="rcx-box rcx-box--full rcx-css-1qvl0ud"
+                    >
+                      <span
+                        class="rcx-skeleton rcx-skeleton--rect rcx-css-1oezft"
+                      />
+                      <div
+                        class="rcx-box rcx-box--full rcx-css-1eminnr"
+                      >
+                        <span
+                          class="rcx-skeleton rcx-skeleton--text rcx-css-1qcz93u"
+                        />
+                        <span
+                          class="rcx-skeleton rcx-skeleton--text rcx-css-1qcz93u"
+                        />
+                      </div>
+                    </div>
+                  </td>
+                  <td
+                    class="rcx-box rcx-box--full rcx-table__cell"
+                  >
+                    <span
+                      class="rcx-skeleton rcx-skeleton--text rcx-css-1qcz93u"
+                    />
+                  </td>
+                  <td
+                    class="rcx-box rcx-box--full rcx-table__cell"
+                  >
+                    <span
+                      class="rcx-skeleton rcx-skeleton--text rcx-css-1qcz93u"
+                    />
+                  </td>
+                  <td
+                    class="rcx-box rcx-box--full rcx-table__cell"
+                  >
+                    <span
+                      class="rcx-skeleton rcx-skeleton--text rcx-css-1qcz93u"
+                    />
+                  </td>
+                  <td
+                    class="rcx-box rcx-box--full rcx-table__cell"
+                  >
+                    <span
+                      class="rcx-skeleton rcx-skeleton--text rcx-css-1qcz93u"
+                    />
+                  </td>
+                </tr>
+                <tr
+                  class="rcx-box rcx-box--full rcx-table__row"
+                >
+                  <td
+                    class="rcx-box rcx-box--full rcx-table__cell"
+                  >
+                    <div
+                      class="rcx-box rcx-box--full rcx-css-1qvl0ud"
+                    >
+                      <span
+                        class="rcx-skeleton rcx-skeleton--rect rcx-css-1oezft"
+                      />
+                      <div
+                        class="rcx-box rcx-box--full rcx-css-1eminnr"
+                      >
+                        <span
+                          class="rcx-skeleton rcx-skeleton--text rcx-css-1qcz93u"
+                        />
+                        <span
+                          class="rcx-skeleton rcx-skeleton--text rcx-css-1qcz93u"
+                        />
+                      </div>
+                    </div>
+                  </td>
+                  <td
+                    class="rcx-box rcx-box--full rcx-table__cell"
+                  >
+                    <span
+                      class="rcx-skeleton rcx-skeleton--text rcx-css-1qcz93u"
+                    />
+                  </td>
+                  <td
+                    class="rcx-box rcx-box--full rcx-table__cell"
+                  >
+                    <span
+                      class="rcx-skeleton rcx-skeleton--text rcx-css-1qcz93u"
+                    />
+                  </td>
+                  <td
+                    class="rcx-box rcx-box--full rcx-table__cell"
+                  >
+                    <span
+                      class="rcx-skeleton rcx-skeleton--text rcx-css-1qcz93u"
+                    />
+                  </td>
+                  <td
+                    class="rcx-box rcx-box--full rcx-table__cell"
+                  >
+                    <span
+                      class="rcx-skeleton rcx-skeleton--text rcx-css-1qcz93u"
+                    />
+                  </td>
+                </tr>
+                <tr
+                  class="rcx-box rcx-box--full rcx-table__row"
+                >
+                  <td
+                    class="rcx-box rcx-box--full rcx-table__cell"
+                  >
+                    <div
+                      class="rcx-box rcx-box--full rcx-css-1qvl0ud"
+                    >
+                      <span
+                        class="rcx-skeleton rcx-skeleton--rect rcx-css-1oezft"
+                      />
+                      <div
+                        class="rcx-box rcx-box--full rcx-css-1eminnr"
+                      >
+                        <span
+                          class="rcx-skeleton rcx-skeleton--text rcx-css-1qcz93u"
+                        />
+                        <span
+                          class="rcx-skeleton rcx-skeleton--text rcx-css-1qcz93u"
+                        />
+                      </div>
+                    </div>
+                  </td>
+                  <td
+                    class="rcx-box rcx-box--full rcx-table__cell"
+                  >
+                    <span
+                      class="rcx-skeleton rcx-skeleton--text rcx-css-1qcz93u"
+                    />
+                  </td>
+                  <td
+                    class="rcx-box rcx-box--full rcx-table__cell"
+                  >
+                    <span
+                      class="rcx-skeleton rcx-skeleton--text rcx-css-1qcz93u"
+                    />
+                  </td>
+                  <td
+                    class="rcx-box rcx-box--full rcx-table__cell"
+                  >
+                    <span
+                      class="rcx-skeleton rcx-skeleton--text rcx-css-1qcz93u"
+                    />
+                  </td>
+                  <td
+                    class="rcx-box rcx-box--full rcx-table__cell"
+                  >
+                    <span
+                      class="rcx-skeleton rcx-skeleton--text rcx-css-1qcz93u"
+                    />
+                  </td>
+                </tr>
+                <tr
+                  class="rcx-box rcx-box--full rcx-table__row"
+                >
+                  <td
+                    class="rcx-box rcx-box--full rcx-table__cell"
+                  >
+                    <div
+                      class="rcx-box rcx-box--full rcx-css-1qvl0ud"
+                    >
+                      <span
+                        class="rcx-skeleton rcx-skeleton--rect rcx-css-1oezft"
+                      />
+                      <div
+                        class="rcx-box rcx-box--full rcx-css-1eminnr"
+                      >
+                        <span
+                          class="rcx-skeleton rcx-skeleton--text rcx-css-1qcz93u"
+                        />
+                        <span
+                          class="rcx-skeleton rcx-skeleton--text rcx-css-1qcz93u"
+                        />
+                      </div>
+                    </div>
+                  </td>
+                  <td
+                    class="rcx-box rcx-box--full rcx-table__cell"
+                  >
+                    <span
+                      class="rcx-skeleton rcx-skeleton--text rcx-css-1qcz93u"
+                    />
+                  </td>
+                  <td
+                    class="rcx-box rcx-box--full rcx-table__cell"
+                  >
+                    <span
+                      class="rcx-skeleton rcx-skeleton--text rcx-css-1qcz93u"
+                    />
+                  </td>
+                  <td
+                    class="rcx-box rcx-box--full rcx-table__cell"
+                  >
+                    <span
+                      class="rcx-skeleton rcx-skeleton--text rcx-css-1qcz93u"
+                    />
+                  </td>
+                  <td
+                    class="rcx-box rcx-box--full rcx-table__cell"
+                  >
+                    <span
+                      class="rcx-skeleton rcx-skeleton--text rcx-css-1qcz93u"
+                    />
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+        <div
+          class="os-scrollbar os-scrollbar-horizontal os-theme-dark os-scrollbar-auto-hide os-scrollbar-auto-hide-hidden os-scrollbar-handle-interactive os-scrollbar-cornerless os-scrollbar-unusable"
+          style="--os-scroll-percent: 0; --os-viewport-percent: 0; --os-scroll-direction: 0;"
+        >
+          <div
+            class="os-scrollbar-track"
+          >
+            <div
+              class="os-scrollbar-handle"
+            />
+          </div>
+        </div>
+        <div
+          class="os-scrollbar os-scrollbar-vertical os-theme-dark os-scrollbar-auto-hide os-scrollbar-auto-hide-hidden os-scrollbar-handle-interactive os-scrollbar-cornerless os-scrollbar-unusable"
+          style="--os-scroll-percent: 0; --os-viewport-percent: 0; --os-scroll-direction: 0;"
+        >
+          <div
+            class="os-scrollbar-track"
+          >
+            <div
+              class="os-scrollbar-handle"
+            />
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</body>
+`;
+
+exports[`renders TokenGenerated without crashing 1`] = `
+<body>
+  <div>
+    <form
+      class="rcx-box rcx-box--full"
+    >
+      <fieldset
+        class="rcx-box rcx-box--full rcx-field-group rcx-css-cnkcl9"
+        role="group"
+      >
+        <div
+          class="rcx-box rcx-box--full rcx-field rcx-field-group__item"
+        >
+          <span
+            class="rcx-box rcx-box--full rcx-field__row"
+          >
+            <input
+              aria-describedby="_r_1a_"
+              aria-label="Personal access token name"
+              class="rcx-box rcx-box--full rcx-box--animated rcx-input-box--type-text rcx-input-box rcx-css-sdt442"
+              data-qa="PersonalTokenField"
+              name="name"
+              placeholder="Add new personal access token"
+              size="1"
+              type="text"
+              value=""
+            />
+            <div
+              class="rcx-box rcx-box--full rcx-css-cz9l1k rcx-css-sdt442"
+            >
+              <div
+                class="rcx-box rcx-box--full rcx-css-1mbgoc8"
+              >
+                <div
+                  aria-hidden="true"
+                  data-a11y-ignore="aria-hidden-focus"
+                  data-react-aria-prevent-focus="true"
+                  data-testid="hidden-select-container"
+                  style="border: 0px; clip-path: inset(50%); height: 1px; margin: -1px; overflow: hidden; padding: 0px; position: absolute; width: 1px; white-space: nowrap;"
+                >
+                  <label>
+                    <select
+                      name="bypassTwoFactor"
+                      tabindex="-1"
+                    >
+                      <option />
+                      <option
+                        value="require"
+                      >
+                        require
+                      </option>
+                      <option
+                        value="bypass"
+                      >
+                        bypass
+                      </option>
+                    </select>
+                  </label>
+                </div>
+              </div>
+              <button
+                aria-expanded="false"
+                aria-haspopup="listbox"
+                aria-label="Two factor authentication"
+                aria-labelledby="react-aria-_r_1i_ react-aria-_r_1d_"
+                class="rcx-box rcx-box--full rcx-box--animated rcx-select rcx-css-1vw6rc6"
+                type="button"
+              >
+                <span
+                  class="rcx-box rcx-box--full rcx-css-1ah8hdc"
+                  id="react-aria-_r_1i_"
+                >
+                  Require two-factor authentication
+                </span>
+                <i
+                  aria-hidden="true"
+                  class="rcx-box rcx-box--full rcx-icon--name-chevron-down rcx-icon rcx-css-l5txo2"
+                >
+                  
+                </i>
+              </button>
+            </div>
+            <button
+              class="rcx-box rcx-box--full rcx-button--primary rcx-button"
+              type="submit"
+            >
+              <span
+                class="rcx-button--content"
+              >
+                Add
+              </span>
+            </button>
+          </span>
+        </div>
+      </fieldset>
+    </form>
+    <div
+      class="rcx-box rcx-box--full rcx-css-qcmk2x"
+    >
+      <div
+        class="rcx-box rcx-box--full rcx-css-1pd039f rcx-css-1cb6i7s"
+        data-overlayscrollbars="host"
+      >
+        <div
+          class="os-size-observer"
+        >
+          <div
+            class="os-size-observer-listener"
+          />
+        </div>
+        <div
+          class=""
+          data-overlayscrollbars-viewport="scrollbarHidden overflowXHidden overflowYHidden"
+          style="margin-right: 0px; margin-bottom: 0px; margin-left: 0px; top: 0px; left: 0px; width: calc(100% + 0px); padding: 0px 0px 0px 0px;"
+          tabindex="-1"
+        >
+          <div
+            class="rcx-box rcx-box--full rcx-table__wrapper"
+          >
+            <table
+              class="rcx-box rcx-box--full rcx-table--sticky rcx-table--fixed rcx-table"
+            >
+              <thead
+                class="rcx-box rcx-box--full rcx-table__head"
+              >
+                <tr
+                  class="rcx-box rcx-box--full rcx-table__row"
+                >
+                  <th
+                    class="rcx-box rcx-box--full rcx-table__cell--header rcx-table__cell"
+                  >
+                    <div
+                      class="rcx-box rcx-box--full rcx-css-127j9mz"
+                      wrap="no-wrap"
+                    >
+                      Personal access token name
+                    </div>
+                  </th>
+                  <th
+                    class="rcx-box rcx-box--full rcx-table__cell--header rcx-table__cell"
+                  >
+                    <div
+                      class="rcx-box rcx-box--full rcx-css-127j9mz"
+                      wrap="no-wrap"
+                    >
+                      Created at
+                    </div>
+                  </th>
+                  <th
+                    class="rcx-box rcx-box--full rcx-table__cell--header rcx-table__cell"
+                  >
+                    <div
+                      class="rcx-box rcx-box--full rcx-css-127j9mz"
+                      wrap="no-wrap"
+                    >
+                      Last token part
+                    </div>
+                  </th>
+                  <th
+                    class="rcx-box rcx-box--full rcx-table__cell--header rcx-table__cell"
+                  >
+                    <div
+                      class="rcx-box rcx-box--full rcx-css-127j9mz"
+                      wrap="no-wrap"
+                    >
+                      Two factor authentication
+                    </div>
+                  </th>
+                  <th
+                    class="rcx-box rcx-box--full rcx-table__cell--header rcx-table__cell"
+                  >
+                    <div
+                      class="rcx-box rcx-box--full rcx-css-127j9mz"
+                      wrap="no-wrap"
+                    />
+                  </th>
+                </tr>
+              </thead>
+              <tbody
+                class="rcx-box rcx-box--full rcx-table__body"
+              >
+                <tr
+                  class="rcx-box rcx-box--full rcx-table__row"
+                  qa-token-name="ci-pipeline"
+                  role="link"
+                  tabindex="0"
+                >
+                  <td
+                    class="rcx-box rcx-box--full rcx-table__cell rcx-css-1k07nwm"
+                  >
+                    ci-pipeline
+                  </td>
+                  <td
+                    class="rcx-box rcx-box--full rcx-table__cell rcx-css-1te28na"
+                  >
+                    January 10th, 2026 12:00 PM
+                  </td>
+                  <td
+                    class="rcx-box rcx-box--full rcx-table__cell rcx-css-1te28na"
+                  >
+                    ...
+                    a1b2c3
+                  </td>
+                  <td
+                    class="rcx-box rcx-box--full rcx-table__cell rcx-css-1te28na"
+                  >
+                    Require
+                  </td>
+                  <td
+                    class="rcx-box rcx-box--full rcx-table__cell rcx-css-1te28na"
+                  >
+                    <div
+                      class="rcx-button-group rcx-button-group--align-start"
+                      role="group"
+                    >
+                      <button
+                        class="rcx-box rcx-box--full rcx-button--small-square rcx-button--icon-secondary rcx-button--square rcx-button--icon rcx-button"
+                        title="Refresh"
+                        type="button"
+                      >
+                        <i
+                          aria-hidden="true"
+                          class="rcx-box rcx-box--full rcx-icon--name-refresh rcx-icon rcx-css-4pvxx3"
+                        >
+                          
+                        </i>
+                      </button>
+                      <button
+                        class="rcx-box rcx-box--full rcx-button--small-square rcx-button--icon-secondary rcx-button--square rcx-button--icon rcx-button"
+                        title="Remove"
+                        type="button"
+                      >
+                        <i
+                          aria-hidden="true"
+                          class="rcx-box rcx-box--full rcx-icon--name-trash rcx-icon rcx-css-4pvxx3"
+                        >
+                          
+                        </i>
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+                <tr
+                  class="rcx-box rcx-box--full rcx-table__row"
+                  qa-token-name="backup-script"
+                  role="link"
+                  tabindex="0"
+                >
+                  <td
+                    class="rcx-box rcx-box--full rcx-table__cell rcx-css-1k07nwm"
+                  >
+                    backup-script
+                  </td>
+                  <td
+                    class="rcx-box rcx-box--full rcx-table__cell rcx-css-1te28na"
+                  >
+                    March 2nd, 2026 8:30 AM
+                  </td>
+                  <td
+                    class="rcx-box rcx-box--full rcx-table__cell rcx-css-1te28na"
+                  >
+                    ...
+                    d4e5f6
+                  </td>
+                  <td
+                    class="rcx-box rcx-box--full rcx-table__cell rcx-css-1te28na"
+                  >
+                    Ignore
+                  </td>
+                  <td
+                    class="rcx-box rcx-box--full rcx-table__cell rcx-css-1te28na"
+                  >
+                    <div
+                      class="rcx-button-group rcx-button-group--align-start"
+                      role="group"
+                    >
+                      <button
+                        class="rcx-box rcx-box--full rcx-button--small-square rcx-button--icon-secondary rcx-button--square rcx-button--icon rcx-button"
+                        title="Refresh"
+                        type="button"
+                      >
+                        <i
+                          aria-hidden="true"
+                          class="rcx-box rcx-box--full rcx-icon--name-refresh rcx-icon rcx-css-4pvxx3"
+                        >
+                          
+                        </i>
+                      </button>
+                      <button
+                        class="rcx-box rcx-box--full rcx-button--small-square rcx-button--icon-secondary rcx-button--square rcx-button--icon rcx-button"
+                        title="Remove"
+                        type="button"
+                      >
+                        <i
+                          aria-hidden="true"
+                          class="rcx-box rcx-box--full rcx-icon--name-trash rcx-icon rcx-css-4pvxx3"
+                        >
+                          
+                        </i>
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+        <div
+          class="os-scrollbar os-scrollbar-horizontal os-theme-dark os-scrollbar-auto-hide os-scrollbar-auto-hide-hidden os-scrollbar-handle-interactive os-scrollbar-cornerless os-scrollbar-unusable"
+          style="--os-scroll-percent: 0; --os-viewport-percent: 0; --os-scroll-direction: 0;"
+        >
+          <div
+            class="os-scrollbar-track"
+          >
+            <div
+              class="os-scrollbar-handle"
+            />
+          </div>
+        </div>
+        <div
+          class="os-scrollbar os-scrollbar-vertical os-theme-dark os-scrollbar-auto-hide os-scrollbar-auto-hide-hidden os-scrollbar-handle-interactive os-scrollbar-cornerless os-scrollbar-unusable"
+          style="--os-scroll-percent: 0; --os-viewport-percent: 0; --os-scroll-direction: 0;"
+        >
+          <div
+            class="os-scrollbar-track"
+          >
+            <div
+              class="os-scrollbar-handle"
+            />
+          </div>
+        </div>
+      </div>
+    </div>
+    <nav
+      aria-label="Pagination Navigation"
+      class="rcx-box rcx-box--full rcx-pagination rcx-pagination--divider"
+    >
+      <div
+        class="rcx-pagination__left"
+      >
+        <span
+          class="rcx-pagination__label"
+          id="_r_1k_"
+        >
+          Items_per_page:
+        </span>
+        <ol
+          aria-labelledby="_r_1k_"
+          class="rcx-box rcx-box--full rcx-pagination__list"
+        >
+          <li
+            class="rcx-pagination__list-item"
+          >
+            <button
+              aria-label="Show 25 items per page"
+              class="rcx-box rcx-box--full rcx-pagination__link"
+              disabled=""
+              tabindex="-1"
+            >
+              25
+            </button>
+          </li>
+          <li
+            class="rcx-pagination__list-item"
+          >
+            <button
+              aria-label="Show 50 items per page"
+              class="rcx-box rcx-box--full rcx-pagination__link"
+              tabindex="0"
+            >
+              50
+            </button>
+          </li>
+          <li
+            class="rcx-pagination__list-item"
+          >
+            <button
+              aria-label="Show 100 items per page"
+              class="rcx-box rcx-box--full rcx-pagination__link"
+              tabindex="0"
+            >
+              100
+            </button>
+          </li>
+        </ol>
+      </div>
+      <div
+        class="rcx-pagination__right"
+      >
+        <span
+          class="rcx-pagination__label"
+          id="_r_1j_"
+        >
+          Showing_results_of
+        </span>
+        <ol
+          aria-labelledby="_r_1j_"
+          class="rcx-box rcx-box--full rcx-pagination__list"
+        >
+          <li
+            class="rcx-pagination__list-item"
+          >
+            <button
+              aria-label="Previous page"
+              class="rcx-box rcx-box--full rcx-pagination__back"
+              disabled=""
+            >
+              <span
+                class="rcx-box rcx-box--full rcx-chevron--left rcx-chevron"
+              >
+                <i
+                  aria-hidden="true"
+                  class="rcx-box rcx-box--full rcx-icon--name-chevron-down rcx-icon rcx-css-1g87xs3"
+                >
+                  
+                </i>
+              </span>
+            </button>
+          </li>
+          <li
+            class="rcx-pagination__list-item"
+          >
+            <button
+              aria-label="Page 1"
+              class="rcx-box rcx-box--full rcx-pagination__link"
+              disabled=""
+            >
+              1
+            </button>
+          </li>
+          <li
+            class="rcx-pagination__list-item"
+          >
+            <button
+              aria-label="Next page"
+              class="rcx-box rcx-box--full rcx-pagination__forward"
+              disabled=""
+            >
+              <span
+                class="rcx-box rcx-box--full rcx-chevron--right rcx-chevron"
+              >
+                <i
+                  aria-hidden="true"
+                  class="rcx-box rcx-box--full rcx-icon--name-chevron-down rcx-icon rcx-css-1g87xs3"
+                >
+                  
+                </i>
+              </span>
+            </button>
+          </li>
+        </ol>
+      </div>
+    </nav>
+    <dialog
+      aria-labelledby="_r_1l_-title"
+      aria-modal="true"
+      class="rcx-box rcx-box--full rcx-modal"
+      open=""
+    >
+      <div
+        class="rcx-box rcx-box--full rcx-modal__inner rcx-css-qtwduz"
+      >
+        <header
+          class="rcx-box rcx-box--full rcx-modal__header"
+        >
+          <div
+            class="rcx-box rcx-box--full rcx-modal__header-inner"
+          >
+            <div
+              class="rcx-box rcx-box--full rcx-css-trljwa rcx-css-jd7xeo"
+            >
+              <i
+                aria-hidden="true"
+                class="rcx-box rcx-box--full rcx-icon--name-info rcx-icon rcx-css-zozvgz"
+              >
+                
+              </i>
+            </div>
+            <div
+              class="rcx-box rcx-box--full rcx-modal__header-text rcx-css-trljwa rcx-css-lma364"
+            >
+              <h2
+                class="rcx-box rcx-box--full rcx-modal__title"
+                id="_r_1l_-title"
+              >
+                Personal access token successfully generated
+              </h2>
+            </div>
+            <button
+              aria-label="Close"
+              class="rcx-box rcx-box--full rcx-button--small-square rcx-button--square rcx-button--icon rcx-button rcx-css-trljwa rcx-css-lma364"
+              tabindex="-1"
+              type="button"
+            >
+              <i
+                aria-hidden="true"
+                class="rcx-box rcx-box--full rcx-icon--name-cross rcx-icon rcx-css-4pvxx3"
+              >
+                
+              </i>
+            </button>
+          </div>
+        </header>
+        <div
+          class="rcx-box rcx-box--full rcx-modal__content rcx-css-1vw7itl"
+        >
+          <div
+            class="rcx-box rcx-box--full rcx-modal__content-wrapper rcx-css-r1bpeb"
+          >
+            <div
+              class="rcx-box rcx-box--full"
+            >
+              Please save your token carefully as you will no longer be able to view it afterwards. 
+              <br />
+              Token: 
+              <strong>
+                Xk3v9Qm2Lp7RtY8wZ1
+              </strong>
+              <br />
+              Your user id: 
+              <strong>
+                john.doe
+              </strong>
+            </div>
+          </div>
+        </div>
+        <div
+          class="rcx-box rcx-box--full rcx-modal__footer rcx-css-17mu816"
+        >
+          <div
+            class="rcx-button-group rcx-button-group--align-end"
+            role="group"
+          >
+            <button
+              class="rcx-box rcx-box--full rcx-button"
+              type="button"
+            >
+              <span
+                class="rcx-button--content"
+              >
+                Ok
+              </span>
+            </button>
+          </div>
+        </div>
+      </div>
+    </dialog>
+  </div>
+</body>
+`;
+
+exports[`renders WithTokens without crashing 1`] = `
+<body>
+  <div>
+    <form
+      class="rcx-box rcx-box--full"
+    >
+      <fieldset
+        class="rcx-box rcx-box--full rcx-field-group rcx-css-cnkcl9"
+        role="group"
+      >
+        <div
+          class="rcx-box rcx-box--full rcx-field rcx-field-group__item"
+        >
+          <span
+            class="rcx-box rcx-box--full rcx-field__row"
+          >
+            <input
+              aria-describedby="_r_1m_"
+              aria-label="Personal access token name"
+              class="rcx-box rcx-box--full rcx-box--animated rcx-input-box--type-text rcx-input-box rcx-css-sdt442"
+              data-qa="PersonalTokenField"
+              name="name"
+              placeholder="Add new personal access token"
+              size="1"
+              type="text"
+              value=""
+            />
+            <div
+              class="rcx-box rcx-box--full rcx-css-cz9l1k rcx-css-sdt442"
+            >
+              <div
+                class="rcx-box rcx-box--full rcx-css-1mbgoc8"
+              >
+                <div
+                  aria-hidden="true"
+                  data-a11y-ignore="aria-hidden-focus"
+                  data-react-aria-prevent-focus="true"
+                  data-testid="hidden-select-container"
+                  style="border: 0px; clip-path: inset(50%); height: 1px; margin: -1px; overflow: hidden; padding: 0px; position: absolute; width: 1px; white-space: nowrap;"
+                >
+                  <label>
+                    <select
+                      name="bypassTwoFactor"
+                      tabindex="-1"
+                    >
+                      <option />
+                      <option
+                        value="require"
+                      >
+                        require
+                      </option>
+                      <option
+                        value="bypass"
+                      >
+                        bypass
+                      </option>
+                    </select>
+                  </label>
+                </div>
+              </div>
+              <button
+                aria-expanded="false"
+                aria-haspopup="listbox"
+                aria-label="Two factor authentication"
+                aria-labelledby="react-aria-_r_1u_ react-aria-_r_1p_"
+                class="rcx-box rcx-box--full rcx-box--animated rcx-select rcx-css-1vw6rc6"
+                type="button"
+              >
+                <span
+                  class="rcx-box rcx-box--full rcx-css-1ah8hdc"
+                  id="react-aria-_r_1u_"
+                >
+                  Require two-factor authentication
+                </span>
+                <i
+                  aria-hidden="true"
+                  class="rcx-box rcx-box--full rcx-icon--name-chevron-down rcx-icon rcx-css-l5txo2"
+                >
+                  
+                </i>
+              </button>
+            </div>
+            <button
+              class="rcx-box rcx-box--full rcx-button--primary rcx-button"
+              type="submit"
+            >
+              <span
+                class="rcx-button--content"
+              >
+                Add
+              </span>
+            </button>
+          </span>
+        </div>
+      </fieldset>
+    </form>
+    <div
+      class="rcx-box rcx-box--full rcx-css-qcmk2x"
+    >
+      <div
+        class="rcx-box rcx-box--full rcx-css-1pd039f rcx-css-1cb6i7s"
+        data-overlayscrollbars="host"
+      >
+        <div
+          class="os-size-observer"
+        >
+          <div
+            class="os-size-observer-listener"
+          />
+        </div>
+        <div
+          class=""
+          data-overlayscrollbars-viewport="scrollbarHidden overflowXHidden overflowYHidden"
+          style="margin-right: 0px; margin-bottom: 0px; margin-left: 0px; top: 0px; left: 0px; width: calc(100% + 0px); padding: 0px 0px 0px 0px;"
+          tabindex="-1"
+        >
+          <div
+            class="rcx-box rcx-box--full rcx-table__wrapper"
+          >
+            <table
+              class="rcx-box rcx-box--full rcx-table--sticky rcx-table--fixed rcx-table"
+            >
+              <thead
+                class="rcx-box rcx-box--full rcx-table__head"
+              >
+                <tr
+                  class="rcx-box rcx-box--full rcx-table__row"
+                >
+                  <th
+                    class="rcx-box rcx-box--full rcx-table__cell--header rcx-table__cell"
+                  >
+                    <div
+                      class="rcx-box rcx-box--full rcx-css-127j9mz"
+                      wrap="no-wrap"
+                    >
+                      Personal access token name
+                    </div>
+                  </th>
+                  <th
+                    class="rcx-box rcx-box--full rcx-table__cell--header rcx-table__cell"
+                  >
+                    <div
+                      class="rcx-box rcx-box--full rcx-css-127j9mz"
+                      wrap="no-wrap"
+                    >
+                      Created at
+                    </div>
+                  </th>
+                  <th
+                    class="rcx-box rcx-box--full rcx-table__cell--header rcx-table__cell"
+                  >
+                    <div
+                      class="rcx-box rcx-box--full rcx-css-127j9mz"
+                      wrap="no-wrap"
+                    >
+                      Last token part
+                    </div>
+                  </th>
+                  <th
+                    class="rcx-box rcx-box--full rcx-table__cell--header rcx-table__cell"
+                  >
+                    <div
+                      class="rcx-box rcx-box--full rcx-css-127j9mz"
+                      wrap="no-wrap"
+                    >
+                      Two factor authentication
+                    </div>
+                  </th>
+                  <th
+                    class="rcx-box rcx-box--full rcx-table__cell--header rcx-table__cell"
+                  >
+                    <div
+                      class="rcx-box rcx-box--full rcx-css-127j9mz"
+                      wrap="no-wrap"
+                    />
+                  </th>
+                </tr>
+              </thead>
+              <tbody
+                class="rcx-box rcx-box--full rcx-table__body"
+              >
+                <tr
+                  class="rcx-box rcx-box--full rcx-table__row"
+                  qa-token-name="ci-pipeline"
+                  role="link"
+                  tabindex="0"
+                >
+                  <td
+                    class="rcx-box rcx-box--full rcx-table__cell rcx-css-1k07nwm"
+                  >
+                    ci-pipeline
+                  </td>
+                  <td
+                    class="rcx-box rcx-box--full rcx-table__cell rcx-css-1te28na"
+                  >
+                    January 10th, 2026 12:00 PM
+                  </td>
+                  <td
+                    class="rcx-box rcx-box--full rcx-table__cell rcx-css-1te28na"
+                  >
+                    ...
+                    a1b2c3
+                  </td>
+                  <td
+                    class="rcx-box rcx-box--full rcx-table__cell rcx-css-1te28na"
+                  >
+                    Require
+                  </td>
+                  <td
+                    class="rcx-box rcx-box--full rcx-table__cell rcx-css-1te28na"
+                  >
+                    <div
+                      class="rcx-button-group rcx-button-group--align-start"
+                      role="group"
+                    >
+                      <button
+                        class="rcx-box rcx-box--full rcx-button--small-square rcx-button--icon-secondary rcx-button--square rcx-button--icon rcx-button"
+                        title="Refresh"
+                        type="button"
+                      >
+                        <i
+                          aria-hidden="true"
+                          class="rcx-box rcx-box--full rcx-icon--name-refresh rcx-icon rcx-css-4pvxx3"
+                        >
+                          
+                        </i>
+                      </button>
+                      <button
+                        class="rcx-box rcx-box--full rcx-button--small-square rcx-button--icon-secondary rcx-button--square rcx-button--icon rcx-button"
+                        title="Remove"
+                        type="button"
+                      >
+                        <i
+                          aria-hidden="true"
+                          class="rcx-box rcx-box--full rcx-icon--name-trash rcx-icon rcx-css-4pvxx3"
+                        >
+                          
+                        </i>
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+                <tr
+                  class="rcx-box rcx-box--full rcx-table__row"
+                  qa-token-name="backup-script"
+                  role="link"
+                  tabindex="0"
+                >
+                  <td
+                    class="rcx-box rcx-box--full rcx-table__cell rcx-css-1k07nwm"
+                  >
+                    backup-script
+                  </td>
+                  <td
+                    class="rcx-box rcx-box--full rcx-table__cell rcx-css-1te28na"
+                  >
+                    March 2nd, 2026 8:30 AM
+                  </td>
+                  <td
+                    class="rcx-box rcx-box--full rcx-table__cell rcx-css-1te28na"
+                  >
+                    ...
+                    d4e5f6
+                  </td>
+                  <td
+                    class="rcx-box rcx-box--full rcx-table__cell rcx-css-1te28na"
+                  >
+                    Ignore
+                  </td>
+                  <td
+                    class="rcx-box rcx-box--full rcx-table__cell rcx-css-1te28na"
+                  >
+                    <div
+                      class="rcx-button-group rcx-button-group--align-start"
+                      role="group"
+                    >
+                      <button
+                        class="rcx-box rcx-box--full rcx-button--small-square rcx-button--icon-secondary rcx-button--square rcx-button--icon rcx-button"
+                        title="Refresh"
+                        type="button"
+                      >
+                        <i
+                          aria-hidden="true"
+                          class="rcx-box rcx-box--full rcx-icon--name-refresh rcx-icon rcx-css-4pvxx3"
+                        >
+                          
+                        </i>
+                      </button>
+                      <button
+                        class="rcx-box rcx-box--full rcx-button--small-square rcx-button--icon-secondary rcx-button--square rcx-button--icon rcx-button"
+                        title="Remove"
+                        type="button"
+                      >
+                        <i
+                          aria-hidden="true"
+                          class="rcx-box rcx-box--full rcx-icon--name-trash rcx-icon rcx-css-4pvxx3"
+                        >
+                          
+                        </i>
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+        <div
+          class="os-scrollbar os-scrollbar-horizontal os-theme-dark os-scrollbar-auto-hide os-scrollbar-auto-hide-hidden os-scrollbar-handle-interactive os-scrollbar-cornerless os-scrollbar-unusable"
+          style="--os-scroll-percent: 0; --os-viewport-percent: 0; --os-scroll-direction: 0;"
+        >
+          <div
+            class="os-scrollbar-track"
+          >
+            <div
+              class="os-scrollbar-handle"
+            />
+          </div>
+        </div>
+        <div
+          class="os-scrollbar os-scrollbar-vertical os-theme-dark os-scrollbar-auto-hide os-scrollbar-auto-hide-hidden os-scrollbar-handle-interactive os-scrollbar-cornerless os-scrollbar-unusable"
+          style="--os-scroll-percent: 0; --os-viewport-percent: 0; --os-scroll-direction: 0;"
+        >
+          <div
+            class="os-scrollbar-track"
+          >
+            <div
+              class="os-scrollbar-handle"
+            />
+          </div>
+        </div>
+      </div>
+    </div>
+    <nav
+      aria-label="Pagination Navigation"
+      class="rcx-box rcx-box--full rcx-pagination rcx-pagination--divider"
+    >
+      <div
+        class="rcx-pagination__left"
+      >
+        <span
+          class="rcx-pagination__label"
+          id="_r_20_"
+        >
+          Items_per_page:
+        </span>
+        <ol
+          aria-labelledby="_r_20_"
+          class="rcx-box rcx-box--full rcx-pagination__list"
+        >
+          <li
+            class="rcx-pagination__list-item"
+          >
+            <button
+              aria-label="Show 25 items per page"
+              class="rcx-box rcx-box--full rcx-pagination__link"
+              disabled=""
+              tabindex="-1"
+            >
+              25
+            </button>
+          </li>
+          <li
+            class="rcx-pagination__list-item"
+          >
+            <button
+              aria-label="Show 50 items per page"
+              class="rcx-box rcx-box--full rcx-pagination__link"
+              tabindex="0"
+            >
+              50
+            </button>
+          </li>
+          <li
+            class="rcx-pagination__list-item"
+          >
+            <button
+              aria-label="Show 100 items per page"
+              class="rcx-box rcx-box--full rcx-pagination__link"
+              tabindex="0"
+            >
+              100
+            </button>
+          </li>
+        </ol>
+      </div>
+      <div
+        class="rcx-pagination__right"
+      >
+        <span
+          class="rcx-pagination__label"
+          id="_r_1v_"
+        >
+          Showing_results_of
+        </span>
+        <ol
+          aria-labelledby="_r_1v_"
+          class="rcx-box rcx-box--full rcx-pagination__list"
+        >
+          <li
+            class="rcx-pagination__list-item"
+          >
+            <button
+              aria-label="Previous page"
+              class="rcx-box rcx-box--full rcx-pagination__back"
+              disabled=""
+            >
+              <span
+                class="rcx-box rcx-box--full rcx-chevron--left rcx-chevron"
+              >
+                <i
+                  aria-hidden="true"
+                  class="rcx-box rcx-box--full rcx-icon--name-chevron-down rcx-icon rcx-css-1g87xs3"
+                >
+                  
+                </i>
+              </span>
+            </button>
+          </li>
+          <li
+            class="rcx-pagination__list-item"
+          >
+            <button
+              aria-label="Page 1"
+              class="rcx-box rcx-box--full rcx-pagination__link"
+              disabled=""
+            >
+              1
+            </button>
+          </li>
+          <li
+            class="rcx-pagination__list-item"
+          >
+            <button
+              aria-label="Next page"
+              class="rcx-box rcx-box--full rcx-pagination__forward"
+              disabled=""
+            >
+              <span
+                class="rcx-box rcx-box--full rcx-chevron--right rcx-chevron"
+              >
+                <i
+                  aria-hidden="true"
+                  class="rcx-box rcx-box--full rcx-icon--name-chevron-down rcx-icon rcx-css-1g87xs3"
+                >
+                  
+                </i>
+              </span>
+            </button>
+          </li>
+        </ol>
+      </div>
+    </nav>
+  </div>
+</body>
+`;

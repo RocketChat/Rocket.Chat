@@ -19,6 +19,7 @@
   - I have added tests that prove my fix is effective or that my feature works (if applicable)
   - I have added necessary documentation (if applicable)
   - Comments state intent, not mechanism, and none explains code in another file - https://github.com/RocketChat/Rocket.Chat/blob/develop/docs/code-comments.md
+  - This pull request carries one concern and can be reverted on its own - https://github.com/RocketChat/Rocket.Chat/blob/develop/docs/change-organization.md
   - Any dependent changes have been merged and published in downstream modules
 -->
 

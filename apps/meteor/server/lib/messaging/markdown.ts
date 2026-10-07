@@ -1,10 +1,10 @@
 import { Meteor } from 'meteor/meteor';
 import { Tracker } from 'meteor/tracker';
 
-import { createMarkdownMessageRenderer, createMarkdownNotificationRenderer } from '../../../app/markdown/lib/markdown';
+import { createMarkdownMessageRenderer, createMarkdownNotificationRenderer } from '../../../lib/markdown/markdown';
 import { callbacks } from '../callbacks';
 
-export { Markdown } from '../../../app/markdown/lib/markdown';
+export { Markdown } from '../../../lib/markdown/markdown';
 
 Meteor.startup(() => {
 	Tracker.autorun(() => {

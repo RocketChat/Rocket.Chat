@@ -6,7 +6,7 @@ import { Meteor } from 'meteor/meteor';
 
 import { settings } from '..';
 import { updateAuditedByUser } from './auditedSettingUpdates';
-import { getSettingPermissionId } from '../../../app/authorization/lib';
+import { getSettingPermissionId } from '../../../lib/authorization';
 import { hasPermissionAsync } from '../../lib/authorization/hasPermission';
 import { notifyOnSettingChangedById } from '../../lib/notifyListener';
 import { validateSettingRules } from '../../lib/settingValidationRules';

@@ -3,7 +3,7 @@ import { AuthorizationContext, useUserId } from '@rocket.chat/ui-contexts';
 import type { ContextType, ReactNode } from 'react';
 import { useMemo, useSyncExternalStore } from 'react';
 
-import { createAuthorizationFunctions } from '../../app/authorization/lib/createAuthorizationFunctions';
+import { createAuthorizationFunctions } from '../../lib/authorization/createAuthorizationFunctions';
 import { PermissionsCachedStore } from '../cachedStores';
 import { Permissions, Roles, Subscriptions, Users } from '../stores';
 

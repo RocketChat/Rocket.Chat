@@ -162,7 +162,7 @@ export class ConferenceWindow {
 
 	/** The provider's page, framed rather than handed a tab of its own. Named with `aria-label`, never `title`. */
 	get frameProvider(): Locator {
-		return this.page.getByLabel('Conference Call', { exact: true });
+		return this.page.getByLabel('Conference call', { exact: true });
 	}
 
 	// ---------------------------------------------------------------------------------------------------------

@@ -19,7 +19,7 @@ Practical consequence: when you look for code, ask "what kind of thing is it?" b
 | `server/`   | **All community server code.** Described in detail below. |
 | `ee/server/` | Enterprise server code — an exact mirror of `server/`'s responsibility layout. See [License boundary](#the-license-boundary-ee). |
 | `client/`, `ee/client/` | Frontend (React) code. |
-| `app/`      | **Legacy remnant, do not add server code here.** What's left is genuinely shared client+server code (`app/*/lib/`), client-only feature code (`app/*/client/`), and `app/apps/server/` (Apps-Engine bridges/converters, kept intentionally). |
+| `app/`      | **Legacy remnant, do not add server code here.** What's left is genuinely shared client+server code (`app/*/lib/`), and client-only feature code (`app/*/client/`). |
 | `lib/`      | Small utilities shared between client and server (isomorphic, no Meteor/server imports). |
 | `imports/`  | Legacy Meteor-style feature folders (`personal-access-tokens`, message-read-receipt client parts). Avoid adding to it. |
 | `packages/` (repo root) | Workspace packages (`@rocket.chat/*`). Cross-app logic, typings (`core-typings`, `rest-typings`), and services SDK (`core-services`) live here — prefer a package when code must be shared beyond `apps/meteor`. |
@@ -50,7 +50,7 @@ Practical consequence: when you look for code, ask "what kind of thing is it?" b
 | `startup/` | Boot-time configuration and one-off initialization (`initialData.ts`, `rateLimiter.js`, `robots.js`, `migrations/`). |
 | `routes/` | Non-REST HTTP routes (avatar serving, etc.). |
 | `database/` | Mongo connection utilities (`trash`, `readSecondaryPreferred`, transaction helpers). |
-| `modules/` | Larger self-contained subsystems (core-apps, listeners, notifications, streamer). |
+| `modules/` | Larger self-contained subsystems: `apps/` (the Apps-Engine host: bridges and converters) and `core-apps/`. |
 | `features/` | Feature-flag style subsystems (e.g. `EmailInbox/`). |
 | `configuration/` | Runtime configuration glue (OAuth, CAS, LDAP wiring). |
 | `email/`, `ufs/`, `oauth2-server/`, `deasync/` | Infrastructure kept as-is: mailer transport, Upload-File-System storage engine, OAuth2 provider implementation, deasync shim. |
@@ -81,7 +81,7 @@ Practical consequence: when you look for code, ask "what kind of thing is it?" b
 
 ## The EE tree (`ee/server/`) and the license boundary
 
-`ee/server/` mirrors the same responsibility layout: `api/`, `hooks/`, `lib/` (with `omnichannel/`, `license/`, `ldap/`, `canned-responses/`, `abac/`, `audit/`, …), `meteor-methods/`, `settings/`, `cron/`, `models/`, `patches/`, `startup/`, `configuration/`, and `local-services/` (EE internal services).
+`ee/server/` mirrors the same responsibility layout: `api/`, `hooks/`, `lib/` (with `omnichannel/`, `license/`, `ldap/`, `canned-responses/`, `abac/`, `audit/`, `apps/` — the Apps-Engine orchestrator, marketplace client and app storage, …), `meteor-methods/`, `settings/`, `cron/`, `models/`, `patches/`, `startup/`, `configuration/`, and `local-services/` (EE internal services).
 
 **The directory boundary is the license boundary.** Code under an `ee/` path is governed by the Enterprise license (`apps/meteor/ee/LICENSE`); everything else is community-licensed:
 
@@ -120,4 +120,4 @@ Anti-patterns to avoid:
 
 ## History
 
-The structure above is the result of a 7-phase migration (finished 2026-07) that dissolved the old Meteor-package-style `app/*/server/` folders: slash commands (#40259), bridges (#41115), REST API (#41126), domain functions (#41155), meteor-methods (#41225), lib/hooks/feature code (#41315), omnichannel + final cleanup (#41381). Files were moved as-is, so `git log --follow` works across the moves. The old `app/<feature>/server/` path of any file can be found in those PRs' manifests if needed.
+The structure above is the result of a 7-phase migration (finished 2026-07) that dissolved the old Meteor-package-style `app/*/server/` folders: slash commands (#40259), bridges (#41115), REST API (#41126), domain functions (#41155), meteor-methods (#41225), lib/hooks/feature code (#41315), omnichannel + final cleanup (#41381). The Apps-Engine host folders (`app/apps/server/` and `ee/server/apps/`) were out of scope for those phases and moved later, into `server/modules/apps/` and the `ee/server/` responsibility folders (#42459). Files were moved as-is, so `git log --follow` works across the moves. The old `app/<feature>/server/` path of any file can be found in those PRs' manifests if needed.

@@ -122,11 +122,14 @@ test.describe.serial('file-upload', () => {
 	test('should respect the maximum number of files allowed per message: 10', async () => {
 		const files = new Array(10).fill('number1.png');
 
-		await Promise.all(files.map((file) => poHomeChannel.content.sendFileMessage(file)));
+		await poHomeChannel.content.sendMultipleFilesMessage(files);
+		await expect(poHomeChannel.composer.getFilesInComposer()).toHaveCount(10);
+
 		await poHomeChannel.content.dragAndDropTxtFile({ waitForResponse: false });
 
+		await poHomeChannel.toastMessage.waitForDisplay({ type: 'error' });
 		await expect(poHomeChannel.composer.getFilesInComposer()).toHaveCount(10);
-		await expect(poHomeChannel.composer.getFileByName('any_file.txt')).not.toBeVisible();
+		await expect(poHomeChannel.composer.getFileByName(TEST_FILE_TXT)).not.toBeVisible();
 	});
 
 	test('should upload file in composer after recording video message', async ({ context }) => {

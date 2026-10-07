@@ -644,7 +644,7 @@ export class AbacService extends ServiceClass implements IAbacService {
 		// if is the last attribute, just remove all
 		if (previous.length === 1) {
 			await Rooms.unsetAbacAttributesById(rid);
-			void Audit.objectAttributesRemoved({ _id: room._id }, previous, actor);
+			void Audit.objectAttributesRemoved({ _id: room._id, name: room.name }, previous, actor);
 
 			this.broadcastRoomUpdate({ ...room, abacAttributes: undefined });
 
@@ -838,6 +838,7 @@ export class AbacService extends ServiceClass implements IAbacService {
 				logger.error({
 					msg: 'Failed to remove user from ABAC room',
 					rid: room._id,
+					userId: user._id,
 					err,
 					reason,
 				});
@@ -920,7 +921,7 @@ export class AbacService extends ServiceClass implements IAbacService {
 		}
 
 		const abacRooms = await Rooms.findAllPrivateRoomsWithAbacAttributes({
-			projection: { _id: 1, t: 1, teamMain: 1, abacAttributes: 1 },
+			projection: { _id: 1, name: 1, t: 1, teamMain: 1, abacAttributes: 1 },
 		}).toArray();
 
 		if (!abacRooms.length) {

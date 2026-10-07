@@ -31,19 +31,19 @@ import {
 	ContextualbarScrollableContent,
 	ContextualbarFooter,
 	ContextualbarDialog,
+	ExternalLink,
 } from '@rocket.chat/ui-client';
-import type { TranslationKey } from '@rocket.chat/ui-contexts';
-import { useSetting, useTranslation, useToastMessageDispatch, useEndpoint } from '@rocket.chat/ui-contexts';
+import { useSetting, useToastMessageDispatch, useEndpoint } from '@rocket.chat/ui-contexts';
 import { useQueryClient } from '@tanstack/react-query';
 import type { ChangeEvent } from 'react';
 import { useId, useMemo } from 'react';
 import { useForm, Controller } from 'react-hook-form';
+import { Trans, useTranslation } from 'react-i18next';
 
 import type { EditRoomInfoFormData } from './useEditRoomInitialValues';
 import { useEditRoomInitialValues } from './useEditRoomInitialValues';
 import { useEditRoomPermissions } from './useEditRoomPermissions';
 import { MessageTypesValues } from '../../../../../../app/lib/lib/MessageTypes';
-import RawText from '../../../../../components/RawText';
 import RoomAvatarEditor from '../../../../../components/avatar/RoomAvatarEditor';
 import { msToTimeUnit, TIMEUNIT } from '../../../../../lib/convertTimeUnit';
 import { getDirtyFields } from '../../../../../lib/getDirtyFields';
@@ -59,12 +59,6 @@ export type EditRoomInfoProps = {
 	onClickBack: () => void;
 };
 
-const title = {
-	team: 'Edit_team',
-	channel: 'Edit_channel',
-	discussion: 'Edit_discussion',
-} as const;
-
 const getRetentionSetting = (roomType: IRoomWithRetentionPolicy['t']): string => {
 	switch (roomType) {
 		case 'd':
@@ -79,7 +73,7 @@ const getRetentionSetting = (roomType: IRoomWithRetentionPolicy['t']): string =>
 
 const EditRoomInfo = ({ room, onClickClose, onClickBack }: EditRoomInfoProps) => {
 	const query = useQueryClient();
-	const t = useTranslation();
+	const { t } = useTranslation();
 	const dispatchToastMessage = useToastMessageDispatch();
 	const isFederated = isRoomFederated(room);
 	const isAbacManaged = useIsABACManagedRoom(room);
@@ -110,10 +104,7 @@ const EditRoomInfo = ({ room, onClickClose, onClickBack }: EditRoomInfoProps) =>
 		formState: { isDirty, dirtyFields, errors, isSubmitting },
 	} = useForm<EditRoomInfoFormData>({ defaultValues });
 
-	const sysMesOptions: SelectOption[] = useMemo(
-		() => MessageTypesValues.map(({ key, i18nLabel }) => [key, t(i18nLabel as TranslationKey)]),
-		[t],
-	);
+	const sysMesOptions: SelectOption[] = useMemo(() => MessageTypesValues.map(({ key, i18nLabel }) => [key, t(i18nLabel)]), [t]);
 
 	const { isDirty: isRoomNameDirty } = getFieldState('roomName');
 
@@ -236,11 +227,21 @@ const EditRoomInfo = ({ room, onClickClose, onClickBack }: EditRoomInfoProps) =>
 
 	const showAccordion = showAdvancedSettings || showRetentionPolicy;
 
+	const title = useMemo(
+		() =>
+			({
+				team: t('Edit_team'),
+				channel: t('Edit_channel'),
+				discussion: t('Edit_discussion'),
+			})[roomType],
+		[roomType, t],
+	);
+
 	return (
 		<ContextualbarDialog>
 			<ContextualbarHeader>
 				{onClickBack && <ContextualbarBack onClick={onClickBack} />}
-				<ContextualbarTitle>{t(`${title[roomType]}`)}</ContextualbarTitle>
+				<ContextualbarTitle>{title}</ContextualbarTitle>
 				{onClickClose && <ContextualbarClose onClick={onClickClose} />}
 			</ContextualbarHeader>
 			<ContextualbarScrollableContent padding={24}>
@@ -539,7 +540,10 @@ const EditRoomInfo = ({ room, onClickClose, onClickBack }: EditRoomInfoProps) =>
 										{retentionOverrideGlobal && (
 											<>
 												<Callout type='danger'>
-													<RawText>{t('RetentionPolicyRoom_ReadTheDocs', { retentionPolicyUrl: links.retentionPolicy })}</RawText>
+													<Trans
+														i18nKey='RetentionPolicyRoom_ReadTheDocs'
+														components={{ docsLink: <ExternalLink to={links.retentionPolicy} /> }}
+													/>
 												</Callout>
 												<Field>
 													<FieldLabel htmlFor={retentionMaxAgeField}>

@@ -1,3 +1,7 @@
+import { once } from 'node:events';
+import { PassThrough, Readable } from 'node:stream';
+import { text } from 'node:stream/consumers';
+
 import { expect } from 'chai';
 import { before, beforeEach, describe, it } from 'mocha';
 import proxyquire from 'proxyquire';
@@ -466,6 +470,108 @@ describe('FileUpload', () => {
 			expect(result).to.be.true;
 			expect(res.writeHead.called).to.be.false;
 			expect(res.setHeader.calledOnceWith('content-disposition', 'attachment; filename="export.zip"')).to.be.true;
+		});
+	});
+
+	describe('proxyFile', () => {
+		const fileUrl = 'https://bucket.s3.amazonaws.com/file-id?X-Amz-Signature=abc';
+
+		const createUpstream = (statusCode: number, headers: Record<string, string>, body = '') => {
+			const fileRes = Object.assign(Readable.from([Buffer.from(body)]), { statusCode, headers });
+			return { get: sinon.stub().callsFake((_url, _options, callback) => callback(fileRes)) };
+		};
+
+		const createResponse = () => {
+			const headers = new Map<string, string>();
+			const res = Object.assign(new PassThrough(), {
+				statusCode: 200,
+				setHeader: (name: string, value: string | number) => headers.set(name.toLowerCase(), String(value)),
+				removeHeader: (name: string) => headers.delete(name.toLowerCase()),
+				writeHead(statusCode: number) {
+					res.statusCode = statusCode;
+					return res;
+				},
+			});
+			return { res: res as any, headers, body: text(res) };
+		};
+
+		it('should forward the requested byte range and relay the partial response', async () => {
+			const request = createUpstream(
+				206,
+				{
+					'accept-ranges': 'bytes',
+					'content-length': '4',
+					'content-range': 'bytes 2-5/720467',
+					'content-type': 'audio/mpeg',
+					'etag': '"abc"',
+					'x-amz-request-id': 'internal',
+				},
+				'data',
+			);
+			const { res, headers, body } = createResponse();
+			const req = { headers: { 'range': 'bytes=2-5', 'if-range': '"abc"', 'cookie': 'rc_token=secret' } } as any;
+
+			FileUpload.proxyFile('Audio record.mp3', fileUrl, false, request, req, res);
+
+			expect(request.get.firstCall.args[1]).to.deep.equal({ headers: { 'range': 'bytes=2-5', 'if-range': '"abc"' } });
+			expect(await body).to.equal('data');
+			expect(res.statusCode).to.equal(206);
+			expect(Object.fromEntries(headers)).to.deep.equal({
+				'content-disposition': 'inline; filename="Audio%20record.mp3"',
+				'accept-ranges': 'bytes',
+				'content-length': '4',
+				'content-range': 'bytes 2-5/720467',
+				'content-type': 'audio/mpeg',
+				'etag': '"abc"',
+			});
+		});
+
+		it('should relay the whole file when no range is requested', async () => {
+			const request = createUpstream(200, { 'accept-ranges': 'bytes', 'content-length': '4', 'content-type': 'audio/mpeg' }, 'data');
+			const { res, headers, body } = createResponse();
+
+			FileUpload.proxyFile('audio.mp3', fileUrl, true, request, { headers: {} } as any, res);
+
+			expect(request.get.firstCall.args[1]).to.deep.equal({ headers: {} });
+			expect(await body).to.equal('data');
+			expect(res.statusCode).to.equal(200);
+			expect(headers.get('content-disposition')).to.equal('attachment; filename="audio.mp3"');
+			expect(headers.get('accept-ranges')).to.equal('bytes');
+			expect(headers.get('content-length')).to.equal('4');
+		});
+
+		it('should answer an unsatisfiable range with 416 and the file size', async () => {
+			const request = createUpstream(416, { 'content-range': 'bytes */720467' }, '<Error/>');
+			const { res, headers, body } = createResponse();
+
+			FileUpload.proxyFile('audio.mp3', fileUrl, false, request, { headers: { range: 'bytes=999999-' } } as any, res);
+
+			expect(await body).to.equal('');
+			expect(res.statusCode).to.equal(416);
+			expect(headers.get('content-range')).to.equal('bytes */720467');
+		});
+
+		it('should fail with 500 when the storage refuses the request', async () => {
+			const request = createUpstream(403, { 'content-type': 'application/xml' }, '<Error/>');
+			const { res, headers, body } = createResponse();
+
+			FileUpload.proxyFile('audio.mp3', fileUrl, false, request, { headers: {} } as any, res);
+
+			expect(await body).to.equal('');
+			expect(res.statusCode).to.equal(500);
+			expect(headers.get('x-rc-proxyfile-status')).to.equal('403');
+			expect(headers.has('content-type')).to.be.false;
+		});
+
+		it('should release the storage response when the client goes away', async () => {
+			const fileRes = Object.assign(new PassThrough(), { statusCode: 200, headers: {} });
+			const res = Object.assign(new PassThrough(), { setHeader: sinon.stub() });
+
+			FileUpload.proxyFile('audio.mp3', fileUrl, false, { get: sinon.stub().yields(fileRes) }, { headers: {} } as any, res);
+			res.destroy();
+			await once(res, 'close');
+
+			expect(fileRes.destroyed).to.be.true;
 		});
 	});
 });

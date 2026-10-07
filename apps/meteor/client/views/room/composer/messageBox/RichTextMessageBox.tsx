@@ -2,6 +2,7 @@
 import { isRoomFederated, isRoomNativeFederated } from '@rocket.chat/core-typings';
 import { useContentBoxSize, useMediaQuery, useStableCallback } from '@rocket.chat/fuselage-hooks';
 import type { Options } from '@rocket.chat/message-parser';
+import { useFormatDateAndTime } from '@rocket.chat/ui-client';
 import { MessageComposerHint, RichTextComposerInputExpandable } from '@rocket.chat/ui-composer';
 import { useTranslation, useUserPreference, useLayout, useSetting } from '@rocket.chat/ui-contexts';
 import { useMutation } from '@tanstack/react-query';
@@ -28,14 +29,13 @@ import {
 } from './messageBoxHelpers';
 import { handleRichTextSelectionWrapping } from './wrapSelection';
 import { useExternalLink } from '../../../../hooks/useExternalLink';
-import { useFormatDateAndTime } from '../../../../hooks/useFormatDateAndTime';
 import { useIsFederationEnabled } from '../../../../hooks/useIsFederationEnabled';
 import { useMergedRefsV2 } from '../../../../hooks/useMergedRefsV2';
 import { createRichTextComposerAPI } from '../../../../lib/createRichTextComposerAPI';
 import { emoji } from '../../../../lib/emoji';
 import { formattingButtons } from '../../../../lib/messageBoxFormatting';
 import { roomCoordinator } from '../../../../lib/rooms/roomCoordinator';
-import { getSelectionRange, setSelectionRange } from '../../../../lib/selectionRange';
+import { getContentEndOffset, getSelectionRange, setSelectionRange } from '../../../../lib/selectionRange';
 import { keyCodes } from '../../../../lib/utils/keyCodes';
 import { Subscriptions } from '../../../../stores';
 import { useAutoLinkDomains } from '../../MessageList/hooks/useAutoLinkDomains';
@@ -143,7 +143,7 @@ const RichTextMessageBox = ({
 	const messageComposerRef = useRef<HTMLElement>(null);
 
 	const subscription = useRoomSubscription();
-	const { initialValue, persistLocal, flushDraft } = useDraft(
+	const { initialValue, persistLocal, flushDraft, discardDraft } = useDraft(
 		room._id,
 		tmid ? subscription?.threadDrafts?.[tmid] : subscription?.draft,
 		tmid,
@@ -168,7 +168,7 @@ const RichTextMessageBox = ({
 		(node: HTMLDivElement) => {
 			if (!chat.composer) {
 				chat.setComposerAPI(
-					createRichTextComposerAPI(node, persistLocal, initialValue, quoteChainLimit, parseOptions, messageComposerRef, {
+					createRichTextComposerAPI(node, persistLocal, discardDraft, initialValue, quoteChainLimit, parseOptions, messageComposerRef, {
 						rid: room._id,
 						tmid,
 					}),
@@ -184,7 +184,7 @@ const RichTextMessageBox = ({
 				chat.setComposerAPI();
 			};
 		},
-		[chat, flushDraft, initialValue, persistLocal, quoteChainLimit, parseOptions, room._id, tmid],
+		[chat, discardDraft, flushDraft, initialValue, persistLocal, quoteChainLimit, parseOptions, room._id, tmid],
 	);
 
 	const isTouchDevice = useMediaQuery('(pointer: coarse)');
@@ -217,9 +217,8 @@ const RichTextMessageBox = ({
 
 		const text = chat.composer?.text ?? '';
 		popup.clear();
-		flushDraft('');
 
-		onSend?.({
+		void onSend?.({
 			value: text,
 			tshow,
 			previewUrls,
@@ -249,7 +248,8 @@ const RichTextMessageBox = ({
 		popup.clear();
 
 		// Sets the cursor position to the end after resetting an edited message
-		setSelectionRange(input, input.innerText.length, input.innerText.length);
+		const end = getContentEndOffset(input);
+		setSelectionRange(input, end, end);
 		input.focus();
 	};
 

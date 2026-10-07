@@ -10,7 +10,7 @@ import { OmnichannelSectionsHref } from '../omnichannel-admin';
 export class OmnichannelContactCenterContacts extends OmnichannelContactCenter {
 	protected readonly route = OmnichannelSectionsHref.currentContacts;
 
-	protected override readonly tableName = 'Omnichannel Contact Center Contacts';
+	protected override readonly tableName = 'Omnichannel contact center contacts';
 
 	readonly contactInfo: OmnichannelContactInfo;
 

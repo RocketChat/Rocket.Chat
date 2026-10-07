@@ -8,6 +8,7 @@ export type UserCreateParamsPOST = {
 	password: string;
 	username: string;
 	active?: boolean;
+	presenceDisabledByAdmin?: boolean;
 	bio?: string;
 	nickname?: string;
 	statusText?: string;
@@ -32,6 +33,7 @@ const userCreateParamsPostSchema = {
 		password: { type: 'string' },
 		username: { type: 'string' },
 		active: { type: 'boolean', nullable: true },
+		presenceDisabledByAdmin: { type: 'boolean', nullable: true },
 		bio: { type: 'string', nullable: true },
 		nickname: { type: 'string', nullable: true },
 		statusText: { type: 'string', nullable: true },

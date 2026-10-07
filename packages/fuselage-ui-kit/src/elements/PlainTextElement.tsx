@@ -8,7 +8,7 @@ const PlainTextElement = ({ textObject }: PlainTextElementProps) => {
 	const { t } = useAppTranslation();
 
 	const text = textObject.i18n
-		? t(textObject.i18n.key, { ns: textObject.i18n.ns, defaultValue: textObject.text, replace: textObject.i18n.args })
+		? t(textObject.i18n.key, { ...textObject.i18n.args, ns: textObject.i18n.ns, defaultValue: textObject.text })
 		: textObject.text;
 
 	return <>{text}</>;

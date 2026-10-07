@@ -7,6 +7,10 @@ import { useTranslation } from 'react-i18next';
 
 import ConferencePreflight from './ConferencePreflight';
 import ConferenceStatePage from './ConferenceStatePage';
+import CallControls from '../call/CallControls';
+import CallHeader from '../call/CallHeader';
+import CallStageArea from '../call/CallStageArea';
+import CallBar from '../components/CallBar';
 import CallMembersPanel from '../components/CallMembersPanel/CallMembersPanel';
 import CallPanel from '../components/CallPanel';
 import CallTopBar from '../components/CallTopBar';
@@ -90,14 +94,7 @@ const ConferenceWindow = () => {
 	// Kept true as each ring lapses, which is what stops the dialler sounding for a call nobody is being asked about.
 	const ringingMembers = useRinging(otherMembers);
 	const someoneRinging = ringingMembers.length > 0;
-	useEffect(() => {
-		if (someoneRinging) {
-			callSounds.playDialer();
-		} else {
-			callSounds.stopDialer();
-		}
-		return () => callSounds.stopDialer();
-	}, [someoneRinging, callSounds]);
+	useEffect(() => (someoneRinging ? callSounds.playDialer() : undefined), [someoneRinging, callSounds]);
 
 	const [bannerDismissed, setBannerDismissed] = useState(false);
 
@@ -124,7 +121,9 @@ const ConferenceWindow = () => {
 		);
 	}
 
-	if (session.loading) {
+	// Waits for the room even with a session: a call started on the start screen arrives joined before its provider
+	// is known, and until then an embedded call reads as a join with no URL.
+	if (session.loading || room.loading) {
 		return <>{slots.loading}</>;
 	}
 
@@ -133,10 +132,6 @@ const ConferenceWindow = () => {
 	}
 
 	if (!session.joined) {
-		if (room.loading) {
-			return <>{slots.loading}</>;
-		}
-
 		return (
 			// No `confirming`: joining takes this screen down with it — `session.loading` is that very request, and
 			// it returns the loading slot above — so there is no button left to report it on.
@@ -147,6 +142,7 @@ const ConferenceWindow = () => {
 				canName={call.canRename}
 				participants={{ people: present.slice(0, PREFLIGHT_FACES_SHOWN), total: presentCount, displayAvatars: viewer.displayAvatars }}
 				capabilities={call.capabilities}
+				media={slots.preflightMedia ?? null}
 				onConfirm={(preferences, name, ring) => actions.join(preferences, name, ring)}
 				onCancel={actions.leave}
 			/>
@@ -162,48 +158,70 @@ const ConferenceWindow = () => {
 		);
 	}
 
+	// A call that runs in here brings its own header and controls, so the window's bars carry those instead. Only then
+	// does the application provide the call's own contexts, which is what everything behind this flag reads.
+	const embeddedCall = !session.url && session.embedded;
+
+	const panelToggles = (
+		<>
+			<IconButton
+				small
+				secondary
+				// The same words in both, because they disagreed: the tooltip said "People" while the accessible
+				// name said how many, so anything looking for the button by the name it appeared to have never
+				// found it.
+				aria-label={t('__count__people_in_the_call', { count: presentCount })}
+				title={t('__count__people_in_the_call', { count: presentCount })}
+				aria-pressed={activePanel === 'members'}
+				onClick={() => togglePanel('members')}
+				icon={<Icon name='members' size='x20' color={activePanel === 'members' ? 'info' : undefined} />}
+				badge={presentCount > 0 ? <Badge>{presentCount}</Badge> : undefined}
+			/>
+			<IconButton
+				small
+				secondary
+				aria-label={withBadgeCount(t('Chat'), unread, unreadTitle, unseenActivity)}
+				title={t('Chat')}
+				aria-pressed={chatVisible}
+				onClick={() => togglePanel('chat')}
+				icon={<Icon name='balloon' size='x20' color={chatVisible ? 'info' : undefined} />}
+				// `chatBadge` is `null` for activity with no count behind it, which is the dot — a `Badge` with
+				// nothing in it. Only `undefined` means no badge at all, so the test is against that rather than
+				// for truth.
+				badge={
+					chatBadge !== undefined ? (
+						<Badge variant={unreadVariant} title={unreadTitle}>
+							{chatBadge}
+						</Badge>
+					) : undefined
+				}
+			/>
+		</>
+	);
+
 	return (
 		<Box display='flex' flexDirection='column' flexGrow={1} minHeight={0} style={{ backgroundColor: 'black' }}>
 			{room.chatAccess && !bannerDismissed && <ChatAccessNotice access={room.chatAccess} onDismiss={() => setBannerDismissed(true)} />}
 
-			<CallTopBar startAt={call.createdAt} name={call.name}>
-				<IconButton
-					small
-					secondary
-					// The same words in both, because they disagreed: the tooltip said "People" while the accessible
-					// name said how many, so anything looking for the button by the name it appeared to have never
-					// found it.
-					aria-label={t('__count__people_in_the_call', { count: presentCount })}
-					title={t('__count__people_in_the_call', { count: presentCount })}
-					aria-pressed={activePanel === 'members'}
-					onClick={() => togglePanel('members')}
-					icon={<Icon name='members' size='x20' color={activePanel === 'members' ? 'info' : undefined} />}
-					badge={presentCount > 0 ? <Badge>{presentCount}</Badge> : undefined}
-				/>
-				<IconButton
-					small
-					secondary
-					aria-label={withBadgeCount(t('Chat'), unread, unreadTitle, unseenActivity)}
-					title={t('Chat')}
-					aria-pressed={chatVisible}
-					onClick={() => togglePanel('chat')}
-					icon={<Icon name='balloon' size='x20' color={chatVisible ? 'info' : undefined} />}
-					// `chatBadge` is `null` for activity with no count behind it, which is the dot — a `Badge` with
-					// nothing in it. Only `undefined` means no badge at all, so the test is against that rather than
-					// for truth.
-					badge={
-						chatBadge !== undefined ? (
-							<Badge variant={unreadVariant} title={unreadTitle}>
-								{chatBadge}
-							</Badge>
-						) : undefined
+			{embeddedCall ? (
+				<CallTopBar
+					host={
+						<Box display='flex' flexGrow={1} minWidth={0} alignItems='center'>
+							<CallHeader name={call.name} />
+						</Box>
 					}
-				/>
-			</CallTopBar>
+				>
+					{panelToggles}
+				</CallTopBar>
+			) : (
+				<CallTopBar startAt={call.createdAt} name={call.name}>
+					{panelToggles}
+				</CallTopBar>
+			)}
 
 			<Box display='flex' flexGrow={1} minHeight={0} position='relative'>
 				<Box flexGrow={1} minWidth={0} display='flex' flexDirection='column' position='relative'>
-					{session.url && <ConferenceIframe url={session.url} />}
+					{session.url ? <ConferenceIframe url={session.url} /> : <CallStageArea />}
 				</Box>
 
 				<CallPanel visible={!!activePanel} sheet={sheetPanel}>
@@ -214,6 +232,9 @@ const ConferenceWindow = () => {
 					{activePanel === 'chat' && <ChatPanelContext.Provider value={closeChat}>{slots.chat}</ChatPanelContext.Provider>}
 				</CallPanel>
 			</Box>
+
+			{/* Only a call running in here has controls of ours to hold; an iframe keeps its own inside the frame. */}
+			{embeddedCall && <CallBar centre={<CallControls />} />}
 		</Box>
 	);
 };

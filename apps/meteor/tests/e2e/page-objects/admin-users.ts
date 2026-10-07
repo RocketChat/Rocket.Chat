@@ -4,7 +4,7 @@ import { Admin, AdminSectionsHref } from './admin';
 import { MenuMoreActions, UserInfoFlexTab, EditUserFlexTab } from './fragments';
 import { expect } from '../utils/test';
 
-type UserActions = 'Make Admin' | 'Remove Admin' | 'Activate' | 'Deactivate';
+type UserActions = 'Make admin' | 'Remove admin' | 'Activate' | 'Deactivate' | 'Manage user status';
 
 export class AdminUsers extends Admin {
 	readonly editUser: EditUserFlexTab;
@@ -37,7 +37,7 @@ export class AdminUsers extends Admin {
 	}
 
 	private get inputSearchUsers(): Locator {
-		return this.page.getByRole('textbox', { name: 'Search Users' });
+		return this.page.getByRole('textbox', { name: 'Search users' });
 	}
 
 	get btnMoreActionsMenu(): Locator {
@@ -46,6 +46,11 @@ export class AdminUsers extends Admin {
 
 	getUserRowByUsername(username: string): Locator {
 		return this.page.locator('tr', { hasText: username }).first();
+	}
+
+	async filterByUserStatus(option: 'All user statuses' | 'Default status' | 'Managed status'): Promise<void> {
+		await this.page.getByRole('button', { name: /^(All user statuses|Default status|Managed status)$/ }).click();
+		await this.page.getByRole('option', { name: option, exact: true }).click();
 	}
 
 	getTabByName(name: 'All' | 'Pending' | 'Active' | 'Deactivated' = 'All'): Locator {

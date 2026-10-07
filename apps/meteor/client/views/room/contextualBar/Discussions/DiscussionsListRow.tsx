@@ -1,10 +1,10 @@
 import type { IDiscussionMessage } from '@rocket.chat/core-typings';
+import { useTimeAgo } from '@rocket.chat/ui-client';
 import type { MouseEvent } from 'react';
 import { memo } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import DiscussionsListItem from './components/DiscussionsListItem';
-import { useTimeAgo } from '../../../../hooks/useTimeAgo';
 import { normalizeThreadMessage } from '../../../../lib/normalizeThreadMessage';
 
 export type DiscussionListRowProps = {

@@ -1,9 +1,8 @@
 import { Badge, IconButton, SidebarCollapseGroup, SidebarCollapseGroupMenu } from '@rocket.chat/fuselage';
-import type { TranslationKey } from '@rocket.chat/ui-contexts';
 import type { HTMLAttributes, KeyboardEvent, MouseEventHandler } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { useHasLicenseModule } from '../../hooks/useHasLicenseModule';
+import { useIsEnterprise } from '../../hooks/useIsEnterprise';
 import { usePreventPropagation } from '../../hooks/usePreventPropagation';
 import { useDeferredMenuMount } from '../Item/useDeferredMenuMount';
 import CategoryMenu from '../categories/CategoryMenu';
@@ -22,12 +21,12 @@ type RoomListCollapserProps = {
 
 const RoomListCollapser = ({ group, canMoveUp, canMoveDown, onMoveUp, onMoveDown, ...props }: RoomListCollapserProps) => {
 	const { t } = useTranslation();
-	const { data: hasLicenseModule = false } = useHasLicenseModule('experimental-enterprise-features');
+	const { data: { isEnterprise = false } = {} } = useIsEnterprise();
 	const preventPropagation = usePreventPropagation();
 	const { mounted: menuVisibility, requestMount, mountNow } = useDeferredMenuMount();
 	const { unreadTitle, unreadVariant, showUnread, unreadCount } = useUnreadDisplay(group.unreadInfo);
 
-	const title = group.translateTitle ? t(group.title as TranslationKey) : group.title;
+	const title = group.translateTitle ? t(group.title) : group.title;
 
 	return (
 		<SidebarCollapseGroup
@@ -44,7 +43,7 @@ const RoomListCollapser = ({ group, canMoveUp, canMoveDown, onMoveUp, onMoveDown
 			onFocus={mountNow}
 			onPointerEnter={requestMount}
 			menu={
-				hasLicenseModule ? (
+				isEnterprise ? (
 					<SidebarCollapseGroupMenu onClick={preventPropagation}>
 						{menuVisibility ? (
 							<CategoryMenu

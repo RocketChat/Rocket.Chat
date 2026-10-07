@@ -1,6 +1,6 @@
 {
 	"name": "@rocket.chat/model-typings",
-	"version": "2.5.1",
+	"version": "2.6.0-rc.0",
 	"private": true,
 	"main": "./dist/index.js",
 	"typings": "./dist/index.d.ts",
@@ -18,7 +18,7 @@
 	},
 	"devDependencies": {
 		"@types/node-rsa": "^1.1.4",
-		"eslint": "~9.39.5",
+		"eslint": "~10.11.0",
 		"mongodb": "6.16.0",
 		"typescript": "~5.9.3"
 	},
