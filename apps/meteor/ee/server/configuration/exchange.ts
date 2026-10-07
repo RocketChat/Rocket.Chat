@@ -6,7 +6,7 @@ import { addSettings } from '../settings/exchange';
 
 export const configureOutlookCalendar = async (): Promise<void> => {
 	await License.onLicense('outlook-calendar', async () => {
-		addSettings();
+		await addSettings();
 
 		await Calendar.setupNextNotification();
 		await Calendar.setupNextStatusChange();
