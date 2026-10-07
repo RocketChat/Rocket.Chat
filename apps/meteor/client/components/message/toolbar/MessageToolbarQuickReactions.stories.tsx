@@ -147,7 +147,7 @@ const Conversation = () => (
 	</Box>
 );
 
-/** The toolbar as it shows on hover: the user's three frequent emojis, topped up with suggested ones. */
+/** The toolbar as it shows on hover: the user's three most frequent emojis. */
 export const InTheMessageToolbar: StoryObj = {
 	render: () => <Conversation />,
 };
