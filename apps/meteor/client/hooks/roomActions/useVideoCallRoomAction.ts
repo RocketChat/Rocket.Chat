@@ -1,4 +1,3 @@
-import { isRoomFederated } from '@rocket.chat/core-typings';
 import { useStableCallback, useStableArray } from '@rocket.chat/fuselage-hooks';
 import { usePermission, useSetting, useUser } from '@rocket.chat/ui-contexts';
 import type { RoomToolboxActionConfig } from '@rocket.chat/ui-contexts';
@@ -13,15 +12,17 @@ import {
 import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 
+import { federationAllowsVideoCall } from '../../lib/videoConference/federatedVideoCalls';
 import { useRoom, useUserIsSubscribed } from '../../views/room/contexts/RoomContext';
 import { useVideoConfWarning } from '../../views/room/contextualBar/VideoConference/hooks/useVideoConfWarning';
+import { useFederatedVideoCallsEnabled } from '../useFederatedVideoCallsEnabled';
 
 export const useVideoCallRoomAction = () => {
 	const { t } = useTranslation();
 	const room = useRoom();
 	const user = useUser();
 	const subscribed = useUserIsSubscribed();
-	const federated = isRoomFederated(room);
+	const federatedCallsEnabled = useFederatedVideoCallsEnabled();
 
 	const ownUser = room.uids?.length === 1 || false;
 
@@ -55,7 +56,7 @@ export const useVideoCallRoomAction = () => {
 
 	const visible = groups.length > 0;
 	const allowed = visible && permittedToCallManagement && (!user?.username || !room.muted?.includes(user.username)) && !ownUser;
-	const unavailable = federated || (!!room.ro && !permittedToPostReadonly) || room.archived;
+	const unavailable = !federationAllowsVideoCall(room, federatedCallsEnabled) || (!!room.ro && !permittedToPostReadonly) || room.archived;
 	// A room open only as a preview can't start a call: the call is the members', so the user is told to join first
 	// rather than shown a call that fails. An omnichannel room is served by agents who need not have joined it.
 	const mustJoin = !subscribed && room.t !== 'l';

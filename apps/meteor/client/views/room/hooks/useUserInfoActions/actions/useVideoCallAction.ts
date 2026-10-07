@@ -1,5 +1,4 @@
 import type { IUser } from '@rocket.chat/core-typings';
-import { isRoomFederated } from '@rocket.chat/core-typings';
 import {
 	useTranslation,
 	useUserRoom,
@@ -20,6 +19,8 @@ import {
 } from '@rocket.chat/ui-video-conf';
 import { useMemo } from 'react';
 
+import { useFederatedVideoCallsEnabled } from '../../../../../hooks/useFederatedVideoCallsEnabled';
+import { federationAllowsVideoCall } from '../../../../../lib/videoConference/federatedVideoCalls';
 import { useVideoConfWarning } from '../../../contextualBar/VideoConference/hooks/useVideoConfWarning';
 import type { UserInfoAction } from '../useUserInfoActions';
 
@@ -37,6 +38,7 @@ export const useVideoCallAction = (user: Pick<IUser, '_id' | 'username' | 'feder
 	const isRinging = useVideoConfIsRinging();
 	const ownUserId = useUserId();
 	const conferenceWindowEnabled = useVideoConfWindowEnabled();
+	const federatedCallsEnabled = useFederatedVideoCallsEnabled();
 
 	const enabledForDMs = useSetting('VideoConf_Enable_DMs');
 	const permittedToCallManagement = usePermission('call-management', room?._id);
@@ -68,9 +70,11 @@ export const useVideoCallAction = (user: Pick<IUser, '_id' | 'username' | 'feder
 			}
 		};
 
-		// Without a DM, the entry is only offered to someone a DM can be created with: im.create needs a username,
-		// and calls are not supported over federation.
-		const hasCallableRoom = room ? !isRoomFederated(room) : canCreateDirectMessage && !user.federated && !!user.username;
+		// Without a DM, the entry is only offered to someone a DM can be created with: im.create needs a username. A
+		// federated user's DM is federated too, so they are offered the call only where federated calls run.
+		const hasCallableRoom = room
+			? federationAllowsVideoCall(room, federatedCallsEnabled)
+			: canCreateDirectMessage && !!user.username && (!user.federated || federatedCallsEnabled);
 
 		const shouldShowStartCall =
 			hasCallableRoom && user._id !== ownUserId && enabledForDMs && permittedToCallManagement && !isCalling && !isRinging;
@@ -95,6 +99,7 @@ export const useVideoCallAction = (user: Pick<IUser, '_id' | 'username' | 'feder
 		isCalling,
 		isRinging,
 		conferenceWindowEnabled,
+		federatedCallsEnabled,
 		t,
 		startCall,
 		dispatchPopup,
