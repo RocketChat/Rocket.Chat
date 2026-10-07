@@ -13,17 +13,14 @@ const SidebarRailCallPanel = () => {
 	const { isEmbedded: embeddedLayout, isMobile } = useLayout();
 	const isOpen = useSidebarRailStore((state) => state.panel === 'calls');
 	const setPanel = useSidebarRailStore((state) => state.setPanel);
+	const closeCalls = useSidebarRailStore((state) => state.closeCalls);
 
 	// Arriving at the call history opens the calls panel; leaving it gives the sidebar back to the room list.
 	useEffect(() => {
 		setPanel('calls');
 
-		return () => {
-			if (useSidebarRailStore.getState().panel === 'calls') {
-				setPanel('inbox');
-			}
-		};
-	}, [setPanel]);
+		return closeCalls;
+	}, [setPanel, closeCalls]);
 
 	return (
 		<FeaturePreview feature='sidebarRail' disabled={embeddedLayout || isMobile}>

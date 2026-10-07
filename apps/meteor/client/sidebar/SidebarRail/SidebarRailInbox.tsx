@@ -1,19 +1,18 @@
-import { css } from '@rocket.chat/css-in-js';
-import { Badge, Box, NavBarItem } from '@rocket.chat/fuselage';
+import { NavBarItem } from '@rocket.chat/fuselage';
 import { useUserSubscriptions } from '@rocket.chat/ui-contexts';
 import type { HTMLAttributes } from 'react';
-import { useMemo } from 'react';
+import { useEffect, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
+import tinykeys from 'tinykeys';
 
+import SidebarRailItemBadge from './SidebarRailItemBadge';
 import { useSidebarRailStore } from './useSidebarRailStore';
 import { buildUnreadInfo } from '../hooks/useRoomList';
 import { useUnreadDisplay } from '../hooks/useUnreadDisplay';
 
 const openSubscriptionsQuery = { open: { $ne: false } };
 
-const badgeStyle = css`
-	pointer-events: none;
-`;
+const getInboxShortcutLabel = () => (window.navigator.platform.toLowerCase().includes('mac') ? '(⌘+Shift+U)' : '(Ctrl+Shift+U)');
 
 type SidebarRailInboxProps = Omit<HTMLAttributes<HTMLElement>, 'is'>;
 
@@ -24,19 +23,32 @@ const SidebarRailInbox = (props: SidebarRailInboxProps) => {
 
 	const rooms = useUserSubscriptions(openSubscriptionsQuery);
 	const unreadInfo = useMemo(() => buildUnreadInfo(rooms), [rooms]);
-	const { unreadTitle, unreadVariant, showUnread } = useUnreadDisplay(unreadInfo);
+	const { unreadTitle, unreadVariant, showUnread, unreadCount } = useUnreadDisplay(unreadInfo);
 
-	const title = showUnread ? t('Inbox_with_unread', { unreadTitle }) : t('Inbox');
+	useEffect(
+		() =>
+			tinykeys(window, {
+				'$mod+Shift+U': (event) => {
+					event.preventDefault();
+					setPanel('inbox');
+				},
+			}),
+		[setPanel],
+	);
+
+	const label = showUnread ? t('Inbox_with_unread', { unreadTitle }) : t('Inbox');
 
 	return (
-		<Box position='relative'>
-			<NavBarItem {...props} title={title} icon='inbox' pressed={isActive} onClick={() => setPanel('inbox')} />
-			{showUnread && (
-				<Box position='absolute' insetBlockStart={2} insetInlineEnd={2} className={badgeStyle} aria-hidden>
-					<Badge small variant={unreadVariant} />
-				</Box>
-			)}
-		</Box>
+		<NavBarItem
+			{...props}
+			title={`${label} ${getInboxShortcutLabel()}`}
+			icon='inbox'
+			pressed={isActive}
+			aria-keyshortcuts='Control+Shift+U Meta+Shift+U'
+			onClick={() => setPanel('inbox')}
+		>
+			{showUnread && <SidebarRailItemBadge variant={unreadVariant}>{unreadCount.total}</SidebarRailItemBadge>}
+		</NavBarItem>
 	);
 };
 

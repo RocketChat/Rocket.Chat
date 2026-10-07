@@ -16,6 +16,9 @@ import { getShortcutLabel } from '../../navbar/NavBarSearch/getShortcutLabel';
 import { useSearchItems } from '../../navbar/NavBarSearch/hooks/useSearchItems';
 import { isOption } from '../../navbar/NavBarSearch/hooks/useSearchNavigation';
 
+// Keeps the focus ring of the first and last rows inside the scroller.
+const ListSpacer = () => <Box height={4} />;
+
 const SidebarRailSearchPanelContent = () => {
 	const { t } = useTranslation();
 	const focusManager = useFocusManager();
@@ -24,6 +27,7 @@ const SidebarRailSearchPanelContent = () => {
 	const searchText = useSidebarRailStore((state) => state.searchText);
 	const setSearchText = useSidebarRailStore((state) => state.setSearchText);
 	const setPanel = useSidebarRailStore((state) => state.setPanel);
+	const returnToPreviousPanel = useSidebarRailStore((state) => state.returnToPreviousPanel);
 
 	const { items, isLoading } = useSearchItems(searchText);
 
@@ -51,7 +55,11 @@ const SidebarRailSearchPanelContent = () => {
 	const handleInputKeyDown = (event: ReactKeyboardEvent) => {
 		if (event.key === 'Escape') {
 			event.preventDefault();
-			setSearchText('');
+			if (searchText) {
+				setSearchText('');
+			} else {
+				returnToPreviousPanel();
+			}
 		}
 
 		if (event.code === 'ArrowDown') {
@@ -108,6 +116,7 @@ const SidebarRailSearchPanelContent = () => {
 					<Virtuoso
 						data={items}
 						computeItemKey={(_, item) => item._id}
+						components={{ Header: ListSpacer, Footer: ListSpacer }}
 						itemContent={(_, item) => <NavBarSearchRow room={item} avatarSize='x28' onClick={() => setPanel('inbox')} />}
 					/>
 				</VirtualizedScrollbars>
