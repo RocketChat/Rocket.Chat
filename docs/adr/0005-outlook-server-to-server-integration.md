@@ -177,6 +177,12 @@ Exchange on-premises with impersonation is reached over NTLM or Basic, and some 
 
 **MD4 and HMAC-MD5 are an accepted risk** on the same grounds. Both are mandated by MS-NLMP section 3.3.2, and a stronger hash produces a value the domain controller does not compute, so authentication fails. The citation is recorded in the source so scanner findings are not reopened on every pass.
 
+**A workspace running in FIPS mode cannot use NTLM at all**, which follows from those same algorithms rather than from a policy we chose. The FIPS provider refuses MD4 and HMAC-MD5 outright, so the handshake is impossible rather than discouraged, and no setting changes that: MS-NLMP defines NTLMv2 over them. The transport refuses the combination when it is constructed, as `ntlm-unavailable`, so Test Connection names the cause instead of failing later inside the handshake with an OpenSSL error nobody can act on. Exchange Online is unaffected, since Graph is a bearer token over TLS and computes nothing itself.
+
+Basic over HTTPS stays available there, and is the only method we offer in that deployment. Basic performs no cryptography of its own, so everything in play belongs to TLS and therefore to the validated provider. What it costs is that the service account password crosses the wire on every request rather than never, which is acceptable when TLS terminates at Exchange and is not when a load balancer terminates it, because that balancer then sees the credentials in clear. The same topology already decides whether Extended Protection can work, recorded under Known limitations.
+
+A deployment that runs FIPS **and** has Basic disabled on the EWS virtual directory, which hardening guides routinely require, has no path we support today. Kerberos is the FIPS-approved alternative for on-premises Exchange and is out of scope, so this is a limit of the current scope rather than a defect to work around.
+
 - ### The plaintext client secret is an accepted risk
 
 Settings follow the existing convention rather than a bespoke encryption scheme, because the hard part is key management and a one-off would give administrators a false read on how the rest of the product behaves. The platform-wide direction is to make secrets read-none write-many, which supersedes anything this integration would have built for itself. The mitigation available today is reducing what the credential can reach, which is what `ApplicationAccessPolicy` scoping is for.
