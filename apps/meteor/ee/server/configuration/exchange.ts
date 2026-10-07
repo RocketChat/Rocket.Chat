@@ -7,7 +7,7 @@ import { addSettings } from '../settings/exchange';
 
 Meteor.startup(() =>
 	License.onLicense('outlook-calendar', async () => {
-		addSettings();
+		await addSettings();
 
 		await Calendar.setupNextNotification();
 		await Calendar.setupNextStatusChange();
