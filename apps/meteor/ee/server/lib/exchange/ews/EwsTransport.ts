@@ -1,3 +1,4 @@
+import { getFips } from 'crypto';
 import type { ClientRequestArgs } from 'http';
 import type { AgentOptions } from 'https';
 import { Agent, request } from 'https';
@@ -112,6 +113,13 @@ export class EwsTransport implements IEwsTransport {
 
 		if (this.endpoint.protocol !== 'https:') {
 			this.configError = new ExchangeError('not-configured', 'The EWS endpoint must use HTTPS');
+			return;
+		}
+
+		if (config.authMethod === 'ntlm' && getFips()) {
+			this.configError = new ExchangeError('ntlm-unavailable', 'NTLM cannot be used while the workspace runs in FIPS mode', {
+				detail: 'Use Basic authentication over HTTPS, if the EWS virtual directory accepts it.',
+			});
 			return;
 		}
 
