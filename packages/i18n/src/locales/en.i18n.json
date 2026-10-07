@@ -2790,6 +2790,7 @@
   "Exchange_Test_Connection_host_not_allowed": "The request was refused because it targeted a host other than the configured endpoint.",
   "Exchange_Test_Connection_mailbox_not_found": "Exchange could not find the mailbox.",
   "Exchange_Test_Connection_not_configured": "The connection settings are incomplete.",
+  "Exchange_Test_Connection_ntlm_unavailable": "NTLM is not available because this workspace runs in FIPS mode, which forbids the algorithms NTLM requires. Use Basic authentication over HTTPS if the Exchange server accepts it.",
   "Exchange_Test_Connection_rate_limited": "Exchange is rate limiting requests. Try again shortly.",
   "Exchange_Test_Connection_successful": "Connected to Exchange successfully.",
   "Exchange_Test_Connection_unexpected_response": "Exchange answered in an unexpected way. Check the server logs for details.",
