@@ -21,7 +21,7 @@ Options:
 
 Example usage:
 - Create a symbolic link in multiple fuselage packages:
-    yarn fuselage -a link -p fuselage;fuselage-icons;message-parser
+    yarn fuselage -a link -p fuselage;fuselage-hooks;styled
 
 - Remove the symbolic link:
     yarn fuselage -a undo
