@@ -10,3 +10,4 @@ import './audit';
 import './abac';
 import './mcp';
 import './videoConferenceCallConfig';
+import './videoConferenceFederatedToken';

@@ -1,3 +1,4 @@
+import type { IMatrixRTCMembership } from '@rocket.chat/core-typings';
 import { federationSDK } from '@rocket.chat/federation-sdk';
 import { Logger } from '@rocket.chat/logger';
 
@@ -7,11 +8,11 @@ import { MatrixRTCTokenError } from './errors';
 import { isUserJoined } from './roomMembership';
 import { getOwnSFU, mintRemoteMemberToken, serverNameOfUserId } from './sfu';
 import { MATRIXRTC_ROOM_CALL_SLOT_ID, legacyLiveKitIdentityFor, liveKitRoomAliasFor, sfuGetLiveKitIdentityFor } from '../derive';
-import { getOpenIdTokenSubject } from '../openid';
+import { getOpenIdTokenSubject, issueOpenIdToken } from '../openid';
 
 const logger = new Logger('MatrixRTCTokens');
 
-/** Where this server serves the lk-jwt-service contract, the token service compatibility memberships name. */
+/** Where this server serves the lk-jwt-service contract: the `livekit_service_url` its memberships announce. */
 export const MATRIXRTC_TOKEN_SERVICE_PATH = '/matrixrtc/livekit-jwt';
 
 type OpenIdToken = { access_token: string; matrix_server_name: string };
@@ -159,4 +160,69 @@ export async function grantSfuGetToken(body: unknown): Promise<{ url: string; jw
 		slotId: MATRIXRTC_ROOM_CALL_SLOT_ID,
 		identity: sfuGetLiveKitIdentityFor(userId, request.device_id),
 	});
+}
+
+/** Element Call gives up on a token service after the same time. */
+const SERVICE_REQUEST_TIMEOUT_MS = 30_000;
+
+class TokenServiceError extends Error {
+	constructor(
+		readonly status: number,
+		url: string,
+	) {
+		super(`The token service at ${url} answered ${status}`);
+		this.name = 'TokenServiceError';
+	}
+}
+
+async function postToTokenService(url: string, body: Record<string, unknown>): Promise<{ serverUrl: string; token: string }> {
+	const response = await fetch(url, {
+		method: 'POST',
+		headers: { 'Content-Type': 'application/json' },
+		body: JSON.stringify(body),
+		signal: AbortSignal.timeout(SERVICE_REQUEST_TIMEOUT_MS),
+	});
+	if (!response.ok) {
+		throw new TokenServiceError(response.status, url);
+	}
+
+	const { url: serverUrl, jwt } = fieldsOf(await response.json());
+	if (typeof serverUrl !== 'string' || !serverUrl || typeof jwt !== 'string' || !jwt) {
+		throw new Error(`The token service at ${url} answered without an SFU or a token`);
+	}
+
+	return { serverUrl, token: jwt };
+}
+
+/**
+ * A token for the SFU behind another homeserver's token service (a `livekit_service_url`), for one of this server's
+ * members to watch it: asked as Element Call asks, with an OpenID token this server issues for the member.
+ */
+export async function requestServiceToken(
+	serviceUrl: string,
+	member: Pick<IMatrixRTCMembership, 'userId' | 'mrid' | 'slotId' | 'memberId' | 'deviceId'>,
+): Promise<{ serverUrl: string; token: string }> {
+	// The address comes from another server's announcement, and this server is the one calling it.
+	if (new URL(serviceUrl).protocol !== 'https:') {
+		throw new Error(`Refusing a token service that is not served over HTTPS: ${serviceUrl}`);
+	}
+
+	const base = serviceUrl.replace(/\/+$/, '');
+	const openidToken = issueOpenIdToken(member.userId, federationSDK.getConfig('serverName'));
+
+	try {
+		return await postToTokenService(`${base}/get_token`, {
+			room_id: member.mrid,
+			slot_id: member.slotId,
+			openid_token: openidToken,
+			member: { id: member.memberId, claimed_user_id: member.userId, claimed_device_id: member.deviceId },
+		});
+	} catch (err) {
+		// A service that predates `/get_token` answers `/sfu/get`, which only knows the room-wide call.
+		if (!(err instanceof TokenServiceError && err.status === 404) || member.slotId !== MATRIXRTC_ROOM_CALL_SLOT_ID) {
+			throw err;
+		}
+	}
+
+	return postToTokenService(`${base}/sfu/get`, { room: member.mrid, openid_token: openidToken, device_id: member.deviceId });
 }

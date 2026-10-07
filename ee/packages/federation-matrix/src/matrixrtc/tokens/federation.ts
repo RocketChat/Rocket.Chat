@@ -1,4 +1,5 @@
-import { federationSDK } from '@rocket.chat/federation-sdk';
+import type { IMatrixRTCMembership } from '@rocket.chat/core-typings';
+import { FederationRequestError, federationSDK } from '@rocket.chat/federation-sdk';
 
 import { fieldsOf, hasText } from './body';
 import { MatrixRTCTokenError } from './errors';
@@ -63,4 +64,50 @@ export async function grantFederationToken(origin: string, body: unknown): Promi
 	const jwt = await mintRemoteMemberToken(sfu.issuer, liveKitRoomAliasFor(request.room_id, request.slot_id), identityOf(request));
 
 	return { jwt };
+}
+
+const FEDERATION_TOKEN_PATH = '/_matrix/federation/unstable/io.element.msc4195/rtc/livekit/get_token';
+const STABLE_FEDERATION_TOKEN_PATH = '/_matrix/federation/v1/rtc/livekit/get_token';
+
+const isUnrecognizedEndpoint = (err: unknown): boolean =>
+	err instanceof FederationRequestError && (err.response.status === 404 || err.message.includes('M_UNRECOGNIZED'));
+
+/**
+ * A token for the SFU at `url`, which the homeserver `destination` hosts, for one of this server's members to watch
+ * it. The member is named both ways lk-jwt-service has read it, so either generation answers.
+ */
+export async function requestFederationToken(
+	destination: string,
+	url: string,
+	member: Pick<IMatrixRTCMembership, 'userId' | 'mrid' | 'slotId' | 'memberId' | 'deviceId'>,
+): Promise<{ serverUrl: string; token: string }> {
+	const body = {
+		url,
+		user_id: member.userId,
+		room_id: member.mrid,
+		slot_id: member.slotId,
+		member_id: member.memberId,
+		member: { id: member.memberId, claimed_user_id: member.userId, claimed_device_id: member.deviceId },
+	};
+
+	const requestAt = async (uri: string) => {
+		// Sent as it is: a body passed unsigned would get event hashes and signatures added to it.
+		const response = await federationSDK.makeSignedRequest({ method: 'POST', domain: destination, uri, signedBody: body });
+		const { jwt } = fieldsOf(await response.json());
+		if (typeof jwt !== 'string' || !jwt) {
+			throw new Error(`${destination} answered get_token without a token`);
+		}
+
+		return { serverUrl: url, token: jwt };
+	};
+
+	try {
+		return await requestAt(FEDERATION_TOKEN_PATH);
+	} catch (err) {
+		if (!isUnrecognizedEndpoint(err)) {
+			throw err;
+		}
+	}
+
+	return requestAt(STABLE_FEDERATION_TOKEN_PATH);
 }
