@@ -1,9 +1,10 @@
 import type { SearchFilterGroup, SearchFilterSuggestion } from '@rocket.chat/ai-search';
-import { Box, Icon, SidebarItem, SidebarItemIcon, SidebarItemTitle } from '@rocket.chat/fuselage';
+import { Box, SidebarItem, SidebarItemIcon, SidebarItemTitle } from '@rocket.chat/fuselage';
 import type { MouseEvent, ReactElement } from 'react';
 import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 
+import NavBarSearchFilterSuggestionIcon from './NavBarSearchFilterSuggestionIcon';
 import { useSearchFilters } from './hooks/useSearchFilters';
 
 const filterSuggestionGroupLabels = {
@@ -56,7 +57,7 @@ const NavBarSearchFilterSuggestions = ({ suggestions }: NavBarSearchFilterSugges
 					</Box>
 					{groupSuggestions.map((item) => (
 						<SidebarItem key={item.key} role='option' onClick={(event) => handleFilterSuggestion(event, item)}>
-							<SidebarItemIcon icon={<Icon name={item.icon} size='x16' />} />
+							<SidebarItemIcon icon={<NavBarSearchFilterSuggestionIcon suggestion={item} />} />
 							<SidebarItemTitle>{item.title}</SidebarItemTitle>
 							<Box color='hint' fontScale='c1' flexShrink={0}>
 								{item.description}

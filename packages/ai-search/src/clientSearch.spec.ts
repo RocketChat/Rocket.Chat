@@ -289,7 +289,7 @@ describe('AI Search client helpers', () => {
 					key: 'in-room-id',
 					filterKey: 'in',
 					group: 'rooms',
-					title: '#General',
+					title: 'General',
 					description: 'Search_in_this_room',
 					value: 'general',
 					icon: 'hash',

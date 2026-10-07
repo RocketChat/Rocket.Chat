@@ -203,7 +203,7 @@ describe('useAISearchItems', () => {
 					key: 'in-rid-general',
 					filterKey: 'in',
 					group: 'rooms',
-					title: '#General',
+					title: 'General',
 					description: 'Search in this room',
 					value: 'general',
 					icon: 'hash',

@@ -282,7 +282,7 @@ export const buildFilterSuggestions = (
 			key: `in-${room.rid || room._id}`,
 			filterKey: 'in',
 			group: 'rooms',
-			title: `#${room.fname || room.name}`,
+			title: room.fname || room.name || '',
 			description: t('Search_in_this_room'),
 			value: room.name || room.fname || '',
 			icon: 'hash',
