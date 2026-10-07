@@ -291,7 +291,7 @@ export class CalendarService extends ServiceClassInternal implements ICalendarSe
 			return this.syncBusyPresence(uid, { now });
 		}
 
-		const inProgress = await CalendarEvent.findOverlappingEvents('', uid, now, now).toArray();
+		const inProgress = await CalendarEvent.findOverlappingEvents('', uid, now, now, { projection: { _id: 1 } }).toArray();
 
 		if (inProgress.length) {
 			await this.syncBusyPresence(uid, { now });
@@ -430,7 +430,9 @@ export class CalendarService extends ServiceClassInternal implements ICalendarSe
 			return;
 		}
 
-		const overlappingEvents = await CalendarEvent.findOverlappingEvents(excludeEventId ?? '', uid, now, now).toArray();
+		const overlappingEvents = await CalendarEvent.findOverlappingEvents(excludeEventId ?? '', uid, now, now, {
+			projection: { endTime: 1 },
+		}).toArray();
 		const endTimes = [...(seedEndTime ? [seedEndTime] : []), ...overlappingEvents.map((event) => event.endTime)].filter(
 			(date): date is Date => Boolean(date),
 		);

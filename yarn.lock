@@ -10422,6 +10422,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@rocket.chat/icons@npm:^0.51.0":
+  version: 0.51.0
+  resolution: "@rocket.chat/icons@npm:0.51.0"
+  checksum: 10/60389ef2e71e258a1506d195b9f573657f8c9f082e733739c8325958af46f3b42fd3bbe5e849b81a99af058ead352efa4a22fba7067e98fea70d42c92d398d8c
+  languageName: node
+  linkType: hard
+
 "@rocket.chat/instance-status@workspace:^, @rocket.chat/instance-status@workspace:packages/instance-status":
   version: 0.0.0-use.local
   resolution: "@rocket.chat/instance-status@workspace:packages/instance-status"
@@ -10797,7 +10804,7 @@ __metadata:
     "@rocket.chat/gazzodown-alt": "workspace:^"
     "@rocket.chat/http-router": "workspace:^"
     "@rocket.chat/i18n": "workspace:^"
-    "@rocket.chat/icons": "npm:^0.50.0"
+    "@rocket.chat/icons": "npm:^0.51.0"
     "@rocket.chat/instance-status": "workspace:^"
     "@rocket.chat/jest-presets": "workspace:~"
     "@rocket.chat/jwt": "workspace:^"

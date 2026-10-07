@@ -1,5 +1,6 @@
 import { MicrosoftGraphProvider, parseGraphDateTime } from './MicrosoftGraphProvider';
 import type { ExchangeEventUpsert } from '../definition/types';
+import { MAX_CONTACT_PHOTO_BYTES } from '../sync/limits';
 
 const serverFetch = jest.fn();
 
@@ -251,6 +252,201 @@ describe('MicrosoftGraphProvider', () => {
 			await expect(new MicrosoftGraphProvider(config).listEvents(MAILBOX, timeWindow)).rejects.toMatchObject({
 				code: 'authentication-failed',
 			});
+		});
+	});
+
+	describe('listContacts', () => {
+		const DEFAULT_CONTACTS_FOLDER_ID = 'default';
+		const GIVEN_NAME = 'John';
+		const SURNAME = 'Doe';
+		const CONTACT_NAME = `${GIVEN_NAME} ${SURNAME}`;
+		const CONTACT_ID = 'c1';
+
+		const provider = () => new MicrosoftGraphProvider(config);
+
+		const contact = (over: Record<string, unknown> = {}) => ({ id: CONTACT_ID, displayName: CONTACT_NAME, ...over });
+
+		it('addresses the default folder directly, which Graph does not list among the contact folders', async () => {
+			mockTokenThen(graphResponse({ value: [] }));
+
+			await provider().listContacts(MAILBOX, DEFAULT_CONTACTS_FOLDER_ID);
+
+			expect(graphCall()[0]).toContain('/users/user%40contoso.com/contacts/delta');
+		});
+
+		it('scopes any other folder to its own id', async () => {
+			mockTokenThen(graphResponse({ value: [] }));
+
+			await provider().listContacts(MAILBOX, 'AAMk=Suppliers');
+
+			expect(graphCall()[0]).toContain('/contactFolders/AAMk%3DSuppliers/contacts/delta');
+		});
+
+		it('reports a removed contact as a deletion of the folder it was read from', async () => {
+			mockTokenThen(graphResponse({ value: [{ 'id': CONTACT_ID, '@removed': { reason: 'deleted' } }] }));
+
+			const page = await provider().listContacts(MAILBOX, DEFAULT_CONTACTS_FOLDER_ID);
+
+			expect(page.items).toEqual([{ kind: 'deleted', externalId: CONTACT_ID, folderId: DEFAULT_CONTACTS_FOLDER_ID }]);
+		});
+
+		it('gathers the numbers Graph keeps apart, labelled by the field they came from', async () => {
+			const MOBILE_PHONE = '+5491123456789';
+			const BUSINESS_PHONE = '+541143211000';
+			const HOME_PHONE = '+541144440000';
+
+			mockTokenThen(
+				graphResponse({
+					value: [contact({ mobilePhone: MOBILE_PHONE, businessPhones: [BUSINESS_PHONE], homePhones: [HOME_PHONE] })],
+				}),
+			);
+
+			const page = await provider().listContacts(MAILBOX, DEFAULT_CONTACTS_FOLDER_ID);
+
+			expect(page.items[0]).toMatchObject({
+				phones: [
+					{ raw: MOBILE_PHONE, label: 'mobile' },
+					{ raw: BUSINESS_PHONE, label: 'business' },
+					{ raw: HOME_PHONE, label: 'home' },
+				],
+			});
+		});
+
+		it('names a contact by its parts when Graph sends no display name', async () => {
+			mockTokenThen(graphResponse({ value: [contact({ displayName: undefined, givenName: GIVEN_NAME, surname: SURNAME })] }));
+
+			const page = await provider().listContacts(MAILBOX, DEFAULT_CONTACTS_FOLDER_ID);
+
+			expect(page.items[0]).toMatchObject({ displayName: CONTACT_NAME, givenName: GIVEN_NAME, surname: SURNAME });
+		});
+
+		it('falls back to an address when a contact carries no name at all', async () => {
+			const ONLY_EMAIL = 'john@corp.example';
+
+			mockTokenThen(graphResponse({ value: [contact({ displayName: undefined, emailAddresses: [{ address: ONLY_EMAIL }] })] }));
+
+			const page = await provider().listContacts(MAILBOX, DEFAULT_CONTACTS_FOLDER_ID);
+
+			expect(page.items[0]).toMatchObject({ displayName: ONLY_EMAIL });
+		});
+
+		it('skips a contact with nothing to resolve it by rather than storing it nameless', async () => {
+			const OTHER_CONTACT_ID = 'c2';
+
+			mockTokenThen(graphResponse({ value: [{ id: CONTACT_ID }, contact({ id: OTHER_CONTACT_ID })] }));
+
+			const page = await provider().listContacts(MAILBOX, DEFAULT_CONTACTS_FOLDER_ID);
+
+			expect(page.items.map((item) => item.externalId)).toEqual([OTHER_CONTACT_ID]);
+		});
+
+		it('keeps the delta link for the next run once the folder has been read to the end', async () => {
+			const DELTA_LINK = 'https://graph.microsoft.com/delta';
+
+			mockTokenThen(graphResponse({ 'value': [], '@odata.deltaLink': DELTA_LINK }));
+
+			const page = await provider().listContacts(MAILBOX, DEFAULT_CONTACTS_FOLDER_ID);
+
+			expect(page).toMatchObject({ hasMore: false, cursor: DELTA_LINK });
+		});
+
+		it('carries the next link while there is more of the folder to read', async () => {
+			const NEXT_LINK = 'https://graph.microsoft.com/next';
+
+			mockTokenThen(graphResponse({ 'value': [], '@odata.nextLink': NEXT_LINK }));
+
+			const page = await provider().listContacts(MAILBOX, DEFAULT_CONTACTS_FOLDER_ID);
+
+			expect(page).toMatchObject({ hasMore: true, cursor: NEXT_LINK });
+		});
+
+		it('never claims to have read the folder whole', async () => {
+			mockTokenThen(graphResponse({ value: [contact()] }));
+
+			const page = await provider().listContacts(MAILBOX, DEFAULT_CONTACTS_FOLDER_ID);
+
+			expect(page.coverage).toBe('delta');
+		});
+	});
+
+	describe('getContactPhotos', () => {
+		const CONTACT_ID = 'c1';
+		const OTHER_CONTACT_ID = 'c2';
+		const BATCH_SIZE = 20;
+
+		const entry = (id: string, over: Record<string, unknown> = {}) => ({
+			id,
+			status: 200,
+			body: Buffer.from([0xff, 0xd8, 0xff]).toString('base64'),
+			...over,
+		});
+
+		const getContactPhotosAnswering = async (ids: string[]) => {
+			const photos = [];
+			for await (const photo of new MicrosoftGraphProvider(config).getContactPhotos(MAILBOX, ids)) {
+				photos.push(photo);
+			}
+
+			return photos;
+		};
+
+		const requestedIds = (call: number): string[] =>
+			JSON.parse(serverFetch.mock.calls[call][1].body).requests.map(({ id }: { id: string }) => id);
+
+		it('asks for a chunk of photos in one batch instead of a request per contact', async () => {
+			mockTokenThen(graphResponse({ responses: [entry(CONTACT_ID), entry(OTHER_CONTACT_ID)] }));
+
+			const photos = await getContactPhotosAnswering([CONTACT_ID, OTHER_CONTACT_ID]);
+
+			expect(graphCall()[0]).toContain('/$batch');
+			expect(requestedIds(1)).toEqual([CONTACT_ID, OTHER_CONTACT_ID]);
+			expect(photos.map(({ externalId }) => externalId)).toEqual([CONTACT_ID, OTHER_CONTACT_ID]);
+		});
+
+		it('splits a folder larger than one batch into consecutive requests', async () => {
+			mockTokenThen(graphResponse({ responses: [] }), graphResponse({ responses: [] }));
+
+			await getContactPhotosAnswering([...new Array(BATCH_SIZE).fill('1'), `c${BATCH_SIZE}`]);
+
+			expect(requestedIds(1)).toHaveLength(BATCH_SIZE);
+			expect(requestedIds(2)).toEqual([`c${BATCH_SIZE}`]);
+		});
+
+		it('skips the contacts Graph answered for with anything but a photo', async () => {
+			mockTokenThen(graphResponse({ responses: [entry(CONTACT_ID, { status: 404, body: undefined }), entry(OTHER_CONTACT_ID)] }));
+
+			const photos = await getContactPhotosAnswering([CONTACT_ID, OTHER_CONTACT_ID]);
+
+			expect(photos.map(({ externalId }) => externalId)).toEqual([OTHER_CONTACT_ID]);
+		});
+
+		it('skips a photo above the size cap rather than storing it', async () => {
+			const huge = Buffer.alloc(MAX_CONTACT_PHOTO_BYTES + 1).toString('base64');
+
+			mockTokenThen(graphResponse({ responses: [entry(CONTACT_ID, { body: huge }), entry(OTHER_CONTACT_ID)] }));
+
+			const photos = await getContactPhotosAnswering([CONTACT_ID, OTHER_CONTACT_ID]);
+
+			expect(photos.map(({ externalId }) => externalId)).toEqual([OTHER_CONTACT_ID]);
+		});
+
+		it('skips an empty body, which is a photo endpoint answering with nothing', async () => {
+			mockTokenThen(graphResponse({ responses: [entry(CONTACT_ID, { body: '' })] }));
+
+			await expect(getContactPhotosAnswering([CONTACT_ID])).resolves.toEqual([]);
+		});
+
+		it('takes the content type from the batch entry, falling back to jpeg', async () => {
+			const PNG_CONTENT_TYPE = 'image/png';
+			const DEFAULT_CONTENT_TYPE = 'image/jpeg';
+
+			mockTokenThen(
+				graphResponse({ responses: [entry(CONTACT_ID, { headers: { 'Content-Type': PNG_CONTENT_TYPE } }), entry(OTHER_CONTACT_ID)] }),
+			);
+
+			const photos = await getContactPhotosAnswering([CONTACT_ID, OTHER_CONTACT_ID]);
+
+			expect(photos.map(({ contentType }) => contentType)).toEqual([PNG_CONTENT_TYPE, DEFAULT_CONTENT_TYPE]);
 		});
 	});
 });

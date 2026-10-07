@@ -4,11 +4,13 @@ import { Meteor } from 'meteor/meteor';
 
 import { detachExchangeProvider, registerExchangeProviderWatchers } from '../lib/exchange/ExchangeProviderRegistry';
 import { registerCalendarSyncJob } from '../lib/exchange/sync/calendar/registerCalendarSyncJob';
+import { registerContactSyncJob } from '../lib/exchange/sync/contacts/registerContactSyncJob';
 import { addSettings } from '../settings/exchange';
 
 Meteor.startup(async () => {
 	let stopProviderWatcher: (() => void) | undefined;
-	let stopSyncWatcher: (() => void) | undefined;
+	let stopCalendarSyncWatcher: (() => void) | undefined;
+	let stopContactSyncWatcher: (() => void) | undefined;
 
 	License.onToggledFeature('outlook-calendar', {
 		up: async () => {
@@ -18,11 +20,13 @@ Meteor.startup(async () => {
 			await Calendar.setupNextStatusChange();
 
 			stopProviderWatcher = registerExchangeProviderWatchers();
-			stopSyncWatcher = registerCalendarSyncJob();
+			stopCalendarSyncWatcher = registerCalendarSyncJob();
+			stopContactSyncWatcher = registerContactSyncJob();
 		},
 		down: () => {
 			stopProviderWatcher?.();
-			stopSyncWatcher?.();
+			stopCalendarSyncWatcher?.();
+			stopContactSyncWatcher?.();
 
 			detachExchangeProvider();
 		},
