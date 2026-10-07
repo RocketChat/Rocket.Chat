@@ -109,6 +109,7 @@ export * from './IOmnichannelServiceLevelAgreements';
 
 export type * from './autoTranslate';
 export * from './IVideoConference';
+export * from './IMatrixRTCMembership';
 export type * from './VideoConferenceCapabilities';
 
 export type * from './SpotlightUser';

@@ -18,6 +18,7 @@ import {
 	EmojiCustomRaw,
 	ExportOperationsRaw,
 	FederationKeysRaw,
+	MatrixRTCMembershipsRaw,
 	ImportDataRaw,
 	ImportsModel,
 	InstanceStatusRaw,
@@ -100,6 +101,7 @@ registerModel('IEmailMessageHistoryModel', new EmailMessageHistoryRaw(db));
 registerModel('IEmojiCustomModel', new EmojiCustomRaw(db, trashCollection));
 registerModel('IExportOperationsModel', new ExportOperationsRaw(db));
 registerModel('IFederationKeysModel', new FederationKeysRaw(db));
+registerModel('IMatrixRTCMembershipsModel', new MatrixRTCMembershipsRaw(db));
 registerModel('IImportDataModel', new ImportDataRaw(db));
 registerModel('IImportsModel', new ImportsModel(db));
 registerModel('IInstanceStatusModel', new InstanceStatusRaw(db));

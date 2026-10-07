@@ -13,6 +13,7 @@ import type {
 	IEmojiCustomModel,
 	IExportOperationsModel,
 	IFederationKeysModel,
+	IMatrixRTCMembershipsModel,
 	IInstanceStatusModel,
 	IIntegrationHistoryModel,
 	IIntegrationsModel,
@@ -110,6 +111,7 @@ import {
 	SamlUsedAssertionsRaw,
 	CronHistoryRaw,
 	VideoConferenceRaw,
+	MatrixRTCMembershipsRaw,
 } from './modelClasses';
 import { proxify, registerModel } from './proxify';
 
@@ -145,6 +147,7 @@ export const EmailMessageHistory = proxify<IEmailMessageHistoryModel>('IEmailMes
 export const EmojiCustom = proxify<IEmojiCustomModel>('IEmojiCustomModel');
 export const ExportOperations = proxify<IExportOperationsModel>('IExportOperationsModel');
 export const FederationKeys = proxify<IFederationKeysModel>('IFederationKeysModel');
+export const MatrixRTCMemberships = proxify<IMatrixRTCMembershipsModel>('IMatrixRTCMembershipsModel');
 export const ImportData = proxify<IImportDataModel>('IImportDataModel');
 export const Imports = proxify<IImportsModel>('IImportsModel');
 export const InstanceStatus = proxify<IInstanceStatusModel>('IInstanceStatusModel');
@@ -249,6 +252,7 @@ export function registerServiceModels(db: Db, trash?: Collection<RocketChatRecor
 	// The video-conference stream decides who may follow a call by reading it, and that check runs in whichever
 	// process holds the stream — ddp-streamer, once the services are split out.
 	registerModel('IVideoConferenceModel', () => new VideoConferenceRaw(db));
+	registerModel('IMatrixRTCMembershipsModel', () => new MatrixRTCMembershipsRaw(db));
 	registerModel('ISamlUsedAssertionsModel', () => new SamlUsedAssertionsRaw(db));
 	registerModel('ICronHistoryModel', () => new CronHistoryRaw(db));
 }

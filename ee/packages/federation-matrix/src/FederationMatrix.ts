@@ -15,7 +15,16 @@ import {
 	isUserNativeFederated,
 	UserStatus,
 } from '@rocket.chat/core-typings';
-import type { MessageQuoteAttachment, IMessage, IRoom, IUser, IRoomNativeFederated, ISubscription } from '@rocket.chat/core-typings';
+import type {
+	MessageQuoteAttachment,
+	IMatrixRTCMembership,
+	IMessage,
+	IRoom,
+	IUser,
+	IRoomNativeFederated,
+	ISubscription,
+	IVideoConference,
+} from '@rocket.chat/core-typings';
 import { eventIdSchema, roomIdSchema, userIdSchema, federationSDK, FederationRequestError } from '@rocket.chat/federation-sdk';
 import type { EventID, FileMessageType, PduForType, PresenceState } from '@rocket.chat/federation-sdk';
 import { Logger } from '@rocket.chat/logger';
@@ -32,6 +41,7 @@ import {
 	toInternalQuoteMessageFormat,
 } from './helpers/message.parsers';
 import { validateFederatedUsername } from './helpers/validateFederatedUsername';
+import { declineRTCSession, getRemoteLiveKitToken, joinRTCSession, leaveRTCSession, notifyRTCSession } from './matrixrtc';
 import { MatrixMediaService } from './services/MatrixMediaService';
 import { shortnameToUnicode } from './utils/emojiConverter';
 
@@ -1231,5 +1241,30 @@ export class FederationMatrix extends ServiceClass implements IFederationMatrixS
 			thread,
 			ts: new Date(event.origin_server_ts),
 		});
+	}
+
+	async joinRTCSession(call: IVideoConference, user: IUser): Promise<IMatrixRTCMembership> {
+		return joinRTCSession(call, user);
+	}
+
+	async leaveRTCSession(call: IVideoConference, uid: IUser['_id']): Promise<void> {
+		return leaveRTCSession(call, uid);
+	}
+
+	async notifyRTCSession(call: IVideoConference, caller: IUser, targets: IUser[], kind: 'ring' | 'notification'): Promise<void> {
+		return notifyRTCSession(call, caller, targets, kind);
+	}
+
+	async declineRTCSession(call: IVideoConference, user: IUser): Promise<void> {
+		return declineRTCSession(call, user);
+	}
+
+	async getRemoteLiveKitToken(
+		call: IVideoConference,
+		user: IUser,
+		serverName: string,
+		transport: string,
+	): Promise<{ serverUrl: string; token: string }> {
+		return getRemoteLiveKitToken(call, user, serverName, transport);
 	}
 }

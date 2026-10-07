@@ -1,4 +1,12 @@
-import type { IMessage, IRoomFederated, IRoomNativeFederated, ISubscription, IUser } from '@rocket.chat/core-typings';
+import type {
+	IMatrixRTCMembership,
+	IMessage,
+	IRoomFederated,
+	IRoomNativeFederated,
+	ISubscription,
+	IUser,
+	IVideoConference,
+} from '@rocket.chat/core-typings';
 import type { EventID, EventStore, PduForType } from '@rocket.chat/federation-sdk';
 
 export interface IFederationMatrixService {
@@ -35,4 +43,22 @@ export interface IFederationMatrixService {
 	updateUserName(user: IUser): Promise<void>;
 	joinAppServiceRoom(roomAlias: string, user: IUser): Promise<boolean>;
 	saveFederationMessage(event: { event: PduForType<'m.room.message'>; event_id: EventID }): Promise<void>;
+	/**
+	 * Announces in the room that one of this server's users is in a federated conference, or confirms the
+	 * announcement still stands, and returns the membership. Safe to repeat on every join and every token request.
+	 */
+	joinRTCSession(call: IVideoConference, user: IUser): Promise<IMatrixRTCMembership>;
+	/** Announces in the room that one of this server's users left a federated conference. */
+	leaveRTCSession(call: IVideoConference, uid: IUser['_id']): Promise<void>;
+	/** Rings, or tells about the call, the members of other servers through the room. */
+	notifyRTCSession(call: IVideoConference, caller: IUser, targets: IUser[], kind: 'ring' | 'notification'): Promise<void>;
+	/** Turns down, for one of this server's users, a ring that came from another server. */
+	declineRTCSession(call: IVideoConference, user: IUser): Promise<void>;
+	/** A token for one of this server's users to watch, on another homeserver's SFU, the members it hosts. */
+	getRemoteLiveKitToken(
+		call: IVideoConference,
+		user: IUser,
+		serverName: string,
+		transport: string,
+	): Promise<{ serverUrl: string; token: string }>;
 }
