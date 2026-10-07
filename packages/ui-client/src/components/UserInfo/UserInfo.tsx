@@ -8,21 +8,13 @@ import { useTimeAgo } from '../../hooks/useTimeAgo';
 import { useUserCustomFields } from '../../hooks/useUserCustomFields';
 import { useUserDisplayName } from '../../hooks/useUserDisplayName';
 import { ContextualbarScrollableContent } from '../Contextualbar';
-import {
-	InfoPanel,
-	InfoPanelActionGroup,
-	InfoPanelAvatar,
-	InfoPanelField,
-	InfoPanelLabel,
-	InfoPanelSection,
-	InfoPanelText,
-	InfoPanelTitle,
-} from '../InfoPanel';
+import { InfoPanel, InfoPanelActionGroup, InfoPanelField, InfoPanelLabel, InfoPanelSection, InfoPanelText } from '../InfoPanel';
 import { MarkdownTextContext } from '../MarkdownTextContext';
 import UTCClock from '../UTCClock';
-import { UserCardRoles } from '../UserCard';
+import { UserCardRoles, UserCardUsername } from '../UserCard';
 import UserInfoABACAttributes from './UserInfoABACAttributes';
 import UserInfoAvatar from './UserInfoAvatar';
+import UserInfoCopyableText from './UserInfoCopyableText';
 
 type UserInfoDataProps = Serialized<
 	Pick<
@@ -83,38 +75,46 @@ const UserInfo = ({
 	const userDisplayName = useUserDisplayName({ name, username });
 	const userCustomFields = useUserCustomFields(customFields);
 	const MarkdownText = useContext(MarkdownTextContext);
-
 	const usernameId = useId();
 
 	return (
 		<ContextualbarScrollableContent padding={24} {...props}>
 			<InfoPanel>
-				{username && (
-					<InfoPanelAvatar>
-						<UserInfoAvatar username={username} etag={avatarETag} />
-					</InfoPanelAvatar>
-				)}
+				<InfoPanelSection display='flex' alignItems='center'>
+					{username && <UserInfoAvatar username={username} etag={avatarETag} size='x48' />}
+					<Box display='flex' flexDirection='column' flexGrow={1} flexShrink={1} marginInlineStart='x8' withTruncatedText>
+						{userDisplayName && <UserCardUsername is='h2' flexGrow={0} flexBasis='auto' status={status} name={userDisplayName} />}
+						{customStatus && (
+							<Box color='hint' fontScale='p2' paddingInlineStart='x4' withTruncatedText>
+								{customStatus}
+							</Box>
+						)}
+					</Box>
+				</InfoPanelSection>
 
 				{actions && <InfoPanelActionGroup>{actions}</InfoPanelActionGroup>}
 
 				<InfoPanelSection>
-					{userDisplayName && <InfoPanelTitle icon={status} title={userDisplayName} />}
+					{username && username !== name && (
+						<InfoPanelField is='dl'>
+							<InfoPanelLabel is='dt' id={usernameId}>
+								{t('Username')}
+							</InfoPanelLabel>
+							<UserInfoCopyableText is='dd' aria-labelledby={usernameId} text={username} label={t('Username')} />
+						</InfoPanelField>
+					)}
 
-					{customStatus && <InfoPanelText>{customStatus}</InfoPanelText>}
-				</InfoPanelSection>
-
-				<InfoPanelSection>
 					{reason && (
 						<InfoPanelField>
 							<InfoPanelLabel>{t('Reason_for_joining')}</InfoPanelLabel>
-							<InfoPanelText>{reason}</InfoPanelText>
+							<UserInfoCopyableText text={reason} label={t('Reason_for_joining')} />
 						</InfoPanelField>
 					)}
 
 					{nickname && (
 						<InfoPanelField>
 							<InfoPanelLabel>{t('Nickname')}</InfoPanelLabel>
-							<InfoPanelText>{nickname}</InfoPanelText>
+							<UserInfoCopyableText text={nickname} label={t('Nickname')} />
 						</InfoPanelField>
 					)}
 
@@ -122,17 +122,6 @@ const UserInfo = ({
 						<InfoPanelField>
 							<InfoPanelLabel>{t('Roles')}</InfoPanelLabel>
 							<UserCardRoles>{roles}</UserCardRoles>
-						</InfoPanelField>
-					)}
-
-					{username && username !== name && (
-						<InfoPanelField is='dl'>
-							<InfoPanelLabel is='dt' id={usernameId}>
-								{t('Username')}
-							</InfoPanelLabel>
-							<InfoPanelText is='dd' aria-labelledby={usernameId}>
-								{username}
-							</InfoPanelText>
 						</InfoPanelField>
 					)}
 
@@ -148,9 +137,9 @@ const UserInfo = ({
 					{bio && (
 						<InfoPanelField>
 							<InfoPanelLabel>{t('Bio')}</InfoPanelLabel>
-							<InfoPanelText withTruncatedText={false}>
+							<UserInfoCopyableText text={bio} label={t('Bio')} withTruncatedText={false}>
 								<MarkdownText variant='inline' content={bio} />
-							</InfoPanelText>
+							</UserInfoCopyableText>
 						</InfoPanelField>
 					)}
 
@@ -164,32 +153,32 @@ const UserInfo = ({
 					{phone && (
 						<InfoPanelField>
 							<InfoPanelLabel>{t('Phone')}</InfoPanelLabel>
-							<InfoPanelText display='flex' flexDirection='row' alignItems='center'>
+							<UserInfoCopyableText text={phone} label={t('Phone')}>
 								<Box is='a' withTruncatedText href={`tel:${phone}`}>
 									{phone}
 								</Box>
-							</InfoPanelText>
+							</UserInfoCopyableText>
 						</InfoPanelField>
 					)}
 
 					{email && (
 						<InfoPanelField>
 							<InfoPanelLabel>{t('Email')}</InfoPanelLabel>
-							<InfoPanelText display='flex' flexDirection='row' alignItems='center'>
+							<UserInfoCopyableText text={email} label={t('Email')}>
 								<Box is='a' withTruncatedText href={`mailto:${email}`}>
 									{email}
 								</Box>
 								<Margins inline={4}>
 									<Tag>{verified ? t('Verified') : t('Not_verified')}</Tag>
 								</Margins>
-							</InfoPanelText>
+							</UserInfoCopyableText>
 						</InfoPanelField>
 					)}
 
 					{freeSwitchExtension && (
 						<InfoPanelField>
 							<InfoPanelLabel>{t('Voice_call_extension')}</InfoPanelLabel>
-							<InfoPanelText>{freeSwitchExtension}</InfoPanelText>
+							<UserInfoCopyableText text={freeSwitchExtension} label={t('Voice_call_extension')} />
 						</InfoPanelField>
 					)}
 
@@ -204,9 +193,9 @@ const UserInfo = ({
 							customField?.value && (
 								<InfoPanelField key={customField.value}>
 									<InfoPanelLabel>{t(customField.label)}</InfoPanelLabel>
-									<InfoPanelText>
+									<UserInfoCopyableText text={customField.value} label={t(customField.label)}>
 										<MarkdownText content={customField.value} variant='inline' />
-									</InfoPanelText>
+									</UserInfoCopyableText>
 								</InfoPanelField>
 							),
 					)}
