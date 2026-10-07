@@ -2526,10 +2526,17 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@babel/runtime@npm:^7.29.7, @babel/runtime@npm:~7.29.7":
+"@babel/runtime@npm:^7.29.7":
   version: 7.29.7
   resolution: "@babel/runtime@npm:7.29.7"
   checksum: 10/9883b4951787779fd382b121f22f92966d85f19434841f65fb00b2dfec232107e139683f47c6f252891826ad8ee18317b46c3a0e4819116a9885f47b46d7126a
+  languageName: node
+  linkType: hard
+
+"@babel/runtime@npm:~7.29.10":
+  version: 7.29.10
+  resolution: "@babel/runtime@npm:7.29.10"
+  checksum: 10/883bb39a09f4773cf46cdd7ba0080ef6b30ff996a4ed21f8d34511ec0836122e697716533da5efc9b5016f763110b19aa07e81cec6e2036fe72cb26aad556af2
   languageName: node
   linkType: hard
 
@@ -10340,7 +10347,7 @@ __metadata:
     "@babel/preset-env": "npm:~7.29.7"
     "@babel/preset-react": "npm:~7.28.5"
     "@babel/register": "npm:~7.28.6"
-    "@babel/runtime": "npm:~7.29.7"
+    "@babel/runtime": "npm:~7.29.10"
     "@bugsnag/js": "npm:~7.20.2"
     "@bugsnag/plugin-react": "npm:~7.19.0"
     "@datastructures-js/priority-queue": "npm:^6.3.5"
@@ -11482,7 +11489,7 @@ __metadata:
     react: "npm:~19.2.8"
     react-dom: "npm:~19.2.8"
     react-hook-form: "npm:~7.54.2"
-    react-i18next: "npm:~17.0.15"
+    react-i18next: "npm:~17.0.16"
     storybook: "npm:^9.1.20"
     typescript: "npm:~5.9.3"
   peerDependencies:
@@ -33243,7 +33250,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"react-i18next@npm:~17.0.15, react-i18next@npm:~17.0.16":
+"react-i18next@npm:~17.0.16":
   version: 17.0.16
   resolution: "react-i18next@npm:17.0.16"
   dependencies:

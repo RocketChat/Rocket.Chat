@@ -72,7 +72,7 @@
 		"@aws-sdk/s3-request-presigner": "^3.862.0",
 		"@babel/core": "~7.29.7",
 		"@babel/preset-env": "~7.29.7",
-		"@babel/runtime": "~7.29.7",
+		"@babel/runtime": "~7.29.10",
 		"@bugsnag/js": "~7.20.2",
 		"@bugsnag/plugin-react": "~7.19.0",
 		"@datastructures-js/priority-queue": "^6.3.5",
