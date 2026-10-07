@@ -48,7 +48,8 @@ export function getErrorMessage(error: unknown, defaultMessage?: string): string
 }
 
 export async function getEndpointErrorMessage(error: unknown, defaultMessage: string): Promise<string> {
-	if (!(error instanceof Response)) {
+	// Guarded because jsdom does not define `Response`, and `instanceof` against a missing name throws.
+	if (typeof Response === 'undefined' || !(error instanceof Response)) {
 		return getErrorMessage(error, defaultMessage);
 	}
 
