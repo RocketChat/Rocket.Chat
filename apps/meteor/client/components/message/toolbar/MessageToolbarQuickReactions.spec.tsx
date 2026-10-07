@@ -36,10 +36,10 @@ afterEach(() => {
 });
 
 describe('MessageToolbarQuickReactions', () => {
-	it('should show the first five reactions', () => {
+	it('should show the first three reactions', () => {
 		setup();
 
-		expect(getRenderedEmojis()).toEqual(['emoji_0', 'emoji_1', 'emoji_2', 'emoji_3', 'emoji_4']);
+		expect(getRenderedEmojis()).toEqual(['emoji_0', 'emoji_1', 'emoji_2']);
 	});
 
 	it('should open a line with as many of the remaining reactions as fit while they are hovered', async () => {
@@ -48,12 +48,12 @@ describe('MessageToolbarQuickReactions', () => {
 		await user.hover(screen.getByRole('button', { name: 'emoji_2' }));
 		act(() => jest.advanceTimersByTime(HOVER_INTENT_DELAY));
 
-		expect(getRenderedEmojis()).toEqual(['emoji_0', 'emoji_1', 'emoji_2', 'emoji_3', 'emoji_4', 'emoji_5', 'emoji_6', 'emoji_7']);
+		expect(getRenderedEmojis()).toEqual(['emoji_0', 'emoji_1', 'emoji_2', 'emoji_3', 'emoji_4', 'emoji_5']);
 
 		await user.unhover(screen.getByRole('button', { name: 'emoji_2' }));
 		act(() => jest.advanceTimersByTime(HOVER_INTENT_DELAY));
 
-		expect(getRenderedEmojis()).toHaveLength(5);
+		expect(getRenderedEmojis()).toHaveLength(3);
 	});
 
 	it('should not open the line when the pointer only passes over the reactions', async () => {
@@ -63,7 +63,7 @@ describe('MessageToolbarQuickReactions', () => {
 		await user.unhover(screen.getByRole('button', { name: 'emoji_2' }));
 		act(() => jest.advanceTimersByTime(HOVER_INTENT_DELAY));
 
-		expect(getRenderedEmojis()).toHaveLength(5);
+		expect(getRenderedEmojis()).toHaveLength(3);
 	});
 
 	it('should react with an emoji from the opened line', async () => {
@@ -71,9 +71,9 @@ describe('MessageToolbarQuickReactions', () => {
 
 		await user.hover(screen.getByRole('button', { name: 'emoji_0' }));
 		act(() => jest.advanceTimersByTime(HOVER_INTENT_DELAY));
-		await user.click(screen.getByRole('button', { name: 'emoji_6' }));
+		await user.click(screen.getByRole('button', { name: 'emoji_4' }));
 
-		expect(onReact).toHaveBeenCalledWith('emoji_6');
+		expect(onReact).toHaveBeenCalledWith('emoji_4');
 	});
 
 	it('should open the line for keyboard users and close it on Escape, keeping the focus on the reactions', async () => {
@@ -87,12 +87,12 @@ describe('MessageToolbarQuickReactions', () => {
 
 		await user.tab();
 
-		expect(getRenderedEmojis()).toHaveLength(8);
+		expect(getRenderedEmojis()).toHaveLength(6);
 
 		screen.getByRole('button', { name: 'emoji_5' }).focus();
 		await user.keyboard('{Escape}');
 
-		expect(getRenderedEmojis()).toHaveLength(5);
+		expect(getRenderedEmojis()).toHaveLength(3);
 		expect(screen.getByRole('button', { name: 'emoji_0' })).toHaveFocus();
 	});
 });

@@ -6,7 +6,7 @@ Two places offer emojis without searching for them:
 
 - the **emoji picker** opens on _Frequently used_ (the user's own picks) followed by _Suggested_, a set of emojis the
   workspace recommends for day-to-day work (✅ 👀 🙌 🙏 👍 🎉 🚀 and so on);
-- the **message toolbar** shows five quick reactions. Hovering them opens a second line under the toolbar with more.
+- the **message toolbar** shows three quick reactions. Hovering them opens a second line under the toolbar with more.
 
 Both draw on the same suggested list, so changing it changes both.
 
@@ -27,17 +27,17 @@ _Frequently used_ is different: it holds the user's picks as they were made, ton
 ## Quick reactions
 
 The toolbar's reactions are one ordered list: the user's frequent emojis (by usage score, kept in local storage per
-browser), then the suggested ones not already among them. A user who has never reacted therefore still sees five
+browser), then the suggested ones not already among them. A user who has never reacted therefore still sees three
 reactions, all suggestions.
 
-- The first five are always visible.
+- The first three are always visible.
 - Hovering them for a moment, or reaching them with the keyboard, opens a line hanging from the toolbar, as wide as
   it, holding as many of the remaining reactions as fit — the slots line up with the toolbar's buttons.
 - The line stays open while the pointer is over the reactions or the line itself, and closes shortly after it leaves,
   when keyboard focus leaves them, or on Escape (which returns focus to the first reaction if it was in the line).
-- In keyboard order the line comes right after the five reactions, before the other toolbar actions.
+- In keyboard order the line comes right after the three reactions, before the other toolbar actions.
 
-Touch devices have no hover, so they only get the five.
+Touch devices have no hover, so they only get the three.
 
 ## Key Files
 

@@ -6,7 +6,7 @@ import MessageToolbarMoreQuickReactions from './MessageToolbarMoreQuickReactions
 import type { EmojiItem } from '../../../lib/emoji';
 import EmojiElement from '../../../views/composer/EmojiPicker/EmojiElement';
 
-const VISIBLE_REACTIONS = 5;
+const VISIBLE_REACTIONS = 3;
 const HOVER_INTENT_DELAY = 150;
 
 export type MessageToolbarQuickReactionsProps = {
