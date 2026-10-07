@@ -6,6 +6,7 @@ import { PeerInfo, Widget, WidgetFooter, WidgetHandle, WidgetHeader, WidgetConte
 import { useMediaCallView } from '../../context/MediaCallViewContext';
 import AppActions from '../../experimental/AppActionButtons/components/AppActions';
 import { useVisibleAppActions } from '../../experimental/AppActionButtons/hooks/useVisibleAppActions';
+import { isUnknownPeer } from '../../utils/isUnknownPeer';
 
 const getHeaderTitle = ({ connecting, transferred, t }: { connecting: boolean; transferred: boolean; t: TFunction }) => {
 	if (connecting) {
@@ -27,11 +28,6 @@ const OutgoingCall = () => {
 
 	const appActions = useVisibleAppActions();
 
-	// TODO: Figure out how to ensure this always exist before rendering the component
-	if (!peerInfo) {
-		throw new Error('Peer info is required');
-	}
-
 	const connecting = connectionState === 'CONNECTING';
 
 	return (
@@ -41,9 +37,7 @@ const OutgoingCall = () => {
 				<DevicePicker />
 			</WidgetHeader>
 			{transferredBy && <WidgetInfo slots={[{ text: t('Transferred_call__from__to', { from: transferredBy }), type: 'info' }]} />}
-			<WidgetContent>
-				<PeerInfo {...peerInfo} />
-			</WidgetContent>
+			<WidgetContent>{peerInfo && !isUnknownPeer(peerInfo) && <PeerInfo {...peerInfo} />}</WidgetContent>
 			<WidgetFooter>
 				<AppActions actions={appActions} vertical />
 				{appActions.length > 0 && <Divider />}
