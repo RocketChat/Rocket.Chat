@@ -32,6 +32,7 @@ import {
 	ContextualbarFooter,
 	ContextualbarDialog,
 	ExternalLink,
+	getDirtyFields,
 } from '@rocket.chat/ui-client';
 import { useSetting, useToastMessageDispatch, useEndpoint } from '@rocket.chat/ui-contexts';
 import { useQueryClient } from '@tanstack/react-query';
@@ -46,7 +47,6 @@ import { useEditRoomPermissions } from './useEditRoomPermissions';
 import { MessageTypesValues } from '../../../../../../app/lib/lib/MessageTypes';
 import RoomAvatarEditor from '../../../../../components/avatar/RoomAvatarEditor';
 import { msToTimeUnit, TIMEUNIT } from '../../../../../lib/convertTimeUnit';
-import { getDirtyFields } from '../../../../../lib/getDirtyFields';
 import { links } from '../../../../../lib/links';
 import { roomsQueryKeys } from '../../../../../lib/queryKeys';
 import { useIsABACManagedRoom } from '../../../../admin/ABAC/hooks/useIsABACManagedRoom';

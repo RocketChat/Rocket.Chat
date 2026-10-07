@@ -86,5 +86,5 @@ registerAccountRoute('/feature-preview', {
 
 registerAccountRoute('/accessibility-and-appearance', {
 	name: 'accessibility-and-appearance',
-	component: lazy(() => import('./accessibility/AccessibilityPage')),
+	component: lazy(() => import('@rocket.chat/ui-account').then(({ AccessibilityPage }) => ({ default: AccessibilityPage }))),
 });

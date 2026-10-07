@@ -1,4 +1,5 @@
 export * from './useClipboardWithToast';
+export * from './useCreateFontStyleElement';
 export * from './useDefaultSettingFeaturePreviewList';
 export * from './useDocumentTitle';
 export * from './useDontAskAgain';
