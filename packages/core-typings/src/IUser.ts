@@ -182,6 +182,7 @@ export const SIDEBAR_SYSTEM_GROUP_KEYS = [
 	'Teams',
 	'Discussions',
 	'Channels',
+	'Teams_and_channels',
 	'Direct_Messages',
 	'Conversations',
 ] as const;
