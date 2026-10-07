@@ -23,7 +23,6 @@ const NavBarSearchInputAddon = ({
 	onToggleFilters,
 }: NavBarSearchInputAddonProps): ReactElement => {
 	const { t } = useTranslation();
-	console.log('filters', filters);
 	return (
 		<Box display='flex' alignItems='center' gap={8}>
 			{filters.length > 1 ? (
