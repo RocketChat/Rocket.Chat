@@ -42,6 +42,9 @@ export const connectionStateFor = (state: ConnectionState): CallConnectionState 
 	}
 };
 
+/** Someone in the call, as the call names and draws them. */
+export type CallPerson = { id: string; displayName: string; avatarUrl: string };
+
 const trackOf = (tracks: ParticipantTrack[], identity: string) => tracks.find((t) => t.participant.identity === identity);
 
 /** A remote participant as the call UI draws them. */
@@ -68,3 +71,14 @@ export const toRemoteParticipantInfo = (
 		audioStream: aud?.publication?.track?.mediaStream,
 	};
 };
+
+/** A remote participant drawn as the person they are, whatever identity they hold on the SFU. */
+export const toPersonInfo = (
+	participant: Parameters<typeof toRemoteParticipantInfo>[0],
+	tracks: ParticipantTracks,
+	person: CallPerson,
+): RemoteParticipantInfo => ({
+	...toRemoteParticipantInfo(participant, tracks, person.avatarUrl),
+	id: person.id,
+	displayName: person.displayName,
+});

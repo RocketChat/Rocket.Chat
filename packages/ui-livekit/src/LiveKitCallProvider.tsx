@@ -20,12 +20,15 @@ import {
 } from '@rocket.chat/ui-conference';
 import { useToastMessageDispatch, useUser, useUserAvatarPath } from '@rocket.chat/ui-contexts';
 import { DeviceSelectionProvider } from '@rocket.chat/ui-media';
-import type { RemoteParticipant } from 'livekit-client';
+import type { Participant, RemoteParticipant } from 'livekit-client';
 import { ConnectionState, Room, RoomEvent, Track } from 'livekit-client';
 import type { ReactNode } from 'react';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 
-import { connectionStateFor, isAgentParticipant, otherPeople, toRemoteParticipantInfo } from './callParticipants';
+import type { CallConnection, CallSFU } from './callConnections';
+import { OWN_SFU } from './callConnections';
+import type { CallPerson } from './callParticipants';
+import { connectionStateFor, isAgentParticipant, otherPeople, toPersonInfo } from './callParticipants';
 import { useCallDataChannel } from './useCallDataChannel';
 import { useCallDeviceSwitching } from './useCallDeviceSwitching';
 import { useCallDiagnostics } from './useCallDiagnostics';
@@ -127,19 +130,24 @@ export const LiveKitCallProvider = ({ callId, connect, preferences, onEnded, chi
 	const remoteScreenTracks = useTracks([Track.Source.ScreenShare], { room, onlySubscribed: true });
 	const remoteAudioTracks = useTracks([Track.Source.Microphone], { room, onlySubscribed: true });
 
-	// A participant's identity is their user id, which is what names their avatar.
 	const getUserAvatarPath = useUserAvatarPath();
+
+	// A participant's identity is their user id, which is what names their avatar.
+	const personOf = useCallback(
+		(_sfu: CallSFU, participant: Pick<Participant, 'identity' | 'name'>): CallPerson => ({
+			id: participant.identity,
+			displayName: participant.name || participant.identity,
+			avatarUrl: getUserAvatarPath({ userId: participant.identity }),
+		}),
+		[getUserAvatarPath],
+	);
 
 	const remoteParticipants = useMemo(
 		(): RemoteParticipantInfo[] =>
 			remotes.map((p) =>
-				toRemoteParticipantInfo(
-					p,
-					{ camera: remoteCameraTracks, screen: remoteScreenTracks, microphone: remoteAudioTracks },
-					getUserAvatarPath({ userId: p.identity }),
-				),
+				toPersonInfo(p, { camera: remoteCameraTracks, screen: remoteScreenTracks, microphone: remoteAudioTracks }, personOf(OWN_SFU, p)),
 			),
-		[remotes, remoteCameraTracks, remoteScreenTracks, remoteAudioTracks, getUserAvatarPath],
+		[remotes, remoteCameraTracks, remoteScreenTracks, remoteAudioTracks, personOf],
 	);
 
 	const localCameraPub = localParticipant.getTrackPublication(Track.Source.Camera);
@@ -176,21 +184,31 @@ export const LiveKitCallProvider = ({ callId, connect, preferences, onEnded, chi
 		};
 	}, [room]);
 
+	const user = useUser();
+	const selfId = user?._id || localParticipant.identity;
+
+	const connections = useMemo((): CallConnection[] => [{ sfu: OWN_SFU, room }], [room]);
+	const targetOf = useCallback((personId: string) => personId, []);
+
 	const { raisedHands, localHandRaised, activeReactions, toggleHand, sendReaction, muteParticipant } = useCallDataChannel(
-		room,
 		localParticipant,
+		{
+			selfId,
+			connections,
+			personOf,
+			targetOf,
+		},
 	);
 
 	const deviceSelection = useCallDeviceSwitching(room, arrival);
 
 	const speakingWhileMuted = useSpeakingWhileMuted(connected && !micEnabled, playMutedReminder, deviceSelection.selectedIds.audioinput);
 
-	const user = useUser();
 	const selfDisplayName = useUserDisplayName({ name: user?.name, username: user?.username });
 
 	const self = useMemo(
 		(): CallSelf => ({
-			id: user?._id || localParticipant.identity,
+			id: selfId,
 			displayName: selfDisplayName || '',
 			avatarUrl: getUserAvatarPath({ userId: user?._id || '' }),
 			muted: !micEnabled,
@@ -204,8 +222,8 @@ export const LiveKitCallProvider = ({ callId, connect, preferences, onEnded, chi
 			microphoneStream,
 		}),
 		[
+			selfId,
 			user?._id,
-			localParticipant.identity,
 			selfDisplayName,
 			getUserAvatarPath,
 			micEnabled,
