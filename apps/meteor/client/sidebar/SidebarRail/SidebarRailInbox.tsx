@@ -1,9 +1,9 @@
-import { NavBarItem } from '@rocket.chat/fuselage';
+import { Box, NavBarItem } from '@rocket.chat/fuselage';
 import { useUserSubscriptions } from '@rocket.chat/ui-contexts';
 import type { HTMLAttributes } from 'react';
-import { useEffect, useMemo } from 'react';
+import { /* useEffect */ useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
-import tinykeys from 'tinykeys';
+// import tinykeys from 'tinykeys';
 
 import SidebarRailItemBadge from './SidebarRailItemBadge';
 import { useSidebarRailStore } from './useSidebarRailStore';
@@ -23,32 +23,23 @@ const SidebarRailInbox = (props: SidebarRailInboxProps) => {
 
 	const rooms = useUserSubscriptions(openSubscriptionsQuery);
 	const unreadInfo = useMemo(() => buildUnreadInfo(rooms), [rooms]);
-	const { unreadTitle, unreadVariant, showUnread, unreadCount } = useUnreadDisplay(unreadInfo);
-
-	useEffect(
-		() =>
-			tinykeys(window, {
-				'$mod+Shift+U': (event) => {
-					event.preventDefault();
-					setPanel('inbox');
-				},
-			}),
-		[setPanel],
-	);
+	const unreadResult = useUnreadDisplay(unreadInfo);
+	const { unreadTitle, unreadVariant, showUnread, unreadCount } = unreadResult;
 
 	const label = showUnread ? t('Inbox_with_unread', { unreadTitle }) : t('Inbox');
 
 	return (
-		<NavBarItem
-			{...props}
-			title={`${label} ${getInboxShortcutLabel()}`}
-			icon='inbox'
-			pressed={isActive}
-			aria-keyshortcuts='Control+Shift+U Meta+Shift+U'
-			onClick={() => setPanel('inbox')}
-		>
+		<Box position='relative'>
+			<NavBarItem
+				{...props}
+				title={`${label} ${getInboxShortcutLabel()}`}
+				icon='inbox'
+				pressed={isActive}
+				aria-keyshortcuts='Control+Shift+U Meta+Shift+U'
+				onClick={() => setPanel('inbox')}
+			/>
 			{showUnread && <SidebarRailItemBadge variant={unreadVariant}>{unreadCount.total}</SidebarRailItemBadge>}
-		</NavBarItem>
+		</Box>
 	);
 };
 

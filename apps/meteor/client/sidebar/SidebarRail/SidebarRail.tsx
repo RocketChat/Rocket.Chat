@@ -1,4 +1,3 @@
-import { css } from '@rocket.chat/css-in-js';
 import { Box, NavBarGroup, NavBarItem } from '@rocket.chat/fuselage';
 import { usePermission, useRouter, useUser } from '@rocket.chat/ui-contexts';
 import { useVideoConfWindowEnabled } from '@rocket.chat/ui-video-conf';
@@ -19,11 +18,11 @@ import NavBarItemMarketPlaceMenu from '../../navbar/NavBarPagesGroup/NavBarItemM
 import { NavBarItemAdministrationMenu, UserMenu } from '../../navbar/NavBarSettingsToolbar';
 import { useOmnichannelEnabled } from '../../views/omnichannel/hooks/useOmnichannelEnabled';
 
-const groupStackStyle = css`
-	display: flex;
-	flex-direction: column;
-	gap: 0.5rem;
-`;
+const groupStackProps = {
+	display: 'flex',
+	flexDirection: 'column',
+	gap: '0.5rem',
+} as const;
 
 const SidebarRail = () => {
 	const { t } = useTranslation();
@@ -43,9 +42,15 @@ const SidebarRail = () => {
 			setPanel('search');
 		};
 
+		const openInbox = (event: KeyboardEvent) => {
+			event.preventDefault();
+			setPanel('inbox');
+		};
+
 		return tinykeys(window, {
 			'$mod+K': openSearch,
 			'$mod+P': openSearch,
+			'$mod+Shift+U': openInbox,
 		});
 	}, [setPanel]);
 
@@ -72,7 +77,7 @@ const SidebarRail = () => {
 					<Box is='img' src='/images/logo/icon.svg' alt='Rocket.Chat' size='x28' />
 				</Box>
 				<SidebarRailDivider />
-				<Box className={groupStackStyle}>
+				<Box {...groupStackProps}>
 					<NavBarGroup vertical aria-label={t('Pages_and_actions')}>
 						<SidebarRailSearch />
 						<SidebarRailInbox />
@@ -91,7 +96,7 @@ const SidebarRail = () => {
 					</>
 				)}
 			</Box>
-			<Box padding={8} className={groupStackStyle}>
+			<Box padding={8} {...groupStackProps}>
 				<NavBarGroup vertical aria-label={t('History_navigation')}>
 					<NavBarItem title={t('Back_in_history')} icon='chevron-left' onClick={() => navigate(-1)} />
 					<NavBarItem title={t('Forward_in_history')} icon='chevron-right' onClick={() => navigate(1)} />
