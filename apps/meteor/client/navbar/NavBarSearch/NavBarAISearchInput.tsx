@@ -12,7 +12,6 @@ import tinykeys from 'tinykeys';
 
 import NavBarAISearchListBox from './NavBarAISearchListbox';
 import NavBarSearchInputAddon from './NavBarSearchInputAddon';
-import NavBarSearchListBox from './NavBarSearchListbox';
 import { getShortcutLabel } from './getShortcutLabel';
 import { useNavBarAISearch } from './hooks/useNavBarAISearch';
 import { useSearchClick } from './hooks/useSearchClick';
@@ -130,25 +129,17 @@ const NavBarAISearchInput = () => {
 					/>
 				}
 			/>
-			{state.isOpen &&
-				(aiSearchActive ? (
-					<NavBarAISearchListBox
-						state={state}
-						overlayProps={overlayProps}
-						aiSearchActive={aiSearchActive}
-						handleToggleAISearch={handleToggleAISearch}
-						aiSearchAvailable={canSearchWithAIFromTopBar}
-						filtersOpen={filtersOpen}
-						onCloseFilters={() => setFiltersRequested(false)}
-					/>
-				) : (
-					<NavBarSearchListBox
-						state={state}
-						overlayProps={overlayProps}
-						aiSearchActive={aiSearchActive}
-						handleToggleAISearch={handleToggleAISearch}
-					/>
-				))}
+			{state.isOpen && (
+				<NavBarAISearchListBox
+					state={state}
+					overlayProps={overlayProps}
+					aiSearchActive={aiSearchActive}
+					handleToggleAISearch={handleToggleAISearch}
+					aiSearchAvailable={canSearchWithAIFromTopBar}
+					filtersOpen={filtersOpen}
+					onCloseFilters={() => setFiltersRequested(false)}
+				/>
+			)}
 		</Box>
 	);
 };

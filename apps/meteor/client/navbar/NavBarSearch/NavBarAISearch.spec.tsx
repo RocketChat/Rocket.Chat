@@ -7,7 +7,6 @@ import NavBarAISearch from './NavBarAISearch';
 import '@testing-library/jest-dom';
 
 jest.mock('./NavBarAISearchListbox', () => () => null);
-jest.mock('./NavBarSearchListbox', () => () => null);
 jest.mock('tinykeys', () => ({ __esModule: true, default: () => jest.fn() }));
 jest.mock('./hooks/useNavBarAISearch', () => ({
 	useNavBarAISearch: () => ({

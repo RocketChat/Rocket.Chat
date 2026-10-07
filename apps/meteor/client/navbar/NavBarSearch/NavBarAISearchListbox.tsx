@@ -79,15 +79,19 @@ const NavBarAISearchListBox = ({
 			) : (
 				<>
 					<ResultsLiveRegion shouldAnnounce={!isSearchLoading} itemCount={itemCount} isLoading={isSearchLoading} />
-					<Box display='flex' justifyContent='space-between' alignItems='center' paddingInline={12}>
-						<Box display='flex' alignItems='center'>
-							{t('AI_Search')}
-							<Icon name='info' size={16} marginInlineStart={2} title={t('AI_Search_description')} />
-						</Box>
-						<ToggleSwitch checked={aiSearchActive} onChange={handleToggleAISearch} />
-					</Box>
-					{aiSearchActive && <NavBarSearchFilterTypeRow draft={aiItems.draft} />}
-					<Divider marginBlockStart={12} />
+					{aiSearchAvailable && (
+						<>
+							<Box display='flex' justifyContent='space-between' alignItems='center' paddingInline={12}>
+								<Box display='flex' alignItems='center'>
+									{t('AI_Search')}
+									<Icon name='info' size={16} marginInlineStart={2} title={t('AI_Search_description')} />
+								</Box>
+								<ToggleSwitch checked={aiSearchActive} onChange={handleToggleAISearch} />
+							</Box>
+							{aiSearchActive && <NavBarSearchFilterTypeRow draft={aiItems.draft} />}
+							<Divider marginBlockStart={12} />
+						</>
+					)}
 					<CustomScrollbars>
 						<div
 							{...overlayProps}

@@ -1,6 +1,6 @@
 import type { OverlayTriggerAria } from '@react-aria/overlays';
 import type { OverlayTriggerState } from '@react-stately/overlays';
-import { Box, Tile, ToggleSwitch, Divider } from '@rocket.chat/fuselage';
+import { Box, Tile } from '@rocket.chat/fuselage';
 import { useStableCallback, useOutsideClick } from '@rocket.chat/fuselage-hooks';
 import { CustomScrollbars } from '@rocket.chat/ui-client';
 import { useRef } from 'react';
@@ -17,16 +17,9 @@ import ResultsLiveRegion from '../../components/ResultsLiveRegion';
 export type NavBarSearchListBoxProps = {
 	state: OverlayTriggerState;
 	overlayProps: OverlayTriggerAria['overlayProps'];
-	aiSearchActive?: boolean;
-	handleToggleAISearch?: () => void;
 };
 
-const NavBarSearchListBox = ({
-	state,
-	overlayProps,
-	aiSearchActive = false,
-	handleToggleAISearch = () => null,
-}: NavBarSearchListBoxProps) => {
+const NavBarSearchListBox = ({ state, overlayProps }: NavBarSearchListBoxProps) => {
 	const { t } = useTranslation();
 	const containerRef = useRef<HTMLElement>(null);
 
@@ -58,11 +51,6 @@ const NavBarSearchListBox = ({
 			flexDirection='column'
 		>
 			<ResultsLiveRegion shouldAnnounce={!isLoading} itemCount={items.length} isLoading={isLoading} />
-			<Box display='flex' justifyContent='space-between' alignItems='center' paddingInline={12}>
-				<span>AI Search</span>
-				<ToggleSwitch checked={aiSearchActive} onChange={handleToggleAISearch} />
-			</Box>
-			<Divider marginBlockStart={12} />
 			<CustomScrollbars>
 				<div {...overlayProps} role='listbox' aria-label={t('Channels')} aria-busy={isLoading} tabIndex={-1} onKeyDown={handleKeyDown}>
 					{items.length === 0 && !isLoading && <NavBarSearchNoResults />}
