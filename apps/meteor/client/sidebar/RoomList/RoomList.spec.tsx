@@ -1,5 +1,5 @@
 import { mockAppRoot } from '@rocket.chat/mock-providers';
-import { render, screen, within } from '@testing-library/react';
+import { render, screen } from '@testing-library/react';
 import type { HTMLAttributes, ReactNode } from 'react';
 
 import RoomList from './RoomList';
@@ -177,11 +177,6 @@ describe('RoomList', () => {
 			}),
 		);
 		expect(screen.getAllByTestId('group-header').map((element) => element.textContent)).toEqual([
-			'Channels:3',
-			'Direct_Messages:1',
-			'Empty_Group:0',
-		]);
-		expect(screen.getAllByRole('listitem').map((element) => within(element).getByTestId('group-header').textContent)).toEqual([
 			'Channels:3',
 			'Direct_Messages:1',
 			'Empty_Group:0',
