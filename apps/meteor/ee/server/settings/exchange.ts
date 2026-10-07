@@ -8,8 +8,8 @@ const serverOnly = [enabled, { _id: 'Exchange_Mode', value: 'server' }];
 const graphOnly = [...serverOnly, { _id: 'Exchange_Sync_Provider', value: 'graph' }];
 const ewsOnly = [...serverOnly, { _id: 'Exchange_Sync_Provider', value: 'ews' }];
 
-export function addSettings(): void {
-	void settingsRegistry.addGroup('Outlook_Calendar', async function () {
+export function addSettings(): Promise<void> {
+	return settingsRegistry.addGroup('Outlook_Calendar', async function () {
 		await this.with(
 			{
 				enterprise: true,
@@ -47,6 +47,7 @@ export function addSettings(): void {
 						public: true,
 						invalidValue: '',
 						placeholder: 'https://exchange.example.com/owa/#path=/calendar/view/Month',
+						enableQuery: legacyOnly,
 					});
 
 					await this.add(
@@ -56,6 +57,7 @@ export function addSettings(): void {
 							type: 'string',
 							public: true,
 							invalidValue: '',
+							enableQuery: legacyOnly,
 						},
 					);
 
@@ -63,6 +65,7 @@ export function addSettings(): void {
 						type: 'boolean',
 						public: true,
 						invalidValue: false,
+						enableQuery: legacyOnly,
 					});
 
 					/**
