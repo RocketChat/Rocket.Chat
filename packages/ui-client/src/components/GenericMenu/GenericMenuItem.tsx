@@ -1,10 +1,10 @@
-import { Icon, ItemActions, ItemContent, ItemIcon, ItemTitle } from '@rocket.chat/fuselage';
+import { MenuItemColumn, MenuItemContent, MenuItemIcon, MenuItemInput } from '@rocket.chat/fuselage';
 import type { ComponentProps, MouseEvent, ReactNode } from 'react';
 
 export type GenericMenuItemProps = {
 	id: string;
-	icon?: ComponentProps<typeof Icon>['name'];
-	iconColor?: ComponentProps<typeof Icon>['color'];
+	icon?: ComponentProps<typeof MenuItemIcon>['name'];
+	iconColor?: ComponentProps<typeof MenuItemIcon>['color'];
 	content?: ReactNode;
 	addon?: ReactNode;
 	onClick?: (e?: MouseEvent<HTMLElement>) => void;
@@ -23,19 +23,11 @@ export type GenericMenuItemProps = {
 
 const GenericMenuItem = ({ icon, iconColor, content, addon, status, gap, tooltip }: GenericMenuItemProps) => (
 	<>
-		{gap && <ItemIcon />}
-		{icon && (
-			<ItemIcon>
-				<Icon name={icon} color={iconColor} size='x20' />
-			</ItemIcon>
-		)}
-		{status && <ItemIcon>{status}</ItemIcon>}
-		{content && (
-			<ItemContent title={tooltip}>
-				<ItemTitle>{content}</ItemTitle>
-			</ItemContent>
-		)}
-		{addon && <ItemActions>{addon}</ItemActions>}
+		{gap && <MenuItemColumn />}
+		{icon && <MenuItemIcon name={icon} color={iconColor} />}
+		{status && <MenuItemColumn>{status}</MenuItemColumn>}
+		{content && <MenuItemContent title={tooltip}>{content}</MenuItemContent>}
+		{addon && <MenuItemInput>{addon}</MenuItemInput>}
 	</>
 );
 
