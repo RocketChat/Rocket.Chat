@@ -1,3 +1,4 @@
+import { css } from '@rocket.chat/css-in-js';
 import { Box, NavBarGroup, NavBarItem } from '@rocket.chat/fuselage';
 import { usePermission, useRouter, useUser } from '@rocket.chat/ui-contexts';
 import { useVideoConfWindowEnabled } from '@rocket.chat/ui-video-conf';
@@ -17,6 +18,12 @@ import NavBarOmnichannelGroup from '../../navbar/NavBarOmnichannelGroup';
 import NavBarItemMarketPlaceMenu from '../../navbar/NavBarPagesGroup/NavBarItemMarketPlaceMenu';
 import { NavBarItemAdministrationMenu, UserMenu } from '../../navbar/NavBarSettingsToolbar';
 import { useOmnichannelEnabled } from '../../views/omnichannel/hooks/useOmnichannelEnabled';
+
+const groupStackStyle = css`
+	display: flex;
+	flex-direction: column;
+	gap: 0.5rem;
+`;
 
 const SidebarRail = () => {
 	const { t } = useTranslation();
@@ -65,16 +72,18 @@ const SidebarRail = () => {
 					<Box is='img' src='/images/logo/icon.svg' alt='Rocket.Chat' size='x28' />
 				</Box>
 				<SidebarRailDivider />
-				<NavBarGroup vertical aria-label={t('Pages_and_actions')}>
-					<SidebarRailSearch />
-					<SidebarRailInbox />
-					<SidebarRailCreateNew />
-					{showMarketplace && <NavBarItemMarketPlaceMenu />}
-				</NavBarGroup>
-				<NavBarGroup vertical aria-label={t('Voice_Call')}>
-					<SidebarRailPhone />
-					{user && showOngoingCalls && <NavBarItemOngoingCalls />}
-				</NavBarGroup>
+				<Box className={groupStackStyle}>
+					<NavBarGroup vertical aria-label={t('Pages_and_actions')}>
+						<SidebarRailSearch />
+						<SidebarRailInbox />
+						<SidebarRailCreateNew />
+						{showMarketplace && <NavBarItemMarketPlaceMenu />}
+					</NavBarGroup>
+					<NavBarGroup vertical aria-label={t('Voice_Call')}>
+						<SidebarRailPhone />
+						{user && showOngoingCalls && <NavBarItemOngoingCalls />}
+					</NavBarGroup>
+				</Box>
 				{showOmnichannel && (
 					<>
 						<SidebarRailDivider />
@@ -82,7 +91,7 @@ const SidebarRail = () => {
 					</>
 				)}
 			</Box>
-			<Box padding={8}>
+			<Box padding={8} className={groupStackStyle}>
 				<NavBarGroup vertical aria-label={t('History_navigation')}>
 					<NavBarItem title={t('Back_in_history')} icon='chevron-left' onClick={() => navigate(-1)} />
 					<NavBarItem title={t('Forward_in_history')} icon='chevron-right' onClick={() => navigate(1)} />
