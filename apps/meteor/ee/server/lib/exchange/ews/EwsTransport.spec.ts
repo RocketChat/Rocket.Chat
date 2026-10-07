@@ -112,6 +112,7 @@ describe('NTLM under FIPS', () => {
 	});
 
 	it('allows NTLM when FIPS is off', async () => {
+		jest.spyOn(crypto, 'getFips').mockReturnValue(0);
 		refuseSocket();
 
 		await expect(transportFor({ authMethod: 'ntlm' }).post('<soap/>')).rejects.toBe(SOCKET_REACHED);
