@@ -241,6 +241,13 @@ export interface IStats extends IRocketChatRecord {
 	totalSubscriptionRoles: number;
 	totalUserRoles: number;
 	totalCustomRoles: number;
+	sidebarDisplayPreferences?: {
+		viewMode: Record<'extended' | 'condensed', number>;
+		displayAvatar: number;
+		avatarSize: Record<'small' | 'medium' | 'large', number>;
+		displayPreview: number;
+		activityFilter: number;
+	};
 	totalWebRTCCalls: number;
 	uncaughtExceptionsCount: number;
 	push: number;

@@ -1172,6 +1172,46 @@ export class UsersRaw extends BaseRaw<IUser, DefaultFields<IUser>> implements IU
 		return this.col.aggregate<{ _id: string; total: number }>(pipeline).toArray();
 	}
 
+	getSidebarDisplayPreferences(defaults: { viewMode: string; displayAvatar: boolean; avatarSize: string; displayPreview: boolean }) {
+		const pipeline = [
+			{
+				$match: {
+					active: true,
+					type: 'user',
+				},
+			},
+			{
+				$group: {
+					_id: {
+						viewMode: { $ifNull: ['$settings.preferences.sidebarViewMode', defaults.viewMode] },
+						displayAvatar: { $ifNull: ['$settings.preferences.sidebarDisplayAvatar', defaults.displayAvatar] },
+						avatarSize: { $ifNull: ['$settings.preferences.sidebarAvatarSize', defaults.avatarSize] },
+						displayPreview: { $ifNull: ['$settings.preferences.sidebarDisplayPreview', defaults.displayPreview] },
+						activityFilter: {
+							$anyElementTrue: [
+								{
+									$map: {
+										input: { $ifNull: ['$settings.preferences.sidebarCategories', []] },
+										as: 'category',
+										in: { $gt: [{ $ifNull: ['$$category.activityFilterHours', 0] }, 0] },
+									},
+								},
+							],
+						},
+					},
+					total: { $sum: 1 },
+				},
+			},
+		];
+
+		return this.col
+			.aggregate<{
+				_id: { viewMode: string; displayAvatar: boolean; avatarSize: string; displayPreview: boolean; activityFilter: boolean };
+				total: number;
+			}>(pipeline)
+			.toArray();
+	}
+
 	updateStatusText(_id: IUser['_id'], statusText: string, options?: UpdateOptions) {
 		const update = {
 			$set: {

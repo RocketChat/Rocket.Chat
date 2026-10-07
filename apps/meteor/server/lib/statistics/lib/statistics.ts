@@ -66,6 +66,36 @@ const getUserLanguages = async (totalUsers: number): Promise<{ [key: string]: nu
 
 const { db } = MongoInternals.defaultRemoteCollectionDriver().mongo;
 
+const getSidebarDisplayPreferencesStatistics = async (): Promise<IStats['sidebarDisplayPreferences']> => {
+	const result = {
+		viewMode: { extended: 0, condensed: 0 },
+		displayAvatar: 0,
+		avatarSize: { small: 0, medium: 0, large: 0 },
+		displayPreview: 0,
+		activityFilter: 0,
+	};
+
+	const groups = await Users.getSidebarDisplayPreferences({
+		viewMode: settings.get<string>('Accounts_Default_User_Preferences_sidebarViewMode'),
+		displayAvatar: settings.get<boolean>('Accounts_Default_User_Preferences_sidebarDisplayAvatar'),
+		avatarSize: settings.get<string>('Accounts_Default_User_Preferences_sidebarAvatarSize'),
+		displayPreview: settings.get<boolean>('Accounts_Default_User_Preferences_sidebarDisplayPreview'),
+	});
+
+	for (const { _id, total } of groups) {
+		// A leftover `medium` view mode renders as Condensed.
+		result.viewMode[_id.viewMode === 'extended' ? 'extended' : 'condensed'] += total;
+		result.displayAvatar += _id.displayAvatar ? total : 0;
+		if (_id.displayAvatar && _id.avatarSize in result.avatarSize) {
+			result.avatarSize[_id.avatarSize as keyof typeof result.avatarSize] += total;
+		}
+		result.displayPreview += _id.displayPreview ? total : 0;
+		result.activityFilter += _id.activityFilter ? total : 0;
+	}
+
+	return result;
+};
+
 export const statistics = {
 	get: async (): Promise<IStats> => {
 		const readPreference = readSecondaryPreferred(db);
@@ -498,6 +528,7 @@ export const statistics = {
 		statistics.totalSubscriptionRoles = await RolesRaw.countByScope('Subscriptions', { readPreference });
 		statistics.totalUserRoles = await RolesRaw.countByScope('Users', { readPreference });
 		statistics.totalCustomRoles = await RolesRaw.countCustomRoles({ readPreference });
+		statistics.sidebarDisplayPreferences = await getSidebarDisplayPreferencesStatistics();
 		statistics.totalWebRTCCalls = settings.get('WebRTC_Calls_Count');
 		statistics.uncaughtExceptionsCount = settings.get('Uncaught_Exceptions_Count');
 

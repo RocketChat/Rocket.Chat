@@ -221,6 +221,17 @@ export interface IUsersModel extends IBaseModel<IUser> {
 	}): Promise<{ date: string; users: number; type: 'users' }[]>;
 
 	getUserLanguages(): Promise<{ _id: string; total: number }[]>;
+	getSidebarDisplayPreferences(defaults: {
+		viewMode: string;
+		displayAvatar: boolean;
+		avatarSize: string;
+		displayPreview: boolean;
+	}): Promise<
+		{
+			_id: { viewMode: string; displayAvatar: boolean; avatarSize: string; displayPreview: boolean; activityFilter: boolean };
+			total: number;
+		}[]
+	>;
 
 	setAbacAttributesById(userId: IUser['_id'], attributes: NonNullable<IUser['abacAttributes']>): Promise<IUser | null>;
 	unsetAbacAttributesById(userId: IUser['_id']): Promise<IUser | null>;
