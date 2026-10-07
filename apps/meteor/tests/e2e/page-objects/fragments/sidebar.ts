@@ -85,15 +85,15 @@ export class RoomSidebar extends Sidebar {
 	}
 
 	get teamsCollapser(): Locator {
-		return this.root.getByRole('listitem', { name: 'Collapse Teams' }).first();
+		return this.root.getByRole('group', { name: 'Collapse Teams' }).first();
 	}
 
 	get channelsCollapser(): Locator {
-		return this.channelsList.getByRole('listitem', { name: 'Collapse Channels' });
+		return this.channelsList.getByRole('group', { name: 'Collapse Channels' });
 	}
 
 	get directMessagesCollapser(): Locator {
-		return this.channelsList.getByRole('listitem', { name: 'Collapse Direct messages' });
+		return this.channelsList.getByRole('group', { name: 'Collapse Direct messages' });
 	}
 
 	get firstChannelFromList(): Locator {
