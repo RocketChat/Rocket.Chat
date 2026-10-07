@@ -2568,7 +2568,6 @@
   "Local_Domains": "ローカルドメイン",
   "Local_Password": "ローカルパスワード",
   "Local_Time": "現地時間",
-  "Local_Time_time": "現地時間：{{time}}",
   "Local_Timezone": "ローカルタイムゾーン",
   "Localization": "ローカライズ",
   "Location": "場所",

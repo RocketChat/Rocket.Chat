@@ -3693,7 +3693,6 @@
   "Local_Domains": "本地域名",
   "Local_Password": "本地密码",
   "Local_Time": "本地时间",
-  "Local_Time_time": "本地时间：{{time}}",
   "Local_Timezone": "本地时区",
   "Localization": "本地化",
   "Location": "位置",
