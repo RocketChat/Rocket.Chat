@@ -9,7 +9,8 @@ import EmojiElement from '../../../views/composer/EmojiPicker/EmojiElement';
 
 const toolbarBorderRadius = 'var(--rcx-message-toolbar-border-radius, var(--rcx-border-radius-medium, 0.25rem))';
 
-// A second line hanging from the toolbar, edge to edge with its border
+// A second line hanging from the toolbar, a shade darker. Without a top border it covers the toolbar's bottom one, so
+// the two lines share one outline with no divider between them.
 const lineClassName = css`
 	position: absolute;
 	inset-block-start: 100%;
@@ -18,9 +19,10 @@ const lineClassName = css`
 	gap: 0.25rem;
 	padding: 0.125rem;
 	border: 1px solid ${Palette.stroke['stroke-extra-light']};
+	border-block-start: none;
 	border-end-start-radius: ${toolbarBorderRadius};
 	border-end-end-radius: ${toolbarBorderRadius};
-	background: ${Palette.surface['surface-room']};
+	background: ${Palette.surface['surface-hover']};
 
 	.rcx-message-toolbar:has(&) {
 		border-end-start-radius: 0;
