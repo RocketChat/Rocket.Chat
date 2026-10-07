@@ -10,11 +10,11 @@ import {
 	GenericTableHeader,
 	GenericTableHeaderCell,
 	GenericTableRow,
+	GenericNoResults,
 } from '@rocket.chat/ui-client';
 import { useRouter } from '@rocket.chat/ui-contexts';
 import { useTranslation } from 'react-i18next';
 
-import GenericNoResults from '../../../../../components/GenericNoResults';
 import AccordionLoading from '../../../components/AccordionLoading';
 import { useAppInstances } from '../../../hooks/useAppInstances';
 

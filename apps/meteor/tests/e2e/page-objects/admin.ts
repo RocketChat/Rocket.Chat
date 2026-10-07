@@ -57,6 +57,8 @@ export abstract class Admin extends RoutedPage {
 
 	async waitForReady(): Promise<void> {
 		await this.pageContent.waitFor({ state: 'visible' });
+		// The admin sidebar can mount after the page content; until then the room list is still exposed.
+		await this.sidebar.waitForDisplay();
 	}
 
 	get btnAdd(): Locator {

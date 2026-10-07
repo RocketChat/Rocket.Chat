@@ -1,12 +1,12 @@
 import type { VideoConferenceCapabilities } from '@rocket.chat/core-typings';
+import type { DeviceSelection } from '@rocket.chat/ui-media';
+import { DeviceSelectionProvider } from '@rocket.chat/ui-media';
 import type { ReactNode } from 'react';
 import { Suspense, useMemo } from 'react';
 
 import { PreviewMediaContextProvider } from './PreviewMediaContext';
 import { useCallDevicePreview } from './useCallDevicePreview';
 import type { PreflightMedia } from '../context/definitions';
-import type { DeviceSelection } from '../devices/DeviceSelectionContext';
-import { DeviceSelectionProvider } from '../devices/DeviceSelectionContext';
 import { useCallDevicesInitialState } from '../hooks/useCallDevicesInitialState';
 
 export type PreviewMediaProviderProps = {

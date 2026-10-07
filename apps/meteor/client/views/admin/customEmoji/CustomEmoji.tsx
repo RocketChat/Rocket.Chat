@@ -10,6 +10,7 @@ import {
 	GenericTableRow,
 	usePagination,
 	useSort,
+	GenericNoResults,
 } from '@rocket.chat/ui-client';
 import { useTranslation, useEndpoint } from '@rocket.chat/ui-contexts';
 import { useQuery } from '@tanstack/react-query';
@@ -17,7 +18,6 @@ import type { MutableRefObject } from 'react';
 import { useEffect, useMemo, useState } from 'react';
 
 import FilterByText from '../../../components/FilterByText';
-import GenericNoResults from '../../../components/GenericNoResults';
 
 export type CustomEmojiProps = {
 	reload: MutableRefObject<() => void>;

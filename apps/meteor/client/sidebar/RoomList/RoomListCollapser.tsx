@@ -1,6 +1,5 @@
 import { css } from '@rocket.chat/css-in-js';
 import { Badge, Box, IconButton, Palette, SidebarCollapseGroup, SidebarCollapseGroupMenu } from '@rocket.chat/fuselage';
-import type { TranslationKey } from '@rocket.chat/ui-contexts';
 import type { HTMLAttributes, KeyboardEvent, MouseEventHandler } from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -49,7 +48,7 @@ const RoomListCollapser = ({ group, canMoveUp, canMoveDown, onMoveUp, onMoveDown
 	const { mounted: menuVisibility, requestMount, mountNow } = useDeferredMenuMount();
 	const { unreadTitle, unreadVariant, showUnread, unreadCount } = useUnreadDisplay(group.unreadInfo);
 
-	const title = group.translateTitle ? t(group.title as TranslationKey) : group.title;
+	const title = group.translateTitle ? t(group.title) : group.title;
 
 	const filterChip =
 		!group.collapsed && group.activityFilterHours && group.inactiveCount > 0 ? (
@@ -62,7 +61,7 @@ const RoomListCollapser = ({ group, canMoveUp, canMoveDown, onMoveUp, onMoveDown
 		) : undefined;
 
 	return (
-		<Box className={[headerStyle, filterChip && inlineChipStyle]}>
+		<Box role='listitem' className={[headerStyle, filterChip && inlineChipStyle]}>
 			<SidebarCollapseGroup
 				title={title}
 				empty={group.empty}

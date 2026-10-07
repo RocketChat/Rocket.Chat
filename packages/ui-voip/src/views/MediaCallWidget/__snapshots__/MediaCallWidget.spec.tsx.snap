@@ -42,10 +42,10 @@ exports[`renders IncomingCall without crashing 1`] = `
           class="rcx-box rcx-box--full rcx-css-qwfmt5"
         >
           <button
-            aria-label="customize"
+            aria-label="Device_settings_lowercase"
             class="rcx-box rcx-box--full rcx-button--tiny-square rcx-button--square rcx-button--icon rcx-button rcx-css-1wk08i8"
             disabled=""
-            label="customize"
+            label="Device_settings_lowercase"
             title="Device_settings_not_supported_by_browser"
             type="button"
           >
@@ -208,10 +208,10 @@ exports[`renders IncomingCallConnecting without crashing 1`] = `
           class="rcx-box rcx-box--full rcx-css-qwfmt5"
         >
           <button
-            aria-label="customize"
+            aria-label="Device_settings_lowercase"
             class="rcx-box rcx-box--full rcx-button--tiny-square rcx-button--square rcx-button--icon rcx-button rcx-css-1wk08i8"
             disabled=""
-            label="customize"
+            label="Device_settings_lowercase"
             title="Device_settings_not_supported_by_browser"
             type="button"
           >
@@ -357,10 +357,10 @@ exports[`renders IncomingCallTransfer without crashing 1`] = `
           class="rcx-box rcx-box--full rcx-css-qwfmt5"
         >
           <button
-            aria-label="customize"
+            aria-label="Device_settings_lowercase"
             class="rcx-box rcx-box--full rcx-button--tiny-square rcx-button--square rcx-button--icon rcx-button rcx-css-1wk08i8"
             disabled=""
-            label="customize"
+            label="Device_settings_lowercase"
             title="Device_settings_not_supported_by_browser"
             type="button"
           >
@@ -533,10 +533,10 @@ exports[`renders IncomingCallTransferConnecting without crashing 1`] = `
           class="rcx-box rcx-box--full rcx-css-qwfmt5"
         >
           <button
-            aria-label="customize"
+            aria-label="Device_settings_lowercase"
             class="rcx-box rcx-box--full rcx-button--tiny-square rcx-button--square rcx-button--icon rcx-button rcx-css-1wk08i8"
             disabled=""
-            label="customize"
+            label="Device_settings_lowercase"
             title="Device_settings_not_supported_by_browser"
             type="button"
           >
@@ -841,10 +841,10 @@ exports[`renders NewCall without crashing 1`] = `
           role="group"
         >
           <button
-            aria-label="customize"
+            aria-label="Device_settings_lowercase"
             class="rcx-box rcx-box--full rcx-button--medium-square rcx-button--icon-secondary rcx-button--square rcx-button--icon rcx-button rcx-css-1wk08i8"
             disabled=""
-            label="customize"
+            label="Device_settings_lowercase"
             title="Device_settings_not_supported_by_browser"
             type="button"
           >
@@ -947,10 +947,10 @@ exports[`renders OngoingCall without crashing 1`] = `
             </i>
           </button>
           <button
-            aria-label="customize"
+            aria-label="Device_settings_lowercase"
             class="rcx-box rcx-box--full rcx-button--tiny-square rcx-button--square rcx-button--icon rcx-button rcx-css-1wk08i8"
             disabled=""
-            label="customize"
+            label="Device_settings_lowercase"
             title="Device_settings_not_supported_by_browser"
             type="button"
           >
@@ -1167,10 +1167,10 @@ exports[`renders OngoingCallConnecting without crashing 1`] = `
             </i>
           </button>
           <button
-            aria-label="customize"
+            aria-label="Device_settings_lowercase"
             class="rcx-box rcx-box--full rcx-button--tiny-square rcx-button--square rcx-button--icon rcx-button rcx-css-1wk08i8"
             disabled=""
-            label="customize"
+            label="Device_settings_lowercase"
             title="Device_settings_not_supported_by_browser"
             type="button"
           >
@@ -1397,10 +1397,10 @@ exports[`renders OngoingCallDisabledAllButScreenshare without crashing 1`] = `
             </i>
           </button>
           <button
-            aria-label="customize"
+            aria-label="Device_settings_lowercase"
             class="rcx-box rcx-box--full rcx-button--tiny-square rcx-button--square rcx-button--icon rcx-button rcx-css-1wk08i8"
             disabled=""
-            label="customize"
+            label="Device_settings_lowercase"
             title="Device_settings_not_supported_by_browser"
             type="button"
           >
@@ -1584,10 +1584,10 @@ exports[`renders OngoingCallDisabledAllFeatures without crashing 1`] = `
           class="rcx-box rcx-box--full rcx-css-qwfmt5"
         >
           <button
-            aria-label="customize"
+            aria-label="Device_settings_lowercase"
             class="rcx-box rcx-box--full rcx-button--tiny-square rcx-button--square rcx-button--icon rcx-button rcx-css-1wk08i8"
             disabled=""
-            label="customize"
+            label="Device_settings_lowercase"
             title="Device_settings_not_supported_by_browser"
             type="button"
           >
@@ -1758,10 +1758,10 @@ exports[`renders OutgoingCall without crashing 1`] = `
           class="rcx-box rcx-box--full rcx-css-qwfmt5"
         >
           <button
-            aria-label="customize"
+            aria-label="Device_settings_lowercase"
             class="rcx-box rcx-box--full rcx-button--tiny-square rcx-button--square rcx-button--icon rcx-button rcx-css-1wk08i8"
             disabled=""
-            label="customize"
+            label="Device_settings_lowercase"
             title="Device_settings_not_supported_by_browser"
             type="button"
           >
@@ -1907,10 +1907,10 @@ exports[`renders OutgoingCallConnecting without crashing 1`] = `
           class="rcx-box rcx-box--full rcx-css-qwfmt5"
         >
           <button
-            aria-label="customize"
+            aria-label="Device_settings_lowercase"
             class="rcx-box rcx-box--full rcx-button--tiny-square rcx-button--square rcx-button--icon rcx-button rcx-css-1wk08i8"
             disabled=""
-            label="customize"
+            label="Device_settings_lowercase"
             title="Device_settings_not_supported_by_browser"
             type="button"
           >
@@ -2056,10 +2056,10 @@ exports[`renders OutgoingCallTransfer without crashing 1`] = `
           class="rcx-box rcx-box--full rcx-css-qwfmt5"
         >
           <button
-            aria-label="customize"
+            aria-label="Device_settings_lowercase"
             class="rcx-box rcx-box--full rcx-button--tiny-square rcx-button--square rcx-button--icon rcx-button rcx-css-1wk08i8"
             disabled=""
-            label="customize"
+            label="Device_settings_lowercase"
             title="Device_settings_not_supported_by_browser"
             type="button"
           >
@@ -2215,10 +2215,10 @@ exports[`renders OutgoingCallTransferConnecting without crashing 1`] = `
           class="rcx-box rcx-box--full rcx-css-qwfmt5"
         >
           <button
-            aria-label="customize"
+            aria-label="Device_settings_lowercase"
             class="rcx-box rcx-box--full rcx-button--tiny-square rcx-button--square rcx-button--icon rcx-button rcx-css-1wk08i8"
             disabled=""
-            label="customize"
+            label="Device_settings_lowercase"
             title="Device_settings_not_supported_by_browser"
             type="button"
           >

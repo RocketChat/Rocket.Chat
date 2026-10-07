@@ -231,6 +231,8 @@ export interface IUser extends IRocketChatRecord {
 	statusSource?: PresenceSource;
 	statusExpiresAt?: Date;
 	statusId?: string;
+	presenceDisabledByAdmin?: boolean;
+	statusVisibilityDeniedByAdmin?: string[];
 	previousState?: {
 		statusDefault: UserStatus;
 		statusText: string;

@@ -27,7 +27,6 @@
 		"typecheck": "run-s typecheck:default typecheck:base-runtime typecheck:node-runtime typecheck:types"
 	},
 	"dependencies": {
-		"@msgpack/msgpack": "3.0.0-beta2",
 		"@rocket.chat/apps-engine": "workspace:^",
 		"@rocket.chat/core-typings": "workspace:^",
 		"@rocket.chat/model-typings": "workspace:^",
@@ -52,7 +51,7 @@
 		"@types/semver": "^7.5.8",
 		"@types/stack-trace": "0.0.33",
 		"@types/uuid": "~10.0.0",
-		"eslint": "~10.7.0",
+		"eslint": "~10.11.0",
 		"npm-run-all": "^4.1.5",
 		"ts-node": "^6.2.0",
 		"typescript": "~5.9.3"

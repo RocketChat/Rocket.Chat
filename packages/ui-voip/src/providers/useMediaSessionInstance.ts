@@ -3,11 +3,11 @@ import { MediaSignalingSession, MediaCallWebRTCProcessor } from '@rocket.chat/me
 import type { MediaSignalTransport, ClientMediaSignal, ServerMediaSignal, WebRTCProcessorConfig } from '@rocket.chat/media-signaling';
 import type { TranslationKey } from '@rocket.chat/ui-contexts';
 import { useSetting, useStream, useToastMessageDispatch, useWriteStream } from '@rocket.chat/ui-contexts';
+import { stopTracks } from '@rocket.chat/ui-media';
 import { useEffect, useSyncExternalStore, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { MediaCallLogger } from './MediaCallLogger';
-import { stopTracks } from '../hooks';
 import { useIceServers } from '../hooks/useIceServers';
 
 type SignalTransport = MediaSignalTransport<ClientMediaSignal>;
