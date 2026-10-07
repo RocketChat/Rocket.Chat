@@ -1,15 +1,17 @@
 import type { Credentials } from '@rocket.chat/api-client';
-import type { IUser } from '@rocket.chat/core-typings';
+import type { ICalendarEvent, IUser } from '@rocket.chat/core-typings';
 import { expect } from 'chai';
 import { after, before, describe, it } from 'mocha';
+import { MongoClient } from 'mongodb';
 import type { Response } from 'supertest';
 
 import { sleep } from '../../../lib/utils/sleep';
 import { getCredentials, api, request, credentials } from '../../data/api-data';
+import { updateSetting } from '../../data/permissions.helper';
 import { password } from '../../data/user';
 import { createUser, deleteUser, login } from '../../data/users.helper';
 import { withTimeout } from '../../data/utils';
-import { IS_EE } from '../../e2e/config/constants';
+import { IS_EE, URL_MONGODB } from '../../e2e/config/constants';
 
 describe('[Calendar Events]', () => {
 	let user2: IUser;
@@ -664,6 +666,245 @@ describe('[Calendar Events]', () => {
 				})
 				.expect('Content-Type', 'application/json')
 				.expect(400);
+		});
+	});
+
+	describe('[Calendar Events by source]', () => {
+		const subject = `calendar-events.by-source-${Date.now()}`;
+		const date = new Date();
+		const syncedId = `calendar-events.synced-${Date.now()}`;
+		let connection: MongoClient;
+		let desktopId: string | undefined;
+		let ownId: string | undefined;
+
+		before(async () => {
+			connection = await MongoClient.connect(URL_MONGODB);
+
+			// No route accepts `source`, on purpose, so the event the server sync owns is the one that goes in by hand
+			await connection
+				.db()
+				.collection<ICalendarEvent>('rocketchat_calendar_event')
+				.insertOne({
+					_id: syncedId,
+					_updatedAt: new Date(),
+					uid: credentials['X-User-Id'],
+					source: 'outlook',
+					externalId: `calendar-events.by-source-synced-${Date.now()}`,
+					subject,
+					description: 'Description',
+					startTime: date,
+					notificationSent: false,
+				});
+
+			const desktop = await request
+				.post(api('calendar-events.import'))
+				.set(credentials)
+				.send({
+					startTime: date.toISOString(),
+					subject,
+					description: 'Description',
+					externalId: `calendar-events.by-source-desktop-${Date.now()}`,
+					reminderMinutesBeforeStart: 15,
+				})
+				.expect(200);
+
+			expect(desktop.body).to.have.property('success', true);
+			desktopId = desktop.body.id;
+
+			const own = await request
+				.post(api('calendar-events.create'))
+				.set(credentials)
+				.send({
+					startTime: date.toISOString(),
+					subject,
+					description: 'Description',
+				})
+				.expect(200);
+
+			expect(own.body).to.have.property('success', true);
+			ownId = own.body.id;
+
+			expect(desktopId).to.be.a('string');
+			expect(ownId).to.be.a('string');
+		});
+
+		after(async () => {
+			await Promise.all([
+				request.post(api('calendar-events.delete')).set(credentials).send({ eventId: desktopId }),
+				request.post(api('calendar-events.delete')).set(credentials).send({ eventId: ownId }),
+			]);
+			await connection.db().collection<ICalendarEvent>('rocketchat_calendar_event').deleteOne({ _id: syncedId });
+			await connection.close();
+		});
+
+		(!IS_EE ? describe : describe.skip)('[Calendar Events without the Outlook license]', () => {
+			it('should leave a server synced event out of the list', async () => {
+				const res = await request
+					.get(api('calendar-events.list'))
+					.set(credentials)
+					.query({ date: date.toISOString() })
+					.expect('Content-Type', 'application/json')
+					.expect(200);
+
+				expect(res.body.data.map(({ _id }: { _id: string }) => _id)).to.not.include(syncedId);
+			});
+
+			it('should still list the events the user created', async () => {
+				const res = await request
+					.get(api('calendar-events.list'))
+					.set(credentials)
+					.query({ date: date.toISOString() })
+					.expect('Content-Type', 'application/json')
+					.expect(200);
+
+				expect(res.body.data.map(({ _id }: { _id: string }) => _id)).to.include(ownId);
+			});
+
+			it('should still list an event the desktop integration imported, which carries no source', async () => {
+				const res = await request
+					.get(api('calendar-events.list'))
+					.set(credentials)
+					.query({ date: date.toISOString() })
+					.expect('Content-Type', 'application/json')
+					.expect(200);
+
+				expect(res.body.data.map(({ _id }: { _id: string }) => _id)).to.include(desktopId);
+			});
+
+			it('should refuse to return a server synced event by id', async () => {
+				await request
+					.get(api('calendar-events.info'))
+					.set(credentials)
+					.query({ id: syncedId })
+					.expect('Content-Type', 'application/json')
+					.expect(400);
+			});
+
+			it('should still return an event the user created by id', async () => {
+				await request
+					.get(api('calendar-events.info'))
+					.set(credentials)
+					.query({ id: ownId })
+					.expect('Content-Type', 'application/json')
+					.expect(200)
+					.expect((res: Response) => {
+						expect(res.body).to.have.property('success', true);
+						expect(res.body).to.have.property('event').that.is.an('object').with.property('subject', subject);
+					});
+			});
+
+			it('should still return an event the desktop integration imported by id', async () => {
+				await request
+					.get(api('calendar-events.info'))
+					.set(credentials)
+					.query({ id: desktopId })
+					.expect('Content-Type', 'application/json')
+					.expect(200)
+					.expect((res: Response) => {
+						expect(res.body).to.have.property('success', true);
+						expect(res.body).to.have.property('event').that.is.an('object').with.property('subject', subject);
+					});
+			});
+		});
+
+		(IS_EE ? describe : describe.skip)('[Calendar Events while the server owns the sync]', () => {
+			before('hand the calendar over, now that the fixtures exist', () => updateSetting('Exchange_Mode', 'server'));
+
+			after(() => updateSetting('Exchange_Mode', 'legacy'));
+
+			it('should refuse to create an event carrying an external id', async () => {
+				await request
+					.post(api('calendar-events.create'))
+					.set(credentials)
+					.send({
+						startTime: date.toISOString(),
+						subject,
+						description: 'Description',
+						externalId: `calendar-events.server-managed-refused-${Date.now()}`,
+					})
+					.expect('Content-Type', 'application/json')
+					.expect(400)
+					.expect((res: Response) => {
+						expect(res.body).to.have.property('error', 'error-calendar-managed-by-server-sync');
+					});
+			});
+
+			it('should refuse to import an event', async () => {
+				await request
+					.post(api('calendar-events.import'))
+					.set(credentials)
+					.send({
+						startTime: date.toISOString(),
+						subject,
+						description: 'Description',
+						externalId: `calendar-events.server-managed-refused-${Date.now()}`,
+					})
+					.expect('Content-Type', 'application/json')
+					.expect(400)
+					.expect((res: Response) => {
+						expect(res.body).to.have.property('error', 'error-calendar-managed-by-server-sync');
+					});
+			});
+
+			it('should refuse to update a server synced event', async () => {
+				await request
+					.post(api('calendar-events.update'))
+					.set(credentials)
+					.send({ eventId: syncedId, startTime: date.toISOString(), subject: 'Changed', description: 'Description' })
+					.expect('Content-Type', 'application/json')
+					.expect(400)
+					.expect((res: Response) => {
+						expect(res.body).to.have.property('error', 'error-calendar-event-owned-by-outlook-sync');
+					});
+			});
+
+			it('should refuse to delete a server synced event', async () => {
+				await request
+					.post(api('calendar-events.delete'))
+					.set(credentials)
+					.send({ eventId: syncedId })
+					.expect('Content-Type', 'application/json')
+					.expect(400)
+					.expect((res: Response) => {
+						expect(res.body).to.have.property('error', 'error-calendar-event-owned-by-outlook-sync');
+					});
+			});
+
+			it('should still update an event the desktop integration imported, which carries no source', async () => {
+				await request
+					.post(api('calendar-events.update'))
+					.set(credentials)
+					.send({ eventId: desktopId, startTime: date.toISOString(), subject: 'Changed', description: 'Description' })
+					.expect('Content-Type', 'application/json')
+					.expect(200)
+					.expect((res: Response) => {
+						expect(res.body).to.have.property('success', true);
+					});
+			});
+
+			it('should still create an event with no external id', async () => {
+				const created = await request
+					.post(api('calendar-events.create'))
+					.set(credentials)
+					.send({ startTime: date.toISOString(), subject, description: 'Description' })
+					.expect(200);
+
+				expect(created.body).to.have.property('success', true);
+
+				await request.post(api('calendar-events.delete')).set(credentials).send({ eventId: created.body.id }).expect(200);
+			});
+
+			it('should still update an event the user owns', async () => {
+				await request
+					.post(api('calendar-events.update'))
+					.set(credentials)
+					.send({ eventId: ownId, startTime: date.toISOString(), subject: 'Changed', description: 'Description' })
+					.expect('Content-Type', 'application/json')
+					.expect(200)
+					.expect((res: Response) => {
+						expect(res.body).to.have.property('success', true);
+					});
+			});
 		});
 	});
 
