@@ -18,7 +18,7 @@
 	},
 	"devDependencies": {
 		"@types/node-rsa": "^1.1.4",
-		"eslint": "~10.7.0",
+		"eslint": "~10.11.0",
 		"mongodb": "6.16.0",
 		"typescript": "~5.9.3"
 	},

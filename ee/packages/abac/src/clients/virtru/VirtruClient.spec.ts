@@ -3,6 +3,11 @@ import { VirtruClient } from './VirtruClient';
 const serverFetchMock = jest.fn();
 jest.mock('@rocket.chat/server-fetch', () => ({ serverFetch: (...a: unknown[]) => serverFetchMock(...a) }));
 
+const logErrorMock = jest.fn();
+jest.mock('../../logger', () => ({
+	logger: { section: () => ({ error: (...a: unknown[]) => logErrorMock(...a), debug: jest.fn(), info: jest.fn(), warn: jest.fn() }) },
+}));
+
 const cfg = {
 	baseUrl: 'http://pdp',
 	clientId: 'cid',
@@ -14,7 +19,10 @@ const cfg = {
 
 const okJson = (body: unknown) => ({ ok: true, status: 200, json: async () => body, text: async () => '' });
 
-beforeEach(() => serverFetchMock.mockReset());
+beforeEach(() => {
+	serverFetchMock.mockReset();
+	logErrorMock.mockReset();
+});
 
 describe('VirtruClient', () => {
 	it('caches the OIDC token across apiCalls (one token fetch serves many calls)', async () => {
@@ -86,5 +94,23 @@ describe('VirtruClient', () => {
 			.mockResolvedValueOnce({ ok: false, status: 500, text: async () => 'boom' });
 		const c = new VirtruClient(cfg);
 		await expect(c.apiCall('/x', {})).rejects.toThrow('Virtru PDP call failed');
+		expect(logErrorMock).toHaveBeenCalledTimes(1);
+		expect(logErrorMock).toHaveBeenCalledWith(expect.objectContaining({ endpoint: '/x', status: 500, response: 'boom' }));
+	});
+
+	it('apiCall logs and rethrows when the token request or the PDP request rejects', async () => {
+		const c = new VirtruClient(cfg);
+		const tokenErr = new Error('oidc down');
+		serverFetchMock.mockRejectedValueOnce(tokenErr);
+		await expect(c.apiCall('/x', {})).rejects.toBe(tokenErr);
+
+		const networkErr = new Error('ECONNRESET');
+		serverFetchMock.mockResolvedValueOnce(okJson({ access_token: 'tok', expires_in: 3600 })).mockRejectedValueOnce(networkErr);
+		await expect(c.apiCall('/y', {})).rejects.toBe(networkErr);
+
+		expect(logErrorMock.mock.calls).toEqual([
+			[expect.objectContaining({ endpoint: '/x', err: tokenErr })],
+			[expect.objectContaining({ endpoint: '/y', err: networkErr })],
+		]);
 	});
 });

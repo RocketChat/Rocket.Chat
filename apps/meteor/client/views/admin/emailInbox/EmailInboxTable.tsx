@@ -9,13 +9,13 @@ import {
 	GenericTableRow,
 	usePagination,
 	useSort,
+	GenericNoResults,
 } from '@rocket.chat/ui-client';
 import { useRoute, useTranslation, useEndpoint } from '@rocket.chat/ui-contexts';
 import { useQuery } from '@tanstack/react-query';
 import { useMemo, useCallback } from 'react';
 
 import SendTestButton from './SendTestButton';
-import GenericNoResults from '../../../components/GenericNoResults';
 
 const EmailInboxTable = () => {
 	const t = useTranslation();

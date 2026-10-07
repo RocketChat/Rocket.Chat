@@ -4,13 +4,14 @@ import { useTranslation } from 'react-i18next';
 
 import type { PeerInfo, SessionState } from '../context/definitions';
 import { convertAvatarUrlToPng } from '../utils/convertAvatarUrlToPng';
+import { isExternalPeer } from '../utils/isExternalPeer';
 
 const getDisplayInfo = (peerInfo?: PeerInfo) => {
 	if (!peerInfo) {
 		return undefined;
 	}
 
-	if ('number' in peerInfo) {
+	if (isExternalPeer(peerInfo)) {
 		return { title: peerInfo.number };
 	}
 	if ('displayName' in peerInfo) {

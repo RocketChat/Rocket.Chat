@@ -2,7 +2,6 @@ import type { ILivechatPriority, Serialized } from '@rocket.chat/core-typings';
 import { LivechatPriorityWeight } from '@rocket.chat/core-typings';
 import type { SelectOption } from '@rocket.chat/fuselage';
 import { Options, Box, Option, Field, FieldLabel, FieldRow, SelectLegacy } from '@rocket.chat/fuselage';
-import type { TranslationKey } from '@rocket.chat/ui-contexts';
 import type { ComponentProps } from 'react';
 import { useCallback, forwardRef, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -24,7 +23,7 @@ export const PrioritiesSelect = ({ value = '', label, options, onChange }: Prior
 
 	const formattedOptions = useMemo<SelectOption[]>(() => {
 		const opts: SelectOption[] = options?.map(({ dirty, name, i18n, _id, sortItem }) => {
-			const label = dirty && name ? name : t(i18n as TranslationKey);
+			const label = dirty && name ? name : t(i18n);
 			sorting[_id] = sortItem;
 			return [_id, label];
 		});

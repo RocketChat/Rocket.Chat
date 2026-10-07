@@ -1,6 +1,6 @@
 import type { Serialized } from '@rocket.chat/core-typings';
 import { TableRow, TableCell } from '@rocket.chat/fuselage';
-import type { TranslationKey } from '@rocket.chat/ui-contexts';
+import { useFormatDateAndTime } from '@rocket.chat/ui-client';
 import { useRouter } from '@rocket.chat/ui-contexts';
 import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -12,7 +12,6 @@ import {
 	ImportingStartedStates,
 	ProgressStep,
 } from '../../../../app/importer/lib/ImporterProgressStep';
-import { useFormatDateAndTime } from '../../../hooks/useFormatDateAndTime';
 
 export type ImportOperationSummaryProps = {
 	type: string;
@@ -100,7 +99,7 @@ function ImportOperationSummary({
 			<TableCell>{formatDateAndTime(_updatedAt)}</TableCell>
 			{!small && (
 				<>
-					<TableCell>{status && t(status.replace('importer_', 'importer_status_') as TranslationKey)}</TableCell>
+					<TableCell>{status && t(status.replace('importer_', 'importer_status_'))}</TableCell>
 					<TableCell>{fileName}</TableCell>
 					<TableCell align='center'>{users}</TableCell>
 					<TableCell align='center'>{contacts}</TableCell>

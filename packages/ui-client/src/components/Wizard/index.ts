@@ -11,4 +11,3 @@ export * from './lib/StepNode';
 export * from './WizardContext';
 export * from './useWizardContext';
 export * from './useWizard';
-export * from './mocks/createMockWizardApi';

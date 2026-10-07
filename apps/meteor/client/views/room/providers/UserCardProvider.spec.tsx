@@ -239,7 +239,7 @@ it('closes shortly after the pointer leaves the card and its trigger', async () 
 	}
 });
 
-it('hands the card over to the next author the pointer moves to', async () => {
+it('makes the next author wait out the full hover delay, even with a card showing', async () => {
 	jest.useFakeTimers();
 	try {
 		render(
@@ -253,15 +253,44 @@ it('hands the card over to the next author the pointer moves to', async () => {
 		await advance(1000);
 		expect(screen.getByTestId('user-card')).toHaveTextContent('jane');
 
-		// with a card already showing, the next author's card replaces it without waiting out the hover delay
 		fireEvent.mouseLeave(screen.getByText('author jane'));
 		fireEvent.mouseEnter(screen.getByText('author john'));
-		await advance(0);
-		expect(screen.getByTestId('user-card')).toHaveTextContent('john');
 
-		// the pointer resting on john's name keeps his card open
-		await advance(1000);
+		// jane's card lingers, then closes; john's waits for the whole delay
+		await advance(300);
+		expect(screen.queryByTestId('user-card')).not.toBeInTheDocument();
+		await advance(199);
+		expect(screen.queryByTestId('user-card')).not.toBeInTheDocument();
+		await advance(1);
 		expect(screen.getByTestId('user-card')).toHaveTextContent('john');
+	} finally {
+		jest.useRealTimers();
+	}
+});
+
+it('does not open cards right away for authors the pointer sweeps past after one closed', async () => {
+	jest.useFakeTimers();
+	try {
+		render(
+			<UserCardProvider>
+				<AuthorTrigger username='jane' />
+				<AuthorTrigger username='john' />
+			</UserCardProvider>,
+		);
+
+		fireEvent.mouseEnter(screen.getByText('author jane'));
+		await advance(1000);
+		fireEvent.mouseLeave(screen.getByText('author jane'));
+		await advance(300);
+		expect(screen.queryByTestId('user-card')).not.toBeInTheDocument();
+
+		// passing over another author shortly after
+		fireEvent.mouseEnter(screen.getByText('author john'));
+		await advance(100);
+		expect(screen.queryByTestId('user-card')).not.toBeInTheDocument();
+		fireEvent.mouseLeave(screen.getByText('author john'));
+		await advance(1000);
+		expect(screen.queryByTestId('user-card')).not.toBeInTheDocument();
 	} finally {
 		jest.useRealTimers();
 	}

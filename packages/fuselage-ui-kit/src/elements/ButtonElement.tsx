@@ -15,7 +15,7 @@ const ButtonElement = ({ block, context, surfaceRenderer }: ButtonElementProps) 
 		void action({ target: e.currentTarget });
 	};
 
-	if (url) {
+	if (url && UiKit.isSafeUrl(url)) {
 		return (
 			<Button
 				is='a'
