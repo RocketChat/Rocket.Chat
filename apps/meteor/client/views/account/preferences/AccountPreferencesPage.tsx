@@ -11,6 +11,7 @@ import PreferencesLocalizationSection from './PreferencesLocalizationSection';
 import PreferencesMessagesSection from './PreferencesMessagesSection';
 import PreferencesMyDataSection from './PreferencesMyDataSection';
 import PreferencesNotificationsSection from './PreferencesNotificationsSection';
+import PreferencesSidebarSection from './PreferencesSidebarSection';
 import PreferencesSoundSection from './PreferencesSoundSection';
 import PreferencesUserPresenceSection from './PreferencesUserPresenceSection';
 import type { AccountPreferencesData } from './useAccountPreferencesValues';
@@ -83,6 +84,7 @@ const AccountPreferencesPage = () => {
 							<PreferencesUserPresenceSection />
 							<PreferencesNotificationsSection />
 							<PreferencesMessagesSection />
+							<PreferencesSidebarSection />
 							<PreferencesHighlightsSection />
 							<PreferencesSoundSection />
 							{dataDownloadEnabled && <PreferencesMyDataSection />}

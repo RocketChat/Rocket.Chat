@@ -1,5 +1,7 @@
 import { useUserPreference } from '@rocket.chat/ui-contexts';
 
+import { toSidebarViewMode } from '../../../sidebar/hooks/useSidebarDisplayPreferences';
+
 export type AccountPreferencesData = {
 	language?: string;
 	dontAskAgainList?: string[];
@@ -34,6 +36,8 @@ export type AccountPreferencesData = {
 	sidebarSortby?: string;
 	sidebarViewMode?: string;
 	sidebarDisplayAvatar?: boolean;
+	sidebarDisplayPreview?: boolean;
+	sidebarAvatarSize?: 'small' | 'medium' | 'large';
 	sidebarGroupByType?: boolean;
 	masterVolume?: number;
 	notificationsSoundVolume?: number;
@@ -80,6 +84,11 @@ export const useAccountPreferencesValues = (): AccountPreferencesData => {
 
 	const desktopNotificationVoiceCalls = useUserPreference<boolean>('desktopNotificationVoiceCalls');
 
+	const sidebarViewMode = toSidebarViewMode(useUserPreference<string>('sidebarViewMode'));
+	const sidebarAvatarSize = useUserPreference<'small' | 'medium' | 'large'>('sidebarAvatarSize');
+	const sidebarDisplayAvatar = useUserPreference<boolean>('sidebarDisplayAvatar');
+	const sidebarDisplayPreview = useUserPreference<boolean>('sidebarDisplayPreview');
+
 	return {
 		language,
 		dontAskAgainList,
@@ -111,5 +120,9 @@ export const useAccountPreferencesValues = (): AccountPreferencesData => {
 		notificationsSoundVolume,
 		voipRingerVolume,
 		desktopNotificationVoiceCalls,
+		sidebarViewMode,
+		sidebarDisplayAvatar,
+		sidebarDisplayPreview,
+		sidebarAvatarSize,
 	};
 };
