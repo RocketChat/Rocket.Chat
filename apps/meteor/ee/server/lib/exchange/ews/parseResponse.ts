@@ -117,13 +117,15 @@ const assertNoResponseCodeErrors = (doc: Document): void => {
 	}
 };
 
+const SOAP_ENVELOPE_NAMESPACES = new Set(['http://schemas.xmlsoap.org/soap/envelope/', 'http://www.w3.org/2003/05/soap-envelope']);
+
 const assertIsSoapEnvelope = (doc: Document): void => {
 	const root = doc.documentElement;
 	const localName = root.localName ?? root.nodeName.replace(/^.*:/, '');
 
-	if (localName !== 'Envelope') {
+	if (localName !== 'Envelope' || !SOAP_ENVELOPE_NAMESPACES.has(root.namespaceURI ?? '')) {
 		throw new ExchangeError('unexpected-response', 'Exchange returned a document that is not a SOAP envelope', {
-			detail: `root element was <${root.nodeName}>`,
+			detail: `root element was <${root.nodeName}> in ${root.namespaceURI ?? 'no namespace'}`,
 		});
 	}
 };
