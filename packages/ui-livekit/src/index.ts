@@ -1,5 +1,5 @@
-import { LiveKitCallProvider } from './LiveKitCallProvider';
+import { MultiSFUCallProvider } from './MultiSFUCallProvider';
 
 export { PreviewVideoProvider } from './PreviewVideoProvider';
 
-export default LiveKitCallProvider;
+export default MultiSFUCallProvider;

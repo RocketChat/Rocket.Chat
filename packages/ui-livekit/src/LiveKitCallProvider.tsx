@@ -25,14 +25,16 @@ import { ConnectionState, Room, RoomEvent, Track } from 'livekit-client';
 import type { ReactNode } from 'react';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 
-import type { CallConnection, CallSFU } from './callConnections';
+import type { CallConnection, CallSFU, RemoteSFUConnection } from './callConnections';
 import { OWN_SFU } from './callConnections';
 import type { CallPerson } from './callParticipants';
-import { connectionStateFor, isAgentParticipant, otherPeople, toPersonInfo } from './callParticipants';
+import { connectionStateFor, isAgentParticipant, otherPeople, subscribedTracksOf, toPersonInfo } from './callParticipants';
+import type { CallRoster } from './callRoster';
 import { useCallDataChannel } from './useCallDataChannel';
 import { useCallDeviceSwitching } from './useCallDeviceSwitching';
 import { useCallDiagnostics } from './useCallDiagnostics';
 import { useLiveKitTransport } from './useLiveKitTransport';
+import { useRemoteSFUParticipants } from './useRemoteSFUParticipants';
 import { useSendResolution } from './useSendResolution';
 import { useSpeakingWhileMuted } from './useSpeakingWhileMuted';
 import { useVideoQuality } from './useVideoQuality';
@@ -45,8 +47,14 @@ export type LiveKitCallProviderProps = {
 	preferences?: { mic?: boolean; cam?: boolean; micId?: string; camId?: string; speakerId?: string };
 	/** The call ended for this user, whoever ended it. */
 	onEnded: () => void;
+	/** Who is who in a federated call, whose participants go by their membership's LiveKit identity rather than their user id. */
+	roster?: CallRoster;
+	/** The other homeservers' SFUs a federated call watches, where the members they host publish. */
+	remoteSFUs?: readonly RemoteSFUConnection[];
 	children: ReactNode;
 };
+
+const NO_REMOTE_SFUS: readonly RemoteSFUConnection[] = [];
 
 /** New arrivals are announced only while each face in the call still matters. */
 const JOIN_CHIME_MAX_PARTICIPANTS = 6;
@@ -61,16 +69,26 @@ const useArrivalPreferences = (preferences: LiveKitCallProviderProps['preference
 };
 
 /**
- * A LiveKit call running in the conference window. Meant to be loaded lazily, so the SDK is fetched for a call
- * rather than on every page load.
+ * A LiveKit call running in the conference window, published on this server's SFU. In a federated call, whoever the
+ * other homeservers' SFUs carry is in it too. Meant to be loaded lazily, so the SDK is fetched for a call rather than
+ * on every page load.
  *
  * Mounted around the window before the join: the room exists from the first render and `connect` is what flips,
  * so nothing it wraps remounts when the call starts.
  */
-export const LiveKitCallProvider = ({ callId, connect, preferences, onEnded, children }: LiveKitCallProviderProps) => {
+export const LiveKitCallProvider = ({
+	callId,
+	connect,
+	preferences,
+	onEnded,
+	roster,
+	remoteSFUs = NO_REMOTE_SFUS,
+	children,
+}: LiveKitCallProviderProps) => {
 	const dispatchToastMessage = useToastMessageDispatch();
 	const { data: credentials, error: transportError } = useLiveKitTransport(callId, connect);
 	const [room] = useState(() => new Room());
+	const federated = Boolean(credentials?.federation);
 
 	// Failing before the call is up leaves no call to sit in; failing inside one, as a device refusing to publish
 	// does, leaves the call as it was.
@@ -130,25 +148,44 @@ export const LiveKitCallProvider = ({ callId, connect, preferences, onEnded, chi
 	const remoteScreenTracks = useTracks([Track.Source.ScreenShare], { room, onlySubscribed: true });
 	const remoteAudioTracks = useTracks([Track.Source.Microphone], { room, onlySubscribed: true });
 
+	const remoteSFUParticipants = useRemoteSFUParticipants(remoteSFUs);
+
 	const getUserAvatarPath = useUserAvatarPath();
 
-	// A participant's identity is their user id, which is what names their avatar.
 	const personOf = useCallback(
-		(_sfu: CallSFU, participant: Pick<Participant, 'identity' | 'name'>): CallPerson => ({
-			id: participant.identity,
-			displayName: participant.name || participant.identity,
-			avatarUrl: getUserAvatarPath({ userId: participant.identity }),
-		}),
-		[getUserAvatarPath],
+		(sfu: CallSFU, participant: Pick<Participant, 'identity' | 'name'>): CallPerson | undefined => {
+			if (federated) {
+				return roster?.personOn(sfu, participant.identity);
+			}
+			// Outside a federated call a participant's identity is their user id, which is what names their avatar.
+			return {
+				id: participant.identity,
+				displayName: participant.name || participant.identity,
+				avatarUrl: getUserAvatarPath({ userId: participant.identity }),
+			};
+		},
+		[federated, roster, getUserAvatarPath],
 	);
 
-	const remoteParticipants = useMemo(
-		(): RemoteParticipantInfo[] =>
-			remotes.map((p) =>
-				toPersonInfo(p, { camera: remoteCameraTracks, screen: remoteScreenTracks, microphone: remoteAudioTracks }, personOf(OWN_SFU, p)),
-			),
-		[remotes, remoteCameraTracks, remoteScreenTracks, remoteAudioTracks, personOf],
-	);
+	// Each person with the identity they are seen under, which is the one a request meant for them has to name.
+	const { remoteParticipants, identities } = useMemo(() => {
+		const ownTracks = { camera: remoteCameraTracks, screen: remoteScreenTracks, microphone: remoteAudioTracks };
+		const people: RemoteParticipantInfo[] = [];
+		const identityByPerson = new Map<string, string>();
+
+		const add = (sfu: CallSFU, participant: Parameters<typeof toPersonInfo>[0], tracks: Parameters<typeof toPersonInfo>[1]) => {
+			const person = personOf(sfu, participant);
+			if (person) {
+				people.push(toPersonInfo(participant, tracks, person));
+				identityByPerson.set(person.id, participant.identity);
+			}
+		};
+
+		remotes.forEach((participant) => add(OWN_SFU, participant, ownTracks));
+		remoteSFUParticipants.forEach(({ connection, participant }) => add(connection.sfu, participant, subscribedTracksOf(participant)));
+
+		return { remoteParticipants: people, identities: identityByPerson };
+	}, [remotes, remoteSFUParticipants, remoteCameraTracks, remoteScreenTracks, remoteAudioTracks, personOf]);
 
 	const localCameraPub = localParticipant.getTrackPublication(Track.Source.Camera);
 	const localScreenPub = localParticipant.getTrackPublication(Track.Source.ScreenShare);
@@ -164,31 +201,44 @@ export const LiveKitCallProvider = ({ callId, connect, preferences, onEnded, chi
 
 	const diagnostics = useCallDiagnostics(
 		room,
-		allParticipants.filter((p) => p !== localParticipant),
+		allParticipants.filter((p) => p !== localParticipant && personOf(OWN_SFU, p)),
 		credentials?.serverUrl ?? '',
 		connected,
 	);
 
+	const connections = useMemo((): CallConnection[] => [{ sfu: OWN_SFU, room }, ...remoteSFUs], [room, remoteSFUs]);
+
 	useEffect(() => {
-		const onConnect = (participant: RemoteParticipant) => {
-			if (isAgentParticipant(participant)) return;
-			// People only, the reader included, so the chime sounds while the call grows to six and is silent from the seventh.
-			const people = [...room.remoteParticipants.values()].filter((p) => !isAgentParticipant(p)).length + 1;
-			if (people <= JOIN_CHIME_MAX_PARTICIPANTS) {
-				playJoinChime();
-			}
-		};
-		room.on(RoomEvent.ParticipantConnected, onConnect);
-		return () => {
-			room.off(RoomEvent.ParticipantConnected, onConnect);
-		};
-	}, [room]);
+		const isPerson = (sfu: CallSFU, participant: RemoteParticipant) =>
+			!isAgentParticipant(participant) && Boolean(personOf(sfu, participant));
+
+		const stops = connections.map(({ sfu, room: connectionRoom }) => {
+			const onConnect = (participant: RemoteParticipant) => {
+				if (!isPerson(sfu, participant)) return;
+				// People only, the reader included, so the chime sounds while the call grows to six and is silent from the seventh.
+				const people = connections.reduce(
+					(count, other) => count + [...other.room.remoteParticipants.values()].filter((p) => isPerson(other.sfu, p)).length,
+					1,
+				);
+				if (people <= JOIN_CHIME_MAX_PARTICIPANTS) {
+					playJoinChime();
+				}
+			};
+			connectionRoom.on(RoomEvent.ParticipantConnected, onConnect);
+			return () => {
+				connectionRoom.off(RoomEvent.ParticipantConnected, onConnect);
+			};
+		});
+		return () => stops.forEach((stop) => stop());
+	}, [connections, personOf]);
 
 	const user = useUser();
 	const selfId = user?._id || localParticipant.identity;
 
-	const connections = useMemo((): CallConnection[] => [{ sfu: OWN_SFU, room }], [room]);
-	const targetOf = useCallback((personId: string) => personId, []);
+	const targetOf = useCallback(
+		(personId: string) => (federated ? (identities.get(personId) ?? roster?.identityOf(personId)) : personId),
+		[federated, identities, roster],
+	);
 
 	const { raisedHands, localHandRaised, activeReactions, toggleHand, sendReaction, muteParticipant } = useCallDataChannel(
 		localParticipant,
@@ -201,6 +251,15 @@ export const LiveKitCallProvider = ({ callId, connect, preferences, onEnded, chi
 	);
 
 	const deviceSelection = useCallDeviceSwitching(room, arrival);
+
+	// What the other SFUs carry plays through the speaker the call is on.
+	const speakerId = deviceSelection.selectedIds.audiooutput;
+	useEffect(() => {
+		if (!speakerId) return;
+		remoteSFUs.forEach(({ room: remoteRoom }) => {
+			remoteRoom.switchActiveDevice('audiooutput', speakerId).catch((err: unknown) => console.warn('audiooutput switch failed', err));
+		});
+	}, [remoteSFUs, speakerId]);
 
 	const speakingWhileMuted = useSpeakingWhileMuted(connected && !micEnabled, playMutedReminder, deviceSelection.selectedIds.audioinput);
 
@@ -280,6 +339,9 @@ export const LiveKitCallProvider = ({ callId, connect, preferences, onEnded, chi
 						<CallDiagnosticsProvider value={diagnostics ?? null}>
 							{children}
 							<RoomAudioRenderer room={room} />
+							{remoteSFUs.map(({ sfu, room: remoteRoom }) => (
+								<RoomAudioRenderer key={sfu.key} room={remoteRoom} />
+							))}
 						</CallDiagnosticsProvider>
 					</VideoQualityProvider>
 				</DeviceSelectionProvider>

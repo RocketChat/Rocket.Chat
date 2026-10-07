@@ -12141,6 +12141,7 @@ __metadata:
   resolution: "@rocket.chat/ui-livekit@workspace:packages/ui-livekit"
   dependencies:
     "@livekit/components-react": "npm:2.9.23"
+    "@rocket.chat/core-typings": "workspace:^"
     "@rocket.chat/fuselage-hooks": "workspace:^"
     "@rocket.chat/jest-presets": "workspace:~"
     "@rocket.chat/tsconfig": "workspace:*"
@@ -12164,6 +12165,7 @@ __metadata:
     react-i18next: "npm:~17.0.16"
     typescript: "npm:~5.9.3"
   peerDependencies:
+    "@rocket.chat/core-typings": "workspace:^"
     "@rocket.chat/fuselage-hooks": "*"
     "@rocket.chat/ui-client": "workspace:^"
     "@rocket.chat/ui-conference": "workspace:^"

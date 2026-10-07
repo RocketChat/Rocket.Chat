@@ -72,6 +72,24 @@ export const toRemoteParticipantInfo = (
 	};
 };
 
+type SubscribablePublication = NonNullable<ParticipantTrack['publication']> & { isSubscribed: boolean };
+
+type PublishingParticipant = Pick<Participant, 'identity'> & {
+	getTrackPublication: (source: Track.Source) => SubscribablePublication | undefined;
+};
+
+const subscribedTrack = (participant: PublishingParticipant, source: Track.Source): ParticipantTrack[] => {
+	const publication = participant.getTrackPublication(source);
+	return publication?.isSubscribed ? [{ participant, publication }] : [];
+};
+
+/** A participant's tracks that are subscribed, listed as LiveKit's track hooks list a whole room's. */
+export const subscribedTracksOf = (participant: PublishingParticipant): ParticipantTracks => ({
+	camera: subscribedTrack(participant, Track.Source.Camera),
+	screen: subscribedTrack(participant, Track.Source.ScreenShare),
+	microphone: subscribedTrack(participant, Track.Source.Microphone),
+});
+
 /** A remote participant drawn as the person they are, whatever identity they hold on the SFU. */
 export const toPersonInfo = (
 	participant: Parameters<typeof toRemoteParticipantInfo>[0],
