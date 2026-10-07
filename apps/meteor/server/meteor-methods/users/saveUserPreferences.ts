@@ -208,7 +208,7 @@ export const saveUserPreferences = async (settings: Partial<UserPreferences>, us
 	}
 
 	if (settings.idleTimeLimit != null && settings.idleTimeLimit < 60) {
-		throw new Meteor.Error('invalid-idle-time-limit-value', 'Invalid idleTimeLimit');
+		throw new Meteor.Error('invalid-idle-time-limit-value', 'Idle time limit must be at least 60 seconds'); // fixed the error statementx
 	}
 
 	if (!isUserHidingAllowed()) {
