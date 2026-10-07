@@ -45,7 +45,13 @@ const GRAPH_HOSTS: ReadonlySet<string> = new Set([
 
 const isRecognized = (url: string, hosts: ReadonlySet<string>): boolean => {
 	try {
-		return hosts.has(new URL(url).hostname);
+		const parsedUrl = new URL(url);
+
+		if (parsedUrl.protocol !== 'https:') {
+			return false;
+		}
+
+		return hosts.has(parsedUrl.hostname);
 	} catch {
 		return false;
 	}
