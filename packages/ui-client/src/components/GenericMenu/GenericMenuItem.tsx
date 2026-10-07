@@ -19,6 +19,8 @@ export type GenericMenuItemProps = {
 	 * string for typeahead and to announce, and cannot read one out of arbitrary JSX.
 	 */
 	textValue?: string;
+	/** Items of a submenu this item opens instead of acting on its own. */
+	submenu?: GenericMenuItemProps[];
 };
 
 const GenericMenuItem = ({ icon, iconColor, content, addon, status, gap, tooltip }: GenericMenuItemProps) => (
