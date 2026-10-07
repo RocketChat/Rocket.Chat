@@ -3,17 +3,17 @@ import { Icon, SidebarAction, SidebarActions, SidebarItemIcon } from '@rocket.ch
 import type { SubscriptionWithRoom } from '@rocket.chat/ui-contexts';
 import { useLayout } from '@rocket.chat/ui-contexts';
 import type { TFunction } from 'i18next';
-import type { AllHTMLAttributes, ComponentType, ReactNode } from 'react';
+import type { AllHTMLAttributes, ComponentType, MouseEvent, ReactNode } from 'react';
 import { memo, useMemo } from 'react';
 
 import { RoomIcon } from '../../components/RoomIcon';
 import { useUserStatusTooltip } from '../../hooks/useUserStatusTooltip';
 import { roomCoordinator } from '../../lib/rooms/roomCoordinator';
 import { getSubscriptionDraft } from '../../lib/utils/getSubscriptionDraft';
-import { getUidDirectMessage } from '../../lib/utils/getUidDirectMessage';
 import { isIOsDevice } from '../../lib/utils/isIOsDevice';
 import { getMessagePreview } from '../../lib/utils/normalizeMessagePreview/getMessagePreview';
 import { useOmnichannelPriorities } from '../../views/omnichannel/hooks/useOmnichannelPriorities';
+import { useRoomHoverCard } from '../RoomHoverCard';
 import RoomMenu from '../RoomMenu';
 import SidebarItemBadges from '../badges/SidebarItemBadges';
 import type { useAvatarTemplate } from '../hooks/useAvatarTemplate';
@@ -71,15 +71,18 @@ const SidebarItemTemplateWithData = ({
 	t,
 	isAnonymous,
 	videoConfActions,
-	userId,
 }: RoomListRowProps) => {
 	const { sidebar } = useLayout();
 
 	const href = roomCoordinator.getRouteLink(room.t, room) || '';
 	const title = roomCoordinator.getRoomName(room.t, room) || '';
 
-	const dmUserId = getUidDirectMessage(room, userId);
-	const dmStatusTooltipHandlers = useUserStatusTooltip(dmUserId, title);
+	// Omnichannel rooms keep the plain title tooltip; every other room gets the hover card.
+	const titleTooltipHandlers = useUserStatusTooltip(undefined, title);
+	const { openRoomHoverCard, closeRoomHoverCard } = useRoomHoverCard();
+	const hoverHandlers = isOmnichannelRoom(room)
+		? titleTooltipHandlers
+		: { onMouseEnter: (e: MouseEvent<HTMLElement>) => openRoomHoverCard(e, room.rid), onPointerDown: closeRoomHoverCard };
 
 	const { unreadTitle, showUnread, unreadCount, highlightUnread: highlighted } = useUnreadDisplay(room);
 
@@ -152,7 +155,7 @@ const SidebarItemTemplateWithData = ({
 						)
 					: undefined
 			}
-			{...dmStatusTooltipHandlers}
+			{...hoverHandlers}
 		/>
 	);
 };
