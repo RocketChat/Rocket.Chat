@@ -87,7 +87,7 @@ export function addSettings(): Promise<void> {
 					});
 				});
 
-				await this.section('Exchange_Server_Sync', async function () {
+				await this.section('Exchange_Mode_Server', async function () {
 					await this.add('Exchange_Sync_Provider', 'graph', {
 						type: 'select',
 						values: [
