@@ -10068,7 +10068,7 @@ __metadata:
 
 "@rocket.chat/fuselage@patch:@rocket.chat/fuselage@npm%3A0.94.0#~/.yarn/patches/@rocket.chat-fuselage-npm-0.94.0-df04db6881.patch":
   version: 0.94.0
-  resolution: "@rocket.chat/fuselage@patch:@rocket.chat/fuselage@npm%3A0.94.0#~/.yarn/patches/@rocket.chat-fuselage-npm-0.94.0-df04db6881.patch::version=0.94.0&hash=a59e96"
+  resolution: "@rocket.chat/fuselage@patch:@rocket.chat/fuselage@npm%3A0.94.0#~/.yarn/patches/@rocket.chat-fuselage-npm-0.94.0-df04db6881.patch::version=0.94.0&hash=9cdaa8"
   dependencies:
     "@rocket.chat/css-in-js": "npm:~0.33.1"
     "@rocket.chat/fuselage-tokens": "npm:^0.35.0"
@@ -10084,7 +10084,7 @@ __metadata:
     react: "*"
     react-dom: "*"
     react-virtuoso: "*"
-  checksum: 10/d09557bd045de2278fb5738e87ca49f033e4f3095351a5d59352e7a6f18921d656fe9e8f2711fdaf1c3ab0140299453e707e23c5dbd2ec0e3ee8ecbad5df8517
+  checksum: 10/50f066bac74ccdb32567edf3a6a4b57a73cc55f82f23286931321a052fdea475d7580252ea5d7cd10927b9e3c2580c0711c40706cd9730b1616bd7751e1432a8
   languageName: node
   linkType: hard
 
