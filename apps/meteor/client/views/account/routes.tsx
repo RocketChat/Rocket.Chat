@@ -81,7 +81,7 @@ registerAccountRoute('/omnichannel', {
 
 registerAccountRoute('/feature-preview', {
 	name: 'feature-preview',
-	component: lazy(() => import('./featurePreview/AccountFeaturePreviewPage')),
+	component: lazy(() => import('@rocket.chat/ui-account').then(({ FeaturePreviewPage }) => ({ default: FeaturePreviewPage }))),
 });
 
 registerAccountRoute('/accessibility-and-appearance', {

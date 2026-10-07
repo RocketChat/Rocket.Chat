@@ -7,6 +7,7 @@ export * from './useEmbeddedLayout';
 export * from './useFormatDateAndTime';
 export * from './useFormatTime';
 export * from './useFeaturePreview';
+export * from './useFeaturePreviewEnableQuery';
 export * from './useFeaturePreviewList';
 export * from './useGoToDirectMessage';
 export * from './useLicense';
