@@ -62,7 +62,7 @@ export const buildFont = (icons) =>
 			]),
 		);
 
-export const buildDefinition = (icons) => {
+export const buildDefinition = (icons) =>
 	Promise.resolve(icons)
 		.then(fromIconDescriptorsToCharacters)
 		.then(
@@ -70,6 +70,4 @@ export const buildDefinition = (icons) => {
 export default Icons;
 export type Keys = keyof typeof Icons;`,
 		)
-		.then(writeSource('dist/index.d.ts'))
-		.catch(console.log);
-};
+		.then(writeSource('dist/index.d.ts'));
