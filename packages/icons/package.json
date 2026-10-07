@@ -1,0 +1,47 @@
+{
+	"name": "@rocket.chat/icons",
+	"version": "0.51.0",
+	"description": "Rocket.Chat's Icons",
+	"homepage": "https://github.com/RocketChat/Rocket.Chat#readme",
+	"bugs": {
+		"url": "https://github.com/RocketChat/Rocket.Chat/issues"
+	},
+	"repository": {
+		"type": "git",
+		"url": "git+https://github.com/RocketChat/Rocket.Chat.git",
+		"directory": "packages/icons"
+	},
+	"license": "MIT",
+	"author": {
+		"name": "Rocket.Chat",
+		"url": "https://rocket.chat/"
+	},
+	"main": "dist/index.js",
+	"files": [
+		"/dist"
+	],
+	"scripts": {
+		"build": "node scripts/buildIcons.mjs",
+		"lint": "eslint .",
+		"lint:fix": "eslint --fix ."
+	},
+	"devDependencies": {
+		"eslint": "~10.8.1",
+		"prettier": "~3.6.2",
+		"rimraf": "~6.1.3",
+		"stylelint": "~17.14.1",
+		"stylelint-order": "~8.1.1",
+		"stylelint-prettier": "~5.0.3",
+		"stylelint-scss": "~7.2.0",
+		"svg2ttf": "~6.1.0",
+		"svgicons2svgfont": "~16.0.0",
+		"ttf2eot": "~3.1.0",
+		"ttf2woff": "~3.0.0",
+		"ttf2woff2": "~8.0.1",
+		"unicode": "~14.0.0",
+		"xml2js": "~0.6.2"
+	},
+	"publishConfig": {
+		"access": "public"
+	}
+}
