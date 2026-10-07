@@ -2,6 +2,7 @@ import { federationSDK, init } from '@rocket.chat/federation-sdk';
 import { Logger } from '@rocket.chat/logger';
 
 import { registerEvents } from './events';
+import { configureMatrixRTC } from './matrixrtc/config';
 
 const logger = new Logger('FederationSetup');
 
@@ -47,6 +48,8 @@ export async function configureFederationMatrixSettings(settings: {
 	xmppBridgeURL: string;
 	xmppBridgeHSToken: string;
 	xmppBridgeASToken: string;
+	matrixRTCEnabled: boolean;
+	matrixRTCProfile: string;
 }) {
 	const {
 		instanceId,
@@ -63,6 +66,8 @@ export async function configureFederationMatrixSettings(settings: {
 		xmppBridgeURL,
 		xmppBridgeHSToken,
 		xmppBridgeASToken,
+		matrixRTCEnabled,
+		matrixRTCProfile,
 	} = settings;
 
 	if (!validateDomain(serverName)) {
@@ -107,6 +112,8 @@ export async function configureFederationMatrixSettings(settings: {
 			processReceipt: processEDUReceipt,
 		},
 	});
+
+	configureMatrixRTC({ enabled: matrixRTCEnabled, profile: matrixRTCProfile });
 
 	if (xmppEnabled) {
 		await federationSDK.registerAppService({

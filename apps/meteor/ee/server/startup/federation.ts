@@ -35,6 +35,8 @@ const configureFederation = async () => {
 			xmppBridgeURL: settings.get('Federation_XMPP_Bridge_URL'),
 			xmppBridgeHSToken: settings.get('Federation_XMPP_Bridge_HS_Token'),
 			xmppBridgeASToken: settings.get('Federation_XMPP_Bridge_AS_Token'),
+			matrixRTCEnabled: settings.get('Federation_Service_MatrixRTC_Enabled'),
+			matrixRTCProfile: settings.get('Federation_Service_MatrixRTC_Mode'),
 		});
 	} catch (err) {
 		logger.error({ msg: 'Failed to start federation-matrix service', err });
@@ -72,6 +74,8 @@ export const startFederationService = async (): Promise<void> => {
 			'Federation_XMPP_Bridge_URL',
 			'Federation_XMPP_Bridge_HS_Token',
 			'Federation_XMPP_Bridge_AS_Token',
+			'Federation_Service_MatrixRTC_Enabled',
+			'Federation_Service_MatrixRTC_Mode',
 		],
 		async () => {
 			await configureFederation();
