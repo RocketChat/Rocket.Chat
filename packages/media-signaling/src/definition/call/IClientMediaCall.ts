@@ -91,7 +91,7 @@ export const callRejectedReasonList = [
 
 export type CallRejectedReason = (typeof callRejectedReasonList)[number];
 
-export const callFlagList = ['internal', 'create-data-channel'];
+export const callFlagList = ['internal', 'create-data-channel', 'replaces-call'];
 
 export type CallFlag = (typeof callFlagList)[number];
 

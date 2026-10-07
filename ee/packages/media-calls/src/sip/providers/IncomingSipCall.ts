@@ -172,6 +172,7 @@ export class IncomingSipCall extends BaseSipCall {
 		uas.on('destroy', () => this.onDialogDestroyed());
 
 		this.sipDialog = uas;
+		await this.saveDialogIdentity();
 	}
 
 	protected cancel(res: SipMessage): void {

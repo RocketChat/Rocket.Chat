@@ -113,9 +113,15 @@ export class SipServerSession {
 
 	public async sendReferRequest(
 		sipDialog: Srf.Dialog,
-		params: { transferredTo?: MediaCallContact; transferredBy?: MediaCallContact; conferenceAlias?: string },
+		params: {
+			transferredTo?: MediaCallContact;
+			transferredBy?: MediaCallContact;
+			conferenceAlias?: string;
+			/** The dialog the transfer target must replace, making it an attended transfer */
+			replacesDialog?: NonNullable<IMediaCall['sipDialog']>;
+		},
 	): Promise<number> {
-		const { transferredBy, transferredTo, conferenceAlias } = params;
+		const { transferredBy, transferredTo, conferenceAlias, replacesDialog } = params;
 		if (!transferredTo && !conferenceAlias) {
 			throw new Error('Missing refer destination');
 		}
@@ -125,10 +131,12 @@ export class SipServerSession {
 		const referredBy = transferredBy && this.geContactUri(transferredBy);
 		const referToConference = conferenceAlias && this.getPexipUri(conferenceAlias);
 
-		const referTo = referToConference || (referToActor && this.geContactUri(referToActor));
-		if (!referTo) {
+		const referToUri = referToConference || (referToActor && this.geContactUri(referToActor));
+		if (!referToUri) {
 			throw new Error('invalid-transfer');
 		}
+
+		const referTo = replacesDialog ? `<${referToUri}?${this.getReplacesParameter(replacesDialog)}>` : referToUri;
 
 		const res = await sipDialog.request({
 			method: 'REFER',
@@ -143,6 +151,11 @@ export class SipServerSession {
 		}
 
 		return res.status;
+	}
+
+	/** Identifies the dialog from the point of view of the party that is to be replaced out of it, as in RFC 3891 */
+	private getReplacesParameter({ callId, localTag, remoteTag }: NonNullable<IMediaCall['sipDialog']>): string {
+		return `Replaces=${encodeURIComponent(`${callId};to-tag=${remoteTag};from-tag=${localTag}`)}`;
 	}
 
 	public getPexipUri(alias: string): string {

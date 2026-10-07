@@ -108,7 +108,8 @@ export class MediaCallServer implements IMediaCallServer {
 				logger.error({ msg: 'Failed to create a requested call', params, err: error });
 			}
 
-			const originalId = params.requestedCallId || params.parentCallId;
+			// The call that is being replaced is not the one that was requested, and must not be told it was refused
+			const originalId = params.requestedCallId || (params.replacedCallIds?.length ? undefined : params.parentCallId);
 
 			if (originalId && params.requestedBy?.type === 'user') {
 				logger.info({ msg: 'Call Request Rejected', uid: params.requestedBy.id, rejectionReason });
@@ -378,7 +379,10 @@ export class MediaCallServer implements IMediaCallServer {
 		}
 
 		// The callee contact type will determine if the call is going to go through SIP or directly to another rocket.chat user
-		const callee = await mediaCallDirector.cast.getContactForActor(params.callee, this.getCalleeContactOptions());
+		const callee = await mediaCallDirector.cast.getContactForActor(
+			params.callee,
+			params.requiredCalleeType ? { requiredType: params.requiredCalleeType } : this.getCalleeContactOptions(),
+		);
 		if (!callee) {
 			logger.debug('Failed to load callee contact information');
 			throw new CallRejectedError('invalid-call-params');
