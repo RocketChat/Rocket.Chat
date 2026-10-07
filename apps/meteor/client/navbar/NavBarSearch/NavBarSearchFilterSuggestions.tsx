@@ -1,6 +1,6 @@
 import type { SearchFilterGroup, SearchFilterSuggestion } from '@rocket.chat/ai-search';
 import { Box, SidebarItem, SidebarItemIcon, SidebarItemTitle } from '@rocket.chat/fuselage';
-import type { MouseEvent, ReactElement } from 'react';
+import type { KeyboardEvent, ReactElement, SyntheticEvent } from 'react';
 import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -39,10 +39,16 @@ const NavBarSearchFilterSuggestions = ({ suggestions }: NavBarSearchFilterSugges
 	const { acceptSuggestion } = useSearchFilters();
 	const filterSuggestionGroups = useMemo(() => groupFilterSuggestions(suggestions), [suggestions]);
 
-	const handleFilterSuggestion = (event: MouseEvent, suggestion: SearchFilterSuggestion) => {
+	const handleSelect = (event: SyntheticEvent, suggestion: SearchFilterSuggestion) => {
 		event.preventDefault();
 		event.stopPropagation();
 		acceptSuggestion(suggestion);
+	};
+
+	const handleKeyDown = (event: KeyboardEvent, suggestion: SearchFilterSuggestion) => {
+		if (event.key === 'Enter') {
+			handleSelect(event, suggestion);
+		}
 	};
 
 	if (!filterSuggestionGroups.length) {
@@ -62,10 +68,18 @@ const NavBarSearchFilterSuggestions = ({ suggestions }: NavBarSearchFilterSugges
 								key={item.key}
 								user={item.user}
 								description={item.description}
-								onClick={(event) => handleFilterSuggestion(event, item)}
+								tabIndex={-1}
+								onClick={(event) => handleSelect(event, item)}
+								onKeyDown={(event) => handleKeyDown(event, item)}
 							/>
 						) : (
-							<SidebarItem key={item.key} role='option' onClick={(event) => handleFilterSuggestion(event, item)}>
+							<SidebarItem
+								key={item.key}
+								role='option'
+								tabIndex={-1}
+								onClick={(event) => handleSelect(event, item)}
+								onKeyDown={(event) => handleKeyDown(event, item)}
+							>
 								<SidebarItemIcon icon={<NavBarSearchFilterSuggestionIcon suggestion={item} />} />
 								<SidebarItemTitle>{item.title}</SidebarItemTitle>
 								<Box color='hint' fontScale='c1' flexShrink={0}>
