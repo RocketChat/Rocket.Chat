@@ -9604,7 +9604,6 @@ __metadata:
     "@types/underscore": "npm:^1.13.0"
     "@types/uuid": "npm:^10.0.0"
     "@types/ws": "npm:^8.18.2"
-    colorette: "npm:^1.4.0"
     ejson: "npm:^2.2.3"
     eslint: "npm:~10.12.0"
     eventemitter3: "npm:^5.0.4"
@@ -19765,13 +19764,6 @@ __metadata:
   version: 2.9.3
   resolution: "colord@npm:2.9.3"
   checksum: 10/907a4506d7307e2f580b471b581e992181ed75ab0c6925ece9ca46d88161d2fc50ed15891cd0556d0d9321237ca75afc9d462e4c050b939ef88428517f047f30
-  languageName: node
-  linkType: hard
-
-"colorette@npm:^1.4.0":
-  version: 1.4.0
-  resolution: "colorette@npm:1.4.0"
-  checksum: 10/c8d6c8c3ef5a99acfc3dd9a68f48019f1479ec347551387e4a1762e40f69e98ce19d4dc321ffb4919d1f28a7bdc90c39d4e9a901f4c474fd2124ad93a00c0454
   languageName: node
   linkType: hard
 
