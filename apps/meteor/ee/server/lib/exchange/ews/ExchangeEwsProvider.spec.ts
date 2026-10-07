@@ -1,5 +1,6 @@
 import { ExchangeEwsProvider } from './ExchangeEwsProvider';
 import type { IEwsTransport } from './IEwsTransport';
+import type { DateRange } from '../definition/types';
 
 const T = 'http://schemas.microsoft.com/exchange/services/2006/types';
 const M = 'http://schemas.microsoft.com/exchange/services/2006/messages';
@@ -33,7 +34,8 @@ class FakeTransport implements IEwsTransport {
 
 const timeWindow = { start: new Date('2026-08-21T00:00:00Z'), end: new Date('2026-08-22T00:00:00Z') };
 
-const cursorFor = (syncState: string, windowStart: Date = timeWindow.start) => `${windowStart.toISOString()}|${syncState}`;
+const cursorFor = (syncState: string, window: DateRange = timeWindow) =>
+	`${window.start.toISOString()}|${window.end.toISOString()}|${syncState}`;
 
 describe('ExchangeEwsProvider', () => {
 	describe('testConnection', () => {
@@ -174,7 +176,7 @@ describe('ExchangeEwsProvider', () => {
 			const page = await new ExchangeEwsProvider(transport).listEvents(
 				'user@corp.example',
 				timeWindow,
-				cursorFor('S0', new Date('2026-08-20T00:00:00Z')),
+				cursorFor('S0', { start: new Date('2026-08-20T00:00:00Z'), end: new Date('2026-08-21T00:00:00Z') }),
 			);
 
 			expect(page.coverage).toBe('full');
