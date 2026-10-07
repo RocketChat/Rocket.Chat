@@ -35,6 +35,27 @@ describe('GraphTokenClient', () => {
 		jest.useRealTimers();
 	});
 
+	describe('recognising Microsoft endpoints', () => {
+		it.each([
+			['authority', { authorityHost: 'https://login.micronline.com' }],
+			['graph', { graphHost: 'https://graph.micro.com' }],
+		])('refuses a %s host that is not Microsoft, without sending anything', async (_label, override) => {
+			const client = new GraphTokenClient({ ...config, ...override });
+
+			await expect(client.getAccessToken()).rejects.toMatchObject({ code: 'endpoint-not-recognized' });
+			expect(serverFetch).not.toHaveBeenCalled();
+		});
+
+		it.each([
+			['https://login.microsoftonline.us', 'https://graph.microsoft.us'],
+			['https://login.chinacloudapi.cn', 'https://microsoftgraph.chinacloudapi.cn'],
+		])('accepts the national cloud pair %s and %s', async (authorityHost, graphHost) => {
+			serverFetch.mockResolvedValue(jsonResponse(200, { access_token: 'token', expires_in: 3600, token_type: 'Bearer' }));
+
+			await expect(new GraphTokenClient({ ...config, authorityHost, graphHost }).getAccessToken()).resolves.toBe('token');
+		});
+	});
+
 	describe('endpoint construction', () => {
 		it('builds the v2.0 token endpoint for the tenant', () => {
 			const client = new GraphTokenClient(config);
