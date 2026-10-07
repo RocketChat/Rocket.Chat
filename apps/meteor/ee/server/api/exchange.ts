@@ -21,6 +21,7 @@ const ERROR_MESSAGES: Record<ExchangeErrorCode, string> = {
 	'connection-failed': 'Exchange_Test_Connection_connection_failed',
 	'host-not-allowed': 'Exchange_Test_Connection_host_not_allowed',
 	'ntlm-unavailable': 'Exchange_Test_Connection_ntlm_unavailable',
+	'endpoint-not-recognized': 'Exchange_Test_Connection_endpoint_not_recognized',
 	'rate-limited': 'Exchange_Test_Connection_rate_limited',
 	'unexpected-response': 'Exchange_Test_Connection_unexpected_response',
 };

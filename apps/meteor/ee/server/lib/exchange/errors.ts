@@ -15,6 +15,8 @@ export type ExchangeErrorCode =
 	| 'host-not-allowed'
 	/** NTLM is unusable here: the workspace runs in FIPS mode, which forbids the algorithms it mandates. */
 	| 'ntlm-unavailable'
+	/** A configured host is not one of Microsoft's own endpoints, so no credential is sent to it. */
+	| 'endpoint-not-recognized'
 	/** Rate limited and out of retries. */
 	| 'rate-limited'
 	/** The server answered, but not in a shape we understand. */

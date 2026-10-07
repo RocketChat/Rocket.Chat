@@ -2786,6 +2786,7 @@
   "Exchange_Test_Connection_authentication_failed": "Exchange rejected the credentials. Check them in the server-to-server connection settings.",
   "Exchange_Test_Connection_authorization_failed": "The credentials are valid but not allowed to read mailboxes. Check the application access policy or the impersonation role.",
   "Exchange_Test_Connection_connection_failed": "Could not reach the Exchange endpoint. Check the URL, the network route, and the certificate.",
+  "Exchange_Test_Connection_endpoint_not_recognized": "The configured host is not a Microsoft endpoint. Use the defaults, or the endpoints published for your national cloud.",
   "Exchange_Test_Connection_failed": "The connection test failed.",
   "Exchange_Test_Connection_host_not_allowed": "The request was refused because it targeted a host other than the configured endpoint.",
   "Exchange_Test_Connection_mailbox_not_found": "Exchange could not find the mailbox.",

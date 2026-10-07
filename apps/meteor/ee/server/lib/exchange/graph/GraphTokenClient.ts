@@ -34,6 +34,23 @@ const TOKEN_REQUEST_TIMEOUT_MS = 10000;
 
 const hostnameOf = (url: string): string => new URL(url).hostname;
 
+const AUTHORITY_HOSTS: ReadonlySet<string> = new Set(['login.microsoftonline.com', 'login.microsoftonline.us', 'login.chinacloudapi.cn']);
+
+const GRAPH_HOSTS: ReadonlySet<string> = new Set([
+	'graph.microsoft.com',
+	'graph.microsoft.us',
+	'dod-graph.microsoft.us',
+	'microsoftgraph.chinacloudapi.cn',
+]);
+
+const isRecognized = (url: string, hosts: ReadonlySet<string>): boolean => {
+	try {
+		return hosts.has(new URL(url).hostname);
+	} catch {
+		return false;
+	}
+};
+
 export class GraphTokenClient {
 	private tokenCache: TokenCache | null = null;
 
@@ -83,7 +100,20 @@ export class GraphTokenClient {
 		return `${this.graphHost.replace(/\/+$/, '')}/.default`;
 	}
 
+	private assertRecognizedEndpoints(): void {
+		for (const [url, hosts] of [
+			[this.authorityHost, AUTHORITY_HOSTS],
+			[this.graphHost, GRAPH_HOSTS],
+		] as const) {
+			if (!isRecognized(url, hosts)) {
+				throw new ExchangeError('endpoint-not-recognized', 'The configured host is not a Microsoft endpoint', { detail: url });
+			}
+		}
+	}
+
 	public async getAccessToken(): Promise<string> {
+		this.assertRecognizedEndpoints();
+
 		const cached = this.tokenCache;
 		if (cached && Date.now() < cached.expiresAt) {
 			return cached.accessToken;
