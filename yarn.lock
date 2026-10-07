@@ -10023,9 +10023,9 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@rocket.chat/federation-sdk@npm:0.8.1":
-  version: 0.8.1
-  resolution: "@rocket.chat/federation-sdk@npm:0.8.1"
+"@rocket.chat/federation-sdk@file:./ee/packages/federation-matrix/vendor/rocket.chat-federation-sdk-0.8.1-matrixrtc.2.tgz::locator=rocket.chat%40workspace%3A.":
+  version: 0.8.1-matrixrtc.2
+  resolution: "@rocket.chat/federation-sdk@file:./ee/packages/federation-matrix/vendor/rocket.chat-federation-sdk-0.8.1-matrixrtc.2.tgz#./ee/packages/federation-matrix/vendor/rocket.chat-federation-sdk-0.8.1-matrixrtc.2.tgz::hash=704e54&locator=rocket.chat%40workspace%3A."
   dependencies:
     "@datastructures-js/priority-queue": "npm:^6.3.5"
     "@noble/ed25519": "npm:^3.0.0"
@@ -10039,7 +10039,7 @@ __metadata:
     zod: "npm:~4.3.6"
   peerDependencies:
     typescript: ~5.9.2
-  checksum: 10/1014020ec78dfdeb324f658b2cb1d509d7b0d8d87977bbae314b286183bd4620f88f754097478ecc4ffa0a943cb26d1cd7667616b36f8c1063b32ec11d4fdb53
+  checksum: 10/f404f20f558242bf310d395b46ac24b8ca71713ceccda64f0157af7e99ebc7472427431092bfb9115ee3089afd064cdbc1c33bd930f1901a8d853df61342f0e2
   languageName: node
   linkType: hard
 
