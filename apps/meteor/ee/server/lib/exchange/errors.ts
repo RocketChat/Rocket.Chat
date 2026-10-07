@@ -13,6 +13,8 @@ export type ExchangeErrorCode =
 	| 'connection-failed'
 	/** The host is not on the provider's allowlist. This is the air-gap invariant refusing a request. */
 	| 'host-not-allowed'
+	/** NTLM is unusable here: the workspace runs in FIPS mode, which forbids the algorithms it mandates. */
+	| 'ntlm-unavailable'
 	/** Rate limited and out of retries. */
 	| 'rate-limited'
 	/** The server answered, but not in a shape we understand. */
