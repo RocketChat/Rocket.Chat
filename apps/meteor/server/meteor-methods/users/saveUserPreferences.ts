@@ -47,6 +47,8 @@ type UserPreferences = {
 	sidebarSortby: string;
 	sidebarViewMode: string;
 	sidebarDisplayAvatar: boolean;
+	sidebarDisplayPreview: boolean;
+	sidebarAvatarSize: 'small' | 'medium' | 'large';
 	sidebarGroupByType: boolean;
 	sidebarCategories: ISidebarCategory[];
 	muteFocusedConversations: boolean;
@@ -155,8 +157,10 @@ export const saveUserPreferences = async (settings: Partial<UserPreferences>, us
 		sidebarShowFavorites: Match.Optional(Boolean),
 		sidebarShowUnread: Match.Optional(Boolean),
 		sidebarSortby: Match.Optional(String),
-		sidebarViewMode: Match.Optional(String),
+		sidebarViewMode: Match.Optional(Match.OneOf('extended', 'medium', 'condensed')),
 		sidebarDisplayAvatar: Match.Optional(Boolean),
+		sidebarDisplayPreview: Match.Optional(Boolean),
+		sidebarAvatarSize: Match.Optional(Match.OneOf('small', 'medium', 'large')),
 		sidebarGroupByType: Match.Optional(Boolean),
 		sidebarCategories: Match.Optional([
 			{

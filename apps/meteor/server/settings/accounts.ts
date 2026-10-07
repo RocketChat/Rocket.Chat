@@ -556,16 +556,12 @@ export const createAccountSettings = () =>
 				public: true,
 				i18nLabel: 'Theme_Appearence',
 			});
-			await this.add('Accounts_Default_User_Preferences_sidebarViewMode', 'medium', {
+			await this.add('Accounts_Default_User_Preferences_sidebarViewMode', 'condensed', {
 				type: 'select',
 				values: [
 					{
 						key: 'extended',
 						i18nLabel: 'Extended',
-					},
-					{
-						key: 'medium',
-						i18nLabel: 'Medium',
 					},
 					{
 						key: 'condensed',
@@ -579,6 +575,33 @@ export const createAccountSettings = () =>
 				type: 'boolean',
 				public: true,
 				i18nLabel: 'Display_Avatars_Sidebar',
+			});
+
+			await this.add('Accounts_Default_User_Preferences_sidebarDisplayPreview', false, {
+				type: 'boolean',
+				public: true,
+				i18nLabel: 'Display_Message_Preview_Sidebar',
+				i18nDescription: 'Display_Message_Preview_Sidebar_Description',
+			});
+
+			await this.add('Accounts_Default_User_Preferences_sidebarAvatarSize', 'medium', {
+				type: 'select',
+				values: [
+					{
+						key: 'small',
+						i18nLabel: 'Small',
+					},
+					{
+						key: 'medium',
+						i18nLabel: 'Medium',
+					},
+					{
+						key: 'large',
+						i18nLabel: 'Large',
+					},
+				],
+				public: true,
+				i18nLabel: 'Sidebar_avatar_size',
 			});
 
 			await this.add('Accounts_Default_User_Preferences_sidebarShowUnread', false, {

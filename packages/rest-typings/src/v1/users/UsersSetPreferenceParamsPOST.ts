@@ -40,6 +40,8 @@ export type UsersSetPreferencesParamsPOST = {
 		statusVisibilityDenied?: string[];
 		sidebarViewMode?: string;
 		sidebarDisplayAvatar?: boolean;
+		sidebarDisplayPreview?: boolean;
+		sidebarAvatarSize?: 'small' | 'medium' | 'large';
 		sidebarGroupByType?: boolean;
 		sidebarCategories?: ISidebarCategory[];
 		muteFocusedConversations?: boolean;
@@ -196,10 +198,20 @@ const UsersSetPreferencesParamsPostSchema = {
 				},
 				sidebarViewMode: {
 					type: 'string',
+					enum: ['extended', 'medium', 'condensed', null],
 					nullable: true,
 				},
 				sidebarDisplayAvatar: {
 					type: 'boolean',
+					nullable: true,
+				},
+				sidebarDisplayPreview: {
+					type: 'boolean',
+					nullable: true,
+				},
+				sidebarAvatarSize: {
+					type: 'string',
+					enum: ['small', 'medium', 'large', null],
 					nullable: true,
 				},
 				sidebarGroupByType: {

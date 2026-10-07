@@ -169,6 +169,8 @@ describe('miscellaneous', () => {
 					'sidebarSortby',
 					'sidebarViewMode',
 					'sidebarDisplayAvatar',
+					'sidebarDisplayPreview',
+					'sidebarAvatarSize',
 					'sidebarGroupByType',
 					'sidebarSectionsOrder',
 					'muteFocusedConversations',
