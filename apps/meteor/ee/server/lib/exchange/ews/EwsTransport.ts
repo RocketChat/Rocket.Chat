@@ -180,7 +180,15 @@ export class EwsTransport implements IEwsTransport {
 			throw new ExchangeError('authentication-failed', 'Exchange did not return an NTLM challenge header');
 		}
 
-		const type2 = decodeType2Message(Array.isArray(challengeHeader) ? challengeHeader.join(', ') : challengeHeader);
+		let type2;
+
+		try {
+			type2 = decodeType2Message(Array.isArray(challengeHeader) ? challengeHeader.join(', ') : challengeHeader);
+		} catch (err) {
+			throw new ExchangeError('authentication-failed', 'Exchange returned an unusable NTLM challenge', {
+				detail: err instanceof Error ? err.message : undefined,
+			});
+		}
 
 		// Extended Protection rejects a response whose binding does not match this connection's certificate,
 		// which is what stops a relay attack.
