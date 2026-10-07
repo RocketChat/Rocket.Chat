@@ -222,6 +222,10 @@ API.v1.post(
 				},
 			});
 		} catch (e) {
+			// A federated room refusing the call is the answer itself, not a provider problem to diagnose.
+			if (e instanceof Error && e.message.startsWith('error-videoconf-federation-')) {
+				return API.v1.failure(e.message);
+			}
 			return API.v1.failure(await VideoConf.diagnoseProvider(userId, roomId));
 		}
 	},
