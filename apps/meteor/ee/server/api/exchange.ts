@@ -20,6 +20,7 @@ const ERROR_MESSAGES: Record<ExchangeErrorCode, string> = {
 	'mailbox-not-found': 'Exchange_Test_Connection_mailbox_not_found',
 	'connection-failed': 'Exchange_Test_Connection_connection_failed',
 	'host-not-allowed': 'Exchange_Test_Connection_host_not_allowed',
+	'ntlm-unavailable': 'Exchange_Test_Connection_ntlm_unavailable',
 	'rate-limited': 'Exchange_Test_Connection_rate_limited',
 	'unexpected-response': 'Exchange_Test_Connection_unexpected_response',
 };
