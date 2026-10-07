@@ -269,8 +269,9 @@ class MediaCallDirector {
 
 		const service = requestedService || 'webrtc';
 
-		// webrtc is our only known service right now, but if the call was requested by a client that doesn't also implement it, we don't need to even create a call
-		if (service !== 'webrtc') {
+		// `webrtc` is handled by the client; `cti` is handled by an external device/gateway through an app.
+		// Any other service is unknown and the call can't be created.
+		if (service !== 'webrtc' && service !== 'cti') {
 			throw new Error('invalid-call-service');
 		}
 
@@ -330,6 +331,7 @@ class MediaCallDirector {
 
 			features: allowedFeatures,
 			...(params.sipCallId && { sipCallId: params.sipCallId }),
+			...(params.device && { device: params.device }),
 		};
 
 		logger.debug({ msg: 'creating call', call });

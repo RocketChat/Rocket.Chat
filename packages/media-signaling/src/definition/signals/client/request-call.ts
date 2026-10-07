@@ -1,7 +1,7 @@
 import type { JSONSchemaType } from 'ajv';
 
 import type { CallFeature, CallService } from '../../call';
-import { callFeatureList } from '../../call/IClientMediaCall';
+import { callFeatureList, callServiceList } from '../../call/IClientMediaCall';
 
 export type ClientMediaSignalRequestCall = {
 	/** the callId on this signal is temporary and is never propagated to other agents */
@@ -54,7 +54,7 @@ export const clientMediaSignalRequestCallSchema: JSONSchemaType<ClientMediaSigna
 			type: 'array',
 			items: {
 				type: 'string',
-				enum: ['webrtc'],
+				enum: callServiceList,
 				nullable: false,
 			},
 			nullable: false,

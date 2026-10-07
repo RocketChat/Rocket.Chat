@@ -127,6 +127,7 @@ export const AppPermissions = {
 	'mediaCall': {
 		history: { name: 'media-call.history' },
 		read: { name: 'media-call.read' },
+		control: { name: 'media-call.control' },
 	},
 };
 
