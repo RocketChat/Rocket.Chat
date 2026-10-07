@@ -391,6 +391,13 @@ describe('RichText Composer API - text', () => {
 		expect(input.textContent).toBe('first\nsecond\n');
 		expect(composer.text).toBe('first\nsecond');
 	});
+
+	it('reads non-breaking spaces as regular spaces so a mention after another mention is sent and autocompleted', () => {
+		const { composer } = setupComposer('@all\u00a0@jo', { start: 8, end: 8 });
+
+		expect(composer.text).toBe('@all @jo');
+		expect(composer.substring(0, composer.selection.start)).toBe('@all @jo');
+	});
 });
 
 describe('RichText Composer API - wrapSelection', () => {
