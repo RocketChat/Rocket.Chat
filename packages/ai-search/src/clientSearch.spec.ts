@@ -363,17 +363,12 @@ describe('AI Search client helpers', () => {
 					key: 'from-user-id',
 					filterKey: 'from',
 					group: 'users',
-					title: '@alice',
-					description: 'Example User',
+					title: 'alice',
+					description: 'Search_messages_from_this_user',
 					value: 'alice',
 					icon: 'user',
+					user: { _id: 'user-id', username: 'alice', name: 'Example User' },
 				},
-			]);
-		});
-
-		it('falls back to a generic description when the user has no name', () => {
-			expect(buildUserFilterSuggestions({ key: 'from', value: 'ali' }, [{ _id: 'user-id', username: 'alice' }], t)).toMatchObject([
-				{ description: 'Search_messages_from_this_user' },
 			]);
 		});
 

@@ -5,6 +5,7 @@ import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import NavBarSearchFilterSuggestionIcon from './NavBarSearchFilterSuggestionIcon';
+import NavBarSearchFilterUserSuggestion from './NavBarSearchFilterUserSuggestion';
 import { useSearchFilters } from './hooks/useSearchFilters';
 
 const filterSuggestionGroupLabels = {
@@ -55,15 +56,24 @@ const NavBarSearchFilterSuggestions = ({ suggestions }: NavBarSearchFilterSugges
 					<Box color='titles-labels' fontScale='c1' fontWeight='bold' paddingInline={12} marginBlockEnd={4} role='presentation' aria-hidden>
 						{t(filterSuggestionGroupLabels[group])}
 					</Box>
-					{groupSuggestions.map((item) => (
-						<SidebarItem key={item.key} role='option' onClick={(event) => handleFilterSuggestion(event, item)}>
-							<SidebarItemIcon icon={<NavBarSearchFilterSuggestionIcon suggestion={item} />} />
-							<SidebarItemTitle>{item.title}</SidebarItemTitle>
-							<Box color='hint' fontScale='c1' flexShrink={0}>
-								{item.description}
-							</Box>
-						</SidebarItem>
-					))}
+					{groupSuggestions.map((item) =>
+						item.user ? (
+							<NavBarSearchFilterUserSuggestion
+								key={item.key}
+								user={item.user}
+								description={item.description}
+								onClick={(event) => handleFilterSuggestion(event, item)}
+							/>
+						) : (
+							<SidebarItem key={item.key} role='option' onClick={(event) => handleFilterSuggestion(event, item)}>
+								<SidebarItemIcon icon={<NavBarSearchFilterSuggestionIcon suggestion={item} />} />
+								<SidebarItemTitle>{item.title}</SidebarItemTitle>
+								<Box color='hint' fontScale='c1' flexShrink={0}>
+									{item.description}
+								</Box>
+							</SidebarItem>
+						),
+					)}
 				</Box>
 			))}
 		</>

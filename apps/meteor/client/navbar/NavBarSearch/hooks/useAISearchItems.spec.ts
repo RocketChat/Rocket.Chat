@@ -267,10 +267,11 @@ describe('useAISearchItems', () => {
 						key: 'from-user-1',
 						filterKey: 'from',
 						group: 'users',
-						title: '@john',
-						description: 'John Doe',
+						title: 'john',
+						description: 'Search messages from this user',
 						value: 'john',
 						icon: 'user',
+						user: { _id: 'user-1', username: 'john', name: 'John Doe', avatarETag: '' },
 					},
 					{
 						key: 'from-current',

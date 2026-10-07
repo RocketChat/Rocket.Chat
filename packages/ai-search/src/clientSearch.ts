@@ -32,6 +32,7 @@ export type SearchFilterSuggestion = {
 	value: string;
 	icon: SearchFilterIcon;
 	meta?: SearchFilterMeta;
+	user?: SearchUserSuggestionSource;
 };
 
 export type SearchRoomSuggestionSource = {
@@ -45,6 +46,7 @@ export type SearchUserSuggestionSource = {
 	_id: string;
 	name?: string;
 	username: string;
+	avatarETag?: string;
 };
 
 type TranslateFn = (key: string, options?: Record<string, string>) => string;
@@ -322,10 +324,11 @@ export const buildUserFilterSuggestions = (
 		key: `from-${user._id}`,
 		filterKey: 'from',
 		group: 'users',
-		title: `@${user.username}`,
-		description: user.name || t('Search_messages_from_this_user'),
+		title: user.username,
+		description: t('Search_messages_from_this_user'),
 		value: user.username,
 		icon: 'user',
+		user: { _id: user._id, username: user.username, name: user.name, avatarETag: user.avatarETag },
 	}));
 };
 
