@@ -32,6 +32,7 @@ const RoomListCollapser = ({ group, canMoveUp, canMoveDown, onMoveUp, onMoveDown
 	return (
 		<SidebarCollapseGroup
 			title={title}
+			role='listitem'
 			expanded={!group.collapsed}
 			badge={
 				showUnread ? (
