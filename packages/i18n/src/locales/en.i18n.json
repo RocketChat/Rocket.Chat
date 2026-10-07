@@ -3122,6 +3122,7 @@
   "From_email_warning": "<b>Warning</b>: The field <b>From</b> is subject to your mail server settings.",
   "Full_log": "Full log",
   "Full_Name": "Full name",
+  "Full_profile": "Full profile",
   "Full_Screen": "Full screen",
   "Fullscreen": "Fullscreen",
   "Fullscreen_failed_to_switch_not_allowed": "Switching to fullscreen was not allowed, please check your browser settings.",
