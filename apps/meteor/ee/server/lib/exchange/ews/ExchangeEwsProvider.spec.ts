@@ -5,8 +5,8 @@ const T = 'http://schemas.microsoft.com/exchange/services/2006/types';
 const M = 'http://schemas.microsoft.com/exchange/services/2006/messages';
 const E = 'http://schemas.microsoft.com/exchange/services/2006/errors';
 
-const soap = (body: string) =>
-	`<?xml version="1.0" encoding="utf-8"?><soap:Envelope xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/" xmlns:t="${T}" xmlns:m="${M}"><soap:Body>${body}</soap:Body></soap:Envelope>`;
+const soap = (body: string, prefix = 'soap') =>
+	`<?xml version="1.0" encoding="utf-8"?><${prefix}:Envelope xmlns:${prefix}="http://schemas.xmlsoap.org/soap/envelope/" xmlns:t="${T}" xmlns:m="${M}"><${prefix}:Body>${body}</${prefix}:Body></${prefix}:Envelope>`;
 
 const okResponse = (inner: string) => soap(`<m:ResponseMessages><m:ResponseCode>NoError</m:ResponseCode>${inner}</m:ResponseMessages>`);
 
@@ -257,10 +257,11 @@ describe('ExchangeEwsProvider', () => {
 
 	describe('error channels', () => {
 		it.each(['s', 'soap', 'SOAP-ENV'])('surfaces a SOAP fault sent with the %s prefix', async (prefix) => {
-			const transport = new FakeTransport([soap(`<${prefix}:Fault><faultstring>Bad request</faultstring></${prefix}:Fault>`)]);
+			const transport = new FakeTransport([soap(`<${prefix}:Fault><faultstring>Bad request</faultstring></${prefix}:Fault>`, prefix)]);
 
 			await expect(new ExchangeEwsProvider(transport).listEvents('user@corp.example', timeWindow)).rejects.toMatchObject({
 				code: 'unexpected-response',
+				message: 'Exchange rejected the request',
 			});
 		});
 
@@ -270,6 +271,7 @@ describe('ExchangeEwsProvider', () => {
 					'<s:Fault><faultstring>The specified object was not found in the store.</faultstring><detail>' +
 						`<e:ResponseCode xmlns:e="${E}">ErrorNonExistentMailbox</e:ResponseCode>` +
 						'</detail></s:Fault>',
+					's',
 				),
 			]);
 
