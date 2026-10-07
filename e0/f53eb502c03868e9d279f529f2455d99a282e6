@@ -1,0 +1,31 @@
+apps/meteor/ee/server/lib/ldap/Manager.ts
+  s_370c5aeb0f1790::t_38646077170d35 83-85
+apps/meteor/tests/end-to-end/api/LDAP.ts
+  s_370c5aeb0f1790::t_6be8ef63412565 119,127-136,141-143,212
+  s_370c5aeb0f1790::t_ba586a8c2505f3 120-123,137-139,213-217
+  s_370c5aeb0f1790::t_24c1510b1246e7 140
+  s_370c5aeb0f1790::t_58a38c27014363 15,37-39,44,118,124-126,193-211,218
+packages/i18n/src/locales/en.i18n.json
+  s_370c5aeb0f1790::t_151fa3a000306b 3677,3769
+.changeset/ldap-sync-now-feedback.md
+  s_370c5aeb0f1790::t_151fa3a000306b 6
+  s_370c5aeb0f1790::t_8ca0aea8fe54d2 1-5
+apps/meteor/ee/server/api/ldap.ts
+  s_370c5aeb0f1790::t_38646077170d35 43-55
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.2",
+  "base_commit_sha": "e0f53eb502c03868e9d279f529f2455d99a282e6",
+  "prompts": {},
+  "sessions": {
+    "s_370c5aeb0f1790": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "445b8770-35a6-4937-8a3a-e250dbd75199",
+        "model": "claude-opus-5-5"
+      },
+      "human_author": "Ricardo Garim <rswarovsky@gmail.com>"
+    }
+  }
+}
