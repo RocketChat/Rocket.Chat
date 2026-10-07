@@ -1,4 +1,4 @@
-import { Box, ItemContent, ItemDescription, ItemTitle } from '@rocket.chat/fuselage';
+import { ItemContent, ItemDescription, ItemMeta, ItemTitle } from '@rocket.chat/fuselage';
 import { useTranslation } from 'react-i18next';
 
 export type ComposerBoxPopupSlashCommandProps = {
@@ -10,6 +10,7 @@ export type ComposerBoxPopupSlashCommandProps = {
 
 function ComposerBoxPopupSlashCommand({ _id, description, params, disabled }: ComposerBoxPopupSlashCommandProps) {
 	const { t } = useTranslation();
+	const meta = disabled ? t('Unavailable_in_encrypted_channels') : description;
 
 	return (
 		<>
@@ -19,9 +20,11 @@ function ComposerBoxPopupSlashCommand({ _id, description, params, disabled }: Co
 					{params && <ItemDescription inline>{params}</ItemDescription>}
 				</ItemTitle>
 			</ItemContent>
-			<Box is={ItemContent} textAlign='end'>
-				<ItemDescription>{disabled ? t('Unavailable_in_encrypted_channels') : description}</ItemDescription>
-			</Box>
+			{meta && (
+				<ItemMeta truncate title={meta}>
+					{meta}
+				</ItemMeta>
+			)}
 		</>
 	);
 }

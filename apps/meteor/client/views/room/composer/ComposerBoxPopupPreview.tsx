@@ -1,3 +1,4 @@
+import { css } from '@rocket.chat/css-in-js';
 import { Box, Item, ItemContent, ItemGroupHeader, ItemGroupTitle, ItemTitle, Skeleton, Tile } from '@rocket.chat/fuselage';
 import { Random } from '@rocket.chat/random';
 import { useEndpoint } from '@rocket.chat/ui-contexts';
@@ -8,6 +9,12 @@ import type { ComposerBoxPopupProps } from './ComposerBoxPopup';
 import { useChat } from '../contexts/ChatContext';
 
 type ComposerBoxPopupPreviewItem = { _id: string; type: 'image' | 'video' | 'audio' | 'text' | 'other'; value: string; sort?: number };
+
+const optionsStyle = css`
+	& > * {
+		flex-shrink: 0;
+	}
+`;
 
 export type ComposerBoxPopupPreviewProps = ComposerBoxPopupProps<ComposerBoxPopupPreviewItem> & {
 	title?: ReactNode;
@@ -118,6 +125,8 @@ const ComposerBoxPopupPreview = forwardRef(function ComposerBoxPopupPreview(
 					display='flex'
 					overflow='auto'
 					padding={8}
+					gap={4}
+					className={optionsStyle}
 					aria-orientation='horizontal'
 					aria-labelledby={title ? id : undefined}
 					aria-busy={isLoading}
@@ -125,24 +134,19 @@ const ComposerBoxPopupPreview = forwardRef(function ComposerBoxPopupPreview(
 					{isLoading &&
 						Array(5)
 							.fill(5)
-							.map((_, index) => <Skeleton variant='rect' height='100px' width='120px' margin={2} flexShrink={0} key={index} />)}
+							.map((_, index) => <Skeleton variant='rect' height='100px' width='120px' key={index} />)}
 
 					{!isLoading &&
 						itemsFlat.map((item) => (
-							<Box
-								is={Item}
+							<Item
 								key={item._id}
 								id={`popup-item-${item._id}`}
 								role='option'
 								aria-selected={item === focused}
 								tabIndex={-1}
 								onClick={() => select(item)}
-								flexShrink={0}
-								margin={2}
-								borderWidth='default'
-								borderRadius='medium'
-								borderColor={item === focused ? 'highlight' : 'transparent'}
-								backgroundColor={item === focused ? 'selected' : undefined}
+								selected={item === focused}
+								focusVisible={item === focused}
 							>
 								{item.type === 'image' && <img src={item.value} alt={item._id} />}
 								{item.type === 'audio' && (
@@ -165,7 +169,7 @@ const ComposerBoxPopupPreview = forwardRef(function ComposerBoxPopupPreview(
 									</ItemContent>
 								)}
 								{item.type === 'other' && <code>{item.value}</code>}
-							</Box>
+							</Item>
 						))}
 				</Box>
 			</Tile>
