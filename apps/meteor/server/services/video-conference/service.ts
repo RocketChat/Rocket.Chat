@@ -643,7 +643,7 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 	 * whose chat is not a thread, a direct call, or a group call nobody named.
 	 */
 	private threadTitleFor(call: VideoConference): string {
-		if (!isGroupVideoConference(call) || !this.chatLivesInAThread()) {
+		if (!isGroupVideoConference(call) || !this.chatLivesInAThread(call)) {
 			return '';
 		}
 
@@ -2334,14 +2334,17 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 	 *
 	 * Deliberately not a provider question: the chat panel is ours whoever runs the media, and an iframed
 	 * provider renders inside our own page. `maybeCreateDiscussion` does still ask the provider.
+	 *
+	 * Never in a federated call: the call message is not sent to other servers, so a thread off it could not be
+	 * either, and the chat would split by server.
 	 */
-	private chatLivesInAThread(): boolean {
-		return this.isPersistentChatEnabled() && this.getPersistentChatMode() === 'thread';
+	private chatLivesInAThread(call: Pick<VideoConference, 'federation'>): boolean {
+		return !call.federation && this.isPersistentChatEnabled() && this.getPersistentChatMode() === 'thread';
 	}
 
 	/** Idempotent: `follow` uses `$addToSet`. */
 	private async autoFollowCallThread(call: Optional<VideoConference, 'providerData'>, uid: IUser['_id']): Promise<void> {
-		if (!this.chatLivesInAThread()) {
+		if (!this.chatLivesInAThread(call)) {
 			return;
 		}
 
@@ -2354,7 +2357,7 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 
 	/** Only once the thread's parent message exists, for everyone who joined before it did. */
 	private async autoFollowCallThreadForAllParticipants(call: VideoConference): Promise<void> {
-		if (!this.chatLivesInAThread()) {
+		if (!this.chatLivesInAThread(call)) {
 			return;
 		}
 
