@@ -10,15 +10,20 @@ import { getMatrixMediaBridgeRoutes } from './_matrix/media-bridge';
 import { getMatrixOpenIdRoutes } from './_matrix/openid';
 import { getMatrixProfilesRoutes } from './_matrix/profiles';
 import { getMatrixRoomsRoutes } from './_matrix/rooms';
+import { getMatrixRTCRoutes } from './_matrix/rtc';
 import { getMatrixSendJoinRoutes } from './_matrix/send-join';
 import { getMatrixSendLeaveRoutes } from './_matrix/send-leave';
 import { getMatrixTransactionsRoutes } from './_matrix/transactions';
 import { getFederationVersionsRoutes } from './_matrix/versions';
+import { getMatrixRTCTokenServiceRoutes } from './matrixrtc/livekit-jwt';
 import { isFederationDomainAllowedMiddleware } from './middlewares/isFederationDomainAllowed';
 import { isFederationEnabledMiddleware } from './middlewares/isFederationEnabled';
 import { isLicenseEnabledMiddleware } from './middlewares/isLicenseEnabled';
+import type { MATRIXRTC_TOKEN_SERVICE_PATH } from '../matrixrtc/tokens/service';
 
-export const getFederationRoutes = (version: string): { matrix: Router<'/_matrix'>; wellKnown: Router<'/.well-known'> } => {
+export const getFederationRoutes = (
+	version: string,
+): { matrix: Router<'/_matrix'>; wellKnown: Router<'/.well-known'>; matrixRTC: Router<typeof MATRIXRTC_TOKEN_SERVICE_PATH> } => {
 	const matrix = new Router('/_matrix');
 	const wellKnown = new Router('/.well-known');
 
@@ -39,9 +44,10 @@ export const getFederationRoutes = (version: string): { matrix: Router<'/_matrix
 		.use(getMatrixTransactionsRoutes())
 		.use(getMatrixMediaRoutes())
 		.use(getMatrixSendLeaveRoutes())
-		.use(getMatrixMakeLeaveRoutes());
+		.use(getMatrixMakeLeaveRoutes())
+		.use(getMatrixRTCRoutes());
 
 	wellKnown.use(isFederationEnabledMiddleware).use(isLicenseEnabledMiddleware).use(getWellKnownRoutes());
 
-	return { matrix, wellKnown };
+	return { matrix, wellKnown, matrixRTC: getMatrixRTCTokenServiceRoutes() };
 };
