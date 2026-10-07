@@ -1,0 +1,274 @@
+# Two Rocket.Chat servers (rc1, rc2) federated over Matrix, each with its own LiveKit SFU,
+# for MatrixRTC calls between them. See README.md in this directory.
+#
+# Values come from .env next to this file (created by ./init-env.sh, never committed).
+
+name: rc-matrixrtc
+
+x-rc-common: &rc-common
+  image: ${RC_IMAGE:-rocketchat/rocket.chat:matrixrtc-poc}
+  # Built locally by ./build-image.sh; a pull would replace it with a registry image.
+  pull_policy: never
+  restart: unless-stopped
+  depends_on:
+    mongo:
+      condition: service_healthy
+  volumes:
+    - ${CERTS_DIR:?set CERTS_DIR in .env}/ca/rootCA.crt:/usr/local/share/ca-certificates/rootCA.pem:ro
+  healthcheck:
+    test: ['CMD-SHELL', 'wget -qO- http://127.0.0.1:3000/health >/dev/null 2>&1 || exit 1']
+    interval: 10s
+    timeout: 5s
+    retries: 30
+    start_period: 60s
+
+x-rc-env: &rc-env
+  PORT: 3000
+  NODE_EXTRA_CA_CERTS: /usr/local/share/ca-certificates/rootCA.pem
+  LOG_LEVEL: ${RC_LOG_LEVEL:-debug}
+  # No REST rate limits, no 2FA prompts on REST logins; also exits on unhandled rejections.
+  TEST_MODE: ${RC_TEST_MODE:-api}
+  # Outlive traefik's 90s idle timeout so the proxy never reuses a socket the server closed.
+  HTTP_SOCKET_TIMEOUT_MS: 120000
+  SERVER_DISCOVERY_CACHE_MAX_AGE: 0
+  # Test fixture admin, as in docker-compose.test.yml.
+  ADMIN_USERNAME: admin
+  ADMIN_PASS: admin
+  ADMIN_EMAIL: admin@admin.com
+  OVERWRITE_SETTING_Show_Setup_Wizard: completed
+  OVERWRITE_SETTING_Cloud_Workspace_Client_Id: temp_id
+  OVERWRITE_SETTING_Cloud_Workspace_Client_Secret: temp_secret
+  OVERWRITE_SETTING_Federation_Service_Enabled: 'true'
+  OVERWRITE_SETTING_VideoConf_LiveKit_Enabled: 'true'
+  OVERWRITE_SETTING_VideoConf_Conference_Window_Enabled: 'true'
+  OVERWRITE_SETTING_VideoConf_Default_Provider: livekit
+  # ---- MatrixRTC PoC settings ---------------------------------------------------------------
+  # Not registered by the server until the PoC adds them; unknown OVERWRITE_SETTING_ keys are ignored.
+  OVERWRITE_SETTING_Federation_Service_MatrixRTC_Enabled: 'true'
+  OVERWRITE_SETTING_Federation_Service_MatrixRTC_Mode: matrix_2_0
+  # -------------------------------------------------------------------------------------------
+
+x-livekit-common: &livekit-common
+  image: ${LIVEKIT_IMAGE:-livekit/livekit-server:v1.13.7}
+  restart: unless-stopped
+  # livekit-server reads its whole config from LIVEKIT_CONFIG (see each service).
+
+networks:
+  # One network per server so no container can reach another server directly: every
+  # cross-server request resolves the server name to traefik and goes through TLS, as in
+  # production. A shared network would also let the server names clash with the service
+  # names and hit containers on their plain HTTP ports.
+  rc1-net:
+  rc2-net:
+  hs1-net:
+  element-net:
+
+volumes:
+  mongo-data:
+  hs1-data:
+
+services:
+  traefik:
+    image: ${TRAEFIK_IMAGE:-traefik:v3.6.6}
+    restart: unless-stopped
+    command:
+      - '--providers.docker=true'
+      - '--providers.docker.exposedbydefault=false'
+      - '--providers.file.filename=/etc/traefik/dynamic.yml'
+      - '--entrypoints.web.address=:80'
+      - '--entrypoints.web.http.redirections.entrypoint.to=websecure'
+      - '--entrypoints.web.http.redirections.entrypoint.scheme=https'
+      - '--entrypoints.websecure.address=:443'
+    ports:
+      - '80:80'
+      - '443:443'
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - ./traefik-dynamic.yml:/etc/traefik/dynamic.yml:ro
+      # Individual files, so the CA private key next to them never enters a container.
+      - ${CERTS_DIR}/rc1.pem:/etc/traefik/certs/rc1.pem:ro
+      - ${CERTS_DIR}/rc1-key.pem:/etc/traefik/certs/rc1-key.pem:ro
+      - ${CERTS_DIR}/rc2.pem:/etc/traefik/certs/rc2.pem:ro
+      - ${CERTS_DIR}/rc2-key.pem:/etc/traefik/certs/rc2-key.pem:ro
+      - ${CERTS_DIR}/hs1.pem:/etc/traefik/certs/hs1.pem:ro
+      - ${CERTS_DIR}/hs1-key.pem:/etc/traefik/certs/hs1-key.pem:ro
+      - ${CERTS_DIR}/element.pem:/etc/traefik/certs/element.pem:ro
+      - ${CERTS_DIR}/element-key.pem:/etc/traefik/certs/element-key.pem:ro
+    networks:
+      rc1-net:
+        aliases: [rc1, rc2, hs1]
+      rc2-net:
+        aliases: [rc1, rc2, hs1]
+      hs1-net:
+        aliases: [rc1, rc2, hs1]
+      element-net:
+        aliases: [rc1, rc2, hs1, element]
+
+  mongo:
+    image: ${MONGO_IMAGE:-mongo:8.0}
+    restart: unless-stopped
+    entrypoint: |
+      bash -c
+        "mongod --replSet rs0 --bind_ip_all --wiredTigerCacheSizeGB 0.5 &
+          until mongosh --quiet --eval \"db.adminCommand('ping')\" >/dev/null 2>&1; do
+            echo '=====> Waiting for Mongo...';
+            sleep 1;
+          done;
+          mongosh --quiet --eval \"try { rs.status() } catch (e) { rs.initiate({_id: 'rs0', members: [{ _id: 0, host: 'mongo:27017' }]}) }\";
+          echo '=====> ReplSet rs0 ready';
+        wait"
+    # Loopback only, and not 27017 (the host's own mongod).
+    ports:
+      - '127.0.0.1:${MONGO_HOST_PORT:-27037}:27017'
+    volumes:
+      - mongo-data:/data/db
+    networks:
+      - rc1-net
+      - rc2-net
+    healthcheck:
+      test: ['CMD', 'mongosh', '--quiet', '--eval', 'quit(rs.status().myState === 1 ? 0 : 1)']
+      interval: 5s
+      timeout: 5s
+      retries: 30
+      start_period: 10s
+
+  rc1:
+    <<: *rc-common
+    environment:
+      <<: *rc-env
+      ROOT_URL: https://rc1
+      MONGO_URL: mongodb://mongo:27017/rc1?replicaSet=rs0
+      ROCKETCHAT_LICENSE: ${ENTERPRISE_LICENSE_RC1:?set ENTERPRISE_LICENSE_RC1 in .env}
+      OVERWRITE_SETTING_Federation_Service_Domain: rc1
+      OVERWRITE_SETTING_Federation_Service_Matrix_Signing_Key: ${MATRIX_SIGNING_KEY_RC1:?set MATRIX_SIGNING_KEY_RC1 in .env}
+      # What the browser connects to; the server itself reaches the SFU at ws://livekit1:7980.
+      OVERWRITE_SETTING_VideoConf_LiveKit_Url: ws://localhost:7980
+      OVERWRITE_SETTING_VideoConf_LiveKit_Api_Key: ${LIVEKIT1_API_KEY:?set LIVEKIT1_API_KEY in .env}
+      OVERWRITE_SETTING_VideoConf_LiveKit_Api_Secret: ${LIVEKIT1_API_SECRET:?set LIVEKIT1_API_SECRET in .env}
+    networks:
+      - rc1-net
+    labels:
+      - 'traefik.enable=true'
+      - 'traefik.docker.network=rc-matrixrtc_rc1-net'
+      - 'traefik.http.routers.rc1.rule=Host(`rc1`)'
+      - 'traefik.http.routers.rc1.entrypoints=websecure'
+      - 'traefik.http.routers.rc1.tls=true'
+      - 'traefik.http.services.rc1.loadbalancer.server.port=3000'
+
+  rc2:
+    <<: *rc-common
+    environment:
+      <<: *rc-env
+      ROOT_URL: https://rc2
+      MONGO_URL: mongodb://mongo:27017/rc2?replicaSet=rs0
+      ROCKETCHAT_LICENSE: ${ENTERPRISE_LICENSE_RC2:?set ENTERPRISE_LICENSE_RC2 in .env}
+      OVERWRITE_SETTING_Federation_Service_Domain: rc2
+      OVERWRITE_SETTING_Federation_Service_Matrix_Signing_Key: ${MATRIX_SIGNING_KEY_RC2:?set MATRIX_SIGNING_KEY_RC2 in .env}
+      # What the browser connects to; the server itself reaches the SFU at ws://livekit2:7990.
+      OVERWRITE_SETTING_VideoConf_LiveKit_Url: ws://localhost:7990
+      OVERWRITE_SETTING_VideoConf_LiveKit_Api_Key: ${LIVEKIT2_API_KEY:?set LIVEKIT2_API_KEY in .env}
+      OVERWRITE_SETTING_VideoConf_LiveKit_Api_Secret: ${LIVEKIT2_API_SECRET:?set LIVEKIT2_API_SECRET in .env}
+    networks:
+      - rc2-net
+    labels:
+      - 'traefik.enable=true'
+      - 'traefik.docker.network=rc-matrixrtc_rc2-net'
+      - 'traefik.http.routers.rc2.rule=Host(`rc2`)'
+      - 'traefik.http.routers.rc2.entrypoints=websecure'
+      - 'traefik.http.routers.rc2.tls=true'
+      - 'traefik.http.services.rc2.loadbalancer.server.port=3000'
+
+  # Container ports equal the host ports: LiveKit advertises its own ports in ICE candidates,
+  # so a remapped port would point browsers at the wrong one.
+  livekit1:
+    <<: *livekit-common
+    environment:
+      LIVEKIT_CONFIG: |
+        port: 7980
+        rtc:
+          tcp_port: 7981
+          udp_port: 7982
+          use_external_ip: false
+          node_ip: 127.0.0.1
+        keys:
+          ${LIVEKIT1_API_KEY}: ${LIVEKIT1_API_SECRET}
+        logging:
+          level: ${LIVEKIT_LOG_LEVEL:-info}
+    ports:
+      - '127.0.0.1:7980:7980/tcp'
+      - '127.0.0.1:7981:7981/tcp'
+      - '127.0.0.1:7982:7982/udp'
+    networks:
+      - rc1-net
+
+  livekit2:
+    <<: *livekit-common
+    environment:
+      LIVEKIT_CONFIG: |
+        port: 7990
+        rtc:
+          tcp_port: 7991
+          udp_port: 7992
+          use_external_ip: false
+          node_ip: 127.0.0.1
+        keys:
+          ${LIVEKIT2_API_KEY}: ${LIVEKIT2_API_SECRET}
+        logging:
+          level: ${LIVEKIT_LOG_LEVEL:-info}
+    ports:
+      - '127.0.0.1:7990:7990/tcp'
+      - '127.0.0.1:7991:7991/tcp'
+      - '127.0.0.1:7992:7992/udp'
+    networks:
+      - rc2-net
+
+  # ---- interop profile: a Synapse homeserver and Element, for tests against a reference server ----
+  hs1:
+    image: ${SYNAPSE_IMAGE:-matrixdotorg/synapse:v1.160.0}
+    profiles: [interop]
+    restart: unless-stopped
+    entrypoint: |
+      sh -c
+      "update-ca-certificates &&
+      mkdir -p /data/media_store &&
+      chown 991:991 /data /data/media_store &&
+      /start.py &
+      until curl -sf http://localhost:8008/_matrix/client/versions >/dev/null; do
+        echo '=====> Waiting for Synapse...';
+        sleep 2;
+      done;
+      for u in admin alice bob; do
+        register_new_matrix_user -u $$u -p $$u --admin http://localhost:8008 -c /data/homeserver.yaml 2>&1 | sed 's/^/=======> /';
+      done;
+      wait"
+    volumes:
+      - hs1-data:/data
+      - ../hs1/homeserver.yaml:/data/homeserver.yaml:ro
+      - ../hs1/hs1.log.config:/data/hs1.log.config:ro
+      - ../hs1/hs1.signing.key:/data/hs1.signing.key:ro
+      - ${CERTS_DIR}/ca/rootCA.crt:/usr/local/share/ca-certificates/rootCA.crt:ro
+    networks:
+      - hs1-net
+    labels:
+      - 'traefik.enable=true'
+      - 'traefik.docker.network=rc-matrixrtc_hs1-net'
+      - 'traefik.http.routers.hs1.rule=Host(`hs1`)'
+      - 'traefik.http.routers.hs1.entrypoints=websecure'
+      - 'traefik.http.routers.hs1.tls=true'
+      - 'traefik.http.services.hs1.loadbalancer.server.port=8008'
+
+  element:
+    image: ${ELEMENT_IMAGE:-vectorim/element-web:v1.12.30}
+    profiles: [interop]
+    restart: unless-stopped
+    volumes:
+      - ../element/config.json:/app/config.json:ro
+    networks:
+      - element-net
+    labels:
+      - 'traefik.enable=true'
+      - 'traefik.docker.network=rc-matrixrtc_element-net'
+      - 'traefik.http.routers.element.rule=Host(`element`)'
+      - 'traefik.http.routers.element.entrypoints=websecure'
+      - 'traefik.http.routers.element.tls=true'
+      - 'traefik.http.services.element.loadbalancer.server.port=80'
