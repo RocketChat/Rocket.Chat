@@ -1,4 +1,4 @@
-import { Box, Chip, AutoComplete, Item, ItemContent, ItemDescription, ItemMedia, ItemTitle } from '@rocket.chat/fuselage';
+import { Box, Chip, AutoComplete, Option, OptionAvatar, OptionContent, OptionDescription } from '@rocket.chat/fuselage';
 import { useDebouncedValue } from '@rocket.chat/fuselage-hooks';
 import { ITEM_MEDIA_SIZE, UserAvatar } from '@rocket.chat/ui-avatar';
 import type * as UiKit from '@rocket.chat/ui-kit';
@@ -43,17 +43,15 @@ const MultiUsersSelectElement = ({ block, context }: MultiUsersSelectElementProp
 					</Box>
 				</Chip>
 			)}
-			renderItem={({ value, label, selected, focus, ...props }) => (
-				<Item {...props} is='li' inset='md' selected={selected} focused={focus} aria-selected={selected}>
-					<ItemMedia>
+			renderItem={({ value, label, ...props }) => (
+				<Option key={value} {...props}>
+					<OptionAvatar>
 						<UserAvatar username={value} size={ITEM_MEDIA_SIZE.condensed} />
-					</ItemMedia>
-					<ItemContent>
-						<ItemTitle>
-							{label} <ItemDescription inline>({value})</ItemDescription>
-						</ItemTitle>
-					</ItemContent>
-				</Item>
+					</OptionAvatar>
+					<OptionContent>
+						{label} <OptionDescription>({value})</OptionDescription>
+					</OptionContent>
+				</Option>
 			)}
 		/>
 	);
