@@ -6,6 +6,18 @@ import type { DateRange, ExchangeEvent, ExchangeProviderCapabilities, Page } fro
 import { ExchangeError } from '../errors';
 import { logger } from '../logger';
 
+/** The sync state answers about the calendar folder, not about the window, so the window it was issued for travels with it. */
+const CURSOR_SEPARATOR = '|';
+
+const encodeCursor = (syncState: string | undefined, windowStart: Date): string | undefined =>
+	syncState && `${windowStart.toISOString()}${CURSOR_SEPARATOR}${syncState}`;
+
+const decodeCursor = (cursor?: string): { windowStart?: string; syncState?: string } => {
+	const separator = cursor?.indexOf(CURSOR_SEPARATOR) ?? -1;
+
+	return separator < 0 ? { syncState: cursor } : { windowStart: cursor?.slice(0, separator), syncState: cursor?.slice(separator + 1) };
+};
+
 /** At 1000 occurrences a page, past any window a person can fill. An emergency guard, not a working limit. */
 const MAX_CALENDAR_VIEW_PAGES = 50;
 
@@ -46,21 +58,24 @@ export class ExchangeEwsProvider implements IExchangeProvider {
 	}
 
 	public async listEvents(mailbox: string, timeWindow: DateRange, cursor?: string): Promise<Page<ExchangeEvent>> {
-		const doc = parseEwsResponse(await this.transport.post(syncFolderItemsRequest(mailbox, cursor)));
+		const previous = decodeCursor(cursor);
+		const doc = parseEwsResponse(await this.transport.post(syncFolderItemsRequest(mailbox, previous.syncState)));
 		const syncState = textOf(firstByTag(doc, MESSAGES_NS, 'SyncState'));
 		// EWS reports "true" when it handed over everything, which is the inverse of hasMore.
 		const includesLastItem = textOf(firstByTag(doc, MESSAGES_NS, 'IncludesLastItemInRange')) === 'true';
 		const changed = ['Create', 'Update', 'Delete'].some((tag) => allByTag(doc, TYPES_NS, tag).length > 0);
 
-		if (!changed) {
-			return { items: [], cursor: syncState, hasMore: !includesLastItem, coverage: 'delta' };
+		const nextCursor = encodeCursor(syncState, timeWindow.start);
+
+		if (!changed && previous.windowStart === timeWindow.start.toISOString()) {
+			return { items: [], cursor: nextCursor, hasMore: !includesLastItem, coverage: 'delta' };
 		}
 
 		const { events, complete } = await this.snapshotWindow(mailbox, timeWindow);
 
 		return {
 			items: events,
-			cursor: syncState,
+			cursor: nextCursor,
 			hasMore: !includesLastItem,
 			coverage: complete ? 'full' : 'partial',
 		};

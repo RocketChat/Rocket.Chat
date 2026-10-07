@@ -33,6 +33,8 @@ class FakeTransport implements IEwsTransport {
 
 const timeWindow = { start: new Date('2026-08-21T00:00:00Z'), end: new Date('2026-08-22T00:00:00Z') };
 
+const cursorFor = (syncState: string, windowStart: Date = timeWindow.start) => `${windowStart.toISOString()}|${syncState}`;
+
 describe('ExchangeEwsProvider', () => {
 	describe('testConnection', () => {
 		it('resolves the service account, with no impersonation header', async () => {
@@ -68,7 +70,7 @@ describe('ExchangeEwsProvider', () => {
 		it('sends an ExchangeImpersonation header naming the target mailbox', async () => {
 			const transport = new FakeTransport([okResponse('<m:Changes/>')]);
 
-			await new ExchangeEwsProvider(transport).listEvents('user@corp.example', timeWindow);
+			await new ExchangeEwsProvider(transport).listEvents('user@corp.example', timeWindow, cursorFor('S0'));
 
 			expect(transport.sent[0]).toContain('<t:ExchangeImpersonation>');
 			expect(transport.sent[0]).toContain('<t:PrimarySmtpAddress>user@corp.example</t:PrimarySmtpAddress>');
@@ -77,7 +79,7 @@ describe('ExchangeEwsProvider', () => {
 		it('escapes the mailbox so a stray ampersand cannot break the envelope', async () => {
 			const transport = new FakeTransport([okResponse('<m:Changes/>')]);
 
-			await new ExchangeEwsProvider(transport).listEvents('a&b@corp.example', timeWindow);
+			await new ExchangeEwsProvider(transport).listEvents('a&b@corp.example', timeWindow, cursorFor('S0'));
 
 			expect(transport.sent[0]).toContain('a&amp;b@corp.example');
 			expect(transport.sent[0]).not.toContain('a&b@corp.example');
@@ -86,7 +88,7 @@ describe('ExchangeEwsProvider', () => {
 		it('pins the request server version and asks for UTC', async () => {
 			const transport = new FakeTransport([okResponse('<m:Changes/>')]);
 
-			await new ExchangeEwsProvider(transport).listEvents('user@corp.example', timeWindow);
+			await new ExchangeEwsProvider(transport).listEvents('user@corp.example', timeWindow, cursorFor('S0'));
 
 			expect(transport.sent[0]).toContain('<t:RequestServerVersion Version="Exchange2013"/>');
 			expect(transport.sent[0]).toContain('<t:TimeZoneDefinition Id="UTC"/>');
@@ -101,8 +103,8 @@ describe('ExchangeEwsProvider', () => {
 			]);
 			const provider = new ExchangeEwsProvider(transport);
 
-			await provider.listEvents('user@corp.example', timeWindow);
-			await provider.listEvents('user@corp.example', timeWindow, 'S1');
+			await provider.listEvents('user@corp.example', timeWindow, cursorFor('S0'));
+			await provider.listEvents('user@corp.example', timeWindow, cursorFor('S1'));
 
 			expect(transport.sent).toHaveLength(2);
 			expect(transport.sent[0]).not.toContain('<m:FindFolder');
@@ -111,7 +113,7 @@ describe('ExchangeEwsProvider', () => {
 		});
 
 		it('omits SyncState on an initial sync', async () => {
-			const transport = new FakeTransport([okResponse('<m:Changes/>')]);
+			const transport = new FakeTransport([okResponse('<m:Changes/>'), calendarViewOk()]);
 
 			await new ExchangeEwsProvider(transport).listEvents('user@corp.example', timeWindow);
 
@@ -121,11 +123,12 @@ describe('ExchangeEwsProvider', () => {
 		it('returns the sync state as the cursor and inverts IncludesLastItemInRange', async () => {
 			const transport = new FakeTransport([
 				okResponse('<m:SyncState>TOKEN</m:SyncState><m:IncludesLastItemInRange>false</m:IncludesLastItemInRange><m:Changes/>'),
+				calendarViewOk(),
 			]);
 
 			const page = await new ExchangeEwsProvider(transport).listEvents('user@corp.example', timeWindow);
 
-			expect(page).toMatchObject({ cursor: 'TOKEN', hasMore: true });
+			expect(page).toMatchObject({ cursor: cursorFor('TOKEN'), hasMore: true });
 		});
 
 		it('takes a full window snapshot once anything changed, deletions included', async () => {
@@ -146,16 +149,36 @@ describe('ExchangeEwsProvider', () => {
 			expect(page.items.map((event) => event?.externalId)).toEqual(['STILL-THERE']);
 		});
 
-		it('reports nothing and skips the snapshot when the delta is empty', async () => {
+		it('reports nothing and skips the snapshot when the delta is empty and the window has not moved', async () => {
 			const transport = new FakeTransport([
 				okResponse('<m:SyncState>S1</m:SyncState><m:IncludesLastItemInRange>true</m:IncludesLastItemInRange><m:Changes/>'),
 			]);
 
-			const page = await new ExchangeEwsProvider(transport).listEvents('user@corp.example', timeWindow);
+			const page = await new ExchangeEwsProvider(transport).listEvents('user@corp.example', timeWindow, cursorFor('S0'));
 
-			expect(page).toMatchObject({ items: [], cursor: 'S1', coverage: 'delta' });
+			expect(page).toMatchObject({ items: [], cursor: cursorFor('S1'), coverage: 'delta' });
 			// Just the probe. An empty delta must not cost a window fetch.
 			expect(transport.sent).toHaveLength(1);
+		});
+
+		it('snapshots an empty delta anyway when the cursor was issued for another window', async () => {
+			const CALENDAR_ITEM = 'ALREADY-THERE';
+			const transport = new FakeTransport([
+				okResponse('<m:SyncState>S1</m:SyncState><m:IncludesLastItemInRange>true</m:IncludesLastItemInRange><m:Changes/>'),
+				calendarViewOk(CALENDAR_ITEM),
+				okResponse(
+					`<m:Items><t:CalendarItem><t:ItemId Id="${CALENDAR_ITEM}"/><t:Start>2026-08-21T10:00:00Z</t:Start></t:CalendarItem></m:Items>`,
+				),
+			]);
+
+			const page = await new ExchangeEwsProvider(transport).listEvents(
+				'user@corp.example',
+				timeWindow,
+				cursorFor('S0', new Date('2026-08-20T00:00:00Z')),
+			);
+
+			expect(page.coverage).toBe('full');
+			expect(page.items.map((event) => event?.externalId)).toEqual([CALENDAR_ITEM]);
 		});
 
 		it('fetches detail for created and updated items and normalizes them', async () => {
