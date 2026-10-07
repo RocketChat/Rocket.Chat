@@ -3,6 +3,7 @@ export type ExchangeEndpoints = {
 		POST: () => {
 			provider: string;
 			message: string;
+			success: boolean;
 		};
 	};
 };
