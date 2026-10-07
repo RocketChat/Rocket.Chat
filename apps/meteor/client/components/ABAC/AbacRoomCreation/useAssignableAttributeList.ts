@@ -8,7 +8,7 @@ export const useAssignableAttributeList = (enabled = true) => {
 
 	return useQuery({
 		queryKey: ABACQueryKeys.assignableAttributes(),
-		queryFn: async () => (await getAssignableAttributes()).attributes,
+		queryFn: async () => (await getAssignableAttributes({})).attributes,
 		enabled,
 		staleTime: 15_000,
 		refetchOnWindowFocus: false,

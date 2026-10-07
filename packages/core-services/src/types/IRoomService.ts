@@ -44,7 +44,12 @@ export interface IRoomService {
 	removeUserFromRoom(
 		roomId: string,
 		user: IUser,
-		options?: { byUser?: Pick<IUser, '_id' | 'username'>; skipAppPreEvents?: boolean; customSystemMessage?: MessageTypesValues },
+		options?: {
+			byUser?: Pick<IUser, '_id' | 'username'>;
+			skipAppPreEvents?: boolean;
+			customSystemMessage?: MessageTypesValues;
+			skipSystemMessage?: boolean;
+		},
 	): Promise<void>;
 	getValidRoomName(displayName: string, roomId?: string, options?: { allowDuplicates?: boolean }): Promise<string>;
 	saveRoomTopic(

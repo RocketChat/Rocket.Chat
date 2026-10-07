@@ -1,7 +1,10 @@
 import type {
 	IAbacAttribute,
 	IAbacAttributeDefinition,
+	AbacMembershipGroup,
+	AbacPreviewCursor,
 	IAbacMembershipPreview,
+	IAbacRoomMembershipPreview,
 	IAuditServerActor,
 	IRoom,
 	IRoomAbacRedaction,
@@ -176,6 +179,16 @@ export const GETAbacAssignableAttributesResponseSchema = ajv.compile<{ attribute
 	GetAbacAssignableAttributesResponse,
 );
 
+const GetAbacAssignableAttributesQuery = {
+	type: 'object',
+	properties: {
+		rid: { type: 'string', minLength: 1 },
+	},
+	additionalProperties: false,
+};
+
+export const GETAbacAssignableAttributesQuerySchema = ajvQuery.compile<{ rid?: string }>(GetAbacAssignableAttributesQuery);
+
 const GetAbacAttributeByIdResponse = {
 	type: 'object',
 	properties: {
@@ -305,7 +318,6 @@ const PostRoomAbacAttributesBody = {
 		attributes: {
 			type: 'object',
 			propertyNames: { type: 'string', pattern: ATTRIBUTE_KEY_PATTERN },
-			minProperties: 1,
 			maxProperties: MAX_ROOM_ATTRIBUTE_KEYS,
 			additionalProperties: {
 				type: 'array',
@@ -326,6 +338,7 @@ const PostAbacAttributeAssignabilityBody = {
 	properties: {
 		attributes: {
 			...PostRoomAbacAttributesBody.properties.attributes,
+			minProperties: 1,
 			additionalProperties: {
 				...PostRoomAbacAttributesBody.properties.attributes.additionalProperties,
 				minItems: 1,
@@ -357,9 +370,47 @@ const PostAbacMembershipPreviewBody = {
 	additionalProperties: false,
 };
 
-export const POSTAbacMembershipPreviewBodySchema = ajv.compile<{ members: string[]; attributes: Record<string, string[]> }>(
-	PostAbacMembershipPreviewBody,
-);
+const MembershipVerdict = { type: 'string', enum: ['compliant', 'nonCompliant', 'inconclusive'] };
+
+const PreviewCursor = {
+	type: 'object',
+	properties: {
+		_id: { type: 'string', minLength: 1 },
+		username: { type: 'string' },
+	},
+	required: ['_id'],
+	additionalProperties: false,
+};
+
+const PostAbacRoomMembershipPreviewBody = {
+	type: 'object',
+	properties: {
+		rid: { type: 'string', minLength: 1 },
+		attributes: PostRoomAbacAttributesBody.properties.attributes,
+		filter: { type: 'string' },
+		after: PreviewCursor,
+		count: { type: 'integer', minimum: 1 },
+		group: { type: 'string', enum: ['loses', 'retains'] },
+	},
+	required: ['rid', 'attributes'],
+	additionalProperties: false,
+};
+
+export type POSTAbacMembershipPreviewBody =
+	| { members: string[]; attributes: Record<string, string[]> }
+	| {
+			rid: string;
+			attributes: Record<string, string[]>;
+			filter?: string;
+			after?: AbacPreviewCursor;
+			count?: number;
+			group?: AbacMembershipGroup;
+	  };
+
+export const POSTAbacMembershipPreviewBodySchema = ajv.compile<POSTAbacMembershipPreviewBody>({
+	type: 'object',
+	oneOf: [PostAbacMembershipPreviewBody, PostAbacRoomMembershipPreviewBody],
+});
 
 const PreviewMember = {
 	type: 'object',
@@ -385,7 +436,32 @@ const PostAbacMembershipPreviewResponse = {
 	additionalProperties: false,
 };
 
-export const POSTAbacMembershipPreviewResponseSchema = ajv.compile<IAbacMembershipPreview>(PostAbacMembershipPreviewResponse);
+const PostAbacRoomMembershipPreviewResponse = {
+	type: 'object',
+	properties: {
+		success: { type: 'boolean', enum: [true] },
+		members: {
+			type: 'array',
+			items: {
+				...PreviewMember,
+				properties: { ...PreviewMember.properties, verdict: MembershipVerdict, roles: { type: 'array', items: { type: 'string' } } },
+				required: ['_id', 'verdict'],
+			},
+		},
+		count: { type: 'integer', minimum: 0 },
+		checked: { type: 'integer', minimum: 0 },
+		total: { type: 'integer', minimum: 0 },
+		next: PreviewCursor,
+		editor: MembershipVerdict,
+	},
+	required: ['success', 'members', 'count', 'checked'],
+	additionalProperties: false,
+};
+
+export const POSTAbacMembershipPreviewResponseSchema = ajv.compile<IAbacMembershipPreview | IAbacRoomMembershipPreview>({
+	type: 'object',
+	oneOf: [PostAbacMembershipPreviewResponse, PostAbacRoomMembershipPreviewResponse],
+});
 
 const PostSingleRoomAbacAttributeBody = {
 	type: 'object',

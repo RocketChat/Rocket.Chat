@@ -1,4 +1,5 @@
-import type { IAbacAttributeDefinition, IRoom, IUser, AtLeast } from '@rocket.chat/core-typings';
+import type { AbacRoomMembershipPreviewPage } from '@rocket.chat/core-services';
+import type { IAbacAttributeDefinition, IAbacRoomMembershipPreview, IRoom, IUser, AtLeast } from '@rocket.chat/core-typings';
 
 export type IEntityIdentifier = { emailAddress: string } | { id: string };
 
@@ -40,6 +41,10 @@ export type SubjectEvaluation = {
 
 export type RoomEvaluation = SubjectEvaluation;
 
+export type AttributeSetChange = { added: boolean; removed: boolean };
+
+export type RoomMembersPreview = Pick<IAbacRoomMembershipPreview, 'members' | 'checked' | 'total' | 'next'>;
+
 export type NonCompliantPair = {
 	user: Pick<IUser, '_id' | 'emails' | 'username'>;
 	room: AtLeast<IRoom, '_id' | 'abacAttributes'>;
@@ -69,6 +74,14 @@ export interface IPolicyDecisionPoint {
 		room: AtLeast<IRoom, '_id' | 't' | 'teamMain' | 'abacAttributes'>,
 		newAttributes: IAbacAttributeDefinition[],
 	): Promise<IUser[]>;
+
+	needsEvaluation(change: AttributeSetChange): boolean;
+
+	previewRoomMembers(
+		room: AtLeast<IRoom, '_id' | 'abacAttributes'>,
+		attributes: IAbacAttributeDefinition[],
+		page: AbacRoomMembershipPreviewPage,
+	): Promise<RoomMembersPreview>;
 
 	onSubjectAttributesChanged(user: IUser, next: IAbacAttributeDefinition[]): Promise<Pick<IRoom, '_id' | 'name'>[]>;
 

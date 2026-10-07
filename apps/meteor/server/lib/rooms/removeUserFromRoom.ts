@@ -18,7 +18,7 @@ import { notifyOnRoomChangedById, notifyOnSubscriptionChanged } from '../notifyL
 export const performUserRemoval = async function (
 	room: IRoom,
 	user: IUser,
-	options?: { byUser?: IUser; skipAppPreEvents?: boolean; customSystemMessage?: MessageTypesValues },
+	options?: { byUser?: IUser; skipAppPreEvents?: boolean; customSystemMessage?: MessageTypesValues; skipSystemMessage?: boolean },
 ): Promise<void> {
 	const subscription = await Subscriptions.findOneByRoomIdAndUserId(room._id, user._id, {
 		projection: { _id: 1, status: 1 },
@@ -35,7 +35,7 @@ export const performUserRemoval = async function (
 	// TODO: move before callbacks to service
 	await beforeLeaveRoomCallback.run(user, room);
 
-	if (subscription) {
+	if (subscription && !options?.skipSystemMessage) {
 		if (options?.customSystemMessage) {
 			await Message.saveSystemMessage(options?.customSystemMessage, room._id, user.username || '', user);
 		} else if (options?.byUser) {
@@ -90,7 +90,7 @@ export const performUserRemoval = async function (
 export const removeUserFromRoom = async function (
 	rid: string,
 	user: IUser,
-	options?: { byUser?: IUser; skipAppPreEvents?: boolean; customSystemMessage?: MessageTypesValues },
+	options?: { byUser?: IUser; skipAppPreEvents?: boolean; customSystemMessage?: MessageTypesValues; skipSystemMessage?: boolean },
 ): Promise<void> {
 	const room = await Rooms.findOneById(rid);
 	if (!room) {

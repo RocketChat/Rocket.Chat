@@ -1,3 +1,4 @@
+import type { IAbacMembershipPreview } from '@rocket.chat/core-typings';
 import { useEndpoint } from '@rocket.chat/ui-contexts';
 import { useQuery } from '@tanstack/react-query';
 
@@ -8,7 +9,7 @@ export const useAbacMembershipPreview = (members: string[], attributes: Record<s
 
 	return useQuery({
 		queryKey: ABACQueryKeys.membershipPreview(members, attributes),
-		queryFn: () => previewMembership({ members, attributes }),
+		queryFn: async () => (await previewMembership({ members, attributes })) as IAbacMembershipPreview,
 		enabled: enabled && Object.keys(attributes).length > 0,
 		refetchOnWindowFocus: false,
 	});
