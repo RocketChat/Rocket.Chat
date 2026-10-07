@@ -27,8 +27,8 @@ export class ExchangeError extends Error {
 
 	public readonly detail?: string;
 
-	constructor(code: ExchangeErrorCode, message: string, options?: { detail?: string; cause?: unknown }) {
-		super(message, options?.cause ? { cause: options.cause } : undefined);
+	constructor(code: ExchangeErrorCode, message: string, options?: { detail?: string }) {
+		super(message);
 		this.name = 'ExchangeError';
 		this.code = code;
 		this.detail = options?.detail === undefined ? undefined : scrubText(options.detail);
