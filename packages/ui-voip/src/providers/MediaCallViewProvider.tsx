@@ -22,7 +22,9 @@ import { useMediaCallInstance } from '../context/MediaCallInstanceContext';
 import MediaCallViewContext from '../context/MediaCallViewContext';
 import type { PeerInfo } from '../context/definitions';
 import { isValidTone, useTonePlayer } from '../hooks/useTonePlayer';
+import { useVoiceToVideoEscalation } from '../hooks/useVoiceToVideoEscalation';
 import { isExternalPeer } from '../utils/isExternalPeer';
+import { isInternalPeer } from '../utils/isInternalPeer';
 import TransferModal from '../views/TransferModal';
 
 export type MediaCallViewProviderProps = {
@@ -39,6 +41,8 @@ const MediaCallViewProvider = ({ children }: MediaCallViewProviderProps) => {
 
 	const sessionState = useMediaSession(instance);
 	const controls = useMediaSessionControls(instance);
+
+	const { onRequestVideoCall, isRequestingVideoCall } = useVoiceToVideoEscalation(sessionState);
 
 	useDesktopNotifications(sessionState);
 
@@ -61,7 +65,7 @@ const MediaCallViewProvider = ({ children }: MediaCallViewProviderProps) => {
 	}, [audioInput?.id, controls, sessionState.hidden]);
 
 	useCallSounds(
-		sessionState.hidden ? 'none' : sessionState.state,
+		sessionState.hidden || !sessionState.ringing ? 'none' : sessionState.state,
 		useCallback(
 			(callback) => {
 				if (!instance) {
@@ -89,7 +93,7 @@ const MediaCallViewProvider = ({ children }: MediaCallViewProviderProps) => {
 		}
 
 		const startCall = (micless: boolean) => {
-			if ('userId' in targetPeer) {
+			if (isInternalPeer(targetPeer)) {
 				void controls.startCall(targetPeer.userId, 'user', micless);
 				return;
 			}
@@ -179,7 +183,24 @@ const MediaCallViewProvider = ({ children }: MediaCallViewProviderProps) => {
 			dispatchToastMessage({ type: 'success', message: t('Call_transfered_to__name__', { name: peer.displayName }) });
 		};
 
-		setModal(<TransferModal onCancel={onCancel} onConfirm={onConfirm} />);
+		const onConsult = (kind: 'user' | 'sip', peer: { displayName: string; id: string }) => {
+			offCallback?.();
+			void controls.consultBeforeTransfer(kind, peer.id);
+			setModal(null);
+		};
+
+		const instanceState = instance?.getState();
+		const canHold = instanceState?.confirmed && instanceState.features.includes('hold');
+
+		setModal(<TransferModal onCancel={onCancel} onConfirm={onConfirm} onConsult={canHold ? onConsult : undefined} />);
+	};
+
+	const onSwapCalls = () => {
+		controls.swapCalls();
+	};
+
+	const onCompleteTransfer = () => {
+		controls.completeTransfer();
 	};
 
 	const playTone = useTonePlayer(audioOutput?.id);
@@ -221,14 +242,41 @@ const MediaCallViewProvider = ({ children }: MediaCallViewProviderProps) => {
 		});
 	}, [instance, onChangePosition]);
 
+	useEffect(() => {
+		if (!sessionState.escalated) {
+			return;
+		}
+
+		const state = instance?.getState();
+
+		if (!state?.confirmed) {
+			return;
+		}
+
+		if (!state?.call.hasScreenVideoTrack()) {
+			return;
+		}
+
+		try {
+			state.call.requestScreenShare(false);
+			dispatchToastMessage({ type: 'info', message: t('Screen_sharing_stopped_video_escalation') });
+		} catch (error) {
+			console.error('Error stopping screen share', error);
+		}
+	}, [sessionState.escalated, dispatchToastMessage, t, instance]);
+
 	const contextValue = {
 		sessionState,
 		targetPeer,
+		isRequestingVideoCall,
+		onRequestVideoCall,
 		onClickDirectMessage,
 		onMute,
 		onHold,
 		onDeviceChange,
 		onForward,
+		onSwapCalls,
+		onCompleteTransfer,
 		onTone,
 		onEndCall,
 		onCall,

@@ -35,7 +35,8 @@ export interface IMediaCallContact {
  */
 export interface IMediaCall {
 	id: string;
-	service: 'webrtc';
+	/** `webrtc`: handled by the Rocket.Chat client; `cti`: handled by an app on an external device/gateway. */
+	service: 'webrtc' | 'cti';
 	kind: 'direct';
 	state: MediaCallState;
 
@@ -75,6 +76,12 @@ export interface IMediaCall {
 	 * `parentCallId`, because there is no earlier call it replaced.
 	 */
 	divertedBy?: IMediaCallContact;
+
+	transferredBy?: IMediaCallContact;
+	transferredTo?: IMediaCallContact;
+	transferredAt?: Date;
+
+	sipCallId?: string;
 }
 
 /**

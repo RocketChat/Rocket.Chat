@@ -10,6 +10,7 @@ describe('derivePeerInfoFromInstanceContact', () => {
 				id: '+5511999999999',
 			};
 			expect(derivePeerInfoFromInstanceContact(contact)).toEqual({
+				type: 'sip',
 				number: '+5511999999999',
 			});
 		});
@@ -19,6 +20,7 @@ describe('derivePeerInfoFromInstanceContact', () => {
 				type: 'sip',
 			};
 			expect(derivePeerInfoFromInstanceContact(contact)).toEqual({
+				type: 'sip',
 				number: 'unknown',
 			});
 		});
@@ -29,6 +31,7 @@ describe('derivePeerInfoFromInstanceContact', () => {
 				id: '',
 			};
 			expect(derivePeerInfoFromInstanceContact(contact)).toEqual({
+				type: 'sip',
 				number: 'unknown',
 			});
 		});
@@ -40,6 +43,7 @@ describe('derivePeerInfoFromInstanceContact', () => {
 				displayName: 'Customer Support',
 			};
 			expect(derivePeerInfoFromInstanceContact(contact)).toEqual({
+				type: 'sip',
 				number: '+5511999999999',
 				displayName: 'Customer Support',
 			});
@@ -56,6 +60,7 @@ describe('derivePeerInfoFromInstanceContact', () => {
 				sipExtension: '1001',
 			};
 			expect(derivePeerInfoFromInstanceContact(contact)).toEqual({
+				type: 'user',
 				displayName: 'John Doe',
 				userId: 'userId123',
 				username: 'johndoe',
@@ -63,15 +68,13 @@ describe('derivePeerInfoFromInstanceContact', () => {
 			});
 		});
 
-		it('returns internal peer info with "unknown" for missing displayName and id', () => {
+		it('returns unknown peer info for missing displayName and id', () => {
 			const contact: CallContact = {
 				type: 'user',
 			};
 			expect(derivePeerInfoFromInstanceContact(contact)).toEqual({
+				type: 'unknown',
 				displayName: 'unknown',
-				userId: 'unknown',
-				username: undefined,
-				callerId: undefined,
 			});
 		});
 
@@ -84,6 +87,7 @@ describe('derivePeerInfoFromInstanceContact', () => {
 				sipExtension: '1002',
 			};
 			expect(derivePeerInfoFromInstanceContact(contact)).toEqual({
+				type: 'user',
 				displayName: 'Jane Smith',
 				userId: 'userId456',
 				username: 'janesmith',
@@ -91,27 +95,26 @@ describe('derivePeerInfoFromInstanceContact', () => {
 			});
 		});
 
-		it('returns internal peer info with "unknown" for empty string displayName and id', () => {
+		it('returns unknown peer info for empty string displayName and id', () => {
 			const contact: CallContact = {
 				type: 'user',
 				id: '',
 				displayName: '',
 			};
 			expect(derivePeerInfoFromInstanceContact(contact)).toEqual({
+				type: 'unknown',
 				displayName: 'unknown',
-				userId: 'unknown',
-				username: undefined,
-				callerId: undefined,
 			});
 		});
 	});
 
-	describe('invalid contact type', () => {
-		it('throws when contact type is undefined (treated as user path but fails internal validation)', () => {
+	describe('contact without identity', () => {
+		it('returns unknown peer info when contact has no type, id or uid', () => {
 			const contact = {} as CallContact;
-			expect(() => derivePeerInfoFromInstanceContact(contact)).toThrow(
-				'deriveInternalPeerInfoFromInstanceContact: Contact is not a user contact',
-			);
+			expect(derivePeerInfoFromInstanceContact(contact)).toEqual({
+				type: 'unknown',
+				displayName: 'unknown',
+			});
 		});
 	});
 });

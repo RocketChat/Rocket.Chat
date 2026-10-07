@@ -10,14 +10,18 @@ export type MediaCallStreams = {
 	localScreen?: IMediaStreamWrapper;
 };
 
-type MediaCallViewContextValue = {
+export type MediaCallViewContextValue = {
 	sessionState: SessionState;
 	targetPeer?: PeerInfo;
+	isRequestingVideoCall: boolean;
+	onRequestVideoCall: () => void;
 	onClickDirectMessage?: () => void;
 	onMute: () => void;
 	onHold: () => void;
 	onDeviceChange: (device: Device) => void;
 	onForward: () => void;
+	onSwapCalls: () => void;
+	onCompleteTransfer: () => void;
 	onTone: (tone: string) => void;
 	onEndCall: () => void;
 	onCall: () => Promise<void>;
@@ -45,17 +49,24 @@ export const defaultSessionState: SessionState = {
 	remoteHeld: false,
 	callId: undefined,
 	startedAt: undefined,
+	escalated: false,
 	supportedFeatures: ['audio', 'transfer', 'hold'],
 	confirmed: false,
+	hasAlternateCall: false,
+	canCompleteTransfer: false,
 };
 
 export const defaultMediaCallContextValue: MediaCallViewContextValue = {
 	sessionState: defaultSessionState,
 	targetPeer: undefined,
+	isRequestingVideoCall: false,
+	onRequestVideoCall: () => undefined,
 	onMute: () => undefined,
 	onHold: () => undefined,
 	onDeviceChange: () => undefined,
 	onForward: () => undefined,
+	onSwapCalls: () => undefined,
+	onCompleteTransfer: () => undefined,
 	onTone: () => undefined,
 	onEndCall: () => undefined,
 	onCall: () => Promise.resolve(undefined),

@@ -1,6 +1,7 @@
 import type {
 	AvailableAgentsAggregation,
 	IUser,
+	IUserMediaCallDevice,
 	IRole,
 	ILivechatAgent,
 	UserStatus,
@@ -386,7 +387,7 @@ export interface IUsersModel extends IBaseModel<IUser> {
 	getAgentInfo(
 		agentId: IUser['_id'],
 		showAgentEmail?: boolean,
-	): Promise<Pick<ILivechatAgent, '_id' | 'name' | 'username' | 'phone' | 'customFields' | 'status' | 'livechat' | 'emails'> | null>;
+	): Promise<Pick<ILivechatAgent, '_id' | 'name' | 'username' | 'phones' | 'customFields' | 'status' | 'livechat' | 'emails'> | null>;
 	setE2EPublicAndPrivateKeysByUserId(userId: string, e2e: { public_key: string; private_key: string }): Promise<UpdateResult>;
 	rocketMailUnsubscribe(userId: string, createdAt: string): Promise<number>;
 	fetchKeysByUserId(userId: string): Promise<{ public_key: string; private_key: string } | object>;
@@ -555,6 +556,7 @@ export interface IUsersModel extends IBaseModel<IUser> {
 	setProfile(userId: string, profile: Record<string, unknown>): Promise<UpdateResult>;
 	setBio(userId: string, bio?: string): Promise<UpdateResult>;
 	setNickname(userId: string, nickname?: string): Promise<UpdateResult>;
+	setPhones(userId: string, phones: IUser['phones']): Promise<UpdateResult>;
 	clearSettings(userId: string): Promise<UpdateResult>;
 	setPreferences(userId: string, preferences: Record<string, unknown>): Promise<UpdateResult>;
 	setTwoFactorAuthorizationHashAndUntilForUserIdAndToken(userId: string, token: string, hash: string, until: Date): Promise<UpdateResult>;
@@ -596,6 +598,15 @@ export interface IUsersModel extends IBaseModel<IUser> {
 		freeSwitchExtension: string,
 		options?: O,
 	): Promise<DocumentWithProjection<T, O> | null>;
+	setMediaCallDeviceById(userId: IUser['_id'], device: IUserMediaCallDevice | null): Promise<UpdateResult>;
+	findByPhone<T extends Document = IUser, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(
+		phoneNumber: string,
+		options?: O,
+	): FindCursor<DocumentWithProjection<T, O>>;
+	findAllBySipIdentifiers<T extends Document = IUser, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(
+		sipIdentifiers: string[],
+		options?: O,
+	): FindCursor<DocumentWithProjection<T, O>>;
 	countUsersInRoles(roles: IRole['_id'][]): Promise<number>;
 	countAllUsersWithPendingAvatar(): Promise<number>;
 	findOneByIdAndRole<T extends Document = IUser, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(

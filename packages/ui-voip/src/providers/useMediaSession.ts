@@ -96,10 +96,8 @@ export const useMediaSession = (instance?: MediaSignalingSession): SessionState 
 					type: 'instance_updated',
 					payload: {
 						peerInfo: {
+							type: 'unknown',
 							displayName: instanceState.title,
-							userId: 'unknown',
-							username: undefined,
-							callerId: undefined,
 						},
 						transferredBy: undefined,
 						state,
@@ -113,6 +111,9 @@ export const useMediaSession = (instance?: MediaSignalingSession): SessionState 
 						startedAt: undefined,
 						supportedFeatures: [],
 						confirmed: instanceState.confirmed,
+						hasAlternateCall: false,
+						canCompleteTransfer: false,
+						escalated: false,
 					},
 				});
 				return;
@@ -124,7 +125,9 @@ export const useMediaSession = (instance?: MediaSignalingSession): SessionState 
 				activeTimestamp: startedAt,
 				features: supportedFeatures,
 				transferredBy: callTransferredBy,
+				escalated,
 				remoteParticipant: { muted: remoteMuted, held: remoteHeld, contact },
+				ringing,
 			} = instanceState;
 
 			const transferredBy = callTransferredBy?.displayName || callTransferredBy?.username || undefined;
@@ -162,6 +165,10 @@ export const useMediaSession = (instance?: MediaSignalingSession): SessionState 
 					startedAt,
 					supportedFeatures,
 					confirmed: instanceState.confirmed,
+					hasAlternateCall: instance.hasAlternateCall(),
+					canCompleteTransfer: instance.canCompleteTransfer(),
+					escalated,
+					ringing,
 				},
 			});
 		};

@@ -8,8 +8,8 @@ import { DragContext } from '../../components';
 import MediaCallViewContext from '../../context/MediaCallViewContext';
 import type { PeerInfo, SessionState } from '../../context/definitions';
 
-const externalPeer = { number: '+15551234567' } as PeerInfo;
-const internalPeer = { displayName: 'John Doe', userId: 'u1', username: 'john.doe' } as PeerInfo;
+const externalPeer = { type: 'sip', number: '+15551234567' } as PeerInfo;
+const internalPeer = { type: 'user', displayName: 'John Doe', userId: 'u1', username: 'john.doe' } as PeerInfo;
 
 type RenderOptions = {
 	peerInfo: PeerInfo;
@@ -29,6 +29,8 @@ const renderView = (Component: ComponentType, { peerInfo, inline = false, localS
 		remoteMuted: false,
 		remoteHeld: false,
 		confirmed: false,
+		hasAlternateCall: false,
+		canCompleteTransfer: false,
 		callId: 'call-1',
 		supportedFeatures: ['audio', 'screen-share', 'hold', 'transfer'],
 	} as SessionState;
@@ -42,6 +44,8 @@ const renderView = (Component: ComponentType, { peerInfo, inline = false, localS
 		onHold: jest.fn(),
 		onDeviceChange: jest.fn(),
 		onForward: jest.fn(),
+		onSwapCalls: jest.fn(),
+		onCompleteTransfer: jest.fn(),
 		onTone: jest.fn(),
 		onEndCall: jest.fn(),
 		onCall: jest.fn(),

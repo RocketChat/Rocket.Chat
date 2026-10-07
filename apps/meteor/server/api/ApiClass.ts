@@ -114,7 +114,7 @@ interface IAPIProperties {
 interface IAPIDefaultFieldsToExclude {
 	avatarOrigin: number;
 	emails: number;
-	phone: number;
+	phones: number;
 	statusConnection: number;
 	createdAt: number;
 	lastLogin: number;
@@ -208,7 +208,7 @@ export class APIClass<TBasePath extends string = '', TOperations extends Record<
 		this.defaultLimitedUserFieldsToExclude = {
 			avatarOrigin: 0,
 			emails: 0,
-			phone: 0,
+			phones: 0,
 			statusConnection: 0,
 			createdAt: 0,
 			lastLogin: 0,

@@ -6,6 +6,7 @@ import { HttpStatusCode } from '@rocket.chat/apps-engine/definition/accessors';
 import type { IApi, IApiRequest, IApiResponse } from '@rocket.chat/apps-engine/definition/api';
 import { ApiSecurity, ApiVisibility } from '@rocket.chat/apps-engine/definition/api';
 import type { IApiEndpointInfo } from '@rocket.chat/apps-engine/definition/api/IApiEndpointInfo';
+import type { IMediaCall } from '@rocket.chat/apps-engine/definition/mediaCalls';
 import type { IMessage, IMessageAttachment, IMessageRaw } from '@rocket.chat/apps-engine/definition/messages';
 import type {
 	IOutboundEmailMessageProvider,
@@ -505,6 +506,40 @@ export class TestData {
 			title: 'Video Conference',
 			anonymousUsers: 0,
 			providerName: 'test',
+		};
+	}
+
+	public static getMediaCall(): IMediaCall {
+		return {
+			id: 'first-call',
+			service: 'webrtc',
+			kind: 'direct',
+			state: 'hangup',
+			origin: 'internal',
+			createdBy: {
+				type: 'user',
+				id: 'johnId',
+			},
+			createdAt: new Date(),
+			caller: {
+				type: 'user',
+				id: 'johnId',
+			},
+			callee: {
+				type: 'user',
+				id: 'janeId',
+			},
+			ended: true,
+			endedBy: {
+				type: 'user',
+				id: 'janeId',
+			},
+			endedAt: new Date(),
+			hangupReason: 'normal',
+			acceptedAt: new Date(),
+			activatedAt: new Date(),
+			uids: ['johnId', 'janeId'],
+			features: ['voice'],
 		};
 	}
 

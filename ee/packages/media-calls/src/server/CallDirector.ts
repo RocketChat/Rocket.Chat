@@ -30,7 +30,10 @@ export type CreateCallParams = InternalCallParams & {
 	sipCallId?: string;
 };
 
-type CallIdentityParams = Pick<CreateCallParams, 'caller' | 'callee' | 'requestedCallId' | 'parentCallId' | 'divertedBy'> & {
+type CallIdentityParams = Pick<
+	CreateCallParams,
+	'caller' | 'callee' | 'requestedCallId' | 'parentCallId' | 'attended' | 'replacedCallIds' | 'divertedBy'
+> & {
 	createdBy: MediaCallContact;
 	service: IMediaCall['service'];
 };
@@ -46,7 +49,7 @@ const scheduledExpirationChecks = new Map<string, ReturnType<typeof setTimeout>>
  * The fields that identify a call attempt, whether or not the call goes on to happen.
  */
 function getCallIdentity(params: CallIdentityParams) {
-	const { caller, callee, createdBy, service, requestedCallId, parentCallId, divertedBy } = params;
+	const { caller, callee, createdBy, service, requestedCallId, parentCallId, attended, replacedCallIds, divertedBy } = params;
 
 	return {
 		// Use UUIDs to identify all media calls, for better compatibility with libs that require it (such as React Native's CallKit)
@@ -68,6 +71,8 @@ function getCallIdentity(params: CallIdentityParams) {
 
 		...(requestedCallId && { callerRequestedId: requestedCallId }),
 		...(parentCallId && { parentCallId }),
+		...(attended && { attended }),
+		...(replacedCallIds?.length && { replacedCallIds }),
 		...(divertedBy && { divertedBy }),
 	};
 }
@@ -106,7 +111,21 @@ class MediaCallDirector {
 		logger.info({ msg: 'Call was flagged as active', callId: call._id });
 		this.scheduleExpirationCheckByCallId(call._id);
 		getMediaCallServer().emitter.emit('callActivated', { call: activatedCall });
+		this.hangupReplacedCalls(activatedCall).catch((err) =>
+			logger.error({ msg: 'Failed to end the calls replaced by a call', err, callId: call._id }),
+		);
 		return actorAgent.oppositeAgent?.onCallActive(call._id);
+	}
+
+	private async hangupReplacedCalls(call: IMediaCall): Promise<void> {
+		for (const replacedCallId of call.replacedCallIds ?? []) {
+			const replacedCall = await MediaCalls.findOneById(replacedCallId);
+			if (!replacedCall || replacedCall.ended) {
+				continue;
+			}
+
+			await this.hangupDetachedCall(replacedCall, { endedBy: call.createdBy, reason: 'transfer' });
+		}
 	}
 
 	public async acceptCall(
@@ -117,15 +136,12 @@ class MediaCallDirector {
 			webrtcAnswer?: RTCSessionDescriptionInit;
 			supportedFeatures: CallFeature[];
 			sipCallId?: string;
+			negotiationId?: string;
 		},
 	): Promise<boolean> {
 		logger.debug({ msg: 'MediaCallDirector.acceptCall' });
 
-		// To avoid race conditions, load the negotiation before changing the call state
-		// Once the state changes, negotiations need to be referred by id.
-		const negotiation = await MediaCallNegotiations.findLatestByCallId(call._id);
-
-		const { webrtcAnswer, ...acceptData } = data;
+		const { webrtcAnswer, negotiationId, ...acceptData } = data;
 
 		const updatedCall = await MediaCalls.acceptCallById(call._id, acceptData, this.getNewExpirationTime());
 		// Nothing came back: the call was no longer ringing
@@ -141,12 +157,12 @@ class MediaCallDirector {
 		await calleeAgent.onCallAccepted(updatedCall);
 		await calleeAgent.oppositeAgent?.onCallAccepted(updatedCall);
 
-		if (data.webrtcAnswer && negotiation) {
-			const negotiationResult = await MediaCallNegotiations.setAnswerById(negotiation._id, data.webrtcAnswer);
+		if (webrtcAnswer && negotiationId) {
+			const negotiationResult = await MediaCallNegotiations.setAnswerById(negotiationId, webrtcAnswer);
 			if (negotiationResult.modifiedCount) {
-				logger.info({ msg: 'Negotiation answer was saved', callId: call._id, negotiationId: negotiation._id });
+				logger.info({ msg: 'Negotiation answer was saved', callId: call._id, negotiationId });
 			}
-			await calleeAgent.oppositeAgent?.onRemoteDescriptionChanged(call._id, negotiation._id);
+			await calleeAgent.oppositeAgent?.onRemoteDescriptionChanged(call._id, negotiationId);
 		}
 
 		return true;
@@ -272,8 +288,9 @@ class MediaCallDirector {
 
 		const service = requestedService || 'webrtc';
 
-		// webrtc is our only known service right now, but if the call was requested by a client that doesn't also implement it, we don't need to even create a call
-		if (service !== 'webrtc') {
+		// `webrtc` is handled by the client; `cti` is handled by an external device/gateway through an app.
+		// Any other service is unknown and the call can't be created.
+		if (service !== 'webrtc' && service !== 'cti') {
 			throw new Error('invalid-call-service');
 		}
 
@@ -311,7 +328,18 @@ class MediaCallDirector {
 		}
 
 		const requestedFeatures = getFeaturesSupportedByTransport(caller, callee, hookResult.features || features);
-		const allowedFeatures = requestedFeatures.filter((feature) => getMediaCallServer().isFeatureAvailableForUser(caller.id, feature));
+
+		const forbiddenFeatures: CallFeature[] = [];
+		if (parentCallId) {
+			// Transferred calls can not be escalated yet
+			forbiddenFeatures.push('conference-escalation');
+		}
+
+		const participants = [caller, callee];
+		const allowedFeatures = requestedFeatures.filter(
+			(feature) => !forbiddenFeatures.includes(feature) && getMediaCallServer().isFeatureAvailableForParticipants(feature, participants),
+		);
+
 		const call: Omit<IMediaCall, '_updatedAt'> = {
 			...getCallIdentity({ ...params, createdBy, service }),
 
@@ -322,6 +350,7 @@ class MediaCallDirector {
 
 			features: allowedFeatures,
 			...(params.sipCallId && { sipCallId: params.sipCallId }),
+			...(params.device && { device: params.device }),
 		};
 
 		logger.debug({ msg: 'creating call', call });
@@ -347,13 +376,14 @@ class MediaCallDirector {
 		to: MediaCallContact,
 		by: MediaCallSignedContact,
 		agent: IMediaCallAgent,
+		options: { replacesCallId?: string } = {},
 	): Promise<void> {
 		if (!agent.oppositeAgent) {
 			logger.error({ msg: 'Unable to transfer calls without a reference to the opposite agent.' });
 			return;
 		}
 
-		const updateResult = await MediaCalls.transferCallById(call._id, { by, to });
+		const updateResult = await MediaCalls.transferCallById(call._id, { by, to, ...options });
 		if (!updateResult.modifiedCount) {
 			return;
 		}

@@ -31,7 +31,11 @@ export interface IMediaCallsModel extends IBaseModel<IMediaCall> {
 	activateCallById(callId: string, expiresAt: Date): Promise<IMediaCall | null>;
 	setExpiresAtById(callId: string, expiresAt: Date): Promise<UpdateResult>;
 	hangupCallById(callId: string, params: { endedBy?: IMediaCall['endedBy']; reason?: string } | undefined): Promise<IMediaCall | null>;
-	transferCallById(callId: string, params: { by: MediaCallSignedContact; to: MediaCallContact }): Promise<UpdateResult>;
+	transferCallById(
+		callId: string,
+		params: { by: MediaCallSignedContact; to: MediaCallContact; replacesCallId?: string },
+	): Promise<UpdateResult>;
+	setSipDialogById(callId: string, sipDialog: NonNullable<IMediaCall['sipDialog']>): Promise<UpdateResult>;
 	findAllExpiredCalls<T extends Document = IMediaCall, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(
 		options?: O,
 	): FindCursor<DocumentWithProjection<T, O>>;
@@ -39,6 +43,33 @@ export interface IMediaCallsModel extends IBaseModel<IMediaCall> {
 		uid: IUser['_id'],
 		options?: O,
 	): FindCursor<DocumentWithProjection<T, O>>;
+	findAllNotOverByOppositeSipExtension<
+		T extends Document = IMediaCall,
+		O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>,
+	>(
+		sipExtension: string,
+		options?: O,
+	): FindCursor<DocumentWithProjection<T, O>>;
 	hasUnfinishedCalls(): Promise<boolean>;
-	hasUnfinishedCallsByUid(uid: IUser['_id'], exceptCallId?: string): Promise<boolean>;
+	hasUnfinishedCallsByUid(uid: IUser['_id'], exceptCallIds?: string | string[]): Promise<boolean>;
+	isUserInCallIds(uid: IUser['_id'], callIds: string[]): Promise<boolean>;
+	findAllPendingEscalationByUidAndCallIds<
+		T extends Document = IMediaCall,
+		O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>,
+	>(
+		uid: IUser['_id'],
+		callIds: string[],
+		options?: O,
+	): FindCursor<DocumentWithProjection<T, O>>;
+	isUserSipExtensionInCallIds(sipExtension: string, callIds: string[]): Promise<boolean>;
+	updateParticipantsById(
+		callId: string,
+		participants: { caller?: MediaCallSignedContact; callee?: MediaCallSignedContact },
+	): Promise<UpdateResult>;
+	flagAsEscalatedByCallId(callId: string): Promise<UpdateResult>;
+	flagAsRemotelyEscalatedByCallId(callId: string): Promise<UpdateResult>;
+	findAllNotOverByCallIds<T extends Document = IMediaCall, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(
+		callIds: string[],
+		options?: O,
+	): FindCursor<DocumentWithProjection<T, O>>;
 }

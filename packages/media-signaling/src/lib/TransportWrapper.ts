@@ -48,6 +48,14 @@ export class MediaSignalTransportWrapper {
 		return this.sendToServer(callId, 'negotiation-needed', { oldNegotiationId });
 	}
 
+	public setMuted(callId: string, muted: boolean) {
+		return this.sendToServer(callId, 'mute', { muted });
+	}
+
+	public setHeld(callId: string, held: boolean) {
+		return this.sendToServer(callId, 'hold', { held });
+	}
+
 	public sendSignal(signal: ClientMediaSignal): void {
 		this.logger?.debug('MediaSignalTransportWrapper.sendSignal', signal);
 		this.sendSignalFn(signal);

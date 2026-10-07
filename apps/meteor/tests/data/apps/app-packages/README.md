@@ -46,6 +46,23 @@ Three things to know:
 - Keep an app to a single class file. `rc-apps package` bundles the whole app into one file anyway, and one
   file is what this document can show.
 
+The scratch dir also needs a `package.json` whose `devDependencies["@rocket.chat/apps-engine"]` is a version
+`semver.coerce` can parse — the CLI compares it against `requiredApiVersion` and dies on `Invalid Version: null`
+for something like `"alpha"`. Match the value the other fixtures use so the CLI does not rewrite `app.json`.
+
+**Keep `rc-apps` current.** It resolves `@rocket.chat/apps-engine` with a `createRequire` rooted at your
+app's own `app.json`, so what it validates against depends on where the app sits. Versions before
+`@rocket.chat/apps-compiler` 0.7.0 look only at `apps-engine/server/permissions/AppPermissions`, a path the
+published package stopped shipping when the engine was split — which makes packaging anywhere outside this
+monorepo die with `MODULE_NOT_FOUND`. 0.7.0 falls back to `definition/metadata/AppPermissions` and tolerates
+the old path being absent. Upgrade with `volta install @rocket.chat/apps-cli`.
+
+If a new permission is rejected inside this repo (`Invalid permission "..." defined`) while it packages fine
+elsewhere, the cause is a stale `packages/apps-engine/server/` directory: build output from before the engine
+split that nothing regenerates and `.gitignore` hides. Resolution walks up from your app and finds it, so the
+old path *succeeds* and shadows the current permission list. Delete the directory — nothing in the repo
+imports it, and the compiler then falls through to the live definitions on its own.
+
 ### Available apps
 
 #### IPreFileUpload handler
@@ -696,6 +713,77 @@ export class UiKitRoomTestApp extends App implements IUIKitInteractionHandler {
 
 </details>
 
+#### Media Call Reader Test
+
+File name: `media-call-reader-test_0.0.1.zip`
+
+An app with the `media-call.read` permission that exposes a public API endpoint for testing the `MediaCallRead` accessor. The endpoint `GET /read-call?callId=<id>` calls `read.getMediaCallReader().getById(callId)` and returns `{ call: <IMediaCall | null> }`.
+
+Used by `apps/meteor/tests/end-to-end/apps/app-media-call-reader.ts`.
+
+<details>
+<summary>App source code</summary>
+
+**app.json** (relevant excerpt)
+```json
+{
+    "permissions": [
+        { "name": "media-call.read" }
+    ]
+}
+```
+
+**MediaCallReaderTestApp.ts**
+```typescript
+import {
+    IAppAccessors, IConfigurationExtend, IHttp, ILogger,
+    IModify, IPersistence, IRead,
+} from '@rocket.chat/apps-engine/definition/accessors';
+import { ApiSecurity, ApiVisibility } from '@rocket.chat/apps-engine/definition/api';
+import { ApiEndpoint, IApiEndpointInfo, IApiRequest, IApiResponse } from '@rocket.chat/apps-engine/definition/api';
+import { App } from '@rocket.chat/apps-engine/definition/App';
+import { IAppInfo } from '@rocket.chat/apps-engine/definition/metadata';
+
+class ReadCallEndpoint extends ApiEndpoint {
+    public path = 'read-call';
+
+    public async get(
+        request: IApiRequest,
+        _endpoint: IApiEndpointInfo,
+        read: IRead,
+        _modify: IModify,
+        _http: IHttp,
+        _persis: IPersistence,
+    ): Promise<IApiResponse> {
+        const { callId } = request.query;
+
+        if (!callId) {
+            return { status: 400, content: { error: 'callId query parameter is required' } };
+        }
+
+        const call = await read.getMediaCallReader().getById(callId);
+
+        return { status: 200, content: { call: call || null } };
+    }
+}
+
+export class MediaCallReaderTestApp extends App {
+    constructor(info: IAppInfo, logger: ILogger, accessors: IAppAccessors) {
+        super(info, logger, accessors);
+    }
+
+    protected async extendConfiguration(configuration: IConfigurationExtend): Promise<void> {
+        await configuration.api.provideApi({
+            visibility: ApiVisibility.PUBLIC,
+            security: ApiSecurity.UNSECURE,
+            endpoints: [new ReadCallEndpoint(this)],
+        });
+    }
+}
+```
+
+</details>
+
 #### Media call lifecycle events (IMediaCallHandler)
 
 File name: `media-call-events-test_0.0.1.zip`
@@ -1012,6 +1100,281 @@ function describeOutcome(context: IMediaCallEndedContext): string {
 	}
 
 	return 'unreachable';
+}
+```
+
+</details>
+
+#### Media call cti control (desk phones)
+
+File name: `media-call-cti-test_0.0.1.zip`
+
+Stands in for an app that drives calls on real desk phones through a CTI gateway, so `cti` calls can be
+exercised end to end with no PBX and no hardware. It offers one fake device, records every control
+command it receives in the app logs, and reports call progress back over `modify.getMediaCallModifier()`.
+
+The device it owns is `stub-desk-phone`. Control commands are broadcast to every cti-capable app, so
+`executeMediaCallDial` ignores a call placed on any other device and logs `dial_ignored_device` instead —
+which is also how a test asserts the self-filtering contract holds.
+
+**Endpoints:**
+
+- `POST /api/apps/public/:appId/incoming` with `{ "userId", "from"?, "device"? }` rings a user as if a call
+  had arrived on their desk phone, driving `createIncomingCall`. `from` defaults to a stub SIP caller.
+- `POST /api/apps/public/:appId/advance` with `{ "callId", "to", "reason"?, "muted"?, "held"?, "remoteMuted"?, "remoteHeld"? }`
+  moves a call on, where `to` is `ringing` | `answered` | `active` | `ended` | `state`.
+
+Progress is driven by the test rather than by timers: the gateway is simulated, so a test says when the far
+end answers instead of sleeping. The one exception is `dial`, which reports `ringing` immediately — the
+phone starts ringing the moment the gateway accepts the origination, and it proves the write accessor works
+from inside a control handler.
+
+**Log labels** (read with `findAppLogItem`): `get_devices_uid`, `dial_call_id`, `dial_device`, `dial_callee`,
+`dial_ignored_device`, `answer_call_id`, `hangup_call_id`, `hangup_reason`, `mute_call_id`, `mute_muted`,
+`hold_call_id`, `hold_held`, `transfer_call_id`, `transfer_to`, `dtmf_call_id`, `dtmf_tone`.
+
+**Permissions:** `api` and `media-call.control`. Declaring a list replaces the defaults rather than adding
+to them, so the list names everything the app uses. `media-call.control` is not a default permission and the
+write accessor answers nothing without it, so the same list has to be passed to `installLocalTestPackage`.
+
+<details>
+<summary>App source code</summary>
+
+**app.json** (relevant excerpt)
+```json
+{
+    "permissions": [
+        { "name": "api" },
+        { "name": "media-call.control" }
+    ]
+}
+```
+
+**MediaCallCtiTestApp.ts**
+```typescript
+import type {
+	IAppAccessors,
+	IConfigurationExtend,
+	IHttp,
+	ILogger,
+	IModify,
+	IPersistence,
+	IRead,
+} from '@rocket.chat/apps-engine/definition/accessors';
+import { App } from '@rocket.chat/apps-engine/definition/App';
+import type { IApiEndpointInfo, IApiRequest, IApiResponse } from '@rocket.chat/apps-engine/definition/api';
+import { ApiEndpoint, ApiSecurity, ApiVisibility } from '@rocket.chat/apps-engine/definition/api';
+import type {
+	IMediaCallAnswerContext,
+	IMediaCallDevice,
+	IMediaCallDevicesContext,
+	IMediaCallDialContext,
+	IMediaCallDtmfContext,
+	IMediaCallHandler,
+	IMediaCallHangupContext,
+	IMediaCallHoldContext,
+	IMediaCallMuteContext,
+	IMediaCallTransferContext,
+} from '@rocket.chat/apps-engine/definition/mediaCalls';
+import type { IAppInfo } from '@rocket.chat/apps-engine/definition/metadata';
+import { AppMethod } from '@rocket.chat/apps-engine/definition/metadata';
+
+/**
+ * The single device this app pretends to own. Control for a call placed on any other device
+ * belongs to some other app, so this one leaves it alone.
+ */
+const STUB_DEVICE_ID = 'stub-desk-phone';
+
+/**
+ * Rings a Rocket.Chat user as if a call had arrived on their desk phone, so the inbound half of
+ * cti can be driven without a PBX.
+ *
+ * `POST /incoming` with `{ userId, from?, device? }`.
+ */
+class IncomingCallEndpoint extends ApiEndpoint {
+	public path = 'incoming';
+
+	public async post(
+		request: IApiRequest,
+		_endpoint: IApiEndpointInfo,
+		_read: IRead,
+		modify: IModify,
+		_http: IHttp,
+		_persis: IPersistence,
+	): Promise<IApiResponse> {
+		const { userId, from, device } = request.content;
+
+		if (!userId) {
+			return { status: 400, content: { error: 'userId is required' } };
+		}
+
+		await modify.getMediaCallModifier().createIncomingCall({
+			userId,
+			from: from || { type: 'sip', id: '5551234', displayName: 'Stub caller' },
+			device: device || STUB_DEVICE_ID,
+		});
+
+		return { status: 200, content: { ok: true } };
+	}
+}
+
+/**
+ * Moves a call this app is handling to its next state. The gateway is simulated, so the test says
+ * when the far end answers instead of waiting on a timer.
+ *
+ * `POST /advance` with `{ callId, to: 'ringing'|'answered'|'active'|'ended'|'state', reason?, muted?, held? }`.
+ */
+class AdvanceCallEndpoint extends ApiEndpoint {
+	public path = 'advance';
+
+	public async post(
+		request: IApiRequest,
+		_endpoint: IApiEndpointInfo,
+		_read: IRead,
+		modify: IModify,
+		_http: IHttp,
+		_persis: IPersistence,
+	): Promise<IApiResponse> {
+		const { callId, to, reason, muted, held, remoteMuted, remoteHeld } = request.content;
+
+		if (!callId || !to) {
+			return { status: 400, content: { error: 'callId and to are required' } };
+		}
+
+		const mediaCalls = modify.getMediaCallModifier();
+
+		switch (to) {
+			case 'ringing':
+				await mediaCalls.reportRinging(callId);
+				break;
+			case 'answered':
+				await mediaCalls.reportAnswered(callId);
+				break;
+			case 'active':
+				await mediaCalls.reportActive(callId);
+				break;
+			case 'ended':
+				await mediaCalls.reportEnded(callId, reason);
+				break;
+			case 'state':
+				await mediaCalls.reportState(callId, { muted, held, remoteMuted, remoteHeld });
+				break;
+			default:
+				return { status: 400, content: { error: `unknown target state: ${to}` } };
+		}
+
+		return { status: 200, content: { ok: true } };
+	}
+}
+
+/**
+ * Stands in for an app that drives calls on real desk phones through a CTI gateway: it offers one
+ * fake device, records every control command it receives in the app logs, and reports call progress
+ * back over the media-call write accessor. That is enough to exercise cti end to end with no hardware.
+ */
+export class MediaCallCtiTestApp extends App implements IMediaCallHandler {
+	constructor(info: IAppInfo, logger: ILogger, accessors: IAppAccessors) {
+		super(info, logger, accessors);
+	}
+
+	protected async extendConfiguration(configuration: IConfigurationExtend): Promise<void> {
+		await configuration.api.provideApi({
+			visibility: ApiVisibility.PUBLIC,
+			security: ApiSecurity.UNSECURE,
+			endpoints: [new IncomingCallEndpoint(this), new AdvanceCallEndpoint(this)],
+		});
+	}
+
+	public async [AppMethod.EXECUTE_MEDIA_CALL_GET_DEVICES](context: IMediaCallDevicesContext): Promise<IMediaCallDevice[]> {
+		this.getLogger().info('get_devices_uid', context.userId);
+
+		return [{ id: STUB_DEVICE_ID, name: 'Stub desk phone' }];
+	}
+
+	public async [AppMethod.EXECUTE_MEDIA_CALL_DIAL](
+		context: IMediaCallDialContext,
+		_read: IRead,
+		_http: IHttp,
+		_persistence: IPersistence,
+		modify: IModify,
+	): Promise<void> {
+		// Control is broadcast to every cti app, so ignore a call placed on someone else's device.
+		if (context.device !== STUB_DEVICE_ID) {
+			this.getLogger().info('dial_ignored_device', context.device);
+			return;
+		}
+
+		this.getLogger().info('dial_call_id', context.call.id);
+		this.getLogger().info('dial_device', context.device);
+		this.getLogger().info('dial_callee', context.call.callee.id);
+
+		// The phone starts ringing as soon as the gateway accepts the origination; the rest of the
+		// progression is driven by the test over `POST /advance`.
+		await modify.getMediaCallModifier().reportRinging(context.call.id);
+	}
+
+	public async [AppMethod.EXECUTE_MEDIA_CALL_ANSWER](
+		context: IMediaCallAnswerContext,
+		_read: IRead,
+		_http: IHttp,
+		_persistence: IPersistence,
+		modify: IModify,
+	): Promise<void> {
+		this.getLogger().info('answer_call_id', context.call.id);
+
+		await modify.getMediaCallModifier().reportActive(context.call.id);
+	}
+
+	public async [AppMethod.EXECUTE_MEDIA_CALL_HANGUP](
+		context: IMediaCallHangupContext,
+		_read: IRead,
+		_http: IHttp,
+		_persistence: IPersistence,
+		modify: IModify,
+	): Promise<void> {
+		this.getLogger().info('hangup_call_id', context.call.id);
+		this.getLogger().info('hangup_reason', context.reason || '');
+
+		// Tolerates a hangup that races the gateway's own end report.
+		await modify.getMediaCallModifier().reportEnded(context.call.id, context.reason);
+	}
+
+	public async [AppMethod.EXECUTE_MEDIA_CALL_MUTE](
+		context: IMediaCallMuteContext,
+		_read: IRead,
+		_http: IHttp,
+		_persistence: IPersistence,
+		modify: IModify,
+	): Promise<void> {
+		this.getLogger().info('mute_call_id', context.call.id);
+		this.getLogger().info('mute_muted', String(context.muted));
+
+		// Confirm the mute back, which is what moves the widget out of its optimistic state.
+		await modify.getMediaCallModifier().reportState(context.call.id, { muted: context.muted });
+	}
+
+	public async [AppMethod.EXECUTE_MEDIA_CALL_HOLD](
+		context: IMediaCallHoldContext,
+		_read: IRead,
+		_http: IHttp,
+		_persistence: IPersistence,
+		modify: IModify,
+	): Promise<void> {
+		this.getLogger().info('hold_call_id', context.call.id);
+		this.getLogger().info('hold_held', String(context.held));
+
+		await modify.getMediaCallModifier().reportState(context.call.id, { held: context.held });
+	}
+
+	public async [AppMethod.EXECUTE_MEDIA_CALL_TRANSFER](context: IMediaCallTransferContext): Promise<void> {
+		this.getLogger().info('transfer_call_id', context.call.id);
+		this.getLogger().info('transfer_to', context.to.id);
+	}
+
+	public async [AppMethod.EXECUTE_MEDIA_CALL_DTMF](context: IMediaCallDtmfContext): Promise<void> {
+		this.getLogger().info('dtmf_call_id', context.call.id);
+		this.getLogger().info('dtmf_tone', context.tone);
+	}
 }
 ```
 

@@ -39,6 +39,7 @@ const MockedMediaCallProvider = ({
 	confirmed = true,
 }: MockedMediaCallProviderProps) => {
 	const [peerInfo, setPeerInfo] = useState<PeerInfo | undefined>({
+		type: 'user',
 		displayName: 'John Doe',
 		userId: '1234567890',
 		avatarUrl,
@@ -84,6 +85,7 @@ const MockedMediaCallProvider = ({
 		}
 
 		return Promise.resolve({
+			type: 'user' as const,
 			displayName: peer.label,
 			userId: peer.value,
 			avatarUrl: peer.avatarUrl,
@@ -93,7 +95,7 @@ const MockedMediaCallProvider = ({
 	};
 
 	const onCall = async (id?: string) => {
-		if (id) {
+		if (typeof id === 'string') {
 			setPeerInfo(await getPeerInfo(id));
 		}
 
@@ -129,6 +131,7 @@ const MockedMediaCallProvider = ({
 		remoteHeld,
 		callId: undefined,
 		supportedFeatures,
+		escalated: false,
 		confirmed,
 	} as SessionState;
 
@@ -140,6 +143,8 @@ const MockedMediaCallProvider = ({
 		onHold,
 		onDeviceChange,
 		onForward,
+		onSwapCalls: () => console.log('swap calls'),
+		onCompleteTransfer: () => console.log('complete transfer'),
 		onTone,
 		onEndCall,
 		onCall,
@@ -149,6 +154,8 @@ const MockedMediaCallProvider = ({
 		onToggleScreenSharing: () => undefined,
 		onOpenPopout: () => undefined,
 		onClosePopout: () => undefined,
+		isRequestingVideoCall: false,
+		onRequestVideoCall: () => undefined,
 	};
 
 	return (

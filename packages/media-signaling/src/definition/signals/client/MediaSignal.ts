@@ -1,11 +1,18 @@
 import { Ajv, type JSONSchemaType } from 'ajv';
 
 import { clientMediaSignalAnswerSchema, type ClientMediaSignalAnswer } from './answer';
+import { clientMediaSignalAttendedTransferSchema, type ClientMediaSignalAttendedTransfer } from './attended-transfer';
+import {
+	clientMediaSignalCompleteAttendedTransferSchema,
+	type ClientMediaSignalCompleteAttendedTransfer,
+} from './complete-attended-transfer';
 import { clientMediaSignalDTMFSchema, type ClientMediaSignalDTMF } from './dtmf';
 import { clientMediaSignalErrorSchema, type ClientMediaSignalError } from './error';
 import { clientMediaSignalHangupSchema, type ClientMediaSignalHangup } from './hangup';
+import { clientMediaSignalHoldSchema, type ClientMediaSignalHold } from './hold';
 import { clientMediaSignalLocalSDPSchema, type ClientMediaSignalLocalSDP } from './local-sdp';
 import { clientMediaSignalLocalStateSchema, type ClientMediaSignalLocalState } from './local-state';
+import { clientMediaSignalMuteSchema, type ClientMediaSignalMute } from './mute';
 import { clientMediaSignalNegotiationNeededSchema, type ClientMediaSignalNegotiationNeeded } from './negotiation-needed';
 import { clientMediaSignalRegisterSchema, type ClientMediaSignalRegister } from './register';
 import { clientMediaSignalRequestCallSchema, type ClientMediaSignalRequestCall } from './request-call';
@@ -23,7 +30,11 @@ export type ClientMediaSignal =
 	| ClientMediaSignalLocalState
 	| ClientMediaSignalRegister
 	| ClientMediaSignalNegotiationNeeded
-	| ClientMediaSignalTransfer;
+	| ClientMediaSignalTransfer
+	| ClientMediaSignalAttendedTransfer
+	| ClientMediaSignalCompleteAttendedTransfer
+	| ClientMediaSignalMute
+	| ClientMediaSignalHold;
 
 export const clientMediaSignalSchema: JSONSchemaType<ClientMediaSignal> = {
 	type: 'object',
@@ -41,6 +52,10 @@ export const clientMediaSignalSchema: JSONSchemaType<ClientMediaSignal> = {
 		clientMediaSignalRegisterSchema,
 		clientMediaSignalNegotiationNeededSchema,
 		clientMediaSignalTransferSchema,
+		clientMediaSignalAttendedTransferSchema,
+		clientMediaSignalCompleteAttendedTransferSchema,
+		clientMediaSignalMuteSchema,
+		clientMediaSignalHoldSchema,
 	],
 };
 

@@ -193,6 +193,7 @@ export class MediaSignalingSession extends Emitter<MediaSignalingEvents> {
 	private getMainCall(skipLocal = false): ClientMediaCall | null {
 		let ringingCall: ClientMediaCall | null = null;
 		let pendingCall: ClientMediaCall | null = null;
+		const heldCalls: ClientMediaCall[] = [];
 
 		for (const call of this.knownCalls.values()) {
 			if (call.state === 'hangup' || call.ignored || !call.initialized) {
@@ -203,7 +204,11 @@ export class MediaSignalingSession extends Emitter<MediaSignalingEvents> {
 			}
 
 			if (call.busy) {
-				return call;
+				if (!call.held) {
+					return call;
+				}
+				heldCalls.push(call);
+				continue;
 			}
 			if (call.state === 'ringing' && !ringingCall) {
 				ringingCall = call;
@@ -214,7 +219,76 @@ export class MediaSignalingSession extends Emitter<MediaSignalingEvents> {
 				continue;
 			}
 		}
-		return ringingCall || pendingCall;
+		if (ringingCall || pendingCall) {
+			return ringingCall || pendingCall;
+		}
+
+		// With nothing but held calls, keep the one that was already the main call
+		const { mainCall: lastMainCall } = this.lastState;
+		return (lastMainCall && heldCalls.includes(lastMainCall) ? lastMainCall : heldCalls[0]) ?? null;
+	}
+
+	private getAlternateCall(mainCall: ClientMediaCall): ClientMediaCall | null {
+		if (!mainCall.busy || mainCall.hidden) {
+			return null;
+		}
+
+		for (const call of this.knownCalls.values()) {
+			if (call !== mainCall && call.busy && !call.hidden && !call.ignored && call.initialized) {
+				return call;
+			}
+		}
+
+		return null;
+	}
+
+	/** Whether there is another call in progress that could be swapped with the main one */
+	public hasAlternateCall(): boolean {
+		const mainCall = this.getMainCall(false);
+		return Boolean(mainCall && this.getAlternateCall(mainCall));
+	}
+
+	/** Puts the main call on hold and takes the other call in progress off hold */
+	public swapCalls(): void {
+		const mainCall = this.getMainCall(false);
+		const alternateCall = mainCall && this.getAlternateCall(mainCall);
+		if (!mainCall || !alternateCall) {
+			throw new Error('No call to switch to.');
+		}
+
+		if (!mainCall.held) {
+			mainCall.setHeld(true);
+		}
+		alternateCall.setHeld(false);
+	}
+
+	private getAttendedTransferCall(): ClientMediaCall | null {
+		for (const call of this.knownCalls.values()) {
+			if (!call.busy || call.hidden || call.ignored || !call.transferringCallId) {
+				continue;
+			}
+
+			if (this.knownCalls.get(call.transferringCallId)?.busy) {
+				return call;
+			}
+		}
+
+		return null;
+	}
+
+	/** Whether there is an attended transfer waiting to be completed */
+	public canCompleteTransfer(): boolean {
+		return Boolean(this.getAttendedTransferCall());
+	}
+
+	/** Drops out of the calls so the actor on the held call and the actor that was consulted talk to each other */
+	public completeTransfer(): void {
+		const call = this.getAttendedTransferCall();
+		if (!call) {
+			throw new Error('No transfer to complete.');
+		}
+
+		call.completeAttendedTransfer();
 	}
 
 	public async processSignal(signal: ServerMediaSignal): Promise<void> {
@@ -242,6 +316,9 @@ export class MediaSignalingSession extends Emitter<MediaSignalingEvents> {
 		}
 
 		const call = this.getOrCreateCallBySignal(signal);
+		if (!call) {
+			return;
+		}
 
 		if (signal.type === 'notification' && signal.signedContractId) {
 			if (signal.signedContractId === this._sessionId) {
@@ -292,6 +369,24 @@ export class MediaSignalingSession extends Emitter<MediaSignalingEvents> {
 		const call = this.createCall(callId);
 
 		await call.requestCall({ type: calleeType, id: calleeId }, this.config.features, contactInfo);
+	}
+
+	/** Puts the main call on hold and starts a call to `calleeId`, to consult them before transferring the held call to them */
+	public async startAttendedTransfer(
+		calleeType: CallActorType,
+		calleeId: string,
+		params: { contactInfo?: CallContact } = {},
+	): Promise<void> {
+		this.config.logger?.debug('MediaSignalingSession.startAttendedTransfer', calleeId);
+		const heldCall = this.getMainCall(false);
+		if (!heldCall?.busy || heldCall.hidden) {
+			throw new Error('No call to transfer.');
+		}
+
+		heldCall.setHeld(true);
+
+		const call = this.createCall(this.createTemporaryCallId());
+		await call.requestAttendedTransfer(heldCall.callId, { type: calleeType, id: calleeId }, params.contactInfo);
 	}
 
 	public setIceGatheringTimeout(newTimeout: number): void {
@@ -377,11 +472,16 @@ export class MediaSignalingSession extends Emitter<MediaSignalingEvents> {
 		return null;
 	}
 
-	private getOrCreateCallBySignal(signal: ServerMediaCallSignal): ClientMediaCall {
+	private getOrCreateCallBySignal(signal: ServerMediaCallSignal): ClientMediaCall | null {
 		this.config.logger?.debug('MediaSignalingSession.getOrCreateCallBySignal', signal);
 		const existingCall = this.getExistingCallBySignal(signal);
 		if (existingCall) {
 			return existingCall;
+		}
+
+		// Notifications that do not cause state change can be ignored if the call is still unknown
+		if (signal.type === 'notification' && ['escalated', 'trying'].includes(signal.notification)) {
+			return null;
 		}
 
 		return this.createCall(signal.callId);
@@ -680,9 +780,11 @@ export class MediaSignalingSession extends Emitter<MediaSignalingEvents> {
 		call.emitter.on('accepting', () => this.onAcceptingCall(call));
 		call.emitter.on('hidden', () => this.onHiddenCall(call));
 		call.emitter.on('active', () => this.onActiveCall(call));
+		call.emitter.on('ringing', () => this.onRingingCall());
 		call.emitter.on('ended', () => this.onEndedCall(call));
 		call.emitter.on('screenShareRequestChange', (requested: boolean) => this.onScreenShareRequestChange(call, requested));
 		call.emitter.on('streamChange', () => this.onSessionStateChange());
+		call.emitter.on('escalated', () => this.onSessionStateChange());
 
 		return call;
 	}
@@ -741,6 +843,11 @@ export class MediaSignalingSession extends Emitter<MediaSignalingEvents> {
 	private onActiveCall(_call: ClientMediaCall): void {
 		this.config.logger?.debug('MediaSignalingSession.onActiveCall');
 		this.onSessionStateChange();
+	}
+
+	private onRingingCall(): void {
+		this.config.logger?.debug('MediaSignalingSession.onRingingCall');
+		this.emit('sessionStateChange');
 	}
 
 	private async onScreenShareRequestChange(call: ClientMediaCall, requested: boolean): Promise<void> {

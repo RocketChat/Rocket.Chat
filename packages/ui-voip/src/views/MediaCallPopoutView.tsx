@@ -4,11 +4,14 @@ import { ActionButton, ToggleButton } from '@rocket.chat/ui-media';
 import { memo } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { Timer, DevicePicker, useShouldWrapCards, ActionStrip } from '../components';
+import { Timer, DevicePicker, useShouldWrapCards, ActionStrip, VideoCallButton } from '../components';
+import EscalatedCallPrompt from './EscalatedCallPrompt';
 import MediaCallCardList from './MediaCallCardList';
 import { useFullscreenToggle } from './useFullscreenToggle';
 import { useMediaCallView } from '../context/MediaCallViewContext';
-import { isExternalPeer } from '../utils/isExternalPeer';
+import AppActions from '../experimental/AppActionButtons/components/AppActions';
+import { useVisibleAppActions } from '../experimental/AppActionButtons/hooks/useVisibleAppActions';
+import { isInternalPeer } from '../utils/isInternalPeer';
 
 export type MediaCallPopoutViewProps = {
 	user: {
@@ -28,12 +31,16 @@ const MediaCallPopoutView = ({ user, onClickClosePopout }: MediaCallPopoutViewPr
 		onMute,
 		onHold,
 		onForward,
+		onSwapCalls,
+		onCompleteTransfer,
 		onEndCall,
 		onToggleScreenSharing,
+		onRequestVideoCall,
 		streams: { localScreen },
 	} = useMediaCallView();
 
-	const { muted, held, peerInfo, connectionState, startedAt, supportedFeatures } = sessionState;
+	const { muted, held, peerInfo, connectionState, startedAt, escalated, supportedFeatures, hasAlternateCall, canCompleteTransfer } =
+		sessionState;
 
 	const { ref, borderBoxSize } = useResizeObserver<HTMLDivElement>();
 
@@ -42,7 +49,15 @@ const MediaCallPopoutView = ({ user, onClickClosePopout }: MediaCallPopoutViewPr
 	const connecting = connectionState === 'CONNECTING';
 	const reconnecting = connectionState === 'RECONNECTING';
 
-	if (!peerInfo || isExternalPeer(peerInfo)) {
+	const appActions = useVisibleAppActions();
+
+	const showAppActions = appActions.length > 0;
+
+	const escalationAvailable = supportedFeatures.includes('conference-escalation');
+
+	const showHeaderActions = escalationAvailable && !escalated;
+
+	if (!peerInfo || !isInternalPeer(peerInfo)) {
 		return null;
 	}
 
@@ -59,7 +74,9 @@ const MediaCallPopoutView = ({ user, onClickClosePopout }: MediaCallPopoutViewPr
 			flexDirection='column'
 			ref={ref}
 		>
-			<MediaCallCardList user={user} shouldWrapCards={shouldWrapCards} />
+			{showAppActions && <ActionStrip leftSlot={<AppActions actions={appActions} />} />}
+			{showHeaderActions ? <ActionStrip rightSlot={<VideoCallButton onClick={onRequestVideoCall} />} /> : null}
+			{escalationAvailable && escalated ? <EscalatedCallPrompt /> : <MediaCallCardList user={user} shouldWrapCards={shouldWrapCards} />}
 			<ActionStrip
 				leftSlot={
 					<Box color='default' alignContent='center' paddingInlineStart={16}>
@@ -101,6 +118,12 @@ const MediaCallPopoutView = ({ user, onClickClosePopout }: MediaCallPopoutViewPr
 						pressed={localScreen?.active ?? false}
 						onToggle={onToggleScreenSharing}
 					/>
+				)}
+				{hasAlternateCall && (
+					<ActionButton disabled={connecting || reconnecting} label={t('Switch_call')} icon='arrow-loop' onClick={onSwapCalls} />
+				)}
+				{canCompleteTransfer && (
+					<ActionButton disabled={connecting || reconnecting} label={t('Complete_transfer')} icon='check' onClick={onCompleteTransfer} />
 				)}
 				{supportedFeatures.includes('transfer') && (
 					<ActionButton disabled={connecting || reconnecting} label={t('Forward')} icon='arrow-forward' onClick={onForward} />

@@ -1,13 +1,24 @@
 import { Box, ButtonGroup } from '@rocket.chat/fuselage';
 import { ActionButton, ToggleButton } from '@rocket.chat/ui-media';
-import { memo } from 'react';
+import { memo, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { Timer, DevicePicker, useShouldWrapCards, CARD_LIST_SECTION_MAX_HEIGHT, ActionStrip, ActionToggleChat } from '../../components';
+import {
+	Timer,
+	DevicePicker,
+	useShouldWrapCards,
+	CARD_LIST_SECTION_MAX_HEIGHT,
+	ActionStrip,
+	ActionToggleChat,
+	VideoCallButton,
+} from '../../components';
 import { useMediaCallInstance } from '../../context/MediaCallInstanceContext';
 import { useMediaCallView } from '../../context/MediaCallViewContext';
 import useRegisterView from '../../context/useRegisterView';
-import { isExternalPeer } from '../../utils/isExternalPeer';
+import AppActions from '../../experimental/AppActionButtons/components/AppActions';
+import { useVisibleAppActions } from '../../experimental/AppActionButtons/hooks/useVisibleAppActions';
+import { isInternalPeer } from '../../utils/isInternalPeer';
+import EscalatedCallPrompt from '../EscalatedCallPrompt';
 import MediaCallCardList from '../MediaCallCardList';
 import PopoutDockPrompt from '../PopoutDockPrompt';
 
@@ -43,30 +54,53 @@ const MediaCallRoomSection = ({ showChat, onToggleChat, user, containerHeight }:
 		onMute,
 		onHold,
 		onForward,
+		onSwapCalls,
+		onCompleteTransfer,
 		onEndCall,
 		onToggleScreenSharing,
 		onOpenPopout,
 		onClosePopout,
+		onRequestVideoCall,
 		streams: { localScreen },
 	} = useMediaCallView();
 	const { currentViews } = useMediaCallInstance();
 
 	const isPopout = currentViews.has('popout');
 
-	const { muted, held, peerInfo, connectionState, startedAt, supportedFeatures } = sessionState;
+	const { muted, held, peerInfo, connectionState, startedAt, escalated, supportedFeatures, hasAlternateCall, canCompleteTransfer } =
+		sessionState;
 
 	const shouldWrapCards = useShouldWrapCards(showChat, containerHeight);
 
 	const connecting = connectionState === 'CONNECTING';
 	const reconnecting = connectionState === 'RECONNECTING';
 
+	const escalationAvailable = supportedFeatures.includes('conference-escalation');
+
 	useRegisterView('room');
 
 	const screenShareAvailable = supportedFeatures.includes('screen-share');
 	const holdAvailable = supportedFeatures.includes('hold');
 	const transferAvailable = supportedFeatures.includes('transfer');
+	const appActions = useVisibleAppActions();
 
-	if (!peerInfo || isExternalPeer(peerInfo)) {
+	const showAppActions = appActions.length > 0;
+
+	const content = useMemo(() => {
+		if (isPopout) {
+			return <PopoutDockPrompt onClosePopout={onClosePopout} />;
+		}
+
+		if (escalationAvailable && escalated) {
+			return <EscalatedCallPrompt />;
+		}
+
+		return <MediaCallCardList user={user} shouldWrapCards={shouldWrapCards} />;
+	}, [isPopout, escalationAvailable, escalated, user, shouldWrapCards, onClosePopout]);
+
+	const showHeaderActions = escalationAvailable && !escalated;
+
+	if (!peerInfo || !isInternalPeer(peerInfo)) {
 		return null;
 	}
 
@@ -82,7 +116,11 @@ const MediaCallRoomSection = ({ showChat, onToggleChat, user, containerHeight }:
 			aria-label={t('Voice_call')}
 			{...getSplitStyles(showChat)}
 		>
-			{isPopout ? <PopoutDockPrompt onClosePopout={onClosePopout} /> : <MediaCallCardList user={user} shouldWrapCards={shouldWrapCards} />}
+			{showAppActions && <ActionStrip leftSlot={<AppActions actions={appActions} />} />}
+			{showHeaderActions ? <ActionStrip rightSlot={<VideoCallButton onClick={onRequestVideoCall} />} /> : null}
+
+			{content}
+
 			<ActionStrip
 				leftSlot={
 					<Box color='default' alignContent='center' paddingInlineStart={16}>
@@ -122,6 +160,12 @@ const MediaCallRoomSection = ({ showChat, onToggleChat, user, containerHeight }:
 						pressed={localScreen?.active ?? false}
 						onToggle={onToggleScreenSharing}
 					/>
+				)}
+				{hasAlternateCall && (
+					<ActionButton disabled={connecting || reconnecting} label={t('Switch_call')} icon='arrow-loop' onClick={onSwapCalls} />
+				)}
+				{canCompleteTransfer && (
+					<ActionButton disabled={connecting || reconnecting} label={t('Complete_transfer')} icon='check' onClick={onCompleteTransfer} />
 				)}
 				{transferAvailable && (
 					<ActionButton disabled={connecting || reconnecting} label={t('Forward')} icon='arrow-forward' onClick={onForward} />
