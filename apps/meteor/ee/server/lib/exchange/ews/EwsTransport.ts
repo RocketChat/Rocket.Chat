@@ -283,6 +283,13 @@ export class EwsTransport implements IEwsTransport {
 
 	private readBody(response: { status: number; body: string }): string {
 		// SOAP faults arrive with HTTP 500, so 5xx bodies must reach the parser.
+		if (response.status === 401) {
+			throw new ExchangeError('authentication-failed', 'Exchange rejected the credentials', {
+				detail:
+					'The service account was not accepted, or the configured authentication method is not enabled on the EWS virtual directory.',
+			});
+		}
+
 		if (response.status === 403) {
 			throw new ExchangeError('authorization-failed', 'Exchange refused the request', { detail: response.body.slice(0, 300) });
 		}
