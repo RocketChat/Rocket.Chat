@@ -1,9 +1,11 @@
-import { Button, ButtonGroup } from '@rocket.chat/fuselage';
+import { Button, ButtonGroup, Divider } from '@rocket.chat/fuselage';
 import type { TFunction } from 'i18next';
 import { useTranslation } from 'react-i18next';
 
 import { PeerInfo, Widget, WidgetFooter, WidgetHandle, WidgetHeader, WidgetContent, DevicePicker, WidgetInfo } from '../../components';
 import { useMediaCallView } from '../../context/MediaCallViewContext';
+import AppActions from '../../experimental/AppActionButtons/components/AppActions';
+import { useVisibleAppActions } from '../../experimental/AppActionButtons/hooks/useVisibleAppActions';
 
 const getHeaderTitle = ({ connecting, transferred, t }: { connecting: boolean; transferred: boolean; t: TFunction }) => {
 	if (connecting) {
@@ -23,6 +25,8 @@ const OutgoingCall = () => {
 	const { sessionState, onEndCall } = useMediaCallView();
 	const { peerInfo, connectionState, transferredBy } = sessionState;
 
+	const appActions = useVisibleAppActions();
+
 	// TODO: Figure out how to ensure this always exist before rendering the component
 	if (!peerInfo) {
 		throw new Error('Peer info is required');
@@ -41,6 +45,8 @@ const OutgoingCall = () => {
 				<PeerInfo {...peerInfo} />
 			</WidgetContent>
 			<WidgetFooter>
+				<AppActions actions={appActions} vertical />
+				{appActions.length > 0 && <Divider />}
 				<ButtonGroup stretch>
 					<Button medium name='phone' icon='phone-off' danger flexGrow={1} onClick={onEndCall}>
 						{t('Cancel')}
