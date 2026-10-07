@@ -1,6 +1,6 @@
 import type { IMatrixRTCMembership, IUser, IVideoConference, RocketChatRecordDeleted } from '@rocket.chat/core-typings';
 import type { IMatrixRTCMembershipsModel } from '@rocket.chat/model-typings';
-import type { Collection, Db, FindCursor, IndexDescription } from 'mongodb';
+import type { Collection, Db, FindCursor, IndexDescription, UpdateResult } from 'mongodb';
 
 import { BaseRaw } from './BaseRaw';
 
@@ -31,5 +31,20 @@ export class MatrixRTCMembershipsRaw extends BaseRaw<IMatrixRTCMembership> imple
 
 	findExpired(now = new Date()): FindCursor<IMatrixRTCMembership> {
 		return this.find({ expiresAt: { $lte: now } });
+	}
+
+	findLocalByCallIdAndUid(callId: IVideoConference['_id'], uid: IUser['_id']): FindCursor<IMatrixRTCMembership> {
+		return this.find({ callId, uid, local: true });
+	}
+
+	findLocalByCallId(callId: IVideoConference['_id']): FindCursor<IMatrixRTCMembership> {
+		return this.find({ callId, local: true });
+	}
+
+	updateAnnouncementById(
+		_id: IMatrixRTCMembership['_id'],
+		{ eventId, expiresAt }: Pick<IMatrixRTCMembership, 'eventId' | 'expiresAt'>,
+	): Promise<UpdateResult> {
+		return this.updateOne({ _id }, { $set: { eventId, expiresAt } });
 	}
 }

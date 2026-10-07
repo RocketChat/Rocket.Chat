@@ -1,7 +1,7 @@
 import type { IRocketChatRecord } from './IRocketChatRecord';
 import type { IRoom } from './IRoom';
 import type { IUser } from './IUser';
-import type { IVideoConference } from './IVideoConference';
+import type { IVideoConference, VideoConferenceMemberFederation } from './IVideoConference';
 
 /**
  * How a MatrixRTC membership is expressed in the room: Matrix 2.0 sticky events, or the state events Element Call
@@ -61,3 +61,21 @@ export interface IMatrixRTCMembership extends IRocketChatRecord {
 
 /** The key that tells one SFU of a federated call from another: its address, or its token service's address. */
 export const getMatrixRTCTransportKey = (transport: MatrixRTCLiveKitTransport): string => transport.url || transport.serviceUrl || '';
+
+/** Where a member publishes, as a conference's roster tells clients: from the member's latest membership. */
+export const getVideoConferenceMemberFederation = ({
+	serverName,
+	transport,
+	livekitIdentity,
+	livekitIdentityAliases,
+	local,
+}: Pick<
+	IMatrixRTCMembership,
+	'serverName' | 'transport' | 'livekitIdentity' | 'livekitIdentityAliases' | 'local'
+>): VideoConferenceMemberFederation => ({
+	serverName,
+	transport: getMatrixRTCTransportKey(transport),
+	livekitIdentity,
+	...(livekitIdentityAliases && { livekitIdentityAliases }),
+	local,
+});

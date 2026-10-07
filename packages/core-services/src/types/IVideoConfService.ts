@@ -10,6 +10,7 @@ import type {
 	VideoConferenceChatAccessMode,
 	VideoConferenceCreateData,
 	VideoConferenceInstructions,
+	VideoConferenceMemberFederation,
 } from '@rocket.chat/core-typings';
 import type { InsertionModel } from '@rocket.chat/model-typings';
 import type { PaginatedResult } from '@rocket.chat/rest-typings';
@@ -62,5 +63,7 @@ export interface IVideoConfService {
 	shareChatWithMembers(uid: IUser['_id'], callId: VideoConference['_id'], mode: VideoConferenceChatAccessMode): Promise<IRoom['_id']>;
 
 	renameCall(uid: IUser['_id'], callId: VideoConference['_id'], title: string): Promise<void>;
+	/** Records where a member of a federated conference publishes, and tells the conference's clients when it changed. */
+	setMemberFederation(callId: VideoConference['_id'], uid: IUser['_id'], federation: VideoConferenceMemberFederation): Promise<void>;
 	createVoIP(data: InsertionModel<IVoIPVideoConference>): Promise<IVoIPVideoConference['_id'] | undefined>;
 }

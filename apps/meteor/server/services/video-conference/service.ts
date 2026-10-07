@@ -2,7 +2,7 @@ import { Apps } from '@rocket.chat/apps';
 import type { AppVideoConfProviderManager } from '@rocket.chat/apps/dist/server/managers/AppVideoConfProviderManager';
 import type { VideoConfData, VideoConfDataExtended } from '@rocket.chat/apps-engine/definition/videoConfProviders';
 import type { IVideoConfService, VideoConferenceJoinOptions } from '@rocket.chat/core-services';
-import { api, ServiceClassInternal, Message, Presence, Room } from '@rocket.chat/core-services';
+import { api, ServiceClassInternal, FederationMatrix, Message, Presence, Room } from '@rocket.chat/core-services';
 import type {
 	IDirectVideoConference,
 	ILivechatVideoConference,
@@ -26,6 +26,7 @@ import type {
 	Optional,
 	ExternalVideoConference,
 	IVoIPVideoConference,
+	VideoConferenceMemberFederation,
 } from '@rocket.chat/core-typings';
 import {
 	UserStatus,
@@ -38,7 +39,7 @@ import {
 } from '@rocket.chat/core-typings';
 import { Logger } from '@rocket.chat/logger';
 import type { InsertionModel } from '@rocket.chat/model-typings';
-import { Users, VideoConference as VideoConferenceModel, Rooms, Messages, Subscriptions } from '@rocket.chat/models';
+import { Users, VideoConference as VideoConferenceModel, MatrixRTCMemberships, Rooms, Messages, Subscriptions } from '@rocket.chat/models';
 import { Random } from '@rocket.chat/random';
 import type { PaginatedResult } from '@rocket.chat/rest-typings';
 import { wrapExceptions } from '@rocket.chat/tools';
@@ -550,6 +551,7 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 		}
 
 		await VideoConferenceModel.setDataById(call._id, { endedAt: new Date(), status: VideoConferenceStatus.ENDED });
+		await this.leaveFederatedSessionForEveryone(call);
 		await this.runVideoConferenceChangedEvent(call._id);
 		this.notifyVideoConfUpdate(call.rid, call._id);
 
@@ -582,6 +584,7 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 		}
 
 		await VideoConferenceModel.setDataById(call._id, { endedAt: new Date(), status: VideoConferenceStatus.EXPIRED });
+		await this.leaveFederatedSessionForEveryone(call);
 	}
 
 	private async endDirectCall(call: IDirectVideoConference): Promise<void> {
@@ -1297,6 +1300,11 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 			await this.claimBusyForCall(_id);
 		}
 
+		// Before any ring: a ring to another server relates to the caller's membership.
+		if (call.federation) {
+			await this.joinFederatedSession(call, _id);
+		}
+
 		// When persistent chat is in "thread" mode, auto-follow the call's chat
 		// thread so the participant receives thread notifications for messages
 		// sent during the call. `follow` uses $addToSet and is idempotent.
@@ -1565,7 +1573,7 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 	 */
 	public async leaveCall(uid: IUser['_id'], callId: VideoConference['_id']): Promise<void> {
 		const call = await VideoConferenceModel.findOneById(callId, {
-			projection: { rid: 1, users: 1, endedAt: 1, providerName: 1, createdBy: 1 },
+			projection: { rid: 1, users: 1, endedAt: 1, providerName: 1, createdBy: 1, federation: 1 },
 		});
 		if (!call || call.endedAt) {
 			return;
@@ -1582,6 +1590,10 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 		await VideoConferenceModel.setUserLeftById(callId, uid, leftAt);
 		this.notifyVideoConfUpdate(call.rid, callId);
 		this.notifyConferenceUpdate(callId);
+
+		if (call.federation) {
+			await this.leaveFederatedSession(call, uid);
+		}
 
 		// The leaver's own devices only: a room-wide 'end' would dismiss everyone else's popup mid-call.
 		if (this.runsInOurCallWindow(call.providerName)) {
@@ -1647,10 +1659,16 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 		// Revival is decided in the same atomic step as the write. A separate read would race a reported leave,
 		// and could call a heartbeat against an ended call a revival — re-claiming busy with no release left.
 		const renewal = await VideoConferenceModel.renewUserPresenceById(callId, uid, new Date(), INFERRED_LEAVE_REASONS);
+		if (!renewal) {
+			return;
+		}
 
-		// Nothing matched (the call ended, the member is unknown, or they reported leaving) or nothing was
-		// revived: nothing to undo, so no side effects at all.
-		if (!renewal?.revived) {
+		// The lease is what keeps a federated membership announced, and what announces it again after the sweep
+		// withdrew it.
+		await this.renewFederatedSession(callId, uid);
+
+		// Nothing was revived: nothing to undo, so no side effects at all.
+		if (!renewal.revived) {
 			return;
 		}
 
@@ -1692,6 +1710,15 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 					await this.releaseBusyForCall(uid);
 				}
 
+				// This server stands in for its members' Matrix clients, so it is the one to tell the other servers.
+				const announced = expired.filter(({ uid }) => call.users.some(({ _id, federation }) => _id === uid && federation?.local));
+				if (announced.length) {
+					const federatedCall = await this.getUnfiltered(call._id);
+					if (federatedCall?.federation) {
+						await Promise.all(announced.map(({ uid }) => this.leaveFederatedSession(federatedCall, uid)));
+					}
+				}
+
 				this.notifyVideoConfUpdate(call.rid, call._id);
 				this.notifyConferenceUpdate(call._id);
 
@@ -1705,6 +1732,63 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 				// One malformed call must not stop the sweep for every other call.
 				logger.error({ msg: 'Failed to expire presence leases for a conference', callId: call._id, err });
 			}
+		}
+	}
+
+	public async setMemberFederation(
+		callId: VideoConference['_id'],
+		uid: IUser['_id'],
+		federation: VideoConferenceMemberFederation,
+	): Promise<void> {
+		// An identical entry is not a change, so it reaches nobody.
+		const { modifiedCount } = await VideoConferenceModel.updateOne(
+			{ '_id': callId, 'users._id': uid },
+			{ $set: { 'users.$.federation': federation } },
+		);
+		if (modifiedCount) {
+			this.notifyConferenceUpdate(callId);
+		}
+	}
+
+	/** Never fails the join it is part of: the member's call config, which needs the membership, reports the failure. */
+	private async joinFederatedSession(call: Optional<VideoConference, 'providerData'>, uid: IUser['_id']): Promise<void> {
+		try {
+			const user = await Users.findOneById(uid);
+			if (user) {
+				await FederationMatrix.joinRTCSession(call, user);
+			}
+		} catch (err) {
+			logger.error({ msg: 'Failed to announce a member of a federated conference', callId: call._id, uid, err });
+		}
+	}
+
+	/** Takes any read of the conference: the memberships to withdraw are found by its id alone. */
+	private async leaveFederatedSession(call: Pick<VideoConference, '_id'>, uid: IUser['_id']): Promise<void> {
+		try {
+			await FederationMatrix.leaveRTCSession(call as VideoConference, uid);
+		} catch (err) {
+			logger.error({ msg: 'Failed to announce that a member left a federated conference', callId: call._id, uid, err });
+		}
+	}
+
+	/** Whoever this server announced in a conference that ended: nobody is left to report their departure. */
+	private async leaveFederatedSessionForEveryone(call: VideoConference): Promise<void> {
+		if (!call.federation) {
+			return;
+		}
+
+		const members = await MatrixRTCMemberships.findLocalByCallId(call._id).toArray();
+		await Promise.all([...new Set(members.map(({ uid }) => uid))].map((uid) => this.leaveFederatedSession(call, uid)));
+	}
+
+	private async renewFederatedSession(callId: VideoConference['_id'], uid: IUser['_id']): Promise<void> {
+		if (!settings.get<boolean>('Federation_Service_MatrixRTC_Enabled')) {
+			return;
+		}
+
+		const call = await VideoConferenceModel.findOneById(callId);
+		if (call?.federation) {
+			await this.joinFederatedSession(call, uid);
 		}
 	}
 
