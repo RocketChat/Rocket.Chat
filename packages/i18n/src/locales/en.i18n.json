@@ -2775,7 +2775,6 @@
   "Exchange_Mode_Description": "Legacy asks each user to sign in to Exchange from the desktop app. Server-to-server uses one administrator-configured connection and covers every platform.",
   "Exchange_Mode_Legacy": "Legacy (per user, desktop app only)",
   "Exchange_Mode_Server": "Server-to-server",
-  "Exchange_Server_Sync_Description": "Sync calendars from Exchange using a single administrator-configured connection, so no user has to sign in.",
   "Exchange_Server_Sync_Disabled": "Server-to-server sync is turned off.",
   "Exchange_Sync_Provider": "Exchange type",
   "Exchange_Sync_Provider_Description": "Exchange Online uses Microsoft Graph. Exchange on-premises uses EWS. Each deployment supports only one of them, so this is set by an administrator and never detected automatically.",
