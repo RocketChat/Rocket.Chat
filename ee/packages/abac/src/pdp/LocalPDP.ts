@@ -1,10 +1,27 @@
 import { LDAPEnterprise } from '@rocket.chat/core-services';
+import type { AbacRoomMembershipPreviewPage } from '@rocket.chat/core-services';
 import type { IAbacAttributeDefinition, IRoom, AtLeast, IUser } from '@rocket.chat/core-typings';
 import { Rooms, Users } from '@rocket.chat/models';
 
 import { OnlyCompliantCanBeAddedToRoomError } from '../errors';
-import { buildCompliantConditions, buildNonCompliantConditions, buildRoomNonCompliantConditionsFromSubject } from '../helper';
-import type { EvaluableSubject, IPolicyDecisionPoint, ReevaluationUser, RoomEvaluation, SubjectEvaluation } from './types';
+import {
+	buildCompliantConditions,
+	buildNonCompliantConditions,
+	buildRoomNonCompliantConditionsFromSubject,
+	previewRetainingEveryone,
+	previewWindowInSteps,
+	readRoomMembersWindow,
+	verdictsOf,
+} from '../helper';
+import type {
+	AttributeSetChange,
+	EvaluableSubject,
+	IPolicyDecisionPoint,
+	ReevaluationUser,
+	RoomEvaluation,
+	RoomMembersPreview,
+	SubjectEvaluation,
+} from './types';
 
 export class LocalPDP implements IPolicyDecisionPoint {
 	async isAvailable(): Promise<boolean> {
@@ -49,6 +66,26 @@ export class LocalPDP implements IPolicyDecisionPoint {
 		};
 
 		return Users.find(query, { projection: { __rooms: 0 } }).toArray();
+	}
+
+	needsEvaluation({ added }: AttributeSetChange): boolean {
+		return added;
+	}
+
+	async previewRoomMembers(
+		room: AtLeast<IRoom, '_id' | 'abacAttributes'>,
+		attributes: IAbacAttributeDefinition[],
+		page: AbacRoomMembershipPreviewPage,
+	): Promise<RoomMembersPreview> {
+		const members = { active: true, __rooms: room._id };
+		if (!attributes.length) {
+			return previewRetainingEveryone(members, page);
+		}
+
+		const window = await readRoomMembersWindow(members, page);
+		return previewWindowInSteps(window, page, window.subjects.length, async (subjects) =>
+			verdictsOf(await this.evaluateSubjectsAgainstAttributes(subjects, attributes, room)),
+		);
 	}
 
 	async onSubjectAttributesChanged(user: IUser, _next: IAbacAttributeDefinition[]): Promise<Pick<IRoom, '_id' | 'name'>[]> {

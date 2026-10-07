@@ -1,7 +1,19 @@
-import type { AbacCreationAttributesResult } from '@rocket.chat/core-services';
-import type { AbacMembershipVerdict, ILDAPEntry, IAbacAttributeDefinition, IRoom } from '@rocket.chat/core-typings';
-import { AbacAttributes, Rooms } from '@rocket.chat/models';
+import type { AbacCreationAttributesResult, AbacRoomMembershipPreviewPage } from '@rocket.chat/core-services';
+import type {
+	AbacMembershipGroup,
+	AbacMembershipVerdict,
+	AbacPreviewCursor,
+	AbacRoomPreviewMember,
+	ILDAPEntry,
+	IAbacAttributeDefinition,
+	IRoom,
+	ISubscription,
+	IUser,
+} from '@rocket.chat/core-typings';
+import { AbacAttributes, Rooms, Subscriptions, Users } from '@rocket.chat/models';
+import { escapeRegExp } from '@rocket.chat/tools';
 import mem from 'mem';
+import type { Filter } from 'mongodb';
 
 import {
 	AbacAttributeDefinitionNotFoundError,
@@ -13,7 +25,7 @@ import {
 	AbacRoomNotFoundError,
 	PdpUnavailableError,
 } from './errors';
-import type { IResourceDecision, SubjectEvaluation } from './pdp/types';
+import type { IResourceDecision, RoomMembersPreview, SubjectEvaluation } from './pdp/types';
 
 export const MAX_ABAC_ATTRIBUTE_KEYS = 10;
 export const MAX_ABAC_ATTRIBUTE_VALUES = 10;
@@ -62,6 +74,114 @@ export function verdictOf({ compliant, nonCompliant }: SubjectEvaluation, id: st
 	return 'inconclusive';
 }
 
+const MEMBERSHIP_VERDICTS: AbacMembershipVerdict[] = ['compliant', 'nonCompliant', 'inconclusive'];
+
+export function verdictsOf(evaluation: SubjectEvaluation): (id: string) => AbacMembershipVerdict {
+	const verdicts = new Map(MEMBERSHIP_VERDICTS.flatMap((verdict) => evaluation[verdict].map((id) => [id, verdict] as const)));
+	return (id) => verdicts.get(id) ?? 'inconclusive';
+}
+
+const membersAfter = ({ _id, username }: AbacPreviewCursor): Filter<IUser> =>
+	typeof username === 'string'
+		? { $or: [{ username: { $gt: username } }, { username, _id: { $gt: _id } }] }
+		: { $or: [{ username: { $type: 'string' } }, { username: { $not: { $type: 'string' } }, _id: { $gt: _id } }] };
+
+const toPreviewCursor = ({ _id, username }: AbacPreviewCursor): AbacPreviewCursor => ({
+	_id,
+	...(typeof username === 'string' && { username }),
+});
+
+export type PreviewSubject = Pick<IUser, '_id' | 'username' | 'name' | 'emails'>;
+
+export const PREVIEW_READ_OPTIONS = { projection: { _id: 1, username: 1, name: 1, emails: 1 }, sort: { username: 1, _id: 1 } } as const;
+
+export const isInGroup = (group: AbacMembershipGroup, verdict: AbacMembershipVerdict): boolean =>
+	(group === 'loses') === (verdict !== 'compliant');
+
+export const toPreviewMembers = (subjects: PreviewSubject[], verdictFor: (id: string) => AbacMembershipVerdict): AbacRoomPreviewMember[] =>
+	subjects.map(({ _id, username, name }) => ({ _id, username, name, verdict: verdictFor(_id) }));
+
+export async function withRoomRoles(rid: IRoom['_id'], members: AbacRoomPreviewMember[]): Promise<AbacRoomPreviewMember[]> {
+	if (!members.length) {
+		return members;
+	}
+
+	const subscriptions = await Subscriptions.findByRoomIdAndUserIds<Pick<ISubscription, 'u' | 'roles'>>(
+		rid,
+		members.map(({ _id }) => _id),
+		{ projection: { 'u._id': 1, 'roles': 1 } },
+	).toArray();
+	const rolesOf = new Map(subscriptions.flatMap(({ u, roles }) => (roles?.length ? [[u._id, roles] as const] : [])));
+
+	return members.map((member) => {
+		const roles = rolesOf.get(member._id);
+		return roles ? { ...member, roles } : member;
+	});
+}
+
+export const PREVIEW_SCAN_LIMIT = 1000;
+
+export type RoomMembersWindow = { subjects: PreviewSubject[]; more: boolean; total?: number };
+
+const searchOf = (filter?: string): Filter<IUser>[] => {
+	if (!filter) {
+		return [];
+	}
+	const search = new RegExp(escapeRegExp(filter), 'i');
+	return [{ $or: [{ username: search }, { name: search }] }];
+};
+
+export async function readRoomMembersWindow(
+	members: Filter<IUser>,
+	{ filter, after, count, group }: AbacRoomMembershipPreviewPage,
+): Promise<RoomMembersWindow> {
+	const size = group ? PREVIEW_SCAN_LIMIT : count;
+	const population = [members, ...searchOf(filter)];
+	const range = after ? [membersAfter(after)] : [];
+
+	const read = await Users.find<PreviewSubject>(
+		{ $and: [...population, ...range] },
+		{ ...PREVIEW_READ_OPTIONS, limit: size + 1 },
+	).toArray();
+	const total = after ? undefined : await Users.countDocuments({ $and: population });
+
+	return { subjects: read.slice(0, size), more: read.length > size, ...(total !== undefined && { total }) };
+}
+
+export async function previewWindowInSteps(
+	window: RoomMembersWindow,
+	{ count, group }: AbacRoomMembershipPreviewPage,
+	step: number,
+	verdictsFor: (subjects: PreviewSubject[]) => Promise<(id: string) => AbacMembershipVerdict>,
+): Promise<RoomMembersPreview> {
+	const { subjects, more, total } = window;
+	const members: AbacRoomPreviewMember[] = [];
+	let checked = 0;
+
+	while (checked < subjects.length && members.length < count) {
+		const batch = subjects.slice(checked, checked + step);
+		const verdictFor = await verdictsFor(batch);
+		members.push(...toPreviewMembers(batch, verdictFor).filter(({ verdict }) => !group || isInGroup(group, verdict)));
+		checked += batch.length;
+	}
+
+	const last = subjects[checked - 1];
+	const next = last && (checked < subjects.length || more) ? toPreviewCursor(last) : undefined;
+
+	return { members, checked, ...(total !== undefined && { total }), ...(next && { next }) };
+}
+
+export async function previewRetainingEveryone(members: Filter<IUser>, page: AbacRoomMembershipPreviewPage): Promise<RoomMembersPreview> {
+	if (page.group === 'loses') {
+		const range = page.after ? [membersAfter(page.after)] : [];
+		const remaining = await Users.countDocuments({ $and: [members, ...searchOf(page.filter), ...range] });
+		return { members: [], checked: remaining, ...(!page.after && { total: remaining }) };
+	}
+
+	const window = await readRoomMembersWindow(members, { ...page, group: undefined });
+	return previewWindowInSteps(window, page, window.subjects.length, async () => () => 'compliant');
+}
+
 export function toAttributeMap(attributes: IAbacAttributeDefinition[]): Record<string, string[]> {
 	const map = new Map<string, string[]>();
 	for (const { key, values } of attributes) {
@@ -98,6 +218,21 @@ export function findOwnedValues(attributes: IAbacAttributeDefinition[], owned: M
 
 	return kept;
 }
+
+export function withAttributeValues(
+	owned: Map<string, Set<string>>,
+	attributes: IAbacAttributeDefinition[] = [],
+): Map<string, Set<string>> {
+	const merged = new Map(Array.from(owned, ([key, values]) => [key, new Set(values)]));
+	for (const { key, values } of attributes) {
+		merged.set(key, new Set([...(merged.get(key) ?? []), ...values]));
+	}
+
+	return merged;
+}
+
+export const toAttributeDefinitions = (entitlements: Map<string, Set<string>>): IAbacAttributeDefinition[] =>
+	Array.from(entitlements, ([key, values]) => ({ key, values: [...values] }));
 
 export const sortByKey = (attributes: IAbacAttributeDefinition[]): IAbacAttributeDefinition[] =>
 	[...attributes].sort((a, b) => a.key.localeCompare(b.key));
@@ -233,6 +368,9 @@ export function validateAndNormalizeAttributes(attributes: Record<string, string
 
 const getAttributeDefinitionsFromDb = async (keys: string[]) =>
 	AbacAttributes.find({ key: { $in: keys } }, { projection: { key: 1, values: 1 } }).toArray();
+
+export const listAttributeDefinitions = async (): Promise<IAbacAttributeDefinition[]> =>
+	(await AbacAttributes.find({}, { projection: { key: 1, values: 1 } }).toArray()).map(({ key, values }) => ({ key, values }));
 
 const getAttributeDefinitionsCached = mem(getAttributeDefinitionsFromDb, {
 	maxAge: 30_000,
