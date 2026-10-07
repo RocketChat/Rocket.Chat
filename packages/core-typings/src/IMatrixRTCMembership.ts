@@ -48,6 +48,11 @@ export interface IMatrixRTCMembership extends IRocketChatRecord {
 	serverName: string;
 	/** The LiveKit identity the member publishes as, which is how their media is told apart. */
 	livekitIdentity: string;
+	/**
+	 * Other identities a remote member may publish as. Matrix clients of different generations derive the identity
+	 * differently from the same membership, so a participant matching any of them is this member.
+	 */
+	livekitIdentityAliases?: string[];
 	callIntent?: 'audio' | 'video';
 	joinedAt: Date;
 	/** Past this, the membership no longer counts, whether or not a leave ever arrives. */

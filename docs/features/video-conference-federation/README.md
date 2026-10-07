@@ -28,14 +28,24 @@ Every member publishes on **their own homeserver's SFU** and watches the members
 
 ## Signalling: memberships in the Matrix room
 
-Two forms, chosen by `Federation_Service_MatrixRTC_Mode` for what this server sends; both are always read:
+Matrix clients are mid-migration, and each generation announces memberships, names SFUs and derives LiveKit
+identities differently. `Federation_Service_MatrixRTC_Mode` picks the profile this server **announces** in; every
+profile is always **read**:
 
-| Mode | Membership | SFU tokens for other servers' members |
-| --- | --- | --- |
-| `matrix_2_0` (default) | sticky event (MSC4354), fresh `member.id` per join | homeserver to homeserver: MSC4195 federation `get_token` |
-| `compatibility` | state event `org.matrix.msc3401.call.member` per device | OpenID token checked against the member's homeserver, at the lk-jwt-service-style endpoint the membership names |
+| Profile | Membership | Transport announced | Identity published as | How others get a token for our SFU |
+| --- | --- | --- | --- | --- |
+| `compatibility` (default) | state `org.matrix.msc3401.call.member`, one per device | `livekit_service_url` | `@user:server:DEVICE` | OpenID at our lk-jwt-service-compatible endpoint |
+| `matrix_2_0` | sticky `org.matrix.msc4143.rtc.member` (MSC4354), fresh `member.id` per join | `livekit_service_url` | `H([user, device, member.id])` | OpenID at our lk-jwt-service-compatible endpoint |
+| `matrix_2_0_msc4195` | as `matrix_2_0` | `url` (the SFU itself) | `H([user, member.id])` | their homeserver asks ours: MSC4195 federation `get_token` |
 
-Rings are `rtc.notification` events (MSC4075) and declines `rtc.decline` (MSC4310), both as timeline events.
+`compatibility` and `matrix_2_0` are what deployed Element Call does in its two modes, while `matrix_2_0_msc4195` is
+where MSC4195 and the next Element Call are going. Rocket.Chat ↔ Rocket.Chat works in all three.
+
+Reading a remote membership yields every identity its sender may publish as (`livekitIdentity` plus
+`livekitIdentityAliases`), since the same membership maps to different identities in different client generations.
+
+Rings are `org.matrix.msc4075.rtc.notification` and declines `org.matrix.msc4310.rtc.decline`, both sticky timeline
+events. A ring relates (`m.reference`) to the caller's membership event and mentions the callee.
 
 ## Data model
 
@@ -67,8 +77,10 @@ of a federated room.
 - **Join**: the first `join` or `callConfig` for a local user creates their membership. That means a device id
   generated for the join, a fresh member id and this server's SFU as the transport. The membership is announced in
   the mode's form. Repeated calls return the same membership. (`FederationMatrix.joinRTCSession`)
-- **Refresh**: while the lease is renewed, the announcement is re-sent before it expires (sticky events last at most
-  an hour; compatibility memberships carry `expires`).
+- **Refresh**: while the lease is renewed, the announcement is re-sent before it expires. Sticky memberships last
+  an hour, and compatibility memberships carry `expires`, whose content must change on every refresh.
+- **Late joiners**: a server that joins the room mid-call receives this server's unexpired sticky memberships from
+  the SDK (MSC4354), since nothing else would tell it for up to an hour.
 - **Leave**: leaving, or the lease running out, sends the leave form and removes the membership. This server plays
   the role Matrix clients give to delayed events: it knows when its user is gone.
 - **Ring**: a call in a federated DM rings the remote callee with an `rtc.notification` (`ring`) that mentions them
@@ -88,12 +100,13 @@ membership counts as a leave.
 | Who | For which SFU | How |
 | --- | --- | --- |
 | Local user | this server's | `video-conference.callConfig`: publish + subscribe, identity from their membership, `federation` block in the answer |
-| Local user | another server's | `video-conference.federatedToken` → this server asks that server (`FederationMatrix.getRemoteLiveKitToken`): MSC4195 federation `get_token` for a Matrix 2.0 membership, or an OpenID token from this server at the membership's token service for a compatibility one |
-| Remote user | this server's | MSC4195 federation `get_token` (signed by their homeserver), or OpenID at this server's lk-jwt-service-compatible endpoint, checked through `/_matrix/federation/v1/openid/userinfo` |
+| Local user | another server's | `video-conference.federatedToken` → this server fetches it (`FederationMatrix.getRemoteLiveKitToken`): with an OpenID token from this server at the membership's `livekit_service_url`, or through MSC4195 federation `get_token` when the membership announces only a `url` |
+| Remote user | this server's | OpenID at this server's lk-jwt-service-compatible endpoint, checked through `/_matrix/federation/v1/openid/userinfo`; or MSC4195 federation `get_token`, signed by their homeserver |
 
-Tokens for members of other servers are **subscribe-only and hidden**. They watch this SFU but never appear on it
-or publish on it. The member must be joined to the Matrix room. Token minting stays with the LiveKit provider
-(`apps/meteor/ee/server/lib/livekit`), reached from the federation package through `IMatrixRTCLiveKitIssuer`.
+Tokens for members of other servers are **subscribe-only**. They watch this SFU but never publish on it. They are
+not hidden, as MSC4195 requires, so clients tell watchers from members by identity. The member must be joined to
+the Matrix room. Token minting stays with the LiveKit provider (`apps/meteor/ee/server/lib/livekit`), reached from
+the federation package through `IMatrixRTCLiveKitIssuer`.
 
 ## Client
 
@@ -101,8 +114,9 @@ or publish on it. The member must be joined to the Matrix room. Token minting st
   member's `federation` entry.
 - The client opens one subscribe-only connection per `(serverName, transport)` of joined remote members, with a
   token from `video-conference.federatedToken`, and closes it when those members are gone.
-- A participant is shown only when their identity matches a roster member's `livekitIdentity` on that connection.
-  The name and avatar come from the roster, not from the identity.
+- A participant is shown only when their identity matches a roster member's `livekitIdentity` or one of their
+  `livekitIdentityAliases` on that connection. Anyone else there watches the SFU from another server. The name and
+  avatar come from the roster, not from the identity.
 - Hands, reactions and mute requests go over the data channel of the member's own SFU, which other servers'
   members watch.
 
@@ -111,7 +125,7 @@ or publish on it. The member must be joined to the Matrix room. Token minting st
 | Setting | Purpose |
 | --- | --- |
 | `Federation_Service_MatrixRTC_Enabled` | Allows calls in federated rooms. Public, so the call button can follow it. |
-| `Federation_Service_MatrixRTC_Mode` | `matrix_2_0` or `compatibility`: the form this server announces memberships in. |
+| `Federation_Service_MatrixRTC_Mode` | `compatibility`, `matrix_2_0` or `matrix_2_0_msc4195`: the profile this server announces memberships in (see [Signalling](#signalling-memberships-in-the-matrix-room)). |
 
 LiveKit must be configured as for any native call ([native-video-conference](../native-video-conference/README.md)).
 

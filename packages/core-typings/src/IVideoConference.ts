@@ -91,6 +91,8 @@ export type VideoConferenceMemberFederation = {
 	transport: string;
 	/** The LiveKit identity the member publishes as. */
 	livekitIdentity: string;
+	/** Other identities the member may publish as: see `IMatrixRTCMembership.livekitIdentityAliases`. */
+	livekitIdentityAliases?: string[];
 	/** A member of this server, publishing on its own SFU. */
 	local: boolean;
 };
