@@ -4,6 +4,7 @@ import { federationSDK } from '@rocket.chat/federation-sdk';
 import { MatrixRTCMemberships } from '@rocket.chat/models';
 
 import { configureMatrixRTC } from './config';
+import { legacyLiveKitIdentityFor, liveKitIdentityFor } from './derive';
 import { setMatrixRTCLiveKitIssuer } from './issuer';
 import { MEMBERSHIP_REFRESH_HEADROOM_MS, declineRTCSession, joinRTCSession, leaveRTCSession, notifyRTCSession } from './session';
 
@@ -392,5 +393,132 @@ describe('declineRTCSession', () => {
 		await declineRTCSession(call, alice);
 
 		expect(sdk.sendStickyEvent).not.toHaveBeenCalled();
+	});
+});
+
+describe('the Matrix 2.0 profiles', () => {
+	const WSS = 'wss://sfu.rc.example.com';
+
+	const stickyMembership = (overrides: Partial<IMatrixRTCMembership> = {}): IMatrixRTCMembership =>
+		storedMembership({
+			mode: 'matrix_2_0',
+			stateKey: undefined,
+			memberId: '2f4c3a1e-8d1b-4c39-9b1f-0a7e6c2d5b10',
+			livekitIdentity: 'H3',
+			expiresAt: new Date(SENT_AT + HOUR),
+			...overrides,
+		});
+
+	beforeEach(() => {
+		jest.clearAllMocks();
+		jest.useFakeTimers({ now: SENT_AT, doNotFake: ['nextTick', 'setImmediate', 'queueMicrotask'] });
+
+		setMatrixRTCLiveKitIssuer({ getOwnTransport: () => ({ url: WSS, serviceUrl: SERVICE_URL }), mintToken: jest.fn() });
+		sdk.getConfig.mockReturnValue('rc.example.com' as any);
+		sdk.getEventById.mockResolvedValue({ event: { origin_server_ts: SENT_AT } } as any);
+		sdk.sendStickyEvent.mockResolvedValue({ eventId: '$sticky' } as any);
+		memberships.findOneActiveLocal.mockResolvedValue(null);
+		memberships.insertOne.mockResolvedValue({ insertedId: 'membership1' } as any);
+	});
+
+	afterEach(() => {
+		jest.useRealTimers();
+		configureMatrixRTC({ enabled: true, profile: 'compatibility' });
+	});
+
+	it('announces a sticky membership for an hour, naming the token service, under a fresh member id', async () => {
+		configureMatrixRTC({ enabled: true, profile: 'matrix_2_0' });
+
+		const membership = await joinRTCSession(call, alice);
+
+		expect(sdk.sendStateEvent).not.toHaveBeenCalled();
+		expect(sdk.sendStickyEvent).toHaveBeenCalledTimes(1);
+		const [roomId, type, content, sender, duration] = sdk.sendStickyEvent.mock.calls[0];
+		expect(membership.memberId).toMatch(/^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/);
+		expect([roomId, type, sender, duration]).toEqual([
+			'!abc:rc.example.com',
+			'org.matrix.msc4143.rtc.member',
+			'@alice:rc.example.com',
+			HOUR,
+		]);
+		expect(content).toEqual({
+			slot_id: 'm.call#ROOM',
+			application: { 'type': 'm.call', 'm.call.intent': 'video' },
+			transports: { published: [{ type: 'livekit', livekit_service_url: SERVICE_URL }], can_subscribe: ['livekit'] },
+			member: { device_id: membership.deviceId, user_id: '@alice:rc.example.com', id: membership.memberId },
+			versions: [],
+			msc4354_sticky_key: membership.memberId,
+		});
+	});
+
+	it('mints, in matrix_2_0, the identity deployed Element Call derives from a token-service membership', async () => {
+		configureMatrixRTC({ enabled: true, profile: 'matrix_2_0' });
+
+		const membership = await joinRTCSession(call, alice);
+
+		expect(membership).toMatchObject({
+			mode: 'matrix_2_0',
+			eventId: '$sticky',
+			transport: { type: 'livekit', serviceUrl: SERVICE_URL },
+			livekitIdentity: legacyLiveKitIdentityFor('@alice:rc.example.com', membership.deviceId, membership.memberId),
+			joinedAt: new Date(SENT_AT),
+			expiresAt: new Date(SENT_AT + HOUR),
+		});
+		expect(membership).not.toHaveProperty('stateKey');
+		expect(setMemberFederation).toHaveBeenCalledWith('call1', 'alice-id', expect.objectContaining({ transport: SERVICE_URL }));
+	});
+
+	it('names the SFU itself in matrix_2_0_msc4195, and mints the MSC4195 identity', async () => {
+		configureMatrixRTC({ enabled: true, profile: 'matrix_2_0_msc4195' });
+
+		const membership = await joinRTCSession(call, alice);
+
+		expect(sdk.sendStickyEvent.mock.calls[0][2]).toMatchObject({ transports: { published: [{ type: 'livekit', url: WSS }] } });
+		expect(membership).toMatchObject({
+			transport: { type: 'livekit', url: WSS },
+			livekitIdentity: liveKitIdentityFor('@alice:rc.example.com', membership.memberId),
+		});
+		expect(setMemberFederation).toHaveBeenCalledWith('call1', 'alice-id', expect.objectContaining({ transport: WSS }));
+	});
+
+	it('sends the same membership again before the hour runs out', async () => {
+		jest.setSystemTime(SENT_AT + HOUR - MEMBERSHIP_REFRESH_HEADROOM_MS);
+		memberships.findOneActiveLocal.mockResolvedValue(stickyMembership());
+		sdk.getEventById.mockResolvedValue({ event: { origin_server_ts: SENT_AT + HOUR - MEMBERSHIP_REFRESH_HEADROOM_MS } } as any);
+
+		const membership = await joinRTCSession(call, alice);
+
+		const [, type, content, , duration] = sdk.sendStickyEvent.mock.calls[0];
+		expect([type, duration]).toEqual(['org.matrix.msc4143.rtc.member', HOUR]);
+		expect(content).toMatchObject({ member: { device_id: 'ABCDEFGHIJ', id: '2f4c3a1e-8d1b-4c39-9b1f-0a7e6c2d5b10' } });
+		expect(membership).toMatchObject({
+			eventId: '$sticky',
+			joinedAt: new Date(SENT_AT),
+			expiresAt: new Date(SENT_AT + 2 * HOUR - MEMBERSHIP_REFRESH_HEADROOM_MS),
+		});
+	});
+
+	it('leaves with the leave form, as sticky as the join it supersedes', async () => {
+		memberships.findLocalByCallIdAndUid.mockReturnValue(cursorOf([stickyMembership()]));
+
+		await leaveRTCSession(call, 'alice-id');
+
+		expect(sdk.sendStickyEvent).toHaveBeenCalledWith(
+			'!abc:rc.example.com',
+			'org.matrix.msc4143.rtc.member',
+			{ slot_id: 'm.call#ROOM', msc4354_sticky_key: '2f4c3a1e-8d1b-4c39-9b1f-0a7e6c2d5b10' },
+			'@alice:rc.example.com',
+			HOUR,
+		);
+		expect(memberships.removeByIds).toHaveBeenCalledWith(['membership1']);
+	});
+
+	it('sends no leave for a membership that already stopped counting', async () => {
+		memberships.findLocalByCallIdAndUid.mockReturnValue(cursorOf([stickyMembership({ expiresAt: new Date(SENT_AT) })]));
+
+		await leaveRTCSession(call, 'alice-id');
+
+		expect(sdk.sendStickyEvent).not.toHaveBeenCalled();
+		expect(memberships.removeByIds).toHaveBeenCalledWith(['membership1']);
 	});
 });

@@ -1,30 +1,42 @@
-import { randomInt } from 'node:crypto';
+import { randomInt, randomUUID } from 'node:crypto';
 
 import { VideoConf } from '@rocket.chat/core-services';
 import { getVideoConferenceMemberFederation, isUserNativeFederated } from '@rocket.chat/core-typings';
-import type { IMatrixRTCMembership, IUser, IVideoConference, VideoConferenceFederation } from '@rocket.chat/core-typings';
+import type {
+	IMatrixRTCMembership,
+	IUser,
+	IVideoConference,
+	MatrixRTCLiveKitTransport,
+	VideoConferenceFederation,
+} from '@rocket.chat/core-typings';
 import { federationSDK } from '@rocket.chat/federation-sdk';
 import type { EventID, RoomID, UserID } from '@rocket.chat/federation-sdk';
 import { Logger } from '@rocket.chat/logger';
 import { MatrixRTCMemberships } from '@rocket.chat/models';
 
 import { getMatrixRTCProfile } from './config';
+import type { MatrixRTCProfile } from './config';
 import {
 	CALL_MEMBER_EVENT_TYPE,
 	COMPAT_MEMBERSHIP_EXPIRY_MS,
 	DECLINE_STICKY_DURATION_MS,
+	MEMBERSHIP_STICKY_DURATION_MS,
 	NOTIFICATION_STICKY_DURATION_MS,
 	RTC_DECLINE_EVENT_TYPES,
+	RTC_MEMBER_EVENT_TYPES,
 	RTC_NOTIFICATION_EVENT_TYPES,
 	buildCompatMembership,
 	buildCompatMembershipLeave,
 	buildRtcDecline,
+	buildRtcMembership,
+	buildRtcMembershipLeave,
 	buildRtcNotification,
 	compatMembershipStateKey,
 } from './events';
 import type { CallIntent } from './events';
 import { localLiveKitIdentityFor } from './identities';
 import { getMatrixRTCLiveKitIssuer } from './issuer';
+import type { MatrixRTCOwnTransport } from './issuer';
 import { createKeyedQueue } from './keyedQueue';
 
 const logger = new Logger('MatrixRTCSession');
@@ -75,7 +87,13 @@ const roomVersionOf = async (mrid: string): Promise<string> => {
 const originServerTsOf = async (eventId: EventID): Promise<number | undefined> =>
 	(await federationSDK.getEventById(eventId))?.event.origin_server_ts;
 
-const announceCompatMembership = async ({
+type Announcement = Pick<IMatrixRTCMembership, 'mode' | 'memberId' | 'stateKey' | 'eventId' | 'joinedAt' | 'expiresAt'>;
+
+/** What this server's members publish on: its SFU, named the way the profile's readers connect to it. */
+const transportFor = (profile: MatrixRTCProfile, { url, serviceUrl }: MatrixRTCOwnTransport): MatrixRTCLiveKitTransport =>
+	profile === 'matrix_2_0_msc4195' ? { type: 'livekit', url } : { type: 'livekit', serviceUrl };
+
+const sendCompatMembership = async ({
 	mrid,
 	userId,
 	deviceId,
@@ -98,10 +116,69 @@ const announceCompatMembership = async ({
 	return eventId;
 };
 
-const stickyEventsUnavailable = (profile: string): Error =>
-	new Error(`The ${profile} profile announces sticky events, which this build of the federation SDK cannot send`);
+/** Sticky for the hour js-sdk keeps a membership: it stops counting then unless announced again. */
+const sendRtcMembership = async (
+	mrid: string,
+	membership: Pick<IMatrixRTCMembership, 'userId' | 'deviceId' | 'memberId' | 'transport'>,
+	now: Date,
+): Promise<Pick<IMatrixRTCMembership, 'eventId' | 'expiresAt'> & { sentAt: Date }> => {
+	const { userId } = membership;
+	const content = buildRtcMembership({ ...membership, callIntent: CALL_INTENT });
+	const { eventId } = await federationSDK.sendStickyEvent(
+		mrid as RoomID,
+		RTC_MEMBER_EVENT_TYPES[0],
+		content,
+		userId as UserID,
+		MEMBERSHIP_STICKY_DURATION_MS,
+	);
+	const sentAt = new Date((await originServerTsOf(eventId)) ?? now.getTime());
 
-/** Announces a fresh membership: a new device, a new member id, and this server's SFU. */
+	return { eventId, sentAt, expiresAt: new Date(sentAt.getTime() + MEMBERSHIP_STICKY_DURATION_MS) };
+};
+
+async function announceCompatMembership(
+	mrid: string,
+	{ userId, deviceId, transport }: Pick<IMatrixRTCMembership, 'userId' | 'deviceId' | 'transport'>,
+	now: Date,
+): Promise<Announcement> {
+	if (!transport.serviceUrl) {
+		throw new Error('A compatibility membership names the token service of an SFU');
+	}
+
+	const stateKey = compatMembershipStateKey(userId, deviceId, await roomVersionOf(mrid));
+	const eventId = await sendCompatMembership({
+		mrid,
+		userId,
+		deviceId,
+		stateKey,
+		serviceUrl: transport.serviceUrl,
+		expires: COMPAT_MEMBERSHIP_EXPIRY_MS,
+	});
+	const joinedAt = new Date((await originServerTsOf(eventId)) ?? now.getTime());
+
+	return {
+		mode: 'compatibility',
+		// The member id the OpenID `/get_token` path reads from a compatibility membership is its `membershipID`.
+		memberId: `${userId}:${deviceId}`,
+		stateKey,
+		eventId,
+		joinedAt,
+		expiresAt: new Date(joinedAt.getTime() + COMPAT_MEMBERSHIP_EXPIRY_MS),
+	};
+}
+
+async function announceRtcMembership(
+	mrid: string,
+	member: Pick<IMatrixRTCMembership, 'userId' | 'deviceId' | 'transport'>,
+	now: Date,
+): Promise<Announcement> {
+	const memberId = randomUUID();
+	const { eventId, sentAt, expiresAt } = await sendRtcMembership(mrid, { ...member, memberId }, now);
+
+	return { mode: 'matrix_2_0', memberId, eventId, joinedAt: sentAt, expiresAt };
+}
+
+/** Announces a fresh membership in the configured profile: a new device, a new member id, and this server's SFU. */
 async function announceMembership(call: IVideoConference, user: IUser, now: Date): Promise<IMatrixRTCMembership> {
 	const { mrid, slotId } = sessionOf(call);
 
@@ -111,45 +188,29 @@ async function announceMembership(call: IVideoConference, user: IUser, now: Date
 	}
 
 	const profile = getMatrixRTCProfile();
-	if (profile !== 'compatibility') {
-		throw stickyEventsUnavailable(profile);
-	}
-
 	const userId = matrixUserIdOf(user);
 	const deviceId = generateDeviceId();
-	// The member id the OpenID `/get_token` path reads from a compatibility membership is its `membershipID`.
-	const memberId = `${userId}:${deviceId}`;
-	const stateKey = compatMembershipStateKey(userId, deviceId, await roomVersionOf(mrid));
+	const transport = transportFor(profile, ownTransport);
 
-	const eventId = await announceCompatMembership({
-		mrid,
-		userId,
-		deviceId,
-		stateKey,
-		serviceUrl: ownTransport.serviceUrl,
-		expires: COMPAT_MEMBERSHIP_EXPIRY_MS,
-	});
-	const joinedAt = new Date((await originServerTsOf(eventId)) ?? now.getTime());
+	const announcement =
+		profile === 'compatibility'
+			? await announceCompatMembership(mrid, { userId, deviceId, transport }, now)
+			: await announceRtcMembership(mrid, { userId, deviceId, transport }, now);
 
 	const membership: Omit<IMatrixRTCMembership, '_id' | '_updatedAt'> = {
 		rid: call.rid,
 		mrid,
 		slotId,
 		callId: call._id,
-		mode: 'compatibility',
 		userId,
 		uid: user._id,
 		local: true,
 		deviceId,
-		memberId,
-		stateKey,
-		eventId,
-		transport: { type: 'livekit', serviceUrl: ownTransport.serviceUrl },
+		...announcement,
+		transport,
 		serverName: federationSDK.getConfig('serverName'),
-		livekitIdentity: localLiveKitIdentityFor(profile, { userId, deviceId, memberId }),
+		livekitIdentity: localLiveKitIdentityFor(profile, { userId, deviceId, memberId: announcement.memberId }),
 		callIntent: CALL_INTENT,
-		joinedAt,
-		expiresAt: new Date(joinedAt.getTime() + COMPAT_MEMBERSHIP_EXPIRY_MS),
 	};
 
 	const { insertedId } = await MatrixRTCMemberships.insertOne(membership);
@@ -157,19 +218,26 @@ async function announceMembership(call: IVideoConference, user: IUser, now: Date
 	return { ...membership, _id: insertedId, _updatedAt: now };
 }
 
-/** Announces the membership again, with content that differs from the last announcement. */
-async function refreshMembership(membership: IMatrixRTCMembership): Promise<IMatrixRTCMembership> {
-	if (membership.mode !== 'compatibility') {
-		throw stickyEventsUnavailable(membership.mode);
+/**
+ * Announces the membership again before it stops counting. A sticky one is sent again as it was; a compatibility one
+ * must differ, since identical state would be a no-op, so it keeps its `created_ts` and grows its `expires`.
+ */
+async function refreshMembership(membership: IMatrixRTCMembership, now: Date): Promise<IMatrixRTCMembership> {
+	const { mrid, userId, deviceId, stateKey, transport, joinedAt } = membership;
+
+	if (membership.mode === 'matrix_2_0') {
+		const { eventId, expiresAt } = await sendRtcMembership(mrid, membership, now);
+		await MatrixRTCMemberships.updateAnnouncementById(membership._id, { eventId, expiresAt });
+
+		return { ...membership, eventId, expiresAt };
 	}
 
-	const { mrid, userId, deviceId, stateKey, transport, joinedAt } = membership;
 	if (!stateKey || !transport.serviceUrl) {
 		throw new Error(`Membership ${membership._id} lacks what its compatibility announcement needs`);
 	}
 
 	const expires = membership.expiresAt.getTime() - joinedAt.getTime() + COMPAT_MEMBERSHIP_EXPIRY_MS;
-	const eventId = await announceCompatMembership({
+	const eventId = await sendCompatMembership({
 		mrid,
 		userId,
 		deviceId,
@@ -192,17 +260,27 @@ async function refreshIfDue(membership: IMatrixRTCMembership, now: Date): Promis
 	}
 
 	try {
-		return await refreshMembership(membership);
+		return await refreshMembership(membership, now);
 	} catch (err) {
 		logger.error({ msg: 'Failed to refresh a MatrixRTC membership', membershipId: membership._id, callId: membership.callId, err });
 		return membership;
 	}
 }
 
-async function announceLeave({ _id, mode, mrid, userId, stateKey }: IMatrixRTCMembership): Promise<void> {
+/** A sticky membership that ran out has already stopped counting, so there is nothing left to supersede. */
+async function announceLeave({ _id, mode, mrid, userId, stateKey, memberId, expiresAt }: IMatrixRTCMembership, now: Date): Promise<void> {
 	try {
-		if (mode !== 'compatibility') {
-			throw stickyEventsUnavailable(mode);
+		if (mode === 'matrix_2_0') {
+			if (expiresAt > now) {
+				await federationSDK.sendStickyEvent(
+					mrid as RoomID,
+					RTC_MEMBER_EVENT_TYPES[0],
+					buildRtcMembershipLeave(memberId),
+					userId as UserID,
+					MEMBERSHIP_STICKY_DURATION_MS,
+				);
+			}
+			return;
 		}
 
 		if (stateKey) {
@@ -246,7 +324,8 @@ export async function leaveRTCSession(call: IVideoConference, uid: IUser['_id'])
 			return;
 		}
 
-		await Promise.all(memberships.map(announceLeave));
+		const now = new Date();
+		await Promise.all(memberships.map((membership) => announceLeave(membership, now)));
 		await MatrixRTCMemberships.removeByIds(memberships.map(({ _id }) => _id));
 	});
 }
