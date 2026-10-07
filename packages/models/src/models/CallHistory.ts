@@ -1,5 +1,11 @@
 import type { CallHistoryItem, IRegisterUser, IUser } from '@rocket.chat/core-typings';
-import type { FindPaginated, ICallHistoryModel, DocumentWithProjection, FindOptionsWithProjection } from '@rocket.chat/model-typings';
+import type {
+	FindPaginated,
+	ICallHistoryModel,
+	DocumentWithProjection,
+	FindOptionsWithProjection,
+	InsertionModel,
+} from '@rocket.chat/model-typings';
 import { escapeRegExp } from '@rocket.chat/tools';
 import type { Db, Filter, FindCursor, IndexDescription, Document } from 'mongodb';
 
@@ -83,10 +89,33 @@ export class CallHistoryRaw extends BaseRaw<CallHistoryItem> implements ICallHis
 						external: true,
 						contactExtension: textSearch,
 					},
+					{
+						type: 'mitel',
+						contactNumber: textSearch,
+					},
 				],
 			}),
 		};
 
 		return this.findPaginated<T, O>(query, options);
+	}
+
+	public async importHistoryItem(data: InsertionModel<CallHistoryItem>): Promise<CallHistoryItem['_id'] | null> {
+		const { _id, _updatedAt, uid, callId, ...documentData } = data;
+
+		const result = await this.findOneAndUpdate(
+			{
+				uid,
+				callId,
+			},
+			{ $set: documentData, $setOnInsert: { uid, callId } },
+			{ returnDocument: 'after', projection: { _id: 1 }, upsert: true },
+		);
+
+		if (!result) {
+			return null;
+		}
+
+		return result._id;
 	}
 }
