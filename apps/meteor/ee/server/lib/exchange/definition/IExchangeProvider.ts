@@ -14,7 +14,7 @@ export interface IExchangeProvider {
 
 	testConnection(): Promise<void>;
 
-	/** `timeWindow` bounds the range, `cursor` is an opaque delta token, omitted for an initial sync. */
+	/** `timeWindow` bounds the range, `cursor` is an opaque continuation/delta token, omitted for an initial sync. */
 	listEvents(mailbox: string, timeWindow: DateRange, cursor?: string): Promise<Page<ExchangeEvent>>;
 
 	listContactFolders?(mailbox: string): Promise<ContactFolder[]>;
