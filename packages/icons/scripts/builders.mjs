@@ -1,7 +1,7 @@
 import { createSvgBuffer, createTtfBuffer, createWoffBuffer, createWoff2Buffer, createEotBuffer } from './font.mjs';
 import { getMappedGlyphs } from './glyphs.mjs';
 import { createSvgSprite, createSvgIcons } from './svg.mjs';
-import { encodeJson, runEslint, writeBinary, writeSource } from './utils.mjs';
+import { encodeJson, writeBinary, writeSource } from './utils.mjs';
 
 const filterOtherIconsOut = (icons) => icons.filter(({ type }) => type !== 'other');
 
@@ -39,14 +39,12 @@ export const buildCommonJsModule = (icons) =>
 	Promise.resolve(icons)
 		.then(fromIconDescriptorsToCharacters)
 		.then((characters) => `module.exports = ${encodeJson(characters)};`)
-		.then(runEslint('index.cjs'))
 		.then(writeSource('dist/index.js'));
 
 export const buildEsmModule = (icons) =>
 	Promise.resolve(icons)
 		.then(fromIconDescriptorsToCharacters)
 		.then((characters) => `export default ${encodeJson(characters)};`)
-		.then(runEslint('index.mjs'))
 		.then(writeSource('dist/index.mjs'));
 
 export const buildFont = (icons) =>
@@ -72,7 +70,6 @@ export const buildDefinition = (icons) => {
 export default Icons;
 export type Keys = keyof typeof Icons;`,
 		)
-		// .then(runEslint('index.d.ts'))
 		.then(writeSource('dist/index.d.ts'))
 		.catch(console.log);
 };

@@ -1,8 +1,6 @@
 import { glob, mkdir, readFile, rm, writeFile } from 'fs/promises';
 import { dirname } from 'path';
 
-import { ESLint } from 'eslint';
-
 export const encodeJson = (data) =>
 	JSON.stringify(data, null, 2).replace(/[\u007f-￿]/g, (c) => `\\u${`0000${c.charCodeAt(0).toString(16)}`.slice(-4)}`);
 
@@ -30,24 +28,3 @@ export const writeJson = (path) => async (data) => {
 export const removeFile = (path) => rm(path, { recursive: true, force: true });
 
 export const listFiles = (pattern) => Array.fromAsync(glob(pattern));
-
-export const runEslint = (path) => async (source) => {
-	const eslint = new ESLint({ fix: true });
-	const results = await eslint.lintText(source, {
-		filePath: path,
-		warnIgnored: true,
-	});
-
-	const formatter = await eslint.loadFormatter('stylish');
-	const resultText = await formatter.format(results);
-
-	if (results.some((result) => result.fatalErrorCount > 0)) {
-		throw new Error(resultText);
-	}
-
-	console.log(resultText);
-
-	const [result] = results;
-
-	return result.output ?? source;
-};
