@@ -35,6 +35,28 @@ describe('GraphTokenClient', () => {
 		jest.useRealTimers();
 	});
 
+	describe('invalidating while a request is in flight', () => {
+		it('does not let the older request populate the cache', async () => {
+			let release = (_: unknown) => undefined as void;
+			serverFetch.mockReturnValueOnce(
+				new Promise((resolve) => {
+					release = resolve;
+				}),
+			);
+			const client = new GraphTokenClient(config);
+
+			const first = client.getAccessToken();
+			client.invalidate();
+			release(jsonResponse(200, { access_token: 'stale', expires_in: 3600, token_type: 'Bearer' }));
+
+			await expect(first).resolves.toBe('stale');
+
+			serverFetch.mockResolvedValue(jsonResponse(200, { access_token: 'fresh', expires_in: 3600, token_type: 'Bearer' }));
+
+			await expect(client.getAccessToken()).resolves.toBe('fresh');
+		});
+	});
+
 	describe('recognising Microsoft endpoints', () => {
 		it.each([
 			['authority', { authorityHost: 'https://login.micronline.com' }],
