@@ -1,3 +1,4 @@
+import { MeteorError } from '@rocket.chat/core-services';
 import type { ILDAPEntry, LDAPLoginResult, ILDAPUniqueIdentifierField, IUser, LoginUsername, IImportUser } from '@rocket.chat/core-typings';
 import { Users as UsersRaw } from '@rocket.chat/models';
 import { SHA256 } from '@rocket.chat/sha256';
@@ -104,13 +105,19 @@ export class LDAPManager {
 		}
 	}
 
+	private static async connectAndBind(ldap: LDAPConnection): Promise<void> {
+		await ldap.connect();
+		await ldap.bindAuthenticationUserOrFail().catch((err: Error) => {
+			throw new MeteorError('LDAP_Bind_failed', undefined, { error: err.message });
+		});
+	}
+
 	public static async testConnection(): Promise<void> {
+		const ldap = new LDAPConnection();
 		try {
-			const ldap = new LDAPConnection();
-			await ldap.testConnection();
-		} catch (err) {
-			connLogger.error({ err });
-			throw err;
+			await this.connectAndBind(ldap);
+		} finally {
+			ldap.disconnect();
 		}
 	}
 
@@ -119,16 +126,18 @@ export class LDAPManager {
 		const ldap = new LDAPConnection();
 
 		try {
-			await ldap.connect();
+			await this.connectAndBind(ldap);
 
 			const users = await ldap.searchByUsername(escapedUsername);
-			if (users.length !== 1) {
-				logger.debug({ msg: 'Search results', count: users.length, username: escapedUsername });
-				throw new Error('User not found');
+			logger.debug({ msg: 'Search results', count: users.length, username: escapedUsername });
+			if (users.length === 0) {
+				throw new MeteorError('LDAP_User_not_found');
 			}
-		} catch (err) {
-			logger.error({ err });
-			throw err;
+			if (users.length > 1) {
+				throw new MeteorError('LDAP_Multiple_users_found', undefined, { total: String(users.length) });
+			}
+		} finally {
+			ldap.disconnect();
 		}
 	}
 
