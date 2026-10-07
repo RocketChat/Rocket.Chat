@@ -1,19 +1,30 @@
 import { VideoConf } from '@rocket.chat/core-services';
-import { isRoomNativeFederated, VideoConferenceStatus } from '@rocket.chat/core-typings';
-import type { IMatrixRTCMembership, IRoomNativeFederated } from '@rocket.chat/core-typings';
+import { isRoomNativeFederated, isUserNativeFederated, VideoConferenceStatus } from '@rocket.chat/core-typings';
+import type { IMatrixRTCMembership, IRoomNativeFederated, IUser } from '@rocket.chat/core-typings';
 import { federationSDK } from '@rocket.chat/federation-sdk';
 import type { HomeserverEventSignatures, RoomID } from '@rocket.chat/federation-sdk';
 import { Logger } from '@rocket.chat/logger';
-import { MatrixRTCMemberships, Rooms, VideoConference } from '@rocket.chat/models';
+import { MatrixRTCMemberships, Rooms, Users, VideoConference } from '@rocket.chat/models';
 
 import { isMatrixRTCEnabled } from './config';
 import { MATRIXRTC_ROOM_CALL_SLOT_ID } from './derive';
-import { CALL_MEMBER_EVENT_TYPE, RTC_MEMBER_EVENT_TYPES, parseCompatMembership, parseRtcMembership } from './events';
-import type { AnnouncedMembership } from './events';
+import {
+	CALL_MEMBER_EVENT_TYPE,
+	RTC_DECLINE_EVENT_TYPES,
+	RTC_MEMBER_EVENT_TYPES,
+	RTC_NOTIFICATION_EVENT_TYPES,
+	isNotificationLive,
+	parseCompatMembership,
+	parseRtcDecline,
+	parseRtcMembership,
+	parseRtcNotification,
+} from './events';
+import type { AnnouncedMembership, RtcNotification } from './events';
 import { remoteLiveKitIdentitiesFor } from './identities';
 import { createKeyedQueue } from './keyedQueue';
 import { extractDomainFromMatrixUserId } from '../helpers/extractDomainFromMatrixUserId';
 import { getOrCreateFederatedUser } from '../helpers/getOrCreateFederatedUser';
+import { getUsernameServername } from '../helpers/getUsernameServername';
 
 const logger = new Logger('MatrixRTCInbound');
 
@@ -27,6 +38,10 @@ export type RemoteMembership = Omit<IMatrixRTCMembership, '_id' | '_updatedAt' |
 const STARTUP_REBUILD_DELAY_MS = 10_000;
 
 const RTC_MEMBER_TYPES = new Set<string>(RTC_MEMBER_EVENT_TYPES);
+
+const RTC_NOTIFICATION_TYPES = new Set<string>(RTC_NOTIFICATION_EVENT_TYPES);
+
+const RTC_DECLINE_TYPES = new Set<string>(RTC_DECLINE_EVENT_TYPES);
 
 const perRoom = createKeyedQueue();
 
@@ -172,23 +187,126 @@ const isDepartureFromCall = async ({ type, room_id: mrid, state_key: userId, con
 	typeof userId === 'string' &&
 	!!(await MatrixRTCMemberships.findOne({ mrid, userId, local: false }, { projection: { _id: 1 } }));
 
-/** What another server says about a room's call, in any form; everything else is ignored. */
-export async function handleMatrixRTCEvent({ event }: MatrixEvent): Promise<void> {
+/** This server's users a ring is for: those it mentions, and everyone here in a direct message rung as a whole. */
+async function localCalleesOf(
+	room: IRoomNativeFederated,
+	{ userIds, roomMention }: RtcNotification,
+): Promise<{ uid: IUser['_id']; userId: string }[]> {
+	const serverName = federationSDK.getConfig('serverName');
+
+	const usernames = userIds.flatMap((userId) => {
+		try {
+			const [username, , isLocal] = getUsernameServername(userId, serverName);
+			return isLocal ? [username] : [];
+		} catch {
+			return [];
+		}
+	});
+
+	const callees = await Users.find(
+		{ $or: [{ username: { $in: usernames } }, ...(roomMention && room.t === 'd' ? [{ _id: { $in: room.uids ?? [] } }] : [])] },
+		{ projection: { username: 1, federated: 1, federation: 1 } },
+	).toArray();
+
+	return callees
+		.filter((user) => !isUserNativeFederated(user) && user.username)
+		.map(({ _id, username }) => ({ uid: _id, userId: `@${username}:${serverName}` }));
+}
+
+/** A ring from another server's member rings this server's users it is for, in the conference of its caller. */
+async function ringLocalUsers(room: IRoomNativeFederated, { event, event_id: eventId }: MatrixEvent): Promise<void> {
+	const ring = parseRtcNotification(event);
+	if (!ring || ring.kind !== 'ring' || ring.slotId !== MATRIXRTC_ROOM_CALL_SLOT_ID || !isNotificationLive(ring, Date.now())) {
+		return;
+	}
+
+	const callees = await localCalleesOf(room, ring);
+	if (!callees.length) {
+		return;
+	}
+
+	const { mrid } = room.federation;
+	const caller =
+		(await MatrixRTCMemberships.findOne({ mrid, eventId: ring.membershipEventId, userId: event.sender, local: false })) ??
+		(await MatrixRTCMemberships.findOne({ mrid, userId: event.sender, local: false }, { sort: { joinedAt: -1 } }));
+	if (!caller) {
+		return;
+	}
+
+	const callId = caller.callId ?? (await VideoConf.syncFederatedSession(room._id, { mrid, slotId: MATRIXRTC_ROOM_CALL_SLOT_ID }));
+	if (!callId) {
+		return;
+	}
+
+	await MatrixRTCMemberships.setNotificationById(caller._id, { eventId, userIds: callees.map(({ userId }) => userId) });
+	await VideoConf.ringFromFederation(
+		callId,
+		caller.uid,
+		callees.map(({ uid }) => uid),
+	);
+}
+
+/** Only a decline of a ring this server sent, by someone it rang, counts. */
+async function recordDecline({ event }: MatrixEvent): Promise<void> {
+	const decline = parseRtcDecline(event);
+	if (!decline) {
+		return;
+	}
+
+	const ringer = await MatrixRTCMemberships.findOneByNotificationEventId(decline.notificationEventId);
+	if (!ringer?.local || !ringer.callId || !ringer.notification?.userIds.includes(event.sender)) {
+		return;
+	}
+
+	const decliner = await getOrCreateFederatedUser(event.sender);
+	await VideoConf.declineCall(decliner._id, ringer.callId);
+}
+
+type RTCEventKind = 'session' | 'ring' | 'decline';
+
+const kindOf = async (event: MatrixEvent['event']): Promise<RTCEventKind | undefined> => {
+	if (!isOwnUser(event.sender)) {
+		if (isMembershipEvent(event.type)) {
+			return 'session';
+		}
+		if (RTC_NOTIFICATION_TYPES.has(event.type)) {
+			return 'ring';
+		}
+		if (RTC_DECLINE_TYPES.has(event.type)) {
+			return 'decline';
+		}
+	}
+
+	return (await isDepartureFromCall(event)) ? 'session' : undefined;
+};
+
+/**
+ * What another server says about a room's call, in any form; everything else is ignored. Each room's events are
+ * handled in the order they arrive, so a ring finds the membership announced before it.
+ */
+export async function handleMatrixRTCEvent(payload: MatrixEvent): Promise<void> {
 	if (!isMatrixRTCEnabled()) {
 		return;
 	}
 
-	const relevant = (isMembershipEvent(event.type) && !isOwnUser(event.sender)) || (await isDepartureFromCall(event));
-	if (!relevant) {
+	const kind = await kindOf(payload.event);
+	if (!kind) {
 		return;
 	}
 
-	const room = await Rooms.findOneFederatedByMrid(event.room_id);
+	const room = await Rooms.findOneFederatedByMrid(payload.event.room_id);
 	if (!room || !isRoomNativeFederated(room)) {
 		return;
 	}
 
-	await queueRebuild(room);
+	switch (kind) {
+		case 'session':
+			return queueRebuild(room);
+		case 'ring':
+			return perRoom(room.federation.mrid, () => ringLocalUsers(room, payload));
+		case 'decline':
+			return perRoom(room.federation.mrid, () => recordDecline(payload));
+	}
 }
 
 /** The rooms whose calls this server knows of: remote members on record, or a conference still running. */

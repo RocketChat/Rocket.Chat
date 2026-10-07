@@ -42,4 +42,15 @@ export interface IMatrixRTCMembershipsModel extends IBaseModel<IMatrixRTCMembers
 
 	/** Attaches every membership of a session that still counts to the conference mirroring it. */
 	attachSessionToCall(mrid: string, slotId: string, callId: IVideoConference['_id'], now?: Date): Promise<UpdateResult | Document>;
+
+	setNotificationById(
+		_id: IMatrixRTCMembership['_id'],
+		notification: NonNullable<IMatrixRTCMembership['notification']>,
+	): Promise<UpdateResult>;
+
+	/** The membership whose member sent a ring, by the ring's event. */
+	findOneByNotificationEventId(eventId: string): Promise<IMatrixRTCMembership | null>;
+
+	/** The membership of another server's member whose latest ring in a conference rang a Matrix user. */
+	findOneRemoteRinging(callId: IVideoConference['_id'], userId: string): Promise<IMatrixRTCMembership | null>;
 }

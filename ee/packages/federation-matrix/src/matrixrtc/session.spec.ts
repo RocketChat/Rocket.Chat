@@ -5,7 +5,7 @@ import { MatrixRTCMemberships } from '@rocket.chat/models';
 
 import { configureMatrixRTC } from './config';
 import { setMatrixRTCLiveKitIssuer } from './issuer';
-import { MEMBERSHIP_REFRESH_HEADROOM_MS, joinRTCSession, leaveRTCSession } from './session';
+import { MEMBERSHIP_REFRESH_HEADROOM_MS, declineRTCSession, joinRTCSession, leaveRTCSession, notifyRTCSession } from './session';
 
 jest.mock('@rocket.chat/core-services', () => ({
 	VideoConf: { setMemberFederation: jest.fn() },
@@ -18,6 +18,8 @@ jest.mock('@rocket.chat/models', () => ({
 		updateAnnouncementById: jest.fn(),
 		findLocalByCallIdAndUid: jest.fn(),
 		removeByIds: jest.fn(),
+		setNotificationById: jest.fn(),
+		findOneRemoteRinging: jest.fn(),
 	},
 }));
 
@@ -27,6 +29,7 @@ jest.mock('@rocket.chat/federation-sdk', () => ({
 		getLatestRoomState2: jest.fn(),
 		getEventById: jest.fn(),
 		sendStateEvent: jest.fn(),
+		sendStickyEvent: jest.fn(),
 	},
 }));
 
@@ -298,5 +301,96 @@ describe('leaveRTCSession', () => {
 
 		expect(sdk.sendStateEvent).not.toHaveBeenCalled();
 		expect(memberships.removeByIds).not.toHaveBeenCalled();
+	});
+});
+
+describe('notifyRTCSession', () => {
+	const bob = {
+		_id: 'bob-id',
+		username: '@bob:remote.example.org',
+		federated: true,
+		federation: { version: 1, mui: '@bob:remote.example.org', origin: 'remote.example.org' },
+	} as unknown as IUser;
+
+	beforeEach(() => {
+		jest.clearAllMocks();
+		jest.useFakeTimers({ now: SENT_AT, doNotFake: ['nextTick', 'setImmediate', 'queueMicrotask'] });
+		sdk.getConfig.mockReturnValue('rc.example.com' as any);
+		sdk.sendStickyEvent.mockResolvedValue({ eventId: '$ring' } as any);
+	});
+
+	afterEach(() => {
+		jest.useRealTimers();
+	});
+
+	it('rings the callee as Element Call does, mentioning them and relating to the caller membership', async () => {
+		memberships.findOneActiveLocal.mockResolvedValue(storedMembership());
+
+		await notifyRTCSession(call, alice, [bob], 'ring');
+
+		expect(sdk.sendStickyEvent).toHaveBeenCalledWith(
+			'!abc:rc.example.com',
+			'org.matrix.msc4075.rtc.notification',
+			{
+				'slot_id': 'm.call#ROOM',
+				'm.mentions': { user_ids: ['@bob:remote.example.org'] },
+				'notification_type': 'ring',
+				'm.relates_to': { rel_type: 'm.reference', event_id: '$join' },
+				'sender_ts': SENT_AT,
+				'lifetime': 90_000,
+				'msc4354_sticky_key': 'm.call#ROOM',
+				'm.call.intent': 'video',
+			},
+			'@alice:rc.example.com',
+			110_000,
+		);
+	});
+
+	it('remembers the ring, which a decline relates to', async () => {
+		memberships.findOneActiveLocal.mockResolvedValue(storedMembership());
+
+		await notifyRTCSession(call, alice, [bob], 'ring');
+
+		expect(memberships.setNotificationById).toHaveBeenCalledWith('membership1', { eventId: '$ring', userIds: ['@bob:remote.example.org'] });
+	});
+
+	it('cannot ring for a caller who is not announced: the ring would relate to nothing', async () => {
+		memberships.findOneActiveLocal.mockResolvedValue(null);
+
+		await expect(notifyRTCSession(call, alice, [bob], 'ring')).rejects.toThrow(/no membership/);
+		expect(sdk.sendStickyEvent).not.toHaveBeenCalled();
+	});
+});
+
+describe('declineRTCSession', () => {
+	beforeEach(() => {
+		jest.clearAllMocks();
+		sdk.getConfig.mockReturnValue('rc.example.com' as any);
+		sdk.sendStickyEvent.mockResolvedValue({ eventId: '$decline' } as any);
+	});
+
+	it('turns down the ring that rang the user, as js-sdk does', async () => {
+		memberships.findOneRemoteRinging.mockResolvedValue(
+			storedMembership({ local: false, notification: { eventId: '$ring', userIds: ['@alice:rc.example.com'] } }),
+		);
+
+		await declineRTCSession(call, alice);
+
+		expect(memberships.findOneRemoteRinging).toHaveBeenCalledWith('call1', '@alice:rc.example.com');
+		expect(sdk.sendStickyEvent).toHaveBeenCalledWith(
+			'!abc:rc.example.com',
+			'org.matrix.msc4310.rtc.decline',
+			{ 'm.relates_to': { rel_type: 'm.reference', event_id: '$ring' }, 'msc4354_sticky_key': '$ring' },
+			'@alice:rc.example.com',
+			120_000,
+		);
+	});
+
+	it('sends nothing when no other server rang the user', async () => {
+		memberships.findOneRemoteRinging.mockResolvedValue(null);
+
+		await declineRTCSession(call, alice);
+
+		expect(sdk.sendStickyEvent).not.toHaveBeenCalled();
 	});
 });

@@ -89,6 +89,15 @@ const VideoConferenceModelMock = {
 		Object.assign(fixture!, data);
 	}),
 	setRingingById: sinon.stub().resolves(),
+	setUsersRingingById: sinon.stub().callsFake(async (_callId: string, uids: string[], ringingAt = new Date()) => {
+		fixture!.users.filter(({ _id }) => uids.includes(_id)).forEach((user) => Object.assign(user, { ringingAt }));
+	}),
+	setUserDeclinedById: sinon.stub().callsFake(async (_callId: string, uid: string) => {
+		Object.assign(
+			fixture!.users.find(({ _id }) => _id === uid)!,
+			{ declined: true },
+		);
+	}),
 	addMemberById: sinon.stub().callsFake(async (_callId: string, user: IVideoConferenceUser) => {
 		if (!fixture!.users.some(({ _id }) => _id === user._id)) {
 			fixture!.users.push({ ...user, joined: false });
@@ -132,11 +141,38 @@ const MatrixRTCMembershipsMock = {
 
 const users: Record<string, unknown> = {
 	alice: { _id: 'alice', username: 'alice', name: 'Alice', avatarETag: null },
-	bob: { _id: 'bob', username: '@bob:remote.example.org', name: '@bob:remote.example.org', avatarETag: null },
-	carol: { _id: 'carol', username: '@carol:remote.example.org', name: '@carol:remote.example.org', avatarETag: null },
+	dave: { _id: 'dave', username: 'dave', name: 'Dave', avatarETag: null },
+	bob: {
+		_id: 'bob',
+		username: '@bob:remote.example.org',
+		name: '@bob:remote.example.org',
+		avatarETag: null,
+		federated: true,
+		federation: { version: 1, mui: '@bob:remote.example.org', origin: 'remote.example.org' },
+	},
+	carol: {
+		_id: 'carol',
+		username: '@carol:remote.example.org',
+		name: '@carol:remote.example.org',
+		avatarETag: null,
+		federated: true,
+		federation: { version: 1, mui: '@carol:remote.example.org', origin: 'remote.example.org' },
+	},
 };
 
-const UsersMock = { findOneById: sinon.stub().callsFake(async (uid: string) => users[uid] ?? null) };
+const UsersMock = {
+	findOneById: sinon.stub().callsFake(async (uid: string) => users[uid] ?? null),
+	find: sinon.stub().callsFake((query: { _id: { $in: string[] } }) => ({
+		toArray: async () => query._id.$in.map((uid) => users[uid]).filter(Boolean),
+	})),
+};
+
+const FederationMatrixMock = {
+	joinRTCSession: sinon.stub().resolves(),
+	leaveRTCSession: sinon.stub().resolves(),
+	notifyRTCSession: sinon.stub().resolves(),
+	declineRTCSession: sinon.stub().resolves(),
+};
 
 const sendMessageStub = sinon.stub().resolves({ _id: 'msg1' });
 const broadcastStub = sinon.stub().resolves();
@@ -153,7 +189,10 @@ const VideoConfService = createService({
 			findByRoomIdAndNotUserId: sinon.stub().returns({ toArray: async () => [], forEach: async () => undefined }),
 		},
 	},
-	services: { Presence: { setActiveState: sinon.stub().resolves(), endActiveState: sinon.stub().resolves() } },
+	services: {
+		FederationMatrix: FederationMatrixMock,
+		Presence: { setActiveState: sinon.stub().resolves(), endActiveState: sinon.stub().resolves() },
+	},
 	overrides: {
 		'../../lib/messages/sendMessage': { sendMessage: sendMessageStub },
 		'../../lib/videoConfProviders': {
@@ -188,7 +227,14 @@ describe('VideoConfService: conferences in federated rooms', () => {
 		activeProvider = 'livekit';
 		providerCapabilities.current = { embedded: true };
 		settingValues.Federation_Service_MatrixRTC_Enabled = true;
-		resetAll(...Object.values(VideoConferenceModelMock), ...Object.values(MatrixRTCMembershipsMock), sendMessageStub, broadcastStub);
+		resetAll(
+			...Object.values(VideoConferenceModelMock),
+			...Object.values(MatrixRTCMembershipsMock),
+			...Object.values(FederationMatrixMock),
+			UsersMock.find,
+			sendMessageStub,
+			broadcastStub,
+		);
 	});
 
 	afterEach(() => {
@@ -407,6 +453,108 @@ describe('VideoConfService: conferences in federated rooms', () => {
 			await service.expireFederatedMemberships(NOW);
 
 			expect(MatrixRTCMembershipsMock.removeByIds.called).to.be.false;
+		});
+	});
+
+	describe('ringing across servers', () => {
+		const rings = () => broadcastStub.args.filter(([channel, payload]) => channel === 'user.video-conference' && payload.action === 'ring');
+
+		it('rings the callee of a direct call on their own server when the caller arrives, after announcing the caller', async () => {
+			room = { ...federatedRoom, t: 'd', uids: ['alice', 'bob'] };
+			fixture = buildDirectCall([buildMember({ _id: 'bob', username: '@bob:remote.example.org', joined: false, joinedAt: undefined })], {
+				providerName: 'livekit',
+				status: VideoConferenceStatus.CALLING,
+				createdBy: { _id: 'alice', username: 'alice', name: 'Alice' },
+				federation: session,
+			});
+
+			await service.addUser('call1', 'alice');
+
+			expect(FederationMatrixMock.notifyRTCSession.calledOnce).to.be.true;
+			const [call, caller, targets, kind] = FederationMatrixMock.notifyRTCSession.firstCall.args;
+			expect(call.federation).to.deep.equal(session);
+			expect(caller).to.include({ _id: 'alice' });
+			expect(targets.map(({ _id }: { _id: string }) => _id)).to.deep.equal(['bob']);
+			expect(kind).to.equal('ring');
+			expect(FederationMatrixMock.joinRTCSession.calledBefore(FederationMatrixMock.notifyRTCSession)).to.be.true;
+		});
+
+		it('rings only the members of other servers there', async () => {
+			fixture = buildGroupCall(
+				[
+					buildMember({ _id: 'alice' }),
+					buildMember({ _id: 'bob', joined: false, joinedAt: undefined }),
+					buildMember({ _id: 'dave', joined: false, joinedAt: undefined }),
+				],
+				{ providerName: 'livekit', federation: session },
+			);
+
+			await service.ringMember('alice', 'call1', 'bob');
+			await service.ringMember('alice', 'call1', 'dave');
+
+			expect(FederationMatrixMock.notifyRTCSession.calledOnce).to.be.true;
+			expect(FederationMatrixMock.notifyRTCSession.firstCall.args[2].map(({ _id }: { _id: string }) => _id)).to.deep.equal(['bob']);
+		});
+
+		it('rings nobody elsewhere for a conference outside a federated room', async () => {
+			fixture = buildGroupCall([buildMember({ _id: 'alice' }), buildMember({ _id: 'bob', joined: false, joinedAt: undefined })], {
+				providerName: 'livekit',
+			});
+
+			await service.ringMember('alice', 'call1', 'bob');
+
+			expect(FederationMatrixMock.notifyRTCSession.called).to.be.false;
+		});
+
+		it('rings the users here a member of another server calls, as any ring does', async () => {
+			fixture = buildDirectCall([buildMember({ _id: 'bob', federation: bobFederation })], {
+				providerName: 'livekit',
+				createdBy: { _id: 'bob', username: '@bob:remote.example.org', name: '@bob:remote.example.org' },
+				federation: session,
+			});
+
+			await service.ringFromFederation('call1', 'bob', ['alice']);
+
+			expect(member('alice')).to.include({ joined: false });
+			expect(member('alice')?.ringingAt).to.be.instanceOf(Date);
+			expect(rings().map(([, payload]) => payload.userId)).to.deep.equal(['alice']);
+			expect(rings()[0][1].params).to.deep.equal({ callId: 'call1', rid: 'room1', uid: 'bob' });
+			expect(FederationMatrixMock.notifyRTCSession.called).to.be.false;
+		});
+
+		it('does not ring again someone already in the call', async () => {
+			fixture = buildGroupCall([buildMember({ _id: 'bob', federation: bobFederation }), buildMember({ _id: 'alice' })], {
+				providerName: 'livekit',
+				federation: session,
+			});
+
+			await service.ringFromFederation('call1', 'bob', ['alice']);
+
+			expect(rings()).to.be.empty;
+		});
+
+		it('turns down, on the caller server, the ring a user here declines', async () => {
+			fixture = buildDirectCall([buildMember({ _id: 'bob', federation: bobFederation }), buildMember({ _id: 'alice', joined: false })], {
+				providerName: 'livekit',
+				federation: session,
+			});
+
+			await service.declineCall('alice', 'call1');
+
+			expect(FederationMatrixMock.declineRTCSession.calledOnce).to.be.true;
+			expect(FederationMatrixMock.declineRTCSession.firstCall.args[1]).to.include({ _id: 'alice' });
+		});
+
+		it('records a decline from another server without sending it back', async () => {
+			fixture = buildDirectCall([buildMember({ _id: 'alice' }), buildMember({ _id: 'bob', joined: false })], {
+				providerName: 'livekit',
+				federation: session,
+			});
+
+			await service.declineCall('bob', 'call1');
+
+			expect(member('bob')).to.include({ declined: true });
+			expect(FederationMatrixMock.declineRTCSession.called).to.be.false;
 		});
 	});
 });

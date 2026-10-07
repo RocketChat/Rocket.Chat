@@ -1,7 +1,7 @@
 import { randomInt } from 'node:crypto';
 
 import { VideoConf } from '@rocket.chat/core-services';
-import { getVideoConferenceMemberFederation } from '@rocket.chat/core-typings';
+import { getVideoConferenceMemberFederation, isUserNativeFederated } from '@rocket.chat/core-typings';
 import type { IMatrixRTCMembership, IUser, IVideoConference, VideoConferenceFederation } from '@rocket.chat/core-typings';
 import { federationSDK } from '@rocket.chat/federation-sdk';
 import type { EventID, RoomID, UserID } from '@rocket.chat/federation-sdk';
@@ -12,8 +12,14 @@ import { getMatrixRTCProfile } from './config';
 import {
 	CALL_MEMBER_EVENT_TYPE,
 	COMPAT_MEMBERSHIP_EXPIRY_MS,
+	DECLINE_STICKY_DURATION_MS,
+	NOTIFICATION_STICKY_DURATION_MS,
+	RTC_DECLINE_EVENT_TYPES,
+	RTC_NOTIFICATION_EVENT_TYPES,
 	buildCompatMembership,
 	buildCompatMembershipLeave,
+	buildRtcDecline,
+	buildRtcNotification,
 	compatMembershipStateKey,
 } from './events';
 import type { CallIntent } from './events';
@@ -49,7 +55,9 @@ const sessionOf = (call: IVideoConference): VideoConferenceFederation => {
 	return call.federation;
 };
 
-const matrixUserIdOf = (user: Pick<IUser, 'username'>): string => `@${user.username}:${federationSDK.getConfig('serverName')}`;
+/** A user of this server, or the federated user standing for a member of another. */
+const matrixUserIdOf = (user: IUser): string =>
+	isUserNativeFederated(user) ? user.federation.mui : `@${user.username}:${federationSDK.getConfig('serverName')}`;
 
 const roomVersionOf = async (mrid: string): Promise<string> => {
 	const known = roomVersions.get(mrid);
@@ -243,17 +251,58 @@ export async function leaveRTCSession(call: IVideoConference, uid: IUser['_id'])
 	});
 }
 
-/** Rings, or tells about the call, the members of other servers through the room. */
+/**
+ * Rings, or tells about the call, the members of other servers through the room, mentioning each of them. The ring
+ * relates to the caller's own membership, so the caller must be announced first.
+ */
 export async function notifyRTCSession(
-	_call: IVideoConference,
-	_caller: IUser,
-	_targets: IUser[],
-	_kind: 'ring' | 'notification',
+	call: IVideoConference,
+	caller: IUser,
+	targets: IUser[],
+	kind: 'ring' | 'notification',
 ): Promise<void> {
-	throw new Error('not implemented');
+	const { mrid } = sessionOf(call);
+
+	const membership = await MatrixRTCMemberships.findOneActiveLocal(call._id, caller._id);
+	if (!membership?.eventId) {
+		throw new Error(`User ${caller._id} has no membership in conference ${call._id} for a ring to relate to`);
+	}
+
+	const userIds = targets.map(matrixUserIdOf);
+	const content = buildRtcNotification({
+		kind,
+		userIds,
+		membershipEventId: membership.eventId,
+		senderTs: Date.now(),
+		callIntent: membership.callIntent,
+	});
+
+	const { eventId } = await federationSDK.sendStickyEvent(
+		mrid as RoomID,
+		RTC_NOTIFICATION_EVENT_TYPES[0],
+		content,
+		membership.userId as UserID,
+		NOTIFICATION_STICKY_DURATION_MS,
+	);
+
+	await MatrixRTCMemberships.setNotificationById(membership._id, { eventId, userIds });
 }
 
-/** Turns down, for one of this server's users, a ring that came from another server. */
-export async function declineRTCSession(_call: IVideoConference, _user: IUser): Promise<void> {
-	throw new Error('not implemented');
+/** Turns down, for one of this server's users, the ring another server rang them with in a conference, if any. */
+export async function declineRTCSession(call: IVideoConference, user: IUser): Promise<void> {
+	const { mrid } = sessionOf(call);
+	const userId = matrixUserIdOf(user);
+
+	const ringer = await MatrixRTCMemberships.findOneRemoteRinging(call._id, userId);
+	if (!ringer?.notification) {
+		return;
+	}
+
+	await federationSDK.sendStickyEvent(
+		mrid as RoomID,
+		RTC_DECLINE_EVENT_TYPES[0],
+		buildRtcDecline(ringer.notification.eventId),
+		userId as UserID,
+		DECLINE_STICKY_DURATION_MS,
+	);
 }

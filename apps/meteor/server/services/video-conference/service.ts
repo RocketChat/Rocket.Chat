@@ -40,6 +40,7 @@ import {
 	isGroupVideoConference,
 	isLivechatVideoConference,
 	isRoomNativeFederated,
+	isUserNativeFederated,
 } from '@rocket.chat/core-typings';
 import { MATRIXRTC_ROOM_CALL_SLOT_ID } from '@rocket.chat/federation-matrix';
 import { Logger } from '@rocket.chat/logger';
@@ -1407,7 +1408,7 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 	 * so there is somewhere to record it.
 	 */
 	public async declineCall(uid: IUser['_id'], callId: VideoConference['_id']): Promise<void> {
-		const call = await VideoConferenceModel.findOneById(callId, { projection: { rid: 1, users: 1 } });
+		const call = await VideoConferenceModel.findOneById(callId, { projection: { rid: 1, users: 1, federation: 1 } });
 		if (!call) {
 			throw new Error('invalid-video-conference');
 		}
@@ -1419,6 +1420,22 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 		await VideoConferenceModel.setUserDeclinedById(callId, uid);
 		this.notifyVideoConfUpdate(call.rid, callId);
 		this.notifyConferenceUpdate(callId);
+
+		if (call.federation) {
+			await this.declineFederatedRing(call, uid);
+		}
+	}
+
+	/** The caller on another server stops ringing only when told; a decline that came from there is not sent back. */
+	private async declineFederatedRing(call: Pick<VideoConference, '_id'>, uid: IUser['_id']): Promise<void> {
+		try {
+			const user = await Users.findOneById(uid);
+			if (user && !isUserNativeFederated(user)) {
+				await FederationMatrix.declineRTCSession(call as VideoConference, user);
+			}
+		} catch (err) {
+			logger.error({ msg: 'Failed to decline a ring from another server', callId: call._id, uid, err });
+		}
 	}
 
 	/**
@@ -1560,6 +1577,58 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 		// The ring only reaches a client that is on screen, and it is one-shot. A desktop notification is what
 		// reaches someone who isn't looking at the app.
 		await this.notifyUsersAddedToConference(uid, memberIds, callId, rid);
+
+		await this.ringOnOtherServers(callId, uid, memberIds);
+	}
+
+	/** Members of other servers are rung by their own server, which a ring in the Matrix room reaches. */
+	private async ringOnOtherServers(callId: VideoConference['_id'], callerId: IUser['_id'], memberIds: IUser['_id'][]): Promise<void> {
+		if (!settings.get<boolean>('Federation_Service_MatrixRTC_Enabled')) {
+			return;
+		}
+
+		try {
+			const call = await VideoConferenceModel.findOneById(callId);
+			if (!call?.federation) {
+				return;
+			}
+
+			const [caller, members] = await Promise.all([Users.findOneById(callerId), Users.find({ _id: { $in: memberIds } }).toArray()]);
+			const remote = members.filter((member) => isUserNativeFederated(member));
+			// A ring that came from another server is not one to send back to it.
+			if (!caller || isUserNativeFederated(caller) || !remote.length) {
+				return;
+			}
+
+			await FederationMatrix.notifyRTCSession(call, caller, remote, 'ring');
+		} catch (err) {
+			logger.error({ msg: 'Failed to ring members of other servers', callId, err });
+		}
+	}
+
+	public async ringFromFederation(callId: VideoConference['_id'], callerId: IUser['_id'], uids: IUser['_id'][]): Promise<void> {
+		const call = await VideoConferenceModel.findOneById(callId);
+		if (!call || call.endedAt) {
+			return;
+		}
+
+		const ringable: IUser['_id'][] = [];
+		for (const uid of uids) {
+			const member = call.users.find(({ _id }) => _id === uid);
+			if (member ? canRingConferenceMember(member) : await this.addAbsentMember(callId, uid)) {
+				ringable.push(uid);
+			}
+		}
+
+		if (!ringable.length) {
+			return;
+		}
+
+		await this.ringUsers(callId, call.rid, callerId, ringable);
+
+		if (isDirectVideoConference(call)) {
+			await Promise.all(ringable.map((uid) => this.sendPushNotification(call, uid)));
+		}
 	}
 
 	/**

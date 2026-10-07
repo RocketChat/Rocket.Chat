@@ -54,6 +54,8 @@ export interface IMatrixRTCMembership extends IRocketChatRecord {
 	 */
 	livekitIdentityAliases?: string[];
 	callIntent?: 'audio' | 'video';
+	/** The latest ring the member sent, and the Matrix users it rang: what a decline relates to. */
+	notification?: { eventId: string; userIds: string[] };
 	joinedAt: Date;
 	/** Past this, the membership no longer counts, whether or not a leave ever arrives. */
 	expiresAt: Date;

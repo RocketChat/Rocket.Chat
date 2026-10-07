@@ -1,13 +1,13 @@
 import { VideoConf } from '@rocket.chat/core-services';
 import { federationSDK } from '@rocket.chat/federation-sdk';
-import { MatrixRTCMemberships, Rooms } from '@rocket.chat/models';
+import { MatrixRTCMemberships, Rooms, Users } from '@rocket.chat/models';
 
 import { configureMatrixRTC } from './config';
 import { handleMatrixRTCEvent } from './inbound';
 import { getOrCreateFederatedUser } from '../helpers/getOrCreateFederatedUser';
 
 jest.mock('@rocket.chat/core-services', () => ({
-	VideoConf: { syncFederatedSession: jest.fn() },
+	VideoConf: { syncFederatedSession: jest.fn(), ringFromFederation: jest.fn(), declineCall: jest.fn() },
 }));
 
 jest.mock('@rocket.chat/models', () => ({
@@ -16,8 +16,11 @@ jest.mock('@rocket.chat/models', () => ({
 		findOne: jest.fn(),
 		upsertRemote: jest.fn(),
 		removeByIds: jest.fn(),
+		setNotificationById: jest.fn(),
+		findOneByNotificationEventId: jest.fn(),
 	},
 	Rooms: { findOneFederatedByMrid: jest.fn() },
+	Users: { find: jest.fn() },
 	VideoConference: { find: jest.fn() },
 }));
 
@@ -353,5 +356,162 @@ describe('handleMatrixRTCEvent', () => {
 		await Promise.all([first, ...burst]);
 
 		expect(sdk.getLatestRoomState).toHaveBeenCalledTimes(2);
+	});
+});
+
+describe('rings and declines from other servers', () => {
+	const users = jest.mocked(Users);
+	const ringFromFederation = jest.mocked(VideoConf.ringFromFederation);
+	const declineCall = jest.mocked(VideoConf.declineCall);
+
+	const ringContent = (overrides: Record<string, unknown> = {}) => ({
+		'slot_id': 'm.call#ROOM',
+		'm.mentions': { user_ids: ['@alice:rc.example.com'] },
+		'notification_type': 'ring',
+		'm.relates_to': { rel_type: 'm.reference', event_id: '$bob_membership' },
+		'sender_ts': NOW - 1000,
+		'lifetime': 90_000,
+		'msc4354_sticky_key': 'm.call#ROOM',
+		...overrides,
+	});
+
+	const ring = (content = ringContent()) =>
+		({
+			event_id: '$ring',
+			event: {
+				type: 'org.matrix.msc4075.rtc.notification',
+				room_id: MRID,
+				sender: '@bob:remote.example.org',
+				origin_server_ts: NOW - 1000,
+				content,
+			},
+		}) as any;
+
+	const bobMembership = { _id: 'm-bob', uid: 'bob', callId: 'call1', userId: '@bob:remote.example.org' };
+
+	beforeEach(() => {
+		jest.clearAllMocks();
+		jest.useFakeTimers({ now: NOW, doNotFake: ['nextTick', 'setImmediate', 'queueMicrotask'] });
+		configureMatrixRTC({ enabled: true, profile: 'compatibility' });
+		sdk.getConfig.mockReturnValue('rc.example.com' as any);
+		rooms.findOneFederatedByMrid.mockResolvedValue(room as any);
+		memberships.findOne.mockResolvedValue(bobMembership as any);
+		users.find.mockReturnValue(cursorOf([{ _id: 'alice', username: 'alice' }]));
+	});
+
+	afterEach(() => {
+		jest.useRealTimers();
+	});
+
+	it('rings the users here it mentions, in the conference of the membership it relates to', async () => {
+		await handleMatrixRTCEvent(ring());
+
+		expect(memberships.findOne).toHaveBeenCalledWith({
+			mrid: MRID,
+			eventId: '$bob_membership',
+			userId: '@bob:remote.example.org',
+			local: false,
+		});
+		expect(users.find.mock.calls[0][0]).toEqual({ $or: [{ username: { $in: ['alice'] } }] });
+		expect(ringFromFederation).toHaveBeenCalledWith('call1', 'bob', ['alice']);
+	});
+
+	it('remembers who the ring rang, so their decline can relate to it', async () => {
+		await handleMatrixRTCEvent(ring());
+
+		expect(memberships.setNotificationById).toHaveBeenCalledWith('m-bob', { eventId: '$ring', userIds: ['@alice:rc.example.com'] });
+	});
+
+	it('rings everyone here in a direct message rung as a whole, as Element rings one', async () => {
+		rooms.findOneFederatedByMrid.mockResolvedValue({ ...room, t: 'd', uids: ['alice', 'bob'] } as any);
+		users.find.mockReturnValue(
+			cursorOf([
+				{ _id: 'alice', username: 'alice' },
+				{ _id: 'bob', username: '@bob:remote.example.org', federated: true, federation: { version: 1, mui: '@bob:remote.example.org' } },
+			]),
+		);
+
+		await handleMatrixRTCEvent(ring(ringContent({ 'm.mentions': { user_ids: [], room: true } })));
+
+		expect(users.find.mock.calls[0][0]).toEqual({ $or: [{ username: { $in: [] } }, { _id: { $in: ['alice', 'bob'] } }] });
+		expect(ringFromFederation).toHaveBeenCalledWith('call1', 'bob', ['alice']);
+	});
+
+	it('finds the conference of a caller whose membership is not attached to one yet', async () => {
+		memberships.findOne.mockResolvedValue({ ...bobMembership, callId: undefined } as any);
+		syncFederatedSession.mockResolvedValue('call2');
+
+		await handleMatrixRTCEvent(ring());
+
+		expect(syncFederatedSession).toHaveBeenCalledWith('room1', { mrid: MRID, slotId: 'm.call#ROOM' });
+		expect(ringFromFederation).toHaveBeenCalledWith('call2', 'bob', ['alice']);
+	});
+
+	it.each([
+		['a ring past its lifetime', ringContent({ sender_ts: NOW - 90_001 })],
+		['a mere notification', ringContent({ notification_type: 'notification' })],
+		['a ring in another slot', ringContent({ slot_id: 'm.call#other' })],
+		['a ring that mentions nobody here', ringContent({ 'm.mentions': { user_ids: ['@carol:remote.example.org'] } })],
+	])('rings nobody for %s', async (_, content) => {
+		users.find.mockReturnValue(cursorOf([]));
+
+		await handleMatrixRTCEvent(ring(content));
+
+		expect(ringFromFederation).not.toHaveBeenCalled();
+	});
+
+	it('rings nobody for a caller who is not in the call', async () => {
+		memberships.findOne.mockResolvedValue(null);
+
+		await handleMatrixRTCEvent(ring());
+
+		expect(ringFromFederation).not.toHaveBeenCalled();
+	});
+
+	describe('declines', () => {
+		const decline = (sender = '@bob:remote.example.org') =>
+			({
+				event_id: '$decline',
+				event: {
+					type: 'org.matrix.msc4310.rtc.decline',
+					room_id: MRID,
+					sender,
+					origin_server_ts: NOW,
+					content: { 'm.relates_to': { rel_type: 'm.reference', event_id: '$our_ring' }, 'msc4354_sticky_key': '$our_ring' },
+				},
+			}) as any;
+
+		it('records the decline of someone this server rang', async () => {
+			memberships.findOneByNotificationEventId.mockResolvedValue({
+				local: true,
+				callId: 'call1',
+				notification: { eventId: '$our_ring', userIds: ['@bob:remote.example.org'] },
+			} as any);
+
+			await handleMatrixRTCEvent(decline());
+
+			expect(memberships.findOneByNotificationEventId).toHaveBeenCalledWith('$our_ring');
+			expect(declineCall).toHaveBeenCalledWith('uid-of-@bob:remote.example.org', 'call1');
+		});
+
+		it('ignores a decline by someone the ring did not ring', async () => {
+			memberships.findOneByNotificationEventId.mockResolvedValue({
+				local: true,
+				callId: 'call1',
+				notification: { eventId: '$our_ring', userIds: ['@carol:remote.example.org'] },
+			} as any);
+
+			await handleMatrixRTCEvent(decline());
+
+			expect(declineCall).not.toHaveBeenCalled();
+		});
+
+		it('ignores a decline of a ring this server did not send', async () => {
+			memberships.findOneByNotificationEventId.mockResolvedValue(null);
+
+			await handleMatrixRTCEvent(decline());
+
+			expect(declineCall).not.toHaveBeenCalled();
+		});
 	});
 });

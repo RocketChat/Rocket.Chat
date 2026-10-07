@@ -74,5 +74,7 @@ export interface IVideoConfService {
 	syncFederatedSession(rid: IRoom['_id'], session: VideoConferenceFederation): Promise<VideoConference['_id'] | undefined>;
 	/** Forgets the MatrixRTC memberships that ran out, and lets the conferences they were in follow. */
 	expireFederatedMemberships(now?: Date): Promise<void>;
+	/** Rings this server's users, as any ring does, for a member of another server calling them in a federated conference. */
+	ringFromFederation(callId: VideoConference['_id'], callerId: IUser['_id'], uids: IUser['_id'][]): Promise<void>;
 	createVoIP(data: InsertionModel<IVoIPVideoConference>): Promise<IVoIPVideoConference['_id'] | undefined>;
 }

@@ -71,4 +71,19 @@ export class MatrixRTCMembershipsRaw extends BaseRaw<IMatrixRTCMembership> imple
 	attachSessionToCall(mrid: string, slotId: string, callId: IVideoConference['_id'], now = new Date()): Promise<UpdateResult | Document> {
 		return this.updateMany({ mrid, slotId, callId: { $ne: callId }, expiresAt: { $gt: now } }, { $set: { callId } });
 	}
+
+	setNotificationById(
+		_id: IMatrixRTCMembership['_id'],
+		notification: NonNullable<IMatrixRTCMembership['notification']>,
+	): Promise<UpdateResult> {
+		return this.updateOne({ _id }, { $set: { notification } });
+	}
+
+	findOneByNotificationEventId(eventId: string): Promise<IMatrixRTCMembership | null> {
+		return this.findOne({ 'notification.eventId': eventId });
+	}
+
+	findOneRemoteRinging(callId: IVideoConference['_id'], userId: string): Promise<IMatrixRTCMembership | null> {
+		return this.findOne({ callId, 'local': false, 'notification.userIds': userId }, { sort: { _updatedAt: -1 } });
+	}
 }
