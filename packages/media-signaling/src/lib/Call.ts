@@ -94,6 +94,13 @@ export class ClientMediaCall implements IClientMediaCall {
 
 	private _transferredBy: CallContact | null;
 
+	private _transferringCallId: string | null;
+
+	/** For a call placed to consult someone before an attended transfer: the id of the call that is on hold waiting for it */
+	public get transferringCallId(): string | null {
+		return this._transferringCallId;
+	}
+
 	public get transferredBy(): CallContact | null {
 		if (!this._transferredBy) {
 			return null;
@@ -181,7 +188,8 @@ export class ClientMediaCall implements IClientMediaCall {
 	}
 
 	public get ringing(): boolean {
-		if (this.hidden) {
+		// A call that takes over for one already in progress is accepted without ringing
+		if (this.hidden || this.hasFlag('replaces-call')) {
 			return false;
 		}
 
@@ -373,6 +381,7 @@ export class ClientMediaCall implements IClientMediaCall {
 		this._ignored = false;
 		this._contact = null;
 		this._transferredBy = null;
+		this._transferringCallId = null;
 		this._service = null;
 		this._remoteHeld = false;
 		this._remoteMute = false;
@@ -430,6 +439,28 @@ export class ClientMediaCall implements IClientMediaCall {
 			callee,
 			supportedServices: Object.keys(this.config.processorFactories) as CallService[],
 			supportedFeatures,
+		});
+
+		return this.initializeOutboundCall({ ...contactInfo, ...callee });
+	}
+
+	/** Requests this call as a consultation with `callee` while the call `heldCallId` is on hold, before an attended transfer */
+	public async requestAttendedTransfer(
+		heldCallId: string,
+		callee: { type: CallActorType; id: string },
+		contactInfo?: CallContact,
+	): Promise<void> {
+		if (this._initialized) {
+			return;
+		}
+
+		this.config.logger?.debug('ClientMediaCall.requestAttendedTransfer', callee);
+
+		this._transferringCallId = heldCallId;
+
+		this.config.transporter.sendToServer(heldCallId, 'attended-transfer', {
+			requestedCallId: this.callId,
+			to: callee,
 		});
 
 		return this.initializeOutboundCall({ ...contactInfo, ...callee });
@@ -499,6 +530,10 @@ export class ClientMediaCall implements IClientMediaCall {
 
 			// Send an ACK so the server knows that this session exists and is reachable
 			this.acknowledge();
+
+			if (this._role === 'callee' && this.hasFlag('replaces-call') && this.isPendingOurAcceptance()) {
+				this.accept();
+			}
 
 			// Adds a secondary timeout for all sessions of the call; Won't matter if the original caller session is still active, but is needed for transferred calls.
 			this.addStateTimeout('pending', TIMEOUT_TO_ACCEPT);
@@ -782,6 +817,17 @@ export class ClientMediaCall implements IClientMediaCall {
 		this.config.transporter.sendToServer(this.callId, 'transfer', {
 			to: callee,
 		});
+	}
+
+	/** Finishes the attended transfer this call was placed for, leaving the held call's actor and this call's actor talking to each other */
+	public completeAttendedTransfer(): void {
+		if (!this.busy || !this._transferringCallId) {
+			return;
+		}
+
+		this.config.logger?.debug('ClientMediaCall.completeAttendedTransfer');
+
+		this.config.transporter.sendToServer(this.callId, 'complete-attended-transfer', {});
 	}
 
 	public hangup(reason: CallHangupReason = 'normal'): void {
