@@ -122,7 +122,7 @@ describe('hook', () => {
 
 	it('should return value when peerInfo has userId', () => {
 		mockGetAutocompleteOptions.mockResolvedValue([]);
-		const peerInfo: PeerInfo = { userId: 'user1', displayName: 'User 1' };
+		const peerInfo: PeerInfo = { type: 'user', userId: 'user1', displayName: 'User 1' };
 
 		const { result } = renderHook(() => usePeerAutocomplete(mockOnSelectPeer, peerInfo), {
 			wrapper: appRoot(),
@@ -133,7 +133,7 @@ describe('hook', () => {
 
 	it('should return undefined value when peerInfo has no userId', () => {
 		mockGetAutocompleteOptions.mockResolvedValue([]);
-		const peerInfo: PeerInfo = { number: '123456' };
+		const peerInfo: PeerInfo = { type: 'sip', number: '123456' };
 
 		const { result } = renderHook(() => usePeerAutocomplete(mockOnSelectPeer, peerInfo), {
 			wrapper: appRoot(),
@@ -250,7 +250,7 @@ describe('hook', () => {
 			const mockUseUserPresence = useUserPresence as jest.MockedFunction<typeof useUserPresence>;
 
 			mockGetAutocompleteOptions.mockResolvedValue([]);
-			const peerInfo: PeerInfo = { userId: 'user1', displayName: 'User 1', status: UserStatus.ONLINE };
+			const peerInfo: PeerInfo = { type: 'user', userId: 'user1', displayName: 'User 1', status: UserStatus.ONLINE };
 
 			mockUseUserPresence.mockReturnValue({ _id: 'user1', status: UserStatus.AWAY, statusText: '' });
 
@@ -271,7 +271,7 @@ describe('hook', () => {
 			const mockUseUserPresence = useUserPresence as jest.MockedFunction<typeof useUserPresence>;
 
 			mockGetAutocompleteOptions.mockResolvedValue([]);
-			const peerInfo: PeerInfo = { userId: 'user1', displayName: 'User 1', status: UserStatus.ONLINE };
+			const peerInfo: PeerInfo = { type: 'user', userId: 'user1', displayName: 'User 1', status: UserStatus.ONLINE };
 
 			mockUseUserPresence.mockReturnValue({ _id: 'user1', status: UserStatus.ONLINE, statusText: '' });
 
@@ -305,7 +305,7 @@ describe('hook', () => {
 			const mockUseUserPresence = useUserPresence as jest.MockedFunction<typeof useUserPresence>;
 
 			mockGetAutocompleteOptions.mockResolvedValue([]);
-			const peerInfo: PeerInfo = { number: '123456' };
+			const peerInfo: PeerInfo = { type: 'sip', number: '123456' };
 
 			mockUseUserPresence.mockReturnValue({ _id: 'user1', status: UserStatus.ONLINE, statusText: '' });
 
@@ -323,7 +323,7 @@ describe('hook', () => {
 			const mockUseUserPresence = useUserPresence as jest.MockedFunction<typeof useUserPresence>;
 
 			mockGetAutocompleteOptions.mockResolvedValue([]);
-			const peerInfo: PeerInfo = { userId: 'user1', displayName: 'User 1', status: UserStatus.ONLINE };
+			const peerInfo: PeerInfo = { type: 'user', userId: 'user1', displayName: 'User 1', status: UserStatus.ONLINE };
 
 			mockUseUserPresence.mockReturnValue(undefined);
 

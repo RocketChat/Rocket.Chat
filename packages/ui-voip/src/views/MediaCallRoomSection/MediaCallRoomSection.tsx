@@ -9,7 +9,7 @@ import { useMediaCallView } from '../../context/MediaCallViewContext';
 import useRegisterView from '../../context/useRegisterView';
 import AppActions from '../../experimental/AppActionButtons/components/AppActions';
 import { useVisibleAppActions } from '../../experimental/AppActionButtons/hooks/useVisibleAppActions';
-import { isExternalPeer } from '../../utils/isExternalPeer';
+import { isInternalPeer } from '../../utils/isInternalPeer';
 import MediaCallCardList from '../MediaCallCardList';
 import PopoutDockPrompt from '../PopoutDockPrompt';
 
@@ -71,7 +71,7 @@ const MediaCallRoomSection = ({ showChat, onToggleChat, user, containerHeight }:
 
 	const showHeaderActions = appActions.length > 0;
 
-	if (!peerInfo || isExternalPeer(peerInfo)) {
+	if (!peerInfo || !isInternalPeer(peerInfo)) {
 		return null;
 	}
 

@@ -10,7 +10,7 @@ import { useFullscreenToggle } from './useFullscreenToggle';
 import { useMediaCallView } from '../context/MediaCallViewContext';
 import AppActions from '../experimental/AppActionButtons/components/AppActions';
 import { useVisibleAppActions } from '../experimental/AppActionButtons/hooks/useVisibleAppActions';
-import { isExternalPeer } from '../utils/isExternalPeer';
+import { isInternalPeer } from '../utils/isInternalPeer';
 
 export type MediaCallPopoutViewProps = {
 	user: {
@@ -48,7 +48,7 @@ const MediaCallPopoutView = ({ user, onClickClosePopout }: MediaCallPopoutViewPr
 
 	const showHeaderActions = appActions.length > 0;
 
-	if (!peerInfo || isExternalPeer(peerInfo)) {
+	if (!peerInfo || !isInternalPeer(peerInfo)) {
 		return null;
 	}
 
