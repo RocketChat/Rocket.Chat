@@ -1,5 +1,5 @@
-import type { AbacActor } from '@rocket.chat/core-services';
-import type { IAbacAttributeDefinition, IRoom, IUser, AtLeast } from '@rocket.chat/core-typings';
+import type { AbacActor, AbacRoomMembershipPreviewPage } from '@rocket.chat/core-services';
+import type { IAbacAttributeDefinition, IAbacRoomMembershipPreview, IRoom, IUser, AtLeast } from '@rocket.chat/core-typings';
 
 export type IEntityIdentifier = { emailAddress: string } | { id: string };
 
@@ -39,6 +39,10 @@ export type Evaluation = {
 	inconclusive: string[];
 };
 
+export type AttributeSetChange = { added: boolean; removed: boolean };
+
+export type RoomMembersPreview = Pick<IAbacRoomMembershipPreview, 'members' | 'checked' | 'total' | 'next'>;
+
 export type NonCompliantPair = {
 	user: Pick<IUser, '_id' | 'emails' | 'username'>;
 	room: AtLeast<IRoom, '_id' | 'abacAttributes'>;
@@ -58,7 +62,17 @@ export interface IPolicyDecisionPoint {
 
 	assertCreatorMayAssign(attributes: IAbacAttributeDefinition[], actor: AbacActor): Promise<{ creatorAdmitted: boolean }>;
 
-	filterAssignableAttributes(definitions: IAbacAttributeDefinition[], actor: AbacActor): Promise<IAbacAttributeDefinition[]>;
+	findUnassignableValues(
+		attributes: IAbacAttributeDefinition[],
+		actor: AbacActor,
+		alreadyAssigned?: IAbacAttributeDefinition[],
+	): Promise<IAbacAttributeDefinition[]>;
+
+	filterAssignableAttributes(
+		definitions: IAbacAttributeDefinition[],
+		actor: AbacActor,
+		alreadyAssigned?: IAbacAttributeDefinition[],
+	): Promise<IAbacAttributeDefinition[]>;
 
 	evaluateSubjectsAgainstAttributes(
 		subjects: EvaluableSubject[],
@@ -72,6 +86,14 @@ export interface IPolicyDecisionPoint {
 		room: AtLeast<IRoom, '_id' | 't' | 'teamMain' | 'abacAttributes'>,
 		newAttributes: IAbacAttributeDefinition[],
 	): Promise<IUser[]>;
+
+	needsEvaluation(change: AttributeSetChange): boolean;
+
+	previewRoomMembers(
+		room: AtLeast<IRoom, '_id' | 'abacAttributes'>,
+		attributes: IAbacAttributeDefinition[],
+		page: AbacRoomMembershipPreviewPage,
+	): Promise<RoomMembersPreview>;
 
 	onSubjectAttributesChanged(user: IUser, next: IAbacAttributeDefinition[]): Promise<Pick<IRoom, '_id' | 'name'>[]>;
 

@@ -12,7 +12,7 @@ export const useAssignableAttributes = <TData = AssignableAttributes>(enabled: b
 
 	return useQuery({
 		queryKey: ABACQueryKeys.assignableAttributes(),
-		queryFn: () => getAssignableAttributes(),
+		queryFn: () => getAssignableAttributes({}),
 		enabled,
 		select,
 		staleTime: 15_000,
