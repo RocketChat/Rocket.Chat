@@ -1,6 +1,7 @@
 import { expect } from 'chai';
 import { beforeEach } from 'mocha';
 
+import { MESSAGE_MAX_PARSE_LENGTH_DEFAULT } from '../../../../../../lib/constants';
 import { BeforeSaveMarkdownParser } from '../../../../../../server/services/messages/hooks/BeforeSaveMarkdownParser';
 
 const createMessage = (msg?: string, extra: any = {}) => ({
@@ -77,6 +78,29 @@ describe('Markdown parser', () => {
 
 		const message = await markdownParser.parseMarkdown({
 			message: createMessage('short msg'),
+			config: {},
+		});
+
+		expect(message).to.have.property('md');
+	});
+
+	it('should skip parsing when msg exceeds the default limit and MESSAGE_MAX_PARSE_LENGTH is unset', async () => {
+		const markdownParser = new BeforeSaveMarkdownParser(true);
+
+		const message = await markdownParser.parseMarkdown({
+			message: createMessage('a'.repeat(MESSAGE_MAX_PARSE_LENGTH_DEFAULT + 1)),
+			config: {},
+		});
+
+		expect(message).to.not.have.property('md');
+	});
+
+	it('should parse msgs above the default limit when MESSAGE_MAX_PARSE_LENGTH is 0', async () => {
+		process.env.MESSAGE_MAX_PARSE_LENGTH = '0';
+		const markdownParser = new BeforeSaveMarkdownParser(true);
+
+		const message = await markdownParser.parseMarkdown({
+			message: createMessage('a'.repeat(MESSAGE_MAX_PARSE_LENGTH_DEFAULT + 1)),
 			config: {},
 		});
 
