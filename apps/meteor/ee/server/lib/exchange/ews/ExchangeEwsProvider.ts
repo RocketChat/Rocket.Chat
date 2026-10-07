@@ -9,13 +9,16 @@ import { logger } from '../logger';
 /** The sync state answers about the calendar folder, not about the window, so the window it was issued for travels with it. */
 const CURSOR_SEPARATOR = '|';
 
-const encodeCursor = (syncState: string | undefined, windowStart: Date): string | undefined =>
-	syncState && `${windowStart.toISOString()}${CURSOR_SEPARATOR}${syncState}`;
+const windowKey = ({ start, end }: DateRange): string => `${start.toISOString()}${CURSOR_SEPARATOR}${end.toISOString()}`;
 
-const decodeCursor = (cursor?: string): { windowStart?: string; syncState?: string } => {
-	const separator = cursor?.indexOf(CURSOR_SEPARATOR) ?? -1;
+const encodeCursor = (syncState: string | undefined, timeWindow: DateRange): string | undefined =>
+	syncState && `${windowKey(timeWindow)}${CURSOR_SEPARATOR}${syncState}`;
 
-	return separator < 0 ? { syncState: cursor } : { windowStart: cursor?.slice(0, separator), syncState: cursor?.slice(separator + 1) };
+const decodeCursor = (cursor?: string): { window?: string; syncState?: string } => {
+	const first = cursor?.indexOf(CURSOR_SEPARATOR) ?? -1;
+	const second = first < 0 ? -1 : (cursor?.indexOf(CURSOR_SEPARATOR, first + 1) ?? -1);
+
+	return second < 0 ? { syncState: cursor } : { window: cursor?.slice(0, second), syncState: cursor?.slice(second + 1) };
 };
 
 /** At 1000 occurrences a page, past any window a person can fill. An emergency guard, not a working limit. */
@@ -65,9 +68,9 @@ export class ExchangeEwsProvider implements IExchangeProvider {
 		const includesLastItem = textOf(firstByTag(doc, MESSAGES_NS, 'IncludesLastItemInRange')) === 'true';
 		const changed = ['Create', 'Update', 'Delete'].some((tag) => allByTag(doc, TYPES_NS, tag).length > 0);
 
-		const nextCursor = encodeCursor(syncState, timeWindow.start);
+		const nextCursor = encodeCursor(syncState, timeWindow);
 
-		if (!changed && previous.windowStart === timeWindow.start.toISOString()) {
+		if (!changed && previous.window === windowKey(timeWindow)) {
 			return { items: [], cursor: nextCursor, hasMore: !includesLastItem, coverage: 'delta' };
 		}
 
