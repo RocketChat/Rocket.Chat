@@ -53,7 +53,7 @@ it('opens the widget with the received phone number', () => {
 
 	bridge.fire('+15551234567');
 
-	expect(openWidget).toHaveBeenCalledWith<[PeerInfo]>({ number: '+15551234567' });
+	expect(openWidget).toHaveBeenCalledWith<[PeerInfo]>({ type: 'sip', number: '+15551234567' });
 });
 
 // phoneNumber is typed as `any` since we are testing invalid format treatment
@@ -95,5 +95,5 @@ it('re-registers the callback when the openWidget reference changes', () => {
 
 	bridge.fire('5551234567');
 
-	expect(newOpenWidget).toHaveBeenCalledWith<[PeerInfo]>({ number: '5551234567' });
+	expect(newOpenWidget).toHaveBeenCalledWith<[PeerInfo]>({ type: 'sip', number: '5551234567' });
 });
