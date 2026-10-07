@@ -1,8 +1,16 @@
-import type { IUser, MediaCallActor, MediaCallActorType, MediaCallContact, MediaCallContactInformation } from '@rocket.chat/core-typings';
+import type {
+	IMediaCall,
+	IUser,
+	MediaCallActor,
+	MediaCallActorType,
+	MediaCallContact,
+	MediaCallContactInformation,
+} from '@rocket.chat/core-typings';
 import type { CallRole } from '@rocket.chat/media-signaling';
 import { Users } from '@rocket.chat/models';
 
 import { BroadcastActorAgent } from './BroadcastAgent';
+import { CtiActorAgent } from './CtiActorAgent';
 import type { IMediaCallAgent } from '../definition/IMediaCallAgent';
 import type { IMediaCallCastDirector } from '../definition/IMediaCallCastDirector';
 import type { GetActorContactOptions, MinimalUserData, MediaCallHeader } from '../definition/common';
@@ -35,7 +43,7 @@ export class MediaCallCastDirector implements IMediaCallCastDirector {
 	public async getAgentFromCall(call: MediaCallHeader, role: CallRole): Promise<IMediaCallAgent | null> {
 		const { [role]: actor } = call;
 
-		return this.getAgentForActorAndRole(actor, role);
+		return this.getAgentForActorAndRole(actor, role, call.service);
 	}
 
 	public async getContactForActor(
@@ -109,12 +117,20 @@ export class MediaCallCastDirector implements IMediaCallCastDirector {
 		return users[0];
 	}
 
-	public async getAgentForActorAndRole(actor: MediaCallContact, role: CallRole): Promise<IMediaCallAgent | null> {
+	public async getAgentForActorAndRole(
+		actor: MediaCallContact,
+		role: CallRole,
+		service?: IMediaCall['service'],
+	): Promise<IMediaCallAgent | null> {
 		if (actor.type === 'user') {
 			return this.getAgentForUserActorAndRole(actor, role);
 		}
 
 		if (actor.type === 'sip') {
+			// On a cti call the non-user leg is handled by an app/gateway, not the SIP/drachtio backend.
+			if (service === 'cti') {
+				return this.getAgentForCtiActorAndRole(actor, role);
+			}
 			return this.getAgentForSipActorAndRole(actor, role);
 		}
 
@@ -155,6 +171,10 @@ export class MediaCallCastDirector implements IMediaCallCastDirector {
 
 	protected async getAgentForSipActorAndRole(actor: MediaCallContact, role: CallRole): Promise<BroadcastActorAgent | null> {
 		return new BroadcastActorAgent(actor, role);
+	}
+
+	protected async getAgentForCtiActorAndRole(actor: MediaCallContact, role: CallRole): Promise<CtiActorAgent | null> {
+		return new CtiActorAgent(actor, role);
 	}
 
 	protected buildContactListForUser(user: MinimalUserData, defaultContactInfo?: MediaCallContactInformation, sipId?: string): ContactList {

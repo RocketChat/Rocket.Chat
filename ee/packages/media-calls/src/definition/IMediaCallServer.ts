@@ -1,7 +1,8 @@
-import type { CallPreventionRecord, IMediaCall, IUser, MediaCallContact } from '@rocket.chat/core-typings';
+import type { CallPreventionRecord, IMediaCall, IUser, IUserMediaCallDevice, MediaCallContact } from '@rocket.chat/core-typings';
 import type { Emitter } from '@rocket.chat/emitter';
 import type { CallFeature, ClientMediaSignal, ClientMediaSignalBody, ServerMediaSignal } from '@rocket.chat/media-signaling';
 
+import type { CtiCallStateEvent, MediaCallDevice } from './IMediaCallAppGateway';
 import type { InternalCallParams, MediaCallHeader, SignalProcessingOptions } from './common';
 
 export type VoipPushNotificationType = 'incoming_call' | 'remoteEnded' | 'answeredElsewhere' | 'declinedElsewhere' | 'unanswered';
@@ -69,6 +70,11 @@ export interface IMediaCallServerSettings {
 
 	mobileRinging: boolean;
 
+	/** Calls placed on external devices (desk phones) handled by an app. */
+	cti: {
+		enabled: boolean;
+	};
+
 	permissionCheck: (uid: IUser['_id'], callType: 'internal' | 'external' | 'any') => Promise<boolean>;
 	isFeatureEnabled: (feature: CallFeature) => boolean;
 }
@@ -96,6 +102,17 @@ export interface IMediaCallServer {
 	runPreCallCreatedHook(params: PreCallCreatedHookParams): Promise<PreCallCreatedHookResult>;
 
 	requestCall(params: InternalCallParams): Promise<void>;
+
+	// cti (app-backed device calls): app -> host entry points
+	createIncomingCtiCall(params: {
+		user: MediaCallContact;
+		from: MediaCallContact;
+		device?: string;
+		features?: CallFeature[];
+	}): Promise<void>;
+	reportCtiCallState(callId: string, event: CtiCallStateEvent): Promise<void>;
+	getUserMediaDevices(uid: IUser['_id']): Promise<MediaCallDevice[]>;
+	selectUserMediaDevice(uid: IUser['_id'], deviceId: string | null): Promise<IUserMediaCallDevice | null>;
 
 	permissionCheck(uid: IUser['_id'], callType: 'internal' | 'external' | 'any'): Promise<boolean>;
 	isFeatureAvailableForParticipants(feature: CallFeature, participants: MediaCallContact[]): boolean;
