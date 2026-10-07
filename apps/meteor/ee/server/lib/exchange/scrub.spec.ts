@@ -20,6 +20,10 @@ describe('scrubText', () => {
 			expect(result).not.toContain(redactedValue);
 		});
 
+		it('redacts a lowercase scheme, where a case sensitive match leaves the value behind', () => {
+			expect(scrubText(`Authorization: bearer ${bearerToken}`)).not.toContain(bearerToken);
+		});
+
 		it('redacts an authorization header rendered as an object property', () => {
 			expect(scrubText('{"Authorization":"Bearer abc123def456"}')).not.toContain('abc123def456');
 		});
@@ -55,6 +59,10 @@ describe('scrubText', () => {
 
 		it('redacts a password field in a form or object rendering', () => {
 			expect(scrubText('username=svc-rc&password=hunter2')).not.toContain('hunter2');
+		});
+
+		it('redacts a password in JSON, where a quote sits between the key and the colon', () => {
+			expect(scrubText('{"username":"svc-rc","password":"hunter2"}')).not.toContain('hunter2');
 		});
 	});
 
@@ -96,6 +104,20 @@ describe('scrubForLog', () => {
 
 		expect(JSON.stringify(result)).not.toContain('abc123def456');
 		expect(JSON.stringify(result)).not.toContain('Q29ycFxzdmM6cHc=');
+	});
+
+	it('redacts by key, since a credential on its own looks like any other string', () => {
+		expect(scrubForLog({ clientSecret: 'sh-8Q~abc', password: 'hunter2', status: 500 })).toEqual({
+			clientSecret: REDACTED,
+			password: REDACTED,
+			status: 500,
+		});
+	});
+
+	it('keeps a key that names a location, whose value the text patterns still cover', () => {
+		const config = { tokenEndpoint: 'https://login.microsoftonline.com/tenant/oauth2/v2.0/token' };
+
+		expect(scrubForLog(config)).toEqual(config);
 	});
 
 	it('passes non-string primitives through untouched', () => {
