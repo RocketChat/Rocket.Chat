@@ -4,7 +4,7 @@ import type { NavBarSearchFormValues } from '@rocket.chat/ai-search';
 import { Tile, Box, ToggleSwitch, Divider, Icon } from '@rocket.chat/fuselage';
 import { useOutsideClick, useStableCallback } from '@rocket.chat/fuselage-hooks';
 import { CustomScrollbars } from '@rocket.chat/ui-client';
-import { useRef } from 'react';
+import { useId, useRef } from 'react';
 import { useFormContext, useWatch } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 
@@ -40,6 +40,7 @@ const NavBarAISearchListBox = ({
 }: NavBarAISearchListBoxProps) => {
 	const { t } = useTranslation();
 	const containerRef = useRef<HTMLElement>(null);
+	const aiSearchLabelId = useId();
 
 	const handleKeyDown = useListboxNavigation(state);
 	useOutsideClick([containerRef], state.close);
@@ -83,10 +84,12 @@ const NavBarAISearchListBox = ({
 						<>
 							<Box display='flex' justifyContent='space-between' alignItems='center' paddingInline={12}>
 								<Box display='flex' alignItems='center'>
-									{t('AI_Search')}
+									<Box is='span' id={aiSearchLabelId}>
+										{t('AI_Search')}
+									</Box>
 									<Icon name='info' size={16} marginInlineStart={2} title={t('AI_Search_description')} />
 								</Box>
-								<ToggleSwitch checked={aiSearchActive} onChange={handleToggleAISearch} />
+								<ToggleSwitch aria-labelledby={aiSearchLabelId} checked={aiSearchActive} onChange={handleToggleAISearch} />
 							</Box>
 							{aiSearchActive && <NavBarSearchFilterTypeRow draft={aiItems.draft} />}
 							<Divider marginBlockStart={12} />
