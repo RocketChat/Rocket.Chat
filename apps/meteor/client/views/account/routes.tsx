@@ -51,7 +51,7 @@ export const registerAccountRoute = createRouteGroup(
 
 registerAccountRoute('/preferences', {
 	name: 'preferences',
-	component: lazy(() => import('./preferences/AccountPreferencesPage')),
+	component: lazy(() => import('./preferences/AccountPreferencesRoute')),
 });
 
 registerAccountRoute('/profile', {

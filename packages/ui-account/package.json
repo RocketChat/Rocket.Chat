@@ -20,6 +20,7 @@
 	"dependencies": {
 		"@react-aria/visually-hidden": "^3.8.27",
 		"@tanstack/react-query": "~5.65.1",
+		"dompurify": "~3.4.16",
 		"react-hook-form": "~7.54.2",
 		"react-i18next": "~17.0.16"
 	},
@@ -44,6 +45,7 @@
 		"@types/react": "~19.2.18",
 		"@types/react-dom": "~19.2.7",
 		"eslint": "~10.12.0",
+		"i18next": "~26.4.2",
 		"jest": "~30.5.2",
 		"jest-axe": "~11.0.0",
 		"react": "~19.2.8",
