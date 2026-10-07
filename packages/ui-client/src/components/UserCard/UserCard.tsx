@@ -6,9 +6,9 @@ import { useContext } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { useEmbeddedLayout } from '../../hooks/useEmbeddedLayout';
+import { HoverCardActions } from '../HoverCard';
 import { MarkdownTextContext } from '../MarkdownTextContext';
 import * as Status from '../UserStatus';
-import UserCardActions from './UserCardActions';
 import UserCardDialog from './UserCardDialog';
 import UserCardInfo from './UserCardInfo';
 import UserCardRoles from './UserCardRoles';
@@ -55,7 +55,7 @@ const UserCard = ({
 			<div>
 				{username && <UserAvatar username={username} etag={etag} size='x124' />}
 				<Box flexGrow={0} display='flex' marginBlockStart={12} alignItems='center' justifyContent='center'>
-					<UserCardActions aria-label={t('User_card_actions')}>{actions}</UserCardActions>
+					<HoverCardActions aria-label={t('User_card_actions')}>{actions}</HoverCardActions>
 				</Box>
 			</div>
 			<Box display='flex' flexDirection='column' flexGrow={1} flexShrink={1} marginInlineStart={16} width='1px'>

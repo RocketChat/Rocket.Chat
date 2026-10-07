@@ -19,6 +19,7 @@ export { default as AnnouncementBanner } from './AnnouncementBanner';
 export { default as UserAutoComplete } from './UserAutoComplete';
 export * from './GenericMenu';
 export * from './GenericNoResults';
+export * from './HoverCard';
 export * from './ImageGalleryContext';
 export * from './Modal';
 export * from './Wizard';
