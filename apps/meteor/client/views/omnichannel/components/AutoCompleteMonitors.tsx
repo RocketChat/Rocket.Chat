@@ -1,4 +1,4 @@
-import { CheckBox, Item, ItemActions, ItemContent, ItemTitle, PaginatedMultiSelectFiltered } from '@rocket.chat/fuselage';
+import { CheckOption, PaginatedMultiSelectFiltered } from '@rocket.chat/fuselage';
 import { useDebouncedValue } from '@rocket.chat/fuselage-hooks';
 import type { ComponentProps } from 'react';
 import { memo, useMemo, useState } from 'react';
@@ -31,20 +31,9 @@ const AutoCompleteMonitors = ({ value = [], onBlur, onChange, ...props }: AutoCo
 			endReached={() => fetchNextPage()}
 			onBlur={onBlur}
 			onChange={onChange}
-			renderItem={({ label, value, index: _index, selected: _selected, focus, ...props }) => {
-				const isSelected = !!value && selectedValues.has(value);
-
-				return (
-					<Item {...props} inset='md' selected={isSelected} focused={focus} aria-selected={isSelected}>
-						<ItemContent>
-							<ItemTitle>{label}</ItemTitle>
-						</ItemContent>
-						<ItemActions aria-hidden>
-							<CheckBox checked={isSelected} readOnly tabIndex={-1} />
-						</ItemActions>
-					</Item>
-				);
-			}}
+			renderItem={({ label, value, ...props }) => (
+				<CheckOption {...props} label={label} selected={value ? selectedValues.has(value) : false} />
+			)}
 		/>
 	);
 };
