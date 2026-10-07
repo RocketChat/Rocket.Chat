@@ -24,7 +24,7 @@
 		"@rocket.chat/emitter": "workspace:~",
 		"@rocket.chat/media-signaling": "workspace:~",
 		"@tanstack/react-query": "~5.65.1",
-		"react-i18next": "~17.0.15"
+		"react-i18next": "~17.0.16"
 	},
 	"devDependencies": {
 		"@playwright/test": "~1.52.0",

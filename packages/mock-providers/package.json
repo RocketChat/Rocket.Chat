@@ -20,7 +20,7 @@
 		"@rocket.chat/i18n": "workspace:~",
 		"@rocket.chat/ui-contexts": "workspace:^",
 		"i18next": "~26.4.2",
-		"react-i18next": "~17.0.15"
+		"react-i18next": "~17.0.16"
 	},
 	"devDependencies": {
 		"@faker-js/faker": "~8.0.2",

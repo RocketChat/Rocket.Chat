@@ -35,7 +35,7 @@
 		"eslint-plugin-testing-library": "~7.16.2",
 		"globals": "~17.13.0",
 		"prettier": "~3.9.9",
-		"typescript-eslint": "~8.71.0"
+		"typescript-eslint": "~8.71.1"
 	},
 	"devDependencies": {
 		"storybook": "^9.1.20",
