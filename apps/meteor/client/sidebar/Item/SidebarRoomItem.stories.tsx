@@ -86,7 +86,7 @@ export const Lists: StoryFn<typeof SidebarRoomItem> = (args) => (
 	<Box display='flex' gap={24}>
 		{(['condensed', 'extended'] as const).map((viewMode) => (
 			<Box key={viewMode} width='x280'>
-				<Box fontScale='micro' color='hint' paddingInline={8} mbe={8}>
+				<Box fontScale='micro' color='hint' paddingInline={8} marginBlockEnd={8}>
 					{viewMode}
 				</Box>
 				{['general', 'design', 'engineering', 'random'].map((name, index) => (
