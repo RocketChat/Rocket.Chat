@@ -8,7 +8,11 @@ export const MESSAGES_NS = 'http://schemas.microsoft.com/exchange/services/2006/
 /** Where a SOAP fault names its `ResponseCode`. An operation uses `MESSAGES_NS` for the same element. */
 export const ERRORS_NS = 'http://schemas.microsoft.com/exchange/services/2006/errors';
 
-const BENIGN_RESPONSE_CODES = new Set(['NoError', 'ErrorNameResolutionMultipleResults']);
+/**
+ *  The last one is an error, kept here deliberately since a batched `GetItem` asks about ids a previous `FindItem` returned,
+ *  so an item deleted in between is a race rather than a fault, and failing the batch would discard the items that are still there
+ */
+const BENIGN_RESPONSE_CODES = new Set(['NoError', 'ErrorNameResolutionMultipleResults', 'ErrorItemNotFound']);
 
 const RESPONSE_CODE_TO_ERROR: Record<string, { code: ExchangeErrorCode; message: string }> = {
 	ErrorAccessDenied: { code: 'authorization-failed', message: 'The service account is not allowed to access this mailbox' },
