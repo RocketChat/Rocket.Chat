@@ -1,8 +1,8 @@
 import type { IOutboundProviderMetadata } from '@rocket.chat/core-typings';
 import { Select } from '@rocket.chat/fuselage';
+import { formatPhoneNumber } from '@rocket.chat/ui-client';
 import { useMemo, type ComponentProps } from 'react';
 
-import { formatPhoneNumber } from '../../../../../lib/formatPhoneNumber';
 
 export type SenderSelectProps = Omit<ComponentProps<typeof Select>, 'options'> & {
 	provider: IOutboundProviderMetadata | undefined;

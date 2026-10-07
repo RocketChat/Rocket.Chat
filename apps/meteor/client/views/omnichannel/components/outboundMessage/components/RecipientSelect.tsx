@@ -1,9 +1,9 @@
 import type { Serialized, ILivechatContact } from '@rocket.chat/core-typings';
 import { Select } from '@rocket.chat/fuselage';
+import { formatPhoneNumber } from '@rocket.chat/ui-client';
 import type { ComponentProps, Key } from 'react';
 import { useMemo } from 'react';
 
-import { formatPhoneNumber } from '../../../../../lib/formatPhoneNumber';
 
 export type RecipientSelectProps = Omit<ComponentProps<typeof Select>, 'options' | 'onChange' | 'value'> & {
 	type: 'phone' | 'email';
