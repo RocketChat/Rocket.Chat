@@ -2167,7 +2167,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@babel/plugin-transform-react-display-name@npm:^7.27.1, @babel/plugin-transform-react-display-name@npm:^7.28.0":
+"@babel/plugin-transform-react-display-name@npm:^7.28.0":
   version: 7.28.0
   resolution: "@babel/plugin-transform-react-display-name@npm:7.28.0"
   dependencies:
@@ -2459,22 +2459,6 @@ __metadata:
   peerDependencies:
     "@babel/core": ^7.0.0-0 || ^8.0.0-0 <8.0.0
   checksum: 10/039aba98a697b920d6440c622aaa6104bb6076d65356b29dad4b3e6627ec0354da44f9621bafbeefd052cd4ac4d7f88c9a2ab094efcb50963cb352781d0c6428
-  languageName: node
-  linkType: hard
-
-"@babel/preset-react@npm:~7.27.1":
-  version: 7.27.1
-  resolution: "@babel/preset-react@npm:7.27.1"
-  dependencies:
-    "@babel/helper-plugin-utils": "npm:^7.27.1"
-    "@babel/helper-validator-option": "npm:^7.27.1"
-    "@babel/plugin-transform-react-display-name": "npm:^7.27.1"
-    "@babel/plugin-transform-react-jsx": "npm:^7.27.1"
-    "@babel/plugin-transform-react-jsx-development": "npm:^7.27.1"
-    "@babel/plugin-transform-react-pure-annotations": "npm:^7.27.1"
-  peerDependencies:
-    "@babel/core": ^7.0.0-0
-  checksum: 10/26dd63164ada235ddca53c074944f52cea9a6d8064d02871cad672fe92cc2e136dd1809fb61fa0313a3c19d8e32a00a667d0cbd79465ad8460e2c1b88e5509ae
   languageName: node
   linkType: hard
 
@@ -10355,7 +10339,7 @@ __metadata:
     "@axe-core/playwright": "npm:^4.10.2"
     "@babel/core": "npm:~7.29.7"
     "@babel/preset-env": "npm:~7.29.7"
-    "@babel/preset-react": "npm:~7.27.1"
+    "@babel/preset-react": "npm:~7.28.5"
     "@babel/register": "npm:~7.28.6"
     "@babel/runtime": "npm:~7.29.7"
     "@bugsnag/js": "npm:~7.20.2"

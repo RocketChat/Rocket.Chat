@@ -342,7 +342,7 @@
 	},
 	"devDependencies": {
 		"@axe-core/playwright": "^4.10.2",
-		"@babel/preset-react": "~7.27.1",
+		"@babel/preset-react": "~7.28.5",
 		"@babel/register": "~7.28.6",
 		"@faker-js/faker": "~8.0.2",
 		"@playwright/test": "~1.52.0",
