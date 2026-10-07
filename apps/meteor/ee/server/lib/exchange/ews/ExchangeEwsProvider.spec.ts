@@ -322,6 +322,16 @@ describe('ExchangeEwsProvider', () => {
 
 			await expect(new ExchangeEwsProvider(transport).listEvents('user@corp.example', timeWindow)).rejects.toMatchObject({
 				code: 'unexpected-response',
+				message: 'Exchange returned a document that is not a SOAP envelope',
+			});
+		});
+
+		it('rejects an Envelope that is not in a SOAP namespace', async () => {
+			const transport = new FakeTransport(['<Envelope xmlns="urn:acme:portal"><Body/></Envelope>']);
+
+			await expect(new ExchangeEwsProvider(transport).listEvents('user@corp.example', timeWindow)).rejects.toMatchObject({
+				code: 'unexpected-response',
+				message: 'Exchange returned a document that is not a SOAP envelope',
 			});
 		});
 
@@ -330,6 +340,7 @@ describe('ExchangeEwsProvider', () => {
 
 			await expect(new ExchangeEwsProvider(transport).listEvents('user@corp.example', timeWindow)).rejects.toMatchObject({
 				code: 'unexpected-response',
+				message: 'Exchange returned a body that is not valid XML',
 			});
 		});
 	});
