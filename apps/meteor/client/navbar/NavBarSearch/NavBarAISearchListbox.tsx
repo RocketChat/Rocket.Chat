@@ -92,7 +92,6 @@ const NavBarAISearchListBox = ({
 								<ToggleSwitch aria-labelledby={aiSearchLabelId} checked={aiSearchActive} onChange={handleToggleAISearch} />
 							</Box>
 							{aiSearchActive && <NavBarSearchFilterTypeRow draft={aiItems.draft} />}
-							<Divider marginBlockStart={12} />
 						</>
 					)}
 					<CustomScrollbars>
@@ -106,6 +105,7 @@ const NavBarAISearchListBox = ({
 						>
 							<NavBarSearchIntelligentSection items={aiItems.intelligent} onSelect={handleSelect} onClose={state.close} />
 							<NavBarSearchFilterSuggestions suggestions={aiItems.filterSuggestions} />
+							<Divider marginBlockStart={12} />
 							<NavBarSearchRoomSection
 								filterText={filterText}
 								itemCount={itemCount}

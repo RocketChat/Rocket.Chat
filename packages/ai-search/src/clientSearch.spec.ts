@@ -288,9 +288,7 @@ describe('AI Search client helpers', () => {
 				{
 					key: 'in-room-id',
 					filterKey: 'in',
-					group: 'rooms',
 					title: 'General',
-					description: 'Search_in_this_room',
 					value: 'general',
 					icon: 'hash',
 					meta: { rid: 'room-id' },
@@ -312,7 +310,6 @@ describe('AI Search client helpers', () => {
 				{
 					key: 'from-current',
 					filterKey: 'from',
-					group: 'users',
 					title: 'from:ali',
 					description: 'Search_messages_from_this_username',
 					value: 'ali',
@@ -343,7 +340,6 @@ describe('AI Search client helpers', () => {
 					].map(([value, description]) => ({
 						key: `${key}-${value}`,
 						filterKey: key,
-						group: 'dates',
 						title: `${key}:${value}`,
 						description,
 						value,
@@ -362,7 +358,6 @@ describe('AI Search client helpers', () => {
 				{
 					key: 'from-user-id',
 					filterKey: 'from',
-					group: 'users',
 					title: 'alice',
 					description: 'Search_messages_from_this_user',
 					value: 'alice',

@@ -1,10 +1,8 @@
 import { AI_SEARCH_FILTER_SUGGESTION_LIMIT, MAX_ROOM_SEARCH_PATTERN_LENGTH, MAX_SEARCH_FILTER_VALUES } from './constants';
 
-export const SEARCH_FILTER_KEYS = ['in', 'from', 'after', 'before'] as const;
+export const SEARCH_FILTER_KEYS = ['in', 'from', 'before', 'after'] as const;
 
 export type SearchFilterKey = (typeof SEARCH_FILTER_KEYS)[number];
-
-export type SearchFilterGroup = 'rooms' | 'users' | 'dates';
 
 export type SearchFilterIcon = 'hash' | 'user' | 'calendar';
 
@@ -26,9 +24,8 @@ export type NavBarSearchFormValues = { filterText: string; filters: AppliedFilte
 export type SearchFilterSuggestion = {
 	key: string;
 	filterKey: SearchFilterKey;
-	group: SearchFilterGroup;
 	title: string;
-	description: string;
+	description?: string;
 	value: string;
 	icon: SearchFilterIcon;
 	meta?: SearchFilterMeta;
@@ -52,7 +49,6 @@ export type SearchUserSuggestionSource = {
 type TranslateFn = (key: string, options?: Record<string, string>) => string;
 
 type SearchFilterConfig = {
-	group: SearchFilterGroup;
 	icon: SearchFilterIcon;
 	multiple: boolean;
 	pillLabel: string;
@@ -77,7 +73,6 @@ const normalizeDate = (rawValue: string): string | undefined => {
 
 export const SEARCH_FILTERS: Record<SearchFilterKey, SearchFilterConfig> = {
 	in: {
-		group: 'rooms',
 		icon: 'hash',
 		multiple: true,
 		pillLabel: 'Search_filter_in',
@@ -86,7 +81,6 @@ export const SEARCH_FILTERS: Record<SearchFilterKey, SearchFilterConfig> = {
 		title: 'Search_filter_in_rooms',
 	},
 	from: {
-		group: 'users',
 		icon: 'user',
 		multiple: true,
 		pillLabel: 'Search_filter_from',
@@ -95,7 +89,6 @@ export const SEARCH_FILTERS: Record<SearchFilterKey, SearchFilterConfig> = {
 		title: 'Search_filter_from_users',
 	},
 	after: {
-		group: 'dates',
 		icon: 'calendar',
 		multiple: false,
 		pillLabel: 'Search_filter_after',
@@ -104,7 +97,6 @@ export const SEARCH_FILTERS: Record<SearchFilterKey, SearchFilterConfig> = {
 		title: 'Search_filter_after_date',
 	},
 	before: {
-		group: 'dates',
 		icon: 'calendar',
 		multiple: false,
 		pillLabel: 'Search_filter_before',
@@ -262,7 +254,6 @@ const buildDateFilterSuggestions = (key: 'after' | 'before', t: TranslateFn): Se
 	].map(({ description, value }) => ({
 		key: `${key}-${value}`,
 		filterKey: key,
-		group: 'dates',
 		title: `${key}:${value}`,
 		description,
 		value,
@@ -283,9 +274,7 @@ export const buildFilterSuggestions = (
 		return rooms.slice(0, AI_SEARCH_FILTER_SUGGESTION_LIMIT).map((room) => ({
 			key: `in-${room.rid || room._id}`,
 			filterKey: 'in',
-			group: 'rooms',
 			title: room.fname || room.name || '',
-			description: t('Search_in_this_room'),
 			value: room.name || room.fname || '',
 			icon: 'hash',
 			meta: { rid: room.rid || room._id },
@@ -299,7 +288,6 @@ export const buildFilterSuggestions = (
 			{
 				key: 'from-current',
 				filterKey: 'from',
-				group: 'users',
 				title: value ? `from:${value}` : 'from:username',
 				description: t('Search_messages_from_this_username'),
 				value,
@@ -323,7 +311,6 @@ export const buildUserFilterSuggestions = (
 	return users.slice(0, AI_SEARCH_FILTER_SUGGESTION_LIMIT).map((user) => ({
 		key: `from-${user._id}`,
 		filterKey: 'from',
-		group: 'users',
 		title: user.username,
 		description: t('Search_messages_from_this_user'),
 		value: user.username,

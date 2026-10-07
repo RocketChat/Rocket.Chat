@@ -51,7 +51,6 @@ const setup = ({
 
 	const wrapper = mockAppRoot()
 		.withTranslations('en', 'core', {
-			Search_in_this_room: 'Search in this room',
 			Search_messages_from_this_username: 'Search messages from this username',
 			Search_messages_from_this_user: 'Search messages from this user',
 			Today: 'Today',
@@ -202,9 +201,7 @@ describe('useAISearchItems', () => {
 				{
 					key: 'in-rid-general',
 					filterKey: 'in',
-					group: 'rooms',
 					title: 'General',
-					description: 'Search in this room',
 					value: 'general',
 					icon: 'hash',
 					meta: { rid: 'rid-general' },
@@ -266,7 +263,6 @@ describe('useAISearchItems', () => {
 					{
 						key: 'from-user-1',
 						filterKey: 'from',
-						group: 'users',
 						title: 'john',
 						description: 'Search messages from this user',
 						value: 'john',
@@ -276,7 +272,6 @@ describe('useAISearchItems', () => {
 					{
 						key: 'from-current',
 						filterKey: 'from',
-						group: 'users',
 						title: 'from:jo',
 						description: 'Search messages from this username',
 						value: 'jo',
@@ -301,7 +296,6 @@ describe('useAISearchItems', () => {
 				{
 					key: 'from-current',
 					filterKey: 'from',
-					group: 'users',
 					title: 'from:jo',
 					description: 'Search messages from this username',
 					value: 'jo',
@@ -337,7 +331,6 @@ describe('useAISearchItems', () => {
 				{
 					key: `after-${formatDate(today)}`,
 					filterKey: 'after',
-					group: 'dates',
 					title: `after:${formatDate(today)}`,
 					description: 'Today',
 					value: formatDate(today),
@@ -346,7 +339,6 @@ describe('useAISearchItems', () => {
 				{
 					key: `after-${formatDate(yesterday)}`,
 					filterKey: 'after',
-					group: 'dates',
 					title: `after:${formatDate(yesterday)}`,
 					description: 'Yesterday',
 					value: formatDate(yesterday),
@@ -355,7 +347,6 @@ describe('useAISearchItems', () => {
 				{
 					key: `after-${formatDate(lastWeek)}`,
 					filterKey: 'after',
-					group: 'dates',
 					title: `after:${formatDate(lastWeek)}`,
 					description: 'Last 7 days',
 					value: formatDate(lastWeek),
@@ -371,7 +362,7 @@ describe('useAISearchItems', () => {
 			await waitFor(() => expect(result.current.isFetching).toBe(false));
 
 			expect(result.current.data.filterSuggestions).toHaveLength(3);
-			expect(result.current.data.filterSuggestions.every(({ key, group }) => key.startsWith('before-') && group === 'dates')).toBe(true);
+			expect(result.current.data.filterSuggestions.every(({ key }) => key.startsWith('before-'))).toBe(true);
 		});
 	});
 });

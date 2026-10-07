@@ -50,11 +50,11 @@ describe('NavBarSearchIntelligentSection', () => {
 		const buildRoutePath = jest.fn(() => '/search' as const);
 		renderSection([], { buildRoutePath });
 
-		expect(screen.queryByText('View all results')).not.toBeInTheDocument();
+		expect(screen.queryByRole('link', { name: 'View all results' })).not.toBeInTheDocument();
 		expect(buildRoutePath).not.toHaveBeenCalled();
 	});
 
-	it('renders a native link to the AI Search page when related results are available', async () => {
+	it('renders a native link to the AI Search page in the section header when related results are available', async () => {
 		const user = userEvent.setup();
 		const buildRoutePath = jest.fn(() => '/search?q=in%3Ageneral%20deployment%20errors' as const);
 		const onClose = jest.fn();
@@ -70,7 +70,7 @@ describe('NavBarSearchIntelligentSection', () => {
 			onClose,
 		);
 
-		const action = screen.getByRole('option', { name: 'View all results' });
+		const action = screen.getByRole('link', { name: 'View all results' });
 		expect(action.tagName).toBe('A');
 		expect(action).toHaveAttribute('href', '/search?q=in%3Ageneral%20deployment%20errors');
 		expect(buildRoutePath).toHaveBeenCalledWith({

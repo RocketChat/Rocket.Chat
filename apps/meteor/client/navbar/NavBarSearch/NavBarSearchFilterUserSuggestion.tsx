@@ -10,7 +10,7 @@ import { ReactiveUserStatus } from '../../components/UserStatus';
 
 export type NavBarSearchFilterUserSuggestionProps = {
 	user: SearchUserSuggestionSource;
-	description: string;
+	description?: string;
 } & Partial<ComponentProps<typeof NavBarSearchItem>>;
 
 const NavBarSearchFilterUserSuggestion = ({ user, description, ...props }: NavBarSearchFilterUserSuggestionProps): ReactElement => {
@@ -24,9 +24,11 @@ const NavBarSearchFilterUserSuggestion = ({ user, description, ...props }: NavBa
 			avatar={<UserAvatar size='x20' username={user.username} etag={user.avatarETag} />}
 			icon={<SidebarItemIcon icon={<ReactiveUserStatus uid={user._id} />} />}
 			actions={
-				<Box color='hint' fontScale='c1' flexShrink={0}>
-					{description}
-				</Box>
+				description ? (
+					<Box color='hint' fontScale='c1' flexShrink={0}>
+						{description}
+					</Box>
+				) : undefined
 			}
 		/>
 	);
