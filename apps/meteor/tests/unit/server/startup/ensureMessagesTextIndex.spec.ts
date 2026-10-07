@@ -105,10 +105,13 @@ describe('ensureMessagesTextIndex', () => {
 			const originalEnv = { ...process.env };
 			Object.assign(process.env, env);
 
-			const { ensureMessagesTextIndex: fn } = proxyquire.noCallThru().load('../../../../server/startup/ensureMessagesTextIndex', {
-				'@rocket.chat/models': models,
-				'../lib/logger/system': systemLogger,
-			});
+			const { ensureMessagesTextIndex: fn } = proxyquire
+				.noCallThru()
+				.noPreserveCache()
+				.load('../../../../server/startup/ensureMessagesTextIndex', {
+					'@rocket.chat/models': models,
+					'../lib/logger/system': systemLogger,
+				});
 
 			return {
 				fn,

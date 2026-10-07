@@ -2,8 +2,6 @@ import { Messages } from '@rocket.chat/models';
 
 import { SystemLogger } from '../lib/logger/system';
 
-const { USE_ROOM_SEARCH_INDEX = 'false' } = process.env;
-
 export const TEXT_INDEX_FIELDS = {
 	'msg': 'text',
 	'attachments.description': 'text',
@@ -50,6 +48,7 @@ export const classifyTextIndex = (idx: { key: Record<string, unknown>; weights?:
 };
 
 export const ensureMessagesTextIndex = async (): Promise<void> => {
+	const { USE_ROOM_SEARCH_INDEX = 'false' } = process.env;
 	const desiredShape = USE_ROOM_SEARCH_INDEX === 'true' ? 'room-scoped' : 'default';
 
 	SystemLogger.debug({
