@@ -7,6 +7,7 @@ import { getKeyServerRoutes } from './_matrix/key/server';
 import { getMatrixMakeLeaveRoutes } from './_matrix/make-leave';
 import { getMatrixMediaRoutes } from './_matrix/media';
 import { getMatrixMediaBridgeRoutes } from './_matrix/media-bridge';
+import { getMatrixOpenIdRoutes } from './_matrix/openid';
 import { getMatrixProfilesRoutes } from './_matrix/profiles';
 import { getMatrixRoomsRoutes } from './_matrix/rooms';
 import { getMatrixSendJoinRoutes } from './_matrix/send-join';
@@ -26,6 +27,8 @@ export const getFederationRoutes = (version: string): { matrix: Router<'/_matrix
 		.use(isLicenseEnabledMiddleware)
 		.use(getKeyServerRoutes())
 		.use(getFederationVersionsRoutes(version))
+		// Unsigned by design: the services of other homeservers call it, not the homeservers themselves.
+		.use(getMatrixOpenIdRoutes())
 		.use(getClientRoutes())
 		.use(getMatrixMediaBridgeRoutes())
 		.use(isFederationDomainAllowedMiddleware)
