@@ -284,11 +284,15 @@ export const buildFilterSuggestions = (
 	if (draft.key === 'from') {
 		const value = stripSigil(draft.value);
 
+		if (!value) {
+			return [];
+		}
+
 		return [
 			{
 				key: 'from-current',
 				filterKey: 'from',
-				title: value ? `from:${value}` : 'from:username',
+				title: `from:${value}`,
 				description: t('Search_messages_from_this_username'),
 				value,
 				icon: 'user',
@@ -302,7 +306,6 @@ export const buildFilterSuggestions = (
 export const buildUserFilterSuggestions = (
 	draft: DraftSearchFilter | undefined,
 	users: SearchUserSuggestionSource[],
-	t: TranslateFn,
 ): SearchFilterSuggestion[] => {
 	if (draft?.key !== 'from') {
 		return [];
@@ -312,7 +315,6 @@ export const buildUserFilterSuggestions = (
 		key: `from-${user._id}`,
 		filterKey: 'from',
 		title: user.username,
-		description: t('Search_messages_from_this_user'),
 		value: user.username,
 		icon: 'user',
 		user: { _id: user._id, username: user.username, name: user.name, avatarETag: user.avatarETag },

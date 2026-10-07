@@ -52,7 +52,6 @@ const setup = ({
 	const wrapper = mockAppRoot()
 		.withTranslations('en', 'core', {
 			Search_messages_from_this_username: 'Search messages from this username',
-			Search_messages_from_this_user: 'Search messages from this user',
 			Today: 'Today',
 			Yesterday: 'Yesterday',
 			Last_7_days: 'Last 7 days',
@@ -264,7 +263,6 @@ describe('useAISearchItems', () => {
 						key: 'from-user-1',
 						filterKey: 'from',
 						title: 'john',
-						description: 'Search messages from this user',
 						value: 'john',
 						icon: 'user',
 						user: { _id: 'user-1', username: 'john', name: 'John Doe', avatarETag: '' },

@@ -87,9 +87,9 @@ export const useAISearchItems = (
 	const filterSuggestions = useMemo(
 		() =>
 			draft?.key === 'from'
-				? mergeFilterSuggestions(buildUserFilterSuggestions(draft, userFilter === debouncedUserFilter ? users : [], t), localSuggestions)
+				? mergeFilterSuggestions(buildUserFilterSuggestions(draft, userFilter === debouncedUserFilter ? users : []), localSuggestions)
 				: localSuggestions,
-		[debouncedUserFilter, draft, localSuggestions, t, userFilter, users],
+		[debouncedUserFilter, draft, localSuggestions, userFilter, users],
 	);
 
 	return {

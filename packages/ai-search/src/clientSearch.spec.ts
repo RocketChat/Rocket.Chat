@@ -318,8 +318,8 @@ describe('AI Search client helpers', () => {
 			]);
 		});
 
-		it('shows a placeholder username while the from: draft is empty', () => {
-			expect(buildFilterSuggestions({ key: 'from', value: '' }, [], t)).toMatchObject([{ title: 'from:username', value: '' }]);
+		it('suggests nothing for an empty from: draft', () => {
+			expect(buildFilterSuggestions({ key: 'from', value: '' }, [], t)).toEqual([]);
 		});
 
 		describe('date drafts', () => {
@@ -353,13 +353,12 @@ describe('AI Search client helpers', () => {
 	describe('buildUserFilterSuggestions', () => {
 		it('builds user suggestions for a from: draft', () => {
 			expect(
-				buildUserFilterSuggestions({ key: 'from', value: 'ali' }, [{ _id: 'user-id', name: 'Example User', username: 'alice' }], t),
+				buildUserFilterSuggestions({ key: 'from', value: 'ali' }, [{ _id: 'user-id', name: 'Example User', username: 'alice' }]),
 			).toEqual([
 				{
 					key: 'from-user-id',
 					filterKey: 'from',
 					title: 'alice',
-					description: 'Search_messages_from_this_user',
 					value: 'alice',
 					icon: 'user',
 					user: { _id: 'user-id', username: 'alice', name: 'Example User' },
@@ -368,13 +367,13 @@ describe('AI Search client helpers', () => {
 		});
 
 		it('suggests no users for other drafts', () => {
-			expect(buildUserFilterSuggestions({ key: 'in', value: 'ali' }, [{ _id: 'user-id', username: 'alice' }], t)).toEqual([]);
+			expect(buildUserFilterSuggestions({ key: 'in', value: 'ali' }, [{ _id: 'user-id', username: 'alice' }])).toEqual([]);
 		});
 	});
 
 	describe('mergeFilterSuggestions', () => {
 		it('drops fallback suggestions that point at a value already suggested', () => {
-			const users = buildUserFilterSuggestions({ key: 'from', value: 'alice' }, [{ _id: 'user-id', username: 'alice' }], t);
+			const users = buildUserFilterSuggestions({ key: 'from', value: 'alice' }, [{ _id: 'user-id', username: 'alice' }]);
 			const typedAlice = buildFilterSuggestions({ key: 'from', value: 'alice' }, [], t);
 			const typedAli = buildFilterSuggestions({ key: 'from', value: 'ali' }, [], t);
 

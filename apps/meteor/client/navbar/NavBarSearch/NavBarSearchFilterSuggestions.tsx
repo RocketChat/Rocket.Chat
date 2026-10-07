@@ -36,7 +36,6 @@ const NavBarSearchFilterSuggestions = ({ suggestions }: NavBarSearchFilterSugges
 					<NavBarSearchFilterUserSuggestion
 						key={item.key}
 						user={item.user}
-						description={item.description}
 						tabIndex={-1}
 						onClick={(event) => handleSelect(event, item)}
 						onKeyDown={(event) => handleKeyDown(event, item)}
