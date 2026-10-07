@@ -1,5 +1,5 @@
 import type { ILivechatContact, Serialized } from '@rocket.chat/core-typings';
-import { Item, ItemContent, ItemDescription, ItemTitle, PaginatedSelectFiltered } from '@rocket.chat/fuselage';
+import { Option, OptionDescription, PaginatedSelectFiltered } from '@rocket.chat/fuselage';
 import type { ComponentProps } from 'react';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -44,18 +44,15 @@ const AutoCompleteOutboundProvider = ({ contact, disabled, value, placeholder, o
 			setFilter={setChannelsFilter as (value: string | number | undefined) => void}
 			options={options}
 			onChange={onChange}
-			renderItem={({ label, value, index: _index, selected, focus, ...props }) => {
+			renderItem={({ label, value, ...props }) => {
 				const lastChat = findLastChatFromChannel(contact?.channels, value);
 
 				return (
-					<Item {...props} inset='md' selected={selected} focused={focus} aria-selected={selected}>
-						<ItemContent>
-							<ItemTitle>{label}</ItemTitle>
-							{lastChat ? (
-								<ItemDescription>{t('Last_message_received__time__', { time: getTimeFromNow(lastChat) })}</ItemDescription>
-							) : null}
-						</ItemContent>
-					</Item>
+					<Option {...props} label={label} value={value}>
+						{lastChat ? (
+							<OptionDescription>{t('Last_message_received__time__', { time: getTimeFromNow(lastChat) })}</OptionDescription>
+						) : null}
+					</Option>
 				);
 			}}
 		/>
