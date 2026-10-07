@@ -1,0 +1,23 @@
+.changeset/quiet-sockets-listen.md
+  s_2f1eb2976e708c::t_9bfa8043101275 1-5
+ee/apps/ddp-streamer/src/DDPStreamer.ts
+  s_2f1eb2976e708c::t_a893e9af230c42 251-257,259-262,264-270,272,274-276,278,280,282-288
+ee/apps/ddp-streamer/src/service.ts
+  s_2f1eb2976e708c::t_2e93b1f6652c46 49-50
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.4",
+  "base_commit_sha": "ffb97a3db74899980955abe9a822558ae24427f2",
+  "prompts": {},
+  "sessions": {
+    "s_2f1eb2976e708c": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "69a34187-23fb-458b-8b99-8e645b839152",
+        "model": "claude-opus-5-5"
+      },
+      "human_author": "Diego Sampaio <chinello@gmail.com>"
+    }
+  }
+}
