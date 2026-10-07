@@ -7,8 +7,11 @@ import { usePersistCategoriesMutation } from './usePersistCategoriesMutation';
 import { useUserSidebarCategories } from './useUserSidebarCategories';
 import { SIDEBAR_DYNAMIC_GROUP_KEYS } from '../../hooks/useCategoryList';
 
+const dispatchToastMessage = jest.fn();
+
 jest.mock('@rocket.chat/ui-contexts', () => ({
 	useUserPreference: jest.fn(),
+	useToastMessageDispatch: () => dispatchToastMessage,
 }));
 
 jest.mock('./usePersistCategoriesMutation', () => ({
@@ -32,7 +35,8 @@ const withCategories = (rawCategories: ISidebarCategory[]) =>
 	mockedUseUserSidebarCategories.mockReturnValue({ rawCategories, customCategories: rawCategories.filter((entry) => !entry.default) });
 
 beforeEach(() => {
-	mutateAsync.mockClear();
+	mutateAsync.mockReset().mockResolvedValue(undefined);
+	dispatchToastMessage.mockClear();
 	mockedUseUserPreference.mockReturnValue(undefined); // sidebarSectionsOrder falls back to SIDEBAR_SYSTEM_GROUP_KEYS
 	mockedUsePersistCategoriesMutation.mockReturnValue({ mutateAsync } as any);
 	withCategories([]);
@@ -46,6 +50,39 @@ it('reads the filter stored on the group entry', () => {
 	expect(result.current.getActivityFilterHours('Channels')).toBe(168);
 	expect(result.current.getActivityFilterHours('Direct_Messages')).toBeUndefined();
 	expect(result.current.hasActivityFilters).toBe(true);
+});
+
+it('keeps both changes when two are made before the preference catches up', async () => {
+	withCategories([
+		{ _id: 'Channels', name: 'Channels', default: true },
+		{ _id: 'custom', name: 'Work' },
+	]);
+
+	const { result } = renderHook(() => useActivityFilter());
+
+	await act(async () => {
+		await Promise.all([result.current.setActivityFilterHours('Channels', 24), result.current.setActivityFilterHours('custom', 168)]);
+	});
+
+	expect(mutateAsync).toHaveBeenCalledTimes(2);
+	expect(mutateAsync.mock.calls[1][0]).toEqual([
+		{ _id: 'Channels', name: 'Channels', default: true, activityFilterHours: 24 },
+		{ _id: 'custom', name: 'Work', activityFilterHours: 168 },
+	]);
+});
+
+it('tells the user when the filter could not be saved', async () => {
+	withCategories([{ _id: 'custom', name: 'Work' }]);
+	const error = new Error('network down');
+	mutateAsync.mockRejectedValueOnce(error);
+
+	const { result } = renderHook(() => useActivityFilter());
+
+	await act(async () => {
+		await result.current.setActivityFilterHours('custom', 24);
+	});
+
+	expect(dispatchToastMessage).toHaveBeenCalledWith({ type: 'error', message: error });
 });
 
 it('stores a filter on a custom category', async () => {

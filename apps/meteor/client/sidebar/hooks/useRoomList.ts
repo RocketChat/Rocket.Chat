@@ -51,8 +51,9 @@ type useRoomListReturnType = {
 	totalCount: number;
 };
 
-export const isUnreadRoom = (room: SubscriptionWithRoom): boolean =>
-	!room.hideUnreadStatus && Boolean(room.alert || room.unread || room.tunread?.length);
+const hasUnreadMessages = (room: SubscriptionWithRoom): boolean => Boolean(room.alert || room.unread || room.tunread?.length);
+
+export const isUnreadRoom = (room: SubscriptionWithRoom): boolean => !room.hideUnreadStatus && hasUnreadMessages(room);
 
 /**
  * When the room was last active, as the activity filter judges it: the sidebar's activity date, or for a room
@@ -171,10 +172,14 @@ export const useRoomList = ({
 				// sidebar, plus its unread rooms when "Show unreads" is enabled.
 				const isVisibleWhileCollapsed = (room: SubscriptionWithRoom) => room.rid === openedRoom || (showUnreads && isUnreadRoom(room));
 				// The activity filter only thins out read rooms: unread ones and the one currently open always stay
-				// listed. A room with no date at all is kept rather than guessed at.
+				// listed, including those whose unread status the user hid. A room with no date at all is kept rather
+				// than guessed at.
 				const activeSince = activityFilterHours ? now - activityFilterHours * HOUR : undefined;
 				const isInactive = (room: SubscriptionWithRoom) =>
-					activeSince !== undefined && room.rid !== openedRoom && !isUnreadRoom(room) && (getLastActivity(room) ?? Infinity) < activeSince;
+					activeSince !== undefined &&
+					room.rid !== openedRoom &&
+					!hasUnreadMessages(room) &&
+					(getLastActivity(room) ?? Infinity) < activeSince;
 				const inactiveCount = collapsed ? 0 : allRooms.filter(isInactive).length;
 				const hideInactive = inactiveCount > 0 && !showingInactive;
 

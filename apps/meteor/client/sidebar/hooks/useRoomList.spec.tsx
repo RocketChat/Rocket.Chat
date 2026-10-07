@@ -498,6 +498,32 @@ describe('the activity filter', () => {
 		expect(group?.inactiveCount).toBe(2);
 	});
 
+	it('keeps unread rooms whose unread status the user hid', async () => {
+		const hiddenUnread = {
+			...createFakeSubscription({
+				t: 'c',
+				name: 'hidden-unread',
+				...emptyUnread,
+				unread: 3,
+				hideUnreadStatus: true,
+				lm: new Date(Date.now() - 3 * DAY),
+			}),
+			...createFakeRoom({ t: 'c' }),
+		} as unknown as SubscriptionWithRoom;
+
+		const { result } = renderHook(() => useRoomList({ collapsedGroups: [] }), {
+			wrapper: getWrapperSettings({
+				rooms: [...channels, hiddenUnread],
+				sidebarGroupByType: true,
+				isEnterprise: true,
+				sidebarCategories: [{ _id: 'Channels', name: 'Channels', default: true, activityFilterHours: 24 }],
+			}).build(),
+		});
+
+		await waitFor(() => expect(channelsGroupOf(result.current.groups)?.activityFilterHours).toBe(24));
+		expect(namesOf(channelsGroupOf(result.current.groups))).toEqual(['hidden-unread', 'quiet-unread', 'recent-read']);
+	});
+
 	it('widens with the window', async () => {
 		const { result } = renderChannels({ activityFilterHours: 24 * 7 });
 
@@ -550,9 +576,13 @@ describe('the activity filter', () => {
 			undated('no-dates-at-all', {}),
 		];
 
-		localStorage.setItem('fuselage-localStorage-sidebarActivityFilters', JSON.stringify({ Direct_Messages: 24 * 30 }));
 		const { result } = renderHook(() => useRoomList({ collapsedGroups: [] }), {
-			wrapper: getWrapperSettings({ rooms, sidebarGroupByType: true, isEnterprise: true }).build(),
+			wrapper: getWrapperSettings({
+				rooms,
+				sidebarGroupByType: true,
+				isEnterprise: true,
+				sidebarCategories: [{ _id: 'Direct_Messages', name: 'Direct_Messages', default: true, activityFilterHours: 24 * 30 }],
+			}).build(),
 		});
 
 		const directGroupOf = () => result.current.groups.find((group) => group.key === 'Direct_Messages');

@@ -10,6 +10,7 @@ import RoomListWrapper from './RoomListWrapper';
 import { useMergedRefsV2 } from '../../hooks/useMergedRefsV2';
 import { useOpenedRoom } from '../../lib/RoomManager';
 import { useMoveCategoryPosition } from '../categories/hooks/useMoveCategoryPosition';
+import { useUserSidebarCategories } from '../categories/hooks/useUserSidebarCategories';
 import SidebarVirtualList from '../components/SidebarVirtualList';
 import { useAvatarTemplate } from '../hooks/useAvatarTemplate';
 import { SIDEBAR_DYNAMIC_GROUP_KEYS } from '../hooks/useCategoryList';
@@ -41,11 +42,27 @@ const RoomList = () => {
 	const isAnonymous = !userId;
 
 	const { collapsedGroups, handleClick, handleKeyDown } = useCollapsedGroups();
-	// Lifting a group's activity filter from its chip lasts for this session only.
-	const [groupsShowingInactive, setGroupsShowingInactive] = useState<string[]>([]);
+	// Lifting a group's activity filter from its chip lasts for this session only, and only for the window it was
+	// lifted from: picking another window filters the group again.
+	const { rawCategories } = useUserSidebarCategories();
+	const getActivityFilterHours = useCallback(
+		(key: string) => rawCategories.find((entry) => entry._id === key)?.activityFilterHours,
+		[rawCategories],
+	);
+	const [liftedActivityFilters, setLiftedActivityFilters] = useState<Record<string, number | undefined>>({});
+	const groupsShowingInactive = useMemo(
+		() =>
+			Object.entries(liftedActivityFilters)
+				.filter(([key, hours]) => hours === getActivityFilterHours(key))
+				.map(([key]) => key),
+		[liftedActivityFilters, getActivityFilterHours],
+	);
 	const toggleShowingInactive = useCallback(
-		(key: string) => setGroupsShowingInactive((keys) => (keys.includes(key) ? keys.filter((k) => k !== key) : [...keys, key])),
-		[],
+		(key: string) =>
+			setLiftedActivityFilters(({ [key]: _, ...lifted }) =>
+				groupsShowingInactive.includes(key) ? lifted : { ...lifted, [key]: getActivityFilterHours(key) },
+			),
+		[groupsShowingInactive, getActivityFilterHours],
 	);
 	const { groups } = useRoomList({ collapsedGroups, groupsShowingInactive });
 	const moveCategory = useMoveCategoryPosition();
