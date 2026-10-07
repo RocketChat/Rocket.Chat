@@ -1,4 +1,4 @@
-import { AutoComplete, Box, Item, ItemContent, ItemTitle } from '@rocket.chat/fuselage';
+import { AutoComplete, Option, Box } from '@rocket.chat/fuselage';
 import { useDebouncedValue } from '@rocket.chat/fuselage-hooks';
 import { useEndpoint } from '@rocket.chat/ui-contexts';
 import { keepPreviousData, useQuery } from '@tanstack/react-query';
@@ -49,13 +49,7 @@ const RoomFormAutocomplete = ({ value, onSelectedRoom, ...props }: RoomFormAutoc
 					{label?.name}
 				</Box>
 			)}
-			renderItem={({ value: _value, label, selected, focus, ...props }) => (
-				<Item {...props} is='li' inset='md' selected={selected} focused={focus} aria-selected={selected}>
-					<ItemContent>
-						<ItemTitle>{label.name}</ItemTitle>
-					</ItemContent>
-				</Item>
-			)}
+			renderItem={({ label, ...props }) => <Option {...props} label={label.name} />}
 			options={result.data}
 		/>
 	);
