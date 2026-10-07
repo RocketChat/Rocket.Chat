@@ -93,7 +93,7 @@
 		"markdown-it": "^14.2.0",
 		"markdown-it/linkify-it": "5.0.2",
 		"minimist": "1.2.6",
-		"mongodb": "6.10.0",
+		"mongodb": "6.16.0",
 		"@grpc/proto-loader/protobufjs": "7.6.5",
 		"@opentelemetry/otlp-transformer/protobufjs": "7.6.5",
 		"webdav/axios": "0.34.0",

@@ -5611,12 +5611,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@mongodb-js/saslprep@npm:^1.1.5":
-  version: 1.4.12
-  resolution: "@mongodb-js/saslprep@npm:1.4.12"
+"@mongodb-js/saslprep@npm:^1.1.9":
+  version: 1.6.0
+  resolution: "@mongodb-js/saslprep@npm:1.6.0"
   dependencies:
     sparse-bitfield: "npm:^3.0.3"
-  checksum: 10/c0ab53304d47aa027cf61b191572ef2f9ce38be91d7cc7fb8bc357bdeefdeaa9afcbf3b7e0c626f004c6b30410aa4f086043817053a761c695a94ae467711a52
+  checksum: 10/071957d2a0b6f70393291b7f87ac803d190fa64a44781447293db8b9a809c479c37909fa737918611f844e672c7131bfde8efa1bf04d8dab13b1c5db967deb28
   languageName: node
   linkType: hard
 
@@ -9257,7 +9257,7 @@ __metadata:
     eslint: "npm:~10.12.0"
     jest: "npm:~30.5.2"
     mem: "npm:^8.1.1"
-    mongodb: "npm:6.10.0"
+    mongodb: "npm:6.16.0"
     mongodb-memory-server: "npm:^10.2.3"
     p-limit: "npm:3.1.0"
     typescript: "npm:~5.9.3"
@@ -10843,7 +10843,7 @@ __metadata:
     mongodb: "npm:6.16.0"
     typescript: "npm:~5.9.3"
   peerDependencies:
-    mongodb: 6.10.0
+    mongodb: 6.16.0
   languageName: unknown
   linkType: soft
 
@@ -18888,7 +18888,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"bson@npm:^6.7.0, bson@npm:^6.7.1":
+"bson@npm:^6.10.3, bson@npm:^6.7.1":
   version: 6.10.4
   resolution: "bson@npm:6.10.4"
   checksum: 10/8a79a452219a13898358a5abc93e32bc3805236334f962661da121ce15bd5cade27718ba3310ee2a143ff508489b08467eed172ecb2a658cb8d2e94fdb76b215
@@ -29850,16 +29850,16 @@ __metadata:
   languageName: node
   linkType: hard
 
-"mongodb@npm:6.10.0":
-  version: 6.10.0
-  resolution: "mongodb@npm:6.10.0"
+"mongodb@npm:6.16.0":
+  version: 6.16.0
+  resolution: "mongodb@npm:6.16.0"
   dependencies:
-    "@mongodb-js/saslprep": "npm:^1.1.5"
-    bson: "npm:^6.7.0"
+    "@mongodb-js/saslprep": "npm:^1.1.9"
+    bson: "npm:^6.10.3"
     mongodb-connection-string-url: "npm:^3.0.0"
   peerDependencies:
     "@aws-sdk/credential-providers": ^3.188.0
-    "@mongodb-js/zstd": ^1.1.0
+    "@mongodb-js/zstd": ^1.1.0 || ^2.0.0
     gcp-metadata: ^5.2.0
     kerberos: ^2.0.1
     mongodb-client-encryption: ">=6.0.0 <7"
@@ -29880,7 +29880,7 @@ __metadata:
       optional: true
     socks:
       optional: true
-  checksum: 10/cab3b9171de69078a69a969d9c17b78b14fd346ad7579e8e88369d0494cd9bfb3a58e78d312d8480b94c601907aa57b5fa89fe44531de94839a04b79ea856ae0
+  checksum: 10/eb47da9ef00331aca1804426424a8630f9e42c48bf6021786ebb1766b1d53bda62c64498b41627b5fe5c01260ec5ca2e8cbc2468e394df5d5b874cee646e9c06
   languageName: node
   linkType: hard
 

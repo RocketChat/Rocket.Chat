@@ -23,7 +23,7 @@
 		"typescript": "~5.9.3"
 	},
 	"peerDependencies": {
-		"mongodb": "6.10.0"
+		"mongodb": "6.16.0"
 	},
 	"volta": {
 		"extends": "../../package.json"
