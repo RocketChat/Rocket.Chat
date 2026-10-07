@@ -1,5 +1,5 @@
 import type { IRoom } from '@rocket.chat/core-typings';
-import { Box, Item, ItemContent, ItemMedia, ItemMeta, ItemTitle } from '@rocket.chat/fuselage';
+import { Option, Box } from '@rocket.chat/fuselage';
 import type { AutoCompleteProps } from '@rocket.chat/fuselage';
 import { AutoComplete } from '@rocket.chat/fuselage-forms';
 import { useDebouncedValue } from '@rocket.chat/fuselage-hooks';
@@ -87,21 +87,18 @@ const RoomAutoComplete = forwardRef<HTMLInputElement, RoomAutoCompleteProps>(fun
 					{renderRoomIcon?.({ encrypted: label?.encrypted, type: label?.type })}
 				</>
 			)}
-			renderItem={({ value, label, selected, focus, ...props }) => {
-				const roomIcon = renderRoomIcon?.({ encrypted: label?.encrypted, type: label?.type });
-
-				return (
-					<Item {...props} is='li' inset='sm' selected={selected} focused={focus} aria-selected={selected}>
-						<ItemMedia>
-							<RoomAvatar size={ITEM_MEDIA_SIZE.condensed} room={{ _id: value, ...label }} />
-						</ItemMedia>
-						<ItemContent>
-							<ItemTitle>{label?.name}</ItemTitle>
-						</ItemContent>
-						{roomIcon && <ItemMeta>{roomIcon}</ItemMeta>}
-					</Item>
-				);
-			}}
+			renderItem={({ value, label, ...props }) => (
+				<Option
+					{...props}
+					label={
+						<>
+							{label?.name}
+							{renderRoomIcon?.({ encrypted: label?.encrypted, type: label?.type })}
+						</>
+					}
+					avatar={<RoomAvatar size={ITEM_MEDIA_SIZE.condensed} room={{ _id: value, ...label }} />}
+				/>
+			)}
 			options={options}
 		/>
 	);
