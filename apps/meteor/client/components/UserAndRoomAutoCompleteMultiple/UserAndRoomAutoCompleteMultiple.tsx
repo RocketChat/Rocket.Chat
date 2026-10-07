@@ -1,5 +1,5 @@
 import { type RoomType, isDirectMessageRoom } from '@rocket.chat/core-typings';
-import { AutoComplete, Box, Chip, Item, ItemContent, ItemMedia, ItemTitle } from '@rocket.chat/fuselage';
+import { AutoComplete, Box, Option, OptionAvatar, OptionContent, Chip } from '@rocket.chat/fuselage';
 import { useDebouncedValue, useStableArray } from '@rocket.chat/fuselage-hooks';
 import { escapeRegExp } from '@rocket.chat/tools';
 import { ITEM_MEDIA_SIZE, RoomAvatar } from '@rocket.chat/ui-avatar';
@@ -112,15 +112,13 @@ const UserAndRoomAutoCompleteMultiple = ({
 					</Box>
 				</Chip>
 			)}
-			renderItem={({ value, label, selected, focus, ...props }) => (
-				<Item {...props} is='li' inset='md' selected={selected} focused={focus} aria-selected={selected}>
-					<ItemMedia>
+			renderItem={({ value, label, ...props }) => (
+				<Option key={value} {...props}>
+					<OptionAvatar>
 						<RoomAvatar size={ITEM_MEDIA_SIZE.condensed} room={{ ...label, _id: value }} />
-					</ItemMedia>
-					<ItemContent>
-						<ItemTitle>{label.name}</ItemTitle>
-					</ItemContent>
-				</Item>
+					</OptionAvatar>
+					<OptionContent>{label.name}</OptionContent>
+				</Option>
 			)}
 			options={options}
 		/>
