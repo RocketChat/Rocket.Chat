@@ -40,7 +40,19 @@ API.v1.post(
 			throw new Error('LDAP_disabled');
 		}
 
-		await LDAPEnterprise.sync();
+		if (
+			settings.get('LDAP_Background_Sync') !== true &&
+			settings.get('LDAP_Background_Sync_Avatars') !== true &&
+			settings.get('LDAP_Background_Sync_ABAC_Attributes') !== true
+		) {
+			throw new Error('LDAP_Background_Sync_disabled');
+		}
+
+		try {
+			await LDAPEnterprise.sync();
+		} catch (err) {
+			return API.v1.failure({ error: 'LDAP_Sync_failed', details: { error: err instanceof Error ? err.message : String(err) } });
+		}
 		await LDAPEnterprise.syncAvatarAndAbacAttributes();
 
 		return API.v1.success({

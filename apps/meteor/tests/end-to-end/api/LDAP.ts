@@ -12,6 +12,7 @@ import { IS_EE } from '../../e2e/config/constants';
 const ldapLoginUsername = 'ldap.e2e';
 const ldapAvatarUsername = 'ldap.avatar';
 const ldapSyncUsername = 'ldap.sync';
+const ldapNoEmailUsername = 'userwithnoemail';
 const ldapAvatarRgb = [0, 102, 203];
 
 type Setting = Pick<ISetting, '_id' | 'value'>;
@@ -33,11 +34,14 @@ const ldapSettings: Setting[] = [
 	{ _id: 'LDAP_Avatar_Field', value: 'jpegPhoto' },
 	{ _id: 'LDAP_Find_User_After_Login', value: false },
 	{ _id: 'LDAP_Background_Sync', value: false },
+	{ _id: 'LDAP_Background_Sync_Avatars', value: false },
+	{ _id: 'LDAP_Background_Sync_ABAC_Attributes', value: false },
+	{ _id: 'LDAP_Default_Domain', value: '' },
 ];
 
 const deleteLdapUsers = () =>
 	Promise.all(
-		[ldapLoginUsername, ldapAvatarUsername, ldapSyncUsername].map((username) =>
+		[ldapLoginUsername, ldapAvatarUsername, ldapSyncUsername, ldapNoEmailUsername].map((username) =>
 			request.post(api('users.delete')).set(credentials).send({ username }),
 		),
 	);
@@ -111,6 +115,32 @@ const waitForLdapConnection = () =>
 			});
 		});
 
+		describe('when nothing is set to sync', () => {
+			it('should report that nothing is enabled to sync', async () => {
+				const res = await request.post(api('ldap.syncNow')).set(credentials).expect('Content-Type', 'application/json').expect(400);
+
+				expect(res.body).to.have.property('success', false);
+				expect(res.body).to.have.property('error', 'LDAP_Background_Sync_disabled');
+			});
+		});
+
+		describe('when only avatar sync is enabled', () => {
+			before(async () => {
+				await updateSetting('LDAP_Background_Sync_Avatars', true);
+			});
+
+			after(async () => {
+				await updateSetting('LDAP_Background_Sync_Avatars', false);
+			});
+
+			it('should still run the sync', async () => {
+				const res = await request.post(api('ldap.syncNow')).set(credentials).expect('Content-Type', 'application/json').expect(200);
+
+				expect(res.body).to.have.property('success', true);
+				expect(res.body).to.have.property('message', 'Sync_in_progress');
+			});
+		});
+
 		describe('when LDAP is enabled', () => {
 			const syncSettings: Setting[] = [
 				{ _id: 'LDAP_User_Search_Filter', value: `(uid=${ldapSyncUsername})` },
@@ -159,6 +189,33 @@ const waitForLdapConnection = () =>
 				for (const username of [ldapLoginUsername, ldapAvatarUsername]) {
 					await request.get(api('users.info')).set(credentials).query({ username }).expect(400);
 				}
+			});
+
+			describe('when an existing LDAP user has no email', () => {
+				before(async () => {
+					await updateSetting('LDAP_BaseDN', 'ou=users,dc=space,dc=air');
+					await updateSetting('LDAP_User_Search_Filter', `(uid=${ldapNoEmailUsername})`);
+					await updateSetting('LDAP_Default_Domain', 'space.air');
+					await waitForLdapConnection();
+					await request.post(api('ldap.syncNow')).set(credentials).expect(200);
+
+					await updateSetting('LDAP_Default_Domain', '');
+					await updateSetting('LDAP_Background_Sync_Import_New_Users', false);
+					await updateSetting('LDAP_Background_Sync_Keep_Existant_Users_Updated', true);
+				});
+
+				after(async () => {
+					await updateSetting('LDAP_BaseDN', 'ou=others,dc=space,dc=air');
+					await waitForLdapConnection();
+				});
+
+				it('should report the error that stopped the sync', async () => {
+					const res = await request.post(api('ldap.syncNow')).set(credentials).expect('Content-Type', 'application/json').expect(400);
+
+					expect(res.body).to.have.property('success', false);
+					expect(res.body).to.have.property('error', 'LDAP_Sync_failed');
+					expect(res.body.details).to.deep.equal({ error: 'Failed to get email address from LDAP user' });
+				});
 			});
 		});
 	});
