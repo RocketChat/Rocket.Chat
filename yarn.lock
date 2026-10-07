@@ -10847,6 +10847,7 @@ __metadata:
     "@rocket.chat/tools": "workspace:^"
     "@rocket.chat/tracing": "workspace:^"
     "@rocket.chat/tsconfig": "workspace:*"
+    "@rocket.chat/ui-account": "workspace:^"
     "@rocket.chat/ui-avatar": "workspace:^"
     "@rocket.chat/ui-client": "workspace:^"
     "@rocket.chat/ui-composer": "workspace:^"
@@ -11861,6 +11862,46 @@ __metadata:
 "@rocket.chat/tsconfig@workspace:*, @rocket.chat/tsconfig@workspace:packages/tsconfig, @rocket.chat/tsconfig@workspace:~":
   version: 0.0.0-use.local
   resolution: "@rocket.chat/tsconfig@workspace:packages/tsconfig"
+  languageName: unknown
+  linkType: soft
+
+"@rocket.chat/ui-account@workspace:^, @rocket.chat/ui-account@workspace:packages/ui-account":
+  version: 0.0.0-use.local
+  resolution: "@rocket.chat/ui-account@workspace:packages/ui-account"
+  dependencies:
+    "@rocket.chat/core-typings": "workspace:^"
+    "@rocket.chat/fuselage": "npm:^0.94.0"
+    "@rocket.chat/fuselage-hooks": "npm:^0.43.1"
+    "@rocket.chat/icons": "workspace:~"
+    "@rocket.chat/jest-presets": "workspace:~"
+    "@rocket.chat/mock-providers": "workspace:~"
+    "@rocket.chat/storybook-config": "workspace:~"
+    "@rocket.chat/tsconfig": "workspace:*"
+    "@rocket.chat/ui-client": "workspace:^"
+    "@rocket.chat/ui-contexts": "workspace:^"
+    "@storybook/react": "npm:^9.1.20"
+    "@tanstack/react-query": "npm:~5.65.1"
+    "@testing-library/react": "npm:~16.3.3"
+    "@testing-library/user-event": "npm:~14.6.7"
+    "@types/jest-axe": "npm:~3.5.9"
+    "@types/react": "npm:~19.2.18"
+    "@types/react-dom": "npm:~19.2.7"
+    eslint: "npm:~10.11.0"
+    jest: "npm:~30.5.2"
+    jest-axe: "npm:~11.0.0"
+    react: "npm:~19.2.8"
+    react-dom: "npm:~19.2.8"
+    react-hook-form: "npm:~7.54.2"
+    react-i18next: "npm:~17.0.15"
+    storybook: "npm:^9.1.20"
+    typescript: "npm:~5.9.3"
+  peerDependencies:
+    "@rocket.chat/fuselage": "*"
+    "@rocket.chat/fuselage-hooks": "*"
+    "@rocket.chat/ui-client": "workspace:^"
+    "@rocket.chat/ui-contexts": "workspace:^"
+    react: "*"
+    react-dom: "*"
   languageName: unknown
   linkType: soft
 
