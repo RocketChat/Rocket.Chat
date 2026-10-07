@@ -22,7 +22,7 @@ import { useMediaCallInstance } from '../../context';
 import { useMediaCallView } from '../../context/MediaCallViewContext';
 import AppActions from '../../experimental/AppActionButtons/components/AppActions';
 import { useVisibleAppActions } from '../../experimental/AppActionButtons/hooks/useVisibleAppActions';
-import { isExternalPeer } from '../../utils/isExternalPeer';
+import { isUnknownPeer } from '../../utils/isUnknownPeer';
 
 const OngoingCall = () => {
 	const { t } = useTranslation();
@@ -58,12 +58,7 @@ const OngoingCall = () => {
 
 	const appActions = useVisibleAppActions();
 
-	// TODO: Figure out how to ensure this always exist before rendering the component
-	if (!peerInfo) {
-		throw new Error('Peer info is required');
-	}
-
-	const isSip = isExternalPeer(peerInfo);
+	const isSip = peerInfo?.type === 'sip';
 
 	return (
 		<Widget>
@@ -88,7 +83,7 @@ const OngoingCall = () => {
 			</WidgetHeader>
 			<WidgetContent>
 				<CardWidgetContainer>
-					<PeerInfo {...peerInfo} slots={remoteSlots} remoteMuted={remoteMuted} />
+					{peerInfo && !isUnknownPeer(peerInfo) && <PeerInfo {...peerInfo} slots={remoteSlots} remoteMuted={remoteMuted} />}
 
 					{isInline && isSip && !localScreen?.active && <Dialpad autoFocus={false} />}
 
@@ -152,7 +147,7 @@ const OngoingCall = () => {
 					)}
 					<ActionButton
 						label={t('Voice_call__user__hangup', {
-							user: isExternalPeer(peerInfo) ? peerInfo.displayName || peerInfo.number : peerInfo.displayName,
+							user: (peerInfo && (peerInfo.displayName || ('number' in peerInfo && peerInfo.number))) || t('Unknown'),
 						})}
 						icon='phone-off'
 						danger
