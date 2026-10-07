@@ -32,6 +32,9 @@ export type EwsTransportConfig = {
 
 const REQUEST_TIMEOUT_MS = 60000;
 
+/** For IPv6 literals */
+const normalizeHost = (hostname: string): string => (hostname.startsWith('[') ? hostname.slice(1, -1) : hostname);
+
 const splitDomainAndUser = (username: string): { domain: string; user: string } => {
 	// `CORP\svc-rocketchat` is how administrators write it; Exchange expects the two parts separately.
 	const backslash = username.indexOf('\\');
@@ -96,7 +99,7 @@ export class EwsTransport implements IEwsTransport {
 			return;
 		}
 
-		this.agent = new AllowlistedAgent(this.endpoint.hostname, {
+		this.agent = new AllowlistedAgent(normalizeHost(this.endpoint.hostname), {
 			keepAlive: true,
 			maxSockets: 1,
 			...(config.caCert ? { ca: config.caCert } : {}),
