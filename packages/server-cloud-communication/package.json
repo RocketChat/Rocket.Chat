@@ -15,7 +15,7 @@
 	},
 	"devDependencies": {
 		"@rocket.chat/license": "workspace:^",
-		"eslint": "~10.11.0",
+		"eslint": "~10.12.0",
 		"typescript": "~5.9.3"
 	},
 	"volta": {

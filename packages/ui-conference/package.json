@@ -45,7 +45,7 @@
 		"@types/jest-axe": "~3.5.9",
 		"@types/react": "~19.2.18",
 		"@types/react-dom": "~19.2.7",
-		"eslint": "~10.11.0",
+		"eslint": "~10.12.0",
 		"i18next": "~26.4.2",
 		"jest": "~30.5.2",
 		"jest-axe": "~11.0.0",

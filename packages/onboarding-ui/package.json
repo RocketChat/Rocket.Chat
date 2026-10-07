@@ -56,7 +56,7 @@
     "@types/react": "~19.2.18",
     "@types/react-dom": "~19.2.7",
     "countries-list": "^3.4.1",
-    "eslint": "~10.11.0",
+    "eslint": "~10.12.0",
     "jest": "~30.5.2",
     "react": "~19.2.8",
     "react-dom": "~19.2.8",
