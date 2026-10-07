@@ -1,4 +1,4 @@
-import { Field, FieldError, FieldLabel, FieldRow, Item, ItemContent, ItemDescription, ItemMedia, ItemTitle } from '@rocket.chat/fuselage';
+import { Box, Field, FieldError, FieldLabel, FieldRow, Option, OptionContent, OptionDescription } from '@rocket.chat/fuselage';
 import { useStableCallback } from '@rocket.chat/fuselage-hooks';
 import { ITEM_MEDIA_SIZE, UserAvatar } from '@rocket.chat/ui-avatar';
 import { useId } from 'react';
@@ -38,29 +38,22 @@ const ContactField = ({ control, isError = false, isFetching = false, onRetry, .
 		},
 	});
 
-	const renderContactOption = useStableCallback<RenderFnType>(
-		({ label, value: _value, index: _index, selected, focus, ...props }, { phones }) => {
-			const phoneList = phones?.map((p) => formatPhoneNumber(p.phoneNumber)).join(', ');
+	const renderContactOption = useStableCallback<RenderFnType>(({ label, ...props }, { phones }) => {
+		const phoneList = phones?.map((p) => formatPhoneNumber(p.phoneNumber)).join(', ');
 
-			return (
-				<Item {...props} inset='md' selected={selected} focused={focus} aria-selected={selected}>
-					<ItemMedia>
-						<UserAvatar username={label} size={ITEM_MEDIA_SIZE.condensed} />
-					</ItemMedia>
-					<ItemContent>
-						<ItemTitle>
-							{label}
-							{phones?.length ? (
-								<ItemDescription inline title={phoneList}>
-									{`(${phoneList})`}
-								</ItemDescription>
-							) : null}
-						</ItemTitle>
-					</ItemContent>
-				</Item>
-			);
-		},
-	);
+		return (
+			<Option {...props} avatar={<UserAvatar title={label} username={label} size={ITEM_MEDIA_SIZE.condensed} />}>
+				<Box is={OptionContent} marginInlineEnd='auto' flexGrow={0} flexShrink={0} flexBasis={0}>
+					{label}
+				</Box>
+				{phones?.length ? (
+					<Box withTruncatedText flexGrow={0} flexShrink={1} title={phoneList}>
+						<OptionDescription>{`(${phoneList})`}</OptionDescription>
+					</Box>
+				) : null}
+			</Option>
+		);
+	});
 
 	return (
 		<Field {...props}>
