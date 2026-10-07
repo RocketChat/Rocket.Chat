@@ -53,6 +53,7 @@ export const commonServiceStubs = {
 			}
 		},
 	},
+	'@rocket.chat/federation-matrix': { MATRIXRTC_ROOM_CALL_SLOT_ID: 'm.call#ROOM' },
 	'@rocket.chat/random': { Random: { id: () => 'randomId' } },
 	'@rocket.chat/tools': { wrapExceptions: (fn: () => unknown) => fn() },
 	'meteor/meteor': { Meteor: { startup: () => undefined } },

@@ -1,4 +1,5 @@
 import { edus } from './edu';
+import { matrixRTC } from './matrixrtc';
 import { member } from './member';
 import { message } from './message';
 import { ping } from './ping';
@@ -12,4 +13,5 @@ export function registerEvents() {
 	member();
 	void edus();
 	room();
+	matrixRTC();
 }

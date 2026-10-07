@@ -1,5 +1,5 @@
 import type { IMatrixRTCMembership, IUser, IVideoConference } from '@rocket.chat/core-typings';
-import type { FindCursor, UpdateResult } from 'mongodb';
+import type { Document, FindCursor, UpdateResult } from 'mongodb';
 
 import type { IBaseModel } from './IBaseModel';
 
@@ -27,4 +27,19 @@ export interface IMatrixRTCMembershipsModel extends IBaseModel<IMatrixRTCMembers
 		_id: IMatrixRTCMembership['_id'],
 		announcement: Pick<IMatrixRTCMembership, 'eventId' | 'expiresAt'>,
 	): Promise<UpdateResult>;
+
+	/** The memberships other servers announced in one Matrix room, whether or not they still count. */
+	findRemoteByRoom(mrid: string): FindCursor<IMatrixRTCMembership>;
+
+	/** The Matrix rooms in which other servers announced memberships this server still holds. */
+	findRemoteRoomIds(): Promise<string[]>;
+
+	/**
+	 * Records a membership another server announced, keyed as its announcement is: by state key for a compatibility
+	 * membership, by member id for a sticky one. When it was first seen is kept.
+	 */
+	upsertRemote(membership: Omit<IMatrixRTCMembership, '_id' | '_updatedAt' | 'callId' | 'local'>): Promise<UpdateResult>;
+
+	/** Attaches every membership of a session that still counts to the conference mirroring it. */
+	attachSessionToCall(mrid: string, slotId: string, callId: IVideoConference['_id'], now?: Date): Promise<UpdateResult | Document>;
 }

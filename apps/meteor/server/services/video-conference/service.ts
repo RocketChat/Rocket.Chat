@@ -26,17 +26,22 @@ import type {
 	Optional,
 	ExternalVideoConference,
 	IVoIPVideoConference,
+	IMatrixRTCMembership,
+	VideoConferenceFederation,
 	VideoConferenceMemberFederation,
 } from '@rocket.chat/core-typings';
 import {
 	UserStatus,
 	VideoConferenceStatus,
+	getVideoConferenceMemberFederation,
 	hasJoinedVideoConference,
 	isDirectVideoConference,
 	isInVideoConference,
 	isGroupVideoConference,
 	isLivechatVideoConference,
+	isRoomNativeFederated,
 } from '@rocket.chat/core-typings';
+import { MATRIXRTC_ROOM_CALL_SLOT_ID } from '@rocket.chat/federation-matrix';
 import { Logger } from '@rocket.chat/logger';
 import type { InsertionModel } from '@rocket.chat/model-typings';
 import { Users, VideoConference as VideoConferenceModel, MatrixRTCMemberships, Rooms, Messages, Subscriptions } from '@rocket.chat/models';
@@ -79,6 +84,12 @@ import { settings } from '../../settings';
 const { db } = MongoInternals.defaultRemoteCollectionDriver().mongo;
 
 const logger = new Logger('VideoConference');
+
+/** The only provider whose calls span homeservers: each one's members publish on its own LiveKit. */
+const FEDERATED_CALL_PROVIDER = 'livekit';
+
+/** Members of other servers are in the call for as long as their memberships count, which their own server renews. */
+const holdsPresenceLease = (member: IVideoConferenceUser): boolean => member.federation?.local !== false;
 
 export class VideoConfService extends ServiceClassInternal implements IVideoConfService {
 	protected name = 'video-conference';
@@ -133,20 +144,35 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 	): Promise<VideoConferenceInstructions> {
 		return wrapExceptions(async () => {
 			const providerName = await this.getValidatedProvider();
-			const initialData = await this.getTypeForNewVideoConference(rid, Boolean(allowRinging));
+			const federation = await this.getSessionForNewCall(rid, providerName);
 
-			const data = {
-				...initialData,
-				createdBy: caller,
-				rid,
-				providerName,
+			const startCall = async () => {
+				const initialData = await this.getTypeForNewVideoConference(rid, Boolean(allowRinging));
+
+				const data = {
+					...initialData,
+					createdBy: caller,
+					rid,
+					providerName,
+					...(federation && { federation }),
+				};
+
+				if (data.type === 'videoconference') {
+					data.title = title;
+				}
+
+				return this.create(data, false);
 			};
 
-			if (data.type === 'videoconference') {
-				data.title = title;
+			if (!federation) {
+				return startCall();
 			}
 
-			return this.create(data, false);
+			// One call per room: whoever starts it second, on whichever server, joins the first.
+			return this.serializeFederatedSession(federation, async () => {
+				const running = await this.findRunningFederatedCall(federation);
+				return running ? this.instructionsFor(running, caller) : startCall();
+			});
 		}).catch((err) => {
 			logger.error({
 				name: 'Error on VideoConf.start',
@@ -1697,7 +1723,7 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 					continue;
 				}
 
-				const expired = expiredPresenceLeases(call.users, now);
+				const expired = expiredPresenceLeases(call.users.filter(holdsPresenceLease), now);
 				if (!expired.length) {
 					continue;
 				}
@@ -1740,14 +1766,22 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 		uid: IUser['_id'],
 		federation: VideoConferenceMemberFederation,
 	): Promise<void> {
-		// An identical entry is not a change, so it reaches nobody.
+		if (await this.writeMemberFederation(callId, uid, federation)) {
+			this.notifyConferenceUpdate(callId);
+		}
+	}
+
+	/** Says whether anything changed: an identical entry is not a change, so it is worth telling nobody. */
+	private async writeMemberFederation(
+		callId: VideoConference['_id'],
+		uid: IUser['_id'],
+		federation: VideoConferenceMemberFederation,
+	): Promise<boolean> {
 		const { modifiedCount } = await VideoConferenceModel.updateOne(
 			{ '_id': callId, 'users._id': uid },
 			{ $set: { 'users.$.federation': federation } },
 		);
-		if (modifiedCount) {
-			this.notifyConferenceUpdate(callId);
-		}
+		return modifiedCount > 0;
 	}
 
 	/** Never fails the join it is part of: the member's call config, which needs the membership, reports the failure. */
@@ -1789,6 +1823,213 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 		const call = await VideoConferenceModel.findOneById(callId);
 		if (call?.federation) {
 			await this.joinFederatedSession(call, uid);
+		}
+	}
+
+	/** Undefined outside a federated room; refuses one where federated calls cannot run. */
+	private async getSessionForNewCall(rid: IRoom['_id'], providerName: string): Promise<VideoConferenceFederation | undefined> {
+		const room = await Rooms.findOneById(rid, { projection: { federated: 1, federation: 1 } });
+		if (!room || !isRoomNativeFederated(room)) {
+			return undefined;
+		}
+
+		if (!settings.get<boolean>('Federation_Service_MatrixRTC_Enabled')) {
+			throw new Error('error-videoconf-federation-disabled');
+		}
+
+		if (providerName !== FEDERATED_CALL_PROVIDER || !this.isEmbeddedProvider(providerName)) {
+			throw new Error('error-videoconf-federation-requires-livekit');
+		}
+
+		if (!room.federation.mrid) {
+			throw new Error('error-videoconf-federation-room-not-ready');
+		}
+
+		return { mrid: room.federation.mrid, slotId: MATRIXRTC_ROOM_CALL_SLOT_ID };
+	}
+
+	private findRunningFederatedCall({ mrid, slotId }: VideoConferenceFederation): Promise<VideoConference | null> {
+		return VideoConferenceModel.findOne(
+			{
+				'federation.mrid': mrid,
+				'federation.slotId': slotId,
+				'status': { $in: [VideoConferenceStatus.CALLING, VideoConferenceStatus.STARTED] },
+				'endedAt': { $exists: false },
+			},
+			{ sort: { createdAt: -1 } },
+		);
+	}
+
+	private instructionsFor(call: VideoConference, caller: IUser['_id']): VideoConferenceInstructions {
+		if (isDirectVideoConference(call)) {
+			return { type: 'direct', callId: call._id, calleeId: call.users.find(({ _id }) => _id !== caller)?._id ?? call.createdBy._id };
+		}
+
+		return { type: 'videoconference', callId: call._id, rid: call.rid };
+	}
+
+	private readonly federatedSessionTails = new Map<string, Promise<unknown>>();
+
+	/** One session at a time, so a call starting here and a member arriving from elsewhere cannot make two conferences. */
+	private serializeFederatedSession<T>({ mrid, slotId }: VideoConferenceFederation, task: () => Promise<T>): Promise<T> {
+		const key = JSON.stringify([mrid, slotId]);
+		const run = (this.federatedSessionTails.get(key) ?? Promise.resolve()).then(task);
+		const tail = run.catch(() => undefined);
+
+		this.federatedSessionTails.set(key, tail);
+		void tail.then(() => {
+			if (this.federatedSessionTails.get(key) === tail) {
+				this.federatedSessionTails.delete(key);
+			}
+		});
+
+		return run;
+	}
+
+	public async syncFederatedSession(rid: IRoom['_id'], session: VideoConferenceFederation): Promise<VideoConference['_id'] | undefined> {
+		return this.serializeFederatedSession(session, async () => {
+			const now = new Date();
+			const remote = (await MatrixRTCMemberships.findActiveBySession(session.mrid, session.slotId, now).toArray()).filter(
+				({ local }) => !local,
+			);
+
+			const call =
+				(await this.findRunningFederatedCall(session)) ??
+				(remote.length && settings.get<boolean>('Federation_Service_MatrixRTC_Enabled')
+					? await this.startFederatedCall(rid, session, remote)
+					: null);
+			if (!call) {
+				return undefined;
+			}
+
+			await MatrixRTCMemberships.attachSessionToCall(session.mrid, session.slotId, call._id, now);
+			await this.syncRemoteMembers(call, remote, now);
+
+			return call._id;
+		});
+	}
+
+	/** Started by the member of another server who was in the session first, as if they had started it here. */
+	private async startFederatedCall(
+		rid: IRoom['_id'],
+		federation: VideoConferenceFederation,
+		remote: IMatrixRTCMembership[],
+	): Promise<VideoConference | null> {
+		const room = await Rooms.findOneById<Pick<IRoom, '_id' | 't' | 'uids' | 'name' | 'fname'>>(rid, {
+			projection: { t: 1, uids: 1, name: 1, fname: 1 },
+		});
+		const [first] = [...remote].sort((a, b) => a.joinedAt.getTime() - b.joinedAt.getTime());
+		const creator = await Users.findOneById(first.uid);
+		if (!room || !creator?.username) {
+			return null;
+		}
+
+		const createdBy = { _id: creator._id, name: creator.name || creator.username, username: creator.username };
+		const isDirect = room.t === 'd' && room.uids?.length === 2;
+
+		const callId = isDirect
+			? await VideoConferenceModel.createDirect({ ...{ federation }, rid, createdBy, providerName: FEDERATED_CALL_PROVIDER })
+			: await VideoConferenceModel.createGroup({
+					...{ federation },
+					rid,
+					title: room.fname || room.name || '',
+					createdBy,
+					providerName: FEDERATED_CALL_PROVIDER,
+				});
+
+		// Its caller is in it already, so it is not waiting for them to arrive.
+		if (isDirect) {
+			await VideoConferenceModel.setStatusById(callId, VideoConferenceStatus.STARTED);
+		}
+
+		const call = await this.getUnfiltered(callId);
+		if (!call) {
+			return null;
+		}
+
+		const messageId = await this.createMessage(call, creator);
+		call.messages.started = messageId;
+		await VideoConferenceModel.setMessageById(callId, 'started', messageId);
+		this.notifyVideoConfUpdate(rid, callId);
+
+		return call;
+	}
+
+	/** One roster entry per member of another server, from their latest membership; nobody else is touched. */
+	private async syncRemoteMembers(call: VideoConference, remote: IMatrixRTCMembership[], now: Date): Promise<void> {
+		const latest = new Map<IUser['_id'], IMatrixRTCMembership>();
+		for (const membership of remote) {
+			const current = latest.get(membership.uid);
+			if (!current || membership.joinedAt > current.joinedAt) {
+				latest.set(membership.uid, membership);
+			}
+		}
+
+		const arrived: IUser['_id'][] = [];
+		let changed = false;
+
+		for (const [uid, membership] of latest) {
+			const entry = call.users.find(({ _id }) => _id === uid);
+			if (!entry || !isInVideoConference(entry)) {
+				const user = await Users.findOneById<Required<Pick<IUser, '_id' | 'username' | 'name' | 'avatarETag'>>>(uid, {
+					projection: { username: 1, name: 1, avatarETag: 1 },
+				});
+				if (!user) {
+					continue;
+				}
+
+				await VideoConferenceModel.addMemberById(call._id, { ...user, ts: now });
+				await VideoConferenceModel.setUserJoinedById(call._id, uid, now);
+				arrived.push(uid);
+			}
+
+			changed = (await this.writeMemberFederation(call._id, uid, getVideoConferenceMemberFederation(membership))) || changed;
+		}
+
+		const departed = call.users.filter((member) => isInVideoConference(member) && !holdsPresenceLease(member) && !latest.has(member._id));
+		await Promise.all(departed.map(({ _id }) => VideoConferenceModel.setUserLeftById(call._id, _id, now)));
+
+		if (!arrived.length && !departed.length && !changed) {
+			return;
+		}
+
+		this.notifyVideoConfUpdate(call.rid, call._id);
+		this.notifyConferenceUpdate(call._id);
+
+		if (arrived.length && this.runsInOurCallWindow(call.providerName)) {
+			await this.notifyUsersOfRoom(call.rid, arrived[0], 'started', { callId: call._id, rid: call.rid, uid: call.createdBy._id });
+		}
+
+		if (isDirectVideoConference(call)) {
+			for (const uid of arrived) {
+				await this.updateDirectCall(call, uid);
+			}
+		}
+
+		if (departed.length) {
+			setTimeout(() => {
+				void this.endCallIfEmpty(call._id).catch((err) =>
+					logger.error({ msg: 'Failed to end an empty conference', callId: call._id, err }),
+				);
+			}, EMPTY_CALL_GRACE_MS);
+		}
+	}
+
+	public async expireFederatedMemberships(now = new Date()): Promise<void> {
+		const expired = await MatrixRTCMemberships.findExpired(now).toArray();
+		if (!expired.length) {
+			return;
+		}
+
+		await MatrixRTCMemberships.removeByIds(expired.map(({ _id }) => _id));
+
+		const sessions = new Map(expired.map(({ rid, mrid, slotId }) => [JSON.stringify([mrid, slotId]), { rid, session: { mrid, slotId } }]));
+		for (const { rid, session } of sessions.values()) {
+			try {
+				await this.syncFederatedSession(rid, session);
+			} catch (err) {
+				logger.error({ msg: 'Failed to follow expired memberships in a federated conference', rid, err });
+			}
 		}
 	}
 
@@ -2061,7 +2302,7 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 		}
 
 		const call = await VideoConferenceModel.findOneById(callId, {
-			projection: { rid: 1, createdBy: 1, discussionRid: 1, providerName: 1 },
+			projection: { rid: 1, createdBy: 1, discussionRid: 1, providerName: 1, federation: 1 },
 		});
 		if (!call) {
 			throw new Error('invalid-video-conference');
@@ -2069,6 +2310,11 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 
 		// If there's already a discussion assigned to it, do not create a new one
 		if (call.discussionRid) {
+			return;
+		}
+
+		// A discussion is a room of this server only, which the members of the other servers could never read.
+		if (call.federation) {
 			return;
 		}
 

@@ -3,6 +3,7 @@ import { Logger } from '@rocket.chat/logger';
 
 import { registerEvents } from './events';
 import { configureMatrixRTC } from './matrixrtc/config';
+import { scheduleRTCSessionsRebuild } from './matrixrtc/inbound';
 
 const logger = new Logger('FederationSetup');
 
@@ -114,6 +115,9 @@ export async function configureFederationMatrixSettings(settings: {
 	});
 
 	configureMatrixRTC({ enabled: matrixRTCEnabled, profile: matrixRTCProfile });
+	if (matrixRTCEnabled) {
+		scheduleRTCSessionsRebuild();
+	}
 
 	if (xmppEnabled) {
 		await federationSDK.registerAppService({

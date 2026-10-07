@@ -1,6 +1,6 @@
 import type { IMatrixRTCMembership, IUser, IVideoConference, RocketChatRecordDeleted } from '@rocket.chat/core-typings';
 import type { IMatrixRTCMembershipsModel } from '@rocket.chat/model-typings';
-import type { Collection, Db, FindCursor, IndexDescription, UpdateResult } from 'mongodb';
+import type { Collection, Db, Document, FindCursor, IndexDescription, UpdateResult } from 'mongodb';
 
 import { BaseRaw } from './BaseRaw';
 
@@ -14,6 +14,7 @@ export class MatrixRTCMembershipsRaw extends BaseRaw<IMatrixRTCMembership> imple
 			{ key: { mrid: 1, slotId: 1, expiresAt: 1 } },
 			{ key: { callId: 1, uid: 1 } },
 			{ key: { expiresAt: 1 } },
+			{ key: { mrid: 1, local: 1 } },
 		];
 	}
 
@@ -46,5 +47,28 @@ export class MatrixRTCMembershipsRaw extends BaseRaw<IMatrixRTCMembership> imple
 		{ eventId, expiresAt }: Pick<IMatrixRTCMembership, 'eventId' | 'expiresAt'>,
 	): Promise<UpdateResult> {
 		return this.updateOne({ _id }, { $set: { eventId, expiresAt } });
+	}
+
+	findRemoteByRoom(mrid: string): FindCursor<IMatrixRTCMembership> {
+		return this.find({ mrid, local: false });
+	}
+
+	findRemoteRoomIds(): Promise<string[]> {
+		return this.col.distinct('mrid', { local: false });
+	}
+
+	upsertRemote({ joinedAt, ...membership }: Omit<IMatrixRTCMembership, '_id' | '_updatedAt' | 'callId' | 'local'>): Promise<UpdateResult> {
+		const { mrid, userId, mode } = membership;
+		const key = mode === 'compatibility' ? { stateKey: membership.stateKey } : { memberId: membership.memberId };
+
+		return this.updateOne(
+			{ mrid, userId, mode, local: false, ...key },
+			{ $set: { ...membership, local: false }, $setOnInsert: { joinedAt } },
+			{ upsert: true },
+		);
+	}
+
+	attachSessionToCall(mrid: string, slotId: string, callId: IVideoConference['_id'], now = new Date()): Promise<UpdateResult | Document> {
+		return this.updateMany({ mrid, slotId, callId: { $ne: callId }, expiresAt: { $gt: now } }, { $set: { callId } });
 	}
 }
