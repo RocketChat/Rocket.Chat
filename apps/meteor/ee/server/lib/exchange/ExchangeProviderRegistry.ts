@@ -75,8 +75,6 @@ const DEFAULT_SYNC_WINDOW_DAYS = 2;
 const MIN_SYNC_WINDOW_DAYS = 1;
 const MAX_SYNC_WINDOW_DAYS = 7;
 
-const DAY_MS = 24 * 60 * 60 * 1000;
-
 /**
  * Starts at midnight, the same day `calendar-events.list` reports on, so an event that already happened
  * today is still refreshed rather than left behind. Both bounds land on a day boundary, so the window is
@@ -89,7 +87,10 @@ export const getSyncWindow = (from: Date = new Date()): DateRange => {
 	const start = new Date(from);
 	start.setHours(0, 0, 0, 0);
 
-	return { start, end: new Date(start.getTime() + days * DAY_MS) };
+	const end = new Date(start);
+	end.setDate(end.getDate() + days);
+
+	return { start, end };
 };
 
 export const isServerSyncEnabled = (): boolean => current !== undefined;
