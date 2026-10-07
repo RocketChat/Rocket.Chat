@@ -182,7 +182,7 @@ const getUrlContent = async (urlObj: URL, redirectCount = 5): Promise<OEmbedUrlC
 const parseUrl = async function (url: string): Promise<{ urlPreview: MessageUrl; foundMeta: boolean }> {
 	const parsedUrlObject: MessageUrl = { url, meta: {} };
 	let foundMeta = false;
-	if (!isAbsoluteURL(url)) {
+	if (!isAbsoluteURL(url) && !url.startsWith('//')) {
 		return { urlPreview: parsedUrlObject, foundMeta };
 	}
 
@@ -219,7 +219,14 @@ const getUrlMeta = async function (
 	withFragment?: boolean,
 ): Promise<OEmbedUrlWithMetadata | OEmbedUrlContentResult | undefined> {
 	log.debug({ msg: 'Obtaining metadata for URL', url });
-	const urlObj = new URL(url);
+	const fetchUrl = url.startsWith('//') ? `https:${url}` : url;
+	let urlObj: URL;
+	try {
+		urlObj = new URL(fetchUrl);
+	} catch (err) {
+		log.error({ msg: 'Invalid URL for OEmbed', url: fetchUrl, err });
+		return undefined;
+	}
 
 	if (withFragment) {
 		urlObj.searchParams.set('_escaped_fragment_', '');
