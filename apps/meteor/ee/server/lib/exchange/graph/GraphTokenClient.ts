@@ -64,6 +64,9 @@ export class GraphTokenClient {
 
 	private inFlight: Promise<string> | null = null;
 
+	/** So a request already in flight cannot write back what it was sent to fetch. */
+	private generation = 0;
+
 	constructor(config: GraphTokenClientConfig) {
 		this.config = config;
 	}
@@ -76,6 +79,7 @@ export class GraphTokenClient {
 	public invalidate(): void {
 		this.tokenCache = null;
 		this.inFlight = null;
+		this.generation += 1;
 	}
 
 	private get authorityHost(): string {
@@ -129,8 +133,12 @@ export class GraphTokenClient {
 			return this.inFlight;
 		}
 
-		this.inFlight = this.requestToken().finally(() => {
-			this.inFlight = null;
+		const { generation } = this;
+
+		this.inFlight = this.requestToken(generation).finally(() => {
+			if (this.generation === generation) {
+				this.inFlight = null;
+			}
 		});
 
 		return this.inFlight;
@@ -145,7 +153,7 @@ export class GraphTokenClient {
 		}
 	}
 
-	private async requestToken(): Promise<string> {
+	private async requestToken(generation: number): Promise<string> {
 		this.assertConfigured();
 
 		const body = new URLSearchParams();
@@ -185,10 +193,12 @@ export class GraphTokenClient {
 
 		const expiresIn = typeof payload.expires_in === 'number' && payload.expires_in > 0 ? payload.expires_in : FALLBACK_EXPIRES_IN_SECONDS;
 
-		this.tokenCache = {
-			accessToken: payload.access_token,
-			expiresAt: Date.now() + Math.max(expiresIn - EXPIRY_SAFETY_MARGIN_SECONDS, 0) * 1000,
-		};
+		if (this.generation === generation) {
+			this.tokenCache = {
+				accessToken: payload.access_token,
+				expiresAt: Date.now() + Math.max(expiresIn - EXPIRY_SAFETY_MARGIN_SECONDS, 0) * 1000,
+			};
+		}
 
 		logger.debug({ msg: 'Acquired Microsoft Graph access token', expiresIn });
 
