@@ -161,10 +161,18 @@ const EmojiPicker = ({ reference, onClose, onPickEmoji }: EmojiPickerProps) => {
 	};
 
 	const handleScroll = (range: ListRange) => {
-		const { startIndex } = range;
+		const { startIndex , endIndex } = range;
+
+			 if ( emojiListByCategory.length > 0 && endIndex >= emojiListByCategory.length - 1) {
+			    const lastCategory = categoriesIndexes[categoriesIndexes.length - 1];
+			if (lastCategory) {
+				setCurrentCategory(lastCategory.key);
+				return;
+			}
+		}
 
 		const category = categoriesIndexes.find(
-			(category, index) => category.index <= startIndex + 1 && categoriesIndexes[index + 1]?.index >= startIndex,
+			(category, index) => category.index <= startIndex + 1 && (categoriesIndexes[index + 1]?.index ?? Infinity)>= startIndex,
 		);
 
 		if (!category) {
