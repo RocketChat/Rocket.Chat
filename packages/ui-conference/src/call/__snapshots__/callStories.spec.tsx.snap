@@ -2413,7 +2413,7 @@ exports[`call stories renders CallReactions Several without crashing 1`] = `
             class="rcx-box rcx-box--full rcx-css-1isbrhp"
           >
             <div
-              class="rcx-box rcx-box--full rcx-css-4darkt"
+              class="rcx-box rcx-box--full rcx-css-1m7v9vi"
             >
               <span
                 class="rcx-box rcx-box--full rcx-css-173vxlm"
@@ -2427,7 +2427,7 @@ exports[`call stories renders CallReactions Several without crashing 1`] = `
               </span>
             </div>
             <div
-              class="rcx-box rcx-box--full rcx-css-4darkt"
+              class="rcx-box rcx-box--full rcx-css-1m7v9vi"
             >
               <span
                 class="rcx-box rcx-box--full rcx-css-173vxlm"
@@ -2441,7 +2441,7 @@ exports[`call stories renders CallReactions Several without crashing 1`] = `
               </span>
             </div>
             <div
-              class="rcx-box rcx-box--full rcx-css-4darkt"
+              class="rcx-box rcx-box--full rcx-css-1m7v9vi"
             >
               <span
                 class="rcx-box rcx-box--full rcx-css-173vxlm"
@@ -2480,7 +2480,7 @@ exports[`call stories renders CallReactions Unattributed without crashing 1`] = 
             class="rcx-box rcx-box--full rcx-css-1isbrhp"
           >
             <div
-              class="rcx-box rcx-box--full rcx-css-4darkt"
+              class="rcx-box rcx-box--full rcx-css-1m7v9vi"
             >
               <span
                 class="rcx-box rcx-box--full rcx-css-173vxlm"
@@ -2993,6 +2993,16 @@ exports[`call stories renders CallStageArea HandsAndReactions without crashing 1
                         Ada Lovelace
                       </div>
                       <div
+                        class="rcx-box rcx-box--full rcx-css-160ihdo"
+                      >
+                        <div
+                          aria-hidden="true"
+                          class="rcx-box rcx-box--full rcx-css-1x1ga38"
+                        >
+                          👍
+                        </div>
+                      </div>
+                      <div
                         class="rcx-box rcx-box--full rcx-css-h0y5qh"
                       >
                         <div
@@ -3041,6 +3051,16 @@ exports[`call stories renders CallStageArea HandsAndReactions without crashing 1
                         class="rcx-box rcx-box--full rcx-css-7fuf0e rcx-css-1ruhktd"
                       >
                         Grace Hopper
+                      </div>
+                      <div
+                        class="rcx-box rcx-box--full rcx-css-160ihdo"
+                      >
+                        <div
+                          aria-hidden="true"
+                          class="rcx-box rcx-box--full rcx-css-1x1ga38"
+                        >
+                          🎉
+                        </div>
                       </div>
                       <div
                         class="rcx-box rcx-box--full rcx-css-h0y5qh"
@@ -3203,7 +3223,7 @@ exports[`call stories renders CallStageArea HandsAndReactions without crashing 1
               class="rcx-box rcx-box--full rcx-css-1isbrhp"
             >
               <div
-                class="rcx-box rcx-box--full rcx-css-4darkt"
+                class="rcx-box rcx-box--full rcx-css-1m7v9vi"
               >
                 <span
                   class="rcx-box rcx-box--full rcx-css-173vxlm"
@@ -3217,7 +3237,7 @@ exports[`call stories renders CallStageArea HandsAndReactions without crashing 1
                 </span>
               </div>
               <div
-                class="rcx-box rcx-box--full rcx-css-4darkt"
+                class="rcx-box rcx-box--full rcx-css-1m7v9vi"
               >
                 <span
                   class="rcx-box rcx-box--full rcx-css-173vxlm"
@@ -4499,6 +4519,81 @@ exports[`call stories renders ParticipantTile Muted without crashing 1`] = `
 </body>
 `;
 
+exports[`call stories renders ParticipantTile Reacting without crashing 1`] = `
+<body>
+  <div>
+    <div
+      class="rcx-box rcx-box--full rcx-css-owlgau"
+    >
+      <div
+        style="background-color: rgb(31, 35, 41); border-radius: 4px; display: flex; flex-direction: column; height: auto; overflow: hidden;"
+      >
+        <div
+          style="width: 20rem; aspect-ratio: 16 / 9;"
+        >
+          <div
+            class="rcx-box rcx-box--full rcx-css-1997hga"
+          >
+            <i
+              aria-hidden="true"
+              class="rcx-box rcx-box--full rcx-icon--name-user rcx-icon rcx-css-334r0s"
+            >
+              
+            </i>
+            <div
+              class="rcx-box rcx-box--full rcx-css-7fuf0e rcx-css-1ruhktd"
+            >
+              Ada Lovelace
+            </div>
+            <div
+              class="rcx-box rcx-box--full rcx-css-160ihdo"
+            >
+              <div
+                aria-hidden="true"
+                class="rcx-box rcx-box--full rcx-css-1x1ga38"
+              >
+                🎉
+              </div>
+            </div>
+            <div
+              class="rcx-box rcx-box--full rcx-css-h0y5qh"
+            >
+              <div
+                class="rcx-box rcx-box--full rcx-css-1ob2k5e"
+                data-testid="voice-activity-badge"
+                style="width: 28px; height: 28px;"
+              >
+                <div
+                  aria-hidden="true"
+                  class="rcx-box rcx-box--full rcx-css-fmd200"
+                  style="height: 18px;"
+                >
+                  <div
+                    class="rcx-box rcx-box--full rcx-css-llqk8q"
+                    data-testid="voice-activity-bar"
+                    style="height: 3px;"
+                  />
+                  <div
+                    class="rcx-box rcx-box--full rcx-css-llqk8q"
+                    data-testid="voice-activity-bar"
+                    style="height: 3px;"
+                  />
+                  <div
+                    class="rcx-box rcx-box--full rcx-css-llqk8q"
+                    data-testid="voice-activity-bar"
+                    style="height: 3px;"
+                  />
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</body>
+`;
+
 exports[`call stories renders ParticipantTile Self without crashing 1`] = `
 <body>
   <div>
@@ -4526,10 +4621,95 @@ exports[`call stories renders ParticipantTile Self without crashing 1`] = `
               John Doe
             </div>
             <div
-              class="rcx-box rcx-box--full rcx-css-10ikj1k rcx-css-16uxknr"
+              class="rcx-box rcx-box--full rcx-css-160ihdo"
             >
-              720
-              p
+              <div
+                class="rcx-box rcx-box--full rcx-css-1wnmmi7 rcx-css-16uxknr"
+              >
+                720
+                p
+              </div>
+            </div>
+            <div
+              class="rcx-box rcx-box--full rcx-css-h0y5qh"
+            >
+              <div
+                class="rcx-box rcx-box--full rcx-css-1ob2k5e"
+                data-testid="voice-activity-badge"
+                style="width: 28px; height: 28px;"
+              >
+                <div
+                  aria-hidden="true"
+                  class="rcx-box rcx-box--full rcx-css-fmd200"
+                  style="height: 18px;"
+                >
+                  <div
+                    class="rcx-box rcx-box--full rcx-css-llqk8q"
+                    data-testid="voice-activity-bar"
+                    style="height: 3px;"
+                  />
+                  <div
+                    class="rcx-box rcx-box--full rcx-css-llqk8q"
+                    data-testid="voice-activity-bar"
+                    style="height: 3px;"
+                  />
+                  <div
+                    class="rcx-box rcx-box--full rcx-css-llqk8q"
+                    data-testid="voice-activity-bar"
+                    style="height: 3px;"
+                  />
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</body>
+`;
+
+exports[`call stories renders ParticipantTile SelfReacting without crashing 1`] = `
+<body>
+  <div>
+    <div
+      class="rcx-box rcx-box--full rcx-css-owlgau"
+    >
+      <div
+        style="background-color: rgb(31, 35, 41); border-radius: 4px; display: flex; flex-direction: column; height: auto; overflow: hidden;"
+      >
+        <div
+          style="width: 20rem; aspect-ratio: 16 / 9;"
+        >
+          <div
+            class="rcx-box rcx-box--full rcx-css-1997hga"
+          >
+            <i
+              aria-hidden="true"
+              class="rcx-box rcx-box--full rcx-icon--name-user rcx-icon rcx-css-334r0s"
+            >
+              
+            </i>
+            <div
+              class="rcx-box rcx-box--full rcx-css-7fuf0e rcx-css-1ruhktd"
+            >
+              John Doe
+            </div>
+            <div
+              class="rcx-box rcx-box--full rcx-css-160ihdo"
+            >
+              <div
+                class="rcx-box rcx-box--full rcx-css-1wnmmi7 rcx-css-16uxknr"
+              >
+                720
+                p
+              </div>
+              <div
+                aria-hidden="true"
+                class="rcx-box rcx-box--full rcx-css-1x1ga38"
+              >
+                👍
+              </div>
             </div>
             <div
               class="rcx-box rcx-box--full rcx-css-h0y5qh"

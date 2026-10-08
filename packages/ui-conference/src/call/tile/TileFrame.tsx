@@ -6,6 +6,7 @@ import { useTranslation } from 'react-i18next';
 
 import VoiceActivity from '../VoiceActivity';
 import { useSpeakingRing } from '../hooks/useSpeakingRing';
+import { REACTION_VISIBLE_MS } from '../lib/reactions';
 import { speakingRingThickness } from '../lib/speakingRing';
 import type { TileParticipant } from '../lib/stageTiles';
 
@@ -44,16 +45,23 @@ const labelStyles = css`
 	pointer-events: none;
 `;
 
-const sendBadgeStyles = css`
+/** The top-left corner: what the reader's own tile is sending, and the latest reaction from whoever's tile it is. */
+const leftIndicatorRowStyles = css`
 	position: absolute;
 	top: 0.25rem;
 	left: 0.25rem;
+	display: flex;
+	align-items: center;
+	gap: 0.25rem;
+	pointer-events: none;
+`;
+
+const sendBadgeStyles = css`
 	padding: 0.125rem 0.25rem;
 	border-radius: ${borderRadius('medium')};
 	background-color: ${Palette.surface['surface-overlay'].toString()};
 	color: ${Palette.text['font-pure-white'].toString()};
 	font-variant-numeric: tabular-nums;
-	pointer-events: none;
 `;
 
 const indicatorRowStyles = css`
@@ -76,6 +84,30 @@ const indicatorBadgeStyles = css`
 	color: ${Palette.text['font-pure-white'].toString()};
 `;
 
+/** Seen for exactly as long as the same reaction rises over the call. */
+const reactionBadgeStyles = css`
+	font-size: 1rem;
+	line-height: 1;
+	animation: rcx-tile-reaction ${REACTION_VISIBLE_MS}ms ease-out forwards;
+
+	@keyframes rcx-tile-reaction {
+		0% {
+			opacity: 0;
+			transform: scale(0.6);
+		}
+		12% {
+			opacity: 1;
+			transform: scale(1);
+		}
+		75% {
+			opacity: 1;
+		}
+		100% {
+			opacity: 0;
+		}
+	}
+`;
+
 const handRaisedLabelStyles = css`
 	/* Palette carries no button colours: this is the token fuselage's success button is drawn with. */
 	background-color: var(--rcx-color-button-background-success-default);
@@ -84,7 +116,7 @@ const handRaisedLabelStyles = css`
 	text-shadow: none;
 `;
 
-export type TileFrameProps = Pick<TileParticipant, 'displayName' | 'muted' | 'held' | 'audioStream' | 'handPosition'> & {
+export type TileFrameProps = Pick<TileParticipant, 'displayName' | 'muted' | 'held' | 'audioStream' | 'handPosition' | 'reaction'> & {
 	/** How wide the speaking ring gets at full volume. */
 	ringWidth: number;
 	/**
@@ -96,8 +128,8 @@ export type TileFrameProps = Pick<TileParticipant, 'displayName' | 'muted' | 'he
 	children: ReactNode;
 };
 
-/** Everything a tile says over the picture: who it is, whether they are speaking, their microphone, their hand. */
-const TileFrame = ({ displayName, muted, held, audioStream, handPosition, ringWidth, sendHeight, children }: TileFrameProps) => {
+/** Everything a tile says over the picture: who it is, whether they are speaking, their microphone, their hand, their reaction. */
+const TileFrame = ({ displayName, muted, held, audioStream, handPosition, reaction, ringWidth, sendHeight, children }: TileFrameProps) => {
 	const { t } = useTranslation();
 	const { audioLevel: rawLevel, ringLevel: displayLevel } = useSpeakingRing(audioStream ?? null, muted);
 	const ringThickness = speakingRingThickness(displayLevel, ringWidth);
@@ -128,10 +160,21 @@ const TileFrame = ({ displayName, muted, held, audioStream, handPosition, ringWi
 				)}
 				{displayName}
 			</Box>
-			{/* What is sent rather than captured: the encoder drops to a smaller layer when bandwidth or CPU says so. */}
-			{sendHeight && (
-				<Box className={sendBadgeStyles} fontScale='c1'>
-					{sendHeight}p
+			{(sendHeight || reaction) && (
+				<Box className={leftIndicatorRowStyles}>
+					{/* What is sent rather than captured: the encoder drops to a smaller layer when bandwidth or CPU says so. */}
+					{sendHeight && (
+						<Box className={sendBadgeStyles} fontScale='c1'>
+							{sendHeight}p
+						</Box>
+					)}
+					{/* Keyed by the reaction, so a newer one starts over instead of taking up the fade of the one it replaces.
+					    Hidden from assistive technology: the call already announces each reaction as it arrives. */}
+					{reaction && (
+						<Box key={reaction.id} className={[indicatorBadgeStyles, reactionBadgeStyles]} aria-hidden>
+							{reaction.emoji}
+						</Box>
+					)}
 				</Box>
 			)}
 			<Box className={indicatorRowStyles}>
