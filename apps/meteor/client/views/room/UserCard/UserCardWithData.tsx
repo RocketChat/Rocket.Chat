@@ -1,5 +1,6 @@
 import { getUserDisplayName } from '@rocket.chat/core-typings';
 import type { IRoom } from '@rocket.chat/core-typings';
+import { IconButton } from '@rocket.chat/fuselage';
 import { useStableCallback } from '@rocket.chat/fuselage-hooks';
 import { GenericMenu, UserCard, UserCardAction, UserCardRole, UserCardSkeleton } from '@rocket.chat/ui-client';
 import { useSetting, useRolesDescription } from '@rocket.chat/ui-contexts';
@@ -41,23 +42,13 @@ const UserCardWithData = ({ username, rid, onOpenUserInfo, onClose }: UserCardWi
 	const user = useMemo(() => {
 		const defaultValue = isLoading ? undefined : null;
 
-		const {
-			_id,
-			name,
-			roles = defaultValue,
-			bio = defaultValue,
-			utcOffset = defaultValue,
-			nickname,
-			avatarETag,
-			freeSwitchExtension,
-		} = data?.user || {};
+		const { _id, name, roles = defaultValue, utcOffset = defaultValue, nickname, avatarETag, freeSwitchExtension } = data?.user || {};
 
 		return {
 			_id,
 			name: getUserDisplayName(name, username, showRealNames),
 			username,
 			roles: roles && getRoles(roles).map((role, index) => <UserCardRole key={index}>{role}</UserCardRole>),
-			bio,
 			etag: avatarETag,
 			localTime: typeof utcOffset === 'number' && Number.isFinite(utcOffset) && <LocalTime utcOffset={utcOffset} />,
 			status: _id && <ReactiveUserStatus uid={_id} />,
@@ -75,7 +66,7 @@ const UserCardWithData = ({ username, rid, onOpenUserInfo, onClose }: UserCardWi
 	const { actions: actionsDefinition, menuActions: menuOptions } = useUserInfoActions({
 		rid,
 		user: { _id: user._id ?? '', username: user.username, name: user.name, freeSwitchExtension: user.freeSwitchExtension },
-		size: 3,
+		size: 2,
 		isMember,
 		reload: refetch,
 	});
@@ -85,12 +76,21 @@ const UserCardWithData = ({ username, rid, onOpenUserInfo, onClose }: UserCardWi
 			return null;
 		}
 
-		return <GenericMenu title={t('More')} key='menu' sections={menuOptions} placement='bottom-start' callbackAction={onClose} />;
+		return (
+			<GenericMenu
+				button={<IconButton icon='kebab' secondary small />}
+				title={t('More')}
+				key='menu'
+				sections={menuOptions}
+				placement='bottom-start'
+				callbackAction={onClose}
+			/>
+		);
 	}, [menuOptions, onClose, t]);
 
 	const actions = useMemo(() => {
 		const mapAction = ([key, { content, title, icon, onClick, disabled }]: [string, UserInfoAction]) => (
-			<UserCardAction key={key} label={content || title} aria-label={content || title} onClick={onClick} icon={icon!} disabled={disabled} />
+			<UserCardAction key={key} label={content || title} icon={icon} onClick={onClick} disabled={disabled} />
 		);
 
 		return [...actionsDefinition.map(mapAction), menu].filter(Boolean);
@@ -100,7 +100,7 @@ const UserCardWithData = ({ username, rid, onOpenUserInfo, onClose }: UserCardWi
 		return <UserCardSkeleton />;
 	}
 
-	return <UserCard user={user} onClose={onClose} onOpenUserInfo={handleOpenUserInfo} actions={actions} />;
+	return <UserCard user={user} onOpenUserInfo={handleOpenUserInfo} actions={actions} />;
 };
 
 export default UserCardWithData;
