@@ -48,6 +48,7 @@ describe('applyDeferredSideEffects', () => {
 		await applyDeferredSideEffects(new Map());
 
 		expect(setupNextNotification).not.toHaveBeenCalled();
+		expect(setupNextStatusChange).not.toHaveBeenCalled();
 	});
 
 	it('keeps going for the other users when one presence write fails', async () => {
