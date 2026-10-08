@@ -890,7 +890,7 @@ exports[`renders WithSearchInput without crashing 1`] = `
 </body>
 `;
 
-exports[`renders WithSlider without crashing 1`] = `
+exports[`renders WithSelect without crashing 1`] = `
 <body>
   <div>
     <div
@@ -900,7 +900,7 @@ exports[`renders WithSlider without crashing 1`] = `
         class="rcx-box rcx-box--full rcx-field__label rcx-label"
         id="react-aria-_r_9_-label"
       >
-        Example Slider
+        Example Select
         <span
           class="rcx-box rcx-box--full rcx-label__info rcx-css-wcp0mp"
         >
@@ -928,60 +928,99 @@ exports[`renders WithSlider without crashing 1`] = `
         class="rcx-box rcx-box--full rcx-field__description"
         id="react-aria-_r_9_-description"
       >
-        You can use the slider to select a value from a range of values
+        You can select a single option from a list of options
       </span>
       <span
         class="rcx-box rcx-box--full rcx-field__row"
       >
         <div
-          aria-labelledby="react-aria-_r_9_-label"
-          class="rcx-css-146twpt"
-          id="react-aria-_r_a_"
-          role="group"
+          class="rcx-box rcx-box--full rcx-css-1mbgoc8"
         >
-          <label
-            aria-live="off"
-            class="rcx-box rcx-box--full rcx-label"
-            for="react-aria-_r_a_-0"
-          >
-            <span
-              aria-live="off"
-              class="rcx-box rcx-box--full rcx-label"
-              data-testid="slider-output"
-              for="react-aria-_r_a_-0"
-            >
-              20
-            </span>
-          </label>
           <div
-            class="rcx-css-7w2yw5"
-            style="position: relative;"
+            aria-hidden="true"
+            data-a11y-ignore="aria-hidden-focus"
+            data-react-aria-prevent-focus="true"
+            data-testid="hidden-select-container"
+            style="border: 0px; clip-path: inset(50%); height: 1px; margin: -1px; overflow: hidden; padding: 0px; position: absolute; width: 1px; white-space: nowrap;"
           >
-            <div
-              class="rcx-css-5ps27r"
-              style="position: absolute; left: 20%; transform: translate(-50%, -50%);"
-            >
-              <div
-                style="border: 0px; clip-path: inset(50%); height: 1px; margin: -1px; overflow: hidden; padding: 0px; position: absolute; width: 1px; white-space: nowrap;"
+            <label>
+              <select
+                tabindex="-1"
               >
-                <input
-                  aria-describedby="react-aria-_r_9_-description react-aria-_r_9_-error react-aria-_r_9_-hint"
-                  aria-details=""
-                  aria-labelledby="react-aria-_r_a_"
-                  aria-orientation="horizontal"
-                  aria-valuetext="20"
-                  id="react-aria-_r_a_-0"
-                  max="100"
-                  min="0"
-                  step="1"
-                  tabindex="0"
-                  type="range"
-                  value="20"
-                />
-              </div>
-            </div>
+                <option />
+                <option
+                  value="1"
+                >
+                  1
+                </option>
+                <option
+                  value="2"
+                >
+                  2
+                </option>
+                <option
+                  value="3"
+                >
+                  3
+                </option>
+                <option
+                  value="4"
+                >
+                  4
+                </option>
+                <option
+                  value="5"
+                >
+                  5
+                </option>
+                <option
+                  value="6"
+                >
+                  6
+                </option>
+                <option
+                  value="7"
+                >
+                  7
+                </option>
+                <option
+                  value="8"
+                >
+                  8
+                </option>
+                <option
+                  value="9"
+                >
+                  9
+                </option>
+                <option
+                  value="10"
+                >
+                  10
+                </option>
+              </select>
+            </label>
           </div>
         </div>
+        <button
+          aria-describedby="react-aria-_r_9_-description react-aria-_r_9_-error react-aria-_r_9_-hint"
+          aria-expanded="false"
+          aria-haspopup="listbox"
+          aria-labelledby="react-aria-_r_h_ react-aria-_r_9_-label"
+          class="rcx-box rcx-box--full rcx-box--animated rcx-select rcx-css-1vw6rc6"
+          type="button"
+        >
+          <span
+            class="rcx-box rcx-box--full rcx-css-az37y0"
+            id="react-aria-_r_h_"
+          />
+          <i
+            aria-hidden="true"
+            class="rcx-box rcx-box--full rcx-icon--name-chevron-down rcx-icon rcx-css-l5txo2"
+          >
+            
+          </i>
+        </button>
       </span>
       <span
         class="rcx-box rcx-box--full rcx-field__error"
@@ -1011,6 +1050,127 @@ exports[`renders WithSlider without crashing 1`] = `
 </body>
 `;
 
+exports[`renders WithSlider without crashing 1`] = `
+<body>
+  <div>
+    <div
+      class="rcx-box rcx-box--full rcx-field"
+    >
+      <span
+        class="rcx-box rcx-box--full rcx-field__label rcx-label"
+        id="react-aria-_r_i_-label"
+      >
+        Example Slider
+        <span
+          class="rcx-box rcx-box--full rcx-label__info rcx-css-wcp0mp"
+        >
+          <span
+            hidden=""
+          >
+            with extra info in a tooltip
+          </span>
+          <i
+            aria-hidden="true"
+            class="rcx-box rcx-box--full rcx-icon--name-info-circled rcx-icon"
+            title="with extra info in a tooltip"
+          >
+            
+          </i>
+        </span>
+        <span
+          aria-hidden="true"
+          class="rcx-box rcx-box--full rcx-label__required rcx-css-b7g1a9"
+        >
+          *
+        </span>
+      </span>
+      <span
+        class="rcx-box rcx-box--full rcx-field__description"
+        id="react-aria-_r_i_-description"
+      >
+        You can use the slider to select a value from a range of values
+      </span>
+      <span
+        class="rcx-box rcx-box--full rcx-field__row"
+      >
+        <div
+          aria-labelledby="react-aria-_r_i_-label"
+          class="rcx-css-146twpt"
+          id="react-aria-_r_j_"
+          role="group"
+        >
+          <label
+            aria-live="off"
+            class="rcx-box rcx-box--full rcx-label"
+            for="react-aria-_r_j_-0"
+          >
+            <span
+              aria-live="off"
+              class="rcx-box rcx-box--full rcx-label"
+              data-testid="slider-output"
+              for="react-aria-_r_j_-0"
+            >
+              20
+            </span>
+          </label>
+          <div
+            class="rcx-css-7w2yw5"
+            style="position: relative;"
+          >
+            <div
+              class="rcx-css-5ps27r"
+              style="position: absolute; left: 20%; transform: translate(-50%, -50%);"
+            >
+              <div
+                style="border: 0px; clip-path: inset(50%); height: 1px; margin: -1px; overflow: hidden; padding: 0px; position: absolute; width: 1px; white-space: nowrap;"
+              >
+                <input
+                  aria-describedby="react-aria-_r_i_-description react-aria-_r_i_-error react-aria-_r_i_-hint"
+                  aria-details=""
+                  aria-labelledby="react-aria-_r_j_"
+                  aria-orientation="horizontal"
+                  aria-valuetext="20"
+                  id="react-aria-_r_j_-0"
+                  max="100"
+                  min="0"
+                  step="1"
+                  tabindex="0"
+                  type="range"
+                  value="20"
+                />
+              </div>
+            </div>
+          </div>
+        </div>
+      </span>
+      <span
+        class="rcx-box rcx-box--full rcx-field__error"
+        id="react-aria-_r_i_-error"
+        role="alert"
+      >
+        You failed to enter a valid value
+      </span>
+      <span
+        class="rcx-box rcx-box--full rcx-field__row"
+      >
+        <span
+          class="rcx-box rcx-box--full rcx-field__hint"
+          id="react-aria-_r_i_-hint"
+        >
+          This should help the user enter a valid value
+        </span>
+        <a
+          class="rcx-box rcx-box--full rcx-field__link"
+          href="#"
+        >
+          Link to more information
+        </a>
+      </span>
+    </div>
+  </div>
+</body>
+`;
+
 exports[`renders WithTextArea without crashing 1`] = `
 <body>
   <div>
@@ -1019,7 +1179,7 @@ exports[`renders WithTextArea without crashing 1`] = `
     >
       <label
         class="rcx-box rcx-box--full rcx-field__label rcx-label"
-        for="react-aria-_r_g_-label"
+        for="react-aria-_r_p_-label"
       >
         Example Text Area
         <span
@@ -1047,7 +1207,7 @@ exports[`renders WithTextArea without crashing 1`] = `
       </label>
       <span
         class="rcx-box rcx-box--full rcx-field__description"
-        id="react-aria-_r_g_-description"
+        id="react-aria-_r_p_-description"
       >
         You can use this field to enter multi-line text
       </span>
@@ -1055,17 +1215,17 @@ exports[`renders WithTextArea without crashing 1`] = `
         class="rcx-box rcx-box--full rcx-field__row"
       >
         <textarea
-          aria-describedby="react-aria-_r_g_-description react-aria-_r_g_-error react-aria-_r_g_-hint"
+          aria-describedby="react-aria-_r_p_-description react-aria-_r_p_-error react-aria-_r_p_-hint"
           aria-invalid="true"
           class="rcx-box rcx-box--full rcx-box--animated rcx-input-box--type-textarea rcx-input-box"
           cols="1"
-          id="react-aria-_r_g_-label"
+          id="react-aria-_r_p_-label"
           size="1"
         />
       </span>
       <span
         class="rcx-box rcx-box--full rcx-field__error"
-        id="react-aria-_r_g_-error"
+        id="react-aria-_r_p_-error"
         role="alert"
       >
         You failed to enter a valid value
@@ -1075,7 +1235,7 @@ exports[`renders WithTextArea without crashing 1`] = `
       >
         <span
           class="rcx-box rcx-box--full rcx-field__hint"
-          id="react-aria-_r_g_-hint"
+          id="react-aria-_r_p_-hint"
         >
           This should help the user enter a valid value
         </span>
@@ -1099,7 +1259,7 @@ exports[`renders WithTextInput without crashing 1`] = `
     >
       <label
         class="rcx-box rcx-box--full rcx-field__label rcx-label"
-        for="react-aria-_r_h_-label"
+        for="react-aria-_r_q_-label"
       >
         Example Text Input
         <span
@@ -1127,7 +1287,7 @@ exports[`renders WithTextInput without crashing 1`] = `
       </label>
       <span
         class="rcx-box rcx-box--full rcx-field__description"
-        id="react-aria-_r_h_-description"
+        id="react-aria-_r_q_-description"
       >
         Text inputs are used to enter a single line of text.
       </span>
@@ -1135,17 +1295,17 @@ exports[`renders WithTextInput without crashing 1`] = `
         class="rcx-box rcx-box--full rcx-field__row"
       >
         <input
-          aria-describedby="react-aria-_r_h_-description react-aria-_r_h_-error react-aria-_r_h_-hint"
+          aria-describedby="react-aria-_r_q_-description react-aria-_r_q_-error react-aria-_r_q_-hint"
           aria-invalid="true"
           class="rcx-box rcx-box--full rcx-box--animated rcx-input-box--type-text rcx-input-box"
-          id="react-aria-_r_h_-label"
+          id="react-aria-_r_q_-label"
           size="1"
           type="text"
         />
       </span>
       <span
         class="rcx-box rcx-box--full rcx-field__error"
-        id="react-aria-_r_h_-error"
+        id="react-aria-_r_q_-error"
         role="alert"
       >
         You failed to enter a valid value
@@ -1155,7 +1315,7 @@ exports[`renders WithTextInput without crashing 1`] = `
       >
         <span
           class="rcx-box rcx-box--full rcx-field__hint"
-          id="react-aria-_r_h_-hint"
+          id="react-aria-_r_q_-hint"
         >
           This should help the user enter a valid value
         </span>
@@ -1216,10 +1376,10 @@ exports[`renders WithToggleSwitch without crashing 1`] = `
             Example Toggle Switch with extra info in a tooltip  *
           </div>
           <input
-            aria-describedby="react-aria-_r_i_-description react-aria-_r_i_-error react-aria-_r_i_-hint"
+            aria-describedby="react-aria-_r_r_-description react-aria-_r_r_-error react-aria-_r_r_-hint"
             aria-invalid="true"
             class="rcx-box rcx-box--full rcx-toggle-switch__input"
-            id="react-aria-_r_i_-label"
+            id="react-aria-_r_r_-label"
             type="checkbox"
           />
           <i
@@ -1230,13 +1390,13 @@ exports[`renders WithToggleSwitch without crashing 1`] = `
       </span>
       <span
         class="rcx-box rcx-box--full rcx-field__description"
-        id="react-aria-_r_i_-description"
+        id="react-aria-_r_r_-description"
       >
         This field represents a boolean value
       </span>
       <span
         class="rcx-box rcx-box--full rcx-field__error"
-        id="react-aria-_r_i_-error"
+        id="react-aria-_r_r_-error"
         role="alert"
       >
         You failed to enter a valid value
@@ -1246,7 +1406,7 @@ exports[`renders WithToggleSwitch without crashing 1`] = `
       >
         <span
           class="rcx-box rcx-box--full rcx-field__hint"
-          id="react-aria-_r_i_-hint"
+          id="react-aria-_r_r_-hint"
         >
           This should help the user enter a valid value
         </span>
@@ -1270,7 +1430,7 @@ exports[`renders WithUrlInput without crashing 1`] = `
     >
       <label
         class="rcx-box rcx-box--full rcx-field__label rcx-label"
-        for="react-aria-_r_j_-label"
+        for="react-aria-_r_s_-label"
       >
         Example URL Input
         <span
@@ -1298,7 +1458,7 @@ exports[`renders WithUrlInput without crashing 1`] = `
       </label>
       <span
         class="rcx-box rcx-box--full rcx-field__description"
-        id="react-aria-_r_j_-description"
+        id="react-aria-_r_s_-description"
       >
         This field requires a valid URL
       </span>
@@ -1306,17 +1466,17 @@ exports[`renders WithUrlInput without crashing 1`] = `
         class="rcx-box rcx-box--full rcx-field__row"
       >
         <input
-          aria-describedby="react-aria-_r_j_-description react-aria-_r_j_-error react-aria-_r_j_-hint"
+          aria-describedby="react-aria-_r_s_-description react-aria-_r_s_-error react-aria-_r_s_-hint"
           aria-invalid="true"
           class="rcx-box rcx-box--full rcx-box--animated rcx-input-box--type-url rcx-input-box"
-          id="react-aria-_r_j_-label"
+          id="react-aria-_r_s_-label"
           size="1"
           type="url"
         />
       </span>
       <span
         class="rcx-box rcx-box--full rcx-field__error"
-        id="react-aria-_r_j_-error"
+        id="react-aria-_r_s_-error"
         role="alert"
       >
         You failed to enter a valid value
@@ -1326,7 +1486,7 @@ exports[`renders WithUrlInput without crashing 1`] = `
       >
         <span
           class="rcx-box rcx-box--full rcx-field__hint"
-          id="react-aria-_r_j_-hint"
+          id="react-aria-_r_s_-hint"
         >
           This should help the user enter a valid value
         </span>
