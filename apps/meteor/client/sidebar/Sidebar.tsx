@@ -4,6 +4,8 @@ import { memo } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import SidebarRoomList from './RoomList';
+import TeamsPanel from './TeamsPanel';
+import { useTeamsPanel } from './TeamsPanel/hooks/useTeamsPanel';
 import SidebarFooter from './footer';
 import BannerSection from './sections/BannerSection';
 import NowPlayingSection from './sections/NowPlayingSection';
@@ -12,6 +14,7 @@ const Sidebar = () => {
 	const { t } = useTranslation();
 	const sidebarViewMode = useUserPreference('sidebarViewMode');
 	const sidebarHideAvatar = !useUserPreference('sidebarDisplayAvatar');
+	const { open: teamsPanelOpen } = useTeamsPanel();
 
 	return (
 		<FuselageSidebar
@@ -26,7 +29,7 @@ const Sidebar = () => {
 				.join(' ')}
 		>
 			<BannerSection />
-			<SidebarRoomList />
+			{teamsPanelOpen ? <TeamsPanel /> : <SidebarRoomList />}
 			<NowPlayingSection />
 			<SidebarFooter />
 		</FuselageSidebar>
