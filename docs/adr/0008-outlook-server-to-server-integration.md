@@ -1,4 +1,4 @@
-# ADR 0005 — Outlook server-to-server integration 
+# ADR 0005 — Outlook server-to-server integration
 
 ## Introduction
 
