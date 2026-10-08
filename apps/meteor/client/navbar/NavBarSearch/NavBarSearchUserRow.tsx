@@ -1,4 +1,4 @@
-import { ItemIcon } from '@rocket.chat/fuselage';
+import { SidebarItemIcon } from '@rocket.chat/fuselage';
 import type { SubscriptionWithRoom } from '@rocket.chat/ui-contexts';
 import { useSetting } from '@rocket.chat/ui-contexts';
 import type { ComponentProps, ReactNode } from 'react';
@@ -17,11 +17,7 @@ export type NavBarSearchUserRowProps = {
 const NavBarSearchUserRow = ({ room, id, AvatarTemplate, ...props }: NavBarSearchUserRowProps) => {
 	const useRealName = useSetting('UI_Use_Real_Name');
 	const title = useRealName ? room.fname || room.name : room.name || room.fname || '';
-	const icon = (
-		<ItemIcon>
-			<ReactiveUserStatus uid={room._id} />
-		</ItemIcon>
-	);
+	const icon = <SidebarItemIcon icon={<ReactiveUserStatus uid={room._id} />} />;
 	const href = roomCoordinator.getRouteLink(room.t, { name: room.name }) || '';
 
 	return <NavBarSearchItem {...props} id={id} href={href} title={title} avatar={AvatarTemplate} icon={icon} />;

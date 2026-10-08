@@ -1,4 +1,4 @@
-import { Item, ItemContent, ItemMedia, ItemTitle } from '@rocket.chat/fuselage';
+import { SidebarItem, SidebarItemAvatarWrapper, SidebarItemTitle } from '@rocket.chat/fuselage';
 import type { HTMLAttributes, ReactNode } from 'react';
 
 export type NavBarSearchItemProps = {
@@ -11,19 +11,17 @@ export type NavBarSearchItemProps = {
 	selected?: boolean;
 	badges?: ReactNode;
 	clickable?: boolean;
-} & Omit<HTMLAttributes<HTMLAnchorElement>, 'is' | 'title'>;
+} & Omit<HTMLAttributes<HTMLAnchorElement>, 'is'>;
 
-const NavBarSearchItem = ({ icon, title, avatar, actions, unread, badges, clickable: _clickable, ...props }: NavBarSearchItemProps) => {
+const NavBarSearchItem = ({ icon, title, avatar, actions, unread, badges, ...props }: NavBarSearchItemProps) => {
 	return (
-		<Item is='a' role='option' inset='md' highlighted={unread} {...props}>
-			{avatar && <ItemMedia>{avatar}</ItemMedia>}
-			{icon}
-			<ItemContent>
-				<ItemTitle>{title}</ItemTitle>
-			</ItemContent>
-			{badges}
-			{actions}
-		</Item>
+		<SidebarItem role='option' {...props}>
+			{avatar && <SidebarItemAvatarWrapper>{avatar}</SidebarItemAvatarWrapper>}
+			{icon && icon}
+			<SidebarItemTitle unread={unread}>{title}</SidebarItemTitle>
+			{badges && badges}
+			{actions && actions}
+		</SidebarItem>
 	);
 };
 
