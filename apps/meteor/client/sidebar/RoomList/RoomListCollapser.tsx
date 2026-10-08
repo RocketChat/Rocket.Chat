@@ -29,13 +29,12 @@ const RoomListCollapser = ({ group, canMoveUp, canMoveDown, onMoveUp, onMoveDown
 		<Box
 			is='section'
 			role='listitem'
-			paddingInline={4}
 			aria-label={group.collapsed ? t('Expand_group', { group: title }) : t('Collapse_group', { group: title })}
 			onFocus={mountNow}
 			onPointerEnter={requestMount}
 			{...props}
 		>
-			<ItemGroupHeader>
+			<ItemGroupHeader inset='sm'>
 				<ItemGroupTitle is='button' aria-expanded={!group.collapsed} onClick={onClick}>
 					<Chevron size='x16' right={group.collapsed} />
 					<Box is='span' withTruncatedText color={group.empty ? 'font-disabled' : undefined}>

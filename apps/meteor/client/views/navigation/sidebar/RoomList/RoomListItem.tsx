@@ -11,6 +11,7 @@ import {
 	ItemRow,
 	ItemTitle,
 } from '@rocket.chat/fuselage';
+import type { ItemInset } from '@rocket.chat/fuselage';
 import { ITEM_MEDIA_SIZE, RoomAvatar } from '@rocket.chat/ui-avatar';
 import type { ItemMediaSizeName } from '@rocket.chat/ui-avatar';
 import { useDeferredMenuMount, useShortTimeAgo } from '@rocket.chat/ui-client';
@@ -36,6 +37,7 @@ export type RoomListItemProps = {
 	'viewMode'?: RoomListItemViewMode;
 	/** Shows the room avatar, as the `sidebarDisplayAvatar` preference allows. */
 	'showAvatar'?: boolean;
+	'inset'?: ItemInset;
 	/** Navigates to the room. Without it, the title renders as a button that runs `onClick`. */
 	'href'?: string;
 	'onClick'?: MouseEventHandler<HTMLElement>;
@@ -57,6 +59,7 @@ const RoomListItem = ({
 	title,
 	viewMode = 'condensed',
 	showAvatar = true,
+	inset,
 	href,
 	onClick,
 	subtitle,
@@ -95,7 +98,7 @@ const RoomListItem = ({
 	);
 
 	return (
-		<Item {...props} selected={selected} highlighted={highlighted} onFocus={mountNow} onPointerEnter={requestMount}>
+		<Item {...props} inset={inset} selected={selected} highlighted={highlighted} onFocus={mountNow} onPointerEnter={requestMount}>
 			{showAvatar && (
 				<ItemMedia>
 					<RoomAvatar size={ITEM_MEDIA_SIZE[viewMode]} room={{ ...room, _id: room.rid || room._id, type: room.t }} />

@@ -29,13 +29,8 @@ const RoomListCollapser = ({
 	const expanded = !collapsedGroups.includes(group);
 
 	return (
-		<Box
-			is='section'
-			paddingInline={4}
-			aria-label={expanded ? t('Collapse_group', { group: title }) : t('Expand_group', { group: title })}
-			{...props}
-		>
-			<ItemGroupHeader>
+		<Box is='section' aria-label={expanded ? t('Collapse_group', { group: title }) : t('Expand_group', { group: title })} {...props}>
+			<ItemGroupHeader inset='sm'>
 				<ItemGroupTitle is='button' aria-expanded={expanded} onClick={onClick}>
 					<Chevron size='x16' right={!expanded} />
 					<Box is='span' withTruncatedText>
