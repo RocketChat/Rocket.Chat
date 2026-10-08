@@ -137,7 +137,7 @@ export const useSideBarRoomsList = (): {
 	groupCounts: number[];
 	totalCount: number;
 } & ReturnType<typeof useCollapsedGroups> => {
-	const { collapsedGroups, handleClick, handleKeyDown } = useCollapsedGroups();
+	const { collapsedGroups, handleClick } = useCollapsedGroups();
 	const { groups, unreadGroupData } = useRoomsListContext();
 
 	const roomListGroups = collapsibleFilters
@@ -164,7 +164,6 @@ export const useSideBarRoomsList = (): {
 	return {
 		collapsedGroups,
 		handleClick,
-		handleKeyDown,
 		roomListGroups,
 		groupCounts,
 		totalCount: groupCounts.reduce((acc, count) => acc + count, 0),
