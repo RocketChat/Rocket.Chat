@@ -70,11 +70,15 @@ export class RoomSidebar extends Sidebar {
 
 	/** The whole row, so tests reach the badges, avatar, preview and menu that sit beside the room link. */
 	getSidebarItemByName(name: string) {
-		return this.channelsList.getByRole('listitem').filter({ has: this.getSidebarItemLinkByName(name) });
+		return this.channelsList.getByRole('listitem').filter({ has: this.getRoomLink(name) });
 	}
 
 	getSidebarItemLinkByName(name: string) {
-		return this.channelsList.getByRole('link', { name }).filter({ has: this.page.getByText(name, { exact: true }) });
+		return this.channelsList.locator(this.getRoomLink(name));
+	}
+
+	private getRoomLink(name: string) {
+		return this.page.getByRole('link', { name }).filter({ has: this.page.getByText(name, { exact: true }) });
 	}
 
 	getFilterItemByName(name: string): Locator {
