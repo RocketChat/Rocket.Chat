@@ -11,7 +11,7 @@ export type FieldContextValue = {
 	fieldType: FieldType;
 	setFieldType: (fieldType: FieldType) => void;
 	emitAction: () => void;
-	onAction: (cb: () => void) => void;
+	onAction: (cb: () => void) => () => void;
 };
 
 export const FieldContext = createContext<FieldContextValue>({
@@ -23,7 +23,7 @@ export const FieldContext = createContext<FieldContextValue>({
 	fieldType: 'referencedByLabel',
 	setFieldType: () => undefined,
 	emitAction: () => undefined,
-	onAction: () => undefined,
+	onAction: () => () => undefined,
 });
 
 export type LabelTypes = 'hint' | 'description' | 'error' | 'placeholder';
@@ -184,7 +184,7 @@ export const useFieldWrappedByInputLabel = (): [
 					return;
 				}
 
-				onAction(() => {
+				return onAction(() => {
 					node.focus();
 					node.click();
 				});
