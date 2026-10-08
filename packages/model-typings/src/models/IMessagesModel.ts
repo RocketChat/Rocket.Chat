@@ -364,6 +364,7 @@ export interface IMessagesModel extends IBaseModel<IMessage> {
 
 	findThreadsByRoomId(rid: string, skip: number, limit: number): FindCursor<IMessage>;
 	decreaseReplyCountById(_id: string, inc?: number): Promise<IMessage | null>;
+	unsetThreadByIdIfEmpty(_id: string): Promise<UpdateResult>;
 	countPinned(options?: CountDocumentsOptions): Promise<number>;
 	countStarred(options?: CountDocumentsOptions): Promise<number>;
 	removeFileAttachmentsByMessageIds(_ids: string[], replaceWith?: MessageAttachment): Promise<Document | UpdateResult>;
