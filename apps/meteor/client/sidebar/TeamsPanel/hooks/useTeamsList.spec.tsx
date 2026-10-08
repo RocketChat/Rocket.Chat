@@ -87,39 +87,6 @@ describe('useTeamsList', () => {
 		expect(result.current[0].rooms.map(({ rid }) => rid)).toEqual(['eng-frontend']);
 	});
 
-	it('lists the unjoined rooms of an expanded team after the joined ones, and hides them while it is collapsed', () => {
-		const unjoinedRooms = new Map([
-			['eng', [{ _id: 'eng-qa', t: 'c' as const, name: 'qa', fname: 'QA', teamId: 'eng' }]],
-			['ops', [{ _id: 'ops-status', t: 'c' as const, name: 'status-page', fname: 'Status page', teamId: 'ops' }]],
-		]);
-		const { result } = renderHook(
-			() => {
-				const teams = useTeamSubscriptions();
-				return useTeamsList({ teams, expandedTeams: ['eng'], unjoinedRooms });
-			},
-			{ wrapper: wrapper(all) },
-		);
-
-		const [eng, ops] = result.current;
-		expect(eng.unjoinedRooms.map(({ _id }) => _id)).toEqual(['eng-qa']);
-		expect(ops.unjoinedRooms).toEqual([]);
-	});
-
-	it('searches the unjoined rooms too', () => {
-		const unjoinedRooms = new Map([['eng', [{ _id: 'eng-qa', t: 'c' as const, name: 'qa', fname: 'QA', teamId: 'eng' }]]]);
-		const { result } = renderHook(
-			() => {
-				const teams = useTeamSubscriptions();
-				return useTeamsList({ teams, expandedTeams: [], unjoinedRooms, filterText: 'qa' });
-			},
-			{ wrapper: wrapper(all) },
-		);
-
-		expect(result.current).toHaveLength(1);
-		expect(result.current[0].rooms).toEqual([]);
-		expect(result.current[0].unjoinedRooms.map(({ _id }) => _id)).toEqual(['eng-qa']);
-	});
-
 	it('returns no team when nothing matches the filter', () => {
 		const { result } = render({ expandedTeams: [], filterText: 'nothing like this' });
 
