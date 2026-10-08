@@ -32,6 +32,7 @@ type RoomListRowProps = {
 };
 
 const SidebarItemWithData = ({ room, id, style, t, videoConfActions }: RoomListRowProps) => {
+	const href = roomCoordinator.getRouteLink(room.t, room) || '';
 	const title = roomCoordinator.getRoomName(room.t, room) || '';
 
 	const dmUserId = getUidDirectMessage(room, useUserId());
@@ -70,6 +71,7 @@ const SidebarItemWithData = ({ room, id, style, t, videoConfActions }: RoomListR
 			selected={selected}
 			aria-current={selected || undefined}
 			aria-label={showUnread ? t('__unreadTitle__from__roomTitle__', { unreadTitle, roomTitle: title }) : title}
+			href={href}
 			onClick={() => redirectToFilter(room)}
 			title={title}
 			icon={<RoomIcon room={room} placement='sidebar' size='x20' isIncomingCall={isIncomingCall} />}
