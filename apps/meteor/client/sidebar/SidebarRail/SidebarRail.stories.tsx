@@ -8,6 +8,7 @@ const baseRoot = () =>
 	mockAppRoot().withSetting('Layout_Show_Home_Button', true).withTranslations('en', 'core', {
 		Sidebar: 'Sidebar',
 		Home: 'Home',
+		Teams: 'Teams',
 		Create_new: 'Create new',
 		Voice_Call: 'Voice Call',
 		Pages_and_actions: 'Pages and actions',
