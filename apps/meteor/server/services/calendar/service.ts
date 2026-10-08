@@ -26,7 +26,9 @@ const defaultMinutesForNotifications = 5;
 export class CalendarService extends ServiceClassInternal implements ICalendarService {
 	protected name = 'calendar';
 
-	public async create(data: Omit<InsertionModel<ICalendarEvent>, 'reminderTime' | 'notificationSent'>): Promise<ICalendarEvent['_id']> {
+	public async create(
+		data: Omit<InsertionModel<ICalendarEvent>, 'reminderTime' | 'notificationSent' | 'source' | 'seriesMasterId'>,
+	): Promise<ICalendarEvent['_id']> {
 		const { uid, startTime, endTime, subject, description, reminderMinutesBeforeStart, meetingUrl, busy } = data;
 		const minutes = reminderMinutesBeforeStart ?? defaultMinutesForNotifications;
 		const reminderTime = minutes ? getShiftedTime(startTime, -minutes) : undefined;
@@ -54,7 +56,9 @@ export class CalendarService extends ServiceClassInternal implements ICalendarSe
 		return insertResult.insertedId;
 	}
 
-	public async import(data: Omit<InsertionModel<ICalendarEvent>, 'notificationSent'>): Promise<ICalendarEvent['_id']> {
+	public async import(
+		data: Omit<InsertionModel<ICalendarEvent>, 'notificationSent' | 'source' | 'seriesMasterId'>,
+	): Promise<ICalendarEvent['_id']> {
 		const { externalId } = data;
 		if (!externalId) {
 			return this.create(data);
@@ -114,7 +118,10 @@ export class CalendarService extends ServiceClassInternal implements ICalendarSe
 		return CalendarEvent.findByUserIdAndDate(uid, date, options).toArray();
 	}
 
-	public async update(eventId: ICalendarEvent['_id'], data: Partial<ICalendarEvent>): Promise<UpdateResult | null> {
+	public async update(
+		eventId: ICalendarEvent['_id'],
+		data: Omit<Partial<ICalendarEvent>, 'source' | 'seriesMasterId'>,
+	): Promise<UpdateResult | null> {
 		const event = await this.get(eventId);
 		if (!event) {
 			return null;
