@@ -12,6 +12,7 @@ import {
 	ItemTitle,
 } from '@rocket.chat/fuselage';
 import { ITEM_MEDIA_SIZE, UserAvatar } from '@rocket.chat/ui-avatar';
+import { useDeferredMenuMount } from '@rocket.chat/ui-client';
 import type { MouseEvent } from 'react';
 
 import UserActions from './RoomMembersActions';
@@ -19,7 +20,6 @@ import { getUserDisplayNames } from '../../../../../lib/getUserDisplayNames';
 import InvitationBadge from '../../../../components/InvitationBadge';
 import { ReactiveUserStatus } from '../../../../components/UserStatus';
 import { useUserStatusTooltip } from '../../../../hooks/useUserStatusTooltip';
-import { useDeferredMenuMount } from '../../../../sidebar/Item/useDeferredMenuMount';
 import type { RoomMember } from '../../../hooks/useMembersList';
 
 export type RoomMembersItemProps = Pick<RoomMember, 'federated' | 'username' | 'name' | '_id' | 'freeSwitchExtension' | 'subscription'> & {
