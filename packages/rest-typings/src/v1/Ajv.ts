@@ -30,6 +30,9 @@ ajvQuery.addFormat(
 	'rfc_email',
 	/^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$/,
 );
+const isHttpUrl = (value: string): boolean => URL.canParse(value) && ['http:', 'https:'].includes(new URL(value).protocol);
+ajv.addFormat('http_url', { type: 'string', validate: isHttpUrl });
+ajvQuery.addFormat('http_url', { type: 'string', validate: isHttpUrl });
 ajv.addKeyword({
 	keyword: 'isNotEmpty',
 	type: 'string',

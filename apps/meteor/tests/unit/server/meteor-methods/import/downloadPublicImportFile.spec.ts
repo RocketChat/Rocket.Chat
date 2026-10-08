@@ -22,6 +22,12 @@ const stubs = {
 	systemLoggerError: sinon.stub(),
 };
 
+class MeteorError extends Error {
+	constructor(public error: string) {
+		super(error);
+	}
+}
+
 class MockImporter {
 	startFileUpload = stubs.startFileUpload;
 
@@ -35,7 +41,7 @@ const { executeDownloadPublicImportFile } = proxyquire
 	.load('../../../../../server/meteor-methods/import/downloadPublicImportFile.ts', {
 		'@rocket.chat/core-services': { Import: { newOperation: stubs.newOperation } },
 		'@rocket.chat/server-fetch': { serverFetch: stubs.serverFetch },
-		'meteor/meteor': { Meteor: { methods: sinon.stub() } },
+		'meteor/meteor': { Meteor: { methods: sinon.stub(), Error: MeteorError } },
 		'../../lib/authorization/hasPermission': { hasPermissionAsync: sinon.stub() },
 		'../../lib/deprecationWarningLogger': { methodDeprecationLogger: { method: sinon.stub() } },
 		'../../lib/import': { Importers: { get: stubs.importersGet } },
@@ -72,6 +78,42 @@ describe('executeDownloadPublicImportFile', () => {
 		expect(resume.calledOnce).to.be.true;
 		expect(writeStream.destroyed).to.be.true;
 		expect(stubs.updateProgress.calledWith(progressStep.ERROR)).to.be.true;
+	});
+
+	[
+		'/tmp/import.zip',
+		'file:///tmp/import.zip',
+		'https://',
+		'http://:80',
+		'httpfoo',
+		'ftp://example.com/import.zip',
+		['https://example.com/import.zip'],
+		undefined,
+	].forEach((fileUrl) => {
+		it(`rejects ${JSON.stringify(fileUrl)} before creating an import`, async () => {
+			await expect(executeDownloadPublicImportFile('user-id', fileUrl, 'csv')).to.be.rejectedWith('error-invalid-import-file-url');
+
+			expect(stubs.newOperation.called).to.be.false;
+			expect(stubs.startFileUpload.called).to.be.false;
+			expect(stubs.createWriteStream.called).to.be.false;
+			expect(stubs.serverFetch.called).to.be.false;
+		});
+	});
+
+	[
+		'http://example.com/import.zip',
+		'https://example.com/import.zip',
+		'HTTPS://example.com/import.zip',
+		'Http://example.com/import.zip',
+	].forEach((fileUrl) => {
+		it(`downloads ${fileUrl}`, async () => {
+			stubs.serverFetch.resolves({ ok: true, status: 200, body: new PassThrough() });
+
+			await executeDownloadPublicImportFile('user-id', fileUrl, 'csv');
+
+			sinon.assert.calledOnceWithMatch(stubs.serverFetch, fileUrl);
+			expect(stubs.createWriteStream.calledOnce).to.be.true;
+		});
 	});
 
 	it('marks the import as failed and destroys the writable when the HTTP stream fails', async () => {
