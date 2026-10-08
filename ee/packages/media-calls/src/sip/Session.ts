@@ -90,7 +90,7 @@ export class SipServerSession {
 		return this.srf.createUAC(uri, opts, progressCallbacks);
 	}
 
-	public geContactUri(contact: MediaCallContact): string {
+	public getContactUri(contact: MediaCallContact): string {
 		const sipExtension = contact.sipExtension || (contact.type === 'sip' && contact.id) || null;
 		const username = contact.username && `user-${contact.username}`;
 		const userId = contact.id && `user-${contact.id}`;
@@ -121,9 +121,9 @@ export class SipServerSession {
 
 		// Sip targets can only be referred to other sip users
 		const referToActor = await mediaCallDirector.cast.getContactForActor(transferredTo, { requiredType: 'sip' });
-		const referredBy = transferredBy && this.geContactUri(transferredBy);
+		const referredBy = transferredBy && this.getContactUri(transferredBy);
 
-		const referTo = referToActor && this.geContactUri(referToActor);
+		const referTo = referToActor && this.getContactUri(referToActor);
 		if (!referTo) {
 			throw new Error('invalid-transfer');
 		}
