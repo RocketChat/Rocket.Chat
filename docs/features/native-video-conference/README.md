@@ -81,9 +81,10 @@ with the camera off, it is remembered straight away and applied when the camera 
 Reactions rise from the call area with the sender's name, and raised hands are listed next to the participants button,
 because a call can be larger than the tiles it shows.
 
-Raised hands are a queue. The top bar names the front of it — "You" when that is the reader — and only that hand's
-tile plate is green: everyone behind it gets a white plate with their place in line, so whose turn is next reads at a
-glance however many hands are up.
+Raised hands are a queue. The top bar names the front of it — "You" when that is the reader — and lists the whole line,
+including hands whose tiles are not on screen. On the tiles that are, only the front of the queue gets a green plate:
+anyone else in line gets a white one with their place in it, so whose turn is next reads at a glance however many hands
+are up.
 
 ## Who gets rung
 
