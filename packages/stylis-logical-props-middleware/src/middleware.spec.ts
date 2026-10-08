@@ -91,3 +91,26 @@ describe('supported properties', () => {
 		expect(serialize(compile('.a{margin-inline:4px 8px;}'), middleware([logicalProperties, stringify]))).toBe('.a{margin-inline:4px 8px;}');
 	});
 });
+
+describe('root selectors', () => {
+	it('produces matching direction-scoped fallback selectors for html', () => {
+		expect(render('html{margin-inline:4px 8px;}')).toBe(
+			'html:not([dir=rtl]){margin-left:4px;margin-right:8px;}html[dir=rtl]{margin-right:4px;margin-left:8px;}',
+		);
+	});
+
+	it('produces matching direction-scoped fallback selectors for :root', () => {
+		expect(render(':root{margin-inline:4px 8px;}')).toBe(
+			':root:not([dir=rtl]){margin-left:4px;margin-right:8px;}:root[dir=rtl]{margin-right:4px;margin-left:8px;}',
+		);
+	});
+
+	it('retains descendant-scoped fallback selectors for non-root selectors', () => {
+		expect(render('body{margin-inline:4px 8px;}')).toBe(
+			'html:not([dir=rtl]) body{margin-left:4px;margin-right:8px;}[dir=rtl] body{margin-right:4px;margin-left:8px;}',
+		);
+		expect(render('.app{padding-inline:10px;}')).toBe(
+			'html:not([dir=rtl]) .app{padding-left:10px;padding-right:10px;}[dir=rtl] .app{padding-right:10px;padding-left:10px;}',
+		);
+	});
+});
