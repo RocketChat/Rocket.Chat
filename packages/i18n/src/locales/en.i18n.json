@@ -1622,7 +1622,7 @@
   "Converting_team_to_channel": "Converting team to channel",
   "Copied": "Copied",
   "Copy": "Copy",
-  "Copy_field": "Copy {{field}}",
+  "Copy_field": "Copy {{field, lowercase}}",
   "Copy_Link": "Copy link",
   "Copy_link": "Copy link",
   "Copy_password": "Copy password",
