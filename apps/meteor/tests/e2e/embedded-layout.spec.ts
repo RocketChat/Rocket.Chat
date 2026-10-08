@@ -120,6 +120,16 @@ test.describe('embedded-layout', () => {
 	});
 
 	test.describe('Direct message functionality', () => {
+		let dmTarget: ITestUser;
+
+		test.beforeAll(async ({ api }) => {
+			dmTarget = await createTestUser(api);
+		});
+
+		test.afterAll(async () => {
+			await dmTarget.delete();
+		});
+
 		test('should allow sending direct messages', async ({ page, api }) => {
 			await createDirectMessage(api);
 			await poHomeChannel.goto();
@@ -135,26 +145,14 @@ test.describe('embedded-layout', () => {
 			await expect(poHomeChannel.content.lastUserMessage).toContainText(dmMessage);
 		});
 
-		test.describe('when no DM exists yet', () => {
-			let dmTarget: ITestUser;
+		test('should enable the composer when a new DM is opened by username', async ({ page }) => {
+			await page.goto(embeddedLayoutURL(`/direct/${dmTarget.data.username}`));
 
-			test.beforeAll(async ({ api }) => {
-				dmTarget = await createTestUser(api);
-			});
+			await expect(poHomeChannel.composer.inputMessage).toBeEnabled();
 
-			test.afterAll(async () => {
-				await dmTarget.delete();
-			});
-
-			test('should enable the composer when the DM is opened by username', async ({ page }) => {
-				await page.goto(embeddedLayoutURL(`/direct/${dmTarget.data.username}`));
-
-				await expect(poHomeChannel.composer.inputMessage).toBeEnabled();
-
-				const dmMessage = `Embedded new DM test ${Date.now()}`;
-				await poHomeChannel.content.sendMessage(dmMessage);
-				await expect(poHomeChannel.content.lastUserMessage).toContainText(dmMessage);
-			});
+			const dmMessage = `Embedded new DM test ${Date.now()}`;
+			await poHomeChannel.content.sendMessage(dmMessage);
+			await expect(poHomeChannel.content.lastUserMessage).toContainText(dmMessage);
 		});
 	});
 });
