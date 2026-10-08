@@ -1,4 +1,4 @@
-import { configureCalendarSyncJob, DEFAULT_INTERVAL_MINUTES, CALENDAR_SYNC_JOB, registerCalendarSyncJob } from './registerCalendarSyncJob';
+import { configureCalendarSyncJob, DEFAULT_INTERVAL_HOURS, CALENDAR_SYNC_JOB, registerCalendarSyncJob } from './registerCalendarSyncJob';
 
 const get = jest.fn();
 const has = jest.fn();
@@ -24,7 +24,7 @@ describe('configureCalendarSyncJob', () => {
 		const values: Record<string, unknown> = {
 			Outlook_Calendar_Enabled: true,
 			Exchange_Mode: 'server',
-			Exchange_Calendar_Sync_Interval: 15,
+			Exchange_Calendar_Sync_Interval: 1,
 			...over,
 		};
 		get.mockImplementation((key: string) => values[key]);
@@ -39,12 +39,12 @@ describe('configureCalendarSyncJob', () => {
 	});
 
 	it.each([
-		[1, '*/1 * * * *'],
-		[15, '*/15 * * * *'],
-		[45.9, '*/45 * * * *'],
-		[59, '*/59 * * * *'],
-	])('schedules every %s minutes as %s', async (minutes, schedule) => {
-		settingsOf({ Exchange_Calendar_Sync_Interval: minutes });
+		[1, '0 */1 * * *'],
+		[3, '0 */3 * * *'],
+		[12, '0 */12 * * *'],
+		[24, '0 0 * * *'],
+	])('schedules every %s hours as %s', async (hours, schedule) => {
+		settingsOf({ Exchange_Calendar_Sync_Interval: hours });
 
 		await configureCalendarSyncJob();
 
@@ -52,23 +52,24 @@ describe('configureCalendarSyncJob', () => {
 	});
 
 	it.each([
-		[60, '0 */1 * * *'],
-		[90, '0 */2 * * *'],
-		[60 * 48, '0 */23 * * *'],
-	])('converts %s minutes into the hour field as %s', async (minutes, schedule) => {
-		settingsOf({ Exchange_Calendar_Sync_Interval: minutes });
+		[5, '0 */4 * * *'],
+		[7, '0 */6 * * *'],
+		[23, '0 */12 * * *'],
+		[48, '0 0 * * *'],
+	])('rounds %s hours down to %s rather than scheduling an uneven cadence', async (hours, schedule) => {
+		settingsOf({ Exchange_Calendar_Sync_Interval: hours });
 
 		await configureCalendarSyncJob();
 
 		expect(add).toHaveBeenCalledWith(CALENDAR_SYNC_JOB, schedule, expect.any(Function));
 	});
 
-	it.each([0, -5, NaN, 0.5])('falls back to the default interval for %p', async (minutes) => {
-		settingsOf({ Exchange_Calendar_Sync_Interval: minutes });
+	it.each([0, -5, NaN, 0.5])('falls back to the default interval for %p', async (hours) => {
+		settingsOf({ Exchange_Calendar_Sync_Interval: hours });
 
 		await configureCalendarSyncJob();
 
-		expect(add).toHaveBeenCalledWith(CALENDAR_SYNC_JOB, `*/${DEFAULT_INTERVAL_MINUTES} * * * *`, expect.any(Function));
+		expect(add).toHaveBeenCalledWith(CALENDAR_SYNC_JOB, `0 */${DEFAULT_INTERVAL_HOURS} * * *`, expect.any(Function));
 	});
 
 	it.each([
@@ -120,6 +121,25 @@ describe('registerCalendarSyncJob', () => {
 		await flush();
 
 		expect(add).toHaveBeenCalled();
+	});
+
+	it('does not re-add the job when the cleanup lands while a reconfiguration is in flight', async () => {
+		let resume: (exists: boolean) => void = () => undefined;
+		has.mockImplementationOnce(
+			() =>
+				new Promise<boolean>((resolve) => {
+					resume = resolve;
+				}),
+		);
+
+		const unregister = registerCalendarSyncJob();
+		watchMultiple.mock.calls[0][1]();
+
+		unregister();
+		resume(false);
+		await flush();
+
+		expect(add).not.toHaveBeenCalled();
 	});
 
 	it('stops watching and drops the job when the returned cleanup runs', async () => {
