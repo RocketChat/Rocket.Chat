@@ -26,7 +26,6 @@ const outcome = (over: Partial<CalendarSyncOutcome> = {}): CalendarSyncOutcome =
 	deleted: 0,
 	pruned: 0,
 	changed: false,
-	removedEvents: false,
 	failed: false,
 	fatal: false,
 	...over,
@@ -106,20 +105,18 @@ describe('runCalendarSync', () => {
 		expect([...dirtyArg().keys()]).toEqual(['a']);
 	});
 
-	it('keeps the removal gate on for a user whose later mailbox reported no removal', async () => {
+	it('collects a user once however many mailboxes they have', async () => {
 		candidates.mockImplementation(
 			from([
 				{ uid: 'a', mailbox: 'one@x' },
 				{ uid: 'a', mailbox: 'two@x' },
 			]),
 		);
-		syncCalendarWindow
-			.mockResolvedValueOnce(outcome({ changed: true, removedEvents: true }))
-			.mockResolvedValueOnce(outcome({ changed: true, removedEvents: false }));
+		syncCalendarWindow.mockResolvedValueOnce(outcome({ changed: true })).mockResolvedValueOnce(outcome({ changed: true }));
 
 		await runCalendarSync();
 
-		expect(dirtyArg().get('a')).toBe(true);
+		expect(dirtyArg()).toEqual(new Set(['a']));
 	});
 
 	it('does nothing when server sync is off', async () => {
@@ -158,11 +155,11 @@ describe('runCalendarSync', () => {
 			if (uid === 'b') {
 				throw new Error('boom');
 			}
-			return outcome({ changed: true, removedEvents: true });
+			return outcome({ changed: true });
 		});
 
 		await expect(runCalendarSync()).rejects.toThrow('boom');
-		expect(dirtyArg().get('a')).toBe(true);
+		expect(dirtyArg().has('a')).toBe(true);
 	});
 
 	it('keeps at most the configured number of mailboxes in flight at once', async () => {
