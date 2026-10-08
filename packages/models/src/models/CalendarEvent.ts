@@ -266,14 +266,6 @@ export class CalendarEventRaw extends BaseRaw<ICalendarEvent> implements ICalend
 		});
 	}
 
-	public deleteUnfinishedImportedByUserId(uid: IUser['_id'], notBefore: Date): Promise<DeleteResult> {
-		return this.deleteMany({
-			uid,
-			externalId: { $type: 'string' },
-			$or: [{ endTime: { $gt: notBefore } }, { endTime: { $exists: false }, startTime: { $gt: notBefore } }],
-		});
-	}
-
 	public deleteImportedOutsideSet(uid: IUser['_id'], start: Date, end: Date, keepExternalIds: string[]): Promise<DeleteResult> {
 		return this.deleteMany({
 			uid,

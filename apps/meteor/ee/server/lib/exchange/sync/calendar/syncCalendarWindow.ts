@@ -151,7 +151,7 @@ const applyRemovals = async (
 	};
 
 	if (removals.size) {
-		removalResult.deleted += record(await Calendar.deleteImported(uid, [...removals], timeWindow.start, options));
+		removalResult.deleted = record(await Calendar.deleteImported(uid, [...removals], timeWindow.start, options));
 	}
 
 	if (resyncedSeries.length) {
@@ -160,7 +160,7 @@ const applyRemovals = async (
 
 	// Only from a complete set, and only after the upserts landed.
 	if (keepExternalIds) {
-		removalResult.pruned += record(await Calendar.pruneImportedWindow(uid, timeWindow, keepExternalIds, options));
+		removalResult.pruned = record(await Calendar.pruneImportedWindow(uid, timeWindow, keepExternalIds, options));
 	}
 };
 
@@ -186,28 +186,13 @@ export const syncCalendarWindow = async (
 	const removalResult: RemovalResult = { changed: false, removedEvents: false, deleted: 0, pruned: 0 };
 
 	try {
-    // For the case a user email changed, we delete future events from the previous mailbox
-		if (state && !sameSource) {
-			const dropped = await Calendar.deleteUnfinishedImported(uid, new Date(), { deferSideEffects: true });
-
-			removalResult.changed = removalResult.changed || dropped.changed;
-			removalResult.removedEvents = removalResult.removedEvents || dropped.deleted > 0;
-			removalResult.deleted += dropped.deleted;
-
-			logger.info({
-				msg: 'Dropped the imported events of a mailbox that is no longer the one being synced',
-				uid,
-				deleted: dropped.deleted,
-			});
-		}
-
 		const collected = await collectPages(provider, mailbox, timeWindow, reusable ? state?.cursor : undefined);
 
 		const imported = await Calendar.importMany(
 			[...collected.upserts.values()].map((event) => toCalendarEvent(uid, event)),
 			{ deferSideEffects: true },
 		);
-		removalResult.changed = removalResult.changed || imported.changed;
+		removalResult.changed = imported.changed;
 
 		await applyRemovals(uid, timeWindow, collected, removalResult);
 
