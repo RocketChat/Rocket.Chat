@@ -2,7 +2,7 @@ import { mockAppRoot } from '@rocket.chat/mock-providers';
 import { renderHook } from '@testing-library/react';
 
 import { useRoomIconLabel } from './useRoomIconLabel';
-import { createFakeSubscription } from '../../../../../tests/mocks/data';
+import { createFakeSubscription } from '../../../tests/mocks/data';
 
 const wrapper = mockAppRoot()
 	.withTranslations('en', 'core', {
