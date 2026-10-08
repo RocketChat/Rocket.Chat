@@ -50,11 +50,6 @@ export class Sidepanel {
 		return this.sidepanelList.getByRole('link', { name });
 	}
 
-	/** The whole row, so tests reach the badges and preview that sit beside the room link. */
-	getItemRowByName(name: string): Locator {
-		return this.sidepanelList.getByRole('listitem').filter({ has: this.getItemByName(name) });
-	}
-
 	getSidepanelItem(name: string, subtitle?: string): Locator {
 		const regex = new RegExp(`${name}.*${subtitle}`);
 		return this.sidepanelList.getByRole('link', { name: regex });
