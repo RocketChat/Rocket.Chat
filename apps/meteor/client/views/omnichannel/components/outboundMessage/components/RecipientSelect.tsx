@@ -4,7 +4,6 @@ import { formatPhoneNumber } from '@rocket.chat/ui-client';
 import type { ComponentProps, Key } from 'react';
 import { useMemo } from 'react';
 
-
 export type RecipientSelectProps = Omit<ComponentProps<typeof Select>, 'options' | 'onChange' | 'value'> & {
 	type: 'phone' | 'email';
 	contact: Serialized<ILivechatContact> | undefined;
