@@ -48,11 +48,21 @@ export const serveAvatarFile = (file: IUpload, req: IIncomingMessage, res: Serve
 };
 
 export const getAvatarSizeFromRequest = (req: IIncomingMessage) => {
-	const requestSize = req.query.size && parseInt(req.query.size);
-	if (!requestSize) {
+	// Only validate if size parameter is explicitly provided
+	if (req.query.size == null) {
 		return;
 	}
-	return Math.min(Math.max(requestSize, MIN_SVG_AVATAR_SIZE), MAX_SVG_AVATAR_SIZE);
+
+	const parsedSize = parseInt(String(req.query.size), 10);
+
+	// Treat invalid, zero, or negative values as invalid input
+	if (isNaN(parsedSize) || parsedSize <= 0) {
+		console.warn(`Invalid avatar size parameter: ${req.query.size}`);
+		return MAX_SVG_AVATAR_SIZE;
+	}
+
+	// Clamp size between min and max bounds
+	return Math.min(Math.max(parsedSize, MIN_SVG_AVATAR_SIZE), MAX_SVG_AVATAR_SIZE);
 };
 export const serveSvgAvatarInRequestedFormat = ({
 	nameOrUsername,
