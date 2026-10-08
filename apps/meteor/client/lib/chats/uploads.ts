@@ -12,20 +12,101 @@ import { USER_ACTIVITIES, UserAction } from '../UserAction';
 import { settings } from '../settings';
 import { fileUploadIsValidContentType } from '../utils/restrictions';
 
+type PersistedUpload = {
+	id: string;
+	fileName: string;
+	fileType: string;
+	fileSize: number;
+	url: string;
+	encryption?: {
+		key: JsonWebKey;
+		iv: string;
+		type: string;
+		hash: string;
+		metadataForEncryption: Partial<import('@rocket.chat/core-typings').IUpload>;
+	};
+};
+
 class UploadsStore extends Emitter<{ update: void; [x: `cancelling-${Upload['id']}`]: void }> implements UploadsAPI {
 	private rid: string;
 
 	private tmid?: string;
 
+	private storageKey: string;
+
 	constructor({ rid, tmid }: { rid: IRoom['_id']; tmid?: IMessage['_id'] }) {
 		super();
 		this.rid = rid;
 		this.tmid = tmid;
+		this.storageKey = `composer_uploads_${rid}${tmid ? `-${tmid}` : ''}`;
+		this.restoreFromStorage();
 	}
 
 	private uploads: readonly Upload[] = [];
 
 	private processingUploads: boolean = false;
+
+	private restoreFromStorage(): void {
+		try {
+			const stored = localStorage.getItem(this.storageKey);
+			if (!stored) {
+				return;
+			}
+
+			const persisted: PersistedUpload[] = JSON.parse(stored);
+			this.uploads = persisted.map((p) => {
+				const file = new File([], p.fileName, { type: p.fileType });
+				Object.defineProperty(file, 'size', { value: p.fileSize, configurable: true });
+
+				return {
+					id: p.id,
+					file,
+					url: p.url,
+					percentage: 100,
+					...(p.encryption && {
+						encryptedFile: {
+							file: new File([], p.fileName, { type: p.encryption.type }),
+							key: p.encryption.key,
+							iv: p.encryption.iv,
+							type: p.encryption.type,
+							hash: p.encryption.hash,
+						},
+						metadataForEncryption: p.encryption.metadataForEncryption,
+					}),
+				};
+			});
+		} catch {
+			localStorage.removeItem(this.storageKey);
+		}
+	}
+
+	private persistToStorage(): void {
+		const completedUploads = this.uploads.filter((u) => u.url && !u.error);
+
+		if (completedUploads.length === 0) {
+			localStorage.removeItem(this.storageKey);
+			return;
+		}
+
+		const serialized: PersistedUpload[] = completedUploads.map((u) => ({
+			id: u.id,
+			fileName: u.file.name,
+			fileType: u.file.type,
+			fileSize: u.file.size,
+			url: u.url!,
+			...(isEncryptedUpload(u) && {
+				encryption: {
+					key: u.encryptedFile.key,
+					iv: u.encryptedFile.iv,
+					type: u.encryptedFile.type,
+					hash: u.encryptedFile.hash,
+					metadataForEncryption: u.metadataForEncryption,
+				},
+			}),
+		}));
+
+		localStorage.setItem(this.storageKey, JSON.stringify(serialized));
+	}
 
 	set = (uploads: Upload[]): void => {
 		this.uploads = uploads;
@@ -57,6 +138,7 @@ class UploadsStore extends Emitter<{ update: void; [x: `cancelling-${Upload['id'
 
 	removeUpload = (id: Upload['id']): void => {
 		this.set(this.uploads.filter((upload) => upload.id !== id));
+		this.persistToStorage();
 
 		if (this.uploads.length === 0) {
 			UserAction.stop(this.rid, USER_ACTIVITIES.USER_UPLOADING, { tmid: this.tmid });
@@ -89,15 +171,22 @@ class UploadsStore extends Emitter<{ update: void; [x: `cancelling-${Upload['id'
 						return upload;
 					}
 
+					const originalSize = upload.file.size;
+					const newFile = new File([upload.file], fileName, upload.file);
+					if (newFile.size !== originalSize) {
+						Object.defineProperty(newFile, 'size', { value: originalSize, configurable: true });
+					}
+
 					return {
 						...upload,
-						file: new File([upload.file], fileName, upload.file),
+						file: newFile,
 						...(isEncryptedUpload(upload) && {
 							metadataForEncryption: { ...upload.metadataForEncryption, name: fileName },
 						}),
 					};
 				}),
 			);
+			this.persistToStorage();
 		} catch (error) {
 			this.set(
 				this.uploads.map((upload) => {
@@ -194,6 +283,7 @@ class UploadsStore extends Emitter<{ update: void; [x: `cancelling-${Upload['id'
 						if (xhr.status === 200) {
 							const result = JSON.parse(xhr.responseText);
 							this.updateUpload(id, { id: result.file._id, url: result.file.url, percentage: 100 });
+							this.persistToStorage();
 							return;
 						}
 
