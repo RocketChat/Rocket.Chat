@@ -138,7 +138,7 @@ export const handleBrowserVersionCheck = (request: IncomingMessage, res: ServerR
 			<div class="rcx-box">
 				<div class="rcx-box rcx-box--text-color-alternative not-supported-browser__text rcx-@s6mi60">Browser not supported</div>
 				<a class="rcx-box rcx-button rcx-button--primary" href="https://rocket.chat/docs/getting-support/#supported-browser-versions" target="_blank">Check the documentation</a>
-				<a class="rcx-box rcx-button rcx-button--primary" href="#" onclick="document.cookie = 'browser_version_check=bypass; path=/'; location.reload(true);">Proceed anyway</a>
+				<a class="rcx-box rcx-button rcx-button--primary" href="#" onclick="document.cookie = 'browser_version_check=bypass; path=/; SameSite=Lax'; location.reload(true);">Proceed anyway</a>
 			</div>
 		</section>
 	`);
