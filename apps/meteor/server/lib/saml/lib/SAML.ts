@@ -128,10 +128,12 @@ export class SAML {
 
 		// Second, try searching by username or email (according to the immutableProperty setting)
 		if (!user) {
-			const expression = userObject.emailList.map((email) => `^${escapeRegExp(email)}$`).join('|');
-			const emailRegex = new RegExp(expression, 'i');
+			const validEmails = userObject.emailList.filter((email) => typeof email === 'string' && email.trim() !== '');
+			const expression = validEmails.map((email) => `^${escapeRegExp(email)}$`).join('|');
 
-			user = await SAML.findUser(userObject.username, emailRegex);
+			// An empty expression would compile to a pattern that matches every address, so no regex is
+			// built at all when there is nothing valid to search for.
+			user = await SAML.findUser(userObject.username, expression ? new RegExp(expression, 'i') : undefined);
 		}
 
 		const emails = userObject.emailList.map((email) => ({
@@ -553,7 +555,7 @@ export class SAML {
 		});
 	}
 
-	private static async findUser(username: string | undefined, emailRegex: RegExp): Promise<IUser | undefined | null> {
+	private static async findUser(username: string | undefined, emailRegex: RegExp | undefined): Promise<IUser | undefined | null> {
 		const { globalSettings } = SAMLUtils;
 
 		if (globalSettings.immutableProperty === 'Username') {
@@ -563,6 +565,10 @@ export class SAML {
 				});
 			}
 
+			return;
+		}
+
+		if (!emailRegex) {
 			return;
 		}
 
