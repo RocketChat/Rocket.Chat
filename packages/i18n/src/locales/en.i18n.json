@@ -4580,6 +4580,8 @@
   "More_groups": "More private groups",
   "More_options": "More options",
   "More_unreads": "More unreads",
+  "More_unreads_above": "More unreads above",
+  "More_unreads_below": "More unreads below",
   "Most_popular_channels_top_5": "Most popular channels (top 5)",
   "Most_recent_requested": "Most recent requested",
   "Most_recent_updated": "Most recent updated",
@@ -6992,6 +6994,9 @@
   "Unread_Count": "Unread count",
   "Unread_Count_DM": "Unread count for direct messages",
   "Unread_Count_Omni": "Unread count for omnichannel chats",
+  "Unread_mentions": "Unread mentions",
+  "Unread_mentions_above": "Unread mentions above",
+  "Unread_mentions_below": "Unread mentions below",
   "Unread_Messages": "Unread messages",
   "unread_messages_counter": {
     "one": "{{count}} unread message",
