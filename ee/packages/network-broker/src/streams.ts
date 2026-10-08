@@ -1,7 +1,7 @@
 import { Readable } from 'node:stream';
 
 import EJSON from 'ejson';
-import type { Msg, NatsConnection, Subscription } from 'nats';
+import type { Msg, NatsConnection } from 'nats';
 import { Empty, createInbox, headers } from 'nats';
 
 /**
@@ -89,13 +89,11 @@ function serveStream(nc: NatsConnection, stream: Readable, idleTimeout: number):
 	const subject = createInbox();
 	const chunks = toChunks(stream)[Symbol.asyncIterator]();
 
-	let subscription: Subscription | undefined;
 	let idle: NodeJS.Timeout | undefined;
 
 	const close = (reason?: Error): void => {
 		clearTimeout(idle);
-		idle = undefined;
-		subscription?.unsubscribe();
+		subscription.unsubscribe();
 
 		if (reason) {
 			stream.destroy(reason);
@@ -117,7 +115,7 @@ function serveStream(nc: NatsConnection, stream: Readable, idleTimeout: number):
 	// interleave two `next()` calls on the same iterator
 	let queue = Promise.resolve();
 
-	subscription = nc.subscribe(subject, {
+	const subscription = nc.subscribe(subject, {
 		callback: (_error, msg): void => {
 			armIdleTimer();
 
@@ -180,32 +178,27 @@ function mapPayload(value: unknown, map: (value: unknown) => unknown | undefined
 		return replacement;
 	}
 
-	if (Array.isArray(value)) {
-		let changed = false;
-		const mapped = value.map((entry) => {
-			const next = mapPayload(entry, map);
-			changed ||= next !== entry;
-
-			return next;
-		});
-
-		return changed ? mapped : value;
+	if (!Array.isArray(value) && !isPlainObject(value)) {
+		return value;
 	}
 
-	if (isPlainObject(value)) {
-		let changed = false;
-		const mapped: Record<string, unknown> = {};
+	// array indexes are string keys too, so one walk covers both shapes
+	const source = value as Record<string, unknown>;
 
-		for (const [key, entry] of Object.entries(value)) {
-			const next = mapPayload(entry, map);
-			changed ||= next !== entry;
-			mapped[key] = next;
+	// copied only once something inside changes, so a payload without streams costs no allocation
+	let copy: Record<string, unknown> | undefined;
+
+	for (const key of Object.keys(source)) {
+		const entry = source[key];
+		const next = mapPayload(entry, map);
+
+		if (next !== entry) {
+			copy ??= (Array.isArray(source) ? [...source] : { ...source }) as Record<string, unknown>;
+			copy[key] = next;
 		}
-
-		return changed ? mapped : value;
 	}
 
-	return value;
+	return copy ?? value;
 }
 
 /** Replaces every stream in an outgoing payload with the subject serving its chunks. */
