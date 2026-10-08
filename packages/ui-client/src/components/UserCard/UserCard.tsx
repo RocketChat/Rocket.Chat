@@ -29,6 +29,7 @@ export type UserCardProps = {
 		nickname?: string;
 		name?: string;
 		username?: string;
+		title?: string;
 		etag?: string;
 		customStatus?: ReactNode;
 		roles?: ReactNode;
@@ -40,7 +41,7 @@ export type UserCardProps = {
 };
 
 const UserCard = ({
-	user: { name, username, etag, customStatus, roles, status = <Status.Offline />, localTime, nickname } = {},
+	user: { name, username, title, etag, customStatus, roles, status = <Status.Offline />, localTime, nickname } = {},
 	actions,
 	onOpenUserInfo,
 }: UserCardProps) => {
@@ -76,11 +77,18 @@ const UserCard = ({
 					}
 				/>
 				<Box display='flex' flexDirection='column' marginBlockStart='x18'>
-					{(roles || localTime || username) && (
+					{(roles || localTime || username || title) && (
 						<HoverCardInfoList>
 							{username && name !== username && (
 								<HoverCardInfoItem icon='at' label={t('Username')}>
 									{username}
+								</HoverCardInfoItem>
+							)}
+							{title && (
+								<HoverCardInfoItem icon='business' label={t('Title')}>
+									<Box is='span' display='block' withTruncatedText title={title}>
+										{title}
+									</Box>
 								</HoverCardInfoItem>
 							)}
 							{roles && (
