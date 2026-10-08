@@ -105,7 +105,7 @@ const NavBarAISearchListBox = ({
 						>
 							<NavBarSearchIntelligentSection items={aiItems.intelligent} onSelect={handleSelect} onClose={state.close} />
 							<NavBarSearchFilterSuggestions suggestions={aiItems.filterSuggestions} />
-							<Divider marginBlockStart={12} />
+							{aiSearchAvailable && <Divider marginBlockStart={12} />}
 							<NavBarSearchRoomSection
 								filterText={filterText}
 								itemCount={itemCount}
