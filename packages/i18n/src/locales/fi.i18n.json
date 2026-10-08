@@ -1045,7 +1045,6 @@
   "Connected": "Yhdistetty",
   "Connection_Closed": "Yhteys katkaistu",
   "Connection_error": "Yhteysvirhe",
-  "Connection_failed": "LDAP-yhteys epäonnistui",
   "Connection_Reset": "Yhteyden nollaus",
   "Connectivity_Services": "Yhteyspalvelut",
   "ConnectWorkspace_Button": "Yhdistä työtila",
