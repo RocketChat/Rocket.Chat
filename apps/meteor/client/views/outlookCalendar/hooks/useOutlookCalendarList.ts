@@ -57,7 +57,8 @@ export const useMutationOutlookCalendarSync = () => {
 				return;
 			}
 
-			dispatchToastMessage({ type: 'error', message: await getEndpointErrorMessage(error, 'Outlook_Sync_Failed') });
+			const errorMessage = isServerManaged ? await getEndpointErrorMessage(error, 'Outlook_Sync_Failed') : t('Outlook_Sync_Failed');
+			dispatchToastMessage({ type: 'error', message: errorMessage });
 		},
 	});
 	return syncMutation;
