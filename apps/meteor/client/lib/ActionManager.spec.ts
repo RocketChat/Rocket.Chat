@@ -43,3 +43,37 @@ describe('modal.close', () => {
 		expect(close).not.toHaveBeenCalled();
 	});
 });
+
+describe('contextual bar disposal', () => {
+	const barView = { appId, id: 'bar-id', title: { type: 'plain_text', text: 'Title' }, blocks: [] } as UiKit.ContextualBarView;
+
+	const openContextualBar = (openContext: string) => {
+		const router = {
+			getRouteName: () => 'room',
+			getRouteParameters: () => ({ rid: 'GENERAL', tab: 'app', context: openContext }),
+			getSearchParameters: () => ({}),
+			navigate: jest.fn(),
+		};
+		const actionManager = new ActionManager(router as unknown as ContextType<typeof RouterContext>);
+		actionManager.openView('contextual_bar', barView);
+		router.navigate.mockClear();
+
+		return { actionManager, router };
+	};
+
+	it('closes the room tab when the disposed view is the one open', () => {
+		const { actionManager, router } = openContextualBar(barView.id);
+
+		actionManager.disposeView(barView.id);
+
+		expect(router.navigate).toHaveBeenCalledWith(expect.objectContaining({ params: { rid: 'GENERAL', tab: '', context: '' } }));
+	});
+
+	it('leaves the room tab alone when another view is open', () => {
+		const { actionManager, router } = openContextualBar('other-view');
+
+		actionManager.disposeView(barView.id);
+
+		expect(router.navigate).not.toHaveBeenCalled();
+	});
+});
