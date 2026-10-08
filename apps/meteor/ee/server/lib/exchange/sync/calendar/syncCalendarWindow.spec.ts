@@ -6,7 +6,6 @@ import { ExchangeError } from '../../errors';
 
 const importMany = jest.fn();
 const deleteImported = jest.fn();
-const deleteUnfinishedImported = jest.fn();
 const pruneImportedWindow = jest.fn();
 const pruneImportedSeries = jest.fn();
 
@@ -19,7 +18,6 @@ jest.mock('@rocket.chat/core-services', () => ({
 	Calendar: {
 		importMany: (...args: unknown[]) => importMany(...args),
 		deleteImported: (...args: unknown[]) => deleteImported(...args),
-		deleteUnfinishedImported: (...args: unknown[]) => deleteUnfinishedImported(...args),
 		pruneImportedWindow: (...args: unknown[]) => pruneImportedWindow(...args),
 		pruneImportedSeries: (...args: unknown[]) => pruneImportedSeries(...args),
 	},
@@ -93,7 +91,6 @@ describe('syncCalendarWindow', () => {
 		findOneByUserId.mockResolvedValue(null);
 		importMany.mockResolvedValue(batch());
 		deleteImported.mockResolvedValue(batch());
-		deleteUnfinishedImported.mockResolvedValue(batch());
 		pruneImportedWindow.mockResolvedValue(batch());
 		pruneImportedSeries.mockResolvedValue(batch());
 		saveCursor.mockResolvedValue(undefined);
