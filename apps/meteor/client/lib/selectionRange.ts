@@ -1,5 +1,3 @@
-// TODO: Change the Selection API to support rich text as the current version may support flat text only.
-
 const INLINE_TAGS = new Set([
 	'a',
 	'abbr',
