@@ -1,5 +1,5 @@
 import { faker } from '@faker-js/faker';
-import type { Page } from '@playwright/test';
+import type { Page, Response } from '@playwright/test';
 
 import { createAuxContext } from './fixtures/createAuxContext';
 import { Users } from './fixtures/userStates';
@@ -107,21 +107,24 @@ test.describe('Messaging', () => {
 	});
 
 	test.describe.serial('Message edition', () => {
+		// a retry runs in a fresh worker, so the file-level beforeAll re-creates
+		// targetChannel empty; seed the message under edit here instead of
+		// inheriting it from the 'Navigation' group
+		test.beforeEach(async () => {
+			await channelPage.gotoChannel(targetChannel);
+			await channelPage.content.sendMessage('msg2');
+		});
+
 		test('should edit messages', async ({ page }) => {
 			const waitForEdit = () =>
 				page.waitForResponse(
 					(response) => /api\/v1\/chat.update/.test(response.url()) && response.status() === 200 && response.request().method() === 'POST',
 				);
-
-			await channelPage.navbar.openChat(targetChannel);
-
-			await test.step('send messages to edit', async () => {
-				await channelPage.content.sendMessage('msg1');
-				await channelPage.content.sendMessage('msg2');
-			});
-
 			await test.step('focus on the second message', async () => {
-				await expect(channelPage.composer.inputMessage).toBeFocused();
+				// the composer autofocuses only when it mounts enabled, so take the
+				// focus rather than waiting on it
+				await expect(channelPage.composer.inputMessage).toBeEnabled();
+				await channelPage.composer.inputMessage.click();
 				await page.keyboard.press('ArrowUp');
 
 				await expect(channelPage.composer.inputMessage).toHaveValue('msg2');
@@ -134,14 +137,34 @@ test.describe('Messaging', () => {
 			});
 
 			await test.step('stress test on message editions', async () => {
-				for (const element of ['edited msg2 a', 'edited msg2 b', 'edited msg2 c', 'edited msg2 d', 'edited msg2 e']) {
-					await expect(channelPage.composer.inputMessage).toBeFocused();
-					await page.keyboard.press('ArrowUp');
-					await expect(channelPage.composer.inputMessage).not.toHaveValue('');
+				const edits = ['edited msg2 a', 'edited msg2 b', 'edited msg2 c', 'edited msg2 d', 'edited msg2 e'];
 
-					await Promise.all([waitForEdit(), channelPage.content.sendMessage(element, false)]);
-					await expect(channelPage.content.lastUserMessageBody).toHaveText(element);
+				// firing the burst without awaiting each edit is the point of this step,
+				// so count every update: a single waitForResponse resolves on the first
+				// one and leaves the final assertion racing the remaining four
+				let updates = 0;
+				const countUpdate = (response: Response) => {
+					if (/api\/v1\/chat.update/.test(response.url()) && response.status() === 200 && response.request().method() === 'POST') {
+						updates += 1;
+					}
+				};
+
+				page.on('response', countUpdate);
+
+				try {
+					for (const element of edits) {
+						await expect(channelPage.composer.inputMessage).toBeFocused();
+						await page.keyboard.press('ArrowUp');
+
+						await channelPage.content.sendMessage(element, false);
+					}
+
+					await expect.poll(() => updates, { timeout: 20_000 }).toBe(edits.length);
+				} finally {
+					page.off('response', countUpdate);
 				}
+
+				await expect(channelPage.content.lastUserMessageBody).toHaveText('edited msg2 e');
 			});
 		});
 	});
