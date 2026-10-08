@@ -1,0 +1,15 @@
+apps/meteor/client/lib/RoomHistoryManager.spec.ts
+  ai_agent 147-148,150-151,153
+apps/meteor/tests/unit/server/lib/messages/loadRoomHistory.spec.ts
+  ai_agent 37-52
+apps/meteor/server/lib/messages/loadRoomHistory.ts
+  ai_agent 84
+apps/meteor/client/lib/RoomHistoryManager.ts
+  ai_agent 267
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.2",
+  "base_commit_sha": "00b14d0fe9478d16413c0a7087b7997952e38f4b",
+  "prompts": {}
+}
