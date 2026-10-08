@@ -1,5 +1,5 @@
-import { Box, Item } from '@rocket.chat/fuselage';
-import type { AnchorHTMLAttributes, ReactNode } from 'react';
+import { Box, SidebarItem } from '@rocket.chat/fuselage';
+import type { ReactNode } from 'react';
 import { memo } from 'react';
 
 export type SidebarGenericItemProps = {
@@ -7,14 +7,14 @@ export type SidebarGenericItemProps = {
 	active?: boolean;
 	children: ReactNode;
 	externalUrl?: boolean;
-} & Omit<AnchorHTMLAttributes<HTMLAnchorElement>, 'href' | 'children' | 'is'>;
+};
 
 const SidebarGenericItem = ({ href, active, externalUrl, children, ...props }: SidebarGenericItemProps) => (
-	<Item is='a' selected={active} href={href} {...(externalUrl && { target: '_blank', rel: 'noopener noreferrer' })} {...props}>
+	<SidebarItem selected={active} is='a' href={href} {...(externalUrl && { target: '_blank', rel: 'noopener noreferrer' })} {...props}>
 		<Box display='flex' flexDirection='row' alignItems='center' paddingBlock={8} width='100%'>
 			{children}
 		</Box>
-	</Item>
+	</SidebarItem>
 );
 
 export default memo(SidebarGenericItem);
