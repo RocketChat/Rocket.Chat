@@ -44,6 +44,6 @@
 		"eslint": "~10.11.0",
 		"jest": "~30.5.2",
 		"mongodb-memory-server": "^10.2.3",
-		"typescript": "~5.9.3"
+		"typescript": "~6.0.3"
 	}
 }

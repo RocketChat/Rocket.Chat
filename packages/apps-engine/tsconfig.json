@@ -7,7 +7,7 @@
         "noImplicitAny": true,
         "noUnusedLocals": true,
         "removeComments": false,
-        "moduleResolution": "node",
+        "moduleResolution": "bundler",
         "resolveJsonModule": true,
         "types": ["node"],
         "lib": ["es2017", "dom"],

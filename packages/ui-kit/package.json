@@ -38,7 +38,7 @@
 		"eslint": "~10.11.0",
 		"jest": "~30.5.2",
 		"ts-patch": "^3.3.0",
-		"typescript": "~5.9.3"
+		"typescript": "~6.0.3"
 	},
 	"peerDependencies": {
 		"@rocket.chat/icons": "*"

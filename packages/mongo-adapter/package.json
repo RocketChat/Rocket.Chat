@@ -20,7 +20,7 @@
 		"eslint": "~10.11.0",
 		"jest": "~30.5.2",
 		"mongodb": "6.16.0",
-		"typescript": "~5.9.3"
+		"typescript": "~6.0.3"
 	},
 	"peerDependencies": {
 		"mongodb": "6.10.0"

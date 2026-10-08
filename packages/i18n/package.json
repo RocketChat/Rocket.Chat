@@ -40,7 +40,7 @@
 		"eslint": "~10.11.0",
 		"i18next": "~26.4.2",
 		"jest": "~30.5.2",
-		"typescript": "~5.9.3"
+		"typescript": "~6.0.3"
 	},
 	"peerDependencies": {
 		"@rocket.chat/tools": "workspace:~",
