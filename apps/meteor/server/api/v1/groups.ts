@@ -1266,7 +1266,7 @@ API.v1.get(
 	async function action() {
 		const { _id } = this.queryParams;
 
-		const room = await Rooms.findOne({ _id, t: 'p' });
+		const room = await Rooms.findOneByIdAndType(_id, 'p');
 		if (!room) {
 			return API.v1.failure('Group does not exists');
 		}

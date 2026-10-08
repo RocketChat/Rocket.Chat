@@ -1702,7 +1702,7 @@ API.v1.get(
 	async function action() {
 		const { _id } = this.queryParams;
 
-		const room = await Rooms.findOne({ _id, t: 'c' });
+		const room = await Rooms.findOneByIdAndType(_id, 'c');
 		if (!room) {
 			return API.v1.failure('Channel does not exists');
 		}
