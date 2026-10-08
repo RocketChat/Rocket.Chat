@@ -3,6 +3,7 @@ import { useUserPreference } from '@rocket.chat/ui-contexts';
 import { memo } from 'react';
 import { useTranslation } from 'react-i18next';
 
+import InboxHeader from './InboxHeader';
 import SidebarRoomList from './RoomList';
 import TeamsPanel from './TeamsPanel';
 import { useTeamsPanel } from './TeamsPanel/hooks/useTeamsPanel';
@@ -14,7 +15,7 @@ const Sidebar = () => {
 	const { t } = useTranslation();
 	const sidebarViewMode = useUserPreference('sidebarViewMode');
 	const sidebarHideAvatar = !useUserPreference('sidebarDisplayAvatar');
-	const { open: teamsPanelOpen } = useTeamsPanel();
+	const { available: railEnabled, open: teamsPanelOpen } = useTeamsPanel();
 
 	return (
 		<FuselageSidebar
@@ -29,7 +30,14 @@ const Sidebar = () => {
 				.join(' ')}
 		>
 			<BannerSection />
-			{teamsPanelOpen ? <TeamsPanel /> : <SidebarRoomList />}
+			{teamsPanelOpen ? (
+				<TeamsPanel />
+			) : (
+				<>
+					{railEnabled && <InboxHeader />}
+					<SidebarRoomList />
+				</>
+			)}
 			<NowPlayingSection />
 			<SidebarFooter />
 		</FuselageSidebar>
