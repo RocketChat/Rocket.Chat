@@ -106,6 +106,20 @@ const reactionBadgeStyles = css`
 			opacity: 0;
 		}
 	}
+
+	/* For anyone who asked for less motion: no pop, but still gone when the reaction is. */
+	@media (prefers-reduced-motion: reduce) {
+		animation-name: rcx-tile-reaction-fade;
+	}
+
+	@keyframes rcx-tile-reaction-fade {
+		75% {
+			opacity: 1;
+		}
+		100% {
+			opacity: 0;
+		}
+	}
 `;
 
 const handRaisedLabelStyles = css`

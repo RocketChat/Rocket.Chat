@@ -2997,7 +2997,7 @@ exports[`call stories renders CallStageArea HandsAndReactions without crashing 1
                       >
                         <div
                           aria-hidden="true"
-                          class="rcx-box rcx-box--full rcx-css-1x1ga38"
+                          class="rcx-box rcx-box--full rcx-css-1qx140x"
                         >
                           👍
                         </div>
@@ -3057,7 +3057,7 @@ exports[`call stories renders CallStageArea HandsAndReactions without crashing 1
                       >
                         <div
                           aria-hidden="true"
-                          class="rcx-box rcx-box--full rcx-css-1x1ga38"
+                          class="rcx-box rcx-box--full rcx-css-1qx140x"
                         >
                           🎉
                         </div>
@@ -4550,7 +4550,7 @@ exports[`call stories renders ParticipantTile Reacting without crashing 1`] = `
             >
               <div
                 aria-hidden="true"
-                class="rcx-box rcx-box--full rcx-css-1x1ga38"
+                class="rcx-box rcx-box--full rcx-css-1qx140x"
               >
                 🎉
               </div>
@@ -4706,7 +4706,7 @@ exports[`call stories renders ParticipantTile SelfReacting without crashing 1`] 
               </div>
               <div
                 aria-hidden="true"
-                class="rcx-box rcx-box--full rcx-css-1x1ga38"
+                class="rcx-box rcx-box--full rcx-css-1qx140x"
               >
                 👍
               </div>

@@ -75,7 +75,7 @@ with the camera off, it is remembered straight away and applied when the camera 
 | Type | Reliable | Payload | Meaning |
 | --- | --- | --- | --- |
 | `hand` | yes | `{ raised, raisedAt, rebroadcast? }` | Raised hands. `rebroadcast` restates a hand for someone who arrived later; only new hands chime. |
-| `reaction` | no | `{ emoji, reactionId? }` | Floating reactions, 3.5s on receivers. |
+| `reaction` | no | `{ emoji, reactionId? }` | Floating reactions: seen for 3s, kept for 3.5s on receivers. |
 | `mute` | yes | `{ target }` | Asks one participant to mute. Only the target acts on it, by muting itself; nothing reaches into anyone's machine. |
 
 Reactions rise from the call area with the sender's name, and raised hands are listed next to the participants button,
