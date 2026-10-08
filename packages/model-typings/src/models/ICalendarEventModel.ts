@@ -29,6 +29,7 @@ export interface ICalendarEventModel extends IBaseModel<ICalendarEvent> {
 	bulkUpsertImported(events: ImportedCalendarEvent[]): Promise<CalendarBulkUpsertResult>;
 	reopenNotifications(uid: IUser['_id'], externalIds: string[]): Promise<UpdateResult>;
 	deleteUnfinishedByExternalIdsAndUserId(uid: IUser['_id'], externalIds: string[], notBefore: Date): Promise<DeleteResult>;
+	deleteUnfinishedImportedByUserId(uid: IUser['_id'], notBefore: Date): Promise<DeleteResult>;
 	deleteImportedOutsideSet(uid: IUser['_id'], start: Date, end: Date, keepExternalIds: string[]): Promise<DeleteResult>;
 	deleteSeriesOutsideSet(
 		uid: IUser['_id'],
