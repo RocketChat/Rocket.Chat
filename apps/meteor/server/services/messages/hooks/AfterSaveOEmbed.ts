@@ -238,7 +238,7 @@ const getUrlMeta = async function (
 	}
 
 	log.debug({ msg: 'Parsing metadata for URL', url });
-	const metas: OEmbedMeta = {} as any;
+	const metas: Partial<OEmbedMeta> = {};
 
 	if (content?.body) {
 		const escapeMeta = (name: string, value: string): string => {
