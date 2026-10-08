@@ -58,6 +58,23 @@ describe.each<RoomListItemViewMode>(['condensed', 'medium', 'extended'])('RoomLi
 		expect(screen.getByRole('link', { name: 'general' })).toHaveAttribute('aria-describedby', icon.id);
 	});
 
+	it('runs onClick when the room link is clicked', async () => {
+		const onClick = jest.fn((event: Event) => event.preventDefault());
+		renderItem({ viewMode, href: '/channel/general', onClick: onClick as unknown as RoomListItemProps['onClick'] });
+
+		await userEvent.click(screen.getByRole('link', { name: 'general' }));
+
+		expect(onClick).toHaveBeenCalledTimes(1);
+	});
+
+	it('hides the avatar when showAvatar is false', () => {
+		const { rerender } = renderItem({ viewMode, href: '/channel/general' });
+		expect(screen.getByRole('figure')).toBeInTheDocument();
+
+		rerender(<RoomListItem room={room} title='general' href='/channel/general' viewMode={viewMode} showAvatar={false} />);
+		expect(screen.queryByRole('figure')).not.toBeInTheDocument();
+	});
+
 	it('keeps the badges and menu outside the room link', () => {
 		renderItem({ viewMode, href: '/channel/general' });
 
