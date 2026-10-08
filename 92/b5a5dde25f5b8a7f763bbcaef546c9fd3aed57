@@ -1,0 +1,31 @@
+ee/apps/ddp-streamer/src/service.ts
+  s_33a210286bd31f::t_a04ebf1df16efa 49
+ee/packages/network-broker/src/NatsBroker.test.ts
+  s_33a210286bd31f::t_a04ebf1df16efa 83-94,97-106,113,123,134-141,147-152,203,232,249,310,319,355-356,384,388,404,407,420,425,435-575
+ee/packages/abac/src/index.ts
+  s_33a210286bd31f::t_a04ebf1df16efa 18,84,263-266,272-274,276-278,281-282,738-742
+ee/apps/account-service/src/Account.ts
+  s_33a210286bd31f::t_a04ebf1df16efa 3,11,25,34-38
+docs/service-brokers.md
+  s_33a210286bd31f::t_a04ebf1df16efa 172-207,266-267
+ee/packages/network-broker/src/NatsBroker.ts
+  s_33a210286bd31f::t_a04ebf1df16efa 55-60,88-91,159-164,169-173,177,188,204-206,212-312,400-404,575
+ee/packages/omnichannel-services/src/OmnichannelTranscript.ts
+  s_33a210286bd31f::t_a04ebf1df16efa 19,83-84,103
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "92b5a5dde25f5b8a7f763bbcaef546c9fd3aed57",
+  "prompts": {},
+  "sessions": {
+    "s_33a210286bd31f": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "545194f8-0fc1-45d8-8bcb-0656c1f3a3d4",
+        "model": "claude-opus-5-5"
+      },
+      "human_author": "Diego Sampaio <chinello@gmail.com>"
+    }
+  }
+}
