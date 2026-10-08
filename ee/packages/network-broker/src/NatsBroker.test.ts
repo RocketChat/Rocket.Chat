@@ -104,18 +104,22 @@ const createCore = async (broker: NatsBroker): Promise<void> => {
 	running.push({ broker, services: core });
 };
 
-const start = async (nodeID = 'node-a', { localRouting = true } = {}) => {
+const setup = (dependencyTimeout = QUICK_START, { nodeID = 'node-a', localRouting = true } = {}) => {
 	const nc = new FakeNatsConnection();
 	(connect as jest.Mock).mockResolvedValue(nc);
 
-	const previous = process.env.BROKER_LOCAL_ROUTING;
-	process.env.BROKER_LOCAL_ROUTING = localRouting ? 'true' : 'false';
-	const broker = new NatsBroker({}, nodeID, QUICK_START);
-	if (previous === undefined) {
-		delete process.env.BROKER_LOCAL_ROUTING;
-	} else {
-		process.env.BROKER_LOCAL_ROUTING = previous;
-	}
+	return { nc, broker: new NatsBroker({}, nodeID, { dependencyTimeout, localRouting }) };
+};
+
+/** A start that timed out is asserted on, instead of escaping as an unhandled rejection. */
+const outcome = (starting: Promise<void>): Promise<unknown> =>
+	starting.then(
+		() => 'started',
+		(e: unknown) => e,
+	);
+
+const start = async (nodeID = 'node-a', { localRouting = true } = {}) => {
+	const { nc, broker } = setup(QUICK_START, { nodeID, localRouting });
 	const accounts = new Accounts();
 	const deviceManagement = new DeviceManagement();
 	const files = new Files();
@@ -377,11 +381,9 @@ describe('NatsBroker discovery', () => {
 
 describe('NatsBroker lifecycle hooks', () => {
 	it('should keep the broker up when a service fails to start', async () => {
-		const nc = new FakeNatsConnection();
-		(connect as jest.Mock).mockResolvedValue(nc);
+		const { broker } = setup();
 		const consoleError = jest.spyOn(console, 'error').mockImplementation(() => undefined);
 
-		const broker = new NatsBroker({}, 'node-a', QUICK_START);
 		const broken = new Broken();
 		const accounts = new Accounts();
 
@@ -397,11 +399,9 @@ describe('NatsBroker lifecycle hooks', () => {
 	});
 
 	it('should still answer calls to a service that failed to start', async () => {
-		const nc = new FakeNatsConnection();
-		(connect as jest.Mock).mockResolvedValue(nc);
+		const { broker } = setup();
 		jest.spyOn(console, 'error').mockImplementation(() => undefined);
 
-		const broker = new NatsBroker({}, 'node-a', QUICK_START);
 		const broken = new Broken();
 
 		await createCore(broker);
@@ -413,11 +413,9 @@ describe('NatsBroker lifecycle hooks', () => {
 	});
 
 	it('should not stop the remaining services from starting', async () => {
-		const nc = new FakeNatsConnection();
-		(connect as jest.Mock).mockResolvedValue(nc);
+		const { broker } = setup();
 		jest.spyOn(console, 'error').mockImplementation(() => undefined);
 
-		const broker = new NatsBroker({}, 'node-a', QUICK_START);
 		const broken = new Broken();
 		const accounts = new Accounts();
 		const started = jest.spyOn(accounts, 'started');
@@ -436,20 +434,6 @@ describe('NatsBroker service dependencies', () => {
 	// past the 5s these tests wait under fake timers, and short of the 7s they drive the
 	// clock to, so a start that never completes times out instead of hanging the test
 	const WAITING_START = 6_500;
-
-	const setup = (dependencyTimeout = QUICK_START) => {
-		const nc = new FakeNatsConnection();
-		(connect as jest.Mock).mockResolvedValue(nc);
-
-		return { nc, broker: new NatsBroker({}, 'node-a', dependencyTimeout) };
-	};
-
-	/** A start that timed out is asserted on, instead of escaping as an unhandled rejection. */
-	const outcome = (starting: Promise<void>): Promise<unknown> =>
-		starting.then(
-			() => 'started',
-			(e: unknown) => e,
-		);
 
 	it('should not register a service, nor start it, until settings and license are reachable', async () => {
 		jest.useFakeTimers();
@@ -626,16 +610,11 @@ describe('NatsBroker.stop', () => {
 
 	it('should let a start still waiting on dependencies finish without registering anything', async () => {
 		jest.useFakeTimers();
-		const nc = new FakeNatsConnection();
-		(connect as jest.Mock).mockResolvedValue(nc);
 		// times the start out before the clock runs out, should stop fail to release it
-		const broker = new NatsBroker({}, 'node-a', 6_500);
+		const { nc, broker } = setup(6_500);
 		await broker.createService(new Accounts());
 
-		const starting = broker.start().then(
-			() => 'started',
-			(e: unknown) => e,
-		);
+		const starting = outcome(broker.start());
 		await jest.advanceTimersByTimeAsync(0);
 
 		await broker.stop();
@@ -650,7 +629,7 @@ describe('NatsBroker.emitToOne', () => {
 	/** A second node on the same NATS connection, running only another instance of device-management. */
 	const startSecondNode = async (nc: FakeNatsConnection): Promise<void> => {
 		(connect as jest.Mock).mockResolvedValue(nc);
-		const broker = new NatsBroker({}, 'node-b', QUICK_START);
+		const broker = new NatsBroker({}, 'node-b', { dependencyTimeout: QUICK_START });
 		const deviceManagement = new DeviceManagement();
 
 		await createCore(broker);

@@ -3,7 +3,7 @@ import { hostname } from 'node:os';
 
 import { NatsBroker } from './NatsBroker';
 
-const { NATS_URL, TRANSPORTER, SKIP_PROCESS_EVENT_REGISTRATION = 'false' } = process.env;
+const { NATS_URL, TRANSPORTER, SKIP_PROCESS_EVENT_REGISTRATION = 'false', REQUEST_TIMEOUT = '60', BROKER_LOCAL_ROUTING } = process.env;
 
 // TRANSPORTER is the Moleculer transporter string and is kept as a fallback; note
 // that compose passes it through as an empty string when unset, so `||` is used
@@ -24,7 +24,10 @@ function stopOnSignal(broker: NatsBroker): void {
 }
 
 export function startNatsBroker(nodeID?: string): NatsBroker {
-	const broker = new NatsBroker({ servers }, nodeID || `${hostname().toLowerCase()}-${randomUUID()}`);
+	const broker = new NatsBroker({ servers }, nodeID || `${hostname().toLowerCase()}-${randomUUID()}`, {
+		requestTimeout: (parseInt(REQUEST_TIMEOUT) || 60) * 1000,
+		localRouting: BROKER_LOCAL_ROUTING !== 'false',
+	});
 
 	if (SKIP_PROCESS_EVENT_REGISTRATION !== 'true') {
 		stopOnSignal(broker);

@@ -11,10 +11,6 @@ import { withDefaultDependencies } from './withDefaultDependencies';
 
 export { connect } from 'nats';
 
-const { REQUEST_TIMEOUT = '60' } = process.env;
-
-const requestTimeout = (parseInt(REQUEST_TIMEOUT) || 60) * 1000;
-
 const TE = new TextEncoder();
 const TD = new TextDecoder();
 
@@ -69,6 +65,14 @@ function isNoResponders(e: unknown): boolean {
 }
 
 const internalMethods = new Set(['$node.list', '$node.services']);
+
+type NatsBrokerOptions = {
+	/** milliseconds a service may wait for its dependencies before `start()` gives up; `0` waits forever */
+	dependencyTimeout?: number;
+	requestTimeout?: number;
+	/** kill switch: `false` routes every call over nats, as if nothing were local */
+	localRouting?: boolean;
+};
 
 type RegisteredService = {
 	service: Service;
@@ -163,19 +167,19 @@ export class NatsBroker implements IBroker {
 
 	private readonly localRegistry?: LocalServiceRegistry;
 
-	/**
-	 * @param dependencyTimeout milliseconds a service may wait for its dependencies
-	 * before `start()` gives up; `0` waits forever
-	 */
+	private readonly dependencyTimeout: number;
+
+	private readonly requestTimeout: number;
+
 	constructor(
 		private options: ConnectionOptions,
 		nodeID: string,
-		private readonly dependencyTimeout = 0,
+		{ dependencyTimeout = 0, requestTimeout = 60_000, localRouting = true }: NatsBrokerOptions = {},
 	) {
 		this.nodeID = toSubjectToken(nodeID);
-
-		// kill switch: leaving it out routes every call over nats, as if nothing were local
-		this.localRegistry = process.env.BROKER_LOCAL_ROUTING === 'false' ? undefined : new LocalServiceRegistry();
+		this.dependencyTimeout = dependencyTimeout;
+		this.requestTimeout = requestTimeout;
+		this.localRegistry = localRouting ? new LocalServiceRegistry() : undefined;
 	}
 
 	async destroyService(instance: IServiceClass): Promise<void> {
@@ -370,10 +374,10 @@ export class NatsBroker implements IBroker {
 		for (const method of getCallableMethods(instance)) {
 			const respond = async (msg: ServiceMsg): Promise<void> => {
 				try {
-					const args = consumeStreams(nc, decodeParams(msg.data), requestTimeout) as unknown[];
+					const args = consumeStreams(nc, decodeParams(msg.data), this.requestTimeout) as unknown[];
 					const result = await this.runInContext(() => serviceInstance[method](...args));
 
-					msg.respond(encodePayload(serveStreams(nc, result, requestTimeout)));
+					msg.respond(encodePayload(serveStreams(nc, result, this.requestTimeout)));
 				} catch (e) {
 					// nats only turns *synchronous* throws into an error reply, so an async
 					// handler has to answer explicitly or the caller waits for the timeout
@@ -436,20 +440,20 @@ export class NatsBroker implements IBroker {
 
 		const subject = options?.nodeID ? `${NODE_PREFIX}.${toSubjectToken(options.nodeID)}.${method}` : `${RPC_PREFIX}.${method}`;
 
-		const msg = await this.request(this.nc, subject, encodePayload(serveStreams(this.nc, data, requestTimeout)));
+		const msg = await this.request(this.nc, subject, encodePayload(serveStreams(this.nc, data, this.requestTimeout)));
 
 		const serviceError = ServiceError.toServiceError(msg);
 		if (serviceError) {
 			throw restoreError(msg, serviceError);
 		}
 
-		return consumeStreams(this.nc, decodePayload(msg.data), requestTimeout);
+		return consumeStreams(this.nc, decodePayload(msg.data), this.requestTimeout);
 	}
 
 	private async request(nc: NatsConnection, subject: string, payload: Uint8Array): Promise<Msg> {
 		for (const backoff of NO_RESPONDERS_RETRY_DELAYS) {
 			try {
-				return await nc.request(subject, payload, { timeout: requestTimeout });
+				return await nc.request(subject, payload, { timeout: this.requestTimeout });
 			} catch (e) {
 				if (!isNoResponders(e)) {
 					throw e;
@@ -460,7 +464,7 @@ export class NatsBroker implements IBroker {
 		}
 
 		// last attempt, so a still missing responder surfaces to the caller
-		return nc.request(subject, payload, { timeout: requestTimeout });
+		return nc.request(subject, payload, { timeout: this.requestTimeout });
 	}
 
 	/** Moleculer internals that application code still calls through the broker. */
