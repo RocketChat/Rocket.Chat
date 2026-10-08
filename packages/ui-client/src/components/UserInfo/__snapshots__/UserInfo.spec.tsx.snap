@@ -168,7 +168,7 @@ exports[`renders Default without crashing 1`] = `
                       <div
                         class="rcx-box rcx-box--full rcx-css-1po16l8"
                       >
-                        Roles
+                        Workspace_roles
                       </div>
                       <div
                         class="rcx-box rcx-box--full rcx-css-1fksvtu"
@@ -519,7 +519,7 @@ exports[`renders InvitedUser without crashing 1`] = `
                       <div
                         class="rcx-box rcx-box--full rcx-css-1po16l8"
                       >
-                        Roles
+                        Workspace_roles
                       </div>
                       <div
                         class="rcx-box rcx-box--full rcx-css-1fksvtu"
@@ -884,7 +884,7 @@ exports[`renders WithABACAttributes without crashing 1`] = `
                       <div
                         class="rcx-box rcx-box--full rcx-css-1po16l8"
                       >
-                        Roles
+                        Workspace_roles
                       </div>
                       <div
                         class="rcx-box rcx-box--full rcx-css-1fksvtu"
@@ -1295,7 +1295,7 @@ exports[`renders WithVoiceCallExtension without crashing 1`] = `
                       <div
                         class="rcx-box rcx-box--full rcx-css-1po16l8"
                       >
-                        Roles
+                        Workspace_roles
                       </div>
                       <div
                         class="rcx-box rcx-box--full rcx-css-1fksvtu"

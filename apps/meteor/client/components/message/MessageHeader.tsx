@@ -36,7 +36,7 @@ const MessageHeader = ({ message }: MessageHeaderProps) => {
 	const normalizedUsername = normalizeUsername(user.username);
 
 	const showRoles = useMessageListShowRoles();
-	const { workspaceRoles, roomRoles } = useUserRolesByScope(message.u._id, message.rid, showRoles);
+	const { workspaceRoles, roomRoles } = useUserRolesByScope(message.u._id, message.rid, { enabled: showRoles });
 	const shouldShowRolesList = showRoles && (workspaceRoles.length > 0 || roomRoles.length > 0 || !!message.bot);
 
 	// While selecting, the whole row toggles the selection, so the name and the role tag stop being triggers.

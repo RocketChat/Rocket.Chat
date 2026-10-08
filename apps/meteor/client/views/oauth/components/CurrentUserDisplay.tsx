@@ -1,5 +1,5 @@
 import type { IUser } from '@rocket.chat/core-typings';
-import { UserCard, UserCardRole, UserStatus } from '@rocket.chat/ui-client';
+import { UserCard, UserStatus } from '@rocket.chat/ui-client';
 import { useRolesDescription, useSetting } from '@rocket.chat/ui-contexts';
 import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -25,7 +25,7 @@ const CurrentUserDisplay = ({ user }: CurrentUserDisplayProps) => {
 			nickname,
 			status: <UserStatus.Online />,
 			customStatus: statusText ?? <></>,
-			roles: roles && getRoles(roles).map((role, index) => <UserCardRole key={index}>{role}</UserCardRole>),
+			workspaceRoles: roles && getRoles(roles).join(', '),
 			localTime: typeof utcOffset === 'number' && Number.isFinite(utcOffset) && <LocalTime utcOffset={utcOffset} />,
 		}),
 		[avatarETag, getRoles, name, nickname, roles, showRealNames, statusText, username, utcOffset],

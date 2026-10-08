@@ -42,6 +42,7 @@ export type UserInfoProps = UserInfoDataProps & {
 	verified?: boolean;
 	actions: ReactNode;
 	roles: ReactNode[];
+	roomRoles?: ReactNode[];
 	reason?: string;
 	invitationDate?: string;
 };
@@ -54,6 +55,7 @@ const UserInfo = ({
 	bio,
 	avatarETag,
 	roles,
+	roomRoles,
 	utcOffset,
 	phone,
 	email,
@@ -120,8 +122,15 @@ const UserInfo = ({
 
 					{roles?.length !== 0 && (
 						<InfoPanelField>
-							<InfoPanelLabel>{t('Roles')}</InfoPanelLabel>
+							<InfoPanelLabel>{t('Workspace_roles')}</InfoPanelLabel>
 							<UserCardRoles>{roles}</UserCardRoles>
+						</InfoPanelField>
+					)}
+
+					{roomRoles && roomRoles.length !== 0 && (
+						<InfoPanelField>
+							<InfoPanelLabel>{t('Room_roles')}</InfoPanelLabel>
+							<UserCardRoles>{roomRoles}</UserCardRoles>
 						</InfoPanelField>
 					)}
 

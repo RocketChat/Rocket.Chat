@@ -3,7 +3,7 @@ import type { IRoom } from '@rocket.chat/core-typings';
 import { IconButton } from '@rocket.chat/fuselage';
 import { useStableCallback } from '@rocket.chat/fuselage-hooks';
 import { GenericMenu, UserCard, UserCardAction, UserCardRole, UserCardSkeleton } from '@rocket.chat/ui-client';
-import { useSetting, useRolesDescription } from '@rocket.chat/ui-contexts';
+import { useSetting } from '@rocket.chat/ui-contexts';
 import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -11,6 +11,7 @@ import LocalTime from '../../../components/LocalTime';
 import { ReactiveUserStatus } from '../../../components/UserStatus';
 import { ReactiveUserStatusText } from '../../../components/UserStatusText';
 import { useUserInfoQuery } from '../../../hooks/useUserInfoQuery';
+import { useUserRolesByScope } from '../../../hooks/useUserRolesByScope';
 import { useMemberExists } from '../../hooks/useMemberExists';
 import { useUserInfoActions } from '../hooks/useUserInfoActions';
 import type { UserInfoAction } from '../hooks/useUserInfoActions/useUserInfoActions';
@@ -24,11 +25,11 @@ export type UserCardWithDataProps = {
 
 const UserCardWithData = ({ username, rid, onOpenUserInfo, onClose }: UserCardWithDataProps) => {
 	const { t } = useTranslation();
-	const getRoles = useRolesDescription();
 	const showRealNames = useSetting('UI_Use_Real_Name', false);
 
 	// no placeholder: a card handed off to another author shows a skeleton, not the previous user's data
 	const { data, isLoading: isUserInfoLoading } = useUserInfoQuery({ username }, { placeholderData: undefined });
+	const { workspaceRoles, roomRoles } = useUserRolesByScope(data?.user?._id, rid, { userRoleIds: data?.user?.roles });
 	const {
 		data: isMemberData,
 		refetch,
@@ -42,22 +43,14 @@ const UserCardWithData = ({ username, rid, onOpenUserInfo, onClose }: UserCardWi
 	const user = useMemo(() => {
 		const defaultValue = isLoading ? undefined : null;
 
-		const {
-			_id,
-			name,
-			roles = defaultValue,
-			utcOffset = defaultValue,
-			nickname,
-			avatarETag,
-			freeSwitchExtension,
-			federated,
-		} = data?.user || {};
+		const { _id, name, utcOffset = defaultValue, nickname, avatarETag, freeSwitchExtension, federated } = data?.user || {};
 
 		return {
 			_id,
 			name: getUserDisplayName(name, username, showRealNames),
 			username,
-			roles: roles && getRoles(roles).map((role, index) => <UserCardRole key={index}>{role}</UserCardRole>),
+			roles: roomRoles.length > 0 && roomRoles.map((role, index) => <UserCardRole key={index}>{role}</UserCardRole>),
+			workspaceRoles: workspaceRoles.length > 0 && workspaceRoles.join(', '),
 			etag: avatarETag,
 			localTime: typeof utcOffset === 'number' && Number.isFinite(utcOffset) && <LocalTime utcOffset={utcOffset} />,
 			status: _id && <ReactiveUserStatus uid={_id} />,
@@ -66,7 +59,7 @@ const UserCardWithData = ({ username, rid, onOpenUserInfo, onClose }: UserCardWi
 			freeSwitchExtension,
 			federated,
 		};
-	}, [data, username, showRealNames, isLoading, getRoles]);
+	}, [data, username, showRealNames, isLoading, workspaceRoles, roomRoles]);
 
 	const handleOpenUserInfo = useStableCallback(() => {
 		onOpenUserInfo();
