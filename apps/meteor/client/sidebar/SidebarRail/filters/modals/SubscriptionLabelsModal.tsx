@@ -1,4 +1,5 @@
 import { MAX_LABEL_NAME_LENGTH } from '@rocket.chat/core-typings';
+import { css } from '@rocket.chat/css-in-js';
 import { Box } from '@rocket.chat/fuselage';
 import { Field, FieldGroup, FieldLabel, FieldRow, MultiSelectFiltered } from '@rocket.chat/fuselage-forms';
 import { GenericModal } from '@rocket.chat/ui-client';
@@ -26,6 +27,12 @@ type SubscriptionLabelsModalProps = {
 	rid: string;
 	onClose: () => void;
 };
+
+const multiSelectAnchorStyle = css`
+	div:has(.rcx-input-box--undecorated) {
+		flex-grow: 1;
+	}
+`;
 
 const SubscriptionLabelsModal = ({ rid, onClose }: SubscriptionLabelsModalProps) => {
 	const { t } = useTranslation();
@@ -128,6 +135,7 @@ const SubscriptionLabelsModal = ({ rid, onClose }: SubscriptionLabelsModalProps)
 										placeholder={t('Search_or_create_label')}
 										renderItem={LabelSelectOption}
 										renderSelected={LabelSelectChip}
+										className={multiSelectAnchorStyle}
 									/>
 								)}
 							/>

@@ -101,7 +101,7 @@ const SidebarRailFiltersList = () => {
 					<Box fontScale='c1' color='font-secondary-info'>
 						{t('Filter_has_no_rules')}
 					</Box>
-					<Button small secondary onClick={() => openEditFilter(filter)}>
+					<Button size='small' variant='secondary' onClick={() => openEditFilter(filter)}>
 						{t('Edit')}
 					</Button>
 				</Box>
@@ -109,7 +109,7 @@ const SidebarRailFiltersList = () => {
 		}
 
 		return (
-			<Box fontScale='c1' color='font-secondary-info' paddingInline={16} paddingBlock={4}>
+			<Box marginInlineStart={8} fontScale='c1' color='font-disabled' paddingInline={16} paddingBlock={4}>
 				{t('No_rooms')}
 			</Box>
 		);

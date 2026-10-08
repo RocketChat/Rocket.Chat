@@ -26,6 +26,7 @@ const ManageLabelsModal = ({ onCreate, onEdit, onDelete, onClose }: ManageLabels
 			cancelText={t('Close')}
 			onConfirm={onCreate}
 			onCancel={onClose}
+			onDismiss={() => undefined}
 		>
 			{labels.length === 0 && <Box color='font-secondary-info'>{t('Labels_empty_description')}</Box>}
 			{labels.length > 0 && (

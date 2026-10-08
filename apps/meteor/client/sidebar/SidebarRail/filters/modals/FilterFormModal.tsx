@@ -227,7 +227,7 @@ const FilterFormModal = ({ filter, onClose }: FilterFormModalProps) => {
 						<FieldLabel>{t('Sort_By')}</FieldLabel>
 						<FieldRow>
 							<Box display='flex' gap={8} width='full'>
-								<Box flexGrow={1}>
+								<Box flexGrow={1} justifyItems='stretch'>
 									<Controller
 										control={control}
 										name='sortBy'
@@ -236,7 +236,7 @@ const FilterFormModal = ({ filter, onClose }: FilterFormModalProps) => {
 										)}
 									/>
 								</Box>
-								<Box flexGrow={1}>
+								<Box flexGrow={1} justifyItems='stretch'>
 									<Controller
 										control={control}
 										name='sortDirection'

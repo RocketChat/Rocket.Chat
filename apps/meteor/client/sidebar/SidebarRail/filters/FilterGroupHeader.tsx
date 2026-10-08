@@ -42,25 +42,27 @@ const FilterGroupHeader = ({ group, canMoveUp, canMoveDown, onMoveUp, onMoveDown
 			onPointerEnter={requestMount}
 			menu={
 				<SidebarCollapseGroupMenu onClick={preventPropagation}>
-					{/* The group only renders its own badge while collapsed, so an expanded group shows it next to the menu. */}
-					{!collapsed && badge && (
-						<Box display='flex' alignItems='center' marginInlineEnd={4}>
-							{badge}
-						</Box>
-					)}
-					{menuVisibility ? (
-						<FilterGroupMenu
-							filter={filter}
-							rooms={rooms}
-							hasUnread={showUnread}
-							canMoveUp={canMoveUp}
-							canMoveDown={canMoveDown}
-							onMoveUp={onMoveUp}
-							onMoveDown={onMoveDown}
-						/>
-					) : (
-						<IconButton tabIndex={-1} aria-hidden mini icon='kebab' onPointerDown={mountNow} />
-					)}
+					<Box is='span' display='flex' flexDirection='row'>
+						{/* The group only renders its own badge while collapsed, so an expanded group shows it next to the menu. */}
+						{!collapsed && badge && (
+							<Box display='flex' alignItems='center' marginInlineEnd={4}>
+								{badge}
+							</Box>
+						)}
+						{menuVisibility ? (
+							<FilterGroupMenu
+								filter={filter}
+								rooms={rooms}
+								hasUnread={showUnread}
+								canMoveUp={canMoveUp}
+								canMoveDown={canMoveDown}
+								onMoveUp={onMoveUp}
+								onMoveDown={onMoveDown}
+							/>
+						) : (
+							<IconButton tabIndex={-1} aria-hidden mini icon='kebab' onPointerDown={mountNow} />
+						)}
+					</Box>
 				</SidebarCollapseGroupMenu>
 			}
 			aria-label={collapsed ? t('Expand_group', { group: filter.name }) : t('Collapse_group', { group: filter.name })}
