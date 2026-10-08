@@ -82,7 +82,7 @@ export class RoomSidebar extends Sidebar {
 	}
 
 	getFilterItemByName(name: string): Locator {
-		return this.root.getByRole('button', { name }).filter({ has: this.page.getByText(name, { exact: true }) });
+		return this.root.getByRole('link', { name }).filter({ has: this.page.getByText(name, { exact: true }) });
 	}
 
 	getSidebarListItem(name: string): Locator {
