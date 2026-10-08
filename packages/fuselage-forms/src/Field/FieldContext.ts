@@ -95,8 +95,10 @@ const getDescribedBy = (descriptors: Set<LabelTypes>, id: string) => {
 		.join(' ');
 };
 
-const getInputId = (id: string, descriptors: Set<LabelTypes>) => {
-	return `${id}-label${descriptors.has('placeholder') ? ` ${id}-placeholder` : ''}`;
+const getInputId = (id: string) => `${id}-label`;
+
+const getLabelledBy = (id: string, descriptors: Set<LabelTypes>) => {
+	return `${getInputId(id)}${descriptors.has('placeholder') ? ` ${id}-placeholder` : ''}`;
 };
 
 const getAriaInvalid = (descriptors: Set<LabelTypes>): { 'aria-invalid': 'true' | 'false' } => {
@@ -116,7 +118,7 @@ export const useFieldReferencedByInput = () => {
 
 	return useMemo(
 		() => ({
-			'id': getInputId(id, descriptors),
+			'id': getInputId(id),
 			'aria-describedby': getDescribedBy(descriptors, id),
 			...getAriaInvalid(descriptors),
 		}),
@@ -134,7 +136,7 @@ export const useFieldReferencedByLabel = () => {
 
 	return useMemo(
 		() => ({
-			'aria-labelledby': getInputId(id, descriptors),
+			'aria-labelledby': getLabelledBy(id, descriptors),
 			'aria-describedby': getDescribedBy(descriptors, id),
 			...getAriaInvalid(descriptors),
 		}),
@@ -153,7 +155,7 @@ export const useFieldReferencedByLabelWithId = () => {
 	return useMemo(
 		() => ({
 			id,
-			'aria-labelledby': getInputId(id, descriptors),
+			'aria-labelledby': getLabelledBy(id, descriptors),
 			'aria-describedby': getDescribedBy(descriptors, id),
 			...getAriaInvalid(descriptors),
 		}),
@@ -198,7 +200,7 @@ export const useFieldWrappedByInputLabel = (): [
 			label,
 			{
 				'aria-describedby': getDescribedBy(descriptors, id),
-				'id': getInputId(id, descriptors),
+				'id': getInputId(id),
 				...getAriaInvalid(descriptors),
 			},
 			refCallback,
