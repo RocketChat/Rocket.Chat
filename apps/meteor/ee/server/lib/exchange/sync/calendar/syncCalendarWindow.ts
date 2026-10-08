@@ -215,7 +215,7 @@ export const syncCalendarWindow = async (
 			await ExchangeCalendarSyncState.clearCursorByUserId(uid);
 		}
 
-		await ExchangeCalendarSyncState.setLastError(uid, identity, `${code}: ${scrubText(err instanceof Error ? err.message : String(err))}`);
+		await ExchangeCalendarSyncState.setLastError(uid, `${code}: ${scrubText(err instanceof Error ? err.message : String(err))}`);
 
 		logger.warn({ msg: 'Exchange calendar sync failed for a mailbox', uid, code, err: scrubForLog(err) });
 
