@@ -10,9 +10,6 @@ export type CalendarBatchResult = {
 	skipped: number;
 };
 
-/** Mirrors the `delete` gate. Without it a refresh may set or extend a claim but never end one. */
-export type CalendarPresenceRefreshOptions = { removedEvents?: boolean };
-
 /** `deferSideEffects` suppresses the workspace-global reschedulers and the presence refresh, so a caller running a batch can do them once at the end. */
 export type CalendarBatchOptions = { deferSideEffects?: boolean };
 
@@ -45,5 +42,5 @@ export interface ICalendarService {
 		keepExternalIds: string[],
 		options?: CalendarBatchOptions,
 	): Promise<CalendarBatchResult>;
-	refreshBusyPresence(uid: IUser['_id'], options?: CalendarPresenceRefreshOptions): Promise<void>;
+	refreshBusyPresence(uid: IUser['_id']): Promise<void>;
 }

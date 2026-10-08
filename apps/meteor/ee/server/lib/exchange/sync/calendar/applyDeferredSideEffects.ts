@@ -4,10 +4,10 @@ import type { IUser } from '@rocket.chat/core-typings';
 import { logger } from '../../logger';
 import { scrubForLog } from '../../scrub';
 
-export const applyDeferredSideEffects = async (dirty: Map<IUser['_id'], boolean>): Promise<void> => {
-	for (const [uid, removedEvents] of dirty) {
+export const applyDeferredSideEffects = async (dirty: Set<IUser['_id']>): Promise<void> => {
+	for (const uid of dirty) {
 		try {
-			await Calendar.refreshBusyPresence(uid, { removedEvents });
+			await Calendar.refreshBusyPresence(uid);
 		} catch (err) {
 			// One user's presence write must not cost the rest of the run theirs, nor the reschedule below.
 			logger.error({ msg: 'Could not refresh calendar busy presence after the Exchange calendar sync', uid, err: scrubForLog(err) });
