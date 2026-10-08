@@ -237,7 +237,7 @@ export class CalendarEventRaw extends BaseRaw<ICalendarEvent> implements ICalend
 			uid,
 			$and: [
 				{ $or: [{ externalId: { $in: externalIds } }, { seriesMasterId: { $in: externalIds } }] },
-				{ $or: [{ endTime: { $gt: notBefore } }, { endTime: { $exists: false }, startTime: { $gt: notBefore } }] },
+				{ $or: [{ endTime: { $gt: notBefore } }, { endTime: { $exists: false }, startTime: { $gte: notBefore } }] },
 			],
 		});
 	}
@@ -253,7 +253,7 @@ export class CalendarEventRaw extends BaseRaw<ICalendarEvent> implements ICalend
 			uid,
 			startTime: { $lt: end },
 			$and: [
-				{ $or: [{ endTime: { $gt: start } }, { endTime: { $exists: false }, startTime: { $gt: start } }] },
+				{ $or: [{ endTime: { $gt: start } }, { endTime: { $exists: false }, startTime: { $gte: start } }] },
 				{
 					$or: [
 						{ seriesMasterId: { $in: seriesMasterIds }, externalId: { $nin: keepExternalIds } },
@@ -271,7 +271,7 @@ export class CalendarEventRaw extends BaseRaw<ICalendarEvent> implements ICalend
 			uid,
 			externalId: { $type: 'string', $nin: keepExternalIds },
 			startTime: { $lt: end },
-			$or: [{ endTime: { $gt: start } }, { endTime: { $exists: false }, startTime: { $gt: start } }],
+			$or: [{ endTime: { $gt: start } }, { endTime: { $exists: false }, startTime: { $gte: start } }],
 		});
 	}
 }
