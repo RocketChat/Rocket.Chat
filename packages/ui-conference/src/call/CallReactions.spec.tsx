@@ -9,8 +9,7 @@ it('does not cut off reactions stacked above the newest', () => {
 	const { container } = render(<CallReactions reactions={burst} />);
 
 	const layer = container.querySelector('[aria-live]') as HTMLElement;
-	const { overflow, height } = getComputedStyle(layer);
 
-	expect(overflow).not.toBe('hidden');
-	expect(height).not.toMatch(/rem$/);
+	// Neither clipped, in any form, nor held to a height the stack can outgrow.
+	expect(getComputedStyle(layer)).toMatchObject({ overflow: '', height: '' });
 });

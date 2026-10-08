@@ -2402,7 +2402,7 @@ exports[`call stories renders CallReactions Burst without crashing 1`] = `
       class="rcx-box rcx-box--full rcx-css-owlgau"
     >
       <div
-        style="background-color: rgb(31, 35, 41); border-radius: 4px; display: flex; flex-direction: column; height: 20rem; overflow: hidden;"
+        style="background-color: rgb(31, 35, 41); border-radius: 4px; display: flex; flex-direction: column; height: 36rem; overflow: hidden;"
       >
         <div
           style="position: relative; flex-grow: 1;"
