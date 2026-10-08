@@ -2,6 +2,7 @@ import { useSetModal, useSetting } from '@rocket.chat/ui-contexts';
 import { useCallback } from 'react';
 
 import { asCallUrl } from '../../../../../lib/utils/asCallUrl';
+import { usesConferenceWindow } from '../../../../conference/lib/callWindow';
 import VideoConfBlockModal from '../VideoConfBlockModal';
 
 // Named, so a reload that loses the reference below still finds the window instead of stacking a second one.
@@ -120,16 +121,18 @@ export const useVideoConfOpenCall = () => {
 				return undefined;
 			}
 
+			const inConferenceWindow = usesConferenceWindow(conferenceWindowEnabled, providerName);
+
 			// Nothing openable — a call with no URL yet, or an address that isn't a web address at all. Saying the
 			// popup was blocked would be a lie with advice attached: allowing popups can't make this succeed, and
 			// the modal's retry would refuse it again. Nothing opened, so there is nothing to report either.
-			if (conferenceWindowEnabled && !asCallUrl(callUrl)) {
+			if (inConferenceWindow && !asCallUrl(callUrl)) {
 				return null;
 			}
 
 			// Without the call window a call is an ordinary new tab, exactly as it always was: no popup features
 			// for a browser to refuse, and no window shared between calls.
-			const open = conferenceWindowEnabled ? () => openConferenceWindow(callUrl) : () => window.open(callUrl);
+			const open = inConferenceWindow ? () => openConferenceWindow(callUrl) : () => window.open(callUrl);
 
 			// The window is handed back so the caller can watch it — see `useLeaveCallOnWindowClose`, which is what
 			// notices a call window disappearing before it could report its own departure.
@@ -137,7 +140,7 @@ export const useVideoConfOpenCall = () => {
 
 			// A plain tab is blocked only by `window.open` returning null, which is the test this has always made.
 			// A popout can also come back already closed, which is how some blockers refuse one.
-			const blocked = conferenceWindowEnabled ? isBlocked(target) : target === null;
+			const blocked = inConferenceWindow ? isBlocked(target) : target === null;
 
 			if (!blocked) {
 				return target;
