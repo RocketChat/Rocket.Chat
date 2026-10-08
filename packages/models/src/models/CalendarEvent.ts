@@ -204,16 +204,32 @@ export class CalendarEventRaw extends BaseRaw<ICalendarEvent> implements ICalend
 		const now = new Date();
 
 		const result = await this.col.bulkWrite(
-			events.map(({ uid, externalId, ...fields }) => ({
-				updateOne: {
-					filter: { uid, externalId },
-					update: {
-						$set: { ...fields, _updatedAt: now },
-						$setOnInsert: { _id: new ObjectId().toHexString(), uid, externalId, notificationSent: false },
+			events.map(({ uid, externalId, ...fields }) => {
+				const set: Record<string, unknown> = { _updatedAt: now };
+				const unset: Record<string, 1> = {};
+
+				// A field the provider stopped sending has to be cleared
+				for (const [key, value] of Object.entries(fields)) {
+					if (value === undefined) {
+						unset[key] = 1;
+					} else {
+						set[key] = value;
+					}
+				}
+
+				return {
+					updateOne: {
+						filter: { uid, externalId },
+						update: {
+							$set: set,
+							...(Object.keys(unset).length > 0 && { $unset: unset }),
+							$setOnInsert: { _id: new ObjectId().toHexString(), uid, externalId, notificationSent: false },
+						},
+						upsert: true,
 					},
-					upsert: true,
-				},
-			})),
+				};
+			}),
+			// Unordered so one rejected event cannot abort the rest of the page; callers pass a single entry per event.
 			{ ordered: false },
 		);
 
