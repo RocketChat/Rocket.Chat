@@ -1,6 +1,7 @@
 export * from './useClipboardWithToast';
 export * from './useCreateFontStyleElement';
 export * from './useDefaultSettingFeaturePreviewList';
+export * from './useDeferredMenuMount';
 export * from './useDocumentTitle';
 export * from './useDontAskAgain';
 export * from './useDropdownVisibility';

@@ -13,12 +13,10 @@ import {
 } from '@rocket.chat/fuselage';
 import { ITEM_MEDIA_SIZE, RoomAvatar } from '@rocket.chat/ui-avatar';
 import type { ItemMediaSizeName } from '@rocket.chat/ui-avatar';
-import { useShortTimeAgo } from '@rocket.chat/ui-client';
+import { useDeferredMenuMount, useShortTimeAgo } from '@rocket.chat/ui-client';
 import type { SubscriptionWithRoom } from '@rocket.chat/ui-contexts';
 import type { AriaAttributes, HTMLAttributes, MouseEventHandler, ReactNode } from 'react';
 import { memo } from 'react';
-
-import { useDeferredMenuMount } from '../../../../sidebar/Item/useDeferredMenuMount';
 
 export type RoomListItemViewMode = ItemMediaSizeName;
 

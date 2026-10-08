@@ -1,9 +1,9 @@
 import { Badge, Box, Chevron, IconButton, ItemActions, ItemGroupHeader, ItemGroupTitle } from '@rocket.chat/fuselage';
+import { useDeferredMenuMount } from '@rocket.chat/ui-client';
 import type { HTMLAttributes, MouseEventHandler } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { useIsEnterprise } from '../../hooks/useIsEnterprise';
-import { useDeferredMenuMount } from '../Item/useDeferredMenuMount';
 import CategoryMenu from '../categories/CategoryMenu';
 import type { SidebarRoomListGroup } from '../hooks/useRoomList';
 import { useUnreadDisplay } from '../hooks/useUnreadDisplay';

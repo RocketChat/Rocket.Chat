@@ -14,12 +14,12 @@ import {
 	Tag,
 } from '@rocket.chat/fuselage';
 import { ITEM_MEDIA_SIZE, RoomAvatar } from '@rocket.chat/ui-avatar';
+import { useDeferredMenuMount } from '@rocket.chat/ui-client';
 import { usePermission } from '@rocket.chat/ui-contexts';
 import { useTranslation } from 'react-i18next';
 
 import TeamsChannelItemMenu from './TeamsChannelItemMenu';
 import { roomCoordinator } from '../../../../lib/rooms/roomCoordinator';
-import { useDeferredMenuMount } from '../../../../sidebar/Item/useDeferredMenuMount';
 
 export type TeamsChannelItemProps = {
 	room: IRoom;
