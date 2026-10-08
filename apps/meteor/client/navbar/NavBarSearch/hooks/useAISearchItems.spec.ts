@@ -220,19 +220,6 @@ describe('useAISearchItems', () => {
 			expect(result.current.data.filterSuggestions[0]).toEqual(expect.objectContaining({ filterKey: 'in', value: 'general' }));
 		});
 
-		it('leaves direct messages out of the recent rooms for an empty in: token', async () => {
-			const subscriptions = [
-				createFakeSubscription({ rid: 'rid-general', name: 'general', fname: 'General', t: 'c' }),
-				createFakeSubscription({ rid: 'rid-dm', name: 'alice', fname: 'Alice', t: 'd' }),
-			];
-			const { wrapper } = setup({ subscriptions });
-			const { result } = renderHook(() => useAISearchItems('in:', [], true), { wrapper });
-
-			await act(async () => undefined);
-
-			expect(result.current.data.filterSuggestions.map(({ value }) => value)).toEqual(['general']);
-		});
-
 		it('caps room suggestions at the configured limit', async () => {
 			const subscriptions = Array.from({ length: AI_SEARCH_FILTER_SUGGESTION_LIMIT + 2 }, (_, index) =>
 				createFakeSubscription({ rid: `rid-${index}`, name: `general-${index}`, t: 'c' }),

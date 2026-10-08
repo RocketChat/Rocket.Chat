@@ -333,7 +333,7 @@ export const buildRoomSearchQuery = (value: string, mention?: string) => {
 	return {
 		$or: [{ name: filterRegex }, { fname: filterRegex }],
 		...(mention && {
-			t: mention === '@' ? 'd' : { $ne: 'd' },
+			t: mention === '@' ? ('d' as const) : ({ $ne: 'd' } as const),
 		}),
 	};
 };
