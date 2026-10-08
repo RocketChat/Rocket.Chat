@@ -106,7 +106,7 @@ export default (instance: MessageTypes) => {
 	instance.registerType({
 		id: 'wm',
 		system: true,
-		text: (t, message) => t('Welcome', { user: message.u.username }),
+		text: (t, message) => t('Welcome', { postProcess: 'sprintf', sprintf: [message.u.username] }),
 	});
 
 	instance.registerType({
