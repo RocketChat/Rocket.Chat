@@ -10,6 +10,7 @@ import { logger } from '../logger';
 
 const GRAPH_API_VERSION = 'v1.0';
 const REQUEST_TIMEOUT_MS = 30000;
+const MASTER_FETCH_BATCH_SIZE = 5;
 
 /** Without this, Graph answers in the mailbox's own timezone with the zone in a sibling field. */
 const PREFER_UTC = 'outlook.timezone="UTC"';
@@ -120,24 +121,47 @@ export class MicrosoftGraphProvider implements IExchangeProvider {
 			}
 		}
 
-		const fetched = await Promise.all([...missing].map(async (id) => [id, await this.fetchSeriesMaster(mailbox, id)] as const));
-		for (const [id, master] of fetched) {
-			if (master) {
-				masters.set(id, master);
+		const ids = [...missing];
+		for (let i = 0; i < ids.length; i += MASTER_FETCH_BATCH_SIZE) {
+			const fetched = await Promise.all(
+				ids.slice(i, i + MASTER_FETCH_BATCH_SIZE).map(async (id) => [id, await this.fetchSeriesMaster(mailbox, id)] as const),
+			);
+
+			for (const [id, master] of fetched) {
+				if (master) {
+					masters.set(id, master);
+				}
 			}
 		}
 
 		const resolved: GraphEvent[] = [];
+		let unresolved = 0;
+
 		for (const event of raw) {
 			if (event.type === 'seriesMaster' && !event['@removed']) {
 				continue;
 			}
 
 			const masterId = asString(event.seriesMasterId);
-			const master = masterId && !event['@removed'] ? masters.get(masterId) : undefined;
+
+			if (!masterId || event['@removed']) {
+				resolved.push(event);
+				continue;
+			}
+
+			const master = masters.get(masterId);
+
+			if (!master) {
+				unresolved += 1;
+				continue;
+			}
 
 			// Spread order is intended anything the occurrence states itself wins over the series
-			resolved.push(master ? { ...master, ...event } : event);
+			resolved.push({ ...master, ...event });
+		}
+
+		if (unresolved) {
+			logger.warn({ msg: 'Occurrences left out of this round, so the stored events keep what they have', mailbox, unresolved });
 		}
 
 		return resolved;
@@ -166,7 +190,7 @@ export class MicrosoftGraphProvider implements IExchangeProvider {
 		try {
 			return await this.requestJson<GraphEvent>(url, { headers: { Prefer: PREFER_UTC } });
 		} catch (err) {
-			logger.warn({ msg: 'Could not read the series master of a recurring event, its occurrences stay untitled', err });
+			logger.warn({ msg: 'Could not read the series master of a recurring event', mailbox, masterId: id, err });
 			return undefined;
 		}
 	}
