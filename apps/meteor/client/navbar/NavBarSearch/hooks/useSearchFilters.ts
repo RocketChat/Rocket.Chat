@@ -1,10 +1,4 @@
-import type {
-	AppliedFilter,
-	NavBarSearchFormValues,
-	SearchFilterKey,
-	SearchFilterMeta,
-	SearchFilterSuggestion,
-} from '@rocket.chat/ai-search';
+import type { AppliedFilter, NavBarSearchFormValues, SearchFilterKey, SearchFilterSuggestion } from '@rocket.chat/ai-search';
 import { createAppliedFilter, mergeAppliedFilters, parseSearchInput, removeAppliedFilter, removeDraftFilter } from '@rocket.chat/ai-search';
 import { useStableCallback } from '@rocket.chat/fuselage-hooks';
 import { useFormContext, useWatch } from 'react-hook-form';

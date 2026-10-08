@@ -113,6 +113,7 @@ const NavBarAISearchInput = () => {
 			<TextInput
 				{...rest}
 				{...triggerProps}
+				aria-haspopup={filtersOpen ? 'dialog' : 'listbox'}
 				onChange={handleChange}
 				onFocus={handleFocus}
 				onKeyDown={handleKeyDown}

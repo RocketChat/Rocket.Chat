@@ -76,7 +76,7 @@ const NavBarAISearchListBox = ({
 			flexDirection='column'
 		>
 			{filtersOpen ? (
-				<NavBarSearchFiltersView filters={filters} onBack={onCloseFilters} />
+				<NavBarSearchFiltersView id={overlayProps.id} filters={filters} onBack={onCloseFilters} />
 			) : (
 				<>
 					<ResultsLiveRegion shouldAnnounce={!isSearchLoading} itemCount={itemCount} isLoading={isSearchLoading} />
