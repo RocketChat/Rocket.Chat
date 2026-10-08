@@ -7,6 +7,7 @@ import { Empty, ErrorCode, NatsError, RequestStrategy, ServiceError, connect } f
 import type { ServiceNodes } from './licenseEnforcement';
 import { startLicenseEnforcement } from './licenseEnforcement';
 import { consumeStreams, serveStreams } from './streams';
+import { withDefaultDependencies } from './withDefaultDependencies';
 
 export { connect } from 'nats';
 
@@ -55,9 +56,6 @@ const NO_RESPONDERS_CODE: string = ErrorCode.NoResponders;
 /** Discovery is a request-many round trip; a short TTL keeps back to back lookups to a single ping. */
 const DISCOVERY_TTL = 1000;
 
-/** Every service but `settings` itself depends on these. */
-const DEFAULT_DEPENDENCIES = ['settings', 'license'];
-
 /** How often a service still waiting on a remote dependency looks for it again. */
 const DEPENDENCY_INTERVAL = 1000;
 
@@ -86,10 +84,6 @@ type RegisteredService = {
  */
 function toSubjectToken(nodeID: string): string {
 	return nodeID.replace(/[^A-Za-z0-9_-]/g, '_');
-}
-
-function withDefaultDependencies(name: string, serviceDependencies: string[]): string[] {
-	return [...serviceDependencies, ...(name === 'settings' ? [] : DEFAULT_DEPENDENCIES)].filter((dependency) => dependency !== name);
 }
 
 function encodePayload(value: unknown): Uint8Array {
