@@ -10,7 +10,7 @@ export const CALENDAR_SYNC_JOB = 'Exchange_Calendar_Sync';
 
 const WATCHED_SETTINGS = ['Outlook_Calendar_Enabled', 'Exchange_Mode', 'Exchange_Calendar_Sync_Interval'];
 
-export const DEFAULT_INTERVAL_MINUTES = 15;
+export const DEFAULT_INTERVAL_HOURS = 1;
 
 const stopExchangeSyncJob = async (): Promise<void> => {
 	if (await cronJobs.has(CALENDAR_SYNC_JOB)) {
@@ -18,18 +18,23 @@ const stopExchangeSyncJob = async (): Promise<void> => {
 	}
 };
 
-const intervalToCron = (minutes: number): string => {
-	const value = Math.trunc(minutes) > 0 ? Math.trunc(minutes) : DEFAULT_INTERVAL_MINUTES;
-
-	if (value < 60) {
-		return `*/${value} * * * *`;
+const fitHours = (hours: number): number => {
+	for (let step = Math.min(hours, 24); step > 1; step--) {
+		if (24 % step === 0) {
+			return step;
+		}
 	}
 
-	// If greater than or equal to 60, it's converted to hours
-	return `0 */${Math.min(Math.round(value / 60), 23)} * * *`;
+	return 1;
 };
 
-export const configureCalendarSyncJob = async (): Promise<void> => {
+const intervalToCron = (hours: number): string => {
+	const step = fitHours(Math.trunc(hours) > 0 ? Math.trunc(hours) : DEFAULT_INTERVAL_HOURS);
+
+	return step === 24 ? '0 0 * * *' : `0 */${step} * * *`;
+};
+
+export const configureCalendarSyncJob = async (isCurrent: () => boolean = () => true): Promise<void> => {
 	if (await cronJobs.has(CALENDAR_SYNC_JOB)) {
 		await cronJobs.remove(CALENDAR_SYNC_JOB);
 	}
@@ -46,19 +51,29 @@ export const configureCalendarSyncJob = async (): Promise<void> => {
 		return;
 	}
 
+	if (!isCurrent()) {
+		return;
+	}
+
 	logger.info({ msg: 'Scheduling the Exchange calendar sync job', schedule });
 
 	await cronJobs.add(CALENDAR_SYNC_JOB, schedule, async () => runCalendarSync());
 };
 
 export const registerCalendarSyncJob = (): (() => void) => {
+	let generation = 0;
+	let stopped = false;
+
 	const stopWatching = settings.watchMultiple(WATCHED_SETTINGS, () => {
-		void configureCalendarSyncJob().catch((err) =>
+		const started = ++generation;
+
+		void configureCalendarSyncJob(() => !stopped && generation === started).catch((err) =>
 			logger.error({ msg: 'Could not configure the Exchange calendar sync job', err: scrubForLog(err) }),
 		);
 	});
 
 	return () => {
+		stopped = true;
 		stopWatching();
 
 		void stopExchangeSyncJob().catch((err) =>

@@ -41,7 +41,6 @@ export const runCalendarSync = async (): Promise<CalendarSyncRunSummary> => {
 
 	running = true;
 
-	// The value is the delete gate: true only when this user had a busy, in-progress event removed.
 	const dirty = new Set<IUser['_id']>();
 
 	try {
