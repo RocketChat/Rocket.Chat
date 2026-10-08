@@ -3,7 +3,7 @@ import type { UpdateResult } from 'mongodb';
 
 import type { IBaseModel } from './IBaseModel';
 
-/** The fields that, when any of them changes, make a stored cursor unusable. */
+/** What a stored cursor was obtained from, saved alongside it so a later run can tell whether it still applies. */
 export type ExchangeCalendarSyncIdentity = Pick<IExchangeCalendarSyncState, 'mailbox' | 'provider' | 'syncWindowDays' | 'windowStart'>;
 
 export interface IExchangeCalendarSyncStateModel extends IBaseModel<IExchangeCalendarSyncState> {
