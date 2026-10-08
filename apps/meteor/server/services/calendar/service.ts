@@ -211,7 +211,12 @@ export class CalendarService extends ServiceClassInternal implements ICalendarSe
 				...(busy !== undefined && { busy }),
 			});
 
-			byUid.set(uid, [...(byUid.get(uid) ?? []), externalId]);
+			const seen = byUid.get(uid);
+			if (seen) {
+				seen.push(externalId);
+			} else {
+				byUid.set(uid, [externalId]);
+			}
 		}
 
 		const { upsertedCount, modifiedCount } = await CalendarEvent.bulkUpsertImported(prepared);
