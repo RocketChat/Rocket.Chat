@@ -53,7 +53,7 @@
 		"i18next": "~26.4.2",
 		"identity-obj-proxy": "^3.0.0",
 		"jest": "~30.5.2",
-		"katex": "~0.16.47",
+		"katex": "~0.18.2",
 		"outdent": "^0.8.0",
 		"react": "~19.2.8",
 		"react-aria": "~3.37.0",
