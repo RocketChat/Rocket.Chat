@@ -1,6 +1,6 @@
 import type { SlashCommand } from '@rocket.chat/core-typings';
 import { useDebouncedCallback } from '@rocket.chat/fuselage-hooks';
-import { useEndpoint, useStream, useUserId } from '@rocket.chat/ui-contexts';
+import { useEndpoint, useSetting, useStream, useUserId } from '@rocket.chat/ui-contexts';
 import { useQueryClient, useQuery } from '@tanstack/react-query';
 import { useEffect } from 'react';
 
@@ -43,9 +43,11 @@ export const useAppSlashCommands = () => {
 	}, [apps, uid, invalidate]);
 
 	const getSlashCommands = useEndpoint('GET', '/v1/commands.list');
+	const upperCountLimit = useSetting('API_Upper_Count_Limit', 100);
+	const count = typeof upperCountLimit === 'number' && upperCountLimit > 0 ? upperCountLimit : 100;
 
 	const { data } = useQuery({
-		queryKey: appsQueryKeys.slashCommands(),
+		queryKey: appsQueryKeys.slashCommands(count),
 		enabled: !!uid,
 		structuralSharing: false,
 		retry: true,
@@ -53,8 +55,6 @@ export const useAppSlashCommands = () => {
 		retryDelay: (attemptIndex) => Math.min(500 * Math.random() * 10 * 2 ** attemptIndex, 30000),
 		queryFn: async () => {
 			const fetchBatch = async (accumulator: SlashCommandBasicInfo[] = []): Promise<SlashCommandBasicInfo[]> => {
-				// TODO: make `API_Upper_Count_Limit` public and use it here instead of this guess
-				const count = 50;
 				const { commands, appsLoaded, total } = await getSlashCommands({ offset: accumulator.length, count });
 
 				if (!appsLoaded) {
