@@ -104,6 +104,16 @@ const ConferenceWindow = () => {
 
 	const [bannerDismissed, setBannerDismissed] = useState(false);
 
+	// Guarded on the join not being in flight and not having failed, or a refusal would be asked again forever.
+	const { autoJoin, joined, loading: joining, error: joinError } = session;
+	const { join } = actions;
+	const { name: callName } = call;
+	useEffect(() => {
+		if (autoJoin && !joined && !joining && !joinError) {
+			join({ mic: true, cam: false }, callName, false);
+		}
+	}, [autoJoin, joined, joining, joinError, join, callName]);
+
 	// Only a refusal is an answer about the call. Anything else is the server not having been reached, which says
 	// nothing about it — and sending someone away from a call that is still running is the worse mistake.
 	if (room.error) {
@@ -138,6 +148,10 @@ const ConferenceWindow = () => {
 	}
 
 	if (!session.joined) {
+		if (session.autoJoin) {
+			return <>{slots.loading}</>;
+		}
+
 		return (
 			// No `confirming`: joining takes this screen down with it — `session.loading` is that very request, and
 			// it returns the loading slot above — so there is no button left to report it on.
@@ -183,25 +197,27 @@ const ConferenceWindow = () => {
 				icon={<Icon name='members' size='x20' color={activePanel === 'members' ? 'info' : undefined} />}
 				badge={presentCount > 0 ? <Badge>{presentCount}</Badge> : undefined}
 			/>
-			<IconButton
-				small
-				secondary
-				aria-label={withBadgeCount(t('Chat'), unread, unreadTitle, unseenActivity)}
-				title={t('Chat')}
-				aria-pressed={chatVisible}
-				onClick={() => togglePanel('chat')}
-				icon={<Icon name='balloon' size='x20' color={chatVisible ? 'info' : undefined} />}
-				// `chatBadge` is `null` for activity with no count behind it, which is the dot — a `Badge` with
-				// nothing in it. Only `undefined` means no badge at all, so the test is against that rather than
-				// for truth.
-				badge={
-					chatBadge !== undefined ? (
-						<Badge variant={unreadVariant} title={unreadTitle}>
-							{chatBadge}
-						</Badge>
-					) : undefined
-				}
-			/>
+			{!session.providerOwnsChatToggle && (
+				<IconButton
+					small
+					secondary
+					aria-label={withBadgeCount(t('Chat'), unread, unreadTitle, unseenActivity)}
+					title={t('Chat')}
+					aria-pressed={chatVisible}
+					onClick={() => togglePanel('chat')}
+					icon={<Icon name='balloon' size='x20' color={chatVisible ? 'info' : undefined} />}
+					// `chatBadge` is `null` for activity with no count behind it, which is the dot — a `Badge` with
+					// nothing in it. Only `undefined` means no badge at all, so the test is against that rather than
+					// for truth.
+					badge={
+						chatBadge !== undefined ? (
+							<Badge variant={unreadVariant} title={unreadTitle}>
+								{chatBadge}
+							</Badge>
+						) : undefined
+					}
+				/>
+			)}
 		</>
 	);
 
@@ -232,7 +248,7 @@ const ConferenceWindow = () => {
 					{session.url ? <ConferenceIframe url={session.url} /> : <CallStageArea layout={stageLayout} />}
 				</Box>
 
-				<CallPanel visible={!!activePanel} sheet={sheetPanel}>
+				<CallPanel visible={!!activePanel} sheet={sheetPanel} dock={session.panelDock}>
 					{activePanel === 'members' &&
 						(embeddedCall ? (
 							<EmbeddedCallMembersPanel onClose={() => togglePanel('members')} />
