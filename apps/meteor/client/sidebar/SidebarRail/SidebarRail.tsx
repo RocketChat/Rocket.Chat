@@ -7,6 +7,7 @@ import tinykeys from 'tinykeys';
 
 import SidebarRailCreateNew from './SidebarRailCreateNew';
 import SidebarRailDivider from './SidebarRailDivider';
+import SidebarRailFilters from './SidebarRailFilters';
 import SidebarRailInbox from './SidebarRailInbox';
 import SidebarRailLoginPage from './SidebarRailLoginPage';
 import SidebarRailPhone from './SidebarRailPhone';
@@ -47,10 +48,16 @@ const SidebarRail = () => {
 			setPanel('inbox');
 		};
 
+		const openFilters = (event: KeyboardEvent) => {
+			event.preventDefault();
+			setPanel('filters');
+		};
+
 		return tinykeys(window, {
 			'$mod+K': openSearch,
 			'$mod+P': openSearch,
 			'$mod+Shift+U': openInbox,
+			'$mod+Shift+F': openFilters,
 		});
 	}, [setPanel]);
 
@@ -81,6 +88,7 @@ const SidebarRail = () => {
 					<NavBarGroup vertical aria-label={t('Pages_and_actions')}>
 						<SidebarRailSearch />
 						<SidebarRailInbox />
+						<SidebarRailFilters />
 						<SidebarRailCreateNew />
 						{showMarketplace && <NavBarItemMarketPlaceMenu />}
 					</NavBarGroup>

@@ -1,6 +1,6 @@
 import { create } from 'zustand';
 
-export type SidebarRailPanel = 'inbox' | 'search' | 'calls';
+export type SidebarRailPanel = 'inbox' | 'search' | 'calls' | 'filters';
 
 type SidebarRailState = {
 	panel: SidebarRailPanel;

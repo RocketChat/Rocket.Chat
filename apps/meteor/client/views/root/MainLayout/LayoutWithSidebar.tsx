@@ -11,6 +11,7 @@ import { MainLayoutStyleTags } from './MainLayoutStyleTags';
 import NavBar from '../../../navbar';
 import Sidebar from '../../../sidebar';
 import SidebarRail from '../../../sidebar/SidebarRail';
+import SidebarRailFiltersPanel from '../../../sidebar/SidebarRail/SidebarRailFiltersPanel';
 import SidebarRailSearchPanel from '../../../sidebar/SidebarRail/SidebarRailSearchPanel';
 import NavigationRegion from '../../navigation';
 import RoomsNavigationProvider from '../../navigation/providers/RoomsNavigationProvider';
@@ -97,6 +98,7 @@ const LayoutWithSidebar = ({ children }: LayoutWithSidebarProps) => {
 					<FeaturePreview feature='sidebarRail' disabled={shouldToggle || embeddedLayout}>
 						<FeaturePreviewOn>
 							<SidebarRailSearchPanel />
+							<SidebarRailFiltersPanel />
 						</FeaturePreviewOn>
 						<FeaturePreviewOff>{null}</FeaturePreviewOff>
 					</FeaturePreview>
