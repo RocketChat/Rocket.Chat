@@ -238,7 +238,7 @@ const CALL_PREFERENCES_KEY = callPreferencesStorageKey('john.doe');
 export const storeCallPreferences = (preferences: { mic?: boolean; cam?: boolean; ring?: boolean }) => () => {
 	const previous = localStorage.getItem(CALL_PREFERENCES_KEY);
 
-	localStorage.setItem(CALL_PREFERENCES_KEY, JSON.stringify({ mic: true, cam: false, ring: true, ...preferences }));
+	localStorage.setItem(CALL_PREFERENCES_KEY, JSON.stringify({ mic: true, cam: false, ring: true, videoQuality: 'auto', ...preferences }));
 
 	return () => {
 		if (previous === null) {
@@ -294,6 +294,9 @@ export const CallSurface = ({ children, height = 'auto' }: { children: ReactNode
 );
 
 export const allCapabilities: VideoConferenceCapabilities = { mic: true, cam: true, title: true };
+
+/** A provider that runs the call in this window — the only one the preflight offers device choices for. */
+export const embeddedCapabilities: VideoConferenceCapabilities = { ...allCapabilities, embedded: true };
 
 /** The four states a member of a call can be in. `ringing` needs {@link withLiveRings} to stay one. */
 export const members: Record<'joined' | 'ringing' | 'declined' | 'left', ConferenceMember> = {

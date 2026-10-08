@@ -27,7 +27,7 @@ export function setSandboxRequire(newRequire: SandboxRequire): void {
 
 /**
  * Extra globals bound into the app's eval shell on top of the common ones
- * (`exports`, `module`, `require`, `console`, `globalThis`). Node needs none;
+ * (`exports`, `module`, `require`, `globalThis`). Node needs none;
  * Deno injects a `Buffer` and shadows `Deno` with `undefined`. Injecting them
  * as data keeps the eval-shell skeleton single-source.
  */
@@ -55,18 +55,10 @@ function wrapAppCode(code: string): (require: SandboxRequire) => Promise<Record<
 		`
         const exports = {};
         const module = { exports };
-        const _error = console.error.bind(console);
-        const _console = {
-            log: _error,
-            error: _error,
-            debug: _error,
-            info: _error,
-            warn: _error,
-        };
 
-        const result = (async (exports,module,require,console,globalThis${extraParams}) => {
+        const result = (async (exports,module,require,globalThis${extraParams}) => {
             ${code};
-        })(exports,module,require,_console,undefined${extraArgs});
+        })(exports,module,require,undefined${extraArgs});
 
         return result.then(() => module.exports);`,
 	) as (require: SandboxRequire, globals: SandboxGlobals) => Promise<Record<string, unknown>>;

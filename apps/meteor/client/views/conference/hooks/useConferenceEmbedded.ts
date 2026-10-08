@@ -291,6 +291,8 @@ export const useConferenceEmbedded = (callId: string) => {
 			 * page reading that as a join that went wrong, so it asks this first.
 			 */
 			embedded: data ? data.url === '' : false,
+			/** Known before the join, so a provider that runs the call in here can be mounted around the preflight. */
+			providerName: info?.providerName,
 			/**
 			 * Whether *this window* has joined — which is to say, whether it holds a session to render.
 			 *

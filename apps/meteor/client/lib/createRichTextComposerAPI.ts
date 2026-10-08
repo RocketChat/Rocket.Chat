@@ -6,7 +6,7 @@ import type { ComposerAPI } from './chats/ChatAPI';
 import { createComposerAPICore, triggerEvent, type SetText } from './createComposerAPICore';
 import { limitQuoteChain } from './limitQuoteChain';
 import { createComposerRenderer, renderComposerContent } from './messageStateHandler';
-import { getSelectionRange, setSelectionRange } from './selectionRange';
+import { getContentEndOffset, getSelectionRange, setSelectionRange } from './selectionRange';
 import { bareLinePrefixRange, continueLinePrefix } from './toggleLinePrefix';
 
 export const createRichTextComposerAPI = (
@@ -83,7 +83,6 @@ export const createRichTextComposerAPI = (
 		setText,
 		focus,
 		prepareQuotedMessage: (message) => limitQuoteChain(message, quoteChainLimit),
-		richText: true,
 	});
 
 	const wrapSelection = (pattern: string): { selectionStart: number; selectionEnd: number; value: string } => {
@@ -201,7 +200,7 @@ export const createRichTextComposerAPI = (
 
 	const replyWith = async (text: string): Promise<void> => {
 		setText(text);
-		const end = input.innerText.length;
+		const end = getContentEndOffset(input);
 		renderComposerContent(input, parseOptions, { selectionStart: end, selectionEnd: end });
 	};
 
@@ -223,7 +222,7 @@ export const createRichTextComposerAPI = (
 			return getSelectionRange(input).selectionStart;
 		},
 		setCursorToEnd: () => {
-			const end = input.innerText.length;
+			const end = getContentEndOffset(input);
 			focus();
 			setSelectionRange(input, end, end);
 		},

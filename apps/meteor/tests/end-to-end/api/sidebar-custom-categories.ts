@@ -208,11 +208,11 @@ describe('[Sidebar Custom Categories]', () => {
 
 			// Create rooms as admin (regular users lack create-c permission by default),
 			// then invite the test user so they are subscribed.
-			const r1 = await createRoom({ type: 'c', name: `setcat-${Random.id()}` }).expect(200);
+			const r1 = await createRoom({ type: 'c', name: `setcat-${Random.id()}` });
 			roomId = r1.body.channel._id;
 			await addUserToRoom({ usernames: [testUser.username as string], rid: roomId, type: 'c' });
 
-			const r2 = await createRoom({ type: 'c', name: `setcat-${Random.id()}` }).expect(200);
+			const r2 = await createRoom({ type: 'c', name: `setcat-${Random.id()}` });
 			roomId2 = r2.body.channel._id;
 			await addUserToRoom({ usernames: [testUser.username as string], rid: roomId2, type: 'c' });
 		});
@@ -290,7 +290,7 @@ describe('[Sidebar Custom Categories]', () => {
 			});
 
 			it('should silently skip a room the user is not subscribed to', async () => {
-				const adminRoom = await createRoom({ type: 'c', name: `admin-only-${Random.id()}` }).expect(200);
+				const adminRoom = await createRoom({ type: 'c', name: `admin-only-${Random.id()}` });
 				const adminRoomId = adminRoom.body.channel._id;
 				try {
 					await setCategory({ roomIds: [adminRoomId], category: catId }).expect(200);

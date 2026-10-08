@@ -1,19 +1,10 @@
 import { ButtonGroup, Button, Box } from '@rocket.chat/fuselage';
 import { SHA256 } from '@rocket.chat/sha256';
 import { Page, PageFooter, PageHeader, PageScrollableContentWithShadow } from '@rocket.chat/ui-client';
-import type { TranslationKey } from '@rocket.chat/ui-contexts';
-import {
-	useSetModal,
-	useToastMessageDispatch,
-	useUser,
-	useLogout,
-	useEndpoint,
-	useTranslation,
-	useSetting,
-	useLayout,
-} from '@rocket.chat/ui-contexts';
+import { useSetModal, useToastMessageDispatch, useUser, useLogout, useEndpoint, useSetting, useLayout } from '@rocket.chat/ui-contexts';
 import { useId, useState, useCallback } from 'react';
 import { FormProvider, useForm } from 'react-hook-form';
+import { useTranslation } from 'react-i18next';
 
 import AccountProfileForm from './AccountProfileForm';
 import ActionConfirmModal from './ActionConfirmModal';
@@ -23,7 +14,7 @@ import { useAllowPasswordChange } from '../security/useAllowPasswordChange';
 
 // TODO: enforce useMutation
 const AccountProfilePage = () => {
-	const t = useTranslation();
+	const { t } = useTranslation();
 	const user = useUser();
 	const dispatchToastMessage = useToastMessageDispatch();
 	const { isMobile } = useLayout();
@@ -32,12 +23,14 @@ const AccountProfilePage = () => {
 	const logout = useLogout();
 	const [loggingOut, setLoggingOut] = useState(false);
 
-	const erasureType = useSetting('Message_ErasureType');
+	const erasureType = useSetting<'Delete' | 'Keep' | 'Unlink'>('Message_ErasureType', 'Delete');
 	const allowDeleteOwnAccount = useSetting('Accounts_AllowDeleteOwnAccount');
 	const { hasLocalPassword } = useAllowPasswordChange();
 
+	// Track the user record so data arriving after mount fills the form, without discarding unsaved edits.
 	const methods = useForm({
-		defaultValues: getProfileInitialValues(user),
+		values: getProfileInitialValues(user),
+		resetOptions: { keepDirtyValues: true },
 		reValidateMode: 'onBlur',
 	});
 
@@ -80,7 +73,7 @@ const AccountProfilePage = () => {
 				<ConfirmOwnerChangeModal
 					onConfirm={handleConfirm}
 					onCancel={() => setModal(null)}
-					contentTitle={t(`Delete_User_Warning_${erasureType}` as TranslationKey)}
+					contentTitle={t('Delete_User_Warning', { context: erasureType })}
 					confirmText={t('Delete')}
 					shouldChangeOwner={shouldChangeOwner}
 					shouldBeRemoved={shouldBeRemoved}

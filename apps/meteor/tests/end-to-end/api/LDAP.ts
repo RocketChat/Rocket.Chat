@@ -201,6 +201,61 @@ const waitForLdapConnection = () =>
 					expect(res.body).to.have.property('message', 'LDAP_User_Found');
 				});
 		});
+
+		it('should report that no LDAP user matches an unknown username', async () => {
+			await request
+				.post(api('ldap.testSearch'))
+				.set(credentials)
+				.send({ username: 'ldap.does-not-exist' })
+				.expect('Content-Type', 'application/json')
+				.expect(400)
+				.expect((res: Response) => {
+					expect(res.body).to.have.property('success', false);
+					expect(res.body).to.have.property('error', 'LDAP_User_not_found');
+				});
+		});
+	});
+
+	describe('with a wrong authentication password', () => {
+		before(async () => {
+			await updateSetting('LDAP_Authentication_Password', 'wrong-password');
+		});
+
+		after(async () => {
+			await updateSetting('LDAP_Authentication_Password', 'adminpassword');
+			await waitForLdapConnection();
+		});
+
+		it('should fail the connection test with the bind error', async () => {
+			await retry(
+				'LDAP settings propagation',
+				async () => {
+					await request
+						.post(api('ldap.testConnection'))
+						.set(credentials)
+						.expect('Content-Type', 'application/json')
+						.expect(400)
+						.expect((res: Response) => {
+							expect(res.body).to.have.property('error', 'LDAP_Bind_failed');
+							expect(res.body).to.have.nested.property('details.error').that.is.a('string').and.not.empty;
+						});
+				},
+				{ delayMs: 1_000 },
+			);
+		});
+
+		it('should fail the search test with the bind error instead of searching anonymously', async () => {
+			await request
+				.post(api('ldap.testSearch'))
+				.set(credentials)
+				.send({ username: ldapLoginUsername })
+				.expect('Content-Type', 'application/json')
+				.expect(400)
+				.expect((res: Response) => {
+					expect(res.body).to.have.property('error', 'LDAP_Bind_failed');
+					expect(res.body).to.have.nested.property('details.error').that.is.a('string').and.not.empty;
+				});
+		});
 	});
 
 	describe('[/ldap.testConnection]', () => {

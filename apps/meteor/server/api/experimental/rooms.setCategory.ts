@@ -33,7 +33,7 @@ API.experimental.post(
 	'rooms.setCategory',
 	{
 		authRequired: true,
-		license: ['experimental-enterprise-features'],
+		licenseRequired: true,
 		body: isRoomsSetCategoryParamsPOST,
 		response: {
 			200: ajv.compile<void>({

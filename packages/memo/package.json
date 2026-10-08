@@ -35,9 +35,8 @@
 	"devDependencies": {
 		"@rocket.chat/jest-presets": "workspace:~",
 		"@rocket.chat/tsconfig": "workspace:~",
-		"eslint": "~9.39.5",
-		"jest": "~30.2.0",
-		"ts-jest": "~29.4.12",
+		"eslint": "~10.11.0",
+		"jest": "~30.5.2",
 		"typescript": "~5.9.3"
 	},
 	"volta": {
