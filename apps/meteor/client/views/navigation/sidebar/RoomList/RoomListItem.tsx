@@ -36,6 +36,8 @@ export type RoomListItemProps = {
 	'title': string;
 	/** `condensed` and `medium` render a single line; `extended` adds the time and the `subtitle` line. */
 	'viewMode'?: RoomListItemViewMode;
+	/** Shows the room avatar, as the `sidebarDisplayAvatar` preference allows. */
+	'showAvatar'?: boolean;
 	/** Navigates to the room. Without it, the title renders as a button that runs `onClick`. */
 	'href'?: string;
 	'onClick'?: MouseEventHandler<HTMLElement>;
@@ -56,6 +58,7 @@ const RoomListItem = ({
 	room,
 	title,
 	viewMode = 'condensed',
+	showAvatar = true,
 	href,
 	onClick,
 	subtitle,
@@ -95,9 +98,11 @@ const RoomListItem = ({
 
 	return (
 		<Item {...props} selected={selected} highlighted={highlighted} onFocus={mountNow} onPointerEnter={requestMount}>
-			<ItemMedia>
-				<RoomAvatar size={ITEM_MEDIA_SIZE[viewMode]} room={{ ...room, _id: room.rid || room._id, type: room.t }} />
-			</ItemMedia>
+			{showAvatar && (
+				<ItemMedia>
+					<RoomAvatar size={ITEM_MEDIA_SIZE[viewMode]} room={{ ...room, _id: room.rid || room._id, type: room.t }} />
+				</ItemMedia>
+			)}
 			{isExtended ? (
 				<ItemContent>
 					<ItemRow>

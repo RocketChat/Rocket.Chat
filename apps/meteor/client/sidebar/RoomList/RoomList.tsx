@@ -13,14 +13,12 @@ import { useMergedRefsV2 } from '../../hooks/useMergedRefsV2';
 import { useOpenedRoom } from '../../lib/RoomManager';
 import { useMoveCategoryPosition } from '../categories/hooks/useMoveCategoryPosition';
 import SidebarVirtualList from '../components/SidebarVirtualList';
-import { useAvatarTemplate } from '../hooks/useAvatarTemplate';
 import { SIDEBAR_DYNAMIC_GROUP_KEYS } from '../hooks/useCategoryList';
 import { useCollapsedGroups } from '../hooks/useCollapsedGroups';
 import { useOffscreenUnreads } from '../hooks/useOffscreenUnreads';
 import { usePreventDefault } from '../hooks/usePreventDefault';
 import { useRoomList } from '../hooks/useRoomList';
 import { useShortcutOpenMenu } from '../hooks/useShortcutOpenMenu';
-import { useTemplateByViewMode } from '../hooks/useTemplateByViewMode';
 
 const canMoveGroup = (groups: { key: string }[], index: number, direction: 'up' | 'down'): boolean => {
 	if (SIDEBAR_DYNAMIC_GROUP_KEYS.includes(groups[index].key)) return false;
@@ -46,27 +44,23 @@ const RoomList = () => {
 	const { collapsedGroups, handleClick } = useCollapsedGroups();
 	const { groups } = useRoomList({ collapsedGroups });
 	const moveCategory = useMoveCategoryPosition();
-	const avatarTemplate = useAvatarTemplate();
-	const sideBarItemTemplate = useTemplateByViewMode();
 	const virtualizerRef = useRef<VirtualizerHandle>(null);
 	const { previousUnread, nextUnread, handleRangeChange } = useOffscreenUnreads({ groups });
 	const openedRoom = useOpenedRoom() ?? '';
 	const sidebarViewMode = useUserPreference<SidebarViewMode>('sidebarViewMode') || 'extended';
+	const sidebarDisplayAvatar = !!useUserPreference<boolean>('sidebarDisplayAvatar');
 	const bufferSize = sidebarRowHeight[sidebarViewMode] * SIDEBAR_VIRTUAL_BUFFER_ROWS;
 
-	const extended = sidebarViewMode === 'extended';
 	const itemData = useMemo(
 		() => ({
-			extended,
 			t,
-			SidebarItemTemplate: sideBarItemTemplate,
-			AvatarTemplate: avatarTemplate,
+			viewMode: sidebarViewMode,
+			showAvatar: sidebarDisplayAvatar,
 			openedRoom,
-			sidebarViewMode,
 			isAnonymous,
 			userId,
 		}),
-		[avatarTemplate, extended, isAnonymous, openedRoom, sideBarItemTemplate, sidebarViewMode, t, userId],
+		[isAnonymous, openedRoom, sidebarDisplayAvatar, sidebarViewMode, t, userId],
 	);
 
 	const allGroupKeys = useMemo(() => groups.map((group) => group.key), [groups]);
