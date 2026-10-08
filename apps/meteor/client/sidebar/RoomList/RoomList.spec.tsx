@@ -7,7 +7,6 @@ import type { SidebarRoomListGroup } from '../hooks/useRoomList';
 
 const mockCollapsedGroups: string[] = [];
 const mockHandleClick = jest.fn();
-const mockHandleKeyDown = jest.fn();
 const mockMoveCategory = jest.fn();
 const mockUsePreventDefault = jest.fn();
 const mockUseShortcutOpenMenu = jest.fn();
@@ -106,7 +105,6 @@ jest.mock('../hooks/useCollapsedGroups', () => ({
 	useCollapsedGroups: () => ({
 		collapsedGroups: mockCollapsedGroups,
 		handleClick: mockHandleClick,
-		handleKeyDown: mockHandleKeyDown,
 	}),
 }));
 
