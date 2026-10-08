@@ -74,6 +74,24 @@ describe('[Chat]', () => {
 			expect(res.body).to.have.property('success', false);
 		});
 
+		it('should not leak the transient "parseUrls" directive onto the returned message (#42086)', async () => {
+			const res = await request
+				.post(api('chat.postMessage'))
+				.set(credentials)
+				.send({
+					channel: testChannel.name,
+					text: 'Message posted with an explicit parseUrls directive',
+					parseUrls: false,
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200);
+
+			expect(res.body).to.have.property('success', true);
+			expect(res.body).to.have.property('message').that.is.an('object');
+			// parseUrls is only an input directive; it must not be persisted or echoed back.
+			expect(res.body.message).to.not.have.property('parseUrls');
+		});
+
 		it('should throw an error when it has some properties with the wrong type(attachments.title_link_download, attachments.fields, message_link)', async () => {
 			const res = await request
 				.post(api('chat.postMessage'))

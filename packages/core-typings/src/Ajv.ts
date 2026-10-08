@@ -12,7 +12,7 @@ import type { IIntegration } from './IIntegration';
 import type { IIntegrationHistory } from './IIntegrationHistory';
 import type { IInvite } from './IInvite';
 import type { IMeApiUser } from './IMeApiUser';
-import type { IMessage } from './IMessage';
+import type { IMessage, IMessageSearchResult } from './IMessage';
 import type { IModerationAudit, IModerationReport } from './IModerationReport';
 import type { IOAuthApps } from './IOAuthApps';
 import type { IPermission } from './IPermission';
@@ -38,6 +38,7 @@ export const schemas = typia.json.schemas<
 			| ICustomSound
 			| IEmojiCustom
 			| IMessage
+			| IMessageSearchResult
 			| IOAuthApps
 			| IPermission
 			| IMediaCall
