@@ -1,4 +1,4 @@
-import { render, screen } from '@testing-library/react';
+import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 
 import { Field, FieldLabel, useFieldDescriptorId } from '.';
@@ -63,4 +63,24 @@ it('should not reference a missing label from an input outside a field', () => {
 
 	expect(combobox).not.toHaveAttribute('aria-labelledby');
 	expect(combobox).toHaveAccessibleName('Players');
+});
+
+it('should keep the wrapped input name in sync with the label text', async () => {
+	const { rerender } = render(
+		<Field>
+			<FieldLabel>Old label</FieldLabel>
+			<CheckBox />
+		</Field>,
+	);
+
+	expect(screen.getByRole('checkbox')).toHaveAccessibleName('Old label');
+
+	rerender(
+		<Field>
+			<FieldLabel>New label</FieldLabel>
+			<CheckBox />
+		</Field>,
+	);
+
+	await waitFor(() => expect(screen.getByRole('checkbox')).toHaveAccessibleName('New label'));
 });

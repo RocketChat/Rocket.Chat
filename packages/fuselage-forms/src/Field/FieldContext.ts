@@ -56,11 +56,17 @@ export const useFieldLabel = (): [RefCallback<HTMLElement>, string] => {
 				}
 				setLabel(getTextFromNode(node));
 
+				const observer = new MutationObserver(() => setLabel(getTextFromNode(node)));
+				observer.observe(node, { childList: true, characterData: true, subtree: true });
+
 				const onClick = () => emitAction();
 
 				node.addEventListener('click', onClick);
 
-				return () => node.removeEventListener('click', onClick);
+				return () => {
+					observer.disconnect();
+					node.removeEventListener('click', onClick);
+				};
 			},
 			[setLabel, emitAction],
 		),
