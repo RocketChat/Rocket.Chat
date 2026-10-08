@@ -135,6 +135,8 @@ const AdminUserForm = ({ userData, onReload, context, refetchUserFormData, roleD
 			isNewUserPage,
 			isVerificationNeeded: !!isVerificationNeeded,
 		}),
+		// keep what the admin already typed when the SMTP query resolves and the values recompute
+		resetOptions: { keepDirtyValues: true },
 	});
 
 	const showVoipExtension = useShowVoipExtension();
