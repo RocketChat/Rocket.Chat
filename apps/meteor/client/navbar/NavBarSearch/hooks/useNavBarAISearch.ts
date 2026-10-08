@@ -10,7 +10,6 @@ import { useHasLicenseModule } from '../../../hooks/useHasLicenseModule';
 
 type TranslationFn = ReturnType<typeof useTranslation>['t'];
 
-/** Availability and the AI Search toggle. Filter state lives in `useSearchFilters`. */
 export const useNavBarAISearch = ({
 	setFocus,
 	state,

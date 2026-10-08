@@ -45,7 +45,7 @@ export const useAISearchItems = (
 	);
 	const { draft } = parsed;
 	// the half-typed token stays in the input but must not reach the search request
-	const searchText = draft ? removeDraftFilter(parsed.text) : parsed.text;
+	const searchText = draft ? removeDraftFilter(parsed.text) : parsed.text.trim();
 	const filters = useMemo(() => mergeAppliedFilters(appliedFilters, parsed.filters), [appliedFilters, parsed.filters]);
 
 	const debouncedSearchText = useDebouncedValue(searchText, 500);
