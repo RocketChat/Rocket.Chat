@@ -91,6 +91,10 @@ including hands whose tiles are not on screen. On the tiles that are, only the f
 anyone else in line gets a white one with their place in it, so whose turn is next reads at a glance however many hands
 are up.
 
+A sender's latest reaction also sits in the top-left corner of their own tile, opposite the microphone, for exactly as
+long as it rises (`REACTION_VISIBLE_MS`) — not for the provider's longer `REACTION_TTL_MS`, which only bounds how long it
+is kept. A newer reaction from the same person replaces it and starts the time over.
+
 ## Who gets rung
 
 | Room | Rings | Why |
