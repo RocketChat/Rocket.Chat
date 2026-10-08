@@ -41,6 +41,7 @@ describe('configureCalendarSyncJob', () => {
 	it.each([
 		[1, '*/1 * * * *'],
 		[15, '*/15 * * * *'],
+		[45.9, '*/45 * * * *'],
 		[59, '*/59 * * * *'],
 	])('schedules every %s minutes as %s', async (minutes, schedule) => {
 		settingsOf({ Exchange_Calendar_Sync_Interval: minutes });
@@ -62,7 +63,7 @@ describe('configureCalendarSyncJob', () => {
 		expect(add).toHaveBeenCalledWith(CALENDAR_SYNC_JOB, schedule, expect.any(Function));
 	});
 
-	it.each([0, -5, NaN, 0.5, 15.9])('falls back to the default interval for %p', async (minutes) => {
+	it.each([0, -5, NaN, 0.5])('falls back to the default interval for %p', async (minutes) => {
 		settingsOf({ Exchange_Calendar_Sync_Interval: minutes });
 
 		await configureCalendarSyncJob();
@@ -119,5 +120,15 @@ describe('registerCalendarSyncJob', () => {
 		await flush();
 
 		expect(add).toHaveBeenCalled();
+	});
+
+	it('stops watching and drops the job when the returned cleanup runs', async () => {
+		has.mockResolvedValue(true);
+
+		registerCalendarSyncJob()();
+		await flush();
+
+		expect(stopWatching).toHaveBeenCalled();
+		expect(remove).toHaveBeenCalledWith(CALENDAR_SYNC_JOB);
 	});
 });
