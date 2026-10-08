@@ -1,14 +1,14 @@
 import { after, before, describe, it } from 'node:test';
 
 import type { Credentials } from '@rocket.chat/api-client';
-import type { ICalendarEvent, IUser } from '@rocket.chat/core-typings';
+import type { ICalendarEvent, ISetting, IUser } from '@rocket.chat/core-typings';
 import { expect } from 'chai';
 import { MongoClient } from 'mongodb';
 import type { Response } from 'supertest';
 
 import { sleep } from '../../../lib/utils/sleep';
 import { getCredentials, api, request, credentials } from '../../data/api-data';
-import { updateSetting } from '../../data/permissions.helper';
+import { getSettingValueById, updateSetting } from '../../data/permissions.helper';
 import { password } from '../../data/user';
 import { createUser, deleteUser, login } from '../../data/users.helper';
 import { withTimeout } from '../../data/utils';
@@ -734,8 +734,10 @@ describe('[Calendar Events]', () => {
 				request.post(api('calendar-events.delete')).set(credentials).send({ eventId: desktopId }),
 				request.post(api('calendar-events.delete')).set(credentials).send({ eventId: ownId }),
 			]);
-			await connection.db().collection<ICalendarEvent>('rocketchat_calendar_event').deleteOne({ _id: syncedId });
-			await connection.close();
+			if (connection) {
+				await connection.db().collection<ICalendarEvent>('rocketchat_calendar_event').deleteOne({ _id: syncedId });
+				await connection.close();
+			}
 		});
 
 		(!IS_EE ? describe : describe.skip)('[Calendar Events without the Outlook license]', () => {
@@ -809,9 +811,16 @@ describe('[Calendar Events]', () => {
 		});
 
 		(IS_EE ? describe : describe.skip)('[Calendar Events while the server owns the sync]', () => {
-			before(() => updateSetting('Exchange_Mode', 'server'));
+			let previousExchangeMode: ISetting['value'];
 
-			after(() => updateSetting('Exchange_Mode', 'legacy'));
+			before(async () => {
+				previousExchangeMode = await getSettingValueById('Exchange_Mode');
+				await updateSetting('Exchange_Mode', 'server');
+			});
+
+			after(async () => {
+				await updateSetting('Exchange_Mode', previousExchangeMode);
+			});
 
 			it('should refuse to create an event carrying an external id', async () => {
 				await request
