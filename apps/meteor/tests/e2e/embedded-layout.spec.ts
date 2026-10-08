@@ -2,6 +2,7 @@ import { Users } from './fixtures/userStates';
 import { HomeChannel } from './page-objects';
 import { createDirectMessage, createTargetChannel, deleteChannel } from './utils';
 import { test, expect } from './utils/test';
+import { createTestUser, type ITestUser } from './utils/user-helpers';
 
 const embeddedLayoutURL = (pageUrl: string) => `${pageUrl}?layout=embedded`;
 
@@ -132,6 +133,28 @@ test.describe('embedded-layout', () => {
 			const dmMessage = `Embedded DM test ${Date.now()}`;
 			await poHomeChannel.content.sendMessage(dmMessage);
 			await expect(poHomeChannel.content.lastUserMessage).toContainText(dmMessage);
+		});
+
+		test.describe('when no DM exists yet', () => {
+			let dmTarget: ITestUser;
+
+			test.beforeAll(async ({ api }) => {
+				dmTarget = await createTestUser(api);
+			});
+
+			test.afterAll(async () => {
+				await dmTarget.delete();
+			});
+
+			test('should enable the composer when the DM is opened by username', async ({ page }) => {
+				await page.goto(embeddedLayoutURL(`/direct/${dmTarget.data.username}`));
+
+				await expect(poHomeChannel.composer.inputMessage).toBeEnabled();
+
+				const dmMessage = `Embedded new DM test ${Date.now()}`;
+				await poHomeChannel.content.sendMessage(dmMessage);
+				await expect(poHomeChannel.content.lastUserMessage).toContainText(dmMessage);
+			});
 		});
 	});
 });
