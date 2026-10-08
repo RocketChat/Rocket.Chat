@@ -20,7 +20,7 @@
 	"dependencies": {
 		"@tanstack/react-query": "~5.65.1",
 		"react-hook-form": "~7.54.2",
-		"react-i18next": "~17.0.15"
+		"react-i18next": "~17.0.16"
 	},
 	"devDependencies": {
 		"@rocket.chat/core-typings": "workspace:^",
@@ -39,7 +39,7 @@
 		"@types/jest-axe": "~3.5.9",
 		"@types/react": "~19.2.18",
 		"@types/react-dom": "~19.2.7",
-		"eslint": "~10.11.0",
+		"eslint": "~10.12.0",
 		"jest": "~30.5.2",
 		"jest-axe": "~11.0.0",
 		"react": "~19.2.8",
