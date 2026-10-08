@@ -1,6 +1,6 @@
 import { Box } from '@rocket.chat/fuselage';
-import { useUserPreference, useUserId } from '@rocket.chat/ui-contexts';
-import { useMemo } from 'react';
+import { useUserId } from '@rocket.chat/ui-contexts';
+import { useCallback, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import RoomListCollapser from './RoomListCollapser';
@@ -9,7 +9,9 @@ import RoomListRowWrapper from './RoomListRowWrapper';
 import RoomListWrapper from './RoomListWrapper';
 import { useMergedRefsV2 } from '../../hooks/useMergedRefsV2';
 import { useOpenedRoom } from '../../lib/RoomManager';
+import { getSidebarItemGap, getSidebarItemHeight } from '../Item/sidebarItemLayout';
 import { useMoveCategoryPosition } from '../categories/hooks/useMoveCategoryPosition';
+import { useUserSidebarCategories } from '../categories/hooks/useUserSidebarCategories';
 import SidebarVirtualList from '../components/SidebarVirtualList';
 import { useAvatarTemplate } from '../hooks/useAvatarTemplate';
 import { SIDEBAR_DYNAMIC_GROUP_KEYS } from '../hooks/useCategoryList';
@@ -17,20 +19,12 @@ import { useCollapsedGroups } from '../hooks/useCollapsedGroups';
 import { usePreventDefault } from '../hooks/usePreventDefault';
 import { useRoomList } from '../hooks/useRoomList';
 import { useShortcutOpenMenu } from '../hooks/useShortcutOpenMenu';
-import { useTemplateByViewMode } from '../hooks/useTemplateByViewMode';
+import { useSidebarDisplayPreferences } from '../hooks/useSidebarDisplayPreferences';
 
 const canMoveGroup = (groups: { key: string }[], index: number, direction: 'up' | 'down'): boolean => {
 	if (SIDEBAR_DYNAMIC_GROUP_KEYS.includes(groups[index].key)) return false;
 	if (direction === 'down') return index + 1 < groups.length;
 	return groups.slice(0, index).some((g) => !SIDEBAR_DYNAMIC_GROUP_KEYS.includes(g.key));
-};
-
-type SidebarViewMode = 'extended' | 'medium' | 'condensed';
-
-const sidebarRowHeight: Record<SidebarViewMode, number> = {
-	condensed: 28,
-	medium: 36,
-	extended: 48,
 };
 
 const SIDEBAR_VIRTUAL_BUFFER_ROWS = 5;
@@ -41,27 +35,50 @@ const RoomList = () => {
 	const isAnonymous = !userId;
 
 	const { collapsedGroups, handleClick, handleKeyDown } = useCollapsedGroups();
-	const { groups } = useRoomList({ collapsedGroups });
+	// Lifting a group's activity filter from its chip lasts for this session only, and only for the window it was
+	// lifted from: picking another window filters the group again.
+	const { rawCategories } = useUserSidebarCategories();
+	const getActivityFilterHours = useCallback(
+		(key: string) => rawCategories.find((entry) => entry._id === key)?.activityFilterHours,
+		[rawCategories],
+	);
+	const [liftedActivityFilters, setLiftedActivityFilters] = useState<Record<string, number | undefined>>({});
+	const groupsShowingInactive = useMemo(
+		() =>
+			Object.entries(liftedActivityFilters)
+				.filter(([key, hours]) => hours === getActivityFilterHours(key))
+				.map(([key]) => key),
+		[liftedActivityFilters, getActivityFilterHours],
+	);
+	const toggleShowingInactive = useCallback(
+		(key: string) =>
+			setLiftedActivityFilters(({ [key]: _, ...lifted }) =>
+				groupsShowingInactive.includes(key) ? lifted : { ...lifted, [key]: getActivityFilterHours(key) },
+			),
+		[groupsShowingInactive, getActivityFilterHours],
+	);
+	const { groups } = useRoomList({ collapsedGroups, groupsShowingInactive });
 	const moveCategory = useMoveCategoryPosition();
 	const avatarTemplate = useAvatarTemplate();
-	const sideBarItemTemplate = useTemplateByViewMode();
 	const openedRoom = useOpenedRoom() ?? '';
-	const sidebarViewMode = useUserPreference<SidebarViewMode>('sidebarViewMode') || 'extended';
-	const bufferSize = sidebarRowHeight[sidebarViewMode] * SIDEBAR_VIRTUAL_BUFFER_ROWS;
+	const { viewMode, displayPreview, displayAvatar, avatarSize: preferredAvatarSize } = useSidebarDisplayPreferences();
+	const avatarSize = displayAvatar ? preferredAvatarSize : undefined;
+	const itemGap = getSidebarItemGap(viewMode);
+	const rowWrapperStyle = useMemo(() => ({ paddingBlock: itemGap / 2 }), [itemGap]);
+	const bufferSize = (getSidebarItemHeight(viewMode, displayPreview, avatarSize) + itemGap) * SIDEBAR_VIRTUAL_BUFFER_ROWS;
 
-	const extended = sidebarViewMode === 'extended';
 	const itemData = useMemo(
 		() => ({
-			extended,
 			t,
-			SidebarItemTemplate: sideBarItemTemplate,
 			AvatarTemplate: avatarTemplate,
 			openedRoom,
-			sidebarViewMode,
+			viewMode,
+			avatarSize,
+			displayPreview,
 			isAnonymous,
 			userId,
 		}),
-		[avatarTemplate, extended, isAnonymous, openedRoom, sideBarItemTemplate, sidebarViewMode, t, userId],
+		[avatarTemplate, avatarSize, displayPreview, isAnonymous, openedRoom, viewMode, t, userId],
 	);
 
 	const allGroupKeys = useMemo(() => groups.map((group) => group.key), [groups]);
@@ -94,12 +111,13 @@ const RoomList = () => {
 						canMoveDown={canMoveGroup(groups, index, 'down')}
 						onMoveUp={() => moveCategory(allGroupKeys, group.key, 'up')}
 						onMoveDown={() => moveCategory(allGroupKeys, group.key, 'down')}
+						onToggleInactive={() => toggleShowingInactive(group.key)}
 						onClick={() => handleClick(group.key)}
 						onKeyDown={(e) => handleKeyDown(e, group.key)}
 					/>
 				)}
 				renderItem={(item, _itemIndex, _group, _groupIndex, rowIndex) => (
-					<RoomListRowWrapper data-index={rowIndex}>
+					<RoomListRowWrapper data-index={rowIndex} style={rowWrapperStyle}>
 						<RoomListRow data={itemData} item={item} />
 					</RoomListRowWrapper>
 				)}

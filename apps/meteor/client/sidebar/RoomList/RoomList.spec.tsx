@@ -1,5 +1,6 @@
 import { mockAppRoot } from '@rocket.chat/mock-providers';
 import { render, screen } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
 import type { HTMLAttributes, ReactNode } from 'react';
 
 import RoomList from './RoomList';
@@ -38,6 +39,12 @@ const groups = [
 	makeGroup('Direct_Messages', [rooms[2]], 1),
 	makeGroup('Empty_Group', [], 0),
 ];
+
+const mockUseRoomList = jest.fn((_options: { collapsedGroups?: string[]; groupsShowingInactive?: string[] }) => ({
+	groups,
+	groupsCount: [2, 1, 0],
+	totalCount: 3,
+}));
 
 type MockSidebarVirtualListProps = {
 	groups: {
@@ -119,25 +126,20 @@ jest.mock('../hooks/usePreventDefault', () => ({
 }));
 
 jest.mock('../hooks/useRoomList', () => ({
-	useRoomList: () => ({
-		groups,
-		groupsCount: [2, 1, 0],
-		totalCount: 3,
-	}),
+	useRoomList: (options: { collapsedGroups?: string[]; groupsShowingInactive?: string[] }) => mockUseRoomList(options),
 }));
 
 jest.mock('../hooks/useShortcutOpenMenu', () => ({
 	useShortcutOpenMenu: (ref: unknown) => mockUseShortcutOpenMenu(ref),
 }));
 
-jest.mock('../hooks/useTemplateByViewMode', () => ({
-	useTemplateByViewMode: () => 'SidebarItemTemplate',
-}));
-
 jest.mock('./RoomListCollapser', () => ({
 	__esModule: true,
-	default: ({ group }: { group: SidebarRoomListGroup }) => (
-		<button type='button' data-testid='group-header'>{`${group.title}:${group.unreadInfo.unread}`}</button>
+	default: ({ group, onToggleInactive }: { group: SidebarRoomListGroup; onToggleInactive: () => void }) => (
+		<>
+			<button type='button' data-testid='group-header'>{`${group.title}:${group.unreadInfo.unread}`}</button>
+			<button type='button' onClick={onToggleInactive}>{`toggle ${group.key}`}</button>
+		</>
 	),
 }));
 
@@ -173,7 +175,7 @@ describe('RoomList', () => {
 					{ key: 'Direct_Messages', group: groups[1], items: [rooms[2]] },
 					{ key: 'Empty_Group', group: groups[2], items: [] },
 				],
-				bufferSize: 240,
+				bufferSize: 220,
 			}),
 		);
 		expect(screen.getAllByTestId('group-header').map((element) => element.textContent)).toEqual([
@@ -184,5 +186,17 @@ describe('RoomList', () => {
 		expect(screen.getAllByTestId('room-row-wrapper')).toHaveLength(3);
 		expect(screen.getAllByTestId('room-row-wrapper').map((element) => element.getAttribute('data-index'))).toEqual(['1', '2', '4']);
 		expect(screen.getAllByTestId('room-row').map((element) => element.textContent)).toEqual(['general', 'support', 'alice']);
+	});
+
+	it("lifts and restores a group's activity filter for the session from its header", async () => {
+		render(<RoomList />, { wrapper: appRoot });
+
+		expect(mockUseRoomList).toHaveBeenLastCalledWith(expect.objectContaining({ groupsShowingInactive: [] }));
+
+		await userEvent.click(screen.getByRole('button', { name: 'toggle Channels' }));
+		expect(mockUseRoomList).toHaveBeenLastCalledWith(expect.objectContaining({ groupsShowingInactive: ['Channels'] }));
+
+		await userEvent.click(screen.getByRole('button', { name: 'toggle Channels' }));
+		expect(mockUseRoomList).toHaveBeenLastCalledWith(expect.objectContaining({ groupsShowingInactive: [] }));
 	});
 });

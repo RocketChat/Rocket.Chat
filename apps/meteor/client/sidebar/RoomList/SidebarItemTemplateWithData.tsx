@@ -3,7 +3,7 @@ import { Icon, SidebarAction, SidebarActions, SidebarItemIcon } from '@rocket.ch
 import type { SubscriptionWithRoom } from '@rocket.chat/ui-contexts';
 import { useLayout } from '@rocket.chat/ui-contexts';
 import type { TFunction } from 'i18next';
-import type { AllHTMLAttributes, ComponentType, ReactNode } from 'react';
+import type { AllHTMLAttributes } from 'react';
 import { memo, useMemo } from 'react';
 
 import { RoomIcon } from '../../components/RoomIcon';
@@ -14,36 +14,20 @@ import { getUidDirectMessage } from '../../lib/utils/getUidDirectMessage';
 import { isIOsDevice } from '../../lib/utils/isIOsDevice';
 import { getMessagePreview } from '../../lib/utils/normalizeMessagePreview/getMessagePreview';
 import { useOmnichannelPriorities } from '../../views/omnichannel/hooks/useOmnichannelPriorities';
+import SidebarRoomItem from '../Item/SidebarRoomItem';
 import RoomMenu from '../RoomMenu';
 import SidebarItemBadges from '../badges/SidebarItemBadges';
 import type { useAvatarTemplate } from '../hooks/useAvatarTemplate';
+import type { SidebarAvatarSize, SidebarViewMode } from '../hooks/useSidebarDisplayPreferences';
 import { useUnreadDisplay } from '../hooks/useUnreadDisplay';
 
 type RoomListRowProps = {
-	extended: boolean;
+	viewMode: SidebarViewMode;
+	avatarSize?: SidebarAvatarSize;
+	displayPreview: boolean;
 	t: TFunction;
-	SidebarItemTemplate: ComponentType<
-		{
-			icon: ReactNode;
-			title: ReactNode;
-			avatar: ReactNode;
-			actions: ReactNode;
-			href: string;
-			time?: Date;
-			menu?: () => ReactNode;
-			menuOptions?: unknown;
-			subtitle?: ReactNode;
-			titleIcon?: ReactNode;
-			badges?: ReactNode;
-			threadUnread?: boolean;
-			unread?: boolean;
-			selected?: boolean;
-			is?: string;
-		} & AllHTMLAttributes<HTMLElement>
-	>;
 	AvatarTemplate: ReturnType<typeof useAvatarTemplate>;
 	openedRoom?: string;
-	// sidebarViewMode: 'extended';
 	isAnonymous?: boolean;
 	userId?: string;
 
@@ -54,7 +38,6 @@ type RoomListRowProps = {
 
 	selected?: boolean;
 
-	sidebarViewMode?: unknown;
 	videoConfActions?: {
 		[action: string]: () => void;
 	};
@@ -65,8 +48,9 @@ const SidebarItemTemplateWithData = ({
 	id,
 	selected,
 	style,
-	extended,
-	SidebarItemTemplate,
+	viewMode,
+	avatarSize,
+	displayPreview,
 	AvatarTemplate,
 	t,
 	isAnonymous,
@@ -110,12 +94,14 @@ const SidebarItemTemplateWithData = ({
 	const isQueued = isOmnichannelRoom(room) && room.status === 'queued';
 	const { enabled: isPriorityEnabled } = useOmnichannelPriorities();
 
-	const message = extended && getMessagePreview(room, lastMessage, t);
+	const message = displayPreview && getMessagePreview(room, lastMessage, t);
 	const subtitle = message ? <span className='message-body--unstyled' dangerouslySetInnerHTML={{ __html: message }} /> : null;
 
 	return (
-		<SidebarItemTemplate
-			is='a'
+		<SidebarRoomItem
+			viewMode={viewMode}
+			avatarSize={avatarSize}
+			displayPreview={displayPreview}
 			id={id}
 			data-unread={highlighted}
 			unread={highlighted}
@@ -167,12 +153,12 @@ function safeDateNotEqualCheck(a: Date | string | undefined, b: Date | string | 
 const keys: (keyof RoomListRowProps)[] = [
 	'id',
 	'style',
-	'extended',
+	'viewMode',
+	'avatarSize',
+	'displayPreview',
 	'selected',
-	'SidebarItemTemplate',
 	'AvatarTemplate',
 	't',
-	'sidebarViewMode',
 	'videoConfActions',
 ];
 

@@ -94,7 +94,14 @@ const getWrapperSettings = ({
 	isEnterprise?: boolean;
 	fakeRoom?: SubscriptionWithRoom;
 	rooms?: SubscriptionWithRoom[];
-	sidebarCategories?: { _id: string; name?: string; default?: boolean; showUnreads?: boolean; keepUnreadsOnTop?: boolean }[];
+	sidebarCategories?: {
+		_id: string;
+		name?: string;
+		default?: boolean;
+		showUnreads?: boolean;
+		keepUnreadsOnTop?: boolean;
+		activityFilterHours?: number;
+	}[];
 }) => {
 	const root = mockAppRoot()
 		.wrap((children) => (
@@ -438,5 +445,158 @@ describe('the Incoming calls group', () => {
 	it('leaves the ringing room in the list either way', () => {
 		expect(roomListOf(renderWithRingingCall(false).result.current.groups)).toHaveLength(1);
 		expect(roomListOf(renderWithRingingCall(true).result.current.groups)).toHaveLength(1);
+	});
+});
+
+describe('the activity filter', () => {
+	const HOUR = 60 * 60 * 1000;
+	const DAY = 24 * HOUR;
+
+	const channel = (name: string, lm: Date, unread = 0) =>
+		({
+			...createFakeSubscription({ t: 'c', name, ...emptyUnread, unread, lm }),
+			...createFakeRoom({ t: 'c' }),
+		}) as unknown as SubscriptionWithRoom;
+
+	const recentRead = channel('recent-read', new Date(Date.now() - HOUR));
+	const quietRead = channel('quiet-read', new Date(Date.now() - 3 * DAY));
+	const quietUnread = channel('quiet-unread', new Date(Date.now() - 3 * DAY), 2);
+	const dormantRead = channel('dormant-read', new Date(Date.now() - 40 * DAY));
+
+	const channels = [recentRead, quietRead, quietUnread, dormantRead];
+
+	const renderChannels = ({
+		activityFilterHours,
+		collapsedGroups = [],
+		groupsShowingInactive,
+		isEnterprise = true,
+	}: {
+		activityFilterHours: number;
+		collapsedGroups?: string[];
+		groupsShowingInactive?: string[];
+		isEnterprise?: boolean;
+	}) =>
+		renderHook(() => useRoomList({ collapsedGroups, groupsShowingInactive }), {
+			wrapper: getWrapperSettings({
+				rooms: channels,
+				sidebarGroupByType: true,
+				isEnterprise,
+				sidebarCategories: [{ _id: 'Channels', name: 'Channels', default: true, activityFilterHours }],
+			}).build(),
+		});
+
+	const channelsGroupOf = (groups: SidebarRoomListGroup[]) => groups.find((group) => group.key === 'Channels');
+	// Sorted, so the assertions do not depend on the sidebar sort preference.
+	const namesOf = (group?: SidebarRoomListGroup) => group?.rooms.map((room) => room.name).sort();
+
+	it('hides read rooms with no activity inside the window, keeping unread ones', async () => {
+		const { result } = renderChannels({ activityFilterHours: 24 });
+
+		await waitFor(() => expect(channelsGroupOf(result.current.groups)?.activityFilterHours).toBe(24));
+		const group = channelsGroupOf(result.current.groups);
+		expect(namesOf(group)).toEqual(['quiet-unread', 'recent-read']);
+		expect(group?.inactiveCount).toBe(2);
+	});
+
+	it('keeps unread rooms whose unread status the user hid', async () => {
+		const hiddenUnread = {
+			...createFakeSubscription({
+				t: 'c',
+				name: 'hidden-unread',
+				...emptyUnread,
+				unread: 3,
+				hideUnreadStatus: true,
+				lm: new Date(Date.now() - 3 * DAY),
+			}),
+			...createFakeRoom({ t: 'c' }),
+		} as unknown as SubscriptionWithRoom;
+
+		const { result } = renderHook(() => useRoomList({ collapsedGroups: [] }), {
+			wrapper: getWrapperSettings({
+				rooms: [...channels, hiddenUnread],
+				sidebarGroupByType: true,
+				isEnterprise: true,
+				sidebarCategories: [{ _id: 'Channels', name: 'Channels', default: true, activityFilterHours: 24 }],
+			}).build(),
+		});
+
+		await waitFor(() => expect(channelsGroupOf(result.current.groups)?.activityFilterHours).toBe(24));
+		expect(namesOf(channelsGroupOf(result.current.groups))).toEqual(['hidden-unread', 'quiet-unread', 'recent-read']);
+	});
+
+	it('widens with the window', async () => {
+		const { result } = renderChannels({ activityFilterHours: 24 * 7 });
+
+		await waitFor(() => expect(channelsGroupOf(result.current.groups)?.activityFilterHours).toBe(24 * 7));
+		const group = channelsGroupOf(result.current.groups);
+		expect(namesOf(group)).toEqual(['quiet-read', 'quiet-unread', 'recent-read']);
+		expect(group?.inactiveCount).toBe(1);
+	});
+
+	it('lists every room while the group is showing its inactive ones, still counting them', async () => {
+		const { result } = renderChannels({ activityFilterHours: 24, groupsShowingInactive: ['Channels'] });
+
+		await waitFor(() => expect(channelsGroupOf(result.current.groups)?.activityFilterHours).toBe(24));
+		const group = channelsGroupOf(result.current.groups);
+		expect(namesOf(group)).toHaveLength(channels.length);
+		expect(group?.inactiveCount).toBe(2);
+		expect(group?.showingInactive).toBe(true);
+	});
+
+	it('keeps the open room listed even when it is inactive', async () => {
+		mockOpenedRoom = quietRead.rid;
+		const { result } = renderChannels({ activityFilterHours: 24 });
+
+		await waitFor(() => expect(channelsGroupOf(result.current.groups)?.activityFilterHours).toBe(24));
+		const group = channelsGroupOf(result.current.groups);
+		expect(namesOf(group)).toEqual(['quiet-read', 'quiet-unread', 'recent-read']);
+		expect(group?.inactiveCount).toBe(1);
+	});
+
+	it('leaves a collapsed group to its own rules', async () => {
+		mockOpenedRoom = dormantRead.rid;
+		const { result } = renderChannels({ activityFilterHours: 24, collapsedGroups: ['Channels'] });
+
+		await waitFor(() => expect(channelsGroupOf(result.current.groups)?.activityFilterHours).toBe(24));
+		const group = channelsGroupOf(result.current.groups);
+		expect(namesOf(group)).toEqual(['dormant-read']);
+		expect(group?.inactiveCount).toBe(0);
+	});
+
+	it('judges a room with no activity date by when the user last read, saw or joined it', async () => {
+		const undated = (name: string, dates: { lr?: Date; ls?: Date; ts?: Date }) =>
+			({
+				...createFakeSubscription({ t: 'd', name, ...emptyUnread, lm: undefined, lr: undefined, ls: undefined, ts: undefined, ...dates }),
+				...createFakeRoom({ t: 'd' }),
+			}) as unknown as SubscriptionWithRoom;
+
+		const rooms = [
+			undated('seen-long-ago', { ls: new Date(Date.now() - 400 * DAY) }),
+			undated('read-recently', { ls: new Date(Date.now() - 400 * DAY), lr: new Date(Date.now() - HOUR) }),
+			undated('no-dates-at-all', {}),
+		];
+
+		const { result } = renderHook(() => useRoomList({ collapsedGroups: [] }), {
+			wrapper: getWrapperSettings({
+				rooms,
+				sidebarGroupByType: true,
+				isEnterprise: true,
+				sidebarCategories: [{ _id: 'Direct_Messages', name: 'Direct_Messages', default: true, activityFilterHours: 24 * 30 }],
+			}).build(),
+		});
+
+		const directGroupOf = () => result.current.groups.find((group) => group.key === 'Direct_Messages');
+		await waitFor(() => expect(directGroupOf()?.activityFilterHours).toBe(24 * 30));
+		expect(namesOf(directGroupOf())).toEqual(['no-dates-at-all', 'read-recently']);
+		expect(directGroupOf()?.inactiveCount).toBe(1);
+	});
+
+	it('does nothing without the license module', () => {
+		const { result } = renderChannels({ activityFilterHours: 24, isEnterprise: false });
+
+		const group = channelsGroupOf(result.current.groups);
+		expect(group?.activityFilterHours).toBeUndefined();
+		expect(namesOf(group)).toHaveLength(channels.length);
+		expect(group?.inactiveCount).toBe(0);
 	});
 });

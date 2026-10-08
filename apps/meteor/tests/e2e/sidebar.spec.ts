@@ -96,6 +96,7 @@ test.describe.serial('Sidebar', () => {
 		const defaultPreferences = {
 			sidebarViewMode: 'extended',
 			sidebarDisplayAvatar: true,
+			sidebarDisplayPreview: true,
 			sidebarSortby: 'activity',
 			sidebarShowUnread: false,
 		};
@@ -113,23 +114,34 @@ test.describe.serial('Sidebar', () => {
 			await page.keyboard.press('Enter');
 			await expect(poHomeChannel.navbar.menuDisplay).toBeVisible();
 
-			await poHomeChannel.navbar.getDisplayMenuItem('Medium').focus();
+			await poHomeChannel.navbar.getDisplayMenuItem('Condensed').focus();
 
 			await page.keyboard.press('Space');
 
-			await expect(poHomeChannel.navbar.getDisplayMenuItem('Medium').getByRole('radio')).toBeChecked();
+			await expect(poHomeChannel.navbar.getDisplayMenuItem('Condensed').getByRole('radio')).toBeChecked();
 			await page.keyboard.press('Escape');
 		});
 
-		test('should toggle Avatars using keyboard', async ({ page }) => {
+		test('should turn Avatars off from its submenu using keyboard', async ({ page }) => {
 			await poHomeChannel.navbar.btnDisplay.click();
-			const avatarsItem = poHomeChannel.navbar.getDisplayMenuItem('Avatars');
 
-			await avatarsItem.focus();
+			await poHomeChannel.navbar.btnDisplayAvatars.focus();
+			await page.keyboard.press('ArrowRight');
+			await poHomeChannel.navbar.getAvatarSizeMenuItem('Off').focus();
+			await page.keyboard.press('Enter');
+
+			await expect(poHomeChannel.navbar.btnDisplayAvatars).toContainText('Off');
+			await page.keyboard.press('Escape');
+		});
+
+		test('should toggle Message preview using keyboard', async ({ page }) => {
+			await poHomeChannel.navbar.btnDisplay.click();
+			const previewItem = poHomeChannel.navbar.getDisplayMenuItem('Message preview');
+
+			await previewItem.focus();
 			await page.keyboard.press('Space');
 
-			const newAvatarsItem = poHomeChannel.navbar.getDisplayMenuItem('Avatars');
-			await expect(newAvatarsItem.getByRole('checkbox')).not.toBeChecked();
+			await expect(poHomeChannel.navbar.getDisplayMenuItem('Message preview').getByRole('checkbox')).not.toBeChecked();
 			await page.keyboard.press('Escape');
 		});
 

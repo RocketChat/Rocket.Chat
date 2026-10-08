@@ -4105,6 +4105,62 @@ describe('[Users]', () => {
 				});
 		});
 
+		it('should persist the sidebar display preferences', async () => {
+			await request
+				.post(api('users.setPreferences'))
+				.set(credentials)
+				.send({
+					data: { sidebarViewMode: 'extended', sidebarDisplayAvatar: true, sidebarAvatarSize: 'large', sidebarDisplayPreview: true },
+				})
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+				});
+
+			await request
+				.get(api('users.getPreferences'))
+				.set(credentials)
+				.expect(200)
+				.expect((res) => {
+					expect(res.body.preferences).to.include({
+						sidebarViewMode: 'extended',
+						sidebarDisplayAvatar: true,
+						sidebarAvatarSize: 'large',
+						sidebarDisplayPreview: true,
+					});
+				});
+
+			await request
+				.post(api('users.setPreferences'))
+				.set(credentials)
+				.send({ data: { sidebarViewMode: 'condensed', sidebarAvatarSize: 'medium', sidebarDisplayPreview: false } })
+				.expect(200);
+		});
+
+		it('should fail when sidebarAvatarSize is not a known size', async () => {
+			await request
+				.post(api('users.setPreferences'))
+				.set(credentials)
+				.send({ data: { sidebarAvatarSize: 'huge' } })
+				.expect(400)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', false);
+					expect(res.body).to.have.property('errorType', 'invalid-params');
+				});
+		});
+
+		it('should fail when sidebarViewMode is not a known view mode', async () => {
+			await request
+				.post(api('users.setPreferences'))
+				.set(credentials)
+				.send({ data: { sidebarViewMode: 'compact' } })
+				.expect(400)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', false);
+					expect(res.body).to.have.property('errorType', 'invalid-params');
+				});
+		});
+
 		it('should fail when utcOffset is not a number', async () => {
 			await request
 				.post(api('users.setPreferences'))

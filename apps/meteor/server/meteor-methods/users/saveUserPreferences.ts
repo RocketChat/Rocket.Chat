@@ -1,4 +1,5 @@
 import { StatusVisibility } from '@rocket.chat/core-services';
+import { SIDEBAR_CATEGORY_ACTIVITY_FILTER_MAX_HOURS } from '@rocket.chat/core-typings';
 import type { ISidebarCategory, ISubscription, ThemePreference } from '@rocket.chat/core-typings';
 import type { ServerMethods } from '@rocket.chat/ddp-client';
 import { Subscriptions, Users } from '@rocket.chat/models';
@@ -47,6 +48,8 @@ type UserPreferences = {
 	sidebarSortby: string;
 	sidebarViewMode: string;
 	sidebarDisplayAvatar: boolean;
+	sidebarDisplayPreview: boolean;
+	sidebarAvatarSize: 'small' | 'medium' | 'large';
 	sidebarGroupByType: boolean;
 	sidebarCategories: ISidebarCategory[];
 	muteFocusedConversations: boolean;
@@ -97,6 +100,17 @@ const MAX_CATEGORY_NAME_LENGTH = 30;
 
 export const validateSidebarCategories = (categories: ISidebarCategory[]): void => {
 	for (const category of categories) {
+		const { activityFilterHours } = category;
+		if (
+			activityFilterHours !== undefined &&
+			(activityFilterHours < 1 || activityFilterHours > SIDEBAR_CATEGORY_ACTIVITY_FILTER_MAX_HOURS)
+		) {
+			throw new Meteor.Error(
+				'error-invalid-param',
+				`sidebarCategories activityFilterHours must be between 1 and ${SIDEBAR_CATEGORY_ACTIVITY_FILTER_MAX_HOURS}`,
+			);
+		}
+
 		if (category.default) {
 			continue;
 		}
@@ -144,8 +158,10 @@ export const saveUserPreferences = async (settings: Partial<UserPreferences>, us
 		sidebarShowFavorites: Match.Optional(Boolean),
 		sidebarShowUnread: Match.Optional(Boolean),
 		sidebarSortby: Match.Optional(String),
-		sidebarViewMode: Match.Optional(String),
+		sidebarViewMode: Match.Optional(Match.OneOf('extended', 'medium', 'condensed')),
 		sidebarDisplayAvatar: Match.Optional(Boolean),
+		sidebarDisplayPreview: Match.Optional(Boolean),
+		sidebarAvatarSize: Match.Optional(Match.OneOf('small', 'medium', 'large')),
 		sidebarGroupByType: Match.Optional(Boolean),
 		sidebarCategories: Match.Optional([
 			{
@@ -154,6 +170,7 @@ export const saveUserPreferences = async (settings: Partial<UserPreferences>, us
 				default: Match.Optional(Boolean),
 				showUnreads: Match.Optional(Boolean),
 				keepUnreadsOnTop: Match.Optional(Boolean),
+				activityFilterHours: Match.Optional(Match.Integer),
 			},
 		]),
 		muteFocusedConversations: Match.Optional(Boolean),

@@ -1,3 +1,4 @@
+import { SIDEBAR_CATEGORY_ACTIVITY_FILTER_MAX_HOURS } from '@rocket.chat/core-typings';
 import type { ISidebarCategory, ThemePreference } from '@rocket.chat/core-typings';
 
 import { ajv } from '../Ajv';
@@ -39,6 +40,8 @@ export type UsersSetPreferencesParamsPOST = {
 		statusVisibilityDenied?: string[];
 		sidebarViewMode?: string;
 		sidebarDisplayAvatar?: boolean;
+		sidebarDisplayPreview?: boolean;
+		sidebarAvatarSize?: 'small' | 'medium' | 'large';
 		sidebarGroupByType?: boolean;
 		sidebarCategories?: ISidebarCategory[];
 		muteFocusedConversations?: boolean;
@@ -195,10 +198,20 @@ const UsersSetPreferencesParamsPostSchema = {
 				},
 				sidebarViewMode: {
 					type: 'string',
+					enum: ['extended', 'medium', 'condensed', null],
 					nullable: true,
 				},
 				sidebarDisplayAvatar: {
 					type: 'boolean',
+					nullable: true,
+				},
+				sidebarDisplayPreview: {
+					type: 'boolean',
+					nullable: true,
+				},
+				sidebarAvatarSize: {
+					type: 'string',
+					enum: ['small', 'medium', 'large', null],
 					nullable: true,
 				},
 				sidebarGroupByType: {
@@ -215,6 +228,7 @@ const UsersSetPreferencesParamsPostSchema = {
 							default: { type: 'boolean' },
 							showUnreads: { type: 'boolean', nullable: true },
 							keepUnreadsOnTop: { type: 'boolean', nullable: true },
+							activityFilterHours: { type: 'integer', minimum: 1, maximum: SIDEBAR_CATEGORY_ACTIVITY_FILTER_MAX_HOURS },
 						},
 						required: ['_id', 'name'],
 						additionalProperties: false,

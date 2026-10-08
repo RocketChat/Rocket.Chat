@@ -240,8 +240,9 @@ test.describe('E2EE Encrypted Channels', () => {
 	}) => {
 		const channelName = faker.string.uuid();
 
-		// Enable Sidebar Extended display mode
+		// Show the last message in the sidebar
 		await poHomeChannel.navbar.setDisplayMode('Extended');
+		await poHomeChannel.navbar.setMessagePreview(true);
 
 		// Create private channel
 		await poHomeChannel.navbar.createNew('Channel', channelName, { private: true });

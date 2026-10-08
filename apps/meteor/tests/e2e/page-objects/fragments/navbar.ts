@@ -91,8 +91,17 @@ export class Navbar {
 		return this.menuDisplay.getByRole('group', { name: 'Display' });
 	}
 
-	getDisplayMenuItem(mode: 'Extended' | 'Medium' | 'Condensed' | 'Avatars'): Locator {
+	getDisplayMenuItem(mode: 'Extended' | 'Condensed' | 'Message preview'): Locator {
 		return this.groupDisplay.getByRole('menuitemcheckbox', { name: mode });
+	}
+
+	/** Opens the avatar submenu (Off, Small, Medium, Large). */
+	get btnDisplayAvatars(): Locator {
+		return this.groupDisplay.getByRole('menuitem', { name: /^Avatars/ });
+	}
+
+	getAvatarSizeMenuItem(size: 'Off' | 'Small' | 'Medium' | 'Large'): Locator {
+		return this.root.getByRole('menu').last().getByRole('menuitemcheckbox', { name: size, exact: true });
 	}
 
 	get groupSortBy(): Locator {
@@ -221,9 +230,18 @@ export class Navbar {
 		await this.waitForChannel();
 	}
 
-	async setDisplayMode(mode: 'Extended' | 'Medium' | 'Condensed'): Promise<void> {
+	async setDisplayMode(mode: 'Extended' | 'Condensed'): Promise<void> {
 		await this.btnDisplay.click();
 		await this.menuDisplay.getByRole('menuitemcheckbox', { name: mode }).click();
+		await this.root.keyboard.press('Escape');
+	}
+
+	async setMessagePreview(enabled: boolean): Promise<void> {
+		await this.btnDisplay.click();
+		const item = this.getDisplayMenuItem('Message preview');
+		if ((await item.getByRole('checkbox').isChecked()) !== enabled) {
+			await item.click();
+		}
 		await this.root.keyboard.press('Escape');
 	}
 
