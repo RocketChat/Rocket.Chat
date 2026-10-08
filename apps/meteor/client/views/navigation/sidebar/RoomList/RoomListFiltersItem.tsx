@@ -43,7 +43,7 @@ const RoomListFiltersItem = ({ group, icon }: RoomListFiltersItemProps) => {
 			aria-selected={selected}
 			aria-label={showUnread ? t('__unreadTitle__from__roomTitle__', { unreadTitle, roomTitle }) : roomTitle}
 		>
-			<ItemIcon label={roomTitle}>
+			<ItemIcon>
 				<Icon size='x20' name={icon} />
 			</ItemIcon>
 			<ItemContent>
