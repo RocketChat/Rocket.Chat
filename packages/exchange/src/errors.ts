@@ -9,7 +9,7 @@ export type ExchangeErrorCode =
 	| 'authorization-failed'
 	/** The mailbox address does not resolve on the server. */
 	| 'mailbox-not-found'
-	/** No verified email to use as the mailbox, and no custom field configured to replace it. */
+	/** No verified email address is available to use as the mailbox. */
 	| 'email-not-verified'
 	/** Transport level: DNS, TLS, timeout, connection refused. */
 	| 'connection-failed'
