@@ -8,10 +8,10 @@ describe('getLdapErrorReason', () => {
 		expect(getLdapErrorReason(new Error('Invalid Credentials'))).to.equal('Invalid Credentials');
 	});
 
-	it('should return the message of the first attempt when all connection attempts fail', () => {
-		const error = new AggregateError([new Error('connect ECONNREFUSED ::1:9999'), new Error('connect ECONNREFUSED 127.0.0.1:9999')]);
+	it('should return the message of every attempt when all connection attempts fail', () => {
+		const error = new AggregateError([new Error('connect ECONNREFUSED ::1:9999'), new Error('connect ETIMEDOUT 127.0.0.1:9999')]);
 
-		expect(getLdapErrorReason(error)).to.equal('connect ECONNREFUSED ::1:9999');
+		expect(getLdapErrorReason(error)).to.equal('connect ECONNREFUSED ::1:9999; connect ETIMEDOUT 127.0.0.1:9999');
 	});
 
 	it('should fall back to the error code when the message is empty', () => {

@@ -1,6 +1,6 @@
 export function getLdapErrorReason(error: unknown): string {
 	if (error instanceof AggregateError && error.errors.length > 0) {
-		return getLdapErrorReason(error.errors[0]);
+		return error.errors.map(getLdapErrorReason).join('; ');
 	}
 
 	if (error instanceof Error) {

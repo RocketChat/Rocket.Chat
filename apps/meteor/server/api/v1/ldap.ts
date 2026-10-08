@@ -54,7 +54,9 @@ API.v1.post(
 				return API.v1.failure({ error: String(err.error), details: err.details });
 			}
 
-			return API.v1.failure('LDAP_Connection_failed_reason', 'error-ldap-connection-failed', undefined, {
+			return API.v1.failure({
+				error: 'LDAP_Connection_failed_reason',
+				errorType: 'error-ldap-connection-failed',
 				details: { reason: getLdapErrorReason(err) },
 			});
 		}
