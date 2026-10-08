@@ -145,8 +145,8 @@ test.describe('embedded-layout', () => {
 			await expect(poHomeChannel.content.lastUserMessage).toContainText(dmMessage);
 		});
 
-		test('should enable the composer when a new DM is opened by username', async ({ page }) => {
-			await page.goto(embeddedLayoutURL(`/direct/${dmTarget.data.username}`));
+		test('should enable the composer when a new DM is opened by username', async () => {
+			await poHomeChannel.gotoDirectEmbedded(dmTarget.data.username);
 
 			await expect(poHomeChannel.composer.inputMessage).toBeEnabled();
 
