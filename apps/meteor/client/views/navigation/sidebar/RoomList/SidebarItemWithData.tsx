@@ -7,13 +7,12 @@ import type { AllHTMLAttributes } from 'react';
 import { memo, useMemo } from 'react';
 
 import RoomListItem from './RoomListItem';
-import { RoomIcon } from '../../../../components/RoomIcon';
+import { RoomIcon, useRoomIconLabel } from '../../../../components/RoomIcon';
 import { useUserStatusTooltip } from '../../../../hooks/useUserStatusTooltip';
 import { roomCoordinator } from '../../../../lib/rooms/roomCoordinator';
 import { getUidDirectMessage } from '../../../../lib/utils/getUidDirectMessage';
 import { useRoomsListContext, useIsRoomFilter, useRedirectToFilter } from '../../contexts/RoomsNavigationContext';
 import SidebarItemBadges from '../badges/SidebarItemBadges';
-import { useRoomIconLabel } from '../hooks/useRoomIconLabel';
 import { useUnreadDisplay } from '../hooks/useUnreadDisplay';
 
 type RoomListRowProps = {
