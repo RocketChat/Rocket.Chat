@@ -17,11 +17,13 @@ export type CalendarPresenceRefreshOptions = { removedEvents?: boolean };
 export type CalendarBatchOptions = { deferSideEffects?: boolean };
 
 export interface ICalendarService {
-	create(data: Omit<InsertionModel<ICalendarEvent>, 'reminderTime' | 'notificationSent'>): Promise<ICalendarEvent['_id']>;
-	import(data: Omit<InsertionModel<ICalendarEvent>, 'notificationSent'>): Promise<ICalendarEvent['_id']>;
+	create(
+		data: Omit<InsertionModel<ICalendarEvent>, 'reminderTime' | 'notificationSent' | 'source' | 'seriesMasterId'>,
+	): Promise<ICalendarEvent['_id']>;
+	import(data: Omit<InsertionModel<ICalendarEvent>, 'notificationSent' | 'source' | 'seriesMasterId'>): Promise<ICalendarEvent['_id']>;
 	get(eventId: ICalendarEvent['_id']): Promise<ICalendarEvent | null>;
 	list(uid: IUser['_id'], date: Date, options?: { excludeOutlook?: boolean }): Promise<ICalendarEvent[]>;
-	update(eventId: ICalendarEvent['_id'], data: Partial<ICalendarEvent>): Promise<UpdateResult | null>;
+	update(eventId: ICalendarEvent['_id'], data: Omit<Partial<ICalendarEvent>, 'source' | 'seriesMasterId'>): Promise<UpdateResult | null>;
 	delete(eventId: ICalendarEvent['_id']): Promise<DeleteResult>;
 	setupNextNotification(): Promise<void>;
 	setupNextStatusChange(): Promise<void>;
