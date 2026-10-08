@@ -25,8 +25,16 @@ const TeamsTable = () => {
 	const mediaQuery = useMediaQuery('(min-width: 768px)');
 	const [text, setText] = useState('');
 
-	const { current, itemsPerPage, setItemsPerPage: onSetItemsPerPage, setCurrent: onSetCurrent, ...paginationProps } = usePagination();
 	const { sortBy, sortDirection, setSort } = useSort<'name' | 'usersCount' | 'lastMessage' | 'createdAt'>('name');
+	const {
+		current,
+		itemsPerPage,
+		setItemsPerPage: onSetItemsPerPage,
+		setCurrent: onSetCurrent,
+		...paginationProps
+	} = usePagination({
+		resetOn: [text, sortBy, sortDirection],
+	});
 
 	const headers = useMemo(
 		() =>

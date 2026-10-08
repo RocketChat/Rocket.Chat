@@ -17,8 +17,8 @@ const sortMapping = {
 
 const DeviceManagementAccountTable = () => {
 	const { t } = useTranslation();
-	const { current, itemsPerPage, setCurrent, setItemsPerPage, ...paginationProps } = usePagination();
 	const { sortBy, sortDirection, setSort } = useSort<'client' | 'os' | 'loginAt'>('loginAt');
+	const { current, itemsPerPage, setCurrent, setItemsPerPage, ...paginationProps } = usePagination({ resetOn: [sortBy, sortDirection] });
 
 	const query = useMemo(
 		() => ({

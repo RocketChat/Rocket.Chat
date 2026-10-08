@@ -59,7 +59,15 @@ const AppLogs = ({ id }: AppLogsProps) => {
 
 	const { startTime, endTime, startDate, endDate, event, severity, instance } = watch();
 
-	const { current, itemsPerPage, setItemsPerPage: onSetItemsPerPage, setCurrent: onSetCurrent, ...paginationProps } = usePagination();
+	const {
+		current,
+		itemsPerPage,
+		setItemsPerPage: onSetItemsPerPage,
+		setCurrent: onSetCurrent,
+		...paginationProps
+	} = usePagination({
+		resetOn: [startTime, endTime, startDate, endDate, event, severity, instance],
+	});
 
 	const [expandedStates, dispatch] = useReducer(expandedReducer, []);
 

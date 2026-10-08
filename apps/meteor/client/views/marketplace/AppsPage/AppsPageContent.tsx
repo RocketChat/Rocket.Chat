@@ -28,7 +28,6 @@ const AppsPageContent = () => {
 	const reload = useAppsReload();
 	const [text, setText] = useState('');
 	const debouncedText = useDebouncedValue(text, 500);
-	const { current, itemsPerPage, setItemsPerPage: onSetItemsPerPage, setCurrent: onSetCurrent, ...paginationProps } = usePagination();
 
 	const router = useRouter();
 
@@ -110,14 +109,29 @@ const AppsPageContent = () => {
 	};
 
 	const [categories, selectedCategories, categoryTagList, onSelected] = useCategories();
+	const categoryLabels = useMemo(() => selectedCategories.map(({ label }) => label), [selectedCategories]);
+	const purchaseType = useMemo(findPurchaseType, [freePaidFilterStructure]);
+	const sortingMethod = useMemo(findSort, [sortFilterStructure]);
+	const status = useMemo(findStatus, [statusFilterStructure]);
+
+	const {
+		current,
+		itemsPerPage,
+		setItemsPerPage: onSetItemsPerPage,
+		setCurrent: onSetCurrent,
+		...paginationProps
+	} = usePagination({
+		resetOn: [debouncedText, categoryLabels, purchaseType, sortingMethod, status, context],
+	});
+
 	const { isPending, isError, error, data } = useFilteredApps({
 		text: debouncedText,
 		current,
 		itemsPerPage,
-		categories: useMemo(() => selectedCategories.map(({ label }) => label), [selectedCategories]),
-		purchaseType: useMemo(findPurchaseType, [freePaidFilterStructure]),
-		sortingMethod: useMemo(findSort, [sortFilterStructure]),
-		status: useMemo(findStatus, [statusFilterStructure]),
+		categories: categoryLabels,
+		purchaseType,
+		sortingMethod,
+		status,
 		context,
 	});
 

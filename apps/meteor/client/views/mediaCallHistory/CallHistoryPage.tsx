@@ -76,7 +76,6 @@ const CallHistoryPage = () => {
 	const sortProps = useSort<'contact' | 'type' | 'status' | 'timestamp'>('timestamp', 'desc');
 
 	const getCallHistory = useEndpoint('GET', '/v1/call-history.list');
-	const { setItemsPerPage, setCurrent, ...paginationProps } = usePagination();
 
 	const router = useRouter();
 	const historyId = useRouteParameter('historyId');
@@ -86,6 +85,10 @@ const CallHistoryPage = () => {
 	const { searchText, type, states } = filterProps;
 
 	const debouncedSearchText = useDebouncedValue(searchText, 400);
+
+	const { setItemsPerPage, setCurrent, ...paginationProps } = usePagination({
+		resetOn: [debouncedSearchText, type, states, sortProps.sortBy, sortProps.sortDirection],
+	});
 
 	const onClickRow = useCallback(
 		(rid: string, _id: string) => {

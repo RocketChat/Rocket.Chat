@@ -33,8 +33,16 @@ const UsersTable = ({ workspace = 'local' }: UsersTableProps) => {
 	const [text, setText] = useState('');
 	const canViewFullOtherUserInfo = usePermission('view-full-other-user-info');
 
-	const { current, itemsPerPage, setItemsPerPage: onSetItemsPerPage, setCurrent: onSetCurrent, ...paginationProps } = usePagination();
 	const { sortBy, sortDirection, setSort } = useSort<'name' | 'email' | 'origin' | 'createdAt'>('name');
+	const {
+		current,
+		itemsPerPage,
+		setItemsPerPage: onSetItemsPerPage,
+		setCurrent: onSetCurrent,
+		...paginationProps
+	} = usePagination({
+		resetOn: [text, workspace, sortBy, sortDirection],
+	});
 
 	const headers = useMemo(
 		() =>
