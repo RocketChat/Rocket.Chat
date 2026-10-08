@@ -1,0 +1,1343 @@
+// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
+
+exports[`renders WithAutoComplete without crashing 1`] = `
+<body>
+  <div>
+    <div
+      class="rcx-box rcx-box--full rcx-field"
+    >
+      <span
+        class="rcx-box rcx-box--full rcx-field__label rcx-label"
+        id="react-aria-_r_0_-label"
+      >
+        Example AutoComplete
+        <span
+          class="rcx-box rcx-box--full rcx-label__info rcx-css-wcp0mp"
+        >
+          <span
+            hidden=""
+          >
+            with extra info in a tooltip
+          </span>
+          <i
+            aria-hidden="true"
+            class="rcx-box rcx-box--full rcx-icon--name-info-circled rcx-icon"
+            title="with extra info in a tooltip"
+          >
+            
+          </i>
+        </span>
+        <span
+          aria-hidden="true"
+          class="rcx-box rcx-box--full rcx-label__required rcx-css-b7g1a9"
+        >
+          *
+        </span>
+      </span>
+      <span
+        class="rcx-box rcx-box--full rcx-field__description"
+        id="react-aria-_r_0_-description"
+      >
+        You can search and select a single option from a list
+      </span>
+      <span
+        class="rcx-box rcx-box--full rcx-field__row"
+      >
+        <div
+          class="rcx-box rcx-box--full rcx-box--animated rcx-autocomplete rcx-css-t3n91h"
+        >
+          <div
+            class="rcx-box rcx-box--full rcx-css-6d871f"
+            role="group"
+          >
+            <input
+              aria-describedby="react-aria-_r_0_-description react-aria-_r_0_-error react-aria-_r_0_-hint"
+              aria-invalid="true"
+              aria-labelledby="react-aria-_r_0_-label"
+              class="rcx-box rcx-box--full rcx-box--animated rcx-input-box--undecorated rcx-input-box rcx-css-trljwa rcx-css-rcil7k"
+              id="react-aria-_r_0_"
+              placeholder="Search..."
+              value=""
+            />
+          </div>
+          <div
+            class="rcx-box rcx-box--full rcx-autocomplete__addon"
+          >
+            <i
+              aria-hidden="true"
+              class="rcx-box rcx-box--full rcx-icon--name-magnifier rcx-icon rcx-css-l5txo2"
+            >
+              
+            </i>
+          </div>
+        </div>
+      </span>
+      <span
+        class="rcx-box rcx-box--full rcx-field__error"
+        id="react-aria-_r_0_-error"
+        role="alert"
+      >
+        You failed to enter a valid value
+      </span>
+      <span
+        class="rcx-box rcx-box--full rcx-field__row"
+      >
+        <span
+          class="rcx-box rcx-box--full rcx-field__hint"
+          id="react-aria-_r_0_-hint"
+        >
+          This should help the user enter a valid value
+        </span>
+        <a
+          class="rcx-box rcx-box--full rcx-field__link"
+          href="#"
+        >
+          Link to more information
+        </a>
+      </span>
+    </div>
+  </div>
+</body>
+`;
+
+exports[`renders WithAutoCompleteMultiple without crashing 1`] = `
+<body>
+  <div>
+    <div
+      class="rcx-box rcx-box--full rcx-field"
+    >
+      <span
+        class="rcx-box rcx-box--full rcx-field__label rcx-label"
+        id="react-aria-_r_1_-label"
+      >
+        Example AutoComplete (Multiple)
+        <span
+          class="rcx-box rcx-box--full rcx-label__info rcx-css-wcp0mp"
+        >
+          <span
+            hidden=""
+          >
+            with extra info in a tooltip
+          </span>
+          <i
+            aria-hidden="true"
+            class="rcx-box rcx-box--full rcx-icon--name-info-circled rcx-icon"
+            title="with extra info in a tooltip"
+          >
+            
+          </i>
+        </span>
+        <span
+          aria-hidden="true"
+          class="rcx-box rcx-box--full rcx-label__required rcx-css-b7g1a9"
+        >
+          *
+        </span>
+      </span>
+      <span
+        class="rcx-box rcx-box--full rcx-field__description"
+        id="react-aria-_r_1_-description"
+      >
+        You can search and select multiple options from a list
+      </span>
+      <span
+        class="rcx-box rcx-box--full rcx-field__row"
+      >
+        <div
+          class="rcx-box rcx-box--full rcx-box--animated rcx-autocomplete rcx-css-t3n91h"
+        >
+          <div
+            class="rcx-box rcx-box--full rcx-css-6d871f"
+            role="group"
+          >
+            <input
+              aria-describedby="react-aria-_r_1_-description react-aria-_r_1_-error react-aria-_r_1_-hint"
+              aria-invalid="true"
+              aria-labelledby="react-aria-_r_1_-label"
+              class="rcx-box rcx-box--full rcx-box--animated rcx-input-box--undecorated rcx-input-box rcx-css-trljwa rcx-css-rcil7k"
+              id="react-aria-_r_1_"
+              placeholder="Search..."
+              value=""
+            />
+            <button
+              class="rcx-box rcx-chip rcx-css-trljwa"
+              type="button"
+              value="1"
+            >
+              <span
+                class="rcx-box rcx-chip__text rcx-css-trljwa"
+              >
+                Option 1
+              </span>
+              <i
+                aria-hidden="true"
+                class="rcx-box rcx-box--full rcx-icon--name-cross rcx-icon rcx-css-trljwa rcx-css-1wv1vf9"
+              >
+                
+              </i>
+            </button>
+            <button
+              class="rcx-box rcx-chip rcx-css-trljwa"
+              type="button"
+              value="3"
+            >
+              <span
+                class="rcx-box rcx-chip__text rcx-css-trljwa"
+              >
+                Option 3
+              </span>
+              <i
+                aria-hidden="true"
+                class="rcx-box rcx-box--full rcx-icon--name-cross rcx-icon rcx-css-trljwa rcx-css-1wv1vf9"
+              >
+                
+              </i>
+            </button>
+          </div>
+          <div
+            class="rcx-box rcx-box--full rcx-autocomplete__addon"
+          >
+            <i
+              aria-hidden="true"
+              class="rcx-box rcx-box--full rcx-icon--name-magnifier rcx-icon rcx-css-l5txo2"
+            >
+              
+            </i>
+          </div>
+        </div>
+      </span>
+      <span
+        class="rcx-box rcx-box--full rcx-field__error"
+        id="react-aria-_r_1_-error"
+        role="alert"
+      >
+        You failed to enter a valid value
+      </span>
+      <span
+        class="rcx-box rcx-box--full rcx-field__row"
+      >
+        <span
+          class="rcx-box rcx-box--full rcx-field__hint"
+          id="react-aria-_r_1_-hint"
+        >
+          This should help the user enter a valid value
+        </span>
+        <a
+          class="rcx-box rcx-box--full rcx-field__link"
+          href="#"
+        >
+          Link to more information
+        </a>
+      </span>
+    </div>
+  </div>
+</body>
+`;
+
+exports[`renders WithCheckbox without crashing 1`] = `
+<body>
+  <div>
+    <div
+      class="rcx-box rcx-box--full rcx-field"
+    >
+      <span
+        class="rcx-box rcx-box--full rcx-field__row"
+      >
+        <span
+          class="rcx-box rcx-box--full rcx-field__label rcx-label"
+        >
+          Example Checkbox
+          <span
+            class="rcx-box rcx-box--full rcx-label__info rcx-css-wcp0mp"
+          >
+            <span
+              hidden=""
+            >
+              with extra info in a tooltip
+            </span>
+            <i
+              aria-hidden="true"
+              class="rcx-box rcx-box--full rcx-icon--name-info-circled rcx-icon"
+              title="with extra info in a tooltip"
+            >
+              
+            </i>
+          </span>
+          <span
+            aria-hidden="true"
+            class="rcx-box rcx-box--full rcx-label__required rcx-css-b7g1a9"
+          >
+            *
+          </span>
+        </span>
+        <label
+          class="rcx-box rcx-box--full rcx-check-box"
+        >
+          <div
+            style="border: 0px; clip-path: inset(50%); height: 1px; margin: -1px; overflow: hidden; padding: 0px; position: absolute; width: 1px; white-space: nowrap;"
+          >
+            Example Checkbox with extra info in a tooltip  *
+          </div>
+          <input
+            aria-describedby="react-aria-_r_2_-description react-aria-_r_2_-error react-aria-_r_2_-hint"
+            aria-invalid="true"
+            class="rcx-box rcx-box--full rcx-check-box__input"
+            id="react-aria-_r_2_-label"
+            type="checkbox"
+          />
+          <i
+            aria-hidden="true"
+            class="rcx-box rcx-box--full rcx-check-box__fake"
+          />
+        </label>
+      </span>
+      <span
+        class="rcx-box rcx-box--full rcx-field__description"
+        id="react-aria-_r_2_-description"
+      >
+        You can select multiple options
+      </span>
+      <span
+        class="rcx-box rcx-box--full rcx-field__error"
+        id="react-aria-_r_2_-error"
+        role="alert"
+      >
+        You failed to enter a valid value
+      </span>
+      <span
+        class="rcx-box rcx-box--full rcx-field__row"
+      >
+        <span
+          class="rcx-box rcx-box--full rcx-field__hint"
+          id="react-aria-_r_2_-hint"
+        >
+          This should help the user enter a valid value
+        </span>
+        <a
+          class="rcx-box rcx-box--full rcx-field__link"
+          href="#"
+        >
+          Link to more information
+        </a>
+      </span>
+    </div>
+  </div>
+</body>
+`;
+
+exports[`renders WithEmailInput without crashing 1`] = `
+<body>
+  <div>
+    <div
+      class="rcx-box rcx-box--full rcx-field"
+    >
+      <label
+        class="rcx-box rcx-box--full rcx-field__label rcx-label"
+        for="react-aria-_r_3_-label"
+      >
+        Example Email Input
+        <span
+          class="rcx-box rcx-box--full rcx-label__info rcx-css-wcp0mp"
+        >
+          <span
+            hidden=""
+          >
+            with extra info in a tooltip
+          </span>
+          <i
+            aria-hidden="true"
+            class="rcx-box rcx-box--full rcx-icon--name-info-circled rcx-icon"
+            title="with extra info in a tooltip"
+          >
+            
+          </i>
+        </span>
+        <span
+          aria-hidden="true"
+          class="rcx-box rcx-box--full rcx-label__required rcx-css-b7g1a9"
+        >
+          *
+        </span>
+      </label>
+      <span
+        class="rcx-box rcx-box--full rcx-field__description"
+        id="react-aria-_r_3_-description"
+      >
+        This field requires a valid email address
+      </span>
+      <span
+        class="rcx-box rcx-box--full rcx-field__row"
+      >
+        <input
+          aria-describedby="react-aria-_r_3_-description react-aria-_r_3_-error react-aria-_r_3_-hint"
+          aria-invalid="true"
+          class="rcx-box rcx-box--full rcx-box--animated rcx-input-box--type-email rcx-input-box"
+          id="react-aria-_r_3_-label"
+          size="1"
+          type="email"
+        />
+      </span>
+      <span
+        class="rcx-box rcx-box--full rcx-field__error"
+        id="react-aria-_r_3_-error"
+        role="alert"
+      >
+        You failed to enter a valid value
+      </span>
+      <span
+        class="rcx-box rcx-box--full rcx-field__row"
+      >
+        <span
+          class="rcx-box rcx-box--full rcx-field__hint"
+          id="react-aria-_r_3_-hint"
+        >
+          This should help the user enter a valid value
+        </span>
+        <a
+          class="rcx-box rcx-box--full rcx-field__link"
+          href="#"
+        >
+          Link to more information
+        </a>
+      </span>
+    </div>
+  </div>
+</body>
+`;
+
+exports[`renders WithMultiSelect without crashing 1`] = `
+<body>
+  <div>
+    <div
+      class="rcx-box rcx-box--full rcx-field"
+    >
+      <span
+        class="rcx-box rcx-box--full rcx-field__label rcx-label"
+        id="react-aria-_r_4_-label"
+      >
+        Example MultiSelect
+        <span
+          class="rcx-box rcx-box--full rcx-label__info rcx-css-wcp0mp"
+        >
+          <span
+            hidden=""
+          >
+            with extra info in a tooltip
+          </span>
+          <i
+            aria-hidden="true"
+            class="rcx-box rcx-box--full rcx-icon--name-info-circled rcx-icon"
+            title="with extra info in a tooltip"
+          >
+            
+          </i>
+        </span>
+        <span
+          aria-hidden="true"
+          class="rcx-box rcx-box--full rcx-label__required rcx-css-b7g1a9"
+        >
+          *
+        </span>
+      </span>
+      <span
+        class="rcx-box rcx-box--full rcx-field__description"
+        id="react-aria-_r_4_-description"
+      >
+        You can select multiple options from a list of options
+      </span>
+      <span
+        class="rcx-box rcx-box--full rcx-field__row"
+      >
+        <div
+          class="rcx-box rcx-box--full rcx-box--animated rcx-select"
+        >
+          <div
+            class="rcx-box rcx-box--full rcx-css-1sr8su7"
+          >
+            <div
+              class="rcx-box rcx-box--full rcx-css-w398ts"
+            >
+              <button
+                aria-controls="react-aria-_r_4_-listbox"
+                aria-describedby="react-aria-_r_4_-description react-aria-_r_4_-error react-aria-_r_4_-hint"
+                aria-expanded="false"
+                aria-haspopup="listbox"
+                aria-invalid="true"
+                aria-labelledby="react-aria-_r_4_-label"
+                class="rcx-box rcx-box--full rcx-input-box--undecorated rcx-select__focus rcx-css-trljwa rcx-css-l5gd0a"
+                id="react-aria-_r_4_"
+                role="combobox"
+                type="button"
+              />
+              <button
+                class="rcx-box rcx-chip rcx-css-trljwa"
+                tabindex="-1"
+                type="button"
+              >
+                <span
+                  class="rcx-box rcx-chip__text rcx-css-trljwa"
+                >
+                  item 1
+                </span>
+                <i
+                  aria-hidden="true"
+                  class="rcx-box rcx-box--full rcx-icon--name-cross rcx-icon rcx-css-trljwa rcx-css-1wv1vf9"
+                >
+                  
+                </i>
+              </button>
+              <button
+                class="rcx-box rcx-chip rcx-css-trljwa"
+                tabindex="-1"
+                type="button"
+              >
+                <span
+                  class="rcx-box rcx-chip__text rcx-css-trljwa"
+                >
+                  item 3
+                </span>
+                <i
+                  aria-hidden="true"
+                  class="rcx-box rcx-box--full rcx-icon--name-cross rcx-icon rcx-css-trljwa rcx-css-1wv1vf9"
+                >
+                  
+                </i>
+              </button>
+            </div>
+          </div>
+          <div
+            class="rcx-box rcx-box--full rcx-select__addon rcx-css-x7bl3q rcx-css-1bprq55"
+          >
+            <i
+              aria-hidden="true"
+              class="rcx-box rcx-box--full rcx-icon--name-chevron-down rcx-icon rcx-css-4pvxx3"
+            >
+              
+            </i>
+          </div>
+        </div>
+      </span>
+      <span
+        class="rcx-box rcx-box--full rcx-field__error"
+        id="react-aria-_r_4_-error"
+        role="alert"
+      >
+        You failed to enter a valid value
+      </span>
+      <span
+        class="rcx-box rcx-box--full rcx-field__row"
+      >
+        <span
+          class="rcx-box rcx-box--full rcx-field__hint"
+          id="react-aria-_r_4_-hint"
+        >
+          This should help the user enter a valid value
+        </span>
+        <a
+          class="rcx-box rcx-box--full rcx-field__link"
+          href="#"
+        >
+          Link to more information
+        </a>
+      </span>
+    </div>
+  </div>
+</body>
+`;
+
+exports[`renders WithNumberInput without crashing 1`] = `
+<body>
+  <div>
+    <div
+      class="rcx-box rcx-box--full rcx-field"
+    >
+      <label
+        class="rcx-box rcx-box--full rcx-field__label rcx-label"
+        for="react-aria-_r_5_-label"
+      >
+        Example Number Input
+        <span
+          class="rcx-box rcx-box--full rcx-label__info rcx-css-wcp0mp"
+        >
+          <span
+            hidden=""
+          >
+            with extra info in a tooltip
+          </span>
+          <i
+            aria-hidden="true"
+            class="rcx-box rcx-box--full rcx-icon--name-info-circled rcx-icon"
+            title="with extra info in a tooltip"
+          >
+            
+          </i>
+        </span>
+        <span
+          aria-hidden="true"
+          class="rcx-box rcx-box--full rcx-label__required rcx-css-b7g1a9"
+        >
+          *
+        </span>
+      </label>
+      <span
+        class="rcx-box rcx-box--full rcx-field__description"
+        id="react-aria-_r_5_-description"
+      >
+        This field requires a valid number
+      </span>
+      <span
+        class="rcx-box rcx-box--full rcx-field__row"
+      >
+        <input
+          aria-describedby="react-aria-_r_5_-description react-aria-_r_5_-error react-aria-_r_5_-hint"
+          aria-invalid="true"
+          class="rcx-box rcx-box--full rcx-box--animated rcx-input-box--type-number rcx-input-box"
+          id="react-aria-_r_5_-label"
+          size="1"
+          type="number"
+        />
+      </span>
+      <span
+        class="rcx-box rcx-box--full rcx-field__error"
+        id="react-aria-_r_5_-error"
+        role="alert"
+      >
+        You failed to enter a valid value
+      </span>
+      <span
+        class="rcx-box rcx-box--full rcx-field__row"
+      >
+        <span
+          class="rcx-box rcx-box--full rcx-field__hint"
+          id="react-aria-_r_5_-hint"
+        >
+          This should help the user enter a valid value
+        </span>
+        <a
+          class="rcx-box rcx-box--full rcx-field__link"
+          href="#"
+        >
+          Link to more information
+        </a>
+      </span>
+    </div>
+  </div>
+</body>
+`;
+
+exports[`renders WithPasswordInput without crashing 1`] = `
+<body>
+  <div>
+    <div
+      class="rcx-box rcx-box--full rcx-field"
+    >
+      <label
+        class="rcx-box rcx-box--full rcx-field__label rcx-label"
+        for="react-aria-_r_6_-label"
+      >
+        Example Password Input
+        <span
+          class="rcx-box rcx-box--full rcx-label__info rcx-css-wcp0mp"
+        >
+          <span
+            hidden=""
+          >
+            with extra info in a tooltip
+          </span>
+          <i
+            aria-hidden="true"
+            class="rcx-box rcx-box--full rcx-icon--name-info-circled rcx-icon"
+            title="with extra info in a tooltip"
+          >
+            
+          </i>
+        </span>
+        <span
+          aria-hidden="true"
+          class="rcx-box rcx-box--full rcx-label__required rcx-css-b7g1a9"
+        >
+          *
+        </span>
+      </label>
+      <span
+        class="rcx-box rcx-box--full rcx-field__description"
+        id="react-aria-_r_6_-description"
+      >
+        This field requires a valid password
+      </span>
+      <span
+        class="rcx-box rcx-box--full rcx-field__row"
+      >
+        <label
+          class="rcx-box rcx-box--full rcx-label rcx-box rcx-box--full rcx-box--animated rcx-input-box__wrapper"
+        >
+          <input
+            aria-describedby="react-aria-_r_6_-description react-aria-_r_6_-error react-aria-_r_6_-hint"
+            aria-invalid="true"
+            class="rcx-box rcx-box--full rcx-box--animated rcx-input-box--undecorated rcx-input-box--type-password rcx-input-box"
+            id="react-aria-_r_6_-label"
+            size="1"
+            type="password"
+          />
+          <span
+            class="rcx-box rcx-box--full rcx-input-box__addon"
+          >
+            <i
+              aria-hidden="true"
+              class="rcx-box rcx-box--full rcx-icon--name-eye-off rcx-icon rcx-css-1bepdyv"
+            >
+              
+            </i>
+          </span>
+        </label>
+      </span>
+      <span
+        class="rcx-box rcx-box--full rcx-field__error"
+        id="react-aria-_r_6_-error"
+        role="alert"
+      >
+        You failed to enter a valid value
+      </span>
+      <span
+        class="rcx-box rcx-box--full rcx-field__row"
+      >
+        <span
+          class="rcx-box rcx-box--full rcx-field__hint"
+          id="react-aria-_r_6_-hint"
+        >
+          This should help the user enter a valid value
+        </span>
+        <a
+          class="rcx-box rcx-box--full rcx-field__link"
+          href="#"
+        >
+          Link to more information
+        </a>
+      </span>
+    </div>
+  </div>
+</body>
+`;
+
+exports[`renders WithRadioButton without crashing 1`] = `
+<body>
+  <div>
+    <div
+      class="rcx-box rcx-box--full rcx-field"
+    >
+      <span
+        class="rcx-box rcx-box--full rcx-field__row"
+      >
+        <span
+          class="rcx-box rcx-box--full rcx-field__label rcx-label"
+        >
+          Example Radio Button
+          <span
+            class="rcx-box rcx-box--full rcx-label__info rcx-css-wcp0mp"
+          >
+            <span
+              hidden=""
+            >
+              with extra info in a tooltip
+            </span>
+            <i
+              aria-hidden="true"
+              class="rcx-box rcx-box--full rcx-icon--name-info-circled rcx-icon"
+              title="with extra info in a tooltip"
+            >
+              
+            </i>
+          </span>
+          <span
+            aria-hidden="true"
+            class="rcx-box rcx-box--full rcx-label__required rcx-css-b7g1a9"
+          >
+            *
+          </span>
+        </span>
+        <label
+          class="rcx-box rcx-box--full rcx-radio-button"
+        >
+          <div
+            style="border: 0px; clip-path: inset(50%); height: 1px; margin: -1px; overflow: hidden; padding: 0px; position: absolute; width: 1px; white-space: nowrap;"
+          >
+            Example Radio Button with extra info in a tooltip  *
+          </div>
+          <input
+            aria-describedby="react-aria-_r_7_-description react-aria-_r_7_-error react-aria-_r_7_-hint"
+            aria-invalid="true"
+            class="rcx-box rcx-box--full rcx-radio-button__input"
+            id="react-aria-_r_7_-label"
+            type="radio"
+          />
+          <i
+            aria-hidden="true"
+            class="rcx-box rcx-box--full rcx-radio-button__fake"
+          />
+        </label>
+      </span>
+      <span
+        class="rcx-box rcx-box--full rcx-field__description"
+        id="react-aria-_r_7_-description"
+      >
+        You can only select a single option
+      </span>
+      <span
+        class="rcx-box rcx-box--full rcx-field__error"
+        id="react-aria-_r_7_-error"
+        role="alert"
+      >
+        You failed to enter a valid value
+      </span>
+      <span
+        class="rcx-box rcx-box--full rcx-field__row"
+      >
+        <span
+          class="rcx-box rcx-box--full rcx-field__hint"
+          id="react-aria-_r_7_-hint"
+        >
+          This should help the user enter a valid value
+        </span>
+        <a
+          class="rcx-box rcx-box--full rcx-field__link"
+          href="#"
+        >
+          Link to more information
+        </a>
+      </span>
+    </div>
+  </div>
+</body>
+`;
+
+exports[`renders WithSearchInput without crashing 1`] = `
+<body>
+  <div>
+    <div
+      class="rcx-box rcx-box--full rcx-field"
+    >
+      <label
+        class="rcx-box rcx-box--full rcx-field__label rcx-label"
+        for="react-aria-_r_8_-label"
+      >
+        Example Search Input
+        <span
+          class="rcx-box rcx-box--full rcx-label__info rcx-css-wcp0mp"
+        >
+          <span
+            hidden=""
+          >
+            with extra info in a tooltip
+          </span>
+          <i
+            aria-hidden="true"
+            class="rcx-box rcx-box--full rcx-icon--name-info-circled rcx-icon"
+            title="with extra info in a tooltip"
+          >
+            
+          </i>
+        </span>
+        <span
+          aria-hidden="true"
+          class="rcx-box rcx-box--full rcx-label__required rcx-css-b7g1a9"
+        >
+          *
+        </span>
+      </label>
+      <span
+        class="rcx-box rcx-box--full rcx-field__description"
+        id="react-aria-_r_8_-description"
+      >
+        You can use this field to search for things
+      </span>
+      <span
+        class="rcx-box rcx-box--full rcx-field__row"
+      >
+        <input
+          aria-describedby="react-aria-_r_8_-description react-aria-_r_8_-error react-aria-_r_8_-hint"
+          aria-invalid="true"
+          class="rcx-box rcx-box--full rcx-box--animated rcx-input-box--type-search rcx-input-box"
+          id="react-aria-_r_8_-label"
+          size="1"
+          type="search"
+        />
+      </span>
+      <span
+        class="rcx-box rcx-box--full rcx-field__error"
+        id="react-aria-_r_8_-error"
+        role="alert"
+      >
+        You failed to enter a valid value
+      </span>
+      <span
+        class="rcx-box rcx-box--full rcx-field__row"
+      >
+        <span
+          class="rcx-box rcx-box--full rcx-field__hint"
+          id="react-aria-_r_8_-hint"
+        >
+          This should help the user enter a valid value
+        </span>
+        <a
+          class="rcx-box rcx-box--full rcx-field__link"
+          href="#"
+        >
+          Link to more information
+        </a>
+      </span>
+    </div>
+  </div>
+</body>
+`;
+
+exports[`renders WithSlider without crashing 1`] = `
+<body>
+  <div>
+    <div
+      class="rcx-box rcx-box--full rcx-field"
+    >
+      <span
+        class="rcx-box rcx-box--full rcx-field__label rcx-label"
+        id="react-aria-_r_9_-label"
+      >
+        Example Slider
+        <span
+          class="rcx-box rcx-box--full rcx-label__info rcx-css-wcp0mp"
+        >
+          <span
+            hidden=""
+          >
+            with extra info in a tooltip
+          </span>
+          <i
+            aria-hidden="true"
+            class="rcx-box rcx-box--full rcx-icon--name-info-circled rcx-icon"
+            title="with extra info in a tooltip"
+          >
+            
+          </i>
+        </span>
+        <span
+          aria-hidden="true"
+          class="rcx-box rcx-box--full rcx-label__required rcx-css-b7g1a9"
+        >
+          *
+        </span>
+      </span>
+      <span
+        class="rcx-box rcx-box--full rcx-field__description"
+        id="react-aria-_r_9_-description"
+      >
+        You can use the slider to select a value from a range of values
+      </span>
+      <span
+        class="rcx-box rcx-box--full rcx-field__row"
+      >
+        <div
+          aria-labelledby="react-aria-_r_9_-label"
+          class="rcx-css-146twpt"
+          id="react-aria-_r_a_"
+          role="group"
+        >
+          <label
+            aria-live="off"
+            class="rcx-box rcx-box--full rcx-label"
+            for="react-aria-_r_a_-0"
+          >
+            <span
+              aria-live="off"
+              class="rcx-box rcx-box--full rcx-label"
+              data-testid="slider-output"
+              for="react-aria-_r_a_-0"
+            >
+              20
+            </span>
+          </label>
+          <div
+            class="rcx-css-7w2yw5"
+            style="position: relative;"
+          >
+            <div
+              class="rcx-css-5ps27r"
+              style="position: absolute; left: 20%; transform: translate(-50%, -50%);"
+            >
+              <div
+                style="border: 0px; clip-path: inset(50%); height: 1px; margin: -1px; overflow: hidden; padding: 0px; position: absolute; width: 1px; white-space: nowrap;"
+              >
+                <input
+                  aria-describedby="react-aria-_r_9_-description react-aria-_r_9_-error react-aria-_r_9_-hint"
+                  aria-details=""
+                  aria-labelledby="react-aria-_r_a_"
+                  aria-orientation="horizontal"
+                  aria-valuetext="20"
+                  id="react-aria-_r_a_-0"
+                  max="100"
+                  min="0"
+                  step="1"
+                  tabindex="0"
+                  type="range"
+                  value="20"
+                />
+              </div>
+            </div>
+          </div>
+        </div>
+      </span>
+      <span
+        class="rcx-box rcx-box--full rcx-field__error"
+        id="react-aria-_r_9_-error"
+        role="alert"
+      >
+        You failed to enter a valid value
+      </span>
+      <span
+        class="rcx-box rcx-box--full rcx-field__row"
+      >
+        <span
+          class="rcx-box rcx-box--full rcx-field__hint"
+          id="react-aria-_r_9_-hint"
+        >
+          This should help the user enter a valid value
+        </span>
+        <a
+          class="rcx-box rcx-box--full rcx-field__link"
+          href="#"
+        >
+          Link to more information
+        </a>
+      </span>
+    </div>
+  </div>
+</body>
+`;
+
+exports[`renders WithTextArea without crashing 1`] = `
+<body>
+  <div>
+    <div
+      class="rcx-box rcx-box--full rcx-field"
+    >
+      <label
+        class="rcx-box rcx-box--full rcx-field__label rcx-label"
+        for="react-aria-_r_g_-label"
+      >
+        Example Text Area
+        <span
+          class="rcx-box rcx-box--full rcx-label__info rcx-css-wcp0mp"
+        >
+          <span
+            hidden=""
+          >
+            with extra info in a tooltip
+          </span>
+          <i
+            aria-hidden="true"
+            class="rcx-box rcx-box--full rcx-icon--name-info-circled rcx-icon"
+            title="with extra info in a tooltip"
+          >
+            
+          </i>
+        </span>
+        <span
+          aria-hidden="true"
+          class="rcx-box rcx-box--full rcx-label__required rcx-css-b7g1a9"
+        >
+          *
+        </span>
+      </label>
+      <span
+        class="rcx-box rcx-box--full rcx-field__description"
+        id="react-aria-_r_g_-description"
+      >
+        You can use this field to enter multi-line text
+      </span>
+      <span
+        class="rcx-box rcx-box--full rcx-field__row"
+      >
+        <textarea
+          aria-describedby="react-aria-_r_g_-description react-aria-_r_g_-error react-aria-_r_g_-hint"
+          aria-invalid="true"
+          class="rcx-box rcx-box--full rcx-box--animated rcx-input-box--type-textarea rcx-input-box"
+          cols="1"
+          id="react-aria-_r_g_-label"
+          size="1"
+        />
+      </span>
+      <span
+        class="rcx-box rcx-box--full rcx-field__error"
+        id="react-aria-_r_g_-error"
+        role="alert"
+      >
+        You failed to enter a valid value
+      </span>
+      <span
+        class="rcx-box rcx-box--full rcx-field__row"
+      >
+        <span
+          class="rcx-box rcx-box--full rcx-field__hint"
+          id="react-aria-_r_g_-hint"
+        >
+          This should help the user enter a valid value
+        </span>
+        <a
+          class="rcx-box rcx-box--full rcx-field__link"
+          href="#"
+        >
+          Link to more information
+        </a>
+      </span>
+    </div>
+  </div>
+</body>
+`;
+
+exports[`renders WithTextInput without crashing 1`] = `
+<body>
+  <div>
+    <div
+      class="rcx-box rcx-box--full rcx-field"
+    >
+      <label
+        class="rcx-box rcx-box--full rcx-field__label rcx-label"
+        for="react-aria-_r_h_-label"
+      >
+        Example Text Input
+        <span
+          class="rcx-box rcx-box--full rcx-label__info rcx-css-wcp0mp"
+        >
+          <span
+            hidden=""
+          >
+            with extra info in a tooltip
+          </span>
+          <i
+            aria-hidden="true"
+            class="rcx-box rcx-box--full rcx-icon--name-info-circled rcx-icon"
+            title="with extra info in a tooltip"
+          >
+            
+          </i>
+        </span>
+        <span
+          aria-hidden="true"
+          class="rcx-box rcx-box--full rcx-label__required rcx-css-b7g1a9"
+        >
+          *
+        </span>
+      </label>
+      <span
+        class="rcx-box rcx-box--full rcx-field__description"
+        id="react-aria-_r_h_-description"
+      >
+        Text inputs are used to enter a single line of text.
+      </span>
+      <span
+        class="rcx-box rcx-box--full rcx-field__row"
+      >
+        <input
+          aria-describedby="react-aria-_r_h_-description react-aria-_r_h_-error react-aria-_r_h_-hint"
+          aria-invalid="true"
+          class="rcx-box rcx-box--full rcx-box--animated rcx-input-box--type-text rcx-input-box"
+          id="react-aria-_r_h_-label"
+          size="1"
+          type="text"
+        />
+      </span>
+      <span
+        class="rcx-box rcx-box--full rcx-field__error"
+        id="react-aria-_r_h_-error"
+        role="alert"
+      >
+        You failed to enter a valid value
+      </span>
+      <span
+        class="rcx-box rcx-box--full rcx-field__row"
+      >
+        <span
+          class="rcx-box rcx-box--full rcx-field__hint"
+          id="react-aria-_r_h_-hint"
+        >
+          This should help the user enter a valid value
+        </span>
+        <a
+          class="rcx-box rcx-box--full rcx-field__link"
+          href="#"
+        >
+          Link to more information
+        </a>
+      </span>
+    </div>
+  </div>
+</body>
+`;
+
+exports[`renders WithToggleSwitch without crashing 1`] = `
+<body>
+  <div>
+    <div
+      class="rcx-box rcx-box--full rcx-field"
+    >
+      <span
+        class="rcx-box rcx-box--full rcx-field__row"
+      >
+        <span
+          class="rcx-box rcx-box--full rcx-field__label rcx-label"
+        >
+          Example Toggle Switch
+          <span
+            class="rcx-box rcx-box--full rcx-label__info rcx-css-wcp0mp"
+          >
+            <span
+              hidden=""
+            >
+              with extra info in a tooltip
+            </span>
+            <i
+              aria-hidden="true"
+              class="rcx-box rcx-box--full rcx-icon--name-info-circled rcx-icon"
+              title="with extra info in a tooltip"
+            >
+              
+            </i>
+          </span>
+          <span
+            aria-hidden="true"
+            class="rcx-box rcx-box--full rcx-label__required rcx-css-b7g1a9"
+          >
+            *
+          </span>
+        </span>
+        <label
+          class="rcx-box rcx-box--full rcx-toggle-switch"
+        >
+          <div
+            style="border: 0px; clip-path: inset(50%); height: 1px; margin: -1px; overflow: hidden; padding: 0px; position: absolute; width: 1px; white-space: nowrap;"
+          >
+            Example Toggle Switch with extra info in a tooltip  *
+          </div>
+          <input
+            aria-describedby="react-aria-_r_i_-description react-aria-_r_i_-error react-aria-_r_i_-hint"
+            aria-invalid="true"
+            class="rcx-box rcx-box--full rcx-toggle-switch__input"
+            id="react-aria-_r_i_-label"
+            type="checkbox"
+          />
+          <i
+            aria-hidden="true"
+            class="rcx-box rcx-box--full rcx-toggle-switch__fake"
+          />
+        </label>
+      </span>
+      <span
+        class="rcx-box rcx-box--full rcx-field__description"
+        id="react-aria-_r_i_-description"
+      >
+        This field represents a boolean value
+      </span>
+      <span
+        class="rcx-box rcx-box--full rcx-field__error"
+        id="react-aria-_r_i_-error"
+        role="alert"
+      >
+        You failed to enter a valid value
+      </span>
+      <span
+        class="rcx-box rcx-box--full rcx-field__row"
+      >
+        <span
+          class="rcx-box rcx-box--full rcx-field__hint"
+          id="react-aria-_r_i_-hint"
+        >
+          This should help the user enter a valid value
+        </span>
+        <a
+          class="rcx-box rcx-box--full rcx-field__link"
+          href="#"
+        >
+          Link to more information
+        </a>
+      </span>
+    </div>
+  </div>
+</body>
+`;
+
+exports[`renders WithUrlInput without crashing 1`] = `
+<body>
+  <div>
+    <div
+      class="rcx-box rcx-box--full rcx-field"
+    >
+      <label
+        class="rcx-box rcx-box--full rcx-field__label rcx-label"
+        for="react-aria-_r_j_-label"
+      >
+        Example URL Input
+        <span
+          class="rcx-box rcx-box--full rcx-label__info rcx-css-wcp0mp"
+        >
+          <span
+            hidden=""
+          >
+            with extra info in a tooltip
+          </span>
+          <i
+            aria-hidden="true"
+            class="rcx-box rcx-box--full rcx-icon--name-info-circled rcx-icon"
+            title="with extra info in a tooltip"
+          >
+            
+          </i>
+        </span>
+        <span
+          aria-hidden="true"
+          class="rcx-box rcx-box--full rcx-label__required rcx-css-b7g1a9"
+        >
+          *
+        </span>
+      </label>
+      <span
+        class="rcx-box rcx-box--full rcx-field__description"
+        id="react-aria-_r_j_-description"
+      >
+        This field requires a valid URL
+      </span>
+      <span
+        class="rcx-box rcx-box--full rcx-field__row"
+      >
+        <input
+          aria-describedby="react-aria-_r_j_-description react-aria-_r_j_-error react-aria-_r_j_-hint"
+          aria-invalid="true"
+          class="rcx-box rcx-box--full rcx-box--animated rcx-input-box--type-url rcx-input-box"
+          id="react-aria-_r_j_-label"
+          size="1"
+          type="url"
+        />
+      </span>
+      <span
+        class="rcx-box rcx-box--full rcx-field__error"
+        id="react-aria-_r_j_-error"
+        role="alert"
+      >
+        You failed to enter a valid value
+      </span>
+      <span
+        class="rcx-box rcx-box--full rcx-field__row"
+      >
+        <span
+          class="rcx-box rcx-box--full rcx-field__hint"
+          id="react-aria-_r_j_-hint"
+        >
+          This should help the user enter a valid value
+        </span>
+        <a
+          class="rcx-box rcx-box--full rcx-field__link"
+          href="#"
+        >
+          Link to more information
+        </a>
+      </span>
+    </div>
+  </div>
+</body>
+`;
