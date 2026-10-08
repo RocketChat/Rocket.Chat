@@ -9,8 +9,6 @@ import { startLicenseEnforcement } from './licenseEnforcement';
 import { consumeStreams, serveStreams } from './streams';
 import { withDefaultDependencies } from './withDefaultDependencies';
 
-export { connect } from 'nats';
-
 const TE = new TextEncoder();
 const TD = new TextDecoder();
 
@@ -64,8 +62,6 @@ function isNoResponders(e: unknown): boolean {
 	return e instanceof NatsError && e.code === NO_RESPONDERS_CODE;
 }
 
-const internalMethods = new Set(['$node.list', '$node.services']);
-
 type NatsBrokerOptions = {
 	/** milliseconds a service may wait for its dependencies before `start()` gives up; `0` waits forever */
 	dependencyTimeout?: number;
@@ -106,12 +102,12 @@ function decodeParams(data: Uint8Array): any[] {
 
 function encodeError(e: unknown): Uint8Array {
 	if (isMeteorError(e)) {
-		return TE.encode(EJSON.stringify(e.toJSON()));
+		return encodePayload(e.toJSON());
 	}
 
 	const { message, stack } = e instanceof Error ? e : new Error(String(e));
 
-	return TE.encode(EJSON.stringify({ message, stack }));
+	return encodePayload({ message, stack });
 }
 
 /** Header values are line based, so newlines in a message would corrupt the protocol frame. */
@@ -151,10 +147,6 @@ export class NatsBroker implements IBroker {
 
 	private nc?: NatsConnection;
 
-	private started = false;
-
-	private pendingServices: IServiceClass[] = [];
-
 	private services = new Map<IServiceClass, RegisteredService>();
 
 	private dependencies = new Map<IServiceClass, string[]>();
@@ -170,6 +162,12 @@ export class NatsBroker implements IBroker {
 	private readonly dependencyTimeout: number;
 
 	private readonly requestTimeout: number;
+
+	/** Moleculer internals that application code still calls through the broker. */
+	private readonly internalMethods = new Map<string, () => Promise<unknown>>([
+		['$node.list', () => this.nodeList()],
+		['$node.services', () => this.serviceList()],
+	]);
 
 	constructor(
 		private options: ConnectionOptions,
@@ -204,8 +202,8 @@ export class NatsBroker implements IBroker {
 	async createService(instance: IServiceClass, serviceDependencies: string[] = []): Promise<void> {
 		this.dependencies.set(instance, withDefaultDependencies(instance.getName(), serviceDependencies));
 
-		if (!this.started) {
-			this.pendingServices.push(instance);
+		// `start()` picks it up from `dependencies`
+		if (!this.nc) {
 			return;
 		}
 
@@ -421,24 +419,27 @@ export class NatsBroker implements IBroker {
 	}
 
 	async call(method: string, data: any, options?: CallingOptions): Promise<any> {
-		if (!this.started || !this.nc) {
+		if (!this.nc) {
 			return;
 		}
 
-		if (internalMethods.has(method)) {
-			return this.callInternal(method);
+		const internal = this.internalMethods.get(method);
+		if (internal) {
+			return internal();
 		}
+
+		const nodeID = options?.nodeID && toSubjectToken(options.nodeID);
 
 		// a service in this process answers directly, so arguments and the result keep
 		// their identity instead of being flattened by EJSON
-		if (!options?.nodeID || toSubjectToken(options.nodeID) === this.nodeID) {
+		if (!nodeID || nodeID === this.nodeID) {
 			const local = this.localRegistry?.resolve(method);
 			if (local) {
 				return this.runInContext(() => local(data ?? []));
 			}
 		}
 
-		const subject = options?.nodeID ? `${NODE_PREFIX}.${toSubjectToken(options.nodeID)}.${method}` : `${RPC_PREFIX}.${method}`;
+		const subject = nodeID ? `${NODE_PREFIX}.${nodeID}.${method}` : `${RPC_PREFIX}.${method}`;
 
 		const msg = await this.request(this.nc, subject, encodePayload(serveStreams(this.nc, data, this.requestTimeout)));
 
@@ -467,18 +468,6 @@ export class NatsBroker implements IBroker {
 		return nc.request(subject, payload, { timeout: this.requestTimeout });
 	}
 
-	/** Moleculer internals that application code still calls through the broker. */
-	private async callInternal(method: string): Promise<any> {
-		switch (method) {
-			case '$node.list':
-				return this.nodeList();
-			case '$node.services':
-				return this.serviceList();
-			default:
-				throw new Error(`unknown internal method: ${method}`);
-		}
-	}
-
 	async broadcastToServices<T extends keyof EventSignatures>(
 		_services: string[],
 		_event: T,
@@ -488,19 +477,11 @@ export class NatsBroker implements IBroker {
 	}
 
 	async broadcast<T extends keyof EventSignatures>(event: T, ...args: Parameters<EventSignatures[T]>): Promise<void> {
-		if (!this.started || !this.nc) {
-			return;
-		}
-
-		this.nc.publish(`${EVENT_PREFIX}.${String(event)}`, encodePayload(args));
+		this.nc?.publish(`${EVENT_PREFIX}.${String(event)}`, encodePayload(args));
 	}
 
 	async emitToOne<T extends keyof EventSignatures>(event: T, ...args: Parameters<EventSignatures[T]>): Promise<void> {
-		if (!this.started || !this.nc) {
-			return;
-		}
-
-		this.nc.publish(`${EMIT_PREFIX}.${String(event)}`, encodePayload(args));
+		this.nc?.publish(`${EMIT_PREFIX}.${String(event)}`, encodePayload(args));
 	}
 
 	async broadcastLocal<T extends keyof EventSignatures>(event: T, ...args: Parameters<EventSignatures[T]>): Promise<void> {
@@ -578,12 +559,8 @@ export class NatsBroker implements IBroker {
 
 	async start(): Promise<void> {
 		this.nc = await connect(this.options);
-		this.started = true;
 
-		const pending = this.pendingServices;
-		this.pendingServices = [];
-
-		await this.startWhenReady(pending);
+		await this.startWhenReady([...this.dependencies.keys()]);
 
 		console.log('NatsBroker started successfully.');
 	}
@@ -597,10 +574,11 @@ export class NatsBroker implements IBroker {
 			}
 		}
 
-		this.started = false;
+		const { nc } = this;
+		this.nc = undefined;
 
-		if (this.nc && !this.nc.isClosed()) {
-			await this.nc.drain();
+		if (nc && !nc.isClosed()) {
+			await nc.drain();
 		}
 	}
 }
