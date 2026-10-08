@@ -30,6 +30,7 @@ export interface ICalendarService {
 		options?: CalendarBatchOptions,
 	): Promise<CalendarBatchResult>;
 	deleteImported(uid: IUser['_id'], externalIds: string[], notBefore: Date, options?: CalendarBatchOptions): Promise<CalendarBatchResult>;
+	deleteUnfinishedImported(uid: IUser['_id'], notBefore: Date, options?: CalendarBatchOptions): Promise<CalendarBatchResult>;
 	pruneImportedWindow(
 		uid: IUser['_id'],
 		timeWindow: { start: Date; end: Date },

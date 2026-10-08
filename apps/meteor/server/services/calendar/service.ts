@@ -251,6 +251,12 @@ export class CalendarService extends ServiceClassInternal implements ICalendarSe
 		return this.finishDeletion(uid, deletedCount, options);
 	}
 
+	public async deleteUnfinishedImported(uid: IUser['_id'], notBefore: Date, options?: CalendarBatchOptions): Promise<CalendarBatchResult> {
+		const { deletedCount } = await CalendarEvent.deleteUnfinishedImportedByUserId(uid, notBefore);
+
+		return this.finishDeletion(uid, deletedCount, options);
+	}
+
 	public async pruneImportedWindow(
 		uid: IUser['_id'],
 		timeWindow: { start: Date; end: Date },
