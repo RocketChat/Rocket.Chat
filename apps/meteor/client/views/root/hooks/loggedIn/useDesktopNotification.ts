@@ -2,10 +2,10 @@ import type { INotificationDesktop } from '@rocket.chat/core-typings';
 import { useStableCallback } from '@rocket.chat/fuselage-hooks';
 import { useUser } from '@rocket.chat/ui-contexts';
 
-import { useNotification } from './useNotification';
-import { RoomManager } from '../../lib/RoomManager';
-import { e2e } from '../../lib/e2ee';
-import { getAvatarAsPng } from '../../lib/utils/getAvatarAsPng';
+import { useNotification } from '../../../../hooks/notification/useNotification';
+import { RoomManager } from '../../../../lib/RoomManager';
+import { e2e } from '../../../../lib/e2ee';
+import { getAvatarAsPng } from '../../../../lib/utils/getAvatarAsPng';
 
 export const useDesktopNotification = () => {
 	const user = useUser();

@@ -1,7 +1,7 @@
 import { useRef, useEffect } from 'react';
 import type { AllHTMLAttributes } from 'react';
 
-import { useChat } from '../views/room/contexts/ChatContext';
+import { useChat } from '../../../../contexts/ChatContext';
 
 export const useFileInput = (props: AllHTMLAttributes<HTMLInputElement>) => {
 	const fileInputRef = useRef<HTMLInputElement>(undefined);

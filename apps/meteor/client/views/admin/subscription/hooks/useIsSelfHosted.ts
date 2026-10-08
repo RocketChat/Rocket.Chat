@@ -1,4 +1,4 @@
-import { useStatistics } from '../views/hooks/useStatistics';
+import { useStatistics } from '../../../hooks/useStatistics';
 
 export const useIsSelfHosted = (): { isSelfHosted: boolean; isLoading: boolean } => {
 	const { data, isLoading } = useStatistics();
