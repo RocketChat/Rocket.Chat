@@ -3,10 +3,10 @@ import { Box } from '@rocket.chat/fuselage';
 import { GenericModal } from '@rocket.chat/ui-client';
 import { useEndpoint, useToastMessageDispatch } from '@rocket.chat/ui-contexts';
 import { memo, useCallback } from 'react';
-import { ErrorBoundary } from 'react-error-boundary';
 import { FormProvider, useForm } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 
+import ReportableErrorBoundary from '../../../../../components/ErrorReport/ReportableErrorBoundary';
 import GenericError from '../../../../../components/GenericError';
 import CannedResponseForm from '../../components/CannedResponseForm';
 import type { CannedResponseEditFormData } from '../CannedResponseEdit';
@@ -69,11 +69,13 @@ const CreateCannedResponseModal = ({ cannedResponseData, onClose, reloadCannedLi
 			title={cannedResponseData?._id ? t('Edit_Canned_Response') : t('Create_canned_response')}
 			wrapperFunction={(props) => <Box is='form' onSubmit={handleSubmit(handleCreate)} {...props} />}
 		>
-			<ErrorBoundary fallbackRender={() => <GenericError icon='circle-exclamation' />}>
+			<ReportableErrorBoundary
+				fallbackRender={({ error, componentStack }) => <GenericError icon='circle-exclamation' errorReport={{ error, componentStack }} />}
+			>
 				<FormProvider {...methods}>
 					<CannedResponseForm />
 				</FormProvider>
-			</ErrorBoundary>
+			</ReportableErrorBoundary>
 		</GenericModal>
 	);
 };
