@@ -812,7 +812,7 @@ describe('[Calendar Events]', () => {
 		(IS_EE ? describe : describe.skip)('[Calendar Events while the server owns the sync]', () => {
 			let previousExchangeMode: ISetting['value'];
 
-			before('hand the calendar over, now that the fixtures exist', () => {
+			before('hand the calendar over, now that the fixtures exist', async () => {
 				previousExchangeMode = await getSettingValueById('Exchange_Mode');
 				await updateSetting('Exchange_Mode', 'server');
 			});
