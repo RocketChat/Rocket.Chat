@@ -41,6 +41,10 @@ A renderer still needs a method for every block in its list. Fuselage has a spec
 
 `FuselageSurfaceRenderer` keeps a default list for subclasses that pass none. Only internal surfaces should rely on it.
 
+## Links
+
+`button`, `icon_button` and overflow options open their `url` unless `isSafeUrl` from `@rocket.chat/ui-kit` rejects it. It rejects URLs whose scheme runs code in the page (`javascript:`, `data:`, `vbscript:`, in any letter case or with leading whitespace) and URLs that cannot be parsed. Everything else opens in a new tab without access to the opener, including app deep links such as `zoommtg:` or `msteams:` and relative URLs. A rejected URL is ignored, and the element behaves as if it had none: it sends its `blockAction` instead of opening a link. Both Fuselage and Livechat apply the same check.
+
 ## Other renderers
 
 `apps/meteor/client/views/admin/subscription/surface/UiKitSubscriptionLicenseSurface.tsx` defines `SubscriptionLicenseSurfaceRenderer`, an internal surface built on `FuselageSurfaceRenderer` that apps do not use. The support matrix leaves it out.

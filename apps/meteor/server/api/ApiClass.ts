@@ -52,6 +52,7 @@ import { shouldBreakInVersion } from '../lib/shouldBreakInVersion';
 import { authenticationMiddlewareForHono } from './v1/middlewares/authenticationHono';
 import { permissionsMiddleware } from './v1/middlewares/permissions';
 import { license } from '../../ee/server/api/v1/middlewares/license';
+import { licenseRequired } from '../../ee/server/api/v1/middlewares/licenseRequired';
 import { getDefaultUserFields } from '../lib/utils/functions/getDefaultUserFields';
 import { settings } from '../settings';
 
@@ -969,6 +970,7 @@ export class APIClass<TBasePath extends string = '', TOperations extends Record<
 						logger,
 					}),
 					permissionsMiddleware(_options as TypedOptions),
+					licenseRequired(_options as TypedOptions, License),
 					license(_options as TypedOptions, License),
 					(operations[method as keyof Operations<TPathPattern, TOptions>] as Record<string, any>).action,
 				);

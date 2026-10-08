@@ -81,7 +81,7 @@ export class RoomSidebar extends Sidebar {
 	}
 
 	get firstCollapser(): Locator {
-		return this.channelsList.getByRole('group').first().getByRole('button').first();
+		return this.channelsList.getByRole('listitem').first().getByRole('button').first();
 	}
 
 	get teamsCollapser(): Locator {
@@ -132,7 +132,7 @@ export class RoomSidebar extends Sidebar {
 	}
 
 	getCategoryCollapser(name: string): Locator {
-		return this.root.getByRole('group', { name: `Collapse ${name}`, exact: true }).first();
+		return this.root.getByRole('listitem', { name: `Collapse ${name}`, exact: true }).first();
 	}
 
 	getCategoryKebab(name: string): Locator {

@@ -1,0 +1,61 @@
+{
+	"name": "@rocket.chat/ui-account",
+	"version": "0.0.1",
+	"private": true,
+	"main": "./dist/index.js",
+	"typings": "./dist/index.d.ts",
+	"files": [
+		"/dist"
+	],
+	"scripts": {
+		"build": "rm -rf dist && tsc -p tsconfig.build.json",
+		"dev": "tsc -p tsconfig.build.json --watch --preserveWatchOutput",
+		"lint": "eslint .",
+		"lint:fix": "eslint --fix .",
+		"storybook": "storybook dev -p 6006",
+		"test": "TZ=UTC jest",
+		"testunit": "TZ=UTC jest",
+		"typecheck": "tsc --noEmit --skipLibCheck -p tsconfig.json"
+	},
+	"dependencies": {
+		"@tanstack/react-query": "~5.65.1",
+		"react-hook-form": "~7.54.2",
+		"react-i18next": "~17.0.16"
+	},
+	"devDependencies": {
+		"@rocket.chat/core-typings": "workspace:^",
+		"@rocket.chat/fuselage": "^0.94.0",
+		"@rocket.chat/fuselage-hooks": "^0.43.1",
+		"@rocket.chat/icons": "workspace:~",
+		"@rocket.chat/jest-presets": "workspace:~",
+		"@rocket.chat/mock-providers": "workspace:~",
+		"@rocket.chat/storybook-config": "workspace:~",
+		"@rocket.chat/tsconfig": "workspace:*",
+		"@rocket.chat/ui-client": "workspace:^",
+		"@rocket.chat/ui-contexts": "workspace:^",
+		"@storybook/react": "^9.1.20",
+		"@testing-library/react": "~16.3.3",
+		"@testing-library/user-event": "~14.6.7",
+		"@types/jest-axe": "~3.5.9",
+		"@types/react": "~19.2.18",
+		"@types/react-dom": "~19.2.7",
+		"eslint": "~10.12.0",
+		"jest": "~30.5.2",
+		"jest-axe": "~11.0.0",
+		"react": "~19.2.8",
+		"react-dom": "~19.2.8",
+		"storybook": "^9.1.20",
+		"typescript": "~5.9.3"
+	},
+	"peerDependencies": {
+		"@rocket.chat/fuselage": "*",
+		"@rocket.chat/fuselage-hooks": "*",
+		"@rocket.chat/ui-client": "workspace:^",
+		"@rocket.chat/ui-contexts": "workspace:^",
+		"react": "*",
+		"react-dom": "*"
+	},
+	"volta": {
+		"extends": "../../package.json"
+	}
+}

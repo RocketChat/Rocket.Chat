@@ -63,7 +63,7 @@ const MediaCallViewProvider = ({ children }: MediaCallViewProviderProps) => {
 	}, [audioInput?.id, controls, sessionState.hidden]);
 
 	useCallSounds(
-		sessionState.hidden ? 'none' : sessionState.state,
+		!sessionState.ringing ? 'none' : sessionState.state,
 		useCallback(
 			(callback) => {
 				if (!instance) {

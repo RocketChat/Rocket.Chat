@@ -2592,7 +2592,6 @@
   "Local_Domains": "Domaines locaux",
   "Local_Password": "Mot de passe local",
   "Local_Time": "Heure locale",
-  "Local_Time_time": "Heure locale : {{time}}",
   "Local_Timezone": "Fuseau horaire local",
   "Localization": "Localisation",
   "Location": "Emplacement",

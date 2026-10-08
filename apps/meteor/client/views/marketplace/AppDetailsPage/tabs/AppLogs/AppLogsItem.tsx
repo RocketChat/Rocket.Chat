@@ -1,5 +1,6 @@
 import type { ILogItem } from '@rocket.chat/core-typings';
 import { Box, Divider } from '@rocket.chat/fuselage';
+import { useFormatDateAndTime } from '@rocket.chat/ui-client';
 import { useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -7,7 +8,6 @@ import AppLogsItemEntry from './AppLogsItemEntry';
 import { AppsLogItemField } from './AppLogsItemField';
 import { CollapseButton } from './Components/CollapseButton';
 import { CollapsibleRegion } from './Components/CollapsibleRegion';
-import { useFormatDateAndTime } from '../../../../../hooks/useFormatDateAndTime';
 
 export type AppLogsItemProps = {
 	regionId: string;

@@ -23,7 +23,7 @@
 		"@rocket.chat/fuselage-toastbar": "workspace:^",
 		"@rocket.chat/fuselage-tokens": "^0.35.0",
 		"@rocket.chat/fuselage-ui-kit": "workspace:~",
-		"@rocket.chat/icons": "^0.50.0",
+		"@rocket.chat/icons": "workspace:~",
 		"@rocket.chat/logo": "workspace:~",
 		"@rocket.chat/styled": "~0.34.1",
 		"@rocket.chat/ui-avatar": "workspace:^",
@@ -46,7 +46,7 @@
 		"@types/react": "~19.2.18",
 		"@types/react-dom": "~19.2.7",
 		"@vitejs/plugin-react": "~6.0.5",
-		"eslint": "~10.7.0",
+		"eslint": "~10.12.0",
 		"typescript": "~5.9.3",
 		"vite": "^8.0.16"
 	},

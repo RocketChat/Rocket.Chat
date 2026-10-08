@@ -1,5 +1,11 @@
-import { LDAP } from '@rocket.chat/core-services';
-import { ajv, isLdapTestSearch, validateUnauthorizedErrorResponse, validateForbiddenErrorResponse } from '@rocket.chat/rest-typings';
+import { LDAP, isMeteorError } from '@rocket.chat/core-services';
+import {
+	ajv,
+	isLdapTestSearch,
+	validateBadRequestErrorResponse,
+	validateUnauthorizedErrorResponse,
+	validateForbiddenErrorResponse,
+} from '@rocket.chat/rest-typings';
 
 import { SystemLogger } from '../../lib/logger/system';
 import { settings } from '../../settings';
@@ -25,6 +31,7 @@ API.v1.post(
 		permissionsRequired: ['test-admin-options'],
 		response: {
 			200: ajv.compile<{ message: string; success: true }>(messageResponseSchema),
+			400: validateBadRequestErrorResponse,
 			401: validateUnauthorizedErrorResponse,
 			403: validateForbiddenErrorResponse,
 		},
@@ -42,7 +49,11 @@ API.v1.post(
 			await LDAP.testConnection();
 		} catch (err) {
 			SystemLogger.error({ err });
-			throw new Error('Connection_failed');
+			if (isMeteorError(err)) {
+				return API.v1.failure({ error: String(err.error), details: err.details });
+			}
+
+			return API.v1.failure('Connection_failed');
 		}
 
 		return API.v1.success({
@@ -59,6 +70,7 @@ API.v1.post(
 		body: isLdapTestSearch,
 		response: {
 			200: ajv.compile<{ message: string; success: true }>(messageResponseSchema),
+			400: validateBadRequestErrorResponse,
 			401: validateUnauthorizedErrorResponse,
 			403: validateForbiddenErrorResponse,
 		},
@@ -76,7 +88,11 @@ API.v1.post(
 			await LDAP.testSearch(this.bodyParams.username);
 		} catch (err) {
 			SystemLogger.error({ err });
-			throw new Error('LDAP_search_failed');
+			if (isMeteorError(err)) {
+				return API.v1.failure({ error: String(err.error), details: err.details });
+			}
+
+			return API.v1.failure('LDAP_search_failed');
 		}
 
 		return API.v1.success({

@@ -1,5 +1,6 @@
 import type { Serialized } from '@rocket.chat/core-typings';
 import { TableRow, TableCell } from '@rocket.chat/fuselage';
+import { useFormatDateAndTime } from '@rocket.chat/ui-client';
 import { useRouter } from '@rocket.chat/ui-contexts';
 import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -11,7 +12,6 @@ import {
 	ImportingStartedStates,
 	ProgressStep,
 } from '../../../../app/importer/lib/ImporterProgressStep';
-import { useFormatDateAndTime } from '../../../hooks/useFormatDateAndTime';
 
 export type ImportOperationSummaryProps = {
 	type: string;

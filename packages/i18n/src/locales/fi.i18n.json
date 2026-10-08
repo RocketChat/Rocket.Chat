@@ -2948,7 +2948,6 @@
   "Local_Domains": "Paikalliset toimialueet",
   "Local_Password": "Paikallinen salasana",
   "Local_Time": "Paikallinen aika",
-  "Local_Time_time": "Paikallinen aika: {{time}}",
   "Local_Timezone": "Paikallinen aikavyöhyke",
   "Localization": "Lokalisointi",
   "Location": "Sijainti",
