@@ -256,13 +256,10 @@ Lifecycle hooks, remote handlers and locally dispatched calls now all run inside
 `asyncLocalStorage.run`, so `context` is populated on both paths.
 
 The same `created()` also gave up when the broker exposed no metrics, which
-`NatsBroker` does not. Metrics registration is now conditional rather than a guard
+`NatsBroker` [does not](#not-implemented-yet). Metrics registration is now conditional rather than a guard
 clause in front of the DDP handlers — a second instance of the same mistake as
 [gating the socket server on a boot read](#3-services-wait-for-their-dependencies-lifecycle-failures-are-not-fatal): an
 optional concern was gating the thing the service exists to do.
-
-**Tracing is still missing.** `LocalBroker` and `MoleculerBroker` wrap handlers in a
-tracer span as well; `NatsBroker` does not.
 
 #### 6. The process stops gracefully on SIGTERM
 
@@ -286,6 +283,26 @@ dependencies so a boot that never finished lets go too, then drains the
 connection — and exit with `0` even if a service failed to stop.
 `SKIP_PROCESS_EVENT_REGISTRATION=true` leaves the signals alone, as it does for
 Moleculer.
+
+### Not implemented yet
+
+`MoleculerBroker` does these and `NatsBroker` does not, so switching to `BROKER=nats` silently loses them:
+
+- **Tracing.** `LocalBroker` and `MoleculerBroker` carry the caller's trace context
+  with every call (`injectCurrentContext()`, sent as `optl` under Moleculer), and
+  `MoleculerBroker` runs each handler in a tracer span continuing it. `NatsBroker`
+  sends no trace context and opens no span, so a trace stops at the first remote call.
+- **Metrics.** `MoleculerBroker` exposes Moleculer's metrics registry as
+  `broker.metrics`, with a Prometheus reporter behind `MS_METRICS`. `NatsBroker`
+  leaves `metrics` undefined, so ddp-streamer's `rocketchat_subscription`,
+  `users_connected` and `users_logged` are not recorded, and no broker metrics
+  are exported.
+- **Namespaces.** `MS_NAMESPACE` gives each Moleculer deployment its own
+  namespace, so deployments that share a transporter never see each other.
+  `NatsBroker` subjects (`rpc.`, `node.`, `event.`, `emit.`) and service names
+  are global to the NATS server: two deployments on one server would answer each
+  other's calls, receive each other's events, and discover each other's services.
+  A NATS account per deployment isolates them today.
 
 ## Events across instances
 
