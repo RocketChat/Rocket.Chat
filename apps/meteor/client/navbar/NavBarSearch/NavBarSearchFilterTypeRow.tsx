@@ -21,7 +21,13 @@ const NavBarSearchFilterTypeRow = ({ draft }: NavBarSearchFilterTypeRowProps): R
 				const isActive = draft?.key === key;
 
 				return (
-					<Button key={key} small primary={isActive} aria-pressed={isActive} onClick={() => startFilter(key)}>
+					<Button
+						key={key}
+						size='small'
+						variant={isActive ? 'primary' : 'secondary'}
+						aria-pressed={isActive}
+						onClick={() => startFilter(key)}
+					>
 						<Icon name={icon} size='x16' marginInlineEnd={4} />
 						{t(pillLabel)}
 					</Button>
