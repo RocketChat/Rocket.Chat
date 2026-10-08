@@ -30,10 +30,11 @@ implementation it got.
 | `MoleculerBroker` | `ee/packages/network-broker/src/MoleculerBroker.ts` | microservices, `BROKER` unset | in process when local, over the transporter when remote |
 | `NatsBroker`      | `ee/packages/network-broker/src/NatsBroker.ts`      | microservices, `BROKER=nats`  | in process when local, over NATS when remote            |
 
-The monolith installs `LocalBroker` unconditionally at
-`apps/meteor/server/startup/localServices.ts`. In microservices mode
-`apps/meteor/ee/server/startup/index.ts` replaces it with a network broker, and
-`startBroker()` picks between the two implementations:
+The monolith installs `LocalBroker` at
+`apps/meteor/server/startup/localServices.ts`, which is loaded only outside
+microservices mode. In microservices mode `apps/meteor/ee/server/startup/index.ts`
+installs a network broker instead - a broker cannot be swapped once the API has
+started - and `startBroker()` picks between the two implementations:
 
 ```ts
 // ee/packages/network-broker/src/startBroker.ts
