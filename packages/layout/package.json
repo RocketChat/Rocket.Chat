@@ -42,7 +42,7 @@
 		"@rocket.chat/fuselage": "^0.94.0",
 		"@rocket.chat/jest-presets": "workspace:~",
 		"@rocket.chat/storybook-config": "workspace:~",
-		"@rocket.chat/storybook-dark-mode": "~4.2.1",
+		"@rocket.chat/storybook-dark-mode": "workspace:~",
 		"@rocket.chat/tsconfig": "workspace:~",
 		"@testing-library/dom": "~10.4.2",
 		"@testing-library/react": "~16.3.3",

@@ -10086,7 +10086,7 @@ __metadata:
     "@rocket.chat/jest-presets": "workspace:~"
     "@rocket.chat/logo": "workspace:~"
     "@rocket.chat/storybook-config": "workspace:~"
-    "@rocket.chat/storybook-dark-mode": "npm:~4.2.1"
+    "@rocket.chat/storybook-dark-mode": "workspace:~"
     "@rocket.chat/styled": "npm:~0.34.1"
     "@rocket.chat/tsconfig": "workspace:~"
     "@testing-library/dom": "npm:~10.4.2"
@@ -10997,7 +10997,7 @@ __metadata:
     "@rocket.chat/layout": "workspace:~"
     "@rocket.chat/logo": "workspace:~"
     "@rocket.chat/storybook-config": "workspace:~"
-    "@rocket.chat/storybook-dark-mode": "workspace:^"
+    "@rocket.chat/storybook-dark-mode": "workspace:~"
     "@rocket.chat/styled": "npm:~0.34.1"
     "@rocket.chat/tsconfig": "workspace:~"
     "@testing-library/dom": "npm:~10.4.2"
@@ -11346,21 +11346,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@rocket.chat/storybook-dark-mode@npm:~4.2.1":
-  version: 4.2.1
-  resolution: "@rocket.chat/storybook-dark-mode@npm:4.2.1"
-  dependencies:
-    "@storybook/global": "npm:~5.0.0"
-    "@storybook/icons": "npm:~1.6.0"
-    fast-deep-equal: "npm:~3.1.3"
-  peerDependencies:
-    react: "*"
-    react-dom: "*"
-  checksum: 10/c9c649713c10c5b405d1cd7b2c6ac3c1093bd51ec4840e17956f1be225298addfa9db7cd981e589153f7faaf753425dd67bd8b6a820668557f78d9cf413c12a6
-  languageName: node
-  linkType: hard
-
-"@rocket.chat/storybook-dark-mode@workspace:^, @rocket.chat/storybook-dark-mode@workspace:packages/storybook-dark-mode, @rocket.chat/storybook-dark-mode@workspace:~":
+"@rocket.chat/storybook-dark-mode@workspace:packages/storybook-dark-mode, @rocket.chat/storybook-dark-mode@workspace:~":
   version: 0.0.0-use.local
   resolution: "@rocket.chat/storybook-dark-mode@workspace:packages/storybook-dark-mode"
   dependencies:
