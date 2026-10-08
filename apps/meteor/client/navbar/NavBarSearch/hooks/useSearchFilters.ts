@@ -25,14 +25,6 @@ export const useSearchFilters = ({ aiSearchActive = false }: { aiSearchActive?: 
 		setFilters(mergeAppliedFilters(getValues('filters'), incoming));
 	});
 
-	const addFilter = useStableCallback((key: SearchFilterKey, rawValue: string, meta?: SearchFilterMeta) => {
-		const filter = createAppliedFilter(key, rawValue, meta);
-
-		if (filter) {
-			applyFilters([filter]);
-		}
-	});
-
 	const removeFilter = useStableCallback((id: string) => {
 		setFilters(removeAppliedFilter(getValues('filters'), id));
 		setFocus('filterText');
@@ -89,7 +81,6 @@ export const useSearchFilters = ({ aiSearchActive = false }: { aiSearchActive?: 
 
 	return {
 		filters,
-		addFilter,
 		removeFilter,
 		removeLastFilter,
 		clearFilters,
