@@ -229,7 +229,6 @@ export class CalendarEventRaw extends BaseRaw<ICalendarEvent> implements ICalend
 					},
 				};
 			}),
-			// Unordered so one rejected event cannot abort the rest of the page; callers pass a single entry per event.
 			{ ordered: false },
 		);
 
