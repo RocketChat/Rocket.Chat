@@ -104,24 +104,21 @@ describe('ExchangeEwsProvider', () => {
 	});
 
 	describe('listEvents', () => {
-		const SYNC_STATE = 'S1';
-
 		it('addresses the calendar directly, with no folder lookup of its own', async () => {
-			const ANOTHER_SYNC_STATE = 'S2';
 			const transport = new FakeTransport([
 				okResponse('<m:SyncState>S2</m:SyncState><m:IncludesLastItemInRange>true</m:IncludesLastItemInRange><m:Changes/>'),
 				okResponse('<m:SyncState>S3</m:SyncState><m:IncludesLastItemInRange>true</m:IncludesLastItemInRange><m:Changes/>'),
 			]);
 			const provider = new ExchangeEwsProvider(transport);
 
-			await provider.listEvents(MAILBOX, timeWindow, cursorFor(SYNC_STATE));
-			await provider.listEvents(MAILBOX, timeWindow, cursorFor(ANOTHER_SYNC_STATE));
+			await provider.listEvents(MAILBOX, timeWindow, cursorFor('S1'));
+			await provider.listEvents(MAILBOX, timeWindow, cursorFor('S2'));
 
 			expect(transport.sent).toHaveLength(2);
 			expect(transport.sent[0]).not.toContain('<m:FindFolder');
 			expect(transport.sent[0]).toContain('<m:SyncFolderId><t:DistinguishedFolderId Id="calendar"/></m:SyncFolderId>');
-			expect(transport.sent[0]).toContain(`<m:SyncState>${SYNC_STATE}</m:SyncState>`);
-			expect(transport.sent[1]).toContain(`<m:SyncState>${ANOTHER_SYNC_STATE}</m:SyncState>`);
+			expect(transport.sent[0]).toContain(`<m:SyncState>S1</m:SyncState>`);
+			expect(transport.sent[1]).toContain(`<m:SyncState>S2</m:SyncState>`);
 		});
 
 		it('omits SyncState on an initial sync', async () => {
@@ -134,13 +131,13 @@ describe('ExchangeEwsProvider', () => {
 
 		it('returns the sync state as the cursor and inverts IncludesLastItemInRange', async () => {
 			const transport = new FakeTransport([
-				okResponse(`<m:SyncState>${SYNC_STATE}</m:SyncState><m:IncludesLastItemInRange>false</m:IncludesLastItemInRange><m:Changes/>`),
+				okResponse(`<m:SyncState>S1</m:SyncState><m:IncludesLastItemInRange>false</m:IncludesLastItemInRange><m:Changes/>`),
 				calendarViewOk(),
 			]);
 
 			const page = await new ExchangeEwsProvider(transport).listEvents(MAILBOX, timeWindow);
 
-			expect(page).toMatchObject({ cursor: cursorFor(SYNC_STATE), hasMore: true });
+			expect(page).toMatchObject({ cursor: cursorFor('S1'), hasMore: true });
 		});
 
 		it('takes a full window snapshot once anything changed, deletions included', async () => {
@@ -166,12 +163,12 @@ describe('ExchangeEwsProvider', () => {
 
 		it('reports nothing and skips the snapshot when the delta is empty and the window has not moved', async () => {
 			const transport = new FakeTransport([
-				okResponse(`<m:SyncState>${SYNC_STATE}</m:SyncState><m:IncludesLastItemInRange>true</m:IncludesLastItemInRange><m:Changes/>`),
+				okResponse(`<m:SyncState>S2</m:SyncState><m:IncludesLastItemInRange>true</m:IncludesLastItemInRange><m:Changes/>`),
 			]);
 
-			const page = await new ExchangeEwsProvider(transport).listEvents(MAILBOX, timeWindow, cursorFor(SYNC_STATE));
+			const page = await new ExchangeEwsProvider(transport).listEvents(MAILBOX, timeWindow, cursorFor('S1'));
 
-			expect(page).toMatchObject({ items: [], cursor: cursorFor(SYNC_STATE), coverage: 'delta' });
+			expect(page).toMatchObject({ items: [], cursor: cursorFor('S2'), coverage: 'delta' });
 			// Just the probe. An empty delta must not cost a window fetch.
 			expect(transport.sent).toHaveLength(1);
 		});
