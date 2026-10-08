@@ -1,6 +1,5 @@
 import { Box, Icon, IconButton, TextInput } from '@rocket.chat/fuselage';
 import { useDebouncedValue } from '@rocket.chat/fuselage-hooks';
-import type { SubscriptionWithRoom } from '@rocket.chat/ui-contexts';
 import { useUserId, useUserPreference } from '@rocket.chat/ui-contexts';
 import type { ChangeEvent, KeyboardEvent } from 'react';
 import { useId, useMemo, useState } from 'react';
@@ -9,10 +8,7 @@ import { useTranslation } from 'react-i18next';
 import TeamsListWrapper from './TeamsListWrapper';
 import TeamsPanelCollapser from './TeamsPanelCollapser';
 import TeamsPanelEmpty from './TeamsPanelEmpty';
-import TeamsPanelUnjoinedRoom from './TeamsPanelUnjoinedRoom';
 import { useExpandedTeams } from './hooks/useExpandedTeams';
-import type { TeamUnjoinedRoom } from './hooks/useTeamUnjoinedRooms';
-import { useTeamUnjoinedRooms } from './hooks/useTeamUnjoinedRooms';
 import { useTeamSubscriptions, useTeamsList } from './hooks/useTeamsList';
 import { useTeamsPanel } from './hooks/useTeamsPanel';
 import { useMergedRefsV2 } from '../../hooks/useMergedRefsV2';
@@ -27,8 +23,6 @@ import { useShortcutOpenMenu } from '../hooks/useShortcutOpenMenu';
 import { useTemplateByViewMode } from '../hooks/useTemplateByViewMode';
 
 type SidebarViewMode = 'extended' | 'medium' | 'condensed';
-
-type TeamsPanelRow = { type: 'room'; room: SubscriptionWithRoom } | { type: 'unjoined'; room: TeamUnjoinedRoom };
 
 const sidebarRowHeight: Record<SidebarViewMode, number> = {
 	condensed: 28,
@@ -56,8 +50,7 @@ const TeamsPanel = () => {
 
 	const allTeams = useTeamSubscriptions();
 	const { expandedTeams, toggleTeam, handleKeyDown } = useExpandedTeams(allTeams);
-	const unjoinedRooms = useTeamUnjoinedRooms(allTeams, expandedTeams);
-	const teams = useTeamsList({ teams: allTeams, expandedTeams, unjoinedRooms, filterText: debouncedFilterText });
+	const teams = useTeamsList({ teams: allTeams, expandedTeams, filterText: debouncedFilterText });
 	const hasTeams = allTeams.length > 0;
 
 	const avatarTemplate = useAvatarTemplate();
@@ -86,12 +79,7 @@ const TeamsPanel = () => {
 			teams.map((team) => ({
 				key: team.key,
 				group: team,
-				items: team.expanded
-					? [
-							...team.rooms.map((room): TeamsPanelRow => ({ type: 'room', room })),
-							...team.unjoinedRooms.map((room): TeamsPanelRow => ({ type: 'unjoined', room })),
-						]
-					: [],
+				items: team.expanded ? team.rooms : [],
 			})),
 		[teams],
 	);
@@ -144,7 +132,7 @@ const TeamsPanel = () => {
 						groups={virtualGroups}
 						as={TeamsListWrapper}
 						bufferSize={bufferSize}
-						getItemKey={(item) => item.room._id}
+						getItemKey={(item) => item._id}
 						renderGroup={(team) => (
 							<TeamsPanelCollapser
 								team={team}
@@ -155,11 +143,7 @@ const TeamsPanel = () => {
 						)}
 						renderItem={(item, _itemIndex, _team, _teamIndex, rowIndex) => (
 							<RoomListRowWrapper data-index={rowIndex}>
-								{item.type === 'room' ? (
-									<RoomListRow data={itemData} item={item.room} />
-								) : (
-									<TeamsPanelUnjoinedRoom data={itemData} room={item.room} />
-								)}
+								<RoomListRow data={itemData} item={item} />
 							</RoomListRowWrapper>
 						)}
 					/>

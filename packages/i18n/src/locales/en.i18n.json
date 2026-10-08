@@ -6602,7 +6602,6 @@
   "Teams_panel_close": "Close Teams and show all rooms",
   "Teams_panel_empty_description": "Teams group related channels under one name. Join a team or create one to see it here with its rooms.",
   "Teams_panel_empty_title": "You're not in any team yet",
-  "Teams_panel_room_not_joined": "{{room}}, not joined",
   "Teams_panel_search_placeholder": "Search teams and rooms",
   "Teams_Private_Team": "Private team",
   "Teams_Public_Team": "Public team",

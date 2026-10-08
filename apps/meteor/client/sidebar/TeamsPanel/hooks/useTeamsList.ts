@@ -2,7 +2,6 @@ import type { SubscriptionWithRoom } from '@rocket.chat/ui-contexts';
 import { useUserPreference, useUserSubscriptions } from '@rocket.chat/ui-contexts';
 import { useMemo } from 'react';
 
-import type { TeamUnjoinedRoom } from './useTeamUnjoinedRooms';
 import { useSortQueryOptions } from '../../../hooks/useSortQueryOptions';
 import type { GroupUnreadInfo } from '../../hooks/useRoomList';
 import { buildUnreadInfo, emptyUnreadInfo } from '../../hooks/useRoomList';
@@ -15,8 +14,6 @@ export type SidebarTeam = {
 	main: SubscriptionWithRoom;
 	/** Rows to render under the team header: the main room first, then the team's other joined rooms. */
 	rooms: SubscriptionWithRoom[];
-	/** Public rooms of the team the user has not joined, listed after the joined ones while the team is expanded. */
-	unjoinedRooms: TeamUnjoinedRoom[];
 	expanded: boolean;
 	/** Accounts only for what a collapsed team hides; an expanded team's rooms carry their own counters. */
 	unreadInfo: GroupUnreadInfo;
@@ -75,12 +72,10 @@ export type TeamSubscriptions = ReturnType<typeof useTeamSubscriptions>;
 export const useTeamsList = ({
 	teams,
 	expandedTeams,
-	unjoinedRooms,
 	filterText = '',
 }: {
 	teams: TeamSubscriptions;
 	expandedTeams: string[];
-	unjoinedRooms?: Map<string, TeamUnjoinedRoom[]>;
 	filterText?: string;
 }) =>
 	useMemo<SidebarTeam[]>(() => {
@@ -88,15 +83,12 @@ export const useTeamsList = ({
 
 		return teams.flatMap(({ key, title, main, rooms }) => {
 			const allRooms = [main, ...rooms];
-			const allUnjoinedRooms = unjoinedRooms?.get(key) ?? [];
 
 			if (text) {
 				// A team that matches by name keeps all its rooms; otherwise only the matching rooms are kept.
-				const teamMatches = matches(main, text);
-				const visibleRooms = teamMatches ? allRooms : rooms.filter((room) => matches(room, text));
-				const visibleUnjoinedRooms = teamMatches ? allUnjoinedRooms : allUnjoinedRooms.filter((room) => matches(room, text));
+				const visibleRooms = matches(main, text) ? allRooms : rooms.filter((room) => matches(room, text));
 
-				if (!visibleRooms.length && !visibleUnjoinedRooms.length) {
+				if (!visibleRooms.length) {
 					return [];
 				}
 
@@ -106,7 +98,6 @@ export const useTeamsList = ({
 						title,
 						main,
 						rooms: visibleRooms,
-						unjoinedRooms: visibleUnjoinedRooms,
 						expanded: true,
 						unreadInfo: emptyUnreadInfo(),
 					},
@@ -121,13 +112,12 @@ export const useTeamsList = ({
 					title,
 					main,
 					rooms: expanded ? allRooms : [],
-					unjoinedRooms: expanded ? allUnjoinedRooms : [],
 					expanded,
 					unreadInfo: expanded ? emptyUnreadInfo() : buildUnreadInfo(allRooms),
 				},
 			];
 		});
-	}, [teams, expandedTeams, unjoinedRooms, filterText]);
+	}, [teams, expandedTeams, filterText]);
 
 /** The unread state of every room in every team, for the Teams item in the rail. */
 export const useTeamsUnreadInfo = () => {
