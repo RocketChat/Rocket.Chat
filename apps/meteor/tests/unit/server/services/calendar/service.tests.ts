@@ -787,8 +787,8 @@ describe('CalendarService', () => {
 			busy: true,
 		});
 
-		it('ends the claim after a removal when nothing is in progress any more', async () => {
-			await service.refreshBusyPresence(fakeUserId, { removedEvents: true });
+		it('ends the claim when nothing is in progress any more', async () => {
+			await service.refreshBusyPresence(fakeUserId);
 
 			sinon.assert.calledWith(PresenceMock.endActiveState, fakeUserId, 'calendar');
 		});
@@ -807,7 +807,7 @@ describe('CalendarService', () => {
 				toArray: sinon.stub().resolves([inProgress(fakeEndTime), inProgress(later)]),
 			});
 
-			await service.refreshBusyPresence(fakeUserId, { removedEvents: true });
+			await service.refreshBusyPresence(fakeUserId);
 
 			expect(PresenceMock.setActiveState.firstCall.args[1]).to.deep.include({ statusExpiresAt: later });
 		});
@@ -816,7 +816,7 @@ describe('CalendarService', () => {
 			settingsMock.set('Calendar_BusyStatus_Enabled', false);
 			CalendarEventMock.findOverlappingEvents.returns({ toArray: sinon.stub().resolves([inProgress(fakeEndTime)]) });
 
-			await service.refreshBusyPresence(fakeUserId, { removedEvents: true });
+			await service.refreshBusyPresence(fakeUserId);
 
 			sinon.assert.notCalled(PresenceMock.setActiveState);
 			sinon.assert.notCalled(PresenceMock.endActiveState);
