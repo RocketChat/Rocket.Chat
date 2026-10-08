@@ -206,16 +206,16 @@ export class CalendarService extends ServiceClassInternal implements ICalendarSe
 			prepared.push({
 				uid,
 				externalId,
-				...(source && { source }),
-				...(seriesMasterId && { seriesMasterId }),
+				source,
+				seriesMasterId,
 				startTime,
-				...(endTime && { endTime }),
+				endTime,
 				subject,
 				description,
 				meetingUrl,
 				reminderMinutesBeforeStart,
 				reminderTime,
-				...(busy !== undefined && { busy }),
+				busy,
 			});
 
 			const seen = byUid.get(uid);
