@@ -112,13 +112,22 @@ export class DDPSDK implements SDK {
 
 		const sdk = new DDPSDK(connection, stream, account, timeoutControl, rest);
 
-		connection.on('connected', () => {
+		connection.on('connected', async (session) => {
 			if (account.user?.token) {
-				void account.loginWithToken(account.user.token);
+				// Resubscribing before the relogin settles would reach the server as an anonymous session.
+				await account.loginWithToken(account.user.token).catch(() => undefined);
+				// The socket dropped or was replaced meanwhile; the next 'connected' resubscribes.
+				if (connection.status !== 'connected' || connection.session !== session) {
+					return;
+				}
 			}
 			[...stream.subscriptions.entries()].forEach(([, sub]) => {
 				ddp.subscribeWithId(sub.id, sub.name, sub.params);
 			});
+		});
+
+		connection.on('disconnected', () => {
+			ddp.failOutstandingWaitBlock({ error: 'connection-lost', reason: 'Connection lost before the method result arrived' });
 		});
 
 		return sdk;

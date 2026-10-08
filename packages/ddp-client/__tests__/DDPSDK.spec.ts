@@ -300,6 +300,71 @@ describe('Method call and Disconnection cases', () => {
 		jest.useRealTimers();
 	});
 
+	it('should not keep methods queued behind a wait method whose socket dropped before the result', async () => {
+		const sdk = DDPSDK.create('ws://localhost:1234');
+
+		await handleConnection(server, sdk.connection.connect());
+
+		const login = sdk.client.callAsyncWithOptions('login', { wait: true }, { resume: 'token' });
+		await server.nextMessage;
+
+		jest.useFakeTimers();
+
+		server.close();
+		WS.clean();
+		server = new WS('ws://localhost:1234/websocket');
+
+		const connected = new Promise((resolve) => sdk.connection.once('connected', () => resolve(undefined)));
+		await handleConnection(server, jest.advanceTimersByTimeAsync(1000), connected);
+
+		await expect(login).rejects.toMatchObject({ error: 'connection-lost' });
+
+		const [[result]] = await Promise.all([
+			handleMethod(server, 'method', ['args'], '1', sdk.client.callAsync('method', 'args')),
+			jest.advanceTimersByTimeAsync(1000),
+		]);
+
+		expect(result).toBe(1);
+		sdk.connection.close();
+		jest.useRealTimers();
+	});
+
+	it('should resubscribe only after the relogin settles on reconnect', async () => {
+		const sdk = DDPSDK.create('ws://localhost:1234');
+
+		await handleConnection(server, sdk.connection.connect());
+
+		const stream = sdk.stream('stream', '123', jest.fn());
+		await handleSubscription(server, stream.id, 'stream', '123');
+		await stream.ready();
+
+		sdk.account.user = { id: 'uid', token: 'token' };
+
+		jest.useFakeTimers();
+
+		server.close();
+		WS.clean();
+		server = new WS('ws://localhost:1234/websocket');
+
+		const connected = new Promise((resolve) => sdk.connection.once('connected', () => resolve(undefined)));
+		await handleConnection(server, jest.advanceTimersByTimeAsync(1000), connected);
+
+		const received = () => server.messages.map((message) => JSON.parse(String(message)).msg);
+
+		await jest.advanceTimersByTimeAsync(1000);
+		expect(received()).toEqual(['connect', 'method']);
+
+		await Promise.all([
+			handleMethod(server, 'login', [{ resume: 'token' }], JSON.stringify({ id: 'uid', token: 'token', tokenExpires: { $date: 1 } })),
+			jest.advanceTimersByTimeAsync(1000),
+		]);
+		await Promise.all([handleSubscription(server, stream.id, 'stream', '123'), jest.advanceTimersByTimeAsync(1000)]);
+
+		expect(received()).toEqual(['connect', 'method', 'sub']);
+		sdk.connection.close();
+		jest.useRealTimers();
+	});
+
 	it.skip('should handle properly if the message was sent before disconnection but got disconnected before receiving the response', async () => {
 		const sdk = DDPSDK.create('ws://localhost:1234');
 

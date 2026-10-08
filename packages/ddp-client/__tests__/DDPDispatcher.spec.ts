@@ -147,3 +147,38 @@ it('should send the next blocks if the outstanding block was completed', () => {
 	expect(fn).toHaveBeenNthCalledWith(2, block2);
 	expect(fn).toHaveBeenNthCalledWith(3, block3);
 });
+
+it('should fail the outstanding wait block so the blocks queued behind it are sent', () => {
+	const fn = jest.fn();
+
+	const ddpDispatcher = new DDPDispatcher();
+	ddpDispatcher.on('send', fn);
+
+	const login = ddp.call('login');
+	const next = ddp.call('next');
+
+	ddpDispatcher.dispatch(login, { wait: true });
+	ddpDispatcher.dispatch(next);
+
+	const onResult = jest.fn(() => ddpDispatcher.removeItem(login));
+	ddpDispatcher.onResult(login.id, onResult);
+
+	const error = { error: 'connection-lost' };
+	ddpDispatcher.failOutstandingWaitBlock(error);
+
+	expect(onResult).toHaveBeenCalledWith({ msg: 'result', id: login.id, error });
+	expect(ddpDispatcher.queue).toEqual([]);
+	expect(fn).toHaveBeenLastCalledWith(next);
+});
+
+it('should not fail anything when the head block does not wait', () => {
+	const ddpDispatcher = new DDPDispatcher();
+	const onResult = jest.fn();
+
+	const login = ddp.call('login');
+	ddpDispatcher.onResult(login.id, onResult);
+
+	ddpDispatcher.failOutstandingWaitBlock({ error: 'connection-lost' });
+
+	expect(onResult).not.toHaveBeenCalled();
+});
