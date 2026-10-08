@@ -17,7 +17,7 @@ import type { IAppsEngineService } from './types/IAppsEngineService';
 import type { IAuthorization, RoomAccessValidator, UserWithRoles } from './types/IAuthorization';
 import type { IAuthorizationLivechat } from './types/IAuthorizationLivechat';
 import type { IBannerService } from './types/IBannerService';
-import type { CalendarBatchOptions, CalendarBatchResult, CalendarPresenceRefreshOptions, ICalendarService } from './types/ICalendarService';
+import type { CalendarBatchOptions, CalendarBatchResult, ICalendarService } from './types/ICalendarService';
 import type { ICallHistoryService } from './types/ICallHistoryService';
 import type { IDeviceManagementService } from './types/IDeviceManagementService';
 import type { IEnterpriseSettings } from './types/IEnterpriseSettings';
@@ -163,7 +163,6 @@ export type {
 	IUploadService,
 	CalendarBatchOptions,
 	CalendarBatchResult,
-	CalendarPresenceRefreshOptions,
 	ICalendarService,
 	IAISearchService,
 	AISearchAnswerMessage,

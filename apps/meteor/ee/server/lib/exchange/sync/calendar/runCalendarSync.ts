@@ -42,7 +42,7 @@ export const runCalendarSync = async (): Promise<CalendarSyncRunSummary> => {
 	running = true;
 
 	// The value is the delete gate: true only when this user had a busy, in-progress event removed.
-	const dirty = new Map<IUser['_id'], boolean>();
+	const dirty = new Set<IUser['_id']>();
 
 	try {
 		if (!isServerSyncEnabled()) {
@@ -77,7 +77,7 @@ export const runCalendarSync = async (): Promise<CalendarSyncRunSummary> => {
 			}
 
 			if (outcome.changed) {
-				dirty.set(uid, (dirty.get(uid) ?? false) || outcome.removedEvents);
+				dirty.add(uid);
 			}
 
 			if (outcome.fatal) {

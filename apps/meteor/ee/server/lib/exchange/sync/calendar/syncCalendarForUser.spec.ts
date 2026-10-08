@@ -25,7 +25,6 @@ const outcome = (over: Partial<CalendarSyncOutcome> = {}): CalendarSyncOutcome =
 	deleted: 0,
 	pruned: 0,
 	changed: false,
-	removedEvents: false,
 	failed: false,
 	fatal: false,
 	...over,
@@ -59,16 +58,16 @@ describe('syncCalendarForUser', () => {
 	});
 
 	it('still applies the side effects of work that committed before the failure', async () => {
-		syncCalendarWindow.mockResolvedValue(outcome({ failed: true, changed: true, removedEvents: true, error: new Error('boom') }));
+		syncCalendarWindow.mockResolvedValue(outcome({ failed: true, changed: true, error: new Error('boom') }));
 
 		await expect(syncCalendarForUser('uid')).rejects.toThrow('boom');
-		expect(applyDeferredSideEffects).toHaveBeenCalledWith(new Map([['uid', true]]));
+		expect(applyDeferredSideEffects).toHaveBeenCalledWith(new Set(['uid']));
 	});
 
 	it('leaves the side effects alone when nothing changed', async () => {
 		await syncCalendarForUser('uid');
 
-		expect(applyDeferredSideEffects).toHaveBeenCalledWith(new Map());
+		expect(applyDeferredSideEffects).toHaveBeenCalledWith(new Set());
 	});
 
 	it('asks the user to verify their email rather than blaming the mailbox', async () => {

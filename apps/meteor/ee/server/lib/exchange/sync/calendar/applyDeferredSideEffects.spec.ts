@@ -20,32 +20,22 @@ describe('applyDeferredSideEffects', () => {
 		setupNextStatusChange.mockResolvedValue(undefined);
 	});
 
-	it('passes each user their own removal gate', async () => {
-		await applyDeferredSideEffects(
-			new Map([
-				['a', true],
-				['b', false],
-			]),
-		);
+	it('refreshes every dirty user', async () => {
+		await applyDeferredSideEffects(new Set(['a', 'b']));
 
-		expect(refreshBusyPresence).toHaveBeenNthCalledWith(1, 'a', { removedEvents: true });
-		expect(refreshBusyPresence).toHaveBeenNthCalledWith(2, 'b', { removedEvents: false });
+		expect(refreshBusyPresence).toHaveBeenNthCalledWith(1, 'a');
+		expect(refreshBusyPresence).toHaveBeenNthCalledWith(2, 'b');
 	});
 
 	it('reschedules the workspace jobs once, not once per user', async () => {
-		await applyDeferredSideEffects(
-			new Map([
-				['a', false],
-				['b', false],
-			]),
-		);
+		await applyDeferredSideEffects(new Set(['a', 'b']));
 
 		expect(setupNextNotification).toHaveBeenCalledTimes(1);
 		expect(setupNextStatusChange).toHaveBeenCalledTimes(1);
 	});
 
 	it('does not reschedule when no user changed', async () => {
-		await applyDeferredSideEffects(new Map());
+		await applyDeferredSideEffects(new Set());
 
 		expect(setupNextNotification).not.toHaveBeenCalled();
 		expect(setupNextStatusChange).not.toHaveBeenCalled();
@@ -54,12 +44,7 @@ describe('applyDeferredSideEffects', () => {
 	it('keeps going for the other users when one presence write fails', async () => {
 		refreshBusyPresence.mockRejectedValueOnce(new Error('boom'));
 
-		await applyDeferredSideEffects(
-			new Map([
-				['a', false],
-				['b', false],
-			]),
-		);
+		await applyDeferredSideEffects(new Set(['a', 'b']));
 
 		expect(refreshBusyPresence).toHaveBeenCalledTimes(2);
 		expect(setupNextNotification).toHaveBeenCalled();
