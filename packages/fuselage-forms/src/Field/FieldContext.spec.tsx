@@ -2,7 +2,7 @@ import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 
 import { Field, FieldLabel, useFieldDescriptorId } from '.';
-import { CheckBox, TextInput } from '../Inputs';
+import { CheckBox, MultiSelectFiltered, TextInput } from '../Inputs';
 
 it('should stop acting on a wrapped input after it is replaced', async () => {
 	const { container, rerender } = render(
@@ -43,4 +43,24 @@ it('should keep the input id a single token when a placeholder is registered', (
 
 	expect(input?.id).not.toContain(' ');
 	expect(label?.htmlFor).toBe(input?.id);
+});
+
+it('should leave the props of an input outside a field untouched', () => {
+	const { container } = render(<TextInput id='custom' aria-labelledby='external' aria-invalid='true' />);
+
+	const input = container.querySelector('input');
+
+	expect(input).toHaveAttribute('id', 'custom');
+	expect(input).toHaveAttribute('aria-labelledby', 'external');
+	expect(input).toHaveAttribute('aria-invalid', 'true');
+	expect(input).not.toHaveAttribute('aria-describedby');
+});
+
+it('should not reference a missing label from an input outside a field', () => {
+	render(<MultiSelectFiltered options={[]} onChange={() => undefined} aria-label='Players' />);
+
+	const combobox = screen.getByRole('combobox');
+
+	expect(combobox).not.toHaveAttribute('aria-labelledby');
+	expect(combobox).toHaveAccessibleName('Players');
 });

@@ -116,14 +116,17 @@ export const useFieldReferencedByInput = () => {
 		setFieldType('referencedByInput');
 	}, [setFieldType]);
 
-	return useMemo(
-		() => ({
+	return useMemo(() => {
+		if (!id) {
+			return {};
+		}
+
+		return {
 			'id': getInputId(id),
 			'aria-describedby': getDescribedBy(descriptors, id),
 			...getAriaInvalid(descriptors),
-		}),
-		[descriptors, id],
-	);
+		};
+	}, [descriptors, id]);
 };
 
 // label has id and input is aria-labelledby
@@ -134,14 +137,17 @@ export const useFieldReferencedByLabel = () => {
 		setFieldType('referencedByLabel');
 	}, [setFieldType]);
 
-	return useMemo(
-		() => ({
+	return useMemo(() => {
+		if (!id) {
+			return {};
+		}
+
+		return {
 			'aria-labelledby': getLabelledBy(id, descriptors),
 			'aria-describedby': getDescribedBy(descriptors, id),
 			...getAriaInvalid(descriptors),
-		}),
-		[descriptors, id],
-	);
+		};
+	}, [descriptors, id]);
 };
 
 // label has id and input is aria-labelledby + has id for aria-controls
@@ -152,24 +158,27 @@ export const useFieldReferencedByLabelWithId = () => {
 		setFieldType('referencedByLabel');
 	}, [setFieldType]);
 
-	return useMemo(
-		() => ({
+	return useMemo(() => {
+		if (!id) {
+			return {};
+		}
+
+		return {
 			id,
 			'aria-labelledby': getLabelledBy(id, descriptors),
 			'aria-describedby': getDescribedBy(descriptors, id),
 			...getAriaInvalid(descriptors),
-		}),
-		[descriptors, id],
-	);
+		};
+	}, [descriptors, id]);
 };
 
 // label is rendered visually hidden inside the inputs wrapper label
 export const useFieldWrappedByInputLabel = (): [
 	ReactNode,
 	{
-		'aria-describedby': string;
-		'id': string;
-		'aria-invalid': 'true' | 'false';
+		'aria-describedby'?: string;
+		'id'?: string;
+		'aria-invalid'?: 'true' | 'false';
 	},
 	RefCallback<HTMLElement>,
 ] => {
@@ -198,11 +207,13 @@ export const useFieldWrappedByInputLabel = (): [
 	return useMemo(
 		() => [
 			label,
-			{
-				'aria-describedby': getDescribedBy(descriptors, id),
-				'id': getInputId(id),
-				...getAriaInvalid(descriptors),
-			},
+			id
+				? {
+						'aria-describedby': getDescribedBy(descriptors, id),
+						'id': getInputId(id),
+						...getAriaInvalid(descriptors),
+					}
+				: {},
 			refCallback,
 		],
 		[label, descriptors, id, refCallback],
