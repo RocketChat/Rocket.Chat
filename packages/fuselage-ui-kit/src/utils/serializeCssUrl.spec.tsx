@@ -10,9 +10,27 @@ it.each([
 	['https://example.test/image.png', 'url("https://example.test/image.png")'],
 	['a"b', String.raw`url("a\"b")`],
 	[String.raw`a\b`, String.raw`url("a\\b")`],
-	['a\nb', String.raw`url("a\nb")`],
+	['a\nb', String.raw`url("a\a b")`],
 ])('serializes %j as a quoted CSS URL', (input, expected) => {
 	expect(serializeCssUrl(input)).toBe(expected);
+});
+
+it.each([
+	['backspace', '\b', String.raw`\8 `],
+	['tab', '\t', String.raw`\9 `],
+	['newline', '\n', String.raw`\a `],
+	['form feed', '\f', String.raw`\c `],
+	['carriage return', '\r', String.raw`\d `],
+	['unit separator', '\x1f', String.raw`\1f `],
+])('preserves %s in a URL when CSS parses it', (_name, character, expectedEscape) => {
+	const style = document.createElement('style');
+
+	style.textContent = `.image { background-image: ${serializeCssUrl(`a${character}b`)}; }`;
+	document.head.append(style);
+
+	expect((style.sheet?.cssRules[0] as CSSStyleRule).style.cssText).toBe(`background-image: url("a${expectedEscape}b");`);
+
+	style.remove();
 });
 
 it('does not let URL content create additional CSS rules', () => {
