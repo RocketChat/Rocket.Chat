@@ -151,6 +151,59 @@ const MyComponent = (props: MyComponentProps) => /* ... */;
 export default MyComponent;
 ```
 
+## Destructure props explicitly; don't spread them
+
+Name every prop a component uses and pass each one on by name. A `{...props}` spread hides what reaches the child,
+lets callers override things the component meant to own, and forwards props the child does not understand to the DOM.
+
+❌ Incorrect:
+
+```tsx
+const CallDeviceToggle = ({ device, ...props }: CallDeviceToggleProps) => <IconButton icon={iconFor(device)} {...props} />;
+```
+
+✅ Correct:
+
+```tsx
+const CallDeviceToggle = ({ device, title, disabled, onClick }: CallDeviceToggleProps) => (
+	<IconButton icon={iconFor(device)} title={title} disabled={disabled} onClick={onClick} />
+);
+```
+
+**When it does not apply:** a component used as the `button` of `GenericMenu` (`packages/ui-client`) is cloned by
+Fuselage's `Menu`, which injects the trigger's props and ref — that component has to forward what it receives.
+Leave a one-line comment at the spread saying so.
+
+## Prefer explicit variants over boolean mode props
+
+A boolean that switches a component between modes (`isLocal`, `compact`, `showChat`) multiplies into combinations
+nobody designed and puts every mode's logic in one body. Give each mode its own component, sharing the parts they
+have in common.
+
+❌ Incorrect:
+
+```tsx
+<ParticipantTile participant={participant} isLocal compact showName={!compact} />
+```
+
+✅ Correct:
+
+```tsx
+<LocalParticipantTile participant={participant} />
+<CompactParticipantTile participant={participant} />
+```
+
+Props that vary appearance within one mode — `small`, `primary` on a button — are not what this is about.
+
+## Keep business rules out of components
+
+A rule — which status a member shows, whether a control is offered — is a pure function in a `.ts` file with its
+own unit test, not a branch inside a component. `packages/ui-conference/src/lib/memberStatus.ts` and its spec are
+the shape.
+
+When a component passes ~300 lines, split it: one hook per concern (state, data, a subscription) and small
+components for the parts, so each can be read and tested alone.
+
 ## Use generic types when appropriate
 
 Generic types are a great way to ensure type safety once they enable us to not fall into the unsoundness of type assertions.
