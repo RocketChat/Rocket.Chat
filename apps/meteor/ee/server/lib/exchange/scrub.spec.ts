@@ -64,6 +64,17 @@ describe('scrubText', () => {
 		it('redacts a password in JSON, where a quote sits between the key and the colon', () => {
 			expect(scrubText('{"username":"svc-rc","password":"hunter2"}')).not.toContain('hunter2');
 		});
+
+		it('redacts a password carried in the userinfo of a URL, keeping the host', () => {
+			const result = scrubText('could not reach https://svc-rc:hunter2@exchange.corp.example/EWS/Exchange.asmx');
+
+			expect(result).not.toContain('hunter2');
+			expect(result).toContain('exchange.corp.example');
+		});
+
+		it('redacts a bare token query parameter, not only the oauth named ones', () => {
+			expect(scrubText('GET https://graph.microsoft.com/v1.0/me?token=abc123def456')).not.toContain('abc123def456');
+		});
 	});
 
 	describe('what it leaves alone', () => {
@@ -114,10 +125,8 @@ describe('scrubForLog', () => {
 		});
 	});
 
-	it('keeps a key that names a location, whose value the text patterns still cover', () => {
-		const config = { tokenEndpoint: 'https://login.microsoftonline.com/tenant/oauth2/v2.0/token' };
-
-		expect(scrubForLog(config)).toEqual(config);
+	it('redacts a sensitive key even when it also names a location', () => {
+		expect(scrubForLog({ passwordUrl: 'https://svc:hunter2@host/reset' })).toEqual({ passwordUrl: REDACTED });
 	});
 
 	it('passes non-string primitives through untouched', () => {
