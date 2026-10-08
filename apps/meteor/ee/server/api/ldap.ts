@@ -1,4 +1,5 @@
 import { LDAPEnterprise } from '@rocket.chat/core-services';
+import { License } from '@rocket.chat/license';
 import { ajv, validateBadRequestErrorResponse, validateUnauthorizedErrorResponse } from '@rocket.chat/rest-typings';
 
 import { API } from '../../../server/api/api';
@@ -43,7 +44,7 @@ API.v1.post(
 		if (
 			settings.get('LDAP_Background_Sync') !== true &&
 			settings.get('LDAP_Background_Sync_Avatars') !== true &&
-			settings.get('LDAP_Background_Sync_ABAC_Attributes') !== true
+			!(settings.get('LDAP_Background_Sync_ABAC_Attributes') === true && License.hasModule('abac') && settings.get('ABAC_Enabled') === true)
 		) {
 			throw new Error('LDAP_Background_Sync_disabled');
 		}

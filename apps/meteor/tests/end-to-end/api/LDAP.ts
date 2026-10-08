@@ -124,6 +124,23 @@ const waitForLdapConnection = () =>
 			});
 		});
 
+		describe('when only ABAC attribute sync is enabled but ABAC is off', () => {
+			before(async () => {
+				await updateSetting('LDAP_Background_Sync_ABAC_Attributes', true);
+			});
+
+			after(async () => {
+				await updateSetting('LDAP_Background_Sync_ABAC_Attributes', false);
+			});
+
+			it('should report that nothing is enabled to sync', async () => {
+				const res = await request.post(api('ldap.syncNow')).set(credentials).expect('Content-Type', 'application/json').expect(400);
+
+				expect(res.body).to.have.property('success', false);
+				expect(res.body).to.have.property('error', 'LDAP_Background_Sync_disabled');
+			});
+		});
+
 		describe('when only avatar sync is enabled', () => {
 			before(async () => {
 				await updateSetting('LDAP_Background_Sync_Avatars', true);
@@ -151,10 +168,16 @@ const waitForLdapConnection = () =>
 				});
 
 				it('should report the error that stopped the sync', async () => {
-					const res = await request.post(api('ldap.syncNow')).set(credentials).expect('Content-Type', 'application/json').expect(400);
+					await retry(
+						'LDAP settings propagation',
+						async () => {
+							const res = await request.post(api('ldap.syncNow')).set(credentials).expect('Content-Type', 'application/json').expect(400);
 
-					expect(res.body).to.have.property('success', false);
-					expect(res.body).to.have.property('error', 'LDAP_Sync_failed');
+							expect(res.body).to.have.property('success', false);
+							expect(res.body).to.have.property('error', 'LDAP_Sync_failed');
+						},
+						{ delayMs: 1_000 },
+					);
 				});
 			});
 		});
@@ -228,11 +251,17 @@ const waitForLdapConnection = () =>
 				});
 
 				it('should report the error that stopped the sync', async () => {
-					const res = await request.post(api('ldap.syncNow')).set(credentials).expect('Content-Type', 'application/json').expect(400);
+					await retry(
+						'LDAP settings propagation',
+						async () => {
+							const res = await request.post(api('ldap.syncNow')).set(credentials).expect('Content-Type', 'application/json').expect(400);
 
-					expect(res.body).to.have.property('success', false);
-					expect(res.body).to.have.property('error', 'LDAP_Sync_failed');
-					expect(res.body.details).to.deep.equal({ error: 'Failed to get email address from LDAP user' });
+							expect(res.body).to.have.property('success', false);
+							expect(res.body).to.have.property('error', 'LDAP_Sync_failed');
+							expect(res.body.details).to.deep.equal({ error: 'Failed to get email address from LDAP user' });
+						},
+						{ delayMs: 1_000 },
+					);
 				});
 			});
 		});
