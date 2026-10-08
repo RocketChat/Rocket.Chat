@@ -6,6 +6,6 @@ export { default as CreateRoomStepsFooter } from './CreateRoomStepsFooter';
 export { useAbacCreationFlow } from './useAbacCreationFlow';
 export { isAbacCreationBlocked, useAbacRoomCreation } from './useAbacRoomCreation';
 export type { AbacRoomCreation } from './useAbacRoomCreation';
-export { useAssignableAttributeList } from './useAssignableAttributeList';
+export { useAssignableAttributeList, useAssignableAttributes } from './useAssignableAttributeList';
 export { useCreateRoomSteps } from './useCreateRoomSteps';
 export type { CreateRoomStep } from './useCreateRoomSteps';
