@@ -87,14 +87,14 @@ export class MicrosoftGraphProvider implements IExchangeProvider {
 
 		const raw = Array.isArray(payload.value) ? (payload.value as GraphEvent[]) : [];
 		const nextLink = asString(payload['@odata.nextLink']);
-		const events = await this.resolveSeries(mailbox, raw);
+		const { events, complete } = await this.resolveSeries(mailbox, raw);
 
 		return {
 			items: events.map((event) => this.toExchangeEvent(event)).filter((event): event is ExchangeEvent => event !== undefined),
 			// A `nextLink` resumes this round, a `deltaLink` opens the next one. Both come back as the cursor.
 			cursor: nextLink ?? asString(payload['@odata.deltaLink']),
 			hasMore: Boolean(nextLink),
-			coverage: 'delta',
+			coverage: complete ? 'delta' : 'partial',
 			resyncedSeries: this.resyncedSeries(raw),
 		};
 	}
@@ -104,7 +104,7 @@ export class MicrosoftGraphProvider implements IExchangeProvider {
 	 * stub per occurrence: the stub carries the times and nothing else, so it is read on top of its master,
 	 * and the master itself is dropped because the occurrences are what happens in the window.
 	 */
-	private async resolveSeries(mailbox: string, raw: GraphEvent[]): Promise<GraphEvent[]> {
+	private async resolveSeries(mailbox: string, raw: GraphEvent[]): Promise<{ events: GraphEvent[]; complete: boolean }> {
 		const masters = new Map<string, GraphEvent>();
 		for (const event of raw) {
 			const id = asString(event.id);
@@ -164,7 +164,7 @@ export class MicrosoftGraphProvider implements IExchangeProvider {
 			logger.warn({ msg: 'Occurrences left out of this round, so the stored events keep what they have', mailbox, unresolved });
 		}
 
-		return resolved;
+		return { events: resolved, complete: unresolved === 0 };
 	}
 
 	/**
