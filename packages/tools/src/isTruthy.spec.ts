@@ -6,6 +6,7 @@ describe('isTruthy', () => {
 		['null', null],
 		['false', false],
 		['zero', 0],
+		['zero bigint', 0n],
 		['empty string', ''],
 		['NaN', Number.NaN],
 	])('returns false for falsy values: %s', (_name, value) => {
