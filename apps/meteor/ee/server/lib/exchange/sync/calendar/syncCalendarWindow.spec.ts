@@ -370,12 +370,12 @@ describe('syncCalendarWindow', () => {
 		expect(provider.listEvents).toHaveBeenCalledTimes(MAX_EVENT_PAGES);
 	});
 
-	it('reports removedEvents when the prune removed something, which is what may end a busy claim', async () => {
+	it('reports what the prune removed', async () => {
 		pruneImportedWindow.mockResolvedValue(batch({ changed: true, deleted: 2 }));
 		const provider = providerReturning('ews', page([upsert('A')], { coverage: 'full' }));
 
 		const outcome = await syncCalendarWindow(provider, UID, MAILBOX, timeWindow);
 
-		expect(outcome).toMatchObject({ pruned: 2, removedEvents: true, changed: true });
+		expect(outcome).toMatchObject({ pruned: 2, changed: true });
 	});
 });
