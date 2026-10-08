@@ -14,6 +14,6 @@ export interface IExchangeCalendarSyncStateModel extends IBaseModel<IExchangeCal
 		cursor: string | undefined,
 		lastSyncAt: Date,
 	): Promise<UpdateResult>;
-	setLastError(uid: IUser['_id'], identity: ExchangeCalendarSyncIdentity, lastError: string): Promise<UpdateResult>;
+	setLastError(uid: IUser['_id'], lastError: string): Promise<UpdateResult>;
 	clearCursorByUserId(uid: IUser['_id']): Promise<UpdateResult>;
 }
