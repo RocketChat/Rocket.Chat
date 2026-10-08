@@ -47,6 +47,7 @@ const UserCard = ({
 	const { t } = useTranslation();
 	const isLayoutEmbedded = useEmbeddedLayout();
 	const MarkdownText = useContext(MarkdownTextContext);
+	const showUsername = !!username && name !== username;
 
 	return (
 		<HoverCard aria-label={t('User_card')}>
@@ -76,9 +77,9 @@ const UserCard = ({
 					}
 				/>
 				<Box display='flex' flexDirection='column' marginBlockStart='x18'>
-					{(roles || localTime || username) && (
+					{(showUsername || roles || localTime) && (
 						<HoverCardInfoList>
-							{username && name !== username && (
+							{showUsername && (
 								<HoverCardInfoItem icon='at' label={t('Username')}>
 									{username}
 								</HoverCardInfoItem>
