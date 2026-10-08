@@ -27,8 +27,16 @@ const SlaTable = ({ reload }: { reload: MutableRefObject<() => void> }) => {
 
 	const [filter, setFilter] = useState('');
 
-	const { current, itemsPerPage, setItemsPerPage: onSetItemsPerPage, setCurrent: onSetCurrent, ...paginationProps } = usePagination();
 	const { sortBy, sortDirection, setSort } = useSort<'name' | 'description' | 'dueTimeInMinutes'>('name');
+	const {
+		current,
+		itemsPerPage,
+		setItemsPerPage: onSetItemsPerPage,
+		setCurrent: onSetCurrent,
+		...paginationProps
+	} = usePagination({
+		resetOn: [filter, sortBy, sortDirection],
+	});
 
 	const query = useDebouncedValue(
 		useMemo(

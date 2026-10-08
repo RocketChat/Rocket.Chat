@@ -31,7 +31,15 @@ const ManagersTable = () => {
 
 	const { sortBy, sortDirection, setSort } = useSort<'name' | 'username' | 'emails.address'>('name');
 
-	const { current, itemsPerPage, setItemsPerPage: onSetItemsPerPage, setCurrent: onSetCurrent, ...paginationProps } = usePagination();
+	const {
+		current,
+		itemsPerPage,
+		setItemsPerPage: onSetItemsPerPage,
+		setCurrent: onSetCurrent,
+		...paginationProps
+	} = usePagination({
+		resetOn: [text, sortBy, sortDirection],
+	});
 
 	const query = useDebouncedValue(
 		useMemo(

@@ -32,7 +32,9 @@ const AgentsTable = () => {
 		500,
 	) as ['name' | 'username' | 'emails.address' | 'statusLivechat', 'asc' | 'desc'];
 
-	const { current, itemsPerPage, setItemsPerPage, setCurrent, ...paginationProps } = usePagination();
+	const { current, itemsPerPage, setItemsPerPage, setCurrent, ...paginationProps } = usePagination({
+		resetOn: [text, sortBy, sortDirection],
+	});
 
 	const query = useQuery({ text, current, itemsPerPage }, debouncedSort);
 	const { data, isSuccess, isLoading, isError, refetch } = useAgentsQuery(query);

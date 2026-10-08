@@ -25,8 +25,16 @@ const TagsTable = () => {
 	const [filter, setFilter] = useState('');
 	const router = useRouter();
 
-	const { current, itemsPerPage, setItemsPerPage: onSetItemsPerPage, setCurrent: onSetCurrent, ...paginationProps } = usePagination();
 	const { sortBy, sortDirection, setSort } = useSort<'name' | 'description'>('name');
+	const {
+		current,
+		itemsPerPage,
+		setItemsPerPage: onSetItemsPerPage,
+		setCurrent: onSetCurrent,
+		...paginationProps
+	} = usePagination({
+		resetOn: [filter, sortBy, sortDirection],
+	});
 
 	const onRowClick = useStableCallback((id: string) => router.navigate(`/omnichannel/tags/edit/${id}`));
 	const handleAddNew = useStableCallback(() => router.navigate('/omnichannel/tags/new'));

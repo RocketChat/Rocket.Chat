@@ -38,8 +38,16 @@ const CannedResponsesTable = () => {
 	const [text, setText] = useState('');
 	const debouncedText = useDebouncedValue(text, 500);
 
-	const { current, itemsPerPage, setItemsPerPage: onSetItemsPerPage, setCurrent: onSetCurrent, ...paginationProps } = usePagination();
 	const { sortBy, setSort, sortDirection } = useSort<'shortcut' | 'scope' | 'tags' | '_createdAt' | 'createdBy'>('shortcut');
+	const {
+		current,
+		itemsPerPage,
+		setItemsPerPage: onSetItemsPerPage,
+		setCurrent: onSetCurrent,
+		...paginationProps
+	} = usePagination({
+		resetOn: [debouncedText, sharing, createdBy, sortBy, sortDirection],
+	});
 
 	const query = useMemo(
 		() => ({

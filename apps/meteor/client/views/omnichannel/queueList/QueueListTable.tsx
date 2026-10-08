@@ -22,7 +22,6 @@ import GenericNoResults from '../../../components/GenericNoResults';
 
 const QueueListTable = () => {
 	const t = useTranslation();
-	const { current, itemsPerPage, setItemsPerPage: onSetItemsPerPage, setCurrent: onSetCurrent, ...paginationProps } = usePagination();
 	const { sortBy, sortDirection, setSort } = useSort<'servedBy' | 'department' | 'total' | 'status'>('servedBy');
 
 	const [filters, setFilters] = useState<{
@@ -33,6 +32,16 @@ const QueueListTable = () => {
 		servedBy: '',
 		status: '',
 		departmentId: '',
+	});
+
+	const {
+		current,
+		itemsPerPage,
+		setItemsPerPage: onSetItemsPerPage,
+		setCurrent: onSetCurrent,
+		...paginationProps
+	} = usePagination({
+		resetOn: [filters, sortBy, sortDirection],
 	});
 
 	const mediaQuery = useMediaQuery('(min-width: 1024px)');

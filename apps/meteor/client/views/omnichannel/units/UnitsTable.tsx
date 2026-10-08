@@ -24,8 +24,16 @@ const UnitsTable = () => {
 	const [filter, setFilter] = useState('');
 	const router = useRouter();
 
-	const { current, itemsPerPage, setItemsPerPage: onSetItemsPerPage, setCurrent: onSetCurrent, ...paginationProps } = usePagination();
 	const { sortBy, sortDirection, setSort } = useSort<'name' | 'visibility'>('name');
+	const {
+		current,
+		itemsPerPage,
+		setItemsPerPage: onSetItemsPerPage,
+		setCurrent: onSetCurrent,
+		...paginationProps
+	} = usePagination({
+		resetOn: [filter, sortBy, sortDirection],
+	});
 
 	const query = useDebouncedValue(
 		useMemo(

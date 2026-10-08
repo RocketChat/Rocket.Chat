@@ -44,8 +44,8 @@ const MonitorsTable = () => {
 
 	const dispatchToastMessage = useToastMessageDispatch();
 
-	const pagination = usePagination();
 	const sort = useSort<'name' | 'username' | 'email'>('name');
+	const pagination = usePagination({ resetOn: [text, sort.sortBy, sort.sortDirection] });
 
 	const getMonitors = useEndpoint('GET', '/v1/livechat/monitors');
 

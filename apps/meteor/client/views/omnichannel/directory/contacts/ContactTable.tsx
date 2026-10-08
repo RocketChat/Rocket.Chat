@@ -26,8 +26,10 @@ function ContactTable() {
 	const [term, setTerm] = useState('');
 	const omnichannelDirectoryRouter = useOmnichannelDirectoryRouter();
 
-	const { current, itemsPerPage, setItemsPerPage, setCurrent, ...paginationProps } = usePagination();
 	const { sortBy, sortDirection, setSort } = useSort<'name' | 'channels.lastChat.ts' | 'contactManager.username' | 'lastChat.ts'>('name');
+	const { current, itemsPerPage, setItemsPerPage, setCurrent, ...paginationProps } = usePagination({
+		resetOn: [term, sortBy, sortDirection],
+	});
 
 	const query = useDebouncedValue(
 		useMemo(

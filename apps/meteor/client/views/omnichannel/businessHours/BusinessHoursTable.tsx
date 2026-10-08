@@ -20,7 +20,15 @@ const BusinessHoursTable = () => {
 	const t = useTranslation();
 	const [text, setText] = useState('');
 
-	const { current, itemsPerPage, setItemsPerPage: onSetItemsPerPage, setCurrent: onSetCurrent, ...paginationProps } = usePagination();
+	const {
+		current,
+		itemsPerPage,
+		setItemsPerPage: onSetItemsPerPage,
+		setCurrent: onSetCurrent,
+		...paginationProps
+	} = usePagination({
+		resetOn: [text],
+	});
 
 	const query = useDebouncedValue(
 		useMemo(

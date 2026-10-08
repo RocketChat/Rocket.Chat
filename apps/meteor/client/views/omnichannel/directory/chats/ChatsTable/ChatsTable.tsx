@@ -31,8 +31,16 @@ const ChatsTable = () => {
 
 	const chatsQuery = useChatsQuery();
 
-	const { current, itemsPerPage, setItemsPerPage: onSetItemsPerPage, setCurrent: onSetCurrent, ...paginationProps } = usePagination();
 	const { sortBy, sortDirection, setSort } = useSort<'fname' | 'ts'>('ts', 'desc');
+	const {
+		current,
+		itemsPerPage,
+		setItemsPerPage: onSetItemsPerPage,
+		setCurrent: onSetCurrent,
+		...paginationProps
+	} = usePagination({
+		resetOn: [filters, sortBy, sortDirection],
+	});
 
 	const query = useMemo(
 		() => chatsQuery(filters, [sortBy, sortDirection], current, itemsPerPage),
