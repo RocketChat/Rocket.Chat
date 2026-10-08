@@ -12,7 +12,7 @@ import {
 } from '@rocket.chat/ui-client';
 import { useEndpoint } from '@rocket.chat/ui-contexts';
 import { useQuery } from '@tanstack/react-query';
-import { useMemo, useEffect, useState } from 'react';
+import { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import GenericNoResults from '../../../../components/GenericNoResults';
@@ -28,7 +28,7 @@ const LogsPage = () => {
 
 	const formatDate = useFormatDateAndTime();
 
-	const { current, itemsPerPage, setItemsPerPage, setCurrent, ...paginationProps } = usePagination();
+	const { current, itemsPerPage, setItemsPerPage, setCurrent, ...paginationProps } = usePagination({ resetOn: [startDate, endDate] });
 	const getLogs = useEndpoint('GET', '/v1/abac/audit');
 	const query = useMemo(
 		() => ({
@@ -39,11 +39,6 @@ const LogsPage = () => {
 		}),
 		[current, itemsPerPage, startDate, endDate],
 	);
-
-	// Whenever the user changes the filter or the text, reset the pagination to the first page
-	useEffect(() => {
-		setCurrent(0);
-	}, [startDate, endDate, setCurrent]);
 
 	const getActionLabel = (action?: AbacAttributeDefinitionChangeType | AbacActionPerformed | null) => {
 		switch (action) {

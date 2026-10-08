@@ -41,7 +41,15 @@ const SecurityLogsTable = () => {
 		settingId: '',
 	});
 
-	const { current, itemsPerPage, setItemsPerPage: onSetItemsPerPage, setCurrent: onSetCurrent, ...paginationProps } = usePagination();
+	const {
+		current,
+		itemsPerPage,
+		setItemsPerPage: onSetItemsPerPage,
+		setCurrent: onSetCurrent,
+		...paginationProps
+	} = usePagination({
+		resetOn: [query],
+	});
 
 	const handleClearFilters = () => {
 		setSetting('');
@@ -51,7 +59,6 @@ const SecurityLogsTable = () => {
 			end: new Date().toISOString(),
 			settingId: '',
 		});
-		onSetCurrent(0);
 	};
 
 	const handleApplyFilters = () => {
@@ -61,7 +68,6 @@ const SecurityLogsTable = () => {
 			end: end?.toISOString() ?? new Date().toISOString(),
 			settingId: setting,
 		});
-		onSetCurrent(0);
 	};
 
 	const handleItemClick = ({

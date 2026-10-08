@@ -17,7 +17,7 @@ import {
 } from '@rocket.chat/ui-client';
 import { useRouteParameter, useTranslation, useRouter, useEndpoint } from '@rocket.chat/ui-contexts';
 import { useQuery } from '@tanstack/react-query';
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { useMemo, useState } from 'react';
 import { Trans } from 'react-i18next';
 
 import AdminInviteUsers from './AdminInviteUsers';
@@ -65,22 +65,22 @@ const AdminUsersPage = () => {
 		queryFn: async () => getRoles(),
 	});
 
-	const paginationData = usePagination();
 	const sortData = useSort<UsersTableSortingOption>('name');
 
 	const [tab, setTab] = useState<AdminUsersTab>('all');
 	const [userFilters, setUserFilters] = useState<UsersFilters>({ text: '', roles: [] });
 
 	const searchTerm = useDebouncedValue(userFilters.text, 500);
-	const prevSearchTerm = useRef('');
+	const selectedRoles = useMemo(() => userFilters.roles.map((role) => role.id), [userFilters.roles]);
+
+	const paginationData = usePagination({ resetOn: [searchTerm, selectedRoles, tab, sortData.sortBy, sortData.sortDirection] });
 
 	const filteredUsersQueryResult = useFilteredUsers({
 		searchTerm,
-		prevSearchTerm,
 		sortData,
 		paginationData,
 		tab,
-		selectedRoles: useMemo(() => userFilters.roles.map((role) => role.id), [userFilters.roles]),
+		selectedRoles,
 	});
 
 	const pendingUsersCount = usePendingUsersCount(filteredUsersQueryResult.data?.users);
@@ -92,16 +92,10 @@ const AdminUsersPage = () => {
 
 	const handleTabChange = (tab: AdminUsersTab) => {
 		setTab(tab);
-
-		paginationData.setCurrent(0);
 		sortData.setSort(tab === 'pending' ? 'active' : 'name', 'asc');
 	};
 
 	const handleCloseContextualbar = useStableCallback(() => router.navigate('/admin/users'));
-
-	useEffect(() => {
-		prevSearchTerm.current = searchTerm;
-	}, [searchTerm]);
 
 	const isRoutePrevented = useMemo(
 		() => context && ['new', 'invite'].includes(context) && isCreateUserDisabled,

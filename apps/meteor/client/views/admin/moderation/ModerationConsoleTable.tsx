@@ -29,13 +29,21 @@ const ModerationConsoleTable = () => {
 	const { sortBy, sortDirection, setSort } = useSort<'reports.ts' | 'reports.message.u.username' | 'reports.description' | 'count'>(
 		'reports.ts',
 	);
-	const { current, itemsPerPage, setItemsPerPage: onSetItemsPerPage, setCurrent: onSetCurrent, ...paginationProps } = usePagination();
-
 	const [dateRange, setDateRange] = useState<{ start: string | null; end: string | null }>({
 		start: '',
 		end: '',
 	});
 	const { start, end } = dateRange;
+
+	const {
+		current,
+		itemsPerPage,
+		setItemsPerPage: onSetItemsPerPage,
+		setCurrent: onSetCurrent,
+		...paginationProps
+	} = usePagination({
+		resetOn: [text, start, end, sortBy, sortDirection],
+	});
 
 	const query = useDebouncedValue(
 		useMemo(

@@ -13,7 +13,7 @@ import {
 import { useEndpoint } from '@rocket.chat/ui-contexts';
 import { useQuery } from '@tanstack/react-query';
 import type { MutableRefObject } from 'react';
-import { useRef, useState, useEffect, useMemo } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import RoomRow from './RoomRow';
@@ -33,27 +33,25 @@ const RoomsTable = ({ reload }: { reload: MutableRefObject<() => void> }) => {
 
 	const [roomFilters, setRoomFilters] = useState<RoomFilters>({ searchText: '', types: [] });
 
-	const prevRoomFilterText = useRef<string>(roomFilters.searchText);
-
 	const { sortBy, sortDirection, setSort } = useSort<'name' | 't' | 'usersCount' | 'msgs' | 'default' | 'featured' | 'ts'>('name');
-	const { current, itemsPerPage, setItemsPerPage, setCurrent, ...paginationProps } = usePagination();
 	const searchText = useDebouncedValue(roomFilters.searchText, 500);
+	const { current, itemsPerPage, setItemsPerPage, setCurrent, ...paginationProps } = usePagination({
+		resetOn: [searchText, roomFilters.types, sortBy, sortDirection],
+	});
 
 	const query = useDebouncedValue(
-		useMemo(() => {
-			if (searchText !== prevRoomFilterText.current) {
-				setCurrent(0);
-			}
-			return {
+		useMemo(
+			() => ({
 				filter: searchText || '',
 				sort: `{ "${sortBy}": ${sortDirection === 'asc' ? 1 : -1} }`,
 				count: itemsPerPage,
-				offset: searchText === prevRoomFilterText.current ? current : 0,
+				offset: current,
 				types: (roomFilters.types.length ? [...roomFilters.types.map((roomType) => roomType.id)] : DEFAULT_TYPES) as unknown as (
 					'c' | 'd' | 'p' | 'l' | 'discussions' | 'teams'
 				)[],
-			};
-		}, [searchText, sortBy, sortDirection, itemsPerPage, current, roomFilters.types, setCurrent]),
+			}),
+			[searchText, sortBy, sortDirection, itemsPerPage, current, roomFilters.types],
+		),
 		500,
 	);
 
@@ -67,10 +65,6 @@ const RoomsTable = ({ reload }: { reload: MutableRefObject<() => void> }) => {
 	useEffect(() => {
 		reload.current = refetch;
 	}, [reload, refetch]);
-
-	useEffect(() => {
-		prevRoomFilterText.current = searchText;
-	}, [searchText]);
 
 	const headers = (
 		<>

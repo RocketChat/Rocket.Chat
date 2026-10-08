@@ -26,9 +26,16 @@ export type CustomSoundsTableProps = {
 const CustomSoundsTable = ({ reload, onClick }: CustomSoundsTableProps) => {
 	const t = useTranslation();
 	const { sortBy, sortDirection, setSort } = useSort<'name'>('name');
-	const { current, itemsPerPage, setItemsPerPage: onSetItemsPerPage, setCurrent: onSetCurrent, ...paginationProps } = usePagination();
-
 	const [text, setText] = useState('');
+	const {
+		current,
+		itemsPerPage,
+		setItemsPerPage: onSetItemsPerPage,
+		setCurrent: onSetCurrent,
+		...paginationProps
+	} = usePagination({
+		resetOn: [text, sortBy, sortDirection],
+	});
 
 	const query = useDebouncedValue(
 		useMemo(

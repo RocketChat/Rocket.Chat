@@ -22,7 +22,7 @@ const PermissionsPage = ({ isEnterprise }: PermissionsPageProps) => {
 	const router = useRoute('admin-permissions');
 	const setModal = useSetModal();
 
-	const paginationData = usePagination();
+	const paginationData = usePagination({ resetOn: [type, filter] });
 	const { permissions, total, roleList } = usePermissionsAndRoles(type, filter, paginationData.itemsPerPage, paginationData.current);
 
 	const handlePermissionsTab = useStableCallback(() => {

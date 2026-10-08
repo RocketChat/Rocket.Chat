@@ -27,7 +27,15 @@ const IntegrationsTable = ({ type }: IntegrationsTableProps) => {
 	const [text, setText] = useState('');
 	const router = useRoute('admin-integrations');
 	const { sortBy, sortDirection, setSort } = useSort<'name' | 'channel' | '_createdBy' | '_createdAt' | 'username'>('name');
-	const { current, itemsPerPage, setItemsPerPage: onSetItemsPerPage, setCurrent: onSetCurrent, ...paginationProps } = usePagination();
+	const {
+		current,
+		itemsPerPage,
+		setItemsPerPage: onSetItemsPerPage,
+		setCurrent: onSetCurrent,
+		...paginationProps
+	} = usePagination({
+		resetOn: [text, type, sortBy, sortDirection],
+	});
 
 	const query = useDebouncedValue(
 		useMemo(

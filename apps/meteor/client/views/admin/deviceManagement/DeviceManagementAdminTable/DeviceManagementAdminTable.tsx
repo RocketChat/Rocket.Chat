@@ -25,8 +25,10 @@ const isSessionPopulatedSession = (
 const DeviceManagementAdminTable = () => {
 	const { t } = useTranslation();
 	const [text, setText] = useState('');
-	const { current, itemsPerPage, setCurrent, setItemsPerPage, ...paginationProps } = usePagination();
 	const { sortBy, sortDirection, setSort } = useSort<'client' | 'os' | 'username' | 'loginAt'>('username');
+	const { current, itemsPerPage, setCurrent, setItemsPerPage, ...paginationProps } = usePagination({
+		resetOn: [text, sortBy, sortDirection],
+	});
 
 	const query = useDebouncedValue(
 		useMemo(
@@ -34,7 +36,7 @@ const DeviceManagementAdminTable = () => {
 				filter: text,
 				sort: JSON.stringify({ [sortMapping[sortBy]]: sortDirection === 'asc' ? 1 : -1 }),
 				count: itemsPerPage,
-				offset: text ? undefined : current,
+				offset: current,
 			}),
 			[text, itemsPerPage, current, sortBy, sortDirection],
 		),

@@ -60,7 +60,7 @@ const UsersInRolePage = ({ role }: UsersInRolePageProps) => {
 
 	const getUsersInRoleEndpoint = useEndpoint('GET', '/v1/roles.getUsersInRole');
 
-	const paginationData = usePagination();
+	const paginationData = usePagination({ resetOn: [_id, rid] });
 	const { itemsPerPage, current } = paginationData;
 
 	const query = useMemo(

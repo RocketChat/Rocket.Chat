@@ -29,8 +29,16 @@ export type CustomUserStatusProps = {
 const CustomUserStatus = ({ reload, onClick }: CustomUserStatusProps) => {
 	const { t } = useTranslation();
 	const [text, setText] = useState('');
-	const { current, itemsPerPage, setItemsPerPage: onSetItemsPerPage, setCurrent: onSetCurrent, ...paginationProps } = usePagination();
 	const { sortBy, sortDirection, setSort } = useSort<'name' | 'statusType'>('name');
+	const {
+		current,
+		itemsPerPage,
+		setItemsPerPage: onSetItemsPerPage,
+		setCurrent: onSetCurrent,
+		...paginationProps
+	} = usePagination({
+		resetOn: [text, sortBy, sortDirection],
+	});
 
 	const query = useDebouncedValue(
 		useMemo(
