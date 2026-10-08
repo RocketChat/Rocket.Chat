@@ -1781,10 +1781,10 @@ exports[`renders OngoingCallNoScreenSharingPermission without crashing 1`] = `
             </i>
           </button>
           <button
-            aria-label="customize"
+            aria-label="Device_settings_lowercase"
             class="rcx-box rcx-box--full rcx-button--tiny-square rcx-button--square rcx-button--icon rcx-button rcx-css-1wk08i8"
             disabled=""
-            label="customize"
+            label="Device_settings_lowercase"
             title="Device_settings_not_supported_by_browser"
             type="button"
           >
