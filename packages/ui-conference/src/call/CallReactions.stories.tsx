@@ -37,3 +37,14 @@ export const Several: Story = {
 export const Unattributed: Story = {
 	args: { reactions: [{ id: '1', emoji: '❤️' }] },
 };
+
+/** Many at once: the oldest are pushed highest, and each still rises and fades out whole. */
+export const Burst: Story = {
+	args: {
+		reactions: ['👍', '🎉', '😂', '❤️', '👏', '🔥', '😮', '🙌'].map((emoji, index) => ({
+			id: String(index),
+			emoji,
+			name: ['Ada Lovelace', 'Grace Hopper', 'Alan Turing', 'Katherine Johnson'][index % 4],
+		})),
+	},
+};
