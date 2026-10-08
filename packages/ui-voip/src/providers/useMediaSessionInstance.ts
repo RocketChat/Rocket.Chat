@@ -13,7 +13,8 @@ import { useIceServers } from '../hooks/useIceServers';
 type SignalTransport = MediaSignalTransport<ClientMediaSignal>;
 
 const randomStringFactory = () => {
-	if (!window.crypto) {
+	// `crypto.randomUUID` is only exposed in secure contexts, while `crypto` itself is always present
+	if (typeof window.crypto?.randomUUID !== 'function') {
 		return Math.random().toString(36).substring(2, 15);
 	}
 
