@@ -1,9 +1,4 @@
-import type {
-	CalendarBatchOptions,
-	CalendarBatchResult,
-	CalendarPresenceRefreshOptions,
-	ICalendarService,
-} from '@rocket.chat/core-services';
+import type { CalendarBatchOptions, CalendarBatchResult, ICalendarService } from '@rocket.chat/core-services';
 import { Presence, ServiceClassInternal, api } from '@rocket.chat/core-services';
 import type { IUser, ICalendarEvent } from '@rocket.chat/core-typings';
 import { UserStatus } from '@rocket.chat/core-typings';
@@ -296,34 +291,24 @@ export class CalendarService extends ServiceClassInternal implements ICalendarSe
 		return this.finishDeletion(uid, deletedCount, options);
 	}
 
-	public async refreshBusyPresence(uid: IUser['_id'], options?: CalendarPresenceRefreshOptions): Promise<void> {
-		const now = new Date();
-
-		if (options?.removedEvents) {
-			return this.syncBusyPresence(uid, { now });
-		}
-
-		const inProgress = await CalendarEvent.findOverlappingEvents('', uid, now, now).toArray();
-
-		if (inProgress.length) {
-			await this.syncBusyPresence(uid, { now });
-		}
+	public async refreshBusyPresence(uid: IUser['_id']): Promise<void> {
+		return this.syncBusyPresence(uid, { now: new Date() });
 	}
 
 	private async finishDeletion(uid: IUser['_id'], deletedCount: number, options?: CalendarBatchOptions): Promise<CalendarBatchResult> {
 		if (deletedCount > 0 && !options?.deferSideEffects) {
-			await this.applyBatchSideEffects([uid], { removedEvents: true });
+			await this.applyBatchSideEffects([uid]);
 		}
 
 		return { changed: deletedCount > 0, upserted: 0, modified: 0, deleted: deletedCount, skipped: 0 };
 	}
 
-	private async applyBatchSideEffects(uids: IUser['_id'][], options?: CalendarPresenceRefreshOptions): Promise<void> {
+	private async applyBatchSideEffects(uids: IUser['_id'][]): Promise<void> {
 		await this.setupNextNotification();
 		await this.setupNextStatusChange();
 
 		for (const uid of uids) {
-			await this.refreshBusyPresence(uid, options);
+			await this.refreshBusyPresence(uid);
 		}
 	}
 

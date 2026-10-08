@@ -20,7 +20,6 @@ export type CalendarSyncOutcome = {
 	deleted: number;
 	pruned: number;
 	changed: boolean;
-	removedEvents: boolean;
 	failed: boolean;
 	fatal: boolean;
 	error?: unknown;
@@ -32,7 +31,6 @@ const EMPTY: CalendarSyncOutcome = {
 	deleted: 0,
 	pruned: 0,
 	changed: false,
-	removedEvents: false,
 	failed: false,
 	fatal: false,
 };
@@ -129,7 +127,7 @@ const collectPages = async (
 	}
 };
 
-type RemovalResult = { changed: boolean; removedEvents: boolean; deleted: number; pruned: number };
+type RemovalResult = { changed: boolean; deleted: number; pruned: number };
 
 /**
  * The three ways an event leaves: the provider named it, a series came back without it, or the window was
@@ -145,7 +143,6 @@ const applyRemovals = async (
 
 	const record = (result: CalendarBatchResult): number => {
 		removalResult.changed = removalResult.changed || result.changed;
-		removalResult.removedEvents = removalResult.removedEvents || result.deleted > 0;
 
 		return result.deleted;
 	};
@@ -183,7 +180,7 @@ export const syncCalendarWindow = async (
 	// Discarding an EWS cursor just because the time window changed would force a useless and expensive full sync.
 	const reusable = Boolean(state?.cursor) && sameSource && (sameWindow || provider.id !== 'graph');
 
-	const removalResult: RemovalResult = { changed: false, removedEvents: false, deleted: 0, pruned: 0 };
+	const removalResult: RemovalResult = { changed: false, deleted: 0, pruned: 0 };
 
 	try {
 		const collected = await collectPages(provider, mailbox, timeWindow, reusable ? state?.cursor : undefined);
@@ -204,7 +201,6 @@ export const syncCalendarWindow = async (
 			deleted: removalResult.deleted,
 			pruned: removalResult.pruned,
 			changed: removalResult.changed,
-			removedEvents: removalResult.removedEvents,
 			failed: false,
 			fatal: false,
 		};
@@ -222,7 +218,6 @@ export const syncCalendarWindow = async (
 		return {
 			...EMPTY,
 			changed: removalResult.changed,
-			removedEvents: removalResult.removedEvents,
 			failed: true,
 			fatal: FATAL_CODES.has(code),
 			error: err,

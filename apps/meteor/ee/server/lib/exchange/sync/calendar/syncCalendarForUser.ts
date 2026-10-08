@@ -18,7 +18,6 @@ export const syncCalendarForUser = async (uid: IUser['_id']): Promise<CalendarSy
 	inFlight.add(uid);
 
 	let changed = false;
-	let removedEvents = false;
 
 	try {
 		const provider = getExchangeProvider();
@@ -40,7 +39,6 @@ export const syncCalendarForUser = async (uid: IUser['_id']): Promise<CalendarSy
 		const outcome = await syncCalendarWindow(provider, uid, mailbox, getCalendarSyncWindow());
 
 		changed = outcome.changed;
-		removedEvents = outcome.removedEvents;
 
 		if (outcome.failed) {
 			throw outcome.error;
@@ -50,7 +48,7 @@ export const syncCalendarForUser = async (uid: IUser['_id']): Promise<CalendarSy
 	} finally {
 		inFlight.delete(uid);
 
-		const dirty = new Map<IUser['_id'], boolean>(changed ? [[uid, removedEvents]] : []);
+		const dirty = new Set<IUser['_id']>(changed ? [uid] : []);
 		await applyDeferredSideEffects(dirty);
 	}
 };
