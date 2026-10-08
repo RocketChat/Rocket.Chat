@@ -22,7 +22,6 @@ export const useNavBarAISearch = ({
 	const intelligentSearchEnabled = useSetting<boolean>('AI_Intelligent_Search_Enabled', false);
 	const { data: hasIntelligentSearchLicense = false } = useHasLicenseModule(AI_LICENSE_MODULE);
 	const canSearchWithAIFromTopBar = hasIntelligentSearchLicense && intelligentSearchEnabled;
-	// const canSearchWithAIFromTopBar = true; // For testing purposes, we are enabling AI search regardless of license and setting. Remove this line in production.
 	const [aiSearchRequested, setAISearchRequested] = useState(false);
 	const aiSearchActive = Boolean(aiSearchRequested && canSearchWithAIFromTopBar);
 
