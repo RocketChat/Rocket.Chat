@@ -110,6 +110,7 @@ const ForwardMessageModal = ({ onClose, permalink, message }: ForwardMessageProp
 										name={name}
 										value={value}
 										limit={25}
+										includeHiddenDirectMessages
 										onChange={onChange}
 									/>
 								)}
