@@ -302,6 +302,7 @@ class PushClass {
 		}
 
 		if (result.ok) {
+			logger.debug({ msg: 'push sent to gateway', service, status: result.status, response });
 			return;
 		}
 
