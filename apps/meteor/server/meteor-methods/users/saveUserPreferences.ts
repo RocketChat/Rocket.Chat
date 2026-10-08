@@ -115,6 +115,9 @@ export const validateSidebarCategories = (categories: ISidebarCategory[]): void 
 	}
 };
 
+/** Owned by the sidebar filters endpoints, which validate them and keep their revision consistent. */
+const RESERVED_PREFERENCE_KEYS = ['subscriptionLabels', 'sidebarFilters', 'sidebarFiltersDisplay', 'sidebarFiltersRevision'];
+
 export const saveUserPreferences = async (settings: Partial<UserPreferences>, userId: string): Promise<void> => {
 	const keys = {
 		language: Match.Optional(String),
@@ -169,6 +172,10 @@ export const saveUserPreferences = async (settings: Partial<UserPreferences>, us
 		statusVisibilityDenied: Match.Optional([String]),
 	};
 	check(settings, Match.ObjectIncluding(keys));
+
+	if (RESERVED_PREFERENCE_KEYS.some((key) => key in settings)) {
+		throw new Meteor.Error('error-invalid-param', 'Labels and filters can only be changed through their own endpoints');
+	}
 
 	if (settings.sidebarCategories) {
 		validateSidebarCategories(settings.sidebarCategories);

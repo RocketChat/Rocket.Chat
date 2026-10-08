@@ -10,6 +10,7 @@ export const subscriptionFields = {
 	f: 1,
 	u: 1,
 	category: 1,
+	labels: 1,
 	open: 1,
 	alert: 1,
 	roles: 1,

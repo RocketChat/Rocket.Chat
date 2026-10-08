@@ -1,3 +1,20 @@
+import type {
+	ISidebarFilter,
+	ISidebarFilterRule,
+	ISidebarFilterSort,
+	ISidebarFiltersDisplay,
+	ISubscriptionLabel,
+	SubscriptionLabelColor,
+	SubscriptionLabelIcon,
+} from '@rocket.chat/core-typings';
+
+type SidebarFilterFields = {
+	name: string;
+	sort: ISidebarFilterSort;
+	matches: ISidebarFilterRule;
+	notMatches: ISidebarFilterRule;
+};
+
 /**
  * Opt-in typings for experimental REST endpoints (`/api/experimental/...`).
  *
@@ -25,5 +42,40 @@
 export type ExperimentalEndpoints = {
 	'/experimental/rooms.setCategory': {
 		POST: (params: { roomIds: string[]; category: string | null }) => { success: true };
+	};
+	'/experimental/subscriptionLabels.create': {
+		POST: (params: { name: string; icon?: SubscriptionLabelIcon; color?: SubscriptionLabelColor }) => { label: ISubscriptionLabel };
+	};
+	'/experimental/subscriptionLabels.update': {
+		POST: (params: { labelId: string; name?: string; icon?: SubscriptionLabelIcon; color?: SubscriptionLabelColor }) => {
+			label: ISubscriptionLabel;
+		};
+	};
+	'/experimental/subscriptionLabels.delete': {
+		POST: (params: { labelId: string }) => { success: true };
+	};
+	'/experimental/sidebarFilters.create': {
+		POST: (params: SidebarFilterFields) => { filter: ISidebarFilter };
+	};
+	'/experimental/sidebarFilters.update': {
+		POST: (params: SidebarFilterFields & { filterId: string }) => { filter: ISidebarFilter };
+	};
+	'/experimental/sidebarFilters.delete': {
+		POST: (params: { filterId: string }) => { success: true };
+	};
+	'/experimental/sidebarFilters.duplicate': {
+		POST: (params: { filterId: string; name: string }) => { filter: ISidebarFilter };
+	};
+	'/experimental/sidebarFilters.reorder': {
+		POST: (params: { filterIds: string[] }) => { success: true };
+	};
+	'/experimental/sidebarFilters.setDisplayPreferences': {
+		POST: (params: Partial<ISidebarFiltersDisplay>) => { success: true };
+	};
+	'/experimental/subscriptions.setLabels': {
+		POST: (params: { roomId: string; labelIds: string[] }) => { success: true };
+	};
+	'/experimental/subscriptions.readMany': {
+		POST: (params: { roomIds: string[] }) => { success: true };
 	};
 };

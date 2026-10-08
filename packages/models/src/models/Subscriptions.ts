@@ -1329,6 +1329,22 @@ export class SubscriptionsRaw extends BaseRaw<ISubscription> implements ISubscri
 		return this.updateMany(query, update);
 	}
 
+	setLabelsByRoomIdAndUserId(roomId: string, userId: string, labelIds: string[]): Promise<UpdateResult> {
+		const query: Filter<ISubscription> = {
+			'u._id': userId,
+			'rid': roomId,
+			't': { $ne: 'l' },
+		};
+
+		const update: UpdateFilter<ISubscription> = labelIds.length ? { $set: { labels: labelIds } } : { $unset: { labels: 1 } };
+
+		return this.updateOne(query, update);
+	}
+
+	removeLabelFromUserSubscriptions(userId: string, labelId: string): Promise<UpdateResult | Document> {
+		return this.updateMany({ 'u._id': userId, 'labels': labelId }, { $pull: { labels: labelId } });
+	}
+
 	updateNameAndAlertByRoomId(roomId: string, name: string, fname: string): Promise<UpdateResult | Document> {
 		const query = { rid: roomId };
 
