@@ -28,24 +28,24 @@ export class FederationSidenav {
 		await this.page.locator('role=search >> role=searchbox').focus();
 		await this.page.locator('role=search >> role=searchbox').type(name);
 		await this.page.waitForTimeout(2000);
-		await this.page.locator(`role=search >> role=listbox >> role=link >> text="${name}"`).nth(item).click({ force: true });
+		await this.page.locator(`role=search >> role=listbox >> role=option >> text="${name}"`).nth(item).click({ force: true });
 	}
 
 	async countRoomsByNameOnSearch(name: string): Promise<number> {
 		await this.page.locator('role=navigation >> role=button[name=Search]').click();
 		await this.page.locator('role=search >> role=searchbox').focus();
 		await this.page.locator('role=search >> role=searchbox').type(name);
-		await this.page.locator(`role=search >> role=listbox >> role=link >> text="${name}"`).waitFor();
+		await this.page.locator(`role=search >> role=listbox >> role=option >> text="${name}"`).waitFor();
 		await this.page.waitForTimeout(2000);
 
-		return this.page.locator(`role=search >> role=listbox >> role=link >> text="${name}"`).count();
+		return this.page.locator(`role=search >> role=listbox >> role=option >> text="${name}"`).count();
 	}
 
 	async openDMMultipleChat(name: string): Promise<void> {
 		await this.page.locator('role=navigation >> role=button[name=Search]').click();
 		await this.page.locator('role=search >> role=searchbox').focus();
 		await this.page.locator('role=search >> role=searchbox').type(name);
-		await this.page.locator(`role=search >> role=listbox >> role=link >> text="${name}"`).waitFor();
-		await this.page.locator(`.rcx-item`).nth(1).click({ force: true });
+		await this.page.locator(`role=search >> role=listbox >> role=option >> text="${name}"`).waitFor();
+		await this.page.locator(`role=search >> role=listbox >> role=option >> text="${name}"`).first().click();
 	}
 }
