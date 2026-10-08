@@ -6,12 +6,12 @@ import type {
 	ILivechatContact,
 } from '@rocket.chat/core-typings';
 import { Box, Margins } from '@rocket.chat/fuselage';
+import { formatPhoneNumber } from '@rocket.chat/ui-client';
 import type { ComponentProps } from 'react';
 import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import PreviewItem from './PreviewItem';
-import { formatPhoneNumber } from '../../../../../../lib/formatPhoneNumber';
 import type { TemplateParameters } from '../../types/template';
 import TemplatePreview from '../TemplatePreview';
 

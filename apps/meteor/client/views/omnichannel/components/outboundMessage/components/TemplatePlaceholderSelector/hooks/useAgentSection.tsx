@@ -1,8 +1,7 @@
+import { formatPhoneNumber } from '@rocket.chat/ui-client';
 import { useUser } from '@rocket.chat/ui-contexts';
 import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
-
-import { formatPhoneNumber } from '../../../../../../../lib/formatPhoneNumber';
 
 type UseAgentSectionProps = {
 	onSelect(value: string): void;
