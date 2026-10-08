@@ -1,3 +1,5 @@
+import { License } from '@rocket.chat/license';
+
 import { settings } from '../../../../server/settings';
 
 export type LiveKitConfig = {
@@ -21,6 +23,11 @@ export function getLiveKitConfig(): LiveKitConfig {
 		// A lifetime of zero or less would mint tokens that are already expired.
 		tokenTtlHours: tokenTtlHours > 0 ? tokenTtlHours : DEFAULT_TOKEN_TTL_HOURS,
 	};
+}
+
+/** Whether the workspace's license includes LiveKit calls, which are sold apart from the rest of video conferencing. */
+export function isLiveKitLicensed(): boolean {
+	return License.hasModule('video-conference-native');
 }
 
 export function isLiveKitFullyConfigured(): boolean {

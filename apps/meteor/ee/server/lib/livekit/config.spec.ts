@@ -4,11 +4,13 @@ import { beforeEach, describe, it } from 'mocha';
 const proxyquire = require('proxyquire');
 
 let values: Record<string, unknown> = {};
+let modules: string[] = [];
 
-const { getLiveKitConfig, isLiveKitFullyConfigured } = proxyquire
+const { getLiveKitConfig, isLiveKitFullyConfigured, isLiveKitLicensed } = proxyquire
 	.noCallThru()
 	.noPreserveCache()
 	.load('./config', {
+		'@rocket.chat/license': { License: { hasModule: (module: string) => modules.includes(module) } },
 		'../../../../server/settings': { settings: { get: (key: string) => values[key] } },
 	});
 
@@ -58,5 +60,19 @@ describe('LiveKit configuration', () => {
 
 			expect(getLiveKitConfig().tokenTtlHours).to.equal(6);
 		});
+	});
+});
+
+describe('LiveKit licensing', () => {
+	it('is licensed by the video-conference-native module', () => {
+		modules = ['videoconference-enterprise', 'video-conference-native'];
+
+		expect(isLiveKitLicensed()).to.be.true;
+	});
+
+	it('is not licensed by the rest of video conferencing alone', () => {
+		modules = ['videoconference-enterprise'];
+
+		expect(isLiveKitLicensed()).to.be.false;
 	});
 });

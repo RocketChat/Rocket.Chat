@@ -4,8 +4,9 @@ How to run a self-hosted LiveKit server beside a Rocket.Chat deployed with the o
 [rocketchat-compose](https://github.com/RocketChat/rocketchat-compose) stack, reusing its Traefik for TLS and routing.
 LiveKit Cloud works too: skip to [Rocket.Chat settings](#4-rocketchat-settings) and use its URL and keys.
 
-> **Enterprise licence required.** The provider is part of the `videoconference-enterprise` module; without it the
-> settings below do not exist.
+> **License add-on required.** LiveKit calls are licensed by their own module, `video-conference-native`, on top of
+> the `videoconference-enterprise` module the rest of video conferencing needs. Without `videoconference-enterprise`
+> the settings below do not exist; without `video-conference-native` they are locked and LiveKit is not offered.
 
 ## Prerequisites
 
@@ -121,7 +122,7 @@ environment sets them from the compose file instead, at the cost of making them 
 
 | Symptom | Likely cause |
 | --- | --- |
-| No LiveKit option in the provider list | Licence missing, a setting empty, or the conference window disabled |
+| No LiveKit option in the provider list | The `video-conference-native` module missing from the license, a setting empty, or the conference window disabled |
 | Call window opens but nobody connects | `VideoConf_LiveKit_Url` wrong or the Traefik router missing |
 | Connected, no audio/video | 7882/udp blocked, or `node_ip` not set behind NAT |
 | Works on LAN only | LiveKit advertises private addresses: set `node_ip` |
