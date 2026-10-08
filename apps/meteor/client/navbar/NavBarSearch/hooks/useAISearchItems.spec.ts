@@ -359,8 +359,7 @@ describe('useAISearchItems', () => {
 
 			await waitFor(() => expect(result.current.isFetching).toBe(false));
 
-			expect(result.current.data.filterSuggestions).toHaveLength(3);
-			expect(result.current.data.filterSuggestions.every(({ key }) => key.startsWith('before-'))).toBe(true);
+			expect(result.current.data.filterSuggestions.map(({ filterKey }) => filterKey)).toEqual(['before', 'before', 'before']);
 		});
 	});
 });
