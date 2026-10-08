@@ -16,7 +16,7 @@ const SidebarRailCreateNew = (props: SidebarRailCreateNewProps) => {
 		return null;
 	}
 
-	return <GenericMenu icon='pencil-box' sections={sections} title={t('Create_new')} is={NavBarItem} placement='right-start' {...props} />;
+	return <GenericMenu icon='plus' sections={sections} title={t('Create_new')} is={NavBarItem} placement='right-start' {...props} />;
 };
 
 export default SidebarRailCreateNew;
