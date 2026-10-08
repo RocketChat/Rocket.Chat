@@ -41,13 +41,13 @@ const toCalendarEvent = (uid: IUser['_id'], event: ExchangeEventUpsert): Omit<In
 	uid,
 	externalId: event.externalId,
 	source: 'outlook',
-	...(event.seriesMasterId && { seriesMasterId: event.seriesMasterId }),
+	seriesMasterId: event.seriesMasterId,
 	subject: event.subject,
 	description: event.description,
 	startTime: event.startTime,
-	...(event.endTime && { endTime: event.endTime }),
-	...(event.meetingUrl && { meetingUrl: event.meetingUrl }),
-	...(event.reminderMinutesBeforeStart !== undefined && { reminderMinutesBeforeStart: event.reminderMinutesBeforeStart }),
+	endTime: event.endTime,
+	meetingUrl: event.meetingUrl,
+	reminderMinutesBeforeStart: event.reminderMinutesBeforeStart,
 	busy: event.busy,
 });
 
