@@ -8,7 +8,6 @@ import {
 	MessageSystemTimestamp,
 	MessageSystemBlock,
 	CheckBox,
-	MessageUsername,
 	MessageNameContainer,
 } from '@rocket.chat/fuselage';
 import { useButtonPattern } from '@rocket.chat/fuselage-hooks';
@@ -21,7 +20,6 @@ import type { ComponentProps, KeyboardEvent, MouseEvent } from 'react';
 import { memo } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { normalizeUsername } from '../../../../lib/utils/normalizeUsername';
 import {
 	useIsSelecting,
 	useToggleSelect,
@@ -31,12 +29,7 @@ import {
 import Attachments from '../content/Attachments';
 import MessageActions from '../content/MessageActions';
 import { getCheckboxLabel } from '../helpers/getCheckboxLabel';
-import {
-	useMessageListShowRealName,
-	useMessageListShowUsername,
-	useMessageListFormatDateAndTime,
-	useMessageListFormatTime,
-} from '../list/MessageListContext';
+import { useMessageListFormatDateAndTime, useMessageListFormatTime } from '../list/MessageListContext';
 
 export type SystemMessageProps = {
 	message: IMessage;
@@ -49,11 +42,7 @@ const SystemMessage = ({ message, showUserAvatar, ...props }: SystemMessageProps
 	const formatDateAndTime = useMessageListFormatDateAndTime();
 	const { openUserCard, openUserInfo } = useUserCard();
 
-	const showRealName = useMessageListShowRealName();
 	const user = { ...message.u, roles: [], ...useUserPresence(message.u._id) };
-	const normalizedUsername = normalizeUsername(user.username);
-	const usernameAndRealNameAreSame = !user.name || normalizedUsername === user.name;
-	const showUsername = useMessageListShowUsername() && showRealName && !usernameAndRealNameAreSame;
 	const displayName = useUserDisplayName(user);
 
 	const messageType = MessageTypes.getType(message);
@@ -112,12 +101,6 @@ const SystemMessage = ({ message, showUserAvatar, ...props }: SystemMessageProps
 						})}
 					>
 						<MessageSystemName>{displayName}</MessageSystemName>
-						{showUsername && (
-							<>
-								{' '}
-								<MessageUsername data-username={normalizedUsername}>@{normalizedUsername}</MessageUsername>
-							</>
-						)}
 					</MessageNameContainer>
 					{messageType && (
 						<MessageSystemBody role='document' aria-roledescription={t('system_message_body')}>
