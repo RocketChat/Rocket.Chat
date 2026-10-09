@@ -4,10 +4,6 @@ import { getRoomAbacLockContext } from '../../../../server/lib/authorization/get
 import { callbacks } from '../../../../server/lib/callbacks';
 import { beforeCreateRoomCallback } from '../../../../server/lib/callbacks/beforeCreateRoomCallback';
 
-/**
- * Every non-DM creation path funnels through `createRoom`, so guarding here means a new caller
- * cannot become a bypass. DMs return through `createDirectRoom` before this runs.
- */
 beforeCreateRoomCallback.add(
 	({ room }) => {
 		const { enforcementOn } = getRoomAbacLockContext();
@@ -20,7 +16,6 @@ beforeCreateRoomCallback.add(
 			return;
 		}
 
-		// `Discussion_enabled` is also held at false; this covers the callers that bypass it.
 		if (isDiscussion(room)) {
 			throw new Error('error-abac-discussion-creation-blocked');
 		}
