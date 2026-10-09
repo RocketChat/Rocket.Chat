@@ -22,6 +22,9 @@ type UserInfoDataProps = Serialized<
 		| 'name'
 		| 'username'
 		| 'nickname'
+		| 'title'
+		| 'nationality'
+		| 'languages'
 		| 'bio'
 		| 'lastLogin'
 		| 'avatarETag'
@@ -51,6 +54,9 @@ const UserInfo = ({
 	name,
 	lastLogin,
 	nickname,
+	title,
+	nationality,
+	languages,
 	bio,
 	avatarETag,
 	roles,
@@ -75,6 +81,12 @@ const UserInfo = ({
 	const userDisplayName = useUserDisplayName({ name, username });
 	const userCustomFields = useUserCustomFields(customFields);
 	const MarkdownText = useContext(MarkdownTextContext);
+
+	const profileDetails = [
+		{ label: t('Title'), text: title },
+		{ label: t('Nationality'), text: nationality },
+		{ label: t('Languages'), text: languages?.join(', ') },
+	];
 	const usernameId = useId();
 
 	return (
@@ -116,6 +128,16 @@ const UserInfo = ({
 							<InfoPanelLabel>{t('Nickname')}</InfoPanelLabel>
 							<UserInfoCopyableText text={nickname} label={t('Nickname')} />
 						</InfoPanelField>
+					)}
+
+					{profileDetails.map(
+						({ label, text }) =>
+							text && (
+								<InfoPanelField key={label}>
+									<InfoPanelLabel>{label}</InfoPanelLabel>
+									<UserInfoCopyableText text={text} label={label} withTruncatedText={false} wordBreak='break-word' />
+								</InfoPanelField>
+							),
 					)}
 
 					{roles?.length !== 0 && (
