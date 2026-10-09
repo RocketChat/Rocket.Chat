@@ -1,16 +1,5 @@
 import { MeteorError } from '@rocket.chat/core-services';
-import type {
-	IMessage,
-	SlashCommand,
-	SlashCommandOptions,
-	RequiredField,
-	SlashCommandPreviewItem,
-	SlashCommandPreviews,
-} from '@rocket.chat/core-typings';
-import type { ServerMethods } from '@rocket.chat/ddp-client';
-import { Meteor } from 'meteor/meteor';
-
-import { methodDeprecationLogger } from '../deprecationWarningLogger';
+import type { IMessage, SlashCommand, SlashCommandOptions, RequiredField, SlashCommandPreviewItem, SlashCommandPreviews } from '@rocket.chat/core-typings';
 
 interface ISlashCommandAddParams<T extends string> {
 	command: string;
@@ -131,36 +120,3 @@ export const slashCommands = {
 		return cmd.previewCallback(command, params, message, preview, userId, triggerId);
 	},
 };
-
-declare module '@rocket.chat/ddp-client' {
-	// eslint-disable-next-line @typescript-eslint/naming-convention
-	interface ServerMethods {
-		slashCommand(params: { cmd: string; params: string; msg: IMessage; triggerId: string }): unknown;
-	}
-}
-
-Meteor.methods<ServerMethods>({
-	async slashCommand(command) {
-		methodDeprecationLogger.method('slashCommand', '9.0.0', '/v1/commands.run');
-		const userId = Meteor.userId();
-		if (!userId) {
-			throw new Meteor.Error('error-invalid-user', 'Invalid user', {
-				method: 'slashCommand',
-			});
-		}
-
-		if (!command?.cmd || !slashCommands.commands[command.cmd]) {
-			throw new Meteor.Error('error-invalid-command', 'Invalid Command Provided', {
-				method: 'executeSlashCommandPreview',
-			});
-		}
-
-		return slashCommands.run({
-			command: command.cmd,
-			params: command.params,
-			message: command.msg,
-			triggerId: command.triggerId,
-			userId,
-		});
-	},
-});

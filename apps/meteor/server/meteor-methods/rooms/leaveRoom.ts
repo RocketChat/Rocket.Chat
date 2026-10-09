@@ -1,22 +1,12 @@
 import type { IUser } from '@rocket.chat/core-typings';
-import type { ServerMethods } from '@rocket.chat/ddp-client';
 import { Roles, Subscriptions, Rooms } from '@rocket.chat/models';
-import { check } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
 
 import { RoomMemberActions } from '../../../definition/IRoomTypeConfig';
 import { hasPermissionAsync } from '../../lib/authorization/hasPermission';
 import { hasRoleAsync } from '../../lib/authorization/hasRole';
-import { methodDeprecationLogger } from '../../lib/deprecationWarningLogger';
 import { removeUserFromRoom } from '../../lib/rooms/removeUserFromRoom';
 import { roomCoordinator } from '../../lib/rooms/roomCoordinator';
-
-declare module '@rocket.chat/ddp-client' {
-	// eslint-disable-next-line @typescript-eslint/naming-convention
-	interface ServerMethods {
-		leaveRoom(rid: string): Promise<void>;
-	}
-}
 
 export const leaveRoomMethod = async (user: IUser, rid: string): Promise<void> => {
 	const room = await Rooms.findOneById(rid);
@@ -56,22 +46,3 @@ export const leaveRoomMethod = async (user: IUser, rid: string): Promise<void> =
 
 	return removeUserFromRoom(rid, user);
 };
-
-Meteor.methods<ServerMethods>({
-	async leaveRoom(rid) {
-		methodDeprecationLogger.method('leaveRoom', '9.0.0', ['/v1/channels.leave', '/v1/groups.leave', '/v1/im.leave']);
-		check(rid, String);
-
-		if (!Meteor.userId()) {
-			throw new Meteor.Error('error-invalid-user', 'Invalid user', { method: 'leaveRoom' });
-		}
-
-		const user = (await Meteor.userAsync()) as unknown as IUser;
-
-		if (!user) {
-			throw new Meteor.Error('error-invalid-user', 'Invalid user', { method: 'leaveRoom' });
-		}
-
-		return leaveRoomMethod(user, rid);
-	},
-});

@@ -1,6 +1,5 @@
 import './models/startup';
 import './lib/license/settings';
-import './meteor-methods/license';
 import './api/v1/canned-responses';
 import './lib/canned-responses';
 import './lib/omnichannel';

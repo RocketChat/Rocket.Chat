@@ -3,26 +3,15 @@ import { check } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
 
 import { hasPermissionAsync } from '../../lib/authorization/hasPermission';
-import { buildWorkspaceRegistrationData } from '../../lib/cloud/buildRegistrationData';
 import { checkUserHasCloudLogin } from '../../lib/cloud/checkUserHasCloudLogin';
 import { finishOAuthAuthorization } from '../../lib/cloud/finishOAuthAuthorization';
 import { getOAuthAuthorizationUrl } from '../../lib/cloud/getOAuthAuthorizationUrl';
-import { retrieveRegistrationStatus } from '../../lib/cloud/retrieveRegistrationStatus';
 import { startRegisterWorkspace } from '../../lib/cloud/startRegisterWorkspace';
 import { userLogout } from '../../lib/cloud/userLogout';
-import { methodDeprecationLogger } from '../../lib/deprecationWarningLogger';
 
 declare module '@rocket.chat/ddp-client' {
 	// eslint-disable-next-line @typescript-eslint/naming-convention
 	interface ServerMethods {
-		'cloud:checkRegisterStatus': () => {
-			workspaceRegistered: boolean;
-			workspaceId: string;
-			uniqueId: string;
-			token: string;
-			email: string;
-		};
-		'cloud:getWorkspaceRegisterData': () => string;
 		'cloud:registerWorkspace': () => boolean;
 		'cloud:getOAuthAuthorizationUrl': () => string;
 		'cloud:finishOAuthAuthorization': (code: string, state: string) => boolean;
@@ -32,50 +21,6 @@ declare module '@rocket.chat/ddp-client' {
 }
 
 Meteor.methods<ServerMethods>({
-	/**
-	 * @deprecated this method is deprecated and will be removed soon.
-	 * Prefer using cloud.registrationStatus rest api.
-	 */
-	async 'cloud:checkRegisterStatus'() {
-		methodDeprecationLogger.method('cloud:checkRegisterStatus', '9.0.0', '/v1/cloud.registrationStatus');
-		const uid = Meteor.userId();
-
-		if (!uid) {
-			throw new Meteor.Error('error-invalid-user', 'Invalid user', {
-				method: 'cloud:checkRegisterStatus',
-			});
-		}
-
-		if (!(await hasPermissionAsync(uid, 'manage-cloud'))) {
-			throw new Meteor.Error('error-not-authorized', 'Not authorized', {
-				method: 'cloud:checkRegisterStatus',
-			});
-		}
-
-		return retrieveRegistrationStatus();
-	},
-	/**
-	 * @deprecated this method is deprecated and will be removed soon.
-	 * Prefer using cloud.workspaceRegisterData rest api.
-	 */
-	async 'cloud:getWorkspaceRegisterData'() {
-		methodDeprecationLogger.method('cloud:getWorkspaceRegisterData', '9.0.0', '/v1/cloud.workspaceRegisterData');
-		const uid = Meteor.userId();
-
-		if (!uid) {
-			throw new Meteor.Error('error-invalid-user', 'Invalid user', {
-				method: 'cloud:getWorkspaceRegisterData',
-			});
-		}
-
-		if (!(await hasPermissionAsync(uid, 'manage-cloud'))) {
-			throw new Meteor.Error('error-not-authorized', 'Not authorized', {
-				method: 'cloud:getWorkspaceRegisterData',
-			});
-		}
-
-		return Buffer.from(JSON.stringify(await buildWorkspaceRegistrationData(undefined))).toString('base64');
-	},
 	async 'cloud:registerWorkspace'() {
 		const uid = Meteor.userId();
 

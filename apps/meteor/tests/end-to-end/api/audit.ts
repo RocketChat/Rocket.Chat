@@ -4,7 +4,7 @@ import { Random } from '@rocket.chat/random';
 import { expect } from 'chai';
 import { before, describe, it, after } from 'mocha';
 
-import { getCredentials, api, request, credentials, methodCall } from '../../data/api-data';
+import { getCredentials, api, request, credentials } from '../../data/api-data';
 import { updatePermission } from '../../data/permissions.helper';
 import { createRoom, deleteRoom } from '../../data/rooms.helper';
 import { password } from '../../data/user';
@@ -150,16 +150,9 @@ import { IS_EE } from '../../e2e/config/constants';
 		});
 		it('should fetch the members of a room with offset and count', async () => {
 			await request
-				.post(methodCall('addUsersToRoom'))
+				.post(api('channels.invite'))
 				.set(credentials)
-				.send({
-					message: JSON.stringify({
-						method: 'addUsersToRoom',
-						params: [{ rid: testChannel._id, users: [dummyUser.username] }],
-						id: 'id',
-						msg: 'method',
-					}),
-				})
+				.send({ roomId: testChannel._id, username: dummyUser.username })
 				.expect('Content-Type', 'application/json')
 				.expect(200)
 				.expect((res) => {
