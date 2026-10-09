@@ -102,13 +102,15 @@ describe('runCalendarSync', () => {
 
 		const release = acquireMailbox('a');
 
-		const summary = await runCalendarSync();
+		try {
+			const summary = await runCalendarSync();
 
-		release?.();
-
-		expect(syncCalendarWindow).toHaveBeenCalledTimes(1);
-		expect(syncCalendarWindow.mock.calls[0][1]).toBe('b');
-		expect(summary).toMatchObject({ mailboxes: 1, skipped: 1 });
+			expect(syncCalendarWindow).toHaveBeenCalledTimes(1);
+			expect(syncCalendarWindow.mock.calls[0][1]).toBe('b');
+			expect(summary).toMatchObject({ mailboxes: 1, skipped: 1 });
+		} finally {
+			release?.();
+		}
 	});
 
 	it('stops pulling candidates once one fails fatally, not just syncing them', async () => {
