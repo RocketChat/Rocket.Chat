@@ -19,7 +19,7 @@ const SidebarRailSort = (props: SidebarRailSortProps) => {
 			title={t('Display')}
 			selectionMode='multiple'
 			is={NavBarItem}
-			placement='right-start'
+			placement='bottom-end'
 			{...props}
 		/>
 	);

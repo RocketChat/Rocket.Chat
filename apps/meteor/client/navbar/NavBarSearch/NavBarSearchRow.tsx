@@ -7,11 +7,12 @@ import NavBarSearchUserRow from './NavBarSearchUserRow';
 
 export type NavBarSearchRowProps = {
 	room: SubscriptionWithRoom;
-	onClick: () => void;
+	onClick?: () => void;
+	avatarSize?: 'x20' | 'x28';
 };
 
-const NavBarSearchRow = ({ room, onClick }: NavBarSearchRowProps) => {
-	const Avatar = <RoomAvatar size='x20' room={{ ...room, _id: room.rid || room._id, type: room.t }} />;
+const NavBarSearchRow = ({ room, onClick, avatarSize = 'x20' }: NavBarSearchRowProps) => {
+	const Avatar = <RoomAvatar size={avatarSize} room={{ ...room, _id: room.rid || room._id, type: room.t }} />;
 
 	if (room.t === 'd' && !room.u) {
 		return <NavBarSearchUserRow id={`search-${room._id}`} room={room} AvatarTemplate={Avatar} onClick={onClick} />;
