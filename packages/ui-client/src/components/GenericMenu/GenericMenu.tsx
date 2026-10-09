@@ -1,5 +1,5 @@
 import { IconButton, MenuItem, MenuSection, Menu } from '@rocket.chat/fuselage';
-import { cloneElement, type ComponentProps, type ReactNode } from 'react';
+import { cloneElement, type ComponentProps, type ReactElement, type ReactNode } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import type { GenericMenuItemProps } from './GenericMenuItem';
@@ -28,7 +28,14 @@ type GenericMenuConditionalProps =
 			sections?: never;
 	  };
 
-export type GenericMenuProps = GenericMenuCommonProps & GenericMenuConditionalProps & Omit<ComponentProps<typeof Menu>, 'children'>;
+export type GenericMenuProps = GenericMenuCommonProps &
+	GenericMenuConditionalProps &
+	Omit<ComponentProps<typeof Menu>, 'children' | 'button'> & {
+		/**
+		 * @deprecated Prop `button` is deprecated as custom elements passed here cannot be guaranteed to render a semantic `<button>` or preserve keyboard and screen-reader accessibility traits.
+		 */
+		button?: ReactElement;
+	};
 
 const GenericMenu = ({ title, icon = 'menu', disabled, onAction, callbackAction, button, className, ...props }: GenericMenuProps) => {
 	const { t, i18n } = useTranslation();
@@ -49,8 +56,6 @@ const GenericMenu = ({ title, icon = 'menu', disabled, onAction, callbackAction,
 
 	if (isMenuEmpty || disabled) {
 		if (button) {
-			// FIXME: deprecate prop `button` as there's no way to ensure it is actually a button
-			// (e.g cloneElement could be passing props to a fragment)
 			return cloneElement(button, { small: true, icon, disabled, title, className } as any);
 		}
 
