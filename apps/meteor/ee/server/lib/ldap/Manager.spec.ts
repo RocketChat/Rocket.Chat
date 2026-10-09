@@ -9,18 +9,25 @@ const subscriptionsStub = { findOneByRoomIdAndUserId: sinon.stub() };
 const addUserToRoomStub = sinon.stub();
 const removeUserFromRoomStub = sinon.stub();
 const loggerStub = { debug: sinon.stub(), error: sinon.stub(), info: sinon.stub(), warn: sinon.stub() };
+const usersStub = { findLDAPUsers: sinon.stub() };
+
+class LDAPManagerStub {
+	static mapUserData = sinon.stub();
+
+	static getLdapUsername = sinon.stub();
+}
 
 const { LDAPEEManager } = proxyquire.noCallThru().load('./Manager', {
 	'@rocket.chat/core-services': { Abac: {}, Team: {} },
 	'@rocket.chat/license': { License: { hasModule: () => false } },
-	'@rocket.chat/models': { Users: {}, Roles: {}, Subscriptions: subscriptionsStub, Rooms: roomsStub },
+	'@rocket.chat/models': { Users: usersStub, Roles: {}, Subscriptions: subscriptionsStub, Rooms: roomsStub },
 	'../../../../server/lib/import/definitions/IConversionCallbacks': {},
 	'../../../../server/settings': { settings: settingsStub },
 	'../../../../server/lib/utils/lib/getValidRoomName': { getValidRoomName: (name: string) => Promise.resolve(name) },
 	'../../../../lib/utils/arrayUtils': { ensureArray: (value: unknown) => (Array.isArray(value) ? value : [value]) },
 	'../../../../server/lib/ldap/Connection': { LDAPConnection: class {} },
 	'../../../../server/lib/ldap/Logger': { logger: loggerStub, searchLogger: loggerStub, mapLogger: loggerStub },
-	'../../../../server/lib/ldap/Manager': { LDAPManager: class {} },
+	'../../../../server/lib/ldap/Manager': { LDAPManager: LDAPManagerStub },
 	'../../../../server/lib/ldap/UserConverter': { LDAPUserConverter: class {} },
 	'../../../../server/lib/rooms/addUserToRoom': { addUserToRoom: addUserToRoomStub },
 	'../../../../server/lib/rooms/createRoom': { createRoom: sinon.stub() },
@@ -106,5 +113,31 @@ describe('LDAPEEManager syncUserChannels', () => {
 
 		expect(addUserToRoomStub.calledWith('ridA', user)).to.be.true;
 		expect(removeUserFromRoomStub.calledWith('ridB', user)).to.be.true;
+	});
+});
+
+describe('LDAPEEManager updateExistingUsers', () => {
+	it('should keep updating the remaining users when one of them cannot be mapped', async () => {
+		const brokenUser = { username: 'broken' };
+		const validUser = { username: 'valid' };
+		const brokenEntry = { dn: 'uid=broken,dc=example' };
+		const validEntry = { dn: 'uid=valid,dc=example' };
+		const validUserData = { username: 'valid' };
+		const mapError = new Error('Failed to get email address from LDAP user');
+		const ldap = { findOneByUsername: sinon.stub() };
+		const converter = { addObjectToMemory: sinon.stub() };
+
+		usersStub.findLDAPUsers.returns({ toArray: async () => [brokenUser, validUser] });
+		ldap.findOneByUsername.withArgs('broken').resolves(brokenEntry);
+		ldap.findOneByUsername.withArgs('valid').resolves(validEntry);
+		LDAPManagerStub.mapUserData.withArgs(brokenEntry).throws(mapError);
+		LDAPManagerStub.mapUserData.withArgs(validEntry).returns(validUserData);
+		LDAPManagerStub.getLdapUsername.returns('valid');
+		loggerStub.error.resetHistory();
+
+		await (LDAPEEManager as any).updateExistingUsers(ldap, converter);
+
+		expect(converter.addObjectToMemory.calledOnceWithExactly(validUserData, { dn: validEntry.dn, username: 'valid' })).to.be.true;
+		expect(loggerStub.error.calledWithMatch({ dn: brokenEntry.dn, err: mapError })).to.be.true;
 	});
 });
