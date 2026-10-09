@@ -497,7 +497,12 @@ API.v1.post(
 		const room = await findRoomByIdOrName({ params: this.bodyParams });
 		const { _id } = room;
 
-		if (!room || !(await canAccessRoomAsync(room, { _id: this.userId }))) {
+		if (!room) {
+			return API.v1.failure('User does not have access to the room [error-not-allowed]', 'error-not-allowed');
+		}
+
+		const hasAccess = await canAccessRoomAsync(room, { _id: this.userId });
+		if (!hasAccess && !(await hasPermissionAsync(this.userId, 'clean-channel-history', _id))) {
 			return API.v1.failure('User does not have access to the room [error-not-allowed]', 'error-not-allowed');
 		}
 
