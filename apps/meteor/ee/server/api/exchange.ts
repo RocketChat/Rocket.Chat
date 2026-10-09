@@ -189,7 +189,7 @@ API.v1.post(
 			logger.error({ msg: 'On-demand Exchange contact sync failed', uid: this.userId, err: scrubForLog(err) });
 
 			if (!isExchangeError(err)) {
-				return API.v1.internalError('Outlook_Sync_Failed');
+				return API.v1.internalError('Outlook_contact_sync_failed');
 			}
 
 			return USER_FIXABLE_SYNC_ERRORS.has(err.code)
