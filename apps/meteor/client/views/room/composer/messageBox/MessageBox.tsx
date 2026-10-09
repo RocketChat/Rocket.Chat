@@ -217,10 +217,11 @@ const MessageBox = ({
 					event.stopPropagation();
 
 					onNavigateToPreviousMessage?.();
-
-					if (event.altKey) {
-						input.setSelectionRange(0, 0);
-					}
+				}
+				if (event.altKey) {
+					event.preventDefault();
+					event.stopPropagation();
+					input.setSelectionRange(0, 0);
 				}
 
 				return;
@@ -232,10 +233,31 @@ const MessageBox = ({
 					event.stopPropagation();
 
 					onNavigateToNextMessage?.();
+				}
+				if (event.altKey) {
+					event.preventDefault();
+					event.stopPropagation();
+					input.setSelectionRange(input.value.length, input.value.length);
+				}
 
-					if (event.altKey) {
-						input.setSelectionRange(input.value.length, input.value.length);
-					}
+				return;
+			}
+
+			case 'ArrowLeft': {
+				if (event.altKey) {
+					event.preventDefault();
+					event.stopPropagation();
+					input.setSelectionRange(0, 0);
+				}
+
+				return;
+			}
+
+			case 'ArrowRight': {
+				if (event.altKey) {
+					event.preventDefault();
+					event.stopPropagation();
+					input.setSelectionRange(input.value.length, input.value.length);
 				}
 			}
 		}
