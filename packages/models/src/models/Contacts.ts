@@ -116,16 +116,30 @@ export class ContactsRaw extends BaseRaw<IContact> implements IContactsModel {
 		const now = new Date();
 
 		const result = await this.col.bulkWrite(
-			contacts.map(({ uid, externalId, folderId, ...fields }) => ({
-				updateOne: {
-					filter: { uid, source: OUTLOOK, folderId, externalId },
-					update: {
-						$set: { ...fields, lastSyncAt, _updatedAt: now },
-						$setOnInsert: { _id: new ObjectId().toHexString(), uid, source: OUTLOOK, folderId, externalId },
+			contacts.map(({ uid, externalId, folderId, ...fields }) => {
+				const set: Record<string, unknown> = { lastSyncAt, _updatedAt: now };
+				const unset: Record<string, 1> = {};
+
+				for (const [key, value] of Object.entries(fields)) {
+					if (value === undefined) {
+						unset[key] = 1;
+					} else {
+						set[key] = value;
+					}
+				}
+
+				return {
+					updateOne: {
+						filter: { uid, source: OUTLOOK, folderId, externalId },
+						update: {
+							$set: set,
+							...(Object.keys(unset).length > 0 && { $unset: unset }),
+							$setOnInsert: { _id: new ObjectId().toHexString(), uid, source: OUTLOOK, folderId, externalId },
+						},
+						upsert: true,
 					},
-					upsert: true,
-				},
-			})),
+				};
+			}),
 			{ ordered: false },
 		);
 
