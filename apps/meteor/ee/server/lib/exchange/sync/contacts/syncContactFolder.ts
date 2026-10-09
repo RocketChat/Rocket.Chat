@@ -224,12 +224,7 @@ export const syncContactFolder = async (
 			await ExchangeContactSyncState.clearCursor(uid, folderId);
 		}
 
-		await ExchangeContactSyncState.setLastError(
-			uid,
-			folderId,
-			identity,
-			`${code}: ${scrubText(err instanceof Error ? err.message : String(err))}`,
-		);
+		await ExchangeContactSyncState.setLastError(uid, folderId, `${code}: ${scrubText(err instanceof Error ? err.message : String(err))}`);
 
 		logger.warn({ msg: 'Exchange contact folder sync failed', uid, folderId, code, err: scrubForLog(err) });
 

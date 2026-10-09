@@ -1,9 +1,11 @@
 import type { IUser } from '@rocket.chat/core-typings';
 
-const held = new Map<IUser['_id'], { settled: Promise<void>; finish: () => void }>();
+const held = new Map<string, { settled: Promise<void>; finish: () => void }>();
 
-export const acquireMailbox = (uid: IUser['_id']): (() => void) | undefined => {
-	if (held.has(uid)) {
+export const acquireMailbox = (scope: 'calendar' | 'contacts', uid: IUser['_id']): (() => void) | undefined => {
+	const key = `${scope}:${uid}`;
+
+	if (held.has(key)) {
 		return undefined;
 	}
 
@@ -12,10 +14,10 @@ export const acquireMailbox = (uid: IUser['_id']): (() => void) | undefined => {
 		finish = resolve;
 	});
 
-	held.set(uid, { settled, finish });
+	held.set(key, { settled, finish });
 
 	return () => {
-		held.delete(uid);
+		held.delete(key);
 		finish();
 	};
 };

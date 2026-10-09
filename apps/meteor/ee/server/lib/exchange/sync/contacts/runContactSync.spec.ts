@@ -1,4 +1,5 @@
 import { runContactSync } from './runContactSync';
+import { acquireMailbox } from '../mailboxLock';
 import type { UserContactSyncOutcome } from './syncUserContacts';
 import { ExchangeError } from '../../errors';
 import { MAILBOX_CONCURRENCY } from '../limits';
@@ -134,6 +135,48 @@ describe('runContactSync', () => {
 			const summary = await runContactSync();
 
 			expect(summary).toMatchObject({ notDue: 1, mailboxes: 1 });
+		});
+
+		it('leaves a mailbox alone while an on-demand sync holds it', async () => {
+			iterateMailboxCandidates.mockImplementation(
+				from([
+					{ uid: 'a', mailbox: 'a@corp.example' },
+					{ uid: 'b', mailbox: 'b@corp.example' },
+				]),
+			);
+
+			const release = acquireMailbox('contacts', 'a');
+
+			try {
+				const summary = await runContactSync();
+
+				expect(syncUserContacts).toHaveBeenCalledTimes(1);
+				expect(syncUserContacts.mock.calls[0][2]).toBe('b@corp.example');
+				expect(summary).toMatchObject({ mailboxes: 1, skipped: 1 });
+			} finally {
+				release?.();
+			}
+		});
+
+		it('takes the calendar lock as a separate one, so neither sync waits for the other', async () => {
+			const release = acquireMailbox('calendar', 'a');
+
+			try {
+				const summary = await runContactSync();
+
+				expect(summary).toMatchObject({ mailboxes: 1, skipped: 0 });
+			} finally {
+				release?.();
+			}
+		});
+
+		it('releases the mailbox once the run is over, so the next one is not locked out', async () => {
+			await runContactSync();
+
+			const release = acquireMailbox('contacts', 'a');
+
+			expect(release).toBeDefined();
+			release?.();
 		});
 
 		it('passes the configured region down to every mailbox', async () => {
