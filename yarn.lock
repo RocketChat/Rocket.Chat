@@ -9922,20 +9922,37 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@rocket.chat/fuselage-forms@npm:~1.5.1":
-  version: 1.5.1
-  resolution: "@rocket.chat/fuselage-forms@npm:1.5.1"
+"@rocket.chat/fuselage-forms@workspace:^, @rocket.chat/fuselage-forms@workspace:packages/fuselage-forms":
+  version: 0.0.0-use.local
+  resolution: "@rocket.chat/fuselage-forms@workspace:packages/fuselage-forms"
   dependencies:
-    "@rocket.chat/emitter": "npm:^0.33.0"
+    "@rocket.chat/emitter": "workspace:~"
+    "@rocket.chat/fuselage": "npm:^0.94.0"
+    "@rocket.chat/fuselage-hooks": "npm:^0.43.1"
+    "@rocket.chat/jest-presets": "workspace:~"
+    "@rocket.chat/storybook-config": "workspace:~"
+    "@rocket.chat/tsconfig": "workspace:~"
+    "@testing-library/dom": "npm:~10.4.2"
+    "@testing-library/react": "npm:~16.3.3"
+    "@testing-library/user-event": "npm:~14.6.7"
+    "@types/jest-axe": "npm:~3.5.9"
+    "@types/react": "npm:~19.2.18"
+    "@types/react-dom": "npm:~19.2.7"
+    eslint: "npm:~10.12.0"
+    jest: "npm:~30.5.2"
+    jest-axe: "npm:~11.0.0"
+    react: "npm:~19.2.8"
     react-aria: "npm:~3.37.0"
+    react-dom: "npm:~19.2.8"
+    storybook: "npm:~9.1.20"
+    typescript: "npm:~5.9.3"
   peerDependencies:
     "@rocket.chat/fuselage": "*"
     "@rocket.chat/fuselage-hooks": "*"
     react: "*"
     react-dom: "*"
-  checksum: 10/9a96ec4c0078bf28f9c4158cf1b7a7e1d79d277c94fec5315a707f3240c2c157be066c818b30a4514091214984c538344d4322bdf1355853423e46cffe5c5704
-  languageName: node
-  linkType: hard
+  languageName: unknown
+  linkType: soft
 
 "@rocket.chat/fuselage-hooks@npm:^0.43.1":
   version: 0.43.1
@@ -10566,7 +10583,7 @@ __metadata:
     "@rocket.chat/federation-matrix": "workspace:^"
     "@rocket.chat/federation-sdk": "npm:0.8.1"
     "@rocket.chat/fuselage": "npm:^0.94.0"
-    "@rocket.chat/fuselage-forms": "npm:~1.5.1"
+    "@rocket.chat/fuselage-forms": "workspace:^"
     "@rocket.chat/fuselage-hooks": "npm:^0.43.1"
     "@rocket.chat/fuselage-toastbar": "workspace:^"
     "@rocket.chat/fuselage-tokens": "npm:^0.35.0"
@@ -11806,7 +11823,7 @@ __metadata:
     "@rocket.chat/core-typings": "workspace:^"
     "@rocket.chat/css-in-js": "workspace:^"
     "@rocket.chat/fuselage": "npm:^0.94.0"
-    "@rocket.chat/fuselage-forms": "npm:~1.5.1"
+    "@rocket.chat/fuselage-forms": "workspace:^"
     "@rocket.chat/fuselage-hooks": "npm:^0.43.1"
     "@rocket.chat/fuselage-tokens": "npm:^0.35.0"
     "@rocket.chat/i18n": "workspace:^"
