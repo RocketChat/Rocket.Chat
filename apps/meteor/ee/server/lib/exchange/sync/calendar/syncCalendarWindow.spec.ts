@@ -201,12 +201,13 @@ describe('syncCalendarWindow', () => {
 			const provider = providerReturning(
 				'ews',
 				page([upsert('A'), upsert('B')], { hasMore: true, cursor: 'c1', coverage: 'full' }),
-				page([upsert('A')], { coverage: 'full' }),
+				page([upsert('A'), upsert('C')], { coverage: 'full' }),
 			);
 
 			await syncCalendarWindow(provider, UID, MAILBOX, timeWindow);
 
-			expect(pruneImportedWindow).toHaveBeenCalledWith(UID, timeWindow, ['A'], { deferSideEffects: true });
+			expect(importedExternalIds()).toEqual(['A', 'C']);
+			expect(pruneImportedWindow).toHaveBeenCalledWith(UID, timeWindow, ['A', 'C'], { deferSideEffects: true });
 		});
 
 		it('prunes after the upserts landed, so it cannot remove what this run is reviving', async () => {
@@ -368,6 +369,31 @@ describe('syncCalendarWindow', () => {
 		await syncCalendarWindow(provider, UID, MAILBOX, timeWindow);
 
 		expect(provider.listEvents).toHaveBeenCalledTimes(MAX_EVENT_PAGES);
+	});
+
+	it('does not prune against a snapshot a later truncated page outdated', async () => {
+		const provider = providerReturning(
+			'ews',
+			page([upsert('A')], { coverage: 'full', hasMore: true, cursor: 'c1' }),
+			page([upsert('A'), upsert('B')], { coverage: 'partial' }),
+		);
+
+		await syncCalendarWindow(provider, UID, MAILBOX, timeWindow);
+
+		expect(pruneImportedWindow).not.toHaveBeenCalled();
+	});
+
+	it('prunes nothing from a read that stopped at the page cap', async () => {
+		const pages: EventPage[] = Array.from({ length: MAX_EVENT_PAGES }, () =>
+			page([upsert('A')], { hasMore: true, cursor: 'more', coverage: 'full', resyncedSeries: ['master'] }),
+		);
+
+		await syncCalendarWindow(providerReturning('ews', ...pages), UID, MAILBOX, timeWindow);
+
+		expect(pruneImportedWindow).not.toHaveBeenCalled();
+		expect(pruneImportedSeries).not.toHaveBeenCalled();
+		// Dropping the cursor makes the next run read the window whole, which is what reconciles the gap.
+		expect(saveCursor).toHaveBeenCalledWith(UID, expect.anything(), undefined, expect.any(Date));
 	});
 
 	it('reports what the prune removed', async () => {
