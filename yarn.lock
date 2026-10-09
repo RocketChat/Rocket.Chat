@@ -11645,7 +11645,7 @@ __metadata:
     "@rocket.chat/core-typings": "workspace:^"
     "@rocket.chat/css-in-js": "workspace:~"
     "@rocket.chat/fuselage": "npm:^0.94.0"
-    "@rocket.chat/fuselage-forms": "npm:~1.5.1"
+    "@rocket.chat/fuselage-forms": "workspace:^"
     "@rocket.chat/fuselage-hooks": "npm:^0.43.1"
     "@rocket.chat/icons": "workspace:~"
     "@rocket.chat/jest-presets": "workspace:~"
