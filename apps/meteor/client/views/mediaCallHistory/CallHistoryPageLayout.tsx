@@ -1,5 +1,5 @@
 import { Tabs, TabsItem } from '@rocket.chat/fuselage';
-import { Page, PageContent, PageHeader } from '@rocket.chat/ui-client';
+import { Page, PageContent } from '@rocket.chat/ui-client';
 import type { ReactNode } from 'react';
 import { useId } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -24,7 +24,6 @@ const CallHistoryPageLayout = ({ children, contextualBar, filters, tab, onChange
 	return (
 		<Page flexDirection='row'>
 			<Page>
-				<PageHeader title={t('Call_history')} />
 				<Tabs>
 					<TabsItem id={callsTabId} aria-controls={panelId} selected={tab === 'calls'} onClick={() => onChangeTab('calls')}>
 						{t('Calls')}
