@@ -111,8 +111,9 @@ const body = renderToStaticMarkup(<LandingView />);
 
 // In browser mode (jsdom present), @rocket.chat/css-in-js inserts generated styles
 // into document.head via attachRules. Collect them now so we can inline them.
+// Read the CSSOM rather than the text: in production builds rules are added with insertRule.
 const dynamicStyles = Array.from(jsdomWindow.document.head.querySelectorAll('style'))
-	.map((el) => el.textContent ?? '')
+	.map((el) => (el.sheet ? Array.from(el.sheet.cssRules, (rule) => rule.cssText).join('\n') : (el.textContent ?? '')))
 	.join('\n');
 
 const fuselageCss = readFileSync(fuselageCssPath, 'utf-8');

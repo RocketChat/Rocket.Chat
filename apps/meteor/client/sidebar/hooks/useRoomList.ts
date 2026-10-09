@@ -7,7 +7,7 @@ import { useVideoConfIncomingCalls, useVideoConfWindowEnabled } from '@rocket.ch
 import { useMemo } from 'react';
 
 import { filterGroupVisibility, getRoomCategory, useCategoryList } from './useCategoryList';
-import { useHasLicenseModule } from '../../hooks/useHasLicenseModule';
+import { useIsEnterprise } from '../../hooks/useIsEnterprise';
 import { useSortQueryOptions } from '../../hooks/useSortQueryOptions';
 import { useOpenedRoom } from '../../lib/RoomManager';
 import { useOmnichannelEnabled } from '../../views/omnichannel/hooks/useOmnichannelEnabled';
@@ -52,7 +52,7 @@ export const isUnreadRoom = (room: SubscriptionWithRoom): boolean =>
 export const useRoomList = ({ collapsedGroups }: { collapsedGroups?: string[] }): useRoomListReturnType => {
 	const showOmnichannel = useOmnichannelEnabled();
 
-	const { data: hasLicenseModule = false } = useHasLicenseModule('experimental-enterprise-features');
+	const { data: { isEnterprise = false } = {} } = useIsEnterprise();
 
 	const { customCategories } = useUserSidebarCategories();
 	const { isShowUnreads, isKeepUnreadsOnTop } = useToggleUnreads();
@@ -137,9 +137,9 @@ export const useRoomList = ({ collapsedGroups }: { collapsedGroups?: string[] })
 				const title = category ? category.name : key;
 				const translateTitle = SIDEBAR_SYSTEM_GROUP_KEYS.includes(key as any);
 				const collapsed = isCollapsed(key);
-				const showUnreadsForGroup = hasLicenseModule ? isShowUnreads(key) : false;
+				const showUnreadsForGroup = isEnterprise ? isShowUnreads(key) : false;
 				const showUnreads = category ? Boolean(category.showUnreads) : showUnreadsForGroup;
-				const keepUnreadsOnTopForGroup = hasLicenseModule ? isKeepUnreadsOnTop(key) : false;
+				const keepUnreadsOnTopForGroup = isEnterprise ? isKeepUnreadsOnTop(key) : false;
 				const keepUnreadsOnTop = category ? Boolean(category.keepUnreadsOnTop) : keepUnreadsOnTopForGroup;
 				const allRooms = [...set];
 				// A collapsed group still shows the room currently open, so the user can locate themselves in the
@@ -170,13 +170,13 @@ export const useRoomList = ({ collapsedGroups }: { collapsedGroups?: string[] })
 				};
 			};
 
-			const groups = filterGroupVisibility(unfilteredGroups, hasLicenseModule, makeGroup);
+			const groups = filterGroupVisibility(unfilteredGroups, isEnterprise, makeGroup);
 
 			return groups;
 		}, [
 			categoryList,
 			rooms,
-			hasLicenseModule,
+			isEnterprise,
 			collapsedGroups,
 			incomingCalls,
 			conferenceWindowEnabled,

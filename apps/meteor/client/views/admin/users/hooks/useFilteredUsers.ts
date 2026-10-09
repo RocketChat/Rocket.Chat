@@ -14,9 +14,18 @@ type UseFilteredUsersOptions = {
 	paginationData: ReturnType<typeof usePagination>;
 	sortData: ReturnType<typeof useSort<UsersTableSortingOption>>;
 	selectedRoles: string[];
+	statusManagement?: UsersListStatusParamsGET['statusManagement'];
 };
 
-const useFilteredUsers = ({ searchTerm, prevSearchTerm, sortData, paginationData, tab, selectedRoles }: UseFilteredUsersOptions) => {
+const useFilteredUsers = ({
+	searchTerm,
+	prevSearchTerm,
+	sortData,
+	paginationData,
+	tab,
+	selectedRoles,
+	statusManagement,
+}: UseFilteredUsersOptions) => {
 	const { setCurrent, itemsPerPage, current } = paginationData;
 	const { sortBy, sortDirection } = sortData;
 
@@ -45,11 +54,12 @@ const useFilteredUsers = ({ searchTerm, prevSearchTerm, sortData, paginationData
 			...listUsersPayload[tab],
 			searchTerm,
 			roles: selectedRoles,
+			...(statusManagement && { statusManagement }),
 			sort: `{ "${sortBy}": ${sortDirection === 'asc' ? 1 : -1} }`,
 			count: itemsPerPage,
 			offset: searchTerm === prevSearchTerm.current ? current : 0,
 		};
-	}, [current, itemsPerPage, prevSearchTerm, searchTerm, selectedRoles, setCurrent, sortBy, sortDirection, tab]);
+	}, [current, itemsPerPage, prevSearchTerm, searchTerm, selectedRoles, setCurrent, sortBy, sortDirection, statusManagement, tab]);
 	const getUsers = useEndpoint('GET', '/v1/users.listByStatus');
 	const usersListQueryResult = useQuery({
 		queryKey: ['users.list', payload, tab],

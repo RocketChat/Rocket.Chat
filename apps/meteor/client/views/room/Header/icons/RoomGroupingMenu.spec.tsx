@@ -4,13 +4,13 @@ import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 
 import RoomGroupingMenu from './RoomGroupingMenu';
-import { useHasLicenseModule } from '../../../../hooks/useHasLicenseModule';
+import { useIsEnterprise } from '../../../../hooks/useIsEnterprise';
 import { useCategoryModals } from '../../../../sidebar/categories/hooks/useCategoryModals';
 import { useMoveRoomCategory } from '../../../../sidebar/categories/hooks/useMoveRoomCategory';
 import { useUserIsSubscribed } from '../../contexts/RoomContext';
 import { useToggleFavoriteMutation } from '../../hooks/useToggleFavoriteMutation';
 
-jest.mock('../../../../hooks/useHasLicenseModule', () => ({ useHasLicenseModule: jest.fn() }));
+jest.mock('../../../../hooks/useIsEnterprise', () => ({ useIsEnterprise: jest.fn() }));
 jest.mock('../../../../sidebar/categories/hooks/useMoveRoomCategory', () => ({ useMoveRoomCategory: jest.fn() }));
 jest.mock('../../../../sidebar/categories/hooks/useCategoryModals', () => ({ useCategoryModals: jest.fn() }));
 jest.mock('../../contexts/RoomContext', () => ({ useUserIsSubscribed: jest.fn() }));
@@ -18,7 +18,7 @@ jest.mock('../../hooks/useToggleFavoriteMutation', () => ({ useToggleFavoriteMut
 
 const mockedUseCategoryModals = jest.mocked(useCategoryModals);
 const mockedUseMoveRoomCategory = jest.mocked(useMoveRoomCategory);
-const mockedUseHasLicenseModule = jest.mocked(useHasLicenseModule);
+const mockedUseIsEnterprise = jest.mocked(useIsEnterprise);
 const mockedUseUserIsSubscribed = jest.mocked(useUserIsSubscribed);
 const mockedUseToggleFavoriteMutation = jest.mocked(useToggleFavoriteMutation);
 
@@ -37,7 +37,7 @@ beforeEach(() => {
 	mockedUseToggleFavoriteMutation.mockReturnValue({ mutate: jest.fn() } as any);
 	mockedUseCategoryModals.mockReturnValue({ openCreate: jest.fn(), openManage: jest.fn(), openDelete: jest.fn() });
 	mockedUseMoveRoomCategory.mockReturnValue({ mutate: jest.fn(), mutateAsync: jest.fn() } as any);
-	mockedUseHasLicenseModule.mockReturnValue({ data: true } as any);
+	mockedUseIsEnterprise.mockReturnValue({ data: { isEnterprise: true } } as any);
 });
 
 it('shows Favorites in the grouping menu when the room is favorited', async () => {

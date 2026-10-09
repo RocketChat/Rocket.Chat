@@ -1,11 +1,11 @@
 import { IconButton, Divider, Box } from '@rocket.chat/fuselage';
 import { ActionLink } from '@rocket.chat/layout';
+import { useClipboardWithToast } from '@rocket.chat/ui-client';
 import { usePermission, useSetModal, useSetting } from '@rocket.chat/ui-contexts';
 import { useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import ManageLicenseModal from './ManageLicenseModal';
-import useClipboardWithToast from '../../../../../../hooks/useClipboardWithToast';
 import { useServerInfo } from '../../../../../../hooks/useWorkspaceInfo';
 
 const PlanCardLicenseDetails = () => {

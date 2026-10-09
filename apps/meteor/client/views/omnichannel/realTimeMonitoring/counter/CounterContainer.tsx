@@ -1,6 +1,5 @@
 import type { Box } from '@rocket.chat/fuselage';
 import { Skeleton } from '@rocket.chat/fuselage';
-import type { TranslationKey } from '@rocket.chat/ui-contexts';
 import type { ComponentPropsWithoutRef } from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -20,7 +19,7 @@ const CounterContainer = ({ totals, ...props }: CounterContainerProps) => {
 	return (
 		<CounterRow {...props}>
 			{totals.map(({ title, value }, i) => (
-				<CounterItem key={i} title={title ? t(title as TranslationKey) : <Skeleton width='x60' />} count={value} />
+				<CounterItem key={i} title={title ? t(title) : <Skeleton width='x60' />} count={value} />
 			))}
 		</CounterRow>
 	);

@@ -3,8 +3,8 @@ import { Button } from '@rocket.chat/fuselage';
 import { capitalize } from '@rocket.chat/tools';
 import { GenericModal } from '@rocket.chat/ui-client';
 import { useToastMessageDispatch, useAbsoluteUrl, useEndpoint, useTranslation, useSetModal } from '@rocket.chat/ui-contexts';
-import DOMPurify from 'dompurify';
 import { memo, useEffect, useState } from 'react';
+import { Trans } from 'react-i18next';
 
 import CreateOAuthModal from './CreateOAuthModal';
 import { strRight } from '../../../../../../lib/utils/stringUtils';
@@ -116,10 +116,10 @@ function OAuthGroupPage({ _id, onClickBack, ...group }: OAuthGroupPageProps) {
 							key={sectionName}
 							groupId={_id}
 							help={
-								<span
-									dangerouslySetInnerHTML={{
-										__html: DOMPurify.sanitize(t('Custom_oauth_helper', { url: callbackURL(sectionName) })),
-									}}
+								<Trans
+									i18nKey='Custom_oauth_helper'
+									values={{ url: callbackURL(sectionName) }}
+									components={{ code: <code className='inline' /> }}
 								/>
 							}
 							sectionName={sectionName}

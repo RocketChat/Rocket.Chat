@@ -369,10 +369,10 @@ export class VirtruPDP implements IPolicyDecisionPoint {
 		}
 
 		const abacRoomCursor = Rooms.findPrivateRoomsByIdsWithAbacAttributes(roomIds, {
-			projection: { _id: 1, abacAttributes: 1 },
+			projection: { _id: 1, name: 1, abacAttributes: 1 },
 		});
 
-		const abacRoomById = new Map<string, Pick<IRoom, '_id' | 'abacAttributes'>>();
+		const abacRoomById = new Map<string, Pick<IRoom, '_id' | 'name' | 'abacAttributes'>>();
 		for await (const room of abacRoomCursor) {
 			abacRoomById.set(room._id, room);
 		}
@@ -387,14 +387,14 @@ export class VirtruPDP implements IPolicyDecisionPoint {
 		return this.evaluateUserRooms(entries);
 	}
 
-	async onSubjectAttributesChanged(user: IUser, _next: IAbacAttributeDefinition[]): Promise<Pick<IRoom, '_id'>[]> {
+	async onSubjectAttributesChanged(user: IUser, _next: IAbacAttributeDefinition[]): Promise<Pick<IRoom, '_id' | 'name'>[]> {
 		const roomIds = user.__rooms;
 		if (!roomIds?.length) {
 			return [];
 		}
 
 		const abacRooms = await Rooms.findPrivateRoomsByIdsWithAbacAttributes(roomIds, {
-			projection: { _id: 1, abacAttributes: 1 },
+			projection: { _id: 1, name: 1, abacAttributes: 1 },
 		}).toArray();
 
 		if (!abacRooms.length) {
@@ -408,7 +408,7 @@ export class VirtruPDP implements IPolicyDecisionPoint {
 				msg: 'User has no entity key for Virtru PDP evaluation, treating as non-compliant for all ABAC rooms',
 				userId: user._id,
 			});
-			return abacRooms.map(({ _id }) => ({ _id }));
+			return abacRooms.map(({ _id, name }) => ({ _id, name }));
 		}
 
 		const decisionRequests = abacRooms.map((room) => ({
@@ -428,12 +428,12 @@ export class VirtruPDP implements IPolicyDecisionPoint {
 
 		const responses = await this.getDecisionBulk(decisionRequests);
 
-		const nonCompliantRooms: Pick<IRoom, '_id'>[] = [];
+		const nonCompliantRooms: Pick<IRoom, '_id' | 'name'>[] = [];
 
 		responses.forEach((resp, index) => {
 			const permitted = resp?.resourceDecisions?.length && resp.resourceDecisions.every((rd) => rd.decision === 'DECISION_PERMIT');
 			if (!permitted && abacRooms[index]) {
-				nonCompliantRooms.push({ _id: abacRooms[index]._id });
+				nonCompliantRooms.push({ _id: abacRooms[index]._id, name: abacRooms[index].name });
 			}
 		});
 

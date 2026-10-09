@@ -392,7 +392,7 @@ describe('[Commands]', () => {
 				deleteRoom({ type: 'c', roomId: channel._id }),
 				deleteRoom({ type: 'p', roomId: group1._id }),
 			]);
-			await Promise.all([deleteUser(user1), deleteUser(user2)]);
+			await Promise.all([deleteUser(user1, { confirmRelinquish: true }), deleteUser(user2)]);
 		});
 
 		it('should not add users from group which is not accessible by current user', async () => {

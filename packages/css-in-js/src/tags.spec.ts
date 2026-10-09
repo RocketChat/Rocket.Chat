@@ -64,6 +64,14 @@ describe('tags', () => {
 			).toBe('color: red;');
 		});
 
+		it('interpolates functions nested in arrays with args passed', () => {
+			const rule = css`
+				color: ${[(colorValue: string): string => colorValue]};
+			`;
+			expect(rule('red')).toBe('color: red;');
+			expect(rule('blue')).toBe('color: blue;');
+		});
+
 		it('interpolates other `css` tagged template strings', () => {
 			expect(
 				css`
@@ -93,6 +101,21 @@ describe('tags', () => {
 			expect(cssUntyped(null)()).toBe('');
 			expect(cssUntyped([])()).toBe('');
 			expect(cssUntyped([null])()).toBe('');
+		});
+
+		it('releases the evaluation context when an interpolation throws', () => {
+			const failing = css`
+				color: ${() => {
+					throw new Error();
+				}};
+			`;
+			expect(() => failing()).toThrow();
+
+			expect(
+				css`
+					animation-name: ${keyframes`from { opacity: 0; }`};
+				`(),
+			).toMatch(/@keyframes /);
 		});
 	});
 
@@ -161,6 +184,21 @@ describe('tags', () => {
 			expect(keyframesUntyped(null)()).toBe('none');
 			expect(keyframesUntyped([])()).toBe('none');
 			expect(keyframesUntyped([null])()).toBe('none');
+		});
+
+		it('releases the evaluation context when an interpolation throws', () => {
+			const failing = keyframes`
+				from { opacity: ${() => {
+					throw new Error();
+				}}; }
+			`;
+			expect(() => failing()).toThrow();
+
+			expect(
+				css`
+					animation-name: ${keyframes`from { opacity: 0; }`};
+				`(),
+			).toMatch(/@keyframes /);
 		});
 	});
 });

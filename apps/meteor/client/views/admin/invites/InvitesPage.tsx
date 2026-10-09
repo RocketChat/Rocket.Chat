@@ -10,13 +10,13 @@ import {
 	Page,
 	PageHeader,
 	PageContent,
+	GenericNoResults,
 } from '@rocket.chat/ui-client';
 import { useSetModal, useToastMessageDispatch, useTranslation, useEndpoint } from '@rocket.chat/ui-contexts';
 import { useQuery } from '@tanstack/react-query';
 import { useMemo } from 'react';
 
 import InviteRow from './InviteRow';
-import GenericNoResults from '../../../components/GenericNoResults';
 
 const InvitesPage = () => {
 	const t = useTranslation();

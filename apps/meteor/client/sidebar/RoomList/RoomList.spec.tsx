@@ -119,6 +119,7 @@ jest.mock('../hooks/usePreventDefault', () => ({
 }));
 
 jest.mock('../hooks/useRoomList', () => ({
+	...jest.requireActual('../hooks/useRoomList'),
 	useRoomList: () => ({
 		groups,
 		groupsCount: [2, 1, 0],

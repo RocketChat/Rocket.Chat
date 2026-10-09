@@ -685,7 +685,10 @@ describe('/teams.members', () => {
 			.end(done);
 	});
 
-	after(() => Promise.all([deleteUser(testUser), deleteUser(testUser2), deleteTeam(credentials, teamName)]));
+	after(async () => {
+		await deleteTeam(credentials, teamName);
+		await Promise.all([deleteUser(testUser), deleteUser(testUser2)]);
+	});
 
 	it('should list all the members from a public team', async () => {
 		const res = await request
@@ -944,7 +947,10 @@ describe('/teams.updateMember', () => {
 			.end(done);
 	});
 
-	after(() => Promise.all([deleteUser(testUser), deleteUser(testUser2), deleteTeam(credentials, teamName)]));
+	after(async () => {
+		await deleteTeam(credentials, teamName);
+		await Promise.all([deleteUser(testUser), deleteUser(testUser2)]);
+	});
 
 	it("should update member's data in a public team", (done) => {
 		void request
@@ -1022,7 +1028,10 @@ describe('/teams.removeMember', () => {
 			});
 	});
 
-	after(() => Promise.all([deleteUser(testUser), deleteUser(testUser2), deleteTeam(credentials, teamName)]));
+	after(async () => {
+		await deleteTeam(credentials, teamName);
+		await Promise.all([deleteUser(testUser), deleteUser(testUser2)]);
+	});
 
 	it('should not be able to remove the last owner', (done) => {
 		void request
@@ -1139,7 +1148,10 @@ describe('/teams.leave', () => {
 			});
 	});
 
-	after(() => Promise.all([deleteUser(testUser), deleteUser(testUser2), deleteTeam(credentials, teamName)]));
+	after(async () => {
+		await deleteTeam(credentials, teamName);
+		await Promise.all([deleteUser(testUser), deleteUser(testUser2)]);
+	});
 
 	it('should not be able to remove the last owner', (done) => {
 		request
@@ -2138,8 +2150,8 @@ describe('/teams.listRooms', () => {
 				deleteRoom({ type: 'c', roomId: discussionOnMainRoom._id }),
 				deleteTeam(credentials, teamName),
 				deleteTeam(credentials, testPrivateTeam.name),
-				deleteUser({ _id: testUser._id }),
 			]);
+			await deleteUser({ _id: testUser._id }, { confirmRelinquish: true });
 		});
 
 		it('should fail if user is not logged in', async () => {

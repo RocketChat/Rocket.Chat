@@ -1048,10 +1048,6 @@ describe('LIVECHAT - business hours', () => {
 				expect(latestAgent?.openBusinessHours?.[0]).to.be.equal(defaultBH._id);
 			});
 		});
-
-		after(async () => {
-			await deleteUser(agent);
-		});
 	});
 
 	describe('[CE][BH] On Agent deactivated/activated', () => {

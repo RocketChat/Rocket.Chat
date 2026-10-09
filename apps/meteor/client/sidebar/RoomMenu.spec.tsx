@@ -56,7 +56,7 @@ const renderOptions = {
 const buildEnterpriseQueryClient = () => {
 	const client = new QueryClient({ defaultOptions: { queries: { retry: false }, mutations: { retry: false } } });
 	client.setQueryData(['licenses', 'getLicenses', undefined], {
-		license: createFakeLicenseInfo({ hasValidLicense: true, activeModules: ['experimental-enterprise-features'] }),
+		license: createFakeLicenseInfo({ hasValidLicense: true }),
 	});
 	return client;
 };

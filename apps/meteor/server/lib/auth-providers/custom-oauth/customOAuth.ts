@@ -2,7 +2,7 @@ import { LDAP } from '@rocket.chat/core-services';
 import type { IUser, OAuthConfiguration } from '@rocket.chat/core-typings';
 import { Logger } from '@rocket.chat/logger';
 import { Users } from '@rocket.chat/models';
-import { isAbsoluteURL } from '@rocket.chat/tools';
+import { capitalize, isAbsoluteURL } from '@rocket.chat/tools';
 import { Accounts } from 'meteor/accounts-base';
 import { Meteor } from 'meteor/meteor';
 import type { DoneCallback } from 'passport';
@@ -14,6 +14,7 @@ import { client } from '../../../database/utils';
 import { settings } from '../../../settings/cached';
 import { callbacks } from '../../callbacks';
 import { notifyOnUserChange } from '../../notifyListener';
+import { warnUnlicensedAuthService } from '../../premiumAuthDeprecation';
 import { saveUserIdentity } from '../../users/saveUserIdentity';
 
 const logger = new Logger('CustomOAuth');
@@ -371,6 +372,11 @@ Accounts.validateNewUser((user: IUser & { email: string }) => {
 const { updateOrCreateUserFromExternalService } = Accounts;
 
 Accounts.updateOrCreateUserFromExternalService = async function (...args) {
+	// only services created by an admin have this setting; built-in providers reuse this class too
+	if (settings.get(`Accounts_OAuth_Custom-${capitalize(args[0])}`) !== undefined) {
+		warnUnlicensedAuthService('Custom OAuth', 'oauth-enterprise');
+	}
+
 	for (const hook of BeforeUpdateOrCreateUserFromExternalService.values()) {
 		await hook.apply(this, args as unknown as [string, Record<string, any>]);
 	}

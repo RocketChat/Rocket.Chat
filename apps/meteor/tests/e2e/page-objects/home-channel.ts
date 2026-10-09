@@ -144,10 +144,6 @@ export class HomeChannel extends RoutedPage {
 		return this.page.locator('[data-qa="ContextualbarActionClose"]');
 	}
 
-	get userCardToolbar(): Locator {
-		return this.page.locator('[role=toolbar][aria-label="User card actions"]');
-	}
-
 	getRoomHeaderFavoriteBtn(isEnterprise: boolean): Locator {
 		return isEnterprise ? this.btnCategorySelector : this.roomHeaderFavoriteBtn;
 	}

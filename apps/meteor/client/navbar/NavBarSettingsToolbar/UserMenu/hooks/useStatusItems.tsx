@@ -1,4 +1,5 @@
-import type { ICustomUserStatus, IUser, UserStatus as UserStatusEnum } from '@rocket.chat/core-typings';
+import type { ICustomUserStatus, IUser } from '@rocket.chat/core-typings';
+import { UserStatus as UserStatusEnum } from '@rocket.chat/core-typings';
 import { Box, Icon, RadioButton } from '@rocket.chat/fuselage';
 import type { GenericMenuItemProps } from '@rocket.chat/ui-client';
 import { clientCallbacks } from '@rocket.chat/ui-client';
@@ -11,6 +12,7 @@ import { useCustomStatusModalHandler } from './useCustomStatusModalHandler';
 import { useStatusVisibilityModalHandler } from './useStatusVisibilityModalHandler';
 import MarkdownText from '../../../../components/MarkdownText';
 import { UserStatus } from '../../../../components/UserStatus';
+import UserStatusDisabledInfo from '../../../../components/UserStatusDisabledInfo';
 import { useExpirationText } from '../../../../hooks/useExpirationText';
 import { useFireGlobalEvent } from '../../../../hooks/useFireGlobalEvent';
 import { userStatuses } from '../../../../lib/userStatuses';
@@ -19,9 +21,7 @@ import { mapCustomUserStatusFromApi } from '../../../../lib/utils/mapCustomUserS
 import { useStatusDisabledModal } from '../../../../views/admin/customUserStatus/hooks/useStatusDisabledModal';
 
 export const useStatusItems = (user?: IUser): GenericMenuItemProps[] => {
-	// We should lift this up to somewhere else if we want to use it in other places
-
-	userStatuses.invisibleAllowed = useSetting('Accounts_AllowInvisibleStatusOption', true);
+	const invisibleAllowed = useSetting('Accounts_AllowInvisibleStatusOption', true);
 
 	const queryClient = useQueryClient();
 	const stream = useStream('notify-logged');
@@ -75,13 +75,27 @@ export const useStatusItems = (user?: IUser): GenericMenuItemProps[] => {
 		staleTime: Infinity,
 	});
 
+	const workspacePresenceDisabled = useSetting('Accounts_UserStatus_Enabled', true) === false;
+	const adminStatusHidingEnabled = useSetting('Accounts_StatusVisibility_Admin_Enabled', false);
+	const userPresenceDisabled = user?.presenceDisabledByAdmin === true && adminStatusHidingEnabled;
 	const handleStatusDisabledModal = useStatusDisabledModal();
 	const handleCustomStatus = useCustomStatusModalHandler();
 	const handleStatusVisibility = useStatusVisibilityModalHandler();
-	const statusVisibilityEnabled = useSetting('Accounts_StatusVisibility_Enabled', false);
+	const statusVisibilityEnabled = useSetting('Accounts_StatusVisibility_Enabled', false) && adminStatusHidingEnabled;
 	const customStatusExpiration = useExpirationText(user?.statusExpiresAt);
 
 	return useMemo<GenericMenuItemProps[]>(() => {
+		if (userPresenceDisabled || workspacePresenceDisabled) {
+			return [
+				{
+					id: 'user-status-disabled',
+					status: <UserStatus status={UserStatusEnum.OFFLINE} />,
+					content: t('Offline'),
+					addon: <UserStatusDisabledInfo workspace={workspacePresenceDisabled} />,
+				},
+			];
+		}
+
 		if (presenceDisabled) {
 			return [
 				{
@@ -135,7 +149,9 @@ export const useStatusItems = (user?: IUser): GenericMenuItemProps[] => {
 
 		const isPresetSelected = (statusType: UserStatusEnum): boolean =>
 			!user?.statusText && !customStatusExpiration && user?.status === statusType;
-		const presetItems = (statuses ?? [])
+		const availableStatuses = (statuses ?? []).filter((status) => invisibleAllowed || status.statusType !== UserStatusEnum.OFFLINE);
+
+		const presetItems = availableStatuses
 			.filter((s) => userStatuses.isValidType(s.id))
 			.map((status): GenericMenuItemProps => ({
 				id: status.id,
@@ -147,7 +163,7 @@ export const useStatusItems = (user?: IUser): GenericMenuItemProps[] => {
 
 		// Admin-defined custom statuses
 		const customItems = allowUserStatusMessageChange
-			? (statuses ?? [])
+			? availableStatuses
 					.filter((s) => !userStatuses.isValidType(s.id))
 					.map((status): GenericMenuItemProps => ({
 						id: status.id,
@@ -174,6 +190,8 @@ export const useStatusItems = (user?: IUser): GenericMenuItemProps[] => {
 		return [...items, ...presetItems, ...customItems, ...actionItems];
 	}, [
 		presenceDisabled,
+		userPresenceDisabled,
+		workspacePresenceDisabled,
 		allowUserStatusMessageChange,
 		t,
 		handleStatusDisabledModal,
@@ -181,6 +199,7 @@ export const useStatusItems = (user?: IUser): GenericMenuItemProps[] => {
 		user?.statusText,
 		customStatusExpiration,
 		statuses,
+		invisibleAllowed,
 		handleCustomStatus,
 		handleStatusVisibility,
 		statusVisibilityEnabled,

@@ -1,8 +1,7 @@
 import type { cssFn } from '@rocket.chat/css-in-js';
 import { css } from '@rocket.chat/css-in-js';
+import { UserCardInfo } from '@rocket.chat/ui-client';
 import type { ComponentProps, CSSProperties, ReactNode } from 'react';
-
-import { UserCardInfo } from '../../../components/UserCard';
 
 const wordBreak = css`
 	word-break: break-word;

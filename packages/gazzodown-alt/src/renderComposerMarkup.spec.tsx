@@ -68,20 +68,41 @@ describe('blocks the composer gives visual treatment', () => {
 		expect(input.querySelector('span')?.getAttribute('style')).toBe(`font-weight:bold;font-size:${fontSize}`);
 	});
 
-	it('rules a quote and marks every one of its lines', () => {
+	const quoteBarsOf = (input: HTMLElement): Element[] =>
+		Array.from(input.querySelectorAll('span[style]')).filter((span) => span.getAttribute('style')?.includes('border-inline-start'));
+
+	it('rules a quote and gives every one of its lines its own bar', () => {
 		const input = mountTokens([{ type: 'QUOTE', value: [paragraph('first'), paragraph('second')] }]);
+		const bars = quoteBarsOf(input);
 
 		expect(input.textContent).toBe('> first\n> second\n');
-		expect(input.querySelector('span')?.getAttribute('style')).toBe(
-			'border-inline-start:2px solid var(--rcx-color-stroke-light, #ccc);padding-inline-start:8px;color:var(--rcx-color-font-secondary-info, #666)',
-		);
+		expect(bars.map((bar) => bar.textContent)).toEqual(['> first\n', '> second\n']);
+
+		for (const bar of bars) {
+			expect(bar.getAttribute('style')).toBe(
+				'border-inline-start:2px solid var(--rcx-color-stroke-light, #ccc);padding-inline-start:8px;color:var(--rcx-color-font-secondary-info, #666)',
+			);
+		}
 	});
 
-	it('tints a spoiler block, which the parser does not currently produce', () => {
+	it('bars an empty quote line as well', () => {
+		expect(quoteBarsOf(mountSource('> one\n>\n> two')).map((bar) => bar.textContent)).toEqual(['> one\n', '>\n', '> two\n']);
+	});
+
+	it.each([
+		['no space', '>one'],
+		['two spaces', '>  one'],
+		['a tab', '>\tone'],
+	])('keeps a quote marker written with %s instead of normalizing it', (_label, text) => {
+		expect(mountSource(text).textContent).toBe(`${text}\n`);
+	});
+
+	it('tints a spoiler block and keeps its fences outside the tint', () => {
 		const input = mountTokens([{ type: 'SPOILER_BLOCK', value: [paragraph('secret')] }]);
 
-		expect(input.textContent).toBe('secret\n');
-		expect(input.querySelector('span')?.getAttribute('style')).toBe(
+		expect(input.textContent).toBe('||\nsecret\n||');
+		expect(input.querySelector('span[style]')?.textContent).toBe('secret\n');
+		expect(input.querySelector('span[style]')?.getAttribute('style')).toBe(
 			'background-color:var(--rcx-color-surface-tint, rgba(0, 0, 0, 0.08));border-radius:2px;padding:0 2px',
 		);
 	});
@@ -218,6 +239,8 @@ describe('every renderer emits the text it was parsed from', () => {
 		['ordered list item with inline markup', '1. *bold* one'],
 		['ordered list followed by a paragraph', '1. one\ntext after'],
 		['tasks', '- [x] done\n- [ ] todo'],
+		['spoiler block', '||\nline one\nline two\n||'],
+		['spoiler block between paragraphs', 'before\n||\nhidden\n||\nafter'],
 		['emoji shortcode', 'hi :smile: there'],
 		['emoji shortcode alone', ':smile:'],
 		['unicode emoji in text', 'hi 😄 there'],
@@ -273,6 +296,8 @@ describe('markup the renderer cannot reproduce', () => {
 		['phone link', 'call +15551234567 now'],
 		['padded horizontal rule', '  ---'],
 		['several big emoji', '😄 😄'],
+		['spoiler block with a blank line before its closing fence', '||\nsecret\n\n||'],
+		['code block with a leading empty line', '```\n\nconst a = 1;\n```'],
 	])('does not reproduce %s, so the caller must guard the text', (_label, text) => {
 		expect(textOf(mountSource(text))).not.toBe(text);
 	});

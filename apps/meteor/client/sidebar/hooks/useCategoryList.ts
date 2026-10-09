@@ -3,7 +3,7 @@ import { useSetting, useUserPreference } from '@rocket.chat/ui-contexts';
 import { useMemo } from 'react';
 
 import { useSidebarSectionsOrder } from './useSidebarSectionsOrder';
-import { useHasLicenseModule } from '../../hooks/useHasLicenseModule';
+import { useIsEnterprise } from '../../hooks/useIsEnterprise';
 import { useUserSidebarCategories } from '../categories/hooks/useUserSidebarCategories';
 
 type FilterSystemCategoriesOptions = {
@@ -73,7 +73,7 @@ export const withDynamicFirst = (ids: string[], sectionsOrder: readonly string[]
 
 export const filterGroupVisibility = <T>(
 	groups: Map<string, Set<SubscriptionWithRoom>>,
-	hasLicenseModule: boolean,
+	isEnterprise: boolean,
 	makeGroup: (key: string, set: Set<SubscriptionWithRoom>) => T,
 ): T[] => {
 	const filteredGroups: T[] = [];
@@ -87,7 +87,7 @@ export const filterGroupVisibility = <T>(
 			return;
 		}
 
-		if (!hasLicenseModule || SIDEBAR_DYNAMIC_GROUP_KEYS.includes(key)) {
+		if (!isEnterprise || SIDEBAR_DYNAMIC_GROUP_KEYS.includes(key)) {
 			if (group.size > 0) {
 				filteredGroups.push(makeGroup(key, group));
 			}
@@ -168,7 +168,7 @@ export const getRoomCategory = (
 };
 
 export const useCategoryList = (showOmnichannel: boolean, inquiriesEnabled: boolean) => {
-	const { data: hasLicenseModule = false } = useHasLicenseModule('experimental-enterprise-features');
+	const { data: { isEnterprise = false } = {} } = useIsEnterprise();
 	const { rawCategories: sidebarCategories } = useUserSidebarCategories();
 	const sidebarSectionsOrder = useSidebarSectionsOrder();
 	const sidebarGroupByType = useUserPreference<boolean>('sidebarGroupByType') ?? false;
@@ -177,7 +177,7 @@ export const useCategoryList = (showOmnichannel: boolean, inquiriesEnabled: bool
 	const sidebarShowUnread = useUserPreference<boolean>('sidebarShowUnread', false) ?? false;
 
 	const categoryList = useMemo(() => {
-		if (hasLicenseModule) {
+		if (isEnterprise) {
 			return filterSystemCategories(
 				mergeWithSectionsOrder(
 					sidebarCategories.map(({ _id }) => _id),
@@ -205,7 +205,7 @@ export const useCategoryList = (showOmnichannel: boolean, inquiriesEnabled: bool
 	}, [
 		sidebarCategories,
 		sidebarSectionsOrder,
-		hasLicenseModule,
+		isEnterprise,
 		showOmnichannel,
 		inquiriesEnabled,
 		sidebarGroupByType,

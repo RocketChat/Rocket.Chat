@@ -1,4 +1,4 @@
-import { Readable } from 'node:stream';
+import { PassThrough, Readable } from 'node:stream';
 
 import {
 	ServiceClass,
@@ -415,7 +415,7 @@ export class OmnichannelTranscript extends ServiceClass implements IOmnichannelT
 		try {
 			const { rid } = await roomService.createDirectMessage({ to: details.userId, from: 'rocket.cat' });
 			const [rocketCatFile, transcriptFile] = await this.uploadFiles({
-				streamParam: Readable.from(stream),
+				stream: Readable.from(stream),
 				roomIds: [rid, details.rid],
 				data,
 				transcriptText,
@@ -452,20 +452,27 @@ export class OmnichannelTranscript extends ServiceClass implements IOmnichannelT
 	}
 
 	private async uploadFiles({
-		streamParam,
+		stream,
 		roomIds,
 		data,
 		transcriptText,
 	}: {
-		streamParam: Readable;
+		stream: Readable;
 		roomIds: string[];
 		data: Pick<WorkerData, 'siteName' | 'visitor'>;
 		transcriptText: string;
 	}): Promise<IUpload[]> {
+		// every upload reads its own copy, so one that starts reading late still gets the whole pdf
+		const copies = roomIds.map(() => new PassThrough());
+		copies.forEach((copy) => stream.pipe(copy));
+
+		// a render that fails halfway must fail the uploads instead of leaving them waiting
+		stream.on('error', (err) => copies.forEach((copy) => copy.destroy(err)));
+
 		return Promise.all(
-			roomIds.map((roomId) => {
+			roomIds.map((roomId, index) => {
 				return uploadService.uploadFileFromStream({
-					streamParam,
+					streamParam: copies[index],
 					details: {
 						// transcript_{company-name}_{date}_{hour}.pdf
 						name: `${transcriptText}_${data.siteName}_${new Intl.DateTimeFormat('en-US').format(new Date()).replaceAll('/', '-')}_${

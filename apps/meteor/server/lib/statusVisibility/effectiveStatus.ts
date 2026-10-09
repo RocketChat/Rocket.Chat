@@ -1,13 +1,21 @@
+import type { PresenceScope } from '@rocket.chat/core-services';
 import type { IUser } from '@rocket.chat/core-typings';
 import { UserStatus } from '@rocket.chat/core-typings';
+import { hiddenIds } from '@rocket.chat/streamer';
 import type { Filter } from 'mongodb';
 
-export const effectiveStatusFilter = (status: UserStatus[], hidden?: Set<IUser['_id']>): Filter<IUser> => {
-	if (!hidden?.size) {
-		return { status: { $in: status } };
+const matchesNobody = (): Filter<IUser> => ({ $nor: [{}] });
+
+export const effectiveStatusFilter = (status: UserStatus[], hidden: PresenceScope): Filter<IUser> => {
+	if (hidden.hideAll) {
+		return status.includes(UserStatus.OFFLINE) ? {} : matchesNobody();
 	}
 
-	const ids = [...hidden];
+	const ids = hiddenIds(hidden);
+
+	if (!ids.length) {
+		return { status: { $in: status } };
+	}
 
 	if (status.includes(UserStatus.OFFLINE)) {
 		return { $or: [{ _id: { $nin: ids }, status: { $in: status } }, { _id: { $in: ids } }] };
@@ -16,11 +24,32 @@ export const effectiveStatusFilter = (status: UserStatus[], hidden?: Set<IUser['
 	return { $and: [{ _id: { $nin: ids } }, { status: { $in: status } }] };
 };
 
-export const effectiveStatusExpression = (hidden: Set<IUser['_id']>) => ({
-	$cond: [{ $in: ['$_id', [...hidden]] }, UserStatus.OFFLINE, '$status'],
-});
+export const effectiveStatusExpression = (hidden: PresenceScope) => {
+	if (hidden.hideAll) {
+		return UserStatus.OFFLINE;
+	}
 
-export const excludingOfflineFilter = (hidden?: Set<IUser['_id']>): Filter<IUser> =>
-	hidden?.size
-		? { $and: [{ _id: { $nin: [...hidden] } }, { status: { $ne: UserStatus.OFFLINE } }] }
-		: { status: { $ne: UserStatus.OFFLINE } };
+	const ids = hiddenIds(hidden);
+
+	return ids.length ? { $cond: [{ $in: ['$_id', ids] }, UserStatus.OFFLINE, '$status'] } : '$status';
+};
+
+export const excludingHiddenFilter = (hidden: PresenceScope): Filter<IUser> => {
+	if (hidden.hideAll) {
+		return matchesNobody();
+	}
+
+	const ids = hiddenIds(hidden);
+
+	return ids.length ? { _id: { $nin: ids } } : {};
+};
+
+export const excludingOfflineFilter = (hidden: PresenceScope): Filter<IUser> => {
+	if (hidden.hideAll) {
+		return matchesNobody();
+	}
+
+	const ids = hiddenIds(hidden);
+
+	return ids.length ? { $and: [{ _id: { $nin: ids } }, { status: { $ne: UserStatus.OFFLINE } }] } : { status: { $ne: UserStatus.OFFLINE } };
+};

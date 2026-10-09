@@ -1,7 +1,6 @@
 import { isSetting, isSettingColor } from '@rocket.chat/core-typings';
 import { AccordionItem, Box, Button, FieldGroup } from '@rocket.chat/fuselage';
 import { useStableCallback } from '@rocket.chat/fuselage-hooks';
-import type { TranslationKey } from '@rocket.chat/ui-contexts';
 import type { ReactNode } from 'react';
 import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -75,7 +74,7 @@ function SettingsSection({ groupId, hasReset = true, sectionTitle, sectionName, 
 		<AccordionItem
 			data-qa-section={sectionName}
 			noncollapsible={solo || !sectionName}
-			title={sectionTitle || (sectionName && t(sectionName as TranslationKey))}
+			title={sectionTitle || (sectionName && t(sectionName))}
 		>
 			{help && (
 				<Box is='p' color='hint' fontScale='p2'>

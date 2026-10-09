@@ -66,6 +66,8 @@ const RichTextComposerInput = forwardRef<HTMLDivElement, RichTextComposerInputPr
 				paddingBlock={16}
 				borderWidth='none'
 				is='span'
+				role='textbox'
+				aria-multiline='true'
 				contentEditable={!disabled}
 				aria-disabled={disabled}
 				suppressContentEditableWarning

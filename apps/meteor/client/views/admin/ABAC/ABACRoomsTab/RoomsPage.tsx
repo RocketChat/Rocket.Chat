@@ -8,6 +8,7 @@ import {
 	GenericTableHeaderCell,
 	GenericTableRow,
 	usePagination,
+	GenericNoResults,
 } from '@rocket.chat/ui-client';
 import { useEndpoint, useRouter, useSearchParameter } from '@rocket.chat/ui-contexts';
 import { useQuery } from '@tanstack/react-query';
@@ -15,7 +16,6 @@ import { useMemo, useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import RoomMenu from './RoomMenu';
-import GenericNoResults from '../../../../components/GenericNoResults';
 import { RoomIcon } from '../../../../components/RoomIcon';
 import { ABACQueryKeys } from '../../../../lib/queryKeys';
 import { useIsABACAvailable } from '../hooks/useIsABACAvailable';
@@ -86,7 +86,7 @@ const RoomsPage = () => {
 								['value', t('Values'), false],
 							]}
 							value={filterType}
-							onChange={(value) => setFilterType(value as 'all' | 'roomName' | 'attribute' | 'value')}
+							onChange={(value) => setFilterType(value)}
 						/>
 					</Box>
 					<Button onClick={handleNewAttribute} primary marginInlineStart={8} disabled={isABACAvailable !== true}>

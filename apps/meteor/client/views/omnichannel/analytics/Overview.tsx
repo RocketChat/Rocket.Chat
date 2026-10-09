@@ -1,5 +1,4 @@
 import { Box, Skeleton } from '@rocket.chat/fuselage';
-import type { TranslationKey } from '@rocket.chat/ui-contexts';
 import { useEndpoint } from '@rocket.chat/ui-contexts';
 import { useEffect, useState, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -67,7 +66,7 @@ const Overview = ({ type, dateRange, departmentId }: OverviewProps) => {
 							paddingBlock={8}
 							flexBasis='100%'
 							key={i}
-							title={title ? t(title as TranslationKey) : <Skeleton width='x60' />}
+							title={title ? t(title) : <Skeleton width='x60' />}
 							count={value}
 						/>
 					))}

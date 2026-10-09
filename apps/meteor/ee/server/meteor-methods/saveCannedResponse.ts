@@ -90,6 +90,7 @@ export const saveCannedResponse = async (
 
 		result = await CannedResponse.updateCannedResponse(_id, {
 			...responseData,
+			tags: responseData.tags ?? [],
 			...(cannedResponse.scope === 'user' && { userId: cannedResponse.userId }),
 			createdBy: cannedResponse.createdBy,
 		});
@@ -98,6 +99,7 @@ export const saveCannedResponse = async (
 
 		const data = {
 			...responseData,
+			tags: responseData.tags ?? [],
 			...(responseData.scope === 'user' && { userId: user?._id }),
 			createdBy: { _id: user?._id || '', username: user?.username || '' },
 			_createdAt: new Date(),

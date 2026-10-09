@@ -8,13 +8,13 @@ import {
 	GenericTableHeaderCell,
 	GenericTableLoadingRow,
 	GenericTableRow,
+	GenericNoResults,
 } from '@rocket.chat/ui-client';
 import { useTranslation } from 'react-i18next';
 
 import type { WebdavSortOptions } from './WebdavFilePickerModal';
 import { getNodeFileSize } from './lib/getNodeFileSize';
 import { getNodeIconType } from './lib/getNodeIconType';
-import GenericNoResults from '../../../../components/GenericNoResults';
 import { timeAgo } from '../../../../lib/utils/timeAgo';
 
 export type WebdavFilePickerTableProps = {

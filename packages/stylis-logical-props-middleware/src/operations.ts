@@ -48,12 +48,12 @@ export const compileOperations = ({
 			return;
 		}
 
-		const op: Operation = (value, ruleSet, _ltrRuleSet, rtlRuleSet) => {
+		const op: Operation = (value, ruleSet, ltrRuleSet, rtlRuleSet) => {
 			switch (value) {
 				case 'start':
 				case 'inline-start':
 					if (!logicalValues.get(value)) {
-						attachDeclaration(property, 'left', ruleSet);
+						attachDeclaration(property, 'left', ltrRuleSet);
 						attachDeclaration(property, 'right', rtlRuleSet);
 						return;
 					}
@@ -62,7 +62,7 @@ export const compileOperations = ({
 				case 'end':
 				case 'inline-end':
 					if (!logicalValues.get(value)) {
-						attachDeclaration(property, 'right', ruleSet);
+						attachDeclaration(property, 'right', ltrRuleSet);
 						attachDeclaration(property, 'left', rtlRuleSet);
 						return;
 					}

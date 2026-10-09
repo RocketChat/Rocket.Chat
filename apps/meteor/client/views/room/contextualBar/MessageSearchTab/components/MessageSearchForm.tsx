@@ -1,7 +1,6 @@
 import type { IMessageSearchProvider } from '@rocket.chat/core-typings';
 import { Box, Field, FieldLabel, FieldHint, Icon, TextInput, ToggleSwitch, Callout } from '@rocket.chat/fuselage';
 import { useDebouncedCallback, useStableCallback } from '@rocket.chat/fuselage-hooks';
-import type { TranslationKey } from '@rocket.chat/ui-contexts';
 import DOMPurify from 'dompurify';
 import { useEffect, useId } from 'react';
 import { useForm, useWatch } from 'react-hook-form';
@@ -61,9 +60,7 @@ const MessageSearchForm = ({ provider, onSearch, searchListId, isSuccess }: Mess
 					autoComplete='off'
 					{...register('searchText')}
 				/>
-				{provider.description && (
-					<FieldHint dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(t(provider.description as TranslationKey)) }} />
-				)}
+				{provider.description && <FieldHint dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(t(provider.description)) }} />}
 			</Field>
 			{globalSearchEnabled && (
 				<Field>

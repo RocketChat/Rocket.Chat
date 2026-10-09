@@ -142,5 +142,7 @@ const wrapReferenceCounting = (attacher: StrictRuleAttacher): RuleAttacher => {
 export const attachRules: RuleAttacher =
 	(typeof window === 'undefined' && discardRules) ||
 	// eslint-disable-next-line dot-notation
-	(process.env['NODE_ENV'] === 'production' && !!CSSStyleSheet.prototype.insertRule && wrapReferenceCounting(attachRulesIntoStyleSheet)) ||
+	(process.env['NODE_ENV'] === 'production' &&
+		!!window.CSSStyleSheet?.prototype.insertRule &&
+		wrapReferenceCounting(attachRulesIntoStyleSheet)) ||
 	wrapReferenceCounting(attachRulesIntoElement);

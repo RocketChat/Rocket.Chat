@@ -1,5 +1,5 @@
 import type { IRoom, IUser } from '@rocket.chat/core-typings';
-import { usePermission, useUserRoom, useUserSubscription } from '@rocket.chat/ui-contexts';
+import { usePermission, useUserId, useUserRoom, useUserSubscription } from '@rocket.chat/ui-contexts';
 import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -22,6 +22,7 @@ export const useBanUserAction = (user: Pick<IUser, '_id' | 'username'>, roomId: 
 	}
 
 	const { _id: uid, username } = user;
+	const ownUserId = useUserId();
 	const hasPermissionToBan = usePermission('ban-user', roomId);
 
 	const { roomCanBan } = getRoomDirectives({ room, showingUserId: uid, userSubscription: subscription });
@@ -29,7 +30,7 @@ export const useBanUserAction = (user: Pick<IUser, '_id' | 'username'>, roomId: 
 	const handleBan = useBanUser({ roomId });
 
 	return useMemo(() => {
-		if (!hasPermissionToBan || !roomCanBan) {
+		if (!hasPermissionToBan || !roomCanBan || uid === ownUserId) {
 			return undefined;
 		}
 
@@ -40,5 +41,5 @@ export const useBanUserAction = (user: Pick<IUser, '_id' | 'username'>, roomId: 
 			type: 'moderation' as const,
 			variant: 'danger' as const,
 		};
-	}, [handleBan, roomCanBan, hasPermissionToBan, t, username]);
+	}, [handleBan, roomCanBan, hasPermissionToBan, t, username, uid, ownUserId]);
 };

@@ -23,7 +23,7 @@ const Medium = ({ icon, title, titleIcon, avatar, actions, badges, unread, menu,
 
 	return (
 		<SidebarItem {...props} onFocus={mountNow} onPointerEnter={requestMount}>
-			<SidebarItemAvatarWrapper>{avatar}</SidebarItemAvatarWrapper>
+			{avatar && <SidebarItemAvatarWrapper>{avatar}</SidebarItemAvatarWrapper>}
 			{icon}
 			<SidebarItemTitle unread={unread}>{title}</SidebarItemTitle>
 			{titleIcon}

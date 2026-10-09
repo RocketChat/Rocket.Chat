@@ -4,7 +4,7 @@ import { UserStatus } from '@rocket.chat/core-typings';
 import supertest from 'supertest';
 import type { Response } from 'supertest';
 
-import { api, credentials, methodCall, request } from './api-data';
+import { api, assertSuccess, credentials, methodCall, request } from './api-data';
 import { password } from './user';
 
 export type TestUser<TUser extends IUser> = TUser & { username: string; emails: string[] };
@@ -103,31 +103,65 @@ export const login = (username: string | undefined, password: string, config?: I
 			});
 	});
 
-export const deleteUser = async (user: Pick<IUser, '_id'>, extraData = {}, config?: IRequestConfig) => {
-	const requestInstance = config?.request || request;
-	const credentialsInstance = config?.credentials || credentials;
-	return requestInstance
+const requestUserDeletion = (user: Pick<IUser, '_id'>, extraData: Record<string, unknown>, config?: IRequestConfig) =>
+	(config?.request || request)
 		.post(api('users.delete'))
-		.set(credentialsInstance)
-		.send({
-			userId: user._id,
-			...extraData,
-		});
+		.set(config?.credentials || credentials)
+		.send({ userId: user._id, ...extraData });
+
+/**
+ * @throws {RequestFailedError} when the user is not deleted
+ */
+export const deleteUser = async (user: Pick<IUser, '_id'>, extraData = {}, config?: IRequestConfig) =>
+	assertSuccess('users.delete', await requestUserDeletion(user, extraData, config));
+
+/**
+ * Cleanup for users a test may already have deleted itself.
+ *
+ * @throws {RequestFailedError} when the user exists and is not deleted
+ */
+export const deleteUserIfExists = async (user: Pick<IUser, '_id'>, extraData = {}, config?: IRequestConfig) => {
+	const res = await requestUserDeletion(user, extraData, config);
+
+	if (res.status === 400 && res.body?.errorType === 'error-invalid-user') {
+		return;
+	}
+
+	assertSuccess('users.delete', res);
 };
 
-export const getUserByUsername = <TUser extends IUser>(username: string, config?: IRequestConfig) =>
-	new Promise<TestUser<TUser>>((resolve) => {
-		const requestInstance = config?.request || request;
-		const credentialsInstance = config?.credentials || credentials;
+/**
+ * @throws {RequestFailedError} when the user does not exist or cannot be fetched
+ */
+export const getUserByUsername = async <TUser extends IUser>(username: string, config?: IRequestConfig): Promise<TestUser<TUser>> => {
+	const requestInstance = config?.request || request;
+	const credentialsInstance = config?.credentials || credentials;
 
-		void requestInstance
-			.get(api('users.info'))
-			.query({ username })
-			.set(credentialsInstance)
-			.end((_err: unknown, res: Response) => {
-				resolve(res.body.user);
-			});
-	});
+	const res = await requestInstance.get(api('users.info')).query({ username }).set(credentialsInstance);
+
+	return assertSuccess('users.info', res).body.user;
+};
+
+/**
+ * Like {@link getUserByUsername}, for users that may legitimately not exist.
+ *
+ * @throws {RequestFailedError} when the lookup fails for any reason other than the user not existing
+ */
+export const findUserByUsername = async <TUser extends IUser>(
+	username: string,
+	config?: IRequestConfig,
+): Promise<TestUser<TUser> | undefined> => {
+	const requestInstance = config?.request || request;
+	const credentialsInstance = config?.credentials || credentials;
+
+	const res = await requestInstance.get(api('users.info')).query({ username }).set(credentialsInstance);
+
+	if (res.status === 400 && res.body?.error === 'User not found.') {
+		return undefined;
+	}
+
+	return assertSuccess('users.info', res).body.user;
+};
 
 export const getMe = <TUser extends IUser>(overrideCredential = credentials, config?: IRequestConfig) =>
 	new Promise<TestUser<TUser>>((resolve) => {

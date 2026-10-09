@@ -114,7 +114,6 @@ export const deviceManagementQueryKeys = {
 };
 
 export const miscQueryKeys = {
-	personalAccessTokens: ['personal-access-tokens'] as const,
 	lookup: (endpoint: string) => ['lookup', endpoint] as const,
 	autotranslateSupportedLanguages: (targetLanguage: string) => ['autotranslate', 'supported-languages', targetLanguage] as const,
 };
@@ -206,4 +205,10 @@ export const videoConferenceQueryKeys = {
 export const messagesQueryKeys = {
 	all: ['messages'] as const,
 	message: (messageId: IMessage['_id']) => [...messagesQueryKeys.all, messageId] as const,
+};
+
+export const managedPresenceQueryKeys = {
+	all: ['admin', 'managed-presence-users'] as const,
+	list: (query: PaginatedRequest) => [...managedPresenceQueryKeys.all, query] as const,
+	byUsername: (username?: IUser['username']) => [...managedPresenceQueryKeys.all, 'byUsername', username] as const,
 };

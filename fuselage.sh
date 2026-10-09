@@ -21,7 +21,7 @@ Options:
 
 Example usage:
 - Create a symbolic link in multiple fuselage packages:
-    yarn fuselage -a link -p fuselage;fuselage-icons;message-parser
+    yarn fuselage -a link -p fuselage;fuselage-hooks;styled
 
 - Remove the symbolic link:
     yarn fuselage -a undo
@@ -109,18 +109,13 @@ if [[ $action == "next-all" || $action == "latest-all" ]]; then
         targetVersion="latest"
     fi
 
-    echo "📦 @rocket.chat/fuselage-toastbar [UPDATING to $targetVersion version...]
-📦 @rocket.chat/fuselage-tokens [UPDATING to $targetVersion version...]
-📦 @rocket.chat/css-in-js [UPDATING to $targetVersion version...]
+    echo "📦 @rocket.chat/fuselage-tokens [UPDATING to $targetVersion version...]
 📦 @rocket.chat/styled [UPDATING to $targetVersion version...]
 📦 @rocket.chat/fuselage [UPDATING to $targetVersion version...]
 📦 @rocket.chat/fuselage-hooks [UPDATING to $targetVersion version...]
-📦 @rocket.chat/icons [UPDATING to $targetVersion version...]
-📦 @rocket.chat/logo [UPDATING to $targetVersion version...]
-📦 @rocket.chat/onboarding-ui [UPDATING to $targetVersion version...]
 📦 @rocket.chat/layout [UPDATING to $targetVersion version...]"
 
-    eval "yarn up @rocket.chat/fuselage-toastbar@$targetVersion @rocket.chat/fuselage-tokens@$targetVersion @rocket.chat/css-in-js@$targetVersion @rocket.chat/styled@$targetVersion @rocket.chat/fuselage@$targetVersion @rocket.chat/fuselage-hooks@$targetVersion @rocket.chat/icons@$targetVersion @rocket.chat/logo@$targetVersion @rocket.chat/onboarding-ui@$targetVersion @rocket.chat/layout@$targetVersion"
+    eval "yarn up @rocket.chat/fuselage-tokens@$targetVersion @rocket.chat/styled@$targetVersion @rocket.chat/fuselage@$targetVersion @rocket.chat/fuselage-hooks@$targetVersion @rocket.chat/layout@$targetVersion"
     exit 1
 fi
 

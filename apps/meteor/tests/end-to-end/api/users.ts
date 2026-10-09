@@ -2,6 +2,7 @@ import crypto from 'crypto';
 
 import type { Credentials } from '@rocket.chat/api-client';
 import type { IRoom, ISubscription, ITeam, IUser } from '@rocket.chat/core-typings';
+import { UserStatus } from '@rocket.chat/core-typings';
 import { Random } from '@rocket.chat/random';
 import type { IGetRoomRoles, PaginatedResult, DefaultUserInfo } from '@rocket.chat/rest-typings';
 import { assert, expect } from 'chai';
@@ -10,6 +11,7 @@ import { MongoClient } from 'mongodb';
 import speakeasy from 'speakeasy';
 import type { Response } from 'supertest';
 
+import { sleep } from '../../../lib/utils/sleep';
 import { getCredentials, api, request, credentials, apiEmail, apiUsername, wait, reservedWords } from '../../data/api-data';
 import { imgURL, tiffURL } from '../../data/interactions';
 import { createAgent, makeAgentAvailable } from '../../data/livechat/rooms';
@@ -21,7 +23,8 @@ import { createTeam, deleteTeam } from '../../data/teams.helper';
 import type { IUserWithCredentials } from '../../data/user';
 import { adminEmail, password, adminUsername } from '../../data/user';
 import type { TestUser } from '../../data/users.helper';
-import { createUser, login, deleteUser, getUserByUsername } from '../../data/users.helper';
+import { createUser, login, deleteUser, deleteUserIfExists, findUserByUsername, getUserByUsername } from '../../data/users.helper';
+import { withTimeout } from '../../data/utils';
 import { IS_EE, URL_MONGODB } from '../../e2e/config/constants';
 
 const MAX_BIO_LENGTH = 260;
@@ -690,13 +693,18 @@ describe('[Users]', () => {
 		});
 
 		describe('default email2fa auto opt in configuration', () => {
-			let user: IUser;
+			let user: IUser | undefined;
 
 			afterEach(async () => {
-				await deleteUser(user);
 				await updateSetting('Accounts_TwoFactorAuthentication_By_Email_Enabled', true);
 				await updateSetting('Accounts_TwoFactorAuthentication_By_Email_Auto_Opt_In', true);
 				await updateSetting('Accounts_TwoFactorAuthentication_Enabled', true);
+
+				const createdUser = user;
+				user = undefined;
+				if (createdUser) {
+					await deleteUser(createdUser);
+				}
 			});
 
 			const dummyUser = {
@@ -970,7 +978,7 @@ describe('[Users]', () => {
 						expect(res.body).to.have.property('errorType', 'error-user-registration-disabled');
 					});
 
-				const user = await getUserByUsername(username);
+				const user = await findUserByUsername(username);
 				expect(user).to.be.undefined;
 			});
 		});
@@ -1017,7 +1025,7 @@ describe('[Users]', () => {
 						expect(res.body).to.have.property('errorType', 'error-user-registration-secret');
 					});
 
-				const user = await getUserByUsername(username);
+				const user = await findUserByUsername(username);
 				expect(user).to.be.undefined;
 			});
 
@@ -1041,7 +1049,7 @@ describe('[Users]', () => {
 						expect(res.body).to.have.property('errorType', 'error-user-registration-secret');
 					});
 
-				const user = await getUserByUsername(username);
+				const user = await findUserByUsername(username);
 				expect(user).to.be.undefined;
 			});
 
@@ -1141,7 +1149,7 @@ describe('[Users]', () => {
 						expect(res.body).to.have.property('errorType', 'error-invalid-domain');
 					});
 
-				const user = await getUserByUsername(username);
+				const user = await findUserByUsername(username);
 				expect(user).to.be.undefined;
 			});
 
@@ -1205,7 +1213,7 @@ describe('[Users]', () => {
 						expect(res.body).to.have.nested.property('body.error', 'error-user-registration-custom-field');
 					});
 
-				const user = await getUserByUsername(username);
+				const user = await findUserByUsername(username);
 				expect(user).to.be.undefined;
 			});
 
@@ -1981,6 +1989,178 @@ describe('[Users]', () => {
 					expect(firstUser).to.have.property('active', false);
 				})
 				.end(done);
+		});
+
+		describe('custom fields filter', () => {
+			let cfUser: TestUser<IUser>;
+			const cfValue = `ext-${Date.now()}`;
+
+			before(async () => {
+				await updateSetting('Accounts_CustomFields', JSON.stringify({ externalId: { type: 'text', required: false } }));
+
+				cfUser = await createUser();
+
+				await request
+					.post(api('users.update'))
+					.set(credentials)
+					.send({ userId: cfUser._id, data: { customFields: { externalId: cfValue } } })
+					.expect(200);
+			});
+
+			after(async () => {
+				await Promise.all([
+					updateSetting('Accounts_CustomFields', ''),
+					restorePermissionToRoles('view-full-other-user-info'),
+					deleteUser(cfUser),
+				]);
+			});
+
+			it('should return only the user whose custom field matches the whole value', async () => {
+				const response = await request
+					.get(api('users.list'))
+					.set(credentials)
+					.query(`customFields[externalId]=${cfValue}`)
+					.expect('Content-Type', 'application/json')
+					.expect(200);
+
+				expect(response.body).to.have.property('total', 1);
+				expect(response.body.users[0]).to.have.property('_id', cfUser._id);
+
+				const partial = await request
+					.get(api('users.list'))
+					.set(credentials)
+					.query({ customFields: { externalId: cfValue.slice(0, -1) } })
+					.expect(200);
+
+				expect(partial.body).to.have.property('total', 0);
+			});
+
+			it('should reject an operator in the value', async () => {
+				await request
+					.get(api('users.list'))
+					.set(credentials)
+					.query({ customFields: { externalId: { $ne: null } } })
+					.expect(400);
+			});
+
+			it('should reject an empty parameter and the JSON string form', async () => {
+				await request.get(api('users.list')).set(credentials).query('customFields=').expect(400);
+				await request
+					.get(api('users.list'))
+					.set(credentials)
+					.query({ customFields: JSON.stringify({ externalId: cfValue }) })
+					.expect(400);
+			});
+
+			it('should return the custom fields only when includeCustomFields is true', async () => {
+				const withFields = await request
+					.get(api('users.list'))
+					.set(credentials)
+					.query({ customFields: { externalId: cfValue }, includeCustomFields: true })
+					.expect(200);
+				expect(withFields.body.users[0]).to.have.nested.property('customFields.externalId', cfValue);
+
+				const withoutFields = await request
+					.get(api('users.list'))
+					.set(credentials)
+					.query({ customFields: { externalId: cfValue } })
+					.expect(200);
+				expect(withoutFields.body.users[0]).to.not.have.property('customFields');
+			});
+
+			it('should reject an empty includeCustomFields instead of treating it as false', async () => {
+				await request.get(api('users.list')).set(credentials).query('includeCustomFields=').expect(400);
+			});
+
+			it('should forbid both filtering and reading without view-full-other-user-info', async () => {
+				await updatePermission('view-full-other-user-info', ['admin']);
+
+				await request
+					.get(api('users.list'))
+					.set(user2Credentials)
+					.query({ customFields: { externalId: cfValue } })
+					.expect(403);
+
+				await request.get(api('users.list')).set(user2Credentials).query({ includeCustomFields: true }).expect(403);
+
+				const response = await request.get(api('users.list')).set(user2Credentials).query({ includeCustomFields: false }).expect(200);
+				expect(response.body.users[0]).to.not.have.property('customFields');
+			});
+		});
+
+		describe('username filter', () => {
+			const prefix = `ulf${Date.now()}`;
+			let lowerUser: TestUser<IUser>;
+			let mixedUser: TestUser<IUser>;
+			let dottedUser: TestUser<IUser>;
+
+			before(async () => {
+				[lowerUser, mixedUser, dottedUser] = await Promise.all([
+					createUser({ username: `${prefix}.john` }),
+					createUser({ username: `x.${prefix.toUpperCase()}.joanna` }),
+					createUser({ username: `${prefix}.bob` }),
+				]);
+			});
+
+			after(async () => {
+				await Promise.all([deleteUser(lowerUser), deleteUser(mixedUser), deleteUser(dottedUser)]);
+			});
+
+			const listUsernames = async (query: Record<string, string>, creds: Credentials = credentials): Promise<string[]> => {
+				const response = await request
+					.get(api('users.list'))
+					.set(creds)
+					.query({ count: 50, ...query })
+					.expect('Content-Type', 'application/json')
+					.expect(200);
+
+				expect(response.body).to.have.property('success', true);
+				return response.body.users.map((user: IUser) => user.username);
+			};
+
+			it('should match any part of the username, ignoring case', async () => {
+				expect(await listUsernames({ username: `${prefix}.jo` })).to.have.members([lowerUser.username, mixedUser.username]);
+				expect(await listUsernames({ username: prefix })).to.have.members([lowerUser.username, mixedUser.username, dottedUser.username]);
+			});
+
+			it('should treat regex metacharacters literally', async () => {
+				expect(await listUsernames({ username: `${prefix}.*` })).to.be.empty;
+				expect(await listUsernames({ username: `${prefix}\\.bob` })).to.be.empty;
+				expect(await listUsernames({ username: `${prefix}.bob` })).to.have.members([dottedUser.username]);
+			});
+
+			it('should combine with the email filter', async () => {
+				expect(await listUsernames({ username: prefix, email: lowerUser.emails[0].address })).to.have.members([lowerUser.username]);
+				expect(await listUsernames({ username: `${prefix}.bob`, email: lowerUser.emails[0].address })).to.be.empty;
+			});
+
+			it('should not require view-full-other-user-info', async () => {
+				await updatePermission('view-full-other-user-info', ['admin']);
+
+				try {
+					expect(await listUsernames({ username: `${prefix}.bob` }, user2Credentials)).to.have.members([dottedUser.username]);
+				} finally {
+					await restorePermissionToRoles('view-full-other-user-info');
+				}
+			});
+
+			it('should reject an empty username instead of ignoring it', async () => {
+				await request
+					.get(api('users.list'))
+					.set(credentials)
+					.query({ username: '' })
+					.expect('Content-Type', 'application/json')
+					.expect(400);
+			});
+
+			it('should reject a username that is not a plain string', async () => {
+				await request
+					.get(api('users.list'))
+					.set(credentials)
+					.query('username[$ne]=x')
+					.expect('Content-Type', 'application/json')
+					.expect(400);
+			});
 		});
 
 		it('should query all users in the system when logged as normal user and `view-outside-room` not granted', async () => {
@@ -3176,6 +3356,76 @@ describe('[Users]', () => {
 			});
 		});
 
+		describe('status message', () => {
+			let statusUser: TestUser<IUser>;
+			let statusUserCredentials: Credentials;
+
+			const findStatusFields = async () => {
+				const connection = await MongoClient.connect(URL_MONGODB);
+				const fields = await connection
+					.db()
+					.collection<IUser>('users')
+					.findOne(
+						{ _id: statusUser._id },
+						{ projection: { _id: 0, statusText: 1, statusDefault: 1, statusSource: 1, statusExpiresAt: 1 } },
+					);
+				await connection.close();
+
+				return fields;
+			};
+
+			const waitForStatusFields = (predicate: (fields: Partial<IUser>) => boolean) =>
+				withTimeout(async (signal) => {
+					for (;;) {
+						const fields = await findStatusFields();
+						if ((fields && predicate(fields)) || signal.aborted) {
+							return fields;
+						}
+						await sleep(200);
+					}
+				}, 15000);
+
+			const updateStatusText = (statusText: string) =>
+				request.post(api('users.update')).set(credentials).send({ userId: statusUser._id, data: { statusText } }).expect(200);
+
+			before(() => updateSetting('Accounts_AllowUserStatusMessageChange', true));
+
+			beforeEach(async () => {
+				statusUser = await createUser();
+				statusUserCredentials = await login(statusUser.username, password);
+			});
+
+			afterEach(() => deleteUser(statusUser));
+
+			it('should replace an expiring status with a manual one that keeps the status the user chose', async () => {
+				await request
+					.post(api('users.setStatus'))
+					.set(statusUserCredentials)
+					.send({ status: 'busy', message: 'focus time', expiresAt: new Date(Date.now() + 60 * 60 * 1000).toISOString() })
+					.expect(200);
+
+				const { body } = await updateStatusText('set by an admin');
+				expect(body.user).to.have.property('statusText', 'set by an admin');
+
+				const fields = await waitForStatusFields(({ statusText }) => statusText === 'set by an admin');
+				expect(fields).to.deep.equal({ statusText: 'set by an admin', statusDefault: 'busy', statusSource: 'manual' });
+			});
+
+			it('should not leave the user busy when the message is replaced during a meeting', async () => {
+				await updateUserInDb(statusUser._id, {
+					statusDefault: UserStatus.BUSY,
+					statusText: 'Outlook: In a meeting',
+					statusSource: 'external',
+					statusExpiresAt: new Date(Date.now() + 60 * 60 * 1000),
+				});
+
+				await updateStatusText('set by an admin');
+
+				const fields = await waitForStatusFields(({ statusText }) => statusText === 'set by an admin');
+				expect(fields).to.deep.equal({ statusText: 'set by an admin', statusDefault: 'online', statusSource: 'manual' });
+			});
+		});
+
 		it('should return 401 when not authenticated', async () => {
 			await request
 				.post(api('users.update'))
@@ -4109,7 +4359,7 @@ describe('[Users]', () => {
 			userCredentials = await login(targetUser.username, password);
 		});
 
-		after(async () => deleteUser(targetUser));
+		after(async () => deleteUserIfExists(targetUser));
 
 		it('Enable "Accounts_AllowDeleteOwnAccount" setting...', (done) => {
 			void request
@@ -4151,8 +4401,6 @@ describe('[Users]', () => {
 				.expect((res) => {
 					expect(res.body).to.have.property('success', true);
 				});
-
-			await deleteUser(user);
 		});
 
 		describe('last owner cases', () => {
@@ -4177,7 +4425,7 @@ describe('[Users]', () => {
 
 			afterEach(async () => {
 				await deleteRoom({ type: 'c', roomId: room._id });
-				await deleteUser(user);
+				await deleteUserIfExists(user);
 			});
 
 			it('should return an error when trying to delete user own account if user is the last room owner', async () => {
@@ -4264,8 +4512,8 @@ describe('[Users]', () => {
 		});
 
 		after(async () => {
-			await deleteUser(newUser);
 			await updatePermission('delete-user', ['admin']);
+			await deleteUserIfExists(newUser);
 		});
 
 		it('should return an error when trying delete user account without "delete-user" permission', async () => {
@@ -4315,7 +4563,10 @@ describe('[Users]', () => {
 				await removeRoomOwner({ type: 'c', roomId: room._id, userId: credentials['X-User-Id'] });
 			});
 
-			afterEach(() => Promise.all([deleteRoom({ type: 'c', roomId: room._id }), deleteUser(targetUser, { confirmRelinquish: true })]));
+			afterEach(async () => {
+				await deleteRoom({ type: 'c', roomId: room._id });
+				await deleteUserIfExists(targetUser, { confirmRelinquish: true });
+			});
 
 			it('should return an error when trying to delete user account if the user is the last room owner', async () => {
 				await updatePermission('delete-user', ['admin']);
@@ -5335,7 +5586,8 @@ describe('[Users]', () => {
 			});
 
 			after(async () => {
-				await Promise.all([deleteRoom({ type: 'c', roomId }), deleteUser(user), deleteUser(user2)]);
+				await deleteRoom({ type: 'c', roomId });
+				await Promise.all([deleteUser(user), deleteUser(user2)]);
 			});
 
 			it('should return an empty list when the user does not have any subscription', async () => {
