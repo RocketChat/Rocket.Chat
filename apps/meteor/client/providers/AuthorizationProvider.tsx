@@ -66,11 +66,7 @@ const AuthorizationProvider = ({ children }: AuthorizationProviderProps) => {
 				getRoleScope: (id) => rolesState.get(id)?.scope,
 				// Read Subscriptions live — reactivity for scoped checks is wired through
 				// the per-call subscribe returned by queryPermission/queryRole below.
-				hasSubscriptionRole: (rid, roleId) =>
-					Subscriptions.use
-						.getState()
-						.find((s) => s.rid === rid)
-						?.roles?.includes(roleId) ?? false,
+				getSubscriptionRoles: (rid) => Subscriptions.use.getState().find((s) => s.rid === rid)?.roles ?? [],
 				isReady: () => true,
 			}),
 		[userId, currentUserRoles, permissionsState, rolesState],
@@ -78,9 +74,9 @@ const AuthorizationProvider = ({ children }: AuthorizationProviderProps) => {
 
 	const contextValue = useMemo(
 		(): ContextType<typeof AuthorizationContext> => ({
-			// Callers without `scope` never touch Subscriptions (the factory short-circuits
-			// at the role-scope gate). They rely on context-value identity for re-renders
-			// from Users/Permissions/Roles changes — which is why subscribe is noop.
+			// Callers without `scope` never touch Subscriptions. They rely on context-value
+			// identity for re-renders from Users/Permissions/Roles changes — which is why
+			// subscribe is noop.
 			// Callers with a `scope` (room id) DO touch Subscriptions, so we attach a
 			// per-call subscribe to that store so they re-evaluate when subscriptions
 			// for the relevant room flip without dragging the rest of the tree along.

@@ -4,14 +4,14 @@ import type { IPermission, IRole, IUser } from '@rocket.chat/core-typings';
 export type AuthorizationDeps = {
 	/** The currently logged-in user id, or undefined. */
 	getCurrentUserId: () => IUser['_id'] | undefined;
-	/** The role ids assigned to a given user (Users scope). */
+	/** The role ids assigned to a given user, whatever their scope. */
 	getUserRoles: (userId: IUser['_id']) => IRole['_id'][] | undefined;
 	/** Lookup a permission by id. */
 	getPermission: (permissionId: IPermission['_id']) => IPermission | undefined;
 	/** The scope of a role; defaults to 'Users' when the role is unknown. */
 	getRoleScope: (roleId: IRole['_id']) => IRole['scope'] | undefined;
-	/** Whether a subscription scoped to `rid` grants `roleId`. */
-	hasSubscriptionRole: (rid: string, roleId: IRole['_id']) => boolean;
+	/** The role ids the current user holds on the subscription to `rid`. */
+	getSubscriptionRoles: (rid: string) => IRole['_id'][];
 	/** Whether the permissions cache is hydrated; otherwise checks short-circuit to false. */
 	isReady: () => boolean;
 };
@@ -40,7 +40,7 @@ export const createAuthorizationFunctions = (deps: AuthorizationDeps): Authoriza
 		switch (roleScope) {
 			case 'Subscriptions':
 				if (!scope) return false;
-				return deps.hasSubscriptionRole(scope, roleId);
+				return deps.getSubscriptionRoles(scope).includes(roleId);
 			case 'Users':
 				return deps.getUserRoles(userId)?.includes(roleId) ?? false;
 			default:
@@ -55,16 +55,15 @@ export const createAuthorizationFunctions = (deps: AuthorizationDeps): Authoriza
 		scopedRoles: IRole['_id'][] | undefined,
 		quantifier: (this: IPermission['_id'][], predicate: (id: IPermission['_id']) => boolean) => boolean,
 	): boolean => {
-		const userRoles = deps.getUserRoles(userId);
+		const userRoles = deps.getUserRoles(userId) ?? [];
+		const roomRoles = scope ? deps.getSubscriptionRoles(scope) : [];
+		const roles = [...userRoles, ...roomRoles];
 		return quantifier.call(permissionIds, (permissionId) => {
-			if (userRoles && AuthorizationUtils.isPermissionRestrictedForRoleList(permissionId, userRoles)) {
+			if (AuthorizationUtils.isPermissionRestrictedForRoleList(permissionId, roles)) {
 				return false;
 			}
-			const roles = deps.getPermission(permissionId)?.roles ?? [];
-			return roles.some((roleId) => {
-				if (scopedRoles?.includes(roleId)) return true;
-				return hasRole(userId, roleId, scope);
-			});
+			const permissionRoles = deps.getPermission(permissionId)?.roles ?? [];
+			return permissionRoles.some((roleId) => roles.includes(roleId) || scopedRoles?.includes(roleId));
 		});
 	};
 
