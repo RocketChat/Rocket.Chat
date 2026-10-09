@@ -1,10 +1,13 @@
 import type { IAppServerOrchestrator } from '@rocket.chat/apps';
 import { expect } from 'chai';
 import { beforeEach, describe, it } from 'mocha';
+import proxyquire from 'proxyquire';
 import sinon from 'sinon';
 import * as z from 'zod';
 
-import { createUploadsCodec } from '../../../../../../server/modules/apps/converters/codecs/uploads';
+const { createUploadsCodec } = proxyquire.noCallThru().load('../../../../../../server/modules/apps/converters/codecs/uploads', {
+	'../../../../lib/utils/getURL': { getURL: (path: string) => `http://localhost:3000${path}` },
+});
 
 const sandbox = sinon.createSandbox();
 
