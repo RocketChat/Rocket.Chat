@@ -279,7 +279,7 @@ import { IS_EE, URL_MONGODB } from '../../e2e/config/constants';
 		});
 	});
 
-	describe('the Discussion_enabled override (D10)', () => {
+	describe('the Discussion_enabled override', () => {
 		const saveDiscussionEnabled = (value: boolean) => request.post(api('settings/Discussion_enabled')).set(credentials).send({ value });
 
 		after(async () => {
