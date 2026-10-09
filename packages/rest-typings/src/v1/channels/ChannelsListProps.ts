@@ -3,17 +3,12 @@ import { ajvQuery } from '../Ajv';
 
 export type ChannelsListProps = PaginatedRequest<{
 	_id?: string;
-	/* deprecated */
-	fields?: string;
 }>;
 
 const channelsListPropsSchema = {
 	type: 'object',
 	properties: {
 		_id: {
-			type: 'string',
-		},
-		query: {
 			type: 'string',
 		},
 		count: {
@@ -23,9 +18,6 @@ const channelsListPropsSchema = {
 			type: 'number',
 		},
 		sort: {
-			type: 'string',
-		},
-		fields: {
 			type: 'string',
 		},
 	},

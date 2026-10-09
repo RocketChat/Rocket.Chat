@@ -177,7 +177,6 @@ type ChatGetThreadsList = PaginatedRequest<{
 	rid: IRoom['_id'];
 	type?: 'unread' | 'following';
 	text?: string;
-	fields?: string;
 }>;
 
 const ChatGetThreadsListSchema = {
@@ -204,14 +203,6 @@ const ChatGetThreadsListSchema = {
 			nullable: true,
 		},
 		sort: {
-			type: 'string',
-			nullable: true,
-		},
-		query: {
-			type: 'string',
-			nullable: true,
-		},
-		fields: {
 			type: 'string',
 			nullable: true,
 		},
