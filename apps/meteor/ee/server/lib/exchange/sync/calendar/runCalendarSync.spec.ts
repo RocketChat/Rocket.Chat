@@ -1,3 +1,4 @@
+import { acquireMailbox } from './mailboxLock';
 import { runCalendarSync } from './runCalendarSync';
 import { ExchangeError } from '../../errors';
 import { MAILBOX_CONCURRENCY } from '../limits';
@@ -89,6 +90,25 @@ describe('runCalendarSync', () => {
 
 		expect(summary.aborted).toBe(true);
 		expect(syncCalendarWindow.mock.calls.length).toBe(1);
+	});
+
+	it('leaves a mailbox alone while an on-demand sync holds it', async () => {
+		candidates.mockImplementation(
+			from([
+				{ uid: 'a', mailbox: 'a@x' },
+				{ uid: 'b', mailbox: 'b@x' },
+			]),
+		);
+
+		const release = acquireMailbox('a');
+
+		const summary = await runCalendarSync();
+
+		release?.();
+
+		expect(syncCalendarWindow).toHaveBeenCalledTimes(1);
+		expect(syncCalendarWindow.mock.calls[0][1]).toBe('b');
+		expect(summary).toMatchObject({ mailboxes: 1, skipped: 1 });
 	});
 
 	it('stops pulling candidates once one fails fatally, not just syncing them', async () => {
