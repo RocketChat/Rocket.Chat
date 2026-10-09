@@ -273,6 +273,129 @@ describe('VirtruPDP.checkUsernamesMatchAttributes', () => {
 		const pdp = new VirtruPDP(mkClient({ apiCall }));
 		await expect(pdp.checkUsernamesMatchAttributes(['bob'], attrs, room)).rejects.toBeInstanceOf(OnlyCompliantCanBeAddedToRoomError);
 	});
+
+	it('throws when a decision is inconclusive', async () => {
+		usersFindByUsernames.mockReturnValue(cursor([user()]));
+		const apiCall = jest.fn().mockResolvedValue({ decisionResponses: [{ resourceDecisions: [{ decision: 'DECISION_UNSPECIFIED' }] }] });
+		const pdp = new VirtruPDP(mkClient({ apiCall }));
+		await expect(pdp.checkUsernamesMatchAttributes(['bob'], attrs, room)).rejects.toBeInstanceOf(OnlyCompliantCanBeAddedToRoomError);
+	});
+});
+
+describe('VirtruPDP.evaluateSubjectsAgainstAttributes', () => {
+	const room = { _id: 'r1' };
+	const attrs = [{ key: 'clearance', values: ['secret'] }];
+	const alice = user({ _id: 'u2', username: 'alice', emails: [{ address: 'a@x.com', verified: true }] });
+	const carol = user({ _id: 'u3', username: 'carol', emails: [{ address: 'c@x.com', verified: true }] });
+	const decision = (value?: Decision) => ({ resourceDecisions: value ? [{ ephemeralResourceId: 'r1', decision: value }] : [] });
+
+	it('treats every subject as compliant when there are no attributes, without calling the PDP', async () => {
+		const apiCall = jest.fn();
+		const pdp = new VirtruPDP(mkClient({ apiCall }));
+		await expect(pdp.evaluateSubjectsAgainstAttributes([user()], [], room)).resolves.toEqual({
+			compliant: ['u1'],
+			nonCompliant: [],
+			inconclusive: [],
+		});
+		expect(apiCall).not.toHaveBeenCalled();
+	});
+
+	it('asks for every subject in one decision call and keeps PERMIT, DENY and the rest apart', async () => {
+		const apiCall = jest.fn().mockResolvedValue({
+			decisionResponses: [decision('DECISION_PERMIT'), decision('DECISION_DENY'), decision('DECISION_UNSPECIFIED')],
+		});
+		const pdp = new VirtruPDP(mkClient({ apiCall }));
+
+		await expect(pdp.evaluateSubjectsAgainstAttributes([user(), alice, carol], attrs, room)).resolves.toEqual({
+			compliant: ['u1'],
+			nonCompliant: ['u2'],
+			inconclusive: ['u3'],
+		});
+		expect(apiCall).toHaveBeenCalledTimes(1);
+		expect(apiCall.mock.calls[0][1].decisionRequests).toHaveLength(3);
+	});
+
+	it('reports an empty or missing decision as inconclusive, not compliant', async () => {
+		const apiCall = jest.fn().mockResolvedValue({ decisionResponses: [decision()] });
+		const pdp = new VirtruPDP(mkClient({ apiCall }));
+
+		await expect(pdp.evaluateSubjectsAgainstAttributes([user(), alice], attrs, room)).resolves.toEqual({
+			compliant: [],
+			nonCompliant: [],
+			inconclusive: ['u1', 'u2'],
+		});
+	});
+
+	it('reports a subject without an entity key as non-compliant without asking for it', async () => {
+		const apiCall = jest.fn().mockResolvedValue({ decisionResponses: [decision('DECISION_PERMIT')] });
+		const pdp = new VirtruPDP(mkClient({ apiCall }));
+
+		await expect(pdp.evaluateSubjectsAgainstAttributes([user({ emails: [] }), alice], attrs, room)).resolves.toEqual({
+			compliant: ['u2'],
+			nonCompliant: ['u1'],
+			inconclusive: [],
+		});
+		expect(apiCall.mock.calls[0][1].decisionRequests).toHaveLength(1);
+	});
+
+	it('rejects when the decision call fails', async () => {
+		const pdp = new VirtruPDP(mkClient({ apiCall: jest.fn().mockRejectedValue(new Error('network')) }));
+
+		await expect(pdp.evaluateSubjectsAgainstAttributes([user()], attrs, room)).rejects.toThrow('network');
+	});
+});
+
+describe('VirtruPDP.evaluateSubjectAgainstRooms', () => {
+	const room = (_id: string) => ({ _id, abacAttributes: [{ key: 'clearance', values: ['secret'] }] });
+	const decision = (value?: Decision) => ({ resourceDecisions: value ? [{ ephemeralResourceId: 'r', decision: value }] : [] });
+
+	it('keeps rooms without attributes as compliant, without calling the PDP', async () => {
+		const apiCall = jest.fn();
+		const pdp = new VirtruPDP(mkClient({ apiCall }));
+
+		await expect(pdp.evaluateSubjectAgainstRooms(user(), [{ _id: 'plain', abacAttributes: [] }, { _id: 'bare' }])).resolves.toEqual({
+			compliant: ['plain', 'bare'],
+			nonCompliant: [],
+			inconclusive: [],
+		});
+		expect(apiCall).not.toHaveBeenCalled();
+	});
+
+	it('asks for every attributed room in one decision call and keeps PERMIT, DENY and the rest apart', async () => {
+		const apiCall = jest.fn().mockResolvedValue({
+			decisionResponses: [decision('DECISION_PERMIT'), decision('DECISION_DENY'), decision()],
+		});
+		const pdp = new VirtruPDP(mkClient({ apiCall }));
+
+		await expect(pdp.evaluateSubjectAgainstRooms(user(), [room('r1'), { _id: 'plain' }, room('r2'), room('r3')])).resolves.toEqual({
+			compliant: ['plain', 'r1'],
+			nonCompliant: ['r2'],
+			inconclusive: ['r3'],
+		});
+		expect(apiCall).toHaveBeenCalledTimes(1);
+
+		const { decisionRequests } = apiCall.mock.calls[0][1];
+		expect(decisionRequests.map((request: any) => request.resources[0].ephemeralId)).toEqual(['r1', 'r2', 'r3']);
+		expect(decisionRequests[0].entityIdentifier.entityChain.entities[0]).toEqual({ emailAddress: 'bob@x.com' });
+	});
+
+	it('refuses every attributed room to a subject without an entity key, without calling the PDP', async () => {
+		const apiCall = jest.fn();
+		const pdp = new VirtruPDP(mkClient({ apiCall }));
+
+		await expect(pdp.evaluateSubjectAgainstRooms(user({ emails: [] }), [room('r1'), { _id: 'plain' }])).resolves.toEqual({
+			compliant: ['plain'],
+			nonCompliant: ['r1'],
+			inconclusive: [],
+		});
+		expect(apiCall).not.toHaveBeenCalled();
+	});
+
+	it('rejects when the decision call fails', async () => {
+		const pdp = new VirtruPDP(mkClient({ apiCall: jest.fn().mockRejectedValue(new Error('network')) }));
+
+		await expect(pdp.evaluateSubjectAgainstRooms(user(), [room('r1')])).rejects.toThrow('network');
+	});
 });
 
 describe('VirtruPDP.onRoomAttributesChanged', () => {
