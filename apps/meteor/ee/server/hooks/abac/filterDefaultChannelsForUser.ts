@@ -23,13 +23,10 @@ filterDefaultChannelsForUser.patch(async (next, rooms, user, options) => {
 		return unlocked;
 	}
 
-	// Compliance is evaluated by username, so a user without one cannot join an attributed room.
 	if (!user.username) {
 		return unlocked.filter((room) => !room.abacAttributes?.length);
 	}
 
-	// The attributes come from the LDAP background sync, which only sees users that already existed
-	// when it last ran, so a user created a moment ago carries none until this refreshes them.
 	if (options?.refreshUserAttributes) {
 		try {
 			await LDAPEnterprise.syncUsersAbacAttributesByIds([user._id]);
