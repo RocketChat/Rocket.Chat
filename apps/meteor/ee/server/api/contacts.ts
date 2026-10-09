@@ -84,7 +84,7 @@ API.v1.get(
 		const { offset, count } = await getPaginationItems(this.queryParams);
 		const { sort } = await this.parseJsonQuery();
 
-		if (sort && !Object.keys(sort).every((key) => CONTACTS_SORTABLE_FIELDS.includes(key))) {
+		if (sort && !Object.keys(sort).every((key) => (CONTACTS_SORTABLE_FIELDS as readonly string[]).includes(key))) {
 			return API.v1.failure('error-invalid-sort-keys');
 		}
 
