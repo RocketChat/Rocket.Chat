@@ -6,7 +6,8 @@ import type {
 	IUIKitViewCloseIncomingInteraction,
 	IUIKitViewSubmitIncomingInteraction,
 } from './UIKitIncomingInteractionTypes';
-import { UIKitInteractionResponder } from './UIKitInteractionResponder';
+import type { UIKitInteractionResponder } from './UIKitInteractionResponder';
+import { UIKitInteractionResponderImpl } from './UIKitInteractionResponder';
 
 export abstract class UIKitInteractionContext {
 	private baseContext: IUIKitBaseIncomingInteraction;
@@ -18,7 +19,7 @@ export abstract class UIKitInteractionContext {
 
 		this.baseContext = { appId, actionId, room, user, triggerId, threadId };
 
-		this.responder = new UIKitInteractionResponder(this.baseContext);
+		this.responder = new UIKitInteractionResponderImpl(this.baseContext);
 	}
 
 	public getInteractionResponder() {
