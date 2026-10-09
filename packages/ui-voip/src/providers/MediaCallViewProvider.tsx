@@ -23,6 +23,7 @@ import MediaCallViewContext from '../context/MediaCallViewContext';
 import type { PeerInfo } from '../context/definitions';
 import { isValidTone, useTonePlayer } from '../hooks/useTonePlayer';
 import { isExternalPeer } from '../utils/isExternalPeer';
+import { isInternalPeer } from '../utils/isInternalPeer';
 import TransferModal from '../views/TransferModal';
 
 export type MediaCallViewProviderProps = {
@@ -89,7 +90,7 @@ const MediaCallViewProvider = ({ children }: MediaCallViewProviderProps) => {
 		}
 
 		const startCall = (micless: boolean) => {
-			if ('userId' in targetPeer) {
+			if (isInternalPeer(targetPeer)) {
 				void controls.startCall(targetPeer.userId, 'user', micless);
 				return;
 			}

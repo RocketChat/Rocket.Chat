@@ -20,7 +20,7 @@ describe('derivePeerInfoFromInstanceState', () => {
 	} as const;
 
 	describe('Temp Call', () => {
-		it('returns internal peer info with title from instance state', () => {
+		it('returns unknown peer info with title from instance state', () => {
 			const state: ITempMediaCallData = {
 				confirmed: false,
 				tempCallId: 'tempId',
@@ -29,9 +29,8 @@ describe('derivePeerInfoFromInstanceState', () => {
 				state: 'ringing',
 			};
 			expect(derivePeerInfoFromInstanceState(state)).toEqual({
+				type: 'unknown',
 				displayName: 'Someone',
-				userId: 'unknown',
-				username: undefined,
 			});
 		});
 	});
@@ -68,6 +67,7 @@ describe('derivePeerInfoFromInstanceState', () => {
 				state: 'active',
 			};
 			expect(derivePeerInfoFromInstanceState(state)).toEqual({
+				type: 'user',
 				displayName: 'John Doe',
 				userId: 'userId123',
 				username: 'johndoe',
@@ -103,6 +103,7 @@ describe('derivePeerInfoFromInstanceState', () => {
 				state: 'active',
 			};
 			expect(derivePeerInfoFromInstanceState(state)).toEqual({
+				type: 'sip',
 				number: '+5511999999999',
 			});
 		});

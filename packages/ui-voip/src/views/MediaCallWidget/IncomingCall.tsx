@@ -4,6 +4,7 @@ import { useTranslation } from 'react-i18next';
 
 import { DevicePicker, PeerInfo, Widget, WidgetFooter, WidgetHandle, WidgetHeader, WidgetContent, WidgetInfo } from '../../components';
 import { useMediaCallView } from '../../context/MediaCallViewContext';
+import { isUnknownPeer } from '../../utils/isUnknownPeer';
 
 const getHeaderTitle = ({ connecting, transferred, t }: { connecting: boolean; transferred: boolean; t: TFunction }) => {
 	if (connecting) {
@@ -25,11 +26,6 @@ const IncomingCall = () => {
 
 	const connecting = connectionState === 'CONNECTING';
 
-	// TODO: Figure out how to ensure this always exist before rendering the component
-	if (!peerInfo) {
-		throw new Error('Peer info is required');
-	}
-
 	return (
 		<Widget>
 			<WidgetHandle />
@@ -37,9 +33,7 @@ const IncomingCall = () => {
 				<DevicePicker />
 			</WidgetHeader>
 			{transferredBy && <WidgetInfo slots={[{ text: t('Transferring_call_incoming__from_', { from: transferredBy }), type: 'info' }]} />}
-			<WidgetContent>
-				<PeerInfo {...peerInfo} />
-			</WidgetContent>
+			<WidgetContent>{peerInfo && !isUnknownPeer(peerInfo) && <PeerInfo {...peerInfo} />}</WidgetContent>
 			<WidgetFooter>
 				<ButtonGroup stretch>
 					{connecting ? (
