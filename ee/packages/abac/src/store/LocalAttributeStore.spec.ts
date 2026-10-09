@@ -50,10 +50,10 @@ describe('LocalAttributeStore', () => {
 		expect(r).toEqual({ attributes: docs, offset: 0, count: 1, total: 1 });
 	});
 
-	it('listAttributeKeys returns every key, unpaginated', async () => {
+	it('listAttributeKeys returns every key from the model', async () => {
 		findAllKeys.mockResolvedValue(['clearance', 'team']);
 		await expect(new LocalAttributeStore().listAttributeKeys(actor)).resolves.toEqual(['clearance', 'team']);
-		expect(findPaginated).not.toHaveBeenCalled();
+		expect(findAllKeys).toHaveBeenCalledTimes(1);
 	});
 
 	it('list builds $or query when key and values filters provided', async () => {
