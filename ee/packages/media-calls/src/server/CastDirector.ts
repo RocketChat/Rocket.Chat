@@ -68,8 +68,8 @@ export class MediaCallCastDirector implements IMediaCallCastDirector {
 		options: GetActorContactOptions,
 		defaultContactInfo?: MediaCallContactInformation,
 	): Promise<MediaCallContact | null> {
-		const user = await Users.findOneById<Pick<IUser, '_id' | 'name' | 'username' | 'freeSwitchExtension'>>(userId, {
-			projection: { name: 1, username: 1, freeSwitchExtension: 1 },
+		const user = await Users.findOneById<Pick<IUser, '_id' | 'name' | 'username' | 'sipExtension'>>(userId, {
+			projection: { name: 1, username: 1, sipExtension: 1 },
 		});
 		if (!user) {
 			return null;
@@ -83,8 +83,8 @@ export class MediaCallCastDirector implements IMediaCallCastDirector {
 		options: GetActorContactOptions,
 		defaultContactInfo?: MediaCallContactInformation,
 	): Promise<MediaCallContact | null> {
-		const user = await Users.findOneByFreeSwitchExtension<Pick<IUser, '_id' | 'name' | 'username' | 'freeSwitchExtension'>>(sipExtension, {
-			projection: { name: 1, username: 1, freeSwitchExtension: 1 },
+		const user = await Users.findOneBySipExtension<Pick<IUser, '_id' | 'name' | 'username' | 'sipExtension'>>(sipExtension, {
+			projection: { name: 1, username: 1, sipExtension: 1 },
 		});
 
 		const list = user
@@ -116,7 +116,7 @@ export class MediaCallCastDirector implements IMediaCallCastDirector {
 	}
 
 	protected buildContactListForUser(user: MinimalUserData, defaultContactInfo?: MediaCallContactInformation): ContactList {
-		const { name: displayName, username, freeSwitchExtension: sipExtension, _id: id } = user;
+		const { name: displayName, username, sipExtension, _id: id } = user;
 
 		const data: Partial<MediaCallContact> = {
 			...defaultContactInfo,

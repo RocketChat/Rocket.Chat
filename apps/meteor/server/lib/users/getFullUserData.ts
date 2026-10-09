@@ -27,7 +27,7 @@ export const defaultFields = {
 	federated: 1,
 	statusLivechat: 1,
 	abacAttributes: 1,
-	freeSwitchExtension: 1,
+	sipExtension: 1,
 } as const;
 
 export const fullFields = {
@@ -84,16 +84,16 @@ const getFields = (canViewAllInfo: boolean): Record<string, 0 | 1> => ({
 const findTargetUser = (type: string, value: string, opts: any) => {
 	if (type === 'importId') return Users.findOneByImportId(value, opts);
 	if (type === 'email') return Users.findOneByEmailAddress(value, opts);
-	if (type === 'freeSwitchExtension') return Users.findOneByFreeSwitchExtension(value, opts);
+	if (type === 'sipExtension') return Users.findOneBySipExtension(value, opts);
 	return Users.findOneByIdOrUsername(value, opts);
 };
 
 export async function getFullUserDataByUniqueSearchTerm(
 	userId: string,
 	searchValue: string,
-	searchType: 'id' | 'username' | 'importId' | 'email' | 'freeSwitchExtension',
+	searchType: 'id' | 'username' | 'importId' | 'email' | 'sipExtension',
 ): Promise<IUser | null> {
-	const caller = await Users.findOneById(userId, { projection: { username: 1, importIds: 1, emails: 1, freeSwitchExtension: 1 } });
+	const caller = await Users.findOneById(userId, { projection: { username: 1, importIds: 1, emails: 1, sipExtension: 1 } });
 
 	if (!caller) {
 		return null;
@@ -103,7 +103,7 @@ export async function getFullUserDataByUniqueSearchTerm(
 		(searchType === 'id' && searchValue === userId) ||
 		(searchType === 'username' && searchValue === caller.username) ||
 		(searchType === 'importId' && caller.importIds?.includes(searchValue)) ||
-		(searchType === 'freeSwitchExtension' && caller.freeSwitchExtension === searchValue) ||
+		(searchType === 'sipExtension' && caller.sipExtension === searchValue) ||
 		(searchType === 'email' &&
 			caller.emails?.some((email: IUserEmail) => email.address.trim().toLowerCase() === searchValue.trim().toLowerCase()));
 

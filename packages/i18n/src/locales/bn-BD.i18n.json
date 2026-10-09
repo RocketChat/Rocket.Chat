@@ -17,7 +17,6 @@
   "access-mailer_description": "সমস্ত ব্যবহারকারীর কাছে গণ ইমেল প্রেরণের অনুমতি",
   "Accounts": "হিসাব",
   "Accounts_AllowAnonymousRead": "বেনামে পড়ার অনুমতি দিন",
-  "Accounts_AllowAnonymousWrite": "বেনামে লিখার অনুমতি দিন",
   "Accounts_AllowDeleteOwnAccount": "ব্যবহারকারীদের নিজস্ব একাউন্ট ডিলিট করার অনুমতি দিন",
   "Accounts_AllowEmailChange": "ইমেইল পরিবর্তনের অনুমতি দিন",
   "Accounts_AllowEmailNotifications": "ইমেল বিজ্ঞপ্তি অনুমতি দিন",

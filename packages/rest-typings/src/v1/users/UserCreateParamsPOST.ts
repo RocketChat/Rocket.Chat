@@ -20,9 +20,7 @@ export type UserCreateParamsPOST = {
 	verified?: boolean;
 	customFields?: Record<string, any>;
 	settings?: IUserSettings;
-	freeSwitchExtension?: string;
-	/* @deprecated */
-	fields: string;
+	sipExtension?: string;
 };
 
 const userCreateParamsPostSchema = {
@@ -44,8 +42,7 @@ const userCreateParamsPostSchema = {
 		sendWelcomeEmail: { type: 'boolean', nullable: true },
 		verified: { type: 'boolean', nullable: true },
 		customFields: { type: 'object' },
-		fields: { type: 'string', nullable: true },
-		freeSwitchExtension: { type: 'string', nullable: true },
+		sipExtension: { type: 'string', nullable: true },
 	},
 	additionalProperties: false,
 	required: ['email', 'name', 'password', 'username'],

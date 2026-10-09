@@ -146,11 +146,11 @@ const UsersTable = ({
 			tab === 'all' && showVoipExtension && (
 				<GenericTableHeaderCell
 					width='x180'
-					key='freeSwitchExtension'
+					key='sipExtension'
 					direction={sortData?.sortDirection}
-					active={sortData?.sortBy === 'freeSwitchExtension'}
+					active={sortData?.sortBy === 'sipExtension'}
 					onClick={sortData?.setSort}
-					sort='freeSwitchExtension'
+					sort='sipExtension'
 				>
 					{t('Voice_call_extension')}
 				</GenericTableHeaderCell>

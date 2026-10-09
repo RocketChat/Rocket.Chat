@@ -15,11 +15,13 @@ import {
 	closeOmnichannelRoom,
 	deleteVisitor,
 } from '../../../data/livechat/rooms';
+import { updateSetting } from '../../../data/permissions.helper';
 
 describe('MAC', () => {
 	before((done) => getCredentials(done));
 
 	before(async () => {
+		await updateSetting('Livechat_enabled', true);
 		await createAgent();
 		await makeAgentAvailable();
 	});

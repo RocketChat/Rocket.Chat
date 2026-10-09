@@ -30,6 +30,7 @@ type TestUser = { user: IUser; credentials: Credentials };
 
 	before((done) => getCredentials(done));
 	before(async () => {
+		await updateSetting('Livechat_enabled', true);
 		await updateSetting('Livechat_accept_chats_with_no_agents', true);
 		await setUserActiveStatus('rocketchat.internal.admin.test', true);
 		await createAgent();

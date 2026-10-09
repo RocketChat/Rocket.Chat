@@ -1,6 +1,6 @@
 {
 	"name": "rocket.chat",
-	"version": "8.10.0-develop",
+	"version": "9.0.0-develop",
 	"private": true,
 	"description": "Rocket.Chat Monorepo",
 	"homepage": "https://github.com/RocketChat/Rocket.Chat#readme",
@@ -38,7 +38,6 @@
 		"@rocket.chat/css-supports": "workspace:~",
 		"@rocket.chat/stylis-logical-props-middleware": "workspace:~",
 		"file-type@npm:^16.5.4": "patch:file-type@npm%3A16.5.4#~/.yarn/patches/file-type-npm-16.5.4-d653e66a40.patch",
-		"image-size@npm:^1.2.1": "patch:image-size@npm%3A1.2.1#~/.yarn/patches/image-size-npm-1.2.1-e285f3c080.patch",
 		"browserslist": "^4.28.7",
 		"postcss-svgo/svgo": "4.1.0",
 		"@vue/compiler-sfc/postcss": "8.5.26",
@@ -96,7 +95,6 @@
 		"mongodb": "6.16.0",
 		"@grpc/proto-loader/protobufjs": "7.6.5",
 		"@opentelemetry/otlp-transformer/protobufjs": "7.6.5",
-		"webdav/axios": "0.34.0",
 		"wait-on/joi": "17.13.4",
 		"webpack-dev-server/launch-editor": "2.14.1",
 		"webpack-dev-server/http-proxy-middleware": "2.0.10",

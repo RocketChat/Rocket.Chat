@@ -41,7 +41,7 @@ export const WithVoiceCallExtension = {
 	render: Template,
 
 	args: {
-		freeSwitchExtension: '1234567890',
+		sipExtension: '1234567890',
 	},
 };
 

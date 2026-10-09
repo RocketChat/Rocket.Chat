@@ -14,7 +14,6 @@ declare global {
 	interface Window {
 		defaultUserLanguage?: () => string;
 		DISABLE_ANIMATION?: boolean;
-		ServiceConfiguration?: unknown;
 		__meteor_runtime_config__: {
 			ROOT_URL_PATH_PREFIX: string;
 			ROOT_URL: string;

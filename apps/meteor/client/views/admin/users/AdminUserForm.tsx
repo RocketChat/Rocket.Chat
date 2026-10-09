@@ -60,15 +60,12 @@ export type AdminUserFormProps = {
 	roleError: Error | null;
 };
 
-export type UserFormProps = Omit<
-	UserCreateParamsPOST & {
-		avatar: AvatarObject;
-		passwordConfirmation: string;
-		freeSwitchExtension?: string;
-		statusVisibilityDeniedByAdmin?: string[];
-	},
-	'fields'
->;
+export type UserFormProps = UserCreateParamsPOST & {
+	avatar: AvatarObject;
+	passwordConfirmation: string;
+	sipExtension?: string;
+	statusVisibilityDeniedByAdmin?: string[];
+};
 
 const getInitialValue = ({
 	data,
@@ -97,7 +94,7 @@ const getInitialValue = ({
 	statusText: data?.statusText ?? '',
 	presenceDisabledByAdmin: data?.presenceDisabledByAdmin === true,
 	statusVisibilityDeniedByAdmin: data?.statusVisibilityDeniedByAdmin ?? [],
-	freeSwitchExtension: data?.freeSwitchExtension ?? '',
+	sipExtension: data?.sipExtension ?? '',
 	...(isNewUserPage && { joinDefaultChannels: true }),
 	sendWelcomeEmail: isSmtpEnabled,
 	avatar: '' as AvatarObject,
@@ -210,7 +207,6 @@ const AdminUserForm = ({ userData, onReload, context, refetchUserFormData, roleD
 			...userFormData,
 			statusText,
 			...(showUserStatusSection && { presenceDisabledByAdmin }),
-			fields: '',
 		});
 	});
 
@@ -396,7 +392,7 @@ const AdminUserForm = ({ userData, onReload, context, refetchUserFormData, roleD
 							<FieldRow>
 								<Controller
 									control={control}
-									name='freeSwitchExtension'
+									name='sipExtension'
 									render={({ field }) => <TextInput {...field} id={voiceExtensionId} flexGrow={1} />}
 								/>
 							</FieldRow>
