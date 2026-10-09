@@ -13,7 +13,7 @@ exports[`call stories renders AudioDevicePicker MicrophoneOn without crashing 1`
           aria-expanded="false"
           aria-haspopup="true"
           aria-label="Device options"
-          class="rcx-box rcx-box--full rcx-button--large-square rcx-button--icon-secondary rcx-button--square rcx-button--icon rcx-button rcx-css-1wk08i8"
+          class="rcx-box rcx-box--full rcx-split-button__trigger rcx-button--large-square rcx-button--icon-secondary rcx-button--square rcx-button--icon rcx-button rcx-css-1wk08i8"
           id="react-aria-_r_0_"
           label="Device options"
           title="Device settings"
@@ -60,7 +60,7 @@ exports[`call stories renders AudioDevicePicker Muted without crashing 1`] = `
           aria-expanded="false"
           aria-haspopup="true"
           aria-label="Device options"
-          class="rcx-box rcx-box--full rcx-button--large-square rcx-button--icon-secondary-danger rcx-button--square rcx-button--icon rcx-button rcx-css-1wk08i8"
+          class="rcx-box rcx-box--full rcx-split-button__trigger rcx-button--large-square rcx-button--icon-secondary-danger rcx-button--square rcx-button--icon rcx-button rcx-css-1wk08i8"
           id="react-aria-_r_2_"
           label="Device options"
           title="Device settings"
@@ -98,107 +98,95 @@ exports[`call stories renders CallBar Default without crashing 1`] = `
             style="position: relative;"
           >
             <div
-              class="rcx-box rcx-box--full rcx-css-yaiuut"
+              aria-label="Microphone"
+              class="rcx-split-button"
+              role="group"
             >
-              <div
-                class="rcx-box rcx-box--full"
+              <button
+                aria-expanded="false"
+                aria-haspopup="true"
+                aria-label="Device options"
+                class="rcx-box rcx-box--full rcx-split-button__trigger rcx-button--large-square rcx-button--icon-secondary rcx-button--square rcx-button--icon rcx-button rcx-css-1wk08i8"
+                id="react-aria-_r_4_"
+                label="Device options"
+                title="Device settings"
+                type="button"
               >
-                <button
-                  aria-expanded="false"
-                  aria-haspopup="true"
-                  aria-label="Device options"
-                  class="rcx-box rcx-box--full rcx-button--large-square rcx-button--icon-secondary rcx-button--square rcx-button--icon rcx-button rcx-css-1wk08i8"
-                  id="react-aria-_r_4_"
-                  label="Device options"
-                  title="Device settings"
-                  type="button"
+                <div
+                  aria-hidden="true"
+                  class="rcx-box rcx-box--full rcx-css-fmd200"
+                  style="height: 24px;"
                 >
                   <div
-                    aria-hidden="true"
-                    class="rcx-box rcx-box--full rcx-css-fmd200"
-                    style="height: 24px;"
-                  >
-                    <div
-                      class="rcx-box rcx-box--full rcx-css-llqk8q"
-                      data-testid="voice-activity-bar"
-                      style="height: 3px;"
-                    />
-                    <div
-                      class="rcx-box rcx-box--full rcx-css-llqk8q"
-                      data-testid="voice-activity-bar"
-                      style="height: 3px;"
-                    />
-                    <div
-                      class="rcx-box rcx-box--full rcx-css-llqk8q"
-                      data-testid="voice-activity-bar"
-                      style="height: 3px;"
-                    />
-                  </div>
-                </button>
-              </div>
-              <div
-                class="rcx-box rcx-box--full"
+                    class="rcx-box rcx-box--full rcx-css-llqk8q"
+                    data-testid="voice-activity-bar"
+                    style="height: 3px;"
+                  />
+                  <div
+                    class="rcx-box rcx-box--full rcx-css-llqk8q"
+                    data-testid="voice-activity-bar"
+                    style="height: 3px;"
+                  />
+                  <div
+                    class="rcx-box rcx-box--full rcx-css-llqk8q"
+                    data-testid="voice-activity-bar"
+                    style="height: 3px;"
+                  />
+                </div>
+              </button>
+              <button
+                aria-label="Mute"
+                aria-pressed="false"
+                class="rcx-box rcx-box--full rcx-button--large-square rcx-button--icon-secondary rcx-button--square rcx-button--icon rcx-button"
+                label="Mute"
+                title="Mute"
+                type="button"
               >
-                <button
-                  aria-label="Mute"
-                  aria-pressed="false"
-                  class="rcx-box rcx-box--full rcx-button--large-square rcx-button--icon-secondary rcx-button--square rcx-button--icon rcx-button"
-                  label="Mute"
-                  title="Mute"
-                  type="button"
+                <i
+                  aria-hidden="true"
+                  class="rcx-box rcx-box--full rcx-icon--name-mic rcx-icon rcx-css-1bepdyv"
                 >
-                  <i
-                    aria-hidden="true"
-                    class="rcx-box rcx-box--full rcx-icon--name-mic rcx-icon rcx-css-1bepdyv"
-                  >
-                    
-                  </i>
-                </button>
-              </div>
+                  
+                </i>
+              </button>
             </div>
             <div
-              class="rcx-box rcx-box--full rcx-css-yaiuut"
+              aria-label="Camera"
+              class="rcx-split-button rcx-split-button--danger"
+              role="group"
             >
-              <div
-                class="rcx-box rcx-box--full"
+              <button
+                aria-expanded="false"
+                aria-haspopup="true"
+                aria-label="Camera options"
+                class="rcx-box rcx-box--full rcx-split-button__trigger rcx-button--large-square rcx-button--icon-secondary-danger rcx-button--square rcx-button--icon rcx-button rcx-css-1wk08i8"
+                id="react-aria-_r_6_"
+                label="Camera options"
+                title="Camera"
+                type="button"
               >
-                <button
-                  aria-expanded="false"
-                  aria-haspopup="true"
-                  aria-label="Camera options"
-                  class="rcx-box rcx-box--full rcx-button--large-square rcx-button--icon-secondary-danger rcx-button--square rcx-button--icon rcx-button rcx-css-1wk08i8"
-                  id="react-aria-_r_6_"
-                  label="Camera options"
-                  title="Camera"
-                  type="button"
+                <i
+                  aria-hidden="true"
+                  class="rcx-box rcx-box--full rcx-icon--name-chevron-up rcx-icon rcx-css-1bepdyv"
                 >
-                  <i
-                    aria-hidden="true"
-                    class="rcx-box rcx-box--full rcx-icon--name-chevron-up rcx-icon rcx-css-1bepdyv"
-                  >
-                    
-                  </i>
-                </button>
-              </div>
-              <div
-                class="rcx-box rcx-box--full"
+                  
+                </i>
+              </button>
+              <button
+                aria-label="Camera"
+                aria-pressed="false"
+                class="rcx-box rcx-box--full rcx-button--large-square rcx-button--icon-secondary-danger rcx-button--square rcx-button--icon rcx-button"
+                label="Camera"
+                title="Start camera"
+                type="button"
               >
-                <button
-                  aria-label="Camera"
-                  aria-pressed="false"
-                  class="rcx-box rcx-box--full rcx-button--large-square rcx-button--icon-secondary-danger rcx-button--square rcx-button--icon rcx-button"
-                  label="Camera"
-                  title="Start camera"
-                  type="button"
+                <i
+                  aria-hidden="true"
+                  class="rcx-box rcx-box--full rcx-icon--name-video-off rcx-icon rcx-css-1bepdyv"
                 >
-                  <i
-                    aria-hidden="true"
-                    class="rcx-box rcx-box--full rcx-icon--name-video-off rcx-icon rcx-css-1bepdyv"
-                  >
-                    ❴
-                  </i>
-                </button>
-              </div>
+                  ❴
+                </i>
+              </button>
             </div>
             <button
               aria-label="Share screen"
@@ -303,107 +291,95 @@ exports[`call stories renders CallControls CameraOnAndSharing without crashing 1
           style="position: relative;"
         >
           <div
-            class="rcx-box rcx-box--full rcx-css-yaiuut"
+            aria-label="Microphone"
+            class="rcx-split-button"
+            role="group"
           >
-            <div
-              class="rcx-box rcx-box--full"
+            <button
+              aria-expanded="false"
+              aria-haspopup="true"
+              aria-label="Device options"
+              class="rcx-box rcx-box--full rcx-split-button__trigger rcx-button--large-square rcx-button--icon-secondary rcx-button--square rcx-button--icon rcx-button rcx-css-1wk08i8"
+              id="react-aria-_r_a_"
+              label="Device options"
+              title="Device settings"
+              type="button"
             >
-              <button
-                aria-expanded="false"
-                aria-haspopup="true"
-                aria-label="Device options"
-                class="rcx-box rcx-box--full rcx-button--large-square rcx-button--icon-secondary rcx-button--square rcx-button--icon rcx-button rcx-css-1wk08i8"
-                id="react-aria-_r_a_"
-                label="Device options"
-                title="Device settings"
-                type="button"
+              <div
+                aria-hidden="true"
+                class="rcx-box rcx-box--full rcx-css-fmd200"
+                style="height: 24px;"
               >
                 <div
-                  aria-hidden="true"
-                  class="rcx-box rcx-box--full rcx-css-fmd200"
-                  style="height: 24px;"
-                >
-                  <div
-                    class="rcx-box rcx-box--full rcx-css-llqk8q"
-                    data-testid="voice-activity-bar"
-                    style="height: 3px;"
-                  />
-                  <div
-                    class="rcx-box rcx-box--full rcx-css-llqk8q"
-                    data-testid="voice-activity-bar"
-                    style="height: 3px;"
-                  />
-                  <div
-                    class="rcx-box rcx-box--full rcx-css-llqk8q"
-                    data-testid="voice-activity-bar"
-                    style="height: 3px;"
-                  />
-                </div>
-              </button>
-            </div>
-            <div
-              class="rcx-box rcx-box--full"
+                  class="rcx-box rcx-box--full rcx-css-llqk8q"
+                  data-testid="voice-activity-bar"
+                  style="height: 3px;"
+                />
+                <div
+                  class="rcx-box rcx-box--full rcx-css-llqk8q"
+                  data-testid="voice-activity-bar"
+                  style="height: 3px;"
+                />
+                <div
+                  class="rcx-box rcx-box--full rcx-css-llqk8q"
+                  data-testid="voice-activity-bar"
+                  style="height: 3px;"
+                />
+              </div>
+            </button>
+            <button
+              aria-label="Mute"
+              aria-pressed="false"
+              class="rcx-box rcx-box--full rcx-button--large-square rcx-button--icon-secondary rcx-button--square rcx-button--icon rcx-button"
+              label="Mute"
+              title="Mute"
+              type="button"
             >
-              <button
-                aria-label="Mute"
-                aria-pressed="false"
-                class="rcx-box rcx-box--full rcx-button--large-square rcx-button--icon-secondary rcx-button--square rcx-button--icon rcx-button"
-                label="Mute"
-                title="Mute"
-                type="button"
+              <i
+                aria-hidden="true"
+                class="rcx-box rcx-box--full rcx-icon--name-mic rcx-icon rcx-css-1bepdyv"
               >
-                <i
-                  aria-hidden="true"
-                  class="rcx-box rcx-box--full rcx-icon--name-mic rcx-icon rcx-css-1bepdyv"
-                >
-                  
-                </i>
-              </button>
-            </div>
+                
+              </i>
+            </button>
           </div>
           <div
-            class="rcx-box rcx-box--full rcx-css-yaiuut"
+            aria-label="Camera"
+            class="rcx-split-button"
+            role="group"
           >
-            <div
-              class="rcx-box rcx-box--full"
+            <button
+              aria-expanded="false"
+              aria-haspopup="true"
+              aria-label="Camera options"
+              class="rcx-box rcx-box--full rcx-split-button__trigger rcx-button--large-square rcx-button--icon-secondary rcx-button--square rcx-button--icon rcx-button rcx-css-1wk08i8"
+              id="react-aria-_r_c_"
+              label="Camera options"
+              title="Camera"
+              type="button"
             >
-              <button
-                aria-expanded="false"
-                aria-haspopup="true"
-                aria-label="Camera options"
-                class="rcx-box rcx-box--full rcx-button--large-square rcx-button--icon-secondary rcx-button--square rcx-button--icon rcx-button rcx-css-1wk08i8"
-                id="react-aria-_r_c_"
-                label="Camera options"
-                title="Camera"
-                type="button"
+              <i
+                aria-hidden="true"
+                class="rcx-box rcx-box--full rcx-icon--name-chevron-up rcx-icon rcx-css-1bepdyv"
               >
-                <i
-                  aria-hidden="true"
-                  class="rcx-box rcx-box--full rcx-icon--name-chevron-up rcx-icon rcx-css-1bepdyv"
-                >
-                  
-                </i>
-              </button>
-            </div>
-            <div
-              class="rcx-box rcx-box--full"
+                
+              </i>
+            </button>
+            <button
+              aria-label="Camera"
+              aria-pressed="true"
+              class="rcx-box rcx-box--full rcx-button--large-square rcx-button--icon-secondary rcx-button--square rcx-button--icon rcx-button"
+              label="Camera"
+              title="Stop camera"
+              type="button"
             >
-              <button
-                aria-label="Camera"
-                aria-pressed="true"
-                class="rcx-box rcx-box--full rcx-button--large-square rcx-button--icon-secondary rcx-button--square rcx-button--icon rcx-button"
-                label="Camera"
-                title="Stop camera"
-                type="button"
+              <i
+                aria-hidden="true"
+                class="rcx-box rcx-box--full rcx-icon--name-video rcx-icon rcx-css-1bepdyv"
               >
-                <i
-                  aria-hidden="true"
-                  class="rcx-box rcx-box--full rcx-icon--name-video rcx-icon rcx-css-1bepdyv"
-                >
-                  ❲
-                </i>
-              </button>
-            </div>
+                ❲
+              </i>
+            </button>
           </div>
           <button
             aria-label="Share screen"
@@ -507,107 +483,95 @@ exports[`call stories renders CallControls Default without crashing 1`] = `
           style="position: relative;"
         >
           <div
-            class="rcx-box rcx-box--full rcx-css-yaiuut"
+            aria-label="Microphone"
+            class="rcx-split-button"
+            role="group"
           >
-            <div
-              class="rcx-box rcx-box--full"
+            <button
+              aria-expanded="false"
+              aria-haspopup="true"
+              aria-label="Device options"
+              class="rcx-box rcx-box--full rcx-split-button__trigger rcx-button--large-square rcx-button--icon-secondary rcx-button--square rcx-button--icon rcx-button rcx-css-1wk08i8"
+              id="react-aria-_r_g_"
+              label="Device options"
+              title="Device settings"
+              type="button"
             >
-              <button
-                aria-expanded="false"
-                aria-haspopup="true"
-                aria-label="Device options"
-                class="rcx-box rcx-box--full rcx-button--large-square rcx-button--icon-secondary rcx-button--square rcx-button--icon rcx-button rcx-css-1wk08i8"
-                id="react-aria-_r_g_"
-                label="Device options"
-                title="Device settings"
-                type="button"
+              <div
+                aria-hidden="true"
+                class="rcx-box rcx-box--full rcx-css-fmd200"
+                style="height: 24px;"
               >
                 <div
-                  aria-hidden="true"
-                  class="rcx-box rcx-box--full rcx-css-fmd200"
-                  style="height: 24px;"
-                >
-                  <div
-                    class="rcx-box rcx-box--full rcx-css-llqk8q"
-                    data-testid="voice-activity-bar"
-                    style="height: 3px;"
-                  />
-                  <div
-                    class="rcx-box rcx-box--full rcx-css-llqk8q"
-                    data-testid="voice-activity-bar"
-                    style="height: 3px;"
-                  />
-                  <div
-                    class="rcx-box rcx-box--full rcx-css-llqk8q"
-                    data-testid="voice-activity-bar"
-                    style="height: 3px;"
-                  />
-                </div>
-              </button>
-            </div>
-            <div
-              class="rcx-box rcx-box--full"
+                  class="rcx-box rcx-box--full rcx-css-llqk8q"
+                  data-testid="voice-activity-bar"
+                  style="height: 3px;"
+                />
+                <div
+                  class="rcx-box rcx-box--full rcx-css-llqk8q"
+                  data-testid="voice-activity-bar"
+                  style="height: 3px;"
+                />
+                <div
+                  class="rcx-box rcx-box--full rcx-css-llqk8q"
+                  data-testid="voice-activity-bar"
+                  style="height: 3px;"
+                />
+              </div>
+            </button>
+            <button
+              aria-label="Mute"
+              aria-pressed="false"
+              class="rcx-box rcx-box--full rcx-button--large-square rcx-button--icon-secondary rcx-button--square rcx-button--icon rcx-button"
+              label="Mute"
+              title="Mute"
+              type="button"
             >
-              <button
-                aria-label="Mute"
-                aria-pressed="false"
-                class="rcx-box rcx-box--full rcx-button--large-square rcx-button--icon-secondary rcx-button--square rcx-button--icon rcx-button"
-                label="Mute"
-                title="Mute"
-                type="button"
+              <i
+                aria-hidden="true"
+                class="rcx-box rcx-box--full rcx-icon--name-mic rcx-icon rcx-css-1bepdyv"
               >
-                <i
-                  aria-hidden="true"
-                  class="rcx-box rcx-box--full rcx-icon--name-mic rcx-icon rcx-css-1bepdyv"
-                >
-                  
-                </i>
-              </button>
-            </div>
+                
+              </i>
+            </button>
           </div>
           <div
-            class="rcx-box rcx-box--full rcx-css-yaiuut"
+            aria-label="Camera"
+            class="rcx-split-button rcx-split-button--danger"
+            role="group"
           >
-            <div
-              class="rcx-box rcx-box--full"
+            <button
+              aria-expanded="false"
+              aria-haspopup="true"
+              aria-label="Camera options"
+              class="rcx-box rcx-box--full rcx-split-button__trigger rcx-button--large-square rcx-button--icon-secondary-danger rcx-button--square rcx-button--icon rcx-button rcx-css-1wk08i8"
+              id="react-aria-_r_i_"
+              label="Camera options"
+              title="Camera"
+              type="button"
             >
-              <button
-                aria-expanded="false"
-                aria-haspopup="true"
-                aria-label="Camera options"
-                class="rcx-box rcx-box--full rcx-button--large-square rcx-button--icon-secondary-danger rcx-button--square rcx-button--icon rcx-button rcx-css-1wk08i8"
-                id="react-aria-_r_i_"
-                label="Camera options"
-                title="Camera"
-                type="button"
+              <i
+                aria-hidden="true"
+                class="rcx-box rcx-box--full rcx-icon--name-chevron-up rcx-icon rcx-css-1bepdyv"
               >
-                <i
-                  aria-hidden="true"
-                  class="rcx-box rcx-box--full rcx-icon--name-chevron-up rcx-icon rcx-css-1bepdyv"
-                >
-                  
-                </i>
-              </button>
-            </div>
-            <div
-              class="rcx-box rcx-box--full"
+                
+              </i>
+            </button>
+            <button
+              aria-label="Camera"
+              aria-pressed="false"
+              class="rcx-box rcx-box--full rcx-button--large-square rcx-button--icon-secondary-danger rcx-button--square rcx-button--icon rcx-button"
+              label="Camera"
+              title="Start camera"
+              type="button"
             >
-              <button
-                aria-label="Camera"
-                aria-pressed="false"
-                class="rcx-box rcx-box--full rcx-button--large-square rcx-button--icon-secondary-danger rcx-button--square rcx-button--icon rcx-button"
-                label="Camera"
-                title="Start camera"
-                type="button"
+              <i
+                aria-hidden="true"
+                class="rcx-box rcx-box--full rcx-icon--name-video-off rcx-icon rcx-css-1bepdyv"
               >
-                <i
-                  aria-hidden="true"
-                  class="rcx-box rcx-box--full rcx-icon--name-video-off rcx-icon rcx-css-1bepdyv"
-                >
-                  ❴
-                </i>
-              </button>
-            </div>
+                ❴
+              </i>
+            </button>
           </div>
           <button
             aria-label="Share screen"
@@ -711,107 +675,95 @@ exports[`call stories renders CallControls HandRaised without crashing 1`] = `
           style="position: relative;"
         >
           <div
-            class="rcx-box rcx-box--full rcx-css-yaiuut"
+            aria-label="Microphone"
+            class="rcx-split-button"
+            role="group"
           >
-            <div
-              class="rcx-box rcx-box--full"
+            <button
+              aria-expanded="false"
+              aria-haspopup="true"
+              aria-label="Device options"
+              class="rcx-box rcx-box--full rcx-split-button__trigger rcx-button--large-square rcx-button--icon-secondary rcx-button--square rcx-button--icon rcx-button rcx-css-1wk08i8"
+              id="react-aria-_r_m_"
+              label="Device options"
+              title="Device settings"
+              type="button"
             >
-              <button
-                aria-expanded="false"
-                aria-haspopup="true"
-                aria-label="Device options"
-                class="rcx-box rcx-box--full rcx-button--large-square rcx-button--icon-secondary rcx-button--square rcx-button--icon rcx-button rcx-css-1wk08i8"
-                id="react-aria-_r_m_"
-                label="Device options"
-                title="Device settings"
-                type="button"
+              <div
+                aria-hidden="true"
+                class="rcx-box rcx-box--full rcx-css-fmd200"
+                style="height: 24px;"
               >
                 <div
-                  aria-hidden="true"
-                  class="rcx-box rcx-box--full rcx-css-fmd200"
-                  style="height: 24px;"
-                >
-                  <div
-                    class="rcx-box rcx-box--full rcx-css-llqk8q"
-                    data-testid="voice-activity-bar"
-                    style="height: 3px;"
-                  />
-                  <div
-                    class="rcx-box rcx-box--full rcx-css-llqk8q"
-                    data-testid="voice-activity-bar"
-                    style="height: 3px;"
-                  />
-                  <div
-                    class="rcx-box rcx-box--full rcx-css-llqk8q"
-                    data-testid="voice-activity-bar"
-                    style="height: 3px;"
-                  />
-                </div>
-              </button>
-            </div>
-            <div
-              class="rcx-box rcx-box--full"
+                  class="rcx-box rcx-box--full rcx-css-llqk8q"
+                  data-testid="voice-activity-bar"
+                  style="height: 3px;"
+                />
+                <div
+                  class="rcx-box rcx-box--full rcx-css-llqk8q"
+                  data-testid="voice-activity-bar"
+                  style="height: 3px;"
+                />
+                <div
+                  class="rcx-box rcx-box--full rcx-css-llqk8q"
+                  data-testid="voice-activity-bar"
+                  style="height: 3px;"
+                />
+              </div>
+            </button>
+            <button
+              aria-label="Mute"
+              aria-pressed="false"
+              class="rcx-box rcx-box--full rcx-button--large-square rcx-button--icon-secondary rcx-button--square rcx-button--icon rcx-button"
+              label="Mute"
+              title="Mute"
+              type="button"
             >
-              <button
-                aria-label="Mute"
-                aria-pressed="false"
-                class="rcx-box rcx-box--full rcx-button--large-square rcx-button--icon-secondary rcx-button--square rcx-button--icon rcx-button"
-                label="Mute"
-                title="Mute"
-                type="button"
+              <i
+                aria-hidden="true"
+                class="rcx-box rcx-box--full rcx-icon--name-mic rcx-icon rcx-css-1bepdyv"
               >
-                <i
-                  aria-hidden="true"
-                  class="rcx-box rcx-box--full rcx-icon--name-mic rcx-icon rcx-css-1bepdyv"
-                >
-                  
-                </i>
-              </button>
-            </div>
+                
+              </i>
+            </button>
           </div>
           <div
-            class="rcx-box rcx-box--full rcx-css-yaiuut"
+            aria-label="Camera"
+            class="rcx-split-button rcx-split-button--danger"
+            role="group"
           >
-            <div
-              class="rcx-box rcx-box--full"
+            <button
+              aria-expanded="false"
+              aria-haspopup="true"
+              aria-label="Camera options"
+              class="rcx-box rcx-box--full rcx-split-button__trigger rcx-button--large-square rcx-button--icon-secondary-danger rcx-button--square rcx-button--icon rcx-button rcx-css-1wk08i8"
+              id="react-aria-_r_o_"
+              label="Camera options"
+              title="Camera"
+              type="button"
             >
-              <button
-                aria-expanded="false"
-                aria-haspopup="true"
-                aria-label="Camera options"
-                class="rcx-box rcx-box--full rcx-button--large-square rcx-button--icon-secondary-danger rcx-button--square rcx-button--icon rcx-button rcx-css-1wk08i8"
-                id="react-aria-_r_o_"
-                label="Camera options"
-                title="Camera"
-                type="button"
+              <i
+                aria-hidden="true"
+                class="rcx-box rcx-box--full rcx-icon--name-chevron-up rcx-icon rcx-css-1bepdyv"
               >
-                <i
-                  aria-hidden="true"
-                  class="rcx-box rcx-box--full rcx-icon--name-chevron-up rcx-icon rcx-css-1bepdyv"
-                >
-                  
-                </i>
-              </button>
-            </div>
-            <div
-              class="rcx-box rcx-box--full"
+                
+              </i>
+            </button>
+            <button
+              aria-label="Camera"
+              aria-pressed="false"
+              class="rcx-box rcx-box--full rcx-button--large-square rcx-button--icon-secondary-danger rcx-button--square rcx-button--icon rcx-button"
+              label="Camera"
+              title="Start camera"
+              type="button"
             >
-              <button
-                aria-label="Camera"
-                aria-pressed="false"
-                class="rcx-box rcx-box--full rcx-button--large-square rcx-button--icon-secondary-danger rcx-button--square rcx-button--icon rcx-button"
-                label="Camera"
-                title="Start camera"
-                type="button"
+              <i
+                aria-hidden="true"
+                class="rcx-box rcx-box--full rcx-icon--name-video-off rcx-icon rcx-css-1bepdyv"
               >
-                <i
-                  aria-hidden="true"
-                  class="rcx-box rcx-box--full rcx-icon--name-video-off rcx-icon rcx-css-1bepdyv"
-                >
-                  ❴
-                </i>
-              </button>
-            </div>
+                ❴
+              </i>
+            </button>
           </div>
           <button
             aria-label="Share screen"
@@ -915,92 +867,80 @@ exports[`call stories renders CallControls Muted without crashing 1`] = `
           style="position: relative;"
         >
           <div
-            class="rcx-box rcx-box--full rcx-css-yaiuut"
+            aria-label="Microphone"
+            class="rcx-split-button rcx-split-button--danger"
+            role="group"
           >
-            <div
-              class="rcx-box rcx-box--full"
+            <button
+              aria-expanded="false"
+              aria-haspopup="true"
+              aria-label="Device options"
+              class="rcx-box rcx-box--full rcx-split-button__trigger rcx-button--large-square rcx-button--icon-secondary-danger rcx-button--square rcx-button--icon rcx-button rcx-css-1wk08i8"
+              id="react-aria-_r_s_"
+              label="Device options"
+              title="Device settings"
+              type="button"
             >
-              <button
-                aria-expanded="false"
-                aria-haspopup="true"
-                aria-label="Device options"
-                class="rcx-box rcx-box--full rcx-button--large-square rcx-button--icon-secondary-danger rcx-button--square rcx-button--icon rcx-button rcx-css-1wk08i8"
-                id="react-aria-_r_s_"
-                label="Device options"
-                title="Device settings"
-                type="button"
+              <i
+                aria-hidden="true"
+                class="rcx-box rcx-box--full rcx-icon--name-chevron-up rcx-icon rcx-css-1bepdyv"
               >
-                <i
-                  aria-hidden="true"
-                  class="rcx-box rcx-box--full rcx-icon--name-chevron-up rcx-icon rcx-css-1bepdyv"
-                >
-                  
-                </i>
-              </button>
-            </div>
-            <div
-              class="rcx-box rcx-box--full"
+                
+              </i>
+            </button>
+            <button
+              aria-label="Mute"
+              aria-pressed="true"
+              class="rcx-box rcx-box--full rcx-button--large-square rcx-button--icon-secondary-danger rcx-button--square rcx-button--icon rcx-button"
+              label="Mute"
+              title="Unmute"
+              type="button"
             >
-              <button
-                aria-label="Mute"
-                aria-pressed="true"
-                class="rcx-box rcx-box--full rcx-button--large-square rcx-button--icon-secondary-danger rcx-button--square rcx-button--icon rcx-button"
-                label="Mute"
-                title="Unmute"
-                type="button"
+              <i
+                aria-hidden="true"
+                class="rcx-box rcx-box--full rcx-icon--name-mic-off rcx-icon rcx-css-1bepdyv"
               >
-                <i
-                  aria-hidden="true"
-                  class="rcx-box rcx-box--full rcx-icon--name-mic-off rcx-icon rcx-css-1bepdyv"
-                >
-                  
-                </i>
-              </button>
-            </div>
+                
+              </i>
+            </button>
           </div>
           <div
-            class="rcx-box rcx-box--full rcx-css-yaiuut"
+            aria-label="Camera"
+            class="rcx-split-button rcx-split-button--danger"
+            role="group"
           >
-            <div
-              class="rcx-box rcx-box--full"
+            <button
+              aria-expanded="false"
+              aria-haspopup="true"
+              aria-label="Camera options"
+              class="rcx-box rcx-box--full rcx-split-button__trigger rcx-button--large-square rcx-button--icon-secondary-danger rcx-button--square rcx-button--icon rcx-button rcx-css-1wk08i8"
+              id="react-aria-_r_u_"
+              label="Camera options"
+              title="Camera"
+              type="button"
             >
-              <button
-                aria-expanded="false"
-                aria-haspopup="true"
-                aria-label="Camera options"
-                class="rcx-box rcx-box--full rcx-button--large-square rcx-button--icon-secondary-danger rcx-button--square rcx-button--icon rcx-button rcx-css-1wk08i8"
-                id="react-aria-_r_u_"
-                label="Camera options"
-                title="Camera"
-                type="button"
+              <i
+                aria-hidden="true"
+                class="rcx-box rcx-box--full rcx-icon--name-chevron-up rcx-icon rcx-css-1bepdyv"
               >
-                <i
-                  aria-hidden="true"
-                  class="rcx-box rcx-box--full rcx-icon--name-chevron-up rcx-icon rcx-css-1bepdyv"
-                >
-                  
-                </i>
-              </button>
-            </div>
-            <div
-              class="rcx-box rcx-box--full"
+                
+              </i>
+            </button>
+            <button
+              aria-label="Camera"
+              aria-pressed="false"
+              class="rcx-box rcx-box--full rcx-button--large-square rcx-button--icon-secondary-danger rcx-button--square rcx-button--icon rcx-button"
+              label="Camera"
+              title="Start camera"
+              type="button"
             >
-              <button
-                aria-label="Camera"
-                aria-pressed="false"
-                class="rcx-box rcx-box--full rcx-button--large-square rcx-button--icon-secondary-danger rcx-button--square rcx-button--icon rcx-button"
-                label="Camera"
-                title="Start camera"
-                type="button"
+              <i
+                aria-hidden="true"
+                class="rcx-box rcx-box--full rcx-icon--name-video-off rcx-icon rcx-css-1bepdyv"
               >
-                <i
-                  aria-hidden="true"
-                  class="rcx-box rcx-box--full rcx-icon--name-video-off rcx-icon rcx-css-1bepdyv"
-                >
-                  ❴
-                </i>
-              </button>
-            </div>
+                ❴
+              </i>
+            </button>
           </div>
           <button
             aria-label="Share screen"
@@ -1104,107 +1044,95 @@ exports[`call stories renders CallControls OneOnOne without crashing 1`] = `
           style="position: relative;"
         >
           <div
-            class="rcx-box rcx-box--full rcx-css-yaiuut"
+            aria-label="Microphone"
+            class="rcx-split-button"
+            role="group"
           >
-            <div
-              class="rcx-box rcx-box--full"
+            <button
+              aria-expanded="false"
+              aria-haspopup="true"
+              aria-label="Device options"
+              class="rcx-box rcx-box--full rcx-split-button__trigger rcx-button--large-square rcx-button--icon-secondary rcx-button--square rcx-button--icon rcx-button rcx-css-1wk08i8"
+              id="react-aria-_r_12_"
+              label="Device options"
+              title="Device settings"
+              type="button"
             >
-              <button
-                aria-expanded="false"
-                aria-haspopup="true"
-                aria-label="Device options"
-                class="rcx-box rcx-box--full rcx-button--large-square rcx-button--icon-secondary rcx-button--square rcx-button--icon rcx-button rcx-css-1wk08i8"
-                id="react-aria-_r_12_"
-                label="Device options"
-                title="Device settings"
-                type="button"
+              <div
+                aria-hidden="true"
+                class="rcx-box rcx-box--full rcx-css-fmd200"
+                style="height: 24px;"
               >
                 <div
-                  aria-hidden="true"
-                  class="rcx-box rcx-box--full rcx-css-fmd200"
-                  style="height: 24px;"
-                >
-                  <div
-                    class="rcx-box rcx-box--full rcx-css-llqk8q"
-                    data-testid="voice-activity-bar"
-                    style="height: 3px;"
-                  />
-                  <div
-                    class="rcx-box rcx-box--full rcx-css-llqk8q"
-                    data-testid="voice-activity-bar"
-                    style="height: 3px;"
-                  />
-                  <div
-                    class="rcx-box rcx-box--full rcx-css-llqk8q"
-                    data-testid="voice-activity-bar"
-                    style="height: 3px;"
-                  />
-                </div>
-              </button>
-            </div>
-            <div
-              class="rcx-box rcx-box--full"
+                  class="rcx-box rcx-box--full rcx-css-llqk8q"
+                  data-testid="voice-activity-bar"
+                  style="height: 3px;"
+                />
+                <div
+                  class="rcx-box rcx-box--full rcx-css-llqk8q"
+                  data-testid="voice-activity-bar"
+                  style="height: 3px;"
+                />
+                <div
+                  class="rcx-box rcx-box--full rcx-css-llqk8q"
+                  data-testid="voice-activity-bar"
+                  style="height: 3px;"
+                />
+              </div>
+            </button>
+            <button
+              aria-label="Mute"
+              aria-pressed="false"
+              class="rcx-box rcx-box--full rcx-button--large-square rcx-button--icon-secondary rcx-button--square rcx-button--icon rcx-button"
+              label="Mute"
+              title="Mute"
+              type="button"
             >
-              <button
-                aria-label="Mute"
-                aria-pressed="false"
-                class="rcx-box rcx-box--full rcx-button--large-square rcx-button--icon-secondary rcx-button--square rcx-button--icon rcx-button"
-                label="Mute"
-                title="Mute"
-                type="button"
+              <i
+                aria-hidden="true"
+                class="rcx-box rcx-box--full rcx-icon--name-mic rcx-icon rcx-css-1bepdyv"
               >
-                <i
-                  aria-hidden="true"
-                  class="rcx-box rcx-box--full rcx-icon--name-mic rcx-icon rcx-css-1bepdyv"
-                >
-                  
-                </i>
-              </button>
-            </div>
+                
+              </i>
+            </button>
           </div>
           <div
-            class="rcx-box rcx-box--full rcx-css-yaiuut"
+            aria-label="Camera"
+            class="rcx-split-button rcx-split-button--danger"
+            role="group"
           >
-            <div
-              class="rcx-box rcx-box--full"
+            <button
+              aria-expanded="false"
+              aria-haspopup="true"
+              aria-label="Camera options"
+              class="rcx-box rcx-box--full rcx-split-button__trigger rcx-button--large-square rcx-button--icon-secondary-danger rcx-button--square rcx-button--icon rcx-button rcx-css-1wk08i8"
+              id="react-aria-_r_14_"
+              label="Camera options"
+              title="Camera"
+              type="button"
             >
-              <button
-                aria-expanded="false"
-                aria-haspopup="true"
-                aria-label="Camera options"
-                class="rcx-box rcx-box--full rcx-button--large-square rcx-button--icon-secondary-danger rcx-button--square rcx-button--icon rcx-button rcx-css-1wk08i8"
-                id="react-aria-_r_14_"
-                label="Camera options"
-                title="Camera"
-                type="button"
+              <i
+                aria-hidden="true"
+                class="rcx-box rcx-box--full rcx-icon--name-chevron-up rcx-icon rcx-css-1bepdyv"
               >
-                <i
-                  aria-hidden="true"
-                  class="rcx-box rcx-box--full rcx-icon--name-chevron-up rcx-icon rcx-css-1bepdyv"
-                >
-                  
-                </i>
-              </button>
-            </div>
-            <div
-              class="rcx-box rcx-box--full"
+                
+              </i>
+            </button>
+            <button
+              aria-label="Camera"
+              aria-pressed="false"
+              class="rcx-box rcx-box--full rcx-button--large-square rcx-button--icon-secondary-danger rcx-button--square rcx-button--icon rcx-button"
+              label="Camera"
+              title="Start camera"
+              type="button"
             >
-              <button
-                aria-label="Camera"
-                aria-pressed="false"
-                class="rcx-box rcx-box--full rcx-button--large-square rcx-button--icon-secondary-danger rcx-button--square rcx-button--icon rcx-button"
-                label="Camera"
-                title="Start camera"
-                type="button"
+              <i
+                aria-hidden="true"
+                class="rcx-box rcx-box--full rcx-icon--name-video-off rcx-icon rcx-css-1bepdyv"
               >
-                <i
-                  aria-hidden="true"
-                  class="rcx-box rcx-box--full rcx-icon--name-video-off rcx-icon rcx-css-1bepdyv"
-                >
-                  ❴
-                </i>
-              </button>
-            </div>
+                ❴
+              </i>
+            </button>
           </div>
           <button
             aria-label="Share screen"
@@ -1308,92 +1236,80 @@ exports[`call stories renders CallControls SpeakingWhileMuted without crashing 1
           style="position: relative;"
         >
           <div
-            class="rcx-box rcx-box--full rcx-css-yaiuut"
+            aria-label="Microphone"
+            class="rcx-split-button rcx-split-button--danger"
+            role="group"
           >
-            <div
-              class="rcx-box rcx-box--full"
+            <button
+              aria-expanded="false"
+              aria-haspopup="true"
+              aria-label="Device options"
+              class="rcx-box rcx-box--full rcx-split-button__trigger rcx-button--large-square rcx-button--icon-secondary-danger rcx-button--square rcx-button--icon rcx-button rcx-css-1wk08i8"
+              id="react-aria-_r_18_"
+              label="Device options"
+              title="Device settings"
+              type="button"
             >
-              <button
-                aria-expanded="false"
-                aria-haspopup="true"
-                aria-label="Device options"
-                class="rcx-box rcx-box--full rcx-button--large-square rcx-button--icon-secondary-danger rcx-button--square rcx-button--icon rcx-button rcx-css-1wk08i8"
-                id="react-aria-_r_18_"
-                label="Device options"
-                title="Device settings"
-                type="button"
+              <i
+                aria-hidden="true"
+                class="rcx-box rcx-box--full rcx-icon--name-chevron-up rcx-icon rcx-css-1bepdyv"
               >
-                <i
-                  aria-hidden="true"
-                  class="rcx-box rcx-box--full rcx-icon--name-chevron-up rcx-icon rcx-css-1bepdyv"
-                >
-                  
-                </i>
-              </button>
-            </div>
-            <div
-              class="rcx-box rcx-box--full"
+                
+              </i>
+            </button>
+            <button
+              aria-label="Mute"
+              aria-pressed="true"
+              class="rcx-box rcx-box--full rcx-button--large-square rcx-button--icon-secondary-danger rcx-button--square rcx-button--icon rcx-button"
+              label="Mute"
+              title="You are muted — click to unmute"
+              type="button"
             >
-              <button
-                aria-label="Mute"
-                aria-pressed="true"
-                class="rcx-box rcx-box--full rcx-button--large-square rcx-button--icon-secondary-danger rcx-button--square rcx-button--icon rcx-button"
-                label="Mute"
-                title="You are muted — click to unmute"
-                type="button"
+              <i
+                aria-hidden="true"
+                class="rcx-box rcx-box--full rcx-icon--name-mic-off rcx-icon rcx-css-1bepdyv"
               >
-                <i
-                  aria-hidden="true"
-                  class="rcx-box rcx-box--full rcx-icon--name-mic-off rcx-icon rcx-css-1bepdyv"
-                >
-                  
-                </i>
-              </button>
-            </div>
+                
+              </i>
+            </button>
           </div>
           <div
-            class="rcx-box rcx-box--full rcx-css-yaiuut"
+            aria-label="Camera"
+            class="rcx-split-button rcx-split-button--danger"
+            role="group"
           >
-            <div
-              class="rcx-box rcx-box--full"
+            <button
+              aria-expanded="false"
+              aria-haspopup="true"
+              aria-label="Camera options"
+              class="rcx-box rcx-box--full rcx-split-button__trigger rcx-button--large-square rcx-button--icon-secondary-danger rcx-button--square rcx-button--icon rcx-button rcx-css-1wk08i8"
+              id="react-aria-_r_1a_"
+              label="Camera options"
+              title="Camera"
+              type="button"
             >
-              <button
-                aria-expanded="false"
-                aria-haspopup="true"
-                aria-label="Camera options"
-                class="rcx-box rcx-box--full rcx-button--large-square rcx-button--icon-secondary-danger rcx-button--square rcx-button--icon rcx-button rcx-css-1wk08i8"
-                id="react-aria-_r_1a_"
-                label="Camera options"
-                title="Camera"
-                type="button"
+              <i
+                aria-hidden="true"
+                class="rcx-box rcx-box--full rcx-icon--name-chevron-up rcx-icon rcx-css-1bepdyv"
               >
-                <i
-                  aria-hidden="true"
-                  class="rcx-box rcx-box--full rcx-icon--name-chevron-up rcx-icon rcx-css-1bepdyv"
-                >
-                  
-                </i>
-              </button>
-            </div>
-            <div
-              class="rcx-box rcx-box--full"
+                
+              </i>
+            </button>
+            <button
+              aria-label="Camera"
+              aria-pressed="false"
+              class="rcx-box rcx-box--full rcx-button--large-square rcx-button--icon-secondary-danger rcx-button--square rcx-button--icon rcx-button"
+              label="Camera"
+              title="Start camera"
+              type="button"
             >
-              <button
-                aria-label="Camera"
-                aria-pressed="false"
-                class="rcx-box rcx-box--full rcx-button--large-square rcx-button--icon-secondary-danger rcx-button--square rcx-button--icon rcx-button"
-                label="Camera"
-                title="Start camera"
-                type="button"
+              <i
+                aria-hidden="true"
+                class="rcx-box rcx-box--full rcx-icon--name-video-off rcx-icon rcx-css-1bepdyv"
               >
-                <i
-                  aria-hidden="true"
-                  class="rcx-box rcx-box--full rcx-icon--name-video-off rcx-icon rcx-css-1bepdyv"
-                >
-                  ❴
-                </i>
-              </button>
-            </div>
+                ❴
+              </i>
+            </button>
           </div>
           <button
             aria-label="Share screen"
@@ -3824,7 +3740,7 @@ exports[`call stories renders CameraPicker CameraOff without crashing 1`] = `
           aria-expanded="false"
           aria-haspopup="true"
           aria-label="Camera options"
-          class="rcx-box rcx-box--full rcx-button--large-square rcx-button--icon-secondary-danger rcx-button--square rcx-button--icon rcx-button rcx-css-1wk08i8"
+          class="rcx-box rcx-box--full rcx-split-button__trigger rcx-button--large-square rcx-button--icon-secondary-danger rcx-button--square rcx-button--icon rcx-button rcx-css-1wk08i8"
           id="react-aria-_r_23_"
           label="Camera options"
           title="Camera"
@@ -3856,7 +3772,7 @@ exports[`call stories renders CameraPicker CameraOn without crashing 1`] = `
           aria-expanded="false"
           aria-haspopup="true"
           aria-label="Camera options"
-          class="rcx-box rcx-box--full rcx-button--large-square rcx-button--icon-secondary rcx-button--square rcx-button--icon rcx-button rcx-css-1wk08i8"
+          class="rcx-box rcx-box--full rcx-split-button__trigger rcx-button--large-square rcx-button--icon-secondary rcx-button--square rcx-button--icon rcx-button rcx-css-1wk08i8"
           id="react-aria-_r_25_"
           label="Camera options"
           title="Camera"
@@ -3886,7 +3802,7 @@ exports[`call stories renders CameraPicker NoCamera without crashing 1`] = `
       >
         <button
           aria-label="Camera options"
-          class="rcx-box rcx-box--full rcx-button--large-square rcx-button--icon-secondary-danger rcx-button--square rcx-button--icon rcx-button rcx-css-1wk08i8"
+          class="rcx-box rcx-box--full rcx-split-button__trigger rcx-button--large-square rcx-button--icon-secondary-danger rcx-button--square rcx-button--icon rcx-button rcx-css-1wk08i8"
           disabled=""
           label="Camera options"
           title="Device settings (not supported by the browser)"
@@ -3921,7 +3837,7 @@ exports[`call stories renders CameraPicker Open without crashing 1`] = `
           aria-expanded="true"
           aria-haspopup="true"
           aria-label="Camera options"
-          class="rcx-box rcx-box--full rcx-button--icon-pressed rcx-button--large-square rcx-button--icon-secondary-pressed rcx-button--icon-secondary rcx-button--square rcx-button--icon rcx-button rcx-css-1wk08i8"
+          class="rcx-box rcx-box--full rcx-split-button__trigger rcx-button--icon-pressed rcx-button--large-square rcx-button--icon-secondary-pressed rcx-button--icon-secondary rcx-button--square rcx-button--icon rcx-button rcx-css-1wk08i8"
           id="react-aria-_r_27_"
           label="Camera options"
           title="Camera"
