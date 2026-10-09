@@ -15,7 +15,7 @@ const validateCreationAttributesMock = sinon.stub();
 
 let guard: Guard;
 
-p.noCallThru().load('../../../../../../ee/server/hooks/abac/beforeCreateRoom.ts', {
+p.noCallThru().load('./beforeCreateRoom.ts', {
 	'@rocket.chat/core-services': { Abac: { validateCreationAttributes: validateCreationAttributesMock } },
 	'@rocket.chat/license': { License: licenseMock },
 	'../../../../server/lib/authorization/getRoomAbacLockContext': { getRoomAbacLockContext: getRoomAbacLockContextMock },
