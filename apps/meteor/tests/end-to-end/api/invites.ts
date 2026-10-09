@@ -131,11 +131,7 @@ describe('Invites', () => {
 		});
 
 		it('should use the existing invite for GENERAL with inviteToken', async () => {
-			const res = await request
-				.post(api('useInviteToken'))
-				.set(credentials)
-				.send({ token: testInviteToken })
-				.expect(200);
+			const res = await request.post(api('useInviteToken')).set(credentials).send({ token: testInviteToken }).expect(200);
 
 			expect(res.body).to.have.property('success', true);
 		});
@@ -169,11 +165,7 @@ describe('Invites', () => {
 		});
 
 		it('should succeed when valid inviteToken', async () => {
-			const res = await request
-				.post(api('validateInviteToken'))
-				.set(credentials)
-				.send({ token: testInviteToken })
-				.expect(200);
+			const res = await request.post(api('validateInviteToken')).set(credentials).send({ token: testInviteToken }).expect(200);
 
 			expect(res.body).to.have.property('success', true);
 			expect(res.body).to.have.property('valid', true);
