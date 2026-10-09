@@ -20,6 +20,7 @@ import {
 	useRoomToolbox,
 } from '@rocket.chat/ui-contexts';
 import { createPortal } from 'react-dom';
+import { useEffect } from 'react';
 
 import ThreadChat from './components/ThreadChat';
 import ThreadSkeleton from './components/ThreadSkeleton';
