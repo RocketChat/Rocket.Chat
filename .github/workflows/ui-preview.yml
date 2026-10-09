@@ -152,7 +152,7 @@ jobs:
           Or run it in a browser against any server (default \`https://open.rocket.chat\`):
 
           \`\`\`sh
-          npx @rocket.chat/ui-preview --pr $NUMBER --server https://open.rocket.chat
+          npx @rocket.chat/ui-preview $NUMBER --server https://open.rocket.chat
           \`\`\`"
 
           comment_id=$(gh api "repos/$REPO/issues/$NUMBER/comments" --paginate -q ".[] | select(.body | startswith(\"$marker\")) | .id" | head -n1)

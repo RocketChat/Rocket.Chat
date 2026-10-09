@@ -14,16 +14,17 @@ import { preview } from 'vite';
 
 const repository = 'rocketchat/rocket.chat-web';
 
-const usage = `Usage: npx @rocket.chat/ui-preview --pr <number> [options]
+const usage = `Usage: npx @rocket.chat/ui-preview <pull request number or URL> [options]
 
-  --pr <number>     Latest build of a pull request
+  --pr <number>     Latest build of a pull request (same as the positional argument)
   --sha <sha>       Exact build of a commit (with --pr, that PR's build of it)
   --develop         Latest build of develop
   --server <url>    Rocket.Chat server to run against (default: https://open.rocket.chat)
   --port <port>     Local port (default: 3000)
   -h, --help        Show this help`;
 
-const { values: args } = parseArgs({
+const { values: args, positionals } = parseArgs({
+	allowPositionals: true,
 	options: {
 		pr: { type: 'string' },
 		sha: { type: 'string' },
@@ -45,10 +46,14 @@ if (args.help) {
 }
 
 const tag = (() => {
-	if (args.pr && !/^\d+$/.test(args.pr)) fail(`--pr must be a pull request number.\n\n${usage}`);
+	const prArg = args.pr ?? positionals[0];
+	// Accepts `42665` or a pull request URL, so a link copied from GitHub works as is.
+	const pr =
+		prArg && (prArg.match(/^(\d+)$/) ?? prArg.match(/^https:\/\/github\.com\/RocketChat\/Rocket\.Chat\/pull\/(\d+)(?:[/?#]|$)/i))?.[1];
+	if (prArg && !pr) fail(`"${prArg}" is not a Rocket.Chat pull request number or URL.\n\n${usage}`);
 	if (args.sha && !/^[0-9a-f]{40}$/.test(args.sha)) fail(`--sha must be a full 40-character commit hash.\n\n${usage}`);
-	if (args.pr && args.sha) return `pr-${args.pr}-${args.sha}`;
-	if (args.pr) return `pr-${args.pr}`;
+	if (pr && args.sha) return `pr-${pr}-${args.sha}`;
+	if (pr) return `pr-${pr}`;
 	if (args.sha) return args.sha;
 	if (args.develop) return 'develop';
 	fail(usage);
