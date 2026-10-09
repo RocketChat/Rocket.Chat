@@ -1,0 +1,14 @@
+.github/workflows/ci-test-e2e.yml
+  h_4c386397e672f4 20
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "1c9a14abb56cfb1b2e8d1eabd84d567ce97cbc3b",
+  "prompts": {},
+  "humans": {
+    "h_4c386397e672f4": {
+      "author": "Diego Sampaio <chinello@gmail.com>"
+    }
+  }
+}
