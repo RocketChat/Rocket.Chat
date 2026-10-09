@@ -5,8 +5,8 @@ import { render, screen } from '@testing-library/react';
 import type { ReactNode } from 'react';
 
 import ConferenceWindow from './ConferenceWindow';
-import type { CallState } from '../call/context';
-import { CallActionsProvider, CallDiagnosticsProvider, CallStateProvider } from '../call/context';
+import type { CallMediaProcessing, CallState } from '../call/context';
+import { CallActionsProvider, CallDiagnosticsProvider, CallMediaProcessingProvider, CallStateProvider } from '../call/context';
 import type { ConferenceContextValue, ConferencePanel } from '../context/ConferenceContext';
 import { ConferenceContext } from '../context/ConferenceContext';
 import type { VideoQualitySelection } from '../devices/VideoQualityContext';
@@ -49,13 +49,30 @@ const deviceSelection: DeviceSelection = {
 
 const videoQuality: VideoQualitySelection = { quality: 'auto', qualities: [], pending: false, select: jest.fn() };
 
+const mediaProcessing: CallMediaProcessing = {
+	noiseSuppression: { methods: [], method: 'none', pending: false, select: jest.fn() },
+	backgroundBlur: {
+		available: false,
+		level: 'none',
+		levels: [],
+		pending: false,
+		model: 'quality',
+		models: [],
+		select: jest.fn(),
+		selectModel: jest.fn(),
+		backgroundImage: { available: false, active: false, hasImage: false, select: jest.fn(), activate: jest.fn() },
+	},
+};
+
 /** What a provider running the call in this window provides around it. */
 const CallContexts = ({ state = buildCallState(), children }: { state?: CallState; children: ReactNode }) => (
 	<CallStateProvider value={state}>
 		<CallActionsProvider value={actions}>
 			<DeviceSelectionProvider value={deviceSelection}>
 				<VideoQualityProvider value={videoQuality}>
-					<CallDiagnosticsProvider value={null}>{children}</CallDiagnosticsProvider>
+					<CallMediaProcessingProvider value={mediaProcessing}>
+						<CallDiagnosticsProvider value={null}>{children}</CallDiagnosticsProvider>
+					</CallMediaProcessingProvider>
 				</VideoQualityProvider>
 			</DeviceSelectionProvider>
 		</CallActionsProvider>

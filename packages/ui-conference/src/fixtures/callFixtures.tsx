@@ -6,8 +6,8 @@ import { useState } from 'react';
 import { action } from 'storybook/actions';
 
 import { JOHN_DOE_ID } from './storyFixtures';
-import type { CallActions, CallDiagnosticsData, CallSelf, CallState, RemoteParticipantInfo } from '../call/context';
-import { CallActionsProvider, CallDiagnosticsProvider, CallStateProvider } from '../call/context';
+import type { CallActions, CallDiagnosticsData, CallMediaProcessing, CallSelf, CallState, RemoteParticipantInfo } from '../call/context';
+import { CallActionsProvider, CallDiagnosticsProvider, CallMediaProcessingProvider, CallStateProvider } from '../call/context';
 import type { VideoQualitySelection } from '../devices/VideoQualityContext';
 import { VideoQualityProvider } from '../devices/VideoQualityContext';
 
@@ -83,6 +83,29 @@ export const buildVideoQuality = (overrides: Partial<VideoQualitySelection> = {}
 	...overrides,
 });
 
+/** Every processing choice offered, with the weakest of each in use. */
+export const buildMediaProcessing = (): CallMediaProcessing => ({
+	noiseSuppression: { methods: ['none', 'browser', 'rnnoise'], method: 'browser', pending: false, select: action('selectNoiseMethod') },
+	backgroundBlur: {
+		available: true,
+		level: 'none',
+		levels: ['none', 'light', 'medium', 'strong'],
+		blur: 'processor',
+		pending: false,
+		model: 'quality',
+		models: ['quality', 'performance'],
+		select: action('selectBlurLevel'),
+		selectModel: action('selectBlurModel'),
+		backgroundImage: {
+			available: true,
+			active: false,
+			hasImage: false,
+			select: async (file) => action('selectBackgroundImage')(file),
+			activate: action('activateBackgroundImage'),
+		},
+	},
+});
+
 export const diagnosticsSample: CallDiagnosticsData = {
 	serverUrl: 'wss://livekit.example.com',
 	connectionState: 'connected',
@@ -126,13 +149,16 @@ const CallContexts = ({ state, deviceSelection, videoQuality, diagnostics = null
 	const [actions] = useState(buildCallActions);
 	const [devices] = useState(() => buildDeviceSelection(deviceSelection));
 	const [quality] = useState(() => buildVideoQuality(videoQuality));
+	const [mediaProcessing] = useState(buildMediaProcessing);
 
 	return (
 		<CallStateProvider value={callState}>
 			<CallActionsProvider value={actions}>
 				<DeviceSelectionProvider value={devices}>
 					<VideoQualityProvider value={quality}>
-						<CallDiagnosticsProvider value={diagnostics}>{children}</CallDiagnosticsProvider>
+						<CallMediaProcessingProvider value={mediaProcessing}>
+							<CallDiagnosticsProvider value={diagnostics}>{children}</CallDiagnosticsProvider>
+						</CallMediaProcessingProvider>
 					</VideoQualityProvider>
 				</DeviceSelectionProvider>
 			</CallActionsProvider>

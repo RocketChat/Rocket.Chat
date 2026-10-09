@@ -3,6 +3,8 @@ import { useTranslation } from 'react-i18next';
 
 import PreflightDeviceMenu from './PreflightDeviceMenu';
 import { usePreviewMedia } from './PreviewMediaContext';
+import { useBackgroundEffectChoices } from '../devices/useBackgroundEffectChoices';
+import { useNoiseSuppressionChoices } from '../devices/useNoiseSuppressionChoices';
 import { useVideoQualityChoices } from '../devices/useVideoQualityChoices';
 
 /** The devices to arrive on, one menu per kind the provider can be told about. */
@@ -10,6 +12,8 @@ const PreflightDevices = () => {
 	const { t } = useTranslation();
 	const { capabilities } = usePreviewMedia();
 	const videoQuality = useVideoQualityChoices();
+	const backgroundEffects = useBackgroundEffectChoices();
+	const noiseSuppression = useNoiseSuppressionChoices();
 
 	return (
 		<Box
@@ -23,9 +27,9 @@ const PreflightDevices = () => {
 			// forcing three cut every device name down to nothing.
 			style={{ gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))' }}
 		>
-			{capabilities.mic && <PreflightDeviceMenu kind='audioinput' label={t('Microphone')} />}
+			{capabilities.mic && <PreflightDeviceMenu kind='audioinput' label={t('Microphone')} choices={noiseSuppression} />}
 			<PreflightDeviceMenu kind='audiooutput' label={t('Speaker')} />
-			{capabilities.cam && <PreflightDeviceMenu kind='videoinput' label={t('Camera')} choices={[videoQuality]} />}
+			{capabilities.cam && <PreflightDeviceMenu kind='videoinput' label={t('Camera')} choices={[videoQuality, ...backgroundEffects]} />}
 		</Box>
 	);
 };

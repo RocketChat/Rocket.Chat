@@ -13,12 +13,13 @@ The call is mounted by the conference window's composition root, around the wind
 - The window looks up the component registered for the call's `providerName` (`embeddedCallProviders`, filled at
   client startup) and wraps itself in it. Core code never names LiveKit; the registration line does.
 - The LiveKit component connects once the window has joined, and provides the call contexts from
-  `@rocket.chat/ui-conference` (call state, call actions, devices, diagnostics). The window's
+  `@rocket.chat/ui-conference` (call state, call actions, devices, media processing, diagnostics). The window's
   header, stage and controls read those contexts directly: no portal, no state pushed back up to a parent.
 - The tree is the same before and after the join, so connecting never remounts the window.
 
 The LiveKit client is its own package, `@rocket.chat/ui-livekit`, loaded lazily so the SDK stays out of the bundle for
-every other provider.
+every other provider. The track processors (blur, virtual background, RNNoise) are React-free, in
+`@rocket.chat/media-processors`, and receive their asset URLs from the app.
 
 Because the call only renders in the window, the server registers the provider only when LiveKit is fully configured
 **and** `VideoConf_Conference_Window_Enabled` is on. A provider in the registry is one the camera button offers, and
@@ -59,8 +60,42 @@ Changes made during a call are written back to the same record, so the next pref
 - **The room is asked which device is in use.** The app's device store is only written from inside a call, so on arrival
   it answers with the first device the browser enumerated. The call listens for `ActiveDeviceChanged` and corrects the
   store from `getActiveDevice`, which is the device obtained rather than the one requested.
-- **The preflight camera is a LiveKit track**, opened at the same capture preset the call will use. What the call
-  sends can be a smaller simulcast layer than that.
+- **The preflight camera is a LiveKit track**, opened at the same capture preset the call will use, so blur and
+  resolution are previewed as the call will send them. What the call sends can be a smaller simulcast layer than that.
+
+## Background blur
+
+The camera's own blur is used where the platform exposes a controllable `backgroundBlur` capability. Otherwise ours
+runs: MediaPipe segmentation in a worker and a WebGL2 compositor, as a LiveKit `TrackProcessor`.
+
+- **Ask `getCapabilities()`, never `applyConstraints`.** An unknown non-required constraint is dropped per spec, so
+  `applyConstraints({ backgroundBlur: true })` resolves on browsers that cannot blur.
+- **Why not `@livekit/track-processors`:** it composites the background at a fixed quarter of the frame size and
+  stretches it back, which is the blockiness users reported, and no option changes the factor. Ours refines the matte
+  against the image, blurs colour and coverage together (no halo), and keeps the subject at full resolution.
+- **Segment a model-sized copy of the frame.** Reading back a frame-sized mask costs ~60ms per frame at 1080p; the model
+  resizes its input anyway.
+- **Two models**, offered as *Quality* (`selfie_multiclass_256x256`, separate hair class) and *Performance*
+  (`selfie_segmenter_landscape`, 65× smaller). Which confidence is the person depends on the model's labels.
+- Only the participant at the camera is kept; people walking behind them are dropped.
+- Strengths are fractions of frame height, so they look the same at every resolution.
+- Sustained frame pressure lowers only the background and matte resolutions. Figures are in **Connection info**.
+
+The MediaPipe runtime is served under `/video-conference/assets/` from the installed `@mediapipe/tasks-vision` package,
+so it always matches the version the client code expects, and URLs follow the workspace's root path. The two segmentation models come from `@rocket.chat/mediapipe-models` and are served the same way: clients never reach
+Google, and airgapped workspaces blur out of the box. The package keeps the models out of the repository and pins them
+by SHA-256.
+
+## Noise suppression
+
+Two filters, offered as *Off / Basic / Good*:
+
+- **Basic** is the browser's own `noiseSuppression` constraint. Switching it restarts the microphone track.
+- **Good** is RNNoise in an AudioWorklet, served by the server from `@sapphi-red/web-noise-suppressor`. It removes
+  typing and background noise the browser's filter leaves in, and switching it rewires the graph without a gap.
+
+Krisp is not offered: it is licensed through LiveKit Cloud, and on a self-hosted server it attaches, starts and then
+fails its entitlement check, filtering nothing.
 
 ## Send resolution
 
@@ -97,4 +132,3 @@ The preflight's **Ring participants** switch lets the caller decide, and is reme
 - The resolution picker restarts the camera with a capture preset, which is a hint to the camera rather than a cap on
   the encoder. Publish options would be the right tool.
 - No e2e coverage for the native flow yet.
-- Background blur and noise suppression ship in a follow-up.

@@ -1928,6 +1928,483 @@ exports[`call stories renders CallDiagnosticsPanel WaitingForData without crashi
 </body>
 `;
 
+exports[`call stories renders CallDiagnosticsPanel WithBackgroundBlur without crashing 1`] = `
+<body>
+  <div>
+    <div
+      class="rcx-box rcx-box--full rcx-css-owlgau"
+    >
+      <div
+        style="display: flex; flex-direction: column; width: 22.5rem; height: 100dvh;"
+      >
+        <div
+          class="rcx-box rcx-box--full rcx-css-lm07yg"
+        >
+          <div
+            class="rcx-box rcx-box--full rcx-css-1bdyjik rcx-css-1l4fxfb"
+          >
+            <h5
+              class="rcx-box rcx-box--full rcx-css-1spko5i"
+              id="contextualbarTitle"
+            >
+              Connection info
+            </h5>
+            <div
+              class="rcx-button-group rcx-button-group--align-start"
+              role="group"
+            >
+              <button
+                aria-label="Close"
+                class="rcx-box rcx-box--full rcx-button--small-square rcx-button--square rcx-button--icon rcx-button rcx-css-ue04py"
+                data-qa="ContextualbarActionClose"
+                type="button"
+              >
+                <i
+                  aria-hidden="true"
+                  class="rcx-box rcx-box--full rcx-icon--name-cross rcx-icon rcx-css-4pvxx3"
+                >
+                  
+                </i>
+              </button>
+            </div>
+          </div>
+        </div>
+        <div
+          class="rcx-box rcx-box--full rcx-css-1oqpq9y"
+        >
+          <div
+            class="rcx-box rcx-box--full rcx-css-1huv9ou"
+          >
+            <div
+              class="rcx-box rcx-box--full rcx-css-sniqno rcx-css-e5wsng"
+            >
+              Connection
+            </div>
+            <div
+              class="rcx-box rcx-box--full rcx-css-a7w78v"
+            >
+              <div
+                class="rcx-box rcx-box--full rcx-css-hza90u"
+              >
+                Server
+              </div>
+              <div
+                class="rcx-box rcx-box--full rcx-css-bu561y rcx-css-10hqhn7"
+              >
+                livekit.example.com
+              </div>
+            </div>
+            <div
+              class="rcx-box rcx-box--full rcx-css-a7w78v"
+            >
+              <div
+                class="rcx-box rcx-box--full rcx-css-hza90u"
+              >
+                Status
+              </div>
+              <div
+                class="rcx-box rcx-box--full rcx-css-bu561y rcx-css-10hqhn7"
+              >
+                connected
+              </div>
+            </div>
+            <div
+              class="rcx-box rcx-box--full rcx-css-a7w78v"
+            >
+              <div
+                class="rcx-box rcx-box--full rcx-css-hza90u"
+              >
+                Quality
+              </div>
+              <div
+                class="rcx-box rcx-box--full rcx-css-bu561y rcx-css-10hqhn7"
+              >
+                <div
+                  class="rcx-box rcx-box--full rcx-css-9jnddr"
+                >
+                  <span
+                    class="rcx-box rcx-box--full rcx-css-7i96qu rcx-css-1rtu0k9"
+                  />
+                  poor
+                </div>
+              </div>
+            </div>
+            <div
+              class="rcx-box rcx-box--full rcx-css-a7w78v"
+            >
+              <div
+                class="rcx-box rcx-box--full rcx-css-hza90u"
+              >
+                Latency
+              </div>
+              <div
+                class="rcx-box rcx-box--full rcx-css-bu561y rcx-css-10hqhn7"
+              >
+                42 ms
+              </div>
+            </div>
+          </div>
+          <hr
+            class="rcx-box rcx-box--full rcx-divider"
+          />
+          <div
+            class="rcx-box rcx-box--full rcx-css-1huv9ou"
+          >
+            <div
+              class="rcx-box rcx-box--full rcx-css-sniqno rcx-css-e5wsng"
+            >
+              Bandwidth
+            </div>
+            <div
+              class="rcx-box rcx-box--full rcx-css-a7w78v"
+            >
+              <div
+                class="rcx-box rcx-box--full rcx-css-hza90u"
+              >
+                Upload
+              </div>
+              <div
+                class="rcx-box rcx-box--full rcx-css-bu561y rcx-css-10hqhn7"
+              >
+                1480 kbps
+              </div>
+            </div>
+            <div
+              class="rcx-box rcx-box--full rcx-css-a7w78v"
+            >
+              <div
+                class="rcx-box rcx-box--full rcx-css-hza90u"
+              >
+                Download
+              </div>
+              <div
+                class="rcx-box rcx-box--full rcx-css-bu561y rcx-css-10hqhn7"
+              >
+                3210 kbps
+              </div>
+            </div>
+            <div
+              class="rcx-box rcx-box--full rcx-css-a7w78v"
+            >
+              <div
+                class="rcx-box rcx-box--full rcx-css-hza90u"
+              >
+                Total sent
+              </div>
+              <div
+                class="rcx-box rcx-box--full rcx-css-bu561y rcx-css-10hqhn7"
+              >
+                17.5 MB
+              </div>
+            </div>
+            <div
+              class="rcx-box rcx-box--full rcx-css-a7w78v"
+            >
+              <div
+                class="rcx-box rcx-box--full rcx-css-hza90u"
+              >
+                Total received
+              </div>
+              <div
+                class="rcx-box rcx-box--full rcx-css-bu561y rcx-css-10hqhn7"
+              >
+                40.0 MB
+              </div>
+            </div>
+          </div>
+          <hr
+            class="rcx-box rcx-box--full rcx-divider"
+          />
+          <div
+            class="rcx-box rcx-box--full rcx-css-1huv9ou"
+          >
+            <div
+              class="rcx-box rcx-box--full rcx-css-sniqno rcx-css-e5wsng"
+            >
+              Video sending
+            </div>
+            <div
+              class="rcx-box rcx-box--full rcx-css-a7w78v"
+            >
+              <div
+                class="rcx-box rcx-box--full rcx-css-hza90u"
+              >
+                Resolution
+              </div>
+              <div
+                class="rcx-box rcx-box--full rcx-css-bu561y rcx-css-10hqhn7"
+              >
+                1280x720
+              </div>
+            </div>
+            <div
+              class="rcx-box rcx-box--full rcx-css-a7w78v"
+            >
+              <div
+                class="rcx-box rcx-box--full rcx-css-hza90u"
+              >
+                Codec
+              </div>
+              <div
+                class="rcx-box rcx-box--full rcx-css-bu561y rcx-css-10hqhn7"
+              >
+                VP8
+              </div>
+            </div>
+            <div
+              class="rcx-box rcx-box--full rcx-css-a7w78v"
+            >
+              <div
+                class="rcx-box rcx-box--full rcx-css-hza90u"
+              >
+                FPS
+              </div>
+              <div
+                class="rcx-box rcx-box--full rcx-css-bu561y rcx-css-10hqhn7"
+              >
+                30
+              </div>
+            </div>
+            <div
+              class="rcx-box rcx-box--full rcx-css-a7w78v"
+            >
+              <div
+                class="rcx-box rcx-box--full rcx-css-hza90u"
+              >
+                Limited by
+              </div>
+              <div
+                class="rcx-box rcx-box--full rcx-css-bu561y rcx-css-10hqhn7"
+              >
+                cpu
+              </div>
+            </div>
+          </div>
+          <hr
+            class="rcx-box rcx-box--full rcx-divider"
+          />
+          <div
+            class="rcx-box rcx-box--full rcx-css-1huv9ou"
+          >
+            <div
+              class="rcx-box rcx-box--full rcx-css-sniqno rcx-css-e5wsng"
+            >
+              Background blur
+            </div>
+            <div
+              class="rcx-box rcx-box--full rcx-css-a7w78v"
+            >
+              <div
+                class="rcx-box rcx-box--full rcx-css-hza90u"
+              >
+                Processor FPS
+              </div>
+              <div
+                class="rcx-box rcx-box--full rcx-css-bu561y rcx-css-10hqhn7"
+              >
+                29.7
+              </div>
+            </div>
+            <div
+              class="rcx-box rcx-box--full rcx-css-a7w78v"
+            >
+              <div
+                class="rcx-box rcx-box--full rcx-css-hza90u"
+              >
+                Frame work
+              </div>
+              <div
+                class="rcx-box rcx-box--full rcx-css-bu561y rcx-css-10hqhn7"
+              >
+                6.2 ms
+              </div>
+            </div>
+            <div
+              class="rcx-box rcx-box--full rcx-css-a7w78v"
+            >
+              <div
+                class="rcx-box rcx-box--full rcx-css-hza90u"
+              >
+                Compositor
+              </div>
+              <div
+                class="rcx-box rcx-box--full rcx-css-bu561y rcx-css-10hqhn7"
+              >
+                1.4 ms
+              </div>
+            </div>
+            <div
+              class="rcx-box rcx-box--full rcx-css-a7w78v"
+            >
+              <div
+                class="rcx-box rcx-box--full rcx-css-hza90u"
+              >
+                Segmentation
+              </div>
+              <div
+                class="rcx-box rcx-box--full rcx-css-bu561y rcx-css-10hqhn7"
+              >
+                4.1 ms
+              </div>
+            </div>
+            <div
+              class="rcx-box rcx-box--full rcx-css-a7w78v"
+            >
+              <div
+                class="rcx-box rcx-box--full rcx-css-hza90u"
+              >
+                Mask interval
+              </div>
+              <div
+                class="rcx-box rcx-box--full rcx-css-bu561y rcx-css-10hqhn7"
+              >
+                66 ms
+              </div>
+            </div>
+            <div
+              class="rcx-box rcx-box--full rcx-css-a7w78v"
+            >
+              <div
+                class="rcx-box rcx-box--full rcx-css-hza90u"
+              >
+                Adaptive level
+              </div>
+              <div
+                class="rcx-box rcx-box--full rcx-css-bu561y rcx-css-10hqhn7"
+              >
+                1
+              </div>
+            </div>
+          </div>
+          <hr
+            class="rcx-box rcx-box--full rcx-divider"
+          />
+          <div
+            class="rcx-box rcx-box--full rcx-css-1huv9ou"
+          >
+            <div
+              class="rcx-box rcx-box--full rcx-css-sniqno rcx-css-e5wsng"
+            >
+              Receiving
+               (
+              1
+              )
+            </div>
+            <div
+              class="rcx-box rcx-box--full rcx-css-bc2u2h"
+            >
+              <div
+                class="rcx-box rcx-box--full rcx-css-1gq80sf"
+              >
+                Ada Lovelace
+              </div>
+              <div
+                class="rcx-box rcx-box--full rcx-css-a7w78v"
+              >
+                <div
+                  class="rcx-box rcx-box--full rcx-css-hza90u"
+                >
+                  Resolution
+                </div>
+                <div
+                  class="rcx-box rcx-box--full rcx-css-bu561y rcx-css-10hqhn7"
+                >
+                  1280x720
+                </div>
+              </div>
+              <div
+                class="rcx-box rcx-box--full rcx-css-a7w78v"
+              >
+                <div
+                  class="rcx-box rcx-box--full rcx-css-hza90u"
+                >
+                  Codec
+                </div>
+                <div
+                  class="rcx-box rcx-box--full rcx-css-bu561y rcx-css-10hqhn7"
+                >
+                  VP8
+                </div>
+              </div>
+              <div
+                class="rcx-box rcx-box--full rcx-css-a7w78v"
+              >
+                <div
+                  class="rcx-box rcx-box--full rcx-css-hza90u"
+                >
+                  FPS
+                </div>
+                <div
+                  class="rcx-box rcx-box--full rcx-css-bu561y rcx-css-10hqhn7"
+                >
+                  30
+                </div>
+              </div>
+              <div
+                class="rcx-box rcx-box--full rcx-css-a7w78v"
+              >
+                <div
+                  class="rcx-box rcx-box--full rcx-css-hza90u"
+                >
+                  Video bitrate
+                </div>
+                <div
+                  class="rcx-box rcx-box--full rcx-css-bu561y rcx-css-10hqhn7"
+                >
+                  1210 kbps
+                </div>
+              </div>
+              <div
+                class="rcx-box rcx-box--full rcx-css-a7w78v"
+              >
+                <div
+                  class="rcx-box rcx-box--full rcx-css-hza90u"
+                >
+                  Audio bitrate
+                </div>
+                <div
+                  class="rcx-box rcx-box--full rcx-css-bu561y rcx-css-10hqhn7"
+                >
+                  30 kbps
+                </div>
+              </div>
+              <div
+                class="rcx-box rcx-box--full rcx-css-a7w78v"
+              >
+                <div
+                  class="rcx-box rcx-box--full rcx-css-hza90u"
+                >
+                  Packets lost
+                </div>
+                <div
+                  class="rcx-box rcx-box--full rcx-css-bu561y rcx-css-10hqhn7"
+                >
+                  3
+                </div>
+              </div>
+              <div
+                class="rcx-box rcx-box--full rcx-css-a7w78v"
+              >
+                <div
+                  class="rcx-box rcx-box--full rcx-css-hza90u"
+                >
+                  Jitter
+                </div>
+                <div
+                  class="rcx-box rcx-box--full rcx-css-bu561y rcx-css-10hqhn7"
+                >
+                  4 ms
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</body>
+`;
+
 exports[`call stories renders CallHeader Named without crashing 1`] = `
 <body>
   <div>
@@ -4195,6 +4672,237 @@ exports[`call stories renders CameraPicker Open without crashing 1`] = `
               </label>
             </div>
           </div>
+          <hr
+            class="rcx-box rcx-box--full rcx-divider"
+            role="separator"
+          />
+          <div
+            role="presentation"
+          >
+            <div
+              class="rcx-option__title"
+              id="react-aria-_r_38_"
+              role="presentation"
+            >
+              Background effects
+            </div>
+            <div
+              aria-labelledby="react-aria-_r_38_"
+              class="rcx-box rcx-box--full rcx-css-8q5c1d"
+              role="group"
+            >
+              <label
+                aria-checked="false"
+                aria-disabled="false"
+                aria-selected="false"
+                class="rcx-option"
+                data-key="choice:1:level-none"
+                id="react-aria-_r_3c_"
+                role="menuitemradio"
+                tabindex="-1"
+              >
+                <div
+                  class="rcx-option__wrapper"
+                >
+                  <div
+                    class="rcx-option__content"
+                  >
+                    <div
+                      class="rcx-box rcx-box--full rcx-css-1qw20w4"
+                      title="None"
+                    >
+                      <span
+                        class="rcx-box rcx-box--full rcx-css-1te28na"
+                      >
+                        None
+                      </span>
+                    </div>
+                  </div>
+                  <div
+                    class="rcx-option__input"
+                  >
+                    <label
+                      class="rcx-box rcx-box--full rcx-radio-button"
+                    >
+                      <input
+                        checked=""
+                        class="rcx-box rcx-box--full rcx-radio-button__input"
+                        type="radio"
+                      />
+                      <i
+                        aria-hidden="true"
+                        class="rcx-box rcx-box--full rcx-radio-button__fake"
+                      />
+                    </label>
+                  </div>
+                </div>
+              </label>
+              <label
+                aria-checked="false"
+                aria-disabled="false"
+                aria-selected="false"
+                class="rcx-option"
+                data-key="choice:1:level-light"
+                id="react-aria-_r_3g_"
+                role="menuitemradio"
+                tabindex="-1"
+              >
+                <div
+                  class="rcx-option__wrapper"
+                >
+                  <div
+                    class="rcx-option__content"
+                  >
+                    <div
+                      class="rcx-box rcx-box--full rcx-css-1qw20w4"
+                      title="Light"
+                    >
+                      <span
+                        class="rcx-box rcx-box--full rcx-css-1te28na"
+                      >
+                        Light
+                      </span>
+                    </div>
+                  </div>
+                  <div
+                    class="rcx-option__input"
+                  >
+                    <label
+                      class="rcx-box rcx-box--full rcx-radio-button"
+                    >
+                      <input
+                        class="rcx-box rcx-box--full rcx-radio-button__input"
+                        type="radio"
+                      />
+                      <i
+                        aria-hidden="true"
+                        class="rcx-box rcx-box--full rcx-radio-button__fake"
+                      />
+                    </label>
+                  </div>
+                </div>
+              </label>
+              <label
+                aria-checked="false"
+                aria-disabled="false"
+                aria-selected="false"
+                class="rcx-option"
+                data-key="choice:1:level-medium"
+                id="react-aria-_r_3k_"
+                role="menuitemradio"
+                tabindex="-1"
+              >
+                <div
+                  class="rcx-option__wrapper"
+                >
+                  <div
+                    class="rcx-option__content"
+                  >
+                    <div
+                      class="rcx-box rcx-box--full rcx-css-1qw20w4"
+                      title="Medium"
+                    >
+                      <span
+                        class="rcx-box rcx-box--full rcx-css-1te28na"
+                      >
+                        Medium
+                      </span>
+                    </div>
+                  </div>
+                  <div
+                    class="rcx-option__input"
+                  >
+                    <label
+                      class="rcx-box rcx-box--full rcx-radio-button"
+                    >
+                      <input
+                        class="rcx-box rcx-box--full rcx-radio-button__input"
+                        type="radio"
+                      />
+                      <i
+                        aria-hidden="true"
+                        class="rcx-box rcx-box--full rcx-radio-button__fake"
+                      />
+                    </label>
+                  </div>
+                </div>
+              </label>
+              <label
+                aria-checked="false"
+                aria-disabled="false"
+                aria-selected="false"
+                class="rcx-option"
+                data-key="choice:1:level-strong"
+                id="react-aria-_r_3o_"
+                role="menuitemradio"
+                tabindex="-1"
+              >
+                <div
+                  class="rcx-option__wrapper"
+                >
+                  <div
+                    class="rcx-option__content"
+                  >
+                    <div
+                      class="rcx-box rcx-box--full rcx-css-1qw20w4"
+                      title="Strong"
+                    >
+                      <span
+                        class="rcx-box rcx-box--full rcx-css-1te28na"
+                      >
+                        Strong
+                      </span>
+                    </div>
+                  </div>
+                  <div
+                    class="rcx-option__input"
+                  >
+                    <label
+                      class="rcx-box rcx-box--full rcx-radio-button"
+                    >
+                      <input
+                        class="rcx-box rcx-box--full rcx-radio-button__input"
+                        type="radio"
+                      />
+                      <i
+                        aria-hidden="true"
+                        class="rcx-box rcx-box--full rcx-radio-button__fake"
+                      />
+                    </label>
+                  </div>
+                </div>
+              </label>
+              <label
+                aria-checked="false"
+                aria-disabled="false"
+                aria-selected="false"
+                class="rcx-option"
+                data-key="choice:1:image-choose"
+                id="react-aria-_r_3s_"
+                role="menuitemradio"
+                tabindex="-1"
+              >
+                <div
+                  class="rcx-option__wrapper"
+                >
+                  <div
+                    class="rcx-option__content"
+                  >
+                    <div
+                      class="rcx-box rcx-box--full rcx-css-1qw20w4"
+                      title="Choose background image…"
+                    >
+                      <span
+                        class="rcx-box rcx-box--full rcx-css-1te28na"
+                      >
+                        Choose background image…
+                      </span>
+                    </div>
+                  </div>
+                </div>
+              </label>
+            </div>
+          </div>
         </div>
       </div>
     </div>
@@ -4206,7 +4914,7 @@ exports[`call stories renders CameraPicker Open without crashing 1`] = `
     >
       <button
         aria-label="Dismiss"
-        id="react-aria-_r_38_"
+        id="react-aria-_r_3t_"
         style="width: 1px; height: 1px;"
         tabindex="-1"
       />

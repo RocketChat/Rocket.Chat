@@ -1,8 +1,9 @@
 import { DeviceSelectionProvider } from '@rocket.chat/ui-media';
 import type { Decorator } from '@storybook/react';
 
-import { buildDeviceSelection, buildVideoQuality, fakeDevices } from './callFixtures';
+import { buildDeviceSelection, buildMediaProcessing, buildVideoQuality, fakeDevices } from './callFixtures';
 import { embeddedCapabilities } from './storyFixtures';
+import { CallMediaProcessingProvider } from '../call/context';
 import { VideoQualityProvider } from '../devices/VideoQualityContext';
 import type { PreviewMediaState } from '../preflight/PreviewMediaContext';
 import { PreviewMediaContextProvider } from '../preflight/PreviewMediaContext';
@@ -23,7 +24,9 @@ export const withPreviewMedia =
 		<PreviewMediaContextProvider value={{ capabilities, preview: { stream: null, devices } }}>
 			<DeviceSelectionProvider value={buildDeviceSelection({ devices, selectedIds })}>
 				<VideoQualityProvider value={buildVideoQuality({ height: undefined })}>
-					<Story />
+					<CallMediaProcessingProvider value={buildMediaProcessing()}>
+						<Story />
+					</CallMediaProcessingProvider>
 				</VideoQualityProvider>
 			</DeviceSelectionProvider>
 		</PreviewMediaContextProvider>
