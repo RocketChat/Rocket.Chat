@@ -1550,6 +1550,7 @@
   "Contact_Center": "Contact center",
   "Contact_Chat_History": "Contact chat history",
   "Contact_created": "Contact created",
+  "Contact_delete_failed": "Failed to delete contact",
   "Contact_deleted": "Contact deleted",
   "Contact_detail": "Contact detail",
   "Contact_email": "Contact email",

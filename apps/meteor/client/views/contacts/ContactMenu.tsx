@@ -33,7 +33,7 @@ const ContactMenu = ({ contact, onEdit, onDeleted }: ContactMenuProps) => {
 			onDeleted?.();
 		},
 		onError: async (error) =>
-			dispatchToastMessage({ type: 'error', message: await getEndpointErrorMessage(error, 'Failed_to_save_settings') }),
+			dispatchToastMessage({ type: 'error', message: await getEndpointErrorMessage(error, 'Contact_delete_failed') }),
 		onSettled: async () => {
 			await queryClient.invalidateQueries({ queryKey: ['contacts', 'list'] });
 
@@ -57,22 +57,26 @@ const ContactMenu = ({ contact, onEdit, onDeleted }: ContactMenuProps) => {
 	const reachItems: GenericMenuItemProps[] = [
 		...contact.phones.map(({ raw, label }, index) => {
 			const resolved = labelOf(label);
+			const content = resolved ? `${t('Call')} (${resolved}) ${raw}` : `${t('Call')} ${raw}`;
 
 			return {
 				id: `call-${index}`,
 				icon: 'phone' as const,
-				content: resolved ? `${t('Call')} (${resolved}) ${raw}` : `${t('Call')} ${raw}`,
+				content,
+				textValue: content,
 				disabled: !canCall,
 				onClick: () => call(raw),
 			};
 		}),
 		...contact.emails.map(({ address, label }, index) => {
 			const resolved = labelOf(label);
+			const content = resolved ? `${t('Email')} (${resolved}) ${address}` : `${t('Email')} ${address}`;
 
 			return {
 				id: `email-${index}`,
 				icon: 'mail' as const,
-				content: resolved ? `${t('Email')} (${resolved}) ${address}` : `${t('Email')} ${address}`,
+				content,
+				textValue: content,
 				onClick: () => window.open(`mailto:${address}`, '_self'),
 			};
 		}),
@@ -83,8 +87,15 @@ const ContactMenu = ({ contact, onEdit, onDeleted }: ContactMenuProps) => {
 	if (contact.source === 'local') {
 		sections.push({
 			items: [
-				{ id: 'edit', icon: 'edit', content: t('Edit'), onClick: onEdit },
-				{ id: 'delete', icon: 'trash', iconColor: 'danger', content: <Box color='danger'>{t('Delete')}</Box>, onClick: handleDelete },
+				{ id: 'edit', icon: 'edit', content: t('Edit'), textValue: t('Edit'), onClick: onEdit },
+				{
+					id: 'delete',
+					icon: 'trash',
+					iconColor: 'danger',
+					content: <Box color='danger'>{t('Delete')}</Box>,
+					textValue: t('Delete'),
+					onClick: handleDelete,
+				},
 			],
 		});
 	}
