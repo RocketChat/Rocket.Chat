@@ -135,9 +135,8 @@ describe('Invite authorization and token protection', () => {
 	});
 
 	it('keeps a migrated URL token valid until its recorded expiry', async () => {
-		invites.findOneByInviteToken
-			.withArgs('old-id')
-			.resolves({ ...invite, inviteToken: 'old-id', legacy: true, expires: new Date(Date.now() + 1000) });
+		const expires = new Date(Date.now() + 24 * 60 * 60 * 1000);
+		invites.findOneByInviteToken.withArgs('old-id').resolves({ ...invite, inviteToken: 'old-id', legacy: true, expires });
 		const result = await validateInviteToken('old-id');
 		expect(result.inviteData._id).to.equal(invite._id);
 	});

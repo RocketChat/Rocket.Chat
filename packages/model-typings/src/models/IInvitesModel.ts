@@ -9,5 +9,5 @@ export interface IInvitesModel extends IBaseModel<IInvite> {
 	increaseUsageById(_id: string, uses: number): Promise<UpdateResult>;
 	countUses(): Promise<number>;
 	findInvitesForManagement(): FindCursor<IInviteSummary>;
-	migrateLegacyInvite(_id: string, expiresAt: Date, session: ClientSession): Promise<void>;
+	migrateLegacyInvites(ids: string[], expiresAt: Date, session: ClientSession): Promise<void>;
 }

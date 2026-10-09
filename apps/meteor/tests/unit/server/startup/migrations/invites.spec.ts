@@ -14,7 +14,8 @@ describe('Invite upgrade migrations', () => {
 	let pending: Map<string, { expires?: Date }>;
 	let migrated: Map<string, Date>;
 	let permissionRoles: Map<string, string[]>;
-	const migrateLegacyInvite = sinon.stub();
+	const migrateLegacyInvites = sinon.stub();
+	const withTransaction = sinon.stub();
 	const createIndex = sinon.stub();
 
 	beforeEach(() => {
@@ -22,11 +23,15 @@ describe('Invite upgrade migrations', () => {
 		pending = new Map([['old-id', {}]]);
 		migrated = new Map();
 		permissionRoles = new Map([['create-invite-links', ['admin', 'owner', 'moderator', 'custom-creator']]]);
-		migrateLegacyInvite.reset();
+		migrateLegacyInvites.reset();
+		withTransaction.reset();
+		withTransaction.callsFake(async (transaction: () => Promise<void>) => transaction());
 		createIndex.reset();
-		migrateLegacyInvite.callsFake(async (_id: string, expiresAt: Date) => {
-			migrated.set(_id, pending.get(_id)?.expires || expiresAt);
-			pending.delete(_id);
+		migrateLegacyInvites.callsFake(async (ids: string[], expiresAt: Date) => {
+			for (const _id of ids) {
+				migrated.set(_id, pending.get(_id)?.expires || expiresAt);
+				pending.delete(_id);
+			}
 		});
 		const dependencies = {
 			'@rocket.chat/models': {
@@ -49,7 +54,7 @@ describe('Invite upgrade migrations', () => {
 							toArray: async () => [...pending.keys()].slice(0, options.limit).map((_id) => map({ _id })),
 						}),
 					}),
-					migrateLegacyInvite,
+					migrateLegacyInvites,
 					col: { createIndex },
 				},
 			},
@@ -57,7 +62,7 @@ describe('Invite upgrade migrations', () => {
 				client: {
 					withSession: async (callback: (session: unknown) => Promise<void>) =>
 						callback({
-							withTransaction: async (transaction: () => Promise<void>) => transaction(),
+							withTransaction,
 						}),
 				},
 			},
@@ -98,29 +103,33 @@ describe('Invite upgrade migrations', () => {
 			clock.tick(24 * 60 * 60 * 1000);
 			await tokenMigration.up();
 			expect(deadline).to.deep.equal(new Date('2027-01-07T00:00:00Z'));
-			expect(migrateLegacyInvite.callCount).to.equal(1);
+			expect(migrateLegacyInvites.callCount).to.equal(1);
 		} finally {
 			clock.restore();
 		}
 	});
 
-	it('processes workspaces with more than one batch of legacy invites', async () => {
+	it('processes multiple fetch batches in bounded transaction chunks', async () => {
 		pending = new Map(Array.from({ length: 1001 }, (_, index) => [`old-${index}`, {}]));
 		await tokenMigration.up();
 		expect(pending.size).to.equal(0);
 		expect(migrated.size).to.equal(1001);
+		expect(withTransaction.callCount).to.equal(11);
+		expect(migrateLegacyInvites.getCalls().map(({ args }) => args[0].length)).to.deep.equal([...Array<number>(10).fill(100), 1]);
 		expect(createIndex.calledOnce).to.equal(true);
 	});
 
 	it('resumes after interruption without extending the cutoff for remaining invites', async () => {
-		pending.set('second-id', {});
-		migrateLegacyInvite.onSecondCall().rejects(new Error('interrupted'));
+		pending = new Map(Array.from({ length: 101 }, (_, index) => [`old-${index}`, {}]));
+		migrateLegacyInvites.onSecondCall().rejects(new Error('interrupted'));
 		await expect(tokenMigration.up()).to.be.rejectedWith('interrupted');
 		const originalDeadline = deadline;
 		expect(pending.size).to.equal(1);
+		expect(migrated.size).to.equal(100);
 		expect(createIndex.called).to.equal(false);
 		await tokenMigration.up();
-		expect(migrated.get('second-id')).to.equal(originalDeadline);
+		expect(migrated.get('old-100')).to.equal(originalDeadline);
 		expect(pending.size).to.equal(0);
+		expect(migrated.size).to.equal(101);
 	});
 });

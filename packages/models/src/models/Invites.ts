@@ -69,27 +69,27 @@ export class InvitesRaw extends BaseRaw<IInvite> implements IInvitesModel {
 		);
 	}
 
-	async migrateLegacyInvite(_id: string, expiresAt: Date, session: ClientSession): Promise<void> {
+	async migrateLegacyInvites(ids: string[], expiresAt: Date, session: ClientSession): Promise<void> {
 		if (!session.inTransaction()) {
 			throw new Error('Legacy invite migration requires a transaction');
 		}
 
-		const invite = await this.col.findOne({ _id, inviteToken: { $exists: false } }, { session });
-		if (!invite) {
+		const invites = await this.col.find({ _id: { $in: ids }, inviteToken: { $exists: false } }, { session }).toArray();
+		if (!invites.length) {
 			return;
 		}
 
-		await this.col.insertOne(
-			{
+		await this.col.insertMany(
+			invites.map((invite) => ({
 				...invite,
 				_id: crypto.randomUUID(),
 				inviteToken: invite._id,
 				legacy: true,
 				expires: invite.expires ?? expiresAt,
 				url: '',
-			},
+			})),
 			{ session },
 		);
-		await this.col.deleteOne({ _id: invite._id }, { session });
+		await this.col.deleteMany({ _id: { $in: invites.map(({ _id }) => _id) }, inviteToken: { $exists: false } }, { session });
 	}
 }

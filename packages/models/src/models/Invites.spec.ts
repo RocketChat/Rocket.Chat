@@ -1,5 +1,5 @@
 import type { IInvite } from '@rocket.chat/core-typings';
-import { MongoClient } from 'mongodb';
+import { MongoClient, MongoServerError } from 'mongodb';
 import type { ClientSession, Db } from 'mongodb';
 
 import { InvitesRaw } from './Invites';
@@ -23,7 +23,7 @@ describe('InvitesRaw', () => {
 	});
 
 	it('requires a transaction before changing a legacy record ID', async () => {
-		await expect(model.migrateLegacyInvite('old-id', new Date(), { inTransaction: () => false } as ClientSession)).rejects.toThrow(
+		await expect(model.migrateLegacyInvites(['old-id'], new Date(), { inTransaction: () => false } as ClientSession)).rejects.toThrow(
 			'requires a transaction',
 		);
 		expect(findOne).not.toHaveBeenCalled();
@@ -71,7 +71,7 @@ describeWithMongo('InvitesRaw migration with MongoDB transactions', () => {
 
 	const migrate = async (expiresAt = deadline) =>
 		client.withSession(async (session) => {
-			await session.withTransaction(async () => model.migrateLegacyInvite(legacyInvite._id, expiresAt, session));
+			await session.withTransaction(async () => model.migrateLegacyInvites([legacyInvite._id], expiresAt, session));
 		});
 
 	it('preserves old URLs and limits while separating their tokens from the listed record IDs', async () => {
@@ -111,11 +111,92 @@ describeWithMongo('InvitesRaw migration with MongoDB transactions', () => {
 		expect(await model.col.countDocuments()).toBe(1);
 	});
 
+	it('migrates 100 invites using one bulk read, insert, and removal while preserving every record', async () => {
+		const originals = Array.from({ length: 100 }, (_, index) => ({
+			...legacyInvite,
+			_id: index === 0 ? legacyInvite._id : `Old${index}`,
+			expires: index % 2 ? new Date('2026-10-20') : null,
+			uses: index % 5,
+		}));
+		await model.col.deleteMany({});
+		await model.col.insertMany(originals as IInvite[]);
+		const ids = originals.map(({ _id }) => _id);
+		const read = jest.spyOn(model.col, 'find');
+		const insert = jest.spyOn(model.col, 'insertMany');
+		const remove = jest.spyOn(model.col, 'deleteMany');
+		try {
+			await client.withSession(async (session) => {
+				await session.withTransaction(async () => model.migrateLegacyInvites(ids, deadline, session));
+			});
+			expect(read).toHaveBeenCalledTimes(1);
+			expect(insert).toHaveBeenCalledTimes(1);
+			expect(remove).toHaveBeenCalledTimes(1);
+		} finally {
+			read.mockRestore();
+			insert.mockRestore();
+			remove.mockRestore();
+		}
+
+		const migrated = await model.col.find({}).toArray();
+		expect(migrated).toHaveLength(originals.length);
+		const byToken = new Map(migrated.map((invite) => [invite.inviteToken, invite]));
+		for (const original of originals) {
+			const replacement = byToken.get(original._id);
+			expect(replacement).toMatchObject({
+				...original,
+				_id: expect.any(String),
+				inviteToken: original._id,
+				legacy: true,
+				expires: original.expires ?? deadline,
+				url: '',
+			});
+			expect(replacement?._id).not.toBe(original._id);
+		}
+	});
+
+	it('rolls back the whole chunk if a replacement conflicts with an existing token', async () => {
+		const second = { ...legacyInvite, _id: 'Bad456' };
+		const strong = { ...legacyInvite, _id: 'strong-id', inviteToken: second._id };
+		await model.col.insertMany([second as IInvite, strong]);
+		await expect(
+			client.withSession(async (session) => {
+				await session.withTransaction(async () => model.migrateLegacyInvites([legacyInvite._id, second._id], deadline, session));
+			}),
+		).rejects.toMatchObject({ code: 11000 });
+		expect(await model.col.findOne({ _id: legacyInvite._id })).toEqual(legacyInvite);
+		expect(await model.col.findOne({ _id: second._id })).toEqual(second);
+		expect(await model.findOneById(strong._id)).toEqual(strong);
+		expect(await model.col.countDocuments()).toBe(3);
+	});
+
+	it('retries a whole transaction without duplicating replacements or extending expiry', async () => {
+		const second = { ...legacyInvite, _id: 'Old456' };
+		await model.col.insertOne(second as IInvite);
+		let attempts = 0;
+		await client.withSession(async (session) => {
+			await session.withTransaction(async () => {
+				attempts++;
+				await model.migrateLegacyInvites([legacyInvite._id, second._id], deadline, session);
+				if (attempts === 1) {
+					const error = new MongoServerError({ message: 'retry migration', code: 112 });
+					error.addErrorLabel('TransientTransactionError');
+					throw error;
+				}
+			});
+		});
+		expect(attempts).toBe(2);
+		expect(await model.col.countDocuments()).toBe(2);
+		for (const _id of [legacyInvite._id, second._id]) {
+			expect(await model.findOneByInviteToken(_id)).toMatchObject({ legacy: true, expires: deadline, uses: legacyInvite.uses });
+			expect(await model.findOneById(_id)).toBeNull();
+		}
+	});
+
 	it('rolls back both the insert and removal when a transaction fails', async () => {
 		await expect(
 			client.withSession(async (session) => {
 				await session.withTransaction(async () => {
-					await model.migrateLegacyInvite(legacyInvite._id, deadline, session);
+					await model.migrateLegacyInvites([legacyInvite._id], deadline, session);
 					throw new Error('interrupted migration');
 				});
 			}),
@@ -130,7 +211,7 @@ describeWithMongo('InvitesRaw migration with MongoDB transactions', () => {
 		const strong = { ...legacyInvite, _id: 'strong-id', inviteToken: 'strong-token', expires: null };
 		await model.col.insertOne(strong);
 		await client.withSession(async (session) => {
-			await session.withTransaction(async () => model.migrateLegacyInvite(strong._id, deadline, session));
+			await session.withTransaction(async () => model.migrateLegacyInvites([strong._id], deadline, session));
 		});
 		expect(await model.findOneById(strong._id)).toEqual(strong);
 		await expect(model.col.insertOne({ ...strong, _id: 'another-id' })).rejects.toMatchObject({ code: 11000 });

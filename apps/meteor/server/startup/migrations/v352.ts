@@ -4,6 +4,7 @@ import { client } from '../../database/utils';
 import { addMigration } from '../../lib/migrations';
 
 const batchSize = 1000;
+const transactionChunkSize = 100;
 const legacyInviteGracePeriodDays = 90;
 
 addMigration({
@@ -28,8 +29,9 @@ addMigration({
 					.map(({ _id }) => _id)
 					.toArray();
 
-				for (const _id of ids) {
-					await session.withTransaction(async () => Invites.migrateLegacyInvite(_id, transition.expiresAt, session));
+				for (let offset = 0; offset < ids.length; offset += transactionChunkSize) {
+					const chunk = ids.slice(offset, offset + transactionChunkSize);
+					await session.withTransaction(async () => Invites.migrateLegacyInvites(chunk, transition.expiresAt, session));
 				}
 			} while (ids.length === batchSize);
 		});

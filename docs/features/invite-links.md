@@ -18,7 +18,7 @@ The creation response contains the token and URL for the authorized creator. The
 
 The permission migration creates the new management permission without copying roles from the creation permission. It preserves an existing management permission configuration when rerun. Fresh databases skip numbered migrations and use the same permission defaults.
 
-The token migration preserves each old URL by storing its old record ID as the token and replacing its internal record ID. Each replacement uses a MongoDB transaction. The room, creator, creation date, usage count, and usage limit remain unchanged. Existing strong-token records are not replaced.
+The token migration preserves each old URL by storing its old record ID as the token and replacing its internal record ID. Replacements are processed in transaction chunks of at most 100 invites, with bulk reads, inserts, and removals. Each chunk commits atomically, so an interrupted upgrade resumes with the remaining legacy records. The room, creator, creation date, usage count, and usage limit remain unchanged. Existing strong-token records are not replaced.
 
 Legacy invites with an expiry retain that expiry. Legacy invites without an expiry receive a deadline 90 days after the migration starts. The deadline is stored once for the workspace, so interruptions and reruns cannot extend it. Expired or exhausted invites are not made valid again.
 
