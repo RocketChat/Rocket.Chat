@@ -5,15 +5,12 @@ import { isTruthy } from '@rocket.chat/tools';
 import pLimit from 'p-limit';
 
 import type {
-	EvaluableSubject,
 	IPolicyDecisionPoint,
 	IGetDecisionBulkRequest,
 	IGetDecisionBulkResponse,
 	IResourceDecision,
 	NonCompliantPair,
 	ReevaluationUser,
-	RoomEvaluation,
-	SubjectEvaluation,
 } from './types';
 import { HEALTH_CHECK_TIMEOUT } from '../clients/virtru/VirtruClient';
 import type { VirtruClient } from '../clients/virtru/VirtruClient';
@@ -37,18 +34,6 @@ export const getDeniedSubjects = <T extends { user: Pick<IUser, '_id'>; room: Pi
 		}
 		return false;
 	});
-};
-
-const classifyDecisions = (decisions: IResourceDecision[] = []): keyof SubjectEvaluation => {
-	if (decisions.some((rd) => rd.decision === 'DECISION_DENY')) {
-		return 'nonCompliant';
-	}
-
-	if (decisions.length && decisions.every((rd) => rd.decision === 'DECISION_PERMIT')) {
-		return 'compliant';
-	}
-
-	return 'inconclusive';
 };
 
 export class VirtruPDP implements IPolicyDecisionPoint {
@@ -230,44 +215,18 @@ export class VirtruPDP implements IPolicyDecisionPoint {
 			return;
 		}
 
-		const users = await Users.findByUsernames(usernames, { projection: { _id: 1, emails: 1, username: 1 } }).toArray();
-		if (!users.length) {
-			throw new OnlyCompliantCanBeAddedToRoomError();
-		}
-
-		const { nonCompliant, inconclusive } = await this.evaluateSubjectsAgainstAttributes(users, attributes, object);
-		if (nonCompliant.length || inconclusive.length) {
-			throw new OnlyCompliantCanBeAddedToRoomError();
-		}
-	}
-
-	async evaluateSubjectsAgainstAttributes(
-		subjects: EvaluableSubject[],
-		attributes: IAbacAttributeDefinition[],
-		object: Pick<IRoom, '_id'>,
-	): Promise<SubjectEvaluation> {
-		const ids = subjects.map(({ _id }) => _id);
-
-		if (!ids.length || !attributes.length) {
-			return { compliant: ids, nonCompliant: [], inconclusive: [] };
-		}
-
 		const config = this.client.getConfig();
-		const fqns = buildAttributeFqns(config.attributeNamespace, attributes);
+		const users = await Users.findByUsernames(usernames, { projection: { _id: 1, emails: 1, username: 1 } }).toArray();
 
-		const evaluation: SubjectEvaluation = { compliant: [], nonCompliant: [], inconclusive: [] };
-		const decided: EvaluableSubject[] = [];
+		const fqns = buildAttributeFqns(config.attributeNamespace, attributes);
 		const decisionRequests: IGetDecisionBulkRequest[] = [];
 
-		for (const subject of subjects) {
-			const entityKey = getUserEntityKey(config.defaultEntityKey, subject);
+		for (const user of users) {
+			const entityKey = getUserEntityKey(config.defaultEntityKey, user);
 			if (!entityKey) {
-				pdpLogger.warn({ msg: 'User has no entity key for Virtru PDP evaluation, treating as non-compliant', userId: subject._id });
-				evaluation.nonCompliant.push(subject._id);
-				continue;
+				throw new OnlyCompliantCanBeAddedToRoomError();
 			}
 
-			decided.push(subject);
 			decisionRequests.push({
 				entityIdentifier: {
 					entityChain: {
@@ -284,71 +243,19 @@ export class VirtruPDP implements IPolicyDecisionPoint {
 			});
 		}
 
-		const responses = decisionRequests.length ? await this.getDecisionBulk(decisionRequests) : [];
-
-		decided.forEach(({ _id }, index) => {
-			const verdict = classifyDecisions(responses[index]?.resourceDecisions);
-			if (verdict === 'inconclusive') {
-				pdpLogger.warn({ msg: 'Inconclusive PDP decision', rid: object._id, userId: _id });
-			}
-
-			evaluation[verdict].push(_id);
-		});
-
-		return evaluation;
-	}
-
-	async evaluateSubjectAgainstRooms(subject: EvaluableSubject, rooms: AtLeast<IRoom, '_id' | 'abacAttributes'>[]): Promise<RoomEvaluation> {
-		const evaluation: RoomEvaluation = { compliant: [], nonCompliant: [], inconclusive: [] };
-		const attributed: AtLeast<IRoom, '_id' | 'abacAttributes'>[] = [];
-
-		for (const room of rooms) {
-			if (room.abacAttributes?.length) {
-				attributed.push(room);
-			} else {
-				evaluation.compliant.push(room._id);
-			}
+		if (!decisionRequests.length) {
+			throw new OnlyCompliantCanBeAddedToRoomError();
 		}
 
-		if (!attributed.length) {
-			return evaluation;
-		}
+		const responses = await this.getDecisionBulk(decisionRequests);
 
-		const config = this.client.getConfig();
-		const entityKey = getUserEntityKey(config.defaultEntityKey, subject);
-		if (!entityKey) {
-			pdpLogger.warn({ msg: 'User has no entity key for Virtru PDP evaluation, treating as non-compliant', userId: subject._id });
-			evaluation.nonCompliant.push(...attributed.map(({ _id }) => _id));
-			return evaluation;
-		}
-
-		const responses = await this.getDecisionBulk(
-			attributed.map((room) => ({
-				entityIdentifier: {
-					entityChain: {
-						entities: [buildEntityIdentifier(config.defaultEntityKey, entityKey)],
-					},
-				},
-				action: { name: 'read' },
-				resources: [
-					{
-						ephemeralId: room._id,
-						attributeValues: { fqns: buildAttributeFqns(config.attributeNamespace, room.abacAttributes ?? []) },
-					},
-				],
-			})),
+		const hasNonCompliant = responses.some(
+			(resp) => !resp?.resourceDecisions?.length || resp.resourceDecisions.some((rd) => rd.decision !== 'DECISION_PERMIT'),
 		);
 
-		attributed.forEach(({ _id }, index) => {
-			const verdict = classifyDecisions(responses[index]?.resourceDecisions);
-			if (verdict === 'inconclusive') {
-				pdpLogger.warn({ msg: 'Inconclusive PDP decision', rid: _id, userId: subject._id });
-			}
-
-			evaluation[verdict].push(_id);
-		});
-
-		return evaluation;
+		if (hasNonCompliant) {
+			throw new OnlyCompliantCanBeAddedToRoomError();
+		}
 	}
 
 	async onRoomAttributesChanged(

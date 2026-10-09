@@ -142,29 +142,6 @@ export const Audit = {
 			{ type: 'system' },
 		);
 	},
-	actionsPerformed: async (
-		entries: Array<{
-			subject: MinimalUser;
-			object: MinimalRoom;
-			reason?: AbacAuditReason;
-			actionPerformed?: AbacActionPerformed;
-			pdp?: AbacPdpType;
-		}>,
-	) => {
-		return ServerEvents.createAuditServerEvents(
-			entries.map(({ subject, object, reason = 'room-attributes-change', actionPerformed = 'revoked-object-access', pdp }) => ({
-				key: 'abac.action.performed' as const,
-				data: {
-					action: actionPerformed,
-					reason,
-					subject,
-					object,
-					pdp,
-				},
-				actor: { type: 'system' as const },
-			})),
-		);
-	},
 	subjectAttributeChanged: async (diff: IAbacAttributeDefinition[], subject: MinimalUser) => {
 		return audit(
 			'abac.subject.attribute.changed',

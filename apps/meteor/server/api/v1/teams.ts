@@ -34,6 +34,7 @@ import { eraseRoom } from '../../lib/eraseRoom';
 import { removeUserFromRoom } from '../../lib/rooms/removeUserFromRoom';
 import { effectiveStatusFilter } from '../../lib/statusVisibility/effectiveStatus';
 import { getUsersHiddenFrom, redactHiddenMembers } from '../../lib/statusVisibility/hiddenUsers';
+import { settings } from '../../settings';
 import type { ExtractRoutesFromAPI } from '../ApiClass';
 import { API } from '../api';
 import { eraseTeam } from '../lib/eraseTeam';
@@ -309,6 +310,13 @@ API.v1.post(
 			return API.v1.forbidden();
 		}
 		const canUpdateAny = !!(await hasPermissionAsync(this.user, 'view-all-team-channels', team.roomId));
+
+		if (settings.get('ABAC_Enabled') && isDefault) {
+			const room = await Rooms.findOneByIdAndType(roomId, 'p', { projection: { abacAttributes: 1 } });
+			if (room?.abacAttributes?.length) {
+				return API.v1.failure('error-room-is-abac-managed');
+			}
+		}
 
 		const room = await Team.updateRoom(this.userId, roomId, isDefault, canUpdateAny);
 
