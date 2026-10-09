@@ -136,7 +136,9 @@ describe('ExchangeEwsProvider', () => {
 				),
 				okResponse('<m:SyncState>S2</m:SyncState><m:IncludesLastItemInRange>true</m:IncludesLastItemInRange><m:Changes/>'),
 				calendarViewOk('STILL-THERE'),
-				okResponse('<m:Items><t:CalendarItem><t:ItemId Id="STILL-THERE"/><t:Start>2026-08-21T10:00:00Z</t:Start></t:CalendarItem></m:Items>'),
+				okResponse(
+					'<m:Items><t:CalendarItem><t:ItemId Id="STILL-THERE"/><t:Start>2026-08-21T10:00:00Z</t:Start></t:CalendarItem></m:Items>',
+				),
 			]);
 
 			const page = await new ExchangeEwsProvider(transport).listEvents(MAILBOX, timeWindow);
