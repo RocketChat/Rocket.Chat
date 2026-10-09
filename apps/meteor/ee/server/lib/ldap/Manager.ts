@@ -740,6 +740,12 @@ export class LDAPEEManager extends LDAPManager {
 					converter.addObjectToMemory(userData, { dn: ldapUser.dn, username: this.getLdapUsername(ldapUser) });
 				} catch (err) {
 					logger.error({ msg: 'Skipping LDAP user that could not be mapped', dn: ldapUser.dn, err });
+
+					const activeState = { username: user.username } as IImportUser;
+					this.copyActiveState(ldapUser, activeState);
+					if (activeState.deleted && user.active) {
+						await setUserActiveStatus(user._id, false, true);
+					}
 				}
 			} else if (disableMissingUsers && user.active) {
 				await setUserActiveStatus(user._id, false, true);

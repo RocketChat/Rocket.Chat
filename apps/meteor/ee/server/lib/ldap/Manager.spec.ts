@@ -10,6 +10,7 @@ const addUserToRoomStub = sinon.stub();
 const removeUserFromRoomStub = sinon.stub();
 const loggerStub = { debug: sinon.stub(), error: sinon.stub(), info: sinon.stub(), warn: sinon.stub() };
 const usersStub = { findLDAPUsers: sinon.stub() };
+const setUserActiveStatusStub = sinon.stub();
 
 class LDAPManagerStub {
 	static mapUserData = sinon.stub();
@@ -32,7 +33,7 @@ const { LDAPEEManager } = proxyquire.noCallThru().load('./Manager', {
 	'../../../../server/lib/rooms/addUserToRoom': { addUserToRoom: addUserToRoomStub },
 	'../../../../server/lib/rooms/createRoom': { createRoom: sinon.stub() },
 	'../../../../server/lib/rooms/removeUserFromRoom': { removeUserFromRoom: removeUserFromRoomStub },
-	'../../../../server/lib/users/setUserActiveStatus': { setUserActiveStatus: sinon.stub() },
+	'../../../../server/lib/users/setUserActiveStatus': { setUserActiveStatus: setUserActiveStatusStub },
 	'../syncUserRoles': { syncUserRoles: sinon.stub() },
 	'./copyCustomFieldsLDAP': { copyCustomFieldsLDAP: sinon.stub() },
 });
@@ -139,5 +140,23 @@ describe('LDAPEEManager updateExistingUsers', () => {
 
 		expect(converter.addObjectToMemory.calledOnceWithExactly(validUserData, { dn: validEntry.dn, username: 'valid' })).to.be.true;
 		expect(loggerStub.error.calledWithMatch({ dn: brokenEntry.dn, err: mapError })).to.be.true;
+	});
+
+	it('should still deactivate a user that cannot be mapped when LDAP marks the account as disabled', async () => {
+		const brokenUser = { _id: 'brokenId', username: 'broken', active: true };
+		const brokenEntry = { dn: 'uid=broken,dc=example', userAccountControl: 2 };
+		const ldap = { findOneByUsername: sinon.stub().resolves(brokenEntry) };
+		const converter = { addObjectToMemory: sinon.stub() };
+
+		usersStub.findLDAPUsers.returns({ toArray: async () => [brokenUser] });
+		LDAPManagerStub.mapUserData.withArgs(brokenEntry).throws(new Error('Failed to get email address from LDAP user'));
+		settingsStub.get.reset();
+		settingsStub.get.withArgs('LDAP_Sync_User_Active_State').returns('disable');
+		setUserActiveStatusStub.reset();
+
+		await (LDAPEEManager as any).updateExistingUsers(ldap, converter);
+
+		expect(converter.addObjectToMemory.called).to.be.false;
+		expect(setUserActiveStatusStub.calledOnceWithExactly('brokenId', false, true)).to.be.true;
 	});
 });
