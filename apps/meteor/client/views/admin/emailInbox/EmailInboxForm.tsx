@@ -419,7 +419,10 @@ const EmailInboxForm = ({ inboxData }: EmailInboxFormProps) => {
 									<Controller
 										name='smtpPassword'
 										control={control}
-										rules={{ required: t('Required_field', { field: t('Password') }) }}
+										rules={{ required: t('Required_field', { field: t('Password') }) ,minLength:{
+											value:6,
+											message:t("Password must be at least 8 characters long "),
+										}}}
 										render={({ field }) => (
 											<PasswordInput
 												id={smtpPasswordField}
@@ -541,7 +544,10 @@ const EmailInboxForm = ({ inboxData }: EmailInboxFormProps) => {
 									<Controller
 										name='imapPassword'
 										control={control}
-										rules={{ required: t('Required_field', { field: t('Password') }) }}
+										rules={{ required: t('Required_field', { field: t('Password') }),minLength:{
+											value:6,
+											message:t('Password must be at least 8 characters long'),
+										} }}
 										render={({ field }) => (
 											<PasswordInput
 												id={imapPasswordField}
