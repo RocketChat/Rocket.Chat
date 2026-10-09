@@ -556,7 +556,11 @@ export class AbacService extends ServiceClass implements IAbacService {
 		await store.validateAssignable(attrs, actor);
 	}
 
-	async validateCreationAttributes(attributes: IAbacAttributeDefinition[], actor: AbacActor): Promise<AbacCreationAttributesResult> {
+	async validateCreationAttributes(
+		attributes: IAbacAttributeDefinition[],
+		actor: AbacActor,
+		{ creatorJoins }: { creatorJoins: boolean },
+	): Promise<AbacCreationAttributesResult> {
 		let normalized: IAbacAttributeDefinition[];
 		let store: IAttributeStore;
 		let bypassed: boolean;
@@ -578,18 +582,28 @@ export class AbacService extends ServiceClass implements IAbacService {
 			return toCreationDenial(err, 'invalid');
 		}
 
-		if (bypassed) {
-			return { allowed: true, attributes: normalized, bypassed };
+		if (!bypassed) {
+			try {
+				await this.assertCreatorMayAssign(normalized, actor, store);
+			} catch (err) {
+				if (!(err instanceof AbacError)) {
+					logger.error({ msg: 'ABAC creator authority check failed', err });
+					return { allowed: false, reason: 'unavailable', code: AbacErrorCode.PdpUnavailable };
+				}
+				return toCreationDenial(err, 'not-entitled');
+			}
 		}
 
-		try {
-			await this.assertCreatorMayAssign(normalized, actor, store);
-		} catch (err) {
-			if (!(err instanceof AbacError)) {
-				logger.error({ msg: 'ABAC creator authority check failed', err });
-				return { allowed: false, reason: 'unavailable', code: AbacErrorCode.PdpUnavailable };
+		if (creatorJoins) {
+			try {
+				await this.assertPdpPermitsCreator(normalized, actor);
+			} catch (err) {
+				if (!(err instanceof AbacError)) {
+					logger.error({ msg: 'ABAC creator admission check failed', err });
+					return { allowed: false, reason: 'unavailable', code: AbacErrorCode.PdpUnavailable };
+				}
+				return toCreationDenial(err, 'creator-not-admitted');
 			}
-			return toCreationDenial(err, 'not-entitled');
 		}
 
 		return { allowed: true, attributes: normalized, bypassed };

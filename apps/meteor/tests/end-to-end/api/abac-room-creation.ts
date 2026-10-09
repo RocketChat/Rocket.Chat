@@ -156,11 +156,23 @@ import { IS_EE } from '../../e2e/config/constants';
 				});
 		});
 
-		it('admits values the creator does not hold once restricting to owned attributes is off', async () => {
+		it('admits values the creator does not hold once restricting to owned attributes is off, for a room the creator leaves', async () => {
 			await setSetting('ABAC_Restrict_To_Owned_Attributes', false);
 
-			const res = await createGroup({ abacAttributes: { [dept]: ['sales'] } }, creatorCredentials).expect(200);
+			const res = await createGroup({ abacAttributes: { [dept]: ['sales'] }, excludeSelf: true }, creatorCredentials).expect(200);
 			track(res.body.group._id);
+
+			expect(res.body.group.abacAttributes).to.deep.equal([{ key: dept, values: ['sales'] }]);
+		});
+
+		it('is refused to a creator who would not be admitted to the room', async () => {
+			await setSetting('ABAC_Restrict_To_Owned_Attributes', false);
+
+			await createGroup({ abacAttributes: { [dept]: ['sales'] } }, creatorCredentials)
+				.expect(400)
+				.expect((res) => {
+					expect(res.body).to.have.property('errorType', 'error-abac-creator-not-admitted');
+				});
 		});
 
 		it('leaves administrator writes through ABAC > Rooms unaffected by restricting to owned attributes', async () => {
@@ -260,11 +272,19 @@ import { IS_EE } from '../../e2e/config/constants';
 				await updatePermission('bypass-abac-store-validation', savedPermissions.get('bypass-abac-store-validation') ?? []);
 			});
 
-			it('admits values the creator does not hold, and filters the creator out as a member', async () => {
-				const res = await createGroup({ abacAttributes: { [dept]: ['ops'] } }, creatorCredentials).expect(200);
+			it('admits values the creator does not hold, for a room the creator leaves', async () => {
+				const res = await createGroup({ abacAttributes: { [dept]: ['ops'] }, excludeSelf: true }, creatorCredentials).expect(200);
 				track(res.body.group._id);
 
-				expect(res.body.skippedMembers).to.deep.equal([creator.username]);
+				expect(res.body.group.abacAttributes).to.deep.equal([{ key: dept, values: ['ops'] }]);
+			});
+
+			it('is still refused when the creator would not be admitted to the room', async () => {
+				await createGroup({ abacAttributes: { [dept]: ['ops'] } }, creatorCredentials)
+					.expect(400)
+					.expect((res) => {
+						expect(res.body).to.have.property('errorType', 'error-abac-creator-not-admitted');
+					});
 			});
 		});
 	});

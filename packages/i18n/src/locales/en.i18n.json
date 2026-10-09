@@ -2534,6 +2534,7 @@
   "error-abac-attributes-private-rooms-only": "ABAC attributes can only be set on private rooms.",
   "error-abac-attributes-required": "While ABAC enforcement is on, a room can only be created with every attribute the workspace requires.",
   "error-abac-attributes-room-conversion": "ABAC attributes cannot be set while converting an existing room to a team.",
+  "error-abac-creator-not-admitted": "You would not be allowed into a room with these attributes, so it was not created.",
   "error-abac-decision-inconclusive": "The access decision for these attributes could not be made.",
   "error-abac-decision-unavailable": "Access decisions are unavailable right now. Please try again later.",
   "error-abac-discussion-creation-blocked": "Discussions cannot be created while ABAC enforcement is on.",

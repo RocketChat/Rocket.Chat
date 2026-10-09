@@ -5,7 +5,7 @@ import p from 'proxyquire';
 import sinon from 'sinon';
 
 type RoomToCreate = Omit<IRoom, '_id' | '_updatedAt'>;
-type Guard = (data: { owner: IUser; room: RoomToCreate }) => Promise<void>;
+type Guard = (data: { owner: IUser; room: RoomToCreate; members: string[] }) => Promise<void>;
 
 const settingsMock = { get: sinon.stub() };
 const licenseMock = { hasModule: sinon.stub() };
@@ -35,7 +35,7 @@ const owner = { _id: 'owner', username: 'owner', name: 'Owner' } as IUser;
 
 const privateRoom = (extra: Partial<RoomToCreate> = {}): RoomToCreate => ({ t: 'p', name: 'room', ...extra }) as RoomToCreate;
 
-const run = (room: RoomToCreate) => guard({ owner, room });
+const run = (room: RoomToCreate, members: string[] = ['owner']) => guard({ owner, room, members });
 
 const enforcement = (requiredAttributeKeys: string[] = []) =>
 	getRoomAbacLockContextMock.returns({ enforcementOn: true, requiredAttributeKeys });
@@ -118,6 +118,28 @@ describe('beforeCreateRoom (ABAC)', () => {
 
 			expect(room.abacAttributes).to.deep.equal([{ key: 'dept', values: ['eng'] }]);
 			expect(validateCreationAttributesMock.calledWith(sinon.match.any, { _id: 'owner', username: 'owner', name: 'Owner' })).to.be.true;
+		});
+
+		it('should have the PDP admit a creator who joins the room', async () => {
+			await run(privateRoom({ abacAttributes }), ['owner', 'member']);
+
+			expect(validateCreationAttributesMock.firstCall.args[2]).to.deep.equal({ creatorJoins: true });
+		});
+
+		it('should not have the PDP admit a creator who excluded themselves', async () => {
+			await run(privateRoom({ abacAttributes }), ['member']);
+
+			expect(validateCreationAttributesMock.firstCall.args[2]).to.deep.equal({ creatorJoins: false });
+		});
+
+		it('should refuse a creator the PDP would not admit to the room', async () => {
+			validateCreationAttributesMock.resolves({
+				allowed: false,
+				reason: 'creator-not-admitted',
+				code: 'error-only-compliant-users-can-be-added-to-abac-rooms',
+			});
+
+			await expect(run(privateRoom({ abacAttributes }))).to.be.rejectedWith('error-abac-creator-not-admitted');
 		});
 	});
 

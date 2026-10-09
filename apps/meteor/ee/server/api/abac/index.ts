@@ -508,8 +508,6 @@ const abacEndpoints = API.v1
 			});
 		},
 	)
-
-	// Runs the check room creation runs, so the answer before creating cannot disagree with it.
 	.post(
 		'abac/attribute-assignability',
 		{
@@ -532,6 +530,7 @@ const abacEndpoints = API.v1
 			const result = await Abac.validateCreationAttributes(
 				toAbacAttributeDefinitions(this.bodyParams.attributes) ?? [],
 				toAbacActor(this.user),
+				{ creatorJoins: true },
 			);
 			if (!result.allowed) {
 				throw toCreationAttributesDenialError(result);

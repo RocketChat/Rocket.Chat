@@ -1125,6 +1125,8 @@ describe('AbacService (unit)', () => {
 
 	describe('validateCreationAttributes', () => {
 		const requested = [{ key: 'dept', values: ['eng', 'sales'] }];
+		const creatorExcluded = { creatorJoins: false };
+		const creatorJoining = { creatorJoins: true };
 
 		const makeStore = (held: Record<string, string[]> = {}) => ({
 			validateAssignable: jest.fn().mockResolvedValue(undefined),
@@ -1151,7 +1153,7 @@ describe('AbacService (unit)', () => {
 				(service as any).attributeStores.local.store = makeStore({ dept: ['eng'], region: ['emea'] });
 
 				await expect(
-					service.validateCreationAttributes([...requested, { key: 'region', values: ['emea', 'apac'] }], fakeActor),
+					service.validateCreationAttributes([...requested, { key: 'region', values: ['emea', 'apac'] }], fakeActor, creatorExcluded),
 				).resolves.toEqual({
 					allowed: false,
 					reason: 'not-entitled',
@@ -1168,7 +1170,7 @@ describe('AbacService (unit)', () => {
 
 				const unnormalized = [{ key: ' dept ', values: ['eng', ' sales', 'eng'] }];
 
-				await expect(service.validateCreationAttributes(unnormalized, fakeActor)).resolves.toEqual({
+				await expect(service.validateCreationAttributes(unnormalized, fakeActor, creatorExcluded)).resolves.toEqual({
 					allowed: true,
 					attributes: requested,
 					bypassed: false,
@@ -1180,7 +1182,7 @@ describe('AbacService (unit)', () => {
 				const store = makeStore();
 				(service as any).attributeStores.local.store = store;
 
-				await expect(service.validateCreationAttributes(requested, fakeActor)).resolves.toMatchObject({ allowed: true });
+				await expect(service.validateCreationAttributes(requested, fakeActor, creatorExcluded)).resolves.toMatchObject({ allowed: true });
 				expect(store.entitlementsOf).not.toHaveBeenCalled();
 			});
 
@@ -1189,7 +1191,7 @@ describe('AbacService (unit)', () => {
 				const store = makeStore();
 				(service as any).attributeStores.local.store = store;
 
-				await expect(service.validateCreationAttributes(requested, fakeActor)).resolves.toEqual({
+				await expect(service.validateCreationAttributes(requested, fakeActor, creatorExcluded)).resolves.toEqual({
 					allowed: true,
 					attributes: requested,
 					bypassed: true,
@@ -1201,7 +1203,9 @@ describe('AbacService (unit)', () => {
 				mockHasPermission.mockResolvedValue(true);
 				(service as any).attributeStores.local.store = makeStore();
 
-				await expect(service.validateCreationAttributes([{ key: 'unknown', values: ['x'] }], fakeActor)).resolves.toMatchObject({
+				await expect(
+					service.validateCreationAttributes([{ key: 'unknown', values: ['x'] }], fakeActor, creatorExcluded),
+				).resolves.toMatchObject({
 					allowed: false,
 					reason: 'invalid',
 					code: 'error-attribute-definition-not-found',
@@ -1218,6 +1222,7 @@ describe('AbacService (unit)', () => {
 							{ key: 'dept', values: ['sales'] },
 						],
 						fakeActor,
+						creatorExcluded,
 					),
 				).resolves.toMatchObject({ allowed: false, reason: 'invalid', key: 'dept' });
 			});
@@ -1225,7 +1230,10 @@ describe('AbacService (unit)', () => {
 			it('refuses nothing to assign rather than approving it', async () => {
 				(service as any).attributeStores.local.store = makeStore();
 
-				await expect(service.validateCreationAttributes([], fakeActor)).resolves.toMatchObject({ allowed: false, reason: 'invalid' });
+				await expect(service.validateCreationAttributes([], fakeActor, creatorExcluded)).resolves.toMatchObject({
+					allowed: false,
+					reason: 'invalid',
+				});
 			});
 
 			it('refuses as unavailable when the PDP is down, before evaluating anything', async () => {
@@ -1233,7 +1241,7 @@ describe('AbacService (unit)', () => {
 				const store = makeStore({ dept: ['eng', 'sales'] });
 				(service as any).attributeStores.local.store = store;
 
-				await expect(service.validateCreationAttributes(requested, fakeActor)).resolves.toEqual({
+				await expect(service.validateCreationAttributes(requested, fakeActor, creatorExcluded)).resolves.toEqual({
 					allowed: false,
 					reason: 'unavailable',
 					code: 'error-pdp-unavailable',
@@ -1261,7 +1269,7 @@ describe('AbacService (unit)', () => {
 				);
 				(service as any).attributeStores.virtru.store = store;
 
-				await expect(service.validateCreationAttributes(requested, fakeActor)).resolves.toEqual({
+				await expect(service.validateCreationAttributes(requested, fakeActor, creatorExcluded)).resolves.toEqual({
 					allowed: false,
 					reason: 'not-entitled',
 					code: 'error-invalid-attribute-values',
@@ -1274,7 +1282,7 @@ describe('AbacService (unit)', () => {
 				const store = makeStore();
 				(service as any).attributeStores.virtru.store = store;
 
-				await expect(service.validateCreationAttributes(requested, fakeActor)).resolves.toEqual({
+				await expect(service.validateCreationAttributes(requested, fakeActor, creatorExcluded)).resolves.toEqual({
 					allowed: true,
 					attributes: requested,
 					bypassed: false,
@@ -1287,7 +1295,7 @@ describe('AbacService (unit)', () => {
 				store.validateAssignable.mockRejectedValue(new AbacEntityResolutionFailedError());
 				(service as any).attributeStores.virtru.store = store;
 
-				await expect(service.validateCreationAttributes(requested, fakeActor)).resolves.toEqual({
+				await expect(service.validateCreationAttributes(requested, fakeActor, creatorExcluded)).resolves.toEqual({
 					allowed: false,
 					reason: 'inconclusive',
 					code: 'error-virtru-entity-resolution-failed',
@@ -1299,7 +1307,7 @@ describe('AbacService (unit)', () => {
 				store.validateAssignable.mockRejectedValue(new Error('request timed out'));
 				(service as any).attributeStores.virtru.store = store;
 
-				await expect(service.validateCreationAttributes(requested, fakeActor)).resolves.toEqual({
+				await expect(service.validateCreationAttributes(requested, fakeActor, creatorExcluded)).resolves.toEqual({
 					allowed: false,
 					reason: 'unavailable',
 					code: 'error-pdp-unavailable',
@@ -1311,7 +1319,7 @@ describe('AbacService (unit)', () => {
 				store.validateAssignable.mockRejectedValue(new PdpUnavailableError());
 				(service as any).attributeStores.virtru.store = store;
 
-				await expect(service.validateCreationAttributes(requested, fakeActor)).resolves.toMatchObject({
+				await expect(service.validateCreationAttributes(requested, fakeActor, creatorExcluded)).resolves.toMatchObject({
 					allowed: false,
 					reason: 'unavailable',
 				});
@@ -1322,7 +1330,10 @@ describe('AbacService (unit)', () => {
 				const store = makeStore();
 				(service as any).attributeStores.virtru.store = store;
 
-				await expect(service.validateCreationAttributes(requested, fakeActor)).resolves.toMatchObject({ allowed: true, bypassed: true });
+				await expect(service.validateCreationAttributes(requested, fakeActor, creatorExcluded)).resolves.toMatchObject({
+					allowed: true,
+					bypassed: true,
+				});
 				expect(store.validateAssignable).not.toHaveBeenCalled();
 			});
 
@@ -1341,7 +1352,7 @@ describe('AbacService (unit)', () => {
 				it('refuses the creation when Virtru does not permit the creator the attributes', async () => {
 					checkUsernamesMatchAttributes.mockRejectedValue(new OnlyCompliantCanBeAddedToRoomError());
 
-					await expect(service.validateCreationAttributes(requested, fakeActor)).resolves.toEqual({
+					await expect(service.validateCreationAttributes(requested, fakeActor, creatorExcluded)).resolves.toEqual({
 						allowed: false,
 						reason: 'not-entitled',
 						code: 'error-only-compliant-users-can-be-added-to-abac-rooms',
@@ -1353,7 +1364,7 @@ describe('AbacService (unit)', () => {
 					const store = makeStore();
 					(service as any).attributeStores.local.store = store;
 
-					await expect(service.validateCreationAttributes(requested, fakeActor)).resolves.toEqual({
+					await expect(service.validateCreationAttributes(requested, fakeActor, creatorExcluded)).resolves.toEqual({
 						allowed: true,
 						attributes: requested,
 						bypassed: false,
@@ -1362,12 +1373,71 @@ describe('AbacService (unit)', () => {
 				});
 
 				it('refuses a creator without a username rather than asking Virtru about nobody', async () => {
-					await expect(service.validateCreationAttributes(requested, { ...fakeActor, username: undefined } as any)).resolves.toMatchObject({
+					await expect(
+						service.validateCreationAttributes(requested, { ...fakeActor, username: undefined } as any, creatorExcluded),
+					).resolves.toMatchObject({
 						allowed: false,
 						reason: 'not-entitled',
 					});
 					expect(checkUsernamesMatchAttributes).not.toHaveBeenCalled();
 				});
+			});
+		});
+
+		describe('when the creator joins the room', () => {
+			let checkUsernamesMatchAttributes: jest.Mock;
+
+			beforeEach(() => {
+				checkUsernamesMatchAttributes = jest.fn().mockResolvedValue(undefined);
+				(service as any).pdp = { isAvailable: jest.fn().mockResolvedValue(true), checkUsernamesMatchAttributes };
+				(service as any).attributeStores.local.store = makeStore();
+				restrictToOwned(false);
+			});
+
+			it('refuses a creator the PDP would not admit to the room', async () => {
+				checkUsernamesMatchAttributes.mockRejectedValue(new OnlyCompliantCanBeAddedToRoomError());
+
+				await expect(service.validateCreationAttributes(requested, fakeActor, creatorJoining)).resolves.toEqual({
+					allowed: false,
+					reason: 'creator-not-admitted',
+					code: 'error-only-compliant-users-can-be-added-to-abac-rooms',
+				});
+				expect(checkUsernamesMatchAttributes).toHaveBeenCalledWith([fakeActor.username], requested, { _id: 'room-creation' });
+			});
+
+			it('refuses a bypass holder the PDP would not admit to the room', async () => {
+				mockHasPermission.mockResolvedValue(true);
+				checkUsernamesMatchAttributes.mockRejectedValue(new OnlyCompliantCanBeAddedToRoomError());
+
+				await expect(service.validateCreationAttributes(requested, fakeActor, creatorJoining)).resolves.toMatchObject({
+					allowed: false,
+					reason: 'creator-not-admitted',
+				});
+			});
+
+			it('refuses as unavailable when the admission check fails unexpectedly', async () => {
+				checkUsernamesMatchAttributes.mockRejectedValue(new Error('request timed out'));
+
+				await expect(service.validateCreationAttributes(requested, fakeActor, creatorJoining)).resolves.toEqual({
+					allowed: false,
+					reason: 'unavailable',
+					code: 'error-pdp-unavailable',
+				});
+			});
+
+			it('allows a creator the PDP admits', async () => {
+				await expect(service.validateCreationAttributes(requested, fakeActor, creatorJoining)).resolves.toEqual({
+					allowed: true,
+					attributes: requested,
+					bypassed: false,
+				});
+			});
+
+			it('does not ask about a creator who does not join', async () => {
+				checkUsernamesMatchAttributes.mockRejectedValue(new OnlyCompliantCanBeAddedToRoomError());
+
+				await expect(service.validateCreationAttributes(requested, fakeActor, creatorExcluded)).resolves.toMatchObject({ allowed: true });
+				expect(checkUsernamesMatchAttributes).not.toHaveBeenCalled();
 			});
 		});
 	});

@@ -4283,6 +4283,8 @@ import { IS_EE, URL_MONGODB } from '../../e2e/config/constants';
 					.send({ name: `vstore-bypass-create-${Date.now()}`, excludeSelf: true, abacAttributes: { team: ['blue'] } })
 					.expect(200);
 
+				expect(res.body.group.abacAttributes).to.deep.equal([{ key: 'team', values: ['blue'] }]);
+
 				await request.post(api('rooms.delete')).set(credentials).send({ roomId: res.body.group._id }).expect(200);
 			});
 

@@ -14,7 +14,7 @@ import { toAbacActor } from '../../lib/abac/toAbacActor';
 
 type RoomToCreate = Omit<IRoom, '_id' | '_updatedAt'>;
 
-const assignCreationAttributes = async (owner: IUser, room: RoomToCreate): Promise<void> => {
+const assignCreationAttributes = async (owner: IUser, room: RoomToCreate, members: string[]): Promise<void> => {
 	if (!room.abacAttributes?.length) {
 		return;
 	}
@@ -36,7 +36,9 @@ const assignCreationAttributes = async (owner: IUser, room: RoomToCreate): Promi
 		throw new Error('error-abac-attributes-not-allowed');
 	}
 
-	const result = await Abac.validateCreationAttributes(room.abacAttributes, toAbacActor(owner));
+	const result = await Abac.validateCreationAttributes(room.abacAttributes, toAbacActor(owner), {
+		creatorJoins: !!owner.username && members.includes(owner.username),
+	});
 	if (!result.allowed) {
 		throw toCreationAttributesDenialError(result);
 	}
@@ -70,8 +72,8 @@ const refuseRoomsEnforcementWouldLock = (room: RoomToCreate): void => {
 };
 
 beforeCreateRoomCallback.add(
-	async ({ owner, room }) => {
-		await assignCreationAttributes(owner, room);
+	async ({ owner, room, members }) => {
+		await assignCreationAttributes(owner, room, members);
 
 		refuseRoomsEnforcementWouldLock(room);
 	},

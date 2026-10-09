@@ -29,7 +29,7 @@ const isAttributeDefinition = (value: unknown): value is IAbacAttributeDefinitio
 
 export function toCreationDenial(
 	err: unknown,
-	reasonForAttributeError: 'invalid' | 'not-entitled',
+	reasonForAttributeError: 'invalid' | 'not-entitled' | 'creator-not-admitted',
 ): Extract<AbacCreationAttributesResult, { allowed: false }> {
 	if (err instanceof PdpUnavailableError || err instanceof AbacAttributeStoreExternalError) {
 		return { allowed: false, reason: 'unavailable', code: err.code };
