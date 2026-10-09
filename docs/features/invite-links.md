@@ -28,6 +28,16 @@ Token validation does not fall back to record IDs. A pending registration that s
 
 Integrations must share the returned URL or `inviteToken`, not `_id`. Removal must use the record ID from the current management list; old record IDs no longer identify migrated records.
 
+### Deployment procedure
+
+This migration requires a maintenance window. The migration lock coordinates migration runners; it does not stop invite writes from already-running instances. Older validators also cannot resolve legacy URLs after their record IDs are replaced. Do not serve traffic with older and upgraded application instances at the same time during this transition.
+
+1. Stop all older Rocket.Chat application instances and wait for their in-flight requests to finish. Prevent automatic restarts of the older version.
+2. Start one upgraded instance with the default migration target, `latest`. Wait for migration 352 to complete successfully.
+3. Start the remaining instances on the upgraded version and resume traffic.
+
+If older instances were left running and wrote tokenless invites after migration 352 completed, stop them before performing catch-up. Start one upgraded instance with `MIGRATION_VERSION=352,rerun` to migrate those records. Remove that override from the deployment configuration after successful catch-up and before subsequent starts. The rerun preserves the original workspace cutoff and existing token-bearing records; a normal restart alone does not rerun a completed migration.
+
 ## Migration regression tests
 
 The model suite includes transaction, rollback, expiry, and token-uniqueness checks against MongoDB. Set `INVITES_TEST_MONGO_URL` to a disposable replica-set MongoDB instance to enable these checks:

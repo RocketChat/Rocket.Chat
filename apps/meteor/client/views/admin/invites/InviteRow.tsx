@@ -65,7 +65,7 @@ const InviteRow = ({ _id, roomName, createdAt, expires, uses, maxUses, onRemove 
 		<GenericTableRow>
 			<GenericTableCell>
 				<Box color='hint' fontScale='p2'>
-					{roomName || _id}
+					{roomName ? `${roomName} (${_id})` : _id}
 				</Box>
 			</GenericTableCell>
 			{notSmall && (
