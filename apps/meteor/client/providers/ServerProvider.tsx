@@ -12,7 +12,7 @@ import type { Method, PathFor, OperationParams, OperationResult, UrlParams, Path
 import type { UploadResult, ServerContextValue } from '@rocket.chat/ui-contexts';
 import { ServerContext } from '@rocket.chat/ui-contexts';
 import { compile } from 'path-to-regexp';
-import { useMemo, useSyncExternalStore, type ReactNode } from 'react';
+import { useMemo, useSyncExternalStore, useEffect, type ReactNode } from 'react';
 
 import { Info as info } from '../../app/utils/rocketchat.info';
 import { sdk } from '../lib/SDKClient';
@@ -189,6 +189,12 @@ export type ServerProviderProps = { children?: ReactNode };
 
 const ServerProvider = ({ children }: ServerProviderProps) => {
 	const { connected, status, retryCount, retryTime } = useSyncExternalStore(subscribeStatus, getStatusSnapshot);
+
+	useEffect(() => {
+		if (retryCount && retryCount >= 30 && navigator.onLine) {
+			window.location.reload();
+		}
+	}, [retryCount]);
 
 	const value = useMemo(
 		(): ServerContextValue => ({
