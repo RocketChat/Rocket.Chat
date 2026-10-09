@@ -43,9 +43,17 @@ export async function addOAuthApp(applicationParams: OauthAppsAddParams, uid: IU
 		});
 	}
 
+	const redirectUris = parseUriList(applicationParams.redirectUri);
+
+	if (redirectUris.length === 0) {
+		throw new Meteor.Error('error-invalid-redirectUri', 'Invalid redirectUri', {
+			method: 'addOAuthApp',
+		});
+	}
+
 	const application = {
 		...applicationParams,
-		redirectUri: parseUriList(applicationParams.redirectUri),
+		redirectUri: redirectUris.join(','),
 		clientId: Random.id(),
 		clientSecret: Random.secret(),
 		_createdAt: new Date(),
@@ -55,12 +63,6 @@ export async function addOAuthApp(applicationParams: OauthAppsAddParams, uid: IU
 			username: user.username,
 		},
 	};
-
-	if (application.redirectUri.length === 0) {
-		throw new Meteor.Error('error-invalid-redirectUri', 'Invalid redirectUri', {
-			method: 'addOAuthApp',
-		});
-	}
 
 	return {
 		...application,
