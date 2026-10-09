@@ -7,7 +7,7 @@ import { Timer, DevicePicker, useShouldWrapCards, CARD_LIST_SECTION_MAX_HEIGHT, 
 import { useMediaCallInstance } from '../../context/MediaCallInstanceContext';
 import { useMediaCallView } from '../../context/MediaCallViewContext';
 import useRegisterView from '../../context/useRegisterView';
-import { isExternalPeer } from '../../utils/isExternalPeer';
+import { isInternalPeer } from '../../utils/isInternalPeer';
 import MediaCallCardList from '../MediaCallCardList';
 import PopoutDockPrompt from '../PopoutDockPrompt';
 
@@ -66,7 +66,7 @@ const MediaCallRoomSection = ({ showChat, onToggleChat, user, containerHeight }:
 	const holdAvailable = supportedFeatures.includes('hold');
 	const transferAvailable = supportedFeatures.includes('transfer');
 
-	if (!peerInfo || isExternalPeer(peerInfo)) {
+	if (!peerInfo || !isInternalPeer(peerInfo)) {
 		return null;
 	}
 
