@@ -1,4 +1,4 @@
-import type { IInvite } from '@rocket.chat/core-typings';
+import type { IInvite, IInviteSummary } from '@rocket.chat/core-typings';
 import {
 	ajv,
 	isFindOrCreateInviteParams,
@@ -7,6 +7,7 @@ import {
 	isSendInvitationEmailParams,
 	validateBadRequestErrorResponse,
 	validateUnauthorizedErrorResponse,
+	validateForbiddenErrorResponse,
 } from '@rocket.chat/rest-typings';
 
 import { findOrCreateInvite } from '../../lib/rooms/invites/findOrCreateInvite';
@@ -68,8 +69,9 @@ const invites = API.v1
 		'listInvites',
 		{
 			authRequired: true,
+			permissionsRequired: ['manage-invite-links'],
 			response: {
-				200: ajv.compile<(Omit<IInvite, 'inviteToken'> & { roomName?: string })[]>({
+				200: ajv.compile<IInviteSummary[]>({
 					additionalProperties: false,
 					type: 'array',
 					items: {
@@ -108,11 +110,11 @@ const invites = API.v1
 							uses: {
 								type: 'number',
 							},
-							url: {
-								type: 'string',
+							legacy: {
+								type: 'boolean',
 							},
 						},
-						required: ['_id', 'days', 'maxUses', 'rid', 'userId', 'createdAt', '_updatedAt', 'uses', 'url'],
+						required: ['_id', 'days', 'maxUses', 'rid', 'userId', 'createdAt', '_updatedAt', 'uses'],
 					},
 				}),
 				401: ajv.compile({
@@ -137,6 +139,7 @@ const invites = API.v1
 					},
 					required: ['success', 'error'],
 				}),
+				403: validateForbiddenErrorResponse,
 			},
 		},
 
@@ -264,6 +267,7 @@ const invites = API.v1
 		'removeInvite/:_id',
 		{
 			authRequired: true,
+			permissionsRequired: ['manage-invite-links'],
 			response: {
 				200: removeInviteResponseSchema,
 				400: validateBadRequestErrorResponse,
@@ -273,6 +277,7 @@ const invites = API.v1
 					required: ['success', 'error'],
 					additionalProperties: false,
 				}),
+				403: validateForbiddenErrorResponse,
 			},
 		},
 		async function action() {

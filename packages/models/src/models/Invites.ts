@@ -1,8 +1,8 @@
 import crypto from 'node:crypto';
 
-import type { IInvite, RocketChatRecordDeleted } from '@rocket.chat/core-typings';
+import type { IInvite, IInviteSummary, RocketChatRecordDeleted } from '@rocket.chat/core-typings';
 import type { IInvitesModel } from '@rocket.chat/model-typings';
-import type { Collection, Db, UpdateResult } from 'mongodb';
+import type { ClientSession, Collection, Db, FindCursor, IndexDescription, UpdateResult } from 'mongodb';
 
 import { BaseRaw } from './BaseRaw';
 
@@ -11,13 +11,19 @@ export class InvitesRaw extends BaseRaw<IInvite> implements IInvitesModel {
 		super(db, 'invites', trash);
 	}
 
+	protected override modelIndexes(): IndexDescription[] {
+		return [{ key: { inviteToken: 1 }, unique: true, partialFilterExpression: { inviteToken: { $type: 'string' } } }];
+	}
+
 	findOneByUserRoomMaxUsesAndExpiration(userId: string, rid: string, maxUses: number, daysToExpire: number): Promise<IInvite | null> {
 		return this.findOne({
 			rid,
 			userId,
 			days: daysToExpire,
 			maxUses,
-			...(daysToExpire > 0 ? { expires: { $gt: new Date() } } : {}),
+			legacy: { $ne: true },
+			inviteToken: { $type: 'string' },
+			$or: [{ expires: null }, { expires: { $gt: new Date() } }],
 			...(maxUses > 0 ? { uses: { $lt: maxUses } } : {}),
 		});
 	}
@@ -43,22 +49,47 @@ export class InvitesRaw extends BaseRaw<IInvite> implements IInvitesModel {
 		return result?.totalUses || 0;
 	}
 
-	async ensureInviteToken(_id: string): Promise<string> {
-		const inviteToken = crypto.randomUUID();
+	findInvitesForManagement(): FindCursor<IInviteSummary> {
+		return this.find<IInviteSummary>(
+			{},
+			{
+				projection: {
+					_id: 1,
+					_updatedAt: 1,
+					rid: 1,
+					userId: 1,
+					createdAt: 1,
+					expires: 1,
+					days: 1,
+					maxUses: 1,
+					uses: 1,
+					legacy: 1,
+				},
+			},
+		);
+	}
 
-		const result = await this.updateOne({ _id, inviteToken: { $exists: false } }, { $set: { inviteToken } });
-
-		if (result.modifiedCount > 0) {
-			return inviteToken;
+	async migrateLegacyInvite(_id: string, expiresAt: Date, session: ClientSession): Promise<void> {
+		if (!session.inTransaction()) {
+			throw new Error('Legacy invite migration requires a transaction');
 		}
 
-		const invite = await this.findOneById(_id, { projection: { inviteToken: 1 } });
+		const invite = await this.col.findOne({ _id, inviteToken: { $exists: false } }, { session });
 		if (!invite) {
-			throw new Error(`Invite with _id ${_id} not found`);
+			return;
 		}
-		if (!invite.inviteToken) {
-			throw new Error(`Invite with _id ${_id} exists but has no inviteToken`);
-		}
-		return invite.inviteToken;
+
+		await this.col.insertOne(
+			{
+				...invite,
+				_id: crypto.randomUUID(),
+				inviteToken: invite._id,
+				legacy: true,
+				expires: invite.expires ?? expiresAt,
+				url: '',
+			},
+			{ session },
+		);
+		await this.col.deleteOne({ _id: invite._id }, { session });
 	}
 }

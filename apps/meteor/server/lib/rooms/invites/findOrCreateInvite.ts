@@ -1,12 +1,14 @@
 import crypto from 'node:crypto';
 
 import { api } from '@rocket.chat/core-services';
+import { isBannedSubscription } from '@rocket.chat/core-typings';
 import type { IInvite } from '@rocket.chat/core-typings';
 import { Invites, Subscriptions, Rooms } from '@rocket.chat/models';
 import { Meteor } from 'meteor/meteor';
 
 import { RoomMemberActions } from '../../../../definition/IRoomTypeConfig';
 import { settings } from '../../../settings';
+import { canAccessRoomAsync } from '../../authorization/canAccessRoom';
 import { hasPermissionAsync } from '../../authorization/hasPermission';
 import { getURL } from '../../utils/getURL';
 import { roomCoordinator } from '../roomCoordinator';
@@ -47,13 +49,16 @@ export const findOrCreateInvite = async (userId: string, invite: Pick<IInvite, '
 	}
 
 	const subscription = await Subscriptions.findOneByRoomIdAndUserId(invite.rid, userId, {
-		projection: { _id: 1 },
+		projection: { _id: 1, status: 1 },
 	});
 	if (!subscription) {
 		throw new Meteor.Error('error-invalid-room', 'The rid field is invalid', {
 			method: 'findOrCreateInvite',
 			field: 'rid',
 		});
+	}
+	if (isBannedSubscription(subscription)) {
+		throw new Meteor.Error('error-user-is-banned', 'User is banned from this room', { method: 'findOrCreateInvite' });
 	}
 
 	const room = await Rooms.findOneById(invite.rid);
@@ -62,6 +67,9 @@ export const findOrCreateInvite = async (userId: string, invite: Pick<IInvite, '
 			method: 'findOrCreateInvite',
 			field: 'rid',
 		});
+	}
+	if (!(await canAccessRoomAsync(room, { _id: userId }))) {
+		throw new Meteor.Error('not_authorized');
 	}
 
 	if (settings.get('ABAC_Enabled') && room?.abacAttributes?.length) {
@@ -87,14 +95,9 @@ export const findOrCreateInvite = async (userId: string, invite: Pick<IInvite, '
 		throw new Meteor.Error('invalid-number-of-uses', 'Invite should be valid for 1, 5, 10, 25, 50, 100 or infinite (0) uses.');
 	}
 
-	// Before anything, let's check if there's an existing invite with the same settings for the same channel and user and that has not yet expired.
 	const existing = await Invites.findOneByUserRoomMaxUsesAndExpiration(userId, invite.rid, maxUses, days);
 
-	// If an existing invite was found, ensure it has an inviteToken and return it
 	if (existing) {
-		// Ensure the invite has an inviteToken (handles legacy invites atomically)
-		const inviteToken = await Invites.ensureInviteToken(existing._id);
-		existing.inviteToken = inviteToken;
 		existing.url = getInviteUrl(existing);
 		return existing;
 	}
@@ -102,7 +105,6 @@ export const findOrCreateInvite = async (userId: string, invite: Pick<IInvite, '
 	const _id = crypto.randomBytes(8).toString('hex');
 	const inviteToken = crypto.randomUUID();
 
-	// insert invite
 	const createdAt = new Date();
 	let expires = null;
 	if (days > 0) {

@@ -1,9 +1,10 @@
 import type { Credentials } from '@rocket.chat/api-client';
-import type { IInvite, IRoom, IUser } from '@rocket.chat/core-typings';
+import type { IInvite, IInviteSummary, IRole, IRoom, IUser } from '@rocket.chat/core-typings';
 import { expect } from 'chai';
 import { after, before, describe, it } from 'mocha';
 
 import { getCredentials, api, request, credentials } from '../../data/api-data';
+import { createCustomRole, deleteCustomRole } from '../../data/roles.helper';
 import { createRoom, deleteRoom } from '../../data/rooms.helper';
 import { password } from '../../data/user';
 import type { TestUser } from '../../data/users.helper';
@@ -94,11 +95,105 @@ describe('Invites', () => {
 			expect(res.body).to.have.property('message');
 		});
 
-		it('should return the existing invite for GENERAL without inviteToken', async () => {
+		it('should return the existing invite for GENERAL without invite credentials', async () => {
 			const res = await request.get(api('listInvites')).set(credentials).expect(200);
 
-			expect(res.body[0]).to.have.property('_id', testInviteID);
-			expect(res.body[0]).to.not.have.property('inviteToken');
+			const invite = res.body.find((invite: IInviteSummary) => invite._id === testInviteID);
+			expect(invite).to.exist;
+			expect(invite).to.not.have.property('inviteToken');
+			expect(invite).to.not.have.property('url');
+		});
+	});
+
+	describe('Invite creation and management permissions', () => {
+		let creatorRole: IRole;
+		let managerRole: IRole;
+		let creator: TestUser<IUser>;
+		let manager: TestUser<IUser>;
+		let creatorCredentials: Credentials;
+		let managerCredentials: Credentials;
+		let roomId: string;
+		let inviteId: string;
+
+		before(async () => {
+			creatorRole = await createCustomRole({ name: `invite-creator-${Date.now()}`, scope: 'Users', description: 'Invite creator test' });
+			managerRole = await createCustomRole({ name: `invite-manager-${Date.now()}`, scope: 'Users', description: 'Invite manager test' });
+			await request
+				.post(api('permissions.addRole'))
+				.set(credentials)
+				.send({ permissionId: 'create-invite-links', role: creatorRole._id })
+				.expect(200);
+			await request
+				.post(api('permissions.addRole'))
+				.set(credentials)
+				.send({ permissionId: 'manage-invite-links', role: managerRole._id })
+				.expect(200);
+			creator = await createUser({ roles: ['user', creatorRole._id] });
+			manager = await createUser({ roles: ['user', managerRole._id], joinDefaultChannels: false });
+			creatorCredentials = await login(creator.username, password);
+			managerCredentials = await login(manager.username, password);
+			const room = await createRoom({ type: 'p', name: `private-invite-test-${Date.now()}` });
+			roomId = room.body.group._id;
+			const invite = await request.post(api('findOrCreateInvite')).set(credentials).send({ rid: roomId, days: 1, maxUses: 10 }).expect(200);
+			inviteId = invite.body._id;
+		});
+
+		after(async () => {
+			await deleteRoom({ type: 'p', roomId });
+			await deleteUser(creator);
+			await deleteUser(manager);
+			await request
+				.post(api('permissions.removeRole'))
+				.set(credentials)
+				.send({ permissionId: 'create-invite-links', role: creatorRole._id })
+				.expect(200);
+			await request
+				.post(api('permissions.removeRole'))
+				.set(credentials)
+				.send({ permissionId: 'manage-invite-links', role: managerRole._id })
+				.expect(200);
+			await deleteCustomRole({ roleId: creatorRole._id });
+			await deleteCustomRole({ roleId: managerRole._id });
+		});
+
+		it('should deny workspace-wide listing and removal to a creator-only user', async () => {
+			await request.get(api('listInvites')).set(creatorCredentials).expect(403);
+			await request
+				.delete(api(`removeInvite/${inviteId}`))
+				.set(creatorCredentials)
+				.expect(403);
+		});
+
+		it('should deny token retrieval for a private room the creator has not joined', async () => {
+			await request.post(api('findOrCreateInvite')).set(creatorCredentials).send({ rid: roomId, days: 1, maxUses: 10 }).expect(400);
+		});
+
+		it('should allow scoped creation after the creator joins the room', async () => {
+			await request.post(api('groups.invite')).set(credentials).send({ roomId, userId: creator._id }).expect(200);
+			const response = await request
+				.post(api('findOrCreateInvite'))
+				.set(creatorCredentials)
+				.send({ rid: roomId, days: 1, maxUses: 10 })
+				.expect(200);
+			expect(response.body.inviteToken).to.be.a('string');
+			await request
+				.delete(api(`removeInvite/${response.body._id}`))
+				.set(credentials)
+				.expect(200);
+		});
+
+		it('should let a manager list and remove invites without room membership', async () => {
+			const response = await request.get(api('listInvites')).set(managerCredentials).expect(200);
+			const invite = response.body.find((invite: IInviteSummary) => invite._id === inviteId);
+			expect(invite).to.exist;
+			expect(invite).to.not.have.property('inviteToken');
+			expect(invite).to.not.have.property('url');
+			await request.post(api('findOrCreateInvite')).set(managerCredentials).send({ rid: roomId, days: 1, maxUses: 10 }).expect(400);
+			await request
+				.delete(api(`removeInvite/${inviteId}`))
+				.set(managerCredentials)
+				.expect(200);
+			await request.get(api('groups.info')).set(managerCredentials).query({ roomId }).expect(400);
 		});
 	});
 

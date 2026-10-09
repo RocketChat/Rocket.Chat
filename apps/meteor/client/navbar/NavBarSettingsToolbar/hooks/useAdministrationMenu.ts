@@ -7,7 +7,7 @@ const ADMIN_PERMISSIONS = [
 	'run-import',
 	'view-user-administration',
 	'view-room-administration',
-	'create-invite-links',
+	'manage-invite-links',
 	'manage-cloud',
 	'view-logs',
 	'manage-sounds',
