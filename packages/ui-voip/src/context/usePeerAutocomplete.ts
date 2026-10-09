@@ -66,7 +66,7 @@ export const usePeerAutocomplete = (onSelectPeer: (peerInfo: PeerInfo) => void, 
 			}
 
 			if (isFirstPeerAutocompleteOption(value)) {
-				onSelectPeer({ number: value.replace(PREFIX_FIRST_OPTION, '') });
+				onSelectPeer({ type: 'sip', number: value.replace(PREFIX_FIRST_OPTION, '') });
 				return;
 			}
 
@@ -77,6 +77,7 @@ export const usePeerAutocomplete = (onSelectPeer: (peerInfo: PeerInfo) => void, 
 			}
 
 			onSelectPeer({
+				type: 'user',
 				userId: localInfo.value,
 				displayName: localInfo.label,
 				avatarUrl: localInfo.avatarUrl,

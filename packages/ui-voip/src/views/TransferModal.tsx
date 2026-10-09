@@ -15,6 +15,8 @@ import { useTranslation } from 'react-i18next';
 import { PeerAutocomplete, PeerInfo } from '../components';
 import { usePeerAutocomplete, type PeerInfo as PeerInfoType } from '../context';
 import { isExternalPeer } from '../utils/isExternalPeer';
+import { isInternalPeer } from '../utils/isInternalPeer';
+import { isUnknownPeer } from '../utils/isUnknownPeer';
 
 export type TransferModalProps = {
 	onCancel(): void;
@@ -46,7 +48,7 @@ const TransferModal = ({ onCancel, onConfirm }: TransferModalProps) => {
 
 		setError(undefined);
 
-		if ('userId' in peer) {
+		if (isInternalPeer(peer)) {
 			onConfirm('user', { id: peer.userId, displayName: peer.displayName });
 			return;
 		}
@@ -67,7 +69,7 @@ const TransferModal = ({ onCancel, onConfirm }: TransferModalProps) => {
 			</ModalHeader>
 			<ModalContent>
 				<PeerAutocomplete {...autocomplete} error={error} onChangeValue={onChangeValue} />
-				{peer && (
+				{peer && !isUnknownPeer(peer) && (
 					<Box marginBlock={8}>
 						<PeerInfo {...peer} />
 					</Box>
