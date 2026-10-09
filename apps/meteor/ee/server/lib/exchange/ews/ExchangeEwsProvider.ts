@@ -24,6 +24,9 @@ const decodeCursor = (cursor?: string): { window?: string; syncState?: string } 
 /** At 1000 occurrences a page, past any window a person can fill. An emergency guard, not a working limit. */
 const MAX_CALENDAR_VIEW_PAGES = 50;
 
+/** At 100 changes a page, enough to carry a first sync of a long-lived calendar in one run. */
+const MAX_SYNC_BATCHES = 50;
+
 /** How many items one `GetItem` is asked for, matching the delta's own page size. */
 const EVENT_BATCH_SIZE = 100;
 
@@ -60,18 +63,35 @@ export class ExchangeEwsProvider implements IExchangeProvider {
 		}
 	}
 
+	/** Asks the folder whether anything moved */
+	private async probeChanges(mailbox: string, from?: string): Promise<{ syncState?: string; changed: boolean }> {
+		let syncState = from;
+		let changed = false;
+
+		for (let batch = 0; batch < MAX_SYNC_BATCHES; batch++) {
+			const doc = parseEwsResponse(await this.transport.post(syncFolderItemsRequest(mailbox, syncState)));
+
+			syncState = textOf(firstByTag(doc, MESSAGES_NS, 'SyncState')) || syncState;
+			changed = changed || ['Create', 'Update', 'Delete'].some((tag) => allByTag(doc, TYPES_NS, tag).length > 0);
+
+			if (textOf(firstByTag(doc, MESSAGES_NS, 'IncludesLastItemInRange')) !== 'false') {
+				return { syncState, changed };
+			}
+		}
+
+		logger.warn({ msg: 'Exchange calendar delta still had changes pending after the batch cap', mailbox });
+
+		return { syncState, changed };
+	}
+
 	public async listEvents(mailbox: string, timeWindow: DateRange, cursor?: string): Promise<Page<ExchangeEvent>> {
 		const previous = decodeCursor(cursor);
-		const doc = parseEwsResponse(await this.transport.post(syncFolderItemsRequest(mailbox, previous.syncState)));
-		const syncState = textOf(firstByTag(doc, MESSAGES_NS, 'SyncState'));
-		// EWS reports "true" when it handed over everything, which is the inverse of hasMore.
-		const includesLastItem = textOf(firstByTag(doc, MESSAGES_NS, 'IncludesLastItemInRange')) === 'true';
-		const changed = ['Create', 'Update', 'Delete'].some((tag) => allByTag(doc, TYPES_NS, tag).length > 0);
+		const { syncState, changed } = await this.probeChanges(mailbox, previous.syncState);
 
 		const nextCursor = encodeCursor(syncState, timeWindow);
 
 		if (!changed && previous.window === windowKey(timeWindow)) {
-			return { items: [], cursor: nextCursor, hasMore: !includesLastItem, coverage: 'delta' };
+			return { items: [], cursor: nextCursor, hasMore: false, coverage: 'delta' };
 		}
 
 		const { events, complete } = await this.snapshotWindow(mailbox, timeWindow);
@@ -79,7 +99,7 @@ export class ExchangeEwsProvider implements IExchangeProvider {
 		return {
 			items: events,
 			cursor: nextCursor,
-			hasMore: !includesLastItem,
+			hasMore: false,
 			coverage: complete ? 'full' : 'partial',
 		};
 	}
