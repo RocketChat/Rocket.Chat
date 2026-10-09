@@ -4,7 +4,7 @@ import { useDebouncedValue } from '@rocket.chat/fuselage-hooks';
 import { GenericTableLoadingRow, usePagination, useSort } from '@rocket.chat/ui-client';
 import { useEndpoint } from '@rocket.chat/ui-contexts';
 import { useQuery } from '@tanstack/react-query';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import ContactEdit from './ContactEdit';
@@ -37,6 +37,10 @@ const ContactsTab = ({ tab, onChangeTab }: ContactsTabProps) => {
 	const filterProps = useContactsPageFilters();
 	const { searchText } = filterProps;
 	const debouncedSearchText = useDebouncedValue(searchText, 400);
+
+	useEffect(() => {
+		setCurrent(0);
+	}, [debouncedSearchText, setCurrent]);
 
 	const { data, isPending, error, refetch } = useQuery({
 		queryKey: [
