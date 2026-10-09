@@ -114,7 +114,7 @@ const ContactsTab = ({ tab, onChangeTab }: ContactsTabProps) => {
 				<GenericNoResults
 					icon='address-book'
 					title={debouncedSearchText ? t('No_results_found') : t('No_contacts')}
-					description={t('No_contacts_description')}
+					description={debouncedSearchText ? undefined : t('No_contacts_description')}
 				/>
 			)}
 			{data.items.length > 0 && (
