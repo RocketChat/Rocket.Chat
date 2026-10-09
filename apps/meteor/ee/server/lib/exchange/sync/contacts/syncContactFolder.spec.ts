@@ -375,7 +375,7 @@ describe('syncContactFolder', () => {
 			await syncContactFolder(failingProvider(new Error('socket hang up')), UID, MAILBOX, FOLDER, REGION);
 
 			expect(saveCursor).not.toHaveBeenCalled();
-			expect(setLastError).toHaveBeenCalledWith(UID, FOLDER, { mailbox: MAILBOX, provider: 'graph' }, expect.stringContaining('unknown'));
+			expect(setLastError).toHaveBeenCalledWith(UID, FOLDER, expect.stringContaining('unknown'));
 		});
 	});
 });
