@@ -7,15 +7,12 @@ import NavBarAISearch from './NavBarAISearch';
 import '@testing-library/jest-dom';
 
 jest.mock('./NavBarAISearchListbox', () => () => null);
-jest.mock('./NavBarSearchListbox', () => () => null);
 jest.mock('tinykeys', () => ({ __esModule: true, default: () => jest.fn() }));
 jest.mock('./hooks/useNavBarAISearch', () => ({
 	useNavBarAISearch: () => ({
 		aiSearchActive: false,
 		canSearchWithAIFromTopBar: true,
-		appliedFilterChips: [],
 		aiSearchButtonTooltip: 'Search with AI',
-		handleRemoveFilter: jest.fn(),
 		handleToggleAISearch: jest.fn(),
 	}),
 }));
