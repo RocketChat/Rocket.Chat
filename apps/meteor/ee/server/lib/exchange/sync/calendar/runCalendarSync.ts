@@ -98,9 +98,9 @@ export const runCalendarSync = async (): Promise<CalendarSyncRunSummary> => {
 
 		throw err;
 	} finally {
-		running = false;
-
 		// Has to run after a throw too, or the schedulers stay armed for an answer the collection no longer holds.
 		await applyDeferredSideEffects(dirty);
+
+		running = false;
 	}
 };
