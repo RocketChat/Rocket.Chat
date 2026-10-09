@@ -32,7 +32,14 @@ export const contactAvatar = async function (request: IncomingMessage, res: Serv
 		return;
 	}
 
-	const contactId = decodeURIComponent(req.url.slice(1).replace(/\?.*$/, ''));
+	let contactId: string;
+	try {
+		contactId = decodeURIComponent(req.url.slice(1).replace(/\?.*$/, ''));
+	} catch {
+		res.writeHead(404);
+		res.end();
+		return;
+	}
 
 	const contact = await Contacts.findOneById<Pick<IContact, '_id' | 'uid' | 'displayName'>>(contactId, {
 		projection: { uid: 1, displayName: 1 },
