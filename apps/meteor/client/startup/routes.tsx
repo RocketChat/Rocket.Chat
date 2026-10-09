@@ -115,7 +115,7 @@ declare module '@rocket.chat/ui-contexts' {
 			pattern: '/saml/:token';
 		};
 		'call-history': {
-			pathname: `/call-history${`/details/${string}` | ''}`;
+			pathname: `/call-history${`/details/${string}` | '/contacts' | ''}`;
 			pattern: '/call-history/:tab?/:historyId?';
 		};
 		'search': {
