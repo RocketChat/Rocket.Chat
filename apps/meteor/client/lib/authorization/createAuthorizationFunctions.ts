@@ -56,7 +56,7 @@ export const createAuthorizationFunctions = (deps: AuthorizationDeps): Authoriza
 		quantifier: (this: IPermission['_id'][], predicate: (id: IPermission['_id']) => boolean) => boolean,
 	): boolean => {
 		const userRoles = deps.getUserRoles(userId) ?? [];
-		const roomRoles = scope ? deps.getSubscriptionRoles(scope) : [];
+		const roomRoles = scope && userId === deps.getCurrentUserId() ? deps.getSubscriptionRoles(scope) : [];
 		const roles = [...userRoles, ...roomRoles];
 		return quantifier.call(permissionIds, (permissionId) => {
 			if (AuthorizationUtils.isPermissionRestrictedForRoleList(permissionId, roles)) {

@@ -299,6 +299,17 @@ describe('createAuthorizationFunctions', () => {
 			expect(hasPermission('delete-message', 'room-1')).toBe(false);
 		});
 
+		it('does not use the room roles of the current user to check another user', () => {
+			const { userHasAllPermission } = setup({
+				...world,
+				userRoles: { 'current-user': ['user'], 'other-user': ['user'] },
+				subscriptionRoles: { 'room-1': ['moderator'] },
+			});
+
+			expect(userHasAllPermission('delete-message', 'room-1', 'current-user')).toBe(true);
+			expect(userHasAllPermission('delete-message', 'room-1', 'other-user')).toBe(false);
+		});
+
 		it('does not count a scoped role held on the user as a role in the room', () => {
 			const { hasRole } = setup({ ...world, userRoles: { 'current-user': ['moderator'] } });
 
