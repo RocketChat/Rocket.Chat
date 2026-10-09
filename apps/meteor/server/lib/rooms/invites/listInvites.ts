@@ -14,6 +14,9 @@ export const listInvites = async (userId: string): Promise<IInviteSummary[]> => 
 	}
 
 	const invites = await Invites.findInvitesForManagement().toArray();
+	if (!invites.length) {
+		return [];
+	}
 
 	const rids = [...new Set(invites.map((invite) => invite.rid))];
 	const rooms = await Rooms.findByIds(rids, { projection: { name: 1, fname: 1 } }).toArray();

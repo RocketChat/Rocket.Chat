@@ -101,6 +101,13 @@ describe('Invite authorization and token protection', () => {
 		expect(subscriptions.findOneByRoomIdAndUserId.called).to.equal(false);
 	});
 
+	it('returns an empty list without querying rooms when there are no invites', async () => {
+		hasPermissionAsync.callsFake(async (_userId: string, permission: string) => permission === 'manage-invite-links');
+		invites.findInvitesForManagement.returns({ toArray: async () => [] });
+		expect(await listInvites('manager')).to.deep.equal([]);
+		expect(rooms.findByIds.called).to.equal(false);
+	});
+
 	it('does not give a global manager invite-creation permission', async () => {
 		hasPermissionAsync.callsFake(async (_userId: string, permission: string) => permission === 'manage-invite-links');
 		await expect(findOrCreateInvite('manager', { rid: invite.rid, days: 0, maxUses: 5 })).to.be.rejectedWith('not_authorized');

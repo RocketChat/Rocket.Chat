@@ -1,10 +1,9 @@
 import type { Credentials } from '@rocket.chat/api-client';
-import type { IInvite, IInviteSummary, IRole, IRoom, IUser } from '@rocket.chat/core-typings';
+import type { IInvite, IInviteSummary, IPermission, IRoom, IUser } from '@rocket.chat/core-typings';
 import { expect } from 'chai';
 import { after, before, describe, it } from 'mocha';
 
 import { getCredentials, api, request, credentials } from '../../data/api-data';
-import { createCustomRole, deleteCustomRole } from '../../data/roles.helper';
 import { createRoom, deleteRoom } from '../../data/rooms.helper';
 import { password } from '../../data/user';
 import type { TestUser } from '../../data/users.helper';
@@ -106,8 +105,7 @@ describe('Invites', () => {
 	});
 
 	describe('Invite creation and management permissions', () => {
-		let creatorRole: IRole;
-		let managerRole: IRole;
+		let originalPermissions: Pick<IPermission, '_id' | 'roles'>[] = [];
 		let creator: TestUser<IUser>;
 		let manager: TestUser<IUser>;
 		let creatorCredentials: Credentials;
@@ -116,20 +114,23 @@ describe('Invites', () => {
 		let inviteId: string;
 
 		before(async () => {
-			creatorRole = await createCustomRole({ name: `invite-creator-${Date.now()}`, scope: 'Users', description: 'Invite creator test' });
-			managerRole = await createCustomRole({ name: `invite-manager-${Date.now()}`, scope: 'Users', description: 'Invite manager test' });
+			const permissionResponse = await request.get(api('permissions.listAll')).set(credentials).expect(200);
+			originalPermissions = permissionResponse.body.update
+				.filter(({ _id }: IPermission) => _id === 'create-invite-links' || _id === 'manage-invite-links')
+				.map(({ _id, roles }: IPermission) => ({ _id, roles }));
+			expect(originalPermissions).to.have.lengthOf(2);
 			await request
-				.post(api('permissions.addRole'))
+				.post(api('permissions.update'))
 				.set(credentials)
-				.send({ permissionId: 'create-invite-links', role: creatorRole._id })
+				.send({
+					permissions: originalPermissions.map(({ _id, roles }) => ({
+						_id,
+						roles: [...roles.filter((role) => role !== 'user' && role !== 'bot'), _id === 'create-invite-links' ? 'user' : 'bot'],
+					})),
+				})
 				.expect(200);
-			await request
-				.post(api('permissions.addRole'))
-				.set(credentials)
-				.send({ permissionId: 'manage-invite-links', role: managerRole._id })
-				.expect(200);
-			creator = await createUser({ roles: ['user', creatorRole._id] });
-			manager = await createUser({ roles: ['user', managerRole._id], joinDefaultChannels: false });
+			creator = await createUser({ roles: ['user'] });
+			manager = await createUser({ roles: ['bot'], joinDefaultChannels: false });
 			creatorCredentials = await login(creator.username, password);
 			managerCredentials = await login(manager.username, password);
 			const room = await createRoom({ type: 'p', name: `private-invite-test-${Date.now()}` });
@@ -139,21 +140,17 @@ describe('Invites', () => {
 		});
 
 		after(async () => {
-			await deleteRoom({ type: 'p', roomId });
-			await deleteUser(creator);
-			await deleteUser(manager);
-			await request
-				.post(api('permissions.removeRole'))
-				.set(credentials)
-				.send({ permissionId: 'create-invite-links', role: creatorRole._id })
-				.expect(200);
-			await request
-				.post(api('permissions.removeRole'))
-				.set(credentials)
-				.send({ permissionId: 'manage-invite-links', role: managerRole._id })
-				.expect(200);
-			await deleteCustomRole({ roleId: creatorRole._id });
-			await deleteCustomRole({ roleId: managerRole._id });
+			try {
+				await Promise.all([
+					roomId ? deleteRoom({ type: 'p', roomId }) : undefined,
+					creator ? deleteUser(creator) : undefined,
+					manager ? deleteUser(manager) : undefined,
+				]);
+			} finally {
+				if (originalPermissions.length) {
+					await request.post(api('permissions.update')).set(credentials).send({ permissions: originalPermissions }).expect(200);
+				}
+			}
 		});
 
 		it('should deny workspace-wide listing and removal to a creator-only user', async () => {

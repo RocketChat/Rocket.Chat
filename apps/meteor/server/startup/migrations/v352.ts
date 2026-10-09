@@ -24,8 +24,12 @@ addMigration({
 
 		await client.withSession(async (session) => {
 			let ids: string[];
+			let lastId: string | undefined;
 			do {
-				ids = await Invites.find({ inviteToken: { $exists: false } }, { projection: { _id: 1 }, limit: batchSize })
+				ids = await Invites.find(
+					{ inviteToken: { $exists: false }, ...(lastId !== undefined && { _id: { $gt: lastId } }) },
+					{ projection: { _id: 1 }, sort: { _id: 1 }, hint: '_id_', limit: batchSize },
+				)
 					.map(({ _id }) => _id)
 					.toArray();
 
@@ -33,6 +37,7 @@ addMigration({
 					const chunk = ids.slice(offset, offset + transactionChunkSize);
 					await session.withTransaction(async () => Invites.migrateLegacyInvites(chunk, transition.expiresAt, session));
 				}
+				lastId = ids.at(-1);
 			} while (ids.length === batchSize);
 		});
 
