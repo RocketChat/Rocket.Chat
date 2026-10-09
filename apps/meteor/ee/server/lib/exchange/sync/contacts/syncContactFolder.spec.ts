@@ -231,6 +231,19 @@ describe('syncContactFolder', () => {
 			expect(importedPhones()).toEqual([{ raw: '011 4321-1000', e164: '+541143211000', label: 'work' }]);
 		});
 
+		it('carries a field Outlook cleared as undefined, which is what tells the upsert to remove it', async () => {
+			const provider = providerReturning('graph', page([upsert('A', { givenName: 'Ada', surname: undefined })]));
+
+			await syncContactFolder(provider, UID, MAILBOX, FOLDER, REGION);
+
+			const [imported] = bulkUpsertImported.mock.calls[0][0] as Record<string, unknown>[];
+
+			expect(imported.givenName).toBe('Ada');
+			expect(imported).toHaveProperty('surname', undefined);
+			expect(imported).toHaveProperty('companyName', undefined);
+			expect(imported).toHaveProperty('officeLocation', undefined);
+		});
+
 		it('leaves a number it cannot resolve without a e164 key, so it never matches the wrong contact', async () => {
 			const provider = providerReturning('graph', page([upsert('A', { phones: [{ raw: 'ext. 204' }] })]));
 
