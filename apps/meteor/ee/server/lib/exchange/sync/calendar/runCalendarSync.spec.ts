@@ -36,7 +36,7 @@ const from = (items: { uid: string; mailbox?: string }[]) =>
 		yield* items;
 	};
 
-const dirtyArg = (): Map<string, boolean> => applyDeferredSideEffects.mock.calls[0][0];
+const dirtyArg = (): Set<string> => applyDeferredSideEffects.mock.calls[0][0];
 
 const deferred = () => {
 	let resolve: () => void = () => undefined;
@@ -91,6 +91,21 @@ describe('runCalendarSync', () => {
 		expect(syncCalendarWindow.mock.calls.length).toBe(1);
 	});
 
+	it('stops pulling candidates once one fails fatally, not just syncing them', async () => {
+		let pulled = 0;
+		candidates.mockImplementation(async function* () {
+			for (let i = 0; i < 100; i++) {
+				pulled++;
+				yield { uid: `u${i}`, mailbox: `u${i}@x` };
+			}
+		});
+		syncCalendarWindow.mockResolvedValueOnce(outcome({ failed: true, fatal: true }));
+
+		await runCalendarSync();
+
+		expect(pulled).toBeLessThan(100);
+	});
+
 	it('marks a user dirty only when something changed', async () => {
 		candidates.mockImplementation(
 			from([
@@ -102,7 +117,7 @@ describe('runCalendarSync', () => {
 
 		await runCalendarSync();
 
-		expect([...dirtyArg().keys()]).toEqual(['a']);
+		expect([...dirtyArg()]).toEqual(['a']);
 	});
 
 	it('collects a user once however many mailboxes they have', async () => {
