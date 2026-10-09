@@ -1,9 +1,9 @@
 import { Box } from '@rocket.chat/fuselage';
-import { useSetting } from '@rocket.chat/ui-contexts';
-import { useMemo } from 'react';
+import { useEndpoint } from '@rocket.chat/ui-contexts';
+import { useQuery } from '@tanstack/react-query';
 import { useTranslation } from 'react-i18next';
 
-import { buildClassificationBanner, parseClassificationBannersConfig } from './lib/engine';
+import { roomsQueryKeys } from '../../../lib/queryKeys';
 import { useIsABACManagedRoom } from '../../admin/ABAC/hooks/useIsABACManagedRoom';
 import { useRoom } from '../contexts/RoomContext';
 
@@ -11,20 +11,15 @@ const ClassificationBanner = () => {
 	const { t } = useTranslation();
 	const room = useRoom();
 	const isABACRoom = useIsABACManagedRoom(room);
-	const bannersEnabled = useSetting('ABAC_Classification_Banners_Enabled', false);
-	const rawConfig = useSetting('ABAC_Classification_Banners_Config', '');
-	const enabled = bannersEnabled && isABACRoom;
+	const getRoomInfo = useEndpoint('GET', '/v1/rooms.info');
 
-	const banner = useMemo(() => {
-		if (!enabled) {
-			return null;
-		}
+	const { data: banner } = useQuery({
+		queryKey: [...roomsQueryKeys.info(room._id), 'classificationBanner', room.abacAttributes],
+		queryFn: async () => (await getRoomInfo({ roomId: room._id })).classificationBanner ?? null,
+		enabled: isABACRoom,
+	});
 
-		const config = parseClassificationBannersConfig(rawConfig);
-		return config?.enabled ? buildClassificationBanner(config, room.abacAttributes ?? []) : null;
-	}, [enabled, rawConfig, room.abacAttributes]);
-
-	if (!banner) {
+	if (!isABACRoom || !banner) {
 		return null;
 	}
 

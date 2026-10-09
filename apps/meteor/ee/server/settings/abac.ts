@@ -54,7 +54,7 @@ export function addSettings(): Promise<void> {
 				});
 				await this.add('ABAC_Classification_Banners_Enabled', false, {
 					type: 'boolean',
-					public: true,
+					public: false,
 					invalidValue: false,
 					section: 'ABAC_Classification_Banners',
 					enableQuery: abacEnabledQuery,
@@ -64,7 +64,7 @@ export function addSettings(): Promise<void> {
 					type: 'code',
 					code: 'application/json',
 					multiline: true,
-					public: true,
+					public: false,
 					invalidValue: '',
 					section: 'ABAC_Classification_Banners',
 					enableQuery: [abacEnabledQuery, { _id: 'ABAC_Classification_Banners_Enabled', value: true }],
