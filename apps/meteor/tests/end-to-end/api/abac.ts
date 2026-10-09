@@ -924,9 +924,6 @@ import { IS_EE, URL_MONGODB } from '../../e2e/config/constants';
 		});
 
 		after(async () => {
-			// Assigning attributes evicts the attribute-less admin, so the deletions below can fail
-			// silently. Clearing the flag first keeps a room that survives out of every new user's
-			// auto-join.
 			await clearDefaultFlag([privateDefaultRoomId, mainRoomIdSaveSettings]);
 
 			await deleteRoom({ type: 'p', roomId: privateDefaultRoomId });
