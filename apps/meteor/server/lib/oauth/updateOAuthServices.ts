@@ -5,7 +5,7 @@ import type {
 	OAuthConfiguration,
 	TwitterOAuthConfiguration,
 } from '@rocket.chat/core-typings';
-import { LoginServiceConfiguration } from '@rocket.chat/models';
+import { LoginServiceConfiguration, Settings } from '@rocket.chat/models';
 
 import { addPassportCustomOAuth } from './addPassportCustomOAuth';
 import { logger } from './logger';
@@ -39,6 +39,12 @@ export async function updateOAuthServices(): Promise<void> {
 			};
 
 			if (/Accounts_OAuth_Custom-/.test(key)) {
+				const loginStyleSettingId = `${key}-login_style`;
+				const storedLoginStyle = settings.get<string | undefined>(loginStyleSettingId);
+				if (storedLoginStyle === '') {
+					await Settings.updateValueById(loginStyleSettingId, 'redirect');
+				}
+
 				data.custom = true;
 				data.clientId = settings.get(`${key}-id`);
 				data.secret = settings.get(`${key}-secret`);
@@ -50,7 +56,7 @@ export async function updateOAuthServices(): Promise<void> {
 				data.accessTokenParam = settings.get(`${key}-access_token_param`);
 				data.buttonLabelText = settings.get(`${key}-button_label_text`);
 				data.buttonLabelColor = settings.get(`${key}-button_label_color`);
-				data.loginStyle = settings.get(`${key}-login_style`);
+				data.loginStyle = storedLoginStyle || 'redirect';
 				data.buttonColor = settings.get(`${key}-button_color`);
 				data.tokenSentVia = settings.get(`${key}-token_sent_via`);
 				data.identityTokenSentVia = settings.get(`${key}-identity_token_sent_via`);
