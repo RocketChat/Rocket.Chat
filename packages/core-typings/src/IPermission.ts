@@ -2,9 +2,8 @@ import type { IRocketChatRecord } from './IRocketChatRecord';
 
 export interface IPermission extends IRocketChatRecord {
 	roles: string[];
-	// TODO: migrate settings with group and section with null to undefined
-	group?: string | null;
-	section?: string | null;
+	group?: string;
+	section?: string;
 	groupPermissionId?: string;
 	level?: 'settings';
 	sectionPermissionId?: string;
