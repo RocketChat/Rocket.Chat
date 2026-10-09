@@ -10627,6 +10627,7 @@ __metadata:
     "@rocket.chat/server-cloud-communication": "workspace:^"
     "@rocket.chat/server-fetch": "workspace:^"
     "@rocket.chat/sha256": "workspace:^"
+    "@rocket.chat/site-replication": "workspace:^"
     "@rocket.chat/storybook-config": "workspace:~"
     "@rocket.chat/streamer": "workspace:^"
     "@rocket.chat/styled": "npm:~0.34.1"
@@ -11503,7 +11504,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@rocket.chat/site-replication@workspace:packages/site-replication":
+"@rocket.chat/site-replication@workspace:^, @rocket.chat/site-replication@workspace:packages/site-replication":
   version: 0.0.0-use.local
   resolution: "@rocket.chat/site-replication@workspace:packages/site-replication"
   dependencies:

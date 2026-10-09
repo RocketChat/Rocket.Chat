@@ -25,6 +25,8 @@ import { PushService } from './push/service';
 import { RoomService } from './room/service';
 import { SAUMonitorService } from './sauMonitor/service';
 import { SettingsService } from './settings/service';
+import { readSiteReplicationConfig } from './site-replication/config';
+import { SiteReplicationService } from './site-replication/service';
 import { StatusVisibilityService } from './statusVisibility/service';
 import { TeamService } from './team/service';
 import { UiKitCoreAppService } from './uikit-core-app/service';
@@ -35,7 +37,7 @@ import { i18n } from '../lib/i18n';
 import { AuthorizationLivechat } from '../lib/omnichannel/roomAccessValidator.internalService';
 
 export const registerServices = async (): Promise<void> => {
-	const { db } = MongoInternals.defaultRemoteCollectionDriver().mongo;
+	const { db, client } = MongoInternals.defaultRemoteCollectionDriver().mongo;
 
 	api.registerService(new AppsEngineService());
 	api.registerService(new AnalyticsService());
@@ -65,6 +67,11 @@ export const registerServices = async (): Promise<void> => {
 	api.registerService(new MediaCallService());
 	api.registerService(new CallHistoryService());
 	api.registerService(new AISearchService());
+
+	const siteReplication = readSiteReplicationConfig();
+	if (siteReplication) {
+		api.registerService(new SiteReplicationService(siteReplication, client, db));
+	}
 
 	// if the process is running in micro services mode we don't need to register services that will run separately
 	if (!isRunningMs()) {
