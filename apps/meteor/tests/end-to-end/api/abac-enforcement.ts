@@ -1,5 +1,6 @@
 import type { Credentials } from '@rocket.chat/api-client';
 import type { IRoom, IUser } from '@rocket.chat/core-typings';
+import { TeamType } from '@rocket.chat/core-typings';
 import { expect } from 'chai';
 import { before, after, describe, it } from 'mocha';
 import { MongoClient } from 'mongodb';
@@ -9,6 +10,7 @@ import { api, getCredentials, request, credentials } from '../../data/api-data';
 import { sleep } from '../../data/livechat/utils';
 import { updateSetting } from '../../data/permissions.helper';
 import { createRoom, deleteRoom } from '../../data/rooms.helper';
+import { createTeam, deleteTeam } from '../../data/teams.helper';
 import { password } from '../../data/user';
 import { createUser, deleteUser, login } from '../../data/users.helper';
 import { IS_EE, URL_MONGODB } from '../../e2e/config/constants';
@@ -311,6 +313,104 @@ import { IS_EE, URL_MONGODB } from '../../e2e/config/constants';
 					expect(res.body).to.have.property('success', false);
 					expect(res.body.error).to.include('error-abac-room-locked');
 				});
+		});
+	});
+
+	describe('default rooms', () => {
+		const teamKey = `abac_enf_team_${Date.now()}`;
+		const teamName = `abac-enf-team-${Date.now()}`;
+		let defaultRoomId: IRoom['_id'];
+		let teamDefaultRoomId: IRoom['_id'];
+		let laterTeamRoomId: IRoom['_id'];
+		let teamId: string;
+		let newUser: IUser;
+		let teamMember: IUser;
+
+		const memberUsernames = async (roomId: IRoom['_id']): Promise<string[]> => {
+			const res = await request.get(api('groups.members')).query({ roomId }).set(credentials).expect(200);
+			return (res.body.members as { username: string }[]).map(({ username }) => username);
+		};
+
+		before(async () => {
+			const room = await createRoom({ type: 'p', name: `abac-enf-default-${Date.now()}` });
+			defaultRoomId = room.body.group._id;
+			await request.post(api('rooms.saveRoomSettings')).set(credentials).send({ rid: defaultRoomId, default: true }).expect(200);
+
+			await request
+				.post(api('abac/attributes'))
+				.set(credentials)
+				.send({ key: teamKey, values: ['value'] })
+				.expect(200);
+			await addAbacAttributesToUserDirectly(connection, credentials['X-User-Id'], [{ key: teamKey, values: ['value'] }]);
+
+			const team = await createTeam(credentials, teamName, TeamType.PRIVATE);
+			teamId = team._id;
+			await request
+				.post(api(`abac/rooms/${team.roomId}/attributes/${teamKey}`))
+				.set(credentials)
+				.send({ values: ['value'] })
+				.expect(200);
+
+			const teamRoom = await createRoom({ type: 'p', name: `abac-enf-team-default-${Date.now()}`, extraData: { teamId } });
+			teamDefaultRoomId = teamRoom.body.group._id;
+			await request.post(api('teams.updateRoom')).set(credentials).send({ roomId: teamDefaultRoomId, isDefault: true }).expect(200);
+
+			const laterRoom = await createRoom({ type: 'p', name: `abac-enf-team-later-${Date.now()}`, extraData: { teamId } });
+			laterTeamRoomId = laterRoom.body.group._id;
+
+			await setEnforcement(true);
+		});
+
+		after(async () => {
+			await setEnforcement(false);
+			await request.post(api('rooms.saveRoomSettings')).set(credentials).send({ rid: defaultRoomId, default: false }).expect(200);
+			await deleteRoom({ type: 'p', roomId: defaultRoomId });
+			await deleteTeam(credentials, teamName);
+			await deleteRoom({ type: 'p', roomId: teamDefaultRoomId });
+			await deleteRoom({ type: 'p', roomId: laterTeamRoomId });
+			await addAbacAttributesToUserDirectly(connection, credentials['X-User-Id'], []);
+			await Promise.all([newUser, teamMember].filter(Boolean).map((user) => deleteUser(user)));
+
+			const res = await request.get(api('abac/attributes')).query({ key: teamKey }).set(credentials).expect(200);
+			const attribute = (res.body.attributes as { _id: string; key: string }[]).find((a) => a.key === teamKey);
+			if (attribute) {
+				await request
+					.delete(api(`abac/attributes/${attribute._id}`))
+					.set(credentials)
+					.expect(200);
+			}
+		});
+
+		it('does not auto-join a new user to a locked default room', async () => {
+			newUser = await createUser();
+
+			expect(await memberUsernames(defaultRoomId)).to.not.include(newUser.username);
+		});
+
+		it('adds a member to the team without joining its locked default room', async () => {
+			teamMember = await createUser({ joinDefaultChannels: false });
+			await addAbacAttributesToUserDirectly(connection, teamMember._id, [{ key: teamKey, values: ['value'] }]);
+
+			await request
+				.post(api('teams.addMembers'))
+				.set(credentials)
+				.send({ teamId, members: [{ userId: teamMember._id, roles: ['member'] }] })
+				.expect(200);
+
+			expect(await memberUsernames(teamDefaultRoomId)).to.not.include(teamMember.username);
+		});
+
+		it('marks a locked room as team default without adding the team members', async () => {
+			await request
+				.post(api('teams.updateRoom'))
+				.set(credentials)
+				.send({ roomId: laterTeamRoomId, isDefault: true })
+				.expect(200)
+				.expect((res) => {
+					expect(res.body.room).to.have.property('teamDefault', true);
+				});
+
+			expect(await memberUsernames(laterTeamRoomId)).to.not.include(teamMember.username);
 		});
 	});
 });
