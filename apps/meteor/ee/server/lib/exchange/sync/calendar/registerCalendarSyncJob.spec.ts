@@ -23,7 +23,7 @@ jest.mock('@rocket.chat/cron', () => ({
 	},
 }));
 jest.mock('./runCalendarSync', () => ({ runCalendarSync: jest.fn() }));
-jest.mock('./mailboxLock', () => ({ whenMailboxesIdle: () => whenMailboxesIdle() }));
+jest.mock('../mailboxLock', () => ({ whenMailboxesIdle: () => whenMailboxesIdle() }));
 jest.mock('@rocket.chat/core-services', () => ({
 	Calendar: { discardImportedBySource: (...args: unknown[]) => discardImportedBySource(...args) },
 }));
