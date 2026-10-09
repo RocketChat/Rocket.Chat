@@ -1,6 +1,7 @@
 import type { IContactPublic } from '@rocket.chat/core-typings';
 import { License } from '@rocket.chat/license';
 import { Contacts } from '@rocket.chat/models';
+import type { LocalContactPayload, PaginatedResult } from '@rocket.chat/rest-typings';
 import {
 	isContactsCreateProps,
 	isContactsDeleteProps,
@@ -11,15 +12,13 @@ import {
 	validateForbiddenErrorResponse,
 	validateNotFoundErrorResponse,
 	validateUnauthorizedErrorResponse,
+	CONTACTS_SORTABLE_FIELDS,
 } from '@rocket.chat/rest-typings';
-import type { LocalContactPayload, PaginatedResult } from '@rocket.chat/rest-typings';
 
 import { API } from '../../../server/api/api';
 import { getPaginationItems } from '../../../server/api/lib/getPaginationItems';
 import { settings } from '../../../server/settings';
 import { normalizeE164 } from '../lib/exchange/sync/contacts/normalizeE164';
-
-const SORTABLE_FIELDS = ['displayName', 'emails.address', 'phones.raw', 'categories', 'companyName', 'officeLocation'];
 
 const toLocalContact = ({ displayName, givenName, surname, companyName, emails, phones }: LocalContactPayload) => {
 	const defaultRegion = settings.get<string>('Exchange_Contacts_Default_Region') ?? '';
@@ -85,7 +84,7 @@ API.v1.get(
 		const { offset, count } = await getPaginationItems(this.queryParams);
 		const { sort } = await this.parseJsonQuery();
 
-		if (sort && !Object.keys(sort).every((key) => SORTABLE_FIELDS.includes(key))) {
+		if (sort && !Object.keys(sort).every((key) => CONTACTS_SORTABLE_FIELDS.includes(key))) {
 			return API.v1.failure('error-invalid-sort-keys');
 		}
 
