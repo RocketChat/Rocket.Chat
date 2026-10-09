@@ -5,11 +5,15 @@ import { useCustomSound } from '@rocket.chat/ui-contexts';
 import { Controller, useFormContext } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 
-const PreferencesSoundSection = () => {
-	const { t } = useTranslation();
+export type PreferencesSoundSectionProps = {
+	sounds: { _id: string; name: string }[];
+};
 
+const PreferencesSoundSection = ({ sounds }: PreferencesSoundSectionProps) => {
+	const { t } = useTranslation();
 	const customSound = useCustomSound();
-	const soundsList: SelectOption[] = customSound.list?.map((value) => [value._id, t(value.name)]) || [];
+
+	const soundsList: SelectOption[] = sounds.map((value) => [value._id, t(value.name)]);
 	const { control, watch } = useFormContext<{
 		newMessageNotification: string;
 		notificationsSoundVolume: number;

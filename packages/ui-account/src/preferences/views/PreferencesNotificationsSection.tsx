@@ -1,13 +1,16 @@
-import type { INotificationDesktop } from '@rocket.chat/core-typings';
 import type { SelectOption } from '@rocket.chat/fuselage';
 import { AccordionItem, Button } from '@rocket.chat/fuselage';
 import { Field, FieldGroup, FieldHint, FieldLabel, FieldRow, Select, ToggleSwitch } from '@rocket.chat/fuselage-forms';
-import { useSetting, useUserPreference, useUser } from '@rocket.chat/ui-contexts';
 import { useCallback, useEffect, useId, useMemo, useState } from 'react';
 import { Controller, useFormContext } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 
-import { useNotification } from '../../../hooks/notification/useNotification';
+import type { PreferencesViewModel } from '../logic/usePreferences';
+
+export type PreferencesNotificationsSectionProps = {
+	notifications: PreferencesViewModel['notifications'];
+	onSendTestNotification: () => void;
+};
 
 const notificationOptionsLabelMap = {
 	all: 'All_messages',
@@ -20,45 +23,26 @@ const emailNotificationOptionsLabelMap = {
 	nothing: 'Email_Notification_Mode_Disabled',
 };
 
-const PreferencesNotificationsSection = () => {
+const PreferencesNotificationsSection = ({
+	notifications: {
+		defaultDesktop: defaultDesktopNotifications,
+		defaultMobile: defaultMobileNotifications,
+		userEmailMode: userEmailNotificationMode,
+		canChangeEmailNotification,
+		showNewLoginEmailPreference,
+		showCalendarPreference,
+		showMobileRinging,
+	},
+	onSendTestNotification: onSendNotification,
+}: PreferencesNotificationsSectionProps) => {
 	const { t, i18n } = useTranslation();
-	const user = useUser();
 
 	const [notificationsPermission, setNotificationsPermission] = useState<NotificationPermission>();
 
-	const defaultDesktopNotifications = useSetting(
-		'Accounts_Default_User_Preferences_desktopNotifications',
-	) as keyof typeof notificationOptionsLabelMap;
-	const defaultMobileNotifications = useSetting(
-		'Accounts_Default_User_Preferences_pushNotifications',
-	) as keyof typeof notificationOptionsLabelMap;
-	const canChangeEmailNotification = useSetting('Accounts_AllowEmailNotifications');
-
-	const loginEmailEnabled = useSetting('Device_Management_Enable_Login_Emails');
-	const allowLoginEmailPreference = useSetting('Device_Management_Allow_Login_Email_preference');
-	const showNewLoginEmailPreference = loginEmailEnabled && allowLoginEmailPreference;
-	const showVideoConfMobileRinging = useSetting('VideoConf_Mobile_Ringing');
-	const showVoipMobileRinging = useSetting('VoIP_TeamCollab_Mobile_Ringing_Enabled');
-	const showMobileRinging = showVideoConfMobileRinging || showVoipMobileRinging;
-	const notify = useNotification();
-
-	const userEmailNotificationMode = useUserPreference('emailNotificationMode') as keyof typeof emailNotificationOptionsLabelMap;
-
 	useEffect(() => setNotificationsPermission(window.Notification && Notification.permission), []);
 
-	const onSendNotification = useCallback(() => {
-		notify({
-			payload: {
-				sender: { _id: 'rocket.cat', username: 'rocket.cat' },
-				rid: 'GENERAL',
-			} as INotificationDesktop['payload'],
-			title: t('Desktop_Notification_Test'),
-			text: t('This_is_a_desktop_notification'),
-		});
-	}, [notify, t]);
-
 	const onAskNotificationPermission = useCallback(() => {
-		window.Notification && Notification.requestPermission().then((val) => setNotificationsPermission(val));
+		if (window.Notification) void Notification.requestPermission().then((val) => setNotificationsPermission(val));
 	}, []);
 
 	const notificationOptions = useMemo(
@@ -89,8 +73,6 @@ const PreferencesNotificationsSection = () => {
 	const { control } = useFormContext();
 
 	const desktopNotificationsLabelId = useId();
-
-	const showCalendarPreference = user?.settings?.calendar?.outlook?.Enabled;
 
 	return (
 		<AccordionItem title={t('Notifications')}>

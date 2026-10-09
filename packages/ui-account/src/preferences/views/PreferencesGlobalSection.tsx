@@ -1,15 +1,19 @@
 import type { SelectOption } from '@rocket.chat/fuselage';
 import { AccordionItem } from '@rocket.chat/fuselage';
 import { Field, FieldGroup, FieldLabel, FieldRow, MultiSelect } from '@rocket.chat/fuselage-forms';
-import { useUserPreference } from '@rocket.chat/ui-contexts';
 import { Controller, useFormContext } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 
-const PreferencesGlobalSection = () => {
+import type { DontAskAgainItem } from '../logic/preferencesPayload';
+
+export type PreferencesGlobalSectionProps = {
+	dontAskAgainItems: DontAskAgainItem[];
+};
+
+const PreferencesGlobalSection = ({ dontAskAgainItems }: PreferencesGlobalSectionProps) => {
 	const { t } = useTranslation();
 
-	const userDontAskAgainList = useUserPreference<{ action: string; label: string }[]>('dontAskAgainList') || [];
-	const options: SelectOption[] = userDontAskAgainList.map(({ action, label }) => [action, label]);
+	const options: SelectOption[] = dontAskAgainItems.map(({ action, label }) => [action, label]);
 
 	const { control } = useFormContext();
 

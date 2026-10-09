@@ -16,32 +16,20 @@ import {
 	Callout,
 	Margins,
 } from '@rocket.chat/fuselage';
-import { usePreferenceFeaturePreviewList, Page, PageHeader, PageScrollableContentWithShadow, PageFooter } from '@rocket.chat/ui-client';
-import { useToastMessageDispatch, useEndpoint } from '@rocket.chat/ui-contexts';
+import { Page, PageHeader, PageScrollableContentWithShadow, PageFooter, useFeaturePreviewEnableQuery } from '@rocket.chat/ui-client';
 import type { ChangeEvent } from 'react';
-import { useEffect, Fragment } from 'react';
+import { Fragment } from 'react';
 import { useForm } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 
-import { useFeaturePreviewEnableQuery } from '../../../hooks/useFeaturePreviewEnableQuery';
+import type { FeaturePreviewPreferencesViewModel } from '../logic/useFeaturePreviewPreferences';
 
-const AccountFeaturePreviewPage = () => {
+export type FeaturePreviewViewProps = {
+	vm: FeaturePreviewPreferencesViewModel;
+};
+
+const FeaturePreviewView = ({ vm: { features, save } }: FeaturePreviewViewProps) => {
 	const { t } = useTranslation();
-	const dispatchToastMessage = useToastMessageDispatch();
-	const { features, unseenFeatures } = usePreferenceFeaturePreviewList();
-
-	const setUserPreferences = useEndpoint('POST', '/v1/users.setPreferences');
-
-	useEffect(() => {
-		if (unseenFeatures) {
-			const featuresPreview = features.map((feature) => ({
-				name: feature.name,
-				value: feature.value,
-			}));
-
-			void setUserPreferences({ data: { featuresPreview } });
-		}
-	}, [setUserPreferences, features, unseenFeatures]);
 
 	const {
 		watch,
@@ -56,15 +44,8 @@ const AccountFeaturePreviewPage = () => {
 	const { featuresPreview } = watch();
 
 	const handleSave = async () => {
-		const featuresToBeSaved = featuresPreview.map((feature) => ({ name: feature.name, value: feature.value }));
-		try {
-			await setUserPreferences({ data: { featuresPreview: featuresToBeSaved } });
-			dispatchToastMessage({ type: 'success', message: t('Preferences_saved') });
-		} catch (error) {
-			dispatchToastMessage({ type: 'error', message: error });
-		} finally {
-			reset({ featuresPreview });
-		}
+		await save(featuresPreview);
+		reset({ featuresPreview });
 	};
 
 	const handleFeatures = (e: ChangeEvent<HTMLInputElement>) => {
@@ -137,4 +118,4 @@ const AccountFeaturePreviewPage = () => {
 	);
 };
 
-export default AccountFeaturePreviewPage;
+export default FeaturePreviewView;

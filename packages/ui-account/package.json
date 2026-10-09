@@ -18,17 +18,22 @@
 		"typecheck": "tsc --noEmit --skipLibCheck -p tsconfig.json"
 	},
 	"dependencies": {
+		"@react-aria/visually-hidden": "^3.8.27",
 		"@tanstack/react-query": "~5.65.1",
+		"dompurify": "~3.4.16",
 		"react-hook-form": "~7.54.2",
 		"react-i18next": "~17.0.16"
 	},
 	"devDependencies": {
 		"@rocket.chat/core-typings": "workspace:^",
+		"@rocket.chat/css-in-js": "workspace:~",
 		"@rocket.chat/fuselage": "^0.94.0",
+		"@rocket.chat/fuselage-forms": "~1.5.1",
 		"@rocket.chat/fuselage-hooks": "^0.43.1",
 		"@rocket.chat/icons": "workspace:~",
 		"@rocket.chat/jest-presets": "workspace:~",
 		"@rocket.chat/mock-providers": "workspace:~",
+		"@rocket.chat/rest-typings": "workspace:^",
 		"@rocket.chat/storybook-config": "workspace:~",
 		"@rocket.chat/tsconfig": "workspace:*",
 		"@rocket.chat/ui-client": "workspace:^",
@@ -40,6 +45,7 @@
 		"@types/react": "~19.2.18",
 		"@types/react-dom": "~19.2.7",
 		"eslint": "~10.12.0",
+		"i18next": "~26.4.2",
 		"jest": "~30.5.2",
 		"jest-axe": "~11.0.0",
 		"react": "~19.2.8",
@@ -48,8 +54,12 @@
 		"typescript": "~5.9.3"
 	},
 	"peerDependencies": {
+		"@react-aria/visually-hidden": "*",
+		"@rocket.chat/css-in-js": "workspace:^",
 		"@rocket.chat/fuselage": "*",
+		"@rocket.chat/fuselage-forms": "*",
 		"@rocket.chat/fuselage-hooks": "*",
+		"@rocket.chat/rest-typings": "workspace:^",
 		"@rocket.chat/ui-client": "workspace:^",
 		"@rocket.chat/ui-contexts": "workspace:^",
 		"react": "*",

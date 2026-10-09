@@ -13,27 +13,32 @@ import {
 	Select,
 	ToggleSwitch,
 } from '@rocket.chat/fuselage-forms';
-import { ExternalLink, Page, PageHeader, PageScrollableContentWithShadow, PageFooter } from '@rocket.chat/ui-client';
-import { useTranslation, useToastMessageDispatch, useEndpoint, useSetting, useLocationHash } from '@rocket.chat/ui-contexts';
-import { useMutation } from '@tanstack/react-query';
+import {
+	ExternalLink,
+	Page,
+	PageHeader,
+	PageScrollableContentWithShadow,
+	PageFooter,
+	getDirtyFields,
+	links,
+	useCreateFontStyleElement,
+} from '@rocket.chat/ui-client';
+import { useTranslation, useLocationHash } from '@rocket.chat/ui-contexts';
 import { useId, useMemo } from 'react';
 import { Controller, useForm } from 'react-hook-form';
 
 import { fontSizes } from './fontSizes';
-import type { AccessibilityPreferencesData } from './hooks/useAcessibilityPreferencesValues';
-import { useAccessiblityPreferencesValues } from './hooks/useAcessibilityPreferencesValues';
-import { useCreateFontStyleElement } from './hooks/useCreateFontStyleElement';
 import { themeItems as themes } from './themeItems';
-import { getDirtyFields } from '../../../lib/getDirtyFields';
-import { links } from '../../../lib/links';
+import type { AccessibilityPreferencesData, AccessibilityPreferencesViewModel } from '../logic/useAccessibilityPreferences';
 
-const AccessibilityPage = () => {
+export type AccessibilityViewProps = {
+	vm: AccessibilityPreferencesViewModel;
+};
+
+const AccessibilityView = ({ vm: { values: preferencesValues, displayRolesEnabled, save } }: AccessibilityViewProps) => {
 	const t = useTranslation();
-	const dispatchToastMessage = useToastMessageDispatch();
-	const preferencesValues = useAccessiblityPreferencesValues();
 
 	const createFontStyleElement = useCreateFontStyleElement();
-	const displayRolesEnabled = useSetting('UI_DisplayRoles');
 	const shouldExpand = useLocationHash().length > 1;
 
 	const timeFormatOptions = useMemo(
@@ -60,21 +65,13 @@ const AccessibilityPage = () => {
 
 	const currentData = watch();
 
-	const setUserPreferencesEndpoint = useEndpoint('POST', '/v1/users.setPreferences');
-
-	const setPreferencesAction = useMutation({
-		mutationFn: setUserPreferencesEndpoint,
-		onSuccess: () => dispatchToastMessage({ type: 'success', message: t('Preferences_saved') }),
-		onError: (error) => dispatchToastMessage({ type: 'error', message: error }),
-		onSettled: (_data, _error, { data: { fontSize } }) => {
-			reset(currentData);
-			dirtyFields.fontSize && fontSize && createFontStyleElement(fontSize);
-		},
-	});
-
-	const handleSaveData = (formData: AccessibilityPreferencesData) => {
-		const data = getDirtyFields(formData, dirtyFields);
-		setPreferencesAction.mutateAsync({ data });
+	const handleSaveData = async (formData: AccessibilityPreferencesData) => {
+		const changes = getDirtyFields(formData, dirtyFields);
+		await save(changes);
+		reset(currentData);
+		if (changes.fontSize) {
+			createFontStyleElement(changes.fontSize);
+		}
 	};
 
 	return (
@@ -221,4 +218,4 @@ const AccessibilityPage = () => {
 	);
 };
 
-export default AccessibilityPage;
+export default AccessibilityView;
