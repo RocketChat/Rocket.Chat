@@ -365,6 +365,13 @@ export class LivechatClientImpl extends DDPSDK implements LivechatStream, Livech
 
 		const timeoutControl = TimeoutControl.create(ddp, connection);
 
+		//reconnect after a pause upon timeout
+		timeoutControl.on('timeout', () => {
+			setTimeout(() => {
+				connection.connect();
+			}, 5000);
+		});
+
 		const rest = new RestClient({ baseUrl: url.replace(/^ws/, 'http') });
 
 		const sdk = new LivechatClientImpl(connection, stream, account, timeoutControl, rest);
@@ -374,6 +381,8 @@ export class LivechatClientImpl extends DDPSDK implements LivechatStream, Livech
 				ddp.subscribeWithId(sub.id, sub.name, sub.params);
 			}
 		});
+
+		
 
 		return sdk;
 	}
