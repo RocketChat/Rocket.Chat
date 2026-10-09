@@ -2395,6 +2395,143 @@ exports[`call stories renders CallRaisedHands QueueOpen without crashing 1`] = `
 </body>
 `;
 
+exports[`call stories renders CallReactions Burst without crashing 1`] = `
+<body>
+  <div>
+    <div
+      class="rcx-box rcx-box--full rcx-css-owlgau"
+    >
+      <div
+        style="background-color: rgb(31, 35, 41); border-radius: 4px; display: flex; flex-direction: column; height: 36rem; overflow: hidden;"
+      >
+        <div
+          style="position: relative; flex-grow: 1;"
+        >
+          <div
+            aria-live="polite"
+            aria-relevant="additions"
+            class="rcx-box rcx-box--full rcx-css-1lt8env"
+          >
+            <div
+              class="rcx-box rcx-box--full rcx-css-4darkt"
+            >
+              <span
+                class="rcx-box rcx-box--full rcx-css-173vxlm"
+              >
+                👍
+              </span>
+              <span
+                class="rcx-box rcx-box--full rcx-css-15el5ek rcx-css-16uxknr"
+              >
+                Ada Lovelace
+              </span>
+            </div>
+            <div
+              class="rcx-box rcx-box--full rcx-css-4darkt"
+            >
+              <span
+                class="rcx-box rcx-box--full rcx-css-173vxlm"
+              >
+                🎉
+              </span>
+              <span
+                class="rcx-box rcx-box--full rcx-css-15el5ek rcx-css-16uxknr"
+              >
+                Grace Hopper
+              </span>
+            </div>
+            <div
+              class="rcx-box rcx-box--full rcx-css-4darkt"
+            >
+              <span
+                class="rcx-box rcx-box--full rcx-css-173vxlm"
+              >
+                😂
+              </span>
+              <span
+                class="rcx-box rcx-box--full rcx-css-15el5ek rcx-css-16uxknr"
+              >
+                Alan Turing
+              </span>
+            </div>
+            <div
+              class="rcx-box rcx-box--full rcx-css-4darkt"
+            >
+              <span
+                class="rcx-box rcx-box--full rcx-css-173vxlm"
+              >
+                ❤️
+              </span>
+              <span
+                class="rcx-box rcx-box--full rcx-css-15el5ek rcx-css-16uxknr"
+              >
+                Katherine Johnson
+              </span>
+            </div>
+            <div
+              class="rcx-box rcx-box--full rcx-css-4darkt"
+            >
+              <span
+                class="rcx-box rcx-box--full rcx-css-173vxlm"
+              >
+                👏
+              </span>
+              <span
+                class="rcx-box rcx-box--full rcx-css-15el5ek rcx-css-16uxknr"
+              >
+                Ada Lovelace
+              </span>
+            </div>
+            <div
+              class="rcx-box rcx-box--full rcx-css-4darkt"
+            >
+              <span
+                class="rcx-box rcx-box--full rcx-css-173vxlm"
+              >
+                🔥
+              </span>
+              <span
+                class="rcx-box rcx-box--full rcx-css-15el5ek rcx-css-16uxknr"
+              >
+                Grace Hopper
+              </span>
+            </div>
+            <div
+              class="rcx-box rcx-box--full rcx-css-4darkt"
+            >
+              <span
+                class="rcx-box rcx-box--full rcx-css-173vxlm"
+              >
+                😮
+              </span>
+              <span
+                class="rcx-box rcx-box--full rcx-css-15el5ek rcx-css-16uxknr"
+              >
+                Alan Turing
+              </span>
+            </div>
+            <div
+              class="rcx-box rcx-box--full rcx-css-4darkt"
+            >
+              <span
+                class="rcx-box rcx-box--full rcx-css-173vxlm"
+              >
+                🙌
+              </span>
+              <span
+                class="rcx-box rcx-box--full rcx-css-15el5ek rcx-css-16uxknr"
+              >
+                Katherine Johnson
+              </span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</body>
+`;
+
 exports[`call stories renders CallReactions Several without crashing 1`] = `
 <body>
   <div>
@@ -2410,7 +2547,7 @@ exports[`call stories renders CallReactions Several without crashing 1`] = `
           <div
             aria-live="polite"
             aria-relevant="additions"
-            class="rcx-box rcx-box--full rcx-css-1isbrhp"
+            class="rcx-box rcx-box--full rcx-css-1lt8env"
           >
             <div
               class="rcx-box rcx-box--full rcx-css-4darkt"
@@ -2477,7 +2614,7 @@ exports[`call stories renders CallReactions Unattributed without crashing 1`] = 
           <div
             aria-live="polite"
             aria-relevant="additions"
-            class="rcx-box rcx-box--full rcx-css-1isbrhp"
+            class="rcx-box rcx-box--full rcx-css-1lt8env"
           >
             <div
               class="rcx-box rcx-box--full rcx-css-4darkt"
@@ -2578,7 +2715,7 @@ exports[`call stories renders CallStageArea Alone without crashing 1`] = `
             <div
               aria-live="polite"
               aria-relevant="additions"
-              class="rcx-box rcx-box--full rcx-css-1isbrhp"
+              class="rcx-box rcx-box--full rcx-css-1lt8env"
             />
           </div>
         </section>
@@ -2875,7 +3012,7 @@ exports[`call stories renders CallStageArea Grid without crashing 1`] = `
             <div
               aria-live="polite"
               aria-relevant="additions"
-              class="rcx-box rcx-box--full rcx-css-1isbrhp"
+              class="rcx-box rcx-box--full rcx-css-1lt8env"
             />
           </div>
         </section>
@@ -3200,7 +3337,7 @@ exports[`call stories renders CallStageArea HandsAndReactions without crashing 1
             <div
               aria-live="polite"
               aria-relevant="additions"
-              class="rcx-box rcx-box--full rcx-css-1isbrhp"
+              class="rcx-box rcx-box--full rcx-css-1lt8env"
             >
               <div
                 class="rcx-box rcx-box--full rcx-css-4darkt"
@@ -3527,7 +3664,7 @@ exports[`call stories renders CallStageArea Sidebar without crashing 1`] = `
             <div
               aria-live="polite"
               aria-relevant="additions"
-              class="rcx-box rcx-box--full rcx-css-1isbrhp"
+              class="rcx-box rcx-box--full rcx-css-1lt8env"
             />
           </div>
         </section>
@@ -3664,7 +3801,7 @@ exports[`call stories renders CallStageArea Spotlight without crashing 1`] = `
             <div
               aria-live="polite"
               aria-relevant="additions"
-              class="rcx-box rcx-box--full rcx-css-1isbrhp"
+              class="rcx-box rcx-box--full rcx-css-1lt8env"
             />
           </div>
         </section>

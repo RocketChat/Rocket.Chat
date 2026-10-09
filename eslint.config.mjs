@@ -440,9 +440,18 @@ export default [
 			'no-restricted-imports': [
 				'error',
 				{
+					paths: [
+						{
+							// ui-client mixes headless hooks with Fuselage components; only the former are allowed here.
+							name: '@rocket.chat/ui-client',
+							allowTypeImports: true,
+							allowImportNames: ['usePreferenceFeaturePreviewList'],
+							message: 'logic/ may only use headless hooks from ui-client; add the hook to the allow list if it renders nothing.',
+						},
+					],
 					patterns: [
 						{
-							group: ['@rocket.chat/fuselage', '@rocket.chat/ui-client', 'react-dom', '**/views/**'],
+							group: ['@rocket.chat/fuselage', 'react-dom', '**/views/**'],
 							message: 'logic/ must not depend on rendering; move this to views/ or pass it in.',
 						},
 					],

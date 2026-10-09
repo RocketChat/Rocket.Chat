@@ -66,6 +66,7 @@ const UserInfoWithData = ({ uid, username, rid, invitationDate, onClose, onClick
 			createdAt,
 			canViewAllInfo,
 			freeSwitchExtension,
+			federated,
 		} = data.user;
 
 		return {
@@ -89,15 +90,15 @@ const UserInfoWithData = ({ uid, username, rid, invitationDate, onClose, onClick
 			customStatus: <ReactiveUserStatusText uid={_id} />,
 			nickname,
 			freeSwitchExtension,
+			federated,
 		};
 	}, [data, getRoles]);
 
 	return (
 		<ContextualbarDialog>
 			<ContextualbarHeader>
-				{onClickBack && <ContextualbarBack onClick={onClickBack} />}
-				{!onClickBack && <ContextualbarIcon name='user' />}
-				<ContextualbarTitle>{t('User_Info')}</ContextualbarTitle>
+				{onClickBack ? <ContextualbarBack onClick={onClickBack} /> : <ContextualbarIcon name='user' />}
+				<ContextualbarTitle>{t('Full_profile')}</ContextualbarTitle>
 				{onClose && <ContextualbarClose onClick={onClose} />}
 			</ContextualbarHeader>
 

@@ -6,7 +6,7 @@ import { Trans, useTranslation } from 'react-i18next';
 import PlanCardHeader from './PlanCardHeader';
 import PlanCardLicenseDetails from './PlanCardLicenseDetails';
 import { useFormatDate } from '../../../../../../hooks/useFormatDate';
-import { useIsSelfHosted } from '../../../../../../hooks/useIsSelfHosted';
+import { useIsSelfHosted } from '../../../hooks/useIsSelfHosted';
 import { CONTACT_SALES_LINK } from '../../../utils/links';
 
 type LicenseLimits = {

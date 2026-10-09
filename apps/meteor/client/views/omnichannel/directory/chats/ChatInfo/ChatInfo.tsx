@@ -15,8 +15,8 @@ import { useMemo } from 'react';
 
 import DepartmentField from './DepartmentField';
 import VisitorClientInfo from './VisitorClientInfo';
+import { useFormatDuration } from './useFormatDuration';
 import MarkdownText from '../../../../../components/MarkdownText';
-import { useFormatDuration } from '../../../../../hooks/useFormatDuration';
 import { useFormattedRelativeTime } from '../../../../../hooks/useFormattedRelativeTime';
 import CustomField from '../../../components/CustomField';
 import { useValidCustomFields } from '../../../contactInfo/hooks/useValidCustomFields';

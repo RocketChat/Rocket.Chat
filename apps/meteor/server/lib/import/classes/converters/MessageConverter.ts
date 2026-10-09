@@ -25,8 +25,18 @@ type IMessageReaction = {
 
 type IMessageReactions = Record<string, IMessageReaction>;
 
+const createUniqueClock = () => {
+	let last = 0;
+	return (): Date => {
+		last = Math.max(Date.now(), last + 1);
+		return new Date(last);
+	};
+};
+
 export class MessageConverter extends RecordConverter<IImportMessageRecord> {
 	private rids: string[] = [];
+
+	private readonly importTime = createUniqueClock();
 
 	override async convertData({ afterImportAllMessagesFn, ...callbacks }: MessageConversionCallbacks = {}): Promise<void> {
 		this.rids = [];
@@ -49,8 +59,8 @@ export class MessageConverter extends RecordConverter<IImportMessageRecord> {
 	}
 
 	protected async insertMessage(data: IImportMessage): Promise<void> {
-		if (!data.ts || isNaN(data.ts as unknown as number)) {
-			throw new Error('importer-message-invalid-timestamp');
+		if (!(Number(data.ts) > 0)) {
+			data.ts = this.importTime();
 		}
 
 		const creator = await this._cache.findImportedUser(data.u._id);

@@ -2269,7 +2269,6 @@
   "Local_Domains": "로컬 도메인",
   "Local_Password": "로컬 비밀번호",
   "Local_Time": "현지 시간",
-  "Local_Time_time": "현지 시간 : {{time}}",
   "Localization": "언어번역",
   "Location": "위치",
   "Log_Exceptions_to_Channel": "대화방에 예외 기록",

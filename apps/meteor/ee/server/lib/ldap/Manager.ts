@@ -80,9 +80,10 @@ export class LDAPEEManager extends LDAPManager {
 			}
 		} catch (err) {
 			logger.error({ err });
+			throw err;
+		} finally {
+			ldap.disconnect();
 		}
-
-		ldap.disconnect();
 	}
 
 	public static async syncAvatars(): Promise<void> {
@@ -237,6 +238,7 @@ export class LDAPEEManager extends LDAPManager {
 			}
 		} catch (err) {
 			logger.error({ err });
+			throw err;
 		}
 	}
 

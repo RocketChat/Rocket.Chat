@@ -7,6 +7,7 @@ import {
 	validateForbiddenErrorResponse,
 } from '@rocket.chat/rest-typings';
 
+import { getLdapErrorReason } from '../../lib/ldap/getLdapErrorReason';
 import { SystemLogger } from '../../lib/logger/system';
 import { settings } from '../../settings';
 import { API } from '../api';
@@ -53,7 +54,11 @@ API.v1.post(
 				return API.v1.failure({ error: String(err.error), details: err.details });
 			}
 
-			return API.v1.failure('Connection_failed');
+			return API.v1.failure({
+				error: 'LDAP_Connection_failed_reason',
+				errorType: 'error-ldap-connection-failed',
+				details: { reason: getLdapErrorReason(err) },
+			});
 		}
 
 		return API.v1.success({
