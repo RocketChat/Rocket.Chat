@@ -1,11 +1,11 @@
 import type { Credentials } from '@rocket.chat/api-client';
-import type { IContact, IUser } from '@rocket.chat/core-typings';
+import type { IContact, ISetting, IUser } from '@rocket.chat/core-typings';
 import { expect } from 'chai';
 import { after, before, describe, it } from 'mocha';
 import { MongoClient } from 'mongodb';
 
 import { getCredentials, api, request, credentials } from '../../data/api-data';
-import { updateSetting } from '../../data/permissions.helper';
+import { getSettingValueById, updateSetting } from '../../data/permissions.helper';
 import { password } from '../../data/user';
 import { createUser, deleteUser, login } from '../../data/users.helper';
 import { IS_EE, URL_MONGODB } from '../../e2e/config/constants';
@@ -54,25 +54,29 @@ describe('[Contacts]', () => {
 	});
 
 	after(async () => {
-		await contacts().deleteMany({ _id: { $in: [syncedId, ownLocalContactId] } });
-		await connection.close();
+		if (connection) {
+			await contacts().deleteMany({ _id: { $in: [syncedId, ownLocalContactId] } });
+			await connection.close();
+		}
 	});
 
 	(IS_EE ? describe : describe.skip)('with outlook-calendar license', () => {
 		let otherUser: IUser;
 		let otherCredentials: Credentials;
 		let otherContactId: string;
+		let previousRegion: ISetting['value'];
 
 		before(async () => {
 			otherUser = await createUser();
 			otherCredentials = await login(otherUser.username, password);
+			previousRegion = await getSettingValueById('Exchange_Contacts_Default_Region');
 			await updateSetting('Exchange_Contacts_Default_Region', 'AR');
 			otherContactId = await createContact(otherCredentials, { givenName: `Other${stamp}`, surname: 'Contact' });
 		});
 
 		after(async () => {
 			await contacts().deleteMany({ uid: otherUser._id });
-			await updateSetting('Exchange_Contacts_Default_Region', '');
+			await updateSetting('Exchange_Contacts_Default_Region', previousRegion);
 			await deleteUser(otherUser);
 		});
 
