@@ -32,7 +32,6 @@ export function addSettings(): Promise<void> {
 				await this.add('ABAC_Enforce_All_Rooms', false, {
 					type: 'boolean',
 					public: true,
-					// Losing the license must never leave rooms locked.
 					invalidValue: false,
 					section: 'ABAC',
 					i18nDescription: 'ABAC_Enforce_All_Rooms_Description',
