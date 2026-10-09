@@ -5,7 +5,16 @@ import { ajv, ajvQuery } from './Ajv';
 import type { PaginatedRequest } from '../helpers/PaginatedRequest';
 import type { PaginatedResult } from '../helpers/PaginatedResult';
 
-export type ContactsSortableField = 'displayName' | 'emails.address' | 'categories' | 'companyName' | 'officeLocation';
+export const CONTACTS_SORTABLE_FIELDS = [
+	'displayName',
+	'emails.address',
+	'phones.raw',
+	'categories',
+	'companyName',
+	'officeLocation',
+] as const;
+
+export type ContactsSortableField = (typeof CONTACTS_SORTABLE_FIELDS)[number];
 
 export type ContactsListProps = PaginatedRequest<{ text?: string }, ContactsSortableField>;
 
