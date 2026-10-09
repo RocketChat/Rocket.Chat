@@ -3,7 +3,7 @@ import { cronJobs } from '@rocket.chat/cron';
 import { ExchangeCalendarSyncState } from '@rocket.chat/models';
 import { isValidCron } from 'cron-validator';
 
-import { whenMailboxesIdle } from './mailboxLock';
+import { whenMailboxesIdle } from '../mailboxLock';
 import { runCalendarSync } from './runCalendarSync';
 import { settings } from '../../../../../../server/settings';
 import { logger } from '../../logger';
