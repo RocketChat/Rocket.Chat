@@ -76,7 +76,7 @@ export const runContactSync = async (): Promise<ContactSyncRunSummary> => {
 				return;
 			}
 
-			if (await ExchangeContactSyncState.hasFolderSyncedSince(uid, dueSince)) {
+			if (await ExchangeContactSyncState.hasSyncedSince(uid, dueSince)) {
 				summary.notDue++;
 				return;
 			}

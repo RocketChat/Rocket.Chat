@@ -8,7 +8,7 @@ const syncUserContacts = jest.fn();
 const getExchangeProvider = jest.fn();
 const isServerSyncEnabled = jest.fn();
 const iterateMailboxCandidates = jest.fn();
-const hasFolderSyncedSince = jest.fn();
+const hasSyncedSince = jest.fn();
 const settingsGet = jest.fn();
 
 jest.mock('./syncUserContacts', () => ({ syncUserContacts: (...args: unknown[]) => syncUserContacts(...args) }));
@@ -18,7 +18,7 @@ jest.mock('../../ExchangeProviderRegistry', () => ({
 	isServerSyncEnabled: () => isServerSyncEnabled(),
 }));
 jest.mock('@rocket.chat/models', () => ({
-	ExchangeContactSyncState: { hasFolderSyncedSince: (...args: unknown[]) => hasFolderSyncedSince(...args) },
+	ExchangeContactSyncState: { hasSyncedSince: (...args: unknown[]) => hasSyncedSince(...args) },
 }));
 jest.mock('../../../../../../server/settings', () => ({ settings: { get: (key: string) => settingsGet(key) } }));
 
@@ -63,7 +63,7 @@ describe('runContactSync', () => {
 		isServerSyncEnabled.mockReturnValue(true);
 		getExchangeProvider.mockReturnValue({ id: 'ews' });
 		syncUserContacts.mockResolvedValue(outcome());
-		hasFolderSyncedSince.mockResolvedValue(false);
+		hasSyncedSince.mockResolvedValue(false);
 		iterateMailboxCandidates.mockImplementation(from([{ uid: 'a', mailbox: 'a@corp.example' }]));
 		settingsOf();
 	});
@@ -130,7 +130,7 @@ describe('runContactSync', () => {
 					{ uid: 'b', mailbox: 'b@corp.example' },
 				]),
 			);
-			hasFolderSyncedSince.mockResolvedValueOnce(true);
+			hasSyncedSince.mockResolvedValueOnce(true);
 
 			const summary = await runContactSync();
 
