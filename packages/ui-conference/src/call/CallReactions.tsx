@@ -18,15 +18,14 @@ const layerStyles = css`
 	position: absolute;
 	left: 1rem;
 	bottom: 1rem;
-	// Tall enough for the whole rise, and no wider than it needs to be, so the call underneath stays clickable.
+	// No wider than it needs to be, so the call underneath stays clickable.
 	width: 20rem;
 	max-width: 60%;
-	height: 15rem;
+	// Unclipped, and as tall as what is in it: a burst stacks the oldest higher, and each must still fade out on its
+	// own rather than be cut off on the way up.
 	pointer-events: none;
-	overflow: hidden;
 	display: flex;
 	flex-direction: column;
-	justify-content: flex-end;
 	align-items: flex-start;
 	gap: 0.25rem;
 `;
