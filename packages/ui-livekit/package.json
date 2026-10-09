@@ -21,7 +21,7 @@
 		"livekit-client": "^2.20.1"
 	},
 	"devDependencies": {
-		"@rocket.chat/fuselage-hooks": "^0.43.1",
+		"@rocket.chat/fuselage-hooks": "workspace:^",
 		"@rocket.chat/jest-presets": "workspace:~",
 		"@rocket.chat/tsconfig": "workspace:*",
 		"@rocket.chat/ui-client": "workspace:^",
