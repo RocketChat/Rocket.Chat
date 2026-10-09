@@ -20,6 +20,7 @@ export const useContactsSync = () => {
 			return result;
 		},
 		onSuccess: () => dispatchToastMessage({ type: 'success', message: t('Outlook_contact_sync_complete') }),
-		onError: async (error) => dispatchToastMessage({ type: 'error', message: await getEndpointErrorMessage(error, 'Outlook_Sync_Failed') }),
+		onError: async (error) =>
+			dispatchToastMessage({ type: 'error', message: await getEndpointErrorMessage(error, 'Outlook_contact_sync_failed') }),
 	});
 };
