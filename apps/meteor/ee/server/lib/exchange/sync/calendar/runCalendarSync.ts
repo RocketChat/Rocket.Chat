@@ -1,6 +1,7 @@
 import type { IUser } from '@rocket.chat/core-typings';
 
 import { applyDeferredSideEffects } from './applyDeferredSideEffects';
+import { acquireMailbox } from './mailboxLock';
 import { forEachWithConcurrency } from '../forEachWithConcurrency';
 import { MAILBOX_CONCURRENCY } from '../limits';
 import { iterateMailboxCandidates } from '../resolveMailboxes';
@@ -64,27 +65,38 @@ export const runCalendarSync = async (): Promise<CalendarSyncRunSummary> => {
 				return;
 			}
 
+			const release = acquireMailbox(uid);
+
+			if (!release) {
+				summary.skipped++;
+				return;
+			}
+
 			summary.mailboxes++;
 
-			const outcome = await syncCalendarWindow(provider, uid, mailbox, timeWindow);
+			try {
+				const outcome = await syncCalendarWindow(provider, uid, mailbox, timeWindow);
 
-			summary.upserted += outcome.upserted;
-			summary.modified += outcome.modified;
-			summary.deleted += outcome.deleted;
-			summary.pruned += outcome.pruned;
+				summary.upserted += outcome.upserted;
+				summary.modified += outcome.modified;
+				summary.deleted += outcome.deleted;
+				summary.pruned += outcome.pruned;
 
-			if (outcome.failed) {
-				summary.failed++;
-			}
+				if (outcome.failed) {
+					summary.failed++;
+				}
 
-			if (outcome.changed) {
-				dirty.add(uid);
-			}
+				if (outcome.changed) {
+					dirty.add(uid);
+				}
 
-			if (outcome.fatal) {
-				summary.aborted = true;
+				if (outcome.fatal) {
+					summary.aborted = true;
 
-				await candidates.return(undefined);
+					await candidates.return(undefined);
+				}
+			} finally {
+				release();
 			}
 		});
 
