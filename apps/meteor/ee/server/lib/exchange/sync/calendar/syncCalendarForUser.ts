@@ -2,7 +2,7 @@ import type { IUser } from '@rocket.chat/core-typings';
 import { Users } from '@rocket.chat/models';
 
 import { applyDeferredSideEffects } from './applyDeferredSideEffects';
-import { acquireMailbox } from './mailboxLock';
+import { acquireMailbox } from '../mailboxLock';
 import { resolveMailbox } from '../resolveMailboxes';
 import type { CalendarSyncOutcome } from './syncCalendarWindow';
 import { syncCalendarWindow } from './syncCalendarWindow';
@@ -10,7 +10,7 @@ import { getExchangeProvider, getCalendarSyncWindow } from '../../ExchangeProvid
 import { ExchangeError } from '../../errors';
 
 export const syncCalendarForUser = async (uid: IUser['_id']): Promise<CalendarSyncOutcome> => {
-	const release = acquireMailbox(uid);
+	const release = acquireMailbox('calendar', uid);
 
 	if (!release) {
 		throw new ExchangeError('rate-limited', 'A sync for this mailbox is already in progress');

@@ -50,13 +50,8 @@ export class ExchangeContactSyncStateRaw extends BaseRaw<IExchangeContactSyncSta
 		);
 	}
 
-	public async setLastError(
-		uid: IUser['_id'],
-		folderId: string,
-		identity: ExchangeContactSyncIdentity,
-		lastError: string,
-	): Promise<UpdateResult> {
-		return this.updateOne({ uid, folderId }, { $set: { ...identity, lastError, lastErrorAt: new Date() } }, { upsert: true });
+	public async setLastError(uid: IUser['_id'], folderId: string, lastError: string): Promise<UpdateResult> {
+		return this.updateOne({ uid, folderId }, { $set: { lastError, lastErrorAt: new Date() } }, { upsert: true });
 	}
 
 	public async clearCursor(uid: IUser['_id'], folderId: string): Promise<UpdateResult> {

@@ -1,4 +1,4 @@
-import { acquireMailbox } from './mailboxLock';
+import { acquireMailbox } from '../mailboxLock';
 import { runCalendarSync } from './runCalendarSync';
 import { ExchangeError } from '../../errors';
 import { MAILBOX_CONCURRENCY } from '../limits';
@@ -100,7 +100,7 @@ describe('runCalendarSync', () => {
 			]),
 		);
 
-		const release = acquireMailbox('a');
+		const release = acquireMailbox('calendar', 'a');
 
 		try {
 			const summary = await runCalendarSync();

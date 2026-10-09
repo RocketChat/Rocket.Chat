@@ -14,6 +14,7 @@ export type UserContactSyncOutcome = {
 	pruned: number;
 	failed: number;
 	fatal: boolean;
+	error?: unknown;
 };
 
 const EMPTY: UserContactSyncOutcome = { folders: 0, upserted: 0, modified: 0, deleted: 0, pruned: 0, failed: 0, fatal: false };
@@ -58,6 +59,7 @@ export const syncUserContacts = async (
 
 		if (outcome.failed) {
 			summary.failed++;
+			summary.error = summary.error ?? outcome.error;
 		}
 
 		if (outcome.fatal) {
