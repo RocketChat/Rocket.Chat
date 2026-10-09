@@ -52,6 +52,7 @@ describe('Invites', () => {
 					rid: 'GENERAL',
 					days: 1,
 					maxUses: 10,
+				})
 				.expect(200);
 
 			expect(res.body).to.have.property('success', true);
@@ -73,6 +74,7 @@ describe('Invites', () => {
 					rid: 'GENERAL',
 					days: 1,
 					maxUses: 10,
+				})
 				.expect(200);
 
 			expect(res.body).to.have.property('success', true);
