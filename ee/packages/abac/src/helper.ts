@@ -4,6 +4,7 @@ import mem from 'mem';
 
 import {
 	AbacAttributeDefinitionNotFoundError,
+	AbacCannotConvertDefaultRoomToAbacError,
 	AbacInvalidAttributeKeyError,
 	AbacInvalidAttributeValuesError,
 	AbacRoomNotFoundError,
@@ -228,6 +229,9 @@ export async function getAbacRoom(rid: string): Promise<IRoom> {
 	const room = await Rooms.findOneByIdAndType(rid, 'p');
 	if (!room) {
 		throw new AbacRoomNotFoundError();
+	}
+	if (room.default || room.teamDefault) {
+		throw new AbacCannotConvertDefaultRoomToAbacError();
 	}
 
 	return room;

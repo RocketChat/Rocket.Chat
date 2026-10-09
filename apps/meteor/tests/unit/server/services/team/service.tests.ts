@@ -19,7 +19,7 @@ const Message = {
 
 const addUserToRoom = sinon.stub();
 
-const filterDefaultChannelsForUser = sinon.stub();
+const getRoomAbacLockContext = sinon.stub();
 
 const { TeamService } = proxyquire.noCallThru().load('../../../../../server/services/team/service', {
 	'@rocket.chat/core-services': {
@@ -48,8 +48,8 @@ const { TeamService } = proxyquire.noCallThru().load('../../../../../server/serv
 	'../../lib/rooms/addUserToRoom': {
 		addUserToRoom,
 	},
-	'../../lib/rooms/filterDefaultChannelsForUser': {
-		filterDefaultChannelsForUser,
+	'../../lib/authorization/getRoomAbacLockContext': {
+		getRoomAbacLockContext,
 	},
 	'../../lib/users/checkUsernameAvailability': {
 		checkUsernameAvailability: sinon.stub(),
@@ -79,8 +79,9 @@ describe('Team service', () => {
 		Rooms.unsetTeamId.reset();
 		Users.findActiveByIds.reset();
 		Message.saveSystemMessage.reset();
-		filterDefaultChannelsForUser.reset();
-		filterDefaultChannelsForUser.callsFake((rooms: unknown[]) => Promise.resolve(rooms));
+		getRoomAbacLockContext.reset();
+
+		getRoomAbacLockContext.returns({ enforcementOn: false, requiredAttributeKeys: [] });
 	});
 
 	it('should wait for default room membership operations to finish', async function () {
@@ -132,28 +133,16 @@ describe('Team service', () => {
 		expect(addUserToRoom.callCount).to.equal(1);
 	});
 
-	it('should leave out the default rooms the user is not allowed to join', async () => {
-		const allowedRoom = { _id: 'allowed-room' };
-		const refusedRoom = { _id: 'refused-room' };
-
+	it('should leave out the default rooms enforcement locks', async () => {
+		getRoomAbacLockContext.returns({ enforcementOn: true, requiredAttributeKeys: [] });
 		addUserToRoom.resolves(true);
+
 		Rooms.findDefaultRoomsForTeam.returns({
-			toArray: () => Promise.resolve([allowedRoom, refusedRoom]),
-		});
-		Users.findActiveByIds.returns({
-			toArray: () => Promise.resolve([{ _id: 'user-1', username: 'user-1' }]),
-		});
-		filterDefaultChannelsForUser.resolves([allowedRoom]);
-
-		await service.addMembersToDefaultRooms({ _id: 'inviter', username: 'inviter' }, 'team-id', [{ userId: 'user-1' }]);
-
-		expect(addUserToRoom.callCount).to.equal(1);
-		expect(addUserToRoom.firstCall.args[0]).to.equal('allowed-room');
-	});
-
-	it('should filter the default rooms without refreshing the member attributes', async () => {
-		Rooms.findDefaultRoomsForTeam.returns({
-			toArray: () => Promise.resolve([{ _id: 'default-room' }]),
+			toArray: () =>
+				Promise.resolve([
+					{ _id: 'locked-room', t: 'p' },
+					{ _id: 'compliant-room', t: 'p', abacAttributes: [{ key: 'dept', values: ['eng'] }] },
+				]),
 		});
 		Users.findActiveByIds.returns({
 			toArray: () => Promise.resolve([{ _id: 'user-1', username: 'user-1' }]),
@@ -161,8 +150,8 @@ describe('Team service', () => {
 
 		await service.addMembersToDefaultRooms({ _id: 'inviter', username: 'inviter' }, 'team-id', [{ userId: 'user-1' }]);
 
-		expect(filterDefaultChannelsForUser.calledOnce).to.be.true;
-		expect(filterDefaultChannelsForUser.firstCall.args[2]?.refreshUserAttributes).to.not.be.true;
+		expect(addUserToRoom.calledOnce).to.be.true;
+		expect(addUserToRoom.firstCall.args[0]).to.equal('compliant-room');
 	});
 
 	describe('unsetTeamIdOfRooms', () => {
