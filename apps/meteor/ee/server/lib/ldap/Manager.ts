@@ -744,7 +744,9 @@ export class LDAPEEManager extends LDAPManager {
 					const activeState = { username: user.username } as IImportUser;
 					this.copyActiveState(ldapUser, activeState);
 					if (activeState.deleted && user.active) {
-						await setUserActiveStatus(user._id, false, true);
+						await setUserActiveStatus(user._id, false, true).catch((err) =>
+							logger.error({ msg: 'Failed to deactivate LDAP user that could not be mapped', dn: ldapUser.dn, err }),
+						);
 					}
 				}
 			} else if (disableMissingUsers && user.active) {

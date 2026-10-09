@@ -153,10 +153,39 @@ describe('LDAPEEManager updateExistingUsers', () => {
 		settingsStub.get.reset();
 		settingsStub.get.withArgs('LDAP_Sync_User_Active_State').returns('disable');
 		setUserActiveStatusStub.reset();
+		setUserActiveStatusStub.resolves();
 
 		await (LDAPEEManager as any).updateExistingUsers(ldap, converter);
 
 		expect(converter.addObjectToMemory.called).to.be.false;
 		expect(setUserActiveStatusStub.calledOnceWithExactly('brokenId', false, true)).to.be.true;
+	});
+
+	it('should keep updating the remaining users when deactivating a user that cannot be mapped fails', async () => {
+		const brokenUser = { _id: 'brokenId', username: 'broken', active: true };
+		const validUser = { username: 'valid' };
+		const brokenEntry = { dn: 'uid=broken,dc=example', userAccountControl: 2 };
+		const validEntry = { dn: 'uid=valid,dc=example' };
+		const validUserData = { username: 'valid' };
+		const deactivateError = new Error('error-action-not-allowed');
+		const ldap = { findOneByUsername: sinon.stub() };
+		const converter = { addObjectToMemory: sinon.stub() };
+
+		usersStub.findLDAPUsers.returns({ toArray: async () => [brokenUser, validUser] });
+		ldap.findOneByUsername.withArgs('broken').resolves(brokenEntry);
+		ldap.findOneByUsername.withArgs('valid').resolves(validEntry);
+		LDAPManagerStub.mapUserData.withArgs(brokenEntry).throws(new Error('Failed to get email address from LDAP user'));
+		LDAPManagerStub.mapUserData.withArgs(validEntry).returns(validUserData);
+		LDAPManagerStub.getLdapUsername.returns('valid');
+		settingsStub.get.reset();
+		settingsStub.get.withArgs('LDAP_Sync_User_Active_State').returns('disable');
+		setUserActiveStatusStub.reset();
+		setUserActiveStatusStub.rejects(deactivateError);
+		loggerStub.error.resetHistory();
+
+		await (LDAPEEManager as any).updateExistingUsers(ldap, converter);
+
+		expect(converter.addObjectToMemory.calledOnceWithExactly(validUserData, { dn: validEntry.dn, username: 'valid' })).to.be.true;
+		expect(loggerStub.error.calledWithMatch({ dn: brokenEntry.dn, err: deactivateError })).to.be.true;
 	});
 });
