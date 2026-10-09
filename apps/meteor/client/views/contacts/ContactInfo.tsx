@@ -58,9 +58,9 @@ const ContactInfo = ({ contact, onEdit, onClose }: ContactInfoProps) => {
 						{!!plainEmails.length && (
 							<InfoPanelField>
 								<InfoPanelLabel>{t('Email')}</InfoPanelLabel>
-								{plainEmails.map(({ address }) => (
+								{plainEmails.map(({ address }, index) => (
 									<ContactInfoEntry
-										key={address}
+										key={`email-${index}-${address}`}
 										text={address}
 										actionIcon='mail'
 										actionLabel={t('Email')}
@@ -70,8 +70,8 @@ const ContactInfo = ({ contact, onEdit, onClose }: ContactInfoProps) => {
 							</InfoPanelField>
 						)}
 
-						{labelledEmails.map(({ address, label }) => (
-							<InfoPanelField key={address}>
+						{labelledEmails.map(({ address, label }, index) => (
+							<InfoPanelField key={`labelled-email-${index}-${address}`}>
 								<InfoPanelLabel>{`${t('Email')} (${labelOf(label)})`}</InfoPanelLabel>
 								<ContactInfoEntry
 									text={address}
@@ -84,11 +84,11 @@ const ContactInfo = ({ contact, onEdit, onClose }: ContactInfoProps) => {
 
 						{!!phones.length && <Divider />}
 
-						{phones.map(({ raw, label }) => {
+						{phones.map(({ raw, label }, index) => {
 							const resolved = labelOf(label);
 
 							return (
-								<InfoPanelField key={raw}>
+								<InfoPanelField key={`phone-${index}-${raw}`}>
 									<InfoPanelLabel>{resolved ? `${t('Phone')} (${resolved})` : t('Phone')}</InfoPanelLabel>
 									<ContactInfoEntry
 										text={raw}
