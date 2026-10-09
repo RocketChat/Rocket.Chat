@@ -25,6 +25,7 @@ const onHoverStyle = css`
 
 const CodeBlock = ({ lines = [], language }: CodeBlockProps) => {
 	const ref = useRef<HTMLElement>(null);
+	const [copied, setCopied] = useState(false);
 
 	const { highlightRegex } = useContext(MarkupInteractionContext);
 	const { t } = useTranslation();
@@ -41,18 +42,16 @@ const CodeBlock = ({ lines = [], language }: CodeBlockProps) => {
 
 			return (
 				<>
-					<>{head}</>
-					{chunks.map((chunk, i) => {
-						if (i % 2 === 0) {
-							return (
-								<mark key={i} className='highlight-text'>
-									{chunk}
-								</mark>
-							);
-						}
-
-						return <Fragment key={i}>{chunk}</Fragment>;
-					})}
+					{head}
+					{chunks.map((chunk, i) =>
+						i % 2 === 0 ? (
+							<mark key={i} className='highlight-text'>
+								{chunk}
+							</mark>
+						) : (
+							<Fragment key={i}>{chunk}</Fragment>
+						),
+					)}
 				</>
 			);
 		}
@@ -62,7 +61,6 @@ const CodeBlock = ({ lines = [], language }: CodeBlockProps) => {
 
 	useLayoutEffect(() => {
 		const element = ref.current;
-
 		if (!element) {
 			return;
 		}
