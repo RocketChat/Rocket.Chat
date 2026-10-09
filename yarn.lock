@@ -9820,6 +9820,7 @@ __metadata:
     "@rocket.chat/core-typings": "workspace:^"
     "@rocket.chat/emitter": "workspace:~"
     "@rocket.chat/fuselage": "npm:^0.94.0"
+    "@rocket.chat/fuselage-forms": "npm:~1.5.1"
     "@rocket.chat/fuselage-hooks": "npm:^0.43.1"
     "@rocket.chat/fuselage-tokens": "npm:^0.35.0"
     "@rocket.chat/gazzodown": "workspace:^"
@@ -9856,6 +9857,7 @@ __metadata:
   peerDependencies:
     "@rocket.chat/apps-engine": "workspace:^"
     "@rocket.chat/fuselage": "*"
+    "@rocket.chat/fuselage-forms": "*"
     "@rocket.chat/fuselage-hooks": "*"
     "@rocket.chat/icons": "*"
     "@rocket.chat/styled": "*"
