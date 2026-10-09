@@ -28,7 +28,6 @@ const RequiredAttributesField = () => {
 				return;
 			}
 
-			// A failed lookup cannot tell us which removals are unrestorable, so warn about all of them.
 			const keysToConfirm = isSuccess ? removedKeys.filter((key) => !options.some((option) => option.key === key)) : removedKeys;
 
 			if (keysToConfirm.length === 0) {
