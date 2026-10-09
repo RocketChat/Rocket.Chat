@@ -1,7 +1,7 @@
 import { expect } from 'chai';
 import { before, describe, it, after } from 'mocha';
 
-import { getCredentials, api, request, credentials, methodCall } from '../../data/api-data';
+import { getCredentials, api, request, credentials } from '../../data/api-data';
 import { restorePermissionToRoles } from '../../data/permissions.helper';
 import { IS_EE } from '../../e2e/config/constants';
 
@@ -14,24 +14,15 @@ import { IS_EE } from '../../e2e/config/constants';
 
 	function succeedRemoveGuestPermission(permissionName: string) {
 		it(`should allow removing the whitelisted permission ${permissionName} from the guest role`, async () => {
-			const res = await request
-				.post(methodCall('authorization:removeRoleFromPermission'))
+			await request
+				.post(api('permissions.removeRole'))
 				.set(credentials)
-				.send({
-					message: JSON.stringify({
-						method: 'authorization:removeRoleFromPermission',
-						params: [permissionName, 'guest'],
-						id: 'id',
-						msg: 'method',
-					}),
-				})
+				.send({ permissionId: permissionName, role: 'guest' })
 				.expect('Content-Type', 'application/json')
-				.expect(200);
-
-			expect(res.body).to.have.property('success', true);
-			expect(res.body).to.have.property('message');
-			const message = JSON.parse(res.body.message);
-			expect(message).to.not.have.property('error');
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+				});
 
 			const permissionsListRes = await request
 				.get(api('permissions.listAll'))
@@ -50,24 +41,15 @@ import { IS_EE } from '../../e2e/config/constants';
 
 	function succeedAddGuestPermission(permissionName: string) {
 		it(`should allow granting the whitelisted permission ${permissionName} to the guest role`, async () => {
-			const res = await request
-				.post(methodCall('authorization:addPermissionToRole'))
+			await request
+				.post(api('permissions.addRole'))
 				.set(credentials)
-				.send({
-					message: JSON.stringify({
-						method: 'authorization:addPermissionToRole',
-						params: [permissionName, 'guest'],
-						id: 'id',
-						msg: 'method',
-					}),
-				})
+				.send({ permissionId: permissionName, role: 'guest' })
 				.expect('Content-Type', 'application/json')
-				.expect(200);
-
-			expect(res.body).to.have.property('success', true);
-			expect(res.body).to.have.property('message');
-			const message = JSON.parse(res.body.message);
-			expect(message).to.not.have.property('error');
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+				});
 
 			const permissionsListRes = await request
 				.get(api('permissions.listAll'))
@@ -94,25 +76,17 @@ import { IS_EE } from '../../e2e/config/constants';
 		});
 
 		it('should not allow adding a non whitelisted permission to the guest role', async () => {
-			const res = await request
-				.post(methodCall('authorization:addPermissionToRole'))
+			await request
+				.post(api('permissions.addRole'))
 				.set(credentials)
-				.send({
-					message: JSON.stringify({
-						method: 'authorization:addPermissionToRole',
-						params: ['create-c', 'guest'],
-						id: 'id',
-						msg: 'method',
-					}),
-				})
+				.send({ permissionId: 'create-c', role: 'guest' })
 				.expect('Content-Type', 'application/json')
-				.expect(400);
-
-			expect(res.body).to.have.property('success', false);
-			expect(res.body).to.have.property('message');
-			const message = JSON.parse(res.body.message);
-			expect(message).to.have.property('error');
-			expect(message.error).to.have.property('reason', 'Permission is restricted');
+				.expect(400)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', false);
+					expect(res.body).to.have.property('error', 'Permission is restricted');
+					expect(res.body).to.have.property('errorType', 'error-action-not-allowed');
+				});
 		});
 	});
 });
