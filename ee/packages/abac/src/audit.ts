@@ -167,6 +167,8 @@ export const Audit = {
 				},
 				actor: { type: 'system' as const },
 			})),
+		).catch((err) =>
+			logger.error({ msg: 'Failed to write ABAC audit events', event: 'abac.action.performed', count: entries.length, err }),
 		);
 	},
 	subjectAttributeChanged: async (diff: IAbacAttributeDefinition[], subject: MinimalUser) => {
