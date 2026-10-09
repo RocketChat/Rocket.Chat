@@ -1,0 +1,34 @@
+{
+	"$schema": "https://www.schemastore.org/package",
+	"name": "@rocket.chat/ui-preview",
+	"version": "0.0.0",
+	"description": "Runs the web client built for a Rocket.Chat pull request against any Rocket.Chat server",
+	"repository": {
+		"type": "git",
+		"url": "git+https://github.com/RocketChat/Rocket.Chat.git",
+		"directory": "packages/ui-preview"
+	},
+	"license": "MIT",
+	"type": "module",
+	"bin": {
+		"rocketchat-ui-preview": "./bin/ui-preview.mjs"
+	},
+	"files": [
+		"bin"
+	],
+	"scripts": {
+		"lint": "eslint ."
+	},
+	"dependencies": {
+		"vite": "^8.0.16"
+	},
+	"devDependencies": {
+		"eslint": "~10.12.0"
+	},
+	"engines": {
+		"node": ">=22"
+	},
+	"volta": {
+		"extends": "../../package.json"
+	}
+}
