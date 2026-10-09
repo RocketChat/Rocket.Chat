@@ -23,7 +23,7 @@ export class ExchangeContactSyncStateRaw extends BaseRaw<IExchangeContactSyncSta
 		return states.map(({ folderId }) => folderId);
 	}
 
-	public async hasFolderSyncedSince(uid: IUser['_id'], since: Date): Promise<boolean> {
+	public async hasSyncedSince(uid: IUser['_id'], since: Date): Promise<boolean> {
 		return Boolean(await this.findOne({ uid, lastSyncAt: { $gte: since } }, { projection: { _id: 1 } }));
 	}
 

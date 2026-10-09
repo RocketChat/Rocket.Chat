@@ -9,7 +9,7 @@ export type ExchangeContactSyncIdentity = Pick<IExchangeContactSyncState, 'mailb
 export interface IExchangeContactSyncStateModel extends IBaseModel<IExchangeContactSyncState> {
 	findOneByUserIdAndFolder(uid: IUser['_id'], folderId: string): Promise<IExchangeContactSyncState | null>;
 	findFolderIdsByUserId(uid: IUser['_id']): Promise<string[]>;
-	hasFolderSyncedSince(uid: IUser['_id'], since: Date): Promise<boolean>;
+	hasSyncedSince(uid: IUser['_id'], since: Date): Promise<boolean>;
 	saveCursor(
 		uid: IUser['_id'],
 		folderId: string,
