@@ -1,5 +1,5 @@
 import { Box } from '@rocket.chat/fuselage';
-import { useEndpoint } from '@rocket.chat/ui-contexts';
+import { useEndpoint, useSetting } from '@rocket.chat/ui-contexts';
 import { useQuery } from '@tanstack/react-query';
 import { useTranslation } from 'react-i18next';
 
@@ -11,15 +11,17 @@ const ClassificationBanner = () => {
 	const { t } = useTranslation();
 	const room = useRoom();
 	const isABACRoom = useIsABACManagedRoom(room);
+	const bannersEnabled = useSetting('ABAC_Classification_Banners_Enabled', false);
+	const enabled = bannersEnabled && isABACRoom;
 	const getRoomInfo = useEndpoint('GET', '/v1/rooms.info');
 
 	const { data: banner } = useQuery({
 		queryKey: [...roomsQueryKeys.info(room._id), 'classificationBanner', room.abacAttributes],
 		queryFn: async () => (await getRoomInfo({ roomId: room._id })).classificationBanner ?? null,
-		enabled: isABACRoom,
+		enabled,
 	});
 
-	if (!isABACRoom || !banner) {
+	if (!enabled || !banner) {
 		return null;
 	}
 

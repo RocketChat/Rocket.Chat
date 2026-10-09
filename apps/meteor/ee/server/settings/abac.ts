@@ -54,7 +54,7 @@ export function addSettings(): Promise<void> {
 				});
 				await this.add('ABAC_Classification_Banners_Enabled', false, {
 					type: 'boolean',
-					public: false,
+					public: true,
 					invalidValue: false,
 					section: 'ABAC_Classification_Banners',
 					enableQuery: abacEnabledQuery,

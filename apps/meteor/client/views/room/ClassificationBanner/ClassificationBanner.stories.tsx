@@ -28,6 +28,7 @@ const withBanner = (classificationBanner: ClassificationBannerPayload) =>
 	mockAppRoot()
 		.withJohnDoe()
 		.withSetting('ABAC_Enabled', true)
+		.withSetting('ABAC_Classification_Banners_Enabled', true)
 		.withEndpoint('GET', '/v1/licenses.info', () => ({
 			license: createFakeLicenseInfo({ activeModules: ['abac'] }),
 		}))
