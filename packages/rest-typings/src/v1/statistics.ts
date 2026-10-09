@@ -36,15 +36,11 @@ const StatisticsSchema = {
 
 export const isStatisticsProps = ajv.compile<StatisticsProps>(StatisticsSchema);
 
-type StatisticsListProps = PaginatedRequest<{ fields?: string }>;
+type StatisticsListProps = PaginatedRequest<{}>;
 
 const StatisticsListSchema = {
 	type: 'object',
 	properties: {
-		fields: {
-			type: 'string',
-			nullable: true,
-		},
 		count: {
 			type: 'number',
 			nullable: true,
@@ -54,10 +50,6 @@ const StatisticsListSchema = {
 			nullable: true,
 		},
 		sort: {
-			type: 'string',
-			nullable: true,
-		},
-		query: {
 			type: 'string',
 			nullable: true,
 		},

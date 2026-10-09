@@ -415,41 +415,20 @@ describe('[Channels]', () => {
 			expect(channels1).to.not.deep.equal(channels2);
 		});
 
-		it('should accept the `fields` query param', async () => {
-			await request
-				.get(api('channels.list'))
-				.set(credentials)
-				.query({
-					fields: JSON.stringify({ name: 1 }),
-				})
-				.expect('Content-Type', 'application/json')
-				.expect(200)
-				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
-					expect(res.body).to.have.property('channels').that.is.an('array');
-					expect(res.body).to.have.property('count');
-					expect(res.body).to.have.property('total');
-				});
-		});
-
-		it('should accept the `fields` query param alongside the other supported params', async () => {
-			await request
-				.get(api('channels.list'))
-				.set(credentials)
-				.query({
-					_id: testChannel._id,
-					query: JSON.stringify({}),
-					fields: JSON.stringify({ name: 1 }),
-					sort: JSON.stringify({ name: 1 }),
-					count: 1,
-					offset: 0,
-				})
-				.expect('Content-Type', 'application/json')
-				.expect(200)
-				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
-					expect(res.body).to.have.property('channels').that.is.an('array');
-				});
+		it("should reject the removed 'query' and 'fields' parameters", async () => {
+			await Promise.all(
+				[{ query: JSON.stringify({}) }, { fields: JSON.stringify({ name: 1 }) }].map((params) =>
+					request
+						.get(api('channels.list'))
+						.set(credentials)
+						.query(params)
+						.expect('Content-Type', 'application/json')
+						.expect(400)
+						.expect((res) => {
+							expect(res.body).to.have.property('success', false);
+						}),
+				),
+			);
 		});
 
 		it('should reject unknown query params', async () => {
@@ -484,41 +463,20 @@ describe('[Channels]', () => {
 	});
 
 	describe('[/channels.list.joined]', () => {
-		it('should accept the `fields` query param', async () => {
-			const res = await request
-				.get(api('channels.list.joined'))
-				.set(credentials)
-				.query({
-					fields: JSON.stringify({ name: 1 }),
-				})
-				.expect('Content-Type', 'application/json')
-				.expect(200);
-
-			expect(res.body).to.have.property('success', true);
-			expect(res.body).to.have.property('channels').that.is.an('array');
-			expect(res.body).to.have.property('count');
-			expect(res.body).to.have.property('total');
-		});
-
-		it('should accept the `fields` query param alongside the other supported params', async () => {
-			const res = await request
-				.get(api('channels.list.joined'))
-				.set(credentials)
-				.query({
-					roomId: channel._id,
-					roomName: channel.name,
-					_id: channel._id,
-					query: JSON.stringify({}),
-					fields: JSON.stringify({ name: 1 }),
-					sort: JSON.stringify({ name: 1 }),
-					count: 1,
-					offset: 0,
-				})
-				.expect('Content-Type', 'application/json')
-				.expect(200);
-
-			expect(res.body).to.have.property('success', true);
-			expect(res.body).to.have.property('channels').that.is.an('array');
+		it("should reject the removed 'query' and 'fields' parameters", async () => {
+			await Promise.all(
+				[{ query: JSON.stringify({}) }, { fields: JSON.stringify({ name: 1 }) }].map((params) =>
+					request
+						.get(api('channels.list.joined'))
+						.set(credentials)
+						.query(params)
+						.expect('Content-Type', 'application/json')
+						.expect(400)
+						.expect((res) => {
+							expect(res.body).to.have.property('success', false);
+						}),
+				),
+			);
 		});
 
 		it('should reject unknown query params', async () => {
@@ -1432,7 +1390,7 @@ describe('[Channels]', () => {
 			]);
 		});
 
-		it('should return an error if no query', () =>
+		it("should return an error if '_id' is missing", () =>
 			void request
 				.get(api('channels.online'))
 				.set(credentials)
@@ -1440,20 +1398,21 @@ describe('[Channels]', () => {
 				.expect(400)
 				.expect((res) => {
 					expect(res.body).to.have.property('success', false);
-					expect(res.body).to.have.property('error', 'Invalid query');
 				}));
 
-		it('should return an error if passing an empty query', () =>
-			void request
+		it("should reject the removed 'query' parameter even alongside a valid '_id'", async () => {
+			const { testUserCredentials, room } = await createUserAndChannel();
+
+			return request
 				.get(api('channels.online'))
-				.set(credentials)
-				.query('query={}')
+				.set(testUserCredentials)
+				.query({ _id: room._id, query: '{}' })
 				.expect('Content-Type', 'application/json')
 				.expect(400)
 				.expect((res) => {
 					expect(res.body).to.have.property('success', false);
-					expect(res.body).to.have.property('error', 'Invalid query');
-				}));
+				});
+		});
 
 		it('should return an array with online members', async () => {
 			const { testUser, testUserCredentials, room } = await createUserAndChannel();
