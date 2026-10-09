@@ -5,4 +5,6 @@
 '@rocket.chat/models': major
 ---
 
-Separates invite tokens from record IDs and omits tokens and URLs from invite listings. New invitations use cryptographically random UUID tokens. An upgrade migration preserves old URLs with new internal record IDs and keeps existing expiry and usage limits. Legacy links without an expiry become invalid 90 days after migration starts; rerunning the migration does not extend that period. Invite creators receive strong-token replacement links rather than reusing legacy links. Integrations must use `inviteToken` or the returned `url` when sharing invitations, and use the current record ID for removal.
+- Requires `manage-invite-links` (admins by default) for global invite listing, removal, and admin access. Creation remains room-scoped.
+- Separates secure invite tokens from record IDs and removes tokens and URLs from listings. Integrations must share `inviteToken` or `url`, not `_id`.
+- Preserves legacy URLs and limits, but expires never-expiring legacy links after 90 days. Migrated invites receive new record IDs for removal.
