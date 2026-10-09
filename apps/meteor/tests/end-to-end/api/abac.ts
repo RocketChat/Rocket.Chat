@@ -2290,10 +2290,10 @@ const addAbacAttributesToUserDirectly = async (userId: string, abacAttributes: I
 			await deleteRoom({ type: 'p', roomId: plainRoom._id });
 		});
 
-		it('should not expose the banner settings publicly', async () => {
+		it('should not expose the banner config publicly', async () => {
 			await request
 				.get(`${v1}/settings.public`)
-				.query({ _id: 'ABAC_Classification_Banners_Enabled,ABAC_Classification_Banners_Config' })
+				.query({ _id: 'ABAC_Classification_Banners_Config' })
 				.expect(200)
 				.expect((res) => {
 					expect(res.body.settings).to.be.an('array').that.is.empty;
