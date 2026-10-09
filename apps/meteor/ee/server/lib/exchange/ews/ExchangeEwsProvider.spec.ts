@@ -129,15 +129,21 @@ describe('ExchangeEwsProvider', () => {
 			expect(transport.sent[0]).not.toContain('<m:SyncState>');
 		});
 
-		it('returns the sync state as the cursor and inverts IncludesLastItemInRange', async () => {
+		it('drains the delta pages, carrying the last sync state, and expands the window once', async () => {
 			const transport = new FakeTransport([
-				okResponse(`<m:SyncState>S1</m:SyncState><m:IncludesLastItemInRange>false</m:IncludesLastItemInRange><m:Changes/>`),
-				calendarViewOk(),
+				okResponse(
+					`<m:SyncState>S1</m:SyncState><m:IncludesLastItemInRange>false</m:IncludesLastItemInRange><m:Changes><t:Create><t:ItemId Id="STILL-THERE"/></t:Create></m:Changes>`,
+				),
+				okResponse('<m:SyncState>S2</m:SyncState><m:IncludesLastItemInRange>true</m:IncludesLastItemInRange><m:Changes/>'),
+				calendarViewOk('STILL-THERE'),
+				okResponse('<m:Items><t:CalendarItem><t:ItemId Id="STILL-THERE"/><t:Start>2026-08-21T10:00:00Z</t:Start></t:CalendarItem></m:Items>'),
 			]);
 
 			const page = await new ExchangeEwsProvider(transport).listEvents(MAILBOX, timeWindow);
 
-			expect(page).toMatchObject({ cursor: cursorFor('S1'), hasMore: true });
+			expect(page).toMatchObject({ cursor: cursorFor('S2'), hasMore: false, coverage: 'full' });
+			expect(transport.sent.filter((body) => body.includes('<m:SyncFolderItems'))).toHaveLength(2);
+			expect(transport.sent.filter((body) => body.includes('<m:CalendarView'))).toHaveLength(1);
 		});
 
 		it('takes a full window snapshot once anything changed, deletions included', async () => {
