@@ -21,14 +21,7 @@ const CameraPicker = () => {
 			// A call joined with the camera off may not have the permission that names the cameras yet.
 			beforeOpen={() => revealDeviceLabels(['videoinput'], devices)}
 			button={
-				<DeviceMenuButton
-					rcx-split-button__trigger
-					secondary
-					large
-					menuIcon='chevron-up'
-					label={t('Camera_options')}
-					danger={!self.cameraOn}
-				/>
+				<DeviceMenuButton splitButtonTrigger secondary large menuIcon='chevron-up' label={t('Camera_options')} danger={!self.cameraOn} />
 			}
 		/>
 	);
