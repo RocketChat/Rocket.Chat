@@ -10,7 +10,6 @@ const integrationsHistorySchema = {
 		id: { type: 'string', nullable: false, minLength: 1 },
 		...paginationQueryProperties,
 		sort: { type: 'string', nullable: true },
-		query: { type: 'string', nullable: true },
 	},
 	required: ['id'],
 	additionalProperties: false,

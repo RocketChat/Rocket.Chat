@@ -60,15 +60,12 @@ export type AdminUserFormProps = {
 	roleError: Error | null;
 };
 
-export type UserFormProps = Omit<
-	UserCreateParamsPOST & {
-		avatar: AvatarObject;
-		passwordConfirmation: string;
-		sipExtension?: string;
-		statusVisibilityDeniedByAdmin?: string[];
-	},
-	'fields'
->;
+export type UserFormProps = UserCreateParamsPOST & {
+	avatar: AvatarObject;
+	passwordConfirmation: string;
+	sipExtension?: string;
+	statusVisibilityDeniedByAdmin?: string[];
+};
 
 const getInitialValue = ({
 	data,
@@ -210,7 +207,6 @@ const AdminUserForm = ({ userData, onReload, context, refetchUserFormData, roleD
 			...userFormData,
 			statusText,
 			...(showUserStatusSection && { presenceDisabledByAdmin }),
-			fields: '',
 		});
 	});
 

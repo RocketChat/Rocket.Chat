@@ -5,7 +5,7 @@ import { paginationQueryProperties } from './pagination';
 import type { PaginatedRequest } from '../helpers/PaginatedRequest';
 import type { PaginatedResult } from '../helpers/PaginatedResult';
 
-type DirectoryProps = PaginatedRequest<{ text?: string; type?: string; workspace?: string; query?: string }>;
+type DirectoryProps = PaginatedRequest<{ text?: string; type?: string; workspace?: string }>;
 
 const DirectorySchema = {
 	type: 'object',
@@ -24,10 +24,6 @@ const DirectorySchema = {
 			nullable: true,
 		},
 		workspace: {
-			type: 'string',
-			nullable: true,
-		},
-		query: {
 			type: 'string',
 			nullable: true,
 		},
