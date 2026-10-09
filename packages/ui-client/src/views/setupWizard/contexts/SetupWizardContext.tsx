@@ -30,7 +30,7 @@ type SetupWizarContextValue = {
 	registerAdminUser: (user: Omit<Parameters<ComponentProps<typeof AdminInfoPage>['onSubmit']>[0], 'keepPosted'>) => Promise<void>;
 	registerServer: (params: { email: string; resend?: boolean }) => Promise<void>;
 	saveAgreementData: (agreement: boolean) => Promise<void>;
-	saveWorkspaceData: () => Promise<void>;
+	completeCloudRegistration: () => Promise<void>;
 	saveOrganizationData: (data: SetupWizardData['organizationData']) => Promise<void>;
 	completeSetupWizard: () => Promise<void>;
 	maxSteps: number;
@@ -61,7 +61,7 @@ export const SetupWizardContext = createContext<SetupWizarContextValue>({
 	registerAdminUser: async () => undefined,
 	registerServer: async () => undefined,
 	saveAgreementData: async () => undefined,
-	saveWorkspaceData: async () => undefined,
+	completeCloudRegistration: async () => undefined,
 	saveOrganizationData: async () => undefined,
 	validateEmail: () => true,
 	currentStep: 1,
