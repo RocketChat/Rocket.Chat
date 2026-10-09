@@ -34,7 +34,6 @@ import { escapeRegExp, getLoginExpirationInMs } from '@rocket.chat/tools';
 import { Accounts } from 'meteor/accounts-base';
 import { Match, check } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
-import type { Mongo } from 'meteor/mongo';
 import type { Filter } from 'mongodb';
 
 import { generatePersonalAccessTokenOfUser } from '../../../imports/personal-access-tokens/server/api/methods/generateToken';
@@ -658,13 +657,10 @@ API.v1.get(
 	},
 );
 
-// users.list accepts arbitrary query filter fields (name, username, etc.)
-// that cannot be statically defined — keeping as addRoute until params are known
 API.v1.addRoute(
 	'users.list',
 	{
 		authRequired: true,
-		queryOperations: ['$or', '$and'],
 		permissionsRequired: ['view-d-room'],
 		query: isUsersListParamsGET,
 	},
@@ -684,15 +680,13 @@ API.v1.addRoute(
 			}
 
 			const { offset, count } = await getPaginationItems(this.queryParams);
-			const { sort, fields, query } = await this.parseJsonQuery();
+			const { sort, fields } = await this.parseJsonQuery();
 
 			const nonEmptyFields = getNonEmptyFields(fields);
 
 			const inclusiveFields = getInclusiveFields(nonEmptyFields);
 
-			const inclusiveFieldsKeys = Object.keys(inclusiveFields);
-
-			const nonEmptyQuery = getNonEmptyQuery(query, canViewFullOtherUserInfo);
+			const nonEmptyQuery = getNonEmptyQuery(canViewFullOtherUserInfo);
 
 			if ('email' in this.queryParams && this.queryParams.email) {
 				if (!canViewFullOtherUserInfo) {
@@ -703,27 +697,6 @@ API.v1.addRoute(
 					$regex: `^${escapedEmail}$`,
 					$options: 'i',
 				};
-			}
-
-			// if user provided a query, validate it with their allowed operators
-			// otherwise we use the default query (with $regex and $options)
-			if (
-				!isValidQuery(
-					nonEmptyQuery,
-					[
-						...inclusiveFieldsKeys,
-						inclusiveFieldsKeys.includes('emails') && 'emails.address.*',
-						inclusiveFieldsKeys.includes('username') && 'username.*',
-						inclusiveFieldsKeys.includes('name') && 'name.*',
-						inclusiveFieldsKeys.includes('type') && 'type.*',
-						inclusiveFieldsKeys.includes('customFields') && 'customFields.*',
-					].filter(Boolean) as string[],
-					// At this point, we have already validated the user query not containing malicious fields
-					// On here we are using our own query so we can allow some extra fields
-					[...this.queryOperations, '$regex', '$options'],
-				)
-			) {
-				throw new Meteor.Error('error-invalid-query', isValidQuery.errors.join('\n'));
 			}
 
 			if (customFields) {
@@ -737,10 +710,6 @@ API.v1.addRoute(
 			}
 
 			const hidden = await getUsersHiddenFrom(this.userId);
-
-			if (queryFiltersStatus(query)) {
-				nonEmptyQuery.$and = [...(nonEmptyQuery.$and ?? []), excludingHiddenFilter(hidden) as Mongo.Query<IUser>];
-			}
 
 			const actualSort = sort ? { ...sort } : { username: 1 };
 
