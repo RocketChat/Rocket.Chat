@@ -111,7 +111,11 @@ const ContactsTab = ({ tab, onChangeTab }: ContactsTabProps) => {
 	return (
 		<CallHistoryPageLayout filters={contactFilters} contextualBar={contextualBar} tab={tab} onChangeTab={onChangeTab}>
 			{data.items.length === 0 && (
-				<GenericNoResults icon='address-book' title={t('No_contacts')} description={t('No_contacts_description')} />
+				<GenericNoResults
+					icon='address-book'
+					title={debouncedSearchText ? t('No_results_found') : t('No_contacts')}
+					description={t('No_contacts_description')}
+				/>
 			)}
 			{data.items.length > 0 && (
 				<ContactsTable sort={sortProps} columns={columns}>
