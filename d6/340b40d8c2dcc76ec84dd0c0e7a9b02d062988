@@ -1,0 +1,24 @@
+ee/packages/network-broker/src/NatsBroker.ts
+  s_b922ec72574ab5::t_496f661365bf30 10
+ee/packages/network-broker/src/MoleculerBroker.ts
+  s_b922ec72574ab5::t_73cfcf85e9a688 9
+  s_b922ec72574ab5::t_ff9de6ea2b91ff 94
+ee/packages/network-broker/src/withDefaultDependencies.ts
+  s_b922ec72574ab5::t_a558520fc4be4c 1-6
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "d6340b40d8c2dcc76ec84dd0c0e7a9b02d062988",
+  "prompts": {},
+  "sessions": {
+    "s_b922ec72574ab5": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "9f014057-9101-4112-b9c5-9bfee78d9592",
+        "model": "claude-opus-5-5"
+      },
+      "human_author": "Diego Sampaio <chinello@gmail.com>"
+    }
+  }
+}

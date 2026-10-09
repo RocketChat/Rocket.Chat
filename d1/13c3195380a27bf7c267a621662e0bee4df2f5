@@ -1,0 +1,24 @@
+ee/packages/network-broker/src/streams.ts
+  s_b922ec72574ab5::t_d21294b729a6ff 96
+  s_b922ec72574ab5::t_d23faa2609877b 118
+  s_b922ec72574ab5::t_e92db0db2acb83 181-182,188-189,193,195,197,201
+  s_b922ec72574ab5::t_05e50d0a413fa1 4
+  s_b922ec72574ab5::t_db0c0d3de8866a 185-186,191-192,196
+  s_b922ec72574ab5::t_0ffbea31c966de 183
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "d113c3195380a27bf7c267a621662e0bee4df2f5",
+  "prompts": {},
+  "sessions": {
+    "s_b922ec72574ab5": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "9f014057-9101-4112-b9c5-9bfee78d9592",
+        "model": "claude-opus-5-5"
+      },
+      "human_author": "Diego Sampaio <chinello@gmail.com>"
+    }
+  }
+}
