@@ -123,6 +123,9 @@ const setupCustomRole = async (api: BaseTest['api']) => {
 };
 
 test.describe('SAML', () => {
+	// SAML requires the `saml-enterprise` module since 9.0.0
+	test.skip(!constants.IS_EE);
+
 	let poRegistration: Registration;
 	let samlRoleId: string;
 	let targetInviteGroupId: string;
@@ -481,8 +484,6 @@ test.describe('SAML', () => {
 	});
 
 	test('User Mapping - Custom Role', async ({ page, api }) => {
-		test.skip(!constants.IS_EE);
-
 		await doLoginStep(page, 'samluser4');
 
 		await test.step('expect users role to have been mapped correctly', async () => {
