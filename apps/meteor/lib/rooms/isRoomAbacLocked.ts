@@ -4,7 +4,6 @@ import { isPrivateRoom, isPublicRoom, isRoomFederated } from '@rocket.chat/core-
 export type AbacLockableRoom = Pick<IRoom, 't' | 'abacAttributes' | 'federated'>;
 
 export type RoomAbacLockContext = {
-	/** `ABAC_Enabled` and `ABAC_Enforce_All_Rooms`, both. */
 	enforcementOn: boolean;
 	requiredAttributeKeys: string[];
 };
@@ -18,21 +17,17 @@ export const isRoomAbacLocked = (room: AbacLockableRoom, { enforcementOn, requir
 		return false;
 	}
 
-	// Federated rooms are never ABAC-enforced, since remote members cannot be evaluated against the
-	// PDP (ABAC-P4/D8). Checked first because it outranks every rule below.
+	// Remote members cannot be evaluated against the PDP, so federated rooms are never enforced.
 	if (isRoomFederated(room)) {
 		return false;
 	}
 
-	// ABAC-P4/D6 — enforcement forces ABAC-managed on, which forces Private on, so a public channel
-	// is outside the boundary whatever it carries.
 	if (isPublicRoom(room)) {
 		return true;
 	}
 
-	// Direct messages are governed by organizational policy rather than enforcement (ABAC-P4/D1),
-	// and Omnichannel is out of scope. A whitelist, so a room type added later stays unlocked until
-	// someone decides it should not be.
+	// A whitelist, so a room type added later stays unlocked until someone decides it should not be.
+	// Direct messages and Omnichannel are intentionally outside enforcement.
 	if (!isPrivateRoom(room)) {
 		return false;
 	}

@@ -8,14 +8,11 @@ import { useEditableSetting } from '../../EditableSettingsContext';
 import type { SettingLookupEndpoint } from '../../settings/hooks/useSettingLookupOptions';
 import { useSettingLookupQuery } from '../../settings/hooks/useSettingLookupOptions';
 
-const SETTING_ID = 'ABAC_Required_Attributes';
-const LOOKUP_ENDPOINT = 'v1/abac/attribute-keys';
-
 const toKeys = (value: SettingValue): string[] => (Array.isArray(value) ? value.map(String) : []);
 
 const RequiredAttributesField = () => {
-	const setting = useEditableSetting(SETTING_ID);
-	const lookupEndpoint = (setting?.lookupEndpoint ?? LOOKUP_ENDPOINT) as SettingLookupEndpoint;
+	const setting = useEditableSetting('ABAC_Required_Attributes');
+	const lookupEndpoint = (setting?.lookupEndpoint ?? 'v1/abac/attribute-keys') as SettingLookupEndpoint;
 	const { data: options, isSuccess, isPending } = useSettingLookupQuery(lookupEndpoint);
 	const setModal = useSetModal();
 
@@ -58,7 +55,7 @@ const RequiredAttributesField = () => {
 		return null;
 	}
 
-	return <SettingField settingId={SETTING_ID} disabled={isPending} onBeforeChange={onBeforeChange} />;
+	return <SettingField settingId='ABAC_Required_Attributes' disabled={isPending} onBeforeChange={onBeforeChange} />;
 };
 
 export default RequiredAttributesField;

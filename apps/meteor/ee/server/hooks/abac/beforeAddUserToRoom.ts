@@ -11,8 +11,7 @@ beforeAddUserToRoom.patch(async (prev, users, room, actor) => {
 
 	const validUsers = users.filter(Boolean);
 
-	// Has to come before the ABAC-managed path below, which returns early for a room carrying no
-	// attributes at all, precisely the room enforcement locks.
+	// Before the ABAC-managed path below, which returns early for the attribute-less rooms enforcement locks.
 	if (validUsers.length && isRoomAbacLocked(room, getRoomAbacLockContext())) {
 		throw new Error('error-abac-room-locked');
 	}
