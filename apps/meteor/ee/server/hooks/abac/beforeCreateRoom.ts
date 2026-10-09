@@ -5,12 +5,8 @@ import { callbacks } from '../../../../server/lib/callbacks';
 import { beforeCreateRoomCallback } from '../../../../server/lib/callbacks/beforeCreateRoomCallback';
 
 /**
- * While enforcement is on, neither a public channel nor a discussion can be made compliant, so both
- * are refused at creation (ABAC-P4/D6, D7).
- *
- * `beforeCreateRoomCallback` is the seam because every non-DM creation path funnels through
- * `createRoom`, so a new caller cannot become a new bypass. DMs return through `createDirectRoom`
- * before this runs, which is why D1 needs no condition.
+ * Every non-DM creation path funnels through `createRoom`, so guarding here means a new caller
+ * cannot become a bypass. DMs return through `createDirectRoom` before this runs.
  */
 beforeCreateRoomCallback.add(
 	({ room }) => {
@@ -24,12 +20,11 @@ beforeCreateRoomCallback.add(
 			return;
 		}
 
-		// `Discussion_enabled` is also held at false (D10); this covers the callers that bypass it.
+		// `Discussion_enabled` is also held at false; this covers the callers that bypass it.
 		if (isDiscussion(room)) {
 			throw new Error('error-abac-discussion-creation-blocked');
 		}
 
-		// Enforcement locks ABAC-managed on, which forces Private on.
 		if (isPublicRoom(room)) {
 			throw new Error('error-abac-public-room-creation-blocked');
 		}
