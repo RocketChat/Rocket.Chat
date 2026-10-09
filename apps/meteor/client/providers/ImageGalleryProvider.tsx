@@ -22,16 +22,9 @@ const ImageGalleryProvider = ({ children }: ImageGalleryProviderProps) => {
 			if (target?.classList.contains('preview-image')) {
 				return setSingleImageUrl(target.dataset.id);
 			}
-			if (target?.classList.contains('gallery-item')) {
-				const id = target.closest('.gallery-item-container')?.getAttribute('data-id') || undefined;
-				return setImageId(target.dataset.id || id);
-			}
-			if (target?.classList.contains('gallery-item-container')) {
-				return setImageId(target.dataset.id);
-			}
-			if (target?.classList.contains('rcx-avatar__element') && target.closest('.gallery-item')) {
-				const avatarTarget = target.closest('.gallery-item-container')?.getAttribute('data-id') || undefined;
-				return setImageId(avatarTarget);
+			const galleryItem = target?.closest<HTMLElement>('.gallery-item');
+			if (galleryItem) {
+				return setImageId(galleryItem.dataset.id);
 			}
 		};
 		document.addEventListener('click', handleImageClick);

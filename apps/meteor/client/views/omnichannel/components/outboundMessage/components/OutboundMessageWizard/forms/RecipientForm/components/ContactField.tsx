@@ -1,6 +1,6 @@
 import { Box, Field, FieldError, FieldLabel, FieldRow, Option, OptionContent, OptionDescription } from '@rocket.chat/fuselage';
 import { useStableCallback } from '@rocket.chat/fuselage-hooks';
-import { UserAvatar } from '@rocket.chat/ui-avatar';
+import { ITEM_MEDIA_SIZE, UserAvatar } from '@rocket.chat/ui-avatar';
 import { useId } from 'react';
 import type { ComponentProps } from 'react';
 import { useController, type Control } from 'react-hook-form';
@@ -42,7 +42,7 @@ const ContactField = ({ control, isError = false, isFetching = false, onRetry, .
 		const phoneList = phones?.map((p) => formatPhoneNumber(p.phoneNumber)).join(', ');
 
 		return (
-			<Option {...props} avatar={<UserAvatar title={label} username={label} size='x20' />}>
+			<Option {...props} avatar={<UserAvatar title={label} username={label} size={ITEM_MEDIA_SIZE.condensed} />}>
 				<Box is={OptionContent} marginInlineEnd='auto' flexGrow={0} flexShrink={0} flexBasis={0}>
 					{label}
 				</Box>

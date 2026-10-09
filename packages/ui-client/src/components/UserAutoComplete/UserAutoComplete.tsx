@@ -1,6 +1,6 @@
 import { AutoComplete, Option, Box, Chip } from '@rocket.chat/fuselage';
 import { useDebouncedValue } from '@rocket.chat/fuselage-hooks';
-import { UserAvatar } from '@rocket.chat/ui-avatar';
+import { ITEM_MEDIA_SIZE, UserAvatar } from '@rocket.chat/ui-avatar';
 import { useEndpoint } from '@rocket.chat/ui-contexts';
 import { useQuery } from '@tanstack/react-query';
 import type { ComponentPropsWithoutRef } from 'react';
@@ -46,7 +46,7 @@ const UserAutoComplete = ({ value, onChange, ...props }: UserAutoCompleteProps) 
 				</Chip>
 			)}
 			renderItem={({ value, label, ...props }) => (
-				<Option key={value} label={label} avatar={<UserAvatar size='x20' username={value} />} {...props} />
+				<Option key={value} label={label} avatar={<UserAvatar size={ITEM_MEDIA_SIZE.condensed} username={value} />} {...props} />
 			)}
 			options={options}
 		/>

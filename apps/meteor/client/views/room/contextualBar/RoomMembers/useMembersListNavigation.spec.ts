@@ -25,14 +25,20 @@ afterAll(() => {
 
 beforeEach(() => {
 	(createFocusManager as jest.Mock).mockReturnValue(mockFocusManager);
-	mockFocusManager.focusNext.mockReset().mockReturnValue(document.createElement('li'));
-	mockFocusManager.focusPrevious.mockReset().mockReturnValue(document.createElement('li'));
+	mockFocusManager.focusNext.mockReset().mockReturnValue(createMemberButton());
+	mockFocusManager.focusPrevious.mockReset().mockReturnValue(createMemberButton());
 });
+
+const createMemberButton = () => {
+	const button = document.createElement('button');
+	button.className = 'rcx-item__link';
+	return button;
+};
 
 const createList = (itemCount = 2) => {
 	const container = document.createElement('div');
 	const items = Array.from({ length: itemCount }, () => {
-		const li = document.createElement('li');
+		const li = createMemberButton();
 		container.appendChild(li);
 		return li;
 	});
@@ -54,7 +60,7 @@ it('creates a focus manager scoped to the list node', () => {
 	cleanup();
 });
 
-it('calls focusNext with an LI-matching predicate on ArrowDown', () => {
+it('calls focusNext with a member-button predicate on ArrowDown', () => {
 	const { container, items, cleanup } = createList();
 	setupHook(container);
 
@@ -64,13 +70,13 @@ it('calls focusNext with an LI-matching predicate on ArrowDown', () => {
 	expect(mockFocusManager.focusPrevious).not.toHaveBeenCalled();
 
 	const { accept } = mockFocusManager.focusNext.mock.calls[0][0];
-	expect(accept(document.createElement('li'))).toBe(true);
+	expect(accept(createMemberButton())).toBe(true);
 	expect(accept(document.createElement('div'))).toBe(false);
 	expect(accept(document.createElement('button'))).toBe(false);
 	cleanup();
 });
 
-it('calls focusPrevious with an LI-matching predicate on ArrowUp', () => {
+it('calls focusPrevious with a member-button predicate on ArrowUp', () => {
 	const { container, items, cleanup } = createList();
 	setupHook(container);
 
@@ -80,12 +86,12 @@ it('calls focusPrevious with an LI-matching predicate on ArrowUp', () => {
 	expect(mockFocusManager.focusNext).not.toHaveBeenCalled();
 
 	const { accept } = mockFocusManager.focusPrevious.mock.calls[0][0];
-	expect(accept(document.createElement('li'))).toBe(true);
+	expect(accept(createMemberButton())).toBe(true);
 	expect(accept(document.createElement('div'))).toBe(false);
 	cleanup();
 });
 
-it('ignores events whose target is not an LI element', () => {
+it('ignores events whose target is not a member button', () => {
 	const { container, cleanup } = createList(0);
 	setupHook(container);
 
@@ -158,9 +164,12 @@ describe('when the adjacent item is outside the render window', () => {
 		scroller.appendChild(listNode);
 		document.body.appendChild(scroller);
 
-		const li = document.createElement('li');
-		Object.defineProperty(li, 'offsetHeight', { configurable: true, get: () => 36 });
-		listNode.appendChild(li);
+		const row = document.createElement('div');
+		row.className = 'rcx-item';
+		Object.defineProperty(row, 'offsetHeight', { configurable: true, get: () => 36 });
+		const li = createMemberButton();
+		row.appendChild(li);
+		listNode.appendChild(row);
 
 		setupHook(listNode);
 

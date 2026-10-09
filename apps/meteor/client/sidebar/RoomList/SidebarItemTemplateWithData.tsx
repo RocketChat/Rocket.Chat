@@ -1,49 +1,30 @@
 import { isOmnichannelRoom } from '@rocket.chat/core-typings';
-import { Icon, SidebarAction, SidebarActions, SidebarItemIcon } from '@rocket.chat/fuselage';
+import { Icon, IconButton, ItemActions } from '@rocket.chat/fuselage';
 import type { SubscriptionWithRoom } from '@rocket.chat/ui-contexts';
 import { useLayout } from '@rocket.chat/ui-contexts';
 import type { TFunction } from 'i18next';
-import type { AllHTMLAttributes, ComponentType, ReactNode } from 'react';
+import type { AllHTMLAttributes } from 'react';
 import { memo, useMemo } from 'react';
 
-import { RoomIcon } from '../../components/RoomIcon';
+import { RoomIcon, useRoomIconLabel } from '../../components/RoomIcon';
 import { useUserStatusTooltip } from '../../hooks/useUserStatusTooltip';
 import { roomCoordinator } from '../../lib/rooms/roomCoordinator';
 import { getSubscriptionDraft } from '../../lib/utils/getSubscriptionDraft';
 import { getUidDirectMessage } from '../../lib/utils/getUidDirectMessage';
 import { isIOsDevice } from '../../lib/utils/isIOsDevice';
 import { getMessagePreview } from '../../lib/utils/normalizeMessagePreview/getMessagePreview';
+import RoomListItem from '../../views/navigation/sidebar/RoomList/RoomListItem';
+import type { RoomListItemViewMode } from '../../views/navigation/sidebar/RoomList/RoomListItem';
 import { useOmnichannelPriorities } from '../../views/omnichannel/hooks/useOmnichannelPriorities';
 import RoomMenu from '../RoomMenu';
 import SidebarItemBadges from '../badges/SidebarItemBadges';
-import type { useAvatarTemplate } from '../hooks/useAvatarTemplate';
 import { useUnreadDisplay } from '../hooks/useUnreadDisplay';
 
 type RoomListRowProps = {
-	extended: boolean;
 	t: TFunction;
-	SidebarItemTemplate: ComponentType<
-		{
-			icon: ReactNode;
-			title: ReactNode;
-			avatar: ReactNode;
-			actions: ReactNode;
-			href: string;
-			time?: Date;
-			menu?: () => ReactNode;
-			menuOptions?: unknown;
-			subtitle?: ReactNode;
-			titleIcon?: ReactNode;
-			badges?: ReactNode;
-			threadUnread?: boolean;
-			unread?: boolean;
-			selected?: boolean;
-			is?: string;
-		} & AllHTMLAttributes<HTMLElement>
-	>;
-	AvatarTemplate: ReturnType<typeof useAvatarTemplate>;
+	viewMode: RoomListItemViewMode;
+	showAvatar: boolean;
 	openedRoom?: string;
-	// sidebarViewMode: 'extended';
 	isAnonymous?: boolean;
 	userId?: string;
 
@@ -54,7 +35,6 @@ type RoomListRowProps = {
 
 	selected?: boolean;
 
-	sidebarViewMode?: unknown;
 	videoConfActions?: {
 		[action: string]: () => void;
 	};
@@ -65,9 +45,8 @@ const SidebarItemTemplateWithData = ({
 	id,
 	selected,
 	style,
-	extended,
-	SidebarItemTemplate,
-	AvatarTemplate,
+	viewMode,
+	showAvatar,
 	t,
 	isAnonymous,
 	videoConfActions,
@@ -85,12 +64,8 @@ const SidebarItemTemplateWithData = ({
 
 	const { lastMessage, unread = 0, alert, rid, t: type, cl } = room;
 
-	const icon = (
-		<SidebarItemIcon
-			highlighted={highlighted}
-			icon={<RoomIcon room={room} placement='sidebar' size='x20' isIncomingCall={Boolean(videoConfActions)} />}
-		/>
-	);
+	const isIncomingCall = Boolean(videoConfActions);
+	const iconLabel = useRoomIconLabel(room, isIncomingCall);
 
 	const titleIcon = getSubscriptionDraft(room) ? (
 		<Icon name='pencil' size='x12' title={room.draft ? t('Unfinished_message') : t('Unfinished_thread_message')} />
@@ -99,58 +74,59 @@ const SidebarItemTemplateWithData = ({
 	const actions = useMemo(
 		() =>
 			videoConfActions && (
-				<SidebarActions>
-					<SidebarAction onClick={videoConfActions.acceptCall} mini secondary success icon='phone' />
-					<SidebarAction onClick={videoConfActions.rejectCall} mini secondary danger icon='phone-off' />
-				</SidebarActions>
+				<ItemActions>
+					<IconButton onClick={videoConfActions.acceptCall} mini secondary success icon='phone' aria-label={t('Accept_Call')} />
+					<IconButton onClick={videoConfActions.rejectCall} mini secondary danger icon='phone-off' aria-label={t('Reject_call')} />
+				</ItemActions>
 			),
-		[videoConfActions],
+		[t, videoConfActions],
 	);
 
 	const isQueued = isOmnichannelRoom(room) && room.status === 'queued';
 	const { enabled: isPriorityEnabled } = useOmnichannelPriorities();
 
-	const message = extended && getMessagePreview(room, lastMessage, t);
+	const message = viewMode === 'extended' && getMessagePreview(room, lastMessage, t);
 	const subtitle = message ? <span className='message-body--unstyled' dangerouslySetInnerHTML={{ __html: message }} /> : null;
 
 	return (
-		<SidebarItemTemplate
-			is='a'
+		<RoomListItem
 			id={id}
+			room={room}
+			viewMode={viewMode}
+			showAvatar={showAvatar}
+			inset='sm'
 			data-unread={highlighted}
-			unread={highlighted}
+			highlighted={highlighted}
 			selected={selected}
 			aria-current={selected ? 'page' : undefined}
 			href={href}
-			onClick={(): void => {
+			onClick={() => {
 				if (!selected) sidebar.toggle();
 			}}
 			aria-label={showUnread ? t('__unreadTitle__from__roomTitle__', { unreadTitle, roomTitle: title }) : title}
 			title={title}
 			time={lastMessage?.ts}
 			subtitle={subtitle}
-			icon={icon}
+			icon={<RoomIcon room={room} placement='sidebar' size='x20' isIncomingCall={isIncomingCall} />}
+			iconLabel={iconLabel}
 			titleIcon={titleIcon}
 			style={style}
 			badges={<SidebarItemBadges room={room} roomTitle={title} />}
-			avatar={AvatarTemplate && <AvatarTemplate {...room} />}
 			actions={actions}
 			menu={
-				!isIOsDevice && !isAnonymous && (!isQueued || (isQueued && isPriorityEnabled))
-					? () => (
-							<RoomMenu
-								alert={alert}
-								threadUnread={unreadCount.threads > 0}
-								rid={rid}
-								unread={!!unread}
-								roomOpen={selected}
-								type={type}
-								cl={cl}
-								name={title}
-								hideDefaultOptions={isQueued}
-							/>
-						)
-					: undefined
+				!isIOsDevice && !isAnonymous && (!isQueued || (isQueued && isPriorityEnabled)) ? (
+					<RoomMenu
+						alert={alert}
+						threadUnread={unreadCount.threads > 0}
+						rid={rid}
+						unread={!!unread}
+						roomOpen={selected}
+						type={type}
+						cl={cl}
+						name={title}
+						hideDefaultOptions={isQueued}
+					/>
+				) : undefined
 			}
 			{...dmStatusTooltipHandlers}
 		/>
@@ -164,17 +140,7 @@ function safeDateNotEqualCheck(a: Date | string | undefined, b: Date | string | 
 	return new Date(a).toISOString() !== new Date(b).toISOString();
 }
 
-const keys: (keyof RoomListRowProps)[] = [
-	'id',
-	'style',
-	'extended',
-	'selected',
-	'SidebarItemTemplate',
-	'AvatarTemplate',
-	't',
-	'sidebarViewMode',
-	'videoConfActions',
-];
+const keys: (keyof RoomListRowProps)[] = ['id', 'style', 'viewMode', 'showAvatar', 'selected', 't', 'videoConfActions'];
 
 export default memo(SidebarItemTemplateWithData, (prevProps, nextProps) => {
 	if (keys.some((key) => prevProps[key] !== nextProps[key])) {

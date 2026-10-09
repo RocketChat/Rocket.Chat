@@ -1,10 +1,9 @@
-import { Badge, IconButton, SidebarCollapseGroup, SidebarCollapseGroupMenu } from '@rocket.chat/fuselage';
-import type { HTMLAttributes, KeyboardEvent, MouseEventHandler } from 'react';
+import { Badge, Box, Chevron, IconButton, ItemActions, ItemGroupHeader, ItemGroupTitle } from '@rocket.chat/fuselage';
+import { useDeferredMenuMount } from '@rocket.chat/ui-client';
+import type { HTMLAttributes, MouseEventHandler } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { useIsEnterprise } from '../../hooks/useIsEnterprise';
-import { usePreventPropagation } from '../../hooks/usePreventPropagation';
-import { useDeferredMenuMount } from '../Item/useDeferredMenuMount';
 import CategoryMenu from '../categories/CategoryMenu';
 import type { SidebarRoomListGroup } from '../hooks/useRoomList';
 import { useUnreadDisplay } from '../hooks/useUnreadDisplay';
@@ -15,37 +14,40 @@ type RoomListCollapserProps = {
 	canMoveDown: boolean;
 	onMoveUp: () => void;
 	onMoveDown: () => void;
-	onClick: MouseEventHandler<HTMLElement>;
-	onKeyDown: (e: KeyboardEvent) => void;
-} & Omit<HTMLAttributes<HTMLElement>, 'onClick' | 'onKeyDown'>;
+	onClick: MouseEventHandler<HTMLButtonElement>;
+} & Omit<HTMLAttributes<HTMLElement>, 'onClick' | 'color' | 'is'>;
 
-const RoomListCollapser = ({ group, canMoveUp, canMoveDown, onMoveUp, onMoveDown, ...props }: RoomListCollapserProps) => {
+const RoomListCollapser = ({ group, canMoveUp, canMoveDown, onMoveUp, onMoveDown, onClick, ...props }: RoomListCollapserProps) => {
 	const { t } = useTranslation();
 	const { data: { isEnterprise = false } = {} } = useIsEnterprise();
-	const preventPropagation = usePreventPropagation();
 	const { mounted: menuVisibility, requestMount, mountNow } = useDeferredMenuMount();
 	const { unreadTitle, unreadVariant, showUnread, unreadCount } = useUnreadDisplay(group.unreadInfo);
 
 	const title = group.translateTitle ? t(group.title) : group.title;
 
 	return (
-		<SidebarCollapseGroup
-			title={title}
+		<Box
+			is='section'
 			role='listitem'
-			empty={group.empty}
-			expanded={!group.collapsed}
-			badge={
-				showUnread ? (
+			aria-label={group.collapsed ? t('Expand_group', { group: title }) : t('Collapse_group', { group: title })}
+			onFocus={mountNow}
+			onPointerEnter={requestMount}
+			{...props}
+		>
+			<ItemGroupHeader inset='sm'>
+				<ItemGroupTitle is='button' aria-expanded={!group.collapsed} onClick={onClick}>
+					<Chevron size='x16' right={group.collapsed} />
+					<Box is='span' withTruncatedText color={group.empty ? 'font-disabled' : undefined}>
+						{title}
+					</Box>
+				</ItemGroupTitle>
+				{group.collapsed && showUnread && (
 					<Badge variant={unreadVariant} title={unreadTitle} aria-label={unreadTitle} role='status'>
 						{unreadCount.total}
 					</Badge>
-				) : undefined
-			}
-			onFocus={mountNow}
-			onPointerEnter={requestMount}
-			menu={
-				isEnterprise ? (
-					<SidebarCollapseGroupMenu onClick={preventPropagation}>
+				)}
+				{isEnterprise && (
+					<ItemActions reveal='hover'>
 						{menuVisibility ? (
 							<CategoryMenu
 								category={group.category}
@@ -60,12 +62,10 @@ const RoomListCollapser = ({ group, canMoveUp, canMoveDown, onMoveUp, onMoveDown
 						) : (
 							<IconButton tabIndex={-1} aria-hidden mini icon='kebab' onPointerDown={mountNow} />
 						)}
-					</SidebarCollapseGroupMenu>
-				) : undefined
-			}
-			aria-label={group.collapsed ? t('Expand_group', { group: title }) : t('Collapse_group', { group: title })}
-			{...props}
-		/>
+					</ItemActions>
+				)}
+			</ItemGroupHeader>
+		</Box>
 	);
 };
 

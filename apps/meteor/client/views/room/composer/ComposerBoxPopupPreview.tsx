@@ -1,4 +1,5 @@
-import { Box, Skeleton, Tile, Option } from '@rocket.chat/fuselage';
+import { css } from '@rocket.chat/css-in-js';
+import { Box, Item, ItemContent, ItemGroupHeader, ItemGroupTitle, ItemTitle, Skeleton, Tile } from '@rocket.chat/fuselage';
 import { Random } from '@rocket.chat/random';
 import { useEndpoint } from '@rocket.chat/ui-contexts';
 import type { ForwardedRef, ReactNode } from 'react';
@@ -8,6 +9,12 @@ import type { ComposerBoxPopupProps } from './ComposerBoxPopup';
 import { useChat } from '../contexts/ChatContext';
 
 type ComposerBoxPopupPreviewItem = { _id: string; type: 'image' | 'video' | 'audio' | 'text' | 'other'; value: string; sort?: number };
+
+const optionsStyle = css`
+	& > * {
+		flex-shrink: 0;
+	}
+`;
 
 export type ComposerBoxPopupPreviewProps = ComposerBoxPopupProps<ComposerBoxPopupPreviewItem> & {
 	title?: ReactNode;
@@ -105,55 +112,65 @@ const ComposerBoxPopupPreview = forwardRef(function ComposerBoxPopupPreview(
 
 	return (
 		<Box position='relative'>
-			<Tile padding={0} role='menu' marginBlockEnd={8} overflow='hidden' aria-labelledby={id}>
+			<Tile padding={0} marginBlockEnd={8} overflow='hidden'>
 				{title && (
-					<Box backgroundColor='tint' paddingInline={16} paddingBlock={8} id={id}>
-						{title}
+					<Box backgroundColor='tint'>
+						<ItemGroupHeader inset='md'>
+							<ItemGroupTitle id={id}>{title}</ItemGroupTitle>
+						</ItemGroupHeader>
 					</Box>
 				)}
-				<Box display='flex' padding={8}>
-					<Box role='listbox' display='flex' overflow='auto' fontSize={0} width={0} flexGrow={1} aria-busy={isLoading}>
-						{isLoading &&
-							Array(5)
-								.fill(5)
-								.map((_, index) => <Skeleton variant='rect' height='100px' width='120px' margin={2} key={index} />)}
+				<Box
+					role='listbox'
+					display='flex'
+					overflow='auto'
+					padding={8}
+					gap={4}
+					className={optionsStyle}
+					aria-orientation='horizontal'
+					aria-labelledby={title ? id : undefined}
+					aria-busy={isLoading}
+				>
+					{isLoading &&
+						Array(5)
+							.fill(5)
+							.map((_, index) => <Skeleton variant='rect' height='100px' width='120px' key={index} />)}
 
-						{!isLoading &&
-							itemsFlat.map((item) => (
-								<Box
-									onClick={() => select(item)}
-									role='option'
-									className={['popup-item', item === focused && 'selected'].filter(Boolean).join(' ')}
-									id={`popup-item-${item._id}`}
-									key={item._id}
-									backgroundColor={item === focused ? 'selected' : undefined}
-									borderColor={item === focused ? 'highlight' : 'transparent'}
-									tabIndex={item === focused ? 0 : -1}
-									aria-selected={item === focused}
-									margin={2}
-									borderWidth='default'
-									borderRadius='medium'
-								>
-									{item.type === 'image' && <img src={item.value} alt={item._id} />}
-									{item.type === 'audio' && (
-										<audio controls>
-											<track kind='captions' />
-											<source src={item.value} />
-											Your browser does not support the audio element.
-										</audio>
-									)}
-									{item.type === 'video' && (
-										<video controls className='inline-video'>
-											<track kind='captions' />
-											<source src={item.value} />
-											Your browser does not support the video element.
-										</video>
-									)}
-									{item.type === 'text' && <Option>{item.value}</Option>}
-									{item.type === 'other' && <code>{item.value}</code>}
-								</Box>
-							))}
-					</Box>
+					{!isLoading &&
+						itemsFlat.map((item) => (
+							<Item
+								key={item._id}
+								id={`popup-item-${item._id}`}
+								role='option'
+								aria-selected={item === focused}
+								tabIndex={-1}
+								onClick={() => select(item)}
+								selected={item === focused}
+								focusVisible={item === focused}
+							>
+								{item.type === 'image' && <img src={item.value} alt={item._id} />}
+								{item.type === 'audio' && (
+									<audio controls>
+										<track kind='captions' />
+										<source src={item.value} />
+										Your browser does not support the audio element.
+									</audio>
+								)}
+								{item.type === 'video' && (
+									<video controls className='inline-video'>
+										<track kind='captions' />
+										<source src={item.value} />
+										Your browser does not support the video element.
+									</video>
+								)}
+								{item.type === 'text' && (
+									<ItemContent>
+										<ItemTitle>{item.value}</ItemTitle>
+									</ItemContent>
+								)}
+								{item.type === 'other' && <code>{item.value}</code>}
+							</Item>
+						))}
 				</Box>
 			</Tile>
 		</Box>

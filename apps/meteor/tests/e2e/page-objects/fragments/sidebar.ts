@@ -68,12 +68,21 @@ export class RoomSidebar extends Sidebar {
 		return this.root.getByTestId('virtuoso-item-list');
 	}
 
+	/** The whole row, so tests reach the badges, avatar, preview and menu that sit beside the room link. */
 	getSidebarItemByName(name: string) {
-		return this.channelsList.getByRole('link', { name }).filter({ has: this.page.getByText(name, { exact: true }) });
+		return this.channelsList.getByRole('listitem').filter({ has: this.getRoomLink(name) });
+	}
+
+	getSidebarItemLinkByName(name: string) {
+		return this.channelsList.locator(this.getRoomLink(name));
+	}
+
+	private getRoomLink(name: string) {
+		return this.page.getByRole('link', { name }).filter({ has: this.page.getByText(name, { exact: true }) });
 	}
 
 	getFilterItemByName(name: string): Locator {
-		return this.root.getByRole('button', { name }).filter({ has: this.page.getByText(name, { exact: true }) });
+		return this.root.getByRole('link', { name }).filter({ has: this.page.getByText(name, { exact: true }) });
 	}
 
 	getSidebarListItem(name: string): Locator {
@@ -85,15 +94,15 @@ export class RoomSidebar extends Sidebar {
 	}
 
 	get teamsCollapser(): Locator {
-		return this.root.getByRole('group', { name: 'Collapse Teams' }).first();
+		return this.root.getByRole('region', { name: 'Collapse Teams' }).first();
 	}
 
 	get channelsCollapser(): Locator {
-		return this.channelsList.getByRole('group', { name: 'Collapse Channels' });
+		return this.channelsList.getByRole('region', { name: 'Collapse Channels' });
 	}
 
 	get directMessagesCollapser(): Locator {
-		return this.channelsList.getByRole('group', { name: 'Collapse Direct messages' });
+		return this.channelsList.getByRole('region', { name: 'Collapse Direct messages' });
 	}
 
 	get firstChannelFromList(): Locator {
@@ -108,7 +117,8 @@ export class RoomSidebar extends Sidebar {
 	}
 
 	getCollapseGroupByName(name: string): Locator {
-		return this.root.getByRole('button').filter({ has: this.page.getByRole('heading', { name, exact: true }) });
+		const escapedName = name.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+		return this.root.getByRole('region', { name: new RegExp(`^(Collapse|Expand) ${escapedName}$`) });
 	}
 
 	getItemUnreadBadge(item: Locator): Locator {
@@ -128,7 +138,7 @@ export class RoomSidebar extends Sidebar {
 	}
 
 	getSidebarListItemByName(name: string): Locator {
-		return this.channelsList.getByRole('listitem').filter({ has: this.getSidebarItemByName(name) });
+		return this.getSidebarItemByName(name);
 	}
 
 	getCategoryCollapser(name: string): Locator {

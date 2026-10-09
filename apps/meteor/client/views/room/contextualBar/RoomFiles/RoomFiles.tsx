@@ -95,7 +95,7 @@ const RoomFiles = ({
 					</Box>
 				)}
 				{isSuccess && (
-					<Box width='full' height='full' id={filesListId} flexShrink={1} overflow='hidden'>
+					<Box width='full' height='full' id={filesListId} flexShrink={1} overflow='hidden' marginBlock={8}>
 						{filesItems.length === 0 && <ContextualbarEmptyContent title={t('No_files_found')} />}
 						{filesItems.length > 0 && (
 							<VirtualizedScrollbars>

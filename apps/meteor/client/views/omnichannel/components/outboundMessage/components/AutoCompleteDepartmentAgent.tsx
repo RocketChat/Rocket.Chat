@@ -1,7 +1,7 @@
 import type { ILivechatDepartmentAgents, Serialized } from '@rocket.chat/core-typings';
 import { AutoComplete, Box, Chip, Option, OptionAvatar, OptionContent } from '@rocket.chat/fuselage';
 import { useDebouncedValue } from '@rocket.chat/fuselage-hooks';
-import { UserAvatar } from '@rocket.chat/ui-avatar';
+import { ITEM_MEDIA_SIZE, UserAvatar } from '@rocket.chat/ui-avatar';
 import type { AllHTMLAttributes } from 'react';
 import { useMemo, useState } from 'react';
 
@@ -52,7 +52,7 @@ const AutoCompleteDepartmentAgent = ({ value, onChange, agents, placeholder, ...
 			renderItem={({ value, label, ...props }) => (
 				<Option key={value} {...props}>
 					<OptionAvatar>
-						<UserAvatar username={label} size='x20' />
+						<UserAvatar username={label} size={ITEM_MEDIA_SIZE.condensed} />
 					</OptionAvatar>
 					<OptionContent>{label}</OptionContent>
 				</Option>

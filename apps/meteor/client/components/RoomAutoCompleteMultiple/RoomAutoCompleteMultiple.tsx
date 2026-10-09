@@ -1,6 +1,6 @@
 import { AutoComplete, Option, Chip, Box, Skeleton } from '@rocket.chat/fuselage';
 import { useDebouncedValue } from '@rocket.chat/fuselage-hooks';
-import { RoomAvatar } from '@rocket.chat/ui-avatar';
+import { ITEM_MEDIA_SIZE, RoomAvatar } from '@rocket.chat/ui-avatar';
 import { useEndpoint } from '@rocket.chat/ui-contexts';
 import { keepPreviousData, useQuery } from '@tanstack/react-query';
 import type { ComponentProps } from 'react';
@@ -63,7 +63,7 @@ const RoomAutoCompleteMultiple = ({ value, onChange, ...props }: RoomAutoComplet
 					key={value}
 					{...props}
 					label={label.name}
-					avatar={<RoomAvatar size='x20' room={{ ...label, type: label?.type || 'c', _id: value }} />}
+					avatar={<RoomAvatar size={ITEM_MEDIA_SIZE.condensed} room={{ ...label, type: label?.type || 'c', _id: value }} />}
 				/>
 			)}
 			options={options}

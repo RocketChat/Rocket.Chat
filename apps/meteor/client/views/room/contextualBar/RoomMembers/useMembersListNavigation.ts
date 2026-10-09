@@ -2,7 +2,7 @@ import { createFocusManager } from '@react-aria/focus';
 import type { RefCallback } from 'react';
 import { useCallback, useRef } from 'react';
 
-const isMemberItem = (node: Element) => node.tagName === 'LI';
+const isMemberItem = (node: Element) => node.classList.contains('rcx-item__link');
 
 export const useMembersListNavigation = (): { membersListRef: RefCallback<HTMLElement> } => {
 	const cleanupRef = useRef<(() => void) | null>(null);
@@ -32,7 +32,7 @@ export const useMembersListNavigation = (): { membersListRef: RefCallback<HTMLEl
 			while (scroller && getComputedStyle(scroller).overflowY === 'visible') {
 				scroller = scroller.parentElement;
 			}
-			const itemHeight = (e.target as HTMLElement).offsetHeight;
+			const itemHeight = (e.target.closest<HTMLElement>('.rcx-item') ?? (e.target as HTMLElement)).offsetHeight;
 			if (!scroller || itemHeight <= 0) return;
 
 			scroller.scrollTop = isUp ? Math.max(0, scroller.scrollTop - itemHeight) : scroller.scrollTop + itemHeight;
