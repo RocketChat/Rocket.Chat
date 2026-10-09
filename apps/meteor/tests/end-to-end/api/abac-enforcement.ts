@@ -2,6 +2,7 @@ import type { Credentials } from '@rocket.chat/api-client';
 import type { IRoom, IUser } from '@rocket.chat/core-typings';
 import { expect } from 'chai';
 import { before, after, describe, it } from 'mocha';
+import { MongoClient } from 'mongodb';
 
 import { addAbacAttributesToUserDirectly } from '../../data/abac.helper';
 import { api, getCredentials, request, credentials } from '../../data/api-data';
@@ -10,7 +11,7 @@ import { updateSetting } from '../../data/permissions.helper';
 import { createRoom, deleteRoom } from '../../data/rooms.helper';
 import { password } from '../../data/user';
 import { createUser, deleteUser, login } from '../../data/users.helper';
-import { IS_EE } from '../../e2e/config/constants';
+import { IS_EE, URL_MONGODB } from '../../e2e/config/constants';
 
 /**
  * Every room type is covered by `apps/meteor/lib/rooms/isRoomAbacLocked.spec.ts`. Only DMs are
@@ -19,7 +20,7 @@ import { IS_EE } from '../../e2e/config/constants';
 (IS_EE ? describe : describe.skip)('[ABAC Enforcement] (Enterprise Only)', function () {
 	this.retries(0);
 
-	const v1 = '/api/v1';
+	let connection: MongoClient;
 
 	// Enforcement changes are applied by a settings watcher, so a write has to settle before the
 	// next request observes it.
@@ -41,6 +42,8 @@ import { IS_EE } from '../../e2e/config/constants';
 	before((done) => getCredentials(done));
 
 	before(async () => {
+		connection = await MongoClient.connect(URL_MONGODB);
+
 		await updateSetting('ABAC_Enabled', true);
 
 		otherUser = await createUser();
@@ -52,6 +55,7 @@ import { IS_EE } from '../../e2e/config/constants';
 		await setRequiredAttributes([]);
 		await updateSetting('ABAC_Enabled', false);
 		await deleteUser(otherUser);
+		await connection.close();
 	});
 
 	describe('excluded room types are untouched by enforcement', () => {
@@ -149,26 +153,26 @@ import { IS_EE } from '../../e2e/config/constants';
 		});
 	});
 
-	describe('changing the required attributes re-locks a compliant room (D3)', () => {
+	describe('changing the required attributes re-locks a compliant room', () => {
 		const carriedKey = `abac_enf_carried_${Date.now()}`;
 		const laterKey = `abac_enf_later_${Date.now()}`;
 		let compliantRoomId: IRoom['_id'];
 
 		before(async () => {
 			await request
-				.post(`${v1}/abac/attributes`)
+				.post(api('abac/attributes'))
 				.set(credentials)
 				.send({ key: carriedKey, values: ['value'] })
 				.expect(200);
 			await request
-				.post(`${v1}/abac/attributes`)
+				.post(api('abac/attributes'))
 				.set(credentials)
 				.send({ key: laterKey, values: ['value'] })
 				.expect(200);
 
 			// Both keys: without `laterKey` the tightening below evicts the admin, and the test
 			// observes the eviction instead of the lock.
-			await addAbacAttributesToUserDirectly(credentials['X-User-Id'], [
+			await addAbacAttributesToUserDirectly(connection, credentials['X-User-Id'], [
 				{ key: carriedKey, values: ['value'] },
 				{ key: laterKey, values: ['value'] },
 			]);
@@ -177,7 +181,7 @@ import { IS_EE } from '../../e2e/config/constants';
 			compliantRoomId = room.body.group._id;
 
 			await request
-				.post(`${v1}/abac/rooms/${compliantRoomId}/attributes`)
+				.post(api(`abac/rooms/${compliantRoomId}/attributes`))
 				.set(credentials)
 				.send({ attributes: { [carriedKey]: ['value'] } })
 				.expect(200);
@@ -190,13 +194,16 @@ import { IS_EE } from '../../e2e/config/constants';
 			await setEnforcement(false);
 			await setRequiredAttributes([]);
 			await deleteRoom({ type: 'p', roomId: compliantRoomId });
-			await addAbacAttributesToUserDirectly(credentials['X-User-Id'], []);
+			await addAbacAttributesToUserDirectly(connection, credentials['X-User-Id'], []);
 
 			for (const key of [carriedKey, laterKey]) {
-				const res = await request.get(`${v1}/abac/attributes`).query({ key }).set(credentials).expect(200);
+				const res = await request.get(api('abac/attributes')).query({ key }).set(credentials).expect(200);
 				const attribute = (res.body.attributes as { _id: string; key: string }[]).find((a) => a.key === key);
 				if (attribute) {
-					await request.delete(`${v1}/abac/attributes/${attribute._id}`).set(credentials).expect(200);
+					await request
+						.delete(api(`abac/attributes/${attribute._id}`))
+						.set(credentials)
+						.expect(200);
 				}
 			}
 		});
@@ -233,7 +240,7 @@ import { IS_EE } from '../../e2e/config/constants';
 			await setEnforcement(false);
 		});
 
-		it('blocks public channel creation (D6)', async () => {
+		it('blocks public channel creation', async () => {
 			await request
 				.post(api('channels.create'))
 				.set(credentials)
@@ -245,7 +252,7 @@ import { IS_EE } from '../../e2e/config/constants';
 				});
 		});
 
-		it('blocks discussion creation (D7)', async () => {
+		it('blocks discussion creation', async () => {
 			const parent = await createRoom({ type: 'p', name: `abac-parent-${Date.now()}` });
 			const parentId = parent.body.group._id;
 
