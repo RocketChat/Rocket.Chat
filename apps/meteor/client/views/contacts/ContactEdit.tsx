@@ -120,7 +120,11 @@ const ContactEdit = ({ contact, onSaved, onClose }: ContactEditProps) => {
 					<Field>
 						<FieldLabel required>{t('First_name')}</FieldLabel>
 						<FieldRow>
-							<TextInput {...register('givenName', { required: t('Required_field', { field: t('First_name') }) })} />
+							<TextInput
+								{...register('givenName', {
+									validate: (value) => value.trim().length > 0 || t('Required_field', { field: t('First_name') }),
+								})}
+							/>
 						</FieldRow>
 						{errors.givenName && <FieldError>{errors.givenName.message}</FieldError>}
 					</Field>
