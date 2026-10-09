@@ -4,8 +4,8 @@ import { Messages } from '@rocket.chat/models';
 import { check } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
 
-import { canAccessRoomIdsAsync } from '../../lib/authorization/canAccessRoom';
 import { methodDeprecationLogger } from '../../lib/deprecationWarningLogger';
+import { filterMessagesByRoomAccess } from '../../lib/messages/filterMessagesByRoomAccess';
 
 declare module '@rocket.chat/ddp-client' {
 	// eslint-disable-next-line @typescript-eslint/naming-convention
@@ -27,19 +27,6 @@ Meteor.methods<ServerMethods>({
 
 		const msgs = await Messages.findVisibleByIds(messages).toArray();
 
-		if (!msgs.length) {
-			return msgs;
-		}
-
-		if (
-			!(await canAccessRoomIdsAsync(
-				msgs.map((m) => m.rid),
-				user,
-			))
-		) {
-			throw new Meteor.Error('error-not-allowed', 'Not allowed', { method: 'getMessages' });
-		}
-
-		return msgs;
+		return filterMessagesByRoomAccess(msgs, user);
 	},
 });

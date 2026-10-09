@@ -34,11 +34,12 @@ import { escapeRegExp } from '@rocket.chat/tools';
 import { Meteor } from 'meteor/meteor';
 
 import { roomAccessAttributes } from '../../lib/authorization';
-import { canAccessRoomAsync, canAccessRoomIdAsync, canAccessRoomIdsAsync } from '../../lib/authorization/canAccessRoom';
+import { canAccessRoomAsync, canAccessRoomIdAsync } from '../../lib/authorization/canAccessRoom';
 import { hasPermissionAsync } from '../../lib/authorization/hasPermission';
 import { callbacks } from '../../lib/callbacks';
 import { applyAirGappedRestrictionsValidation } from '../../lib/cloud/license/airGappedRestrictionsWrapper';
 import { deleteMessageValidatingPermission } from '../../lib/messages/deleteMessage';
+import { filterMessagesByRoomAccess } from '../../lib/messages/filterMessagesByRoomAccess';
 import { processWebhookMessage } from '../../lib/messages/processWebhookMessage';
 import { pinMessage, unpinMessage } from '../../lib/messaging/pins/pinMessage';
 import { executeSetReaction } from '../../lib/messaging/reactions/setReaction';
@@ -1505,18 +1506,13 @@ const chatEndpoints = API.v1
 			const { messageIds } = this.bodyParams;
 
 			const messages = await Messages.findVisibleByIds(messageIds).toArray();
-			if (!messages.length) {
+
+			const visibleMessages = await filterMessagesByRoomAccess(messages, this.user);
+			if (!visibleMessages.length) {
 				return API.v1.notFound();
 			}
 
-			const rids = [...new Set(messages.map(({ rid }) => rid))];
-
-			// The batch spans rooms, so one unreadable room rejects the whole request.
-			if (!(await canAccessRoomIdsAsync(rids, this.user))) {
-				return API.v1.forbidden();
-			}
-
-			return API.v1.success({ messages: await normalizeMessagesForUser(messages, this.userId) });
+			return API.v1.success({ messages: await normalizeMessagesForUser(visibleMessages, this.userId) });
 		},
 	);
 

@@ -5364,14 +5364,30 @@ describe('Threads', () => {
 			expect(res.body.messages.map((message: IMessage) => message._id)).to.deep.equal([firstMessageId]);
 		});
 
-		it('should reject the whole batch when any message belongs to an unreadable room', async () => {
+		it('should omit messages from unreadable rooms the same way as nonexistent ids', async () => {
 			const res = await request
 				.post(api('chat.getMessages'))
 				.set(outsiderCredentials)
 				.send({ messageIds: [firstMessageId, privateMessageId] })
-				.expect(403);
+				.expect(200);
 
-			expect(res.body).to.have.property('success', false);
+			expect(res.body.messages.map((message: IMessage) => message._id)).to.deep.equal([firstMessageId]);
+		});
+
+		it('should return the same response for an unreadable message id as for a nonexistent one', async () => {
+			const unreadableRes = await request
+				.post(api('chat.getMessages'))
+				.set(outsiderCredentials)
+				.send({ messageIds: [privateMessageId] });
+
+			const nonexistentRes = await request
+				.post(api('chat.getMessages'))
+				.set(outsiderCredentials)
+				.send({ messageIds: ['does-not-exist'] });
+
+			expect(unreadableRes.status).to.equal(nonexistentRes.status);
+			expect(unreadableRes.status).to.equal(404);
+			expect(unreadableRes.body).to.deep.equal(nonexistentRes.body);
 		});
 
 		it('should resolve the readable subset for the same user when the unreadable id is dropped', async () => {
