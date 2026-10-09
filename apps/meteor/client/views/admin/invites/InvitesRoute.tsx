@@ -4,9 +4,9 @@ import InvitesPage from './InvitesPage';
 import NotAuthorizedPage from '../../notAuthorized/NotAuthorizedPage';
 
 const InvitesRoute = () => {
-	const canCreateInviteLinks = usePermission('create-invite-links');
+	const canManageInviteLinks = usePermission('manage-invite-links');
 
-	if (!canCreateInviteLinks) {
+	if (!canManageInviteLinks) {
 		return <NotAuthorizedPage />;
 	}
 

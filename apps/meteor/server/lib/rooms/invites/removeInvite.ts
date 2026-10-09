@@ -9,7 +9,7 @@ export const removeInvite = async (userId: string, invite: Pick<IInvite, '_id'>)
 		return false;
 	}
 
-	if (!(await hasPermissionAsync(userId, 'create-invite-links'))) {
+	if (!(await hasPermissionAsync(userId, 'manage-invite-links'))) {
 		throw new Meteor.Error('not_authorized');
 	}
 

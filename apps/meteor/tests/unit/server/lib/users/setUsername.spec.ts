@@ -24,7 +24,7 @@ describe('setUsername', () => {
 			broadcast: sinon.stub(),
 		},
 		Invites: {
-			findOneById: sinon.stub(),
+			findOneByInviteToken: sinon.stub(),
 		},
 		callbacks: {
 			run: sinon.stub(),
@@ -78,7 +78,7 @@ describe('setUsername', () => {
 		stubs.Accounts.sendEnrollmentEmail.reset();
 		stubs.settings.get.reset();
 		stubs.api.broadcast.reset();
-		stubs.Invites.findOneById.reset();
+		stubs.Invites.findOneByInviteToken.reset();
 		stubs.callbacks.run.reset();
 		stubs.callbacks.runAsync.reset();
 		stubs.checkUsernameAvailability.reset();
@@ -319,17 +319,18 @@ describe('setUsername', () => {
 			expect(stubs.setUserAvatar.called).to.be.false;
 		});
 
-		it('should add user to room if inviteToken is present', async () => {
-			const mockUser = { _id: userId, username: null, inviteToken: 'invite token' };
+		it('should complete a pending registration with a migrated legacy invite token', async () => {
+			const mockUser = { _id: userId, username: null, inviteToken: 'Old123' };
 			stubs.validateUsername.returns(true);
 			stubs.Users.findOneById.resolves(mockUser);
 			stubs.checkUsernameAvailability.resolves(true);
 			stubs.settings.get.withArgs('Accounts_SetDefaultAvatar').returns(true);
 			stubs.getAvatarSuggestionForUser.resolves({ google: { blob: 'blobData', contentType: 'image/png' } });
-			stubs.Invites.findOneById.resolves({ rid: 'room id' });
+			stubs.Invites.findOneByInviteToken.withArgs('Old123').resolves({ _id: 'new-record-id', rid: 'room id', legacy: true });
 
 			await _setUsername(userId, username, mockUser);
 
+			expect(stubs.Invites.findOneByInviteToken.calledOnceWith('Old123')).to.be.true;
 			expect(stubs.addUserToRoom.calledOnceWith('room id', mockUser)).to.be.true;
 		});
 	});

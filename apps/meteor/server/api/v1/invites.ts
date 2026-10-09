@@ -1,4 +1,4 @@
-import type { IInvite } from '@rocket.chat/core-typings';
+import type { IInvite, IInviteSummary } from '@rocket.chat/core-typings';
 import {
 	ajv,
 	isFindOrCreateInviteParams,
@@ -7,6 +7,7 @@ import {
 	isSendInvitationEmailParams,
 	validateBadRequestErrorResponse,
 	validateUnauthorizedErrorResponse,
+	validateForbiddenErrorResponse,
 } from '@rocket.chat/rest-typings';
 
 import { findOrCreateInvite } from '../../lib/rooms/invites/findOrCreateInvite';
@@ -68,11 +69,52 @@ const invites = API.v1
 		'listInvites',
 		{
 			authRequired: true,
+			permissionsRequired: ['manage-invite-links'],
 			response: {
-				200: ajv.compile<IInvite[]>({
+				200: ajv.compile<IInviteSummary[]>({
+					additionalProperties: false,
 					type: 'array',
 					items: {
-						$ref: '#/components/schemas/IInvite',
+						additionalProperties: false,
+						type: 'object',
+						properties: {
+							_id: {
+								type: 'string',
+							},
+							days: {
+								type: 'number',
+							},
+							maxUses: {
+								type: 'number',
+							},
+							rid: {
+								type: 'string',
+							},
+							roomName: {
+								type: 'string',
+								nullable: true,
+							},
+							userId: {
+								type: 'string',
+							},
+							createdAt: {
+								type: 'string',
+							},
+							_updatedAt: {
+								type: 'string',
+							},
+							expires: {
+								type: 'string',
+								nullable: true,
+							},
+							uses: {
+								type: 'number',
+							},
+							legacy: {
+								type: 'boolean',
+							},
+						},
+						required: ['_id', 'days', 'maxUses', 'rid', 'userId', 'createdAt', '_updatedAt', 'uses'],
 					},
 				}),
 				401: ajv.compile({
@@ -97,6 +139,7 @@ const invites = API.v1
 					},
 					required: ['success', 'error'],
 				}),
+				403: validateForbiddenErrorResponse,
 			},
 		},
 
@@ -116,6 +159,9 @@ const invites = API.v1
 					type: 'object',
 					properties: {
 						_id: {
+							type: 'string',
+						},
+						inviteToken: {
 							type: 'string',
 						},
 						rid: {
@@ -151,7 +197,7 @@ const invites = API.v1
 							description: 'Indicates if the request was successful.',
 						},
 					},
-					required: ['_id', 'rid', 'createdAt', 'maxUses', 'uses', 'userId', '_updatedAt', 'days', 'success'],
+					required: ['_id', 'inviteToken', 'rid', 'createdAt', 'maxUses', 'uses', 'userId', '_updatedAt', 'days', 'success'],
 				}),
 				400: ajv.compile({
 					additionalProperties: false,
@@ -221,6 +267,7 @@ const invites = API.v1
 		'removeInvite/:_id',
 		{
 			authRequired: true,
+			permissionsRequired: ['manage-invite-links'],
 			response: {
 				200: removeInviteResponseSchema,
 				400: validateBadRequestErrorResponse,
@@ -230,6 +277,7 @@ const invites = API.v1
 					required: ['success', 'error'],
 					additionalProperties: false,
 				}),
+				403: validateForbiddenErrorResponse,
 			},
 		},
 		async function action() {

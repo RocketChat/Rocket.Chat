@@ -58,7 +58,7 @@ export const {
 		href: '/admin/invites',
 		i18nLabel: 'Invites',
 		icon: 'user-plus',
-		permissionGranted: (): boolean => hasPermission('create-invite-links'),
+		permissionGranted: (): boolean => hasPermission('manage-invite-links'),
 	},
 	{
 		href: '/admin/user-status',

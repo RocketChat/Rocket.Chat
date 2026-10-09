@@ -4051,6 +4051,8 @@
   "manage-incoming-integrations_description": "Permission to manage the server incoming integrations",
   "manage-integrations": "Manage integrations",
   "manage-integrations_description": "Permission to manage the server integrations",
+  "manage-invite-links": "Manage invite links",
+  "manage-invite-links_description": "Permission to list and remove invite links for all rooms. Does not grant access to those rooms.",
   "manage-livechat-agents": "Manage omnichannel agents",
   "manage-livechat-agents_description": "Permission to manage omnichannel agents",
   "manage-livechat-canned-responses": "Manage omnichannel canned responses",

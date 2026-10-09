@@ -127,7 +127,7 @@ test.describe('SAML', () => {
 	let samlRoleId: string;
 	let targetInviteGroupId: string;
 	let targetInviteGroupName: string;
-	let inviteId: string;
+	let inviteToken: string;
 	let targetChannel: string;
 	let autoCreatedChannel: string;
 
@@ -169,8 +169,8 @@ test.describe('SAML', () => {
 
 		const inviteResponse = await api.post('/findOrCreateInvite', { rid: targetInviteGroupId, days: 1, maxUses: 0 });
 		expect(inviteResponse.status()).toBe(200);
-		const { _id } = await inviteResponse.json();
-		inviteId = _id;
+		const { inviteToken: token } = await inviteResponse.json();
+		inviteToken = token;
 	});
 
 	test.afterAll(async ({ api }) => {
@@ -500,10 +500,10 @@ test.describe('SAML', () => {
 	});
 
 	test('Redirect to a specific group after login when using a valid invite link', async ({ page }) => {
-		await poRegistration.gotoInvite(inviteId);
+		await poRegistration.gotoInvite(inviteToken);
 		await page.getByRole('link', { name: 'Back to login' }).click();
 
-		expect(await page.evaluate((key) => sessionStorage.getItem(key), KEY)).toEqual(JSON.stringify(inviteId));
+		expect(await page.evaluate((key) => sessionStorage.getItem(key), KEY)).toEqual(JSON.stringify(inviteToken));
 
 		await doLoginStep(page, 'samluser1', null);
 
@@ -514,10 +514,10 @@ test.describe('SAML', () => {
 	});
 
 	test('Remove invite token from session storage if invite is not used', async ({ page }) => {
-		await poRegistration.gotoInvite(inviteId);
+		await poRegistration.gotoInvite(inviteToken);
 		await page.getByRole('link', { name: 'Back to login' }).click();
 
-		expect(await page.evaluate((key) => sessionStorage.getItem(key), KEY)).toEqual(JSON.stringify(inviteId));
+		expect(await page.evaluate((key) => sessionStorage.getItem(key), KEY)).toEqual(JSON.stringify(inviteToken));
 
 		await poRegistration.goto();
 		await doLoginStep(page, 'samluser2');
@@ -540,10 +540,10 @@ test.describe('SAML', () => {
 		await poRegistration2.goto();
 		await expect(page2).toHaveURL('/home');
 
-		await poRegistration.gotoInvite(inviteId);
+		await poRegistration.gotoInvite(inviteToken);
 		await page.getByRole('link', { name: 'Back to login' }).click();
 
-		expect(await page.evaluate((key) => sessionStorage.getItem(key), KEY)).toEqual(JSON.stringify(inviteId));
+		expect(await page.evaluate((key) => sessionStorage.getItem(key), KEY)).toEqual(JSON.stringify(inviteToken));
 		expect(await page2.evaluate((key) => sessionStorage.getItem(key), KEY)).toEqual('null');
 
 		await expect(poRegistration.btnLoginWithSaml).toBeVisible();

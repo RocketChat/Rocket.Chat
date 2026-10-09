@@ -1,4 +1,4 @@
-import type { IInvite } from '@rocket.chat/core-typings';
+import type { IInvite, IInviteSummary } from '@rocket.chat/core-typings';
 import { Box, IconButton } from '@rocket.chat/fuselage';
 import { useMediaQuery } from '@rocket.chat/fuselage-hooks';
 import { GenericTableCell, GenericTableRow, useFormatDateAndTime } from '@rocket.chat/ui-client';
@@ -16,14 +16,14 @@ const isExpired = (expires: IInvite['expires']): boolean => {
 	return false;
 };
 
-export type InviteRowProps = Omit<IInvite, 'createdAt' | 'expires' | '_updatedAt'> & {
+export type InviteRowProps = Omit<IInviteSummary, 'createdAt' | 'expires' | '_updatedAt'> & {
 	onRemove: (removeInvite: () => Promise<boolean>) => void;
 	_updatedAt: string;
 	createdAt: string;
 	expires: string | null;
 };
 
-const InviteRow = ({ _id, createdAt, expires, uses, maxUses, onRemove }: InviteRowProps) => {
+const InviteRow = ({ _id, roomName, createdAt, expires, uses, maxUses, onRemove }: InviteRowProps) => {
 	const { t } = useTranslation();
 	const formatDateAndTime = useFormatDateAndTime();
 	const removeInvite = useEndpoint('DELETE', '/v1/removeInvite/:_id', { _id });
@@ -65,7 +65,7 @@ const InviteRow = ({ _id, createdAt, expires, uses, maxUses, onRemove }: InviteR
 		<GenericTableRow>
 			<GenericTableCell>
 				<Box color='hint' fontScale='p2'>
-					{_id}
+					{roomName ? `${roomName} (${_id})` : _id}
 				</Box>
 			</GenericTableCell>
 			{notSmall && (
