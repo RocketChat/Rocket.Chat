@@ -7,8 +7,8 @@ import { useCallback, memo } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import ThreadListMessage from './ThreadListMessage';
-import { useDecryptedMessage } from '../../../../../hooks/useDecryptedMessage';
 import { normalizeThreadMessage } from '../../../../../lib/normalizeThreadMessage';
+import { useDecryptedMessage } from '../hooks/useDecryptedMessage';
 
 export type ThreadListItemProps = {
 	thread: IThreadMainMessage;

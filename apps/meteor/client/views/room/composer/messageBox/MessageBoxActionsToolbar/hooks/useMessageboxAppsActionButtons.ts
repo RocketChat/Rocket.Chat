@@ -2,12 +2,12 @@ import { useToastMessageDispatch } from '@rocket.chat/ui-contexts';
 import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { useAppActionButtons, getIdForActionButton } from './useAppActionButtons';
-import { useApplyButtonFilters } from './useApplyButtonFilters';
-import { Utilities } from '../../ee/lib/misc/Utilities';
-import { UiKitTriggerTimeoutError } from '../lib/errors/UiKitTriggerTimeoutError';
-import type { MessageBoxAction } from '../lib/messageBox';
-import { useUiKitActionManager } from '../uikit/hooks/useUiKitActionManager';
+import { Utilities } from '../../../../../../../ee/lib/misc/Utilities';
+import { useAppActionButtons, getIdForActionButton } from '../../../../../../hooks/useAppActionButtons';
+import { useApplyButtonFilters } from '../../../../../../hooks/useApplyButtonFilters';
+import { UiKitTriggerTimeoutError } from '../../../../../../lib/errors/UiKitTriggerTimeoutError';
+import type { MessageBoxAction } from '../../../../../../lib/messageBox';
+import { useUiKitActionManager } from '../../../../../../uikit/hooks/useUiKitActionManager';
 
 export const useMessageboxAppsActionButtons = () => {
 	const result = useAppActionButtons('messageBoxAction');

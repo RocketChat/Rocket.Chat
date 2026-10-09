@@ -1,7 +1,7 @@
 import { useEndpoint } from '@rocket.chat/ui-contexts';
 import { useInfiniteQuery } from '@tanstack/react-query';
 
-import { roomsQueryKeys } from '../lib/queryKeys';
+import { roomsQueryKeys } from '../../../lib/queryKeys';
 
 export const useRoomsList = ({ text }: { text: string }) => {
 	const getRooms = useEndpoint('GET', '/v1/rooms.autocomplete.channelAndPrivate.withPagination');
