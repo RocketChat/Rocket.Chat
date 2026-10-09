@@ -2,6 +2,7 @@ import type { Credentials } from '@rocket.chat/api-client';
 import type { IMessage, IPermission, IRoom, ISetting, IUser } from '@rocket.chat/core-typings';
 import { expect } from 'chai';
 import { after, before, describe, it } from 'mocha';
+import { MongoClient } from 'mongodb';
 
 import { addAbacAttributesToUserDirectly } from '../../data/abac.helper';
 import { api, credentials, getCredentials, request } from '../../data/api-data';
@@ -9,7 +10,7 @@ import { sleep } from '../../data/livechat/utils';
 import { getSettingValueById, updatePermission, updateSetting } from '../../data/permissions.helper';
 import { password } from '../../data/user';
 import { createUser, deleteUser, login } from '../../data/users.helper';
-import { IS_EE } from '../../e2e/config/constants';
+import { IS_EE, URL_MONGODB } from '../../e2e/config/constants';
 
 (IS_EE ? describe : describe.skip)('[ABAC Room Attributes] (Enterprise Only)', function () {
 	this.retries(0);
@@ -37,6 +38,7 @@ import { IS_EE } from '../../e2e/config/constants';
 
 	let ownedRoomId: IRoom['_id'];
 	let otherRoomId: IRoom['_id'];
+	let connection: MongoClient;
 
 	const setSetting = async (id: string, value: ISetting['value']) => {
 		await updateSetting(id, value);
@@ -51,7 +53,7 @@ import { IS_EE } from '../../e2e/config/constants';
 	const newUser = async (attributes: string[]) => {
 		const user = await createUser();
 		createdUsers.push(user);
-		await addAbacAttributesToUserDirectly(user._id, [{ key: dept, values: attributes }]);
+		await addAbacAttributesToUserDirectly(connection, user._id, [{ key: dept, values: attributes }]);
 		return user;
 	};
 
@@ -85,6 +87,8 @@ import { IS_EE } from '../../e2e/config/constants';
 	before(async function () {
 		this.timeout(30000);
 
+		connection = await MongoClient.connect(URL_MONGODB);
+
 		savedPermissionRoles = await getPermissionRoles(savedPermissionId);
 		for (const id of settingIds) {
 			savedSettings.set(id, await getSettingValueById(id));
@@ -100,7 +104,7 @@ import { IS_EE } from '../../e2e/config/constants';
 			.expect(200);
 
 		adminId = credentials['X-User-Id'];
-		await addAbacAttributesToUserDirectly(adminId, [{ key: dept, values: ['eng', 'sales'] }]);
+		await addAbacAttributesToUserDirectly(connection, adminId, [{ key: dept, values: ['eng', 'sales'] }]);
 
 		owner = await newUser(['eng', 'sales']);
 		ownerCredentials = await login(owner.username, password);
@@ -121,7 +125,7 @@ import { IS_EE } from '../../e2e/config/constants';
 			await request.post(api('rooms.delete')).set(credentials).send({ roomId }).expect(200);
 		}
 
-		await addAbacAttributesToUserDirectly(adminId, []);
+		await addAbacAttributesToUserDirectly(connection, adminId, []);
 		for (const user of createdUsers) {
 			await deleteUser(user);
 		}
@@ -136,6 +140,8 @@ import { IS_EE } from '../../e2e/config/constants';
 		for (const [id, value] of savedSettings) {
 			await setSetting(id, value);
 		}
+
+		await connection.close();
 	});
 
 	describe('POST /abac/rooms/:rid/attributes', () => {
