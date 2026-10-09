@@ -1,4 +1,3 @@
-import { AuthorizationUtils } from '@rocket.chat/authorization/dist/AuthorizationUtils';
 import type { IRole } from '@rocket.chat/core-typings';
 
 import { createAuthorizationFunctions } from './createAuthorizationFunctions';
@@ -6,8 +5,11 @@ import { permissions } from '../../server/lib/authorization/constant/permissions
 
 const roleScopes: Record<IRole['_id'], IRole['scope']> = { user: 'Users', moderator: 'Subscriptions' };
 
-const setup = ({ userRoles, roomRoles = {} }: { userRoles: IRole['_id'][]; roomRoles?: Record<string, IRole['_id'][]> }) =>
-	createAuthorizationFunctions({
+const setup = (
+	{ userRoles, roomRoles = {} }: { userRoles: IRole['_id'][]; roomRoles?: Record<string, IRole['_id'][]> },
+	create = createAuthorizationFunctions,
+) =>
+	create({
 		getCurrentUserId: () => 'uid',
 		getUserRoles: () => userRoles,
 		getPermission: (permissionId) => {
@@ -49,11 +51,26 @@ describe('createAuthorizationFunctions', () => {
 		});
 
 		it('applies the restrictions of a role held on a subscription in that room', () => {
-			AuthorizationUtils.addRolePermissionWhiteList('guest', ['view-c-room']);
-			const { hasPermission } = setup({ userRoles: ['user'], roomRoles: { 'room-1': ['guest'] } });
+			jest.isolateModules(() => {
+				const { AuthorizationUtils } = jest.requireActual<typeof import('@rocket.chat/authorization/dist/AuthorizationUtils')>(
+					'@rocket.chat/authorization/dist/AuthorizationUtils',
+				);
+				const isolated = jest.requireActual<typeof import('./createAuthorizationFunctions')>('./createAuthorizationFunctions');
+				AuthorizationUtils.addRolePermissionWhiteList('guest', ['view-c-room']);
+				const { hasPermission } = setup({ userRoles: ['user'], roomRoles: { 'room-1': ['guest'] } }, isolated.createAuthorizationFunctions);
 
-			expect(hasPermission('view-outside-room')).toBe(true);
-			expect(hasPermission('view-outside-room', 'room-1')).toBe(false);
+				expect(hasPermission('view-outside-room')).toBe(true);
+				expect(hasPermission('view-outside-room', 'room-1')).toBe(false);
+			});
+		});
+	});
+
+	describe('userHasAllPermission', () => {
+		it('does not use the room roles of the logged-in user to check another user', () => {
+			const { userHasAllPermission } = setup({ userRoles: ['user'], roomRoles: { 'room-1': ['moderator'] } });
+
+			expect(userHasAllPermission('delete-message', 'room-1', 'uid')).toBe(true);
+			expect(userHasAllPermission('delete-message', 'room-1', 'another-uid')).toBe(false);
 		});
 	});
 
