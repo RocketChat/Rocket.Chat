@@ -8,15 +8,28 @@ export type SettingLookupEndpoint = PathPattern extends `/${infer U}` ? U : Path
 
 export type SettingLookupOption = { key: string; label: string };
 
+const isSettingLookupOption = (option: unknown): option is SettingLookupOption =>
+	typeof option === 'object' &&
+	option !== null &&
+	'key' in option &&
+	typeof option.key === 'string' &&
+	'label' in option &&
+	typeof option.label === 'string';
+
+const toSettingLookupOptions = (response: unknown): SettingLookupOption[] => {
+	if (typeof response !== 'object' || response === null || !('data' in response) || !Array.isArray(response.data)) {
+		return [];
+	}
+
+	return response.data.filter(isSettingLookupOption);
+};
+
 export const useSettingLookupOptions = (lookupEndpoint: SettingLookupEndpoint): SettingLookupOption[] => {
-	const lookup = useEndpoint('GET', lookupEndpoint) as unknown as () => Promise<{ data: SettingLookupOption[] }>;
+	const lookup = useEndpoint('GET', lookupEndpoint) as unknown as () => Promise<unknown>;
 
 	const { data: options = [] } = useQuery({
 		queryKey: miscQueryKeys.lookup(lookupEndpoint),
-		queryFn: async () => {
-			const { data = [] } = (await lookup()) ?? {};
-			return data;
-		},
+		queryFn: async () => toSettingLookupOptions(await lookup()),
 	});
 
 	return options;
