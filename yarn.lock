@@ -9922,7 +9922,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@rocket.chat/fuselage-forms@workspace:^, @rocket.chat/fuselage-forms@workspace:packages/fuselage-forms":
+"@rocket.chat/fuselage-forms@npm:~1.5.1, @rocket.chat/fuselage-forms@workspace:^, @rocket.chat/fuselage-forms@workspace:packages/fuselage-forms":
   version: 0.0.0-use.local
   resolution: "@rocket.chat/fuselage-forms@workspace:packages/fuselage-forms"
   dependencies:
