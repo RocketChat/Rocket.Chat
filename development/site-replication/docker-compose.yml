@@ -1,0 +1,92 @@
+# Two sites, "east" and "west", each with its own MongoDB, RustFS and Rocket.Chat.
+# See ./README.md for how to build the image, seed both sites and cut the link between them.
+
+x-mongo: &mongo
+  image: mongo:8.0
+  command: ['--replSet', 'rs0', '--bind_ip_all']
+
+x-rustfs: &rustfs
+  image: rustfs/rustfs:1.0.1
+  environment:
+    RUSTFS_ACCESS_KEY: ${RUSTFS_ACCESS_KEY:-rocketchat}
+    RUSTFS_SECRET_KEY: ${RUSTFS_SECRET_KEY:-change-me-please}
+
+x-rocketchat: &rocketchat
+  image: ${ROCKETCHAT_IMAGE:-rocketchat-site-replication:local}
+  restart: unless-stopped
+  environment: &rocketchat-env
+    PORT: '3000'
+    SITE_REPLICATION_SECRET: ${SITE_REPLICATION_SECRET:-change-me-please}
+    SITE_REPLICATION_PORT: '3200'
+    SITE_REPLICATION_PARTITION_THRESHOLD_MS: '30000'
+
+services:
+  mongo-east:
+    <<: *mongo
+    healthcheck:
+      test:
+        - CMD
+        - mongosh
+        - --quiet
+        - --eval
+        - "try { rs.status().ok } catch (e) { rs.initiate({ _id: 'rs0', members: [{ _id: 0, host: 'mongo-east:27017' }] }).ok }"
+      interval: 5s
+    networks: [east]
+
+  mongo-west:
+    <<: *mongo
+    healthcheck:
+      test:
+        - CMD
+        - mongosh
+        - --quiet
+        - --eval
+        - "try { rs.status().ok } catch (e) { rs.initiate({ _id: 'rs0', members: [{ _id: 0, host: 'mongo-west:27017' }] }).ok }"
+      interval: 5s
+    networks: [west]
+
+  rustfs-east:
+    <<: *rustfs
+    ports: ['9000:9000']
+    networks: [east, interconnect]
+
+  rustfs-west:
+    <<: *rustfs
+    ports: ['9100:9000']
+    networks: [west, interconnect]
+
+  rocketchat-east:
+    <<: *rocketchat
+    depends_on:
+      mongo-east: { condition: service_healthy }
+    ports: ['3000:3000']
+    environment:
+      <<: *rocketchat-env
+      ROOT_URL: http://localhost:3000
+      MONGO_URL: mongodb://mongo-east:27017/rocketchat?replicaSet=rs0
+      SITE_REPLICATION_SITE_ID: east
+      SITE_REPLICATION_SITE_NAME: East
+      SITE_REPLICATION_PEER_ID: west
+      SITE_REPLICATION_PEER_URL: http://rocketchat-west:3200
+    networks: [east, interconnect]
+
+  rocketchat-west:
+    <<: *rocketchat
+    depends_on:
+      mongo-west: { condition: service_healthy }
+    ports: ['3100:3000']
+    environment:
+      <<: *rocketchat-env
+      ROOT_URL: http://localhost:3100
+      MONGO_URL: mongodb://mongo-west:27017/rocketchat?replicaSet=rs0
+      SITE_REPLICATION_SITE_ID: west
+      SITE_REPLICATION_SITE_NAME: West
+      SITE_REPLICATION_PEER_ID: east
+      SITE_REPLICATION_PEER_URL: http://rocketchat-east:3200
+    networks: [west, interconnect]
+
+networks:
+  east: {}
+  west: {}
+  # The link between the sites. Disconnect a container from it to simulate a partition.
+  interconnect: {}
