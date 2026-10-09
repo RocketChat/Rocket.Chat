@@ -51,7 +51,9 @@ export const runCalendarSync = async (): Promise<CalendarSyncRunSummary> => {
 		const provider = getExchangeProvider();
 		const timeWindow = getCalendarSyncWindow();
 
-		await forEachWithConcurrency(iterateMailboxCandidates(), MAILBOX_CONCURRENCY, async ({ uid, mailbox }) => {
+		const candidates = iterateMailboxCandidates();
+
+		await forEachWithConcurrency(candidates, MAILBOX_CONCURRENCY, async ({ uid, mailbox }) => {
 			if (summary.aborted) {
 				return;
 			}
@@ -81,6 +83,8 @@ export const runCalendarSync = async (): Promise<CalendarSyncRunSummary> => {
 
 			if (outcome.fatal) {
 				summary.aborted = true;
+
+				await candidates.return(undefined);
 			}
 		});
 
