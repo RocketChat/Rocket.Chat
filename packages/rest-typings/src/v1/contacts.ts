@@ -1,4 +1,4 @@
-import type { IContact } from '@rocket.chat/core-typings';
+import type { IContactPublic } from '@rocket.chat/core-typings';
 import type { JSONSchemaType } from 'ajv';
 
 import { ajv, ajvQuery } from './Ajv';
@@ -140,10 +140,10 @@ export const isContactsDeleteProps = ajv.compile(contactsDeletePropsSchema);
 
 export type ContactsEndpoints = {
 	'/v1/contacts.list': {
-		GET: (params: ContactsListProps) => PaginatedResult<{ items: IContact[]; syncedTotal: number }>;
+		GET: (params: ContactsListProps) => PaginatedResult<{ items: IContactPublic[]; syncedTotal: number }>;
 	};
 	'/v1/contacts.create': {
-		POST: (params: ContactsCreateProps) => { contact: IContact };
+		POST: (params: ContactsCreateProps) => { contact: IContactPublic };
 	};
 	'/v1/contacts.update': {
 		POST: (params: ContactsUpdateProps) => void;
