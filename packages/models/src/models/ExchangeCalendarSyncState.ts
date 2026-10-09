@@ -34,7 +34,7 @@ export class ExchangeCalendarSyncStateRaw extends BaseRaw<IExchangeCalendarSyncS
 	}
 
 	public async setLastError(uid: IUser['_id'], lastError: string): Promise<UpdateResult> {
-		return this.updateOne({ uid }, { $set: { lastError, lastErrorAt: new Date() } }, { upsert: true });
+		return this.updateOne({ uid }, { $set: { lastError, lastErrorAt: new Date() } });
 	}
 
 	public async clearCursorByUserId(uid: IUser['_id']): Promise<UpdateResult> {
