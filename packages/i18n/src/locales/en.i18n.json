@@ -5198,6 +5198,7 @@
   "Outlook_Calendar_Url_Mapping": "Domain to Outlook URL mapping",
   "Outlook_Calendar_Url_Mapping_Description": "Map the domain of the calendar to the Outlook URL. This is useful if you have multiple domains and want to use different Outlook URLs for each.",
   "Outlook_contact_sync_complete": "Outlook contact sync complete",
+  "Outlook_contact_sync_failed": "Failed to sync Outlook contacts",
   "Outlook_contacts": "Outlook contacts",
   "Outlook_Sync_Failed": "Failed to load outlook events.",
   "Outlook_Sync_Success": "Outlook events synchronized.",
