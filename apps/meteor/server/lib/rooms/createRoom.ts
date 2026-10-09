@@ -315,6 +315,7 @@ export const createRoom = async <T extends RoomType>(
 	await beforeCreateRoomCallback.run({
 		owner,
 		room: roomProps,
+		members: memberList,
 	});
 
 	if (type === 'c') {

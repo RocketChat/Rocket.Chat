@@ -11,6 +11,6 @@ Adds ABAC attributes to room creation. `groups.create` and `teams.create` accept
 
 A creator can only assign what they may hold. With the local Policy Decision Point, the new **Restrict room creators to attributes they hold** setting, on by default, limits them to their own attribute values; with Virtru, they are limited to the values Virtru entitles them to. A refusal names the attribute, and when access decisions are unavailable the room is not created. `POST /v1/abac/attribute-assignability` answers the same question before creating. Holders of **Bypass ABAC store validation** skip that check, and the audit log records when they do.
 
-Members named at creation who do not carry the room's attributes are left out, and the response lists them in `skippedMembers`.
+Members named at creation who do not carry the room's attributes are left out, and the response lists them in `skippedMembers`. The creator is not: a room the creator would not be admitted to is not created, unless the request leaves the creator out with `excludeSelf`.
 
 While enforcement is on, a private channel or team can only be created carrying every attribute the workspace requires, and federated rooms cannot be created.
