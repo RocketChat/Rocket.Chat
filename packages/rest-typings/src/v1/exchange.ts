@@ -21,6 +21,7 @@ export type ExchangeEndpoints = {
 			modified: number;
 			deleted: number;
 			pruned: number;
+			success: boolean;
 		};
 	};
 };
