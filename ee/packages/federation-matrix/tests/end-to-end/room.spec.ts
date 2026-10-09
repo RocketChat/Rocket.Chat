@@ -1751,9 +1751,15 @@ import { SynapseClient } from '../helper/synapse-client';
 				});
 
 				it('should not have the subscription on the RC side after revoked invitation', async () => {
-					const subscriptions = await getSubscriptions(rc1AdminRequestConfig);
-					const invitedSub = subscriptions.update.find((sub) => sub.fname?.includes(channelName));
-					expect(invitedSub).toBeFalsy();
+					await retry(
+						'waiting for the revoked invitation to propagate to RC',
+						async () => {
+							const subscriptions = await getSubscriptions(rc1AdminRequestConfig);
+							const invitedSub = subscriptions.update.find((sub) => sub.fname?.includes(channelName));
+							expect(invitedSub).toBeFalsy();
+						},
+						{ retries: 5, delayMs: 1000 },
+					);
 				});
 
 				it('should have the RC user with leave membership on Synapse side after revoked invitation', async () => {
