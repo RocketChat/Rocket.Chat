@@ -6,6 +6,7 @@ const user = {
 	name: 'Guilherme Gazzo',
 	username: 'guilherme.gazzo',
 	customStatus: '🛴 currently working on User Card',
+	workspaceRoles: 'Admin, Livechat Agent',
 	roles: (
 		<>
 			<UserCardRole>Admin</UserCardRole>

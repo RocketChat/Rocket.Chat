@@ -20,7 +20,7 @@ export const upsertPermissions = async (): Promise<void> => {
 		{ name: 'user', scope: 'Users', description: '' },
 		{ name: 'federated-external', scope: 'Users', description: '' },
 		{ name: 'bot', scope: 'Users', description: '' },
-		{ name: 'app', scope: 'Users', description: '' },
+		{ name: 'app', scope: 'Users', description: 'App' },
 		{ name: 'guest', scope: 'Users', description: '' },
 		{ name: 'anonymous', scope: 'Users', description: '' },
 		{ name: 'livechat-agent', scope: 'Users', description: 'Livechat Agent' },
