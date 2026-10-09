@@ -1,3 +1,4 @@
+/** What Rocket.Chat knows about a file while it is being uploaded. */
 export interface IUploadDetails {
 	/**
 	 * Full filename of the file, including extension name

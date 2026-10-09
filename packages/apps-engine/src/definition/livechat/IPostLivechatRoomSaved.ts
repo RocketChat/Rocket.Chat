@@ -9,7 +9,7 @@ export interface IPostLivechatRoomSaved {
 	/**
 	 * Handler called *after* the room's info get saved.
 	 *
-	 * @param data the livechat context data which contains room's info.
+	 * @param context the livechat room which was saved.
 	 * @param read An accessor to the environment
 	 * @param http An accessor to the outside world
 	 * @param persis An accessor to the App's persistence

@@ -9,7 +9,7 @@ export interface IPostLivechatRoomClosed {
 	/**
 	 * Method called *after* a livechat room is closed.
 	 *
-	 * @param livechatRoom The livechat room which is closed.
+	 * @param room The livechat room which is closed.
 	 * @param read An accessor to the environment
 	 * @param http An accessor to the outside world
 	 * @param persis An accessor to the App's persistence

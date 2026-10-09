@@ -5,6 +5,14 @@ import type { IMessageUpdater } from './IMessageUpdater';
 import type { IRoomBuilder } from './IRoomBuilder';
 import type { IUserUpdater } from './IUserUpdater';
 
+/**
+ * Changes records that already exist.
+ *
+ * `message` and `room` hand back a builder loaded with the record as it
+ * stands; the change lands when {@link IModifyUpdater.finish} is called with
+ * it. The `updater` argument is who the change is attributed to, and it has to
+ * be allowed to make it.
+ */
 export interface IModifyUpdater {
 	/**
 	 * Get the updater object responsible for the
@@ -44,7 +52,9 @@ export interface IModifyUpdater {
 
 	/**
 	 * Finishes the updating process, saving the object to the database.
-	 * Note: If there is an issue or error while updating, this will throw an error.
+	 *
+	 * > [!WARNING]
+	 * > This throws when the save fails, so nothing is written silently.
 	 *
 	 * @param builder the builder instance
 	 */

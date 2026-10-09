@@ -2,6 +2,14 @@ import type { ILivechatTransferData, IVisitor, IVisitorExternalIdentifier } from
 import type { IRoom } from '../rooms';
 import type { IUser } from '../users';
 
+/**
+ * Moves a Livechat conversation along: hands it over, closes it, or records
+ * something on the visitor.
+ *
+ * It needs the write permission of whatever it touches:
+ * `livechat-room.write`, `livechat-visitor.write`,
+ * `livechat-custom-fields.write`.
+ */
 export interface ILivechatUpdater {
 	/**
 	 * Transfer a Livechat visitor to another room

@@ -15,6 +15,14 @@ import type { IUploadCreator } from './IUploadCreator';
 import type { IUserBuilder } from './IUserBuilder';
 import type { IVideoConferenceBuilder } from './IVideoConferenceBuilder';
 
+/**
+ * Creates new records: messages, rooms, discussions, conferences, uploads and
+ * more.
+ *
+ * Everything built here goes through a builder. Nothing exists until
+ * {@link IModifyCreator.finish} is called with it, so a builder can be passed
+ * around and changed first.
+ */
 export interface IModifyCreator {
 	/**
 	 * Get the creator object responsible for the

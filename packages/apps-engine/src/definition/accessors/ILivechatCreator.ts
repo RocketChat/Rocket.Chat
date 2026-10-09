@@ -1,13 +1,22 @@
 import type { ILivechatRoom, IVisitor, IVisitorExternalIdentifier, ResolveVisitorContactData } from '../livechat';
 import type { IUser } from '../users';
 
+/** What to record on a Livechat room beyond the visitor and the agent. */
 export interface IExtraRoomParams {
+	/** Where the conversation came from, which decides how it is presented to the agent. */
 	source?: ILivechatRoom['source'];
+	/** The values to fill into the workspace's custom room fields. */
 	customFields?: {
 		[key: string]: unknown;
 	};
 }
 
+/**
+ * Creates the Livechat records an App needs to bring a conversation in from
+ * outside.
+ *
+ * A conversation needs a visitor and a room, in that order.
+ */
 export interface ILivechatCreator {
 	/**
 	 * Resolves a visitor by external identifier (e.g., WhatsApp BSUID) with contact data fallback.
