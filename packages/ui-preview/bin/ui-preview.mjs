@@ -115,12 +115,18 @@ const download = async () => {
 };
 
 // Paths a browser navigates to that the server, not the client, must answer (OAuth popups, downloads, livechat).
-const serverPages = ['/api', '/_oauth', '/_saml', '/_cas', '/file-upload', '/file-decrypt', '/ufs', '/data-export', '/livechat'];
+const serverPages = ['/api', '/oauth', '/_oauth', '/_saml', '/_cas', '/file-upload', '/file-decrypt', '/ufs', '/data-export', '/livechat'];
+
+// Client routes nested under a server page prefix (the OAuth provider's consent and error pages).
+const clientPagesUnderServerPages = ['/oauth/authorize', '/oauth/error'];
+
+const matchesPath = (url, prefix) => url === prefix || url.startsWith(`${prefix}/`) || url.startsWith(`${prefix}?`);
 
 const isClientPage = (req) =>
 	req.method === 'GET' &&
 	req.headers.accept?.includes('text/html') &&
-	!serverPages.some((prefix) => req.url === prefix || req.url.startsWith(`${prefix}/`) || req.url.startsWith(`${prefix}?`));
+	(clientPagesUnderServerPages.some((prefix) => matchesPath(req.url, prefix)) ||
+		!serverPages.some((prefix) => matchesPath(req.url, prefix)));
 
 const proxyTo = (options = {}) => ({
 	target: server,
