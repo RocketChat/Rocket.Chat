@@ -25,12 +25,7 @@ const mapStories = (stories: Partial<typeof composedStories>) =>
 
 const allTestCases = mapStories(composedStories);
 
-// TODO: Fix select a11y violations
-// "Interactive controls must not be nested (nested-interactive)"
-// This is an issue in the component itself and not with the fields
-const { WithSelect: _, ...accessibleStories } = composedStories;
-
-const a11yTestCases = mapStories(accessibleStories);
+const a11yTestCases = mapStories(composedStories);
 
 const onlyInputs = mapStories(restStories);
 
