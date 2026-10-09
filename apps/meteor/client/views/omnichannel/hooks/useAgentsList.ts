@@ -1,4 +1,5 @@
 import type { ILivechatAgent, Serialized } from '@rocket.chat/core-typings';
+import { getNextPageOffset } from '@rocket.chat/ui-client';
 import { useEndpoint } from '@rocket.chat/ui-contexts';
 import { useInfiniteQuery } from '@tanstack/react-query';
 import { useTranslation } from 'react-i18next';
@@ -80,10 +81,7 @@ export const useAgentsList = (options: AgentsListOptions) => {
 			return items;
 		},
 		initialPageParam: 0,
-		getNextPageParam: (lastPage) => {
-			const offset = lastPage.offset + lastPage.count;
-			return offset < lastPage.total ? offset : undefined;
-		},
+		getNextPageParam: getNextPageOffset,
 		initialData: () => ({
 			pages: [{ users: [], offset: 0, count: 0, total: Infinity }],
 			pageParams: [0],

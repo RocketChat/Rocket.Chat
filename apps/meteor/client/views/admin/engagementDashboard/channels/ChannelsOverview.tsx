@@ -1,6 +1,6 @@
 import { Icon, Margins, Pagination, Skeleton, Table, TableBody, TableCell, TableHead, TableRow, Tile } from '@rocket.chat/fuselage';
 import { format } from 'date-fns/format';
-import { useMemo, useState } from 'react';
+import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { useChannelsList } from './useChannelsList';
@@ -15,14 +15,10 @@ const ChannelsOverview = () => {
 
 	const { t } = useTranslation();
 
-	const [current, setCurrent] = useState(0);
-	const [itemsPerPage, setItemsPerPage] = useState<25 | 50 | 100>(25);
-
-	const { data } = useChannelsList({
-		period,
-		offset: current,
-		count: itemsPerPage,
-	});
+	const {
+		queryResult: { data },
+		paginationProps,
+	} = useChannelsList({ period });
 
 	const channels = useMemo(() => {
 		if (!data) {
@@ -115,17 +111,7 @@ const ChannelsOverview = () => {
 						</TableBody>
 					</Table>
 				)}
-				<Pagination
-					current={current}
-					itemsPerPage={itemsPerPage}
-					itemsPerPageLabel={(): string => t('Items_per_page:')}
-					showingResultsLabel={({ count, current, itemsPerPage }): string =>
-						t('Showing_results_of', { from: current + 1, to: Math.min(current + itemsPerPage, count), total: count })
-					}
-					count={data?.total || 0}
-					onSetItemsPerPage={setItemsPerPage}
-					onSetCurrent={setCurrent}
-				/>
+				<Pagination {...paginationProps} />
 			</div>
 		</>
 	);

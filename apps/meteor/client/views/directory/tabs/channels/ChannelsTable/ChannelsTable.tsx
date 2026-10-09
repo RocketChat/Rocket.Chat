@@ -7,7 +7,7 @@ import {
 	GenericTableHeaderCell,
 	GenericTableBody,
 	GenericTableLoadingTable,
-	usePagination,
+	usePaginatedQueryKey,
 	useSort,
 } from '@rocket.chat/ui-client';
 import { useRoute, useTranslation, useEndpoint } from '@rocket.chat/ui-contexts';
@@ -28,7 +28,6 @@ const ChannelsTable = () => {
 	const channelRoute = useRoute('channel');
 	const groupsRoute = useRoute('group');
 
-	const { current, itemsPerPage, setItemsPerPage: onSetItemsPerPage, setCurrent: onSetCurrent, ...paginationProps } = usePagination();
 	const { sortBy, sortDirection, setSort } = useSort<'name' | 'usersCount' | 'lastMessage' | 'createdAt'>('name');
 
 	const headers = useMemo(
@@ -81,10 +80,14 @@ const ChannelsTable = () => {
 	);
 
 	const getDirectoryData = useEndpoint('GET', '/v1/directory');
-	const query = useDirectoryQuery({ text, current, itemsPerPage }, [sortBy, sortDirection], 'channels');
+	const query = useDirectoryQuery({ text }, [sortBy, sortDirection], 'channels');
+	const { paginatedQuery, queryKey, paginationProps } = usePaginatedQueryKey({
+		query,
+		getQueryKey: (query) => ['getDirectoryData', query] as const,
+	});
 	const { data, isFetched, isLoading, isError, refetch } = useQuery({
-		queryKey: ['getDirectoryData', query],
-		queryFn: () => getDirectoryData(query),
+		queryKey,
+		queryFn: () => getDirectoryData(paginatedQuery),
 	});
 
 	const onClick = useMemo(
@@ -117,15 +120,7 @@ const ChannelsTable = () => {
 							))}
 						</GenericTableBody>
 					</GenericTable>
-					<Pagination
-						divider
-						current={current}
-						itemsPerPage={itemsPerPage}
-						count={data?.total || 0}
-						onSetItemsPerPage={onSetItemsPerPage}
-						onSetCurrent={onSetCurrent}
-						{...paginationProps}
-					/>
+					<Pagination divider {...paginationProps} />
 				</>
 			)}
 			{isFetched && data?.result.length === 0 && <GenericNoResults />}

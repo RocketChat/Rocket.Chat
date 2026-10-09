@@ -1,3 +1,4 @@
+import { getNextPageOffset } from '@rocket.chat/ui-client';
 import { useEndpoint } from '@rocket.chat/ui-contexts';
 import { useQuery } from '@tanstack/react-query';
 
@@ -16,25 +17,24 @@ export const useAttributeList = () => {
 		staleTime: ATTRIBUTE_LIST_STALE_TIME,
 		queryKey: ABACQueryKeys.roomAttributes.list(),
 		queryFn: async () => {
-			const firstPage = await attributesAutoCompleteEndpoint({ offset: 0, count: COUNT });
-			const { attributes: firstPageAttributes, total } = firstPage;
-
-			let currentPage = COUNT;
 			const pages = [];
+			let offset: number | undefined = 0;
 
-			while (currentPage < total) {
-				pages.push(attributesAutoCompleteEndpoint({ offset: currentPage, count: COUNT }));
-				currentPage += COUNT;
+			while (offset !== undefined) {
+				const page = await attributesAutoCompleteEndpoint({ offset, count: COUNT });
+				pages.push(page);
+				offset = getNextPageOffset(page);
 			}
-			const remainingPages = await Promise.all(pages);
 
 			return {
-				attributes: [...firstPageAttributes, ...remainingPages.flatMap((page) => page.attributes)].map((attribute) => ({
-					_id: attribute._id,
-					label: attribute.key,
-					value: attribute.key,
-					attributeValues: attribute.values,
-				})),
+				attributes: pages
+					.flatMap((page) => page.attributes)
+					.map((attribute) => ({
+						_id: attribute._id,
+						label: attribute.key,
+						value: attribute.key,
+						attributeValues: attribute.values,
+					})),
 			};
 		},
 	});

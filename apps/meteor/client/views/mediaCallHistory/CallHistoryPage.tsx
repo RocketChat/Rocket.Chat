@@ -1,7 +1,7 @@
 import type { CallHistoryItem, Serialized } from '@rocket.chat/core-typings';
 import { Pagination } from '@rocket.chat/fuselage';
 import { useDebouncedValue } from '@rocket.chat/fuselage-hooks';
-import { useSort, usePagination, GenericTableLoadingRow } from '@rocket.chat/ui-client';
+import { useSort, usePaginatedQueryKey, GenericTableLoadingRow } from '@rocket.chat/ui-client';
 import { useEndpoint, useRouteParameter, useRouter } from '@rocket.chat/ui-contexts';
 import { MediaCallHistoryTable, isCallHistoryUnknownContact, isCallHistoryInternalContact } from '@rocket.chat/ui-voip';
 import type { CallHistoryContact } from '@rocket.chat/ui-voip';
@@ -76,7 +76,6 @@ const CallHistoryPage = () => {
 	const sortProps = useSort<'contact' | 'type' | 'status' | 'timestamp'>('timestamp', 'desc');
 
 	const getCallHistory = useEndpoint('GET', '/v1/call-history.list');
-	const { setItemsPerPage, setCurrent, ...paginationProps } = usePagination();
 
 	const router = useRouter();
 	const historyId = useRouteParameter('historyId');
@@ -115,25 +114,21 @@ const CallHistoryPage = () => {
 		setTab(null);
 	}, [setTab, historyId, onClickRow, tab?.rid]);
 
+	const { paginatedQuery, queryKey, paginationProps } = usePaginatedQueryKey({
+		query: { sortBy: sortProps.sortBy, sortDirection: sortProps.sortDirection, type, states, debouncedSearchText },
+		getQueryKey: ({ sortBy, sortDirection, offset, count, type, states, debouncedSearchText }) =>
+			['call-history', 'list', sortBy, sortDirection, offset, count, type, states, debouncedSearchText] as const,
+	});
+
 	const { data, isPending, error, refetch } = useQuery({
-		queryKey: [
-			'call-history',
-			'list',
-			sortProps.sortBy,
-			sortProps.sortDirection,
-			paginationProps.current,
-			paginationProps.itemsPerPage,
-			type,
-			states,
-			debouncedSearchText,
-		],
+		queryKey,
 		queryFn: () => {
 			const sort = getSort(sortProps.sortBy, sortProps.sortDirection);
 			const stateFilter = getStateFilter(states);
 
 			return getCallHistory({
-				count: paginationProps.itemsPerPage,
-				offset: paginationProps.current,
+				count: paginatedQuery.count,
+				offset: paginatedQuery.offset,
 				sort: JSON.stringify(sort),
 				...(type !== 'all' && { direction: type }),
 				...(stateFilter && { state: stateFilter }),
@@ -167,9 +162,7 @@ const CallHistoryPage = () => {
 		return null;
 	})();
 
-	const pagination = (
-		<Pagination divider count={data?.total || 0} onSetItemsPerPage={setItemsPerPage} onSetCurrent={setCurrent} {...paginationProps} />
-	);
+	const pagination = <Pagination divider {...paginationProps} />;
 
 	if (isPending) {
 		return (

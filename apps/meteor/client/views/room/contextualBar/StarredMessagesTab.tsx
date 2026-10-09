@@ -1,4 +1,5 @@
 import type { IMessage } from '@rocket.chat/core-typings';
+import { getNextPageOffset } from '@rocket.chat/ui-client';
 import { useEndpoint } from '@rocket.chat/ui-contexts';
 import { useQuery } from '@tanstack/react-query';
 import { useTranslation } from 'react-i18next';
@@ -19,12 +20,12 @@ const StarredMessagesTab = () => {
 		queryFn: async () => {
 			const messages: IMessage[] = [];
 
-			for (
-				let offset = 0, result = await getStarredMessages({ roomId: room._id, offset: 0 });
-				result.count > 0;
-				offset += result.count, result = await getStarredMessages({ roomId: room._id, offset })
-			) {
+			let offset: number | undefined = 0;
+
+			while (offset !== undefined) {
+				const result = await getStarredMessages({ roomId: room._id, offset });
 				messages.push(...result.messages.map(mapMessageFromApi));
+				offset = getNextPageOffset(result);
 			}
 
 			return Promise.all(messages.map(onClientMessageReceived));

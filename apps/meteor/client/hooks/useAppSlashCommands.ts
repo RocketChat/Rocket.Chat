@@ -1,5 +1,6 @@
 import type { SlashCommand } from '@rocket.chat/core-typings';
 import { useDebouncedCallback } from '@rocket.chat/fuselage-hooks';
+import { getNextPageOffset } from '@rocket.chat/ui-client';
 import { useEndpoint, useStream, useUserId } from '@rocket.chat/ui-contexts';
 import { useQueryClient, useQuery } from '@tanstack/react-query';
 import { useEffect } from 'react';
@@ -63,7 +64,7 @@ export const useAppSlashCommands = () => {
 
 				const newAccumulator = [...accumulator, ...commands];
 
-				if (commands.length > 0 && newAccumulator.length < total) {
+				if (getNextPageOffset({ offset: accumulator.length, count: commands.length, total }) !== undefined) {
 					return fetchBatch(newAccumulator);
 				}
 

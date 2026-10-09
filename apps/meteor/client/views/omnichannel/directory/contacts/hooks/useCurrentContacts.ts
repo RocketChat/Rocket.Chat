@@ -7,11 +7,15 @@ export const useCurrentContacts = (
 	query: PaginatedRequest<{
 		searchText: string;
 	}>,
+	queryKey: readonly unknown[],
 ): UseQueryResult<OperationResult<'GET', '/v1/omnichannel/contacts.search'>> => {
 	const currentContacts = useEndpoint('GET', '/v1/omnichannel/contacts.search');
 
 	return useQuery({
-		queryKey: ['current-contacts', query],
-		queryFn: () => currentContacts(query),
+		queryKey,
+		queryFn: async () => {
+			const result = await currentContacts(query);
+			return { ...result, offset: query.offset ?? 0, count: result.contacts.length };
+		},
 	});
 };

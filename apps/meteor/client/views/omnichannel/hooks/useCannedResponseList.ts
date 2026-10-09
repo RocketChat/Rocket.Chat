@@ -1,4 +1,5 @@
 import type { ILivechatDepartment, IOmnichannelCannedResponse } from '@rocket.chat/core-typings';
+import { getNextPageOffset } from '@rocket.chat/ui-client';
 import { useEndpoint } from '@rocket.chat/ui-contexts';
 import { useInfiniteQuery } from '@tanstack/react-query';
 
@@ -13,7 +14,7 @@ export const useCannedResponseList = ({ filter, type }: { filter: string; type: 
 	return useInfiniteQuery({
 		queryKey: cannedResponsesQueryKeys.list({ filter, type }),
 		queryFn: async ({ pageParam: offset }) => {
-			const { cannedResponses, total } = await getCannedResponses({
+			const { cannedResponses, ...page } = await getCannedResponses({
 				...(filter && { text: filter }),
 				...(type && ['global', 'user'].find((option) => option === type) && { scope: type }),
 				...(type &&
@@ -42,18 +43,14 @@ export const useCannedResponseList = ({ filter, type }: { filter: string; type: 
 						departmentName,
 					};
 				}),
-				itemCount: total,
+				...page,
 			};
 		},
 		initialPageParam: 0,
-		getNextPageParam: (lastPage, _, lastOffset) => {
-			const nextOffset = lastOffset + count;
-			if (nextOffset >= lastPage.itemCount) return undefined;
-			return nextOffset;
-		},
+		getNextPageParam: getNextPageOffset,
 		select: ({ pages }) => ({
 			cannedItems: pages.flatMap((page) => page.items),
-			total: pages.at(-1)?.itemCount,
+			total: pages.at(-1)?.total,
 		}),
 	});
 };

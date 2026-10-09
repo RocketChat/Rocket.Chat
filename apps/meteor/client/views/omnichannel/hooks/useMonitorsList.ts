@@ -1,4 +1,5 @@
 import type { Serialized, ILivechatMonitor } from '@rocket.chat/core-typings';
+import { getNextPageOffset } from '@rocket.chat/ui-client';
 import { useEndpoint } from '@rocket.chat/ui-contexts';
 import { useInfiniteQuery } from '@tanstack/react-query';
 
@@ -42,10 +43,7 @@ export const useMonitorsList = (options: MonitorsListOptions) => {
 		},
 		select: (data) => data.pages.flatMap<MonitorListItem>((page) => page.monitors),
 		initialPageParam: 0,
-		getNextPageParam: (lastPage) => {
-			const offset = lastPage.offset + lastPage.count;
-			return offset < lastPage.total ? offset : undefined;
-		},
+		getNextPageParam: getNextPageOffset,
 		initialData: () => ({
 			pages: [{ monitors: [], offset: 0, count: 0, total: Infinity }],
 			pageParams: [0],

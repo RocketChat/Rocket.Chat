@@ -33,8 +33,6 @@ export const useChatsQuery = () => {
 		(
 			{ guest, servedBy, department, status, from, to, tags, units, ...customFields }: ChatsFiltersQuery,
 			[column, direction]: [string, 'asc' | 'desc'],
-			current: number,
-			itemsPerPage: 25 | 50 | 100,
 		) => {
 			const query: CurrentChatQuery = {
 				...(guest && { roomName: guest }),
@@ -42,8 +40,6 @@ export const useChatsQuery = () => {
 					[column]: sortDir(direction),
 					ts: column === 'ts' ? sortDir(direction) : undefined,
 				}),
-				...(itemsPerPage && { count: itemsPerPage }),
-				...(current && { offset: current }),
 			};
 
 			if (from || to) {

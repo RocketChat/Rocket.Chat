@@ -9,7 +9,7 @@ import {
 	GenericTableLoadingRow,
 	GenericTableRow,
 	GenericTableCell,
-	usePagination,
+	usePaginatedQueryKey,
 	useSort,
 } from '@rocket.chat/ui-client';
 import { useTranslation, usePermission, useToastMessageDispatch, useEndpoint, useRouter } from '@rocket.chat/ui-contexts';
@@ -38,7 +38,6 @@ const CannedResponsesTable = () => {
 	const [text, setText] = useState('');
 	const debouncedText = useDebouncedValue(text, 500);
 
-	const { current, itemsPerPage, setItemsPerPage: onSetItemsPerPage, setCurrent: onSetCurrent, ...paginationProps } = usePagination();
 	const { sortBy, setSort, sortDirection } = useSort<'shortcut' | 'scope' | 'tags' | '_createdAt' | 'createdBy'>('shortcut');
 
 	const query = useMemo(
@@ -47,19 +46,21 @@ const CannedResponsesTable = () => {
 			sort: JSON.stringify({ [sortBy]: sortDirection === 'asc' ? 1 : -1 }),
 			...(sharing && { scope: sharing }),
 			...(createdBy && createdBy !== 'all' && { createdBy }),
-			...(itemsPerPage && { count: itemsPerPage }),
-			...(current && { offset: current }),
 		}),
-		[createdBy, current, debouncedText, itemsPerPage, sharing, sortBy, sortDirection],
+		[createdBy, debouncedText, sharing, sortBy, sortDirection],
 	);
+	const { paginatedQuery, queryKey, paginationProps } = usePaginatedQueryKey({
+		query,
+		getQueryKey: (query) => ['getCannedResponses', query] as const,
+	});
 
-	const [defaultQuery] = useState(hashKey([query]));
-	const queryHasChanged = defaultQuery !== hashKey([query]);
+	const [defaultQuery] = useState(hashKey([paginatedQuery]));
+	const queryHasChanged = defaultQuery !== hashKey([paginatedQuery]);
 
 	const getCannedResponses = useEndpoint('GET', '/v1/canned-responses');
 	const { data, isLoading, isSuccess } = useQuery({
-		queryKey: ['getCannedResponses', query],
-		queryFn: () => getCannedResponses(query),
+		queryKey,
+		queryFn: () => getCannedResponses(paginatedQuery),
 		refetchOnWindowFocus: false,
 	});
 
@@ -174,15 +175,7 @@ const CannedResponsesTable = () => {
 							))}
 						</GenericTableBody>
 					</GenericTable>
-					<Pagination
-						divider
-						current={current}
-						itemsPerPage={itemsPerPage}
-						count={data?.total || 0}
-						onSetItemsPerPage={onSetItemsPerPage}
-						onSetCurrent={onSetCurrent}
-						{...paginationProps}
-					/>
+					<Pagination divider {...paginationProps} />
 				</>
 			)}
 		</>

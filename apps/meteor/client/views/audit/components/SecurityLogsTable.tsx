@@ -9,7 +9,7 @@ import {
 	GenericTableHeaderCell,
 	GenericTableLoadingRow,
 	GenericTableRow,
-	usePagination,
+	usePaginatedQueryKey,
 } from '@rocket.chat/ui-client';
 import { useEndpoint, useSetModal } from '@rocket.chat/ui-contexts';
 import { useQuery } from '@tanstack/react-query';
@@ -41,7 +41,11 @@ const SecurityLogsTable = () => {
 		settingId: '',
 	});
 
-	const { current, itemsPerPage, setItemsPerPage: onSetItemsPerPage, setCurrent: onSetCurrent, ...paginationProps } = usePagination();
+	const { paginatedQuery, queryKey, paginationProps } = usePaginatedQueryKey({
+		query,
+		getQueryKey: ({ count, offset, ...query }) => ['audit.settings', query, count, offset] as const,
+	});
+	const { onSetCurrent } = paginationProps;
 
 	const handleClearFilters = () => {
 		setSetting('');
@@ -92,10 +96,10 @@ const SecurityLogsTable = () => {
 	const getAudits = useEndpoint('GET', '/v1/audit.settings');
 
 	const { data, isLoading, isSuccess } = useQuery({
-		queryKey: ['audit.settings', query, itemsPerPage, current],
+		queryKey,
 
 		queryFn: async () => {
-			return getAudits({ ...query, ...(itemsPerPage && { count: itemsPerPage }), ...(current && { offset: current }) });
+			return getAudits(paginatedQuery);
 		},
 	});
 
@@ -203,15 +207,7 @@ const SecurityLogsTable = () => {
 					</GenericTableBody>
 				</GenericTable>
 			)}
-			<Pagination
-				divider
-				current={current}
-				itemsPerPage={itemsPerPage}
-				count={data?.total || 0}
-				onSetItemsPerPage={onSetItemsPerPage}
-				onSetCurrent={onSetCurrent}
-				{...paginationProps}
-			/>
+			<Pagination divider {...paginationProps} />
 		</>
 	);
 };

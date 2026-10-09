@@ -1,4 +1,5 @@
 import type { OperationResult } from '@rocket.chat/rest-typings';
+import { usePaginatedQueryKey } from '@rocket.chat/ui-client';
 import { useEndpoint } from '@rocket.chat/ui-contexts';
 import type { UseQueryResult } from '@tanstack/react-query';
 import { useQuery } from '@tanstack/react-query';
@@ -8,8 +9,6 @@ import { marketplaceQueryKeys } from '../../../lib/queryKeys';
 
 export const useLogs = ({
 	appId,
-	current,
-	itemsPerPage,
 	logLevel,
 	method,
 	startDate,
@@ -17,30 +16,34 @@ export const useLogs = ({
 	instanceId,
 }: {
 	appId: string;
-	current: number;
-	itemsPerPage: number;
 	logLevel?: '0' | '1' | '2';
 	method?: string;
 	startDate?: string;
 	endDate?: string;
 	instanceId?: string;
-}): UseQueryResult<OperationResult<'GET', '/apps/:id/logs'>> => {
+}): UseQueryResult<OperationResult<'GET', '/apps/:id/logs'>> & {
+	paginationProps: ReturnType<typeof usePaginatedQueryKey>['paginationProps'];
+} => {
 	const query = useMemo(
 		() => ({
-			count: itemsPerPage,
-			offset: current,
 			...(logLevel && { logLevel }),
 			...(method && { method }),
 			...(startDate && { startDate }),
 			...(endDate && { endDate }),
 			...(instanceId && { instanceId }),
 		}),
-		[itemsPerPage, current, logLevel, method, startDate, endDate, instanceId],
+		[logLevel, method, startDate, endDate, instanceId],
 	);
+	const { paginatedQuery, queryKey, paginationProps } = usePaginatedQueryKey({
+		query,
+		getQueryKey: (query) => marketplaceQueryKeys.appLogs(appId, query),
+	});
 	const logs = useEndpoint('GET', '/apps/:id/logs', { id: appId });
 
-	return useQuery({
-		queryKey: marketplaceQueryKeys.appLogs(appId, query),
-		queryFn: () => logs(query),
+	const result = useQuery({
+		queryKey,
+		queryFn: () => logs(paginatedQuery),
 	});
+
+	return { ...result, paginationProps };
 };

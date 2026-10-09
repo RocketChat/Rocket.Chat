@@ -7,7 +7,7 @@ import {
 	GenericTableBody,
 	GenericTableLoadingTable,
 } from '@rocket.chat/ui-client';
-import type { usePagination } from '@rocket.chat/ui-client';
+import type { ComponentProps } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import UsersInRoleTableRow from './UsersInRoleTableRow';
@@ -18,16 +18,14 @@ export type UsersInRoleTableProps = {
 	isLoading: boolean;
 	isError: boolean;
 	isSuccess: boolean;
-	total: number;
 	users: Serialized<IUserInRole>[];
 	onRemove: (username: IUserInRole['username']) => void;
-	paginationData: ReturnType<typeof usePagination>;
+	paginationProps: ComponentProps<typeof Pagination>;
 	refetch: () => void;
 };
 
-const UsersInRoleTable = ({ isLoading, isSuccess, isError, total, users, onRemove, refetch, paginationData }: UsersInRoleTableProps) => {
+const UsersInRoleTable = ({ isLoading, isSuccess, isError, users, onRemove, refetch, paginationProps }: UsersInRoleTableProps) => {
 	const { t } = useTranslation();
-	const { current, itemsPerPage, setCurrent, setItemsPerPage, ...paginationProps } = paginationData;
 
 	const headers = (
 		<>
@@ -57,15 +55,7 @@ const UsersInRoleTable = ({ isLoading, isSuccess, isError, total, users, onRemov
 							))}
 						</GenericTableBody>
 					</GenericTable>
-					<Pagination
-						divider
-						current={current}
-						itemsPerPage={itemsPerPage}
-						count={total}
-						onSetItemsPerPage={setItemsPerPage}
-						onSetCurrent={setCurrent}
-						{...paginationProps}
-					/>
+					<Pagination divider {...paginationProps} />
 				</>
 			)}
 			{isSuccess && users?.length === 0 && <GenericNoResults />}

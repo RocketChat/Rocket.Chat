@@ -1,7 +1,7 @@
 import type { IRole, IRoom } from '@rocket.chat/core-typings';
 import { Box, Field, FieldLabel, FieldRow, Margins, ButtonGroup, Button, Callout, FieldError } from '@rocket.chat/fuselage';
 import { useStableCallback } from '@rocket.chat/fuselage-hooks';
-import { usePagination, Page, PageHeader, PageContent } from '@rocket.chat/ui-client';
+import { usePaginatedQueryKey, Page, PageHeader, PageContent } from '@rocket.chat/ui-client';
 import { useToastMessageDispatch, useEndpoint, useRouter } from '@rocket.chat/ui-contexts';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { useId, useMemo } from 'react';
@@ -60,22 +60,24 @@ const UsersInRolePage = ({ role }: UsersInRolePageProps) => {
 
 	const getUsersInRoleEndpoint = useEndpoint('GET', '/v1/roles.getUsersInRole');
 
-	const paginationData = usePagination();
-	const { itemsPerPage, current } = paginationData;
-
 	const query = useMemo(
 		() => ({
 			role: _id,
 			...(rid && { roomId: rid }),
-			...(itemsPerPage && { count: itemsPerPage }),
-			...(current && { offset: current }),
 		}),
-		[itemsPerPage, current, rid, _id],
+		[rid, _id],
 	);
+	const { paginatedQuery, queryKey, paginationProps } = usePaginatedQueryKey({
+		query,
+		getQueryKey: (query) => ['getUsersInRole', _id, query] as const,
+	});
 
 	const { data, isLoading, isSuccess, refetch, isError } = useQuery({
-		queryKey: ['getUsersInRole', _id, query],
-		queryFn: async () => getUsersInRoleEndpoint(query),
+		queryKey,
+		queryFn: async () => {
+			const result = await getUsersInRoleEndpoint(paginatedQuery);
+			return { ...result, offset: paginatedQuery.offset, count: result.users.length };
+		},
 	});
 
 	const handleRemove = useRemoveUserFromRole({ rid, roleId: _id, roleName: name, roleDescription: description });
@@ -158,11 +160,10 @@ const UsersInRolePage = ({ role }: UsersInRolePageProps) => {
 							isLoading={isLoading}
 							isError={isError}
 							isSuccess={isSuccess}
-							total={data?.total || 0}
 							users={data?.users || []}
 							onRemove={handleRemove}
 							refetch={refetch}
-							paginationData={paginationData}
+							paginationProps={paginationProps}
 						/>
 					)}
 					{role.scope !== 'Users' && !rid && <Callout type='info'>{t('Select_a_room')}</Callout>}

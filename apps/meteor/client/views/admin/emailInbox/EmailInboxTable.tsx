@@ -7,7 +7,7 @@ import {
 	GenericTableHeaderCell,
 	GenericTableLoadingTable,
 	GenericTableRow,
-	usePagination,
+	usePaginatedQueryKey,
 	useSort,
 } from '@rocket.chat/ui-client';
 import { useRoute, useTranslation, useEndpoint } from '@rocket.chat/ui-contexts';
@@ -20,7 +20,6 @@ import GenericNoResults from '../../../components/GenericNoResults';
 const EmailInboxTable = () => {
 	const t = useTranslation();
 	const router = useRoute('admin-email-inboxes');
-	const { current, itemsPerPage, setItemsPerPage: onSetItemsPerPage, setCurrent: onSetCurrent, ...paginationProps } = usePagination();
 	const { sortBy, sortDirection, setSort } = useSort<'name' | 'email' | 'active'>('name');
 
 	const onClick = useCallback(
@@ -37,13 +36,15 @@ const EmailInboxTable = () => {
 
 	const query = {
 		sort: JSON.stringify({ [sortBy]: sortDirection === 'asc' ? 1 : -1 }),
-		...(itemsPerPage && { count: itemsPerPage }),
-		...(current && { offset: current }),
 	};
+	const { paginatedQuery, queryKey, paginationProps } = usePaginatedQueryKey({
+		query,
+		getQueryKey: (query) => ['email-list', query] as const,
+	});
 
 	const result = useQuery({
-		queryKey: ['email-list', query],
-		queryFn: () => endpoint(query),
+		queryKey,
+		queryFn: () => endpoint(paginatedQuery),
 	});
 
 	const headers = useMemo(
@@ -95,15 +96,7 @@ const EmailInboxTable = () => {
 							))}
 						</GenericTableBody>
 					</GenericTable>
-					<Pagination
-						divider
-						current={current}
-						itemsPerPage={itemsPerPage}
-						count={result.data.count}
-						onSetItemsPerPage={onSetItemsPerPage}
-						onSetCurrent={onSetCurrent}
-						{...paginationProps}
-					/>
+					<Pagination divider {...paginationProps} />
 				</>
 			)}
 			{result.isSuccess && result.data.emailInboxes.length === 0 && <GenericNoResults />}

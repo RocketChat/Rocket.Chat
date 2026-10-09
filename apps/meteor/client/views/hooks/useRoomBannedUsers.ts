@@ -1,4 +1,5 @@
 import type { IUser, RequiredField } from '@rocket.chat/core-typings';
+import { getNextPageOffset } from '@rocket.chat/ui-client';
 import { useEndpoint } from '@rocket.chat/ui-contexts';
 import { useInfiniteQuery } from '@tanstack/react-query';
 
@@ -26,10 +27,7 @@ export const useRoomBannedUsers = ({ rid, limit = 50, enabled = true }: UseRoomB
 				offset: start,
 			});
 		},
-		getNextPageParam: (lastPage) => {
-			const offset = lastPage.offset + lastPage.count;
-			return offset >= lastPage.total ? undefined : offset;
-		},
+		getNextPageParam: getNextPageOffset,
 
 		select: ({ pages }) => ({
 			total: pages[pages.length - 1].total,

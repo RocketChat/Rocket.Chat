@@ -6,7 +6,7 @@ import {
 	GenericTableHeaderCell,
 	GenericTableHeader,
 	GenericTableLoadingRow,
-	usePagination,
+	usePaginatedQueryKey,
 } from '@rocket.chat/ui-client';
 import { useTranslation, useEndpoint } from '@rocket.chat/ui-contexts';
 import { useQuery } from '@tanstack/react-query';
@@ -20,25 +20,25 @@ const BusinessHoursTable = () => {
 	const t = useTranslation();
 	const [text, setText] = useState('');
 
-	const { current, itemsPerPage, setItemsPerPage: onSetItemsPerPage, setCurrent: onSetCurrent, ...paginationProps } = usePagination();
-
 	const query = useDebouncedValue(
 		useMemo(
 			() => ({
 				name: text,
-				...(itemsPerPage && { count: itemsPerPage }),
-				...(current && { offset: current }),
 			}),
-			[text, itemsPerPage, current],
+			[text],
 		),
 		500,
 	);
+	const { paginatedQuery, queryKey, paginationProps } = usePaginatedQueryKey({
+		query,
+		getQueryKey: (query) => ['livechat-getBusinessHours', query] as const,
+	});
 
 	const getBusinessHours = useEndpoint('GET', '/v1/livechat/business-hours');
 	const { data, isLoading, isSuccess, isError, refetch } = useQuery({
-		queryKey: ['livechat-getBusinessHours', query],
+		queryKey,
 
-		queryFn: async () => getBusinessHours(query),
+		queryFn: async () => getBusinessHours(paginatedQuery),
 	});
 
 	const headers = (
@@ -73,15 +73,7 @@ const BusinessHoursTable = () => {
 							))}
 						</GenericTableBody>
 					</GenericTable>
-					<Pagination
-						divider
-						current={current}
-						itemsPerPage={itemsPerPage}
-						count={data.total || 0}
-						onSetItemsPerPage={onSetItemsPerPage}
-						onSetCurrent={onSetCurrent}
-						{...paginationProps}
-					/>
+					<Pagination divider {...paginationProps} />
 				</>
 			)}
 			{isError && (

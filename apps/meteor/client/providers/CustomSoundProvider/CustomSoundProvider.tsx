@@ -1,5 +1,6 @@
 import type { ICustomSound } from '@rocket.chat/core-typings';
 import { useStableCallback } from '@rocket.chat/fuselage-hooks';
+import { getNextPageOffset } from '@rocket.chat/ui-client';
 import { CustomSoundContext, useEndpoint, useStream, useUserPreference } from '@rocket.chat/ui-contexts';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { useEffect, useMemo, useRef, type ReactNode } from 'react';
@@ -28,14 +29,11 @@ const CustomSoundProvider = ({ children }: CustomSoundProviderProps) => {
 			// load every custom sound into the provider (the legacy `listCustomSounds`
 			// method returned them all at once).
 			const sounds: Awaited<ReturnType<typeof getCustomSounds>>['sounds'] = [];
-			let total = Infinity;
-			while (sounds.length < total) {
-				const page = await getCustomSounds({ count: 100, offset: sounds.length });
-				total = page.total;
+			let offset: number | undefined = 0;
+			while (offset !== undefined) {
+				const page = await getCustomSounds({ count: 100, offset });
 				sounds.push(...page.sounds);
-				if (!page.sounds.length) {
-					break;
-				}
+				offset = getNextPageOffset(page);
 			}
 
 			if (!sounds.length) {

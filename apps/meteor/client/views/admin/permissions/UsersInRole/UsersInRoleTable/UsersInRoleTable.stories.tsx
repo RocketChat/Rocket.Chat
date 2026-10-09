@@ -31,56 +31,53 @@ const generateMockedUsers = (count: number) =>
 
 const mockedUsers = generateMockedUsers(5);
 
-const paginationData = createMockedPagination(mockedUsers.length, 30);
+const { setCurrent: onSetCurrent, setItemsPerPage: onSetItemsPerPage, ...pagination } = createMockedPagination(mockedUsers.length, 30);
+const paginationProps = { ...pagination, onSetCurrent, onSetItemsPerPage, count: 30 };
 
 export const Default = {
 	args: {
-		total: 30,
 		isLoading: false,
 		isError: false,
 		isSuccess: true,
 		users: mockedUsers,
 		onRemove: () => undefined,
 		refetch: () => undefined,
-		paginationData,
+		paginationProps,
 	},
 };
 
 export const withLoading = {
 	args: {
-		total: 0,
 		isLoading: true,
 		isError: false,
 		isSuccess: false,
 		users: [],
 		onRemove: () => undefined,
 		refetch: () => undefined,
-		paginationData,
+		paginationProps,
 	},
 };
 
 export const withNoResults = {
 	args: {
-		total: 0,
 		isLoading: false,
 		isError: false,
 		isSuccess: true,
 		users: [],
 		onRemove: () => undefined,
 		refetch: () => undefined,
-		paginationData,
+		paginationProps,
 	},
 };
 
 export const withError = {
 	args: {
-		total: 0,
 		isLoading: false,
 		isError: true,
 		isSuccess: false,
 		users: [],
 		onRemove: () => undefined,
 		refetch: () => undefined,
-		paginationData,
+		paginationProps,
 	},
 };

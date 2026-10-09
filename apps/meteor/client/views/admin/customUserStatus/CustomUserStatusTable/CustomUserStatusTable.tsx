@@ -7,7 +7,7 @@ import {
 	GenericTableHeaderCell,
 	GenericTableBody,
 	GenericTableLoadingTable,
-	usePagination,
+	usePaginatedQueryKey,
 	useSort,
 } from '@rocket.chat/ui-client';
 import { useEndpoint } from '@rocket.chat/ui-contexts';
@@ -29,7 +29,6 @@ export type CustomUserStatusProps = {
 const CustomUserStatus = ({ reload, onClick }: CustomUserStatusProps) => {
 	const { t } = useTranslation();
 	const [text, setText] = useState('');
-	const { current, itemsPerPage, setItemsPerPage: onSetItemsPerPage, setCurrent: onSetCurrent, ...paginationProps } = usePagination();
 	const { sortBy, sortDirection, setSort } = useSort<'name' | 'statusType'>('name');
 
 	const query = useDebouncedValue(
@@ -37,23 +36,23 @@ const CustomUserStatus = ({ reload, onClick }: CustomUserStatusProps) => {
 			() => ({
 				name: escapeRegExp(text),
 				sort: `{ "${sortBy}": ${sortDirection === 'asc' ? 1 : -1} }`,
-				count: itemsPerPage,
-				offset: current,
 			}),
-			[text, itemsPerPage, current, sortBy, sortDirection],
+			[text, sortBy, sortDirection],
 		),
 		500,
 	);
+	const { paginatedQuery, queryKey, paginationProps } = usePaginatedQueryKey({
+		query,
+		getQueryKey: (query) => ['custom-user-statuses', query] as const,
+	});
 
 	const getCustomUserStatus = useEndpoint('GET', '/v1/custom-user-status.list');
 
 	const { data, isLoading, refetch, isFetched } = useQuery({
-		queryKey: ['custom-user-statuses', query],
+		queryKey,
 
-		queryFn: async () => {
-			const { statuses } = await getCustomUserStatus(query);
-			return statuses;
-		},
+		queryFn: async () => getCustomUserStatus(paginatedQuery),
+		select: ({ statuses }) => statuses,
 		meta: {
 			apiErrorToastMessage: true,
 		},
@@ -95,16 +94,7 @@ const CustomUserStatus = ({ reload, onClick }: CustomUserStatusProps) => {
 							))}
 						</GenericTableBody>
 					</GenericTable>
-					{isFetched && (
-						<Pagination
-							current={current}
-							itemsPerPage={itemsPerPage}
-							count={data.length}
-							onSetItemsPerPage={onSetItemsPerPage}
-							onSetCurrent={onSetCurrent}
-							{...paginationProps}
-						/>
-					)}
+					{isFetched && <Pagination {...paginationProps} />}
 				</>
 			)}
 		</>

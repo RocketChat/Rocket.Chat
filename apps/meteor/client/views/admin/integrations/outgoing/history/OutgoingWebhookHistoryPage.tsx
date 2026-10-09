@@ -1,5 +1,6 @@
 import { Button, ButtonGroup, Pagination } from '@rocket.chat/fuselage';
-import { CustomScrollbars, usePagination, Page, PageHeader, PageContent } from '@rocket.chat/ui-client';
+import { useStableCallback } from '@rocket.chat/fuselage-hooks';
+import { CustomScrollbars, usePaginatedQueryKey, Page, PageHeader, PageContent } from '@rocket.chat/ui-client';
 import { useToastMessageDispatch, useRouteParameter, useTranslation, useEndpoint, useRouter } from '@rocket.chat/ui-contexts';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import type { ComponentProps } from 'react';
@@ -13,8 +14,6 @@ const OutgoingWebhookHistoryPage = (props: ComponentProps<typeof Page>) => {
 	const t = useTranslation();
 	const router = useRouter();
 
-	const { itemsPerPage, setItemsPerPage, current, setCurrent, itemsPerPageLabel, showingResultsLabel } = usePagination();
-
 	const [mounted, setMounted] = useState(false);
 	const [total, setTotal] = useState(0);
 
@@ -22,18 +21,13 @@ const OutgoingWebhookHistoryPage = (props: ComponentProps<typeof Page>) => {
 
 	const id = useRouteParameter('id') as string;
 
-	const query = useMemo(
-		() => ({
-			id,
-			count: itemsPerPage,
-			offset: current,
-		}),
-		[id, itemsPerPage, current],
-	);
+	const query = useMemo(() => ({ id }), [id]);
+	const { paginatedQuery, queryKey, paginationProps } = usePaginatedQueryKey({
+		query,
+		getQueryKey: (query) => ['integrations/history', query.id, query.count, query.offset] as const,
+	});
 
 	const fetchHistory = useEndpoint('GET', '/v1/integrations.history');
-
-	const queryKey = useMemo(() => ['integrations/history', id, itemsPerPage, current], [id, itemsPerPage, current]);
 
 	const queryClient = useQueryClient();
 
@@ -42,13 +36,17 @@ const OutgoingWebhookHistoryPage = (props: ComponentProps<typeof Page>) => {
 	const { data, isPending, refetch } = useQuery({
 		queryKey,
 		queryFn: async () => {
-			const result = fetchHistory(query);
+			const result = fetchHistory(paginatedQuery);
 			setMounted(true);
 			return result;
 		},
 		gcTime: 99999,
 		staleTime: 99999,
 	});
+
+	const setHistoryData = useStableCallback((updater: (oldData: HistoryData | undefined) => HistoryData | undefined) =>
+		queryClient.setQueryData<HistoryData>(queryKey, updater),
+	);
 
 	const handleClearHistory = async (): Promise<void> => {
 		try {
@@ -66,7 +64,7 @@ const OutgoingWebhookHistoryPage = (props: ComponentProps<typeof Page>) => {
 			return sdk.stream('integrationHistory', [id], (integration) => {
 				if (integration.type === 'inserted') {
 					setTotal((total) => total + 1);
-					queryClient.setQueryData<HistoryData>(queryKey, (oldData): HistoryData | undefined => {
+					setHistoryData((oldData): HistoryData | undefined => {
 						if (!oldData || !integration.data) {
 							return;
 						}
@@ -79,7 +77,7 @@ const OutgoingWebhookHistoryPage = (props: ComponentProps<typeof Page>) => {
 				}
 
 				if (integration.type === 'updated') {
-					queryClient.setQueryData<HistoryData>(queryKey, (oldData): HistoryData | undefined => {
+					setHistoryData((oldData): HistoryData | undefined => {
 						if (!oldData) {
 							return;
 						}
@@ -98,7 +96,7 @@ const OutgoingWebhookHistoryPage = (props: ComponentProps<typeof Page>) => {
 				}
 			}).stop;
 		}
-	}, [id, mounted, queryClient, queryKey, refetch]);
+	}, [id, mounted, refetch, setHistoryData]);
 
 	return (
 		<Page flexDirection='column' {...props}>
@@ -116,15 +114,7 @@ const OutgoingWebhookHistoryPage = (props: ComponentProps<typeof Page>) => {
 				<CustomScrollbars>
 					<HistoryContent key='historyContent' data={data?.history || []} isLoading={isPending} />
 				</CustomScrollbars>
-				<Pagination
-					current={current}
-					itemsPerPage={itemsPerPage}
-					itemsPerPageLabel={itemsPerPageLabel}
-					showingResultsLabel={showingResultsLabel}
-					count={data?.total || 0}
-					onSetItemsPerPage={setItemsPerPage}
-					onSetCurrent={setCurrent}
-				/>
+				<Pagination {...paginationProps} />
 			</PageContent>
 		</Page>
 	);

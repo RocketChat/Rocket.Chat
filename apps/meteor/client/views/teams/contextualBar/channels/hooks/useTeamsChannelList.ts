@@ -1,4 +1,5 @@
 import type { IRoom } from '@rocket.chat/core-typings';
+import { getNextPageOffset } from '@rocket.chat/ui-client';
 import { useEndpoint } from '@rocket.chat/ui-contexts';
 import { useInfiniteQuery } from '@tanstack/react-query';
 
@@ -20,7 +21,7 @@ export const useTeamsChannelList = ({ teamId, type, text }: TeamsChannelListOpti
 	return useInfiniteQuery({
 		queryKey: teamsQueryKeys.listChannels(teamId, { type, text }),
 		queryFn: async ({ pageParam: offset }) => {
-			const { rooms, total } = await listTeamRooms({
+			const { rooms, ...page } = await listTeamRooms({
 				teamId,
 				offset,
 				count,
@@ -40,18 +41,14 @@ export const useTeamsChannelList = ({ teamId, type, text }: TeamsChannelListOpti
 					}),
 					...room,
 				})),
-				itemCount: total,
+				...page,
 			};
 		},
 		initialPageParam: 0,
-		getNextPageParam: (lastPage, _, lastOffset) => {
-			const nextOffset = lastOffset + count;
-			if (nextOffset >= lastPage.itemCount) return undefined;
-			return nextOffset;
-		},
+		getNextPageParam: getNextPageOffset,
 		select: ({ pages }) => ({
 			channels: pages.flatMap((page) => page.items),
-			total: pages.at(-1)?.itemCount,
+			total: pages.at(-1)?.total,
 		}),
 	});
 };

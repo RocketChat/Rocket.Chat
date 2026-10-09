@@ -1,5 +1,6 @@
 import { Base64 } from '@rocket.chat/base64';
 import type { IUpload } from '@rocket.chat/core-typings';
+import { getNextPageOffset } from '@rocket.chat/ui-client';
 import { useUserRoom, useEndpoint } from '@rocket.chat/ui-contexts';
 import { useInfiniteQuery } from '@tanstack/react-query';
 
@@ -25,7 +26,7 @@ export const useFilesList = ({ rid, type, text }: { rid: Required<IUpload>['rid'
 	return useInfiniteQuery({
 		queryKey: roomsQueryKeys.files(rid, { type, text }),
 		queryFn: async ({ pageParam: offset }) => {
-			const { files, total } = await getFiles({
+			const { files, ...page } = await getFiles({
 				roomId: rid,
 				offset,
 				count,
@@ -65,18 +66,14 @@ export const useFilesList = ({ rid, type, text }: { rid: Required<IUpload>['rid'
 
 			return {
 				items,
-				itemCount: total,
+				...page,
 			};
 		},
 		initialPageParam: 0,
-		getNextPageParam: (lastPage, _, lastOffset) => {
-			const nextOffset = lastOffset + count;
-			if (nextOffset >= lastPage.itemCount) return undefined;
-			return nextOffset;
-		},
+		getNextPageParam: getNextPageOffset,
 		select: ({ pages }) => ({
 			filesItems: pages.flatMap((page) => page.items),
-			total: pages.at(-1)?.itemCount,
+			total: pages.at(-1)?.total,
 		}),
 	});
 };

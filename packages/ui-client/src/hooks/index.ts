@@ -9,6 +9,7 @@ export * from './useFeaturePreview';
 export * from './useFeaturePreviewList';
 export * from './useGoToDirectMessage';
 export * from './useLicense';
+export * from './usePaginatedQueryKey';
 export * from './usePreferenceFeaturePreviewList';
 export * from './useRoomRoute';
 export * from './useThemeMode';

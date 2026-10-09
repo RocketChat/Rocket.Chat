@@ -1,4 +1,5 @@
 import type { IRole, IUser, AtLeast, ISubscription, Serialized } from '@rocket.chat/core-typings';
+import { getNextPageOffset } from '@rocket.chat/ui-client';
 import { useEndpoint, useSetting, useStream } from '@rocket.chat/ui-contexts';
 import type { InfiniteData, QueryClient } from '@tanstack/react-query';
 import { useInfiniteQuery, useQueryClient } from '@tanstack/react-query';
@@ -149,11 +150,7 @@ export const useMembersList = (options: MembersListOptions) => {
 				...(options.type !== 'all' && { status: [options.type] }),
 			});
 		},
-		getNextPageParam: (lastPage) => {
-			const offset = lastPage.offset + lastPage.count;
-			// if the offset is greater than the total, return undefined to stop the query from trying to fetch another page
-			return offset >= lastPage.total ? undefined : offset;
-		},
+		getNextPageParam: getNextPageOffset,
 		initialPageParam: 0,
 	});
 };

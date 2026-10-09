@@ -1,3 +1,4 @@
+import { getNextPageOffset } from '@rocket.chat/ui-client';
 import { useEndpoint } from '@rocket.chat/ui-contexts';
 import { useInfiniteQuery } from '@tanstack/react-query';
 
@@ -27,15 +28,13 @@ export const useRoomsList = ({ text }: { text: string }) => {
 
 			return {
 				items,
-				itemCount: total,
+				offset,
+				count: rooms.length,
+				total,
 			};
 		},
 		initialPageParam: 0,
-		getNextPageParam: (lastPage, _, lastOffset) => {
-			const nextOffset = lastOffset + count;
-			if (nextOffset >= lastPage.itemCount) return undefined;
-			return nextOffset;
-		},
+		getNextPageParam: getNextPageOffset,
 		select: ({ pages }) => pages.flatMap((page) => page.items),
 	});
 };

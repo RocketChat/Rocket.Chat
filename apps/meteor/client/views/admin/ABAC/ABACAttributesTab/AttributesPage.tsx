@@ -7,7 +7,7 @@ import {
 	GenericTableHeader,
 	GenericTableHeaderCell,
 	GenericTableRow,
-	usePagination,
+	usePaginatedQueryKey,
 } from '@rocket.chat/ui-client';
 import { useEndpoint, useRouter, useSearchParameter } from '@rocket.chat/ui-contexts';
 import { useQuery } from '@tanstack/react-query';
@@ -26,7 +26,6 @@ const AttributesPage = () => {
 	const [text, setText] = useState(searchTerm ?? '');
 
 	const debouncedText = useDebouncedValue(text, 400);
-	const { current, itemsPerPage, setItemsPerPage, setCurrent, ...paginationProps } = usePagination();
 	const getAttributes = useEndpoint('GET', '/v1/abac/attributes');
 	const isABACAvailable = useIsABACAvailable();
 
@@ -44,15 +43,17 @@ const AttributesPage = () => {
 	const query = useMemo(
 		() => ({
 			...(debouncedText ? { key: debouncedText, values: debouncedText } : {}),
-			offset: current,
-			count: itemsPerPage,
 		}),
-		[debouncedText, current, itemsPerPage],
+		[debouncedText],
 	);
+	const { paginatedQuery, queryKey, paginationProps } = usePaginatedQueryKey({
+		query,
+		getQueryKey: (query) => ABACQueryKeys.roomAttributes.list(query),
+	});
 
 	const { data, isLoading } = useQuery({
-		queryKey: ABACQueryKeys.roomAttributes.list(query),
-		queryFn: () => getAttributes(query),
+		queryKey,
+		queryFn: () => getAttributes(paginatedQuery),
 	});
 
 	return (
@@ -94,15 +95,7 @@ const AttributesPage = () => {
 							))}
 						</GenericTableBody>
 					</GenericTable>
-					<Pagination
-						divider
-						current={current}
-						itemsPerPage={itemsPerPage}
-						count={data?.total || 0}
-						onSetItemsPerPage={setItemsPerPage}
-						onSetCurrent={setCurrent}
-						{...paginationProps}
-					/>
+					<Pagination divider {...paginationProps} />
 				</>
 			)}
 		</>

@@ -9,10 +9,10 @@ import {
 	GenericTableBody,
 	GenericTableLoadingTable,
 } from '@rocket.chat/ui-client';
-import type { usePagination, useSort } from '@rocket.chat/ui-client';
+import type { useSort } from '@rocket.chat/ui-client';
 import type { TranslationKey } from '@rocket.chat/ui-contexts';
 import { useRouter } from '@rocket.chat/ui-contexts';
-import type { Dispatch, SetStateAction, MouseEvent, KeyboardEvent } from 'react';
+import type { ComponentProps, Dispatch, SetStateAction, MouseEvent, KeyboardEvent } from 'react';
 import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -26,20 +26,18 @@ export type UsersTableProps = {
 	tab: AdminUsersTab;
 	roleData: { roles: Serialized<IRole>[] } | undefined;
 	users: Serialized<DefaultUserInfo>[];
-	total: number;
 	isLoading: boolean;
 	isError: boolean;
 	isSuccess: boolean;
 	onReload: () => void;
 	setUserFilters: Dispatch<SetStateAction<UsersFilters>>;
-	paginationData: ReturnType<typeof usePagination>;
+	paginationProps: ComponentProps<typeof Pagination>;
 	sortData: ReturnType<typeof useSort<UsersTableSortingOption>>;
 	isSeatsCapExceeded: boolean;
 };
 
 const UsersTable = ({
 	users,
-	total,
 	isLoading,
 	isError,
 	isSuccess,
@@ -47,7 +45,7 @@ const UsersTable = ({
 	roleData,
 	tab,
 	onReload,
-	paginationData,
+	paginationProps,
 	sortData,
 	isSeatsCapExceeded,
 }: UsersTableProps) => {
@@ -59,7 +57,6 @@ const UsersTable = ({
 	const isLaptop = !breakpoints.includes('xxl');
 
 	const showVoipExtension = useShowVoipExtension();
-	const { current, itemsPerPage, setCurrent, setItemsPerPage, ...paginationProps } = paginationData;
 
 	const isKeyboardEvent = (event: MouseEvent<HTMLElement> | KeyboardEvent<HTMLElement>): event is KeyboardEvent<HTMLElement> => {
 		return (event as KeyboardEvent<HTMLElement>).key !== undefined;
@@ -199,15 +196,7 @@ const UsersTable = ({
 							))}
 						</GenericTableBody>
 					</GenericTable>
-					<Pagination
-						divider
-						current={current}
-						itemsPerPage={itemsPerPage}
-						count={total}
-						onSetItemsPerPage={setItemsPerPage}
-						onSetCurrent={setCurrent}
-						{...paginationProps}
-					/>
+					<Pagination divider {...paginationProps} />
 				</>
 			)}
 		</>

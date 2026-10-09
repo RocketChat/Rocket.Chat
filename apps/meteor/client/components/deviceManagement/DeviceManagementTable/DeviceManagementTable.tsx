@@ -13,11 +13,7 @@ import GenericNoResults from '../../GenericNoResults/GenericNoResults';
 type DeviceManagementTableProps<T> = UseQueryResult<PaginatedResult<{ sessions: Serialized<T>[] }>> & {
 	headers: ReactNode[];
 	renderRow: (data: Serialized<T>) => ReactNode;
-	current?: ComponentProps<typeof Pagination>['current'];
-	itemsPerPage?: ComponentProps<typeof Pagination>['itemsPerPage'];
-	setCurrent?: ComponentProps<typeof Pagination>['onSetCurrent'];
-	setItemsPerPage?: ComponentProps<typeof Pagination>['onSetItemsPerPage'];
-	paginationProps?: Partial<ComponentProps<typeof Pagination>>;
+	paginationProps: ComponentProps<typeof Pagination>;
 };
 
 // TODO: Missing error state
@@ -30,10 +26,6 @@ const DeviceManagementTable = <T extends DeviceManagementSession | DeviceManagem
 	refetch,
 	headers,
 	renderRow,
-	current,
-	itemsPerPage,
-	setCurrent,
-	setItemsPerPage,
 	paginationProps,
 }: DeviceManagementTableProps<T>) => {
 	const { t } = useTranslation();
@@ -64,17 +56,7 @@ const DeviceManagementTable = <T extends DeviceManagementSession | DeviceManagem
 					{isSuccess && data?.sessions && data.sessions.map(renderRow)}
 				</GenericTableBody>
 			</GenericTable>
-			{isSuccess && (
-				<Pagination
-					divider
-					current={current}
-					itemsPerPage={itemsPerPage}
-					count={data?.total || 0}
-					onSetCurrent={setCurrent}
-					onSetItemsPerPage={setItemsPerPage}
-					{...paginationProps}
-				/>
-			)}
+			{isSuccess && <Pagination divider {...paginationProps} />}
 		</>
 	);
 };

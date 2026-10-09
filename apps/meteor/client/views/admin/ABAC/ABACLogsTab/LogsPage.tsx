@@ -8,7 +8,7 @@ import {
 	GenericTableHeader,
 	GenericTableHeaderCell,
 	GenericTableRow,
-	usePagination,
+	usePaginatedQueryKey,
 } from '@rocket.chat/ui-client';
 import { useEndpoint } from '@rocket.chat/ui-contexts';
 import { useQuery } from '@tanstack/react-query';
@@ -28,22 +28,24 @@ const LogsPage = () => {
 
 	const formatDate = useFormatDateAndTime();
 
-	const { current, itemsPerPage, setItemsPerPage, setCurrent, ...paginationProps } = usePagination();
 	const getLogs = useEndpoint('GET', '/v1/abac/audit');
 	const query = useMemo(
 		() => ({
 			...(startDate && { start: new Date(`${startDate}T00:00:00.000`).toISOString() }),
 			...(endDate && { end: new Date(`${endDate}T23:59:59.999`).toISOString() }),
-			offset: current,
-			count: itemsPerPage,
 		}),
-		[current, itemsPerPage, startDate, endDate],
+		[startDate, endDate],
 	);
+	const { paginatedQuery, queryKey, paginationProps } = usePaginatedQueryKey({
+		query,
+		getQueryKey: (query) => ABACQueryKeys.logs.list(query),
+	});
+	const { onSetCurrent } = paginationProps;
 
 	// Whenever the user changes the filter or the text, reset the pagination to the first page
 	useEffect(() => {
-		setCurrent(0);
-	}, [startDate, endDate, setCurrent]);
+		onSetCurrent(0);
+	}, [startDate, endDate, onSetCurrent]);
 
 	const getActionLabel = (action?: AbacAttributeDefinitionChangeType | AbacActionPerformed | null) => {
 		switch (action) {
@@ -75,8 +77,8 @@ const LogsPage = () => {
 	};
 
 	const { data, isLoading } = useQuery({
-		queryKey: ABACQueryKeys.logs.list(query),
-		queryFn: () => getLogs(query),
+		queryKey,
+		queryFn: () => getLogs(paginatedQuery),
 		select: (data) => ({
 			events: data.events.map((event) => {
 				const eventInfo = {
@@ -203,15 +205,7 @@ const LogsPage = () => {
 							})}
 						</GenericTableBody>
 					</GenericTable>
-					<Pagination
-						divider
-						current={current}
-						itemsPerPage={itemsPerPage}
-						count={data?.total || 0}
-						onSetItemsPerPage={setItemsPerPage}
-						onSetCurrent={setCurrent}
-						{...paginationProps}
-					/>
+					<Pagination divider {...paginationProps} />
 				</>
 			)}
 		</>

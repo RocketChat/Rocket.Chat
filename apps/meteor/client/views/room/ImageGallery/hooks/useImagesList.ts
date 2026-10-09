@@ -1,5 +1,6 @@
 import { Base64 } from '@rocket.chat/base64';
 import type { IRoom } from '@rocket.chat/core-typings';
+import { getNextPageOffset } from '@rocket.chat/ui-client';
 import { useEndpoint } from '@rocket.chat/ui-contexts';
 import { useInfiniteQuery } from '@tanstack/react-query';
 
@@ -14,7 +15,7 @@ export const useImagesList = ({ roomId, startingFromId }: { roomId: IRoom['_id']
 	return useInfiniteQuery({
 		queryKey: roomsQueryKeys.images(roomId, { startingFromId }),
 		queryFn: async ({ pageParam: offset }) => {
-			const { files, total } = await getFiles({
+			const { files, ...page } = await getFiles({
 				roomId,
 				startingFromId,
 				offset,
@@ -49,15 +50,11 @@ export const useImagesList = ({ roomId, startingFromId }: { roomId: IRoom['_id']
 
 			return {
 				items,
-				itemCount: total,
+				...page,
 			};
 		},
 		initialPageParam: 0,
-		getNextPageParam: (lastPage, _, lastOffset) => {
-			const nextOffset = lastOffset + count;
-			if (nextOffset >= lastPage.itemCount) return undefined;
-			return nextOffset;
-		},
+		getNextPageParam: getNextPageOffset,
 		// Remove duplicates while preserving order
 		select: ({ pages }) => Array.from(new Map(pages.flatMap((page) => page.items.map((item) => [item._id, item]))).values()),
 	});

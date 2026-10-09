@@ -9,7 +9,6 @@ import {
 	ContextualbarTitle,
 	ContextualbarClose,
 	ContextualbarDialog,
-	usePagination,
 	useSort,
 	Page,
 	PageHeader,
@@ -65,7 +64,6 @@ const AdminUsersPage = () => {
 		queryFn: async () => getRoles(),
 	});
 
-	const paginationData = usePagination();
 	const sortData = useSort<UsersTableSortingOption>('name');
 
 	const [tab, setTab] = useState<AdminUsersTab>('all');
@@ -74,11 +72,10 @@ const AdminUsersPage = () => {
 	const searchTerm = useDebouncedValue(userFilters.text, 500);
 	const prevSearchTerm = useRef('');
 
-	const filteredUsersQueryResult = useFilteredUsers({
+	const { usersListQueryResult: filteredUsersQueryResult, paginationProps } = useFilteredUsers({
 		searchTerm,
 		prevSearchTerm,
 		sortData,
-		paginationData,
 		tab,
 		selectedRoles: useMemo(() => userFilters.roles.map((role) => role.id), [userFilters.roles]),
 	});
@@ -93,7 +90,7 @@ const AdminUsersPage = () => {
 	const handleTabChange = (tab: AdminUsersTab) => {
 		setTab(tab);
 
-		paginationData.setCurrent(0);
+		paginationProps.onSetCurrent(0);
 		sortData.setSort(tab === 'pending' ? 'active' : 'name', 'asc');
 	};
 
@@ -159,9 +156,8 @@ const AdminUsersPage = () => {
 						isLoading={filteredUsersQueryResult.isLoading}
 						isError={filteredUsersQueryResult.isError}
 						isSuccess={filteredUsersQueryResult.isSuccess}
-						total={filteredUsersQueryResult.data?.total || 0}
 						setUserFilters={setUserFilters}
-						paginationData={paginationData}
+						paginationProps={paginationProps}
 						sortData={sortData}
 						tab={tab}
 						isSeatsCapExceeded={isSeatsCapExceeded}

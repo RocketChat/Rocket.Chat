@@ -6,11 +6,11 @@ import {
 	GenericTableBody,
 	GenericTableHeaderCell,
 	GenericTableLoadingRow,
-	usePagination,
+	usePaginatedQueryKey,
 } from '@rocket.chat/ui-client';
 import { useTranslation, useEndpoint, useRouter } from '@rocket.chat/ui-contexts';
 import { useQuery, hashKey } from '@tanstack/react-query';
-import { useMemo, useState } from 'react';
+import { useState } from 'react';
 
 import TriggersRow from './TriggersRow';
 import GenericError from '../../../components/GenericError';
@@ -25,13 +25,18 @@ const TriggersTable = () => {
 		router.navigate('/omnichannel/triggers/new');
 	});
 
-	const { current, itemsPerPage, setItemsPerPage, setCurrent, ...paginationProps } = usePagination();
-
-	const query = useMemo(() => ({ offset: current, count: itemsPerPage }), [current, itemsPerPage]);
+	const {
+		paginatedQuery: query,
+		queryKey,
+		paginationProps,
+	} = usePaginatedQueryKey({
+		query: {},
+		getQueryKey: (query) => ['livechat-triggers', query] as const,
+	});
 
 	const getTriggers = useEndpoint('GET', '/v1/livechat/triggers');
 	const { data, refetch, isSuccess, isLoading, isError } = useQuery({
-		queryKey: ['livechat-triggers', query],
+		queryKey,
 		queryFn: async () => getTriggers(query),
 	});
 
@@ -79,15 +84,7 @@ const TriggersTable = () => {
 							))}
 						</GenericTableBody>
 					</GenericTable>
-					<Pagination
-						divider
-						current={current}
-						itemsPerPage={itemsPerPage}
-						count={data?.total || 0}
-						onSetItemsPerPage={setItemsPerPage}
-						onSetCurrent={setCurrent}
-						{...paginationProps}
-					/>
+					<Pagination divider {...paginationProps} />
 				</>
 			)}
 			{isError && <GenericError buttonAction={refetch} />}

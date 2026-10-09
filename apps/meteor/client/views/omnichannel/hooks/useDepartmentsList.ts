@@ -1,4 +1,5 @@
 import type { ILivechatDepartment, Serialized } from '@rocket.chat/core-typings';
+import { getNextPageOffset } from '@rocket.chat/ui-client';
 import { useEndpoint } from '@rocket.chat/ui-contexts';
 import { useInfiniteQuery, useQuery } from '@tanstack/react-query';
 import { useMemo } from 'react';
@@ -86,10 +87,7 @@ export const useDepartmentsList = (options: DepartmentsListOptions) => {
 			return items;
 		},
 		initialPageParam: 0,
-		getNextPageParam: (lastPage) => {
-			const offset = lastPage.offset + lastPage.count;
-			return offset < lastPage.total ? offset : undefined;
-		},
+		getNextPageParam: getNextPageOffset,
 		initialData: () => ({
 			pages: [{ departments: [], offset: 0, count: 0, total: Infinity }],
 			pageParams: [0],

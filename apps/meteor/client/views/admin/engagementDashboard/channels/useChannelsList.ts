@@ -1,3 +1,4 @@
+import { usePaginatedQueryKey } from '@rocket.chat/ui-client';
 import { useEndpoint } from '@rocket.chat/ui-contexts';
 import { keepPreviousData, useQuery } from '@tanstack/react-query';
 
@@ -6,15 +7,18 @@ import { getPeriodRange } from '../../../../components/dashboards/periods';
 
 type UseChannelsListOptions = {
 	period: Period['key'];
-	offset: number;
-	count: number;
 };
 
-export const useChannelsList = ({ period, offset, count }: UseChannelsListOptions) => {
+export const useChannelsList = ({ period }: UseChannelsListOptions) => {
 	const getChannelsList = useEndpoint('GET', '/v1/engagement-dashboard/channels/list');
+	const { paginatedQuery, queryKey, paginationProps } = usePaginatedQueryKey({
+		query: { period },
+		getQueryKey: (query) => ['admin/engagement-dashboard/channels/list', query] as const,
+	});
+	const { offset, count } = paginatedQuery;
 
-	return useQuery({
-		queryKey: ['admin/engagement-dashboard/channels/list', { period, offset, count }],
+	const queryResult = useQuery({
+		queryKey,
 
 		queryFn: async () => {
 			const { start, end } = getPeriodRange(period);
@@ -39,4 +43,6 @@ export const useChannelsList = ({ period, offset, count }: UseChannelsListOption
 		refetchInterval: 5 * 60 * 1000,
 		throwOnError: true,
 	});
+
+	return { queryResult, paginationProps };
 };

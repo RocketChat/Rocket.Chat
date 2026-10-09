@@ -7,7 +7,7 @@ import {
 	GenericTableHeaderCell,
 	GenericTableBody,
 	GenericTableHeader,
-	usePagination,
+	usePaginatedQueryKey,
 	useSort,
 } from '@rocket.chat/ui-client';
 import { useEndpoint, useRouter } from '@rocket.chat/ui-contexts';
@@ -29,8 +29,6 @@ const ModerationConsoleTable = () => {
 	const { sortBy, sortDirection, setSort } = useSort<'reports.ts' | 'reports.message.u.username' | 'reports.description' | 'count'>(
 		'reports.ts',
 	);
-	const { current, itemsPerPage, setItemsPerPage: onSetItemsPerPage, setCurrent: onSetCurrent, ...paginationProps } = usePagination();
-
 	const [dateRange, setDateRange] = useState<{ start: string | null; end: string | null }>({
 		start: '',
 		end: '',
@@ -42,21 +40,23 @@ const ModerationConsoleTable = () => {
 			() => ({
 				selector: text,
 				sort: JSON.stringify({ [sortBy]: sortDirection === 'asc' ? 1 : -1 }),
-				count: itemsPerPage,
-				offset: current,
 				...(end && { latest: `${new Date(end).toISOString().slice(0, 10)}T23:59:59.999Z` }),
 				...(start && { oldest: `${new Date(start).toISOString().slice(0, 10)}T00:00:00.000Z` }),
 			}),
-			[current, end, itemsPerPage, sortBy, sortDirection, start, text],
+			[end, sortBy, sortDirection, start, text],
 		),
 		500,
 	);
+	const { paginatedQuery, queryKey, paginationProps } = usePaginatedQueryKey({
+		query,
+		getQueryKey: (query) => ['moderation', 'msgReports', 'fetchAll', query] as const,
+	});
 
 	const getReports = useEndpoint('GET', '/v1/moderation.reportsByUsers');
 
 	const { data, isLoading, isSuccess } = useQuery({
-		queryKey: ['moderation', 'msgReports', 'fetchAll', query],
-		queryFn: async () => getReports(query),
+		queryKey,
+		queryFn: async () => getReports(paginatedQuery),
 		meta: {
 			apiErrorToastMessage: true,
 		},
@@ -123,15 +123,7 @@ const ModerationConsoleTable = () => {
 							))}
 						</GenericTableBody>
 					</GenericTable>
-					<Pagination
-						current={current}
-						divider
-						itemsPerPage={itemsPerPage}
-						count={data?.total || 0}
-						onSetItemsPerPage={onSetItemsPerPage}
-						onSetCurrent={onSetCurrent}
-						{...paginationProps}
-					/>
+					<Pagination divider {...paginationProps} />
 				</>
 			)}
 			{isSuccess && data.reports.length === 0 && <GenericNoResults />}

@@ -1,4 +1,5 @@
 import type { IRoom } from '@rocket.chat/core-typings';
+import { getNextPageOffset } from '@rocket.chat/ui-client';
 import { useEndpoint } from '@rocket.chat/ui-contexts';
 import { useInfiniteQuery } from '@tanstack/react-query';
 
@@ -13,7 +14,7 @@ export const useVideoConfList = ({ roomId }: { roomId: IRoom['_id'] }) => {
 	return useInfiniteQuery({
 		queryKey: videoConferenceQueryKeys.fromRoom(roomId),
 		queryFn: async ({ pageParam: offset }) => {
-			const { data, total } = await getVideoConfs({
+			const { data, ...page } = await getVideoConfs({
 				roomId,
 				offset,
 				count,
@@ -21,18 +22,14 @@ export const useVideoConfList = ({ roomId }: { roomId: IRoom['_id'] }) => {
 
 			return {
 				items: data.map(mapVideoConfFromApi),
-				itemCount: total,
+				...page,
 			};
 		},
 		initialPageParam: 0,
-		getNextPageParam: (lastPage, _, lastOffset) => {
-			const nextOffset = lastOffset + count;
-			if (nextOffset >= lastPage.itemCount) return undefined;
-			return nextOffset;
-		},
+		getNextPageParam: getNextPageOffset,
 		select: ({ pages }) => ({
 			videoConfs: pages.flatMap((page) => page.items),
-			total: pages.at(-1)?.itemCount,
+			total: pages.at(-1)?.total,
 		}),
 	});
 };
