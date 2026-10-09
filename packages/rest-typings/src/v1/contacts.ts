@@ -42,14 +42,17 @@ const localContactProperties = {
 	givenName: {
 		type: 'string',
 		minLength: 1,
+		pattern: '\\S',
 		nullable: false,
 	},
 	surname: {
 		type: 'string',
+		minLength: 1,
 		nullable: true,
 	},
 	companyName: {
 		type: 'string',
+		minLength: 1,
 		nullable: true,
 	},
 	emails: {

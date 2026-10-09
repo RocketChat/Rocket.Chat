@@ -24,15 +24,32 @@ const SORTABLE_FIELDS = ['displayName', 'emails.address', 'phones.raw', 'categor
 const toLocalContact = ({ displayName, givenName, surname, companyName, emails, phones }: LocalContactPayload) => {
 	const defaultRegion = settings.get<string>('Exchange_Contacts_Default_Region') ?? '';
 
+	const name = givenName.trim();
+	const lastName = surname?.trim();
+	const company = companyName?.trim();
+
 	return {
-		displayName: displayName || [givenName, surname].filter(Boolean).join(' '),
-		givenName,
-		...(surname && { surname }),
-		...(companyName && { companyName }),
-		emails: (emails ?? []).map(({ address, label }) => ({ address, ...(label && { label }) })),
-		phones: (phones ?? []).map(({ raw, label }) => {
-			const e164 = normalizeE164(raw, defaultRegion);
-			return { raw, ...(e164 && { e164 }), ...(label && { label }) };
+		displayName: displayName?.trim() || [name, lastName].filter(Boolean).join(' '),
+		givenName: name,
+		...(lastName && { surname: lastName }),
+		...(company && { companyName: company }),
+		emails: (emails ?? []).flatMap(({ address, label }) => {
+			const value = address.trim();
+			const tag = label?.trim();
+
+			return value ? [{ address: value, ...(tag && { label: tag }) }] : [];
+		}),
+		phones: (phones ?? []).flatMap(({ raw, label }) => {
+			const value = raw.trim();
+			const tag = label?.trim();
+
+			if (!value) {
+				return [];
+			}
+
+			const e164 = normalizeE164(value, defaultRegion);
+
+			return [{ raw: value, ...(e164 && { e164 }), ...(tag && { label: tag }) }];
 		}),
 	};
 };
