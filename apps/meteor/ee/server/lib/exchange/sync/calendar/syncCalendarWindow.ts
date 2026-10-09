@@ -98,9 +98,14 @@ const collectPages = async (
 			upserts.set(item.externalId, item);
 		}
 
-		// Each complete page is an independent full-window snapshot, so the newest one supersedes any earlier one
+		// A full page is the whole window, so it supersedes what earlier pages of this run collected rather
+		// than adding to it
 		if (page.coverage === 'full') {
+			upserts.clear();
+			pageUpserts.forEach((item) => upserts.set(item.externalId, item));
 			keepExternalIds = pageUpserts.map(({ externalId }) => externalId);
+		} else if (page.coverage === 'partial') {
+			keepExternalIds = undefined;
 		}
 
 		page.resyncedSeries?.forEach((id) => resyncedSeries.add(id));
@@ -122,7 +127,8 @@ const collectPages = async (
 
 		if (!page.cursor || pages >= MAX_EVENT_PAGES) {
 			logger.warn({ msg: 'Exchange calendar read stopped before the provider was done', mailbox, pages, missingCursor: !page.cursor });
-			return { upserts, removals, keepExternalIds, resyncedSeries: [], cursor };
+
+			return { upserts, removals, resyncedSeries: [] };
 		}
 	}
 };
@@ -152,12 +158,12 @@ const applyRemovals = async (
 	}
 
 	if (resyncedSeries.length) {
-		record(await Calendar.pruneImportedSeries(uid, timeWindow, resyncedSeries, [...upserts.keys()], options));
+		removalResult.pruned += record(await Calendar.pruneImportedSeries(uid, timeWindow, resyncedSeries, [...upserts.keys()], options));
 	}
 
 	// Only from a complete set, and only after the upserts landed.
 	if (keepExternalIds) {
-		removalResult.pruned = record(await Calendar.pruneImportedWindow(uid, timeWindow, keepExternalIds, options));
+		removalResult.pruned += record(await Calendar.pruneImportedWindow(uid, timeWindow, keepExternalIds, options));
 	}
 };
 
