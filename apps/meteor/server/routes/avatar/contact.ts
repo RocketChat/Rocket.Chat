@@ -44,7 +44,7 @@ export const contactAvatar = async function (request: IncomingMessage, res: Serv
 		return;
 	}
 
-	setCacheAndDispositionHeaders(req, res);
+	setCacheAndDispositionHeaders(req, res, 'private');
 
 	const file = await Avatars.findOneContactAvatar(contact._id);
 

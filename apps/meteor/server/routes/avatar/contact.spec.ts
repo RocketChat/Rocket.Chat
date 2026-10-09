@@ -72,6 +72,15 @@ describe('#contactAvatar()', () => {
 			expect(response.writeHead.called).to.be.false;
 		});
 
+		it('marks the answer private, since only the owner may hold a copy of it', async () => {
+			mocks.findOneContactAvatar.resolves({ _id: 'a1', uploadedAt: new Date(0), type: 'image/jpeg', size: 100 });
+			const request = byQuery(OWNER, 'raw-token');
+
+			await contactAvatar(request, response, next);
+
+			expect(mocks.utils.setCacheAndDispositionHeaders.calledWith(request, response, 'private')).to.be.true;
+		});
+
 		it('refuses a signed in user asking for someone else`s contact', async () => {
 			mocks.findOneByIdAndLoginToken.resolves({ _id: 'someone-else' });
 
