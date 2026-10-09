@@ -15,17 +15,11 @@ import { password } from '../../data/user';
 import { createUser, deleteUser, login } from '../../data/users.helper';
 import { IS_EE, URL_MONGODB } from '../../e2e/config/constants';
 
-/**
- * Every room type is covered by `apps/meteor/lib/rooms/isRoomAbacLocked.spec.ts`. Only DMs are
- * repeated here, because they are what an over-broad guard would break most visibly.
- */
 (IS_EE ? describe : describe.skip)('[ABAC Enforcement] (Enterprise Only)', function () {
 	this.retries(0);
 
 	let connection: MongoClient;
 
-	// Enforcement changes are applied by a settings watcher, so a write has to settle before the
-	// next request observes it.
 	const SETTLE_MS = 500;
 
 	const setEnforcement = async (value: boolean) => {
@@ -172,8 +166,6 @@ import { IS_EE, URL_MONGODB } from '../../e2e/config/constants';
 				.send({ key: laterKey, values: ['value'] })
 				.expect(200);
 
-			// Both keys: without `laterKey` the tightening below evicts the admin, and the test
-			// observes the eviction instead of the lock.
 			await addAbacAttributesToUserDirectly(connection, credentials['X-User-Id'], [
 				{ key: carriedKey, values: ['value'] },
 				{ key: laterKey, values: ['value'] },
@@ -273,8 +265,6 @@ import { IS_EE, URL_MONGODB } from '../../e2e/config/constants';
 		});
 
 		it('still allows private channel creation', async () => {
-			// Enforcement does not require attributes at creation, only afterwards, so the channel is
-			// created and then locked until they are assigned.
 			const res = await request
 				.post(api('groups.create'))
 				.set(credentials)

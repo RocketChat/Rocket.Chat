@@ -32,7 +32,6 @@ export async function validateRoomMessagePermissionsAsync(
 		throw new Error('error-not-allowed');
 	}
 
-	// After the access check so a non-member learns nothing about the room's state.
 	if (isRoomAbacLocked(room, getRoomAbacLockContext())) {
 		throw new Error('error-abac-room-locked');
 	}
