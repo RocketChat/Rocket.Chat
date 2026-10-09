@@ -1,13 +1,8 @@
-import type { IAbacAttributeDefinition } from '@rocket.chat/core-typings';
+import type { ClassificationBannerPayload, ClassificationBannerSegment, IAbacAttributeDefinition } from '@rocket.chat/core-typings';
 import { isTruthy } from '@rocket.chat/tools';
 
 import { readableTextColor } from './colors';
-import type {
-	ClassificationBannerAttribute,
-	ClassificationBannerPayload,
-	ClassificationBannerSegment,
-	ClassificationBannersConfig,
-} from './types';
+import type { ClassificationBannerAttribute, ClassificationBannersConfig } from './types';
 
 export const parseClassificationBannersConfig = (raw: string): ClassificationBannersConfig | null => {
 	try {

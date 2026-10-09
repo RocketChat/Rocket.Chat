@@ -986,5 +986,7 @@ export class AbacService extends ServiceClass implements IAbacService {
 export { LocalPDP, VirtruPDP } from './pdp';
 export type { IPolicyDecisionPoint, VirtruPDPConfig } from './pdp';
 export { PdpHealthCheckError, getPdpHealthErrorCode, AbacAttributeStoreExternalError } from './errors';
+export { buildClassificationBanner, parseClassificationBannersConfig } from './classification-banner/engine';
+export type { ClassificationBannersConfig } from './classification-banner/types';
 
 export default AbacService;

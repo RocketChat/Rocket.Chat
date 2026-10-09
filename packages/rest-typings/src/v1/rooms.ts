@@ -1,4 +1,5 @@
 import type {
+	ClassificationBannerPayload,
 	IMessage,
 	IRoom,
 	IRoomAbacRedaction,
@@ -920,6 +921,7 @@ export type RoomsEndpoints = {
 			room: IRoom | undefined;
 			parent?: Pick<IRoom, '_id' | 'name' | 'fname' | 't' | 'prid' | 'u'>;
 			team?: Pick<ITeam, 'name' | 'roomId' | 'type' | '_id'>;
+			classificationBanner?: ClassificationBannerPayload;
 		};
 	};
 
