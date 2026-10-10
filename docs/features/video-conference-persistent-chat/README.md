@@ -132,7 +132,9 @@ Same-origin (in-product) conferences share a named window, `rocketchat-conferenc
 | showing a different conference | navigated to the new one |
 | closed, or never opened | opened fresh as a popout |
 
-Whether it is showing this conference is decided by reading the window's actual `location.pathname`, not the URL we last passed — those differ in string form between the start and join paths.
+Whether it is showing this conference is decided by reading the window's actual `location` (path and query), not the URL we last passed — those differ in string form between the start and join paths.
+
+Reloading would be worse than redundant: it tears the call down and joins it again, so whoever else is in it sees this user freeze until the old connection times out. That is why the window is found again **by name** when the page asking has no handle on it — a reload of the main app loses the handle, not the window. Opening the name with no URL navigates nothing: it is the existing window as it is, or a new blank one when there is none, which is then sent to the conference as before.
 
 External provider URLs get their own popout each time, unnamed.
 
