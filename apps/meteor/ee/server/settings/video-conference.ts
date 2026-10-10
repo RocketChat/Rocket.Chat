@@ -53,41 +53,44 @@ export function addSettings(): Promise<void> {
 				});
 
 				await this.section('VideoConf_LiveKit', async function () {
-					await this.add('VideoConf_LiveKit_Enabled', false, {
-						type: 'boolean',
-						public: true,
-						invalidValue: false,
-						alert: 'VideoConf_LiveKit_Alpha_Alert',
-						i18nDescription: 'VideoConf_LiveKit_Enabled_Description',
-					});
+					// Sold apart from the rest of video conferencing, so licensed by a module of its own.
+					await this.with({ modules: ['video-conference-native'] }, async function () {
+						await this.add('VideoConf_LiveKit_Enabled', false, {
+							type: 'boolean',
+							public: true,
+							invalidValue: false,
+							alert: 'VideoConf_LiveKit_Alpha_Alert',
+							i18nDescription: 'VideoConf_LiveKit_Enabled_Description',
+						});
 
-					const livekitEnabled = { _id: 'VideoConf_LiveKit_Enabled', value: true };
+						const livekitEnabled = { _id: 'VideoConf_LiveKit_Enabled', value: true };
 
-					await this.add('VideoConf_LiveKit_Url', '', {
-						type: 'string',
-						invalidValue: '',
-						enableQuery: [livekitEnabled],
-					});
+						await this.add('VideoConf_LiveKit_Url', '', {
+							type: 'string',
+							invalidValue: '',
+							enableQuery: [livekitEnabled],
+						});
 
-					await this.add('VideoConf_LiveKit_Api_Key', '', {
-						type: 'string',
-						secret: true,
-						invalidValue: '',
-						enableQuery: [livekitEnabled],
-					});
+						await this.add('VideoConf_LiveKit_Api_Key', '', {
+							type: 'string',
+							secret: true,
+							invalidValue: '',
+							enableQuery: [livekitEnabled],
+						});
 
-					await this.add('VideoConf_LiveKit_Api_Secret', '', {
-						type: 'password',
-						secret: true,
-						invalidValue: '',
-						enableQuery: [livekitEnabled],
-					});
+						await this.add('VideoConf_LiveKit_Api_Secret', '', {
+							type: 'password',
+							secret: true,
+							invalidValue: '',
+							enableQuery: [livekitEnabled],
+						});
 
-					await this.add('VideoConf_LiveKit_Token_TTL', 6, {
-						type: 'int',
-						invalidValue: 6,
-						i18nDescription: 'VideoConf_LiveKit_Token_TTL_Description',
-						enableQuery: [livekitEnabled],
+						await this.add('VideoConf_LiveKit_Token_TTL', 6, {
+							type: 'int',
+							invalidValue: 6,
+							i18nDescription: 'VideoConf_LiveKit_Token_TTL_Description',
+							enableQuery: [livekitEnabled],
+						});
 					});
 				});
 
