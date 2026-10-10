@@ -2854,6 +2854,62 @@ describe('[Chat]', () => {
 					expect(res.body).to.have.property('messages').and.to.be.deep.equal([]);
 				});
 		});
+
+		it('should find message by attachment fields (title, text, description, pretext, author_name, fields.title, fields.value)', async () => {
+			const uniqueTimestamp = Date.now();
+			const testTerms: Record<string, string> = {
+				'title': `alert_title_${uniqueTimestamp}`,
+				'text': `alert_text_${uniqueTimestamp}`,
+				'description': `alert_desc_${uniqueTimestamp}`,
+				'pretext': `alert_pretext_${uniqueTimestamp}`,
+				'author_name': `alert_author_${uniqueTimestamp}`,
+				'fields.title': `alert_ftitle_${uniqueTimestamp}`,
+				'fields.value': `alert_fvalue_${uniqueTimestamp}`,
+			};
+
+			await request
+				.post(api('chat.sendMessage'))
+				.set(credentials)
+				.send({
+					message: {
+						rid: testChannel._id,
+						msg: 'Normal message container',
+						attachments: [
+							{
+								title: `Alert Title ${testTerms.title}`,
+								text: `Attachment text ${testTerms.text}`,
+								description: `Attachment description ${testTerms.description}`,
+								pretext: `Attachment pretext ${testTerms.pretext}`,
+								author_name: `AlertBot ${testTerms.author_name}`,
+								fields: [
+									{
+										title: testTerms['fields.title'],
+										value: testTerms['fields.value'],
+									},
+								],
+							},
+						],
+					},
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200);
+
+			for (const [field, term] of Object.entries(testTerms)) {
+				const res = await request
+					.get(api('chat.search'))
+					.set(credentials)
+					.query({
+						roomId: testChannel._id,
+						searchText: term,
+					})
+					.expect('Content-Type', 'application/json')
+					.expect(200);
+
+				expect(res.body).to.have.property('success', true);
+				expect(res.body).to.have.property('messages').that.is.an('array');
+				expect(res.body.messages.length, `Expected search to find message by ${field}`).to.be.at.least(1);
+			}
+		});
 	});
 
 	describe('[/chat.react]', () => {
