@@ -7,7 +7,11 @@ import type { TFunction } from 'i18next';
 import { normalizeMessagePreview } from './normalizeMessagePreview';
 import { getSubscriptionDraft } from '../getSubscriptionDraft';
 
-export const getMessagePreview = (room: SubscriptionWithRoom, lastMessage: IMessage | undefined, t: TFunction): string | undefined => {
+export const getMessagePreview = (
+	room: Pick<SubscriptionWithRoom, 'draft' | 'threadDrafts' | 't' | 'uids'> & Partial<Pick<SubscriptionWithRoom, 'u'>>,
+	lastMessage: IMessage | undefined,
+	t: TFunction,
+): string | undefined => {
 	const draft = getSubscriptionDraft(room);
 	if (draft) {
 		return `${t('Draft')}: ${escapeHTML(draft)}`;

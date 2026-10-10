@@ -1,9 +1,9 @@
 import { MessageMetricsItem, MessageBlock, MessageMetrics, MessageMetricsItemIcon, MessageMetricsItemLabel } from '@rocket.chat/fuselage';
 import { useResizeObserver } from '@rocket.chat/fuselage-hooks';
-import { useTimeAgo } from '@rocket.chat/ui-client';
 import { useTranslation } from '@rocket.chat/ui-contexts';
 
 import ThreadMetricsParticipants from '../../../../../components/message/content/ThreadMetricsParticipants';
+import { useThreadListTimeAgo } from '../hooks/useThreadListTimeAgo';
 
 type ThreadMetricsProps = {
 	lm: Date;
@@ -14,7 +14,7 @@ type ThreadMetricsProps = {
 const ThreadListMetrics = ({ counter, participants, lm }: ThreadMetricsProps) => {
 	const t = useTranslation();
 
-	const format = useTimeAgo();
+	const format = useThreadListTimeAgo();
 
 	const { ref, borderBoxSize } = useResizeObserver<HTMLDivElement>();
 
@@ -23,7 +23,6 @@ const ThreadListMetrics = ({ counter, participants, lm }: ThreadMetricsProps) =>
 	return (
 		<MessageBlock ref={ref}>
 			<MessageMetrics>
-				{participants?.length > 0 && <ThreadMetricsParticipants participants={participants} />}
 				<MessageMetricsItem title={t('Last_message__date__', { date: format(lm) })}>
 					<MessageMetricsItemIcon name='thread' />
 					{isSmall ? (
@@ -32,6 +31,7 @@ const ThreadListMetrics = ({ counter, participants, lm }: ThreadMetricsProps) =>
 						<MessageMetricsItemLabel>{t('__count__replies__date__', { count: counter, date: format(lm) })}</MessageMetricsItemLabel>
 					)}
 				</MessageMetricsItem>
+				{participants?.length > 0 && <ThreadMetricsParticipants participants={participants} />}
 			</MessageMetrics>
 		</MessageBlock>
 	);

@@ -1,6 +1,6 @@
 import type { IMessage, IThreadMainMessage } from '@rocket.chat/core-typings';
 import { Box, Icon, TextInput, Select, Callout, Throbber } from '@rocket.chat/fuselage';
-import { useResizeObserver, useAutoFocus, useLocalStorage, useDebouncedValue } from '@rocket.chat/fuselage-hooks';
+import { useResizeObserver, useAutoFocus, useLocalStorage } from '@rocket.chat/fuselage-hooks';
 import {
 	VirtualizedScrollbars,
 	ContextualbarClose,
@@ -12,19 +12,19 @@ import {
 	ContextualbarSection,
 	ContextualbarDialog,
 } from '@rocket.chat/ui-client';
-import { useTranslation, useUserId, useRoomToolbox } from '@rocket.chat/ui-contexts';
+import { useTranslation, useRoomToolbox } from '@rocket.chat/ui-contexts';
 import type { ChangeEvent } from 'react';
 import { useMemo, useState, useCallback, useId } from 'react';
 import { Virtuoso } from 'react-virtuoso';
 
 import ThreadListItem from './components/ThreadListItem';
 import { useThreadsList } from './hooks/useThreadsList';
+import type { ThreadsListType } from './hooks/useThreadsListOptions';
+import { useThreadsListOptions } from './hooks/useThreadsListOptions';
 import ResultsLiveRegion from '../../../../components/ResultsLiveRegion';
 import { getErrorMessage } from '../../../../lib/errorHandling';
 import { useRoom, useRoomSubscription } from '../../contexts/RoomContext';
 import { useGoToThread } from '../../hooks/useGoToThread';
-
-type ThreadType = 'all' | 'following' | 'unread';
 
 // TODO: Refactor this component to isolate the data from the visual
 const ThreadList = () => {
@@ -52,7 +52,7 @@ const ThreadList = () => {
 		[setSearchText],
 	);
 
-	const typeOptions: (readonly [type: ThreadType, label: string])[] = useMemo(
+	const typeOptions: (readonly [type: ThreadsListType, label: string])[] = useMemo(
 		() => [
 			['all', t('All')],
 			['following', t('Following')],
@@ -61,7 +61,7 @@ const ThreadList = () => {
 		[t],
 	);
 
-	const [type, setType] = useLocalStorage<ThreadType>('thread-list-type', 'all');
+	const [type, setType] = useLocalStorage<ThreadsListType>('thread-list-type', 'all');
 
 	const handleTypeChange = useCallback(
 		(type: string) => {
@@ -74,37 +74,7 @@ const ThreadList = () => {
 	const room = useRoom();
 	const rid = room._id;
 	const subscription = useRoomSubscription();
-	const subscribed = !!subscription;
-	const uid = useUserId();
-	const tunread = subscription?.tunread?.sort().join(',');
-	const text = useDebouncedValue(searchText, 400);
-	const options = useDebouncedValue(
-		useMemo(() => {
-			if (type === 'all' || !subscribed || !uid) {
-				return {
-					rid,
-					text,
-				};
-			}
-			switch (type) {
-				case 'following':
-					return {
-						rid,
-						text,
-						type,
-						uid,
-					};
-				case 'unread':
-					return {
-						rid,
-						text,
-						type,
-						tunread: tunread?.split(','),
-					};
-			}
-		}, [rid, subscribed, text, tunread, type, uid]),
-		300,
-	);
+	const options = useThreadsListOptions(type, searchText);
 
 	const { isPending, error, isSuccess, data, fetchNextPage } = useThreadsList(options);
 
