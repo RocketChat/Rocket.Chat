@@ -1,5 +1,6 @@
+import { after, before, describe, it } from 'node:test';
+
 import { expect } from 'chai';
-import { after, before, describe, it } from 'mocha';
 import type { Response } from 'supertest';
 
 import { getCredentials, request, api, credentials } from '../../data/api-data';
@@ -11,7 +12,7 @@ import { createUser, deleteUser, login } from '../../data/users.helper';
 import { IS_EE } from '../../e2e/config/constants';
 
 describe('Apps - Video Conferences', () => {
-	before((done) => getCredentials(done));
+	before((_t, done) => getCredentials(done));
 
 	const roomName = `apps-e2etest-room-${Date.now()}-videoconf`;
 	let roomId: string | undefined;

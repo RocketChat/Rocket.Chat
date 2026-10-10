@@ -1,15 +1,15 @@
+import { after, before, describe, it } from 'node:test';
+
 import type { IUser } from '@rocket.chat/core-typings';
 import { Random } from '@rocket.chat/random';
 import { expect } from 'chai';
-import { before, describe, it, after } from 'mocha';
 import speakeasy from 'speakeasy';
 
 import { getCredentials, methodCall, request } from '../../../data/api-data';
 import { password } from '../../../data/user';
 import { createUser, deleteUser, login } from '../../../data/users.helper';
 
-describe('2fa:enable', function () {
-	this.retries(0);
+describe('2fa:enable', () => {
 	let totpSecret: string;
 	let user1: IUser;
 	let user2: IUser;
@@ -18,9 +18,9 @@ describe('2fa:enable', function () {
 	let user2Credentials: { 'X-Auth-Token': string; 'X-User-Id': string };
 	let user3Credentials: { 'X-Auth-Token': string; 'X-User-Id': string };
 
-	before((done) => getCredentials(done));
+	before((_t, done) => getCredentials(done));
 
-	before('create user', async () => {
+	before(async () => {
 		[user1, user2, user3] = await Promise.all([
 			createUser({ username: Random.id(), email: `${Random.id()}@example.com`, verified: true }),
 			createUser({ username: Random.id(), email: `${Random.id()}@example.com}`, verified: true }),
@@ -33,7 +33,7 @@ describe('2fa:enable', function () {
 		]);
 	});
 
-	after('remove user', async () => Promise.all([deleteUser(user1), deleteUser(user2), deleteUser(user3)]));
+	after(async () => Promise.all([deleteUser(user1), deleteUser(user2), deleteUser(user3)]));
 
 	it('should return error when user is not logged in', async () => {
 		await request

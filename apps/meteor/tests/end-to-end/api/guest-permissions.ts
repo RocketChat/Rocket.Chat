@@ -1,5 +1,6 @@
+import { after, before, describe, it } from 'node:test';
+
 import { expect } from 'chai';
-import { before, describe, it, after } from 'mocha';
 
 import { getCredentials, api, request, credentials, methodCall } from '../../data/api-data';
 import { restorePermissionToRoles } from '../../data/permissions.helper';
@@ -8,7 +9,7 @@ import { IS_EE } from '../../e2e/config/constants';
 (IS_EE ? describe : describe.skip)('[Guest Permissions]', () => {
 	const guestPermissions = ['view-d-room', 'view-joined-room', 'view-p-room', 'start-discussion', 'mobile-upload-file'];
 
-	before((done) => getCredentials(done));
+	before((_t, done) => getCredentials(done));
 
 	after(() => Promise.all(guestPermissions.map((permissionName) => restorePermissionToRoles(permissionName))));
 

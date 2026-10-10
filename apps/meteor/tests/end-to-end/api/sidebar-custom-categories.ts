@@ -1,8 +1,9 @@
+import { after, before, describe, it } from 'node:test';
+
 import type { Credentials } from '@rocket.chat/api-client';
 import type { ISidebarCategory, IUser } from '@rocket.chat/core-typings';
 import { Random } from '@rocket.chat/random';
 import { expect } from 'chai';
-import { after, before, describe, it } from 'mocha';
 
 import { getCredentials, api, request, credentials } from '../../data/api-data';
 import { createRoom, deleteRoom, getSubscriptionByRoomId, addUserToRoom } from '../../data/rooms.helper';
@@ -29,7 +30,7 @@ describe('[Sidebar Custom Categories]', () => {
 		...overrides,
 	});
 
-	before((done) => getCredentials(done));
+	before((_t, done) => getCredentials(done));
 
 	before(async () => {
 		testUser = await createUser();

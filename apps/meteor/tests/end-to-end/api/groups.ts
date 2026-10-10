@@ -1,7 +1,8 @@
+import { after, before, beforeEach, describe, it } from 'node:test';
+
 import type { Credentials } from '@rocket.chat/api-client';
 import { TeamType, type IIntegration, type IMessage, type IRoom, type ITeam, type IUser } from '@rocket.chat/core-typings';
 import { assert, expect } from 'chai';
-import { after, before, describe, it, beforeEach } from 'mocha';
 
 import { getCredentials, api, request, credentials, apiPrivateChannelName } from '../../data/api-data';
 import { pinMessage, starMessage, sendMessage, updateMessage } from '../../data/chat.helper';
@@ -36,7 +37,7 @@ describe('[Groups]', () => {
 		name: string;
 	};
 
-	before((done) => getCredentials(done));
+	before((_t, done) => getCredentials(done));
 
 	before(async () => {
 		await request
@@ -104,12 +105,9 @@ describe('[Groups]', () => {
 		});
 
 		describe('guest users', () => {
-			it('should not add guest users to more rooms than defined in the license', async function () {
-				// TODO this is not the right way to do it. We're doing this way for now just because we have separate CI jobs for EE and CE,
-				// ideally we should have a single CI job that adds a license and runs both CE and EE tests.
-				if (!process.env.IS_EE) {
-					this.skip();
-				}
+			// TODO this is not the right way to do it. We're doing this way for now just because we have separate CI jobs for EE and CE,
+			// ideally we should have a single CI job that adds a license and runs both CE and EE tests.
+			it('should not add guest users to more rooms than defined in the license', { skip: !process.env.IS_EE }, async () => {
 				const promises = [];
 
 				for (let i = 0; i < maxRoomsPerGuest; i++) {
@@ -431,7 +429,7 @@ describe('[Groups]', () => {
 
 		const newGroupInfoName = `info-private-channel-test-${Date.now()}`;
 
-		before('creating new group...', async () => {
+		before(async () => {
 			await request
 				.post(api('groups.create'))
 				.set(credentials)
@@ -445,7 +443,7 @@ describe('[Groups]', () => {
 				});
 		});
 
-		after('deleting group...', async () => {
+		after(async () => {
 			await request
 				.post(api('groups.delete'))
 				.set(credentials)
@@ -1630,8 +1628,8 @@ describe('[Groups]', () => {
 			};
 		};
 
-		it('should return an error if no query', () =>
-			request
+		it('should return an error if no query', async () => {
+			await request
 				.get(api('groups.online'))
 				.set(credentials)
 				.expect('Content-Type', 'application/json')
@@ -1639,10 +1637,11 @@ describe('[Groups]', () => {
 				.expect((res) => {
 					expect(res.body).to.have.property('success', false);
 					expect(res.body).to.have.property('error', 'Invalid query');
-				}));
+				});
+		});
 
-		it('should return an error if passing an empty query', () =>
-			request
+		it('should return an error if passing an empty query', async () => {
+			await request
 				.get(api('groups.online'))
 				.set(credentials)
 				.query('query={}')
@@ -1651,7 +1650,8 @@ describe('[Groups]', () => {
 				.expect((res) => {
 					expect(res.body).to.have.property('success', false);
 					expect(res.body).to.have.property('error', 'Invalid query');
-				}));
+				});
+		});
 
 		it('should return an array with online members', async () => {
 			const { testUser, testUserCredentials, room } = await createUserAndChannel();
@@ -2229,7 +2229,7 @@ describe('[Groups]', () => {
 		let cfchannel: IRoom;
 		let groupWithoutCustomFields: IRoom;
 
-		before('create group with customFields', async () => {
+		before(async () => {
 			const customFields = { field0: 'value0' };
 
 			await request
@@ -2254,7 +2254,7 @@ describe('[Groups]', () => {
 				});
 		});
 
-		after('delete group with customFields', async () => {
+		after(async () => {
 			await request
 				.post(api('groups.delete'))
 				.set(credentials)
@@ -2385,7 +2385,7 @@ describe('[Groups]', () => {
 					expect(res.body).to.have.not.nested.property('group.customFields.field4', 'value4');
 				});
 		});
-		it('set customFields as a string -> should return 400', (done) => {
+		it('set customFields as a string -> should return 400', (_t, done) => {
 			const customFields = '';
 
 			void request
@@ -2842,7 +2842,7 @@ describe('[Groups]', () => {
 			expect(res.body).to.have.a.property('success', true);
 		});
 
-		it('should fail to convert group without the required parameters', (done) => {
+		it('should fail to convert group without the required parameters', (_t, done) => {
 			void request.post(api('groups.convertToTeam')).set(credentials).send({}).expect(400).end(done);
 		});
 

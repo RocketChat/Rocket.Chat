@@ -1,7 +1,8 @@
+import { after, before, describe, it } from 'node:test';
+
 import type { ILoggerStorageEntry } from '@rocket.chat/apps/dist/server/logging/ILoggerStorageEntry';
 import type { App } from '@rocket.chat/core-typings';
 import { expect } from 'chai';
-import { after, before, describe, it } from 'mocha';
 
 import { getCredentials, request, credentials } from '../../data/api-data';
 import { apps } from '../../data/apps/apps-data';
@@ -12,7 +13,7 @@ import { IS_EE } from '../../e2e/config/constants';
 (IS_EE ? describe : describe.skip)('Apps - Logs', () => {
 	let app: App;
 
-	before((done) => getCredentials(done));
+	before((_t, done) => getCredentials(done));
 
 	before(async () => {
 		await cleanupApps();
@@ -21,7 +22,7 @@ import { IS_EE } from '../../e2e/config/constants';
 
 	after(() => cleanupApps());
 
-	it('should throw an error when trying to get logs for an invalid app', (done) => {
+	it('should throw an error when trying to get logs for an invalid app', (_t, done) => {
 		void request
 			.get(apps('/invalid-id/logs'))
 			.set(credentials)
@@ -35,7 +36,7 @@ import { IS_EE } from '../../e2e/config/constants';
 			.end(done);
 	});
 
-	it('should return app logs successfully', (done) => {
+	it('should return app logs successfully', (_t, done) => {
 		void request
 			.get(apps(`/${app.id}/logs`))
 			.set(credentials)
@@ -51,7 +52,7 @@ import { IS_EE } from '../../e2e/config/constants';
 			.end(done);
 	});
 
-	it('should return app logs with pagination', (done) => {
+	it('should return app logs with pagination', (_t, done) => {
 		void request
 			.get(apps(`/${app.id}/logs`))
 			.query({ count: 1, offset: 0 })
@@ -67,7 +68,7 @@ import { IS_EE } from '../../e2e/config/constants';
 			.end(done);
 	});
 
-	it('should return app logs with sorting', (done) => {
+	it('should return app logs with sorting', (_t, done) => {
 		void request
 			.get(apps(`/${app.id}/logs`))
 			.query({ sort: JSON.stringify({ _updatedAt: -1 }) })
@@ -81,7 +82,7 @@ import { IS_EE } from '../../e2e/config/constants';
 			.end(done);
 	});
 
-	it('should return app logs filtered by logLevel', (done) => {
+	it('should return app logs filtered by logLevel', (_t, done) => {
 		void request
 			.get(apps(`/${app.id}/logs`))
 			.query({ logLevel: '2' })
@@ -101,7 +102,7 @@ import { IS_EE } from '../../e2e/config/constants';
 			.end(done);
 	});
 
-	it('should return app logs filtered by method', (done) => {
+	it('should return app logs filtered by method', (_t, done) => {
 		void request
 			.get(apps(`/${app.id}/logs`))
 			.query({ method: 'app:construct' })
@@ -119,7 +120,7 @@ import { IS_EE } from '../../e2e/config/constants';
 			.end(done);
 	});
 
-	it('should return app logs filtered by date range', (done) => {
+	it('should return app logs filtered by date range', (_t, done) => {
 		const startDate = new Date();
 		startDate.setDate(startDate.getDate() - 1); // 1 day ago
 		const endDate = new Date();
@@ -147,7 +148,7 @@ import { IS_EE } from '../../e2e/config/constants';
 			.end(done);
 	});
 
-	it('should return app logs with combined filters', (done) => {
+	it('should return app logs with combined filters', (_t, done) => {
 		const startDate = new Date();
 		startDate.setDate(startDate.getDate() - 1); // 1 day ago
 		const endDate = new Date();
@@ -182,7 +183,7 @@ import { IS_EE } from '../../e2e/config/constants';
 			.end(done);
 	});
 
-	it('should reject invalid logLevel value', (done) => {
+	it('should reject invalid logLevel value', (_t, done) => {
 		void request
 			.get(apps(`/${app.id}/logs`))
 			.query({ logLevel: 'debug' })
@@ -196,7 +197,7 @@ import { IS_EE } from '../../e2e/config/constants';
 			.end(done);
 	});
 
-	it('should reject invalid date format', (done) => {
+	it('should reject invalid date format', (_t, done) => {
 		void request
 			.get(apps(`/${app.id}/logs`))
 			.query({ startDate: 'invalid-date' })
@@ -210,7 +211,7 @@ import { IS_EE } from '../../e2e/config/constants';
 			.end(done);
 	});
 
-	it('should reject invalid date range', (done) => {
+	it('should reject invalid date range', (_t, done) => {
 		const startDate = new Date();
 		const endDate = new Date();
 		endDate.setDate(endDate.getDate() - 1); // endDate before startDate
@@ -231,7 +232,7 @@ import { IS_EE } from '../../e2e/config/constants';
 			.end(done);
 	});
 
-	it('should reject invalid additional properties', (done) => {
+	it('should reject invalid additional properties', (_t, done) => {
 		void request
 			.get(apps(`/${app.id}/logs`))
 			.query({ invalidProperty: 'value' })
@@ -245,7 +246,7 @@ import { IS_EE } from '../../e2e/config/constants';
 			.end(done);
 	});
 
-	it('should reject appId query parameter', (done) => {
+	it('should reject appId query parameter', (_t, done) => {
 		void request
 			.get(apps(`/${app.id}/logs`))
 			.query({ appId: 'invalid-id' })
@@ -259,7 +260,7 @@ import { IS_EE } from '../../e2e/config/constants';
 			.end(done);
 	});
 
-	it('should require authentication', (done) => {
+	it('should require authentication', (_t, done) => {
 		void request
 			.get(apps(`/${app.id}/logs`))
 			.expect('Content-Type', 'application/json')
@@ -271,7 +272,7 @@ import { IS_EE } from '../../e2e/config/constants';
 			.end(done);
 	});
 
-	it('should require manage-apps permission', (done) => {
+	it('should require manage-apps permission', (_t, done) => {
 		void updatePermission('manage-apps', []).then(
 			() =>
 				void request

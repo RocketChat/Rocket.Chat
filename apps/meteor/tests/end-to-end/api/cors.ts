@@ -1,5 +1,6 @@
+import { after, before, describe, it } from 'node:test';
+
 import { expect } from 'chai';
-import { after, before, describe, it } from 'mocha';
 
 import { getCredentials, request } from '../../data/api-data';
 import { updateSetting } from '../../data/permissions.helper';
@@ -17,7 +18,7 @@ const getHash = () =>
 		});
 
 describe('[CORS]', () => {
-	before((done) => getCredentials(done));
+	before((_t, done) => getCredentials(done));
 	after(async () => {
 		await updateSetting('Site_Url', 'http://localhost:3000');
 	});

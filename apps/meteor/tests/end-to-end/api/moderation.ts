@@ -1,6 +1,7 @@
+import { after, before, beforeEach, describe, it } from 'node:test';
+
 import type { IMessage, IModerationAudit, IModerationReport, IUser } from '@rocket.chat/core-typings';
 import { expect } from 'chai';
-import { after, before, describe, it } from 'mocha';
 import type { Response } from 'supertest';
 
 import { getCredentials, api, request, credentials } from '../../data/api-data';
@@ -27,7 +28,7 @@ const reportUser = (userId: string, reason: string) => makeModerationApiRequest(
 const getUsersReports = (userId: string) => makeModerationApiRequest('moderation.user.reportsByUserId', 'get', { userId });
 
 describe('[Moderation]', () => {
-	before((done) => getCredentials(done));
+	before((_t, done) => getCredentials(done));
 
 	describe('[/moderation.reportsByUsers]', () => {
 		it('should return an array of reports', async () => {

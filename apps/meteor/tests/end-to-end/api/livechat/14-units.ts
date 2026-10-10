@@ -1,6 +1,7 @@
+import { after, before, describe, it } from 'node:test';
+
 import type { ILivechatDepartment, IOmnichannelBusinessUnit } from '@rocket.chat/core-typings';
 import { expect } from 'chai';
-import { before, after, describe, it } from 'mocha';
 
 import { getCredentials, api, request, credentials } from '../../../data/api-data';
 import { deleteDepartment, getDepartmentById } from '../../../data/livechat/department';
@@ -12,7 +13,7 @@ import { createUser, deleteUser, login } from '../../../data/users.helper';
 import { IS_EE } from '../../../e2e/config/constants';
 
 (IS_EE ? describe : describe.skip)('[EE] LIVECHAT - Units', () => {
-	before((done) => getCredentials(done));
+	before((_t, done) => getCredentials(done));
 
 	before(async () => {
 		await updateSetting('Livechat_enabled', true);
@@ -26,7 +27,7 @@ import { IS_EE } from '../../../e2e/config/constants';
 	describe('[GET] livechat/units', () => {
 		it('should return empty if manage-livechat-units permission is missing', async () => {
 			await updatePermission('manage-livechat-units', []);
-			return request
+			await request
 				.get(api('livechat/units'))
 				.set(credentials)
 				.send({
@@ -117,7 +118,7 @@ import { IS_EE } from '../../../e2e/config/constants';
 	describe('[POST] livechat/units', () => {
 		it('should fail if manage-livechat-units permission is missing', async () => {
 			await updatePermission('manage-livechat-units', []);
-			return request
+			await request
 				.post(api('livechat/units'))
 				.set(credentials)
 				.send({
@@ -183,7 +184,7 @@ import { IS_EE } from '../../../e2e/config/constants';
 	describe('[GET] livechat/units/:id', () => {
 		it('should fail if manage-livechat-units permission is missing', async () => {
 			await updatePermission('manage-livechat-units', []);
-			return request.get(api('livechat/units/123')).set(credentials).send().expect(403);
+			await request.get(api('livechat/units/123')).set(credentials).send().expect(403);
 		});
 		it('should return a unit', async () => {
 			await updatePermission('manage-livechat-units', ['admin']);
@@ -210,7 +211,7 @@ import { IS_EE } from '../../../e2e/config/constants';
 	describe('[POST] livechat/units/:id', () => {
 		it('should fail if manage-livechat-units permission is missing', async () => {
 			await updatePermission('manage-livechat-units', []);
-			return request.post(api('livechat/units/123')).set(credentials).expect(403);
+			await request.post(api('livechat/units/123')).set(credentials).expect(403);
 		});
 		it('should fail if unit does not exist', async () => {
 			await updatePermission('manage-livechat-units', ['admin']);
@@ -317,7 +318,7 @@ import { IS_EE } from '../../../e2e/config/constants';
 	describe('[DELETE] livechat/units/:id', () => {
 		it('should fail if manage-livechat-units permission is missing', async () => {
 			await updatePermission('manage-livechat-units', []);
-			return request.delete(api('livechat/units/123')).set(credentials).expect(403);
+			await request.delete(api('livechat/units/123')).set(credentials).expect(403);
 		});
 		it('should return a deleted unit', async () => {
 			await updatePermission('manage-livechat-units', ['admin']);
@@ -341,7 +342,7 @@ import { IS_EE } from '../../../e2e/config/constants';
 	describe('livechat/units/:unitId/departments', () => {
 		it('should fail if manage-livechat-units permission is missing', async () => {
 			await updatePermission('manage-livechat-units', []);
-			return request.get(api('livechat/units/123/departments')).set(credentials).expect(403);
+			await request.get(api('livechat/units/123/departments')).set(credentials).expect(403);
 		});
 		it('should return departments associated with a unit', async () => {
 			await updatePermission('manage-livechat-units', ['admin']);
@@ -368,7 +369,7 @@ import { IS_EE } from '../../../e2e/config/constants';
 	describe('livechat/units/:unitId/departments/available', () => {
 		it('should fail if manage-livechat-units permission is missing', async () => {
 			await updatePermission('manage-livechat-units', []);
-			return request.get(api('livechat/units/123/departments/available')).set(credentials).expect(403);
+			await request.get(api('livechat/units/123/departments/available')).set(credentials).expect(403);
 		});
 		it('should return departments not associated with a unit', async () => {
 			await updatePermission('manage-livechat-units', ['admin']);
@@ -396,7 +397,7 @@ import { IS_EE } from '../../../e2e/config/constants';
 	describe('livechat/units/:unitId/monitors', () => {
 		it('should fail if manage-livechat-units permission is missing', async () => {
 			await updatePermission('manage-livechat-monitors', []);
-			return request.get(api('livechat/units/123/monitors')).set(credentials).expect(403);
+			await request.get(api('livechat/units/123/monitors')).set(credentials).expect(403);
 		});
 		it('should return monitors associated with a unit', async () => {
 			await updatePermission('manage-livechat-monitors', ['admin']);
@@ -439,8 +440,8 @@ import { IS_EE } from '../../../e2e/config/constants';
 
 		after(async () => Promise.all([deleteUser(monitor1), deleteUser(monitor2), deleteUnit(unit)]));
 
-		it('should fail creating department when providing an invalid property in the department unit object', () => {
-			return request
+		it('should fail creating department when providing an invalid property in the department unit object', async () => {
+			await request
 				.post(api('livechat/department'))
 				.set(credentials)
 				.send({
@@ -541,9 +542,9 @@ import { IS_EE } from '../../../e2e/config/constants';
 			]),
 		);
 
-		it("should fail updating a department's unit when providing an invalid property in the department unit object", () => {
+		it("should fail updating a department's unit when providing an invalid property in the department unit object", async () => {
 			const updatedName = 'updated-department-name';
-			return request
+			await request
 				.put(api(`livechat/department/${department._id}`))
 				.set(credentials)
 				.send({
@@ -558,9 +559,9 @@ import { IS_EE } from '../../../e2e/config/constants';
 				});
 		});
 
-		it("should fail updating a department's unit when providing an invalid _id type in the department unit object", () => {
+		it("should fail updating a department's unit when providing an invalid _id type in the department unit object", async () => {
 			const updatedName = 'updated-department-name';
-			return request
+			await request
 				.put(api(`livechat/department/${department._id}`))
 				.set(credentials)
 				.send({
@@ -575,9 +576,9 @@ import { IS_EE } from '../../../e2e/config/constants';
 				});
 		});
 
-		it('should fail removing the last department from a unit', () => {
+		it('should fail removing the last department from a unit', async () => {
 			const updatedName = 'updated-department-name';
-			return request
+			await request
 				.put(api(`livechat/department/${baseDepartment._id}`))
 				.set(credentials)
 				.send({

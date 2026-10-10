@@ -1,8 +1,9 @@
+import { after, before, describe, it } from 'node:test';
+
 import type { Credentials } from '@rocket.chat/api-client';
 import type { IMessage, IRoom, IUser } from '@rocket.chat/core-typings';
 import { Random } from '@rocket.chat/random';
 import { expect } from 'chai';
-import { after, before, describe, it } from 'mocha';
 
 import { getCredentials, api, request, credentials, apiUsername, apiEmail, methodCall } from '../../data/api-data';
 import { pinMessage, sendMessage, starMessage, updateMessage } from '../../data/chat.helper';
@@ -18,7 +19,7 @@ describe('[Direct Messages]', () => {
 	let user: TestUser<IUser>;
 	let directMessage: { _id: IRoom['_id'] };
 
-	before((done) => getCredentials(done));
+	before((_t, done) => getCredentials(done));
 
 	before(async () => {
 		user = await createUser();
@@ -37,7 +38,7 @@ describe('[Direct Messages]', () => {
 			});
 	});
 
-	before('/chat.postMessage', (done) => {
+	before((_t, done) => {
 		void request
 			.post(api('chat.postMessage'))
 			.set(credentials)
@@ -992,7 +993,7 @@ describe('[Direct Messages]', () => {
 		let directMessageId: IMessage['_id'];
 		let user: TestUser<IUser>;
 
-		before((done) => {
+		before((_t, done) => {
 			void request
 				.post(api('users.create'))
 				.set(credentials)
@@ -1013,7 +1014,7 @@ describe('[Direct Messages]', () => {
 				.end(done);
 		});
 
-		before((done) => {
+		before((_t, done) => {
 			void request
 				.post(api('chat.postMessage'))
 				.set(credentials)

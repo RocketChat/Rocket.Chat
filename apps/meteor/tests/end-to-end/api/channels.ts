@@ -1,8 +1,9 @@
+import { after, before, beforeEach, describe, it } from 'node:test';
+
 import type { Credentials } from '@rocket.chat/api-client';
 import { TeamType, type IIntegration, type IMessage, type IRoom, type ITeam, type IUser } from '@rocket.chat/core-typings';
 import { Random } from '@rocket.chat/random';
 import { expect, assert } from 'chai';
-import { after, before, describe, it, beforeEach } from 'mocha';
 
 import { getCredentials, api, request, credentials, reservedWords } from '../../data/api-data';
 import { pinMessage, sendMessage, starMessage, updateMessage } from '../../data/chat.helper';
@@ -34,9 +35,9 @@ describe('[Channels]', () => {
 	let channel: Pick<IRoom, '_id' | 'name'>;
 	const apiPublicChannelName = `api-channel-test-${Date.now()}`;
 
-	before((done) => getCredentials(done));
+	before((_t, done) => getCredentials(done));
 
-	before('Creating channel', (done) => {
+	before((_t, done) => {
 		void request
 			.post(api('channels.create'))
 			.set(credentials)
@@ -66,7 +67,7 @@ describe('[Channels]', () => {
 	it('/channels.invite', async () => {
 		const roomInfo = await getRoomInfo(channel._id);
 
-		return request
+		await request
 			.post(api('channels.invite'))
 			.set(credentials)
 			.send({
@@ -195,7 +196,7 @@ describe('[Channels]', () => {
 	it('/channels.kick', async () => {
 		const roomInfo = await getRoomInfo(channel._id);
 
-		return request
+		await request
 			.post(api('channels.kick'))
 			.set(credentials)
 			.send({
@@ -216,7 +217,7 @@ describe('[Channels]', () => {
 	it('/channels.invite', async () => {
 		const roomInfo = await getRoomInfo(channel._id);
 
-		return request
+		await request
 			.post(api('channels.invite'))
 			.set(credentials)
 			.send({
@@ -642,7 +643,7 @@ describe('[Channels]', () => {
 	it('/channels.rename', async () => {
 		const roomInfo = await getRoomInfo(channel._id);
 
-		return request
+		await request
 			.post(api('channels.rename'))
 			.set(credentials)
 			.send({
@@ -706,7 +707,7 @@ describe('[Channels]', () => {
 	it('/channels.setJoinCode', async () => {
 		const roomInfo = await getRoomInfo(channel._id);
 
-		return request
+		await request
 			.post(api('channels.setJoinCode'))
 			.set(credentials)
 			.send({
@@ -727,7 +728,7 @@ describe('[Channels]', () => {
 	it('/channels.setReadOnly', async () => {
 		const roomInfo = await getRoomInfo(channel._id);
 
-		return request
+		await request
 			.post(api('channels.setReadOnly'))
 			.set(credentials)
 			.send({
@@ -747,7 +748,7 @@ describe('[Channels]', () => {
 	it('/channels.leave', async () => {
 		const roomInfo = await getRoomInfo(channel._id);
 
-		return request
+		await request
 			.post(api('channels.leave'))
 			.set(credentials)
 			.send({
@@ -810,13 +811,9 @@ describe('[Channels]', () => {
 				});
 		});
 
-		it('should not add guest users to more rooms than defined in the license', async function () {
-			// TODO this is not the right way to do it. We're doing this way for now just because we have separate CI jobs for EE and CE,
-			// ideally we should have a single CI job that adds a license and runs both CE and EE tests.
-			if (!process.env.IS_EE) {
-				this.skip();
-			}
-
+		// TODO this is not the right way to do it. We're doing this way for now just because we have separate CI jobs for EE and CE,
+		// ideally we should have a single CI job that adds a license and runs both CE and EE tests.
+		it('should not add guest users to more rooms than defined in the license', { skip: !process.env.IS_EE }, async () => {
 			const promises = [];
 			for (let i = 0; i < maxRoomsPerGuest; i++) {
 				promises.push(
@@ -1458,7 +1455,7 @@ describe('[Channels]', () => {
 		it('should return an array with online members', async () => {
 			const { testUser, testUserCredentials, room } = await createUserAndChannel();
 
-			return request
+			await request
 				.get(api('channels.online'))
 				.set(testUserCredentials)
 				.query({ _id: room._id })
@@ -1482,7 +1479,7 @@ describe('[Channels]', () => {
 
 			const { testUser, room } = await createUserAndChannel();
 
-			return request
+			await request
 				.get(api('channels.online'))
 				.set(outsiderCredentials)
 				.query({ _id: room._id })
@@ -1511,7 +1508,7 @@ describe('[Channels]', () => {
 		let testUser: TestUser<IUser>;
 		let testUserCredentials: Credentials;
 
-		before('Create test user', async () => {
+		before(async () => {
 			testUser = await createUser();
 			testUserCredentials = await login(testUser.username, password);
 			testChannelNoCode = (await createRoom({ type: 'c', credentials: testUserCredentials, name: `${apiPublicChannelName}-nojoincode` }))
@@ -1532,7 +1529,7 @@ describe('[Channels]', () => {
 			await deleteUser(testUser);
 		});
 
-		before('Set code for channel', (done) => {
+		before((_t, done) => {
 			void request
 				.post(api('channels.setJoinCode'))
 				.set(testUserCredentials)
@@ -1580,7 +1577,7 @@ describe('[Channels]', () => {
 
 		describe('code-needed channel', () => {
 			describe('without join-without-join-code permission', () => {
-				before('set join-without-join-code permission to false', async () => {
+				before(async () => {
 					await updatePermission('join-without-join-code', []);
 				});
 
@@ -1630,11 +1627,11 @@ describe('[Channels]', () => {
 			});
 
 			describe('with join-without-join-code permission', () => {
-				before('set join-without-join-code permission to true', async () => {
+				before(async () => {
 					await updatePermission('join-without-join-code', ['admin']);
 				});
 
-				before('leave channel', (done) => {
+				before((_t, done) => {
 					void request
 						.post(api('channels.leave'))
 						.set(credentials)
@@ -2725,7 +2722,7 @@ describe('[Channels]', () => {
 			await deleteRoom({ type: 'c', roomId: withCFChannel._id });
 		});
 
-		it('create channel with customFields', (done) => {
+		it('create channel with customFields', (_t, done) => {
 			const customFields = { field0: 'value0' };
 			void request
 				.post(api('channels.create'))
@@ -2754,7 +2751,7 @@ describe('[Channels]', () => {
 		});
 		it('change customFields', async () => {
 			const customFields = { field9: 'value9' };
-			return request
+			await request
 				.post(api('channels.setCustomFields'))
 				.set(credentials)
 				.send({
@@ -2797,7 +2794,7 @@ describe('[Channels]', () => {
 
 			expect(res.body).to.have.property('success', true);
 		});
-		it('create channel without customFields', (done) => {
+		it('create channel without customFields', (_t, done) => {
 			void request
 				.post(api('channels.create'))
 				.set(credentials)
@@ -2811,7 +2808,7 @@ describe('[Channels]', () => {
 		});
 		it('set customFields with one nested field', async () => {
 			const customFields = { field1: 'value1' };
-			return request
+			await request
 				.post(api('channels.setCustomFields'))
 				.set(credentials)
 				.send({
@@ -2831,7 +2828,7 @@ describe('[Channels]', () => {
 		it('set customFields with multiple nested fields', async () => {
 			const customFields = { field2: 'value2', field3: 'value3', field4: 'value4' };
 
-			return request
+			await request
 				.post(api('channels.setCustomFields'))
 				.set(credentials)
 				.send({
@@ -2851,7 +2848,7 @@ describe('[Channels]', () => {
 					expect(res.body).to.have.not.nested.property('channel.customFields.field1', 'value1');
 				});
 		});
-		it('set customFields to empty object', (done) => {
+		it('set customFields to empty object', (_t, done) => {
 			const customFields = {};
 
 			void request
@@ -2874,7 +2871,7 @@ describe('[Channels]', () => {
 				})
 				.end(done);
 		});
-		it('set customFields as a string -> should return 400', (done) => {
+		it('set customFields as a string -> should return 400', (_t, done) => {
 			const customFields = '';
 
 			void request
@@ -2920,7 +2917,7 @@ describe('[Channels]', () => {
 		it('should set channel as default', async () => {
 			const roomInfo = await getRoomInfo(testChannel._id);
 
-			return request
+			await request
 				.post(api('channels.setDefault'))
 				.set(credentials)
 				.send({
@@ -2941,7 +2938,7 @@ describe('[Channels]', () => {
 		it('should unset channel as default', async () => {
 			const roomInfo = await getRoomInfo(testChannel._id);
 
-			return request
+			await request
 				.post(api('channels.setDefault'))
 				.set(credentials)
 				.send({
@@ -4089,7 +4086,7 @@ describe('[Channels]', () => {
 				});
 		});
 
-		it('should fail to convert channel without the required parameters', (done) => {
+		it('should fail to convert channel without the required parameters', (_t, done) => {
 			void request.post(api('channels.convertToTeam')).set(credentials).send({}).expect(400).end(done);
 		});
 

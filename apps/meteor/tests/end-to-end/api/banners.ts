@@ -1,6 +1,7 @@
+import { after, before, describe, it } from 'node:test';
+
 import type { IUser } from '@rocket.chat/core-typings';
 import { expect } from 'chai';
-import { after, before, describe, it } from 'mocha';
 import { MongoClient } from 'mongodb';
 
 import { getCredentials, api, request, credentials } from '../../data/api-data';
@@ -8,7 +9,7 @@ import { getMe } from '../../data/users.helper';
 import { URL_MONGODB } from '../../e2e/config/constants';
 
 describe('banners', () => {
-	before((done) => getCredentials(done));
+	before((_t, done) => getCredentials(done));
 
 	describe('[/banners.dismiss]', () => {
 		it('should fail if not logged in', async () => {
@@ -150,7 +151,7 @@ describe('banners', () => {
 
 	describe('[/banners]', () => {
 		it('should fail if not logged in', async () => {
-			return request
+			await request
 				.get(api('banners'))
 				.query({
 					platform: 'web',
@@ -163,7 +164,7 @@ describe('banners', () => {
 		});
 
 		it('should fail if missing platform', async () => {
-			return request
+			await request
 				.get(api('banners'))
 				.set(credentials)
 				.query({})
@@ -175,7 +176,7 @@ describe('banners', () => {
 		});
 
 		it('should fail if platform is invalid', async () => {
-			return request
+			await request
 				.get(api('banners'))
 				.set(credentials)
 				.query({
@@ -189,7 +190,7 @@ describe('banners', () => {
 		});
 
 		it('should succesfully return web banners', async () => {
-			return request
+			await request
 				.get(api('banners'))
 				.set(credentials)
 				.query({
@@ -203,7 +204,7 @@ describe('banners', () => {
 		});
 
 		it('should succesfully return mobile banners', async () => {
-			return request
+			await request
 				.get(api('banners'))
 				.set(credentials)
 				.query({
@@ -219,7 +220,7 @@ describe('banners', () => {
 
 	describe('[/banners/:id]', () => {
 		it('should fail if not logged in', async () => {
-			return request
+			await request
 				.get(api('banners/some-id'))
 				.query({
 					platform: 'web',
@@ -232,7 +233,7 @@ describe('banners', () => {
 		});
 
 		it('should fail if missing platform', async () => {
-			return request
+			await request
 				.get(api('banners/some-id'))
 				.set(credentials)
 				.query({})
@@ -244,7 +245,7 @@ describe('banners', () => {
 		});
 
 		it('should fail if platform is invalid', async () => {
-			return request
+			await request
 				.get(api('banners/some-id'))
 				.set(credentials)
 				.query({
@@ -258,7 +259,7 @@ describe('banners', () => {
 		});
 
 		it('should succesfully return a web banner by id', async () => {
-			return request
+			await request
 				.get(api('banners/some-id'))
 				.set(credentials)
 				.query({
@@ -272,7 +273,7 @@ describe('banners', () => {
 		});
 
 		it('should succesfully return a mobile banner by id', async () => {
-			return request
+			await request
 				.get(api('banners/some-id'))
 				.set(credentials)
 				.query({

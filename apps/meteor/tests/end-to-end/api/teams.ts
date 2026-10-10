@@ -1,9 +1,10 @@
+import { after, afterEach, before, beforeEach, describe, it } from 'node:test';
+
 import type { Credentials } from '@rocket.chat/api-client';
 import type { IRole, IRoom, ITeam, IUser } from '@rocket.chat/core-typings';
 import { TeamType } from '@rocket.chat/core-typings';
 import { Random } from '@rocket.chat/random';
 import { expect } from 'chai';
-import { after, afterEach, before, beforeEach, describe, it } from 'mocha';
 
 import { getCredentials, api, request, credentials, methodCall } from '../../data/api-data';
 import { updatePermission, updateSetting } from '../../data/permissions.helper';
@@ -39,7 +40,7 @@ const addMembers = async (credentials: Record<string, any>, teamName: string, me
 };
 
 describe('[Teams]', () => {
-	before((done) => getCredentials(done));
+	before((_t, done) => getCredentials(done));
 
 	describe('/teams.create', () => {
 		const name = `test-team-create-${Date.now()}`;
@@ -84,7 +85,7 @@ describe('[Teams]', () => {
 			createdTeams.push(res.body.team);
 		});
 
-		it('should create a public team with a member', (done) => {
+		it('should create a public team with a member', (_t, done) => {
 			void request
 				.post(api('teams.create'))
 				.set(credentials)
@@ -123,7 +124,7 @@ describe('[Teams]', () => {
 				.catch(done);
 		});
 
-		it('should create private team with a defined owner', (done) => {
+		it('should create private team with a defined owner', (_t, done) => {
 			void request
 				.post(api('teams.create'))
 				.set(credentials)
@@ -311,7 +312,7 @@ describe('/teams.convertToChannel', () => {
 	const teamName = `test-team-convert-to-channel-${Date.now()}`;
 	const channelToEraseName = `${teamName}-channelToErase`;
 	const channelToKeepName = `${teamName}-channelToKeep`;
-	before('Create test team', (done) => {
+	before((_t, done) => {
 		void request
 			.post(api('teams.create'))
 			.set(credentials)
@@ -325,7 +326,7 @@ describe('/teams.convertToChannel', () => {
 			});
 	});
 
-	before('create channel (to erase after its team is converted to a channel)', (done) => {
+	before((_t, done) => {
 		void request
 			.post(api('channels.create'))
 			.set(credentials)
@@ -345,7 +346,7 @@ describe('/teams.convertToChannel', () => {
 			.then(() => done());
 	});
 
-	before('add first channel to team', (done) => {
+	before((_t, done) => {
 		void request
 			.post(api('teams.addRooms'))
 			.set(credentials)
@@ -365,7 +366,7 @@ describe('/teams.convertToChannel', () => {
 			.catch(done);
 	});
 
-	before('create channel (to keep after its team is converted to a channel)', (done) => {
+	before((_t, done) => {
 		void request
 			.post(api('channels.create'))
 			.set(credentials)
@@ -385,7 +386,7 @@ describe('/teams.convertToChannel', () => {
 			.then(() => done());
 	});
 
-	before('add second channel to team', (done) => {
+	before((_t, done) => {
 		void request
 			.post(api('teams.addRooms'))
 			.set(credentials)
@@ -412,7 +413,7 @@ describe('/teams.convertToChannel', () => {
 		]),
 	);
 
-	it('should convert the team to a channel, delete the specified room and move the other back to the workspace', (done) => {
+	it('should convert the team to a channel, delete the specified room and move the other back to the workspace', (_t, done) => {
 		void request
 			.post(api('teams.convertToChannel'))
 			.set(credentials)
@@ -484,7 +485,7 @@ describe('/teams.addMembers', () => {
 	let testUser: TestUser<IUser>;
 	let testUser2: TestUser<IUser>;
 
-	before('Create test team', (done) => {
+	before((_t, done) => {
 		void request
 			.post(api('teams.create'))
 			.set(credentials)
@@ -507,7 +508,7 @@ describe('/teams.addMembers', () => {
 
 	afterEach(() => Promise.all([deleteUser(testUser), deleteUser(testUser2)]));
 
-	it('should add members to a public team', (done) => {
+	it('should add members to a public team', (_t, done) => {
 		void request
 			.post(api('teams.addMembers'))
 			.set(credentials)
@@ -573,7 +574,7 @@ describe('/teams.addMembers', () => {
 			.catch(done);
 	});
 
-	it('should add members and assign roles to them properly', (done) => {
+	it('should add members and assign roles to them properly', (_t, done) => {
 		void request
 			.post(api('teams.addMembers'))
 			.set(credentials)
@@ -651,7 +652,7 @@ describe('/teams.members', () => {
 		testUser2 = await createUser();
 	});
 
-	before('Create test team', (done) => {
+	before((_t, done) => {
 		void request
 			.post(api('teams.create'))
 			.set(credentials)
@@ -665,7 +666,7 @@ describe('/teams.members', () => {
 			});
 	});
 
-	before('Add members to team', (done) => {
+	before((_t, done) => {
 		void request
 			.post(api('teams.addMembers'))
 			.set(credentials)
@@ -726,7 +727,7 @@ describe('/teams.list', () => {
 	let testUser1Credentials: Credentials;
 	let testTeamAdmin: TestUser<IUser>;
 	let testTeam1: IRoom;
-	before('Create test team', (done) => {
+	before((_t, done) => {
 		void request
 			.post(api('teams.create'))
 			.set(credentials)
@@ -737,15 +738,15 @@ describe('/teams.list', () => {
 			.end(done);
 	});
 
-	before('Create test users', async () => {
+	before(async () => {
 		testUser1 = await createUser();
 	});
 
-	before('login test users', async () => {
+	before(async () => {
 		testUser1Credentials = await login(testUser1.username, password);
 	});
 
-	before('Create test team', async () => {
+	before(async () => {
 		await request.post(api('teams.create')).set(credentials).send({
 			name: teamName,
 			type: 0,
@@ -776,7 +777,7 @@ describe('/teams.list', () => {
 		]),
 	);
 
-	after('delete test users', () => deleteUser(testUser1));
+	after(() => deleteUser(testUser1));
 
 	it('should list all teams', async () => {
 		const res = await request.get(api('teams.list')).set(credentials).expect('Content-Type', 'application/json').expect(200);
@@ -800,8 +801,8 @@ describe('/teams.list', () => {
 		expect(res.body.teams[0]).to.have.property('numberOfUsers');
 	});
 
-	it("should prevent users from accessing unrelated teams via 'query' parameter", () => {
-		return request
+	it("should prevent users from accessing unrelated teams via 'query' parameter", async () => {
+		await request
 			.get(api('teams.list'))
 			.set(testUser1Credentials)
 			.query({
@@ -824,8 +825,8 @@ describe('/teams.list', () => {
 			});
 	});
 
-	it("should prevent admins from accessing unrelated teams via 'query' parameter", () => {
-		return request
+	it("should prevent admins from accessing unrelated teams via 'query' parameter", async () => {
+		await request
 			.get(api('teams.list'))
 			.set(credentials)
 			.query({
@@ -914,7 +915,7 @@ describe('/teams.updateMember', () => {
 		testUser2 = await createUser();
 	});
 
-	before('Create test team', (done) => {
+	before((_t, done) => {
 		void request
 			.post(api('teams.create'))
 			.set(credentials)
@@ -927,7 +928,7 @@ describe('/teams.updateMember', () => {
 				done();
 			});
 	});
-	before('Add members to team', (done) => {
+	before((_t, done) => {
 		void request
 			.post(api('teams.addMembers'))
 			.set(credentials)
@@ -952,7 +953,7 @@ describe('/teams.updateMember', () => {
 		await Promise.all([deleteUser(testUser), deleteUser(testUser2)]);
 	});
 
-	it("should update member's data in a public team", (done) => {
+	it("should update member's data in a public team", (_t, done) => {
 		void request
 			.post(api('teams.updateMember'))
 			.set(credentials)
@@ -1014,7 +1015,7 @@ describe('/teams.removeMember', () => {
 		testUser2 = await createUser();
 	});
 
-	before('Create test team', (done) => {
+	before((_t, done) => {
 		void request
 			.post(api('teams.create'))
 			.set(credentials)
@@ -1033,7 +1034,7 @@ describe('/teams.removeMember', () => {
 		await Promise.all([deleteUser(testUser), deleteUser(testUser2)]);
 	});
 
-	it('should not be able to remove the last owner', (done) => {
+	it('should not be able to remove the last owner', (_t, done) => {
 		void request
 			.post(api('teams.removeMember'))
 			.set(credentials)
@@ -1052,7 +1053,7 @@ describe('/teams.removeMember', () => {
 			.catch(done);
 	});
 
-	it('should not be able to remove if rooms is empty', (done) => {
+	it('should not be able to remove if rooms is empty', (_t, done) => {
 		void request
 			.post(api('teams.removeMember'))
 			.set(credentials)
@@ -1072,7 +1073,7 @@ describe('/teams.removeMember', () => {
 			.catch(done);
 	});
 
-	it('should remove one member from a public team', (done) => {
+	it('should remove one member from a public team', (_t, done) => {
 		void request
 			.post(api('teams.addMembers'))
 			.set(credentials)
@@ -1134,7 +1135,7 @@ describe('/teams.leave', () => {
 		testUser2 = await createUser();
 	});
 
-	before('Create test team', (done) => {
+	before((_t, done) => {
 		void request
 			.post(api('teams.create'))
 			.set(credentials)
@@ -1153,7 +1154,7 @@ describe('/teams.leave', () => {
 		await Promise.all([deleteUser(testUser), deleteUser(testUser2)]);
 	});
 
-	it('should not be able to remove the last owner', (done) => {
+	it('should not be able to remove the last owner', (_t, done) => {
 		request
 			.post(api('teams.leave'))
 			.set(credentials)
@@ -1171,7 +1172,7 @@ describe('/teams.leave', () => {
 			.catch(done);
 	});
 
-	it('should remove the calling user from the team', (done) => {
+	it('should remove the calling user from the team', (_t, done) => {
 		request
 			.post(api('teams.addMembers'))
 			.set(credentials)
@@ -1205,7 +1206,7 @@ describe('/teams.leave', () => {
 			.catch(done);
 	});
 
-	it('should not be able to leave if rooms is empty', (done) => {
+	it('should not be able to leave if rooms is empty', (_t, done) => {
 		request
 			.post(api('teams.leave'))
 			.set(credentials)
@@ -1242,7 +1243,7 @@ describe('/teams.info', () => {
 
 	after(() => Promise.all([deleteTeam(credentials, testTeam.name), deleteTeam(credentials, testTeam2.name), deleteUser(testUser)]));
 
-	it('should successfully get a team info by name', (done) => {
+	it('should successfully get a team info by name', (_t, done) => {
 		request
 			.get(api('teams.info'))
 			.set(credentials)
@@ -1260,7 +1261,7 @@ describe('/teams.info', () => {
 			.then(() => done())
 			.catch(done);
 	});
-	it('should successfully get a team info by id', (done) => {
+	it('should successfully get a team info by id', (_t, done) => {
 		request
 			.get(api('teams.info'))
 			.set(credentials)
@@ -1278,7 +1279,7 @@ describe('/teams.info', () => {
 			.then(() => done())
 			.catch(done);
 	});
-	it('should fail if a team is not found', (done) => {
+	it('should fail if a team is not found', (_t, done) => {
 		request
 			.get(api('teams.info'))
 			.set(credentials)
@@ -1294,7 +1295,7 @@ describe('/teams.info', () => {
 			.then(() => done())
 			.catch(done);
 	});
-	it('should fail if a user doesnt belong to a team', (done) => {
+	it('should fail if a user doesnt belong to a team', (_t, done) => {
 		request
 			.get(api('teams.info'))
 			.set(testUserCredentials)
@@ -1317,7 +1318,7 @@ describe('/teams.delete', () => {
 		let roomId: IRoom['_id'];
 		const tempTeamName = `temporaryTeam-${Date.now()}`;
 
-		before('create team', (done) => {
+		before((_t, done) => {
 			void request
 				.post(api('teams.create'))
 				.set(credentials)
@@ -1341,7 +1342,7 @@ describe('/teams.delete', () => {
 
 		after(() => deleteTeam(credentials, tempTeamName));
 
-		it('should delete the team and the main room', (done) => {
+		it('should delete the team and the main room', (_t, done) => {
 			request
 				.post(api('teams.delete'))
 				.set(credentials)
@@ -1396,7 +1397,7 @@ describe('/teams.delete', () => {
 		let channel1Id: IRoom['_id'];
 		let channel2Id: IRoom['_id'];
 
-		before('create team', (done) => {
+		before((_t, done) => {
 			void request
 				.post(api('teams.create'))
 				.set(credentials)
@@ -1410,7 +1411,7 @@ describe('/teams.delete', () => {
 				.then(() => done());
 		});
 
-		before('create channel 1', (done) => {
+		before((_t, done) => {
 			void request
 				.post(api('channels.create'))
 				.set(credentials)
@@ -1430,7 +1431,7 @@ describe('/teams.delete', () => {
 				.then(() => done());
 		});
 
-		before('add channel 1 to team', (done) => {
+		before((_t, done) => {
 			request
 				.post(api('teams.addRooms'))
 				.set(credentials)
@@ -1450,7 +1451,7 @@ describe('/teams.delete', () => {
 				.catch(done);
 		});
 
-		before('create channel 2', (done) => {
+		before((_t, done) => {
 			void request
 				.post(api('channels.create'))
 				.set(credentials)
@@ -1470,7 +1471,7 @@ describe('/teams.delete', () => {
 				.then(() => done());
 		});
 
-		before('add channel 2 to team', (done) => {
+		before((_t, done) => {
 			void request
 				.post(api('teams.addRooms'))
 				.set(credentials)
@@ -1491,7 +1492,7 @@ describe('/teams.delete', () => {
 
 		after(() => deleteRoom({ type: 'c', roomId: channel1Id }));
 
-		it('should delete the specified room and move the other back to the workspace', (done) => {
+		it('should delete the specified room and move the other back to the workspace', (_t, done) => {
 			request
 				.post(api('teams.delete'))
 				.set(credentials)
@@ -1549,7 +1550,7 @@ describe('/teams.delete', () => {
 		let channel2Id: IRoom['_id'];
 		let teamMainRoomId: IRoom['_id'];
 
-		before('create team', async () => {
+		before(async () => {
 			await request
 				.post(api('teams.create'))
 				.set(credentials)
@@ -1563,7 +1564,7 @@ describe('/teams.delete', () => {
 				});
 		});
 
-		before('create channel 1', async () => {
+		before(async () => {
 			await request
 				.post(api('channels.create'))
 				.set(credentials)
@@ -1582,7 +1583,7 @@ describe('/teams.delete', () => {
 				});
 		});
 
-		before('add channel 1 to team', async () => {
+		before(async () => {
 			await request
 				.post(api('teams.addRooms'))
 				.set(credentials)
@@ -1600,7 +1601,7 @@ describe('/teams.delete', () => {
 				});
 		});
 
-		before('create channel 2', async () => {
+		before(async () => {
 			await request
 				.post(api('channels.create'))
 				.set(credentials)
@@ -1619,7 +1620,7 @@ describe('/teams.delete', () => {
 				});
 		});
 
-		before('add channel 2 to team', async () => {
+		before(async () => {
 			await request
 				.post(api('teams.addRooms'))
 				.set(credentials)
@@ -1813,7 +1814,7 @@ describe('/teams.addRooms', () => {
 		expect(res.body.rooms[0]).to.not.have.property('teamDefault');
 	});
 
-	it('should fail if the user cannot access the channel', (done) => {
+	it('should fail if the user cannot access the channel', (_t, done) => {
 		void updatePermission('move-room-to-team', ['admin', 'user'])
 			.then(() => {
 				void request
@@ -1835,7 +1836,7 @@ describe('/teams.addRooms', () => {
 			.catch(done);
 	});
 
-	it('should fail if the user is not the owner of the channel', (done) => {
+	it('should fail if the user is not the owner of the channel', (_t, done) => {
 		void request
 			.post(methodCall('addUsersToRoom'))
 			.set(credentials)
@@ -2059,7 +2060,7 @@ describe('/teams.listRooms', () => {
 		let discussionOnPublicRoom: IRoom;
 		let discussionOnMainRoom: IRoom;
 
-		before('Create test team', async () => {
+		before(async () => {
 			testUser = await createUser();
 			testUserCredentials = await login(testUser.username, password);
 
@@ -2068,7 +2069,7 @@ describe('/teams.listRooms', () => {
 			testPrivateTeam = await createTeam(testUserCredentials, `${teamName}private`, 1, []);
 		});
 
-		before('make user owner', async () => {
+		before(async () => {
 			await request
 				.post(api('teams.updateMember'))
 				.set(credentials)
@@ -2083,7 +2084,7 @@ describe('/teams.listRooms', () => {
 				.expect(200);
 		});
 
-		before('create rooms', async () => {
+		before(async () => {
 			privateRoom = (await createRoom({ type: 'p', name: `test-p-${Date.now()}` })).body.group;
 			privateRoom2 = (await createRoom({ type: 'p', name: `test-p2-${Date.now()}`, credentials: testUserCredentials })).body.group;
 			publicRoom = (await createRoom({ type: 'c', name: `test-c-${Date.now()}` })).body.channel;
@@ -2109,7 +2110,7 @@ describe('/teams.listRooms', () => {
 			]);
 		});
 
-		before('Create discussions', async () => {
+		before(async () => {
 			discussionOnPrivateRoom = (
 				await request
 					.post(api('rooms.createDiscussion'))
@@ -2821,7 +2822,7 @@ describe('/teams.update', () => {
 	const testTeamName2 = `test-team-name-changed${Date.now()}-2`;
 	let unauthorizedUser: TestUser<IUser>;
 
-	before('Create test team', (done) => {
+	before((_t, done) => {
 		void request
 			.post(api('teams.create'))
 			.set(credentials)
@@ -2835,7 +2836,7 @@ describe('/teams.update', () => {
 			});
 	});
 
-	before('Create test team', (done) => {
+	before((_t, done) => {
 		void request
 			.post(api('teams.create'))
 			.set(credentials)
@@ -2849,7 +2850,7 @@ describe('/teams.update', () => {
 			});
 	});
 
-	before('Create test team', (done) => {
+	before((_t, done) => {
 		void request
 			.post(api('teams.create'))
 			.set(credentials)

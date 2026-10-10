@@ -1,7 +1,8 @@
+import { after, afterEach, before, describe, it } from 'node:test';
+
 import type { Credentials } from '@rocket.chat/api-client';
 import type { IIntegration, IUser } from '@rocket.chat/core-typings';
 import { assert, expect } from 'chai';
-import { after, afterEach, before, describe, it } from 'mocha';
 
 import { getCredentials, api, request, credentials } from '../../data/api-data';
 import { createIntegration, removeIntegration } from '../../data/integration.helper';
@@ -15,7 +16,7 @@ describe('[Outgoing Integrations]', () => {
 	let user: TestUser<IUser>;
 	let userCredentials: Credentials;
 
-	before((done) => getCredentials(done));
+	before((_t, done) => getCredentials(done));
 
 	before(async () => {
 		user = await createUser();
@@ -62,7 +63,7 @@ describe('[Outgoing Integrations]', () => {
 	let integration: IIntegration;
 
 	describe('[/integrations.create]', () => {
-		it('should return an error when the user DOES NOT have the permission "manage-outgoing-integrations" to add an outgoing integration', (done) => {
+		it('should return an error when the user DOES NOT have the permission "manage-outgoing-integrations" to add an outgoing integration', (_t, done) => {
 			void updatePermission('manage-outgoing-integrations', []).then(() => {
 				void request
 					.post(api('integrations.create'))
@@ -91,7 +92,7 @@ describe('[Outgoing Integrations]', () => {
 			});
 		});
 
-		it('should return an error when the user DOES NOT have the permission "manage-own-outgoing-integrations" to add an outgoing integration', (done) => {
+		it('should return an error when the user DOES NOT have the permission "manage-own-outgoing-integrations" to add an outgoing integration', (_t, done) => {
 			void updatePermission('manage-own-outgoing-integrations', []).then(() => {
 				void request
 					.post(api('integrations.create'))
@@ -120,7 +121,7 @@ describe('[Outgoing Integrations]', () => {
 			});
 		});
 
-		it('should return an error when the user sends an invalid type of integration', (done) => {
+		it('should return an error when the user sends an invalid type of integration', (_t, done) => {
 			void request
 				.post(api('integrations.create'))
 				.set(credentials)
@@ -147,7 +148,7 @@ describe('[Outgoing Integrations]', () => {
 				.end(done);
 		});
 
-		it('should add the integration successfully when the user ONLY has the permission "manage-outgoing-integrations" to add an outgoing integration', (done) => {
+		it('should add the integration successfully when the user ONLY has the permission "manage-outgoing-integrations" to add an outgoing integration', (_t, done) => {
 			let integrationId: IIntegration['_id'];
 			void updatePermission('manage-outgoing-integrations', ['admin']).then(() => {
 				void request
@@ -178,7 +179,7 @@ describe('[Outgoing Integrations]', () => {
 			});
 		});
 
-		it('should add the integration successfully when the user ONLY has the permission "manage-own-outgoing-integrations" to add an outgoing integration', (done) => {
+		it('should add the integration successfully when the user ONLY has the permission "manage-own-outgoing-integrations" to add an outgoing integration', (_t, done) => {
 			void updatePermission('manage-outgoing-integrations', []).then(() => {
 				void updatePermission('manage-own-outgoing-integrations', ['admin']).then(() => {
 					void request
@@ -210,7 +211,7 @@ describe('[Outgoing Integrations]', () => {
 			});
 		});
 
-		it('should create an outgoing integration successfully', (done) => {
+		it('should create an outgoing integration successfully', (_t, done) => {
 			let integrationId: IIntegration['_id'];
 			void request
 				.post(api('integrations.create'))
@@ -245,7 +246,7 @@ describe('[Outgoing Integrations]', () => {
 	});
 
 	describe('[/integrations.list]', () => {
-		it('should return the list of outgoing integrations', (done) => {
+		it('should return the list of outgoing integrations', (_t, done) => {
 			void request
 				.get(api('integrations.list'))
 				.set(credentials)
@@ -266,7 +267,7 @@ describe('[Outgoing Integrations]', () => {
 				.end(done);
 		});
 
-		it('should return the list create by the user only', (done) => {
+		it('should return the list create by the user only', (_t, done) => {
 			void updatePermission('manage-outgoing-integrations', []).then(() => {
 				void updatePermission('manage-own-outgoing-integrations', ['user']).then(() => {
 					void request
@@ -327,7 +328,7 @@ describe('[Outgoing Integrations]', () => {
 				});
 		});
 
-		it('should return the history of outgoing integrations', (done) => {
+		it('should return the history of outgoing integrations', (_t, done) => {
 			void updatePermission('manage-outgoing-integrations', ['admin']).then(() => {
 				void request
 					.get(api('integrations.history'))
@@ -350,7 +351,7 @@ describe('[Outgoing Integrations]', () => {
 	});
 
 	describe('[/integrations.get]', () => {
-		it('should return an error when the required "integrationId" query parameters is not sent', (done) => {
+		it('should return an error when the required "integrationId" query parameters is not sent', (_t, done) => {
 			void request
 				.get(api('integrations.get'))
 				.set(credentials)
@@ -363,7 +364,7 @@ describe('[Outgoing Integrations]', () => {
 				.end(done);
 		});
 
-		it('should return an error when the user DOES NOT have the permission "manage-outgoing-integrations" to get an outgoing integration', (done) => {
+		it('should return an error when the user DOES NOT have the permission "manage-outgoing-integrations" to get an outgoing integration', (_t, done) => {
 			void updatePermission('manage-outgoing-integrations', []).then(() => {
 				void request
 					.get(api('integrations.get'))
@@ -379,7 +380,7 @@ describe('[Outgoing Integrations]', () => {
 			});
 		});
 
-		it('should return an error when the user DOES NOT have the permission "manage-outgoing-integrations" to get an outgoing integration created by another user', (done) => {
+		it('should return an error when the user DOES NOT have the permission "manage-outgoing-integrations" to get an outgoing integration created by another user', (_t, done) => {
 			void updatePermission('manage-outgoing-integrations', []).then(() => {
 				void request
 					.get(api('integrations.get'))
@@ -395,7 +396,7 @@ describe('[Outgoing Integrations]', () => {
 			});
 		});
 
-		it('should return an error when the user sends an invalid integration', (done) => {
+		it('should return an error when the user sends an invalid integration', (_t, done) => {
 			void updatePermission('manage-outgoing-integrations', ['admin']).then(() => {
 				void request
 					.get(api('integrations.get'))
@@ -411,7 +412,7 @@ describe('[Outgoing Integrations]', () => {
 			});
 		});
 
-		it('should return the integration successfully when the user is able to see only your own integrations', (done) => {
+		it('should return the integration successfully when the user is able to see only your own integrations', (_t, done) => {
 			void updatePermission('manage-outgoing-integrations', [])
 				.then(() => updatePermission('manage-own-outgoing-integrations', ['user']))
 				.then(() => {
@@ -430,7 +431,7 @@ describe('[Outgoing Integrations]', () => {
 				});
 		});
 
-		it('should return the integration successfully', (done) => {
+		it('should return the integration successfully', (_t, done) => {
 			void updatePermission('manage-outgoing-integrations', ['admin']).then(() => {
 				void request
 					.get(api('integrations.get'))
@@ -449,7 +450,7 @@ describe('[Outgoing Integrations]', () => {
 	});
 
 	describe('[/integrations.remove]', () => {
-		it('should return an error when the user DOES NOT have the permission "manage-outgoing-integrations" to remove an outgoing integration', (done) => {
+		it('should return an error when the user DOES NOT have the permission "manage-outgoing-integrations" to remove an outgoing integration', (_t, done) => {
 			void updatePermission('manage-outgoing-integrations', []).then(() => {
 				void request
 					.post(api('integrations.remove'))
@@ -468,7 +469,7 @@ describe('[Outgoing Integrations]', () => {
 			});
 		});
 
-		it('should return an error when the user DOES NOT have the permission "manage-own-outgoing-integrations" to remove an outgoing integration', (done) => {
+		it('should return an error when the user DOES NOT have the permission "manage-own-outgoing-integrations" to remove an outgoing integration', (_t, done) => {
 			void updatePermission('manage-own-incoming-integrations', []).then(() => {
 				void request
 					.post(api('integrations.remove'))
@@ -487,7 +488,7 @@ describe('[Outgoing Integrations]', () => {
 			});
 		});
 
-		it('should return an error when the user sends an invalid type of integration', (done) => {
+		it('should return an error when the user sends an invalid type of integration', (_t, done) => {
 			void updatePermission('manage-own-outgoing-integrations', ['admin']).then(() => {
 				void request
 					.post(api('integrations.remove'))
@@ -506,7 +507,7 @@ describe('[Outgoing Integrations]', () => {
 			});
 		});
 
-		it('should remove the integration successfully when the user at least one of the necessary permission to remove an outgoing integration', (done) => {
+		it('should remove the integration successfully when the user at least one of the necessary permission to remove an outgoing integration', (_t, done) => {
 			void updatePermission('manage-outgoing-integrations', ['admin']).then(() => {
 				void request
 					.post(api('integrations.remove'))
@@ -524,7 +525,7 @@ describe('[Outgoing Integrations]', () => {
 			});
 		});
 
-		it('the normal user should remove the integration successfully when the user have the "manage-own-outgoing-integrations" to remove an outgoing integration', (done) => {
+		it('the normal user should remove the integration successfully when the user have the "manage-own-outgoing-integrations" to remove an outgoing integration', (_t, done) => {
 			void updatePermission('manage-own-outgoing-integrations', ['user']).then(() => {
 				void request
 					.post(api('integrations.remove'))
@@ -576,18 +577,22 @@ describe('[Outgoing Integrations]', () => {
 		afterEach(() => updatePermission('manage-outgoing-integrations', ['admin']));
 
 		describe('[/integrations.clearHistory]', () => {
-			it('should fail when unauthenticated', () => request.post(api('integrations.clearHistory')).send({ integrationId }).expect(401));
+			it('should fail when unauthenticated', async () => {
+				await request.post(api('integrations.clearHistory')).send({ integrationId }).expect(401);
+			});
 
-			it('should fail with 400 when integrationId is not provided', () =>
-				request.post(api('integrations.clearHistory')).set(credentials).send({}).expect(400));
+			it('should fail with 400 when integrationId is not provided', async () => {
+				await request.post(api('integrations.clearHistory')).set(credentials).send({}).expect(400);
+			});
 
-			it('should fail with 400 when the integration does not exist', () =>
-				request
+			it('should fail with 400 when the integration does not exist', async () => {
+				await request
 					.post(api('integrations.clearHistory'))
 					.set(credentials)
 					.send({ integrationId: 'does-not-exist' })
 					.expect(400)
-					.expect((res) => expect(res.body).to.have.property('success', false)));
+					.expect((res) => expect(res.body).to.have.property('success', false));
+			});
 
 			it('should fail with 400 when the user lacks the manage-outgoing-integrations permission', async () => {
 				await Promise.all([updatePermission('manage-outgoing-integrations', []), updatePermission('manage-own-outgoing-integrations', [])]);
@@ -602,37 +607,42 @@ describe('[Outgoing Integrations]', () => {
 					});
 			});
 
-			it('should clear the integration history', () =>
-				request
+			it('should clear the integration history', async () => {
+				await request
 					.post(api('integrations.clearHistory'))
 					.set(credentials)
 					.send({ integrationId })
 					.expect(200)
-					.expect((res) => expect(res.body).to.have.property('success', true)));
+					.expect((res) => expect(res.body).to.have.property('success', true));
+			});
 		});
 
 		describe('[/integrations.replayOutgoing]', () => {
-			it('should fail when unauthenticated', () =>
-				request.post(api('integrations.replayOutgoing')).send({ integrationId, historyId: 'x' }).expect(401));
+			it('should fail when unauthenticated', async () => {
+				await request.post(api('integrations.replayOutgoing')).send({ integrationId, historyId: 'x' }).expect(401);
+			});
 
-			it('should fail with 400 when required params are missing', () =>
-				request.post(api('integrations.replayOutgoing')).set(credentials).send({ integrationId }).expect(400));
+			it('should fail with 400 when required params are missing', async () => {
+				await request.post(api('integrations.replayOutgoing')).set(credentials).send({ integrationId }).expect(400);
+			});
 
-			it('should fail with 400 when the integration does not exist', () =>
-				request
+			it('should fail with 400 when the integration does not exist', async () => {
+				await request
 					.post(api('integrations.replayOutgoing'))
 					.set(credentials)
 					.send({ integrationId: 'does-not-exist', historyId: 'x' })
 					.expect(400)
-					.expect((res) => expect(res.body).to.have.property('success', false)));
+					.expect((res) => expect(res.body).to.have.property('success', false));
+			});
 
-			it('should fail with 400 when the history does not exist', () =>
-				request
+			it('should fail with 400 when the history does not exist', async () => {
+				await request
 					.post(api('integrations.replayOutgoing'))
 					.set(credentials)
 					.send({ integrationId, historyId: 'does-not-exist' })
 					.expect(400)
-					.expect((res) => expect(res.body).to.have.property('success', false)));
+					.expect((res) => expect(res.body).to.have.property('success', false));
+			});
 
 			it('should fail with 400 when the user lacks permission (integration becomes inaccessible)', async () => {
 				await Promise.all([updatePermission('manage-outgoing-integrations', []), updatePermission('manage-own-outgoing-integrations', [])]);

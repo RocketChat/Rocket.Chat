@@ -1,8 +1,9 @@
+import { after, before, describe, it } from 'node:test';
+
 import type { Credentials } from '@rocket.chat/api-client';
 import type { IRoom, ITeam, IUser } from '@rocket.chat/core-typings';
 import { TeamType, UserStatus } from '@rocket.chat/core-typings';
 import { expect } from 'chai';
-import { after, before, describe, it } from 'mocha';
 
 import { api, credentials, getCredentials, request } from '../../data/api-data';
 import { updateEESetting } from '../../data/permissions.helper';
@@ -12,9 +13,7 @@ import { password } from '../../data/user';
 import { createUser, deleteUser, login, setUserStatus } from '../../data/users.helper';
 import { IS_EE } from '../../e2e/config/constants';
 
-(IS_EE ? describe : describe.skip)('[Status Visibility] (Enterprise Only)', function () {
-	this.retries(0);
-
+(IS_EE ? describe : describe.skip)('[Status Visibility] (Enterprise Only)', () => {
 	let hider: IUser & { username: string };
 	let viewer: IUser & { username: string };
 	let bystander: IUser & { username: string };
@@ -29,7 +28,7 @@ import { IS_EE } from '../../e2e/config/constants';
 	const statusOf = (members: { username?: string; status?: string }[], username: string) =>
 		members.find((member) => member.username === username)?.status;
 
-	before((done) => getCredentials(done));
+	before((_t, done) => getCredentials(done));
 
 	before(async () => {
 		await updateEESetting('Accounts_StatusVisibility_Enabled', true);

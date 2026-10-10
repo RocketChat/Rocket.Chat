@@ -1,10 +1,11 @@
+import { before, describe, it } from 'node:test';
+
 import { expect } from 'chai';
-import { before, describe, it } from 'mocha';
 
 import { getCredentials, api, request, credentials } from '../../data/api-data';
 
 describe('[Webdav]', () => {
-	before((done) => getCredentials(done));
+	before((_t, done) => getCredentials(done));
 
 	describe('/webdav.getMyAccounts', () => {
 		it('should return my webdav accounts', async () => {

@@ -1,7 +1,8 @@
+import { after, before, describe, it } from 'node:test';
+
 import { faker } from '@faker-js/faker';
 import type { ILivechatAgent, ILivechatVisitor, IOmnichannelRoom, IRoom } from '@rocket.chat/core-typings';
 import { expect } from 'chai';
-import { before, describe, it, after } from 'mocha';
 
 import { api, getCredentials, request } from '../../../data/api-data';
 import { sendSimpleMessage } from '../../../data/chat.helper';
@@ -20,7 +21,7 @@ import { createRoom, deleteRoom } from '../../../data/rooms.helper';
 
 describe('LIVECHAT - messages', () => {
 	let agent: ILivechatAgent;
-	before((done) => getCredentials(done));
+	before((_t, done) => getCredentials(done));
 
 	before(async () => {
 		agent = await createAgent();

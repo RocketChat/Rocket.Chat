@@ -1,6 +1,7 @@
+import { after, before, describe, it } from 'node:test';
+
 import type { ILivechatVisitor, IOmnichannelRoom, ISetting } from '@rocket.chat/core-typings';
 import { expect } from 'chai';
-import { after, before, describe, it } from 'mocha';
 
 import { getCredentials, api, request, credentials } from '../../../data/api-data';
 import {
@@ -17,7 +18,7 @@ import { getLivechatVisitorByToken } from '../../../data/livechat/visitor';
 import { updatePermission, updateSetting } from '../../../data/permissions.helper';
 
 describe('LIVECHAT - Integrations', () => {
-	before((done) => getCredentials(done));
+	before((_t, done) => getCredentials(done));
 
 	before(async () => {
 		await updateSetting('Livechat_enabled', true);
@@ -28,7 +29,7 @@ describe('LIVECHAT - Integrations', () => {
 			await updatePermission('view-livechat-manager', []);
 			await request.get(api('livechat/integrations.settings')).set(credentials).expect('Content-Type', 'application/json').expect(403);
 		});
-		it('should return an array of settings', (done) => {
+		it('should return an array of settings', (_t, done) => {
 			updatePermission('view-livechat-manager', ['admin'])
 				.then(async () => {
 					const res = await request

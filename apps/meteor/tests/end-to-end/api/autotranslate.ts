@@ -1,7 +1,8 @@
+import { after, before, describe, it } from 'node:test';
+
 import type { Credentials } from '@rocket.chat/api-client';
 import type { IMessage, IRoom, IUser } from '@rocket.chat/core-typings';
 import { expect } from 'chai';
-import { before, describe, after, it } from 'mocha';
 
 import { getCredentials, api, request, credentials, methodCall } from '../../data/api-data';
 import { sendSimpleMessage } from '../../data/chat.helper';
@@ -25,7 +26,7 @@ const resetE2EDefaults = async () => {
 };
 
 describe('AutoTranslate', () => {
-	before((done) => getCredentials(done));
+	before((_t, done) => getCredentials(done));
 
 	describe('[AutoTranslate]', () => {
 		describe('[/autotranslate.getProviderUiMetadata]', () => {

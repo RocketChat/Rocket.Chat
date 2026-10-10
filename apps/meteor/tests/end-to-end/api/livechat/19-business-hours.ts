@@ -1,8 +1,9 @@
+import { after, afterEach, before, beforeEach, describe, it } from 'node:test';
+
 import type { Credentials } from '@rocket.chat/api-client';
 import type { ILivechatAgent, ILivechatBusinessHour, ILivechatDepartment } from '@rocket.chat/core-typings';
 import { LivechatBusinessHourBehaviors, LivechatBusinessHourTypes, ILivechatAgentStatus } from '@rocket.chat/core-typings';
 import { expect } from 'chai';
-import { after, before, describe, it } from 'mocha';
 
 import { sleep } from '../../../../lib/utils/sleep';
 import { getCredentials, api, request, credentials } from '../../../data/api-data';
@@ -34,7 +35,7 @@ import { IS_EE } from '../../../e2e/config/constants';
 import { retry } from '../helpers/retry';
 
 describe('LIVECHAT - business hours', () => {
-	before((done) => getCredentials(done));
+	before((_t, done) => getCredentials(done));
 
 	before(async () => {
 		await updateSetting('Livechat_enabled', true);

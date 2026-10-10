@@ -1,6 +1,7 @@
+import { after, before, describe, it } from 'node:test';
+
 import type { ISetting } from '@rocket.chat/core-typings';
 import { expect } from 'chai';
-import { before, after, describe, it } from 'mocha';
 import sharp from 'sharp';
 import type { Response } from 'supertest';
 
@@ -59,7 +60,7 @@ const waitForLdapConnection = () =>
 	);
 
 (IS_EE ? describe : describe.skip)('LDAP', () => {
-	before((done) => getCredentials(done));
+	before((_t, done) => getCredentials(done));
 
 	let originalSettings: Setting[] | undefined;
 

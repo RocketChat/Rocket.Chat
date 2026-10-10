@@ -1,9 +1,10 @@
+import { after, before, describe, it } from 'node:test';
+
 import type { Credentials } from '@rocket.chat/api-client';
 import { TeamType } from '@rocket.chat/core-typings';
 import type { AtLeast, IIntegration, IMessage, IRoom, ITeam, IUser } from '@rocket.chat/core-typings';
 import { Random } from '@rocket.chat/random';
 import { assert, expect } from 'chai';
-import { after, before, describe, it } from 'mocha';
 
 import { getCredentials, api, request, credentials } from '../../data/api-data';
 import { createIntegration, removeIntegration } from '../../data/integration.helper';
@@ -23,7 +24,7 @@ describe('[Incoming Integrations]', () => {
 	let channel: IRoom;
 	let testChannelName: string;
 
-	before((done) => getCredentials(done));
+	before((_t, done) => getCredentials(done));
 
 	before(async () => {
 		await Promise.all([
@@ -285,7 +286,7 @@ describe('[Incoming Integrations]', () => {
 				expect(res.body).to.have.property('success', false);
 				expect(res.body).to.have.property('error', 'overriding destination channel is disabled for this integration');
 			});
-			it('should send a message for a channel that is specified in the webhooks configuration', (done) => {
+			it('should send a message for a channel that is specified in the webhooks configuration', (_t, done) => {
 				const successfulMessage = `Message sent successfully at #${Date.now()}`;
 				void request
 					.post(`/hooks/${integration._id}/${integration.token}`)
@@ -340,7 +341,7 @@ describe('[Incoming Integrations]', () => {
 					})
 					.expect(200);
 
-				return request
+				await request
 					.get(api('channels.messages'))
 					.set(credentials)
 					.query({
@@ -649,7 +650,7 @@ describe('[Incoming Integrations]', () => {
 	});
 
 	describe('[/integrations.list]', () => {
-		before((done) => {
+		before((_t, done) => {
 			void createUser().then((createdUser) => {
 				user = createdUser;
 				void login(user.username, password).then((credentials) => {
