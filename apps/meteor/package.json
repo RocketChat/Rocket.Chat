@@ -25,8 +25,9 @@
 	"scripts": {
 		".testunit:definition": "mocha --config ./.mocharc.definition.js",
 		".testunit:jest": "TZ=UTC TS_NODE_COMPILER_OPTIONS='{\"allowJs\": false}' jest",
+		".testunit:node": "node --test --require tsx --require ./tests/setup/chaiPlugins.ts '**/*.test.{ts,js}'",
 		".testunit:server": "mocha --config ./.mocharc.js",
-		".testunit:server:cov": "nyc -r text -r lcov mocha --config ./.mocharc.js",
+		".testunit:server:cov": "nyc --silent mocha --config ./.mocharc.js && nyc --no-clean -r text -r lcov yarn .testunit:node",
 		"build:ci": "METEOR_DEBUG_BUILD=1 METEOR_DISABLE_OPTIMISTIC_CACHING=1 meteor build --verbose --server-only --directory /tmp/dist",
 		"build:vite": "vite build --config vite/vite.config.mts",
 		"coverage": "TS_NODE_COMPILER_OPTIONS='{\"module\": \"commonjs\"}' nyc -r html mocha --config ./.mocharc.js",
