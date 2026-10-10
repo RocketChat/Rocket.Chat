@@ -1,7 +1,7 @@
 import type { IAbacAttributeDefinition, IRoom } from '@rocket.chat/core-typings';
-import { isPrivateRoom, isPublicRoom, isRoomFederated } from '@rocket.chat/core-typings';
+import { isDiscussion, isPrivateRoom, isPublicRoom, isRoomFederated } from '@rocket.chat/core-typings';
 
-export type AbacLockableRoom = Pick<IRoom, 't' | 'abacAttributes' | 'federated'>;
+export type AbacLockableRoom = Pick<IRoom, 't' | 'abacAttributes' | 'federated' | 'prid'>;
 
 export type RoomAbacLockContext = {
 	enforcementOn: boolean;
@@ -15,6 +15,12 @@ export const isRoomAbacLocked = (room: AbacLockableRoom, { enforcementOn, requir
 
 	if (isRoomFederated(room)) {
 		return false;
+	}
+
+	// Enforcement holds `Discussion_enabled` at false, so a discussion that predates it stays locked
+	// whatever it carries.
+	if (isDiscussion(room)) {
+		return true;
 	}
 
 	if (isPublicRoom(room)) {

@@ -12,6 +12,7 @@ jest.mock('../contexts/RoomContext', () => ({
 }));
 
 const appRoot = mockAppRoot().withTranslations('en', 'core', {
+	ABAC_Room_locked_discussion: 'discussions stay locked',
 	ABAC_Room_locked_member: 'set this room attributes',
 	ABAC_Room_locked_public: 'make this channel private',
 });
@@ -28,10 +29,10 @@ describe('ComposerAbacLocked', () => {
 		expect(screen.getByText('set this room attributes')).toBeInTheDocument();
 	});
 
-	it('should treat a private discussion as any other private room, which is what the predicate does here', () => {
+	it('should not offer attributes on a private discussion, which no attribute set unlocks', () => {
 		renderFor(createFakeRoom({ t: 'p', prid: 'parent-room' }));
 
-		expect(screen.getByText('set this room attributes')).toBeInTheDocument();
+		expect(screen.getByText('discussions stay locked')).toBeInTheDocument();
 	});
 
 	it('should not offer attributes on a public channel, which cannot hold them', () => {
@@ -40,9 +41,9 @@ describe('ComposerAbacLocked', () => {
 		expect(screen.getByText('make this channel private')).toBeInTheDocument();
 	});
 
-	it('should treat a public discussion as public, since attributes cannot unlock it either', () => {
+	it('should not tell a public discussion to go private, which would not unlock it', () => {
 		renderFor(createFakeRoom({ t: 'c', prid: 'parent-room' }));
 
-		expect(screen.getByText('make this channel private')).toBeInTheDocument();
+		expect(screen.getByText('discussions stay locked')).toBeInTheDocument();
 	});
 });
