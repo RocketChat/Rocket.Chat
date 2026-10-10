@@ -37,6 +37,11 @@ export const Queue: Story = {
 	args: { hands: queue },
 };
 
+/** The reader first in line: called "You", as they would say it. */
+export const OwnHandNext: Story = {
+	args: { hands: [{ id: 'reader', name: 'Rodrigo Nascimento', isLocal: true }, ...queue] },
+};
+
 /** The whole line, in order. */
 export const QueueOpen: Story = {
 	args: { hands: queue },
