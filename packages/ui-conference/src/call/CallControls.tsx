@@ -194,7 +194,7 @@ const CallControls = ({ layout, onLayoutChange, onOpenDiagnostics }: CallControl
 					onToggle={toggleMic}
 				/>
 			</SplitButton>
-			<SplitButton danger={!self.cameraOn}>
+			<SplitButton danger={!self.cameraOn} aria-label={t('Camera_controls')}>
 				<CameraPicker />
 				<ToggleButton
 					label={t('Camera')}

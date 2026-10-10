@@ -151,7 +151,7 @@ exports[`call stories renders CallBar Default without crashing 1`] = `
               </button>
             </div>
             <div
-              aria-label="Camera"
+              aria-label="Camera controls"
               class="rcx-split-button rcx-split-button--danger"
               role="group"
             >
@@ -344,7 +344,7 @@ exports[`call stories renders CallControls CameraOnAndSharing without crashing 1
             </button>
           </div>
           <div
-            aria-label="Camera"
+            aria-label="Camera controls"
             class="rcx-split-button"
             role="group"
           >
@@ -536,7 +536,7 @@ exports[`call stories renders CallControls Default without crashing 1`] = `
             </button>
           </div>
           <div
-            aria-label="Camera"
+            aria-label="Camera controls"
             class="rcx-split-button rcx-split-button--danger"
             role="group"
           >
@@ -728,7 +728,7 @@ exports[`call stories renders CallControls HandRaised without crashing 1`] = `
             </button>
           </div>
           <div
-            aria-label="Camera"
+            aria-label="Camera controls"
             class="rcx-split-button rcx-split-button--danger"
             role="group"
           >
@@ -905,7 +905,7 @@ exports[`call stories renders CallControls Muted without crashing 1`] = `
             </button>
           </div>
           <div
-            aria-label="Camera"
+            aria-label="Camera controls"
             class="rcx-split-button rcx-split-button--danger"
             role="group"
           >
@@ -1097,7 +1097,7 @@ exports[`call stories renders CallControls OneOnOne without crashing 1`] = `
             </button>
           </div>
           <div
-            aria-label="Camera"
+            aria-label="Camera controls"
             class="rcx-split-button rcx-split-button--danger"
             role="group"
           >
@@ -1274,7 +1274,7 @@ exports[`call stories renders CallControls SpeakingWhileMuted without crashing 1
             </button>
           </div>
           <div
-            aria-label="Camera"
+            aria-label="Camera controls"
             class="rcx-split-button rcx-split-button--danger"
             role="group"
           >
