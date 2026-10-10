@@ -75,11 +75,15 @@ with the camera off, it is remembered straight away and applied when the camera 
 | Type | Reliable | Payload | Meaning |
 | --- | --- | --- | --- |
 | `hand` | yes | `{ raised, raisedAt, rebroadcast? }` | Raised hands. `rebroadcast` restates a hand for someone who arrived later; only new hands chime. |
-| `reaction` | no | `{ emoji, reactionId? }` | Floating reactions, 3.5s on receivers. |
+| `reaction` | no | `{ emoji, reactionId? }` | Floating reactions: seen for 3s, kept for 3.5s on receivers. |
 | `mute` | yes | `{ target }` | Asks one participant to mute. Only the target acts on it, by muting itself; nothing reaches into anyone's machine. |
 
 Reactions rise from the call area with the sender's name, and raised hands are listed next to the participants button,
 because a call can be larger than the tiles it shows.
+
+A sender's latest reaction also sits in the top-left corner of their own tile, opposite the microphone, for exactly as
+long as it rises (`REACTION_VISIBLE_MS`) — not for the provider's longer `REACTION_TTL_MS`, which only bounds how long it
+is kept. A newer reaction from the same person replaces it and starts the time over.
 
 ## Who gets rung
 

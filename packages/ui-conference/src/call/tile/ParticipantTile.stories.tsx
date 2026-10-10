@@ -55,9 +55,19 @@ export const HandRaised: Story = {
 	args: { handPosition: 3 },
 };
 
+/** Their latest reaction, in the corner opposite the microphone, for as long as it rises over the call. */
+export const Reacting: Story = {
+	args: { reaction: { id: '1', emoji: '🎉' } },
+};
+
 /** The reader's own tile, which alone says what its encoder is sending. */
 export const Self: Story = {
 	render: () => <SelfTile displayName='John Doe' muted={false} held={false} sendHeight={720} />,
+};
+
+/** The reader's own reaction, beside what their tile says it is sending. */
+export const SelfReacting: Story = {
+	render: () => <SelfTile displayName='John Doe' muted={false} held={false} sendHeight={720} reaction={{ id: '1', emoji: '👍' }} />,
 };
 
 export const Thumbnail: Story = {

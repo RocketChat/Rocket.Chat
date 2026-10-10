@@ -16,6 +16,7 @@ const ParticipantThumbnail = ({
 	cameraStream,
 	audioStream,
 	handPosition,
+	reaction,
 }: ParticipantThumbnailProps) => (
 	<TileFrame
 		displayName={displayName}
@@ -23,6 +24,7 @@ const ParticipantThumbnail = ({
 		held={held}
 		audioStream={audioStream}
 		handPosition={handPosition}
+		reaction={reaction}
 		ringWidth={THUMBNAIL_RING_WIDTH}
 	>
 		<TilePicture displayName={displayName} avatarUrl={avatarUrl} cameraStream={cameraStream} avatarSize='x32' mirrored={false} />
