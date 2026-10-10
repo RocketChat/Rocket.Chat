@@ -13,13 +13,14 @@ import {
 import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { useRoom } from '../../views/room/contexts/RoomContext';
+import { useRoom, useUserIsSubscribed } from '../../views/room/contexts/RoomContext';
 import { useVideoConfWarning } from '../../views/room/contextualBar/VideoConference/hooks/useVideoConfWarning';
 
 export const useVideoCallRoomAction = () => {
 	const { t } = useTranslation();
 	const room = useRoom();
 	const user = useUser();
+	const subscribed = useUserIsSubscribed();
 	const federated = isRoomFederated(room);
 
 	const ownUser = room.uids?.length === 1 || false;
@@ -54,8 +55,18 @@ export const useVideoCallRoomAction = () => {
 
 	const visible = groups.length > 0;
 	const allowed = visible && permittedToCallManagement && (!user?.username || !room.muted?.includes(user.username)) && !ownUser;
-	const disabled = federated || (!!room.ro && !permittedToPostReadonly) || room.archived;
-	const tooltip = disabled ? t('core.Video_Call_unavailable_for_this_type_of_room') : undefined;
+	const unavailable = federated || (!!room.ro && !permittedToPostReadonly) || room.archived;
+	// A room open only as a preview can't start a call: the call is the members', so the user is told to join first
+	// rather than shown a call that fails. An omnichannel room is served by agents who need not have joined it.
+	const mustJoin = !subscribed && room.t !== 'l';
+	const disabled = unavailable || mustJoin;
+
+	let tooltip: string | undefined;
+	if (unavailable) {
+		tooltip = t('core.Video_Call_unavailable_for_this_type_of_room');
+	} else if (mustJoin) {
+		tooltip = t('Join_the_room_to_start_a_call');
+	}
 
 	const handleOpenVideoConf = useStableCallback(async () => {
 		if (isCalling || isRinging) {
