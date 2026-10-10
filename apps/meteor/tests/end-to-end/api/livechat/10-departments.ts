@@ -1,8 +1,9 @@
+import { after, before, describe, it } from 'node:test';
+
 import { faker } from '@faker-js/faker';
 import type { Credentials } from '@rocket.chat/api-client';
 import type { ILivechatDepartment, IUser } from '@rocket.chat/core-typings';
 import { expect } from 'chai';
-import { before, describe, it, after } from 'mocha';
 import type { Response } from 'supertest';
 
 import { getCredentials, api, request, credentials } from '../../../data/api-data';
@@ -22,7 +23,7 @@ import { createUser, deleteUser, login } from '../../../data/users.helper';
 import { IS_EE } from '../../../e2e/config/constants';
 
 (IS_EE ? describe.skip : describe)('LIVECHAT - Departments[CE]', () => {
-	before((done) => getCredentials(done));
+	before((_t, done) => getCredentials(done));
 
 	before(async () => {
 		await updateSetting('Livechat_enabled', true);
@@ -76,8 +77,8 @@ import { IS_EE } from '../../../e2e/config/constants';
 		departmentId = body.department._id;
 	});
 
-	it('should not create a 2nd department', () => {
-		return request
+	it('should not create a 2nd department', async () => {
+		await request
 			.post(api('livechat/department'))
 			.set(credentials)
 			.send({ department: { name: 'Test', enabled: true, showOnOfflineForm: true, showOnRegistration: true, email: 'bla@bla' } })
@@ -96,7 +97,7 @@ import { IS_EE } from '../../../e2e/config/constants';
 
 (IS_EE ? describe : describe.skip)('LIVECHAT - Departments', () => {
 	let initialDep: ILivechatDepartment;
-	before((done) => getCredentials(done));
+	before((_t, done) => getCredentials(done));
 
 	before(async () => {
 		await updateSetting('Livechat_enabled', true);
@@ -364,16 +365,16 @@ import { IS_EE } from '../../../e2e/config/constants';
 	});
 
 	describe('GET livechat/department/:_id', () => {
-		it('should return unauthorized error when the user does not have the necessary permission', async () => {
+		it('should return unauthorized error when the user does not have the necessary permission', { timeout: 5000 }, async () => {
 			await updatePermission('view-livechat-departments', []);
 			await request
 				.get(api('livechat/department/testetetetstetete'))
 				.set(credentials)
 				.expect('Content-Type', 'application/json')
 				.expect(403);
-		}).timeout(5000);
+		});
 
-		it('should return an error when the department does not exist', async () => {
+		it('should return an error when the department does not exist', { timeout: 5000 }, async () => {
 			await updatePermission('view-livechat-departments', ['admin']);
 			await request
 				.get(api('livechat/department/testesteteste'))
@@ -385,7 +386,7 @@ import { IS_EE } from '../../../e2e/config/constants';
 					expect(res.body).to.have.property('department');
 					expect(res.body.department).to.be.null;
 				});
-		}).timeout(5000);
+		});
 
 		it('should return the department', async () => {
 			await updatePermission('view-livechat-departments', ['admin']);

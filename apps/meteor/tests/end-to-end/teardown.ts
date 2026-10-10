@@ -1,3 +1,5 @@
+import { afterEach } from 'node:test';
+
 import type { Response } from 'supertest';
 
 import { request } from '../data/api-data';
@@ -37,4 +39,10 @@ methods.forEach((method) => {
 	};
 });
 
-export const getLastRequest = () => ({ lastUrl, lastMethod, lastBody, lastQuery, lastResponse });
+afterEach((t) => {
+	if (!('passed' in t) || t.passed) {
+		return;
+	}
+
+	console.log({ where: t.fullName, lastUrl, lastMethod, lastBody, lastQuery, lastResponse: lastResponse?.text });
+});
