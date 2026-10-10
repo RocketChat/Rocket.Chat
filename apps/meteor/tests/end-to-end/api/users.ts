@@ -5801,7 +5801,9 @@ describe('[Users]', () => {
 				.expect(200);
 
 			expect(res.body).to.have.property('success', true);
-			void getUserStatus(credentials['X-User-Id']).then((status) => expect(status.status).to.be.equal('busy'));
+			const status = await getUserStatus(credentials['X-User-Id']);
+			expect(status.status).to.be.equal('offline');
+			expect(status).to.have.property('statusSource', 'manual');
 		});
 		it('should return an error when trying to update other user status without the required permission', async () => {
 			await updatePermission('edit-other-user-info', []);
@@ -5835,9 +5837,9 @@ describe('[Users]', () => {
 				.expect(200);
 
 			expect(res.body).to.have.property('success', true);
-			void getUserStatus(credentials['X-User-Id']).then((status) => {
-				expect(status.status).to.be.equal('busy');
-			});
+			const status = await getUserStatus(user._id);
+			expect(status.status).to.be.equal('offline');
+			expect(status).to.have.property('statusSource', 'manual');
 		});
 		it('should return an error when the user try to update user status with an invalid status', async () => {
 			const res = await request

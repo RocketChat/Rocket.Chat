@@ -826,7 +826,7 @@ describe('[Channels]', () => {
 			}
 			const channelIds = (await Promise.all(promises)).map((r) => r.body.channel).map((channel) => channel._id);
 
-			void request
+			await request
 				.post(api('channels.create'))
 				.set(credentials)
 				.send({
@@ -837,25 +837,24 @@ describe('[Channels]', () => {
 				.expect(200)
 				.expect((res) => {
 					expect(res.body).to.have.property('success', true);
-					room = res.body.group;
-				})
-				.then(() => {
-					void request
-						.get(api('channels.members'))
-						.set(credentials)
-						.query({
-							roomId: room._id,
-						})
-						.expect('Content-Type', 'application/json')
-						.expect(200)
-						.expect((res) => {
-							expect(res.body).to.have.property('success', true);
-							expect(res.body).to.have.property('members').and.to.be.an('array');
-							expect(res.body.members).to.have.lengthOf(1);
-						});
+					room = res.body.channel;
 				});
 
-			await Promise.all(channelIds.map((id) => deleteRoom({ type: 'c', roomId: id })));
+			await request
+				.get(api('channels.members'))
+				.set(credentials)
+				.query({
+					roomId: room._id,
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.property('members').and.to.be.an('array');
+					expect(res.body.members).to.have.lengthOf(1);
+				});
+
+			await Promise.all([...channelIds, room._id].map((id) => deleteRoom({ type: 'c', roomId: id })));
 		});
 
 		it('should successfully create a channel in a team', async () => {
