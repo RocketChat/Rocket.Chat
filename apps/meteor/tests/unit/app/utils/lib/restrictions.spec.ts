@@ -1,6 +1,6 @@
 import { expect } from 'chai';
 
-import { fileUploadIsValidContentTypeFromSettings } from '../../../../../app/utils/lib/restrictions';
+import { fileUploadIsValidContentTypeFromSettings } from '../../../../../lib/restrictions';
 
 describe('fileUploadIsValidContentTypeFromSettings', () => {
 	describe('no lists configured', () => {

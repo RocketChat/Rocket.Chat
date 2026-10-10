@@ -20,7 +20,7 @@ const appRoot = resolve(here, '..');
 const require = createRequire(import.meta.url);
 const swiperRoot = dirname(require.resolve('swiper/package.json'));
 
-// Replaces the rocketchat:version Meteor compiler plugin for `app/utils/rocketchat.info`.
+// Replaces the rocketchat:version Meteor compiler plugin for `rocketchat.info`.
 const rocketchatInfo = (): Plugin => {
 	const virtualId = '\0rocketchat-info';
 
@@ -40,7 +40,7 @@ const rocketchatInfo = (): Plugin => {
 			if (id !== virtualId) return undefined;
 
 			const info = {
-				...JSON.parse(readFileSync(join(appRoot, 'app/utils/rocketchat.info'), 'utf8')),
+				...JSON.parse(readFileSync(join(appRoot, 'rocketchat.info'), 'utf8')),
 				marketplaceApiVersion: require('@rocket.chat/apps-engine/package.json').version.replace(/^[^0-9]/g, ''),
 				build: { date: new Date().toISOString() },
 				commit: { hash: git('rev-parse HEAD'), branch: git('rev-parse --abbrev-ref HEAD') },

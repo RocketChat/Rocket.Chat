@@ -14,7 +14,7 @@ import { ServerContext } from '@rocket.chat/ui-contexts';
 import { compile } from 'path-to-regexp';
 import { useMemo, useSyncExternalStore, type ReactNode } from 'react';
 
-import { Info as info } from '../../app/utils/rocketchat.info';
+import { Info as info } from '../../rocketchat.info';
 import { sdk } from '../lib/SDKClient';
 import { absoluteUrl } from '../lib/absoluteUrl';
 import { ensureConnectedAndAuthenticated, getDdpSdk } from '../lib/sdk/ddpSdk';
