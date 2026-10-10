@@ -184,9 +184,16 @@ export const syncContactFolder = async (
 			now,
 		);
 
+		let avatarsSynced = true;
+
 		if (syncAvatarsEnabled) {
 			if (fetchAvatars || upserts.size) {
-				await syncAvatars(provider, uid, mailbox, folderId, fetchAvatars ? undefined : [...upserts.keys()]);
+				try {
+					await syncAvatars(provider, uid, mailbox, folderId, fetchAvatars ? undefined : [...upserts.keys()]);
+				} catch (err) {
+					avatarsSynced = false;
+					logger.warn({ msg: 'Could not read Exchange contact photos for a folder', uid, folderId, err: scrubForLog(err) });
+				}
 			}
 		} else if (state?.avatarsSyncedAt) {
 			// We delete avatars if the setting is disabled
@@ -207,7 +214,7 @@ export const syncContactFolder = async (
 		// Only from a complete read, and only after the upserts landed.
 		const pruned = keepExternalIds ? await Contacts.deleteImportedOutsideSet(uid, folderId, keepExternalIds) : undefined;
 
-		await ExchangeContactSyncState.saveCursor(uid, folderId, identity, cursor, now, syncAvatarsEnabled ? now : undefined);
+		await ExchangeContactSyncState.saveCursor(uid, folderId, identity, cursor, now, syncAvatarsEnabled && avatarsSynced ? now : undefined);
 
 		return {
 			upserted: imported.upsertedCount,
