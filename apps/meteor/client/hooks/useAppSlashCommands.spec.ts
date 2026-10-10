@@ -75,6 +75,24 @@ describe('useAppSlashCommands', () => {
 		});
 	});
 
+	it('should register the permission declared by the app', async () => {
+		mockGetSlashCommands.mockResolvedValue({
+			commands: [{ ...mockSlashCommands[0], permission: ['manage-apps', 'view-logs'] }],
+			total: 1,
+			appsLoaded: true,
+		});
+
+		renderHook(() => useAppSlashCommands(), {
+			wrapper: mockAppRoot().withEndpoint('GET', '/v1/commands.list', mockGetSlashCommands).withJohnDoe().build(),
+		});
+
+		await waitFor(() => {
+			expect(slashCommands.commands['/test']).toBeDefined();
+		});
+
+		expect(slashCommands.commands['/test'].permission).toEqual(['manage-apps', 'view-logs']);
+	});
+
 	it('should handle command/removed event by invalidating queries', async () => {
 		const streamRef: StreamControllerRef<'apps'> = {};
 
