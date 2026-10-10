@@ -1,5 +1,5 @@
 import { IconButton } from '@rocket.chat/fuselage';
-import type * as UiKit from '@rocket.chat/ui-kit';
+import * as UiKit from '@rocket.chat/ui-kit';
 import type { MouseEventHandler } from 'react';
 
 import { useUiKitState } from '../hooks/useUiKitState';
@@ -17,7 +17,7 @@ const IconButtonElement = ({ block, context }: IconButtonElementProps) => {
 		void action({ target: e.currentTarget });
 	};
 
-	if (url) {
+	if (url && UiKit.isSafeUrl(url)) {
 		return <IconButton small is='a' target='_blank' disabled={loading} icon={iconName} href={url} onClick={handleClick} label={label} />;
 	}
 

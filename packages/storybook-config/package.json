@@ -16,7 +16,8 @@
 		"copy-svg": "cp -r ./src/logo.svg ./dist/logo.svg",
 		"dev": "tsc -p tsconfig.json --watch --preserveWatchOutput",
 		"lint": "eslint .",
-		"lint:fix": "eslint --fix ."
+		"lint:fix": "eslint --fix .",
+		"typecheck": "tsc --noEmit"
 	},
 	"dependencies": {
 		"@rocket.chat/emitter": "workspace:~",
@@ -33,11 +34,11 @@
 		"webpack": "~5.104.1"
 	},
 	"devDependencies": {
-		"@rocket.chat/fuselage": "^0.94.0",
-		"@rocket.chat/icons": "^0.50.0",
+		"@rocket.chat/fuselage": "^0.95.0",
+		"@rocket.chat/icons": "workspace:~",
 		"@rocket.chat/tsconfig": "workspace:*",
 		"@storybook/react": "^9.1.20",
-		"eslint": "~10.7.0",
+		"eslint": "~10.12.0",
 		"react": "~19.2.8",
 		"react-dom": "~19.2.8",
 		"typescript": "~5.9.3"

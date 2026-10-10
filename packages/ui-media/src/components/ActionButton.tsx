@@ -1,4 +1,4 @@
-import { Icon, IconButton } from '@rocket.chat/fuselage';
+import { Icon, IconButton, SplitButtonTrigger } from '@rocket.chat/fuselage';
 import type { Keys } from '@rocket.chat/icons';
 import type { ComponentProps, ReactElement } from 'react';
 import { forwardRef } from 'react';
@@ -9,16 +9,20 @@ export type ActionButtonProps = {
 	icon: Keys | ReactElement;
 	/** Renders the larger variant used by the conference UI. The widget keeps its original size by default. */
 	large?: boolean;
+	/** Renders it as the menu segment of a fuselage `SplitButton`. */
+	splitButtonTrigger?: boolean;
 	disabled?: boolean;
 	onClick?: () => void;
 } & Omit<ComponentProps<typeof IconButton>, 'icon' | 'aria-label' | 'disabled' | 'onClick'>;
 
 const ActionButton = forwardRef<HTMLButtonElement, ActionButtonProps>(function ActionButton(
-	{ disabled, label, icon, onClick, title, secondary = true, large = false, ...props },
+	{ disabled, label, icon, onClick, title, secondary = true, large = false, splitButtonTrigger = false, ...props },
 	ref,
 ) {
+	const Button = splitButtonTrigger ? SplitButtonTrigger : IconButton;
+
 	return (
-		<IconButton
+		<Button
 			label={label}
 			{...(large ? { large: true } : { medium: true })}
 			secondary={secondary}

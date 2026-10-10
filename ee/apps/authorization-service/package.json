@@ -15,7 +15,6 @@
 		"build": "tsc -p tsconfig.json",
 		"lint": "eslint .",
 		"ms": "TRANSPORTER=${TRANSPORTER:-TCP} MONGO_URL=${MONGO_URL:-mongodb://localhost:3001/meteor} ts-node --files src/service.ts",
-		"test": "echo \"Error: no test specified\" && exit 1",
 		"typecheck": "tsc --noEmit --skipLibCheck -p tsconfig.json"
 	},
 	"dependencies": {
@@ -46,7 +45,7 @@
 		"@rocket.chat/tsconfig": "workspace:*",
 		"@types/polka": "^0.5.8",
 		"@types/prometheus-gc-stats": "^0.6.4",
-		"eslint": "~10.7.0",
+		"eslint": "~10.12.0",
 		"ts-node": "^10.9.2",
 		"typescript": "~5.9.3"
 	},

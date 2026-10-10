@@ -306,6 +306,18 @@ describe('CsvImporter', () => {
 			});
 		});
 
+		it('should hand over a timestamp that is not a plain number as an invalid date', async () => {
+			await runImport([
+				{ name: 'general/messages.csv', content: 'alice,1700000000000abc,trailing junk\nbob,2026-09-23T10:00:00Z,iso date' },
+				{ name: 'directmessages/messages.csv', content: 'alice,bob,1700000002000abc,dm junk' },
+			]);
+
+			expect(converter.addMessage.callCount).to.equal(3);
+			for (const call of converter.addMessage.getCalls()) {
+				expect(call.args[0].ts.getTime()).to.be.NaN;
+			}
+		});
+
 		it('should convert direct messages into a single room per participant pair, whatever the username order', async () => {
 			await runImport([{ name: 'directmessages/messages.csv', content: DM_MESSAGES_CSV }]);
 

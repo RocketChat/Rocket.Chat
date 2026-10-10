@@ -29,12 +29,12 @@ import { useTranslation } from 'react-i18next';
 import DepartmentsAgentsTable from './DepartmentAgentsTable/DepartmentAgentsTable';
 import DepartmentTags from './DepartmentTags';
 import type { EditDepartmentFormData } from './definitions';
+import { useRoomsList } from './useRoomsList';
 import { formatAgentListPayload } from './utils/formatAgentListPayload';
 import { formatEditDepartmentPayload } from './utils/formatEditDepartmentPayload';
 import { getFormInitialValues } from './utils/getFormInititalValues';
 import { useFormSubmitWithDirtyCheck } from '../../../hooks/useFormSubmitWithDirtyCheck';
 import { useHasLicenseModule } from '../../../hooks/useHasLicenseModule';
-import { useRoomsList } from '../../../hooks/useRoomsList';
 import { EeTextInput, EeTextAreaInput, EeNumberInput, DepartmentBusinessHours } from '../additionalForms';
 import AutoCompleteUnit from '../additionalForms/AutoCompleteUnit';
 import AutoCompleteDepartment from '../components/AutoCompleteDepartment';
@@ -171,7 +171,7 @@ function EditDepartment({ data, id, title, allowedToForwardData }: EditDepartmen
 								<TextInput
 									id={nameField}
 									flexGrow={1}
-									error={errors.name?.message as string}
+									error={errors.name?.message}
 									placeholder={t('Name')}
 									{...register('name', { required: t('Required_field', { field: t('Name') }) })}
 								/>
@@ -201,7 +201,7 @@ function EditDepartment({ data, id, title, allowedToForwardData }: EditDepartmen
 							<FieldRow>
 								<TextInput
 									id={emailField}
-									error={errors.email?.message as string}
+									error={errors.email?.message}
 									endAddon={<Icon name='mail' size='x20' />}
 									placeholder={t('Email')}
 									{...register('email', {
@@ -357,7 +357,7 @@ function EditDepartment({ data, id, title, allowedToForwardData }: EditDepartmen
 													disabled={!!initialValues.unit}
 													haveNone
 													id={unitFieldId}
-													error={errors.unit?.message as string}
+													error={errors.unit?.message}
 													aria-describedby={`${unitFieldId}-error`}
 													value={value}
 													onChange={onChange}

@@ -46,7 +46,7 @@ void (async () => {
 
 	notifications.configure();
 
-	api.registerService(new DDPStreamer(server, lifecycle, registry, collections, notifications));
+	api.registerService(new DDPStreamer(server, lifecycle, registry, collections, notifications), ['meteor']);
 
 	await api.start();
 })();

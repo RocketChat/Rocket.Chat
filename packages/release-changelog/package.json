@@ -5,7 +5,8 @@
 	"main": "dist/index.js",
 	"scripts": {
 		"build": "tsc",
-		"lint": "eslint ."
+		"lint": "eslint .",
+		"typecheck": "tsc --noEmit"
 	},
 	"dependencies": {
 		"dataloader": "^2.2.3",
@@ -14,7 +15,7 @@
 	"devDependencies": {
 		"@changesets/types": "^6.0.0",
 		"@types/node": "~24.13.6",
-		"eslint": "~10.7.0",
+		"eslint": "~10.12.0",
 		"typescript": "~5.9.3"
 	},
 	"volta": {

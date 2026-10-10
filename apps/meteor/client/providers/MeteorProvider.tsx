@@ -1,4 +1,4 @@
-import { MarkdownTextContext, ModalProvider, TooltipProvider } from '@rocket.chat/ui-client';
+import { ImageGalleryContext, MarkdownTextContext, ModalProvider, TooltipProvider } from '@rocket.chat/ui-client';
 import type { ReactNode } from 'react';
 
 import ActionManagerProvider from './ActionManagerProvider';
@@ -20,6 +20,7 @@ import TranslationProvider from './TranslationProvider';
 import UserPresenceProvider from './UserPresenceProvider';
 import UserProvider from './UserProvider';
 import VideoConfProvider from './VideoConfProvider';
+import LazyImageGallery from '../components/LazyImageGallery';
 import MarkdownText from '../components/MarkdownText';
 import { OmnichannelRoomIconProvider } from '../components/RoomIcon/OmnichannelRoomIcon/provider/OmnichannelRoomIconProvider';
 
@@ -29,49 +30,51 @@ export type MeteorProviderProps = {
 
 const MeteorProvider = ({ children }: MeteorProviderProps) => (
 	<MarkdownTextContext.Provider value={MarkdownText}>
-		<ServerProvider>
-			<RouterProvider>
-				<ModalProvider>
-					<SettingsProvider>
-						<TranslationProvider>
-							<SessionProvider>
-								<TooltipProvider>
-									<ToastMessagesProvider>
-										<AvatarUrlProvider>
-											<UserProvider>
-												<LayoutProvider>
-													<AuthenticationProvider>
-														<CustomSoundProvider>
-															<DeviceProvider>
-																<AuthorizationProvider>
-																	<EmojiPickerProvider>
-																		<OmnichannelRoomIconProvider>
-																			<UserPresenceProvider>
-																				<ActionManagerProvider>
-																					<VideoConfProvider>
-																						<MediaCallProvider>
-																							<OmnichannelProvider>{children}</OmnichannelProvider>
-																						</MediaCallProvider>
-																					</VideoConfProvider>
-																				</ActionManagerProvider>
-																			</UserPresenceProvider>
-																		</OmnichannelRoomIconProvider>
-																	</EmojiPickerProvider>
-																</AuthorizationProvider>
-															</DeviceProvider>
-														</CustomSoundProvider>
-													</AuthenticationProvider>
-												</LayoutProvider>
-											</UserProvider>
-										</AvatarUrlProvider>
-									</ToastMessagesProvider>
-								</TooltipProvider>
-							</SessionProvider>
-						</TranslationProvider>
-					</SettingsProvider>
-				</ModalProvider>
-			</RouterProvider>
-		</ServerProvider>
+		<ImageGalleryContext.Provider value={LazyImageGallery}>
+			<ServerProvider>
+				<RouterProvider>
+					<ModalProvider>
+						<SettingsProvider>
+							<TranslationProvider>
+								<SessionProvider>
+									<TooltipProvider>
+										<ToastMessagesProvider>
+											<AvatarUrlProvider>
+												<UserProvider>
+													<LayoutProvider>
+														<AuthenticationProvider>
+															<CustomSoundProvider>
+																<DeviceProvider>
+																	<AuthorizationProvider>
+																		<EmojiPickerProvider>
+																			<OmnichannelRoomIconProvider>
+																				<UserPresenceProvider>
+																					<ActionManagerProvider>
+																						<VideoConfProvider>
+																							<MediaCallProvider>
+																								<OmnichannelProvider>{children}</OmnichannelProvider>
+																							</MediaCallProvider>
+																						</VideoConfProvider>
+																					</ActionManagerProvider>
+																				</UserPresenceProvider>
+																			</OmnichannelRoomIconProvider>
+																		</EmojiPickerProvider>
+																	</AuthorizationProvider>
+																</DeviceProvider>
+															</CustomSoundProvider>
+														</AuthenticationProvider>
+													</LayoutProvider>
+												</UserProvider>
+											</AvatarUrlProvider>
+										</ToastMessagesProvider>
+									</TooltipProvider>
+								</SessionProvider>
+							</TranslationProvider>
+						</SettingsProvider>
+					</ModalProvider>
+				</RouterProvider>
+			</ServerProvider>
+		</ImageGalleryContext.Provider>
 	</MarkdownTextContext.Provider>
 );
 

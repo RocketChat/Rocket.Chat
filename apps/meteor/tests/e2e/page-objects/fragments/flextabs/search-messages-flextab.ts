@@ -20,7 +20,8 @@ export class SearchMessagesFlexTab extends FlexTab {
 
 	async jumpToMessage(messageText: string) {
 		const message = (await this.getResultItem(messageText)).first();
-		await message.hover();
+		// Hover the body, not the item's center: the center can land on the author's name, whose hover card covers the toolbar.
+		await message.getByText(messageText).hover();
 		await message.getByRole('button', { name: 'Jump to message' }).click();
 	}
 }

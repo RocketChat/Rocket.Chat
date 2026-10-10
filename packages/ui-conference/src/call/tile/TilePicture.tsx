@@ -4,7 +4,7 @@ import { Avatar, Box, Icon } from '@rocket.chat/fuselage';
 import { StreamVideo } from '@rocket.chat/ui-media';
 
 import { useStreamHasLiveVideo } from '../hooks/useStreamHasLiveVideo';
-import { backdropTint } from '../lib/backdropTint';
+import { backdropTint } from '../lib/speakingRing';
 import type { TileParticipant } from '../lib/stageTiles';
 
 const avatarBackdropStyles = css`

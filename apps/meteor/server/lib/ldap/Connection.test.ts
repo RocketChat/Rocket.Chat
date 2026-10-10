@@ -107,4 +107,47 @@ describe('LDAPConnection', () => {
 			expect(connection.client.search.called).to.be.false;
 		});
 	});
+
+	describe('bindAuthenticationUserOrFail', () => {
+		const bindError = new Error('Invalid Credentials');
+		let connection: any;
+
+		beforeEach(() => {
+			connection = new LDAPConnection();
+			connection.client = { bind: sinon.stub().yields(null) };
+			connection.options.authentication = true;
+			connection.options.authenticationUserDN = 'cn=admin,dc=example,dc=com';
+			connection.options.authenticationPassword = 'secret';
+		});
+
+		it('should bind with the authentication user when authentication is enabled', async () => {
+			await connection.bindAuthenticationUserOrFail();
+			sinon.assert.calledOnceWithMatch(connection.client.bind, 'cn=admin,dc=example,dc=com', 'secret');
+		});
+
+		it('should reject with the bind error when the bind fails', async () => {
+			connection.client.bind.yields(bindError);
+			const error = await connection.bindAuthenticationUserOrFail().then(
+				() => undefined,
+				(e: unknown) => e,
+			);
+			expect(error).to.equal(bindError);
+		});
+
+		it('should reject without binding when authentication is enabled and the user DN is empty', async () => {
+			connection.options.authenticationUserDN = '';
+			const error = await connection.bindAuthenticationUserOrFail().then(
+				() => undefined,
+				(e: unknown) => e,
+			);
+			expect(error).to.be.an('error').with.property('message', 'Invalid UserDN for authentication');
+			sinon.assert.notCalled(connection.client.bind);
+		});
+
+		it('should not bind when authentication is disabled', async () => {
+			connection.options.authentication = false;
+			await connection.bindAuthenticationUserOrFail();
+			sinon.assert.notCalled(connection.client.bind);
+		});
+	});
 });

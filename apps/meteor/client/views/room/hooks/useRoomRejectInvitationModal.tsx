@@ -3,7 +3,7 @@ import { useSetModal, useUserSubscription } from '@rocket.chat/ui-contexts';
 import { useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { useRoomName } from '../../../hooks/useRoomName';
+import { useRoomName } from './useRoomName';
 import type { IRoomWithFederationOriginalName } from '../contexts/RoomContext';
 
 type RoomRejectInvitationModalResult = {

@@ -12,15 +12,13 @@ A UiKit block or element only works once every layer knows about it. Missing one
 
 ## 2. Where it may appear (`packages/ui-kit`)
 
-- [ ] Layout block: add it to each surface layout union **and** to the array passed to `super()` in `src/surfaces/<surface>/UiKitParser<Surface>.ts`.
+- [ ] Layout block: add its `type` to the `<surface>SurfaceLayoutBlockTypes` list in `src/surfaces/<surface>/UiKitParser<Surface>.ts` for each surface that should accept it. The surface type, the parser and the Fuselage renderer all follow that list.
 - [ ] Element: add it to each container type that should accept it (`ActionsBlock.elements`, `InputBlock.element`, `SectionBlock.accessory`, ...). Also update the matching guard (`isActionsBlockElement`, `isInputBlockElement`, ...); see [rendering.md](rendering.md#element-filtering-is-not-enforced-when-the-container-is-allowed) for when guards apply.
 
 ## 3. Web renderer (`packages/fuselage-ui-kit`)
 
 - [ ] Add the component in `src/blocks/` or `src/elements/`. Interactive elements read and dispatch their value with `useUiKitState` (`src/hooks/useUiKitState.ts`); initial values come from `src/utils/getInitialValue.ts`.
 - [ ] Add the renderer method named after the `type`: on `FuselageSurfaceRenderer` if every surface should draw it, otherwise on the specific `*SurfaceRenderer`. Check the `BlockContext` it will be called with.
-- [ ] Layout block: add it to the allowlist of each Fuselage surface renderer. These are separate from the `ui-kit` parser allowlists.
-
 ## 4. Livechat (`packages/livechat`), message blocks only
 
 - [ ] If Livechat should show it, add a component under `src/components/uiKit/message/` and a method on `MessageParser`. Otherwise, apps can wrap Rocket.Chat-only content in a `conditional` block with `when: { engine: ['rocket.chat'] }`.

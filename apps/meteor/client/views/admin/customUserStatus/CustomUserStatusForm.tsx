@@ -54,7 +54,7 @@ const CustomUserStatusForm = ({ onClose, onReload, status }: CustomUserStatusFor
 				});
 
 				onReload();
-				route.push({});
+				route.push({ tab: 'custom-status' });
 			} catch (error) {
 				dispatchToastMessage({ type: 'error', message: error });
 			}
@@ -72,7 +72,7 @@ const CustomUserStatusForm = ({ onClose, onReload, status }: CustomUserStatusFor
 				await deleteStatus({ customUserStatusId: status?._id ?? '' });
 				dispatchToastMessage({ type: 'success', message: t('Custom_User_Status_Has_Been_Deleted') });
 				onReload();
-				route.push({});
+				route.push({ tab: 'custom-status' });
 			} catch (error) {
 				dispatchToastMessage({ type: 'error', message: error });
 			} finally {

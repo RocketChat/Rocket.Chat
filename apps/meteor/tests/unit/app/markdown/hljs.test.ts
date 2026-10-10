@@ -2,7 +2,7 @@ import { afterEach, describe, it } from 'node:test';
 
 import { expect } from 'chai';
 
-import hljs, { register } from '../../../../app/markdown/lib/hljs';
+import hljs, { register } from '../../../../lib/markdown/hljs';
 
 const lazyLanguages: string[] = [
 	'onec',

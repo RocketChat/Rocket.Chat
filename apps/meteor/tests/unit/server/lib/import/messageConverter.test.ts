@@ -57,7 +57,7 @@ describe('Message Converter', () => {
 			const converter = new MessageConverter({ workInMemory: true });
 			converter._cache.addRoom('general', 'main');
 
-			await (converter as any).insertMessage(messageToImport);
+			await (converter as any).insertMessage({ ...messageToImport });
 
 			expect(insertMessage.getCalls()).to.be.an('array').with.lengthOf(1);
 			expect(insertMessage.getCall(0).args).to.be.an('array').with.lengthOf(4);
@@ -70,6 +70,24 @@ describe('Message Converter', () => {
 				msg: messageToImport.msg,
 				rid: 'main',
 			});
+		});
+
+		it('should save messages with an invalid timestamp at the time of the import, each after the previous one', async () => {
+			const clock = sinon.useFakeTimers({ now: 1790000000000, toFake: ['Date'] });
+			try {
+				const converter = new MessageConverter({ workInMemory: true });
+				converter._cache.addRoom('general', 'main');
+
+				for (const ts of [new Date(-836412432), new Date(0), new Date(NaN), undefined]) {
+					await (converter as any).insertMessage({ ...messageToImport, ts });
+				}
+
+				expect(insertMessage.getCalls().map((call) => call.args[1].ts.getTime())).to.deep.equal([
+					1790000000000, 1790000000001, 1790000000002, 1790000000003,
+				]);
+			} finally {
+				clock.restore();
+			}
 		});
 	});
 

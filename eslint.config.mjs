@@ -395,6 +395,7 @@ export default [
 			'apps/meteor/ee/server/**/*.ts',
 			'apps/meteor/server/**/*.ts',
 			'packages/fuselage-ui-kit/**/*.@(ts|tsx)',
+			'packages/ui-account/**/*.@(ts|tsx)',
 			'packages/ui-client/**/*.@(ts|tsx)',
 			'packages/ui-voip/**/*.@(ts|tsx)',
 			'packages/web-ui-registration/**/*.@(ts|tsx)',
@@ -423,6 +424,33 @@ export default [
 			],
 		},
 	},
+	// View-agnostic logic: must stay reusable by clients that do not render with Fuselage (e.g. mobile).
+	{
+		files: ['packages/ui-account/src/**/logic/**/*.@(ts|tsx)'],
+		ignores: ['**/*.spec.@(ts|tsx)'],
+		rules: {
+			'no-restricted-imports': [
+				'error',
+				{
+					paths: [
+						{
+							// ui-client mixes headless hooks with Fuselage components; only the former are allowed here.
+							name: '@rocket.chat/ui-client',
+							allowTypeImports: true,
+							allowImportNames: ['usePreferenceFeaturePreviewList'],
+							message: 'logic/ may only use headless hooks from ui-client; add the hook to the allow list if it renders nothing.',
+						},
+					],
+					patterns: [
+						{
+							group: ['@rocket.chat/fuselage', 'react-dom', '**/views/**'],
+							message: 'logic/ must not depend on rendering; move this to views/ or pass it in.',
+						},
+					],
+				},
+			],
+		},
+	},
 	// FIXME: these rules require type information and the files are not included in the main tsconfig.json
 	{
 		files: [
@@ -444,7 +472,7 @@ export default [
 			'@(ee/packages|packages)/*/jest.config.ts',
 
 			'ee/packages/pdf-worker/.storybook/*.@(ts|tsx)',
-			'packages/@(gazzodown|ui-client|ui-composer|ui-voip|web-ui-registration)/.storybook/*.@(ts|tsx)',
+			'packages/@(gazzodown|ui-account|ui-client|ui-composer|ui-voip|web-ui-registration)/.storybook/*.@(ts|tsx)',
 		],
 		rules: {
 			'@typescript-eslint/prefer-optional-chain': 'off',

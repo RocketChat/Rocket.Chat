@@ -14,7 +14,7 @@ import {
 	createMarkdownNotificationRenderer,
 	markup,
 } from './markdown.mocks';
-import hljs from '../../../../app/markdown/lib/hljs';
+import hljs from '../../../../lib/markdown/hljs';
 
 const { bold, inlineCode, anchor, image, blockquote } = markup;
 

@@ -5,7 +5,8 @@ import userEvent from '@testing-library/user-event';
 
 import CameraPicker from './CameraPicker';
 import { CallStateProvider } from './context';
-import { buildCallState, buildDeviceSelection, fakeDevices } from '../fixtures/callFixtures';
+import { VideoQualityProvider } from '../devices/VideoQualityContext';
+import { buildCallState, buildDeviceSelection, buildVideoQuality, fakeDevices } from '../fixtures/callFixtures';
 
 const getUserMedia = jest.fn();
 
@@ -25,7 +26,9 @@ const renderPicker = (devices: MediaDeviceInfo[]) =>
 	render(
 		<CallStateProvider value={buildCallState()}>
 			<DeviceSelectionProvider value={buildDeviceSelection({ devices })}>
-				<CameraPicker />
+				<VideoQualityProvider value={buildVideoQuality()}>
+					<CameraPicker />
+				</VideoQualityProvider>
 			</DeviceSelectionProvider>
 		</CallStateProvider>,
 		{ wrapper: mockAppRoot().build() },
