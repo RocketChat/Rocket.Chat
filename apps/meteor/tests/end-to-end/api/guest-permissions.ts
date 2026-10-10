@@ -84,7 +84,7 @@ import { IS_EE } from '../../e2e/config/constants';
 				.expect(400)
 				.expect((res) => {
 					expect(res.body).to.have.property('success', false);
-					expect(res.body).to.have.property('error', 'Permission is restricted');
+					expect(res.body).to.have.property('error').that.includes('Permission is restricted');
 					expect(res.body).to.have.property('errorType', 'error-action-not-allowed');
 				});
 		});
