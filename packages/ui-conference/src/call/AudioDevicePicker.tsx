@@ -3,8 +3,12 @@ import { useTranslation } from 'react-i18next';
 
 import VoiceActivity from './VoiceActivity';
 import { useCallState } from './context';
+import { useNoiseSuppressionChoices } from '../devices/useNoiseSuppressionChoices';
 
-/** The microphone and speaker of a call running in this window, its trigger showing what the microphone hears. */
+/**
+ * The microphone and speaker of a call running in this window, with the noise cancelling done to the microphone; its
+ * trigger shows what the microphone hears.
+ */
 const AudioDevicePicker = () => {
 	const { t } = useTranslation();
 	const { self } = useCallState();
@@ -14,6 +18,8 @@ const AudioDevicePicker = () => {
 	// A muted mic never moves, whatever it is still hearing.
 	const micLevel = useAudioLevel(self.muted ? null : (self.microphoneStream ?? null));
 
+	const noiseSuppression = useNoiseSuppressionChoices();
+
 	return (
 		<DeviceMenu
 			kinds={['audioinput', 'audiooutput']}
@@ -21,6 +27,7 @@ const AudioDevicePicker = () => {
 			placement='top-end'
 			// A call joined muted may not have the permission that names the devices yet.
 			beforeOpen={() => revealDeviceLabels(['audioinput', 'audiooutput'], devices)}
+			choices={noiseSuppression}
 			button={
 				<DeviceMenuButton
 					secondary

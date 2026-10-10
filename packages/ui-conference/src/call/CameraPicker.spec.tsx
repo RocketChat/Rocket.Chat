@@ -4,9 +4,9 @@ import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 
 import CameraPicker from './CameraPicker';
-import { CallStateProvider } from './context';
+import { CallMediaProcessingProvider, CallStateProvider } from './context';
 import { VideoQualityProvider } from '../devices/VideoQualityContext';
-import { buildCallState, buildDeviceSelection, buildVideoQuality, fakeDevices } from '../fixtures/callFixtures';
+import { buildCallState, buildDeviceSelection, buildMediaProcessing, buildVideoQuality, fakeDevices } from '../fixtures/callFixtures';
 
 const getUserMedia = jest.fn();
 
@@ -27,7 +27,9 @@ const renderPicker = (devices: MediaDeviceInfo[]) =>
 		<CallStateProvider value={buildCallState()}>
 			<DeviceSelectionProvider value={buildDeviceSelection({ devices })}>
 				<VideoQualityProvider value={buildVideoQuality()}>
-					<CameraPicker />
+					<CallMediaProcessingProvider value={buildMediaProcessing()}>
+						<CameraPicker />
+					</CallMediaProcessingProvider>
 				</VideoQualityProvider>
 			</DeviceSelectionProvider>
 		</CallStateProvider>,

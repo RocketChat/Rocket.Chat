@@ -1,7 +1,7 @@
 import type { ReactNode } from 'react';
 import { createContext, useContext } from 'react';
 
-import type { VideoQuality } from '../hooks/useCallDevicesInitialState';
+import type { BlurLevel, BlurModel, VideoQuality } from '../hooks/useCallDevicesInitialState';
 
 /** A camera track the preflight can show, whatever SDK opened it. */
 export type PreviewVideoTrack = {
@@ -17,11 +17,13 @@ const NO_PREVIEW_VIDEO: PreviewVideo = { error: false };
 /** Filled by whichever provider opens the preflight's camera; with none, there is no camera to show. */
 export const PreviewVideoContext = createContext<PreviewVideo>(NO_PREVIEW_VIDEO);
 
-/** What a provider that opens the preflight's camera is told: whether to, which camera, and at what resolution. */
+/** What a provider that opens the preflight's camera is told: whether to, which camera, at what resolution and blur. */
 export type PreviewVideoProviderProps = {
 	enabled: boolean;
 	deviceId?: string;
 	quality: VideoQuality;
+	blurLevel: BlurLevel;
+	blurModel: BlurModel;
 	children: ReactNode;
 };
 

@@ -14,6 +14,8 @@ const PreflightPreview = () => {
 	const previewVideo = usePreviewVideo();
 	const { preferences } = useCallDevicesInitialState(capabilities);
 
+	// Attached by the track rather than through `srcObject`: `attach` is what hands over the *processed* track when
+	// a processor is running, which is the reason the preview is a LiveKit track at all.
 	const { track } = previewVideo;
 	const videoRef = useCallback(
 		(node: HTMLVideoElement | null) => {
