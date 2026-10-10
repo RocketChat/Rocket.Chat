@@ -582,12 +582,14 @@ test.describe('OC - Livechat API', () => {
 
 				await expect(poLiveChat.txtChatMessage('this_a_test_message_from_visitor')).toBeVisible();
 
+				const visitorResponse = page.waitForResponse('**/api/v1/livechat/visitor');
+
 				await poLiveChat.page.evaluate((registerGuestVisitor) => {
 					window.RocketChat.livechat.registerGuest(registerGuestVisitor);
 					window.RocketChat.livechat.registerGuest(registerGuestVisitor);
 				}, registerGuestVisitor);
 
-				await page.waitForResponse('**/api/v1/livechat/visitor');
+				await visitorResponse;
 				await page.waitForTimeout(500); // NOTE: timeout is necessary to allow websocket unsubscribes to happen
 
 				await poLiveChat.onlineAgentMessage.fill('this_a_new_test_message_from_visitor');
