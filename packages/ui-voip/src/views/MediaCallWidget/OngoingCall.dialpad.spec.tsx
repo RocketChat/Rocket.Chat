@@ -37,6 +37,7 @@ const renderView = (Component: ComponentType, { peerInfo, inline = false, localS
 
 	const viewContextValue = {
 		sessionState,
+		allowedFeatures: sessionState.supportedFeatures,
 		onClickDirectMessage: undefined,
 		onMute: jest.fn(),
 		onHold: jest.fn(),
