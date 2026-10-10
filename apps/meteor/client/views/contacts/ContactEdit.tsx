@@ -1,4 +1,4 @@
-import type { IContact, Serialized } from '@rocket.chat/core-typings';
+import type { IContactPublic, Serialized } from '@rocket.chat/core-typings';
 import { Box, Button, ButtonGroup, Divider, Icon, IconButton } from '@rocket.chat/fuselage';
 import { Field, FieldError, FieldGroup, FieldLabel, FieldRow, TextInput } from '@rocket.chat/fuselage-forms';
 import {
@@ -18,8 +18,8 @@ import { useTranslation } from 'react-i18next';
 import { getEndpointErrorMessage } from '../../lib/errorHandling';
 
 export type ContactEditProps = {
-	contact?: Serialized<IContact>;
-	onSaved?: (contact: Serialized<IContact>) => void;
+	contact?: Serialized<IContactPublic>;
+	onSaved?: (contact: Serialized<IContactPublic>) => void;
 	onClose: () => void;
 };
 

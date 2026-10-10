@@ -1,4 +1,4 @@
-import type { IContact, Serialized } from '@rocket.chat/core-typings';
+import type { IContactPublic, Serialized } from '@rocket.chat/core-typings';
 import { Box } from '@rocket.chat/fuselage';
 import type { GenericMenuItemProps } from '@rocket.chat/ui-client';
 import { GenericMenu, GenericModal } from '@rocket.chat/ui-client';
@@ -11,7 +11,7 @@ import { useContactLabel } from './hooks/useContactLabel';
 import { getEndpointErrorMessage } from '../../lib/errorHandling';
 
 export type ContactMenuProps = {
-	contact: Serialized<IContact>;
+	contact: Serialized<IContactPublic>;
 	onEdit: () => void;
 	onDeleted?: () => void;
 };
