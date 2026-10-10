@@ -255,17 +255,7 @@ describe('Meteor.methods', () => {
 
 			describe('simple message and thread where the room message was read by the invited user but the thread message was not', () => {
 				before("should read all main room's messages with the invited user", async () => {
-					await request
-						.post(methodCall('readMessages'))
-						.set(userCredentials)
-						.send({
-							message: JSON.stringify({
-								id: 'id',
-								msg: 'method',
-								method: 'readMessages',
-								params: [room._id, true],
-							}),
-						});
+					await request.post(api('subscriptions.read')).set(userCredentials).send({ rid: room._id });
 				});
 
 				it("should return both the sender's and the invited user's read receipt for a message sent in the main room", async () => {
@@ -3435,8 +3425,8 @@ describe('Meteor.methods', () => {
 		let testUserCredentials: Credentials;
 
 		const now = new Date();
-		const startDate = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 0, 0, 0, 0).getTime();
-		const endDate = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 23, 59, 59, 999).getTime();
+		const startDate = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 0, 0, 0, 0).toISOString();
+		const endDate = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 23, 59, 59, 999).toISOString();
 
 		before('create test user', async () => {
 			testUser = await createUser();
@@ -3444,85 +3434,42 @@ describe('Meteor.methods', () => {
 		});
 
 		before('generate audits data', async () => {
-			await request
-				.post(methodCall('auditGetMessages'))
-				.set(credentials)
-				.send({
-					message: JSON.stringify({
-						method: 'auditGetMessages',
-						params: [
-							{
-								type: '',
-								msg: 'test1234',
-								startDate: { $date: startDate },
-								endDate: { $date: endDate },
-								rid: 'GENERAL',
-								users: [],
-							},
-						],
-						id: '14',
-						msg: 'method',
-					}),
-				});
+			await request.post(api('audit.messages')).set(credentials).send({
+				type: '',
+				msg: 'test1234',
+				startDate,
+				endDate,
+				rid: 'GENERAL',
+				users: [],
+			});
 		});
 
 		after(() => Promise.all([deleteUser(testUser)]));
 
 		it('should fail if the user does not have permissions to get auditions', async () => {
 			await request
-				.post(methodCall('auditGetAuditions'))
+				.get(api('audit.auditions'))
 				.set(testUserCredentials)
-				.send({
-					message: JSON.stringify({
-						method: 'auditGetAuditions',
-						params: [
-							{
-								startDate: { $date: startDate },
-								endDate: { $date: endDate },
-							},
-						],
-						id: '18',
-						msg: 'method',
-					}),
-				})
+				.query({ startDate, endDate })
 				.expect('Content-Type', 'application/json')
-				.expect(400)
+				.expect(403)
 				.expect((res) => {
-					expect(res.body).to.have.a.property('message');
-					const data = JSON.parse(res.body.message);
-					expect(data).to.have.a.property('error');
-					expect(data.error).to.have.a.property('error', 'Not allowed');
+					expect(res.body).to.have.a.property('success', false);
 				});
 		});
 
 		it('should not return more user data than necessary - e.g. passwords, hashes, tokens', async () => {
 			await request
-				.post(methodCall('auditGetAuditions'))
+				.get(api('audit.auditions'))
 				.set(credentials)
-				.send({
-					message: JSON.stringify({
-						method: 'auditGetAuditions',
-						params: [
-							{
-								startDate: { $date: startDate },
-								endDate: { $date: endDate },
-							},
-						],
-						id: '18',
-						msg: 'method',
-					}),
-				})
+				.query({ startDate, endDate })
 				.expect('Content-Type', 'application/json')
 				.expect(200)
 				.expect((res) => {
 					expect(res.body).to.have.a.property('success', true);
-					expect(res.body).to.have.a.property('message').that.is.a('string');
-					const data = JSON.parse(res.body.message);
-					expect(data).to.have.a.property('result').that.is.an('array');
-					expect(data.result.length).to.be.greaterThan(0);
-					expect(data).to.have.a.property('msg', 'result');
-					expect(data).to.have.a.property('id', '18');
-					data.result.forEach((item: any) => {
+					expect(res.body).to.have.a.property('auditions').that.is.an('array');
+					expect(res.body.auditions.length).to.be.greaterThan(0);
+					res.body.auditions.forEach((item: any) => {
 						expect(item).to.have.all.keys('_id', 'ts', 'results', 'u', 'fields', '_updatedAt');
 						expect(item.u).to.not.have.property('services');
 						expect(item.u).to.not.have.property('roles');
@@ -3557,25 +3504,14 @@ describe('Meteor.methods', () => {
 
 		it('should not allow an agent to join a closed livechat room', async () => {
 			await request
-				.post(methodCall('joinRoom'))
+				.post(api('rooms.join'))
 				.set(userCredentials)
-				.send({
-					message: JSON.stringify({
-						method: 'joinRoom',
-						params: [room._id],
-						id: 'id',
-						msg: 'method',
-					}),
-				})
+				.send({ roomId: room._id })
 				.expect('Content-Type', 'application/json')
 				.expect(400)
 				.expect((res) => {
 					expect(res.body).to.have.a.property('success', false);
-					expect(res.body).to.have.a.property('message').that.is.a('string');
-
-					const data = JSON.parse(res.body.message);
-					expect(data).to.have.a.property('error').that.is.an('object');
-					expect(data.error).to.have.a.property('error', 'room-closed');
+					expect(res.body).to.have.a.property('errorType', 'room-closed');
 				});
 		});
 	});

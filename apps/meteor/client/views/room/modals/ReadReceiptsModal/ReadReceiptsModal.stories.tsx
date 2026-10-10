@@ -57,7 +57,7 @@ export default {
 export const Default: StoryObj<typeof ReadReceiptsModal> = {
 	decorators: [
 		mockAppRoot()
-			.withMethod('getReadReceipts', () => readReceipts)
+			.withEndpoint('GET', '/v1/chat.getMessageReadReceipts', () => ({ receipts: readReceipts }))
 			.buildStoryDecorator(),
 	],
 };
@@ -65,7 +65,7 @@ export const Default: StoryObj<typeof ReadReceiptsModal> = {
 export const Loading: StoryObj<typeof ReadReceiptsModal> = {
 	decorators: [
 		mockAppRoot()
-			.withMethod('getReadReceipts', () => new Promise<IReadReceiptWithUser[]>(() => undefined) as unknown as IReadReceiptWithUser[])
+			.withEndpoint('GET', '/v1/chat.getMessageReadReceipts', () => new Promise(() => undefined))
 			.buildStoryDecorator(),
 	],
 };
@@ -73,7 +73,7 @@ export const Loading: StoryObj<typeof ReadReceiptsModal> = {
 export const Empty: StoryObj<typeof ReadReceiptsModal> = {
 	decorators: [
 		mockAppRoot()
-			.withMethod('getReadReceipts', () => [])
+			.withEndpoint('GET', '/v1/chat.getMessageReadReceipts', () => ({ receipts: [] }))
 			.buildStoryDecorator(),
 	],
 };
