@@ -3,7 +3,9 @@ import type { IUser } from '@rocket.chat/core-typings';
 import { Subscriptions } from '@rocket.chat/models';
 
 import { getDefaultChannels } from './getDefaultChannels';
+import { isRoomAbacLocked } from '../../../lib/rooms/isRoomAbacLocked';
 import { settings } from '../../settings';
+import { getRoomAbacLockContext } from '../authorization/getRoomAbacLockContext';
 import { callbacks } from '../callbacks';
 import { getSubscriptionAutotranslateDefaultConfig } from '../getSubscriptionAutotranslateDefaultConfig';
 import { notifyOnSubscriptionChangedById } from '../notifyListener';
@@ -11,7 +13,8 @@ import { getDefaultSubscriptionPref } from '../utils/lib/getDefaultSubscriptionP
 
 export const addUserToDefaultChannels = async function (user: IUser, silenced?: boolean): Promise<void> {
 	await callbacks.run('beforeJoinDefaultChannels', user);
-	const defaultRooms = await getDefaultChannels();
+	const lockContext = getRoomAbacLockContext();
+	const defaultRooms = (await getDefaultChannels()).filter((room) => !isRoomAbacLocked(room, lockContext));
 
 	for (const room of defaultRooms) {
 		if (settings.get('ABAC_Enabled') && room?.abacAttributes?.length) {

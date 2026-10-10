@@ -19,6 +19,8 @@ const Message = {
 
 const addUserToRoom = sinon.stub();
 
+const getRoomAbacLockContext = sinon.stub();
+
 const { TeamService } = proxyquire.noCallThru().load('../../../../../server/services/team/service', {
 	'@rocket.chat/core-services': {
 		Room: {},
@@ -45,6 +47,9 @@ const { TeamService } = proxyquire.noCallThru().load('../../../../../server/serv
 	},
 	'../../lib/rooms/addUserToRoom': {
 		addUserToRoom,
+	},
+	'../../lib/authorization/getRoomAbacLockContext': {
+		getRoomAbacLockContext,
 	},
 	'../../lib/users/checkUsernameAvailability': {
 		checkUsernameAvailability: sinon.stub(),
@@ -74,6 +79,9 @@ describe('Team service', () => {
 		Rooms.unsetTeamId.reset();
 		Users.findActiveByIds.reset();
 		Message.saveSystemMessage.reset();
+		getRoomAbacLockContext.reset();
+
+		getRoomAbacLockContext.returns({ enforcementOn: false, requiredAttributeKeys: [] });
 	});
 
 	it('should wait for default room membership operations to finish', async function () {
@@ -123,6 +131,27 @@ describe('Team service', () => {
 		).to.be.rejectedWith('room-add-failed');
 
 		expect(addUserToRoom.callCount).to.equal(1);
+	});
+
+	it('should leave out the default rooms enforcement locks', async () => {
+		getRoomAbacLockContext.returns({ enforcementOn: true, requiredAttributeKeys: [] });
+		addUserToRoom.resolves(true);
+
+		Rooms.findDefaultRoomsForTeam.returns({
+			toArray: () =>
+				Promise.resolve([
+					{ _id: 'locked-room', t: 'p' },
+					{ _id: 'compliant-room', t: 'p', abacAttributes: [{ key: 'dept', values: ['eng'] }] },
+				]),
+		});
+		Users.findActiveByIds.returns({
+			toArray: () => Promise.resolve([{ _id: 'user-1', username: 'user-1' }]),
+		});
+
+		await service.addMembersToDefaultRooms({ _id: 'inviter', username: 'inviter' }, 'team-id', [{ userId: 'user-1' }]);
+
+		expect(addUserToRoom.calledOnce).to.be.true;
+		expect(addUserToRoom.firstCall.args[0]).to.equal('compliant-room');
 	});
 
 	describe('unsetTeamIdOfRooms', () => {

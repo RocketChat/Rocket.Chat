@@ -27,6 +27,8 @@ import { Team, Rooms, Subscriptions, Users, TeamMember } from '@rocket.chat/mode
 import { escapeRegExp } from '@rocket.chat/tools';
 import type { Document, FindOptions, Filter } from 'mongodb';
 
+import { isRoomAbacLocked } from '../../../lib/rooms/isRoomAbacLocked';
+import { getRoomAbacLockContext } from '../../lib/authorization/getRoomAbacLockContext';
 import { notifyOnSubscriptionChangedByRoomIdAndUserId, notifyOnRoomChangedById } from '../../lib/notifyListener';
 import { addUserToRoom } from '../../lib/rooms/addUserToRoom';
 import { getSubscribedRoomsForUserWithDetails } from '../../lib/rooms/getRoomsWithSingleOwner';
@@ -465,7 +467,7 @@ export class TeamService extends ServiceClassInternal implements ITeamService {
 		room.teamDefault = isDefault;
 		await Rooms.setTeamDefaultById(rid, isDefault);
 
-		if (isDefault) {
+		if (isDefault && !isRoomAbacLocked(room, getRoomAbacLockContext())) {
 			const maxNumberOfAutoJoinMembers = settings.get<number>('API_User_Limit');
 			const teamMembers = await this.members(
 				uid,
@@ -973,7 +975,8 @@ export class TeamService extends ServiceClassInternal implements ITeamService {
 		teamId: string,
 		members: Array<Pick<ITeamMember, 'userId'>>,
 	): Promise<void> {
-		const defaultRooms = await Rooms.findDefaultRoomsForTeam(teamId).toArray();
+		const lockContext = getRoomAbacLockContext();
+		const defaultRooms = (await Rooms.findDefaultRoomsForTeam(teamId).toArray()).filter((room) => !isRoomAbacLocked(room, lockContext));
 		const users = await Users.findActiveByIds(members.map((member) => member.userId)).toArray();
 
 		for (const room of defaultRooms) {

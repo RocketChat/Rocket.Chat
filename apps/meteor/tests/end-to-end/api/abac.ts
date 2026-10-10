@@ -4,6 +4,7 @@ import { expect } from 'chai';
 import { before, after, describe, it } from 'mocha';
 import { MongoClient } from 'mongodb';
 
+import { addAbacAttributesToUserDirectly } from '../../data/abac.helper';
 import { api, getCredentials, request, credentials, methodCall } from '../../data/api-data';
 import { sleep } from '../../data/livechat/utils';
 import {
@@ -23,25 +24,13 @@ import { adminEmail, adminUsername, password } from '../../data/user';
 import { createUser, deleteUser, login } from '../../data/users.helper';
 import { IS_EE, URL_MONGODB } from '../../e2e/config/constants';
 
-// NOTE: This manipulates the DB directly to add ABAC attributes to a user
-// The idea is to avoid having to go through LDAP to add info to the user
-let connection: MongoClient;
-const addAbacAttributesToUserDirectly = async (userId: string, abacAttributes: IAbacAttributeDefinition[]) => {
-	await connection.db().collection('users').updateOne(
-		{
-			// @ts-expect-error - collection types for _id
-			_id: userId,
-		},
-		{ $set: { abacAttributes } },
-	);
-};
-
 (IS_EE ? describe : describe.skip)('[ABAC] (Enterprise Only)', function () {
 	this.retries(0);
 
 	let testRoom: IRoom;
 	let unauthorizedUser: IUser;
 	let unauthorizedCredentials: Credentials;
+	let connection: MongoClient;
 
 	const initialKey = `attr_${Date.now()}`;
 	const updatedKey = `${initialKey}_renamed`;
@@ -553,8 +542,8 @@ const addAbacAttributesToUserDirectly = async (userId: string, abacAttributes: I
 					.send({ key: auditAttrKey, values: ['v1'] })
 					.expect(200);
 
-				await addAbacAttributesToUserDirectly(auditUser._id, [{ key: auditAttrKey, values: ['v1'] }]);
-				await addAbacAttributesToUserDirectly(credentials['X-User-Id'], [{ key: auditAttrKey, values: ['v1'] }]);
+				await addAbacAttributesToUserDirectly(connection, auditUser._id, [{ key: auditAttrKey, values: ['v1'] }]);
+				await addAbacAttributesToUserDirectly(connection, credentials['X-User-Id'], [{ key: auditAttrKey, values: ['v1'] }]);
 
 				const roomRes = await createRoom({ type: 'p', name: `abac-audit-user-room-${Date.now()}`, members: [auditUser.username!] });
 				auditRoom = roomRes.body.group as IRoom;
@@ -740,7 +729,7 @@ const addAbacAttributesToUserDirectly = async (userId: string, abacAttributes: I
 					.send({ key: key2, values: ['value2'] })
 					.expect(200);
 
-				await addAbacAttributesToUserDirectly(credentials['X-User-Id'], [
+				await addAbacAttributesToUserDirectly(connection, credentials['X-User-Id'], [
 					{ key: key1, values: ['value1'] },
 					{ key: key2, values: ['value2'] },
 				]);
@@ -1751,7 +1740,7 @@ const addAbacAttributesToUserDirectly = async (userId: string, abacAttributes: I
 						expect(res.body).to.have.property('success', true);
 					});
 
-				await addAbacAttributesToUserDirectly(credentials['X-User-Id'], [{ key: validateAttrKey, values: ['one'] }]);
+				await addAbacAttributesToUserDirectly(connection, credentials['X-User-Id'], [{ key: validateAttrKey, values: ['one'] }]);
 
 				await request
 					.post(`${v1}/abac/rooms/${plainRoomId}/attributes/${validateAttrKey}`)
@@ -1800,7 +1789,7 @@ const addAbacAttributesToUserDirectly = async (userId: string, abacAttributes: I
 						expect(res.body).to.have.property('success', true);
 					});
 
-				await addAbacAttributesToUserDirectly(credentials['X-User-Id'], [{ key: inviteAttrKey, values: ['one'] }]);
+				await addAbacAttributesToUserDirectly(connection, credentials['X-User-Id'], [{ key: inviteAttrKey, values: ['one'] }]);
 
 				await request
 					.post(`${v1}/abac/rooms/${managedRoomId}/attributes/${inviteAttrKey}`)
@@ -1883,7 +1872,7 @@ const addAbacAttributesToUserDirectly = async (userId: string, abacAttributes: I
 				.expect(200);
 
 			// We have to add them directly cause otherwise the abac engine would kick the user from the room after the attribute is added
-			await addAbacAttributesToUserDirectly(credentials['X-User-Id'], [{ key: accessAttrKey, values: ['v1'] }]);
+			await addAbacAttributesToUserDirectly(connection, credentials['X-User-Id'], [{ key: accessAttrKey, values: ['v1'] }]);
 
 			// Create two private rooms: one will stay without attributes, the other will get the attribute
 			roomWithoutAttr = (await createRoom({ type: 'p', name: `abac-access-noattr-${Date.now()}` })).body.group;
@@ -1952,7 +1941,7 @@ const addAbacAttributesToUserDirectly = async (userId: string, abacAttributes: I
 					.send({ key: enabledAccessAttrKey, values: ['v1'] })
 					.expect(200);
 
-				await addAbacAttributesToUserDirectly(credentials['X-User-Id'], [{ key: enabledAccessAttrKey, values: ['v1'] }]);
+				await addAbacAttributesToUserDirectly(connection, credentials['X-User-Id'], [{ key: enabledAccessAttrKey, values: ['v1'] }]);
 
 				managedRoom = (await createRoom({ type: 'p', name: `abac-access-disabled-${Date.now()}` })).body.group;
 
@@ -1975,7 +1964,7 @@ const addAbacAttributesToUserDirectly = async (userId: string, abacAttributes: I
 					.expect(200);
 
 				enabledUser = createUserRes.body.user;
-				await addAbacAttributesToUserDirectly(enabledUser._id, [{ key: enabledAccessAttrKey, values: ['v1'] }]);
+				await addAbacAttributesToUserDirectly(connection, enabledUser._id, [{ key: enabledAccessAttrKey, values: ['v1'] }]);
 
 				await updateSetting('ABAC_Enabled', false);
 			});
@@ -2000,7 +1989,7 @@ const addAbacAttributesToUserDirectly = async (userId: string, abacAttributes: I
 			});
 
 			it('INVITE: should still fail after user loses attributes when ABAC is disabled', async () => {
-				await addAbacAttributesToUserDirectly(enabledUser._id, [{ key: enabledAccessAttrKey, values: [] }]);
+				await addAbacAttributesToUserDirectly(connection, enabledUser._id, [{ key: enabledAccessAttrKey, values: [] }]);
 
 				await request
 					.post(`${v1}/groups.invite`)
@@ -2035,8 +2024,8 @@ const addAbacAttributesToUserDirectly = async (userId: string, abacAttributes: I
 
 			cacheUser = await createUser();
 			cacheUserCreds = await login(cacheUser.username, password);
-			await addAbacAttributesToUserDirectly(cacheUser._id, [{ key: cacheAttrKey, values: ['on'] }]);
-			await addAbacAttributesToUserDirectly(credentials['X-User-Id'], [{ key: cacheAttrKey, values: ['on'] }]);
+			await addAbacAttributesToUserDirectly(connection, cacheUser._id, [{ key: cacheAttrKey, values: ['on'] }]);
+			await addAbacAttributesToUserDirectly(connection, credentials['X-User-Id'], [{ key: cacheAttrKey, values: ['on'] }]);
 
 			await request
 				.post(`${v1}/abac/rooms/${cacheRoom._id}/attributes/${cacheAttrKey}`)
@@ -2078,7 +2067,7 @@ const addAbacAttributesToUserDirectly = async (userId: string, abacAttributes: I
 		});
 
 		it('ACCESS: user retains access within cache after losing attributes', async () => {
-			await addAbacAttributesToUserDirectly(cacheUser._id, []);
+			await addAbacAttributesToUserDirectly(connection, cacheUser._id, []);
 
 			await request
 				.get(`/api/v1/groups.history`)
@@ -2116,7 +2105,7 @@ const addAbacAttributesToUserDirectly = async (userId: string, abacAttributes: I
 		});
 
 		it('ACCESS: user can be re invited to the room and access history', async () => {
-			await addAbacAttributesToUserDirectly(cacheUser._id, [{ key: cacheAttrKey, values: ['on'] }]);
+			await addAbacAttributesToUserDirectly(connection, cacheUser._id, [{ key: cacheAttrKey, values: ['on'] }]);
 			await request
 				.post(`${v1}/groups.invite`)
 				.set(credentials)
@@ -2170,8 +2159,8 @@ const addAbacAttributesToUserDirectly = async (userId: string, abacAttributes: I
 
 			projUser = await createUser();
 			projUserCreds = await login(projUser.username, password);
-			await addAbacAttributesToUserDirectly(projUser._id, [{ key: projAttrKey, values: ['on'] }]);
-			await addAbacAttributesToUserDirectly(credentials['X-User-Id'], [{ key: projAttrKey, values: ['on'] }]);
+			await addAbacAttributesToUserDirectly(connection, projUser._id, [{ key: projAttrKey, values: ['on'] }]);
+			await addAbacAttributesToUserDirectly(connection, credentials['X-User-Id'], [{ key: projAttrKey, values: ['on'] }]);
 
 			await request
 				.post(`${v1}/abac/rooms/${projRoom._id}/attributes/${projAttrKey}`)
@@ -2214,7 +2203,7 @@ const addAbacAttributesToUserDirectly = async (userId: string, abacAttributes: I
 		});
 
 		it('PROJECTION: member that lost its attributes is denied while still subscribed', async () => {
-			await addAbacAttributesToUserDirectly(projUser._id, []);
+			await addAbacAttributesToUserDirectly(connection, projUser._id, []);
 
 			await request
 				.get(`${v1}/groups.messages`)
@@ -2749,9 +2738,9 @@ const addAbacAttributesToUserDirectly = async (userId: string, abacAttributes: I
 				const davidUser = await request.get(`${v1}/users.info`).set(credentials).query({ username: 'david.scott' }).expect(200);
 				const sergeiUser = await request.get(`${v1}/users.info`).set(credentials).query({ username: 'sergei.krikalev' }).expect(200);
 
-				await addAbacAttributesToUserDirectly(davidUser.body.user._id, [{ key: 'department', values: ['navControl'] }]);
-				await addAbacAttributesToUserDirectly(sergeiUser.body.user._id, [{ key: 'department', values: ['navControl'] }]);
-				await addAbacAttributesToUserDirectly(credentials['X-User-Id'], [{ key: 'department', values: ['navControl'] }]);
+				await addAbacAttributesToUserDirectly(connection, davidUser.body.user._id, [{ key: 'department', values: ['navControl'] }]);
+				await addAbacAttributesToUserDirectly(connection, sergeiUser.body.user._id, [{ key: 'department', values: ['navControl'] }]);
+				await addAbacAttributesToUserDirectly(connection, credentials['X-User-Id'], [{ key: 'department', values: ['navControl'] }]);
 
 				await request
 					.post(`${v1}/abac/rooms/${roomIdWithAbac}/attributes/department`)
@@ -3223,6 +3212,7 @@ const addAbacAttributesToUserDirectly = async (userId: string, abacAttributes: I
 	this.retries(0);
 
 	const attrKey = `ext_pdp_attr_${Date.now()}`;
+	let connection: MongoClient;
 
 	before((done) => {
 		getCredentials(done);
@@ -3850,7 +3840,7 @@ const addAbacAttributesToUserDirectly = async (userId: string, abacAttributes: I
 
 		before(async () => {
 			userWithAttrs = await createUser({ verified: true });
-			await addAbacAttributesToUserDirectly(userWithAttrs._id, [{ key: attrKey, values: ['alpha'] }]);
+			await addAbacAttributesToUserDirectly(connection, userWithAttrs._id, [{ key: attrKey, values: ['alpha'] }]);
 		});
 
 		after(async () => {
