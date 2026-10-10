@@ -172,7 +172,9 @@ describe('livechat/server/lib/webhooks sendRequest', () => {
 	});
 
 	it('retries once on retryable status (e.g., 500) and succeeds on next attempt', async () => {
-		clock = sinon.useFakeTimers();
+		clock = sinon.useFakeTimers({
+			toFake: ['setTimeout', 'clearTimeout', 'setInterval', 'clearInterval', 'setImmediate', 'clearImmediate', 'Date'],
+		});
 
 		const timeout = 1500;
 		const retryAfter = timeout * 4;
@@ -211,7 +213,9 @@ describe('livechat/server/lib/webhooks sendRequest', () => {
 	});
 
 	it('stops after max attempts and logs final error for repeated retryable failures', async () => {
-		clock = sinon.useFakeTimers();
+		clock = sinon.useFakeTimers({
+			toFake: ['setTimeout', 'clearTimeout', 'setInterval', 'clearInterval', 'setImmediate', 'clearImmediate', 'Date'],
+		});
 
 		const timeout = 500;
 		const retryAfter = timeout * 4;
@@ -264,7 +268,9 @@ describe('livechat/server/lib/webhooks sendRequest', () => {
 	});
 
 	it('uses default attempts=5 and schedules retry with delay = timeout*4', async () => {
-		clock = sinon.useFakeTimers();
+		clock = sinon.useFakeTimers({
+			toFake: ['setTimeout', 'clearTimeout', 'setInterval', 'clearInterval', 'setImmediate', 'clearImmediate', 'Date'],
+		});
 
 		const timeout = 1234;
 		const retryAfter = timeout * 4;

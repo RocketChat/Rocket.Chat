@@ -93,7 +93,10 @@ describe('VideoConfService.leaveCall', () => {
 	};
 
 	beforeEach(() => {
-		clock = sinon.useFakeTimers({ shouldAdvanceTime: false });
+		clock = sinon.useFakeTimers({
+			shouldAdvanceTime: false,
+			toFake: ['setTimeout', 'clearTimeout', 'setInterval', 'clearInterval', 'setImmediate', 'clearImmediate', 'Date'],
+		});
 		service = new VideoConfService();
 		resetAll(
 			VideoConferenceModelMock.findOneById,
@@ -295,7 +298,10 @@ describe('VideoConfService one call at a time', () => {
 	let calls: Record<string, VideoConference>;
 
 	beforeEach(() => {
-		clock = sinon.useFakeTimers({ shouldAdvanceTime: false });
+		clock = sinon.useFakeTimers({
+			shouldAdvanceTime: false,
+			toFake: ['setTimeout', 'clearTimeout', 'setInterval', 'clearInterval', 'setImmediate', 'clearImmediate', 'Date'],
+		});
 		service = new VideoConfService();
 		calls = {};
 		// Leaving other calls on join is part of the embedded lifecycle — a non-embedded join records the member
