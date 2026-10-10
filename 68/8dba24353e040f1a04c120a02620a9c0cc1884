@@ -1,0 +1,227 @@
+apps/meteor/tests/end-to-end/api/livechat/19-business-hours.ts
+  s_5b0b5e57d4c07c::t_e23897e98ae28c 1-2,38
+apps/meteor/tests/end-to-end/api/moderation.ts
+  s_5b0b5e57d4c07c::t_e23897e98ae28c 1-2,31
+apps/meteor/tests/end-to-end/apps/send-messages.ts
+  s_5b0b5e57d4c07c::t_e23897e98ae28c 1-2,16,25,43,78,113
+apps/meteor/tests/end-to-end/api/cloud.ts
+  s_5b0b5e57d4c07c::t_e23897e98ae28c 1-2,9-10,22,36,50,75,90,106,123,149,163,177,202,214,226,248,259,271,297,309
+apps/meteor/tests/end-to-end/api/livechat/09-visitors.ts
+  s_5b0b5e57d4c07c::t_e23897e98ae28c 1-2,41
+apps/meteor/tests/end-to-end/api/livechat/15-canned-responses.ts
+  s_5b0b5e57d4c07c::t_e23897e98ae28c 1-2,18,27,122,175,183,186,189,192,207,281,285
+apps/meteor/tests/end-to-end/api/livechat/23-mac.ts
+  s_5b0b5e57d4c07c::t_e23897e98ae28c 1-2,21
+apps/meteor/tests/end-to-end/apps/slash-command-test-simple.ts
+  s_5b0b5e57d4c07c::t_e23897e98ae28c 1-2,11,20,35,50,64
+apps/meteor/tests/end-to-end/api/livechat/04-dashboards.ts
+  s_5b0b5e57d4c07c::t_e23897e98ae28c 1-2,28,31,33-40,93-96,99-100,102-104,106-109,111-119,121-158,170,182,201,242,254,273,306,318,337,374,386,405,437,449,467,494,506,521,552,560,575,605,617,632,658,670,694,738,760,769,778,790,804,830-834,836-841,843-851,854,874-878,880-885,887-895,898,920,942,964,997-1001,1003-1006,1008-1020,1022,1043,1075,1105,1163,1206-1212,1214-1221,1223,1244,1278-1285,1287-1288,1290,1292-1298,1300-1314,1316,1376,1385,1394,1406,1419,1457,1486
+apps/meteor/tests/end-to-end/api/livechat/07-queue.ts
+  s_5b0b5e57d4c07c::t_e23897e98ae28c 1-2,56,417,669,1081
+apps/meteor/tests/end-to-end/api/rooms.ts
+  s_5b0b5e57d4c07c::t_e23897e98ae28c 2,45,1091,1937,1954,2238,2625,2692,3093,3108,3185,3487,3496-3497,3512-3513,3527-3528,3549,3585-3586,3600-3601,3636,3655,3674,3693,3713,3732,3750,3769,3788,3806,3822,3841,3860,3878,3897,3986-3987,4004-4005,4019-4020,4034-4035,4049-4050,4064-4065,4079-4080,4094-4095,4109-4110,4124-4125,4139-4140,4154-4155,4169-4170,4184-4185,4211,4977-4978,4988-4989,4999-5000,5010-5011,5025-5026,5041-5042,5055-5056,5072-5073,5143-5144,5159-5160,5214-5215,5225-5226,5240-5241,5256-5257,5302-5303,5456
+apps/meteor/tests/end-to-end/apps/slash-command-test-with-arguments.ts
+  s_5b0b5e57d4c07c::t_e23897e98ae28c 1-2,11,21,36
+apps/meteor/tests/end-to-end/api/federation.ts
+  s_5b0b5e57d4c07c::t_e23897e98ae28c 1-2,10
+apps/meteor/tests/end-to-end/apps/apps-hooks-file-upload.ts
+  s_5b0b5e57d4c07c::t_e23897e98ae28c 1-2,14
+apps/meteor/tests/end-to-end/api/livechat/01-agents.ts
+  s_5b0b5e57d4c07c::t_e23897e98ae28c 1-2,43,358,364,419,421-422,424,427,429,431,433
+apps/meteor/tests/end-to-end/apps/send-messages-as-user.ts
+  s_5b0b5e57d4c07c::t_e23897e98ae28c 1-2,20,29,45,63,102,112,147
+apps/meteor/tests/end-to-end/api/methods.ts
+  s_5b0b5e57d4c07c::t_e23897e98ae28c 1-2,21,29,50,69,258,326,385,390,483,504,523,639,643,648,669,687,802,823,842,864,1077,1098,1117,1258,1279,1292,1493,1513,1532,1755,1811,1917,2095,2117,2122,2155,2441,2557,2623,2642,2666,2690,2713,2756,2938,2960,2992,3012,3032,3052,3072,3092,3162,3182,3202,3295,3331-3333,3439,3444,3586,3603
+apps/meteor/tests/end-to-end/api/livechat/22-monitors.ts
+  s_5b0b5e57d4c07c::t_e23897e98ae28c 2-3,32,135,155
+apps/meteor/tests/end-to-end/api/subscriptions.ts
+  s_5b0b5e57d4c07c::t_e23897e98ae28c 1-2,14
+apps/meteor/tests/end-to-end/api/livechat/21-reports.ts
+  s_5b0b5e57d4c07c::t_e23897e98ae28c 1-2,17
+apps/meteor/tests/end-to-end/apps/update-status-text.ts
+  s_5b0b5e57d4c07c::t_e23897e98ae28c 1-2,18
+apps/meteor/tests/end-to-end/api/livechat/contacts.ts
+  s_5b0b5e57d4c07c::t_e23897e98ae28c 1-2,36
+apps/meteor/tests/end-to-end/api/http-response-truncation.ts
+  s_5b0b5e57d4c07c::t_e23897e98ae28c 1-2,67-72,74-80,82,84,86-88
+apps/meteor/tests/end-to-end/api/sidebar-custom-categories.ts
+  s_5b0b5e57d4c07c::t_e23897e98ae28c 1-2,33
+apps/meteor/tests/end-to-end/apps/app-logs-distinct-values.ts
+  s_5b0b5e57d4c07c::t_e23897e98ae28c 1-2,14,24,48,60,76,89
+apps/meteor/tests/end-to-end/api/livechat/03-custom-fields.ts
+  s_5b0b5e57d4c07c::t_e23897e98ae28c 1-2,13
+apps/meteor/tests/end-to-end/apps/app-message-reactions.ts
+  s_5b0b5e57d4c07c::t_e23897e98ae28c 1-2,16
+apps/meteor/tests/end-to-end/api/34-engagement-dashboard.ts
+  s_5b0b5e57d4c07c::t_e23897e98ae28c 1-2,12,15
+apps/meteor/tests/end-to-end/apps/video-conferences.ts
+  s_5b0b5e57d4c07c::t_e23897e98ae28c 1-2,15
+apps/meteor/tests/end-to-end/api/livechat/14-units.ts
+  s_5b0b5e57d4c07c::t_e23897e98ae28c 1-2,16,30,121,187,214,321,345,372,400,443-444,545,547,562,564,579,581
+apps/meteor/tests/end-to-end/apps/apps-update.ts
+  s_5b0b5e57d4c07c::t_e23897e98ae28c 1-2,18
+apps/meteor/tests/end-to-end/apps/installation.ts
+  s_5b0b5e57d4c07c::t_e23897e98ae28c 1-2,15,24,41,63,85,92,107,121,135,151
+apps/meteor/tests/end-to-end/api/direct-message.ts
+  s_5b0b5e57d4c07c::t_e23897e98ae28c 1-2,22,41,996,1017
+apps/meteor/tests/end-to-end/api/livechat/11-email-inbox.ts
+  s_5b0b5e57d4c07c::t_e23897e98ae28c 1-2,12
+apps/meteor/tests/end-to-end/api/livechat/custom-fields-save.ts
+  s_5b0b5e57d4c07c::t_e23897e98ae28c 1-2,19
+apps/meteor/tests/end-to-end/api/abac.ts
+  s_5b0b5e57d4c07c::t_e23897e98ae28c 1-2,40,51,808,820,828,838,1035,1055,2020-2026,2028,2030-2033,2035-2039,2041-2045,2047,2049-2056,2156-2162,2164,2166-2169,2171-2175,2177-2181,2183-2187,2189-2193,2239,2475,2596-2603,3162,3165,3169-3171,3173-3174,3176-3193,3195-3202,3204-3208,3210-3213,3220-3223,3225,3227-3231,3233-3235,3237-3244,3286-3289,3291,3293-3297,3299-3304,3306-3313,3352-3355,3357-3368,3436-3439,3441-3446,3448-3461,3522-3530,3532-3534,3536-3543,3566-3574,3576-3589,3595,3625-3633,3635-3637,3639-3646,3687-3695,3697-3699,3701-3708,3815,3831,3833-3836,3838,3840-3846,3848-3856,3858-3863,3865-3874,3881-3884,3886-3889,3891,3893-3899,4021-4027,4075-4081,4137-4140,4142-4148,4199-4207,4277-4280,4282-4288,4348-4350,4352,4354-4356,4358-4359,4361-4366,4368-4372,4374-4386,4395,4413-4426,4428-4435,4448-4461,4529-4531,4533-4534,4536-4541,4543-4549,4551-4559,4605,4662
+apps/meteor/tests/end-to-end/api/methods/2fa-enable.ts
+  s_5b0b5e57d4c07c::t_e23897e98ae28c 1-2,12,21,23,36
+apps/meteor/tests/end-to-end/api/audit.ts
+  s_5b0b5e57d4c07c::t_e23897e98ae28c 1-2,22,311-313,315-317,319-321,329-330,338-339,346-348,350-352,354-355,359-360,372-373,381-382,402-404,406-408,410-411,415-416,428-429,437-438
+apps/meteor/tests/end-to-end/api/statistics.ts
+  s_5b0b5e57d4c07c::t_e23897e98ae28c 1-2,9
+apps/meteor/tests/end-to-end/apps/presence-state.ts
+  s_5b0b5e57d4c07c::t_e23897e98ae28c 1-2,17
+apps/meteor/tests/end-to-end/apps/app-logs.ts
+  s_5b0b5e57d4c07c::t_e23897e98ae28c 1-2,16,25,39,55,71,85,105,123,151,186,200,214,235,249,263,275
+apps/meteor/tests/end-to-end/api/livechat/12-priorites.ts
+  s_5b0b5e57d4c07c::t_e23897e98ae28c 1-2,39
+apps/meteor/tests/end-to-end/api/channels.ts
+  s_5b0b5e57d4c07c::t_e23897e98ae28c 1-2,38,40,70,199,220,646,710,731,751,814-816,1458,1482,1511,1532,1580,1630,1634,2725,2754,2797,2811,2831,2851,2874,2920,2941,4089
+apps/meteor/tests/end-to-end/api/livechat/17-dashboards-ee.ts
+  s_5b0b5e57d4c07c::t_e23897e98ae28c 1-2,26
+apps/meteor/tests/end-to-end/api/permissions.ts
+  s_5b0b5e57d4c07c::t_e23897e98ae28c 1-2,14,176-178,180-181,186-187,189-190,195-196,198-199,204-205,245-247,249-250,255-256
+apps/meteor/tests/end-to-end/apps/app-logs-general.ts
+  s_5b0b5e57d4c07c::t_e23897e98ae28c 1-2,16,25,41,53,68,84,98,116,134,153,179,193,207,228
+apps/meteor/tests/end-to-end/apps/app-logs-export.ts
+  s_5b0b5e57d4c07c::t_e23897e98ae28c 1-2,15,24,37,61,87,95,110,135,154,172,191,219,256,275,290,303,316,336,349,357,366,385
+apps/meteor/tests/end-to-end/api/SAML.ts
+  s_5b0b5e57d4c07c::t_e23897e98ae28c 1-2,10
+apps/meteor/tests/data/uploads.helper.ts
+  s_5b0b5e57d4c07c::t_e23897e98ae28c 1-2,44,60,76,94,96-97,114,116-117,341
+apps/meteor/tests/end-to-end/api/oauthapps.ts
+  s_5b0b5e57d4c07c::t_e23897e98ae28c 1-2,12,171-172,189-190,239-240,253-254,265-266,279-280
+apps/meteor/tests/end-to-end/api/outgoing-integrations.ts
+  s_5b0b5e57d4c07c::t_e23897e98ae28c 1-2,19,66,95,124,151,182,214,249,270,331,354,367,383,399,415,434,453,472,491,510,528,580-582,584-586,588-589,594-595,610-611,616-617,621-623,625-627,629-630,635-636,638-639,644-645
+apps/meteor/tests/end-to-end/api/licenses.ts
+  s_5b0b5e57d4c07c::t_e23897e98ae28c 1-2,15
+apps/meteor/tests/end-to-end/api/push.ts
+  s_5b0b5e57d4c07c::t_e23897e98ae28c 1-2,9
+apps/meteor/tests/end-to-end/apps/apps-uninstall.ts
+  s_5b0b5e57d4c07c::t_e23897e98ae28c 1-2,14,24,36
+apps/meteor/tests/end-to-end/api/livechat/24-routing.ts
+  s_5b0b5e57d4c07c::t_e23897e98ae28c 1-2,28
+apps/meteor/tests/end-to-end/api/ai-search.ts
+  s_5b0b5e57d4c07c::t_e23897e98ae28c 1-2,13
+apps/meteor/tests/end-to-end/api/livechat/08-triggers.ts
+  s_5b0b5e57d4c07c::t_e23897e98ae28c 1-2,12
+apps/meteor/tests/end-to-end/api/media-calls.ts
+  s_5b0b5e57d4c07c::t_e23897e98ae28c 1-2,16
+apps/meteor/tests/end-to-end/api/login-code.ts
+  s_5b0b5e57d4c07c::t_e23897e98ae28c 2,38
+apps/meteor/tests/end-to-end/api/banners.ts
+  s_5b0b5e57d4c07c::t_e23897e98ae28c 1-2,12,154,167,179,193,207,223,236,248,262,276
+apps/meteor/tests/end-to-end/api/livechat/10-departments.ts
+  s_5b0b5e57d4c07c::t_e23897e98ae28c 1-2,26,80-81,100,368,375,377,389
+apps/meteor/tests/end-to-end/api/invites.ts
+  s_5b0b5e57d4c07c::t_e23897e98ae28c 1-2,16
+apps/meteor/tests/end-to-end/api/chat.ts
+  s_5b0b5e57d4c07c::t_e23897e98ae28c 1-2,36,675,693,711,1116,1354,1657,1749,1751,2023,2034-2035,2050-2051,2066-2067,2082-2083,2099-2100,2332,2351,2365,2379,2394,2975,2993-2995,3012,3411,3429,3447,3464,4202,4290,4339,4352,4368,4573,4671,4965,5077,5180
+apps/meteor/tests/end-to-end/apps/app-resolve-visitor.ts
+  s_5b0b5e57d4c07c::t_e23897e98ae28c 1-2,18
+apps/meteor/tests/end-to-end/api/users.ts
+  s_5b0b5e57d4c07c::t_e23897e98ae28c 2,191,193,387,415,1792,1912,1921,1931,1961,2555,2713-2714,2730-2731,3903,3925,3950,3973,3993,4072,4291,5143,5311,5316-5324,5326,5360,5423,5488,5495-5497,5499-5500,5502-5506,5508-5509,5511-5515,5517-5523,5525,5537,5930,5971,5989,6007,6011,6032,6131,6563-6565,6567-6568,6574-6575,6637-6639,6641-6642,6654-6655,6659-6661,6663-6665,6667-6668,6676-6677,6681-6683,6685-6686,6693-6694,6698-6700,6702-6704,6706-6707,6714-6715,6717-6718,6726-6727,6731-6733,6735-6737,6739-6740,6748-6749
+apps/meteor/tests/end-to-end/api/custom-user-status.ts
+  s_5b0b5e57d4c07c::t_e23897e98ae28c 1-2,24
+apps/meteor/tests/end-to-end/api/livechat/20-messages.ts
+  s_5b0b5e57d4c07c::t_e23897e98ae28c 1-2,24
+apps/meteor/tests/end-to-end/api/assets.ts
+  s_5b0b5e57d4c07c::t_e23897e98ae28c 1
+apps/meteor/tests/end-to-end/api/commands.ts
+  s_5b0b5e57d4c07c::t_e23897e98ae28c 1-2,16,213,218,225,256-257,289,293,300,363,372,379,390,476,480,486,493,509,514,521,528,546,551,558,565
+apps/meteor/tests/end-to-end/api/setupWizard.ts
+  s_5b0b5e57d4c07c::t_e23897e98ae28c 1-2,10-11,15,27,40,62,74
+apps/meteor/tests/end-to-end/api/livechat/05-inquiries.ts
+  s_5b0b5e57d4c07c::t_e23897e98ae28c 1-2,36
+apps/meteor/tests/end-to-end/api/livechat/11-livechat.ts
+  s_5b0b5e57d4c07c::t_e23897e98ae28c 1-2,32
+apps/meteor/tests/end-to-end/api/custom-sounds.ts
+  s_5b0b5e57d4c07c::t_e23897e98ae28c 3,53
+apps/meteor/tests/end-to-end/api/teams.ts
+  s_5b0b5e57d4c07c::t_e23897e98ae28c 1-2,43,88,127,315,329,349,369,389,416,488,511,577,655,669,730,741,745,749,780,804-805,828-829,918,931,956,1018,1037,1056,1076,1138,1157,1175,1209,1246,1264,1282,1298,1321,1345,1400,1414,1434,1454,1474,1495,1553,1567,1586,1604,1623,1817,1839,2063,2072,2087,2113,2825,2839,2853
+apps/meteor/tests/end-to-end/api/webdav.ts
+  s_5b0b5e57d4c07c::t_e23897e98ae28c 1-2,8
+apps/meteor/tests/end-to-end/api/livechat/02-appearance.ts
+  s_5b0b5e57d4c07c::t_e23897e98ae28c 1-2,12
+apps/meteor/tests/end-to-end/api/groups.ts
+  s_5b0b5e57d4c07c::t_e23897e98ae28c 1-2,40,108-110,432,446,1631-1632,1640-1641,1643-1644,1653-1654,2232,2257,2388,2845
+apps/meteor/tests/end-to-end/api/emoji-custom.ts
+  s_5b0b5e57d4c07c::t_e23897e98ae28c 1-2,15,71
+apps/meteor/tests/end-to-end/api/settings.ts
+  s_5b0b5e57d4c07c::t_e23897e98ae28c 1-2,11,87,235,249,261,275,293,312,417,441,760-762,764-766,797-799,812-813,820-821,825-827,829-831,833-834,841-842
+apps/meteor/tests/end-to-end/api/oauth-server.ts
+  s_5b0b5e57d4c07c::t_e23897e98ae28c 1-2,52
+apps/meteor/tests/end-to-end/api/livechat/12-mailer.ts
+  s_5b0b5e57d4c07c::t_e23897e98ae28c 1-2,10
+apps/meteor/tests/end-to-end/api/import.spec.ts
+  s_5b0b5e57d4c07c::t_e23897e98ae28c 1-2,17
+apps/meteor/tests/end-to-end/api/helpers/retry.ts
+  s_5b0b5e57d4c07c::t_e23897e98ae28c 1-2
+apps/meteor/tests/end-to-end/api/livechat/13-tags.ts
+  s_5b0b5e57d4c07c::t_e23897e98ae28c 1-2,17
+apps/meteor/tests/end-to-end/api/livechat/06-integrations.ts
+  s_5b0b5e57d4c07c::t_e23897e98ae28c 1-2,21,32
+apps/meteor/tests/end-to-end/api/calendar.ts
+  s_5b0b5e57d4c07c::t_e23897e98ae28c 1-2,19,123,216,528,612
+apps/meteor/tests/end-to-end/api/guest-permissions.ts
+  s_5b0b5e57d4c07c::t_e23897e98ae28c 1-2,12
+apps/meteor/tests/end-to-end/api/autotranslate.ts
+  s_5b0b5e57d4c07c::t_e23897e98ae28c 1-2,29
+apps/meteor/package.json
+  s_5b0b5e57d4c07c::t_e23897e98ae28c 58-59
+apps/meteor/tests/end-to-end/api/assets2.ts
+  s_5b0b5e57d4c07c::t_e23897e98ae28c 1-2,10
+apps/meteor/tests/end-to-end/api/incoming-integrations.ts
+  s_5b0b5e57d4c07c::t_e23897e98ae28c 1-2,27,289,344,653
+apps/meteor/tests/end-to-end/apps/app-logs-nested-requests.ts
+  s_5b0b5e57d4c07c::t_e23897e98ae28c 1-2,15
+apps/meteor/tests/end-to-end/api/livechat/18-rooms-ee.ts
+  s_5b0b5e57d4c07c::t_e23897e98ae28c 1-2,28
+apps/meteor/tests/end-to-end/teardown.ts
+  s_5b0b5e57d4c07c::t_e23897e98ae28c 1-2,42-48
+apps/meteor/tests/end-to-end/api/roles.ts
+  s_5b0b5e57d4c07c::t_e23897e98ae28c 1-2,12,15,19-21,37-39,61,91-93,110-112,172,188,218,301-303,318-320,336-338,418-420,437-439,456-458,475-477
+apps/meteor/tests/end-to-end/api/status-visibility.ts
+  s_5b0b5e57d4c07c::t_e23897e98ae28c 1-2,16,31
+apps/meteor/tests/end-to-end/api/miscellaneous.ts
+  s_5b0b5e57d4c07c::t_e23897e98ae28c 1-2,20
+apps/meteor/tests/end-to-end/api/livechat/00-rooms.ts
+  s_5b0b5e57d4c07c::t_e23897e98ae28c 2,87,808-809,817-818
+apps/meteor/tests/end-to-end/api/call-history.ts
+  s_5b0b5e57d4c07c::t_e23897e98ae28c 1-2,16
+apps/meteor/tests/end-to-end/api/file-upload-image-rotation.ts
+  s_5b0b5e57d4c07c::t_e23897e98ae28c 1,25
+apps/meteor/tests/end-to-end/api/failed-login-attempts.ts
+  s_5b0b5e57d4c07c::t_e23897e98ae28c 1-2,19,195,202,204,216
+apps/meteor/tests/end-to-end/apps/app-api-endpoint-params.ts
+  s_5b0b5e57d4c07c::t_e23897e98ae28c 1-2,15
+apps/meteor/tests/end-to-end/api/presence.ts
+  s_5b0b5e57d4c07c::t_e23897e98ae28c 1-2,14
+apps/meteor/tests/end-to-end/api/LDAP.ts
+  s_5b0b5e57d4c07c::t_e23897e98ae28c 1-2,63
+apps/meteor/tests/end-to-end/api/cors.ts
+  s_5b0b5e57d4c07c::t_e23897e98ae28c 1-2,21
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.2",
+  "base_commit_sha": "688dba24353e040f1a04c120a02620a9c0cc1884",
+  "prompts": {},
+  "sessions": {
+    "s_5b0b5e57d4c07c": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "143f68a7-f9c3-4644-b97d-bcdac5d53d61",
+        "model": "claude-opus-5-5"
+      },
+      "human_author": "Ricardo Garim <rswarovsky@gmail.com>"
+    }
+  }
+}
