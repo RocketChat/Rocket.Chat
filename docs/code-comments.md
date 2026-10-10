@@ -72,11 +72,11 @@ to the file: it resolves on GitHub and in the editor.
 - history: `// Changed from X to Y` — that's what git is for
 - analysis: alternatives weighed, edge cases enumerated, "verified that..."
 - the same explanation at four call sites — put it on the function they call
-  (`TODO` is the exception, see below)
+  (the `TODO` directive is the exception, see below)
 - commented-out code
 - `*_SUMMARY.md` / `*_ANALYSIS.md` describing how a change was reached
 
-## TODO is not a comment
+## The `TODO` directive is not a comment
 
 `scripts/todo-issue` turns it into an issue: the first line after the keyword
 becomes the title, the comment lines under it become the body, and similar
