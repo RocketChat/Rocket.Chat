@@ -1,7 +1,8 @@
 import type { ICalendarEvent, IUser } from '@rocket.chat/core-typings';
-import type { DeleteResult, FindCursor, FindOptions, UpdateResult } from 'mongodb';
+import type { DeleteResult, Document, FindCursor, UpdateResult } from 'mongodb';
 
 import type { IBaseModel, InsertionModel } from './IBaseModel';
+import type { DocumentWithProjection, FindOptionsWithProjection } from '../types/DocumentWithProjection';
 
 export type ImportedCalendarEvent = Omit<InsertionModel<ICalendarEvent>, 'notificationSent' | 'externalId'> & { externalId: string };
 
@@ -17,13 +18,13 @@ export interface ICalendarEventModel extends IBaseModel<ICalendarEvent> {
 		externalId: Required<ICalendarEvent>['externalId'],
 		uid: ICalendarEvent['uid'],
 	): Promise<ICalendarEvent | null>;
-	findOverlappingEvents(
+	findOverlappingEvents<P extends Document = ICalendarEvent, O extends FindOptionsWithProjection<P> = FindOptionsWithProjection<P>>(
 		eventId: ICalendarEvent['_id'],
 		uid: IUser['_id'],
 		startTime: Date,
 		endTime: Date,
-		options?: FindOptions<ICalendarEvent>,
-	): FindCursor<ICalendarEvent>;
+		options?: O,
+	): FindCursor<DocumentWithProjection<P, O>>;
 	findNextFutureEvent(startTime: Date): Promise<Pick<ICalendarEvent, '_id' | 'startTime'> | null>;
 	findEventsStartingNow({
 		now,
