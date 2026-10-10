@@ -1016,7 +1016,7 @@ whoever added them, which their client would read as their own call being turned
 Manual cases live in [`qa/`](./qa/README.md) — 70 of them, in Qase import format, split along the setting the
 way the code is. Its README also records where this document is ahead of the code.
 
-The cheap runners were used deliberately: mocha under `apps/meteor/tests/unit/**` (~2s for the whole config) and
+We used the cheap runners on purpose: `node:test` for the `apps/meteor` unit tests (`*.test.ts`) and
 package-level jest. The specs sit beside what they test, so the file names say where to look; enumerating them
 here only produced a list that went stale on its own.
 

@@ -202,7 +202,7 @@ extended with the nested `{ from, map, list }` branch so it fully reproduces `tr
 two were migrated by swapping their `transformMappedData` calls for the shared `mappedDecodeAsync`
 helper *in place*, rather than being wrapped in `create*Codec` factories. Reasons:
 
-1. **Test harness.** `messages.tests.js` uses `proxyquire` to stub `@rocket.chat/models`,
+1. **Test harness.** `messages.test.js` uses `proxyquire` to stub `@rocket.chat/models`,
    `@rocket.chat/random` and `@rocket.chat/core-typings` (`isMessageFromVisitor`) on the `messages.ts`
    module. `proxyquire` only replaces a module's *own* `require`s, so moving `convertAppMessage`'s
    model/`Random` usage into a separate `codecs/messages.ts` module would bypass the stubs and break
@@ -234,7 +234,7 @@ messages and threads memoization, which remained in the class layer (see the Pha
   normalise to ISO strings and `undefined` fields drop — matching how payloads cross the app bridge.
 - **Enum-codec unit tests** assert `decode`/`encode` match the legacy `_convert*` helpers for every
   input, including fallbacks.
-- The existing `rooms.tests.ts` and `messages.tests.js` remain the oracle for the two hardest
+- The existing `rooms.test.ts` and `messages.test.js` remain the oracle for the two hardest
   converters.
 - New codecs get their own focused tests as they are introduced.
 

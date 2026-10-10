@@ -663,7 +663,7 @@ outcomes are written as system messages via `saveCallToHistory` / `sendHistoryMe
 - Host bridge: `apps/meteor/app/apps/server/bridges/listeners.ts`.
 - Host trigger, mappers and `getCallOrigin`: `apps/meteor/server/services/media-call/appEvents.ts`,
   wired in `service.ts`; covered by
-  `apps/meteor/tests/unit/server/services/media-call/appEvents.spec.ts` — `origin` for each of the
+  `apps/meteor/tests/unit/server/services/media-call/appEvents.test.ts` — `origin` for each of the
   three contact-type combinations, on the pre context and on `toAppMediaCall`.
 - EE hook bus: `IMediaCallServer.setHooks` / `runPreCallCreatedHook`, consulted in
   `MediaCallDirector.createCall` (`ee/packages/media-calls/src/`).
