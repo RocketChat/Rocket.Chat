@@ -66,7 +66,7 @@ test.describe('Admin > Status and presence > Managed users', () => {
 			await dialog.getByRole('textbox', { name: 'User', exact: true }).pressSequentially(hiddenUser.data.username);
 			await listbox.selectOption(hiddenUser.data.name || hiddenUser.data.username);
 
-			await dialog.getByRole('combobox', { name: 'Select users', exact: true }).pressSequentially(blockedViewer.data.username);
+			await dialog.getByRole('combobox', { name: 'Hide status from', exact: true }).pressSequentially(blockedViewer.data.username);
 			await listbox.selectOption(blockedViewer.data.username);
 			await page.keyboard.press('Tab');
 
