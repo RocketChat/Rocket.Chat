@@ -1,0 +1,533 @@
+apps/meteor/tests/unit/server/hooks/omnichannel/sendToCRM.test.ts
+  s_5b0b5e57d4c07c::t_3042dfe65d81b2 1-125
+apps/meteor/server/lib/omnichannel/contacts/mapVisitorToContact.test.ts
+  s_5b0b5e57d4c07c::t_3042dfe65d81b2 1-216
+apps/meteor/tests/unit/server/lib/OutboundMessageProvider.test.ts
+  s_5b0b5e57d4c07c::t_3042dfe65d81b2 1-142
+apps/meteor/lib/videoConference/memberStatus.test.ts
+  s_5b0b5e57d4c07c::t_3042dfe65d81b2 1-89
+apps/meteor/tests/unit/server/lib/rooms/getRoomByNameOrIdWithOptionToJoin.test.ts
+  s_5b0b5e57d4c07c::t_3042dfe65d81b2 1-519
+apps/meteor/tests/unit/server/modules/apps/converters.edge.test.ts
+  s_5b0b5e57d4c07c::t_3042dfe65d81b2 1-66
+apps/meteor/tests/unit/definition/rest/v1/teams/TeamsAddMembersProps.test.ts
+  s_5b0b5e57d4c07c::t_3042dfe65d81b2 1-93
+apps/meteor/tests/unit/lib/utils/stringUtils.test.ts
+  s_5b0b5e57d4c07c::t_3042dfe65d81b2 1-23
+apps/meteor/server/services/video-conference/ringing.test.ts
+  s_5b0b5e57d4c07c::t_3042dfe65d81b2 1-410
+apps/meteor/ee/tests/unit/apps/meteor/ee/server/local-services/instance/getTransporter.test.ts
+  s_5b0b5e57d4c07c::t_3042dfe65d81b2 1-27
+apps/meteor/tests/unit/app/utils/lib/restrictions.test.ts
+  s_5b0b5e57d4c07c::t_3042dfe65d81b2 1-63
+apps/meteor/tests/unit/server/lib/rooms/findDirectRoomByIdentifier.test.ts
+  s_5b0b5e57d4c07c::t_3042dfe65d81b2 1-108
+apps/meteor/tests/unit/server/services/messages/hooks/BeforeSaveMarkdownParser.test.ts
+  s_5b0b5e57d4c07c::t_3042dfe65d81b2 1-111
+apps/meteor/tests/unit/server/services/nps/spec.test.ts
+  s_5b0b5e57d4c07c::t_3042dfe65d81b2 1-104
+apps/meteor/tests/unit/server/settings/functions/validateSettings.test.ts
+  s_5b0b5e57d4c07c::t_3042dfe65d81b2 1-38
+apps/meteor/tests/unit/server/slashcommands/status.test.ts
+  s_5b0b5e57d4c07c::t_3042dfe65d81b2 1-73
+apps/meteor/tests/unit/server/lib/users/setUsername.test.ts
+  s_5b0b5e57d4c07c::t_3042dfe65d81b2 1-338
+apps/meteor/tests/unit/server/lib/omnichannel/sendTranscript.test.ts
+  s_5b0b5e57d4c07c::t_3042dfe65d81b2 1-236
+apps/meteor/tests/unit/server/modules/apps/codecs/settings.test.ts
+  s_5b0b5e57d4c07c::t_3042dfe65d81b2 1-14
+apps/meteor/server/api/lib/projectionAllowsAttribute.test.ts
+  s_5b0b5e57d4c07c::t_3042dfe65d81b2 1-31
+apps/meteor/tests/unit/server/meteor-methods/messages/createDirectMessage.test.ts
+  s_5b0b5e57d4c07c::t_3042dfe65d81b2 1-147
+apps/meteor/tests/unit/server/lib/rooms/banUserFromRoom.test.ts
+  s_5b0b5e57d4c07c::t_3042dfe65d81b2 1-265
+apps/meteor/tests/unit/server/lib/omnichannel/closeLivechatRoom.test.ts
+  s_5b0b5e57d4c07c::t_3042dfe65d81b2 1-124
+apps/meteor/tests/unit/definition/rest/v1/video-conference/VideoConfStartProps.test.ts
+  s_5b0b5e57d4c07c::t_3042dfe65d81b2 1-60
+apps/meteor/server/lib/media/file/functions/sanitizeFileName.test.ts
+  s_5b0b5e57d4c07c::t_3042dfe65d81b2 1-56
+apps/meteor/tests/unit/server/lib/shared/disableCustomScripts.test.ts
+  s_5b0b5e57d4c07c::t_3042dfe65d81b2 1-71
+apps/meteor/tests/unit/server/modules/apps/codecs/enums.test.ts
+  s_5b0b5e57d4c07c::t_3042dfe65d81b2 1-154
+apps/meteor/server/routes/avatar/middlewares/browserVersion.test.ts
+  s_5b0b5e57d4c07c::t_3042dfe65d81b2 1-88
+apps/meteor/tests/unit/server/meteor-methods/messages/deleteFileMessage.test.ts
+  s_5b0b5e57d4c07c::t_3042dfe65d81b2 1-125
+apps/meteor/ee/server/lib/ldap/copyCustomFieldsLDAP.test.ts
+  s_5b0b5e57d4c07c::t_3042dfe65d81b2 1-211
+apps/meteor/tests/unit/app/emoji/helpers.test.ts
+  s_5b0b5e57d4c07c::t_3042dfe65d81b2 1-295
+apps/meteor/tests/unit/server/modules/apps/messages.test.js
+  s_5b0b5e57d4c07c::t_3042dfe65d81b2 1-181
+apps/meteor/lib/videoConference/conferenceName.test.ts
+  s_5b0b5e57d4c07c::t_3042dfe65d81b2 1-74
+apps/meteor/server/services/video-conference/getChatAccess.test.ts
+  s_5b0b5e57d4c07c::t_3042dfe65d81b2 1-143
+apps/meteor/ee/tests/unit/server/hooks/omnichannel/afterInquiryQueued.test.ts
+  s_5b0b5e57d4c07c::t_3042dfe65d81b2 1-87
+apps/meteor/server/lib/cas/loginHandler.test.ts
+  s_5b0b5e57d4c07c::t_3042dfe65d81b2 1-61
+apps/meteor/tests/unit/server/lib/saml/server.test.ts
+  s_5b0b5e57d4c07c::t_3042dfe65d81b2 1-1272
+apps/meteor/lib/videoConference/presence.test.ts
+  s_5b0b5e57d4c07c::t_3042dfe65d81b2 1-103
+apps/meteor/tests/unit/server/slashcommands/join.test.ts
+  s_5b0b5e57d4c07c::t_3042dfe65d81b2 1-79
+apps/meteor/server/meteor-methods/messages/sendFileMessage.test.ts
+  s_5b0b5e57d4c07c::t_3042dfe65d81b2 1-112
+apps/meteor/server/services/video-conference/addUserToCall.test.ts
+  s_5b0b5e57d4c07c::t_3042dfe65d81b2 1-179
+apps/meteor/tests/unit/server/modules/apps/codecs/uploads.test.ts
+  s_5b0b5e57d4c07c::t_3042dfe65d81b2 1-52
+apps/meteor/tests/unit/server/lib/messaging/Message.test.js
+  s_5b0b5e57d4c07c::t_3042dfe65d81b2 1-20
+apps/meteor/server/lib/notifications/push/apn.test.ts
+  s_5b0b5e57d4c07c::t_3042dfe65d81b2 1-164
+apps/meteor/server/lib/ldap/getLdapDynamicValue.test.ts
+  s_5b0b5e57d4c07c::t_3042dfe65d81b2 1-66
+apps/meteor/tests/unit/server/modules/apps/converters.golden.test.ts
+  s_5b0b5e57d4c07c::t_3042dfe65d81b2 1-905
+apps/meteor/tests/unit/server/services/ai-search/service.test.ts
+  s_5b0b5e57d4c07c::t_3042dfe65d81b2 1-731
+apps/meteor/server/api/lib/logMethodCallError.test.ts
+  s_5b0b5e57d4c07c::t_3042dfe65d81b2 1-83
+docs/coverage.md
+  s_5b0b5e57d4c07c::t_3042dfe65d81b2 94-97
+apps/meteor/tests/unit/server/hooks/messages/processThreads.test.ts
+  s_5b0b5e57d4c07c::t_3042dfe65d81b2 1-67
+apps/meteor/server/routes/avatar/utils.test.ts
+  s_5b0b5e57d4c07c::t_3042dfe65d81b2 1-255
+docs/features/video-conference-persistent-chat/README.md
+  s_5b0b5e57d4c07c::t_3042dfe65d81b2 1019
+apps/meteor/tests/unit/definition/rest/v1/teams/TeamsDeleteProps.test.ts
+  s_5b0b5e57d4c07c::t_3042dfe65d81b2 1-62
+apps/meteor/tests/unit/lib/utils/parseCSV.test.ts
+  s_5b0b5e57d4c07c::t_3042dfe65d81b2 1-50
+apps/meteor/tests/unit/server/meteor-methods/auth/createToken.test.ts
+  s_5b0b5e57d4c07c::t_3042dfe65d81b2 1-79
+apps/meteor/ee/tests/unit/server/lib/license/canEnableApp.test.ts
+  s_5b0b5e57d4c07c::t_3042dfe65d81b2 1-128
+apps/meteor/tests/unit/server/lib/cloud/registerPreIntentWorkspaceWizard.test.ts
+  s_5b0b5e57d4c07c::t_3042dfe65d81b2 1-65
+apps/meteor/tests/unit/server/lib/notifyListener.test.ts
+  s_5b0b5e57d4c07c::t_3042dfe65d81b2 1-305
+apps/meteor/server/services/video-conference/busyStatus.test.ts
+  s_5b0b5e57d4c07c::t_3042dfe65d81b2 1-279
+apps/meteor/lib/videoConference/chatAccess.test.ts
+  s_5b0b5e57d4c07c::t_3042dfe65d81b2 1-26
+apps/meteor/tests/unit/app/mentions/client.test.js
+  s_5b0b5e57d4c07c::t_3042dfe65d81b2 1-316
+apps/meteor/tests/unit/definition/rest/v1/video-conference/VideoConfJoinProps.test.ts
+  s_5b0b5e57d4c07c::t_3042dfe65d81b2 1-47
+apps/meteor/tests/unit/definition/rest/v1/video-conference/VideoConfShareChatProps.test.ts
+  s_5b0b5e57d4c07c::t_3042dfe65d81b2 1-28
+apps/meteor/tests/unit/server/lib/messaging/validateCustomMessageFields.test.ts
+  s_5b0b5e57d4c07c::t_3042dfe65d81b2 1-88
+apps/meteor/tests/unit/server/services/calendar/service.test.ts
+  s_5b0b5e57d4c07c::t_3042dfe65d81b2 1-637
+apps/meteor/tests/unit/server/users/saveUserIdentity.test.ts
+  s_5b0b5e57d4c07c::t_3042dfe65d81b2 1-135
+apps/meteor/tests/unit/server/lib/shared/validateNameChars.test.ts
+  s_5b0b5e57d4c07c::t_3042dfe65d81b2 1-58
+apps/meteor/tests/unit/server/services/media-call/appEvents.test.ts
+  s_5b0b5e57d4c07c::t_3042dfe65d81b2 1-735
+apps/meteor/server/lib/omnichannel/contacts/resolveContactConflicts.test.ts
+  s_5b0b5e57d4c07c::t_3042dfe65d81b2 1-283
+apps/meteor/server/routes/avatar/user.test.ts
+  s_5b0b5e57d4c07c::t_3042dfe65d81b2 1-325
+apps/meteor/tests/unit/server/lib/notifications/push/push.test.ts
+  s_5b0b5e57d4c07c::t_3042dfe65d81b2 1-114
+apps/meteor/tests/unit/server/lib/omnichannel/conditionalLockAgent.test.ts
+  s_5b0b5e57d4c07c::t_3042dfe65d81b2 1-102
+apps/meteor/tests/unit/server/lib/omnichannel/custom-fields.test.ts
+  s_5b0b5e57d4c07c::t_3042dfe65d81b2 1-108
+apps/meteor/server/lib/omnichannel/contacts/isVerifiedChannelInSource.test.ts
+  s_5b0b5e57d4c07c::t_3042dfe65d81b2 1-112
+apps/meteor/tests/unit/server/settings/functions/overrideGenerator.test.ts
+  s_5b0b5e57d4c07c::t_3042dfe65d81b2 1-48
+apps/meteor/tests/unit/server/slashcommands/archive.test.ts
+  s_5b0b5e57d4c07c::t_3042dfe65d81b2 1-127
+apps/meteor/tests/unit/server/slashcommands/msg.test.ts
+  s_5b0b5e57d4c07c::t_3042dfe65d81b2 1-78
+apps/meteor/tests/unit/server/services/banner/service.test.ts
+  s_5b0b5e57d4c07c::t_3042dfe65d81b2 1-150
+apps/meteor/ee/server/lib/ldap/replacesNestedValues.test.ts
+  s_5b0b5e57d4c07c::t_3042dfe65d81b2 1-89
+apps/meteor/ee/tests/unit/server/lib/omnichannel/QueueInactivityMonitor.test.ts
+  s_5b0b5e57d4c07c::t_3042dfe65d81b2 1-199
+apps/meteor/server/lib/ldap/ldapKeyExists.test.ts
+  s_5b0b5e57d4c07c::t_3042dfe65d81b2 1-95
+apps/meteor/tests/unit/definition/rest/v1/teams/TeamsConvertToChannelProps.test.ts
+  s_5b0b5e57d4c07c::t_3042dfe65d81b2 1-36
+apps/meteor/tests/unit/server/settings/functions/settings.test.ts
+  s_5b0b5e57d4c07c::t_3042dfe65d81b2 1-722
+apps/meteor/server/lib/omnichannel/contacts/validateContactManager.test.ts
+  s_5b0b5e57d4c07c::t_3042dfe65d81b2 1-34
+apps/meteor/ee/tests/unit/server/lib/omnichannel/AutoCloseOnHold.test.ts
+  s_5b0b5e57d4c07c::t_3042dfe65d81b2 1-257
+apps/meteor/tests/unit/server/modules/apps/codecs/rooms.test.ts
+  s_5b0b5e57d4c07c::t_3042dfe65d81b2 1-212
+apps/meteor/tests/unit/server/slashcommands/inviteall.test.ts
+  s_5b0b5e57d4c07c::t_3042dfe65d81b2 1-180
+apps/meteor/server/lib/utils/lib/JWTHelper.test.ts
+  s_5b0b5e57d4c07c::t_3042dfe65d81b2 1-300
+apps/meteor/ee/tests/unit/server/lib/omnichannel/business-hour/Custom.test.ts
+  s_5b0b5e57d4c07c::t_3042dfe65d81b2 1-134
+apps/meteor/tests/unit/server/lib/cloud/userLogout.test.ts
+  s_5b0b5e57d4c07c::t_3042dfe65d81b2 1-73
+apps/meteor/tests/unit/server/meteor-methods/messages/loadSurroundingMessages.test.ts
+  s_5b0b5e57d4c07c::t_3042dfe65d81b2 1-107
+apps/meteor/tests/unit/server/sdk/errors.test.ts
+  s_5b0b5e57d4c07c::t_3042dfe65d81b2 1-59
+apps/meteor/server/api/lib/getUploadFormData.test.ts
+  s_5b0b5e57d4c07c::t_3042dfe65d81b2 1-197
+apps/meteor/tests/unit/server/hooks/omnichannel/markRoomResponded.test.ts
+  s_5b0b5e57d4c07c::t_3042dfe65d81b2 1-202
+apps/meteor/ee/tests/unit/server/lib/omnichannel/restrictQuery.test.ts
+  s_5b0b5e57d4c07c::t_3042dfe65d81b2 1-303
+apps/meteor/tests/unit/definition/rest/v1/federation/FederationRemoveServerProps.test.ts
+  s_5b0b5e57d4c07c::t_3042dfe65d81b2 1-43
+apps/meteor/tests/unit/lib/utils/normalizeUsername.test.ts
+  s_5b0b5e57d4c07c::t_3042dfe65d81b2 1-23
+apps/meteor/tests/unit/server/services/team/service.test.ts
+  s_5b0b5e57d4c07c::t_3042dfe65d81b2 1-147
+apps/meteor/tests/unit/app/utils/lib/getURL.test.js
+  s_5b0b5e57d4c07c::t_3042dfe65d81b2 1-164
+apps/meteor/tests/unit/server/meteor-methods/platform/updateGroupKey.test.ts
+  s_5b0b5e57d4c07c::t_3042dfe65d81b2 1-59
+apps/meteor/server/api/lib/queryFiltersStatus.test.ts
+  s_5b0b5e57d4c07c::t_3042dfe65d81b2 1-35
+apps/meteor/server/lib/2fa/code/index.test.ts
+  s_5b0b5e57d4c07c::t_3042dfe65d81b2 1-136
+apps/meteor/ee/tests/unit/server/airgappedRestrictions/airgappedRestrictions.test.ts
+  s_5b0b5e57d4c07c::t_3042dfe65d81b2 1-134
+apps/meteor/tests/unit/server/services/omnichannel/queue.test.ts
+  s_5b0b5e57d4c07c::t_3042dfe65d81b2 1-448
+apps/meteor/ee/tests/unit/server/api/apps/endpoints/lib/makeAppLogsQuery.test.ts
+  s_5b0b5e57d4c07c::t_3042dfe65d81b2 1-132
+docs/backend-folder-structure.md
+  s_5b0b5e57d4c07c::t_3042dfe65d81b2 116-118
+apps/meteor/ee/tests/unit/server/lib/apps/storage/AppRealStorage.test.ts
+  s_5b0b5e57d4c07c::t_3042dfe65d81b2 1-407
+apps/meteor/server/lib/ldap/operations/split.test.ts
+  s_5b0b5e57d4c07c::t_3042dfe65d81b2 1-49
+apps/meteor/tests/unit/server/lib/import/PendingFileImporter.test.ts
+  s_5b0b5e57d4c07c::t_3042dfe65d81b2 1-357
+apps/meteor/tests/unit/server/lib/users/saveUser/sendUserEmail.test.ts
+  s_5b0b5e57d4c07c::t_3042dfe65d81b2 1-155
+apps/meteor/tests/unit/server/services/messages/hooks/BeforeSaveSpotify.test.ts
+  s_5b0b5e57d4c07c::t_3042dfe65d81b2 1-94
+apps/meteor/tests/unit/server/services/omnichannel-analytics/OverviewData.test.ts
+  s_5b0b5e57d4c07c::t_3042dfe65d81b2 1-353
+apps/meteor/tests/unit/server/api/canBypassRateLimit.test.ts
+  s_5b0b5e57d4c07c::t_3042dfe65d81b2 1-41
+apps/meteor/server/lib/ldap/operations/replace.test.ts
+  s_5b0b5e57d4c07c::t_3042dfe65d81b2 1-106
+apps/meteor/server/lib/omnichannel/contacts/validateCustomFields.test.ts
+  s_5b0b5e57d4c07c::t_3042dfe65d81b2 1-64
+apps/meteor/ee/tests/unit/apps/livechat-enterprise/server/lib/mergeContacts.test.ts
+  s_5b0b5e57d4c07c::t_3042dfe65d81b2 1-127
+apps/meteor/tests/unit/server/lib/auth-providers/custom-oauth/transform_helpers.test.js
+  s_5b0b5e57d4c07c::t_3042dfe65d81b2 1-123
+apps/meteor/tests/unit/server/lib/import/messageConverter.test.ts
+  s_5b0b5e57d4c07c::t_3042dfe65d81b2 1-261
+apps/meteor/tests/unit/lib/utils/arrayUtils.test.ts
+  s_5b0b5e57d4c07c::t_3042dfe65d81b2 1-21
+apps/meteor/tests/unit/server/lib/subscriptionTypeGuards.test.ts
+  s_5b0b5e57d4c07c::t_3042dfe65d81b2 1-49
+apps/meteor/tests/unit/server/lib/users/validateUsername.test.ts
+  s_5b0b5e57d4c07c::t_3042dfe65d81b2 1-96
+apps/meteor/tests/unit/server/services/room/getNameForDMs.test.ts
+  s_5b0b5e57d4c07c::t_3042dfe65d81b2 1-130
+apps/meteor/tests/unit/server/settings/functions/getSettingDefaults.test.ts
+  s_5b0b5e57d4c07c::t_3042dfe65d81b2 1-112
+apps/meteor/server/services/video-conference/callMessage.test.ts
+  s_5b0b5e57d4c07c::t_3042dfe65d81b2 1-128
+apps/meteor/tests/unit/server/services/messages/hooks/BeforeSaveCheckMAC.test.ts
+  s_5b0b5e57d4c07c::t_3042dfe65d81b2 1-105
+apps/meteor/tests/unit/server/services/messages/hooks/BeforeSaveBadWords.test.ts
+  s_5b0b5e57d4c07c::t_3042dfe65d81b2 1-129
+apps/meteor/tests/unit/server/slashcommands/hide.test.ts
+  s_5b0b5e57d4c07c::t_3042dfe65d81b2 1-106
+apps/meteor/tests/unit/server/hooks/omnichannel/processRoomAbandonment.test.ts
+  s_5b0b5e57d4c07c::t_3042dfe65d81b2 1-624
+apps/meteor/tests/unit/server/hooks/omnichannel/beforeNewRoom.test.ts
+  s_5b0b5e57d4c07c::t_3042dfe65d81b2 1-54
+apps/meteor/tests/unit/lib/roles/getMostImportantRole.test.ts
+  s_5b0b5e57d4c07c::t_3042dfe65d81b2 1-45
+apps/meteor/tests/unit/server/modules/apps/codecs/mappedData.test.ts
+  s_5b0b5e57d4c07c::t_3042dfe65d81b2 1-239
+apps/meteor/tests/unit/definition/rest/v1/federation/FederationJoinExternalPublicRoomProps.test.ts
+  s_5b0b5e57d4c07c::t_3042dfe65d81b2 1-51
+apps/meteor/tests/unit/server/slashcommands/topic.test.ts
+  s_5b0b5e57d4c07c::t_3042dfe65d81b2 1-49
+apps/meteor/server/lib/messages/extractUrlsFromMessageAST.test.ts
+  s_5b0b5e57d4c07c::t_3042dfe65d81b2 1-118
+apps/meteor/tests/unit/app/markdown/markdown.test.ts
+  s_5b0b5e57d4c07c::t_3042dfe65d81b2 1-236
+apps/meteor/tests/unit/server/lib/autotranslate/autotranslate.test.ts
+  s_5b0b5e57d4c07c::t_3042dfe65d81b2 1-84
+apps/meteor/server/lib/omnichannel/contacts/migrateVisitorToContactId.test.ts
+  s_5b0b5e57d4c07c::t_3042dfe65d81b2 1-71
+apps/meteor/tests/unit/definition/rest/v1/teams/TeamsUpdateMemberProps.test.ts
+  s_5b0b5e57d4c07c::t_3042dfe65d81b2 1-65
+apps/meteor/tests/unit/app/emoji/emojiNativeParser.test.ts
+  s_5b0b5e57d4c07c::t_3042dfe65d81b2 1-71
+apps/meteor/tests/unit/lib/mimeTypes.test.ts
+  s_5b0b5e57d4c07c::t_3042dfe65d81b2 1-17
+apps/meteor/server/lib/ldap/operations/match.test.ts
+  s_5b0b5e57d4c07c::t_3042dfe65d81b2 1-107
+apps/meteor/tests/unit/server/lib/omnichannel/assets.test.ts
+  s_5b0b5e57d4c07c::t_3042dfe65d81b2 1-36
+apps/meteor/server/api/lib/eraseTeam.test.ts
+  s_5b0b5e57d4c07c::t_3042dfe65d81b2 1-294
+apps/meteor/tests/unit/server/lib/import/CsvImporter.test.ts
+  s_5b0b5e57d4c07c::t_3042dfe65d81b2 1-430
+apps/meteor/tests/unit/server/meteor-methods/import/downloadPublicImportFile.test.ts
+  s_5b0b5e57d4c07c::t_3042dfe65d81b2 1-144
+apps/meteor/tests/unit/server/services/messages/hooks/BeforeSavePreventMention.test.ts
+  s_5b0b5e57d4c07c::t_3042dfe65d81b2 1-116
+apps/meteor/tests/unit/server/lib/dataExport/uploadZipFile.test.ts
+  s_5b0b5e57d4c07c::t_3042dfe65d81b2 1-154
+apps/meteor/tests/unit/server/services/instance/service.test.ts
+  s_5b0b5e57d4c07c::t_3042dfe65d81b2 1-196
+apps/meteor/server/lib/2fa/code/EmailCheck.test.ts
+  s_5b0b5e57d4c07c::t_3042dfe65d81b2 1-71
+apps/meteor/server/services/video-conference/expirePresenceLeases.test.ts
+  s_5b0b5e57d4c07c::t_3042dfe65d81b2 1-201
+apps/meteor/server/ufs/ufs-local.test.ts
+  s_5b0b5e57d4c07c::t_3042dfe65d81b2 1-115
+apps/meteor/tests/unit/server/lib/parseMessageSearchQuery.test.ts
+  s_5b0b5e57d4c07c::t_3042dfe65d81b2 1-210
+apps/meteor/ee/tests/unit/server/hooks/messages/BeforeSaveCannedResponse.test.ts
+  s_5b0b5e57d4c07c::t_3042dfe65d81b2 1-169
+apps/meteor/tests/unit/server/lib/shared/getModifiedHttpHeaders.test.ts
+  s_5b0b5e57d4c07c::t_3042dfe65d81b2 1-76
+apps/meteor/tests/unit/definition/rest/v1/teams/TeamsRemoveRoomProps.test.ts
+  s_5b0b5e57d4c07c::t_3042dfe65d81b2 1-27
+apps/meteor/tests/unit/server/lib/omnichannel/isMessageFromBot.test.ts
+  s_5b0b5e57d4c07c::t_3042dfe65d81b2 1-37
+apps/meteor/tests/unit/server/lib/omnichannel/parseTranscriptRequest.test.ts
+  s_5b0b5e57d4c07c::t_3042dfe65d81b2 1-129
+apps/meteor/server/services/video-conference/declineCall.test.ts
+  s_5b0b5e57d4c07c::t_3042dfe65d81b2 1-143
+apps/meteor/tests/unit/server/services/messages/hooks/BeforeSaveJumpToMessage.test.ts
+  s_5b0b5e57d4c07c::t_3042dfe65d81b2 1-736
+apps/meteor/tests/unit/lib/utils/parseParameters.test.ts
+  s_5b0b5e57d4c07c::t_3042dfe65d81b2 1-187
+apps/meteor/tests/unit/server/lib/omnichannel/validateRequiredCustomFields.test.ts
+  s_5b0b5e57d4c07c::t_3042dfe65d81b2 1-66
+apps/meteor/tests/unit/server/services/omnichannel-integrations/providers/twilio.test.ts
+  s_5b0b5e57d4c07c::t_3042dfe65d81b2 1-284
+apps/meteor/ee/tests/unit/server/lib/apps/disableAppsWithAddonsCallback.test.ts
+  s_5b0b5e57d4c07c::t_3042dfe65d81b2 1-233
+apps/meteor/tests/unit/definition/rest/v1/video-conference/VideoConfInfoProps.test.ts
+  s_5b0b5e57d4c07c::t_3042dfe65d81b2 1-42
+apps/meteor/tests/unit/server/lib/fileUtils.test.ts
+  s_5b0b5e57d4c07c::t_3042dfe65d81b2 1-29
+apps/meteor/tests/unit/server/lib/messaging/getHiddenSystemMessage.test.ts
+  s_5b0b5e57d4c07c::t_3042dfe65d81b2 1-92
+apps/meteor/server/lib/media/file-upload/lib/ranges.test.ts
+  s_5b0b5e57d4c07c::t_3042dfe65d81b2 1-63
+apps/meteor/tests/unit/server/lib/notifications/email/api.test.ts
+  s_5b0b5e57d4c07c::t_3042dfe65d81b2 1-69
+apps/meteor/tests/unit/server/services/calendar/utils/getShiftedTime.test.ts
+  s_5b0b5e57d4c07c::t_3042dfe65d81b2 1-23
+apps/meteor/tests/unit/server/services/media-call/service.test.ts
+  s_5b0b5e57d4c07c::t_3042dfe65d81b2 1-175
+apps/meteor/tests/unit/server/lib/import/recordConverter.test.ts
+  s_5b0b5e57d4c07c::t_3042dfe65d81b2 1-136
+apps/meteor/tests/unit/server/services/user/service.test.ts
+  s_5b0b5e57d4c07c::t_3042dfe65d81b2 1-69
+apps/meteor/tests/unit/server/ee/lib/apps/marketplace/MarketplaceAPIClient.test.ts
+  s_5b0b5e57d4c07c::t_3042dfe65d81b2 1-60
+apps/meteor/tests/unit/server/startup/initialData.test.ts
+  s_5b0b5e57d4c07c::t_3042dfe65d81b2 1-233
+apps/meteor/tests/unit/lib/utils/isRelativeURL.test.ts
+  s_5b0b5e57d4c07c::t_3042dfe65d81b2 1-24
+apps/meteor/tests/unit/server/slashcommands/create.test.ts
+  s_5b0b5e57d4c07c::t_3042dfe65d81b2 1-84
+apps/meteor/ee/tests/unit/server/lib/omnichannel/AutoTransferChatsScheduler.test.ts
+  s_5b0b5e57d4c07c::t_3042dfe65d81b2 1-259
+apps/meteor/server/lib/ldap/operations/substring.test.ts
+  s_5b0b5e57d4c07c::t_3042dfe65d81b2 1-49
+apps/meteor/tests/unit/server/lib/statistics/lib/UAParserCustom.test.js
+  s_5b0b5e57d4c07c::t_3042dfe65d81b2 1-74
+apps/meteor/tests/unit/server/settings/functions/compareSettingsMetadata.test.ts
+  s_5b0b5e57d4c07c::t_3042dfe65d81b2 1-30
+apps/meteor/ee/tests/unit/server/airgappedRestrictions/airGappedRestrictionsWrapper.test.ts
+  s_5b0b5e57d4c07c::t_3042dfe65d81b2 1-36
+apps/meteor/tests/unit/server/slashcommands/messages.test.ts
+  s_5b0b5e57d4c07c::t_3042dfe65d81b2 1-61
+apps/meteor/tests/unit/server/lib/import/SlackImporter.test.ts
+  s_5b0b5e57d4c07c::t_3042dfe65d81b2 1-299
+apps/meteor/tests/unit/server/api/checkPermissions.test.ts
+  s_5b0b5e57d4c07c::t_3042dfe65d81b2 1-108
+apps/meteor/tests/unit/server/lib/messaging/reactions/setReaction.test.ts
+  s_5b0b5e57d4c07c::t_3042dfe65d81b2 1-431
+apps/meteor/tests/unit/server/lib/notifications/message/getEmailContent.test.ts
+  s_5b0b5e57d4c07c::t_3042dfe65d81b2 1-96
+apps/meteor/tests/unit/server/lib/systemMessage/hideSystemMessage.test.ts
+  s_5b0b5e57d4c07c::t_3042dfe65d81b2 1-55
+apps/meteor/tests/unit/definition/rest/v1/teams/TeamsLeaveProps.test.ts
+  s_5b0b5e57d4c07c::t_3042dfe65d81b2 1-64
+apps/meteor/tests/unit/server/lib/saml/loginHandler.test.ts
+  s_5b0b5e57d4c07c::t_3042dfe65d81b2 1-111
+apps/meteor/ee/tests/unit/server/lib/omnichannel/requestPdfTranscript.test.ts
+  s_5b0b5e57d4c07c::t_3042dfe65d81b2 1-73
+apps/meteor/tests/unit/server/services/omnichannel-analytics/AgentData.test.ts
+  s_5b0b5e57d4c07c::t_3042dfe65d81b2 1-1806
+apps/meteor/ee/server/lib/livekit/callConfig.test.ts
+  s_5b0b5e57d4c07c::t_3042dfe65d81b2 1-93
+apps/meteor/tests/unit/app/markdown/client.test.js
+  s_5b0b5e57d4c07c::t_3042dfe65d81b2 1-481
+apps/meteor/ee/server/lib/livekit/config.test.ts
+  s_5b0b5e57d4c07c::t_3042dfe65d81b2 1-63
+docs/adr/0003-media-call-events-for-apps.md
+  s_5b0b5e57d4c07c::t_3042dfe65d81b2 666
+apps/meteor/server/lib/omnichannel/contacts/registerContact.test.ts
+  s_5b0b5e57d4c07c::t_3042dfe65d81b2 1-131
+apps/meteor/tests/unit/app/markdown/hljs.test.ts
+  s_5b0b5e57d4c07c::t_3042dfe65d81b2 1-214
+apps/meteor/tests/unit/definition/rest/v1/teams/TeamsUpdateProps.test.ts
+  s_5b0b5e57d4c07c::t_3042dfe65d81b2 1-193
+apps/meteor/server/lib/statistics/functions/sendUsageReport.test.ts
+  s_5b0b5e57d4c07c::t_3042dfe65d81b2 1-106
+apps/meteor/server/routes/avatar/room.test.ts
+  s_5b0b5e57d4c07c::t_3042dfe65d81b2 1-135
+apps/meteor/server/lib/ldap/operations/fallback.test.ts
+  s_5b0b5e57d4c07c::t_3042dfe65d81b2 1-62
+apps/meteor/tests/unit/server/lib/dataExport/exportRoomMessagesToFile.test.ts
+  s_5b0b5e57d4c07c::t_3042dfe65d81b2 1-280
+apps/meteor/tests/unit/server/lib/saml/idpMetadata.test.ts
+  s_5b0b5e57d4c07c::t_3042dfe65d81b2 1-226
+apps/meteor/tests/unit/server/modules/apps/converters.lookup.test.ts
+  s_5b0b5e57d4c07c::t_3042dfe65d81b2 1-232
+apps/meteor/tests/unit/server/slashcommands/invite.test.ts
+  s_5b0b5e57d4c07c::t_3042dfe65d81b2 1-198
+apps/meteor/server/lib/dataExport/processDataDownloads.test.ts
+  s_5b0b5e57d4c07c::t_3042dfe65d81b2 1-252
+apps/meteor/tests/unit/server/lib/import/userConverter.test.ts
+  s_5b0b5e57d4c07c::t_3042dfe65d81b2 1-627
+apps/meteor/tests/unit/server/startup/cloudRegistration.test.ts
+  s_5b0b5e57d4c07c::t_3042dfe65d81b2 1-76
+apps/meteor/server/lib/2fa/code/checkCodeForUser.test.ts
+  s_5b0b5e57d4c07c::t_3042dfe65d81b2 1-194
+apps/meteor/server/lib/omnichannel/contacts/updateContact.test.ts
+  s_5b0b5e57d4c07c::t_3042dfe65d81b2 1-89
+apps/meteor/tests/unit/lib/utils/secondsToHHMMSS.test.ts
+  s_5b0b5e57d4c07c::t_3042dfe65d81b2 1-30
+apps/meteor/tests/unit/server/modules/apps/converters.messages.test.ts
+  s_5b0b5e57d4c07c::t_3042dfe65d81b2 1-262
+apps/meteor/tests/unit/definition/rest/v1/federation/FederationPublicRoomsProps.test.ts
+  s_5b0b5e57d4c07c::t_3042dfe65d81b2 1-39
+apps/meteor/tests/unit/server/lib/messaging/mentions/server.test.js
+  s_5b0b5e57d4c07c::t_3042dfe65d81b2 1-289
+apps/meteor/tests/unit/server/services/omnichannel-analytics/ChartData.test.ts
+  s_5b0b5e57d4c07c::t_3042dfe65d81b2 1-245
+apps/meteor/tests/unit/definition/rest/v1/teams/TeamsRemoveMemberProps.test.ts
+  s_5b0b5e57d4c07c::t_3042dfe65d81b2 1-85
+apps/meteor/tests/unit/server/services/room/service.test.ts
+  s_5b0b5e57d4c07c::t_3042dfe65d81b2 1-730
+apps/meteor/tests/unit/server/modules/apps/converters.threads.test.ts
+  s_5b0b5e57d4c07c::t_3042dfe65d81b2 1-171
+apps/meteor/tests/unit/server/slashcommands/leave.test.ts
+  s_5b0b5e57d4c07c::t_3042dfe65d81b2 1-71
+apps/meteor/package.json
+  s_5b0b5e57d4c07c::t_3042dfe65d81b2 27-28,31,60-61
+apps/meteor/ee/tests/unit/server/lib/omnichannel/Helper.test.ts
+  s_5b0b5e57d4c07c::t_3042dfe65d81b2 1-112
+apps/meteor/server/lib/ldap/Connection.test.ts
+  s_5b0b5e57d4c07c::t_3042dfe65d81b2 1-110
+apps/meteor/tests/unit/lib/getMessageMaxParseLength.test.ts
+  s_5b0b5e57d4c07c::t_3042dfe65d81b2 1-41
+docs/proposals/apps-converters-zod/README.md
+  s_5b0b5e57d4c07c::t_3042dfe65d81b2 205,237
+apps/meteor/ee/tests/unit/server/hooks/omnichannel/manageDepartmentUnit.test.ts
+  s_5b0b5e57d4c07c::t_3042dfe65d81b2 1-182
+apps/meteor/ee/server/lib/ldap/Manager.test.ts
+  s_5b0b5e57d4c07c::t_3042dfe65d81b2 1-111
+apps/meteor/server/lib/utils/restrictions.test.ts
+  s_5b0b5e57d4c07c::t_3042dfe65d81b2 1-35
+apps/meteor/server/services/video-conference/renameCall.test.ts
+  s_5b0b5e57d4c07c::t_3042dfe65d81b2 1-77
+apps/meteor/tests/unit/definition/rest/v1/federation/FederationAddServerProps.test.ts
+  s_5b0b5e57d4c07c::t_3042dfe65d81b2 1-43
+apps/meteor/tests/unit/server/lib/omnichannel/disableContact.test.ts
+  s_5b0b5e57d4c07c::t_3042dfe65d81b2 1-107
+apps/meteor/tests/unit/server/api/checkPermissionsForInvocation.test.ts
+  s_5b0b5e57d4c07c::t_3042dfe65d81b2 1-127
+apps/meteor/tests/unit/server/lib/settingValidationRules.test.ts
+  s_5b0b5e57d4c07c::t_3042dfe65d81b2 1-199
+apps/meteor/ee/server/lib/livekit/capabilities.test.ts
+  s_5b0b5e57d4c07c::t_3042dfe65d81b2 1-50
+apps/meteor/tests/unit/server/lib/notifications/message/messageContainsHighlight.test.ts
+  s_5b0b5e57d4c07c::t_3042dfe65d81b2 1-91
+apps/meteor/tests/unit/server/lib/banUserFromRoom.test.ts
+  s_5b0b5e57d4c07c::t_3042dfe65d81b2 1-213
+apps/meteor/ee/tests/unit/apps/livechat-enterprise/server/lib/isAgentAvailableToTakeContactInquiry.test.ts
+  s_5b0b5e57d4c07c::t_3042dfe65d81b2 1-122
+apps/meteor/tests/unit/server/modules/apps/rooms.test.ts
+  s_5b0b5e57d4c07c::t_3042dfe65d81b2 1-178
+apps/meteor/tests/unit/server/slashcommands/moderation.test.ts
+  s_5b0b5e57d4c07c::t_3042dfe65d81b2 1-118
+apps/meteor/tests/unit/server/publications/messages.test.ts
+  s_5b0b5e57d4c07c::t_3042dfe65d81b2 1-355
+apps/meteor/tests/unit/definition/rest/v1/video-conference/VideoConfListProps.test.ts
+  s_5b0b5e57d4c07c::t_3042dfe65d81b2 1-52
+apps/meteor/server/lib/media/file-upload/lib/urlExpiry.test.ts
+  s_5b0b5e57d4c07c::t_3042dfe65d81b2 1-17
+apps/meteor/ee/tests/unit/apps/livechat-enterprise/server/lib/verifyContactChannel.test.ts
+  s_5b0b5e57d4c07c::t_3042dfe65d81b2 1-244
+apps/meteor/server/lib/ldap/getLdapString.test.ts
+  s_5b0b5e57d4c07c::t_3042dfe65d81b2 1-48
+apps/meteor/tests/unit/server/lib/import/roomConverter.test.ts
+  s_5b0b5e57d4c07c::t_3042dfe65d81b2 1-271
+apps/meteor/server/lib/callbacks.test.ts
+  s_5b0b5e57d4c07c::t_3042dfe65d81b2 1-72
+apps/meteor/tests/unit/server/lib/omnichannel/business-hour/BusinessHourManager.test.ts
+  s_5b0b5e57d4c07c::t_3042dfe65d81b2 1-205
+apps/meteor/server/routes/avatar/middlewares/auth.test.ts
+  s_5b0b5e57d4c07c::t_3042dfe65d81b2 1-125
+apps/meteor/tests/unit/app/highlight-words/helper.test.js
+  s_5b0b5e57d4c07c::t_3042dfe65d81b2 1-64
+apps/meteor/tests/unit/server/api/lib/isValidQuery.test.ts
+  s_5b0b5e57d4c07c::t_3042dfe65d81b2 1-227
+apps/meteor/tests/unit/server/lib/cloud/syncWorkspace/syncCloudData.test.ts
+  s_5b0b5e57d4c07c::t_3042dfe65d81b2 1-102
+apps/meteor/server/lib/media/file-upload/lib/FileUpload.test.ts
+  s_5b0b5e57d4c07c::t_3042dfe65d81b2 1-577
+apps/meteor/server/services/video-conference/leaveCall.test.ts
+  s_5b0b5e57d4c07c::t_3042dfe65d81b2 1-398
+apps/meteor/server/services/video-conference/listJoinableCalls.test.ts
+  s_5b0b5e57d4c07c::t_3042dfe65d81b2 1-279
+apps/meteor/server/api/lib/getServerInfo.test.ts
+  s_5b0b5e57d4c07c::t_3042dfe65d81b2 1-61
+apps/meteor/tests/unit/server/lib/messages/extractMentionsFromMessageAST.test.ts
+  s_5b0b5e57d4c07c::t_3042dfe65d81b2 1-398
+apps/meteor/tests/unit/server/lib/e2e/functions/resetRoomKey.test.ts
+  s_5b0b5e57d4c07c::t_3042dfe65d81b2 1-208
+apps/meteor/tests/unit/server/lib/omnichannel/webhooks.test.ts
+  s_5b0b5e57d4c07c::t_3042dfe65d81b2 1-300
+apps/meteor/tests/unit/server/services/apps-engine/service.test.ts
+  s_5b0b5e57d4c07c::t_3042dfe65d81b2 1-224
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.2",
+  "base_commit_sha": "4e0d10e9716e929702336a8ecd3f24407f099ee3",
+  "prompts": {},
+  "sessions": {
+    "s_5b0b5e57d4c07c": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "143f68a7-f9c3-4644-b97d-bcdac5d53d61",
+        "model": "claude-opus-5-5"
+      },
+      "human_author": "Ricardo Garim <rswarovsky@gmail.com>"
+    }
+  }
+}
