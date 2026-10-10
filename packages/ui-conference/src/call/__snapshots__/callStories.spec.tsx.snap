@@ -225,9 +225,9 @@ exports[`call stories renders CallBar Default without crashing 1`] = `
             >
               <i
                 aria-hidden="true"
-                class="rcx-box rcx-box--full rcx-icon--name-hand-pointer rcx-icon rcx-css-1bepdyv"
+                class="rcx-box rcx-box--full rcx-icon--name-hand rcx-icon rcx-css-1bepdyv"
               >
-                
+                
               </i>
             </button>
             <div
@@ -430,9 +430,9 @@ exports[`call stories renders CallControls CameraOnAndSharing without crashing 1
           >
             <i
               aria-hidden="true"
-              class="rcx-box rcx-box--full rcx-icon--name-hand-pointer rcx-icon rcx-css-1bepdyv"
+              class="rcx-box rcx-box--full rcx-icon--name-hand rcx-icon rcx-css-1bepdyv"
             >
-              
+              
             </i>
           </button>
           <div
@@ -634,9 +634,9 @@ exports[`call stories renders CallControls Default without crashing 1`] = `
           >
             <i
               aria-hidden="true"
-              class="rcx-box rcx-box--full rcx-icon--name-hand-pointer rcx-icon rcx-css-1bepdyv"
+              class="rcx-box rcx-box--full rcx-icon--name-hand rcx-icon rcx-css-1bepdyv"
             >
-              
+              
             </i>
           </button>
           <div
@@ -838,9 +838,9 @@ exports[`call stories renders CallControls HandRaised without crashing 1`] = `
           >
             <i
               aria-hidden="true"
-              class="rcx-box rcx-box--full rcx-icon--name-hand-pointer rcx-icon rcx-css-1px5el2"
+              class="rcx-box rcx-box--full rcx-icon--name-hand rcx-icon rcx-css-1px5el2"
             >
-              
+              
             </i>
           </button>
           <div
@@ -1027,9 +1027,9 @@ exports[`call stories renders CallControls Muted without crashing 1`] = `
           >
             <i
               aria-hidden="true"
-              class="rcx-box rcx-box--full rcx-icon--name-hand-pointer rcx-icon rcx-css-1bepdyv"
+              class="rcx-box rcx-box--full rcx-icon--name-hand rcx-icon rcx-css-1bepdyv"
             >
-              
+              
             </i>
           </button>
           <div
@@ -1231,9 +1231,9 @@ exports[`call stories renders CallControls OneOnOne without crashing 1`] = `
           >
             <i
               aria-hidden="true"
-              class="rcx-box rcx-box--full rcx-icon--name-hand-pointer rcx-icon rcx-css-1bepdyv"
+              class="rcx-box rcx-box--full rcx-icon--name-hand rcx-icon rcx-css-1bepdyv"
             >
-              
+              
             </i>
           </button>
           <div
@@ -1420,9 +1420,9 @@ exports[`call stories renders CallControls SpeakingWhileMuted without crashing 1
           >
             <i
               aria-hidden="true"
-              class="rcx-box rcx-box--full rcx-icon--name-hand-pointer rcx-icon rcx-css-1bepdyv"
+              class="rcx-box rcx-box--full rcx-icon--name-hand rcx-icon rcx-css-1bepdyv"
             >
-              
+              
             </i>
           </button>
           <div
@@ -2114,12 +2114,12 @@ exports[`call stories renders CallRaisedHands OneHand without crashing 1`] = `
           title="Alan Turing raised their hand"
           type="button"
         >
-          <span
+          <i
             aria-hidden="true"
-            class="rcx-box rcx-box--full rcx-css-16qr4e"
+            class="rcx-box rcx-box--full rcx-icon--name-hand rcx-icon rcx-css-18jrq41"
           >
-            ✋
-          </span>
+            
+          </i>
           <span
             class="rcx-box rcx-box--full rcx-css-1te28na"
           >
@@ -2150,12 +2150,12 @@ exports[`call stories renders CallRaisedHands Queue without crashing 1`] = `
           title="Alan Turing raised their hand"
           type="button"
         >
-          <span
+          <i
             aria-hidden="true"
-            class="rcx-box rcx-box--full rcx-css-16qr4e"
+            class="rcx-box rcx-box--full rcx-icon--name-hand rcx-icon rcx-css-18jrq41"
           >
-            ✋
-          </span>
+            
+          </i>
           <span
             class="rcx-box rcx-box--full rcx-css-1te28na"
           >
@@ -2195,12 +2195,12 @@ exports[`call stories renders CallRaisedHands QueueOpen without crashing 1`] = `
           title="Alan Turing raised their hand"
           type="button"
         >
-          <span
+          <i
             aria-hidden="true"
-            class="rcx-box rcx-box--full rcx-css-16qr4e"
+            class="rcx-box rcx-box--full rcx-icon--name-hand rcx-icon rcx-css-18jrq41"
           >
-            ✋
-          </span>
+            
+          </i>
           <span
             class="rcx-box rcx-box--full rcx-css-1te28na"
           >
@@ -3113,11 +3113,12 @@ exports[`call stories renders CallStageArea HandsAndReactions without crashing 1
                       <div
                         class="rcx-box rcx-box--full rcx-css-156jqoz rcx-css-1ruhktd"
                       >
-                        <span
+                        <i
                           aria-hidden="true"
+                          class="rcx-box rcx-box--full rcx-icon--name-hand rcx-icon rcx-css-7z8nen"
                         >
-                          ✋
-                        </span>
+                          
+                        </i>
                         <div
                           style="border: 0px; clip-path: inset(50%); height: 1px; margin: -1px; overflow: hidden; padding: 0px; position: absolute; width: 1px; white-space: nowrap;"
                         >
@@ -3216,11 +3217,12 @@ exports[`call stories renders CallStageArea HandsAndReactions without crashing 1
                       <div
                         class="rcx-box rcx-box--full rcx-css-156jqoz rcx-css-1ruhktd"
                       >
-                        <span
+                        <i
                           aria-hidden="true"
+                          class="rcx-box rcx-box--full rcx-icon--name-hand rcx-icon rcx-css-7z8nen"
                         >
-                          ✋
-                        </span>
+                          
+                        </i>
                         <div
                           style="border: 0px; clip-path: inset(50%); height: 1px; margin: -1px; overflow: hidden; padding: 0px; position: absolute; width: 1px; white-space: nowrap;"
                         >
@@ -4446,11 +4448,12 @@ exports[`call stories renders ParticipantTile HandRaised without crashing 1`] = 
             <div
               class="rcx-box rcx-box--full rcx-css-156jqoz rcx-css-1ruhktd"
             >
-              <span
+              <i
                 aria-hidden="true"
+                class="rcx-box rcx-box--full rcx-icon--name-hand rcx-icon rcx-css-7z8nen"
               >
-                ✋
-              </span>
+                
+              </i>
               <div
                 style="border: 0px; clip-path: inset(50%); height: 1px; margin: -1px; overflow: hidden; padding: 0px; position: absolute; width: 1px; white-space: nowrap;"
               >

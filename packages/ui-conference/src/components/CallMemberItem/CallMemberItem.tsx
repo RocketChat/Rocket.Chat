@@ -90,9 +90,7 @@ const CallMemberItem = ({
 					)}
 					{handRaised && (
 						<Box marginInlineStart={4} display='flex' title={t('Raised_hand')}>
-							<Box is='span' aria-hidden>
-								✋
-							</Box>
+							<Icon name='hand' size='x16' />
 							<VisuallyHidden>{t('Raised_hand')}</VisuallyHidden>
 						</Box>
 					)}

@@ -122,7 +122,7 @@ const TileFrame = ({ displayName, muted, held, audioStream, handPosition, ringWi
 			<Box className={[labelStyles, handPosition !== undefined ? handRaisedLabelStyles : null]} fontScale='p1'>
 				{handPosition !== undefined && (
 					<>
-						<span aria-hidden>✋</span>
+						<Icon name='hand' size='x20' verticalAlign='text-bottom' />
 						<VisuallyHidden>{t('Raised_hand')}</VisuallyHidden> ({handPosition}){'  '}
 					</>
 				)}

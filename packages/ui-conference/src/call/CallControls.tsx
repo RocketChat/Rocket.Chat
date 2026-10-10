@@ -243,7 +243,7 @@ const CallControls = ({ layout, onLayoutChange, onOpenDiagnostics }: CallControl
 			/>
 			<ToggleButton
 				label={t('Raise_hand')}
-				icons={['hand-pointer', 'hand-pointer']}
+				icons={['hand', 'hand']}
 				titles={[t('Raise_hand'), t('Lower_hand')]}
 				pressed={self.handRaised}
 				aria-pressed={self.handRaised}

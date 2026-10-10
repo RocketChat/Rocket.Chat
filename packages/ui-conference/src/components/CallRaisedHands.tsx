@@ -1,4 +1,4 @@
-import { Box } from '@rocket.chat/fuselage';
+import { Box, Icon } from '@rocket.chat/fuselage';
 import { GenericMenu } from '@rocket.chat/ui-client';
 import type { GenericMenuItemProps } from '@rocket.chat/ui-client';
 import { useTranslation } from 'react-i18next';
@@ -54,9 +54,7 @@ const CallRaisedHands = ({ hands }: CallRaisedHandsProps) => {
 			placement='bottom-end'
 			button={
 				<RaisedHandsButton aria-label={label}>
-					<Box is='span' aria-hidden lineHeight={1}>
-						✋
-					</Box>
+					<Icon name='hand' size='x16' flexShrink={0} />
 					<Box is='span' withTruncatedText>
 						{next.name}
 					</Box>
