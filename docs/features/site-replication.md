@@ -19,14 +19,15 @@ same data. The reasoning behind the design is in
   | Kind of field | Example | Rule |
   | --- | --- | --- |
   | Counter | unread count, message count | Increments from both sites add up |
-  | Set | reactions, thread followers, login tokens | Additions and removals from both sites apply |
+  | Set | reactions, thread followers, login tokens | Each element follows its latest addition or removal |
   | Anything else | message text, room topic | The newer write wins |
   | Deleted document | a removed message | The delete wins over edits made before it |
 
 - **Collisions on unique keys are merged or renamed.** Two subscriptions for the same user and room
-  merge into one. Two rooms or users created with the same name keep the earlier one's name; the
-  later one gets the creating site's id appended, for example `ops-west`. Collisions with no safe
-  rule are kept aside in the `rocketchat_site_replication_conflicts` collection.
+  merge into one. When two rooms or users claim the same name, by creation or by renaming, the
+  earlier claim keeps it and the later one gets its site's id appended, for example `ops-west`.
+  Collisions with no safe rule are kept aside in the `rocketchat_site_replication_conflicts`
+  collection.
 
 ## Messages written while disconnected
 
@@ -91,6 +92,10 @@ An example two-site deployment is in
 ## Known limits
 
 - Two edits to the same field during a partition keep only the later one.
+- Adding an element a site already holds is not a write. If one site removes a thread from a user's
+  unread threads while the other adds the same, already present thread, the removal wins.
+- Counters are not clamped. If both sites reset the same unread count during a partition, it can
+  read below zero until the user next reads the room.
 - A renamed user keeps the old username in messages and subscriptions written before the rename.
 - Upgrades run database migrations at each site independently. Upgrade both sites while they are
   connected and idle, or a migration that increments values may apply twice.

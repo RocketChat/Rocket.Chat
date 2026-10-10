@@ -78,6 +78,7 @@ describe('buildOp', () => {
 		const op = update({ reactions: { ':x:': { usernames: ['u1'], note: 'n' } } }, { reactions: {} }, { removedFields: ['reactions.:x:'] });
 		expect(op?.pull).toEqual([['reactions.:x:.usernames', ['u1']]]);
 		expect(op?.unset).toEqual(['reactions.:x:.note']);
+		expect(op?.prune).toEqual(['reactions.:x:']);
 	});
 
 	it('falls back to plain values when the pre-image is missing', () => {

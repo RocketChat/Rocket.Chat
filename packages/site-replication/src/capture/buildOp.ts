@@ -30,6 +30,8 @@ class UpdateBuilder {
 
 	readonly pull = new Map<string, unknown[]>();
 
+	readonly prune = new Set<string>();
+
 	private readonly handledInstances = new Set<string>();
 
 	constructor(
@@ -140,6 +142,9 @@ class UpdateBuilder {
 				for (const key of keys) {
 					this.walk(joinPath(path, key), before?.[key], after?.[key]);
 				}
+				if (after === undefined && path !== '') {
+					this.prune.add(path);
+				}
 				return;
 			}
 			case 'plain':
@@ -175,7 +180,10 @@ class UpdateBuilder {
 		if (this.pull.size) {
 			op.pull = [...this.pull];
 		}
-		return op.set || op.unset || op.inc || op.add || op.pull ? op : undefined;
+		if (this.prune.size) {
+			op.prune = [...this.prune];
+		}
+		return op.set || op.unset || op.inc || op.add || op.pull || op.prune ? op : undefined;
 	}
 }
 

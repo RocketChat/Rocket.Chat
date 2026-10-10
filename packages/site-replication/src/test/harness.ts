@@ -13,7 +13,8 @@ import type { AppliedChange, Logger } from '../types';
 
 export const THRESHOLD_MS = 600;
 
-export type Network = { up: boolean };
+/** `loseHealAnswers` drops that many answers to merge requests after the peer has processed them. */
+export type Network = { up: boolean; loseHealAnswers?: number };
 
 export type TestSite = {
 	id: string;
@@ -57,6 +58,10 @@ export const createSites = async (clients: MongoClient[], dbName: string, networ
 		const response = await fetch(url, init);
 		if (!network.up) {
 			throw new Error('network partition');
+		}
+		if (url.includes('/heal?') && network.loseHealAnswers) {
+			network.loseHealAnswers--;
+			throw new Error('answer lost');
 		}
 		return response;
 	};

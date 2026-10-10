@@ -5,8 +5,8 @@ import type { IncomingMessage, Server, ServerResponse } from 'http';
 import { BSON } from 'mongodb';
 
 import { PROTOCOL_PREFIX } from './protocol';
-import type { PeerHandlers } from './protocol';
-import type { Logger, SiteId } from '../types';
+import type { OpsRequest, PeerHandlers } from './protocol';
+import type { Logger, Op, SiteId } from '../types';
 
 const MAX_BODY_BYTES = 64 * 1024 * 1024;
 
@@ -29,6 +29,23 @@ const readBody = async (req: IncomingMessage): Promise<unknown> => {
 		chunks.push(chunk as Buffer);
 	}
 	return chunks.length ? BSON.EJSON.parse(Buffer.concat(chunks).toString('utf8'), { relaxed: true }) : undefined;
+};
+
+const isOpsRequest = (body: unknown): body is OpsRequest => {
+	const ops = (body as { ops?: unknown } | undefined)?.ops;
+	return (
+		Array.isArray(ops) &&
+		ops.every(
+			(op: Partial<Op>) =>
+				typeof op === 'object' &&
+				typeof op.seq === 'number' &&
+				typeof op.t === 'number' &&
+				typeof op.site === 'string' &&
+				typeof op.coll === 'string' &&
+				typeof op.id === 'string' &&
+				['insert', 'update', 'delete'].includes(op.kind as string),
+		)
+	);
 };
 
 const send = (res: ServerResponse, status: number, body: unknown): void => {
@@ -61,8 +78,13 @@ export const createPeerServer = (options: {
 			switch (route) {
 				case 'GET /hello':
 					return send(res, 200, await handlers.hello(from));
-				case 'POST /ops':
-					return send(res, 200, await handlers.ops((await readBody(req)) as never));
+				case 'POST /ops': {
+					const body = await readBody(req);
+					if (!isOpsRequest(body)) {
+						return send(res, 400, { error: 'malformed operations' });
+					}
+					return send(res, 200, await handlers.ops(body));
+				}
 				case 'POST /heal':
 					return send(res, 200, await handlers.heal((await readBody(req)) as never));
 				case 'POST /heal/poke':

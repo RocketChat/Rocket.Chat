@@ -159,6 +159,66 @@ describe('SiteReplicator with two sites', () => {
 		}
 	});
 
+	it('suffixes a room renamed to a name the other side created later', async () => {
+		await rooms(a.db).insertOne({ _id: 'r1', name: 'foo', fname: 'foo', t: 'c', msgs: 0, _updatedAt: new Date() });
+		await converged(a, b);
+		await partition();
+		await rooms(a.db).updateOne({ _id: 'r1' }, { $set: { name: 'bar', fname: 'bar', _updatedAt: new Date() } });
+		await sleep(20);
+		await rooms(b.db).insertOne({ _id: 'r2', name: 'bar', fname: 'bar', t: 'c', msgs: 0, _updatedAt: new Date() });
+		await heal();
+
+		for (const site of [a, b]) {
+			expect(await rooms(site.db).findOne({ _id: 'r1' })).toMatchObject({ name: 'bar' });
+			expect(await rooms(site.db).findOne({ _id: 'r2' })).toMatchObject({ name: 'bar-B' });
+		}
+	});
+
+	it('keeps the later of an addition and a removal of the same set element', async () => {
+		await subscriptions(a.db).insertOne({ _id: 's1', rid: 'general', u: { _id: 'alice' }, unread: 1, tunread: ['t1', 't2'] });
+		await converged(a, b);
+		await partition();
+		await subscriptions(a.db).updateOne({ _id: 's1' }, { $pull: { tunread: 't1' }, $inc: { unread: -1 } } as Document);
+		await subscriptions(b.db).updateOne({ _id: 's1' }, { $pull: { tunread: { $in: ['t1', 't2'] } } } as Document);
+		await sleep(20);
+		await subscriptions(b.db).updateOne({ _id: 's1' }, { $addToSet: { tunread: 't1' }, $inc: { unread: -1 } });
+		await subscriptions(b.db).updateOne({ _id: 's1' }, { $inc: { unread: 1 } });
+		await heal();
+
+		expect(await subscriptions(a.db).findOne({ _id: 's1' })).toMatchObject({ tunread: ['t1'], unread: 0 });
+	});
+
+	it('keeps a document re-created after the other side deleted it', async () => {
+		await rooms(a.db).insertOne({ _id: 'phoenix', t: 'c', msgs: 0, topic: 'first life', _updatedAt: new Date() });
+		await converged(a, b);
+		await partition();
+		await rooms(b.db).deleteOne({ _id: 'phoenix' });
+		await sleep(20);
+		await rooms(a.db).deleteOne({ _id: 'phoenix' });
+		await rooms(a.db).insertOne({ _id: 'phoenix', t: 'c', msgs: 0, topic: 'second life', _updatedAt: new Date() });
+		await heal();
+
+		expect(await rooms(b.db).findOne({ _id: 'phoenix' })).toMatchObject({ topic: 'second life' });
+	});
+
+	it('removes a reaction entirely unless the other side reacted meanwhile', async () => {
+		await messages(a.db).insertOne({
+			_id: 'm-r',
+			rid: 'general',
+			msg: 'x',
+			ts: new Date(),
+			u: { _id: 'alice' },
+			reactions: { ':x:': { usernames: ['alice'] }, ':y:': { usernames: ['alice'] } },
+		});
+		await converged(a, b);
+		await partition();
+		await messages(a.db).updateOne({ _id: 'm-r' }, { $unset: { 'reactions.:x:': 1, 'reactions.:y:': 1 } });
+		await messages(b.db).updateOne({ _id: 'm-r' }, { $addToSet: { 'reactions.:y:.usernames': 'bob' } });
+		await heal();
+
+		expect((await messages(b.db).findOne({ _id: 'm-r' }))?.reactions).toEqual({ ':y:': { usernames: ['bob'] } });
+	});
+
 	it("moves each side's messages into a thread when both sides posted in a room while disconnected", async () => {
 		await rooms(a.db).insertOne({ _id: 'quiet', name: 'quiet', t: 'c', msgs: 0, _updatedAt: new Date() });
 		await converged(a, b);
@@ -179,6 +239,19 @@ describe('SiteReplicator with two sites', () => {
 			expect(anchorB?.msg).toContain('Site B');
 			expect(byId.get('a2')?.tmid).toBe(anchorA?._id);
 			expect(byId.get('q1')?.tmid).toBeUndefined();
+		}
+	});
+
+	it('agrees on one plan when the answer to a merge request is lost', async () => {
+		await partition();
+		await postMessage(a.db, 'lost-a', 'general', 'alice', 'from A');
+		await postMessage(b.db, 'lost-b', 'general', 'bob', 'from B');
+		network.loseHealAnswers = 2;
+		await heal();
+
+		for (const site of [a, b]) {
+			expect(await messages(site.db).countDocuments({ 'u.username': 'rocket.cat' })).toBe(2);
+			expect(await messages(site.db).countDocuments({ tmid: { $exists: true } })).toBe(2);
 		}
 	});
 

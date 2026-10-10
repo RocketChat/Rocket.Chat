@@ -1,6 +1,6 @@
 import type { Collection, Db, ResumeToken } from 'mongodb';
 
-import type { HealPlan } from './heal/plan';
+import type { HealPlan, HealRequest } from './heal/plan';
 import type { Op, Stamp } from './types';
 import type { VersionDoc } from './versions';
 
@@ -9,7 +9,7 @@ export type CaptureState = { _id: 'capture'; seq: number; token?: ResumeToken };
 /** Progress with the peer, in the peer's sequence numbers for `applied` and ours for `acked`. */
 export type PeerState = { _id: `peer:${string}`; acked: number; applied: number };
 
-export type LinkState = { _id: 'link'; downSince?: number | null; healing?: boolean };
+export type LinkState = { _id: 'link'; downSince?: number | null; healing?: boolean; pendingHeal?: HealRequest | null };
 
 export type SessionsState = { _id: 'sessions'; ids: string[] };
 

@@ -1,20 +1,24 @@
 import { randomUUID } from 'crypto';
 
-import type { ChangeStream, ChangeStreamDocument, ChangeStreamOptions, Document, ResumeToken } from 'mongodb';
+import { MongoServerError } from 'mongodb';
+import type { ChangeStream, ChangeStreamDocument, ChangeStreamOptions, ClientSession, Document, Filter, ResumeToken } from 'mongodb';
 
 import { buildOp } from './buildOp';
 import type { CapturedEvent, UnsequencedOp } from './buildOp';
 import { sessionKey, sleep } from '../context';
 import type { Context } from '../context';
-import type { CaptureState, OutboxEntry } from '../store';
+import type { CaptureState, OutboxEntry, StateDoc } from '../store';
 import type { Stamp } from '../types';
-import { emptyVersion, newestAmong, stampPaths, versionKey } from '../versions';
+import { elementStamp, emptyVersion, isNewer, newestAmong, stampElements, stampPaths, versionKey } from '../versions';
 import type { VersionDoc } from '../versions';
 
 const BATCH_LIMIT = 500;
 const FENCE_TIMEOUT_MS = 30_000;
 
 type Captured = { op: UnsequencedOp; updatedAt: Date | null | undefined };
+
+/** Another instance of this site has taken over capture since this one last wrote. */
+class CaptureTakenOver extends Error {}
 
 const writtenPaths = (op: UnsequencedOp): string[] => [...(op.set ?? []).map(([path]) => path), ...(op.unset ?? [])];
 
@@ -54,9 +58,13 @@ export class Capture {
 
 	private readonly fenceWaiters = new Map<string, () => void>();
 
+	/** The resume token this instance last read or wrote; capture state that moved past it belongs to another instance. */
+	private lastToken: ResumeToken | undefined;
+
 	constructor(
 		private readonly ctx: Context,
 		private readonly onCaptured: () => void,
+		private readonly onTakenOver: () => void,
 	) {}
 
 	start(): void {
@@ -95,6 +103,12 @@ export class Capture {
 				if (this.stopped) {
 					return;
 				}
+				if (err instanceof CaptureTakenOver) {
+					this.ctx.logger.warn('another instance took over capture; stopping here');
+					this.stopped = true;
+					this.onTakenOver();
+					return;
+				}
 				this.ctx.logger.error('capture failed, restarting', { err: String(err) });
 				await sleep(1000);
 			}
@@ -109,6 +123,7 @@ export class Capture {
 			fullDocumentBeforeChange: 'whenAvailable',
 			maxAwaitTimeMS: 200,
 		};
+		this.lastToken = state?.token;
 		if (state?.token) {
 			options.resumeAfter = state.token;
 		} else {
@@ -176,7 +191,13 @@ export class Capture {
 		if (captured.length) {
 			await this.write(captured, token);
 		} else {
-			await store.state.updateOne({ _id: 'capture' }, { $set: { token } }, { upsert: true });
+			await this.guarded(async () => {
+				const result = await store.state.updateOne(this.ownedState(), { $set: { token } }, { upsert: true });
+				if (!result.matchedCount && !result.upsertedCount) {
+					throw new CaptureTakenOver();
+				}
+			});
+			this.lastToken = token;
 		}
 
 		for (const id of fences) {
@@ -188,45 +209,75 @@ export class Capture {
 		}
 	}
 
+	private ownedState(): Filter<StateDoc> {
+		return this.lastToken ? { _id: 'capture', token: this.lastToken } : { _id: 'capture', token: { $exists: false } };
+	}
+
+	/** Runs a write to the capture state, reporting a takeover when another instance already moved that state on. */
+	private async guarded(write: () => Promise<void>): Promise<void> {
+		try {
+			await write();
+		} catch (err) {
+			if (err instanceof MongoServerError && err.code === 11000) {
+				throw new CaptureTakenOver();
+			}
+			throw err;
+		}
+	}
+
 	private async write(captured: Captured[], token: ResumeToken): Promise<void> {
-		const { client, store } = this.ctx;
+		const { client } = this.ctx;
 		const session = client.startSession();
 		try {
-			await session.withTransaction(async () => {
-				const state = (await store.state.findOneAndUpdate(
-					{ _id: 'capture' },
-					{ $inc: { seq: captured.length }, $set: { token } },
-					{ upsert: true, returnDocument: 'after', session },
-				)) as CaptureState | null;
-				const firstSeq = (state?.seq ?? captured.length) - captured.length + 1;
-
-				const keys = [...new Set(captured.map(({ op }) => versionKey(op.coll, op.id)))];
-				const versions = new Map<string, VersionDoc>(
-					(await store.versions.find({ _id: { $in: keys } }, { session }).toArray()).map((doc) => [doc._id, doc]),
-				);
-
-				const entries: OutboxEntry[] = captured.map(({ op, updatedAt }, index) => {
-					const key = versionKey(op.coll, op.id);
-					const version = versions.get(key) ?? emptyVersion(op.coll, op.id);
-					const stamped = this.stamp(op, version);
-					versions.set(key, this.recordLocalWrite(stamped, version, updatedAt));
-					return { ...stamped, seq: firstSeq + index, _id: firstSeq + index };
-				});
-
-				await store.outbox.insertMany(entries, { session });
-				await store.versions.bulkWrite(
-					[...versions.values()].map((doc) => ({ replaceOne: { filter: { _id: doc._id }, replacement: doc, upsert: true } })),
-					{ session },
-				);
-			});
+			await this.guarded(() => this.writeInTransaction(session, captured, token));
+			this.lastToken = token;
 		} finally {
 			await session.endSession();
 		}
 	}
 
+	private async writeInTransaction(session: ClientSession, captured: Captured[], token: ResumeToken): Promise<void> {
+		const { store } = this.ctx;
+		await session.withTransaction(async () => {
+			const state = (await store.state.findOneAndUpdate(
+				this.ownedState(),
+				{ $inc: { seq: captured.length }, $set: { token } },
+				{ upsert: true, returnDocument: 'after', session },
+			)) as CaptureState | null;
+			if (!state) {
+				throw new CaptureTakenOver();
+			}
+			const firstSeq = state.seq - captured.length + 1;
+
+			const keys = [...new Set(captured.map(({ op }) => versionKey(op.coll, op.id)))];
+			const versions = new Map<string, VersionDoc>(
+				(await store.versions.find({ _id: { $in: keys } }, { session }).toArray()).map((doc) => [doc._id, doc]),
+			);
+
+			const entries: OutboxEntry[] = captured.map(({ op, updatedAt }, index) => {
+				const key = versionKey(op.coll, op.id);
+				const version = versions.get(key) ?? emptyVersion(op.coll, op.id);
+				const stamped = this.stamp(op, version);
+				versions.set(key, this.recordLocalWrite(stamped, version, updatedAt));
+				return { ...stamped, seq: firstSeq + index, _id: firstSeq + index };
+			});
+
+			await store.outbox.insertMany(entries, { session });
+			await store.versions.bulkWrite(
+				[...versions.values()].map((doc) => ({ replaceOne: { filter: { _id: doc._id }, replacement: doc, upsert: true } })),
+				{ session },
+			);
+		});
+	}
+
 	/** Stamps a local write after every write it overwrites, so a slow local clock cannot make it lose to older peer writes. */
 	private stamp(op: UnsequencedOp, version: VersionDoc): UnsequencedOp {
-		const overwritten = newestAmong(version, writtenPaths(op));
+		const overwritten = [...(op.add ?? []), ...(op.pull ?? [])]
+			.flatMap(([path, values]) => values.map((value) => elementStamp(version, path, value)))
+			.reduce(
+				(newest, candidate) => (candidate && isNewer(candidate, newest) ? candidate : newest),
+				newestAmong(version, writtenPaths(op)),
+			);
 		return overwritten && overwritten.t >= op.t ? { ...op, t: overwritten.t + 1 } : op;
 	}
 
@@ -245,6 +296,10 @@ export class Capture {
 				return next;
 			case 'update':
 				next.v = stampPaths(next.v, writtenPaths(op), stamp);
+				next.e = [...(op.add ?? []), ...(op.pull ?? [])].reduce(
+					(entries, [path, values]) => stampElements(entries, path, values, stamp),
+					next.e,
+				);
 				return next;
 			case 'delete':
 				next.del = stamp;

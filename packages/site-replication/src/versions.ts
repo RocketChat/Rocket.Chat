@@ -1,7 +1,10 @@
-import { pathsOverlap } from './paths';
+import { canonical, pathsOverlap } from './paths';
 import type { SiteId, Stamp } from './types';
 
 export type FieldVersion = { p: string; t: number; s: SiteId };
+
+/** The last addition or removal of one element of a set field. */
+export type ElementVersion = { p: string; k: string; t: number; s: SiteId };
 
 /**
  * What this site knows about the last write to each field of one replicated document, kept so a late
@@ -10,6 +13,7 @@ export type FieldVersion = { p: string; t: number; s: SiteId };
 export type VersionDoc = {
 	_id: string;
 	v: FieldVersion[];
+	e?: ElementVersion[];
 	/** When the document was created. Decides which of two conflicting documents wins. */
 	ins?: Stamp;
 	/** When the document was deleted. A delete wins over every write stamped before it. */
@@ -55,3 +59,20 @@ export const stampPaths = (entries: FieldVersion[], paths: string[], stamp: Stam
 };
 
 export const emptyVersion = (coll: string, id: string): VersionDoc => ({ _id: versionKey(coll, id), v: [], at: new Date() });
+
+/** The newest write that decides whether `value` is in the set at `path`: its own last change, or a write of the whole field. */
+export const elementStamp = (version: VersionDoc | undefined | null, path: string, value: unknown): Stamp | undefined => {
+	const key = canonical(value);
+	const own = version?.e?.find((entry) => entry.p === path && entry.k === key);
+	const whole = newestOverlapping(version, path);
+	if (own && isNewer(own, whole)) {
+		return { t: own.t, s: own.s };
+	}
+	return whole;
+};
+
+export const stampElements = (entries: ElementVersion[] | undefined, path: string, values: unknown[], stamp: Stamp): ElementVersion[] => {
+	const keys = new Set(values.map(canonical));
+	const kept = (entries ?? []).filter((entry) => entry.p !== path || !keys.has(entry.k));
+	return [...kept, ...[...keys].map((k) => ({ p: path, k, t: stamp.t, s: stamp.s }))];
+};

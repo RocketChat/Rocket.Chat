@@ -33,10 +33,15 @@ export class HealCoordinator {
 		private readonly wakeLink: () => void,
 	) {}
 
+	/** Restores the reconnection state, finishing any merge plan whose rewrite a restart interrupted. */
 	async load(): Promise<void> {
 		const link = (await this.ctx.store.state.findOne({ _id: 'link' })) as LinkState | null;
 		this.healing = !!link?.healing;
 		this.outageStart = link?.downSince ?? null;
+		this.acceptingFromPeer = !(this.healing && this.initiates);
+		for (const plan of await this.ctx.store.heals.find({ localRethreadDone: { $ne: true } }).toArray()) {
+			await this.applier.rethreadOwnBacklog(plan);
+		}
 	}
 
 	isHealing(): boolean {
@@ -107,30 +112,44 @@ export class HealCoordinator {
 		return { site, name: siteName, downSince: this.outageStart, from, cut, rooms };
 	}
 
+	/**
+	 * Asks the peer for its half of the plan. The request is stored and sent again unchanged until it is
+	 * answered, so a lost answer cannot leave the two sites holding different plans.
+	 */
 	private async initiate(): Promise<void> {
 		this.acceptingFromPeer = false;
-		try {
-			await this.quiesceApplies();
-			const hello = await this.peer.hello();
-			const request: HealRequest = {
-				healId: randomUUID(),
-				at: Date.now(),
-				thresholdMs: this.thresholdMs,
-				initiator: await this.backlogSide(hello.applied),
-				responderFrom: await this.applier.appliedFrom(this.ctx.peer),
-			};
-			const { responder } = await this.peer.heal(request);
-			await this.activate(buildPlan(request, responder));
-		} finally {
-			this.acceptingFromPeer = true;
-		}
+		await this.quiesceApplies();
+		const request = (await this.pendingRequest()) ?? (await this.newRequest());
+		const { responder } = await this.peer.heal(request);
+		await this.activate(buildPlan(request, responder));
+	}
+
+	private async pendingRequest(): Promise<HealRequest | undefined> {
+		const link = (await this.ctx.store.state.findOne({ _id: 'link' })) as LinkState | null;
+		return link?.pendingHeal ?? undefined;
+	}
+
+	private async newRequest(): Promise<HealRequest> {
+		const hello = await this.peer.hello();
+		const request: HealRequest = {
+			healId: randomUUID(),
+			at: Date.now(),
+			thresholdMs: this.thresholdMs,
+			initiator: await this.backlogSide(hello.applied),
+			responderFrom: await this.applier.appliedFrom(this.ctx.peer),
+		};
+		await this.ctx.store.state.updateOne({ _id: 'link' }, { $set: { pendingHeal: request } }, { upsert: true });
+		return request;
 	}
 
 	/** The responder's half of the handshake. Repeating a request returns the plan already agreed for it. */
 	async handleHeal(request: HealRequest): Promise<HealResponse> {
 		const existing = await this.ctx.store.heals.findOne({ _id: request.healId });
 		const existingSide = existing && sideOf(existing, this.ctx.site);
-		if (existingSide) {
+		if (existing && existingSide) {
+			if (!existing.localRethreadDone) {
+				await this.activate(existing);
+			}
 			return { responder: existingSide };
 		}
 		this.healing = true;
@@ -152,7 +171,8 @@ export class HealCoordinator {
 		await this.applier.rethreadOwnBacklog(plan);
 		this.healing = false;
 		this.outageStart = null;
-		await store.state.updateOne({ _id: 'link' }, { $set: { healing: false, downSince: null } }, { upsert: true });
+		this.acceptingFromPeer = true;
+		await store.state.updateOne({ _id: 'link' }, { $set: { healing: false, downSince: null, pendingHeal: null } }, { upsert: true });
 		logger.info('sites reconciled after reconnecting', { heal: plan._id, threadedRooms: plan.rooms.length });
 		this.wakeLink();
 	}

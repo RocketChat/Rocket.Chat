@@ -69,6 +69,8 @@ export class SiteReplicator {
 
 	private leaseLoop: Promise<void> | undefined;
 
+	private leaseRenewedAt = 0;
+
 	constructor(private readonly options: SiteReplicatorOptions) {
 		if (options.site === options.peer.site) {
 			throw new Error('site and peer site must differ');
@@ -148,17 +150,28 @@ export class SiteReplicator {
 	}
 
 	private async renewLease(): Promise<void> {
-		const interval = (this.options.leaseTtlMs ?? 15_000) / 3;
+		const ttl = this.options.leaseTtlMs ?? 15_000;
 		while (!this.stopped) {
-			await sleep(interval);
-			if (!this.stopped) {
-				await this.holdLease().catch((err) => this.ctx.logger.error('lease renewal failed', { err: String(err) }));
+			await sleep(ttl / 3);
+			if (this.stopped) {
+				return;
+			}
+			try {
+				await this.holdLease();
+			} catch (err) {
+				this.ctx.logger.error('lease renewal failed', { err: String(err) });
+				if (Date.now() - this.leaseRenewedAt >= ttl / 2) {
+					await this.stepDown();
+				}
 			}
 		}
 	}
 
 	private async holdLease(): Promise<void> {
 		const leader = await this.lease.acquire();
+		if (leader) {
+			this.leaseRenewedAt = Date.now();
+		}
 		if (leader && !this.running) {
 			await this.stepUp();
 		} else if (!leader && this.running) {
@@ -173,10 +186,14 @@ export class SiteReplicator {
 			options.secret,
 			ctx.site,
 			options.fetch ?? globalThis.fetch,
-			options.requestTimeoutMs ?? 10_000,
+			options.requestTimeoutMs ?? 60_000,
 		);
 		let link: Link | undefined;
-		const capture = new Capture(ctx, () => link?.wake());
+		const capture = new Capture(
+			ctx,
+			() => link?.wake(),
+			() => void this.stepDown(),
+		);
 		const applier = new Applier(ctx, capture, options.notifier ?? (() => undefined));
 		const coordinator = new HealCoordinator(ctx, peerClient, applier, options.partitionThresholdMs ?? 30_000, () => link?.wake());
 		link = new Link(ctx, peerClient, applier, coordinator, {
@@ -200,6 +217,6 @@ export class SiteReplicator {
 		}
 		await running.link.stop();
 		await running.capture.stop();
-		await running.applier.close();
+		running.applier.close();
 	}
 }

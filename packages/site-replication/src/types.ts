@@ -29,6 +29,8 @@ export type Op = {
 	inc?: PathDelta[];
 	add?: PathValues[];
 	pull?: PathValues[];
+	/** Objects the origin removed whole. The peer removes them only if nothing it holds in them survives the removals. */
+	prune?: string[];
 };
 
 export type UniqueConflictPolicy =
