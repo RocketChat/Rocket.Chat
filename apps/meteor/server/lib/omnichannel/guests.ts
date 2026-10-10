@@ -86,6 +86,7 @@ export async function removeContactsByVisitorId({ _id }: { _id: string }) {
 	if (!contacts.length) {
 		livechatLogger.debug({ msg: 'No contacts found for visitor', visitorId: _id });
 		await removeGuest({ _id });
+		return;
 	}
 
 	// And a contact shouldn't have many channels associated, so we can do this
