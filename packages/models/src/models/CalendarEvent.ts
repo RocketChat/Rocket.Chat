@@ -1,6 +1,6 @@
 import type { ICalendarEvent, IUser, RocketChatRecordDeleted } from '@rocket.chat/core-typings';
 import type { CalendarBulkUpsertResult, ICalendarEventModel, ImportedCalendarEvent } from '@rocket.chat/model-typings';
-import type { DeleteResult, FindCursor, IndexDescription, Collection, Db, UpdateResult } from 'mongodb';
+import type { DeleteResult, FindCursor, IndexDescription, Collection, Db, UpdateResult, FindOptions } from 'mongodb';
 import { ObjectId } from 'mongodb';
 
 import { BaseRaw } from './BaseRaw';
@@ -134,20 +134,24 @@ export class CalendarEventRaw extends BaseRaw<ICalendarEvent> implements ICalend
 		uid: IUser['_id'],
 		startTime: Date,
 		endTime: Date,
+		options?: FindOptions<ICalendarEvent>,
 	): FindCursor<ICalendarEvent> {
-		return this.find({
-			_id: { $ne: eventId }, // Exclude current event
-			uid,
-			busy: { $ne: false },
-			$or: [
-				// Event starts during our event
-				{ startTime: { $gte: startTime, $lt: endTime } },
-				// Event ends during our event
-				{ endTime: { $gt: startTime, $lte: endTime } },
-				// Event completely contains our event
-				{ startTime: { $lte: startTime }, endTime: { $gte: endTime } },
-			],
-		});
+		return this.find(
+			{
+				_id: { $ne: eventId }, // Exclude current event
+				uid,
+				busy: { $ne: false },
+				$or: [
+					// Event starts during our event
+					{ startTime: { $gte: startTime, $lt: endTime } },
+					// Event ends during our event
+					{ endTime: { $gt: startTime, $lte: endTime } },
+					// Event completely contains our event
+					{ startTime: { $lte: startTime }, endTime: { $gte: endTime } },
+				],
+			},
+			options,
+		);
 	}
 
 	public async findNextFutureEvent(startTime: Date): Promise<Pick<ICalendarEvent, '_id' | 'startTime'> | null> {
