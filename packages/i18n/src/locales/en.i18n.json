@@ -2767,7 +2767,7 @@
   "Exchange_Contacts_Sync_Enabled": "Sync personal contacts",
   "Exchange_Contacts_Sync_Enabled_Description": "Reads each user's Outlook contact folders so their personal contacts resolve incoming calls and appear in contact search.",
   "Exchange_Contacts_Sync_Interval_Days": "Contacts sync interval (days)",
-  "Exchange_Contacts_Sync_Interval_Days_Description": "How often each mailbox is read. Contacts change far less often than calendars, so a longer interval costs little.",
+  "Exchange_Contacts_Sync_Interval_Days_Description": "How often each mailbox is read. A fraction is truncated and anything below one day is read as one day. Contacts change far less often than calendars, so a longer interval costs little.",
   "Exchange_Desktop": "Legacy (per user, desktop app only)",
   "Exchange_Desktop_Description": "Each user signs in to Exchange from the Rocket.Chat desktop app. Only available on desktop, and coverage depends on each user signing in.",
   "Exchange_EWS": "Exchange on-premises credentials",
