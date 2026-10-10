@@ -45,6 +45,7 @@ let skipBold = false;
 let skipItalic = false;
 let skipStrikethrough = false;
 let skipReferences = false;
+let codeFence = '';
 }}
 
 Start
@@ -59,6 +60,7 @@ Start
 Blocks
   = Blockquote
   / BlockSpoiler
+  / LongCode
   / Code
   / HorizontalRule
   / Table
@@ -158,6 +160,16 @@ TimestampRules = "<t:" date:(Unixtime / ISO8601Date / ISO8601DateWithoutMillisec
 Code = "```" language:CodeLanguage? EndOfLine lines:CodeLine+ EndOfLine "```" { return code(lines, language); }
 
 CodeLanguage = $[a-zA-Z0-9 \_\-.]+
+
+/**
+ * Code fenced by four or more backticks, so it can hold a ``` fence of its own.
+ * Only a line with exactly the opening backticks closes it.
+ */
+LongCode = fence:$("````" "`"*) &{ codeFence = fence; return true; } language:CodeLanguage? EndOfLine lines:LongCodeLine+ LongCodeClose { return code(lines, language); }
+
+LongCodeLine = !LongCodeClose text:$[^\r\n]* EndOfLine { return codeLine(plain(text)); }
+
+LongCodeClose = fence:$"`"+ &{ return fence === codeFence; } [ \t]* &(EndOfLine / !.)
 
 CodeLine
   = chunk:CodeChunk { return codeLine(chunk); }
