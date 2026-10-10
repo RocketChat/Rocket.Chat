@@ -2,7 +2,7 @@ import type { Credentials } from '@rocket.chat/api-client';
 import type { IRoom, ISubscription, IUser } from '@rocket.chat/core-typings';
 import type { Endpoints } from '@rocket.chat/rest-typings';
 
-import { api, assertSuccess, credentials, request, RequestFailedError } from './api-data';
+import { api, assertSuccess, credentials, methodCall, request, RequestFailedError } from './api-data';
 import type { IRequestConfig } from './users.helper';
 
 type CreateRoomParams = {
@@ -150,6 +150,44 @@ export const addUserToRoom = ({
 			assertSuccess(endpoint, await requestInstance.post(api(endpoint)).set(credentialsInstance).send({ roomId: rid, username })),
 		),
 	);
+};
+
+/**
+ * Adds users to a direct room through the deprecated `addUsersToRoom` method, the only entrypoint
+ * that accepts a direct room. Prefer {@link addUserToRoom} for channels and groups.
+ *
+ * @throws {RequestFailedError} with the method's DDP result as `body` when the method fails
+ */
+// TODO: move addUserToDirectRoomViaMethod to REST once an endpoint can add users to a direct room
+export const addUserToDirectRoomViaMethod = async ({
+	usernames,
+	rid,
+	config,
+}: {
+	usernames: string[];
+	rid: IRoom['_id'];
+	config: IRequestConfig;
+}) => {
+	const res = await config.request
+		.post(methodCall('addUsersToRoom'))
+		.set(config.credentials)
+		.send({
+			message: JSON.stringify({
+				method: 'addUsersToRoom',
+				params: [{ rid, users: usernames }],
+				id: 'id',
+				msg: 'method',
+			}),
+		});
+
+	const carriesMethodReply = (res.status === 200 || res.status === 400) && typeof res.body?.message === 'string';
+	const result = carriesMethodReply ? JSON.parse(res.body.message) : undefined;
+
+	if (res.status !== 200 || res.body?.success !== true || !result || result.error) {
+		throw new RequestFailedError('method.call/addUsersToRoom', res.status, result ?? res.body);
+	}
+
+	return result.result as boolean;
 };
 
 /**
