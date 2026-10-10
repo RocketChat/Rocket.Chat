@@ -33,4 +33,10 @@ describe('validateSettings', () => {
 	it('should throw an error expecting multiSelect receiving string', () => {
 		expect(() => validateSetting('test', 'multiSelect', '[]')).to.throw();
 	});
+	it('should validate the type multiLookup', () => {
+		expect(() => validateSetting('test', 'multiLookup', [])).to.not.throw();
+	});
+	it('should throw an error expecting multiLookup receiving string', () => {
+		expect(() => validateSetting('test', 'multiLookup', '[]')).to.throw();
+	});
 });

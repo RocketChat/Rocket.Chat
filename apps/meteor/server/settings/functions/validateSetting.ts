@@ -36,6 +36,7 @@ export const validateSetting = <T extends ISetting>(_id: T['_id'], type: T['type
 			}
 			break;
 		case 'multiSelect':
+		case 'multiLookup':
 			if (!Array.isArray(value)) {
 				throw new Error(`Setting ${_id} is of type array but got ${typeof value}`);
 			}

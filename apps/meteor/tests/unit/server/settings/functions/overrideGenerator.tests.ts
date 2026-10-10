@@ -43,4 +43,14 @@ describe('overrideGenerator', () => {
 
 		expect(setting).to.be.equal(overwritten);
 	});
+
+	it('should overwrite a multiLookup setting from a JSON array', () => {
+		const overwrite = overrideGenerator(() => '["a","b"]');
+
+		const setting = getSettingDefaults({ _id: 'test', value: [], type: 'multiLookup' });
+		const overwritten = overwrite(setting);
+
+		expect(overwritten).to.have.property('value').that.deep.equals(['a', 'b']);
+		expect(overwritten).to.have.property('valueSource').that.equals('processEnvValue');
+	});
 });

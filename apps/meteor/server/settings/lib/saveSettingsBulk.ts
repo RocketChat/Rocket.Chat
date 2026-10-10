@@ -91,6 +91,7 @@ export const saveSettingsBulk = async (
 					checkSettingValueBounds(setting, value);
 					break;
 				case 'multiSelect':
+				case 'multiLookup':
 					check(value, Array);
 					break;
 				case 'code':
