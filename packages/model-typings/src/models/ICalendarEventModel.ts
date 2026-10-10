@@ -1,10 +1,15 @@
 import type { ICalendarEvent, IUser } from '@rocket.chat/core-typings';
-import type { FindCursor, UpdateResult } from 'mongodb';
+import type { DeleteResult, Document, FindCursor, UpdateResult } from 'mongodb';
 
-import type { IBaseModel } from './IBaseModel';
+import type { IBaseModel, InsertionModel } from './IBaseModel';
+import type { DocumentWithProjection, FindOptionsWithProjection } from '../types/DocumentWithProjection';
+
+export type ImportedCalendarEvent = Omit<InsertionModel<ICalendarEvent>, 'notificationSent' | 'externalId'> & { externalId: string };
+
+export type CalendarBulkUpsertResult = { matchedCount: number; modifiedCount: number; upsertedCount: number };
 
 export interface ICalendarEventModel extends IBaseModel<ICalendarEvent> {
-	findByUserIdAndDate(uid: IUser['_id'], date: Date): FindCursor<ICalendarEvent>;
+	findByUserIdAndDate(uid: IUser['_id'], date: Date, options?: { excludeOutlook?: boolean }): FindCursor<ICalendarEvent>;
 	updateEvent(eventId: ICalendarEvent['_id'], eventData: Partial<ICalendarEvent>): Promise<UpdateResult>;
 	findNextNotificationDate(): Promise<Date | null>;
 	findEventsToNotify(notificationTime: Date, minutes: number): FindCursor<ICalendarEvent>;
@@ -13,7 +18,13 @@ export interface ICalendarEventModel extends IBaseModel<ICalendarEvent> {
 		externalId: Required<ICalendarEvent>['externalId'],
 		uid: ICalendarEvent['uid'],
 	): Promise<ICalendarEvent | null>;
-	findOverlappingEvents(eventId: ICalendarEvent['_id'], uid: IUser['_id'], startTime: Date, endTime: Date): FindCursor<ICalendarEvent>;
+	findOverlappingEvents<P extends Document = ICalendarEvent, O extends FindOptionsWithProjection<P> = FindOptionsWithProjection<P>>(
+		eventId: ICalendarEvent['_id'],
+		uid: IUser['_id'],
+		startTime: Date,
+		endTime: Date,
+		options?: O,
+	): FindCursor<DocumentWithProjection<P, O>>;
 	findNextFutureEvent(startTime: Date): Promise<Pick<ICalendarEvent, '_id' | 'startTime'> | null>;
 	findEventsStartingNow({
 		now,
@@ -22,4 +33,15 @@ export interface ICalendarEventModel extends IBaseModel<ICalendarEvent> {
 		now: Date;
 		offset?: number;
 	}): FindCursor<Pick<ICalendarEvent, '_id' | 'uid' | 'startTime' | 'endTime'>>;
+	bulkUpsertImported(events: ImportedCalendarEvent[]): Promise<CalendarBulkUpsertResult>;
+	reopenNotifications(uid: IUser['_id'], externalIds: string[]): Promise<UpdateResult>;
+	deleteUnfinishedByExternalIdsAndUserId(uid: IUser['_id'], externalIds: string[], notBefore: Date): Promise<DeleteResult>;
+	deleteImportedOutsideSet(uid: IUser['_id'], start: Date, end: Date, keepExternalIds: string[]): Promise<DeleteResult>;
+	deleteSeriesOutsideSet(
+		uid: IUser['_id'],
+		start: Date,
+		end: Date,
+		seriesMasterIds: string[],
+		keepExternalIds: string[],
+	): Promise<DeleteResult>;
 }

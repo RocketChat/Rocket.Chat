@@ -1,10 +1,11 @@
-import type { ICalendarService } from '@rocket.chat/core-services';
+import type { CalendarBatchOptions, CalendarBatchResult, ICalendarService } from '@rocket.chat/core-services';
 import { Presence, ServiceClassInternal, api } from '@rocket.chat/core-services';
 import type { IUser, ICalendarEvent } from '@rocket.chat/core-typings';
 import { UserStatus } from '@rocket.chat/core-typings';
 import { cronJobs } from '@rocket.chat/cron';
+import { License } from '@rocket.chat/license';
 import { Logger } from '@rocket.chat/logger';
-import type { InsertionModel } from '@rocket.chat/model-typings';
+import type { ImportedCalendarEvent, InsertionModel } from '@rocket.chat/model-typings';
 import { CalendarEvent, Users } from '@rocket.chat/models';
 import type { UpdateResult, DeleteResult } from 'mongodb';
 
@@ -20,7 +21,9 @@ const defaultMinutesForNotifications = 5;
 export class CalendarService extends ServiceClassInternal implements ICalendarService {
 	protected name = 'calendar';
 
-	public async create(data: Omit<InsertionModel<ICalendarEvent>, 'reminderTime' | 'notificationSent'>): Promise<ICalendarEvent['_id']> {
+	public async create(
+		data: Omit<InsertionModel<ICalendarEvent>, 'reminderTime' | 'notificationSent' | 'source' | 'seriesMasterId'>,
+	): Promise<ICalendarEvent['_id']> {
 		const { uid, startTime, endTime, subject, description, reminderMinutesBeforeStart, meetingUrl, busy } = data;
 		const minutes = reminderMinutesBeforeStart ?? defaultMinutesForNotifications;
 		const reminderTime = minutes ? getShiftedTime(startTime, -minutes) : undefined;
@@ -48,7 +51,9 @@ export class CalendarService extends ServiceClassInternal implements ICalendarSe
 		return insertResult.insertedId;
 	}
 
-	public async import(data: Omit<InsertionModel<ICalendarEvent>, 'notificationSent'>): Promise<ICalendarEvent['_id']> {
+	public async import(
+		data: Omit<InsertionModel<ICalendarEvent>, 'notificationSent' | 'source' | 'seriesMasterId'>,
+	): Promise<ICalendarEvent['_id']> {
 		const { externalId } = data;
 		if (!externalId) {
 			return this.create(data);
@@ -104,11 +109,14 @@ export class CalendarService extends ServiceClassInternal implements ICalendarSe
 		return CalendarEvent.findOne({ _id: eventId });
 	}
 
-	public async list(uid: IUser['_id'], date: Date): Promise<ICalendarEvent[]> {
-		return CalendarEvent.findByUserIdAndDate(uid, date).toArray();
+	public async list(uid: IUser['_id'], date: Date, options?: { excludeOutlook?: boolean }): Promise<ICalendarEvent[]> {
+		return CalendarEvent.findByUserIdAndDate(uid, date, options).toArray();
 	}
 
-	public async update(eventId: ICalendarEvent['_id'], data: Partial<ICalendarEvent>): Promise<UpdateResult | null> {
+	public async update(
+		eventId: ICalendarEvent['_id'],
+		data: Omit<Partial<ICalendarEvent>, 'source' | 'seriesMasterId'>,
+	): Promise<UpdateResult | null> {
 		const event = await this.get(eventId);
 		if (!event) {
 			return null;
@@ -150,7 +158,7 @@ export class CalendarService extends ServiceClassInternal implements ICalendarSe
 	public async delete(eventId: ICalendarEvent['_id']): Promise<DeleteResult> {
 		const event = await this.get(eventId);
 		const now = new Date();
-		const wasInProgress = Boolean(event && event.busy !== false && event.startTime <= now && (!event.endTime || event.endTime > now));
+		const wasInProgress = Boolean(event && this.isBusyAndInProgress(event, now));
 
 		const result = await CalendarEvent.deleteOne({
 			_id: eventId,
@@ -166,6 +174,142 @@ export class CalendarService extends ServiceClassInternal implements ICalendarSe
 		}
 
 		return result;
+	}
+
+	public async importMany(
+		events: Omit<InsertionModel<ICalendarEvent>, 'notificationSent'>[],
+		options?: CalendarBatchOptions,
+	): Promise<CalendarBatchResult> {
+		const prepared: ImportedCalendarEvent[] = [];
+		const byUid = new Map<IUser['_id'], string[]>();
+		let skipped = 0;
+
+		for (const data of events) {
+			const { uid, externalId, source, seriesMasterId, startTime, endTime, subject, description, reminderMinutesBeforeStart, busy } = data;
+
+			if (!externalId) {
+				skipped++;
+				continue;
+			}
+
+			const meetingUrl = data.meetingUrl ? data.meetingUrl : await this.parseDescriptionForMeetingUrl(description);
+			const reminderTime =
+				reminderMinutesBeforeStart !== undefined && reminderMinutesBeforeStart >= 0
+					? getShiftedTime(startTime, -reminderMinutesBeforeStart)
+					: undefined;
+
+			prepared.push({
+				uid,
+				externalId,
+				source,
+				seriesMasterId,
+				startTime,
+				endTime,
+				subject,
+				description,
+				meetingUrl,
+				reminderMinutesBeforeStart,
+				reminderTime,
+				busy,
+			});
+
+			const seen = byUid.get(uid);
+			if (seen) {
+				seen.push(externalId);
+			} else {
+				byUid.set(uid, [externalId]);
+			}
+		}
+
+		const { upsertedCount, modifiedCount } = await CalendarEvent.bulkUpsertImported(prepared);
+
+		let reopened = 0;
+		for (const [uid, externalIds] of byUid) {
+			reopened += (await CalendarEvent.reopenNotifications(uid, externalIds)).modifiedCount;
+		}
+
+		const result: CalendarBatchResult = {
+			changed: upsertedCount + modifiedCount + reopened > 0,
+			upserted: upsertedCount,
+			modified: modifiedCount + reopened,
+			deleted: 0,
+			skipped,
+		};
+
+		if (!options?.deferSideEffects && result.changed) {
+			await this.applyBatchSideEffects([...byUid.keys()]);
+		}
+
+		return result;
+	}
+
+	public async deleteImported(
+		uid: IUser['_id'],
+		externalIds: string[],
+		notBefore: Date,
+		options?: CalendarBatchOptions,
+	): Promise<CalendarBatchResult> {
+		if (!externalIds.length) {
+			return { changed: false, upserted: 0, modified: 0, deleted: 0, skipped: 0 };
+		}
+
+		const { deletedCount } = await CalendarEvent.deleteUnfinishedByExternalIdsAndUserId(uid, externalIds, notBefore);
+
+		return this.finishDeletion(uid, deletedCount, options);
+	}
+
+	public async pruneImportedWindow(
+		uid: IUser['_id'],
+		timeWindow: { start: Date; end: Date },
+		keepExternalIds: string[],
+		options?: CalendarBatchOptions,
+	): Promise<CalendarBatchResult> {
+		const { deletedCount } = await CalendarEvent.deleteImportedOutsideSet(uid, timeWindow.start, timeWindow.end, keepExternalIds);
+
+		return this.finishDeletion(uid, deletedCount, options);
+	}
+
+	public async pruneImportedSeries(
+		uid: IUser['_id'],
+		timeWindow: { start: Date; end: Date },
+		seriesMasterIds: string[],
+		keepExternalIds: string[],
+		options?: CalendarBatchOptions,
+	): Promise<CalendarBatchResult> {
+		if (!seriesMasterIds.length) {
+			return { changed: false, upserted: 0, modified: 0, deleted: 0, skipped: 0 };
+		}
+
+		const { deletedCount } = await CalendarEvent.deleteSeriesOutsideSet(
+			uid,
+			timeWindow.start,
+			timeWindow.end,
+			seriesMasterIds,
+			keepExternalIds,
+		);
+
+		return this.finishDeletion(uid, deletedCount, options);
+	}
+
+	public async refreshBusyPresence(uid: IUser['_id']): Promise<void> {
+		return this.syncBusyPresence(uid, { now: new Date() });
+	}
+
+	private async finishDeletion(uid: IUser['_id'], deletedCount: number, options?: CalendarBatchOptions): Promise<CalendarBatchResult> {
+		if (deletedCount > 0 && !options?.deferSideEffects) {
+			await this.applyBatchSideEffects([uid]);
+		}
+
+		return { changed: deletedCount > 0, upserted: 0, modified: 0, deleted: deletedCount, skipped: 0 };
+	}
+
+	private async applyBatchSideEffects(uids: IUser['_id'][]): Promise<void> {
+		await this.setupNextNotification();
+		await this.setupNextStatusChange();
+
+		for (const uid of uids) {
+			await this.refreshBusyPresence(uid);
+		}
 	}
 
 	public async setupNextNotification(): Promise<void> {
@@ -269,6 +413,10 @@ export class CalendarService extends ServiceClassInternal implements ICalendarSe
 		await this.syncBusyPresence(event.uid, { excludeEventId: event._id, seedEndTime: event.endTime, now });
 	}
 
+	private isBusyAndInProgress(event: Pick<ICalendarEvent, 'startTime' | 'endTime' | 'busy'>, now: Date): boolean {
+		return event.busy !== false && event.startTime <= now && (!event.endTime || event.endTime > now);
+	}
+
 	// Derives "busy until the latest active meeting ends" from the events in progress now and applies
 	// it as one calendar claim. `excludeEventId`/`seedEndTime` re-add the triggering event's own end.
 	private async syncBusyPresence(
@@ -279,7 +427,9 @@ export class CalendarService extends ServiceClassInternal implements ICalendarSe
 			return;
 		}
 
-		const overlappingEvents = await CalendarEvent.findOverlappingEvents(excludeEventId ?? '', uid, now, now).toArray();
+		const overlappingEvents = await CalendarEvent.findOverlappingEvents(excludeEventId ?? '', uid, now, now, {
+			projection: { endTime: 1 },
+		}).toArray();
 		const endTimes = [...(seedEndTime ? [seedEndTime] : []), ...overlappingEvents.map((event) => event.endTime)].filter(
 			(date): date is Date => Boolean(date),
 		);
@@ -315,6 +465,10 @@ export class CalendarService extends ServiceClassInternal implements ICalendarSe
 
 	private async sendEventNotification(event: ICalendarEvent): Promise<void> {
 		if (!(await getUserPreference(event.uid, 'notifyCalendarEvents'))) {
+			return;
+		}
+
+		if (event.source === 'outlook' && !License.hasModule('outlook-calendar')) {
 			return;
 		}
 

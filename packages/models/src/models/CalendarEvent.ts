@@ -1,6 +1,13 @@
 import type { ICalendarEvent, IUser, RocketChatRecordDeleted } from '@rocket.chat/core-typings';
-import type { ICalendarEventModel } from '@rocket.chat/model-typings';
-import type { FindCursor, IndexDescription, Collection, Db, UpdateResult } from 'mongodb';
+import type {
+	CalendarBulkUpsertResult,
+	DocumentWithProjection,
+	FindOptionsWithProjection,
+	ICalendarEventModel,
+	ImportedCalendarEvent,
+} from '@rocket.chat/model-typings';
+import type { DeleteResult, Document, FindCursor, IndexDescription, Collection, Db, UpdateResult } from 'mongodb';
+import { ObjectId } from 'mongodb';
 
 import { BaseRaw } from './BaseRaw';
 
@@ -17,6 +24,9 @@ export class CalendarEventRaw extends BaseRaw<ICalendarEvent> implements ICalend
 			{
 				key: { reminderTime: -1, notificationSent: 1 },
 			},
+			{
+				key: { uid: 1, externalId: 1 },
+			},
 		];
 	}
 
@@ -30,7 +40,7 @@ export class CalendarEventRaw extends BaseRaw<ICalendarEvent> implements ICalend
 		});
 	}
 
-	public findByUserIdAndDate(uid: IUser['_id'], date: Date): FindCursor<ICalendarEvent> {
+	public findByUserIdAndDate(uid: IUser['_id'], date: Date, options?: { excludeOutlook?: boolean }): FindCursor<ICalendarEvent> {
 		const startTime = new Date(date.toISOString());
 		startTime.setHours(0, 0, 0, 0);
 
@@ -41,6 +51,7 @@ export class CalendarEventRaw extends BaseRaw<ICalendarEvent> implements ICalend
 			{
 				uid,
 				startTime: { $gte: startTime, $lt: finalTime },
+				...(options?.excludeOutlook && { source: { $ne: 'outlook' } }),
 			},
 			{
 				sort: { startTime: 1 },
@@ -124,25 +135,29 @@ export class CalendarEventRaw extends BaseRaw<ICalendarEvent> implements ICalend
 		);
 	}
 
-	public findOverlappingEvents(
+	public findOverlappingEvents<P extends Document = ICalendarEvent, O extends FindOptionsWithProjection<P> = FindOptionsWithProjection<P>>(
 		eventId: ICalendarEvent['_id'],
 		uid: IUser['_id'],
 		startTime: Date,
 		endTime: Date,
-	): FindCursor<ICalendarEvent> {
-		return this.find({
-			_id: { $ne: eventId }, // Exclude current event
-			uid,
-			busy: { $ne: false },
-			$or: [
-				// Event starts during our event
-				{ startTime: { $gte: startTime, $lt: endTime } },
-				// Event ends during our event
-				{ endTime: { $gt: startTime, $lte: endTime } },
-				// Event completely contains our event
-				{ startTime: { $lte: startTime }, endTime: { $gte: endTime } },
-			],
-		});
+		options?: O,
+	): FindCursor<DocumentWithProjection<P, O>> {
+		return this.find<P, O>(
+			{
+				_id: { $ne: eventId }, // Exclude current event
+				uid,
+				busy: { $ne: false },
+				$or: [
+					// Event starts during our event
+					{ startTime: { $gte: startTime, $lt: endTime } },
+					// Event ends during our event
+					{ endTime: { $gt: startTime, $lte: endTime } },
+					// Event completely contains our event
+					{ startTime: { $lte: startTime }, endTime: { $gte: endTime } },
+				],
+			},
+			options,
+		);
 	}
 
 	public async findNextFutureEvent(startTime: Date): Promise<Pick<ICalendarEvent, '_id' | 'startTime'> | null> {
@@ -185,5 +200,103 @@ export class CalendarEventRaw extends BaseRaw<ICalendarEvent> implements ICalend
 				},
 			},
 		);
+	}
+
+	/**
+	 * Through `this.col`, so the string `_id` and `_updatedAt` that `BaseRaw` adds are set by hand. Mongo
+	 * would supply an ObjectId, which no lookup by string id would ever match.
+	 */
+	public async bulkUpsertImported(events: ImportedCalendarEvent[]): Promise<CalendarBulkUpsertResult> {
+		if (!events.length) {
+			return { matchedCount: 0, modifiedCount: 0, upsertedCount: 0 };
+		}
+
+		const now = new Date();
+
+		const result = await this.col.bulkWrite(
+			events.map(({ uid, externalId, ...fields }) => {
+				const set: Record<string, unknown> = { _updatedAt: now };
+				const unset: Record<string, 1> = {};
+
+				// A field the provider stopped sending has to be cleared
+				for (const [key, value] of Object.entries(fields)) {
+					if (value === undefined) {
+						unset[key] = 1;
+					} else {
+						set[key] = value;
+					}
+				}
+
+				return {
+					updateOne: {
+						filter: { uid, externalId },
+						update: {
+							$set: set,
+							...(Object.keys(unset).length > 0 && { $unset: unset }),
+							$setOnInsert: { _id: new ObjectId().toHexString(), uid, externalId, notificationSent: false },
+						},
+						upsert: true,
+					},
+				};
+			}),
+			{ ordered: false },
+		);
+
+		return {
+			matchedCount: result.matchedCount,
+			modifiedCount: result.modifiedCount,
+			upsertedCount: result.upsertedCount,
+		};
+	}
+
+	public reopenNotifications(uid: IUser['_id'], externalIds: string[]): Promise<UpdateResult> {
+		return this.col.updateMany(
+			{ uid, externalId: { $in: externalIds }, notificationSent: true, reminderTime: { $gt: new Date() } },
+			{ $set: { notificationSent: false, _updatedAt: new Date() } },
+		);
+	}
+
+	/** An id may name a whole series rather than one event: Graph reports a deleted series by its master alone. */
+	public deleteUnfinishedByExternalIdsAndUserId(uid: IUser['_id'], externalIds: string[], notBefore: Date): Promise<DeleteResult> {
+		return this.deleteMany({
+			uid,
+			$and: [
+				{ $or: [{ externalId: { $in: externalIds } }, { seriesMasterId: { $in: externalIds } }] },
+				{ $or: [{ endTime: { $gt: notBefore } }, { endTime: { $exists: false }, startTime: { $gte: notBefore } }] },
+			],
+		});
+	}
+
+	public deleteSeriesOutsideSet(
+		uid: IUser['_id'],
+		start: Date,
+		end: Date,
+		seriesMasterIds: string[],
+		keepExternalIds: string[],
+	): Promise<DeleteResult> {
+		return this.deleteMany({
+			uid,
+			startTime: { $lt: end },
+			$and: [
+				{ $or: [{ endTime: { $gt: start } }, { endTime: { $exists: false }, startTime: { $gte: start } }] },
+				{
+					$or: [
+						{ seriesMasterId: { $in: seriesMasterIds }, externalId: { $nin: keepExternalIds } },
+						// Turning a single event into a series keeps its id and makes it the master, so the row we
+						// hold under that id stopped being an event of its own the moment the occurrences appeared.
+						{ externalId: { $in: seriesMasterIds } },
+					],
+				},
+			],
+		});
+	}
+
+	public deleteImportedOutsideSet(uid: IUser['_id'], start: Date, end: Date, keepExternalIds: string[]): Promise<DeleteResult> {
+		return this.deleteMany({
+			uid,
+			externalId: { $type: 'string', $nin: keepExternalIds },
+			startTime: { $lt: end },
+			$or: [{ endTime: { $gt: start } }, { endTime: { $exists: false }, startTime: { $gte: start } }],
+		});
 	}
 }

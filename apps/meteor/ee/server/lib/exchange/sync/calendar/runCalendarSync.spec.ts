@@ -1,0 +1,238 @@
+import { acquireMailbox } from './mailboxLock';
+import { runCalendarSync } from './runCalendarSync';
+import { ExchangeError } from '../../errors';
+import { MAILBOX_CONCURRENCY } from '../limits';
+import type { CalendarSyncOutcome } from './syncCalendarWindow';
+
+const syncCalendarWindow = jest.fn();
+const applyDeferredSideEffects = jest.fn();
+const getExchangeProvider = jest.fn();
+const isServerSyncEnabled = jest.fn();
+const candidates = jest.fn();
+
+jest.mock('./syncCalendarWindow', () => ({ syncCalendarWindow: (...args: unknown[]) => syncCalendarWindow(...args) }));
+jest.mock('./applyDeferredSideEffects', () => ({
+	applyDeferredSideEffects: (...args: unknown[]) => applyDeferredSideEffects(...args),
+}));
+jest.mock('../resolveMailboxes', () => ({ iterateMailboxCandidates: () => candidates() }));
+jest.mock('../../ExchangeProviderRegistry', () => ({
+	getExchangeProvider: () => getExchangeProvider(),
+	getCalendarSyncWindow: () => ({ start: new Date('2026-09-07T00:00:00Z'), end: new Date('2026-09-09T00:00:00Z') }),
+	isServerSyncEnabled: () => isServerSyncEnabled(),
+}));
+
+const outcome = (over: Partial<CalendarSyncOutcome> = {}): CalendarSyncOutcome => ({
+	upserted: 0,
+	modified: 0,
+	deleted: 0,
+	pruned: 0,
+	changed: false,
+	failed: false,
+	fatal: false,
+	...over,
+});
+
+const from = (items: { uid: string; mailbox?: string }[]) =>
+	async function* () {
+		yield* items;
+	};
+
+const dirtyArg = (): Set<string> => applyDeferredSideEffects.mock.calls[0][0];
+
+const deferred = () => {
+	let resolve: () => void = () => undefined;
+	const promise = new Promise<void>((r) => {
+		resolve = r;
+	});
+	return { promise, resolve };
+};
+
+describe('runCalendarSync', () => {
+	beforeEach(() => {
+		jest.clearAllMocks();
+		isServerSyncEnabled.mockReturnValue(true);
+		getExchangeProvider.mockReturnValue({ id: 'ews' });
+		syncCalendarWindow.mockResolvedValue(outcome());
+		applyDeferredSideEffects.mockResolvedValue(undefined);
+		candidates.mockImplementation(from([{ uid: 'a', mailbox: 'a@corp.example' }]));
+	});
+
+	it('counts a user with no resolvable mailbox as skipped and syncs the rest', async () => {
+		candidates.mockImplementation(from([{ uid: 'a' }, { uid: 'b', mailbox: 'b@corp.example' }]));
+
+		const summary = await runCalendarSync();
+
+		expect(summary).toMatchObject({ skipped: 1, mailboxes: 1 });
+		expect(syncCalendarWindow).toHaveBeenCalledTimes(1);
+	});
+
+	it('adds up the counters of every mailbox', async () => {
+		candidates.mockImplementation(
+			from([
+				{ uid: 'a', mailbox: 'a@x' },
+				{ uid: 'b', mailbox: 'b@x' },
+			]),
+		);
+		syncCalendarWindow
+			.mockResolvedValueOnce(outcome({ upserted: 2, deleted: 1 }))
+			.mockResolvedValueOnce(outcome({ upserted: 3, pruned: 4, failed: true }));
+
+		const summary = await runCalendarSync();
+
+		expect(summary).toMatchObject({ upserted: 5, deleted: 1, pruned: 4, failed: 1 });
+	});
+
+	it('stops taking new mailboxes once one fails fatally', async () => {
+		candidates.mockImplementation(from(Array.from({ length: 20 }, (_, i) => ({ uid: `u${i}`, mailbox: `u${i}@x` }))));
+		syncCalendarWindow.mockResolvedValueOnce(outcome({ failed: true, fatal: true }));
+
+		const summary = await runCalendarSync();
+
+		expect(summary.aborted).toBe(true);
+		expect(syncCalendarWindow.mock.calls.length).toBe(1);
+	});
+
+	it('leaves a mailbox alone while an on-demand sync holds it', async () => {
+		candidates.mockImplementation(
+			from([
+				{ uid: 'a', mailbox: 'a@x' },
+				{ uid: 'b', mailbox: 'b@x' },
+			]),
+		);
+
+		const release = acquireMailbox('a');
+
+		try {
+			const summary = await runCalendarSync();
+
+			expect(syncCalendarWindow).toHaveBeenCalledTimes(1);
+			expect(syncCalendarWindow.mock.calls[0][1]).toBe('b');
+			expect(summary).toMatchObject({ mailboxes: 1, skipped: 1 });
+		} finally {
+			release?.();
+		}
+	});
+
+	it('stops pulling candidates once one fails fatally, not just syncing them', async () => {
+		let pulled = 0;
+		candidates.mockImplementation(async function* () {
+			for (let i = 0; i < 100; i++) {
+				pulled++;
+				yield { uid: `u${i}`, mailbox: `u${i}@x` };
+			}
+		});
+		syncCalendarWindow.mockResolvedValueOnce(outcome({ failed: true, fatal: true }));
+
+		await runCalendarSync();
+
+		expect(pulled).toBeLessThan(100);
+	});
+
+	it('marks a user dirty only when something changed', async () => {
+		candidates.mockImplementation(
+			from([
+				{ uid: 'a', mailbox: 'a@x' },
+				{ uid: 'b', mailbox: 'b@x' },
+			]),
+		);
+		syncCalendarWindow.mockResolvedValueOnce(outcome({ changed: true })).mockResolvedValueOnce(outcome({ changed: false }));
+
+		await runCalendarSync();
+
+		expect([...dirtyArg()]).toEqual(['a']);
+	});
+
+	it('collects a user once however many mailboxes they have', async () => {
+		candidates.mockImplementation(
+			from([
+				{ uid: 'a', mailbox: 'one@x' },
+				{ uid: 'a', mailbox: 'two@x' },
+			]),
+		);
+		syncCalendarWindow.mockResolvedValueOnce(outcome({ changed: true })).mockResolvedValueOnce(outcome({ changed: true }));
+
+		await runCalendarSync();
+
+		expect(dirtyArg()).toEqual(new Set(['a']));
+	});
+
+	it('does nothing when server sync is off', async () => {
+		isServerSyncEnabled.mockReturnValue(false);
+
+		const summary = await runCalendarSync();
+
+		expect(summary.mailboxes).toBe(0);
+		expect(getExchangeProvider).not.toHaveBeenCalled();
+	});
+
+	it('returns quietly when the provider was torn down between the tick and the run', async () => {
+		getExchangeProvider.mockImplementation(() => {
+			throw new ExchangeError('not-configured', 'gone');
+		});
+
+		await expect(runCalendarSync()).resolves.toMatchObject({ mailboxes: 0, failed: 0 });
+	});
+
+	it('propagates any other failure of the run itself', async () => {
+		getExchangeProvider.mockImplementation(() => {
+			throw new ExchangeError('host-not-allowed', 'nope');
+		});
+
+		await expect(runCalendarSync()).rejects.toMatchObject({ code: 'host-not-allowed' });
+	});
+
+	it('applies the deferred side effects for what committed before the run threw', async () => {
+		candidates.mockImplementation(
+			from([
+				{ uid: 'a', mailbox: 'a@x' },
+				{ uid: 'b', mailbox: 'b@x' },
+			]),
+		);
+		syncCalendarWindow.mockImplementation(async (_provider: unknown, uid: string) => {
+			if (uid === 'b') {
+				throw new Error('boom');
+			}
+			return outcome({ changed: true });
+		});
+
+		await expect(runCalendarSync()).rejects.toThrow('boom');
+		expect(dirtyArg().has('a')).toBe(true);
+	});
+
+	it('keeps at most the configured number of mailboxes in flight at once', async () => {
+		candidates.mockImplementation(from(Array.from({ length: MAILBOX_CONCURRENCY + 1 }, (_, i) => ({ uid: `u${i}`, mailbox: `u${i}@x` }))));
+
+		const gate = deferred();
+		let started = 0;
+		syncCalendarWindow.mockImplementation(async () => {
+			started++;
+			await gate.promise;
+			return outcome();
+		});
+
+		const run = runCalendarSync();
+		await new Promise((resolve) => setTimeout(resolve, 0));
+
+		expect(started).toBe(MAILBOX_CONCURRENCY);
+
+		gate.resolve();
+		await run;
+		expect(started).toBe(MAILBOX_CONCURRENCY + 1);
+	});
+
+	it('skips a run while the previous one is still going', async () => {
+		const gate = deferred();
+		syncCalendarWindow.mockImplementation(async () => {
+			await gate.promise;
+			return outcome({ upserted: 1 });
+		});
+
+		const first = runCalendarSync();
+		const second = await runCalendarSync();
+
+		expect(second).toMatchObject({ mailboxes: 0, upserted: 0 });
+
+		gate.resolve();
+		await expect(first).resolves.toMatchObject({ upserted: 1 });
+	});
+});
