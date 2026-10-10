@@ -1,3 +1,4 @@
+export { LoggedSettingsCachedStore } from './LoggedSettingsCachedStore';
 export { PermissionsCachedStore } from './PermissionsCachedStore';
 export { PrivateSettingsCachedStore } from './PrivateSettingsCachedStore';
 export { PublicSettingsCachedStore } from './PublicSettingsCachedStore';

@@ -4,4 +4,5 @@ import type { IServiceClass } from './ServiceClass';
 
 export interface IEnterpriseSettings extends IServiceClass {
 	changeSettingValue(record: ISetting): undefined | ISetting['value'];
+	getCacheKeyPart(): { valid: boolean; modules: string[] };
 }

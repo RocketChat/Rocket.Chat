@@ -29,6 +29,13 @@ export function changeSettingValue(record: Pick<ISetting, 'value' | 'enterprise'
 	return record.value;
 }
 
+export function getCacheKeyPart(): { valid: boolean; modules: string[] } {
+	return {
+		valid: License.hasValidLicense(),
+		modules: License.getModules().sort(),
+	};
+}
+
 settings.set = use(settings.set, (context, next) => {
 	const [record] = context;
 

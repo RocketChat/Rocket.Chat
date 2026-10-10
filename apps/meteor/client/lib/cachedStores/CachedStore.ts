@@ -16,7 +16,11 @@ import { STORAGE_KEYS, getStoredItem } from '../sdk/storage';
 import { getUserId } from '../user';
 import { getConfig } from '../utils/getConfig';
 
-type Name = 'rooms' | 'subscriptions' | 'permissions' | 'public-settings' | 'private-settings';
+type MethodBackedName = 'rooms' | 'subscriptions' | 'permissions' | 'public-settings' | 'private-settings';
+
+type Name = MethodBackedName | 'logged-settings';
+
+const isMethodBackedName = (name: Name): name is MethodBackedName => name !== 'logged-settings';
 
 const hasId = <T>(record: T): record is T & { _id: string } => typeof record === 'object' && record !== null && '_id' in record;
 const hasUpdatedAt = <T>(record: T): record is T & { _updatedAt: Date } =>
@@ -86,7 +90,13 @@ export abstract class CachedStore<T extends IRocketChatRecord, U = T> implements
 	protected abstract getToken(): unknown;
 
 	private async loadFromCache() {
-		const data = await localforage.getItem<{ version: number; token: unknown; records: unknown[]; updatedAt: Date | string }>(this.name);
+		const data = await localforage.getItem<{
+			version: number;
+			token: unknown;
+			records: unknown[];
+			updatedAt: Date | string;
+			metadata?: Record<string, unknown>;
+		}>(this.name);
 
 		if (!data) {
 			return false;
@@ -120,6 +130,7 @@ export abstract class CachedStore<T extends IRocketChatRecord, U = T> implements
 		}
 
 		const records = deserializedRecords.filter(hasId);
+		this.restoreCacheMetadata(data.metadata ?? {});
 		this.store.getState().replaceAll(records);
 		this.handleLoadedFromServer(records);
 
@@ -141,23 +152,42 @@ export abstract class CachedStore<T extends IRocketChatRecord, U = T> implements
 		};
 	}
 
-	private async callLoad() {
+	protected async callLoad() {
+		if (!isMethodBackedName(this.name)) {
+			throw new Error(`${this.name} must override callLoad`);
+		}
 		// TODO: workaround for bad function overload
 		const data = await sdk.call(`${this.name}/get`);
 		return data as unknown as U[];
 	}
 
-	private async callSync(updatedSince: Date) {
+	protected async callSync(updatedSince: Date): Promise<{ update: U[]; remove: U[]; reset?: boolean }> {
+		if (!isMethodBackedName(this.name)) {
+			throw new Error(`${this.name} must override callSync`);
+		}
 		// TODO: workaround for bad function overload
 		const data = await sdk.call(`${this.name}/get`, updatedSince);
 		return data as unknown as { update: U[]; remove: U[] };
 	}
 
+	protected getCacheMetadata(): Record<string, unknown> {
+		return {};
+	}
+
+	protected restoreCacheMetadata(_metadata: Record<string, unknown>): void {
+		// This method can be overridden to restore what getCacheMetadata saved
+	}
+
 	private async loadFromServer() {
 		const startTime = new Date();
-		const lastTime = this.updatedAt;
 		const data = await this.callLoad();
 		this.log(`${data.length} records loaded from server`);
+
+		this.replaceRecords(data, startTime);
+	}
+
+	private replaceRecords(data: U[], startTime: Date) {
+		const lastTime = this.updatedAt;
 
 		const newRecords = data.map((record) => {
 			const mapped = this.mapRecord(record);
@@ -199,6 +229,7 @@ export abstract class CachedStore<T extends IRocketChatRecord, U = T> implements
 			version: this.version,
 			token: this.getToken(),
 			records: Array.from(this.store.getState().records.values()),
+			metadata: this.getCacheMetadata(),
 		});
 		this.log('saving cache (done)');
 	});
@@ -230,7 +261,7 @@ export abstract class CachedStore<T extends IRocketChatRecord, U = T> implements
 		await this.save();
 	}
 
-	private trySync(delay = 10) {
+	protected trySync(delay = 10) {
 		clearTimeout(this.timer);
 		// Wait for an empty queue to load data again and sync
 		this.timer = setTimeout(async () => {
@@ -252,6 +283,13 @@ export abstract class CachedStore<T extends IRocketChatRecord, U = T> implements
 		this.log(`syncing from ${this.updatedAt}`);
 
 		const data = await this.callSync(this.updatedAt);
+
+		if (data.reset) {
+			this.log(`${data.update.length} records replaced in sync`);
+			this.replaceRecords(data.update, startTime);
+			return true;
+		}
+
 		const changes = [];
 
 		if (data.update && data.update.length > 0) {

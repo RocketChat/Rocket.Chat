@@ -8,7 +8,7 @@ import { useQueryClient } from '@tanstack/react-query';
 import type { ReactNode } from 'react';
 import { useCallback, useMemo } from 'react';
 
-import { PublicSettingsCachedStore, PrivateSettingsCachedStore } from '../cachedStores';
+import { LoggedSettingsCachedStore, PublicSettingsCachedStore, PrivateSettingsCachedStore } from '../cachedStores';
 import { useShowSettingAlerts } from '../hooks/useShowSettingAlerts';
 import { PrivateCachedStore } from '../lib/cachedStores/CachedStore';
 import { applyQueryOptions } from '../lib/cachedStores/applyQueryOptions';
@@ -37,24 +37,39 @@ const SettingsProvider = ({ children }: SettingsProviderProps) => {
 		})();
 	}
 
+	const settingsStores = useMemo(
+		() =>
+			cachedCollection === PublicSettingsCachedStore
+				? [LoggedSettingsCachedStore.store, cachedCollection.store]
+				: [cachedCollection.store, LoggedSettingsCachedStore.store],
+		[cachedCollection],
+	);
+
 	const querySetting = useMemo(
 		() =>
 			(_id: ISetting['_id']): [subscribe: (onStoreChange: () => void) => () => void, getSnapshot: () => ISetting | undefined] => {
-				let snapshot = cachedCollection.store.getState().get(_id);
+				const getSetting = () => settingsStores.map((store) => store.getState().get(_id)).find(isTruthy);
 
-				const subscribe = (onStoreChange: () => void) =>
-					cachedCollection.store.subscribe(() => {
-						const newSnapshot = cachedCollection.store.getState().get(_id);
-						if (newSnapshot === snapshot) return;
-						snapshot = newSnapshot;
-						onStoreChange();
-					});
+				let snapshot = getSetting();
+
+				const subscribe = (onStoreChange: () => void) => {
+					const unsubscribers = settingsStores.map((store) =>
+						store.subscribe(() => {
+							const newSnapshot = getSetting();
+							if (newSnapshot === snapshot) return;
+							snapshot = newSnapshot;
+							onStoreChange();
+						}),
+					);
+
+					return () => unsubscribers.forEach((unsubscribe) => unsubscribe());
+				};
 
 				const getSnapshot = () => snapshot;
 
 				return [subscribe, getSnapshot];
 			},
-		[cachedCollection.store],
+		[settingsStores],
 	);
 
 	const querySettings = useMemo(() => {
@@ -82,21 +97,39 @@ const SettingsProvider = ({ children }: SettingsProviderProps) => {
 			} as const;
 
 			const predicate = createPredicateFromFilter<ISetting>(effectiveQuery);
-			let snapshot = applyQueryOptions(cachedCollection.store.getState().filter(predicate), options);
+			const getSettings = () =>
+				applyQueryOptions(
+					[
+						...new Map(
+							settingsStores
+								.flatMap((store) => store.getState().filter(predicate))
+								.reverse()
+								.map((setting) => [setting._id, setting]),
+						).values(),
+					],
+					options,
+				);
 
-			const subscribe = (onStoreChange: () => void) =>
-				cachedCollection.store.subscribe(() => {
-					const newSnapshot = applyQueryOptions(cachedCollection.store.getState().filter(predicate), options);
-					if (newSnapshot === snapshot) return;
-					snapshot = newSnapshot;
-					onStoreChange();
-				});
+			let snapshot = getSettings();
+
+			const subscribe = (onStoreChange: () => void) => {
+				const unsubscribers = settingsStores.map((store) =>
+					store.subscribe(() => {
+						const newSnapshot = getSettings();
+						if (newSnapshot === snapshot) return;
+						snapshot = newSnapshot;
+						onStoreChange();
+					}),
+				);
+
+				return () => unsubscribers.forEach((unsubscribe) => unsubscribe());
+			};
 
 			const getSnapshot = () => snapshot;
 
 			return [subscribe, getSnapshot];
 		};
-	}, [cachedCollection.store]);
+	}, [settingsStores]);
 
 	const queryClient = useQueryClient();
 

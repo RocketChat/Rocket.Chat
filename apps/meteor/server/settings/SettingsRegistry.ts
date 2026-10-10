@@ -149,6 +149,11 @@ export class SettingsRegistry {
 			throw new Error(`Enterprise setting ${_id} is missing the invalidValue option`);
 		}
 
+		if (settingFromCode.loggedIn && settingFromCode.public) {
+			SystemLogger.error({ msg: 'Setting cannot be both loggedIn and public', _id });
+			throw new Error(`Setting ${_id} cannot be both loggedIn and public`);
+		}
+
 		const settingFromCodeOverwritten = overwriteSetting(settingFromCode);
 
 		const settingStored = this.store.getSetting(_id);

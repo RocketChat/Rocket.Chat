@@ -19,6 +19,12 @@ type PublicSettingFields<T extends ISetting> = T extends ISettingColor
 	? Pick<T, '_id' | 'value' | 'editor' | 'enterprise' | 'invalidValue' | 'modules' | 'requiredOnWizard'>
 	: Pick<T, '_id' | 'value' | 'enterprise' | 'invalidValue' | 'modules' | 'requiredOnWizard'>;
 
+const notHiddenLoggedInFilter = {
+	hidden: { $ne: true },
+	public: { $ne: true },
+	loggedIn: true,
+};
+
 export class SettingsRaw extends BaseRaw<ISetting> implements ISettingsModel {
 	constructor(db: Db, trash?: Collection<RocketChatRecordDeleted<ISetting>>) {
 		super(db, 'settings', trash);
@@ -248,6 +254,31 @@ export class SettingsRaw extends BaseRaw<ISetting> implements ISettingsModel {
 				requiredOnWizard: 1,
 			},
 		});
+	}
+
+	findNotHiddenLoggedIn(updatedAfter?: Date): FindCursor<ISetting> {
+		const filter: Filter<ISetting> = { ...notHiddenLoggedInFilter };
+
+		if (updatedAfter) {
+			filter._updatedAt = { $gt: updatedAfter };
+		}
+
+		return this.find(filter, {
+			projection: {
+				_id: 1,
+				value: 1,
+				editor: 1,
+				enterprise: 1,
+				invalidValue: 1,
+				modules: 1,
+				requiredOnWizard: 1,
+				_updatedAt: 1,
+			},
+		});
+	}
+
+	trashFindDeletedLoggedInAfter(deletedAt: Date): FindCursor<Pick<RocketChatRecordDeleted<ISetting>, '_id' | '_deletedAt'>> {
+		return this.trashFindDeletedAfter(deletedAt, notHiddenLoggedInFilter, { projection: { _id: 1, _deletedAt: 1 } });
 	}
 
 	findEnterpriseSettings(): FindCursor<ISetting> {

@@ -499,6 +499,12 @@ export abstract class BaseRaw<
 		deletedAt: Date,
 		query?: Filter<TDeleted>,
 		options?: FindOptions<P extends TDeleted ? TDeleted : P>,
+	): FindCursor<WithId<TDeleted>>;
+
+	trashFindDeletedAfter<P extends Document = TDeleted>(
+		deletedAt: Date,
+		query?: Filter<TDeleted>,
+		options?: FindOptions<P extends TDeleted ? TDeleted : P>,
 	): FindCursor<WithId<TDeleted>> {
 		const q = {
 			__collection__: this.name,

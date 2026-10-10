@@ -7,6 +7,7 @@ import './callbacks';
 import './deviceManagement';
 import './incomingMessages';
 import './livechatEnterprise';
+import './loggedSettings';
 import './roles';
 import './routes';
 import './slashCommands';
