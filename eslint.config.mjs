@@ -206,7 +206,7 @@ export default [
 		},
 	},
 	{
-		files: ['apps/meteor/tests/@(end-to-end|unit)/**/*.spec.ts'],
+		files: ['apps/meteor/tests/@(end-to-end|unit)/**/*.@(spec|test).ts'],
 		rules: {
 			'jest/expect-expect': 'off',
 			'jest/no-conditional-expect': 'off',
