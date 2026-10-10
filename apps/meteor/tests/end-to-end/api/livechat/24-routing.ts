@@ -1,9 +1,10 @@
+import { after, before, describe, it } from 'node:test';
+
 import { faker } from '@faker-js/faker';
 import type { Credentials } from '@rocket.chat/api-client';
 import { UserStatus } from '@rocket.chat/core-typings';
 import type { ILivechatDepartment, IUser, ILivechatAgent } from '@rocket.chat/core-typings';
 import { expect } from 'chai';
-import { after, before, describe, it } from 'mocha';
 
 import { getCredentials, request, api, credentials } from '../../../data/api-data';
 import {
@@ -24,7 +25,7 @@ import { createUser, deleteUser, login, setUserActiveStatus, setUserStatus } fro
 import { IS_EE } from '../../../e2e/config/constants';
 
 (IS_EE ? describe : describe.skip)('Omnichannel - Routing', () => {
-	before((done) => getCredentials(done));
+	before((_t, done) => getCredentials(done));
 
 	after(async () => {
 		await updateSetting('Livechat_Routing_Method', 'Manual_Selection');

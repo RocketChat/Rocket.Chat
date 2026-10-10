@@ -1,5 +1,6 @@
+import { after, before, describe, it } from 'node:test';
+
 import { expect } from 'chai';
-import { before, describe, it, after } from 'mocha';
 import type { Response } from 'supertest';
 
 import { getCredentials, api, request, credentials } from '../../data/api-data';
@@ -10,7 +11,7 @@ import { createUser, deleteUser, login } from '../../data/users.helper';
 describe('[Presence]', () => {
 	let createdUser: any;
 
-	before((done) => getCredentials(done));
+	before((_t, done) => getCredentials(done));
 
 	let unauthorizedUserCredentials: any;
 	before(async () => {

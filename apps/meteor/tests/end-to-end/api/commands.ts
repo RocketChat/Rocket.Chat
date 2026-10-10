@@ -1,8 +1,9 @@
+import { after, before, describe, it } from 'node:test';
+
 import type { Credentials } from '@rocket.chat/api-client';
 import type { IRoom, IThreadMessage, IUser } from '@rocket.chat/core-typings';
 import { Random } from '@rocket.chat/random';
 import { expect } from 'chai';
-import { before, describe, it, after } from 'mocha';
 
 import { getCredentials, api, request, credentials } from '../../data/api-data';
 import { sendSimpleMessage } from '../../data/chat.helper';
@@ -12,7 +13,7 @@ import type { TestUser } from '../../data/users.helper';
 import { createUser, deleteUser, login } from '../../data/users.helper';
 
 describe('[Commands]', () => {
-	before((done) => getCredentials(done));
+	before((_t, done) => getCredentials(done));
 
 	describe('[/commands.get]', () => {
 		it('should return an error when call the endpoint without "command" required parameter', async () => {
@@ -209,19 +210,19 @@ describe('[Commands]', () => {
 		});
 	});
 
-	describe('Command archive', function () {
+	describe('Command archive', () => {
 		describe('unauthorized cases', () => {
 			let user: TestUser<IUser>;
 			let credentials: Credentials;
 
-			this.beforeAll(async () => {
+			before(async () => {
 				user = await createUser({
 					joinDefaultChannels: true,
 				});
 				credentials = await login(user.username, password);
 			});
 
-			this.afterAll(async () => {
+			after(async () => {
 				await deleteUser(user);
 			});
 
@@ -252,8 +253,8 @@ describe('[Commands]', () => {
 			});
 		});
 
-		describe('authorized cases', function () {
-			this.afterAll(async () => {
+		describe('authorized cases', () => {
+			after(async () => {
 				await request
 					.post(api('commands.run'))
 					.set(credentials)
@@ -285,18 +286,18 @@ describe('[Commands]', () => {
 		});
 	});
 
-	describe('Command unarchive', function () {
+	describe('Command unarchive', () => {
 		describe('unauthorized cases', () => {
 			let user: TestUser<IUser>;
 			let credentials: Credentials;
-			this.beforeAll(async () => {
+			before(async () => {
 				user = await createUser({
 					joinDefaultChannels: true,
 				});
 				credentials = await login(user.username, password);
 			});
 
-			this.afterAll(async () => {
+			after(async () => {
 				await deleteUser(user);
 			});
 
@@ -359,7 +360,7 @@ describe('[Commands]', () => {
 		});
 	});
 
-	describe('Command "invite-all-from"', function () {
+	describe('Command "invite-all-from"', () => {
 		let group: IRoom;
 		let group1: IRoom;
 		let channel: IRoom;
@@ -368,14 +369,14 @@ describe('[Commands]', () => {
 		let user1Credentials: Credentials;
 		let user2Credentials: Credentials;
 
-		this.beforeAll(async () => {
+		before(async () => {
 			user1 = await createUser();
 			user2 = await createUser();
 
 			[user1Credentials, user2Credentials] = await Promise.all([login(user1.username, password), login(user2.username, password)]);
 		});
 
-		this.beforeAll(async () => {
+		before(async () => {
 			const [response1, response2, response3] = await Promise.all([
 				createRoom({ type: 'p', name: `room1-${Date.now()}.${Random.id()}`, credentials: user1Credentials }),
 				createRoom({ type: 'c', name: `room2-${Date.now()}.${Random.id()}`, credentials: user2Credentials }),
@@ -386,7 +387,7 @@ describe('[Commands]', () => {
 			group1 = response3.body.group;
 		});
 
-		this.afterAll(async () => {
+		after(async () => {
 			await Promise.all([
 				deleteRoom({ type: 'p', roomId: group._id }),
 				deleteRoom({ type: 'c', roomId: channel._id }),
@@ -472,24 +473,24 @@ describe('[Commands]', () => {
 				});
 		});
 	});
-	describe('Command "kick"', function () {
+	describe('Command "kick"', () => {
 		let directMessageRoom: IRoom;
 		let user1: TestUser<IUser>;
 		let user1Credentials: Credentials;
-		this.beforeAll(async () => {
+		before(async () => {
 			user1 = await createUser();
 
 			[user1Credentials] = await Promise.all([login(user1.username, password)]);
 		});
 
-		this.beforeAll(async () => {
+		before(async () => {
 			const [response1] = await Promise.all([
 				createRoom({ type: 'd', name: `room1-${Date.now()}.${Random.id()}`, username: user1.username }),
 			]);
 			directMessageRoom = response1.body.room;
 		});
 
-		this.afterAll(async () => {
+		after(async () => {
 			await Promise.all([deleteRoom({ type: 'd', roomId: directMessageRoom._id })]);
 			await Promise.all([deleteUser(user1)]);
 		});
@@ -505,26 +506,26 @@ describe('[Commands]', () => {
 			expect(res.body).to.have.property('error').that.is.a('string');
 		});
 	});
-	describe('Command "leave"', function () {
+	describe('Command "leave"', () => {
 		let directMessageRoom: IRoom;
 		let user1: TestUser<IUser>;
 		let user2: TestUser<IUser>;
 		let user1Credentials: Credentials;
-		this.beforeAll(async () => {
+		before(async () => {
 			user1 = await createUser();
 			user2 = await createUser();
 
 			[user1Credentials] = await Promise.all([login(user1.username, password)]);
 		});
 
-		this.beforeAll(async () => {
+		before(async () => {
 			const [response1] = await Promise.all([
 				createRoom({ type: 'd', name: `room1-${Date.now()}.${Random.id()}`, username: user1.username }),
 			]);
 			directMessageRoom = response1.body.room;
 		});
 
-		this.afterAll(async () => {
+		after(async () => {
 			await Promise.all([deleteRoom({ type: 'd', roomId: directMessageRoom._id })]);
 			await Promise.all([deleteUser(user1), deleteUser(user2)]);
 		});
@@ -542,26 +543,26 @@ describe('[Commands]', () => {
 	});
 
 	// TODO: invite never fails
-	describe.skip('Command "invite"', function () {
+	describe.skip('Command "invite"', () => {
 		let directMessageRoom: IRoom;
 		let user1: TestUser<IUser>;
 		let user2: TestUser<IUser>;
 		let user1Credentials: Credentials;
-		this.beforeAll(async () => {
+		before(async () => {
 			user1 = await createUser();
 			user2 = await createUser();
 
 			[user1Credentials] = await Promise.all([login(user1.username, password)]);
 		});
 
-		this.beforeAll(async () => {
+		before(async () => {
 			const [response1] = await Promise.all([
 				createRoom({ type: 'd', name: `room1-${Date.now()}.${Random.id()}`, username: user1.username }),
 			]);
 			directMessageRoom = response1.body.room;
 		});
 
-		this.afterAll(async () => {
+		after(async () => {
 			await Promise.all([deleteRoom({ type: 'd', roomId: directMessageRoom._id })]);
 			await Promise.all([deleteUser(user1), deleteUser(user2)]);
 		});

@@ -1,3 +1,5 @@
+import { after, afterEach, before, beforeEach, describe, it } from 'node:test';
+
 import { faker } from '@faker-js/faker';
 import type { Credentials } from '@rocket.chat/api-client';
 import type {
@@ -8,7 +10,6 @@ import type {
 	ILivechatContactVisitorAssociation,
 } from '@rocket.chat/core-typings';
 import { expect } from 'chai';
-import { before, after, describe, it } from 'mocha';
 
 import { getCredentials, api, request, credentials } from '../../../data/api-data';
 import { createCustomField, deleteCustomField } from '../../../data/livechat/custom-fields';
@@ -32,7 +33,7 @@ import { IS_EE } from '../../../e2e/config/constants';
 describe('LIVECHAT - contacts', () => {
 	let agentUser: IUser;
 	let livechatAgent: ILivechatAgent;
-	before((done) => getCredentials(done));
+	before((_t, done) => getCredentials(done));
 
 	before(async () => {
 		await updateSetting('Livechat_enabled', true);

@@ -1,7 +1,8 @@
+import { after, before, describe, it } from 'node:test';
+
 import type { Credentials } from '@rocket.chat/api-client';
 import type { ILivechatDepartment, ILivechatInquiryRecord, ILivechatVisitor, IOmnichannelRoom, IUser } from '@rocket.chat/core-typings';
 import { expect } from 'chai';
-import { before, describe, it, after } from 'mocha';
 import type { Response } from 'supertest';
 
 import { getCredentials, api, request, credentials } from '../../../data/api-data';
@@ -32,7 +33,7 @@ import { IS_EE } from '../../../e2e/config/constants';
 import { retry } from '../helpers/retry';
 
 describe('LIVECHAT - inquiries', () => {
-	before((done) => getCredentials(done));
+	before((_t, done) => getCredentials(done));
 
 	before(async () => {
 		await updateSetting('Livechat_enabled', true);

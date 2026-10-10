@@ -1,3 +1,5 @@
+import { after, before, describe, it } from 'node:test';
+
 import { faker } from '@faker-js/faker';
 import type {
 	ILivechatInquiryRecord,
@@ -7,7 +9,6 @@ import type {
 } from '@rocket.chat/core-typings';
 import { OmnichannelSortingMechanismSettingType } from '@rocket.chat/core-typings';
 import { expect } from 'chai';
-import { after, before, describe, it } from 'mocha';
 
 import { getCredentials, api, request, credentials } from '../../../data/api-data';
 import { createDepartmentWithAnOnlineAgent } from '../../../data/livechat/department';
@@ -35,7 +36,7 @@ import { IS_EE } from '../../../e2e/config/constants';
 import { generateRandomSLAData } from '../../../e2e/utils/omnichannel/sla';
 
 (IS_EE ? describe : describe.skip)('[EE] LIVECHAT - Priorities & SLAs', () => {
-	before((done) => getCredentials(done));
+	before((_t, done) => getCredentials(done));
 
 	before(async () => {
 		await updateSetting('Livechat_enabled', true);

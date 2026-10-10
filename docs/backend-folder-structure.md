@@ -113,9 +113,9 @@ Anti-patterns to avoid:
 
 ## Tests
 
-- **Co-located specs** (`server/**/**.spec.ts`) and **mirrored specs** (`tests/unit/server/**` mirrors the source tree; EE code is mirrored under `ee/tests/unit/**`) both exist. When you move source, move its mirror.
-- Two runners with **separate globs**: mocha (`.mocharc.js` `spec` list) and jest (`jest.config.ts` `testMatch`). A spec in a folder not matched by any glob silently never runs; a jest spec caught by a mocha glob throws `jest is not defined`.
-- `proxyquire`/`jest.mock` keys are **string literals matched against the loaded module's import specifiers** — lint and tsc cannot validate them. If you move a module, every mock key referencing it (or referencing its dependencies' specifiers) must be updated, and the affected suites actually run. A stale key silently loads the real dependency; if that dependency reaches `server/settings/index.ts`, the whole mocha run dies with a top-level-await transform error — that error is the signature of a stale settings mock.
+- Tests sit next to the code they test (`server/**/*.test.ts`, `server/**/*.spec.ts`) or in a mirror of the source tree (`tests/unit/server/**`, with EE code under `ee/tests/unit/**`). When you move source code, move its mirror too.
+- During the migration from Jest to `node:test`, the file name selects the runner. `*.test.ts` runs on `node:test` and `*.spec.ts` runs on Jest. Both runners find their files with globs.
+- `proxyquire`/`jest.mock` keys are **string literals matched against the loaded module's import specifiers** — lint and tsc cannot validate them. If you move a module, every mock key referencing it (or referencing its dependencies' specifiers) must be updated, and the affected suites actually run. A stale key silently loads the real dependency; if that dependency reaches `server/settings/index.ts`, the file fails to load with a top-level-await transform error — that error is the signature of a stale settings mock.
 - Specs must not depend on suite execution order (e.g. on another spec having installed a mocked core-services broker) — mock `@rocket.chat/core-services` locally.
 
 ## History

@@ -1,12 +1,13 @@
+import { after, before, describe, it } from 'node:test';
+
 import { expect } from 'chai';
-import { after, before, describe, it } from 'mocha';
 import type { Response } from 'supertest';
 
 import { getCredentials, api, request, credentials } from '../../data/api-data';
 import { updatePermission } from '../../data/permissions.helper';
 
 describe('SAML', () => {
-	before((done) => getCredentials(done));
+	before((_t, done) => getCredentials(done));
 
 	describe('[/saml.parseMetadata]', () => {
 		after(() => updatePermission('test-admin-options', ['admin']));

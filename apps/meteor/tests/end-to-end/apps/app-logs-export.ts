@@ -1,7 +1,8 @@
+import { after, before, describe, it } from 'node:test';
+
 import type { ILoggerStorageEntry } from '@rocket.chat/apps/dist/server/logging/ILoggerStorageEntry';
 import type { App } from '@rocket.chat/core-typings';
 import { expect } from 'chai';
-import { after, before, describe, it } from 'mocha';
 
 import { getCredentials, request, credentials, getInstanceId } from '../../data/api-data';
 import { apps } from '../../data/apps/apps-data';
@@ -11,7 +12,7 @@ import { IS_EE } from '../../e2e/config/constants';
 (IS_EE ? describe : describe.skip)('Apps - Logs Export', () => {
 	let app: App;
 
-	before((done) => getCredentials(done));
+	before((_t, done) => getCredentials(done));
 
 	before(async () => {
 		await cleanupApps();
@@ -20,7 +21,7 @@ import { IS_EE } from '../../e2e/config/constants';
 
 	after(() => cleanupApps());
 
-	it('should throw an error when trying to export logs for an invalid app', (done) => {
+	it('should throw an error when trying to export logs for an invalid app', (_t, done) => {
 		void request
 			.get(apps('/invalid-id/export-logs'))
 			.query({ type: 'json' })
@@ -33,7 +34,7 @@ import { IS_EE } from '../../e2e/config/constants';
 			.end(done);
 	});
 
-	it('should export app logs as JSON successfully', (done) => {
+	it('should export app logs as JSON successfully', (_t, done) => {
 		void request
 			.get(apps(`/${app.id}/export-logs`))
 			.query({ type: 'json' })
@@ -57,7 +58,7 @@ import { IS_EE } from '../../e2e/config/constants';
 			.end(done);
 	});
 
-	it('should export app logs as CSV successfully', (done) => {
+	it('should export app logs as CSV successfully', (_t, done) => {
 		void request
 			.get(apps(`/${app.id}/export-logs`))
 			.query({ type: 'csv' })
@@ -83,7 +84,7 @@ import { IS_EE } from '../../e2e/config/constants';
 			.end(done);
 	});
 
-	it('should throw error when type is not specified', (done) => {
+	it('should throw error when type is not specified', (_t, done) => {
 		void request
 			.get(apps(`/${app.id}/export-logs`))
 			.set(credentials)
@@ -91,7 +92,7 @@ import { IS_EE } from '../../e2e/config/constants';
 			.end(done);
 	});
 
-	it('should export app logs with pagination parameters', (done) => {
+	it('should export app logs with pagination parameters', (_t, done) => {
 		void request
 			.get(apps(`/${app.id}/export-logs`))
 			.query({ count: 5, type: 'json' })
@@ -106,7 +107,7 @@ import { IS_EE } from '../../e2e/config/constants';
 			.end(done);
 	});
 
-	it('should export app logs with sorting parameters', (done) => {
+	it('should export app logs with sorting parameters', (_t, done) => {
 		void request
 			.get(apps(`/${app.id}/export-logs`))
 			.query({
@@ -131,7 +132,7 @@ import { IS_EE } from '../../e2e/config/constants';
 			.end(done);
 	});
 
-	it('should export app logs filtered by logLevel', (done) => {
+	it('should export app logs filtered by logLevel', (_t, done) => {
 		void request
 			.get(apps(`/${app.id}/export-logs`))
 			.query({ logLevel: '2', type: 'json' })
@@ -150,7 +151,7 @@ import { IS_EE } from '../../e2e/config/constants';
 			.end(done);
 	});
 
-	it('should export app logs filtered by method', (done) => {
+	it('should export app logs filtered by method', (_t, done) => {
 		void request
 			.get(apps(`/${app.id}/export-logs`))
 			.query({ method: 'app:construct', type: 'json' })
@@ -168,7 +169,7 @@ import { IS_EE } from '../../e2e/config/constants';
 			.end(done);
 	});
 
-	it('should export app logs filtered by instance id', (done) => {
+	it('should export app logs filtered by instance id', (_t, done) => {
 		const instanceId = getInstanceId();
 		void request
 			.get(apps(`/${app.id}/export-logs`))
@@ -187,7 +188,7 @@ import { IS_EE } from '../../e2e/config/constants';
 			.end(done);
 	});
 
-	it('should export app logs filtered by date range', (done) => {
+	it('should export app logs filtered by date range', (_t, done) => {
 		const startDate = new Date();
 		startDate.setDate(startDate.getDate() - 1); // 1 day ago
 		const endDate = new Date();
@@ -215,7 +216,7 @@ import { IS_EE } from '../../e2e/config/constants';
 			.end(done);
 	});
 
-	it('should export app logs with combined filters', (done) => {
+	it('should export app logs with combined filters', (_t, done) => {
 		const startDate = new Date();
 		startDate.setDate(startDate.getDate() - 1); // 1 day ago
 		const endDate = new Date();
@@ -252,7 +253,7 @@ import { IS_EE } from '../../e2e/config/constants';
 			.end(done);
 	});
 
-	it('should return an error when no logs are found for the specified criteria', (done) => {
+	it('should return an error when no logs are found for the specified criteria', (_t, done) => {
 		const futureDate = new Date();
 		futureDate.setFullYear(futureDate.getFullYear() + 1);
 
@@ -271,7 +272,7 @@ import { IS_EE } from '../../e2e/config/constants';
 			.end(done);
 	});
 
-	it('should respect the maximum limit of 2000 logs', (done) => {
+	it('should respect the maximum limit of 2000 logs', (_t, done) => {
 		void request
 			.get(apps(`/${app.id}/export-logs`))
 			.query({ count: 5000, type: 'json' })
@@ -286,7 +287,7 @@ import { IS_EE } from '../../e2e/config/constants';
 			.end(done);
 	});
 
-	it('should reject invalid logLevel value', (done) => {
+	it('should reject invalid logLevel value', (_t, done) => {
 		void request
 			.get(apps(`/${app.id}/export-logs`))
 			.query({ logLevel: 'debug' })
@@ -299,7 +300,7 @@ import { IS_EE } from '../../e2e/config/constants';
 			.end(done);
 	});
 
-	it('should reject invalid date format', (done) => {
+	it('should reject invalid date format', (_t, done) => {
 		void request
 			.get(apps(`/${app.id}/export-logs`))
 			.query({ startDate: 'invalid-date' })
@@ -312,7 +313,7 @@ import { IS_EE } from '../../e2e/config/constants';
 			.end(done);
 	});
 
-	it('should reject invalid date range', (done) => {
+	it('should reject invalid date range', (_t, done) => {
 		const startDate = new Date();
 		const endDate = new Date();
 		endDate.setDate(endDate.getDate() - 1); // endDate before startDate
@@ -332,7 +333,7 @@ import { IS_EE } from '../../e2e/config/constants';
 			.end(done);
 	});
 
-	it('should reject invalid additional properties', (done) => {
+	it('should reject invalid additional properties', (_t, done) => {
 		void request
 			.get(apps(`/${app.id}/export-logs`))
 			.query({ invalidProperty: 'value' })
@@ -345,7 +346,7 @@ import { IS_EE } from '../../e2e/config/constants';
 			.end(done);
 	});
 
-	it('should handle authentication requirement', (done) => {
+	it('should handle authentication requirement', (_t, done) => {
 		void request
 			.get(apps(`/${app.id}/export-logs`))
 			.query({ type: 'json' })
@@ -353,7 +354,7 @@ import { IS_EE } from '../../e2e/config/constants';
 			.end(done);
 	});
 
-	it('should handle authentication via cookie', (done) => {
+	it('should handle authentication via cookie', (_t, done) => {
 		void request
 			.get(apps(`/${app.id}/export-logs`))
 			.query({ type: 'json' })
@@ -362,7 +363,7 @@ import { IS_EE } from '../../e2e/config/constants';
 			.end(done);
 	});
 
-	it('should include proper filename with timestamp in Content-Disposition header', (done) => {
+	it('should include proper filename with timestamp in Content-Disposition header', (_t, done) => {
 		void request
 			.get(apps(`/${app.id}/export-logs`))
 			.query({ type: 'json' })
@@ -381,7 +382,7 @@ import { IS_EE } from '../../e2e/config/constants';
 			.end(done);
 	});
 
-	it('should include Content-Length header', (done) => {
+	it('should include Content-Length header', (_t, done) => {
 		void request
 			.get(apps(`/${app.id}/export-logs`))
 			.query({ type: 'json' })

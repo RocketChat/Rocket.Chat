@@ -1,7 +1,8 @@
+import { after, before, describe, it } from 'node:test';
+
 import { faker } from '@faker-js/faker';
 import type { ILivechatVisitor, IOmnichannelRoom } from '@rocket.chat/core-typings';
 import { expect } from 'chai';
-import { before, describe, it, after } from 'mocha';
 import type { Response } from 'supertest';
 
 import { getCredentials, api, request, credentials } from '../../../data/api-data';
@@ -37,7 +38,7 @@ const getLicenseInfo = (loadValues = false) => {
 describe('LIVECHAT - visitors', () => {
 	let visitor: ILivechatVisitor;
 
-	before((done) => getCredentials(done));
+	before((_t, done) => getCredentials(done));
 
 	before(async () => {
 		await updateSetting('Livechat_enabled', true);

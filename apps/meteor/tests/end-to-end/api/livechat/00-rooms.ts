@@ -1,4 +1,5 @@
 import fs from 'fs';
+import { after, afterEach, before, describe, it } from 'node:test';
 import path from 'path';
 
 import { faker } from '@faker-js/faker';
@@ -15,7 +16,6 @@ import type {
 } from '@rocket.chat/core-typings';
 import { LivechatPriorityWeight } from '@rocket.chat/core-typings';
 import { expect } from 'chai';
-import { after, afterEach, before, describe, it } from 'mocha';
 import type { Response } from 'supertest';
 
 import type { SuccessResult } from '../../../../server/api/definition';
@@ -84,7 +84,7 @@ describe('LIVECHAT - rooms', () => {
 	let room: IOmnichannelRoom;
 	let appId: string;
 
-	before((done) => getCredentials(done));
+	before((_t, done) => getCredentials(done));
 
 	before(async () => {
 		if (IS_EE) {
@@ -805,8 +805,8 @@ describe('LIVECHAT - rooms', () => {
 				]);
 			});
 
-			it('should return valid list of rooms for monitor', () => {
-				return request
+			it('should return valid list of rooms for monitor', async () => {
+				await request
 					.get(api('livechat/rooms'))
 					.set(userCreds)
 					.expect(200)
@@ -814,8 +814,8 @@ describe('LIVECHAT - rooms', () => {
 						expect(res.body.rooms.some((r: IOmnichannelRoom) => r._id === room1._id)).to.be.true;
 					});
 			});
-			it('should return a valid list of rooms for monitor 2', () => {
-				return request
+			it('should return a valid list of rooms for monitor 2', async () => {
+				await request
 					.get(api('livechat/rooms'))
 					.set(user2Creds)
 					.expect(200)
@@ -3162,7 +3162,7 @@ describe('LIVECHAT - rooms', () => {
 				expect(response2.body).to.have.property('success', true);
 			});
 
-			(IS_EE ? it : it.skip)('should update room priority', async () => {
+			it('should update room priority', async () => {
 				await addPermissions({
 					'save-others-livechat-room-info': ['admin', 'livechat-manager'],
 					'view-l-room': ['livechat-agent', 'admin', 'livechat-manager'],

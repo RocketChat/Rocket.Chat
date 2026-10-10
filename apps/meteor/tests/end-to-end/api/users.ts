@@ -1,4 +1,5 @@
 import crypto from 'crypto';
+import { after, afterEach, before, beforeEach, describe, it } from 'node:test';
 
 import type { Credentials } from '@rocket.chat/api-client';
 import type { IRoom, ISubscription, ITeam, IUser } from '@rocket.chat/core-typings';
@@ -6,7 +7,6 @@ import { UserStatus } from '@rocket.chat/core-typings';
 import { Random } from '@rocket.chat/random';
 import type { IGetRoomRoles, PaginatedResult, DefaultUserInfo } from '@rocket.chat/rest-typings';
 import { assert, expect } from 'chai';
-import { after, afterEach, before, beforeEach, describe, it } from 'mocha';
 import { MongoClient } from 'mongodb';
 import speakeasy from 'speakeasy';
 import type { Response } from 'supertest';
@@ -191,9 +191,9 @@ describe('[Users]', () => {
 	let targetUser: { _id: IUser['_id']; username: string; emails: { address: string }[] };
 	let userCredentials: Credentials;
 
-	before((done) => getCredentials(done));
+	before((_t, done) => getCredentials(done));
 
-	before('should create a new user', async () => {
+	before(async () => {
 		const user = await createUser({
 			active: true,
 			roles: ['user'],
@@ -387,7 +387,7 @@ describe('[Users]', () => {
 				await Promise.all(users.map((user) => deleteUser(user)));
 			});
 
-			it('should create a new user with default roles', (done) => {
+			it('should create a new user with default roles', (_t, done) => {
 				const username = `defaultUserRole_${apiUsername}${Date.now()}`;
 				const email = `defaultUserRole_${apiEmail}${Date.now()}`;
 
@@ -415,7 +415,7 @@ describe('[Users]', () => {
 					.end(done);
 			});
 
-			it('should create a new user with only the role provided', (done) => {
+			it('should create a new user with only the role provided', (_t, done) => {
 				const username = `defaultUserRole_${apiUsername}${Date.now()}`;
 				const email = `defaultUserRole_${apiEmail}${Date.now()}`;
 
@@ -1792,7 +1792,7 @@ describe('[Users]', () => {
 				expect(res.body.users.map((u: IUser) => u._id)).to.include('rocket.cat');
 			});
 
-			it('should return full list of online users for more than 10 minutes in the past', (done) => {
+			it('should return full list of online users for more than 10 minutes in the past', (_t, done) => {
 				const date = new Date();
 				date.setMinutes(date.getMinutes() - 11);
 
@@ -1912,7 +1912,7 @@ describe('[Users]', () => {
 			user3Credentials = await login(user3.username, password);
 		});
 
-		before('Create a group', async () => {
+		before(async () => {
 			group = (
 				await createRoom({
 					type: 'p',
@@ -1921,7 +1921,7 @@ describe('[Users]', () => {
 			).body.group;
 		});
 
-		before('Create invite link', async () => {
+		before(async () => {
 			inviteToken = (
 				await request.post(api('findOrCreateInvite')).set(credentials).send({
 					rid: group._id,
@@ -1931,7 +1931,7 @@ describe('[Users]', () => {
 			).body._id;
 		});
 
-		after('Remove invite link', async () =>
+		after(async () =>
 			request
 				.delete(api(`removeInvite/${inviteToken}`))
 				.set(credentials)
@@ -1961,7 +1961,7 @@ describe('[Users]', () => {
 			expect(myself).to.not.have.property('e2e');
 		});
 
-		it('should sort for user statuses and check if deactivated user is correctly sorted', (done) => {
+		it('should sort for user statuses and check if deactivated user is correctly sorted', (_t, done) => {
 			const query = {
 				fields: JSON.stringify({
 					username: 1,
@@ -2555,7 +2555,7 @@ describe('[Users]', () => {
 		});
 
 		describe('[/users.getAvatarSuggestion]', () => {
-			it('should return 401 unauthorized when user is not logged in', (done) => {
+			it('should return 401 unauthorized when user is not logged in', (_t, done) => {
 				void request.get(api('users.getAvatarSuggestion')).expect('Content-Type', 'application/json').expect(401).end(done);
 			});
 
@@ -2713,8 +2713,8 @@ describe('[Users]', () => {
 			expect(res.body).to.have.property('error', `Bio size exceeds ${MAX_BIO_LENGTH} characters [error-bio-size-exceeded]`);
 		});
 
-		it('should return an error when trying to upsert a user by sending an empty userId', () => {
-			return request
+		it('should return an error when trying to upsert a user by sending an empty userId', async () => {
+			await request
 				.post(api('users.update'))
 				.set(credentials)
 				.send({
@@ -2730,8 +2730,8 @@ describe('[Users]', () => {
 				});
 		});
 
-		it('should return an error when trying to use the joinDefaultChannels param, which is not intended for updates', () => {
-			return request
+		it('should return an error when trying to use the joinDefaultChannels param, which is not intended for updates', async () => {
+			await request
 				.post(api('users.update'))
 				.set(credentials)
 				.send({
@@ -3973,7 +3973,7 @@ describe('[Users]', () => {
 	describe('[/users.setPreferences]', () => {
 		after(() => updatePermission('edit-other-user-info', ['admin']));
 
-		it('should return an error when the user try to update info of another user and does not have the necessary permission', (done) => {
+		it('should return an error when the user try to update info of another user and does not have the necessary permission', (_t, done) => {
 			const userPreferences = {
 				userId: 'rocket.cat',
 				data: {
@@ -3995,7 +3995,7 @@ describe('[Users]', () => {
 					.end(done);
 			});
 		});
-		it('should return an error when the user try to update info of an nonexistent user', (done) => {
+		it('should return an error when the user try to update info of an nonexistent user', (_t, done) => {
 			const userPreferences = {
 				userId: 'invalid-id',
 				data: {
@@ -4020,7 +4020,7 @@ describe('[Users]', () => {
 					.end(done);
 			});
 		});
-		it('should set some preferences of another user successfully', (done) => {
+		it('should set some preferences of another user successfully', (_t, done) => {
 			const userPreferences = {
 				userId: 'rocket.cat',
 				data: {
@@ -4043,7 +4043,7 @@ describe('[Users]', () => {
 					.end(done);
 			});
 		});
-		it('should set some preferences by user when execute successfully', (done) => {
+		it('should set some preferences by user when execute successfully', (_t, done) => {
 			const userPreferences = {
 				userId: credentials['X-User-Id'],
 				data: {
@@ -4063,7 +4063,7 @@ describe('[Users]', () => {
 				})
 				.end(done);
 		});
-		it('should set some preferences and language preference by user when execute successfully', (done) => {
+		it('should set some preferences and language preference by user when execute successfully', (_t, done) => {
 			const userPreferences = {
 				userId: credentials['X-User-Id'],
 				data: {
@@ -4142,7 +4142,7 @@ describe('[Users]', () => {
 	});
 
 	describe('[/users.getPreferences]', () => {
-		it('should return all preferences when execute successfully', (done) => {
+		it('should return all preferences when execute successfully', (_t, done) => {
 			const userPreferences = {
 				...preferences.data,
 				language: 'en',
@@ -4361,7 +4361,7 @@ describe('[Users]', () => {
 
 		after(async () => deleteUserIfExists(targetUser));
 
-		it('Enable "Accounts_AllowDeleteOwnAccount" setting...', (done) => {
+		it('Enable "Accounts_AllowDeleteOwnAccount" setting...', (_t, done) => {
 			void request
 				.post('/api/v1/settings/Accounts_AllowDeleteOwnAccount')
 				.set(credentials)
@@ -5213,7 +5213,7 @@ describe('[Users]', () => {
 		let testUser: TestUser<IUser>;
 		const testRoleId = 'guest';
 
-		before('Create test user', async () => {
+		before(async () => {
 			testUser = await createUser();
 			await request
 				.post(api('roles.addUserToRole'))
@@ -5381,21 +5381,22 @@ describe('[Users]', () => {
 		});
 	});
 
-	describe('[/users.logoutOtherClients]', function () {
+	describe('[/users.logoutOtherClients]', () => {
 		let user: TestUser<IUser>;
 		let userCredentials: Credentials;
 		let newCredentials: Credentials;
 
-		this.timeout(20000);
+		before(
+			async () => {
+				user = await createUser({ joinDefaultChannels: false });
+				userCredentials = await login(user.username, password);
+				newCredentials = await login(user.username, password);
+			},
+			{ timeout: 20000 },
+		);
+		after(() => deleteUser(user), { timeout: 20000 });
 
-		before(async () => {
-			user = await createUser({ joinDefaultChannels: false });
-			userCredentials = await login(user.username, password);
-			newCredentials = await login(user.username, password);
-		});
-		after(() => deleteUser(user));
-
-		it('should invalidate all active sesions', (done) => {
+		it('should invalidate all active sesions', { timeout: 20000 }, (_t, done) => {
 			/* We want to validate that the login with the "old" credentials fails
 				However, the removal of the tokens is done asynchronously.
 				Thus, we check that within the next seconds, at least one try to
@@ -5429,7 +5430,7 @@ describe('[Users]', () => {
 				.then(tryAuthentication);
 		});
 
-		it('should remove only logged out session push tokens', async () => {
+		it('should remove only logged out session push tokens', { timeout: 20000 }, async () => {
 			const credentials1 = await login(user.username, password);
 			const credentials2 = await login(user.username, password);
 
@@ -5492,7 +5493,7 @@ describe('[Users]', () => {
 				});
 		});
 
-		it('should return 401 when not authenticated', async () => {
+		it('should return 401 when not authenticated', { timeout: 20000 }, async () => {
 			await request
 				.post(api('users.logoutOtherClients'))
 				.expect('Content-Type', 'application/json')
@@ -5557,40 +5558,44 @@ describe('[Users]', () => {
 	describe('[/users.autocomplete]', () => {
 		after(() => updatePermission('view-outside-room', ['admin', 'owner', 'moderator', 'user']));
 
-		describe('[without permission]', function () {
+		describe('[without permission]', () => {
 			let user: TestUser<IUser>;
 			let userCredentials: Credentials;
 			let user2: TestUser<IUser>;
 			let user2Credentials: Credentials;
 			let roomId: IRoom['_id'];
 
-			this.timeout(20000);
+			before(
+				async () => {
+					const users = await Promise.all([createUser({ joinDefaultChannels: false }), createUser({ joinDefaultChannels: false })]);
 
-			before(async () => {
-				const users = await Promise.all([createUser({ joinDefaultChannels: false }), createUser({ joinDefaultChannels: false })]);
+					user = users[0];
+					user2 = users[1];
 
-				user = users[0];
-				user2 = users[1];
+					const credentials = await Promise.all([
+						login(user.username, password),
+						login(user2.username, password),
+						await updatePermission('view-outside-room', []),
+					]);
 
-				const credentials = await Promise.all([
-					login(user.username, password),
-					login(user2.username, password),
-					await updatePermission('view-outside-room', []),
-				]);
+					userCredentials = credentials[0];
+					user2Credentials = credentials[1];
 
-				userCredentials = credentials[0];
-				user2Credentials = credentials[1];
+					roomId = (await createRoom({ type: 'c', credentials: userCredentials, name: `channel.autocomplete.${Date.now()}` })).body.channel
+						._id;
+				},
+				{ timeout: 20000 },
+			);
 
-				roomId = (await createRoom({ type: 'c', credentials: userCredentials, name: `channel.autocomplete.${Date.now()}` })).body.channel
-					._id;
-			});
+			after(
+				async () => {
+					await deleteRoom({ type: 'c', roomId });
+					await Promise.all([deleteUser(user), deleteUser(user2)]);
+				},
+				{ timeout: 20000 },
+			);
 
-			after(async () => {
-				await deleteRoom({ type: 'c', roomId });
-				await Promise.all([deleteUser(user), deleteUser(user2)]);
-			});
-
-			it('should return an empty list when the user does not have any subscription', async () => {
+			it('should return an empty list when the user does not have any subscription', { timeout: 20000 }, async () => {
 				const res = await request
 					.get(api('users.autocomplete'))
 					.query({ selector: '{}' })
@@ -5602,7 +5607,7 @@ describe('[Users]', () => {
 				expect(res.body).to.have.property('items').and.to.be.an('array').that.has.lengthOf(0);
 			});
 
-			it('should return users that are subscribed to the same rooms as the requester', async () => {
+			it('should return users that are subscribed to the same rooms as the requester', { timeout: 20000 }, async () => {
 				await joinChannel({ overrideCredentials: user2Credentials, roomId });
 
 				void request
@@ -5796,7 +5801,9 @@ describe('[Users]', () => {
 				.expect(200);
 
 			expect(res.body).to.have.property('success', true);
-			void getUserStatus(credentials['X-User-Id']).then((status) => expect(status.status).to.be.equal('busy'));
+			const status = await getUserStatus(credentials['X-User-Id']);
+			expect(status.status).to.be.equal('offline');
+			expect(status).to.have.property('statusSource', 'manual');
 		});
 		it('should return an error when trying to update other user status without the required permission', async () => {
 			await updatePermission('edit-other-user-info', []);
@@ -5830,9 +5837,9 @@ describe('[Users]', () => {
 				.expect(200);
 
 			expect(res.body).to.have.property('success', true);
-			void getUserStatus(credentials['X-User-Id']).then((status) => {
-				expect(status.status).to.be.equal('busy');
-			});
+			const status = await getUserStatus(user._id);
+			expect(status.status).to.be.equal('offline');
+			expect(status).to.have.property('statusSource', 'manual');
 		});
 		it('should return an error when the user try to update user status with an invalid status', async () => {
 			const res = await request
@@ -5995,7 +6002,7 @@ describe('[Users]', () => {
 		});
 		after(() => deleteUser(user));
 
-		it('should invalidate all active sesions', (done) => {
+		it('should invalidate all active sesions', (_t, done) => {
 			/* We want to validate that the login with the "old" credentials fails
 				However, the removal of the tokens is done asynchronously.
 				Thus, we check that within the next seconds, at least one try to
@@ -6036,7 +6043,7 @@ describe('[Users]', () => {
 		const teamName2 = `team-name-2-${Date.now()}`;
 		let testUser: TestUser<IUser>;
 
-		before('create team 1', (done) => {
+		before((_t, done) => {
 			void request
 				.post(api('teams.create'))
 				.set(credentials)
@@ -6054,7 +6061,7 @@ describe('[Users]', () => {
 				.end(done);
 		});
 
-		before('create team 2', (done) => {
+		before((_t, done) => {
 			void request
 				.post(api('teams.create'))
 				.set(credentials)
@@ -6072,11 +6079,11 @@ describe('[Users]', () => {
 				.end(done);
 		});
 
-		before('create new user', async () => {
+		before(async () => {
 			testUser = await createUser({ joinDefaultChannels: false });
 		});
 
-		before('add test user to team 1', (done) => {
+		before((_t, done) => {
 			void request
 				.post(api('teams.addMembers'))
 				.set(credentials)
@@ -6097,7 +6104,7 @@ describe('[Users]', () => {
 				.then(() => done());
 		});
 
-		before('add test user to team 2', (done) => {
+		before((_t, done) => {
 			void request
 				.post(api('teams.addMembers'))
 				.set(credentials)
@@ -6196,7 +6203,7 @@ describe('[Users]', () => {
 				.expect(200);
 		});
 
-		it('should logout the requester', (done) => {
+		it('should logout the requester', (_t, done) => {
 			void updatePermission('logout-other-user', []).then(() => {
 				void request.post(api('users.logout')).set(userCredentials).expect('Content-Type', 'application/json').expect(200).end(done);
 			});
@@ -6628,16 +6635,19 @@ describe('[Users]', () => {
 	});
 
 	describe('[/users.verifyEmail]', () => {
-		it('should fail with 400 when the token is not provided', () => request.post(api('users.verifyEmail')).send({}).expect(400));
+		it('should fail with 400 when the token is not provided', async () => {
+			await request.post(api('users.verifyEmail')).send({}).expect(400);
+		});
 
-		it('should fail with 403 when the token does not match any user', () =>
-			request
+		it('should fail with 403 when the token does not match any user', async () => {
+			await request
 				.post(api('users.verifyEmail'))
 				.send({ token: 'this-token-does-not-exist' })
 				.expect(403)
 				.expect((res: Response) => {
 					expect(res.body).to.have.property('success', false);
-				}));
+				});
+		});
 
 		describe('when a valid token is provided', () => {
 			let user: TestUser<IUser>;
@@ -6699,10 +6709,12 @@ describe('[Users]', () => {
 		after(async () => deleteUser(totpUser));
 
 		describe('[/users.enableTotp]', () => {
-			it('should fail when unauthenticated', () => request.post(api('users.enableTotp')).expect(401));
+			it('should fail when unauthenticated', async () => {
+				await request.post(api('users.enableTotp')).expect(401);
+			});
 
-			it('should return a secret and an otpauth url', () =>
-				request
+			it('should return a secret and an otpauth url', async () => {
+				await request
 					.post(api('users.enableTotp'))
 					.set(totpCredentials)
 					.expect(200)
@@ -6714,17 +6726,21 @@ describe('[Users]', () => {
 							.that.is.a('string')
 							.and.match(/^otpauth:\/\//);
 						secret = res.body.secret;
-					}));
+					});
+			});
 		});
 
 		describe('[/users.validateTotp]', () => {
-			it('should fail when unauthenticated', () => request.post(api('users.validateTotp')).send({ code: '000000' }).expect(401));
+			it('should fail when unauthenticated', async () => {
+				await request.post(api('users.validateTotp')).send({ code: '000000' }).expect(401);
+			});
 
-			it('should fail with 400 when the code is missing', () =>
-				request.post(api('users.validateTotp')).set(totpCredentials).send({}).expect(400));
+			it('should fail with 400 when the code is missing', async () => {
+				await request.post(api('users.validateTotp')).set(totpCredentials).send({}).expect(400);
+			});
 
-			it('should enable totp and return backup codes for a valid code', () =>
-				request
+			it('should enable totp and return backup codes for a valid code', async () => {
+				await request
 					.post(api('users.validateTotp'))
 					.set(totpCredentials)
 					.send({ code: totpCode() })
@@ -6732,41 +6748,49 @@ describe('[Users]', () => {
 					.expect((res: Response) => {
 						expect(res.body).to.have.property('success', true);
 						expect(res.body).to.have.property('codes').that.is.an('array');
-					}));
+					});
+			});
 		});
 
 		describe('[/users.totpCodesRemaining]', () => {
-			it('should fail when unauthenticated', () => request.get(api('users.totpCodesRemaining')).expect(401));
+			it('should fail when unauthenticated', async () => {
+				await request.get(api('users.totpCodesRemaining')).expect(401);
+			});
 
-			it('should return the number of remaining backup codes', () =>
-				request
+			it('should return the number of remaining backup codes', async () => {
+				await request
 					.get(api('users.totpCodesRemaining'))
 					.set(totpCredentials)
 					.expect(200)
 					.expect((res: Response) => {
 						expect(res.body).to.have.property('success', true);
 						expect(res.body).to.have.property('remaining').that.is.a('number');
-					}));
+					});
+			});
 		});
 
 		describe('[/users.regenerateTotpCodes]', () => {
-			it('should fail when unauthenticated', () => request.post(api('users.regenerateTotpCodes')).send({ code: '000000' }).expect(401));
+			it('should fail when unauthenticated', async () => {
+				await request.post(api('users.regenerateTotpCodes')).send({ code: '000000' }).expect(401);
+			});
 
-			it('should fail with 400 when the code is missing', () =>
-				request.post(api('users.regenerateTotpCodes')).set(totpCredentials).send({}).expect(400));
+			it('should fail with 400 when the code is missing', async () => {
+				await request.post(api('users.regenerateTotpCodes')).set(totpCredentials).send({}).expect(400);
+			});
 
-			it('should fail with 400 when the code is invalid', () =>
-				request
+			it('should fail with 400 when the code is invalid', async () => {
+				await request
 					.post(api('users.regenerateTotpCodes'))
 					.set(totpCredentials)
 					.send({ code: '000000' })
 					.expect(400)
 					.expect((res: Response) => {
 						expect(res.body).to.have.property('success', false);
-					}));
+					});
+			});
 
-			it('should return a fresh set of backup codes for a valid code', () =>
-				request
+			it('should return a fresh set of backup codes for a valid code', async () => {
+				await request
 					.post(api('users.regenerateTotpCodes'))
 					.set(totpCredentials)
 					.send({ code: totpCode() })
@@ -6774,17 +6798,21 @@ describe('[Users]', () => {
 					.expect((res: Response) => {
 						expect(res.body).to.have.property('success', true);
 						expect(res.body).to.have.property('codes').that.is.an('array');
-					}));
+					});
+			});
 		});
 
 		describe('[/users.disableTotp]', () => {
-			it('should fail when unauthenticated', () => request.post(api('users.disableTotp')).send({ code: '000000' }).expect(401));
+			it('should fail when unauthenticated', async () => {
+				await request.post(api('users.disableTotp')).send({ code: '000000' }).expect(401);
+			});
 
-			it('should fail with 400 when the code is missing', () =>
-				request.post(api('users.disableTotp')).set(totpCredentials).send({}).expect(400));
+			it('should fail with 400 when the code is missing', async () => {
+				await request.post(api('users.disableTotp')).set(totpCredentials).send({}).expect(400);
+			});
 
-			it('should disable totp for a valid code', () =>
-				request
+			it('should disable totp for a valid code', async () => {
+				await request
 					.post(api('users.disableTotp'))
 					.set(totpCredentials)
 					.send({ code: totpCode() })
@@ -6792,7 +6820,8 @@ describe('[Users]', () => {
 					.expect((res: Response) => {
 						expect(res.body).to.have.property('success', true);
 						expect(res.body).to.have.property('disabled', true);
-					}));
+					});
+			});
 		});
 	});
 });

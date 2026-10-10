@@ -1,8 +1,9 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
+import { after, before, describe, it } from 'node:test';
+
 import type { Credentials } from '@rocket.chat/api-client';
 import type { ILivechatDepartment, IUser } from '@rocket.chat/core-typings';
 import { expect } from 'chai';
-import { before, it, describe, after } from 'mocha';
 
 import { getCredentials, api, request, credentials } from '../../../data/api-data';
 import { addOrRemoveAgentFromDepartment, createDepartment } from '../../../data/livechat/department';
@@ -28,7 +29,7 @@ type TestUser = { user: IUser; credentials: Credentials };
 	let noUnitDepartment: ILivechatDepartment;
 	let unitDepartment: ILivechatDepartment;
 
-	before((done) => getCredentials(done));
+	before((_t, done) => getCredentials(done));
 	before(async () => {
 		await updateSetting('Livechat_accept_chats_with_no_agents', true);
 		await setUserActiveStatus('rocketchat.internal.admin.test', true);
@@ -131,7 +132,7 @@ type TestUser = { user: IUser; credentials: Credentials };
 	describe('[GET] livechat/monitors', () => {
 		it('should fail if manage-livechat-monitors permission is missing', async () => {
 			await removePermissionFromAllRoles('manage-livechat-monitors');
-			return request.get(api('livechat/monitors')).set(credentials).expect(403);
+			await request.get(api('livechat/monitors')).set(credentials).expect(403);
 		});
 		it('should return all monitors', async () => {
 			await restorePermissionToRoles('manage-livechat-monitors');
@@ -151,7 +152,7 @@ type TestUser = { user: IUser; credentials: Credentials };
 	describe('livechat/monitors/:username', () => {
 		it('should fail if manage-livechat-monitors permission is missing', async () => {
 			await removePermissionFromAllRoles('manage-livechat-monitors');
-			return request.get(api('livechat/monitors/123')).set(credentials).expect(403);
+			await request.get(api('livechat/monitors/123')).set(credentials).expect(403);
 		});
 		it('should return a monitor', async () => {
 			await restorePermissionToRoles('manage-livechat-monitors');
