@@ -1,4 +1,4 @@
-import type { IContact, Serialized } from '@rocket.chat/core-typings';
+import type { IContactPublic, Serialized } from '@rocket.chat/core-typings';
 import { Box, Chip, Divider } from '@rocket.chat/fuselage';
 import { BaseAvatar } from '@rocket.chat/ui-avatar';
 import {
@@ -24,7 +24,7 @@ import { useContactLabel } from './hooks/useContactLabel';
 import { getAvatarURL } from '../../lib/getAvatarURL';
 
 export type ContactInfoProps = {
-	contact: Serialized<IContact>;
+	contact: Serialized<IContactPublic>;
 	onEdit: () => void;
 	onClose: () => void;
 };
