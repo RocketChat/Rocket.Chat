@@ -8,7 +8,7 @@ import type { Response } from 'supertest';
 import { retry } from './helpers/retry';
 import { sleep } from '../../../lib/utils/sleep';
 import { getCredentials, api, request, credentials, apiUrl } from '../../data/api-data';
-import { followMessage, sendMessage, sendSimpleMessage, deleteMessage, updateMessage } from '../../data/chat.helper';
+import { followMessage, sendMessage, sendSimpleMessage, deleteMessage, updateMessage, getMessageById } from '../../data/chat.helper';
 import { imgURL } from '../../data/interactions';
 import { mockServerHealthy, mockServerReset, mockServerSet } from '../../data/mock-server.helper';
 import { updatePermission, updateSetting } from '../../data/permissions.helper';
@@ -2564,6 +2564,27 @@ describe('[Chat]', () => {
 				const userWhoWasFollowingTheThreadSubscription = await getSubscriptionByRoomId(testChannel._id, otherUserCredentials);
 
 				expectNoUnreadThreadMessages(userWhoWasFollowingTheThreadSubscription);
+			});
+
+			it('should turn the parent back into a regular message once its last reply is removed', async () => {
+				const firstReplyId = (await sendSimpleMessage({ roomId: testChannel._id, tmid: parentThreadId })).body.message._id;
+				const secondReplyId = (
+					await sendSimpleMessage({ roomId: testChannel._id, tmid: parentThreadId, userCredentials: otherUserCredentials })
+				).body.message._id;
+
+				await deleteMessage({ msgId: firstReplyId, roomId: testChannel._id });
+
+				const parentWithOneReply = await getMessageById({ msgId: parentThreadId });
+				expect(parentWithOneReply).to.have.property('tcount', 1);
+				expect(parentWithOneReply).to.have.property('tlm');
+				expect(parentWithOneReply).to.have.property('replies').that.is.an('array').that.is.not.empty;
+
+				await deleteMessage({ msgId: secondReplyId, roomId: testChannel._id });
+
+				const parentWithoutReplies = await getMessageById({ msgId: parentThreadId });
+				expect(parentWithoutReplies).to.not.have.property('tcount');
+				expect(parentWithoutReplies).to.not.have.property('tlm');
+				expect(parentWithoutReplies).to.not.have.property('replies');
 			});
 		});
 
