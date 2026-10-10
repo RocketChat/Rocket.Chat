@@ -67,11 +67,18 @@ export interface IRocketChatDesktop {
 	reloadServer: () => void;
 	getE2ePdfPreviewSizeLimit: () => number;
 	openInBrowser: (url: string) => void;
+	/**
+	 * Present only in the desktop app's video call window (4.18 and later), whose `RocketChatDesktop` carries this and
+	 * nothing of the main window's but no-op setters.
+	 */
+	videoCall?: IVideoCallWindow;
 }
 
+/** What the desktop app's video call window offers the page loaded in it. */
 export interface IVideoCallWindow {
 	openInMainWindow: (path: string) => void;
 	close: () => void;
 	requestScreenSharing: () => Promise<string | null>;
-	getAuthCredentials: () => Promise<{ userId: string; authToken: string; serverUrl: string } | null>;
+	/** @deprecated Removed in desktop 4.18, and never used: it handed the user's session token to the provider's page. */
+	getAuthCredentials?: () => Promise<{ userId: string; authToken: string; serverUrl: string } | null>;
 }
