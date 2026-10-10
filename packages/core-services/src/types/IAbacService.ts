@@ -2,6 +2,9 @@ import type {
 	IAbacAttributeDefinition,
 	IAbacAttribute,
 	IAbacMembershipPreview,
+	IAbacRoomMembershipPreview,
+	AbacMembershipGroup,
+	AbacPreviewCursor,
 	IRoom,
 	IRoomAbacRedaction,
 	IUser,
@@ -21,6 +24,15 @@ export type AbacCreationAttributesResult =
 
 export type AbacMembershipPreviewResult =
 	{ allowed: true; preview: IAbacMembershipPreview } | Extract<AbacCreationAttributesResult, { allowed: false }>;
+
+export type AbacRoomAttributesGrant = 'manage-abac-admin-rooms' | 'edit-room-abac-attributes';
+
+export type AbacRoomMembershipPreviewPage = {
+	filter?: string;
+	after?: AbacPreviewCursor;
+	count: number;
+	group?: AbacMembershipGroup;
+};
 
 export interface IAbacService {
 	addAbacAttribute(attribute: IAbacAttributeDefinition, actor: AbacActor | undefined): Promise<void>;
@@ -54,13 +66,26 @@ export interface IAbacService {
 		options: { creatorJoins: boolean },
 	): Promise<AbacCreationAttributesResult>;
 	listAssignableAttributes(actor: AbacActor): Promise<IAbacAttributeDefinition[]>;
+	listRoomAssignableAttributes(rid: string, actor: AbacActor, grant: AbacRoomAttributesGrant): Promise<IAbacAttributeDefinition[]>;
 	auditRoomAttributesAtCreation(room: Pick<IRoom, '_id' | 'name' | 'abacAttributes'>, actor: AbacActor): Promise<void>;
 	previewCreationMembers(
 		usernames: string[],
 		attributes: IAbacAttributeDefinition[],
 		actor: AbacActor,
 	): Promise<AbacMembershipPreviewResult>;
-	setRoomAbacAttributes(rid: string, attributes: Record<string, string[]>, actor: AbacActor | undefined): Promise<void>;
+	previewRoomMembers(
+		rid: string,
+		attributes: Record<string, string[]>,
+		actor: AbacActor,
+		page: AbacRoomMembershipPreviewPage,
+		grant: AbacRoomAttributesGrant,
+	): Promise<IAbacRoomMembershipPreview>;
+	setRoomAbacAttributes(
+		rid: string,
+		attributes: Record<string, string[]>,
+		actor: AbacActor | undefined,
+		grant?: AbacRoomAttributesGrant,
+	): Promise<void>;
 	removeRoomAbacAttribute(rid: string, key: string, actor: AbacActor | undefined): Promise<void>;
 	addRoomAbacAttributeByKey(rid: string, key: string, values: string[], actor: AbacActor | undefined): Promise<void>;
 	replaceRoomAbacAttributeByKey(rid: string, key: string, values: string[], actor: AbacActor | undefined): Promise<void>;

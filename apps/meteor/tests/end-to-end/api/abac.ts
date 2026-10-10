@@ -114,8 +114,18 @@ import { IS_EE, URL_MONGODB } from '../../e2e/config/constants';
 					await updatePermission('manage-abac-admin-rooms', ['admin']);
 				});
 
-				it('POST /abac/rooms/:rid/attributes should return 403', async () => {
-					await request.post(`${v1}/abac/rooms/${testRoom._id}/attributes`).set(credentials).send({ attributes: {} }).expect(403);
+				it('POST /abac/rooms/:rid/attributes should return 403 when edit-room-abac-attributes is withdrawn too', async () => {
+					await updatePermission('edit-room-abac-attributes', []);
+
+					try {
+						await request
+							.post(`${v1}/abac/rooms/${testRoom._id}/attributes`)
+							.set(credentials)
+							.send({ attributes: { [dummyKey]: ['v1'] } })
+							.expect(403);
+					} finally {
+						await updatePermission('edit-room-abac-attributes', ['admin', 'owner']);
+					}
 				});
 
 				it('DELETE /abac/rooms/:rid/attributes should return 403', async () => {
