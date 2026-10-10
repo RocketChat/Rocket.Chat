@@ -14,7 +14,7 @@ export async function testPrivateMethod<T extends (...args: any[]) => any>(
 	}
 
 	const method = proto[methodName];
-	void testFn(method.bind(service));
+	await testFn(method.bind(service));
 
 	if (isStubbed) {
 		sinon.stub(proto, methodName).callsFake(originalMethod);

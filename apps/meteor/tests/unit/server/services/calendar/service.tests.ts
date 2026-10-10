@@ -357,7 +357,7 @@ describe('CalendarService', () => {
 	describe('Private: doSetupNextNotification', () => {
 		it('should schedule notifications at the next date', async () => {
 			await testPrivateMethod(service, 'doSetupNextNotification', async (method) => {
-				const nextDate = new Date('2025-01-01T10:00:00Z');
+				const nextDate = new Date(Date.now() + 60 * 60 * 1000);
 				CalendarEventMock.findNextNotificationDate.resolves(nextDate);
 
 				await method(false);
