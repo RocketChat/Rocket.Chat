@@ -86,7 +86,9 @@ const ComposerMarkup = ({ tokens }: ComposerMarkupProps): ReactElement => {
 						);
 
 					case 'CODE':
-						return <ComposerCodeBlock key={index} language={block.language} lines={block.value} />;
+						return (
+							<ComposerCodeBlock key={index} language={block.language} lines={block.value} fence={codeFenceOf(sourceLines[index]?.[0])} />
+						);
 
 					case 'UNORDERED_LIST':
 						return <ComposerList key={index} items={block.value} marker={unorderedMarker} />;
@@ -129,6 +131,9 @@ const ComposerMarkup = ({ tokens }: ComposerMarkupProps): ReactElement => {
 // cursor landed on still looks like one: a bad line falls back to the canonical form rather than
 // pasting unrelated text into the composer.
 const quoteMarkerOf = (line: string | undefined): string => /^>[ \t]*/.exec(line ?? '')?.[0] ?? '> ';
+
+// A code block may be fenced by more than three backticks; its closing fence repeats the opening one.
+const codeFenceOf = (line: string | undefined): string => /^`{3,}/.exec(line ?? '')?.[0] ?? '```';
 
 const lineBreakOf = (line: string | undefined): string => (line !== undefined && /^[ \t]*$/.test(line) ? `${line}\n` : '\n');
 

@@ -245,6 +245,8 @@ describe('every renderer emits the text it was parsed from', () => {
 		['emoji shortcode alone', ':smile:'],
 		['unicode emoji in text', 'hi 😄 there'],
 		['unicode emoji alone', '😄'],
+		['four-backtick code holding a fence', '````\nintro\n```py\nprint(1)\n```\n````'],
+		['four-backtick code with a language', '````js\nconst a = 1;\n````\nafter'],
 	])('reproduces %s exactly', (_label, text) => {
 		expect(textOf(mountSource(text))).toBe(text);
 	});
