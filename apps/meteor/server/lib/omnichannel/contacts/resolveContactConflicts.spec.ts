@@ -27,6 +27,9 @@ const { resolveContactConflicts } = proxyquire.noCallThru().load('./resolveConta
 	'./patchContact': {
 		patchContact,
 	},
+	'../../notifyListener': {
+		notifyOnSettingChanged: sinon.stub(),
+	},
 });
 
 describe('resolveContactConflicts', () => {

@@ -53,6 +53,7 @@ const { OmnichannelQueue } = p.noCallThru().load('../../../../../server/services
 		},
 	},
 	'../../lib/omnichannel/settings': libSettings,
+	'../../lib/notifyListener': { notifyOnLivechatInquiryChangedByRoom: Sinon.stub() },
 	'../../settings': { settings },
 	'./logger': { queueLogger },
 	'@rocket.chat/models': models,
@@ -387,6 +388,7 @@ describe('Omnichannel Queue processor', () => {
 			queue.running = true;
 			queue.getActiveQueues = Sinon.stub().resolves([null]);
 			await queue.execute();
+			clearTimeout(queue.timeoutHandler);
 
 			expect(queue.getActiveQueues.calledOnce).to.be.true;
 		});

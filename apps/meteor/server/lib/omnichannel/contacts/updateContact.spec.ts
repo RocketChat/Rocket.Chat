@@ -32,6 +32,12 @@ const { updateContact } = proxyquire.noCallThru().load('./updateContact', {
 	'./patchContact': {
 		patchContact,
 	},
+	'../../notifyListener': {
+		notifyOnSubscriptionChangedByVisitorIds: sinon.stub(),
+		notifyOnRoomChangedByContactId: sinon.stub(),
+		notifyOnLivechatInquiryChangedByVisitorIds: sinon.stub(),
+		notifyOnSettingChanged: sinon.stub(),
+	},
 });
 
 describe('updateContact', () => {
