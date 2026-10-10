@@ -1,6 +1,8 @@
 import type { IContact, IContactPublic, IUser, RocketChatRecordDeleted } from '@rocket.chat/core-typings';
 import type {
 	ContactBulkUpsertResult,
+	DocumentWithProjection,
+	FindOptionsWithProjection,
 	FindPaginated,
 	IContactsModel,
 	ImportedContact,
@@ -8,18 +10,7 @@ import type {
 	LocalContactUpdate,
 } from '@rocket.chat/model-typings';
 import { escapeRegExp } from '@rocket.chat/tools';
-import type {
-	Collection,
-	Db,
-	DeleteResult,
-	Document,
-	Filter,
-	FindCursor,
-	FindOptions,
-	IndexDescription,
-	UpdateFilter,
-	UpdateResult,
-} from 'mongodb';
+import type { Collection, Db, DeleteResult, Document, Filter, FindCursor, IndexDescription, UpdateFilter, UpdateResult } from 'mongodb';
 import { ObjectId } from 'mongodb';
 
 import { BaseRaw } from './BaseRaw';
@@ -51,12 +42,12 @@ export class ContactsRaw extends BaseRaw<IContact> implements IContactsModel {
 		];
 	}
 
-	public findPaginatedByUserId(
+	public findPaginatedByUserId<P extends Document = IContact, O extends FindOptionsWithProjection<P> = FindOptionsWithProjection<P>>(
 		uid: IUser['_id'],
 		text: string | undefined,
-		options: FindOptions<IContact>,
+		options: O,
 		source?: IContact['source'],
-	): FindPaginated<FindCursor<IContact>> {
+	): FindPaginated<FindCursor<DocumentWithProjection<P, O>>> {
 		const query: Filter<IContact> = { uid, ...(source && { source }) };
 
 		if (text) {
@@ -65,7 +56,7 @@ export class ContactsRaw extends BaseRaw<IContact> implements IContactsModel {
 			query.$or = [{ displayName: pattern }, { companyName: pattern }, { 'emails.address': pattern }, { 'phones.raw': pattern }];
 		}
 
-		return this.findPaginated(query, options);
+		return this.findPaginated<P, O>(query, options);
 	}
 
 	/** Sorted so a number saved on more than one contact always answers with the same name. */
@@ -150,12 +141,12 @@ export class ContactsRaw extends BaseRaw<IContact> implements IContactsModel {
 		};
 	}
 
-	public findImportedByFolder<P extends Document = IContact>(
+	public findImportedByFolder<P extends Document = IContact, O extends FindOptionsWithProjection<P> = FindOptionsWithProjection<P>>(
 		uid: IUser['_id'],
 		folderId: string,
 		externalIds?: { in: string[] } | { notIn: string[] },
-		options?: FindOptions<P extends IContact ? IContact : P>,
-	): FindCursor<P> {
+		options?: O,
+	): FindCursor<DocumentWithProjection<P, O>> {
 		const query: Filter<IContact> = { uid, source: OUTLOOK, folderId };
 
 		if (externalIds && 'in' in externalIds) {
@@ -166,7 +157,7 @@ export class ContactsRaw extends BaseRaw<IContact> implements IContactsModel {
 			query.externalId = { $type: 'string', $nin: externalIds.notIn };
 		}
 
-		return this.find<P>(query, options);
+		return this.find<P, O>(query, options);
 	}
 
 	public deleteImportedByExternalIds(uid: IUser['_id'], folderId: string, externalIds: string[]): Promise<DeleteResult> {

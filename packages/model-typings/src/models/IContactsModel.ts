@@ -1,7 +1,8 @@
 import type { IContact, IContactPublic, IUser } from '@rocket.chat/core-typings';
-import type { DeleteResult, Document, FindCursor, FindOptions, UpdateResult } from 'mongodb';
+import type { DeleteResult, Document, FindCursor, UpdateResult } from 'mongodb';
 
 import type { FindPaginated, IBaseModel, InsertionModel } from './IBaseModel';
+import type { DocumentWithProjection, FindOptionsWithProjection } from '../types/DocumentWithProjection';
 
 export type ImportedContact = Omit<InsertionModel<IContact>, '_id' | 'source' | 'externalId' | 'folderId' | 'lastSyncAt'> & {
 	externalId: string;
@@ -18,12 +19,12 @@ export type LocalContactUpdate = Omit<LocalContact, 'uid'>;
 export type ContactBulkUpsertResult = { matchedCount: number; modifiedCount: number; upsertedCount: number };
 
 export interface IContactsModel extends IBaseModel<IContact> {
-	findPaginatedByUserId(
+	findPaginatedByUserId<P extends Document = IContact, O extends FindOptionsWithProjection<P> = FindOptionsWithProjection<P>>(
 		uid: IUser['_id'],
 		text: string | undefined,
-		options: FindOptions<IContact>,
+		options: O,
 		source?: IContact['source'],
-	): FindPaginated<FindCursor<IContact>>;
+	): FindPaginated<FindCursor<DocumentWithProjection<P, O>>>;
 	findOneByUserIdAndPhone(
 		uid: IUser['_id'],
 		e164: string,
@@ -34,12 +35,12 @@ export interface IContactsModel extends IBaseModel<IContact> {
 	updateLocal(uid: IUser['_id'], contactId: IContact['_id'], contact: LocalContactUpdate): Promise<UpdateResult>;
 	deleteLocal(uid: IUser['_id'], contactId: IContact['_id']): Promise<DeleteResult>;
 	bulkUpsertImported(contacts: ImportedContact[], lastSyncAt: Date): Promise<ContactBulkUpsertResult>;
-	findImportedByFolder<P extends Document = IContact>(
+	findImportedByFolder<P extends Document = IContact, O extends FindOptionsWithProjection<P> = FindOptionsWithProjection<P>>(
 		uid: IUser['_id'],
 		folderId: string,
 		externalIds?: { in: string[] } | { notIn: string[] },
-		options?: FindOptions<P extends IContact ? IContact : P>,
-	): FindCursor<P>;
+		options?: O,
+	): FindCursor<DocumentWithProjection<P, O>>;
 	deleteImportedByExternalIds(uid: IUser['_id'], folderId: string, externalIds: string[]): Promise<DeleteResult>;
 	deleteImportedOutsideSet(uid: IUser['_id'], folderId: string, keepExternalIds: string[]): Promise<DeleteResult>;
 	deleteImportedByFolder(uid: IUser['_id'], folderId: string): Promise<DeleteResult>;
