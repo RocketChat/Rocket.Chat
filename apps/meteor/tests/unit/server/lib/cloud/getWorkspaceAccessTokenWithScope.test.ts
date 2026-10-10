@@ -1,5 +1,6 @@
+import { describe, it, beforeEach, afterEach } from 'node:test';
+
 import { expect } from 'chai';
-import { describe, it, beforeEach, afterEach } from 'mocha';
 import proxyquire from 'proxyquire';
 import sinon from 'sinon';
 

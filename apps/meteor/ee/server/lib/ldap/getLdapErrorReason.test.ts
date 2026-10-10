@@ -1,5 +1,6 @@
+import { describe, it } from 'node:test';
+
 import { expect } from 'chai';
-import 'mocha';
 
 import { getLdapErrorReason } from './getLdapErrorReason';
 

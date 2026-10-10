@@ -1,3 +1,5 @@
+import { describe, it } from 'node:test';
+
 import type { ILivechatContactVisitorAssociation } from '@rocket.chat/core-typings';
 import { OmnichannelSourceType } from '@rocket.chat/core-typings';
 import { expect } from 'chai';

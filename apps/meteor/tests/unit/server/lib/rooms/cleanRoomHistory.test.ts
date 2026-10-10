@@ -1,7 +1,8 @@
+import { beforeEach, describe, it } from 'node:test';
+
 import type { IMessagesModel, IReadReceiptsModel, IRoomsModel, ISubscriptionsModel } from '@rocket.chat/model-typings';
 import { registerModel } from '@rocket.chat/models';
 import { expect } from 'chai';
-import { beforeEach, describe, it } from 'mocha';
 import p from 'proxyquire';
 import sinon from 'sinon';
 
