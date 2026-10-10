@@ -358,6 +358,10 @@ export class AbacService extends ServiceClass implements IAbacService {
 		return (await this.resolveAttributeStore()).list(actor, filters);
 	}
 
+	async listAbacAttributeKeys(actor?: AbacActor): Promise<string[]> {
+		return (await this.resolveAttributeStore()).listAttributeKeys(actor);
+	}
+
 	async listAbacRooms(
 		filters?: {
 			offset?: number;

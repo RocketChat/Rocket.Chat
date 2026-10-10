@@ -16,6 +16,10 @@ export class AbacAttributesRaw extends BaseRaw<IAbacAttribute> {
 		return this.findOne({ key }, options);
 	}
 
+	findAllKeys(): Promise<string[]> {
+		return this.col.distinct('key');
+	}
+
 	async countTotalValues(): Promise<number> {
 		const [result] = await this.col
 			.aggregate<{ totalValues: number }>([
