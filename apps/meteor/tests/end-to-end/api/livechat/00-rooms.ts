@@ -3162,7 +3162,7 @@ describe('LIVECHAT - rooms', () => {
 				expect(response2.body).to.have.property('success', true);
 			});
 
-			(IS_EE ? it : it.skip)('should update room priority', async () => {
+			it('should update room priority', async () => {
 				await addPermissions({
 					'save-others-livechat-room-info': ['admin', 'livechat-manager'],
 					'view-l-room': ['livechat-agent', 'admin', 'livechat-manager'],
