@@ -1,9 +1,9 @@
 /**
  * @jest-environment node
  */
+import type { ClassificationBannersConfig } from '@rocket.chat/abac';
 import { ajv } from '@rocket.chat/rest-typings';
 
-import type { ClassificationBannersConfig } from './types';
 import schema from '../../../../../../../ee/packages/abac/docs/classification-banners.schema.json';
 
 const validate = ajv.compile(schema);
