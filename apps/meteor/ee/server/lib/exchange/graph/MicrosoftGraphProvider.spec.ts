@@ -406,7 +406,7 @@ describe('MicrosoftGraphProvider', () => {
 		it('splits a folder larger than one batch into consecutive requests', async () => {
 			mockTokenThen(graphResponse({ responses: [] }), graphResponse({ responses: [] }));
 
-			await getContactPhotosAnswering([...new Array(BATCH_SIZE).fill('1'), `c${BATCH_SIZE}`]);
+			await getContactPhotosAnswering(Array.from({ length: BATCH_SIZE + 1 }, (_, i) => `c${i}`));
 
 			expect(requestedIds(1)).toHaveLength(BATCH_SIZE);
 			expect(requestedIds(2)).toEqual([`c${BATCH_SIZE}`]);
