@@ -165,7 +165,7 @@ export class ContactsRaw extends BaseRaw<IContact> implements IContactsModel {
 	}
 
 	public deleteImportedOutsideSet(uid: IUser['_id'], folderId: string, keepExternalIds: string[]): Promise<DeleteResult> {
-		return this.deleteMany({ uid, source: OUTLOOK, folderId, externalId: { $type: 'string', $nin: keepExternalIds } });
+		return this.deleteMany({ uid, source: OUTLOOK, folderId, externalId: { $exists: true, $nin: keepExternalIds } });
 	}
 
 	public deleteImportedByFolder(uid: IUser['_id'], folderId: string): Promise<DeleteResult> {
