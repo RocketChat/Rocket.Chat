@@ -239,12 +239,16 @@ describe('every renderer emits the text it was parsed from', () => {
 		['ordered list item with inline markup', '1. *bold* one'],
 		['ordered list followed by a paragraph', '1. one\ntext after'],
 		['tasks', '- [x] done\n- [ ] todo'],
+		['nested list', '- one\n  - two\n\t1. three\n- four\ntext after'],
+		['nested tasks', '- [ ] parent\n    - [x] child\n- [x] next'],
 		['spoiler block', '||\nline one\nline two\n||'],
 		['spoiler block between paragraphs', 'before\n||\nhidden\n||\nafter'],
 		['emoji shortcode', 'hi :smile: there'],
 		['emoji shortcode alone', ':smile:'],
 		['unicode emoji in text', 'hi 😄 there'],
 		['unicode emoji alone', '😄'],
+		['four-backtick code holding a fence', '````\nintro\n```py\nprint(1)\n```\n````'],
+		['four-backtick code with a language', '````js\nconst a = 1;\n````\nafter'],
 	])('reproduces %s exactly', (_label, text) => {
 		expect(textOf(mountSource(text))).toBe(text);
 	});

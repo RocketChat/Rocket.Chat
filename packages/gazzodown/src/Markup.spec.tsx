@@ -152,6 +152,35 @@ it('renders an ordered list', () => {
 	expect(items[2]).toHaveTextContent('你好');
 });
 
+it('renders a nested list inside its parent item', () => {
+	render(
+		<Markup
+			tokens={[
+				{
+					type: 'UNORDERED_LIST',
+					value: [
+						{
+							type: 'LIST_ITEM',
+							value: [{ type: 'PLAIN_TEXT', value: 'Parent' }],
+							nested: [
+								{ type: 'ORDERED_LIST', value: [{ type: 'LIST_ITEM', value: [{ type: 'PLAIN_TEXT', value: 'Child' }], number: 1 }] },
+							],
+						},
+						{ type: 'LIST_ITEM', value: [{ type: 'PLAIN_TEXT', value: 'Sibling' }] },
+					],
+				},
+			]}
+		/>,
+	);
+
+	const [outer, inner] = screen.getAllByRole('list');
+	expect(outer.tagName).toBe('UL');
+	expect(inner.tagName).toBe('OL');
+	expect(outer).toContainElement(inner);
+	expect(inner).toHaveTextContent('Child');
+	expect(screen.getAllByRole('listitem')).toHaveLength(3);
+});
+
 it('renders a task list', () => {
 	render(
 		<Markup
