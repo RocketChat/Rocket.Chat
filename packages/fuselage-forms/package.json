@@ -45,7 +45,7 @@
 	},
 	"devDependencies": {
 		"@rocket.chat/fuselage": "^0.94.0",
-		"@rocket.chat/fuselage-hooks": "^0.43.1",
+		"@rocket.chat/fuselage-hooks": "workspace:^",
 		"@rocket.chat/jest-presets": "workspace:~",
 		"@rocket.chat/storybook-config": "workspace:~",
 		"@rocket.chat/tsconfig": "workspace:~",
