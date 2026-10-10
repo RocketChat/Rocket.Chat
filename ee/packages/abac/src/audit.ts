@@ -142,6 +142,35 @@ export const Audit = {
 			{ type: 'system' },
 		);
 	},
+	actionsPerformed: async (
+		entries: Array<{
+			subject: MinimalUser;
+			object: MinimalRoom;
+			reason?: AbacAuditReason;
+			actionPerformed?: AbacActionPerformed;
+			pdp?: AbacPdpType;
+		}>,
+	) => {
+		if (!entries.length) {
+			return;
+		}
+
+		return ServerEvents.createAuditServerEvents(
+			entries.map(({ subject, object, reason = 'room-attributes-change', actionPerformed = 'revoked-object-access', pdp }) => ({
+				key: 'abac.action.performed' as const,
+				data: {
+					action: actionPerformed,
+					reason,
+					subject,
+					object,
+					pdp,
+				},
+				actor: { type: 'system' as const },
+			})),
+		).catch((err) =>
+			logger.error({ msg: 'Failed to write ABAC audit events', event: 'abac.action.performed', count: entries.length, err }),
+		);
+	},
 	subjectAttributeChanged: async (diff: IAbacAttributeDefinition[], subject: MinimalUser) => {
 		return audit(
 			'abac.subject.attribute.changed',

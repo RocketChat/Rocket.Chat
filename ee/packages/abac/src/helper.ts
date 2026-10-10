@@ -4,11 +4,11 @@ import mem from 'mem';
 
 import {
 	AbacAttributeDefinitionNotFoundError,
-	AbacCannotConvertDefaultRoomToAbacError,
 	AbacInvalidAttributeKeyError,
 	AbacInvalidAttributeValuesError,
 	AbacRoomNotFoundError,
 } from './errors';
+import type { IResourceDecision, SubjectEvaluation } from './pdp/types';
 
 export const MAX_ABAC_ATTRIBUTE_KEYS = 10;
 export const MAX_ABAC_ATTRIBUTE_VALUES = 10;
@@ -230,9 +230,6 @@ export async function getAbacRoom(rid: string): Promise<IRoom> {
 	if (!room) {
 		throw new AbacRoomNotFoundError();
 	}
-	if (room.default || room.teamDefault) {
-		throw new AbacCannotConvertDefaultRoomToAbacError();
-	}
 
 	return room;
 }
@@ -318,3 +315,15 @@ export function diffAttributeSets(
 }
 
 export const stripTrailingSlashes = (value: string): string => value.replace(/\/+$/, '');
+
+export const classifyDecisions = (decisions: IResourceDecision[] = []): keyof SubjectEvaluation => {
+	if (decisions.some((rd) => rd.decision === 'DECISION_DENY')) {
+		return 'nonCompliant';
+	}
+
+	if (decisions.length && decisions.every((rd) => rd.decision === 'DECISION_PERMIT')) {
+		return 'compliant';
+	}
+
+	return 'inconclusive';
+};

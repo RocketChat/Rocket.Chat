@@ -2545,7 +2545,6 @@
   "error-business-hour-finish-time-equals-start-time": "Start and finish time cannot be the same",
   "error-business-hours-are-closed": "Business hours are closed",
   "error-canned-response-not-found": "Canned response not found",
-  "error-cannot-convert-default-room-to-abac": "Default and team default rooms cannot be converted into attribute-based access control rooms.",
   "error-cannot-delete-app-user": "Deleting app user is not allowed, uninstall the corresponding app to remove it.",
   "error-cannot-place-chat-on-hold": "You cannot place chat on-hold",
   "error-cant-add-federated-users": "Can't add federated users to a non-federated room",

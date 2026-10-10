@@ -4,7 +4,7 @@ import { Rooms, Users } from '@rocket.chat/models';
 
 import { OnlyCompliantCanBeAddedToRoomError } from '../errors';
 import { buildCompliantConditions, buildNonCompliantConditions, buildRoomNonCompliantConditionsFromSubject } from '../helper';
-import type { IPolicyDecisionPoint, ReevaluationUser } from './types';
+import type { EvaluableSubject, IPolicyDecisionPoint, ReevaluationUser, RoomEvaluation, SubjectEvaluation } from './types';
 
 export class LocalPDP implements IPolicyDecisionPoint {
 	async isAvailable(): Promise<boolean> {
@@ -102,5 +102,49 @@ export class LocalPDP implements IPolicyDecisionPoint {
 		if (nonCompliantSet.size) {
 			throw new OnlyCompliantCanBeAddedToRoomError();
 		}
+	}
+
+	async evaluateSubjectsAgainstAttributes(
+		subjects: EvaluableSubject[],
+		attributes: IAbacAttributeDefinition[],
+		_object: Pick<IRoom, '_id'>,
+	): Promise<SubjectEvaluation> {
+		const ids = subjects.map(({ _id }) => _id);
+
+		if (!ids.length || !attributes.length) {
+			return { compliant: ids, nonCompliant: [], inconclusive: [] };
+		}
+
+		const nonCompliant = await Users.find({ _id: { $in: ids }, $or: buildNonCompliantConditions(attributes) }, { projection: { _id: 1 } })
+			.map(({ _id }) => _id)
+			.toArray();
+
+		const denied = new Set(nonCompliant);
+
+		return { compliant: ids.filter((id) => !denied.has(id)), nonCompliant, inconclusive: [] };
+	}
+
+	async evaluateSubjectAgainstRooms(subject: EvaluableSubject, rooms: AtLeast<IRoom, '_id' | 'abacAttributes'>[]): Promise<RoomEvaluation> {
+		const ids = rooms.map(({ _id }) => _id);
+
+		if (!ids.length) {
+			return { compliant: [], nonCompliant: [], inconclusive: [] };
+		}
+
+		const user = await Users.findOneById<Pick<IUser, '_id' | 'abacAttributes'>>(subject._id, { projection: { abacAttributes: 1 } });
+		if (!user) {
+			return { compliant: [], nonCompliant: ids, inconclusive: [] };
+		}
+
+		const compliant = await Rooms.find(
+			{ _id: { $in: ids }, $nor: buildRoomNonCompliantConditionsFromSubject(user.abacAttributes ?? []) },
+			{ projection: { _id: 1 } },
+		)
+			.map(({ _id }) => _id)
+			.toArray();
+
+		const permitted = new Set(compliant);
+
+		return { compliant, nonCompliant: ids.filter((id) => !permitted.has(id)), inconclusive: [] };
 	}
 }
