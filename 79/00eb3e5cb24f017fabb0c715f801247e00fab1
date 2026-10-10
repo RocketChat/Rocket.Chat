@@ -1,0 +1,21 @@
+eslint.config.mjs
+  s_5b0b5e57d4c07c::t_f3f0cf629ea949 209
+apps/meteor/package.json
+  s_5b0b5e57d4c07c::t_f3f0cf629ea949 28,30
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.2",
+  "base_commit_sha": "7900eb3e5cb24f017fabb0c715f801247e00fab1",
+  "prompts": {},
+  "sessions": {
+    "s_5b0b5e57d4c07c": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "143f68a7-f9c3-4644-b97d-bcdac5d53d61",
+        "model": "claude-opus-5-5"
+      },
+      "human_author": "Ricardo Garim <rswarovsky@gmail.com>"
+    }
+  }
+}
