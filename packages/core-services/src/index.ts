@@ -68,7 +68,13 @@ import type { IUserService } from './types/IUserService';
 import type { IVideoConfService, VideoConferenceJoinOptions } from './types/IVideoConfService';
 
 export type { AppStatusReport } from './types/IAppsEngineService';
-export type { IAbacService, AbacActor, AbacCreationAttributesDenialReason, AbacCreationAttributesResult } from './types/IAbacService';
+export type {
+	IAbacService,
+	AbacActor,
+	AbacCreationAttributesDenialReason,
+	AbacCreationAttributesResult,
+	AbacMembershipPreviewResult,
+} from './types/IAbacService';
 export type { PresenceScope } from './types/IStatusVisibilityService';
 export { asyncLocalStorage } from './lib/asyncLocalStorage';
 export { MeteorError, isMeteorError } from './MeteorError';

@@ -23,7 +23,13 @@ import { IS_EE, URL_MONGODB } from '../../e2e/config/constants';
 	const dept = `rc-dept-${suffix}`;
 	const clearance = `rc-clearance-${suffix}`;
 
-	const settingIds = ['ABAC_Enabled', 'ABAC_Enforce_All_Rooms', 'ABAC_Required_Attributes', 'ABAC_Restrict_To_Owned_Attributes'];
+	const settingIds = [
+		'ABAC_Enabled',
+		'ABAC_Enforce_All_Rooms',
+		'ABAC_Required_Attributes',
+		'ABAC_Restrict_To_Owned_Attributes',
+		'API_User_Limit',
+	];
 	const permissionIds = ['create-abac-managed-room', 'bypass-abac-store-validation'];
 	const savedSettings = new Map<string, ISetting['value']>();
 	const savedPermissions = new Map<string, string[]>();
@@ -425,6 +431,103 @@ import { IS_EE, URL_MONGODB } from '../../e2e/config/constants';
 			expect(answer.body.errorType).to.equal(creation.body.errorType);
 			expect(answer.body.details).to.deep.equal(creation.body.details);
 			expect(answer.body.details.attributes).to.deep.equal([{ key: dept, values: ['sales'] }]);
+		});
+	});
+
+	describe('POST /abac/membership-preview', () => {
+		const preview = (body: Record<string, unknown>, as: Credentials = creatorCredentials) =>
+			request.post(`${v1}/abac/membership-preview`).set(as).send(body);
+
+		const usernamesOf = (members: IUser[]) => members.map(({ username }) => username);
+
+		before(async () => {
+			await updatePermission('create-abac-managed-room', ['admin', 'user']);
+			await setSetting('ABAC_Restrict_To_Owned_Attributes', true);
+		});
+
+		it('requires create-abac-managed-room', async () => {
+			await updatePermission('create-abac-managed-room', ['admin']);
+
+			try {
+				await preview({ members: [], attributes: { [dept]: ['eng'] } }).expect(403);
+			} finally {
+				await updatePermission('create-abac-managed-room', ['admin', 'user']);
+			}
+		});
+
+		it('rejects anything but a list of usernames and a set of attributes', async () => {
+			await preview({ rid: 'GENERAL', members: [], attributes: { [dept]: ['eng'] } }).expect(400);
+			await preview({ members: [{ $ne: null }], attributes: { [dept]: ['eng'] } }).expect(400);
+			await preview({ members: [], attributes: { [dept]: [] } }).expect(400);
+			await preview({ members: [], attributes: {} }).expect(400);
+		});
+
+		it('refuses more members than API_User_Limit', async () => {
+			await setSetting('API_User_Limit', 1);
+
+			try {
+				await preview({ members: [unattributedUser.username], attributes: { [dept]: ['eng'] } })
+					.expect(400)
+					.expect((res) => {
+						expect(res.body.error).to.include('error-abac-preview-too-many-members');
+					});
+			} finally {
+				await setSetting('API_User_Limit', savedSettings.get('API_User_Limit'));
+			}
+		});
+
+		it('counts the creator when no one else is named', async () => {
+			const res = await preview({ members: [], attributes: { [dept]: ['eng'] } }).expect(200);
+
+			expect(usernamesOf(res.body.compliant)).to.deep.equal([creator.username]);
+			expect(res.body.creator).to.equal('compliant');
+		});
+
+		it('refuses values the creator does not hold, as creation does', async () => {
+			await preview({ members: [unattributedUser.username], attributes: { [dept]: ['sales'] } })
+				.expect(400)
+				.expect((res) => {
+					expect(res.body).to.have.property('errorType', 'error-abac-attribute-not-assignable');
+					expect(res.body.details.attributes).to.deep.equal([{ key: dept, values: ['sales'] }]);
+				});
+		});
+
+		it('reports a creator who would not be added once restricting to owned attributes is off', async () => {
+			await setSetting('ABAC_Restrict_To_Owned_Attributes', false);
+
+			try {
+				const res = await preview({ members: [], attributes: { [dept]: ['sales'] } }).expect(200);
+
+				expect(res.body.compliant).to.deep.equal([]);
+				expect(usernamesOf(res.body.nonCompliant)).to.deep.equal([creator.username]);
+				expect(res.body.creator).to.equal('nonCompliant');
+			} finally {
+				await setSetting('ABAC_Restrict_To_Owned_Attributes', true);
+			}
+		});
+
+		it('names the members creation then skips', async () => {
+			const members = [unattributedUser.username];
+			const attributes = { [dept]: ['eng'] };
+
+			const answer = await preview({ members, attributes }).expect(200);
+			const creation = await createGroup({ abacAttributes: attributes, members }, creatorCredentials).expect(200);
+			track(creation.body.group._id);
+
+			expect(usernamesOf(answer.body.compliant)).to.deep.equal([creator.username]);
+			expect([...usernamesOf(answer.body.nonCompliant), ...usernamesOf(answer.body.inconclusive)]).to.deep.equal(
+				creation.body.skippedMembers,
+			);
+		});
+
+		it('is refused while ABAC is disabled', async () => {
+			await setSetting('ABAC_Enabled', false);
+
+			try {
+				await preview({ members: [], attributes: { [dept]: ['eng'] } }).expect(400);
+			} finally {
+				await setSetting('ABAC_Enabled', true);
+			}
 		});
 	});
 });

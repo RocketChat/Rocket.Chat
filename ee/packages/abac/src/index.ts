@@ -1,5 +1,5 @@
 import { api, Authorization, License, Room, ServiceClass, Settings } from '@rocket.chat/core-services';
-import type { AbacActor, AbacCreationAttributesResult, IAbacService } from '@rocket.chat/core-services';
+import type { AbacActor, AbacCreationAttributesResult, AbacMembershipPreviewResult, IAbacService } from '@rocket.chat/core-services';
 import { AbacAccessOperation, AbacObjectType, isAbacPdpType, isAbacAttributeStoreType } from '@rocket.chat/core-typings';
 import type {
 	IAbacAttribute,
@@ -44,11 +44,12 @@ import {
 	findUnownedValues,
 	toAttributeMap,
 	toCreationDenial,
+	verdictOf,
 	MAX_ABAC_ATTRIBUTE_KEYS,
 	stripTrailingSlashes,
 } from './helper';
 import { logger } from './logger';
-import type { IPolicyDecisionPoint, VirtruPDPConfig } from './pdp';
+import type { IPolicyDecisionPoint, SubjectEvaluation, VirtruPDPConfig } from './pdp';
 import { LocalPDP, VirtruPDP } from './pdp';
 import { LocalAttributeStore, VirtruAttributeStore } from './store';
 import type { AttributeStoreDescriptor, AttributeStoreSelectionContext, IAttributeStore } from './store';
@@ -658,6 +659,48 @@ export class AbacService extends ServiceClass implements IAbacService {
 			actor,
 			bypassed ? 'store-validation-bypassed' : 'api',
 		);
+	}
+
+	async previewCreationMembers(
+		usernames: string[],
+		attributes: IAbacAttributeDefinition[],
+		actor: AbacActor,
+	): Promise<AbacMembershipPreviewResult> {
+		const validation = await this.validateCreationAttributes(attributes, actor, { creatorJoins: false });
+		if (!validation.allowed) {
+			return validation;
+		}
+
+		const { pdp } = this;
+		if (!pdp) {
+			return { allowed: false, reason: 'unavailable', code: AbacErrorCode.PdpUnavailable };
+		}
+
+		const subjects = await Users.find(
+			{ $or: [{ _id: actor._id }, { username: { $in: usernames } }] },
+			{ projection: { _id: 1, username: 1, name: 1, emails: 1 } },
+		).toArray();
+
+		let evaluation: SubjectEvaluation;
+		try {
+			evaluation = await pdp.evaluateSubjectsAgainstAttributes(subjects, validation.attributes, { _id: 'room-creation' });
+		} catch (err) {
+			logger.error({ msg: 'ABAC membership preview failed', err });
+			return { allowed: false, reason: 'unavailable', code: AbacErrorCode.PdpUnavailable };
+		}
+
+		const members = new Map(subjects.map(({ _id, username, name }) => [_id, { _id, username, name }]));
+		const toMembers = (ids: string[]) => ids.flatMap((id) => members.get(id) ?? []);
+
+		return {
+			allowed: true,
+			preview: {
+				compliant: toMembers(evaluation.compliant),
+				nonCompliant: toMembers(evaluation.nonCompliant),
+				inconclusive: toMembers(evaluation.inconclusive),
+				creator: verdictOf(evaluation, actor._id),
+			},
+		};
 	}
 
 	async setRoomAbacAttributes(rid: string, attributes: Record<string, string[]>, actor: AbacActor): Promise<void> {
