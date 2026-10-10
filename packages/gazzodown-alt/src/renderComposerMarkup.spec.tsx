@@ -239,6 +239,8 @@ describe('every renderer emits the text it was parsed from', () => {
 		['ordered list item with inline markup', '1. *bold* one'],
 		['ordered list followed by a paragraph', '1. one\ntext after'],
 		['tasks', '- [x] done\n- [ ] todo'],
+		['nested list', '- one\n  - two\n\t1. three\n- four\ntext after'],
+		['nested tasks', '- [ ] parent\n    - [x] child\n- [x] next'],
 		['spoiler block', '||\nline one\nline two\n||'],
 		['spoiler block between paragraphs', 'before\n||\nhidden\n||\nafter'],
 		['emoji shortcode', 'hi :smile: there'],

@@ -7,7 +7,7 @@ import ComposerInlineElements from './ComposerInlineElements';
 import ComposerList from './ComposerList';
 import { ComposerMarkupContext } from './ComposerMarkupContext';
 import ComposerPlainSpan from './ComposerPlainSpan';
-import { sourceLinesOf } from './sourceLines';
+import { nestedSourceOf, sourceLinesOf } from './sourceLines';
 import { blockSourceOf, sourceOf } from './sourceOf';
 
 type ComposerMarkupProps = {
@@ -89,12 +89,14 @@ const ComposerMarkup = ({ tokens }: ComposerMarkupProps): ReactElement => {
 						return <ComposerCodeBlock key={index} language={block.language} lines={block.value} />;
 
 					case 'UNORDERED_LIST':
-						return <ComposerList key={index} items={block.value} marker={unorderedMarker} />;
+						return <ComposerList key={index} items={block.value} marker={unorderedMarker} lines={sourceLines[index] ?? []} />;
 
 					case 'ORDERED_LIST':
-						return <ComposerList key={index} items={block.value} marker={orderedMarker} />;
+						return <ComposerList key={index} items={block.value} marker={orderedMarker} lines={sourceLines[index] ?? []} />;
 
-					case 'TASKS':
+					case 'TASKS': {
+						const nested = nestedSourceOf(block.value, sourceLines[index] ?? []);
+
 						return (
 							<span key={index}>
 								{block.value.map((task, tidx) => (
@@ -102,10 +104,12 @@ const ComposerMarkup = ({ tokens }: ComposerMarkupProps): ReactElement => {
 										{task.status ? '- [x] ' : '- [ ] '}
 										<ComposerInlineElements>{task.value}</ComposerInlineElements>
 										{'\n'}
+										<ComposerPlainSpan text={nested[tidx]} />
 									</span>
 								))}
 							</span>
 						);
+					}
 
 					case 'HORIZONTAL_RULE':
 					case 'TABLE':
