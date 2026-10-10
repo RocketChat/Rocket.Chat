@@ -618,29 +618,29 @@ describe('[Channels]', () => {
 		});
 	});
 
+	function failRenameChannel(name: string) {
+		it(`should not rename a channel to the reserved name ${name}`, async () => {
+			const res = await request
+				.post(api('channels.rename'))
+				.set(credentials)
+				.send({
+					roomId: channel._id,
+					name,
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(400);
+
+			expect(res.body).to.have.property('success', false);
+			expect(res.body).to.have.property('error', `${name} is not a valid room name. [error-invalid-room-name]`);
+		});
+	}
+
+	reservedWords.forEach((name) => {
+		failRenameChannel(name);
+	});
+
 	it('/channels.rename', async () => {
 		const roomInfo = await getRoomInfo(channel._id);
-
-		function failRenameChannel(name: string) {
-			it(`should not rename a channel to the reserved name ${name}`, async () => {
-				const res = await request
-					.post(api('channels.rename'))
-					.set(credentials)
-					.send({
-						roomId: channel._id,
-						name,
-					})
-					.expect('Content-Type', 'application/json')
-					.expect(400);
-
-				expect(res.body).to.have.property('success', false);
-				expect(res.body).to.have.property('error', `${name} is already in use :( [error-field-unavailable]`);
-			});
-		}
-
-		reservedWords.forEach((name) => {
-			failRenameChannel(name);
-		});
 
 		return request
 			.post(api('channels.rename'))
