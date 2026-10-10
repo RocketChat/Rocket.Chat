@@ -1,3 +1,5 @@
+import type { IVideoCallWindow } from '@rocket.chat/desktop-api';
+
 import { _relativeToSiteRootUrl } from '../../../lib/absoluteUrl';
 
 /** How long to let `window.close` take effect before assuming it was refused. */
@@ -7,11 +9,17 @@ const CLOSE_GRACE = 500;
 export const NEW_CONFERENCE_ID = 'new';
 
 /**
+ * The desktop app's bridge for its video call window, where it has one: under `RocketChatDesktop` since desktop
+ * 4.18, and a global of its own before that.
+ */
+const desktopCallWindow = (): IVideoCallWindow | undefined => window.RocketChatDesktop?.videoCall ?? window.videoCallWindow;
+
+/**
  * Closes the call window.
  *
  * Three strategies, tried in order:
  *
- * 1. **Desktop app**: the Electron preload exposes `videoCallWindow.close()` on the renderer's `window`.
+ * 1. **Desktop app**: the desktop app's preload exposes a `close()` for its video call window.
  *    `window.close()` does not reliably close a BrowserWindow that wasn't opened by `window.open()`, and
  *    the desktop app opens the conference window internally via `openInternalVideoChatWindow`.
  * 2. **Browser**: `window.close()` works when the window was opened by script (`window.open`).
@@ -20,8 +28,10 @@ export const NEW_CONFERENCE_ID = 'new';
  *    application's, or a 404.
  */
 export const closeCallWindow = (): void => {
-	if (window.videoCallWindow?.close) {
-		window.videoCallWindow.close();
+	const desktop = desktopCallWindow();
+
+	if (desktop?.close) {
+		desktop.close();
 		return;
 	}
 
