@@ -106,4 +106,8 @@ describe('sanitizeUrl', () => {
 	it('allows bare domain names', () => {
 		expect(sanitizeUrl('example.com/page')).toBe('//example.com/page');
 	});
+
+	it('does not duplicate slashes for protocol-relative URLs', () => {
+		expect(sanitizeUrl('//example.com/page')).toBe('//example.com/page');
+	});
 });

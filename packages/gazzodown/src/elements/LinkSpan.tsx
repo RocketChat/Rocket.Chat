@@ -44,16 +44,18 @@ const LinkSpan = ({ href, label }: LinkSpanProps) => {
 		return labelElements;
 	}, [label]);
 
+	const tooltipText = sanitizedHref.startsWith('//') ? sanitizedHref.substring(2) : sanitizedHref;
+
 	if (isExternal(sanitizedHref)) {
 		return (
-			<a href={sanitizedHref} title={sanitizedHref} rel='noopener noreferrer' target='_blank'>
+			<a href={sanitizedHref} title={tooltipText} rel='noopener noreferrer' target='_blank'>
 				{children}
 			</a>
 		);
 	}
 
 	return (
-		<a href={sanitizedHref} title={t('Go_to_href', { href: sanitizedHref.replace(getBaseURI(), '') })}>
+		<a href={sanitizedHref} title={t('Go_to_href', { href: tooltipText.replace(getBaseURI(), '') })}>
 			{children}
 		</a>
 	);
