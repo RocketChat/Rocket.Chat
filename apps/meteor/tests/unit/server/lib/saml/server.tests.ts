@@ -150,10 +150,12 @@ describe('SAML', () => {
 		});
 
 		describe('LogoutRequest.validate', () => {
-			it('should extract the idpSession and nameID from the request', () => {
-				const parser = new LogoutRequestParser(serviceProviderOptions);
+			const options = { ...serviceProviderOptions, validateLogoutRequestSignature: false };
 
-				void parser.validate(makeLogoutRequestEnvelope(simpleLogoutRequest), async (err, data) => {
+			it('should extract the idpSession and nameID from the request', async () => {
+				const parser = new LogoutRequestParser(options);
+
+				await parser.validate(makeLogoutRequestEnvelope(simpleLogoutRequest), async (err, data) => {
 					expect(err).to.be.null;
 					expect(data).to.be.an('object');
 					expect(data).to.have.property('idpSession');
@@ -165,26 +167,26 @@ describe('SAML', () => {
 				});
 			});
 
-			it('should fail to parse an invalid xml', () => {
-				const parser = new LogoutRequestParser(serviceProviderOptions);
-				void parser.validate(makeLogoutRequestEnvelope(invalidXml), async (err, data) => {
+			it('should fail to parse an invalid xml', async () => {
+				const parser = new LogoutRequestParser(options);
+				await parser.validate(makeLogoutRequestEnvelope(invalidXml), async (err, data) => {
 					expect(err).to.exist;
 					expect(data).to.not.exist;
 				});
 			});
 
-			it('should fail to parse a xml without any LogoutRequest tag', () => {
-				const parser = new LogoutRequestParser(serviceProviderOptions);
-				void parser.validate(makeLogoutRequestEnvelope(randomXml), async (err, data) => {
+			it('should fail to parse a xml without any LogoutRequest tag', async () => {
+				const parser = new LogoutRequestParser(options);
+				await parser.validate(makeLogoutRequestEnvelope(randomXml), async (err, data) => {
 					expect(err).to.be.equal('No Request Found');
 					expect(data).to.not.exist;
 				});
 			});
 
-			it('should fail to parse a request with no NameId', () => {
-				const parser = new LogoutRequestParser(serviceProviderOptions);
+			it('should fail to parse a request with no NameId', async () => {
+				const parser = new LogoutRequestParser(options);
 
-				void parser.validate(makeLogoutRequestEnvelope(invalidLogoutRequest), async (err, data) => {
+				await parser.validate(makeLogoutRequestEnvelope(invalidLogoutRequest), async (err, data) => {
 					expect(err).to.be.an('error').that.has.property('message').equal('SAML Logout Request: No NameID node found');
 					expect(data).to.not.exist;
 				});
@@ -221,60 +223,62 @@ describe('SAML', () => {
 		});
 
 		describe('LogoutResponse.validate', () => {
-			it('should extract the inResponseTo from the response', () => {
-				const logoutResponse = simpleLogoutResponse.replace('[STATUSCODE]', 'urn:oasis:names:tc:SAML:2.0:status:Success');
-				const parser = new LogoutResponseParser(serviceProviderOptions);
+			const options = { ...serviceProviderOptions, validateLogoutResponseSignature: false };
 
-				void parser.validate(makeLogoutResponseEnvelope(logoutResponse), async (err, inResponseTo) => {
+			it('should extract the inResponseTo from the response', async () => {
+				const logoutResponse = simpleLogoutResponse.replace('[STATUSCODE]', 'urn:oasis:names:tc:SAML:2.0:status:Success');
+				const parser = new LogoutResponseParser(options);
+
+				await parser.validate(makeLogoutResponseEnvelope(logoutResponse), async (err, inResponseTo) => {
 					expect(err).to.be.null;
 					expect(inResponseTo).to.be.equal('_id-6530db3fcd23dc42a31c');
 				});
 			});
 
-			it('should reject a response with a non-success StatusCode', () => {
+			it('should reject a response with a non-success StatusCode', async () => {
 				const logoutResponse = simpleLogoutResponse.replace('[STATUSCODE]', 'Anything');
-				const parser = new LogoutResponseParser(serviceProviderOptions);
+				const parser = new LogoutResponseParser(options);
 
-				void parser.validate(makeLogoutResponseEnvelope(logoutResponse), async (err, inResponseTo) => {
+				await parser.validate(makeLogoutResponseEnvelope(logoutResponse), async (err, inResponseTo) => {
 					expect(err).to.be.equal('Error. Logout not confirmed by IDP');
 					expect(inResponseTo).to.be.null;
 				});
 			});
 
-			it('should fail to parse an invalid xml', () => {
-				const parser = new LogoutResponseParser(serviceProviderOptions);
-				void parser.validate(makeLogoutResponseEnvelope(invalidXml), async (err, inResponseTo) => {
+			it('should fail to parse an invalid xml', async () => {
+				const parser = new LogoutResponseParser(options);
+				await parser.validate(makeLogoutResponseEnvelope(invalidXml), async (err, inResponseTo) => {
 					expect(err).to.exist;
 					expect(inResponseTo).to.not.exist;
 				});
 			});
 
-			it('should fail to parse a xml without any LogoutResponse tag', () => {
-				const parser = new LogoutResponseParser(serviceProviderOptions);
-				void parser.validate(makeLogoutResponseEnvelope(randomXml), async (err, inResponseTo) => {
+			it('should fail to parse a xml without any LogoutResponse tag', async () => {
+				const parser = new LogoutResponseParser(options);
+				await parser.validate(makeLogoutResponseEnvelope(randomXml), async (err, inResponseTo) => {
 					expect(err).to.be.equal('No Response Found');
 					expect(inResponseTo).to.not.exist;
 				});
 			});
 
-			it('should fail to parse a xml without an inResponseTo attribute', () => {
+			it('should fail to parse a xml without an inResponseTo attribute', async () => {
 				const instant = new Date().toISOString();
 				const logoutResponse = simpleLogoutResponse
 					.replace('[INSTANT]', instant)
 					.replace('[STATUSCODE]', 'urn:oasis:names:tc:SAML:2.0:status:Success')
 					.replace('InResponseTo=', 'SomethingElse=');
 
-				const parser = new LogoutResponseParser(serviceProviderOptions);
-				void parser.validate(makeLogoutResponseEnvelope(logoutResponse), async (err, inResponseTo) => {
+				const parser = new LogoutResponseParser(options);
+				await parser.validate(makeLogoutResponseEnvelope(logoutResponse), async (err, inResponseTo) => {
 					expect(err).to.be.equal('Unexpected Response from IDP');
 					expect(inResponseTo).to.not.exist;
 				});
 			});
 
-			it('should reject a response with no status tag', () => {
-				const parser = new LogoutResponseParser(serviceProviderOptions);
+			it('should reject a response with no status tag', async () => {
+				const parser = new LogoutResponseParser(options);
 
-				void parser.validate(makeLogoutResponseEnvelope(invalidLogoutResponse), async (err, inResponseTo) => {
+				await parser.validate(makeLogoutResponseEnvelope(invalidLogoutResponse), async (err, inResponseTo) => {
 					expect(err).to.be.equal('Error. Logout not confirmed by IDP');
 					expect(inResponseTo).to.be.null;
 				});
