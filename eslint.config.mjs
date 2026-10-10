@@ -198,14 +198,6 @@ export default [
 		},
 	},
 	{
-		files: ['apps/meteor/**/*.tests.js'],
-		languageOptions: {
-			globals: {
-				...globals.mocha,
-			},
-		},
-	},
-	{
 		files: ['apps/meteor/tests/@(end-to-end|unit)/**/*.@(spec|test).ts'],
 		rules: {
 			'jest/expect-expect': 'off',
