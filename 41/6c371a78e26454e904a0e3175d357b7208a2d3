@@ -1,0 +1,24 @@
+apps/meteor/tests/end-to-end/api/livechat/10-departments.ts
+  s_5b0b5e57d4c07c::t_8619b4adc6146f 566
+  ai_agent 596-599,601-603,605-607,609-615,617-621,623,625-627,629-631,633-635,723
+apps/meteor/tests/end-to-end/apps/video-conferences.ts
+  ai_agent 250,270,290,547,596,616,636,687,745,786,806,880,1032
+apps/meteor/tests/end-to-end/api/livechat/00-rooms.ts
+  s_5b0b5e57d4c07c::t_8619b4adc6146f 3165
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.2",
+  "base_commit_sha": "416c371a78e26454e904a0e3175d357b7208a2d3",
+  "prompts": {},
+  "sessions": {
+    "s_5b0b5e57d4c07c": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "143f68a7-f9c3-4644-b97d-bcdac5d53d61",
+        "model": "claude-opus-5-5"
+      },
+      "human_author": "Ricardo Garim <rswarovsky@gmail.com>"
+    }
+  }
+}
