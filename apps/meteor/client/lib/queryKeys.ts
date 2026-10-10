@@ -1,4 +1,5 @@
 import type {
+	AbacMembershipGroup,
 	ILivechatDepartment,
 	IMessage,
 	IRoom,
@@ -157,6 +158,11 @@ export const ABACQueryKeys = {
 	assignableAttributes: () => [...ABACQueryKeys.all, 'assignable-attributes'] as const,
 	membershipPreview: (members: string[], attributes: Record<string, string[]>) =>
 		[...ABACQueryKeys.all, 'membership-preview', { members, attributes }] as const,
+	roomMembershipPreview: {
+		all: (rid: string) => [...ABACQueryKeys.all, 'room-membership-preview', rid] as const,
+		group: (rid: string, attributes: Record<string, string[]>, filter: string, group: AbacMembershipGroup) =>
+			[...ABACQueryKeys.roomMembershipPreview.all(rid), { attributes, filter, group }] as const,
+	},
 	rooms: {
 		all: () => [...ABACQueryKeys.all, 'rooms'] as const,
 		list: (...args: [query?: PaginatedRequest]) => [...ABACQueryKeys.rooms.all(), ...args] as const,

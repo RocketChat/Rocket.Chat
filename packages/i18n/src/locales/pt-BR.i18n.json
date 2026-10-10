@@ -141,7 +141,6 @@
   "ABAC_room_membership": "sala filiação",
   "ABAC_Room_removed": "sala {{roomName}} removido do gerenciamento do ABAC",
   "ABAC_Room_to_be_managed": "sala para ser gerenciado pelo ABAC",
-  "ABAC_Room_updated": "{{roomName}} ABAC sala atualizado",
   "ABAC_Rooms_Affected": {
     "one": "{{count}} sala afetada",
     "other": "{{count}} salas afetadas"
@@ -152,9 +151,6 @@
   "ABAC_Select_Attribute_Values": "Selecionar valores de atributos",
   "ABAC_ShowAttributesInRooms": "Mostrar atributos ABAC na sala",
   "ABAC_ShowAttributesInRooms_Description": "Exibir os atributos ABAC atribuídos ao site sala na barra contextual",
-  "ABAC_Update_room_confirmation_modal_annotation": "Proceder com cautela",
-  "ABAC_Update_room_confirmation_modal_title": "Atualização do ABAC sala",
-  "ABAC_Update_room_content": "{{roomName}} é atualmente gerenciado pelo ABAC. Mudanças podem alterar quem pode acessar este sala.",
   "ABAC_Value_removed": "Valor removido",
   "ABAC_Virtru_Attribute_Namespace": "Espaço de nomes de atributos",
   "ABAC_Virtru_Attribute_Namespace_Description": "O namespace usado para criar FQNs de atributos (por exemplo, opentdf.io produz https://opentdf.io/attr/{key}/value/{value}).",

@@ -141,7 +141,6 @@
   "ABAC_room_membership": "Raummitgliedschaft",
   "ABAC_Room_removed": "Raum {{roomName}} aus der ABAC-Verwaltung entfernt",
   "ABAC_Room_to_be_managed": "Raum, der ABAC-verwaltet werden soll",
-  "ABAC_Room_updated": "ABAC-Raum {{roomName}} aktualisiert",
   "ABAC_Rooms_Affected": {
     "one": "{{count}} Raum betroffen",
     "other": "{{count}} Räume betroffen"
@@ -152,9 +151,6 @@
   "ABAC_Select_Attribute_Values": "Attributwerte auswählen",
   "ABAC_ShowAttributesInRooms": "ABAC-Attribute in Räumen anzeigen",
   "ABAC_ShowAttributesInRooms_Description": "Die dem Raum zugewiesenen ABAC-Attribute in der Kontextleiste anzeigen",
-  "ABAC_Update_room_confirmation_modal_annotation": "Mit Vorsicht fortfahren",
-  "ABAC_Update_room_confirmation_modal_title": "ABAC-Raum aktualisieren",
-  "ABAC_Update_room_content": "{{roomName}} ist derzeit ABAC-verwaltet. Änderungen können beeinflussen, wer auf diesen Raum zugreifen kann.",
   "ABAC_Value_removed": "Wert entfernt",
   "ABAC_Virtru_Attribute_Namespace": "Attribut-Namespace",
   "ABAC_Virtru_Attribute_Namespace_Description": "Der Namespace zum Erzeugen der Attribut-FQNs (z. B. erzeugt opentdf.io https://opentdf.io/attr/{key}/value/{value}).",
