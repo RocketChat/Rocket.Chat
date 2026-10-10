@@ -7,6 +7,7 @@ import { useCallback, useState } from 'react';
 import { useUsersData } from './hooks/useUsersData';
 import { useUiKitState } from '../../hooks/useUiKitState';
 import type { BlockProps } from '../../utils/BlockProps';
+import { getAutoCompleteKey } from '../../utils/getAutoCompleteKey';
 
 export type UsersSelectElementProps = BlockProps<UiKit.UsersSelectElement>;
 
@@ -21,7 +22,7 @@ const UsersSelectElement = ({ block, context }: UsersSelectElementProps) => {
 	const [filter, setFilter] = useState('');
 	const debouncedFilter = useDebouncedValue(filter, 300);
 
-	const data = useUsersData({ filter: debouncedFilter });
+	const data = useUsersData({ filter: debouncedFilter, selected: value ? [value] : [] });
 
 	const handleChange = useCallback(
 		(value: string | string[]) => {
@@ -32,6 +33,8 @@ const UsersSelectElement = ({ block, context }: UsersSelectElementProps) => {
 
 	return (
 		<AutoComplete
+			key={getAutoCompleteKey(value, data)}
+			autoFocus={block.focus_on_load}
 			value={value}
 			placeholder={block.placeholder?.text}
 			disabled={loading}

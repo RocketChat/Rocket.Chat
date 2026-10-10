@@ -90,6 +90,10 @@ const createStory = (blocks: readonly UiKit.LayoutBlock[]): StoryObj<StoryArgs> 
 
 export const Divider = createStory(payloads.divider);
 
+export const Header = createStory(payloads.header);
+
+export const Markdown = createStory(payloads.markdown);
+
 export const SectionWithPlainText = createStory(payloads.sectionWithPlainText);
 
 export const SectionWithMrkdwn = createStory(payloads.sectionWithMrkdwn);
@@ -103,6 +107,8 @@ export const SectionWithImageAccessory = createStory(payloads.sectionWithImageAc
 export const SectionWithOverflowMenuAccessory = createStory(payloads.sectionWithOverflowMenuAccessory);
 
 export const SectionWithDatePickerAccessory = createStory(payloads.sectionWithDatePickerAccessory);
+
+export const SectionWithRadioButtonAccessory = createStory(payloads.sectionWithRadioButtonAccessory);
 
 export const ImageWithTitle = createStory(payloads.imageWithTitle);
 

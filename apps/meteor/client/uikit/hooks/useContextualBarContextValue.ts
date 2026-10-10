@@ -70,5 +70,6 @@ export const useContextualBarContextValue = ({
 		...view,
 		values,
 		viewId: view.id,
+		rid,
 	};
 };

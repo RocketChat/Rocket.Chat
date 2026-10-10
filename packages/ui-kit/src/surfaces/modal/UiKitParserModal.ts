@@ -7,8 +7,10 @@ export const modalSurfaceLayoutBlockTypes = [
 	'callout',
 	'context',
 	'divider',
+	'header',
 	'image',
 	'input',
+	'markdown',
 	'preview',
 	'section',
 ] as const satisfies readonly RenderableLayoutBlock['type'][];

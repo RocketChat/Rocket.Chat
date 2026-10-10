@@ -64,6 +64,17 @@ Source: [`packages/ui-kit/src/blocks/layout/DividerBlock.ts`](../../../packages/
 | `appId` | `string` | no |  |
 | `blockId` | `string` | no |  |
 
+### `header`
+
+Source: [`packages/ui-kit/src/blocks/layout/HeaderBlock.ts`](../../../packages/ui-kit/src/blocks/layout/HeaderBlock.ts)
+
+| Field | Type | Required | Notes |
+| --- | --- | --- | --- |
+| `type` | `'header'` | yes | A large title that separates sections of a surface. |
+| `text` | `PlainText` | yes |  |
+| `appId` | `string` | no |  |
+| `blockId` | `string` | no |  |
+
 ### `image`
 
 Source: [`packages/ui-kit/src/blocks/layout/ImageBlock.ts`](../../../packages/ui-kit/src/blocks/layout/ImageBlock.ts)
@@ -102,6 +113,17 @@ Source: [`packages/ui-kit/src/blocks/layout/InputBlock.ts`](../../../packages/ui
 | `appId` | `string` | no |  |
 | `blockId` | `string` | no |  |
 
+### `markdown`
+
+Source: [`packages/ui-kit/src/blocks/layout/MarkdownBlock.ts`](../../../packages/ui-kit/src/blocks/layout/MarkdownBlock.ts)
+
+| Field | Type | Required | Notes |
+| --- | --- | --- | --- |
+| `type` | `'markdown'` | yes | A longer piece of formatted text, written in Markdown, rendered like a chat message. |
+| `text` | `string` | yes |  |
+| `appId` | `string` | no |  |
+| `blockId` | `string` | no |  |
+
 ### `preview`
 
 Source: [`packages/ui-kit/src/blocks/layout/PreviewBlock.ts`](../../../packages/ui-kit/src/blocks/layout/PreviewBlock.ts)
@@ -128,7 +150,7 @@ Source: [`packages/ui-kit/src/blocks/layout/SectionBlock.ts`](../../../packages/
 | `type` | `'section'` | yes |  |
 | `text` | `TextObject` | no |  |
 | `fields` | `readonly TextObject[]` | no |  |
-| `accessory` | `ButtonElement \| DatePickerElement \| ImageElement \| MultiStaticSelectElement \| OverflowElement \| StaticSelectElement` | no |  |
+| `accessory` | `ButtonElement \| ChannelsSelectElement \| CheckboxElement \| ConversationsSelectElement \| DatePickerElement \| ImageElement \| MultiChannelsSelectElement \| MultiConversationsSelectElement \| MultiStaticSelectElement \| MultiUsersSelectElement \| OverflowElement \| RadioButtonElement \| StaticSelectElement \| TimePickerElement \| UsersSelectElement` | no |  |
 | `appId` | `string` | no |  |
 | `blockId` | `string` | no |  |
 
@@ -168,6 +190,7 @@ Source: [`packages/ui-kit/src/blocks/elements/ButtonElement.ts`](../../../packag
 | `value` | `string` | no |  |
 | `style` | `'primary' \| 'secondary' \| 'danger' \| 'warning' \| 'success'` | no |  |
 | `secondary` | `boolean` | no |  |
+| `accessibility_label` | `string` | no | What assistive technology announces instead of `text`, when the visible text alone is ambiguous. |
 | `appId` | `string` | yes |  |
 | `blockId` | `string` | yes |  |
 | `actionId` | `string` | yes |  |
@@ -182,6 +205,8 @@ Source: [`packages/ui-kit/src/blocks/elements/ChannelsSelectElement.ts`](../../.
 | --- | --- | --- | --- |
 | `type` | `'channels_select'` | yes |  |
 | `placeholder` | `PlainText` | no |  |
+| `initial_channel` | `string` | no | Id of the room selected when the view opens. |
+| `focus_on_load` | `boolean` | no | Focuses the field when the view opens. |
 | `appId` | `string` | yes |  |
 | `blockId` | `string` | yes |  |
 | `actionId` | `string` | yes |  |
@@ -197,6 +222,7 @@ Source: [`packages/ui-kit/src/blocks/elements/CheckboxElement.ts`](../../../pack
 | `type` | `'checkbox'` | yes |  |
 | `options` | `Option[]` | yes |  |
 | `initialOptions` | `Option[]` | no |  |
+| `focus_on_load` | `boolean` | no | Focuses the field when the view opens (its first option). |
 | `appId` | `string` | yes |  |
 | `blockId` | `string` | yes |  |
 | `actionId` | `string` | yes |  |
@@ -209,7 +235,12 @@ Source: [`packages/ui-kit/src/blocks/elements/ConversationsSelectElement.ts`](..
 
 | Field | Type | Required | Notes |
 | --- | --- | --- | --- |
-| `type` | `'conversations_select'` | yes |  |
+| `type` | `'conversations_select'` | yes | Picks one conversation the user belongs to (channel, private group or direct message); the value is the room id. |
+| `placeholder` | `PlainText` | no |  |
+| `initial_conversation` | `string` | no | Id of the room selected when the view opens. |
+| `default_to_current_conversation` | `boolean` | no | Starts with the conversation the view was opened from when nothing else is selected. Only surfaces opened from a room (message, contextual bar) know it. |
+| `filter` | `{ include?: ('public' \| 'private' \| 'im' \| 'mpim')[] }` | no | Which kinds of conversation to list; `im` and `mpim` both cover direct messages. |
+| `focus_on_load` | `boolean` | no | Focuses the field when the view opens. |
 | `appId` | `string` | yes |  |
 | `blockId` | `string` | yes |  |
 | `actionId` | `string` | yes |  |
@@ -225,6 +256,38 @@ Source: [`packages/ui-kit/src/blocks/elements/DatePickerElement.ts`](../../../pa
 | `type` | `'datepicker'` | yes |  |
 | `placeholder` | `TextObject` | no |  |
 | `initialDate` | `string` | no |  |
+| `focus_on_load` | `boolean` | no | Focuses the field when the view opens. |
+| `appId` | `string` | yes |  |
+| `blockId` | `string` | yes |  |
+| `actionId` | `string` | yes |  |
+| `confirm` | `ConfirmationDialog` | no |  |
+| `dispatchActionConfig` | `InputElementDispatchAction[]` | no |  |
+
+### `datetimepicker`
+
+Source: [`packages/ui-kit/src/blocks/elements/DateTimePickerElement.ts`](../../../packages/ui-kit/src/blocks/elements/DateTimePickerElement.ts)
+
+| Field | Type | Required | Notes |
+| --- | --- | --- | --- |
+| `type` | `'datetimepicker'` | yes | Picks a date and a time together; the value is a Unix timestamp in seconds, shown in the user's time zone. |
+| `initial_date_time` | `number` | no |  |
+| `focus_on_load` | `boolean` | no | Focuses the field when the view opens. |
+| `appId` | `string` | yes |  |
+| `blockId` | `string` | yes |  |
+| `actionId` | `string` | yes |  |
+| `confirm` | `ConfirmationDialog` | no |  |
+| `dispatchActionConfig` | `InputElementDispatchAction[]` | no |  |
+
+### `email_text_input`
+
+Source: [`packages/ui-kit/src/blocks/elements/EmailTextInputElement.ts`](../../../packages/ui-kit/src/blocks/elements/EmailTextInputElement.ts)
+
+| Field | Type | Required | Notes |
+| --- | --- | --- | --- |
+| `type` | `'email_text_input'` | yes | A field for an email address. |
+| `placeholder` | `PlainText` | no |  |
+| `initial_value` | `string` | no |  |
+| `focus_on_load` | `boolean` | no | Focuses the field when the view opens. |
 | `appId` | `string` | yes |  |
 | `blockId` | `string` | yes |  |
 | `actionId` | `string` | yes |  |
@@ -295,6 +358,9 @@ Source: [`packages/ui-kit/src/blocks/elements/MultiChannelsSelectElement.ts`](..
 | --- | --- | --- | --- |
 | `type` | `'multi_channels_select'` | yes |  |
 | `placeholder` | `PlainText` | no |  |
+| `initial_channels` | `string[]` | no | Ids of the rooms selected when the view opens. |
+| `max_selected_items` | `number` | no | Most rooms that can be selected. |
+| `focus_on_load` | `boolean` | no | Focuses the field when the view opens. |
 | `appId` | `string` | yes |  |
 | `blockId` | `string` | yes |  |
 | `actionId` | `string` | yes |  |
@@ -307,7 +373,13 @@ Source: [`packages/ui-kit/src/blocks/elements/MultiConversationsSelectElement.ts
 
 | Field | Type | Required | Notes |
 | --- | --- | --- | --- |
-| `type` | `'multi_conversations_select'` | yes |  |
+| `type` | `'multi_conversations_select'` | yes | Picks several conversations the user belongs to; the value is the list of room ids. |
+| `placeholder` | `PlainText` | no |  |
+| `initial_conversations` | `string[]` | no | Ids of the rooms selected when the view opens. |
+| `max_selected_items` | `number` | no | Most conversations that can be selected. |
+| `default_to_current_conversation` | `boolean` | no | Starts with the conversation the view was opened from when nothing else is selected. Only surfaces opened from a room (message, contextual bar) know it. |
+| `filter` | `{ include?: ('public' \| 'private' \| 'im' \| 'mpim')[] }` | no | Which kinds of conversation to list; `im` and `mpim` both cover direct messages. |
+| `focus_on_load` | `boolean` | no | Focuses the field when the view opens. |
 | `appId` | `string` | yes |  |
 | `blockId` | `string` | yes |  |
 | `actionId` | `string` | yes |  |
@@ -341,6 +413,28 @@ Source: [`packages/ui-kit/src/blocks/elements/MultiUsersSelectElement.ts`](../..
 | --- | --- | --- | --- |
 | `type` | `'multi_users_select'` | yes |  |
 | `placeholder` | `PlainText` | no |  |
+| `initial_users` | `string[]` | no | Usernames of the users selected when the view opens. |
+| `max_selected_items` | `number` | no | Most users that can be selected. |
+| `focus_on_load` | `boolean` | no | Focuses the field when the view opens. |
+| `appId` | `string` | yes |  |
+| `blockId` | `string` | yes |  |
+| `actionId` | `string` | yes |  |
+| `confirm` | `ConfirmationDialog` | no |  |
+| `dispatchActionConfig` | `InputElementDispatchAction[]` | no |  |
+
+### `number_input`
+
+Source: [`packages/ui-kit/src/blocks/elements/NumberInputElement.ts`](../../../packages/ui-kit/src/blocks/elements/NumberInputElement.ts)
+
+| Field | Type | Required | Notes |
+| --- | --- | --- | --- |
+| `type` | `'number_input'` | yes | A field that only takes numbers; the value is the number as typed, as a string. |
+| `is_decimal_allowed` | `boolean` | yes |  |
+| `placeholder` | `PlainText` | no |  |
+| `initial_value` | `string` | no |  |
+| `min_value` | `string` | no |  |
+| `max_value` | `string` | no |  |
+| `focus_on_load` | `boolean` | no | Focuses the field when the view opens. |
 | `appId` | `string` | yes |  |
 | `blockId` | `string` | yes |  |
 | `actionId` | `string` | yes |  |
@@ -373,6 +467,7 @@ Source: [`packages/ui-kit/src/blocks/elements/PlainTextInputElement.ts`](../../.
 | `multiline` | `boolean` | no |  |
 | `minLength` | `number` | no |  |
 | `maxLength` | `number` | no |  |
+| `focus_on_load` | `boolean` | no | Focuses the field when the view opens. |
 | `appId` | `string` | yes |  |
 | `blockId` | `string` | yes |  |
 | `actionId` | `string` | yes |  |
@@ -388,6 +483,7 @@ Source: [`packages/ui-kit/src/blocks/elements/RadioButtonElement.ts`](../../../p
 | `type` | `'radio_button'` | yes |  |
 | `options` | `Option[]` | yes |  |
 | `initialOption` | `Option` | no |  |
+| `focus_on_load` | `boolean` | no | Focuses the field when the view opens (its first option). |
 | `appId` | `string` | yes |  |
 | `blockId` | `string` | yes |  |
 | `actionId` | `string` | yes |  |
@@ -437,6 +533,7 @@ Source: [`packages/ui-kit/src/blocks/elements/TimePickerElement.ts`](../../../pa
 | `type` | `'time_picker'` | yes |  |
 | `placeholder` | `TextObject` | no |  |
 | `initialTime` | `string` | no |  |
+| `focus_on_load` | `boolean` | no | Focuses the field when the view opens. |
 | `appId` | `string` | yes |  |
 | `blockId` | `string` | yes |  |
 | `actionId` | `string` | yes |  |
@@ -458,6 +555,22 @@ Source: [`packages/ui-kit/src/blocks/elements/ToggleSwitchElement.ts`](../../../
 | `confirm` | `ConfirmationDialog` | no |  |
 | `dispatchActionConfig` | `InputElementDispatchAction[]` | no |  |
 
+### `url_text_input`
+
+Source: [`packages/ui-kit/src/blocks/elements/UrlTextInputElement.ts`](../../../packages/ui-kit/src/blocks/elements/UrlTextInputElement.ts)
+
+| Field | Type | Required | Notes |
+| --- | --- | --- | --- |
+| `type` | `'url_text_input'` | yes | A field for a URL. |
+| `placeholder` | `PlainText` | no |  |
+| `initial_value` | `string` | no |  |
+| `focus_on_load` | `boolean` | no | Focuses the field when the view opens. |
+| `appId` | `string` | yes |  |
+| `blockId` | `string` | yes |  |
+| `actionId` | `string` | yes |  |
+| `confirm` | `ConfirmationDialog` | no |  |
+| `dispatchActionConfig` | `InputElementDispatchAction[]` | no |  |
+
 ### `users_select`
 
 Source: [`packages/ui-kit/src/blocks/elements/UsersSelectElement.ts`](../../../packages/ui-kit/src/blocks/elements/UsersSelectElement.ts)
@@ -466,6 +579,8 @@ Source: [`packages/ui-kit/src/blocks/elements/UsersSelectElement.ts`](../../../p
 | --- | --- | --- | --- |
 | `type` | `'users_select'` | yes |  |
 | `placeholder` | `PlainText` | no |  |
+| `initial_user` | `string` | no | Username of the user selected when the view opens. |
+| `focus_on_load` | `boolean` | no | Focuses the field when the view opens. |
 | `appId` | `string` | yes |  |
 | `blockId` | `string` | yes |  |
 | `actionId` | `string` | yes |  |

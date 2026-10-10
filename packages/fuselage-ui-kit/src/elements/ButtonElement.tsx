@@ -22,6 +22,7 @@ const ButtonElement = ({ block, context, surfaceRenderer }: ButtonElementProps) 
 				target='_blank'
 				small
 				minWidth='4ch'
+				aria-label={block.accessibility_label}
 				disabled={loading}
 				href={url}
 				primary={style === 'primary'}
@@ -40,6 +41,7 @@ const ButtonElement = ({ block, context, surfaceRenderer }: ButtonElementProps) 
 		<Button
 			small
 			minWidth='4ch'
+			aria-label={block.accessibility_label}
 			disabled={loading}
 			primary={style === 'primary'}
 			danger={style === 'danger'}

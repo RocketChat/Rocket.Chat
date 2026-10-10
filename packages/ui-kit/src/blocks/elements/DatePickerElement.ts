@@ -5,4 +5,5 @@ export type DatePickerElement = Actionable<{
 	type: 'datepicker';
 	placeholder?: TextObject;
 	initialDate?: string;
+	focus_on_load?: boolean;
 }>;
