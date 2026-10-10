@@ -1,4 +1,4 @@
-import type { IContact, Serialized } from '@rocket.chat/core-typings';
+import type { IContactPublic, Serialized } from '@rocket.chat/core-typings';
 import { Pagination } from '@rocket.chat/fuselage';
 import { useDebouncedValue } from '@rocket.chat/fuselage-hooks';
 import { GenericTableLoadingRow, usePagination, useSort } from '@rocket.chat/ui-client';
@@ -23,7 +23,7 @@ type ContactsTabProps = {
 	onChangeTab: (tab: CallHistoryTab) => void;
 };
 
-type Panel = { kind: 'info'; contact: Serialized<IContact> } | { kind: 'form'; contact?: Serialized<IContact> };
+type Panel = { kind: 'info'; contact: Serialized<IContactPublic> } | { kind: 'form'; contact?: Serialized<IContactPublic> };
 
 const ContactsTab = ({ tab, onChangeTab }: ContactsTabProps) => {
 	const { t } = useTranslation();

@@ -1,4 +1,4 @@
-import type { IContact, Serialized } from '@rocket.chat/core-typings';
+import type { IContactPublic, Serialized } from '@rocket.chat/core-typings';
 import { Box, Icon, Tag } from '@rocket.chat/fuselage';
 import { BaseAvatar } from '@rocket.chat/ui-avatar';
 import { GenericTableCell, GenericTableRow } from '@rocket.chat/ui-client';
@@ -9,7 +9,7 @@ import type { ContactsColumns } from './hooks/useContactsColumns';
 import { getAvatarURL } from '../../lib/getAvatarURL';
 
 export type ContactsTableRowProps = {
-	contact: Serialized<IContact>;
+	contact: Serialized<IContactPublic>;
 	columns: ContactsColumns;
 	onClick: () => void;
 	onEdit: () => void;
