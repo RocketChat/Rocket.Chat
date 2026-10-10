@@ -128,7 +128,9 @@ describe('Omnichannel Queue processor', () => {
 			models.LivechatInquiry.unlock.resetHistory();
 			queueLogger.error.resetHistory();
 			queueLogger.info.resetHistory();
-			clock = Sinon.useFakeTimers();
+			clock = Sinon.useFakeTimers({
+				toFake: ['setTimeout', 'clearTimeout', 'setInterval', 'clearInterval', 'setImmediate', 'clearImmediate', 'Date'],
+			});
 		});
 		afterEach(() => {
 			clock.restore();
@@ -273,7 +275,9 @@ describe('Omnichannel Queue processor', () => {
 			models.LivechatInquiry.removeByRoomId.resetHistory();
 			delegateInquiry.resetHistory();
 			queueLogger.debug.resetHistory();
-			clock = Sinon.useFakeTimers();
+			clock = Sinon.useFakeTimers({
+				toFake: ['setTimeout', 'clearTimeout', 'setInterval', 'clearInterval', 'setImmediate', 'clearImmediate', 'Date'],
+			});
 		});
 		afterEach(() => {
 			clock.restore();
