@@ -1,6 +1,12 @@
 import type { ICalendarEvent, IUser, RocketChatRecordDeleted } from '@rocket.chat/core-typings';
-import type { CalendarBulkUpsertResult, ICalendarEventModel, ImportedCalendarEvent } from '@rocket.chat/model-typings';
-import type { DeleteResult, FindCursor, IndexDescription, Collection, Db, UpdateResult, FindOptions } from 'mongodb';
+import type {
+	CalendarBulkUpsertResult,
+	DocumentWithProjection,
+	FindOptionsWithProjection,
+	ICalendarEventModel,
+	ImportedCalendarEvent,
+} from '@rocket.chat/model-typings';
+import type { DeleteResult, Document, FindCursor, IndexDescription, Collection, Db, UpdateResult } from 'mongodb';
 import { ObjectId } from 'mongodb';
 
 import { BaseRaw } from './BaseRaw';
@@ -129,14 +135,14 @@ export class CalendarEventRaw extends BaseRaw<ICalendarEvent> implements ICalend
 		);
 	}
 
-	public findOverlappingEvents(
+	public findOverlappingEvents<P extends Document = ICalendarEvent, O extends FindOptionsWithProjection<P> = FindOptionsWithProjection<P>>(
 		eventId: ICalendarEvent['_id'],
 		uid: IUser['_id'],
 		startTime: Date,
 		endTime: Date,
-		options?: FindOptions<ICalendarEvent>,
-	): FindCursor<ICalendarEvent> {
-		return this.find(
+		options?: O,
+	): FindCursor<DocumentWithProjection<P, O>> {
+		return this.find<P, O>(
 			{
 				_id: { $ne: eventId }, // Exclude current event
 				uid,
