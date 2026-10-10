@@ -16,7 +16,7 @@ import { useCallback } from 'react';
  * @example
  * // Example for a div acting as a button
  * const handleDivAction = () => console.log('Div button activated!');
- * const divButtonProps = useAccessibleClick(handleDivAction);
+ * const divButtonProps = useButtonPattern(handleDivAction);
  * <div {...divButtonProps} className="my-accessible-div">Click Me</div>
  */
 
