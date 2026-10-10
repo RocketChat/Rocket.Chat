@@ -247,35 +247,42 @@ import { IS_EE, URL_MONGODB } from '../../e2e/config/constants';
 		});
 
 		it('blocks discussion creation', async () => {
-			const parent = await createRoom({ type: 'p', name: `abac-parent-${Date.now()}` });
-			const parentId = parent.body.group._id;
-
-			await request
-				.post(api('rooms.createDiscussion'))
-				.set(credentials)
-				.send({ prid: parentId, t_name: `abac-discussion-${Date.now()}` })
-				.expect(400)
-				.expect((res) => {
-					expect(res.body).to.have.property('success', false);
-				});
-
+			// A private parent without attributes cannot itself be created under enforcement.
 			await setEnforcement(false);
-			await deleteRoom({ type: 'p', roomId: parentId });
-			await setEnforcement(true);
+			let parentId: string | undefined;
+
+			try {
+				const parent = await createRoom({ type: 'p', name: `abac-parent-${Date.now()}` });
+				parentId = parent.body.group._id;
+				await setEnforcement(true);
+
+				await request
+					.post(api('rooms.createDiscussion'))
+					.set(credentials)
+					.send({ prid: parentId, t_name: `abac-discussion-${Date.now()}` })
+					.expect(400)
+					.expect((res) => {
+						expect(res.body).to.have.property('success', false);
+					});
+			} finally {
+				await setEnforcement(false);
+				if (parentId) {
+					await deleteRoom({ type: 'p', roomId: parentId });
+				}
+				await setEnforcement(true);
+			}
 		});
 
-		it('still allows private channel creation', async () => {
-			const res = await request
+		it('blocks a private channel that would be born locked', async () => {
+			await request
 				.post(api('groups.create'))
 				.set(credentials)
 				.send({ name: `abac-private-${Date.now()}` })
-				.expect(200);
-
-			const roomId = res.body.group._id;
-
-			await setEnforcement(false);
-			await deleteRoom({ type: 'p', roomId });
-			await setEnforcement(true);
+				.expect(400)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', false);
+					expect(res.body.error).to.include('error-abac-attributes-required');
+				});
 		});
 	});
 

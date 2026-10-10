@@ -4203,6 +4203,60 @@ import { IS_EE, URL_MONGODB } from '../../e2e/config/constants';
 			});
 		});
 
+		describe('room creation with attributes: creator authority', () => {
+			let creatorV: { user: IUser; creds: Credentials };
+			const createdRoomIds: string[] = [];
+
+			// excludeSelf keeps the member filter, and so GetDecisionBulk, out of these cases:
+			// only the creator's entitlements are asked about.
+			const createGroup = (abacAttributes: Record<string, string[]>) =>
+				request
+					.post(api('groups.create'))
+					.set(creatorV.creds)
+					.send({ name: `vstore-create-${Date.now()}-${Math.random().toString(36).slice(2, 7)}`, excludeSelf: true, abacAttributes });
+
+			before(async function () {
+				this.timeout(15000);
+				creatorV = await makeAdmin('create');
+			});
+
+			after(async () => {
+				await mockServerReset();
+				for (const roomId of createdRoomIds) {
+					await request.post(api('rooms.delete')).set(credentials).send({ roomId }).expect(200);
+				}
+				await deleteUser(creatorV.user);
+			});
+
+			it('creates the room with a value the creator is entitled to', async () => {
+				await mockServerReset();
+				await seedDefaultMocks();
+				await seedGetEntitlements({ [fqn('clearance', 'secret')]: {} });
+
+				const res = await createGroup({ clearance: ['secret'] }).expect(200);
+				createdRoomIds.push(res.body.group._id);
+				expect(res.body.group.abacAttributes).to.deep.equal([{ key: 'clearance', values: ['secret'] }]);
+			});
+
+			it('refuses a value the creator is not entitled to, naming the attribute', async () => {
+				await mockServerReset();
+				await seedDefaultMocks();
+				await seedGetEntitlements({ [fqn('clearance', 'secret')]: {} });
+
+				const res = await createGroup({ clearance: ['topsecret'] }).expect(400);
+				expect(res.body).to.have.property('errorType', 'error-abac-attribute-not-assignable');
+				expect(res.body.details.attributes).to.deep.equal([{ key: 'clearance', values: ['topsecret'] }]);
+			});
+
+			it('refuses the creation, saying decisions are unavailable, when Virtru is unreachable', async () => {
+				await mockServerReset();
+				await mockServerSet('GET', '/healthz', { status: 'NOT_SERVING' }, 503);
+
+				const res = await createGroup({ clearance: ['secret'] }).expect(400);
+				expect(res.body).to.have.property('errorType', 'error-abac-decision-unavailable');
+			});
+		});
+
 		describe('bypass-abac-store-validation permission (spec §4.2)', () => {
 			let adminBypass: { user: IUser; creds: Credentials };
 
@@ -4216,6 +4270,22 @@ import { IS_EE, URL_MONGODB } from '../../e2e/config/constants';
 				await mockServerReset();
 				await updatePermission('bypass-abac-store-validation', []);
 				await deleteUser(adminBypass.user);
+			});
+
+			it('skips the creator authority check at creation: creates a room with a value the creator is not entitled to', async () => {
+				await mockServerReset();
+				await seedDefaultMocks();
+				await seedGetEntitlements({ [fqn('clearance', 'secret')]: {} });
+
+				const res = await request
+					.post(api('groups.create'))
+					.set(adminBypass.creds)
+					.send({ name: `vstore-bypass-create-${Date.now()}`, excludeSelf: true, abacAttributes: { team: ['blue'] } })
+					.expect(200);
+
+				expect(res.body.group.abacAttributes).to.deep.equal([{ key: 'team', values: ['blue'] }]);
+
+				await request.post(api('rooms.delete')).set(credentials).send({ roomId: res.body.group._id }).expect(200);
 			});
 
 			it('skips validateAssignable: assigns a value the admin is not entitled to → 200', async () => {

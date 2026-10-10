@@ -295,6 +295,25 @@ const PostRoomAbacAttributesBody = {
 
 export const POSTRoomAbacAttributesBodySchema = ajv.compile<{ attributes: Record<string, string[]> }>(PostRoomAbacAttributesBody);
 
+const PostAbacAttributeAssignabilityBody = {
+	type: 'object',
+	properties: {
+		attributes: {
+			...PostRoomAbacAttributesBody.properties.attributes,
+			additionalProperties: {
+				...PostRoomAbacAttributesBody.properties.attributes.additionalProperties,
+				minItems: 1,
+			},
+		},
+	},
+	required: ['attributes'],
+	additionalProperties: false,
+};
+
+export const POSTAbacAttributeAssignabilityBodySchema = ajv.compile<{ attributes: Record<string, string[]> }>(
+	PostAbacAttributeAssignabilityBody,
+);
+
 const PostSingleRoomAbacAttributeBody = {
 	type: 'object',
 	properties: {
