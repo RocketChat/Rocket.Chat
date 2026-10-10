@@ -22,6 +22,7 @@
     listItem,
     mentionChannel,
     mentionUser,
+    nestedLists,
     orderedList,
     paragraph,
     phoneChecker,
@@ -197,7 +198,7 @@ HeadingInlineItem = InlineItemPattern / !EndOfLine @Any
  */
 Tasks = items:Task+ { return tasks(items); }
 
-Task = "- [" flag:TaskFlag "]" [ \t]+ text:Inline { return task(text, flag); }
+Task = "- [" flag:TaskFlag "]" [ \t]+ text:Inline nested:NestedLists? { return task(text, flag, nested); }
 
 TaskFlag = "x" { return true; } / " " { return false; }
 
@@ -212,7 +213,7 @@ TaskFlag = "x" { return true; } / " " { return false; }
  */
 OrderedList = items:OrderedListItem+ { return orderedList(items); }
 
-OrderedListItem = number:Digits "." [ \t]+ text:Inline { return listItem(text, parseInt(number, 10)); }
+OrderedListItem = number:Digits "." [ \t]+ text:Inline nested:NestedLists? { return listItem(text, parseInt(number, 10), nested); }
 
 /**
  *
@@ -226,13 +227,33 @@ OrderedListItem = number:Digits "." [ \t]+ text:Inline { return listItem(text, p
  */
 UnorderedList = items:(UnorderedListHyphenItem+ / UnorderedListAsteriskItem+) { return unorderedList(items); }
 
-UnorderedListHyphenItem = "-" [ \t]+ text:Inline { return listItem(text); }
+UnorderedListHyphenItem = "-" [ \t]+ text:Inline nested:NestedLists? { return listItem(text, undefined, nested); }
 
-UnorderedListAsteriskItem = "*" [ \t]+ text:UnorderedListItemContent { return listItem(text); }
+UnorderedListAsteriskItem = "*" [ \t]+ text:UnorderedListItemContent nested:NestedLists? { return listItem(text, undefined, nested); }
 
 UnorderedListItemContent = value:UnorderedListItemContentItem+ !"*" EndOfLine? { return reducePlainTexts(value); }
 
 UnorderedListItemContentItem = InlineItemPattern / !"*" @Any
+
+/**
+ *
+ * Nested lists
+ * Indented list lines right below a list item, of any list kind, e.g:
+ *  - Item One
+ *    1. Nested One
+ *    2. Nested Two
+ *       - [ ] Nested Task
+ *
+ */
+NestedLists = lines:NestedListLine+ { return nestedLists(lines); }
+
+NestedListLine = indent:$[ \t]+ line:NestedListLineItem { return { indent, ...line }; }
+
+NestedListLineItem
+  = "- [" flag:TaskFlag "]" [ \t]+ text:Inline { return { marker: 'task', item: task(text, flag) }; }
+  / number:Digits "." [ \t]+ text:Inline { return { marker: 'ordered', item: listItem(text, parseInt(number, 10)) }; }
+  / "-" [ \t]+ text:Inline { return { marker: '-', item: listItem(text) }; }
+  / "*" [ \t]+ text:UnorderedListItemContent { return { marker: '*', item: listItem(text) }; }
 
 /**
  *

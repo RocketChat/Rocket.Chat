@@ -10,6 +10,7 @@ import type {
 	Types,
 	Task,
 	ListItem,
+	NestedList,
 	Inlines,
 	LineBreak,
 	Emoji,
@@ -55,10 +56,11 @@ export const bigEmoji = (value: BigEmoji['value']): BigEmoji => ({
 	value,
 });
 
-export const task = (value: Task['value'], status: boolean): Task => ({
+export const task = (value: Task['value'], status: boolean, nested?: NestedList[] | null): Task => ({
 	type: 'TASK',
 	status,
 	value,
+	...(nested && { nested }),
 });
 
 export const inlineCode = generate('INLINE_CODE');
@@ -136,11 +138,52 @@ export const orderedList = generate('ORDERED_LIST');
 
 export const unorderedList = generate('UNORDERED_LIST');
 
-export const listItem = (text: Inlines[], number?: number): ListItem => ({
+export const listItem = (text: Inlines[], number?: number, nested?: NestedList[] | null): ListItem => ({
 	type: 'LIST_ITEM',
 	value: text,
 	...(number !== undefined && { number }),
+	...(nested && { nested }),
 });
+
+type NestedListLine = {
+	indent: string;
+	marker: 'task' | 'ordered' | '-' | '*';
+	item: ListItem | Task;
+};
+
+const indentWidth = (indent: string) => [...indent].reduce((width, char) => width + (char === '\t' ? 4 : 1), 0);
+
+// Groups indented list lines into lists by marker, nesting each line under the closest less-indented item above it.
+export const nestedLists = (lines: NestedListLine[]): NestedList[] => {
+	const widths = lines.map(({ indent }) => indentWidth(indent));
+	const lists: NestedList[] = [];
+	let i = 0;
+
+	while (i < lines.length) {
+		const { marker } = lines[i];
+		const width = widths[i];
+		const items: (ListItem | Task)[] = [];
+
+		while (i < lines.length && lines[i].marker === marker && widths[i] <= width) {
+			const { item } = lines[i++];
+			const start = i;
+			while (i < lines.length && widths[i] > width) {
+				i++;
+			}
+			items.push(start < i ? { ...item, nested: nestedLists(lines.slice(start, i)) } : item);
+		}
+
+		if (marker === 'task') {
+			lists.push(tasks(items as Task[]));
+		} else if (marker === 'ordered') {
+			lists.push(orderedList(items as ListItem[]));
+		} else {
+			lists.push(unorderedList(items as ListItem[]));
+		}
+	}
+
+	return lists;
+};
 
 // GFM trims leading/trailing whitespace of each table cell's content
 const trimCellContent = (value: Inlines[]): Inlines[] => {
