@@ -53,6 +53,7 @@ export interface IAbacService {
 		actor: AbacActor,
 		options: { creatorJoins: boolean },
 	): Promise<AbacCreationAttributesResult>;
+	listAssignableAttributes(actor: AbacActor): Promise<IAbacAttributeDefinition[]>;
 	auditRoomAttributesAtCreation(room: Pick<IRoom, '_id' | 'name' | 'abacAttributes'>, actor: AbacActor): Promise<void>;
 	previewCreationMembers(
 		usernames: string[],

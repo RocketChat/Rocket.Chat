@@ -27,6 +27,7 @@ import {
 	GETAbacPdpHealthErrorResponseSchema,
 	GETAbacAttributeKeysResponseSchema,
 	GETAbacConfigResponseSchema,
+	GETAbacAssignableAttributesResponseSchema,
 	POSTAbacAttributeAssignabilityBodySchema,
 	POSTAbacMembershipPreviewBodySchema,
 	POSTAbacMembershipPreviewResponseSchema,
@@ -195,7 +196,7 @@ const abacEndpoints = API.v1
 			},
 		},
 		async function action() {
-			const { offset, count } = await getPaginationItems(this.queryParams as Record<string, string | string[] | number | null | undefined>);
+			const { offset, count } = await getPaginationItems(this.queryParams);
 			const { key, values } = this.queryParams;
 
 			return API.v1.success(
@@ -370,7 +371,7 @@ const abacEndpoints = API.v1
 			query: GETAbacRoomsListQueryValidator,
 		},
 		async function action() {
-			const { offset, count } = await getPaginationItems(this.queryParams as Record<string, string | string[] | number | null | undefined>);
+			const { offset, count } = await getPaginationItems(this.queryParams);
 			const { filter, filterType } = this.queryParams;
 
 			const result = await Abac.listAbacRooms(
@@ -428,7 +429,7 @@ const abacEndpoints = API.v1
 		async function action() {
 			const { start, end, actor } = this.queryParams;
 
-			const { offset, count } = await getPaginationItems(this.queryParams as Record<string, string | number | null | undefined>);
+			const { offset, count } = await getPaginationItems(this.queryParams);
 			const { sort } = await this.parseJsonQuery();
 			const _sort = { ts: sort?.ts ? sort?.ts : -1 };
 
@@ -508,6 +509,27 @@ const abacEndpoints = API.v1
 				bannersConfig: settings.get<string>('ABAC_Classification_Banners_Config'),
 				requiredAttributes: settings.get<string[]>('ABAC_Required_Attributes'),
 			});
+		},
+	)
+	.get(
+		'abac/assignable-attributes',
+		{
+			authRequired: true,
+			permissionsRequired: ['create-abac-managed-room'],
+			license: ['abac'],
+			response: {
+				200: GETAbacAssignableAttributesResponseSchema,
+				400: validateBadRequestErrorResponse,
+				401: validateUnauthorizedErrorResponse,
+				403: validateUnauthorizedErrorResponse,
+			},
+		},
+		async function action() {
+			if (!settings.get('ABAC_Enabled')) {
+				throw new Error('error-abac-not-enabled');
+			}
+
+			return API.v1.success({ attributes: await Abac.listAssignableAttributes(toAbacActor(this.user)) });
 		},
 	)
 	.post(
