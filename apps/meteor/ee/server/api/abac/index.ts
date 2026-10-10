@@ -26,6 +26,7 @@ import {
 	GETAbacPdpHealthResponseSchema,
 	GETAbacPdpHealthErrorResponseSchema,
 	GETAbacAttributeKeysResponseSchema,
+	GETAbacConfigResponseSchema,
 } from './schemas';
 import { API } from '../../../../server/api';
 import type { ExtractRoutesFromAPI } from '../../../../server/api/ApiClass';
@@ -483,6 +484,21 @@ const abacEndpoints = API.v1
 			const keys = (await Abac.listAbacAttributeKeys(getActorFromUser(this.user))).sort((a, b) => a.localeCompare(b));
 
 			return API.v1.success({ data: keys.map((key) => ({ key, label: key })) });
+		},
+	)
+
+	.get(
+		'abac/config',
+		{
+			authRequired: true,
+			license: ['abac'],
+			response: {
+				200: GETAbacConfigResponseSchema,
+				401: validateUnauthorizedErrorResponse,
+			},
+		},
+		async function action() {
+			return API.v1.success({ bannersConfig: settings.get<string>('ABAC_Classification_Banners_Config') });
 		},
 	);
 

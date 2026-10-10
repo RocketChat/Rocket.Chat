@@ -203,6 +203,7 @@ export interface StreamerEvents {
 			];
 		},
 		{ key: 'permissions-changed'; args: ['inserted' | 'updated' | 'removed' | 'changed', ISetting] },
+		{ key: 'abac-config-changed'; args: [] },
 		{ key: 'deleteEmojiCustom'; args: [{ emojiData: IEmoji }] },
 		{ key: 'updateEmojiCustom'; args: [{ emojiData: IEmoji }] },
 		/* @deprecated */
