@@ -19,7 +19,7 @@
 	},
 	"devDependencies": {
 		"@rocket.chat/css-in-js": "workspace:^",
-		"@rocket.chat/fuselage": "^0.94.0",
+		"@rocket.chat/fuselage": "^0.95.0",
 		"@rocket.chat/fuselage-hooks": "^0.43.1",
 		"@rocket.chat/icons": "workspace:~",
 		"@rocket.chat/jest-presets": "workspace:~",

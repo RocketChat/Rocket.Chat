@@ -23,6 +23,7 @@ const AudioDevicePicker = () => {
 			beforeOpen={() => revealDeviceLabels(['audioinput', 'audiooutput'], devices)}
 			button={
 				<DeviceMenuButton
+					splitButtonTrigger
 					secondary
 					large
 					menuIcon={self.muted ? 'chevron-up' : <VoiceActivity level={micLevel} size={24} />}
