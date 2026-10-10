@@ -10138,7 +10138,7 @@ __metadata:
     i18next: "npm:~26.4.2"
     identity-obj-proxy: "npm:^3.0.0"
     jest: "npm:~30.5.2"
-    katex: "npm:~0.16.47"
+    katex: "npm:~0.18.2"
     outdent: "npm:^0.8.0"
     react: "npm:~19.2.8"
     react-aria: "npm:~3.37.0"
@@ -10816,7 +10816,7 @@ __metadata:
     json-2-csv: "npm:~5.5.12"
     jsrsasign: "npm:^11.1.5"
     juice: "npm:^8.1.0"
-    katex: "npm:~0.16.47"
+    katex: "npm:~0.18.2"
     ldap-escape: "npm:^2.0.6"
     ldapjs: "npm:^2.3.3"
     limax: "npm:^3.0.0"
@@ -28106,14 +28106,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"katex@npm:~0.16.47":
-  version: 0.16.47
-  resolution: "katex@npm:0.16.47"
+"katex@npm:~0.18.2":
+  version: 0.18.2
+  resolution: "katex@npm:0.18.2"
   dependencies:
     commander: "npm:^8.3.0"
   bin:
     katex: cli.js
-  checksum: 10/e0286b45d9e0c8443cf0381205619ecbab3919ea5fb6616408f46f0cb471ce2222e83f46aef52cdaacdcbfd4485e00fcfbcf36bd85a8a9a81e22b45827c27ced
+  checksum: 10/13c4c65ba80135d84fb2d34840092d191f3737a8d0623aadf70bd5d1cbcc091aa0e3e423123aa06ae8c518c35eb7c939461ff3740f9425998392d919f65bd063
   languageName: node
   linkType: hard
 
