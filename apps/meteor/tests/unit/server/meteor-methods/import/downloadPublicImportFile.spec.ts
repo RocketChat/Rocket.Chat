@@ -42,7 +42,7 @@ const { executeDownloadPublicImportFile } = proxyquire
 		'../../lib/import/startup/store': { RocketChatImportFileInstance: { createWriteStream: stubs.createWriteStream } },
 		'../../lib/logger/system': { SystemLogger: { error: stubs.systemLoggerError } },
 		'../../settings': { settings: { get: sinon.stub().returns('') } },
-		'../../../app/importer/lib/ImporterProgressStep': { ProgressStep: progressStep },
+		'../../../lib/importer/ImporterProgressStep': { ProgressStep: progressStep },
 	});
 
 describe('executeDownloadPublicImportFile', () => {
