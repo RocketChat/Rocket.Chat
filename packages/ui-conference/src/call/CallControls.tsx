@@ -238,6 +238,7 @@ const CallControls = ({ layout, onLayoutChange, onOpenDiagnostics }: CallControl
 				titles={[t('Share_screen'), t('Stop_sharing_screen')]}
 				pressed={self.screenSharing}
 				aria-pressed={self.screenSharing}
+				info
 				large
 				onToggle={toggleScreenShare}
 			/>
@@ -247,6 +248,7 @@ const CallControls = ({ layout, onLayoutChange, onOpenDiagnostics }: CallControl
 				titles={[t('Raise_hand'), t('Lower_hand')]}
 				pressed={self.handRaised}
 				aria-pressed={self.handRaised}
+				info
 				large
 				onToggle={toggleHand}
 			/>
