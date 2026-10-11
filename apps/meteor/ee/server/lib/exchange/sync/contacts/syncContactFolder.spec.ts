@@ -359,6 +359,7 @@ describe('syncContactFolder', () => {
 			}) as unknown as IExchangeProvider;
 
 		it('discards a cursor the server no longer accepts, so the next run reads from scratch', async () => {
+			findOneByUserIdAndFolder.mockResolvedValue(syncedState());
 			const outcome = await syncContactFolder(
 				failingProvider(new ExchangeError('sync-state-invalid', 'stale token')),
 				UID,
