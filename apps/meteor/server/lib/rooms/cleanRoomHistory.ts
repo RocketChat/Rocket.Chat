@@ -57,10 +57,18 @@ export async function cleanRoomHistory({
 
 	let fileCount = 0;
 
-	const cursor = Messages.findFilesByRoomIdPinnedTimestampAndUsers(rid, excludePinned, ignoreDiscussion, ts, fromUsers, ignoreThreads, {
-		projection: { pinned: 1, files: 1 },
-		limit,
-	});
+	// A limited prune deletes only these messages, so the files and discussions it removes must come from the same set.
+	const selectedMessageIds =
+		limit && !filesOnly
+			? await Messages.findByIdPinnedTimestampLimitAndUsers(rid, excludePinned, ignoreDiscussion, ts, limit, fromUsers, ignoreThreads)
+			: undefined;
+
+	const cursor = selectedMessageIds
+		? Messages.findByRoomIdAndMessageIds(rid, selectedMessageIds, { projection: { pinned: 1, files: 1 } })
+		: Messages.findFilesByRoomIdPinnedTimestampAndUsers(rid, excludePinned, ignoreDiscussion, ts, fromUsers, ignoreThreads, {
+				projection: { pinned: 1, files: 1 },
+				limit,
+			});
 
 	const targetMessageIdsForAttachmentRemoval = new Set<string>();
 	// Since we remove every file from the messages, we don't need to specify which fileId has been removed.
@@ -109,10 +117,9 @@ export async function cleanRoomHistory({
 	}
 
 	if (!ignoreDiscussion) {
-		const discussionsCursor = Messages.findDiscussionByRoomIdPinnedTimestampAndUsers(rid, excludePinned, ts, fromUsers, {
-			projection: { drid: 1 },
-			...(limit && { limit }),
-		});
+		const discussionsCursor = selectedMessageIds
+			? Messages.findByRoomIdAndMessageIds(rid, selectedMessageIds, { projection: { drid: 1 } })
+			: Messages.findDiscussionByRoomIdPinnedTimestampAndUsers(rid, excludePinned, ts, fromUsers, { projection: { drid: 1 } });
 
 		for await (const { drid } of discussionsCursor) {
 			if (!drid) {
@@ -144,9 +151,6 @@ export async function cleanRoomHistory({
 		}
 	}
 
-	const selectedMessageIds = limit
-		? await Messages.findByIdPinnedTimestampLimitAndUsers(rid, excludePinned, ignoreDiscussion, ts, limit, fromUsers, ignoreThreads)
-		: undefined;
 	const count = await Messages.removeByIdPinnedTimestampLimitAndUsers(
 		rid,
 		excludePinned,
@@ -158,7 +162,7 @@ export async function cleanRoomHistory({
 		selectedMessageIds,
 	);
 
-	if (limit && selectedMessageIds) {
+	if (selectedMessageIds) {
 		await ReadReceipts.removeByMessageIds(selectedMessageIds);
 		await ReadReceiptsArchive.removeByMessageIds(selectedMessageIds);
 	}
