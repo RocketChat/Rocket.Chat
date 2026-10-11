@@ -40,3 +40,5 @@ export class ExchangeError extends Error {
 }
 
 export const isExchangeError = (err: unknown): err is ExchangeError => err instanceof ExchangeError;
+
+export const FATAL_CODES = new Set<string>(['not-configured', 'host-not-allowed', 'authentication-failed', 'rate-limited']);

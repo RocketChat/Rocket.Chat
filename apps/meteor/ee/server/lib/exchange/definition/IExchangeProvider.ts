@@ -1,5 +1,5 @@
 import type {
-	ContactFolder,
+	ContactFolderListing,
 	DateRange,
 	EventPage,
 	ExchangeContact,
@@ -18,7 +18,7 @@ export interface IExchangeProvider {
 	/** `timeWindow` bounds the range, `cursor` is an opaque continuation/delta token, omitted for an initial sync. */
 	listEvents(mailbox: string, timeWindow: DateRange, cursor?: string): Promise<EventPage>;
 
-	listContactFolders(mailbox: string): Promise<ContactFolder[]>;
+	listContactFolders(mailbox: string): Promise<ContactFolderListing>;
 
 	/** Per folder, because both providers scope the contact delta token to one. */
 	listContacts(mailbox: string, folderId: string, cursor?: string): Promise<Page<ExchangeContact>>;
