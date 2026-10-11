@@ -5,7 +5,7 @@ import { unlink, rename, writeFile } from 'node:fs/promises';
 import type * as http from 'node:http';
 import type * as https from 'node:https';
 import stream from 'node:stream';
-import { finished } from 'node:stream/promises';
+import { finished, pipeline } from 'node:stream/promises';
 import URL from 'node:url';
 import { isArrayBufferView } from 'node:util/types';
 
@@ -303,8 +303,9 @@ export const FileUpload = {
 
 		const transformer = sharp().resize({ width: 32, height: 32, fit: 'inside' }).jpeg().blur();
 		const result = transformer.toBuffer().then((out) => out.toString('base64'));
-		image.pipe(transformer);
-		return result;
+		// not pipe(): a failed storage read has to reject here instead of leaving toBuffer() pending forever
+		const [, preview] = await Promise.all([pipeline(image, transformer), result]);
+		return preview;
 	},
 
 	async extractMetadata(file: IUpload) {
@@ -348,9 +349,10 @@ export const FileUpload = {
 			thumbFileName: file?.name as string,
 			originalFileId: file?._id as string,
 		}));
-		image.pipe(transformer);
+		// not pipe(): a failed storage read has to reject here instead of leaving toBuffer() pending forever
+		const [, thumbnail] = await Promise.all([pipeline(image, transformer), result]);
 
-		return result;
+		return thumbnail;
 	},
 
 	async uploadImageThumbnail(
@@ -623,6 +625,12 @@ export const FileUpload = {
 		res.end();
 	},
 
+	// TODO: bug Check whether getBuffer() hangs forever when the store's copy() read fails
+	// Problem: copy() uses pipe(), which doesn't forward read errors, so the buffer's 'finish' never fires.
+	// Reproduced for AmazonS3: connection dropped mid-response; an unreachable host also throws uncaughtException.
+	// To check: GoogleStorage (same code as AmazonS3), Webdav and FileSystem. GridFS already handles read errors.
+	// Location: server/lib/media/file-upload/config/{AmazonS3,GoogleStorage,Webdav,FileSystem}.ts copy()
+	// Discovered while: fixing #42514
 	async getBuffer(file: IUpload): Promise<Buffer> {
 		const store = this.getStoreByName(file.store);
 
