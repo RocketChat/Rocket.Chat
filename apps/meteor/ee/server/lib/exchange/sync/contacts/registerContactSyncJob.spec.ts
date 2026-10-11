@@ -1,4 +1,4 @@
-import { configureContactSyncJob, CONTACT_SYNC_JOB } from './registerContactSyncJob';
+import { configureContactSyncJob, registerContactSyncJob, CONTACT_SYNC_JOB } from './registerContactSyncJob';
 
 const get = jest.fn();
 const has = jest.fn();
@@ -88,5 +88,57 @@ describe('configureContactSyncJob', () => {
 			expect(remove).toHaveBeenCalledWith(CONTACT_SYNC_JOB);
 			expect(add).not.toHaveBeenCalled();
 		});
+	});
+});
+
+describe('registerContactSyncJob', () => {
+	const flush = () => new Promise((resolve) => setImmediate(resolve));
+
+	beforeEach(() => {
+		jest.clearAllMocks();
+		has.mockResolvedValue(false);
+		add.mockResolvedValue(undefined);
+		remove.mockResolvedValue(undefined);
+		watchMultiple.mockReturnValue(stopWatching);
+		runContactSync.mockResolvedValue(undefined);
+		settingsOf();
+	});
+
+	it('watches the settings that decide whether the job exists at all', () => {
+		registerContactSyncJob();
+
+		expect(watchMultiple).toHaveBeenCalledWith(
+			['Outlook_Calendar_Enabled', 'Exchange_Mode', 'Exchange_Contacts_Sync_Enabled'],
+			expect.any(Function),
+		);
+	});
+
+	it('does not re-add the job when the cleanup lands while a reconfiguration is in flight', async () => {
+		let resume: (exists: boolean) => void = () => undefined;
+		has.mockImplementationOnce(
+			() =>
+				new Promise<boolean>((resolve) => {
+					resume = resolve;
+				}),
+		);
+
+		const unregister = registerContactSyncJob();
+		watchMultiple.mock.calls[0][1]();
+
+		unregister();
+		resume(false);
+		await flush();
+
+		expect(add).not.toHaveBeenCalled();
+	});
+
+	it('stops watching and drops the job when the returned cleanup runs', async () => {
+		has.mockResolvedValue(true);
+
+		registerContactSyncJob()();
+		await flush();
+
+		expect(stopWatching).toHaveBeenCalled();
+		expect(remove).toHaveBeenCalledWith(CONTACT_SYNC_JOB);
 	});
 });
