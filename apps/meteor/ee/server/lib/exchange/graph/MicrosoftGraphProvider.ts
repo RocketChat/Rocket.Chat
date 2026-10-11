@@ -250,14 +250,28 @@ export class MicrosoftGraphProvider implements IExchangeProvider {
 						continue;
 					}
 
-					const data = new Uint8Array(Buffer.from(res.body, 'base64'));
-
-					if (!data.byteLength) {
+					const base64Length = res.body.length;
+					if (!base64Length) {
 						continue;
 					}
 
-					if (data.byteLength > MAX_CONTACT_PHOTO_BYTES) {
-						logger.warn({ msg: 'Skipping a Graph contact photo above the size cap', externalId: res.id, bytes: data.byteLength });
+					let padding = 0;
+					if (res.body.endsWith('==')) padding = 2;
+					else if (res.body.endsWith('=')) padding = 1;
+
+					const estimatedByteLength = (base64Length * 3) / 4 - padding;
+					if (estimatedByteLength > MAX_CONTACT_PHOTO_BYTES) {
+						logger.warn({
+							msg: 'Skipping a Graph contact photo above the size cap (pre-allocation check)',
+							externalId: res.id,
+							bytes: estimatedByteLength,
+						});
+						continue;
+					}
+
+					const data = new Uint8Array(Buffer.from(res.body, 'base64'));
+
+					if (!data.byteLength) {
 						continue;
 					}
 
