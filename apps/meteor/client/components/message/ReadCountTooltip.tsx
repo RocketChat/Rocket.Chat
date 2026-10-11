@@ -25,8 +25,7 @@ export const ReadCountTooltip = ({
 	const { showRealName } = useContext(MessageListContext);
 
 	const getMessageReaders = useEndpoint('GET', '/v1/chat.getMessageReaders');
-
-	const queryKey = ['message-readers', roomId, messageId];
+	const queryKey = ['message-readers', roomId, messageId] as const;
 
 	const { data, isLoading } = useQuery({
 		queryKey,
@@ -36,7 +35,7 @@ export const ReadCountTooltip = ({
 
 	const readers = data?.readers ?? [];
 
-	const labelFor = (reader: { name?: string; username?: string }) => {
+	const labelFor = (reader: { name?: string; username?: string }): string => {
 		if (showRealName && reader.name) {
 			return reader.name;
 		}

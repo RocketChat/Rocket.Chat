@@ -86,8 +86,8 @@ export class SubscriptionsRaw extends BaseRaw<ISubscription> implements ISubscri
 		return result?.total || 0;
 	}
 
-	countReadersByRoomIdAndMessageTs(rid: string, messageTs: Date, excludeUserId?: string): Promise<number> {
-		const query: Filter<ISubscription> = {
+	private readersByRoomIdAndMessageTsMatch(rid: string, messageTs: Date, excludeUserId?: string): Filter<ISubscription> {
+		return {
 			rid,
 			archived: { $ne: true },
 			ls: { $gte: messageTs },
@@ -96,29 +96,12 @@ export class SubscriptionsRaw extends BaseRaw<ISubscription> implements ISubscri
 				$exists: true,
 			},
 		};
-
-		return this.countDocuments(query);
 	}
 
-	async findReaderUsersByRoomIdAndMessageTs(
-		rid: string,
-		messageTs: Date,
-		excludeUserId: string | undefined,
-		limit: number,
-	): Promise<Array<Pick<IUser, '_id' | 'name' | 'username'>>> {
-		const safeLimit = Math.min(Math.max(Math.trunc(limit) || 1, 1), 100);
-
-		const pipeline = [
+	private readersActiveUsersPipeline(rid: string, messageTs: Date, excludeUserId?: string) {
+		return [
 			{
-				$match: {
-					rid,
-					archived: { $ne: true },
-					ls: { $gte: messageTs },
-					'u._id': {
-						...(excludeUserId ? { $ne: excludeUserId } : {}),
-						$exists: true,
-					},
-				},
+				$match: this.readersByRoomIdAndMessageTsMatch(rid, messageTs, excludeUserId),
 			},
 			{
 				$lookup: {
@@ -134,24 +117,45 @@ export class SubscriptionsRaw extends BaseRaw<ISubscription> implements ISubscri
 					'user.active': true,
 				},
 			},
-			{
-				$sort: {
-					'user.username': 1,
-				},
-			},
-			{
-				$limit: safeLimit,
-			},
-			{
-				$project: {
-					_id: '$user._id',
-					name: '$user.name',
-					username: '$user.username',
-				},
-			},
 		];
+	}
 
-		return this.col.aggregate<Pick<IUser, '_id' | 'name' | 'username'>>(pipeline).toArray();
+	async countReadersByRoomIdAndMessageTs(rid: string, messageTs: Date, excludeUserId?: string): Promise<number> {
+		const [result] = await this.col
+			.aggregate<{ count: number }>([...this.readersActiveUsersPipeline(rid, messageTs, excludeUserId), { $count: 'count' }])
+			.toArray();
+
+		return result?.count ?? 0;
+	}
+
+	async findReaderUsersByRoomIdAndMessageTs(
+		rid: string,
+		messageTs: Date,
+		excludeUserId: string | undefined,
+		limit: number,
+	): Promise<Array<Pick<IUser, '_id' | 'name' | 'username'>>> {
+		const safeLimit = Math.min(Math.max(Math.trunc(limit) || 1, 1), 100);
+
+		return this.col
+			.aggregate<Pick<IUser, '_id' | 'name' | 'username'>>([
+				...this.readersActiveUsersPipeline(rid, messageTs, excludeUserId),
+				{
+					$sort: {
+						'user.username': 1,
+					},
+				},
+				{
+					$limit: safeLimit,
+				},
+				{
+					$project: {
+						_id: '$user._id',
+						name: '$user.name',
+						username: '$user.username',
+					},
+				},
+			])
+			.toArray();
 	}
 
 	findOneByRoomIdAndUserId(rid: string, uid: string, options: FindOptions<ISubscription> = {}): Promise<ISubscription | null> {

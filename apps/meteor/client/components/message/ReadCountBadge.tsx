@@ -6,14 +6,13 @@ import type { ReactElement } from 'react';
 import { useCallback, useEffect, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { useRoom } from '../../views/room/contexts/RoomContext';
-
 import { ReadCountTooltip } from './ReadCountTooltip';
+import { useRoom } from '../../views/room/contexts/RoomContext';
 
 type ReadCountBadgeProps = {
 	messageId: IMessage['_id'];
 	roomId: IRoom['_id'];
-	senderId: string;
+	senderId: IMessage['u']['_id'];
 };
 
 export const ReadCountBadge = ({ messageId, roomId, senderId }: ReadCountBadgeProps): ReactElement | null => {
@@ -43,8 +42,7 @@ export const ReadCountBadge = ({ messageId, roomId, senderId }: ReadCountBadgePr
 
 	const getMessageReadCount = useEndpoint('GET', '/v1/chat.getMessageReadCount');
 
-	const queryKey = ['read-count', roomId, messageId];
-
+	const queryKey = ['read-count', roomId, messageId] as const;
 	const shouldFetch = Boolean(uid && uid === senderId && room.t !== 'd');
 
 	const { data } = useQuery({
@@ -55,19 +53,21 @@ export const ReadCountBadge = ({ messageId, roomId, senderId }: ReadCountBadgePr
 	});
 
 	useEffect(() => {
-		const handler = (event: Event) => {
+		const handler = (event: Event): void => {
 			const { detail } = event as CustomEvent<{ rid?: string }>;
 			if (!detail?.rid || detail.rid !== roomId) {
 				return;
 			}
 
-			queryClient.invalidateQueries({ queryKey });
-			queryClient.invalidateQueries({ queryKey: ['message-readers', roomId, messageId] });
+			void queryClient.invalidateQueries({ queryKey });
+			void queryClient.invalidateQueries({ queryKey: ['message-readers', roomId, messageId] });
 		};
 
-		window.addEventListener('read-counts-changed', handler as EventListener);
-		return () => window.removeEventListener('read-counts-changed', handler as EventListener);
-	}, [queryClient, queryKey, roomId, messageId]);
+		window.addEventListener('read-counts-changed', handler);
+		return () => {
+			window.removeEventListener('read-counts-changed', handler);
+		};
+	}, [messageId, queryClient, queryKey, roomId]);
 
 	useEffect(
 		() => () => {
@@ -78,15 +78,7 @@ export const ReadCountBadge = ({ messageId, roomId, senderId }: ReadCountBadgePr
 
 	const readCount = data?.readCount ?? 0;
 
-	if (!uid || uid !== senderId) {
-		return null;
-	}
-
-	if (room.t === 'd') {
-		return null;
-	}
-
-	if (readCount <= 0) {
+	if (!shouldFetch || readCount <= 0) {
 		return null;
 	}
 
@@ -108,16 +100,19 @@ export const ReadCountBadge = ({ messageId, roomId, senderId }: ReadCountBadgePr
 
 				cancelScheduledTooltipClose();
 
-				ref.current &&
-					openTooltip(
-						<ReadCountTooltip
-							messageId={messageId}
-							roomId={roomId}
-							onTooltipMouseEnter={cancelScheduledTooltipClose}
-							onTooltipMouseLeave={scheduleTooltipClose}
-						/>,
-						ref.current,
-					);
+				if (!ref.current) {
+					return;
+				}
+
+				openTooltip(
+					<ReadCountTooltip
+						messageId={messageId}
+						roomId={roomId}
+						onTooltipMouseEnter={cancelScheduledTooltipClose}
+						onTooltipMouseLeave={scheduleTooltipClose}
+					/>,
+					ref.current,
+				);
 			}}
 		>
 			<Icon name='eye' size='x12' mie={4} />
@@ -125,4 +120,3 @@ export const ReadCountBadge = ({ messageId, roomId, senderId }: ReadCountBadgePr
 		</Box>
 	);
 };
-

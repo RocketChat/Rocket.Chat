@@ -141,20 +141,10 @@ API.v1.addRoute(
 		async get() {
 			const { messageId } = this.queryParams;
 
-			const message = await Messages.findOneById(messageId, { projection: { rid: 1 } });
-
-			if (!message) {
-				return API.v1.failure('The required "messageId" param is missing or invalid.');
-			}
-
-			if (!(await canAccessRoomIdAsync(message.rid, this.userId))) {
-				throw new Meteor.Error('error-not-allowed', 'Not allowed');
-			}
-
 			const result = await getMessageReadCountHelper(messageId, this.userId);
 
 			if (!result) {
-				return API.v1.failure();
+				return API.v1.failure('The required "messageId" param is missing or invalid.');
 			}
 
 			return API.v1.success(result);
@@ -172,20 +162,10 @@ API.v1.addRoute(
 		async get() {
 			const { messageId, limit } = this.queryParams;
 
-			const message = await Messages.findOneById(messageId, { projection: { rid: 1 } });
-
-			if (!message) {
-				return API.v1.failure('The required "messageId" param is missing or invalid.');
-			}
-
-			if (!(await canAccessRoomIdAsync(message.rid, this.userId))) {
-				throw new Meteor.Error('error-not-allowed', 'Not allowed');
-			}
-
-			const result = await getMessageReadersHelper(messageId, this.userId, limit);
+			const result = await getMessageReadersHelper(messageId, this.userId, typeof limit === 'string' ? Number(limit) : limit);
 
 			if (!result) {
-				return API.v1.failure();
+				return API.v1.failure('The required "messageId" param is missing or invalid.');
 			}
 
 			return API.v1.success(result);
