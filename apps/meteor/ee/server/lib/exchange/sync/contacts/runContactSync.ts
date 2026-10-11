@@ -65,7 +65,9 @@ export const runContactSync = async (): Promise<ContactSyncRunSummary> => {
 		);
 		const dueSince = new Date(Date.now() - intervalDays * DAY_MS + DAY_MS / 2);
 
-		await forEachWithConcurrency(iterateMailboxCandidates(), MAILBOX_CONCURRENCY, async ({ uid, mailbox }) => {
+		const candidates = iterateMailboxCandidates();
+
+		await forEachWithConcurrency(candidates, MAILBOX_CONCURRENCY, async ({ uid, mailbox }) => {
 			if (summary.aborted) {
 				return;
 			}
@@ -102,6 +104,8 @@ export const runContactSync = async (): Promise<ContactSyncRunSummary> => {
 
 				if (outcome.fatal) {
 					summary.aborted = true;
+
+					await candidates.return(undefined);
 				}
 			} finally {
 				release();

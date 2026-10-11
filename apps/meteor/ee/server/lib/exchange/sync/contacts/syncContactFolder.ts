@@ -7,13 +7,11 @@ import { normalizeE164 } from './normalizeE164';
 import { settings } from '../../../../../../server/settings';
 import type { IExchangeProvider } from '../../definition/IExchangeProvider';
 import type { ExchangeContactUpsert } from '../../definition/types';
-import { isExchangeError } from '../../errors';
+import { FATAL_CODES, isExchangeError } from '../../errors';
 import { logger } from '../../logger';
 import { scrubForLog, scrubText } from '../../scrub';
 
 const MAX_CONTACT_PAGES = 50;
-
-const FATAL_CODES = new Set(['not-configured', 'host-not-allowed', 'authentication-failed', 'rate-limited']);
 
 export type ContactFolderSyncOutcome = {
 	upserted: number;
