@@ -21,7 +21,9 @@ import { logger } from '../logger';
 import { MAX_CONTACT_PHOTO_BYTES } from '../sync/limits';
 
 const GRAPH_API_VERSION = 'v1.0';
+
 const REQUEST_TIMEOUT_MS = 30000;
+
 const MASTER_FETCH_BATCH_SIZE = 5;
 
 /** Without this, Graph answers in the mailbox's own timezone with the zone in a sibling field. */
@@ -30,8 +32,8 @@ const PREFER_UTC = 'outlook.timezone="UTC"';
 /** Pinned rather than left to Graph, so the page cap below is worth a number we know. Matches EWS. */
 const CONTACT_FOLDER_PAGE_SIZE = 100;
 
-/** At 100 folders a page, far past any real address book. A backstop, not a working limit. */
-const MAX_FOLDER_PAGES = 50;
+/** The walk spends a request per folder on top of paging, so this bounds the whole tree. A backstop, not a working limit. */
+const MAX_FOLDER_REQUESTS = 200;
 
 const DEFAULT_CONTACT_FOLDER_ID = 'default';
 
@@ -169,12 +171,17 @@ export class MicrosoftGraphProvider implements IExchangeProvider {
 	public async listContactFolders(mailbox: string): Promise<ContactFolder[]> {
 		const folders: ContactFolder[] = [{ id: DEFAULT_CONTACT_FOLDER_ID, displayName: 'Contacts' }];
 
-		let url = `${this.graphHost}/${GRAPH_API_VERSION}/users/${encodeURIComponent(
-			mailbox,
-		)}/contactFolders?$select=id,displayName&$top=${CONTACT_FOLDER_PAGE_SIZE}`;
+		// Graph lists one level per call where EWS hands over the tree
+		const pending = [this.contactFoldersUrl(mailbox)];
 
-		for (let page = 0; page < MAX_FOLDER_PAGES; page++) {
-			const payload = await this.requestJson<GraphDeltaResponse>(url);
+		for (let request = 0; request < pending.length; request++) {
+			if (request >= MAX_FOLDER_REQUESTS) {
+				logger.error({ msg: 'Graph contact folders paged out, the rest of them will not sync', mailbox, listed: folders.length });
+
+				return folders;
+			}
+
+			const payload = await this.requestJson<GraphDeltaResponse>(pending[request]);
 			const raw = Array.isArray(payload.value) ? (payload.value as GraphContactFolder[]) : [];
 
 			for (const folder of raw) {
@@ -186,18 +193,15 @@ export class MicrosoftGraphProvider implements IExchangeProvider {
 				}
 
 				folders.push({ id, displayName: asString(folder.displayName) ?? '' });
+				pending.push(this.contactFoldersUrl(mailbox, id));
 			}
 
 			const nextLink = asString(payload['@odata.nextLink']);
 
-			if (!nextLink) {
-				return folders;
+			if (nextLink) {
+				pending.push(nextLink);
 			}
-
-			url = nextLink;
 		}
-
-		logger.error({ msg: 'Graph contact folders paged out, the rest of them will not sync', mailbox, listed: folders.length });
 
 		return folders;
 	}
@@ -218,8 +222,9 @@ export class MicrosoftGraphProvider implements IExchangeProvider {
 		};
 	}
 
-	public async *getContactPhotos(mailbox: string, externalIds: string[]): AsyncIterable<ExchangeContactPhoto> {
+	public async *getContactPhotos(mailbox: string, folderId: string, externalIds: string[]): AsyncIterable<ExchangeContactPhoto> {
 		const batchUrl = `${this.graphHost}/${GRAPH_API_VERSION}/$batch`;
+		const contactsPath = this.contactsPath(mailbox, folderId);
 
 		for (let i = 0; i < externalIds.length; i += GRAPH_BATCH_SIZE) {
 			const chunk = externalIds.slice(i, i + GRAPH_BATCH_SIZE);
@@ -229,7 +234,7 @@ export class MicrosoftGraphProvider implements IExchangeProvider {
 				requests: chunk.map((externalId) => ({
 					id: externalId,
 					method: 'GET',
-					url: `/users/${encodeURIComponent(mailbox)}/contacts/${encodeURIComponent(externalId)}/photo/$value`,
+					url: `${contactsPath}/${encodeURIComponent(externalId)}/photo/$value`,
 				})),
 			};
 
@@ -272,11 +277,22 @@ export class MicrosoftGraphProvider implements IExchangeProvider {
 		}
 	}
 
-	private contactsDeltaUrl(mailbox: string, folderId: string): string {
-		const mailboxUrl = `${this.graphHost}/${GRAPH_API_VERSION}/users/${encodeURIComponent(mailbox)}`;
+	private contactFoldersUrl(mailbox: string, parentId?: string): string {
+		const scope = parentId ? `contactFolders/${encodeURIComponent(parentId)}/childFolders` : 'contactFolders';
+
+		return `${this.graphHost}/${GRAPH_API_VERSION}/users/${encodeURIComponent(
+			mailbox,
+		)}/${scope}?$select=id,displayName&$top=${CONTACT_FOLDER_PAGE_SIZE}`;
+	}
+
+	private contactsPath(mailbox: string, folderId: string): string {
 		const scope = folderId === DEFAULT_CONTACT_FOLDER_ID ? 'contacts' : `contactFolders/${encodeURIComponent(folderId)}/contacts`;
 
-		return `${mailboxUrl}/${scope}/delta?$select=${CONTACT_FIELDS}`;
+		return `/users/${encodeURIComponent(mailbox)}/${scope}`;
+	}
+
+	private contactsDeltaUrl(mailbox: string, folderId: string): string {
+		return `${this.graphHost}/${GRAPH_API_VERSION}${this.contactsPath(mailbox, folderId)}/delta?$select=${CONTACT_FIELDS}`;
 	}
 
 	private toExchangeContact(contact: GraphContact, folderId: string): ExchangeContact | undefined {
