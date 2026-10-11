@@ -358,6 +358,13 @@ export const createEmailSettings = () =>
 				env: true,
 				i18nLabel: 'Host',
 			});
+			await this.add('SMTP_Client_Name', '', {
+				type: 'string',
+				env: true,
+				i18nLabel: 'SMTP_Client_Name',
+				i18nDescription: 'SMTP_Client_Name_Description',
+			});
+
 			await this.add('SMTP_Port', '', {
 				type: 'string',
 				env: true,
