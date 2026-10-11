@@ -434,14 +434,28 @@ export class ExchangeEwsProvider implements IExchangeProvider {
 				continue;
 			}
 
-			const data = new Uint8Array(Buffer.from(content, 'base64'));
-
-			if (!data.byteLength) {
+			const base64Length = content.length;
+			if (!base64Length) {
 				continue;
 			}
 
-			if (data.byteLength > MAX_CONTACT_PHOTO_BYTES) {
-				logger.warn({ msg: 'Skipping an EWS contact photo above the size cap', externalId, bytes: data.byteLength });
+			let padding = 0;
+			if (content.endsWith('==')) padding = 2;
+			else if (content.endsWith('=')) padding = 1;
+
+			const estimatedByteLength = (base64Length * 3) / 4 - padding;
+			if (estimatedByteLength > MAX_CONTACT_PHOTO_BYTES) {
+				logger.warn({
+					msg: 'Skipping an EWS contact photo above the size cap (pre-allocation check)',
+					externalId,
+					bytes: estimatedByteLength,
+				});
+				continue;
+			}
+
+			const data = new Uint8Array(Buffer.from(content, 'base64'));
+
+			if (!data.byteLength) {
 				continue;
 			}
 
