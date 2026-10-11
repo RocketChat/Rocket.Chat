@@ -9,6 +9,7 @@ const deriveExternalPeerInfoFromInstanceContact = (contact: CallContact): Extern
 
 	return {
 		number: contact.id || 'unknown',
+		...(contact.displayName && { displayName: contact.displayName }),
 	};
 };
 

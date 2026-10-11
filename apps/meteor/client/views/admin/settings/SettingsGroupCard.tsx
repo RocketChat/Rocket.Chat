@@ -3,7 +3,7 @@ import { css } from '@rocket.chat/css-in-js';
 import { Button, Box, Card, CardTitle, CardBody, CardControls } from '@rocket.chat/fuselage';
 import type { TranslationKey } from '@rocket.chat/ui-contexts';
 import { useRouter } from '@rocket.chat/ui-contexts';
-import { useId, type ReactElement } from 'react';
+import { useId } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import MarkdownText from '../../../components/MarkdownText';
@@ -15,13 +15,13 @@ const clampStyle = css`
 	-webkit-box-orient: vertical;
 `;
 
-type SettingsGroupCardProps = {
+export type SettingsGroupCardProps = {
 	id: ISetting['_id'];
 	title: TranslationKey;
 	description?: TranslationKey;
 };
 
-const SettingsGroupCard = ({ id, title, description, ...props }: SettingsGroupCardProps): ReactElement => {
+const SettingsGroupCard = ({ id, title, description, ...props }: SettingsGroupCardProps) => {
 	const { t, i18n } = useTranslation();
 	const router = useRouter();
 	const cardId = useId();
@@ -32,7 +32,7 @@ const SettingsGroupCard = ({ id, title, description, ...props }: SettingsGroupCa
 			<CardTitle id={cardId}>{t(title)}</CardTitle>
 			<CardBody>
 				<Box className={clampStyle} id={descriptionId}>
-					{description && i18n.exists(description) && <MarkdownText variant='inlineWithoutBreaks' content={t(description)} />}
+					{description && i18n.exists(description as string) && <MarkdownText variant='inlineWithoutBreaks' content={t(description)} />}
 				</Box>
 			</CardBody>
 			<CardControls>

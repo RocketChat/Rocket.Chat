@@ -1,8 +1,7 @@
 import { ajv } from '../Ajv';
 
 export type ChannelsSetCustomFieldsProps =
-	| { roomId: string; customFields: Record<string, any> }
-	| { roomName: string; customFields: Record<string, any> };
+	{ roomId: string; customFields: Record<string, any> } | { roomName: string; customFields: Record<string, any> };
 
 const channelsSetCustomFieldsPropsSchema = {
 	oneOf: [

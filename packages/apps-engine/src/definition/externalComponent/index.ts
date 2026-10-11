@@ -3,3 +3,7 @@ import type { IPostExternalComponentClosed } from './IPostExternalComponentClose
 import type { IPostExternalComponentOpened } from './IPostExternalComponentOpened';
 
 export type { IExternalComponent, IPostExternalComponentClosed, IPostExternalComponentOpened };
+
+export type * from './IExternalComponentState';
+export type * from './IExternalComponentRoomInfo';
+export type * from './IExternalComponentUserInfo';

@@ -23,8 +23,8 @@ type TagEditPayload = {
 	departments: { label: string; value: string }[];
 };
 
-type TagEditProps = {
-	tagData?: ILivechatTag;
+export type TagEditProps = {
+	tagData?: Serialized<ILivechatTag>;
 	currentDepartments?: Serialized<ILivechatDepartment>[];
 	onClose: () => void;
 };
@@ -136,7 +136,7 @@ const TagEdit = ({ tagData, currentDepartments, onClose }: TagEditProps) => {
 					</Button>
 				</ButtonGroup>
 				{_id && (
-					<Box mbs={8}>
+					<Box marginBlockStart={8}>
 						<ButtonGroup stretch>
 							<Button icon='trash' danger onClick={() => handleDeleteTag(_id)}>
 								{t('Delete')}

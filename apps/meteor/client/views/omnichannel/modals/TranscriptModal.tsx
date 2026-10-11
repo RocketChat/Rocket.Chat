@@ -16,7 +16,7 @@ import { useCallback, useEffect } from 'react';
 import { useForm, Controller } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 
-type TranscriptModalProps = {
+export type TranscriptModalProps = {
 	email: string;
 	room: IOmnichannelRoom;
 	onRequest: (email: string, subject: string) => void;

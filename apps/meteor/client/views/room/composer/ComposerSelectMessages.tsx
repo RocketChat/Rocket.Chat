@@ -1,12 +1,11 @@
 import { Button, ButtonGroup } from '@rocket.chat/fuselage';
 import { MessageFooterCallout, MessageFooterCalloutContent } from '@rocket.chat/ui-composer';
-import type { ReactElement } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import type { ComposerMessageProps } from './ComposerMessage';
 import { useCountSelected, useClearSelection, useAvailableMessagesCount } from '../MessageList/contexts/SelectedMessagesContext';
 
-const ComposerSelectMessages = ({ onClickSelectAll }: ComposerMessageProps): ReactElement => {
+const ComposerSelectMessages = ({ onClickSelectAll }: ComposerMessageProps) => {
 	const { t } = useTranslation();
 
 	const clearSelection = useClearSelection();

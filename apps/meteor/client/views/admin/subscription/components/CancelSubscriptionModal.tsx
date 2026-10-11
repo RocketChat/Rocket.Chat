@@ -3,7 +3,7 @@ import { Trans, useTranslation } from 'react-i18next';
 
 import { DOWNGRADE_LINK } from '../utils/links';
 
-type CancelSubscriptionModalProps = {
+export type CancelSubscriptionModalProps = {
 	planName: string;
 	onConfirm(): void;
 	onCancel(): void;

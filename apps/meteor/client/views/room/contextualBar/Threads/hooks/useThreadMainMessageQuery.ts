@@ -72,11 +72,11 @@ export const useThreadMainMessageQuery = (
 ): UseQueryResult<IThreadMainMessage, Error> => {
 	const room = useRoom();
 
-	const getMessage = useGetMessageByID();
+	const getMessage = useGetMessageByID(false);
 	const subscribeToMessage = useSubscribeToMessage();
 
 	const queryClient = useQueryClient();
-	const unsubscribeRef = useRef<(() => void) | undefined>();
+	const unsubscribeRef = useRef<(() => void) | undefined>(undefined);
 
 	useEffect(() => {
 		return () => {

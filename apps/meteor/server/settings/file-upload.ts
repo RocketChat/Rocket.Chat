@@ -1,4 +1,4 @@
-import { settingsRegistry } from '../../app/settings/server';
+import { settingsRegistry } from '.';
 
 export const createFileUploadSettings = () =>
 	settingsRegistry.addGroup('FileUpload', async function () {
@@ -250,6 +250,15 @@ export const createFileUploadSettings = () =>
 					value: 'GoogleCloudStorage',
 				},
 				secret: true,
+			});
+
+			await this.add('FileUpload_GoogleStorage_URLExpiryTimeSpan', 120, {
+				type: 'int',
+				enableQuery: {
+					_id: 'FileUpload_Storage_Type',
+					value: 'GoogleCloudStorage',
+				},
+				i18nDescription: 'FileUpload_GoogleStorage_URLExpiryTimeSpan_Description',
 			});
 
 			await this.add('FileUpload_GoogleStorage_Proxy_Avatars', false, {

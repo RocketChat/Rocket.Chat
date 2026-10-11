@@ -1,4 +1,4 @@
-import type { IncomingHttpHeaders } from 'http';
+import type { IncomingHttpHeaders } from 'node:http';
 
 type HeaderLike = IncomingHttpHeaders | Headers | Record<string, string | string[] | undefined>;
 

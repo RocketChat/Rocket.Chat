@@ -1,28 +1,26 @@
 import type { IUser } from '@rocket.chat/core-typings';
 import { Callout } from '@rocket.chat/fuselage';
-import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
-import { ContextualbarContent } from '@rocket.chat/ui-client';
+import { useStableCallback } from '@rocket.chat/fuselage-hooks';
+import { ContextualbarContent, UserCardRole, UserInfo } from '@rocket.chat/ui-client';
 import { useSetting, useRolesDescription, useTranslation, useEndpoint } from '@rocket.chat/ui-contexts';
 import { useQuery } from '@tanstack/react-query';
-import type { ReactElement } from 'react';
 import { useMemo } from 'react';
 
 import AdminUserInfoActions from './AdminUserInfoActions';
 import type { AdminUsersTab } from './AdminUsersPage';
 import { getUserEmailAddress } from '../../../../lib/getUserEmailAddress';
 import { FormSkeleton } from '../../../components/Skeleton';
-import { UserCardRole } from '../../../components/UserCard';
-import { UserInfo } from '../../../components/UserInfo';
 import { UserStatus } from '../../../components/UserStatus';
+import { UserStatusText } from '../../../components/UserStatusText';
 import { getUserEmailVerified } from '../../../lib/utils/getUserEmailVerified';
 
-type AdminUserInfoWithDataProps = {
+export type AdminUserInfoWithDataProps = {
 	uid: IUser['_id'];
 	onReload: () => void;
 	tab: AdminUsersTab;
 };
 
-const AdminUserInfoWithData = ({ uid, onReload, tab }: AdminUserInfoWithDataProps): ReactElement => {
+const AdminUserInfoWithData = ({ uid, onReload, tab }: AdminUserInfoWithDataProps) => {
 	const t = useTranslation();
 	const getRoles = useRolesDescription();
 	const approveManuallyUsers = useSetting('Accounts_ManuallyApproveNewUsers');
@@ -42,7 +40,7 @@ const AdminUserInfoWithData = ({ uid, onReload, tab }: AdminUserInfoWithDataProp
 		},
 	});
 
-	const onChange = useEffectEvent(() => {
+	const onChange = useStableCallback(() => {
 		onReload();
 		refetch();
 	});
@@ -61,6 +59,7 @@ const AdminUserInfoWithData = ({ uid, onReload, tab }: AdminUserInfoWithDataProp
 			roles = [],
 			status,
 			statusText,
+			statusExpiresAt,
 			bio,
 			utcOffset,
 			lastLogin,
@@ -89,7 +88,7 @@ const AdminUserInfoWithData = ({ uid, onReload, tab }: AdminUserInfoWithDataProp
 			email: getUserEmailAddress(data.user),
 			createdAt,
 			status: <UserStatus status={status} />,
-			statusText,
+			customStatus: <UserStatusText status={status} statusText={statusText} statusExpiresAt={statusExpiresAt} />,
 			nickname,
 			reason,
 			freeSwitchExtension,
@@ -107,7 +106,7 @@ const AdminUserInfoWithData = ({ uid, onReload, tab }: AdminUserInfoWithDataProp
 
 	if (error || !user || !data?.user) {
 		return (
-			<ContextualbarContent pb={16}>
+			<ContextualbarContent paddingBlock={16}>
 				<Callout type='danger'>{t('User_not_found')}</Callout>
 			</ContextualbarContent>
 		);

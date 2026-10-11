@@ -1,4 +1,4 @@
-import { Readable, PassThrough } from 'stream';
+import { Readable, PassThrough } from 'node:stream';
 
 import type { Request, Response as ExpressResponse } from 'express';
 import type { Hono } from 'hono';

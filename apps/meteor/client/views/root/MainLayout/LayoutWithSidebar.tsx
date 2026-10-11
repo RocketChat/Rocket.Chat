@@ -2,7 +2,7 @@ import { Box } from '@rocket.chat/fuselage';
 import { FeaturePreview, FeaturePreviewOff, FeaturePreviewOn } from '@rocket.chat/ui-client';
 import type { IRouterPaths } from '@rocket.chat/ui-contexts';
 import { useLayout, useSetting, useCurrentRoutePath, useRouter } from '@rocket.chat/ui-contexts';
-import type { ReactElement, ReactNode } from 'react';
+import type { ReactNode } from 'react';
 import { useEffect, useRef } from 'react';
 
 import AccessibilityShortcut from './AccessibilityShortcut';
@@ -10,13 +10,20 @@ import MainContent from './MainContent';
 import { MainLayoutStyleTags } from './MainLayoutStyleTags';
 import NavBar from '../../../navbar';
 import Sidebar from '../../../sidebar';
+import SidebarRail from '../../../sidebar/SidebarRail';
+import SidebarRailHeader from '../../../sidebar/SidebarRail/SidebarRailHeader';
 import NavigationRegion from '../../navigation';
 import RoomsNavigationProvider from '../../navigation/providers/RoomsNavigationProvider';
 
 const INVALID_ROOM_NAME_PREFIXES = ['#', '?'] as const;
 
-const LayoutWithSidebar = ({ children }: { children: ReactNode }): ReactElement => {
-	const { isEmbedded: embeddedLayout } = useLayout();
+export type LayoutWithSidebarProps = { children: ReactNode };
+
+const LayoutWithSidebar = ({ children }: LayoutWithSidebarProps) => {
+	const {
+		isEmbedded: embeddedLayout,
+		sidebar: { shouldToggle },
+	} = useLayout();
 
 	const currentRoutePath = useCurrentRoutePath();
 	const router = useRouter();
@@ -54,13 +61,28 @@ const LayoutWithSidebar = ({ children }: { children: ReactNode }): ReactElement 
 	return (
 		<>
 			<AccessibilityShortcut />
-			{!embeddedLayout && <NavBar />}
+			{!embeddedLayout && (
+				<FeaturePreview feature='sidebarRail' disabled={shouldToggle}>
+					<FeaturePreviewOn>
+						<SidebarRailHeader />
+					</FeaturePreviewOn>
+					<FeaturePreviewOff>
+						<NavBar />
+					</FeaturePreviewOff>
+				</FeaturePreview>
+			)}
 			<Box
-				bg='surface-light'
+				backgroundColor='surface-light'
 				id='rocket-chat'
 				className={[embeddedLayout ? 'embedded-view' : undefined, 'menu-nav'].filter(Boolean).join(' ')}
 			>
 				<MainLayoutStyleTags />
+				<FeaturePreview feature='sidebarRail' disabled={shouldToggle || embeddedLayout}>
+					<FeaturePreviewOn>
+						<SidebarRail />
+					</FeaturePreviewOn>
+					<FeaturePreviewOff>{null}</FeaturePreviewOff>
+				</FeaturePreview>
 				{!removeSidenav && (
 					<FeaturePreview feature='secondarySidebar'>
 						<FeaturePreviewOn>

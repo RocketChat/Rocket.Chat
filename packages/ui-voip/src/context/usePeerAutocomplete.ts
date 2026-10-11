@@ -29,7 +29,8 @@ export const usePeerAutocomplete = (onSelectPeer: (peerInfo: PeerInfo) => void, 
 		queryFn: async () => {
 			const options = await getAutocompleteOptions(debouncedFilter);
 
-			if (debouncedFilter.length > 0) {
+			// A result already reading exactly as the filter makes the dial option an indistinguishable duplicate of it.
+			if (debouncedFilter.length > 0 && !options.some(({ label }) => label === debouncedFilter)) {
 				return [getFirstOption(debouncedFilter), ...options];
 			}
 

@@ -1,17 +1,21 @@
 import type { IMessage } from '@rocket.chat/core-typings';
-import { escapeHTML } from '@rocket.chat/string-helpers';
-import emojione from 'emojione';
+import { escapeHTML } from '@rocket.chat/tools';
 import type { TFunction } from 'i18next';
 
-import { filterMarkdown } from '../../../../app/markdown/lib/markdown';
+import { shortnameToUnicode } from '../../../../lib/emoji-native/shortnameToUnicode';
+import { filterMarkdown } from '../../../../lib/markdown/parser/filtered/filtered';
 
 export const normalizeMessagePreview = (message: IMessage, t: TFunction): string | undefined => {
 	if (message.msg) {
-		return escapeHTML(filterMarkdown(emojione.shortnameToUnicode(message.msg)));
+		return escapeHTML(filterMarkdown(shortnameToUnicode(message.msg)));
 	}
 
 	if (message.attachments) {
-		const attachment = message.attachments.find((attachment) => attachment.title);
+		const attachment = message.attachments.find((attachment) => attachment.title || attachment.description);
+
+		if (attachment?.description) {
+			return escapeHTML(attachment.description);
+		}
 
 		if (attachment?.title) {
 			return escapeHTML(attachment.title);

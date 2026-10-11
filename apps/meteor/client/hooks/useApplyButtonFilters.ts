@@ -10,7 +10,7 @@ import {
 	isPublicDiscussion,
 	isPublicTeamRoom,
 } from '@rocket.chat/core-typings';
-import { AuthorizationContext, useUserId } from '@rocket.chat/ui-contexts';
+import { AuthorizationContext, useRoleIdResolver, useUserId } from '@rocket.chat/ui-contexts';
 import { useCallback, useContext } from 'react';
 
 import { useRoom } from '../views/room/contexts/RoomContext';
@@ -49,16 +49,29 @@ export const useApplyButtonFilters = (category = 'default'): ((button: IUIAction
 	}
 	const applyAuthFilter = useApplyButtonAuthFilter();
 	return useCallback(
-		(button: IUIActionButton) =>
-			applyAuthFilter(button) && (!room || applyRoomFilter(button, room)) && applyCategoryFilter(button, category),
+		// The room is the scope of the role check: without it a role scoped to
+		// `Subscriptions` — `owner`, `moderator`, `leader`, or a custom one — can never match.
+		(button: IUIActionButton) => applyAuthFilter(button, room) && applyRoomFilter(button, room) && applyCategoryFilter(button, category),
 		[applyAuthFilter, category, room],
 	);
 };
 
-export const useApplyButtonAuthFilter = (): ((button: IUIActionButton) => boolean) => {
+/**
+ * Applies the `when` role and permission filters of an action button.
+ *
+ * `room` scopes the checks. A role scoped to `Subscriptions` is granted per room, so a
+ * check for one only passes when it carries the room the button is rendered in; pass the
+ * room on every room-bound surface. Surfaces with no room of their own — the user
+ * dropdown, for instance — can only match roles scoped to `Users`.
+ */
+export const useApplyButtonAuthFilter = (): ((button: IUIActionButton, room?: IRoom) => boolean) => {
 	const uid = useUserId();
 
 	const { queryAllPermissions, queryAtLeastOnePermission, queryRole } = useContext(AuthorizationContext);
+
+	// An app knows the name of a custom role, not the random id the workspace gave it,
+	// so accept either form in the role filters.
+	const resolveRoleId = useRoleIdResolver();
 
 	return useCallback(
 		(button: IUIActionButton, room?: IRoom) => {
@@ -66,11 +79,11 @@ export const useApplyButtonAuthFilter = (): ((button: IUIActionButton) => boolea
 
 			const hasAllPermissionsResult = hasAllPermissions ? queryAllPermissions(hasAllPermissions)[1]() : true;
 			const hasOnePermissionResult = hasOnePermission ? queryAtLeastOnePermission(hasOnePermission)[1]() : true;
-			const hasAllRolesResult = hasAllRoles ? !!uid && hasAllRoles.every((role) => queryRole(role, room?._id)[1]()) : true;
-			const hasOneRoleResult = hasOneRole ? !!uid && hasOneRole.some((role) => queryRole(role, room?._id)[1]()) : true;
+			const hasAllRolesResult = hasAllRoles ? !!uid && hasAllRoles.every((role) => queryRole(resolveRoleId(role), room?._id)[1]()) : true;
+			const hasOneRoleResult = hasOneRole ? !!uid && hasOneRole.some((role) => queryRole(resolveRoleId(role), room?._id)[1]()) : true;
 
 			return hasAllPermissionsResult && hasOnePermissionResult && hasAllRolesResult && hasOneRoleResult;
 		},
-		[queryAllPermissions, queryAtLeastOnePermission, queryRole, uid],
+		[queryAllPermissions, queryAtLeastOnePermission, queryRole, resolveRoleId, uid],
 	);
 };

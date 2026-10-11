@@ -1,11 +1,10 @@
-import { action } from '@storybook/addon-actions';
-import type { Meta } from '@storybook/preact';
+import type { Meta, StoryObj } from '@storybook/preact';
+import { action } from 'storybook/actions';
 
 import { renderMessageBlocks } from '.';
 import Surface from './Surface';
 
 export default {
-	title: 'UiKit/Message/Actions block',
 	parameters: {
 		layout: 'centered',
 	},
@@ -24,175 +23,200 @@ export default {
 	],
 } satisfies Meta;
 
-export const AllSelects = () =>
-	renderMessageBlocks([
-		{
-			type: 'actions',
-			elements: [
+export const AllSelects: StoryObj = {
+	name: 'all selects',
+	render: () => (
+		<>
+			{renderMessageBlocks([
 				{
-					type: 'conversations_select',
-					placeholder: {
-						type: 'plain_text',
-						text: 'Select a conversation',
-						emoji: true,
-					},
-				},
-				{
-					type: 'channels_select',
-					placeholder: {
-						type: 'plain_text',
-						text: 'Select a channel',
-						emoji: true,
-					},
-				},
-				{
-					type: 'users_select',
-					placeholder: {
-						type: 'plain_text',
-						text: 'Select a user',
-						emoji: true,
-					},
-				},
-				{
-					type: 'static_select',
-					placeholder: {
-						type: 'plain_text',
-						text: 'Select an item',
-						emoji: true,
-					},
-					options: [
+					type: 'actions',
+					elements: [
 						{
-							text: {
+							type: 'conversations_select',
+							placeholder: {
 								type: 'plain_text',
-								text: '*this is plain_text text*',
+								text: 'Select a conversation',
 								emoji: true,
 							},
-							value: 'value-0',
 						},
 						{
-							text: {
+							type: 'channels_select',
+							placeholder: {
 								type: 'plain_text',
-								text: '*this is plain_text text*',
+								text: 'Select a channel',
 								emoji: true,
 							},
-							value: 'value-1',
 						},
 						{
-							text: {
+							type: 'users_select',
+							placeholder: {
 								type: 'plain_text',
-								text: '*this is plain_text text*',
+								text: 'Select a user',
 								emoji: true,
 							},
-							value: 'value-2',
+						},
+						{
+							type: 'static_select',
+							placeholder: {
+								type: 'plain_text',
+								text: 'Select an item',
+								emoji: true,
+							},
+							options: [
+								{
+									text: {
+										type: 'plain_text',
+										text: '*this is plain_text text*',
+										emoji: true,
+									},
+									value: 'value-0',
+								},
+								{
+									text: {
+										type: 'plain_text',
+										text: '*this is plain_text text*',
+										emoji: true,
+									},
+									value: 'value-1',
+								},
+								{
+									text: {
+										type: 'plain_text',
+										text: '*this is plain_text text*',
+										emoji: true,
+									},
+									value: 'value-2',
+								},
+							],
 						},
 					],
 				},
-			],
-		},
-	]);
-AllSelects.storyName = 'all selects';
+			])}
+		</>
+	),
+};
 
-export const FilteredConversationsSelect = () =>
-	renderMessageBlocks([
-		{
-			type: 'actions',
-			elements: [
+export const FilteredConversationsSelect: StoryObj = {
+	name: 'filtered conversations select',
+	render: () => (
+		<>
+			{renderMessageBlocks([
 				{
-					type: 'conversations_select',
-					placeholder: {
-						type: 'plain_text',
-						text: 'Select private conversation',
-						emoji: true,
-					},
-					filter: {
-						include: ['private'],
-					},
+					type: 'actions',
+					elements: [
+						{
+							type: 'conversations_select',
+							placeholder: {
+								type: 'plain_text',
+								text: 'Select private conversation',
+								emoji: true,
+							},
+							filter: {
+								include: ['private'],
+							},
+						},
+					],
 				},
-			],
-		},
-	]);
-FilteredConversationsSelect.storyName = 'filtered conversations select';
+			])}
+		</>
+	),
+};
 
-export const SelectsWithInitialOptions = () =>
-	renderMessageBlocks([
-		{
-			type: 'actions',
-			elements: [
+export const SelectsWithInitialOptions: StoryObj = {
+	name: 'selects with initial options',
+	render: () => (
+		<>
+			{renderMessageBlocks([
 				{
-					type: 'conversations_select',
-					placeholder: {
-						type: 'plain_text',
-						text: 'Select a conversation',
-						emoji: true,
-					},
-					initialConversation: 'D123',
+					type: 'actions',
+					elements: [
+						{
+							type: 'conversations_select',
+							placeholder: {
+								type: 'plain_text',
+								text: 'Select a conversation',
+								emoji: true,
+							},
+							initialConversation: 'D123',
+						},
+						{
+							type: 'users_select',
+							placeholder: {
+								type: 'plain_text',
+								text: 'Select a user',
+								emoji: true,
+							},
+							initialUser: 'U123',
+						},
+						{
+							type: 'channels_select',
+							placeholder: {
+								type: 'plain_text',
+								text: 'Select a channel',
+								emoji: true,
+							},
+							initialChannel: 'C123',
+						},
+					],
 				},
-				{
-					type: 'users_select',
-					placeholder: {
-						type: 'plain_text',
-						text: 'Select a user',
-						emoji: true,
-					},
-					initialUser: 'U123',
-				},
-				{
-					type: 'channels_select',
-					placeholder: {
-						type: 'plain_text',
-						text: 'Select a channel',
-						emoji: true,
-					},
-					initialChannel: 'C123',
-				},
-			],
-		},
-	]);
-SelectsWithInitialOptions.storyName = 'selects with initial options';
+			])}
+		</>
+	),
+};
 
-export const Button = () =>
-	renderMessageBlocks([
-		{
-			type: 'actions',
-			elements: [
+export const Button: StoryObj = {
+	name: 'button',
+	render: () => (
+		<>
+			{renderMessageBlocks([
 				{
-					type: 'button',
-					text: {
-						type: 'plain_text',
-						text: 'Click Me',
-						emoji: true,
-					},
-					value: 'click_me_123',
+					type: 'actions',
+					elements: [
+						{
+							type: 'button',
+							text: {
+								type: 'plain_text',
+								text: 'Click Me',
+								emoji: true,
+							},
+							value: 'click_me_123',
+						},
+					],
 				},
-			],
-		},
-	]);
-Button.storyName = 'button';
+			])}
+		</>
+	),
+};
 
-export const DatePicker = () =>
-	renderMessageBlocks([
-		{
-			type: 'actions',
-			elements: [
+export const DatePicker: StoryObj = {
+	name: 'datepicker',
+	render: () => (
+		<>
+			{renderMessageBlocks([
 				{
-					type: 'datepicker',
-					initialDate: '1990-04-28',
-					placeholder: {
-						type: 'plain_text',
-						text: 'Select a date',
-						emoji: true,
-					},
+					type: 'actions',
+					elements: [
+						{
+							type: 'datepicker',
+							initialDate: '1990-04-28',
+							placeholder: {
+								type: 'plain_text',
+								text: 'Select a date',
+								emoji: true,
+							},
+						},
+						{
+							type: 'datepicker',
+							initialDate: '1990-04-28',
+							placeholder: {
+								type: 'plain_text',
+								text: 'Select a date',
+								emoji: true,
+							},
+						},
+					],
 				},
-				{
-					type: 'datepicker',
-					initialDate: '1990-04-28',
-					placeholder: {
-						type: 'plain_text',
-						text: 'Select a date',
-						emoji: true,
-					},
-				},
-			],
-		},
-	]);
-DatePicker.storyName = 'datepicker';
+			])}
+		</>
+	),
+};

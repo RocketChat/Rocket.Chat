@@ -32,9 +32,8 @@ test.describe.serial('Omnichannel Reports', () => {
 		poReports = new OmnichannelReports(page);
 	});
 
-	test.beforeEach(async ({ page }) => {
-		await page.goto('/omnichannel/reports');
-		await page.locator('#main-content').waitFor();
+	test.beforeEach(async () => {
+		await poReports.goto();
 	});
 
 	test.afterAll(async ({ api }) => {

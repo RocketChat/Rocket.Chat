@@ -47,7 +47,7 @@ registerModel('IServerEventsModel', {
 	createAuditServerEvent: () => undefined,
 } as any);
 
-proxyquire.noCallThru().load('../../../../app/license/server/airGappedRestrictions.ts', {
+proxyquire.noCallThru().load('../../../../server/lib/license/airGappedRestrictions.ts', {
 	'@rocket.chat/license': {
 		AirGappedRestriction: airgappedRestrictionObj,
 		License: licenseMock,
@@ -60,7 +60,7 @@ proxyquire.noCallThru().load('../../../../app/license/server/airGappedRestrictio
 			findLastStatsToken: mocks.findLastToken,
 		},
 	},
-	'../../../../app/lib/server/lib/notifyListener': {
+	'../../../../server/lib/notifyListener': {
 		notifyOnSettingChangedById: mocks.notifySetting,
 	},
 	'../../../../server/lib/i18n': {

@@ -1,6 +1,6 @@
 import type { ILivechatDepartment } from '@rocket.chat/core-typings';
 import { Pagination } from '@rocket.chat/fuselage';
-import { useDebouncedValue, useEffectEvent } from '@rocket.chat/fuselage-hooks';
+import { useDebouncedValue, useStableCallback } from '@rocket.chat/fuselage-hooks';
 import {
 	GenericTable,
 	GenericTableBody,
@@ -11,6 +11,7 @@ import {
 	GenericTableRow,
 	usePagination,
 	useSort,
+	GenericNoResults,
 } from '@rocket.chat/ui-client';
 import { useTranslation, useEndpoint, useRouter } from '@rocket.chat/ui-contexts';
 import { useQuery, hashKey, keepPreviousData } from '@tanstack/react-query';
@@ -18,7 +19,6 @@ import { useState, useMemo } from 'react';
 
 import DepartmentItemMenu from './DepartmentItemMenu';
 import FilterByText from '../../../../components/FilterByText';
-import GenericNoResults from '../../../../components/GenericNoResults/GenericNoResults';
 import { links } from '../../../../lib/links';
 
 const DEPARTMENTS_ENDPOINTS = {
@@ -26,7 +26,9 @@ const DEPARTMENTS_ENDPOINTS = {
 	archived: '/v1/livechat/departments/archived',
 } as const;
 
-const DepartmentsTable = ({ archived }: { archived: boolean }) => {
+export type DepartmentsTableProps = { archived: boolean };
+
+const DepartmentsTable = ({ archived }: DepartmentsTableProps) => {
 	const t = useTranslation();
 	const router = useRouter();
 	const [text, setText] = useState('');
@@ -36,7 +38,7 @@ const DepartmentsTable = ({ archived }: { archived: boolean }) => {
 
 	const getDepartments = useEndpoint('GET', archived ? DEPARTMENTS_ENDPOINTS.archived : DEPARTMENTS_ENDPOINTS.department);
 
-	const handleAddNew = useEffectEvent(() => router.navigate('/omnichannel/departments/new'));
+	const handleAddNew = useStableCallback(() => router.navigate('/omnichannel/departments/new'));
 
 	const query = useDebouncedValue(
 		useMemo(
@@ -90,7 +92,7 @@ const DepartmentsTable = ({ archived }: { archived: boolean }) => {
 			>
 				{t('Show_on_registration_page')}
 			</GenericTableHeaderCell>
-			<GenericTableHeaderCell key='spacer' w={40} />
+			<GenericTableHeaderCell key='spacer' width={40} />
 		</>
 	);
 

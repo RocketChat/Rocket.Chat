@@ -1,5 +1,6 @@
 import { faker } from '@faker-js/faker';
-import type { IExternalComponentRoomInfo, IExternalComponentUserInfo } from '@rocket.chat/apps-engine/client/definition';
+import type { IExternalComponentRoomInfo } from '@rocket.chat/apps/dist/client/definition/IExternalComponentRoomInfo';
+import type { IExternalComponentUserInfo } from '@rocket.chat/apps/dist/client/definition/IExternalComponentUserInfo';
 import type { ILivechatContact } from '@rocket.chat/apps-engine/definition/livechat';
 import {
 	AppSubscriptionStatus,
@@ -268,6 +269,7 @@ export const createFakeLicenseInfo = (partial: Partial<Omit<LicenseInfo, 'licens
 		'accessibility-certification',
 		'outbound-messaging',
 		'abac',
+		'video-conference-native',
 	]),
 	externalModules: [],
 	preventedActions: {
@@ -440,6 +442,7 @@ export function createFakeTag(overrides?: Partial<Serialized<ILivechatTag>>): Se
 		description: 'description',
 		numDepartments: 0,
 		departments: [],
+		_updatedAt: new Date().toISOString(),
 		...overrides,
 	};
 }

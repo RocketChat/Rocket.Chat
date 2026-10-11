@@ -27,20 +27,17 @@ const {
 	'meteor/ostrio:cookies': {
 		Cookies: CookiesMock,
 	},
-	'../../../../app/utils/server/getURL': {
-		getURL: () => '',
-	},
 	'@rocket.chat/models': {
 		Users: {
 			findOneByIdAndLoginToken: mocks.findOneByIdAndLoginToken,
 		},
 	},
-	'../../../app/file-upload/server': {
+	'../../lib/media/file-upload': {
 		FileUpload: {
 			get: mocks.fileUploadGet,
 		},
 	},
-	'../../../app/settings/server': {
+	'../../settings': {
 		settings: {
 			get: mocks.settingsGet,
 		},

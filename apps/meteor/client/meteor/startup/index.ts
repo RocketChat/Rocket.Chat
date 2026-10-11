@@ -1,2 +1,1 @@
-import './absoluteUrl';
 import './accounts';

@@ -12,7 +12,9 @@ import {
 } from '@rocket.chat/fuselage';
 import type { ReactNode } from 'react';
 
-const ModalSurface = ({ children }: { children: ReactNode }) => (
+export type ModalSurfaceProps = { children: ReactNode };
+
+const ModalSurface = ({ children }: ModalSurfaceProps) => (
 	<Modal>
 		<ModalHeader>
 			<ModalThumb url='data:image/gif;base64,R0lGODlhAQABAIAAAMLCwgAAACH5BAAAAAAALAAAAAABAAEAAAICRAEAOw==' />

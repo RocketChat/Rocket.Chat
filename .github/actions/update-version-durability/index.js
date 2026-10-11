@@ -11,6 +11,7 @@ import { Octokit } from '@octokit/rest';
 
 const D360_TOKEN = core.getInput('D360_TOKEN');
 const D360_ARTICLE_ID = core.getInput('D360_ARTICLE_ID');
+const D360_USER_ID = core.getInput('D360_USER_ID');
 const PUBLISH = core.getInput('PUBLISH') === 'true';
 const LTS_VERSIONS = (core.getInput('LTS_VERSIONS') || '7.10').split(',').map((v) => v.trim());
 
@@ -193,11 +194,15 @@ async function generateTable({ owner, repo } = {}) {
 
 		const forkResponse = await requestDocument360('put', `Articles/${D360_ARTICLE_ID}/fork`, {
 			lang_code: "en",
-			user_id: "2511fd00-9558-4826-8d8c-4cc0c110f89c",
+			user_id: D360_USER_ID,
 			version_number: response.data.data.version_number,
 		});
 
 		console.log(forkResponse.data);
+
+		if (!forkResponse.data.success) {
+			throw new Error(`Failed to fork article: ${JSON.stringify(forkResponse.data.errors)}`);
+		}
 	}
 
 	console.log('Updating article');
@@ -211,7 +216,7 @@ async function generateTable({ owner, repo } = {}) {
 		console.log('publishing article', updateResponse.data.data.version_number);
 
 		const forkResponse = await requestDocument360('post', `Articles/${D360_ARTICLE_ID}/en/publish`, {
-			user_id: "2511fd00-9558-4826-8d8c-4cc0c110f89c",
+			user_id: D360_USER_ID,
 			version_number: updateResponse.data.data.version_number,
 			publish_message: 'Update support versions table via GitHub Action',
 		});

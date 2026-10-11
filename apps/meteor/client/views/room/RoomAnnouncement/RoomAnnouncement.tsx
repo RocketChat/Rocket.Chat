@@ -1,5 +1,5 @@
 import { Box } from '@rocket.chat/fuselage';
-import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
+import { useStableCallback } from '@rocket.chat/fuselage-hooks';
 import { AnnouncementBanner, GenericModal } from '@rocket.chat/ui-client';
 import { useSetModal } from '@rocket.chat/ui-contexts';
 import type { KeyboardEvent, MouseEvent } from 'react';
@@ -15,7 +15,7 @@ const RoomAnnouncement = ({ announcement }: RoomAnnouncementParams) => {
 	const { t } = useTranslation();
 	const setModal = useSetModal();
 
-	const handleOpenAnnouncement = useEffectEvent(() => {
+	const handleOpenAnnouncement = useStableCallback(() => {
 		setModal(
 			<GenericModal
 				icon={null}

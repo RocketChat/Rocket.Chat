@@ -1,48 +1,55 @@
-import type { Meta, StoryFn } from '@storybook/preact';
+import type { Meta, StoryObj } from '@storybook/preact';
 import type { ComponentProps } from 'preact';
 
-import Menu, { Group, Item } from '.';
+import { Menu, MenuGroup, MenuItem } from '.';
 
 export default {
-	title: 'Components/Menu/Group',
-	component: Group,
+	component: MenuGroup,
 	parameters: {
 		layout: 'centered',
 	},
-} satisfies Meta<ComponentProps<typeof Group>>;
+} satisfies Meta<ComponentProps<typeof MenuGroup>>;
 
-export const Single: StoryFn<ComponentProps<typeof Group>> = (args) => (
-	<Menu>
-		<Group {...args}>
-			<Item>A menu item</Item>
-			<Item>Another menu item</Item>
-		</Group>
-	</Menu>
-);
-Single.storyName = 'single';
+type Story = StoryObj<ComponentProps<typeof MenuGroup>>;
 
-export const Multiple: StoryFn<ComponentProps<typeof Group>> = (args) => (
-	<Menu>
-		<Group {...args}>
-			<Item>A menu item</Item>
-			<Item>Another menu item</Item>
-		</Group>
-		<Group>
-			<Item>Report</Item>
-		</Group>
-	</Menu>
-);
-Multiple.storyName = 'multiple';
+export const Single: Story = {
+	name: 'single',
+	render: (args) => (
+		<Menu>
+			<MenuGroup {...args}>
+				<MenuItem>A menu item</MenuItem>
+				<MenuItem>Another menu item</MenuItem>
+			</MenuGroup>
+		</Menu>
+	),
+};
 
-export const WithTitle: StoryFn<ComponentProps<typeof Group>> = (args) => (
-	<Menu>
-		<Group {...args}>
-			<Item>A menu item</Item>
-			<Item>Another menu item</Item>
-		</Group>
-	</Menu>
-);
-WithTitle.storyName = 'with title';
-WithTitle.args = {
-	title: 'Are you sure?',
+export const Multiple: Story = {
+	name: 'multiple',
+	render: (args) => (
+		<Menu>
+			<MenuGroup {...args}>
+				<MenuItem>A menu item</MenuItem>
+				<MenuItem>Another menu item</MenuItem>
+			</MenuGroup>
+			<MenuGroup>
+				<MenuItem>Report</MenuItem>
+			</MenuGroup>
+		</Menu>
+	),
+};
+
+export const WithTitle: Story = {
+	name: 'with title',
+	args: {
+		title: 'Are you sure?',
+	},
+	render: (args) => (
+		<Menu>
+			<MenuGroup {...args}>
+				<MenuItem>A menu item</MenuItem>
+				<MenuItem>Another menu item</MenuItem>
+			</MenuGroup>
+		</Menu>
+	),
 };

@@ -9,11 +9,12 @@ import AutocompleteOptions, { OptionsContext } from './UserAutoCompleteMultipleO
 import UserAvatarChip from './UserAvatarChip';
 import { usersQueryKeys } from '../../lib/queryKeys';
 
-type UserAutoCompleteMultipleProps = {
+export type UserAutoCompleteMultipleProps = {
 	onChange: (value: Array<string>) => void;
 	value: Array<string> | undefined;
 	placeholder?: string;
 	federated?: boolean;
+	exceptions?: string[];
 	error?: string;
 } & Omit<AllHTMLAttributes<HTMLInputElement>, 'is' | 'onChange' | 'value'>;
 
@@ -30,7 +31,7 @@ type UserAutoCompleteOptions = {
 const matrixRegex = new RegExp('@(.*:.*)');
 
 const UserAutoCompleteMultiple = forwardRef<HTMLInputElement, UserAutoCompleteMultipleProps>(
-	({ onChange, value, placeholder, federated, ...props }, ref) => {
+	({ onChange, value, placeholder, federated, exceptions, ...props }, ref) => {
 		const [filter, setFilter] = useState('');
 		const [selectedCache, setSelectedCache] = useState<UserAutoCompleteOptions>({});
 
@@ -38,10 +39,10 @@ const UserAutoCompleteMultiple = forwardRef<HTMLInputElement, UserAutoCompleteMu
 		const getUsers = useEndpoint('GET', '/v1/users.autocomplete');
 
 		const { data } = useQuery({
-			queryKey: usersQueryKeys.userAutoComplete(debouncedFilter, federated ?? false),
+			queryKey: usersQueryKeys.userAutoComplete(debouncedFilter, federated ?? false, exceptions),
 
 			queryFn: async () => {
-				const users = await getUsers({ selector: JSON.stringify({ term: debouncedFilter }) });
+				const users = await getUsers({ selector: JSON.stringify({ term: debouncedFilter, ...(exceptions?.length && { exceptions }) }) });
 				const options = users.items.map((item): [string, UserAutoCompleteOptionType] => [item.username, item]);
 
 				// Add extra option if filter text matches `username:server`
@@ -101,13 +102,13 @@ const UserAutoCompleteMultiple = forwardRef<HTMLInputElement, UserAutoCompleteMu
 					onChange={handleOnChange}
 					filter={filter}
 					setFilter={setFilter}
-					renderSelected={({ value: username, onMouseDown }: { value: string; onMouseDown: () => void }) => {
+					renderSelected={({ value: username, onMouseDown }) => {
 						const currentCachedOption = selectedCache[username] || {};
 
 						return (
 							<UserAvatarChip
-								mie={4}
-								mb={2}
+								marginInlineEnd={4}
+								marginBlock={2}
 								key={username}
 								federated={currentCachedOption._federated}
 								name={currentCachedOption.name}

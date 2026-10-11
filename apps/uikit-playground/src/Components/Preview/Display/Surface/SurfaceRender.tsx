@@ -6,7 +6,9 @@ import MessageSurface from './MessageSurface';
 import ModalSurface from './ModalSurface';
 import { SurfaceOptions } from './constant';
 
-const SurfaceRender = ({ type = SurfaceOptions.Message, children }: { type?: SurfaceOptions; children: ReactNode }) => (
+export type SurfaceRenderProps = { type?: SurfaceOptions; children: ReactNode };
+
+const SurfaceRender = ({ type = SurfaceOptions.Message, children }: SurfaceRenderProps) => (
 	<>
 		{SurfaceOptions.Message === type && <MessageSurface>{children}</MessageSurface>}
 		{SurfaceOptions.Banner === type && <BannerSurface>{children}</BannerSurface>}

@@ -1,8 +1,8 @@
-interface Visibility {
+type Visibility = {
 	readonly hidden: boolean | undefined;
 	addListener: (f: (this: Document, ev: Event) => any) => void;
 	removeListener: (f: (this: Document, ev: Event) => any) => void;
-}
+};
 
 export const visibility: Visibility = (() => {
 	if (typeof document.hidden !== 'undefined') {

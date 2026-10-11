@@ -1,5 +1,11 @@
 export type { AppStatus } from '@rocket.chat/apps-engine/definition/AppStatus';
 export type {
+	ICallHistorySearchFilters as IAppsCallHistorySearchFilters,
+	ICallHistorySearchPagination as IAppsCallHistorySearchPagination,
+	ICallHistorySearchResult as IAppsCallHistorySearchResult,
+} from '@rocket.chat/apps-engine/definition/accessors';
+export type { ICallHistoryItem as IAppsCallHistoryItem } from '@rocket.chat/apps-engine/definition/mediaCalls';
+export type {
 	IDepartment as IAppsDepartment,
 	ILivechatMessage as IAppsLivechatMessage,
 	ILivechatRoom as IAppsLivechatRoom,
@@ -20,6 +26,6 @@ export type {
 	IVideoConference as IAppsVideoConference,
 	VideoConference as AppsVideoConference,
 } from '@rocket.chat/apps-engine/definition/videoConferences';
-export { AppManager } from '@rocket.chat/apps-engine/server/AppManager';
-export { AppBridges } from '@rocket.chat/apps-engine/server/bridges';
-export { AppMetadataStorage } from '@rocket.chat/apps-engine/server/storage';
+export { AppManager } from './server/AppManager';
+export { AppBridges } from './server/bridges';
+export { AppMetadataStorage } from './server/storage';

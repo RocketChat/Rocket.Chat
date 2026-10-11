@@ -23,7 +23,6 @@ export enum INpsVoteStatus {
 }
 
 export interface INpsVote extends IRocketChatRecord {
-	_id: string;
 	npsId: INps['_id'];
 	ts: Date;
 	identifier: string; // voter identifier

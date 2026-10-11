@@ -1,17 +1,25 @@
-import { IconButton, SidebarV2Item, SidebarV2ItemAvatarWrapper, SidebarV2ItemMenu, SidebarV2ItemTitle } from '@rocket.chat/fuselage';
+import {
+	IconButton,
+	SidebarItem as FuselageSidebarItem,
+	SidebarItemAvatarWrapper,
+	SidebarItemMenu,
+	SidebarItemTitle,
+} from '@rocket.chat/fuselage';
 import { RoomAvatar } from '@rocket.chat/ui-avatar';
 import type { SubscriptionWithRoom } from '@rocket.chat/ui-contexts';
-import type { HTMLAttributes, ReactElement, ReactNode } from 'react';
-import { memo, useState } from 'react';
+import type { HTMLAttributes, ReactNode } from 'react';
+import { memo } from 'react';
 
-type SidebarItemProps = {
+import { useDeferredMenuMount } from '../../../../sidebar/Item/useDeferredMenuMount';
+
+export type SidebarItemProps = {
 	title: ReactNode;
 	titleIcon?: ReactNode;
 	icon?: ReactNode;
 	actions?: ReactNode;
 	href?: string;
 	unread?: boolean;
-	menu?: ReactElement;
+	menu?: ReactNode;
 	menuOptions?: any;
 	selected?: boolean;
 	badges?: ReactNode;
@@ -20,26 +28,27 @@ type SidebarItemProps = {
 } & Omit<HTMLAttributes<HTMLAnchorElement>, 'is'>;
 
 const SidebarItem = ({ icon, title, actions, unread, menu, badges, room, ...props }: SidebarItemProps) => {
-	const [menuVisibility, setMenuVisibility] = useState(!!window.DISABLE_ANIMATION);
-
-	const handleFocus = () => setMenuVisibility(true);
-	const handlePointerEnter = () => setMenuVisibility(true);
+	const { mounted: menuVisibility, requestMount, mountNow } = useDeferredMenuMount();
 
 	return (
-		<SidebarV2Item {...props} title={title} onFocus={handleFocus} onPointerEnter={handlePointerEnter} aria-selected={props.selected}>
-			<SidebarV2ItemAvatarWrapper>
+		<FuselageSidebarItem {...props} onFocus={mountNow} onPointerEnter={requestMount} aria-selected={props.selected}>
+			<SidebarItemAvatarWrapper>
 				<RoomAvatar size='x20' room={{ ...room, _id: room.rid || room._id, type: room.t }} />
-			</SidebarV2ItemAvatarWrapper>
+			</SidebarItemAvatarWrapper>
 			{icon}
-			<SidebarV2ItemTitle unread={unread}>{title}</SidebarV2ItemTitle>
+			<SidebarItemTitle unread={unread}>{title}</SidebarItemTitle>
 			{badges}
 			{actions}
 			{menu && (
-				<SidebarV2ItemMenu>
-					{menuVisibility ? menu : <IconButton tabIndex={-1} aria-hidden mini rcx-sidebar-v2-item__menu icon='kebab' />}
-				</SidebarV2ItemMenu>
+				<SidebarItemMenu>
+					{menuVisibility ? (
+						menu
+					) : (
+						<IconButton tabIndex={-1} aria-hidden mini rcx-sidebar-item__menu icon='kebab' onPointerDown={mountNow} />
+					)}
+				</SidebarItemMenu>
 			)}
-		</SidebarV2Item>
+		</FuselageSidebarItem>
 	);
 };
 

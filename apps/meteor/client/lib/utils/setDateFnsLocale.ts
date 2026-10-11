@@ -1,4 +1,4 @@
-import { setDefaultOptions } from 'date-fns';
+import { setDefaultOptions } from 'date-fns/setDefaultOptions';
 
 import { getDateFnsLocale } from '../../../lib/getDateFnsLocale';
 

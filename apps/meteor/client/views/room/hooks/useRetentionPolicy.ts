@@ -84,18 +84,16 @@ const getMaxAge = (room: IRoom, { maxAgeChannels, maxAgeGroups, maxAgeDMs }: Ret
 	return -Infinity;
 };
 
-export const useRetentionPolicy = (
-	room: IRoom | undefined,
-):
-	| {
-			enabled: boolean;
-			isActive: boolean;
-			filesOnly: boolean;
-			excludePinned: boolean;
-			ignoreThreads: boolean;
-			maxAge: number;
-	  }
-	| undefined => {
+export type RetentionPolicy = {
+	enabled: boolean;
+	isActive: boolean;
+	filesOnly: boolean;
+	excludePinned: boolean;
+	ignoreThreads: boolean;
+	maxAge: number;
+};
+
+export const useRetentionPolicy = (room: IRoom | undefined): RetentionPolicy | undefined => {
 	const settings = {
 		enabled: useSetting('RetentionPolicy_Enabled', false),
 		filesOnly: useSetting('RetentionPolicy_FilesOnly', false),

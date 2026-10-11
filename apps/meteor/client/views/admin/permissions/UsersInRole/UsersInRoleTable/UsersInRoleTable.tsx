@@ -1,20 +1,20 @@
 import type { IUserInRole, Serialized } from '@rocket.chat/core-typings';
 import { Pagination } from '@rocket.chat/fuselage';
+import type { usePagination } from '@rocket.chat/ui-client';
 import {
 	GenericTable,
 	GenericTableHeader,
 	GenericTableHeaderCell,
 	GenericTableBody,
 	GenericTableLoadingTable,
+	GenericNoResults,
 } from '@rocket.chat/ui-client';
-import type { usePagination } from '@rocket.chat/ui-client';
 import { useTranslation } from 'react-i18next';
 
 import UsersInRoleTableRow from './UsersInRoleTableRow';
 import GenericError from '../../../../../components/GenericError';
-import GenericNoResults from '../../../../../components/GenericNoResults';
 
-type UsersInRoleTableProps = {
+export type UsersInRoleTableProps = {
 	isLoading: boolean;
 	isError: boolean;
 	isSuccess: boolean;
@@ -33,7 +33,7 @@ const UsersInRoleTable = ({ isLoading, isSuccess, isError, total, users, onRemov
 		<>
 			<GenericTableHeaderCell>{t('Name')}</GenericTableHeaderCell>
 			<GenericTableHeaderCell>{t('Email')}</GenericTableHeaderCell>
-			<GenericTableHeaderCell w='x80'>{t('Actions')}</GenericTableHeaderCell>
+			<GenericTableHeaderCell width='x80'>{t('Actions')}</GenericTableHeaderCell>
 		</>
 	);
 

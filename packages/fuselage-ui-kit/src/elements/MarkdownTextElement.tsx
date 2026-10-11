@@ -6,10 +6,14 @@ import { Suspense } from 'react';
 
 import { useAppTranslation } from '../hooks/useAppTranslation';
 
-const MarkdownTextElement = ({ textObject }: { textObject: TextObject }) => {
+export type MarkdownTextElementProps = { textObject: TextObject };
+
+const MarkdownTextElement = ({ textObject }: MarkdownTextElementProps) => {
 	const { t } = useAppTranslation();
 
-	const text = textObject.i18n ? t(textObject.i18n.key, { ...textObject.i18n.args }) : textObject.text;
+	const text = textObject.i18n
+		? t(textObject.i18n.key, { ...textObject.i18n.args, ns: textObject.i18n.ns, defaultValue: textObject.text })
+		: textObject.text;
 
 	if (!text) {
 		return null;

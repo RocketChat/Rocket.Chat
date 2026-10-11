@@ -27,3 +27,34 @@ export async function getPairs(): Promise<[string, string]> {
 
 	return [spki, pkcs8];
 }
+
+export type HS256SignOptions = {
+	secret: string;
+	issuer?: string;
+	subject?: string;
+	// Accepts a duration string like '6h' or '30s', a Date, or seconds since epoch.
+	expiresIn?: string | number | Date;
+	// Same accepted forms as expiresIn. Pass 0 for "immediately valid".
+	notBefore?: string | number | Date;
+};
+
+/** Signs a JWT with a shared secret (HS256), for services that authenticate with an API key/secret pair. */
+export async function signHS256(payload: JWTPayload, options: HS256SignOptions): Promise<string> {
+	const secretBytes = new TextEncoder().encode(options.secret);
+	const builder = new SignJWT(payload).setProtectedHeader({ alg: 'HS256', typ: 'JWT' }).setIssuedAt();
+
+	if (options.issuer) {
+		builder.setIssuer(options.issuer);
+	}
+	if (options.subject) {
+		builder.setSubject(options.subject);
+	}
+	if (options.expiresIn !== undefined) {
+		builder.setExpirationTime(options.expiresIn as Parameters<SignJWT['setExpirationTime']>[0]);
+	}
+	if (options.notBefore !== undefined) {
+		builder.setNotBefore(options.notBefore as Parameters<SignJWT['setNotBefore']>[0]);
+	}
+
+	return builder.sign(secretBytes);
+}

@@ -1,12 +1,12 @@
-import http from 'http';
-import https from 'https';
+import http from 'node:http';
+import https from 'node:https';
 
 import { Logger } from '@rocket.chat/logger';
 import { censorUrl } from '@rocket.chat/tools';
 import { AbortController } from 'abort-controller';
 import { HttpProxyAgent } from 'http-proxy-agent';
 import { HttpsProxyAgent } from 'https-proxy-agent';
-import fetch, { Response } from 'node-fetch';
+import fetch, { FetchError, Response } from 'node-fetch';
 import { getProxyForUrl } from 'proxy-from-env';
 
 import { checkForSsrfWithIp, parseSsrfAllowlist } from './checkForSsrf';
@@ -193,6 +193,6 @@ export async function serverFetch(input: string, options?: ExtendedFetchOptions,
 	throw new Error('error-processing-request');
 }
 
-export { Response };
+export { FetchError, Response };
 export type { ExtendedFetchOptions };
 export { parseSsrfAllowlist };

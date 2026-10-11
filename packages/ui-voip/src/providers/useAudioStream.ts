@@ -1,7 +1,7 @@
 import type { MediaSignalingSession } from '@rocket.chat/media-signaling';
-import { useEffect, useState } from 'react';
+import { usePlayMediaStream } from '@rocket.chat/ui-media';
 
-import { usePlayMediaStream } from './usePlayMediaStream';
+import { useInstanceSnapshot } from '../context/useInstanceSnapshot';
 
 const getAudioStream = (instance?: MediaSignalingSession) => {
 	try {
@@ -22,30 +22,7 @@ const getAudioStream = (instance?: MediaSignalingSession) => {
 };
 
 export const useAudioStream = (instance?: MediaSignalingSession) => {
-	const [remoteStream, setRemoteStream] = useState<MediaStream | null>(null);
-
-	useEffect(() => {
-		if (!instance) {
-			setRemoteStream(null);
-			return;
-		}
-
-		const syncRemoteStream = () => {
-			const nextStream = getAudioStream(instance);
-			setRemoteStream((oldStream) => {
-				if (!nextStream) {
-					return null;
-				}
-				return oldStream === nextStream ? oldStream : nextStream;
-			});
-		};
-
-		syncRemoteStream();
-
-		return instance.on('sessionStateChange', () => {
-			syncRemoteStream();
-		});
-	}, [instance]);
+	const remoteStream = useInstanceSnapshot(instance, getAudioStream);
 
 	return usePlayMediaStream(remoteStream);
 };

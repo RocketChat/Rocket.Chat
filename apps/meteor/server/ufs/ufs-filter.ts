@@ -59,7 +59,7 @@ export class Filter {
 		}
 	}
 
-	async check(file: OptionalId<IUpload>, content?: Buffer | string) {
+	async check(file: Omit<OptionalId<IUpload>, '_updatedAt'>, content?: Buffer | string) {
 		let error = null;
 		if (typeof file !== 'object' || !file) {
 			error = this.options.invalidFileError();
@@ -137,7 +137,7 @@ export class Filter {
 		return result;
 	}
 
-	async onCheck(_file: OptionalId<IUpload>, _content?: Buffer | string) {
+	async onCheck(_file: Omit<OptionalId<IUpload>, '_updatedAt'>, _content?: Buffer | string) {
 		return true;
 	}
 }

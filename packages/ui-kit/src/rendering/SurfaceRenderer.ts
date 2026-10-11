@@ -18,12 +18,13 @@ import { isTextObject } from '../blocks/isTextObject';
 import type { Markdown } from '../blocks/text/Markdown';
 import type { PlainText } from '../blocks/text/PlainText';
 
-export abstract class SurfaceRenderer<TOutputObject, TAllowedLayoutBlock extends RenderableLayoutBlock = RenderableLayoutBlock>
-	implements BlockRenderers<TOutputObject>
-{
+export abstract class SurfaceRenderer<
+	TOutputObject,
+	TAllowedLayoutBlock extends RenderableLayoutBlock = RenderableLayoutBlock,
+> implements BlockRenderers<TOutputObject> {
 	protected readonly allowedLayoutBlockTypes: Set<TAllowedLayoutBlock['type']>;
 
-	public constructor(allowedLayoutBlockTypes: TAllowedLayoutBlock['type'][]) {
+	public constructor(allowedLayoutBlockTypes: readonly TAllowedLayoutBlock['type'][]) {
 		this.allowedLayoutBlockTypes = new Set(allowedLayoutBlockTypes);
 	}
 

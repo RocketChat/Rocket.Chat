@@ -8,9 +8,8 @@ import {
 	useMethod,
 } from '@rocket.chat/ui-contexts';
 import { useMutation } from '@tanstack/react-query';
-import type { ReactElement } from 'react';
 
-const ComposerAnonymous = (): ReactElement => {
+const ComposerAnonymous = () => {
 	const t = useTranslation();
 	const dispatch = useToastMessageDispatch();
 	const isAnonymousWriteEnabled = useSetting('Accounts_AllowAnonymousWrite');
@@ -38,7 +37,7 @@ const ComposerAnonymous = (): ReactElement => {
 	};
 
 	return (
-		<Box mb={16}>
+		<Box marginBlock={16}>
 			<ButtonGroup>
 				<Button small primary onClick={() => setForceLogin(true)}>
 					{t('Sign_in_to_start_talking')}

@@ -1,28 +1,25 @@
-import type { ActionsBlock } from '../../blocks/layout/ActionsBlock';
-import type { CalloutBlock } from '../../blocks/layout/CalloutBlock';
-import type { ContextBlock } from '../../blocks/layout/ContextBlock';
-import type { DividerBlock } from '../../blocks/layout/DividerBlock';
-import type { ImageBlock } from '../../blocks/layout/ImageBlock';
-import type { InfoCardBlock } from '../../blocks/layout/InfoCardBlock';
-import type { PreviewBlock } from '../../blocks/layout/PreviewBlock';
-import type { SectionBlock } from '../../blocks/layout/SectionBlock';
-import type { VideoConferenceBlock } from '../../blocks/layout/VideoConferenceBlock';
+import type { RenderableLayoutBlock } from '../../blocks/RenderableLayoutBlock';
 import { SurfaceRenderer } from '../../rendering/SurfaceRenderer';
 
-type MessageSurfaceLayoutBlock =
-	| ActionsBlock
-	| ContextBlock
-	| DividerBlock
-	| ImageBlock
-	| SectionBlock
-	| VideoConferenceBlock
-	| PreviewBlock
-	| CalloutBlock
-	| InfoCardBlock;
+/** Layout blocks a message accepts; every message renderer must allow exactly these. */
+export const messageSurfaceLayoutBlockTypes = [
+	'actions',
+	'callout',
+	'context',
+	'divider',
+	'image',
+	'info_card',
+	'input',
+	'preview',
+	'section',
+	'video_conf',
+] as const satisfies readonly RenderableLayoutBlock['type'][];
+
+type MessageSurfaceLayoutBlock = Extract<RenderableLayoutBlock, { type: (typeof messageSurfaceLayoutBlockTypes)[number] }>;
 
 export abstract class UiKitParserMessage<OutputElement> extends SurfaceRenderer<OutputElement, MessageSurfaceLayoutBlock> {
 	public constructor() {
-		super(['actions', 'context', 'divider', 'image', 'section', 'preview', 'video_conf', 'callout']);
+		super(messageSurfaceLayoutBlockTypes);
 	}
 }
 

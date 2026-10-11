@@ -1,5 +1,5 @@
 import type { SelectOption } from '@rocket.chat/fuselage';
-import { Box, Button, FieldError, FieldRow, MultiSelect, SelectFiltered } from '@rocket.chat/fuselage';
+import { Box, Button, FieldError, FieldRow, MultiSelectFiltered, SelectFiltered } from '@rocket.chat/fuselage';
 import { useCallback, useMemo } from 'react';
 import { useController, useFormContext } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
@@ -12,9 +12,17 @@ type ABACAttributeAutocompleteProps = {
 	index: number;
 	attributeList: { value: string; label: string; attributeValues: string[] }[];
 	required?: boolean;
+	disabled?: boolean;
 };
 
-const RoomFormAttributeField = ({ labelId, onRemove, index, attributeList, required = false }: ABACAttributeAutocompleteProps) => {
+const RoomFormAttributeField = ({
+	labelId,
+	onRemove,
+	index,
+	attributeList,
+	required = false,
+	disabled = false,
+}: ABACAttributeAutocompleteProps) => {
 	const { t } = useTranslation();
 
 	const { control, getValues, resetField } = useFormContext<RoomFormData>();
@@ -57,7 +65,7 @@ const RoomFormAttributeField = ({ labelId, onRemove, index, attributeList, requi
 	}, [attributeList, keyField.value]);
 
 	return (
-		<Box display='flex' flexDirection='column' w='full'>
+		<Box display='flex' flexDirection='column' width='full'>
 			<FieldRow>
 				<SelectFiltered
 					{...keyField}
@@ -68,9 +76,10 @@ const RoomFormAttributeField = ({ labelId, onRemove, index, attributeList, requi
 					aria-invalid={keyFieldState.error ? 'true' : 'false'}
 					aria-describedby={keyFieldState.error ? `${keyField.name}-error` : undefined}
 					placeholder={t('ABAC_Search_Attribute')}
-					mbe={4}
+					marginBlockEnd={4}
 					error={keyFieldState.error?.message}
 					withTruncatedText
+					disabled={disabled}
 					onChange={(value) => {
 						keyField.onChange(value);
 						resetField(`attributes.${index}.values`, { defaultValue: [] });
@@ -83,7 +92,7 @@ const RoomFormAttributeField = ({ labelId, onRemove, index, attributeList, requi
 				</FieldError>
 			)}
 			<FieldRow>
-				<MultiSelect
+				<MultiSelectFiltered
 					required={required}
 					aria-required={required}
 					aria-labelledby={labelId}
@@ -94,6 +103,7 @@ const RoomFormAttributeField = ({ labelId, onRemove, index, attributeList, requi
 					options={valueOptions}
 					placeholder={t('ABAC_Select_Attribute_Values')}
 					error={valuesFieldState.error?.message}
+					disabled={disabled}
 				/>
 			</FieldRow>
 			{valuesFieldState.error && (
@@ -102,7 +112,7 @@ const RoomFormAttributeField = ({ labelId, onRemove, index, attributeList, requi
 				</FieldError>
 			)}
 			{index !== 0 && (
-				<Button onClick={onRemove} title={t('Remove')} mbs={8}>
+				<Button onClick={onRemove} title={t('Remove')} marginBlockStart={8} disabled={disabled}>
 					{t('Remove')}
 				</Button>
 			)}

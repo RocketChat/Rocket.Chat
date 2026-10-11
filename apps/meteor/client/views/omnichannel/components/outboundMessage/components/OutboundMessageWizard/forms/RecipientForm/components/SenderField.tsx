@@ -8,7 +8,7 @@ import { useTranslation } from 'react-i18next';
 import SenderSelect from '../../../../SenderSelect';
 import type { RecipientFormData } from '../RecipientForm';
 
-type SenderFieldProps = ComponentProps<typeof Field> & {
+export type SenderFieldProps = ComponentProps<typeof Field> & {
 	control: Control<RecipientFormData>;
 	provider?: Serialized<IOutboundProviderMetadata>;
 	disabled?: boolean;

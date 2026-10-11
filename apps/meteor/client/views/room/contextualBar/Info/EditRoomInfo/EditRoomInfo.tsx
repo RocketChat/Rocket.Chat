@@ -22,7 +22,7 @@ import {
 	TextAreaInput,
 	AccordionItem,
 } from '@rocket.chat/fuselage';
-import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
+import { useStableCallback } from '@rocket.chat/fuselage-hooks';
 import {
 	ContextualbarHeader,
 	ContextualbarBack,
@@ -31,38 +31,33 @@ import {
 	ContextualbarScrollableContent,
 	ContextualbarFooter,
 	ContextualbarDialog,
+	ExternalLink,
+	getDirtyFields,
 } from '@rocket.chat/ui-client';
-import type { TranslationKey } from '@rocket.chat/ui-contexts';
-import { useSetting, useTranslation, useToastMessageDispatch, useEndpoint } from '@rocket.chat/ui-contexts';
+import { useSetting, useToastMessageDispatch, useEndpoint } from '@rocket.chat/ui-contexts';
 import { useQueryClient } from '@tanstack/react-query';
 import type { ChangeEvent } from 'react';
 import { useId, useMemo } from 'react';
 import { useForm, Controller } from 'react-hook-form';
+import { Trans, useTranslation } from 'react-i18next';
 
 import type { EditRoomInfoFormData } from './useEditRoomInitialValues';
 import { useEditRoomInitialValues } from './useEditRoomInitialValues';
 import { useEditRoomPermissions } from './useEditRoomPermissions';
 import { MessageTypesValues } from '../../../../../../app/lib/lib/MessageTypes';
-import RawText from '../../../../../components/RawText';
 import RoomAvatarEditor from '../../../../../components/avatar/RoomAvatarEditor';
 import { msToTimeUnit, TIMEUNIT } from '../../../../../lib/convertTimeUnit';
-import { getDirtyFields } from '../../../../../lib/getDirtyFields';
 import { links } from '../../../../../lib/links';
 import { roomsQueryKeys } from '../../../../../lib/queryKeys';
+import { useIsABACManagedRoom } from '../../../../admin/ABAC/hooks/useIsABACManagedRoom';
 import { useArchiveRoom } from '../../../../hooks/roomActions/useArchiveRoom';
 import { useRetentionPolicy } from '../../../hooks/useRetentionPolicy';
 
-type EditRoomInfoProps = {
+export type EditRoomInfoProps = {
 	room: IRoomWithRetentionPolicy;
 	onClickClose: () => void;
 	onClickBack: () => void;
 };
-
-const title = {
-	team: 'Edit_team',
-	channel: 'Edit_channel',
-	discussion: 'Edit_discussion',
-} as const;
 
 const getRetentionSetting = (roomType: IRoomWithRetentionPolicy['t']): string => {
 	switch (roomType) {
@@ -78,9 +73,10 @@ const getRetentionSetting = (roomType: IRoomWithRetentionPolicy['t']): string =>
 
 const EditRoomInfo = ({ room, onClickClose, onClickBack }: EditRoomInfoProps) => {
 	const query = useQueryClient();
-	const t = useTranslation();
+	const { t } = useTranslation();
 	const dispatchToastMessage = useToastMessageDispatch();
 	const isFederated = isRoomFederated(room);
+	const isAbacManaged = useIsABACManagedRoom(room);
 	// eslint-disable-next-line no-nested-ternary
 	const roomType = 'prid' in room ? 'discussion' : room.teamMain ? 'team' : 'channel';
 
@@ -108,10 +104,7 @@ const EditRoomInfo = ({ room, onClickClose, onClickBack }: EditRoomInfoProps) =>
 		formState: { isDirty, dirtyFields, errors, isSubmitting },
 	} = useForm<EditRoomInfoFormData>({ defaultValues });
 
-	const sysMesOptions: SelectOption[] = useMemo(
-		() => MessageTypesValues.map(({ key, i18nLabel }) => [key, t(i18nLabel as TranslationKey)]),
-		[t],
-	);
+	const sysMesOptions: SelectOption[] = useMemo(() => MessageTypesValues.map(({ key, i18nLabel }) => [key, t(i18nLabel)]), [t]);
 
 	const { isDirty: isRoomNameDirty } = getFieldState('roomName');
 
@@ -150,7 +143,7 @@ const EditRoomInfo = ({ room, onClickClose, onClickBack }: EditRoomInfoProps) =>
 	const handleArchive = useArchiveRoom(room);
 
 	// TODO: add payload validation
-	const handleUpdateRoomData = useEffectEvent(
+	const handleUpdateRoomData = useStableCallback(
 		async ({
 			hideSysMes,
 			joinCodeRequired,
@@ -193,7 +186,7 @@ const EditRoomInfo = ({ room, onClickClose, onClickBack }: EditRoomInfoProps) =>
 		},
 	);
 
-	const handleSave = useEffectEvent((data: EditRoomInfoFormData) =>
+	const handleSave = useStableCallback((data: EditRoomInfoFormData) =>
 		Promise.all([isDirty && handleUpdateRoomData(data), changeArchiving && handleArchive()].filter(Boolean)),
 	);
 
@@ -234,14 +227,24 @@ const EditRoomInfo = ({ room, onClickClose, onClickBack }: EditRoomInfoProps) =>
 
 	const showAccordion = showAdvancedSettings || showRetentionPolicy;
 
+	const title = useMemo(
+		() =>
+			({
+				team: t('Edit_team'),
+				channel: t('Edit_channel'),
+				discussion: t('Edit_discussion'),
+			})[roomType],
+		[roomType, t],
+	);
+
 	return (
 		<ContextualbarDialog>
 			<ContextualbarHeader>
 				{onClickBack && <ContextualbarBack onClick={onClickBack} />}
-				<ContextualbarTitle>{t(`${title[roomType]}`)}</ContextualbarTitle>
+				<ContextualbarTitle>{title}</ContextualbarTitle>
 				{onClickClose && <ContextualbarClose onClick={onClickClose} />}
 			</ContextualbarHeader>
-			<ContextualbarScrollableContent p={24}>
+			<ContextualbarScrollableContent padding={24}>
 				<form id={formId} onSubmit={handleSubmit(handleSave)}>
 					<Box display='flex' justifyContent='center'>
 						<Controller
@@ -284,7 +287,9 @@ const EditRoomInfo = ({ room, onClickClose, onClickBack }: EditRoomInfoProps) =>
 									<Controller
 										name='roomTopic'
 										control={control}
-										render={({ field }) => <TextInput id={roomTopicField} aria-describedby={`${roomTopicField}-hint`} {...field} />}
+										render={({ field }) => (
+											<TextInput id={roomTopicField} aria-describedby={`${roomTopicField}-hint`} {...field} disabled={isAbacManaged} />
+										)}
 									/>
 								</FieldRow>
 								<FieldRow>
@@ -304,7 +309,7 @@ const EditRoomInfo = ({ room, onClickClose, onClickBack }: EditRoomInfoProps) =>
 												id={roomAnnouncementField}
 												aria-describedby={`${roomAnnouncementField}-hint`}
 												{...field}
-												disabled={isFederated}
+												disabled={isFederated || isAbacManaged}
 											/>
 										)}
 									/>
@@ -321,7 +326,9 @@ const EditRoomInfo = ({ room, onClickClose, onClickBack }: EditRoomInfoProps) =>
 									<Controller
 										name='roomDescription'
 										control={control}
-										render={({ field }) => <TextAreaInput id={roomDescriptionField} {...field} disabled={isFederated} rows={4} />}
+										render={({ field }) => (
+											<TextAreaInput id={roomDescriptionField} {...field} disabled={isFederated || isAbacManaged} rows={4} />
+										)}
 									/>
 								</FieldRow>
 							</Field>
@@ -469,7 +476,13 @@ const EditRoomInfo = ({ room, onClickClose, onClickBack }: EditRoomInfoProps) =>
 														control={control}
 														name='hideSysMes'
 														render={({ field: { value, ...field } }) => (
-															<ToggleSwitch id={hideSysMesField} {...field} checked={value} disabled={isFederated} />
+															<ToggleSwitch
+																id={hideSysMesField}
+																{...field}
+																checked={value}
+																disabled={isFederated}
+																aria-describedby={`${hideSysMesField}-hint`}
+															/>
 														)}
 													/>
 												</FieldRow>
@@ -484,9 +497,13 @@ const EditRoomInfo = ({ room, onClickClose, onClickBack }: EditRoomInfoProps) =>
 																disabled={!hideSysMes || isFederated}
 																placeholder={t('Select_messages_to_hide')}
 																aria-label={t('Select_messages_to_hide')}
+																aria-describedby={`${hideSysMesField}-hint`}
 															/>
 														)}
 													/>
+												</FieldRow>
+												<FieldRow>
+													<FieldHint id={`${hideSysMesField}-hint`}>{t('Hide_System_Messages_Hint')}</FieldHint>
 												</FieldRow>
 											</Field>
 										)}
@@ -523,7 +540,10 @@ const EditRoomInfo = ({ room, onClickClose, onClickBack }: EditRoomInfoProps) =>
 										{retentionOverrideGlobal && (
 											<>
 												<Callout type='danger'>
-													<RawText>{t('RetentionPolicyRoom_ReadTheDocs', { retentionPolicyUrl: links.retentionPolicy })}</RawText>
+													<Trans
+														i18nKey='RetentionPolicyRoom_ReadTheDocs'
+														components={{ docsLink: <ExternalLink to={links.retentionPolicy} /> }}
+													/>
 												</Callout>
 												<Field>
 													<FieldLabel htmlFor={retentionMaxAgeField}>

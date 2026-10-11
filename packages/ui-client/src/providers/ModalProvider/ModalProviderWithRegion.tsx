@@ -4,7 +4,9 @@ import { useState } from 'react';
 import ModalProvider from './ModalProvider';
 import ModalRegion from '../../components/Modal/ModalRegion';
 
-const ModalProviderWithRegion = ({ children }: { children?: ReactNode }) => {
+export type ModalProviderWithRegionProps = { children?: ReactNode };
+
+const ModalProviderWithRegion = ({ children }: ModalProviderWithRegionProps) => {
 	const [region] = useState(() => Symbol());
 
 	return (

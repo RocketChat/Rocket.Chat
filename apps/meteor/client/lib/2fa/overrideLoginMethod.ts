@@ -1,11 +1,7 @@
-import { Accounts } from 'meteor/accounts-base';
-import type { Meteor } from 'meteor/meteor';
-
+import type { MeteorErrorLike } from './types';
 import { isTotpInvalidError, isTotpMaxAttemptsError, isTotpRequiredError } from './utils';
 
-type LoginError = globalThis.Error | Meteor.Error | Meteor.TypedError;
-
-export type LoginCallback = (error: LoginError | undefined, result?: unknown) => void;
+export type LoginCallback = (error: MeteorErrorLike | undefined, result?: unknown) => void;
 
 export const overrideLoginMethod = <TArgs extends any[]>(
 	loginMethod: (...args: [...args: TArgs, cb: LoginCallback]) => void,
@@ -13,7 +9,7 @@ export const overrideLoginMethod = <TArgs extends any[]>(
 	callback: LoginCallback | undefined,
 	loginMethodTOTP: (...args: [...args: TArgs, code: string, cb: LoginCallback]) => void,
 ) => {
-	loginMethod(...loginArgs, async (error: LoginError | undefined, result?: unknown) => {
+	loginMethod(...loginArgs, async (error: MeteorErrorLike | undefined, result?: unknown) => {
 		if (!isTotpRequiredError(error)) {
 			callback?.(error);
 			return error;
@@ -29,7 +25,7 @@ export const overrideLoginMethod = <TArgs extends any[]>(
 				originalCallback: callback,
 				onCode: (code: string) => {
 					return new Promise<void>((resolve, reject) => {
-						loginMethodTOTP(...loginArgs, code, (error: LoginError | undefined, result?: unknown) => {
+						loginMethodTOTP(...loginArgs, code, (error: MeteorErrorLike | undefined, result?: unknown) => {
 							if (!error) {
 								callback?.(undefined, result);
 								resolve();
@@ -56,7 +52,7 @@ export const overrideLoginMethod = <TArgs extends any[]>(
 				},
 			});
 		} catch (error) {
-			callback?.(error as LoginError);
+			callback?.(error as MeteorErrorLike);
 		}
 	});
 };
@@ -70,7 +66,7 @@ export const handleLogin = <TLoginFunction extends (...args: any[]) => Promise<a
 		const callback = args.slice(-1)[0] as LoginCallback | undefined;
 
 		return login(...loginArgs)
-			.catch(async (error: LoginError | undefined) => {
+			.catch(async (error: MeteorErrorLike | undefined) => {
 				if (!isTotpRequiredError(error)) {
 					return Promise.reject(error);
 				}
@@ -83,7 +79,7 @@ export const handleLogin = <TLoginFunction extends (...args: any[]) => Promise<a
 				});
 			})
 			.then((result: unknown) => callback?.(undefined, result))
-			.catch((error: LoginError | undefined) => {
+			.catch((error: MeteorErrorLike | undefined) => {
 				if (!isTotpInvalidError(error)) {
 					callback?.(error);
 					return;
@@ -96,17 +92,3 @@ export const handleLogin = <TLoginFunction extends (...args: any[]) => Promise<a
 			});
 	};
 };
-
-export const callLoginMethod = (options: Omit<Accounts.LoginMethodOptions, 'userCallback'>) =>
-	new Promise<void>((resolve, reject) => {
-		Accounts.callLoginMethod({
-			...options,
-			userCallback: (error) => {
-				if (error) {
-					reject(error);
-				} else {
-					resolve();
-				}
-			},
-		});
-	});

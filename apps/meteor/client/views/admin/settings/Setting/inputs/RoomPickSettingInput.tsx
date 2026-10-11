@@ -1,12 +1,11 @@
 import type { SettingValueRoomPick } from '@rocket.chat/core-typings';
 import { Field, FieldHint, FieldLabel, FieldRow } from '@rocket.chat/fuselage';
-import type { ReactElement } from 'react';
 
 import RoomAutoCompleteMultiple from '../../../../../components/RoomAutoCompleteMultiple';
 import ResetSettingButton from '../ResetSettingButton';
 import type { SettingInputProps } from './types';
 
-type RoomPickSettingInputProps = SettingInputProps<SettingValueRoomPick | '', SettingValueRoomPick>;
+export type RoomPickSettingInputProps = SettingInputProps<SettingValueRoomPick | '', SettingValueRoomPick>;
 
 function RoomPickSettingInput({
 	_id,
@@ -20,7 +19,7 @@ function RoomPickSettingInput({
 	hasResetButton,
 	onChangeValue,
 	onResetButtonClick,
-}: RoomPickSettingInputProps): ReactElement {
+}: RoomPickSettingInputProps) {
 	const parsedValue = (value || []).map(({ _id }) => _id);
 
 	const handleChange = (value: string | string[]) => {

@@ -5,7 +5,7 @@ import { UiKitContext } from './UiKitContext';
 
 const AppIdContext = createContext<string | undefined>(undefined);
 
-type AppIdProviderProps = {
+export type AppIdProviderProps = {
 	children: ReactNode;
 	appId?: string;
 };

@@ -1,16 +1,15 @@
 import { ButtonGroup, Button, IconButton } from '@rocket.chat/fuselage';
-import type { Meta, StoryFn } from '@storybook/react';
+import type { Meta, StoryObj } from '@storybook/react';
 
 import { Widget, WidgetHeader, WidgetFooter, WidgetHandle, WidgetInfo, WidgetContent } from '.';
 
 export default {
-	title: 'V2/Components/Widget',
 	component: Widget,
 	decorators: [(Story) => <Story />],
 } satisfies Meta<typeof Widget>;
 
-export const FullWidget: StoryFn<typeof Widget> = () => {
-	return (
+export const FullWidget: StoryObj<typeof Widget> = {
+	render: () => (
 		<Widget>
 			<WidgetHandle />
 			<WidgetHeader title='Incoming Call...'>
@@ -34,5 +33,5 @@ export const FullWidget: StoryFn<typeof Widget> = () => {
 				</ButtonGroup>
 			</WidgetFooter>
 		</Widget>
-	);
+	),
 };

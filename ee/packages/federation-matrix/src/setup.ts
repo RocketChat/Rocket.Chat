@@ -32,7 +32,7 @@ function validateDomain(domain: string): boolean {
 	return true;
 }
 
-export function configureFederationMatrixSettings(settings: {
+export async function configureFederationMatrixSettings(settings: {
 	instanceId: string;
 	domain: string;
 	signingKey: string;
@@ -43,6 +43,10 @@ export function configureFederationMatrixSettings(settings: {
 	processEDUTyping: boolean;
 	processEDUPresence: boolean;
 	processEDUReceipt: boolean;
+	xmppEnabled: boolean;
+	xmppBridgeURL: string;
+	xmppBridgeHSToken: string;
+	xmppBridgeASToken: string;
 }) {
 	const {
 		instanceId,
@@ -55,6 +59,10 @@ export function configureFederationMatrixSettings(settings: {
 		processEDUTyping,
 		processEDUPresence,
 		processEDUReceipt,
+		xmppEnabled,
+		xmppBridgeURL,
+		xmppBridgeHSToken,
+		xmppBridgeASToken,
 	} = settings;
 
 	if (!validateDomain(serverName)) {
@@ -99,6 +107,26 @@ export function configureFederationMatrixSettings(settings: {
 			processReceipt: processEDUReceipt,
 		},
 	});
+
+	if (xmppEnabled) {
+		await federationSDK.registerAppService({
+			_id: 'xmpp',
+			url: xmppBridgeURL,
+			asToken: xmppBridgeASToken,
+			hsToken: xmppBridgeHSToken,
+			senderLocalpart: 'xmpp',
+			namespaces: {
+				users: [{ regex: '@_xmpp_.*', exclusive: true }],
+				aliases: [{ regex: '#_xmpp_.*', exclusive: true }],
+				rooms: [],
+			},
+			protocols: ['xmpp'],
+			rateLimited: false,
+			receiveEphemeral: true,
+		});
+	} else {
+		await federationSDK.unregisterAppService('xmpp');
+	}
 }
 
 export async function setupFederationMatrix() {
