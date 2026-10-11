@@ -540,7 +540,7 @@ describe('ExchangeEwsProvider', () => {
 		const getContactPhotosAnswering = async (responses: string[], ids = [CONTACT_ID]) => {
 			const transport = new FakeTransport(responses);
 			const photos = [];
-			for await (const photo of new ExchangeEwsProvider(transport).getContactPhotos(MAILBOX, ids)) {
+			for await (const photo of new ExchangeEwsProvider(transport).getContactPhotos(MAILBOX, 'default', ids)) {
 				photos.push(photo);
 			}
 

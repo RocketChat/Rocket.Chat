@@ -372,8 +372,11 @@ export class ExchangeEwsProvider implements IExchangeProvider {
 		};
 	}
 
-	/** It takes two calls: one to learn which contacts carry one and what its attachment id is, another to read the bytes. */
-	public async *getContactPhotos(mailbox: string, externalIds: string[]): AsyncIterable<ExchangeContactPhoto> {
+	/**
+	 * It takes two calls: one to learn which contacts carry one and what its attachment id is, another to read the bytes.
+	 * Neither needs the folder, since EWS reaches an item by its id anywhere in the mailbox.
+	 */
+	public async *getContactPhotos(mailbox: string, _folderId: string, externalIds: string[]): AsyncIterable<ExchangeContactPhoto> {
 		for (let i = 0; i < externalIds.length; i += PHOTO_LOOKUP_BATCH_SIZE) {
 			const owners = await this.findPhotoAttachments(mailbox, externalIds.slice(i, i + PHOTO_LOOKUP_BATCH_SIZE));
 			const attachmentIds = [...owners.keys()];

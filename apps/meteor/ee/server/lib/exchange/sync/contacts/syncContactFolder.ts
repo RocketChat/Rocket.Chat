@@ -139,7 +139,7 @@ const syncAvatars = async (
 
 	const withPhoto = new Set<string>();
 
-	for await (const photo of provider.getContactPhotos(mailbox, [...contactIds.keys()])) {
+	for await (const photo of provider.getContactPhotos(mailbox, folderId, [...contactIds.keys()])) {
 		const contactId = contactIds.get(photo.externalId);
 
 		if (contactId) {

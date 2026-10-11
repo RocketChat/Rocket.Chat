@@ -267,7 +267,7 @@ describe('syncContactFolder', () => {
 				await syncContactFolder(provider, UID, MAILBOX, FOLDER, REGION);
 
 				expect(findImportedByFolder).toHaveBeenCalledWith(UID, FOLDER, undefined, expect.anything());
-				expect(provider.getContactPhotos).toHaveBeenCalledWith(MAILBOX, ['A']);
+				expect(provider.getContactPhotos).toHaveBeenCalledWith(MAILBOX, FOLDER, ['A']);
 			});
 
 			it('asks only for what changed once the folder has been covered', async () => {
