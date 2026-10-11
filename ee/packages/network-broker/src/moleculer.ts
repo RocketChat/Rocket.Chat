@@ -33,12 +33,13 @@ const {
 
 const { Base } = Serializers;
 
-class CustomRegenerator extends Errors.Regenerator {
+export class CustomRegenerator extends Errors.Regenerator {
 	override restoreCustomError(plainError: any): Error | undefined {
 		const { message, reason, details, errorType, isClientSafe } = plainError;
 
 		if (errorType === 'Meteor.Error') {
 			const error = new MeteorError(message, reason, details);
+			error.message = message;
 			if (typeof isClientSafe !== 'undefined') {
 				error.isClientSafe = isClientSafe;
 			}
