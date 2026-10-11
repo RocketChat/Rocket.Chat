@@ -47,6 +47,9 @@ const SidebarRegion = () => {
 			box-shadow: rgba(0, 0, 0, 0.3) 0px 0px 15px 1px;
 			transform: translate3d(0px, 0px, 0px);
 		}
+			[data-unread="true"] .rcx-sidebar-v2-item__title {
+        font-weight: bold !important;
+    }
 
 		&:not(:has(.rcx-sidebar__fixed-width)) {
 			// 1600px to 1919px
