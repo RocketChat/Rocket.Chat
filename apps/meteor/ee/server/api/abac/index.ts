@@ -34,6 +34,7 @@ import {
 import { API } from '../../../../server/api';
 import type { ExtractRoutesFromAPI } from '../../../../server/api/ApiClass';
 import { getPaginationItems } from '../../../../server/api/lib/getPaginationItems';
+import { getRoomAbacLockContext } from '../../../../server/lib/authorization/getRoomAbacLockContext';
 import { toAbacAttributeDefinitions } from '../../../../server/lib/rooms/toAbacAttributeDefinitions';
 import { settings } from '../../../../server/settings';
 import { toCreationAttributesDenialError } from '../../lib/abac/creationAttributesDenial';
@@ -511,7 +512,12 @@ const abacEndpoints = API.v1
 				throw new Error('error-abac-not-enabled');
 			}
 
-			return API.v1.success({ attributes: await Abac.listAssignableAttributes(toAbacActor(this.user)) });
+			const { enforcementOn, requiredAttributeKeys } = getRoomAbacLockContext();
+
+			return API.v1.success({
+				attributes: await Abac.listAssignableAttributes(toAbacActor(this.user)),
+				requiredKeys: enforcementOn ? requiredAttributeKeys : [],
+			});
 		},
 	)
 	.post(

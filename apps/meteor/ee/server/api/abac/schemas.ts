@@ -154,14 +154,16 @@ const GetAbacAssignableAttributesResponse = {
 				additionalProperties: false,
 			},
 		},
+		requiredKeys: { type: 'array', items: { type: 'string' } },
 	},
-	required: ['attributes'],
+	required: ['attributes', 'requiredKeys'],
 	additionalProperties: false,
 };
 
-export const GETAbacAssignableAttributesResponseSchema = ajv.compile<{ attributes: { key: string; values: string[] }[] }>(
-	GetAbacAssignableAttributesResponse,
-);
+export const GETAbacAssignableAttributesResponseSchema = ajv.compile<{
+	attributes: { key: string; values: string[] }[];
+	requiredKeys: string[];
+}>(GetAbacAssignableAttributesResponse);
 
 const GetAbacAttributeByIdResponse = {
 	type: 'object',
