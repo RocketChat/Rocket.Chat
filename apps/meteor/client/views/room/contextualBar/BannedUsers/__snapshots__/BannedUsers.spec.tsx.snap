@@ -4,7 +4,7 @@ exports[`renders Default without crashing 1`] = `
 <body>
   <div>
     <div
-      class="rcx-box rcx-box--full rcx-vertical-bar rcx-css-yefw2m"
+      class="rcx-box rcx-box--full rcx-vertical-bar rcx-css-glyll0"
     >
       <span
         data-focus-scope-start="true"
@@ -15,12 +15,12 @@ exports[`renders Default without crashing 1`] = `
       >
         <div
           aria-labelledby="contextualbarTitle"
-          class="rcx-box rcx-box--full rcx-vertical-bar rcx-css-ohm8rb"
+          class="rcx-box rcx-box--full rcx-vertical-bar rcx-css-nlfrt3"
           role="dialog"
           tabindex="-1"
         >
           <div
-            class="rcx-box rcx-box--full rcx-css-142wtci"
+            class="rcx-box rcx-box--full rcx-css-lm07yg"
           >
             <div
               class="rcx-box rcx-box--full rcx-css-1bdyjik rcx-css-1l4fxfb"
@@ -59,7 +59,7 @@ exports[`renders Default without crashing 1`] = `
               class="rcx-box rcx-box--full rcx-css-4k230l"
             >
               <div
-                class="rcx-box rcx-box--full rcx-css-vlo1oi rcx-css-1cb6i7s"
+                class="rcx-box rcx-box--full rcx-css-1pd039f rcx-css-1cb6i7s"
               >
                 <div
                   data-testid="virtuoso-scroller"
@@ -69,11 +69,11 @@ exports[`renders Default without crashing 1`] = `
                 >
                   <div
                     data-viewport-type="element"
-                    style="width: 100%; height: 100%; position: absolute; top: 0px;"
+                    style="height: 100%; position: absolute; top: 0px; width: 100%;"
                   >
                     <div
                       data-testid="virtuoso-item-list"
-                      style="box-sizing: border-box; margin-top: 0px; padding-top: 0px; padding-bottom: 0px;"
+                      style="box-sizing: border-box; margin-top: 0px; padding-bottom: 0px; padding-top: 0px;"
                     >
                       <div
                         data-index="0"
@@ -110,6 +110,7 @@ exports[`renders Default without crashing 1`] = `
                               class="rcx-option__column"
                             >
                               <svg
+                                aria-hidden="true"
                                 class="rcx-status-bullet rcx-status-bullet--loading undefined "
                                 fill="none"
                                 height="12"
@@ -142,7 +143,7 @@ exports[`renders Default without crashing 1`] = `
                                 aria-haspopup="true"
                                 aria-label="More"
                                 class="rcx-box rcx-box--full rcx-button--small-square rcx-button--square rcx-button--icon rcx-button"
-                                id="react-aria-:r1:"
+                                id="react-aria-_r_1_"
                                 title="More"
                                 type="button"
                               >
@@ -212,7 +213,7 @@ exports[`renders Default without crashing 1`] = `
                                 aria-haspopup="true"
                                 aria-label="More"
                                 class="rcx-box rcx-box--full rcx-button--small-square rcx-button--square rcx-button--icon rcx-button"
-                                id="react-aria-:r3:"
+                                id="react-aria-_r_3_"
                                 title="More"
                                 type="button"
                               >
@@ -262,6 +263,7 @@ exports[`renders Default without crashing 1`] = `
                               class="rcx-option__column"
                             >
                               <svg
+                                aria-hidden="true"
                                 class="rcx-status-bullet rcx-status-bullet--loading undefined "
                                 fill="none"
                                 height="12"
@@ -294,7 +296,7 @@ exports[`renders Default without crashing 1`] = `
                                 aria-haspopup="true"
                                 aria-label="More"
                                 class="rcx-box rcx-box--full rcx-button--small-square rcx-button--square rcx-button--icon rcx-button"
-                                id="react-aria-:r5:"
+                                id="react-aria-_r_5_"
                                 title="More"
                                 type="button"
                               >
@@ -318,40 +320,32 @@ exports[`renders Default without crashing 1`] = `
         </div>
         <div>
           <div
-            class=""
             style="position: absolute; user-select: none; width: 100%; height: 10px; top: -5px; left: 0px; cursor: row-resize;"
           />
           <div
-            class=""
             style="position: absolute; user-select: none; width: 10px; height: 100%; top: 0px; cursor: col-resize; right: -5px;"
           />
           <div
-            class=""
             style="position: absolute; user-select: none; width: 100%; height: 10px; left: 0px; cursor: row-resize; bottom: -5px;"
           />
           <div
-            class=""
             style="position: absolute; user-select: none; width: 3px; height: 100%; top: 0px; left: 0px; cursor: col-resize; z-index: 99;"
           >
             <div
-              class="rcx-box rcx-box--full rcx-css-r98g7d"
+              class="rcx-box rcx-box--full rcx-css-124vum9"
             />
           </div>
           <div
-            class=""
-            style="position: absolute; user-select: none; width: 20px; height: 20px; right: -10px; top: -10px; cursor: ne-resize;"
+            style="position: absolute; user-select: none; width: 20px; height: 20px; z-index: 1; right: -10px; top: -10px; cursor: ne-resize;"
           />
           <div
-            class=""
-            style="position: absolute; user-select: none; width: 20px; height: 20px; right: -10px; bottom: -10px; cursor: se-resize;"
+            style="position: absolute; user-select: none; width: 20px; height: 20px; z-index: 1; right: -10px; bottom: -10px; cursor: se-resize;"
           />
           <div
-            class=""
-            style="position: absolute; user-select: none; width: 20px; height: 20px; left: -10px; bottom: -10px; cursor: sw-resize;"
+            style="position: absolute; user-select: none; width: 20px; height: 20px; z-index: 1; left: -10px; bottom: -10px; cursor: sw-resize;"
           />
           <div
-            class=""
-            style="position: absolute; user-select: none; width: 20px; height: 20px; left: -10px; top: -10px; cursor: nw-resize;"
+            style="position: absolute; user-select: none; width: 20px; height: 20px; z-index: 1; left: -10px; top: -10px; cursor: nw-resize;"
           />
         </div>
       </div>
@@ -368,7 +362,7 @@ exports[`renders Empty without crashing 1`] = `
 <body>
   <div>
     <div
-      class="rcx-box rcx-box--full rcx-vertical-bar rcx-css-yefw2m"
+      class="rcx-box rcx-box--full rcx-vertical-bar rcx-css-glyll0"
     >
       <span
         data-focus-scope-start="true"
@@ -379,12 +373,12 @@ exports[`renders Empty without crashing 1`] = `
       >
         <div
           aria-labelledby="contextualbarTitle"
-          class="rcx-box rcx-box--full rcx-vertical-bar rcx-css-ohm8rb"
+          class="rcx-box rcx-box--full rcx-vertical-bar rcx-css-nlfrt3"
           role="dialog"
           tabindex="-1"
         >
           <div
-            class="rcx-box rcx-box--full rcx-css-142wtci"
+            class="rcx-box rcx-box--full rcx-css-lm07yg"
           >
             <div
               class="rcx-box rcx-box--full rcx-css-1bdyjik rcx-css-1l4fxfb"
@@ -447,40 +441,32 @@ exports[`renders Empty without crashing 1`] = `
         </div>
         <div>
           <div
-            class=""
             style="position: absolute; user-select: none; width: 100%; height: 10px; top: -5px; left: 0px; cursor: row-resize;"
           />
           <div
-            class=""
             style="position: absolute; user-select: none; width: 10px; height: 100%; top: 0px; cursor: col-resize; right: -5px;"
           />
           <div
-            class=""
             style="position: absolute; user-select: none; width: 100%; height: 10px; left: 0px; cursor: row-resize; bottom: -5px;"
           />
           <div
-            class=""
             style="position: absolute; user-select: none; width: 3px; height: 100%; top: 0px; left: 0px; cursor: col-resize; z-index: 99;"
           >
             <div
-              class="rcx-box rcx-box--full rcx-css-r98g7d"
+              class="rcx-box rcx-box--full rcx-css-124vum9"
             />
           </div>
           <div
-            class=""
-            style="position: absolute; user-select: none; width: 20px; height: 20px; right: -10px; top: -10px; cursor: ne-resize;"
+            style="position: absolute; user-select: none; width: 20px; height: 20px; z-index: 1; right: -10px; top: -10px; cursor: ne-resize;"
           />
           <div
-            class=""
-            style="position: absolute; user-select: none; width: 20px; height: 20px; right: -10px; bottom: -10px; cursor: se-resize;"
+            style="position: absolute; user-select: none; width: 20px; height: 20px; z-index: 1; right: -10px; bottom: -10px; cursor: se-resize;"
           />
           <div
-            class=""
-            style="position: absolute; user-select: none; width: 20px; height: 20px; left: -10px; bottom: -10px; cursor: sw-resize;"
+            style="position: absolute; user-select: none; width: 20px; height: 20px; z-index: 1; left: -10px; bottom: -10px; cursor: sw-resize;"
           />
           <div
-            class=""
-            style="position: absolute; user-select: none; width: 20px; height: 20px; left: -10px; top: -10px; cursor: nw-resize;"
+            style="position: absolute; user-select: none; width: 20px; height: 20px; z-index: 1; left: -10px; top: -10px; cursor: nw-resize;"
           />
         </div>
       </div>
@@ -497,7 +483,7 @@ exports[`renders Loading without crashing 1`] = `
 <body>
   <div>
     <div
-      class="rcx-box rcx-box--full rcx-vertical-bar rcx-css-yefw2m"
+      class="rcx-box rcx-box--full rcx-vertical-bar rcx-css-glyll0"
     >
       <span
         data-focus-scope-start="true"
@@ -508,12 +494,12 @@ exports[`renders Loading without crashing 1`] = `
       >
         <div
           aria-labelledby="contextualbarTitle"
-          class="rcx-box rcx-box--full rcx-vertical-bar rcx-css-ohm8rb"
+          class="rcx-box rcx-box--full rcx-vertical-bar rcx-css-nlfrt3"
           role="dialog"
           tabindex="-1"
         >
           <div
-            class="rcx-box rcx-box--full rcx-css-142wtci"
+            class="rcx-box rcx-box--full rcx-css-lm07yg"
           >
             <div
               class="rcx-box rcx-box--full rcx-css-1bdyjik rcx-css-1l4fxfb"
@@ -569,40 +555,32 @@ exports[`renders Loading without crashing 1`] = `
         </div>
         <div>
           <div
-            class=""
             style="position: absolute; user-select: none; width: 100%; height: 10px; top: -5px; left: 0px; cursor: row-resize;"
           />
           <div
-            class=""
             style="position: absolute; user-select: none; width: 10px; height: 100%; top: 0px; cursor: col-resize; right: -5px;"
           />
           <div
-            class=""
             style="position: absolute; user-select: none; width: 100%; height: 10px; left: 0px; cursor: row-resize; bottom: -5px;"
           />
           <div
-            class=""
             style="position: absolute; user-select: none; width: 3px; height: 100%; top: 0px; left: 0px; cursor: col-resize; z-index: 99;"
           >
             <div
-              class="rcx-box rcx-box--full rcx-css-r98g7d"
+              class="rcx-box rcx-box--full rcx-css-124vum9"
             />
           </div>
           <div
-            class=""
-            style="position: absolute; user-select: none; width: 20px; height: 20px; right: -10px; top: -10px; cursor: ne-resize;"
+            style="position: absolute; user-select: none; width: 20px; height: 20px; z-index: 1; right: -10px; top: -10px; cursor: ne-resize;"
           />
           <div
-            class=""
-            style="position: absolute; user-select: none; width: 20px; height: 20px; right: -10px; bottom: -10px; cursor: se-resize;"
+            style="position: absolute; user-select: none; width: 20px; height: 20px; z-index: 1; right: -10px; bottom: -10px; cursor: se-resize;"
           />
           <div
-            class=""
-            style="position: absolute; user-select: none; width: 20px; height: 20px; left: -10px; bottom: -10px; cursor: sw-resize;"
+            style="position: absolute; user-select: none; width: 20px; height: 20px; z-index: 1; left: -10px; bottom: -10px; cursor: sw-resize;"
           />
           <div
-            class=""
-            style="position: absolute; user-select: none; width: 20px; height: 20px; left: -10px; top: -10px; cursor: nw-resize;"
+            style="position: absolute; user-select: none; width: 20px; height: 20px; z-index: 1; left: -10px; top: -10px; cursor: nw-resize;"
           />
         </div>
       </div>
@@ -619,7 +597,7 @@ exports[`renders WithError without crashing 1`] = `
 <body>
   <div>
     <div
-      class="rcx-box rcx-box--full rcx-vertical-bar rcx-css-yefw2m"
+      class="rcx-box rcx-box--full rcx-vertical-bar rcx-css-glyll0"
     >
       <span
         data-focus-scope-start="true"
@@ -630,12 +608,12 @@ exports[`renders WithError without crashing 1`] = `
       >
         <div
           aria-labelledby="contextualbarTitle"
-          class="rcx-box rcx-box--full rcx-vertical-bar rcx-css-ohm8rb"
+          class="rcx-box rcx-box--full rcx-vertical-bar rcx-css-nlfrt3"
           role="dialog"
           tabindex="-1"
         >
           <div
-            class="rcx-box rcx-box--full rcx-css-142wtci"
+            class="rcx-box rcx-box--full rcx-css-lm07yg"
           >
             <div
               class="rcx-box rcx-box--full rcx-css-1bdyjik rcx-css-1l4fxfb"
@@ -698,40 +676,32 @@ exports[`renders WithError without crashing 1`] = `
         </div>
         <div>
           <div
-            class=""
             style="position: absolute; user-select: none; width: 100%; height: 10px; top: -5px; left: 0px; cursor: row-resize;"
           />
           <div
-            class=""
             style="position: absolute; user-select: none; width: 10px; height: 100%; top: 0px; cursor: col-resize; right: -5px;"
           />
           <div
-            class=""
             style="position: absolute; user-select: none; width: 100%; height: 10px; left: 0px; cursor: row-resize; bottom: -5px;"
           />
           <div
-            class=""
             style="position: absolute; user-select: none; width: 3px; height: 100%; top: 0px; left: 0px; cursor: col-resize; z-index: 99;"
           >
             <div
-              class="rcx-box rcx-box--full rcx-css-r98g7d"
+              class="rcx-box rcx-box--full rcx-css-124vum9"
             />
           </div>
           <div
-            class=""
-            style="position: absolute; user-select: none; width: 20px; height: 20px; right: -10px; top: -10px; cursor: ne-resize;"
+            style="position: absolute; user-select: none; width: 20px; height: 20px; z-index: 1; right: -10px; top: -10px; cursor: ne-resize;"
           />
           <div
-            class=""
-            style="position: absolute; user-select: none; width: 20px; height: 20px; right: -10px; bottom: -10px; cursor: se-resize;"
+            style="position: absolute; user-select: none; width: 20px; height: 20px; z-index: 1; right: -10px; bottom: -10px; cursor: se-resize;"
           />
           <div
-            class=""
-            style="position: absolute; user-select: none; width: 20px; height: 20px; left: -10px; bottom: -10px; cursor: sw-resize;"
+            style="position: absolute; user-select: none; width: 20px; height: 20px; z-index: 1; left: -10px; bottom: -10px; cursor: sw-resize;"
           />
           <div
-            class=""
-            style="position: absolute; user-select: none; width: 20px; height: 20px; left: -10px; top: -10px; cursor: nw-resize;"
+            style="position: absolute; user-select: none; width: 20px; height: 20px; z-index: 1; left: -10px; top: -10px; cursor: nw-resize;"
           />
         </div>
       </div>
@@ -748,7 +718,7 @@ exports[`renders WithRealNames without crashing 1`] = `
 <body>
   <div>
     <div
-      class="rcx-box rcx-box--full rcx-vertical-bar rcx-css-yefw2m"
+      class="rcx-box rcx-box--full rcx-vertical-bar rcx-css-glyll0"
     >
       <span
         data-focus-scope-start="true"
@@ -759,12 +729,12 @@ exports[`renders WithRealNames without crashing 1`] = `
       >
         <div
           aria-labelledby="contextualbarTitle"
-          class="rcx-box rcx-box--full rcx-vertical-bar rcx-css-ohm8rb"
+          class="rcx-box rcx-box--full rcx-vertical-bar rcx-css-nlfrt3"
           role="dialog"
           tabindex="-1"
         >
           <div
-            class="rcx-box rcx-box--full rcx-css-142wtci"
+            class="rcx-box rcx-box--full rcx-css-lm07yg"
           >
             <div
               class="rcx-box rcx-box--full rcx-css-1bdyjik rcx-css-1l4fxfb"
@@ -803,7 +773,7 @@ exports[`renders WithRealNames without crashing 1`] = `
               class="rcx-box rcx-box--full rcx-css-4k230l"
             >
               <div
-                class="rcx-box rcx-box--full rcx-css-vlo1oi rcx-css-1cb6i7s"
+                class="rcx-box rcx-box--full rcx-css-1pd039f rcx-css-1cb6i7s"
               >
                 <div
                   data-testid="virtuoso-scroller"
@@ -813,11 +783,11 @@ exports[`renders WithRealNames without crashing 1`] = `
                 >
                   <div
                     data-viewport-type="element"
-                    style="width: 100%; height: 100%; position: absolute; top: 0px;"
+                    style="height: 100%; position: absolute; top: 0px; width: 100%;"
                   >
                     <div
                       data-testid="virtuoso-item-list"
-                      style="box-sizing: border-box; margin-top: 0px; padding-top: 0px; padding-bottom: 0px;"
+                      style="box-sizing: border-box; margin-top: 0px; padding-bottom: 0px; padding-top: 0px;"
                     >
                       <div
                         data-index="0"
@@ -854,6 +824,7 @@ exports[`renders WithRealNames without crashing 1`] = `
                               class="rcx-option__column"
                             >
                               <svg
+                                aria-hidden="true"
                                 class="rcx-status-bullet rcx-status-bullet--loading undefined "
                                 fill="none"
                                 height="12"
@@ -892,7 +863,7 @@ exports[`renders WithRealNames without crashing 1`] = `
                                 aria-haspopup="true"
                                 aria-label="More"
                                 class="rcx-box rcx-box--full rcx-button--small-square rcx-button--square rcx-button--icon rcx-button"
-                                id="react-aria-:rb:"
+                                id="react-aria-_r_b_"
                                 title="More"
                                 type="button"
                               >
@@ -968,7 +939,7 @@ exports[`renders WithRealNames without crashing 1`] = `
                                 aria-haspopup="true"
                                 aria-label="More"
                                 class="rcx-box rcx-box--full rcx-button--small-square rcx-button--square rcx-button--icon rcx-button"
-                                id="react-aria-:rd:"
+                                id="react-aria-_r_d_"
                                 title="More"
                                 type="button"
                               >
@@ -1018,6 +989,7 @@ exports[`renders WithRealNames without crashing 1`] = `
                               class="rcx-option__column"
                             >
                               <svg
+                                aria-hidden="true"
                                 class="rcx-status-bullet rcx-status-bullet--loading undefined "
                                 fill="none"
                                 height="12"
@@ -1056,7 +1028,7 @@ exports[`renders WithRealNames without crashing 1`] = `
                                 aria-haspopup="true"
                                 aria-label="More"
                                 class="rcx-box rcx-box--full rcx-button--small-square rcx-button--square rcx-button--icon rcx-button"
-                                id="react-aria-:rf:"
+                                id="react-aria-_r_f_"
                                 title="More"
                                 type="button"
                               >
@@ -1080,40 +1052,32 @@ exports[`renders WithRealNames without crashing 1`] = `
         </div>
         <div>
           <div
-            class=""
             style="position: absolute; user-select: none; width: 100%; height: 10px; top: -5px; left: 0px; cursor: row-resize;"
           />
           <div
-            class=""
             style="position: absolute; user-select: none; width: 10px; height: 100%; top: 0px; cursor: col-resize; right: -5px;"
           />
           <div
-            class=""
             style="position: absolute; user-select: none; width: 100%; height: 10px; left: 0px; cursor: row-resize; bottom: -5px;"
           />
           <div
-            class=""
             style="position: absolute; user-select: none; width: 3px; height: 100%; top: 0px; left: 0px; cursor: col-resize; z-index: 99;"
           >
             <div
-              class="rcx-box rcx-box--full rcx-css-r98g7d"
+              class="rcx-box rcx-box--full rcx-css-124vum9"
             />
           </div>
           <div
-            class=""
-            style="position: absolute; user-select: none; width: 20px; height: 20px; right: -10px; top: -10px; cursor: ne-resize;"
+            style="position: absolute; user-select: none; width: 20px; height: 20px; z-index: 1; right: -10px; top: -10px; cursor: ne-resize;"
           />
           <div
-            class=""
-            style="position: absolute; user-select: none; width: 20px; height: 20px; right: -10px; bottom: -10px; cursor: se-resize;"
+            style="position: absolute; user-select: none; width: 20px; height: 20px; z-index: 1; right: -10px; bottom: -10px; cursor: se-resize;"
           />
           <div
-            class=""
-            style="position: absolute; user-select: none; width: 20px; height: 20px; left: -10px; bottom: -10px; cursor: sw-resize;"
+            style="position: absolute; user-select: none; width: 20px; height: 20px; z-index: 1; left: -10px; bottom: -10px; cursor: sw-resize;"
           />
           <div
-            class=""
-            style="position: absolute; user-select: none; width: 20px; height: 20px; left: -10px; top: -10px; cursor: nw-resize;"
+            style="position: absolute; user-select: none; width: 20px; height: 20px; z-index: 1; left: -10px; top: -10px; cursor: nw-resize;"
           />
         </div>
       </div>

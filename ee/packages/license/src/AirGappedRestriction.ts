@@ -1,4 +1,4 @@
-import EventEmitter from 'events';
+import EventEmitter from 'node:events';
 
 import { License } from '.';
 import { decryptStatsToken } from './token';

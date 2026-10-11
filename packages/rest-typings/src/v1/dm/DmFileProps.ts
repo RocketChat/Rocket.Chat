@@ -49,7 +49,10 @@ const dmFilesListPropsSchema = {
 			type: 'boolean',
 		},
 	},
-	oneOf: [{ required: ['roomId'] }, { required: ['username'] }],
+	oneOf: [
+		{ type: 'object', required: ['roomId'] },
+		{ type: 'object', required: ['username'] },
+	],
 	required: [],
 	additionalProperties: false,
 };

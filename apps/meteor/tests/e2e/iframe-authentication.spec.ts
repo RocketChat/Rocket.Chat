@@ -49,10 +49,8 @@ test.describe('iframe-authentication', () => {
 		});
 	});
 
-	test('should render iframe instead of login page', async ({ page }) => {
-		await page.goto('/home');
-
-		await expect(poLogin.loginIframeForm).toBeVisible();
+	test('should render iframe instead of login page', async () => {
+		await poLogin.goto('/home', poLogin.loginIframeForm);
 	});
 
 	test('should render iframe login page if API returns error', async ({ page }) => {
@@ -62,9 +60,7 @@ test.describe('iframe-authentication', () => {
 			});
 		});
 
-		await page.goto('/home');
-
-		await expect(poLogin.loginIframeForm).toBeVisible();
+		await poLogin.goto('/home', poLogin.loginIframeForm);
 	});
 
 	test('should login with token when API returns valid token', async ({ page }) => {
@@ -76,8 +72,7 @@ test.describe('iframe-authentication', () => {
 			});
 		});
 
-		await page.goto('/home');
-		await poAuth.waitForDisplay();
+		await poAuth.goto();
 	});
 
 	test('should show login page when API returns invalid token', async ({ page }) => {
@@ -89,14 +84,11 @@ test.describe('iframe-authentication', () => {
 			});
 		});
 
-		await page.goto('/home');
-		await expect(poLogin.loginIframeForm).toBeVisible();
+		await poLogin.goto('/home', poLogin.loginIframeForm);
 	});
 
-	test('should login through iframe', async ({ page }) => {
-		await page.goto('/home');
-
-		await expect(poLogin.loginIframeForm).toBeVisible();
+	test('should login through iframe', async () => {
+		await poLogin.goto('/home', poLogin.loginIframeForm);
 
 		await poLogin.loginIframeSubmitButton.click();
 
@@ -114,9 +106,7 @@ test.describe('iframe-authentication', () => {
 			});
 		});
 
-		await page.goto('/home');
-
-		await expect(poLogin.loginIframeForm).toBeVisible();
+		await poLogin.goto('/home', poLogin.loginIframeForm);
 
 		await poLogin.loginIframeSubmitButton.click();
 
@@ -143,8 +133,7 @@ test.describe('iframe-authentication', () => {
 				});
 			});
 
-			await page.goto('/home');
-			await poLogin.waitForDisplay();
+			await poLogin.goto();
 			await expect(poLogin.loginIframeForm).not.toBeVisible();
 		});
 	});

@@ -39,13 +39,13 @@ const MessageComposerGenericFile = ({
 
 		setModal(
 			<FileUploadModal
-				onSubmit={(name, description) => {
-					onEdit(upload.id, name, description);
+				onSubmit={(name, altText) => {
+					onEdit(upload.id, name, altText);
 					setModal(null);
 					chat?.composer?.focus();
 				}}
 				fileName={upload.file.name}
-				fileDescription={upload.description}
+				fileAltText={upload.altText}
 				file={upload.file}
 				onClose={() => setModal(null)}
 			/>,
@@ -86,7 +86,7 @@ const MessageComposerGenericFile = ({
 			fileTitle={upload.file.name}
 			fileSubtitle={`${fileSize} - ${fileExtension}`}
 			previewUrl={shouldPreview ? previewUrl : undefined}
-			alt={upload.description}
+			alt={upload.altText}
 			fileFormat={getFileExtension(upload.file.name)}
 			showPreview={shouldPreview}
 			actionIcon={actionIcon}

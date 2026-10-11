@@ -2,7 +2,9 @@ import type { ServerMethods } from '@rocket.chat/ddp-client';
 import { DDPRateLimiter } from 'meteor/ddp-rate-limiter';
 import { Meteor } from 'meteor/meteor';
 
+import { methodDeprecationLogger } from '../lib/deprecationWarningLogger';
 import { Spotlight } from '../lib/spotlight';
+import { getUsersHiddenFrom, redactHiddenUsers } from '../lib/statusVisibility/hiddenUsers';
 
 type SpotlightType = {
 	users?: boolean;
@@ -60,14 +62,19 @@ export const spotlightMethod = async ({
 		text = text.slice(1);
 	}
 
-	return {
-		users: type.users ? await spotlight.searchUsers({ userId, rid, text, usernames, mentions }) : [],
-		rooms: type.rooms ? await spotlight.searchRooms({ userId, text, includeFederatedRooms }) : [],
-	};
+	const [users, rooms] = await Promise.all([
+		type.users ? spotlight.searchUsers({ userId, rid, text, usernames, mentions }) : [],
+		type.rooms ? spotlight.searchRooms({ userId, text, includeFederatedRooms }) : [],
+	]);
+
+	const hidden = await getUsersHiddenFrom(userId);
+
+	return { users: redactHiddenUsers(users, hidden), rooms };
 };
 
 Meteor.methods<ServerMethods>({
 	async spotlight(text, usernames = [], type = { users: true, rooms: true, mentions: false, includeFederatedRooms: false }, rid) {
+		methodDeprecationLogger.method('spotlight', '9.0.0', '/v1/spotlight');
 		return spotlightMethod({ text, usernames, type, rid, userId: this.userId });
 	},
 });

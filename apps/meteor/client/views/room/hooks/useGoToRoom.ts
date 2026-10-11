@@ -1,6 +1,6 @@
 import type { IRoom, ISubscription } from '@rocket.chat/core-typings';
 import { useStableCallback } from '@rocket.chat/fuselage-hooks';
-import { useMethod, useRouter, useToastMessageDispatch } from '@rocket.chat/ui-contexts';
+import { useEndpoint, useRouter, useToastMessageDispatch } from '@rocket.chat/ui-contexts';
 
 import { roomCoordinator } from '../../../lib/rooms/roomCoordinator';
 import { Subscriptions } from '../../../stores';
@@ -12,7 +12,7 @@ type GoToRoomByIdOptions = {
 
 export const useGoToRoom = (): ((roomId: IRoom['_id'], options?: GoToRoomByIdOptions) => Promise<void>) => {
 	const router = useRouter();
-	const getRoomById = useMethod('getRoomById');
+	const getRoomInfo = useEndpoint('GET', '/v1/rooms.info');
 	const dispatchToastMessage = useToastMessageDispatch();
 
 	// TODO: remove params recycling
@@ -27,7 +27,10 @@ export const useGoToRoom = (): ((roomId: IRoom['_id'], options?: GoToRoomByIdOpt
 		}
 
 		try {
-			const room = await getRoomById(roomId);
+			const { room } = await getRoomInfo({ roomId });
+			if (!room) {
+				throw new Error('Room not found');
+			}
 			roomCoordinator.openRouteLink(room.t, { rid: room._id, ...room }, router.getSearchParameters(), options);
 		} catch (error) {
 			dispatchToastMessage({ type: 'error', message: error });

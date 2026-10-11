@@ -56,8 +56,8 @@ describe('[File Upload - Image Rotation]', () => {
 			updateSetting('Message_Attachments_Strip_Exif', stripExifSetting),
 			updateSetting('Message_Attachments_Thumbnails_Enabled', thumbnailsEnabledSetting),
 			deleteRoom({ type: 'p', roomId: testRoom._id }),
-			deleteUser(user),
 		]);
+		await deleteUser(user);
 	});
 
 	it('should rotate pixels and strip EXIF orientation', async () => {

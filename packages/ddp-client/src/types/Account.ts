@@ -9,11 +9,14 @@ type User = {
 	tokenExpires?: Date;
 } & Record<string, unknown>;
 
-export interface Account
-	extends Emitter<{
-		uid: string | undefined;
-		user?: User;
-	}> {
+type AccountEvents = {
+	uid: string | undefined;
+	user: User;
+	emailVerificationLink: string;
+	pageLoadLogin: unknown;
+};
+
+export interface Account extends Emitter<AccountEvents> {
 	uid?: string;
 	user?: User;
 	loginWithPassword(username: string, password: string): Promise<void>;
@@ -23,18 +26,30 @@ export interface Account
 		tokenExpires: Date;
 	}>;
 	logout(): Promise<void>;
+	onLogin(fn: () => void): () => void;
+	onLogout(fn: () => void): () => void;
+	onEmailVerificationLink(fn: (token: string) => void): () => void;
+	onPageLoadLogin(fn: (loginAttempt: unknown) => void): () => void;
 }
 
-export class AccountImpl
-	extends Emitter<{
-		uid: string | undefined;
-		user: User;
-	}>
-	implements Account
-{
-	uid?: string;
+export class AccountImpl extends Emitter<AccountEvents> implements Account {
+	private _uid?: string;
 
 	user?: { id: string; username?: string; token?: string; tokenExpires?: Date };
+
+	get uid(): string | undefined {
+		return this._uid;
+	}
+
+	// Setter emits only on transition so onLogin/onLogout fire once per login/logout,
+	// not on every credential refresh. Direct writes from outside the SDK
+	// (adoptAccountFromMeteorLoginResult, teardownAuthenticatedConnection) flow through
+	// here and become the canonical login signal regardless of transport mode.
+	set uid(value: string | undefined) {
+		if (value === this._uid) return;
+		this._uid = value;
+		this.emit('uid', value);
+	}
 
 	constructor(private readonly client: ClientStream) {
 		super();
@@ -65,7 +80,6 @@ export class AccountImpl
 			id,
 		};
 		this.uid = id;
-		this.emit('uid', this.uid);
 		this.emit('user', this.user);
 	}
 
@@ -113,8 +127,31 @@ export class AccountImpl
 		await this.client.callAsyncWithOptions('logout', {
 			wait: true,
 		});
-		this.uid = undefined;
 		this.user = undefined;
-		this.emit('uid', this.uid);
+		this.uid = undefined;
+	}
+
+	onLogin(fn: () => void): () => void {
+		return this.on('uid', (uid) => {
+			if (uid !== undefined) fn();
+		});
+	}
+
+	onLogout(fn: () => void): () => void {
+		return this.on('uid', (uid) => {
+			if (uid === undefined) fn();
+		});
+	}
+
+	// emailVerificationLink and pageLoadLogin have no native source in the SDK — the actual
+	// events come from Meteor's accounts-base (URL hash routing for verification, pending
+	// login attempts for OAuth). The bridge in apps/meteor/client/lib/sdk/ddpSdk.ts forwards
+	// Meteor's events into this emitter; flag-OFF mode delegates directly via meteorBackedSdk.
+	onEmailVerificationLink(fn: (token: string) => void): () => void {
+		return this.on('emailVerificationLink', fn);
+	}
+
+	onPageLoadLogin(fn: (loginAttempt: unknown) => void): () => void {
+		return this.on('pageLoadLogin', fn);
 	}
 }

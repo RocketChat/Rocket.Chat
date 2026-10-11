@@ -61,14 +61,14 @@ test.describe('OC - Forwarding to away departments (EE)', () => {
 		visitor = createFakeVisitor();
 		// Online Agent window opens with idleTimeLimit of 300 by default, therefore it will remain online
 		poHomeOmnichannelOnlineAgent = new HomeOmnichannel(page);
-		await poHomeOmnichannelOnlineAgent.page.goto('/');
-		await poHomeOmnichannelOnlineAgent.waitForHome();
+		await poHomeOmnichannelOnlineAgent.goto();
 
 		await expect(await setSettingValueById(api, 'Accounts_Default_User_Preferences_idleTimeLimit', 1)).toBeOK();
 
 		// Away Agent window opens with idleTimeLimit of 1, therefore after a second it will turn away
 		({ page: omnichannelPage } = await createAuxContext(browser, Users.user2, '/', false));
 		poHomeOmnichannelAwayAgent = new HomeOmnichannel(omnichannelPage);
+		await poHomeOmnichannelAwayAgent.waitForHome();
 		await expect(poHomeOmnichannelAwayAgent.navbar.getUserStatusBadge('away')).toBeVisible();
 	});
 

@@ -17,7 +17,7 @@ import { links } from '../../../../lib/links';
 import type { MarketplaceRouteContext } from '../../hooks/useAppsCountQuery';
 import { usePrivateAppsEnabled } from '../../hooks/usePrivateAppsEnabled';
 
-type UninstallGrandfatheredAppModalProps = {
+export type UninstallGrandfatheredAppModalProps = {
 	context: MarketplaceRouteContext;
 	limit: number;
 	appName: string;

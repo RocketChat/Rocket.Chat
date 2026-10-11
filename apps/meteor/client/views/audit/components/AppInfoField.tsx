@@ -6,7 +6,7 @@ import AuditModalField from './AuditModalField';
 import AuditModalLabel from './AuditModalLabel';
 import AuditModalText from './AuditModalText';
 
-type AppInfoFieldProps = {
+export type AppInfoFieldProps = {
 	appId: string;
 };
 

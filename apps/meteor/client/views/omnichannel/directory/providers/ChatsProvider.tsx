@@ -5,7 +5,7 @@ import { useMemo, useRef } from 'react';
 import { ChatsContext, initialValues } from '../contexts/ChatsContext';
 import { useDisplayFilters } from '../hooks/useDisplayFilters';
 
-type ChatsProviderProps = {
+export type ChatsProviderProps = {
 	children: ReactNode;
 };
 

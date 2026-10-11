@@ -3,7 +3,7 @@ import { useRef, useEffect } from 'react';
 import { useDepsMatch } from './useDepsMatch';
 
 export function useInstance<T>(factory: () => [instance: T, release?: () => void], deps: unknown[]): T {
-	const ref = useRef<[instance: T, release?: () => void]>();
+	const ref = useRef<[instance: T, release?: () => void]>(undefined);
 
 	useEffect(
 		() => () => {

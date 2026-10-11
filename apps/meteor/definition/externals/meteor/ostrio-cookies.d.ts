@@ -9,8 +9,6 @@ declare module 'meteor/ostrio:cookies' {
 			allowedCordovaOrigins?: RegExp | boolean;
 		});
 
-		middleware(): (req: Request, res: Response, next: () => void) => void;
-
 		get(key: string, _tmp?: string): string | undefined;
 	}
 }

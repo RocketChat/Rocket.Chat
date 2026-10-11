@@ -1,9 +1,8 @@
 import { Box, Skeleton } from '@rocket.chat/fuselage';
-import type { ReactElement } from 'react';
 
-const ThreadSkeleton = (): ReactElement => {
+const ThreadSkeleton = () => {
 	return (
-		<Box p={24}>
+		<Box padding={24}>
 			<Skeleton width='32px' height='32px' variant='rect' /> <Skeleton />
 			{Array(5)
 				.fill(5)

@@ -8,7 +8,7 @@ export type ChannelsMessagesProps = PaginatedRequest<
 		roomId: IRoom['_id'];
 		mentionIds?: string;
 		starredIds?: string;
-		pinned?: boolean;
+		pinned?: string;
 		query?: Record<string, any>;
 	},
 	'ts'

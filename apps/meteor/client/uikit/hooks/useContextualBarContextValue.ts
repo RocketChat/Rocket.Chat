@@ -21,6 +21,7 @@ type UseContextualBarContextValueParams = {
 			blockId?: string | undefined;
 		};
 	}>;
+	rid: string;
 };
 type UseContextualBarContextValueReturn = ContextType<typeof UiKitContext>;
 
@@ -28,6 +29,7 @@ export const useContextualBarContextValue = ({
 	view,
 	values,
 	updateValues,
+	rid,
 }: UseContextualBarContextValueParams): UseContextualBarContextValueReturn => {
 	const actionManager = useUiKitActionManager();
 
@@ -53,6 +55,7 @@ export const useContextualBarContextValue = ({
 					blockId,
 					value,
 				},
+				rid,
 			});
 		},
 		updateState: ({ actionId, value, blockId = 'default' }) => {

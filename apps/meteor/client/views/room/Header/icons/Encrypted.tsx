@@ -4,7 +4,9 @@ import { useSetting } from '@rocket.chat/ui-contexts';
 import { memo } from 'react';
 import { useTranslation } from 'react-i18next';
 
-const Encrypted = ({ room }: { room: IRoom }) => {
+export type EncryptedProps = { room: IRoom };
+
+const Encrypted = ({ room }: EncryptedProps) => {
 	const { t } = useTranslation();
 	const e2eEnabled = useSetting('E2E_Enable');
 	return e2eEnabled && room?.encrypted ? <HeaderState title={t('Encrypted')} icon='key' color='status-font-on-success' /> : null;

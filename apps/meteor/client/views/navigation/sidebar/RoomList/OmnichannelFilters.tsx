@@ -21,7 +21,7 @@ const OmnichannelFilters = () => {
 				{canViewOmnichannelQueue && <RoomListFiltersItem group='queue' icon={sidePanelFiltersConfig.queue.icon} />}
 				<RoomListFiltersItem group='onHold' icon={sidePanelFiltersConfig.onHold.icon} />
 			</Box>
-			<Divider borderColor='stroke-light' mb={4} mi={16} />
+			<Divider borderColor='stroke-light' marginBlock={4} marginInline={16} />
 		</>
 	);
 };

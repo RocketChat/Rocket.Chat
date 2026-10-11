@@ -86,7 +86,7 @@ const RegisterWorkspaceSetupStepOneModal = ({
 					<Box is='p' fontSize='p2' withRichContent>
 						{t('RegisterWorkspace_Setup_Subtitle')}
 					</Box>
-					<Field pbs={10}>
+					<Field paddingBlockStart={10}>
 						<FieldLabel htmlFor={emailField}>{t('RegisterWorkspace_Setup_Label')}</FieldLabel>
 						<FieldRow>
 							<TextInput
@@ -97,12 +97,12 @@ const RegisterWorkspaceSetupStepOneModal = ({
 							/>
 						</FieldRow>
 					</Field>
-					<Box mb={16} fontSize='c1'>
+					<Box marginBlock={16} fontSize='c1'>
 						<Box is='p'>
 							<strong>{t('RegisterWorkspace_Setup_Have_Account_Title')}</strong>
 						</Box>
 						<Box is='p'>{t('RegisterWorkspace_Setup_Have_Account_Subtitle')}</Box>
-						<Box is='p' pbs={16}>
+						<Box is='p' paddingBlockStart={16}>
 							<strong>{t('RegisterWorkspace_Setup_No_Account_Title')}</strong>
 						</Box>
 						<Box is='p'>{t('RegisterWorkspace_Setup_No_Account_Subtitle')}</Box>

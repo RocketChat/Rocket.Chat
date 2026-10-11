@@ -1,8 +1,8 @@
+import { getTimezoneNames } from '@rocket.chat/tools';
 import { useMemo } from 'react';
 
-const getTimeZoneNames = (): string[] => {
-	const intl = Intl as typeof Intl & { supportedValuesOf?(key: 'timeZone'): string[] };
-	return typeof intl.supportedValuesOf === 'function' ? intl.supportedValuesOf('timeZone') : [];
-};
-
-export const useTimezoneNameList = (): string[] => useMemo(() => getTimeZoneNames(), []);
+export const useTimezoneNameList = (): string[] =>
+	useMemo(() => {
+		const names = getTimezoneNames();
+		return names.includes('UTC') ? names : ['UTC', ...names];
+	}, []);

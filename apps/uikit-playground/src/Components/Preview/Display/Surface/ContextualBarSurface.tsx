@@ -12,7 +12,9 @@ import {
 import { Scrollbars } from 'rc-scrollbars';
 import type { ReactNode } from 'react';
 
-const ContextualBarSurface = ({ children }: { children: ReactNode }) => (
+export type ContextualBarSurfaceProps = { children: ReactNode };
+
+const ContextualBarSurface = ({ children }: ContextualBarSurfaceProps) => (
 	<Contextualbar>
 		<ContextualbarHeader>
 			<Avatar url='data:image/gif;base64,R0lGODlhAQABAIAAAMLCwgAAACH5BAAAAAAALAAAAAABAAEAAAICRAEAOw==' />
@@ -20,7 +22,7 @@ const ContextualBarSurface = ({ children }: { children: ReactNode }) => (
 			<ContextualbarAction data-qa='ContextualbarActionClose' title='Close' name='cross' />
 		</ContextualbarHeader>
 
-		<Box height='100%' p='12px'>
+		<Box height='100%' padding='12px'>
 			<Box height='100%' display='flex' flexShrink={1} flexDirection='column' flexGrow={1}>
 				<Scrollbars
 					autoHide

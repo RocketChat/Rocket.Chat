@@ -1,16 +1,15 @@
 import { css } from '@rocket.chat/css-in-js';
 import { Box, Bubble } from '@rocket.chat/fuselage';
-import type { ReactElement } from 'react';
 import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import type { Upload } from '../../../../lib/chats/Upload';
 
-type UploadProgressIndicatorProps = {
+export type UploadProgressIndicatorProps = {
 	uploads: readonly Upload[];
 };
 
-const UploadProgressIndicator = ({ uploads }: UploadProgressIndicatorProps): ReactElement | null => {
+const UploadProgressIndicator = ({ uploads }: UploadProgressIndicatorProps) => {
 	const { t } = useTranslation();
 
 	const { percentage, count } = useMemo(() => {
@@ -64,7 +63,7 @@ const UploadProgressIndicator = ({ uploads }: UploadProgressIndicatorProps): Rea
 	}
 
 	return (
-		<Box className={customClass} mbs={8}>
+		<Box className={customClass} marginBlockStart={8}>
 			<Bubble role='status'>{`${percentage}% ${t('Uploading__count__file', { count })}`}</Bubble>
 		</Box>
 	);

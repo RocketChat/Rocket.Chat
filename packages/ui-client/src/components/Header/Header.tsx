@@ -3,7 +3,7 @@ import type { ComponentPropsWithoutRef } from 'react';
 
 import HeaderDivider from './HeaderDivider';
 
-type HeaderProps = ComponentPropsWithoutRef<typeof Box>;
+export type HeaderProps = ComponentPropsWithoutRef<typeof Box>;
 
 const Header = (props: HeaderProps) => (
 	<Box
@@ -17,7 +17,7 @@ const Header = (props: HeaderProps) => (
 		flexShrink={0}
 	>
 		<Box
-			pi='x16'
+			paddingInline='x16'
 			height='x44'
 			display='flex'
 			flexGrow={1}
@@ -25,7 +25,7 @@ const Header = (props: HeaderProps) => (
 			alignItems='center'
 			overflow='hidden'
 			flexDirection='row'
-			bg='room'
+			backgroundColor='room'
 			{...props}
 		/>
 		<HeaderDivider />

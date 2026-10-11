@@ -1,5 +1,5 @@
 import { Pagination, States, StatesAction, StatesActions, StatesIcon, StatesTitle, Box, Button } from '@rocket.chat/fuselage';
-import { useDebouncedValue, useEffectEvent } from '@rocket.chat/fuselage-hooks';
+import { useDebouncedValue, useStableCallback } from '@rocket.chat/fuselage-hooks';
 import {
 	GenericTable,
 	GenericTableHeader,
@@ -8,6 +8,7 @@ import {
 	GenericTableLoadingTable,
 	usePagination,
 	useSort,
+	GenericNoResults,
 } from '@rocket.chat/ui-client';
 import { hashKey } from '@tanstack/react-query';
 import { useMemo, useState } from 'react';
@@ -16,7 +17,6 @@ import { useTranslation } from 'react-i18next';
 import ContactTableRow from './ContactTableRow';
 import { useCurrentContacts } from './hooks/useCurrentContacts';
 import FilterByText from '../../../../components/FilterByText';
-import GenericNoResults from '../../../../components/GenericNoResults';
 import { links } from '../../../../lib/links';
 import { useOmnichannelDirectoryRouter } from '../hooks/useOmnichannelDirectoryRouter';
 
@@ -42,7 +42,7 @@ function ContactTable() {
 		500,
 	);
 
-	const onButtonNewClick = useEffectEvent(() =>
+	const onButtonNewClick = useStableCallback(() =>
 		omnichannelDirectoryRouter.navigate({
 			tab: 'contacts',
 			context: 'new',
@@ -86,7 +86,7 @@ function ContactTable() {
 			>
 				{t('Last_Chat')}
 			</GenericTableHeaderCell>
-			<GenericTableHeaderCell key='spacer' w={40} />
+			<GenericTableHeaderCell key='spacer' width={40} />
 		</>
 	);
 
@@ -123,7 +123,11 @@ function ContactTable() {
 				<>
 					<GenericTable aria-label={t('Omnichannel_Contact_Center_Contacts')}>
 						<GenericTableHeader>{headers}</GenericTableHeader>
-						<GenericTableBody>{data?.contacts.map((contact) => <ContactTableRow key={contact._id} {...contact} />)}</GenericTableBody>
+						<GenericTableBody>
+							{data?.contacts.map((contact) => (
+								<ContactTableRow key={contact._id} {...contact} />
+							))}
+						</GenericTableBody>
 					</GenericTable>
 					<Pagination
 						divider
@@ -137,7 +141,7 @@ function ContactTable() {
 				</>
 			)}
 			{isError && (
-				<Box mbs={20}>
+				<Box marginBlockStart={20}>
 					<States>
 						<StatesIcon variation='danger' name='circle-exclamation' />
 						<StatesTitle>{t('Connection_error')}</StatesTitle>

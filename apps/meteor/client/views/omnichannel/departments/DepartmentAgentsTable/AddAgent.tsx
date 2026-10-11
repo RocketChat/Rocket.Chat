@@ -1,5 +1,5 @@
 import { Box, Button } from '@rocket.chat/fuselage';
-import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
+import { useStableCallback } from '@rocket.chat/fuselage-hooks';
 import { useToastMessageDispatch } from '@rocket.chat/ui-contexts';
 import type { AriaAttributes } from 'react';
 import { useState } from 'react';
@@ -9,7 +9,7 @@ import { useEndpointMutation } from '../../../../hooks/useEndpointMutation';
 import AutoCompleteAgent from '../../components/AutoCompleteAgent';
 import type { IDepartmentAgent } from '../definitions';
 
-type AddAgentProps = Pick<AriaAttributes, 'aria-labelledby'> & {
+export type AddAgentProps = Pick<AriaAttributes, 'aria-labelledby'> & {
 	agentList: IDepartmentAgent[];
 	onAdd: (agent: IDepartmentAgent) => void;
 };
@@ -23,9 +23,9 @@ function AddAgent({ agentList, onAdd, 'aria-labelledby': ariaLabelledBy }: AddAg
 
 	const dispatchToastMessage = useToastMessageDispatch();
 
-	const handleAgent = useEffectEvent((e: string) => setUserId(e));
+	const handleAgent = useStableCallback((e: string) => setUserId(e));
 
-	const handleSave = useEffectEvent(async () => {
+	const handleSave = useStableCallback(async () => {
 		if (!userId) {
 			return;
 		}
@@ -45,7 +45,7 @@ function AddAgent({ agentList, onAdd, 'aria-labelledby': ariaLabelledBy }: AddAg
 	return (
 		<Box role='group' aria-labelledby={ariaLabelledBy} display='flex' alignItems='center'>
 			<AutoCompleteAgent value={userId} onChange={handleAgent} />
-			<Button disabled={!userId} onClick={handleSave} mis={8} primary>
+			<Button disabled={!userId} onClick={handleSave} marginInlineStart={8} primary>
 				{t('Add')}
 			</Button>
 		</Box>

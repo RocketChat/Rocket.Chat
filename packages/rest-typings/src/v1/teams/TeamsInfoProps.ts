@@ -8,7 +8,10 @@ const teamsInfoPropsSchema = {
 		teamId: { type: 'string' },
 		teamName: { type: 'string' },
 	},
-	oneOf: [{ required: ['teamId'] }, { required: ['teamName'] }],
+	oneOf: [
+		{ type: 'object', required: ['teamId'] },
+		{ type: 'object', required: ['teamName'] },
+	],
 	additionalProperties: false,
 };
 

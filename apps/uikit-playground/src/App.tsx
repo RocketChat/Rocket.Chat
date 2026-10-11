@@ -31,7 +31,7 @@ function App() {
 		dispatch(isTabletAction(isTablet));
 	}, [isTablet, dispatch]);
 	return (
-		<Box w='100vw' h='100vh' display='flex' flexDirection='column'>
+		<Box width='100vw' height='100vh' display='flex' flexDirection='column'>
 			<ToastBarProvider>
 				<BrowserRouter>
 					<Routes>

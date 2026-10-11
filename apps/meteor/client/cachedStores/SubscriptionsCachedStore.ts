@@ -34,7 +34,7 @@ class SubscriptionsCachedStore extends PrivateCachedStore<SubscriptionWithRoom, 
 			cl: room?.cl,
 			topic: room?.topic,
 			announcement: room?.announcement,
-			broadcast: room?.broadcast,
+			broadcast: room?.broadcast || undefined,
 			archived: room?.archived,
 			avatarETag: room?.avatarETag,
 			retention: (room as IRoomWithRetentionPolicy | undefined)?.retention,
@@ -86,7 +86,7 @@ class SubscriptionsCachedStore extends PrivateCachedStore<SubscriptionWithRoom, 
 			deserialized.lastMessage._updatedAt = new Date(deserialized.lastMessage._updatedAt);
 		}
 
-		return deserialized;
+		return deserialized && Rooms.use.getState().has(deserialized.rid) ? this.mapRecord(deserialized) : deserialized;
 	}
 }
 

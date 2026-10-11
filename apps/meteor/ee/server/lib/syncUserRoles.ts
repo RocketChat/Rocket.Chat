@@ -3,9 +3,9 @@ import type { IUser, IRole, AtLeast } from '@rocket.chat/core-typings';
 import { License } from '@rocket.chat/license';
 import { Users } from '@rocket.chat/models';
 
-import { settings } from '../../../app/settings/server';
 import { addUserRolesAsync } from '../../../server/lib/roles/addUserRoles';
 import { removeUserFromRolesAsync } from '../../../server/lib/roles/removeUserFromRoles';
+import { settings } from '../../../server/settings';
 
 type setUserRolesOptions = {
 	// If specified, the function will not add nor remove any role that is not on this list.

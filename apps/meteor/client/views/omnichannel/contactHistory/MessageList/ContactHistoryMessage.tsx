@@ -3,7 +3,6 @@ import {
 	Message as MessageTemplate,
 	MessageLeftContainer,
 	MessageContainer,
-	MessageBody,
 	MessageDivider,
 	MessageName,
 	MessageUsername,
@@ -19,7 +18,7 @@ import {
 	Bubble,
 } from '@rocket.chat/fuselage';
 import { UserAvatar } from '@rocket.chat/ui-avatar';
-import { useUserDisplayName } from '@rocket.chat/ui-client';
+import { useFormatTime, useUserDisplayName } from '@rocket.chat/ui-client';
 import { useUserCard } from '@rocket.chat/ui-contexts';
 import { memo } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -29,9 +28,9 @@ import StatusIndicators from '../../../../components/message/StatusIndicators';
 import Attachments from '../../../../components/message/content/Attachments';
 import UiKitMessageBlock from '../../../../components/message/uikit/UiKitMessageBlock';
 import { useFormatDate } from '../../../../hooks/useFormatDate';
-import { useFormatTime } from '../../../../hooks/useFormatTime';
+import { toPlainTextRoot } from '../../../../lib/toPlainTextRoot';
 
-type ContactHistoryMessageProps = {
+export type ContactHistoryMessageProps = {
 	message: IMessage;
 	sequential: boolean;
 	isNewDay: boolean;
@@ -117,10 +116,13 @@ const ContactHistoryMessage = ({ message, sequential, isNewDay, showUserAvatar }
 						</MessageHeaderTemplate>
 					)}
 					{!!quotes?.length && <Attachments attachments={quotes} />}
-					{!message.blocks && message.md && (
-						<MessageBody data-qa-type='message-body' dir='auto'>
-							<MessageContentBody md={message.md} mentions={message.mentions} channels={message.channels} />
-						</MessageBody>
+					{!message.blocks && (
+						<MessageContentBody
+							data-qa-type='message-body'
+							md={message.md ?? toPlainTextRoot(message.msg)}
+							mentions={message.mentions}
+							channels={message.channels}
+						/>
 					)}
 					{message.blocks && <UiKitMessageBlock rid={message.rid} mid={message._id} blocks={message.blocks} />}
 					{!!attachments && <Attachments attachments={attachments} />}

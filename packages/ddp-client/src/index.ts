@@ -6,3 +6,4 @@ export type * from './types/ClientStream';
 export type * from './types/methods';
 export type * from './types/streams';
 export type { SDK } from './types/SDK';
+export type { ConnectionStatus } from './Connection';

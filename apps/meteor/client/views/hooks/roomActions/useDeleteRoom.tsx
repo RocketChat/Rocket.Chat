@@ -1,6 +1,6 @@
 import type { IRoom, RoomAdminFieldsType } from '@rocket.chat/core-typings';
 import { isRoomFederated } from '@rocket.chat/core-typings';
-import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
+import { useStableCallback } from '@rocket.chat/fuselage-hooks';
 import { GenericModal } from '@rocket.chat/ui-client';
 import { useSetModal, useToastMessageDispatch, useRouter, usePermission, useEndpoint } from '@rocket.chat/ui-contexts';
 import { useMutation } from '@tanstack/react-query';
@@ -69,7 +69,7 @@ export const useDeleteRoom = (room: IRoom | Pick<IRoom, RoomAdminFieldsType>, { 
 
 	const isDeleting = deleteTeamMutation.isPending || deleteRoomMutation.isPending;
 
-	const handleDelete = useEffectEvent(() => {
+	const handleDelete = useStableCallback(() => {
 		const handleDeleteTeam = async (roomsToRemove: IRoom['_id'][]) => {
 			if (!room.teamId) {
 				return;

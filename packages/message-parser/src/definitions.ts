@@ -35,6 +35,30 @@ export type CodeLine = {
 	value: Plain;
 };
 
+export type TableCellAlignment = 'left' | 'center' | 'right' | undefined;
+
+export type TableCell = {
+	type: 'TABLE_CELL';
+	align: TableCellAlignment;
+	value: Inlines[];
+};
+
+export type TableRow = {
+	type: 'TABLE_ROW';
+	value: TableCell[];
+};
+
+export type Table = {
+	type: 'TABLE';
+	value: {
+		header: TableCell[];
+		rows: TableRow[];
+	};
+	// New form is a `[start, end]` offset span; the `Plain` form is kept in the
+	// type only to tolerate previously-persisted data at runtime.
+	fallback?: SourceRange | Plain;
+};
+
 export type Color = {
 	type: 'COLOR';
 	value: {
@@ -119,9 +143,22 @@ export type Plain = {
 	value: string;
 };
 
+// [start, end] offsets into the original parsed source. Consumers that don't
+// implement a renderer for a node can slice the source to show the raw markup,
+// without duplicating the text into the AST.
+export type SourceRange = [number, number];
+
 export type LineBreak = {
 	type: 'LINE_BREAK';
 	value: undefined;
+};
+
+export type HorizontalRule = {
+	type: 'HORIZONTAL_RULE';
+	value: undefined;
+	// New form is a `[start, end]` offset span; the `Plain` form is kept in the
+	// type only to tolerate previously-persisted data at runtime.
+	fallback?: SourceRange | Plain;
 };
 
 export type KaTeX = {
@@ -171,7 +208,9 @@ export type Timestamp = {
 		timestamp: string;
 		format: 't' | 'T' | 'd' | 'D' | 'f' | 'F' | 'R';
 	};
-	fallback?: Plain;
+	// New form is a `[start, end]` offset span; the `Plain` form is kept in the
+	// type only to tolerate previously-persisted data at runtime.
+	fallback?: SourceRange | Plain;
 };
 
 export type Types = {
@@ -199,10 +238,14 @@ export type Types = {
 	LIST_ITEM: ListItem;
 	IMAGE: Image;
 	LINE_BREAK: LineBreak;
+	HORIZONTAL_RULE: HorizontalRule;
 	KATEX: KaTeX;
 	INLINE_KATEX: InlineKaTeX;
 	TIMESTAMP: Timestamp;
 	SPOILER_BLOCK: SpoilerBlock;
+	TABLE: Table;
+	TABLE_ROW: TableRow;
+	TABLE_CELL: TableCell;
 };
 
 export type ASTNode =
@@ -224,7 +267,9 @@ export type ASTNode =
 	| ChannelMention
 	| Emoji
 	| Color
-	| Tasks;
+	| Tasks
+	| HorizontalRule
+	| Table;
 
 export type TypesKeys = keyof Types;
 
@@ -244,6 +289,7 @@ export type Inlines =
 	| Color
 	| InlineKaTeX;
 
-export type Blocks = Code | Heading | Quote | SpoilerBlock | ListItem | Tasks | OrderedList | UnorderedList | LineBreak | KaTeX;
+export type Blocks =
+	Code | Heading | Quote | SpoilerBlock | ListItem | Tasks | OrderedList | UnorderedList | LineBreak | KaTeX | HorizontalRule | Table;
 
 export type Root = Array<Paragraph | Blocks> | [BigEmoji];

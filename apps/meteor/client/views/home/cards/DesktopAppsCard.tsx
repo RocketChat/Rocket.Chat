@@ -1,5 +1,5 @@
 import type { Card } from '@rocket.chat/fuselage';
-import type { ComponentProps, ReactElement } from 'react';
+import type { ComponentProps } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { GenericCard, GenericCardButton } from '../../../components/GenericCard';
@@ -10,7 +10,7 @@ const WINDOWS_APP_URL = links.go.desktopAppWindows;
 const LINUX_APP_URL = links.go.desktopAppLinux;
 const MAC_APP_URL = links.go.desktopAppMac;
 
-const DesktopAppsCard = (props: Omit<ComponentProps<typeof Card>, 'type'>): ReactElement => {
+const DesktopAppsCard = (props: Omit<ComponentProps<typeof Card>, 'type'>) => {
 	const { t } = useTranslation();
 	const handleOpenLink = useExternalLink();
 

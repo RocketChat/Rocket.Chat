@@ -10,13 +10,11 @@ import {
 import { useButtonPattern } from '@rocket.chat/fuselage-hooks';
 import { useUserDisplayName } from '@rocket.chat/ui-client';
 import { useUserPresence, useUserCard } from '@rocket.chat/ui-contexts';
-import type { ReactElement } from 'react';
-import { memo } from 'react';
+import { memo, type MouseEvent } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import StatusIndicators from './StatusIndicators';
 import MessageRoles from './header/MessageRoles';
-import { useMessageRoles } from './header/hooks/useMessageRoles';
 import {
 	useMessageListShowUsername,
 	useMessageListShowRealName,
@@ -25,18 +23,20 @@ import {
 	useMessageListFormatTime,
 } from './list/MessageListContext';
 import { normalizeUsername } from '../../../lib/utils/normalizeUsername';
+import { useUserRolesByScope } from '../../hooks/useUserRolesByScope';
+import { useIsSelecting } from '../../views/room/MessageList/contexts/SelectedMessagesContext';
 
-type MessageHeaderProps = {
+export type MessageHeaderProps = {
 	message: IMessage;
 };
 
-const MessageHeader = ({ message }: MessageHeaderProps): ReactElement => {
+const MessageHeader = ({ message }: MessageHeaderProps) => {
 	const { t } = useTranslation();
 
 	const formatTime = useMessageListFormatTime();
 	const formatDateAndTime = useMessageListFormatDateAndTime();
-	const { triggerProps, openUserCard } = useUserCard();
-	const buttonProps = useButtonPattern((e) => openUserCard(e, message.u.username));
+	const { openUserCard, openUserInfo } = useUserCard();
+	const buttonProps = useButtonPattern(() => openUserInfo(message.u.username));
 
 	const showRealName = useMessageListShowRealName();
 	const user = { ...message.u, roles: [], ...useUserPresence(message.u._id) };
@@ -46,24 +46,24 @@ const MessageHeader = ({ message }: MessageHeaderProps): ReactElement => {
 	const normalizedUsername = normalizeUsername(user.username);
 
 	const showRoles = useMessageListShowRoles();
-	const roles = useMessageRoles(message.u._id, message.rid, showRoles);
+	const { workspaceRoles, roomRoles } = useUserRolesByScope(message.u._id, message.rid, showRoles);
+	const roles = [...workspaceRoles, ...roomRoles];
 	const shouldShowRolesList = showRoles && roles.length > 0;
+
+	// While selecting, the whole row toggles the selection, so the name stops being a button.
+	const isSelecting = useIsSelecting();
+	const authorTriggerProps = isSelecting
+		? {}
+		: {
+				...buttonProps,
+				style: { cursor: 'pointer' },
+				onMouseEnter: (e: MouseEvent) => openUserCard(e, message.u.username),
+			};
 
 	return (
 		<FuselageMessageHeader>
-			<MessageNameContainer
-				id={`${message._id}-displayName`}
-				aria-label={displayName}
-				style={{ cursor: 'pointer' }}
-				{...buttonProps}
-				{...triggerProps}
-			>
-				<MessageName
-					title={!showUsername && !usernameAndRealNameAreSame ? `@${normalizedUsername}` : undefined}
-					data-username={normalizedUsername}
-				>
-					{message.alias || displayName}
-				</MessageName>
+			<MessageNameContainer id={`${message._id}-displayName`} aria-label={displayName} {...authorTriggerProps}>
+				<MessageName data-username={normalizedUsername}>{message.alias || displayName}</MessageName>
 				{showUsername && (
 					<>
 						{' '}

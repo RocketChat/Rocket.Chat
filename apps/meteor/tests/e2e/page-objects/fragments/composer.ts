@@ -12,7 +12,7 @@ class VideoRecorderPopup extends Popup {
 	}
 
 	get btnStopRecording(): Locator {
-		return this.root.getByRole('button', { name: 'Stop Recording' });
+		return this.root.getByRole('button', { name: 'Stop recording' });
 	}
 
 	get btnSend(): Locator {
@@ -44,7 +44,7 @@ export abstract class Composer {
 	}
 
 	get toolbarPrimaryActions(): Locator {
-		return this.root.getByRole('toolbar', { name: 'Composer Primary Actions' });
+		return this.root.getByRole('toolbar', { name: 'Composer primary actions' });
 	}
 
 	get allPrimaryActions(): Locator {
@@ -112,11 +112,15 @@ export abstract class Composer {
 	}
 
 	get readOnlyFooter(): Locator {
-		return this.root.getByText('This room is read only');
+		return this.root.getByText('This room is read-only');
 	}
 
 	get typingIndicator(): Locator {
 		return this.root.getByRole('status').getByText(/typing/i);
+	}
+
+	get addLinkModal(): Locator {
+		return this.root.page().getByRole('dialog', { name: 'Add link' });
 	}
 }
 

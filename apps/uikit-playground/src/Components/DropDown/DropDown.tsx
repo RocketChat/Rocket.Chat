@@ -4,7 +4,7 @@ import { Fragment } from 'react';
 import Items from './Items';
 import type { Item, ItemBranch } from './types';
 
-type DropDownProps = {
+export type DropDownProps = {
 	readonly blocksTree: Item;
 };
 
@@ -20,7 +20,7 @@ const DropDown = ({ blocksTree }: DropDownProps) => {
 	);
 
 	return (
-		<Box pbs='15px' pbe='30px'>
+		<Box paddingBlockStart='15px' paddingBlockEnd='30px'>
 			{blocksTree.map((branch: ItemBranch, i: number) => (
 				<Box key={i}>{recursiveComponentTree(branch, layer)}</Box>
 			))}

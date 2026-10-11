@@ -7,7 +7,7 @@ import { isPreviewableImage } from '../../../../lib/utils/isPreviewableImage';
 export type MessageComposerFileItemProps = {
 	upload: Upload;
 	onRemove: (id: string) => void;
-	onEdit: (id: Upload['id'], fileName: string, description?: string) => void;
+	onEdit: (id: Upload['id'], fileName: string, altText?: string) => void;
 	onCancel: (id: Upload['id']) => void;
 	disabled: boolean;
 	shouldPreview?: boolean;

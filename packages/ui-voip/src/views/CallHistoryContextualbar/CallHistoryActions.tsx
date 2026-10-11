@@ -12,7 +12,7 @@ export type HistoryActionCallbacks = {
 	[K in HistoryActions]?: () => void;
 };
 
-type CallHistoryActionsProps = {
+export type CallHistoryActionsProps = {
 	onClose: () => void;
 	actions: HistoryActionCallbacks;
 };
@@ -33,7 +33,8 @@ const i18nDictionary: Record<HistoryActions, string> = {
 	userInfo: 'User_info',
 } as const;
 
-const getItems = (actions: HistoryActionCallbacks, t: TFunction, state: PeekMediaSessionStateReturn) => {
+/** The options menu of a call history entry; a voice call is offered only while no call is under way. */
+export const getCallHistoryMenuItems = (actions: HistoryActionCallbacks, t: TFunction, state: PeekMediaSessionStateReturn) => {
 	return (Object.entries(actions) as [HistoryActions, () => void][])
 		.filter(([_, callback]) => callback)
 		.map(([action, callback]) => {
@@ -53,7 +54,7 @@ const CallHistoryActions = ({ onClose, actions }: CallHistoryActionsProps) => {
 	const { t } = useTranslation();
 
 	const state = usePeekMediaSessionState();
-	const items = getItems(actions, t, state);
+	const items = getCallHistoryMenuItems(actions, t, state);
 	return (
 		<ContextualbarActions>
 			{items.length > 0 && <GenericMenu title={t('Options')} items={items} />}

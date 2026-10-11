@@ -1,6 +1,7 @@
 import type { CalendarEventImportProps } from '@rocket.chat/rest-typings';
 
 import { Users } from './fixtures/userStates';
+import { HomeChannel } from './page-objects';
 import { test, expect, type BaseTest } from './utils/test';
 import { links } from '../../client/lib/links';
 
@@ -19,7 +20,7 @@ test.describe.skip('Calendar', () => {
 	test.describe('Status changes', () => {
 		test.beforeEach(async ({ page, api }) => {
 			expect((await api.post('/users.setStatus', { status: 'away', message: '' })).status()).toBe(200);
-			await page.goto('/home');
+			await new HomeChannel(page).goto();
 		});
 
 		test('Should change user status back to away when there are overlapping imported events', async ({ page, api }) => {

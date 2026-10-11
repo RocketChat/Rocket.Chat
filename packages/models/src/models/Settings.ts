@@ -1,5 +1,5 @@
 import type { ISetting, ISettingColor, ISettingSelectOption, RocketChatRecordDeleted, SettingValue } from '@rocket.chat/core-typings';
-import type { ISettingsModel } from '@rocket.chat/model-typings';
+import type { ISettingsModel, DocumentWithProjection, FindOptionsWithProjection } from '@rocket.chat/model-typings';
 import type {
 	Collection,
 	FindCursor,
@@ -8,13 +8,16 @@ import type {
 	UpdateFilter,
 	UpdateResult,
 	Document,
-	FindOptions,
 	FindOneAndUpdateOptions,
 	WithId,
 	UpdateOptions,
 } from 'mongodb';
 
 import { BaseRaw } from './BaseRaw';
+
+type PublicSettingFields<T extends ISetting> = T extends ISettingColor
+	? Pick<T, '_id' | 'value' | 'editor' | 'enterprise' | 'invalidValue' | 'modules' | 'requiredOnWizard'>
+	: Pick<T, '_id' | 'value' | 'enterprise' | 'invalidValue' | 'modules' | 'requiredOnWizard'>;
 
 export class SettingsRaw extends BaseRaw<ISetting> implements ISettingsModel {
 	constructor(db: Db, trash?: Collection<RocketChatRecordDeleted<ISetting>>) {
@@ -48,7 +51,10 @@ export class SettingsRaw extends BaseRaw<ISetting> implements ISettingsModel {
 		return this.findOne(query);
 	}
 
-	findByIds(_id: string[] | string = [], options?: FindOptions<ISetting>): FindCursor<ISetting> {
+	findByIds<T extends Document = ISetting, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(
+		_id: string[] | string = [],
+		options?: O,
+	): FindCursor<DocumentWithProjection<T, O>> {
 		if (typeof _id === 'string') {
 			_id = [_id];
 		}
@@ -59,7 +65,7 @@ export class SettingsRaw extends BaseRaw<ISetting> implements ISettingsModel {
 			},
 		};
 
-		return this.find(query, options);
+		return this.find<T, O>(query, options);
 	}
 
 	updateValueById(
@@ -174,13 +180,7 @@ export class SettingsRaw extends BaseRaw<ISetting> implements ISettingsModel {
 		return this.updateOne(query, update);
 	}
 
-	findNotHiddenPublic<T extends ISetting = ISetting>(
-		ids: ISetting['_id'][] = [],
-	): FindCursor<
-		T extends ISettingColor
-			? Pick<T, '_id' | 'value' | 'editor' | 'enterprise' | 'invalidValue' | 'modules' | 'requiredOnWizard'>
-			: Pick<T, '_id' | 'value' | 'enterprise' | 'invalidValue' | 'modules' | 'requiredOnWizard'>
-	> {
+	findNotHiddenPublic<T extends ISetting = ISetting>(ids: ISetting['_id'][] = []): FindCursor<PublicSettingFields<T>> {
 		const filter: Filter<ISetting> = {
 			hidden: { $ne: true },
 			public: true,
@@ -190,6 +190,8 @@ export class SettingsRaw extends BaseRaw<ISetting> implements ISettingsModel {
 			filter._id = { $in: ids };
 		}
 
+		// the projection below matches PublicSettingFields, but TypeScript cannot check that against
+		// a conditional type whose input is still a type parameter
 		return this.find(filter, {
 			projection: {
 				_id: 1,
@@ -200,7 +202,7 @@ export class SettingsRaw extends BaseRaw<ISetting> implements ISettingsModel {
 				modules: 1,
 				requiredOnWizard: 1,
 			},
-		});
+		}) as unknown as FindCursor<PublicSettingFields<T>>;
 	}
 
 	findSetupWizardSettings(): FindCursor<ISetting> {

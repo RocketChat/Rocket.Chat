@@ -4,13 +4,13 @@ exports[`AttributesForm renders NewAttribute without crashing 1`] = `
 <body>
   <div>
     <div
-      class="rcx-box rcx-box--full rcx-vertical-bar rcx-css-1ph8q3"
+      class="rcx-box rcx-box--full rcx-vertical-bar rcx-css-1d8k487"
     >
       <div
         class="rcx-box rcx-box--full rcx-css-1svuzur"
       >
         <div
-          class="rcx-box rcx-box--full rcx-css-vlo1oi rcx-css-1cb6i7s"
+          class="rcx-box rcx-box--full rcx-css-1pd039f rcx-css-1cb6i7s"
           data-overlayscrollbars="host"
         >
           <div
@@ -28,7 +28,7 @@ exports[`AttributesForm renders NewAttribute without crashing 1`] = `
           >
             <form
               class="rcx-box rcx-box--full rcx-css-zg7o7h"
-              id=":r0:"
+              id="_r_0_"
             >
               <div
                 class="rcx-box rcx-box--full rcx-css-1jggbrp rcx-css-1fuhgt0"
@@ -40,7 +40,7 @@ exports[`AttributesForm renders NewAttribute without crashing 1`] = `
               >
                 <label
                   class="rcx-box rcx-box--full rcx-field__label rcx-label"
-                  for=":r1:"
+                  for="_r_1_"
                 >
                   Name
                   <span
@@ -57,7 +57,7 @@ exports[`AttributesForm renders NewAttribute without crashing 1`] = `
                     aria-invalid="false"
                     aria-required="true"
                     class="rcx-box rcx-box--full rcx-box--animated rcx-input-box--type-text rcx-input-box"
-                    id=":r1:"
+                    id="_r_1_"
                     name="name"
                     size="1"
                     type="text"
@@ -69,7 +69,7 @@ exports[`AttributesForm renders NewAttribute without crashing 1`] = `
               >
                 <label
                   class="rcx-box rcx-box--full rcx-field__label rcx-label"
-                  id=":r2:"
+                  id="_r_2_"
                 >
                   Values
                   <span
@@ -84,7 +84,7 @@ exports[`AttributesForm renders NewAttribute without crashing 1`] = `
                 >
                   <input
                     aria-invalid="false"
-                    aria-labelledby=":r2:"
+                    aria-labelledby="_r_2_"
                     aria-required="true"
                     class="rcx-box rcx-box--full rcx-box--animated rcx-input-box--type-text rcx-input-box"
                     name="attributeValues.0.value"
@@ -133,7 +133,7 @@ exports[`AttributesForm renders NewAttribute without crashing 1`] = `
         </div>
       </div>
       <div
-        class="rcx-box rcx-box--full rcx-css-m843eh"
+        class="rcx-box rcx-box--full rcx-css-f51umh"
       >
         <div
           class="rcx-button-group rcx-button-group--stretch rcx-button-group--align-start"
@@ -152,7 +152,7 @@ exports[`AttributesForm renders NewAttribute without crashing 1`] = `
           <button
             class="rcx-box rcx-box--full rcx-button--primary rcx-button"
             disabled=""
-            form=":r0:"
+            form="_r_0_"
             type="submit"
           >
             <span
@@ -172,13 +172,13 @@ exports[`AttributesForm renders WithLockedAttributes without crashing 1`] = `
 <body>
   <div>
     <div
-      class="rcx-box rcx-box--full rcx-vertical-bar rcx-css-1ph8q3"
+      class="rcx-box rcx-box--full rcx-vertical-bar rcx-css-1d8k487"
     >
       <div
         class="rcx-box rcx-box--full rcx-css-1svuzur"
       >
         <div
-          class="rcx-box rcx-box--full rcx-css-vlo1oi rcx-css-1cb6i7s"
+          class="rcx-box rcx-box--full rcx-css-1pd039f rcx-css-1cb6i7s"
           data-overlayscrollbars="host"
         >
           <div
@@ -196,7 +196,7 @@ exports[`AttributesForm renders WithLockedAttributes without crashing 1`] = `
           >
             <form
               class="rcx-box rcx-box--full rcx-css-zg7o7h"
-              id=":r3:"
+              id="_r_3_"
             >
               <div
                 class="rcx-box rcx-box--full rcx-css-1jggbrp rcx-css-1fuhgt0"
@@ -208,7 +208,7 @@ exports[`AttributesForm renders WithLockedAttributes without crashing 1`] = `
               >
                 <label
                   class="rcx-box rcx-box--full rcx-field__label rcx-label"
-                  for=":r4:"
+                  for="_r_4_"
                 >
                   Name
                   <span
@@ -225,7 +225,7 @@ exports[`AttributesForm renders WithLockedAttributes without crashing 1`] = `
                     aria-invalid="false"
                     aria-required="true"
                     class="rcx-box rcx-box--full rcx-box--animated rcx-input-box--type-text rcx-input-box"
-                    id=":r4:"
+                    id="_r_4_"
                     name="name"
                     size="1"
                     type="text"
@@ -237,7 +237,7 @@ exports[`AttributesForm renders WithLockedAttributes without crashing 1`] = `
               >
                 <label
                   class="rcx-box rcx-box--full rcx-field__label rcx-label"
-                  id=":r5:"
+                  id="_r_5_"
                 >
                   Values
                   <span
@@ -252,7 +252,7 @@ exports[`AttributesForm renders WithLockedAttributes without crashing 1`] = `
                 >
                   <input
                     aria-invalid="false"
-                    aria-labelledby=":r5:"
+                    aria-labelledby="_r_5_"
                     aria-required="true"
                     class="rcx-box rcx-box--full rcx-box--animated rcx-input-box--type-text rcx-input-box"
                     disabled=""
@@ -266,7 +266,7 @@ exports[`AttributesForm renders WithLockedAttributes without crashing 1`] = `
                 >
                   <input
                     aria-invalid="false"
-                    aria-labelledby=":r5:"
+                    aria-labelledby="_r_5_"
                     aria-required="true"
                     class="rcx-box rcx-box--full rcx-box--animated rcx-input-box--type-text rcx-input-box"
                     disabled=""
@@ -292,7 +292,7 @@ exports[`AttributesForm renders WithLockedAttributes without crashing 1`] = `
                 >
                   <input
                     aria-invalid="false"
-                    aria-labelledby=":r5:"
+                    aria-labelledby="_r_5_"
                     aria-required="true"
                     class="rcx-box rcx-box--full rcx-box--animated rcx-input-box--type-text rcx-input-box"
                     disabled=""
@@ -353,7 +353,7 @@ exports[`AttributesForm renders WithLockedAttributes without crashing 1`] = `
         </div>
       </div>
       <div
-        class="rcx-box rcx-box--full rcx-css-m843eh"
+        class="rcx-box rcx-box--full rcx-css-f51umh"
       >
         <div
           class="rcx-button-group rcx-button-group--stretch rcx-button-group--align-start"
@@ -372,7 +372,7 @@ exports[`AttributesForm renders WithLockedAttributes without crashing 1`] = `
           <button
             class="rcx-box rcx-box--full rcx-button--primary rcx-button"
             disabled=""
-            form=":r3:"
+            form="_r_3_"
             type="submit"
           >
             <span

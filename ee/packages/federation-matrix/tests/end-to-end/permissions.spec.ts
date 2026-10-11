@@ -1,6 +1,5 @@
 import type { IRoomNativeFederated, IUser } from '@rocket.chat/core-typings';
 
-import type {} from '../../../../../apps/meteor/app/api/server/v1/permissions.ts';
 import { api } from '../../../../../apps/meteor/tests/data/api-data';
 import { addUserToRoom, createRoom, getSubscriptionByRoomId, getSubscriptions } from '../../../../../apps/meteor/tests/data/rooms.helper';
 import { createUser, deleteUser, getRequestConfig } from '../../../../../apps/meteor/tests/data/users.helper';
@@ -13,7 +12,10 @@ import { SynapseClient } from '../helper/synapse-client';
 (IS_EE ? describe : describe.skip)('Federation Permissions', () => {
 	let rc1AdminRequestConfig: IRequestConfig;
 	let rc1User1RequestConfig: IRequestConfig;
+	let rc1User1: TestUser<IUser>;
 	let hs1AdminApp: SynapseClient;
+
+	const rc1User1Name = `fed-permissions-user-${Date.now()}`;
 
 	beforeAll(async () => {
 		// Create admin request config for RC1
@@ -23,12 +25,18 @@ import { SynapseClient } from '../helper/synapse-client';
 			federationConfig.rc1.adminPassword,
 		);
 
-		// Create user1 request config for RC1
-		rc1User1RequestConfig = await getRequestConfig(
-			federationConfig.rc1.url,
-			federationConfig.rc1.additionalUser1.username,
-			federationConfig.rc1.additionalUser1.password,
+		// Create user1 in RC1 and its request config
+		rc1User1 = await createUser(
+			{
+				username: rc1User1Name,
+				password: 'random',
+				email: `${rc1User1Name}@rocket.chat`,
+				name: rc1User1Name,
+			},
+			rc1AdminRequestConfig,
 		);
+
+		rc1User1RequestConfig = await getRequestConfig(federationConfig.rc1.url, rc1User1Name, 'random');
 
 		// Create admin Synapse client for HS1
 		hs1AdminApp = new SynapseClient(federationConfig.hs1.url, federationConfig.hs1.adminUser, federationConfig.hs1.adminPassword);
@@ -41,17 +49,27 @@ import { SynapseClient } from '../helper/synapse-client';
 			.expect(200);
 	});
 
-	afterAll(async () =>
+	afterAll(async () => {
+		if (!rc1AdminRequestConfig) {
+			return;
+		}
+
 		// Add permissions for access-federation to any user but admin
-		rc1AdminRequestConfig.request
+		await rc1AdminRequestConfig.request
 			.post(api('permissions.update'))
 			.set(rc1AdminRequestConfig.credentials)
 			.send({ permissions: [{ _id: 'access-federation', roles: ['admin', 'user'] }] })
 			.expect('Content-Type', 'application/json')
-			.expect(200),
-	);
+			.expect(200);
+	});
 
-	afterAll(async () => hs1AdminApp.close());
+	afterAll(async () => hs1AdminApp?.close());
+
+	afterAll(async () => {
+		if (rc1User1?._id) {
+			await deleteUser(rc1User1, {}, rc1AdminRequestConfig);
+		}
+	});
 
 	describe('Access Federation Permission', () => {
 		describe('Users without access-federation permission', () => {
@@ -124,26 +142,23 @@ import { SynapseClient } from '../helper/synapse-client';
 
 			it('should throw an error if a user without access-federation permission tries to create a federated room', async () => {
 				const channelName = `federated-room-${Date.now()}`;
-				const createResponse = await createRoom({
-					type: 'p',
-					name: channelName,
-					members: [],
-					extraData: {
-						federated: true,
-					},
-					config: rc1User1RequestConfig,
-				});
-
-				expect(createResponse.status).toBe(400);
-				expect(createResponse.body).toHaveProperty('success', false);
-				expect(createResponse.body).toHaveProperty('errorType', 'error-not-authorized-federation');
+				await expect(
+					createRoom({
+						type: 'p',
+						name: channelName,
+						members: [],
+						extraData: {
+							federated: true,
+						},
+						config: rc1User1RequestConfig,
+					}),
+				).rejects.toMatchObject({ status: 400, body: { success: false, errorType: 'error-not-authorized-federation' } });
 			});
 
 			describe('Inviting from a local server', () => {
 				let channelName: string;
 
-				let createResponse;
-				let addUserResponse;
+				let createResponse: Awaited<ReturnType<typeof createRoom>>;
 
 				beforeAll(async () => {
 					channelName = `federated-room-${Date.now()}`;
@@ -156,8 +171,6 @@ import { SynapseClient } from '../helper/synapse-client';
 						},
 						config: rc1AdminRequestConfig,
 					});
-					expect(createResponse.status).toBe(200);
-					expect(createResponse.body).toHaveProperty('success', true);
 					expect(createResponse.body).toHaveProperty('group');
 					expect(createResponse.body.group).toHaveProperty('_id');
 					expect(createResponse.body.group).toHaveProperty('t', 'p');
@@ -180,28 +193,23 @@ import { SynapseClient } from '../helper/synapse-client';
 					await deleteUser(user, {}, rc1AdminRequestConfig);
 				});
 				it('should not be able to add a user without access-federation permission to a room', async () => {
-					const addUserResponse = await addUserToRoom({
-						usernames: [user.username],
-						rid: createResponse.body.group._id,
-						config: rc1AdminRequestConfig,
+					await expect(
+						addUserToRoom({ usernames: [user.username], rid: createResponse.body.group._id, type: 'p', config: rc1AdminRequestConfig }),
+					).rejects.toMatchObject({
+						status: 400,
+						body: { success: false, errorType: expect.stringContaining('error-not-authorized-federation') },
 					});
-
-					expect(addUserResponse.status).toBe(400);
-					expect(addUserResponse.body).toHaveProperty('success', false);
-					expect(addUserResponse.body.message).toMatch(/error-not-authorized-federation/);
 				});
 
 				it("should be able to add a remote user to a room regardless of the user's access-federation permission defined locally", async () => {
-					addUserResponse = await addUserToRoom({
-						usernames: [federationConfig.hs1.adminMatrixUserId],
-						rid: createResponse.body.group._id,
-						config: rc1AdminRequestConfig,
-					});
-
-					expect(addUserResponse.status).toBe(200);
-					expect(addUserResponse.body).toHaveProperty('success', true);
-					expect(addUserResponse.body).toHaveProperty('message');
-					expect(addUserResponse.body.message).toMatch('{"msg":"result","id":"id","result":true}');
+					await expect(
+						addUserToRoom({
+							usernames: [federationConfig.hs1.adminMatrixUserId],
+							rid: createResponse.body.group._id,
+							type: 'p',
+							config: rc1AdminRequestConfig,
+						}),
+					).resolves.toHaveLength(1);
 				});
 			});
 		});
@@ -236,8 +244,6 @@ import { SynapseClient } from '../helper/synapse-client';
 					config: rc1AdminRequestConfig,
 				});
 
-				expect(createResponse.status).toBe(200);
-				expect(createResponse.body).toHaveProperty('success', true);
 				expect(createResponse.body).toHaveProperty('group');
 				expect(createResponse.body.group).toHaveProperty('_id');
 				expect(createResponse.body.group).toHaveProperty('t', 'p');
@@ -263,17 +269,16 @@ import { SynapseClient } from '../helper/synapse-client';
 							federated: true,
 						},
 						config: rc1AdminRequestConfig,
-					}).expect(200);
+					});
 
-					const addUserResponse = await addUserToRoom({
-						usernames: [user.username],
-						rid: createResponse.body.group._id,
-						config: rc1AdminRequestConfig,
-					}).expect(200);
-
-					expect(addUserResponse.body).toHaveProperty('success', true);
-					expect(addUserResponse.body).toHaveProperty('message');
-					expect(addUserResponse.body.message).toMatch('{"msg":"result","id":"id","result":true}');
+					await expect(
+						addUserToRoom({
+							usernames: [user.username],
+							rid: createResponse.body.group._id,
+							type: 'p',
+							config: rc1AdminRequestConfig,
+						}),
+					).resolves.toHaveLength(1);
 				});
 			});
 		});
@@ -361,8 +366,8 @@ import { SynapseClient } from '../helper/synapse-client';
 
 		afterAll(async () => {
 			await Promise.all([
-				deleteUser(rcValidUser1.user, {}, rc1AdminRequestConfig),
-				deleteUser(rcValidUser2.user, {}, rc1AdminRequestConfig),
+				deleteUser(rcValidUser1.user, { confirmRelinquish: true }, rc1AdminRequestConfig),
+				deleteUser(rcValidUser2.user, { confirmRelinquish: true }, rc1AdminRequestConfig),
 			]);
 		});
 
@@ -400,8 +405,6 @@ import { SynapseClient } from '../helper/synapse-client';
 						config: rcValidUser1.config,
 					});
 
-					expect(createResponse.status).toBe(200);
-					expect(createResponse.body).toHaveProperty('success', true);
 					expect(createResponse.body).toHaveProperty('group');
 					expect(createResponse.body.group).toHaveProperty('federated', true);
 				});
@@ -418,16 +421,14 @@ import { SynapseClient } from '../helper/synapse-client';
 						config: rcValidUser1.config,
 					});
 
-					expect(createResponse.status).toBe(200);
-
-					const addUserResponse = await addUserToRoom({
-						usernames: [rcValidUser2.username],
-						rid: createResponse.body.group._id,
-						config: rcValidUser1.config,
-					});
-
-					expect(addUserResponse.status).toBe(200);
-					expect(addUserResponse.body).toHaveProperty('success', true);
+					await expect(
+						addUserToRoom({
+							usernames: [rcValidUser2.username],
+							rid: createResponse.body.group._id,
+							type: 'p',
+							config: rcValidUser1.config,
+						}),
+					).resolves.toHaveLength(1);
 				});
 
 				it('should be able to be added to a federated room during creation', async () => {
@@ -442,8 +443,6 @@ import { SynapseClient } from '../helper/synapse-client';
 						config: rcValidUser1.config,
 					});
 
-					expect(createResponse.status).toBe(200);
-					expect(createResponse.body).toHaveProperty('success', true);
 					expect(createResponse.body).toHaveProperty('group');
 					expect(createResponse.body.group).toHaveProperty('federated', true);
 				});
@@ -486,19 +485,17 @@ import { SynapseClient } from '../helper/synapse-client';
 
 				it('should NOT be able to create a federated room', async () => {
 					const channelName = `federated-room-${Date.now()}`;
-					const createResponse = await createRoom({
-						type: 'p',
-						name: channelName,
-						members: [],
-						extraData: {
-							federated: true,
-						},
-						config: userRequestConfig,
-					});
-
-					expect(createResponse.status).toBe(400);
-					expect(createResponse.body).toHaveProperty('success', false);
-					expect(createResponse.body).toHaveProperty('errorType', 'error-not-authorized-federation');
+					await expect(
+						createRoom({
+							type: 'p',
+							name: channelName,
+							members: [],
+							extraData: {
+								federated: true,
+							},
+							config: userRequestConfig,
+						}),
+					).rejects.toMatchObject({ status: 400, body: { success: false, errorType: 'error-not-authorized-federation' } });
 				});
 
 				it('should NOT be able to be added to a federated room', async () => {
@@ -513,34 +510,32 @@ import { SynapseClient } from '../helper/synapse-client';
 						config: rcValidUser1.config,
 					});
 
-					expect(createResponse.status).toBe(200);
-
-					const addUserResponse = await addUserToRoom({
-						usernames: [userWithNonMatchingEmail.username],
-						rid: createResponse.body.group._id,
-						config: rcValidUser1.config,
+					await expect(
+						addUserToRoom({
+							usernames: [userWithNonMatchingEmail.username],
+							rid: createResponse.body.group._id,
+							type: 'p',
+							config: rcValidUser1.config,
+						}),
+					).rejects.toMatchObject({
+						status: 400,
+						body: { success: false, errorType: expect.stringContaining('error-not-authorized-federation') },
 					});
-
-					expect(addUserResponse.status).toBe(400);
-					expect(addUserResponse.body).toHaveProperty('success', false);
-					expect(addUserResponse.body.message).toMatch(/error-not-authorized-federation/);
 				});
 
 				it('should NOT be able to be added to a federated room during creation', async () => {
 					const channelName = `federated-room-${Date.now()}`;
-					const createResponse = await createRoom({
-						type: 'p',
-						name: channelName,
-						members: [userWithNonMatchingEmail.username],
-						extraData: {
-							federated: true,
-						},
-						config: userRequestConfig,
-					});
-
-					expect(createResponse.status).toBe(400);
-					expect(createResponse.body).toHaveProperty('success', false);
-					expect(createResponse.body).toHaveProperty('errorType', 'error-not-authorized-federation');
+					await expect(
+						createRoom({
+							type: 'p',
+							name: channelName,
+							members: [userWithNonMatchingEmail.username],
+							extraData: {
+								federated: true,
+							},
+							config: userRequestConfig,
+						}),
+					).rejects.toMatchObject({ status: 400, body: { success: false, errorType: 'error-not-authorized-federation' } });
 				});
 			});
 
@@ -568,19 +563,17 @@ import { SynapseClient } from '../helper/synapse-client';
 
 				it('should NOT be able to create a federated room', async () => {
 					const channelName = `federated-room-${Date.now()}`;
-					const createResponse = await createRoom({
-						type: 'p',
-						name: channelName,
-						members: [],
-						extraData: {
-							federated: true,
-						},
-						config: userRequestConfig,
-					});
-
-					expect(createResponse.status).toBe(400);
-					expect(createResponse.body).toHaveProperty('success', false);
-					expect(createResponse.body).toHaveProperty('errorType', 'error-not-authorized-federation');
+					await expect(
+						createRoom({
+							type: 'p',
+							name: channelName,
+							members: [],
+							extraData: {
+								federated: true,
+							},
+							config: userRequestConfig,
+						}),
+					).rejects.toMatchObject({ status: 400, body: { success: false, errorType: 'error-not-authorized-federation' } });
 				});
 
 				it('should NOT be able to be added to a federated room', async () => {
@@ -595,17 +588,17 @@ import { SynapseClient } from '../helper/synapse-client';
 						config: rcValidUser1.config,
 					});
 
-					expect(createResponse.status).toBe(200);
-
-					const addUserResponse = await addUserToRoom({
-						usernames: [userWithUnverifiedEmail.username],
-						rid: createResponse.body.group._id,
-						config: rcValidUser1.config,
+					await expect(
+						addUserToRoom({
+							usernames: [userWithUnverifiedEmail.username],
+							rid: createResponse.body.group._id,
+							type: 'p',
+							config: rcValidUser1.config,
+						}),
+					).rejects.toMatchObject({
+						status: 400,
+						body: { success: false, errorType: expect.stringContaining('error-not-authorized-federation') },
 					});
-
-					expect(addUserResponse.status).toBe(400);
-					expect(addUserResponse.body).toHaveProperty('success', false);
-					expect(addUserResponse.body.message).toMatch(/error-not-authorized-federation/);
 				});
 			});
 
@@ -632,19 +625,17 @@ import { SynapseClient } from '../helper/synapse-client';
 
 				it('should NOT be able to create a federated room', async () => {
 					const channelName = `federated-room-${Date.now()}`;
-					const createResponse = await createRoom({
-						type: 'p',
-						name: channelName,
-						members: [],
-						extraData: {
-							federated: true,
-						},
-						config: userRequestConfig,
-					});
-
-					expect(createResponse.status).toBe(400);
-					expect(createResponse.body).toHaveProperty('success', false);
-					expect(createResponse.body).toHaveProperty('errorType', 'error-not-authorized-federation');
+					await expect(
+						createRoom({
+							type: 'p',
+							name: channelName,
+							members: [],
+							extraData: {
+								federated: true,
+							},
+							config: userRequestConfig,
+						}),
+					).rejects.toMatchObject({ status: 400, body: { success: false, errorType: 'error-not-authorized-federation' } });
 				});
 
 				it('should NOT be able to be added to a federated room', async () => {
@@ -659,17 +650,17 @@ import { SynapseClient } from '../helper/synapse-client';
 						config: rcValidUser1.config,
 					});
 
-					expect(createResponse.status).toBe(200);
-
-					const addUserResponse = await addUserToRoom({
-						usernames: [userWithoutEmail.username],
-						rid: createResponse.body.group._id,
-						config: rcValidUser1.config,
+					await expect(
+						addUserToRoom({
+							usernames: [userWithoutEmail.username],
+							rid: createResponse.body.group._id,
+							type: 'p',
+							config: rcValidUser1.config,
+						}),
+					).rejects.toMatchObject({
+						status: 400,
+						body: { success: false, errorType: expect.stringContaining('error-not-authorized-federation') },
 					});
-
-					expect(addUserResponse.status).toBe(400);
-					expect(addUserResponse.body).toHaveProperty('success', false);
-					expect(addUserResponse.body.message).toMatch(/error-not-authorized-federation/);
 				});
 			});
 
@@ -835,7 +826,7 @@ import { SynapseClient } from '../helper/synapse-client';
 				});
 
 				afterAll(async () => {
-					await deleteUser(userWithNonMatchingEmail, {}, rc1AdminRequestConfig);
+					await deleteUser(userWithNonMatchingEmail, { confirmRelinquish: true }, rc1AdminRequestConfig);
 				});
 
 				it('should be able to create a federated room regardless of email domain', async () => {
@@ -850,8 +841,6 @@ import { SynapseClient } from '../helper/synapse-client';
 						config: userRequestConfig,
 					});
 
-					expect(createResponse.status).toBe(200);
-					expect(createResponse.body).toHaveProperty('success', true);
 					expect(createResponse.body).toHaveProperty('group');
 					expect(createResponse.body.group).toHaveProperty('federated', true);
 				});
@@ -868,16 +857,14 @@ import { SynapseClient } from '../helper/synapse-client';
 						config: rc1AdminRequestConfig,
 					});
 
-					expect(createResponse.status).toBe(200);
-
-					const addUserResponse = await addUserToRoom({
-						usernames: [userWithNonMatchingEmail.username],
-						rid: createResponse.body.group._id,
-						config: rc1AdminRequestConfig,
-					});
-
-					expect(addUserResponse.status).toBe(200);
-					expect(addUserResponse.body).toHaveProperty('success', true);
+					await expect(
+						addUserToRoom({
+							usernames: [userWithNonMatchingEmail.username],
+							rid: createResponse.body.group._id,
+							type: 'p',
+							config: rc1AdminRequestConfig,
+						}),
+					).resolves.toHaveLength(1);
 				});
 			});
 		});

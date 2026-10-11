@@ -3,7 +3,6 @@ import type { ISetting as AppsSetting } from '@rocket.chat/apps-engine/definitio
 import type {
 	IEmailInbox,
 	IEmoji,
-	IInquiry,
 	IInstanceStatus,
 	IIntegration,
 	IIntegrationHistory,
@@ -53,8 +52,18 @@ type LoginServiceConfigurationEvent = {
 	  }
 );
 
+/** A stream emit relayed to the other processes; `origin` identifies the process that emitted it. */
+export type RelayedStreamEvent = {
+	stream: string;
+	eventName: string;
+	args: unknown[];
+	origin: string;
+};
+
 export type EventSignatures = {
 	'room.video-conference': (params: { rid: string; callId: string }) => void;
+	/** A local client reported what its user is doing in a room, such as typing. */
+	'room.user-activity': (data: { rid: string; uid: string; activities: string[] }) => void;
 	'shutdown': (params: Record<string, string[]>) => void;
 	'$services.changed': (info: { localService: boolean }) => void;
 	'accounts.login': (info: { userId: string; connection: ISocketConnection }) => void;
@@ -72,7 +81,7 @@ export type EventSignatures = {
 	'license.sync'(): void;
 	'license.actions'(actions: Record<Partial<LicenseLimitKind>, boolean>): void;
 
-	'livechat-inquiry-queue-observer'(data: { action: string; inquiry: IInquiry }): void;
+	'livechat-inquiry-queue-observer'(data: { action: string; inquiry: ILivechatInquiryRecord }): void;
 	'message'(data: { action: string; message: IMessage }): void;
 	'meteor.clientVersionUpdated'(data: AutoUpdateRecord): void;
 	'notify.desktop'(uid: string, data: INotificationDesktop): void;
@@ -122,7 +131,7 @@ export type EventSignatures = {
 	'room'(data: { action: string; room: Partial<IRoom> }): void;
 	'room.avatarUpdate'(room: Pick<IRoom, '_id' | 'avatarETag'>): void;
 	'setting'(data: { action: string; setting: Partial<ISetting> }): void;
-	'stream'([streamer, eventName, payload]: [string, string, any[]]): void;
+	'stream'(relayed: RelayedStreamEvent): void;
 	'subscription'(data: { action: string; subscription: Partial<ISubscription> }): void;
 	'user.avatarUpdate'(user: Partial<IUser>): void;
 	'user.deleted'(
@@ -158,10 +167,17 @@ export type EventSignatures = {
 			rid: IRoom['_id'];
 		};
 	}): void;
+	'presence.invalidateVisibility'(data: { targets?: IUser['_id'][]; viewers?: IUser['_id'][] }): void;
 	'presence.status'(data: {
-		user: Pick<IUser, '_id' | 'username' | 'status' | 'statusText' | 'name' | 'roles'>;
+		user: Pick<IUser, '_id' | 'username' | 'status' | 'statusText' | 'statusSource' | 'statusExpiresAt' | 'name' | 'roles'>;
 		previousStatus: UserStatus | undefined;
 	}): void;
+	/**
+	 * Something about the conference changed: its chat's room, who can read it, or its membership.
+	 *
+	 * One event for all of it, because there is one answer to all of it: read the conference again.
+	 */
+	'video-conference.updated'(data: { callId: VideoConference['_id'] }): void;
 	'watch.messages'(data: { message: IMessage }): void;
 	'watch.roles'(
 		data:
@@ -255,7 +271,7 @@ export type EventSignatures = {
 			  }
 			| {
 					clientAction: 'updated';
-					diff: Record<string, number>;
+					diff: Record<string, any>;
 					unset: Record<string, number>;
 			  }
 		),
@@ -297,7 +313,7 @@ export type EventSignatures = {
 	'watch.priorities'(data: { clientAction: ClientAction; id: ILivechatPriority['_id']; diff?: Record<string, string> }): void;
 	'apps.added'(appId: string): void;
 	'apps.removed'(appId: string): void;
-	'apps.updated'(appId: string): void;
+	'apps.updated'(appId: string, originInstanceId?: string): void;
 	'apps.statusUpdate'(appId: string, status: AppStatus): void;
 	'apps.settingUpdated'(appId: string, setting: AppsSetting): void;
 	'command.added'(command: string): void;

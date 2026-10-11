@@ -1,7 +1,6 @@
 import type { ILivechatBusinessHour, Serialized } from '@rocket.chat/core-typings';
 import { IconButton } from '@rocket.chat/fuselage';
 import { GenericTableRow, GenericTableCell } from '@rocket.chat/ui-client';
-import type { TranslationKey } from '@rocket.chat/ui-contexts';
 import { useRouter } from '@rocket.chat/ui-contexts';
 import type { KeyboardEvent } from 'react';
 import { memo, useMemo } from 'react';
@@ -29,7 +28,7 @@ const BusinessHoursRow = ({ _id, name, timezone, workHours, active, type }: Seri
 	return (
 		<GenericTableRow key={_id} action tabIndex={0} onClick={handleClick} onKeyDown={handleKeyDown}>
 			<GenericTableCell withTruncatedText>{name || t('Default')}</GenericTableCell>
-			<GenericTableCell withTruncatedText>{t(timezone.name as TranslationKey)}</GenericTableCell>
+			<GenericTableCell withTruncatedText>{t(timezone.name)}</GenericTableCell>
 			<GenericTableCell withTruncatedText>{openDays.join(', ')}</GenericTableCell>
 			<GenericTableCell withTruncatedText>{active ? t('Yes') : t('No')}</GenericTableCell>
 			<GenericTableCell withTruncatedText>

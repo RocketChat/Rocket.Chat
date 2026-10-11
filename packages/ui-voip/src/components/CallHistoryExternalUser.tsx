@@ -1,18 +1,20 @@
 import { Box, Icon, FramedIcon } from '@rocket.chat/fuselage';
 
-type CallHistoryExternalUserProps = {
-	number: string;
+import type { CallHistoryExternalContact } from '../definitions';
+
+export type CallHistoryExternalUserProps = {
+	contact: CallHistoryExternalContact;
 	showIcon?: boolean;
 };
 
-const CallHistoryExternalUser = ({ number, showIcon = true }: CallHistoryExternalUserProps) => {
+const CallHistoryExternalUser = ({ contact: { number }, showIcon = true }: CallHistoryExternalUserProps) => {
 	return (
 		<Box display='flex' flexDirection='row' alignItems='center'>
-			<Box mie={8}>
+			<Box marginInlineEnd={8}>
 				<FramedIcon icon='user' size={28} />
 			</Box>
 			{showIcon && (
-				<Box mie={8}>
+				<Box marginInlineEnd={8}>
 					<Icon name='phone' size={20} />
 				</Box>
 			)}

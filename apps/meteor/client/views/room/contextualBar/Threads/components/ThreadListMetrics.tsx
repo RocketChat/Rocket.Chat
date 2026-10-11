@@ -1,10 +1,9 @@
 import { MessageMetricsItem, MessageBlock, MessageMetrics, MessageMetricsItemIcon, MessageMetricsItemLabel } from '@rocket.chat/fuselage';
 import { useResizeObserver } from '@rocket.chat/fuselage-hooks';
+import { useTimeAgo } from '@rocket.chat/ui-client';
 import { useTranslation } from '@rocket.chat/ui-contexts';
-import type { ReactElement } from 'react';
 
 import ThreadMetricsParticipants from '../../../../../components/message/content/ThreadMetricsParticipants';
-import { useTimeAgo } from '../../../../../hooks/useTimeAgo';
 
 type ThreadMetricsProps = {
 	lm: Date;
@@ -12,7 +11,7 @@ type ThreadMetricsProps = {
 	participants: Array<string>;
 };
 
-const ThreadListMetrics = ({ counter, participants, lm }: ThreadMetricsProps): ReactElement => {
+const ThreadListMetrics = ({ counter, participants, lm }: ThreadMetricsProps) => {
 	const t = useTranslation();
 
 	const format = useTimeAgo();

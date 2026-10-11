@@ -9,6 +9,7 @@ import type {
 	RoomType,
 } from '@rocket.chat/core-typings';
 import type { PaginatedRequest } from '@rocket.chat/rest-typings';
+import { videoConferenceInfoQueryKey } from '@rocket.chat/ui-video-conf';
 
 export const roomsQueryKeys = {
 	all: ['rooms'] as const,
@@ -36,6 +37,8 @@ export const roomsQueryKeys = {
 	images: (rid: IRoom['_id'], options?: { startingFromId?: string }) => [...roomsQueryKeys.room(rid), 'images', options] as const,
 	autocomplete: (text: string) => [...roomsQueryKeys.all, 'autocomplete', text] as const,
 	discussions: (rid: IRoom['_id'], ...args: [filter: { text?: string }]) => [...roomsQueryKeys.room(rid), 'discussions', ...args] as const,
+	threadMessages: (rid: IRoom['_id'], tmid: IMessage['_id']) => [...roomsQueryKeys.room(rid), 'threads', tmid, 'messages'] as const,
+	threadMainMessage: (rid: IRoom['_id'], tmid: IMessage['_id']) => [...roomsQueryKeys.room(rid), 'threads', tmid, 'main-message'] as const,
 };
 
 export const subscriptionsQueryKeys = {
@@ -111,7 +114,6 @@ export const deviceManagementQueryKeys = {
 };
 
 export const miscQueryKeys = {
-	personalAccessTokens: ['personal-access-tokens'] as const,
 	lookup: (endpoint: string) => ['lookup', endpoint] as const,
 	autotranslateSupportedLanguages: (targetLanguage: string) => ['autotranslate', 'supported-languages', targetLanguage] as const,
 };
@@ -120,7 +122,8 @@ export const usersQueryKeys = {
 	all: ['users'] as const,
 	userInfo: ({ uid, username }: { uid?: IUser['_id']; username?: IUser['username'] }) =>
 		[...usersQueryKeys.all, 'info', { uid, username }] as const,
-	userAutoComplete: (filter: string, federated: boolean) => [...usersQueryKeys.all, 'autocomplete', filter, federated] as const,
+	userAutoComplete: (filter: string, federated: boolean, exceptions: string[] = []) =>
+		[...usersQueryKeys.all, 'autocomplete', filter, federated, exceptions] as const,
 };
 
 export const teamsQueryKeys = {
@@ -187,9 +190,25 @@ export const marketplaceQueryKeys = {
 export const videoConferenceQueryKeys = {
 	all: ['video-conference'] as const,
 	fromRoom: (roomId: IRoom['_id']) => [...videoConferenceQueryKeys.all, 'rooms', roomId] as const,
+	/**
+	 * Taken from the hook that owns the entry rather than restated here, so there is one spelling of it.
+	 *
+	 * @see useVideoConferenceInfo
+	 */
+	conference: videoConferenceInfoQueryKey,
+	join: (callId: string) => [...videoConferenceQueryKeys.conference(callId), 'join'] as const,
+	joinable: () => [...videoConferenceQueryKeys.all, 'joinable'] as const,
+	/** What the provider can be told about devices — asked before any conference exists. */
+	capabilities: () => [...videoConferenceQueryKeys.all, 'capabilities'] as const,
 } as const;
 
 export const messagesQueryKeys = {
 	all: ['messages'] as const,
 	message: (messageId: IMessage['_id']) => [...messagesQueryKeys.all, messageId] as const,
+};
+
+export const managedPresenceQueryKeys = {
+	all: ['admin', 'managed-presence-users'] as const,
+	list: (query: PaginatedRequest) => [...managedPresenceQueryKeys.all, query] as const,
+	byUsername: (username?: IUser['username']) => [...managedPresenceQueryKeys.all, 'byUsername', username] as const,
 };

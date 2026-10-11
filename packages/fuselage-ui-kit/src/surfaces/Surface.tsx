@@ -1,12 +1,10 @@
-import type { ContextType, ReactElement, ReactNode } from 'react';
+import type { ContextType, ReactNode } from 'react';
 
 import { SurfaceContext } from '../contexts/SurfaceContext';
 
-type SurfaceProps = {
+export type SurfaceProps = {
 	children: ReactNode;
 	type: ContextType<typeof SurfaceContext>;
 };
 
-export const Surface = ({ children, type }: SurfaceProps): ReactElement => (
-	<SurfaceContext.Provider value={type}>{children}</SurfaceContext.Provider>
-);
+export const Surface = ({ children, type }: SurfaceProps) => <SurfaceContext.Provider value={type}>{children}</SurfaceContext.Provider>;

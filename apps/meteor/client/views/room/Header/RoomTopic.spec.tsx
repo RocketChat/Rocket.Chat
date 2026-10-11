@@ -109,7 +109,7 @@ describe('RoomTopic', () => {
 		expect(screen.getByText('Sample Topic')).toBeInTheDocument();
 	});
 
-	it('should render statusText when statusText is present for direct message user and users length < 3', () => {
+	it('should not render the DM partner statusText (handled by RoomMemberStatus)', () => {
 		const room = createFakeRoom({ topic: '', t: 'd', uids: [user._id, user2._id] });
 		const subscription = createFakeSubscription({ t: 'd', rid: room._id });
 
@@ -123,28 +123,6 @@ describe('RoomTopic', () => {
 					.withPermission('edit-room')
 					.withUser(user)
 					.withUsers([user2])
-					.build(),
-			},
-		);
-
-		expect(screen.queryByText('Add_topic')).not.toBeInTheDocument();
-		expect(screen.getByText('Sample Status')).toBeInTheDocument();
-	});
-
-	it('should not render statusText when statusText is present for direct message user and users length >= 3', () => {
-		const room = createFakeRoom({ topic: '', t: 'd', uids: [user._id, user2._id, user3._id] });
-		const subscription = createFakeSubscription({ t: 'd', rid: room._id });
-
-		render(
-			<FakeRoomProvider roomOverrides={room} subscriptionOverrides={subscription}>
-				<RoomTopic room={room} />
-			</FakeRoomProvider>,
-			{
-				wrapper: mockAppRoot()
-					.withSubscriptions([{ ...subscription, ...room }] as unknown as SubscriptionWithRoom[])
-					.withPermission('edit-room')
-					.withUser(user)
-					.withUsers([user2, user3])
 					.build(),
 			},
 		);

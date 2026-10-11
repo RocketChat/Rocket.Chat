@@ -2,7 +2,7 @@ import type { IAuditServerUserActor, IAuditServerSystemActor, IAuditServerAppAct
 import { Box } from '@rocket.chat/fuselage';
 import { UserAvatar } from '@rocket.chat/ui-avatar';
 import { GenericModal } from '@rocket.chat/ui-client';
-import { format } from 'date-fns';
+import { format } from 'date-fns/format';
 import { useTranslation } from 'react-i18next';
 
 import { AppInfoField } from './AppInfoField';
@@ -35,7 +35,7 @@ const SecurityLogDisplayModal = ({ timestamp, actor, setting, changedFrom, chang
 					<Box display='flex' alignItems='center'>
 						{actor.type === 'user' && <UserAvatar size='x24' userId={actor._id} />}
 						<Box
-							mi={actor.type === 'user' ? 8 : 0}
+							marginInline={actor.type === 'user' ? 8 : 0}
 							fontScale='p2m'
 							display='flex'
 							flexDirection='column'

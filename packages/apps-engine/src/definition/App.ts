@@ -39,7 +39,7 @@ export abstract class App implements IApp {
 			`Created by ${this.info.author.name}`,
 		);
 
-		this.setStatus(AppStatus.CONSTRUCTED);
+		void this.setStatus(AppStatus.CONSTRUCTED);
 	}
 
 	public async getStatus(): Promise<AppStatus> {
@@ -141,6 +141,10 @@ export abstract class App implements IApp {
 	}
 
 	public getAccessors(): IAppAccessors {
+		if (!this.accessors) {
+			throw new Error('Accessors not initialized');
+		}
+
 		return this.accessors;
 	}
 

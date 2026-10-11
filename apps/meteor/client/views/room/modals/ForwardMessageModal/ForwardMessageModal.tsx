@@ -18,7 +18,6 @@ import { useClipboard } from '@rocket.chat/fuselage-hooks';
 import { useUserDisplayName } from '@rocket.chat/ui-client';
 import { useTranslation, useEndpoint, useToastMessageDispatch, useUserAvatarPath } from '@rocket.chat/ui-contexts';
 import { useMutation } from '@tanstack/react-query';
-import type { ReactElement } from 'react';
 import { memo, useId } from 'react';
 import { useForm, Controller } from 'react-hook-form';
 
@@ -32,7 +31,7 @@ type ForwardMessageProps = {
 	message: IMessage;
 };
 
-const ForwardMessageModal = ({ onClose, permalink, message }: ForwardMessageProps): ReactElement => {
+const ForwardMessageModal = ({ onClose, permalink, message }: ForwardMessageProps) => {
 	const t = useTranslation();
 	const getUserAvatarPath = useUserAvatarPath();
 	const dispatchToastMessage = useToastMessageDispatch();
@@ -104,7 +103,7 @@ const ForwardMessageModal = ({ onClose, permalink, message }: ForwardMessageProp
 							<Controller
 								name='rooms'
 								control={control}
-								render={({ field: { name, value, onChange } }): ReactElement => (
+								render={({ field: { name, value, onChange } }) => (
 									<UserAndRoomAutoCompleteMultiple
 										id={usersAndRoomsField}
 										aria-describedby={`${usersAndRoomsField}-hint`}

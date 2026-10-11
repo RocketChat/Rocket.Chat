@@ -11,6 +11,7 @@ import {
 	GenericTableRow,
 	usePagination,
 	useSort,
+	GenericNoResults,
 } from '@rocket.chat/ui-client';
 import { useTranslation, useEndpoint } from '@rocket.chat/ui-contexts';
 import { hashKey, useQuery } from '@tanstack/react-query';
@@ -20,7 +21,6 @@ import AddManager from './AddManager';
 import RemoveManagerButton from './RemoveManagerButton';
 import FilterByText from '../../../components/FilterByText';
 import GenericError from '../../../components/GenericError';
-import GenericNoResults from '../../../components/GenericNoResults/GenericNoResults';
 import { links } from '../../../lib/links';
 import { omnichannelQueryKeys } from '../../../lib/queryKeys';
 
@@ -72,7 +72,7 @@ const ManagersTable = () => {
 			>
 				{t('Email')}
 			</GenericTableHeaderCell>
-			<GenericTableHeaderCell key='remove' w='x60'>
+			<GenericTableHeaderCell key='remove' width='x60'>
 				{t('Remove')}
 			</GenericTableHeaderCell>
 		</>
@@ -111,7 +111,7 @@ const ManagersTable = () => {
 									<GenericTableCell withTruncatedText>
 										<Box display='flex' alignItems='center'>
 											<UserAvatar size='x28' username={user.username || ''} etag={user.avatarETag} />
-											<Box display='flex' withTruncatedText mi={8}>
+											<Box display='flex' withTruncatedText marginInline={8}>
 												<Box display='flex' flexDirection='column' alignSelf='center' withTruncatedText>
 													<Box fontScale='p2m' withTruncatedText color='default'>
 														{user.name || user.username}
@@ -124,7 +124,7 @@ const ManagersTable = () => {
 										<Box fontScale='p2m' withTruncatedText color='hint'>
 											{user.username}
 										</Box>
-										<Box mi={4} />
+										<Box marginInline={4} />
 									</GenericTableCell>
 									<GenericTableCell withTruncatedText>{user.emails?.length && user.emails[0].address}</GenericTableCell>
 									<RemoveManagerButton _id={user._id} />

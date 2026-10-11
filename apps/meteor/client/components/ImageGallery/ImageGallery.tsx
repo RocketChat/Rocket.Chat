@@ -6,7 +6,7 @@ import { useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
 import { useTranslation } from 'react-i18next';
 import { Navigation, Zoom, Keyboard, A11y } from 'swiper/modules/index.mjs';
-import type { SwiperClass, SwiperRef } from 'swiper/swiper-react';
+import type { SwiperClass, SwiperRef } from 'swiper/react';
 import { Swiper, SwiperSlide } from 'swiper/swiper-react.mjs';
 
 import 'swiper/swiper.css';
@@ -98,7 +98,15 @@ const swiperStyle = css`
 	}
 `;
 
-export const ImageGallery = ({ images, onClose, loadMore }: { images: IUpload[]; onClose: () => void; loadMore?: () => void }) => {
+export const ImageGallery = ({
+	images,
+	onClose,
+	loadMore,
+}: {
+	images: Pick<IUpload, '_id' | 'path' | 'url' | 'description'>[];
+	onClose: () => void;
+	loadMore?: () => void;
+}) => {
 	const { t } = useTranslation();
 	const swiperRef = useRef<SwiperRef>(null);
 	const [, setSwiperInst] = useState<SwiperClass>();

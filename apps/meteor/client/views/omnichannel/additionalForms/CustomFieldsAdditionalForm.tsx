@@ -16,7 +16,9 @@ const checkIsOptionsValid = (value: string) => {
 	return value.split(',').every((v) => /^[a-zA-Z0-9-_ ]+$/.test(v));
 };
 
-const CustomFieldsAdditionalForm = ({ className }: { className?: ComponentProps<typeof Field>['className'] }) => {
+export type CustomFieldsAdditionalFormProps = { className?: ComponentProps<typeof Field>['className'] };
+
+const CustomFieldsAdditionalForm = ({ className }: CustomFieldsAdditionalFormProps) => {
 	const { t } = useTranslation();
 	const {
 		control,

@@ -4,7 +4,7 @@ import QuoteMessageAction from './actions/QuoteMessageAction';
 import ReactionMessageAction from './actions/ReactionMessageAction';
 import ReplyInThreadMessageAction from './actions/ReplyInThreadMessageAction';
 
-type FederatedItemsProps = {
+export type FederatedItemsProps = {
 	message: IMessage;
 	room: IRoom;
 	subscription: ISubscription | undefined;

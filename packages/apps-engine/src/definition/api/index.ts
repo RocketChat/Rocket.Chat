@@ -1,8 +1,10 @@
 export { ApiEndpoint } from './ApiEndpoint';
-export { IApi, ApiVisibility, ApiSecurity } from './IApi';
-export { IApiEndpoint } from './IApiEndpoint';
-export { IApiEndpointInfo } from './IApiEndpointInfo';
-export { IApiExample, example } from './IApiExample';
-export { IApiRequest } from './IRequest';
-export { IApiResponse } from './IResponse';
-export { IApiEndpointMetadata } from './IApiEndpointMetadata';
+export type { IApi } from './IApi';
+export { ApiVisibility, ApiSecurity } from './IApi';
+export type { IApiEndpoint } from './IApiEndpoint';
+export type { IApiEndpointInfo } from './IApiEndpointInfo';
+export type { IApiExample } from './IApiExample';
+export { example } from './IApiExample';
+export type { IApiRequest } from './IRequest';
+export type { IApiResponse } from './IResponse';
+export type { IApiEndpointMetadata } from './IApiEndpointMetadata';

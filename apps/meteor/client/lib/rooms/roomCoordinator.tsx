@@ -1,8 +1,6 @@
 import type { IRoom, RoomType, IUser, AtLeast, ValueOf, ISubscription } from '@rocket.chat/core-typings';
 import type { RouteName } from '@rocket.chat/ui-contexts';
-import { Meteor } from 'meteor/meteor';
 
-import { hasPermission } from '../../../app/authorization/client';
 import type {
 	RoomSettingsEnum,
 	RoomMemberActions,
@@ -17,7 +15,9 @@ import { router } from '../../providers/RouterProvider';
 import { Subscriptions } from '../../stores';
 import RoomRoute from '../../views/room/RoomRoute';
 import MainLayout from '../../views/root/MainLayout';
+import { absoluteUrl } from '../absoluteUrl';
 import { appLayout } from '../appLayout';
+import { hasPermission } from '../authorization';
 
 class RoomCoordinatorClient extends RoomCoordinator {
 	public add(roomConfig: IRoomTypeClientConfig, directives: Partial<IRoomTypeClientDirectives>): void {
@@ -203,7 +203,7 @@ class RoomCoordinatorClient extends RoomCoordinator {
 			return false;
 		}
 
-		return Meteor.absoluteUrl(
+		return absoluteUrl(
 			router.buildRoutePath({
 				name: config.route.name,
 				params: routeData,

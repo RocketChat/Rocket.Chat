@@ -1,6 +1,11 @@
 {
 	"name": "@rocket.chat/api-client",
-	"version": "0.2.55",
+	"version": "0.2.57-rc.0",
+	"repository": {
+		"type": "git",
+		"url": "git+https://github.com/RocketChat/Rocket.Chat.git",
+		"directory": "packages/api-client"
+	},
 	"main": "./dist/index.js",
 	"typings": "./dist/index.d.ts",
 	"files": [
@@ -25,11 +30,10 @@
 	"devDependencies": {
 		"@rocket.chat/jest-presets": "workspace:~",
 		"@rocket.chat/tsconfig": "workspace:*",
-		"@types/jest": "~30.0.0",
 		"@types/strict-uri-encode": "^2.0.2",
-		"eslint": "~9.39.3",
-		"jest": "~30.2.0",
-		"jest-fetch-mock": "~3.0.3",
+		"eslint": "~10.12.0",
+		"jest": "~30.5.2",
+		"jest-fetch-mock": "~4.2.0",
 		"typescript": "~5.9.3"
 	},
 	"volta": {

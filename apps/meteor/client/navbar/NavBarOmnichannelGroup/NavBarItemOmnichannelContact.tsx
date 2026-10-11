@@ -3,7 +3,7 @@ import type { HTMLAttributes } from 'react';
 
 import { useOmnichannelContactAction } from './hooks/useOmnichannelContactAction';
 
-type NavBarItemOmnichannelContactProps = Omit<HTMLAttributes<HTMLElement>, 'is'>;
+export type NavBarItemOmnichannelContactProps = Omit<HTMLAttributes<HTMLElement>, 'is'>;
 
 const NavBarItemOmnichannelContact = (props: NavBarItemOmnichannelContactProps) => {
 	const { icon, isPressed, title, handleGoToContactCenter } = useOmnichannelContactAction();

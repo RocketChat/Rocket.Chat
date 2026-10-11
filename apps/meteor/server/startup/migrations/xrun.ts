@@ -1,9 +1,10 @@
 import { Permissions, Roles, Settings, Users } from '@rocket.chat/models';
 import type { UpdateResult } from 'mongodb';
 
-import { upsertPermissions } from '../../../app/authorization/server/functions/upsertPermissions';
-import { settings } from '../../../app/settings/server';
+import { upsertPermissions } from '../../lib/authorization/upsertPermissions';
 import { migrateDatabase, onServerVersionChange } from '../../lib/migrations';
+import { addCustomOAuthPremiumAlert } from '../../lib/oauth/addCustomOAuthPremiumAlert';
+import { settings } from '../../settings';
 import { ensureCloudWorkspaceRegistered } from '../cloudRegistration';
 
 const { MIGRATION_VERSION = 'latest' } = process.env;
@@ -98,5 +99,6 @@ export const performMigrationProcedure = async (): Promise<void> => {
 		await upsertPermissions();
 		await ensureCloudWorkspaceRegistered();
 		await moveRetentionSetting();
+		await addCustomOAuthPremiumAlert();
 	});
 };

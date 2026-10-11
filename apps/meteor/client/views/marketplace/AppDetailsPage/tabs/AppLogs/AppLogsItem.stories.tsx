@@ -1,4 +1,4 @@
-import type { Meta, StoryFn } from '@storybook/react';
+import type { StoryObj, Meta } from '@storybook/react';
 import type { ComponentProps } from 'react';
 
 import AppLogsItem from './AppLogsItem';
@@ -39,4 +39,4 @@ export default {
 	},
 } satisfies Meta<ComponentProps<typeof AppLogsItem>>;
 
-export const Simple: StoryFn<ComponentProps<typeof AppLogsItem>> = (args) => <AppLogsItem {...args} />;
+export const Simple: StoryObj<ComponentProps<typeof AppLogsItem>> = {};

@@ -8,8 +8,8 @@ import {
 	defaultAuthnContext,
 	defaultMetadataTemplate,
 	defaultMetadataCertificateTemplate,
-} from '../../../app/meteor-accounts-saml/server/lib/constants';
-import { settingsRegistry } from '../../../app/settings/server';
+} from '../../../server/lib/saml/lib/constants';
+import { settingsRegistry } from '../../../server/settings';
 
 export const addSettings = async function (name: string): Promise<void> {
 	await settingsRegistry.addGroup('SAML', async function () {

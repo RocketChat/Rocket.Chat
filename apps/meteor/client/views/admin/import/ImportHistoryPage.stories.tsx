@@ -1,4 +1,4 @@
-import type { Meta, StoryFn } from '@storybook/react';
+import type { StoryObj, Meta } from '@storybook/react';
 
 import ImportHistoryPage from './ImportHistoryPage';
 
@@ -10,5 +10,7 @@ export default {
 	},
 } satisfies Meta<typeof ImportHistoryPage>;
 
-export const Default: StoryFn<typeof ImportHistoryPage> = () => <ImportHistoryPage />;
-Default.storyName = 'ImportHistoryPage';
+export const Default: StoryObj<typeof ImportHistoryPage> = {
+	render: () => <ImportHistoryPage />,
+	name: 'ImportHistoryPage',
+};

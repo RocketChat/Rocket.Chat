@@ -1,10 +1,9 @@
 import { mockAppRoot } from '@rocket.chat/mock-providers';
-import type { Meta, StoryFn } from '@storybook/react';
+import type { Meta, StoryObj } from '@storybook/react';
 
 import { PasswordVerifier } from './PasswordVerifier';
 
 export default {
-	title: 'Components/PasswordVerifier',
 	component: PasswordVerifier,
 	decorators: [
 		mockAppRoot()
@@ -41,4 +40,4 @@ export default {
 	},
 } satisfies Meta<typeof PasswordVerifier>;
 
-export const Default: StoryFn<typeof PasswordVerifier> = (args) => <PasswordVerifier {...args} />;
+export const Default: StoryObj<typeof PasswordVerifier> = {};

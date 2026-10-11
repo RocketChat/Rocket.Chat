@@ -12,18 +12,16 @@
 		"dev": "tsc --watch --preserveWatchOutput",
 		"lint": "eslint .",
 		"lint:fix": "eslint --fix .",
-		"testunit": "jest --passWithNoTests"
+		"typecheck": "tsc --noEmit"
 	},
 	"dependencies": {
-		"@opentelemetry/api": "^1.9.0",
-		"@opentelemetry/exporter-trace-otlp-grpc": "^0.54.2",
-		"@opentelemetry/sdk-node": "^0.54.2"
+		"@opentelemetry/api": "^1.9.1",
+		"@opentelemetry/exporter-trace-otlp-grpc": "^0.220.0",
+		"@opentelemetry/sdk-node": "^0.220.0",
+		"@opentelemetry/sdk-trace-base": "2.9.0"
 	},
 	"devDependencies": {
-		"@types/jest": "~30.0.0",
-		"eslint": "~9.39.3",
-		"jest": "~30.2.0",
-		"ts-jest": "~29.4.6",
+		"eslint": "~10.12.0",
 		"typescript": "~5.9.3"
 	},
 	"volta": {

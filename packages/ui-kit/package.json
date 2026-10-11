@@ -1,6 +1,6 @@
 {
 	"name": "@rocket.chat/ui-kit",
-	"version": "1.0.0",
+	"version": "1.2.0-rc.0",
 	"description": "Interactive UI elements for Rocket.Chat Apps",
 	"homepage": "https://rocket.chat",
 	"bugs": {
@@ -8,7 +8,8 @@
 	},
 	"repository": {
 		"type": "git",
-		"url": "git+https://github.com/RocketChat/Rocket.Chat.git"
+		"url": "git+https://github.com/RocketChat/Rocket.Chat.git",
+		"directory": "packages/ui-kit"
 	},
 	"license": "MIT",
 	"author": {
@@ -21,10 +22,7 @@
 		"/dist"
 	],
 	"scripts": {
-		".:build:clean": "rimraf dist",
-		".:build:prepare": "ts-patch install && typia patch",
-		".:build:tsc": "tsc -p tsconfig.build.json",
-		"build": "run-s .:build:prepare .:build:clean .:build:tsc",
+		"build": "ts-patch install && typia patch && rm -rf dist && tsc -p tsconfig.build.json",
 		"lint": "eslint .",
 		"test": "jest",
 		"testunit": "jest",
@@ -34,16 +32,11 @@
 		"typia": "patch:typia@npm%3A9.7.2#~/.yarn/patches/typia-npm-9.7.2-5c5d9c80b4.patch"
 	},
 	"devDependencies": {
-		"@rocket.chat/icons": "~0.47.0",
+		"@rocket.chat/icons": "workspace:~",
 		"@rocket.chat/jest-presets": "workspace:~",
 		"@rocket.chat/tsconfig": "workspace:*",
-		"@types/jest": "~30.0.0",
-		"eslint": "~9.39.3",
-		"jest": "~30.2.0",
-		"npm-run-all": "~4.1.5",
-		"prettier": "~3.3.3",
-		"rimraf": "~6.0.1",
-		"ts-jest": "~29.4.6",
+		"eslint": "~10.12.0",
+		"jest": "~30.5.2",
 		"ts-patch": "^3.3.0",
 		"typescript": "~5.9.3"
 	},
@@ -52,8 +45,5 @@
 	},
 	"volta": {
 		"extends": "../../package.json"
-	},
-	"publishConfig": {
-		"access": "public"
 	}
 }

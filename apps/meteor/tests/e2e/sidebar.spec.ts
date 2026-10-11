@@ -1,5 +1,5 @@
 import { Users } from './fixtures/userStates';
-import { HomeChannel } from './page-objects';
+import { AdminInfo, HomeChannel } from './page-objects';
 import { deleteChannel, createTargetChannel } from './utils';
 import { test, expect } from './utils/test';
 
@@ -20,8 +20,7 @@ test.describe.serial('Sidebar', () => {
 	test.beforeEach(async ({ page }) => {
 		poHomeChannel = new HomeChannel(page);
 
-		await page.goto('/home');
-		await page.waitForSelector('main');
+		await poHomeChannel.goto();
 	});
 
 	test.describe('global header', async () => {
@@ -64,17 +63,109 @@ test.describe.serial('Sidebar', () => {
 		});
 		test('should navigate on navbar toolbar pressing tab', async ({ page }) => {
 			await poHomeChannel.navbar.btnHome.focus();
-			await page.keyboard.press('Tab');
-			await page.keyboard.press('Tab');
-			await page.keyboard.press('Tab');
-			await page.keyboard.press('Tab');
-			await page.keyboard.press('Tab');
+			await expect(poHomeChannel.navbar.btnHome).toBeFocused();
 
-			await expect(poHomeChannel.navbar.searchInput).toBeFocused();
+			await test.step('move focus to directory button', async () => {
+				await page.keyboard.press('Tab');
+				await expect(poHomeChannel.navbar.btnDirectory).toBeFocused();
+			});
+
+			await test.step('move focus to marketplace button', async () => {
+				await page.keyboard.press('Tab');
+				await expect(poHomeChannel.navbar.btnMarketplace).toBeFocused();
+			});
+
+			await test.step('move focus to display button', async () => {
+				await page.keyboard.press('Tab');
+				await expect(poHomeChannel.navbar.btnDisplay).toBeFocused();
+			});
+
+			await test.step('move focus to create new button', async () => {
+				await page.keyboard.press('Tab');
+				await expect(poHomeChannel.navbar.btnCreateNew).toBeFocused();
+			});
+
+			await test.step('move focus to search input', async () => {
+				await page.keyboard.press('Tab');
+				await expect(poHomeChannel.navbar.searchInput).toBeFocused();
+			});
+		});
+	});
+
+	test.describe('Display menu keyboard accessibility', () => {
+		const defaultPreferences = {
+			sidebarViewMode: 'extended',
+			sidebarDisplayAvatar: true,
+			sidebarSortby: 'activity',
+			sidebarShowUnread: false,
+		};
+
+		test.beforeEach(async ({ api }) => {
+			await api.post('/users.setPreferences', { data: defaultPreferences });
+		});
+
+		test.afterEach(async ({ api }) => {
+			await api.post('/users.setPreferences', { data: defaultPreferences });
+		});
+
+		test('should change view mode using keyboard', async ({ page }) => {
+			await poHomeChannel.navbar.btnDisplay.focus();
+			await page.keyboard.press('Enter');
+			await expect(poHomeChannel.navbar.menuDisplay).toBeVisible();
+
+			await poHomeChannel.navbar.getDisplayMenuItem('Medium').focus();
+
+			await page.keyboard.press('Space');
+
+			await expect(poHomeChannel.navbar.getDisplayMenuItem('Medium').getByRole('radio')).toBeChecked();
+			await page.keyboard.press('Escape');
+		});
+
+		test('should toggle Avatars using keyboard', async ({ page }) => {
+			await poHomeChannel.navbar.btnDisplay.click();
+			const avatarsItem = poHomeChannel.navbar.getDisplayMenuItem('Avatars');
+
+			await avatarsItem.focus();
+			await page.keyboard.press('Space');
+
+			const newAvatarsItem = poHomeChannel.navbar.getDisplayMenuItem('Avatars');
+			await expect(newAvatarsItem.getByRole('checkbox')).not.toBeChecked();
+			await page.keyboard.press('Escape');
+		});
+
+		test('should change sort mode using keyboard', async ({ page }) => {
+			await poHomeChannel.navbar.btnDisplay.focus();
+			await page.keyboard.press('Enter');
+			await expect(poHomeChannel.navbar.menuDisplay).toBeVisible();
+			await poHomeChannel.navbar.getSortMenuItem('Activity').focus();
+			await page.keyboard.press('ArrowDown');
+			await expect(poHomeChannel.navbar.getSortMenuItem('Name')).toBeFocused();
+			await page.keyboard.press('Space');
+
+			await expect(poHomeChannel.navbar.getSortMenuItem('Name').getByRole('radio')).toBeChecked();
+			await page.keyboard.press('Escape');
+		});
+
+		test('should toggle grouping using keyboard', async ({ page }) => {
+			await poHomeChannel.navbar.btnDisplay.focus();
+			await page.keyboard.press('Enter');
+
+			const unreadItem = poHomeChannel.navbar.getGroupByMenuItem('Unread');
+			await expect(unreadItem.getByRole('checkbox')).not.toBeChecked();
+
+			await unreadItem.focus();
+			await page.keyboard.press('Space');
+
+			await expect(poHomeChannel.navbar.getGroupByMenuItem('Unread').getByRole('checkbox')).toBeChecked();
+			await page.keyboard.press('Escape');
 		});
 	});
 
 	test.describe('sidebar', async () => {
+		test.afterEach(async ({ page }) => {
+			await page.evaluate(() => localStorage.removeItem('sidebarGroups'));
+		});
+
 		test('should navigate on sidebar items using arrow keys and restore focus', async ({ page }) => {
 			// focus should be on the next item
 			await poHomeChannel.sidebar.channelsList.getByRole('link').first().focus();
@@ -87,53 +178,40 @@ test.describe.serial('Sidebar', () => {
 			await expect(poHomeChannel.sidebar.channelsList.getByRole('link').first()).not.toBeFocused();
 		});
 
-		test('should expand/collapse sidebar groups', async ({ page }) => {
-			await page.goto('/home');
-
-			const collapser = poHomeChannel.sidebar.firstCollapser.getByRole('button');
-			let isExpanded: boolean;
+		test('should expand/collapse sidebar groups', async () => {
+			const collapser = poHomeChannel.sidebar.firstCollapser;
 
 			await collapser.click();
-			isExpanded = (await collapser.getAttribute('aria-expanded')) === 'true';
-			expect(isExpanded).toBeFalsy();
+			await expect(collapser).toHaveAttribute('aria-expanded', 'false');
 
 			await collapser.click();
-			isExpanded = (await collapser.getAttribute('aria-expanded')) === 'true';
-			expect(isExpanded).toBeTruthy();
+			await expect(collapser).toHaveAttribute('aria-expanded', 'true');
 		});
 
 		test('should expand/collapse sidebar groups with keyboard', async ({ page }) => {
-			await page.goto('/home');
+			const collapser = poHomeChannel.sidebar.firstCollapser;
 
-			const collapser = poHomeChannel.sidebar.firstCollapser.getByRole('button');
+			await collapser.focus();
+			await expect(collapser).toBeFocused();
+			await page.keyboard.press('Enter');
+			await expect(collapser).toHaveAttribute('aria-expanded', 'false');
 
-			await expect(async () => {
-				await collapser.focus();
-				await expect(collapser).toBeFocused();
-				await page.keyboard.press('Enter');
-				const isExpanded = (await collapser.getAttribute('aria-expanded')) === 'true';
-				expect(isExpanded).toBeFalsy();
-			}).toPass();
-
-			await expect(async () => {
-				await collapser.focus();
-				await page.keyboard.press('Space');
-				const isExpanded = (await collapser.getAttribute('aria-expanded')) === 'true';
-				expect(isExpanded).toBeTruthy();
-			}).toPass();
+			await collapser.focus();
+			await expect(collapser).toBeFocused();
+			await page.keyboard.press('Space');
+			await expect(collapser).toHaveAttribute('aria-expanded', 'true');
 		});
 
 		test('should persist collapsed/expanded groups after page reload', async ({ page }) => {
-			await page.goto('/home');
-
 			const collapser = poHomeChannel.sidebar.firstCollapser;
+			const initialState = await collapser.getAttribute('aria-expanded');
+			const expectedState = initialState === 'true' ? 'false' : 'true';
+
 			await collapser.click();
-			const isExpanded = await collapser.getAttribute('aria-expanded');
+			await expect(collapser).toHaveAttribute('aria-expanded', expectedState);
 
 			await page.reload();
-
-			const isExpandedAfterReload = await collapser.getAttribute('aria-expanded');
-			expect(isExpanded).toEqual(isExpandedAfterReload);
+			await expect(collapser).toHaveAttribute('aria-expanded', expectedState);
 		});
 
 		test('should show unread badge on collapser when group is collapsed and has unread items', async () => {
@@ -150,13 +228,8 @@ test.describe.serial('Sidebar', () => {
 	});
 
 	test.describe('embedded layout', async () => {
-		test.beforeEach(async ({ page }) => {
-			await page.goto('/home');
-			await page.waitForSelector('main');
-		});
-
 		test('should not show Navbar', async ({ page }) => {
-			await poHomeChannel.navbar.openChat(targetChannel);
+			await poHomeChannel.gotoChannel(targetChannel);
 			await expect(page.locator('role=navigation[name="header"]')).toBeVisible();
 			const embeddedLayoutURL = `${page.url()}?layout=embedded`;
 			await page.goto(embeddedLayoutURL);
@@ -164,7 +237,7 @@ test.describe.serial('Sidebar', () => {
 		});
 
 		test('should show burger menu', async ({ page }) => {
-			await page.goto('admin/info?layout=embedded');
+			await new AdminInfo(page).gotoEmbedded();
 			await page.setViewportSize({ width: 767, height: 510 });
 
 			await expect(poHomeChannel.content.burgerButton).toBeVisible();

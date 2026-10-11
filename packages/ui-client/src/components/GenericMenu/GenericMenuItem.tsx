@@ -14,6 +14,11 @@ export type GenericMenuItemProps = {
 	gap?: boolean;
 	tooltip?: string;
 	variant?: string;
+	/**
+	 * What this item *says*, for an item whose `content` is rendered rather than plain text: the collection needs a
+	 * string for typeahead and to announce, and cannot read one out of arbitrary JSX.
+	 */
+	textValue?: string;
 };
 
 const GenericMenuItem = ({ icon, iconColor, content, addon, status, gap, tooltip }: GenericMenuItemProps) => (

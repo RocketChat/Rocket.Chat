@@ -1,13 +1,13 @@
 import { Box, Skeleton } from '@rocket.chat/fuselage';
-import type { ComponentProps, ReactElement } from 'react';
+import type { ComponentProps } from 'react';
 
-export const FormSkeleton = (props: ComponentProps<typeof Box>): ReactElement => (
-	<Box w='full' pb={24} {...props}>
-		<Skeleton mbe={8} />
-		<Skeleton mbe={4} />
-		<Skeleton mbe={4} />
-		<Skeleton mbe={8} />
-		<Skeleton mbe={4} />
-		<Skeleton mbe={8} />
+export const FormSkeleton = (props: ComponentProps<typeof Box>) => (
+	<Box width='full' paddingBlock={24} {...props}>
+		<Skeleton marginBlockEnd={8} />
+		<Skeleton marginBlockEnd={4} />
+		<Skeleton marginBlockEnd={4} />
+		<Skeleton marginBlockEnd={8} />
+		<Skeleton marginBlockEnd={4} />
+		<Skeleton marginBlockEnd={8} />
 	</Box>
 );

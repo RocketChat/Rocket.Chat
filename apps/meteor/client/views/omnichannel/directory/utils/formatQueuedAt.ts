@@ -1,5 +1,5 @@
 import type { IOmnichannelRoom, Serialized } from '@rocket.chat/core-typings';
-import { formatDistance } from 'date-fns';
+import { formatDistance } from 'date-fns/formatDistance';
 
 export const formatQueuedAt = (room: Serialized<IOmnichannelRoom> | undefined) => {
 	const { servedBy, closedAt, open, queuedAt, ts } = room || {};

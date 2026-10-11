@@ -1,5 +1,5 @@
 import { FieldGroup } from '@rocket.chat/fuselage';
-import type { Meta, StoryFn } from '@storybook/react';
+import type { StoryObj, Meta } from '@storybook/react';
 
 import MemoizedSetting from './MemoizedSetting';
 import Setting from './Setting';
@@ -15,21 +15,27 @@ export default {
 	},
 } satisfies Meta<typeof Setting>;
 
-export const Default: StoryFn<typeof MemoizedSetting> = (args) => <MemoizedSetting {...args} />;
-Default.args = {
-	_id: 'setting-id',
-	label: 'Label',
-	hint: 'Hint',
-	type: 'string',
+export const Default: StoryObj<typeof MemoizedSetting> = {
+	render: (args) => <MemoizedSetting {...args} />,
+
+	args: {
+		_id: 'setting-id',
+		label: 'Label',
+		hint: 'Hint',
+		type: 'string',
+	},
 };
 
-export const WithCallout: StoryFn<typeof MemoizedSetting> = (args) => <MemoizedSetting {...args} />;
-WithCallout.args = {
-	_id: 'setting-id',
-	label: 'Label',
-	hint: 'Hint',
-	callout: 'Callout text',
-	type: 'string',
+export const WithCallout: StoryObj<typeof MemoizedSetting> = {
+	render: (args) => <MemoizedSetting {...args} />,
+
+	args: {
+		_id: 'setting-id',
+		label: 'Label',
+		hint: 'Hint',
+		callout: 'Callout text',
+		type: 'string',
+	},
 };
 
 export const types = () => (

@@ -15,9 +15,6 @@ inputs:
   NPM_TOKEN:
     required: false
     description: 'NPM token'
-  deno-version:
-    required: true
-    description: 'Deno version'
   source-hash:
     required: true
     description: 'RC cache id (e.g. packages-build-cache-key + meteor apps/meteor archive hash from CI)'
@@ -53,7 +50,6 @@ runs:
       if: steps.cache-build.outputs.cache-hit != 'true'
       with:
         node-version: ${{ inputs.node-version }}
-        deno-version: ${{ inputs.deno-version }}
         cache-modules: true
         install: true
         type: 'production'
@@ -134,7 +130,7 @@ runs:
       run: meteor reset
 
     - name: Restore packages build
-      uses: actions/download-artifact@018cc2cf5baa6db3ef3c5f8a56943fffe632ef53 # v6.0.0
+      uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
       with:
         name: packages-build
         path: /tmp
@@ -210,7 +206,7 @@ runs:
         tar czf /tmp/Rocket.Chat.tar.gz bundle
 
     - name: Store build
-      uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+      uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
       with:
         name: build-${{ inputs.type }}
         path: /tmp/Rocket.Chat.tar.gz

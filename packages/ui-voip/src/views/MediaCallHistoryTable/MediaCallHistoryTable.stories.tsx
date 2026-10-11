@@ -1,16 +1,12 @@
 import { mockAppRoot } from '@rocket.chat/mock-providers';
 import { GenericMenu, useSort } from '@rocket.chat/ui-client';
-import { action } from '@storybook/addon-actions';
-import type { Meta, StoryFn } from '@storybook/react';
+import type { Meta, StoryObj } from '@storybook/react';
+import { action } from 'storybook/actions';
 
-import type {
-	CallHistoryTableExternalContact,
-	CallHistoryTableInternalContact,
-	CallHistoryTableRowProps,
-	CallHistoryUnknownContact,
-} from './CallHistoryTableRow';
+import type { CallHistoryTableRowProps } from './CallHistoryTableRow';
 import CallHistoryTableRow from './CallHistoryTableRow';
 import MediaCallHistoryTable from './MediaCallHistoryTable';
+import type { CallHistoryContact, CallHistoryInternalContact } from '../../definitions';
 
 const mockedContexts = mockAppRoot()
 	.withTranslations('en', 'core', {
@@ -18,6 +14,7 @@ const mockedContexts = mockAppRoot()
 		Ended: 'Ended',
 		Not_answered: 'Not answered',
 		Failed: 'Failed',
+		Prevented: 'Prevented',
 		Transferred: 'Transferred',
 		Contact: 'Contact',
 		Type: 'Type',
@@ -29,23 +26,13 @@ const mockedContexts = mockAppRoot()
 	.buildStoryDecorator();
 
 export default {
-	title: 'V2/Views/MediaCallHistoryTable',
 	component: MediaCallHistoryTable,
 	decorators: [mockedContexts],
 } satisfies Meta<typeof MediaCallHistoryTable>;
 
-const getStatus = (index: number) => {
-	if (index % 4 === 0) {
-		return 'ended';
-	}
-	if (index % 4 === 1) {
-		return 'not-answered';
-	}
-	if (index % 4 === 2) {
-		return 'failed';
-	}
-	return 'transferred';
-};
+// Each row cycles to the next status, so the table shows every variant in order.
+const STATUSES = ['ended', 'not-answered', 'failed', 'prevented', 'transferred'] as const;
+const getStatus = (index: number) => STATUSES[index % STATUSES.length];
 
 const getDate = (index: number) => {
 	const date = new Date(2025, 5, 1, 12, 0, 0);
@@ -65,7 +52,7 @@ const getDate = (index: number) => {
 	return new Date(date.setMonth(date.getMonth() - 2));
 };
 
-const getContact = (index: number): CallHistoryTableInternalContact | CallHistoryTableExternalContact | CallHistoryUnknownContact => {
+const getContact = (index: number): CallHistoryContact => {
 	if (index % 3 === 0) {
 		return {
 			_id: `user_${index}`,
@@ -83,26 +70,26 @@ const getContact = (index: number): CallHistoryTableInternalContact | CallHistor
 	};
 };
 
-const results = Array.from({ length: 100 }).map(
-	(_, index): CallHistoryTableRowProps<CallHistoryTableInternalContact> => ({
-		_id: `call_${index}`,
-		contact: getContact(index) as CallHistoryTableInternalContact,
-		type: index % 2 ? 'outbound' : 'inbound',
-		status: getStatus(index),
-		duration: index % 2 ? 120 : 0,
-		timestamp: getDate(index).toISOString(),
-		onClick: action(`onClick call_${index}`),
-		menu: <GenericMenu title='Menu' sections={[]} />,
-	}),
-);
+const results = Array.from({ length: 100 }).map((_, index): CallHistoryTableRowProps<CallHistoryInternalContact> => ({
+	_id: `call_${index}`,
+	contact: getContact(index) as CallHistoryInternalContact,
+	type: index % 2 ? 'outbound' : 'inbound',
+	status: getStatus(index),
+	duration: index % 2 ? 120 : 0,
+	timestamp: getDate(index).toISOString(),
+	onClick: action(`onClick call_${index}`),
+	menu: <GenericMenu title='Menu' sections={[]} />,
+}));
 
-export const MediaCallHistoryTableStory: StoryFn<typeof MediaCallHistoryTable> = () => {
-	const sort = useSort<'contact' | 'type' | 'status' | 'timestamp'>('contact');
-	return (
-		<MediaCallHistoryTable sort={sort}>
-			{results.map((result) => (
-				<CallHistoryTableRow key={result._id} {...result} />
-			))}
-		</MediaCallHistoryTable>
-	);
+export const MediaCallHistoryTableStory: StoryObj<typeof MediaCallHistoryTable> = {
+	render: () => {
+		const sort = useSort<'contact' | 'type' | 'status' | 'timestamp'>('contact');
+		return (
+			<MediaCallHistoryTable sort={sort}>
+				{results.map((result) => (
+					<CallHistoryTableRow key={result._id} {...result} />
+				))}
+			</MediaCallHistoryTable>
+		);
+	},
 };
