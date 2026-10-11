@@ -1,5 +1,5 @@
 import { parse } from '../src';
-import { bold, plain, orderedList, listItem, emoji } from './helpers';
+import { bold, plain, orderedList, listItem, emoji, unorderedList } from './helpers';
 
 test.each([
 	[
@@ -23,6 +23,46 @@ test.each([
 				listItem([emoji('smile')], 20),
 			]),
 		],
+	],
+	[
+		`
+1. First item
+2. Second item
+   1. Nested item
+   2. Nested item
+3. Third item
+`.trim(),
+		[
+			orderedList([
+				listItem([plain('First item')], 1),
+				listItem([plain('Second item')], 2, [
+					listItem([plain('Nested item')], 1),
+					listItem([plain('Nested item')], 2),
+				]),
+				listItem([plain('Third item')], 3),
+			]),
+		],
+	],
+	[
+		`
+1. Parent
+   - Nested unordered
+   - Another
+2. Sibling
+`.trim(),
+		[
+			orderedList([
+				listItem([plain('Parent')], 1, [listItem([plain('Nested unordered')]), listItem([plain('Another')])]),
+				listItem([plain('Sibling')], 2),
+			]),
+		],
+	],
+	[
+		`
+1. Ordered
+- Unordered sibling
+`.trim(),
+		[orderedList([listItem([plain('Ordered')], 1)]), unorderedList([listItem([plain('Unordered sibling')])])],
 	],
 ])('parses %p', (input, output) => {
 	expect(parse(input)).toEqual(output);
