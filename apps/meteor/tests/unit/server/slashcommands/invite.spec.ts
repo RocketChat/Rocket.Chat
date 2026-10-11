@@ -208,4 +208,18 @@ describe('/invite', () => {
 		sinon.assert.calledTwice(addUsers);
 		sinon.assert.calledWithExactly(addUsers, 'actor', { rid: 'current-room', users: ['carol'] }, actor);
 	});
+
+	it("reports an app's reason when an app prevents the invitation", async () => {
+		toArray.resolves([bob, carol]);
+		addUsers.onFirstCall().rejects(new MeteorError('error-app-prevented', 'Guests cannot join this room'));
+		await slashCommand.runCommand('invite', { params: '@bob @carol' });
+		sinon.assert.calledOnceWithExactly(broadcast, 'notify.ephemeralMessage', 'actor', 'current-room', {
+			msg: 'Guests cannot join this room',
+		});
+		sinon.assert.notCalled(slashCommand.translate);
+		sinon.assert.notCalled(slashCommand.logger.error);
+
+		sinon.assert.calledTwice(addUsers);
+		sinon.assert.calledWithExactly(addUsers, 'actor', { rid: 'current-room', users: ['carol'] }, actor);
+	});
 });
