@@ -18,7 +18,7 @@ const stopContactSyncJob = async (): Promise<void> => {
 	}
 };
 
-export const configureContactSyncJob = async (): Promise<void> => {
+export const configureContactSyncJob = async (isCurrent: () => boolean = () => true): Promise<void> => {
 	await stopContactSyncJob();
 
 	if (
@@ -37,19 +37,29 @@ export const configureContactSyncJob = async (): Promise<void> => {
 		return;
 	}
 
+	if (!isCurrent()) {
+		return;
+	}
+
 	logger.info({ msg: 'Scheduling the Exchange contact sync job', schedule });
 
 	await cronJobs.add(CONTACT_SYNC_JOB, schedule, async () => runContactSync());
 };
 
 export const registerContactSyncJob = (): (() => void) => {
+	let generation = 0;
+	let stopped = false;
+
 	const stopWatching = settings.watchMultiple(WATCHED_SETTINGS, () => {
-		void configureContactSyncJob().catch((err) =>
+		const started = ++generation;
+
+		void configureContactSyncJob(() => !stopped && generation === started).catch((err) =>
 			logger.error({ msg: 'Could not configure the Exchange contact sync job', err: scrubForLog(err) }),
 		);
 	});
 
 	return () => {
+		stopped = true;
 		stopWatching();
 
 		void stopContactSyncJob().catch((err) =>
