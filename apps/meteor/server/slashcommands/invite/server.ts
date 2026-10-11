@@ -116,14 +116,19 @@ slashCommands.add({
 					);
 				} catch (e: unknown) {
 					if (isMeteorError(e)) {
-						const isTranslated = typeof e.error === 'string' && i18n.exists(e.error);
+						if (e.error === 'error-app-prevented' && e.reason) {
+							void api.broadcast('notify.ephemeralMessage', userId, message.rid, { msg: e.reason });
+							return;
+						}
 
-						if (!isTranslated) {
+						const translationKey = typeof e.error === 'string' && i18n.exists(e.error) ? e.error : undefined;
+
+						if (!translationKey) {
 							logger.error({ msg: 'Failed to invite user to room', err: e, rid: message.rid, uid: userId });
 						}
 
 						void api.broadcast('notify.ephemeralMessage', userId, message.rid, {
-							msg: i18n.t(isTranslated ? (e.error as string) : 'Error_something_went_wrong', {
+							msg: i18n.t(translationKey ?? 'Error_something_went_wrong', {
 								lng: settings.get('Language') || 'en',
 							}),
 						});
