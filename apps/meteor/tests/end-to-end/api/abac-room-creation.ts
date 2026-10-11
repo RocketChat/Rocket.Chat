@@ -514,6 +514,26 @@ import { IS_EE, URL_MONGODB } from '../../e2e/config/constants';
 			}
 		});
 
+		it('returns no required keys while enforcement is off', async () => {
+			const res = await assignable().expect(200);
+
+			expect(res.body.requiredKeys).to.deep.equal([]);
+		});
+
+		it('returns the required keys while enforcement is on', async () => {
+			await setSetting('ABAC_Required_Attributes', [clearance]);
+			await setSetting('ABAC_Enforce_All_Rooms', true);
+
+			try {
+				const res = await assignable().expect(200);
+
+				expect(res.body.requiredKeys).to.deep.equal([clearance]);
+			} finally {
+				await setSetting('ABAC_Enforce_All_Rooms', false);
+				await setSetting('ABAC_Required_Attributes', []);
+			}
+		});
+
 		it('is refused while ABAC is disabled', async () => {
 			await setSetting('ABAC_Enabled', false);
 

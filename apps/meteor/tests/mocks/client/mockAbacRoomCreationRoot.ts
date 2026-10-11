@@ -7,7 +7,7 @@ export type AbacRoomCreationRootOptions = {
 	requiredAttributes?: string[];
 	assignable?: { key: string; values: string[] }[];
 	permissions?: string[];
-	config?: () => unknown;
+	assignableAttributes?: () => unknown;
 };
 
 export const mockAbacRoomCreationRoot = ({
@@ -15,7 +15,7 @@ export const mockAbacRoomCreationRoot = ({
 	requiredAttributes = [],
 	assignable = [{ key: 'dept', values: ['eng', 'sales'] }],
 	permissions = ['create-abac-managed-room', 'create-c', 'create-p', 'create-team'],
-	config = () => ({ bannersConfig: '', requiredAttributes }),
+	assignableAttributes = () => ({ attributes: assignable, requiredKeys: requiredAttributes }),
 }: AbacRoomCreationRootOptions = {}) =>
 	permissions
 		.reduce(
@@ -31,12 +31,7 @@ export const mockAbacRoomCreationRoot = ({
 					'/v1/licenses.info',
 					jest.fn().mockImplementation(() => ({ license: createFakeLicenseInfo({ activeModules: ['abac'] }) })),
 				)
-				.withEndpoint('GET', '/v1/abac/config', jest.fn().mockImplementation(config))
-				.withEndpoint(
-					'GET',
-					'/v1/abac/assignable-attributes',
-					jest.fn().mockImplementation(() => ({ attributes: assignable })),
-				)
+				.withEndpoint('GET', '/v1/abac/assignable-attributes', jest.fn().mockImplementation(assignableAttributes))
 				.withEndpoint(
 					'GET',
 					'/v1/rooms.nameExists',
