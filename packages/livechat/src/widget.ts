@@ -150,7 +150,7 @@ const updateWidgetStyle = (isOpened: boolean) => {
 		document.body.classList.add('rc-livechat-mobile-full-screen');
 	} else {
 		document.body.classList.remove('rc-livechat-mobile-full-screen');
-		if (smallScreen) {
+		if (smallScreen && typeof scrollPosition !== "undefined") {
 			document.documentElement.scrollTop = scrollPosition;
 		}
 	}
