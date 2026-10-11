@@ -61,4 +61,6 @@ export enum AppInterface {
 	IPostUserLoggedIn = 'IPostUserLoggedIn',
 	IPostUserLoggedOut = 'IPostUserLoggedOut',
 	IPostUserStatusChanged = 'IPostUserStatusChanged',
+	// Media calls
+	IMediaCallHandler = 'IMediaCallHandler',
 }

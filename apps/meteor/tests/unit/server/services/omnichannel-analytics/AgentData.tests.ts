@@ -70,7 +70,7 @@ describe('AgentData Analytics', () => {
 
 			try {
 				// @ts-expect-error - test
-				// eslint-disable-next-line prettier/prettier, no-return-await
+
 				await agentOverview.callAction('invalid', moment(), moment());
 			} catch (e) {
 				expect(e).to.be.instanceOf(Error);

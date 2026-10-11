@@ -1,5 +1,5 @@
 import { Box, Pagination } from '@rocket.chat/fuselage';
-import { useDebouncedValue, useEffectEvent } from '@rocket.chat/fuselage-hooks';
+import { useDebouncedValue, useStableCallback } from '@rocket.chat/fuselage-hooks';
 import { UserAvatar } from '@rocket.chat/ui-avatar';
 import {
 	GenericTable,
@@ -11,14 +11,14 @@ import {
 	GenericTableCell,
 	usePagination,
 	useSort,
+	GenericNoResults,
+	useFormatDateAndTime,
 } from '@rocket.chat/ui-client';
 import { useTranslation, usePermission, useToastMessageDispatch, useEndpoint, useRouter } from '@rocket.chat/ui-contexts';
 import { hashKey, useQuery } from '@tanstack/react-query';
 import { useMemo, useState } from 'react';
 
 import CannedResponseFilter from './CannedResponseFilter';
-import GenericNoResults from '../../../../components/GenericNoResults';
-import { useFormatDateAndTime } from '../../../../hooks/useFormatDateAndTime';
 import { links } from '../../../../lib/links';
 import RemoveCannedResponseButton from '../RemoveCannedResponseButton';
 
@@ -63,9 +63,9 @@ const CannedResponsesTable = () => {
 		refetchOnWindowFocus: false,
 	});
 
-	const handleAddNew = useEffectEvent(() => router.navigate('/omnichannel/canned-responses/new'));
+	const handleAddNew = useStableCallback(() => router.navigate('/omnichannel/canned-responses/new'));
 
-	const onRowClick = useEffectEvent((id: string, scope: string) => (): void => {
+	const onRowClick = useStableCallback((id: string, scope: string) => (): void => {
 		if (scope === 'global' && isMonitor && !isManager) {
 			return dispatchToastMessage({
 				type: 'error',
@@ -108,7 +108,7 @@ const CannedResponsesTable = () => {
 			<GenericTableHeaderCell key='tags' direction={sortDirection} active={sortBy === 'tags'} onClick={setSort} sort='tags'>
 				{t('Tags')}
 			</GenericTableHeaderCell>
-			<GenericTableHeaderCell key='remove' w='x60'>
+			<GenericTableHeaderCell key='remove' width='x60'>
 				{t('Remove')}
 			</GenericTableHeaderCell>
 		</>
@@ -148,7 +148,7 @@ const CannedResponsesTable = () => {
 			)}
 			{isSuccess && data?.cannedResponses.length > 0 && (
 				<>
-					<GenericTable aria-busy={text !== debouncedText}>
+					<GenericTable aria-label={t('Canned_Responses')} aria-busy={text !== debouncedText}>
 						<GenericTableHeader>{headers}</GenericTableHeader>
 						<GenericTableBody>
 							{data?.cannedResponses.map(({ _id, shortcut, scope, createdBy, _createdAt, tags = [] }) => (
@@ -158,7 +158,7 @@ const CannedResponsesTable = () => {
 									<GenericTableCell withTruncatedText>
 										<Box display='flex' alignItems='center'>
 											<UserAvatar size='x24' username={createdBy.username} />
-											<Box display='flex' withTruncatedText mi={8}>
+											<Box display='flex' withTruncatedText marginInline={8}>
 												<Box display='flex' flexDirection='column' alignSelf='center' withTruncatedText>
 													<Box fontScale='p2m' withTruncatedText color='default'>
 														{createdBy.username}

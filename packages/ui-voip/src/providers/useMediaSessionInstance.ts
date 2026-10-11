@@ -3,6 +3,7 @@ import { MediaSignalingSession, MediaCallWebRTCProcessor } from '@rocket.chat/me
 import type { MediaSignalTransport, ClientMediaSignal, ServerMediaSignal, WebRTCProcessorConfig } from '@rocket.chat/media-signaling';
 import type { TranslationKey } from '@rocket.chat/ui-contexts';
 import { useSetting, useStream, useToastMessageDispatch, useWriteStream } from '@rocket.chat/ui-contexts';
+import { stopTracks } from '@rocket.chat/ui-media';
 import { useEffect, useSyncExternalStore, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -28,12 +29,54 @@ type MediaSessionStoreEventMap = {
 	requestToast: { message: TranslationKey; args?: Record<string, string>; type: 'error' | 'success' | 'info' | 'warning' };
 };
 
+const MAX_FAILED_SCREEN_SHARE_ATTEMPTS = 3;
+const isNotAllowedError = (error: unknown): error is DOMException & { name: 'NotAllowedError' } => {
+	return error instanceof DOMException && error.name === 'NotAllowedError';
+};
+
+let fakeStream: { audioCtx: AudioContext; stream: MediaStream } | null = null;
+let fakeStreamTimeout: ReturnType<typeof setTimeout> | undefined = undefined;
+
+const getFakeStream = () => {
+	if (fakeStream) {
+		stopFakeStream();
+	}
+
+	const audioCtx = new AudioContext();
+	const { stream } = audioCtx.createMediaStreamDestination();
+
+	fakeStream = {
+		audioCtx,
+		stream,
+	};
+
+	return fakeStream.stream;
+};
+
+const stopFakeStream = () => {
+	if (fakeStreamTimeout) {
+		clearTimeout(fakeStreamTimeout);
+	}
+	if (!fakeStream) {
+		return;
+	}
+	stopTracks(fakeStream.stream);
+	void fakeStream.audioCtx.close();
+	fakeStream = null;
+};
+
 class MediaSessionStore extends Emitter<MediaSessionStoreEventMap> {
 	private sessionInstance: MediaSignalingSession | null = null;
 
 	private sendSignalFn: SignalTransport | null = null;
 
 	private _webrtcProcessorFactory: ((config: WebRTCProcessorConfig) => MediaCallWebRTCProcessor) | null = null;
+
+	private failedScreenShareAttempts = 0;
+
+	private logger = new MediaCallLogger();
+
+	private popoutWindow: Window | undefined;
 
 	constructor() {
 		super();
@@ -84,27 +127,72 @@ class MediaSessionStore extends Emitter<MediaSessionStoreEventMap> {
 		return oldSessionId;
 	}
 
-	private async getDisplayMedia(constraints: MediaStreamConstraints) {
+	private async getUserMedia(constraints: MediaStreamConstraints) {
 		try {
-			if (!navigator?.mediaDevices?.getDisplayMedia) {
-				throw new Error('getDisplayMedia is not supported');
+			if (this.sessionInstance?.micless) {
+				return getFakeStream();
 			}
-			const stream = await navigator.mediaDevices.getDisplayMedia(constraints);
+			const stream = await navigator.mediaDevices.getUserMedia(constraints);
 			if (!stream) {
-				throw new Error('MediaSessionStore - getDisplayMedia - Failed to get display media');
+				throw new Error();
 			}
+			// Wait a little to ensure the track switch happened.
+			// It's ok for the old stream/audioCtx to hang unused for a little
+			fakeStreamTimeout = setTimeout(stopFakeStream, 1000);
 			return stream;
 		} catch (error) {
-			this.requestToast({ message: 'Share_screen_failed_update_or_check_permissions', type: 'error' });
+			if (this.sessionInstance) {
+				this.sessionInstance.micless = true;
+			}
+			return getFakeStream();
+		}
+	}
+
+	private async getDisplayMedia(constraints: MediaStreamConstraints) {
+		try {
+			const actualWindow = this.popoutWindow || window;
+			if (!actualWindow.navigator?.mediaDevices?.getDisplayMedia) {
+				throw new Error('getDisplayMedia is not supported');
+			}
+
+			const stream = await actualWindow.navigator.mediaDevices.getDisplayMedia(constraints);
+			if (!stream) {
+				this.logger.log('MediaSessionStore - getDisplayMedia - no stream returned');
+				throw new Error('MediaSessionStore - getDisplayMedia - Failed to get display media');
+			}
+
+			this.failedScreenShareAttempts = 0;
+			return stream;
+		} catch (error) {
+			this.logger.log('MediaSessionStore - getDisplayMedia - error', {
+				attempts: this.failedScreenShareAttempts,
+				error,
+			});
+
+			if (isNotAllowedError(error) && this.failedScreenShareAttempts < MAX_FAILED_SCREEN_SHARE_ATTEMPTS) {
+				this.logger.log('MediaSessionStore - getDisplayMedia - error - soft failure #', this.failedScreenShareAttempts);
+				this.failedScreenShareAttempts++;
+				throw error;
+			}
+
+			this.logger.log('MediaSessionStore - getDisplayMedia - error - dispatching toast');
+			this.requestToast({ message: 'Share_screen_failed_update_or_check_permissions', type: 'info' });
+
 			throw error;
 		}
 	}
 
-	private makeInstance(userId: string) {
+	private cleanupInstance() {
 		if (this.sessionInstance !== null) {
 			this.sessionInstance.endSession();
 			this.sessionInstance = null;
 		}
+	}
+
+	private makeInstance(userId: string) {
+		this.cleanupInstance();
+
+		this.failedScreenShareAttempts = 0;
 
 		if (!this._webrtcProcessorFactory || !this.sendSignalFn) {
 			return null;
@@ -119,10 +207,10 @@ class MediaSessionStore extends Emitter<MediaSessionStoreEventMap> {
 				webrtc: (config) => this.webrtcProcessorFactory(config),
 			},
 			displayMediaFactory: (...args) => this.getDisplayMedia(...args),
-			mediaStreamFactory: (...args) => navigator.mediaDevices.getUserMedia(...args),
+			mediaStreamFactory: (...args) => this.getUserMedia(...args),
 			randomStringFactory,
 			oldSessionId: this.getOldSessionId(userId),
-			logger: new MediaCallLogger(),
+			logger: this.logger,
 			features: ['audio', 'screen-share', 'transfer', 'hold'],
 			autoSync: true,
 		});
@@ -136,7 +224,12 @@ class MediaSessionStore extends Emitter<MediaSessionStoreEventMap> {
 		return this.sessionInstance;
 	}
 
-	public getInstance(userId?: string) {
+	public getInstance(userId?: string, enabled = true) {
+		if (!enabled) {
+			this.cleanupInstance();
+			return null;
+		}
+
 		if (!userId) {
 			return null;
 		}
@@ -168,11 +261,25 @@ class MediaSessionStore extends Emitter<MediaSessionStoreEventMap> {
 
 		void this.sessionInstance.processSignal(signal);
 	}
+
+	public setPopoutWindow(popoutWindow?: Window) {
+		if (!popoutWindow) {
+			this.popoutWindow = undefined;
+		}
+		this.popoutWindow = popoutWindow;
+	}
 }
 
 const mediaSession = new MediaSessionStore();
 
-export const useMediaSessionInstance = (userId?: string) => {
+export const useSetPopoutWindow = (popoutWindow?: Window) => {
+	useEffect(() => {
+		mediaSession.setPopoutWindow(popoutWindow);
+		return () => mediaSession.setPopoutWindow(undefined);
+	});
+};
+
+export const useMediaSessionInstance = (userId?: string, enabled = true) => {
 	const { t } = useTranslation();
 	const iceServers = useIceServers();
 	const iceGatheringTimeout = useSetting('VoIP_TeamCollab_Ice_Gathering_Timeout', 5000);
@@ -218,8 +325,8 @@ export const useMediaSessionInstance = (userId?: string) => {
 			return mediaSession.onChange(callback);
 		}, []),
 		useCallback(() => {
-			return mediaSession.getInstance(userId);
-		}, [userId]),
+			return mediaSession.getInstance(userId, enabled);
+		}, [userId, enabled]),
 	);
 
 	return instance ?? undefined;

@@ -1,4 +1,4 @@
-import util from 'util';
+import util from 'node:util';
 
 import WS from 'jest-websocket-mock';
 import { WebSocket } from 'ws';
@@ -200,6 +200,30 @@ it('should create and connect to a stream', async () => {
 	const promise = DDPSDK.createAndConnect('ws://localhost:1234');
 	await handleConnection(server, promise);
 	const sdk = await promise;
+	sdk.connection.close();
+});
+
+it('should reconnect after a heartbeat timeout', async () => {
+	jest.useFakeTimers({ advanceTimers: true });
+
+	const sdk = DDPSDK.create('ws://localhost:1234');
+
+	await handleConnection(server, sdk.connection.connect());
+
+	// the server never answers the ping, so the heartbeat times out
+	await Promise.all([server.nextMessage, jest.advanceTimersByTimeAsync(30_000)]);
+
+	const disconnected = new Promise((resolve) => sdk.connection.once('disconnected', () => resolve(undefined)));
+	await Promise.all([jest.advanceTimersByTimeAsync(30_000), disconnected]);
+
+	expect(sdk.connection.status).toBe('disconnected');
+
+	const connected = new Promise((resolve) => sdk.connection.once('connected', () => resolve(undefined)));
+	await handleConnection(server, jest.advanceTimersByTimeAsync(1000), connected);
+
+	expect(sdk.connection.status).toBe('connected');
+
+	jest.useRealTimers();
 	sdk.connection.close();
 });
 

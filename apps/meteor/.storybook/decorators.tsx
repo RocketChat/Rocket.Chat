@@ -1,40 +1,29 @@
 import { mockAppRoot } from '@rocket.chat/mock-providers';
 import type { Decorator } from '@storybook/react';
+import { I18nextProvider } from 'react-i18next';
 
 import ModalContextMock from '../client/stories/contexts/ModalContextMock';
 import RouterContextMock from '../client/stories/contexts/RouterContextMock';
 import ServerContextMock from '../client/stories/contexts/ServerContextMock';
 import TranslationContextMock from '../client/stories/contexts/TranslationContextMock';
+import { storybookI18n } from '../client/stories/i18n';
 
 const MockedAppRoot = mockAppRoot().build();
 
-export const rocketChatDecorator: Decorator = (fn, { parameters }) => {
-	const linkElement = document.getElementById('theme-styles') || document.createElement('link');
-	if (linkElement.id !== 'theme-styles') {
-		require('../app/theme/client/main.css');
-		require('../app/theme/client/rocketchat.font.css');
-		linkElement.setAttribute('id', 'theme-styles');
-		linkElement.setAttribute('rel', 'stylesheet');
-		linkElement.setAttribute('href', 'https://open.rocket.chat/theme.css');
-		document.head.appendChild(linkElement);
-	}
-
-	return (
-		<MockedAppRoot>
-			<ServerContextMock {...parameters.serverContext}>
-				<TranslationContextMock {...parameters.translationContext}>
-					<ModalContextMock {...parameters.modalContext}>
-						<RouterContextMock {...parameters.routerContext}>
-							<style>{`
-								body {
-									background-color: white;
-								}
-							`}</style>
-							<div className='color-primary-font-color'>{fn()}</div>
-						</RouterContextMock>
-					</ModalContextMock>
-				</TranslationContextMock>
-			</ServerContextMock>
-		</MockedAppRoot>
-	);
-};
+export const RocketChatDecorator: Decorator = (Story, { parameters }) => (
+	<MockedAppRoot>
+		<ServerContextMock {...parameters.serverContext}>
+			<TranslationContextMock {...parameters.translationContext}>
+				<ModalContextMock {...parameters.modalContext}>
+					<RouterContextMock {...parameters.routerContext}>
+						<I18nextProvider i18n={storybookI18n}>
+							<div className='color-primary-font-color rcx-content--main'>
+								<Story />
+							</div>
+						</I18nextProvider>
+					</RouterContextMock>
+				</ModalContextMock>
+			</TranslationContextMock>
+		</ServerContextMock>
+	</MockedAppRoot>
+);

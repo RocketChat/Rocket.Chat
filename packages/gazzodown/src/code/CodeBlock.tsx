@@ -3,13 +3,12 @@ import { IconButton, Box } from '@rocket.chat/fuselage';
 import type * as MessageParser from '@rocket.chat/message-parser';
 import { useToastMessageDispatch } from '@rocket.chat/ui-contexts';
 import hljs from 'highlight.js';
-import type { ReactElement } from 'react';
 import { Fragment, useContext, useLayoutEffect, useMemo, useRef, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { MarkupInteractionContext } from '../MarkupInteractionContext';
 
-type CodeBlockProps = {
+export type CodeBlockProps = {
 	language?: string;
 	lines: MessageParser.CodeLine[];
 };
@@ -24,7 +23,7 @@ const onHoverStyle = css`
 	}
 `;
 
-const CodeBlock = ({ lines = [], language }: CodeBlockProps): ReactElement => {
+const CodeBlock = ({ lines = [], language }: CodeBlockProps) => {
 	const ref = useRef<HTMLElement>(null);
 
 	const { highlightRegex } = useContext(MarkupInteractionContext);

@@ -49,7 +49,10 @@ const channelsFilesListPropsSchema = {
 			type: 'boolean',
 		},
 	},
-	oneOf: [{ required: ['roomId'] }, { required: ['roomName'] }],
+	oneOf: [
+		{ type: 'object', required: ['roomId'] },
+		{ type: 'object', required: ['roomName'] },
+	],
 	required: [],
 	additionalProperties: false,
 };

@@ -17,7 +17,7 @@ import { UserAvatar } from '@rocket.chat/ui-avatar';
 import { useUserDisplayName } from '@rocket.chat/ui-client';
 import type { TranslationKey } from '@rocket.chat/ui-contexts';
 import { useUserPresence, useUserCard } from '@rocket.chat/ui-contexts';
-import type { ComponentProps, ReactElement } from 'react';
+import type { ComponentProps, KeyboardEvent, MouseEvent } from 'react';
 import { memo } from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -30,6 +30,7 @@ import {
 } from '../../../views/room/MessageList/contexts/SelectedMessagesContext';
 import Attachments from '../content/Attachments';
 import MessageActions from '../content/MessageActions';
+import { getCheckboxLabel } from '../helpers/getCheckboxLabel';
 import {
 	useMessageListShowRealName,
 	useMessageListShowUsername,
@@ -37,16 +38,16 @@ import {
 	useMessageListFormatTime,
 } from '../list/MessageListContext';
 
-type SystemMessageProps = {
+export type SystemMessageProps = {
 	message: IMessage;
 	showUserAvatar: boolean;
 } & ComponentProps<typeof MessageSystem>;
 
-const SystemMessage = ({ message, showUserAvatar, ...props }: SystemMessageProps): ReactElement => {
+const SystemMessage = ({ message, showUserAvatar, ...props }: SystemMessageProps) => {
 	const { t } = useTranslation();
 	const formatTime = useMessageListFormatTime();
 	const formatDateAndTime = useMessageListFormatDateAndTime();
-	const { triggerProps, openUserCard } = useUserCard();
+	const { openUserCard, openUserInfo } = useUserCard();
 
 	const showRealName = useMessageListShowRealName();
 	const user = { ...message.u, roles: [], ...useUserPresence(message.u._id) };
@@ -61,7 +62,19 @@ const SystemMessage = ({ message, showUserAvatar, ...props }: SystemMessageProps
 	const toggleSelected = useToggleSelect(message._id);
 	const isSelected = useIsSelectedMessage(message._id);
 	useCountSelected();
-	const buttonProps = useButtonPattern((e) => openUserCard(e, user.username));
+	const buttonProps = useButtonPattern(() => openUserInfo(user.username));
+	const openUserCardOnHover = (e: MouseEvent) => openUserCard(e, user.username);
+
+	const handleKeyDown = (e: KeyboardEvent<HTMLDivElement>) => {
+		if (!isSelecting) return;
+
+		if (!(e.code === 'Space' || e.code === 'Enter')) return;
+
+		e.preventDefault();
+		toggleSelected();
+	};
+
+	const checkboxLabel = getCheckboxLabel(message, t);
 
 	return (
 		<MessageSystem
@@ -69,17 +82,35 @@ const SystemMessage = ({ message, showUserAvatar, ...props }: SystemMessageProps
 			aria-roledescription={t('system_message')}
 			tabIndex={0}
 			onClick={isSelecting ? toggleSelected : undefined}
+			onKeyDown={handleKeyDown}
 			isSelected={isSelected}
 			data-system-message-type={message.t}
 			{...props}
 		>
 			<MessageSystemLeftContainer>
-				{!isSelecting && showUserAvatar && <UserAvatar username={message.u.username} size='x18' />}
-				{isSelecting && <CheckBox checked={isSelected} onChange={toggleSelected} />}
+				{!isSelecting && showUserAvatar && (
+					<UserAvatar
+						username={message.u.username}
+						size='x18'
+						title=''
+						style={{ cursor: 'pointer' }}
+						onMouseEnter={openUserCardOnHover}
+						onClick={() => openUserInfo(user.username)}
+						// a pointer-only shortcut for the name button next to it
+						aria-hidden='true'
+					/>
+				)}
+				{isSelecting && <CheckBox checked={isSelected} onChange={toggleSelected} aria-label={checkboxLabel} />}
 			</MessageSystemLeftContainer>
 			<MessageSystemContainer>
 				<MessageSystemBlock>
-					<MessageNameContainer style={{ cursor: 'pointer' }} {...buttonProps} {...triggerProps}>
+					<MessageNameContainer
+						{...(!isSelecting && {
+							...buttonProps,
+							style: { cursor: 'pointer' },
+							onMouseEnter: openUserCardOnHover,
+						})}
+					>
 						<MessageSystemName>{displayName}</MessageSystemName>
 						{showUsername && (
 							<>

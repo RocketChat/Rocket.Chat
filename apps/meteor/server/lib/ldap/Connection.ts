@@ -12,8 +12,8 @@ import ldapjs from 'ldapjs';
 import { logger, connLogger, searchLogger, authLogger, bindLogger, mapLogger } from './Logger';
 import { getLDAPConditionalSetting } from './getLDAPConditionalSetting';
 import { processLdapVariables, type LDAPVariableMap } from './processLdapVariables';
-import { settings } from '../../../app/settings/server';
 import { ensureArray } from '../../../lib/utils/arrayUtils';
+import { settings } from '../../settings';
 
 interface ILDAPEntryCallback<T> {
 	(entry: ldapjs.SearchEntry): T | undefined;
@@ -126,15 +126,6 @@ export class LDAPConnection {
 
 		if (this.client) {
 			this.client.unbind();
-		}
-	}
-
-	public async testConnection(): Promise<void> {
-		try {
-			await this.connect();
-			await this.maybeBindDN();
-		} finally {
-			this.disconnect();
 		}
 	}
 
@@ -349,7 +340,7 @@ export class LDAPConnection {
 		let realEntries = 0;
 
 		return new Promise((resolve, reject) => {
-			this.client.search(baseDN, searchOptions, (err, res: ldapjs.SearchCallbackResponse) => {
+			this.clientSearch(baseDN, searchOptions, (err, res: ldapjs.SearchCallbackResponse) => {
 				if (err) {
 					searchLogger.error({ err });
 					reject(err);
@@ -395,11 +386,18 @@ export class LDAPConnection {
 
 		this.addUserFilters(filter, username);
 
-		const usernameFilter = this.options.userSearchField.split(',').map((item) => `(${item}=${username})`);
+		const fields = this.options.userSearchField
+			.split(',')
+			.map((field) => field.trim())
+			.filter(Boolean);
 
-		if (usernameFilter.length === 0) {
-			logger.error('LDAP_LDAP_User_Search_Field not defined');
-		} else if (usernameFilter.length === 1) {
+		if (!fields.length) {
+			throw new Error('LDAP User Search Field is not configured');
+		}
+
+		const usernameFilter = fields.map((field) => `(${field}=${username})`);
+
+		if (usernameFilter.length === 1) {
 			filter.push(`${usernameFilter[0]}`);
 		} else {
 			filter.push(`(|${usernameFilter.join('')})`);
@@ -517,6 +515,14 @@ export class LDAPConnection {
 		});
 	}
 
+	private clientSearch(baseDN: string, searchOptions: ldapjs.SearchOptions, callback: ldapjs.SearchCallBack): void {
+		try {
+			this.client.search(baseDN, searchOptions, callback);
+		} catch (err) {
+			callback(err as ldapjs.Error, undefined as unknown as ldapjs.SearchCallbackResponse);
+		}
+	}
+
 	private async doAsyncSearch<T = ldapjs.SearchEntry>(
 		baseDN: string,
 		searchOptions: ldapjs.SearchOptions,
@@ -527,7 +533,7 @@ export class LDAPConnection {
 
 		searchLogger.debug({ msg: 'searchOptions', searchOptions, baseDN });
 
-		this.client.search(baseDN, searchOptions, (err: ldapjs.Error | null, res: ldapjs.SearchCallbackResponse): void => {
+		this.clientSearch(baseDN, searchOptions, (err: ldapjs.Error | null, res: ldapjs.SearchCallbackResponse): void => {
 			if (err) {
 				searchLogger.error({ err });
 				callback(err);
@@ -591,7 +597,7 @@ export class LDAPConnection {
 
 		searchLogger.debug({ msg: 'searchOptions', searchOptions, baseDN });
 
-		this.client.search(baseDN, searchOptions, (err: ldapjs.Error | null, res: ldapjs.SearchCallbackResponse): void => {
+		this.clientSearch(baseDN, searchOptions, (err: ldapjs.Error | null, res: ldapjs.SearchCallbackResponse): void => {
 			if (err) {
 				searchLogger.error({ err });
 				callback(err);
@@ -674,13 +680,16 @@ export class LDAPConnection {
 		this.client._updateIdle(override);
 	}
 
-	protected async maybeBindDN({ forceBindAuthenticationUser = false } = {}): Promise<void> {
+	protected async maybeBindDN({ forceBindAuthenticationUser = false, throwOnError = false } = {}): Promise<void> {
 		if (!forceBindAuthenticationUser && (this.usingAuthentication || !this.options.authentication)) {
 			return;
 		}
 
 		if (!this.options.authenticationUserDN) {
 			logger.error('Invalid UserDN for authentication');
+			if (throwOnError) {
+				throw new Error('Invalid UserDN for authentication');
+			}
 			return;
 		}
 
@@ -695,7 +704,14 @@ export class LDAPConnection {
 				dn: this.options.authenticationUserDN,
 			});
 			this.usingAuthentication = false;
+			if (throwOnError) {
+				throw error;
+			}
 		}
+	}
+
+	public async bindAuthenticationUserOrFail(): Promise<void> {
+		return this.maybeBindDN({ throwOnError: true });
 	}
 
 	protected async runBeforeSearch(_searchOptions: ldapjs.SearchOptions): Promise<void> {

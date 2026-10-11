@@ -1,6 +1,7 @@
-import { IFileUploadContext } from './IFileUploadContext';
-import { IPreFileUpload } from './IPreFileUpload';
-import { IUpload } from './IUpload';
+import type { IFileUploadContext } from './IFileUploadContext';
+import type { IPreFileUpload } from './IPreFileUpload';
+import type { IUpload } from './IUpload';
 import { StoreType } from './StoreType';
 
-export { IFileUploadContext, IPreFileUpload, IUpload, StoreType };
+export type { IFileUploadContext, IPreFileUpload, IUpload };
+export { StoreType };

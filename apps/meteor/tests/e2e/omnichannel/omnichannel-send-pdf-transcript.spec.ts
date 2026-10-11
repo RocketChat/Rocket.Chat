@@ -37,7 +37,7 @@ test.describe('omnichannel- export chat transcript as PDF', () => {
 
 	test('Export PDF transcript', async ({ page }) => {
 		await test.step('Expect send a message as a visitor', async () => {
-			await page.goto('/livechat');
+			await poLiveChat.goto();
 			await poLiveChat.openLiveChat();
 			await poLiveChat.sendMessage(newVisitor, false);
 			await poLiveChat.onlineAgentMessage.type('this_a_test_message_from_visitor');
@@ -63,7 +63,7 @@ test.describe('omnichannel- export chat transcript as PDF', () => {
 		await test.step('Expect to have exported PDF in rocket.cat', async () => {
 			await page.waitForTimeout(3000);
 			await agent.poHomeChannel.navbar.openChat('rocket.cat');
-			await expect(agent.poHomeChannel.content.lastUserMessage.getByText('PDF Transcript successfully generated')).toBeVisible();
+			await expect(agent.poHomeChannel.content.lastUserMessage.getByText('PDF transcript successfully generated')).toBeVisible();
 			await expect(agent.poHomeChannel.content.lastUserMessage.getByRole('link', { name: 'Transcript' })).toBeVisible();
 		});
 

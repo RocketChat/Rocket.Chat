@@ -1,9 +1,9 @@
 import type { OEmbedMeta, OEmbedUrlContent, OEmbedProvider } from '@rocket.chat/core-typings';
 import { camelCase } from 'change-case';
 
-import { settings } from '../../../../../app/settings/server';
 import { Info } from '../../../../../app/utils/rocketchat.info';
 import { SystemLogger } from '../../../../lib/logger/system';
+import { settings } from '../../../../settings';
 
 class Providers {
 	private providers: OEmbedProvider[];
@@ -99,6 +99,14 @@ providers.registerProvider({
 	urls: [new RegExp('https?://www\\.loom\\.com/\\S+')],
 	endPoint: 'https://www.loom.com/v1/oembed?format=json',
 });
+
+if (process.env.TEST_MODE) {
+	// resolves the oembed payload from the CI mock-server instead of a real provider — see the oembed suite in tests/end-to-end/api/chat.ts
+	providers.registerProvider({
+		urls: [new RegExp('https?://mock-server\\.dev(:\\d+)?/video/\\S+')],
+		endPoint: 'http://mock-server.dev:8080/oembed',
+	});
+}
 
 export const beforeGetUrlContent = (data: {
 	urlObj: URL;

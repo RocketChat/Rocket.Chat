@@ -1,6 +1,6 @@
 import { Avatar, Box } from '@rocket.chat/fuselage';
 
-type ImageItemProps = {
+export type ImageItemProps = {
 	id: string;
 	url: string | undefined;
 	name: string | undefined;
@@ -23,10 +23,10 @@ const ImageItem = ({ id, url, name, timestamp, username, alt = '' }: ImageItemPr
 		>
 			{url && (
 				<Box minWidth='x48'>
-					<Avatar size='x48' url={url} className='gallery-item' alt={alt} />
+					<Avatar objectFit='cover' size='x48' url={url} className='gallery-item' alt={alt} />
 				</Box>
 			)}
-			<Box mis={8} flexShrink={1} overflow='hidden' className='gallery-item' cursor='default'>
+			<Box marginInlineStart={8} flexShrink={1} overflow='hidden' className='gallery-item' cursor='default'>
 				{name && (
 					<Box withTruncatedText color='default' fontScale='p2m' className='gallery-item'>
 						{name}

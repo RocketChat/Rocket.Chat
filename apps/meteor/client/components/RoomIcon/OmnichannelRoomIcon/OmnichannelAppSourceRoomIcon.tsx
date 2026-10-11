@@ -4,7 +4,7 @@ import type { ComponentProps } from 'react';
 
 import { useOmnichannelRoomIcon } from './context/OmnichannelRoomIconContext';
 
-type OmnichannelAppSourceRoomIconProps = {
+export type OmnichannelAppSourceRoomIconProps = {
 	source: IOmnichannelSourceFromApp;
 	color: ComponentProps<typeof Box>['color'];
 	size: ComponentProps<typeof Icon>['size'];

@@ -7,7 +7,7 @@ export class NotificationPreferencesFlexTab extends FlexTab {
 	readonly listbox: Listbox;
 
 	constructor(page: Page) {
-		super(page.getByRole('dialog', { name: 'Notifications Preferences' }));
+		super(page.getByRole('dialog', { name: 'Notifications preferences' }));
 		this.listbox = new Listbox(page);
 	}
 

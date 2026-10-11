@@ -58,7 +58,7 @@ export class ExportMessagesFlexTab extends FlexTab {
 	}
 
 	get inputUsers() {
-		return this.root.getByLabel('To users');
+		return this.root.getByRole('combobox', { name: 'To users' });
 	}
 
 	get inputAdditionalEmails() {

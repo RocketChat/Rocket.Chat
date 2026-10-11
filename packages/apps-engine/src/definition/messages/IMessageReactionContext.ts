@@ -15,7 +15,7 @@ export interface IMessageReactionContext {
 	 */
 	isReacted: boolean;
 	/**
-	 * The message that recieved the reaction
+	 * The message that received the reaction
 	 */
 	message: IMessage;
 	/**

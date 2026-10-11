@@ -17,11 +17,11 @@ export const handleUserCreated = async (user: IUser): Promise<IUser> => {
 };
 
 export const fillFirstDaysOfUsersIfNeeded = async (date: Date): Promise<void> => {
-	const usersFromAnalytics = await Analytics.findByTypeBeforeDate({
+	const usersFromAnalytics = await Analytics.findOneByTypeBeforeDate({
 		type: 'users',
 		date: convertDateToInt(date),
-	}).toArray();
-	if (!usersFromAnalytics.length) {
+	});
+	if (!usersFromAnalytics) {
 		const startOfPeriod = moment(date).subtract(90, 'days').toDate();
 		const users = await Users.getTotalOfRegisteredUsersByDate({
 			start: startOfPeriod,

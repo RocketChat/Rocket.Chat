@@ -29,19 +29,17 @@ export const useTeamsChannelList = ({ teamId, type, text }: TeamsChannelListOpti
 			});
 
 			return {
-				items: rooms.map(
-					({ _updatedAt, lastMessage, lm, ts, webRtcCallStartTime, usersWaitingForE2EKeys, ...room }): IRoom => ({
-						...(lm && { lm: new Date(lm) }),
-						...(ts && { ts: new Date(ts) }),
-						_updatedAt: new Date(_updatedAt),
-						...(lastMessage && { lastMessage: mapMessageFromApi(lastMessage) }),
-						...(webRtcCallStartTime && { webRtcCallStartTime: new Date(webRtcCallStartTime) }),
-						...(usersWaitingForE2EKeys && {
-							usersWaitingForE2EKeys: usersWaitingForE2EKeys?.map(({ userId, ts }) => ({ userId, ts: new Date(ts) })),
-						}),
-						...room,
+				items: rooms.map(({ _updatedAt, lastMessage, lm, ts, webRtcCallStartTime, usersWaitingForE2EKeys, ...room }): IRoom => ({
+					...(lm && { lm: new Date(lm) }),
+					...(ts && { ts: new Date(ts) }),
+					_updatedAt: new Date(_updatedAt),
+					...(lastMessage && { lastMessage: mapMessageFromApi(lastMessage) }),
+					...(webRtcCallStartTime && { webRtcCallStartTime: new Date(webRtcCallStartTime) }),
+					...(usersWaitingForE2EKeys && {
+						usersWaitingForE2EKeys: usersWaitingForE2EKeys?.map(({ userId, ts }) => ({ userId, ts: new Date(ts) })),
 					}),
-				),
+					...room,
+				})),
 				itemCount: total,
 			};
 		},

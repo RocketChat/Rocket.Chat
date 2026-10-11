@@ -325,11 +325,15 @@ export async function testFileUploads(
 				await addUserToRoom({
 					rid: testRoom._id,
 					usernames: [anotherUser.username!],
+					type: 'p',
 				});
 			}
 		});
 
-		after(() => Promise.all([deleteUser(anotherUser), deleteRoom({ type: roomType, roomId: extraRoom._id })]));
+		after(async () => {
+			await deleteRoom({ type: roomType, roomId: extraRoom._id });
+			await deleteUser(anotherUser, { confirmRelinquish: true });
+		});
 
 		it('should not allow to confirm a file from another user', async function () {
 			if (roomType === 'd') {

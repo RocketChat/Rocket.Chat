@@ -4,7 +4,9 @@ import SidePanelPriorityTag from './SidePanelPriorityTag';
 import RoomActivityIcon from '../../../../omnichannel/components/RoomActivityIcon';
 import { useOmnichannelPriorities } from '../../../../omnichannel/hooks/useOmnichannelPriorities';
 
-const SidePanelOmnichannelBadges = ({ room }: { room: IOmnichannelRoom }) => {
+export type SidePanelOmnichannelBadgesProps = { room: IOmnichannelRoom };
+
+const SidePanelOmnichannelBadges = ({ room }: SidePanelOmnichannelBadgesProps) => {
 	const { enabled: isPriorityEnabled } = useOmnichannelPriorities();
 
 	return (

@@ -1,24 +1,17 @@
 import type { SelectOption } from '@rocket.chat/fuselage';
 import { Field, FieldLabel, FieldRow, Select } from '@rocket.chat/fuselage';
-import type { ReactElement } from 'react';
+import type { ReactNode } from 'react';
 
-type NotificationPreferenceProps = {
+export type NotificationPreferenceProps = {
 	id: string;
 	name: string;
 	options: SelectOption[];
 	onChange: (e: unknown) => void;
 	optionValue: string;
-	children?: ReactElement;
+	children?: ReactNode;
 };
 
-const NotificationPreference = ({
-	name,
-	options,
-	onChange,
-	optionValue,
-	children,
-	...props
-}: NotificationPreferenceProps): ReactElement => (
+const NotificationPreference = ({ name, options, onChange, optionValue, children, ...props }: NotificationPreferenceProps) => (
 	<Field {...props}>
 		<FieldLabel>{name}</FieldLabel>
 		<FieldRow>

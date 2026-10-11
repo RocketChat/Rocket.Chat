@@ -2,9 +2,9 @@ import type { ILivechatContact, ILivechatVisitor, IOmnichannelSource } from '@ro
 import { License } from '@rocket.chat/license';
 import { LivechatContacts } from '@rocket.chat/models';
 
-import { isAgentAvailableToTakeContactInquiry } from '../../../app/livechat/server/lib/contacts/isAgentAvailableToTakeContactInquiry';
-import { isVerifiedChannelInSource } from '../../../app/livechat/server/lib/contacts/isVerifiedChannelInSource';
-import { settings } from '../../../app/settings/server';
+import { isAgentAvailableToTakeContactInquiry } from '../../../server/lib/omnichannel/contacts/isAgentAvailableToTakeContactInquiry';
+import { isVerifiedChannelInSource } from '../../../server/lib/omnichannel/contacts/isVerifiedChannelInSource';
+import { settings } from '../../../server/settings';
 
 // If the contact is unknown and the setting to block unknown contacts is on, we must not allow the agent to take this inquiry
 // if the contact is not verified in this channel and the block unverified contacts setting is on, we should not allow the inquiry to be taken

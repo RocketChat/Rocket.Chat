@@ -1,8 +1,10 @@
-import { IconButton, SidebarV2Item, SidebarV2ItemAvatarWrapper, SidebarV2ItemMenu, SidebarV2ItemTitle } from '@rocket.chat/fuselage';
+import { IconButton, SidebarItem, SidebarItemAvatarWrapper, SidebarItemMenu, SidebarItemTitle } from '@rocket.chat/fuselage';
 import type { HTMLAttributes, ReactNode } from 'react';
-import { memo, useState } from 'react';
+import { memo } from 'react';
 
-type MediumProps = {
+import { useDeferredMenuMount } from './useDeferredMenuMount';
+
+export type MediumProps = {
 	title: ReactNode;
 	titleIcon?: ReactNode;
 	avatar: ReactNode;
@@ -16,25 +18,27 @@ type MediumProps = {
 	menuOptions?: any;
 } & Omit<HTMLAttributes<HTMLElement>, 'is'>;
 
-const Medium = ({ icon, title, avatar, actions, badges, unread, menu, ...props }: MediumProps) => {
-	const [menuVisibility, setMenuVisibility] = useState(!!window.DISABLE_ANIMATION);
-
-	const handleFocus = () => setMenuVisibility(true);
-	const handlePointerEnter = () => setMenuVisibility(true);
+const Medium = ({ icon, title, titleIcon, avatar, actions, badges, unread, menu, ...props }: MediumProps) => {
+	const { mounted: menuVisibility, requestMount, mountNow } = useDeferredMenuMount();
 
 	return (
-		<SidebarV2Item title={title} {...props} onFocus={handleFocus} onPointerEnter={handlePointerEnter}>
-			<SidebarV2ItemAvatarWrapper>{avatar}</SidebarV2ItemAvatarWrapper>
+		<SidebarItem {...props} onFocus={mountNow} onPointerEnter={requestMount}>
+			{avatar && <SidebarItemAvatarWrapper>{avatar}</SidebarItemAvatarWrapper>}
 			{icon}
-			<SidebarV2ItemTitle unread={unread}>{title}</SidebarV2ItemTitle>
+			<SidebarItemTitle unread={unread}>{title}</SidebarItemTitle>
+			{titleIcon}
 			{badges}
 			{actions}
 			{menu && (
-				<SidebarV2ItemMenu>
-					{menuVisibility ? menu() : <IconButton tabIndex={-1} aria-hidden mini rcx-sidebar-v2-item__menu icon='kebab' />}
-				</SidebarV2ItemMenu>
+				<SidebarItemMenu>
+					{menuVisibility ? (
+						menu()
+					) : (
+						<IconButton tabIndex={-1} aria-hidden mini rcx-sidebar-item__menu icon='kebab' onPointerDown={mountNow} />
+					)}
+				</SidebarItemMenu>
 			)}
-		</SidebarV2Item>
+		</SidebarItem>
 	);
 };
 

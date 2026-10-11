@@ -1,8 +1,14 @@
 import { expect } from 'chai';
 import { afterEach, beforeEach, describe, it } from 'mocha';
+import proxyquire from 'proxyquire';
 
-import { createEmojiList, getEmojisBySearchTerm } from '../../../../app/emoji/client/helpers';
-import { emoji } from '../../../../app/emoji/client/lib';
+import { emoji } from '../../../../client/lib/emoji/lib';
+
+const { createEmojiList, getEmojisBySearchTerm } = proxyquire('../../../../client/lib/emoji/helpers.ts', {
+	'@rocket.chat/tools': {
+		escapeRegExp: (value: string) => value.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'),
+	},
+});
 
 const CATEGORY = 'people-test';
 
@@ -52,11 +58,11 @@ describe('restricted emoji picker filtering', () => {
 
 	it('should hide restricted emojis from search results for regular users', () => {
 		const results = getEmojisBySearchTerm('pea', 0, recentEmojis, setRecentEmojis, false, ['peach']);
-		expect(results.map((item) => item.emoji)).to.not.include('peach');
+		expect(results.map((item: { emoji: string }) => item.emoji)).to.not.include('peach');
 	});
 
 	it('should include restricted emojis in search results for users with manage-emoji', () => {
 		const results = getEmojisBySearchTerm('pea', 0, recentEmojis, setRecentEmojis, true, ['peach']);
-		expect(results.map((item) => item.emoji)).to.include('peach');
+		expect(results.map((item: { emoji: string }) => item.emoji)).to.include('peach');
 	});
 });

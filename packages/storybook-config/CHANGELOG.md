@@ -1,5 +1,14 @@
 # @rocket.chat/storybook-config
 
+## 0.0.4-rc.0
+
+### Patch Changes
+
+- <details><summary>Updated dependencies [5cbb5b0c279d56186265c5a1236ea4ea72bba84c]:</summary>
+  - @rocket.chat/storybook-dark-mode@4.3.0-rc.0
+
+  </details>
+
 ## 0.0.3
 
 ### Patch Changes

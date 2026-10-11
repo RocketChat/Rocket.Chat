@@ -4,9 +4,9 @@ import type { IImportUser, IImport, ImportStatus } from '@rocket.chat/core-typin
 import { Imports, ImportData } from '@rocket.chat/models';
 import { ObjectId } from 'mongodb';
 
-import { Importers } from '../../../app/importer/server';
-import { settings } from '../../../app/settings/server';
+import { Importers } from '../../lib/import';
 import { validateRoleList } from '../../lib/roles/validateRoleList';
+import { settings } from '../../settings';
 import { getNewUserRoles } from '../user/lib/getNewUserRoles';
 
 export class ImportService extends ServiceClassInternal implements IImportService {
@@ -144,6 +144,7 @@ export class ImportService extends ServiceClassInternal implements IImportServic
 					roles: data.roles ? [...new Set([...data.roles, ...defaultRoles])] : defaultRoles,
 				},
 				dataType: 'user',
+				_updatedAt: new Date(),
 			})),
 		);
 

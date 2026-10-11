@@ -64,20 +64,70 @@ describe('login', () => {
 
 		await handleConnection(server, sdk.connection.connect());
 
-		const messageResult = {
-			id: 123,
+		const loginResult = {
+			id: '123',
 			token: 'token',
 			tokenExpires: { $date: 99999999 },
 		};
 
+		await handleMethod(server, 'login', [{ resume: 'token' }], JSON.stringify(loginResult), sdk.account.loginWithToken('token'));
+
 		const cb = jest.fn();
-		sdk.account.once('uid', cb);
+		sdk.account.on('uid', cb);
 
-		await handleMethod(server, 'logout', [], JSON.stringify(messageResult), sdk.account.logout());
+		await handleMethod(server, 'logout', [], '{}', sdk.account.logout());
 
+		// uid setter only fires on transitions, so logging out from a logged-in
+		// state emits exactly once (string → undefined).
 		expect(cb).toHaveBeenCalledTimes(1);
+		expect(cb).toHaveBeenCalledWith(undefined);
 
 		const { user } = sdk.account;
 		expect(user).toBeUndefined();
+	});
+
+	it('should fire onLogin / onLogout on uid transitions only', async () => {
+		const sdk = DDPSDK.create('ws://localhost:1234');
+
+		await handleConnection(server, sdk.connection.connect());
+
+		const onLogin = jest.fn();
+		const onLogout = jest.fn();
+		sdk.account.onLogin(onLogin);
+		sdk.account.onLogout(onLogout);
+
+		const loginResult = {
+			id: '123',
+			token: 'token',
+			tokenExpires: { $date: 99999999 },
+		};
+		await handleMethod(server, 'login', [{ resume: 'token' }], JSON.stringify(loginResult), sdk.account.loginWithToken('token'));
+
+		expect(onLogin).toHaveBeenCalledTimes(1);
+		expect(onLogout).not.toHaveBeenCalled();
+
+		await handleMethod(server, 'logout', [], '{}', sdk.account.logout());
+
+		expect(onLogin).toHaveBeenCalledTimes(1);
+		expect(onLogout).toHaveBeenCalledTimes(1);
+	});
+
+	it('should fan out emailVerificationLink and pageLoadLogin events', () => {
+		const sdk = DDPSDK.create('ws://localhost:1234');
+
+		const verify = jest.fn();
+		const pageLoad = jest.fn();
+		const stopVerify = sdk.account.onEmailVerificationLink(verify);
+		sdk.account.onPageLoadLogin(pageLoad);
+
+		sdk.account.emit('emailVerificationLink', 'tok-1');
+		sdk.account.emit('pageLoadLogin', { error: 'totp-required' });
+
+		expect(verify).toHaveBeenCalledWith('tok-1');
+		expect(pageLoad).toHaveBeenCalledWith({ error: 'totp-required' });
+
+		stopVerify();
+		sdk.account.emit('emailVerificationLink', 'tok-2');
+		expect(verify).toHaveBeenCalledTimes(1);
 	});
 });

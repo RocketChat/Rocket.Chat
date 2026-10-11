@@ -4,7 +4,7 @@ import type { CallHistoryTableRowProps, CallHistoryUnknownContact } from '@rocke
 import { useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 
-type CallHistoryRowUnknownUserProps = Omit<CallHistoryTableRowProps<CallHistoryUnknownContact>, 'onClick' | 'menu'> & {
+export type CallHistoryRowUnknownUserProps = Omit<CallHistoryTableRowProps<CallHistoryUnknownContact>, 'onClick' | 'menu'> & {
 	onClick: (historyId: string) => void;
 };
 

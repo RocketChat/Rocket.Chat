@@ -1,29 +1,13 @@
-import type { Decorator, Parameters } from '@storybook/react';
+import { parameters, decorators } from '@rocket.chat/storybook-config/preview';
+import type { Preview } from '@storybook/react';
 
-import '../../../apps/meteor/app/theme/client/main.css';
-import 'highlight.js/styles/github.css';
-import '@rocket.chat/icons/dist/rocketchat.css';
+import DefaultBodySize from './DefaultBodySize';
 
-export const parameters: Parameters = {
-	controls: {
-		matchers: {
-			color: /(background|color)$/i,
-			date: /Date$/,
-		},
+const preview: Preview = {
+	parameters: {
+		...parameters,
 	},
+	decorators: [...decorators, DefaultBodySize],
 };
 
-export const decorators: Decorator[] = [
-	(Story) => (
-		<div>
-			<style>{`
-				body {
-					background-color: white;
-				}
-			`}</style>
-			<Story />
-		</div>
-	),
-];
-
-export const tags = ['autodocs'];
+export default preview;

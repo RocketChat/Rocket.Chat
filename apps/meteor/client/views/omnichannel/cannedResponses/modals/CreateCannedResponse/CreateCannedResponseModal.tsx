@@ -20,7 +20,7 @@ const getInitialData = (cannedResponseData: IOmnichannelCannedResponse | undefin
 	departmentId: cannedResponseData?.departmentId || '',
 });
 
-type CreateCannedResponseModalProps = {
+export type CreateCannedResponseModalProps = {
 	cannedResponseData?: IOmnichannelCannedResponse;
 	onClose: () => void;
 	reloadCannedList: () => void;

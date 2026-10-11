@@ -5,6 +5,8 @@ export type * from './definitions';
 
 export { isNodeOfType } from './guards';
 
+export { asciiList } from './asciiList';
+
 export type Options = {
 	colors?: boolean;
 	emoticons?: boolean;

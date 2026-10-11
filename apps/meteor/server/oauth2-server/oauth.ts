@@ -79,18 +79,40 @@ export class OAuth2Server {
 			return next();
 		};
 
-		this.app.all('/oauth/token', debugMiddleware, transformRequestsNotUsingFormUrlencodedType, async (req, res, next) => {
-			const request = new OAuthServer.Request(req);
-			const response = new OAuthServer.Response(res);
+		const validateTokenPayload = function (req: Request, res: Response, next: NextFunction) {
+			const grantParams = ['client_id', 'client_secret', 'refresh_token', 'code', 'grant_type', 'scope', 'redirect_uri'];
 
-			try {
-				await oauth.token(request, response);
-
-				handleResponse(res, response, next);
-			} catch (e: any) {
-				next(e);
+			for (const param of grantParams) {
+				for (const source of [req.body, req.query]) {
+					if (source?.[param] !== undefined && typeof source[param] !== 'string') {
+						return res.status(400).send({
+							error: 'invalid_request',
+							error_description: `Invalid parameter: ${param} must be a string`,
+						});
+					}
+				}
 			}
-		});
+			return next();
+		};
+
+		this.app.all(
+			'/oauth/token',
+			debugMiddleware,
+			transformRequestsNotUsingFormUrlencodedType,
+			validateTokenPayload,
+			async (req, res, next) => {
+				const request = new OAuthServer.Request(req);
+				const response = new OAuthServer.Response(res);
+
+				try {
+					await oauth.token(request, response);
+
+					handleResponse(res, response, next);
+				} catch (e: any) {
+					next(e);
+				}
+			},
+		);
 
 		this.app.get('/oauth/authorize', debugMiddleware, async (req, res, next) => {
 			if (typeof req.query.client_id !== 'string') {

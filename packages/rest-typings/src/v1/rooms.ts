@@ -1,6 +1,7 @@
 import type {
 	IMessage,
 	IRoom,
+	IRoomAbacRedaction,
 	IUser,
 	RoomAdminFieldsType,
 	IUpload,
@@ -499,7 +500,10 @@ const RoomsIsMemberPropsSchema = {
 		userId: { type: 'string', minLength: 1 },
 		username: { type: 'string', minLength: 1 },
 	},
-	oneOf: [{ required: ['roomId', 'userId'] }, { required: ['roomId', 'username'] }],
+	oneOf: [
+		{ type: 'object', required: ['roomId', 'userId'] },
+		{ type: 'object', required: ['roomId', 'username'] },
+	],
 	additionalProperties: false,
 };
 
@@ -760,6 +764,45 @@ const roomsOpenSchema = {
 
 export const isRoomsOpenProps = ajv.compile<RoomsOpenProps>(roomsOpenSchema);
 
+export type RoomsJoinProps = { roomId: string; joinCode?: string } | { roomName: string; joinCode?: string };
+
+const roomsJoinSchema = {
+	oneOf: [
+		{
+			type: 'object',
+			properties: {
+				roomId: {
+					type: 'string',
+					minLength: 1,
+				},
+				joinCode: {
+					type: 'string',
+					nullable: true,
+				},
+			},
+			required: ['roomId'],
+			additionalProperties: false,
+		},
+		{
+			type: 'object',
+			properties: {
+				roomName: {
+					type: 'string',
+					minLength: 1,
+				},
+				joinCode: {
+					type: 'string',
+					nullable: true,
+				},
+			},
+			required: ['roomName'],
+			additionalProperties: false,
+		},
+	],
+};
+
+export const isRoomsJoinProps = ajv.compile<RoomsJoinProps>(roomsJoinSchema);
+
 type MembersOrderedByRoleProps = {
 	roomId?: IRoom['_id'];
 	roomName?: IRoom['name'];
@@ -770,6 +813,7 @@ type MembersOrderedByRoleProps = {
 export type RoomsMembersOrderedByRoleProps = PaginatedRequest<MembersOrderedByRoleProps>;
 
 const membersOrderedByRoleRolePropsSchema = {
+	type: 'object',
 	properties: {
 		roomId: {
 			type: 'string',
@@ -796,7 +840,10 @@ const membersOrderedByRoleRolePropsSchema = {
 			type: 'string',
 		},
 	},
-	oneOf: [{ required: ['roomId'] }, { required: ['roomName'] }],
+	oneOf: [
+		{ type: 'object', required: ['roomId'] },
+		{ type: 'object', required: ['roomName'] },
+	],
 	additionalProperties: false,
 };
 
@@ -894,11 +941,11 @@ export type RoomsEndpoints = {
 	};
 
 	'/v1/rooms.adminRooms': {
-		GET: (params: RoomsAdminRoomsProps) => PaginatedResult<{ rooms: Pick<IRoom, RoomAdminFieldsType>[] }>;
+		GET: (params: RoomsAdminRoomsProps) => PaginatedResult<{ rooms: Array<Pick<IRoom, RoomAdminFieldsType> & IRoomAbacRedaction> }>;
 	};
 
 	'/v1/rooms.adminRooms.getRoom': {
-		GET: (params: RoomsAdminRoomsGetRoomProps) => Pick<IRoom, RoomAdminFieldsType>;
+		GET: (params: RoomsAdminRoomsGetRoomProps) => Pick<IRoom, RoomAdminFieldsType> & IRoomAbacRedaction;
 	};
 
 	'/v1/rooms.saveRoomSettings': {
@@ -992,6 +1039,12 @@ export type RoomsEndpoints = {
 		POST: (params: RoomsOpenProps) => void;
 	};
 
+	'/v1/rooms.join': {
+		POST: (params: RoomsJoinProps) => {
+			room: IRoom;
+		};
+	};
+
 	'/v1/rooms.membersOrderedByRole': {
 		GET: (params: RoomsMembersOrderedByRoleProps) => PaginatedResult<{
 			members: (IUser & { subscription: Pick<ISubscription, '_id' | 'status' | 'ts' | 'roles'> })[];
@@ -1006,3 +1059,54 @@ export type RoomsEndpoints = {
 		POST: (params: RoomsInviteProps) => void;
 	};
 };
+
+export type RoomsHistoryProps = {
+	roomId: IRoom['_id'];
+	next?: string;
+	previous?: string;
+	aroundId?: IMessage['_id'];
+	lastSeen?: string;
+	count?: number;
+	showThreadMessages?: boolean;
+};
+
+const RoomsHistorySchema = {
+	type: 'object',
+	properties: {
+		roomId: {
+			type: 'string',
+			minLength: 1,
+		},
+		next: {
+			type: 'string',
+			nullable: true,
+		},
+		previous: {
+			type: 'string',
+			nullable: true,
+		},
+		aroundId: {
+			type: 'string',
+			minLength: 1,
+			nullable: true,
+		},
+		lastSeen: {
+			type: 'string',
+			format: 'iso-date-time',
+			nullable: true,
+		},
+		count: {
+			type: 'integer',
+			minimum: 1,
+			nullable: true,
+		},
+		showThreadMessages: {
+			type: 'boolean',
+			nullable: true,
+		},
+	},
+	required: ['roomId'],
+	additionalProperties: false,
+};
+
+export const isRoomsHistoryProps = ajvQuery.compile<RoomsHistoryProps>(RoomsHistorySchema);

@@ -1,28 +1,26 @@
 import type { IRoom, IMessage } from '@rocket.chat/core-typings';
-import type { Icon } from '@rocket.chat/fuselage';
 import { isTruthy } from '@rocket.chat/tools';
 import { GenericMenu, type GenericMenuItemProps } from '@rocket.chat/ui-client';
 import { MessageComposerAction, MessageComposerActionsDivider } from '@rocket.chat/ui-composer';
-import type { TranslationKey } from '@rocket.chat/ui-contexts';
-import { useTranslation, useLayoutHiddenActions } from '@rocket.chat/ui-contexts';
-import type { ComponentProps, MouseEvent } from 'react';
+import { useLayoutHiddenActions } from '@rocket.chat/ui-contexts';
+import type { MouseEvent } from 'react';
 import { memo } from 'react';
+import { useTranslation } from 'react-i18next';
 
 import { useAudioMessageAction } from './hooks/useAudioMessageAction';
 import { useCreateDiscussionAction } from './hooks/useCreateDiscussionAction';
 import { useFileUploadAction } from './hooks/useFileUploadAction';
+import { useMessageboxAppsActionButtons } from './hooks/useMessageboxAppsActionButtons';
 import { useShareLocationAction } from './hooks/useShareLocationAction';
 import { useTimestampAction } from './hooks/useTimestampAction';
 import { useVideoMessageAction } from './hooks/useVideoMessageAction';
 import { useWebdavActions } from './hooks/useWebdavActions';
-import { messageBox } from '../../../../../../app/ui-utils/client';
-import { useMessageboxAppsActionButtons } from '../../../../../hooks/useMessageboxAppsActionButtons';
+import { messageBox } from '../../../../../lib/messageBox';
 import { useChat } from '../../../contexts/ChatContext';
 import { useRoom } from '../../../contexts/RoomContext';
 
-type MessageBoxActionsToolbarProps = {
+export type MessageBoxActionsToolbarProps = {
 	canSend: boolean;
-	typing: boolean;
 	isMicrophoneDenied: boolean;
 	variant: 'small' | 'large';
 	isRecording: boolean;
@@ -40,7 +38,6 @@ const isHidden = (hiddenActions: Array<string>, action: GenericMenuItemProps) =>
 
 const MessageBoxActionsToolbar = ({
 	canSend,
-	typing,
 	isRecording,
 	rid,
 	tmid,
@@ -48,7 +45,7 @@ const MessageBoxActionsToolbar = ({
 	isMicrophoneDenied,
 	isEditing = false,
 }: MessageBoxActionsToolbarProps) => {
-	const t = useTranslation();
+	const { t } = useTranslation();
 	const chatContext = useChat();
 
 	if (!chatContext) {
@@ -57,13 +54,15 @@ const MessageBoxActionsToolbar = ({
 
 	const room = useRoom();
 
-	const audioMessageAction = useAudioMessageAction(!canSend || typing || isRecording || isMicrophoneDenied, isMicrophoneDenied);
-	const videoMessageAction = useVideoMessageAction(!canSend || typing || isRecording);
-	const fileUploadAction = useFileUploadAction(!canSend || isRecording || isEditing);
-	const webdavActions = useWebdavActions(!canSend || isRecording || isEditing);
-	const createDiscussionAction = useCreateDiscussionAction(room);
-	const shareLocationAction = useShareLocationAction(room, tmid);
-	const timestampAction = useTimestampAction(chatContext.composer);
+	const disableBasicActions = !canSend || isRecording || isEditing;
+
+	const audioMessageAction = useAudioMessageAction(disableBasicActions || isMicrophoneDenied, isMicrophoneDenied);
+	const videoMessageAction = useVideoMessageAction(disableBasicActions);
+	const fileUploadAction = useFileUploadAction(disableBasicActions);
+	const webdavActions = useWebdavActions(disableBasicActions);
+	const createDiscussionAction = useCreateDiscussionAction(disableBasicActions, room);
+	const shareLocationAction = useShareLocationAction(disableBasicActions, room, tmid);
+	const timestampAction = useTimestampAction(!canSend || isRecording, chatContext.composer);
 
 	const apps = useMessageboxAppsActionButtons();
 	const { composerToolbox: hiddenActions } = useLayoutHiddenActions();
@@ -114,7 +113,7 @@ const MessageBoxActionsToolbar = ({
 			.filter((item) => !hiddenActions.includes(item.id))
 			.map((item) => ({
 				id: item.id,
-				icon: item.icon as ComponentProps<typeof Icon>['name'],
+				icon: item.icon,
 				content: t(item.label),
 				onClick: (event?: MouseEvent<HTMLElement>) =>
 					item.action({
@@ -124,10 +123,11 @@ const MessageBoxActionsToolbar = ({
 						chat: chatContext,
 					}),
 				gap: Boolean(!item.icon),
+				disabled: disableBasicActions,
 			}));
 
 		return {
-			title: t(name as TranslationKey),
+			title: t(name),
 			items: items || [],
 		};
 	});
@@ -149,7 +149,7 @@ const MessageBoxActionsToolbar = ({
 			<MessageComposerActionsDivider />
 			{featured.map((action) => action && renderAction(action))}
 			<GenericMenu
-				disabled={isRecording}
+				disabled={isRecording || !canSend}
 				data-qa-id='menu-more-actions'
 				detached
 				icon='plus'

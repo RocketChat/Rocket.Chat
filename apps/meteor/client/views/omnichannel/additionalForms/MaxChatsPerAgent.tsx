@@ -6,7 +6,9 @@ import { useTranslation } from 'react-i18next';
 
 import { useHasLicenseModule } from '../../../hooks/useHasLicenseModule';
 
-const MaxChatsPerAgent = ({ className }: { className?: ComponentProps<typeof Field>['className'] }) => {
+export type MaxChatsPerAgentProps = { className?: ComponentProps<typeof Field>['className'] };
+
+const MaxChatsPerAgent = ({ className }: MaxChatsPerAgentProps) => {
 	const { t } = useTranslation();
 	const { control } = useFormContext();
 	const { data: hasLicense = false } = useHasLicenseModule('livechat-enterprise');

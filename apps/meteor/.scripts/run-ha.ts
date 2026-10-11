@@ -56,7 +56,7 @@ async function runMain(config: IConfig): Promise<void> {
 
 async function runInstance(config: IConfig): Promise<void> {
 	// Desctructuring the unused variables allows us to omit them in the `mainConfig`
-	// eslint-disable-next-line @typescript-eslint/no-unused-vars
+
 	const { customEnv, parentEnv, ...mainConfig } = config;
 
 	const env = {

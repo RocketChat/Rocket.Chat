@@ -2,7 +2,7 @@ import { Button } from '@rocket.chat/fuselage';
 import type { Keys as IconName } from '@rocket.chat/icons';
 import type { HTMLAttributes } from 'react';
 
-type AgentInfoActionProps = {
+export type AgentInfoActionProps = {
 	icon: IconName;
 	label?: string;
 	title?: string;

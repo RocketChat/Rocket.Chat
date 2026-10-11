@@ -1,4 +1,4 @@
-import type { IncomingMessage, ServerResponse } from 'http';
+import type { IncomingMessage, ServerResponse } from 'node:http';
 
 import { hashLoginToken } from '@rocket.chat/account-utils';
 import type { IIncomingMessage, IUser, IUserDataFile } from '@rocket.chat/core-typings';
@@ -7,8 +7,8 @@ import { Cookies } from 'meteor/ostrio:cookies';
 import { WebApp } from 'meteor/webapp';
 import { match } from 'path-to-regexp';
 
-import { FileUpload } from '../../app/file-upload/server';
-import { settings } from '../../app/settings/server';
+import { FileUpload } from '../lib/media/file-upload';
+import { settings } from '../settings';
 
 const cookies = new Cookies();
 

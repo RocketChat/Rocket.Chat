@@ -4,6 +4,18 @@ import { expect } from 'chai';
 
 import { api, request, type PathWithoutPrefix } from './api-data';
 
+export function withTimeout<T>(fn: (signal: AbortSignal) => Promise<T>, ms: number): Promise<T> {
+	const controller = new AbortController();
+
+	const timeoutId = setTimeout(() => {
+		controller.abort();
+	}, ms);
+
+	return fn(controller.signal).finally(() => {
+		clearTimeout(timeoutId);
+	});
+}
+
 export const pagination = <TPath extends PathWithoutPrefix<Path>>(
 	apiEndpoint: TPath,
 	credentials: Credentials,

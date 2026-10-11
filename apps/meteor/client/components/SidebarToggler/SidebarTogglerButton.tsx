@@ -4,7 +4,7 @@ import { useTranslation } from 'react-i18next';
 
 import SidebarTogglerBadge from './SidebarTogglerBadge';
 
-type SideBarTogglerButtonProps = {
+export type SideBarTogglerButtonProps = {
 	pressed?: boolean;
 	badge?: ReactNode;
 	onClick: () => void;

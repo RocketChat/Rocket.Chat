@@ -7,5 +7,5 @@ export type BlockProps<B extends UiKit.Block> = {
 	block: B;
 	context: UiKit.BlockContext;
 	index: number;
-	surfaceRenderer: UiKit.SurfaceRenderer<ReactElement>;
+	surfaceRenderer: UiKit.SurfaceRenderer<ReactElement<any>>;
 };

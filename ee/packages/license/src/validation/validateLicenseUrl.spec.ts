@@ -2,7 +2,7 @@
  * @jest-environment node
  */
 
-import crypto from 'crypto';
+import crypto from 'node:crypto';
 
 import { validateLicenseUrl } from './validateLicenseUrl';
 import { MockedLicenseBuilder, getReadyLicenseManager } from '../../__tests__/MockedLicenseBuilder';
@@ -123,6 +123,39 @@ describe('Url Validation', () => {
 				validateLicenseUrl.call(licenseManager, await license.build(), {
 					behaviors: ['invalidate_license', 'prevent_installation', 'start_fair_policy', 'disable_modules'],
 					suppressLog: true,
+				}),
+			).toStrictEqual([]);
+		});
+	});
+
+	describe('type mismatch', () => {
+		it('should validate as hash if the type is url but the value looks like a hash', async () => {
+			const licenseManager = await getReadyLicenseManager();
+
+			const hash = crypto.createHash('sha256').update('localhost:3000').digest('hex');
+			const license = await new MockedLicenseBuilder().withServerUrls({
+				value: hash,
+				type: 'url',
+			});
+			await expect(
+				validateLicenseUrl.call(licenseManager, await license.build(), {
+					behaviors: ['invalidate_license', 'prevent_installation', 'start_fair_policy', 'disable_modules'],
+					suppressLog: false,
+				}),
+			).toStrictEqual([]);
+		});
+
+		it('should validate as url if the type is hash but the value looks like a url', async () => {
+			const licenseManager = await getReadyLicenseManager();
+
+			const license = await new MockedLicenseBuilder().withServerUrls({
+				value: 'localhost:3000',
+				type: 'hash',
+			});
+			await expect(
+				validateLicenseUrl.call(licenseManager, await license.build(), {
+					behaviors: ['invalidate_license', 'prevent_installation', 'start_fair_policy', 'disable_modules'],
+					suppressLog: false,
 				}),
 			).toStrictEqual([]);
 		});

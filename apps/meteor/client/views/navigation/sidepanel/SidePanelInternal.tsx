@@ -1,7 +1,7 @@
 import { Box, IconButton, Sidepanel, SidepanelHeader, SidepanelHeaderTitle, SidepanelListItem, ToggleSwitch } from '@rocket.chat/fuselage';
 import { VirtualizedScrollbars } from '@rocket.chat/ui-client';
 import { useLayout } from '@rocket.chat/ui-contexts';
-import { useId, useRef, type ComponentType } from 'react';
+import { useId, type ComponentType } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Virtuoso } from 'react-virtuoso';
 
@@ -26,7 +26,6 @@ type SidePanelProps<R = any> = {
 
 const SidePanelInternal = ({ title, currentTab, unreadOnly, toggleUnreadOnly, rooms, ItemContentComponent }: SidePanelProps) => {
 	const { t } = useTranslation();
-	const ref = useRef(null);
 	const unreadFieldId = useId();
 	const openedRoom = useOpenedRoom();
 	const {
@@ -35,23 +34,23 @@ const SidePanelInternal = ({ title, currentTab, unreadOnly, toggleUnreadOnly, ro
 	} = useLayout();
 	const isRoomFilter = useIsRoomFilter();
 
-	usePreventDefault(ref);
+	const ref = usePreventDefault();
 
 	return (
 		<Sidepanel role='tabpanel' aria-label={t('Side_panel')}>
 			<SidepanelHeader role='heading' aria-label={title}>
 				<Box withTruncatedText display='flex' alignItems='center'>
-					{isTablet && <IconButton mie={8} icon='arrow-back' title={t('Back')} small onClick={closeSidePanel} />}
+					{isTablet && <IconButton marginInlineEnd={8} icon='arrow-back' title={t('Back')} small onClick={closeSidePanel} />}
 					<SidepanelHeaderTitle>{title}</SidepanelHeaderTitle>
 				</Box>
 				<Box display='flex' alignItems='center'>
-					<Box htmlFor={unreadFieldId} is='label' fontScale='c1' mie={8}>
+					<Box htmlFor={unreadFieldId} is='label' fontScale='c1' marginInlineEnd={8}>
 						{t('Unread')}
 					</Box>
 					<ToggleSwitch id={unreadFieldId} checked={unreadOnly} onChange={toggleUnreadOnly} />
 				</Box>
 			</SidepanelHeader>
-			<Box h='full' ref={ref}>
+			<Box height='full' ref={ref}>
 				{rooms && rooms.length === 0 && <SidePanelNoResults currentTab={currentTab} />}
 				<VirtualizedScrollbars>
 					<Virtuoso

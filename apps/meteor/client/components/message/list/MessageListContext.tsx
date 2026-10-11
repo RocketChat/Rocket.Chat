@@ -1,10 +1,9 @@
 import type { IMessage } from '@rocket.chat/core-typings';
-import type { KeyboardEvent, MouseEvent, RefCallback } from 'react';
+import type { useFormatTime, useFormatDateAndTime } from '@rocket.chat/ui-client';
+import type { KeyboardEvent, MouseEvent } from 'react';
 import { createContext, useContext } from 'react';
 
 import type { useFormatDate } from '../../../hooks/useFormatDate';
-import type { useFormatDateAndTime } from '../../../hooks/useFormatDateAndTime';
-import type { useFormatTime } from '../../../hooks/useFormatTime';
 
 export type MessageListContextValue = {
 	autoTranslate: {
@@ -42,7 +41,6 @@ export type MessageListContextValue = {
 	formatDateAndTime: ReturnType<typeof useFormatDateAndTime>;
 	formatTime: ReturnType<typeof useFormatTime>;
 	formatDate: ReturnType<typeof useFormatDate>;
-	messageListRef?: RefCallback<HTMLElement | undefined>;
 };
 
 export const messageListContextDefaultValue: MessageListContextValue = {
@@ -73,7 +71,6 @@ export const messageListContextDefaultValue: MessageListContextValue = {
 	formatDateAndTime: () => '',
 	formatTime: () => '',
 	formatDate: () => '',
-	messageListRef: undefined,
 };
 
 export const MessageListContext = createContext<MessageListContextValue>(messageListContextDefaultValue);
@@ -97,8 +94,6 @@ export const useUserHasReacted: MessageListContextValue['useUserHasReacted'] = (
 	useContext(MessageListContext).useUserHasReacted(message);
 export const useOpenEmojiPicker: MessageListContextValue['useOpenEmojiPicker'] = (...args) =>
 	useContext(MessageListContext).useOpenEmojiPicker(...args);
-
-export const useMessageListRef = (): MessageListContextValue['messageListRef'] => useContext(MessageListContext).messageListRef;
 
 export const useMessageListShowColors = (): MessageListContextValue['showColors'] => useContext(MessageListContext).showColors;
 

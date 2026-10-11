@@ -1,16 +1,15 @@
 import type { OptionType } from '@rocket.chat/fuselage';
 import { IconButton, PositionAnimated, Options, useCursor } from '@rocket.chat/fuselage';
-import type * as UiKit from '@rocket.chat/ui-kit';
-import type { ReactElement } from 'react';
+import * as UiKit from '@rocket.chat/ui-kit';
 import { useRef, useCallback, useMemo } from 'react';
 
 import { useStringFromTextObject } from '../hooks/useStringFromTextObject';
 import { useUiKitState } from '../hooks/useUiKitState';
 import type { BlockProps } from '../utils/BlockProps';
 
-type OverflowElementProps = BlockProps<UiKit.OverflowElement>;
+export type OverflowElementProps = BlockProps<UiKit.OverflowElement>;
 
-const OverflowElement = ({ block, context }: OverflowElementProps): ReactElement => {
+const OverflowElement = ({ block, context }: OverflowElementProps) => {
 	const [{ loading }, action] = useUiKitState(block, context);
 	const fromTextObjectToString = useStringFromTextObject();
 
@@ -34,9 +33,9 @@ const OverflowElement = ({ block, context }: OverflowElementProps): ReactElement
 	}, [show]);
 
 	const handleSelection = useCallback(
-		([value, _label, _selected, _type, url]: OptionType) => {
-			if (url) {
-				window.open(url);
+		([value, _label, _selected, _disabled, _type, url]: OptionType) => {
+			if (url && UiKit.isSafeUrl(url)) {
+				window.open(url, '_blank', 'noopener');
 			}
 			void action({ target: { value: String(value) } });
 			reset();

@@ -1,42 +1,21 @@
-import type { ThemePreference as ThemeMode, Themes } from '@rocket.chat/core-typings';
+import type { ThemePreference as ThemeMode } from '@rocket.chat/core-typings';
 import { useDarkMode } from '@rocket.chat/fuselage-hooks';
-import { useEndpoint, useUserPreference } from '@rocket.chat/ui-contexts';
-import { useCallback, useState } from 'react';
+import { useUserPreference } from '@rocket.chat/ui-contexts';
 
 /**
- * Returns the current option set by the user, the theme mode resolved given the user configuration and OS (if applies) and a function to set it.
- * @param defaultThemeMode The default theme mode to use if the user has not set any.
- * @returns [currentThemeMode, setThemeMode, resolvedThemeMode]
+ * Returns the resolved theme string based on the user's theme appearance preference and system dark-mode setting.
  */
-export const useThemeMode = (): [
-	currentThemeMode: ThemeMode,
-	setThemeMode: (value: ThemeMode) => () => void,
-	resolvedThemeMode: Themes,
-] => {
+export const useThemeMode = () => {
 	const themeMode = useUserPreference<ThemeMode>('themeAppearence') || 'auto';
+	const isDarkMode = useDarkMode(themeMode === 'auto' ? undefined : themeMode === 'dark');
 
-	const saveUserPreferences = useEndpoint('POST', '/v1/users.setPreferences');
+	if (isDarkMode) {
+		return 'dark';
+	}
 
-	const [updaters] = useState(
-		(): Record<ThemeMode, () => ReturnType<typeof saveUserPreferences>> => ({
-			'light': () => saveUserPreferences({ data: { themeAppearence: 'light' } }),
-			'dark': () => saveUserPreferences({ data: { themeAppearence: 'dark' } }),
-			'auto': () => saveUserPreferences({ data: { themeAppearence: 'auto' } }),
-			'high-contrast': () => saveUserPreferences({ data: { themeAppearence: 'high-contrast' } }),
-		}),
-	);
+	if (themeMode === 'high-contrast') {
+		return 'high-contrast';
+	}
 
-	const setTheme = useCallback((value: ThemeMode): (() => void) => updaters[value], [updaters]);
-
-	const useTheme = () => {
-		if (useDarkMode(themeMode === 'auto' ? undefined : themeMode === 'dark')) {
-			return 'dark';
-		}
-		if (themeMode === 'high-contrast') {
-			return 'high-contrast';
-		}
-		return 'light';
-	};
-
-	return [themeMode, setTheme, useTheme()];
+	return 'light';
 };

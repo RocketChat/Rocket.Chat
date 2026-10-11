@@ -1,6 +1,6 @@
 import { SettingEditor } from '@rocket.chat/core-typings';
 
-import { settingsRegistry } from '../../app/settings/server';
+import { settingsRegistry } from '.';
 
 const omnichannelEnabledQuery = { _id: 'Livechat_enabled', value: true };
 

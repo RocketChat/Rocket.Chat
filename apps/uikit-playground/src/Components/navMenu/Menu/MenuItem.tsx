@@ -2,7 +2,7 @@ import { css } from '@rocket.chat/css-in-js';
 import { Box, Label } from '@rocket.chat/fuselage';
 import type { ComponentProps } from 'react';
 
-type MenuItemProps = {
+export type MenuItemProps = {
 	name: string;
 } & ComponentProps<typeof Box>;
 

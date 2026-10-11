@@ -4,9 +4,9 @@ import { useEffect, useState, useRef, cloneElement, forwardRef, memo } from 'rea
 
 import BaseScrollbars, { getScrollbarsOptions } from './BaseScrollbars';
 
-type VirtualizedScrollbarsProps = {
+export type VirtualizedScrollbarsProps = {
 	overflowX?: boolean;
-	children: ReactElement;
+	children: ReactElement<any>;
 } & Omit<HTMLAttributes<HTMLDivElement>, 'is'>;
 
 const VirtualizedScrollbars = forwardRef<HTMLElement, VirtualizedScrollbarsProps>(function VirtualizedScrollbars(

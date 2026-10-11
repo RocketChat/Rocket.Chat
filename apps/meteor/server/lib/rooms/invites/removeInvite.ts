@@ -1,0 +1,32 @@
+import type { IInvite } from '@rocket.chat/core-typings';
+import { Invites } from '@rocket.chat/models';
+import { Meteor } from 'meteor/meteor';
+
+import { hasPermissionAsync } from '../../authorization/hasPermission';
+
+export const removeInvite = async (userId: string, invite: Pick<IInvite, '_id'>) => {
+	if (!userId || !invite) {
+		return false;
+	}
+
+	if (!(await hasPermissionAsync(userId, 'create-invite-links'))) {
+		throw new Meteor.Error('not_authorized');
+	}
+
+	if (!invite._id) {
+		throw new Meteor.Error('error-the-field-is-required', 'The field _id is required', {
+			method: 'removeInvite',
+			field: '_id',
+		});
+	}
+
+	const { deletedCount } = await Invites.removeById(invite._id);
+
+	if (!deletedCount) {
+		throw new Meteor.Error('invalid-invitation-id', 'Invalid Invitation _id', {
+			method: 'removeInvite',
+		});
+	}
+
+	return true;
+};

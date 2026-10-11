@@ -1,7 +1,7 @@
 import type { IBanner, RocketChatRecordDeleted } from '@rocket.chat/core-typings';
 import { BannerPlatform } from '@rocket.chat/core-typings';
-import type { IBannersModel } from '@rocket.chat/model-typings';
-import type { Collection, FindCursor, Db, FindOptions, IndexDescription, InsertOneResult, UpdateResult } from 'mongodb';
+import type { IBannersModel, DocumentWithProjection, FindOptionsWithProjection } from '@rocket.chat/model-typings';
+import type { Collection, FindCursor, Db, IndexDescription, InsertOneResult, UpdateResult, Document } from 'mongodb';
 
 import { BaseRaw } from './BaseRaw';
 
@@ -34,7 +34,12 @@ export class BannersRaw extends BaseRaw<IBanner> implements IBannersModel {
 		});
 	}
 
-	findActiveByRoleOrId(roles: string[], platform: BannerPlatform, bannerId?: string, options?: FindOptions<IBanner>): FindCursor<IBanner> {
+	findActiveByRoleOrId<T extends Document = IBanner, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(
+		roles: string[],
+		platform: BannerPlatform,
+		bannerId?: string,
+		options?: O,
+	): FindCursor<DocumentWithProjection<T, O>> {
 		const today = new Date();
 
 		const query = {
@@ -46,7 +51,7 @@ export class BannersRaw extends BaseRaw<IBanner> implements IBannersModel {
 			$or: [{ roles: { $in: roles } }, { roles: { $exists: false } }],
 		};
 
-		return this.find(query, options);
+		return this.find<T, O>(query, options);
 	}
 
 	disable(bannerId: string): Promise<UpdateResult> {

@@ -1,12 +1,12 @@
-import { useDebouncedState, useEffectEvent, useLocalStorage } from '@rocket.chat/fuselage-hooks';
+import { useDebouncedState, useLocalStorage, useStableCallback } from '@rocket.chat/fuselage-hooks';
 import { usePermission, useSetting } from '@rocket.chat/ui-contexts';
-import type { ReactNode, ReactElement, ContextType } from 'react';
-import { useState, useCallback, useMemo, useSyncExternalStore } from 'react';
+import type { ContextType, ReactNode } from 'react';
+import { useCallback, useMemo, useState, useSyncExternalStore } from 'react';
 
 import { useUpdateCustomEmoji } from './useUpdateCustomEmoji';
-import { emoji, getFrequentEmoji, createEmojiListByCategorySubscription } from '../../../app/emoji/client';
-import { parseRestrictedEmojis } from '../../../lib/emoji/restrictedEmojis';
 import { EmojiPickerContext } from '../../contexts/EmojiPickerContext';
+import { createEmojiListByCategorySubscription, emoji, getFrequentEmoji } from '../../lib/emoji';
+import { parseRestrictedEmojis } from '../../../lib/emoji/restrictedEmojis';
 import EmojiPicker from '../../views/composer/EmojiPicker';
 
 const DEFAULT_ITEMS_LIMIT = 90;
@@ -14,8 +14,10 @@ const DEFAULT_ITEMS_LIMIT = 90;
 // limit recent emojis to 27 (3 rows of 9)
 const RECENT_EMOJIS_LIMIT = 27;
 
-const EmojiPickerProvider = ({ children }: { children: ReactNode }): ReactElement => {
-	const [emojiPicker, setEmojiPicker] = useState<ReactElement | null>(null);
+export type EmojiPickerProviderProps = { children: ReactNode };
+
+const EmojiPickerProvider = ({ children }: EmojiPickerProviderProps) => {
+	const [emojiPicker, setEmojiPicker] = useState<ReactNode>(null);
 	const [emojiToPreview, setEmojiToPreview] = useDebouncedState<{ emoji: string; name: string } | null>(null, 100);
 	const [recentEmojis, setRecentEmojis] = useLocalStorage<string[]>('emoji.recent', []);
 	const [frequentEmojis, setFrequentEmojis] = useLocalStorage<[string, number][]>('emoji.frequent', []);
@@ -33,7 +35,7 @@ const EmojiPickerProvider = ({ children }: { children: ReactNode }): ReactElemen
 		getFrequentEmoji(frequentEmojis.map(([emoji]) => emoji)),
 	);
 
-	const setQuickReactions = useEffectEvent(() => _setQuickReactions(getFrequentEmoji(frequentEmojis.map(([emoji]) => emoji))));
+	const setQuickReactions = useStableCallback(() => _setQuickReactions(getFrequentEmoji(frequentEmojis.map(([emoji]) => emoji))));
 	const [sub, getSnapshot] = useMemo(() => {
 		return createEmojiListByCategorySubscription(
 			customItemsLimit,
@@ -56,7 +58,9 @@ const EmojiPickerProvider = ({ children }: { children: ReactNode }): ReactElemen
 
 			const sortedFrequent = [...empty, ...frequentEmojis]
 				.map(([emojiName, count]) => {
-					return (emojiName === emoji ? [emojiName, Math.min(count + 5, 100)] : [emojiName, Math.max(count - 1, 0)]) as [string, number];
+					return emojiName === emoji
+						? ([emojiName, Math.min(count + 5, 100)] as [string, number])
+						: ([emojiName, Math.max(count - 1, 0)] as [string, number]);
 				})
 				.sort(([, frequentA], [, frequentB]) => frequentB - frequentA);
 
@@ -71,7 +75,7 @@ const EmojiPickerProvider = ({ children }: { children: ReactNode }): ReactElemen
 			addFrequentEmojis(_emoji);
 
 			const recent = recentEmojis || [];
-			const pos = recent.indexOf(_emoji as never);
+			const pos = recent.indexOf(_emoji);
 
 			if (pos !== -1) {
 				recent.splice(pos, 1);
@@ -99,14 +103,25 @@ const EmojiPickerProvider = ({ children }: { children: ReactNode }): ReactElemen
 		);
 	}, []);
 
-	const handlePreview = useCallback((emoji: string, name: string) => setEmojiToPreview({ emoji, name }), [setEmojiToPreview]);
+	const close = useCallback(() => setEmojiPicker(null), []);
+
+	const handlePreview = useCallback(
+		(emoji: string, name: string) =>
+			setEmojiToPreview((preview) => {
+				if (preview?.emoji === emoji && preview?.name === name) {
+					return preview;
+				}
+				return { emoji, name };
+			}),
+		[setEmojiToPreview],
+	);
 
 	const handleRemovePreview = useCallback(() => setEmojiToPreview(null), [setEmojiToPreview]);
 
 	const contextValue = useMemo(
 		(): ContextType<typeof EmojiPickerContext> => ({
 			isOpen: emojiPicker !== null,
-			close: () => setEmojiPicker(null),
+			close,
 			open,
 			emojiToPreview,
 			handlePreview,
@@ -127,6 +142,7 @@ const EmojiPickerProvider = ({ children }: { children: ReactNode }): ReactElemen
 		[
 			emojiPicker,
 			open,
+			close,
 			emojiToPreview,
 			addRecentEmoji,
 			emojiListByCategory,

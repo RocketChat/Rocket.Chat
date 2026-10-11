@@ -1,7 +1,7 @@
 import { RegisterServerPage, RegisterOfflinePage } from '@rocket.chat/onboarding-ui';
-import { useEndpoint, useMethod, useToastMessageDispatch } from '@rocket.chat/ui-contexts';
+import { useEndpoint, useToastMessageDispatch } from '@rocket.chat/ui-contexts';
 import { useMutation, useQuery } from '@tanstack/react-query';
-import type { ReactElement, ComponentProps } from 'react';
+import type { ComponentProps } from 'react';
 import { useState } from 'react';
 import { I18nextProvider, useTranslation } from 'react-i18next';
 
@@ -14,7 +14,7 @@ const SERVER_OPTIONS = {
 	OFFLINE: 'OFFLINE',
 };
 
-const RegisterServerStep = (): ReactElement => {
+const RegisterServerStep = () => {
 	const { t, i18n } = useTranslation();
 	const { currentStep, goToNextStep, setSetupWizardData, registerServer, maxSteps, completeSetupWizard, saveAgreementData } =
 		useSetupWizardContext();
@@ -34,12 +34,13 @@ const RegisterServerStep = (): ReactElement => {
 
 	const registerManually = useEndpoint('POST', '/v1/cloud.manualRegister');
 	const registerPreIntent = useEndpoint('POST', '/v1/cloud.registerPreIntent');
-	const getWorkspaceRegisterData = useMethod('cloud:getWorkspaceRegisterData');
+	const getWorkspaceRegisterData = useEndpoint('GET', '/v1/cloud.workspaceRegisterData');
 
 	const { data: clientKey } = useQuery({
 		queryKey: ['setupWizard/clientKey'],
 		queryFn: async () => getWorkspaceRegisterData(),
 		staleTime: Infinity,
+		select: (data) => data.registerData,
 	});
 
 	const {

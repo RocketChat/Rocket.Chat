@@ -1,9 +1,8 @@
 import { TextInput, Icon, Button, Divider } from '@rocket.chat/fuselage';
-import { useMediaQuery, useMergedRefs, useOutsideClick } from '@rocket.chat/fuselage-hooks';
+import { useMediaQuery, useOutsideClick } from '@rocket.chat/fuselage-hooks';
 import {
 	EmojiPickerCategoryHeader,
 	EmojiPickerContainer,
-	EmojiPickerFooter,
 	EmojiPickerPreviewArea,
 	EmojiPickerHeader,
 	EmojiPickerListArea,
@@ -20,13 +19,14 @@ import EmojiPickerDropdown from './EmojiPickerDropDown';
 import SearchingResult from './SearchingResult';
 import ToneSelector from './ToneSelector';
 import ToneSelectorWrapper from './ToneSelector/ToneSelectorWrapper';
-import { emoji, getCategoriesList, getEmojisBySearchTerm } from '../../../../app/emoji/client';
-import type { EmojiItem } from '../../../../app/emoji/client';
 import { parseRestrictedEmojis } from '../../../../lib/emoji/restrictedEmojis';
 import { usePreviewEmoji, useEmojiPickerData } from '../../../contexts/EmojiPickerContext';
+import { useMergedRefsV2 } from '../../../hooks/useMergedRefsV2';
+import { emoji, getCategoriesList, getEmojisBySearchTerm } from '../../../lib/emoji';
+import type { EmojiItem } from '../../../lib/emoji';
 import { useIsVisible } from '../../room/hooks/useIsVisible';
 
-type EmojiPickerProps = {
+export type EmojiPickerProps = {
 	reference: Element;
 	onClose: () => void;
 	onPickEmoji: (emoji: string) => void;
@@ -41,9 +41,9 @@ const EmojiPicker = ({ reference, onClose, onPickEmoji, keepOpen = false }: Emoj
 	const emojiContainerRef = useRef<HTMLDivElement>(null);
 
 	const [isVisibleRef, isInputVisible] = useIsVisible();
-	const textInputRef = useRef<HTMLInputElement>();
+	const textInputRef = useRef<HTMLInputElement>(undefined);
 
-	const mergedTextInputRef = useMergedRefs(isVisibleRef, textInputRef);
+	const mergedTextInputRef = useMergedRefsV2(isVisibleRef, textInputRef);
 
 	const emojiCategories = getCategoriesList();
 
@@ -118,10 +118,15 @@ const EmojiPicker = ({ reference, onClose, onPickEmoji, keepOpen = false }: Emoj
 
 		let tone = '';
 
-		for (const emojiPackage in emoji.packages) {
-			if (emoji.packages.hasOwnProperty(emojiPackage)) {
-				if (actualTone > 0 && emoji.packages[emojiPackage].toneList.hasOwnProperty(_emoji)) {
-					tone = `_tone${actualTone}`;
+		// Custom emoji should overwrite native emoji with the same name
+		// Custom emoji with name `:point_right:` should overwrite every tone
+		// Custom emoji with name `:point_right_tone1:` should overwrite only tone1, and not the original or other tones
+		if (emoji.list[`:${_emoji}:`].emojiPackage !== 'emojiCustom') {
+			for (const emojiPackage in emoji.packages) {
+				if (emoji.packages.hasOwnProperty(emojiPackage)) {
+					if (actualTone > 0 && emoji.packages[emojiPackage].toneList.hasOwnProperty(_emoji)) {
+						tone = `_tone${actualTone}`;
+					}
 				}
 			}
 		}
@@ -144,14 +149,7 @@ const EmojiPicker = ({ reference, onClose, onPickEmoji, keepOpen = false }: Emoj
 		setCurrentCategory('');
 		setSearching(e.target.value !== '');
 
-		const emojisResult = getEmojisBySearchTerm(
-			e.target.value,
-			actualTone,
-			recentEmojis,
-			setRecentEmojis,
-			canManageEmoji,
-			restrictedEmojis,
-		);
+		const emojisResult = getEmojisBySearchTerm(e.target.value, actualTone, recentEmojis, setRecentEmojis, canManageEmoji, restrictedEmojis);
 
 		if (emojisResult.filter((emoji) => emoji.image).length === 0) {
 			setCurrentCategory('no-results');
@@ -200,7 +198,7 @@ const EmojiPicker = ({ reference, onClose, onPickEmoji, keepOpen = false }: Emoj
 	};
 
 	return (
-		<EmojiPickerDropdown reference={ref as RefObject<HTMLElement>} ref={emojiContainerRef}>
+		<EmojiPickerDropdown reference={ref as RefObject<HTMLElement | null>} ref={emojiContainerRef}>
 			<EmojiPickerContainer role='dialog' aria-label={t('Emoji_picker')} onKeyDown={handleKeyDown}>
 				<EmojiPickerHeader>
 					<TextInput
@@ -209,7 +207,7 @@ const EmojiPicker = ({ reference, onClose, onPickEmoji, keepOpen = false }: Emoj
 						ref={mergedTextInputRef}
 						value={searchTerm}
 						onChange={handleSearch}
-						addon={<Icon name='magnifier' size='x20' />}
+						endAddon={<Icon name='magnifier' size='x20' />}
 						placeholder={t('Search')}
 						aria-label={t('Search')}
 					/>
@@ -224,7 +222,7 @@ const EmojiPicker = ({ reference, onClose, onPickEmoji, keepOpen = false }: Emoj
 						/>
 					))}
 				</EmojiPickerCategoryHeader>
-				<Divider mb={12} />
+				<Divider marginBlock={12} />
 				<EmojiPickerListArea role='tabpanel'>
 					{searching && <SearchingResult searchResults={searchResults} handleSelectEmoji={handleSelectEmoji} />}
 					{!searching && (
@@ -251,7 +249,6 @@ const EmojiPicker = ({ reference, onClose, onPickEmoji, keepOpen = false }: Emoj
 						<ToneSelector tone={actualTone} setTone={setActualTone} />
 					</ToneSelectorWrapper>
 				</EmojiPickerPreviewArea>
-				<EmojiPickerFooter>{t('Powered_by_JoyPixels')}</EmojiPickerFooter>
 			</EmojiPickerContainer>
 		</EmojiPickerDropdown>
 	);

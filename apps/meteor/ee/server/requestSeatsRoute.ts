@@ -2,9 +2,9 @@ import { Analytics } from '@rocket.chat/core-services';
 import express, { type Request } from 'express';
 import { WebApp } from 'meteor/webapp';
 
-import { authenticationMiddleware, hasPermissionMiddleware } from '../../app/api/server/middlewares/authentication';
-import { getCheckoutUrl, fallback } from '../../app/cloud/server/functions/getCheckoutUrl';
-import { getSeatsRequestLink } from '../app/license/server/getSeatsRequestLink';
+import { getSeatsRequestLink } from './lib/license/getSeatsRequestLink';
+import { authenticationMiddleware, hasPermissionMiddleware } from '../../server/api/v1/middlewares/authentication';
+import { getCheckoutUrl, fallback } from '../../server/lib/cloud/getCheckoutUrl';
 
 const apiServer = express();
 

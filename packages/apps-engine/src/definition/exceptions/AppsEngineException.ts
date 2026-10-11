@@ -16,11 +16,8 @@ export class AppsEngineException extends Error {
 
 	public static JSONRPC_ERROR_CODE = -32070;
 
-	public message: string;
-
 	constructor(message?: string) {
-		super();
-		this.message = message;
+		super(message);
 	}
 
 	public getErrorInfo() {
