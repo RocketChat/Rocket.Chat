@@ -1,16 +1,15 @@
-import { useSetting } from '@rocket.chat/ui-contexts';
+import type { IRoom } from '@rocket.chat/core-typings';
 
 import { useIsAbacEnforcementOn } from './useIsAbacEnforcementOn';
+import { useRoomAbacInfo } from './useRoomAbacInfo';
 import type { AbacLockableRoom } from '../../../../lib/rooms/isRoomAbacLocked';
 import { isRoomAbacLocked } from '../../../../lib/rooms/isRoomAbacLocked';
 
-const NO_REQUIRED_ATTRIBUTE_KEYS: string[] = [];
-
-export const useIsRoomAbacLocked = (room?: AbacLockableRoom): boolean => {
+export const useIsRoomAbacLocked = (rid: IRoom['_id'], room?: AbacLockableRoom): boolean => {
 	const enforcementOn = useIsAbacEnforcementOn();
-	const requiredAttributeKeys = useSetting('ABAC_Required_Attributes', NO_REQUIRED_ATTRIBUTE_KEYS);
+	const { data: requiredAttributeKeys } = useRoomAbacInfo(rid, room?.abacAttributes, (data) => data.abacRequiredAttributes ?? []);
 
-	if (!room) {
+	if (!room || !requiredAttributeKeys) {
 		return false;
 	}
 

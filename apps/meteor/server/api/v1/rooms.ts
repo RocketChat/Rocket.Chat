@@ -1,17 +1,17 @@
 import { FederationMatrix, ClientSafeError, Room, Team } from '@rocket.chat/core-services';
 import {
-	type IRoom,
-	type IRoomAbacRedaction,
-	type IMessage,
-	type IUpload,
-	type RequiredField,
-	type RoomAdminFieldsType,
 	isPrivateRoom,
 	isPublicRoom,
+	type IMessage,
+	type IRoom,
+	type IRoomAbacRedaction,
+	type IUpload,
 	type IUser,
+	type RequiredField,
+	type RoomAdminFieldsType,
 	type UserStatus,
 } from '@rocket.chat/core-typings';
-import { Messages, Rooms, Users, Uploads, Subscriptions } from '@rocket.chat/models';
+import { Messages, Rooms, Subscriptions, Uploads, Users } from '@rocket.chat/models';
 import type { Notifications } from '@rocket.chat/rest-typings';
 import {
 	ajv,
@@ -32,6 +32,7 @@ import {
 	isRoomsHideProps,
 	isRoomsHistoryProps,
 	isRoomsImagesProps,
+	isRoomsInfoProps,
 	isRoomsInviteProps,
 	isRoomsIsMemberProps,
 	isRoomsJoinProps,
@@ -53,6 +54,7 @@ import { Meteor } from 'meteor/meteor';
 import { adminFields } from '../../../lib/rooms/adminFields';
 import { omit } from '../../../lib/utils/omit';
 import { canAccessRoomAsync, canAccessRoomIdAsync, roomAccessAttributes } from '../../lib/authorization/canAccessRoom';
+import { getRoomAbacLockContext } from '../../lib/authorization/getRoomAbacLockContext';
 import { hasPermissionAsync } from '../../lib/authorization/hasPermission';
 import { isABACManagedRoom, stripABACManagedFieldsForAdmin } from '../../lib/authorization/isABACManagedRoom';
 import { banUserFromRoomMethod } from '../../lib/banUserFromRoom';
@@ -80,8 +82,8 @@ import { saveRoomSettings } from '../../meteor-methods/rooms/saveRoomSettings';
 import { toggleFavoriteMethod } from '../../meteor-methods/rooms/toggleFavorite';
 import { executeUnarchiveRoom } from '../../meteor-methods/rooms/unarchiveRoom';
 import { unmuteUserInRoom } from '../../meteor-methods/rooms/unmuteUserInRoom';
-import { saveNotificationSettingsMethod } from '../../meteor-methods/users/saveNotificationSettings';
 import type { NotificationFieldType } from '../../meteor-methods/users/saveNotificationSettings';
+import { saveNotificationSettingsMethod } from '../../meteor-methods/users/saveNotificationSettings';
 import { roomsGetMethod } from '../../publications/room';
 import { settings } from '../../settings';
 import type { ExtractRoutesFromAPI } from '../ApiClass';
@@ -527,6 +529,7 @@ API.v1.get(
 	'rooms.info',
 	{
 		authRequired: true,
+		query: isRoomsInfoProps,
 		response: {
 			200: ajv.compile<{ room: IRoom | null }>({
 				type: 'object',
@@ -535,6 +538,7 @@ API.v1.get(
 					team: { type: 'object' },
 					parent: { type: 'object' },
 					classificationBanner: { type: 'object' },
+					abacRequiredAttributes: { type: 'array', items: { type: 'string' } },
 					success: { type: 'boolean', enum: [true] },
 				},
 				required: ['room', 'success'],
@@ -566,12 +570,14 @@ API.v1.get(
 		const { team, parentRoom } = await Team.getRoomInfo(room);
 		const parent = discussionParent || parentRoom;
 		const classificationBanner = await getRoomClassificationBanner(room);
+		const abacLockContext = this.queryParams.withAbac ? getRoomAbacLockContext() : undefined;
 
 		return API.v1.success({
 			room: await Rooms.findOneByIdOrName(room._id, { projection: fields }),
 			...(team && { team }),
 			...(parent && { parent }),
 			...(classificationBanner && { classificationBanner }),
+			...(abacLockContext?.enforcementOn && { abacRequiredAttributes: abacLockContext.requiredAttributeKeys }),
 		});
 	},
 );
