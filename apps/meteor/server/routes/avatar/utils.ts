@@ -40,7 +40,7 @@ export const serveAvatarFile = (file: IUpload, req: IIncomingMessage, res: Serve
 		res.setHeader('Content-Type', file.type);
 	}
 
-	if (file.size) {
+	if (typeof file.size === 'number') {
 		res.setHeader('Content-Length', file.size);
 	}
 
