@@ -1,7 +1,7 @@
 import { usePermission, useSetting } from '@rocket.chat/ui-contexts';
 
+import { useAssignableAttributes } from './useAssignableAttributeList';
 import { useHasLicenseModule } from '../../../hooks/useHasLicenseModule';
-import { useAbacConfigQuery } from '../../../views/room/hooks/useAbacConfigQuery';
 
 export type AbacRoomCreation = {
 	enforced: boolean;
@@ -17,7 +17,10 @@ export const useAbacRoomCreation = (): { isLoading: boolean; abac?: AbacRoomCrea
 	const enforceAllRooms = useSetting('ABAC_Enforce_All_Rooms', false);
 	const canCreateManaged = usePermission('create-abac-managed-room');
 	const { data: hasAbacModule = false, isLoading: isLicenseLoading } = useHasLicenseModule('abac');
-	const { data: config, isError: isConfigError } = useAbacConfigQuery();
+	const { data: requiredAttributes = [], isPending: isRequiredAttributesPending } = useAssignableAttributes(
+		abacEnabled && hasAbacModule && canCreateManaged,
+		(data) => data.requiredKeys,
+	);
 
 	if (!abacEnabled) {
 		return { isLoading: false };
@@ -31,7 +34,7 @@ export const useAbacRoomCreation = (): { isLoading: boolean; abac?: AbacRoomCrea
 		return { isLoading: false };
 	}
 
-	if (!config && !isConfigError) {
+	if (canCreateManaged && isRequiredAttributesPending) {
 		return { isLoading: true };
 	}
 
@@ -39,7 +42,7 @@ export const useAbacRoomCreation = (): { isLoading: boolean; abac?: AbacRoomCrea
 		isLoading: false,
 		abac: {
 			enforced: enforceAllRooms,
-			requiredAttributes: enforceAllRooms ? (config?.requiredAttributes ?? []) : [],
+			requiredAttributes,
 			canCreateManaged,
 		},
 	};

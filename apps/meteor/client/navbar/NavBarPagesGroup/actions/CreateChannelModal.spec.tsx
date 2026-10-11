@@ -148,22 +148,22 @@ describe('CreateChannelModal', () => {
 			expect(screen.getByRole('button', { name: 'Next' })).toBeDisabled();
 		});
 
-		it('should wait for the ABAC configuration rather than render the switches before it arrives', async () => {
-			let resolveConfig: (value: unknown) => void = () => undefined;
-			const config = jest.fn(
+		it('should wait for the required attributes rather than render the switches before they arrive', async () => {
+			let resolveAssignableAttributes: (value: unknown) => void = () => undefined;
+			const assignableAttributes = jest.fn(
 				() =>
 					new Promise((resolve) => {
-						resolveConfig = resolve;
+						resolveAssignableAttributes = resolve;
 					}),
 			);
 
-			render(<CreateChannelModalWithData onClose={() => null} />, { wrapper: abacRoot({ enforced: true, config }) });
+			render(<CreateChannelModalWithData onClose={() => null} />, { wrapper: abacRoot({ enforced: true, assignableAttributes }) });
 
-			await waitFor(() => expect(config).toHaveBeenCalled());
+			await waitFor(() => expect(assignableAttributes).toHaveBeenCalled());
 			expect(screen.queryByLabelText('ABAC_Managed')).not.toBeInTheDocument();
 			expect(screen.queryByRole('button', { name: 'Create' })).not.toBeInTheDocument();
 
-			resolveConfig({ bannersConfig: '', requiredAttributes: [] });
+			resolveAssignableAttributes({ attributes: [], requiredKeys: [] });
 
 			const managed = await screen.findByLabelText('ABAC_Managed');
 			expect(managed).toBeChecked();
