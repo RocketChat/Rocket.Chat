@@ -63,7 +63,7 @@ export const runContactSync = async (): Promise<ContactSyncRunSummary> => {
 			Math.trunc(settings.get<number>('Exchange_Contacts_Sync_Interval_Days')) || MIN_INTERVAL_DAYS,
 			MIN_INTERVAL_DAYS,
 		);
-		const dueSince = new Date(Date.now() - intervalDays * DAY_MS);
+		const dueSince = new Date(Date.now() - intervalDays * DAY_MS + DAY_MS / 2);
 
 		await forEachWithConcurrency(iterateMailboxCandidates(), MAILBOX_CONCURRENCY, async ({ uid, mailbox }) => {
 			if (summary.aborted) {
