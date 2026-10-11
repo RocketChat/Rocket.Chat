@@ -26,6 +26,27 @@ describe('parseMessageSearchQuery', () => {
 			},
 		},
 		{
+			text: 'from:rocket.cat',
+			query: {
+				'u.username': { $regex: 'rocket\\.cat', $options: 'i' },
+			},
+			options: { projection: {}, sort: { ts: -1 }, skip: 0, limit: 20 },
+		},
+		{
+			text: 'mention:john.doe',
+			query: {
+				'mentions.username': { $regex: 'john\\.doe', $options: 'i' },
+			},
+			options: { projection: {}, sort: { ts: -1 }, skip: 0, limit: 20 },
+		},
+		{
+			text: 'from:john.doe from:jane.doe',
+			query: {
+				'u.username': { $regex: 'john\\.doe|jane\\.doe', $options: 'i' },
+			},
+			options: { projection: {}, sort: { ts: -1 }, skip: 0, limit: 20 },
+		},
+		{
 			text: 'has:star',
 			query: { 'starred._id': params.user._id },
 			options: { projection: {}, sort: { ts: -1 }, skip: 0, limit: 20 },
