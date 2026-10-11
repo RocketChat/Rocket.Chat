@@ -210,6 +210,28 @@ import { IS_EE, URL_MONGODB } from '../../e2e/config/constants';
 				.expect(200);
 		});
 
+		it('lists the required attribute keys in rooms.info with withAbac', async () => {
+			await request
+				.get(api('rooms.info'))
+				.set(credentials)
+				.query({ roomId: compliantRoomId, withAbac: true })
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('abacRequiredAttributes').that.deep.equals([carriedKey]);
+				});
+		});
+
+		it('leaves the required attribute keys out of rooms.info without withAbac', async () => {
+			await request
+				.get(api('rooms.info'))
+				.set(credentials)
+				.query({ roomId: compliantRoomId })
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.not.have.property('abacRequiredAttributes');
+				});
+		});
+
 		it('refuses a message once a new attribute is required', async () => {
 			await setRequiredAttributes([carriedKey, laterKey]);
 
@@ -221,6 +243,19 @@ import { IS_EE, URL_MONGODB } from '../../e2e/config/constants';
 				.expect((res) => {
 					expect(res.body).to.have.property('success', false);
 					expect(res.body.error).to.include('error-abac-room-locked');
+				});
+		});
+
+		it('leaves the required attribute keys out of rooms.info once enforcement is off', async () => {
+			await setEnforcement(false);
+
+			await request
+				.get(api('rooms.info'))
+				.set(credentials)
+				.query({ roomId: compliantRoomId, withAbac: true })
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.not.have.property('abacRequiredAttributes');
 				});
 		});
 	});
@@ -302,6 +337,17 @@ import { IS_EE, URL_MONGODB } from '../../e2e/config/constants';
 				.expect((res) => {
 					expect(res.body).to.have.property('success', false);
 					expect(res.body.error).to.include('error-abac-room-locked');
+				});
+		});
+
+		it('lists the required attribute keys in rooms.info for a regular member', async () => {
+			await request
+				.get(api('rooms.info'))
+				.set(otherCredentials)
+				.query({ roomId: lockedRoomId, withAbac: true })
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('abacRequiredAttributes').that.is.an('array');
 				});
 		});
 	});
