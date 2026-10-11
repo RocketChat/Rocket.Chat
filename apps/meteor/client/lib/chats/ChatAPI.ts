@@ -123,6 +123,7 @@ export type UploadsAPI = {
 	removeUpload(id: Upload['id']): void;
 	editUploadFileName: (id: Upload['id'], fileName: string) => void;
 	editUploadAltText: (id: Upload['id'], altText: string) => void;
+	editUploadFile: (id: Upload['id'], file: File) => void;
 	send(file: File, encrypted?: never): Promise<void>;
 	send(file: File, encrypted: EncryptedFileUploadContent): Promise<void>;
 };
