@@ -1,5 +1,7 @@
 import styled from '@rocket.chat/styled';
 
+import { cssUrl } from '../utils/cssUrl';
+
 const filterElementProps = ({ imageUrl: _imageUrl, size: _size, ...props }: { imageUrl: string; size: number }) => props;
 
 export const Element = styled('div', filterElementProps)`
@@ -8,7 +10,7 @@ export const Element = styled('div', filterElementProps)`
 	background-position: 50%;
 	background-size: cover;
 	background-color: rgba(204, 204, 204, 38%);
-	background-image: url(${(props) => props.imageUrl});
+	background-image: ${(props) => cssUrl(props.imageUrl)};
 	width: ${(props) => String(props.size)}px;
 	height: ${(props) => String(props.size)}px;
 	border-radius: 4px;
