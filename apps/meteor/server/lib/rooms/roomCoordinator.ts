@@ -43,8 +43,8 @@ class RoomCoordinatorServer extends RoomCoordinator {
 				userId: string,
 			): Promise<{ title: string | undefined; text: string; name: string | undefined }> {
 				const title = `#${await this.roomName(room, userId)}`;
-				const useRealName = settings.get<boolean>('UI_Use_Real_Name');
-				const senderName = getUserDisplayName(sender.name, sender.username, useRealName);
+				const shouldUseRealName = settings.get<boolean>('UI_Use_Real_Name');
+				const senderName = getUserDisplayName(sender.name, sender.username, shouldUseRealName);
 
 				const text = `${senderName}: ${notificationMessage}`;
 
