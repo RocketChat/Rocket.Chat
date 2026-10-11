@@ -1,11 +1,11 @@
-import type * as uikit from '@rocket.chat/ui-kit';
+import * as uikit from '@rocket.chat/ui-kit';
 import type { ComponentChild } from 'preact';
 import type { TargetedEvent } from 'preact/compat';
 import { useCallback } from 'preact/compat';
 
 import { MenuItem } from '../../../Menu';
 
-type OverflowOptionProps = uikit.Option & {
+export type OverflowOptionProps = uikit.Option & {
 	confirm: boolean;
 	parser: uikit.SurfaceRenderer<ComponentChild>;
 	onClick: (value: string) => void;
@@ -20,7 +20,7 @@ const OverflowOption = ({ confirm, text, value, url, parser, onClick }: Overflow
 				// TODO
 			}
 
-			if (url) {
+			if (url && uikit.isSafeUrl(url)) {
 				const newTab = window.open();
 				if (!newTab) {
 					throw new Error('Could not open new tab');

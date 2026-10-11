@@ -11,15 +11,12 @@ import type { IVideoConferenceUser } from '@rocket.chat/apps-engine/definition/v
 import type { AppManager } from '../AppManager';
 import type { VideoConferenceBridge } from '../bridges';
 import { VideoConfProviderAlreadyExistsError, VideoConfProviderNotRegisteredError } from '../errors';
-import type { AppAccessorManager } from './AppAccessorManager';
 import { AppPermissionManager } from './AppPermissionManager';
 import { AppVideoConfProvider } from './AppVideoConfProvider';
 import { PermissionDeniedError } from '../errors/PermissionDeniedError';
 import { AppPermissions } from '../permissions/AppPermissions';
 
 export class AppVideoConfProviderManager {
-	private readonly accessors: AppAccessorManager;
-
 	private readonly bridge: VideoConferenceBridge;
 
 	private videoConfProviders: Map<string, Map<string, AppVideoConfProvider>>;
@@ -28,7 +25,6 @@ export class AppVideoConfProviderManager {
 
 	constructor(private readonly manager: AppManager) {
 		this.bridge = this.manager.getBridges().getVideoConferenceBridge();
-		this.accessors = this.manager.getAccessorManager();
 
 		this.videoConfProviders = new Map<string, Map<string, AppVideoConfProvider>>();
 		this.providerApps = new Map<string, string>();
@@ -111,7 +107,7 @@ export class AppVideoConfProviderManager {
 			throw new VideoConfProviderNotRegisteredError(providerName);
 		}
 
-		return providerInfo.runIsFullyConfigured(this.manager.getLogStorage(), this.accessors);
+		return providerInfo.runIsFullyConfigured(this.manager.getLogStorage());
 	}
 
 	public async onNewVideoConference(providerName: string, call: VideoConference): Promise<void> {
@@ -120,7 +116,7 @@ export class AppVideoConfProviderManager {
 			throw new VideoConfProviderNotRegisteredError(providerName);
 		}
 
-		return providerInfo.runOnNewVideoConference(call, this.manager.getLogStorage(), this.accessors);
+		return providerInfo.runOnNewVideoConference(call, this.manager.getLogStorage());
 	}
 
 	public async onVideoConferenceChanged(providerName: string, call: VideoConference): Promise<void> {
@@ -129,7 +125,7 @@ export class AppVideoConfProviderManager {
 			throw new VideoConfProviderNotRegisteredError(providerName);
 		}
 
-		return providerInfo.runOnVideoConferenceChanged(call, this.manager.getLogStorage(), this.accessors);
+		return providerInfo.runOnVideoConferenceChanged(call, this.manager.getLogStorage());
 	}
 
 	public async onUserJoin(providerName: string, call: VideoConference, user?: IVideoConferenceUser): Promise<void> {
@@ -138,7 +134,7 @@ export class AppVideoConfProviderManager {
 			throw new VideoConfProviderNotRegisteredError(providerName);
 		}
 
-		return providerInfo.runOnUserJoin(call, user, this.manager.getLogStorage(), this.accessors);
+		return providerInfo.runOnUserJoin(call, user, this.manager.getLogStorage());
 	}
 
 	public async getVideoConferenceInfo(
@@ -151,7 +147,7 @@ export class AppVideoConfProviderManager {
 			throw new VideoConfProviderNotRegisteredError(providerName);
 		}
 
-		return providerInfo.runGetVideoConferenceInfo(call, user, this.manager.getLogStorage(), this.accessors);
+		return providerInfo.runGetVideoConferenceInfo(call, user, this.manager.getLogStorage());
 	}
 
 	public async generateUrl(providerName: string, call: VideoConfData): Promise<string> {
@@ -160,7 +156,7 @@ export class AppVideoConfProviderManager {
 			throw new VideoConfProviderNotRegisteredError(providerName);
 		}
 
-		return providerInfo.runGenerateUrl(call, this.manager.getLogStorage(), this.accessors);
+		return providerInfo.runGenerateUrl(call, this.manager.getLogStorage());
 	}
 
 	public async customizeUrl(
@@ -174,7 +170,7 @@ export class AppVideoConfProviderManager {
 			throw new VideoConfProviderNotRegisteredError(providerName);
 		}
 
-		return providerInfo.runCustomizeUrl(call, user, options, this.manager.getLogStorage(), this.accessors);
+		return providerInfo.runCustomizeUrl(call, user, options, this.manager.getLogStorage());
 	}
 
 	private retrieveProviderInfo(providerName: string): AppVideoConfProvider | undefined {

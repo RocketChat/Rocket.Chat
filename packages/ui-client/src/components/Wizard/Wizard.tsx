@@ -5,7 +5,7 @@ import type { ComponentPropsWithoutRef, ReactNode } from 'react';
 import { WizardContext } from './WizardContext';
 import type { WizardAPI } from './WizardContext';
 
-type WizardProps = ComponentPropsWithoutRef<typeof Box> & {
+export type WizardProps = ComponentPropsWithoutRef<typeof Box> & {
 	api: WizardAPI;
 	children: ReactNode;
 };

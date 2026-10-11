@@ -3,13 +3,13 @@ import { useUserDisplayName } from '@rocket.chat/ui-client';
 import { useUserAvatarPath, useUserPresence, useUserCard } from '@rocket.chat/ui-contexts';
 import { useMemo } from 'react';
 
-type CallHistoryInternalUserProps = {
-	username: string;
-	name?: string;
-	_id: string;
+import type { CallHistoryInternalContact } from '../definitions';
+
+export type CallHistoryInternalUserProps = {
+	contact: CallHistoryInternalContact;
 };
 
-const CallHistoryInternalUser = ({ username, name, _id }: CallHistoryInternalUserProps) => {
+const CallHistoryInternalUser = ({ contact: { username, name, _id } }: CallHistoryInternalUserProps) => {
 	const getUserAvatarPath = useUserAvatarPath();
 
 	const avatarUrl = useMemo(() => {
@@ -24,8 +24,8 @@ const CallHistoryInternalUser = ({ username, name, _id }: CallHistoryInternalUse
 
 	return (
 		<Box display='flex' flexDirection='row' alignItems='center' role='button' onClick={(e) => openUserCard(e, username)} {...triggerProps}>
-			<Box mie={8}>{avatarUrl ? <Avatar url={avatarUrl} size='x28' /> : <Icon name='user' size='x28' />}</Box>
-			<Box mie={8}>
+			<Box marginInlineEnd={8}>{avatarUrl ? <Avatar url={avatarUrl} size='x28' /> : <Icon name='user' size='x28' />}</Box>
+			<Box marginInlineEnd={8}>
 				<StatusBullet status={userStatus?.status || 'loading'} size='small' />
 			</Box>
 			<Box>{displayName}</Box>

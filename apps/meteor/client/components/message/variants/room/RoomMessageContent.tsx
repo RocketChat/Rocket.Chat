@@ -3,7 +3,6 @@ import { isDiscussionMessage, isThreadMainMessage, isE2EEMessage, isQuoteAttachm
 import { MessageBody } from '@rocket.chat/fuselage';
 import type { TranslationKey } from '@rocket.chat/ui-contexts';
 import { useUserId, useUserPresence } from '@rocket.chat/ui-contexts';
-import type { ReactElement } from 'react';
 import { memo } from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -25,7 +24,7 @@ import { useSubscriptionFromMessageQuery } from '../../hooks/useSubscriptionFrom
 import { useMessageListReadReceipts } from '../../list/MessageListContext';
 import UiKitMessageBlock from '../../uikit/UiKitMessageBlock';
 
-type RoomMessageContentProps = {
+export type RoomMessageContentProps = {
 	message: IMessage;
 	unread: boolean;
 	mention: boolean;
@@ -33,7 +32,7 @@ type RoomMessageContentProps = {
 	searchText?: string;
 };
 
-const RoomMessageContent = ({ message, unread, all, mention, searchText }: RoomMessageContentProps): ReactElement => {
+const RoomMessageContent = ({ message, unread, all, mention, searchText }: RoomMessageContentProps) => {
 	const encrypted = isE2EEMessage(message);
 	const { enabled: oembedEnabled } = useOembedLayout();
 	const subscription = useSubscriptionFromMessageQuery(message).data ?? undefined;
@@ -59,7 +58,12 @@ const RoomMessageContent = ({ message, unread, all, mention, searchText }: RoomM
 				</MessageBody>
 			)}
 
-			{!!quotes?.length && <Attachments attachments={quotes} />}
+			{!!quotes?.length && (
+				<Attachments
+					attachments={quotes}
+					source={{ rid: message.rid, mid: message._id, username: message.u.username, name: message.u.name }}
+				/>
+			)}
 
 			{!normalizedMessage.blocks?.length && !!normalizedMessage.md?.length && (
 				<>
@@ -67,6 +71,7 @@ const RoomMessageContent = ({ message, unread, all, mention, searchText }: RoomM
 						<MessageContentBody
 							id={`${normalizedMessage._id}-content`}
 							md={normalizedMessage.md}
+							msg={normalizedMessage.mdSource}
 							mentions={normalizedMessage.mentions}
 							channels={normalizedMessage.channels}
 							searchText={searchText}
@@ -75,7 +80,13 @@ const RoomMessageContent = ({ message, unread, all, mention, searchText }: RoomM
 				</>
 			)}
 
-			{!!attachments && <Attachments id={message.files?.[0]?._id} attachments={attachments} />}
+			{!!attachments && (
+				<Attachments
+					id={message.files?.[0]?._id}
+					attachments={attachments}
+					source={{ rid: message.rid, mid: message._id, username: message.u.username, name: message.u.name }}
+				/>
+			)}
 
 			{normalizedMessage.blocks && (
 				<UiKitMessageBlock rid={normalizedMessage.rid} mid={normalizedMessage._id} blocks={normalizedMessage.blocks} />

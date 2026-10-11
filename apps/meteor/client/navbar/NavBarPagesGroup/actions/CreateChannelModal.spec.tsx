@@ -176,6 +176,34 @@ describe('CreateChannelModal', () => {
 			expect(encrypted).not.toBeChecked();
 			expect(encrypted).toBeDisabled();
 		});
+
+		it('should render a private channel with encryption checked and disabled for changes when private room encryption is forced', async () => {
+			render(<CreateChannelModal onClose={() => null} />, {
+				wrapper: mockAppRoot().withSetting('E2E_Enable', true).withSetting('E2E_Force_Encryption_For_Private_Rooms', true).build(),
+			});
+
+			await userEvent.click(screen.getByText('Advanced_settings'));
+
+			const encrypted = screen.getByLabelText('Encrypted') as HTMLInputElement;
+			const priv = screen.getByLabelText('Private') as HTMLInputElement;
+
+			// private by default: encrypted is forced ON and cannot be changed
+			expect(priv).toBeChecked();
+			expect(encrypted).toBeChecked();
+			expect(encrypted).toBeDisabled();
+
+			// Private ON -> OFF: encrypted turns OFF and stays disabled (public rooms cannot be encrypted)
+			await userEvent.click(priv);
+			expect(priv).not.toBeChecked();
+			expect(encrypted).not.toBeChecked();
+			expect(encrypted).toBeDisabled();
+
+			// Private OFF -> ON: encryption is forced back ON and remains disabled
+			await userEvent.click(priv);
+			expect(priv).toBeChecked();
+			expect(encrypted).toBeChecked();
+			expect(encrypted).toBeDisabled();
+		});
 	});
 
 	describe('Federation', () => {

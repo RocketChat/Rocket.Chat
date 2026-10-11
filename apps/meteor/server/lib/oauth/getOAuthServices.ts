@@ -1,7 +1,7 @@
 import { isTruthy } from '@rocket.chat/tools';
 
 import { OAuthConfigs } from './oauthConfigs';
-import { type ICachedSettings } from '../../../app/settings/server/CachedSettings';
+import { type ICachedSettings } from '../../settings/CachedSettings';
 
 export const getOAuthServices = (settings: ICachedSettings) => {
 	const services = settings.getByRegexp(/^(Accounts_OAuth_|Accounts_OAuth_Custom-)[a-z0-9_]+$/i);

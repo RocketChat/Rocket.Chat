@@ -3,7 +3,7 @@ import { useTranslation } from 'react-i18next';
 
 import CardSlotContainer from '../CardSlot';
 
-type CardSlotStopSharingProps = {
+export type CardSlotStopSharingProps = {
 	onClick: () => void;
 	showOnHover?: boolean;
 };

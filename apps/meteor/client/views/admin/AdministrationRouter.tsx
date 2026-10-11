@@ -1,5 +1,5 @@
 import { useRouter } from '@rocket.chat/ui-contexts';
-import type { ReactElement, ReactNode } from 'react';
+import type { ReactNode } from 'react';
 import { Suspense, useEffect } from 'react';
 
 import AdministrationLayout from './AdministrationLayout';
@@ -21,11 +21,11 @@ const firstSidebarPage = (sidebarItem: SidebarItem): sidebarItem is Item => {
 	return Boolean(sidebarItem.permissionGranted?.());
 };
 
-type AdministrationRouterProps = {
+export type AdministrationRouterProps = {
 	children?: ReactNode;
 };
 
-const AdministrationRouter = ({ children }: AdministrationRouterProps): ReactElement => {
+const AdministrationRouter = ({ children }: AdministrationRouterProps) => {
 	const router = useRouter();
 
 	useEffect(

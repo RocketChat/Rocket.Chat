@@ -5,5 +5,8 @@
 		"rootDir": "./src",
 		"outDir": "./dist"
 	},
-	"include": ["./src/**/*"]
+	"include": ["./src/**/*"],
+	// restates the inherited exclusions: a child `exclude` replaces the parent's rather than adding to it.
+	// keeping only `node_modules` lets ESLint and `yarn typecheck` cover the type tests; the build config drops them.
+	"exclude": ["node_modules"]
 }

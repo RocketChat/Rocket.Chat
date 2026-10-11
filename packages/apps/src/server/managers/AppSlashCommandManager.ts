@@ -6,7 +6,6 @@ import { SlashCommandContext } from '@rocket.chat/apps-engine/definition/slashco
 import type { AppManager } from '../AppManager';
 import type { CommandBridge } from '../bridges';
 import { CommandAlreadyExistsError, CommandHasAlreadyBeenTouchedError } from '../errors';
-import type { AppAccessorManager } from './AppAccessorManager';
 import { AppSlashCommand } from './AppSlashCommand';
 import { Room } from '../rooms/Room';
 
@@ -21,8 +20,6 @@ import { Room } from '../rooms/Room';
  */
 export class AppSlashCommandManager {
 	private readonly bridge: CommandBridge;
-
-	private readonly accessors: AppAccessorManager;
 
 	/**
 	 * Variable that contains the commands which have been provided by apps.
@@ -51,7 +48,6 @@ export class AppSlashCommandManager {
 
 	constructor(private readonly manager: AppManager) {
 		this.bridge = this.manager.getBridges().getCommandBridge();
-		this.accessors = this.manager.getAccessorManager();
 		this.touchedCommandsToApps = new Map<string, string>();
 		this.appsTouchedCommands = new Map<string, Array<string>>();
 		this.providedCommands = new Map<string, Map<string, AppSlashCommand>>();
@@ -343,12 +339,7 @@ export class AppSlashCommandManager {
 		}
 
 		const appCmd = this.retrieveCommandInfo(cmd, app.getID());
-		await appCmd.runExecutorOrPreviewer(
-			AppMethod._COMMAND_EXECUTOR,
-			this.ensureContext(context),
-			this.manager.getLogStorage(),
-			this.accessors,
-		);
+		await appCmd.runExecutorOrPreviewer(AppMethod._COMMAND_EXECUTOR, this.ensureContext(context), this.manager.getLogStorage());
 	}
 
 	public async getPreviews(command: string, context: SlashCommandContext): Promise<ISlashCommandPreview> {
@@ -372,7 +363,6 @@ export class AppSlashCommandManager {
 			AppMethod._COMMAND_PREVIEWER,
 			this.ensureContext(context),
 			this.manager.getLogStorage(),
-			this.accessors,
 		);
 
 		if (!result) {
@@ -399,7 +389,7 @@ export class AppSlashCommandManager {
 		}
 
 		const appCmd = this.retrieveCommandInfo(cmd, app.getID());
-		await appCmd.runPreviewExecutor(previewItem, this.ensureContext(context), this.manager.getLogStorage(), this.accessors);
+		await appCmd.runPreviewExecutor(previewItem, this.ensureContext(context), this.manager.getLogStorage());
 	}
 
 	private ensureContext(context: SlashCommandContext): SlashCommandContext {

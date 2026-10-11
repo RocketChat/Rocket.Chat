@@ -1,10 +1,12 @@
 import type { LicenseInfo } from '@rocket.chat/core-typings';
-import { Callout, ContextualbarIcon, Skeleton, Tabs, TabsItem } from '@rocket.chat/fuselage';
-import { useDebouncedValue, useEffectEvent } from '@rocket.chat/fuselage-hooks';
+import { Callout, Skeleton, Tabs, TabsItem } from '@rocket.chat/fuselage';
+import { useDebouncedValue, useStableCallback } from '@rocket.chat/fuselage-hooks';
+import type { UsersListStatusParamsGET } from '@rocket.chat/rest-typings';
 import type { OptionProp } from '@rocket.chat/ui-client';
 import {
 	ExternalLink,
 	ContextualbarHeader,
+	ContextualbarIcon,
 	ContextualbarTitle,
 	ContextualbarClose,
 	ContextualbarDialog,
@@ -14,9 +16,8 @@ import {
 	PageHeader,
 	PageContent,
 } from '@rocket.chat/ui-client';
-import { useRouteParameter, useTranslation, useRouter, useEndpoint } from '@rocket.chat/ui-contexts';
+import { useRouteParameter, useTranslation, useRouter, useEndpoint, useSetting } from '@rocket.chat/ui-contexts';
 import { useQuery } from '@tanstack/react-query';
-import type { ReactElement } from 'react';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { Trans } from 'react-i18next';
 
@@ -31,6 +32,7 @@ import UsersTable from './UsersTable';
 import useFilteredUsers from './hooks/useFilteredUsers';
 import usePendingUsersCount from './hooks/usePendingUsersCount';
 import { useSeatsCap } from './useSeatsCap';
+import { useCanManageUserStatus } from '../../../hooks/useCanManageUserStatus';
 import { useLicenseLimitsByBehavior } from '../../../hooks/useLicenseLimitsByBehavior';
 import { useShouldPreventAction } from '../../../hooks/useShouldPreventAction';
 import { useCheckoutUrl } from '../subscription/hooks/useCheckoutUrl';
@@ -38,13 +40,14 @@ import { useCheckoutUrl } from '../subscription/hooks/useCheckoutUrl';
 export type UsersFilters = {
 	text: string;
 	roles: OptionProp[];
+	statusManagement?: UsersListStatusParamsGET['statusManagement'];
 };
 
 export type AdminUsersTab = 'all' | 'active' | 'deactivated' | 'pending';
 
 export type UsersTableSortingOption = 'name' | 'username' | 'emails.address' | 'status' | 'active' | 'freeSwitchExtension';
 
-const AdminUsersPage = (): ReactElement => {
+const AdminUsersPage = () => {
 	const t = useTranslation();
 
 	const seatsCap = useSeatsCap();
@@ -71,6 +74,10 @@ const AdminUsersPage = (): ReactElement => {
 	const [tab, setTab] = useState<AdminUsersTab>('all');
 	const [userFilters, setUserFilters] = useState<UsersFilters>({ text: '', roles: [] });
 
+	const canManageUserStatus = useCanManageUserStatus();
+	const userStatusEnabled = useSetting('Accounts_UserStatus_Enabled', true);
+	const canFilterByUserStatus = canManageUserStatus && userStatusEnabled;
+
 	const searchTerm = useDebouncedValue(userFilters.text, 500);
 	const prevSearchTerm = useRef('');
 
@@ -81,6 +88,7 @@ const AdminUsersPage = (): ReactElement => {
 		paginationData,
 		tab,
 		selectedRoles: useMemo(() => userFilters.roles.map((role) => role.id), [userFilters.roles]),
+		statusManagement: canFilterByUserStatus ? userFilters.statusManagement : undefined,
 	});
 
 	const pendingUsersCount = usePendingUsersCount(filteredUsersQueryResult.data?.users);
@@ -97,7 +105,7 @@ const AdminUsersPage = (): ReactElement => {
 		sortData.setSort(tab === 'pending' ? 'active' : 'name', 'asc');
 	};
 
-	const handleCloseContextualbar = useEffectEvent(() => router.navigate('/admin/users'));
+	const handleCloseContextualbar = useStableCallback(() => router.navigate('/admin/users'));
 
 	useEffect(() => {
 		prevSearchTerm.current = searchTerm;
@@ -117,7 +125,7 @@ const AdminUsersPage = (): ReactElement => {
 					<UsersPageHeaderContent isSeatsCapExceeded={isSeatsCapExceeded} seatsCap={seatsCap} />
 				</PageHeader>
 				{preventAction?.includes('activeUsers') && (
-					<Callout type='danger' title={t('subscription.callout.servicesDisruptionsOccurring')} mbe={19} mi={24}>
+					<Callout type='danger' title={t('subscription.callout.servicesDisruptionsOccurring')} marginBlockEnd={19} marginInline={24}>
 						<Trans
 							i18nKey='subscription.callout.description.limitsExceeded'
 							count={preventAction.length}
@@ -143,7 +151,7 @@ const AdminUsersPage = (): ReactElement => {
 					</TabsItem>
 					<TabsItem selected={tab === 'pending'} onClick={() => handleTabChange('pending')} display='flex' flexDirection='row'>
 						{`${t('Pending')} `}
-						{pendingUsersCount.isLoading && <Skeleton variant='circle' height='x16' width='x16' mis={8} />}
+						{pendingUsersCount.isLoading && <Skeleton variant='circle' height='x16' width='x16' marginInlineStart={8} />}
 						{pendingUsersCount.isSuccess && `(${pendingUsersCount.data})`}
 					</TabsItem>
 					<TabsItem selected={tab === 'active'} onClick={() => handleTabChange('active')}>
@@ -161,6 +169,7 @@ const AdminUsersPage = (): ReactElement => {
 						isSuccess={filteredUsersQueryResult.isSuccess}
 						total={filteredUsersQueryResult.data?.total || 0}
 						setUserFilters={setUserFilters}
+						canFilterByUserStatus={canFilterByUserStatus}
 						paginationData={paginationData}
 						sortData={sortData}
 						tab={tab}

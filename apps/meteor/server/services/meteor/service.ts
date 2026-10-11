@@ -3,24 +3,23 @@ import { api, ServiceClassInternal } from '@rocket.chat/core-services';
 import type { AutoUpdateRecord, IMeteor } from '@rocket.chat/core-services';
 import type { ILivechatAgent, LoginServiceConfiguration, UserStatus } from '@rocket.chat/core-typings';
 import { LoginServiceConfiguration as LoginServiceConfigurationModel, Users } from '@rocket.chat/models';
+import { ListenersModule, invalidatePublicationUserCache } from '@rocket.chat/streamer';
 import { wrapExceptions } from '@rocket.chat/tools';
 import { Meteor } from 'meteor/meteor';
 
 import { processOnChange, serviceConfigCallbacks } from './userReactivity';
-import { isOutgoingIntegration } from '../../../app/integrations/server/lib/definition';
-import { triggerHandler } from '../../../app/integrations/server/lib/triggerHandler';
-import { notifyGuestStatusChanged } from '../../../app/livechat/server/lib/guests';
-import { onlineAgents, monitorAgents } from '../../../app/livechat/server/lib/stream/agentStatus';
-import { metrics } from '../../../app/metrics/server';
-import notifications from '../../../app/notifications/server/lib/Notifications';
-import { settings } from '../../../app/settings/server';
-import { use } from '../../../app/settings/server/Middleware';
-import { setValue, updateValue } from '../../../app/settings/server/raw';
-import { getURL } from '../../../app/utils/server/getURL';
 import { configureEmailInboxes } from '../../features/EmailInbox/EmailInbox';
+import { isOutgoingIntegration } from '../../lib/integrations/lib/definition';
+import { triggerHandler } from '../../lib/integrations/lib/triggerHandler';
+import { metrics } from '../../lib/metrics';
+import notifications from '../../lib/notifications/core/lib/Notifications';
+import { notifyGuestStatusChanged } from '../../lib/omnichannel/guests';
+import { onlineAgents, monitorAgents } from '../../lib/omnichannel/stream/agentStatus';
 import { roomCoordinator } from '../../lib/rooms/roomCoordinator';
-import { ListenersModule } from '../../modules/listeners/listeners.module';
-import { invalidate as invalidatePublicationUserCache } from '../../modules/streamer/publication-user-cache';
+import { getURL } from '../../lib/utils/getURL';
+import { settings } from '../../settings';
+import { use } from '../../settings/Middleware';
+import { setValue, updateValue } from '../../settings/raw';
 
 const disableMsgRoundtripTracking = ['yes', 'true'].includes(String(process.env.DISABLE_MESSAGE_ROUNDTRIP_TRACKING).toLowerCase());
 
@@ -38,7 +37,7 @@ export class MeteorService extends ServiceClassInternal implements IMeteor {
 	constructor() {
 		super();
 
-		new ListenersModule(this, notifications);
+		new ListenersModule(this, notifications, settings);
 
 		this.onEvent('user.forceLogout', (uid: string, sessionId?: string) => {
 			if (sessionId) {

@@ -1,7 +1,7 @@
 import type { AppManager } from '../AppManager';
 import type { IParseAppPackageResult } from '../compiler';
 import type { IRuntimeController } from '../runtime/IRuntimeController';
-import { DenoRuntimeSubprocessController } from '../runtime/deno/AppsEngineDenoRuntime';
+import { NodeRuntimeSubprocessController } from '../runtime/node/AppsEngineNodeRuntime';
 import type { IAppStorageItem } from '../storage';
 
 export type AppRuntimeParams = {
@@ -18,8 +18,11 @@ export type ExecRequestOptions = {
 	timeout?: number;
 };
 
-const defaultRuntimeFactory = (manager: AppManager, appPackage: IParseAppPackageResult, storageItem: IAppStorageItem) =>
-	new DenoRuntimeSubprocessController(manager, appPackage, storageItem);
+export const nodeRuntimeFactory = (manager: AppManager, appPackage: IParseAppPackageResult, storageItem: IAppStorageItem) =>
+	new NodeRuntimeSubprocessController(manager, appPackage, storageItem);
+
+const defaultRuntimeFactory: (manager: AppManager, appPackage: IParseAppPackageResult, storageItem: IAppStorageItem) => IRuntimeController =
+	nodeRuntimeFactory;
 
 export class AppRuntimeManager {
 	private readonly subprocesses: Record<string, IRuntimeController> = {};

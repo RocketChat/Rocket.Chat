@@ -11,6 +11,7 @@ import type { UsersAutocompleteParamsGET } from './users/UsersAutocompleteParams
 import type { UsersInfoParamsGet } from './users/UsersInfoParamsGet';
 import type { UsersListParamsGET } from './users/UsersListParamsGET';
 import type { UsersListStatusParamsGET } from './users/UsersListStatusParamsGET';
+import type { UsersListStatusVisibilityParamsGET } from './users/UsersListStatusVisibilityParamsGET';
 import type { UsersListTeamsParamsGET } from './users/UsersListTeamsParamsGET';
 import type { UsersSendConfirmationEmailParamsPOST } from './users/UsersSendConfirmationEmailParamsPOST';
 import type { UsersSendWelcomeEmailParamsPOST } from './users/UsersSendWelcomeEmailParamsPOST';
@@ -103,7 +104,10 @@ type UsersPresencePayload = {
 };
 
 export type UserPresence = Readonly<
-	Partial<Pick<IUser, 'name' | 'status' | 'utcOffset' | 'statusText' | 'avatarETag' | 'roles' | 'username'>> & Required<Pick<IUser, '_id'>>
+	Partial<
+		Pick<IUser, 'name' | 'status' | 'utcOffset' | 'statusText' | 'statusSource' | 'statusExpiresAt' | 'avatarETag' | 'roles' | 'username'>
+	> &
+		Required<Pick<IUser, '_id'>>
 >;
 
 export type UserPersonalTokens = Pick<IPersonalAccessToken, 'name' | 'lastTokenPart' | 'bypassTwoFactor'> & { createdAt: string };
@@ -153,13 +157,22 @@ export type UsersEndpoints = {
 
 	'/v1/users.list': {
 		GET: (params: UsersListParamsGET) => PaginatedResult<{
-			users: DefaultUserInfo[];
+			users: (DefaultUserInfo & Pick<Partial<IUser>, 'customFields'>)[];
 		}>;
 	};
 
 	'/v1/users.listByStatus': {
 		GET: (params: UsersListStatusParamsGET) => PaginatedResult<{
 			users: DefaultUserInfo[];
+		}>;
+	};
+
+	'/v1/users.listStatusVisibility': {
+		GET: (params: UsersListStatusVisibilityParamsGET) => PaginatedResult<{
+			users: (Pick<IUser, '_id' | 'username' | 'name' | 'status' | 'statusText'> & {
+				presenceDisabledByAdmin: boolean;
+				statusVisibilityDeniedByAdmin: NonNullable<IUser['username']>[];
+			})[];
 		}>;
 	};
 
@@ -179,6 +192,8 @@ export type UsersEndpoints = {
 		GET: (params: { fullExport?: 'true' | 'false' }) => {
 			requested: boolean;
 			exportOperation: IExportOperation;
+			url: string | null;
+			pendingOperationsBeforeMyRequest: number;
 		};
 	};
 
@@ -196,6 +211,7 @@ export type UsersEndpoints = {
 	'/v1/users.resetE2EKey': {
 		POST: (
 			params:
+				| Record<string, never>
 				| {
 						userId: string;
 				  }
@@ -315,15 +331,23 @@ export type UsersEndpoints = {
 	};
 
 	'/v1/users.setStatus': {
-		POST: (params: { message?: string; status?: UserStatus; userId?: string; username?: string; user?: string }) => void;
+		POST: (params: {
+			message?: string;
+			status?: UserStatus;
+			expiresAt?: string;
+			userId?: string;
+			username?: string;
+			user?: string;
+		}) => void;
 	};
 
 	'/v1/users.getStatus': {
 		GET: () => {
+			_id: string;
 			status: 'online' | 'offline' | 'away' | 'busy';
-			message?: string;
-			_id?: string;
 			connectionStatus?: 'online' | 'offline' | 'away' | 'busy';
+			statusSource?: IUser['statusSource'];
+			statusExpiresAt?: IUser['statusExpiresAt'];
 		};
 	};
 
@@ -368,6 +392,30 @@ export type UsersEndpoints = {
 	'/v1/users.deleteOwnAccount': {
 		POST: (params: { password: string; confirmRelinquish?: boolean }) => void;
 	};
+
+	'/v1/users.verifyEmail': {
+		POST: (params: { token: string }) => void;
+	};
+
+	'/v1/users.enableTotp': {
+		POST: () => { secret: string; url: string };
+	};
+
+	'/v1/users.disableTotp': {
+		POST: (params: { code: string }) => { disabled: boolean };
+	};
+
+	'/v1/users.validateTotp': {
+		POST: (params: { code: string }) => { codes: string[] };
+	};
+
+	'/v1/users.regenerateTotpCodes': {
+		POST: (params: { code: string }) => { codes: string[] };
+	};
+
+	'/v1/users.totpCodesRemaining': {
+		GET: () => { remaining: number };
+	};
 };
 
 export * from './users/UserCreateParamsPOST';
@@ -381,3 +429,4 @@ export * from './users/UserRegisterParamsPOST';
 export * from './users/UserLogoutParamsPOST';
 export * from './users/UsersListTeamsParamsGET';
 export * from './users/UsersAutocompleteParamsGET';
+export * from './users/UsersListStatusVisibilityParamsGET';

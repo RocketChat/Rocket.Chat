@@ -30,7 +30,7 @@ const { uploadZipFile } = proxyquire.noCallThru().load('../../../../../server/li
 	'node:fs': {
 		createReadStream: stubs.createReadStream,
 	},
-	'../../../app/file-upload/server': {
+	'../media/file-upload': {
 		FileUpload: {
 			getStore: stubs.getStore,
 		},

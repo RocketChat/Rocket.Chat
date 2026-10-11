@@ -6,7 +6,7 @@ import VideoConfPopupContent from './VideoConfPopupContent';
 import VideoConfPopupFooter from './VideoConfPopupFooter';
 import VideoConfPopupHeader from './VideoConfPopupHeader';
 
-type VideoConfPopupSkeletonProps = Omit<ComponentProps<typeof VideoConfPopup>, 'children'>;
+export type VideoConfPopupSkeletonProps = Omit<ComponentProps<typeof VideoConfPopup>, 'children'>;
 
 const VideoConfPopupSkeleton = (props: VideoConfPopupSkeletonProps) => (
 	<VideoConfPopup aria-label='Loading' {...props}>
@@ -16,7 +16,7 @@ const VideoConfPopupSkeleton = (props: VideoConfPopupSkeletonProps) => (
 		<VideoConfPopupContent>
 			<Box display='flex' alignItems='center'>
 				<Skeleton variant='rect' height='x36' width='x36' />
-				<Skeleton mis={8} variant='rect' height='x24' width='x120' />
+				<Skeleton marginInlineStart={8} variant='rect' height='x24' width='x120' />
 			</Box>
 		</VideoConfPopupContent>
 		<VideoConfPopupFooter>

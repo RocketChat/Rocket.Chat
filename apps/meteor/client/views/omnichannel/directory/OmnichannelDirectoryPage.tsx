@@ -1,4 +1,4 @@
-import { Box, Callout, Tabs } from '@rocket.chat/fuselage';
+import { Box, Callout, Tabs, TabsItem } from '@rocket.chat/fuselage';
 import { Page, PageHeader, PageContent } from '@rocket.chat/ui-client';
 import { useRouteParameter } from '@rocket.chat/ui-contexts';
 import { useEffect, useCallback } from 'react';
@@ -35,16 +35,16 @@ const OmnichannelDirectoryPage = () => {
 				<Page>
 					<PageHeader title={t('Omnichannel_Contact_Center')} />
 					<Tabs flexShrink={0}>
-						<Tabs.Item selected={tab === 'chats'} onClick={() => handleTabClick('chats')}>
+						<TabsItem selected={tab === 'chats'} onClick={() => handleTabClick('chats')}>
 							{t('Chats')}
-						</Tabs.Item>
-						<Tabs.Item selected={tab === 'contacts'} onClick={() => handleTabClick('contacts')}>
+						</TabsItem>
+						<TabsItem selected={tab === 'contacts'} onClick={() => handleTabClick('contacts')}>
 							{t('Contacts')}
-						</Tabs.Item>
+						</TabsItem>
 					</Tabs>
 					<PageContent>
 						{isWorkspaceOverMacLimit && (
-							<Box mbs={16}>
+							<Box marginBlockStart={16}>
 								<Callout type='danger' icon='warning' title={t('The_workspace_has_exceeded_the_monthly_limit_of_active_contacts')}>
 									{t('Talk_to_your_workspace_admin_to_address_this_issue')}
 								</Callout>

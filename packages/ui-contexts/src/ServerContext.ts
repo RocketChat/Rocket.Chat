@@ -34,6 +34,7 @@ export type ServerContextValue = {
 		keys: UrlParams<TPathPattern>;
 		params: OperationParams<TMethod, TPathPattern>;
 		signal?: AbortSignal;
+		keepalive?: boolean;
 	}) => Promise<Serialized<OperationResult<TMethod, TPathPattern>>>;
 	uploadToEndpoint: (
 		endpoint: PathFor<'POST'>,

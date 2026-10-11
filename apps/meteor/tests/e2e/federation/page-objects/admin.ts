@@ -17,7 +17,7 @@ export class FederationAdmin {
 	}
 
 	get inputSearchUsers(): Locator {
-		return this.page.locator('input[placeholder="Search Users"]');
+		return this.page.locator('input[placeholder="Search users"]');
 	}
 
 	get inputSearchSettings(): Locator {
@@ -73,6 +73,6 @@ export class FederationAdmin {
 	}
 
 	get roomsBtnDefaultAvatar(): Locator {
-		return this.page.locator('button[title="Set Default Avatar"]');
+		return this.page.locator('button[title="Set default avatar"]');
 	}
 }

@@ -11,8 +11,15 @@ export const useUserPresenceListener = (): void => {
 
 	useEffect(
 		() =>
-			subscribe((uid, [[username, statusChanged, statusText]]) => {
-				Presence.notify({ _id: uid, username, status: STATUS_MAP[statusChanged as any], statusText });
+			subscribe((uid, [[username, statusChanged, statusText, statusSource, statusExpiresAt]]) => {
+				Presence.notify({
+					_id: uid,
+					username,
+					status: STATUS_MAP[statusChanged as any],
+					statusText,
+					statusSource,
+					statusExpiresAt,
+				});
 			}),
 		[subscribe],
 	);

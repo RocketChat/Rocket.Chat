@@ -5,7 +5,7 @@ import type { NextFunction } from 'connect';
 import { Cookies } from 'meteor/ostrio:cookies';
 import parser from 'ua-parser-js';
 
-import { getURL } from '../../../../app/utils/server/getURL';
+import { getURL } from '../../../lib/utils/getURL';
 
 const cookies = new Cookies();
 

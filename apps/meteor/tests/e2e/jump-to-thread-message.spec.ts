@@ -2,11 +2,13 @@ import type { IMessage } from '@rocket.chat/core-typings';
 import { Random } from '@rocket.chat/random';
 
 import { Users } from './fixtures/userStates';
+import { HomeChannel } from './page-objects';
 import type { BaseTest } from './utils/test';
 import { expect, test } from './utils/test';
 
 test.use({ storageState: Users.admin.state });
 test.describe.serial('Threads', () => {
+	let poHomeChannel: HomeChannel;
 	let targetChannel: { name: string; _id: string };
 	let threadMessage: IMessage;
 	let mainMessage: IMessage;
@@ -43,45 +45,28 @@ test.describe.serial('Threads', () => {
 
 	test.afterAll(({ api }) => api.post('/channels.delete', { roomId: targetChannel._id }));
 
-	test('expect to jump scroll to a non-thread message on opening its message link', async ({ page }) => {
-		const messageLink = `/channel/${targetChannel.name}?msg=${mainMessage._id}`;
-		await page.goto(messageLink);
-
-		await expect(async () => {
-			await page.waitForSelector('#main-content');
-			await page.waitForSelector(`[data-qa-rc-room="${targetChannel._id}"]`);
-		}).toPass();
-
-		const message = page.locator(`[aria-label=\"Message list\"] [data-id=\"${mainMessage._id}\"]`);
-
-		await expect(message).toBeVisible();
+	test.beforeEach(async ({ page }) => {
+		poHomeChannel = new HomeChannel(page);
 	});
 
-	test('expect to jump scroll to thread message on opening its message link', async ({ page }) => {
-		const threadMessageLink = `/channel/${targetChannel.name}?msg=${threadMessage._id}`;
-		await page.goto(threadMessageLink);
+	test('expect to jump scroll to a non-thread message on opening its message link', async () => {
+		await poHomeChannel.gotoChannelMessage(targetChannel.name, mainMessage._id);
 
-		await expect(async () => {
-			await page.waitForSelector('#main-content');
-			await page.waitForSelector(`[data-qa-rc-room="${targetChannel._id}"]`);
-		}).toPass();
-
-		const message = await page.locator(`[aria-label=\"Thread message list\"] [data-id=\"${threadMessage._id}\"]`);
-
-		await expect(message).toBeVisible();
+		await expect(poHomeChannel.content.getRoomById(targetChannel._id)).toBeVisible();
+		await expect(poHomeChannel.content.getMessageById(mainMessage._id)).toBeVisible();
 	});
 
-	test('expect to jump scroll to thread message on opening its message link from a different channel', async ({ page }) => {
-		const threadMessageLink = `/channel/general?msg=${threadMessage._id}`;
-		await page.goto(threadMessageLink);
+	test('expect to jump scroll to thread message on opening its message link', async () => {
+		await poHomeChannel.gotoChannelMessage(targetChannel.name, threadMessage._id, true);
 
-		await expect(async () => {
-			await page.waitForSelector('#main-content');
-			await page.waitForSelector(`[data-qa-rc-room="${targetChannel._id}"]`);
-		}).toPass();
+		await expect(poHomeChannel.content.getRoomById(targetChannel._id)).toBeVisible();
+		await expect(poHomeChannel.content.getThreadMessageById(threadMessage._id)).toBeVisible();
+	});
 
-		const message = await page.locator(`[aria-label=\"Thread message list\"] [data-id=\"${threadMessage._id}\"]`);
+	test('expect to jump scroll to thread message on opening its message link from a different channel', async () => {
+		await poHomeChannel.gotoChannelMessage('general', threadMessage._id, true);
 
-		await expect(message).toBeVisible();
+		await expect(poHomeChannel.content.getRoomById(targetChannel._id)).toBeVisible();
+		await expect(poHomeChannel.content.getThreadMessageById(threadMessage._id)).toBeVisible();
 	});
 });

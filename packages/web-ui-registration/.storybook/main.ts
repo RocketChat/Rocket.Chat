@@ -1,23 +1,3 @@
-import { dirname, join } from 'path';
+import baseConfig from '@rocket.chat/storybook-config/main';
 
-import type { StorybookConfig } from '@storybook/react-webpack5';
-
-export default {
-	stories: ['../src/**/*.stories.@(js|jsx|ts|tsx)'],
-	addons: [
-		getAbsolutePath('@storybook/addon-essentials'),
-		getAbsolutePath('storybook-dark-mode'),
-		getAbsolutePath('@storybook/addon-webpack5-compiler-swc'),
-	],
-
-	framework: {
-		name: getAbsolutePath('@storybook/react-webpack5'),
-		options: {},
-	},
-
-	docs: {},
-} satisfies StorybookConfig;
-
-function getAbsolutePath(value: string): any {
-	return dirname(require.resolve(join(value, 'package.json')));
-}
+export default baseConfig();

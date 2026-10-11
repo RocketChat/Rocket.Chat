@@ -1,21 +1,20 @@
 import { isThreadMainMessage, isRoomFederated } from '@rocket.chat/core-typings';
+import { useFormatTime, useFormatDateAndTime } from '@rocket.chat/ui-client';
 import { useLayout, useUser, useUserPreference, useSetting, useEndpoint, useSearchParameter } from '@rocket.chat/ui-contexts';
 import type { ReactNode } from 'react';
 import { useMemo, memo } from 'react';
 
-import { getRegexHighlight, getRegexHighlightUrl } from '../../../../../app/highlight-words/client/helper';
 import type { MessageListContextValue } from '../../../../components/message/list/MessageListContext';
 import { MessageListContext } from '../../../../components/message/list/MessageListContext';
 import { useFormatDate } from '../../../../hooks/useFormatDate';
-import { useFormatDateAndTime } from '../../../../hooks/useFormatDateAndTime';
-import { useFormatTime } from '../../../../hooks/useFormatTime';
+import { getRegexHighlight, getRegexHighlightUrl } from '../../../../lib/highlightWords';
 import AttachmentProvider from '../../../../providers/AttachmentProvider';
 import { useChat } from '../../contexts/ChatContext';
 import { useRoom, useRoomSubscription } from '../../contexts/RoomContext';
 import { useAutoTranslate } from '../hooks/useAutoTranslate';
 import { useKatex } from '../hooks/useKatex';
 
-type MessageListProviderProps = {
+export type MessageListProviderProps = {
 	children: ReactNode;
 	attachmentDimension?: {
 		width?: number;
@@ -64,13 +63,13 @@ const MessageListProvider = ({ children, attachmentDimension }: MessageListProvi
 
 	const chat = useChat();
 
-	const context: MessageListContextValue = useMemo(
+	const context: MessageListContextValue = useMemo<MessageListContextValue>(
 		() => ({
 			showColors,
 			useUserHasReacted: username
 				? (message) =>
 						(reaction): boolean =>
-							Boolean(message.reactions?.[reaction].usernames.includes(username))
+							Boolean(message.reactions?.[reaction]?.usernames.includes(username))
 				: () => (): boolean => false,
 			useShowFollowing: uid
 				? ({ message }): boolean => Boolean(message.replies && message.replies.indexOf(uid) > -1 && !isThreadMainMessage(message))

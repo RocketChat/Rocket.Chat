@@ -63,10 +63,7 @@ const ExportMessages = () => {
 			toUsers: [],
 			additionalEmails: '',
 			messagesCount: 0,
-			subject: t('Mail_Messages_Subject', {
-				postProcess: 'sprintf',
-				sprintf: [roomName],
-			}),
+			subject: t('Mail_Messages_Subject', { roomName }),
 			format: isE2ERoom ? 'json' : 'html',
 		},
 	});
@@ -323,7 +320,7 @@ const ExportMessages = () => {
 															return undefined;
 														}
 
-														return t('Mail_Message_Invalid_emails', { postProcess: 'sprintf', sprintf: [additionalEmails] });
+														return t('Mail_Message_Invalid_emails', { emails: additionalEmails });
 													},
 													validateRecipient: (additionalEmails) => {
 														if (additionalEmails !== '' || toUsers?.length > 0) {
@@ -343,7 +340,7 @@ const ExportMessages = () => {
 													}}
 													onBlur={onBlur}
 													placeholder={t('Email_Placeholder_any')}
-													addon={<Icon name='mail' size='x20' />}
+													endAddon={<Icon name='mail' size='x20' />}
 													error={errors?.additionalEmails?.message}
 												/>
 											)}
@@ -357,7 +354,7 @@ const ExportMessages = () => {
 										<Controller
 											name='subject'
 											control={control}
-											render={({ field }) => <TextAreaInput rows={3} {...field} addon={<Icon name='edit' size='x20' />} />}
+											render={({ field }) => <TextAreaInput rows={3} {...field} endAddon={<Icon name='edit' size='x20' />} />}
 										/>
 									</FieldRow>
 								</Field>

@@ -22,7 +22,7 @@ class RoomsCachedStore extends PrivateCachedStore<IRoom> {
 			cl: room.cl,
 			topic: room.topic,
 			announcement: room.announcement,
-			broadcast: room.broadcast,
+			broadcast: room.broadcast || undefined,
 			archived: room.archived,
 			avatarETag: room.avatarETag,
 			retention: (room as IRoomWithRetentionPolicy | undefined)?.retention,

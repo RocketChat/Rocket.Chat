@@ -1,14 +1,13 @@
-import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
+import { useStableCallback } from '@rocket.chat/fuselage-hooks';
 import { ContextualbarHeader, ContextualbarTitle, ContextualbarClose, ContextualbarDialog } from '@rocket.chat/ui-client';
 import { useRouteParameter, useRoute, useTranslation, useSetModal } from '@rocket.chat/ui-contexts';
-import type { ReactElement } from 'react';
 import { useEffect } from 'react';
 
 import CustomRoleUpsellModal from './CustomRoleUpsellModal';
 import EditRolePageWithData from './EditRolePageWithData';
 import { useHasLicenseModule } from '../../../hooks/useHasLicenseModule';
 
-const PermissionsContextBar = (): ReactElement | null => {
+const PermissionsContextBar = () => {
 	const t = useTranslation();
 	const _id = useRouteParameter('_id');
 	const context = useRouteParameter('context');
@@ -16,7 +15,7 @@ const PermissionsContextBar = (): ReactElement | null => {
 	const setModal = useSetModal();
 	const { isPending, data: hasCustomRolesModule = false } = useHasLicenseModule('custom-roles');
 
-	const handleCloseContextualbar = useEffectEvent(() => {
+	const handleCloseContextualbar = useStableCallback(() => {
 		router.push({});
 	});
 

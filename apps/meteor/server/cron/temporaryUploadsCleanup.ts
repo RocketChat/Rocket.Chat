@@ -1,7 +1,7 @@
 import { cronJobs } from '@rocket.chat/cron';
 import { Uploads } from '@rocket.chat/models';
 
-import { FileUpload } from '../../app/file-upload/server';
+import { FileUpload } from '../lib/media/file-upload';
 
 async function temporaryUploadCleanup(): Promise<void> {
 	const files = await Uploads.findExpiredTemporaryFiles({ projection: { _id: 1 } }).toArray();

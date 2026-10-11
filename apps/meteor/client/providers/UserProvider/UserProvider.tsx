@@ -5,9 +5,8 @@ import { createPredicateFromFilter } from '@rocket.chat/mongo-adapter';
 import type { FindOptions, SubscriptionWithRoom } from '@rocket.chat/ui-contexts';
 import { UserContext, useRouteParameter, useSearchParameter } from '@rocket.chat/ui-contexts';
 import { useQueryClient } from '@tanstack/react-query';
-import { Meteor } from 'meteor/meteor';
 import type { Filter, ObjectId } from 'mongodb';
-import type { ContextType, ReactElement, ReactNode } from 'react';
+import type { ContextType, ReactNode } from 'react';
 import { useEffect, useMemo, useRef } from 'react';
 import type { StoreApi, UseBoundStore } from 'zustand';
 
@@ -16,31 +15,27 @@ import { useDeleteUser } from './hooks/useDeleteUser';
 import { useEmailVerificationWarning } from './hooks/useEmailVerificationWarning';
 import { useReloadAfterLogin } from './hooks/useReloadAfterLogin';
 import { useUpdateAvatar } from './hooks/useUpdateAvatar';
-import { sdk } from '../../../app/utils/client/lib/SDKClient';
 import { useIdleConnection } from '../../hooks/useIdleConnection';
 import type { IDocumentMapStore } from '../../lib/cachedStores/DocumentMapStore';
 import { applyQueryOptions } from '../../lib/cachedStores/applyQueryOptions';
 import { getDdpSdk } from '../../lib/sdk/ddpSdk';
 import { settings } from '../../lib/settings';
 import { userIdStore } from '../../lib/user';
+import { logout } from '../../meteor/accounts';
 import { Users, Rooms, Subscriptions } from '../../stores';
 import { useSamlInviteToken } from '../../views/invite/hooks/useSamlInviteToken';
 
-type UserProviderProps = {
+export type UserProviderProps = {
 	children: ReactNode;
 };
 
+// Local logout broadcaster — `onLogout(cb)` consumers (e.g. e2ee cleanup) still
+// subscribe to this. The post-logout side effects that used to require a
+// `sdk.call('logoutCleanUp')` round-trip (afterLogoutCleanUpCallback +
+// Apps.IPostUserLoggedOut) now fire server-side via `Accounts.onLogout` and
+// `POST /v1/users.logout`, so this emitter is purely client-side fan-out.
 const ee = new Emitter();
 getDdpSdk().account.onLogout(() => ee.emit('logout'));
-
-ee.on('logout', async () => {
-	const userId = userIdStore.getState();
-	if (!userId) return;
-	const user = Users.state.get(userId);
-	if (!user) return;
-
-	await sdk.call('logoutCleanUp', user);
-});
 
 const queryRoom = (
 	query: Filter<Pick<IRoom, '_id'>>,
@@ -61,7 +56,7 @@ const queryRoom = (
 	return [subscribe, getSnapshot];
 };
 
-const UserProvider = ({ children }: UserProviderProps): ReactElement => {
+const UserProvider = ({ children }: UserProviderProps) => {
 	const userId = userIdStore();
 
 	const user = Users.use((state) => {
@@ -164,7 +159,7 @@ const UserProvider = ({ children }: UserProviderProps): ReactElement => {
 			querySubscription,
 			queryRoom,
 			querySubscriptions,
-			logout: async () => Meteor.logout(),
+			logout: async () => logout(),
 			onLogout: (cb) => {
 				return ee.on('logout', cb);
 			},

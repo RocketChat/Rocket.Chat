@@ -1,5 +1,54 @@
 # @rocket.chat/media-signaling
 
+## 1.3.0-rc.0
+
+### Minor Changes
+
+- ([#41964](https://github.com/RocketChat/Rocket.Chat/pull/41964)) Improves the logic of when the Busy Tone should be played after a call ends
+
+- ([#41681](https://github.com/RocketChat/Rocket.Chat/pull/41681)) Adds media call lifecycle events to the Apps-Engine: an app implementing the new `IMediaCallHandler` interface can now observe calls starting, being answered and ending, and can block a call or change the features it was requested with before it is created
+
+## 1.2.0
+
+### Minor Changes
+
+- ([#41416](https://github.com/RocketChat/Rocket.Chat/pull/41416)) Removes voice calling microphone requirement for starting a successful call, allowing users to join as "listen-only".
+
+## 1.2.0-rc.0
+
+### Minor Changes
+
+- ([#41416](https://github.com/RocketChat/Rocket.Chat/pull/41416)) Removes voice calling microphone requirement for starting a successful call, allowing users to join as "listen-only".
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+  - @rocket.chat/emitter@0.33.0
+
+  </details>
+
+## 1.1.0
+
+### Minor Changes
+
+- ([#40422](https://github.com/RocketChat/Rocket.Chat/pull/40422)) Fixes a soft lock issue where the call negotiation doesn't proceed if the call is accepted while still being initialized
+
+### Patch Changes
+
+- ([#41044](https://github.com/RocketChat/Rocket.Chat/pull/41044)) Fixes an issue where voice calls could fail if the user navigated between rooms during the initial connection
+
+## 1.1.0-rc.1
+
+### Patch Changes
+
+- ([#41044](https://github.com/RocketChat/Rocket.Chat/pull/41044)) Fixes an issue where voice calls could fail if the user navigated between rooms during the initial connection
+
+## 1.1.0-rc.0
+
+### Minor Changes
+
+- ([#40422](https://github.com/RocketChat/Rocket.Chat/pull/40422)) Fixes a soft lock issue where the call negotiation doesn't proceed if the call is accepted while still being initialized
+
 ## 1.0.0
 
 ### Major Changes

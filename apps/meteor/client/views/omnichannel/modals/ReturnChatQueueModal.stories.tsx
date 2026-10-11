@@ -1,4 +1,4 @@
-import type { Meta, StoryFn } from '@storybook/react';
+import type { StoryObj, Meta } from '@storybook/react';
 
 import ReturnChatQueueModal from './ReturnChatQueueModal';
 
@@ -14,4 +14,4 @@ export default {
 	},
 } satisfies Meta<typeof ReturnChatQueueModal>;
 
-export const Default: StoryFn<typeof ReturnChatQueueModal> = (args) => <ReturnChatQueueModal {...args} />;
+export const Default: StoryObj<typeof ReturnChatQueueModal> = {};

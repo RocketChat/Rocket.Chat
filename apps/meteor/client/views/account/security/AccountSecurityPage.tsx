@@ -2,7 +2,6 @@ import { Box, Accordion, AccordionItem, ButtonGroup, Button, Callout } from '@ro
 import { Page, PageHeader, PageScrollableContentWithShadow, PageFooter } from '@rocket.chat/ui-client';
 import { useSetting, useTranslation, useUser } from '@rocket.chat/ui-contexts';
 import { useId } from 'react';
-import type { ReactElement } from 'react';
 import { FormProvider, useForm } from 'react-hook-form';
 
 import ChangePassword from './ChangePassword';
@@ -13,7 +12,7 @@ import { useRequire2faSetup } from '../../hooks/useRequire2faSetup';
 
 const passwordDefaultValues = { password: '', confirmationPassword: '' };
 
-const AccountSecurityPage = (): ReactElement => {
+const AccountSecurityPage = () => {
 	const t = useTranslation();
 	const user = useUser();
 
@@ -45,7 +44,7 @@ const AccountSecurityPage = (): ReactElement => {
 		<Page>
 			<PageHeader title={t('Security')} />
 			<PageScrollableContentWithShadow>
-				<Box maxWidth='x600' w='full' alignSelf='center' color='default'>
+				<Box maxWidth='x600' width='full' alignSelf='center' color='default'>
 					{allowPasswordChange && (
 						<FormProvider {...methods}>
 							<Accordion>
@@ -59,7 +58,7 @@ const AccountSecurityPage = (): ReactElement => {
 						{(twoFactorTOTP || showEmailTwoFactor) && twoFactorEnabled && (
 							<AccordionItem defaultExpanded={require2faSetup} title={t('Two Factor Authentication')}>
 								{require2faSetup && (
-									<Callout type='warning' title={t('Enable_two-factor_authentication')} mbe='24px'>
+									<Callout type='warning' title={t('Enable_two-factor_authentication')} marginBlockEnd='24px'>
 										{t('Enable_two-factor_authentication_callout_description')}
 									</Callout>
 								)}

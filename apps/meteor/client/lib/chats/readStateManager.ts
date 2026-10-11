@@ -1,11 +1,11 @@
 import type { IMessage, IRoom, ISubscription } from '@rocket.chat/core-typings';
 import { Emitter } from '@rocket.chat/emitter';
 
-import { LegacyRoomManager } from '../../../app/ui-utils/client/lib/LegacyRoomManager';
-import { RoomHistoryManager } from '../../../app/ui-utils/client/lib/RoomHistoryManager';
-import { sdk } from '../../../app/utils/client/lib/SDKClient';
 import { withDebouncing } from '../../../lib/utils/highOrderFunctions';
 import { Messages } from '../../stores';
+import { LegacyRoomManager } from '../LegacyRoomManager';
+import { RoomHistoryManager } from '../RoomHistoryManager';
+import { sdk } from '../SDKClient';
 import { getUserId } from '../user';
 
 export class ReadStateManager extends Emitter {
@@ -72,7 +72,8 @@ export class ReadStateManager extends Emitter {
 			(record) =>
 				record.rid === this.subscription?.rid &&
 				record.ts.getTime() > (this.subscription.ls?.getTime() ?? 0) &&
-				record.u._id !== getUserId(),
+				record.u._id !== getUserId() &&
+				(!record.tmid || record.tshow === true),
 			(a, b) => a.ts.getTime() - b.ts.getTime(),
 		);
 
@@ -147,7 +148,7 @@ export class ReadStateManager extends Emitter {
 
 	// this will always mark as read.
 	public async markAsRead() {
-		if (!this.rid) {
+		if (!this.rid || !this.subscription?.rid) {
 			return;
 		}
 

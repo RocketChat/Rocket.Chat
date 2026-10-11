@@ -1,9 +1,9 @@
 import type { IMessage, IRoom, ISubscription } from '@rocket.chat/core-typings';
-import { useMethod, usePermission, useSetting, useUser } from '@rocket.chat/ui-contexts';
+import { useEndpoint, usePermission, useSetting, useUser } from '@rocket.chat/ui-contexts';
 import { useMemo } from 'react';
 
-import { AutoTranslate } from '../../../../app/autotranslate/client';
-import type { MessageActionConfig } from '../../../../app/ui-utils/client/lib/MessageAction';
+import type { MessageActionConfig } from '../../../lib/MessageAction';
+import { AutoTranslate } from '../../../lib/autotranslate';
 import { roomCoordinator } from '../../../lib/rooms/roomCoordinator';
 import { Messages } from '../../../stores';
 import { hasTranslationLanguageInAttachments, hasTranslationLanguageInMessage } from '../../../views/room/MessageList/lib/autoTranslate';
@@ -15,7 +15,7 @@ export const useViewOriginalTranslationAction = (
 	const user = useUser();
 	const autoTranslateEnabled = useSetting('AutoTranslate_Enabled', false);
 	const canAutoTranslate = usePermission('auto-translate');
-	const translateMessage = useMethod('autoTranslate.translateMessage');
+	const translateMessage = useEndpoint('POST', '/v1/autotranslate.translateMessage');
 
 	const language = useMemo(
 		() => subscription?.autoTranslateLanguage || AutoTranslate.getLanguage(message.rid),
@@ -54,7 +54,7 @@ export const useViewOriginalTranslationAction = (
 					(record) => record._id === message._id,
 					(record) => ({ ...record, autoTranslateFetching: true }),
 				);
-				void translateMessage(message, language);
+				void translateMessage({ messageId: message._id, targetLanguage: language });
 			}
 
 			updateMessages(

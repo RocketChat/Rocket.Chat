@@ -6,7 +6,6 @@ import { getPeriodRange } from '../../../../components/dashboards/periods';
 
 type UseMessageOriginsOptions = { period: Period['key'] };
 
-// eslint-disable-next-line @typescript-eslint/explicit-function-return-type
 export const useMessageOrigins = ({ period }: UseMessageOriginsOptions) => {
 	const getMessageOrigins = useEndpoint('GET', '/v1/engagement-dashboard/messages/origin');
 

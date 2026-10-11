@@ -2,7 +2,7 @@ import { Field, FieldLabel, FieldRow, TextInput, Box, Margins, Button, ButtonGro
 import { ContextualbarScrollableContent, ContextualbarFooter } from '@rocket.chat/ui-client';
 import { useToastMessageDispatch, type UploadResult } from '@rocket.chat/ui-contexts';
 import fileSize from 'filesize';
-import type { ReactElement, FormEvent } from 'react';
+import type { ChangeEvent } from 'react';
 import { useState, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -11,7 +11,7 @@ import { CUSTOM_SOUND_ALLOWED_MIME_TYPES, MAX_CUSTOM_SOUND_SIZE_BYTES } from '..
 import { useEndpointUploadMutation } from '../../../hooks/useEndpointUploadMutation';
 import { useSingleFileInput } from '../../../hooks/useSingleFileInput';
 
-type AddCustomSoundProps = {
+export type AddCustomSoundProps = {
 	goToNew: (_id: string) => () => void;
 	close: () => void;
 	onChange: () => void;
@@ -23,7 +23,7 @@ type CustomSoundCreateResult = UploadResult & {
 	};
 };
 
-const AddCustomSound = ({ goToNew, close, onChange, ...props }: AddCustomSoundProps): ReactElement => {
+const AddCustomSound = ({ goToNew, close, onChange, ...props }: AddCustomSoundProps) => {
 	const { t } = useTranslation();
 	const dispatchToastMessage = useToastMessageDispatch();
 
@@ -86,14 +86,14 @@ const AddCustomSound = ({ goToNew, close, onChange, ...props }: AddCustomSoundPr
 					<FieldRow>
 						<TextInput
 							value={name}
-							onChange={(e: FormEvent<HTMLInputElement>): void => setName(e.currentTarget.value)}
+							onChange={(e: ChangeEvent<HTMLInputElement>): void => setName(e.currentTarget.value)}
 							placeholder={t('Name')}
 						/>
 					</FieldRow>
 				</Field>
 				<Field>
 					<FieldLabel alignSelf='stretch'>{t('Sound File')}</FieldLabel>
-					<Box display='flex' flexDirection='row' mbs='none' alignItems='center'>
+					<Box display='flex' flexDirection='row' marginBlockStart='none' alignItems='center'>
 						<Margins inline={4}>
 							<IconButton secondary small icon='upload' onClick={clickUpload} />
 							{sound?.name || t('None')}

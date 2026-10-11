@@ -1,4 +1,4 @@
-import { slashCommands } from '../../../app/utils/client/slashCommand';
+import { slashCommands } from '../../lib/slashCommand';
 
 const callback = undefined;
 const result = undefined;
@@ -17,4 +17,13 @@ slashCommands.add({
 	providesPreview,
 	previewer,
 	previewCallback,
+});
+
+slashCommands.add({
+	command: 'xmpp-join',
+	options: {
+		description: 'Join xmpp rooms',
+		params: '#channel',
+	},
+	providesPreview: false,
 });

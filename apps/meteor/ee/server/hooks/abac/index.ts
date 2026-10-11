@@ -1,1 +1,2 @@
 import './beforeAddUserToRoom';
+import './scopeAdminRoomsForAbac';

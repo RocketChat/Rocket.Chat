@@ -9,7 +9,7 @@ import { useFormatDate } from '../../../../../hooks/useFormatDate';
 import { roomCoordinator } from '../../../../../lib/rooms/roomCoordinator';
 import RoomTags from '../../../RoomTags';
 
-type TeamsTableRowProps = {
+export type TeamsTableRowProps = {
 	onClick: (name: IRoom['name'], type: IRoom['t']) => (e: KeyboardEvent | MouseEvent) => void;
 	team: Serialized<IRoom & { roomsCount: number }>;
 	mediaQuery: boolean;
@@ -25,10 +25,10 @@ const TeamsTableRow = ({ onClick, team, mediaQuery }: TeamsTableRowProps) => {
 			<GenericTableCell>
 				<Box display='flex'>
 					<Box flexGrow={0}>{avatarUrl && <Avatar size='x40' title={fname || name} url={avatarUrl} />}</Box>
-					<Box flexGrow={1} mi={8} withTruncatedText>
+					<Box flexGrow={1} marginInline={8} withTruncatedText>
 						<Box display='flex' alignItems='center'>
 							<RoomIcon room={team} />
-							<Box fontScale='p2m' mi={4}>
+							<Box fontScale='p2m' marginInline={4}>
 								{fname || name}
 							</Box>
 							<RoomTags room={team} />

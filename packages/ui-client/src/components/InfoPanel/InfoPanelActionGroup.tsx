@@ -3,7 +3,7 @@ import type { ComponentPropsWithoutRef } from 'react';
 
 import Section from './InfoPanelSection';
 
-type InfoPanelActionGroupProps = ComponentPropsWithoutRef<typeof ButtonGroup>;
+export type InfoPanelActionGroupProps = ComponentPropsWithoutRef<typeof ButtonGroup>;
 
 const InfoPanelActionGroup = (props: InfoPanelActionGroupProps) => (
 	<Section>

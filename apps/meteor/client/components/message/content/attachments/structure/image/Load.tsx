@@ -5,7 +5,7 @@ import { useTranslation } from 'react-i18next';
 
 import ImageBox from './ImageBox';
 
-type LoadProps = ComponentPropsWithoutRef<typeof Box> & { load: () => void };
+export type LoadProps = ComponentPropsWithoutRef<typeof Box> & { load: () => void };
 
 const Load = ({ load, ...props }: LoadProps) => {
 	const { t } = useTranslation();

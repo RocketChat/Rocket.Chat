@@ -72,7 +72,7 @@ test.describe('OC - Livechat New Chat Triggers - After Registration', () => {
 
 	test.describe('OC - Livechat New Chat Triggers - After Registration', async () => {
 		test('expect trigger message after registration', async () => {
-			await poLiveChat.page.goto('/livechat');
+			await poLiveChat.goto();
 			await poLiveChat.sendMessageAndCloseChat(newVisitor);
 
 			await poLiveChat.startNewChat();
@@ -83,7 +83,7 @@ test.describe('OC - Livechat New Chat Triggers - After Registration', () => {
 	test.describe('OC - Livechat Triggers - After Registration - Reload', async () => {
 		test('expect trigger message after registration', async () => {
 			await test.step('expect trigger message after registration to be visible', async () => {
-				await poLiveChat.page.goto('/livechat');
+				await poLiveChat.goto();
 				await poLiveChat.openAnyLiveChat();
 				await poLiveChat.sendMessage(newVisitor, false);
 				await expect(poLiveChat.txtChatMessage(triggerMessage)).toBeVisible();
@@ -119,7 +119,7 @@ test.describe('OC - Livechat New Chat Triggers - After Registration', () => {
 		});
 
 		test('expect trigger message after registration not be visible after local storage clear', async () => {
-			await poLiveChat.page.goto('/livechat');
+			await poLiveChat.goto();
 			await poLiveChat.sendMessageAndCloseChat(newVisitor);
 
 			await expect(poLiveChat.btnNewChat).toBeVisible();

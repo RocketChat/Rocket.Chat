@@ -5,7 +5,6 @@ import { AppManager } from '../../src/server/AppManager';
 import { AppBridges } from '../../src/server/bridges';
 import { AppCompiler, AppPackageParser } from '../../src/server/compiler';
 import {
-	AppAccessorManager,
 	AppApiManager,
 	AppExternalComponentManager,
 	AppListenerManager,
@@ -131,7 +130,6 @@ describe('AppManager', () => {
 
 		assert.ok(manager.getParser() instanceof AppPackageParser);
 		assert.ok(manager.getCompiler() instanceof AppCompiler);
-		assert.ok(manager.getAccessorManager() instanceof AppAccessorManager);
 		assert.ok(manager.getBridges() instanceof AppBridges);
 		assert.ok(manager.getListenerManager() instanceof AppListenerManager);
 		assert.ok(manager.getCommandManager() instanceof AppSlashCommandManager);

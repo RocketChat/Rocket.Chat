@@ -6,7 +6,7 @@ import { useTranslation } from 'react-i18next';
 
 import { useLogsDistinctValues } from '../../../../hooks/useLogsDistinctValues';
 
-type InstanceFilterSelectProps = Omit<ComponentProps<typeof Select>, 'options'> & { appId: string };
+export type InstanceFilterSelectProps = Omit<ComponentProps<typeof Select>, 'options'> & { appId: string };
 
 export const InstanceFilterSelect = ({ appId, ...props }: InstanceFilterSelectProps) => {
 	const { t } = useTranslation();

@@ -1,11 +1,10 @@
 import { MessageFooterCallout, MessageFooterCalloutAction, MessageFooterCalloutContent } from '@rocket.chat/ui-composer';
-import type { ReactElement } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { useResumeChatOnHoldMutation } from './hooks/useResumeChatOnHoldMutation';
 import { useOmnichannelRoom } from '../../contexts/RoomContext';
 
-export const ComposerOmnichannelOnHold = (): ReactElement => {
+export const ComposerOmnichannelOnHold = () => {
 	const resumeChatOnHoldMutation = useResumeChatOnHoldMutation();
 
 	const room = useOmnichannelRoom();

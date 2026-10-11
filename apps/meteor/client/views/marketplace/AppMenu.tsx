@@ -7,7 +7,7 @@ import { useTranslation } from 'react-i18next';
 import type { AppMenuOption } from './hooks/useAppMenu';
 import { useAppMenu } from './hooks/useAppMenu';
 
-type AppMenuProps = {
+export type AppMenuProps = {
 	app: App;
 	isAppDetailsPage: boolean;
 };

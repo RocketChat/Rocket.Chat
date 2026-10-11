@@ -12,7 +12,7 @@ import {
 	ModalTagline,
 	ModalTitle,
 } from '@rocket.chat/fuselage';
-import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
+import { useStableCallback } from '@rocket.chat/fuselage-hooks';
 import type { Keys as IconName } from '@rocket.chat/icons';
 import type { ReactElement, ReactNode, ComponentPropsWithoutRef } from 'react';
 import { useId, useEffect, useRef } from 'react';
@@ -24,15 +24,17 @@ import { modalStore } from '../../../providers/ModalProvider/ModalStore';
 
 type VariantType = 'danger' | 'secondary-danger' | 'warning' | 'info' | 'success' | 'upsell';
 
-type GenericModalProps = RequiredModalProps & {
+export type GenericModalProps = RequiredModalProps & {
 	variant?: VariantType;
 	children?: ReactNode;
 	cancelText?: ReactNode;
 	confirmText?: ReactNode;
-	title?: string | ReactElement;
-	icon?: IconName | ReactElement | null;
+	title?: string | ReactElement<any>;
+	icon?: IconName | ReactElement<any> | null;
 	confirmDisabled?: boolean;
 	confirmLoading?: boolean;
+	/** Symmetric with `confirmDisabled`: for a modal whose action, once started, cannot be called back. */
+	cancelDisabled?: boolean;
 	tagline?: ReactNode;
 	onCancel?: () => Promise<void> | void;
 	onClose?: () => Promise<void> | void;
@@ -91,6 +93,7 @@ const GenericModal = ({
 	dontAskAgain,
 	confirmDisabled,
 	confirmLoading,
+	cancelDisabled,
 	tagline,
 	wrapperFunction,
 	annotation,
@@ -103,22 +106,22 @@ const GenericModal = ({
 
 	const taglineColor = variant === 'upsell' ? 'annotation' : undefined;
 
-	const handleConfirm = useEffectEvent(() => {
+	const handleConfirm = useStableCallback(() => {
 		dismissedRef.current = false;
 		void onConfirm?.();
 	});
 
-	const handleCancel = useEffectEvent(() => {
+	const handleCancel = useStableCallback(() => {
 		dismissedRef.current = false;
 		void onCancel?.();
 	});
 
-	const handleCloseButtonClick = useEffectEvent(() => {
+	const handleCloseButtonClick = useStableCallback(() => {
 		dismissedRef.current = true;
 		void onClose?.();
 	});
 
-	const handleDismiss = useEffectEvent(() => {
+	const handleDismiss = useStableCallback(() => {
 		dismissedRef.current = true;
 		void onDismiss?.();
 	});
@@ -149,7 +152,7 @@ const GenericModal = ({
 				{annotation && !dontAskAgain && <ModalFooterAnnotation>{annotation}</ModalFooterAnnotation>}
 				<ModalFooterControllers>
 					{onCancel && (
-						<Button secondary onClick={handleCancel}>
+						<Button secondary disabled={cancelDisabled} onClick={handleCancel}>
 							{cancelText ?? t('Cancel')}
 						</Button>
 					)}

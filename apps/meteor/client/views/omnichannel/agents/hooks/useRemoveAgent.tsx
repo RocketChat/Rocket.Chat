@@ -1,5 +1,5 @@
 import type { ILivechatAgent } from '@rocket.chat/core-typings';
-import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
+import { useStableCallback } from '@rocket.chat/fuselage-hooks';
 import { GenericModal } from '@rocket.chat/ui-client';
 import { useSetModal, useToastMessageDispatch, useTranslation, useRouter, useEndpoint } from '@rocket.chat/ui-contexts';
 import { useQueryClient } from '@tanstack/react-query';
@@ -15,7 +15,7 @@ export const useRemoveAgent = (uid: ILivechatAgent['_id']) => {
 
 	const deleteAction = useEndpoint('DELETE', '/v1/livechat/users/agent/:_id', { _id: uid });
 
-	const handleDelete = useEffectEvent(() => {
+	const handleDelete = useStableCallback(() => {
 		const onDeleteAgent = async () => {
 			try {
 				await deleteAction();

@@ -48,4 +48,5 @@ export interface IImportMessage {
 
 	url?: string;
 	_importFile?: IImportPendingFile;
+	_hidden?: boolean;
 }

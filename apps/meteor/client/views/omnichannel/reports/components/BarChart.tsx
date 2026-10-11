@@ -1,7 +1,7 @@
 import type { BarCustomLayerProps, BarDatum } from '@nivo/bar';
 import { ResponsiveBar } from '@nivo/bar';
 import { Box, Palette, Tooltip } from '@rocket.chat/fuselage';
-import type { ComponentProps, ReactNode } from 'react';
+import type { ComponentProps, ReactNode, JSX } from 'react';
 import { useMemo } from 'react';
 
 import { REPORTS_CHARTS_THEME } from './constants';
@@ -20,7 +20,7 @@ type axisItem = {
 	ariaHidden?: boolean;
 };
 
-type BarChartProps = {
+export type BarChartProps = {
 	data: {
 		label: string;
 		value: number;

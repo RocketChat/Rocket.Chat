@@ -1,6 +1,6 @@
 import { defaultFeaturesPreview, FeaturePreviewBadge } from '@rocket.chat/ui-client';
 
-import { hasPermission, hasAtLeastOnePermission } from '../../../app/authorization/client';
+import { hasPermission, hasAtLeastOnePermission } from '../../lib/authorization';
 import { createSidebarItems } from '../../lib/createSidebarItems';
 import { settings } from '../../lib/settings';
 

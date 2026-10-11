@@ -4,6 +4,8 @@ import { federationSDK } from '@rocket.chat/federation-sdk';
 import { Logger } from '@rocket.chat/logger';
 import { Messages, Rooms, Users } from '@rocket.chat/models';
 
+import { getActivityDisplayName } from '../helpers/getActivityDisplayName';
+
 const logger = new Logger('federation-matrix:edu');
 
 export const edus = async () => {
@@ -15,8 +17,22 @@ export const edus = async () => {
 				return;
 			}
 
+			const matrixUser = await Users.findOneByUsername(data.user_id, {
+				projection: { name: 1, username: 1 },
+			});
+			if (!matrixUser) {
+				logger.debug({ msg: 'No federated user found for Matrix user_id', userId: data.user_id });
+				return;
+			}
+
+			const displayName = await getActivityDisplayName(matrixUser);
+			if (!displayName) {
+				logger.debug({ msg: 'Federated user has no name to display, skipping typing event', userId: data.user_id });
+				return;
+			}
+
 			void api.broadcast('user.activity', {
-				user: data.user_id,
+				user: displayName,
 				isTyping: data.typing,
 				roomId: matrixRoom._id,
 			});

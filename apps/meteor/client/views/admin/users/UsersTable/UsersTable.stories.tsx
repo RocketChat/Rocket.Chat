@@ -1,5 +1,5 @@
 import { UserStatus } from '@rocket.chat/core-typings';
-import type { Meta, StoryFn } from '@storybook/react';
+import type { Meta } from '@storybook/react';
 
 import UsersTable from './UsersTable';
 import { createMockedPagination } from '../../../../../tests/mocks/data';
@@ -7,8 +7,6 @@ import { createMockedPagination } from '../../../../../tests/mocks/data';
 export default {
 	component: UsersTable,
 } satisfies Meta<typeof UsersTable>;
-
-const Template: StoryFn<typeof UsersTable> = (args) => <UsersTable {...args} />;
 
 const mockedUsers = [
 	{
@@ -65,28 +63,31 @@ const mockedUsers = [
 
 const paginationData = createMockedPagination(mockedUsers.length, 5);
 
-export const Default = Template.bind({});
-Default.args = {
-	users: mockedUsers,
-	total: 5,
-	isLoading: false,
-	isSuccess: true,
-	tab: 'all',
-	paginationData,
+export const Default = {
+	args: {
+		users: mockedUsers,
+		total: 5,
+		isLoading: false,
+		isSuccess: true,
+		tab: 'all',
+		paginationData,
+	},
 };
 
-export const Loading = Template.bind({});
-Loading.args = {
-	isLoading: true,
-	paginationData,
+export const Loading = {
+	args: {
+		isLoading: true,
+		paginationData,
+	},
 };
 
-export const NoResults = Template.bind({});
-NoResults.args = {
-	users: [],
-	total: 0,
-	isLoading: false,
-	isError: false,
-	isSuccess: true,
-	paginationData,
+export const NoResults = {
+	args: {
+		users: [],
+		total: 0,
+		isLoading: false,
+		isError: false,
+		isSuccess: true,
+		paginationData,
+	},
 };

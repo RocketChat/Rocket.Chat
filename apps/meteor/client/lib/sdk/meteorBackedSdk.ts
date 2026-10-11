@@ -5,6 +5,24 @@ import { Meteor } from 'meteor/meteor';
 import { Tracker } from 'meteor/tracker';
 
 import { parseDDP } from './ddpProtocol';
+import { setStorageBackend } from './storage';
+
+// Wrap an accounts-base onLogin/onLogout hook so it cannot block or abort the
+// (now awaited & sequential, since accounts-base 3.3) hook chain: run it,
+// discard any returned promise so the chain never waits on it, and swallow
+// synchronous throws so later hooks still run.
+const isolateLifecycleHook =
+	(fn: (...args: unknown[]) => unknown) =>
+	(...args: unknown[]): void => {
+		try {
+			const result = fn(...args);
+			if (result && typeof (result as PromiseLike<unknown>).then === 'function') {
+				void Promise.resolve(result).catch((error) => console.error(error));
+			}
+		} catch (error) {
+			console.error(error);
+		}
+	};
 
 /**
  * Meteor-backed pass-through DDPSDK used when the SDK transport is OFF.
@@ -242,15 +260,22 @@ const createMeteorBackedAccount = () => {
 		// onEmailVerificationLink/onPageLoadLogin don't expose an unsubscribe at
 		// all — call sites for those are singletons registered at module load,
 		// so a no-op unsubscribe is acceptable.
+		// accounts-base 3.3 (Meteor 3.5) runs onLogin/onLogout hooks sequentially
+		// with `await` (3.2 fired them synchronously, fire-and-forget). A hook that
+		// returns a promise which only settles after login/logout completes now
+		// blocks the whole chain, and a hook that throws aborts every hook after it
+		// — so unrelated cleanup (e.g. E2EE key removal) silently stops running.
+		// Isolate each hook: run its synchronous part immediately, don't propagate
+		// its promise back to the awaited chain, and swallow throws.
 		onLogin: (fn: () => void): (() => void) => {
-			const handle = Accounts.onLogin(fn);
+			const handle = Accounts.onLogin(isolateLifecycleHook(fn));
 			return () => handle.stop();
 		},
 		onLogout: (fn: () => void): (() => void) => {
 			// @types/meteor declares onLogout's return as void, but at runtime it
 			// returns the same `{ stop }` handle as onLogin (Meteor source:
 			// packages/accounts-base/accounts_common.js).
-			const handle = (Accounts.onLogout as unknown as (fn: () => void) => { stop: () => void })(fn);
+			const handle = (Accounts.onLogout as unknown as (fn: () => void) => { stop: () => void })(isolateLifecycleHook(fn));
 			return () => handle.stop();
 		},
 		onEmailVerificationLink: (fn: (token: string) => void): (() => void) => {
@@ -271,12 +296,63 @@ const createMeteorBackedAccount = () => {
 	} as unknown as DDPSDK['account'];
 };
 
+export const createMeteorBackedStorage = () => {
+	let appliedBackend: 'local' | 'session' | undefined;
+
+	return {
+		changeStorageBackend: () => {
+			const backend: 'local' | 'session' = window[FORGET_SESSION_SETTING_ID] ? 'session' : 'local';
+
+			if (appliedBackend === backend) {
+				return;
+			}
+
+			if (!setStorageBackend(backend)) {
+				return;
+			}
+
+			(Meteor._localStorage as unknown as Storage) = backend === 'session' ? window.sessionStorage : window.localStorage;
+
+			try {
+				Accounts.config({ clientStorage: backend });
+			} catch (error) {
+				// Accounts.config throws when invoked twice with a conflicting value. Meteor's
+				// own boot may have already set clientStorage; the _localStorage reassign above
+				// is what actually switches the backend Meteor reads from, so swallow.
+				console.warn('[storage] Accounts.config(clientStorage) refused at runtime', error);
+			}
+
+			appliedBackend = backend;
+		},
+	};
+};
+
+export const FORGET_SESSION_SETTING_ID = 'Accounts_ForgetUserSessionOnWindowClose';
+
+declare global {
+	// eslint-disable-next-line @typescript-eslint/naming-convention
+	interface Window {
+		[FORGET_SESSION_SETTING_ID]?: boolean;
+	}
+}
+
+declare module '@rocket.chat/ddp-client' {
+	// eslint-disable-next-line @typescript-eslint/naming-convention
+	interface DDPSDK {
+		storage: {
+			changeStorageBackend: () => void;
+		};
+	}
+}
+
 export const createMeteorBackedSdk = (): DDPSDK => {
 	const connection = createMeteorBackedConnection();
 	const client = createMeteorBackedClient();
 	const account = createMeteorBackedAccount();
+	const storage = createMeteorBackedStorage();
 
 	return {
+		storage,
 		connection,
 		client,
 		account,

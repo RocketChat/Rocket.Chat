@@ -34,7 +34,7 @@ export class ConfirmDeleteRoomModal extends Modal {
 
 export class ConfirmDeleteDepartmentModal extends ConfirmDeleteModal {
 	constructor(page: Page) {
-		super(page.getByRole('dialog', { name: 'Delete Department?' }));
+		super(page.getByRole('dialog', { name: 'Delete department?' }));
 	}
 
 	get inputConfirmDepartmentName() {

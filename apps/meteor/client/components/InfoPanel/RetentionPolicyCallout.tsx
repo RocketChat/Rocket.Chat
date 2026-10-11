@@ -5,7 +5,9 @@ import { useTranslation } from 'react-i18next';
 import { usePruneWarningMessage } from '../../hooks/usePruneWarningMessage';
 import { withErrorBoundary } from '../withErrorBoundary';
 
-const RetentionPolicyCallout = ({ room }: { room: IRoom }) => {
+export type RetentionPolicyCalloutProps = { room: IRoom };
+
+const RetentionPolicyCallout = ({ room }: RetentionPolicyCalloutProps) => {
 	const message = usePruneWarningMessage(room);
 	const { t } = useTranslation();
 

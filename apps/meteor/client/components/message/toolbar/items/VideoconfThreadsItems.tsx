@@ -3,7 +3,7 @@ import type { IRoom, ISubscription, IMessage } from '@rocket.chat/core-typings';
 import JumpToMessageAction from './actions/JumpToMessageAction';
 import ReactionMessageAction from './actions/ReactionMessageAction';
 
-type VideoconfThreadsItemsProps = {
+export type VideoconfThreadsItemsProps = {
 	message: IMessage;
 	room: IRoom;
 	subscription: ISubscription | undefined;

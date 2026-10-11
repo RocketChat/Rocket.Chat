@@ -1,5 +1,5 @@
 import type { IRole, IPermission } from '@rocket.chat/core-typings';
-import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
+import { useStableCallback } from '@rocket.chat/fuselage-hooks';
 import { useToastMessageDispatch } from '@rocket.chat/ui-contexts';
 
 export const useChangeRole = ({
@@ -13,7 +13,7 @@ export const useChangeRole = ({
 }): ((roleId: IRole['_id'], granted: boolean) => Promise<boolean>) => {
 	const dispatchToastMessage = useToastMessageDispatch();
 
-	return useEffectEvent(async (roleId: IRole['_id'], granted: boolean) => {
+	return useStableCallback(async (roleId: IRole['_id'], granted: boolean) => {
 		try {
 			if (granted) {
 				await onRemove(permissionId, roleId);

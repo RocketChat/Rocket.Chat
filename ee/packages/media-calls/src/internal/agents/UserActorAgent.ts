@@ -1,6 +1,6 @@
 import type { IMediaCall, MediaCallSignedContact } from '@rocket.chat/core-typings';
-import { isBusyState } from '@rocket.chat/media-signaling';
-import type { ClientMediaSignal, ServerMediaSignal, CallFeature } from '@rocket.chat/media-signaling';
+import { isBusyState, isCallHangupReason } from '@rocket.chat/media-signaling';
+import type { ClientMediaSignal, ServerMediaSignal, CallFeature, CallHangupReason } from '@rocket.chat/media-signaling';
 import { MediaCallNegotiations, MediaCalls } from '@rocket.chat/models';
 
 import { UserActorSignalProcessor } from './CallSignalProcessor';
@@ -15,9 +15,7 @@ import { getStateNotification } from '../../server/signals/getStateNotification'
 
 export class UserActorAgent extends BaseMediaCallAgent {
 	public async processSignal(call: IMediaCall, signal: ClientMediaSignal, options?: SignalProcessingOptions): Promise<void> {
-		const channel = await this.getOrCreateChannel(call, signal.contractId);
-
-		const signalProcessor = new UserActorSignalProcessor(this, call, channel);
+		const signalProcessor = new UserActorSignalProcessor(this, call, signal.contractId);
 		return signalProcessor.processSignal(signal, options);
 	}
 
@@ -56,7 +54,29 @@ export class UserActorAgent extends BaseMediaCallAgent {
 			callId,
 			type: 'notification',
 			notification: 'hangup',
+			hangupReason: await this.getCallHangupReasonForClient(callId).catch(() => 'remote' as const),
 		});
+	}
+
+	private async getCallHangupReasonForClient(callId: string): Promise<CallHangupReason> {
+		const call = await MediaCalls.findOneById<Pick<IMediaCall, '_id' | 'endedBy' | 'hangupReason'>>(callId, {
+			projection: { endedBy: 1, hangupReason: 1 },
+		});
+		if (!call) {
+			return 'remote';
+		}
+
+		const { endedBy, hangupReason } = call;
+
+		if (endedBy?.type !== this.actorType || endedBy?.id !== this.actorId) {
+			return 'remote';
+		}
+
+		if (hangupReason && isCallHangupReason(hangupReason)) {
+			return hangupReason;
+		}
+
+		return 'remote';
 	}
 
 	public async onCallActive(callId: string): Promise<void> {
@@ -68,11 +88,6 @@ export class UserActorAgent extends BaseMediaCallAgent {
 	}
 
 	public async onCallCreated(call: IMediaCall): Promise<void> {
-		if (this.role === 'caller' && call.caller.contractId) {
-			// Pre-create the channel for the contractId that requested the call
-			await this.getOrCreateChannel(call, call.caller.contractId);
-		}
-
 		await this.sendSignal(getNewCallSignal(call, this.role));
 		if (this.role === 'callee') {
 			this.sendPushNotification({ callId: call._id, event: 'new' });

@@ -23,7 +23,7 @@ test.describe('Delete Own Account', () => {
 		poAccountProfile = new AccountProfile(page);
 		poLogin = new Login(page);
 		poAuth = new Authenticated(page);
-		await page.goto('/home');
+		await poLogin.goto();
 	});
 
 	test.afterAll(async ({ api }) => {
@@ -32,15 +32,14 @@ test.describe('Delete Own Account', () => {
 		await userWithoutPermissions.delete();
 	});
 
-	test('should not delete account when invalid password is provided', async ({ page }) => {
+	test('should not delete account when invalid password is provided', async () => {
 		await test.step('login with the user to delete', async () => {
 			await poLogin.login(userWithInvalidPassword.data.username, DEFAULT_USER_CREDENTIALS.password);
 			await poAuth.waitForDisplay();
 		});
 
 		await test.step('navigate to profile and locate Delete My Account button', async () => {
-			await page.goto('/account/profile');
-			await poAccountProfile.profileTitle.waitFor({ state: 'visible' });
+			await poAccountProfile.goto();
 			await poAccountProfile.btnDeleteMyAccount.click();
 			await poAccountProfile.deleteAccountModal.waitForDisplay();
 		});
@@ -56,19 +55,18 @@ test.describe('Delete Own Account', () => {
 		});
 
 		await test.step('verify user is still on the profile page', async () => {
-			await expect(poAccountProfile.profileTitle).toBeVisible();
+			await expect(poAccountProfile.profileHeading).toBeVisible();
 		});
 	});
 
-	test('should delete account when valid password is provided and permission is enabled', async ({ page }) => {
+	test('should delete account when valid password is provided and permission is enabled', async () => {
 		await test.step('login with the user to delete', async () => {
 			await poLogin.login(userToDelete.data.username, DEFAULT_USER_CREDENTIALS.password);
 			await poAuth.waitForDisplay();
 		});
 
 		await test.step('navigate to profile and locate Delete My Account button', async () => {
-			await page.goto('/account/profile');
-			await poAccountProfile.profileTitle.waitFor({ state: 'visible' });
+			await poAccountProfile.goto();
 			await poAccountProfile.btnDeleteMyAccount.click();
 			await poAccountProfile.deleteAccountModal.waitForDisplay();
 		});
@@ -91,15 +89,14 @@ test.describe('Delete Own Account', () => {
 			expect(response.status()).toBe(200);
 		});
 
-		test('should not show delete account button when permission is disabled', async ({ page }) => {
+		test('should not show delete account button when permission is disabled', async () => {
 			await test.step('login with the user to delete', async () => {
 				await poLogin.login(userWithoutPermissions.data.username, DEFAULT_USER_CREDENTIALS.password);
 				await poAuth.waitForDisplay();
 			});
 
 			await test.step('navigate to profile and locate Delete My Account button', async () => {
-				await page.goto('/account/profile');
-				await poAccountProfile.profileTitle.waitFor({ state: 'visible' });
+				await poAccountProfile.goto();
 				await expect(poAccountProfile.btnDeleteMyAccount).not.toBeVisible();
 			});
 		});

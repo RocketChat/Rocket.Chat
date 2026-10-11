@@ -14,10 +14,11 @@ const SettingsPage = () => {
 	const pdpType = useSetting('ABAC_PDP_Type', 'local');
 
 	return (
-		<Box maxWidth='x600' w='full' alignSelf='center' overflow='auto' mb={24}>
+		<Box maxWidth='x600' width='full' alignSelf='center' overflow='auto' marginBlock={24}>
 			<FieldGroup>
 				<AbacEnabledToggle hasABAC={hasABAC} />
 				<SettingField settingId='ABAC_PDP_Type' />
+				{pdpType !== 'local' && <SettingField settingId='ABAC_Attribute_Store' />}
 				<SettingField settingId='ABAC_ShowAttributesInRooms' />
 				<SettingField settingId='Abac_Cache_Decision_Time_Seconds' />
 
@@ -31,6 +32,13 @@ const SettingsPage = () => {
 				)}
 
 				<Accordion>
+					<AccordionItem title={t('ABAC_Classification_Banners')}>
+						<FieldGroup>
+							<SettingField settingId='ABAC_Classification_Banners_Enabled' />
+							<SettingField settingId='ABAC_Classification_Banners_Config' />
+						</FieldGroup>
+					</AccordionItem>
+
 					<AccordionItem title={t('LDAP_DataSync_ABAC')}>
 						<FieldGroup>
 							<SettingField settingId='LDAP_Background_Sync_ABAC_Attributes' />

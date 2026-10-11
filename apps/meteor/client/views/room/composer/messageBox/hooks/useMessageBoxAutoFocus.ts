@@ -7,7 +7,7 @@ import { useCallback, useEffect, useRef } from 'react';
  * @returns callbackRef to bind the logic to the message box
  */
 export const useMessageBoxAutoFocus = (enabled: boolean): Ref<HTMLElement> => {
-	const ref = useRef<HTMLElement>();
+	const ref = useRef<HTMLElement>(undefined);
 
 	useEffect(() => {
 		const handleKeyDown = (e: KeyboardEvent) => {
@@ -26,6 +26,11 @@ export const useMessageBoxAutoFocus = (enabled: boolean): Ref<HTMLElement> => {
 			}
 
 			if (/input|textarea|select/i.test((target as HTMLElement).tagName)) {
+				return;
+			}
+
+			// This prevents focus from being stolen between the two RichText Composers
+			if ((target as HTMLElement).tagName === 'SPAN' && (target as HTMLElement).isContentEditable) {
 				return;
 			}
 

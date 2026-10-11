@@ -16,7 +16,7 @@ import EmojiElement from '../../../../../views/composer/EmojiPicker/EmojiElement
 import { useChat } from '../../../../../views/room/contexts/ChatContext';
 import MessageToolbarItem from '../../MessageToolbarItem';
 
-type ReactionMessageActionProps = {
+export type ReactionMessageActionProps = {
 	message: IMessage;
 	room: IRoom;
 	subscription: ISubscription | undefined;

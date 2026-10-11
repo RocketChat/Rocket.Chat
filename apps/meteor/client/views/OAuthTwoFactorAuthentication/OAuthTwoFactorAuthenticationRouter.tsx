@@ -83,7 +83,7 @@ const OAuthTwoFactorAuthenticationRouter = () => {
 		}
 
 		if (method === 'email') {
-			setModal(<TwoFactorModal method={method} onConfirm={onConfirm} resendEmail={resendEmail} onClose={navigateToHome} />);
+			setModal(<TwoFactorModal method={method} onConfirm={onConfirm} challengeId={challengeId} onClose={navigateToHome} />);
 			return;
 		}
 

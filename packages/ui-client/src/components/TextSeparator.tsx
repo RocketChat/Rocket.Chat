@@ -3,13 +3,13 @@ import type { ReactNode } from 'react';
 
 import DotLeader from './DotLeader';
 
-type TextSeparatorProps = {
+export type TextSeparatorProps = {
 	label: ReactNode;
 	value: ReactNode;
 };
 
 const TextSeparator = ({ label, value }: TextSeparatorProps) => (
-	<Box display='flex' flexDirection='row' mb={4}>
+	<Box display='flex' flexDirection='row' marginBlock={4}>
 		<Box display='inline-flex' alignItems='center'>
 			{label}
 		</Box>

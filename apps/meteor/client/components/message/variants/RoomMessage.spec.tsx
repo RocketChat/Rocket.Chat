@@ -30,8 +30,8 @@ const message: IMessage = {
 	urls: [],
 };
 
-jest.mock('../header/hooks/useMessageRoles', () => ({
-	useMessageRoles: () => [],
+jest.mock('../../../hooks/useUserRolesByScope', () => ({
+	useUserRolesByScope: () => ({ workspaceRoles: [], roomRoles: [] }),
 }));
 jest.mock('../../../lib/utils/fireGlobalEvent', () => ({ fireGlobalEvent: () => undefined }));
 jest.mock('../../../views/room/hooks/useGoToRoom', () => ({ useGoToRoom: () => undefined }));
@@ -44,6 +44,11 @@ jest.mock('../../../views/room/MessageList/hooks/useAutoTranslate', () => ({
 	}),
 }));
 jest.mock('../../../lib/actionLinks', () => undefined);
+jest.mock('../../../lib/RoomManager', () => ({
+	RoomManager: { getStore: jest.fn() },
+	useOpenedRoom: () => undefined,
+	getCollapsibleEventKey: (key: string) => `collapsibleToggled-${key}`,
+}));
 
 it('should show normal message', () => {
 	render(

@@ -4,7 +4,7 @@ import { Modal } from './modal';
 
 export class FileUploadModal extends Modal {
 	constructor(page: Page) {
-		super(page.getByRole('dialog', { name: 'File Upload' }));
+		super(page.getByRole('dialog', { name: 'File upload' }));
 	}
 
 	private get inputFileName() {

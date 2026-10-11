@@ -1,11 +1,10 @@
 import { Box } from '@rocket.chat/fuselage';
-import type { ReactElement } from 'react';
 import { memo, useSyncExternalStore } from 'react';
 
 import MessageBoxReply from './MessageBoxReply';
 import { useChat } from '../../contexts/ChatContext';
 
-const MessageBoxReplies = (): ReactElement | null => {
+const MessageBoxReplies = () => {
 	const chat = useChat();
 
 	if (!chat?.composer?.quotedMessages) {
@@ -19,7 +18,7 @@ const MessageBoxReplies = (): ReactElement | null => {
 	}
 
 	return (
-		<Box mbe={8} position='relative' overflowY='auto' maxHeight='x256'>
+		<Box marginBlockEnd={8} position='relative' overflowY='auto' maxHeight='x256'>
 			{replies.map((reply) => (
 				<MessageBoxReply key={reply._id} reply={reply} />
 			))}

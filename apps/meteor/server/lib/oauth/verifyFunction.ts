@@ -18,10 +18,10 @@ export const verifyFunction = async (
 			accessToken,
 			refreshToken,
 			name: profile.displayName,
-			email: profile?.emails?.[0]?.value,
 			...profile,
 			...restProfile,
 			..._json,
+			email: profile?.emails?.[0]?.value,
 		},
 		{},
 	);

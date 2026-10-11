@@ -1,10 +1,10 @@
 import type { Card } from '@rocket.chat/fuselage';
 import { useTranslation, useRouter } from '@rocket.chat/ui-contexts';
-import type { ComponentProps, ReactElement } from 'react';
+import type { ComponentProps } from 'react';
 
 import { GenericCard, GenericCardButton } from '../../../components/GenericCard';
 
-const AddUsersCard = (props: Omit<ComponentProps<typeof Card>, 'type'>): ReactElement => {
+const AddUsersCard = (props: Omit<ComponentProps<typeof Card>, 'type'>) => {
 	const t = useTranslation();
 
 	const router = useRouter();

@@ -1,12 +1,11 @@
-import type { ComponentChildren, Ref } from 'preact';
+import type { ComponentChildren, Ref, JSX as JSXInternal } from 'preact';
 import type { MouseEventHandler } from 'preact/compat';
-import type { JSXInternal } from 'preact/src/jsx';
 
 import styles from './styles.scss';
 import type { Theme } from '../../Theme';
 import { createClassName } from '../../helpers/createClassName';
 
-type HeaderProps = {
+export type HeaderProps = {
 	children?: ComponentChildren;
 	theme?: Partial<Theme>;
 	className?: string;

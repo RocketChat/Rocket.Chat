@@ -6,7 +6,7 @@ import { useMemo } from 'react';
 import type { UserLabel } from './UserAutoCompleteMultipleOptions';
 import { normalizeUsername } from '../../../lib/utils/normalizeUsername';
 
-type UserAutoCompleteMultipleOptionProps = {
+export type UserAutoCompleteMultipleOptionProps = {
 	label: UserLabel;
 	value: string | number;
 	selected?: boolean;

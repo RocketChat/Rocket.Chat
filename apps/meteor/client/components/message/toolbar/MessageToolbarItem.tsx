@@ -3,7 +3,7 @@ import type { Keys as IconName } from '@rocket.chat/icons';
 import { useLayoutHiddenActions } from '@rocket.chat/ui-contexts';
 import type { MouseEventHandler } from 'react';
 
-type MessageToolbarItemProps = {
+export type MessageToolbarItemProps = {
 	id: string;
 	icon: IconName;
 	title: string;

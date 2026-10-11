@@ -13,7 +13,7 @@ import RetryButton from '../../../components/RetryButton';
 import { cxp } from '../../../utils/cx';
 import type { RecipientFormData } from '../RecipientForm';
 
-type ProviderFieldProps = ComponentProps<typeof Field> & {
+export type ProviderFieldProps = ComponentProps<typeof Field> & {
 	control: Control<RecipientFormData>;
 	contact?: Omit<Serialized<ILivechatContact>, 'contactManager'>;
 	disabled?: boolean;

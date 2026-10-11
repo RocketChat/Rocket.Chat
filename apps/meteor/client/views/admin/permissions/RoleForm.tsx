@@ -6,7 +6,7 @@ import { useTranslation } from 'react-i18next';
 
 import type { EditRolePageFormData } from './EditRolePage';
 
-type RoleFormProps = {
+export type RoleFormProps = {
 	className?: string;
 	editing?: boolean;
 	isProtected?: boolean;

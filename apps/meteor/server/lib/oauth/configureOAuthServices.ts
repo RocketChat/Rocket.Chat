@@ -3,17 +3,20 @@ import { Accounts } from 'meteor/accounts-base';
 import passport from 'passport';
 import type { Profile, DoneCallback } from 'passport';
 
+import { allowPassportOAuthMiddleware } from './allowPassportOAuthMiddleware';
 import type { OAuthServiceConfig } from './createOAuthServiceConfig';
 import { passportOAuthCallback } from './passportOAuthCallback';
-import type { ICachedSettings } from '../../../app/settings/server/CachedSettings';
+import { removeOAuthRoutes } from './removeOAuthRoutes';
 import { oAuthRouter } from '../../configuration/configurePassport';
+import type { ICachedSettings } from '../../settings/CachedSettings';
 
 export const configureOAuthServices = (oauthServiceConfig: OAuthServiceConfig[], settings: ICachedSettings) => {
 	oauthServiceConfig.forEach((config) => {
 		const Strategy = config.strategy;
-		const siteUrl = settings.get<string>('Site_Url');
+		const siteUrl = settings.get<string>('Site_Url').replace(/\/$/, '');
 
 		passport.unuse(config.provider);
+		removeOAuthRoutes(config.provider);
 
 		passport.use(
 			config.provider,
@@ -63,6 +66,7 @@ export const configureOAuthServices = (oauthServiceConfig: OAuthServiceConfig[],
 
 		oAuthRouter.get(
 			`/oauth/${config.provider}`,
+			allowPassportOAuthMiddleware(config.provider),
 			(req, _res, next) => {
 				const { loginClient } = req.query;
 				if (loginClient === 'mobile' || loginClient === 'desktop') {
@@ -80,7 +84,8 @@ export const configureOAuthServices = (oauthServiceConfig: OAuthServiceConfig[],
 		);
 		oAuthRouter.get(
 			`/_oauth/${config.provider}`,
-			passport.authenticate(config.provider, { failureRedirect: '/login', failureFlash: true, failWithError: true, keepSessionInfo: true }),
+			allowPassportOAuthMiddleware(config.provider),
+			passport.authenticate(config.provider, { failureRedirect: '/login', failWithError: true, keepSessionInfo: true }),
 			passportOAuthCallback(siteUrl),
 		);
 	});

@@ -6,7 +6,7 @@ import { useTranslation } from 'react-i18next';
 
 import { useOmnichannelEnabled } from '../../views/omnichannel/hooks/useOmnichannelEnabled';
 
-type NavBarControlsMenuProps = Omit<HTMLAttributes<HTMLElement>, 'is'> & {
+export type NavBarControlsMenuProps = Omit<HTMLAttributes<HTMLElement>, 'is'> & {
 	omnichannelItems: GenericMenuItemProps[];
 	isPressed: boolean;
 	callItem?: GenericMenuItemProps;

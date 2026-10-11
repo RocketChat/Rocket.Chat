@@ -1,6 +1,6 @@
 import { Skeleton, TableRow, TableCell } from '@rocket.chat/fuselage';
 
-type ImportOperationSummarySkeletonProps = {
+export type ImportOperationSummarySkeletonProps = {
 	small?: boolean;
 };
 

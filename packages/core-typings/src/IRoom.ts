@@ -15,13 +15,13 @@ export interface IRoom extends IRocketChatRecord {
 	fname?: string;
 	msgs: number;
 	default?: boolean;
-	broadcast?: true;
+	broadcast?: boolean;
 	featured?: true;
 	announcement?: string;
 	joinCodeRequired?: boolean;
 	announcementDetails?: {
 		style?: string;
-	};
+	} | null;
 	encrypted?: boolean;
 	// The existence of an abac attribute definition indicates that ABAC is enabled for the room
 	abacAttributes?: IAbacAttributeDefinition[];
@@ -381,12 +381,17 @@ export type RoomAdminFieldsType =
 	| 'teamMain'
 	| 'announcement'
 	| 'description'
+	| 'customFields'
 	| 'broadcast'
 	| 'uids'
 	| 'avatarETag'
 	| 'abacAttributes';
 
 export type IRoomAdmin = Pick<IRoom, RoomAdminFieldsType>;
+
+export type IRoomAbacRedaction = { abacAttributesRedacted?: boolean };
+
+export type IRoomAdminWithAbacRedaction = IRoomAdmin & IRoomAbacRedaction;
 
 export interface IRoomWithRetentionPolicy extends IRoom {
 	retention: {

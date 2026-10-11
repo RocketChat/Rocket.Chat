@@ -11,7 +11,7 @@ import { useTranslation } from 'react-i18next';
 
 import MessageToolbarItem from '../../MessageToolbarItem';
 
-type ReplyInThreadMessageActionProps = {
+export type ReplyInThreadMessageActionProps = {
 	message: IMessage;
 	room: IRoom;
 	subscription: ISubscription | undefined;

@@ -1,13 +1,12 @@
 import { GenericModal } from '@rocket.chat/ui-client';
-import type { ReactElement } from 'react';
 import { useTranslation } from 'react-i18next';
 
-type PrioritiesResetModalProps = {
+export type PrioritiesResetModalProps = {
 	onReset: () => Promise<void>;
 	onCancel: () => void;
 };
 
-export const PrioritiesResetModal = ({ onCancel, onReset }: PrioritiesResetModalProps): ReactElement => {
+export const PrioritiesResetModal = ({ onCancel, onReset }: PrioritiesResetModalProps) => {
 	const { t } = useTranslation();
 
 	return (
