@@ -171,7 +171,9 @@ const EditTrigger = ({ triggerData, onClose }: { triggerData?: Serialized<ILivec
 								<Controller
 									name='name'
 									control={control}
-									rules={{ required: t('Required_field', { field: t('Name') }) }}
+									rules={{ required: t('Required_field', { field: t('Name') }),
+								             validate: (value) => { if (value.startsWith(" ")) return t('Name cannot start with space');}
+								    }}
 									render={({ field }) => (
 										<TextInput
 											{...field}
@@ -194,8 +196,13 @@ const EditTrigger = ({ triggerData, onClose }: { triggerData?: Serialized<ILivec
 						<Field>
 							<FieldLabel htmlFor={descriptionField}>{t('Description')}</FieldLabel>
 							<FieldRow>
-								<Controller name='description' control={control} render={({ field }) => <TextInput id={descriptionField} {...field} />} />
+								<Controller name='description' control={control} rules={{validate:(value)=>{if (value.startsWith(" ")) return t('description cannot start with space')}}}  render={({ field }) => <TextInput id={descriptionField} {...field} />} />
 							</FieldRow>
+							{errors?.description && (
+								<FieldError aria-live='assertive' id={`${descriptionField}-error`}>
+									{errors?.description.message}
+								</FieldError>
+							)}
 						</Field>
 
 						{conditionsFields.map((field, index) => (
