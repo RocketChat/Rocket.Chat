@@ -5,6 +5,7 @@ import type { GraphTokenClientConfig } from './GraphTokenClient';
 import type { IExchangeProvider } from '../definition/IExchangeProvider';
 import type {
 	ContactFolder,
+	ContactFolderListing,
 	DateRange,
 	EventPage,
 	ExchangeContact,
@@ -168,7 +169,7 @@ export class MicrosoftGraphProvider implements IExchangeProvider {
 		};
 	}
 
-	public async listContactFolders(mailbox: string): Promise<ContactFolder[]> {
+	public async listContactFolders(mailbox: string): Promise<ContactFolderListing> {
 		const folders: ContactFolder[] = [{ id: DEFAULT_CONTACT_FOLDER_ID, displayName: 'Contacts' }];
 
 		// Graph lists one level per call where EWS hands over the tree
@@ -178,7 +179,7 @@ export class MicrosoftGraphProvider implements IExchangeProvider {
 			if (request >= MAX_FOLDER_REQUESTS) {
 				logger.error({ msg: 'Graph contact folders paged out, the rest of them will not sync', mailbox, listed: folders.length });
 
-				return folders;
+				return { folders, complete: false };
 			}
 
 			const payload = await this.requestJson<GraphDeltaResponse>(pending[request]);
@@ -203,7 +204,7 @@ export class MicrosoftGraphProvider implements IExchangeProvider {
 			}
 		}
 
-		return folders;
+		return { folders, complete: true };
 	}
 
 	public async listContacts(mailbox: string, folderId: string, cursor?: string): Promise<Page<ExchangeContact>> {
