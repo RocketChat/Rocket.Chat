@@ -24,5 +24,5 @@ export interface IExchangeProvider {
 	listContacts(mailbox: string, folderId: string, cursor?: string): Promise<Page<ExchangeContact>>;
 
 	/** Streamed, because a folder's worth of images held at once runs to hundreds of megabytes. */
-	getContactPhotos(mailbox: string, externalIds: string[]): AsyncIterable<ExchangeContactPhoto>;
+	getContactPhotos(mailbox: string, folderId: string, externalIds: string[]): AsyncIterable<ExchangeContactPhoto>;
 }
