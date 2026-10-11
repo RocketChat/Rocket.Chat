@@ -1,0 +1,5 @@
+{
+	"tests": [
+		"yarn workspace @rocket.chat/meteor mocha --config ./.mocharc.base.json tests/unit/lib/restrictedEmojis.spec.ts tests/unit/app/lib/server/lib/validateRestrictedEmojis.spec.ts tests/unit/app/emoji/restrictedEmojiPicker.spec.ts"
+	]
+}

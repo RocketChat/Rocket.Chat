@@ -1,10 +1,11 @@
 import { useDebouncedState, useEffectEvent, useLocalStorage } from '@rocket.chat/fuselage-hooks';
-import { useRole, useSetting } from '@rocket.chat/ui-contexts';
+import { usePermission, useSetting } from '@rocket.chat/ui-contexts';
 import type { ReactNode, ReactElement, ContextType } from 'react';
 import { useState, useCallback, useMemo, useSyncExternalStore } from 'react';
 
 import { useUpdateCustomEmoji } from './useUpdateCustomEmoji';
 import { emoji, getFrequentEmoji, createEmojiListByCategorySubscription } from '../../../app/emoji/client';
+import { parseRestrictedEmojis } from '../../../lib/emoji/restrictedEmojis';
 import { EmojiPickerContext } from '../../contexts/EmojiPickerContext';
 import EmojiPicker from '../../views/composer/EmojiPicker';
 
@@ -24,12 +25,9 @@ const EmojiPickerProvider = ({ children }: { children: ReactNode }): ReactElemen
 
 	const [customItemsLimit, setCustomItemsLimit] = useState(DEFAULT_ITEMS_LIMIT);
 
-	const isAdmin = useRole('admin');
-	const restrictedEmojisString = useSetting('Emoji_Restricted_For_Users', '');
-	const restrictedEmojis = useMemo(() => {
-		if (!restrictedEmojisString) return [];
-		return restrictedEmojisString.split(',').map((emoji) => emoji.trim()).filter(Boolean);
-	}, [restrictedEmojisString]);
+	const canManageEmoji = usePermission('manage-emoji');
+	const restrictedEmojisSetting = useSetting<string>('Emoji_Restricted_For_Users', '');
+	const restrictedEmojis = useMemo(() => parseRestrictedEmojis(restrictedEmojisSetting), [restrictedEmojisSetting]);
 
 	const [quickReactions, _setQuickReactions] = useState<{ emoji: string; image: string }[]>(() =>
 		getFrequentEmoji(frequentEmojis.map(([emoji]) => emoji)),
@@ -43,10 +41,10 @@ const EmojiPickerProvider = ({ children }: { children: ReactNode }): ReactElemen
 			recentEmojis,
 			setRecentEmojis,
 			setQuickReactions,
-			isAdmin,
+			canManageEmoji,
 			restrictedEmojis,
 		);
-	}, [customItemsLimit, actualTone, recentEmojis, setRecentEmojis, setQuickReactions, isAdmin, restrictedEmojis]);
+	}, [customItemsLimit, actualTone, recentEmojis, setRecentEmojis, setQuickReactions, canManageEmoji, restrictedEmojis]);
 
 	const [emojiListByCategory, categoriesIndexes] = useSyncExternalStore(sub, getSnapshot);
 
@@ -90,8 +88,15 @@ const EmojiPickerProvider = ({ children }: { children: ReactNode }): ReactElemen
 		[recentEmojis, setRecentEmojis, addFrequentEmojis],
 	);
 
-	const open = useCallback((ref: Element, callback: (emoji: string) => void) => {
-		return setEmojiPicker(<EmojiPicker reference={ref} onClose={() => setEmojiPicker(null)} onPickEmoji={(emoji) => callback(emoji)} />);
+	const open = useCallback((ref: Element, callback: (emoji: string) => void, options?: { keepOpen?: boolean }) => {
+		return setEmojiPicker(
+			<EmojiPicker
+				reference={ref}
+				keepOpen={options?.keepOpen}
+				onClose={() => setEmojiPicker(null)}
+				onPickEmoji={(emoji) => callback(emoji)}
+			/>,
+		);
 	}, []);
 
 	const handlePreview = useCallback((emoji: string, name: string) => setEmojiToPreview({ emoji, name }), [setEmojiToPreview]);

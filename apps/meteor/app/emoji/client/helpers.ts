@@ -1,6 +1,7 @@
 import { escapeRegExp } from '@rocket.chat/string-helpers';
 import type { TranslationKey } from '@rocket.chat/ui-contexts';
 
+import { isRestrictedEmoji } from '../../../lib/emoji/restrictedEmojis';
 import type { EmojiCategory, EmojiItem } from '.';
 import { emoji, emojiEmitter } from './lib';
 
@@ -22,17 +23,17 @@ export const createEmojiListByCategorySubscription = (
 	recentEmojis: string[],
 	setRecentEmojis: (emojis: string[]) => void,
 	setQuickReactions: () => void,
-	isAdmin: boolean,
+	canManageEmoji: boolean,
 	restrictedEmojis: string[],
 ): [subscribe: (onStoreChange: () => void) => () => void, getSnapshot: () => ReturnType<typeof createPickerEmojis>] => {
 	let result: ReturnType<typeof createPickerEmojis> = [[], []];
 	updateRecent(recentEmojis);
 
 	const sub = (cb: () => void) => {
-		result = createPickerEmojis(customItemsLimit, actualTone, recentEmojis, setRecentEmojis, isAdmin, restrictedEmojis);
+		result = createPickerEmojis(customItemsLimit, actualTone, recentEmojis, setRecentEmojis, canManageEmoji, restrictedEmojis);
 		setQuickReactions();
 		return emojiEmitter.on('updated', () => {
-			result = createPickerEmojis(customItemsLimit, actualTone, recentEmojis, setRecentEmojis, isAdmin, restrictedEmojis);
+			result = createPickerEmojis(customItemsLimit, actualTone, recentEmojis, setRecentEmojis, canManageEmoji, restrictedEmojis);
 			setQuickReactions();
 			cb();
 		});
@@ -46,7 +47,7 @@ export const createPickerEmojis = (
 	actualTone: number,
 	recentEmojis: string[],
 	setRecentEmojis: (emojis: string[]) => void,
-	isAdmin: boolean,
+	canManageEmoji: boolean,
 	restrictedEmojis: string[],
 ): [EmojiPickerItem[], CategoriesIndexes] => {
 	const categories = getCategoriesList();
@@ -55,7 +56,9 @@ export const createPickerEmojis = (
 	const mappedCategories = categories.reduce<EmojiPickerItem[]>((acc, category) => {
 		categoriesIndexes.push({ key: category.key, index: acc.length });
 		acc.push({ category: category.key, i18n: category.i18n });
-		acc.push(...createEmojiList(customItemsLimit, category.key, actualTone, recentEmojis, setRecentEmojis, isAdmin, restrictedEmojis));
+		acc.push(
+			...createEmojiList(customItemsLimit, category.key, actualTone, recentEmojis, setRecentEmojis, canManageEmoji, restrictedEmojis),
+		);
 		return acc;
 	}, []);
 
@@ -68,7 +71,7 @@ export const createEmojiList = (
 	actualTone: number | null,
 	recentEmojis: string[],
 	setRecentEmojis: (emojis: string[]) => void,
-	isAdmin: boolean,
+	canManageEmoji: boolean,
 	restrictedEmojis: string[],
 ): (RowItem | LoadMoreItem)[] => {
 	const items: RowItem = [];
@@ -85,7 +88,11 @@ export const createEmojiList = (
 		for (let i = 0; i < total; i++) {
 			const current = emojiPackage.emojisByCategory[category][i];
 
-			if (!isAdmin && restrictedEmojis.length && restrictedEmojis.includes(current)) {
+			if (!current) {
+				continue;
+			}
+
+			if (!canManageEmoji && isRestrictedEmoji(current, restrictedEmojis)) {
 				continue;
 			}
 
@@ -155,7 +162,7 @@ export const getEmojisBySearchTerm = (
 	actualTone: number,
 	recentEmojis: string[],
 	setRecentEmojis: (emojis: string[]) => void,
-	isAdmin: boolean,
+	canManageEmoji: boolean,
 	restrictedEmojis: string[],
 ) => {
 	const emojis = [];
@@ -172,7 +179,7 @@ export const getEmojisBySearchTerm = (
 			let tone = '';
 			current = current.replace(/:/g, '');
 
-			if (!isAdmin && restrictedEmojis.length && restrictedEmojis.includes(current)) {
+			if (!canManageEmoji && isRestrictedEmoji(current, restrictedEmojis)) {
 				continue;
 			}
 
