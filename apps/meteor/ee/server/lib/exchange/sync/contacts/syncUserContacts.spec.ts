@@ -34,12 +34,12 @@ const outcome = (over: Record<string, unknown> = {}) => ({
 	...over,
 });
 
-const providerListing = (id: 'graph' | 'ews', folders: ContactFolder[]): IExchangeProvider =>
+const providerListing = (id: 'graph' | 'ews', folders: ContactFolder[], complete = true): IExchangeProvider =>
 	({
 		id,
 		capabilities: { supportsWebhooks: false },
 		testConnection: jest.fn(),
-		listContactFolders: jest.fn(async () => folders),
+		listContactFolders: jest.fn(async () => ({ folders, complete })),
 	}) as unknown as IExchangeProvider;
 
 const folder = (id: string): ContactFolder => ({ id, displayName: id });
@@ -112,6 +112,15 @@ describe('syncUserContacts', () => {
 
 			expect(deleteFolderContactAvatars).toHaveBeenCalledWith(UID, 'Suppliers');
 			expect(deleteFolderContactAvatars.mock.invocationCallOrder[0]).toBeLessThan(deleteImportedByFolder.mock.invocationCallOrder[0]);
+		});
+
+		it('keeps a folder the listing never reached, which is not the same as one the user deleted', async () => {
+			findFolderIdsByUserId.mockResolvedValue(['default', 'Suppliers']);
+
+			await syncUserContacts(providerListing('graph', [folder('default')], false), UID, MAILBOX, REGION);
+
+			expect(deleteImportedByFolder).not.toHaveBeenCalled();
+			expect(deleteByUserIdAndFolders).not.toHaveBeenCalled();
 		});
 	});
 });

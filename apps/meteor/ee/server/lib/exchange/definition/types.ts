@@ -94,3 +94,9 @@ export type ContactFolder = {
 	id: string;
 	displayName: string;
 };
+
+export type ContactFolderListing = {
+	folders: ContactFolder[];
+	/** False when a cap cut the listing short, so a folder missing from it is not known to be gone. */
+	complete: boolean;
+};

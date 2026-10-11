@@ -25,6 +25,7 @@ import {
 import type { IExchangeProvider } from '../definition/IExchangeProvider';
 import type {
 	ContactFolder,
+	ContactFolderListing,
 	DateRange,
 	ExchangeContact,
 	ExchangeContactEmail,
@@ -249,7 +250,7 @@ export class ExchangeEwsProvider implements IExchangeProvider {
 		};
 	}
 
-	public async listContactFolders(mailbox: string): Promise<ContactFolder[]> {
+	public async listContactFolders(mailbox: string): Promise<ContactFolderListing> {
 		const folders: ContactFolder[] = [{ id: DEFAULT_CONTACT_FOLDER_ID, displayName: 'Contacts' }];
 		let offset = 0;
 
@@ -273,8 +274,12 @@ export class ExchangeEwsProvider implements IExchangeProvider {
 				folders.push({ id, displayName: textOf(firstByTag(node, TYPES_NS, 'DisplayName')) ?? '' });
 			}
 
-			if (root?.getAttribute('IncludesLastFolderInRange') !== 'false' || !found.length) {
-				return folders;
+			if (root?.getAttribute('IncludesLastFolderInRange') !== 'false') {
+				return { folders, complete: true };
+			}
+
+			if (!found.length) {
+				return { folders, complete: false };
 			}
 
 			offset = Number(root.getAttribute('IndexedPagingOffset')) || offset + found.length;
@@ -282,7 +287,7 @@ export class ExchangeEwsProvider implements IExchangeProvider {
 
 		logger.error({ msg: 'EWS contact folders paged out, the rest of them will not sync', mailbox, listed: folders.length });
 
-		return folders;
+		return { folders, complete: false };
 	}
 
 	public async listContacts(mailbox: string, folderId: string, cursor?: string): Promise<Page<ExchangeContact>> {
