@@ -45,7 +45,7 @@ const RoomMembersWithData = ({ rid }: RoomMembersWithDataProps) => {
 	const isFederated = room && isRoomFederated(room);
 	// we are dropping the non native federation for now
 	const isFederationBlocked = room && !isRoomNativeFederated(room);
-	const isAbacLocked = useIsRoomAbacLocked(room);
+	const isAbacLocked = useIsRoomAbacLocked(rid, room);
 
 	const canCreateInviteLinks =
 		room && user && isFederated && !isFederationBlocked
