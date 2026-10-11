@@ -381,9 +381,9 @@ describe('MicrosoftGraphProvider', () => {
 			...over,
 		});
 
-		const getContactPhotosAnswering = async (ids: string[]) => {
+		const getContactPhotosAnswering = async (ids: string[], folderId = 'default') => {
 			const photos = [];
-			for await (const photo of new MicrosoftGraphProvider(config).getContactPhotos(MAILBOX, ids)) {
+			for await (const photo of new MicrosoftGraphProvider(config).getContactPhotos(MAILBOX, folderId, ids)) {
 				photos.push(photo);
 			}
 
