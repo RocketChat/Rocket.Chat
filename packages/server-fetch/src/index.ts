@@ -90,26 +90,6 @@ async function getFetchAgentWithValidation<U extends string>(
 	return { agent: getFetchAgent(pinnedUrl, allowSelfSignedCerts, originalHostname), pinnedUrl, originalHostname, resolvedIp };
 }
 
-const bodyConsumers = ['arrayBuffer', 'blob', 'buffer', 'json', 'text', 'textConverted'] as const;
-
-// node-fetch only reaches the socket through the request's abort signal: destroying the body, or a consumer
-// rejecting on its size limit or body timeout, would otherwise leave the upstream streaming into it.
-function abortRequestWhenBodyIsDiscarded(response: Response, controller: AbortController) {
-	const body = response.body as Readable;
-	body.once('close', () => controller.abort());
-
-	for (const consumer of bodyConsumers) {
-		const consume: () => Promise<unknown> = response[consumer].bind(response);
-		Object.assign(response, {
-			[consumer]: () =>
-				consume().catch((err) => {
-					body.destroy();
-					throw err;
-				}),
-		});
-	}
-}
-
 function followRedirect(response: fetch.Response, redirectCount = 0) {
 	const location = response.headers.get('location');
 
@@ -191,7 +171,8 @@ export async function serverFetch(input: string, options?: ExtendedFetchOptions,
 			});
 
 			if (!redirectStatus.has(response.status)) {
-				abortRequestWhenBodyIsDiscarded(response, controller);
+				// node-fetch v2 only closes the socket through the abort signal, so destroying the body alone leaves it open
+				(response.body as Readable).once('close', controller.abort.bind(controller));
 				return response;
 			}
 

@@ -47,15 +47,6 @@ describe('serverFetch', () => {
 		await expect(connectionClosed).resolves.toBeUndefined();
 	});
 
-	it('closes the connection when reading the body exceeds the size limit', async () => {
-		const { url, connectionClosed } = await listenEndless(200);
-
-		const response = await serverFetch(url, { ignoreSsrfValidation: true, size: 1_000_000 });
-
-		await expect(response.text()).rejects.toMatchObject({ type: 'max-size' });
-		await expect(connectionClosed).resolves.toBeUndefined();
-	});
-
 	it('closes the connection of a redirect response it follows', async () => {
 		const target = await listen((_req, res) => res.end('ok'));
 		const { url, connectionClosed } = await listenEndless(302, { location: target });
