@@ -82,4 +82,11 @@ describe('serverFetch', () => {
 		await expect(response.text()).resolves.toBe('ok');
 		await expect(connectionClosed).resolves.toBeUndefined();
 	});
+
+	it('closes the connection of a redirect response it cannot follow', async () => {
+		const { url, connectionClosed } = await listenEndless(302);
+
+		await expect(serverFetch(url, { ignoreSsrfValidation: true })).rejects.toThrow('redirect-response-location-header-missing');
+		await expect(connectionClosed).resolves.toBeUndefined();
+	});
 });

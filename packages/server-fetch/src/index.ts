@@ -181,9 +181,9 @@ export async function serverFetch(input: string, options?: ExtendedFetchOptions,
 				return response;
 			}
 
-			currentUrl = new URL(followRedirect(response, redirectCount), currentUrl).toString();
-
 			(response.body as Readable | null)?.destroy();
+
+			currentUrl = new URL(followRedirect(response, redirectCount), currentUrl).toString();
 		}
 	} finally {
 		clearTimeout(timeoutId);
