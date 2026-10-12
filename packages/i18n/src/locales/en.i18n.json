@@ -3446,6 +3446,7 @@
   "Integrations_Outgoing_Type_UserCreated": "User created",
   "Integrations_table": "Integrations table",
   "Intelligent_Search": "AI search",
+  "Intelligent_Search_description": "Use AI to search across the workspace. Returns exact keyword matches and semantically related results along with an AI-generated overview.",
   "Intelligent_Search_disabled_description": "Enable AI search and configure the pipeline before semantic results appear in workspace search.",
   "Intelligent_Search_disabled_title": "AI search is disabled",
   "Intelligent_Search_missing_configuration_description": "Add the pipeline base URL, pipeline ID, and credentials in AI center.",

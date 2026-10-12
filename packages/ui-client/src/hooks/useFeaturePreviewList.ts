@@ -31,7 +31,7 @@ export const defaultFeaturesPreview: FeaturePreviewProps[] = [
 	{
 		name: 'aiSearch',
 		i18n: 'Intelligent_Search',
-		description: 'Intelligent_Search_upsell_description',
+		description: 'Intelligent_Search_description',
 		group: 'AI',
 		value: false,
 		enabled: true,
