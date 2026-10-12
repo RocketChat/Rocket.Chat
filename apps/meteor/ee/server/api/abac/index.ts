@@ -495,7 +495,7 @@ const abacEndpoints = API.v1
 		},
 	)
 	.get(
-		'abac/assignable-attributes',
+		'abac/attributes.listAssignable',
 		{
 			authRequired: true,
 			permissionsRequired: ['create-abac-managed-room'],
