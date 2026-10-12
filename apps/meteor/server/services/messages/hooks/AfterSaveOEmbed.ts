@@ -158,7 +158,7 @@ const getUrlContent = async (urlObj: URL, redirectCount = 5): Promise<OEmbedUrlC
 
 	let totalSize = 0;
 	const chunks = [];
-	for await (const chunk of response.body) {
+	for await (const chunk of response.body ?? []) {
 		totalSize += chunk.length;
 		chunks.push(chunk as Buffer);
 

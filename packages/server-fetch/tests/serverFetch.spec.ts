@@ -56,6 +56,23 @@ describe('serverFetch', () => {
 		await expect(connectionClosed).resolves.toBeUndefined();
 	});
 
+	it('closes the connection when reading the body outlives the timeout', async () => {
+		const connectionClosed = Promise.withResolvers<void>();
+		const url = await listen((req, res) => {
+			res.writeHead(200);
+			const drip = setInterval(() => res.write('x'), 50);
+			req.socket.once('close', () => {
+				clearInterval(drip);
+				connectionClosed.resolve();
+			});
+		});
+
+		const response = await serverFetch(url, { ignoreSsrfValidation: true, timeout: 200 });
+
+		await expect(response.text()).rejects.toMatchObject({ name: 'AbortError' });
+		await expect(connectionClosed.promise).resolves.toBeUndefined();
+	});
+
 	it('closes the connection of a redirect response it follows', async () => {
 		const target = await listen((_req, res) => res.end('ok'));
 		const { url, connectionClosed } = await listenEndless(302, { location: target });

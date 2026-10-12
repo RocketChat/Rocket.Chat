@@ -21,7 +21,11 @@ export default {
 			} satisfies SWC.Config,
 		],
 	},
-	transformIgnorePatterns: ['<rootDir>/node_modules/@babel', '<rootDir>/node_modules/@jest', '/node_modules/(?!@testing-library/)'],
+	transformIgnorePatterns: [
+		'<rootDir>/node_modules/@babel',
+		'<rootDir>/node_modules/@jest',
+		'/node_modules/(?!(@testing-library|node-fetch|fetch-blob|formdata-polyfill|data-uri-to-buffer)/)',
+	],
 	moduleFileExtensions: ['ts', 'tsx', 'js', 'jsx', 'json', 'node', 'mjs'],
 
 	collectCoverage: true,

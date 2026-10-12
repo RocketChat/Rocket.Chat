@@ -1,8 +1,7 @@
 import type { IOutgoingIntegration, IUser } from '@rocket.chat/core-typings';
 import { Integrations, Messages, Rooms, Users } from '@rocket.chat/models';
-import { serverFetch } from '@rocket.chat/server-fetch';
+import { Response, serverFetch } from '@rocket.chat/server-fetch';
 import { Meteor } from 'meteor/meteor';
-import { Response } from 'node-fetch';
 
 import { triggerHandler as sharedTriggerHandler } from './triggerHandler';
 import { updateHistory } from './updateHistory';
@@ -19,7 +18,7 @@ jest.mock('@rocket.chat/models', () => ({
 	Rooms: { findOneById: jest.fn() },
 	Messages: { findOneById: jest.fn() },
 }));
-jest.mock('@rocket.chat/server-fetch', () => ({ serverFetch: jest.fn() }));
+jest.mock('@rocket.chat/server-fetch', () => ({ ...jest.requireActual('@rocket.chat/server-fetch'), serverFetch: jest.fn() }));
 jest.mock('./isolated-vm/isolated-vm', () => ({
 	IsolatedVMScriptEngine: class {
 		public prepareOutgoingRequest = jest.fn();

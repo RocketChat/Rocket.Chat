@@ -4,7 +4,6 @@ import type { Readable } from 'node:stream';
 
 import { Logger } from '@rocket.chat/logger';
 import { censorUrl } from '@rocket.chat/tools';
-import { AbortController } from 'abort-controller';
 import { HttpProxyAgent } from 'http-proxy-agent';
 import { HttpsProxyAgent } from 'https-proxy-agent';
 import fetch, { FetchError, Response } from 'node-fetch';
@@ -90,27 +89,13 @@ async function getFetchAgentWithValidation<U extends string>(
 	return { agent: getFetchAgent(pinnedUrl, allowSelfSignedCerts, originalHostname), pinnedUrl, originalHostname, resolvedIp };
 }
 
-const bodyConsumers = ['arrayBuffer', 'blob', 'buffer', 'json', 'text', 'textConverted'] as const;
-
-// node-fetch only reaches the socket through the request's abort signal: destroying the body, or a consumer
-// rejecting on its size limit or body timeout, would otherwise leave the upstream streaming into it.
-function abortRequestWhenBodyIsDiscarded(response: Response, controller: AbortController) {
-	const body = response.body as Readable;
-	body.once('close', () => controller.abort());
-
-	for (const consumer of bodyConsumers) {
-		const consume: () => Promise<unknown> = response[consumer].bind(response);
-		Object.assign(response, {
-			[consumer]: () =>
-				consume().catch((err) => {
-					body.destroy();
-					throw err;
-				}),
-		});
-	}
+// node-fetch v3 dropped its `timeout` option, which also bounded reading the body
+function abortWhenBodyOutlivesTimeout(response: Response, controller: AbortController, timeout: number) {
+	const timeoutId = setTimeout(() => controller.abort(), timeout);
+	response.body?.once('close', () => clearTimeout(timeoutId));
 }
 
-function followRedirect(response: fetch.Response, redirectCount = 0) {
+function followRedirect(response: Response, redirectCount = 0) {
 	const location = response.headers.get('location');
 
 	if (!location) {
@@ -129,7 +114,7 @@ function followRedirect(response: fetch.Response, redirectCount = 0) {
 
 export async function serverFetch(input: string, options?: ExtendedFetchOptions, allowSelfSignedCerts?: boolean): Promise<Response> {
 	let currentUrl = input;
-	let controller = new AbortController();
+	const controller = new AbortController();
 	const timeoutId = setTimeout(() => controller.abort(), options?.timeout ?? 20000);
 
 	try {
@@ -182,7 +167,6 @@ export async function serverFetch(input: string, options?: ExtendedFetchOptions,
 			}
 
 			const response = await fetch(url.toString(), {
-				// @ts-expect-error - This complained when types were moved to file :/
 				signal: controller.signal,
 				...parsedOptions,
 				redirect: 'manual',
@@ -191,20 +175,29 @@ export async function serverFetch(input: string, options?: ExtendedFetchOptions,
 			});
 
 			if (!redirectStatus.has(response.status)) {
-				abortRequestWhenBodyIsDiscarded(response, controller);
+				if (options?.timeout) {
+					abortWhenBodyOutlivesTimeout(response, controller, options.timeout);
+				}
 				return response;
 			}
 
 			currentUrl = new URL(followRedirect(response, redirectCount), currentUrl).toString();
 
-			controller.abort();
-			controller = new AbortController();
+			(response.body as Readable | null)?.destroy();
 		}
 	} finally {
 		clearTimeout(timeoutId);
 	}
 
 	throw new Error('error-processing-request');
+}
+
+declare module 'node-fetch' {
+	// v3 types the parsed body as `unknown`; v2 left its shape to the caller
+	// eslint-disable-next-line @typescript-eslint/naming-convention
+	interface Response {
+		json<T = any>(): Promise<T>;
+	}
 }
 
 export { FetchError, Response };
