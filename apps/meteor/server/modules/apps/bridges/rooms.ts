@@ -1,7 +1,7 @@
 import { AbacContractError, AbacErrorCode } from '@rocket.chat/abac';
 import type { IAppServerOrchestrator } from '@rocket.chat/apps';
 import type { GetMessagesOptions, GetRoomsFilters, GetRoomsOptions } from '@rocket.chat/apps/dist/server/bridges/RoomBridge';
-import { RoomBridge } from '@rocket.chat/apps/dist/server/bridges/RoomBridge';
+import { RoomBridge, suppliesAbacAttributes } from '@rocket.chat/apps/dist/server/bridges/RoomBridge';
 import type { IMessage, IMessageRaw } from '@rocket.chat/apps-engine/definition/messages';
 import type { IRoom, IRoomRaw } from '@rocket.chat/apps-engine/definition/rooms';
 import { RoomType } from '@rocket.chat/apps-engine/definition/rooms';
@@ -74,7 +74,7 @@ export class AppRoomBridge extends RoomBridge {
 		this.orch.debugLog(`The App ${appId} is creating a new room.`, room);
 
 		const rcRoom = await this.orch.getConverters()?.get('rooms').convertAppRoom(room);
-		const abacAttributes = room.abacAttributes?.length ? room.abacAttributes : undefined;
+		const abacAttributes = suppliesAbacAttributes(room) ? room.abacAttributes : undefined;
 
 		if (abacAttributes && !isAttributeDefinitionList(abacAttributes)) {
 			throw new AbacContractError(AbacErrorCode.InvalidAttributes, { cause: AbacErrorCode.InvalidAttributeValues });
