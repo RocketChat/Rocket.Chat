@@ -210,25 +210,14 @@ import { IS_EE, URL_MONGODB } from '../../e2e/config/constants';
 				.expect(200);
 		});
 
-		it('lists the required attribute keys in rooms.info with withAbac', async () => {
-			await request
-				.get(api('rooms.info'))
-				.set(credentials)
-				.query({ roomId: compliantRoomId, withAbac: true })
-				.expect(200)
-				.expect((res) => {
-					expect(res.body).to.have.property('abacRequiredAttributes').that.deep.equals([carriedKey]);
-				});
-		});
-
-		it('leaves the required attribute keys out of rooms.info without withAbac', async () => {
+		it('lists the required attribute keys in rooms.info', async () => {
 			await request
 				.get(api('rooms.info'))
 				.set(credentials)
 				.query({ roomId: compliantRoomId })
 				.expect(200)
 				.expect((res) => {
-					expect(res.body).to.not.have.property('abacRequiredAttributes');
+					expect(res.body).to.have.property('abacRequiredAttributes').that.deep.equals([carriedKey]);
 				});
 		});
 
@@ -252,7 +241,7 @@ import { IS_EE, URL_MONGODB } from '../../e2e/config/constants';
 			await request
 				.get(api('rooms.info'))
 				.set(credentials)
-				.query({ roomId: compliantRoomId, withAbac: true })
+				.query({ roomId: compliantRoomId })
 				.expect(200)
 				.expect((res) => {
 					expect(res.body).to.not.have.property('abacRequiredAttributes');
@@ -344,7 +333,7 @@ import { IS_EE, URL_MONGODB } from '../../e2e/config/constants';
 			await request
 				.get(api('rooms.info'))
 				.set(otherCredentials)
-				.query({ roomId: lockedRoomId, withAbac: true })
+				.query({ roomId: lockedRoomId })
 				.expect(200)
 				.expect((res) => {
 					expect(res.body).to.have.property('abacRequiredAttributes').that.is.an('array');
