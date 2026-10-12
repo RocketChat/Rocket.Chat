@@ -77,10 +77,10 @@ import { IS_EE, URL_MONGODB } from '../../e2e/config/constants';
 		request.post(`${v1}/abac/rooms/${rid}/attributes`).set(as).send({ attributes });
 
 	const preview = (body: Record<string, unknown>, as: Credentials = ownerCredentials) =>
-		request.post(`${v1}/abac/membership-preview`).set(as).send(body);
+		request.post(`${v1}/abac/membership.preview`).set(as).send(body);
 
 	const assignable = (rid: IRoom['_id'], as: Credentials = ownerCredentials) =>
-		request.get(`${v1}/abac/assignable-attributes`).query({ rid }).set(as);
+		request.get(`${v1}/abac/attributes.listAssignable`).query({ rid }).set(as);
 
 	before((done) => getCredentials(done));
 
@@ -242,7 +242,7 @@ import { IS_EE, URL_MONGODB } from '../../e2e/config/constants';
 		});
 	});
 
-	describe('GET /abac/assignable-attributes with a rid', () => {
+	describe('GET /abac/attributes.listAssignable with a rid', () => {
 		it('requires the permission on that room', async () => {
 			await assignable(otherRoomId).expect(403);
 			await assignable(ownedRoomId, memberCredentials).expect(403);
@@ -288,7 +288,7 @@ import { IS_EE, URL_MONGODB } from '../../e2e/config/constants';
 		});
 	});
 
-	describe('POST /abac/membership-preview with a rid', () => {
+	describe('POST /abac/membership.preview with a rid', () => {
 		const adding = { [dept]: ['eng', 'sales'] };
 		type PreviewMember = Pick<IUser, '_id' | 'username'> & { verdict: string };
 		const losing = (members: PreviewMember[]) => members.filter(({ verdict }) => verdict !== 'compliant');
