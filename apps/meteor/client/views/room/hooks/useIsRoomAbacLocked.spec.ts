@@ -16,9 +16,9 @@ const buildAppRoot = ({ abacEnabled = true, enforceAllRooms = true, requiredAttr
 	mockAppRoot()
 		.withSetting('ABAC_Enabled', abacEnabled, booleanSetting)
 		.withSetting('ABAC_Enforce_All_Rooms', enforceAllRooms, booleanSetting)
-		.withEndpoint('GET', '/v1/rooms.info', ({ withAbac }) => ({
+		.withEndpoint('GET', '/v1/rooms.info', () => ({
 			room: undefined,
-			...(withAbac && { abacRequiredAttributes: requiredAttributeKeys }),
+			abacRequiredAttributes: requiredAttributeKeys,
 		}))
 		.build();
 
@@ -71,7 +71,7 @@ describe('useIsRoomAbacLocked', () => {
 		expect(result.current).toBe(false);
 	});
 
-	it('should read the required keys from rooms.info with withAbac', async () => {
+	it('should read the required keys from rooms.info', async () => {
 		const room = createFakeRoom({ t: 'p', abacAttributes: [{ key: 'clearance', values: ['SECRET'] }] });
 
 		const { result: compliant } = renderHook(() => useIsRoomAbacLocked(room._id, room), {
