@@ -176,10 +176,10 @@ export async function serverFetch(input: string, options?: ExtendedFetchOptions,
 				return response;
 			}
 
-			currentUrl = new URL(followRedirect(response, redirectCount), currentUrl).toString();
-
 			controller.abort();
 			controller = new AbortController();
+
+			currentUrl = new URL(followRedirect(response, redirectCount), currentUrl).toString();
 		}
 	} finally {
 		clearTimeout(timeoutId);
