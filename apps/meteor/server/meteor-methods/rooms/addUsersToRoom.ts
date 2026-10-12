@@ -1,5 +1,5 @@
 import { api } from '@rocket.chat/core-services';
-import { isBannedSubscription, isRoomNativeFederated, type IUser } from '@rocket.chat/core-typings';
+import { isBannedSubscription, isRoomNativeFederated, type IRoom, type IUser } from '@rocket.chat/core-typings';
 import type { ServerMethods } from '@rocket.chat/ddp-client';
 import { Subscriptions, Users, Rooms } from '@rocket.chat/models';
 import { Match } from 'meteor/check';
@@ -27,28 +27,8 @@ export const sanitizeUsername = (username: string) => {
 	return username.replace(/(^@)|( @)/, '');
 };
 
-export const addUsersToRoomMethod = async (userId: string, data: { rid: string; users: string[] }, user?: IUser): Promise<boolean> => {
-	if (!userId) {
-		throw new Meteor.Error('error-invalid-user', 'Invalid user', {
-			method: 'addUsersToRoom',
-		});
-	}
-
-	if (!Match.test(data.rid, String)) {
-		throw new Meteor.Error('error-invalid-room', 'Invalid room', {
-			method: 'addUsersToRoom',
-		});
-	}
-
-	// Get user and room details
-	const room = await Rooms.findOneById(data.rid);
-	if (!room) {
-		throw new Meteor.Error('error-invalid-room', 'Invalid room', {
-			method: 'addUsersToRoom',
-		});
-	}
-
-	const subscription = await Subscriptions.findOneByRoomIdAndUserId(data.rid, userId, {
+export const assertCanAddUsersToRoom = async (userId: string, room: IRoom): Promise<void> => {
+	const subscription = await Subscriptions.findOneByRoomIdAndUserId(room._id, userId, {
 		projection: { _id: 1 },
 	});
 	const userInRoom = subscription != null;
@@ -75,6 +55,30 @@ export const addUsersToRoomMethod = async (userId: string, data: { rid: string; 
 			method: 'addUsersToRoom',
 		});
 	}
+};
+
+export const addUsersToRoomMethod = async (userId: string, data: { rid: string; users: string[] }, user?: IUser): Promise<boolean> => {
+	if (!userId) {
+		throw new Meteor.Error('error-invalid-user', 'Invalid user', {
+			method: 'addUsersToRoom',
+		});
+	}
+
+	if (!Match.test(data.rid, String)) {
+		throw new Meteor.Error('error-invalid-room', 'Invalid room', {
+			method: 'addUsersToRoom',
+		});
+	}
+
+	// Get user and room details
+	const room = await Rooms.findOneById(data.rid);
+	if (!room) {
+		throw new Meteor.Error('error-invalid-room', 'Invalid room', {
+			method: 'addUsersToRoom',
+		});
+	}
+
+	await assertCanAddUsersToRoom(userId, room);
 
 	// Missing the users to be added
 	if (!Array.isArray(data.users)) {
