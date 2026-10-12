@@ -77,7 +77,7 @@ import { IS_EE, URL_MONGODB } from '../../e2e/config/constants';
 		request.post(`${v1}/abac/rooms/${rid}/attributes`).set(as).send({ attributes });
 
 	const preview = (body: Record<string, unknown>, as: Credentials = ownerCredentials) =>
-		request.post(`${v1}/abac/membership.preview`).set(as).send(body);
+		request.post(`${v1}/abac/rooms.evaluateMembership`).set(as).send(body);
 
 	const assignable = (rid: IRoom['_id'], as: Credentials = ownerCredentials) =>
 		request.get(`${v1}/abac/attributes.listAssignable`).query({ rid }).set(as);
@@ -288,7 +288,7 @@ import { IS_EE, URL_MONGODB } from '../../e2e/config/constants';
 		});
 	});
 
-	describe('POST /abac/membership.preview with a rid', () => {
+	describe('POST /abac/rooms.evaluateMembership with a rid', () => {
 		const adding = { [dept]: ['eng', 'sales'] };
 		type PreviewMember = Pick<IUser, '_id' | 'username'> & { verdict: string };
 		const losing = (members: PreviewMember[]) => members.filter(({ verdict }) => verdict !== 'compliant');
