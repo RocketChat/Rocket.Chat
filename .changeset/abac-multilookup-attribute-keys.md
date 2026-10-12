@@ -6,4 +6,4 @@
 '@rocket.chat/meteor': minor
 ---
 
-Adds `GET /v1/abac/attribute-keys`, which returns the workspace's ABAC attribute keys and is the option source for a `multiLookup` setting.
+Adds `GET /v1/abac/attributes.listKeys`, which returns the workspace's ABAC attribute keys and is the option source for a `multiLookup` setting.
