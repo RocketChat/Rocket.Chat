@@ -514,10 +514,16 @@ import { IS_EE, URL_MONGODB } from '../../e2e/config/constants';
 			}
 		});
 
-		it('returns no required keys while enforcement is off', async () => {
-			const res = await assignable().expect(200);
+		it('returns the required keys while enforcement is off', async () => {
+			await setSetting('ABAC_Required_Attributes', [clearance]);
 
-			expect(res.body.requiredKeys).to.deep.equal([]);
+			try {
+				const res = await assignable().expect(200);
+
+				expect(res.body.requiredKeys).to.deep.equal([clearance]);
+			} finally {
+				await setSetting('ABAC_Required_Attributes', []);
+			}
 		});
 
 		it('returns the required keys while enforcement is on', async () => {
