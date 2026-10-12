@@ -26,10 +26,15 @@ const stripReadOnlyRoomFields = (room: IRoom): IRoom => {
 	return room;
 };
 
+export const suppliesAbacAttributes = (room: IRoom): boolean =>
+	room.abacAttributes !== undefined &&
+	room.abacAttributes !== null &&
+	(!Array.isArray(room.abacAttributes) || room.abacAttributes.length > 0);
+
 export abstract class RoomBridge extends BaseBridge {
 	public async doCreate(room: IRoom, members: Array<string>, appId: string): Promise<string> {
 		if (this.hasWritePermission(appId)) {
-			if (room.abacAttributes?.length) {
+			if (suppliesAbacAttributes(room)) {
 				this.assertAbacWritePermission(appId);
 				return this.create(room, members, appId);
 			}
