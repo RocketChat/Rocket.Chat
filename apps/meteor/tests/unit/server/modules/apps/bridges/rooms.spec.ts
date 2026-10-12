@@ -1,3 +1,4 @@
+import { suppliesAbacAttributes } from '@rocket.chat/apps/dist/server/bridges/RoomBridge';
 import type { IRoom } from '@rocket.chat/apps-engine/definition/rooms';
 import { RoomType } from '@rocket.chat/apps-engine/definition/rooms';
 import { expect } from 'chai';
@@ -11,7 +12,7 @@ const createDirectMessage = sinon.stub();
 const getSetting = sinon.stub();
 
 const { AppRoomBridge } = proxyquire.noCallThru().load('../../../../../../server/modules/apps/bridges/rooms', {
-	'@rocket.chat/apps/dist/server/bridges/RoomBridge': { RoomBridge: class {} },
+	'@rocket.chat/apps/dist/server/bridges/RoomBridge': { RoomBridge: class {}, suppliesAbacAttributes },
 	'@rocket.chat/models': {
 		Users: { findOneById: async (_id: string) => ({ _id, username: 'creator' }) },
 	},
@@ -68,6 +69,7 @@ describe('AppRoomBridge.create', () => {
 
 	[
 		{ shape: 'a string', abacAttributes: 'clearance' },
+		{ shape: 'an object', abacAttributes: {} },
 		{ shape: 'a list holding null', abacAttributes: [null] },
 	].forEach(({ shape, abacAttributes: malformed }) => {
 		it(`refuses ABAC attributes given as ${shape}`, async () => {
