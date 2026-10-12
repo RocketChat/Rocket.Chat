@@ -149,6 +149,7 @@
     "one": "{{count}} member was not added because they do not carry the room's attributes.",
     "other": "{{count}} members were not added because they do not carry the room's attributes."
   },
+  "ABAC_Members_Not_Added_Usernames": "Members not added because they do not carry the room's attributes: {{usernames}}",
   "ABAC_Members_preview": "Members (preview)",
   "ABAC_Membership_Evaluated": "Membership evaluated",
   "ABAC_New_attribute": "New attribute",
