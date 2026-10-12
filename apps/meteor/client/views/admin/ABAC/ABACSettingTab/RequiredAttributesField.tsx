@@ -12,7 +12,7 @@ const toKeys = (value: SettingValue): string[] => (Array.isArray(value) ? value.
 
 const RequiredAttributesField = () => {
 	const setting = useEditableSetting('ABAC_Required_Attributes');
-	const lookupEndpoint = (setting?.lookupEndpoint ?? 'v1/abac/attribute-keys') as SettingLookupEndpoint;
+	const lookupEndpoint = (setting?.lookupEndpoint ?? 'v1/abac/attributes.listKeys') as SettingLookupEndpoint;
 	const { data: options, isSuccess, isPending } = useSettingLookupQuery(lookupEndpoint);
 	const setModal = useSetModal();
 

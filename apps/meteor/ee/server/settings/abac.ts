@@ -22,7 +22,7 @@ export function addSettings(): Promise<void> {
 				});
 				await this.add('ABAC_Required_Attributes', [], {
 					type: 'multiLookup',
-					lookupEndpoint: 'v1/abac/attribute-keys',
+					lookupEndpoint: 'v1/abac/attributes.listKeys',
 					public: false,
 					invalidValue: [],
 					section: 'ABAC',
