@@ -12,8 +12,9 @@ addMigration({
 			{
 				t: 'd',
 				usersCount: { $gt: 2 },
-				uids: { $exists: true },
-				$expr: { $ne: [{ $size: '$uids' }, '$usersCount'] },
+				$expr: {
+					$cond: [{ $isArray: '$uids' }, { $ne: [{ $size: '$uids' }, '$usersCount'] }, false],
+				},
 			},
 			[{ $set: { usersCount: { $size: '$uids' } } }],
 		);
