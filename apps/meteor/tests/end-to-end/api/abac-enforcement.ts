@@ -235,7 +235,7 @@ import { IS_EE, URL_MONGODB } from '../../e2e/config/constants';
 				});
 		});
 
-		it('leaves the required attribute keys out of rooms.info once enforcement is off', async () => {
+		it('still lists the required attribute keys in rooms.info once enforcement is off', async () => {
 			await setEnforcement(false);
 
 			await request
@@ -244,8 +244,25 @@ import { IS_EE, URL_MONGODB } from '../../e2e/config/constants';
 				.query({ roomId: compliantRoomId })
 				.expect(200)
 				.expect((res) => {
-					expect(res.body).to.not.have.property('abacRequiredAttributes');
+					expect(res.body).to.have.property('abacRequiredAttributes').that.deep.equals([carriedKey, laterKey]);
 				});
+		});
+
+		it('leaves the required attribute keys out of rooms.info while ABAC is disabled', async () => {
+			await updateSetting('ABAC_Enabled', false);
+
+			try {
+				await request
+					.get(api('rooms.info'))
+					.set(credentials)
+					.query({ roomId: compliantRoomId })
+					.expect(200)
+					.expect((res) => {
+						expect(res.body).to.not.have.property('abacRequiredAttributes');
+					});
+			} finally {
+				await updateSetting('ABAC_Enabled', true);
+			}
 		});
 	});
 
