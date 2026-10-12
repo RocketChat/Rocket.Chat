@@ -34,7 +34,7 @@ const renderManage = (abacAttributes: IAbacAttributeDefinition[], requiredKeys: 
 
 	const { rerender } = render(manage(requiredKeys), {
 		wrapper: mockAppRoot()
-			.withEndpoint('GET', '/v1/abac/assignable-attributes', () => ({ attributes: assignable, requiredKeys: [] }))
+			.withEndpoint('GET', '/v1/abac/attributes.listAssignable', () => ({ attributes: assignable, requiredKeys: [] }))
 			.withEndpoint('POST', '/v1/abac/rooms/:rid/attributes', save)
 			.withRouter({ navigate })
 			.build(),
