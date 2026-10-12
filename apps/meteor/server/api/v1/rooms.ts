@@ -32,7 +32,6 @@ import {
 	isRoomsHideProps,
 	isRoomsHistoryProps,
 	isRoomsImagesProps,
-	isRoomsInfoProps,
 	isRoomsInviteProps,
 	isRoomsIsMemberProps,
 	isRoomsJoinProps,
@@ -529,7 +528,6 @@ API.v1.get(
 	'rooms.info',
 	{
 		authRequired: true,
-		query: isRoomsInfoProps,
 		response: {
 			200: ajv.compile<{ room: IRoom | null }>({
 				type: 'object',
@@ -570,14 +568,14 @@ API.v1.get(
 		const { team, parentRoom } = await Team.getRoomInfo(room);
 		const parent = discussionParent || parentRoom;
 		const classificationBanner = await getRoomClassificationBanner(room);
-		const abacLockContext = this.queryParams.withAbac ? getRoomAbacLockContext() : undefined;
+		const { enforcementOn, requiredAttributeKeys } = getRoomAbacLockContext();
 
 		return API.v1.success({
 			room: await Rooms.findOneByIdOrName(room._id, { projection: fields }),
 			...(team && { team }),
 			...(parent && { parent }),
 			...(classificationBanner && { classificationBanner }),
-			...(abacLockContext?.enforcementOn && { abacRequiredAttributes: abacLockContext.requiredAttributeKeys }),
+			...(enforcementOn && { abacRequiredAttributes: requiredAttributeKeys }),
 		});
 	},
 );
