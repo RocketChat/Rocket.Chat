@@ -388,9 +388,9 @@ import { IS_EE, URL_MONGODB } from '../../e2e/config/constants';
 		});
 	});
 
-	describe('POST /abac/attribute-assignability', () => {
+	describe('POST /abac/attributes.checkAssignability', () => {
 		const assignability = (attributes: Record<string, string[]>, as: Credentials = creatorCredentials) =>
-			request.post(`${v1}/abac/attribute-assignability`).set(as).send({ attributes });
+			request.post(`${v1}/abac/attributes.checkAssignability`).set(as).send({ attributes });
 
 		before(async () => {
 			await updatePermission('create-abac-managed-room', ['admin', 'user']);
