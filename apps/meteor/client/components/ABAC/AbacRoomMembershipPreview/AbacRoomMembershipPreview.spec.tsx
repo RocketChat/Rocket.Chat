@@ -24,7 +24,7 @@ const renderPreview = (respond: (body: PreviewBody) => IAbacRoomMembershipPrevie
 	const onBack = jest.fn();
 	const AppRoot = mockAppRoot()
 		.withJohnDoe()
-		.withEndpoint('POST', '/v1/abac/membership-preview', (body) => endpoint('rid' in body ? body : {}))
+		.withEndpoint('POST', '/v1/abac/membership.preview', (body) => endpoint('rid' in body ? body : {}))
 		.build();
 	const wrapper = ({ children }: { children: ReactNode }) => (
 		<AppRoot>
