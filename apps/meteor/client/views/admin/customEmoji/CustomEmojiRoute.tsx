@@ -1,4 +1,4 @@
-import { Button } from '@rocket.chat/fuselage';
+import { Button, ButtonGroup } from '@rocket.chat/fuselage';
 import {
 	ContextualbarHeader,
 	ContextualbarClose,
@@ -15,6 +15,7 @@ import { useTranslation } from 'react-i18next';
 import AddCustomEmoji from './AddCustomEmoji';
 import CustomEmoji from './CustomEmoji';
 import EditCustomEmojiWithData from './EditCustomEmojiWithData';
+import RestrictEmoji from './RestrictEmoji';
 import NotAuthorizedPage from '../../notAuthorized/NotAuthorizedPage';
 
 const CustomEmojiRoute = () => {
@@ -35,6 +36,10 @@ const CustomEmojiRoute = () => {
 		route.push({ context: 'new' });
 	}, [route]);
 
+	const handleRestrictEmoji = useCallback(() => {
+		route.push({ context: 'restrict' });
+	}, [route]);
+
 	const handleClose = (): void => {
 		route.push({});
 	};
@@ -53,9 +58,14 @@ const CustomEmojiRoute = () => {
 		<Page flexDirection='row'>
 			<Page name='admin-emoji-custom'>
 				<PageHeader title={t('Emoji')}>
-					<Button primary onClick={handleAddEmoji} aria-label={t('New')}>
-						{t('New')}
-					</Button>
+					<ButtonGroup>
+						<Button onClick={handleRestrictEmoji} aria-label={t('Restrict')}>
+							{t('Restrict')}
+						</Button>
+						<Button primary onClick={handleAddEmoji} aria-label={t('New')}>
+							{t('New')}
+						</Button>
+					</ButtonGroup>
 				</PageHeader>
 				<PageContent>
 					<CustomEmoji reload={reload} onClick={handleItemClick} />
@@ -67,11 +77,13 @@ const CustomEmojiRoute = () => {
 						<ContextualbarTitle>
 							{context === 'edit' && t('Custom_Emoji_Info')}
 							{context === 'new' && t('Custom_Emoji_Add')}
+							{context === 'restrict' && t('Restrict_Emoji')}
 						</ContextualbarTitle>
 						<ContextualbarClose onClick={handleClose} />
 					</ContextualbarHeader>
 					{context === 'edit' && id && <EditCustomEmojiWithData _id={id} close={handleClose} onChange={handleChange} />}
 					{context === 'new' && <AddCustomEmoji close={handleClose} onChange={handleChange} />}
+					{context === 'restrict' && <RestrictEmoji close={handleClose} />}
 				</ContextualbarDialog>
 			)}
 		</Page>

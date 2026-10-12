@@ -1,10 +1,12 @@
-import { useDebouncedState, useStableCallback, useLocalStorage } from '@rocket.chat/fuselage-hooks';
-import type { ReactNode, ContextType } from 'react';
-import { useState, useCallback, useMemo, useSyncExternalStore } from 'react';
+import { useDebouncedState, useLocalStorage, useStableCallback } from '@rocket.chat/fuselage-hooks';
+import { usePermission, useSetting } from '@rocket.chat/ui-contexts';
+import type { ContextType, ReactNode } from 'react';
+import { useCallback, useMemo, useState, useSyncExternalStore } from 'react';
 
 import { useUpdateCustomEmoji } from './useUpdateCustomEmoji';
 import { EmojiPickerContext } from '../../contexts/EmojiPickerContext';
-import { emoji, getFrequentEmoji, createEmojiListByCategorySubscription } from '../../lib/emoji';
+import { createEmojiListByCategorySubscription, emoji, getFrequentEmoji } from '../../lib/emoji';
+import { parseRestrictedEmojis } from '../../../lib/emoji/restrictedEmojis';
 import EmojiPicker from '../../views/composer/EmojiPicker';
 
 const DEFAULT_ITEMS_LIMIT = 90;
@@ -25,14 +27,26 @@ const EmojiPickerProvider = ({ children }: EmojiPickerProviderProps) => {
 
 	const [customItemsLimit, setCustomItemsLimit] = useState(DEFAULT_ITEMS_LIMIT);
 
+	const canManageEmoji = usePermission('manage-emoji');
+	const restrictedEmojisSetting = useSetting<string>('Emoji_Restricted_For_Users', '');
+	const restrictedEmojis = useMemo(() => parseRestrictedEmojis(restrictedEmojisSetting), [restrictedEmojisSetting]);
+
 	const [quickReactions, _setQuickReactions] = useState<{ emoji: string; image: string }[]>(() =>
 		getFrequentEmoji(frequentEmojis.map(([emoji]) => emoji)),
 	);
 
 	const setQuickReactions = useStableCallback(() => _setQuickReactions(getFrequentEmoji(frequentEmojis.map(([emoji]) => emoji))));
 	const [sub, getSnapshot] = useMemo(() => {
-		return createEmojiListByCategorySubscription(customItemsLimit, actualTone, recentEmojis, setRecentEmojis, setQuickReactions);
-	}, [customItemsLimit, actualTone, recentEmojis, setRecentEmojis, setQuickReactions]);
+		return createEmojiListByCategorySubscription(
+			customItemsLimit,
+			actualTone,
+			recentEmojis,
+			setRecentEmojis,
+			setQuickReactions,
+			canManageEmoji,
+			restrictedEmojis,
+		);
+	}, [customItemsLimit, actualTone, recentEmojis, setRecentEmojis, setQuickReactions, canManageEmoji, restrictedEmojis]);
 
 	const [emojiListByCategory, categoriesIndexes] = useSyncExternalStore(sub, getSnapshot);
 
@@ -78,8 +92,15 @@ const EmojiPickerProvider = ({ children }: EmojiPickerProviderProps) => {
 		[recentEmojis, setRecentEmojis, addFrequentEmojis],
 	);
 
-	const open = useCallback((ref: Element, callback: (emoji: string) => void) => {
-		return setEmojiPicker(<EmojiPicker reference={ref} onClose={() => setEmojiPicker(null)} onPickEmoji={(emoji) => callback(emoji)} />);
+	const open = useCallback((ref: Element, callback: (emoji: string) => void, options?: { keepOpen?: boolean }) => {
+		return setEmojiPicker(
+			<EmojiPicker
+				reference={ref}
+				keepOpen={options?.keepOpen}
+				onClose={() => setEmojiPicker(null)}
+				onPickEmoji={(emoji) => callback(emoji)}
+			/>,
+		);
 	}, []);
 
 	const close = useCallback(() => setEmojiPicker(null), []);

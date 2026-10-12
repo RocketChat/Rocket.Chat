@@ -5,6 +5,7 @@ import { Messages } from '@rocket.chat/models';
 import { isAbsoluteURL } from '@rocket.chat/tools';
 import { Match, check } from 'meteor/check';
 
+import { assertNoRestrictedEmojis } from '../validateRestrictedEmojis';
 import { isRelativeURL } from '../../../lib/utils/isRelativeURL';
 import { afterSaveMessage } from '../../hooks/messages/afterSaveMessage';
 import { settings } from '../../settings';
@@ -185,6 +186,8 @@ export const validateMessage = async (message: any, room: any, user: any) => {
 			messageCustomFields: settings.get<string>('Message_CustomFields'),
 		});
 	}
+
+	await assertNoRestrictedEmojis(user._id, message.msg, 'sendMessage');
 };
 
 export function prepareMessageObject(

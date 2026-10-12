@@ -5,6 +5,7 @@ import { Match, check } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
 import moment from 'moment';
 
+import { assertNoRestrictedEmojis } from '../../lib/validateRestrictedEmojis';
 import { canSendMessageAsync } from '../../lib/authorization/canSendMessage';
 import { hasPermissionAsync } from '../../lib/authorization/hasPermission';
 import { applyAirGappedRestrictionsValidation } from '../../lib/cloud/license/airGappedRestrictionsWrapper';
@@ -86,6 +87,7 @@ export async function executeUpdateMessage(
 	}
 	await canSendMessageAsync(message.rid, { uid: user._id, username: user.username ?? undefined, ...user });
 
+	await assertNoRestrictedEmojis(uid, message.msg, 'updateMessage');
 	// It is possible to have an empty array as the attachments property, so ensure both things exist
 	if (originalMessage.attachments && originalMessage.attachments.length > 0 && originalMessage.attachments[0].description !== undefined) {
 		originalMessage.attachments[0].description = message.msg;

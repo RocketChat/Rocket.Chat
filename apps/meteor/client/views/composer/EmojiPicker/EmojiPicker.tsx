@@ -8,9 +8,9 @@ import {
 	EmojiPickerListArea,
 	EmojiPickerPreview,
 } from '@rocket.chat/ui-client';
-import { useTranslation, usePermission, useRoute } from '@rocket.chat/ui-contexts';
+import { useTranslation, usePermission, useRoute, useSetting } from '@rocket.chat/ui-contexts';
 import type { ChangeEvent, KeyboardEvent, MouseEvent, RefObject } from 'react';
-import { useLayoutEffect, useState, useEffect, useRef } from 'react';
+import { useLayoutEffect, useState, useEffect, useRef, useMemo } from 'react';
 import type { ListRange, VirtuosoHandle } from 'react-virtuoso';
 
 import CategoriesResult from './CategoriesResult';
@@ -19,6 +19,7 @@ import EmojiPickerDropdown from './EmojiPickerDropDown';
 import SearchingResult from './SearchingResult';
 import ToneSelector from './ToneSelector';
 import ToneSelectorWrapper from './ToneSelector/ToneSelectorWrapper';
+import { parseRestrictedEmojis } from '../../../../lib/emoji/restrictedEmojis';
 import { usePreviewEmoji, useEmojiPickerData } from '../../../contexts/EmojiPickerContext';
 import { useMergedRefsV2 } from '../../../hooks/useMergedRefsV2';
 import { emoji, getCategoriesList, getEmojisBySearchTerm } from '../../../lib/emoji';
@@ -29,9 +30,10 @@ export type EmojiPickerProps = {
 	reference: Element;
 	onClose: () => void;
 	onPickEmoji: (emoji: string) => void;
+	keepOpen?: boolean;
 };
 
-const EmojiPicker = ({ reference, onClose, onPickEmoji }: EmojiPickerProps) => {
+const EmojiPicker = ({ reference, onClose, onPickEmoji, keepOpen = false }: EmojiPickerProps) => {
 	const t = useTranslation();
 
 	const ref = useRef<Element | null>(reference);
@@ -47,6 +49,9 @@ const EmojiPicker = ({ reference, onClose, onPickEmoji }: EmojiPickerProps) => {
 
 	const canManageEmoji = usePermission('manage-emoji');
 	const customEmojiRoute = useRoute('emoji-custom');
+
+	const restrictedEmojisSetting = useSetting<string>('Emoji_Restricted_For_Users', '');
+	const restrictedEmojis = useMemo(() => parseRestrictedEmojis(restrictedEmojisSetting), [restrictedEmojisSetting]);
 
 	const [searching, setSearching] = useState(false);
 	const [searchTerm, setSearchTerm] = useState('');
@@ -129,8 +134,10 @@ const EmojiPicker = ({ reference, onClose, onPickEmoji }: EmojiPickerProps) => {
 		setSearchTerm('');
 
 		onPickEmoji(_emoji + tone);
-		addRecentEmoji(_emoji + tone);
-		onClose();
+		if (!keepOpen) {
+			addRecentEmoji(_emoji + tone);
+			onClose();
+		}
 	};
 
 	useEffect(() => {
@@ -142,7 +149,7 @@ const EmojiPicker = ({ reference, onClose, onPickEmoji }: EmojiPickerProps) => {
 		setCurrentCategory('');
 		setSearching(e.target.value !== '');
 
-		const emojisResult = getEmojisBySearchTerm(e.target.value, actualTone, recentEmojis, setRecentEmojis);
+		const emojisResult = getEmojisBySearchTerm(e.target.value, actualTone, recentEmojis, setRecentEmojis, canManageEmoji, restrictedEmojis);
 
 		if (emojisResult.filter((emoji) => emoji.image).length === 0) {
 			setCurrentCategory('no-results');

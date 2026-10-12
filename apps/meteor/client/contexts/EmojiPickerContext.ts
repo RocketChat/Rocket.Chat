@@ -2,8 +2,12 @@ import { createContext, useContext, useMemo } from 'react';
 
 import type { EmojiPickerItem, CategoriesIndexes } from '../lib/emoji';
 
+type EmojiPickerOpenOptions = {
+	keepOpen?: boolean;
+};
+
 type EmojiPickerContextValue = {
-	open: (ref: Element, callback: (emoji: string) => void) => void;
+	open: (ref: Element, callback: (emoji: string) => void, options?: EmojiPickerOpenOptions) => void;
 	isOpen: boolean;
 	close: () => void;
 	emojiToPreview: { emoji: string; name: string } | null;
