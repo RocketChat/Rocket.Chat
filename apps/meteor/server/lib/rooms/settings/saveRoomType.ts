@@ -1,5 +1,6 @@
 import { Message } from '@rocket.chat/core-services';
 import type { IRoom, IUser } from '@rocket.chat/core-typings';
+import { isPublicRoom } from '@rocket.chat/core-typings';
 import { Rooms, Subscriptions } from '@rocket.chat/models';
 import { Match } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
@@ -7,8 +8,10 @@ import type { UpdateResult, Document } from 'mongodb';
 
 import { RoomSettingsEnum } from '../../../../definition/IRoomTypeConfig';
 import { settings } from '../../../settings';
+import { isABACManagedRoom } from '../../authorization/isABACManagedRoom';
 import { i18n } from '../../i18n';
 import { notifyOnSubscriptionChangedByRoomId } from '../../notifyListener';
+import { removeRoomAbacAttributes } from '../removeRoomAbacAttributes';
 import { roomCoordinator } from '../roomCoordinator';
 
 export const saveRoomType = async function (
@@ -42,14 +45,21 @@ export const saveRoomType = async function (
 		});
 	}
 
+	if (isPublicRoom({ t: roomType }) && isABACManagedRoom(room)) {
+		throw new Meteor.Error('error-action-not-allowed', 'Changing an ABAC managed private room to public is not allowed', {
+			function: 'RocketChat.saveRoomType',
+			action: 'Change_Room_Type',
+		});
+	}
+
 	const result = await Promise.all([Rooms.setTypeById(rid, roomType), Subscriptions.updateTypeByRoomId(rid, roomType)]);
 
 	if (!result) {
 		return result;
 	}
 
-	if (roomType === 'c' && room.abacAttributes?.length) {
-		await Rooms.unsetAbacAttributesById(rid);
+	if (isPublicRoom({ t: roomType })) {
+		await removeRoomAbacAttributes(room, user);
 	}
 
 	if (result[1]?.modifiedCount) {

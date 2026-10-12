@@ -16,3 +16,19 @@ export const addAbacAttributesToUserDirectly = async (
 		throw new Error(`addAbacAttributesToUserDirectly: no user matched ${userId}`);
 	}
 };
+
+export const setRoomAbacAttributesDirectly = async (
+	connection: MongoClient,
+	roomId: string,
+	abacAttributes: IAbacAttributeDefinition[],
+): Promise<void> => {
+	const result = await connection.db().collection('rocketchat_room').updateOne(
+		// @ts-expect-error - collection types for _id
+		{ _id: roomId },
+		{ $set: { abacAttributes } },
+	);
+
+	if (result.matchedCount === 0) {
+		throw new Error(`setRoomAbacAttributesDirectly: no room matched ${roomId}`);
+	}
+};
