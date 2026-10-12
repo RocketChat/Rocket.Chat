@@ -90,7 +90,7 @@ const withPreview = (respond: (page: PreviewPage) => IAbacRoomMembershipPreview 
 			No_members_found: 'No members found',
 			Save: 'Save',
 		})
-		.withEndpoint('POST', '/v1/abac/membership.preview', (body) => respond('rid' in body ? body : {}))
+		.withEndpoint('POST', '/v1/abac/rooms.evaluateMembership', (body) => respond('rid' in body ? body : {}))
 		.wrap((children) => <ModalProviderWithRegion>{children}</ModalProviderWithRegion>)
 		.buildStoryDecorator();
 
