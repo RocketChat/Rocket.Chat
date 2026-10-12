@@ -5,10 +5,10 @@ import { useQuery } from '@tanstack/react-query';
 
 import { ABACQueryKeys } from '../../../lib/queryKeys';
 
-type AssignableAttributes = Serialized<OperationResult<'GET', '/v1/abac/assignable-attributes'>>;
+type AssignableAttributes = Serialized<OperationResult<'GET', '/v1/abac/attributes.listAssignable'>>;
 
 export const useAssignableAttributes = <TData = AssignableAttributes>(enabled: boolean, select?: (data: AssignableAttributes) => TData) => {
-	const getAssignableAttributes = useEndpoint('GET', '/v1/abac/assignable-attributes');
+	const getAssignableAttributes = useEndpoint('GET', '/v1/abac/attributes.listAssignable');
 
 	return useQuery({
 		queryKey: ABACQueryKeys.assignableAttributes(),

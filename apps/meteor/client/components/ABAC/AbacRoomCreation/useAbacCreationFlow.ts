@@ -23,7 +23,7 @@ export const useAbacCreationFlow = ({ abac, isAbacManaged, step, members, attrib
 	const assignable = useAssignableAttributeList(isManaged);
 	const missingRequiredKeys = findMissingRequiredKeys(abac?.requiredAttributes ?? [], assignable.data);
 
-	const checkAssignability = useEndpoint('POST', '/v1/abac/attribute-assignability');
+	const checkAssignability = useEndpoint('POST', '/v1/abac/attributes.checkAssignability');
 	const assignability = useMutation({
 		mutationFn: (attributes: Record<string, string[]>) => checkAssignability({ attributes }),
 	});
