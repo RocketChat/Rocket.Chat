@@ -462,9 +462,9 @@ import { IS_EE, URL_MONGODB } from '../../e2e/config/constants';
 		});
 	});
 
-	describe('POST /abac/membership-preview', () => {
+	describe('POST /abac/membership.preview', () => {
 		const preview = (body: Record<string, unknown>, as: Credentials = creatorCredentials) =>
-			request.post(`${v1}/abac/membership-preview`).set(as).send(body);
+			request.post(`${v1}/abac/membership.preview`).set(as).send(body);
 
 		const usernamesOf = (members: IUser[]) => members.map(({ username }) => username);
 
