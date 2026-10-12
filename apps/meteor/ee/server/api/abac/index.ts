@@ -468,7 +468,7 @@ const abacEndpoints = API.v1
 	)
 
 	.get(
-		'abac/attribute-keys',
+		'abac/attributes.listKeys',
 		{
 			authRequired: true,
 			permissionsRequired: ['abac-management', 'manage-abac-admin-settings'],

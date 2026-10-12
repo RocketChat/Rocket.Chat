@@ -210,8 +210,8 @@ const addAbacAttributesToUserDirectly = async (userId: string, abacAttributes: I
 					await request.get(`${v1}/abac/pdp/health`).set(credentials).expect(403);
 				});
 
-				it('GET /abac/attribute-keys should return 403', async () => {
-					await request.get(`${v1}/abac/attribute-keys`).set(credentials).expect(403);
+				it('GET /abac/attributes.listKeys should return 403', async () => {
+					await request.get(`${v1}/abac/attributes.listKeys`).set(credentials).expect(403);
 				});
 			});
 
@@ -3218,7 +3218,7 @@ const addAbacAttributesToUserDirectly = async (userId: string, abacAttributes: I
 		});
 	});
 
-	describe('[GET] /abac/attribute-keys', () => {
+	describe('[GET] /abac/attributes.listKeys', () => {
 		const keyPrefix = `keys_${Date.now()}`;
 		const createdKeys = [`${keyPrefix}_zulu`, `${keyPrefix}_alpha`];
 		const createdIds: string[] = [];
@@ -3253,11 +3253,11 @@ const addAbacAttributesToUserDirectly = async (userId: string, abacAttributes: I
 		});
 
 		it('should return 401 when not authenticated', async () => {
-			await request.get(`${v1}/abac/attribute-keys`).expect(401);
+			await request.get(`${v1}/abac/attributes.listKeys`).expect(401);
 		});
 
 		it('should return every registered key as a { key, label } option', async () => {
-			const res = await request.get(`${v1}/abac/attribute-keys`).set(credentials).expect(200);
+			const res = await request.get(`${v1}/abac/attributes.listKeys`).set(credentials).expect(200);
 
 			expect(res.body).to.have.property('success', true);
 			expect(res.body).to.have.property('data').that.is.an('array');
@@ -3269,7 +3269,7 @@ const addAbacAttributesToUserDirectly = async (userId: string, abacAttributes: I
 		});
 
 		it('should return the keys sorted', async () => {
-			const res = await request.get(`${v1}/abac/attribute-keys`).set(credentials).expect(200);
+			const res = await request.get(`${v1}/abac/attributes.listKeys`).set(credentials).expect(200);
 
 			const keys: string[] = res.body.data.map(({ key }: { key: string }) => key);
 
