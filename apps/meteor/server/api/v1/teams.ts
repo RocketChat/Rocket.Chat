@@ -33,6 +33,7 @@ import { escapeRegExp } from '@rocket.chat/tools';
 import { canAccessRoomAsync } from '../../lib/authorization';
 import { hasPermissionAsync, hasAtLeastOnePermissionAsync, hasAllPermissionAsync } from '../../lib/authorization/hasPermission';
 import { eraseRoom } from '../../lib/eraseRoom';
+import { removeRoomAbacAttributes } from '../../lib/rooms/removeRoomAbacAttributes';
 import { removeUserFromRoom } from '../../lib/rooms/removeUserFromRoom';
 import { toAbacAttributeDefinitions } from '../../lib/rooms/toAbacAttributeDefinitions';
 import { effectiveStatusFilter } from '../../lib/statusVisibility/effectiveStatus';
@@ -214,6 +215,13 @@ API.v1.post(
 		await Promise.all([Team.unsetTeamIdOfRooms(this.user, team), Team.removeAllMembersFromTeam(team._id)]);
 
 		await Team.deleteById(team._id);
+
+		const teamRoom = await Rooms.findOneById<Pick<IRoom, '_id' | 'name' | 'abacAttributes'>>(team.roomId, {
+			projection: { name: 1, abacAttributes: 1 },
+		});
+		if (teamRoom) {
+			await removeRoomAbacAttributes(teamRoom, this.user);
+		}
 
 		return API.v1.success();
 	},
