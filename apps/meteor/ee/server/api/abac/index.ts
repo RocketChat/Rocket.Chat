@@ -512,11 +512,9 @@ const abacEndpoints = API.v1
 				throw new Error('error-abac-not-enabled');
 			}
 
-			const { enforcementOn, requiredAttributeKeys } = getRoomAbacLockContext();
-
 			return API.v1.success({
 				attributes: await Abac.listAssignableAttributes(toAbacActor(this.user)),
-				requiredKeys: enforcementOn ? requiredAttributeKeys : [],
+				requiredKeys: getRoomAbacLockContext().requiredAttributeKeys,
 			});
 		},
 	)
