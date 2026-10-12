@@ -50,6 +50,13 @@ describe('RoomBridge.doCreate', () => {
 		assert.strictEqual(create.mock.callCount(), 0);
 	});
 
+	it('refuses ABAC attributes that are not a list when the app lacks abac.write, instead of stripping them', async () => {
+		grantAbacWrite(false);
+
+		await assert.rejects(bridge.doCreate(Object.assign(buildRoom(), { abacAttributes: {} }), [], 'app-id'), PermissionDeniedError);
+		assert.strictEqual(create.mock.callCount(), 0);
+	});
+
 	it('strips unmapped ABAC attributes when the app supplies an empty list', async () => {
 		grantAbacWrite(false);
 		const room = {
