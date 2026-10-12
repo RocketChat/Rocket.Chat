@@ -8,7 +8,7 @@ import { ABACQueryKeys } from '../../../lib/queryKeys';
 export const PREVIEW_MIN_MATCHES = 25;
 
 export const usePreviewPages = (rid: string, attributes: Record<string, string[]>, filter: string, group: AbacMembershipGroup) => {
-	const previewMembership = useEndpoint('POST', '/v1/abac/membership-preview');
+	const previewMembership = useEndpoint('POST', '/v1/abac/membership.preview');
 
 	return useInfiniteQuery<
 		IAbacRoomMembershipPreview,
