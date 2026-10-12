@@ -23,7 +23,7 @@ export const useRoomAbacInfo = <TData = RoomAbacInfo>(
 				return {};
 			}
 
-			const { abacRequiredAttributes } = await getRoomInfo({ roomId: rid, withAbac: true });
+			const { abacRequiredAttributes } = await getRoomInfo({ roomId: rid });
 			return { abacRequiredAttributes };
 		},
 		select,
