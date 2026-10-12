@@ -344,19 +344,23 @@ type CreateRoomBody = {
 			);
 		});
 
-		it('creates no room carrying attributes, even with abac.write', async () => {
-			const { name } = await requestRoomThroughApp({
+		it('creates no room carrying attributes, even with abac.write, while finish() resolves', async () => {
+			const { res, name } = await requestRoomThroughApp({
 				type: 'p',
 				creatorUsername: creator.username,
 				abacAttributes: [{ key: clearance, values: ['secret'] }],
 			});
 
+			expect(res.status).to.equal(200);
+			expect(res.body).to.not.have.property('error');
 			expect(await findRoomsNamed(name)).to.be.empty;
 		});
 
-		it('creates no room without attributes either', async () => {
-			const { name } = await requestRoomThroughApp({ type: 'p', creatorUsername: creator.username });
+		it('creates no room without attributes either, while finish() resolves', async () => {
+			const { res, name } = await requestRoomThroughApp({ type: 'p', creatorUsername: creator.username });
 
+			expect(res.status).to.equal(200);
+			expect(res.body).to.not.have.property('error');
 			expect(await findRoomsNamed(name)).to.be.empty;
 		});
 	});
