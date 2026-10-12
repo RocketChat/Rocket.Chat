@@ -1,18 +1,21 @@
 import { AutoComplete, Box, Option, Chip } from '@rocket.chat/fuselage';
-import { useDebouncedValue } from '@rocket.chat/fuselage-hooks';
+import { useDebouncedValue, useStableCallback } from '@rocket.chat/fuselage-hooks';
 import { RoomAvatar } from '@rocket.chat/ui-avatar';
 import { useEndpoint } from '@rocket.chat/ui-contexts';
 import { keepPreviousData, useQuery } from '@tanstack/react-query';
 import type { ComponentProps } from 'react';
-import { memo, useMemo, useState } from 'react';
+import { memo, useMemo, useRef, useState } from 'react';
 
 import { roomCoordinator } from '../../../../../lib/rooms/roomCoordinator';
 
-export type RoomsAvailableForTeamsAutoCompleteProps = Omit<ComponentProps<typeof AutoComplete>, 'filter'>;
+export type RoomsAvailableForTeamsAutoCompleteProps = Omit<ComponentProps<typeof AutoComplete>, 'filter'> & {
+	onAbacRoomsChange?: (roomNames: string[]) => void;
+};
 
-const RoomsAvailableForTeamsAutoComplete = ({ value, onChange, ...props }: RoomsAvailableForTeamsAutoCompleteProps) => {
+const RoomsAvailableForTeamsAutoComplete = ({ value, onChange, onAbacRoomsChange, ...props }: RoomsAvailableForTeamsAutoCompleteProps) => {
 	const [filter, setFilter] = useState('');
 	const debouncedFilter = useDebouncedValue(filter, 1000);
+	const abacRoomNames = useRef(new Map<string, string>());
 
 	const roomsAvailableForTeamsAutoCompleteEndpoint = useEndpoint('GET', '/v1/rooms.autocomplete.availableForTeams');
 
@@ -33,16 +36,29 @@ const RoomsAvailableForTeamsAutoComplete = ({ value, onChange, ...props }: Rooms
 				name: roomCoordinator.getRoomName(room.t, { _id: room._id, name: room.name, fname: room.fname, prid: room.prid }),
 				type: room.t,
 				avatarETag: room.avatarETag,
+				hasAbacAttributes: !!room.abacAttributes?.length,
 			},
 		}));
 	}, [data]);
+
+	const handleChange = useStableCallback((selected: string | string[]) => {
+		for (const { value, label } of options) {
+			if (label.hasAbacAttributes) {
+				abacRoomNames.current.set(value, label.name);
+			}
+		}
+
+		const selectedIds = Array.isArray(selected) ? selected : [selected];
+		onAbacRoomsChange?.(selectedIds.flatMap((id) => abacRoomNames.current.get(id) ?? []));
+		onChange(selected);
+	});
 
 	return (
 		<AutoComplete
 			{...props}
 			multiple
 			value={value}
-			onChange={onChange}
+			onChange={handleChange}
 			filter={filter}
 			setFilter={setFilter}
 			renderSelected={({ selected: { value, label }, onRemove }) => (

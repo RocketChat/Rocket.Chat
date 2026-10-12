@@ -32,6 +32,7 @@ import { addUserToRoom } from '../../lib/rooms/addUserToRoom';
 import { filterDefaultChannelsForUser } from '../../lib/rooms/filterDefaultChannelsForUser';
 import { filterUsersAllowedInRoom } from '../../lib/rooms/filterUsersAllowedInRoom';
 import { getSubscribedRoomsForUserWithDetails } from '../../lib/rooms/getRoomsWithSingleOwner';
+import { removeRoomAbacAttributes } from '../../lib/rooms/removeRoomAbacAttributes';
 import { removeUserFromRoom } from '../../lib/rooms/removeUserFromRoom';
 import { saveRoomName } from '../../lib/rooms/settings';
 import { saveRoomType } from '../../lib/rooms/settings/saveRoomType';
@@ -141,6 +142,15 @@ export class TeamService extends ServiceClassInternal implements ITeamService {
 			});
 
 			await TeamMember.insertMany(membersList.filter(({ userId }) => !skippedIds.has(userId)));
+
+			if (room.id) {
+				const convertedRoom = await Rooms.findOneById<Pick<IRoom, '_id' | 'name' | 'abacAttributes'>>(room.id, {
+					projection: { name: 1, abacAttributes: 1 },
+				});
+				if (convertedRoom) {
+					await removeRoomAbacAttributes(convertedRoom, createdBy);
+				}
+			}
 
 			await Rooms.setTeamMainById(roomId, teamId);
 			await Team.updateMainRoomForTeam(teamId, roomId);
@@ -387,6 +397,11 @@ export class TeamService extends ServiceClassInternal implements ITeamService {
 			}
 
 			room.teamId = teamId;
+		}
+
+		for await (const room of validRooms) {
+			await removeRoomAbacAttributes(room, user);
+			delete room.abacAttributes;
 		}
 
 		await Rooms.setTeamByIds(rids, teamId);

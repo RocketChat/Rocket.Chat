@@ -70,6 +70,7 @@ export interface IAbacService {
 	listAssignableAttributes(actor: AbacActor): Promise<IAbacAttributeDefinition[]>;
 	listRoomAssignableAttributes(rid: string, actor: AbacActor, grant: AbacRoomAttributesGrant): Promise<IAbacAttributeDefinition[]>;
 	auditRoomAttributesAtCreation(room: Pick<IRoom, '_id' | 'name' | 'abacAttributes'>, actor: AbacActor): Promise<void>;
+	auditRoomAttributesRemoved(room: Pick<IRoom, '_id' | 'name' | 'abacAttributes'>, actor: AbacActor): Promise<void>;
 	previewCreationMembers(
 		usernames: string[],
 		attributes: IAbacAttributeDefinition[],
