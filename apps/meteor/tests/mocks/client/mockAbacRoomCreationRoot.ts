@@ -31,7 +31,7 @@ export const mockAbacRoomCreationRoot = ({
 					'/v1/licenses.info',
 					jest.fn().mockImplementation(() => ({ license: createFakeLicenseInfo({ activeModules: ['abac'] }) })),
 				)
-				.withEndpoint('GET', '/v1/abac/assignable-attributes', jest.fn().mockImplementation(assignableAttributes))
+				.withEndpoint('GET', '/v1/abac/attributes.listAssignable', jest.fn().mockImplementation(assignableAttributes))
 				.withEndpoint(
 					'GET',
 					'/v1/rooms.nameExists',

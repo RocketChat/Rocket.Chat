@@ -462,8 +462,8 @@ import { IS_EE, URL_MONGODB } from '../../e2e/config/constants';
 		});
 	});
 
-	describe('GET /abac/assignable-attributes', () => {
-		const assignable = (as: Credentials = creatorCredentials) => request.get(`${v1}/abac/assignable-attributes`).set(as);
+	describe('GET /abac/attributes.listAssignable', () => {
+		const assignable = (as: Credentials = creatorCredentials) => request.get(`${v1}/abac/attributes.listAssignable`).set(as);
 
 		const ownKeys = (attributes: { key: string; values: string[] }[]) => attributes.filter(({ key }) => key === dept || key === clearance);
 
@@ -493,7 +493,7 @@ import { IS_EE, URL_MONGODB } from '../../e2e/config/constants';
 			const [offered] = ownKeys(res.body.attributes);
 
 			await request
-				.post(`${v1}/abac/attribute-assignability`)
+				.post(`${v1}/abac/attributes.checkAssignability`)
 				.set(creatorCredentials)
 				.send({ attributes: { [offered.key]: offered.values } })
 				.expect(200);
