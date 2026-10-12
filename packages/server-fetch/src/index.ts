@@ -1,5 +1,6 @@
 import http from 'node:http';
 import https from 'node:https';
+import type { Readable } from 'node:stream';
 
 import { Logger } from '@rocket.chat/logger';
 import { censorUrl } from '@rocket.chat/tools';
@@ -89,11 +90,24 @@ async function getFetchAgentWithValidation<U extends string>(
 	return { agent: getFetchAgent(pinnedUrl, allowSelfSignedCerts, originalHostname), pinnedUrl, originalHostname, resolvedIp };
 }
 
-function getTimeout(timeout?: number) {
-	const controller = new AbortController();
-	const timeoutId = setTimeout(() => controller.abort(), timeout ?? 20000);
+const bodyConsumers = ['arrayBuffer', 'blob', 'buffer', 'json', 'text', 'textConverted'] as const;
 
-	return { controller, timeoutId };
+// node-fetch only reaches the socket through the request's abort signal: destroying the body, or a consumer
+// rejecting on its size limit or body timeout, would otherwise leave the upstream streaming into it.
+function abortRequestWhenBodyIsDiscarded(response: Response, controller: AbortController) {
+	const body = response.body as Readable;
+	body.once('close', () => controller.abort());
+
+	for (const consumer of bodyConsumers) {
+		const consume: () => Promise<unknown> = response[consumer].bind(response);
+		Object.assign(response, {
+			[consumer]: () =>
+				consume().catch((err) => {
+					body.destroy();
+					throw err;
+				}),
+		});
+	}
 }
 
 function followRedirect(response: fetch.Response, redirectCount = 0) {
@@ -115,7 +129,8 @@ function followRedirect(response: fetch.Response, redirectCount = 0) {
 
 export async function serverFetch(input: string, options?: ExtendedFetchOptions, allowSelfSignedCerts?: boolean): Promise<Response> {
 	let currentUrl = input;
-	const { controller, timeoutId } = getTimeout(options?.timeout);
+	let controller = new AbortController();
+	const timeoutId = setTimeout(() => controller.abort(), options?.timeout ?? 20000);
 
 	try {
 		for (let redirectCount = 0; redirectCount <= MAX_REDIRECTS; redirectCount += 1) {
@@ -176,18 +191,17 @@ export async function serverFetch(input: string, options?: ExtendedFetchOptions,
 			});
 
 			if (!redirectStatus.has(response.status)) {
+				abortRequestWhenBodyIsDiscarded(response, controller);
 				return response;
 			}
 
 			currentUrl = new URL(followRedirect(response, redirectCount), currentUrl).toString();
 
-			// https://github.com/node-fetch/node-fetch/issues/1673 - body not consumed == open socket
-			response.body.resume();
+			controller.abort();
+			controller = new AbortController();
 		}
 	} finally {
-		if (timeoutId) {
-			clearTimeout(timeoutId);
-		}
+		clearTimeout(timeoutId);
 	}
 
 	throw new Error('error-processing-request');
