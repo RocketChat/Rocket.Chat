@@ -39,6 +39,7 @@ type CreateRoomBody = {
 	];
 	const savedSettings = new Map<string, ISetting['value']>();
 	let savedCreatePermissionRoles: string[];
+	let savedCreatePrivateRoles: string[];
 
 	const grantedWithAbacWrite: IAppPermission[] = [
 		{ name: 'api' },
@@ -103,8 +104,10 @@ type CreateRoomBody = {
 			savedSettings.set(id, await getSettingValueById(id));
 		}
 		const permissions = await request.get(api('permissions.listAll')).set(credentials).expect(200);
-		savedCreatePermissionRoles =
-			(permissions.body.update as IPermission[]).find(({ _id }) => _id === 'create-abac-managed-room')?.roles ?? [];
+		const rolesOf = (permissionId: string) =>
+			(permissions.body.update as IPermission[]).find(({ _id }) => _id === permissionId)?.roles ?? [];
+		savedCreatePermissionRoles = rolesOf('create-abac-managed-room');
+		savedCreatePrivateRoles = rolesOf('create-p');
 
 		await setSetting('ABAC_Enabled', true);
 		await setSetting('ABAC_PDP_Type', 'local');
@@ -143,6 +146,7 @@ type CreateRoomBody = {
 		}
 
 		await updatePermission('create-abac-managed-room', savedCreatePermissionRoles);
+		await updatePermission('create-p', savedCreatePrivateRoles);
 		for (const [id, value] of savedSettings) {
 			await setSetting(id, value);
 		}
@@ -152,6 +156,7 @@ type CreateRoomBody = {
 
 	beforeEach(async () => {
 		await updatePermission('create-abac-managed-room', ['admin', 'user']);
+		await updatePermission('create-p', ['admin', 'user', 'federated-external', 'bot', 'app']);
 		await setSetting('ABAC_Restrict_To_Owned_Attributes', true);
 	});
 
