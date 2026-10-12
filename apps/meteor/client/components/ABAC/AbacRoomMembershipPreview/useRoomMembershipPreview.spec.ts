@@ -26,7 +26,7 @@ const pagesOf = (size: number, { pages = Infinity, total = 1000 } = {}) => {
 
 const renderPreview = (endpoint: ReturnType<typeof pagesOf>, filter = '') =>
 	renderHook(() => useRoomMembershipPreview('rid', attributes, filter, 'loses'), {
-		wrapper: mockAppRoot().withEndpoint('POST', '/v1/abac/membership-preview', endpoint).build(),
+		wrapper: mockAppRoot().withEndpoint('POST', '/v1/abac/membership.preview', endpoint).build(),
 	});
 
 describe('useRoomMembershipPreview', () => {
