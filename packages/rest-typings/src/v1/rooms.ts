@@ -101,24 +101,34 @@ export const isRoomsAutocompleteAdminRoomsPayload = ajvQuery.compile<RoomsAutoco
 );
 
 type BaseRoomsProps = { roomId: string } | { roomName: string };
-type RoomsInfoProps = BaseRoomsProps & { fields?: string; withAbac?: boolean };
+type RoomsInfoProps = BaseRoomsProps;
 
 const RoomsInfoSchema = {
-	type: 'object',
-	properties: {
-		roomId: { type: 'string' },
-		roomName: { type: 'string' },
-		fields: { type: 'string' },
-		withAbac: { type: 'boolean' },
-	},
 	oneOf: [
-		{ type: 'object', required: ['roomId'] },
-		{ type: 'object', required: ['roomName'] },
+		{
+			type: 'object',
+			properties: {
+				roomId: {
+					type: 'string',
+				},
+			},
+			required: ['roomId'],
+			additionalProperties: false,
+		},
+		{
+			type: 'object',
+			properties: {
+				roomName: {
+					type: 'string',
+				},
+			},
+			required: ['roomName'],
+			additionalProperties: false,
+		},
 	],
-	additionalProperties: false,
 };
 
-export const isRoomsInfoProps = ajvQuery.compile<RoomsInfoProps>(RoomsInfoSchema);
+export const isRoomsInfoProps = ajv.compile<RoomsInfoProps>(RoomsInfoSchema);
 
 type RoomsCreateDiscussionProps = {
 	prid: IRoom['_id'];
