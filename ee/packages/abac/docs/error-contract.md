@@ -44,19 +44,19 @@ Returned by `groups.create`, `teams.create` and every other path that creates a 
 | `error-abac-decision-unavailable` | The policy decision point or attribute store cannot be reached | `cause` |
 | `error-abac-decision-inconclusive` | The policy decision point could not decide | `cause` |
 
-`abac/attribute-assignability` and `abac/membership-preview` evaluate attributes before a room is
-created, and return the last five keys. `abac/membership-preview` does not check the creator, so it
-never returns `error-abac-creator-not-admitted`.
+`abac/attributes.checkAssignability` and `abac/rooms.evaluateMembership` evaluate attributes before
+a room is created, and return the last five keys. `abac/rooms.evaluateMembership` does not check the
+creator, so it never returns `error-abac-creator-not-admitted`.
 
 ### Previewing room members
 
 | Key | Returned when |
 |---|---|
-| `error-abac-preview-too-many-members` | `abac/membership-preview` was sent more members than `API_User_Limit` allows, the creator included |
+| `error-abac-preview-too-many-members` | `abac/rooms.evaluateMembership` was sent more members than `API_User_Limit` allows, the creator included |
 
 ### Editing a room's attributes
 
-Returned by `abac/rooms/:rid/attributes` and by `abac/membership-preview` with a `rid`, to a user
+Returned by `abac/rooms/:rid/attributes` and by `abac/rooms.evaluateMembership` with a `rid`, to a user
 editing through the room-scoped `edit-room-abac-attributes` permission. A holder of the ABAC
 administration permissions is never refused with these keys.
 
@@ -65,8 +65,8 @@ administration permissions is never refused with these keys.
 | `error-abac-required-attributes-removed` | The edit removes an attribute every ABAC room requires | `keys`, the required attributes removed |
 | `error-abac-room-attributes-cleared` | The edit removes every attribute while enforcement is on | |
 
-`abac/assignable-attributes`, `abac/attribute-assignability` and `abac/membership-preview` return
-`error-abac-not-enabled` in this shape too. The ABAC administration endpoints return it as `error`
+`abac/attributes.listAssignable`, `abac/attributes.checkAssignability` and
+`abac/rooms.evaluateMembership` return `error-abac-not-enabled` in this shape too. The ABAC administration endpoints return it as `error`
 only, and are not part of this contract.
 
 `cause` is the underlying code, for example `error-invalid-attribute-values` or
