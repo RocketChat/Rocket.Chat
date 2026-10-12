@@ -41,6 +41,31 @@ it('renders a big emoji block', () => {
 	expect(screen.getAllByRole('img', { name: ':smile:' })).toHaveLength(2);
 });
 
+it('renders an unknown unicode emoji block with big emoji styling', () => {
+	const { container } = render(
+		<MarkupInteractionContext.Provider
+			value={{
+				convertAsciiToEmoji: true,
+				useEmoji: true,
+				detectEmoji: () => [],
+			}}
+		>
+			<Markup
+				tokens={[
+					{
+						type: 'BIG_EMOJI',
+						value: [{ type: 'EMOJI', value: undefined, unicode: '🫪' }],
+					},
+				]}
+			/>
+		</MarkupInteractionContext.Provider>,
+	);
+
+	expect(screen.getByRole('presentation')).toHaveTextContent('🫪');
+	expect(screen.getByRole('img')).toHaveTextContent('🫪');
+	expect(container.querySelector('.rcx-message__emoji--big')).toBeInTheDocument();
+});
+
 it('renders a big emoji block with ASCII emoji', () => {
 	render(
 		<MarkupInteractionContext.Provider

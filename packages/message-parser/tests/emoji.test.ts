@@ -96,6 +96,7 @@ test.each([
 	['🩷', [bigEmoji([emojiUnicode('🩷')])]], // v15
 	['🫱🏿‍🫲🏻', [bigEmoji([emojiUnicode('🫱🏿‍🫲🏻')])]], // v14
 	['🫩', [bigEmoji([emojiUnicode('🫩')])]], // v16
+	['🫪', [bigEmoji([emojiUnicode('🫪')])]], // v17
 	['🇨🇶', [bigEmoji([emojiUnicode('🇨🇶')])]], // v16
 	// ZWJ sequences anchored by an Emoticon (U+1F600-U+1F64F)
 	['😶‍🌫️', [bigEmoji([emojiUnicode('😶‍🌫️')])]],

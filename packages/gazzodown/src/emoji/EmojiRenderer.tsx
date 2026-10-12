@@ -35,11 +35,23 @@ const EmojiRenderer = ({ big = false, preview = false, ...emoji }: EmojiProps) =
 						</MessageEmoji>
 					)}
 				</span>
-			)) ?? (
-				<span title={sanitizedFallback} role='img' aria-label={sanitizedFallback.charAt(0) === ':' ? sanitizedFallback : undefined}>
-					{sanitizedFallback}
-				</span>
-			)}
+			)) ??
+				(preview ? (
+					<span title={sanitizedFallback} role='img' aria-label={sanitizedFallback.charAt(0) === ':' ? sanitizedFallback : undefined}>
+						{sanitizedFallback}
+					</span>
+				) : (
+					<MessageEmoji
+						big={big}
+						className='emoji'
+						name=''
+						title={sanitizedFallback}
+						role='img'
+						aria-label={sanitizedFallback.charAt(0) === ':' ? sanitizedFallback : undefined}
+					>
+						{sanitizedFallback}
+					</MessageEmoji>
+				))}
 		</>
 	);
 };
