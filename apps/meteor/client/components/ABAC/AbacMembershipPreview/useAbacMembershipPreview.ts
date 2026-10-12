@@ -4,7 +4,7 @@ import { useQuery } from '@tanstack/react-query';
 import { ABACQueryKeys } from '../../../lib/queryKeys';
 
 export const useAbacMembershipPreview = (members: string[], attributes: Record<string, string[]>, enabled = true) => {
-	const previewMembership = useEndpoint('POST', '/v1/abac/membership.preview');
+	const previewMembership = useEndpoint('POST', '/v1/abac/rooms.evaluateMembership');
 
 	return useQuery({
 		queryKey: ABACQueryKeys.membershipPreview(members, attributes),
