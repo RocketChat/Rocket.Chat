@@ -12,7 +12,7 @@ const WATCHED_SETTINGS = ['Outlook_Calendar_Enabled', 'Exchange_Mode', 'Exchange
 
 export const DEFAULT_INTERVAL_HOURS = 1;
 
-const stopExchangeSyncJob = async (): Promise<void> => {
+const stopCalendarSyncJob = async (): Promise<void> => {
 	if (await cronJobs.has(CALENDAR_SYNC_JOB)) {
 		await cronJobs.remove(CALENDAR_SYNC_JOB);
 	}
@@ -35,9 +35,7 @@ const intervalToCron = (hours: number): string => {
 };
 
 export const configureCalendarSyncJob = async (isCurrent: () => boolean = () => true): Promise<void> => {
-	if (await cronJobs.has(CALENDAR_SYNC_JOB)) {
-		await cronJobs.remove(CALENDAR_SYNC_JOB);
-	}
+	await stopCalendarSyncJob();
 
 	if (!settings.get<boolean>('Outlook_Calendar_Enabled') || settings.get<string>('Exchange_Mode') !== 'server') {
 		return;
@@ -58,6 +56,11 @@ export const configureCalendarSyncJob = async (isCurrent: () => boolean = () => 
 	logger.info({ msg: 'Scheduling the Exchange calendar sync job', schedule });
 
 	await cronJobs.add(CALENDAR_SYNC_JOB, schedule, async () => runCalendarSync());
+
+	// A guard to avoid race conditions
+	if (!isCurrent()) {
+		await stopCalendarSyncJob();
+	}
 };
 
 export const registerCalendarSyncJob = (): (() => void) => {
@@ -76,7 +79,7 @@ export const registerCalendarSyncJob = (): (() => void) => {
 		stopped = true;
 		stopWatching();
 
-		void stopExchangeSyncJob().catch((err) =>
+		void stopCalendarSyncJob().catch((err) =>
 			logger.error({ msg: 'Could not stop the Exchange calendar sync job during cleanup', err: scrubForLog(err) }),
 		);
 	};
