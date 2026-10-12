@@ -2,7 +2,7 @@ import type { IMessage, IThreadMainMessage } from '@rocket.chat/core-typings';
 import { isEditedMessage, isThreadMainMessage } from '@rocket.chat/core-typings';
 import { Box, CheckBox, Field, FieldLabel, FieldRow } from '@rocket.chat/fuselage';
 import { clientCallbacks, ContextualbarContent } from '@rocket.chat/ui-client';
-import { useEndpoint, useTranslation, useUserPreference, useRoomToolbox } from '@rocket.chat/ui-contexts';
+import { useEndpoint, useTranslation, useUserPreference, useRoomToolbox, usePermission, useUser } from '@rocket.chat/ui-contexts';
 import type { ComponentProps } from 'react';
 import { useState, useEffect, useCallback, useId } from 'react';
 
@@ -86,6 +86,9 @@ const ThreadChat = ({ mainMessage, onEscape, ...boxProps }: ThreadChatProps) => 
 	}, [mainMessage._id, readThread, room._id]);
 
 	const subscription = useRoomSubscription();
+	const user = useUser();
+	const canPostReadOnly = usePermission('post-readonly', room._id);
+	const canSendToChannel = !room.ro || canPostReadOnly || Boolean(user?.username && room.unmuted?.includes(user.username));
 	const sendToChannelID = useId();
 	const t = useTranslation();
 
@@ -123,21 +126,23 @@ const ThreadChat = ({ mainMessage, onEscape, ...boxProps }: ThreadChatProps) => 
 							onEscape={handleComposerEscape}
 							onNavigateToPreviousMessage={handleNavigateToPreviousMessage}
 							onNavigateToNextMessage={handleNavigateToNextMessage}
-							tshow={sendToChannel}
+							tshow={canSendToChannel && sendToChannel}
 						>
-							<Field marginBlock={8}>
-								<FieldRow justifyContent='initial'>
-									<CheckBox
-										id={sendToChannelID}
-										checked={sendToChannel}
-										onChange={() => setSendToChannel((checked) => !checked)}
-										name='alsoSendThreadToChannel'
-									/>
-									<FieldLabel marginInlineStart='x8' htmlFor={sendToChannelID} color='annotation' fontScale='p2'>
-										{t('Also_send_to_channel')}
-									</FieldLabel>
-								</FieldRow>
-							</Field>
+							{canSendToChannel && (
+								<Field marginBlock={8}>
+									<FieldRow justifyContent='initial'>
+										<CheckBox
+											id={sendToChannelID}
+											checked={sendToChannel}
+											onChange={() => setSendToChannel((checked) => !checked)}
+											name='alsoSendThreadToChannel'
+										/>
+										<FieldLabel marginInlineStart='x8' htmlFor={sendToChannelID} color='annotation' fontScale='p2'>
+											{t('Also_send_to_channel')}
+										</FieldLabel>
+									</FieldRow>
+								</Field>
+							)}
 						</ComposerContainer>
 					</RoomComposer>
 				</Box>

@@ -29,6 +29,7 @@ export const useEditRoomPermissions = (room: IRoom | IRoomWithRetentionPolicy) =
 	);
 	const canSetReadOnly = usePermission('set-readonly', room._id);
 	const canSetReactWhenReadOnly = usePermission('set-react-when-readonly', room._id);
+	const canSetReplyWhenReadOnly = usePermission('set-reply-when-readonly', room._id);
 	const canEditRoomRetentionPolicy = usePermission('edit-room-retention-policy', room._id);
 	const canArchiveOrUnarchive = useAtLeastOnePermission(
 		useMemo(() => ['archive-room', 'unarchive-room'], []),
@@ -46,6 +47,7 @@ export const useEditRoomPermissions = (room: IRoom | IRoomWithRetentionPolicy) =
 		canViewHideSysMes,
 		canViewJoinCode,
 		canViewReactWhenReadOnly,
+		canViewReplyWhenReadOnly,
 	] = useMemo(() => {
 		const isAllowed =
 			roomCoordinator.getRoomDirectives(room.t)?.allowRoomSettingChange ||
@@ -63,6 +65,7 @@ export const useEditRoomPermissions = (room: IRoom | IRoomWithRetentionPolicy) =
 			isAllowed(room, RoomSettingsEnum.SYSTEM_MESSAGES),
 			isAllowed(room, RoomSettingsEnum.JOIN_CODE),
 			isAllowed(room, RoomSettingsEnum.REACT_WHEN_READ_ONLY),
+			isAllowed(room, RoomSettingsEnum.REPLY_WHEN_READ_ONLY),
 		];
 	}, [room]);
 
@@ -70,6 +73,7 @@ export const useEditRoomPermissions = (room: IRoom | IRoomWithRetentionPolicy) =
 		canChangeType,
 		canSetReadOnly,
 		canSetReactWhenReadOnly,
+		canSetReplyWhenReadOnly,
 		canEditRoomRetentionPolicy,
 		canArchiveOrUnarchive,
 		canViewName,
@@ -82,5 +86,6 @@ export const useEditRoomPermissions = (room: IRoom | IRoomWithRetentionPolicy) =
 		canViewHideSysMes,
 		canViewJoinCode,
 		canViewReactWhenReadOnly,
+		canViewReplyWhenReadOnly,
 	};
 };

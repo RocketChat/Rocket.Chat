@@ -31,7 +31,7 @@ const ComposerContainer = ({ children, ...props }: ComposerMessageProps) => {
 	const isSelectingMessages = useIsSelecting();
 	const isBlockedOrBlocker = useMessageComposerIsBlocked({ subscription: props.subscription });
 	const isArchived = useMessageComposerIsArchived(room, props.subscription);
-	const isReadOnly = useMessageComposerIsReadOnly(room);
+	const isReadOnly = useMessageComposerIsReadOnly(room, { tmid: props.tmid });
 
 	const isOmnichannel = isOmnichannelRoom(room);
 	const isFederation = isRoomFederated(room);

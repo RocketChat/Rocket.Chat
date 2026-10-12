@@ -42,6 +42,7 @@ type EditRoomFormData = {
 	favorite: boolean;
 	featured: boolean;
 	reactWhenReadOnly: boolean;
+	replyWhenReadOnly: boolean;
 	roomDescription: string;
 	roomAnnouncement: string;
 	roomAvatar: IRoom['avatarETag'];
@@ -57,6 +58,7 @@ const getInitialValues = (room: Pick<IRoom, RoomAdminFieldsType>): EditRoomFormD
 	favorite: !!room.favorite,
 	featured: !!room.featured,
 	reactWhenReadOnly: !!room.reactWhenReadOnly,
+	replyWhenReadOnly: !!room.replyWhenReadOnly,
 	roomTopic: room.topic ?? '',
 	roomDescription: room.description ?? '',
 	roomAnnouncement: room.announcement ?? '',
@@ -84,9 +86,10 @@ const EditRoom = ({ room, onChange, onDelete, onClose }: EditRoomProps) => {
 		canViewType,
 		canViewReadOnly,
 		canViewReactWhenReadOnly,
+		canViewReplyWhenReadOnly,
 	} = useEditAdminRoomPermissions(room);
 
-	const { roomType, readOnly, archived, isDefault } = watch();
+	const { roomType, readOnly, archived, isDefault, replyWhenReadOnly } = watch();
 
 	const changeArchiving = archived !== !!room.archived;
 
@@ -129,6 +132,7 @@ const EditRoom = ({ room, onChange, onDelete, onClose }: EditRoomProps) => {
 	const roomTypeField = useId();
 	const readOnlyField = useId();
 	const reactWhenReadOnly = useId();
+	const replyWhenReadOnlyField = useId();
 	const archivedField = useId();
 	const isDefaultField = useId();
 	const favoriteField = useId();
@@ -288,6 +292,28 @@ const EditRoom = ({ room, onChange, onDelete, onClose }: EditRoomProps) => {
 									/>
 								</FieldRow>
 								<FieldHint id={`${reactWhenReadOnly}-hint`}>{t('React_when_read_only_changed_successfully')}</FieldHint>
+							</Field>
+						)}
+						{canViewReplyWhenReadOnly && readOnly && (
+							<Field>
+								<FieldRow>
+									<FieldLabel htmlFor={replyWhenReadOnlyField}>{t('Reply_when_read_only')}</FieldLabel>
+									<Controller
+										name='replyWhenReadOnly'
+										control={control}
+										render={({ field: { value, ...field } }) => (
+											<ToggleSwitch
+												id={replyWhenReadOnlyField}
+												{...field}
+												checked={value}
+												aria-describedby={`${replyWhenReadOnlyField}-hint`}
+											/>
+										)}
+									/>
+								</FieldRow>
+								<FieldHint id={`${replyWhenReadOnlyField}-hint`}>
+									{replyWhenReadOnly ? t('Anyone_can_reply_in_threads') : t('Only_authorized_users_can_reply_in_threads')}
+								</FieldHint>
 							</Field>
 						)}
 						{canViewArchived && (

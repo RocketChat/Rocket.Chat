@@ -80,6 +80,8 @@ const MessageTypes = [
 	'room-set-read-only',
 	'room-allowed-reacting',
 	'room-disallowed-reacting',
+	'room-allowed-replying',
+	'room-disallowed-replying',
 	'command',
 	'videoconf',
 	'message_pinned',
