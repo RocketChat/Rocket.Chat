@@ -13,4 +13,4 @@ A creator can only assign what they may hold. With the local Policy Decision Poi
 
 Members named at creation who do not carry the room's attributes are left out, and the response lists them in `skippedMembers`. The creator is not: a room the creator would not be admitted to is not created, unless the request leaves the creator out with `excludeSelf`.
 
-While enforcement is on, a private channel or team can only be created carrying every attribute the workspace requires, and federated rooms cannot be created.
+While enforcement is on, a private channel or team can only be created carrying every attribute the workspace requires.
