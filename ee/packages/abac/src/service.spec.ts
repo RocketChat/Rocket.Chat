@@ -2524,6 +2524,63 @@ describe('AbacService (unit)', () => {
 			});
 		});
 
+		describe('evaluateUsersAllowedInRoom', () => {
+			const unavailable = { allowed: false, reason: 'unavailable', code: 'error-pdp-unavailable' };
+
+			beforeEach(() => {
+				mockUsersFind.mockReturnValue({
+					toArray: async () => [
+						{ _id: 'u1', username: 'alice' },
+						{ _id: 'u2', username: 'bob' },
+					],
+				});
+			});
+
+			it('returns the compliant users as a decision', async () => {
+				usePdp({
+					evaluateSubjectsAgainstAttributes: jest.fn().mockResolvedValue({ compliant: ['u2'], nonCompliant: ['u1'], inconclusive: [] }),
+				});
+
+				await expect(service.evaluateUsersAllowedInRoom(['u1', 'u2'], room)).resolves.toEqual({ allowed: true, userIds: ['u2'] });
+			});
+
+			it('writes no audit, leaving it to the add that follows', async () => {
+				usePdp({
+					evaluateSubjectsAgainstAttributes: jest.fn().mockResolvedValue({ compliant: ['u1', 'u2'], nonCompliant: [], inconclusive: [] }),
+				});
+
+				await service.evaluateUsersAllowedInRoom(['u1', 'u2'], room);
+
+				expect(mockCreateAuditServerEvents).not.toHaveBeenCalled();
+			});
+
+			it('returns a decision admitting nobody when no user complies', async () => {
+				usePdp({
+					evaluateSubjectsAgainstAttributes: jest.fn().mockResolvedValue({ compliant: [], nonCompliant: ['u1', 'u2'], inconclusive: [] }),
+				});
+
+				await expect(service.evaluateUsersAllowedInRoom(['u1', 'u2'], room)).resolves.toEqual({ allowed: true, userIds: [] });
+			});
+
+			it('reports the decision as unavailable when there is no PDP', async () => {
+				(service as any).pdp = null;
+
+				await expect(service.evaluateUsersAllowedInRoom(['u1'], room)).resolves.toEqual(unavailable);
+			});
+
+			it('reports the decision as unavailable when the PDP is unavailable', async () => {
+				usePdp({ isAvailable: jest.fn().mockResolvedValue(false) });
+
+				await expect(service.evaluateUsersAllowedInRoom(['u1'], room)).resolves.toEqual(unavailable);
+			});
+
+			it('reports the decision as unavailable when the decision call fails', async () => {
+				usePdp({ evaluateSubjectsAgainstAttributes: jest.fn().mockRejectedValue(new Error('virtru down')) });
+
+				await expect(service.evaluateUsersAllowedInRoom(['u1', 'u2'], room)).resolves.toEqual(unavailable);
+			});
+		});
+
 		describe('filterRoomsAllowedForUser', () => {
 			const subject = { _id: 'u1', username: 'alice' };
 			const otherRoom = { _id: 'r2', name: 'other', abacAttributes: attributes };

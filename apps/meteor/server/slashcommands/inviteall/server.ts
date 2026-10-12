@@ -3,19 +3,68 @@
  * @param {Object} message - The message object
  */
 
-import { api } from '@rocket.chat/core-services';
-import type { ISubscription, SlashCommand, SlashCommandCallbackParams } from '@rocket.chat/core-typings';
+import { api, isMeteorError } from '@rocket.chat/core-services';
+import type { IRoom, SlashCommand, SlashCommandCallbackParams } from '@rocket.chat/core-typings';
+import { Logger } from '@rocket.chat/logger';
 import { Rooms, Subscriptions, Users } from '@rocket.chat/models';
-import { isTruthy } from '@rocket.chat/tools';
 import { Meteor } from 'meteor/meteor';
 
 import { canAccessRoomAsync } from '../../lib/authorization';
 import { i18n } from '../../lib/i18n';
+import type { AbacEvaluableUser } from '../../lib/rooms/filterUsersAllowedInRoom';
+import { filterUsersAllowedInRoomOrThrow } from '../../lib/rooms/filterUsersAllowedInRoom';
 import { slashCommands } from '../../lib/utils/slashCommand';
-import { addUsersToRoomMethod } from '../../meteor-methods/rooms/addUsersToRoom';
+import { addUsersToRoomMethod, assertCanAddUsersToRoom } from '../../meteor-methods/rooms/addUsersToRoom';
 import { createChannelMethod } from '../../meteor-methods/rooms/createChannel';
 import { createPrivateGroupMethod } from '../../meteor-methods/rooms/createPrivateGroup';
 import { settings } from '../../settings';
+
+const logger = new Logger('SlashCommandInviteAll');
+
+type InvitedMember = Required<AbacEvaluableUser>;
+
+async function partitionMembersAllowedInRoom(
+	userId: string,
+	members: InvitedMember[],
+	room: IRoom | null,
+): Promise<{ allowed: string[]; skipped: InvitedMember[] }> {
+	if (!room) {
+		return { allowed: members.map(({ username }) => username), skipped: [] };
+	}
+
+	await assertCanAddUsersToRoom(userId, room);
+
+	const allowedIds = new Set((await filterUsersAllowedInRoomOrThrow(members, room)).map(({ _id }) => _id));
+
+	return {
+		allowed: members.filter(({ _id }) => allowedIds.has(_id)).map(({ username }) => username),
+		skipped: members.filter(({ _id }) => !allowedIds.has(_id)),
+	};
+}
+
+function reportAddedAndSkipped(
+	userId: string,
+	rid: string,
+	lng: string,
+	{ added, skipped }: { added: number; skipped: InvitedMember[] },
+): void {
+	if (added || !skipped.length) {
+		void api.broadcast('notify.ephemeralMessage', userId, rid, {
+			msg: i18n.t('Users_added', { lng }),
+		});
+	}
+
+	if (skipped.length) {
+		void api.broadcast('notify.ephemeralMessage', userId, rid, {
+			msg: i18n.t('ABAC_Members_Not_Added_Usernames', {
+				interpolation: { escapeValue: false },
+				usernames: skipped.map(({ username }) => `@${username}`).join(', '),
+				lng,
+			}),
+			mentions: skipped.map(({ _id, username }) => ({ _id, username, type: 'user' as const })),
+		});
+	}
+}
 
 function inviteAll<T extends string>(type: T): SlashCommand<T>['callback'] {
 	return async function inviteAll({ command, params, message, userId }: SlashCommandCallbackParams<T>): Promise<void> {
@@ -76,12 +125,14 @@ function inviteAll<T extends string>(type: T): SlashCommand<T>['callback'] {
 			}
 
 			const cursor = Subscriptions.findByRoomIdWhenUsernameExists(baseChannel._id, {
-				projection: { 'u.username': 1 },
+				projection: { 'u._id': 1, 'u.username': 1 },
 			});
-			const users = (await cursor.toArray()).map((s: ISubscription) => s.u.username).filter(isTruthy);
+			const members = (await cursor.toArray()).flatMap(({ u: { _id, username } }) => (username ? [{ _id, username }] : []));
+			const users = members.map(({ username }) => username);
 
 			if (!targetChannel && ['c', 'p'].indexOf(baseChannel.t) > -1) {
-				baseChannel.t === 'c' ? await createChannelMethod(userId, channel, users) : await createPrivateGroupMethod(user, channel, users);
+				const { skippedMembers = [] } =
+					baseChannel.t === 'c' ? await createChannelMethod(userId, channel, users) : await createPrivateGroupMethod(user, channel, users);
 				void api.broadcast('notify.ephemeralMessage', userId, message.rid, {
 					msg: i18n.t('Channel_created', {
 						interpolation: { escapeValue: false },
@@ -89,19 +140,29 @@ function inviteAll<T extends string>(type: T): SlashCommand<T>['callback'] {
 						lng,
 					}),
 				});
+				reportAddedAndSkipped(userId, message.rid, lng, {
+					added: users.length - skippedMembers.length,
+					skipped: members.filter(({ username }) => skippedMembers.includes(username)),
+				});
 			} else {
+				const { allowed, skipped } = await partitionMembersAllowedInRoom(userId, members, targetChannel);
 				await addUsersToRoomMethod(userId, {
 					rid: targetChannel?._id ?? '',
-					users,
+					users: allowed,
 				});
+				reportAddedAndSkipped(userId, message.rid, lng, { added: allowed.length, skipped });
 			}
+		} catch (e: unknown) {
+			const error = isMeteorError(e) && typeof e.error === 'string' ? e.error : undefined;
+			const key = error === 'cant-invite-for-direct-room' ? 'Cannot_invite_users_to_direct_rooms' : error;
+			const translationKey = key && i18n.exists(key) ? key : undefined;
+
+			if (!translationKey) {
+				logger.error({ msg: 'Failed to invite all users to room', err: e, rid: message.rid, uid: userId });
+			}
+
 			void api.broadcast('notify.ephemeralMessage', userId, message.rid, {
-				msg: i18n.t('Users_added', { lng }),
-			});
-		} catch (e: any) {
-			const msg = e.error === 'cant-invite-for-direct-room' ? 'Cannot_invite_users_to_direct_rooms' : e.error;
-			void api.broadcast('notify.ephemeralMessage', userId, message.rid, {
-				msg: i18n.t(msg, { lng }),
+				msg: i18n.t(translationKey ?? 'Error_something_went_wrong', { lng }),
 			});
 		}
 	};
