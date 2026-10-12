@@ -4244,7 +4244,7 @@ import { IS_EE, URL_MONGODB } from '../../e2e/config/constants';
 
 			describe('membership preview', () => {
 				const preview = (attributes: Record<string, string[]> = { clearance: ['secret'] }) =>
-					request.post(`${v1}/abac/membership.preview`).set(creatorV.creds).send({ members: [], attributes });
+					request.post(`${v1}/abac/rooms.evaluateMembership`).set(creatorV.creds).send({ members: [], attributes });
 
 				it('reports the creator as compliant on PERMIT', async () => {
 					await mockServerReset();
