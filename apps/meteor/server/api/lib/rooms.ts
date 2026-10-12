@@ -183,6 +183,7 @@ export async function findRoomsAvailableForTeams({ uid, name }: { uid: string; n
 			name: 1,
 			t: 1,
 			avatarETag: 1,
+			abacAttributes: 1,
 		},
 		limit: 10,
 		sort: {
