@@ -352,11 +352,11 @@ export class IncomingSipCall extends BaseSipCall {
 		logger.debug({ msg: 'IncomingSipCall.getCallerContactFromInvite' });
 
 		const sipExtension = req.callingNumber;
-		const displayName = (await this.getContactNameForCallee(calleeId, sipExtension)) || req.callingName || undefined;
+		const contactName = await this.getContactNameForCallee(calleeId, sipExtension);
 
 		const defaultContactInfo: MediaCallContactInformation = {
 			sipExtension,
-			displayName: displayName || sipExtension,
+			displayName: contactName || req.callingName || sipExtension,
 		};
 
 		const contact = await mediaCallDirector.cast.getContactForExtensionNumber(sipExtension, { requiredType: 'sip' }, defaultContactInfo);
@@ -364,6 +364,7 @@ export class IncomingSipCall extends BaseSipCall {
 		if (contact) {
 			return {
 				...contact,
+				...(contactName && { displayName: contactName }),
 				contractId: sessionId,
 			} as MediaCallSignedContact<'sip'>;
 		}
