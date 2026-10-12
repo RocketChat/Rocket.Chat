@@ -29,7 +29,7 @@ const renderBar = () => {
 	render(<RoomsContextualBar roomInfo={{ rid: 'rid', name: 'alpha' }} attributesData={attributesData} onClose={onClose} />, {
 		wrapper: mockAppRoot()
 			.withSetting('ABAC_Attribute_Store', 'local')
-			.withEndpoint('POST', '/v1/abac/membership-preview', preview)
+			.withEndpoint('POST', '/v1/abac/membership.preview', preview)
 			.withEndpoint('POST', '/v1/abac/rooms/:rid/attributes', save)
 			.build(),
 	});
