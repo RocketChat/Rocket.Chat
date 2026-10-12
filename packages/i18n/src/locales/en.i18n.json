@@ -605,7 +605,7 @@
   "AI_Intelligent_Search_API_Key": "Pipeline API key",
   "AI_Intelligent_Search_API_Key_Secret": "Pipeline API key secret",
   "AI_Intelligent_Search_Enabled": "Enable AI search",
-  "AI_Intelligent_Search_Enabled_Description": "Use the configured vector-search pipeline to add semantic results to workspace search.",
+  "AI_Intelligent_Search_Enabled_Description": "Use the configured vector-search pipeline to add AI to search across the workspace. Returns exact keyword matches and semantically related results along with an AI-generated overview.",
   "AI_Intelligent_Search_Min_Similarity_Percent": "Minimum semantic similarity (%)",
   "AI_Intelligent_Search_Min_Similarity_Percent_Description": "Higher values return fewer but closer semantic matches. Use 0 to keep the widest result set.",
   "AI_Intelligent_Search_Pipeline_Base_URL": "Pipeline API base URL",
