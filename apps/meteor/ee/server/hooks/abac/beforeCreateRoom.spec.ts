@@ -160,8 +160,10 @@ describe('beforeCreateRoom (ABAC)', () => {
 			await expect(run(privateRoom({ abacAttributes: [{ key: 'clearance', values: ['secret'] }] }))).to.be.fulfilled;
 		});
 
-		it('should refuse a federated room', async () => {
-			await expect(run(privateRoom({ federated: true }))).to.be.rejectedWith('error-abac-federated-room-creation-blocked');
+		it('should leave federated rooms alone, public channels and discussions included', async () => {
+			await expect(run(privateRoom({ federated: true }))).to.be.fulfilled;
+			await expect(run(privateRoom({ t: 'c', federated: true }))).to.be.fulfilled;
+			await expect(run(privateRoom({ prid: 'parent', federated: true }))).to.be.fulfilled;
 		});
 
 		it('should refuse public channels and discussions', async () => {

@@ -49,12 +49,8 @@ const assignCreationAttributes = async (owner: IUser, room: RoomToCreate, member
 const refuseRoomsEnforcementWouldLock = (room: RoomToCreate): void => {
 	const lockContext = getRoomAbacLockContext();
 
-	if (!lockContext.enforcementOn || isOmnichannelRoom(room)) {
+	if (!lockContext.enforcementOn || isRoomFederated(room) || isOmnichannelRoom(room)) {
 		return;
-	}
-
-	if (isRoomFederated(room)) {
-		throw new Error('error-abac-federated-room-creation-blocked');
 	}
 
 	// `Discussion_enabled` is also held at false; this covers the callers that bypass it.

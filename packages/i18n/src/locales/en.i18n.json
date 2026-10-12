@@ -2543,7 +2543,6 @@
   "error-abac-decision-unavailable": "Access decisions are unavailable right now. Please try again later.",
   "error-abac-discussion-creation-blocked": "Discussions cannot be created while ABAC enforcement is on.",
   "error-abac-federated-room-attributes": "Federated rooms cannot carry ABAC attributes.",
-  "error-abac-federated-room-creation-blocked": "Federated rooms cannot be created while ABAC enforcement is on.",
   "error-abac-invalid-attributes": "One or more of the provided ABAC attributes are invalid.",
   "error-abac-not-authorized-to-modify-room": "You are not authorized to modify the ABAC attributes of this room.",
   "error-abac-not-enabled": "Attribute-based access control is not enabled on this workspace.",
