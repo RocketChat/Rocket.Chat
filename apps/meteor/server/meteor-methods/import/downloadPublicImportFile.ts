@@ -24,7 +24,7 @@ async function getHttpFileStream(fileUrl: string): Promise<Readable> {
 
 	const body = response.body as Readable;
 	if (!response.ok) {
-		body.resume();
+		body.destroy();
 		throw new Error(`Unexpected response status ${response.status}`);
 	}
 

@@ -15,6 +15,10 @@ const handleExternalProvider = async (externalProviderUrl: string, username: str
 		allowList: settings.get<string>('SSRF_Allowlist'),
 	});
 	response.headers.forEach((value, key) => res.setHeader(key, value));
+	if (!response.body) {
+		res.end();
+		return;
+	}
 	response.body.pipe(res);
 };
 // request /avatar/@name forces returning the svg

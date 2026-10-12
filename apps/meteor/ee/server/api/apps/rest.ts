@@ -292,7 +292,7 @@ export class AppsRestApi {
 								});
 							}
 
-							buff = await response.buffer();
+							buff = Buffer.from(await response.arrayBuffer());
 						} catch (err: any) {
 							orchestrator.getRocketChatLogger().error({ msg: 'Error fetching App from URL:', err });
 							return API.v1.internalError();
