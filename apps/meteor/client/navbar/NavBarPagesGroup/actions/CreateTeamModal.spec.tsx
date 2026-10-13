@@ -1,5 +1,5 @@
 import { mockAppRoot } from '@rocket.chat/mock-providers';
-import { render, screen } from '@testing-library/react';
+import { render, screen, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 
 import CreateTeamModal from './CreateTeamModal';
@@ -7,6 +7,19 @@ import CreateTeamModalWithData from './CreateTeamModalWithData';
 import { mockAbacRoomCreationRoot } from '../../../../tests/mocks/client/mockAbacRoomCreationRoot';
 
 jest.mock('../../../lib/rooms/roomCoordinator', () => ({}));
+
+const selectAttributeValue = async (value: string) => {
+	const comboboxes = screen.getAllByRole('combobox');
+	await userEvent.click(comboboxes[comboboxes.length - 1]);
+
+	const listboxes = await screen.findAllByRole('listbox', { hidden: true });
+	const option = listboxes.map((element) => within(element).queryByText(value)).find(Boolean);
+	if (!option) {
+		throw new Error(`Could not find the option ${value}`);
+	}
+
+	await userEvent.click(option);
+};
 
 describe('CreateTeamModal', () => {
 	describe('ABAC', () => {
@@ -24,8 +37,11 @@ describe('CreateTeamModal', () => {
 			expect(screen.getByText('Step 1 of 2')).toBeInTheDocument();
 		});
 
-		it('should walk the same four steps as a channel once ABAC-managed is on', async () => {
-			render(<CreateTeamModalWithData onClose={() => null} />, { wrapper: mockAbacRoomCreationRoot() });
+		it('should walk the same four steps as a channel and create the team with its attributes', async () => {
+			const createTeam = jest.fn(() => ({ team: { roomId: 'team-room' } }));
+			render(<CreateTeamModalWithData onClose={() => null} />, {
+				wrapper: mockAbacRoomCreationRoot({ requiredAttributes: ['dept'], createTeam }),
+			});
 
 			await userEvent.click(await screen.findByLabelText('ABAC_Managed'));
 			expect(screen.getByText('Step 1 of 4')).toBeInTheDocument();
@@ -37,6 +53,23 @@ describe('CreateTeamModal', () => {
 
 			expect(await screen.findByText('ABAC_Room_Attributes')).toBeInTheDocument();
 			expect(screen.getByText('Step 2 of 4')).toBeInTheDocument();
+
+			await selectAttributeValue('eng');
+			await userEvent.click(screen.getByRole('button', { name: 'Next' }));
+			expect(await screen.findByText('Step 3 of 4')).toBeInTheDocument();
+
+			await userEvent.click(screen.getByRole('button', { name: 'Next' }));
+			expect(await screen.findByText('Step 4 of 4')).toBeInTheDocument();
+
+			const create = await screen.findByRole('button', { name: 'Create' });
+			await waitFor(() => expect(create).toBeEnabled());
+			await userEvent.click(create);
+
+			await waitFor(() =>
+				expect(createTeam).toHaveBeenCalledWith(
+					expect.objectContaining({ name: 'restricted', type: 1, abacAttributes: { dept: ['eng'] } }),
+				),
+			);
 		});
 
 		it('should lock ABAC-managed on under enforcement', async () => {

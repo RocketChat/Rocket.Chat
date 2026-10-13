@@ -9,6 +9,8 @@ export type AbacRoomCreationRootOptions = {
 	assignable?: { key: string; values: string[] }[];
 	permissions?: string[];
 	assignableAttributes?: () => unknown;
+	membershipPreview?: () => unknown;
+	createTeam?: () => unknown;
 };
 
 export const mockAbacRoomCreationRoot = ({
@@ -18,6 +20,13 @@ export const mockAbacRoomCreationRoot = ({
 	assignable = [{ key: 'dept', values: ['eng', 'sales'] }],
 	permissions = ['create-abac-managed-room', 'create-c', 'create-p', 'create-team'],
 	assignableAttributes = () => ({ attributes: assignable, requiredKeys: requiredAttributes }),
+	membershipPreview = () => ({
+		compliant: [{ _id: 'john.doe', username: 'john.doe', name: 'John Doe' }],
+		nonCompliant: [],
+		inconclusive: [],
+		creator: 'compliant',
+	}),
+	createTeam = () => ({ team: { roomId: 'team-room' } }),
 }: AbacRoomCreationRootOptions = {}) =>
 	[...permissions, ...(federation ? ['access-federation'] : [])]
 		.reduce(
@@ -37,6 +46,13 @@ export const mockAbacRoomCreationRoot = ({
 					})),
 				)
 				.withEndpoint('GET', '/v1/abac/attributes.listAssignable', jest.fn().mockImplementation(assignableAttributes))
+				.withEndpoint(
+					'POST',
+					'/v1/abac/attributes.checkAssignability',
+					jest.fn().mockImplementation(() => ({})),
+				)
+				.withEndpoint('POST', '/v1/abac/rooms.evaluateMembership', jest.fn().mockImplementation(membershipPreview))
+				.withEndpoint('POST', '/v1/teams.create', jest.fn().mockImplementation(createTeam))
 				.withEndpoint(
 					'GET',
 					'/v1/rooms.nameExists',
