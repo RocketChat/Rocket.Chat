@@ -72,7 +72,12 @@ const ContactsTab = ({ tab, onChangeTab }: ContactsTabProps) => {
 			<ContactInfo contact={panel.contact} onEdit={() => setPanel({ kind: 'form', contact: panel.contact })} onClose={closePanel} />
 		) : (
 			panel?.kind === 'form' && (
-				<ContactEdit contact={panel.contact} onSaved={(contact) => setPanel({ kind: 'info', contact })} onClose={closePanel} />
+				<ContactEdit
+					key={panel.contact?._id ?? 'new'}
+					contact={panel.contact}
+					onSaved={(contact) => setPanel({ kind: 'info', contact })}
+					onClose={closePanel}
+				/>
 			)
 		);
 
