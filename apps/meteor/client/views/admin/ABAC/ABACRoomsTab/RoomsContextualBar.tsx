@@ -6,6 +6,7 @@ import { FormProvider, useForm, useWatch } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 
 import RoomForm from './RoomForm';
+import { toAttributeMap } from '../../../../components/ABAC/AbacRoomCreation';
 import AbacRoomMembershipPreview from '../../../../components/ABAC/AbacRoomMembershipPreview/AbacRoomMembershipPreview';
 import { hasAttributeChanges } from '../../../../components/ABAC/hasAttributeChanges';
 import { ABACQueryKeys } from '../../../../lib/queryKeys';
@@ -18,14 +19,6 @@ export type RoomsContextualBarProps = {
 
 	onClose: () => void;
 };
-
-type AttributeRows = { key: string; values: string[] }[];
-
-const toAttributeRecord = (rows: AttributeRows) =>
-	rows.reduce((acc: Record<string, string[]>, attribute) => {
-		acc[attribute.key] = attribute.values;
-		return acc;
-	}, {});
 
 const RoomsContextualBar = ({ roomInfo, attributesData, redacted = false, onClose }: RoomsContextualBarProps) => {
 	const { t } = useTranslation();
@@ -87,7 +80,7 @@ const RoomsContextualBar = ({ roomInfo, attributesData, redacted = false, onClos
 	return (
 		<>
 			<ContextualbarHeader>
-				{isPreviewing && <ContextualbarBack onClick={() => setPreviewAttributes(undefined)} />}
+				{isPreviewing && <ContextualbarBack onClick={() => setPreviewAttributes(undefined)} disabled={saveMutation.isPending} />}
 				<ContextualbarTitle>{getTitle()}</ContextualbarTitle>
 				<ContextualbarClose onClick={onClose} />
 			</ContextualbarHeader>
@@ -106,10 +99,10 @@ const RoomsContextualBar = ({ roomInfo, attributesData, redacted = false, onClos
 						hasAttributeChanges={attributesChanged}
 						onSave={(values) => {
 							if (roomInfo) {
-								setPreviewAttributes(toAttributeRecord(values.attributes));
+								setPreviewAttributes(toAttributeMap(values.attributes));
 								return;
 							}
-							return saveMutation.mutateAsync(toAttributeRecord(values.attributes));
+							return saveMutation.mutateAsync(toAttributeMap(values.attributes));
 						}}
 						onClose={onClose}
 						setSelectedRoomLabel={setSelectedRoomLabel}
