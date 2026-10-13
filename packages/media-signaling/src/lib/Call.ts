@@ -834,6 +834,29 @@ export class ClientMediaCall implements IClientMediaCall {
 		this.config.transporter.sendToServer(this.callId, 'complete-attended-transfer', {});
 	}
 
+	/** Whether this call is happening on another session of the same user and may be moved to this one */
+	public canBeTakenOver(): boolean {
+		return (
+			this.contractState === 'ignored' &&
+			!this._ignored &&
+			this.hasRemoteData &&
+			this._service === 'webrtc' &&
+			this._state === 'active' &&
+			!this.isOver()
+		);
+	}
+
+	/** Asks the server to move this call from the session that carries it to this session */
+	public takeOver(): void {
+		if (!this.canBeTakenOver()) {
+			return;
+		}
+
+		this.config.logger?.debug('ClientMediaCall.takeOver');
+
+		this.config.transporter.sendToServer(this.callId, 'take-over', { supportedFeatures: this.config.supportedFeatures });
+	}
+
 	public hangup(reason: CallHangupReason = 'normal'): void {
 		this.config.logger?.debug('ClientMediaCall.hangup', reason);
 		if (this.endedLocally || this._state === 'hangup') {
@@ -1340,7 +1363,69 @@ export class ClientMediaCall implements IClientMediaCall {
 				return this.flagAsEnded('remote', signal.hangupReason);
 			case 'escalated':
 				return this.flagAsEscalated(signal.features);
+			case 'session-changed':
+				return this.processSessionChange(signal);
 		}
+	}
+
+	private processSessionChange({ signedContractId, features }: ServerMediaSignalNotification): void {
+		if (!signedContractId || this.isOver()) {
+			return;
+		}
+
+		this.config.logger?.debug('ClientMediaCall.processSessionChange', signedContractId);
+
+		if (features) {
+			this.enabledFeatures = features;
+		}
+
+		if (signedContractId === this.config.sessionId) {
+			this.acquireContract();
+			return;
+		}
+
+		this.releaseContract();
+	}
+
+	/** This session now carries the call: the media is renegotiated from scratch on a connection of its own */
+	private acquireContract(): void {
+		this.config.logger?.debug('ClientMediaCall.acquireContract');
+		this.resetWebRTC();
+		this.acceptedLocally = true;
+
+		try {
+			this.requireWebRTC();
+		} catch {
+			this.hangup('error');
+			return;
+		}
+
+		this.updateClientState();
+		this.emitter.emit('takenOver');
+		this.reportStates();
+	}
+
+	/** Another session now carries the call: stop the media here without ending the call */
+	private releaseContract(): void {
+		if (!this.signed) {
+			return;
+		}
+
+		this.config.logger?.debug('ClientMediaCall.releaseContract');
+		this.contractState = 'ignored';
+		this.clearStateTimeouts();
+		this.resetWebRTC();
+
+		this.emitter.emit('hidden');
+		this.updateClientState();
+	}
+
+	private resetWebRTC(): void {
+		this.webrtcProcessor?.stop();
+		this.webrtcProcessor = null;
+		this.sentLocalSdp = false;
+		this.receivedRemoteSdp = false;
+		this.negotiationManager = new NegotiationManager(this, { logger: this.config.logger });
 	}
 
 	private async processCallUpdate(signal: ServerMediaSignalUpdateCall) {
