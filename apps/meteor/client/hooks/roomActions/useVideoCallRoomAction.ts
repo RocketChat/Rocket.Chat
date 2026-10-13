@@ -61,12 +61,9 @@ export const useVideoCallRoomAction = () => {
 	const mustJoin = !subscribed && room.t !== 'l';
 	const disabled = unavailable || mustJoin;
 
-	let tooltip: string | undefined;
-	if (unavailable) {
-		tooltip = t('core.Video_Call_unavailable_for_this_type_of_room');
-	} else if (mustJoin) {
-		tooltip = t('Join_the_room_to_start_a_call');
-	}
+	const tooltip =
+		(unavailable ? t('core.Video_Call_unavailable_for_this_type_of_room') : undefined) ??
+		(mustJoin ? t('Join_the_room_to_start_a_call') : undefined);
 
 	const handleOpenVideoConf = useStableCallback(async () => {
 		if (isCalling || isRinging) {
