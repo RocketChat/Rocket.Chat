@@ -497,7 +497,7 @@ import { IS_EE, URL_MONGODB } from '../../e2e/config/constants';
 				await preview({ members: [unattributedUser.username], attributes: { [dept]: ['eng'] } })
 					.expect(400)
 					.expect((res) => {
-						expect(res.body.error).to.include('error-abac-preview-too-many-members');
+						expect(res.body).to.have.property('errorType', 'error-abac-preview-too-many-members');
 					});
 				await preview({ members: [unattributedUser.username], attributes: { [dept]: ['eng'] }, excludeSelf: true }).expect(200);
 			} finally {
