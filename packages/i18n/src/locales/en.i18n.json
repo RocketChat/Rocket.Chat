@@ -142,7 +142,10 @@
   "ABAC_Managed_Hint": "Restricts access to attribute-compliant users.",
   "ABAC_Managed_Not_Allowed_Hint": "You do not have permission to create ABAC-managed rooms.",
   "ABAC_Managed_Private_Only_Hint": "ABAC-managed rooms are private, and you can only create public ones.",
-  "ABAC_Members_Not_Added": "{{count}} members were not added because they do not carry the room's attributes.",
+  "ABAC_Members_Not_Added": {
+    "one": "{{count}} member was not added because they do not carry the room's attributes.",
+    "other": "{{count}} members were not added because they do not carry the room's attributes."
+  },
   "ABAC_New_attribute": "New attribute",
   "ABAC_New_attribute_description": "Create an attribute that can later be assigned to rooms.",
   "ABAC_No_attributes": "No attributes",
