@@ -1,5 +1,6 @@
 import type { IRoom } from '@rocket.chat/core-typings';
 import { mockAppRoot } from '@rocket.chat/mock-providers';
+import type { RoomToolboxActionConfig } from '@rocket.chat/ui-contexts';
 import { RoomToolboxContext } from '@rocket.chat/ui-contexts';
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
@@ -29,12 +30,19 @@ const AppRoot = mockAppRoot()
 	})
 	.build();
 
-const renderFor = (room: IRoom) => {
+const attributesAction: RoomToolboxActionConfig = {
+	id: 'abac-attributes',
+	icon: 'shield',
+	title: 'ABAC_Attribute_based_access_control',
+	groups: ['group', 'team'],
+};
+
+const renderFor = (room: IRoom, actions: RoomToolboxActionConfig[] = [attributesAction]) => {
 	currentRoom = room;
 	const openTab = jest.fn();
 	const wrapper = ({ children }: { children: ReactNode }) => (
 		<AppRoot>
-			<RoomToolboxContext.Provider value={{ actions: [], openTab, closeTab: jest.fn() }}>{children}</RoomToolboxContext.Provider>
+			<RoomToolboxContext.Provider value={{ actions, openTab, closeTab: jest.fn() }}>{children}</RoomToolboxContext.Provider>
 		</AppRoot>
 	);
 
@@ -80,6 +88,13 @@ describe('ComposerAbacLocked', () => {
 
 	it('should not offer Manage attributes to a member who cannot manage them', () => {
 		renderFor(createFakeRoom({ t: 'p' }));
+
+		expect(screen.queryByRole('button', { name: 'Manage attributes' })).not.toBeInTheDocument();
+	});
+
+	it('should not offer Manage attributes when the layout hides the attributes panel', () => {
+		canManage.mockReturnValue(true);
+		renderFor(createFakeRoom({ t: 'p' }), []);
 
 		expect(screen.queryByRole('button', { name: 'Manage attributes' })).not.toBeInTheDocument();
 	});

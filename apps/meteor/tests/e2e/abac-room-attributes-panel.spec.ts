@@ -4,6 +4,7 @@ import type { Page } from 'playwright-core';
 
 import { IS_EE, URL_MONGODB } from './config/constants';
 import { Users } from './fixtures/userStates';
+import { HomeChannel } from './page-objects';
 import { HomeContent } from './page-objects/fragments/home-content';
 import { Listbox } from './page-objects/fragments/listbox';
 import { getSettingValueById, setSettingValueById } from './utils';
@@ -143,7 +144,7 @@ test.describe.serial('abac-room-attributes-panel', () => {
 	test('a room owner unlocks a locked group from the callout, and only members without the new value are removed', async ({ page }) => {
 		const listbox = new Listbox(page);
 
-		await page.goto(`/group/${roomName}`);
+		await new HomeChannel(page).gotoGroup(roomName);
 		const callout = page.getByText('Channel locked. Required ABAC room attributes missing.');
 		await expect(callout).toBeVisible();
 
@@ -181,7 +182,7 @@ test.describe.serial('abac-room-attributes-panel', () => {
 	});
 
 	test('a locked team names the team, and its attributes are reachable from the callout and the toolbox', async ({ page }) => {
-		await page.goto(`/group/${teamName}`);
+		await new HomeChannel(page).gotoGroup(teamName);
 		const callout = page.getByText('Team locked. Required ABAC room attributes missing.');
 		await expect(callout).toBeVisible();
 
