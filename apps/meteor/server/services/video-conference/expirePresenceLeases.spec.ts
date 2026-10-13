@@ -1,5 +1,6 @@
 import type { IVideoConferenceUser, VideoConference, VideoConferenceCapabilities } from '@rocket.chat/core-typings';
 import { VideoConferenceStatus } from '@rocket.chat/core-typings';
+import { fakeCursor } from '@rocket.chat/models/testing';
 import { expect } from 'chai';
 import sinon from 'sinon';
 
@@ -21,12 +22,7 @@ const markMemberLeft = async (_callId: string, uid: string, leftAt: Date) => {
 
 const VideoConferenceModelMock = {
 	findOneById: sinon.stub().callsFake(async () => cloneFixture(fixture)),
-	// A real cursor is async-iterable, which is how the sweep walks it.
-	findActiveWithMembers: sinon.stub().callsFake(() => ({
-		async *[Symbol.asyncIterator]() {
-			yield cloneFixture(fixture);
-		},
-	})),
+	findActiveWithMembers: sinon.stub(),
 	setUserLeftById: sinon.stub().callsFake(markMemberLeft),
 	setDataById: sinon.stub().callsFake(async (_callId: string, data: Partial<VideoConference>) => {
 		Object.assign(fixture, data);
@@ -67,11 +63,7 @@ describe('VideoConfService.expirePresenceLeases', () => {
 		// `resetAll` only clears history — restore the behaviours that some tests replace.
 		VideoConferenceModelMock.setUserLeftById.resetBehavior();
 		VideoConferenceModelMock.setUserLeftById.callsFake(markMemberLeft);
-		VideoConferenceModelMock.findActiveWithMembers.callsFake(() => ({
-			async *[Symbol.asyncIterator]() {
-				yield cloneFixture(fixture);
-			},
-		}));
+		VideoConferenceModelMock.findActiveWithMembers.callsFake(() => fakeCursor([cloneFixture(fixture)]));
 	});
 
 	// The case this exists for: the workspace was down while the call carried on in the provider, so the leave
@@ -124,12 +116,7 @@ describe('VideoConfService.expirePresenceLeases', () => {
 	it('carries on to the next call when one of them fails', async () => {
 		fixture = buildGroupCall([buildMember({ _id: 'gone', lastSeenAt: at(-PRESENCE_LEASE_MS) })]);
 		const second = buildGroupCall([buildMember({ _id: 'gone2', lastSeenAt: at(-PRESENCE_LEASE_MS) })], { _id: 'call2' });
-		VideoConferenceModelMock.findActiveWithMembers.callsFake(() => ({
-			async *[Symbol.asyncIterator]() {
-				yield cloneFixture(fixture);
-				yield cloneFixture(second);
-			},
-		}));
+		VideoConferenceModelMock.findActiveWithMembers.callsFake(() => fakeCursor([cloneFixture(fixture), cloneFixture(second)]));
 		VideoConferenceModelMock.setUserLeftById.withArgs('call1').rejects(new Error('write failed'));
 
 		await service.expirePresenceLeases(at(0));
@@ -139,11 +126,7 @@ describe('VideoConfService.expirePresenceLeases', () => {
 
 	describe('non-embedded providers', () => {
 		const NonEmbeddedModelMock = {
-			findActiveWithMembers: sinon.stub().callsFake(() => ({
-				async *[Symbol.asyncIterator]() {
-					yield cloneFixture(fixture);
-				},
-			})),
+			findActiveWithMembers: sinon.stub().callsFake(() => fakeCursor([cloneFixture(fixture)])),
 			setUserLeftById: sinon.stub().resolves(),
 			setDataById: sinon.stub().resolves(),
 			setStatusById: sinon.stub().resolves(),

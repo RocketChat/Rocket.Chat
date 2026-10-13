@@ -1,5 +1,6 @@
 import type { IVideoConferenceUser, VideoConference } from '@rocket.chat/core-typings';
 import { UserStatus } from '@rocket.chat/core-typings';
+import { fakeCursor } from '@rocket.chat/models/testing';
 import { expect } from 'chai';
 import sinon from 'sinon';
 
@@ -21,11 +22,7 @@ const PresenceMock = {
 
 const VideoConferenceModelMock = {
 	findOneById: sinon.stub().callsFake(async () => cloneFixture(fixture)),
-	findActiveWithMembers: sinon.stub().callsFake(() => ({
-		async *[Symbol.asyncIterator]() {
-			yield cloneFixture(fixture);
-		},
-	})),
+	findActiveWithMembers: sinon.stub().callsFake(() => fakeCursor([cloneFixture(fixture)])),
 	addMemberById: sinon.stub().resolves(),
 	setUserJoinedById: sinon.stub().resolves(),
 	setUserLeftById: sinon.stub().callsFake(async (_callId: string, uid: string, leftAt: Date) => {
@@ -54,7 +51,7 @@ const VideoConferenceModelMock = {
 		Object.assign(fixture, data);
 	}),
 	setStatusById: sinon.stub().resolves(),
-	find: sinon.stub().returns({ toArray: async () => [] }),
+	find: sinon.stub().returns(fakeCursor([])),
 };
 
 const UsersMock = { findOneById: sinon.stub().resolves({ _id: 'joiner', language: 'en' }) };
@@ -80,8 +77,7 @@ const { VideoConfService } = proxyquire.noCallThru().load('./service', {
 		Rooms: { findOneById: sinon.stub().resolves(null) },
 		Messages: { setBlocksById: sinon.stub().resolves() },
 		Subscriptions: {
-			findByRoomIdAndNotUserId: sinon.stub().returns({ toArray: sinon.stub().resolves([]), forEach: sinon.stub().resolves() }),
-			findByRoomId: sinon.stub().returns({ toArray: sinon.stub().resolves([]) }),
+			findByRoomId: sinon.stub().returns(fakeCursor([])),
 		},
 	},
 	'../../../lib/videoConference/constants': { availabilityErrors: {}, shouldRingRecipients: () => false, CALL_FACES_SHOWN: 2 },

@@ -1,3 +1,4 @@
+import { fakeCursor } from '@rocket.chat/models/testing';
 import { expect } from 'chai';
 import { beforeEach, describe, it } from 'mocha';
 import proxyquire from 'proxyquire';
@@ -88,16 +89,13 @@ describe('Team service', () => {
 			}),
 		);
 
-		Rooms.findDefaultRoomsForTeam.returns({
-			toArray: () => Promise.resolve([{ _id: 'default-room' }]),
-		});
-		Users.findActiveByIds.returns({
-			toArray: () =>
-				Promise.resolve([
-					{ _id: 'user-1', username: 'user-1' },
-					{ _id: 'user-2', username: 'user-2' },
-				]),
-		});
+		Rooms.findDefaultRoomsForTeam.returns(fakeCursor([{ _id: 'default-room' }]));
+		Users.findActiveByIds.returns(
+			fakeCursor([
+				{ _id: 'user-1', username: 'user-1' },
+				{ _id: 'user-2', username: 'user-2' },
+			]),
+		);
 
 		await service.addMembersToDefaultRooms({ _id: 'inviter', username: 'inviter' }, 'team-id', [
 			{ userId: 'user-1' },
@@ -111,12 +109,8 @@ describe('Team service', () => {
 		this.timeout(15000);
 
 		addUserToRoom.rejects(new Error('room-add-failed'));
-		Rooms.findDefaultRoomsForTeam.returns({
-			toArray: () => Promise.resolve([{ _id: 'default-room' }]),
-		});
-		Users.findActiveByIds.returns({
-			toArray: () => Promise.resolve([{ _id: 'user-1', username: 'user-1' }]),
-		});
+		Rooms.findDefaultRoomsForTeam.returns(fakeCursor([{ _id: 'default-room' }]));
+		Users.findActiveByIds.returns(fakeCursor([{ _id: 'user-1', username: 'user-1' }]));
 
 		await expect(
 			service.addMembersToDefaultRooms({ _id: 'inviter', username: 'inviter' }, 'team-id', [{ userId: 'user-1' }]),

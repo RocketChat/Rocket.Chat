@@ -1,3 +1,4 @@
+import { fakeCursor } from '@rocket.chat/models/testing';
 import { expect } from 'chai';
 import { describe, it, beforeEach } from 'mocha';
 import proxyquire from 'proxyquire';
@@ -16,8 +17,6 @@ const UsersStub = {
 const { findDirectRoomByIdentifier } = proxyquire.noCallThru().load('../../../../../server/lib/rooms/findDirectRoomByIdentifier.ts', {
 	'@rocket.chat/models': { Rooms: RoomsStub, Users: UsersStub },
 });
-
-const cursorOf = (docs: unknown[]) => ({ toArray: async () => docs });
 
 describe('findDirectRoomByIdentifier', () => {
 	beforeEach(() => {
@@ -40,7 +39,7 @@ describe('findDirectRoomByIdentifier', () => {
 
 	it('should resolve a two-person DM by the other username, over sorted uids', async () => {
 		const room = { _id: 'rid1', t: 'd' };
-		UsersStub.findUsersByUsernames.returns(cursorOf([{ _id: 'zeta' }, { _id: 'alpha' }]));
+		UsersStub.findUsersByUsernames.returns(fakeCursor([{ _id: 'zeta' }, { _id: 'alpha' }]));
 		RoomsStub.findOneDirectRoomContainingAllUserIDs.resolves(room);
 
 		expect(await findDirectRoomByIdentifier('alice', 'me')).to.equal(room);
@@ -48,7 +47,7 @@ describe('findDirectRoomByIdentifier', () => {
 	});
 
 	it('should include the caller in the member set exactly once for a self-DM', async () => {
-		UsersStub.findUsersByUsernames.returns(cursorOf([{ _id: 'me' }]));
+		UsersStub.findUsersByUsernames.returns(fakeCursor([{ _id: 'me' }]));
 		RoomsStub.findOneDirectRoomContainingAllUserIDs.resolves({ _id: 'self', t: 'd' });
 
 		await findDirectRoomByIdentifier('me', 'me');
@@ -58,7 +57,7 @@ describe('findDirectRoomByIdentifier', () => {
 	});
 
 	it('should resolve a group DM from a comma-separated identifier', async () => {
-		UsersStub.findUsersByUsernames.returns(cursorOf([{ _id: 'me' }, { _id: 'a' }, { _id: 'b' }]));
+		UsersStub.findUsersByUsernames.returns(fakeCursor([{ _id: 'me' }, { _id: 'a' }, { _id: 'b' }]));
 		RoomsStub.findOneDirectRoomContainingAllUserIDs.resolves({ _id: 'group', t: 'd' });
 
 		await findDirectRoomByIdentifier('a,b', 'me');
@@ -68,7 +67,7 @@ describe('findDirectRoomByIdentifier', () => {
 	});
 
 	it('should not look the identifier up as a room id when it is a username list', async () => {
-		UsersStub.findUsersByUsernames.returns(cursorOf([{ _id: 'me' }, { _id: 'a' }, { _id: 'b' }]));
+		UsersStub.findUsersByUsernames.returns(fakeCursor([{ _id: 'me' }, { _id: 'a' }, { _id: 'b' }]));
 		RoomsStub.findOneDirectRoomContainingAllUserIDs.resolves({ _id: 'group', t: 'd' });
 
 		await findDirectRoomByIdentifier('a,b', 'me');
@@ -77,7 +76,7 @@ describe('findDirectRoomByIdentifier', () => {
 	});
 
 	it('should trim whitespace around each username in the list', async () => {
-		UsersStub.findUsersByUsernames.returns(cursorOf([{ _id: 'me' }, { _id: 'a' }, { _id: 'b' }]));
+		UsersStub.findUsersByUsernames.returns(fakeCursor([{ _id: 'me' }, { _id: 'a' }, { _id: 'b' }]));
 		RoomsStub.findOneDirectRoomContainingAllUserIDs.resolves({ _id: 'group', t: 'd' });
 
 		await findDirectRoomByIdentifier('a, b', 'me');
@@ -86,14 +85,14 @@ describe('findDirectRoomByIdentifier', () => {
 	});
 
 	it('should return null when any username does not resolve to a user', async () => {
-		UsersStub.findUsersByUsernames.returns(cursorOf([{ _id: 'me' }]));
+		UsersStub.findUsersByUsernames.returns(fakeCursor([{ _id: 'me' }]));
 
 		expect(await findDirectRoomByIdentifier('ghost', 'me')).to.be.null;
 		expect(RoomsStub.findOneDirectRoomContainingAllUserIDs.called).to.be.false;
 	});
 
 	it('should return null when no direct room contains that member set', async () => {
-		UsersStub.findUsersByUsernames.returns(cursorOf([{ _id: 'me' }, { _id: 'alice' }]));
+		UsersStub.findUsersByUsernames.returns(fakeCursor([{ _id: 'me' }, { _id: 'alice' }]));
 		RoomsStub.findOneDirectRoomContainingAllUserIDs.resolves(null);
 
 		expect(await findDirectRoomByIdentifier('alice', 'me')).to.be.null;

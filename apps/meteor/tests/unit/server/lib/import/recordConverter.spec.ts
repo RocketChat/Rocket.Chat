@@ -1,4 +1,5 @@
 import type { IImportRecord, IImportRecordType } from '@rocket.chat/core-typings';
+import { fakeCursor } from '@rocket.chat/models/testing';
 import { expect } from 'chai';
 import proxyquire from 'proxyquire';
 import sinon from 'sinon';
@@ -43,7 +44,7 @@ describe('Record Converter', () => {
 			modelsMock.ImportData.col.insertOne.reset();
 			modelsMock.ImportData.find.reset();
 			modelsMock.ImportData.updateOne.reset();
-			modelsMock.ImportData.find.callsFake(() => ({ toArray: () => [] }));
+			modelsMock.ImportData.find.callsFake(() => fakeCursor([]));
 		});
 
 		describe('Adding and Retrieving users', () => {

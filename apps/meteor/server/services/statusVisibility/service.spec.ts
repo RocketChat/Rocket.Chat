@@ -1,3 +1,4 @@
+import { fakeCursor } from '@rocket.chat/models/testing';
 import { hiddenIds, isHiddenFor } from '@rocket.chat/streamer';
 import EJSON from 'ejson';
 
@@ -32,7 +33,6 @@ jest.mock('@rocket.chat/models', () => ({
 	},
 }));
 
-const cursor = (users: object[]) => ({ toArray: async () => users });
 const flush = () => new Promise((resolve) => setImmediate(resolve));
 const blocking = (id: string, blocked: string[]) => ({ _id: id, settings: { preferences: { statusVisibilityDenied: blocked } } });
 const hiddenFrom = async (service: StatusVisibilityService, viewer: string | null) => {
@@ -49,16 +49,16 @@ describe('status visibility service', () => {
 		settingValues.Accounts_StatusVisibility_Admin_Enabled = true;
 		settingValues.Accounts_UserStatus_Enabled = true;
 		broadcast.mockResolvedValue(undefined);
-		findPresenceUsersByIds.mockReturnValue(cursor([]));
-		findWithStatusVisibilityConfig.mockReturnValue(cursor([]));
-		findPresenceDisabledByAdmin.mockReturnValue(cursor([]));
-		findUsersNotOffline.mockReturnValue(cursor([]));
+		findPresenceUsersByIds.mockReturnValue(fakeCursor([]));
+		findWithStatusVisibilityConfig.mockReturnValue(fakeCursor([]));
+		findPresenceDisabledByAdmin.mockReturnValue(fakeCursor([]));
+		findUsersNotOffline.mockReturnValue(fakeCursor([]));
 		service = new StatusVisibilityService();
 		await service.refresh();
 	});
 
 	it('hides a target from the viewers they blocked, and only from them', async () => {
-		findWithStatusVisibilityConfig.mockReturnValue(cursor([blocking('ana', ['bruno'])]));
+		findWithStatusVisibilityConfig.mockReturnValue(fakeCursor([blocking('ana', ['bruno'])]));
 		await service.refresh();
 
 		expect(await hiddenFrom(service, 'bruno')).toEqual(['ana']);
@@ -66,7 +66,7 @@ describe('status visibility service', () => {
 	});
 
 	it('never hides a target from themselves nor from an anonymous viewer', async () => {
-		findWithStatusVisibilityConfig.mockReturnValue(cursor([blocking('ana', ['ana', 'bruno'])]));
+		findWithStatusVisibilityConfig.mockReturnValue(fakeCursor([blocking('ana', ['ana', 'bruno'])]));
 		await service.refresh();
 
 		expect(await hiddenFrom(service, 'ana')).toEqual([]);
@@ -74,12 +74,12 @@ describe('status visibility service', () => {
 	});
 
 	it('drops an entry when a targeted refresh finds the block list gone', async () => {
-		findWithStatusVisibilityConfig.mockReturnValue(cursor([blocking('ana', ['bruno'])]));
+		findWithStatusVisibilityConfig.mockReturnValue(fakeCursor([blocking('ana', ['bruno'])]));
 		await service.refresh(['ana']);
 		expect(await hiddenFrom(service, 'bruno')).toEqual(['ana']);
 
-		findWithStatusVisibilityConfig.mockReturnValue(cursor([]));
-		findPresenceUsersByIds.mockReturnValue(cursor([{ _id: 'ana' }]));
+		findWithStatusVisibilityConfig.mockReturnValue(fakeCursor([]));
+		findPresenceUsersByIds.mockReturnValue(fakeCursor([{ _id: 'ana' }]));
 		const affected = await service.refresh(['ana']);
 
 		expect(await hiddenFrom(service, 'bruno')).toEqual([]);
@@ -87,7 +87,7 @@ describe('status visibility service', () => {
 	});
 
 	it('lists users with an active block list as restricted, only while the feature is on', async () => {
-		findWithStatusVisibilityConfig.mockReturnValue(cursor([blocking('ana', ['bruno'])]));
+		findWithStatusVisibilityConfig.mockReturnValue(fakeCursor([blocking('ana', ['bruno'])]));
 		await service.refresh();
 
 		expect(await service.getRestrictedUsers()).toEqual(['ana']);
@@ -99,10 +99,10 @@ describe('status visibility service', () => {
 	});
 
 	it('reports the viewers on both sides of a block list change', async () => {
-		findWithStatusVisibilityConfig.mockReturnValue(cursor([blocking('ana', ['bruno'])]));
+		findWithStatusVisibilityConfig.mockReturnValue(fakeCursor([blocking('ana', ['bruno'])]));
 		await service.refresh();
 
-		findWithStatusVisibilityConfig.mockReturnValue(cursor([blocking('ana', ['carla'])]));
+		findWithStatusVisibilityConfig.mockReturnValue(fakeCursor([blocking('ana', ['carla'])]));
 		await service.invalidate(['ana']);
 
 		const [, payload] = broadcast.mock.calls.at(-1) as [string, { viewers?: string[] }];
@@ -119,11 +119,10 @@ describe('status visibility service', () => {
 	});
 
 	it('clears everything when the setting is off and reports who became visible', async () => {
-		findWithStatusVisibilityConfig.mockReturnValue(cursor([blocking('ana', ['bruno'])]));
+		findWithStatusVisibilityConfig.mockReturnValue(fakeCursor([blocking('ana', ['bruno'])]));
 		await service.refresh();
 
 		settingValues.Accounts_StatusVisibility_Enabled = false;
-		findPresenceUsersByIds.mockReturnValue(cursor([{ _id: 'ana' }]));
 		const affected = await service.refresh();
 
 		expect(affected.map(({ _id }) => _id)).toEqual(['ana']);
@@ -131,11 +130,11 @@ describe('status visibility service', () => {
 	});
 
 	it('reports every user whose visibility may have changed, configured before or after', async () => {
-		findWithStatusVisibilityConfig.mockReturnValue(cursor([blocking('ana', ['bruno'])]));
+		findWithStatusVisibilityConfig.mockReturnValue(fakeCursor([blocking('ana', ['bruno'])]));
 		await service.refresh();
 
-		findWithStatusVisibilityConfig.mockReturnValue(cursor([blocking('carla', ['bruno'])]));
-		findPresenceUsersByIds.mockReturnValue(cursor([{ _id: 'ana' }]));
+		findWithStatusVisibilityConfig.mockReturnValue(fakeCursor([blocking('carla', ['bruno'])]));
+		findPresenceUsersByIds.mockReturnValue(fakeCursor([{ _id: 'ana' }]));
 		const affected = await service.refresh();
 
 		expect(affected.map(({ _id }) => _id).sort()).toEqual(['ana', 'carla']);
@@ -164,7 +163,7 @@ describe('status visibility service', () => {
 	});
 
 	it('lists who hid their status from a given viewer', async () => {
-		findWithStatusVisibilityConfig.mockReturnValue(cursor([blocking('ana', ['bruno']), blocking('carla', ['bruno', 'diego'])]));
+		findWithStatusVisibilityConfig.mockReturnValue(fakeCursor([blocking('ana', ['bruno']), blocking('carla', ['bruno', 'diego'])]));
 		await service.refresh();
 
 		expect(await hiddenFrom(service, 'bruno')).toEqual(['ana', 'carla']);
@@ -173,7 +172,7 @@ describe('status visibility service', () => {
 	});
 
 	it('hides an admin-disabled user from every viewer, including one they never blocked', async () => {
-		findPresenceDisabledByAdmin.mockReturnValue(cursor([{ _id: 'ana' }]));
+		findPresenceDisabledByAdmin.mockReturnValue(fakeCursor([{ _id: 'ana' }]));
 		await service.refresh();
 
 		expect(await hiddenFrom(service, 'bruno')).toEqual(['ana']);
@@ -184,30 +183,30 @@ describe('status visibility service', () => {
 
 	it('keeps the admin axis live while the per-user setting is off', async () => {
 		settingValues.Accounts_StatusVisibility_Enabled = false;
-		findPresenceDisabledByAdmin.mockReturnValue(cursor([{ _id: 'ana' }]));
+		findPresenceDisabledByAdmin.mockReturnValue(fakeCursor([{ _id: 'ana' }]));
 		await service.refresh();
 
 		expect(await hiddenFrom(service, 'bruno')).toEqual(['ana']);
 	});
 
 	it('hides an admin-disabled user from an anonymous viewer too', async () => {
-		findPresenceDisabledByAdmin.mockReturnValue(cursor([{ _id: 'ana' }]));
+		findPresenceDisabledByAdmin.mockReturnValue(fakeCursor([{ _id: 'ana' }]));
 		await service.refresh();
 
 		expect(await hiddenFrom(service, null)).toEqual(['ana']);
 	});
 
 	it('unions both axes without repeating a target hidden by each', async () => {
-		findWithStatusVisibilityConfig.mockReturnValue(cursor([blocking('ana', ['bruno']), blocking('carla', ['bruno'])]));
-		findPresenceDisabledByAdmin.mockReturnValue(cursor([{ _id: 'ana' }, { _id: 'diego' }]));
+		findWithStatusVisibilityConfig.mockReturnValue(fakeCursor([blocking('ana', ['bruno']), blocking('carla', ['bruno'])]));
+		findPresenceDisabledByAdmin.mockReturnValue(fakeCursor([{ _id: 'ana' }, { _id: 'diego' }]));
 		await service.refresh();
 
 		expect(await hiddenFrom(service, 'bruno')).toEqual(['ana', 'carla', 'diego']);
 	});
 
 	it('returns a scope that survives the broker transport to a remote streamer', async () => {
-		findWithStatusVisibilityConfig.mockReturnValue(cursor([blocking('carla', ['bruno'])]));
-		findPresenceDisabledByAdmin.mockReturnValue(cursor([{ _id: 'ana' }]));
+		findWithStatusVisibilityConfig.mockReturnValue(fakeCursor([blocking('carla', ['bruno'])]));
+		findPresenceDisabledByAdmin.mockReturnValue(fakeCursor([{ _id: 'ana' }]));
 		await service.refresh();
 
 		for (const viewer of ['bruno', 'dora']) {
@@ -218,14 +217,14 @@ describe('status visibility service', () => {
 	});
 
 	it('flags an admin-disabled user as restricted for the sync broadcast gate', async () => {
-		findPresenceDisabledByAdmin.mockReturnValue(cursor([{ _id: 'ana' }]));
+		findPresenceDisabledByAdmin.mockReturnValue(fakeCursor([{ _id: 'ana' }]));
 		await service.refresh();
 
 		expect((await service.getRestrictedUsers()).sort()).toEqual(['ana']);
 	});
 
 	it('returns a user the admin just disabled among the affected users, so the listener can correct clients', async () => {
-		findPresenceDisabledByAdmin.mockReturnValue(cursor([{ _id: 'ana' }]));
+		findPresenceDisabledByAdmin.mockReturnValue(fakeCursor([{ _id: 'ana' }]));
 
 		const affected = await service.refresh(['ana']);
 
@@ -233,7 +232,7 @@ describe('status visibility service', () => {
 	});
 
 	it('still reports an admin-disabled target on a repeated refresh, since the listener refreshes again', async () => {
-		findPresenceDisabledByAdmin.mockReturnValue(cursor([{ _id: 'ana' }]));
+		findPresenceDisabledByAdmin.mockReturnValue(fakeCursor([{ _id: 'ana' }]));
 		await service.refresh(['ana']);
 
 		const affected = await service.refresh(['ana']);
@@ -242,9 +241,8 @@ describe('status visibility service', () => {
 	});
 
 	it('does not report a target twice when it is both newly disabled and configured', async () => {
-		findPresenceDisabledByAdmin.mockReturnValue(cursor([{ _id: 'ana' }]));
-		findWithStatusVisibilityConfig.mockReturnValue(cursor([blocking('ana', ['bruno'])]));
-		findPresenceUsersByIds.mockReturnValue(cursor([{ _id: 'ana' }]));
+		findPresenceDisabledByAdmin.mockReturnValue(fakeCursor([{ _id: 'ana' }]));
+		findWithStatusVisibilityConfig.mockReturnValue(fakeCursor([blocking('ana', ['bruno'])]));
 
 		const affected = await service.refresh(['ana']);
 
@@ -252,11 +250,11 @@ describe('status visibility service', () => {
 	});
 
 	it('rebroadcasts a user the admin re-enabled, so they do not stay stuck offline', async () => {
-		findPresenceDisabledByAdmin.mockReturnValue(cursor([{ _id: 'ana' }]));
+		findPresenceDisabledByAdmin.mockReturnValue(fakeCursor([{ _id: 'ana' }]));
 		await service.refresh();
 
-		findPresenceDisabledByAdmin.mockReturnValue(cursor([]));
-		findPresenceUsersByIds.mockReturnValue(cursor([{ _id: 'ana' }]));
+		findPresenceDisabledByAdmin.mockReturnValue(fakeCursor([]));
+		findPresenceUsersByIds.mockReturnValue(fakeCursor([{ _id: 'ana' }]));
 		const affected = await service.refresh(['ana']);
 
 		expect(await hiddenFrom(service, 'bruno')).toEqual([]);
@@ -264,10 +262,10 @@ describe('status visibility service', () => {
 	});
 
 	it('scopes a targeted refresh of the admin axis to the given targets', async () => {
-		findPresenceDisabledByAdmin.mockReturnValue(cursor([{ _id: 'ana' }, { _id: 'diego' }]));
+		findPresenceDisabledByAdmin.mockReturnValue(fakeCursor([{ _id: 'ana' }, { _id: 'diego' }]));
 		await service.refresh();
 
-		findPresenceDisabledByAdmin.mockReturnValue(cursor([]));
+		findPresenceDisabledByAdmin.mockReturnValue(fakeCursor([]));
 		await service.refresh(['ana']);
 
 		expect(await hiddenFrom(service, 'bruno')).toEqual(['diego']);
@@ -276,7 +274,7 @@ describe('status visibility service', () => {
 
 	it('hides everyone when presence is disabled workspace-wide', async () => {
 		settingValues.Accounts_UserStatus_Enabled = false;
-		findUsersNotOffline.mockReturnValue(cursor([{ _id: 'ana' }, { _id: 'bruno' }]));
+		findUsersNotOffline.mockReturnValue(fakeCursor([{ _id: 'ana' }, { _id: 'bruno' }]));
 
 		const affected = await service.refresh();
 
@@ -288,7 +286,7 @@ describe('status visibility service', () => {
 
 	it('reports everyone again on a repeated refresh while the workspace policy is on', async () => {
 		settingValues.Accounts_UserStatus_Enabled = false;
-		findUsersNotOffline.mockReturnValue(cursor([{ _id: 'ana' }]));
+		findUsersNotOffline.mockReturnValue(fakeCursor([{ _id: 'ana' }]));
 		await service.refresh();
 
 		const affected = await service.refresh();
@@ -298,7 +296,7 @@ describe('status visibility service', () => {
 
 	it('skips both per-user queries while the workspace policy is on', async () => {
 		settingValues.Accounts_UserStatus_Enabled = false;
-		findUsersNotOffline.mockReturnValue(cursor([]));
+		findUsersNotOffline.mockReturnValue(fakeCursor([]));
 		findWithStatusVisibilityConfig.mockClear();
 		findPresenceDisabledByAdmin.mockClear();
 
@@ -310,7 +308,7 @@ describe('status visibility service', () => {
 
 	it('gives everyone their real presence back when the workspace policy is turned off', async () => {
 		settingValues.Accounts_UserStatus_Enabled = false;
-		findUsersNotOffline.mockReturnValue(cursor([{ _id: 'ana' }, { _id: 'bruno' }]));
+		findUsersNotOffline.mockReturnValue(fakeCursor([{ _id: 'ana' }, { _id: 'bruno' }]));
 		await service.refresh();
 
 		settingValues.Accounts_UserStatus_Enabled = true;
@@ -322,7 +320,7 @@ describe('status visibility service', () => {
 
 	it('does not apply an unscoped invalidation locally, so the listener pass still sees the transition', async () => {
 		settingValues.Accounts_UserStatus_Enabled = false;
-		findUsersNotOffline.mockReturnValue(cursor([{ _id: 'ana' }]));
+		findUsersNotOffline.mockReturnValue(fakeCursor([{ _id: 'ana' }]));
 		await service.refresh();
 
 		settingValues.Accounts_UserStatus_Enabled = true;
@@ -346,12 +344,12 @@ describe('status visibility service', () => {
 		});
 
 		beforeEach(async () => {
-			findWithStatusVisibilityConfig.mockReturnValue(cursor([target([])]));
+			findWithStatusVisibilityConfig.mockReturnValue(fakeCursor([target([])]));
 			await service.refresh();
 		});
 
 		it('should union the admin list with the user list', async () => {
-			findWithStatusVisibilityConfig.mockReturnValue(cursor([target(['chosen'])]));
+			findWithStatusVisibilityConfig.mockReturnValue(fakeCursor([target(['chosen'])]));
 
 			await service.refresh();
 
@@ -362,7 +360,7 @@ describe('status visibility service', () => {
 
 		it('should keep the admin list when Accounts_StatusVisibility_Enabled is off', async () => {
 			settingValues.Accounts_StatusVisibility_Enabled = false;
-			findWithStatusVisibilityConfig.mockReturnValue(cursor([target(['chosen'])]));
+			findWithStatusVisibilityConfig.mockReturnValue(fakeCursor([target(['chosen'])]));
 
 			await service.refresh();
 
@@ -393,8 +391,8 @@ describe('status visibility service', () => {
 		});
 
 		it('hides nobody, whatever rules the users and the admin had stored', async () => {
-			findWithStatusVisibilityConfig.mockReturnValue(cursor([blocking('ana', ['bruno'])]));
-			findPresenceDisabledByAdmin.mockReturnValue(cursor([{ _id: 'target' }]));
+			findWithStatusVisibilityConfig.mockReturnValue(fakeCursor([blocking('ana', ['bruno'])]));
+			findPresenceDisabledByAdmin.mockReturnValue(fakeCursor([{ _id: 'target' }]));
 
 			await service.refresh();
 
@@ -416,18 +414,18 @@ describe('status visibility service', () => {
 			await service.refresh();
 
 			settingValues.Accounts_UserStatus_Enabled = true;
-			findUsersNotOffline.mockReturnValue(cursor([{ _id: 'ana' }]));
+			findUsersNotOffline.mockReturnValue(fakeCursor([{ _id: 'ana' }]));
 
 			expect(await service.refresh()).toEqual([{ _id: 'ana' }]);
 		});
 
 		it('reports the users it stops hiding so their real presence is broadcast again', async () => {
 			settingValues.Accounts_StatusVisibility_Admin_Enabled = true;
-			findPresenceDisabledByAdmin.mockReturnValue(cursor([{ _id: 'target' }]));
+			findPresenceDisabledByAdmin.mockReturnValue(fakeCursor([{ _id: 'target' }]));
 			await service.refresh();
 
 			settingValues.Accounts_StatusVisibility_Admin_Enabled = false;
-			findPresenceUsersByIds.mockReturnValue(cursor([{ _id: 'target' }]));
+			findPresenceUsersByIds.mockReturnValue(fakeCursor([{ _id: 'target' }]));
 
 			expect(await service.refresh()).toEqual([{ _id: 'target' }]);
 			expect(findPresenceUsersByIds).toHaveBeenCalledWith(['target'], expect.anything());

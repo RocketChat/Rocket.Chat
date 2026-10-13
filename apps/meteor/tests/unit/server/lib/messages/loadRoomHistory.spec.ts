@@ -1,3 +1,4 @@
+import { fakeCursor } from '@rocket.chat/models/testing';
 import { expect } from 'chai';
 import { describe, it } from 'mocha';
 import proxyquire from 'proxyquire';
@@ -11,9 +12,7 @@ const { loadRoomHistory } = proxyquire.noCallThru().load('../../../../../server/
 	'../utils/lib/normalizeMessagesForUser': { normalizeMessagesForUser: async (messages: unknown[]) => messages },
 });
 
-const pageOf = (...timestamps: number[]) => ({
-	toArray: async () => timestamps.map((ts, i) => ({ _id: `m${i}`, rid: 'room', ts: new Date(ts) })),
-});
+const pageOf = (...timestamps: number[]) => fakeCursor(timestamps.map((ts, i) => ({ _id: `m${i}`, rid: 'room', ts: new Date(ts) })));
 
 describe('loadRoomHistory', () => {
 	it('should offer the neighbouring pages from the edges of the page returned', async () => {

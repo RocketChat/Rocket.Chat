@@ -1,3 +1,4 @@
+import { fakeCursor } from '@rocket.chat/models/testing';
 import { expect } from 'chai';
 import proxyquire from 'proxyquire';
 import sinon from 'sinon';
@@ -113,8 +114,8 @@ describe('registerContact', () => {
 
 	it('should register a contact when passing valid data', async () => {
 		modelsMock.LivechatVisitors.getVisitorByToken.returns({ _id: 'visitor1' });
-		modelsMock.LivechatCustomField.findByScope.returns({ toArray: () => [] });
-		modelsMock.LivechatRooms.findByVisitorId.returns({ toArray: () => [] });
+		modelsMock.LivechatCustomField.findByScope.returns(fakeCursor([]));
+		modelsMock.LivechatRooms.findByVisitorId.returns(fakeCursor([]));
 		modelsMock.LivechatVisitors.updateOne.returns(undefined);
 
 		await expect(
