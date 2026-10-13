@@ -63,7 +63,6 @@
   "__usernames__joined": "{{usernames}} joined",
   "__usersCount__joined": "{{count}} joined",
   "__usersCount__people_will_be_invited": "{{usersCount}} people will be invited",
-  "_joined.comment": "user a and user b joined a video call",
   "@username": "@username",
   "@username_message": "@username <message>",
   "#channel": "#channel",
