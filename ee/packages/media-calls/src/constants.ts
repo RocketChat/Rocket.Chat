@@ -7,3 +7,7 @@ export const CTI_CALL_FEATURES: CallFeature[] = [...SIP_CALL_FEATURES, ...callCo
 /** Features that only make sense when the peer is outside Rocket.Chat; calls between two users never carry them */
 export const EXTERNAL_CALL_FEATURES: CallFeature[] = ['conference-escalation'];
 export const ESCALATED_CALL_FEATURES: CallFeature[] = ['audio', 'conference-escalation'];
+
+/** How long a take-over waits for a renegotiation started by the caller to be answered */
+export const TAKE_OVER_NEGOTIATION_TIMEOUT = 8000;
+export const TAKE_OVER_NEGOTIATION_POLL_INTERVAL = 250;

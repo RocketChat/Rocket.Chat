@@ -8,6 +8,7 @@ import SidebarRailDivider from './SidebarRailDivider';
 import SidebarRailLoginPage from './SidebarRailLoginPage';
 import SidebarRailPhone from './SidebarRailPhone';
 import SidebarRailSort from './SidebarRailSort';
+import SidebarRailTakeOver from './SidebarRailTakeOver';
 import NavBarOmnichannelGroup from '../../navbar/NavBarOmnichannelGroup';
 import NavBarItemDirectoryPage from '../../navbar/NavBarPagesGroup/NavBarItemDirectoryPage';
 import NavBarItemHomePage from '../../navbar/NavBarPagesGroup/NavBarItemHomePage';
@@ -52,6 +53,7 @@ const SidebarRail = () => {
 				</NavBarGroup>
 				<SidebarRailDivider />
 				<NavBarGroup vertical aria-label={t('Voice_Call')}>
+					<SidebarRailTakeOver />
 					<SidebarRailPhone />
 				</NavBarGroup>
 				{showOmnichannel && (

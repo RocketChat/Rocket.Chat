@@ -25,6 +25,8 @@ export type CallEvents = {
 	active: void;
 	/* Triggered when this client puts the call on the ignore list, either because the call was accepted on a different client or because you called `call.ignore()` */
 	hidden: void;
+	/* Triggered when this client takes over a call that was happening on another session of the same user */
+	takenOver: void;
 	/* Triggered when the call has reached the other user and started ringing */
 	ringing: void;
 
