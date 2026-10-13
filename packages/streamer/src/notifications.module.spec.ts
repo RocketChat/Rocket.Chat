@@ -1,5 +1,6 @@
 import { api, MediaCall, Settings, VideoConf } from '@rocket.chat/core-services';
 import { Subscriptions, Users } from '@rocket.chat/models';
+import { fakeCursor } from '@rocket.chat/models/testing';
 
 import { NotificationsModule } from './notifications.module';
 import { Streamer } from './streamer.module';
@@ -120,7 +121,7 @@ describe('NotificationsModule', () => {
 			countByRoomIdAndUserId.mockReset();
 			countByRoomIdAndUserId.mockResolvedValue(1); // attacker is subscribed to the room
 			findByRoomIdAndNotUserId.mockReset();
-			findByRoomIdAndNotUserId.mockReturnValue({ toArray: async () => [{ u: { _id: 'victim' } }] } as any);
+			findByRoomIdAndNotUserId.mockReturnValue(fakeCursor([{ u: { _id: 'victim' } }]));
 		});
 
 		['force_logout', 'notification', 'message', 'uiInteraction', 'subscriptions-changed', 'webdav', 'banners'].forEach((event) => {

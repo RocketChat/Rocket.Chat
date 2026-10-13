@@ -2,6 +2,7 @@ import fs from 'node:fs';
 import { beforeEach, describe, it } from 'node:test';
 
 import type { IExportOperation } from '@rocket.chat/core-typings';
+import { fakeCursor } from '@rocket.chat/models/testing';
 import { expect } from 'chai';
 import proxyquire from 'proxyquire';
 import Sinon from 'sinon';
@@ -82,24 +83,22 @@ const modelsMock = {
 	Messages: {
 		findPaginated: (_query: object, _options: object) => {
 			return {
-				cursor: {
-					toArray: async () => [
-						{
-							_id: 'msg1',
-							rid: 'general',
-							ts: new Date(),
-							msg: 'Hello World',
-							u: { _id: 'user1', username: 'userone' },
-						},
-						{
-							_id: 'msg2',
-							rid: 'general',
-							ts: new Date(),
-							msg: 'Second message',
-							u: { _id: 'user2', username: 'usertwo' },
-						},
-					],
-				},
+				cursor: fakeCursor([
+					{
+						_id: 'msg1',
+						rid: 'general',
+						ts: new Date(),
+						msg: 'Hello World',
+						u: { _id: 'user1', username: 'userone' },
+					},
+					{
+						_id: 'msg2',
+						rid: 'general',
+						ts: new Date(),
+						msg: 'Second message',
+						u: { _id: 'user2', username: 'usertwo' },
+					},
+				]),
 				totalCount: Promise.resolve(0),
 			};
 		},

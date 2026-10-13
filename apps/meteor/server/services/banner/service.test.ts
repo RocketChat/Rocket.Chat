@@ -2,6 +2,7 @@ import { afterEach, before, describe, it } from 'node:test';
 
 import type { BannerPlatform, IBanner, IBannerDismiss } from '@rocket.chat/core-typings';
 import { registerModel, BaseRaw } from '@rocket.chat/models';
+import { fakeCursor } from '@rocket.chat/models/testing';
 import { expect } from 'chai';
 import type { FindCursor, FindOptions } from 'mongodb';
 import proxyquire from 'proxyquire';
@@ -16,13 +17,13 @@ class BannerModel extends BaseRaw<any> {
 		_bannerId?: string,
 		_options?: FindOptions<IBanner>,
 	): FindCursor<IBanner> {
-		return {} as unknown as FindCursor<IBanner>;
+		return fakeCursor([]);
 	}
 }
 
 class BannerDismissModel extends BaseRaw<any> {
 	findByUserIdAndBannerId(): FindCursor<Pick<IBannerDismiss, 'bannerId'>> {
-		return {} as unknown as FindCursor<Pick<IBannerDismiss, 'bannerId'>>;
+		return fakeCursor([]);
 	}
 }
 
@@ -30,12 +31,6 @@ class UserModel extends BaseRaw<any> {
 	override findOneById(): Promise<any> {
 		return Promise.resolve({});
 	}
-}
-
-function findCursorFactory<T>(items: T[]): FindCursor<T> {
-	return {
-		toArray: () => Promise.resolve(items),
-	} as unknown as FindCursor<T>;
 }
 
 const bannersModel = new BannerModel({ collection: () => ({}) } as unknown as any, 'banner');
@@ -77,12 +72,12 @@ describe('Banners service', () => {
 			const findActiveByRoleOrIdMock = sinon.replace(
 				bannersModel,
 				'findActiveByRoleOrId',
-				sinon.fake.returns(findCursorFactory<IBanner>([FAKE_BANNER])),
+				sinon.fake.returns(fakeCursor<IBanner>([FAKE_BANNER])),
 			);
 			const findByUserIdAndBannerIdMock = sinon.replace(
 				bannerDismissModel,
 				'findByUserIdAndBannerId',
-				sinon.fake.returns(findCursorFactory<Pick<IBannerDismiss, 'bannerId'>>([])),
+				sinon.fake.returns(fakeCursor<Pick<IBannerDismiss, 'bannerId'>>([])),
 			);
 
 			sinon.replace(userModel, 'findOneById', sinon.fake.returns(Promise.resolve({})));
@@ -102,12 +97,12 @@ describe('Banners service', () => {
 			const findActiveByRoleOrIdMock = sinon.replace(
 				bannersModel,
 				'findActiveByRoleOrId',
-				sinon.fake.returns(findCursorFactory<IBanner>([FAKE_BANNER])),
+				sinon.fake.returns(fakeCursor<IBanner>([FAKE_BANNER])),
 			);
 			const findByUserIdAndBannerIdMock = sinon.replace(
 				bannerDismissModel,
 				'findByUserIdAndBannerId',
-				sinon.fake.returns(findCursorFactory<Pick<IBannerDismiss, 'bannerId'>>([{ bannerId: FAKE_BANNER._id }])),
+				sinon.fake.returns(fakeCursor<Pick<IBannerDismiss, 'bannerId'>>([{ bannerId: FAKE_BANNER._id }])),
 			);
 
 			sinon.replace(userModel, 'findOneById', sinon.fake.returns(Promise.resolve({})));
@@ -126,12 +121,12 @@ describe('Banners service', () => {
 			const findActiveByRoleOrIdMock = sinon.replace(
 				bannersModel,
 				'findActiveByRoleOrId',
-				sinon.fake.returns(findCursorFactory<IBanner>([A_SECOND_FAKE_BANNER])),
+				sinon.fake.returns(fakeCursor<IBanner>([A_SECOND_FAKE_BANNER])),
 			);
 			const findByUserIdAndBannerIdMock = sinon.replace(
 				bannerDismissModel,
 				'findByUserIdAndBannerId',
-				sinon.fake.returns(findCursorFactory<Pick<IBannerDismiss, 'bannerId'>>([])),
+				sinon.fake.returns(fakeCursor<Pick<IBannerDismiss, 'bannerId'>>([])),
 			);
 
 			sinon.replace(userModel, 'findOneById', sinon.fake.returns(Promise.resolve({})));

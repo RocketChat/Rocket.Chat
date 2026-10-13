@@ -1,6 +1,7 @@
 import { after, before, beforeEach, describe, it } from 'node:test';
 
 import type { IVideoConferenceUser, VideoConference } from '@rocket.chat/core-typings';
+import { fakeCursor } from '@rocket.chat/models/testing';
 import { expect } from 'chai';
 import sinon from 'sinon';
 
@@ -24,15 +25,19 @@ const project = <T extends Record<string, unknown>>(doc: T, projection?: Record<
 	projection ? (Object.fromEntries(Object.entries(doc).filter(([key]) => key === '_id' || projection[key])) as Partial<T>) : { ...doc };
 
 const VideoConferenceModelMock = {
-	find: sinon.stub().callsFake((_query: unknown, options?: { projection?: Record<string, 1> }) => ({
-		toArray: async () => running.map((call) => project({ ...call, users: [...call.users] }, options?.projection)),
-	})),
+	find: sinon
+		.stub()
+		.callsFake((_query: unknown, options?: { projection?: Record<string, 1> }) =>
+			fakeCursor(running.map((call) => project({ ...call, users: [...call.users] }, options?.projection))),
+		),
 };
 
 const SubscriptionsMock = {
-	findByUserIdAndRoomIds: sinon.stub().callsFake((_uid: string, rids: string[]) => ({
-		toArray: async () => rids.filter((rid) => subscribedRids.includes(rid)).map((rid) => ({ rid, fname: subscriptionNames[rid] })),
-	})),
+	findByUserIdAndRoomIds: sinon
+		.stub()
+		.callsFake((_uid: string, rids: string[]) =>
+			fakeCursor(rids.filter((rid) => subscribedRids.includes(rid)).map((rid) => ({ rid, fname: subscriptionNames[rid] }))),
+		),
 };
 
 const RoomsMock = {

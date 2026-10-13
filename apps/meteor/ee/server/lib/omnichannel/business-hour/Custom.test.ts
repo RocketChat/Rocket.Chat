@@ -1,10 +1,9 @@
 import { beforeEach, describe, it } from 'node:test';
 
+import { fakeCursor } from '@rocket.chat/models/testing';
 import { expect } from 'chai';
 import proxyquire from 'proxyquire';
 import sinon from 'sinon';
-
-const cursor = (docs: unknown[]) => ({ toArray: async () => docs });
 
 const LivechatBusinessHoursStub = {
 	findOne: sinon.stub().resolves(null),
@@ -14,18 +13,17 @@ const LivechatBusinessHoursStub = {
 };
 
 const LivechatDepartmentStub = {
-	findByBusinessHourId: sinon.stub().returns(cursor([])),
-	findInIds: sinon.stub().returns(cursor([])),
+	findByBusinessHourId: sinon.stub(),
+	findInIds: sinon.stub().returns(fakeCursor([])),
 	removeBusinessHourFromDepartmentsByIdsAndBusinessHourId: sinon.stub().resolves(undefined),
 	addBusinessHourToDepartmentsByIds: sinon.stub().resolves(undefined),
 };
 
 const LivechatDepartmentAgentsStub = {
-	findByDepartmentIds: sinon.stub().returns(cursor([])),
+	findByDepartmentIds: sinon.stub(),
 };
 
 const UsersStub = {
-	findAgentsAvailableWithoutBusinessHours: sinon.stub().returns(cursor([])),
 	updateLivechatStatusByAgentIds: sinon.stub().resolves({ modifiedCount: 0 }),
 	closeAgentsBusinessHoursByBusinessHourIds: sinon.stub().resolves(undefined),
 	removeBusinessHourByAgentIds: sinon.stub().resolves(undefined),
@@ -72,9 +70,9 @@ describe('[OC] CustomBusinessHour', () => {
 			LivechatDepartmentStub.removeBusinessHourFromDepartmentsByIdsAndBusinessHourId.resetHistory();
 			LivechatDepartmentStub.addBusinessHourToDepartmentsByIds.resetHistory();
 			LivechatDepartmentStub.findByBusinessHourId.reset();
-			LivechatDepartmentStub.findByBusinessHourId.returns(cursor([{ _id: 'dept1' }, { _id: 'dept2' }]));
+			LivechatDepartmentStub.findByBusinessHourId.returns(fakeCursor([{ _id: 'dept1' }, { _id: 'dept2' }]));
 			LivechatDepartmentAgentsStub.findByDepartmentIds.reset();
-			LivechatDepartmentAgentsStub.findByDepartmentIds.returns(cursor([]));
+			LivechatDepartmentAgentsStub.findByDepartmentIds.returns(fakeCursor([]));
 			UsersStub.removeBusinessHourByAgentIds.resetHistory();
 		});
 
@@ -120,7 +118,7 @@ describe('[OC] CustomBusinessHour', () => {
 		});
 
 		it('should remove the business hour from the agents of removed departments', async () => {
-			LivechatDepartmentAgentsStub.findByDepartmentIds.withArgs(['dept2'], sinon.match.any).returns(cursor([{ agentId: 'agent2' }]));
+			LivechatDepartmentAgentsStub.findByDepartmentIds.withArgs(['dept2'], sinon.match.any).returns(fakeCursor([{ agentId: 'agent2' }]));
 
 			await customBusinessHour.saveBusinessHour({
 				...baseBusinessHour,
