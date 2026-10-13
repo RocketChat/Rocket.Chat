@@ -118,7 +118,7 @@ export class RoomSidebar extends Sidebar {
 
 	getCollapseGroupByName(name: string): Locator {
 		const escapedName = name.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-		return this.root.getByRole('region', { name: new RegExp(`^(Collapse|Expand) ${escapedName}$`) });
+		return this.root.getByRole('listitem', { name: new RegExp(`^(Collapse|Expand) ${escapedName}$`) });
 	}
 
 	getItemUnreadBadge(item: Locator): Locator {
