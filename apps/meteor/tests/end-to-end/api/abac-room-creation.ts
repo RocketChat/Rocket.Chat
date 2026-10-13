@@ -559,7 +559,11 @@ import { IS_EE, URL_MONGODB } from '../../e2e/config/constants';
 			await setSetting('ABAC_Enabled', false);
 
 			try {
-				await preview({ members: [], attributes: { [dept]: ['eng'] } }).expect(400);
+				await preview({ members: [], attributes: { [dept]: ['eng'] } })
+					.expect(400)
+					.expect((res) => {
+						expect(res.body.error).to.include('error-abac-not-enabled');
+					});
 			} finally {
 				await setSetting('ABAC_Enabled', true);
 			}
