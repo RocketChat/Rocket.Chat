@@ -315,14 +315,17 @@ const PostAbacMembershipPreviewBody = {
 			...PostAbacAttributeAssignabilityBody.properties.attributes,
 			minProperties: 1,
 		},
+		excludeSelf: { type: 'boolean' },
 	},
 	required: ['members', 'attributes'],
 	additionalProperties: false,
 };
 
-export const POSTAbacMembershipPreviewBodySchema = ajv.compile<{ members: string[]; attributes: Record<string, string[]> }>(
-	PostAbacMembershipPreviewBody,
-);
+export const POSTAbacMembershipPreviewBodySchema = ajv.compile<{
+	members: string[];
+	attributes: Record<string, string[]>;
+	excludeSelf?: boolean;
+}>(PostAbacMembershipPreviewBody);
 
 const PreviewMember = {
 	type: 'object',
