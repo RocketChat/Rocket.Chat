@@ -59,7 +59,7 @@ const AbacRoomMembershipPreview = ({ rid, roomName, attributes, onBack, onSave }
 	const [group, setGroup] = useState<AbacMembershipGroup>('loses');
 	const filter = useDebouncedValue(text.trim(), 400);
 
-	const editor = useRoomMembershipPreviewEditor(rid, attributes);
+	const { editor, error: editorError } = useRoomMembershipPreviewEditor(rid, attributes);
 
 	useEffect(() => () => queryClient.removeQueries({ queryKey: ABACQueryKeys.roomMembershipPreview.all(rid) }), [queryClient, rid]);
 
@@ -95,7 +95,9 @@ const AbacRoomMembershipPreview = ({ rid, roomName, attributes, onBack, onSave }
 		[t],
 	);
 
-	const { checked, total, isPending, isError, error, isChecking, isPartial, isExhausted } = preview;
+	const { checked, total, isPending, isChecking, isPartial, isExhausted } = preview;
+	const error = preview.error ?? editorError;
+	const isError = preview.isError || !!editorError;
 	const members = useEditorFirst(rid, preview.members, editor, group, filter);
 	const footerContext = { isPartial, canLoadMore: !isSaving, onLoadMore: preview.loadMore };
 

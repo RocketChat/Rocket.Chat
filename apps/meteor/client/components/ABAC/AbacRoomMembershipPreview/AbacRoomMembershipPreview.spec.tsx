@@ -281,6 +281,21 @@ describe('AbacRoomMembershipPreview', () => {
 		expect(saveButton()).toBeDisabled();
 	});
 
+	it("should keep explaining a failed editor's verdict after switching group", async () => {
+		renderPreview(({ group, filter }) => {
+			if (group === 'loses' && !filter) {
+				throw new Error('unavailable');
+			}
+			return page({ editor: 'compliant' });
+		});
+
+		await userEvent.click(await screen.findByRole('button', { name: 'ABAC_Preview_Loses_access' }));
+		await userEvent.click(screen.getByRole('option', { name: 'ABAC_Preview_Retains_access' }));
+
+		expect(await screen.findByText('ABAC_Preview_Unavailable')).toBeInTheDocument();
+		expect(saveButton()).toBeDisabled();
+	});
+
 	it('should go back to the form', async () => {
 		const { onBack } = renderPreview(() => page({ editor: 'compliant' }));
 

@@ -204,7 +204,12 @@ export const LargeRoomStopsAtFetchCap: Story = {
 };
 
 export const SomeLoseAccess: Story = {
-	decorators: [withPreview(({ group, filter }) => pageOf(bySearch(group === 'retains' ? retaining : losing, filter)))],
+	decorators: [
+		withPreview(({ group, filter }) => {
+			const matching = bySearch([...losing, ...retaining], filter).length;
+			return pageOf(bySearch(group === 'retains' ? retaining : losing, filter), { checked: matching, total: matching });
+		}),
+	],
 };
 
 export const NobodyLosesAccess: Story = {
@@ -227,9 +232,10 @@ export const CheckingInProgress: Story = {
 
 export const PartialList: Story = {
 	decorators: [
-		withPreview(({ after }) => {
-			const index = after ? losing.findIndex(({ _id }) => _id === after._id) + 1 : 0;
-			const members = losing.slice(index, index + 1);
+		withPreview(({ group, after }) => {
+			const population = group === 'retains' ? retaining : losing;
+			const index = after ? population.findIndex(({ _id }) => _id === after._id) + 1 : 0;
+			const members = population.slice(index, index + 1);
 			return pageOf(members, {
 				checked: 25,
 				...(!after && { total: 1500 }),
