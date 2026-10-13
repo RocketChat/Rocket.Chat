@@ -499,6 +499,7 @@ import { IS_EE, URL_MONGODB } from '../../e2e/config/constants';
 					.expect((res) => {
 						expect(res.body.error).to.include('error-abac-preview-too-many-members');
 					});
+				await preview({ members: [unattributedUser.username], attributes: { [dept]: ['eng'] }, excludeSelf: true }).expect(200);
 			} finally {
 				await setSetting('API_User_Limit', savedSettings.get('API_User_Limit'));
 			}
@@ -520,11 +521,17 @@ import { IS_EE, URL_MONGODB } from '../../e2e/config/constants';
 				});
 		});
 
-		it('reports a creator who would not be added once restricting to owned attributes is off', async () => {
+		it('refuses a joining creator who would not be admitted, as creation does, and reports one who stays out', async () => {
 			await setSetting('ABAC_Restrict_To_Owned_Attributes', false);
 
 			try {
-				const res = await preview({ members: [], attributes: { [dept]: ['sales'] } }).expect(200);
+				await preview({ members: [], attributes: { [dept]: ['sales'] } })
+					.expect(400)
+					.expect((res) => {
+						expect(res.body).to.have.property('errorType', 'error-abac-creator-not-admitted');
+					});
+
+				const res = await preview({ members: [], attributes: { [dept]: ['sales'] }, excludeSelf: true }).expect(200);
 
 				expect(res.body.compliant).to.deep.equal([]);
 				expect(usernamesOf(res.body.nonCompliant)).to.deep.equal([creator.username]);
