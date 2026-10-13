@@ -1718,6 +1718,7 @@ describe('AbacService (unit)', () => {
 			mockSettingsGet.mockReset();
 			mockRoomsUnsetAllAbacAttributes.mockReset();
 			mockCreateAuditServerEvent.mockReset();
+			mockSettingsSet.mockReset();
 			auditSpy = jest.spyOn(Audit, 'attributeStoreSwitched').mockResolvedValue(undefined);
 			evictionSpy = jest.spyOn(AbacService.prototype as any, 'onRoomAttributesChanged').mockResolvedValue(undefined);
 			pdpRoomAttrsSpy = jest.fn();
@@ -1778,6 +1779,18 @@ describe('AbacService (unit)', () => {
 			expect(mockRoomsUnsetAllAbacAttributes).toHaveBeenCalledWith();
 			expect(auditSpy).toHaveBeenCalledTimes(1);
 			expect(auditSpy).toHaveBeenCalledWith('virtru', 'local', 5);
+		});
+
+		it('clears ABAC_Required_Attributes when the effective store changes', async () => {
+			mockHasModule.mockReturnValue(true);
+			mockRoomsUnsetAllAbacAttributes.mockResolvedValue({ modifiedCount: 0 });
+			const svc = await bootWith(buildSettings({ ABAC_Attribute_Store: 'local' }));
+
+			await fireSettingChanged(svc, 'ABAC_Attribute_Store', 'virtru');
+			await new Promise((r) => setImmediate(r));
+
+			expect(mockSettingsSet).toHaveBeenCalledTimes(1);
+			expect(mockSettingsSet).toHaveBeenCalledWith('ABAC_Required_Attributes', []);
 		});
 
 		it('skips the wipe and audit when the abac license is absent at Store-setting change time', async () => {
@@ -1965,6 +1978,7 @@ describe('AbacService (unit)', () => {
 		};
 
 		beforeEach(() => {
+			mockHasModule.mockReset();
 			mockSettingsGet.mockReset();
 			mockSettingsSet.mockReset().mockResolvedValue({ modifiedCount: 1 });
 		});
