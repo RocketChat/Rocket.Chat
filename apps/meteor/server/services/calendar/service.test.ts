@@ -1,7 +1,7 @@
 import { afterEach, before, beforeEach, describe, it } from 'node:test';
 
 import { api } from '@rocket.chat/core-services';
-import { mockModel } from '@rocket.chat/models/testing';
+import { fakeCursor, mockModel } from '@rocket.chat/models/testing';
 import { expect } from 'chai';
 import type { DeleteResult, UpdateResult } from 'mongodb';
 import proxyquire from 'proxyquire';
@@ -106,22 +106,13 @@ describe('CalendarService', () => {
 		const freshMocks = {
 			insertOne: sinon.stub().resolves({ insertedId: fakeEventId }),
 			findOne: sinon.stub().resolves(null),
-			findByUserIdAndDate: sinon.stub().returns({
-				toArray: sinon.stub().resolves([]),
-			}),
 			updateEvent: sinon.stub().resolves({ modifiedCount: 1, matchedCount: 1 } as UpdateResult),
 			deleteOne: sinon.stub().resolves({ deletedCount: 1 } as DeleteResult),
 			findNextNotificationDate: sinon.stub().resolves(null),
-			findEventsToNotify: sinon.stub().returns({
-				toArray: sinon.stub().resolves([]),
-			}),
 			flagNotificationSent: sinon.stub().resolves(),
 			findOneByExternalIdAndUserId: sinon.stub().resolves(null),
 			findNextFutureEvent: sinon.stub().resolves(null),
-			findOverlappingEvents: sinon.stub().returns({
-				next: sinon.stub().resolves(null),
-				toArray: sinon.stub().resolves([]),
-			}),
+			findOverlappingEvents: sinon.stub().returns(fakeCursor([])),
 			bulkUpsertImported: sinon.stub().resolves({ upsertedCount: 0, modifiedCount: 0, matchedCount: 0 }),
 			reopenNotifications: sinon.stub().resolves({ modifiedCount: 0 }),
 			deleteUnfinishedByExternalIdsAndUserId: sinon.stub().resolves({ deletedCount: 0 }),
@@ -299,10 +290,7 @@ describe('CalendarService', () => {
 				startTime: new Date(t - 60 * 1000),
 				endTime: new Date(t + 120 * 60 * 1000),
 			});
-			CalendarEventMock.findOverlappingEvents.returns({
-				next: sinon.stub().resolves(null),
-				toArray: sinon.stub().resolves([{ _id: 'remaining', endTime: new Date(t + 30 * 60 * 1000) }]),
-			});
+			CalendarEventMock.findOverlappingEvents.returns(fakeCursor([{ _id: 'remaining', endTime: new Date(t + 30 * 60 * 1000) }]));
 
 			await service.delete(fakeEventId);
 
@@ -321,10 +309,7 @@ describe('CalendarService', () => {
 				startTime: new Date(t - 60 * 1000),
 				endTime: new Date(t + 60 * 60 * 1000),
 			});
-			CalendarEventMock.findOverlappingEvents.returns({
-				next: sinon.stub().resolves(null),
-				toArray: sinon.stub().resolves([]),
-			});
+			CalendarEventMock.findOverlappingEvents.returns(fakeCursor([]));
 
 			await service.delete(fakeEventId);
 
@@ -503,13 +488,12 @@ describe('CalendarService', () => {
 				endTime: new Date(now + 60 * 60 * 1000),
 			};
 
-			CalendarEventMock.findOverlappingEvents.returns({
-				next: sinon.stub().resolves(null),
-				toArray: sinon.stub().resolves([
+			CalendarEventMock.findOverlappingEvents.returns(
+				fakeCursor([
 					{ _id: 'later', endTime: new Date(now + 120 * 60 * 1000) },
 					{ _id: 'earlier', endTime: new Date(now + 30 * 60 * 1000) },
 				]),
-			});
+			);
 
 			await callProcessEventStart(event);
 
@@ -583,10 +567,7 @@ describe('CalendarService', () => {
 				startTime: new Date(t - 60 * 1000),
 				endTime: new Date(t + 30 * 60 * 1000),
 			});
-			CalendarEventMock.findOverlappingEvents.returns({
-				next: sinon.stub().resolves(null),
-				toArray: sinon.stub().resolves([{ _id: 'longer', endTime: new Date(t + 90 * 60 * 1000) }]),
-			});
+			CalendarEventMock.findOverlappingEvents.returns(fakeCursor([{ _id: 'longer', endTime: new Date(t + 90 * 60 * 1000) }]));
 
 			await callReconcile(fakeEventId);
 

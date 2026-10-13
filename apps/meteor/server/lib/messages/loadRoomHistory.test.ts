@@ -1,6 +1,6 @@
 import { before, describe, it } from 'node:test';
 
-import { mockModel } from '@rocket.chat/models/testing';
+import { fakeCursor, mockModel } from '@rocket.chat/models/testing';
 import { expect } from 'chai';
 import proxyquire from 'proxyquire';
 import sinon from 'sinon';
@@ -12,9 +12,7 @@ const { loadRoomHistory } = proxyquire.noCallThru().load('./loadRoomHistory', {
 	'../utils/lib/normalizeMessagesForUser': { normalizeMessagesForUser: async (messages: unknown[]) => messages },
 });
 
-const pageOf = (...timestamps: number[]) => ({
-	toArray: async () => timestamps.map((ts, i) => ({ _id: `m${i}`, rid: 'room', ts: new Date(ts) })),
-});
+const pageOf = (...timestamps: number[]) => fakeCursor(timestamps.map((ts, i) => ({ _id: `m${i}`, rid: 'room', ts: new Date(ts) })));
 
 describe('loadRoomHistory', () => {
 	before(() => {

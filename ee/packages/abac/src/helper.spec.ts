@@ -1,4 +1,4 @@
-import { mockModel } from '@rocket.chat/models/testing';
+import { fakeCursor, mockModel } from '@rocket.chat/models/testing';
 
 import {
 	validateAndNormalizeAttributes,
@@ -83,9 +83,7 @@ describe('validateAndNormalizeAttributes', () => {
 describe('ensureAttributeDefinitionsExist', () => {
 	beforeAll(() => {
 		mockModel('AbacAttributes', {
-			find: jest.fn().mockReturnValue({
-				toArray: () => attributesFindMock(),
-			}),
+			find: () => attributesFindMock(),
 		});
 	});
 
@@ -104,7 +102,7 @@ describe('ensureAttributeDefinitionsExist', () => {
 			{ key: 'role', values: ['admin'] },
 		];
 
-		attributesFindMock.mockResolvedValue([{ key: 'dept', values: ['eng', 'sales'] }]);
+		attributesFindMock.mockReturnValue(fakeCursor([{ key: 'dept', values: ['eng', 'sales'] }]));
 
 		await expect(ensureAttributeDefinitionsExist(normalized)).rejects.toThrow('error-attribute-definition-not-found');
 	});
@@ -112,7 +110,7 @@ describe('ensureAttributeDefinitionsExist', () => {
 	it('throws when a normalized value is not in the allowed definition values', async () => {
 		const normalized = [{ key: 'dept', values: ['eng', 'support'] }];
 
-		attributesFindMock.mockResolvedValue([{ key: 'dept', values: ['eng', 'sales'] }]);
+		attributesFindMock.mockReturnValue(fakeCursor([{ key: 'dept', values: ['eng', 'sales'] }]));
 
 		await expect(ensureAttributeDefinitionsExist(normalized)).rejects.toThrow('error-invalid-attribute-values');
 	});
