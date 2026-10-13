@@ -1,6 +1,6 @@
 # Intent: Proven interoperability and Bifrost retirement
 
-Author: Diego Sampaio. Status: draft.
+Author: Diego Sampaio. Status: accepted.
 
 ## Problem
 
@@ -18,9 +18,9 @@ the project decided it is not the production path and will be decommissioned.
 - One command brings up Rocket.Chat, the XMPP server service and a chosen peer (Prosody,
   Openfire or ejabberd) from a compose file, already configured to federate with each other,
   and runs the end-to-end suite against that peer.
-- Every implemented requirement in [specs/](../specs/) is proven against Prosody, Openfire
-  and ejabberd this way, with the results recorded per peer and per requirement. A
-  requirement that fails against a peer becomes a `D` entry.
+- Every implemented requirement in [specs/](../specs/) is proven against Openfire first,
+  then Prosody and ejabberd, this way, with the results recorded per peer and per
+  requirement. A requirement that fails against a peer becomes a `D` entry.
 - The Bifrost XMPP path is retired and native federation becomes the only XMPP offering,
   with a migration note for administrators who use Bifrost.
 
@@ -41,6 +41,11 @@ the project decided it is not the production path and will be decommissioned.
 
 - The compose setup runs on a developer's machine; it is not part of CI.
 - The suite keeps working against servers it did not set up, as it does today.
+- Openfire, the server the one named prospect runs and the load-test reference in
+  [scale-and-availability](scale-and-availability.md), is proven at the latest release of
+  its current stable line (5.1 today). Prosody and ejabberd follow at the latest release of
+  theirs (13.0 and 26.x today). A version a customer or partner reports running is added to
+  the list. Prosody 0.12, out of support since June 2026, is not tested.
 - Each peer is exercised in its default S2S configuration and in its hardened one (verified
   certificates required, as Prosody's `s2s_secure_auth`).
 - Proprietary servers (Isode M-Link, MindLink, and JChat, which cannot be freely obtained to
@@ -57,7 +62,8 @@ the project decided it is not the production path and will be decommissioned.
 
 ## Open questions
 
-- **Q1** Which versions of Prosody, Openfire and ejabberd?
+- **Q1** ~~Which versions of Prosody, Openfire and ejabberd?~~ The latest stable release
+  of each, Openfire first: see Constraints.
 - **Q2** ~~Where are the per-peer results kept: a column per peer in
   [compliance.md](../compliance.md), or a separate interop report?~~ One file per peer:
   see Constraints.
