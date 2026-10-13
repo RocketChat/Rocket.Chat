@@ -94,7 +94,7 @@ const AbacAttributesManage = ({ room, requiredKeys, onBack, onClose, onSaved }: 
 		return (
 			<>
 				<ContextualbarHeader>
-					<ContextualbarBack onClick={() => setPreviewAttributes(undefined)} />
+					<ContextualbarBack onClick={() => setPreviewAttributes(undefined)} disabled={saveMutation.isPending} />
 					<ContextualbarTitle>{t('ABAC_Members_preview')}</ContextualbarTitle>
 					<ContextualbarClose onClick={onClose} />
 				</ContextualbarHeader>
