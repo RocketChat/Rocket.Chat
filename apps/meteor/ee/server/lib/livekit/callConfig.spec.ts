@@ -7,6 +7,7 @@ const proxyquire = require('proxyquire');
 const findOneById = sinon.stub();
 const canAccessConference = sinon.stub();
 const isLiveKitFullyConfigured = sinon.stub();
+const isLiveKitLicensed = sinon.stub();
 const createLiveKitAccessToken = sinon.stub();
 const settingsGet = sinon.stub();
 
@@ -18,7 +19,7 @@ const { getCallConfig } = proxyquire.noCallThru().load('./callConfig', {
 		},
 	},
 	'@rocket.chat/models': { VideoConference: { findOneById } },
-	'./config': { isLiveKitFullyConfigured, getLiveKitConfig: () => ({ url: 'wss://livekit.example.com' }) },
+	'./config': { isLiveKitFullyConfigured, isLiveKitLicensed, getLiveKitConfig: () => ({ url: 'wss://livekit.example.com' }) },
 	'./token': { createLiveKitAccessToken },
 	'../../../../server/settings': { settings: { get: settingsGet } },
 });
@@ -27,10 +28,13 @@ const user = { _id: 'uid', name: 'Real Name', username: 'user.name' };
 
 describe('getCallConfig', () => {
 	beforeEach(() => {
-		[findOneById, canAccessConference, isLiveKitFullyConfigured, createLiveKitAccessToken, settingsGet].forEach((stub) => stub.reset());
+		[findOneById, canAccessConference, isLiveKitFullyConfigured, isLiveKitLicensed, createLiveKitAccessToken, settingsGet].forEach((stub) =>
+			stub.reset(),
+		);
 		findOneById.resolves({ _id: 'call', rid: 'rid', providerName: 'livekit' });
 		canAccessConference.resolves(true);
 		isLiveKitFullyConfigured.returns(true);
+		isLiveKitLicensed.returns(true);
 		createLiveKitAccessToken.resolves('token');
 	});
 
@@ -59,6 +63,20 @@ describe('getCallConfig', () => {
 
 		expect(await getCallConfig('call', user)).to.deep.equal({ config: { providerName: 'jitsi' } });
 		expect(createLiveKitAccessToken.called).to.be.false;
+	});
+
+	it('refuses a LiveKit call while the workspace is not licensed for LiveKit, minting nothing', async () => {
+		isLiveKitLicensed.returns(false);
+
+		expect(await getCallConfig('call', user)).to.deep.equal({ error: 'error-videoconf-livekit-not-licensed' });
+		expect(createLiveKitAccessToken.called).to.be.false;
+	});
+
+	it('answers for another provider whatever the LiveKit license says', async () => {
+		isLiveKitLicensed.returns(false);
+		findOneById.resolves({ _id: 'call', rid: 'rid', providerName: 'jitsi' });
+
+		expect(await getCallConfig('call', user)).to.deep.equal({ config: { providerName: 'jitsi' } });
 	});
 
 	it('refuses a LiveKit call while LiveKit is not configured', async () => {

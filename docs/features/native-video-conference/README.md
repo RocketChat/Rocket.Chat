@@ -24,9 +24,14 @@ Because the call only renders in the window, the server registers the provider o
 **and** `VideoConf_Conference_Window_Enabled` is on. A provider in the registry is one the camera button offers, and
 offering one that has nowhere to render turns a misconfiguration into a silent, audio-only call.
 
+LiveKit is also sold apart from the rest of video conferencing: it needs the `video-conference-native` license module
+on top of `videoconference-enterprise`. The provider is registered only while the license includes it, and is withdrawn
+as soon as a license without it is applied, no restart needed. `video-conference.callConfig` checks it too, since a call
+started while it was licensed outlives the license: from then on nobody can join or rejoin it.
+
 ## Settings
 
-Under **Video Conference → LiveKit** (enterprise):
+Under **Video Conference → LiveKit** (the `video-conference-native` module):
 
 | Setting | Purpose |
 | --- | --- |
