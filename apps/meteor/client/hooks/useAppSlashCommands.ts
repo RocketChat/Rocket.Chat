@@ -37,7 +37,7 @@ export const useAppSlashCommands = () => {
 				return;
 			}
 
-			if (['command/removed', 'command/disabled'].includes(key) && typeof command === 'string') {
+			if (['command/removed', 'command/disabled', 'command/updated'].includes(key) && typeof command === 'string') {
 				delete slashCommands.commands[command];
 			}
 
