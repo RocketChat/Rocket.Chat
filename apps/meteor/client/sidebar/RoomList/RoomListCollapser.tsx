@@ -27,7 +27,6 @@ const RoomListCollapser = ({ group, canMoveUp, canMoveDown, onMoveUp, onMoveDown
 
 	return (
 		<Box
-			is='section'
 			role='listitem'
 			aria-label={group.collapsed ? t('Expand_group', { group: title }) : t('Collapse_group', { group: title })}
 			onFocus={mountNow}
