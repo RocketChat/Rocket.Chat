@@ -150,4 +150,18 @@ describe('AbacAttributesManage', () => {
 		expect(onSaved).not.toHaveBeenCalled();
 		expect(navigate).not.toHaveBeenCalled();
 	});
+
+	it('should not go back to the form while saving', async () => {
+		const { save } = renderManage([
+			{ key: 'clearance', values: ['secret'] },
+			{ key: 'program', values: ['air-force'] },
+		]);
+		save.mockImplementation(() => new Promise(() => undefined));
+
+		await removeOptionalAttributeAndReview();
+		await userEvent.click(screen.getByRole('button', { name: 'save keeping access' }));
+
+		await waitFor(() => expect(save).toHaveBeenCalledTimes(1));
+		expect(screen.getByRole('button', { name: 'Back' })).toBeDisabled();
+	});
 });
