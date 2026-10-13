@@ -68,6 +68,13 @@ describe('AbacMembershipPreview', () => {
 		expect(screen.getByText('ABAC_Preview_Creator_Not_Added')).toBeInTheDocument();
 	});
 
+	it('should not tell a creator with an undetermined answer that they do not hold the attributes', () => {
+		renderPreview(preview({ inconclusive: [bob], creator: 'inconclusive' }));
+
+		expect(screen.queryByText('ABAC_Preview_Creator_Not_Added')).not.toBeInTheDocument();
+		expect(screen.getByText('ABAC_Preview_Inconclusive_Warning')).toBeInTheDocument();
+	});
+
 	it('should show undetermined members in their own group, not as compliant', () => {
 		renderPreview(preview({ inconclusive: [bob] }));
 

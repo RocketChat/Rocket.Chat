@@ -42,7 +42,7 @@ const AbacMembershipPreview = ({ data, isPending, isError }: AbacMembershipPrevi
 					{t('ABAC_Preview_Only_Compliant_Added')}
 				</Callout>
 			)}
-			{hasCompliant && creator !== 'compliant' && (
+			{hasCompliant && creator === 'nonCompliant' && (
 				<Callout type='warning' marginBlockEnd={16}>
 					{t('ABAC_Preview_Creator_Not_Added')}
 				</Callout>
