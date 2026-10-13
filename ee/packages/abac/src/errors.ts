@@ -30,7 +30,6 @@ export enum AbacErrorCode {
 	DecisionInconclusive = 'error-abac-decision-inconclusive',
 	PublicRoomCreationBlocked = 'error-abac-public-room-creation-blocked',
 	DiscussionCreationBlocked = 'error-abac-discussion-creation-blocked',
-	FederatedRoomCreationBlocked = 'error-abac-federated-room-creation-blocked',
 	RoomLocked = 'error-abac-room-locked',
 	CreatorNotAdmitted = 'error-abac-creator-not-admitted',
 	PreviewTooManyMembers = 'error-abac-preview-too-many-members',
