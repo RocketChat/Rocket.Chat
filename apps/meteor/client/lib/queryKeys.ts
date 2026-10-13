@@ -29,7 +29,7 @@ export const roomsQueryKeys = {
 	roles: (rid: IRoom['_id']) => [...roomsQueryKeys.room(rid), 'roles'] as const,
 	info: (rid: IRoom['_id']) => [...roomsQueryKeys.room(rid), 'info'] as const,
 	abacInfo: (rid: IRoom['_id'], abacAttributes: IRoom['abacAttributes'], isABACAvailable: boolean) =>
-		[...roomsQueryKeys.room(rid), 'abac-info', abacAttributes, isABACAvailable] as const,
+		[...roomsQueryKeys.info(rid), 'abac', abacAttributes, isABACAvailable] as const,
 	members: (rid: IRoom['_id'], roomType: RoomType, type?: 'all' | 'online', filter?: string) =>
 		!type && !filter
 			? ([...roomsQueryKeys.room(rid), 'members', roomType] as const)
