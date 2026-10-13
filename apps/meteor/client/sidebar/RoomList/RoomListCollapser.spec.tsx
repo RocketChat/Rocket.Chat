@@ -2,12 +2,13 @@ import { mockAppRoot } from '@rocket.chat/mock-providers';
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { axe } from 'jest-axe';
+import type { ReactNode } from 'react';
 
 import RoomListCollapser from './RoomListCollapser';
 import type { SidebarRoomListGroup } from '../hooks/useRoomList';
 
-jest.mock('../../hooks/useHasLicenseModule', () => ({
-	useHasLicenseModule: () => ({ data: true }),
+jest.mock('../../hooks/useIsEnterprise', () => ({
+	useIsEnterprise: () => ({ data: { isEnterprise: true } }),
 }));
 
 jest.mock('../categories/CategoryMenu', () => ({
@@ -31,10 +32,18 @@ const makeGroup = (collapsed: boolean, unread = 0) =>
 		unreadInfo: { userMentions: 0, groupMentions: 0, unread, tunread: [], tunreadUser: [] },
 	}) as unknown as SidebarRoomListGroup;
 
+const AppRoot = mockAppRoot().build();
+
+const ListWrapper = ({ children }: { children: ReactNode }) => (
+	<AppRoot>
+		<div role='list'>{children}</div>
+	</AppRoot>
+);
+
 const renderCollapser = (group: SidebarRoomListGroup, onClick = jest.fn()) =>
 	render(
 		<RoomListCollapser group={group} canMoveUp={false} canMoveDown={false} onMoveUp={jest.fn()} onMoveDown={jest.fn()} onClick={onClick} />,
-		{ wrapper: mockAppRoot().build() },
+		{ wrapper: ListWrapper },
 	);
 
 describe('RoomListCollapser', () => {
