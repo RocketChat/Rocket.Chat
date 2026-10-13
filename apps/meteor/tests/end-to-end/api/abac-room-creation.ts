@@ -1,5 +1,5 @@
 import type { Credentials } from '@rocket.chat/api-client';
-import type { IPermission, IRoom, ISetting, IUser } from '@rocket.chat/core-typings';
+import type { IPermission, IRoom, ISetting, ISubscription, IUser } from '@rocket.chat/core-typings';
 import { expect } from 'chai';
 import { after, before, beforeEach, describe, it } from 'mocha';
 import { MongoClient } from 'mongodb';
@@ -54,6 +54,14 @@ import { IS_EE, URL_MONGODB } from '../../e2e/config/constants';
 			.send({ name: `abac-rc-${Date.now()}-${Math.random().toString(36).slice(2, 7)}`, ...body });
 
 	const track = (roomId?: IRoom['_id']) => roomId && createdRoomIds.push(roomId);
+
+	const memberUsernames = (roomId: IRoom['_id']) =>
+		connection
+			.db()
+			.collection<ISubscription>('rocketchat_subscription')
+			.find({ rid: roomId })
+			.map(({ u }) => u.username)
+			.toArray();
 
 	before((done) => getCredentials(done));
 
@@ -169,6 +177,7 @@ import { IS_EE, URL_MONGODB } from '../../e2e/config/constants';
 			track(res.body.group._id);
 
 			expect(res.body.group.abacAttributes).to.deep.equal([{ key: dept, values: ['sales'] }]);
+			expect(await memberUsernames(res.body.group._id)).to.not.include(creator.username);
 		});
 
 		it('is refused to a creator who would not be admitted to the room', async () => {
@@ -238,8 +247,7 @@ import { IS_EE, URL_MONGODB } from '../../e2e/config/constants';
 
 			expect(res.body.skippedMembers).to.deep.equal([unattributedUser.username]);
 
-			const members = await request.get(api('groups.members')).set(credentials).query({ roomId }).expect(200);
-			const usernames = (members.body.members as IUser[]).map(({ username }) => username);
+			const usernames = await memberUsernames(roomId);
 			expect(usernames).to.include(creator.username);
 			expect(usernames).to.not.include(unattributedUser.username);
 		});
@@ -283,6 +291,7 @@ import { IS_EE, URL_MONGODB } from '../../e2e/config/constants';
 				track(res.body.group._id);
 
 				expect(res.body.group.abacAttributes).to.deep.equal([{ key: dept, values: ['ops'] }]);
+				expect(await memberUsernames(res.body.group._id)).to.not.include(creator.username);
 			});
 
 			it('is still refused when the creator would not be admitted to the room', async () => {
