@@ -1,0 +1,32 @@
+ee/packages/xmpp-server/docs/adr/0016-a-hosted-room-message-stanza-id-is-its-rocketchat-id.md
+  s_bf488b92c9de7d::t_8805dac8fd6964 1-62
+ee/packages/xmpp-server/docs/intents/room-history.md
+  s_bf488b92c9de7d::t_28d79154744b84 77-79
+  s_bf488b92c9de7d::t_1b6fc19c18d2a1 23-24,29-33,35-37
+  s_bf488b92c9de7d::t_68f250830cdead 62-68
+  s_bf488b92c9de7d::t_c462921ac59d12 48
+  s_bf488b92c9de7d::t_5a88a49640eaa4 17-19,21-22,25-28,34,42-47,59-61,69-70,74-76,80-84
+ee/packages/xmpp-server/docs/compliance.md
+  s_bf488b92c9de7d::t_79c8dffc2b621f 40
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "9bcf1edb24b2beef2a3aee4f26d960b87ffa5621",
+  "prompts": {},
+  "humans": {
+    "h_4c386397e672f4": {
+      "author": "Diego Sampaio <chinello@gmail.com>"
+    }
+  },
+  "sessions": {
+    "s_bf488b92c9de7d": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "bc28bcf1-8630-48cc-a1db-34e784937ef8",
+        "model": "claude-opus-5-5"
+      },
+      "human_author": "Diego Sampaio <chinello@gmail.com>"
+    }
+  }
+}
