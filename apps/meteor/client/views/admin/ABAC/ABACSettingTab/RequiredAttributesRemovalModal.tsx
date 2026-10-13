@@ -26,6 +26,7 @@ const RequiredAttributesRemovalModal = ({ attributeKeys, entitlementsKnown, onCo
 			<Trans
 				i18nKey={entitlementsKnown ? 'ABAC_Required_Attributes_Removal_Content' : 'ABAC_Required_Attributes_Removal_Content_Unknown'}
 				values={{ attributes: attributeKeys.join(', ') }}
+				count={attributeKeys.length}
 				components={{ bold: <Box is='span' fontWeight='bold' /> }}
 			/>
 		</GenericModal>
