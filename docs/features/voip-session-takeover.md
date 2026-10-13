@@ -65,6 +65,12 @@ On `session-changed`, `ClientMediaCall` either acquires or releases the call:
 - The previous owner stops its media and marks the call hidden. It does not send a hangup, so the
   call goes on. Hanging up from it later goes through the `another-client` hangup as for any hidden call.
 
+## UI
+
+The call widgets are not shown for a call carried by another session, so the action is in the navigation
+bar, next to the hangup button, as `useMediaCallTakeOverAction`. It appears while
+`MediaSignalingSession.canTakeOverCall` is true.
+
 Nothing is sent back when the server ignores the request, so the call simply stays hidden.
 
 A removed feature is not restored if a later session supports it again.
