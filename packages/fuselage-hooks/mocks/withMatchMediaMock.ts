@@ -11,13 +11,15 @@ type Viewport = {
 type ChangeListener = (ev: MediaQueryListEvent) => void;
 
 export const withMatchMediaMock = () => {
-	let viewport: Viewport = {
+	const initialViewport: Viewport = {
 		'type': 'screen',
 		'width': 1024,
 		'prefers-color-scheme': 'no-preference',
 		'prefers-reduced-data': 'no-preference',
 		'prefers-reduced-motion': 'no-preference',
 	};
+
+	let viewport: Viewport = { ...initialViewport };
 
 	const mediaQueryLists = new Set<MediaQueryListMock>();
 
@@ -26,15 +28,10 @@ export const withMatchMediaMock = () => {
 
 		private _onchange: ChangeListener | null = null;
 
-		private changeEventListeners: Set<ChangeListener>;
+		private changeEventListeners = new Set<ChangeListener>();
 
 		constructor(media: string) {
 			this._media = media;
-			this.changeEventListeners = new Set<ChangeListener>([
-				(ev) => {
-					this._onchange?.call(this, ev);
-				},
-			]);
 		}
 
 		get matches() {
@@ -60,7 +57,9 @@ export const withMatchMediaMock = () => {
 			}
 
 			this.changeEventListeners.delete(fn);
-			mediaQueryLists.delete(this);
+			if (this.changeEventListeners.size === 0) {
+				mediaQueryLists.delete(this);
+			}
 		}
 
 		get onchange() {
@@ -81,6 +80,7 @@ export const withMatchMediaMock = () => {
 
 		dispatchEvent(ev: MediaQueryListEvent) {
 			this._media = ev.media;
+			this._onchange?.call(this, ev);
 			this.changeEventListeners.forEach((changeEventListener) => {
 				changeEventListener(ev);
 			});
@@ -115,10 +115,7 @@ export const withMatchMediaMock = () => {
 	});
 
 	beforeEach(() => {
-		setViewport({
-			type: 'screen',
-			width: 1024,
-		});
+		setViewport(initialViewport);
 	});
 
 	afterEach(() => {
