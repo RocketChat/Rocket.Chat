@@ -3,11 +3,11 @@ import { css } from '@rocket.chat/css-in-js';
 import { Box, Button, ButtonGroup, CheckBox } from '@rocket.chat/fuselage';
 import { Field, FieldLabel, FieldRow, TextInput } from '@rocket.chat/fuselage-forms';
 import { useBreakpoints, useMediaQuery } from '@rocket.chat/fuselage-hooks';
+import { ToggleButton } from '@rocket.chat/ui-media';
 import type { ComponentProps } from 'react';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import CallDeviceToggle from '../components/CallDeviceToggle';
 import CallParticipants from '../components/CallParticipants';
 import PreflightCameraPlaceholder from '../components/PreflightCameraPlaceholder';
 import type { PreflightMedia } from '../context/definitions';
@@ -114,18 +114,27 @@ const ConferencePreflight = ({
 				<Box position='absolute' insetBlockEnd={12} display='flex' justifyContent='center'>
 					<ButtonGroup>
 						{capabilities.mic && (
-							<CallDeviceToggle
-								device='mic'
-								on={preferences.mic}
-								label={preferences.mic ? t('Mic_on') : t('Mic_off')}
+							<ToggleButton
+								label={t('Microphone')}
+								icons={['mic', 'mic-off']}
+								titles={[t('Microphone'), t('Microphone')]}
+								pressed={!preferences.mic}
+								// Pressed while the device is on, whichever way it is drawn: a screen reader must not hear a live mic as idle.
+								aria-pressed={preferences.mic}
+								dangerWhenPressed
+								large
 								onToggle={() => toggle('mic')}
 							/>
 						)}
 						{capabilities.cam && (
-							<CallDeviceToggle
-								device='cam'
-								on={preferences.cam}
-								label={preferences.cam ? t('Cam_on') : t('Cam_off')}
+							<ToggleButton
+								label={t('Camera')}
+								icons={['video', 'video-off']}
+								titles={[t('Camera'), t('Camera')]}
+								pressed={!preferences.cam}
+								aria-pressed={preferences.cam}
+								dangerWhenPressed
+								large
 								onToggle={() => toggle('cam')}
 							/>
 						)}

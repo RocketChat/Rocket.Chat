@@ -1,9 +1,8 @@
 import type { IUser, UserReport, Serialized } from '@rocket.chat/core-typings';
-import { GenericTableCell, GenericTableRow } from '@rocket.chat/ui-client';
+import { GenericTableCell, GenericTableRow, useFormatDateAndTime } from '@rocket.chat/ui-client';
 
 import ModConsoleUserActions from './ModConsoleUserActions';
 import { normalizeUsername } from '../../../../../lib/utils/normalizeUsername';
-import { useFormatDateAndTime } from '../../../../hooks/useFormatDateAndTime';
 import UserColumn from '../helpers/UserColumn';
 
 export type ModConsoleUserRowProps = {

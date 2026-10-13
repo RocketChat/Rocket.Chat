@@ -1,6 +1,6 @@
+import { stopTracks, useMediaDevices } from '@rocket.chat/ui-media';
 import { useEffect, useState } from 'react';
 
-import { useMediaDevices } from '../call/hooks/useMediaDevices';
 import type { CallDevices, CallPreferences } from '../hooks/useCallDevicesInitialState';
 
 type CallDevicePreview = {
@@ -40,7 +40,7 @@ export const useCallDevicePreview = ({ mic }: CallPreferences, { micId }: CallDe
 			.then((next) => {
 				opened = next;
 				if (cancelled) {
-					next.getTracks().forEach((track) => track.stop());
+					stopTracks(next);
 					return;
 				}
 				setStream(next);
@@ -55,7 +55,9 @@ export const useCallDevicePreview = ({ mic }: CallPreferences, { micId }: CallDe
 
 		return () => {
 			cancelled = true;
-			opened?.getTracks().forEach((track) => track.stop());
+			if (opened) {
+				stopTracks(opened);
+			}
 		};
 	}, [mic, micId, refresh]);
 

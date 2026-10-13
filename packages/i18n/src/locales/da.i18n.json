@@ -2276,7 +2276,6 @@
   "Local_Domains": "Lokale domæner",
   "Local_Password": "Lokalt kodeord",
   "Local_Time": "Lokal tid",
-  "Local_Time_time": "Lokal tid: {{time}}",
   "Localization": "Lokalisering",
   "Location": "Placering",
   "Log_Exceptions_to_Channel": "Log undtagelser fra kanal",

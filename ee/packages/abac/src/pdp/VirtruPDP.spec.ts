@@ -382,19 +382,19 @@ describe('VirtruPDP.onSubjectAttributesChanged', () => {
 	});
 
 	it('returns ALL abac rooms when user has no entity key (no API call)', async () => {
-		const rooms = [{ _id: 'r1', abacAttributes: [{ key: 'k', values: ['v'] }] }];
+		const rooms = [{ _id: 'r1', name: 'room-1', abacAttributes: [{ key: 'k', values: ['v'] }] }];
 		roomsFindPrivateRoomsByIdsWithAbacAttributes.mockReturnValue(cursor(rooms));
 		const apiCall = jest.fn();
 		const pdp = new VirtruPDP(mkClient({ apiCall }));
 		const result = await pdp.onSubjectAttributesChanged(user({ __rooms: ['r1'], emails: [] }) as any, []);
-		expect(result).toEqual([{ _id: 'r1' }]);
+		expect(result).toEqual([{ _id: 'r1', name: 'room-1' }]);
 		expect(apiCall).not.toHaveBeenCalled();
 	});
 
 	it('returns only DENIED rooms when mixed decisions come back', async () => {
 		const rooms = [
-			{ _id: 'rP', abacAttributes: [{ key: 'k', values: ['v'] }] },
-			{ _id: 'rD', abacAttributes: [{ key: 'k', values: ['v'] }] },
+			{ _id: 'rP', name: 'permitted', abacAttributes: [{ key: 'k', values: ['v'] }] },
+			{ _id: 'rD', name: 'denied', abacAttributes: [{ key: 'k', values: ['v'] }] },
 		];
 		roomsFindPrivateRoomsByIdsWithAbacAttributes.mockReturnValue(cursor(rooms));
 		const apiCall = jest.fn().mockResolvedValue({
@@ -405,7 +405,7 @@ describe('VirtruPDP.onSubjectAttributesChanged', () => {
 		});
 		const pdp = new VirtruPDP(mkClient({ apiCall }));
 		const result = await pdp.onSubjectAttributesChanged(user({ __rooms: ['rP', 'rD'] }) as any, []);
-		expect(result).toEqual([{ _id: 'rD' }]);
+		expect(result).toEqual([{ _id: 'rD', name: 'denied' }]);
 	});
 
 	it('still treats DECISION_UNSPECIFIED as non-compliant (LDAP-driven path cannot yield inconclusive decisions)', async () => {

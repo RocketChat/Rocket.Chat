@@ -13,20 +13,26 @@ import {
 	Callout,
 	Margins,
 } from '@rocket.chat/fuselage';
-import { useDefaultSettingFeaturePreviewList, Page, PageHeader, PageScrollableContentWithShadow, PageFooter } from '@rocket.chat/ui-client';
-import type { TranslationKey } from '@rocket.chat/ui-contexts';
-import { useToastMessageDispatch, useTranslation, useSettingsDispatch } from '@rocket.chat/ui-contexts';
+import {
+	useDefaultSettingFeaturePreviewList,
+	Page,
+	PageHeader,
+	PageScrollableContentWithShadow,
+	PageFooter,
+	useFeaturePreviewEnableQuery,
+} from '@rocket.chat/ui-client';
+import { useToastMessageDispatch, useSettingsDispatch } from '@rocket.chat/ui-contexts';
 import type { ChangeEvent } from 'react';
 import { Fragment } from 'react';
 import { useForm } from 'react-hook-form';
+import { useTranslation } from 'react-i18next';
 
-import { useFeaturePreviewEnableQuery } from '../../../hooks/useFeaturePreviewEnableQuery';
 import { useEditableSetting } from '../EditableSettingsContext';
 import Setting from '../settings/Setting';
 import SettingsGroupPageSkeleton from '../settings/SettingsGroupPage/SettingsGroupPageSkeleton';
 
 const AdminFeaturePreviewPage = () => {
-	const t = useTranslation();
+	const { t } = useTranslation();
 	const dispatchToastMessage = useToastMessageDispatch();
 	const allowFeaturePreviewSetting = useEditableSetting('Accounts_AllowFeaturePreview');
 	const { features } = useDefaultSettingFeaturePreviewList();
@@ -86,7 +92,7 @@ const AdminFeaturePreviewPage = () => {
 					</Box>
 					<Accordion>
 						{grouppedFeaturesPreview?.map(([group, features], index) => (
-							<AccordionItem defaultExpanded={index === 0} key={group} title={t(group as TranslationKey)}>
+							<AccordionItem defaultExpanded={index === 0} key={group} title={t(group)}>
 								<FieldGroup>
 									{features.map((feature) => (
 										<Fragment key={feature.name}>

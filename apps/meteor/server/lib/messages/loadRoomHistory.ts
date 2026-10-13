@@ -81,8 +81,8 @@ export async function loadRoomHistory({
 	const oldest = records[records.length - 1];
 
 	const cursor: RoomHistoryCursor = {
-		next: newest && hasNewer ? encodeHistoryCursor(newest.ts) : null,
-		previous: oldest && hasOlder ? encodeHistoryCursor(oldest.ts) : null,
+		next: newest && hasNewer ? encodeHistoryCursor(newest.ts.getTime() < 0 ? new Date(0) : newest.ts) : null,
+		previous: oldest && hasOlder && oldest.ts.getTime() >= 0 ? encodeHistoryCursor(oldest.ts) : null,
 	};
 
 	const [messages, unread] = await Promise.all([

@@ -11,6 +11,7 @@ import { getCredentials, api, request, credentials } from '../../../data/api-dat
 import { addOrRemoveAgentFromDepartment, createDepartmentWithAnOnlineAgent, deleteDepartment } from '../../../data/livechat/department';
 import {
 	closeOmnichannelRoom,
+	closeOpenRoomsServedBy,
 	deleteVisitor,
 	makeAgentAvailable,
 	placeRoomOnHold,
@@ -983,6 +984,7 @@ describe('LIVECHAT - dashboards', function () {
 		after(async () => {
 			await Promise.allSettled(roomsToClose.map((room) => closeOmnichannelRoom(room._id)));
 			await Promise.allSettled(visitorsToDelete.map((visitor) => deleteVisitor(visitor.token)));
+			await Promise.all([closeOpenRoomsServedBy(agent.user._id), closeOpenRoomsServedBy(forwardAgent.user._id)]);
 			await Promise.all([
 				deleteUser(agent.user),
 				deleteUser(forwardAgent.user),
@@ -1183,6 +1185,7 @@ describe('LIVECHAT - dashboards', function () {
 		after(async () => {
 			await Promise.allSettled(roomsToClose.map((room) => closeOmnichannelRoom(room._id)));
 			await Promise.allSettled(visitorsToDelete.map((visitor) => deleteVisitor(visitor.token)));
+			await Promise.all([closeOpenRoomsServedBy(agent.user._id), closeOpenRoomsServedBy(forwardAgent.user._id)]);
 			await Promise.all([deleteUser(agent.user), deleteUser(forwardAgent.user)]);
 		});
 

@@ -35,6 +35,8 @@ import type { AccountProfileFormValues } from './getProfileInitialValues';
 import { useAccountProfileSettings } from './useAccountProfileSettings';
 import { getUserEmailAddress } from '../../../../lib/getUserEmailAddress';
 import UserAutoCompleteMultiple from '../../../components/UserAutoCompleteMultiple';
+import { UserStatus as UserStatusIndicator } from '../../../components/UserStatus';
+import UserStatusDisabledInfo from '../../../components/UserStatusDisabledInfo';
 import UserStatusMenu from '../../../components/UserStatusMenu';
 import UserAvatarEditor from '../../../components/avatar/UserAvatarEditor';
 import { useUpdateAvatar } from '../../../hooks/useUpdateAvatar';
@@ -49,7 +51,11 @@ const AccountProfileForm = (props: AllHTMLAttributes<HTMLFormElement>) => {
 	const { isMobile } = useLayout();
 
 	const setPreferences = useEndpoint('POST', '/v1/users.setPreferences');
-	const statusVisibilityEnabled = useSetting('Accounts_StatusVisibility_Enabled', false);
+	const workspacePresenceDisabled = useSetting('Accounts_UserStatus_Enabled', true) === false;
+	const adminStatusHidingEnabled = useSetting('Accounts_StatusVisibility_Admin_Enabled', false);
+	const presenceDisabledByAdmin = (user?.presenceDisabledByAdmin === true && adminStatusHidingEnabled) || workspacePresenceDisabled;
+	const statusVisibilityEnabled =
+		useSetting('Accounts_StatusVisibility_Enabled', false) && adminStatusHidingEnabled && !presenceDisabledByAdmin;
 	const checkUsernameAvailability = useEndpoint('GET', '/v1/users.checkUsernameAvailability');
 	const sendConfirmationEmail = useEndpoint('POST', '/v1/users.sendConfirmationEmail');
 
@@ -76,7 +82,7 @@ const AccountProfileForm = (props: AllHTMLAttributes<HTMLFormElement>) => {
 
 	const { email, avatar, username, name: userFullName, statusDuration, statusType, statusText } = watch();
 
-	const isExpirationDisabled = statusType === UserStatus.ONLINE && !statusText?.trim();
+	const isExpirationDisabled = presenceDisabledByAdmin || (statusType === UserStatus.ONLINE && !statusText?.trim());
 
 	useEffect(() => {
 		if (isExpirationDisabled) {
@@ -191,7 +197,7 @@ const AccountProfileForm = (props: AllHTMLAttributes<HTMLFormElement>) => {
 				await setPreferences({ data: { statusVisibilityDenied } });
 			}
 
-			if (statusDirty) {
+			if (statusDirty && !presenceDisabledByAdmin) {
 				await setUserStatus({
 					status: statusType,
 					...(allowUserStatusMessageChange && { message: statusText }),
@@ -292,15 +298,20 @@ const AccountProfileForm = (props: AllHTMLAttributes<HTMLFormElement>) => {
 								<TextInput
 									{...field}
 									placeholder={t('StatusMessage_Placeholder')}
-									disabled={!allowUserStatusMessageChange}
+									disabled={!allowUserStatusMessageChange || presenceDisabledByAdmin}
 									flexGrow={1}
 									error={errors.statusText?.message}
+									endAddon={presenceDisabledByAdmin ? <UserStatusDisabledInfo workspace={workspacePresenceDisabled} /> : undefined}
 									startAddon={
-										<Controller
-											control={control}
-											name='statusType'
-											render={({ field: { value, onChange } }) => <UserStatusMenu onChange={onChange} initialStatus={value} />}
-										/>
+										presenceDisabledByAdmin ? (
+											<UserStatusIndicator status={UserStatus.OFFLINE} />
+										) : (
+											<Controller
+												control={control}
+												name='statusType'
+												render={({ field: { value, onChange } }) => <UserStatusMenu onChange={onChange} initialStatus={value} />}
+											/>
+										)
 									}
 								/>
 							)}
@@ -308,7 +319,7 @@ const AccountProfileForm = (props: AllHTMLAttributes<HTMLFormElement>) => {
 					</FieldRow>
 					{errors.statusText && <FieldError>{errors.statusText.message}</FieldError>}
 					{!allowUserStatusMessageChange && <FieldHint>{t('StatusMessage_Change_Disabled')}</FieldHint>}
-					{allowUserStatusMessageChange && <FieldHint>{t('Status_you_can_use_emoji')}</FieldHint>}
+					{allowUserStatusMessageChange && !presenceDisabledByAdmin && <FieldHint>{t('Status_you_can_use_emoji')}</FieldHint>}
 				</Field>
 				<Field>
 					<FieldLabel>{t('Status_clear_after')}</FieldLabel>

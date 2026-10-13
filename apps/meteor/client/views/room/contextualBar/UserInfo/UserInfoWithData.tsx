@@ -34,7 +34,7 @@ export type UserInfoWithDataProps = {
 	onClickBack?: () => void;
 };
 
-const renderCustomFieldValue = (value: string) => <MarkdownText variant='inline' content={value} />;
+const renderMarkdown = (content: string) => <MarkdownText variant='inline' content={content} />;
 
 const UserInfoWithData = ({ uid, username, rid, invitationDate, onClose, onClickBack }: UserInfoWithDataProps) => {
 	const { t } = useTranslation();
@@ -69,6 +69,7 @@ const UserInfoWithData = ({ uid, username, rid, invitationDate, onClose, onClick
 			createdAt,
 			canViewAllInfo,
 			freeSwitchExtension,
+			federated,
 		} = data.user;
 
 		return {
@@ -80,7 +81,7 @@ const UserInfoWithData = ({ uid, username, rid, invitationDate, onClose, onClick
 			 * TODO: We shouldn't use UserCard components outside UserCard
 			 */
 			roles: roles && getRoles(roles).map((role, index) => <UserCardRole key={index}>{role}</UserCardRole>),
-			bio: bio && <MarkdownText variant='inline' content={bio} />,
+			bio,
 			canViewAllInfo,
 			phone,
 			customFields,
@@ -92,15 +93,15 @@ const UserInfoWithData = ({ uid, username, rid, invitationDate, onClose, onClick
 			customStatus: <ReactiveUserStatusText uid={_id} />,
 			nickname,
 			freeSwitchExtension,
+			federated,
 		};
 	}, [data, getRoles]);
 
 	return (
 		<ContextualbarDialog>
 			<ContextualbarHeader>
-				{onClickBack && <ContextualbarBack onClick={onClickBack} />}
-				{!onClickBack && <ContextualbarIcon name='user' />}
-				<ContextualbarTitle>{t('User_Info')}</ContextualbarTitle>
+				{onClickBack ? <ContextualbarBack onClick={onClickBack} /> : <ContextualbarIcon name='user' />}
+				<ContextualbarTitle>{t('Full_profile')}</ContextualbarTitle>
 				{onClose && <ContextualbarClose onClick={onClose} />}
 			</ContextualbarHeader>
 
@@ -119,7 +120,7 @@ const UserInfoWithData = ({ uid, username, rid, invitationDate, onClose, onClick
 			{!isPending && user && (
 				<UserInfo
 					{...user}
-					renderCustomFieldValue={renderCustomFieldValue}
+					renderMarkdown={renderMarkdown}
 					invitationDate={invitationDate}
 					actions={<UserInfoActions user={user} rid={rid} isInvited={Boolean(invitationDate)} backToList={onClickBack} />}
 				/>

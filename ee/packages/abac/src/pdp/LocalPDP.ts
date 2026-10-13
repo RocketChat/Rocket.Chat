@@ -51,7 +51,7 @@ export class LocalPDP implements IPolicyDecisionPoint {
 		return Users.find(query, { projection: { __rooms: 0 } }).toArray();
 	}
 
-	async onSubjectAttributesChanged(user: IUser, _next: IAbacAttributeDefinition[]): Promise<Pick<IRoom, '_id'>[]> {
+	async onSubjectAttributesChanged(user: IUser, _next: IAbacAttributeDefinition[]): Promise<Pick<IRoom, '_id' | 'name'>[]> {
 		const roomIds = user.__rooms;
 
 		// No attributes: no rooms :(
@@ -61,7 +61,7 @@ export class LocalPDP implements IPolicyDecisionPoint {
 					_id: { $in: roomIds },
 					abacAttributes: { $exists: true, $ne: [] },
 				},
-				{ projection: { _id: 1 } },
+				{ projection: { _id: 1, name: 1 } },
 			).toArray();
 		}
 
@@ -70,7 +70,7 @@ export class LocalPDP implements IPolicyDecisionPoint {
 			$or: buildRoomNonCompliantConditionsFromSubject(_next),
 		};
 
-		return Rooms.find(query, { projection: { _id: 1 } }).toArray();
+		return Rooms.find(query, { projection: { _id: 1, name: 1 } }).toArray();
 	}
 
 	async evaluateUserRooms(

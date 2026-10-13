@@ -1,7 +1,7 @@
 import { setTimeout, clearTimeout } from 'node:timers';
 
 import type { IPresence, IBrokerNode } from '@rocket.chat/core-services';
-import { License, ServiceClass, Settings } from '@rocket.chat/core-services';
+import { License, MeteorError, ServiceClass, Settings, StatusVisibility } from '@rocket.chat/core-services';
 import type { IUser } from '@rocket.chat/core-typings';
 import { UserStatus } from '@rocket.chat/core-typings';
 import { cronJobs } from '@rocket.chat/cron';
@@ -301,6 +301,10 @@ export class Presence extends ServiceClass implements IPresence {
 	}
 
 	async setStatus(userId: string, statusDefault: UserStatus, statusText?: string, statusExpiresAt?: Date): Promise<boolean> {
+		if (this.hasPresenceLicense && (await StatusVisibility.isPresenceDisabledFor(userId))) {
+			throw new MeteorError('error-presence-disabled', 'Presence is disabled for this user', { method: 'setStatus' });
+		}
+
 		// Selecting 'online' without a status message clears any manual claim
 		// and reverts to connection-driven presence.
 		if (statusDefault === UserStatus.ONLINE && !statusText) {

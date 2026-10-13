@@ -15,6 +15,8 @@ import type {
 } from '@rocket.chat/core-typings';
 import { ServerEvents } from '@rocket.chat/models';
 
+import { logger } from './logger';
+
 type EventParamsMap = {
 	[K in AbacAuditServerEventKey]: ExtractDataToParams<IServerEvents[K]>;
 };
@@ -26,7 +28,9 @@ export type AbacAuditEventName = AbacAuditServerEventKey;
 export type AbacAuditEventPayload<K extends AbacAuditEventName = AbacAuditEventName> = EventPayload<K>;
 
 async function audit<K extends AbacAuditServerEventKey>(event: K, payload: EventPayload<K>, actor: IAuditServerActor): Promise<void> {
-	return ServerEvents.createAuditServerEvent(event, payload, actor);
+	return ServerEvents.createAuditServerEvent(event, payload, actor).catch((err) =>
+		logger.error({ msg: 'Failed to write ABAC audit event', event, err }),
+	);
 }
 
 export const Audit = {

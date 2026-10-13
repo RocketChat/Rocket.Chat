@@ -1,8 +1,7 @@
 import { Badge, Box } from '@rocket.chat/fuselage';
 import { UserAvatar } from '@rocket.chat/ui-avatar';
+import { useFormatDateAndTime } from '@rocket.chat/ui-client';
 import { usePermission } from '@rocket.chat/ui-contexts';
-
-import { useFormatDateAndTime } from '../../../../../hooks/useFormatDateAndTime';
 
 export type AppRequestItemProps = {
 	seen: boolean;

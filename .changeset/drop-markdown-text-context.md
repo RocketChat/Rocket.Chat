@@ -3,4 +3,4 @@
 '@rocket.chat/meteor': patch
 ---
 
-Removes `MarkdownTextContext` from `@rocket.chat/ui-client`. `UserCard` and `UserInfo` now render the `bio` and custom status nodes they receive, and `UserInfo` takes an optional `renderCustomFieldValue` prop; the web app renders those values as Markdown itself.
+Removes `MarkdownTextContext` from `@rocket.chat/ui-client`. `UserCard` renders the custom status node it receives, and `UserInfo` takes an optional `renderMarkdown` prop for the bio and the custom field values; the web app passes its own Markdown renderer.

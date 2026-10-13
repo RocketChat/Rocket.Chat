@@ -7,7 +7,6 @@ import { useUserMenu } from './useUserMenu';
 // Mock userStatuses to avoid sdk.stream to call Meteor.connection.subscribe
 jest.mock('../../../../lib/userStatuses', () => ({
 	userStatuses: {
-		invisibleAllowed: true,
 		watch: jest.fn(() => () => undefined),
 		sync: jest.fn(() => Promise.resolve()),
 	},

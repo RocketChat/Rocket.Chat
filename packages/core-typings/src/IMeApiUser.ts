@@ -29,6 +29,7 @@ type MeProjectedUserFields = Pick<
 	| 'statusDefault'
 	| 'statusText'
 	| 'statusSource'
+	| 'presenceDisabledByAdmin'
 	| 'statusExpiresAt'
 	| 'statusConnection'
 	| 'bio'

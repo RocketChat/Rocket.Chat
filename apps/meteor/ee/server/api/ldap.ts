@@ -1,4 +1,5 @@
 import { LDAPEnterprise } from '@rocket.chat/core-services';
+import { License } from '@rocket.chat/license';
 import { ajv, validateBadRequestErrorResponse, validateUnauthorizedErrorResponse } from '@rocket.chat/rest-typings';
 
 import { API } from '../../../server/api/api';
@@ -40,8 +41,20 @@ API.v1.post(
 			throw new Error('LDAP_disabled');
 		}
 
-		await LDAPEnterprise.sync();
-		await LDAPEnterprise.syncAvatarAndAbacAttributes();
+		if (
+			settings.get('LDAP_Background_Sync') !== true &&
+			settings.get('LDAP_Background_Sync_Avatars') !== true &&
+			!(settings.get('LDAP_Background_Sync_ABAC_Attributes') === true && License.hasModule('abac') && settings.get('ABAC_Enabled') === true)
+		) {
+			throw new Error('LDAP_Background_Sync_disabled');
+		}
+
+		try {
+			await LDAPEnterprise.sync();
+			await LDAPEnterprise.syncAvatarAndAbacAttributes();
+		} catch (err) {
+			return API.v1.failure({ error: 'LDAP_Sync_failed', details: { error: err instanceof Error ? err.message : String(err) } });
+		}
 
 		return API.v1.success({
 			message: 'Sync_in_progress' as const,

@@ -23,7 +23,7 @@ test('shows the local time of a UTC+0 user without printing a stray "0"', () => 
 	const { container } = render(<Default utcOffset={0} />);
 
 	expect(screen.getByText('Local_Time')).toBeInTheDocument();
-	expect(screen.getByText(/\(UTC 0\)/)).toBeInTheDocument();
+	expect(screen.getByText(/\(UTC \+0\)/)).toBeInTheDocument();
 
 	const strayZeroTextNodes = [...container.querySelectorAll('*')]
 		.flatMap((element) => [...element.childNodes])
@@ -36,14 +36,21 @@ test('shows the local time of a user in a fractional offset time zone', () => {
 	render(<Default utcOffset={5.5} />);
 
 	expect(screen.getByText('Local_Time')).toBeInTheDocument();
-	expect(screen.getByText(/\(UTC 5\.5\)/)).toBeInTheDocument();
+	expect(screen.getByText(/\(UTC \+5\.5\)/)).toBeInTheDocument();
 });
 
-test('renders the bio it is given', () => {
+test('renders the bio through renderMarkdown', () => {
 	const { Default } = composeStories(stories);
-	render(<Default bio={<strong>Rendered bio</strong>} />);
+	render(<Default bio='Rendered bio' renderMarkdown={(content) => <strong>{content}</strong>} />);
 
 	expect(screen.getByText('Rendered bio').tagName).toBe('STRONG');
+});
+
+test('renders the bio as plain text by default', () => {
+	const { Default } = composeStories(stories);
+	render(<Default bio='Plain bio' />);
+
+	expect(screen.getByText('Plain bio')).toBeInTheDocument();
 });
 
 describe('custom fields', () => {
@@ -51,9 +58,9 @@ describe('custom fields', () => {
 		.withSetting('Accounts_CustomFieldsToShowInUserInfo', JSON.stringify([{ Department: 'department' }]))
 		.build();
 
-	test('renders a custom field value through renderCustomFieldValue', () => {
+	test('renders a custom field value through renderMarkdown', () => {
 		const { Default } = composeStories(stories);
-		render(<Default customFields={{ department: 'Engineering' }} renderCustomFieldValue={(value) => <em>{value}</em>} />, { wrapper });
+		render(<Default customFields={{ department: 'Engineering' }} renderMarkdown={(content) => <em>{content}</em>} />, { wrapper });
 
 		expect(screen.getByText('Department')).toBeInTheDocument();
 		expect(screen.getByText('Engineering').tagName).toBe('EM');

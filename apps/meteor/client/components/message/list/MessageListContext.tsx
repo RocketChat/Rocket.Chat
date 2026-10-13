@@ -1,10 +1,9 @@
 import type { IMessage } from '@rocket.chat/core-typings';
-import type { useFormatTime } from '@rocket.chat/ui-client';
+import type { useFormatTime, useFormatDateAndTime } from '@rocket.chat/ui-client';
 import type { KeyboardEvent, MouseEvent } from 'react';
 import { createContext, useContext } from 'react';
 
 import type { useFormatDate } from '../../../hooks/useFormatDate';
-import type { useFormatDateAndTime } from '../../../hooks/useFormatDateAndTime';
 
 export type MessageListContextValue = {
 	autoTranslate: {

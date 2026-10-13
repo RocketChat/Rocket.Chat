@@ -21,7 +21,7 @@ export type AdminUserInfoWithDataProps = {
 	tab: AdminUsersTab;
 };
 
-const renderCustomFieldValue = (value: string) => <MarkdownText variant='inline' content={value} />;
+const renderMarkdown = (content: string) => <MarkdownText variant='inline' content={content} />;
 
 const AdminUserInfoWithData = ({ uid, onReload, tab }: AdminUserInfoWithDataProps) => {
 	const t = useTranslation();
@@ -79,7 +79,7 @@ const AdminUserInfoWithData = ({ uid, onReload, tab }: AdminUserInfoWithDataProp
 			username,
 			lastLogin,
 			roles: getRoles(roles).map((role, index) => <UserCardRole key={index}>{role}</UserCardRole>),
-			bio: bio && <MarkdownText variant='inline' content={bio} />,
+			bio,
 			canViewAllInfo,
 			phone,
 			utcOffset,
@@ -118,7 +118,7 @@ const AdminUserInfoWithData = ({ uid, onReload, tab }: AdminUserInfoWithDataProp
 	return (
 		<UserInfo
 			{...user}
-			renderCustomFieldValue={renderCustomFieldValue}
+			renderMarkdown={renderMarkdown}
 			actions={
 				<AdminUserInfoActions
 					isActive={data?.user.active}

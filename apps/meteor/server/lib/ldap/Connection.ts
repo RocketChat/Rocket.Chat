@@ -129,15 +129,6 @@ export class LDAPConnection {
 		}
 	}
 
-	public async testConnection(): Promise<void> {
-		try {
-			await this.connect();
-			await this.maybeBindDN();
-		} finally {
-			this.disconnect();
-		}
-	}
-
 	public async searchByUsername(escapedUsername: string): Promise<ILDAPEntry[]> {
 		const searchOptions: ldapjs.SearchOptions = {
 			filter: this.getUserFilter(escapedUsername),
@@ -689,13 +680,16 @@ export class LDAPConnection {
 		this.client._updateIdle(override);
 	}
 
-	protected async maybeBindDN({ forceBindAuthenticationUser = false } = {}): Promise<void> {
+	protected async maybeBindDN({ forceBindAuthenticationUser = false, throwOnError = false } = {}): Promise<void> {
 		if (!forceBindAuthenticationUser && (this.usingAuthentication || !this.options.authentication)) {
 			return;
 		}
 
 		if (!this.options.authenticationUserDN) {
 			logger.error('Invalid UserDN for authentication');
+			if (throwOnError) {
+				throw new Error('Invalid UserDN for authentication');
+			}
 			return;
 		}
 
@@ -710,7 +704,14 @@ export class LDAPConnection {
 				dn: this.options.authenticationUserDN,
 			});
 			this.usingAuthentication = false;
+			if (throwOnError) {
+				throw error;
+			}
 		}
+	}
+
+	public async bindAuthenticationUserOrFail(): Promise<void> {
+		return this.maybeBindDN({ throwOnError: true });
 	}
 
 	protected async runBeforeSearch(_searchOptions: ldapjs.SearchOptions): Promise<void> {

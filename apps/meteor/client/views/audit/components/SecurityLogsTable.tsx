@@ -10,6 +10,7 @@ import {
 	GenericTableLoadingRow,
 	GenericTableRow,
 	usePagination,
+	GenericNoResults,
 } from '@rocket.chat/ui-client';
 import { useEndpoint, useSetModal } from '@rocket.chat/ui-contexts';
 import { useQuery } from '@tanstack/react-query';
@@ -20,7 +21,6 @@ import { useTranslation } from 'react-i18next';
 import SecurityLogDisplayModal from './SecurityLogDisplayModal';
 import { SettingSelect } from './SettingSelect';
 import DateRangePicker from './forms/DateRangePicker';
-import GenericNoResults from '../../../components/GenericNoResults';
 import type { DateRange } from '../utils/dateRange';
 import { getTypeTranslation } from '../utils/getAppTypeTranslation';
 

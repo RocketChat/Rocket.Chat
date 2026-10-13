@@ -7,7 +7,6 @@ import {
 	VideoConfController,
 	VideoConfPopup,
 	VideoConfPopupContent,
-	VideoConfPopupControllers,
 	VideoConfPopupFooter,
 	VideoConfPopupFooterButtons,
 	VideoConfPopupHeader,
@@ -20,6 +19,7 @@ import {
 import { useTranslation } from 'react-i18next';
 
 import VideoConfPopupCallerInfo from './VideoConfPopupCallerInfo';
+import VideoConfPopupDeviceControllers from './VideoConfPopupDeviceControllers';
 import VideoConfPopupRoomInfo from './VideoConfPopupRoomInfo';
 import { useVideoConfRoomName } from '../../hooks/useVideoConfRoomName';
 
@@ -71,25 +71,14 @@ const IncomingPopup = ({ id, room, position, onClose, onMute, onConfirm }: Incom
 			<VideoConfPopupHeader>
 				<VideoConfPopupTitle text={t('Incoming_call_from')} />
 				{isPending && <Skeleton />}
-				{isSuccess && (showMic || showCam) && (
-					<VideoConfPopupControllers>
-						{showCam && (
-							<VideoConfController
-								active={controllersConfig.cam}
-								title={controllersConfig.cam ? t('Cam_on') : t('Cam_off')}
-								icon={controllersConfig.cam ? 'video' : 'video-off'}
-								onClick={handleToggleCam}
-							/>
-						)}
-						{showMic && (
-							<VideoConfController
-								active={controllersConfig.mic}
-								title={controllersConfig.mic ? t('Mic_on') : t('Mic_off')}
-								icon={controllersConfig.mic ? 'mic' : 'mic-off'}
-								onClick={handleToggleMic}
-							/>
-						)}
-					</VideoConfPopupControllers>
+				{isSuccess && (
+					<VideoConfPopupDeviceControllers
+						showCam={showCam}
+						showMic={showMic}
+						config={controllersConfig}
+						onToggleCam={handleToggleCam}
+						onToggleMic={handleToggleMic}
+					/>
 				)}
 			</VideoConfPopupHeader>
 			<VideoConfPopupContent>

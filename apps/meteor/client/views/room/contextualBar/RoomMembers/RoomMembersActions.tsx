@@ -4,28 +4,29 @@ import { useTranslation } from 'react-i18next';
 
 import { useUserInfoActions } from '../../hooks/useUserInfoActions';
 
-export type RoomMembersActionsProps = Pick<IUser, '_id' | 'name' | 'username' | 'freeSwitchExtension'> & {
+export type RoomMembersActionsProps = Pick<IUser, '_id' | 'name' | 'username' | 'freeSwitchExtension' | 'federated'> & {
 	rid: IRoom['_id'];
 	isInvited?: boolean;
 	reload: () => void;
 };
 
-const RoomMembersActions = ({ username, _id, name, rid, freeSwitchExtension, isInvited, reload }: RoomMembersActionsProps) => {
+const RoomMembersActions = ({ username, _id, name, rid, freeSwitchExtension, federated, isInvited, reload }: RoomMembersActionsProps) => {
 	const { t } = useTranslation();
 
 	const { menuActions: menuOptions } = useUserInfoActions({
 		rid,
-		user: { _id, username, name, freeSwitchExtension },
+		user: { _id, username, name, freeSwitchExtension, federated },
 		reload,
 		size: 0,
 		isMember: !isInvited,
 		isInvited,
 	});
 
-	if (!menuOptions) {
+	if (!menuOptions?.length) {
 		return null;
 	}
-	return <GenericMenu detached title={t('More')} key='menu' sections={menuOptions} placement='bottom-end' />;
+
+	return <GenericMenu detached tiny title={t('More')} key='menu' sections={menuOptions} placement='bottom-end' />;
 };
 
 export default RoomMembersActions;

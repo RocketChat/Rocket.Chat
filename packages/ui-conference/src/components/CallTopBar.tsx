@@ -1,16 +1,8 @@
-import { css } from '@rocket.chat/css-in-js';
 import { Box, ButtonGroup } from '@rocket.chat/fuselage';
-import { CallTimer } from '@rocket.chat/ui-client';
 import type { ReactNode } from 'react';
 import { useTranslation } from 'react-i18next';
 
-const headerStyles = css`
-	display: inline-flex;
-	align-items: center;
-	min-width: 0;
-	color: rgba(255, 255, 255, 0.85);
-	font-variant-numeric: tabular-nums;
-`;
+import CallTitle from '../call/CallTitle';
 
 /** What the bar is at least, which is what anything laid over the window has to start below. */
 export const CALL_TOP_BAR_MIN_HEIGHT = 48;
@@ -50,27 +42,7 @@ const CallTopBar = ({ startAt, name, host, children }: CallTopBarProps) => {
 			paddingInline={12}
 			gap={8}
 		>
-			{host ?? (
-				<Box className={headerStyles}>
-					<CallTimer startAt={startAt} />
-					{/* The rule between the clock and the name is drawn, not typed. As a character it was content — read
-				    out as "vertical line" by anything reading the header — and styled by nudging its opacity until it
-				    looked like a rule. */}
-					{name && (
-						<Box
-							is='span'
-							withTruncatedText
-							marginInlineStart={8}
-							paddingInlineStart={8}
-							borderInlineStartWidth='default'
-							borderInlineStartStyle='solid'
-							borderInlineStartColor='stroke-extra-light'
-						>
-							{name}
-						</Box>
-					)}
-				</Box>
-			)}
+			{host ?? <CallTitle startAt={startAt} name={name} />}
 			<ButtonGroup>{children}</ButtonGroup>
 		</Box>
 	);

@@ -87,7 +87,7 @@ it('starts the conference with the name and devices it was given', async () => {
 
 	await userEvent.clear(await screen.findByLabelText('Call_name'));
 	await userEvent.type(screen.getByLabelText('Call_name'), 'Release planning');
-	await userEvent.click(screen.getByRole('button', { name: 'Mic_on' }));
+	await userEvent.click(screen.getByRole('button', { name: 'Microphone' }));
 	await userEvent.click(screen.getByRole('button', { name: 'Start_call' }));
 
 	await waitFor(() => expect(start).toHaveBeenCalledWith({ roomId: 'room-id', title: 'Release planning', allowRinging: true }));

@@ -1,7 +1,9 @@
+import type { PresenceScope } from '@rocket.chat/core-services';
 import type { IUser } from '@rocket.chat/core-typings';
 import { UserStatus } from '@rocket.chat/core-typings';
 import type { FindPaginated } from '@rocket.chat/model-typings';
 import { Users } from '@rocket.chat/models';
+import { hiddenIds, scopeHidesAnyone } from '@rocket.chat/streamer';
 import type { FindCursor, FindOptions } from 'mongodb';
 
 import { settings } from '../settings';
@@ -10,7 +12,7 @@ import { effectiveStatusFilter, excludingOfflineFilter } from './statusVisibilit
 type FindUsersParam = {
 	rid: string;
 	status?: UserStatus[] | 'not-offline';
-	hidden?: Set<IUser['_id']>;
+	hidden: PresenceScope;
 	skip?: number;
 	limit?: number;
 	filter?: string;
@@ -26,10 +28,11 @@ export async function findUsersOfRoom({
 	filter = '',
 	sort,
 }: FindUsersParam): Promise<FindPaginated<FindCursor<IUser>>> {
-	const hiddenCanAppear = Boolean(hidden?.size) && (!status || (Array.isArray(status) && status.includes(UserStatus.OFFLINE)));
+	const hiddenCanAppear = scopeHidesAnyone(hidden) && (!status || (Array.isArray(status) && status.includes(UserStatus.OFFLINE)));
 	const hiddenInRoom =
 		hiddenCanAppear &&
-		(await Users.countDocuments({ __rooms: rid, active: true, username: { $exists: true }, _id: { $in: [...(hidden ?? [])] } })) > 0;
+		(hidden.hideAll ||
+			(await Users.countDocuments({ __rooms: rid, active: true, username: { $exists: true }, _id: { $in: hiddenIds(hidden) } })) > 0);
 
 	const options: FindOptions<IUser> = {
 		projection: {

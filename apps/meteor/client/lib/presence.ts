@@ -31,7 +31,6 @@ const subscribeUserPresence = (payload: { added?: string[]; removed?: string[] }
 type InternalEvents = {
 	remove: IUser['_id'];
 	reset: undefined;
-	restart: undefined;
 };
 
 type ExternalEvents = {
@@ -45,7 +44,7 @@ const emitter = new Emitter<Events>();
 const store = new Map<string, UserPresence>();
 
 const isUid = (eventType: keyof Events): eventType is UserPresence['_id'] =>
-	Boolean(eventType) && typeof eventType === 'string' && !['reset', 'restart', 'remove'].includes(eventType);
+	Boolean(eventType) && typeof eventType === 'string' && !['reset', 'remove'].includes(eventType);
 
 const uids = new Set<UserPresence['_id']>();
 
@@ -144,9 +143,6 @@ const getPresence = ((): ((uid: UserPresence['_id']) => void) => {
 			.forEach((uid) => {
 				emitter.emit(uid, undefined);
 			});
-		emitter.once('restart', () => {
-			emitter.events().filter(isUid).forEach(get);
-		});
 	});
 
 	return get;
@@ -178,8 +174,9 @@ const reset = (): void => {
 	emitter.emit('reset');
 };
 
-const restart = (): void => {
-	emitter.emit('restart');
+const resync = (): void => {
+	reset();
+	emitter.events().filter(isUid).forEach(getPresence);
 };
 
 const get = async (uid: UserPresence['_id']): Promise<UserPresence | undefined> =>
@@ -209,7 +206,7 @@ export const Presence = {
 	listen,
 	stop,
 	reset,
-	restart,
+	resync,
 	notify,
 	store,
 	get,

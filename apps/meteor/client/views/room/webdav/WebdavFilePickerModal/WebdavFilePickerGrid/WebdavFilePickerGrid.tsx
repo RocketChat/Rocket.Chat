@@ -1,9 +1,9 @@
 import type { IWebdavNode } from '@rocket.chat/core-typings';
 import { css } from '@rocket.chat/css-in-js';
 import { Box, Icon, Skeleton, Palette } from '@rocket.chat/fuselage';
+import { GenericNoResults } from '@rocket.chat/ui-client';
 
 import WebdavFilePickerGridItem from './WebdavFilePickerGridItem';
-import GenericNoResults from '../../../../../components/GenericNoResults';
 import { getNodeIconType } from '../lib/getNodeIconType';
 
 export type WebdavFilePickerGridProps = {

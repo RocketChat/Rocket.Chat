@@ -5,6 +5,8 @@ export type UsersListParamsGET = PaginatedRequest<{
 	fields?: string;
 	query?: string;
 	email?: string;
+	customFields?: Record<string, string>;
+	includeCustomFields?: boolean;
 	username?: string;
 }>;
 
@@ -17,6 +19,8 @@ const UsersListParamsGetSchema = {
 		offset: { type: 'number', nullable: true },
 		sort: { type: 'string', nullable: true },
 		email: { type: 'string', minLength: 1, nullable: true },
+		customFields: { type: 'object', additionalProperties: { type: 'string' } },
+		includeCustomFields: { type: 'boolean' },
 		username: { type: 'string', minLength: 1, nullable: true },
 	},
 	additionalProperties: false,

@@ -1,6 +1,5 @@
 import type { SelectOption } from '@rocket.chat/fuselage';
 import { InputBox, Field, MultiSelect, FieldGroup, Box, Select, FieldLabel, FieldRow, Callout } from '@rocket.chat/fuselage';
-import type { TranslationKey } from '@rocket.chat/ui-contexts';
 import { useId, useMemo } from 'react';
 import { useFormContext, Controller, useFieldArray } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
@@ -41,8 +40,8 @@ export type BusinessHoursFormProps = { type?: 'default' | 'custom' };
 const BusinessHoursForm = ({ type }: BusinessHoursFormProps) => {
 	const { t } = useTranslation();
 	const timeZones = useTimezoneNameList();
-	const timeZonesOptions: SelectOption[] = useMemo(() => timeZones.map((name) => [name, t(name as TranslationKey)]), [t, timeZones]);
-	const daysOptions: SelectOption[] = useMemo(() => DAYS_OF_WEEK.map((day) => [day, t(day as TranslationKey)]), [t]);
+	const timeZonesOptions: SelectOption[] = useMemo(() => timeZones.map((name) => [name, t(name)]), [t, timeZones]);
+	const daysOptions: SelectOption[] = useMemo(() => DAYS_OF_WEEK.map((day) => [day, t(day)]), [t]);
 
 	const { watch, control } = useFormContext<BusinessHoursFormData>();
 	const { daysTime } = watch();
@@ -101,7 +100,7 @@ const BusinessHoursForm = ({ type }: BusinessHoursFormProps) => {
 			</Field>
 			{daysTimeFields.map((dayTime, index) => (
 				<Field key={dayTime.id}>
-					<FieldLabel>{t(dayTime.day as TranslationKey)}</FieldLabel>
+					<FieldLabel>{t(dayTime.day)}</FieldLabel>
 					<FieldRow>
 						<Box display='flex' flexDirection='column' flexGrow={1} marginInlineEnd={2}>
 							<FieldLabel htmlFor={`${daysTimeField + index}-start`}>{t('Open')}</FieldLabel>

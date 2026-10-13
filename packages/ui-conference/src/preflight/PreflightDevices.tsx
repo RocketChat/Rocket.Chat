@@ -3,11 +3,13 @@ import { useTranslation } from 'react-i18next';
 
 import PreflightDeviceMenu from './PreflightDeviceMenu';
 import { usePreviewMedia } from './PreviewMediaContext';
+import { useVideoQualityChoices } from '../devices/useVideoQualityChoices';
 
 /** The devices to arrive on, one menu per kind the provider can be told about. */
 const PreflightDevices = () => {
 	const { t } = useTranslation();
 	const { capabilities } = usePreviewMedia();
+	const videoQuality = useVideoQualityChoices();
 
 	return (
 		<Box
@@ -23,7 +25,7 @@ const PreflightDevices = () => {
 		>
 			{capabilities.mic && <PreflightDeviceMenu kind='audioinput' label={t('Microphone')} />}
 			<PreflightDeviceMenu kind='audiooutput' label={t('Speaker')} />
-			{capabilities.cam && <PreflightDeviceMenu kind='videoinput' label={t('Camera')} />}
+			{capabilities.cam && <PreflightDeviceMenu kind='videoinput' label={t('Camera')} choices={[videoQuality]} />}
 		</Box>
 	);
 };

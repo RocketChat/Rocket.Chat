@@ -4,6 +4,7 @@ import { useSetModal, useToastMessageDispatch } from '@rocket.chat/ui-contexts';
 import { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
+import VoiceActivity from '../../call/VoiceActivity';
 import { ConferenceContext, useConference } from '../../context/ConferenceContext';
 import type { CallParticipantEntry } from '../../lib/callParticipants';
 import { composeCallParticipants } from '../../lib/callParticipants';
@@ -14,14 +15,24 @@ import CallMemberItem from '../CallMemberItem/CallMemberItem';
 import CallPanelHeader from '../CallPanelHeader';
 import CallParticipantItem from '../CallParticipantItem/CallParticipantItem';
 
+/** What a call running in this window knows about its members, by user id. */
+export type MembersInCall = {
+	raisedHands: ReadonlySet<string>;
+	mutedMembers: ReadonlySet<string>;
+	audioStreams: ReadonlyMap<string, MediaStream | undefined>;
+	muteMember: (memberId: string) => void;
+};
+
 type CallMembersPanelProps = {
+	/** Absent for a provider at an address of its own, whose call this window cannot see into. */
+	inCall?: MembersInCall;
 	onClose: () => void;
 };
 
 // A stable empty list, so a provider with no plugin does not recompose the groups on every render.
 const NO_PARTICIPANTS: PluginParticipant[] = [];
 
-const CallMembersPanel = ({ onClose }: CallMembersPanelProps) => {
+const CallMembersPanel = ({ inCall, onClose }: CallMembersPanelProps) => {
 	const { t } = useTranslation();
 	const setModal = useSetModal();
 	const dispatchToastMessage = useToastMessageDispatch();
@@ -82,6 +93,10 @@ const CallMembersPanel = ({ onClose }: CallMembersPanelProps) => {
 					// Until the server's answer comes back, this is what says the ask is already on its way.
 					ringing={ringingMembers.includes(member._id)}
 					controls={controls}
+					handRaised={inCall?.raisedHands.has(member._id)}
+					muted={inCall?.mutedMembers.has(member._id)}
+					onMute={inCall?.muteMember}
+					activity={inCall && <VoiceActivity stream={inCall.audioStreams.get(member._id)} size={14} badge />}
 					onRing={ringMember}
 				/>
 			);

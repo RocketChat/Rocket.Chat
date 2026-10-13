@@ -12,13 +12,13 @@ import {
 	GenericTableLoadingRow,
 	usePagination,
 	useSort,
+	GenericNoResults,
 } from '@rocket.chat/ui-client';
 import { useTranslation, useEndpoint } from '@rocket.chat/ui-contexts';
 import { useQuery } from '@tanstack/react-query';
 import { useMemo, useState } from 'react';
 
 import { QueueListFilter } from './QueueListFilter';
-import GenericNoResults from '../../../components/GenericNoResults';
 
 const QueueListTable = () => {
 	const t = useTranslation();

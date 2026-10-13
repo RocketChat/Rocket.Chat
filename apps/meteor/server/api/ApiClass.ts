@@ -52,6 +52,7 @@ import { shouldBreakInVersion } from '../lib/shouldBreakInVersion';
 import { authenticationMiddlewareForHono } from './v1/middlewares/authenticationHono';
 import { permissionsMiddleware } from './v1/middlewares/permissions';
 import { license } from '../../ee/server/api/v1/middlewares/license';
+import { licenseRequired } from '../../ee/server/api/v1/middlewares/licenseRequired';
 import { getDefaultUserFields } from '../lib/utils/functions/getDefaultUserFields';
 import { settings } from '../settings';
 
@@ -125,6 +126,8 @@ interface IAPIDefaultFieldsToExclude {
 	_updatedAt: number;
 	settings: number;
 	inviteToken: number;
+	statusVisibilityDeniedByAdmin: number;
+	presenceDisabledByAdmin: number;
 }
 
 export const defaultRateLimiterOptions: RateLimiterOptions = {
@@ -182,8 +185,10 @@ export class APIClass<TBasePath extends string = '', TOperations extends Record<
 	public limitedUserFieldsToExclude: IAPIDefaultFieldsToExclude;
 
 	public limitedUserFieldsToExcludeIfIsPrivilegedUser: {
-		services: number;
-		inviteToken: number;
+		'services': number;
+		'inviteToken': number;
+		'statusVisibilityDeniedByAdmin': number;
+		'settings.preferences.statusVisibilityDenied': number;
 	};
 
 	readonly router: Router<any, any, any>;
@@ -215,11 +220,15 @@ export class APIClass<TBasePath extends string = '', TOperations extends Record<
 			_updatedAt: 0,
 			settings: 0,
 			inviteToken: 0,
+			statusVisibilityDeniedByAdmin: 0,
+			presenceDisabledByAdmin: 0,
 		};
 		this.limitedUserFieldsToExclude = this.defaultLimitedUserFieldsToExclude;
 		this.limitedUserFieldsToExcludeIfIsPrivilegedUser = {
-			services: 0,
-			inviteToken: 0,
+			'services': 0,
+			'inviteToken': 0,
+			'statusVisibilityDeniedByAdmin': 0,
+			'settings.preferences.statusVisibilityDenied': 0,
 		};
 		this.router = new RocketChatAPIRouter(`/${this.apiPath}`.replace(/\/$/, '').replaceAll('//', '/'));
 
@@ -961,6 +970,7 @@ export class APIClass<TBasePath extends string = '', TOperations extends Record<
 						logger,
 					}),
 					permissionsMiddleware(_options as TypedOptions),
+					licenseRequired(_options as TypedOptions, License),
 					license(_options as TypedOptions, License),
 					(operations[method as keyof Operations<TPathPattern, TOptions>] as Record<string, any>).action,
 				);

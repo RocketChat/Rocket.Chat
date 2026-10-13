@@ -21,6 +21,16 @@ const UserMenuButton = forwardRef(function UserMenuButton(props: UserMenuButtonP
 
 	const { status = !user ? 'online' : 'offline', username, avatarETag } = user || anon;
 	const presenceDisabled = useSetting('Presence_broadcast_disabled', false);
+	const userStatusEnabled = useSetting('Accounts_UserStatus_Enabled', true);
+	const adminStatusHidingEnabled = useSetting('Accounts_StatusVisibility_Admin_Enabled', false);
+
+	const getDisplayedStatus = () => {
+		if (!userStatusEnabled || (adminStatusHidingEnabled && user?.presenceDisabledByAdmin)) {
+			return 'offline';
+		}
+
+		return presenceDisabled ? 'disabled' : status;
+	};
 
 	return (
 		<IconButton
@@ -50,7 +60,7 @@ const UserMenuButton = forwardRef(function UserMenuButton(props: UserMenuButtonP
 				borderColor='extra-light'
 				borderRadius='full'
 			>
-				<UserStatus small status={presenceDisabled ? 'disabled' : status} />
+				<UserStatus small status={getDisplayedStatus()} />
 			</Box>
 		</IconButton>
 	);

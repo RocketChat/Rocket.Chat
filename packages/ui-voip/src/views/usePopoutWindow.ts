@@ -36,7 +36,8 @@ const changeTheme = (ownerDocument: Document, theme?: string) => {
 const openExternalWindow = async (callId: string, theme: string) => {
 	const externalWindow = window.open('/voice-call-popup.html', callId, 'width=800,height=500,popup');
 
-	if (!externalWindow) {
+	// Some blockers hand back a window that is already closed rather than none.
+	if (!externalWindow || externalWindow.closed) {
 		throw new Error('No window was opened');
 	}
 

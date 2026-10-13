@@ -1,16 +1,21 @@
-import type { ActionsBlock } from '../../blocks/layout/ActionsBlock';
-import type { CalloutBlock } from '../../blocks/layout/CalloutBlock';
-import type { ContextBlock } from '../../blocks/layout/ContextBlock';
-import type { DividerBlock } from '../../blocks/layout/DividerBlock';
-import type { ImageBlock } from '../../blocks/layout/ImageBlock';
-import type { SectionBlock } from '../../blocks/layout/SectionBlock';
+import type { RenderableLayoutBlock } from '../../blocks/RenderableLayoutBlock';
 import { SurfaceRenderer } from '../../rendering/SurfaceRenderer';
 
-type AttachmentSurfaceLayoutBlock = ActionsBlock | ContextBlock | DividerBlock | ImageBlock | SectionBlock | CalloutBlock;
+/** Layout blocks an attachment accepts; every attachment renderer must allow exactly these. */
+export const attachmentSurfaceLayoutBlockTypes = [
+	'actions',
+	'callout',
+	'context',
+	'divider',
+	'image',
+	'section',
+] as const satisfies readonly RenderableLayoutBlock['type'][];
+
+type AttachmentSurfaceLayoutBlock = Extract<RenderableLayoutBlock, { type: (typeof attachmentSurfaceLayoutBlockTypes)[number] }>;
 
 export abstract class UiKitParserAttachment<T> extends SurfaceRenderer<T, AttachmentSurfaceLayoutBlock> {
 	public constructor() {
-		super(['actions', 'context', 'divider', 'image', 'section', 'callout']);
+		super(attachmentSurfaceLayoutBlockTypes);
 	}
 }
 

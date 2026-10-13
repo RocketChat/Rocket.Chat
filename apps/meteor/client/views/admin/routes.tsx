@@ -49,8 +49,8 @@ declare module '@rocket.chat/ui-contexts' {
 			pattern: '/admin/integrations/:context?/:type?/:id?';
 		};
 		'user-status': {
-			pathname: `/admin/user-status${`/${string}` | ''}${`/${string}` | ''}`;
-			pattern: '/admin/user-status/:context?/:id?';
+			pathname: `/admin/user-status${`/${string}` | ''}${`/${string}` | ''}${`/${string}` | ''}`;
+			pattern: '/admin/user-status/:tab?/:context?/:id?';
 		};
 		'emoji-custom': {
 			pathname: `/admin/emoji${`/${string}` | ''}${`/${string}` | ''}`;
@@ -176,9 +176,9 @@ registerAdminRoute('/integrations/:context?/:type?/:id?', {
 	component: lazy(() => import('./integrations/IntegrationsRoute')),
 });
 
-registerAdminRoute('/user-status/:context?/:id?', {
+registerAdminRoute('/user-status/:tab?/:context?/:id?', {
 	name: 'user-status',
-	component: lazy(() => import('./customUserStatus/CustomUserStatusRoute')),
+	component: lazy(() => import('./statusAndPresence/StatusAndPresenceRoute')),
 });
 
 registerAdminRoute('/emoji/:context?/:id?', {

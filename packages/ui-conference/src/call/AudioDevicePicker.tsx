@@ -1,42 +1,36 @@
-import { useSelectedDevices } from '@rocket.chat/ui-contexts';
-import { stopTracks, useDevicePermissionPrompt2 } from '@rocket.chat/ui-voip';
-import { useCallback } from 'react';
+import { DeviceMenu, DeviceMenuButton, useAudioLevel, useDeviceSelection, useRevealDeviceLabels } from '@rocket.chat/ui-media';
 import { useTranslation } from 'react-i18next';
 
-import CallDeviceMenuButton from './CallDeviceMenuButton';
+import VoiceActivity from './VoiceActivity';
 import { useCallState } from './context';
-import { refreshMediaDevices } from './lib/mediaDevicesStore';
-import DeviceMenu from '../devices/DeviceMenu';
 
-/** The microphone and speaker of a call running in this window. */
+/** The microphone and speaker of a call running in this window, its trigger showing what the microphone hears. */
 const AudioDevicePicker = () => {
 	const { t } = useTranslation();
 	const { self } = useCallState();
-	const chosenMicId = useSelectedDevices()?.audioInput?.id;
+	const { devices } = useDeviceSelection();
+	const revealDeviceLabels = useRevealDeviceLabels();
 
-	const requestPermission = useDevicePermissionPrompt2();
-
-	// Asked on opening, since a call joined muted may not have the permission that names the devices yet. The app's
-	// chosen microphone is preferred, not required: it can be unplugged, and the menu exists to pick another — but
-	// the microphone granted here is remembered, so asking for any one would replace a choice still plugged in.
-	const askForDevices = useCallback(
-		() =>
-			requestPermission({ actionType: 'device-change', constraints: { audio: chosenMicId ? { deviceId: chosenMicId } : true } }).then(
-				(stream) => {
-					stopTracks(stream);
-					refreshMediaDevices();
-				},
-			),
-		[requestPermission, chosenMicId],
-	);
+	// A muted mic never moves, whatever it is still hearing.
+	const micLevel = useAudioLevel(self.muted ? null : (self.microphoneStream ?? null));
 
 	return (
 		<DeviceMenu
 			kinds={['audioinput', 'audiooutput']}
 			title={t('Device_settings_lowercase')}
 			placement='top-end'
-			beforeOpen={askForDevices}
-			button={<CallDeviceMenuButton label={t('Audio_device_options')} danger={self.muted} />}
+			// A call joined muted may not have the permission that names the devices yet.
+			beforeOpen={() => revealDeviceLabels(['audioinput', 'audiooutput'], devices)}
+			button={
+				<DeviceMenuButton
+					splitButtonTrigger
+					secondary
+					large
+					menuIcon={self.muted ? 'chevron-up' : <VoiceActivity level={micLevel} size={24} />}
+					label={t('Audio_device_options')}
+					danger={self.muted}
+				/>
+			}
 		/>
 	);
 };

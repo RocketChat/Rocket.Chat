@@ -1,16 +1,5 @@
-import { css } from '@rocket.chat/css-in-js';
-import { Box, Palette } from '@rocket.chat/fuselage';
-import { CallTimer } from '@rocket.chat/ui-client';
-
+import CallTitle from './CallTitle';
 import { useCallState } from './context';
-
-const callHeaderStyles = css`
-	display: inline-flex;
-	align-items: center;
-	min-width: 0;
-	color: ${Palette.text['font-pure-white'].toString()};
-	font-variant-numeric: tabular-nums;
-`;
 
 export type CallHeaderProps = {
 	name?: string;
@@ -20,25 +9,7 @@ export type CallHeaderProps = {
 const CallHeader = ({ name }: CallHeaderProps) => {
 	const { startedAt } = useCallState();
 
-	return (
-		<Box className={callHeaderStyles}>
-			<CallTimer startAt={startedAt} />
-			{/* Drawn rather than typed: a typed rule is read out as "vertical line". */}
-			{name && (
-				<Box
-					is='span'
-					withTruncatedText
-					marginInlineStart={8}
-					paddingInlineStart={8}
-					borderInlineStartWidth='default'
-					borderInlineStartStyle='solid'
-					borderInlineStartColor='stroke-extra-light'
-				>
-					{name}
-				</Box>
-			)}
-		</Box>
-	);
+	return <CallTitle startAt={startedAt} name={name} />;
 };
 
 export default CallHeader;

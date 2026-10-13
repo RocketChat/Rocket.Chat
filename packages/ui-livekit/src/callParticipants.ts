@@ -11,6 +11,7 @@ export type ParticipantTrack = {
 export type ParticipantTracks = {
 	camera: ParticipantTrack[];
 	screen: ParticipantTrack[];
+	microphone: ParticipantTrack[];
 };
 
 /**
@@ -51,6 +52,7 @@ export const toRemoteParticipantInfo = (
 ): RemoteParticipantInfo => {
 	const cam = trackOf(tracks.camera, participant.identity);
 	const scr = trackOf(tracks.screen, participant.identity);
+	const aud = trackOf(tracks.microphone, participant.identity);
 	const micPub = participant.getTrackPublication(Track.Source.Microphone);
 	// A muted publication can still surface here, and its stream renders as a black frame instead of the avatar.
 	const camMuted = cam?.publication?.isMuted ?? true;
@@ -63,5 +65,6 @@ export const toRemoteParticipantInfo = (
 		held: false,
 		cameraStream: cam && !camMuted ? cam.publication?.track?.mediaStream : undefined,
 		screenStream: scr && !scrMuted ? scr.publication?.track?.mediaStream : undefined,
+		audioStream: aud?.publication?.track?.mediaStream,
 	};
 };

@@ -18,22 +18,19 @@ const mocks = {
 
 export const { Markdown, createMarkdownMessageRenderer, createMarkdownNotificationRenderer } = proxyquire
 	.noCallThru()
-	.load('../../../../app/markdown/lib/markdown', mocks) as typeof import('../../../../app/markdown/lib/markdown');
+	.load('../../../../lib/markdown/markdown', mocks) as typeof import('../../../../lib/markdown/markdown');
 
 export const { filterMarkdown } = proxyquire
 	.noCallThru()
-	.load(
-		'../../../../app/markdown/lib/parser/filtered/filtered',
-		mocks,
-	) as typeof import('../../../../app/markdown/lib/parser/filtered/filtered');
+	.load('../../../../lib/markdown/parser/filtered/filtered', mocks) as typeof import('../../../../lib/markdown/parser/filtered/filtered');
 
-export const { original } = proxyquire.noCallThru().load('../../../../app/markdown/lib/parser/original/original', mocks) as {
+export const { original } = proxyquire.noCallThru().load('../../../../lib/markdown/parser/original/original', mocks) as {
 	original: (message: ParsedMessage, options?: MarkdownOptions) => ParsedMessage;
 };
 
 export const { code } = proxyquire
 	.noCallThru()
-	.load('../../../../app/markdown/lib/parser/original/code', mocks) as typeof import('../../../../app/markdown/lib/parser/original/code');
+	.load('../../../../lib/markdown/parser/original/code', mocks) as typeof import('../../../../lib/markdown/parser/original/code');
 
 const copyonly = (text: string, marker: string) => `<span class="copyonly">${marker}</span>${text}<span class="copyonly">${marker}</span>`;
 
