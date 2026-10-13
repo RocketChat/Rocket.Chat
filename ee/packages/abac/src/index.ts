@@ -230,6 +230,13 @@ export class AbacService extends ServiceClass implements IAbacService {
 		if (!(await License.hasModule('abac'))) {
 			return;
 		}
+
+		try {
+			await Settings.set('ABAC_Required_Attributes', []);
+		} catch (err) {
+			logger.error({ msg: 'Failed to clear ABAC_Required_Attributes on attribute store switch', err });
+		}
+
 		const { modifiedCount } = await Rooms.unsetAllAbacAttributes();
 		if (modifiedCount > 0) {
 			void Audit.attributeStoreSwitched(from, to, modifiedCount);
