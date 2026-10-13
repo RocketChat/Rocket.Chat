@@ -3,10 +3,10 @@ import type { BugsnagErrorBoundary as BugsnagErrorBoundaryComponent } from '@bug
 import BugsnagPluginReact from '@bugsnag/plugin-react';
 import type { ReactNode } from 'react';
 import * as React from 'react';
-import { ErrorBoundary } from 'react-error-boundary';
 
 import AppErrorPage from './AppErrorPage';
 import { Info } from '../../../app/utils/rocketchat.info';
+import ReportableErrorBoundary from '../../components/ErrorReport/ReportableErrorBoundary';
 
 declare global {
 	// eslint-disable-next-line @typescript-eslint/naming-convention
@@ -44,7 +44,11 @@ const OutermostErrorBoundary = ({ children }: OutermostErrorBoundaryProps) => {
 		return <BugsnagErrorBoundary FallbackComponent={AppErrorPage}>{children}</BugsnagErrorBoundary>;
 	}
 
-	return <ErrorBoundary fallbackRender={() => <AppErrorPage />}>{children}</ErrorBoundary>;
+	return (
+		<ReportableErrorBoundary fallbackRender={({ error, componentStack }) => <AppErrorPage error={error} info={{ componentStack }} />}>
+			{children}
+		</ReportableErrorBoundary>
+	);
 };
 
 export default OutermostErrorBoundary;
