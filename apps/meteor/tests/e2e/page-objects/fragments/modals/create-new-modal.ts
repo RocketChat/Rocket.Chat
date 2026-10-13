@@ -65,6 +65,14 @@ export class CreateNewChannelModal extends CreateNewModal {
 		return this.root.locator('label', { hasText: 'ABAC Managed' });
 	}
 
+	get toggleAbacManaged(): Locator {
+		return this.root.getByRole('checkbox', { name: 'ABAC managed' });
+	}
+
+	get toggleFederated(): Locator {
+		return this.root.getByRole('checkbox', { name: 'Federated' });
+	}
+
 	get btnNext(): Locator {
 		return this.root.getByRole('button', { name: 'Next', exact: true });
 	}

@@ -8,9 +8,14 @@ import type { AbacRoomCreation } from './useAbacRoomCreation';
 type AbacManagedFieldProps = {
 	abac: AbacRoomCreation;
 	canCreatePrivate: boolean;
+	federated?: boolean;
 };
 
-const getHintKey = ({ enforced, canCreateManaged }: AbacRoomCreation, canCreatePrivate: boolean): TranslationKey => {
+const getHintKey = ({ enforced, canCreateManaged }: AbacRoomCreation, canCreatePrivate: boolean, federated: boolean): TranslationKey => {
+	if (federated) {
+		return 'ABAC_Managed_Federated_Hint';
+	}
+
 	if (!canCreateManaged) {
 		return 'ABAC_Managed_Not_Allowed_Hint';
 	}
@@ -26,7 +31,7 @@ const getHintKey = ({ enforced, canCreateManaged }: AbacRoomCreation, canCreateP
 	return 'ABAC_Managed_Hint';
 };
 
-const AbacManagedField = ({ abac, canCreatePrivate }: AbacManagedFieldProps) => {
+const AbacManagedField = ({ abac, canCreatePrivate, federated = false }: AbacManagedFieldProps) => {
 	const { t } = useTranslation();
 	const { control } = useFormContext<{ isAbacManaged: boolean }>();
 
@@ -38,11 +43,11 @@ const AbacManagedField = ({ abac, canCreatePrivate }: AbacManagedFieldProps) => 
 					control={control}
 					name='isAbacManaged'
 					render={({ field: { value, ...field } }) => (
-						<ToggleSwitch {...field} checked={value} disabled={abac.enforced || !abac.canCreateManaged || !canCreatePrivate} />
+						<ToggleSwitch {...field} checked={value} disabled={federated || abac.enforced || !abac.canCreateManaged || !canCreatePrivate} />
 					)}
 				/>
 			</FieldRow>
-			<FieldHint>{t(getHintKey(abac, canCreatePrivate))}</FieldHint>
+			<FieldHint>{t(getHintKey(abac, canCreatePrivate, federated))}</FieldHint>
 		</Field>
 	);
 };

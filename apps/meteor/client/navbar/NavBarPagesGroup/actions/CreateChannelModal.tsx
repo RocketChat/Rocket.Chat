@@ -88,6 +88,9 @@ const getNameIcon = (isAbacManaged: boolean, isPrivate: boolean): ComponentProps
 	return isPrivate ? 'hashtag-lock' : 'hashtag';
 };
 
+const getCreationBlockedKey = (canUseFederation: boolean): TranslationKey =>
+	canUseFederation ? 'ABAC_Room_Creation_Federated_Only' : 'ABAC_Room_Creation_Not_Allowed';
+
 const hasExternalMembers = (members: string[]): boolean => members.some((member) => member.startsWith('@'));
 
 const initialAttributes = (abac?: AbacRoomCreation): IAbacAttributeDefinition[] =>
@@ -120,7 +123,6 @@ const CreateChannelModal = ({ teamId = '', mainRoom, onClose, reload, onSuccess,
 
 	const canOnlyCreateOneType = useCreateChannelTypePermission(mainRoom?._id);
 	const canCreatePrivate = canOnlyCreateOneType !== 'c';
-	const creationBlocked = isAbacCreationBlocked(abac, canCreatePrivate);
 
 	const methods = useForm<CreateChannelModalPayload>({
 		defaultValues: {
@@ -147,15 +149,23 @@ const CreateChannelModal = ({ teamId = '', mainRoom, onClose, reload, onSuccess,
 
 	const { isPrivate, broadcast, readOnly, federated, encrypted, isAbacManaged, members, attributes } = watch();
 
+	const creationBlocked = isAbacCreationBlocked(abac, canCreatePrivate, federated);
 	const { step, index, total, isLast, next, back } = useCreateRoomSteps(Boolean(abac), isAbacManaged);
 	const abacFlow = useAbacCreationFlow({ abac, isAbacManaged, step, members, attributes });
 
 	useEffect(() => {
 		if (isAbacManaged) {
 			setValue('isPrivate', true);
-			setValue('federated', false);
 		}
 	}, [isAbacManaged, setValue]);
+
+	useEffect(() => {
+		if (federated) {
+			setValue('isAbacManaged', false);
+		} else if (abac?.enforced) {
+			setValue('isAbacManaged', true);
+		}
+	}, [federated, abac?.enforced, setValue]);
 
 	useEffect(() => {
 		if (federated) {
@@ -257,24 +267,26 @@ const CreateChannelModal = ({ teamId = '', mainRoom, onClose, reload, onSuccess,
 
 	const createChannelFormId = useId();
 
+	const federatedField = (
+		<Field>
+			<FieldRow>
+				<FieldLabel>{t('Federation_Matrix_Federated')}</FieldLabel>
+				<Controller
+					control={control}
+					name='federated'
+					render={({ field: { value, ...field } }) => <ToggleSwitch {...field} checked={value} disabled={!canUseFederation} />}
+				/>
+			</FieldRow>
+			<FieldHint>{t(federationFieldHint)}</FieldHint>
+		</Field>
+	);
+
 	const securityFields = (
 		<FieldGroup>
 			<Box is='h5' fontScale='h5' color='titles-labels'>
 				{t('Security_and_permissions')}
 			</Box>
-			{!isAbacManaged && (
-				<Field>
-					<FieldRow>
-						<FieldLabel>{t('Federation_Matrix_Federated')}</FieldLabel>
-						<Controller
-							control={control}
-							name='federated'
-							render={({ field: { value, ...field } }) => <ToggleSwitch {...field} checked={value} disabled={!canUseFederation} />}
-						/>
-					</FieldRow>
-					<FieldHint>{t(federationFieldHint)}</FieldHint>
-				</Field>
-			)}
+			{!abac && federatedField}
 			<Field>
 				<FieldRow>
 					<FieldLabel>{t('Encrypted')}</FieldLabel>
@@ -330,7 +342,7 @@ const CreateChannelModal = ({ teamId = '', mainRoom, onClose, reload, onSuccess,
 						<>
 							{creationBlocked && (
 								<Callout type='danger' marginBlockEnd={16}>
-									{t('ABAC_Room_Creation_Not_Allowed')}
+									{t(getCreationBlockedKey(canUseFederation))}
 								</Callout>
 							)}
 							<FieldGroup marginBlockEnd={24}>
@@ -377,7 +389,8 @@ const CreateChannelModal = ({ teamId = '', mainRoom, onClose, reload, onSuccess,
 									/>
 									{errors.members && <FieldError>{errors.members.message}</FieldError>}
 								</Field>
-								{abac && <AbacManagedField abac={abac} canCreatePrivate={canCreatePrivate} />}
+								{abac && <AbacManagedField abac={abac} canCreatePrivate={canCreatePrivate} federated={federated} />}
+								{abac && federatedField}
 								<Field>
 									<FieldRow>
 										<FieldLabel>{t('Private')}</FieldLabel>
