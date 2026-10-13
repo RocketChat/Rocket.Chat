@@ -16,12 +16,12 @@ const RequiredAttributesField = () => {
 	const { data: options, isSuccess, isPending } = useSettingLookupQuery(lookupEndpoint);
 	const setModal = useSetModal();
 
-	const storedKeys = toKeys(setting?.value);
+	const storedValue = setting?.value;
 
 	const onBeforeChange = useCallback(
 		(next: SettingValue, proceed: () => void) => {
 			const nextKeys = toKeys(next);
-			const removedKeys = storedKeys.filter((key) => !nextKeys.includes(key));
+			const removedKeys = toKeys(storedValue).filter((key) => !nextKeys.includes(key));
 
 			if (removedKeys.length === 0) {
 				proceed();
@@ -47,7 +47,7 @@ const RequiredAttributesField = () => {
 				/>,
 			);
 		},
-		[isSuccess, options, setModal, storedKeys],
+		[isSuccess, options, setModal, storedValue],
 	);
 
 	if (!setting) {
