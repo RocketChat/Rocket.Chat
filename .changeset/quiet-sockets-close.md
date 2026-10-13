@@ -3,4 +3,4 @@
 '@rocket.chat/meteor': patch
 ---
 
-Fixes outbound HTTP requests, such as SAML metadata fetching and public import file downloads, keeping the connection open after an error response or a redirect while the remote server keeps sending data
+Prevents outbound HTTP requests, such as SAML metadata fetches and public import file downloads, from keeping connections open after an error response or redirect while the remote server continues sending data.
