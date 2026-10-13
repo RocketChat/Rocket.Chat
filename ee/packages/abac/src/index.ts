@@ -668,8 +668,9 @@ export class AbacService extends ServiceClass implements IAbacService {
 		usernames: string[],
 		attributes: IAbacAttributeDefinition[],
 		actor: AbacActor,
+		{ creatorJoins }: { creatorJoins: boolean },
 	): Promise<AbacMembershipPreviewResult> {
-		const validation = await this.validateCreationAttributes(attributes, actor, { creatorJoins: false });
+		const validation = await this.validateCreationAttributes(attributes, actor, { creatorJoins });
 		if (!validation.allowed) {
 			return validation;
 		}

@@ -58,6 +58,7 @@ export interface IAbacService {
 		usernames: string[],
 		attributes: IAbacAttributeDefinition[],
 		actor: AbacActor,
+		options: { creatorJoins: boolean },
 	): Promise<AbacMembershipPreviewResult>;
 	setRoomAbacAttributes(rid: string, attributes: Record<string, string[]>, actor: AbacActor | undefined): Promise<void>;
 	removeRoomAbacAttribute(rid: string, key: string, actor: AbacActor | undefined): Promise<void>;
