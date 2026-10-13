@@ -16,6 +16,7 @@ import { clientMediaSignalMuteSchema, type ClientMediaSignalMute } from './mute'
 import { clientMediaSignalNegotiationNeededSchema, type ClientMediaSignalNegotiationNeeded } from './negotiation-needed';
 import { clientMediaSignalRegisterSchema, type ClientMediaSignalRegister } from './register';
 import { clientMediaSignalRequestCallSchema, type ClientMediaSignalRequestCall } from './request-call';
+import { clientMediaSignalTakeOverSchema, type ClientMediaSignalTakeOver } from './take-over';
 import { clientMediaSignalTransferSchema, type ClientMediaSignalTransfer } from './transfer';
 
 const ajv = new Ajv({ discriminator: true });
@@ -34,7 +35,8 @@ export type ClientMediaSignal =
 	| ClientMediaSignalAttendedTransfer
 	| ClientMediaSignalCompleteAttendedTransfer
 	| ClientMediaSignalMute
-	| ClientMediaSignalHold;
+	| ClientMediaSignalHold
+	| ClientMediaSignalTakeOver;
 
 export const clientMediaSignalSchema: JSONSchemaType<ClientMediaSignal> = {
 	type: 'object',
@@ -56,6 +58,7 @@ export const clientMediaSignalSchema: JSONSchemaType<ClientMediaSignal> = {
 		clientMediaSignalCompleteAttendedTransferSchema,
 		clientMediaSignalMuteSchema,
 		clientMediaSignalHoldSchema,
+		clientMediaSignalTakeOverSchema,
 	],
 };
 
