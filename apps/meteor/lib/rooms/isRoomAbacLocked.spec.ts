@@ -66,6 +66,10 @@ describe('attribute compliance', () => {
 		expect(isRoomAbacLocked(room({ abacAttributes: [] }), enforcing())).to.be.true;
 	});
 
+	it('should lock a room whose attributes all have empty values', () => {
+		expect(isRoomAbacLocked(room({ abacAttributes: [attribute('clearance', [])] }), enforcing())).to.be.true;
+	});
+
 	it('should not lock a room carrying attributes when nothing is required', () => {
 		expect(isRoomAbacLocked(room({ abacAttributes: [attribute('clearance')] }), enforcing())).to.be.false;
 	});
