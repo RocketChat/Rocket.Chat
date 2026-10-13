@@ -179,7 +179,10 @@
   "ABAC_Redacted_Placeholder": "<Redacted>",
   "ABAC_Remove_attribute": "Delete attribute value",
   "abac_removed_user_from_the_room": "was removed by ABAC",
-  "abac_removed_users_from_the_room": "changed the room attributes, and {{count}} members were removed by ABAC",
+  "abac_removed_users_from_the_room": {
+    "one": "changed the room attributes, and {{count}} member was removed by ABAC",
+    "other": "changed the room attributes, and {{count}} members were removed by ABAC"
+  },
   "ABAC_Required_Attributes": "Attributes required in all ABAC rooms",
   "ABAC_Required_Attributes_Description": "Applies while ABAC is enforced across all rooms. Every ABAC room must then carry these attributes, and adding one locks existing rooms that do not have it until the attribute is assigned.",
   "ABAC_Required_Attributes_Not_Held": "You hold no value of {{attributes}}, which every room requires. An administrator has to assign values to you.",
