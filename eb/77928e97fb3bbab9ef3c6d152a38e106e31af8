@@ -1,0 +1,23 @@
+apps/meteor/tests/unit/server/services/omnichannel/queue.tests.ts
+  s_5b0b5e57d4c07c::t_9126b7d1609660 131-133,278-280
+apps/meteor/tests/unit/server/lib/omnichannel/webhooks.spec.ts
+  s_5b0b5e57d4c07c::t_9126b7d1609660 175-177,216-218,271-273
+apps/meteor/server/services/video-conference/leaveCall.spec.ts
+  s_5b0b5e57d4c07c::t_9126b7d1609660 96-99,301-304
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.2",
+  "base_commit_sha": "eb77928e97fb3bbab9ef3c6d152a38e106e31af8",
+  "prompts": {},
+  "sessions": {
+    "s_5b0b5e57d4c07c": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "143f68a7-f9c3-4644-b97d-bcdac5d53d61",
+        "model": "claude-opus-5-5"
+      },
+      "human_author": "Ricardo Garim <rswarovsky@gmail.com>"
+    }
+  }
+}

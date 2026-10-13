@@ -1,0 +1,23 @@
+apps/meteor/tests/unit/server/lib/import/messageConverter.test.ts
+  s_5b0b5e57d4c07c::t_3042dfe65d81b2 91
+apps/meteor/ee/server/lib/ldap/Manager.test.ts
+  s_5b0b5e57d4c07c::t_3042dfe65d81b2 15,191-192
+apps/meteor/tests/end-to-end/api/status-visibility.ts
+  s_5b0b5e57d4c07c::t_cf8f6be2f68b52 1,8,15,33-44,48,83,369-584,604-800
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.2",
+  "base_commit_sha": "f1503a9bb705aa77326747017612184a783de750",
+  "prompts": {},
+  "sessions": {
+    "s_5b0b5e57d4c07c": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "143f68a7-f9c3-4644-b97d-bcdac5d53d61",
+        "model": "claude-opus-5-5"
+      },
+      "human_author": "Ricardo Garim <rswarovsky@gmail.com>"
+    }
+  }
+}
