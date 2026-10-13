@@ -471,7 +471,7 @@ const abacEndpoints = API.v1
 		'abac/attributes.listKeys',
 		{
 			authRequired: true,
-			permissionsRequired: ['abac-management', 'manage-abac-admin-settings'],
+			permissionsRequired: ['manage-abac-admin-settings'],
 			license: ['abac'],
 			response: {
 				200: GETAbacAttributeKeysResponseSchema,
