@@ -7,15 +7,16 @@ import { getAbacErrorAttributes, getAbacErrorType } from './getAbacErrorType';
 type AbacErrorCalloutProps = {
 	error: unknown;
 	fallback: TranslationKey;
+	className?: string;
 };
 
-const AbacErrorCallout = ({ error, fallback }: AbacErrorCalloutProps) => {
+const AbacErrorCallout = ({ error, fallback, className }: AbacErrorCalloutProps) => {
 	const { t, i18n } = useTranslation();
 	const errorType = getAbacErrorType(error);
 	const attributes = getAbacErrorAttributes(error);
 
 	return (
-		<Callout type='danger'>
+		<Callout type='danger' className={className}>
 			{errorType && i18n.exists(errorType) ? t(errorType) : t(fallback)}
 			{attributes.length > 0 && (
 				<Box is='ul' marginBlockStart={4}>
