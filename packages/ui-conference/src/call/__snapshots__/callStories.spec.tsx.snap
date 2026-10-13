@@ -2066,12 +2066,12 @@ exports[`call stories renders CallRaisedHands OwnHandNext without crashing 1`] =
           title="You raised your hand"
           type="button"
         >
-          <span
+          <i
             aria-hidden="true"
-            class="rcx-box rcx-box--full rcx-css-16qr4e"
+            class="rcx-box rcx-box--full rcx-icon--name-hand rcx-icon rcx-css-18jrq41"
           >
-            ✋
-          </span>
+            
+          </i>
           <span
             class="rcx-box rcx-box--full rcx-css-1te28na"
           >
@@ -4506,11 +4506,12 @@ exports[`call stories renders ParticipantTile HandRaisedNext without crashing 1`
             <div
               class="rcx-box rcx-box--full rcx-css-5qb770 rcx-css-1ruhktd"
             >
-              <span
+              <i
                 aria-hidden="true"
+                class="rcx-box rcx-box--full rcx-icon--name-hand rcx-icon rcx-css-16lamw6"
               >
-                ✋
-              </span>
+                
+              </i>
               <div
                 style="border: 0px; clip-path: inset(50%); height: 1px; margin: -1px; overflow: hidden; padding: 0px; position: absolute; width: 1px; white-space: nowrap;"
               >
