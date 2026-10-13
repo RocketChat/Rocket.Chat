@@ -2,10 +2,9 @@ import type { IRoom, IUser } from '@rocket.chat/core-typings';
 import { Subscriptions, Rooms } from '@rocket.chat/models';
 
 import { canAccessRoomAsync } from './canAccessRoom';
-import { getRoomAbacLockContext } from './getRoomAbacLockContext';
 import { hasPermissionAsync } from './hasPermission';
 import { RoomMemberActions } from '../../../definition/IRoomTypeConfig';
-import { isRoomAbacLocked } from '../../../lib/rooms/isRoomAbacLocked';
+import { beforeSendMessageToRoom } from '../../hooks/rooms/beforeSendMessageToRoom';
 import { roomCoordinator } from '../rooms/roomCoordinator';
 
 const subscriptionOptions = {
@@ -32,9 +31,7 @@ export async function validateRoomMessagePermissionsAsync(
 		throw new Error('error-not-allowed');
 	}
 
-	if (isRoomAbacLocked(room, getRoomAbacLockContext())) {
-		throw new Error('error-abac-room-locked');
-	}
+	await beforeSendMessageToRoom(room);
 
 	if (
 		await roomCoordinator.getRoomDirectives(room.t).allowMemberAction(room, RoomMemberActions.BLOCK, 'uid' in args ? args.uid : args._id)
