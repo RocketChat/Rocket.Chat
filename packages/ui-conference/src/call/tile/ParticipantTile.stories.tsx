@@ -55,6 +55,11 @@ export const HandRaised: Story = {
 	args: { handPosition: 3 },
 };
 
+/** First in the queue, whose turn is next: the one plate drawn green. */
+export const HandRaisedNext: Story = {
+	args: { handPosition: 1 },
+};
+
 /** The reader's own tile, which alone says what its encoder is sending. */
 export const Self: Story = {
 	render: () => <SelfTile displayName='John Doe' muted={false} held={false} sendHeight={720} />,

@@ -9,6 +9,8 @@ export type RaisedHand = {
 	id: string;
 	/** Who they are. Falls back to whatever the call knows; never blank, or the label would say nothing. */
 	name: string;
+	/** Whether it is the reader's own hand, which the queue calls "You" rather than by their name. */
+	isLocal?: boolean;
 };
 
 export type CallRaisedHandsProps = {
@@ -28,24 +30,26 @@ const CallRaisedHands = ({ hands }: CallRaisedHandsProps) => {
 
 	const [next, ...waiting] = hands;
 
-	const items: GenericMenuItemProps[] = hands.map(({ id, name }, index) => ({
-		id,
-		textValue: name,
+	const nameOf = ({ name, isLocal }: RaisedHand) => (isLocal ? t('You') : name);
+
+	const items: GenericMenuItemProps[] = hands.map((hand, index) => ({
+		id: hand.id,
+		textValue: nameOf(hand),
 		// Numbered, because the order is the point — this is a queue, not a set.
 		content: (
-			<Box display='flex' alignItems='center' fontScale='p2' minWidth={0} title={name}>
+			<Box display='flex' alignItems='center' fontScale='p2' minWidth={0} title={nameOf(hand)}>
 				<Box is='span' color='hint' marginInlineEnd={8}>
 					{index + 1}.
 				</Box>
 				<Box is='span' withTruncatedText>
-					{name}
+					{nameOf(hand)}
 				</Box>
 			</Box>
 		),
 	}));
 
 	// Reads as a sentence for anyone who can't see the layout: the name alone would be a name with no reason.
-	const label = t('__name__raised_their_hand', { name: next.name });
+	const label = next.isLocal ? t('You_raised_your_hand') : t('__name__raised_their_hand', { name: next.name });
 
 	return (
 		<GenericMenu
@@ -58,7 +62,7 @@ const CallRaisedHands = ({ hands }: CallRaisedHandsProps) => {
 						✋
 					</Box>
 					<Box is='span' withTruncatedText>
-						{next.name}
+						{nameOf(next)}
 					</Box>
 					{/* How many more are behind them. Kept out of the truncation above, so a long name shortens
 					    rather than hiding the fact that there is a queue at all. */}

@@ -76,12 +76,20 @@ const indicatorBadgeStyles = css`
 	color: ${Palette.text['font-pure-white'].toString()};
 `;
 
+/** A raised hand waiting its turn: a plate, fixed white like the name it holds, so it reads over any picture. */
 const handRaisedLabelStyles = css`
-	/* Palette carries no button colours: this is the token fuselage's success button is drawn with. */
-	background-color: var(--rcx-color-button-background-success-default);
+	background-color: ${Palette.text['font-pure-white'].toString()};
+	color: ${Palette.text['font-pure-black'].toString()};
 	padding: 0.25rem 0.75rem;
 	border-radius: ${borderRadius('full')};
 	text-shadow: none;
+`;
+
+/** The hand at the front of the queue, the one whose turn is next: green, so it stands out from the rest of the line. */
+const nextHandLabelStyles = css`
+	/* Palette carries no button colours: this is the token fuselage's success button is drawn with. */
+	background-color: var(--rcx-color-button-background-success-default);
+	color: ${Palette.text['font-pure-white'].toString()};
 `;
 
 export type TileFrameProps = Pick<TileParticipant, 'displayName' | 'muted' | 'held' | 'audioStream' | 'handPosition'> & {
@@ -119,7 +127,14 @@ const TileFrame = ({ displayName, muted, held, audioStream, handPosition, ringWi
 				/>
 			)}
 			{children}
-			<Box className={[labelStyles, handPosition !== undefined ? handRaisedLabelStyles : null]} fontScale='p1'>
+			<Box
+				className={[
+					labelStyles,
+					handPosition !== undefined ? handRaisedLabelStyles : null,
+					handPosition === 1 ? nextHandLabelStyles : null,
+				]}
+				fontScale='p1'
+			>
 				{handPosition !== undefined && (
 					<>
 						<span aria-hidden>✋</span>
