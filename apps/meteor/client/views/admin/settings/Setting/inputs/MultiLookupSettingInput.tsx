@@ -44,7 +44,6 @@ function MultiLookupSettingInput({
 			</FieldRow>
 			<FieldRow>
 				<MultiSelectFiltered
-					max-width='full'
 					id={_id}
 					value={value}
 					placeholder={placeholder}

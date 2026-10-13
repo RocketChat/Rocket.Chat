@@ -1,4 +1,5 @@
 import type { PathPattern } from '@rocket.chat/rest-typings';
+import { isRecord } from '@rocket.chat/tools';
 import { useEndpoint } from '@rocket.chat/ui-contexts';
 import { useQuery } from '@tanstack/react-query';
 
@@ -9,20 +10,10 @@ export type SettingLookupEndpoint = PathPattern extends `/${infer U}` ? U : Path
 export type SettingLookupOption = { key: string; label: string };
 
 const isSettingLookupOption = (option: unknown): option is SettingLookupOption =>
-	typeof option === 'object' &&
-	option !== null &&
-	'key' in option &&
-	typeof option.key === 'string' &&
-	'label' in option &&
-	typeof option.label === 'string';
+	isRecord(option) && typeof option.key === 'string' && typeof option.label === 'string';
 
-const toSettingLookupOptions = (response: unknown): SettingLookupOption[] => {
-	if (typeof response !== 'object' || response === null || !('data' in response) || !Array.isArray(response.data)) {
-		return [];
-	}
-
-	return response.data.filter(isSettingLookupOption);
-};
+const toSettingLookupOptions = (response: unknown): SettingLookupOption[] =>
+	isRecord(response) && Array.isArray(response.data) ? response.data.filter(isSettingLookupOption) : [];
 
 export const useSettingLookupOptions = (lookupEndpoint: SettingLookupEndpoint): SettingLookupOption[] => {
 	const lookup = useEndpoint('GET', lookupEndpoint) as unknown as () => Promise<unknown>;
