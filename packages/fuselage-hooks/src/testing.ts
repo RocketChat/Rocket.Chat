@@ -19,7 +19,8 @@ export function renderHook<
 			return null;
 		};
 
-		renderToString(createElement(TestComponent));
+		const Wrapper = options?.wrapper;
+		renderToString(Wrapper ? createElement(Wrapper, null, createElement(TestComponent)) : createElement(TestComponent));
 
 		return {
 			result: { current: current! },
