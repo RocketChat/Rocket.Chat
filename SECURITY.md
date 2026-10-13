@@ -1,4 +1,4 @@
-You can find our full security documentation in our [handbook](https://handbook.rocket.chat/space/Handbook/74155072/%F0%9F%94%90+Security).
+You can find our full security documentation in our [handbook](https://handbook.rocket.chat/space/SEC/6226148/SECURITY).
 
 ---
 
