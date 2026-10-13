@@ -1322,7 +1322,11 @@ export class AbacService extends ServiceClass implements IAbacService {
 
 			const removedCount = removed.filter(Boolean).length;
 			if (summarizedBy && removedCount) {
-				await Message.saveSystemMessage('abac-removed-users-from-room', rid, String(removedCount), summarizedBy);
+				try {
+					await Message.saveSystemMessage('abac-removed-users-from-room', rid, String(removedCount), summarizedBy);
+				} catch (err) {
+					logger.error({ msg: 'Failed to save ABAC mass-removal summary message', rid, removedCount, err });
+				}
 			}
 		} catch (err) {
 			logger.error({
