@@ -21,7 +21,7 @@ import type {
 } from '@rocket.chat/media-signaling';
 import { MediaCallNegotiations, MediaCalls } from '@rocket.chat/models';
 
-import { DEFAULT_CALL_FEATURES } from '../../constants';
+import { DEFAULT_CALL_FEATURES, TAKE_OVER_NEGOTIATION_POLL_INTERVAL, TAKE_OVER_NEGOTIATION_TIMEOUT } from '../../constants';
 import type { IMediaCallAgent } from '../../definition/IMediaCallAgent';
 import type { SignalProcessingOptions } from '../../definition/common';
 import { logger } from '../../logger';
@@ -143,6 +143,8 @@ export class UserActorSignalProcessor {
 				return this.processMute(signal.muted);
 			case 'hold':
 				return this.processHold(signal.held);
+			case 'take-over':
+				return this.processTakeOver(signal.supportedFeatures || DEFAULT_CALL_FEATURES);
 		}
 	}
 
@@ -402,6 +404,78 @@ export class UserActorSignalProcessor {
 		const by = { ...heldAgent.getMyCallActor(heldCall), ...heldCall[heldRole] } as MediaCallSignedContact;
 
 		await mediaCallDirector.transferCall(heldCall, consultedActor, by, heldAgent, { replacesCallId: this.call._id });
+	}
+
+	/** The actor's own side of an active call moves to the session that requested it, which then offers new media */
+	private async processTakeOver(supportedFeatures: CallFeature[]): Promise<void> {
+		logger.debug({ msg: 'UserActorSignalProcessor.processTakeOver', supportedFeatures });
+		const oldContractId = this.call[this.role].contractId;
+
+		if (this.signed || !oldContractId || this.call.state !== 'active' || this.call.service !== 'webrtc') {
+			return;
+		}
+
+		// Calls that are part of a transfer or a second line stay where they are
+		if (await MediaCalls.hasUnfinishedCallsByUid(this.actorId, this.callId)) {
+			return;
+		}
+
+		if (!(await this.waitForCallerNegotiation())) {
+			await this.endCallStuckInNegotiation(oldContractId);
+			return;
+		}
+
+		const updatedCall = await mediaCallDirector.replaceActorContract(this.call, this.role, {
+			oldContractId,
+			newContractId: this.contractId,
+			supportedFeatures,
+		});
+		if (!updatedCall) {
+			return;
+		}
+
+		await this.sendSignal({
+			callId: this.callId,
+			type: 'notification',
+			notification: 'session-changed',
+			signedContractId: this.contractId,
+			features: updatedCall.features as CallFeature[],
+		});
+
+		if (updatedCall.features.length !== this.call.features.length) {
+			void this.agent.oppositeAgent?.onCallUpdated(this.callId);
+		}
+
+		await this.startNewNegotiation();
+	}
+
+	/** Resolves false if a negotiation offered by the caller is still waiting for its answer after the time limit */
+	private async waitForCallerNegotiation(): Promise<boolean> {
+		const deadline = Date.now() + TAKE_OVER_NEGOTIATION_TIMEOUT;
+
+		for (;;) {
+			const negotiation = await MediaCallNegotiations.findLatestByCallId(this.callId);
+			if (negotiation?.offerer !== 'caller' || negotiation.answer) {
+				return true;
+			}
+
+			if (Date.now() >= deadline) {
+				return false;
+			}
+
+			await new Promise((resolve) => setTimeout(resolve, TAKE_OVER_NEGOTIATION_POLL_INTERVAL));
+		}
+	}
+
+	/** Ends the call that can't be moved, unless it ended or moved to another session in the meantime */
+	private async endCallStuckInNegotiation(oldContractId: string): Promise<void> {
+		const call = await MediaCalls.findOneById(this.callId);
+		if (!call || call.ended || call[this.role].contractId !== oldContractId) {
+			return;
+		}
+
+		logger.error({ msg: 'Ending a call that could not be taken over', callId: this.callId, role: this.role });
+		await mediaCallDirector.hangupByServer(call, 'take-over-negotiation-timeout');
 	}
 
 	private async processDTMF(dtmf: string, duration?: number): Promise<void> {
