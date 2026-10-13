@@ -262,6 +262,21 @@ export class MediaSignalingSession extends Emitter<MediaSignalingEvents> {
 		alternateCall.setHeld(false);
 	}
 
+	/** Whether the main call is happening on another session of this user and may be moved to this one */
+	public canTakeOverCall(): boolean {
+		return Boolean(this.getMainCall(false)?.canBeTakenOver());
+	}
+
+	/** Moves the main call from the session that carries it to this session */
+	public takeOverCall(): void {
+		const call = this.getMainCall(false);
+		if (!call?.canBeTakenOver()) {
+			throw new Error('No call to take over.');
+		}
+
+		call.takeOver();
+	}
+
 	private getAttendedTransferCall(): ClientMediaCall | null {
 		for (const call of this.knownCalls.values()) {
 			if (!call.busy || call.hidden || call.ignored || !call.transferringCallId) {
@@ -779,6 +794,7 @@ export class MediaSignalingSession extends Emitter<MediaSignalingEvents> {
 		call.emitter.on('accepted', () => this.onAcceptedCall(call));
 		call.emitter.on('accepting', () => this.onAcceptingCall(call));
 		call.emitter.on('hidden', () => this.onHiddenCall(call));
+		call.emitter.on('takenOver', () => this.onCallTakenOver(call));
 		call.emitter.on('active', () => this.onActiveCall(call));
 		call.emitter.on('ringing', () => this.onRingingCall());
 		call.emitter.on('ended', () => this.onEndedCall(call));
@@ -832,6 +848,15 @@ export class MediaSignalingSession extends Emitter<MediaSignalingEvents> {
 	private onEndedCall(call: ClientMediaCall): void {
 		this.config.logger?.debug('MediaSignalingSession.onEndedCall');
 		this.ignoreCall(call.callId);
+		this.onSessionStateChange();
+	}
+
+	private onCallTakenOver(call: ClientMediaCall): void {
+		this.config.logger?.debug('MediaSignalingSession.onCallTakenOver');
+		// A call that was hidden never received the input track, even if the session already has one
+		if (this.inputTrack) {
+			void call.setInputTrack(this.inputTrack).catch(() => null);
+		}
 		this.onSessionStateChange();
 	}
 

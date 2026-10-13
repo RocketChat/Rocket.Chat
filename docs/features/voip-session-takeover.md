@@ -51,4 +51,20 @@ never does, for instance because that session is frozen, the call is ended: lett
 would leave it silent. Other pending offers need no wait: the caller's new offer replaces the callee's, and a new offer from
 the callee replaces its own.
 
+## Client
+
+A session that does not carry the call still tracks it, as a hidden call (`busy-elsewhere`).
+`MediaSignalingSession.canTakeOverCall` tells whether the main call is one of those and may be moved
+here, and `takeOverCall` sends the `take-over` signal.
+
+On `session-changed`, `ClientMediaCall` either acquires or releases the call:
+
+- The new owner discards the idle connection it built while the call was hidden, creates a fresh one,
+  and hands it the session's input track once the call is visible. The negotiation then proceeds from
+  the server's `request-offer`.
+- The previous owner stops its media and marks the call hidden. It does not send a hangup, so the
+  call goes on. Hanging up from it later goes through the `another-client` hangup as for any hidden call.
+
+Nothing is sent back when the server ignores the request, so the call simply stays hidden.
+
 A removed feature is not restored if a later session supports it again.
