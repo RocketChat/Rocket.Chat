@@ -27,11 +27,11 @@ export const isRoomAbacLocked = (room: AbacLockableRoom, { enforcementOn, requir
 
 	const attributes: IAbacAttributeDefinition[] = Array.isArray(room.abacAttributes) ? room.abacAttributes : [];
 
-	if (attributes.length === 0) {
+	const presentKeys = new Set(attributes.filter((attribute) => attribute.values?.length > 0).map((attribute) => attribute.key));
+
+	if (presentKeys.size === 0) {
 		return true;
 	}
-
-	const presentKeys = new Set(attributes.filter((attribute) => attribute.values?.length > 0).map((attribute) => attribute.key));
 
 	return requiredAttributeKeys.some((requiredKey) => {
 		const key = requiredKey.trim();
