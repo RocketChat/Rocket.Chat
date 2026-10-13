@@ -254,6 +254,21 @@ describe('Server subscriptions', () => {
 		expect(onStop).toHaveBeenCalledTimes(1);
 	});
 
+	it('still answers a failed subscription when one of its stop callbacks throws', async () => {
+		server.publish('messages', function (this: Publication) {
+			this.onStop(() => {
+				throw new Error('stop callback failure');
+			});
+			throw new MeteorError(403, 'Forbidden');
+		});
+
+		await expect(server.subscribe(session, makeSubscription())).rejects.toThrow('stop callback failure');
+
+		expect(sentPackets(session)).toEqual([{ msg: 'nosub', id: 'test-id', error: new MeteorError(403, 'Forbidden').toJSON() }]);
+		expect(session.subscriptions.size).toBe(0);
+		expect(session.listenerCount('close')).toBe(0);
+	});
+
 	it('starts metrics before execution and completes them after the async publication finishes', async () => {
 		const end = jest.fn().mockReturnValue(0);
 		const metrics: IServiceMetrics = {

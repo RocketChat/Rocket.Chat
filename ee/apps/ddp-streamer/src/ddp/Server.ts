@@ -105,9 +105,9 @@ export class Server {
 
 			end?.();
 		} catch (err: unknown) {
+			session.send(encodeNosub(packet.id, handleInternalException(err, 'Subscription error')));
 			// A failed subscription must not outlive its handler.
 			publication?.emit('stop', session, packet);
-			return session.send(encodeNosub(packet.id, handleInternalException(err, 'Subscription error')));
 		}
 	}
 
