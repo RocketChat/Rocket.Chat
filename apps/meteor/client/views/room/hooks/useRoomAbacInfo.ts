@@ -6,7 +6,7 @@ import { useQuery } from '@tanstack/react-query';
 import { roomsQueryKeys } from '../../../lib/queryKeys';
 import { useIsABACAvailable } from '../../admin/ABAC/hooks/useIsABACAvailable';
 
-type RoomAbacInfo = Pick<Serialized<OperationResult<'GET', '/v1/rooms.info'>>, 'abacRequiredAttributes'>;
+type RoomAbacInfo = Pick<Serialized<OperationResult<'GET', '/v1/rooms.info'>>, 'abacRequiredAttributes' | 'classificationBanner'>;
 
 export const useRoomAbacInfo = <TData = RoomAbacInfo>(
 	rid: IRoom['_id'],
@@ -23,8 +23,8 @@ export const useRoomAbacInfo = <TData = RoomAbacInfo>(
 				return {};
 			}
 
-			const { abacRequiredAttributes } = await getRoomInfo({ roomId: rid });
-			return { abacRequiredAttributes };
+			const { abacRequiredAttributes, classificationBanner } = await getRoomInfo({ roomId: rid });
+			return { abacRequiredAttributes, classificationBanner };
 		},
 		select,
 	});
