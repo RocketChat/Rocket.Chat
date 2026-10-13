@@ -3,6 +3,7 @@ import { Messages, Subscriptions, Users, Rooms } from '@rocket.chat/models';
 import type { ParsedMail } from 'mailparser';
 import moment from 'moment';
 
+import { beforeSendMessageToRoom } from '../../hooks/rooms/beforeSendMessageToRoom';
 import { settings } from '../../settings';
 import { canAccessRoomAsync } from '../authorization';
 import { hasPermissionAsync } from '../authorization/hasPermission';
@@ -109,6 +110,12 @@ export const processDirectEmail = async function (email: ParsedMail): Promise<vo
 				return;
 			}
 		}
+	}
+
+	try {
+		await beforeSendMessageToRoom(roomInfo);
+	} catch {
+		return;
 	}
 
 	const message: Pick<IMessage, 'ts' | 'msg' | 'groupable' | 'rid' | 'sentByEmail' | 'tmid'> = {
