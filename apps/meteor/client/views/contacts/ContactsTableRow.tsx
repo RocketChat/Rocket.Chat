@@ -13,9 +13,10 @@ export type ContactsTableRowProps = {
 	columns: ContactsColumns;
 	onClick: () => void;
 	onEdit: () => void;
+	onDeleted: () => void;
 };
 
-const ContactsTableRow = ({ contact, columns, onClick, onEdit }: ContactsTableRowProps) => {
+const ContactsTableRow = ({ contact, columns, onClick, onEdit, onDeleted }: ContactsTableRowProps) => {
 	const { _id, source, displayName, emails, phones, categories, companyName, officeLocation } = contact;
 
 	const handleKeyDown = (event: KeyboardEvent<HTMLElement>) => {
@@ -63,7 +64,7 @@ const ContactsTableRow = ({ contact, columns, onClick, onEdit }: ContactsTableRo
 			{columns.isVisible('companyName') && <GenericTableCell withTruncatedText>{companyName}</GenericTableCell>}
 			{columns.isVisible('officeLocation') && <GenericTableCell withTruncatedText>{officeLocation}</GenericTableCell>}
 			<GenericTableCell>
-				<ContactMenu contact={contact} onEdit={onEdit} />
+				<ContactMenu contact={contact} onEdit={onEdit} onDeleted={onDeleted} />
 			</GenericTableCell>
 		</GenericTableRow>
 	);
