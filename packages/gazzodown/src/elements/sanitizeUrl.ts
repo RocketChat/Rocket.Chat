@@ -12,6 +12,10 @@ export const sanitizeUrl = (href: string) => {
 			return dangerousProtocols.includes(url.protocol.toLowerCase()) ? '#' : url.href;
 		}
 
+		if (href.startsWith('//')) {
+			return href;
+		}
+
 		return `//${href}`;
 	} catch {
 		return '#';
