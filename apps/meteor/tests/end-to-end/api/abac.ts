@@ -3231,8 +3231,6 @@ const addAbacAttributesToUserDirectly = async (userId: string, abacAttributes: I
 		};
 
 		before(async () => {
-			// The preceding describe leaves ABAC disabled, and the attribute endpoints refuse to run
-			// without it.
 			await updateSetting('ABAC_Enabled', true);
 
 			for (const key of createdKeys) {
