@@ -29,6 +29,12 @@ export interface IMediaCallsModel extends IBaseModel<IMediaCall> {
 		expiresAt: Date,
 	): Promise<IMediaCall | null>;
 	activateCallById(callId: string, expiresAt: Date): Promise<IMediaCall | null>;
+	replaceActiveCallContractById(
+		callId: string,
+		role: 'caller' | 'callee',
+		data: { oldContractId: string; newContractId: string; supportedFeatures: string[] },
+		expiresAt: Date,
+	): Promise<IMediaCall | null>;
 	setExpiresAtById(callId: string, expiresAt: Date): Promise<UpdateResult>;
 	hangupCallById(callId: string, params: { endedBy?: IMediaCall['endedBy']; reason?: string } | undefined): Promise<IMediaCall | null>;
 	transferCallById(
