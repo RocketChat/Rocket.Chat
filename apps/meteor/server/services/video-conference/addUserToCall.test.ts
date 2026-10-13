@@ -1,7 +1,7 @@
 import { afterEach, before, beforeEach, describe, it } from 'node:test';
 
 import type { VideoConference } from '@rocket.chat/core-typings';
-import { mockModel } from '@rocket.chat/models/testing';
+import { fakeCursor, mockModel } from '@rocket.chat/models/testing';
 import { expect } from 'chai';
 import sinon from 'sinon';
 
@@ -49,7 +49,7 @@ const VideoConferenceModelMock = {
 	setStatusById: sinon.stub().resolves(),
 	setRingingById: sinon.stub().resolves(),
 	setUsersRingingById: sinon.stub().resolves(),
-	find: sinon.stub().returns({ toArray: async () => [] }),
+	find: sinon.stub().returns(fakeCursor([])),
 };
 
 const UsersMock = { findOneById: sinon.stub().resolves({ _id: 'joiner', username: 'joiner.user', name: 'Joiner', avatarETag: null }) };

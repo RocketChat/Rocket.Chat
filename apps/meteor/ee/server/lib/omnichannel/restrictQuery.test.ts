@@ -1,6 +1,6 @@
 import { afterEach, describe, it } from 'node:test';
 
-import { mockModel } from '@rocket.chat/models/testing';
+import { fakeCursor, mockModel } from '@rocket.chat/models/testing';
 import { expect } from 'chai';
 import proxyquire from 'proxyquire';
 import sinon from 'sinon';
@@ -31,9 +31,7 @@ describe('restrictQuery', () => {
 			if (captureFindArgs) {
 				findArgs.push({ query, projection });
 			}
-			return {
-				toArray: async () => departmentsToReturn,
-			};
+			return fakeCursor(departmentsToReturn);
 		});
 
 		const debugStub = sinon.stub();

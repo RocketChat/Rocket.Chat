@@ -2,7 +2,7 @@ import { afterEach, before, beforeEach, describe, it } from 'node:test';
 
 import { ClientSafeError } from '@rocket.chat/core-services';
 import type { IMessage } from '@rocket.chat/core-typings';
-import { mockModel } from '@rocket.chat/models/testing';
+import { fakeCursor, mockModel } from '@rocket.chat/models/testing';
 import { expect } from 'chai';
 import proxyquire from 'proxyquire';
 import sinon from 'sinon';
@@ -194,8 +194,8 @@ describe('handleWithoutPagination', () => {
 		const updatedMessages = [{ _id: '1', text: 'Hello' }];
 		const deletedMessages = [{ _id: '2', _deletedAt: new Date() }];
 
-		messagesMock.findForUpdates.returns({ toArray: sinon.stub().resolves(updatedMessages) });
-		messagesMock.trashFindDeletedAfter.returns({ toArray: sinon.stub().resolves(deletedMessages) });
+		messagesMock.findForUpdates.returns(fakeCursor(updatedMessages));
+		messagesMock.trashFindDeletedAfter.returns(fakeCursor(deletedMessages));
 
 		const result = await handleWithoutPagination(rid, lastUpdate);
 
@@ -218,8 +218,8 @@ describe('handleWithoutPagination', () => {
 		const lastUpdate = new Date('2024-01-02T00:00:00.000Z');
 		const fromTs = new Date('2024-01-01T00:00:00.000Z');
 
-		messagesMock.findForUpdates.returns({ toArray: sinon.stub().resolves([]) });
-		messagesMock.trashFindDeletedAfter.returns({ toArray: sinon.stub().resolves([]) });
+		messagesMock.findForUpdates.returns(fakeCursor([]));
+		messagesMock.trashFindDeletedAfter.returns(fakeCursor([]));
 
 		await handleWithoutPagination(rid, lastUpdate, fromTs);
 
@@ -236,8 +236,8 @@ describe('handleWithoutPagination', () => {
 		const rid = 'roomId';
 		const lastUpdate = new Date();
 
-		messagesMock.findForUpdates.returns({ toArray: sinon.stub().resolves([]) });
-		messagesMock.trashFindDeletedAfter.returns({ toArray: sinon.stub().resolves([]) });
+		messagesMock.findForUpdates.returns(fakeCursor([]));
+		messagesMock.trashFindDeletedAfter.returns(fakeCursor([]));
 
 		const result = await handleWithoutPagination(rid, lastUpdate);
 
@@ -257,7 +257,7 @@ describe('handleCursorPagination', () => {
 		const rid = 'roomId';
 		const count = 10;
 		const messages = [{ _id: 'msg1', _updatedAt: new Date('2024-01-01T00:00:00Z') }];
-		messagesMock.findForUpdates.returns({ toArray: sinon.stub().resolves(messages) });
+		messagesMock.findForUpdates.returns(fakeCursor(messages));
 
 		const result = await handleCursorPagination('UPDATED', rid, count);
 
@@ -272,7 +272,7 @@ describe('handleCursorPagination', () => {
 		const rid = 'roomId';
 		const count = 10;
 		const messages = [{ _id: 'msg1', _deletedAt: new Date() }];
-		messagesMock.trashFind.returns({ toArray: sinon.stub().resolves(messages) });
+		messagesMock.trashFind.returns(fakeCursor(messages));
 
 		const result = await handleCursorPagination('DELETED', rid, count);
 
@@ -284,7 +284,7 @@ describe('handleCursorPagination', () => {
 	it('should handle empty response correctly', async () => {
 		const rid = 'roomId';
 		const count = 10;
-		messagesMock.findForUpdates.returns({ toArray: sinon.stub().resolves([]) });
+		messagesMock.findForUpdates.returns(fakeCursor([]));
 
 		const result = await handleCursorPagination('UPDATED', rid, count);
 
@@ -336,8 +336,8 @@ describe('getMessageHistory', () => {
 		const lastUpdate = new Date('2024-01-02T00:00:00.000Z');
 		const fromTs = new Date('2024-01-01T00:00:00.000Z');
 
-		messagesMock.findForUpdates.returns({ toArray: sinon.stub().resolves([]) });
-		messagesMock.trashFindDeletedAfter.returns({ toArray: sinon.stub().resolves([]) });
+		messagesMock.findForUpdates.returns(fakeCursor([]));
+		messagesMock.trashFindDeletedAfter.returns(fakeCursor([]));
 
 		await getMessageHistory(rid, fromId, { lastUpdate, fromTs });
 
