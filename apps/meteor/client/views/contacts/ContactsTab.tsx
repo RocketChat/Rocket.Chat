@@ -1,7 +1,7 @@
 import type { IContactPublic, Serialized } from '@rocket.chat/core-typings';
 import { Pagination } from '@rocket.chat/fuselage';
 import { useDebouncedValue } from '@rocket.chat/fuselage-hooks';
-import { GenericTableLoadingRow, usePagination, useSort } from '@rocket.chat/ui-client';
+import { GenericNoResults, GenericTableLoadingRow, usePagination, useSort } from '@rocket.chat/ui-client';
 import { useEndpoint } from '@rocket.chat/ui-contexts';
 import { useQuery } from '@tanstack/react-query';
 import { useEffect, useState } from 'react';
@@ -14,7 +14,6 @@ import ContactsTable from './ContactsTable';
 import ContactsTableRow from './ContactsTableRow';
 import type { ContactsColumnKey } from './hooks/useContactsColumns';
 import { useContactsColumns } from './hooks/useContactsColumns';
-import GenericNoResults from '../../components/GenericNoResults';
 import type { CallHistoryTab } from '../mediaCallHistory/CallHistoryPageLayout';
 import CallHistoryPageLayout from '../mediaCallHistory/CallHistoryPageLayout';
 
