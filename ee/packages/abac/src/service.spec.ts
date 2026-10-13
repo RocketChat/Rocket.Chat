@@ -1374,6 +1374,11 @@ describe('AbacService (unit)', () => {
 					expect(store.entitlementsOf).not.toHaveBeenCalled();
 				});
 
+				it('asks Virtru about a creator who joins the room once', async () => {
+					await expect(service.validateCreationAttributes(requested, fakeActor, creatorJoining)).resolves.toMatchObject({ allowed: true });
+					expect(checkUsernamesMatchAttributes).toHaveBeenCalledTimes(1);
+				});
+
 				it('refuses a creator without a username rather than asking Virtru about nobody', async () => {
 					await expect(
 						service.validateCreationAttributes(requested, { ...fakeActor, username: undefined } as any, creatorExcluded),
