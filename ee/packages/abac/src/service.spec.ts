@@ -1503,7 +1503,10 @@ describe('AbacService (unit)', () => {
 				mockHasPermission.mockResolvedValue(true);
 				const store = holding({});
 
-				await expect(service.listAssignableAttributes(fakeActor)).resolves.toHaveLength(2);
+				await expect(service.listAssignableAttributes(fakeActor)).resolves.toEqual([
+					{ key: 'dept', values: ['eng', 'sales'] },
+					{ key: 'region', values: ['emea', 'apac'] },
+				]);
 				expect(mockHasPermission).toHaveBeenCalledWith(fakeActor._id, 'bypass-abac-store-validation');
 				expect(store.entitlementsOf).not.toHaveBeenCalled();
 			});

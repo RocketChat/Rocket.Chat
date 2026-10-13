@@ -485,7 +485,7 @@ import { IS_EE, URL_MONGODB } from '../../e2e/config/constants';
 		it('offers a creator who is not an administrator only the values they hold, and no key they hold nothing of', async () => {
 			const res = await assignable().expect(200);
 
-			expect(ownKeys(res.body.attributes)).to.deep.equal([{ key: dept, values: ['eng'] }]);
+			expect(res.body.attributes).to.deep.equal([{ key: dept, values: ['eng'] }]);
 		});
 
 		it('offers only what creation then accepts', async () => {
