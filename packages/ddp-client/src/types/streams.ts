@@ -222,6 +222,7 @@ export interface StreamerEvents {
 		},
 		{ key: 'Users:NameChanged'; args: [Pick<IUser, '_id' | 'name' | 'username'>] },
 		{ key: 'private-settings-changed'; args: ['inserted' | 'updated' | 'removed' | 'changed', ISetting] },
+		{ key: 'logged-settings-changed'; args: ['inserted' | 'updated' | 'removed' | 'changed', ISetting] },
 		{ key: 'deleteCustomUserStatus'; args: [{ userStatusData: Omit<ICustomUserStatus, '_updatedAt'> }] },
 		{
 			key: 'user-status';

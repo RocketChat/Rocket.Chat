@@ -1,31 +1,34 @@
 import type { SettingValue } from '@rocket.chat/core-typings';
 
-import { PublicSettings } from '../../stores';
+import { LoggedSettings, PublicSettings } from '../../stores';
 
 type SettingCallback = (key: string, value: SettingValue) => void;
 
 class Settings {
-	private readonly store = PublicSettings.use;
+	private readonly stores = [LoggedSettings.use, PublicSettings.use];
 
 	/** Get a setting value non-reactively */
 	peek<TValue = any>(_id: string): TValue | undefined {
-		return this.store.getState().get(_id)?.value as TValue | undefined;
+		const setting = this.stores.map((store) => store.getState().get(_id)).find((setting) => setting !== undefined);
+		return setting?.value as TValue | undefined;
 	}
 
 	init(): void {
-		this.store.subscribe((state, prevState) => {
-			const removedIds = new Set(prevState.records.keys()).difference(new Set(state.records.keys()));
+		for (const store of this.stores) {
+			store.subscribe((state, prevState) => {
+				const removedIds = new Set(prevState.records.keys()).difference(new Set(state.records.keys()));
 
-			for (const _id of removedIds) {
-				this.handleChange(_id, undefined);
-			}
-
-			for (const setting of state.records.values()) {
-				if (setting.value !== prevState.get(setting._id)?.value) {
-					this.handleChange(setting._id, setting.value);
+				for (const _id of removedIds) {
+					this.handleChange(_id, undefined);
 				}
-			}
-		});
+
+				for (const setting of state.records.values()) {
+					if (setting.value !== prevState.get(setting._id)?.value) {
+						this.handleChange(setting._id, setting.value);
+					}
+				}
+			});
+		}
 	}
 
 	private callbacks = new Map<string, Set<SettingCallback>>();

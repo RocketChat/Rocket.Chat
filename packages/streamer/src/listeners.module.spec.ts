@@ -1,4 +1,5 @@
 import { api, ServiceClass } from '@rocket.chat/core-services';
+import type { ISettingBase } from '@rocket.chat/core-typings';
 
 import { ListenersModule } from './listeners.module';
 import { NotificationsModule } from './notifications.module';
@@ -27,6 +28,22 @@ class TestStreamer extends Streamer<any> {
 class TestService extends ServiceClass {
 	protected name = 'test';
 }
+
+const createSetting = (overrides: Partial<ISettingBase>): ISettingBase => ({
+	_id: 'my_setting',
+	_updatedAt: new Date(),
+	type: 'string',
+	public: false,
+	env: false,
+	i18nLabel: 'my_setting',
+	value: 'value',
+	packageValue: 'value',
+	blocked: false,
+	sorter: 0,
+	ts: new Date(),
+	createdAt: new Date(),
+	...overrides,
+});
 
 describe('ListenersModule', () => {
 	let notifications: NotificationsModule;
@@ -90,6 +107,36 @@ describe('ListenersModule', () => {
 			fire('stream', { stream: 'notify-room', eventName: 'room1/user-activity', args: [], origin: 'self' });
 
 			expect(emit).not.toHaveBeenCalled();
+		});
+	});
+
+	describe('settings events', () => {
+		it('delivers a loggedIn setting to signed-in users and not to everyone', () => {
+			const notifyAll = jest.spyOn(notifications, 'notifyAllInThisInstance');
+			const notifyLogged = jest.spyOn(notifications, 'notifyLoggedInThisInstance');
+
+			fire('watch.settings', { clientAction: 'updated', setting: createSetting({ loggedIn: true }) });
+
+			expect(notifyAll).not.toHaveBeenCalled();
+			expect(notifyLogged).toHaveBeenCalledWith('logged-settings-changed', 'updated', expect.objectContaining({ _id: 'my_setting' }));
+		});
+
+		it('never delivers a public setting as logged-settings-changed', () => {
+			const notifyLogged = jest.spyOn(notifications, 'notifyLoggedInThisInstance');
+
+			fire('watch.settings', { clientAction: 'updated', setting: createSetting({ public: true }) });
+
+			expect(notifyLogged).not.toHaveBeenCalledWith('logged-settings-changed', expect.anything(), expect.anything());
+		});
+
+		it('delivers nothing for a hidden loggedIn setting', () => {
+			const notifyAll = jest.spyOn(notifications, 'notifyAllInThisInstance');
+			const notifyLogged = jest.spyOn(notifications, 'notifyLoggedInThisInstance');
+
+			fire('watch.settings', { clientAction: 'updated', setting: createSetting({ loggedIn: true, hidden: true }) });
+
+			expect(notifyAll).not.toHaveBeenCalled();
+			expect(notifyLogged).not.toHaveBeenCalled();
 		});
 	});
 });

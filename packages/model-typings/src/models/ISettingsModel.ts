@@ -1,4 +1,4 @@
-import type { ISetting, ISettingColor, ISettingSelectOption, SettingValue } from '@rocket.chat/core-typings';
+import type { ISetting, ISettingColor, ISettingSelectOption, RocketChatRecordDeleted, SettingValue } from '@rocket.chat/core-typings';
 import type { FindCursor, UpdateFilter, UpdateResult, Document, FindOneAndUpdateOptions, WithId, UpdateOptions } from 'mongodb';
 
 import type { IBaseModel } from './IBaseModel';
@@ -60,4 +60,8 @@ export interface ISettingsModel extends IBaseModel<ISetting> {
 	addOptionValueById(_id: ISetting['_id'], option: ISettingSelectOption): Promise<Document | UpdateResult>;
 
 	findNotHiddenPublicUpdatedAfter(updatedAt: Date): FindCursor<ISetting>;
+
+	findNotHiddenLoggedIn(updatedAfter?: Date): FindCursor<ISetting>;
+
+	trashFindDeletedLoggedInAfter(deletedAt: Date): FindCursor<Pick<RocketChatRecordDeleted<ISetting>, '_id' | '_deletedAt'>>;
 }

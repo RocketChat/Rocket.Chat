@@ -372,6 +372,8 @@ export class ListenersModule {
 			if (setting.public === true) {
 				notifications.notifyAllInThisInstance('public-settings-changed', clientAction, value);
 				notifications.notifyAllInThisInstance('public-info', ['public-settings-changed', [clientAction, value]]);
+			} else if (setting.loggedIn === true) {
+				notifications.notifyLoggedInThisInstance('logged-settings-changed', clientAction, value);
 			}
 
 			notifications.notifyLoggedInThisInstance('private-settings-changed', clientAction, value);

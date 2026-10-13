@@ -6,3 +6,5 @@ import { createGlobalStore } from '../lib/cachedStores/createGlobalStore';
 export const PublicSettings = createGlobalStore(createDocumentMapStore<ISetting>());
 
 export const PrivateSettings = createGlobalStore(createDocumentMapStore<ISetting>());
+
+export const LoggedSettings = createGlobalStore(createDocumentMapStore<ISetting>());

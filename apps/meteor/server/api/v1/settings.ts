@@ -5,11 +5,13 @@ import type {
 	LoginServiceConfiguration,
 	TwitterOAuthConfiguration,
 	OAuthConfiguration,
+	RocketChatRecordDeleted,
 } from '@rocket.chat/core-typings';
 import { isActionSettingWithEndpoint, isSettingAction, isSettingColor } from '@rocket.chat/core-typings';
 import { LoginServiceConfiguration as LoginServiceConfigurationModel, Settings } from '@rocket.chat/models';
 import {
 	ajv,
+	ajvQuery,
 	isSettingsUpdatePropDefault,
 	isSettingsUpdatePropsActions,
 	isSettingsUpdatePropsColor,
@@ -35,8 +37,10 @@ import { SettingsEvents, settings } from '../../settings';
 import type { FetchedSetting } from '../../settings/SettingsRegistry';
 import { checkSettingValueBounds } from '../../settings/checkSettingValueBonds';
 import { updateAuditedByUser } from '../../settings/lib/auditedSettingUpdates';
+import { getLoggedInSettings } from '../../settings/lib/getLoggedInSettings';
 import { saveSettingsBulk } from '../../settings/lib/saveSettingsBulk';
 import { setValue } from '../../settings/raw';
+import type { ExtractRoutesFromAPI } from '../ApiClass';
 import { API } from '../api';
 import { getPaginationItems } from '../lib/getPaginationItems';
 
@@ -174,6 +178,74 @@ API.v1.get(
 		});
 	},
 );
+
+type SettingsLoggedInProps = {
+	updatedSince?: string;
+	cacheKey?: string;
+};
+
+const isSettingsLoggedInProps = ajvQuery.compile<SettingsLoggedInProps>({
+	type: 'object',
+	properties: {
+		updatedSince: { type: 'string', format: 'date-time' },
+		cacheKey: { type: 'string' },
+	},
+	additionalProperties: false,
+});
+
+const settingsLoggedInResponseSchema = ajv.compile<{
+	update: ISetting[];
+	remove: Pick<RocketChatRecordDeleted<ISetting>, '_id' | '_deletedAt'>[];
+	cacheKey: string;
+	reset: boolean;
+}>({
+	type: 'object',
+	properties: {
+		update: { type: 'array', items: { type: 'object' } },
+		remove: {
+			type: 'array',
+			items: {
+				type: 'object',
+				properties: {
+					_id: { type: 'string' },
+					_deletedAt: { type: 'string', format: 'date-time' },
+				},
+				required: ['_id', '_deletedAt'],
+				additionalProperties: false,
+			},
+		},
+		cacheKey: { type: 'string' },
+		reset: { type: 'boolean' },
+		success: { type: 'boolean', enum: [true] },
+	},
+	required: ['update', 'remove', 'cacheKey', 'reset', 'success'],
+	additionalProperties: false,
+});
+
+const settingsEndpoints = API.v1.get(
+	'settings.loggedIn',
+	{
+		authRequired: true,
+		query: isSettingsLoggedInProps,
+		response: {
+			200: settingsLoggedInResponseSchema,
+			400: validateBadRequestErrorResponse,
+			401: validateUnauthorizedErrorResponse,
+		},
+	},
+	async function action() {
+		const { updatedSince, cacheKey } = this.queryParams;
+
+		return API.v1.success(await getLoggedInSettings({ updatedSince: updatedSince ? new Date(updatedSince) : undefined, cacheKey }));
+	},
+);
+
+export type SettingsEndpoints = ExtractRoutesFromAPI<typeof settingsEndpoints>;
+
+declare module '@rocket.chat/rest-typings' {
+	// eslint-disable-next-line @typescript-eslint/naming-convention, @typescript-eslint/no-empty-interface
+	interface Endpoints extends SettingsEndpoints {}
+}
 
 API.v1.get(
 	'settings.oauth',

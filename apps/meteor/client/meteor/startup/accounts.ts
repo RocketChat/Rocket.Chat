@@ -1,5 +1,5 @@
 import { t } from '../../../app/utils/lib/i18n';
-import { PublicSettingsCachedStore, SubscriptionsCachedStore } from '../../cachedStores';
+import { LoggedSettingsCachedStore, PublicSettingsCachedStore, SubscriptionsCachedStore } from '../../cachedStores';
 import { sdk } from '../../lib/SDKClient';
 import { getDdpSdk } from '../../lib/sdk/ddpSdk';
 import { FORGET_SESSION_SETTING_ID } from '../../lib/sdk/meteorBackedSdk';
@@ -24,9 +24,10 @@ const whenMainReady = (): Promise<void> => {
 
 		const subscriptionsReady = SubscriptionsCachedStore.useReady.getState();
 		const settingsReady = PublicSettingsCachedStore.useReady.getState();
+		const loggedSettingsReady = LoggedSettingsCachedStore.useReady.getState();
 		const userDataReady = useUserDataSyncReady.getState();
 
-		return userDataReady && subscriptionsReady && settingsReady;
+		return userDataReady && subscriptionsReady && settingsReady && loggedSettingsReady;
 	};
 
 	if (isMainReady()) return Promise.resolve();
@@ -37,6 +38,7 @@ const whenMainReady = (): Promise<void> => {
 			unsubscribeUserId();
 			unsubscribeSubscriptions();
 			unsubscribeSettings();
+			unsubscribeLoggedSettings();
 			unsubscribeUserData();
 			resolve();
 		};
@@ -44,6 +46,7 @@ const whenMainReady = (): Promise<void> => {
 		const unsubscribeUserId = userIdStore.subscribe(checkAndResolve);
 		const unsubscribeSubscriptions = SubscriptionsCachedStore.useReady.subscribe(checkAndResolve);
 		const unsubscribeSettings = PublicSettingsCachedStore.useReady.subscribe(checkAndResolve);
+		const unsubscribeLoggedSettings = LoggedSettingsCachedStore.useReady.subscribe(checkAndResolve);
 		const unsubscribeUserData = useUserDataSyncReady.subscribe(checkAndResolve);
 	});
 };

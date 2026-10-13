@@ -1,10 +1,14 @@
-import type { IServerEvents, LoginServiceConfiguration } from '@rocket.chat/core-typings';
+import type { Credentials } from '@rocket.chat/api-client';
+import type { IServerEvents, IUser, LoginServiceConfiguration } from '@rocket.chat/core-typings';
 import { expect } from 'chai';
 import { before, describe, it, after, afterEach } from 'mocha';
+import { MongoClient } from 'mongodb';
 
 import { getCredentials, api, request, credentials } from '../../data/api-data';
 import { updatePermission, updateSetting, getSettingValueById } from '../../data/permissions.helper';
-import { IS_EE } from '../../e2e/config/constants';
+import { password } from '../../data/user';
+import { createUser, deleteUser, login } from '../../data/users.helper';
+import { IS_EE, URL_MONGODB } from '../../e2e/config/constants';
 
 describe('[Settings]', () => {
 	before((done) => getCredentials(done));
@@ -71,6 +75,167 @@ describe('[Settings]', () => {
 			expect(res.body).to.have.property('count').and.to.be.a('number').and.to.equal(0);
 			expect(res.body).to.have.property('offset').and.to.be.a('number').and.to.equal(0);
 			expect(res.body).to.have.property('total').and.to.be.a('number').and.to.equal(0);
+		});
+	});
+
+	describe('[/settings.loggedIn]', () => {
+		let connection: MongoClient;
+		let user: IUser;
+		let userCredentials: Credentials;
+
+		const testSettingIds = [
+			'Test_LoggedIn_Setting',
+			'Test_LoggedIn_Enterprise_Setting',
+			'Test_LoggedIn_Public_Setting',
+			'Test_Private_Setting',
+		];
+
+		const createSettingDoc = (_id: string, value: string, fields: Record<string, unknown>) => ({
+			_id,
+			value,
+			packageValue: value,
+			type: 'string',
+			public: false,
+			env: false,
+			hidden: false,
+			blocked: false,
+			sorter: 0,
+			i18nLabel: _id,
+			ts: new Date(),
+			createdAt: new Date(),
+			_updatedAt: new Date(),
+			...fields,
+		});
+
+		const deletedSettingIds = ['Test_Deleted_LoggedIn_Setting', 'Test_Deleted_Private_Setting'];
+
+		const deletedAt = new Date();
+
+		const updatedIds = (body: { update: { _id: string }[] }) => body.update.map(({ _id }) => _id);
+
+		const removedIds = (body: { remove: { _id: string }[] }) => body.remove.map(({ _id }) => _id);
+
+		const settingsCollection = () => connection.db().collection<{ _id: string; [key: string]: unknown }>('rocketchat_settings');
+
+		const trashCollection = () => connection.db().collection<{ _id: string; [key: string]: unknown }>('rocketchat__trash');
+
+		before(async () => {
+			connection = await MongoClient.connect(URL_MONGODB);
+
+			await settingsCollection().insertMany([
+				createSettingDoc('Test_LoggedIn_Setting', 'logged-in-value', { loggedIn: true }),
+				createSettingDoc('Test_LoggedIn_Enterprise_Setting', 'enterprise-value', {
+					loggedIn: true,
+					enterprise: true,
+					invalidValue: 'invalid-value',
+					modules: ['auditing'],
+				}),
+				createSettingDoc('Test_LoggedIn_Public_Setting', 'public-value', { loggedIn: true, public: true }),
+				createSettingDoc('Test_Private_Setting', 'private-value', {}),
+			]);
+
+			await trashCollection().insertMany([
+				createSettingDoc('Test_Deleted_LoggedIn_Setting', 'deleted-value', {
+					loggedIn: true,
+					__collection__: 'settings',
+					_deletedAt: deletedAt,
+				}),
+				createSettingDoc('Test_Deleted_Private_Setting', 'deleted-value', { __collection__: 'settings', _deletedAt: deletedAt }),
+			]);
+
+			user = await createUser();
+			userCredentials = await login(user.username, password);
+		});
+
+		after(async () => {
+			await settingsCollection().deleteMany({ _id: { $in: testSettingIds } });
+			await trashCollection().deleteMany({ _id: { $in: deletedSettingIds } });
+			await connection.close();
+			await deleteUser(user);
+		});
+
+		it('should require authentication', async () => {
+			await request.get(api('settings.loggedIn')).expect('Content-Type', 'application/json').expect(401);
+		});
+
+		it('should return only the non-public loggedIn settings to a signed-in user', async () => {
+			const res = await request.get(api('settings.loggedIn')).set(userCredentials).expect('Content-Type', 'application/json').expect(200);
+
+			expect(res.body).to.have.property('success', true);
+			expect(res.body).to.have.property('reset', true);
+			expect(res.body).to.have.property('cacheKey').that.is.a('string');
+			expect(res.body).to.have.property('remove').that.is.an('array').that.is.empty;
+			expect(updatedIds(res.body)).to.include.members(['Test_LoggedIn_Setting', 'Test_LoggedIn_Enterprise_Setting']);
+			expect(updatedIds(res.body)).to.not.include.members(['Test_LoggedIn_Public_Setting']);
+			expect(updatedIds(res.body)).to.not.include.members(['Test_Private_Setting']);
+			expect(updatedIds(res.body)).to.not.include.members(['Site_Url']);
+		});
+
+		it('should return the enterprise setting value according to the license', async () => {
+			const res = await request.get(api('settings.loggedIn')).set(userCredentials).expect(200);
+
+			const setting = res.body.update.find(({ _id }: { _id: string }) => _id === 'Test_LoggedIn_Enterprise_Setting');
+			expect(setting).to.have.property('value', IS_EE ? 'enterprise-value' : 'invalid-value');
+		});
+
+		it('should return a delta without reset when the cacheKey matches', async () => {
+			const { body: full } = await request.get(api('settings.loggedIn')).set(userCredentials).expect(200);
+
+			const res = await request
+				.get(api('settings.loggedIn'))
+				.set(userCredentials)
+				.query({ updatedSince: new Date().toISOString(), cacheKey: full.cacheKey })
+				.expect(200);
+
+			expect(res.body).to.have.property('reset', false);
+			expect(res.body).to.have.property('cacheKey', full.cacheKey);
+			expect(updatedIds(res.body)).to.not.include.members(['Test_LoggedIn_Setting']);
+		});
+
+		it('should list only deleted loggedIn settings in the delta remove', async () => {
+			const { body: full } = await request.get(api('settings.loggedIn')).set(userCredentials).expect(200);
+
+			const res = await request
+				.get(api('settings.loggedIn'))
+				.set(userCredentials)
+				.query({ updatedSince: new Date(deletedAt.getTime() - 1000).toISOString(), cacheKey: full.cacheKey })
+				.expect(200);
+
+			expect(res.body).to.have.property('reset', false);
+			expect(res.body.remove).to.deep.include({ _id: 'Test_Deleted_LoggedIn_Setting', _deletedAt: deletedAt.toISOString() });
+			expect(removedIds(res.body)).to.not.include.members(['Test_Deleted_Private_Setting']);
+		});
+
+		it('should return the full list with reset when the cacheKey is stale', async () => {
+			const res = await request
+				.get(api('settings.loggedIn'))
+				.set(userCredentials)
+				.query({ updatedSince: new Date().toISOString(), cacheKey: 'stale-cache-key' })
+				.expect(200);
+
+			expect(res.body).to.have.property('reset', true);
+			expect(res.body).to.have.property('cacheKey').that.is.not.equal('stale-cache-key');
+			expect(updatedIds(res.body)).to.include.members(['Test_LoggedIn_Setting', 'Test_LoggedIn_Enterprise_Setting']);
+		});
+
+		it('should reject an invalid updatedSince', async () => {
+			const res = await request
+				.get(api('settings.loggedIn'))
+				.set(userCredentials)
+				.query({ updatedSince: 'not-a-date' })
+				.expect('Content-Type', 'application/json')
+				.expect(400);
+
+			expect(res.body).to.have.property('success', false);
+		});
+
+		it('should never list loggedIn settings in settings.public', async () => {
+			const res = await request
+				.get(api('settings.public'))
+				.query({ _id: 'Test_LoggedIn_Setting,Test_LoggedIn_Enterprise_Setting' })
+				.expect(200);
+
+			expect(res.body).to.have.property('settings').that.is.an('array').that.is.empty;
 		});
 	});
 

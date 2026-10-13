@@ -2,7 +2,7 @@ import { ServiceClassInternal } from '@rocket.chat/core-services';
 import type { IEnterpriseSettings } from '@rocket.chat/core-services';
 import type { ISetting } from '@rocket.chat/core-typings';
 
-import { changeSettingValue } from './settings';
+import { changeSettingValue, getCacheKeyPart } from './settings';
 
 export class EnterpriseSettings extends ServiceClassInternal implements IEnterpriseSettings {
 	protected name = 'ee-settings';
@@ -11,5 +11,9 @@ export class EnterpriseSettings extends ServiceClassInternal implements IEnterpr
 
 	changeSettingValue(record: ISetting): undefined | ISetting['value'] {
 		return changeSettingValue(record);
+	}
+
+	getCacheKeyPart(): { valid: boolean; modules: string[] } {
+		return getCacheKeyPart();
 	}
 }

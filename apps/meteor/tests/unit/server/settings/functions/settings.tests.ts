@@ -718,4 +718,41 @@ describe('Settings', () => {
 
 		expect(settings.get(testSetting._id)).to.be.equal(false);
 	});
+
+	it('should reject a setting that is both loggedIn and public', async () => {
+		const settings = new CachedSettings();
+		Settings.settings = settings;
+		settings.initialized();
+		const settingsRegistry = new SettingsRegistry({ store: settings, model: Settings as any });
+
+		await expect(
+			settingsRegistry.add('my_logged_in_public_setting', 'value', { type: 'string', loggedIn: true, public: true }),
+		).to.be.rejectedWith('Setting my_logged_in_public_setting cannot be both loggedIn and public');
+
+		expect(Settings.insertCalls).to.be.equal(0);
+	});
+
+	it('should set and unset loggedIn on a stored setting when a new deploy adds or drops it', async () => {
+		const bootWithStoredSettings = () => {
+			const settings = new CachedSettings();
+			const stored = Settings.findOne({ _id: 'my_logged_in_setting' });
+			if (stored) {
+				settings.set(stored);
+			}
+			Settings.settings = settings;
+			settings.initialized();
+			return new SettingsRegistry({ store: settings, model: Settings as any });
+		};
+
+		await bootWithStoredSettings().add('my_logged_in_setting', 'value', { type: 'string' });
+		expect(Settings.findOne({ _id: 'my_logged_in_setting' })).to.not.have.property('loggedIn');
+
+		await bootWithStoredSettings().add('my_logged_in_setting', 'value', { type: 'string', loggedIn: true });
+		expect(Settings.upsertCalls).to.be.equal(1);
+		expect(Settings.findOne({ _id: 'my_logged_in_setting' })).to.include({ loggedIn: true });
+
+		await bootWithStoredSettings().add('my_logged_in_setting', 'value', { type: 'string' });
+		expect(Settings.upsertCalls).to.be.equal(2);
+		expect(Settings.findOne({ _id: 'my_logged_in_setting' })).to.not.have.property('loggedIn');
+	});
 });
