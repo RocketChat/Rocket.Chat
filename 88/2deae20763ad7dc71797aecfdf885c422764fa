@@ -1,0 +1,25 @@
+ee/apps/ddp-streamer/src/ddp/Server.ts
+  s_016d7aaeef6711::t_bb3d3c9f95c7ca 90
+  s_016d7aaeef6711::t_378335e5c1ba21 102,108-109
+.changeset/ddp-failed-subscription-cleanup.md
+  s_016d7aaeef6711::t_7d67549d666663 1-5
+ee/apps/ddp-streamer/src/ddp/Server.spec.ts
+  s_016d7aaeef6711::t_0679bab412ed50 227-228
+  s_016d7aaeef6711::t_984459db3dce5a 241-254
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "882deae20763ad7dc71797aecfdf885c422764fa",
+  "prompts": {},
+  "sessions": {
+    "s_016d7aaeef6711": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "a4fae552-49c8-446f-9b43-536af0b5a380",
+        "model": "claude-opus-5-5"
+      },
+      "human_author": "Diego Sampaio <chinello@gmail.com>"
+    }
+  }
+}
