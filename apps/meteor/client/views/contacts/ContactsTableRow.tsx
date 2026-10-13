@@ -33,7 +33,7 @@ const ContactsTableRow = ({ contact, columns, onClick, onEdit }: ContactsTableRo
 				<GenericTableCell withTruncatedText>
 					<Box display='flex' alignItems='center'>
 						<BaseAvatar size='x28' url={getAvatarURL({ contactId: _id }) ?? ''} />
-						<Box marginInlineStart={8} fontScale='p2' withTruncatedText>
+						<Box marginInlineStart={8} fontScale='p2' flexGrow={1} flexShrink={1} flexBasis='0%' withTruncatedText>
 							{displayName}
 						</Box>
 					</Box>
