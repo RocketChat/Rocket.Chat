@@ -9,6 +9,7 @@ type AbacManagedFieldProps = {
 	abac: AbacRoomCreation;
 	canCreatePrivate: boolean;
 	federated?: boolean;
+	className?: string;
 };
 
 const getHintKey = ({ enforced, canCreateManaged }: AbacRoomCreation, canCreatePrivate: boolean, federated: boolean): TranslationKey => {
@@ -31,12 +32,12 @@ const getHintKey = ({ enforced, canCreateManaged }: AbacRoomCreation, canCreateP
 	return 'ABAC_Managed_Hint';
 };
 
-const AbacManagedField = ({ abac, canCreatePrivate, federated = false }: AbacManagedFieldProps) => {
+const AbacManagedField = ({ abac, canCreatePrivate, federated = false, className }: AbacManagedFieldProps) => {
 	const { t } = useTranslation();
 	const { control } = useFormContext<{ isAbacManaged: boolean }>();
 
 	return (
-		<Field>
+		<Field className={className}>
 			<FieldRow>
 				<FieldLabel>{t('ABAC_Managed')}</FieldLabel>
 				<Controller
