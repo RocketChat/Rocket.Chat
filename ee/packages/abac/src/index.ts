@@ -581,9 +581,10 @@ export class AbacService extends ServiceClass implements IAbacService {
 			return toCreationDenial(err, 'invalid');
 		}
 
+		let creatorAdmitted = false;
 		if (!bypassed) {
 			try {
-				await this.assertCreatorMayAssign(normalized, actor, store);
+				creatorAdmitted = await this.assertCreatorMayAssign(normalized, actor, store);
 			} catch (err) {
 				if (!(err instanceof AbacError)) {
 					logger.error({ msg: 'ABAC creator authority check failed', err });
@@ -593,7 +594,7 @@ export class AbacService extends ServiceClass implements IAbacService {
 			}
 		}
 
-		if (creatorJoins) {
+		if (creatorJoins && !creatorAdmitted) {
 			try {
 				await this.assertPdpPermitsCreator(normalized, actor);
 			} catch (err) {
@@ -608,16 +609,19 @@ export class AbacService extends ServiceClass implements IAbacService {
 		return { allowed: true, attributes: normalized, bypassed };
 	}
 
-	private async assertCreatorMayAssign(attributes: IAbacAttributeDefinition[], actor: AbacActor, store: IAttributeStore): Promise<void> {
+	private async assertCreatorMayAssign(attributes: IAbacAttributeDefinition[], actor: AbacActor, store: IAttributeStore): Promise<boolean> {
 		if (this.pdpType === 'local') {
-			return this.assertCreatorHoldsAttributes(attributes, actor, store);
+			await this.assertCreatorHoldsAttributes(attributes, actor, store);
+			return false;
 		}
 
 		if (store !== this.attributeStores.local.store) {
-			return store.validateAssignable(attributes, actor);
+			await store.validateAssignable(attributes, actor);
+			return false;
 		}
 
-		return this.assertPdpPermitsCreator(attributes, actor);
+		await this.assertPdpPermitsCreator(attributes, actor);
+		return true;
 	}
 
 	private async assertCreatorHoldsAttributes(
