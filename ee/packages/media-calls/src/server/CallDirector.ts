@@ -177,6 +177,23 @@ class MediaCallDirector {
 		return true;
 	}
 
+	/** Moves one side of an active call to another session of the same actor; returns null if that side no longer belongs to the old session */
+	public async replaceActorContract(
+		call: MediaCallHeader,
+		role: CallRole,
+		data: { oldContractId: string; newContractId: string; supportedFeatures: CallFeature[] },
+	): Promise<IMediaCall | null> {
+		const updatedCall = await MediaCalls.replaceActiveCallContractById(call._id, role, data, this.getNewExpirationTime());
+		if (!updatedCall) {
+			return null;
+		}
+
+		logger.info({ msg: 'Call contract was replaced', callId: call._id, role });
+		this.scheduleExpirationCheckByCallId(call._id);
+
+		return updatedCall;
+	}
+
 	public async startFirstNegotiation(
 		call: MediaCallHeader,
 		offer?: RTCSessionDescriptionInit,
