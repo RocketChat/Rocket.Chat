@@ -18,7 +18,7 @@ const getSizeInPixels = (value: unknown): number =>
 const getNormalizedStyle = (style: CSSStyleDeclaration): NormalizedStyle => ({
 	boxSizing: style.boxSizing === 'border-box' ? 'border-box' : 'content-box',
 	inlineSize: getSizeInPixels(style.inlineSize || style.width),
-	borderInlineStartWidth: getSizeInPixels(style.borderInlineStartWidth || style.borderRightWidth),
+	borderInlineStartWidth: getSizeInPixels(style.borderInlineStartWidth || style.borderLeftWidth),
 	borderInlineEndWidth: getSizeInPixels(style.borderInlineEndWidth || style.borderRightWidth),
 	paddingInlineStart: getSizeInPixels(style.paddingInlineStart || style.paddingLeft),
 	paddingInlineEnd: getSizeInPixels(style.paddingInlineEnd || style.paddingRight),
@@ -150,10 +150,13 @@ class ResizeObserverMock implements ResizeObserver {
 	}
 
 	disconnect = jest.fn(() => {
-		this.callback = () => undefined;
+		this.mutationObservers.forEach((mutationObserver) => mutationObserver.disconnect());
+		this.mutationObservers.clear();
 	});
 
 	observe = jest.fn((target: Element) => {
+		this.mutationObservers.get(target)?.disconnect();
+
 		const mutationObserver = new MutationObserver((mutations) => {
 			for (const mutation of mutations) {
 				if (!(mutation.target instanceof Element)) {
