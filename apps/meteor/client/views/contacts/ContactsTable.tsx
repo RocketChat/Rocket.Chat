@@ -49,12 +49,15 @@ const ContactsTable = ({ sort, columns, children }: ContactsTableProps) => {
 								items: CONTACT_COLUMNS.map(({ key, label }) => ({
 									id: key,
 									content: t(label),
+									textValue: t(label),
 									disabled: columns.isDisabled(key),
 									addon: (
 										<CheckBox
 											checked={columns.isVisible(key)}
 											disabled={columns.isDisabled(key)}
-											onChange={() => undefined}
+											onClick={(e) => {
+												e.stopPropagation();
+											}}
 											tabIndex={-1}
 											aria-hidden='true'
 										/>
