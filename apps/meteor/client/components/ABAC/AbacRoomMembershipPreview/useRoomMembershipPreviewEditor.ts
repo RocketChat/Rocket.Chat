@@ -8,13 +8,15 @@ export type PreviewEditor = {
 	losesAccess: boolean;
 };
 
-export const useRoomMembershipPreviewEditor = (rid: string, attributes: Record<string, string[]>): PreviewEditor | undefined => {
-	const { data } = usePreviewPages(rid, attributes, '', 'loses');
+export const useRoomMembershipPreviewEditor = (rid: string, attributes: Record<string, string[]>) => {
+	const { data, error } = usePreviewPages(rid, attributes, '', 'loses');
 	const verdict = data?.pages[0]?.editor;
 	const hasFirstPage = !!data?.pages.length;
 
-	return useMemo(
+	const editor = useMemo<PreviewEditor | undefined>(
 		() => (hasFirstPage ? { verdict, losesAccess: verdict !== undefined && verdict !== 'compliant' } : undefined),
 		[hasFirstPage, verdict],
 	);
+
+	return { editor, error };
 };
