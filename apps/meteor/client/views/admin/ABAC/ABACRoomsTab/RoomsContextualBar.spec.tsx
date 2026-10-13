@@ -83,4 +83,20 @@ describe('RoomsContextualBar, editing a room', () => {
 		await waitFor(() => expect(save).toHaveBeenCalledWith({ attributes: { Department: ['Engineering'] } }));
 		expect(onClose).toHaveBeenCalledTimes(1);
 	});
+
+	it('should not go back to the form while saving', async () => {
+		const { save } = renderBar();
+		save.mockImplementation(() => new Promise(() => undefined));
+
+		await userEvent.click(screen.getByRole('button', { name: 'Remove' }));
+		await waitFor(() => expect(reviewButton()).toBeEnabled());
+		await userEvent.click(reviewButton());
+
+		const saveButton = await screen.findByRole('button', { name: 'Save' });
+		await waitFor(() => expect(saveButton).toBeEnabled());
+		await userEvent.click(saveButton);
+
+		await waitFor(() => expect(save).toHaveBeenCalledTimes(1));
+		screen.getAllByRole('button', { name: 'Back' }).forEach((back) => expect(back).toBeDisabled());
+	});
 });
