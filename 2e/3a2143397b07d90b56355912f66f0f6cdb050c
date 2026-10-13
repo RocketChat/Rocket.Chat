@@ -1,0 +1,31 @@
+ee/packages/xmpp-server/docs/architecture.md
+  s_8691861c2bfdea::t_edc1478c0397ae 76
+ee/packages/xmpp-server/docs/intents/accreditation-readiness.md
+  s_8691861c2bfdea::t_41d4e8214b1273 19,91
+ee/packages/xmpp-server/docs/adr/0005-peer-certificates-name-a-domain-by-dnsname-srvname-or-xmppaddr.md
+  s_8691861c2bfdea::t_5bee3867db0f70 1-53
+ee/packages/xmpp-server/docs/specs/s2s-connectivity.md
+  s_8691861c2bfdea::t_41d4e8214b1273 139
+  s_8691861c2bfdea::t_43b17f1b19377c 118-119
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "2e3a2143397b07d90b56355912f66f0f6cdb050c",
+  "prompts": {},
+  "humans": {
+    "h_4c386397e672f4": {
+      "author": "Diego Sampaio <chinello@gmail.com>"
+    }
+  },
+  "sessions": {
+    "s_8691861c2bfdea": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "c82adac5-ced2-43b7-ae97-c8fb2dc0ded6",
+        "model": "claude-opus-5-5"
+      },
+      "human_author": "Diego Sampaio <chinello@gmail.com>"
+    }
+  }
+}
