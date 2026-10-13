@@ -2222,7 +2222,7 @@ import { IS_EE, URL_MONGODB } from '../../e2e/config/constants';
 				.set(credentials)
 				.send({ key: bannerAttrKey, values: ['TS', 'U'] })
 				.expect(200);
-			await addAbacAttributesToUserDirectly(credentials['X-User-Id'], [{ key: bannerAttrKey, values: ['TS'] }]);
+			await addAbacAttributesToUserDirectly(connection, credentials['X-User-Id'], [{ key: bannerAttrKey, values: ['TS'] }]);
 
 			bannerRoom = (await createRoom({ type: 'p', name: `abac-banner-room-${Date.now()}` })).body.group;
 			plainRoom = (await createRoom({ type: 'p', name: `abac-plain-room-${Date.now()}` })).body.group;
