@@ -26,8 +26,8 @@ const getLockedMessageKey = (room: IRoom) => {
 const ComposerAbacLocked = () => {
 	const { t } = useTranslation();
 	const room = useRoom();
-	const { openTab } = useRoomToolbox();
-	const canManage = useCanManageRoomAbacAttributes(room);
+	const { actions, openTab } = useRoomToolbox();
+	const canManage = useCanManageRoomAbacAttributes(room) && actions.some(({ id }) => id === ABAC_ATTRIBUTES_TAB);
 
 	return (
 		<MessageFooterCallout>
