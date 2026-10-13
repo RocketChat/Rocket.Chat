@@ -11,7 +11,14 @@ test.use({ storageState: Users.user1.state });
 
 const attrKey = `dept_${Date.now()}`;
 
-const settingIds = ['ABAC_Enabled', 'ABAC_PDP_Type', 'ABAC_Attribute_Store', 'ABAC_Enforce_All_Rooms', 'ABAC_Restrict_To_Owned_Attributes'];
+const settingIds = [
+	'ABAC_Enabled',
+	'ABAC_PDP_Type',
+	'ABAC_Attribute_Store',
+	'ABAC_Enforce_All_Rooms',
+	'ABAC_Restrict_To_Owned_Attributes',
+	'Federation_Service_Enabled',
+];
 
 test.describe.serial('abac-room-creation', () => {
 	let poHomeChannel: HomeChannel;
@@ -106,5 +113,32 @@ test.describe.serial('abac-room-creation', () => {
 			.map(({ u }) => u.username)
 			.toArray();
 		expect(members).toEqual([Users.user1.data.username]);
+	});
+
+	test('under enforcement, turning Federated on releases ABAC managed and shortens the flow', async ({ api }) => {
+		const modal = poHomeChannel.navbar.modals.Channel;
+
+		await Promise.all([
+			setSettingValueById(api, 'ABAC_Enforce_All_Rooms', true),
+			setSettingValueById(api, 'Federation_Service_Enabled', true),
+		]);
+		await poHomeChannel.goto();
+
+		await poHomeChannel.navbar.openCreate('Channel');
+		await expect(modal.getStepIndicator(1, 4)).toBeVisible();
+		await expect(modal.toggleAbacManaged).toBeChecked();
+		await expect(modal.toggleAbacManaged).toBeDisabled();
+		await expect(modal.toggleFederated).toBeEnabled();
+
+		await modal.checkboxFederated.click();
+		await expect(modal.toggleAbacManaged).not.toBeChecked();
+		await expect(modal.toggleAbacManaged).toBeDisabled();
+		await expect(modal.getStepIndicator(1, 2)).toBeVisible();
+
+		await modal.checkboxFederated.click();
+		await expect(modal.toggleAbacManaged).toBeChecked();
+		await expect(modal.getStepIndicator(1, 4)).toBeVisible();
+
+		await modal.close();
 	});
 });

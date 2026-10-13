@@ -25,10 +25,11 @@ describe('CreateChannelModal', () => {
 			expect(screen.getByRole('button', { name: 'Create' })).toBeInTheDocument();
 		});
 
-		it('should take two steps for a room that is not ABAC-managed, with Federated on the second', async () => {
+		it('should take two steps for a room that is not ABAC-managed, with Federated on the first', async () => {
 			render(<CreateChannelModalWithData onClose={() => null} />, { wrapper: abacRoot() });
 
 			expect(await screen.findByLabelText('ABAC_Managed')).not.toBeChecked();
+			expect(screen.getByLabelText('Federation_Matrix_Federated')).toBeInTheDocument();
 			expect(screen.getByText('Step 1 of 2')).toBeInTheDocument();
 			expect(screen.queryByText('Advanced_settings')).not.toBeInTheDocument();
 
@@ -36,7 +37,7 @@ describe('CreateChannelModal', () => {
 			await userEvent.click(screen.getByRole('button', { name: 'Next' }));
 
 			expect(await screen.findByText('Step 2 of 2')).toBeInTheDocument();
-			expect(screen.getByLabelText('Federation_Matrix_Federated')).toBeInTheDocument();
+			expect(screen.queryByLabelText('Federation_Matrix_Federated')).not.toBeInTheDocument();
 			expect(screen.getByRole('button', { name: 'Create' })).toBeInTheDocument();
 		});
 
@@ -52,7 +53,7 @@ describe('CreateChannelModal', () => {
 			expect(screen.getByText('Step 1 of 2')).toBeInTheDocument();
 		});
 
-		it('should take four steps once ABAC-managed is on, forcing Private on and dropping Federated', async () => {
+		it('should take four steps once ABAC-managed is on, forcing Private on', async () => {
 			render(<CreateChannelModalWithData onClose={() => null} />, { wrapper: abacRoot() });
 
 			await userEvent.click(await screen.findByLabelText('ABAC_Managed'));
@@ -101,6 +102,43 @@ describe('CreateChannelModal', () => {
 
 			expect(await screen.findByText('ABAC_Room_Creation_Not_Allowed')).toBeInTheDocument();
 			expect(screen.getByRole('button', { name: 'Next' })).toBeDisabled();
+		});
+
+		it('should release ABAC-managed and Private for a federated room under enforcement, and take them back when Federated is off', async () => {
+			render(<CreateChannelModalWithData onClose={() => null} />, { wrapper: abacRoot({ enforced: true, federation: true }) });
+
+			const managed = await screen.findByLabelText('ABAC_Managed');
+			const federated = screen.getByLabelText('Federation_Matrix_Federated');
+			await waitFor(() => expect(federated).toBeEnabled());
+
+			await userEvent.click(federated);
+
+			await waitFor(() => expect(managed).not.toBeChecked());
+			expect(managed).toBeDisabled();
+			expect(managed).toHaveAccessibleDescription('ABAC_Managed_Federated_Hint');
+			expect(screen.getByLabelText('Private')).toBeEnabled();
+			expect(screen.getByText('Step 1 of 2')).toBeInTheDocument();
+
+			await userEvent.click(federated);
+
+			await waitFor(() => expect(managed).toBeChecked());
+			expect(managed).toHaveAccessibleDescription('ABAC_Managed_Enforced_Hint');
+			expect(screen.getByLabelText('Private')).toBeDisabled();
+			expect(screen.getByText('Step 1 of 4')).toBeInTheDocument();
+		});
+
+		it('should let a creator who cannot create an ABAC-managed room under enforcement go ahead with a federated one', async () => {
+			render(<CreateChannelModalWithData onClose={() => null} />, {
+				wrapper: abacRoot({ enforced: true, federation: true, permissions: ['create-c', 'create-p'] }),
+			});
+
+			expect(await screen.findByText('ABAC_Room_Creation_Federated_Only')).toBeInTheDocument();
+			expect(screen.getByRole('button', { name: 'Next' })).toBeDisabled();
+
+			await userEvent.click(screen.getByLabelText('Federation_Matrix_Federated'));
+
+			await waitFor(() => expect(screen.queryByText('ABAC_Room_Creation_Federated_Only')).not.toBeInTheDocument());
+			expect(screen.getByRole('button', { name: 'Next' })).toBeEnabled();
 		});
 
 		it('should pre-fill the required attributes without a Remove button, and let optional rows be added and removed', async () => {
