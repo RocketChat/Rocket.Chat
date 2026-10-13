@@ -64,18 +64,22 @@ const ContactsTab = ({ tab, onChangeTab }: ContactsTabProps) => {
 		<ContactsPageFilters {...filterProps} onCreate={() => setPanel({ kind: 'form' })} total={data?.syncedTotal ?? 0} />
 	);
 
-	const closePanel = () => setPanel(undefined);
+	const closePanelOf = (contactId: string) => setPanel((current) => (current?.contact?._id === contactId ? undefined : current));
 
 	const contextualBar =
 		panel?.kind === 'info' ? (
-			<ContactInfo contact={panel.contact} onEdit={() => setPanel({ kind: 'form', contact: panel.contact })} onClose={closePanel} />
+			<ContactInfo
+				contact={panel.contact}
+				onEdit={() => setPanel({ kind: 'form', contact: panel.contact })}
+				onClose={() => setPanel(undefined)}
+			/>
 		) : (
 			panel?.kind === 'form' && (
 				<ContactEdit
 					key={panel.contact?._id ?? 'new'}
 					contact={panel.contact}
 					onSaved={(contact) => setPanel({ kind: 'info', contact })}
-					onClose={closePanel}
+					onClose={() => setPanel(undefined)}
 				/>
 			)
 		);
@@ -130,6 +134,7 @@ const ContactsTab = ({ tab, onChangeTab }: ContactsTabProps) => {
 							columns={columns}
 							onClick={() => setPanel({ kind: 'info', contact })}
 							onEdit={() => setPanel({ kind: 'form', contact })}
+							onDeleted={() => closePanelOf(contact._id)}
 						/>
 					))}
 				</ContactsTable>
