@@ -32,7 +32,7 @@ export const useAbacCreationFlow = ({ abac, isAbacManaged, step, members, attrib
 
 	const isStepBlocked =
 		(step === 'attributes' && (assignable.isPending || !!assignable.error || missingRequiredKeys.length > 0)) ||
-		(step === 'preview' && !(preview.isSuccess && preview.data.compliant.length > 0));
+		(step === 'preview' && !(preview.isSuccess && !preview.isFetching && preview.data.compliant.length > 0));
 
 	const confirmAttributes = async (): Promise<boolean> => {
 		try {
