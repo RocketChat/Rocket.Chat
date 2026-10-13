@@ -9,8 +9,8 @@ export type AbacRoomCreation = {
 	canCreateManaged: boolean;
 };
 
-export const isAbacCreationBlocked = (abac: AbacRoomCreation | undefined, canCreatePrivate: boolean): boolean =>
-	Boolean(abac?.enforced && (!abac.canCreateManaged || !canCreatePrivate));
+export const isAbacCreationBlocked = (abac: AbacRoomCreation | undefined, canCreatePrivate: boolean, federated = false): boolean =>
+	Boolean(!federated && abac?.enforced && (!abac.canCreateManaged || !canCreatePrivate));
 
 export const useAbacRoomCreation = (): { isLoading: boolean; abac?: AbacRoomCreation } => {
 	const abacEnabled = useSetting('ABAC_Enabled', false);
