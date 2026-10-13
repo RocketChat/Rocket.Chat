@@ -7,4 +7,4 @@ Adds workspace-wide ABAC enforcement. Turning on **Enforce ABAC across all works
 
 New members are not added to locked default channels, so if the only default channel is public then new members land in no channel at all. Joining a team skips its locked default channels, and marking a locked channel as a team default adds no members to it.
 
-Removing the ABAC license turns both settings off, so a workspace is never left with rooms nobody can unlock.
+Removing the ABAC license turns both settings off, so a workspace is never left with rooms nobody can unlock. Switching the attribute store clears the required attributes, because keys from one store don't apply to the other.
