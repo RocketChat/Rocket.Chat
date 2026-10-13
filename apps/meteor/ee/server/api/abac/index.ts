@@ -475,6 +475,7 @@ const abacEndpoints = API.v1
 			license: ['abac'],
 			response: {
 				200: GETAbacAttributeKeysResponseSchema,
+				400: GenericErrorSchema,
 				401: validateUnauthorizedErrorResponse,
 				403: validateUnauthorizedErrorResponse,
 			},
