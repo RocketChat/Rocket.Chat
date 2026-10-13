@@ -1,3 +1,5 @@
+import type { IMessagesModel, IReadReceiptsModel, IRoomsModel, ISubscriptionsModel } from '@rocket.chat/model-typings';
+import { registerModel } from '@rocket.chat/models';
 import { expect } from 'chai';
 import { beforeEach, describe, it } from 'mocha';
 import p from 'proxyquire';
@@ -23,17 +25,19 @@ const modelsMock = {
 	ReadReceiptsArchive: { removeByMessageIds: sinon.stub() },
 };
 
+registerModel('IMessagesModel', modelsMock.Messages as unknown as IMessagesModel);
+registerModel('IRoomsModel', modelsMock.Rooms as unknown as IRoomsModel);
+registerModel('ISubscriptionsModel', modelsMock.Subscriptions as unknown as ISubscriptionsModel);
+registerModel('IReadReceiptsModel', modelsMock.ReadReceipts as unknown as IReadReceiptsModel);
+registerModel('IReadReceiptsArchiveModel', modelsMock.ReadReceiptsArchive as unknown as IReadReceiptsModel);
+
 const broadcastMock = sinon.stub();
 const notifyOnSubscriptionChangedByIdMock = sinon.stub();
 
 const { cleanRoomHistory } = p.noCallThru().load('../../../../../server/lib/rooms/cleanRoomHistory.ts', {
 	'@rocket.chat/core-services': { api: { broadcast: broadcastMock } },
-	'@rocket.chat/models': modelsMock,
 	'./deleteRoom': { deleteRoom: sinon.stub() },
-	'../i18n': { i18n: { t: (key: string) => key } },
-	'../logger/system': { SystemLogger: { error: sinon.stub() } },
 	'../media/file-upload': { FileUpload: { getStore: sinon.stub() } },
-	'../messaging/discussions/updateAndNotifyParentRoomWithParentMessage': { updateAndNotifyParentRoomWithParentMessage: sinon.stub() },
 	'../notifyListener': {
 		notifyOnRoomChangedById: sinon.stub(),
 		notifyOnSubscriptionChangedById: notifyOnSubscriptionChangedByIdMock,
