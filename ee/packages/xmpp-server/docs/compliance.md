@@ -37,7 +37,7 @@ requirements open), `not-planned` (reason in Notes).
 | [XEP-0363](https://xmpp.org/extensions/xep-0363.html) | HTTP File Upload | draft | [file-transfer](specs/file-transfer.md) | the URLs its clients produce are accepted; the upload slot service itself is C2S and is not implemented |
 | [XEP-0424](https://xmpp.org/extensions/xep-0424.html) | Message Retraction | draft | [message-retraction](specs/message-retraction.md) | required for the end product; needs outbound XEP-0359 ids |
 | [XEP-0085](https://xmpp.org/extensions/xep-0085.html) | Chat State Notifications | draft | [chat-states](specs/chat-states.md) | typing indicators in DMs; rooms open |
-| [XEP-0313](https://xmpp.org/extensions/xep-0313.html) | Message Archive Management | intent | [room-history](intents/room-history.md) | hosted rooms serve no history over XMPP; the intent weighs MAM against XEP-0045 history on join |
+| [XEP-0313](https://xmpp.org/extensions/xep-0313.html) | Message Archive Management | intent | [room-history](intents/room-history.md) | hosted rooms serve no history over XMPP; the intent ships XEP-0045 history on join first, MAM later |
 
 ## Not planned
 
