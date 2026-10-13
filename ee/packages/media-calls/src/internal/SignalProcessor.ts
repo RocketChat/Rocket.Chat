@@ -27,7 +27,7 @@ export type SignalProcessorEvents = {
 
 /** Signals that are meant to reach the server from a session other than the one signed into the call */
 function isSentFromUnsignedSession(signal: ClientMediaSignal): boolean {
-	return signal.type === 'hangup' && signal.reason === 'another-client';
+	return signal.type === 'take-over' || (signal.type === 'hangup' && signal.reason === 'another-client');
 }
 
 export class GlobalSignalProcessor {
