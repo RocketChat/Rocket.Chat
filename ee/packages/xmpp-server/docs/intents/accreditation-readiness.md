@@ -21,25 +21,34 @@ and several defaults work against a security review:
 
 ## Proposed outcome
 
-- A fail-closed mode an administrator can turn on: the server refuses to start without TLS
-  material, and refuses any peer that does not authenticate with a certificate that
-  verifies against the configured trust anchors.
+- A single fail-closed switch, on by default for new installs: the server refuses to start
+  without TLS material, and refuses any peer that does not authenticate with a certificate
+  that verifies against the configured trust anchors. Turning it off shows a warning,
+  writes an audit log entry, and leaves a banner by the setting.
 - The trust anchors for peer certificates are a setting, so a private PKI works without
   environment variables.
-- A stanza whose `from` or `to` is not a valid JID is refused with `jid-malformed` and
-  creates nothing.
+- A stanza whose `from` or `to` is not a well-formed JID (an empty or oversize part, a
+  character RFC 7622 forbids) is refused with `jid-malformed` (type `modify`) and creates
+  nothing. Localparts are compared under the UsernameCaseMapped profile of RFC 8265. A
+  Rocket.Chat username that cannot be carried even with XEP-0106 escaping is not federated.
 - The server installs from an offline package and federates between two networks with no
   internet access, using internal DNS only.
 - FMN NISP conformance evidence exists and is kept current, each item tied to the spec
-  requirements that satisfy it, and the security review is closed.
+  requirements that satisfy it.
+- The security review is closed: a threat model of the S2S connection, code and dependency
+  scanning, a penetration test of the federation endpoint and a configuration review, with
+  every high or critical finding fixed. The security team runs it and shares the final
+  report.
 
 ## Affected users and systems
 
-- Defense and coalition operators; reviewers of the deployment.
+- Defense and coalition operators; reviewers of the deployment; the security team.
 - [configuration-and-lifecycle](../specs/configuration-and-lifecycle.md),
   [s2s-connectivity](../specs/s2s-connectivity.md), [addressing](../specs/addressing.md),
-  [operations.md](../operations.md); ADR 0004 and ADR 0005 may be superseded.
-- Rocket.Chat packaging for offline installs, outside this package.
+  [operations.md](../operations.md); ADR 0004 and ADR 0005 may be superseded, and
+  [ADR 0011](../adr/0011-domain-normalization-is-idna-and-lowercase.md), which leaves
+  PRECIS out of scope, changes for localparts.
+- Rocket.Chat packaging for offline installs, and the audit log, outside this package.
 - [PROJ-120](https://rocketchat.atlassian.net/wiki/spaces/RnD/pages/1307803678/PROJ-120+Native+XMPP+Server+Experience)
   §2 expected outcome ("designed for air-gapped deployments and accreditation-ready
   environments"), §4 in scope "Accreditation enablement" (air-gapped packaging, FMN NISP
@@ -52,16 +61,24 @@ and several defaults work against a security review:
 
 - Default behaviour for existing installs does not change unless the administrator opts in,
   or the change is announced as breaking.
-- Evidence documents reference requirement ids, so they move with the specs.
+- Evidence documents live in this package next to the specs, versioned with the code, and
+  reference requirement ids, so every claim traces from a standard's requirement through
+  the spec and the code to the test that proves it against real peers.
+- UsernameCaseMapped is implemented in this package rather than taken from a third-party
+  one: the npm options are stale or brand new, and the review will scrutinise vendored
+  Unicode code.
 
 ## Open questions
 
-- **Q1** Is fail-closed a single switch, or is it the default for new installs?
-- **Q2** Does validation of localparts mean PRECIS (RFC 7622), out of scope today per [ADR
-  0011](../adr/0011-domain-normalization-is-idna-and-lowercase.md), or only rejecting what
-  `@xmpp/jid` cannot parse?
-- **Q3** Where do the evidence documents live: in this package next to the specs, or with
-  the product's accreditation material?
-- **Q4** What does "security review closure" in S2 cover, and who runs the review?
+- **Q1** ~~Is fail-closed a single switch, or is it the default for new installs?~~ Both:
+  one switch, on by default for new installs: see Proposed outcome.
+- **Q2** ~~Does validation of localparts mean PRECIS (RFC 7622), out of scope today per
+  [ADR 0011](../adr/0011-domain-normalization-is-idna-and-lowercase.md), or only rejecting
+  what `@xmpp/jid` cannot parse?~~ Structural validation plus a UsernameCaseMapped
+  comparison: see Proposed outcome and Constraints.
+- **Q3** ~~Where do the evidence documents live: in this package next to the specs, or with
+  the product's accreditation material?~~ Next to the specs: see Constraints.
+- **Q4** ~~What does "security review closure" in S2 cover, and who runs the review?~~ See
+  Proposed outcome.
 - **Q5** Should XmppAddr names in certificates be honoured for the defense PKIs that issue
   them ([ADR 0005](../adr/0005-peer-certificates-are-matched-on-dnsname-only.md))?

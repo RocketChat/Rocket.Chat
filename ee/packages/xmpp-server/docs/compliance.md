@@ -16,6 +16,8 @@ requirements open), `not-planned` (reason in Notes).
 | [RFC 6121](https://datatracker.ietf.org/doc/html/rfc6121) | XMPP IM and Presence | partial | [direct-messages](specs/direct-messages.md), [presence](specs/presence.md) | chat messages, availability, subscription stanzas; no roster, probes unanswered |
 | [RFC 6122](https://datatracker.ietf.org/doc/html/rfc6122) | XMPP Address Format | implemented | [addressing](specs/addressing.md) | IDNA domains; no PRECIS |
 | [RFC 2782](https://datatracker.ietf.org/doc/html/rfc2782) | DNS SRV | implemented | [s2s-connectivity](specs/s2s-connectivity.md) | |
+| [RFC 7622](https://datatracker.ietf.org/doc/html/rfc7622) | XMPP Address Format | intent | [accreditation-readiness](intents/accreditation-readiness.md) | structural JID validation with `jid-malformed`; obsoletes RFC 6122 |
+| [RFC 8265](https://datatracker.ietf.org/doc/html/rfc8265) | PRECIS Usernames and Passwords | intent | [accreditation-readiness](intents/accreditation-readiness.md) | localparts compared under UsernameCaseMapped |
 
 ## XEPs
 
@@ -32,11 +34,12 @@ requirements open), `not-planned` (reason in Notes).
 | [XEP-0421](https://xmpp.org/extensions/xep-0421.html) | Occupant identifiers for semi-anonymous MUCs | partial | [message-corrections](specs/message-corrections.md) | read in remote rooms to tell apart occupants who held the same nick; hosted rooms do not stamp it |
 | [XEP-0359](https://xmpp.org/extensions/xep-0359.html) | Unique and Stable Stanza IDs | partial | [message-deduplication](specs/message-deduplication.md) | inbound only; nothing stamped outbound |
 | [XEP-0184](https://xmpp.org/extensions/xep-0184.html) | Message Delivery Receipts | draft | [delivery-receipts](specs/delivery-receipts.md) | required for the end product |
-| [XEP-0234](https://xmpp.org/extensions/xep-0234.html) | Jingle File Transfer | draft | [file-transfer](specs/file-transfer.md) | required for the end product; transport open |
-| [XEP-0066](https://xmpp.org/extensions/xep-0066.html) | Out of Band Data | draft | [file-transfer](specs/file-transfer.md) | file URLs both ways; the only file path in rooms |
+| [XEP-0066](https://xmpp.org/extensions/xep-0066.html) | Out of Band Data | draft | [file-transfer](specs/file-transfer.md) | file URLs both ways; the only file path |
 | [XEP-0363](https://xmpp.org/extensions/xep-0363.html) | HTTP File Upload | draft | [file-transfer](specs/file-transfer.md) | the URLs its clients produce are accepted; the upload slot service itself is C2S and is not implemented |
 | [XEP-0424](https://xmpp.org/extensions/xep-0424.html) | Message Retraction | draft | [message-retraction](specs/message-retraction.md) | required for the end product; needs outbound XEP-0359 ids |
 | [XEP-0085](https://xmpp.org/extensions/xep-0085.html) | Chat State Notifications | draft | [chat-states](specs/chat-states.md) | typing indicators in DMs; rooms open |
+| [XEP-0203](https://xmpp.org/extensions/xep-0203.html) | Delayed Delivery | intent | [message-ordering](intents/message-ordering.md) | history a remote room replays is ordered by the room's stamp, clamped to arrival |
+| [XEP-0410](https://xmpp.org/extensions/xep-0410.html) | MUC Self-Ping | intent | [connection-recovery](intents/connection-recovery.md) | detects remote-room sessions a room dropped silently |
 | [XEP-0313](https://xmpp.org/extensions/xep-0313.html) | Message Archive Management | intent | [room-history](intents/room-history.md) | hosted rooms serve no history over XMPP; the intent ships XEP-0045 history on join first, MAM later |
 
 ## Not planned
@@ -50,4 +53,5 @@ why the reason no longer holds.
 | [XEP-0198](https://xmpp.org/extensions/xep-0198.html) | Stream Management | not-planned | | optional on S2S and peers interoperate without it; only guards stanzas lost on a socket that dies mid-write, documented in [s2s-connectivity](specs/s2s-connectivity.md) R10. Revisit if operations show losses |
 | [XEP-0258](https://xmpp.org/extensions/xep-0258.html) | Security Labels in XMPP | not-planned | | out of scope for [PROJ-120](https://rocketchat.atlassian.net/wiki/spaces/RnD/pages/1307803678/PROJ-120+Native+XMPP+Server+Experience) (§3, §4), together with its STANAG 4774/4778 mapping; the page lists it for a future release, which starts with an intent |
 | [XEP-0167](https://xmpp.org/extensions/xep-0167.html) | Jingle RTP Sessions | not-planned | | voice and video over XMPP are outside the end product |
+| [XEP-0234](https://xmpp.org/extensions/xep-0234.html) | Jingle File Transfer | not-planned | [file-transfer](specs/file-transfer.md) | federated servers reach each other over HTTPS, so file URLs (XEP-0066) carry files both ways |
 | [XEP-0114](https://xmpp.org/extensions/xep-0114.html) | Jabber Component Protocol | not-planned | | the native server is a server, not a component attached to another one; administrators who want a component have the Matrix-bridge XMPP integration ([ADR 0002](adr/0002-integration-service-runs-only-as-a-microservice.md)) |

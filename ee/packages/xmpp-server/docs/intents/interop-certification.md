@@ -21,8 +21,8 @@ the project decided it is not the production path and will be decommissioned.
 - Every implemented requirement in [specs/](../specs/) is proven against Prosody, Openfire
   and ejabberd this way, with the results recorded per peer and per requirement. A
   requirement that fails against a peer becomes a `D` entry.
-- The Bifrost XMPP path is retired once native federation covers what it did, with a
-  migration note for administrators who use it.
+- The Bifrost XMPP path is retired and native federation becomes the only XMPP offering,
+  with a migration note for administrators who use Bifrost.
 
 ## Affected users and systems
 
@@ -30,7 +30,7 @@ the project decided it is not the production path and will be decommissioned.
   users of the Bifrost path.
 - `tests/end-to-end/` and [operations.md](../operations.md#running-the-end-to-end-suite);
   every spec, through new `D` entries; [compliance.md](../compliance.md) (the XEP-0114 note
-  refers to the bridge).
+  refers to the bridge, and an Interop section links the per-peer results).
 - The Matrix federation appservice and its `Federation_XMPP_*` settings, outside this package.
 - [PROJ-120](https://rocketchat.atlassian.net/wiki/spaces/RnD/pages/1307803678/PROJ-120+Native+XMPP+Server+Experience)
   §2 "Recommended Path: Native Server vs. Bridge" (Bifrost decommissioned), §4 in scope
@@ -43,16 +43,28 @@ the project decided it is not the production path and will be decommissioned.
 - The suite keeps working against servers it did not set up, as it does today.
 - Each peer is exercised in its default S2S configuration and in its hardened one (verified
   certificates required, as Prosody's `s2s_secure_auth`).
-- Proprietary servers (Isode M-Link, MindLink) are out of scope for this phase.
+- Proprietary servers (Isode M-Link, MindLink, and JChat, which cannot be freely obtained to
+  test against) are out of scope for this phase. JChat is checked later through a partner.
+- Results live in this package as `docs/interop/<peer>.md`, one file per peer, linked from
+  [compliance.md](../compliance.md) with the version and date last proven. Each records the
+  peer version with its image digest, the S2S profile, the Rocket.Chat commit, the date and
+  who ran it, and one row per requirement (test, result, the `D` entry for a failure),
+  generated from the test reporter output rather than typed by hand.
+- Inside the compose setup each container gets network aliases for its domain and its
+  `conference.` subdomain, and there are no SRV records: both sides fall back to A records
+  on port 5269. An init container generates a private CA per run and issues the
+  certificates every service trusts; no certificate or key is committed.
 
 ## Open questions
 
 - **Q1** Which versions of Prosody, Openfire and ejabberd?
-- **Q2** Where are the per-peer results kept: a column per peer in
-  [compliance.md](../compliance.md), or a separate interop report?
-- **Q3** How are certificates and name resolution provided inside the compose setup: a
-  generated private CA, `XMPP_DNS_OVERRIDES`, or the compose network's DNS?
-- **Q4** What does Bifrost cover that native federation does not yet, and is that a blocker
-  for retiring it?
-- **Q5** Does JChat, which the page lists in the estate but not in scope, count as
-  proprietary?
+- **Q2** ~~Where are the per-peer results kept: a column per peer in
+  [compliance.md](../compliance.md), or a separate interop report?~~ One file per peer:
+  see Constraints.
+- **Q3** ~~How are certificates and name resolution provided inside the compose setup: a
+  generated private CA, `XMPP_DNS_OVERRIDES`, or the compose network's DNS?~~ Network
+  aliases and a private CA per run: see Constraints.
+- **Q4** ~~What does Bifrost cover that native federation does not yet, and is that a
+  blocker for retiring it?~~ Nothing that blocks retiring it: see Proposed outcome.
+- **Q5** ~~Does JChat, which the page lists in the estate but not in scope, count as
+  proprietary?~~ Yes: see Constraints.

@@ -146,8 +146,10 @@ Defects that show in remote rooms but are owned elsewhere:
   later configuration changes (status 104)?
 - **Q2** Should remote occupants become members of the mirrored channel, so the member list
   is truthful, or stay as authors only?
-- **Q3** When the remote room drops a session (room destroyed, kick, server restart), should
-  the service rejoin, and after how long?
+- **Q3** ~~When the remote room drops a session (room destroyed, kick, server restart), should
+  the service rejoin, and after how long?~~ A lost session is rejoined with the route backoff;
+  a kick, ban, removal or destroy is not, and a destroy deletes the channel:
+  [connection-recovery](../intents/connection-recovery.md) Constraints.
 
 ## References
 
