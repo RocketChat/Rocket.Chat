@@ -16,7 +16,7 @@ const AbacErrorCallout = ({ error, fallback, className }: AbacErrorCalloutProps)
 	const attributes = getAbacErrorAttributes(error);
 
 	return (
-		<Callout type='danger' className={className}>
+		<Callout type='danger' role='alert' className={className}>
 			{errorType && i18n.exists(errorType) ? t(errorType) : t(fallback)}
 			{attributes.length > 0 && (
 				<Box is='ul' marginBlockStart={4}>
