@@ -4243,8 +4243,8 @@ import { IS_EE, URL_MONGODB } from '../../e2e/config/constants';
 			});
 
 			describe('membership preview', () => {
-				const preview = (attributes: Record<string, string[]> = { clearance: ['secret'] }) =>
-					request.post(`${v1}/abac/rooms.evaluateMembership`).set(creatorV.creds).send({ members: [], attributes });
+				const preview = (attributes: Record<string, string[]> = { clearance: ['secret'] }, excludeSelf = false) =>
+					request.post(`${v1}/abac/rooms.evaluateMembership`).set(creatorV.creds).send({ members: [], attributes, excludeSelf });
 
 				it('reports the creator as compliant on PERMIT', async () => {
 					await mockServerReset();
@@ -4267,13 +4267,23 @@ import { IS_EE, URL_MONGODB } from '../../e2e/config/constants';
 					expect(res.body.details.attributes).to.deep.equal([{ key: 'clearance', values: ['topsecret'] }]);
 				});
 
+				it('refuses a joining creator whose decision is unanswered, as creation does', async () => {
+					await mockServerReset();
+					await seedDefaultMocks();
+					await seedGetEntitlements({ [fqn('clearance', 'secret')]: {} });
+					await seedGetDecisionBulk([{ resourceDecisions: [{ decision: 'DECISION_UNSPECIFIED', ephemeralResourceId: 'room-creation' }] }]);
+
+					const res = await preview().expect(400);
+					expect(res.body).to.have.property('errorType', 'error-abac-creator-not-admitted');
+				});
+
 				it('reports an unanswered decision as inconclusive, not compliant', async () => {
 					await mockServerReset();
 					await seedDefaultMocks();
 					await seedGetEntitlements({ [fqn('clearance', 'secret')]: {} });
 					await seedGetDecisionBulk([{ resourceDecisions: [{ decision: 'DECISION_UNSPECIFIED', ephemeralResourceId: 'room-creation' }] }]);
 
-					const res = await preview().expect(200);
+					const res = await preview(undefined, true).expect(200);
 					expect(res.body.compliant).to.deep.equal([]);
 					expect(res.body.inconclusive.map(({ _id }: IUser) => _id)).to.deep.equal([creatorV.user._id]);
 					expect(res.body.creator).to.equal('inconclusive');
