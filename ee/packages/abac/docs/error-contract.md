@@ -79,9 +79,8 @@ only, and are not part of this contract.
 | `error-abac-attributes-required` | The room is a private room with no attributes, or without every required attribute |
 | `error-abac-public-room-creation-blocked` | The room is a public channel |
 | `error-abac-discussion-creation-blocked` | The room is a discussion |
-| `error-abac-federated-room-creation-blocked` | The room is federated |
 
-Direct messages and Omnichannel rooms are not refused.
+Direct messages, federated rooms and Omnichannel rooms are not refused.
 
 ### Using a locked room
 
