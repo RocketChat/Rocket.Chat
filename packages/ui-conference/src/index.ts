@@ -37,12 +37,22 @@ export { default as SwitchCallModal } from './components/SwitchCallModal';
 export {
 	useCallDevicesInitialState,
 	useCallRingPreference,
+	useNoiseSuppressionPreference,
 	useVideoQualityPreference,
+	useBackgroundBlurPreference,
 	callPreferencesStorageKey,
 	useUpdateCallPreferences,
 	callDeviceIdField,
 } from './hooks/useCallDevicesInitialState';
-export type { CallPreferences, CallRingPreference, CallDevices, VideoQuality } from './hooks/useCallDevicesInitialState';
+export type {
+	CallPreferences,
+	CallRingPreference,
+	CallDevices,
+	NoiseMethod,
+	VideoQuality,
+	BlurLevel,
+	BlurModel,
+} from './hooks/useCallDevicesInitialState';
 export { useRinging, useIsRinging } from './hooks/useRinging';
 export type { RingingCandidate } from './hooks/useRinging';
 
@@ -74,7 +84,7 @@ export type { CallParticipantControl, CallParticipantEntry, CallParticipantGroup
 export { buildJoinableCall, buildConferenceMember, buildChatAccess } from './fixtures/testFixtures';
 
 // A call running in this window: the provider that runs it fills these, and the window's call parts read them.
-export { CallStateProvider, CallActionsProvider, CallDiagnosticsProvider } from './call/context';
+export { CallStateProvider, CallActionsProvider, CallMediaProcessingProvider, CallDiagnosticsProvider } from './call/context';
 export type {
 	CallState,
 	CallSelf,
@@ -82,6 +92,7 @@ export type {
 	RemoteParticipantInfo,
 	ActiveReaction,
 	CallActions,
+	CallMediaProcessing,
 	CallDiagnosticsData,
 	ParticipantTrackStats,
 } from './call/context';

@@ -45,6 +45,8 @@ const formatBytes = (bytes?: number): string => {
 	return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
 };
 
+const fmtDecimal = (value: number | undefined, suffix = ''): string => (value != null ? `${Math.round(value * 10) / 10}${suffix}` : '—');
+
 /** How the connection of the call running in this window is doing, sampled by its provider. */
 const CallDiagnosticsPanel = ({ onClose }: CallDiagnosticsPanelProps) => {
 	const { t } = useTranslation();
@@ -111,6 +113,35 @@ const CallDiagnosticsPanel = ({ onClose }: CallDiagnosticsPanelProps) => {
 								}
 							/>
 						</Box>
+
+						{diagnostics.backgroundBlur && (
+							<>
+								<Divider />
+								<Box paddingBlock={8} paddingInline={16}>
+									<Box className={labelStyles} fontScale='c2' color='font-secondary-info' marginBlockEnd={8}>
+										{t('Background_blur')}
+									</Box>
+									<CallDiagnosticsStatRow label={t('Background_blur_processor_fps')} value={fmtDecimal(diagnostics.backgroundBlur.fps)} />
+									<CallDiagnosticsStatRow
+										label={t('Background_blur_frame_time')}
+										value={fmtDecimal(diagnostics.backgroundBlur.frameMs, ' ms')}
+									/>
+									<CallDiagnosticsStatRow
+										label={t('Background_blur_compositor_time')}
+										value={fmtDecimal(diagnostics.backgroundBlur.compositorMs, ' ms')}
+									/>
+									<CallDiagnosticsStatRow
+										label={t('Background_blur_segmentation_time')}
+										value={fmtDecimal(diagnostics.backgroundBlur.segmentationMs, ' ms')}
+									/>
+									<CallDiagnosticsStatRow
+										label={t('Background_blur_mask_interval')}
+										value={fmt(diagnostics.backgroundBlur.segmentIntervalMs, 'ms')}
+									/>
+									<CallDiagnosticsStatRow label={t('Background_blur_adaptive_level')} value={diagnostics.backgroundBlur.qualityReduction} />
+								</Box>
+							</>
+						)}
 
 						{diagnostics.participants.length > 0 && (
 							<>

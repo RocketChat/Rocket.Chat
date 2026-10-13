@@ -1,0 +1,27 @@
+{
+	"name": "@rocket.chat/mediapipe-models",
+	"version": "0.0.1",
+	"description": "MediaPipe segmentation models used by Rocket.Chat background blur, pinned by checksum",
+	"homepage": "https://github.com/RocketChat/Rocket.Chat#readme",
+	"bugs": {
+		"url": "https://github.com/RocketChat/Rocket.Chat/issues"
+	},
+	"repository": {
+		"type": "git",
+		"url": "git+https://github.com/RocketChat/Rocket.Chat.git",
+		"directory": "packages/mediapipe-models"
+	},
+	"license": "Apache-2.0",
+	"files": [
+		"/models",
+		"/manifest.json",
+		"/NOTICE"
+	],
+	"scripts": {
+		"build": "node scripts/fetch-models.mjs",
+		"prepack": "node scripts/fetch-models.mjs"
+	},
+	"volta": {
+		"extends": "../../package.json"
+	}
+}

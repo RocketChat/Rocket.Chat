@@ -1,0 +1,9 @@
+This package redistributes, unmodified, the following models published by Google as part of MediaPipe:
+
+- selfie_multiclass_256x256.tflite
+  https://ai.google.dev/edge/mediapipe/solutions/vision/image_segmenter#multiclass-model
+- selfie_segmenter_landscape.tflite
+  https://ai.google.dev/edge/mediapipe/solutions/vision/image_segmenter#selfie-model
+
+Copyright Google LLC. Licensed under the Apache License, Version 2.0: https://www.apache.org/licenses/LICENSE-2.0
+Each file is verified against the SHA-256 checksum recorded in manifest.json.

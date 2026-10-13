@@ -27,15 +27,42 @@ export const callDeviceIdField = {
 	audiooutput: 'speakerId',
 } as const satisfies Record<MediaDeviceKind, keyof CallDevices>;
 
-/** The most detail to send: `auto` leaves it to the camera and the connection, and the rest are ceilings. */
+/** Which way of cleaning up the microphone the user picked. */
+export type NoiseMethod = 'none' | 'browser' | 'rnnoise';
+
+const NOISE_METHODS: readonly unknown[] = ['none', 'browser', 'rnnoise'] satisfies NoiseMethod[];
+
+const isNoiseMethod = (value: unknown): value is NoiseMethod => NOISE_METHODS.includes(value);
+
+export type CallNoiseSuppressionPreference = { noiseMethod?: NoiseMethod };
+
+/**
+ * The most detail to send: `auto` leaves it to the camera and the connection, and the rest are ceilings.
+ *
+ * `auto` by default, because the cost of asking for more is not only bandwidth: where background blur is done by
+ * segmenting every frame, four times the pixels is four times the work per frame, on every call.
+ */
 export type VideoQuality = 'auto' | 'h1080' | 'h720' | 'h360' | 'h180';
 
 export type CallVideoQualityPreference = { videoQuality: VideoQuality };
 
-type StoredCallPreferences = CallPreferences & CallDevices & CallRingPreference & CallVideoQualityPreference;
+/** How much to blur the camera's background: `none`, or one of three strengths. */
+export type BlurLevel = 'none' | 'light' | 'medium' | 'strong';
+
+/** Which segmentation model to use: `quality` is sharper around hair but heavier, `performance` is lighter. */
+export type BlurModel = 'quality' | 'performance';
+
+export type CallBackgroundBlurPreference = { blurLevel: BlurLevel; blurModel?: BlurModel };
+
+type StoredCallPreferences = CallPreferences &
+	CallDevices &
+	CallRingPreference &
+	CallNoiseSuppressionPreference &
+	CallBackgroundBlurPreference &
+	CallVideoQualityPreference;
 
 /** Muted and unseen is the safe way in: it can only surprise in the harmless direction. */
-const DEFAULTS: StoredCallPreferences = { mic: true, cam: false, ring: true, videoQuality: 'auto' };
+const DEFAULTS: StoredCallPreferences = { mic: true, cam: false, ring: true, blurLevel: 'none', videoQuality: 'auto' };
 
 const STORAGE_KEY = 'videoconf-call-preferences';
 
@@ -168,6 +195,23 @@ const useRingIn = (stored: StoredCallPreferences, setStored: SetStoredCallPrefer
 	return { ring, toggleRing };
 };
 
+/**
+ * Whether, and how, to clean up the microphone — remembered, since whoever turns it off (to play an instrument, or
+ * because they can hear it working on their voice) has a reason that will still hold on their next call.
+ */
+export const useNoiseSuppressionPreference = () => {
+	const [stored, setStored] = useStoredCallPreferences();
+
+	// Undefined means "the best you can do", which is also what a method this version no longer offers falls back to.
+	const noiseMethod = isNoiseMethod(stored.noiseMethod) ? stored.noiseMethod : undefined;
+	const selectNoiseMethod = useCallback(
+		(method: NoiseMethod) => setStored((current) => ({ ...current, noiseMethod: method })),
+		[setStored],
+	);
+
+	return { noiseMethod, selectNoiseMethod };
+};
+
 /** Which resolution to ask the camera for, remembered like the rest of it. */
 export const useVideoQualityPreference = () => {
 	const [stored, setStored] = useStoredCallPreferences();
@@ -179,6 +223,24 @@ export const useVideoQualityPreference = () => {
 	);
 
 	return { videoQuality, selectVideoQuality };
+};
+
+/**
+ * How much to blur the camera's background, remembered like the rest of it.
+ *
+ * `none` by default: a blurred background is a deliberate look rather than an improvement everyone wants, and where
+ * the camera cannot do it itself we do it by segmenting every frame, which costs real CPU and a download.
+ */
+export const useBackgroundBlurPreference = () => {
+	const [stored, setStored] = useStoredCallPreferences();
+
+	const blurLevel = stored.blurLevel ?? 'none';
+	const selectBlurLevel = useCallback((level: BlurLevel) => setStored((current) => ({ ...current, blurLevel: level })), [setStored]);
+
+	const blurModel: BlurModel = stored.blurModel ?? 'quality';
+	const selectBlurModel = useCallback((model: BlurModel) => setStored((current) => ({ ...current, blurModel: model })), [setStored]);
+
+	return { blurLevel, selectBlurLevel, blurModel, selectBlurModel };
 };
 
 /** Whether to ring the people being called — one habit, the same answer in the preflight and when adding someone. */

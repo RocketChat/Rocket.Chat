@@ -1,4 +1,5 @@
 import { useLiveKitRoom } from '@livekit/components-react';
+import type { MediaProcessorAssets } from '@rocket.chat/media-processors';
 import type { CallActions } from '@rocket.chat/ui-conference';
 import { act, render } from '@testing-library/react';
 import { ConnectionState } from 'livekit-client';
@@ -49,6 +50,7 @@ jest.mock('@rocket.chat/ui-conference', () => ({
 	},
 	VideoQualityProvider: ({ children }: { children: ReactNode }) => children,
 	CallDiagnosticsProvider: ({ children }: { children: ReactNode }) => children,
+	CallMediaProcessingProvider: ({ children }: { children: ReactNode }) => children,
 	playJoinChime: jest.fn(),
 	playMutedReminder: jest.fn(),
 	useUpdateCallPreferences: () => jest.fn(),
@@ -65,6 +67,8 @@ jest.mock('./useCallDiagnostics', () => ({ useCallDiagnostics: () => null }));
 jest.mock('./useSendResolution', () => ({ useSendResolution: () => undefined }));
 jest.mock('./useSpeakingWhileMuted', () => ({ useSpeakingWhileMuted: () => false }));
 jest.mock('./useVideoQuality', () => ({ useVideoQuality: () => ({}) }));
+jest.mock('./useNoiseSuppression', () => ({ useNoiseSuppression: () => ({}) }));
+jest.mock('./useBackgroundBlur', () => ({ useBackgroundBlur: () => ({}) }));
 
 jest.mock('./useLiveKitTransport', () => ({
 	useLiveKitTransport: () => ({ data: { serverUrl: 'wss://lk', token: 'token' }, error: null }),
@@ -79,7 +83,7 @@ const mockedUseLiveKitRoom = jest.mocked(useLiveKitRoom);
 const renderProvider = () => {
 	const onEnded = jest.fn();
 	render(
-		<LiveKitCallProvider callId='call1' connect onEnded={onEnded}>
+		<LiveKitCallProvider callId='call1' connect onEnded={onEnded} assets={{} as MediaProcessorAssets}>
 			<div />
 		</LiveKitCallProvider>,
 	);

@@ -21,6 +21,7 @@ async function readLocalVideoStats(localParticipant: Participant): Promise<{
 	qualityLimitationReason?: string;
 	bytesSent: number;
 	rtt?: number;
+	backgroundBlur?: CallDiagnosticsData['backgroundBlur'];
 }> {
 	const pub = localParticipant.getTrackPublication(Track.Source.Camera);
 	const track = pub?.track as LocalVideoTrack | undefined;
@@ -38,6 +39,8 @@ async function readLocalVideoStats(localParticipant: Participant): Promise<{
 	let qualityLimitationReason: string | undefined;
 	let rtt: number | undefined;
 	let totalBytesSent = 0;
+	const processor = track.getProcessor() as { getPerformanceStats?: () => NonNullable<CallDiagnosticsData['backgroundBlur']> } | undefined;
+	const backgroundBlur = processor?.getPerformanceStats?.();
 
 	stats.forEach((report) => {
 		if (report.type === 'outbound-rtp' && report.kind === 'video') {
@@ -67,6 +70,7 @@ async function readLocalVideoStats(localParticipant: Participant): Promise<{
 		qualityLimitationReason,
 		bytesSent: totalBytesSent,
 		rtt,
+		backgroundBlur,
 	};
 }
 
@@ -262,6 +266,7 @@ export const useCallDiagnostics = (
 			sendFps: videoStats.fps != null ? Math.round(videoStats.fps) : undefined,
 			sendCodec: videoStats.codec,
 			qualityLimitationReason: videoStats.qualityLimitationReason,
+			backgroundBlur: videoStats.backgroundBlur,
 			participants: participantStats,
 			audioConcealment,
 			timestamp: now,

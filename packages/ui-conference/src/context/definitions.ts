@@ -161,6 +161,8 @@ export type ConferenceSlots = {
 export type PreflightMedia = {
 	/** Mounted around the preview for as long as the preflight is on screen; it may suspend while it loads. */
 	PreviewVideoProvider: ComponentType<PreviewVideoProviderProps>;
+	/** Fills `CallMediaProcessingProvider` for the preflight's device menus; it must not suspend. */
+	MediaProcessingProvider: ComponentType<{ children: ReactNode }>;
 };
 
 /**

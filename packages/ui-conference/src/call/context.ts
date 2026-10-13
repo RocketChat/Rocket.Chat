@@ -1,5 +1,7 @@
 import { createRequiredContext } from '@rocket.chat/ui-media';
 
+import type { BlurLevel, BlurModel, NoiseMethod } from '../hooks/useCallDevicesInitialState';
+
 /** The reader, as the call running in this window has them. Each stream is present only while it is live. */
 export type CallSelf = {
 	id: string;
@@ -57,6 +59,45 @@ export type CallActions = {
 	leave: () => void;
 };
 
+export type CallNoiseSuppression = {
+	/** What this workspace can offer, weakest first. Empty until there is a microphone track to filter. */
+	methods: NoiseMethod[];
+	/** Unset while nothing has been chosen, when the best on offer is what a call applies. */
+	method?: NoiseMethod;
+	pending: boolean;
+	select: (method: NoiseMethod) => void;
+};
+
+export type CallBackgroundBlur = {
+	available: boolean;
+	level: BlurLevel;
+	levels: BlurLevel[];
+	/** What is doing the blurring: the camera itself, or segmentation of every frame here. */
+	blur?: 'camera' | 'processor' | null;
+	pending: boolean;
+	model: BlurModel;
+	models: readonly BlurModel[];
+	select: (level: BlurLevel) => void;
+	selectModel: (model: BlurModel) => void;
+	backgroundImage: {
+		available: boolean;
+		active: boolean;
+		hasImage: boolean;
+		name?: string;
+		select: (file: File) => Promise<void>;
+		activate: () => void;
+	};
+};
+
+/**
+ * What is done to the microphone and the camera's picture, for the device menus. A call running in this window fills
+ * it with what its tracks are running; the preflight, with the stored choices the preview applies.
+ */
+export type CallMediaProcessing = {
+	noiseSuppression: CallNoiseSuppression;
+	backgroundBlur: CallBackgroundBlur;
+};
+
 export type ParticipantTrackStats = {
 	id: string;
 	displayName: string;
@@ -68,6 +109,15 @@ export type ParticipantTrackStats = {
 	audioBitrateKbps?: number;
 	packetsLost?: number;
 	jitterMs?: number;
+};
+
+export type BackgroundBlurDiagnostics = {
+	fps?: number;
+	frameMs?: number;
+	compositorMs?: number;
+	segmentationMs?: number;
+	segmentIntervalMs: number;
+	qualityReduction: 0 | 1 | 2;
 };
 
 export type CallDiagnosticsData = {
@@ -84,6 +134,7 @@ export type CallDiagnosticsData = {
 	sendFps?: number;
 	sendCodec?: string;
 	qualityLimitationReason?: string;
+	backgroundBlur?: BackgroundBlurDiagnostics;
 	participants: ParticipantTrackStats[];
 	audioConcealment?: number;
 	timestamp: number;
@@ -92,6 +143,8 @@ export type CallDiagnosticsData = {
 export const [CallStateProvider, useCallState] = createRequiredContext<CallState>('CallState');
 
 export const [CallActionsProvider, useCallActions] = createRequiredContext<CallActions>('CallActions');
+
+export const [CallMediaProcessingProvider, useCallMediaProcessing] = createRequiredContext<CallMediaProcessing>('CallMediaProcessing');
 
 /** `null` until the first sample has been taken. */
 export const [CallDiagnosticsProvider, useCallDiagnostics] = createRequiredContext<CallDiagnosticsData | null>('CallDiagnostics');
