@@ -92,15 +92,10 @@ async function job(): Promise<void> {
 
 const pruneCronName = 'Prune old messages by retention policy';
 
-let currentSchedule: string | undefined;
-
 async function deployCron(precision: string): Promise<void> {
-	// a run in progress would write its old schedule back,
-	// so a new one needs a new job; otherwise keep the job and its lock
-	if (currentSchedule && currentSchedule !== precision) {
+	if (await cronJobs.has(pruneCronName)) {
 		await cronJobs.remove(pruneCronName);
 	}
-	currentSchedule = precision;
 	await cronJobs.add(pruneCronName, precision, async () => job());
 }
 
