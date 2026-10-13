@@ -18,6 +18,7 @@ requirements open), `not-planned` (reason in Notes).
 | [RFC 2782](https://datatracker.ietf.org/doc/html/rfc2782) | DNS SRV | implemented | [s2s-connectivity](specs/s2s-connectivity.md) | |
 | [RFC 7622](https://datatracker.ietf.org/doc/html/rfc7622) | XMPP Address Format | intent | [accreditation-readiness](intents/accreditation-readiness.md) | structural JID validation with `jid-malformed`; obsoletes RFC 6122 |
 | [RFC 8265](https://datatracker.ietf.org/doc/html/rfc8265) | PRECIS Usernames and Passwords | intent | [accreditation-readiness](intents/accreditation-readiness.md) | localparts compared under UsernameCaseMapped |
+| [RFC 9525](https://datatracker.ietf.org/doc/html/rfc9525) | Service Identity in TLS | intent | [accreditation-readiness](intents/accreditation-readiness.md) | peer certificates never matched on the subject CN |
 
 ## XEPs
 

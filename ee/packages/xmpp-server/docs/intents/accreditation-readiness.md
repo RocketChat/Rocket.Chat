@@ -15,6 +15,10 @@ and several defaults work against a security review:
   dialback over TLS ([s2s-connectivity R5](../specs/s2s-connectivity.md));
 - certificate trust is Node's default CA store, so a private PKI is only trusted through
   `NODE_EXTRA_CA_CERTS`;
+- a peer certificate names its domain through dNSName entries only, or through the subject
+  CN when it has none ([ADR 0005](../adr/0005-peer-certificates-are-matched-on-dnsname-only.md)):
+  the XmppAddr and SRVName names of RFC 6120 §13.7.1.2 are ignored, and a CN that RFC 9525
+  no longer recognises is accepted;
 - inbound localparts and resources are not validated, so a malformed JID can become a
   username ([addressing](../specs/addressing.md) validates domains only, R4);
 - installation has not been shown to work without internet access.
@@ -27,6 +31,9 @@ and several defaults work against a security review:
   writes an audit log entry, and leaves a banner by the setting.
 - The trust anchors for peer certificates are a setting, so a private PKI works without
   environment variables.
+- A peer certificate names a domain through any server identity RFC 6120 §13.7.1.2 defines:
+  dNSName, SRVName for `_xmpp-server`, or XmppAddr. The subject CN never names one. A PKI
+  that names servers only by XmppAddr federates under fail-closed.
 - A stanza whose `from` or `to` is not a well-formed JID (an empty or oversize part, a
   character RFC 7622 forbids) is refused with `jid-malformed` (type `modify`) and creates
   nothing. Localparts are compared under the UsernameCaseMapped profile of RFC 8265. A
@@ -45,7 +52,7 @@ and several defaults work against a security review:
 - Defense and coalition operators; reviewers of the deployment; the security team.
 - [configuration-and-lifecycle](../specs/configuration-and-lifecycle.md),
   [s2s-connectivity](../specs/s2s-connectivity.md), [addressing](../specs/addressing.md),
-  [operations.md](../operations.md); ADR 0004 and ADR 0005 may be superseded, and
+  [operations.md](../operations.md); ADR 0004 may be superseded, ADR 0005 is, and
   [ADR 0011](../adr/0011-domain-normalization-is-idna-and-lowercase.md), which leaves
   PRECIS out of scope, changes for localparts.
 - Rocket.Chat packaging for offline installs, and the audit log, outside this package.
@@ -80,5 +87,8 @@ and several defaults work against a security review:
   the product's accreditation material?~~ Next to the specs: see Constraints.
 - **Q4** ~~What does "security review closure" in S2 cover, and who runs the review?~~ See
   Proposed outcome.
-- **Q5** Should XmppAddr names in certificates be honoured for the defense PKIs that issue
-  them ([ADR 0005](../adr/0005-peer-certificates-are-matched-on-dnsname-only.md))?
+- **Q5** ~~Should XmppAddr names in certificates be honoured for the defense PKIs that issue
+  them ([ADR 0005](../adr/0005-peer-certificates-are-matched-on-dnsname-only.md))?~~ Yes,
+  with SRVName, and without the CN: see Proposed outcome. Under fail-closed an unmatched
+  name refuses the peer instead of falling back to dialback, and Node already exposes both
+  names, which removes the cost ADR 0005 rejected them for.
