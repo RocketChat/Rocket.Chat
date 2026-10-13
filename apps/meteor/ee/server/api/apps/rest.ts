@@ -16,8 +16,8 @@ import { registerAppLogsDistinctInstanceHandler } from './endpoints/appLogsDisti
 import { registerAppLogsExportHandler } from './endpoints/appLogsExportHandler';
 import { registerAppLogsHandler } from './endpoints/appLogsHandler';
 import { registerAppsCountHandler } from './endpoints/appsCountHandler';
-import { Info } from '../../../../app/utils/rocketchat.info';
 import { CloudOfflineLicenseError } from '../../../../lib/errors/CloudOfflineLicenseError';
+import { Info } from '../../../../rocketchat.info';
 import { API } from '../../../../server/api';
 import type { APIClass } from '../../../../server/api/ApiClass';
 import { getUploadFormData } from '../../../../server/api/lib/getUploadFormData';

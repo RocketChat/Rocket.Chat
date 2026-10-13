@@ -5,7 +5,7 @@ import { MeteorError } from '@rocket.chat/core-services';
 import type { ValidateFunction } from 'ajv';
 import busboy from 'busboy';
 
-import { getMimeType } from '../../../app/utils/lib/mimeTypes';
+import { getMimeType } from '../../../lib/mimeTypes';
 
 type UploadResult<K> = {
 	file: Readable & { truncated: boolean };
