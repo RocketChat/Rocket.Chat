@@ -292,12 +292,13 @@ const PostAbacAttributeAssignabilityBody = {
 				minItems: 1,
 			},
 		},
+		excludeSelf: { type: 'boolean' },
 	},
 	required: ['attributes'],
 	additionalProperties: false,
 };
 
-export const POSTAbacAttributeAssignabilityBodySchema = ajv.compile<{ attributes: Record<string, string[]> }>(
+export const POSTAbacAttributeAssignabilityBodySchema = ajv.compile<{ attributes: Record<string, string[]>; excludeSelf?: boolean }>(
 	PostAbacAttributeAssignabilityBody,
 );
 

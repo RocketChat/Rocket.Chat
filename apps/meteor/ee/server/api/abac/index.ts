@@ -512,7 +512,7 @@ const abacEndpoints = API.v1
 			const result = await Abac.validateCreationAttributes(
 				toAbacAttributeDefinitions(this.bodyParams.attributes) ?? [],
 				toAbacActor(this.user),
-				{ creatorJoins: true },
+				{ creatorJoins: !this.bodyParams.excludeSelf },
 			);
 			if (!result.allowed) {
 				throw toCreationAttributesDenialError(result);
