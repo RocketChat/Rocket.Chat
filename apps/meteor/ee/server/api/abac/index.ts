@@ -1,5 +1,5 @@
 import { AbacAttributeStoreExternalError, getPdpHealthErrorCode } from '@rocket.chat/abac';
-import { Abac } from '@rocket.chat/core-services';
+import { Abac, MeteorError } from '@rocket.chat/core-services';
 import type { AbacActor } from '@rocket.chat/core-services';
 import type { IServerEvents, IUser } from '@rocket.chat/core-typings';
 import { ServerEvents } from '@rocket.chat/models';
@@ -545,7 +545,7 @@ const abacEndpoints = API.v1
 
 			const { members, attributes, excludeSelf = false } = this.bodyParams;
 			if (members.length + (excludeSelf ? 0 : 1) > settings.get<number>('API_User_Limit')) {
-				throw new Error('error-abac-preview-too-many-members');
+				throw new MeteorError('error-abac-preview-too-many-members', 'Too many members to preview');
 			}
 
 			const result = await Abac.previewCreationMembers(members, toAbacAttributeDefinitions(attributes) ?? [], toAbacActor(this.user), {
