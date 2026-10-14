@@ -8,7 +8,7 @@ import { useEditableSetting } from '../../EditableSettingsContext';
 import type { SettingLookupEndpoint } from '../../settings/hooks/useSettingLookupOptions';
 import { useSettingLookupQuery } from '../../settings/hooks/useSettingLookupOptions';
 
-const toKeys = (value: SettingValue): string[] => (Array.isArray(value) ? value.map(String) : []);
+const toKeys = (value: SettingValue): string[] => value as string[];
 
 const RequiredAttributesField = () => {
 	const setting = useEditableSetting('ABAC_Required_Attributes');
