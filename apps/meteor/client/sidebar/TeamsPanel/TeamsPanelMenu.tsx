@@ -1,8 +1,9 @@
+import type { IRoom } from '@rocket.chat/core-typings';
 import { Menu, MenuItem, MenuItemContent, MenuItemIcon, MenuSection, MenuSubmenuTrigger } from '@rocket.chat/fuselage';
 import { useToggle } from '@rocket.chat/fuselage-hooks';
 import { GenericMenuItem, useHandleMenuAction } from '@rocket.chat/ui-client';
 import type { GenericMenuItemProps } from '@rocket.chat/ui-client';
-import { useAtLeastOnePermission, usePermission, useSetModal } from '@rocket.chat/ui-contexts';
+import { useAtLeastOnePermission, usePermission, useSetModal, useUserRoom } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
 import { memo } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -10,7 +11,9 @@ import { useTranslation } from 'react-i18next';
 import type { SidebarTeam } from './hooks/useTeamsList';
 import { roomCoordinator } from '../../lib/rooms/roomCoordinator';
 import CreateChannelModal from '../../navbar/NavBarPagesGroup/actions/CreateChannelModal';
+import { useDeleteRoom } from '../../views/hooks/roomActions/useDeleteRoom';
 import AddExistingModal from '../../views/teams/contextualBar/channels/AddExistingModal';
+import { useLeaveTeam } from '../../views/teams/contextualBar/info/useLeaveTeam';
 
 const CREATE_TEAM_ROOM_PERMISSIONS = ['create-team-channel', 'create-team-group'];
 
@@ -24,7 +27,8 @@ type TeamsPanelMenuProps = {
 /**
  * Shortcuts to a team's own surfaces from its section in the Teams panel. Everyone gets the views (info, members,
  * channels); editing and adding channels show only to who may do them, checked on the team's main room, where team
- * owners and moderators get their roles. Moving up and down comes first, as in the Inbox categories' menu.
+ * owners and moderators get their roles. Moving up and down comes first, as in the Inbox categories' menu, and
+ * leaving and deleting come last, apart, as in the Team info menu.
  */
 const TeamsPanelMenu = ({ team, canMoveUp, canMoveDown, onMove }: TeamsPanelMenuProps) => {
 	const { t } = useTranslation();
@@ -35,6 +39,10 @@ const TeamsPanelMenu = ({ team, canMoveUp, canMoveDown, onMove }: TeamsPanelMenu
 	const canEdit = usePermission('edit-team-channel', main.rid);
 	const canCreateRoom = useAtLeastOnePermission(CREATE_TEAM_ROOM_PERMISSIONS, main.rid);
 	const canAddExistingRoom = usePermission('move-room-to-team', main.rid);
+	// The main room is in the client store, since the panel only lists teams the user is in.
+	const room = useUserRoom(main.rid) ?? ({ _id: main.rid, t: main.t, name: main.name, teamId, teamMain: true } as IRoom);
+	const { handleDelete, canDeleteRoom } = useDeleteRoom(room);
+	const leaveTeam = useLeaveTeam(room);
 
 	const close = () => toggleOpen(false);
 
@@ -85,7 +93,7 @@ const TeamsPanelMenu = ({ team, canMoveUp, canMoveDown, onMove }: TeamsPanelMenu
 	];
 
 	const editItems: GenericMenuItemProps[] = canEdit
-		? [{ id: 'edit-info', icon: 'edit', content: t('Teams_panel_edit_info'), onClick: () => openTab('team-info', 'edit') }]
+		? [{ id: 'edit', icon: 'edit', content: t('Edit'), onClick: () => openTab('team-info', 'edit') }]
 		: [];
 
 	const createRoom = () => openModal(<CreateChannelModal teamId={teamId} mainRoom={{ _id: main.rid }} onClose={closeModal} />);
@@ -105,7 +113,35 @@ const TeamsPanelMenu = ({ team, canMoveUp, canMoveDown, onMove }: TeamsPanelMenu
 			: undefined;
 
 	const manageItems = [...editItems, ...(singleAddItem ? [singleAddItem] : [])];
-	const allItems = [...orderItems, ...viewItems, ...manageItems, ...addItems];
+	// The existing flows: leaving asks which of the team's channels to leave too, and handles the last owner; deleting
+	// asks which channels to delete or keep, then confirms.
+	const exitItems: GenericMenuItemProps[] = [
+		{
+			id: 'leave',
+			icon: 'sign-out',
+			content: t('Leave'),
+			onClick: () => {
+				close();
+				requestAnimationFrame(leaveTeam);
+			},
+		},
+		...(canDeleteRoom
+			? [
+					{
+						id: 'delete',
+						icon: 'trash' as const,
+						content: t('Delete'),
+						variant: 'danger',
+						onClick: () => {
+							close();
+							requestAnimationFrame(handleDelete);
+						},
+					},
+				]
+			: []),
+	];
+
+	const allItems = [...orderItems, ...viewItems, ...manageItems, ...addItems, ...exitItems];
 	const disabledKeys = allItems.filter(({ disabled }) => disabled).map(({ id }) => id);
 	const handleAction = useHandleMenuAction(allItems);
 
@@ -162,6 +198,17 @@ const TeamsPanelMenu = ({ team, canMoveUp, canMoveDown, onMove }: TeamsPanelMenu
 										</MenuSubmenuTrigger>
 									)}
 								</>
+							</MenuSection>,
+						]
+					: []),
+				...(exitItems.length
+					? [
+							<MenuSection key='exit' items={exitItems} aria-label={t('Leave')}>
+								{(item) => (
+									<MenuItem key={item.id}>
+										<GenericMenuItem {...item} />
+									</MenuItem>
+								)}
 							</MenuSection>,
 						]
 					: []),
