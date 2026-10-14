@@ -19,7 +19,7 @@
 		"pino": "10.3.1"
 	},
 	"devDependencies": {
-		"eslint": "~10.11.0",
+		"eslint": "~10.12.0",
 		"typescript": "~5.9.3"
 	},
 	"volta": {

@@ -5769,6 +5769,17 @@ describe('[/rooms.history]', () => {
 		expect(res.body).to.have.property('errorType', 'error-invalid-cursor');
 	});
 
+	it('should fail when a cursor points before 1970', async () => {
+		const res = await request
+			.get(api('rooms.history'))
+			.set(credentials)
+			.query({ roomId: testChannel._id, previous: '-836412432' })
+			.expect(400);
+
+		expect(res.body).to.have.property('success', false);
+		expect(res.body).to.have.property('errorType', 'error-invalid-cursor');
+	});
+
 	it('should fail for a room that does not exist', async () => {
 		await request.get(api('rooms.history')).set(credentials).query({ roomId: 'does-not-exist' }).expect(404);
 	});

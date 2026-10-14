@@ -26,8 +26,8 @@
 		"@rocket.chat/jest-presets": "workspace:~",
 		"@rocket.chat/tsconfig": "workspace:*",
 		"@types/bcrypt": "^6.0.0",
-		"@types/ws": "^8.5.14",
-		"eslint": "~10.11.0",
+		"@types/ws": "^8.18.2",
+		"eslint": "~10.12.0",
 		"jest": "~30.5.2",
 		"jest-websocket-mock": "~2.5.0",
 		"typescript": "~5.9.3"

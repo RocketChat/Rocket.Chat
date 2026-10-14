@@ -10,7 +10,7 @@ import { filterMarkdown } from '../../lib/markdown/parser/filtered/filtered';
 jest.mock('./getMarkdownParserLimit');
 jest.mock('../../lib/markdown/parser/filtered/filtered');
 jest.mock('@rocket.chat/message-parser');
-jest.mock('../../app/utils/rocketchat.info', () => ({}));
+jest.mock('../../rocketchat.info', () => ({}));
 
 const mockedGetMarkdownParserLimit = jest.mocked(getMarkdownParserLimit);
 const mockedFilterMarkdown = jest.mocked(filterMarkdown);

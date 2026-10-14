@@ -27,7 +27,7 @@
 	"devDependencies": {
 		"@rocket.chat/jest-presets": "workspace:~",
 		"@rocket.chat/tsconfig": "workspace:*",
-		"eslint": "~10.11.0",
+		"eslint": "~10.12.0",
 		"jest": "~30.5.2",
 		"typescript": "~5.9.3"
 	},

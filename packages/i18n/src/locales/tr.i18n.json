@@ -1819,7 +1819,6 @@
   "Local_Domains": "Yerel Alan Adları",
   "Local_Password": "Yerel Şifre",
   "Local_Time": "Yerel Zaman",
-  "Local_Time_time": "Yerel Zaman: {{time}}",
   "Localization": "yerelleştirme",
   "Log_Exceptions_to_Channel": "Kanal için İstisnaları Günlüğe Kaydedin",
   "Log_Exceptions_to_Channel_Description": "Yakalan tüm istisnaları alacak olan kanal. İstisnaları yok saymak için boş bırakın.",

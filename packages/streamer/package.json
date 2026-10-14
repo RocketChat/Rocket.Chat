@@ -36,7 +36,7 @@
 		"@rocket.chat/jest-presets": "workspace:~",
 		"@rocket.chat/media-signaling": "workspace:^",
 		"@types/node": "~24.13.6",
-		"eslint": "~10.11.0",
+		"eslint": "~10.12.0",
 		"jest": "~30.5.2",
 		"typescript": "~5.9.3"
 	},

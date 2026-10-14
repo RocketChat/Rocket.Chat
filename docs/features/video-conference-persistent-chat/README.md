@@ -132,7 +132,8 @@ Same-origin (in-product) conferences share a named window, `rocketchat-conferenc
 | showing a different conference | navigated to the new one |
 | closed, or never opened | opened fresh as a popout |
 
-Whether it is showing this conference is decided by reading the window's actual `location.pathname`, not the URL we last passed — those differ in string form between the start and join paths.
+Whether it is showing this conference is decided by reading the window's actual `location` (path and query), not the URL we last passed — those differ in string form between the start and join paths.
+
 
 External provider URLs get their own popout each time, unnamed.
 
