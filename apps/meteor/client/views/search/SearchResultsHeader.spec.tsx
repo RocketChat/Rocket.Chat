@@ -17,18 +17,22 @@ const renderHeader = (props: Parameters<typeof SearchResultsHeader>[0]) =>
 	});
 
 describe('SearchResultsHeader', () => {
-	it('renders the applied filters', () => {
+	it('renders the applied filters as typed in the search bar', () => {
 		renderHeader({
 			query: 'vacation policy',
 			filters: [
+				{ id: 'before-2026-07-21', key: 'before', value: '2026-07-21' },
 				{ id: 'in-general', key: 'in', value: 'general' },
 				{ id: 'from-thomas', key: 'from', value: 'thomas.berger' },
+				{ id: 'in-release-notes', key: 'in', value: 'release notes' },
 			],
 		});
 
 		expect(screen.getByRole('heading', { level: 1 })).toHaveTextContent('Results for vacation policy');
-		expect(screen.getByText('#general')).toBeInTheDocument();
-		expect(screen.getByText('@thomas.berger')).toBeInTheDocument();
+		expect(screen.getByText('before:2026-07-21')).toBeInTheDocument();
+		expect(screen.getByText('in:general')).toBeInTheDocument();
+		expect(screen.getByText('from:thomas.berger')).toBeInTheDocument();
+		expect(screen.getByText('in:"release notes"')).toBeInTheDocument();
 	});
 
 	it('asks for a query when there is none', () => {

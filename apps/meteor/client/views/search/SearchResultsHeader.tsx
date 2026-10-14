@@ -1,5 +1,5 @@
 import type { AppliedFilter } from '@rocket.chat/ai-search';
-import { getAppliedFilterLabel } from '@rocket.chat/ai-search';
+import { serializeSearchQuery } from '@rocket.chat/ai-search';
 import { Box, Icon, Chip } from '@rocket.chat/fuselage';
 import type { ReactElement } from 'react';
 import { Trans, useTranslation } from 'react-i18next';
@@ -38,7 +38,7 @@ const SearchResultsHeader = ({ query, filters }: SearchResultsHeaderProps): Reac
 			{filters.length > 0 && (
 				<Box display='flex' flexWrap='wrap' gap={10} marginBlockStart={12}>
 					{filters.map((filter) => (
-						<Chip key={filter.id}>{getAppliedFilterLabel(filter)}</Chip>
+						<Chip key={filter.id}>{serializeSearchQuery({ text: '', filters: [filter] })}</Chip>
 					))}
 				</Box>
 			)}
