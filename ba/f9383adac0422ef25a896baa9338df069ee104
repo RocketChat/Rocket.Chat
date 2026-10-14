@@ -1,0 +1,26 @@
+ee/packages/xmpp-server/src/service/XMPPServerService.ts
+  s_9f3665bd616f97::t_03a3b0bb730c16 870
+  s_9f3665bd616f97::t_fd024e172863d4 391,466,564,650,666,680,710,801,829
+packages/models/src/models/Rooms.ts
+  s_9f3665bd616f97::t_01c7e60daeee4f 808-854
+ee/packages/xmpp-server/tests/integration/service-observer.spec.ts
+  s_9f3665bd616f97::t_ff91909991b6da 24
+packages/model-typings/src/models/IRoomsModel.ts
+  s_9f3665bd616f97::t_4391fab25f7580 224-247
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "baf9383adac0422ef25a896baa9338df069ee104",
+  "prompts": {},
+  "sessions": {
+    "s_9f3665bd616f97": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "c8fbba81-a31c-47c4-a6cf-b10ab5fc9b26",
+        "model": "claude-opus-5-5"
+      },
+      "human_author": "Diego Sampaio <chinello@gmail.com>"
+    }
+  }
+}

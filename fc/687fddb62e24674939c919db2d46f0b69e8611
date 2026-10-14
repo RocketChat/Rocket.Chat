@@ -1,0 +1,19 @@
+ee/packages/network-broker/src/MoleculerBroker.test.ts
+  s_e6da09f52b34f0::t_2f695b9e72a2ae 7-10,12-16,19,21
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "fc687fddb62e24674939c919db2d46f0b69e8611",
+  "prompts": {},
+  "sessions": {
+    "s_e6da09f52b34f0": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "aabbee11-45c6-4d43-8a8a-9fedbd2f3c21",
+        "model": "claude-opus-5-5"
+      },
+      "human_author": "Diego Sampaio <chinello@gmail.com>"
+    }
+  }
+}
