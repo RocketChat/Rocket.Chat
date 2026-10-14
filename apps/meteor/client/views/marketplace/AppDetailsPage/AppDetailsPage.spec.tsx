@@ -4,7 +4,7 @@ import userEvent from '@testing-library/user-event';
 import type { ReactNode } from 'react';
 
 import AppDetailsPage from './AppDetailsPage';
-import { AppClientOrchestratorInstance } from '../../../apps/orchestrator';
+import { AppClientOrchestratorInstance } from '../../../lib/apps/orchestrator';
 import { useAppInfo } from '../hooks/useAppInfo';
 
 jest.mock('../hooks/useAppInfo', () => ({
@@ -36,7 +36,7 @@ jest.mock('./AppDetailsPageHeader', () => ({
 	default: () => <div>AppDetailsPageHeader</div>,
 }));
 
-jest.mock('../../../apps/orchestrator', () => ({
+jest.mock('../../../lib/apps/orchestrator', () => ({
 	AppClientOrchestratorInstance: {
 		setAppSettings: jest.fn(),
 	},

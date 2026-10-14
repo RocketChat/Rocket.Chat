@@ -5,12 +5,12 @@ import type { ISetting } from '@rocket.chat/apps-engine/definition/settings';
 import type { Serialized } from '@rocket.chat/core-typings';
 
 import { RealAppsEngineUIHost } from './RealAppsEngineUIHost';
-import type { IAppExternalURL } from '../definitions/IAppExternalURL';
-import type { ICategory } from '../definitions/ICategory';
-import { sdk } from '../lib/SDKClient';
-import { hasAtLeastOnePermission } from '../lib/authorization';
-import { dispatchToastMessage } from '../lib/toast';
-import type { App } from '../views/marketplace/types';
+import type { IAppExternalURL } from '../../definitions/IAppExternalURL';
+import type { ICategory } from '../../definitions/ICategory';
+import type { App } from '../../views/marketplace/types';
+import { sdk } from '../SDKClient';
+import { hasAtLeastOnePermission } from '../authorization';
+import { dispatchToastMessage } from '../toast';
 
 const isErrorObject = (e: unknown): e is { error: string } =>
 	typeof e === 'object' && e !== null && 'error' in e && typeof e.error === 'string';
