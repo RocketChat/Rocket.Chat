@@ -53,6 +53,13 @@ type UseProviderPluginOptions = {
 	 * for why only a deliberate leave gets here.
 	 */
 	onLeave: () => void;
+	/**
+	 * The call ended without the user having chosen to leave it.
+	 *
+	 * A drop and a deliberate leave look alike from here until the user says which they meant, so neither is
+	 * safe to act on alone — see the `disconnected` case below. A deliberate leave reaches `onLeave` instead.
+	 */
+	onDropped?: () => void;
 };
 
 const isPluginFeature = (value: unknown): value is PluginFeature => PLUGIN_FEATURES.includes(value as PluginFeature);
@@ -142,6 +149,7 @@ export const useProviderPlugin = ({
 	onToggleChat,
 	onToggleParticipants,
 	onLeave,
+	onDropped,
 }: UseProviderPluginOptions): ProviderPluginControls => {
 	// Learned from the messages it sends, not from the iframe this page renders: a plugin may run in a frame
 	// *inside* the provider's page, where a message posted to the provider's own window would never reach it.
@@ -163,6 +171,8 @@ export const useProviderPlugin = ({
 	onToggleParticipantsRef.current = onToggleParticipants;
 	const onLeaveRef = useRef(onLeave);
 	onLeaveRef.current = onLeave;
+	const onDroppedRef = useRef(onDropped);
+	onDroppedRef.current = onDropped;
 
 	// `disconnected` also arrives from a prejoin screen, where nobody has joined: reporting a leave from there
 	// would end the call for everyone still on their way into it.
@@ -262,11 +272,14 @@ export const useProviderPlugin = ({
 
 					wasConnectedRef.current = false;
 
-					// A deliberate leave is acted on; an involuntary drop is the provider's to recover, and closing
-					// the window under it turns a blip into a departure.
+					// A deliberate leave is acted on. A drop is the provider's to recover, and closing the window
+					// under it turns a blip into a departure, so that goes to whoever can ask the user which it was.
 					if (data.userInitiated === true) {
 						onLeaveRef.current();
+						break;
 					}
+
+					onDroppedRef.current?.();
 					break;
 
 				case 'toggle-participants':

@@ -20,6 +20,7 @@ const pluginWindow = { postMessage: jest.fn() };
 const onToggleChat = jest.fn();
 const onToggleParticipants = jest.fn();
 const onLeave = jest.fn();
+const onDropped = jest.fn();
 
 const render = (
 	props: { chatVisible?: boolean; participantsVisible?: boolean; hasUnread?: boolean; conferenceUrl?: string | undefined } = {},
@@ -34,6 +35,7 @@ const render = (
 				onToggleChat,
 				onToggleParticipants,
 				onLeave,
+				onDropped,
 			}),
 		{
 			initialProps: {
@@ -65,6 +67,7 @@ beforeEach(() => {
 	pluginWindow.postMessage.mockClear();
 	onToggleChat.mockClear();
 	onLeave.mockClear();
+	onDropped.mockClear();
 });
 
 describe('useProviderPlugin', () => {
@@ -215,6 +218,15 @@ describe('useProviderPlugin', () => {
 
 			expect(result.current.participants).toEqual([]);
 			expect(result.current.self).toBeUndefined();
+		});
+
+		it('hands a dropped connection to whoever can ask the user what they meant', () => {
+			render();
+
+			fromPlugin(message('connected'));
+			fromPlugin(message('disconnected', { userInitiated: false }));
+
+			expect(onDropped).toHaveBeenCalledTimes(1);
 		});
 
 		// A provider's prejoin screen reports a user-initiated disconnect too, and nobody has joined anything
