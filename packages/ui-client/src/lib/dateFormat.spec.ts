@@ -172,42 +172,65 @@ describe('toDate', () => {
 });
 
 describe('toTimezoneDate and timezone formatting', () => {
-	// A message sent at 12:00 PM in British Columbia (UTC-7) is 19:00:00 UTC.
-	const utcInstant = new Date('2026-01-15T19:00:00.000Z');
+	// A message sent at 19:00:00 UTC:
+	// - Before November 1, 2026: BC was winter UTC-8 (11:00 AM)
+	// - In Summer 2026: BC was PDT UTC-7 (12:00 PM)
+	// - After November 1, 2026: BC adopted permanent PDT UTC-7 (12:00 PM)
+	const winterPre = new Date('2026-01-15T19:00:00.000Z');
+	const summer = new Date('2026-07-15T19:00:00.000Z');
+	const winterPost = new Date('2026-12-15T19:00:00.000Z');
 
-	it('converts a Date to British Columbia permanent DST (UTC-7) clock representation', () => {
-		const bcDate = toTimezoneDate(utcInstant, 'America/Dawson_Creek');
+	it('preserves historical British Columbia winter offset (UTC-8) before the transition', () => {
+		const bcDate = toTimezoneDate(winterPre, 'Pacific Time (British Columbia)');
+		expect(bcDate.getHours()).toBe(11);
+		expect(bcDate.getMinutes()).toBe(0);
+		expect(formatDate(winterPre, 'h:mm A', undefined, 'Pacific Time (British Columbia)')).toBe('11:00 AM');
+		expect(formatDate(winterPre, 'h:mm A', undefined, 'America/Vancouver')).toBe('11:00 AM');
+	});
+
+	it('formats British Columbia summer dates with UTC-7', () => {
+		const bcDate = toTimezoneDate(summer, 'Pacific Time (British Columbia)');
 		expect(bcDate.getHours()).toBe(12);
 		expect(bcDate.getMinutes()).toBe(0);
+		expect(formatDate(summer, 'h:mm A', undefined, 'Pacific Time (British Columbia)')).toBe('12:00 PM');
+		expect(formatDate(summer, 'h:mm A', undefined, 'America/Vancouver')).toBe('12:00 PM');
 	});
 
-	it('converts a Date to Alberta permanent DST (UTC-6) clock representation', () => {
-		const abInstant = new Date('2026-01-15T18:00:00.000Z');
-		const abDate = toTimezoneDate(abInstant, 'America/Regina');
-		expect(abDate.getHours()).toBe(12);
-		expect(abDate.getMinutes()).toBe(0);
-	});
-
-	it('converts a Date using Windows time zone identifiers', () => {
-		const bcDate = toTimezoneDate(utcInstant, 'Pacific Time (British Columbia)');
+	it('formats British Columbia dates after the November 2026 transition with permanent UTC-7', () => {
+		const bcDate = toTimezoneDate(winterPost, 'Pacific Time (British Columbia)');
 		expect(bcDate.getHours()).toBe(12);
 		expect(bcDate.getMinutes()).toBe(0);
-
-		const abInstant = new Date('2026-01-15T18:00:00.000Z');
-		const abDate = toTimezoneDate(abInstant, 'Mountain Time (Alberta)');
-		expect(abDate.getHours()).toBe(12);
-		expect(abDate.getMinutes()).toBe(0);
-
-		const mbInstant = new Date('2026-01-15T17:00:00.000Z');
-		const mbDate = toTimezoneDate(mbInstant, 'Manitoba');
-		expect(mbDate.getHours()).toBe(12);
-		expect(mbDate.getMinutes()).toBe(0);
+		expect(formatDate(winterPost, 'h:mm A', undefined, 'Pacific Time (British Columbia)')).toBe('12:00 PM');
+		expect(formatDate(winterPost, 'h:mm A', undefined, 'America/Vancouver')).toBe('12:00 PM');
 	});
 
-	it('formats a date with explicit Canadian timezone in formatDate', () => {
-		expect(formatDate(utcInstant, 'h:mm A', undefined, 'Pacific Time (British Columbia)')).toBe('12:00 PM');
-		expect(formatDate(new Date('2026-01-15T18:00:00.000Z'), 'h:mm A', undefined, 'Mountain Time (Alberta)')).toBe('12:00 PM');
-		expect(formatDate(new Date('2026-01-15T17:00:00.000Z'), 'h:mm A', undefined, 'Manitoba')).toBe('12:00 PM');
+	it('handles Alberta and Manitoba on both sides of each transition', () => {
+		const abWinterPre = new Date('2026-01-15T18:00:00.000Z');
+		const abWinterPost = new Date('2026-12-15T18:00:00.000Z');
+		expect(formatDate(abWinterPre, 'h:mm A', undefined, 'Mountain Time (Alberta)')).toBe('11:00 AM');
+		expect(formatDate(abWinterPost, 'h:mm A', undefined, 'Mountain Time (Alberta)')).toBe('12:00 PM');
+		expect(formatDate(abWinterPre, 'h:mm A', undefined, 'America/Edmonton')).toBe('11:00 AM');
+		expect(formatDate(abWinterPost, 'h:mm A', undefined, 'America/Edmonton')).toBe('12:00 PM');
+
+		const mbWinterPre = new Date('2026-01-15T17:00:00.000Z');
+		const mbWinterPost = new Date('2026-12-15T17:00:00.000Z');
+		expect(formatDate(mbWinterPre, 'h:mm A', undefined, 'Manitoba')).toBe('11:00 AM');
+		expect(formatDate(mbWinterPost, 'h:mm A', undefined, 'Manitoba')).toBe('12:00 PM');
+		expect(formatDate(mbWinterPre, 'h:mm A', undefined, 'America/Winnipeg')).toBe('11:00 AM');
+		expect(formatDate(mbWinterPost, 'h:mm A', undefined, 'America/Winnipeg')).toBe('12:00 PM');
+	});
+
+	it('preserves instant and epoch without host DST gap distortion', () => {
+		const bcDate = toTimezoneDate(winterPost, 'America/Vancouver');
+		expect(bcDate.getTime()).toBe(winterPost.getTime());
+		expect(bcDate.getTimezoneOffset()).toBe(420); // UTC-7
+	});
+
+	it('routes "local" through local-zone resolution', () => {
+		const formattedDefault = formatDate(winterPost, 'h:mm A');
+		const formattedLocal = formatDate(winterPost, 'h:mm A', undefined, 'local');
+		expect(formattedLocal).toBe(formattedDefault);
 	});
 });
+
 
