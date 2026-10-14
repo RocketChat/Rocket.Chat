@@ -83,7 +83,11 @@ export class LocalPDP implements IPolicyDecisionPoint {
 	}
 
 	async reevaluateUsers(users: ReevaluationUser[]): Promise<void> {
-		await LDAPEnterprise.syncUsersAbacAttributesByIds(users.map((user) => user._id));
+		await this.refreshSubjectAttributes(users.map((user) => user._id));
+	}
+
+	async refreshSubjectAttributes(userIds: string[]): Promise<void> {
+		await LDAPEnterprise.syncUsersAbacAttributesByIds(userIds);
 	}
 
 	async checkUsernamesMatchAttributes(usernames: string[], attributes: IAbacAttributeDefinition[], _object: IRoom): Promise<void> {
