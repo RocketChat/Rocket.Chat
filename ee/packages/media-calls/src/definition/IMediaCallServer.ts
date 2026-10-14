@@ -44,6 +44,12 @@ export type MediaCallHooks = {
 	onPreCallCreated?: (params: PreCallCreatedHookParams) => Promise<PreCallCreatedHookResult>;
 };
 
+export type TurnSharedSecretSettings = {
+	uris: string[];
+	secret: string;
+	credentialTtl: number;
+};
+
 export interface IMediaCallServerSettings {
 	internalCalls: {
 		requireExtensions: boolean;
@@ -64,6 +70,8 @@ export interface IMediaCallServerSettings {
 	};
 
 	mobileRinging: boolean;
+
+	turn?: TurnSharedSecretSettings;
 
 	permissionCheck: (uid: IUser['_id'], callType: 'internal' | 'external' | 'any') => Promise<boolean>;
 	isFeatureAvailableForUser: (uid: IUser['_id'], feature: CallFeature) => boolean;
@@ -94,4 +102,5 @@ export interface IMediaCallServer {
 
 	permissionCheck(uid: IUser['_id'], callType: 'internal' | 'external' | 'any'): Promise<boolean>;
 	isFeatureAvailableForUser(uid: IUser['_id'], feature: CallFeature): boolean;
+	getIceServersForUser(uid: IUser['_id']): RTCIceServer[];
 }

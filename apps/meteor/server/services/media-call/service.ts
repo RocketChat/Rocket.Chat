@@ -456,8 +456,31 @@ export class MediaCallService extends ServiceClassInternal implements IMediaCall
 				},
 			},
 			mobileRinging,
+			turn: this.getTurnSharedSecretSettings(),
 			permissionCheck: (uid, callType) => this.userHasMediaCallPermission(uid, callType),
 			isFeatureAvailableForUser: (uid, feature) => this.userHasFeaturePermission(uid, feature),
+		};
+	}
+
+	private getTurnSharedSecretSettings(): IMediaCallServerSettings['turn'] {
+		if (settings.get<string>('VoIP_TeamCollab_TURN_Auth_Mode') !== 'shared-secret') {
+			return undefined;
+		}
+
+		const secret = settings.get<string>('VoIP_TeamCollab_TURN_Shared_Secret');
+		const uris = (settings.get<string>('VoIP_TeamCollab_TURN_Servers') ?? '')
+			.split(',')
+			.map((uri) => uri.trim())
+			.filter(Boolean);
+
+		if (!secret || !uris.length) {
+			return undefined;
+		}
+
+		return {
+			uris,
+			secret,
+			credentialTtl: settings.get<number>('VoIP_TeamCollab_TURN_Credential_TTL') ?? 86400,
 		};
 	}
 

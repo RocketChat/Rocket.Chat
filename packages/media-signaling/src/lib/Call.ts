@@ -216,6 +216,8 @@ export class ClientMediaCall implements IClientMediaCall {
 
 	private remoteCallId: string | null;
 
+	private serverIceServers: RTCIceServer[];
+
 	private oldClientState: ClientState;
 
 	private hasFiredRingingEvent: boolean;
@@ -318,6 +320,7 @@ export class ClientMediaCall implements IClientMediaCall {
 
 		this.localCallId = callId;
 		this.remoteCallId = null;
+		this.serverIceServers = [];
 
 		this.acceptedLocally = false;
 		this.acceptedRemotely = false;
@@ -408,6 +411,11 @@ export class ClientMediaCall implements IClientMediaCall {
 
 	/** initialize a call with the data received from the server on a 'new' signal; this gets executed once for every call */
 	public async initializeRemoteCall(signal: ServerMediaSignalNewCall, oldCall?: ClientMediaCall | null): Promise<void> {
+		if (signal.iceServers) {
+			this.serverIceServers = signal.iceServers;
+			this.webrtcProcessor?.setIceServers(this.getIceServers());
+		}
+
 		if (this.hasRemoteData) {
 			return;
 		}
@@ -1619,13 +1627,15 @@ export class ClientMediaCall implements IClientMediaCall {
 			this.throwError('webrtc-not-implemented');
 		}
 
+		const iceServers = this.getIceServers();
+
 		this.webrtcProcessor = webrtcFactory({
 			logger,
 			iceGatheringTimeout,
 			call: this,
 			inputTrack: this.inputTrack,
 			screenVideoTrack: this.screenVideoTrack,
-			...(this.config.iceServers.length && { rtc: { iceServers: this.config.iceServers } }),
+			...(iceServers.length && { rtc: { iceServers } }),
 		});
 		this.webrtcProcessor.emitter.on('internalStateChange', (stateName) => this.onWebRTCInternalStateChange(stateName));
 		this.webrtcProcessor.emitter.on('streamChanged', () => this.onWebRTCStreamChanged());
@@ -1635,6 +1645,10 @@ export class ClientMediaCall implements IClientMediaCall {
 		this.negotiationManager.emitter.on('negotiation-started', () => this.onNegotiationStarted());
 		this.negotiationManager.emitter.on('error', ({ errorCode, negotiationId }) => this.onNegotiationError(negotiationId, errorCode));
 		this.negotiationManager.setWebRTCProcessor(this.webrtcProcessor);
+	}
+
+	private getIceServers(): RTCIceServer[] {
+		return [...this.config.iceServers, ...this.serverIceServers];
 	}
 
 	private requireWebRTC(): asserts this is ClientMediaCallWebRTC {

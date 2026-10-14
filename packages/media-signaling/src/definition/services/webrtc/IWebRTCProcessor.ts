@@ -37,6 +37,7 @@ export interface IWebRTCProcessor extends IServiceProcessor<WebRTCInternalStateM
 
 	setInputTrack(newInputTrack: MediaStreamTrack | null): Promise<void>;
 	setScreenVideoTrack(newVideoTrack: MediaStreamTrack | null): Promise<void>;
+	setIceServers(iceServers: RTCIceServer[]): void;
 	createOffer(params: { iceRestart?: boolean }): Promise<RTCSessionDescriptionInit>;
 	createAnswer(): Promise<RTCSessionDescriptionInit>;
 

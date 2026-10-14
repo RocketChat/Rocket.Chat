@@ -35,6 +35,43 @@ export function addSettings(): Promise<void> {
 						public: true,
 						invalidValue: 5000,
 					});
+
+					await this.add('VoIP_TeamCollab_TURN_Auth_Mode', 'static', {
+						type: 'select',
+						values: [
+							{ key: 'static', i18nLabel: 'VoIP_TeamCollab_TURN_Auth_Mode_Static' },
+							{ key: 'shared-secret', i18nLabel: 'VoIP_TeamCollab_TURN_Auth_Mode_Shared_Secret' },
+						],
+						public: false,
+						invalidValue: 'static',
+						i18nDescription: 'VoIP_TeamCollab_TURN_Auth_Mode_Description',
+					});
+
+					const sharedSecretMode = { _id: 'VoIP_TeamCollab_TURN_Auth_Mode', value: 'shared-secret' };
+
+					await this.add('VoIP_TeamCollab_TURN_Servers', '', {
+						type: 'string',
+						public: false,
+						invalidValue: '',
+						i18nDescription: 'VoIP_TeamCollab_TURN_Servers_Description',
+						enableQuery: sharedSecretMode,
+					});
+
+					await this.add('VoIP_TeamCollab_TURN_Shared_Secret', '', {
+						type: 'password',
+						secret: true,
+						invalidValue: '',
+						i18nDescription: 'VoIP_TeamCollab_TURN_Shared_Secret_Description',
+						enableQuery: sharedSecretMode,
+					});
+
+					await this.add('VoIP_TeamCollab_TURN_Credential_TTL', 86400, {
+						type: 'int',
+						public: false,
+						invalidValue: 86400,
+						i18nDescription: 'VoIP_TeamCollab_TURN_Credential_TTL_Description',
+						enableQuery: sharedSecretMode,
+					});
 				});
 
 				await this.section('VoIP_TeamCollab_SIP_Integration', async function () {
