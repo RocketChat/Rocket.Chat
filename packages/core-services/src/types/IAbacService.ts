@@ -44,7 +44,11 @@ export interface IAbacService {
 	replaceRoomAbacAttributeByKey(rid: string, key: string, values: string[], actor: AbacActor | undefined): Promise<void>;
 	checkUsernamesMatchAttributes(usernames: string[], attributes: IAbacAttributeDefinition[], object: IRoom): Promise<void>;
 	filterUsersAllowedInRoom(userIds: string[], room: Pick<IRoom, '_id' | 'name' | 'abacAttributes'>): Promise<string[]>;
-	filterRoomsAllowedForUser(userId: string, rooms: Pick<IRoom, '_id' | 'name' | 'abacAttributes'>[]): Promise<string[]>;
+	filterRoomsAllowedForUser(
+		userId: string,
+		rooms: Pick<IRoom, '_id' | 'name' | 'abacAttributes'>[],
+		options?: { refreshAttributes?: boolean },
+	): Promise<string[]>;
 	canAccessObject(
 		room: Pick<IRoom, '_id' | 't' | 'teamId' | 'prid' | 'abacAttributes'>,
 		user: Pick<IUser, '_id'>,
