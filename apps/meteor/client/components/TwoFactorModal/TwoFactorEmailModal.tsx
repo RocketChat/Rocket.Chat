@@ -64,9 +64,11 @@ const TwoFactorEmailModal = ({ onConfirm, onClose, invalidAttempt, emailOrUserna
 			}
 			dispatchToastMessage({ type: 'success', message: t('Email_sent') });
 		} catch (error) {
+			const { errorType } = error as { errorType?: string };
+			const expired = errorType === 'error-challenge-expired' || errorType === 'error-challenge-not-found';
 			dispatchToastMessage({
 				type: 'error',
-				message: t('error-email-send-failed', { message: error }),
+				message: expired ? t('Two-factor_authentication_expired') : t('error-email-send-failed', { message: error }),
 			});
 		}
 	};

@@ -1588,6 +1588,10 @@ API.v1
 				required: ['emailOrUsername'],
 				additionalProperties: false,
 			}),
+			rateLimiterOptions: {
+				numRequestsAllowed: 5,
+				intervalTimeInMS: 60000,
+			},
 			response: {
 				200: voidSuccessResponse,
 				400: validateBadRequestErrorResponse,

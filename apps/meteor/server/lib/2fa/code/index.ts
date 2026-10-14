@@ -1,7 +1,7 @@
 import crypto from 'node:crypto';
 
 import type { IUser, IMethodConnection } from '@rocket.chat/core-typings';
-import { Users } from '@rocket.chat/models';
+import { TwoFactorChallenges, Users } from '@rocket.chat/models';
 import { Accounts } from 'meteor/accounts-base';
 import { Meteor } from 'meteor/meteor';
 
@@ -16,6 +16,7 @@ export interface ITwoFactorOptions {
 	disablePasswordFallback?: boolean;
 	disableRememberMe?: boolean;
 	requireSecondFactor?: boolean; // whether any two factor should be required
+	issueResendChallenge?: boolean;
 }
 
 const totpCheck = new TOTPCheck();
@@ -239,6 +240,10 @@ export async function checkCodeForUser({ user, code, method, options = {}, conne
 			method: selectedMethod.name,
 			...data,
 			availableMethods,
+			...(options.issueResendChallenge &&
+				selectedMethod === emailCheck && {
+					challengeId: await TwoFactorChallenges.createTwoFactorChallenge(existingUser._id, 'email', 'resend'),
+				}),
 		});
 	}
 

@@ -2276,15 +2276,16 @@ export class UsersRaw extends BaseRaw<IUser, DefaultFields<IUser>> implements IU
 		return !!result?._id;
 	}
 
-	addEmailCodeByUserId(userId: IUser['_id'], code: string, expire: Date) {
+	addEmailCodeByUserId(userId: IUser['_id'], code: string, expire: Date, notSentSince: Date) {
 		return this.updateOne(
-			{ _id: userId },
+			{ '_id': userId, 'services.emailCode.sentAt': { $not: { $gt: notSentSince } } },
 			{
 				$set: {
 					'services.emailCode': {
 						code,
 						expire,
 						attempts: 0,
+						sentAt: new Date(),
 					},
 				},
 			},

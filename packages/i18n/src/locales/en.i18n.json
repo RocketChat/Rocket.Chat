@@ -6915,6 +6915,7 @@
   "Two-factor_authentication_disabled": "Two-factor authentication disabled",
   "Two-factor_authentication_email": "Two-factor authentication via email",
   "Two-factor_authentication_enabled": "Two-factor authentication enabled",
+  "Two-factor_authentication_expired": "Your login attempt expired. Please log in again",
   "Two-factor_authentication_native_mobile_app_warning": "WARNING: Once you enable this, you will not be able to login on the native mobile apps (Rocket.Chat+) using your password until they implement the 2FA.",
   "Two-factor_authentication_required": "Two-factor authentication required",
   "Two-factor_authentication_via_TOTP": "Two-factor authentication via TOTP",
