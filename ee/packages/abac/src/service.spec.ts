@@ -1386,6 +1386,17 @@ describe('AbacService (unit)', () => {
 				expect(auditedPairs().sort()).toEqual(['alice@r1', 'carol@r1']);
 			});
 
+			it('writes no audit entry when asked not to', async () => {
+				usePdp({
+					evaluateSubjectsAgainstAttributes: jest
+						.fn()
+						.mockResolvedValue({ compliant: ['u1', 'u3'], nonCompliant: ['u2'], inconclusive: [] }),
+				});
+
+				await expect(service.filterUsersAllowedInRoom(['u1', 'u2', 'u3'], room, { audit: false })).resolves.toEqual(['u1', 'u3']);
+				expect(mockCreateAuditServerEvents).not.toHaveBeenCalled();
+			});
+
 			it('refuses everyone without asking when there is no PDP', async () => {
 				(service as any).pdp = null;
 
@@ -1478,6 +1489,15 @@ describe('AbacService (unit)', () => {
 
 				expect(mockCreateAuditServerEvents).toHaveBeenCalledTimes(1);
 				expect(auditedPairs().sort()).toEqual(['alice@r1', 'alice@r2']);
+			});
+
+			it('writes no audit entry when asked not to', async () => {
+				usePdp({
+					evaluateSubjectAgainstRooms: jest.fn().mockResolvedValue({ compliant: ['r1', 'r2'], nonCompliant: [], inconclusive: [] }),
+				});
+
+				await expect(service.filterRoomsAllowedForUser('u1', [room, otherRoom], { audit: false })).resolves.toEqual(['r1', 'r2']);
+				expect(mockCreateAuditServerEvents).not.toHaveBeenCalled();
 			});
 
 			it('admits nothing when there is no PDP', async () => {

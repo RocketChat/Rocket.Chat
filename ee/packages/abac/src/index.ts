@@ -827,7 +827,11 @@ export class AbacService extends ServiceClass implements IAbacService {
 		);
 	}
 
-	async filterUsersAllowedInRoom(userIds: string[], room: Pick<IRoom, '_id' | 'name' | 'abacAttributes'>): Promise<string[]> {
+	async filterUsersAllowedInRoom(
+		userIds: string[],
+		room: Pick<IRoom, '_id' | 'name' | 'abacAttributes'>,
+		options?: { audit?: boolean },
+	): Promise<string[]> {
 		const attributes = room.abacAttributes ?? [];
 		if (!userIds.length || !attributes.length) {
 			return userIds;
@@ -843,16 +847,18 @@ export class AbacService extends ServiceClass implements IAbacService {
 			const { compliant } = await this.pdp.evaluateSubjectsAgainstAttributes(subjects, attributes, room);
 			const allowed = new Set(compliant);
 
-			void Audit.actionsPerformed(
-				subjects
-					.filter(({ _id }) => allowed.has(_id))
-					.map(({ _id, username }) => ({
-						subject: { _id, username },
-						object: { _id: room._id, name: room.name },
-						reason: 'system',
-						actionPerformed: 'granted-object-access',
-					})),
-			);
+			if (options?.audit !== false) {
+				void Audit.actionsPerformed(
+					subjects
+						.filter(({ _id }) => allowed.has(_id))
+						.map(({ _id, username }) => ({
+							subject: { _id, username },
+							object: { _id: room._id, name: room.name },
+							reason: 'system',
+							actionPerformed: 'granted-object-access',
+						})),
+				);
+			}
 
 			return userIds.filter((id) => allowed.has(id));
 		} catch (err) {
@@ -864,7 +870,7 @@ export class AbacService extends ServiceClass implements IAbacService {
 	async filterRoomsAllowedForUser(
 		userId: string,
 		rooms: Pick<IRoom, '_id' | 'name' | 'abacAttributes'>[],
-		options?: { refreshAttributes?: boolean },
+		options?: { refreshAttributes?: boolean; audit?: boolean },
 	): Promise<string[]> {
 		if (!rooms.length) {
 			return [];
@@ -895,14 +901,16 @@ export class AbacService extends ServiceClass implements IAbacService {
 			const permitted = new Set(compliant);
 			const granted = rooms.filter(({ _id }) => permitted.has(_id));
 
-			void Audit.actionsPerformed(
-				granted.map((room) => ({
-					subject: { _id: subject._id, username: subject.username },
-					object: { _id: room._id, name: room.name },
-					reason: 'system',
-					actionPerformed: 'granted-object-access',
-				})),
-			);
+			if (options?.audit !== false) {
+				void Audit.actionsPerformed(
+					granted.map((room) => ({
+						subject: { _id: subject._id, username: subject.username },
+						object: { _id: room._id, name: room.name },
+						reason: 'system',
+						actionPerformed: 'granted-object-access',
+					})),
+				);
+			}
 
 			return granted.map(({ _id }) => _id);
 		} catch (err) {
