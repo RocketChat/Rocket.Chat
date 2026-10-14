@@ -1,13 +1,13 @@
 import { RING_RECIPIENTS_LIMIT } from '@rocket.chat/core-typings';
-import { Box } from '@rocket.chat/fuselage';
-import { CheckBox, Field, FieldError, FieldGroup, FieldLabel, FieldRow } from '@rocket.chat/fuselage-forms';
+import { Box, TextInput } from '@rocket.chat/fuselage';
+import { CheckBox, Field, FieldDescription, FieldError, FieldGroup, FieldLabel, FieldRow } from '@rocket.chat/fuselage-forms';
 import { GenericModal } from '@rocket.chat/ui-client';
 import { useToastMessageDispatch } from '@rocket.chat/ui-contexts';
 import { useState } from 'react';
 import { Controller, useForm } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 
-import { useConferenceActions, useConferenceSlots, useConferenceViewer } from '../../context/ConferenceContext';
+import { useConferenceActions, useConferenceProvider, useConferenceSlots, useConferenceViewer } from '../../context/ConferenceContext';
 import { useCallRingPreference } from '../../hooks/useCallDevicesInitialState';
 
 type AddParticipantsModalProps = {
@@ -16,7 +16,17 @@ type AddParticipantsModalProps = {
 
 type AddParticipantsFormValues = {
 	users: string[];
+	/** Numbers or SIP addresses to call into the conference, several separated by commas. */
+	destinations: string;
+	/** Whether the people added get the chat as it stands, or a fresh one started for the call. */
+	keepHistory: boolean;
 };
+
+const parseDestinations = (value: string): string[] =>
+	value
+		.split(',')
+		.map((destination) => destination.trim())
+		.filter(Boolean);
 
 /**
  * Associates people with the call, which is what lets them join it — and deliberately puts them in no room.
@@ -26,17 +36,25 @@ type AddParticipantsFormValues = {
 const AddParticipantsModal = ({ onClose }: AddParticipantsModalProps) => {
 	const { t } = useTranslation();
 	const dispatchToastMessage = useToastMessageDispatch();
-	const { addParticipants } = useConferenceActions();
+	const { addParticipants, shareChat } = useConferenceActions();
 	const { renderUserPicker } = useConferenceSlots();
+	const provider = useConferenceProvider();
+
+	// Offered only where the provider can place a call; everywhere else there is nothing to dial with.
+	const canDialOut = provider?.features.has('dial-out') ?? false;
 
 	const {
 		control,
 		handleSubmit,
+		register,
 		watch,
 		formState: { errors },
-	} = useForm<AddParticipantsFormValues>({ defaultValues: { users: [] }, mode: 'onChange' });
+	} = useForm<AddParticipantsFormValues>({
+		defaultValues: { users: [], destinations: '', keepHistory: true },
+		mode: 'onChange',
+	});
 
-	const { users } = watch();
+	const { users, destinations } = watch();
 
 	// The endpoint refuses the whole body past `RING_RECIPIENTS_LIMIT`.
 	const tooMany = users.length > RING_RECIPIENTS_LIMIT;
@@ -49,14 +67,30 @@ const AddParticipantsModal = ({ onClose }: AddParticipantsModalProps) => {
 
 	const [adding, setAdding] = useState(false);
 
-	const handleAdd = ({ users }: AddParticipantsFormValues) => {
+	const handleAdd = ({ users, destinations, keepHistory }: AddParticipantsFormValues) => {
 		setAdding(true);
 
-		void addParticipants(users, canRingUsers && ring)
-			.then(({ added }) => {
+		parseDestinations(destinations).forEach((destination) => provider?.actions.dialOut(destination));
+
+		void (async () => {
+			if (!users.length) {
+				return 0;
+			}
+
+			const { added } = await addParticipants(users, canRingUsers && ring);
+
+			// Membership is what lets them into the call and puts them in no room, so the chat is a second ask:
+			// either the room they are joining as it stands, or a fresh one started for the call.
+			await shareChat(keepHistory ? 'invite' : 'discussion', users);
+
+			return added;
+		})()
+			.then((added) => {
 				// Anyone already associated is skipped, so a selection can come back empty.
 				dispatchToastMessage(
-					added ? { type: 'success', message: t('Users_added') } : { type: 'info', message: t('Selected_users_are_already_in_the_call') },
+					added || !users.length
+						? { type: 'success', message: t('Users_added') }
+						: { type: 'info', message: t('Selected_users_are_already_in_the_call') },
 				);
 
 				onClose();
@@ -72,7 +106,7 @@ const AddParticipantsModal = ({ onClose }: AddParticipantsModalProps) => {
 			icon={null}
 			title={t('Add_people')}
 			confirmText={t('Add')}
-			confirmDisabled={!users.length || tooMany}
+			confirmDisabled={(!users.length && !parseDestinations(destinations).length) || tooMany}
 			confirmLoading={adding}
 			wrapperFunction={(props) => <Box is='form' onSubmit={handleSubmit(handleAdd)} {...props} />}
 			onCancel={onClose}
@@ -106,6 +140,31 @@ const AddParticipantsModal = ({ onClose }: AddParticipantsModalProps) => {
 					</FieldRow>
 					{errors.users && <FieldError>{errors.users.message}</FieldError>}
 				</Field>
+				{/* A question about the people just chosen, so it sits under them. */}
+				{!!users.length && (
+					<Field>
+						<FieldRow justifyContent='flex-start'>
+							<Controller
+								control={control}
+								name='keepHistory'
+								render={({ field: { value, onChange } }) => <CheckBox checked={value} onChange={() => onChange(!value)} />}
+							/>
+							<Box marginInlineStart={8}>
+								<FieldLabel>{t('Keep_chat_history')}</FieldLabel>
+							</Box>
+						</FieldRow>
+						<FieldDescription>{t('Keep_chat_history_Description')}</FieldDescription>
+					</Field>
+				)}
+				{canDialOut && (
+					<Field>
+						<FieldLabel>{t('Phone_Numbers')}</FieldLabel>
+						<FieldRow>
+							<TextInput {...register('destinations')} placeholder={t('Enter_username_or_number')} />
+						</FieldRow>
+						<FieldDescription>{t('Dial_numbers_into_the_call_Description')}</FieldDescription>
+					</Field>
+				)}
 				{/* Under the names, because it is a question about the people just chosen. */}
 				{canRingUsers && (
 					<Field>

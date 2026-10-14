@@ -109,6 +109,9 @@ public rooms — whose history is already open — lead with the invite. A room 
 the discussion as the only option. When a room cannot do what was asked, the answer is a refusal rather than
 silently doing the other thing.
 
+How a chat is given to someone, and how a call is reached from a telephone, are covered under
+[persistent chat](persistent-chat.md).
+
 Deciding who lacks access is mostly one subscription read for every member at once. Rooms whose access can come
 from outside their own subscriptions — team-owned channels, discussions inheriting from a parent, rooms
 carrying ABAC attributes — are asked one at a time instead: getting one of those wrong is worse than the extra
