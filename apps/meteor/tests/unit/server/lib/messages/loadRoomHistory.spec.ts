@@ -1,13 +1,14 @@
+import type { IMessagesModel } from '@rocket.chat/model-typings';
+import { registerModel } from '@rocket.chat/models';
 import { fakeCursor } from '@rocket.chat/models/testing';
 import { expect } from 'chai';
-import { describe, it } from 'mocha';
+import { before, describe, it } from 'mocha';
 import proxyquire from 'proxyquire';
 import sinon from 'sinon';
 
 const findBefore = sinon.stub();
 
 const { loadRoomHistory } = proxyquire.noCallThru().load('../../../../../server/lib/messages/loadRoomHistory', {
-	'@rocket.chat/models': { Messages: { findVisibleByRoomIdBeforeTimestampNotContainingTypes: findBefore } },
 	'../../settings/cached': { settings: { get: () => [] } },
 	'../utils/lib/normalizeMessagesForUser': { normalizeMessagesForUser: async (messages: unknown[]) => messages },
 });
@@ -15,6 +16,10 @@ const { loadRoomHistory } = proxyquire.noCallThru().load('../../../../../server/
 const pageOf = (...timestamps: number[]) => fakeCursor(timestamps.map((ts, i) => ({ _id: `m${i}`, rid: 'room', ts: new Date(ts) })));
 
 describe('loadRoomHistory', () => {
+	before(() => {
+		registerModel('IMessagesModel', { findVisibleByRoomIdBeforeTimestampNotContainingTypes: findBefore } as unknown as IMessagesModel);
+	});
+
 	it('should offer the neighbouring pages from the edges of the page returned', async () => {
 		findBefore.returns(pageOf(3000, 2000, 1000));
 

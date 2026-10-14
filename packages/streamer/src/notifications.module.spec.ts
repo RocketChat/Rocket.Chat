@@ -1,5 +1,5 @@
 import { api, MediaCall, Settings, VideoConf } from '@rocket.chat/core-services';
-import { Subscriptions, Users } from '@rocket.chat/models';
+import { registerModel } from '@rocket.chat/models';
 import { fakeCursor } from '@rocket.chat/models/testing';
 
 import { NotificationsModule } from './notifications.module';
@@ -10,17 +10,6 @@ jest.mock('@rocket.chat/core-services', () => ({
 	VideoConf: { validateAction: jest.fn() },
 	MediaCall: { processSerializedSignal: jest.fn() },
 	Settings: { get: jest.fn() },
-}));
-
-jest.mock('@rocket.chat/models', () => ({
-	...jest.requireActual('@rocket.chat/models'),
-	Subscriptions: {
-		countByRoomIdAndUserId: jest.fn(),
-		findByRoomIdAndNotUserId: jest.fn(),
-	},
-	Users: {
-		findOneById: jest.fn(),
-	},
 }));
 
 jest.mock('@rocket.chat/logger', () => ({
@@ -47,8 +36,17 @@ class TestStreamer extends Streamer<any> {
 
 const validateAction = jest.mocked(VideoConf.validateAction);
 const processSerializedSignal = jest.mocked(MediaCall.processSerializedSignal);
-const countByRoomIdAndUserId = jest.mocked(Subscriptions.countByRoomIdAndUserId);
-const findByRoomIdAndNotUserId = jest.mocked(Subscriptions.findByRoomIdAndNotUserId);
+const subscriptionsModel = {
+	countByRoomIdAndUserId: jest.fn(),
+	findByRoomIdAndNotUserId: jest.fn(),
+};
+const usersModel = {
+	findOneById: jest.fn(),
+};
+registerModel('ISubscriptionsModel', subscriptionsModel as any);
+registerModel('IUsersModel', usersModel as any);
+
+const { countByRoomIdAndUserId, findByRoomIdAndNotUserId } = subscriptionsModel;
 
 describe('NotificationsModule', () => {
 	let notifications: NotificationsModule;
@@ -217,7 +215,7 @@ describe('NotificationsModule', () => {
 
 		beforeEach(() => {
 			jest.mocked(Settings.get).mockResolvedValue(false);
-			jest.mocked(Users.findOneById).mockResolvedValue({ username: 'alice' } as any);
+			usersModel.findOneById.mockResolvedValue({ username: 'alice' } as any);
 			emitToOne = jest.spyOn(api, 'emitToOne').mockResolvedValue();
 		});
 

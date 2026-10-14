@@ -1,3 +1,5 @@
+import type { ILivechatDepartmentModel } from '@rocket.chat/model-typings';
+import { registerModel } from '@rocket.chat/models';
 import { fakeCursor } from '@rocket.chat/models/testing';
 import { expect } from 'chai';
 import proxyquire from 'proxyquire';
@@ -34,10 +36,9 @@ describe('restrictQuery', () => {
 
 		const debugStub = sinon.stub();
 
+		registerModel('ILivechatDepartmentModel', { find: findStub } as unknown as ILivechatDepartmentModel);
+
 		const { restrictQuery } = proxyquire.noCallThru().load(modulePath, {
-			'@rocket.chat/models': {
-				LivechatDepartment: { find: findStub },
-			},
 			'@rocket.chat/omni-core-ee': {
 				getUnitsFromUser: getUnitsFromUserStub,
 			},

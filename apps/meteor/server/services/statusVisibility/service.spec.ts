@@ -1,3 +1,5 @@
+import type { IUsersModel } from '@rocket.chat/model-typings';
+import { registerModel } from '@rocket.chat/models';
 import { fakeCursor } from '@rocket.chat/models/testing';
 import { hiddenIds, isHiddenFor } from '@rocket.chat/streamer';
 import EJSON from 'ejson';
@@ -24,14 +26,13 @@ jest.mock('@rocket.chat/core-services', () => ({
 		}
 	},
 }));
-jest.mock('@rocket.chat/models', () => ({
-	Users: {
-		findPresenceUsersByIds: (...args: unknown[]) => findPresenceUsersByIds(...args),
-		findWithStatusVisibilityConfig: (...args: unknown[]) => findWithStatusVisibilityConfig(...args),
-		findPresenceDisabledByAdmin: (...args: unknown[]) => findPresenceDisabledByAdmin(...args),
-		findUsersNotOffline: (...args: unknown[]) => findUsersNotOffline(...args),
-	},
-}));
+
+registerModel('IUsersModel', {
+	findPresenceUsersByIds: (...args: unknown[]) => findPresenceUsersByIds(...args),
+	findWithStatusVisibilityConfig: (...args: unknown[]) => findWithStatusVisibilityConfig(...args),
+	findPresenceDisabledByAdmin: (...args: unknown[]) => findPresenceDisabledByAdmin(...args),
+	findUsersNotOffline: (...args: unknown[]) => findUsersNotOffline(...args),
+} as unknown as IUsersModel);
 
 const flush = () => new Promise((resolve) => setImmediate(resolve));
 const blocking = (id: string, blocked: string[]) => ({ _id: id, settings: { preferences: { statusVisibilityDenied: blocked } } });

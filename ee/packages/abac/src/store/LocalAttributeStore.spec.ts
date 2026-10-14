@@ -1,3 +1,4 @@
+import { registerModel } from '@rocket.chat/models';
 import { fakeCursor } from '@rocket.chat/models/testing';
 
 import { LocalAttributeStore } from './LocalAttributeStore';
@@ -5,7 +6,7 @@ import { LocalAttributeStore } from './LocalAttributeStore';
 const ensureMock = jest.fn();
 jest.mock('../helper', () => ({ ensureAttributeDefinitionsExist: (...a: unknown[]) => ensureMock(...a) }));
 const findPaginated = jest.fn();
-jest.mock('@rocket.chat/models', () => ({ AbacAttributes: { findPaginated: (...a: unknown[]) => findPaginated(...a) } }));
+registerModel('IAbacAttributesModel', { findPaginated: (...a: unknown[]) => findPaginated(...a) } as any);
 
 const actor = { _id: 'u', username: 'bob', name: 'Bob' };
 

@@ -1,6 +1,8 @@
+import type { IRoomsModel, IUsersModel } from '@rocket.chat/model-typings';
+import { registerModel } from '@rocket.chat/models';
 import { fakeCursor } from '@rocket.chat/models/testing';
 import { expect } from 'chai';
-import { describe, it, beforeEach } from 'mocha';
+import { describe, it, before, beforeEach } from 'mocha';
 import proxyquire from 'proxyquire';
 import Sinon from 'sinon';
 
@@ -14,11 +16,14 @@ const UsersStub = {
 	findUsersByUsernames: Sinon.stub(),
 };
 
-const { findDirectRoomByIdentifier } = proxyquire.noCallThru().load('../../../../../server/lib/rooms/findDirectRoomByIdentifier.ts', {
-	'@rocket.chat/models': { Rooms: RoomsStub, Users: UsersStub },
-});
+const { findDirectRoomByIdentifier } = proxyquire.noCallThru().load('../../../../../server/lib/rooms/findDirectRoomByIdentifier.ts', {});
 
 describe('findDirectRoomByIdentifier', () => {
+	before(() => {
+		registerModel('IRoomsModel', RoomsStub as unknown as IRoomsModel);
+		registerModel('IUsersModel', UsersStub as unknown as IUsersModel);
+	});
+
 	beforeEach(() => {
 		RoomsStub.findByTypeAndNameOrId.reset();
 		RoomsStub.findOneDirectRoomContainingAllUserIDs.reset();

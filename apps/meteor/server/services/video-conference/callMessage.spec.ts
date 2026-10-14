@@ -1,4 +1,7 @@
+import type { IMessagesModel, IRoomsModel, IUsersModel, IVideoConferenceModel } from '@rocket.chat/model-typings';
+import { registerModel } from '@rocket.chat/models';
 import { expect } from 'chai';
+import { before } from 'mocha';
 import sinon from 'sinon';
 
 import { buildDirectCall, buildGroupCall, buildMember, commonServiceStubs, providerCapabilities, resetAll } from './testHarness';
@@ -20,12 +23,6 @@ const sendMessageStub = sinon.stub().resolves({ _id: 'msg1' });
 
 const { VideoConfService } = proxyquire.noCallThru().load('./service', {
 	...commonServiceStubs,
-	'@rocket.chat/models': {
-		Users: { findOneById: sinon.stub().resolves({ _id: 'creator', username: 'creator.user', name: 'Creator User' }) },
-		VideoConference: { findOneById: sinon.stub().resolves(null) },
-		Rooms: { findOneById: sinon.stub().resolves({ _id: 'room1', t: 'c', name: 'general', fname: 'general' }) },
-		Messages: { setBlocksById: sinon.stub().resolves() },
-	},
 	'../../lib/messages/sendMessage': { sendMessage: sendMessageStub },
 	'../../settings': { settings: { get: (key: string) => settingsValues[key] } },
 });
@@ -35,6 +32,17 @@ const sentRecord = () => sendMessageStub.firstCall.args[1] as { t: string; msg: 
 
 describe('VideoConfService: the call message that names a thread', () => {
 	let service: any;
+
+	before(() => {
+		registerModel('IUsersModel', {
+			findOneById: sinon.stub().resolves({ _id: 'creator', username: 'creator.user', name: 'Creator User' }),
+		} as unknown as IUsersModel);
+		registerModel('IVideoConferenceModel', { findOneById: sinon.stub().resolves(null) } as unknown as IVideoConferenceModel);
+		registerModel('IRoomsModel', {
+			findOneById: sinon.stub().resolves({ _id: 'room1', t: 'c', name: 'general', fname: 'general' }),
+		} as unknown as IRoomsModel);
+		registerModel('IMessagesModel', { setBlocksById: sinon.stub().resolves() } as unknown as IMessagesModel);
+	});
 
 	beforeEach(() => {
 		service = new VideoConfService();

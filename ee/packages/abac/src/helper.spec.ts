@@ -1,3 +1,4 @@
+import { registerModel } from '@rocket.chat/models';
 import { fakeCursor } from '@rocket.chat/models/testing';
 
 import {
@@ -12,13 +13,9 @@ import {
 } from './helper';
 
 const attributesFindMock = jest.fn();
-jest.mock('@rocket.chat/models', () => {
-	return {
-		AbacAttributes: {
-			find: () => attributesFindMock(),
-		},
-	};
-});
+registerModel('IAbacAttributesModel', {
+	find: () => attributesFindMock(),
+} as any);
 
 describe('validateAndNormalizeAttributes', () => {
 	it('normalizes keys and merges duplicate values from multiple entries', () => {

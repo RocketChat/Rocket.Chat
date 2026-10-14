@@ -1,6 +1,9 @@
 import type { VideoConference } from '@rocket.chat/core-typings';
+import type { IMessagesModel, IRoomsModel, ISubscriptionsModel, IUsersModel, IVideoConferenceModel } from '@rocket.chat/model-typings';
+import { registerModel } from '@rocket.chat/models';
 import { fakeCursor } from '@rocket.chat/models/testing';
 import { expect } from 'chai';
+import { before } from 'mocha';
 import sinon from 'sinon';
 
 import {
@@ -67,19 +70,20 @@ const { VideoConfService } = proxyquire.noCallThru().load('./service', {
 		Room: { addUserToRoom: sinon.stub().resolves() },
 		Presence: PresenceMock,
 	},
-	'@rocket.chat/models': {
-		Users: UsersMock,
-		VideoConference: VideoConferenceModelMock,
-		Rooms: { findOneById: sinon.stub().resolves(null) },
-		Messages: { setBlocksById: sinon.stub().resolves() },
-		Subscriptions: {},
-	},
 	'../../lib/messaging/threads/functions': { follow: followStub },
 	'../../settings': { settings: { get: (key: string) => settingsValues[key] } },
 });
 
 describe('VideoConfService.addUserToCall provider gating', () => {
 	let service: any;
+
+	before(() => {
+		registerModel('IUsersModel', UsersMock as unknown as IUsersModel);
+		registerModel('IVideoConferenceModel', VideoConferenceModelMock as unknown as IVideoConferenceModel);
+		registerModel('IRoomsModel', { findOneById: sinon.stub().resolves(null) } as unknown as IRoomsModel);
+		registerModel('IMessagesModel', { setBlocksById: sinon.stub().resolves() } as unknown as IMessagesModel);
+		registerModel('ISubscriptionsModel', {} as unknown as ISubscriptionsModel);
+	});
 
 	beforeEach(() => {
 		service = new VideoConfService();
