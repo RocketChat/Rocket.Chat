@@ -2,7 +2,7 @@ import { useEndpoint, useToastMessageDispatch } from '@rocket.chat/ui-contexts';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { useTranslation } from 'react-i18next';
 
-import { getEndpointErrorMessage } from '../../../lib/errorHandling';
+import { getErrorMessage } from '../../../lib/errorHandling';
 
 export const useContactsSync = () => {
 	const { t } = useTranslation();
@@ -20,7 +20,6 @@ export const useContactsSync = () => {
 			return result;
 		},
 		onSuccess: () => dispatchToastMessage({ type: 'success', message: t('Outlook_contact_sync_complete') }),
-		onError: async (error) =>
-			dispatchToastMessage({ type: 'error', message: await getEndpointErrorMessage(error, 'Outlook_contact_sync_failed') }),
+		onError: (error) => dispatchToastMessage({ type: 'error', message: getErrorMessage(error, 'Outlook_contact_sync_failed') }),
 	});
 };
