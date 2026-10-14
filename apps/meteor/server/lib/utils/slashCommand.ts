@@ -26,7 +26,6 @@ interface ISlashCommandAddParams<T extends string> {
 }
 
 const assertCanUseCommand = async ({ permission }: SlashCommand, userId: string, rid: string): Promise<void> => {
-	// A command that declares no permission is open to every user
 	if (permission && !(await hasAtLeastOnePermissionAsync(userId, ([] as string[]).concat(permission), rid))) {
 		throw new MeteorError('error-not-authorized', 'Not authorized');
 	}
