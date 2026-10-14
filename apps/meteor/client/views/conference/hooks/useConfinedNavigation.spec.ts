@@ -54,6 +54,7 @@ describe('useConfinedNavigation', () => {
 	afterEach(() => {
 		openSpy.mockRestore();
 		document.body.innerHTML = '';
+		window.history.replaceState({}, '', '/');
 	});
 
 	describe('anchor click interception', () => {
