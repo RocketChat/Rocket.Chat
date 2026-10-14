@@ -367,7 +367,9 @@ const commandsPreviewPostResponseSchema = ajv.compile<void>({
 	additionalProperties: false,
 });
 
-const isNotAuthorizedError = (error: unknown): boolean => isMeteorError(error) && error.error === 'error-not-authorized';
+const forbiddenErrors = ['error-not-authorized', 'error-not-allowed'];
+
+const isForbiddenError = (error: unknown): boolean => isMeteorError(error) && forbiddenErrors.includes(String(error.error));
 
 // Expects a body of: { command: 'gimme', params: 'any string value', roomId: 'value', triggerId: 'value' }
 API.v1.post(
@@ -415,7 +417,7 @@ API.v1.post(
 		try {
 			result = await slashCommands.run({ command: cmd, params, message, triggerId, userId: this.userId });
 		} catch (error) {
-			if (isNotAuthorizedError(error)) {
+			if (isForbiddenError(error)) {
 				return API.v1.forbidden();
 			}
 			throw error;
@@ -461,7 +463,7 @@ API.v1.get(
 				userId: this.userId,
 			});
 		} catch (error) {
-			if (isNotAuthorizedError(error)) {
+			if (isForbiddenError(error)) {
 				return API.v1.forbidden();
 			}
 			throw error;
@@ -521,7 +523,7 @@ API.v1.post(
 				this.userId,
 			);
 		} catch (error) {
-			if (isNotAuthorizedError(error)) {
+			if (isForbiddenError(error)) {
 				return API.v1.forbidden();
 			}
 			throw error;

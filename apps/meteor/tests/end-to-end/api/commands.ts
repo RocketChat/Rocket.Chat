@@ -523,7 +523,7 @@ describe('[Commands]', () => {
 				.post(api('commands.run'))
 				.set(user1Credentials)
 				.send({ command: 'kick', roomId: directMessageRoom._id, params: user1.username })
-				.expect(400);
+				.expect(403);
 
 			expect(res.body).to.have.property('success', false);
 			expect(res.body).to.have.property('error').that.is.a('string');
@@ -558,7 +558,7 @@ describe('[Commands]', () => {
 				.post(api('commands.run'))
 				.set(user1Credentials)
 				.send({ command: 'leave', roomId: directMessageRoom._id })
-				.expect(400);
+				.expect(403);
 
 			expect(res.body).to.have.property('success', false);
 			expect(res.body).to.have.property('error').that.is.a('string');
