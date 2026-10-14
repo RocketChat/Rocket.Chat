@@ -15,7 +15,7 @@ import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { useFieldArray, useForm } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 
-import { getEndpointErrorMessage } from '../../lib/errorHandling';
+import { getErrorMessage } from '../../lib/errorHandling';
 
 export type ContactEditProps = {
 	contact?: Serialized<IContactPublic>;
@@ -96,8 +96,7 @@ const ContactEdit = ({ contact, onSaved, onClose }: ContactEditProps) => {
 
 			onSaved(saved);
 		},
-		onError: async (error) =>
-			dispatchToastMessage({ type: 'error', message: await getEndpointErrorMessage(error, 'Failed_to_save_settings') }),
+		onError: (error) => dispatchToastMessage({ type: 'error', message: getErrorMessage(error, 'Failed_to_save_settings') }),
 	});
 
 	return (
