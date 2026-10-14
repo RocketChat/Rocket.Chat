@@ -1,4 +1,4 @@
-import { Badge, Box, Icon, IconButton } from '@rocket.chat/fuselage';
+import { Badge, Box, Icon, IconButton, ItemActions } from '@rocket.chat/fuselage';
 import { mockAppRoot } from '@rocket.chat/mock-providers';
 import type { Meta, StoryObj } from '@storybook/react';
 
@@ -18,6 +18,7 @@ const meta: Meta<RoomListItemProps> = {
 		iconLabel: 'Public channel',
 		subtitle: 'Rafael: release notes are up',
 		time: new Date(),
+		menu: <IconButton mini icon='kebab' aria-label='Options' />,
 	},
 	decorators: [
 		mockAppRoot().buildStoryDecorator(),
@@ -60,12 +61,36 @@ export const Unread: Story = {
 	},
 };
 
-export const WithMenu: Story = {
-	args: {
-		menu: <IconButton mini icon='kebab' aria-label='Options' />,
-	},
-};
+// export const WithMenu: Story = {
+// 	args: {
+// 		menu: <IconButton mini icon='kebab' aria-label='Options' />,
+// 	},
+// };
 
 export const WithoutAvatar: Story = {
 	args: { showAvatar: false },
+};
+
+const incomingCallActions = (
+	<ItemActions>
+		<IconButton mini secondary success icon='phone' aria-label='Accept call' />
+		<IconButton mini secondary danger icon='phone-off' aria-label='Reject call' />
+	</ItemActions>
+);
+
+export const IncomingCall: Story = {
+	args: {
+		icon: <Icon name='phone' size='x20' />,
+		iconLabel: 'Incoming call',
+		actions: incomingCallActions,
+		// menu: <IconButton mini icon='kebab' aria-label='Options' />,
+	},
+};
+
+export const IncomingCallExtended: Story = {
+	args: {
+		...IncomingCall.args,
+		viewMode: 'extended',
+		// menu: <IconButton mini icon='kebab' aria-label='Options' />,
+	},
 };
