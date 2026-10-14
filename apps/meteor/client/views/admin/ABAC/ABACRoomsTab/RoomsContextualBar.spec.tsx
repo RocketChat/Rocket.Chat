@@ -1,5 +1,5 @@
 import { mockAppRoot } from '@rocket.chat/mock-providers';
-import { render, screen, waitFor } from '@testing-library/react';
+import { render, screen, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 
 import RoomsContextualBar from './RoomsContextualBar';
@@ -69,7 +69,7 @@ describe('RoomsContextualBar, editing a room', () => {
 		expect(reviewButton()).toBeEnabled();
 	});
 
-	it('should commit the previewed attributes and close', async () => {
+	it('should ask for a confirmation, then commit the previewed attributes and close', async () => {
 		const { save, onClose } = renderBar();
 
 		await userEvent.click(screen.getByRole('button', { name: 'Remove' }));
@@ -79,6 +79,12 @@ describe('RoomsContextualBar, editing a room', () => {
 		const saveButton = await screen.findByRole('button', { name: 'Save' });
 		await waitFor(() => expect(saveButton).toBeEnabled());
 		await userEvent.click(saveButton);
+
+		const dialog = await screen.findByRole('dialog');
+		expect(within(dialog).getByText('ABAC_Preview_Update_room')).toBeInTheDocument();
+		expect(save).not.toHaveBeenCalled();
+
+		await userEvent.click(within(dialog).getByRole('button', { name: 'Save' }));
 
 		await waitFor(() => expect(save).toHaveBeenCalledWith({ attributes: { Department: ['Engineering'] } }));
 		expect(onClose).toHaveBeenCalledTimes(1);
@@ -95,6 +101,7 @@ describe('RoomsContextualBar, editing a room', () => {
 		const saveButton = await screen.findByRole('button', { name: 'Save' });
 		await waitFor(() => expect(saveButton).toBeEnabled());
 		await userEvent.click(saveButton);
+		await userEvent.click(within(await screen.findByRole('dialog')).getByRole('button', { name: 'Save' }));
 
 		await waitFor(() => expect(save).toHaveBeenCalledTimes(1));
 		screen.getAllByRole('button', { name: 'Back' }).forEach((back) => expect(back).toBeDisabled());
