@@ -179,44 +179,48 @@ exports[`OngoingCallsDropdown renders Ringing without crashing 1`] = `
                         </div>
                       </div>
                       <div
-                        class="rcx-item__description"
+                        class="rcx-item__row"
                       >
                         <div
-                          class="rcx-box rcx-box--full rcx-css-1p4sjp4"
+                          class="rcx-item__description"
                         >
-                          1 person joined
+                          <div
+                            class="rcx-box rcx-box--full rcx-css-1p4sjp4"
+                          >
+                            1 person joined
+                          </div>
+                        </div>
+                        <div
+                          class="rcx-item__actions"
+                        >
+                          <button
+                            aria-label="Silence"
+                            class="rcx-box rcx-box--full rcx-button--mini-square rcx-button--icon-secondary rcx-button--square rcx-button--icon rcx-button"
+                            title="Silence"
+                            type="button"
+                          >
+                            <i
+                              aria-hidden="true"
+                              class="rcx-box rcx-box--full rcx-icon--name-bell-off rcx-icon rcx-css-1tg7yd0"
+                            >
+                              
+                            </i>
+                          </button>
+                          <button
+                            aria-label="Decline"
+                            class="rcx-box rcx-box--full rcx-button--mini-square rcx-button--icon-secondary rcx-button--square rcx-button--icon rcx-button"
+                            title="Decline"
+                            type="button"
+                          >
+                            <i
+                              aria-hidden="true"
+                              class="rcx-box rcx-box--full rcx-icon--name-cross rcx-icon rcx-css-1tg7yd0"
+                            >
+                              
+                            </i>
+                          </button>
                         </div>
                       </div>
-                    </div>
-                    <div
-                      class="rcx-item__actions"
-                    >
-                      <button
-                        aria-label="Silence"
-                        class="rcx-box rcx-box--full rcx-button--mini-square rcx-button--icon-secondary rcx-button--square rcx-button--icon rcx-button"
-                        title="Silence"
-                        type="button"
-                      >
-                        <i
-                          aria-hidden="true"
-                          class="rcx-box rcx-box--full rcx-icon--name-bell-off rcx-icon rcx-css-1tg7yd0"
-                        >
-                          
-                        </i>
-                      </button>
-                      <button
-                        aria-label="Decline"
-                        class="rcx-box rcx-box--full rcx-button--mini-square rcx-button--icon-secondary rcx-button--square rcx-button--icon rcx-button"
-                        title="Decline"
-                        type="button"
-                      >
-                        <i
-                          aria-hidden="true"
-                          class="rcx-box rcx-box--full rcx-icon--name-cross rcx-icon rcx-css-1tg7yd0"
-                        >
-                          
-                        </i>
-                      </button>
                     </div>
                   </div>
                 </li>

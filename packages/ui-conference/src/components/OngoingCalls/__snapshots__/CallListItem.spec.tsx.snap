@@ -39,24 +39,28 @@ exports[`CallListItem renders Declined without crashing 1`] = `
             </div>
           </div>
           <div
-            class="rcx-item__description"
+            class="rcx-item__row"
           >
             <div
-              class="rcx-box rcx-box--full rcx-css-1p4sjp4"
+              class="rcx-item__description"
             >
-              3 people joined
+              <div
+                class="rcx-box rcx-box--full rcx-css-1p4sjp4"
+              >
+                3 people joined
+              </div>
             </div>
-          </div>
-        </div>
-        <div
-          class="rcx-item__actions"
-        >
-          <div
-            class="rcx-box rcx-box--full rcx-css-1p4sjp4"
-          >
-            (
-            Declined
-            )
+            <div
+              class="rcx-item__actions"
+            >
+              <div
+                class="rcx-box rcx-box--full rcx-css-1p4sjp4"
+              >
+                (
+                Declined
+                )
+              </div>
+            </div>
           </div>
         </div>
       </div>
@@ -104,31 +108,35 @@ exports[`CallListItem renders Joinable without crashing 1`] = `
             </div>
           </div>
           <div
-            class="rcx-item__description"
+            class="rcx-item__row"
           >
             <div
-              class="rcx-box rcx-box--full rcx-css-1p4sjp4"
+              class="rcx-item__description"
             >
-              4 people joined
+              <div
+                class="rcx-box rcx-box--full rcx-css-1p4sjp4"
+              >
+                4 people joined
+              </div>
+            </div>
+            <div
+              class="rcx-item__actions"
+            >
+              <button
+                aria-label="Decline"
+                class="rcx-box rcx-box--full rcx-button--mini-square rcx-button--icon-secondary rcx-button--square rcx-button--icon rcx-button"
+                title="Decline"
+                type="button"
+              >
+                <i
+                  aria-hidden="true"
+                  class="rcx-box rcx-box--full rcx-icon--name-cross rcx-icon rcx-css-1tg7yd0"
+                >
+                  
+                </i>
+              </button>
             </div>
           </div>
-        </div>
-        <div
-          class="rcx-item__actions"
-        >
-          <button
-            aria-label="Decline"
-            class="rcx-box rcx-box--full rcx-button--mini-square rcx-button--icon-secondary rcx-button--square rcx-button--icon rcx-button"
-            title="Decline"
-            type="button"
-          >
-            <i
-              aria-hidden="true"
-              class="rcx-box rcx-box--full rcx-icon--name-cross rcx-icon rcx-css-1tg7yd0"
-            >
-              
-            </i>
-          </button>
         </div>
       </div>
     </div>
@@ -175,12 +183,16 @@ exports[`CallListItem renders Joined without crashing 1`] = `
             </div>
           </div>
           <div
-            class="rcx-item__description"
+            class="rcx-item__row"
           >
             <div
-              class="rcx-box rcx-box--full rcx-css-1p4sjp4"
+              class="rcx-item__description"
             >
-              2 people joined
+              <div
+                class="rcx-box rcx-box--full rcx-css-1p4sjp4"
+              >
+                2 people joined
+              </div>
             </div>
           </div>
         </div>
@@ -234,44 +246,48 @@ exports[`CallListItem renders Ringing without crashing 1`] = `
             </div>
           </div>
           <div
-            class="rcx-item__description"
+            class="rcx-item__row"
           >
             <div
-              class="rcx-box rcx-box--full rcx-css-1p4sjp4"
+              class="rcx-item__description"
             >
-              1 person joined
+              <div
+                class="rcx-box rcx-box--full rcx-css-1p4sjp4"
+              >
+                1 person joined
+              </div>
+            </div>
+            <div
+              class="rcx-item__actions"
+            >
+              <button
+                aria-label="Silence"
+                class="rcx-box rcx-box--full rcx-button--mini-square rcx-button--icon-secondary rcx-button--square rcx-button--icon rcx-button"
+                title="Silence"
+                type="button"
+              >
+                <i
+                  aria-hidden="true"
+                  class="rcx-box rcx-box--full rcx-icon--name-bell-off rcx-icon rcx-css-1tg7yd0"
+                >
+                  
+                </i>
+              </button>
+              <button
+                aria-label="Decline"
+                class="rcx-box rcx-box--full rcx-button--mini-square rcx-button--icon-secondary rcx-button--square rcx-button--icon rcx-button"
+                title="Decline"
+                type="button"
+              >
+                <i
+                  aria-hidden="true"
+                  class="rcx-box rcx-box--full rcx-icon--name-cross rcx-icon rcx-css-1tg7yd0"
+                >
+                  
+                </i>
+              </button>
             </div>
           </div>
-        </div>
-        <div
-          class="rcx-item__actions"
-        >
-          <button
-            aria-label="Silence"
-            class="rcx-box rcx-box--full rcx-button--mini-square rcx-button--icon-secondary rcx-button--square rcx-button--icon rcx-button"
-            title="Silence"
-            type="button"
-          >
-            <i
-              aria-hidden="true"
-              class="rcx-box rcx-box--full rcx-icon--name-bell-off rcx-icon rcx-css-1tg7yd0"
-            >
-              
-            </i>
-          </button>
-          <button
-            aria-label="Decline"
-            class="rcx-box rcx-box--full rcx-button--mini-square rcx-button--icon-secondary rcx-button--square rcx-button--icon rcx-button"
-            title="Decline"
-            type="button"
-          >
-            <i
-              aria-hidden="true"
-              class="rcx-box rcx-box--full rcx-icon--name-cross rcx-icon rcx-css-1tg7yd0"
-            >
-              
-            </i>
-          </button>
         </div>
       </div>
     </div>
@@ -318,24 +334,28 @@ exports[`CallListItem renders RingingButDeclined without crashing 1`] = `
             </div>
           </div>
           <div
-            class="rcx-item__description"
+            class="rcx-item__row"
           >
             <div
-              class="rcx-box rcx-box--full rcx-css-1p4sjp4"
+              class="rcx-item__description"
             >
-              2 people joined
+              <div
+                class="rcx-box rcx-box--full rcx-css-1p4sjp4"
+              >
+                2 people joined
+              </div>
             </div>
-          </div>
-        </div>
-        <div
-          class="rcx-item__actions"
-        >
-          <div
-            class="rcx-box rcx-box--full rcx-css-1p4sjp4"
-          >
-            (
-            Declined
-            )
+            <div
+              class="rcx-item__actions"
+            >
+              <div
+                class="rcx-box rcx-box--full rcx-css-1p4sjp4"
+              >
+                (
+                Declined
+                )
+              </div>
+            </div>
           </div>
         </div>
       </div>
@@ -383,12 +403,16 @@ exports[`CallListItem renders RingingButJoined without crashing 1`] = `
             </div>
           </div>
           <div
-            class="rcx-item__description"
+            class="rcx-item__row"
           >
             <div
-              class="rcx-box rcx-box--full rcx-css-1p4sjp4"
+              class="rcx-item__description"
             >
-              2 people joined
+              <div
+                class="rcx-box rcx-box--full rcx-css-1p4sjp4"
+              >
+                2 people joined
+              </div>
             </div>
           </div>
         </div>
@@ -442,31 +466,35 @@ exports[`CallListItem renders RingingNotHeardHere without crashing 1`] = `
             </div>
           </div>
           <div
-            class="rcx-item__description"
+            class="rcx-item__row"
           >
             <div
-              class="rcx-box rcx-box--full rcx-css-1p4sjp4"
+              class="rcx-item__description"
             >
-              1 person joined
+              <div
+                class="rcx-box rcx-box--full rcx-css-1p4sjp4"
+              >
+                1 person joined
+              </div>
+            </div>
+            <div
+              class="rcx-item__actions"
+            >
+              <button
+                aria-label="Decline"
+                class="rcx-box rcx-box--full rcx-button--mini-square rcx-button--icon-secondary rcx-button--square rcx-button--icon rcx-button"
+                title="Decline"
+                type="button"
+              >
+                <i
+                  aria-hidden="true"
+                  class="rcx-box rcx-box--full rcx-icon--name-cross rcx-icon rcx-css-1tg7yd0"
+                >
+                  
+                </i>
+              </button>
             </div>
           </div>
-        </div>
-        <div
-          class="rcx-item__actions"
-        >
-          <button
-            aria-label="Decline"
-            class="rcx-box rcx-box--full rcx-button--mini-square rcx-button--icon-secondary rcx-button--square rcx-button--icon rcx-button"
-            title="Decline"
-            type="button"
-          >
-            <i
-              aria-hidden="true"
-              class="rcx-box rcx-box--full rcx-icon--name-cross rcx-icon rcx-css-1tg7yd0"
-            >
-              
-            </i>
-          </button>
         </div>
       </div>
     </div>
@@ -518,38 +546,42 @@ exports[`CallListItem renders RingingSilenced without crashing 1`] = `
             </div>
           </div>
           <div
-            class="rcx-item__description"
+            class="rcx-item__row"
           >
             <div
-              class="rcx-box rcx-box--full rcx-css-1p4sjp4"
+              class="rcx-item__description"
             >
-              1 person joined
+              <div
+                class="rcx-box rcx-box--full rcx-css-1p4sjp4"
+              >
+                1 person joined
+              </div>
+            </div>
+            <div
+              class="rcx-item__actions"
+            >
+              <i
+                aria-hidden="true"
+                class="rcx-box rcx-box--full rcx-icon--name-bell-off rcx-icon rcx-css-z80ug6"
+                title="Incoming call, silenced"
+              >
+                
+              </i>
+              <button
+                aria-label="Decline"
+                class="rcx-box rcx-box--full rcx-button--mini-square rcx-button--icon-secondary rcx-button--square rcx-button--icon rcx-button"
+                title="Decline"
+                type="button"
+              >
+                <i
+                  aria-hidden="true"
+                  class="rcx-box rcx-box--full rcx-icon--name-cross rcx-icon rcx-css-1tg7yd0"
+                >
+                  
+                </i>
+              </button>
             </div>
           </div>
-        </div>
-        <div
-          class="rcx-item__actions"
-        >
-          <i
-            aria-hidden="true"
-            class="rcx-box rcx-box--full rcx-icon--name-bell-off rcx-icon rcx-css-z80ug6"
-            title="Incoming call, silenced"
-          >
-            
-          </i>
-          <button
-            aria-label="Decline"
-            class="rcx-box rcx-box--full rcx-button--mini-square rcx-button--icon-secondary rcx-button--square rcx-button--icon rcx-button"
-            title="Decline"
-            type="button"
-          >
-            <i
-              aria-hidden="true"
-              class="rcx-box rcx-box--full rcx-icon--name-cross rcx-icon rcx-css-1tg7yd0"
-            >
-              
-            </i>
-          </button>
         </div>
       </div>
     </div>
@@ -596,31 +628,35 @@ exports[`CallListItem renders SinglePerson without crashing 1`] = `
             </div>
           </div>
           <div
-            class="rcx-item__description"
+            class="rcx-item__row"
           >
             <div
-              class="rcx-box rcx-box--full rcx-css-1p4sjp4"
+              class="rcx-item__description"
             >
-              1 person joined
+              <div
+                class="rcx-box rcx-box--full rcx-css-1p4sjp4"
+              >
+                1 person joined
+              </div>
+            </div>
+            <div
+              class="rcx-item__actions"
+            >
+              <button
+                aria-label="Decline"
+                class="rcx-box rcx-box--full rcx-button--mini-square rcx-button--icon-secondary rcx-button--square rcx-button--icon rcx-button"
+                title="Decline"
+                type="button"
+              >
+                <i
+                  aria-hidden="true"
+                  class="rcx-box rcx-box--full rcx-icon--name-cross rcx-icon rcx-css-1tg7yd0"
+                >
+                  
+                </i>
+              </button>
             </div>
           </div>
-        </div>
-        <div
-          class="rcx-item__actions"
-        >
-          <button
-            aria-label="Decline"
-            class="rcx-box rcx-box--full rcx-button--mini-square rcx-button--icon-secondary rcx-button--square rcx-button--icon rcx-button"
-            title="Decline"
-            type="button"
-          >
-            <i
-              aria-hidden="true"
-              class="rcx-box rcx-box--full rcx-icon--name-cross rcx-icon rcx-css-1tg7yd0"
-            >
-              
-            </i>
-          </button>
         </div>
       </div>
     </div>

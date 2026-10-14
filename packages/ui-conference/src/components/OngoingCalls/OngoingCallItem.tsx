@@ -34,9 +34,14 @@ const OngoingCallItem = ({ href, icon, title, subtitle, time, actions, onOpen }:
 					{/* Against `undefined`, not for truth: an empty string or a 0 is still the caller asking for a slot. */}
 					{time !== undefined && <ItemMeta>{time}</ItemMeta>}
 				</ItemRow>
-				{subtitle && <ItemDescription>{subtitle}</ItemDescription>}
+				{/* The actions share the subtitle's line, so the time keeps the first line's far end. */}
+				{(subtitle || actions) && (
+					<ItemRow>
+						<ItemDescription>{subtitle}</ItemDescription>
+						{actions && <ItemActions>{actions}</ItemActions>}
+					</ItemRow>
+				)}
 			</ItemContent>
-			{actions && <ItemActions>{actions}</ItemActions>}
 		</Item>
 	);
 };
