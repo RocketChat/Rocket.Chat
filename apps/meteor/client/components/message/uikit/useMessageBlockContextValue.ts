@@ -14,8 +14,8 @@ import {
 } from '@rocket.chat/ui-video-conf';
 import type { ContextType } from 'react';
 
-import { useUiKitActionManager } from './useUiKitActionManager';
-import { useVideoConfWarning } from '../../views/room/contextualBar/VideoConference/hooks/useVideoConfWarning';
+import { useUiKitActionManager } from '../../../hooks/uikit/useUiKitActionManager';
+import { useVideoConfWarning } from '../../../views/room/contextualBar/VideoConference/hooks/useVideoConfWarning';
 
 export const useMessageBlockContextValue = (rid: IRoom['_id'], mid: IMessage['_id']): ContextType<typeof UiKitContext> => {
 	const joinCall = useVideoConfJoinCall();

@@ -4,40 +4,43 @@ import type * as UiKit from '@rocket.chat/ui-kit';
 import { useMemo } from 'react';
 import type { Dispatch, ContextType } from 'react';
 
-import { useUiKitActionManager } from './useUiKitActionManager';
+import { useUiKitActionManager } from '../../../hooks/uikit/useUiKitActionManager';
 
-type UseContextualBarContextValueParams = {
-	view: UiKit.ContextualBarView;
+type UseModalContextValueParams = {
+	view: UiKit.ModalView;
 	values: {
 		[actionId: string]: {
 			value: unknown;
 			blockId?: string | undefined;
 		};
 	};
+	errors?: { [field: string]: string }[] | { [field: string]: string };
 	updateValues: Dispatch<{
 		actionId: string;
 		payload: {
 			value: unknown;
-			blockId?: string | undefined;
+			blockId?: string;
 		};
 	}>;
-	rid: string;
+	rid?: string;
 };
-type UseContextualBarContextValueReturn = ContextType<typeof UiKitContext>;
 
-export const useContextualBarContextValue = ({
+type UseModalContextValueReturn = ContextType<typeof UiKitContext>;
+
+export const useModalContextValue = ({
 	view,
+	errors,
 	values,
 	updateValues,
 	rid,
-}: UseContextualBarContextValueParams): UseContextualBarContextValueReturn => {
+}: UseModalContextValueParams): UseModalContextValueReturn => {
 	const actionManager = useUiKitActionManager();
 
 	const emitInteraction = useMemo(() => actionManager.emitInteraction.bind(actionManager), [actionManager]);
 	const debouncedEmitInteraction = useDebouncedCallback(emitInteraction, 700);
 
 	return {
-		action: async ({ appId, viewId, actionId, dispatchActionConfig, blockId, value }): Promise<void> => {
+		action: async ({ actionId, viewId, appId, dispatchActionConfig, blockId, value }) => {
 			if (!appId || !viewId) {
 				return;
 			}
@@ -55,10 +58,9 @@ export const useContextualBarContextValue = ({
 					blockId,
 					value,
 				},
-				rid,
 			});
 		},
-		updateState: ({ actionId, value, blockId = 'default' }) => {
+		updateState: ({ actionId, value, /* ,appId, */ blockId = 'default' }) => {
 			updateValues({
 				actionId,
 				payload: {
@@ -68,6 +70,7 @@ export const useContextualBarContextValue = ({
 			});
 		},
 		...view,
+		errors,
 		values,
 		viewId: view.id,
 		rid,
