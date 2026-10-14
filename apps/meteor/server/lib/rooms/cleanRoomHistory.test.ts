@@ -2,6 +2,7 @@ import { before, beforeEach, describe, it } from 'node:test';
 
 import type { IMessagesModel, IReadReceiptsModel, IRoomsModel, ISubscriptionsModel } from '@rocket.chat/model-typings';
 import { registerModel } from '@rocket.chat/models';
+import { fakeCursor } from '@rocket.chat/models/testing';
 import { expect } from 'chai';
 import p from 'proxyquire';
 import sinon from 'sinon';
@@ -40,13 +41,6 @@ const { cleanRoomHistory } = p.noCallThru().load('./cleanRoomHistory.ts', {
 });
 
 const ids = (prefix: string, count: number) => Array.from({ length: count }, (_, i) => `${prefix}${i}`);
-const cursorOf = (docs: unknown[]) => ({
-	toArray: async () => docs,
-	forEach: async (fn: (doc: any) => void) => docs.forEach(fn),
-	async *[Symbol.asyncIterator]() {
-		yield* docs;
-	},
-});
 
 describe('cleanRoomHistory', () => {
 	before(() => {
@@ -68,7 +62,7 @@ describe('cleanRoomHistory', () => {
 			notifyOnSubscriptionChangedByIdMock,
 		].forEach((stub) => stub.reset());
 
-		modelsMock.Messages.findFilesByRoomIdPinnedTimestampAndUsers.returns(cursorOf([]));
+		modelsMock.Messages.findFilesByRoomIdPinnedTimestampAndUsers.returns(fakeCursor([]));
 		modelsMock.Messages.findByIdPinnedTimestampLimitAndUsers.resolves([]);
 		modelsMock.Messages.removeByIdPinnedTimestampLimitAndUsers.callsFake(async (...args: unknown[]) => (args[7] as string[]).length);
 	});
@@ -113,8 +107,8 @@ describe('cleanRoomHistory', () => {
 	});
 
 	it('clears pruned threads from unread lists in bounded batches', async () => {
-		modelsMock.Messages.findThreadsByRoomIdPinnedTimestampAndUsers.returns(cursorOf(ids('t', 1500).map((_id) => ({ _id }))));
-		modelsMock.Subscriptions.findUnreadThreadsByRoomId.returns(cursorOf([{ _id: 'sub1' }]));
+		modelsMock.Messages.findThreadsByRoomIdPinnedTimestampAndUsers.returns(fakeCursor(ids('t', 1500).map((_id) => ({ _id }))));
+		modelsMock.Subscriptions.findUnreadThreadsByRoomId.returns(fakeCursor([{ _id: 'sub1' }]));
 		modelsMock.Subscriptions.removeUnreadThreadsByRoomId.resolves({ modifiedCount: 1 });
 
 		await cleanRoomHistory({ rid: 'rid', ignoreThreads: false });
