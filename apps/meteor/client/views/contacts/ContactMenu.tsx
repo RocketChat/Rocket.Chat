@@ -8,7 +8,7 @@ import { useTranslation } from 'react-i18next';
 
 import { useContactCall } from './hooks/useContactCall';
 import { useContactLabel } from './hooks/useContactLabel';
-import { getEndpointErrorMessage } from '../../lib/errorHandling';
+import { getErrorMessage } from '../../lib/errorHandling';
 
 export type ContactMenuProps = {
 	contact: Serialized<IContactPublic>;
@@ -32,8 +32,7 @@ const ContactMenu = ({ contact, onEdit, onDeleted }: ContactMenuProps) => {
 			dispatchToastMessage({ type: 'success', message: t('Contact_deleted') });
 			onDeleted?.();
 		},
-		onError: async (error) =>
-			dispatchToastMessage({ type: 'error', message: await getEndpointErrorMessage(error, 'Contact_delete_failed') }),
+		onError: (error) => dispatchToastMessage({ type: 'error', message: getErrorMessage(error, 'Contact_delete_failed') }),
 		onSettled: async () => {
 			await queryClient.invalidateQueries({ queryKey: ['contacts', 'list'] });
 
