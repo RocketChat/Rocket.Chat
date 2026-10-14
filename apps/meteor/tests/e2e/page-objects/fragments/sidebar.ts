@@ -111,7 +111,7 @@ export class RoomSidebar extends Sidebar {
 
 	async markItemAsUnread(item: Locator): Promise<void> {
 		await item.hover();
-		await item.focus();
+		await item.getByRole('link').focus();
 		await item.getByRole('button', { name: 'Options', exact: true }).click();
 		await this.page.getByRole('menuitem', { name: 'Mark unread' }).click();
 	}
@@ -132,7 +132,7 @@ export class RoomSidebar extends Sidebar {
 	async selectPriority(name: string, priority: string) {
 		const sidebarItem = this.getSidebarItemByName(name);
 		await sidebarItem.hover();
-		await sidebarItem.focus();
+		await sidebarItem.getByRole('link').focus();
 		await sidebarItem.getByRole('button', { name: 'Options', exact: true }).click();
 		await this.page.getByRole('menuitem', { name: priority }).click();
 	}
@@ -173,7 +173,7 @@ export class RoomSidebar extends Sidebar {
 	async openRoomMenu(name: string): Promise<void> {
 		const item = this.getSidebarItemByName(name);
 		await item.hover();
-		await item.focus();
+		await item.getByRole('link').focus();
 		await item.getByRole('button', { name: 'Options', exact: true }).click();
 		await this.menuOptions.waitForDisplay();
 	}
