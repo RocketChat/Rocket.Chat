@@ -244,10 +244,10 @@ describe('[Commands]', () => {
 						roomId: 'GENERAL',
 					})
 					.expect('Content-Type', 'application/json')
-					.expect(400)
+					.expect(403)
 					.expect((res) => {
 						expect(res.body).to.have.property('success', false);
-						expect(res.body).to.have.property('errorType', 'error-not-authorized');
+						expect(res.body).to.have.property('error', 'unauthorized');
 					});
 			});
 		});
@@ -319,10 +319,10 @@ describe('[Commands]', () => {
 						roomId: 'GENERAL',
 					})
 					.expect('Content-Type', 'application/json')
-					.expect(400)
+					.expect(403)
 					.expect((res) => {
 						expect(res.body).to.have.property('success', false);
-						expect(res.body).to.have.property('errorType', 'error-not-authorized');
+						expect(res.body).to.have.property('error', 'unauthorized');
 					});
 			});
 		});
@@ -523,7 +523,7 @@ describe('[Commands]', () => {
 				.post(api('commands.run'))
 				.set(user1Credentials)
 				.send({ command: 'kick', roomId: directMessageRoom._id, params: user1.username })
-				.expect(400);
+				.expect(403);
 
 			expect(res.body).to.have.property('success', false);
 			expect(res.body).to.have.property('error').that.is.a('string');
@@ -558,7 +558,7 @@ describe('[Commands]', () => {
 				.post(api('commands.run'))
 				.set(user1Credentials)
 				.send({ command: 'leave', roomId: directMessageRoom._id })
-				.expect(400);
+				.expect(403);
 
 			expect(res.body).to.have.property('success', false);
 			expect(res.body).to.have.property('error').that.is.a('string');

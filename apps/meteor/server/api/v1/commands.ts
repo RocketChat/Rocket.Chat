@@ -1,4 +1,5 @@
 import { Apps } from '@rocket.chat/apps';
+import { isMeteorError } from '@rocket.chat/core-services';
 import type { SlashCommand, SlashCommandPreviewItem } from '@rocket.chat/core-typings';
 import { Messages } from '@rocket.chat/models';
 import { Random } from '@rocket.chat/random';
@@ -366,6 +367,10 @@ const commandsPreviewPostResponseSchema = ajv.compile<void>({
 	additionalProperties: false,
 });
 
+const forbiddenErrors = ['error-not-authorized', 'error-not-allowed'];
+
+const isForbiddenError = (error: unknown): boolean => isMeteorError(error) && forbiddenErrors.includes(String(error.error));
+
 // Expects a body of: { command: 'gimme', params: 'any string value', roomId: 'value', triggerId: 'value' }
 API.v1.post(
 	'commands.run',
@@ -408,7 +413,15 @@ API.v1.post(
 
 		const { triggerId } = body;
 
-		const result = await slashCommands.run({ command: cmd, params, message, triggerId, userId: this.userId });
+		let result;
+		try {
+			result = await slashCommands.run({ command: cmd, params, message, triggerId, userId: this.userId });
+		} catch (error) {
+			if (isForbiddenError(error)) {
+				return API.v1.forbidden();
+			}
+			throw error;
+		}
 
 		return API.v1.success({ result });
 	},
@@ -441,12 +454,20 @@ API.v1.get(
 
 		const params = query.params ? query.params : '';
 
-		const preview = await getSlashCommandPreviews({
-			cmd,
-			params,
-			msg: { rid: query.roomId },
-			userId: this.userId,
-		});
+		let preview;
+		try {
+			preview = await getSlashCommandPreviews({
+				cmd,
+				params,
+				msg: { rid: query.roomId },
+				userId: this.userId,
+			});
+		} catch (error) {
+			if (isForbiddenError(error)) {
+				return API.v1.forbidden();
+			}
+			throw error;
+		}
 
 		return API.v1.success({ preview: preview ?? null });
 	},
@@ -490,16 +511,23 @@ API.v1.post(
 			...(body.tmid && { tmid: body.tmid }),
 		};
 
-		await executeSlashCommandPreview(
-			{
-				cmd,
-				params,
-				msg,
-				triggerId: body.triggerId,
-			},
-			body.previewItem,
-			this.userId,
-		);
+		try {
+			await executeSlashCommandPreview(
+				{
+					cmd,
+					params,
+					msg,
+					triggerId: body.triggerId,
+				},
+				body.previewItem,
+				this.userId,
+			);
+		} catch (error) {
+			if (isForbiddenError(error)) {
+				return API.v1.forbidden();
+			}
+			throw error;
+		}
 
 		return API.v1.success();
 	},
