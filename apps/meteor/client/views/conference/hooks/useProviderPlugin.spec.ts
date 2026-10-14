@@ -206,6 +206,17 @@ describe('useProviderPlugin', () => {
 			expect(onLeave).not.toHaveBeenCalled();
 		});
 
+		it('forgets who was in the call once the connection is gone', () => {
+			const { result } = render();
+
+			fromPlugin(message('connected'));
+			fromPlugin(message('roster', { participants: [{ uuid: 'p1', displayName: 'Ann' }] }));
+			fromPlugin(message('disconnected', { userInitiated: false }));
+
+			expect(result.current.participants).toEqual([]);
+			expect(result.current.self).toBeUndefined();
+		});
+
 		// A provider's prejoin screen reports a user-initiated disconnect too, and nobody has joined anything
 		// from there: reporting a leave would schedule the empty-call sweep on a call still filling up.
 		it('says nothing for someone who never got past the preflight', () => {

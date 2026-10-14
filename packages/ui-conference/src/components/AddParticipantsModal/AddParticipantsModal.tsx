@@ -1,6 +1,6 @@
 import { RING_RECIPIENTS_LIMIT } from '@rocket.chat/core-typings';
 import { Box } from '@rocket.chat/fuselage';
-import { CheckBox, Field, FieldError, FieldGroup, FieldLabel, FieldRow } from '@rocket.chat/fuselage-forms';
+import { CheckBox, Field, FieldDescription, FieldError, FieldGroup, FieldLabel, FieldRow } from '@rocket.chat/fuselage-forms';
 import { GenericModal } from '@rocket.chat/ui-client';
 import { useToastMessageDispatch } from '@rocket.chat/ui-contexts';
 import { useState } from 'react';
@@ -16,6 +16,8 @@ type AddParticipantsModalProps = {
 
 type AddParticipantsFormValues = {
 	users: string[];
+	/** Whether the people added get the chat as it stands, or a fresh one started for the call. */
+	keepHistory: boolean;
 };
 
 /**
@@ -26,7 +28,7 @@ type AddParticipantsFormValues = {
 const AddParticipantsModal = ({ onClose }: AddParticipantsModalProps) => {
 	const { t } = useTranslation();
 	const dispatchToastMessage = useToastMessageDispatch();
-	const { addParticipants } = useConferenceActions();
+	const { addParticipants, shareChat } = useConferenceActions();
 	const { renderUserPicker } = useConferenceSlots();
 
 	const {
@@ -34,7 +36,10 @@ const AddParticipantsModal = ({ onClose }: AddParticipantsModalProps) => {
 		handleSubmit,
 		watch,
 		formState: { errors },
-	} = useForm<AddParticipantsFormValues>({ defaultValues: { users: [] }, mode: 'onChange' });
+	} = useForm<AddParticipantsFormValues>({
+		defaultValues: { users: [], keepHistory: true },
+		mode: 'onChange',
+	});
 
 	const { users } = watch();
 
@@ -49,11 +54,19 @@ const AddParticipantsModal = ({ onClose }: AddParticipantsModalProps) => {
 
 	const [adding, setAdding] = useState(false);
 
-	const handleAdd = ({ users }: AddParticipantsFormValues) => {
+	const handleAdd = ({ users, keepHistory }: AddParticipantsFormValues) => {
 		setAdding(true);
 
-		void addParticipants(users, canRingUsers && ring)
-			.then(({ added }) => {
+		void (async () => {
+			const { added } = await addParticipants(users, canRingUsers && ring);
+
+			// Membership is what lets them into the call and puts them in no room, so the chat is a second ask:
+			// either the room they are joining as it stands, or a fresh one started for the call.
+			await shareChat(keepHistory ? 'invite' : 'discussion', users);
+
+			return added;
+		})()
+			.then((added) => {
 				// Anyone already associated is skipped, so a selection can come back empty.
 				dispatchToastMessage(
 					added ? { type: 'success', message: t('Users_added') } : { type: 'info', message: t('Selected_users_are_already_in_the_call') },
@@ -106,6 +119,22 @@ const AddParticipantsModal = ({ onClose }: AddParticipantsModalProps) => {
 					</FieldRow>
 					{errors.users && <FieldError>{errors.users.message}</FieldError>}
 				</Field>
+				{/* A question about the people just chosen, so it sits under them. */}
+				{!!users.length && (
+					<Field>
+						<FieldRow justifyContent='flex-start'>
+							<Controller
+								control={control}
+								name='keepHistory'
+								render={({ field: { value, onChange } }) => <CheckBox checked={value} onChange={() => onChange(!value)} />}
+							/>
+							<Box marginInlineStart={8}>
+								<FieldLabel>{t('Keep_chat_history')}</FieldLabel>
+							</Box>
+						</FieldRow>
+						<FieldDescription>{t('Keep_chat_history_Description')}</FieldDescription>
+					</Field>
+				)}
 				{/* Under the names, because it is a question about the people just chosen. */}
 				{canRingUsers && (
 					<Field>

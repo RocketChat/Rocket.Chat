@@ -17,6 +17,10 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
  */
 const PLUGIN_NS = 'rocketchat:videoconf';
 
+/** The bare action under the namespace, or undefined for a message that is not this protocol's. */
+const readAction = (action: string): string | undefined =>
+	action.startsWith(`${PLUGIN_NS}/`) ? action.slice(PLUGIN_NS.length + 1) : undefined;
+
 type UseProviderPluginOptions = {
 	/**
 	 * The provider page in the iframe, and the origin its messages have to come from. Undefined for a provider
@@ -176,7 +180,12 @@ export const useProviderPlugin = ({
 			}
 
 			const { action } = data;
-			if (typeof action !== 'string' || !action.startsWith(`${PLUGIN_NS}/`)) {
+			if (typeof action !== 'string') {
+				return;
+			}
+
+			const name = readAction(action);
+			if (!name) {
 				return;
 			}
 
@@ -191,7 +200,7 @@ export const useProviderPlugin = ({
 				targetOriginRef.current = event.origin === 'null' ? '*' : event.origin;
 			}
 
-			switch (action.slice(PLUGIN_NS.length + 1)) {
+			switch (name) {
 				case 'ready':
 					// Said once per page, so a reload is a new session whose old roster describes nobody.
 					setFeatures(toFeatures(data.features));
@@ -211,10 +220,22 @@ export const useProviderPlugin = ({
 					break;
 
 				case 'disconnected':
-					// Only a deliberate leave from someone who joined: an involuntary drop is the provider's to
-					// recover, and closing the window under it turns a blip into a departure.
-					if (wasConnectedRef.current && data.userInitiated === true) {
-						wasConnectedRef.current = false;
+					// The plugin forgets the roster on a disconnect without publishing the empty one, so whoever was
+					// in the call is not left on show for a connection that is gone.
+					setSelf(undefined);
+					setParticipants(NO_PARTICIPANTS);
+
+					// Nothing from a prejoin screen, where nobody has joined: reporting a leave from there would
+					// end the call for everyone still on their way into it.
+					if (!wasConnectedRef.current) {
+						break;
+					}
+
+					wasConnectedRef.current = false;
+
+					// A deliberate leave is acted on; an involuntary drop is the provider's to recover, and closing
+					// the window under it turns a blip into a departure.
+					if (data.userInitiated === true) {
 						onLeaveRef.current();
 					}
 					break;
