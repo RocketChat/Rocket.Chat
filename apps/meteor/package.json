@@ -136,6 +136,7 @@
 		"@rocket.chat/mongo-adapter": "workspace:^",
 		"@rocket.chat/mp3-encoder": "workspace:~",
 		"@rocket.chat/network-broker": "workspace:^",
+		"@rocket.chat/ntlm": "workspace:^",
 		"@rocket.chat/omni-core": "workspace:^",
 		"@rocket.chat/omni-core-ee": "workspace:^",
 		"@rocket.chat/omnichannel-services": "workspace:^",
