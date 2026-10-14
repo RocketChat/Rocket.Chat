@@ -6,13 +6,6 @@ import * as stories from './InviteUsers.stories';
 
 const testCases = Object.values(composeStories(stories)).map((Story) => [Story.storyName || 'Story', Story]);
 
-beforeEach(() => {
-	jest.mock('react', () => ({
-		...jest.requireActual('react'),
-		useId: () => 1,
-	}));
-});
-
 test.each(testCases)(`renders %s without crashing`, async (_storyname, Story) => {
 	const view = render(<Story />);
 	expect(view.baseElement).toMatchSnapshot();
