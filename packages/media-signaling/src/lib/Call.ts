@@ -411,11 +411,6 @@ export class ClientMediaCall implements IClientMediaCall {
 
 	/** initialize a call with the data received from the server on a 'new' signal; this gets executed once for every call */
 	public async initializeRemoteCall(signal: ServerMediaSignalNewCall, oldCall?: ClientMediaCall | null): Promise<void> {
-		if (signal.iceServers) {
-			this.serverIceServers = signal.iceServers;
-			this.webrtcProcessor?.setIceServers(this.getIceServers());
-		}
-
 		if (this.hasRemoteData) {
 			return;
 		}
@@ -430,6 +425,7 @@ export class ClientMediaCall implements IClientMediaCall {
 		this._service = signal.service;
 		this._role = signal.role;
 		this._flags = signal.flags || [];
+		this.serverIceServers = signal.iceServers || [];
 		this.selfContact = { type: 'user', id: this.config.userId, ...signal.self };
 
 		this._transferredBy = signal.transferredBy || null;
@@ -1627,7 +1623,7 @@ export class ClientMediaCall implements IClientMediaCall {
 			this.throwError('webrtc-not-implemented');
 		}
 
-		const iceServers = this.getIceServers();
+		const iceServers = [...this.config.iceServers, ...this.serverIceServers];
 
 		this.webrtcProcessor = webrtcFactory({
 			logger,
@@ -1645,10 +1641,6 @@ export class ClientMediaCall implements IClientMediaCall {
 		this.negotiationManager.emitter.on('negotiation-started', () => this.onNegotiationStarted());
 		this.negotiationManager.emitter.on('error', ({ errorCode, negotiationId }) => this.onNegotiationError(negotiationId, errorCode));
 		this.negotiationManager.setWebRTCProcessor(this.webrtcProcessor);
-	}
-
-	private getIceServers(): RTCIceServer[] {
-		return [...this.config.iceServers, ...this.serverIceServers];
 	}
 
 	private requireWebRTC(): asserts this is ClientMediaCallWebRTC {

@@ -84,17 +84,10 @@ describe('ClientMediaCall', () => {
 
 	describe('ICE servers', () => {
 		const configuredServer = { urls: 'stun:stun.example.com:3478' };
-		const issuedServer = { urls: ['turn:turn.example.com:3478'], username: '1700003600:callee-id', credential: 'first' };
-
-		const makeWebRtcProcessor = () =>
-			({
-				emitter: new Emitter(),
-				setIceServers: jest.fn(),
-			}) as unknown as IWebRTCProcessor;
+		const issuedServer = { urls: ['turn:turn.example.com:3478'], username: '1700003600:callee-id', credential: 'issued' };
 
 		const makeCallWithWebRtc = () => {
-			const processor = makeWebRtcProcessor();
-			const webrtc = jest.fn((_config: WebRTCProcessorConfig) => processor);
+			const webrtc = jest.fn((_config: WebRTCProcessorConfig) => ({ emitter: new Emitter() }) as unknown as IWebRTCProcessor);
 			const call = new ClientMediaCall(
 				{
 					userId: 'callee-id',
@@ -108,7 +101,7 @@ describe('ClientMediaCall', () => {
 				'call-id',
 			);
 
-			return { call, processor, webrtc };
+			return { call, webrtc };
 		};
 
 		const newCallSignal = (overrides: Partial<ServerMediaSignalNewCall> = {}): ServerMediaSignalNewCall => ({
@@ -136,17 +129,6 @@ describe('ClientMediaCall', () => {
 			await call.processSignal(newCallSignal());
 
 			expect(webrtc).toHaveBeenCalledWith(expect.objectContaining({ rtc: { iceServers: [configuredServer] } }));
-		});
-
-		it('hands the servers of a repeated new signal to the existing processor', async () => {
-			const { call, processor, webrtc } = makeCallWithWebRtc();
-			const reissuedServer = { ...issuedServer, username: '1700007200:callee-id', credential: 'second' };
-
-			await call.processSignal(newCallSignal({ iceServers: [issuedServer] }));
-			await call.processSignal(newCallSignal({ iceServers: [reissuedServer] }));
-
-			expect(webrtc).toHaveBeenCalledTimes(1);
-			expect(processor.setIceServers).toHaveBeenCalledWith([configuredServer, reissuedServer]);
 		});
 	});
 });

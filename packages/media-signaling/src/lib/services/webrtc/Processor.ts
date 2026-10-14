@@ -98,15 +98,6 @@ export class MediaCallWebRTCProcessor implements IWebRTCProcessor {
 		await this.loadScreenVideoTrack();
 	}
 
-	public setIceServers(iceServers: RTCIceServer[]): void {
-		this.config.logger?.debug('MediaCallWebRTCProcessor.setIceServers');
-		if (this.stopped) {
-			return;
-		}
-
-		this.peer.setConfiguration({ ...this.peer.getConfiguration(), iceServers });
-	}
-
 	public async createOffer({ iceRestart }: { iceRestart?: boolean }): Promise<RTCSessionDescriptionInit> {
 		this.config.logger?.debug('MediaCallWebRTCProcessor.createOffer');
 		if (this.stopped) {

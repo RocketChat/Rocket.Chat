@@ -7,7 +7,7 @@ Voice calls (`VoIP_TeamCollab`) read ICE servers from two settings in *Workspace
 | **ICE servers** (`VoIP_TeamCollab_Ice_Servers`) | Public: readable by anyone, signed in or not | STUN servers only |
 | **TURN servers** (`VoIP_TeamCollab_TURN_Servers`) | Private: kept on the server, `secret`, never readable by apps | TURN servers and their credentials |
 
-When a call is created, the server sends each participant, on the call's `new` signal, the TURN servers with credentials for that user. The client uses them after the ICE servers from the public setting. Users who aren't on a call never receive them, and a client that reconnects mid-call gets fresh ones.
+When a call is created, the server sends each participant, on the call's `new` signal, the TURN servers with credentials for that user. The client uses them after the ICE servers from the public setting. Users who aren't on a call never receive them.
 
 ## The TURN servers setting
 
@@ -83,8 +83,8 @@ TURN over TLS on 443 (`turns:` URIs) gets through restrictive corporate networks
 
 ## Shared secret credential lifetime (`ttl`)
 
-- Credentials are minted when the call is created and re-issued whenever the client re-syncs with the server (reconnects), so a lifetime only has to cover the gap between those.
-- An allocation that already exists keeps relaying after its credentials expire. New allocations, which happen on ICE restarts after a network change, need valid credentials: a call that loses its network after the lifetime has passed and cannot reconnect to Rocket.Chat first will not recover.
+- Credentials are minted once per call, when it is created, and are not refreshed while it lasts.
+- An allocation that already exists keeps relaying after its credentials expire. New allocations, which happen on ICE restarts after a network change, need valid credentials: a call whose network changes after the lifetime has passed will not recover. Keep the lifetime longer than your longest expected call.
 - A deactivated user's credentials stay valid until they expire. Shorter lifetimes shrink that window.
 
 The default is 86400 (24 hours) and the minimum 60. One to a few hours is a reasonable hardened value. Rocket.Chat and the TURN server compare an absolute timestamp, so keep both clocks in sync (NTP), especially with short lifetimes.
