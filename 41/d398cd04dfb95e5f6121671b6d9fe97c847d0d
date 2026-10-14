@@ -1,0 +1,23 @@
+apps/meteor/lib/mapLivechatContactConflicts.spec.ts
+  s_741c480c7b5a0f::t_0f6de8f4bf8668 16,96,100
+apps/meteor/.mocharc.js
+  s_741c480c7b5a0f::t_81038bee4db28b 18,46
+apps/meteor/jest.config.ts
+  s_741c480c7b5a0f::t_81038bee4db28b 46
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.2",
+  "base_commit_sha": "41d398cd04dfb95e5f6121671b6d9fe97c847d0d",
+  "prompts": {},
+  "sessions": {
+    "s_741c480c7b5a0f": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "a969920f-0fda-4a41-ab9a-4510c3cc7058",
+        "model": "claude-opus-5-5"
+      },
+      "human_author": "Ricardo Garim <rswarovsky@gmail.com>"
+    }
+  }
+}
