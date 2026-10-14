@@ -1,7 +1,9 @@
 import { api } from '@rocket.chat/core-services';
+import type { ICalendarEventModel, IUsersModel } from '@rocket.chat/model-typings';
+import { registerModel } from '@rocket.chat/models';
 import { fakeCursor } from '@rocket.chat/models/testing';
 import { expect } from 'chai';
-import { describe, it, beforeEach, afterEach } from 'mocha';
+import { describe, it, before, beforeEach, afterEach } from 'mocha';
 import type { DeleteResult, UpdateResult } from 'mongodb';
 import proxyquire from 'proxyquire';
 import sinon from 'sinon';
@@ -45,7 +47,6 @@ const serviceMocks = {
 		Presence: PresenceMock,
 	},
 	'@rocket.chat/cron': { cronJobs: cronJobsMock },
-	'@rocket.chat/models': { CalendarEvent: CalendarEventMock, Users: UsersMock },
 	'../../lib/utils/lib/getUserPreference': { getUserPreference: getUserPreferenceMock },
 	'../../lib/i18n': { i18n: { t: sinon.stub().returns('Outlook: In a meeting') } },
 };
@@ -63,6 +64,11 @@ describe('CalendarService', () => {
 	const fakeSubject = 'Test Meeting';
 	const fakeDescription = 'This is a test meeting';
 	const fakeMeetingUrl = 'https://meet.test/123';
+
+	before(() => {
+		registerModel('ICalendarEventModel', CalendarEventMock as unknown as ICalendarEventModel);
+		registerModel('IUsersModel', UsersMock as unknown as IUsersModel);
+	});
 
 	beforeEach(() => {
 		sandbox = sinon.createSandbox();

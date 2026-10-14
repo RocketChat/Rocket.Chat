@@ -2,7 +2,7 @@ import type { IMessagesModel, IReadReceiptsModel, IRoomsModel, ISubscriptionsMod
 import { registerModel } from '@rocket.chat/models';
 import { fakeCursor } from '@rocket.chat/models/testing';
 import { expect } from 'chai';
-import { beforeEach, describe, it } from 'mocha';
+import { before, beforeEach, describe, it } from 'mocha';
 import p from 'proxyquire';
 import sinon from 'sinon';
 
@@ -26,12 +26,6 @@ const modelsMock = {
 	ReadReceiptsArchive: { removeByMessageIds: sinon.stub() },
 };
 
-registerModel('IMessagesModel', modelsMock.Messages as unknown as IMessagesModel);
-registerModel('IRoomsModel', modelsMock.Rooms as unknown as IRoomsModel);
-registerModel('ISubscriptionsModel', modelsMock.Subscriptions as unknown as ISubscriptionsModel);
-registerModel('IReadReceiptsModel', modelsMock.ReadReceipts as unknown as IReadReceiptsModel);
-registerModel('IReadReceiptsArchiveModel', modelsMock.ReadReceiptsArchive as unknown as IReadReceiptsModel);
-
 const broadcastMock = sinon.stub();
 const notifyOnSubscriptionChangedByIdMock = sinon.stub();
 
@@ -48,6 +42,14 @@ const { cleanRoomHistory } = p.noCallThru().load('../../../../../server/lib/room
 const ids = (prefix: string, count: number) => Array.from({ length: count }, (_, i) => `${prefix}${i}`);
 
 describe('cleanRoomHistory', () => {
+	before(() => {
+		registerModel('IMessagesModel', modelsMock.Messages as unknown as IMessagesModel);
+		registerModel('IRoomsModel', modelsMock.Rooms as unknown as IRoomsModel);
+		registerModel('ISubscriptionsModel', modelsMock.Subscriptions as unknown as ISubscriptionsModel);
+		registerModel('IReadReceiptsModel', modelsMock.ReadReceipts as unknown as IReadReceiptsModel);
+		registerModel('IReadReceiptsArchiveModel', modelsMock.ReadReceiptsArchive as unknown as IReadReceiptsModel);
+	});
+
 	beforeEach(() => {
 		[
 			...Object.values(modelsMock.Messages),

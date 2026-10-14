@@ -1,4 +1,6 @@
 import type { IMessage } from '@rocket.chat/core-typings';
+import type { IMessagesModel, ISettingsModel, IUsersModel } from '@rocket.chat/model-typings';
+import { registerModel } from '@rocket.chat/models';
 import { fakeCursor } from '@rocket.chat/models/testing';
 import { expect } from 'chai';
 import proxyquire from 'proxyquire';
@@ -52,8 +54,12 @@ describe('Message Broadcast Tests', () => {
 		broadcastStub = sinon.stub();
 		memStub = sinon.stub().callsFake((fn: any) => fn);
 
+		const models = modelsStubs();
+		registerModel('IMessagesModel', models.Messages as unknown as IMessagesModel);
+		registerModel('IUsersModel', models.Users as unknown as IUsersModel);
+		registerModel('ISettingsModel', models.Settings as unknown as ISettingsModel);
+
 		const proxyMock = proxyquire.noPreserveCache().load('../../../../server/lib/notifyListener', {
-			'@rocket.chat/models': modelsStubs(),
 			'@rocket.chat/core-services': coreStubs(),
 			'mem': memStub,
 		});
@@ -264,7 +270,6 @@ describe('Message Broadcast Tests', () => {
 	describe('notifyOnMessageChange', () => {
 		const setupProxyMock = () => {
 			const proxyMock = proxyquire.noCallThru().load('../../../../server/lib/notifyListener', {
-				'@rocket.chat/models': modelsStubs(),
 				'@rocket.chat/core-services': coreStubs(),
 				'mem': memStub,
 			});

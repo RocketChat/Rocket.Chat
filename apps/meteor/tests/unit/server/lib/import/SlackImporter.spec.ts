@@ -1,5 +1,7 @@
+import type { IImportDataModel, IMessagesModel, ISettingsModel } from '@rocket.chat/model-typings';
+import { registerModel } from '@rocket.chat/models';
 import { expect } from 'chai';
-import { describe, it, beforeEach } from 'mocha';
+import { describe, it, before, beforeEach } from 'mocha';
 import proxyquire from 'proxyquire';
 import sinon from 'sinon';
 
@@ -7,12 +9,6 @@ const addMessageStub = sinon.stub().resolves();
 const settingsStub = { get: sinon.stub() };
 
 const { SlackImporter } = proxyquire.noCallThru().load('../../../../../server/lib/import/slack/SlackImporter', {
-	'@rocket.chat/models': {
-		'Messages': {},
-		'Settings': { findOneById: sinon.stub().resolves(null) },
-		'ImportData': {},
-		'@global': true,
-	},
 	'..': {
 		Importer: class MockImporter {
 			logger = { debug: sinon.stub(), error: sinon.stub(), info: sinon.stub(), warn: sinon.stub() };
@@ -71,6 +67,12 @@ const { SlackImporter } = proxyquire.noCallThru().load('../../../../../server/li
 
 describe('SlackImporter', () => {
 	let importer: any;
+
+	before(() => {
+		registerModel('IMessagesModel', {} as unknown as IMessagesModel);
+		registerModel('ISettingsModel', { findOneById: sinon.stub().resolves(null) } as unknown as ISettingsModel);
+		registerModel('IImportDataModel', {} as unknown as IImportDataModel);
+	});
 
 	beforeEach(() => {
 		addMessageStub.reset();

@@ -1,3 +1,4 @@
+import { registerModel } from '@rocket.chat/models';
 import { fakeCursor } from '@rocket.chat/models/testing';
 
 import { OnlyCompliantCanBeAddedToRoomError, PdpHealthCheckError } from '../errors';
@@ -12,16 +13,14 @@ const usersFindByUsernames = jest.fn();
 const usersFindActiveByRoomIds = jest.fn();
 const roomsFindPrivateRoomsByIdsWithAbacAttributes = jest.fn();
 
-jest.mock('@rocket.chat/models', () => ({
-	Users: {
-		findOneById: (...a: unknown[]) => usersFindOneById(...a),
-		findByUsernames: (...a: unknown[]) => usersFindByUsernames(...a),
-		findActiveByRoomIds: (...a: unknown[]) => usersFindActiveByRoomIds(...a),
-	},
-	Rooms: {
-		findPrivateRoomsByIdsWithAbacAttributes: (...a: unknown[]) => roomsFindPrivateRoomsByIdsWithAbacAttributes(...a),
-	},
-}));
+registerModel('IUsersModel', {
+	findOneById: (...a: unknown[]) => usersFindOneById(...a),
+	findByUsernames: (...a: unknown[]) => usersFindByUsernames(...a),
+	findActiveByRoomIds: (...a: unknown[]) => usersFindActiveByRoomIds(...a),
+} as any);
+registerModel('IRoomsModel', {
+	findPrivateRoomsByIdsWithAbacAttributes: (...a: unknown[]) => roomsFindPrivateRoomsByIdsWithAbacAttributes(...a),
+} as any);
 
 const cfg = {
 	baseUrl: 'http://pdp',

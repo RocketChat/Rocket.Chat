@@ -1,9 +1,11 @@
 import { MeteorError } from '@rocket.chat/core-services';
 import type { IRoomService } from '@rocket.chat/core-services';
 import type { ISubscription, IUser } from '@rocket.chat/core-typings';
+import type { IRoomsModel, ISubscriptionsModel, IUsersModel } from '@rocket.chat/model-typings';
+import { registerModel } from '@rocket.chat/models';
 import { fakeCursor } from '@rocket.chat/models/testing';
 import { expect } from 'chai';
-import { beforeEach, describe, it } from 'mocha';
+import { before, beforeEach, describe, it } from 'mocha';
 import proxyquire from 'proxyquire';
 import sinon from 'sinon';
 
@@ -58,7 +60,6 @@ const { RoomService } = proxyquire.noCallThru().load('../../../../../server/serv
 		MeteorError,
 		FederationMatrix,
 	},
-	'@rocket.chat/models': { Rooms, Subscriptions, Users },
 	'./hooks/BeforeFederationActions': { FederationActions },
 	'../../lib/getSubscriptionAutotranslateDefaultConfig': { getSubscriptionAutotranslateDefaultConfig: () => undefined },
 	'../../lib/messaging/threads/functions': { readThread },
@@ -95,6 +96,12 @@ const createDirectMessageSubscription = (_id: string, user: Pick<IUser, '_id'>, 
 
 describe('RoomService', () => {
 	let service: IRoomService;
+
+	before(() => {
+		registerModel('IRoomsModel', Rooms as unknown as IRoomsModel);
+		registerModel('ISubscriptionsModel', Subscriptions as unknown as ISubscriptionsModel);
+		registerModel('IUsersModel', Users as unknown as IUsersModel);
+	});
 
 	beforeEach(() => {
 		sandbox.reset();

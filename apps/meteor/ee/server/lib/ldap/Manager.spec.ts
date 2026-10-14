@@ -1,6 +1,8 @@
+import type { IRolesModel, IRoomsModel, ISubscriptionsModel, IUsersModel } from '@rocket.chat/model-typings';
+import { registerModel } from '@rocket.chat/models';
 import { fakeCursor } from '@rocket.chat/models/testing';
 import { expect } from 'chai';
-import { beforeEach, describe, it } from 'mocha';
+import { before, beforeEach, describe, it } from 'mocha';
 import proxyquire from 'proxyquire';
 import sinon from 'sinon';
 
@@ -22,7 +24,6 @@ class LDAPManagerStub {
 const { LDAPEEManager } = proxyquire.noCallThru().load('./Manager', {
 	'@rocket.chat/core-services': { Abac: {}, Team: {} },
 	'@rocket.chat/license': { License: { hasModule: () => false } },
-	'@rocket.chat/models': { Users: usersStub, Roles: {}, Subscriptions: subscriptionsStub, Rooms: roomsStub },
 	'../../../../server/lib/import/definitions/IConversionCallbacks': {},
 	'../../../../server/settings': { settings: settingsStub },
 	'../../../../server/lib/utils/lib/getValidRoomName': { getValidRoomName: (name: string) => Promise.resolve(name) },
@@ -64,6 +65,13 @@ const syncUserChannels = (ldapUserGroups: string[]) => {
 };
 
 describe('LDAPEEManager syncUserChannels', () => {
+	before(() => {
+		registerModel('IUsersModel', usersStub as unknown as IUsersModel);
+		registerModel('IRolesModel', {} as unknown as IRolesModel);
+		registerModel('ISubscriptionsModel', subscriptionsStub as unknown as ISubscriptionsModel);
+		registerModel('IRoomsModel', roomsStub as unknown as IRoomsModel);
+	});
+
 	beforeEach(() => {
 		roomsStub.findOneByNonValidatedName.reset();
 		subscriptionsStub.findOneByRoomIdAndUserId.reset();
@@ -119,6 +127,13 @@ describe('LDAPEEManager syncUserChannels', () => {
 });
 
 describe('LDAPEEManager updateExistingUsers', () => {
+	before(() => {
+		registerModel('IUsersModel', usersStub as unknown as IUsersModel);
+		registerModel('IRolesModel', {} as unknown as IRolesModel);
+		registerModel('ISubscriptionsModel', subscriptionsStub as unknown as ISubscriptionsModel);
+		registerModel('IRoomsModel', roomsStub as unknown as IRoomsModel);
+	});
+
 	it('should keep updating the remaining users when one of them cannot be mapped', async () => {
 		const brokenUser = { username: 'broken' };
 		const validUser = { username: 'valid' };

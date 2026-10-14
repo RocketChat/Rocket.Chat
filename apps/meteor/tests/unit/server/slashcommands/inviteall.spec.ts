@@ -1,4 +1,6 @@
 import { MeteorError } from '@rocket.chat/core-services';
+import type { IRoomsModel, ISubscriptionsModel, IUsersModel } from '@rocket.chat/model-typings';
+import { registerModel } from '@rocket.chat/models';
 import { fakeCursor } from '@rocket.chat/models/testing';
 import { expect } from 'chai';
 import { beforeEach, describe, it } from 'mocha';
@@ -38,12 +40,13 @@ import { loadSlashCommand } from './helpers';
 			addUsers = sinon.stub().resolves();
 			createPublic = sinon.stub().resolves();
 			createPrivate = sinon.stub().resolves();
+			registerModel('IRoomsModel', { findOneById: findRoomById, findOneByName: findRoomByName } as unknown as IRoomsModel);
+			registerModel('IUsersModel', { findOneById: findUser } as unknown as IUsersModel);
+			registerModel('ISubscriptionsModel', {
+				countByRoomIdWhenUsernameExists: count,
+				findByRoomIdWhenUsernameExists: subscriptions,
+			} as unknown as ISubscriptionsModel);
 			slashCommand = loadSlashCommand('inviteall/server', {
-				'@rocket.chat/models': {
-					Rooms: { findOneById: findRoomById, findOneByName: findRoomByName },
-					Users: { findOneById: findUser },
-					Subscriptions: { countByRoomIdWhenUsernameExists: count, findByRoomIdWhenUsernameExists: subscriptions },
-				},
 				'../../lib/authorization': { canAccessRoomAsync: canAccess },
 				'../../meteor-methods/rooms/addUsersToRoom': { addUsersToRoomMethod: addUsers },
 				'../../meteor-methods/rooms/createChannel': { createChannelMethod: createPublic },

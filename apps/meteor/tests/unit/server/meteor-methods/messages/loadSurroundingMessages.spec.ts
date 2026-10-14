@@ -1,7 +1,9 @@
 import { MeteorError } from '@rocket.chat/core-services';
+import type { IMessagesModel } from '@rocket.chat/model-typings';
+import { registerModel } from '@rocket.chat/models';
 import { fakeCursor } from '@rocket.chat/models/testing';
 import { expect } from 'chai';
-import { beforeEach, describe, it } from 'mocha';
+import { before, beforeEach, describe, it } from 'mocha';
 import p from 'proxyquire';
 import sinon from 'sinon';
 
@@ -31,7 +33,6 @@ p.noCallThru().load('../../../../../server/meteor-methods/messages/loadSurroundi
 	'meteor/check': {
 		check: checkMock,
 	},
-	'@rocket.chat/models': modelsMock,
 	'../../lib/authorization/canAccessRoom': {
 		canAccessRoomIdAsync: canAccessRoomIdMock,
 	},
@@ -51,6 +52,10 @@ const loadSurroundingMessagesMethod = meteorMethodsMock.firstCall.args[0].loadSu
 const mainMessage = { _id: 'msg123', rid: 'room123', ts: new Date('2024-01-01T00:00:00Z') };
 
 describe('loadSurroundingMessages', () => {
+	before(() => {
+		registerModel('IMessagesModel', modelsMock.Messages as unknown as IMessagesModel);
+	});
+
 	beforeEach(() => {
 		checkMock.resetHistory();
 		meteorUserIdMock.reset();
