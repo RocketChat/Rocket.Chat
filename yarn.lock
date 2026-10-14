@@ -10697,7 +10697,7 @@ __metadata:
     "@types/meteor": "npm:^2.9.11"
     "@types/meteor-collection-hooks": "npm:^0.8.9"
     "@types/mkdirp": "npm:^1.0.2"
-    "@types/node": "npm:~24.13.6"
+    "@types/node": "npm:~24.19.2"
     "@types/node-rsa": "npm:^1.1.4"
     "@types/oauth2-server": "npm:^3.0.18"
     "@types/object-path": "npm:^0.11.4"
@@ -15754,6 +15754,15 @@ __metadata:
   dependencies:
     undici-types: "npm:~7.18.0"
   checksum: 10/855324e2042ea683a6cbf23ae24458033188f276560b0aa4e36ccc5953f378552c7c1140386067b2c17ea24f2b430c7246f3bc81d74dd04fcfcfb3c6304c5dcb
+  languageName: node
+  linkType: hard
+
+"@types/node@npm:~24.19.2":
+  version: 24.19.2
+  resolution: "@types/node@npm:24.19.2"
+  dependencies:
+    undici-types: "npm:>=7.24.0 <7.24.7"
+  checksum: 10/5bc31df093f2866db0a2f9df0a1e99c2a46c3154ca2dc62ee14bde7af216d6361e4737e1023880921007ccb326b8559980e239e18a6fa927cda507da9383225c
   languageName: node
   linkType: hard
 
@@ -34380,7 +34389,7 @@ __metadata:
     "@rocket.chat/eslint-config": "workspace:~"
     "@types/chart.js": "npm:^2.9.41"
     "@types/js-yaml": "npm:^4.0.9"
-    "@types/node": "npm:~24.13.6"
+    "@types/node": "npm:~24.19.2"
     "@types/stream-buffers": "npm:^3.0.8"
     eslint: "npm:~10.12.0"
     eslint-plugin-you-dont-need-lodash-underscore: "npm:~6.14.0"
@@ -37626,6 +37635,13 @@ __metadata:
   version: 1.13.8
   resolution: "underscore@npm:1.13.8"
   checksum: 10/b50ac5806d059cc180b1bd9adea6f7ed500021f4dc782dfc75d66a90337f6f0506623c1b37863f4a9bf64ffbeb5769b638a54b7f2f5966816189955815953139
+  languageName: node
+  linkType: hard
+
+"undici-types@npm:>=7.24.0 <7.24.7":
+  version: 7.24.6
+  resolution: "undici-types@npm:7.24.6"
+  checksum: 10/defc9538b952e3c15b8526596c591f7c1f0c7605ad27a2b7feddbea7ef2e3003f3eda2cdb051a3cb1a2185e3893100fd9cb925c799db99d48131ea63b5233d10
   languageName: node
   linkType: hard
 
