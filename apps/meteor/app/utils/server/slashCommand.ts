@@ -10,6 +10,8 @@ import type {
 import type { ServerMethods } from '@rocket.chat/ddp-client';
 import { Meteor } from 'meteor/meteor';
 
+import { hasAtLeastOnePermissionAsync } from '../../authorization/server/functions/hasPermission';
+
 interface ISlashCommandAddParams<T extends string> {
 	command: string;
 	callback?: SlashCommand<T>['callback'];
@@ -21,6 +23,12 @@ interface ISlashCommandAddParams<T extends string> {
 	appId?: string;
 	description?: string;
 }
+
+const assertCanUseCommand = async ({ permission }: SlashCommand, userId: string, rid: string): Promise<void> => {
+	if (permission && !(await hasAtLeastOnePermissionAsync(userId, ([] as string[]).concat(permission), rid))) {
+		throw new MeteorError('error-not-authorized', 'Not authorized');
+	}
+};
 
 export const slashCommands = {
 	commands: {} as Record<string, SlashCommand>,
@@ -74,6 +82,8 @@ export const slashCommands = {
 			throw new MeteorError('invalid-command-usage', 'Executing a command requires at least a message with a room id.');
 		}
 
+		await assertCanUseCommand(cmd, userId, message.rid);
+
 		return cmd.callback({ command, params, message, triggerId, userId });
 	},
 	async getPreviews(
@@ -90,6 +100,8 @@ export const slashCommands = {
 		if (!message?.rid) {
 			throw new MeteorError('invalid-command-usage', 'Executing a command requires at least a message with a room id.');
 		}
+
+		await assertCanUseCommand(cmd, userId, message.rid);
 
 		const previewInfo = await cmd.previewer(command, params, message, userId);
 
@@ -125,6 +137,8 @@ export const slashCommands = {
 		if (!preview.id || !preview.type || !preview.value) {
 			throw new MeteorError('error-invalid-preview', 'Preview Item must have an id, type, and value.');
 		}
+
+		await assertCanUseCommand(cmd, userId, message.rid);
 
 		return cmd.previewCallback(command, params, message, preview, userId, triggerId);
 	},
