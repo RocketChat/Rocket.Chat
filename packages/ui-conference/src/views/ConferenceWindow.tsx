@@ -184,19 +184,21 @@ const ConferenceWindow = () => {
 
 	const panelToggles = (
 		<>
-			<IconButton
-				small
-				secondary
-				// The same words in both, because they disagreed: the tooltip said "People" while the accessible
-				// name said how many, so anything looking for the button by the name it appeared to have never
-				// found it.
-				aria-label={t('__count__people_in_the_call', { count: presentCount })}
-				title={t('__count__people_in_the_call', { count: presentCount })}
-				aria-pressed={activePanel === 'members'}
-				onClick={() => togglePanel('members')}
-				icon={<Icon name='members' size='x20' color={activePanel === 'members' ? 'info' : undefined} />}
-				badge={presentCount > 0 ? <Badge>{presentCount}</Badge> : undefined}
-			/>
+			{!session.providerOwnsMembersToggle && (
+				<IconButton
+					small
+					secondary
+					// The same words in both, because they disagreed: the tooltip said "People" while the accessible
+					// name said how many, so anything looking for the button by the name it appeared to have never
+					// found it.
+					aria-label={t('__count__people_in_the_call', { count: presentCount })}
+					title={t('__count__people_in_the_call', { count: presentCount })}
+					aria-pressed={activePanel === 'members'}
+					onClick={() => togglePanel('members')}
+					icon={<Icon name='members' size='x20' color={activePanel === 'members' ? 'info' : undefined} />}
+					badge={presentCount > 0 ? <Badge>{presentCount}</Badge> : undefined}
+				/>
+			)}
 			{!session.providerOwnsChatToggle && (
 				<IconButton
 					small

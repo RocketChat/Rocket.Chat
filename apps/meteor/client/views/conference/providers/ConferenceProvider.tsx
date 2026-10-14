@@ -226,6 +226,7 @@ const ConferenceProvider = ({ callId, children }: { callId: string; children: Re
 				// Pexip's chat is what this window is opened for, so it sits on the side the reader reads from.
 				panelDock: isPexip ? 'start' : 'end',
 				providerOwnsChatToggle: provider.features.has('chat'),
+				providerOwnsMembersToggle: provider.features.has('participants'),
 			},
 			actions,
 			slots: {
