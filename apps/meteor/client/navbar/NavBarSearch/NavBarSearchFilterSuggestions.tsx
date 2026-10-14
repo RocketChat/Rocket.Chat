@@ -5,7 +5,16 @@ import {
 	type NavBarSearchFormValues,
 	type SearchFilterSuggestion,
 } from '@rocket.chat/ai-search';
-import { Box, Icon, Item, ItemContent, ItemGroupHeader, ItemGroupTitle, ItemIcon, ItemMeta, ItemTitle } from '@rocket.chat/fuselage';
+import {
+	Box,
+	Icon,
+	ItemGroupHeader,
+	ItemGroupTitle,
+	ItemMeta,
+	SidebarItem,
+	SidebarItemIcon,
+	SidebarItemTitle,
+} from '@rocket.chat/fuselage';
 import type { MouseEvent, ReactElement } from 'react';
 import { useCallback, useMemo } from 'react';
 import { useFormContext } from 'react-hook-form';
@@ -67,15 +76,11 @@ const NavBarSearchFilterSuggestions = ({ suggestions }: NavBarSearchFilterSugges
 						<ItemGroupTitle>{t(filterSuggestionGroupLabels[group])}</ItemGroupTitle>
 					</ItemGroupHeader>
 					{groupSuggestions.map((item) => (
-						<Item key={item.key} is='a' role='option' inset='md' onClick={(event) => handleFilterSuggestion(event, item.value)}>
-							<ItemIcon>
-								<Icon name={item.icon} size='x16' />
-							</ItemIcon>
-							<ItemContent>
-								<ItemTitle>{item.title}</ItemTitle>
-							</ItemContent>
+						<SidebarItem key={item.key} role='option' onClick={(event) => handleFilterSuggestion(event, item.value)}>
+							<SidebarItemIcon icon={<Icon name={item.icon} size='x16' />} />
+							<SidebarItemTitle>{item.title}</SidebarItemTitle>
 							<ItemMeta>{item.description}</ItemMeta>
-						</Item>
+						</SidebarItem>
 					))}
 				</Box>
 			))}
