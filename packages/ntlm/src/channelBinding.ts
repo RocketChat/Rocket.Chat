@@ -30,6 +30,10 @@ const SIGNATURE_OID_TO_HASH: Record<string, string> = {
 
 const DEFAULT_HASH = 'sha256';
 
+/*
+ * TODO: replace everything down to `certificateHashAlgorithm` with `new X509Certificate(der).signatureAlgorithmOid`
+ * once 9.0.0 drops Node 22, since that getter only exists from Node 24.9.
+ */
 const readDerLength = (der: Buffer, offset: number): { length: number; contentStart: number } => {
 	const first = der[offset];
 
