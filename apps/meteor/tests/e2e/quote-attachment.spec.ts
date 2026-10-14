@@ -1,3 +1,5 @@
+import { randomUUID } from 'crypto';
+
 import type { IOEmbedCache } from '@rocket.chat/core-typings';
 import { MongoClient } from 'mongodb';
 
@@ -11,7 +13,7 @@ test.use({ storageState: Users.admin.state });
 const fileDescription = `Message for quote - ${Date.now()}`;
 const quotedMessage = 'Quoting the attachment';
 const threadQuoteMessage = 'Quoting in thread';
-const linkPreview = { url: `https://rocket.chat/quote-preview-${Date.now()}`, title: 'Quote preview fixture' };
+const linkPreview = { url: `https://rocket.chat/quote-preview-${randomUUID()}`, title: 'Quote preview fixture' };
 
 test.describe.parallel('Quote Attachment', () => {
 	let poHomeChannel: HomeChannel;
