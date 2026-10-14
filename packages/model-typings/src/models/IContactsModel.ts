@@ -1,5 +1,5 @@
 import type { IContact, IContactPublic, IUser } from '@rocket.chat/core-typings';
-import type { DeleteResult, Document, FindCursor, UpdateResult } from 'mongodb';
+import type { DeleteResult, Document, FindCursor } from 'mongodb';
 
 import type { FindPaginated, IBaseModel, InsertionModel } from './IBaseModel';
 import type { DocumentWithProjection, FindOptionsWithProjection } from '../types/DocumentWithProjection';
@@ -32,7 +32,7 @@ export interface IContactsModel extends IBaseModel<IContact> {
 	): Promise<Pick<IContact, '_id' | 'displayName'> | null>;
 	countImportedByUserId(uid: IUser['_id']): Promise<number>;
 	createLocal(contact: LocalContact): Promise<IContactPublic | null>;
-	updateLocal(uid: IUser['_id'], contactId: IContact['_id'], contact: LocalContactUpdate): Promise<UpdateResult>;
+	updateLocal(uid: IUser['_id'], contactId: IContact['_id'], contact: LocalContactUpdate): Promise<IContactPublic | null>;
 	deleteLocal(uid: IUser['_id'], contactId: IContact['_id']): Promise<DeleteResult>;
 	bulkUpsertImported(contacts: ImportedContact[], lastSyncAt: Date): Promise<ContactBulkUpsertResult>;
 	findImportedByFolder<P extends Document = IContact, O extends FindOptionsWithProjection<P> = FindOptionsWithProjection<P>>(

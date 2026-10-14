@@ -34,7 +34,6 @@ const ContactsListPropsSchema = {
 export const isContactsListProps = ajvQuery.compile<ContactsListProps>(ContactsListPropsSchema);
 
 export type LocalContactPayload = {
-	displayName?: string;
 	givenName: string;
 	surname?: string;
 	companyName?: string;
@@ -43,11 +42,6 @@ export type LocalContactPayload = {
 };
 
 const localContactProperties = {
-	displayName: {
-		type: 'string',
-		minLength: 1,
-		nullable: true,
-	},
 	givenName: {
 		type: 'string',
 		minLength: 1,
@@ -146,7 +140,7 @@ export type ContactsEndpoints = {
 		POST: (params: ContactsCreateProps) => { contact: IContactPublic };
 	};
 	'/v1/contacts.update': {
-		POST: (params: ContactsUpdateProps) => void;
+		POST: (params: ContactsUpdateProps) => { contact: IContactPublic };
 	};
 	'/v1/contacts.delete': {
 		POST: (params: ContactsDeleteProps) => void;

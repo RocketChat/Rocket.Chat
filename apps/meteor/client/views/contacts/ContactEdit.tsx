@@ -19,14 +19,13 @@ import { getEndpointErrorMessage } from '../../lib/errorHandling';
 
 export type ContactEditProps = {
 	contact?: Serialized<IContactPublic>;
-	onSaved?: (contact: Serialized<IContactPublic>) => void;
+	onSaved: (contact: Serialized<IContactPublic>) => void;
 	onClose: () => void;
 };
 
 type ContactForm = {
 	givenName: string;
 	surname: string;
-	displayName: string;
 	emails: { address: string; label: string }[];
 	phones: { raw: string; label: string }[];
 	companyName: string;
@@ -51,7 +50,6 @@ const ContactEdit = ({ contact, onSaved, onClose }: ContactEditProps) => {
 		defaultValues: {
 			givenName: contact?.givenName ?? '',
 			surname: contact?.surname ?? '',
-			displayName: contact?.displayName ?? '',
 			emails: contact?.emails.length
 				? contact.emails.map(({ address, label }) => ({ address, label: label ?? '' }))
 				: [{ address: '', label: '' }],
@@ -64,7 +62,7 @@ const ContactEdit = ({ contact, onSaved, onClose }: ContactEditProps) => {
 	const phoneFields = useFieldArray({ control, name: 'phones' });
 
 	const save = useMutation({
-		mutationFn: async ({ givenName, surname, displayName, emails, phones, companyName }: ContactForm) => {
+		mutationFn: async ({ givenName, surname, emails, phones, companyName }: ContactForm) => {
 			const filledEmails = emails
 				.filter(({ address }) => address.trim())
 				.map(({ address, label }) => ({ address: address.trim(), ...(label.trim() && { label: label.trim() }) }));
@@ -76,33 +74,27 @@ const ContactEdit = ({ contact, onSaved, onClose }: ContactEditProps) => {
 			const fields = {
 				givenName,
 				...(surname && { surname }),
-				...(displayName && { displayName }),
 				...(companyName && { companyName }),
 				...(filledEmails.length && { emails: filledEmails }),
 				...(filledPhones.length && { phones: filledPhones }),
 			};
 
 			if (contact) {
-				await updateContact({ contactId: contact._id, ...fields });
+				const { contact: updated } = await updateContact({ contactId: contact._id, ...fields });
 
-				return undefined;
+				return { saved: updated, created: false };
 			}
 
 			const { contact: created } = await createContact(fields);
 
-			return created;
+			return { saved: created, created: true };
 		},
-		onSuccess: async (created) => {
+		onSuccess: async ({ saved, created }) => {
 			dispatchToastMessage({ type: 'success', message: t(created ? 'Contact_created' : 'Contact_updated') });
 
 			await queryClient.invalidateQueries({ queryKey: ['contacts', 'list'] });
 
-			if (created && onSaved) {
-				onSaved(created);
-				return;
-			}
-
-			onClose();
+			onSaved(saved);
 		},
 		onError: async (error) =>
 			dispatchToastMessage({ type: 'error', message: await getEndpointErrorMessage(error, 'Failed_to_save_settings') }),
@@ -132,12 +124,6 @@ const ContactEdit = ({ contact, onSaved, onClose }: ContactEditProps) => {
 						<FieldLabel>{t('Last_name')}</FieldLabel>
 						<FieldRow>
 							<TextInput {...register('surname')} />
-						</FieldRow>
-					</Field>
-					<Field>
-						<FieldLabel>{t('Display_name')}</FieldLabel>
-						<FieldRow>
-							<TextInput {...register('displayName')} />
 						</FieldRow>
 					</Field>
 
