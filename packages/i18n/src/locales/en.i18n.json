@@ -3577,6 +3577,8 @@
   "Katex_Enabled_Description": "Allow using [katex](http://khan.github.io/KaTeX/)  for math typesetting in messages",
   "Katex_Parenthesis_Syntax": "Allow parenthesis syntax",
   "Katex_Parenthesis_Syntax_Description": "Allow using \\[katex block\\] and \\(inline katex\\) syntaxes",
+  "Keep_chat_history": "Keep chat history",
+  "Keep_chat_history_Description": "Off, the call moves to a new chat, so the people you add do not see what was said before.",
   "Keep_default_user_settings": "Keep the default settings",
   "Keep_editing": "Keep editing",
   "Keep_on_top": "Keep on top",

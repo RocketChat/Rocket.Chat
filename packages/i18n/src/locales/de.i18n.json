@@ -3364,6 +3364,8 @@
   "Katex_Enabled_Description": "Erlauben von [KaTeX](http://khan.github.io/KaTeX/)  für mathematische Ausdrücke in Nachrichten",
   "Katex_Parenthesis_Syntax": "Klammer-Syntax erlauben",
   "Katex_Parenthesis_Syntax_Description": "\\[KaTeX Block\\] und \\ (inline KaTeX \\) Syntax erlauben",
+  "Keep_chat_history": "Chatverlauf beibehalten",
+  "Keep_chat_history_Description": "Wenn deaktiviert, wird der Anruf in einen neuen Chat verschoben, sodass die hinzugefügten Personen frühere Nachrichten nicht sehen.",
   "Keep_default_user_settings": "Standardeinstellungen beibehalten",
   "Keep_editing": "Weiter bearbeiten",
   "Keyboard_Shortcut_Key_Alt": "Alt",
