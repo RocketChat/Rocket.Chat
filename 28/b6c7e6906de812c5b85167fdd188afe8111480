@@ -1,0 +1,23 @@
+docs/database-access.md
+  s_b442a5076d1ce2::t_967faa3fe19578 45-73,77-79
+  s_b442a5076d1ce2::t_f6dab77e47dfa6 44
+CLAUDE.md
+  s_b442a5076d1ce2::t_587b56053ab37f 13-14
+  s_b442a5076d1ce2::t_fb61cb9e9198b3 47
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "28b6c7e6906de812c5b85167fdd188afe8111480",
+  "prompts": {},
+  "sessions": {
+    "s_b442a5076d1ce2": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "83b5bb12-6f62-4db9-a9c8-573fc449d858",
+        "model": "claude-opus-5-5"
+      },
+      "human_author": "Diego Sampaio <chinello@gmail.com>"
+    }
+  }
+}
