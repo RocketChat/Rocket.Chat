@@ -1,9 +1,27 @@
 import { Box, Button, Card, CardBody, CardControls, CardHeader, CardTitle, FramedIcon, Skeleton } from '@rocket.chat/fuselage';
+import type { TranslationKey } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
 import { useId } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import MarkdownText from '../../components/MarkdownText';
+import { useCanManageAISettings } from '../../hooks/useCanManageAISettings';
+
+const adminAnswerErrors: Record<string, TranslationKey> = {
+	'error-ai-provider-request-failed': 'Search_AI_answer_error_provider_request_failed',
+	'error-ai-provider-empty-response': 'Search_AI_answer_error_provider_empty_response',
+	'error-ai-provider-not-configured': 'Search_AI_answer_disabled',
+};
+
+const getAnswerErrorMessage = (error: unknown, canManageAISettings: boolean): TranslationKey => {
+	if (!canManageAISettings) {
+		return 'Search_AI_answer_error_unavailable';
+	}
+
+	const errorType = typeof error === 'object' && error !== null && 'errorType' in error ? error.errorType : undefined;
+
+	return (typeof errorType === 'string' && adminAnswerErrors[errorType]) || 'Search_AI_answer_error';
+};
 
 export type SearchAnswerPanelProps = {
 	answer?: string;
@@ -26,6 +44,7 @@ const SearchAnswerPanel = ({
 }: SearchAnswerPanelProps): ReactElement => {
 	const { t } = useTranslation();
 	const titleId = useId();
+	const canManageAISettings = useCanManageAISettings();
 
 	let content: ReactElement;
 	if (isLoading) {
@@ -63,7 +82,7 @@ const SearchAnswerPanel = ({
 					)}
 					{error && !isLoading ? (
 						<Box color='danger' fontScale='p2'>
-							{t('Search_AI_answer_error')}
+							{t(getAnswerErrorMessage(error, canManageAISettings))}
 						</Box>
 					) : (
 						content
