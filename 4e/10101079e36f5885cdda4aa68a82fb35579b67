@@ -1,0 +1,43 @@
+ee/packages/xmpp-server/src/service/helpers/xmppUser.spec.ts
+  s_9f3665bd616f97::t_77aa17dfdc0f07 4,7,32,38,41,44
+packages/models/src/models/Users.ts
+  s_9f3665bd616f97::t_81e592ea211a99 1662-1693
+  s_9f3665bd616f97::t_922a8ba4d7eb08 33
+packages/models/src/models/Rooms.ts
+  s_9f3665bd616f97::t_96696aa954fd4f 855-858
+  s_9f3665bd616f97::t_01c7e60daeee4f 808-854
+packages/model-typings/src/models/IUsersModel.ts
+  s_9f3665bd616f97::t_e2c192a6921be2 322-330
+ee/packages/xmpp-server/src/service/XMPPServerService.ts
+  s_9f3665bd616f97::t_1e726cf5f3ead2 847
+  s_9f3665bd616f97::t_fd024e172863d4 391,466,561,647,663,677,707,798,826
+  s_9f3665bd616f97::t_03a3b0bb730c16 867
+  s_9f3665bd616f97::t_8f6498dbec11df 506
+ee/packages/xmpp-server/src/service/helpers/xmppUser.ts
+  s_9f3665bd616f97::t_1707f03e4c670d 7,14
+packages/model-typings/src/models/IRoomsModel.ts
+  s_9f3665bd616f97::t_dff2ad01b9a157 248-249
+  s_9f3665bd616f97::t_4391fab25f7580 224-247
+ee/packages/xmpp-server/tests/integration/service-observer.spec.ts
+  s_9f3665bd616f97::t_ff91909991b6da 24
+ee/packages/xmpp-server/docs/specs/presence.md
+  s_9f3665bd616f97::t_4a5f705f6c23cf 87
+ee/packages/xmpp-server/docs/specs/addressing.md
+  s_9f3665bd616f97::t_d5a1a289cd73cb 64-66
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "4e10101079e36f5885cdda4aa68a82fb35579b67",
+  "prompts": {},
+  "sessions": {
+    "s_9f3665bd616f97": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "c8fbba81-a31c-47c4-a6cf-b10ab5fc9b26",
+        "model": "claude-opus-5-5"
+      },
+      "human_author": null
+    }
+  }
+}
