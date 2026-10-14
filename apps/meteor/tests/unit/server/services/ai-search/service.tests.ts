@@ -510,7 +510,7 @@ describe('AISearchService', () => {
 				.search({ query: 'fruit', userId: 'user-id', limit: 5 })
 				.then(
 					() => expect.fail('expected the search to reject'),
-					(error: Error) => expect(error.message).to.equal('pipeline unreachable'),
+					(error: Error) => expect(error.message).to.equal('error-ai-search-unreachable'),
 				);
 		});
 
@@ -541,7 +541,7 @@ describe('AISearchService', () => {
 				.search({ query: 'fruit', userId: 'user-id' })
 				.then(
 					() => expect.fail('expected the search to reject'),
-					(error: Error) => expect(error.message).to.equal('Intelligent search pipeline returned HTTP 503'),
+					(error: Error) => expect(error.message).to.equal('error-ai-search-unavailable'),
 				);
 		});
 
