@@ -90,8 +90,7 @@ export const useHandleUnread = (
 		const count = filterMessages(
 			(record) =>
 				record.rid === room._id &&
-				!!lastMessageDate &&
-				record.ts.getTime() <= lastMessageDate?.getTime() &&
+				(!lastMessageDate || record.ts.getTime() <= lastMessageDate.getTime()) &&
 				record.ts.getTime() > (subscription?.ls?.getTime() ?? -Infinity),
 		).length;
 
