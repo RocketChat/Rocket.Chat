@@ -7,7 +7,7 @@ import DOMPurify from 'dompurify';
 import type { MouseEvent } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { outgoingEvents } from '../../../../../../app/integrations/lib/outgoingEvents';
+import { outgoingEvents } from '../../../../../../lib/integrations/outgoingEvents';
 import { useHighlightedCode } from '../../../../../hooks/useHighlightedCode';
 
 export type HistoryItemProps = { data: Serialized<IIntegrationHistory> };

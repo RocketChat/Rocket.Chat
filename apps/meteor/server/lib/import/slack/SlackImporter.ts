@@ -3,7 +3,7 @@ import { Messages, Settings, ImportData } from '@rocket.chat/models';
 import type { IZipEntry } from 'adm-zip';
 
 import { Importer, ProgressStep, ImporterWebsocket } from '..';
-import { MentionsParser } from '../../../../app/mentions/lib/MentionsParser';
+import { MentionsParser } from '../../../../lib/MentionsParser';
 import { settings } from '../../../settings';
 import { notifyOnSettingChanged } from '../../notifyListener';
 import { getUserAvatarURL } from '../../utils/getUserAvatarURL';

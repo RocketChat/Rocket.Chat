@@ -8,7 +8,7 @@ import { useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { useErrorHandler } from './useErrorHandler';
-import { ImportingStartedStates } from '../../../../app/importer/lib/ImporterProgressStep';
+import { ImportingStartedStates } from '../../../../lib/importer/ImporterProgressStep';
 import { numberFormat } from '../../../../lib/utils/stringUtils';
 
 // TODO: review inner logic

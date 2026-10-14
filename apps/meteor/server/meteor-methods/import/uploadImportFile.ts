@@ -3,7 +3,7 @@ import type { IUser } from '@rocket.chat/core-typings';
 import type { ServerMethods } from '@rocket.chat/ddp-client';
 import { Meteor } from 'meteor/meteor';
 
-import { ProgressStep } from '../../../app/importer/lib/ImporterProgressStep';
+import { ProgressStep } from '../../../lib/importer/ImporterProgressStep';
 import { hasPermissionAsync } from '../../lib/authorization/hasPermission';
 import { methodDeprecationLogger } from '../../lib/deprecationWarningLogger';
 import { Importers } from '../../lib/import';
