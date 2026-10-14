@@ -1,9 +1,10 @@
 import { mockAppRoot } from '@rocket.chat/mock-providers';
 import type { SubscriptionWithRoom } from '@rocket.chat/ui-contexts';
-import { renderHook } from '@testing-library/react';
+import { act, renderHook } from '@testing-library/react';
 
-import { useTeamSubscriptions, useTeamsList, useTeamsUnreadInfo } from './useTeamsList';
+import { sortTeams, useTeamSubscriptions, useTeamsList, useTeamsUnreadInfo } from './useTeamsList';
 import { createFakeSubscription } from '../../../../tests/mocks/data';
+import { teamsPanelStore } from '../teamsPanelStore';
 
 const noUnread = {
 	open: true,
@@ -33,6 +34,8 @@ const wrapper = (subscriptions: SubscriptionWithRoom[], sortBy: 'activity' | 'al
 const all = [operations, backend, general, engineering, incidents, frontend, orphan];
 
 describe('useTeamSubscriptions', () => {
+	afterEach(() => teamsPanelStore.setState({ teamsOrder: [] }));
+
 	it('groups joined rooms under their team, leaving out rooms outside teams and teams without a main room', () => {
 		const { result } = renderHook(() => useTeamSubscriptions(), { wrapper: wrapper(all) });
 
@@ -44,10 +47,48 @@ describe('useTeamSubscriptions', () => {
 		]);
 	});
 
-	it('keeps the subscription order when sorting by activity', () => {
+	it('keeps teams alphabetical when rooms are sorted by activity, so activity does not move them', () => {
 		const { result } = renderHook(() => useTeamSubscriptions(), { wrapper: wrapper(all, 'activity') });
 
+		expect(result.current.map(({ key }) => key)).toEqual(['eng', 'ops']);
+	});
+
+	it('follows the order the user moved the teams to', () => {
+		const { result } = renderHook(() => useTeamSubscriptions(), { wrapper: wrapper(all) });
+
+		act(() => teamsPanelStore.getState().moveTeam(['eng', 'ops'], 'ops', 'up'));
+
 		expect(result.current.map(({ key }) => key)).toEqual(['ops', 'eng']);
+	});
+});
+
+describe('sortTeams', () => {
+	const team = (key: string, title: string) => ({ key, title });
+	const teams = [team('c', 'Charlie'), team('a', 'Alpha'), team('d', 'Delta'), team('b', 'Bravo')];
+
+	it('sorts alphabetically while the user has not moved any team', () => {
+		expect(sortTeams(teams, []).map(({ key }) => key)).toEqual(['a', 'b', 'c', 'd']);
+	});
+
+	it('follows the saved order and puts teams joined later at the end, alphabetically', () => {
+		expect(sortTeams(teams, ['c', 'a']).map(({ key }) => key)).toEqual(['c', 'a', 'b', 'd']);
+	});
+});
+
+describe('teamsPanelStore.moveTeam', () => {
+	afterEach(() => teamsPanelStore.setState({ teamsOrder: [] }));
+
+	it('swaps a team with its neighbor', () => {
+		teamsPanelStore.getState().moveTeam(['a', 'b', 'c'], 'b', 'down');
+
+		expect(teamsPanelStore.getState().teamsOrder).toEqual(['a', 'c', 'b']);
+	});
+
+	it('does nothing past either end', () => {
+		teamsPanelStore.getState().moveTeam(['a', 'b'], 'a', 'up');
+		teamsPanelStore.getState().moveTeam(['a', 'b'], 'b', 'down');
+
+		expect(teamsPanelStore.getState().teamsOrder).toEqual([]);
 	});
 });
 

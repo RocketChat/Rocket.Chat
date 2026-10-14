@@ -6209,6 +6209,7 @@
   "Teams_panel_empty_title": "Você ainda não está em nenhuma equipe",
   "Teams_panel_search_placeholder": "Pesquisar equipes e salas",
   "Teams_panel_team_options": "Opções de {{teamName}}",
+  "Teams_panel_team_order": "Ordem das equipes",
   "Teams_Private_Team": "Equipe privada",
   "Teams_Public_Team": "Equipe pública",
   "Teams_removing__username__from_team": "Você está removendo {{username}} desta equipe",

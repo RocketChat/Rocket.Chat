@@ -3,7 +3,7 @@ import { Box, Icon, IconButton, TextInput } from '@rocket.chat/fuselage';
 import { useDebouncedValue } from '@rocket.chat/fuselage-hooks';
 import { useUserId, useUserPreference } from '@rocket.chat/ui-contexts';
 import type { ChangeEvent, KeyboardEvent } from 'react';
-import { useId, useMemo, useState } from 'react';
+import { useId, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import TeamsListWrapper from './TeamsListWrapper';
@@ -12,6 +12,7 @@ import TeamsPanelEmpty from './TeamsPanelEmpty';
 import { useExpandedTeams } from './hooks/useExpandedTeams';
 import { useTeamSubscriptions, useTeamsList } from './hooks/useTeamsList';
 import { useTeamsPanel } from './hooks/useTeamsPanel';
+import { teamsPanelStore } from './teamsPanelStore';
 import { useMergedRefsV2 } from '../../hooks/useMergedRefsV2';
 import { useOpenedRoom } from '../../lib/RoomManager';
 import RoomListRow from '../RoomList/RoomListRow';
@@ -63,6 +64,17 @@ const TeamsPanel = () => {
 	const { expandedTeams, toggleTeam, handleKeyDown } = useExpandedTeams(allTeams);
 	const teams = useTeamsList({ teams: allTeams, expandedTeams, filterText: debouncedFilterText });
 	const hasTeams = allTeams.length > 0;
+	const teamKeys = useMemo(() => allTeams.map(({ key }) => key), [allTeams]);
+	const moveTeam = teamsPanelStore((state) => state.moveTeam);
+	const listRef = useRef<HTMLDivElement>(null);
+
+	// The moved team is rendered again at its new place, so focus would fall to the page; it goes back to its header.
+	const handleMove = (key: string, direction: 'up' | 'down') => {
+		moveTeam(teamKeys, key, direction);
+		requestAnimationFrame(() =>
+			listRef.current?.querySelector<HTMLElement>(`[data-team-key="${key}"] .rcx-sidebar-collapse-group__bar-button`)?.focus(),
+		);
+	};
 
 	const avatarTemplate = useAvatarTemplate();
 	const sideBarItemTemplate = useTemplateByViewMode();
@@ -97,7 +109,7 @@ const TeamsPanel = () => {
 
 	const preventDefaultRef = usePreventDefault();
 	const shortcutOpenMenuRef = useShortcutOpenMenu();
-	const ref = useMergedRefsV2(preventDefaultRef, shortcutOpenMenuRef);
+	const ref = useMergedRefsV2(preventDefaultRef, shortcutOpenMenuRef, listRef);
 
 	return (
 		<Box display='flex' flexDirection='column' flexGrow={1} minHeight={0} role='region' aria-label={t('Teams')}>
@@ -147,6 +159,11 @@ const TeamsPanel = () => {
 						renderGroup={(team) => (
 							<TeamsPanelCollapser
 								team={team}
+								// While searching, a team's neighbors may be hidden, so moving it is turned off.
+								canMoveUp={!debouncedFilterText && teamKeys.indexOf(team.key) > 0}
+								canMoveDown={!debouncedFilterText && teamKeys.indexOf(team.key) < teamKeys.length - 1}
+								onMove={(direction) => handleMove(team.key, direction)}
+								data-team-key={team.key}
 								// While searching every matching team is shown expanded, so toggling would have no visible effect.
 								onClick={() => !debouncedFilterText && toggleTeam(team.key)}
 								onKeyDown={(e) => !debouncedFilterText && handleKeyDown(e, team.key)}

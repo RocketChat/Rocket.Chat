@@ -16,14 +16,17 @@ const CREATE_TEAM_ROOM_PERMISSIONS = ['create-team-channel', 'create-team-group'
 
 type TeamsPanelMenuProps = {
 	team: SidebarTeam;
+	canMoveUp: boolean;
+	canMoveDown: boolean;
+	onMove: (direction: 'up' | 'down') => void;
 };
 
 /**
  * Shortcuts to a team's own surfaces from its section in the Teams panel. Everyone gets the views (info, members,
  * channels); editing and adding channels show only to who may do them, checked on the team's main room, where team
- * owners and moderators get their roles.
+ * owners and moderators get their roles. Moving up and down comes first, as in the Inbox categories' menu.
  */
-const TeamsPanelMenu = ({ team }: TeamsPanelMenuProps) => {
+const TeamsPanelMenu = ({ team, canMoveUp, canMoveDown, onMove }: TeamsPanelMenuProps) => {
 	const { t } = useTranslation();
 	const setModal = useSetModal();
 	const [isOpen, toggleOpen] = useToggle(false);
@@ -52,6 +55,29 @@ const TeamsPanelMenu = ({ team }: TeamsPanelMenuProps) => {
 
 	const closeModal = () => setModal(null);
 
+	const orderItems: GenericMenuItemProps[] = [
+		{
+			id: 'move-up',
+			icon: 'arrow-up',
+			content: t('Move_up'),
+			disabled: !canMoveUp,
+			onClick: () => {
+				close();
+				onMove('up');
+			},
+		},
+		{
+			id: 'move-down',
+			icon: 'arrow-down',
+			content: t('Move_down'),
+			disabled: !canMoveDown,
+			onClick: () => {
+				close();
+				onMove('down');
+			},
+		},
+	];
+
 	const viewItems: GenericMenuItemProps[] = [
 		{ id: 'team-info', icon: 'info-circled', content: t('Teams_Info'), onClick: () => openTab('team-info') },
 		{ id: 'members', icon: 'members', content: t('Members'), onClick: () => openTab('members-list') },
@@ -79,7 +105,9 @@ const TeamsPanelMenu = ({ team }: TeamsPanelMenuProps) => {
 			: undefined;
 
 	const manageItems = [...editItems, ...(singleAddItem ? [singleAddItem] : [])];
-	const handleAction = useHandleMenuAction([...viewItems, ...manageItems, ...addItems]);
+	const allItems = [...orderItems, ...viewItems, ...manageItems, ...addItems];
+	const disabledKeys = allItems.filter(({ disabled }) => disabled).map(({ id }) => id);
+	const handleAction = useHandleMenuAction(allItems);
 
 	const hasManageSection = manageItems.length > 0 || addItems.length > 1;
 
@@ -91,9 +119,17 @@ const TeamsPanelMenu = ({ team }: TeamsPanelMenuProps) => {
 			mini
 			isOpen={isOpen}
 			onOpenChange={toggleOpen}
+			{...(disabledKeys.length ? { disabledKeys } : {})}
 			onAction={handleAction}
 		>
 			{[
+				<MenuSection key='order' items={orderItems} aria-label={t('Teams_panel_team_order')}>
+					{(item) => (
+						<MenuItem key={item.id}>
+							<GenericMenuItem {...item} />
+						</MenuItem>
+					)}
+				</MenuSection>,
 				<MenuSection key='view' items={viewItems} aria-label={t('Teams_panel_team_options', { teamName: title })}>
 					{(item) => (
 						<MenuItem key={item.id}>

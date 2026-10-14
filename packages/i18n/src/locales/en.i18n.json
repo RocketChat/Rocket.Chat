@@ -6610,6 +6610,7 @@
   "Teams_panel_empty_title": "You're not in any team yet",
   "Teams_panel_search_placeholder": "Search teams and rooms",
   "Teams_panel_team_options": "Options for {{teamName}}",
+  "Teams_panel_team_order": "Team order",
   "Teams_Private_Team": "Private team",
   "Teams_Public_Team": "Public team",
   "Teams_removing__username__from_team": "You are removing {{username}} from this team",

@@ -11,11 +11,14 @@ import { useUnreadDisplay } from '../hooks/useUnreadDisplay';
 
 type TeamsPanelCollapserProps = {
 	team: SidebarTeam;
+	canMoveUp: boolean;
+	canMoveDown: boolean;
+	onMove: (direction: 'up' | 'down') => void;
 	onClick: MouseEventHandler<HTMLElement>;
 	onKeyDown: (e: KeyboardEvent) => void;
 } & Omit<HTMLAttributes<HTMLElement>, 'onClick' | 'onKeyDown'>;
 
-const TeamsPanelCollapser = ({ team, ...props }: TeamsPanelCollapserProps) => {
+const TeamsPanelCollapser = ({ team, canMoveUp, canMoveDown, onMove, ...props }: TeamsPanelCollapserProps) => {
 	const { t } = useTranslation();
 	const { unreadTitle, unreadVariant, showUnread, unreadCount } = useUnreadDisplay(team.unreadInfo);
 	const preventPropagation = usePreventPropagation();
@@ -40,7 +43,7 @@ const TeamsPanelCollapser = ({ team, ...props }: TeamsPanelCollapserProps) => {
 			menu={
 				<SidebarCollapseGroupMenu onClick={preventPropagation}>
 					{mounted || isTouch ? (
-						<TeamsPanelMenu team={team} />
+						<TeamsPanelMenu team={team} canMoveUp={canMoveUp} canMoveDown={canMoveDown} onMove={onMove} />
 					) : (
 						<IconButton tabIndex={-1} aria-hidden mini icon='kebab' onPointerDown={mountNow} />
 					)}

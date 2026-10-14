@@ -1,10 +1,11 @@
 import type { SubscriptionWithRoom } from '@rocket.chat/ui-contexts';
-import { useUserPreference, useUserSubscriptions } from '@rocket.chat/ui-contexts';
+import { useUserSubscriptions } from '@rocket.chat/ui-contexts';
 import { useMemo } from 'react';
 
 import { useSortQueryOptions } from '../../../hooks/useSortQueryOptions';
 import type { GroupUnreadInfo } from '../../hooks/useRoomList';
 import { buildUnreadInfo, emptyUnreadInfo } from '../../hooks/useRoomList';
+import { teamsPanelStore } from '../teamsPanelStore';
 
 const query = { open: { $ne: false } };
 
@@ -21,6 +22,18 @@ export type SidebarTeam = {
 
 const getRoomTitle = (room: { fname?: string; name?: string }) => room.fname || room.name || '';
 
+/**
+ * Teams are alphabetical until the user moves one; then they follow the saved order, and teams joined afterwards go
+ * at the end, alphabetically. Activity in a team's rooms never moves the team, so the panel doesn't reshuffle while
+ * the user reads it.
+ */
+export const sortTeams = <T extends { key: string; title: string }>(teams: T[], order: string[]) => {
+	const position = new Map(order.map((key, index) => [key, index]));
+	const rank = (key: string) => position.get(key) ?? order.length;
+
+	return [...teams].sort((a, b) => rank(a.key) - rank(b.key) || a.title.localeCompare(b.title));
+};
+
 const matches = (room: { fname?: string; name?: string }, text: string) => getRoomTitle(room).toLocaleLowerCase().includes(text);
 
 /**
@@ -32,13 +45,12 @@ const matches = (room: { fname?: string; name?: string }, text: string) => getRo
 export const useTeamSubscriptions = () => {
 	const options = useSortQueryOptions();
 	const subscriptions = useUserSubscriptions(query, options);
-	const sortBy = useUserPreference<'activity' | 'alphabetical'>('sidebarSortby');
+	const teamsOrder = teamsPanelStore((state) => state.teamsOrder);
 
 	return useMemo(() => {
 		const teams = new Map<string, { main?: SubscriptionWithRoom; rooms: SubscriptionWithRoom[] }>();
 
-		// Subscriptions arrive already sorted by the user's preference, so with "activity" a team is placed by its
-		// most recently active room, which is the first one of the team to show up here.
+		// Subscriptions arrive sorted by the user's preference, which orders the rooms inside each team.
 		subscriptions.forEach((subscription) => {
 			if (!subscription.teamId) {
 				return;
@@ -59,12 +71,8 @@ export const useTeamSubscriptions = () => {
 			.filter((entry): entry is [string, { main: SubscriptionWithRoom; rooms: SubscriptionWithRoom[] }] => Boolean(entry[1].main))
 			.map(([key, { main, rooms }]) => ({ key, title: getRoomTitle(main), main, rooms }));
 
-		if (sortBy !== 'activity') {
-			list.sort((a, b) => a.title.localeCompare(b.title));
-		}
-
-		return list;
-	}, [subscriptions, sortBy]);
+		return sortTeams(list, teamsOrder);
+	}, [subscriptions, teamsOrder]);
 };
 
 export type TeamSubscriptions = ReturnType<typeof useTeamSubscriptions>;
