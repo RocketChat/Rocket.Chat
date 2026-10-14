@@ -108,9 +108,11 @@ const SearchPage = (): ReactElement => {
 						</Callout>
 					)}
 					{canUseAISearch && intelligentSearchEnabled && meta && !meta.intelligentSearchConfigured && (
-						<AISearchErrorCallout notConfigured marginBlockEnd={16} />
+						<AISearchErrorCallout role='alert' notConfigured marginBlockEnd={16} />
 					)}
-					{searchError && <AISearchErrorCallout error={searchError} onRetry={() => void refetchResults()} marginBlockEnd={16} />}
+					{searchError && (
+						<AISearchErrorCallout role='alert' error={searchError} onRetry={() => void refetchResults()} marginBlockEnd={16} />
+					)}
 					{debouncedQuery && (
 						<SearchAnswerPanel
 							answer={answerResult.data?.answer}
