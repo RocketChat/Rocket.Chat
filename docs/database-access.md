@@ -41,11 +41,40 @@ Read options: `projection`, `sort`, `limit`, `skip`, `session`. Pass them throug
   finder in the same model.
 - Reuse an existing method only when it does exactly the same write. A method with a similar
   name may also touch other fields or skip `_updatedAt`.
-- Pass in values that need domain knowledge (a computed role, a normalized address). The model
-  knows how the document is stored, not the rules of the feature using it.
+
+## Models hold no business logic
+
+A model knows how its collection is stored, not the rules of the feature using it. Two
+consequences:
+
+- **A model doesn't call other models.** A method that reads a second collection, or keeps
+  two collections consistent, is a feature rule. The caller talks to each model and combines
+  the results.
+- **A model doesn't validate its arguments.** It uses what it receives as is: no allowed-value
+  lists, no "start before end", no throwing on bad input. Validation belongs to the endpoint
+  schema or the service that owns the rule. The parameter types are the model's only contract.
+
+Values that need domain knowledge (a computed role, a normalized address) are computed by the
+caller and passed in.
+
+```ts
+// No: the model decides what a valid banner is
+async create(banner: IBanner) {
+	if (banner.startAt > banner.expireAt) {
+		throw new Error('Start date cannot be later than expire date');
+	}
+	return this.insertOne(banner);
+}
+
+// Yes: the service validated before calling it
+async create(banner: IBanner) {
+	return this.insertOne(banner);
+}
+```
 
 ## Existing code
 
-Many inline queries predate this rule. Don't add new ones. When you touch one, move it into
-the model as its own refactor commit, below the change that needed it
+Many inline queries, models that import other models from `../index`, and models that
+validate their input predate these rules. Don't add new ones. When you touch one, move the
+logic to where it belongs as its own refactor commit, below the change that needed it
 ([change organization](change-organization.md)).
