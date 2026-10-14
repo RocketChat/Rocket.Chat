@@ -1,5 +1,6 @@
 import type { Serialized, VideoConference } from '@rocket.chat/core-typings';
 
+import { mapMessageFromApi } from './mapMessageFromApi';
 import { mapVideoConfUserFromApi } from './mapVideoConfUserFromApi';
 
 /**
@@ -12,5 +13,6 @@ export const mapVideoConfFromApi = (videoConf: Serialized<VideoConference>): Vid
 		_updatedAt: new Date(videoConf._updatedAt),
 		createdAt: new Date(videoConf.createdAt),
 		...(videoConf.endedAt && { endedAt: new Date(videoConf.endedAt) }),
+		...(videoConf.discussionLastMessage && { discussionLastMessage: mapMessageFromApi(videoConf.discussionLastMessage) }),
 		users: videoConf.users.map(mapVideoConfUserFromApi),
 	}) as VideoConference;
