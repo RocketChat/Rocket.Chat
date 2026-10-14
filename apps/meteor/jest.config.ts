@@ -43,6 +43,7 @@ export default {
 				'<rootDir>/server/lib/cloud/supportedVersionsToken/**.spec.ts',
 				'<rootDir>/lib/authorization/**.spec.ts',
 				'<rootDir>/lib/mimeTypes.spec.ts',
+				'<rootDir>/lib/utils/isJSON.spec.ts',
 				'<rootDir>/server/lib/auditServerEvents/**.spec.ts',
 				'<rootDir>/server/services/import/**/*.spec.ts',
 				'<rootDir>/server/services/upload/*.spec.ts',
