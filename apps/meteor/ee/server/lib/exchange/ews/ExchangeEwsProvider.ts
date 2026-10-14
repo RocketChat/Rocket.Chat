@@ -114,13 +114,13 @@ export class ExchangeEwsProvider implements IExchangeProvider {
 			}
 
 			const last = nodes[nodes.length - 1];
-			const next = last && parseEwsDateTime(textOf(firstByTag(last, TYPES_NS, 'Start')));
+			const nextStart = last && parseEwsDateTime(textOf(firstByTag(last, TYPES_NS, 'Start')));
 
-			if (!next || next.getTime() <= start.getTime()) {
+			if (!nextStart || nextStart.getTime() <= start.getTime()) {
 				break;
 			}
 
-			start = next;
+			start = nextStart;
 		}
 
 		if (!complete) {
