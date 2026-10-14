@@ -10,13 +10,15 @@ import type {
 	LocalContactUpdate,
 } from '@rocket.chat/model-typings';
 import { escapeRegExp } from '@rocket.chat/tools';
-import type { Collection, Db, DeleteResult, Document, Filter, FindCursor, IndexDescription, UpdateFilter, UpdateResult } from 'mongodb';
+import type { Collection, Db, DeleteResult, Document, Filter, FindCursor, IndexDescription, UpdateFilter } from 'mongodb';
 import { ObjectId } from 'mongodb';
 
 import { BaseRaw } from './BaseRaw';
 
 const OUTLOOK: IContact['source'] = 'outlook';
 const LOCAL: IContact['source'] = 'local';
+
+const PUBLIC_PROJECTION = { uid: 0, externalId: 0, folderId: 0, lastSyncAt: 0 } as const;
 
 export class ContactsRaw extends BaseRaw<IContact> implements IContactsModel {
 	constructor(db: Db, trash?: Collection<RocketChatRecordDeleted<IContact>>) {
@@ -78,10 +80,10 @@ export class ContactsRaw extends BaseRaw<IContact> implements IContactsModel {
 	public async createLocal(contact: LocalContact): Promise<IContactPublic | null> {
 		const { insertedId } = await this.insertOne({ ...contact, source: LOCAL });
 
-		return this.findOneById(insertedId, { projection: { uid: 0, externalId: 0, folderId: 0, lastSyncAt: 0 } });
+		return this.findOneById(insertedId, { projection: PUBLIC_PROJECTION });
 	}
 
-	public async updateLocal(uid: IUser['_id'], contactId: IContact['_id'], contact: LocalContactUpdate): Promise<UpdateResult> {
+	public async updateLocal(uid: IUser['_id'], contactId: IContact['_id'], contact: LocalContactUpdate): Promise<IContactPublic | null> {
 		const { surname, companyName, ...fields } = contact;
 
 		const update: UpdateFilter<IContact> = {
@@ -92,7 +94,10 @@ export class ContactsRaw extends BaseRaw<IContact> implements IContactsModel {
 			update.$unset = { ...(surname ? {} : { surname: 1 }), ...(companyName ? {} : { companyName: 1 }) };
 		}
 
-		return this.updateOne({ _id: contactId, uid, source: LOCAL }, update);
+		return this.findOneAndUpdate({ _id: contactId, uid, source: LOCAL }, update, {
+			returnDocument: 'after',
+			projection: PUBLIC_PROJECTION,
+		});
 	}
 
 	public deleteLocal(uid: IUser['_id'], contactId: IContact['_id']): Promise<DeleteResult> {
