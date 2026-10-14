@@ -24,7 +24,13 @@ const createBanner = (text: string, backgroundColor: string, color: string): Cla
 	monospace: false,
 });
 
-const withBanner = (classificationBanner: ClassificationBannerPayload) =>
+const directMessageArgs: Partial<IRoom> = {
+	_id: 'directMessage',
+	t: 'd',
+	name: 'john.doe',
+};
+
+const withBanner = (classificationBanner: ClassificationBannerPayload, roomOverrides: Partial<IRoom> = roomArgs) =>
 	mockAppRoot()
 		.withJohnDoe()
 		.withSetting('ABAC_Enabled', true)
@@ -33,7 +39,7 @@ const withBanner = (classificationBanner: ClassificationBannerPayload) =>
 			license: createFakeLicenseInfo({ activeModules: ['abac'] }),
 		}))
 		.withEndpoint('GET', '/v1/rooms.info', () => ({ room: null, classificationBanner }))
-		.wrap((children) => <FakeRoomProvider roomOverrides={roomArgs}>{children}</FakeRoomProvider>)
+		.wrap((children) => <FakeRoomProvider roomOverrides={roomOverrides}>{children}</FakeRoomProvider>)
 		.buildStoryDecorator();
 
 export default {
@@ -60,4 +66,8 @@ export const GroupedPrograms: StoryObj<typeof ClassificationBanner> = {
 
 export const Fallback: StoryObj<typeof ClassificationBanner> = {
 	decorators: [withBanner(createBanner('NO CLASSIFICATION DATA', '#6C727A', '#FFFFFF'))],
+};
+
+export const NonAbacRoom: StoryObj<typeof ClassificationBanner> = {
+	decorators: [withBanner(createBanner('UNCLASSIFIED', '#007a33', '#FFFFFF'), directMessageArgs)],
 };

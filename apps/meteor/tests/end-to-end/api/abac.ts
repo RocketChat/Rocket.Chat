@@ -6,6 +6,14 @@ import { MongoClient } from 'mongodb';
 
 import { addAbacAttributesToUserDirectly } from '../../data/abac.helper';
 import { api, getCredentials, request, credentials } from '../../data/api-data';
+import {
+	closeOmnichannelRoom,
+	createAgent,
+	createLivechatRoom,
+	createVisitor,
+	deleteVisitor,
+	makeAgentAvailable,
+} from '../../data/livechat/rooms';
 import { sleep } from '../../data/livechat/utils';
 import {
 	mockServerHealthy,
@@ -2296,6 +2304,135 @@ import { IS_EE, URL_MONGODB } from '../../e2e/config/constants';
 			await updateSetting('ABAC_Classification_Banners_Enabled', false);
 
 			expect(await getRoomInfo(bannerRoom._id)).to.not.have.property('classificationBanner');
+		});
+
+		describe('with a nonAbacBanner configured', () => {
+			const nonAbacBanner = { enabled: true, text: 'UNCLASSIFIED', color: '#007a33' };
+			const expectedNonAbacBanner = {
+				style: 'classic',
+				uppercase: true,
+				monospace: false,
+				text: 'UNCLASSIFIED',
+				segments: [],
+				backgroundColor: '#007a33',
+				color: '#FFFFFF',
+			};
+			let dmUser: IUser;
+			let groupDmUser: IUser;
+			let dmRoomId: IRoom['_id'];
+			let groupDmRoomId: IRoom['_id'];
+			let discussionId: IRoom['_id'];
+			let visitorToken: string;
+			let livechatRoomId: IRoom['_id'];
+
+			before(async () => {
+				[dmUser, groupDmUser] = await Promise.all([createUser(), createUser()]);
+
+				dmRoomId = (await createRoom({ type: 'd', username: dmUser.username })).body.room._id;
+				groupDmRoomId = (
+					await request
+						.post(`${v1}/im.create`)
+						.set(credentials)
+						.send({ usernames: `${dmUser.username},${groupDmUser.username}` })
+						.expect(200)
+				).body.room._id;
+				discussionId = (
+					await request
+						.post(`${v1}/rooms.createDiscussion`)
+						.set(credentials)
+						.send({ prid: plainRoom._id, t_name: `abac-banner-discussion-${Date.now()}` })
+						.expect(200)
+				).body.discussion._id;
+
+				await updateSetting('Livechat_enabled', true);
+				await createAgent();
+				await makeAgentAvailable();
+				const visitor = await createVisitor();
+				visitorToken = visitor.token;
+				livechatRoomId = (await createLivechatRoom(visitorToken))._id;
+
+				await updateSetting('ABAC_Classification_Banners_Enabled', true);
+				await updateSetting('ABAC_Classification_Banners_Config', JSON.stringify({ ...bannersConfig, nonAbacBanner }));
+			});
+
+			after(async () => {
+				await closeOmnichannelRoom(livechatRoomId);
+				await deleteVisitor(visitorToken);
+				await updateSetting('Livechat_enabled', false);
+				await deleteRoom({ type: 'p', roomId: discussionId });
+				await deleteRoom({ type: 'd', roomId: dmRoomId });
+				await deleteRoom({ type: 'd', roomId: groupDmRoomId });
+				await Promise.all([deleteUser(dmUser), deleteUser(groupDmUser)]);
+				await updateSetting('ABAC_Classification_Banners_Enabled', false);
+			});
+
+			it('should keep the attribute banner for an ABAC managed room', async () => {
+				expect((await getRoomInfo(bannerRoom._id)).classificationBanner).to.have.property('text', 'TOP SECRET');
+			});
+
+			(
+				[
+					['a private room without attributes', () => plainRoom._id],
+					['a DM', () => dmRoomId],
+					['a group DM', () => groupDmRoomId],
+					['a discussion', () => discussionId],
+					['an Omnichannel room', () => livechatRoomId],
+				] as const
+			).forEach(([name, getRoomId]) => {
+				it(`should return the nonAbacBanner for ${name}`, async () => {
+					expect((await getRoomInfo(getRoomId())).classificationBanner).to.deep.equal(expectedNonAbacBanner);
+				});
+			});
+
+			it('should return the first enabled entry of a nonAbacBanner list that matches each room', async () => {
+				await updateSetting(
+					'ABAC_Classification_Banners_Config',
+					JSON.stringify({
+						...bannersConfig,
+						nonAbacBanner: [
+							{ enabled: false, text: 'SKIPPED', color: '#6C727A', match: { type: ['direct'] } },
+							{ enabled: true, text: 'PERSONAL', color: '#502b85', match: { type: ['direct'] } },
+							{ enabled: true, text: 'DISCUSSION', color: '#0033a0', match: { discussion: true } },
+							{ enabled: true, text: 'UNCLASSIFIED', color: '#007a33', match: { type: ['public', 'private'] } },
+						],
+					}),
+				);
+
+				try {
+					expect((await getRoomInfo(dmRoomId)).classificationBanner).to.have.property('text', 'PERSONAL');
+					expect((await getRoomInfo(groupDmRoomId)).classificationBanner).to.have.property('text', 'PERSONAL');
+					expect((await getRoomInfo(discussionId)).classificationBanner).to.have.property('text', 'DISCUSSION');
+					expect((await getRoomInfo(plainRoom._id)).classificationBanner).to.have.property('text', 'UNCLASSIFIED');
+					expect(await getRoomInfo(livechatRoomId)).to.not.have.property('classificationBanner');
+					expect((await getRoomInfo(bannerRoom._id)).classificationBanner).to.have.property('text', 'TOP SECRET');
+				} finally {
+					await updateSetting('ABAC_Classification_Banners_Config', JSON.stringify({ ...bannersConfig, nonAbacBanner }));
+				}
+			});
+
+			it('should not return a banner for a room without attributes when nonAbacBanner is disabled', async () => {
+				await updateSetting(
+					'ABAC_Classification_Banners_Config',
+					JSON.stringify({ ...bannersConfig, nonAbacBanner: { ...nonAbacBanner, enabled: false } }),
+				);
+
+				expect(await getRoomInfo(dmRoomId)).to.not.have.property('classificationBanner');
+				expect((await getRoomInfo(bannerRoom._id)).classificationBanner).to.have.property('text', 'TOP SECRET');
+
+				await updateSetting('ABAC_Classification_Banners_Config', JSON.stringify({ ...bannersConfig, nonAbacBanner }));
+			});
+
+			it('should not return a banner in any room while ABAC is disabled', async () => {
+				await updateSetting('ABAC_Enabled', false);
+
+				try {
+					expect(await getRoomInfo(dmRoomId)).to.not.have.property('classificationBanner');
+					expect(await getRoomInfo(plainRoom._id)).to.not.have.property('classificationBanner');
+					expect(await getRoomInfo(bannerRoom._id)).to.not.have.property('classificationBanner');
+				} finally {
+					await updateSetting('ABAC_Enabled', true);
+				}
+			});
 		});
 	});
 
