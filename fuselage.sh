@@ -20,8 +20,8 @@ Options:
     This option can contain multiple packages separated by a semicolon (;).
 
 Example usage:
-- Create a symbolic link in multiple fuselage packages:
-    yarn fuselage -a link -p fuselage;fuselage-tokens
+- Create a symbolic link to a fuselage package:
+    yarn fuselage -a link -p fuselage
 
 - Remove the symbolic link:
     yarn fuselage -a undo
@@ -109,11 +109,10 @@ if [[ $action == "next-all" || $action == "latest-all" ]]; then
         targetVersion="latest"
     fi
 
-    echo "📦 @rocket.chat/fuselage-tokens [UPDATING to $targetVersion version...]
-📦 @rocket.chat/fuselage [UPDATING to $targetVersion version...]
+    echo "📦 @rocket.chat/fuselage [UPDATING to $targetVersion version...]
 📦 @rocket.chat/layout [UPDATING to $targetVersion version...]"
 
-    eval "yarn up @rocket.chat/fuselage-tokens@$targetVersion @rocket.chat/fuselage@$targetVersion @rocket.chat/layout@$targetVersion"
+    eval "yarn up @rocket.chat/fuselage@$targetVersion @rocket.chat/layout@$targetVersion"
     exit 1
 fi
 
