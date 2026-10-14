@@ -252,12 +252,12 @@ describe('useProviderPlugin', () => {
 			expect(result.current.self).toBeUndefined();
 		});
 
-		it('holds exactly the features `ready` named', () => {
+		it('holds the features `ready` named, and dial-out whether or not it did', () => {
 			const { result } = render();
 
 			fromPlugin(message('ready', { features: ['mute', 'disconnect'] }));
 
-			expect([...result.current.features]).toEqual(['mute', 'disconnect']);
+			expect([...result.current.features]).toEqual(['mute', 'disconnect', 'dial-out']);
 		});
 
 		// Either half may learn a message the other has never heard of, so an unknown name is not a reason to
@@ -267,7 +267,7 @@ describe('useProviderPlugin', () => {
 
 			fromPlugin(message('ready', { features: ['mute', 'teleport'] }));
 
-			expect([...result.current.features]).toEqual(['mute']);
+			expect([...result.current.features]).toEqual(['mute', 'dial-out']);
 		});
 	});
 
@@ -392,6 +392,7 @@ describe('useProviderPlugin', () => {
 			actions.disconnect('p1');
 			actions.spotlight('p1', true);
 			actions.setRole('p1', 'host');
+			actions.dialOut('alice@example.com');
 
 			expect(posted()).toEqual([
 				{ action: 'rocketchat:videoconf/mute', participantUuid: 'p1', muted: true },
@@ -400,6 +401,8 @@ describe('useProviderPlugin', () => {
 				{ action: 'rocketchat:videoconf/disconnect', participantUuid: 'p1' },
 				{ action: 'rocketchat:videoconf/spotlight', participantUuid: 'p1', active: true },
 				{ action: 'rocketchat:videoconf/set-role', participantUuid: 'p1', role: 'host' },
+				// The plugin forwards these to a request that requires all three, so none can be left to it.
+				{ action: 'rocketchat:videoconf/dial-out', role: 'GUEST', protocol: 'auto', call_type: 'audio', destination: 'alice@example.com' },
 			]);
 		});
 
