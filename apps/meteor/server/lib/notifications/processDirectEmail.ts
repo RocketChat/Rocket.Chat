@@ -7,6 +7,7 @@ import { beforeSendMessageToRoom } from '../../hooks/rooms/beforeSendMessageToRo
 import { settings } from '../../settings';
 import { canAccessRoomAsync } from '../authorization';
 import { hasPermissionAsync } from '../authorization/hasPermission';
+import { SystemLogger } from '../logger/system';
 import { sendMessage } from '../messages/sendMessage';
 import { metrics } from '../metrics';
 
@@ -114,7 +115,8 @@ export const processDirectEmail = async function (email: ParsedMail): Promise<vo
 
 	try {
 		await beforeSendMessageToRoom(roomInfo);
-	} catch {
+	} catch (err) {
+		SystemLogger.info({ msg: 'Direct reply email dropped', rid: roomInfo._id, err });
 		return;
 	}
 

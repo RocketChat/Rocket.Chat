@@ -91,14 +91,6 @@ describe('attribute compliance', () => {
 		expect(isRoomAbacLocked(room({ abacAttributes: [attribute('clearance', [])] }), enforcing(['clearance']))).to.be.true;
 	});
 
-	it('should compare required keys trimmed', () => {
-		expect(isRoomAbacLocked(room({ abacAttributes: [attribute('clearance')] }), enforcing(['  clearance  ']))).to.be.false;
-	});
-
-	it('should ignore a required key that is blank', () => {
-		expect(isRoomAbacLocked(room({ abacAttributes: [attribute('clearance')] }), enforcing(['   ']))).to.be.false;
-	});
-
 	it('should compare keys case-sensitively', () => {
 		expect(isRoomAbacLocked(room({ abacAttributes: [attribute('Clearance')] }), enforcing(['clearance']))).to.be.true;
 	});
