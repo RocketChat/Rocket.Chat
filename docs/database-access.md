@@ -8,11 +8,11 @@ methods: `find`, `findOne`, `updateOne`, `updateMany`, `findOneAndUpdate`, `dele
 ```ts
 // No: the query shape leaks into the caller
 await Users.findOne({ username }, { projection: { _id: 1 } });
-await Rooms.updateOne({ _id: rid }, { $set: { fname } });
+await Rooms.updateOne({ _id: rid }, { $set: { teamId, teamMain: true } }, { session });
 
 // Yes
 await Users.findOneByUsername(username, { projection: { _id: 1 } });
-await Rooms.setFnameById(rid, fname);
+await Rooms.setTeamMainById(rid, teamId, { session });
 ```
 
 ## Why
@@ -27,8 +27,11 @@ await Rooms.setFnameById(rid, fname);
 
 ## What the caller still decides
 
-Read options: `projection`, `sort`, `limit`, `skip`, `session`. Pass them through the method's
-`options` argument. The filter and the update operators belong to the model.
+For reads: `projection`, `sort`, `limit`, `skip`, `session`. For writes: `session`. Pass them
+through the method's `options` argument. The filter and the update operators belong to the model.
+
+A write method that takes no `options` cannot join a transaction. When a caller needs one,
+add an `options: UpdateOptions` parameter and forward it, as its own refactor commit.
 
 ## Adding a method
 
