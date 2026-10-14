@@ -8,6 +8,7 @@
 '@rocket.chat/rest-typings': minor
 '@rocket.chat/ui-voip': minor
 '@rocket.chat/media-calls': minor
+'@rocket.chat/ntlm': minor
 
 ---
 
