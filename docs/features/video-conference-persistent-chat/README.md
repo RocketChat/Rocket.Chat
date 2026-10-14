@@ -79,6 +79,12 @@ preflight now does with the user able to see what they are joining — two confi
 remains the only place to set devices when there is no preflight, so it is still what a workspace without the
 call window gets.
 
+A room open only as a preview — a channel or a team's room the user can read but hasn't joined — shows the button
+**disabled**, with "Join this room to start a call": a call is its room's members', and the preflight has no
+subscription to start one from. Omnichannel rooms are left out, since agents serve them without joining. Where the
+room can't hold a call at all (federated, archived, read-only without `post-readonly`), that is what the button says
+instead, as joining wouldn't help.
+
 **Joining one that exists** (`joinCall`) emits `call/join`:
 
 - **Call window enabled** — `{ callId }`, and again nothing is posted: the conference page joins for itself
