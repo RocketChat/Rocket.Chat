@@ -118,7 +118,7 @@
 		"@rocket.chat/fuselage-forms": "workspace:^",
 		"@rocket.chat/fuselage-hooks": "workspace:^",
 		"@rocket.chat/fuselage-toastbar": "workspace:^",
-		"@rocket.chat/fuselage-tokens": "^0.35.0",
+		"@rocket.chat/fuselage-tokens": "workspace:^",
 		"@rocket.chat/fuselage-ui-kit": "workspace:^",
 		"@rocket.chat/gazzodown": "workspace:^",
 		"@rocket.chat/gazzodown-alt": "workspace:^",

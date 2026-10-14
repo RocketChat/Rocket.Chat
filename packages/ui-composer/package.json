@@ -25,7 +25,7 @@
 		"@rocket.chat/emitter": "workspace:~",
 		"@rocket.chat/fuselage": "^0.95.0",
 		"@rocket.chat/fuselage-hooks": "workspace:^",
-		"@rocket.chat/fuselage-tokens": "^0.35.0",
+		"@rocket.chat/fuselage-tokens": "workspace:^",
 		"@rocket.chat/icons": "workspace:~",
 		"@rocket.chat/jest-presets": "workspace:~",
 		"@rocket.chat/mock-providers": "workspace:~",
