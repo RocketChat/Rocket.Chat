@@ -19,6 +19,7 @@ const actions = {
 	spotlight: jest.fn(),
 	raiseHand: jest.fn(),
 	setRole: jest.fn(),
+	dialOut: jest.fn(),
 };
 
 const buildParticipant = (overrides: Partial<PluginParticipant> & Pick<PluginParticipant, 'uuid'>): PluginParticipant => ({

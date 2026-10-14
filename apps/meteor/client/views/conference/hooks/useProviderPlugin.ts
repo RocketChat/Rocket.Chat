@@ -7,7 +7,9 @@ import type {
 	ProviderPluginControls,
 } from '@rocket.chat/ui-conference';
 import { PLUGIN_FEATURES } from '@rocket.chat/ui-conference';
+import { useToastMessageDispatch } from '@rocket.chat/ui-contexts';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 
 /**
  * The namespace every message of this protocol carries, in both directions.
@@ -20,6 +22,14 @@ const PLUGIN_NS = 'rocketchat:videoconf';
 /** The bare action under the namespace, or undefined for a message that is not this protocol's. */
 const readAction = (action: string): string | undefined =>
 	action.startsWith(`${PLUGIN_NS}/`) ? action.slice(PLUGIN_NS.length + 1) : undefined;
+
+/**
+ * What a dial-out asks of the provider beyond the destination.
+ *
+ * The plugin forwards these as given to the conference's `dial` request, which requires all three, so a call
+ * placed from here is an audio-only guest and never anything with more standing.
+ */
+const DIAL_OUT_DEFAULTS = { role: 'GUEST', protocol: 'auto', call_type: 'audio' } as const;
 
 type UseProviderPluginOptions = {
 	/**
@@ -107,6 +117,12 @@ const toSelf = (value: Record<string, unknown>): PluginSelf | undefined => {
 	};
 };
 
+/**
+ * Dial-out is offered whether or not the plugin announces it: Pexip's plugin handles it but leaves it off its
+ * list. Drop this once that plugin names it.
+ */
+const withDialOut = (features: ReadonlySet<PluginFeature>): ReadonlySet<PluginFeature> => new Set<PluginFeature>([...features, 'dial-out']);
+
 const NO_FEATURES: ReadonlySet<PluginFeature> = new Set();
 const NO_PARTICIPANTS: PluginParticipant[] = [];
 
@@ -151,6 +167,19 @@ export const useProviderPlugin = ({
 	// `disconnected` also arrives from a prejoin screen, where nobody has joined: reporting a leave from there
 	// would end the call for everyone still on their way into it.
 	const wasConnectedRef = useRef(false);
+
+	// Held in a ref like everything else the listener reads, so a language change does not rebind it.
+	const dispatchToastMessage = useToastMessageDispatch();
+	const { t } = useTranslation();
+	const reportDialOutRef = useRef<(dialled: boolean, detail: string) => void>(() => undefined);
+	reportDialOutRef.current = (dialled, detail) => {
+		if (dialled) {
+			dispatchToastMessage({ type: 'success', message: t('Calling__roomName__', { roomName: detail }) });
+			return;
+		}
+
+		dispatchToastMessage({ type: 'error', message: detail || t('Error') });
+	};
 
 	const [features, setFeatures] = useState<ReadonlySet<PluginFeature>>(NO_FEATURES);
 	const [self, setSelf] = useState<PluginSelf>();
@@ -203,7 +232,7 @@ export const useProviderPlugin = ({
 			switch (name) {
 				case 'ready':
 					// Said once per page, so a reload is a new session whose old roster describes nobody.
-					setFeatures(toFeatures(data.features));
+					setFeatures(withDialOut(toFeatures(data.features)));
 					setSelf(undefined);
 					setParticipants(NO_PARTICIPANTS);
 
@@ -253,6 +282,16 @@ export const useProviderPlugin = ({
 					setSelf(toSelf(data));
 					break;
 
+				// A number is dialled into the call rather than invited to it, so nothing appears anywhere to say
+				// it worked — the provider's answer is the only account of it there is.
+				case 'dial-out-success':
+					reportDialOutRef.current(true, typeof data.displayName === 'string' ? data.displayName : '');
+					break;
+
+				case 'dial-out-error':
+					reportDialOutRef.current(false, typeof data.message === 'string' ? data.message : '');
+					break;
+
 				case 'roster':
 					// The whole list every time: whoever is not in it left.
 					setParticipants(Array.isArray(data.participants) ? data.participants.flatMap((entry) => toParticipant(entry) ?? []) : []);
@@ -286,6 +325,7 @@ export const useProviderPlugin = ({
 			spotlight: (participantUuid, active) => postToPlugin('spotlight', { participantUuid, active }),
 			raiseHand: (participantUuid, raised) => postToPlugin('raise-hand', { participantUuid, raised }),
 			setRole: (participantUuid, role) => postToPlugin('set-role', { participantUuid, role }),
+			dialOut: (destination) => postToPlugin('dial-out', { ...DIAL_OUT_DEFAULTS, destination }),
 		}),
 		[postToPlugin],
 	);
