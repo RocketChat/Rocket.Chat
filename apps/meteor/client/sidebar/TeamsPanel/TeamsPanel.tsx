@@ -1,3 +1,4 @@
+import { css } from '@rocket.chat/css-in-js';
 import { Box, Icon, IconButton, TextInput } from '@rocket.chat/fuselage';
 import { useDebouncedValue } from '@rocket.chat/fuselage-hooks';
 import { useUserId, useUserPreference } from '@rocket.chat/ui-contexts';
@@ -23,6 +24,16 @@ import { useShortcutOpenMenu } from '../hooks/useShortcutOpenMenu';
 import { useTemplateByViewMode } from '../hooks/useTemplateByViewMode';
 
 type SidebarViewMode = 'extended' | 'medium' | 'condensed';
+
+// The team options button only appears on hover or focus; touch screens have neither, so it stays visible there.
+const touchMenuStyle = css`
+	@media (hover: none), (pointer: coarse) {
+		.rcx-sidebar-collapse-group__menu-wrapper {
+			width: 1.25rem;
+			opacity: 1;
+		}
+	}
+`;
 
 const sidebarRowHeight: Record<SidebarViewMode, number> = {
 	condensed: 28,
@@ -127,7 +138,7 @@ const TeamsPanel = () => {
 				</Box>
 			)}
 			{teams.length > 0 && (
-				<Box position='relative' overflow='hidden' flexGrow={1} minHeight={0} ref={ref}>
+				<Box position='relative' overflow='hidden' flexGrow={1} minHeight={0} ref={ref} className={touchMenuStyle}>
 					<SidebarVirtualList
 						groups={virtualGroups}
 						as={TeamsListWrapper}

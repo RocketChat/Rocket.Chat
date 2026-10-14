@@ -4,6 +4,9 @@ import { useCallback } from 'react';
 const isListItem = (node: EventTarget) => (node as HTMLElement).classList.contains('rcx-sidebar-item');
 const isCollapseGroup = (node: EventTarget) => (node as HTMLElement).classList.contains('rcx-sidebar-collapse-group__bar-button');
 const isListItemMenu = (node: EventTarget) => (node as HTMLElement).classList.contains('rcx-sidebar-item__menu');
+// The options button of a group header (Inbox categories, Teams panel teams).
+const isCollapseGroupMenu = (node: EventTarget) => !!(node as HTMLElement).closest?.('.rcx-sidebar-collapse-group__menu-wrapper');
+const isListStop = (node: Element) => isListItem(node) || isListItemMenu(node) || isCollapseGroup(node) || isCollapseGroupMenu(node);
 
 /**
  * Custom hook to provide the sidebar navigation by keyboard.
@@ -21,6 +24,16 @@ export const useSidebarListNavigation = () => {
 					return;
 				}
 
+				// A group header's options button takes part in Tab only; arrow keys there belong to the menu.
+				if (isCollapseGroupMenu(e.target)) {
+					if (e.key === 'Tab' && !e.shiftKey) {
+						e.preventDefault();
+						e.stopPropagation();
+						sidebarListFocusManager?.focusNext({ accept: (node) => !isListStop(node) });
+					}
+					return;
+				}
+
 				if (!isListItem(e.target) && !isCollapseGroup(e.target)) {
 					return;
 				}
@@ -30,16 +43,22 @@ export const useSidebarListNavigation = () => {
 					e.stopPropagation();
 
 					if (e.shiftKey) {
-						sidebarListFocusManager?.focusPrevious({
-							accept: (node) => !isListItem(node) && !isListItemMenu(node) && !isCollapseGroup(node),
-						});
+						sidebarListFocusManager?.focusPrevious({ accept: (node) => !isListStop(node) });
 					} else if (isListItemMenu(e.target)) {
-						sidebarListFocusManager?.focusNext({
-							accept: (node) => !isListItem(node) && !isListItemMenu(node) && !isCollapseGroup(node),
-						});
+						sidebarListFocusManager?.focusNext({ accept: (node) => !isListStop(node) });
+					} else if (isCollapseGroup(e.target)) {
+						// From a group header, Tab goes to that header's own options button, then out of the list.
+						const ownMenu = (e.target as HTMLElement)
+							.closest('.rcx-sidebar-collapse-group__bar')
+							?.querySelector<HTMLElement>('.rcx-sidebar-collapse-group__menu-wrapper button:not([tabindex="-1"])');
+						if (ownMenu) {
+							ownMenu.focus();
+						} else {
+							sidebarListFocusManager?.focusNext({ accept: (node) => !isListStop(node) });
+						}
 					} else {
 						sidebarListFocusManager?.focusNext({
-							accept: (node) => !isListItem(node) && !isCollapseGroup(node),
+							accept: (node) => !isListItem(node) && !isCollapseGroup(node) && !isCollapseGroupMenu(node),
 						});
 					}
 				}

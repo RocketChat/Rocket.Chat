@@ -1,6 +1,6 @@
 import { useStableCallback } from '@rocket.chat/fuselage-hooks';
-import { usePermission, useRoomToolbox } from '@rocket.chat/ui-contexts';
-import { useCallback, useState } from 'react';
+import { usePermission, useRoomToolbox, useRouteParameter } from '@rocket.chat/ui-contexts';
+import { useCallback, useEffect, useState } from 'react';
 
 import TeamsInfo from './TeamsInfo';
 import { useRoom } from '../../../room/contexts/RoomContext';
@@ -8,10 +8,18 @@ import EditChannelWithData from '../../../room/contextualBar/Info/EditRoomInfo';
 
 const TeamsInfoWithData = () => {
 	const room = useRoom();
-	const [editing, setEditing] = useState(false);
 	const { openTab, closeTab } = useRoomToolbox();
 
 	const canEdit = usePermission('edit-team-channel', room._id);
+	// `context=edit` in the route opens the panel straight on the edit form, as the Teams panel's "Edit info" does.
+	const startEditing = useRouteParameter('context') === 'edit' && canEdit;
+	const [editing, setEditing] = useState(startEditing);
+
+	useEffect(() => {
+		if (startEditing) {
+			setEditing(true);
+		}
+	}, [startEditing]);
 	const onClickBack = useStableCallback(() => setEditing(false));
 	const onClickViewChannels = useCallback(() => openTab('team-channels'), [openTab]);
 
