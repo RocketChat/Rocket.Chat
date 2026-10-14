@@ -96,10 +96,8 @@ export const useMediaSession = (instance?: MediaSignalingSession): SessionState 
 					type: 'instance_updated',
 					payload: {
 						peerInfo: {
+							type: 'unknown',
 							displayName: instanceState.title,
-							userId: 'unknown',
-							username: undefined,
-							callerId: undefined,
 						},
 						transferredBy: undefined,
 						state,
