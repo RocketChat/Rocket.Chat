@@ -1,0 +1,50 @@
+ee/packages/xmpp-server/docker-compose/certs/generate.sh
+  s_0dfed31b94683c::t_2920d487431d37 33-34
+  s_0dfed31b94683c::t_d3424223acb8b2 1-32,35-37
+ee/packages/xmpp-server/docker-compose/openfire/entrypoint.sh
+  s_0dfed31b94683c::t_a27cb3fc84fa23 1-27
+ee/packages/xmpp-server/package.json
+  s_0dfed31b94683c::t_04ce07802ada60 17
+ee/packages/xmpp-server/CLAUDE.md
+  s_0dfed31b94683c::t_1da33741bc2a14 12
+ee/packages/xmpp-server/.env.example
+  s_0dfed31b94683c::t_04ce07802ada60 1
+ee/packages/xmpp-server/docker-compose/certs/.gitignore
+  s_0dfed31b94683c::t_60cff9c100876a 1
+ee/packages/xmpp-server/docker-compose.test.yml
+  s_0dfed31b94683c::t_406a0de483a490 1-48,51-132
+  s_0dfed31b94683c::t_99feb24d99fa1c 49-50
+ee/packages/xmpp-server/docker-compose/openfire/openfire.xml
+  s_0dfed31b94683c::t_84545fcdeb87ac 1-28
+ee/packages/xmpp-server/tests/scripts/run-e2e-stack.sh
+  s_0dfed31b94683c::t_45d6e3f9c5aea1 51-52,154,198
+  s_0dfed31b94683c::t_2ba82a0e2faf6e 1-17,19-30,32-40,43-50,53-62,67-101,129-141,143-153,155-157,160,165,167-197,200-206,210-224
+  s_0dfed31b94683c::t_65c47ae238f9fe 18,31,41-42,63-66,199
+  s_0dfed31b94683c::t_a66593776fdf50 102-128
+  s_0dfed31b94683c::t_0adb30bade7dc8 142
+  s_0dfed31b94683c::t_464dab6e72000c 158-159,161-164,166,207-209
+ee/packages/xmpp-server/docs/operations.md
+  s_0dfed31b94683c::t_47319f0b073bc7 269-270
+  s_0dfed31b94683c::t_8b3f942ef6f9ff 307-342
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "f2507e415fbd9e19f24846919fbee4e6153fa7f2",
+  "prompts": {},
+  "humans": {
+    "h_4c386397e672f4": {
+      "author": "Diego Sampaio <chinello@gmail.com>"
+    }
+  },
+  "sessions": {
+    "s_0dfed31b94683c": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "cd914d9d-c63e-4de3-b863-6195aed8137f",
+        "model": "claude-opus-5-5"
+      },
+      "human_author": "Diego Sampaio <chinello@gmail.com>"
+    }
+  }
+}
