@@ -222,6 +222,38 @@ describe('toTimezoneDate and timezone formatting', () => {
 		expect(formatDate(mbWinterPost, 'h:mm A', undefined, 'America/Winnipeg')).toBe('12:00 PM');
 	});
 
+	it('formats at cutover boundaries just before and at the 2026-11-01 transition instants', () => {
+		// British Columbia cutover: 2026-11-01T09:00:00.000Z (02:00 PDT)
+		const bcJustBefore = new Date('2026-11-01T08:59:59.000Z');
+		const bcAtCutover = new Date('2026-11-01T09:00:00.000Z');
+		// Before cutover: PDT (UTC-7) -> 1:59:59 AM
+		expect(formatDate(bcJustBefore, 'h:mm:ss A', undefined, 'Pacific Time (British Columbia)')).toBe('1:59:59 AM');
+		expect(formatDate(bcJustBefore, 'h:mm:ss A', undefined, 'America/Vancouver')).toBe('1:59:59 AM');
+		// At cutover: Permanent UTC-7 (America/Dawson_Creek) -> 2:00:00 AM
+		expect(formatDate(bcAtCutover, 'h:mm:ss A', undefined, 'Pacific Time (British Columbia)')).toBe('2:00:00 AM');
+		expect(formatDate(bcAtCutover, 'h:mm:ss A', undefined, 'America/Vancouver')).toBe('2:00:00 AM');
+
+		// Alberta cutover: 2026-11-01T08:00:00.000Z (02:00 MDT)
+		const abJustBefore = new Date('2026-11-01T07:59:59.000Z');
+		const abAtCutover = new Date('2026-11-01T08:00:00.000Z');
+		// Before cutover: MDT (UTC-6) -> 1:59:59 AM
+		expect(formatDate(abJustBefore, 'h:mm:ss A', undefined, 'Mountain Time (Alberta)')).toBe('1:59:59 AM');
+		expect(formatDate(abJustBefore, 'h:mm:ss A', undefined, 'America/Edmonton')).toBe('1:59:59 AM');
+		// At cutover: Permanent UTC-6 (America/Regina) -> 2:00:00 AM
+		expect(formatDate(abAtCutover, 'h:mm:ss A', undefined, 'Mountain Time (Alberta)')).toBe('2:00:00 AM');
+		expect(formatDate(abAtCutover, 'h:mm:ss A', undefined, 'America/Edmonton')).toBe('2:00:00 AM');
+
+		// Manitoba cutover: 2026-11-01T07:00:00.000Z (02:00 CDT)
+		const mbJustBefore = new Date('2026-11-01T06:59:59.000Z');
+		const mbAtCutover = new Date('2026-11-01T07:00:00.000Z');
+		// Before cutover: CDT (UTC-5) -> 1:59:59 AM
+		expect(formatDate(mbJustBefore, 'h:mm:ss A', undefined, 'Manitoba')).toBe('1:59:59 AM');
+		expect(formatDate(mbJustBefore, 'h:mm:ss A', undefined, 'America/Winnipeg')).toBe('1:59:59 AM');
+		// At cutover: Permanent UTC-5 (America/Atikokan) -> 2:00:00 AM
+		expect(formatDate(mbAtCutover, 'h:mm:ss A', undefined, 'Manitoba')).toBe('2:00:00 AM');
+		expect(formatDate(mbAtCutover, 'h:mm:ss A', undefined, 'America/Winnipeg')).toBe('2:00:00 AM');
+	});
+
 	it('preserves instant and epoch without host DST gap distortion', () => {
 		const bcDate = toTimezoneDate(winterPost, 'America/Vancouver');
 		expect(bcDate.getTime()).toBe(winterPost.getTime());

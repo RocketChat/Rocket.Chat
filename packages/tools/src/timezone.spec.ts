@@ -1,4 +1,10 @@
-import { canonicalizeTimezone, getTimezoneNames, getTimezoneOffsetHours, resolveDateAwareTimezone } from './timezone';
+import {
+	canonicalizeTimezone,
+	getTimezoneNames,
+	getTimezoneOffsetHours,
+	guessTimezoneFromOffset,
+	resolveDateAwareTimezone,
+} from './timezone';
 
 describe('canonicalizeTimezone', () => {
 	it('returns the same value for a canonical IANA zone', () => {
@@ -94,6 +100,26 @@ describe('resolveDateAwareTimezone', () => {
 		expect(resolveDateAwareTimezone('Central Time (Manitoba)', winterPost)).toBe('America/Atikokan');
 		expect(resolveDateAwareTimezone('America/Winnipeg', winterPost)).toBe('America/Atikokan');
 	});
+
+	it('resolves exactly at and just before the cutover boundaries', () => {
+		// BC boundary: 2026-11-01T09:00:00.000Z
+		const bcJustBefore = new Date('2026-11-01T08:59:59.999Z');
+		const bcAtBoundary = new Date('2026-11-01T09:00:00.000Z');
+		expect(resolveDateAwareTimezone('America/Vancouver', bcJustBefore)).toBe('America/Vancouver');
+		expect(resolveDateAwareTimezone('America/Vancouver', bcAtBoundary)).toBe('America/Dawson_Creek');
+
+		// AB boundary: 2026-11-01T08:00:00.000Z
+		const abJustBefore = new Date('2026-11-01T07:59:59.999Z');
+		const abAtBoundary = new Date('2026-11-01T08:00:00.000Z');
+		expect(resolveDateAwareTimezone('America/Edmonton', abJustBefore)).toBe('America/Edmonton');
+		expect(resolveDateAwareTimezone('America/Edmonton', abAtBoundary)).toBe('America/Regina');
+
+		// MB boundary: 2026-11-01T07:00:00.000Z
+		const mbJustBefore = new Date('2026-11-01T06:59:59.999Z');
+		const mbAtBoundary = new Date('2026-11-01T07:00:00.000Z');
+		expect(resolveDateAwareTimezone('America/Winnipeg', mbJustBefore)).toBe('America/Winnipeg');
+		expect(resolveDateAwareTimezone('America/Winnipeg', mbAtBoundary)).toBe('America/Atikokan');
+	});
 });
 
 describe('getTimezoneNames', () => {
@@ -141,5 +167,39 @@ describe('getTimezoneOffsetHours', () => {
 		// Africa/Monrovia observed GMT-0:44:30 until 1972
 		const historicalDate = new Date('1970-01-01T00:00:00.000Z');
 		expect(getTimezoneOffsetHours('Africa/Monrovia', historicalDate)).toBeCloseTo(-0.7416666, 4);
+	});
+});
+
+describe('guessTimezoneFromOffset', () => {
+	it('preserves decimal precision for fractional string and number offsets', () => {
+		// UTC+5:30 (e.g. Asia/Kolkata or Asia/Colombo)
+		const tzString55 = guessTimezoneFromOffset('5.5');
+		expect(getTimezoneOffsetHours(tzString55)).toBe(5.5);
+
+		const tzNumber55 = guessTimezoneFromOffset(5.5);
+		expect(getTimezoneOffsetHours(tzNumber55)).toBe(5.5);
+
+		// Colon string '+05:30'
+		const tzColon55 = guessTimezoneFromOffset('+05:30');
+		expect(getTimezoneOffsetHours(tzColon55)).toBe(5.5);
+
+		// UTC-3:30 (e.g. America/St_Johns in winter)
+		const tzStringNeg35 = guessTimezoneFromOffset('-3.5');
+		const stJohnsWinter = new Date('2026-01-15T12:00:00.000Z');
+		expect(getTimezoneOffsetHours(tzStringNeg35, stJohnsWinter)).toBe(-3.5);
+
+		const tzNumberNeg35 = guessTimezoneFromOffset(-3.5);
+		expect(getTimezoneOffsetHours(tzNumberNeg35, stJohnsWinter)).toBe(-3.5);
+
+		const tzColonNeg35 = guessTimezoneFromOffset('-03:30');
+		expect(getTimezoneOffsetHours(tzColonNeg35, stJohnsWinter)).toBe(-3.5);
+	});
+
+	it('resolves integer offsets as string or number', () => {
+		const tz5 = guessTimezoneFromOffset('5');
+		expect(getTimezoneOffsetHours(tz5)).toBe(5);
+
+		const tzNeg4 = guessTimezoneFromOffset(-4);
+		expect(getTimezoneOffsetHours(tzNeg4)).toBe(-4);
 	});
 });

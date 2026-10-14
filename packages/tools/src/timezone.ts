@@ -127,22 +127,45 @@ export const getTimezoneOffsetHours = (tz?: string, date = new Date()): number =
 	}
 };
 
-export const guessTimezoneFromOffset = (offset: string | number): string => {
-	const totalMinutes = typeof offset === 'number' ? offset * 60 : parseInt(offset, 10) * 60;
-	const date = new Date();
-
-	for (const tz of getTimezoneNames()) {
-		const formatter = new Intl.DateTimeFormat('en-US', { timeZone: tz, timeZoneName: 'shortOffset' });
-		const parts = formatter.formatToParts(date);
-		const tzPart = parts.find((p) => p.type === 'timeZoneName')?.value ?? '';
-		const match = tzPart.match(/^GMT([+-]\d{1,2}(?::(\d{2}))?)?$/);
-		if (!match) {
-			continue;
+export const guessTimezoneFromOffset = (offset: string | number, date = new Date()): string => {
+	let totalMinutes: number;
+	if (typeof offset === 'number') {
+		totalMinutes = Math.round(offset * 60);
+	} else {
+		const str = String(offset).trim();
+		const colonMatch = str.match(/^([+-])?(\d{1,2}):(\d{2})$/);
+		if (colonMatch) {
+			const sign = colonMatch[1] === '-' ? -1 : 1;
+			const hours = parseInt(colonMatch[2], 10);
+			const minutes = parseInt(colonMatch[3], 10);
+			totalMinutes = sign * (hours * 60 + minutes);
+		} else {
+			const parsed = parseFloat(str);
+			totalMinutes = Number.isNaN(parsed) ? 0 : Math.round(parsed * 60);
 		}
-		const tzHours = match[1] ? parseInt(match[1], 10) : 0;
-		const tzMinutes = match[2] ? parseInt(match[2], 10) * (tzHours < 0 ? -1 : 1) : 0;
-		if (tzHours * 60 + tzMinutes === totalMinutes) {
-			return Object.hasOwn(LEGACY_TO_CANONICAL, tz) ? LEGACY_TO_CANONICAL[tz] : tz;
+	}
+
+	const datesToCheck = [
+		date,
+		new Date(Date.UTC(date.getFullYear(), 0, 15, 12)),
+		new Date(Date.UTC(date.getFullYear(), 6, 15, 12)),
+	];
+
+	for (const d of datesToCheck) {
+		for (const tz of getTimezoneNames()) {
+			const formatter = new Intl.DateTimeFormat('en-US', { timeZone: tz, timeZoneName: 'shortOffset' });
+			const parts = formatter.formatToParts(d);
+			const tzPart = parts.find((p) => p.type === 'timeZoneName')?.value ?? '';
+			const match = tzPart.match(/^GMT(?:([+-])(\d{1,2})(?::(\d{2}))?)?$/);
+			if (!match) {
+				continue;
+			}
+			const sign = match[1] === '-' ? -1 : 1;
+			const tzHours = match[2] ? parseInt(match[2], 10) : 0;
+			const tzMinutes = match[3] ? parseInt(match[3], 10) : 0;
+			if (sign * (tzHours * 60 + tzMinutes) === totalMinutes) {
+				return Object.hasOwn(LEGACY_TO_CANONICAL, tz) ? LEGACY_TO_CANONICAL[tz] : tz;
+			}
 		}
 	}
 
