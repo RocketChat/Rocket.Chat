@@ -60,6 +60,7 @@ const NavBarAISearchListBox = ({
 	const { items: rooms, isLoading } = useAISearchRooms(aiSearchActive ? aiItems.searchText : filterText);
 	const itemCount = rooms.length + aiItems.intelligent.length + aiItems.filterSuggestions.length;
 	const isSearchLoading = isLoading || isFetching;
+	const hasAISearchProblem = aiSearchActive && Boolean(aiItems.error || aiItems.notConfigured);
 	const listboxLabel = aiSearchActive ? t('AI_Search_results') : t('Channels');
 
 	return (
@@ -80,7 +81,11 @@ const NavBarAISearchListBox = ({
 				<NavBarSearchFiltersView id={overlayProps.id} filters={filters} onBack={onCloseFilters} />
 			) : (
 				<>
-					<ResultsLiveRegion shouldAnnounce={!isSearchLoading} itemCount={itemCount} isLoading={isSearchLoading} />
+					<ResultsLiveRegion
+						shouldAnnounce={!isSearchLoading && !(hasAISearchProblem && itemCount === 0)}
+						itemCount={itemCount}
+						isLoading={isSearchLoading}
+					/>
 					{aiSearchAvailable && (
 						<>
 							<Box display='flex' justifyContent='space-between' alignItems='center' paddingInline={12}>
@@ -93,8 +98,9 @@ const NavBarAISearchListBox = ({
 								<ToggleSwitch aria-labelledby={aiSearchLabelId} checked={aiSearchActive} onChange={handleToggleAISearch} />
 							</Box>
 							{aiSearchActive && <NavBarSearchFilterTypeRow draft={aiItems.draft} />}
-							{aiSearchActive && (aiItems.error || aiItems.notConfigured) && (
+							{hasAISearchProblem && (
 								<AISearchErrorCallout
+									role='alert'
 									error={aiItems.error}
 									notConfigured={aiItems.notConfigured}
 									onRetry={refetchAISearch}
