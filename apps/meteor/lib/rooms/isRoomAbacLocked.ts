@@ -1,4 +1,4 @@
-import type { IAbacAttributeDefinition, IRoom } from '@rocket.chat/core-typings';
+import type { IRoom } from '@rocket.chat/core-typings';
 import { isPrivateRoom, isPublicRoom, isRoomFederated } from '@rocket.chat/core-typings';
 
 export type AbacLockableRoom = Pick<IRoom, 't' | 'abacAttributes' | 'federated'>;
@@ -25,16 +25,11 @@ export const isRoomAbacLocked = (room: AbacLockableRoom, { enforcementOn, requir
 		return false;
 	}
 
-	const attributes: IAbacAttributeDefinition[] = Array.isArray(room.abacAttributes) ? room.abacAttributes : [];
+	const presentKeys = room.abacAttributes?.filter(({ values }) => values.length > 0).map(({ key }) => key) ?? [];
 
-	const presentKeys = new Set(attributes.filter((attribute) => attribute.values?.length > 0).map((attribute) => attribute.key));
-
-	if (presentKeys.size === 0) {
+	if (!presentKeys.length) {
 		return true;
 	}
 
-	return requiredAttributeKeys.some((requiredKey) => {
-		const key = requiredKey.trim();
-		return key.length > 0 && !presentKeys.has(key);
-	});
+	return requiredAttributeKeys.some((key) => !presentKeys.includes(key));
 };
