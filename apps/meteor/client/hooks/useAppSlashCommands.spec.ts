@@ -75,6 +75,24 @@ describe('useAppSlashCommands', () => {
 		});
 	});
 
+	it('should register the permission declared by the app', async () => {
+		mockGetSlashCommands.mockResolvedValue({
+			commands: [{ ...mockSlashCommands[0], permission: ['manage-apps', 'view-logs'] }],
+			total: 1,
+			appsLoaded: true,
+		});
+
+		renderHook(() => useAppSlashCommands(), {
+			wrapper: mockAppRoot().withEndpoint('GET', '/v1/commands.list', mockGetSlashCommands).withJohnDoe().build(),
+		});
+
+		await waitFor(() => {
+			expect(slashCommands.commands['/test']).toBeDefined();
+		});
+
+		expect(slashCommands.commands['/test'].permission).toEqual(['manage-apps', 'view-logs']);
+	});
+
 	it('should handle command/removed event by invalidating queries', async () => {
 		const streamRef: StreamControllerRef<'apps'> = {};
 
@@ -196,6 +214,33 @@ describe('useAppSlashCommands', () => {
 
 		expect(slashCommands.commands['/test']).toBeDefined();
 		expect(slashCommands.commands['/weather']).toBeDefined();
+	});
+
+	it('should apply a permission change on command/updated event', async () => {
+		const streamRef: StreamControllerRef<'apps'> = {};
+
+		renderHook(() => useAppSlashCommands(), {
+			wrapper: mockAppRoot()
+				.withJohnDoe()
+				.withStream('apps', streamRef)
+				.withEndpoint('GET', '/v1/commands.list', mockGetSlashCommands)
+				.build(),
+		});
+
+		await waitFor(() => {
+			expect(slashCommands.commands['/test']).toBeDefined();
+		});
+
+		mockGetSlashCommands.mockResolvedValue({
+			...mockApiResponse,
+			commands: [{ ...mockSlashCommands[0], permission: 'manage-apps' }, mockSlashCommands[1]],
+		});
+
+		streamRef.controller?.emit('apps', [['command/updated', ['/test']]]);
+
+		await waitFor(() => {
+			expect(slashCommands.commands['/test']?.permission).toBe('manage-apps');
+		});
 	});
 
 	it('should ignore events that do not start with command/', async () => {
