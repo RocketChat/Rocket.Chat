@@ -172,6 +172,8 @@ test.describe.serial('abac-room-attributes-panel', () => {
 		await expect(losesAccess).not.toContainText(Users.user1.data.username);
 
 		await page.getByRole('button', { name: 'Save', exact: true }).click();
+		const confirmation = page.getByRole('dialog').filter({ hasText: 'Update ABAC room' });
+		await confirmation.getByRole('button', { name: 'Save', exact: true }).click();
 		await expect(page.getByText('Room attributes updated')).toBeVisible();
 
 		await expect(attributesBar(page).getByRole('region', { name: levelKey })).toContainText('high');
