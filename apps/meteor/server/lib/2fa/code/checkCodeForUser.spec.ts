@@ -5,6 +5,8 @@ import sinon from 'sinon';
 
 const settingsGet = sinon.stub();
 const totpEnabled = sinon.stub().returns(false);
+const emailEnabled = sinon.stub().returns(false);
+const createTwoFactorChallenge = sinon.stub();
 
 class MeteorError extends Error {
 	error: string;
@@ -35,7 +37,11 @@ class EmailCheck {
 	name = 'email';
 
 	isEnabled(): boolean {
-		return false;
+		return emailEnabled();
+	}
+
+	async processInvalidCode(): Promise<{ codeGenerated: boolean }> {
+		return { codeGenerated: false };
 	}
 }
 
@@ -61,6 +67,7 @@ class PasswordCheckFallback {
 
 const { checkCodeForUser, getFingerprintFromConnection } = proxyquire.noCallThru().load('./index', {
 	'@rocket.chat/models': {
+		TwoFactorChallenges: { createTwoFactorChallenge },
 		Users: {
 			findOneById: async () => null,
 			setTwoFactorAuthorizationHashAndUntilForUserIdAndToken: async () => undefined,
@@ -189,5 +196,58 @@ describe('checkCodeForUser - post-registration grace window', () => {
 				connection,
 			}),
 		).to.be.rejectedWith('TOTP Required');
+	});
+});
+
+describe('checkCodeForUser - resend challenge for emailed codes', () => {
+	let originalTestMode: string | undefined;
+	const user = buildUser(new Date(0));
+
+	before(() => {
+		originalTestMode = process.env.TEST_MODE;
+		delete process.env.TEST_MODE;
+
+		settingsGet.callsFake((key: string) => key === 'Accounts_TwoFactorAuthentication_Enabled');
+		emailEnabled.returns(true);
+	});
+
+	after(() => {
+		emailEnabled.returns(false);
+		if (originalTestMode === undefined) {
+			delete process.env.TEST_MODE;
+		} else {
+			process.env.TEST_MODE = originalTestMode;
+		}
+	});
+
+	beforeEach(() => {
+		totpEnabled.returns(false);
+		createTwoFactorChallenge.reset();
+		createTwoFactorChallenge.resolves('challenge-id');
+	});
+
+	it('should give a password login a resend-only challenge', async () => {
+		const error = await checkCodeForUser({ user, options: { issueResendChallenge: true } }).catch((e: MeteorError) => e);
+
+		expect(error).to.have.nested.property('details.challengeId', 'challenge-id');
+		expect(createTwoFactorChallenge.calledOnceWithExactly('user-id', 'email', 'resend')).to.be.equal(true);
+	});
+
+	it('should not issue a challenge when the login asks for a TOTP code', async () => {
+		totpEnabled.returns(true);
+
+		const error = await checkCodeForUser({ user, options: { issueResendChallenge: true } }).catch((e: MeteorError) => e);
+
+		expect(error).to.have.nested.property('details.method', 'totp');
+		expect(error).to.not.have.nested.property('details.challengeId');
+		expect(createTwoFactorChallenge.called).to.be.equal(false);
+	});
+
+	it('should not issue a challenge when the caller is not a login', async () => {
+		const error = await checkCodeForUser({ user, options: {} }).catch((e: MeteorError) => e);
+
+		expect(error).to.have.property('error', 'totp-required');
+		expect(error).to.not.have.nested.property('details.challengeId');
+		expect(createTwoFactorChallenge.called).to.be.equal(false);
 	});
 });
