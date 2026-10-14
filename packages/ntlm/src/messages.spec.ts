@@ -158,10 +158,15 @@ describe('createType3Message', () => {
 
 	it('reaches the server with the channel binding inside the signed response', () => {
 		const channelBindings = Buffer.alloc(16, 0xcc);
-		const plain = bodyOf(createType3Message(type2, SPEC.user, SPEC.password, 'ws', undefined, options));
-		const bound = bodyOf(createType3Message(type2, SPEC.user, SPEC.password, 'ws', undefined, { ...options, channelBindings }));
+		const plain = securityBuffer(bodyOf(createType3Message(type2, SPEC.user, SPEC.password, 'ws', undefined, options)), 20);
+		const bound = securityBuffer(
+			bodyOf(createType3Message(type2, SPEC.user, SPEC.password, 'ws', undefined, { ...options, channelBindings })),
+			20,
+		);
 
-		expect(securityBuffer(bound, 20)).not.toEqual(securityBuffer(plain, 20));
-		expect(securityBuffer(bound, 20).includes(channelBindings)).toBe(true);
+		// The first sixteen bytes are the proof. A binding appended after it would carry the bytes and still
+		// leave these alone, which is the shape a server with Extended Protection refuses
+		expect(bound.subarray(0, 16)).not.toEqual(plain.subarray(0, 16));
+		expect(bound.includes(channelBindings)).toBe(true);
 	});
 });
