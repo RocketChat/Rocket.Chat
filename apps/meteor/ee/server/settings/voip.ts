@@ -62,6 +62,13 @@ export function addSettings(): Promise<void> {
 						alert: 'VoIP_TeamCollab_Internal_SIP_Beta_Alert',
 					});
 
+					await this.add('VoIP_TeamCollab_SIP_Integration_Normalize_Caller_Numbers', true, {
+						type: 'boolean',
+						public: false,
+						invalidValue: false,
+						i18nDescription: 'VoIP_TeamCollab_SIP_Integration_Normalize_Caller_Numbers_Description',
+					});
+
 					await this.add('VoIP_TeamCollab_Drachtio_Host', '', {
 						type: 'string',
 						public: false,

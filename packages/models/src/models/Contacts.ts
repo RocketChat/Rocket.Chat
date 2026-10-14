@@ -39,6 +39,9 @@ export class ContactsRaw extends BaseRaw<IContact> implements IContactsModel {
 				partialFilterExpression: { 'phones.e164': { $exists: true } },
 			},
 			{
+				key: { 'uid': 1, 'phones.raw': 1 },
+			},
+			{
 				key: { uid: 1, displayName: 1 },
 			},
 		];
@@ -64,13 +67,12 @@ export class ContactsRaw extends BaseRaw<IContact> implements IContactsModel {
 	/** Sorted so a number saved on more than one contact always answers with the same name. */
 	public findOneByUserIdAndPhone(
 		uid: IUser['_id'],
-		e164: string,
+		phone: { e164: string } | { raw: string },
 		source?: IContact['source'],
 	): Promise<Pick<IContact, '_id' | 'displayName'> | null> {
-		return this.findOne(
-			{ uid, 'phones.e164': e164, ...(source && { source }) },
-			{ sort: { displayName: 1 }, projection: { _id: 1, displayName: 1 } },
-		);
+		const match = 'e164' in phone ? { 'phones.e164': phone.e164 } : { 'phones.raw': phone.raw };
+
+		return this.findOne({ uid, ...match, ...(source && { source }) }, { sort: { displayName: 1 }, projection: { _id: 1, displayName: 1 } });
 	}
 
 	public countImportedByUserId(uid: IUser['_id']): Promise<number> {
