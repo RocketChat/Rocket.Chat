@@ -122,7 +122,9 @@ const SearchSourceResult = ({ item }: SearchSourceResultProps): ReactElement => 
 				</MessageContainer>
 				{typeof relevanceScore === 'number' && (
 					<MessageContainerFixed>
-						<MessageRole title={`${relevanceScore}%`}>{relevanceScore}%</MessageRole>
+						<Box position='relative' zIndex={1}>
+							<MessageRole title={t('Semantic_match_score')}>{relevanceScore}%</MessageRole>
+						</Box>
 					</MessageContainerFixed>
 				)}
 			</Message>
