@@ -1,12 +1,13 @@
 import type { AbacMembershipGroup } from '@rocket.chat/core-typings';
 import type { SelectOption } from '@rocket.chat/fuselage';
-import { Box, Button, ButtonGroup, Icon, Select, TextInput } from '@rocket.chat/fuselage';
+import { Box, Button, ButtonGroup, Callout, Icon, Select, TextInput } from '@rocket.chat/fuselage';
 import { useDebouncedValue } from '@rocket.chat/fuselage-hooks';
 import {
 	ContextualbarContent,
 	ContextualbarEmptyContent,
 	ContextualbarFooter,
 	ContextualbarSection,
+	GenericModal,
 	VirtualizedScrollbars,
 } from '@rocket.chat/ui-client';
 import type { TranslationKey } from '@rocket.chat/ui-contexts';
@@ -42,6 +43,8 @@ const emptyLabels: Record<AbacMembershipGroup, TranslationKey> = {
 
 const isMembershipGroup = (value: unknown): value is AbacMembershipGroup => value === 'loses' || value === 'retains';
 
+const countRemoved = (group: AbacMembershipGroup, found: number, total: number) => (group === 'loses' ? found : total - found);
+
 type AbacRoomMembershipPreviewProps = {
 	rid: string;
 	roomName: string;
@@ -67,26 +70,6 @@ const AbacRoomMembershipPreview = ({ rid, roomName, attributes, onBack, onSave }
 	const isSaving = saveMutation.isPending || saveMutation.isSuccess;
 	const preview = useRoomMembershipPreview(rid, attributes, filter, group, isSaving);
 
-	const handleSave = () => {
-		if (editor?.losesAccess) {
-			setModal(
-				<WarningModal
-					text={t('ABAC_Preview_Self_lockout_warning', { roomName })}
-					confirmText={t('Save')}
-					cancelText={t('Cancel')}
-					close={() => setModal(null)}
-					confirm={() => {
-						setModal(null);
-						saveMutation.mutate();
-					}}
-				/>,
-			);
-			return;
-		}
-
-		saveMutation.mutate();
-	};
-
 	const options = useMemo<SelectOption[]>(
 		() => [
 			['loses', t(groupLabels.loses)],
@@ -96,6 +79,68 @@ const AbacRoomMembershipPreview = ({ rid, roomName, attributes, onBack, onSave }
 	);
 
 	const { checked, total, isPending, isChecking, isPartial, isExhausted } = preview;
+	const removed = isExhausted && filter === '' && total !== undefined ? countRemoved(group, preview.members.length, total) : undefined;
+	const removesEveryone = removed !== undefined && removed > 0 && removed === total;
+
+	const closeModal = () => setModal(null);
+	const confirmSave = () => {
+		setModal(null);
+		saveMutation.mutate();
+	};
+
+	const getUpdateText = () => {
+		if (removed === undefined) {
+			return t('ABAC_Preview_Update_room_unknown', { roomName });
+		}
+		if (removed === 0) {
+			return t('ABAC_Preview_Update_room_none', { roomName });
+		}
+		return t('ABAC_Preview_Progress_Removed', { count: removed, total, roomName });
+	};
+
+	const handleSave = () => {
+		if (removesEveryone) {
+			setModal(
+				<GenericModal
+					variant='danger'
+					title={t('ABAC_Preview_Empty_room')}
+					annotation={t('ABAC_Preview_Empty_room_warning')}
+					confirmText={t('Proceed_with_caution')}
+					onConfirm={confirmSave}
+					onCancel={closeModal}
+				>
+					{t('ABAC_Preview_Empty_room_content', { roomName })}
+				</GenericModal>,
+			);
+			return;
+		}
+
+		if (editor?.losesAccess) {
+			setModal(
+				<WarningModal
+					text={t('ABAC_Preview_Self_lockout_warning', { roomName })}
+					confirmText={t('Save')}
+					cancelText={t('Cancel')}
+					close={closeModal}
+					confirm={confirmSave}
+				/>,
+			);
+			return;
+		}
+
+		setModal(
+			<GenericModal
+				variant='info'
+				icon={null}
+				title={t('ABAC_Preview_Update_room')}
+				confirmText={t('Save')}
+				onConfirm={confirmSave}
+				onCancel={closeModal}
+			>
+				{getUpdateText()}
+			</GenericModal>,
+		);
+	};
 	const error = preview.error ?? editorError;
 	const isError = preview.isError || !!editorError;
 	const members = useEditorFirst(rid, preview.members, editor, group, filter);
@@ -146,6 +191,11 @@ const AbacRoomMembershipPreview = ({ rid, roomName, attributes, onBack, onSave }
 							isExhausted={isExhausted}
 							onStop={preview.stop}
 						/>
+						{removesEveryone && (
+							<Box paddingInline={24} paddingBlockEnd={12}>
+								<Callout type='danger'>{t('ABAC_Preview_Empty_room_warning')}</Callout>
+							</Box>
+						)}
 						<AbacRoomPreviewGroupHeader title={t(groupLabels[group])} />
 						{members.length === 0 && <AbacRoomPreviewListFooter context={{ ...footerContext, loading: isPending || isChecking }} />}
 						{isExhausted && members.length === 0 && (
