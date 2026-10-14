@@ -30,7 +30,11 @@ const AbacPreviewMemberGroup = ({ title, members, verdict }: AbacPreviewMemberGr
 			<Box is='ul'>
 				{members.map(({ _id, username, name }) => (
 					<Box is='li' key={_id} display='flex' alignItems='center' paddingBlock={4}>
-						{username && <UserAvatar username={username} size='x20' />}
+						{username && (
+							<Box flexShrink={0} display='flex'>
+								<UserAvatar username={username} size='x20' />
+							</Box>
+						)}
 						<Box flexGrow={1} withTruncatedText marginInlineStart={8}>
 							<Box is='span' fontScale='p2m' color='default'>
 								{name || username}
