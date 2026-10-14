@@ -481,6 +481,7 @@ export class TeamService extends ServiceClassInternal implements ITeamService {
 			const allowed = await filterUsersAllowedInRoom(
 				teamMembers.records.map(({ user: member }) => member),
 				room,
+				{ audit: false },
 			);
 			const allowedIds = new Set(allowed.map(({ _id }) => _id));
 
@@ -989,7 +990,7 @@ export class TeamService extends ServiceClassInternal implements ITeamService {
 		const users = await Users.findActiveByIds(members.map((member) => member.userId)).toArray();
 
 		for (const user of users) {
-			const joinable = await filterDefaultChannelsForUser(defaultRooms, user);
+			const joinable = await filterDefaultChannelsForUser(defaultRooms, user, { audit: false });
 
 			// at this point, users are already part of the team so we won't check for membership
 			await Promise.all(joinable.map((room) => addUserToRoom(room._id, user, inviter, { skipSystemMessage: false })));

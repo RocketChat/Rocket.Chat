@@ -9,8 +9,12 @@ import { settings } from '../../../../server/settings';
 filterDefaultChannelsForUser.patch(async (next, rooms, user, options) => {
 	const candidates = await next(rooms, user, options);
 
-	if (!candidates.length || !settings.get('ABAC_Enabled') || !License.hasModule('abac')) {
+	if (!candidates.length) {
 		return candidates;
+	}
+
+	if (!settings.get('ABAC_Enabled') || !License.hasModule('abac')) {
+		return candidates.filter((room) => room.t !== 'p' || !room.abacAttributes?.length);
 	}
 
 	const lockContext = getRoomAbacLockContext();
@@ -26,7 +30,10 @@ filterDefaultChannelsForUser.patch(async (next, rooms, user, options) => {
 	}
 
 	const allowed = new Set(
-		await Abac.filterRoomsAllowedForUser(user._id, attributed, { refreshAttributes: options?.refreshUserAttributes }),
+		await Abac.filterRoomsAllowedForUser(user._id, attributed, {
+			refreshAttributes: options?.refreshUserAttributes && user.ldap === true,
+			audit: options?.audit,
+		}),
 	);
 
 	return unlocked.filter((room) => !room.abacAttributes?.length || allowed.has(room._id));

@@ -1,7 +1,10 @@
 ---
 '@rocket.chat/abac': minor
+'@rocket.chat/core-services': minor
 '@rocket.chat/i18n': minor
 '@rocket.chat/meteor': minor
+'@rocket.chat/model-typings': minor
+'@rocket.chat/models': minor
 ---
 
 Allows default and team default rooms to carry ABAC attributes, which was previously refused. Assigning attributes to a default room, marking an ABAC room as a default and marking an attributed team channel as a team default now succeed, so these requests no longer return `error-cannot-convert-default-room-to-abac`, `error-action-not-allowed` or `error-room-is-abac-managed`.
