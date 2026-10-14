@@ -1,4 +1,4 @@
-import { Tabs, TabsItem } from '@rocket.chat/fuselage';
+import { IconButton, Tabs, TabsItem } from '@rocket.chat/fuselage';
 import { Page, PageHeader, PageContent } from '@rocket.chat/ui-client';
 import { useRouter, useRouteParameter, useSetting } from '@rocket.chat/ui-contexts';
 import { useEffect, useCallback } from 'react';
@@ -10,7 +10,12 @@ import UsersTab from './tabs/users/UsersTab';
 
 type TabName = 'users' | 'channels' | 'teams' | 'external';
 
-const DirectoryPage = () => {
+type DirectoryPageProps = {
+	/** Shows a close button, for when the page is open in a modal. */
+	onClose?: () => void;
+};
+
+const DirectoryPage = ({ onClose }: DirectoryPageProps) => {
 	const { t } = useTranslation();
 
 	const defaultTab = useSetting<TabName>('Accounts_Directory_DefaultView', 'users');
@@ -38,7 +43,7 @@ const DirectoryPage = () => {
 
 	return (
 		<Page background='room'>
-			<PageHeader title={t('Directory')} />
+			<PageHeader title={t('Directory')}>{onClose && <IconButton icon='cross' small title={t('Close')} onClick={onClose} />}</PageHeader>
 			<Tabs flexShrink={0}>
 				<TabsItem selected={tab === 'channels'} onClick={handleTabClick('channels')}>
 					{t('Channels')}

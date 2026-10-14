@@ -3,13 +3,15 @@ import { usePermission, useUser } from '@rocket.chat/ui-contexts';
 import { memo } from 'react';
 import { useTranslation } from 'react-i18next';
 
+import SidebarRailContactCenter from './SidebarRailContactCenter';
+import SidebarRailDirectory from './SidebarRailDirectory';
 import SidebarRailDivider from './SidebarRailDivider';
 import SidebarRailInbox from './SidebarRailInbox';
 import SidebarRailLoginPage from './SidebarRailLoginPage';
 import SidebarRailPhone from './SidebarRailPhone';
 import SidebarRailTeams from './SidebarRailTeams';
-import NavBarOmnichannelGroup from '../../navbar/NavBarOmnichannelGroup';
-import NavBarItemDirectoryPage from '../../navbar/NavBarPagesGroup/NavBarItemDirectoryPage';
+import NavBarItemOmnichannelLivechatToggle from '../../navbar/NavBarOmnichannelGroup/NavBarItemOmnichannelLivechatToggle';
+import NavBarItemOmnichannelQueue from '../../navbar/NavBarOmnichannelGroup/NavBarItemOmnichannelQueue';
 import NavBarItemMarketPlaceMenu from '../../navbar/NavBarPagesGroup/NavBarItemMarketPlaceMenu';
 import { NavBarItemAdministrationMenu, UserMenu } from '../../navbar/NavBarSettingsToolbar';
 import { useOmnichannelEnabled } from '../../views/omnichannel/hooks/useOmnichannelEnabled';
@@ -45,7 +47,7 @@ const SidebarRail = () => {
 				<NavBarGroup vertical aria-label={t('Pages_and_actions')}>
 					<SidebarRailInbox />
 					<SidebarRailTeams />
-					<NavBarItemDirectoryPage title={t('Directory')} />
+					<SidebarRailDirectory />
 					{showMarketplace && <NavBarItemMarketPlaceMenu />}
 				</NavBarGroup>
 				<SidebarRailDivider />
@@ -55,7 +57,11 @@ const SidebarRail = () => {
 				{showOmnichannel && (
 					<>
 						<SidebarRailDivider />
-						<NavBarOmnichannelGroup vertical />
+						<NavBarGroup vertical aria-label={t('Omnichannel')}>
+							<NavBarItemOmnichannelQueue />
+							<SidebarRailContactCenter />
+							<NavBarItemOmnichannelLivechatToggle />
+						</NavBarGroup>
 					</>
 				)}
 			</Box>
