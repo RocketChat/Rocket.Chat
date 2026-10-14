@@ -97,6 +97,12 @@ const RoomListItem = ({
 		</ItemTitle>
 	);
 
+	const itemMenu = menu && (
+		<ItemActions reveal='hover'>
+			{menuVisibility ? menu : <IconButton tabIndex={-1} aria-hidden mini icon='kebab' onPointerDown={mountNow} />}
+		</ItemActions>
+	);
+
 	return (
 		<Item {...props} inset={inset} selected={selected} highlighted={highlighted} onFocus={mountNow} onPointerEnter={requestMount}>
 			{showAvatar && (
@@ -115,25 +121,21 @@ const RoomListItem = ({
 						<ItemDescription>{subtitle}</ItemDescription>
 						{titleIcon}
 						{badges}
+						{itemMenu}
+						{actions}
 					</ItemRow>
 				</ItemContent>
 			) : (
-				<>
-					{itemIcon}
-					<ItemContent>
-						<ItemRow>
-							{itemTitle}
-							{titleIcon}
-						</ItemRow>
-					</ItemContent>
-					{badges}
-				</>
-			)}
-			{actions}
-			{menu && (
-				<ItemActions reveal='hover'>
-					{menuVisibility ? menu : <IconButton tabIndex={-1} aria-hidden mini icon='kebab' onPointerDown={mountNow} />}
-				</ItemActions>
+				<ItemContent>
+					<ItemRow>
+						{itemIcon}
+						{itemTitle}
+						{titleIcon}
+						{badges}
+						{itemMenu}
+						{actions}
+					</ItemRow>
+				</ItemContent>
 			)}
 		</Item>
 	);
