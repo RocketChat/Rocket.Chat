@@ -13,7 +13,7 @@ const sampleContact: Serialized<ILivechatContact> = {
 
 describe('Map Livechat Contact Conflicts', () => {
 	it('should return an empty object when the contact has no conflicts', () => {
-		expect(mapLivechatContactConflicts({ ...sampleContact })).to.be.equal({});
+		expect(mapLivechatContactConflicts({ ...sampleContact })).to.be.deep.equal({});
 	});
 
 	it('should group conflicts of the same field in a single atribute', () => {
@@ -93,11 +93,11 @@ describe('Map Livechat Contact Conflicts', () => {
 			name: {
 				name: 'name',
 				label: 'Name',
-				values: ['First Name', 'Second Name', 'Contact Name'],
+				values: ['First Value', 'Second Value', 'Contact Name'],
 			},
 			contactManager: {
 				name: 'contactManager',
-				label: 'Manager',
+				label: 'Contact_Manager',
 				values: ['1', '2'],
 			},
 		});

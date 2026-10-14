@@ -15,6 +15,7 @@ module.exports = {
 	ignore: ['server/api/lib/getUserInfo.spec.ts', 'server/lib/omnichannel/business-hour/**/*.spec.ts'],
 	spec: [
 		'server/lib/callbacks.spec.ts',
+		'server/lib/getNestedProp.spec.ts',
 		'server/lib/cas/*.spec.ts',
 		'server/lib/messages/**/*.spec.ts',
 		'server/lib/ldap/*.spec.ts',
@@ -42,6 +43,7 @@ module.exports = {
 		'server/lib/omnichannel/**/*.spec.ts',
 		'server/lib/notifications/push/**/*.spec.ts',
 		'server/lib/utils/**/*.spec.ts',
+		'lib/mapLivechatContactConflicts.spec.ts',
 		'lib/videoConference/*.spec.ts',
 		'server/services/video-conference/**/*.spec.ts',
 	],
