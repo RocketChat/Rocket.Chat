@@ -2,7 +2,9 @@ import { useFocusManager } from '@react-aria/focus';
 import { useCallback } from 'react';
 
 const isListItem = (node: EventTarget) =>
-	node instanceof HTMLElement && node.classList.contains('rcx-item__link') && !!node.closest('[role="listitem"]');
+	node instanceof HTMLElement &&
+	(node.classList.contains('rcx-item__link') || node.classList.contains('rcx-sidebar-item')) &&
+	!!node.closest('[role="listitem"]');
 const isCollapseGroup = (node: EventTarget) => node instanceof HTMLElement && node.classList.contains('rcx-item-group-title');
 const isListItemMenu = (node: EventTarget) => node instanceof HTMLElement && !!node.closest('.rcx-item .rcx-item__actions');
 
