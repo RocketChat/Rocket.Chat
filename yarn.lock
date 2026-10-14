@@ -9993,7 +9993,7 @@ __metadata:
     "@rocket.chat/fuselage-hooks": "workspace:^"
     "@rocket.chat/jest-presets": "workspace:~"
     "@rocket.chat/storybook-config": "workspace:~"
-    "@rocket.chat/styled": "npm:~0.34.1"
+    "@rocket.chat/styled": "workspace:~"
     "@rocket.chat/tsconfig": "workspace:~"
     "@testing-library/dom": "npm:~10.4.2"
     "@testing-library/react": "npm:~16.3.3"
@@ -10037,7 +10037,7 @@ __metadata:
     "@rocket.chat/jest-presets": "workspace:~"
     "@rocket.chat/mock-providers": "workspace:^"
     "@rocket.chat/storybook-config": "workspace:~"
-    "@rocket.chat/styled": "npm:~0.34.1"
+    "@rocket.chat/styled": "workspace:~"
     "@rocket.chat/tsconfig": "workspace:*"
     "@rocket.chat/ui-avatar": "workspace:^"
     "@rocket.chat/ui-contexts": "workspace:^"
@@ -10139,7 +10139,7 @@ __metadata:
     "@rocket.chat/jest-presets": "workspace:~"
     "@rocket.chat/message-parser": "workspace:^"
     "@rocket.chat/storybook-config": "workspace:~"
-    "@rocket.chat/styled": "npm:~0.34.1"
+    "@rocket.chat/styled": "workspace:~"
     "@rocket.chat/tsconfig": "workspace:*"
     "@rocket.chat/ui-client": "workspace:^"
     "@rocket.chat/ui-contexts": "workspace:^"
@@ -10297,7 +10297,7 @@ __metadata:
     "@rocket.chat/logo": "workspace:~"
     "@rocket.chat/storybook-config": "workspace:~"
     "@rocket.chat/storybook-dark-mode": "workspace:~"
-    "@rocket.chat/styled": "npm:~0.34.1"
+    "@rocket.chat/styled": "workspace:~"
     "@rocket.chat/tsconfig": "workspace:~"
     "@testing-library/dom": "npm:~10.4.2"
     "@testing-library/react": "npm:~16.3.3"
@@ -10444,7 +10444,7 @@ __metadata:
   dependencies:
     "@rocket.chat/fuselage-tokens": "npm:^0.35.0"
     "@rocket.chat/jest-presets": "workspace:~"
-    "@rocket.chat/styled": "npm:~0.34.1"
+    "@rocket.chat/styled": "workspace:~"
     "@rocket.chat/tsconfig": "workspace:~"
     "@testing-library/dom": "npm:~10.4.2"
     "@testing-library/react": "npm:~16.3.3"
@@ -10649,7 +10649,7 @@ __metadata:
     "@rocket.chat/sha256": "workspace:^"
     "@rocket.chat/storybook-config": "workspace:~"
     "@rocket.chat/streamer": "workspace:^"
-    "@rocket.chat/styled": "npm:~0.34.1"
+    "@rocket.chat/styled": "workspace:~"
     "@rocket.chat/stylis-logical-props-middleware": "workspace:~"
     "@rocket.chat/tools": "workspace:^"
     "@rocket.chat/tracing": "workspace:^"
@@ -11207,7 +11207,7 @@ __metadata:
     "@rocket.chat/logo": "workspace:~"
     "@rocket.chat/storybook-config": "workspace:~"
     "@rocket.chat/storybook-dark-mode": "workspace:~"
-    "@rocket.chat/styled": "npm:~0.34.1"
+    "@rocket.chat/styled": "workspace:~"
     "@rocket.chat/tsconfig": "workspace:~"
     "@testing-library/dom": "npm:~10.4.2"
     "@testing-library/react": "npm:~16.3.3"
@@ -11600,14 +11600,32 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@rocket.chat/styled@npm:~0.34.1":
-  version: 0.34.1
-  resolution: "@rocket.chat/styled@npm:0.34.1"
+"@rocket.chat/styled@workspace:packages/styled, @rocket.chat/styled@workspace:~":
+  version: 0.0.0-use.local
+  resolution: "@rocket.chat/styled@workspace:packages/styled"
   dependencies:
-    "@rocket.chat/css-in-js": "npm:^0.33.0"
-  checksum: 10/ef3367eabed1d8fa7ebc30ff4daace2eb2493d90a84edcfc737011a3d22abfbed11b5a24b68d6b3559f15164506cd35db72238873dbfbe8459a0f7500e68e490
-  languageName: node
-  linkType: hard
+    "@rocket.chat/css-in-js": "workspace:~"
+    "@rocket.chat/jest-presets": "workspace:~"
+    "@rocket.chat/tsconfig": "workspace:~"
+    "@rollup/plugin-commonjs": "npm:~29.0.3"
+    "@rollup/plugin-json": "npm:~6.1.0"
+    "@rollup/plugin-node-resolve": "npm:~16.0.3"
+    "@rollup/plugin-terser": "npm:~1.0.0"
+    "@rollup/plugin-typescript": "npm:~12.3.0"
+    "@testing-library/dom": "npm:~10.4.2"
+    "@testing-library/react": "npm:~16.3.3"
+    "@types/react": "npm:~19.2.18"
+    "@types/react-dom": "npm:~19.2.7"
+    eslint: "npm:~10.12.0"
+    jest: "npm:~30.5.2"
+    react: "npm:~19.2.8"
+    react-dom: "npm:~19.2.8"
+    rollup: "npm:~4.62.5"
+    typescript: "npm:~5.9.3"
+  peerDependencies:
+    react: "*"
+  languageName: unknown
+  linkType: soft
 
 "@rocket.chat/stylis-logical-props-middleware@workspace:packages/stylis-logical-props-middleware, @rocket.chat/stylis-logical-props-middleware@workspace:~":
   version: 0.0.0-use.local
@@ -11753,7 +11771,7 @@ __metadata:
     "@rocket.chat/models": "workspace:~"
     "@rocket.chat/onboarding-ui": "workspace:^"
     "@rocket.chat/storybook-config": "workspace:~"
-    "@rocket.chat/styled": "npm:~0.34.1"
+    "@rocket.chat/styled": "workspace:~"
     "@rocket.chat/tools": "workspace:~"
     "@rocket.chat/tsconfig": "workspace:*"
     "@rocket.chat/ui-avatar": "workspace:~"
@@ -11851,7 +11869,7 @@ __metadata:
     "@rocket.chat/jest-presets": "workspace:~"
     "@rocket.chat/mock-providers": "workspace:^"
     "@rocket.chat/storybook-config": "workspace:~"
-    "@rocket.chat/styled": "npm:~0.34.1"
+    "@rocket.chat/styled": "workspace:~"
     "@rocket.chat/tsconfig": "workspace:*"
     "@rocket.chat/ui-avatar": "workspace:^"
     "@rocket.chat/ui-client": "workspace:^"
@@ -12049,7 +12067,7 @@ __metadata:
     "@rocket.chat/icons": "workspace:~"
     "@rocket.chat/jest-presets": "workspace:~"
     "@rocket.chat/storybook-config": "workspace:~"
-    "@rocket.chat/styled": "npm:~0.34.1"
+    "@rocket.chat/styled": "workspace:~"
     "@rocket.chat/tsconfig": "workspace:*"
     "@rocket.chat/ui-avatar": "workspace:^"
     "@rocket.chat/ui-contexts": "workspace:^"
@@ -12099,7 +12117,7 @@ __metadata:
     "@rocket.chat/media-signaling": "workspace:~"
     "@rocket.chat/mock-providers": "workspace:~"
     "@rocket.chat/storybook-config": "workspace:~"
-    "@rocket.chat/styled": "npm:~0.34.1"
+    "@rocket.chat/styled": "workspace:~"
     "@rocket.chat/tsconfig": "workspace:*"
     "@rocket.chat/ui-avatar": "workspace:^"
     "@rocket.chat/ui-client": "workspace:^"
@@ -12164,7 +12182,7 @@ __metadata:
     "@rocket.chat/fuselage-ui-kit": "workspace:~"
     "@rocket.chat/icons": "workspace:~"
     "@rocket.chat/logo": "workspace:~"
-    "@rocket.chat/styled": "npm:~0.34.1"
+    "@rocket.chat/styled": "workspace:~"
     "@rocket.chat/tsconfig": "workspace:*"
     "@rocket.chat/ui-avatar": "workspace:^"
     "@rocket.chat/ui-contexts": "workspace:~"
