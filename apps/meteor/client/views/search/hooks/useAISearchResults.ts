@@ -47,5 +47,6 @@ export const useAISearchResults = (queryParam: string, enabled: boolean) => {
 		isLoading: result.isLoading,
 		isPlaceholderData: result.isPlaceholderData,
 		error: result.error,
+		refetch: result.refetch,
 	};
 };

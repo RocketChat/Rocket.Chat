@@ -11,6 +11,7 @@ import SearchResultsHeader from './SearchResultsHeader';
 import SearchSourceResult from './SearchSourceResult';
 import { useAISearchAnswer } from './hooks/useAISearchAnswer';
 import { useAISearchResults } from './hooks/useAISearchResults';
+import AISearchErrorCallout from '../../components/AISearchErrorCallout';
 import { useHasLicenseModule } from '../../hooks/useHasLicenseModule';
 
 const SearchPage = (): ReactElement => {
@@ -30,6 +31,7 @@ const SearchPage = (): ReactElement => {
 		isLoading,
 		isPlaceholderData,
 		error: searchError,
+		refetch: refetchResults,
 	} = useAISearchResults(queryParam, canUseAISearch && intelligentSearchEnabled);
 	const answerMessages = useMemo(
 		() =>
@@ -87,14 +89,10 @@ const SearchPage = (): ReactElement => {
 						</Callout>
 					)}
 					{canUseAISearch && intelligentSearchEnabled && meta && !meta.intelligentSearchConfigured && (
-						<Callout type='warning' icon='warning' title={t('Intelligent_Search_missing_configuration_title')} marginBlockEnd={16}>
-							{t('Intelligent_Search_missing_configuration_description')}
-						</Callout>
+						<AISearchErrorCallout role='alert' notConfigured marginBlockEnd={16} />
 					)}
 					{searchError && (
-						<Callout type='danger' icon='warning' marginBlockEnd={16}>
-							{t('AI_Search_request_failed')}
-						</Callout>
+						<AISearchErrorCallout role='alert' error={searchError} onRetry={() => void refetchResults()} marginBlockEnd={16} />
 					)}
 					{debouncedQuery && (
 						<SearchAnswerPanel

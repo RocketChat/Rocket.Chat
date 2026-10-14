@@ -17,6 +17,7 @@ import { useAISearchItems } from './hooks/useAISearchItems';
 import { useAISearchRooms } from './hooks/useAISearchRooms';
 import { useSearchFilters } from './hooks/useSearchFilters';
 import { useListboxNavigation } from './hooks/useSearchNavigation';
+import AISearchErrorCallout from '../../components/AISearchErrorCallout';
 import ResultsLiveRegion from '../../components/ResultsLiveRegion';
 
 export type NavBarAISearchListBoxProps = {
@@ -55,10 +56,11 @@ const NavBarAISearchListBox = ({
 		clearQuery();
 	});
 
-	const { data: aiItems, isFetching } = useAISearchItems(filterText, filters, aiSearchActive);
+	const { data: aiItems, isFetching, refetch: refetchAISearch } = useAISearchItems(filterText, filters, aiSearchActive);
 	const { items: rooms, isLoading } = useAISearchRooms(aiSearchActive ? aiItems.searchText : filterText);
 	const itemCount = rooms.length + aiItems.intelligent.length + aiItems.filterSuggestions.length;
 	const isSearchLoading = isLoading || isFetching;
+	const hasAISearchProblem = aiSearchActive && Boolean(aiItems.error || aiItems.notConfigured);
 	const listboxLabel = aiSearchActive ? t('AI_Search_results') : t('Channels');
 
 	return (
@@ -79,7 +81,11 @@ const NavBarAISearchListBox = ({
 				<NavBarSearchFiltersView id={overlayProps.id} filters={filters} onBack={onCloseFilters} />
 			) : (
 				<>
-					<ResultsLiveRegion shouldAnnounce={!isSearchLoading} itemCount={itemCount} isLoading={isSearchLoading} />
+					<ResultsLiveRegion
+						shouldAnnounce={!isSearchLoading && !(hasAISearchProblem && itemCount === 0)}
+						itemCount={itemCount}
+						isLoading={isSearchLoading}
+					/>
 					{aiSearchAvailable && (
 						<>
 							<Box display='flex' justifyContent='space-between' alignItems='center' paddingInline={12}>
@@ -92,6 +98,16 @@ const NavBarAISearchListBox = ({
 								<ToggleSwitch aria-labelledby={aiSearchLabelId} checked={aiSearchActive} onChange={handleToggleAISearch} />
 							</Box>
 							{aiSearchActive && <NavBarSearchFilterTypeRow draft={aiItems.draft} />}
+							{hasAISearchProblem && (
+								<AISearchErrorCallout
+									role='alert'
+									error={aiItems.error}
+									notConfigured={aiItems.notConfigured}
+									onRetry={refetchAISearch}
+									marginInline={12}
+									marginBlockStart={8}
+								/>
+							)}
 						</>
 					)}
 					<CustomScrollbars>
