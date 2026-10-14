@@ -221,6 +221,31 @@ const safeFormat = (d: Date, momentFormat: string, locale?: Locale): string => {
 	}
 };
 
+const TIMEZONE_FORMATTER_OPTIONS: Intl.DateTimeFormatOptions = {
+	year: 'numeric',
+	month: 'numeric',
+	day: 'numeric',
+	hour: 'numeric',
+	minute: 'numeric',
+	second: 'numeric',
+	timeZoneName: 'shortOffset',
+	hourCycle: 'h23',
+};
+
+const formattersCache = new Map<string, Intl.DateTimeFormat>();
+
+const getFormatter = (timeZone: string): Intl.DateTimeFormat => {
+	let formatter = formattersCache.get(timeZone);
+	if (!formatter) {
+		formatter = new Intl.DateTimeFormat('en-US', {
+			...TIMEZONE_FORMATTER_OPTIONS,
+			timeZone,
+		});
+		formattersCache.set(timeZone, formatter);
+	}
+	return formatter;
+};
+
 /**
  * Convert a Date to match the clock time of the specified timezone.
  * When rendered with date-fns format tokens (which use local getters),
@@ -236,17 +261,7 @@ export const toTimezoneDate = (date: Date, timezone?: string): Date => {
 
 	try {
 		const targetTz = resolveDateAwareTimezone(timezone, date);
-		const formatter = new Intl.DateTimeFormat('en-US', {
-			timeZone: targetTz,
-			year: 'numeric',
-			month: 'numeric',
-			day: 'numeric',
-			hour: 'numeric',
-			minute: 'numeric',
-			second: 'numeric',
-			timeZoneName: 'shortOffset',
-			hourCycle: 'h23',
-		});
+		const formatter = getFormatter(targetTz);
 		const parts = Object.fromEntries(formatter.formatToParts(date).map((p) => [p.type, p.value]));
 		const targetYear = parseInt(parts.year, 10);
 		const targetMonth = parseInt(parts.month, 10) - 1;
@@ -304,6 +319,9 @@ const getLocalResolvedDate = (d: Date): Date => {
 
 export const formatDate = (date: DateInput, formatStr: string, locale?: Locale, timezone?: string): string => {
 	const d = toDate(date);
+	if (timezone === 'none') {
+		return safeFormat(d, formatStr, locale);
+	}
 	const effectiveTimezone = !timezone || timezone === 'local' ? undefined : timezone;
 	const targetDate = effectiveTimezone ? toTimezoneDate(d, effectiveTimezone) : getLocalResolvedDate(d);
 	return safeFormat(targetDate, formatStr, locale);
@@ -323,8 +341,18 @@ export const formatTimeAgo = (
 	timezone?: string,
 ): string => {
 	const effectiveTimezone = !timezone || timezone === 'local' ? undefined : timezone;
-	const d = effectiveTimezone ? toTimezoneDate(toDate(date), effectiveTimezone) : getLocalResolvedDate(toDate(date));
-	const now = effectiveTimezone ? toTimezoneDate(new Date(), effectiveTimezone) : getLocalResolvedDate(new Date());
+	const d =
+		timezone === 'none'
+			? toDate(date)
+			: effectiveTimezone
+				? toTimezoneDate(toDate(date), effectiveTimezone)
+				: getLocalResolvedDate(toDate(date));
+	const now =
+		timezone === 'none'
+			? new Date()
+			: effectiveTimezone
+				? toTimezoneDate(new Date(), effectiveTimezone)
+				: getLocalResolvedDate(new Date());
 	const diffDays = differenceInCalendarDays(now, d);
 
 	if (diffDays === 0) {

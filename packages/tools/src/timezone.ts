@@ -154,7 +154,17 @@ export const guessTimezoneFromOffset = (offset: string | number): string => {
 	return mins === 0 ? `Etc/GMT${sign === '+' ? '-' : '+'}${hours}` : 'UTC';
 };
 
+let cachedGuessedTimezone: string | undefined;
+
+export const clearTimezoneCache = (): void => {
+	cachedGuessedTimezone = undefined;
+};
+
 export const guessTimezone = (): string => {
+	if (cachedGuessedTimezone) {
+		return cachedGuessedTimezone;
+	}
+
 	let resolved: string;
 	try {
 		resolved = new Intl.DateTimeFormat().resolvedOptions().timeZone;
@@ -163,8 +173,11 @@ export const guessTimezone = (): string => {
 	}
 
 	if (Object.hasOwn(WINDOWS_AND_REGIONAL_TO_CANONICAL, resolved)) {
-		return WINDOWS_AND_REGIONAL_TO_CANONICAL[resolved];
+		cachedGuessedTimezone = WINDOWS_AND_REGIONAL_TO_CANONICAL[resolved];
+		return cachedGuessedTimezone;
 	}
 
-	return Object.hasOwn(LEGACY_TO_CANONICAL, resolved) ? LEGACY_TO_CANONICAL[resolved] : resolved;
+	cachedGuessedTimezone = Object.hasOwn(LEGACY_TO_CANONICAL, resolved) ? LEGACY_TO_CANONICAL[resolved] : resolved;
+	return cachedGuessedTimezone;
 };
+

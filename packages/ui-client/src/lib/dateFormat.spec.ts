@@ -2,6 +2,8 @@
  * @jest-environment <rootDir>/tests/environments/timezone.ts
  * @jest-environment-options {"timezone": "America/Argentina/Buenos_Aires"}
  */
+import * as tools from '@rocket.chat/tools';
+
 import { formatDate, momentFormatToDateFns, toDate, toTimezoneDate } from './dateFormat';
 
 describe('momentFormatToDateFns', () => {
@@ -230,6 +232,40 @@ describe('toTimezoneDate and timezone formatting', () => {
 		const formattedDefault = formatDate(winterPost, 'h:mm A');
 		const formattedLocal = formatDate(winterPost, 'h:mm A', undefined, 'local');
 		expect(formattedLocal).toBe(formattedDefault);
+	});
+
+	it('formats dates using browser-reported Canadian timezone via getLocalResolvedDate', () => {
+		const spy = jest.spyOn(tools, 'guessTimezone').mockReturnValue('America/Vancouver');
+
+		// Before transition (Jan 15, 2026): formats with historical winter UTC-8 (11:00 AM)
+		expect(formatDate(winterPre, 'h:mm A')).toBe('11:00 AM');
+
+		// After transition (Dec 15, 2026): formats with permanent UTC-7 (12:00 PM)
+		expect(formatDate(winterPost, 'h:mm A')).toBe('12:00 PM');
+
+		// Simulate Alberta (America/Edmonton)
+		spy.mockReturnValue('America/Edmonton');
+		expect(formatDate(new Date('2026-01-15T18:00:00.000Z'), 'h:mm A')).toBe('11:00 AM');
+		expect(formatDate(new Date('2026-12-15T18:00:00.000Z'), 'h:mm A')).toBe('12:00 PM');
+
+		// Simulate Manitoba (America/Winnipeg)
+		spy.mockReturnValue('America/Winnipeg');
+		expect(formatDate(new Date('2026-01-15T17:00:00.000Z'), 'h:mm A')).toBe('11:00 AM');
+		expect(formatDate(new Date('2026-12-15T17:00:00.000Z'), 'h:mm A')).toBe('12:00 PM');
+
+		// Simulate permanent zones America/Dawson_Creek and America/Regina directly
+		spy.mockReturnValue('America/Dawson_Creek');
+		expect(formatDate(winterPost, 'h:mm A')).toBe('12:00 PM');
+
+		spy.mockReturnValue('America/Regina');
+		expect(formatDate(new Date('2026-12-15T18:00:00.000Z'), 'h:mm A')).toBe('12:00 PM');
+
+		spy.mockRestore();
+	});
+
+	it('formats dates with timezone "none" without any timezone conversions', () => {
+		const rawDate = new Date('2026-01-15T19:00:00.000Z');
+		expect(typeof formatDate(rawDate, 'h:mm A', undefined, 'none')).toBe('string');
 	});
 });
 
