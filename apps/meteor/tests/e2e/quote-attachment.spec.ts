@@ -1,39 +1,23 @@
 import { randomUUID } from 'crypto';
 
-import type { IOEmbedCache } from '@rocket.chat/core-typings';
-import { MongoClient } from 'mongodb';
-
-import { URL_MONGODB } from './config/constants';
 import { Users } from './fixtures/userStates';
 import { HomeChannel } from './page-objects';
-import { createTargetChannel } from './utils';
+import { createTargetChannel, setSettingValueById } from './utils';
+import { preserveSettings } from './utils/preserveSettings';
 import { test, expect } from './utils/test';
+import { mockServerReset, mockServerSet } from '../data/mock-server.helper';
 
 test.use({ storageState: Users.admin.state });
 const fileDescription = `Message for quote - ${Date.now()}`;
 const quotedMessage = 'Quoting the attachment';
 const threadQuoteMessage = 'Quoting in thread';
-const linkPreview = { url: `https://rocket.chat/quote-preview-${randomUUID()}`, title: 'Quote preview fixture' };
 
 test.describe.parallel('Quote Attachment', () => {
 	let poHomeChannel: HomeChannel;
 	let targetChannel: string;
-	let connection: MongoClient;
 
 	test.beforeAll(async ({ api }) => {
-		connection = await MongoClient.connect(URL_MONGODB);
 		targetChannel = await createTargetChannel(api);
-
-		// CI cannot count on reaching an external website in time, so the preview is seeded straight into the oEmbed cache.
-		await connection
-			.db()
-			.collection<IOEmbedCache>('rocketchat_oembed_cache')
-			.insertOne({
-				_id: linkPreview.url,
-				data: { url: linkPreview.url, meta: { ogTitle: linkPreview.title } },
-				updatedAt: new Date(),
-				_updatedAt: new Date(),
-			});
 	});
 
 	test.beforeEach(async ({ page }) => {
@@ -42,9 +26,6 @@ test.describe.parallel('Quote Attachment', () => {
 	});
 
 	test.afterAll(async ({ api }) => {
-		await connection.db().collection<IOEmbedCache>('rocketchat_oembed_cache').deleteOne({ _id: linkPreview.url });
-		await connection.close();
-
 		expect((await api.post('/channels.delete', { roomName: targetChannel })).status()).toBe(200);
 	});
 
@@ -120,31 +101,47 @@ test.describe.parallel('Quote Attachment', () => {
 		});
 	});
 
-	test('should show link preview when quoting a link with preview', async () => {
-		const testLink = linkPreview.url;
+	test.describe('Link preview', () => {
+		const url = new URL(`/page/quote-preview-${randomUUID()}`, process.env.OEMBED_MOCK_SERVER_URL || 'http://mock-server.dev:8080');
+		const title = 'Quote preview fixture';
+		const originalSettings = preserveSettings(['API_EmbedSafePorts', 'SSRF_Allowlist']);
 
-		await test.step('Send link message in channel', async () => {
-			await poHomeChannel.content.sendMessage(testLink);
-			await expect(poHomeChannel.content.lastUserMessage).toContainText(testLink);
-			await expect(poHomeChannel.content.linkPreview).toBeVisible();
-			await expect(poHomeChannel.content.lastUserMessage).toContainText(linkPreview.title);
+		test.beforeAll(async ({ api }) => {
+			await expect(await setSettingValueById(api, 'API_EmbedSafePorts', `${originalSettings.API_EmbedSafePorts},${url.port}`)).toBeOK();
+			await expect(await setSettingValueById(api, 'SSRF_Allowlist', `${originalSettings.SSRF_Allowlist},${url.host}`)).toBeOK();
+			await mockServerSet('GET', url.pathname, `<html><head><title>${title}</title></head></html>`);
 		});
 
-		await test.step('Quote the link message', async () => {
-			await poHomeChannel.content.lastUserMessage.hover();
-			await poHomeChannel.content.btnQuoteMessage.click();
-
-			// Verify the quote preview shows the link
-			await expect(poHomeChannel.content.quotePreview).toBeVisible();
-			await expect(poHomeChannel.content.quotePreview).toContainText(testLink);
-
-			// Send the quoted message
-			await poHomeChannel.content.sendMessage(quotedMessage);
+		test.afterAll(async () => {
+			await mockServerReset();
 		});
 
-		await test.step('Verify the quoted message appears correctly', async () => {
-			await expect(poHomeChannel.content.quotedLinkText(testLink)).toBeVisible();
-			await expect(poHomeChannel.content.lastUserMessage).toContainText(quotedMessage);
+		test('should show link preview when quoting a link with preview', async () => {
+			const testLink = url.toString();
+
+			await test.step('Send link message in channel', async () => {
+				await poHomeChannel.content.sendMessage(testLink);
+				await expect(poHomeChannel.content.lastUserMessage).toContainText(testLink);
+				await expect(poHomeChannel.content.linkPreview).toBeVisible();
+				await expect(poHomeChannel.content.lastUserMessage).toContainText(title);
+			});
+
+			await test.step('Quote the link message', async () => {
+				await poHomeChannel.content.lastUserMessage.hover();
+				await poHomeChannel.content.btnQuoteMessage.click();
+
+				// Verify the quote preview shows the link
+				await expect(poHomeChannel.content.quotePreview).toBeVisible();
+				await expect(poHomeChannel.content.quotePreview).toContainText(testLink);
+
+				// Send the quoted message
+				await poHomeChannel.content.sendMessage(quotedMessage);
+			});
+
+			await test.step('Verify the quoted message appears correctly', async () => {
+				await expect(poHomeChannel.content.quotedLinkText(testLink)).toBeVisible();
+				await expect(poHomeChannel.content.lastUserMessage).toContainText(quotedMessage);
+			});
 		});
 	});
 });
