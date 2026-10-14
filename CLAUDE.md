@@ -8,6 +8,10 @@ Comments state the **intent** of a function, never the mechanism, and never expl
 code that lives in another file — that belongs in `docs/features/`. Full rules:
 [docs/code-comments.md](docs/code-comments.md).
 
+Every database operation goes through a named model method in `packages/models`; code
+outside a model never passes a filter or update document to `find`, `findOne`, `updateOne`
+and the like. Full rules: [docs/database-access.md](docs/database-access.md).
+
 Each pull request carries one classification and one concern, and can be reverted alone.
 Fixes and enabling refactors are their own commits, ordered below the feature so
 they can be extracted, even in a POC. Full rules:
@@ -39,6 +43,7 @@ Read the doc that matches the task instead of scanning `docs/` wholesale.
 ### Backend
 
 - [docs/backend-folder-structure.md](docs/backend-folder-structure.md) — how `apps/meteor/` server code is organized and where new code goes
+- [docs/database-access.md](docs/database-access.md) — every query and write is a named model method; what callers may still pass, how to add a method
 - [docs/api-endpoint-migration.md](docs/api-endpoint-migration.md) — migrating `API.v1.addRoute()` to the validated `API.v1.get()`/`.post()`/… pattern
 - [docs/ajv-instances.md](docs/ajv-instances.md) — when to use `ajv` vs `ajvQuery` in `@rocket.chat/rest-typings`
 - [docs/apps-engine-migration.md](docs/apps-engine-migration.md) — phased extraction of apps execution into a microservice

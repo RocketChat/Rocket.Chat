@@ -109,6 +109,7 @@ Anti-patterns to avoid:
 - Adding server code under `app/` (the folder is frozen; only shared/client code remains there).
 - Barrel `index.ts` files that just re-export — import the concrete file. (Existing barrels like `settings/index.ts` and `authorization/index.ts` are legacy API surfaces, kept until their consumers are rewritten.)
 - Putting logic in a hook/method/endpoint file instead of `lib`/`services` — those files should be thin entry points.
+- Passing a filter or update document to a model's generic `find`/`findOne`/`updateOne`/… — add a named method to the model instead ([database access](database-access.md)).
 - "Utility" dumping: if it has a domain, it goes in the domain.
 
 ## Tests
