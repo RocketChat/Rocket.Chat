@@ -7,6 +7,7 @@ const dayFormat = ['h:mm A', 'H:mm'] as const;
 
 export const useFormatTime = () => {
 	const clockMode = useUserPreference<1 | 2>('clockMode');
+	const userTimezone = useUserPreference<string>('timezone');
 	const format = useSetting('Message_TimeFormat', 'LT');
 	const sameDay = clockMode !== undefined ? dayFormat[clockMode - 1] : format;
 
@@ -15,12 +16,12 @@ export const useFormatTime = () => {
 			switch (clockMode) {
 				case 1:
 				case 2:
-					return formatDate(time, sameDay);
+					return formatDate(time, sameDay, undefined, userTimezone);
 
 				default:
-					return formatDate(time, format);
+					return formatDate(time, format, undefined, userTimezone);
 			}
 		},
-		[clockMode, format, sameDay],
+		[clockMode, format, sameDay, userTimezone],
 	);
 };

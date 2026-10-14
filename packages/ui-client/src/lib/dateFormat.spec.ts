@@ -2,7 +2,7 @@
  * @jest-environment <rootDir>/tests/environments/timezone.ts
  * @jest-environment-options {"timezone": "America/Argentina/Buenos_Aires"}
  */
-import { formatDate, momentFormatToDateFns, toDate } from './dateFormat';
+import { formatDate, momentFormatToDateFns, toDate, toTimezoneDate } from './dateFormat';
 
 describe('momentFormatToDateFns', () => {
 	it('maps locale tokens', () => {
@@ -170,3 +170,44 @@ describe('toDate', () => {
 		expect(toDate(ms).getTime()).toBe(ms);
 	});
 });
+
+describe('toTimezoneDate and timezone formatting', () => {
+	// A message sent at 12:00 PM in British Columbia (UTC-7) is 19:00:00 UTC.
+	const utcInstant = new Date('2026-01-15T19:00:00.000Z');
+
+	it('converts a Date to British Columbia permanent DST (UTC-7) clock representation', () => {
+		const bcDate = toTimezoneDate(utcInstant, 'America/Dawson_Creek');
+		expect(bcDate.getHours()).toBe(12);
+		expect(bcDate.getMinutes()).toBe(0);
+	});
+
+	it('converts a Date to Alberta permanent DST (UTC-6) clock representation', () => {
+		const abInstant = new Date('2026-01-15T18:00:00.000Z');
+		const abDate = toTimezoneDate(abInstant, 'America/Regina');
+		expect(abDate.getHours()).toBe(12);
+		expect(abDate.getMinutes()).toBe(0);
+	});
+
+	it('converts a Date using Windows time zone identifiers', () => {
+		const bcDate = toTimezoneDate(utcInstant, 'Pacific Time (British Columbia)');
+		expect(bcDate.getHours()).toBe(12);
+		expect(bcDate.getMinutes()).toBe(0);
+
+		const abInstant = new Date('2026-01-15T18:00:00.000Z');
+		const abDate = toTimezoneDate(abInstant, 'Mountain Time (Alberta)');
+		expect(abDate.getHours()).toBe(12);
+		expect(abDate.getMinutes()).toBe(0);
+
+		const mbInstant = new Date('2026-01-15T17:00:00.000Z');
+		const mbDate = toTimezoneDate(mbInstant, 'Manitoba');
+		expect(mbDate.getHours()).toBe(12);
+		expect(mbDate.getMinutes()).toBe(0);
+	});
+
+	it('formats a date with explicit Canadian timezone in formatDate', () => {
+		expect(formatDate(utcInstant, 'h:mm A', undefined, 'Pacific Time (British Columbia)')).toBe('12:00 PM');
+		expect(formatDate(new Date('2026-01-15T18:00:00.000Z'), 'h:mm A', undefined, 'Mountain Time (Alberta)')).toBe('12:00 PM');
+		expect(formatDate(new Date('2026-01-15T17:00:00.000Z'), 'h:mm A', undefined, 'Manitoba')).toBe('12:00 PM');
+	});
+});
+

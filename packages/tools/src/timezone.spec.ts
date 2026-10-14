@@ -1,4 +1,4 @@
-import { canonicalizeTimezone, getTimezoneNames } from './timezone';
+import { canonicalizeTimezone, getTimezoneNames, getTimezoneOffsetHours } from './timezone';
 
 describe('canonicalizeTimezone', () => {
 	it('returns the same value for a canonical IANA zone', () => {
@@ -32,6 +32,22 @@ describe('canonicalizeTimezone', () => {
 		expect(canonicalizeTimezone('Pacific/Enderbury')).toBe('Pacific/Kanton');
 	});
 
+	it('resolves Windows and Canadian permanent time zones', () => {
+		expect(canonicalizeTimezone('Pacific Time (British Columbia)')).toBe('America/Dawson_Creek');
+		expect(canonicalizeTimezone('British Columbia Standard Time')).toBe('America/Dawson_Creek');
+		expect(canonicalizeTimezone('(UTC-07:00) Pacific Time (British Columbia)')).toBe('America/Dawson_Creek');
+
+		expect(canonicalizeTimezone('Mountain Time (Alberta)')).toBe('America/Regina');
+		expect(canonicalizeTimezone('Alberta Standard Time')).toBe('America/Regina');
+		expect(canonicalizeTimezone('(UTC-06:00) Mountain Time (Alberta)')).toBe('America/Regina');
+
+		expect(canonicalizeTimezone('Manitoba')).toBe('America/Atikokan');
+		expect(canonicalizeTimezone('Central Time (Manitoba)')).toBe('America/Atikokan');
+		expect(canonicalizeTimezone('Manitoba Standard Time')).toBe('America/Atikokan');
+
+		expect(canonicalizeTimezone('Yukon Standard Time')).toBe('America/Whitehorse');
+	});
+
 	it('preserves modern canonical names as-is', () => {
 		expect(canonicalizeTimezone('Asia/Kolkata')).toBe('Asia/Kolkata');
 		expect(canonicalizeTimezone('Europe/Kyiv')).toBe('Europe/Kyiv');
@@ -55,3 +71,19 @@ describe('getTimezoneNames', () => {
 		expect(names).not.toContain('Asia/Rangoon');
 	});
 });
+
+describe('getTimezoneOffsetHours', () => {
+	it('calculates the correct UTC offset in hours', () => {
+		expect(getTimezoneOffsetHours('America/Dawson_Creek')).toBe(-7);
+		expect(getTimezoneOffsetHours('America/Regina')).toBe(-6);
+		expect(getTimezoneOffsetHours('America/Atikokan')).toBe(-5);
+		expect(getTimezoneOffsetHours('UTC')).toBe(0);
+	});
+
+	it('resolves Windows Canadian time zones to accurate offsets', () => {
+		expect(getTimezoneOffsetHours('Pacific Time (British Columbia)')).toBe(-7);
+		expect(getTimezoneOffsetHours('Mountain Time (Alberta)')).toBe(-6);
+		expect(getTimezoneOffsetHours('Manitoba')).toBe(-5);
+	});
+});
+

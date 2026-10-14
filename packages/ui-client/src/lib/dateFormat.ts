@@ -1,3 +1,4 @@
+import { canonicalizeTimezone, guessTimezone } from '@rocket.chat/tools';
 import type { Locale } from 'date-fns';
 import { differenceInCalendarDays } from 'date-fns/differenceInCalendarDays';
 import { format } from 'date-fns/format';
@@ -220,8 +221,66 @@ const safeFormat = (d: Date, momentFormat: string, locale?: Locale): string => {
 	}
 };
 
-export const formatDate = (date: DateInput, formatStr: string, locale?: Locale): string => {
-	return safeFormat(toDate(date), formatStr, locale);
+/**
+ * Convert a Date to match the clock time of the specified timezone.
+ * When rendered with date-fns format tokens (which use local getters),
+ * it outputs the correct hour, minute, day, and year for that timezone.
+ */
+export const toTimezoneDate = (date: Date, timezone?: string): Date => {
+	if (!timezone || timezone === 'local') {
+		return date;
+	}
+
+	try {
+		const targetTz = canonicalizeTimezone(timezone);
+		const formatter = new Intl.DateTimeFormat('en-US', {
+			timeZone: targetTz,
+			year: 'numeric',
+			month: '2-digit',
+			day: '2-digit',
+			hour: '2-digit',
+			minute: '2-digit',
+			second: '2-digit',
+			hourCycle: 'h23',
+		});
+		const parts = Object.fromEntries(formatter.formatToParts(date).map((p) => [p.type, p.value]));
+		return new Date(
+			parseInt(parts.year, 10),
+			parseInt(parts.month, 10) - 1,
+			parseInt(parts.day, 10),
+			parseInt(parts.hour, 10),
+			parseInt(parts.minute, 10),
+			parseInt(parts.second, 10),
+			date.getMilliseconds(),
+		);
+	} catch {
+		return date;
+	}
+};
+
+const getLocalResolvedDate = (d: Date): Date => {
+	try {
+		const localTz = guessTimezone();
+		// If the resolved timezone is a Canadian permanent zone or Windows zone mapping,
+		// format using toTimezoneDate to avoid any browser-level 1-hour seasonal lag.
+		if (
+			localTz === 'America/Dawson_Creek' ||
+			localTz === 'America/Regina' ||
+			localTz === 'America/Atikokan' ||
+			localTz === 'America/Whitehorse'
+		) {
+			return toTimezoneDate(d, localTz);
+		}
+	} catch {
+		// ignore
+	}
+	return d;
+};
+
+export const formatDate = (date: DateInput, formatStr: string, locale?: Locale, timezone?: string): string => {
+	const d = toDate(date);
+	const targetDate = timezone ? toTimezoneDate(d, timezone) : getLocalResolvedDate(d);
+	return safeFormat(targetDate, formatStr, locale);
 };
 
 export const formatTimeAgo = (
@@ -235,9 +294,10 @@ export const formatTimeAgo = (
 		otherYearFormat: string;
 	},
 	locale?: Locale,
+	timezone?: string,
 ): string => {
-	const d = toDate(date);
-	const now = new Date();
+	const d = timezone ? toTimezoneDate(toDate(date), timezone) : getLocalResolvedDate(toDate(date));
+	const now = timezone ? toTimezoneDate(new Date(), timezone) : getLocalResolvedDate(new Date());
 	const diffDays = differenceInCalendarDays(now, d);
 
 	if (diffDays === 0) {

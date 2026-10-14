@@ -9,20 +9,21 @@ type UseFormatDateAndTimeParams = {
 
 export const useFormatDateAndTime = ({ withSeconds }: UseFormatDateAndTimeParams = {}) => {
 	const clockMode = useUserPreference('clockMode');
+	const userTimezone = useUserPreference<string>('timezone');
 	const format = useSetting('Message_TimeAndDateFormat', 'LLL');
 
 	return useCallback(
 		(time: string | Date | number = new Date()) => {
 			switch (clockMode) {
 				case 1:
-					return formatDate(time, withSeconds ? 'MMMM D, YYYY h:mm:ss A' : 'MMMM D, YYYY h:mm A');
+					return formatDate(time, withSeconds ? 'MMMM D, YYYY h:mm:ss A' : 'MMMM D, YYYY h:mm A', undefined, userTimezone);
 				case 2:
-					return formatDate(time, withSeconds ? 'MMMM D, YYYY H:mm:ss' : 'MMMM D, YYYY H:mm');
+					return formatDate(time, withSeconds ? 'MMMM D, YYYY H:mm:ss' : 'MMMM D, YYYY H:mm', undefined, userTimezone);
 
 				default:
-					return formatDate(time, withSeconds ? 'L LTS' : format);
+					return formatDate(time, withSeconds ? 'L LTS' : format, undefined, userTimezone);
 			}
 		},
-		[clockMode, format, withSeconds],
+		[clockMode, format, withSeconds, userTimezone],
 	);
 };
