@@ -57,6 +57,7 @@ export default {
 				'<rootDir>/server/lib/integrations/**/*.spec.ts',
 				'<rootDir>/server/lib/statusVisibility/*.spec.ts',
 				'<rootDir>/server/services/statusVisibility/*.spec.ts',
+				'<rootDir>/server/startup/*.spec.ts',
 			],
 			coveragePathIgnorePatterns: ['/node_modules/'],
 		},

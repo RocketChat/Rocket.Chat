@@ -29,6 +29,8 @@ declare module '*.info' {
 		mobile: string;
 	};
 
+	export const supportedNodeVersions: string;
+
 	import type { SignedSupportedVersions } from '@rocket.chat/server-cloud-communication';
 
 	export const supportedVersions: SignedSupportedVersions;
