@@ -5,11 +5,11 @@ import { Agent, request } from 'https';
 import type { Duplex } from 'stream';
 import type { TLSSocket } from 'tls';
 
+import { computeChannelBindingHash, createType1Message, createType3Message, decodeType2Message } from '@rocket.chat/ntlm';
+
 import type { IEwsTransport } from './IEwsTransport';
 import { ExchangeError } from '../errors';
 import { logger } from '../logger';
-import { computeChannelBindingHash } from '../ntlm/channelBinding';
-import { createType1Message, createType3Message, decodeType2Message } from '../ntlm/messages';
 import { scrubForLog } from '../scrub';
 
 /**
