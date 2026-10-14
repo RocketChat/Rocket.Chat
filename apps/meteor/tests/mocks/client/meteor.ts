@@ -1,22 +1,22 @@
-import { jest } from '@jest/globals';
+import { fn } from 'jest-mock';
 
 export const Meteor = {
-	loginWithSamlToken: jest.fn((_token, callback: () => void) => callback()),
+	loginWithSamlToken: fn((_token, callback: () => void) => callback()),
 	connection: {
-		_stream: { on: jest.fn() },
+		_stream: { on: fn() },
 	},
 	_localStorage: {
-		getItem: jest.fn(),
-		setItem: jest.fn(),
+		getItem: fn(),
+		setItem: fn(),
 	},
 	users: {},
 	userId: () => 'uid',
 	_SynchronousQueue: class _SynchronousQueue {
-		drain = jest.fn();
+		drain = fn();
 	},
-	_runFresh: jest.fn(),
-	_isPromise: jest.fn(() => false),
-	defer: jest.fn((fn: () => void) => queueMicrotask(fn)),
+	_runFresh: fn(),
+	_isPromise: fn(() => false),
+	defer: fn((fn: () => void) => queueMicrotask(fn)),
 };
 
 export const Mongo = {
@@ -25,33 +25,33 @@ export const Mongo = {
 			_docs: {},
 		};
 
-		find = jest.fn(() => ({
-			fetch: jest.fn(() => []),
-			observe: jest.fn(),
+		find = fn(() => ({
+			fetch: fn(() => []),
+			observe: fn(),
 		}));
 
-		findOne = jest.fn();
+		findOne = fn();
 
-		update = jest.fn();
+		update = fn();
 	},
 };
 
 export const Accounts = {
-	onLogin: jest.fn(),
-	onLogout: jest.fn(),
+	onLogin: fn(),
+	onLogout: fn(),
 };
 
-export const Tracker = { autorun: jest.fn() };
+export const Tracker = { autorun: fn() };
 
 export const ReactiveVar = class ReactiveVar {};
 
 export const EJSON = {
-	isBinary: jest.fn(() => false),
-	clone: jest.fn((obj) => obj),
-	equals: jest.fn((a, b) => JSON.stringify(a) === JSON.stringify(b)),
+	isBinary: fn(() => false),
+	clone: fn((obj) => obj),
+	equals: fn((a, b) => JSON.stringify(a) === JSON.stringify(b)),
 };
 
 export const DDPCommon = {
-	parseDDP: jest.fn((msg: string) => JSON.parse(msg)),
-	stringifyDDP: jest.fn((msg: unknown) => JSON.stringify(msg)),
+	parseDDP: fn((msg: string) => JSON.parse(msg)),
+	stringifyDDP: fn((msg: unknown) => JSON.stringify(msg)),
 };
