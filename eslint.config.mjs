@@ -498,7 +498,8 @@ export default [
 	{
 		files: [
 			'apps/meteor/client/views/room/ClassificationBanner/lib/schema.spec.ts',
-			'ee/packages/federation-matrix/tests/**',
+			'ee/packages/federation-matrix/tests/end-to-end/@(ban|dms|first-contact|messaging|permissions|presence|room|typing).spec.ts',
+			'ee/packages/federation-matrix/tests/helper/ddp-listener.ts',
 			'ee/packages/pdf-worker/.storybook/preview.tsx',
 			'packages/gazzodown/.storybook/preview.tsx',
 		],
