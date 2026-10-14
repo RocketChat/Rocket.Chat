@@ -7712,6 +7712,8 @@
   "VoIP_TeamCollab_SIP_Integration": "SIP integration",
   "VoIP_TeamCollab_SIP_Integration_Enabled": "SIP integration enabled",
   "VoIP_TeamCollab_SIP_Integration_For_Internal_Calls": "Route internal calls through the SIP integration",
+  "VoIP_TeamCollab_SIP_Integration_Normalize_Caller_Numbers": "Match callers by normalized phone number",
+  "VoIP_TeamCollab_SIP_Integration_Normalize_Caller_Numbers_Description": "Converts an incoming caller's number to E.164, the international standard format, before looking it up in contacts. This matches a caller even when the number is saved in a different format. Turn it off to match the number exactly as the phone system sends it.",
   "VoIP_TeamCollab_SIP_Server_Host": "SIP server host",
   "VoIP_TeamCollab_SIP_Server_Port": "SIP server port",
   "VoIP_TeamCollab_TURN_Servers": "TURN servers",

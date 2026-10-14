@@ -27,7 +27,7 @@ export interface IContactsModel extends IBaseModel<IContact> {
 	): FindPaginated<FindCursor<DocumentWithProjection<P, O>>>;
 	findOneByUserIdAndPhone(
 		uid: IUser['_id'],
-		e164: string,
+		phone: { e164: string } | { raw: string },
 		source?: IContact['source'],
 	): Promise<Pick<IContact, '_id' | 'displayName'> | null>;
 	countImportedByUserId(uid: IUser['_id']): Promise<number>;
