@@ -44,7 +44,6 @@ export function addSettings(): Promise<void> {
 						],
 						public: false,
 						invalidValue: 'static',
-						i18nDescription: 'VoIP_TeamCollab_TURN_Auth_Mode_Description',
 					});
 
 					const sharedSecretMode = { _id: 'VoIP_TeamCollab_TURN_Auth_Mode', value: 'shared-secret' };
@@ -53,7 +52,6 @@ export function addSettings(): Promise<void> {
 						type: 'string',
 						public: false,
 						invalidValue: '',
-						i18nDescription: 'VoIP_TeamCollab_TURN_Servers_Description',
 						enableQuery: sharedSecretMode,
 					});
 
@@ -61,7 +59,6 @@ export function addSettings(): Promise<void> {
 						type: 'password',
 						secret: true,
 						invalidValue: '',
-						i18nDescription: 'VoIP_TeamCollab_TURN_Shared_Secret_Description',
 						enableQuery: sharedSecretMode,
 					});
 
@@ -69,7 +66,6 @@ export function addSettings(): Promise<void> {
 						type: 'int',
 						public: false,
 						invalidValue: 86400,
-						i18nDescription: 'VoIP_TeamCollab_TURN_Credential_TTL_Description',
 						enableQuery: sharedSecretMode,
 					});
 				});

@@ -20,8 +20,8 @@ export function stripSensitiveDataFromSignal<T extends ClientMediaSignal | Serve
 		data.sdp = stripSensitiveDataFromSdp(data.sdp);
 	}
 
-	if ('iceServers' in data && data.iceServers) {
-		data.iceServers = data.iceServers.map(({ credential: _credential, ...server }) => server);
+	if ('iceServers' in data) {
+		data.iceServers = data.iceServers?.map(({ credential: _credential, ...server }) => server);
 	}
 
 	return data;
