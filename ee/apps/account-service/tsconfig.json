@@ -10,6 +10,7 @@
 		/* Additional Checks */
 		"noFallthroughCasesInSwitch": false,
 
+		"rootDir": "./src",
 		"outDir": "./dist/ee/apps/account-service/src",
 	},
 	"include": 
