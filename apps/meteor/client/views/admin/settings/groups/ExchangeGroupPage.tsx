@@ -5,7 +5,7 @@ import { memo, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import BaseGroupPage from './BaseGroupPage';
-import { getEndpointErrorMessage } from '../../../../lib/errorHandling';
+import { getErrorMessage } from '../../../../lib/errorHandling';
 import { useEditableSettings } from '../../EditableSettingsContext';
 
 export type ExchangeGroupPageProps = ISetting & {
@@ -28,7 +28,7 @@ function ExchangeGroupPage({ _id, i18nLabel, onClickBack, ...group }: ExchangeGr
 			const { message } = await testConnection();
 			dispatchToastMessage({ type: 'success', message: t(message) });
 		} catch (error) {
-			dispatchToastMessage({ type: 'error', message: await getEndpointErrorMessage(error, 'Exchange_Test_Connection_failed') });
+			dispatchToastMessage({ type: 'error', message: getErrorMessage(error, 'Exchange_Test_Connection_failed') });
 		}
 	};
 
