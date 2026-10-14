@@ -1,4 +1,4 @@
-import { Badge, Box, Icon, IconButton, ItemActions } from '@rocket.chat/fuselage';
+import { Badge, Box, Icon, IconButton, SidebarItemActions } from '@rocket.chat/fuselage';
 import { mockAppRoot } from '@rocket.chat/mock-providers';
 import type { Meta, StoryObj } from '@storybook/react';
 
@@ -72,10 +72,10 @@ export const WithoutAvatar: Story = {
 };
 
 const incomingCallActions = (
-	<ItemActions>
+	<SidebarItemActions>
 		<IconButton mini secondary success icon='phone' aria-label='Accept call' />
 		<IconButton mini secondary danger icon='phone-off' aria-label='Reject call' />
-	</ItemActions>
+	</SidebarItemActions>
 );
 
 export const IncomingCall: Story = {
