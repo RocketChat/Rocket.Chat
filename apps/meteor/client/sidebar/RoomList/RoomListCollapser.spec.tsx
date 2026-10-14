@@ -100,6 +100,20 @@ describe('RoomListCollapser', () => {
 		expect(screen.getByRole('button', { name: 'Channels' })).not.toContainElement(menu);
 	});
 
+	it('does not toggle the group from the category menu', async () => {
+		const onClick = jest.fn();
+		renderCollapser(makeGroup(false), onClick);
+
+		screen.getByRole('button', { name: 'Channels' }).focus();
+
+		const menu = await screen.findByRole('button', { name: 'Options' });
+		await userEvent.click(menu);
+		menu.focus();
+		await userEvent.keyboard('{Enter}');
+
+		expect(onClick).not.toHaveBeenCalled();
+	});
+
 	it('has no a11y violations', async () => {
 		const { container } = renderCollapser(makeGroup(true, 2));
 

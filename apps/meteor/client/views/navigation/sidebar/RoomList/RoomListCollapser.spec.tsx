@@ -28,9 +28,9 @@ const renderCollapser = ({ collapsed = false, unread = 0, onClick = jest.fn() } 
 	);
 
 describe('RoomListCollapser', () => {
-	it('names the region after the action the toggle performs', () => {
+	it('names the group after the action the toggle performs', () => {
 		const { rerender } = renderCollapser();
-		expect(screen.getByRole('region', { name: 'Collapse Channels' })).toBeInTheDocument();
+		expect(screen.getByRole('group', { name: 'Collapse Channels' })).toBeInTheDocument();
 
 		rerender(
 			<RoomListCollapser
@@ -41,7 +41,7 @@ describe('RoomListCollapser', () => {
 				unreadCount={{ userMentions: 0, groupMentions: 0, unread: 0, tunread: [], tunreadUser: [], tunreadGroup: [] }}
 			/>,
 		);
-		expect(screen.getByRole('region', { name: 'Expand Channels' })).toBeInTheDocument();
+		expect(screen.getByRole('group', { name: 'Expand Channels' })).toBeInTheDocument();
 	});
 
 	it('exposes the expanded state on the toggle button', () => {
@@ -63,14 +63,25 @@ describe('RoomListCollapser', () => {
 		expect(onClick).toHaveBeenCalledTimes(3);
 	});
 
-	it('shows the unread badge', () => {
-		renderCollapser({ unread: 2 });
+	it('shows the unread badge only while collapsed', () => {
+		const { rerender } = renderCollapser({ unread: 2 });
+		expect(screen.queryByRole('status')).not.toBeInTheDocument();
+
+		rerender(
+			<RoomListCollapser
+				group='channels'
+				groupTitle='Channels'
+				collapsedGroups={['channels']}
+				onClick={jest.fn()}
+				unreadCount={{ userMentions: 0, groupMentions: 0, unread: 2, tunread: [], tunreadUser: [], tunreadGroup: [] }}
+			/>,
+		);
 
 		expect(screen.getByRole('status', { name: '2 unread messages' })).toHaveTextContent('2');
 	});
 
 	it('has no accessibility violations', async () => {
-		const { container } = renderCollapser({ unread: 2 });
+		const { container } = renderCollapser({ collapsed: true, unread: 2 });
 
 		expect(await axe(container)).toHaveNoViolations();
 	});

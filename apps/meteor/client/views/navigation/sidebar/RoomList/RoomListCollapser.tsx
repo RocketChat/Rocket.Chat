@@ -1,6 +1,6 @@
 import type { ISubscription } from '@rocket.chat/core-typings';
-import { Badge, Box, Chevron, ItemGroupHeader, ItemGroupTitle } from '@rocket.chat/fuselage';
-import type { HTMLAttributes, MouseEventHandler } from 'react';
+import { Badge, SidebarCollapseGroup } from '@rocket.chat/fuselage';
+import type { HTMLAttributes, KeyboardEvent } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import type { AllGroupsKeys } from '../../contexts/RoomsNavigationContext';
@@ -10,9 +10,9 @@ export type RoomListCollapserProps = {
 	group: AllGroupsKeys;
 	groupTitle: string;
 	collapsedGroups: string[];
-	onClick: MouseEventHandler<HTMLButtonElement>;
+	onClick: () => void;
 	unreadCount: Pick<ISubscription, 'userMentions' | 'groupMentions' | 'unread' | 'tunread' | 'tunreadUser' | 'tunreadGroup'>;
-} & Omit<HTMLAttributes<HTMLElement>, 'onClick' | 'color' | 'is'>;
+} & Omit<HTMLAttributes<HTMLDivElement>, 'onClick' | 'onKeyDown'>;
 
 const RoomListCollapser = ({
 	groupTitle,
@@ -28,22 +28,31 @@ const RoomListCollapser = ({
 	const title = t(groupTitle);
 	const expanded = !collapsedGroups.includes(group);
 
+	const toggleOnEnterOrSpace = (event: KeyboardEvent<HTMLDivElement>) => {
+		if (event.repeat || !['Enter', 'Space'].includes(event.code)) {
+			return;
+		}
+
+		event.preventDefault();
+		onClick();
+	};
+
 	return (
-		<Box is='section' aria-label={expanded ? t('Collapse_group', { group: title }) : t('Expand_group', { group: title })} {...props}>
-			<ItemGroupHeader inset='sm'>
-				<ItemGroupTitle is='button' aria-expanded={expanded} onClick={onClick}>
-					<Chevron size='x16' right={!expanded} />
-					<Box is='span' withTruncatedText>
-						{title}
-					</Box>
-				</ItemGroupTitle>
-				{showUnread && (
+		<SidebarCollapseGroup
+			title={title}
+			expanded={expanded}
+			badge={
+				showUnread ? (
 					<Badge variant={unreadVariant} title={unreadTitle} aria-label={unreadTitle} role='status'>
 						{unreadCount.total}
 					</Badge>
-				)}
-			</ItemGroupHeader>
-		</Box>
+				) : undefined
+			}
+			aria-label={expanded ? t('Collapse_group', { group: title }) : t('Expand_group', { group: title })}
+			onClick={onClick}
+			onKeyDown={toggleOnEnterOrSpace}
+			{...props}
+		/>
 	);
 };
 
