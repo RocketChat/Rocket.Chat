@@ -1,7 +1,7 @@
 import { css } from '@rocket.chat/css-in-js';
 import { Box, Icon, IconButton, TextInput } from '@rocket.chat/fuselage';
 import { useDebouncedValue } from '@rocket.chat/fuselage-hooks';
-import { useUserId, useUserPreference } from '@rocket.chat/ui-contexts';
+import { usePermission, useUserId, useUserPreference } from '@rocket.chat/ui-contexts';
 import type { ChangeEvent, KeyboardEvent } from 'react';
 import { useId, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -11,10 +11,11 @@ import TeamsPanelCollapser from './TeamsPanelCollapser';
 import TeamsPanelEmpty from './TeamsPanelEmpty';
 import { useExpandedTeams } from './hooks/useExpandedTeams';
 import { useTeamSubscriptions, useTeamsList } from './hooks/useTeamsList';
-import { useTeamsPanel } from './hooks/useTeamsPanel';
 import { teamsPanelStore } from './teamsPanelStore';
 import { useMergedRefsV2 } from '../../hooks/useMergedRefsV2';
 import { useOpenedRoom } from '../../lib/RoomManager';
+import CreateTeamModal from '../../navbar/NavBarPagesGroup/actions/CreateTeamModal';
+import { useCreateRoomModal } from '../../navbar/NavBarPagesGroup/hooks/useCreateRoomModal';
 import RoomListRow from '../RoomList/RoomListRow';
 import RoomListRowWrapper from '../RoomList/RoomListRowWrapper';
 import SidebarPanelHeader from '../components/SidebarPanelHeader';
@@ -48,7 +49,8 @@ const TeamsPanel = () => {
 	const { t } = useTranslation();
 	const userId = useUserId();
 	const searchId = useId();
-	const { close } = useTeamsPanel();
+	const canCreateTeam = usePermission('create-team');
+	const createTeam = useCreateRoomModal(CreateTeamModal);
 
 	const [searchOpen, setSearchOpen] = useState(false);
 	const [filterText, setFilterText] = useState('');
@@ -126,7 +128,8 @@ const TeamsPanel = () => {
 						onClick={toggleSearch}
 					/>
 				)}
-				<IconButton icon='cross' small title={t('Close')} aria-label={t('Teams_panel_close')} onClick={close} />
+				{/* The Inbox item in the rail is the way back to all rooms, so the header has no close button. */}
+				{canCreateTeam && <IconButton icon='pencil-box' small title={t('Teams_New_Title')} onClick={() => createTeam()} />}
 			</SidebarPanelHeader>
 			{hasTeams && searchOpen && (
 				<Box paddingInline={16} paddingBlock={8}>
