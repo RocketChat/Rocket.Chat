@@ -1,12 +1,13 @@
 import { AI_LICENSE_MODULE, MAX_SEARCH_ANSWER_MESSAGES } from '@rocket.chat/ai-search';
-import { Box, Button, Callout, Icon } from '@rocket.chat/fuselage';
-import { Page, PageHeader, PageScrollableContentWithShadow, useFeaturePreview } from '@rocket.chat/ui-client';
+import { Box, Button, Callout } from '@rocket.chat/fuselage';
+import { Page, PageScrollableContentWithShadow, useFeaturePreview } from '@rocket.chat/ui-client';
 import { useSearchParameter, useSetting } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
 import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import SearchAnswerPanel from './SearchAnswerPanel';
+import SearchResultsHeader from './SearchResultsHeader';
 import SearchSourceResult from './SearchSourceResult';
 import { useAISearchAnswer } from './hooks/useAISearchAnswer';
 import { useAISearchResults } from './hooks/useAISearchResults';
@@ -21,6 +22,7 @@ const SearchPage = (): ReactElement => {
 	const canUseAISearch = Boolean(hasIntelligentSearchLicense && aiSearchFeatureEnabled);
 	const {
 		query: debouncedQuery,
+		filters,
 		intelligent,
 		meta,
 		hasMoreResults,
@@ -66,30 +68,9 @@ const SearchPage = (): ReactElement => {
 
 	return (
 		<Page background='tint'>
-			<PageHeader title={t('Intelligent_Search')} />
 			<PageScrollableContentWithShadow padding={24}>
 				<Box marginInline='auto' width='full' maxWidth='x800'>
-					<Box display='flex' flexDirection='column' marginBlockEnd={16} gap={8}>
-						{debouncedQuery ? (
-							<Box display='flex' alignItems='center' fontScale='h4' gap={8} minWidth={0}>
-								<Icon name='magnifier' size='x18' />
-								<Box display='flex' alignItems='baseline' gap={8} minWidth={0}>
-									<Box flexShrink={0}>{t('Results')}</Box>
-									<Box color='hint' withTruncatedText>
-										{debouncedQuery}
-									</Box>
-								</Box>
-							</Box>
-						) : (
-							<Box color='hint' fontScale='p2'>
-								{t('Intelligent_Search_page_empty_state')}
-							</Box>
-						)}
-						<Box display='flex' alignItems='center' color='hint' fontScale='p2' gap={8}>
-							<Icon name='stars' size='x14' />
-							{t('Intelligent_Search_scope_all_rooms')}
-						</Box>
-					</Box>
+					<SearchResultsHeader query={debouncedQuery} filters={filters} />
 					{hasIntelligentSearchLicense === false && (
 						<Callout type='info' icon='stars' title={t('Intelligent_Search_upsell_title')} marginBlockEnd={16}>
 							{t('Intelligent_Search_upsell_description')}
@@ -123,19 +104,9 @@ const SearchPage = (): ReactElement => {
 							error={answerResult.error}
 							disabled={!canGenerateAnswer}
 							emptyReason={answerEmptyReason}
-							onGenerate={() => void answerResult.refetch()}
+							onRetry={() => void answerResult.refetch()}
 						/>
 					)}
-					<Box display='flex' alignItems='center' justifyContent='space-between' marginBlockEnd={12}>
-						<Box is='h2' fontScale='h4'>
-							{t('Sources')} · {intelligent.length} {t('Messages')}
-						</Box>
-						{hasMoreResults && (
-							<Button small onClick={loadMore}>
-								{t('Show_more')}
-							</Button>
-						)}
-					</Box>
 					{!debouncedQuery && (
 						<Box display='flex' justifyContent='center' color='hint' padding={24}>
 							{t('Intelligent_Search_start_from_top_bar')}
@@ -151,11 +122,16 @@ const SearchPage = (): ReactElement => {
 							{t('No_results_found')}
 						</Box>
 					)}
-					<Box role='list'>
+					<Box role='list' aria-label={t('Sources')}>
 						{intelligent.map((item) => (
 							<SearchSourceResult key={item._id} item={item} />
 						))}
 					</Box>
+					{hasMoreResults && (
+						<Box marginBlockStart={20}>
+							<Button onClick={loadMore}>{t('Show_more_messages')}</Button>
+						</Box>
+					)}
 				</Box>
 			</PageScrollableContentWithShadow>
 		</Page>

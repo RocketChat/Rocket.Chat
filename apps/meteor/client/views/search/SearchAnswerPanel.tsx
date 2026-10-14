@@ -1,9 +1,9 @@
-import { Box, Button, Card, CardBody, CardControls, CardHeader, CardTitle, FramedIcon, Skeleton } from '@rocket.chat/fuselage';
+import { Box, Button, Card, CardBody, CardHeader, CardTitle, FramedIcon, Icon, Skeleton, CardControls } from '@rocket.chat/fuselage';
 import type { ReactElement } from 'react';
 import { useId } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import MarkdownText from '../../components/MarkdownText';
+import SearchAnswerContent from './SearchAnswerContent';
 
 export type SearchAnswerPanelProps = {
 	answer?: string;
@@ -12,7 +12,7 @@ export type SearchAnswerPanelProps = {
 	error?: unknown;
 	disabled: boolean;
 	emptyReason: string;
-	onGenerate: () => void;
+	onRetry: () => void;
 };
 
 const SearchAnswerPanel = ({
@@ -22,10 +22,11 @@ const SearchAnswerPanel = ({
 	error,
 	disabled,
 	emptyReason,
-	onGenerate,
+	onRetry,
 }: SearchAnswerPanelProps): ReactElement => {
 	const { t } = useTranslation();
 	const titleId = useId();
+	const info = provider ? t('Search_AI_answer_provider', { provider: provider.name, model: provider.model }) : t('Search_AI_overview_info');
 
 	let content: ReactElement;
 	if (isLoading) {
@@ -38,8 +39,21 @@ const SearchAnswerPanel = ({
 				<Skeleton width='72%' />
 			</Box>
 		);
+	} else if (error) {
+		content = (
+			<Box display='flex' flexDirection='column' alignItems='flex-start' gap={12}>
+				<Box color='danger' fontScale='p2'>
+					{t('Search_AI_answer_error')}
+				</Box>
+				<CardControls>
+					<Button small onClick={onRetry}>
+						{t('Try_again')}
+					</Button>
+				</CardControls>
+			</Box>
+		);
 	} else if (answer) {
-		content = <MarkdownText content={answer} parseEmoji fontScale='p2' />;
+		content = <SearchAnswerContent key={answer} answer={answer} />;
 	} else {
 		content = (
 			<Box color='hint' fontScale='p2'>
@@ -49,31 +63,16 @@ const SearchAnswerPanel = ({
 	}
 
 	return (
-		<Box marginBlockEnd={24}>
+		<Box marginBlockEnd={40}>
 			<Card role='region' aria-labelledby={titleId}>
 				<CardHeader>
-					<FramedIcon icon='stars' />
+					<FramedIcon icon='stars' size={20} />
 					<CardTitle id={titleId}>{t('Search_AI_answer')}</CardTitle>
+					<Box is='span' display='flex' role='img' title={info} aria-label={info}>
+						<Icon name='info-circled' size='x16' color='hint' />
+					</Box>
 				</CardHeader>
-				<CardBody flexDirection='column'>
-					{provider && (
-						<Box color='hint' fontScale='c1' marginBlockEnd={8}>
-							{t('Search_AI_answer_provider', { provider: provider.name, model: provider.model })}
-						</Box>
-					)}
-					{error && !isLoading ? (
-						<Box color='danger' fontScale='p2'>
-							{t('Search_AI_answer_error')}
-						</Box>
-					) : (
-						content
-					)}
-				</CardBody>
-				<CardControls>
-					<Button medium disabled={disabled || isLoading} onClick={onGenerate}>
-						{isLoading ? t('Loading') : t(answer ? 'Regenerate' : 'Generate')}
-					</Button>
-				</CardControls>
+				<CardBody flexDirection='column'>{content}</CardBody>
 			</Card>
 		</Box>
 	);
