@@ -117,6 +117,8 @@ describe('NotificationsModule', () => {
 			);
 
 		beforeEach(() => {
+			validateAction.mockReset();
+			validateAction.mockResolvedValue(true);
 			countByRoomIdAndUserId.mockReset();
 			countByRoomIdAndUserId.mockResolvedValue(1); // attacker is subscribed to the room
 			findByRoomIdAndNotUserId.mockReset();
@@ -149,16 +151,85 @@ describe('NotificationsModule', () => {
 			expect(emitSpy).not.toHaveBeenCalled();
 		});
 
-		['video-conference', 'userData'].forEach((event) => {
-			it(`should relay "${event}" event to other room members`, async () => {
-				const emitSpy = jest.spyOn(notifications.streamUser, 'emit');
+		it('should relay "userData" event to other room members', async () => {
+			const emitSpy = jest.spyOn(notifications.streamUser, 'emit');
 
-				const result = await writeAllowed(`room1/${event}`, { foo: 'bar' });
+			const result = await writeAllowed('room1/userData', { foo: 'bar' });
 
-				expect(result).toBe(false);
-				expect(findByRoomIdAndNotUserId).toHaveBeenCalled();
-				expect(emitSpy).toHaveBeenCalled();
+			expect(result).toBe(false);
+			expect(findByRoomIdAndNotUserId).toHaveBeenCalled();
+			expect(emitSpy).toHaveBeenCalled();
+		});
+
+		it('should accept "video-conference" and delegate authorization to VideoConf.validateAction before relaying', async () => {
+			const emitSpy = jest.spyOn(notifications.streamUser, 'emit');
+
+			const payload = {
+				action: 'call-start',
+				params: { callId: '123', uid: 'victim', rid: 'room1' },
+			};
+			const result = await writeAllowed('room1/video-conference', payload);
+
+			expect(result).toBe(false);
+			expect(validateAction).toHaveBeenCalledTimes(1);
+			expect(validateAction).toHaveBeenCalledWith('call-start', 'attacker', { callId: '123', uid: 'victim', rid: 'room1' });
+			expect(findByRoomIdAndNotUserId).toHaveBeenCalled();
+			expect(emitSpy).toHaveBeenCalledWith('victim/video-conference', payload);
+		});
+
+		it('should default rid to event roomId when params.rid is omitted in "video-conference"', async () => {
+			const emitSpy = jest.spyOn(notifications.streamUser, 'emit');
+
+			const payload = {
+				action: 'call-start',
+				params: { callId: '123', uid: 'victim' },
+			};
+			const result = await writeAllowed('room1/video-conference', payload);
+
+			expect(result).toBe(false);
+			expect(validateAction).toHaveBeenCalledWith('call-start', 'attacker', { callId: '123', uid: 'victim', rid: 'room1' });
+			expect(findByRoomIdAndNotUserId).toHaveBeenCalled();
+			expect(emitSpy).toHaveBeenCalled();
+		});
+
+		it('should deny and not relay "video-conference" if VideoConf.validateAction rejects', async () => {
+			validateAction.mockResolvedValue(false);
+			const emitSpy = jest.spyOn(notifications.streamUser, 'emit');
+
+			const result = await writeAllowed('room1/video-conference', {
+				action: 'call-start',
+				params: { callId: '123', uid: 'victim', rid: 'room1' },
 			});
+
+			expect(result).toBe(false);
+			expect(validateAction).toHaveBeenCalledTimes(1);
+			expect(findByRoomIdAndNotUserId).not.toHaveBeenCalled();
+			expect(emitSpy).not.toHaveBeenCalled();
+		});
+
+		it('should deny and not relay "video-conference" if payload is missing action or params', async () => {
+			const emitSpy = jest.spyOn(notifications.streamUser, 'emit');
+
+			const result = await writeAllowed('room1/video-conference', { foo: 'bar' });
+
+			expect(result).toBe(false);
+			expect(validateAction).not.toHaveBeenCalled();
+			expect(findByRoomIdAndNotUserId).not.toHaveBeenCalled();
+			expect(emitSpy).not.toHaveBeenCalled();
+		});
+
+		it('should deny and not relay "video-conference" if params.rid does not match roomId', async () => {
+			const emitSpy = jest.spyOn(notifications.streamUser, 'emit');
+
+			const result = await writeAllowed('room1/video-conference', {
+				action: 'call-start',
+				params: { callId: '123', uid: 'victim', rid: 'differentRoom' },
+			});
+
+			expect(result).toBe(false);
+			expect(validateAction).not.toHaveBeenCalled();
+			expect(findByRoomIdAndNotUserId).not.toHaveBeenCalled();
+			expect(emitSpy).not.toHaveBeenCalled();
 		});
 	});
 

@@ -304,6 +304,40 @@ export class NotificationsModule {
 				['video-conference', 'userData'].includes(e) &&
 				(await Subscriptions.countByRoomIdAndUserId(roomId, this.userId)) > 0
 			) {
+				if (e === 'video-conference') {
+					const [data] = args;
+					if (!data || typeof data !== 'object') {
+						return false;
+					}
+
+					const { action: videoAction, params } = data as {
+						action: string | undefined;
+						params: { callId?: string; uid?: string; rid?: string };
+					};
+
+					if (!videoAction || typeof videoAction !== 'string' || !params || typeof params !== 'object') {
+						return false;
+					}
+
+					const callId = 'callId' in params && typeof params.callId === 'string' ? params.callId : '';
+					const uid = 'uid' in params && typeof params.uid === 'string' ? params.uid : '';
+					const rid = 'rid' in params && typeof params.rid === 'string' ? params.rid : '';
+
+					if (rid && rid !== roomId) {
+						return false;
+					}
+
+					const isValid = await VideoConf.validateAction(videoAction, this.userId, {
+						callId,
+						uid,
+						rid: rid || roomId,
+					});
+
+					if (!isValid) {
+						return false;
+					}
+				}
+
 				const subscriptions: ISubscription[] = await Subscriptions.findByRoomIdAndNotUserId(roomId, this.userId, {
 					projection: { 'u._id': 1, '_id': 0 },
 				}).toArray();
