@@ -123,7 +123,7 @@ test.describe.serial('abac-room-attributes-edit', () => {
 		}
 	});
 
-	test('an administrator sees who loses access before saving, and only they are removed', async ({ page, api }) => {
+	test('an administrator sees who loses access, confirms the update, and only they are removed', async ({ page, api }) => {
 		const rid = await createRoom(api, `abac-edit-${suffix}`);
 
 		await addLevel(page, rid, 'high');
@@ -134,8 +134,12 @@ test.describe.serial('abac-room-attributes-edit', () => {
 		await expect(losesAccess).not.toContainText(Users.admin.data.username);
 
 		await page.getByRole('button', { name: 'Save', exact: true }).click();
-		await expect(page.getByText('Room attributes updated')).toBeVisible();
+		const confirmation = page.getByRole('dialog').filter({ hasText: 'Update ABAC room' });
+		await expect(confirmation).toContainText(`will be removed from abac-edit-${suffix}`);
 		await expect(page.getByRole('dialog').filter({ hasText: 'Are you sure?' })).toHaveCount(0);
+
+		await confirmation.getByRole('button', { name: 'Save', exact: true }).click();
+		await expect(page.getByText('Room attributes updated')).toBeVisible();
 
 		await expect.poll(() => memberUsernames(rid)).toEqual(expect.arrayContaining([Users.admin.data.username, Users.user1.data.username]));
 		expect(await memberUsernames(rid)).not.toContain(Users.user2.data.username);
