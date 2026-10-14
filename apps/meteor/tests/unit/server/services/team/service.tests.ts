@@ -151,7 +151,7 @@ describe('Team service', () => {
 		expect(addUserToRoom.firstCall.args[0]).to.equal('allowed-room');
 	});
 
-	it('should filter the default rooms without refreshing the member attributes', async () => {
+	it('should filter the default rooms without refreshing the member attributes or auditing the grant', async () => {
 		Rooms.findDefaultRoomsForTeam.returns({
 			toArray: () => Promise.resolve([{ _id: 'default-room' }]),
 		});
@@ -163,6 +163,7 @@ describe('Team service', () => {
 
 		expect(filterDefaultChannelsForUser.calledOnce).to.be.true;
 		expect(filterDefaultChannelsForUser.firstCall.args[2]?.refreshUserAttributes).to.not.be.true;
+		expect(filterDefaultChannelsForUser.firstCall.args[2]?.audit).to.equal(false);
 	});
 
 	describe('unsetTeamIdOfRooms', () => {
