@@ -14,19 +14,60 @@ jest.mock('../../../../server/settings', () => ({ settings: { get: (key: string)
 
 const UID = 'uid';
 
+const settingsOf = (over: Record<string, unknown> = {}) => {
+	const values: Record<string, unknown> = {
+		VoIP_TeamCollab_SIP_Integration_Normalize_Caller_Numbers: true,
+		Exchange_Contacts_Default_Region: 'AR',
+		...over,
+	};
+	settingsGet.mockImplementation((key: string) => values[key]);
+};
+
 describe('resolveCallerContact', () => {
 	beforeEach(() => {
 		jest.clearAllMocks();
 		findOneByUserIdAndPhone.mockResolvedValue(null);
 		hasModule.mockReturnValue(true);
-		settingsGet.mockReturnValue('AR');
+		settingsOf();
 	});
 
-	it('looks the caller up by the E.164 form of the number the PBX sent', async () => {
-		findOneByUserIdAndPhone.mockResolvedValue({ _id: 'c1', displayName: 'Ana' });
+	describe('matching callers by their normalized number', () => {
+		it('looks the caller up by the E.164 form of the number the PBX sent', async () => {
+			findOneByUserIdAndPhone.mockResolvedValue({ _id: 'c1', displayName: 'Ana' });
 
-		await expect(resolveCallerContact(UID, '011 4321-1000')).resolves.toEqual({ _id: 'c1', displayName: 'Ana' });
-		expect(findOneByUserIdAndPhone).toHaveBeenCalledWith(UID, '+541143211000', undefined);
+			await expect(resolveCallerContact(UID, '011 4321-1000')).resolves.toEqual({ _id: 'c1', displayName: 'Ana' });
+			expect(findOneByUserIdAndPhone).toHaveBeenCalledWith(UID, { e164: '+541143211000' }, undefined);
+		});
+
+		it('never asks for a number it could not key, which would search the collection for nothing', async () => {
+			await expect(resolveCallerContact(UID, 'anonymous')).resolves.toBeUndefined();
+			expect(findOneByUserIdAndPhone).not.toHaveBeenCalled();
+		});
+
+		it('still resolves an international number when no default region is configured', async () => {
+			settingsOf({ Exchange_Contacts_Default_Region: undefined });
+
+			await resolveCallerContact(UID, '+44 20 7946 0958');
+
+			expect(findOneByUserIdAndPhone).toHaveBeenCalledWith(UID, { e164: '+442079460958' }, undefined);
+		});
+	});
+
+	describe('matching callers by the number as it arrived', () => {
+		beforeEach(() => settingsOf({ VoIP_TeamCollab_SIP_Integration_Normalize_Caller_Numbers: false }));
+
+		it('looks the caller up by the number the PBX spelled, not a form of it', async () => {
+			findOneByUserIdAndPhone.mockResolvedValue({ _id: 'c1', displayName: 'Ana' });
+
+			await expect(resolveCallerContact(UID, '011 4321-1000')).resolves.toEqual({ _id: 'c1', displayName: 'Ana' });
+			expect(findOneByUserIdAndPhone).toHaveBeenCalledWith(UID, { raw: '011 4321-1000' }, undefined);
+		});
+
+		it('asks for a caller id no region could have keyed, since matching it no longer depends on one', async () => {
+			await resolveCallerContact(UID, 'anonymous');
+
+			expect(findOneByUserIdAndPhone).toHaveBeenCalledWith(UID, { raw: 'anonymous' }, undefined);
+		});
 	});
 
 	it('reaches Outlook contacts only while the module is licensed', async () => {
@@ -34,19 +75,6 @@ describe('resolveCallerContact', () => {
 
 		await resolveCallerContact(UID, '011 4321-1000');
 
-		expect(findOneByUserIdAndPhone).toHaveBeenCalledWith(UID, '+541143211000', 'local');
-	});
-
-	it('never asks for a number it could not key, which would search in the collection for nothing', async () => {
-		await expect(resolveCallerContact(UID, 'anonymous')).resolves.toBeUndefined();
-		expect(findOneByUserIdAndPhone).not.toHaveBeenCalled();
-	});
-
-	it('still resolves an international number when no default region is configured', async () => {
-		settingsGet.mockReturnValue(undefined);
-
-		await resolveCallerContact(UID, '+44 20 7946 0958');
-
-		expect(findOneByUserIdAndPhone).toHaveBeenCalledWith(UID, '+442079460958', undefined);
+		expect(findOneByUserIdAndPhone).toHaveBeenCalledWith(UID, { e164: '+541143211000' }, 'local');
 	});
 });
