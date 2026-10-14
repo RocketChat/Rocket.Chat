@@ -53,8 +53,8 @@ const db = {
 
 describe('Omnichannel canned responses', () => {
 	before(() => {
-		registerModel('ILivechatVisitorsModel', () => new LivechatVisitorsModel(db as unknown as any, 'visitor'));
-		registerModel('IUsersModel', () => new UsersModel(db as unknown as any, 'user'));
+		registerModel('ILivechatVisitorsModel', new LivechatVisitorsModel(db as unknown as any, 'visitor'));
+		registerModel('IUsersModel', new UsersModel(db as unknown as any, 'user'));
 	});
 
 	it('should do nothing if canned response is disabled', async () => {
@@ -133,7 +133,7 @@ describe('Omnichannel canned responses', () => {
 		const usersModel = new UsersModel(db as unknown as any, 'user');
 		const spy = sinon.spy(usersModel, 'findOneById');
 
-		registerModel('IUsersModel', () => usersModel);
+		registerModel('IUsersModel', usersModel);
 
 		const canned = new BeforeSaveCannedResponse();
 
@@ -153,7 +153,7 @@ describe('Omnichannel canned responses', () => {
 		const usersModel = new UsersModel(db as unknown as any, 'user');
 		const spy = sinon.spy(usersModel, 'findOneById');
 
-		registerModel('IUsersModel', () => usersModel);
+		registerModel('IUsersModel', usersModel);
 
 		const canned = new BeforeSaveCannedResponse();
 
