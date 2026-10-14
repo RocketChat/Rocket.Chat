@@ -122,6 +122,8 @@ export type ConferenceSession = {
 	 * provider's toolbar is gone, and this window's button is the only one left.
 	 */
 	providerOwnsChatToggle?: boolean;
+	/** The same for the people panel: whether the provider draws a control for it, so this window drops its own. */
+	providerOwnsMembersToggle?: boolean;
 };
 
 /**
