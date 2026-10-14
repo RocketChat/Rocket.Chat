@@ -6,6 +6,13 @@ import { useTranslation } from 'react-i18next';
 
 import { useCanManageAISettings } from '../hooks/useCanManageAISettings';
 
+const PIPELINE_SETTINGS = [
+	'AI_Intelligent_Search_Pipeline_Base_URL',
+	'AI_Intelligent_Search_Pipeline_ID',
+	'AI_Intelligent_Search_API_Key',
+	'AI_Intelligent_Search_API_Key_Secret',
+];
+
 type ErrorMessage = {
 	type: 'info' | 'warning' | 'danger';
 	title: TranslationKey;
@@ -87,7 +94,7 @@ type AISearchErrorCalloutProps = Omit<CalloutProps, 'type' | 'title' | 'actions'
 const AISearchErrorCallout = ({ error, notConfigured = false, onRetry, ...props }: AISearchErrorCalloutProps): ReactElement => {
 	const { t } = useTranslation();
 	const router = useRouter();
-	const canManageAISettings = useCanManageAISettings();
+	const canManageAISettings = useCanManageAISettings(PIPELINE_SETTINGS);
 
 	const getMessage = (): ErrorMessage => {
 		if (notConfigured) {

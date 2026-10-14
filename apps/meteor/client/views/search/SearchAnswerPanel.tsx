@@ -7,6 +7,8 @@ import { useTranslation } from 'react-i18next';
 import MarkdownText from '../../components/MarkdownText';
 import { useCanManageAISettings } from '../../hooks/useCanManageAISettings';
 
+const LLM_PROVIDER_SETTINGS = ['AI_LLM_OpenAI_Base_URL', 'AI_LLM_OpenAI_API_Key', 'AI_LLM_OpenAI_Model'];
+
 const adminAnswerErrors: Record<string, TranslationKey> = {
 	'error-ai-provider-request-failed': 'Search_AI_answer_error_provider_request_failed',
 	'error-ai-provider-empty-response': 'Search_AI_answer_error_provider_empty_response',
@@ -44,7 +46,7 @@ const SearchAnswerPanel = ({
 }: SearchAnswerPanelProps): ReactElement => {
 	const { t } = useTranslation();
 	const titleId = useId();
-	const canManageAISettings = useCanManageAISettings();
+	const canManageAISettings = useCanManageAISettings(LLM_PROVIDER_SETTINGS);
 
 	let content: ReactElement;
 	if (isLoading) {

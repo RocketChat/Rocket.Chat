@@ -54,6 +54,19 @@ describe('AISearchErrorCallout', () => {
 		expect(navigate).toHaveBeenCalledWith({ name: 'admin-ai-center', params: { section: 'search' } });
 	});
 
+	it('needs a pipeline setting permission on top of manage-selected-settings to show admin details', () => {
+		renderCallout({ error: { errorType: 'error-ai-search-credentials-rejected' } }, ['manage-selected-settings']);
+		expect(screen.getByText('AI search is unavailable')).toBeInTheDocument();
+	});
+
+	it('shows admin details to users allowed to change a pipeline setting', () => {
+		renderCallout({ error: { errorType: 'error-ai-search-credentials-rejected' } }, [
+			'manage-selected-settings',
+			'change-setting-AI_Intelligent_Search_API_Key',
+		]);
+		expect(screen.getByText('Invalid search pipeline credentials')).toBeInTheDocument();
+	});
+
 	it('offers admins a retry when the pipeline timed out', () => {
 		renderCallout({ error: { errorType: 'error-ai-search-timeout' }, onRetry: jest.fn() }, ['view-privileged-setting']);
 
