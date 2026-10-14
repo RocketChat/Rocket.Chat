@@ -29,13 +29,15 @@ export type AISearchItems = {
 	filterSuggestions: SearchFilterSuggestion[];
 	searchText: string;
 	draft?: DraftSearchFilter;
+	error?: unknown;
+	notConfigured: boolean;
 };
 
 export const useAISearchItems = (
 	filterText: string,
 	appliedFilters: AppliedFilter[] = [],
 	aiSearchActive = false,
-): { data: AISearchItems; isFetching: boolean } => {
+): { data: AISearchItems; isFetching: boolean; refetch: () => void } => {
 	const { t } = useTranslation();
 	const enabled = aiSearchActive;
 
@@ -62,16 +64,18 @@ export const useAISearchItems = (
 	const aiSearch = useEndpoint('GET', '/v1/ai.search');
 	const shouldSearch = Boolean(enabled && debouncedSearchText.trim());
 	const searchParams = useMemo(() => toAISearchParams({ text: debouncedSearchText, filters }), [debouncedSearchText, filters]);
-	const { data: intelligent = [], isFetching: isIntelligentFetching } = useQuery({
+	const {
+		data: searchResult,
+		error: searchError,
+		isFetching: isIntelligentFetching,
+		refetch,
+	} = useQuery({
 		queryKey: ['sidebar/search/intelligent', searchParams],
 		enabled: shouldSearch,
-		queryFn: async () => {
-			const result = await aiSearch({ ...searchParams, intelligentCount: AI_SEARCH_PAGE_SIZE });
-
-			return result.intelligent;
-		},
+		queryFn: () => aiSearch({ ...searchParams, intelligentCount: AI_SEARCH_PAGE_SIZE }),
 		staleTime: 60_000,
 	});
+	const isCurrentSearch = shouldSearch && searchText === debouncedSearchText;
 
 	const localSuggestions = useMemo(
 		() => (enabled ? buildFilterSuggestions(draft, roomFilterRooms, t) : []),
@@ -94,11 +98,14 @@ export const useAISearchItems = (
 
 	return {
 		data: {
-			intelligent: shouldSearch && searchText === debouncedSearchText ? intelligent : [],
+			intelligent: (isCurrentSearch && searchResult?.intelligent) || [],
 			filterSuggestions,
 			searchText,
 			draft,
+			error: isCurrentSearch ? searchError : undefined,
+			notConfigured: Boolean(isCurrentSearch && searchResult && !searchResult.meta.intelligentSearchConfigured),
 		},
 		isFetching: isIntelligentFetching || isUsersFetching,
+		refetch: () => void refetch(),
 	};
 };

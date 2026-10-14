@@ -362,4 +362,30 @@ describe('useAISearchItems', () => {
 			expect(result.current.data.filterSuggestions.map(({ filterKey }) => filterKey)).toEqual(['before', 'before', 'before']);
 		});
 	});
+
+	describe('search failures', () => {
+		it('exposes the ai.search error for the current search instead of an empty result', async () => {
+			const { wrapper, aiSearchHandler } = setup();
+			aiSearchHandler.mockImplementation(() => {
+				throw Object.assign(new Error('error-ai-search-timeout'), { errorType: 'error-ai-search-timeout' });
+			});
+			const { result } = renderHook(() => useAISearchItems('deploy', [], true), { wrapper });
+
+			await waitFor(() => expect(result.current.data.error).toMatchObject({ errorType: 'error-ai-search-timeout' }));
+			expect(result.current.data.intelligent).toEqual([]);
+			expect(result.current.data.notConfigured).toBe(false);
+		});
+
+		it('flags a workspace whose pipeline is not configured', async () => {
+			const { wrapper, aiSearchHandler } = setup();
+			aiSearchHandler.mockImplementation(() => ({
+				intelligent: [],
+				meta: { intelligentSearchEnabled: true, intelligentSearchConfigured: false, answerGenerationConfigured: false },
+			}));
+			const { result } = renderHook(() => useAISearchItems('deploy', [], true), { wrapper });
+
+			await waitFor(() => expect(result.current.data.notConfigured).toBe(true));
+			expect(result.current.data.error).toBeFalsy();
+		});
+	});
 });
