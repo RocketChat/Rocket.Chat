@@ -28,12 +28,12 @@ describe('GenericUpsellModal', () => {
 	const testCases = Object.values(composeStories(stories)).map((Story) => [Story.storyName || 'Story', Story]);
 
 	test.each(testCases)(`renders %s without crashing`, async (_storyname, Story) => {
-		const { baseElement } = render(<Story />);
+		const { baseElement } = render(<Story />, { wrapper: appRoot });
 		expect(baseElement).toMatchSnapshot();
 	});
 
 	test.each(testCases)('%s should have no a11y violations', async (_storyname, Story) => {
-		const { container } = render(<Story />);
+		const { container } = render(<Story />, { wrapper: appRoot });
 
 		const results = await axe(container);
 		expect(results).toHaveNoViolations();
