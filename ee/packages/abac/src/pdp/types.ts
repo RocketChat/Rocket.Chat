@@ -80,6 +80,8 @@ export interface IPolicyDecisionPoint {
 	): Promise<NonCompliantPair[]>;
 
 	reevaluateUsers(users: ReevaluationUser[]): Promise<void | NonCompliantPair[]>;
+
+	refreshSubjectAttributes(userIds: string[]): Promise<void>;
 }
 
 export interface IVirtruPDPConfig {

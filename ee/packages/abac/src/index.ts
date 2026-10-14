@@ -833,15 +833,14 @@ export class AbacService extends ServiceClass implements IAbacService {
 			return userIds;
 		}
 
-		const { pdp } = this;
-		if (!pdp || !(await pdp.isAvailable())) {
+		if (!this.pdp || !(await this.pdp.isAvailable())) {
 			logger.warn({ msg: 'PDP unavailable, no user admitted to the ABAC room', rid: room._id });
 			return [];
 		}
 
 		try {
 			const subjects = await Users.find({ _id: { $in: userIds } }, { projection: { _id: 1, username: 1, emails: 1 } }).toArray();
-			const { compliant } = await pdp.evaluateSubjectsAgainstAttributes(subjects, attributes, room);
+			const { compliant } = await this.pdp.evaluateSubjectsAgainstAttributes(subjects, attributes, room);
 			const allowed = new Set(compliant);
 
 			void Audit.actionsPerformed(
@@ -862,19 +861,26 @@ export class AbacService extends ServiceClass implements IAbacService {
 		}
 	}
 
-	async filterRoomsAllowedForUser(userId: string, rooms: Pick<IRoom, '_id' | 'name' | 'abacAttributes'>[]): Promise<string[]> {
-		const attributed = rooms.filter((room) => room.abacAttributes?.length);
-		if (!attributed.length) {
-			return rooms.map(({ _id }) => _id);
+	async filterRoomsAllowedForUser(
+		userId: string,
+		rooms: Pick<IRoom, '_id' | 'name' | 'abacAttributes'>[],
+		options?: { refreshAttributes?: boolean },
+	): Promise<string[]> {
+		if (!rooms.length) {
+			return [];
 		}
 
-		const allowed = new Set(rooms.filter((room) => !room.abacAttributes?.length).map(({ _id }) => _id));
-		const keepAllowed = () => rooms.filter(({ _id }) => allowed.has(_id)).map(({ _id }) => _id);
-
-		const { pdp } = this;
-		if (!pdp || !(await pdp.isAvailable())) {
+		if (!this.pdp || !(await this.pdp.isAvailable())) {
 			logger.warn({ msg: 'PDP unavailable, no ABAC room admits the user', uid: userId });
-			return keepAllowed();
+			return [];
+		}
+
+		if (options?.refreshAttributes) {
+			try {
+				await this.pdp.refreshSubjectAttributes([userId]);
+			} catch (err) {
+				logger.error({ msg: 'Failed to refresh the user attributes before evaluating the ABAC rooms', uid: userId, err });
+			}
 		}
 
 		try {
@@ -882,14 +888,12 @@ export class AbacService extends ServiceClass implements IAbacService {
 				projection: { _id: 1, username: 1, emails: 1 },
 			});
 			if (!subject) {
-				return keepAllowed();
+				return [];
 			}
 
-			const { compliant } = await pdp.evaluateSubjectAgainstRooms(subject, attributed);
+			const { compliant } = await this.pdp.evaluateSubjectAgainstRooms(subject, rooms);
 			const permitted = new Set(compliant);
-
-			const granted = attributed.filter(({ _id }) => permitted.has(_id));
-			granted.forEach(({ _id }) => allowed.add(_id));
+			const granted = rooms.filter(({ _id }) => permitted.has(_id));
 
 			void Audit.actionsPerformed(
 				granted.map((room) => ({
@@ -899,11 +903,12 @@ export class AbacService extends ServiceClass implements IAbacService {
 					actionPerformed: 'granted-object-access',
 				})),
 			);
+
+			return granted.map(({ _id }) => _id);
 		} catch (err) {
 			logger.error({ msg: 'Failed to evaluate the ABAC rooms for the user', uid: userId, err });
+			return [];
 		}
-
-		return keepAllowed();
 	}
 
 	private pdpType: AbacPdpType = 'local';
