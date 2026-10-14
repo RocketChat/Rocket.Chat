@@ -1314,6 +1314,7 @@ describe('AbacService (unit)', () => {
 				isAvailable: jest.fn().mockResolvedValue(true),
 				evaluateSubjectsAgainstAttributes: jest.fn().mockResolvedValue({ compliant: [], nonCompliant: [], inconclusive: [] }),
 				evaluateSubjectAgainstRooms: jest.fn().mockResolvedValue({ compliant: [], nonCompliant: [], inconclusive: [] }),
+				refreshSubjectAttributes: jest.fn().mockResolvedValue(undefined),
 				...over,
 			} as any;
 			(service as any).pdp = pdp;
@@ -1415,21 +1416,49 @@ describe('AbacService (unit)', () => {
 				mockUsersFindOneById.mockResolvedValue(subject);
 			});
 
-			it('admits every room without attributes, without asking the PDP', async () => {
+			it('admits nothing without asking the PDP when there are no rooms', async () => {
 				const pdp = usePdp();
 
-				await expect(service.filterRoomsAllowedForUser('u1', [plainRoom])).resolves.toEqual(['r0']);
+				await expect(service.filterRoomsAllowedForUser('u1', [])).resolves.toEqual([]);
 				expect(pdp.isAvailable).not.toHaveBeenCalled();
 			});
 
-			it('evaluates only the attributed rooms, in one PDP call, and keeps the compliant ones in input order', async () => {
+			it('evaluates the rooms in one PDP call and keeps the compliant ones in input order', async () => {
 				const pdp = usePdp({
-					evaluateSubjectAgainstRooms: jest.fn().mockResolvedValue({ compliant: ['r2'], nonCompliant: ['r1'], inconclusive: [] }),
+					evaluateSubjectAgainstRooms: jest.fn().mockResolvedValue({ compliant: ['r2', 'r1'], nonCompliant: [], inconclusive: [] }),
 				});
 
-				await expect(service.filterRoomsAllowedForUser('u1', [room, plainRoom, otherRoom])).resolves.toEqual(['r0', 'r2']);
+				await expect(service.filterRoomsAllowedForUser('u1', [room, otherRoom])).resolves.toEqual(['r1', 'r2']);
 				expect(pdp.evaluateSubjectAgainstRooms).toHaveBeenCalledTimes(1);
 				expect(pdp.evaluateSubjectAgainstRooms).toHaveBeenCalledWith(subject, [room, otherRoom]);
+			});
+
+			it('refreshes the user attributes through the PDP before evaluating when asked', async () => {
+				const pdp = usePdp();
+
+				await service.filterRoomsAllowedForUser('u1', [room], { refreshAttributes: true });
+
+				expect(pdp.refreshSubjectAttributes).toHaveBeenCalledWith(['u1']);
+				expect(pdp.refreshSubjectAttributes.mock.invocationCallOrder[0]).toBeLessThan(
+					pdp.evaluateSubjectAgainstRooms.mock.invocationCallOrder[0],
+				);
+			});
+
+			it('does not refresh the user attributes unless asked', async () => {
+				const pdp = usePdp();
+
+				await service.filterRoomsAllowedForUser('u1', [room]);
+
+				expect(pdp.refreshSubjectAttributes).not.toHaveBeenCalled();
+			});
+
+			it('keeps evaluating when the attribute refresh fails', async () => {
+				usePdp({
+					refreshSubjectAttributes: jest.fn().mockRejectedValue(new Error('ldap down')),
+					evaluateSubjectAgainstRooms: jest.fn().mockResolvedValue({ compliant: ['r1'], nonCompliant: [], inconclusive: [] }),
+				});
+
+				await expect(service.filterRoomsAllowedForUser('u1', [room], { refreshAttributes: true })).resolves.toEqual(['r1']);
 			});
 
 			it('refuses the inconclusive rooms', async () => {
@@ -1440,42 +1469,43 @@ describe('AbacService (unit)', () => {
 				await expect(service.filterRoomsAllowedForUser('u1', [room, otherRoom])).resolves.toEqual(['r1']);
 			});
 
-			it('writes one audit entry per admitted attributed room', async () => {
+			it('writes one audit entry per admitted room', async () => {
 				usePdp({
 					evaluateSubjectAgainstRooms: jest.fn().mockResolvedValue({ compliant: ['r1', 'r2'], nonCompliant: [], inconclusive: [] }),
 				});
 
-				await service.filterRoomsAllowedForUser('u1', [room, plainRoom, otherRoom]);
+				await service.filterRoomsAllowedForUser('u1', [room, otherRoom]);
 
 				expect(mockCreateAuditServerEvents).toHaveBeenCalledTimes(1);
 				expect(auditedPairs().sort()).toEqual(['alice@r1', 'alice@r2']);
 			});
 
-			it('keeps only the rooms without attributes when there is no PDP', async () => {
+			it('admits nothing when there is no PDP', async () => {
 				(service as any).pdp = null;
 
-				await expect(service.filterRoomsAllowedForUser('u1', [room, plainRoom])).resolves.toEqual(['r0']);
+				await expect(service.filterRoomsAllowedForUser('u1', [room])).resolves.toEqual([]);
 			});
 
-			it('keeps only the rooms without attributes when the PDP is unavailable', async () => {
+			it('admits nothing and refreshes nothing when the PDP is unavailable', async () => {
 				const pdp = usePdp({ isAvailable: jest.fn().mockResolvedValue(false) });
 
-				await expect(service.filterRoomsAllowedForUser('u1', [room, plainRoom])).resolves.toEqual(['r0']);
+				await expect(service.filterRoomsAllowedForUser('u1', [room], { refreshAttributes: true })).resolves.toEqual([]);
+				expect(pdp.refreshSubjectAttributes).not.toHaveBeenCalled();
 				expect(pdp.evaluateSubjectAgainstRooms).not.toHaveBeenCalled();
 			});
 
-			it('keeps only the rooms without attributes when the user does not exist', async () => {
+			it('admits nothing when the user does not exist', async () => {
 				mockUsersFindOneById.mockResolvedValue(null);
 				const pdp = usePdp();
 
-				await expect(service.filterRoomsAllowedForUser('u1', [room, plainRoom])).resolves.toEqual(['r0']);
+				await expect(service.filterRoomsAllowedForUser('u1', [room])).resolves.toEqual([]);
 				expect(pdp.evaluateSubjectAgainstRooms).not.toHaveBeenCalled();
 			});
 
-			it('keeps only the rooms without attributes and writes no audit when the decision call fails', async () => {
+			it('admits nothing and writes no audit when the decision call fails', async () => {
 				usePdp({ evaluateSubjectAgainstRooms: jest.fn().mockRejectedValue(new Error('virtru down')) });
 
-				await expect(service.filterRoomsAllowedForUser('u1', [room, plainRoom])).resolves.toEqual(['r0']);
+				await expect(service.filterRoomsAllowedForUser('u1', [room])).resolves.toEqual([]);
 				expect(mockCreateAuditServerEvents).not.toHaveBeenCalled();
 			});
 		});
