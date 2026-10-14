@@ -94,7 +94,6 @@ const SidebarItemTemplateWithData = ({
 			room={room}
 			viewMode={viewMode}
 			showAvatar={showAvatar}
-			inset='sm'
 			data-unread={highlighted}
 			highlighted={highlighted}
 			selected={selected}

@@ -1,22 +1,21 @@
 import {
 	IconButton,
-	Item,
-	ItemActions,
-	ItemContent,
-	ItemDescription,
-	ItemIcon,
-	ItemLink,
-	ItemMedia,
-	ItemMeta,
-	ItemRow,
-	ItemTitle,
+	SidebarItem,
+	SidebarItemAvatarWrapper,
+	SidebarItemCol,
+	SidebarItemContent,
+	SidebarItemIcon,
+	SidebarItemLink,
+	SidebarItemMenu,
+	SidebarItemRow,
+	SidebarItemTimestamp,
+	SidebarItemTitle,
 } from '@rocket.chat/fuselage';
-import type { ItemInset } from '@rocket.chat/fuselage';
 import { ITEM_MEDIA_SIZE, RoomAvatar } from '@rocket.chat/ui-avatar';
 import type { ItemMediaSizeName } from '@rocket.chat/ui-avatar';
 import { useDeferredMenuMount, useShortTimeAgo } from '@rocket.chat/ui-client';
 import type { SubscriptionWithRoom } from '@rocket.chat/ui-contexts';
-import type { AriaAttributes, HTMLAttributes, MouseEventHandler, ReactNode } from 'react';
+import type { AriaAttributes, HTMLAttributes, MouseEventHandler, ReactElement, ReactNode } from 'react';
 import { memo } from 'react';
 
 export type RoomListItemViewMode = ItemMediaSizeName;
@@ -24,7 +23,7 @@ export type RoomListItemViewMode = ItemMediaSizeName;
 type RoomListItemIconProps =
 	| {
 			/** Room type icon or user status, shown before the title. */
-			icon: ReactNode;
+			icon: ReactElement;
 			/** What the icon conveys, such as "Private channel" or "Away". */
 			iconLabel: string;
 	  }
@@ -37,7 +36,6 @@ export type RoomListItemProps = {
 	'viewMode'?: RoomListItemViewMode;
 	/** Shows the room avatar, as the `sidebarDisplayAvatar` preference allows. */
 	'showAvatar'?: boolean;
-	'inset'?: ItemInset;
 	/** Navigates to the room. Without it, the title renders as a button that runs `onClick`. */
 	'href'?: string;
 	'onClick'?: MouseEventHandler<HTMLElement>;
@@ -59,7 +57,6 @@ const RoomListItem = ({
 	title,
 	viewMode = 'condensed',
 	showAvatar = true,
-	inset,
 	href,
 	onClick,
 	subtitle,
@@ -81,63 +78,63 @@ const RoomListItem = ({
 
 	const isExtended = viewMode === 'extended';
 
-	const itemIcon = icon && <ItemIcon label={iconLabel}>{icon}</ItemIcon>;
+	const itemIcon = icon && <SidebarItemIcon icon={icon} label={iconLabel} />;
 
 	const itemTitle = (
-		<ItemTitle>
+		<SidebarItemTitle>
 			{href !== undefined ? (
-				<ItemLink href={href} onClick={onClick} aria-label={ariaLabel} aria-current={ariaCurrent}>
+				<SidebarItemLink href={href} onClick={onClick} aria-label={ariaLabel} aria-current={ariaCurrent}>
 					{title}
-				</ItemLink>
+				</SidebarItemLink>
 			) : (
-				<ItemLink is='button' onClick={onClick} aria-label={ariaLabel} aria-current={ariaCurrent}>
+				<SidebarItemLink is='button' onClick={onClick} aria-label={ariaLabel} aria-current={ariaCurrent}>
 					{title}
-				</ItemLink>
+				</SidebarItemLink>
 			)}
-		</ItemTitle>
+		</SidebarItemTitle>
 	);
 
 	const itemMenu = menu && (
-		<ItemActions reveal='hover'>
+		<SidebarItemMenu>
 			{menuVisibility ? menu : <IconButton tabIndex={-1} aria-hidden mini icon='kebab' onPointerDown={mountNow} />}
-		</ItemActions>
+		</SidebarItemMenu>
 	);
 
 	return (
-		<Item {...props} inset={inset} selected={selected} highlighted={highlighted} onFocus={mountNow} onPointerEnter={requestMount}>
+		<SidebarItem {...props} is='div' selected={selected} highlighted={highlighted} onFocus={mountNow} onPointerEnter={requestMount}>
 			{showAvatar && (
-				<ItemMedia>
+				<SidebarItemAvatarWrapper>
 					<RoomAvatar size={ITEM_MEDIA_SIZE[viewMode]} room={{ ...room, _id: room.rid || room._id, type: room.t }} />
-				</ItemMedia>
+				</SidebarItemAvatarWrapper>
 			)}
 			{isExtended ? (
-				<ItemContent>
-					<ItemRow>
+				<SidebarItemCol>
+					<SidebarItemRow>
 						{itemIcon}
 						{itemTitle}
-						{time && <ItemMeta>{formatDate(time)}</ItemMeta>}
-					</ItemRow>
-					<ItemRow>
-						<ItemDescription>{subtitle}</ItemDescription>
+						{time && <SidebarItemTimestamp>{formatDate(time)}</SidebarItemTimestamp>}
+					</SidebarItemRow>
+					<SidebarItemRow>
+						<SidebarItemContent>{subtitle}</SidebarItemContent>
 						{titleIcon}
 						{badges}
 						{itemMenu}
 						{actions}
-					</ItemRow>
-				</ItemContent>
+					</SidebarItemRow>
+				</SidebarItemCol>
 			) : (
-				<ItemContent>
-					<ItemRow>
+				<SidebarItemCol>
+					<SidebarItemRow>
 						{itemIcon}
 						{itemTitle}
 						{titleIcon}
 						{badges}
 						{itemMenu}
 						{actions}
-					</ItemRow>
-				</ItemContent>
+					</SidebarItemRow>
+				</SidebarItemCol>
 			)}
-		</Item>
+		</SidebarItem>
 	);
 };
 
