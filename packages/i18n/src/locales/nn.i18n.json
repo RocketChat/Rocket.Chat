@@ -4192,7 +4192,7 @@
   "Outlook_authentication": "Outlook-autentisering",
   "Outlook_authentication_description": "Deaktiver denne for å slette eventuelle outlook-autentiseringsinfo som er lagret på denne maskinen.",
   "Outlook_authentication_disabled": "Outlook-autentisering er deaktivert",
-  "Outlook_Calendar": "Outlook-kalender",
+  "Outlook_Calendar": "Microsoft Exchange",
   "Outlook_calendar": "Outlook-kalender",
   "Outlook_Calendar_Enabled": "aktivert",
   "Outlook_calendar_event": "Outlook-kalenderhendelse",
