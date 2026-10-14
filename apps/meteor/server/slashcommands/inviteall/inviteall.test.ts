@@ -2,6 +2,8 @@ import { beforeEach, describe, it } from 'node:test';
 
 import { AbacContractError, AbacErrorCode } from '@rocket.chat/abac';
 import { ClientSafeError, isClientSafeError } from '@rocket.chat/core-services';
+import type { IRoomsModel, ISubscriptionsModel, IUsersModel } from '@rocket.chat/model-typings';
+import { registerModel } from '@rocket.chat/models';
 import { expect } from 'chai';
 import sinon from 'sinon';
 
@@ -45,14 +47,15 @@ import { loadSlashCommand } from '../../../tests/mocks/server/slashcommands/help
 			createPrivate = sinon.stub().resolves({});
 			filterAllowed = sinon.stub().callsFake(async (users) => users);
 			assertCanAdd = sinon.stub().resolves();
+			registerModel('IRoomsModel', { findOneById: findRoomById, findOneByName: findRoomByName } as unknown as IRoomsModel);
+			registerModel('IUsersModel', { findOneById: findUser } as unknown as IUsersModel);
+			registerModel('ISubscriptionsModel', {
+				countByRoomIdWhenUsernameExists: count,
+				findByRoomIdWhenUsernameExists: subscriptions,
+			} as unknown as ISubscriptionsModel);
 			slashCommand = loadSlashCommand('inviteall/server', {
 				'@rocket.chat/core-services': { isClientSafeError },
 				'../../lib/rooms/filterUsersAllowedInRoom': { filterUsersAllowedInRoomOrThrow: filterAllowed },
-				'@rocket.chat/models': {
-					Rooms: { findOneById: findRoomById, findOneByName: findRoomByName },
-					Users: { findOneById: findUser },
-					Subscriptions: { countByRoomIdWhenUsernameExists: count, findByRoomIdWhenUsernameExists: subscriptions },
-				},
 				'../../lib/authorization': { canAccessRoomAsync: canAccess },
 				'../../meteor-methods/rooms/addUsersToRoom': { addUsersToRoomMethod: addUsers, assertCanAddUsersToRoom: assertCanAdd },
 				'../../meteor-methods/rooms/createChannel': { createChannelMethod: createPublic },

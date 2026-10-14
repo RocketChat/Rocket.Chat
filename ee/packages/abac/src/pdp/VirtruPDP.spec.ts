@@ -1,4 +1,5 @@
 import type { AbacRoomMembershipPreviewPage } from '@rocket.chat/core-services';
+import { registerModel } from '@rocket.chat/models';
 
 import { OnlyCompliantCanBeAddedToRoomError, PdpHealthCheckError } from '../errors';
 import { PREVIEW_SCAN_LIMIT } from '../helper';
@@ -15,18 +16,16 @@ const usersFindActiveByRoomIdAfterUsername = jest.fn();
 const usersCountActiveByRoomIdAfterUsername = jest.fn();
 const roomsFindPrivateRoomsByIdsWithAbacAttributes = jest.fn();
 
-jest.mock('@rocket.chat/models', () => ({
-	Users: {
-		findOneById: (...a: unknown[]) => usersFindOneById(...a),
-		findByUsernames: (...a: unknown[]) => usersFindByUsernames(...a),
-		findActiveByRoomIds: (...a: unknown[]) => usersFindActiveByRoomIds(...a),
-		findActiveByRoomIdAfterUsername: (...a: unknown[]) => usersFindActiveByRoomIdAfterUsername(...a),
-		countActiveByRoomIdAfterUsername: (...a: unknown[]) => usersCountActiveByRoomIdAfterUsername(...a),
-	},
-	Rooms: {
-		findPrivateRoomsByIdsWithAbacAttributes: (...a: unknown[]) => roomsFindPrivateRoomsByIdsWithAbacAttributes(...a),
-	},
-}));
+registerModel('IUsersModel', {
+	findOneById: (...a: unknown[]) => usersFindOneById(...a),
+	findByUsernames: (...a: unknown[]) => usersFindByUsernames(...a),
+	findActiveByRoomIds: (...a: unknown[]) => usersFindActiveByRoomIds(...a),
+	findActiveByRoomIdAfterUsername: (...a: unknown[]) => usersFindActiveByRoomIdAfterUsername(...a),
+	countActiveByRoomIdAfterUsername: (...a: unknown[]) => usersCountActiveByRoomIdAfterUsername(...a),
+} as any);
+registerModel('IRoomsModel', {
+	findPrivateRoomsByIdsWithAbacAttributes: (...a: unknown[]) => roomsFindPrivateRoomsByIdsWithAbacAttributes(...a),
+} as any);
 
 const cfg = {
 	baseUrl: 'http://pdp',

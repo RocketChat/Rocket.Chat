@@ -7,7 +7,8 @@ import { buffer } from 'node:stream/consumers';
 import { api } from '@rocket.chat/core-services';
 import type { IMessage, IUpload, IUser } from '@rocket.chat/core-typings';
 import { Logger } from '@rocket.chat/logger';
-import { Uploads, Users } from '@rocket.chat/models';
+import type { IUploadsModel, IUsersModel } from '@rocket.chat/model-typings';
+import { registerModel } from '@rocket.chat/models';
 import sharp from 'sharp';
 
 import { UploadService } from './service';
@@ -21,10 +22,6 @@ import { UploadFS } from '../../ufs';
 jest.mock('@rocket.chat/core-services', () => ({
 	api: { broadcast: jest.fn() },
 	ServiceClassInternal: class {},
-}));
-jest.mock('@rocket.chat/models', () => ({
-	Uploads: { findAllByOriginalFileId: jest.fn() },
-	Users: { unsetAvatarData: jest.fn() },
 }));
 jest.mock('@rocket.chat/logger', () => ({ Logger: jest.fn(() => ({ error: jest.fn() })) }));
 jest.mock('../../lib/media/file-upload', () => ({ FileUpload: { getStore: jest.fn(), getBuffer: jest.fn() } }));
@@ -42,6 +39,12 @@ jest.mock('../../ufs', () => ({ UploadFS: { getTempFilePath: jest.fn() } }));
 
 const { error: logError } = jest.mocked(Logger).mock.results[0].value;
 
+const uploadsModel = { findAllByOriginalFileId: jest.fn() };
+const usersModel = { unsetAvatarData: jest.fn() };
+
+registerModel('IUploadsModel', uploadsModel as unknown as IUploadsModel);
+registerModel('IUsersModel', usersModel as unknown as IUsersModel);
+
 const uploadsStore = { insert: jest.fn(), deleteById: jest.fn(), _store: { getReadStream: jest.fn() } };
 const avatarsStore = { deleteByName: jest.fn() };
 
@@ -58,7 +61,7 @@ describe('UploadService', () => {
 	beforeEach(() => {
 		jest.resetAllMocks();
 		jest.mocked(FileUpload.getStore).mockImplementation((name) => ({ Uploads: uploadsStore, Avatars: avatarsStore })[name] as any);
-		jest.mocked(Uploads.findAllByOriginalFileId).mockReturnValue(cursorOf([]) as any);
+		uploadsModel.findAllByOriginalFileId.mockReturnValue(cursorOf([]) as any);
 		uploadsStore.deleteById.mockResolvedValue(undefined);
 		service = new UploadService();
 	});
@@ -121,16 +124,16 @@ describe('UploadService', () => {
 
 	describe('deleteFile', () => {
 		it('deletes the original file before its derivatives and returns every id removed', async () => {
-			jest.mocked(Uploads.findAllByOriginalFileId).mockReturnValue(cursorOf(['thumb1', 'thumb2']) as any);
+			uploadsModel.findAllByOriginalFileId.mockReturnValue(cursorOf(['thumb1', 'thumb2']) as any);
 
 			await expect(service.deleteFile(user, 'f1', null)).resolves.toEqual({ deletedFiles: ['f1', 'thumb1', 'thumb2'] });
 
-			expect(Uploads.findAllByOriginalFileId).toHaveBeenCalledWith('f1', { projection: { _id: 1 } });
+			expect(uploadsModel.findAllByOriginalFileId).toHaveBeenCalledWith('f1', { projection: { _id: 1 } });
 			expect(uploadsStore.deleteById.mock.calls).toEqual([['f1'], ['thumb1'], ['thumb2']]);
 		});
 
 		it('updates the message before any file is deleted', async () => {
-			jest.mocked(Uploads.findAllByOriginalFileId).mockReturnValue(cursorOf(['thumb1']) as any);
+			uploadsModel.findAllByOriginalFileId.mockReturnValue(cursorOf(['thumb1']) as any);
 			const msg = { _id: 'm1', rid: 'r1', files: [{ _id: 'f1', name: 'a' }] } as IMessage;
 
 			await service.deleteFile(user, 'f1', msg);
@@ -141,7 +144,7 @@ describe('UploadService', () => {
 		});
 
 		it('logs a derivative that could not be deleted and removes the remaining ones', async () => {
-			jest.mocked(Uploads.findAllByOriginalFileId).mockReturnValue(cursorOf(['thumb1', 'thumb2']) as any);
+			uploadsModel.findAllByOriginalFileId.mockReturnValue(cursorOf(['thumb1', 'thumb2']) as any);
 			const err = new Error('storage is down');
 			uploadsStore.deleteById.mockResolvedValueOnce(undefined).mockRejectedValueOnce(err).mockResolvedValueOnce(undefined);
 
@@ -152,7 +155,7 @@ describe('UploadService', () => {
 		});
 
 		it('propagates a failure to delete the original file and leaves its derivatives alone', async () => {
-			jest.mocked(Uploads.findAllByOriginalFileId).mockReturnValue(cursorOf(['thumb1']) as any);
+			uploadsModel.findAllByOriginalFileId.mockReturnValue(cursorOf(['thumb1']) as any);
 			const err = new Error('storage is down');
 			uploadsStore.deleteById.mockRejectedValueOnce(err);
 
@@ -166,7 +169,7 @@ describe('UploadService', () => {
 		const removedMarker = { type: 'removed-file', color: '#FD745E', text: '_File_removed_' };
 
 		it('drops the removed files and replaces only their attachments', async () => {
-			jest.mocked(Uploads.findAllByOriginalFileId).mockReturnValue(cursorOf(['thumb1']) as any);
+			uploadsModel.findAllByOriginalFileId.mockReturnValue(cursorOf(['thumb1']) as any);
 			const msg = {
 				_id: 'm1',
 				rid: 'r1',
@@ -370,7 +373,7 @@ describe('UploadService', () => {
 			await expect(service.resetUserAvatar({ _id: 'u1' } as IUser)).rejects.toThrow('Username is required to reset avatar');
 
 			expect(avatarsStore.deleteByName).not.toHaveBeenCalled();
-			expect(Users.unsetAvatarData).not.toHaveBeenCalled();
+			expect(usersModel.unsetAvatarData).not.toHaveBeenCalled();
 			expect(api.broadcast).not.toHaveBeenCalled();
 		});
 
@@ -379,7 +382,7 @@ describe('UploadService', () => {
 
 			expect(FileUpload.getStore).toHaveBeenCalledWith('Avatars');
 			expect(avatarsStore.deleteByName).toHaveBeenCalledWith('jane');
-			expect(Users.unsetAvatarData).toHaveBeenCalledWith('u1');
+			expect(usersModel.unsetAvatarData).toHaveBeenCalledWith('u1');
 			expect(api.broadcast).toHaveBeenCalledWith('user.avatarUpdate', { username: 'jane', avatarETag: undefined });
 		});
 	});

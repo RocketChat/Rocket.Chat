@@ -1,5 +1,5 @@
 import { Authorization } from '@rocket.chat/core-services';
-import { LivechatUnit, LivechatDepartmentAgents } from '@rocket.chat/models';
+import { registerModel } from '@rocket.chat/models';
 
 import { getUnitsFromUser } from './getUnitsFromUser';
 import { defaultLogger } from '../utils/logger';
@@ -10,22 +10,20 @@ jest.mock('@rocket.chat/core-services', () => ({
 		hasAnyRole: jest.fn(),
 	},
 }));
-jest.mock('@rocket.chat/models', () => ({
-	LivechatUnit: {
-		findByMonitorId: jest.fn(),
-		countUnits: jest.fn(),
-	},
-	LivechatDepartmentAgents: {
-		findByAgentId: jest.fn(),
-	},
-}));
 
 jest.mock('mem', () => (fn: any) => fn);
 jest.mock('../utils/logger');
 
 const mockAuthorization = Authorization as jest.Mocked<typeof Authorization>;
-const mockLivechatUnit = LivechatUnit as jest.Mocked<typeof LivechatUnit>;
-const mockLivechatDepartmentAgents = LivechatDepartmentAgents as jest.Mocked<typeof LivechatDepartmentAgents>;
+const mockLivechatUnit = {
+	findByMonitorId: jest.fn(),
+	countUnits: jest.fn(),
+};
+const mockLivechatDepartmentAgents = {
+	findByAgentId: jest.fn(),
+};
+registerModel('ILivechatUnitModel', mockLivechatUnit as any);
+registerModel('ILivechatDepartmentAgentsModel', mockLivechatDepartmentAgents as any);
 const mockLogger = defaultLogger as jest.Mocked<typeof defaultLogger>;
 describe('getUnitsFromUser', () => {
 	beforeEach(() => {

@@ -5,6 +5,8 @@ import { Upload } from '@rocket.chat/core-services';
 import type { IMessage } from '@rocket.chat/core-typings';
 import { defaultTranslationNamespace, availableTranslationNamespaces, extractTranslationNamespaces } from '@rocket.chat/i18n';
 import { Logger } from '@rocket.chat/logger';
+import type { ILivechatRoomsModel, ILivechatVisitorsModel, IMessagesModel, IUploadsModel, IUsersModel } from '@rocket.chat/model-typings';
+import { registerModel } from '@rocket.chat/models';
 import * as i18next from 'i18next';
 import sprintf from 'i18next-sprintf-postprocessor';
 
@@ -39,26 +41,24 @@ jest.mock('@rocket.chat/core-services', () => ({
 	},
 }));
 
-jest.mock('@rocket.chat/models', () => ({
-	LivechatRooms: {
-		findOneById: jest.fn().mockResolvedValue({}),
-	},
-	Messages: {
-		findLivechatMessagesWithoutTypes: jest.fn().mockReturnValue({
-			toArray: jest.fn().mockResolvedValue([]),
-		}),
-	},
-	Uploads: {
-		findOneById: jest.fn().mockResolvedValue({}),
-	},
-	Users: {
-		findOneById: jest.fn().mockResolvedValue({}),
-		findOneAgentById: jest.fn().mockResolvedValue({}),
-	},
-	LivechatVisitors: {
-		findOneEnabledById: jest.fn().mockResolvedValue({}),
-	},
-}));
+registerModel('ILivechatRoomsModel', {
+	findOneById: jest.fn().mockResolvedValue({}),
+} as unknown as ILivechatRoomsModel);
+registerModel('IMessagesModel', {
+	findLivechatMessagesWithoutTypes: jest.fn().mockReturnValue({
+		toArray: jest.fn().mockResolvedValue([]),
+	}),
+} as unknown as IMessagesModel);
+registerModel('IUploadsModel', {
+	findOneById: jest.fn().mockResolvedValue({}),
+} as unknown as IUploadsModel);
+registerModel('IUsersModel', {
+	findOneById: jest.fn().mockResolvedValue({}),
+	findOneAgentById: jest.fn().mockResolvedValue({}),
+} as unknown as IUsersModel);
+registerModel('ILivechatVisitorsModel', {
+	findOneEnabledById: jest.fn().mockResolvedValue({}),
+} as unknown as ILivechatVisitorsModel);
 
 jest.mock('@rocket.chat/tools', () => ({
 	guessTimezone: jest.fn().mockReturnValue('UTC'),

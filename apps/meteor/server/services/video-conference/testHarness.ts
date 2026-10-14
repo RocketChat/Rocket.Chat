@@ -6,6 +6,8 @@ import type {
 	VideoConferenceCapabilities,
 } from '@rocket.chat/core-typings';
 import { VideoConferenceStatus } from '@rocket.chat/core-typings';
+import type { IBaseModel } from '@rocket.chat/model-typings';
+import { registerModel } from '@rocket.chat/models';
 import proxyquire from 'proxyquire';
 import sinon from 'sinon';
 
@@ -106,7 +108,8 @@ export const commonServiceStubs = {
  * service reaches for one more module.
  *
  * @param broadcast the stub to observe `api.broadcast` through.
- * @param models the `@rocket.chat/models` collections this spec stubs; the rest default to inert.
+ * @param models the `@rocket.chat/models` collections this spec stubs; the rest default to inert. They are registered
+ * each time the service is constructed, because the model registry is shared by every spec file in the run.
  * @param overrides any other module to replace — where a spec is testing something `commonServiceStubs` fakes.
  */
 export const createService = ({
@@ -130,19 +133,23 @@ export const createService = ({
 			Message: { saveSystemMessage: sinon.stub().resolves() },
 			Room: { addUserToRoom: sinon.stub().resolves() },
 		},
-		'@rocket.chat/models': {
-			Users: { findOneById: sinon.stub().resolves(null) },
-			Rooms: { findOneById: sinon.stub().resolves(null) },
-			Messages: { setBlocksById: sinon.stub().resolves() },
-			Subscriptions: {
-				findByRoomIdAndNotUserId: sinon.stub().returns({ toArray: sinon.stub().resolves([]), forEach: sinon.stub().resolves() }),
-			},
-			...models,
-		},
 		...overrides,
 	});
 
-	return VideoConfService as new () => any;
+	const doubles: Record<string, unknown> = {
+		Users: { findOneById: sinon.stub().resolves(null) },
+		Rooms: { findOneById: sinon.stub().resolves(null) },
+		Messages: { setBlocksById: sinon.stub().resolves() },
+		Subscriptions: { findByRoomId: sinon.stub().returns({ toArray: sinon.stub().resolves([]) }) },
+		...models,
+	};
+
+	return class extends VideoConfService {
+		constructor() {
+			Object.entries(doubles).forEach(([name, double]) => registerModel(`I${name}Model`, double as IBaseModel<any>));
+			super();
+		}
+	} as new () => any;
 };
 
 /**
