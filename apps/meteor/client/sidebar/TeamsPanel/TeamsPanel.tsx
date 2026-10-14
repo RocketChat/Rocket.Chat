@@ -64,7 +64,8 @@ const TeamsPanel = () => {
 
 	const allTeams = useTeamSubscriptions();
 	const { expandedTeams, toggleTeam, handleKeyDown } = useExpandedTeams(allTeams);
-	const teams = useTeamsList({ teams: allTeams, expandedTeams, filterText: debouncedFilterText });
+	const teamsUnreads = teamsPanelStore((state) => state.teamsUnreads);
+	const teams = useTeamsList({ teams: allTeams, expandedTeams, filterText: debouncedFilterText, teamsUnreads });
 	const hasTeams = allTeams.length > 0;
 	const teamKeys = useMemo(() => allTeams.map(({ key }) => key), [allTeams]);
 	const moveTeam = teamsPanelStore((state) => state.moveTeam);
@@ -104,7 +105,7 @@ const TeamsPanel = () => {
 			teams.map((team) => ({
 				key: team.key,
 				group: team,
-				items: team.expanded ? team.rooms : [],
+				items: team.rooms,
 			})),
 		[teams],
 	);

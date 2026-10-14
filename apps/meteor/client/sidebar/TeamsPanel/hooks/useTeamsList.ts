@@ -4,7 +4,8 @@ import { useMemo } from 'react';
 
 import { useSortQueryOptions } from '../../../hooks/useSortQueryOptions';
 import type { GroupUnreadInfo } from '../../hooks/useRoomList';
-import { buildUnreadInfo, emptyUnreadInfo } from '../../hooks/useRoomList';
+import { buildUnreadInfo, emptyUnreadInfo, isUnreadRoom } from '../../hooks/useRoomList';
+import type { TeamUnreadOptions } from '../teamsPanelStore';
 import { teamsPanelStore } from '../teamsPanelStore';
 
 const query = { open: { $ne: false } };
@@ -16,6 +17,7 @@ export type SidebarTeam = {
 	/** Rows to render under the team header: the main room first, then the team's other joined rooms. */
 	rooms: SubscriptionWithRoom[];
 	expanded: boolean;
+	unreadOptions: TeamUnreadOptions;
 	/** Accounts only for what a collapsed team hides; an expanded team's rooms carry their own counters. */
 	unreadInfo: GroupUnreadInfo;
 };
@@ -81,16 +83,19 @@ export const useTeamsList = ({
 	teams,
 	expandedTeams,
 	filterText = '',
+	teamsUnreads = {},
 }: {
 	teams: TeamSubscriptions;
 	expandedTeams: string[];
 	filterText?: string;
+	teamsUnreads?: Record<string, TeamUnreadOptions>;
 }) =>
 	useMemo<SidebarTeam[]>(() => {
 		const text = filterText.trim().toLocaleLowerCase();
 
 		return teams.flatMap(({ key, title, main, rooms }) => {
 			const allRooms = [main, ...rooms];
+			const unreadOptions = teamsUnreads[key] ?? {};
 
 			if (text) {
 				// A team that matches by name keeps all its rooms; otherwise only the matching rooms are kept.
@@ -107,25 +112,36 @@ export const useTeamsList = ({
 						main,
 						rooms: visibleRooms,
 						expanded: true,
+						unreadOptions,
 						unreadInfo: emptyUnreadInfo(),
 					},
 				];
 			}
 
 			const expanded = expandedTeams.includes(key);
+			// As in Inbox categories: "Always display" keeps a collapsed team's unread rooms in view, and "Keep on top"
+			// puts unread rooms first, each part keeping the user's sort.
+			const isVisibleWhileCollapsed = (room: SubscriptionWithRoom) => Boolean(unreadOptions.showUnreads) && isUnreadRoom(room);
+			let visibleRooms = expanded ? allRooms : allRooms.filter(isVisibleWhileCollapsed);
+
+			if (unreadOptions.keepUnreadsOnTop) {
+				visibleRooms = [...visibleRooms.filter(isUnreadRoom), ...visibleRooms.filter((room) => !isUnreadRoom(room))];
+			}
 
 			return [
 				{
 					key,
 					title,
 					main,
-					rooms: expanded ? allRooms : [],
+					rooms: visibleRooms,
 					expanded,
-					unreadInfo: expanded ? emptyUnreadInfo() : buildUnreadInfo(allRooms),
+					unreadOptions,
+					// The rooms in view carry their own counters, so the header only adds up the ones it hides.
+					unreadInfo: expanded ? emptyUnreadInfo() : buildUnreadInfo(allRooms.filter((room) => !isVisibleWhileCollapsed(room))),
 				},
 			];
 		});
-	}, [teams, expandedTeams, filterText]);
+	}, [teams, expandedTeams, filterText, teamsUnreads]);
 
 /** The unread state of every room in every team, for the Teams item in the rail. */
 export const useTeamsUnreadInfo = () => {

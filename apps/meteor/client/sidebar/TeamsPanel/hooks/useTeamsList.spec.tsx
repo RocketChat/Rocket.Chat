@@ -160,6 +160,35 @@ describe('unread state', () => {
 		expect(ops?.unreadInfo).toMatchObject({ unread: 3, userMentions: 1 });
 	});
 
+	const renderWithUnreads = (expandedTeams: string[], teamsUnreads: Parameters<typeof useTeamsList>[0]['teamsUnreads']) =>
+		renderHook(
+			() => {
+				const teams = useTeamSubscriptions();
+				return useTeamsList({ teams, expandedTeams, teamsUnreads });
+			},
+			{ wrapper: wrapper(withUnread) },
+		);
+
+	it('keeps the unread rooms of a collapsed team in view with "Always display", counting only the hidden ones', () => {
+		const { result } = renderWithUnreads([], { ops: { showUnreads: true } });
+
+		const ops = result.current.find(({ key }) => key === 'ops');
+		const eng = result.current.find(({ key }) => key === 'eng');
+
+		expect(ops?.rooms.map(({ rid }) => rid)).toEqual(['ops-incidents']);
+		expect(ops?.unreadInfo).toMatchObject({ unread: 0, userMentions: 0 });
+		expect(eng?.rooms).toEqual([]);
+		expect(eng?.unreadInfo).toMatchObject({ unread: 2 });
+	});
+
+	it('puts unread rooms first with "Keep on top"', () => {
+		const { result } = renderWithUnreads(['ops'], { ops: { keepUnreadsOnTop: true } });
+
+		const ops = result.current.find(({ key }) => key === 'ops');
+
+		expect(ops?.rooms.map(({ rid }) => rid)).toEqual(['ops-incidents', 'ops-main']);
+	});
+
 	it('adds up every team room for the rail item, leaving out rooms outside teams', () => {
 		const { result } = renderHook(() => useTeamsUnreadInfo(), { wrapper: wrapper(withUnread) });
 
