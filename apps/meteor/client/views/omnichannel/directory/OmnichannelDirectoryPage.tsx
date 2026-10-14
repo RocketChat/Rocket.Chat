@@ -1,4 +1,4 @@
-import { Box, Callout, IconButton, Tabs, TabsItem } from '@rocket.chat/fuselage';
+import { Box, Callout, Tabs, TabsItem } from '@rocket.chat/fuselage';
 import { Page, PageHeader, PageContent } from '@rocket.chat/ui-client';
 import { useRouteParameter } from '@rocket.chat/ui-contexts';
 import { useEffect, useCallback } from 'react';
@@ -11,12 +11,7 @@ import { useOmnichannelDirectoryRouter } from './hooks/useOmnichannelDirectoryRo
 import ChatsProvider from './providers/ChatsProvider';
 import { useIsOverMacLimit } from '../hooks/useIsOverMacLimit';
 
-type OmnichannelDirectoryPageProps = {
-	/** Shows a close button, for when the page is open in a modal. */
-	onClose?: () => void;
-};
-
-const OmnichannelDirectoryPage = ({ onClose }: OmnichannelDirectoryPageProps) => {
+const OmnichannelDirectoryPage = () => {
 	const { t } = useTranslation();
 	const tab = useRouteParameter('tab');
 	const context = useRouteParameter('context');
@@ -38,9 +33,7 @@ const OmnichannelDirectoryPage = ({ onClose }: OmnichannelDirectoryPageProps) =>
 		<ChatsProvider>
 			<Page flexDirection='row'>
 				<Page>
-					<PageHeader title={t('Omnichannel_Contact_Center')}>
-						{onClose && <IconButton icon='cross' small title={t('Close')} onClick={onClose} />}
-					</PageHeader>
+					<PageHeader title={t('Omnichannel_Contact_Center')} />
 					<Tabs flexShrink={0}>
 						<TabsItem selected={tab === 'chats'} onClick={() => handleTabClick('chats')}>
 							{t('Chats')}

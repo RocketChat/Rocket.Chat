@@ -1,11 +1,9 @@
 import { NavBarItem } from '@rocket.chat/fuselage';
-import { useSetModal } from '@rocket.chat/ui-contexts';
 import type { HTMLAttributes } from 'react';
-import { lazy, Suspense } from 'react';
+import { lazy } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import PageModal from './PageModal/PageModal';
-import PageSkeleton from '../../components/PageSkeleton';
+import { useOpenPageModal } from './PageModal/useOpenPageModal';
 
 const OmnichannelDirectoryRouter = lazy(() => import('../../views/omnichannel/directory/OmnichannelDirectoryRouter'));
 
@@ -17,25 +15,16 @@ type SidebarRailContactCenterProps = Omit<HTMLAttributes<HTMLElement>, 'is'>;
  */
 const SidebarRailContactCenter = (props: SidebarRailContactCenterProps) => {
 	const { t } = useTranslation();
-	const setModal = useSetModal();
+	const openPageModal = useOpenPageModal();
 
-	const handleClick = () => {
-		const close = () => setModal(null);
-
-		setModal(
-			<PageModal
-				routeName='omnichannel-directory'
-				pattern='/omnichannel-directory/:tab?/:context?/:id?'
-				initialParams={{ tab: 'chats' }}
-				aria-label={t('Omnichannel_Contact_Center')}
-				onClose={close}
-			>
-				<Suspense fallback={<PageSkeleton />}>
-					<OmnichannelDirectoryRouter onClose={close} />
-				</Suspense>
-			</PageModal>,
-		);
-	};
+	const handleClick = () =>
+		openPageModal({
+			routeName: 'omnichannel-directory',
+			pattern: '/omnichannel-directory/:tab?/:context?/:id?',
+			params: { tab: 'chats' },
+			label: t('Omnichannel_Contact_Center'),
+			page: <OmnichannelDirectoryRouter />,
+		});
 
 	return <NavBarItem {...props} icon='address-book' title={t('Contact_Center')} aria-haspopup='dialog' onClick={handleClick} />;
 };

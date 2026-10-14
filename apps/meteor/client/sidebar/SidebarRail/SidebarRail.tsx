@@ -8,11 +8,11 @@ import SidebarRailDirectory from './SidebarRailDirectory';
 import SidebarRailDivider from './SidebarRailDivider';
 import SidebarRailInbox from './SidebarRailInbox';
 import SidebarRailLoginPage from './SidebarRailLoginPage';
+import SidebarRailMarketplace from './SidebarRailMarketplace';
 import SidebarRailPhone from './SidebarRailPhone';
 import SidebarRailTeams from './SidebarRailTeams';
 import NavBarItemOmnichannelLivechatToggle from '../../navbar/NavBarOmnichannelGroup/NavBarItemOmnichannelLivechatToggle';
 import NavBarItemOmnichannelQueue from '../../navbar/NavBarOmnichannelGroup/NavBarItemOmnichannelQueue';
-import NavBarItemMarketPlaceMenu from '../../navbar/NavBarPagesGroup/NavBarItemMarketPlaceMenu';
 import { NavBarItemAdministrationMenu, UserMenu } from '../../navbar/NavBarSettingsToolbar';
 import { useOmnichannelEnabled } from '../../views/omnichannel/hooks/useOmnichannelEnabled';
 
@@ -48,7 +48,7 @@ const SidebarRail = () => {
 					<SidebarRailInbox />
 					<SidebarRailTeams />
 					<SidebarRailDirectory />
-					{showMarketplace && <NavBarItemMarketPlaceMenu />}
+					{showMarketplace && <SidebarRailMarketplace />}
 				</NavBarGroup>
 				<SidebarRailDivider />
 				<NavBarGroup vertical aria-label={t('Voice_Call')}>

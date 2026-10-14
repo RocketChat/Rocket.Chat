@@ -1,11 +1,10 @@
 import { NavBarItem } from '@rocket.chat/fuselage';
-import { useSetModal, useSetting } from '@rocket.chat/ui-contexts';
+import { useSetting } from '@rocket.chat/ui-contexts';
 import type { HTMLAttributes } from 'react';
-import { lazy, Suspense } from 'react';
+import { lazy } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import PageModal from './PageModal/PageModal';
-import PageSkeleton from '../../components/PageSkeleton';
+import { useOpenPageModal } from './PageModal/useOpenPageModal';
 
 const DirectoryPage = lazy(() => import('../../views/directory'));
 
@@ -17,26 +16,17 @@ type SidebarRailDirectoryProps = Omit<HTMLAttributes<HTMLElement>, 'is'>;
  */
 const SidebarRailDirectory = (props: SidebarRailDirectoryProps) => {
 	const { t } = useTranslation();
-	const setModal = useSetModal();
+	const openPageModal = useOpenPageModal();
 	const defaultTab = useSetting<string>('Accounts_Directory_DefaultView', 'users');
 
-	const handleClick = () => {
-		const close = () => setModal(null);
-
-		setModal(
-			<PageModal
-				routeName='directory'
-				pattern='/directory/:tab?'
-				initialParams={{ tab: defaultTab }}
-				aria-label={t('Directory')}
-				onClose={close}
-			>
-				<Suspense fallback={<PageSkeleton />}>
-					<DirectoryPage onClose={close} />
-				</Suspense>
-			</PageModal>,
-		);
-	};
+	const handleClick = () =>
+		openPageModal({
+			routeName: 'directory',
+			pattern: '/directory/:tab?',
+			params: { tab: defaultTab },
+			label: t('Directory'),
+			page: <DirectoryPage />,
+		});
 
 	return <NavBarItem {...props} icon='notebook-hashtag' title={t('Directory')} aria-haspopup='dialog' onClick={handleClick} />;
 };

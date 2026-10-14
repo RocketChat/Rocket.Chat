@@ -2,7 +2,7 @@ import type { RouteName, RouteParameters, RouterContextValue, SearchParameters, 
 import { useRouter } from '@rocket.chat/ui-contexts';
 import { useEffect, useMemo, useRef } from 'react';
 
-type Location = { params: RouteParameters; search: SearchParameters };
+export type ModalLocation = { params: RouteParameters; search: SearchParameters };
 
 type NavigateOptions = { replace?: boolean; state?: unknown; relative?: 'route' | 'path' };
 
@@ -50,16 +50,16 @@ export const matchPattern = (pattern: string, pathname: string): RouteParameters
 export const useModalRouter = ({
 	routeName,
 	pattern,
-	initialParams,
+	location,
 	onClose,
 }: {
 	routeName: RouteName;
 	pattern: string;
-	initialParams: RouteParameters;
+	/** Kept by the caller, so the page comes back where it was when the modal is shown again after a dialog on top. */
+	location: { current: ModalLocation };
 	onClose: () => void;
 }): RouterContextValue => {
 	const router = useRouter();
-	const location = useRef<Location>({ params: initialParams, search: {} });
 	const listeners = useRef(new Set<() => void>());
 	const onCloseRef = useRef(onClose);
 	onCloseRef.current = onClose;
@@ -76,12 +76,12 @@ export const useModalRouter = ({
 	}, [router]);
 
 	return useMemo<RouterContextValue>(() => {
-		const setLocation = (next: Location) => {
+		const setLocation = (next: ModalLocation) => {
 			location.current = next;
 			listeners.current.forEach((listener) => listener());
 		};
 
-		const resolve = (to: To): Location | undefined => {
+		const resolve = (to: To): ModalLocation | undefined => {
 			if (typeof to === 'object' && 'name' in to) {
 				return to.name === routeName ? { params: to.params ?? {}, search: to.search ?? {} } : undefined;
 			}
@@ -126,5 +126,5 @@ export const useModalRouter = ({
 			getLocationHash: () => '',
 			navigate,
 		};
-	}, [router, routeName, pattern]);
+	}, [router, routeName, pattern, location]);
 };
