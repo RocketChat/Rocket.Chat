@@ -2,7 +2,7 @@ import { useToastMessageDispatch, useTranslation, useEndpoint, useSetting } from
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 
 import { useOutlookAuthenticationMutation } from './useOutlookAuthentication';
-import { getEndpointErrorMessage } from '../../../lib/errorHandling';
+import { getErrorMessage } from '../../../lib/errorHandling';
 import { syncOutlookEvents } from '../lib/syncOutlookEvents';
 
 export const useOutlookCalendarListForToday = () => {
@@ -57,7 +57,7 @@ export const useMutationOutlookCalendarSync = () => {
 				return;
 			}
 
-			const errorMessage = isServerManaged ? await getEndpointErrorMessage(error, 'Outlook_Sync_Failed') : t('Outlook_Sync_Failed');
+			const errorMessage = isServerManaged ? getErrorMessage(error, 'Outlook_Sync_Failed') : t('Outlook_Sync_Failed');
 			dispatchToastMessage({ type: 'error', message: errorMessage });
 		},
 	});
