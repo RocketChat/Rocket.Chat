@@ -20,7 +20,7 @@ import { getPaginationItems } from '../../../server/api/lib/getPaginationItems';
 import { settings } from '../../../server/settings';
 import { normalizeE164 } from '../lib/exchange/sync/contacts/normalizeE164';
 
-const toLocalContact = ({ displayName, givenName, surname, companyName, emails, phones }: LocalContactPayload) => {
+const toLocalContact = ({ givenName, surname, companyName, emails, phones }: LocalContactPayload) => {
 	const defaultRegion = settings.get<string>('Exchange_Contacts_Default_Region') ?? '';
 
 	const name = givenName.trim();
@@ -28,7 +28,7 @@ const toLocalContact = ({ displayName, givenName, surname, companyName, emails, 
 	const company = companyName?.trim();
 
 	return {
-		displayName: displayName?.trim() || [name, lastName].filter(Boolean).join(' '),
+		displayName: [name, lastName].filter(Boolean).join(' '),
 		givenName: name,
 		...(lastName && { surname: lastName }),
 		...(company && { companyName: company }),
@@ -152,12 +152,13 @@ API.v1.post(
 		authRequired: true,
 		body: isContactsUpdateProps,
 		response: {
-			200: ajv.compile<{ success: true }>({
+			200: ajv.compile<{ contact: IContactPublic; success: true }>({
 				type: 'object',
 				properties: {
+					contact: { $ref: '#/components/schemas/IContactPublic' },
 					success: { type: 'boolean', enum: [true] },
 				},
-				required: ['success'],
+				required: ['contact', 'success'],
 				additionalProperties: false,
 			}),
 			400: validateBadRequestErrorResponse,
@@ -169,13 +170,13 @@ API.v1.post(
 	async function action() {
 		const { contactId, ...payload } = this.bodyParams;
 
-		const { matchedCount } = await Contacts.updateLocal(this.userId, contactId, toLocalContact(payload));
+		const contact = await Contacts.updateLocal(this.userId, contactId, toLocalContact(payload));
 
-		if (!matchedCount) {
+		if (!contact) {
 			return API.v1.notFound();
 		}
 
-		return API.v1.success({});
+		return API.v1.success({ contact });
 	},
 );
 

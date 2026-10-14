@@ -85,7 +85,7 @@ describe('[Contacts]', () => {
 
 			after(() => contacts().deleteMany({ _id: { $in: created } }));
 
-			it('should name a contact after its parts when no display name is given', async () => {
+			it('should name a contact after its parts, which is the only way it gets a name', async () => {
 				const res = await request
 					.post(api('contacts.create'))
 					.set(credentials)
@@ -151,14 +151,28 @@ describe('[Contacts]', () => {
 
 		describe('[/contacts.update]', () => {
 			it('should update a contact the caller owns', async () => {
-				await request
+				const res = await request
 					.post(api('contacts.update'))
 					.set(credentials)
 					.send({ contactId: ownLocalContactId, givenName: `Own${stamp}`, surname: 'Renamed' })
 					.expect('Content-Type', 'application/json')
 					.expect(200);
 
+				expect(res.body.contact).to.include({ _id: ownLocalContactId, displayName: `Own${stamp} Renamed` });
 				expect(await contacts().findOne({ _id: ownLocalContactId })).to.include({ displayName: `Own${stamp} Renamed` });
+			});
+
+			it('should shrink the name back when the part it was built from goes away', async () => {
+				await request
+					.post(api('contacts.update'))
+					.set(credentials)
+					.send({ contactId: ownLocalContactId, givenName: `Own${stamp}` })
+					.expect(200);
+
+				const stored = await contacts().findOne({ _id: ownLocalContactId });
+
+				expect(stored).to.include({ displayName: `Own${stamp}` });
+				expect(stored).to.not.have.property('surname');
 			});
 
 			it('should answer 404 for a contact that belongs to someone else, and leave it as it was', async () => {
