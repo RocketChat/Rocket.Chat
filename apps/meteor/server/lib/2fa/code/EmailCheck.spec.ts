@@ -38,7 +38,7 @@ const { EmailCheck } = proxyquire.noCallThru().load('./EmailCheck', {
 	},
 });
 
-const normalUserMock = { services: { email2fa: { enabled: true } }, emails: [{ email: 'abc@gmail.com', verified: true }] };
+const normalUserMock = { services: { email2fa: { enabled: true } }, emails: [{ address: 'abc@gmail.com', verified: true }] };
 const normalUserWithUnverifiedEmailMock = {
 	services: { email2fa: { enabled: true } },
 	emails: [{ email: 'abc@gmail.com', verified: false }],
@@ -90,7 +90,7 @@ describe('EmailCheck', () => {
 			usersMock.addEmailCodeByUserId.resolves({ modifiedCount: 1 });
 
 			expect(await emailCheck.sendEmailCode(user)).to.be.equal(true);
-			expect(sendMock.calledOnce).to.be.equal(true);
+			expect(sendMock.calledOnceWith(sinon.match({ to: 'abc@gmail.com' }))).to.be.equal(true);
 		});
 
 		it('should not send a code when one was sent in the last minute', async () => {
