@@ -34,6 +34,7 @@ type SetupWizarContextValue = {
 	saveOrganizationData: (data: SetupWizardData['organizationData']) => Promise<void>;
 	completeSetupWizard: () => Promise<void>;
 	maxSteps: number;
+	checkUsernameAvailability: (username: string) => Promise<boolean>;
 };
 
 export const SetupWizardContext = createContext<SetupWizarContextValue>({
@@ -67,6 +68,7 @@ export const SetupWizardContext = createContext<SetupWizarContextValue>({
 	currentStep: 1,
 	completeSetupWizard: async () => undefined,
 	maxSteps: 4,
+	checkUsernameAvailability: async () => true,
 });
 
 export const useSetupWizardContext = (): SetupWizarContextValue => useContext(SetupWizardContext);
