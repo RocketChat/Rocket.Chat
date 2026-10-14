@@ -75,6 +75,12 @@ export interface IMediaCall {
 	 * `parentCallId`, because there is no earlier call it replaced.
 	 */
 	divertedBy?: IMediaCallContact;
+
+	transferredBy?: IMediaCallContact;
+	transferredTo?: IMediaCallContact;
+	transferredAt?: Date;
+
+	sipCallId?: string;
 }
 
 /**

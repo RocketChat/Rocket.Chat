@@ -14,6 +14,7 @@ import UTCClock from '../UTCClock';
 import { UserCardRoles, UserCardUsername } from '../UserCard';
 import UserInfoABACAttributes from './UserInfoABACAttributes';
 import UserInfoCopyableText from './UserInfoCopyableText';
+import UserInfoPhoneNumberList from './UserInfoPhoneNumberList';
 import UserInfoZoomableAvatar from './UserInfoZoomableAvatar';
 
 type UserInfoDataProps = Serialized<
@@ -26,7 +27,7 @@ type UserInfoDataProps = Serialized<
 		| 'lastLogin'
 		| 'avatarETag'
 		| 'utcOffset'
-		| 'phone'
+		| 'phones'
 		| 'createdAt'
 		| 'canViewAllInfo'
 		| 'customFields'
@@ -55,7 +56,7 @@ const UserInfo = ({
 	avatarETag,
 	roles,
 	utcOffset,
-	phone,
+	phones,
 	email,
 	verified,
 	createdAt,
@@ -150,14 +151,12 @@ const UserInfo = ({
 						</InfoPanelField>
 					)}
 
-					{phone && (
-						<InfoPanelField>
-							<InfoPanelLabel>{t('Phone')}</InfoPanelLabel>
-							<UserInfoCopyableText text={phone} label={t('Phone')}>
-								<Box is='a' withTruncatedText href={`tel:${phone}`}>
-									{phone}
-								</Box>
-							</UserInfoCopyableText>
+					{phones && phones.length > 0 && (
+						<InfoPanelField is='dl'>
+							<InfoPanelLabel is='dt'>{t('Phone_Numbers')}</InfoPanelLabel>
+							<InfoPanelText is='dd'>
+								<UserInfoPhoneNumberList phones={phones} />
+							</InfoPanelText>
 						</InfoPanelField>
 					)}
 

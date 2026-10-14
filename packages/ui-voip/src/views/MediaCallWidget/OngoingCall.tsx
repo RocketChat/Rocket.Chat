@@ -1,4 +1,4 @@
-import { ButtonGroup } from '@rocket.chat/fuselage';
+import { ButtonGroup, Divider } from '@rocket.chat/fuselage';
 import { ActionButton, ToggleButton } from '@rocket.chat/ui-media';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -16,9 +16,12 @@ import {
 	DevicePicker,
 	useInfoSlots,
 	useDraggableWidget,
+	getPeerDisplayName,
 } from '../../components';
 import { useMediaCallView } from '../../context/MediaCallViewContext';
-import { isExternalPeer } from '../../utils/isExternalPeer';
+import AppActions from '../../experimental/AppActionButtons/components/AppActions';
+import { useVisibleAppActions } from '../../experimental/AppActionButtons/hooks/useVisibleAppActions';
+import { isUnknownPeer } from '../../utils/isUnknownPeer';
 
 const OngoingCall = () => {
 	const { t } = useTranslation();
@@ -41,12 +44,9 @@ const OngoingCall = () => {
 	const holdAvailable = supportedFeatures.includes('hold');
 	const transferAvailable = supportedFeatures.includes('transfer');
 
-	// TODO: Figure out how to ensure this always exist before rendering the component
-	if (!peerInfo) {
-		throw new Error('Peer info is required');
-	}
+	const appActions = useVisibleAppActions();
 
-	const isSip = isExternalPeer(peerInfo);
+	const isSip = peerInfo?.type === 'sip';
 
 	return (
 		<Widget>
@@ -58,12 +58,14 @@ const OngoingCall = () => {
 				<DevicePicker />
 			</WidgetHeader>
 			<WidgetContent>
-				<PeerInfo {...peerInfo} slots={remoteSlots} remoteMuted={remoteMuted} />
+				{peerInfo && !isUnknownPeer(peerInfo) && <PeerInfo {...peerInfo} slots={remoteSlots} remoteMuted={remoteMuted} />}
 				{isInline && isSip && <Dialpad autoFocus={false} />}
 			</WidgetContent>
 			<WidgetInfo slots={slots} />
 			<WidgetFooter>
 				{!isInline && dialpadOpen && <Dialpad />}
+				<AppActions actions={appActions} vertical />
+				{appActions.length > 0 && <Divider />}
 				<ButtonGroup large>
 					{!isInline && (
 						<ActionButton
@@ -90,7 +92,7 @@ const OngoingCall = () => {
 					)}
 					<ActionButton
 						label={t('Voice_call__user__hangup', {
-							user: isExternalPeer(peerInfo) ? peerInfo.displayName || peerInfo.number : peerInfo.displayName,
+							user: getPeerDisplayName(t, peerInfo),
 						})}
 						icon='phone-off'
 						danger

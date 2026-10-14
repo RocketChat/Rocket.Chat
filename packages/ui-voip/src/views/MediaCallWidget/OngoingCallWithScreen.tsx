@@ -1,4 +1,4 @@
-import { Box, Button, ButtonGroup } from '@rocket.chat/fuselage';
+import { Box, Button, ButtonGroup, Divider } from '@rocket.chat/fuselage';
 import { ActionButton, StreamVideo, ToggleButton } from '@rocket.chat/ui-media';
 import { useTranslation } from 'react-i18next';
 
@@ -17,10 +17,13 @@ import {
 	useDraggableWidget,
 	CardWidgetContainer,
 	StreamCard,
+	getPeerDisplayName,
 } from '../../components';
 import { useMediaCallInstance } from '../../context';
 import { useMediaCallView } from '../../context/MediaCallViewContext';
-import { isExternalPeer } from '../../utils/isExternalPeer';
+import AppActions from '../../experimental/AppActionButtons/components/AppActions';
+import { useVisibleAppActions } from '../../experimental/AppActionButtons/hooks/useVisibleAppActions';
+import { isUnknownPeer } from '../../utils/isUnknownPeer';
 
 const OngoingCall = () => {
 	const { t } = useTranslation();
@@ -54,12 +57,9 @@ const OngoingCall = () => {
 	const connecting = connectionState === 'CONNECTING';
 	const reconnecting = connectionState === 'RECONNECTING';
 
-	// TODO: Figure out how to ensure this always exist before rendering the component
-	if (!peerInfo) {
-		throw new Error('Peer info is required');
-	}
+	const appActions = useVisibleAppActions();
 
-	const isSip = isExternalPeer(peerInfo);
+	const isSip = peerInfo?.type === 'sip';
 
 	return (
 		<Widget>
@@ -84,7 +84,7 @@ const OngoingCall = () => {
 			</WidgetHeader>
 			<WidgetContent>
 				<CardWidgetContainer>
-					<PeerInfo {...peerInfo} slots={remoteSlots} remoteMuted={remoteMuted} />
+					{peerInfo && !isUnknownPeer(peerInfo) && <PeerInfo {...peerInfo} slots={remoteSlots} remoteMuted={remoteMuted} />}
 
 					{isInline && isSip && !localScreen?.active && <Dialpad autoFocus={false} />}
 
@@ -120,6 +120,8 @@ const OngoingCall = () => {
 			</WidgetContent>
 			<WidgetInfo slots={slots} />
 			<WidgetFooter>
+				<AppActions actions={appActions} vertical />
+				{appActions.length > 0 && <Divider />}
 				<ButtonGroup large align='center'>
 					<ToggleButton label={t('Mute')} icons={['mic', 'mic-off']} titles={[t('Mute'), t('Unmute')]} pressed={muted} onToggle={onMute} />
 
@@ -146,7 +148,7 @@ const OngoingCall = () => {
 					)}
 					<ActionButton
 						label={t('Voice_call__user__hangup', {
-							user: isExternalPeer(peerInfo) ? peerInfo.displayName || peerInfo.number : peerInfo.displayName,
+							user: getPeerDisplayName(t, peerInfo),
 						})}
 						icon='phone-off'
 						danger

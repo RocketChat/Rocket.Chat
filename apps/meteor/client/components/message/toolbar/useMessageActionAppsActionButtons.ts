@@ -1,4 +1,8 @@
-import { type IUIActionButton, MessageActionContext as AppsEngineMessageActionContext } from '@rocket.chat/apps-engine/definition/ui';
+import {
+	type IUIActionButton,
+	type MessageActionButton,
+	MessageActionContext as AppsEngineMessageActionContext,
+} from '@rocket.chat/apps-engine/definition/ui';
 import type { IMessage } from '@rocket.chat/core-typings';
 import { useToastMessageDispatch } from '@rocket.chat/ui-contexts';
 import { useMemo } from 'react';
@@ -16,7 +20,8 @@ const filterActionsByContext = (context: string | undefined, action: IUIActionBu
 		return true;
 	}
 
-	const messageActionContext = action.when?.messageActionContext || Object.values(AppsEngineMessageActionContext);
+	const messageActionContext =
+		(action.when as MessageActionButton['when'])?.messageActionContext || Object.values(AppsEngineMessageActionContext);
 	const isContextMatch = messageActionContext.includes(context as AppsEngineMessageActionContext);
 
 	return isContextMatch;

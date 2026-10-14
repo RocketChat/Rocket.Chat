@@ -24,4 +24,6 @@ export const messageReactionTest = path.resolve(__dirname, './message-updater-te
 
 export const appPresenceStateTest = path.resolve(__dirname, './presence-state-test_0.0.1.zip');
 
+export const mediaCallReaderTest = path.resolve(__dirname, './media-call-reader-test_0.0.1.zip');
+
 export const appMediaCallEventsTest = path.resolve(__dirname, './media-call-events-test_0.0.1.zip');
