@@ -11,10 +11,13 @@ const licenseMock = { hasModule: sinon.stub() };
 const abacMock = { filterUsersAllowedInRoom: sinon.stub() };
 const getRoomAbacLockContextMock = sinon.stub();
 
+type Options = { audit?: boolean };
+
 type Patched = (
-	next: (users: AbacEvaluableUser[], room: IRoom) => Promise<AbacEvaluableUser[]>,
+	next: (users: AbacEvaluableUser[], room: IRoom, options?: Options) => Promise<AbacEvaluableUser[]>,
 	users: AbacEvaluableUser[],
 	room: IRoom,
+	options?: Options,
 ) => Promise<AbacEvaluableUser[]>;
 
 let filterUsers: Patched;
@@ -63,18 +66,25 @@ describe('filterUsersAllowedInRoom (ABAC)', () => {
 		abacMock.filterUsersAllowedInRoom.callsFake(async (ids: string[]) => ids);
 	});
 
-	it('should leave the users untouched when ABAC is disabled', async () => {
+	it('should refuse every user for an attributed private room when ABAC is disabled, without asking the PDP', async () => {
 		settingsMock.get.withArgs('ABAC_Enabled').returns(false);
 
-		expect(idsOf(await run())).to.deep.equal(['u1', 'u2']);
+		expect(await run()).to.deep.equal([]);
 		expect(abacMock.filterUsersAllowedInRoom.called).to.be.false;
 	});
 
-	it('should leave the users untouched without the abac license module', async () => {
+	it('should refuse every user for an attributed private room without the abac license module, without asking the PDP', async () => {
 		licenseMock.hasModule.withArgs('abac').returns(false);
 
-		expect(idsOf(await run())).to.deep.equal(['u1', 'u2']);
+		expect(await run()).to.deep.equal([]);
 		expect(abacMock.filterUsersAllowedInRoom.called).to.be.false;
+	});
+
+	it('should admit every user to a room without attributes when ABAC is disabled', async () => {
+		settingsMock.get.withArgs('ABAC_Enabled').returns(false);
+
+		expect(idsOf(await run(users, { _id: 'p2', t: 'p' } as IRoom))).to.deep.equal(['u1', 'u2']);
+		expect(getRoomAbacLockContextMock.called).to.be.false;
 	});
 
 	it('should refuse every user for a locked room without asking the PDP', async () => {
@@ -94,6 +104,12 @@ describe('filterUsersAllowedInRoom (ABAC)', () => {
 
 		expect(idsOf(await run())).to.deep.equal(['u2']);
 		expect(abacMock.filterUsersAllowedInRoom.calledOnceWith(['u1', 'u2'], room)).to.be.true;
+	});
+
+	it('should hand the audit option on to the service', async () => {
+		await filterUsers(next, users, room, { audit: false });
+
+		expect(abacMock.filterUsersAllowedInRoom.firstCall.args[2]).to.deep.equal({ audit: false });
 	});
 
 	it('should refuse a user without a username without sending them to the PDP', async () => {

@@ -9,7 +9,7 @@ const licenseMock = { hasModule: sinon.stub() };
 const getRoomAbacLockContextMock = sinon.stub();
 const abacMock = { filterRoomsAllowedForUser: sinon.stub() };
 
-type Options = { refreshUserAttributes?: boolean };
+type Options = { refreshUserAttributes?: boolean; audit?: boolean };
 
 type Patched = (
 	next: (rooms: IRoom[], user: IUser, options?: Options) => Promise<IRoom[]>,
@@ -40,6 +40,7 @@ const privateWithAttributes = { _id: 'p2', t: 'p', abacAttributes: [{ key: 'dept
 const otherPrivateWithAttributes = { _id: 'p3', t: 'p', abacAttributes: [{ key: 'dept', values: ['ops'] }] } as IRoom;
 
 const user = { _id: 'u1', username: 'user.one' } as IUser;
+const ldapUser = { _id: 'u3', username: 'user.three', ldap: true } as IUser;
 
 const lockContext = { enforcementOn: true, requiredAttributeKeys: [] };
 const unenforced = { enforcementOn: false, requiredAttributeKeys: [] };
@@ -64,19 +65,19 @@ describe('filterDefaultChannelsForUser (ABAC)', () => {
 		abacMock.filterRoomsAllowedForUser.callsFake(async (_uid: string, rooms: IRoom[]) => idsOf(rooms));
 	});
 
-	it('should leave the rooms untouched when ABAC is disabled', async () => {
+	it('should skip attributed private rooms when ABAC is disabled, without calling the service', async () => {
 		settingsMock.get.withArgs('ABAC_Enabled').returns(false);
 
 		const rooms = [publicRoom, privateWithoutAttributes, privateWithAttributes];
 
-		expect(idsOf(await run(rooms))).to.deep.equal(['c1', 'p1', 'p2']);
+		expect(idsOf(await run(rooms))).to.deep.equal(['c1', 'p1']);
 		expect(abacMock.filterRoomsAllowedForUser.called).to.be.false;
 	});
 
-	it('should leave the rooms untouched without the abac license module', async () => {
+	it('should skip attributed private rooms without the abac license module, without calling the service', async () => {
 		licenseMock.hasModule.withArgs('abac').returns(false);
 
-		expect(idsOf(await run([publicRoom, privateWithAttributes]))).to.deep.equal(['c1', 'p2']);
+		expect(idsOf(await run([publicRoom, privateWithAttributes]))).to.deep.equal(['c1']);
 		expect(abacMock.filterRoomsAllowedForUser.called).to.be.false;
 	});
 
@@ -92,16 +93,29 @@ describe('filterDefaultChannelsForUser (ABAC)', () => {
 		expect(abacMock.filterRoomsAllowedForUser.called).to.be.false;
 	});
 
-	it('should ask the service to refresh the attributes when the caller asks for it', async () => {
-		await run([privateWithAttributes]);
+	it('should ask the service to refresh the attributes of an LDAP user when the caller asks for it', async () => {
+		await run([privateWithAttributes], ldapUser);
 
-		expect(abacMock.filterRoomsAllowedForUser.calledOnceWith('u1', [privateWithAttributes], { refreshAttributes: true })).to.be.true;
+		expect(abacMock.filterRoomsAllowedForUser.calledOnceWith('u3', [privateWithAttributes])).to.be.true;
+		expect(abacMock.filterRoomsAllowedForUser.firstCall.args[2]?.refreshAttributes).to.be.true;
+	});
+
+	it('should not refresh the attributes of a user who is not from LDAP, even when the caller asks for it', async () => {
+		expect(idsOf(await run([privateWithAttributes]))).to.deep.equal(['p2']);
+		expect(abacMock.filterRoomsAllowedForUser.calledOnce).to.be.true;
+		expect(abacMock.filterRoomsAllowedForUser.firstCall.args[2]?.refreshAttributes).to.not.be.true;
 	});
 
 	it('should evaluate without refreshing the attributes unless the caller asks for it', async () => {
 		expect(idsOf(await run([privateWithAttributes], user, {}))).to.deep.equal(['p2']);
 		expect(abacMock.filterRoomsAllowedForUser.calledOnce).to.be.true;
 		expect(abacMock.filterRoomsAllowedForUser.firstCall.args[2]?.refreshAttributes).to.not.be.true;
+	});
+
+	it('should hand the audit option on to the service', async () => {
+		await run([privateWithAttributes], user, { audit: false });
+
+		expect(abacMock.filterRoomsAllowedForUser.firstCall.args[2]?.audit).to.equal(false);
 	});
 
 	it('should hand the options on to the next filter', async () => {
