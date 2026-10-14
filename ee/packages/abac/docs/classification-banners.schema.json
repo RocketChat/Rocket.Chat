@@ -23,6 +23,13 @@
         "fallbackColor": { "$ref": "#/$defs/hexColor" }
       }
     },
+    "nonAbacBanner": {
+      "description": "Banner for rooms that are not ABAC managed, such as DMs, group DMs, discussions, federated and Omnichannel rooms. One entry, or a list where the first enabled entry whose match fits the room is shown. When absent, or when no enabled entry matches, the room shows no banner",
+      "oneOf": [
+        { "$ref": "#/$defs/nonAbacBanner" },
+        { "type": "array", "minItems": 1, "items": { "$ref": "#/$defs/nonAbacBanner" } }
+      ]
+    },
     "attributes": {
       "type": "array",
       "minItems": 1,
@@ -35,6 +42,32 @@
     "hexColor": {
       "type": "string",
       "pattern": "^#[0-9a-fA-F]{6}$"
+    },
+    "nonAbacBanner": {
+      "type": "object",
+      "required": ["enabled", "text", "color"],
+      "additionalProperties": false,
+      "properties": {
+        "enabled": { "type": "boolean" },
+        "text": { "type": "string", "minLength": 1 },
+        "color": { "$ref": "#/$defs/hexColor" },
+        "match": { "$ref": "#/$defs/roomMatch" }
+      }
+    },
+    "roomMatch": {
+      "type": "object",
+      "description": "Every property given must hold for the room; an omitted property, and an omitted or empty type list, match any room",
+      "additionalProperties": false,
+      "properties": {
+        "type": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": { "enum": ["direct", "groupDirect", "public", "private", "omnichannel"] }
+        },
+        "federated": { "type": "boolean" },
+        "discussion": { "type": "boolean" },
+        "team": { "type": "boolean", "description": "A team's own room or a room that belongs to a team" }
+      }
     },
     "attribute": {
       "type": "object",

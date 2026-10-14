@@ -4,7 +4,13 @@ import { MongoClient } from 'mongodb';
 import { IS_EE, URL_MONGODB } from './config/constants';
 import { Users } from './fixtures/userStates';
 import { HomeChannel } from './page-objects';
-import { createTargetGroupAndReturnFullRoom, deleteRoom, setSettingValueById } from './utils';
+import {
+	createDirectMessageRoom,
+	createTargetDiscussion,
+	createTargetGroupAndReturnFullRoom,
+	deleteRoom,
+	setSettingValueById,
+} from './utils';
 import { convertHexToRGB } from './utils/convertHexToRGB';
 import { expect, test } from './utils/test';
 
@@ -104,10 +110,70 @@ test.describe.serial('abac-classification-banner', () => {
 	test('should show the classification banner built from the config in an ABAC room', async ({ page }) => {
 		await poHomeChannel.navbar.openChat(room.name as string);
 
-		const banner = page.getByRole('region', { name: 'Room attributes' });
+		const banner = page.getByRole('region', { name: 'Classification banner' });
 		await expect(banner).toBeVisible();
 		await expect(banner).toHaveText('CLEARANCE-TOP SECRET');
 		await expect(banner).toHaveCSS('background-color', convertHexToRGB('#ff8c00'));
+	});
+
+	test('should show no banner in a room without attributes when nonAbacBanner is not configured', async ({ page, api }) => {
+		const { group: plainRoom } = await createTargetGroupAndReturnFullRoom(api);
+
+		await poHomeChannel.navbar.openChat(plainRoom.name as string);
+		await expect(poHomeChannel.composer.inputMessage).toBeVisible();
+		await expect(page.getByRole('region', { name: 'Classification banner' })).toHaveCount(0);
+
+		await deleteRoom(api, plainRoom._id);
+	});
+
+	test.describe('with a nonAbacBanner configured', () => {
+		let plainRoom: IRoom;
+		let discussion: Record<string, string>;
+		let dmRoomId: string;
+
+		test.beforeAll(async ({ api }) => {
+			await setSettingValueById(
+				api,
+				'ABAC_Classification_Banners_Config',
+				JSON.stringify({ ...bannersConfig, nonAbacBanner: { enabled: true, text: 'UNCLASSIFIED', color: '#007a33' } }),
+			);
+			({ group: plainRoom } = await createTargetGroupAndReturnFullRoom(api));
+			discussion = await createTargetDiscussion(api);
+			dmRoomId = await createDirectMessageRoom(api, Users.user1.data.username);
+		});
+
+		test.afterAll(async ({ api }) => {
+			await Promise.all([
+				deleteRoom(api, plainRoom._id),
+				deleteRoom(api, discussion._id),
+				deleteRoom(api, discussion.prid),
+				deleteRoom(api, dmRoomId),
+			]);
+			await setSettingValueById(api, 'ABAC_Classification_Banners_Config', JSON.stringify(bannersConfig));
+		});
+
+		test('should keep the attribute banner in an ABAC room', async ({ page }) => {
+			await poHomeChannel.navbar.openChat(room.name as string);
+
+			await expect(page.getByRole('region', { name: 'Classification banner' })).toHaveText('CLEARANCE-TOP SECRET');
+		});
+
+		const cases: [string, () => string][] = [
+			['a private room without attributes', () => plainRoom.name as string],
+			['a DM', () => Users.user1.data.username],
+			['a discussion', () => discussion.fname],
+		];
+
+		cases.forEach(([name, getRoomName]) => {
+			test(`should show the nonAbacBanner in ${name}`, async ({ page }) => {
+				await poHomeChannel.navbar.openChat(getRoomName());
+
+				const banner = page.getByRole('region', { name: 'Classification banner' });
+				await expect(banner).toBeVisible();
+				await expect(banner).toHaveText('UNCLASSIFIED');
+				await expect(banner).toHaveCSS('background-color', convertHexToRGB('#007a33'));
+			});
+		});
 	});
 
 	test('should not show the banner when classification banners are disabled', async ({ page, api }) => {
@@ -115,6 +181,6 @@ test.describe.serial('abac-classification-banner', () => {
 
 		await poHomeChannel.navbar.openChat(room.name as string);
 		await expect(poHomeChannel.composer.inputMessage).toBeVisible();
-		await expect(page.getByRole('region', { name: 'Room attributes' })).toHaveCount(0);
+		await expect(page.getByRole('region', { name: 'Classification banner' })).toHaveCount(0);
 	});
 });
