@@ -11,18 +11,27 @@ export type ModelName = { [K in keyof Models]: Models[K] extends IBaseModel<any,
 export const mockModel = <K extends ModelName>(name: K, double: Partial<Record<keyof Models[K], unknown>>): void =>
 	registerModel(`I${name}Model`, double as unknown as IBaseModel<any>);
 
-export const fakeCursor = <T>(docs: T[]): FindCursor<T> =>
-	({
-		toArray: async () => [...docs],
-		forEach: async (iterator: (doc: T) => boolean | void) => {
-			for (const doc of docs) {
+export const fakeCursor = <T>(docs: T[]): FindCursor<T> => {
+	let read = (): unknown[] => [...docs];
+
+	const cursor = {
+		toArray: async () => read(),
+		forEach: async (iterator: (doc: unknown) => boolean | void) => {
+			for (const doc of read()) {
 				if (iterator(doc) === false) {
 					break;
 				}
 			}
 		},
-		map: <U>(transform: (doc: T) => U) => fakeCursor(docs.map(transform)),
-		async *[Symbol.asyncIterator]() {
-			yield* docs;
+		map: (transform: (doc: unknown) => unknown) => {
+			const previous = read;
+			read = () => previous().map(transform);
+			return cursor;
 		},
-	}) as unknown as FindCursor<T>;
+		async *[Symbol.asyncIterator]() {
+			yield* read();
+		},
+	};
+
+	return cursor as unknown as FindCursor<T>;
+};
