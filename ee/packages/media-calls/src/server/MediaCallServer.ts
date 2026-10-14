@@ -10,7 +10,7 @@ import type {
 
 import { mediaCallDirector } from './CallDirector';
 import { getDefaultSettings } from './getDefaultSettings';
-import { getTurnIceServer } from './getTurnIceServer';
+import { getIceServer } from './getIceServer';
 import { stripSensitiveDataFromSignal } from './stripSensitiveData';
 import type {
 	IMediaCallServer,
@@ -170,11 +170,7 @@ export class MediaCallServer implements IMediaCallServer {
 	}
 
 	public getIceServersForUser(uid: IUser['_id']): RTCIceServer[] {
-		if (!this.settings.turn) {
-			return [];
-		}
-
-		return [getTurnIceServer(this.settings.turn, uid)];
+		return this.settings.iceServers.map((server) => getIceServer(server, uid));
 	}
 
 	/**

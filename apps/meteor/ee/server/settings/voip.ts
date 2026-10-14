@@ -1,5 +1,43 @@
 import { settingsRegistry } from '../../../server/settings';
 
+const iceServerUrl = { type: 'string', pattern: '^(stun|stuns|turn|turns):' };
+
+const turnServersSchema = {
+	type: 'array',
+	items: {
+		type: 'object',
+		required: ['urls'],
+		additionalProperties: false,
+		properties: {
+			urls: { oneOf: [iceServerUrl, { type: 'array', minItems: 1, items: iceServerUrl }] },
+			auth: {
+				oneOf: [
+					{
+						type: 'object',
+						required: ['type', 'username', 'credential'],
+						additionalProperties: false,
+						properties: {
+							type: { const: 'static' },
+							username: { type: 'string', minLength: 1 },
+							credential: { type: 'string', minLength: 1 },
+						},
+					},
+					{
+						type: 'object',
+						required: ['type', 'secret'],
+						additionalProperties: false,
+						properties: {
+							type: { const: 'shared-secret' },
+							secret: { type: 'string', minLength: 1 },
+							ttl: { type: 'integer', minimum: 60 },
+						},
+					},
+				],
+			},
+		},
+	},
+};
+
 export function addSettings(): Promise<void> {
 	return settingsRegistry.addGroup('VoIP_TeamCollab', async function () {
 		await this.with(
@@ -36,37 +74,14 @@ export function addSettings(): Promise<void> {
 						invalidValue: 5000,
 					});
 
-					await this.add('VoIP_TeamCollab_TURN_Auth_Mode', 'static', {
-						type: 'select',
-						values: [
-							{ key: 'static', i18nLabel: 'VoIP_TeamCollab_TURN_Auth_Mode_Static' },
-							{ key: 'shared-secret', i18nLabel: 'VoIP_TeamCollab_TURN_Auth_Mode_Shared_Secret' },
-						],
-						public: false,
-						invalidValue: 'static',
-					});
-
-					const sharedSecretMode = { _id: 'VoIP_TeamCollab_TURN_Auth_Mode', value: 'shared-secret' };
-
 					await this.add('VoIP_TeamCollab_TURN_Servers', '', {
-						type: 'string',
+						type: 'code',
+						code: 'application/json',
+						multiline: true,
 						public: false,
-						invalidValue: '',
-						enableQuery: sharedSecretMode,
-					});
-
-					await this.add('VoIP_TeamCollab_TURN_Shared_Secret', '', {
-						type: 'password',
 						secret: true,
 						invalidValue: '',
-						enableQuery: sharedSecretMode,
-					});
-
-					await this.add('VoIP_TeamCollab_TURN_Credential_TTL', 86400, {
-						type: 'int',
-						public: false,
-						invalidValue: 86400,
-						enableQuery: sharedSecretMode,
+						schema: turnServersSchema,
 					});
 				});
 

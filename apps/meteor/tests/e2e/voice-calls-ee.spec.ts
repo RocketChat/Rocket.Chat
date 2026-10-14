@@ -631,10 +631,11 @@ test.describe('Internal Voice Calls - TURN shared secret - Enterprise Edition', 
 
 	test.beforeAll(async ({ api }) => {
 		await Promise.all([
-			setSettingValueById(api, 'VoIP_TeamCollab_TURN_Auth_Mode', 'shared-secret'),
-			setSettingValueById(api, 'VoIP_TeamCollab_TURN_Servers', turnServer),
-			setSettingValueById(api, 'VoIP_TeamCollab_TURN_Shared_Secret', sharedSecret),
-			setSettingValueById(api, 'VoIP_TeamCollab_TURN_Credential_TTL', credentialTtl),
+			setSettingValueById(
+				api,
+				'VoIP_TeamCollab_TURN_Servers',
+				JSON.stringify([{ urls: turnServer, auth: { type: 'shared-secret', secret: sharedSecret, ttl: credentialTtl } }]),
+			),
 			api.post('/users.setStatus', { status: 'online', username: 'user1' }),
 			api.post('/users.setStatus', { status: 'online', username: 'user2' }),
 		]);
@@ -651,14 +652,7 @@ test.describe('Internal Voice Calls - TURN shared secret - Enterprise Edition', 
 	});
 
 	test.afterAll(async ({ api }) => {
-		await Promise.all([
-			setSettingValueById(api, 'VoIP_TeamCollab_TURN_Auth_Mode', 'static'),
-			setSettingValueById(api, 'VoIP_TeamCollab_TURN_Servers', ''),
-			setSettingValueById(api, 'VoIP_TeamCollab_TURN_Shared_Secret', ''),
-			setSettingValueById(api, 'VoIP_TeamCollab_TURN_Credential_TTL', 86400),
-			caller.page.close(),
-			callee.page.close(),
-		]);
+		await Promise.all([setSettingValueById(api, 'VoIP_TeamCollab_TURN_Servers', ''), caller.page.close(), callee.page.close()]);
 	});
 
 	test('should issue time-limited TURN credentials to the callee without exposing the secret', async () => {

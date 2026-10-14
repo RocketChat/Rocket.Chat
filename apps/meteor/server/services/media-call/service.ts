@@ -8,7 +8,7 @@ import type {
 	IExternalMediaCallHistoryItem,
 } from '@rocket.chat/core-typings';
 import { UserStatus } from '@rocket.chat/core-typings';
-import { callServer, type IMediaCallServerSettings, getSignalsForExistingCall } from '@rocket.chat/media-calls';
+import { callServer, type IceServerConfig, type IMediaCallServerSettings, getSignalsForExistingCall } from '@rocket.chat/media-calls';
 import type {
 	CallFeature,
 	ClientMediaSignal,
@@ -33,6 +33,7 @@ import { i18n } from '../../lib/i18n';
 import { sendMessage } from '../../lib/messages/sendMessage';
 import { createDirectMessage } from '../../meteor-methods/messages/createDirectMessage';
 import { settings } from '../../settings';
+import { getSettingSchemaValidator } from '../../settings/functions/settingSchemas';
 
 export class MediaCallService extends ServiceClassInternal implements IMediaCallService {
 	protected name = 'media-call';
@@ -456,32 +457,28 @@ export class MediaCallService extends ServiceClassInternal implements IMediaCall
 				},
 			},
 			mobileRinging,
-			turn: this.getTurnSharedSecretSettings(),
+			iceServers: this.getIceServerConfigs(),
 			permissionCheck: (uid, callType) => this.userHasMediaCallPermission(uid, callType),
 			isFeatureAvailableForUser: (uid, feature) => this.userHasFeaturePermission(uid, feature),
 		};
 	}
 
-	private getTurnSharedSecretSettings(): IMediaCallServerSettings['turn'] {
-		if (settings.get<string>('VoIP_TeamCollab_TURN_Auth_Mode') !== 'shared-secret') {
-			return undefined;
+	private getIceServerConfigs(): IceServerConfig[] {
+		const config = settings.get<string>('VoIP_TeamCollab_TURN_Servers');
+		if (!config) {
+			return [];
 		}
 
-		const secret = settings.get<string>('VoIP_TeamCollab_TURN_Shared_Secret');
-		const uris = (settings.get<string>('VoIP_TeamCollab_TURN_Servers') ?? '')
-			.split(',')
-			.map((uri) => uri.trim())
-			.filter(Boolean);
-
-		if (!secret || !uris.length) {
-			return undefined;
+		try {
+			const servers: IceServerConfig[] = JSON.parse(config);
+			if (!getSettingSchemaValidator('VoIP_TeamCollab_TURN_Servers')?.(servers)) {
+				throw new Error('TURN servers do not match the setting schema');
+			}
+			return servers;
+		} catch (err) {
+			logger.error({ msg: 'Ignoring invalid TURN servers configuration', err });
+			return [];
 		}
-
-		return {
-			uris,
-			secret,
-			credentialTtl: settings.get<number>('VoIP_TeamCollab_TURN_Credential_TTL') ?? 86400,
-		};
 	}
 
 	private userHasFeaturePermission(_uid: IUser['_id'], feature: CallFeature): boolean {
