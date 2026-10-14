@@ -825,7 +825,7 @@ API.v1.get(
 				type: 'object',
 				properties: {
 					// user shape varies by projection and permissions
-					users: { type: 'array' },
+					users: { type: 'array', items: {} },
 					count: { type: 'number' },
 					offset: { type: 'number' },
 					total: { type: 'number' },
@@ -1645,7 +1645,7 @@ API.v1.get(
 				type: 'object',
 				properties: {
 					// user shape varies by projection and permissions
-					users: { type: 'array' },
+					users: { type: 'array', items: {} },
 					full: { type: 'boolean' },
 					success: { type: 'boolean', enum: [true] },
 				},
@@ -1815,7 +1815,7 @@ API.v1.get(
 				type: 'object',
 				properties: {
 					// autocomplete items shape varies by permissions
-					items: { type: 'array' },
+					items: { type: 'array', items: {} },
 					success: { type: 'boolean', enum: [true] },
 				},
 				required: ['items', 'success'],
@@ -1967,7 +1967,7 @@ API.v1
 				200: ajv.compile<{ teams: unknown[] }>({
 					type: 'object',
 					properties: {
-						teams: { type: 'array' },
+						teams: { type: 'array', items: {} },
 						success: { type: 'boolean', enum: [true] },
 					},
 					required: ['teams', 'success'],

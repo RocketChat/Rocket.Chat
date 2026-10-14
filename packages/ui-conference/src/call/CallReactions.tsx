@@ -1,6 +1,8 @@
 import { css } from '@rocket.chat/css-in-js';
 import { Box, Palette, borderRadius } from '@rocket.chat/fuselage';
 
+import { REACTION_VISIBLE_MS } from './lib/reactions';
+
 export type CallReaction = {
 	id: string;
 	emoji: string;
@@ -18,15 +20,14 @@ const layerStyles = css`
 	position: absolute;
 	left: 1rem;
 	bottom: 1rem;
-	// Tall enough for the whole rise, and no wider than it needs to be, so the call underneath stays clickable.
+	// No wider than it needs to be, so the call underneath stays clickable.
 	width: 20rem;
 	max-width: 60%;
-	height: 15rem;
+	// Unclipped, and as tall as what is in it: a burst stacks the oldest higher, and each must still fade out on its
+	// own rather than be cut off on the way up.
 	pointer-events: none;
-	overflow: hidden;
 	display: flex;
 	flex-direction: column;
-	justify-content: flex-end;
 	align-items: flex-start;
 	gap: 0.25rem;
 `;
@@ -36,8 +37,8 @@ const reactionStyles = css`
 	align-items: center;
 	gap: 0.5rem;
 	max-width: 100%;
-	// Each one lives for the same three seconds the sender's copy does, then takes itself off the layer.
-	animation: rcx-call-reaction-rise 3s ease-out forwards;
+	// Each one lives for the same time the sender's copy does, then takes itself off the layer.
+	animation: rcx-call-reaction-rise ${REACTION_VISIBLE_MS}ms ease-out forwards;
 
 	@keyframes rcx-call-reaction-rise {
 		0% {

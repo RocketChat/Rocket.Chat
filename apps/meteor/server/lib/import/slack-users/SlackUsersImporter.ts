@@ -12,7 +12,7 @@ import type { ImporterProgress } from '../classes/ImporterProgress';
 import type { ImporterInfo } from '../definitions/ImporterInfo';
 
 export class SlackUsersImporter extends Importer {
-	private csvParser: (csv: string) => string[];
+	private csvParser: (csv: string) => string[][];
 
 	constructor(info: ImporterInfo, importRecord: IImport, converterOptions: ConverterOptions = {}) {
 		super(info, importRecord, converterOptions);

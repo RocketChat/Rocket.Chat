@@ -12,14 +12,14 @@ import type { ReactNode } from 'react';
 import { useState, useEffect, useMemo, memo, useRef } from 'react';
 import { useShallow } from 'zustand/shallow';
 
-import { getOmniChatSortQuery } from '../../app/livechat/lib/inquiries';
-import { ClientLogger } from '../../lib/ClientLogger';
+import { getOmniChatSortQuery } from '../../lib/livechat/inquiries';
 import type { OmnichannelContextValue } from '../contexts/OmnichannelContext';
 import { OmnichannelContext } from '../contexts/OmnichannelContext';
 import { useHasLicenseModule } from '../hooks/useHasLicenseModule';
 import { useLivechatInquiryStore } from '../hooks/useLivechatInquiryStore';
 import { useOmnichannelContinuousSoundNotification } from '../hooks/useOmnichannelContinuousSoundNotification';
 import { useShouldPreventAction } from '../hooks/useShouldPreventAction';
+import { ClientLogger } from '../lib/ClientLogger';
 import { initializeLivechatInquiryStream } from '../lib/omnichannel/queueManager';
 
 const emptyContextValue: OmnichannelContextValue = {

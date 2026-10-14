@@ -4,7 +4,7 @@
  */
 import { isE2EEMessage, type IMessage, type IRoom, type IUser } from '@rocket.chat/core-typings';
 
-import { type MentionsParserArgs, MentionsParser } from '../../../../app/mentions/lib/MentionsParser';
+import { type MentionsParserArgs, MentionsParser } from '../../../../lib/MentionsParser';
 import { extractMentionsFromMessageAST } from '../../messages/extractMentionsFromMessageAST';
 
 type MentionsServerArgs = MentionsParserArgs & {

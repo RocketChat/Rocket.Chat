@@ -87,6 +87,7 @@ import { API } from '../api';
 import { MultipartUploadHandler } from '../lib/MultipartUploadHandler';
 import { composeRoomWithLastMessage } from '../lib/composeRoomWithLastMessage';
 import { getPaginationItems } from '../lib/getPaginationItems';
+import { getRoomClassificationBanner } from '../lib/getRoomClassificationBanner';
 import { getUserFromParams } from '../lib/getUserFromParams';
 import {
 	findAdminRoom,
@@ -531,6 +532,7 @@ API.v1.get(
 					room: { type: ['object', 'null'] },
 					team: { type: 'object' },
 					parent: { type: 'object' },
+					classificationBanner: { type: 'object' },
 					success: { type: 'boolean', enum: [true] },
 				},
 				required: ['room', 'success'],
@@ -561,11 +563,13 @@ API.v1.get(
 			}));
 		const { team, parentRoom } = await Team.getRoomInfo(room);
 		const parent = discussionParent || parentRoom;
+		const classificationBanner = await getRoomClassificationBanner(room);
 
 		return API.v1.success({
 			room: await Rooms.findOneByIdOrName(room._id, { projection: fields }),
 			...(team && { team }),
 			...(parent && { parent }),
+			...(classificationBanner && { classificationBanner }),
 		});
 	},
 );

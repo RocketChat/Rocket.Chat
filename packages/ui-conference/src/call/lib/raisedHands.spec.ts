@@ -22,10 +22,19 @@ describe('nameRaisedHands', () => {
 					{ _id: 'bob', username: 'bob' },
 				],
 				'User',
+				'reader',
 			),
 		).toEqual([
 			{ id: 'ada', name: 'Ada Lovelace' },
 			{ id: 'bob', name: 'bob' },
+			{ id: 'ghost', name: 'User' },
+		]);
+	});
+
+	it("marks the reader's own hand", () => {
+		expect(nameRaisedHands(hands, [{ _id: 'bob', name: 'Bob', username: 'bob' }], 'User', 'bob')).toEqual([
+			{ id: 'ada', name: 'User' },
+			{ id: 'bob', name: 'Bob', isLocal: true },
 			{ id: 'ghost', name: 'User' },
 		]);
 	});

@@ -3,6 +3,7 @@ import type { IRocketChatDesktop, IVideoCallWindow } from '@rocket.chat/desktop-
 declare global {
 	interface Window {
 		RocketChatDesktop?: IRocketChatDesktop;
+		/** @deprecated Desktop 4.15–4.17 only; 4.18 and later expose it as `RocketChatDesktop.videoCall`. */
 		videoCallWindow?: IVideoCallWindow;
 		opera?: string;
 	}
