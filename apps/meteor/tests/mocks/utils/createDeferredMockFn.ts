@@ -1,3 +1,5 @@
+import { fn as mockFn } from 'jest-mock';
+
 export function createDeferredPromise<R = void>() {
 	let resolve!: (value: R | PromiseLike<R>) => void;
 	let reject!: (reason?: unknown) => void;
@@ -12,7 +14,7 @@ export function createDeferredPromise<R = void>() {
 
 function createDeferredMockFn<R = void>() {
 	const deferred = createDeferredPromise<R>();
-	const fn = jest.fn(() => deferred.promise);
+	const fn = mockFn(() => deferred.promise);
 	return { ...deferred, fn };
 }
 

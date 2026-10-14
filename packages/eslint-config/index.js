@@ -560,7 +560,7 @@ export default defineConfig(
 	},
 	{
 		name: 'rocket.chat/react-testing',
-		files: ['**/*.stories.@(ts|tsx|mts|cts|js|jsx|mjs|cjs)', '**/*.spec.@(ts|tsx|js|jsx|mjs|cjs)'],
+		files: ['**/*.stories.@(ts|tsx|mts|cts|js|jsx|mjs|cjs)', '**/*.@(spec|test).@(ts|tsx|js|jsx|mjs|cjs)'],
 		rules: {
 			'react/display-name': 'off',
 			'react/no-multi-comp': 'off',

@@ -1,0 +1,7 @@
+{
+	"name": "meteor",
+	"private": true,
+	"exports": {
+		"./*": "./index.ts"
+	}
+}
