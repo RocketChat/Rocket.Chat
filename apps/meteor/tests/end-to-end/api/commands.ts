@@ -244,10 +244,10 @@ describe('[Commands]', () => {
 						roomId: 'GENERAL',
 					})
 					.expect('Content-Type', 'application/json')
-					.expect(400)
+					.expect(403)
 					.expect((res) => {
 						expect(res.body).to.have.property('success', false);
-						expect(res.body).to.have.property('errorType', 'error-not-authorized');
+						expect(res.body).to.have.property('error', 'unauthorized');
 					});
 			});
 		});
@@ -319,10 +319,10 @@ describe('[Commands]', () => {
 						roomId: 'GENERAL',
 					})
 					.expect('Content-Type', 'application/json')
-					.expect(400)
+					.expect(403)
 					.expect((res) => {
 						expect(res.body).to.have.property('success', false);
-						expect(res.body).to.have.property('errorType', 'error-not-authorized');
+						expect(res.body).to.have.property('error', 'unauthorized');
 					});
 			});
 		});
