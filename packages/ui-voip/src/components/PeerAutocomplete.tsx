@@ -6,12 +6,10 @@ import {
 	FieldRow,
 	FieldDescription,
 	FieldError,
-	Icon,
-	Item,
 	ItemContent,
 	ItemIcon,
-	ItemMedia,
 	ItemTitle,
+	Option,
 	StatusBullet,
 } from '@rocket.chat/fuselage';
 import { ITEM_MEDIA_SIZE } from '@rocket.chat/ui-avatar';
@@ -64,43 +62,22 @@ const PeerAutocomplete = ({ options, filter, value, onChangeValue, onChangeFilte
 					onChange={onChangeValue}
 					options={options}
 					value={value}
-					renderItem={({ value, label, selected, focus, ...props }) => {
-						const itemProps = {
-							...props,
-							'is': 'li',
-							'inset': 'md',
-							selected,
-							'focused': focus,
-							'aria-selected': selected,
-						} as const;
-
+					renderItem={({ value, label, ...props }) => {
 						if (isFirstPeerAutocompleteOption(value)) {
-							return (
-								<Item {...itemProps}>
-									<ItemIcon label={t('Call')}>
-										<Icon name='phone-out' size='x16' />
-									</ItemIcon>
-									<ItemContent>
-										<ItemTitle>{label}</ItemTitle>
-									</ItemContent>
-								</Item>
-							);
+							return <Option {...props} label={label} icon='phone-out' iconLabel={t('Call')} />;
 						}
 
 						const thisOption = options.find((option) => option.value === value);
 
 						return (
-							<Item {...itemProps}>
-								<ItemMedia>
-									<Avatar size={ITEM_MEDIA_SIZE.condensed} url={thisOption?.avatarUrl || ''} />
-								</ItemMedia>
+							<Option {...props} avatar={<Avatar size={ITEM_MEDIA_SIZE.condensed} url={thisOption?.avatarUrl || ''} />}>
 								<ItemIcon label={thisOption?.status && t(STATUS_LABEL_KEYS[thisOption.status])}>
 									<StatusBullet status={thisOption?.status} />
 								</ItemIcon>
 								<ItemContent>
 									<ItemTitle>{label}</ItemTitle>
 								</ItemContent>
-							</Item>
+							</Option>
 						);
 					}}
 					renderSelected={() => null}

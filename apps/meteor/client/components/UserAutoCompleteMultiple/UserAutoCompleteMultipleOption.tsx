@@ -1,4 +1,4 @@
-import { Icon, Item, ItemContent, ItemDescription, ItemIcon, ItemMedia, ItemTitle } from '@rocket.chat/fuselage';
+import { Option, OptionDescription } from '@rocket.chat/fuselage';
 import { ITEM_MEDIA_SIZE, UserAvatar } from '@rocket.chat/ui-avatar';
 import { useSetting } from '@rocket.chat/ui-contexts';
 import type { MouseEventHandler } from 'react';
@@ -17,14 +17,7 @@ export type UserAutoCompleteMultipleOptionProps = {
 	onMouseDown?: MouseEventHandler;
 };
 
-const UserAutoCompleteMultipleOption = ({
-	label,
-	value: _value,
-	selected,
-	focus,
-	disabled,
-	...props
-}: UserAutoCompleteMultipleOptionProps) => {
+const UserAutoCompleteMultipleOption = ({ label, ...props }: UserAutoCompleteMultipleOptionProps) => {
 	const { t } = useTranslation();
 	const { name, _federated } = label;
 	const useRealName = useSetting('UI_Use_Real_Name');
@@ -32,33 +25,19 @@ const UserAutoCompleteMultipleOption = ({
 	const showName = useRealName && !!name;
 
 	return (
-		<Item
+		<Option
 			{...props}
-			is='li'
-			inset='md'
-			selected={selected}
-			focused={focus}
-			disabled={disabled}
-			aria-selected={selected}
-			aria-disabled={disabled || undefined}
 			aria-label={username}
-		>
-			{_federated ? (
-				<ItemIcon label={t('Federated')}>
-					<Icon name='globe' size='x16' />
-				</ItemIcon>
-			) : (
-				<ItemMedia>
-					<UserAvatar username={username || ''} size={ITEM_MEDIA_SIZE.condensed} />
-				</ItemMedia>
-			)}
-			<ItemContent>
-				<ItemTitle>
+			avatar={_federated ? undefined : <UserAvatar username={username || ''} size={ITEM_MEDIA_SIZE.condensed} />}
+			icon={_federated ? 'globe' : undefined}
+			iconLabel={_federated ? t('Federated') : undefined}
+			label={
+				<>
 					{showName ? name : username}
-					{showName && !_federated && <ItemDescription inline>@{username}</ItemDescription>}
-				</ItemTitle>
-			</ItemContent>
-		</Item>
+					{showName && !_federated && <OptionDescription>@{username}</OptionDescription>}
+				</>
+			}
+		/>
 	);
 };
 
