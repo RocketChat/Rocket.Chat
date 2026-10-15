@@ -349,26 +349,14 @@ describe('VirtruPDP.evaluateSubjectAgainstRooms', () => {
 	const room = (_id: string) => ({ _id, abacAttributes: [{ key: 'clearance', values: ['secret'] }] });
 	const decision = (value?: Decision) => ({ resourceDecisions: value ? [{ ephemeralResourceId: 'r', decision: value }] : [] });
 
-	it('keeps rooms without attributes as compliant, without calling the PDP', async () => {
-		const apiCall = jest.fn();
-		const pdp = new VirtruPDP(mkClient({ apiCall }));
-
-		await expect(pdp.evaluateSubjectAgainstRooms(user(), [{ _id: 'plain', abacAttributes: [] }, { _id: 'bare' }])).resolves.toEqual({
-			compliant: ['plain', 'bare'],
-			nonCompliant: [],
-			inconclusive: [],
-		});
-		expect(apiCall).not.toHaveBeenCalled();
-	});
-
-	it('asks for every attributed room in one decision call and keeps PERMIT, DENY and the rest apart', async () => {
+	it('asks for every room in one decision call and keeps PERMIT, DENY and the rest apart', async () => {
 		const apiCall = jest.fn().mockResolvedValue({
 			decisionResponses: [decision('DECISION_PERMIT'), decision('DECISION_DENY'), decision()],
 		});
 		const pdp = new VirtruPDP(mkClient({ apiCall }));
 
-		await expect(pdp.evaluateSubjectAgainstRooms(user(), [room('r1'), { _id: 'plain' }, room('r2'), room('r3')])).resolves.toEqual({
-			compliant: ['plain', 'r1'],
+		await expect(pdp.evaluateSubjectAgainstRooms(user(), [room('r1'), room('r2'), room('r3')])).resolves.toEqual({
+			compliant: ['r1'],
 			nonCompliant: ['r2'],
 			inconclusive: ['r3'],
 		});
@@ -379,13 +367,13 @@ describe('VirtruPDP.evaluateSubjectAgainstRooms', () => {
 		expect(decisionRequests[0].entityIdentifier.entityChain.entities[0]).toEqual({ emailAddress: 'bob@x.com' });
 	});
 
-	it('refuses every attributed room to a subject without an entity key, without calling the PDP', async () => {
+	it('refuses every room to a subject without an entity key, without calling the PDP', async () => {
 		const apiCall = jest.fn();
 		const pdp = new VirtruPDP(mkClient({ apiCall }));
 
-		await expect(pdp.evaluateSubjectAgainstRooms(user({ emails: [] }), [room('r1'), { _id: 'plain' }])).resolves.toEqual({
-			compliant: ['plain'],
-			nonCompliant: ['r1'],
+		await expect(pdp.evaluateSubjectAgainstRooms(user({ emails: [] }), [room('r1'), room('r2')])).resolves.toEqual({
+			compliant: [],
+			nonCompliant: ['r1', 'r2'],
 			inconclusive: [],
 		});
 		expect(apiCall).not.toHaveBeenCalled();
