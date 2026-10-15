@@ -1,0 +1,21 @@
+apps/meteor/tests/unit/server/lib/cloud/getWorkspaceAccessTokenWithScope.spec.ts
+  s_70c920316b3494::t_2ea26fedc474be 6-7,107
+  s_70c920316b3494::t_56613b63646874 104,106,127-134
+  s_70c920316b3494::t_6112a724bb893b 1-5,8-103,105,108-126,135-156
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.2",
+  "base_commit_sha": "f7337c5d14885d7ebd6d100cf4ecf1b919af3c6b",
+  "prompts": {},
+  "sessions": {
+    "s_70c920316b3494": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "ce4868bc-9647-401b-bd93-1dfd4a60ffc7",
+        "model": "claude-opus-5-5"
+      },
+      "human_author": "Ricardo Garim <rswarovsky@gmail.com>"
+    }
+  }
+}
