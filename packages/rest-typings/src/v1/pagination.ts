@@ -1,17 +1,4 @@
 /**
- * The offset-pagination contract, in one place.
- *
- * Spread these into a schema's `properties` rather than restating them. Restating them is how the
- * same three fields ended up declared with six different types across the API, and how
- * `commands.list` came to report the collection size in a field meaning the page size.
- *
- * Endpoints that page by cursor (federation's `pageToken`, `chat.history`'s `aroundId`) are a
- * different contract and do not belong here.
- *
- * Pairs with the `PaginatedRequest` / `PaginatedResult` TypeScript helpers.
- */
-
-/**
  * Query params of an offset-paginated request.
  *
  * The descriptions are the point: they reach the generated OpenAPI docs, which is the only place a
@@ -23,10 +10,9 @@ export const paginationQueryProperties = {
 		minimum: 0,
 		nullable: true,
 		description:
-			'How many items to return. The workspace caps it: for a positive `count`, a page holds at most ' +
-			'`min(count, API_Upper_Count_Limit)` items, so a response can be smaller than asked for — page by what ' +
-			'the response carried, never by this number. Omitted, `API_Default_Count` applies. Zero means every item when ' +
-			'`API_Allow_Infinite_Count` is enabled, and `API_Default_Count` otherwise.',
+			'How many items to return. Each workspace sets a maximum page size and lowers any larger value to it, ' +
+			'so a response can hold fewer items than asked for. When omitted, the workspace default page size is used. ' +
+			'Zero returns every item if the workspace allows it, and the default page size otherwise.',
 	},
 	offset: {
 		type: 'integer',
