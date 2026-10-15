@@ -11,7 +11,10 @@ const ClassificationBanner = () => {
 	const room = useRoom();
 	const isABACRoom = useIsABACManagedRoom(room);
 	const bannersEnabled = useSetting('ABAC_Classification_Banners_Enabled', false);
-	const { data: banner } = useRoomAbacInfo(room._id, room.abacAttributes, (data) => data.classificationBanner);
+	const { data: banner } = useRoomAbacInfo(room._id, room.abacAttributes, {
+		enabled: bannersEnabled && isABACRoom,
+		select: (data) => data.classificationBanner,
+	});
 
 	if (!bannersEnabled || !isABACRoom || !banner) {
 		return null;
