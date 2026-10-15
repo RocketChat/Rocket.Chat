@@ -29,6 +29,7 @@
 	"dependencies": {
 		"@rocket.chat/apps-engine": "workspace:^",
 		"@rocket.chat/core-typings": "workspace:^",
+		"@rocket.chat/logger": "workspace:^",
 		"@rocket.chat/model-typings": "workspace:^",
 		"@rocket.chat/tools": "workspace:^",
 		"acorn": "8.17.0",
