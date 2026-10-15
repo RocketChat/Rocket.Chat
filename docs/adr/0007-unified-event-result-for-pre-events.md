@@ -1,4 +1,4 @@
-# ADR 0002 — A unified `EventResult` return type for apps-engine pre-events
+# ADR 0007 — A unified `EventResult` return type for apps-engine pre-events
 
 ## Status
 
