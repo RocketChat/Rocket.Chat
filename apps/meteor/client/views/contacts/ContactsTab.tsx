@@ -9,7 +9,7 @@ import { useTranslation } from 'react-i18next';
 
 import ContactEdit from './ContactEdit';
 import ContactInfo from './ContactInfo';
-import ContactsPageFilters, { useContactsPageFilters } from './ContactsPageFilters';
+import ContactsPageFilters from './ContactsPageFilters';
 import ContactsTable from './ContactsTable';
 import ContactsTableRow from './ContactsTableRow';
 import type { ContactsColumnKey } from './hooks/useContactsColumns';
@@ -34,8 +34,7 @@ const ContactsTab = ({ tab, onChangeTab }: ContactsTabProps) => {
 
 	const listContacts = useEndpoint('GET', '/v1/contacts.list');
 
-	const filterProps = useContactsPageFilters();
-	const { searchText } = filterProps;
+	const [searchText, setSearchText] = useState('');
 	const debouncedSearchText = useDebouncedValue(searchText, 400);
 
 	useEffect(() => {
@@ -60,7 +59,12 @@ const ContactsTab = ({ tab, onChangeTab }: ContactsTabProps) => {
 	});
 
 	const contactFilters = (
-		<ContactsPageFilters {...filterProps} onCreate={() => setPanel({ kind: 'form' })} total={data?.syncedTotal ?? 0} />
+		<ContactsPageFilters
+			searchText={searchText}
+			onChangeText={setSearchText}
+			onCreate={() => setPanel({ kind: 'form' })}
+			total={data?.syncedTotal ?? 0}
+		/>
 	);
 
 	const closePanelOf = (contactId: string) => setPanel((current) => (current?.contact?._id === contactId ? undefined : current));
