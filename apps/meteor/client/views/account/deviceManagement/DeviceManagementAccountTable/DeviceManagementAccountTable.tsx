@@ -1,7 +1,6 @@
 import { useMediaQuery } from '@rocket.chat/fuselage-hooks';
-import { GenericTableHeaderCell, usePagination, useSort } from '@rocket.chat/ui-client';
+import { GenericTableHeaderCell, usePaginatedQuery, useSort } from '@rocket.chat/ui-client';
 import { useEndpoint } from '@rocket.chat/ui-contexts';
-import { useQuery } from '@tanstack/react-query';
 import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -17,22 +16,21 @@ const sortMapping = {
 
 const DeviceManagementAccountTable = () => {
 	const { t } = useTranslation();
-	const { current, itemsPerPage, setCurrent, setItemsPerPage, ...paginationProps } = usePagination();
 	const { sortBy, sortDirection, setSort } = useSort<'client' | 'os' | 'loginAt'>('loginAt');
 
 	const query = useMemo(
 		() => ({
 			sort: JSON.stringify({ [sortMapping[sortBy]]: sortDirection === 'asc' ? 1 : -1 }),
-			count: itemsPerPage,
-			offset: current,
 		}),
-		[itemsPerPage, current, sortBy, sortDirection],
+		[sortBy, sortDirection],
 	);
 
 	const listSessions = useEndpoint('GET', '/v1/sessions/list');
-	const queryResult = useQuery({
-		queryKey: deviceManagementQueryKeys.userSessions(query),
-		queryFn: () => listSessions(query),
+	const queryResult = usePaginatedQuery({
+		query,
+		getQueryKey: (query) => deviceManagementQueryKeys.userSessions(query),
+		queryFn: listSessions,
+		itemsKey: 'sessions',
 	});
 
 	const mediaQuery = useMediaQuery('(min-width: 1024px)');
@@ -69,11 +67,6 @@ const DeviceManagementAccountTable = () => {
 					current={session.current}
 				/>
 			)}
-			current={current}
-			itemsPerPage={itemsPerPage}
-			setCurrent={setCurrent}
-			setItemsPerPage={setItemsPerPage}
-			paginationProps={paginationProps}
 		/>
 	);
 };
