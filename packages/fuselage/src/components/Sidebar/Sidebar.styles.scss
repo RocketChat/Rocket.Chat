@@ -184,8 +184,6 @@ $sidebar-color-stroke-extra-light: theme('sidebar-color-stroke-extra-light', col
 		}
 
 		&__bar.rcx-item-group-header {
-			--rcx-item-inset-inline: #{lengths.margin(12)};
-
 			padding-block: lengths.padding(8);
 		}
 

@@ -16,6 +16,7 @@ export const SidebarItem = ({ selected, level = 1, className, is = 'a', ...props
 	<Item
 		{...props}
 		is={is}
+		inset='md'
 		selected={selected}
 		className={cx('rcx-sidebar-item', !!selected && 'rcx-sidebar-item--selected', !!level && `rcx-sidebar-item--level-${level}`, className)}
 	/>

@@ -17,6 +17,7 @@ export type SidebarLinkProps = {
 const SidebarLink = ({ selected, icon, badge, menu, className, children, ...props }: SidebarLinkProps) => (
 	<Item
 		is='a'
+		inset='md'
 		role='link'
 		tabIndex={0}
 		selected={selected}

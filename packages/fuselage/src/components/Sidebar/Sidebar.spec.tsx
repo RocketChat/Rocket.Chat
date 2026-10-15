@@ -7,6 +7,8 @@ import * as stories from './Sidebar.stories';
 import { SidebarCollapseGroup } from './SidebarCollapseGroup';
 import { SidebarCollapseGroupMenu } from './SidebarCollapseGroupMenu';
 import { SidebarDivider } from './SidebarDivider';
+import { SidebarItem } from './SidebarItem';
+import SidebarLink from './SidebarLink';
 import { render } from '../../testing';
 
 const { Default } = composeStories(stories);
@@ -74,5 +76,23 @@ describe('[SidebarDivider]', () => {
 		render(<SidebarDivider />);
 
 		expect(screen.getByRole('separator')).toHaveClass('rcx-item-divider', 'rcx-sidebar--divider');
+	});
+});
+
+describe('[Sidebar insets]', () => {
+	it('should inset the collapse group header, rows and links by `md`', () => {
+		render(
+			<>
+				<SidebarCollapseGroup title='Favorites' defaultExpanded>
+					<div role='listitem'>general</div>
+				</SidebarCollapseGroup>
+				<SidebarItem href='#general'>general</SidebarItem>
+				<SidebarLink href='#directory'>Directory</SidebarLink>
+			</>,
+		);
+
+		expect(screen.getByRole('button', { name: 'Favorites' }).parentElement).toHaveClass('rcx-item-group-header--inset-md');
+		expect(screen.getByRole('link', { name: 'general' })).toHaveClass('rcx-item--inset-md');
+		expect(screen.getByRole('link', { name: 'Directory' })).toHaveClass('rcx-item--inset-md');
 	});
 });

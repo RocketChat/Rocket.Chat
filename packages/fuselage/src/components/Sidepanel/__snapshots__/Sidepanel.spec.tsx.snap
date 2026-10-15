@@ -73,7 +73,7 @@ exports[`renders Default without crashing 1`] = `
               role="listitem"
             >
               <a
-                class="rcx-item rcx-sidebar-item rcx-sidebar-item--level-2"
+                class="rcx-item rcx-item--inset-md rcx-sidebar-item rcx-sidebar-item--level-2"
                 href="#"
               >
                 <div
@@ -185,7 +185,7 @@ exports[`renders Default without crashing 1`] = `
               role="listitem"
             >
               <a
-                class="rcx-item rcx-sidebar-item rcx-sidebar-item--level-2"
+                class="rcx-item rcx-item--inset-md rcx-sidebar-item rcx-sidebar-item--level-2"
                 href="#"
               >
                 <div
@@ -297,7 +297,7 @@ exports[`renders Default without crashing 1`] = `
               role="listitem"
             >
               <a
-                class="rcx-item rcx-sidebar-item rcx-sidebar-item--level-2"
+                class="rcx-item rcx-item--inset-md rcx-sidebar-item rcx-sidebar-item--level-2"
                 href="#"
               >
                 <div
@@ -409,7 +409,7 @@ exports[`renders Default without crashing 1`] = `
               role="listitem"
             >
               <a
-                class="rcx-item rcx-sidebar-item rcx-sidebar-item--level-2"
+                class="rcx-item rcx-item--inset-md rcx-sidebar-item rcx-sidebar-item--level-2"
                 href="#"
               >
                 <div
@@ -521,7 +521,7 @@ exports[`renders Default without crashing 1`] = `
               role="listitem"
             >
               <a
-                class="rcx-item rcx-sidebar-item rcx-sidebar-item--level-2"
+                class="rcx-item rcx-item--inset-md rcx-sidebar-item rcx-sidebar-item--level-2"
                 href="#"
               >
                 <div
@@ -633,7 +633,7 @@ exports[`renders Default without crashing 1`] = `
               role="listitem"
             >
               <a
-                class="rcx-item rcx-sidebar-item rcx-sidebar-item--level-2"
+                class="rcx-item rcx-item--inset-md rcx-sidebar-item rcx-sidebar-item--level-2"
                 href="#"
               >
                 <div
@@ -745,7 +745,7 @@ exports[`renders Default without crashing 1`] = `
               role="listitem"
             >
               <a
-                class="rcx-item rcx-sidebar-item rcx-sidebar-item--level-2"
+                class="rcx-item rcx-item--inset-md rcx-sidebar-item rcx-sidebar-item--level-2"
                 href="#"
               >
                 <div
@@ -857,7 +857,7 @@ exports[`renders Default without crashing 1`] = `
               role="listitem"
             >
               <a
-                class="rcx-item rcx-sidebar-item rcx-sidebar-item--level-2"
+                class="rcx-item rcx-item--inset-md rcx-sidebar-item rcx-sidebar-item--level-2"
                 href="#"
               >
                 <div
@@ -969,7 +969,7 @@ exports[`renders Default without crashing 1`] = `
               role="listitem"
             >
               <a
-                class="rcx-item rcx-sidebar-item rcx-sidebar-item--level-2"
+                class="rcx-item rcx-item--inset-md rcx-sidebar-item rcx-sidebar-item--level-2"
                 href="#"
               >
                 <div
@@ -1081,7 +1081,7 @@ exports[`renders Default without crashing 1`] = `
               role="listitem"
             >
               <a
-                class="rcx-item rcx-sidebar-item rcx-sidebar-item--level-2"
+                class="rcx-item rcx-item--inset-md rcx-sidebar-item rcx-sidebar-item--level-2"
                 href="#"
               >
                 <div
@@ -1193,7 +1193,7 @@ exports[`renders Default without crashing 1`] = `
               role="listitem"
             >
               <a
-                class="rcx-item rcx-sidebar-item rcx-sidebar-item--level-2"
+                class="rcx-item rcx-item--inset-md rcx-sidebar-item rcx-sidebar-item--level-2"
                 href="#"
               >
                 <div
@@ -1305,7 +1305,7 @@ exports[`renders Default without crashing 1`] = `
               role="listitem"
             >
               <a
-                class="rcx-item rcx-sidebar-item rcx-sidebar-item--level-2"
+                class="rcx-item rcx-item--inset-md rcx-sidebar-item rcx-sidebar-item--level-2"
                 href="#"
               >
                 <div
@@ -1417,7 +1417,7 @@ exports[`renders Default without crashing 1`] = `
               role="listitem"
             >
               <a
-                class="rcx-item rcx-sidebar-item rcx-sidebar-item--level-2"
+                class="rcx-item rcx-item--inset-md rcx-sidebar-item rcx-sidebar-item--level-2"
                 href="#"
               >
                 <div
@@ -1529,7 +1529,7 @@ exports[`renders Default without crashing 1`] = `
               role="listitem"
             >
               <a
-                class="rcx-item rcx-sidebar-item rcx-sidebar-item--level-2"
+                class="rcx-item rcx-item--inset-md rcx-sidebar-item rcx-sidebar-item--level-2"
                 href="#"
               >
                 <div
@@ -1641,7 +1641,7 @@ exports[`renders Default without crashing 1`] = `
               role="listitem"
             >
               <a
-                class="rcx-item rcx-sidebar-item rcx-sidebar-item--level-2"
+                class="rcx-item rcx-item--inset-md rcx-sidebar-item rcx-sidebar-item--level-2"
                 href="#"
               >
                 <div
@@ -1753,7 +1753,7 @@ exports[`renders Default without crashing 1`] = `
               role="listitem"
             >
               <a
-                class="rcx-item rcx-sidebar-item rcx-sidebar-item--level-2"
+                class="rcx-item rcx-item--inset-md rcx-sidebar-item rcx-sidebar-item--level-2"
                 href="#"
               >
                 <div
@@ -1865,7 +1865,7 @@ exports[`renders Default without crashing 1`] = `
               role="listitem"
             >
               <a
-                class="rcx-item rcx-sidebar-item rcx-sidebar-item--level-2"
+                class="rcx-item rcx-item--inset-md rcx-sidebar-item rcx-sidebar-item--level-2"
                 href="#"
               >
                 <div
@@ -1977,7 +1977,7 @@ exports[`renders Default without crashing 1`] = `
               role="listitem"
             >
               <a
-                class="rcx-item rcx-sidebar-item rcx-sidebar-item--level-2"
+                class="rcx-item rcx-item--inset-md rcx-sidebar-item rcx-sidebar-item--level-2"
                 href="#"
               >
                 <div
@@ -2089,7 +2089,7 @@ exports[`renders Default without crashing 1`] = `
               role="listitem"
             >
               <a
-                class="rcx-item rcx-sidebar-item rcx-sidebar-item--level-2"
+                class="rcx-item rcx-item--inset-md rcx-sidebar-item rcx-sidebar-item--level-2"
                 href="#"
               >
                 <div
@@ -2201,7 +2201,7 @@ exports[`renders Default without crashing 1`] = `
               role="listitem"
             >
               <a
-                class="rcx-item rcx-sidebar-item rcx-sidebar-item--level-2"
+                class="rcx-item rcx-item--inset-md rcx-sidebar-item rcx-sidebar-item--level-2"
                 href="#"
               >
                 <div

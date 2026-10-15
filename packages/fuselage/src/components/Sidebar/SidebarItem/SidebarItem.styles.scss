@@ -79,12 +79,8 @@ $sidebar-color-font-active: theme('sidebar-color-font-active', colors.font(title
 		}
 	}
 
-	&.rcx-item {
-		--rcx-item-inset-inline: #{lengths.margin(12)};
-
-		&.rcx-sidebar-item--level-2 {
-			padding-block: lengths.padding(8);
-		}
+	&.rcx-item.rcx-sidebar-item--level-2 {
+		padding-block: lengths.padding(8);
 	}
 
 	&--level-2:not(.rcx-item) {

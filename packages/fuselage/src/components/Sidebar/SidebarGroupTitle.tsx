@@ -31,6 +31,7 @@ export const SidebarGroupTitle = ({
 }: SidebarGroupTitleProps) => (
 	<ItemGroupHeader
 		{...(props as Omit<HTMLAttributes<HTMLDivElement>, 'is'>)}
+		inset='md'
 		className={cx(
 			'rcx-sidebar-collapse-group__bar',
 			!expanded && empty && 'rcx-sidebar-collapse-group__bar--empty',

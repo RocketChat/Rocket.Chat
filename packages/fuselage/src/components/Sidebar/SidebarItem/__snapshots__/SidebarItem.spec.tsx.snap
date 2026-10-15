@@ -52,7 +52,7 @@ exports[`[SidebarItem Component] renders Condensed without crashing 1`] = `
                   role="group"
                 >
                   <div
-                    class="rcx-item-group-header rcx-sidebar-collapse-group__bar"
+                    class="rcx-item-group-header rcx-item-group-header--inset-md rcx-sidebar-collapse-group__bar"
                   >
                     <div
                       aria-controls="_r_3_"
@@ -123,7 +123,7 @@ exports[`[SidebarItem Component] renders Condensed without crashing 1`] = `
                       role="listitem"
                     >
                       <a
-                        class="rcx-item rcx-sidebar-item rcx-sidebar-item--level-1"
+                        class="rcx-item rcx-item--inset-md rcx-sidebar-item rcx-sidebar-item--level-1"
                         href="#"
                       >
                         <div
@@ -220,7 +220,7 @@ exports[`[SidebarItem Component] renders Condensed without crashing 1`] = `
                       role="listitem"
                     >
                       <a
-                        class="rcx-item rcx-sidebar-item rcx-sidebar-item--level-1"
+                        class="rcx-item rcx-item--inset-md rcx-sidebar-item rcx-sidebar-item--level-1"
                         href="#"
                       >
                         <div
@@ -294,7 +294,7 @@ exports[`[SidebarItem Component] renders Condensed without crashing 1`] = `
                       role="listitem"
                     >
                       <a
-                        class="rcx-item rcx-item--selected rcx-sidebar-item rcx-sidebar-item--selected rcx-sidebar-item--level-1"
+                        class="rcx-item rcx-item--inset-md rcx-item--selected rcx-sidebar-item rcx-sidebar-item--selected rcx-sidebar-item--level-1"
                         href="#"
                       >
                         <div
@@ -362,7 +362,7 @@ exports[`[SidebarItem Component] renders Condensed without crashing 1`] = `
                       role="listitem"
                     >
                       <a
-                        class="rcx-item rcx-sidebar-item rcx-sidebar-item--level-1"
+                        class="rcx-item rcx-item--inset-md rcx-sidebar-item rcx-sidebar-item--level-1"
                         href="#"
                       >
                         <div
@@ -436,7 +436,7 @@ exports[`[SidebarItem Component] renders Condensed without crashing 1`] = `
                       role="listitem"
                     >
                       <a
-                        class="rcx-item rcx-sidebar-item rcx-sidebar-item--level-1"
+                        class="rcx-item rcx-item--inset-md rcx-sidebar-item rcx-sidebar-item--level-1"
                         href="#"
                       >
                         <div
@@ -504,7 +504,7 @@ exports[`[SidebarItem Component] renders Condensed without crashing 1`] = `
                       role="listitem"
                     >
                       <a
-                        class="rcx-item rcx-sidebar-item rcx-sidebar-item--level-1"
+                        class="rcx-item rcx-item--inset-md rcx-sidebar-item rcx-sidebar-item--level-1"
                         href="#"
                       >
                         <div
@@ -578,7 +578,7 @@ exports[`[SidebarItem Component] renders Condensed without crashing 1`] = `
                       role="listitem"
                     >
                       <a
-                        class="rcx-item rcx-sidebar-item rcx-sidebar-item--level-1"
+                        class="rcx-item rcx-item--inset-md rcx-sidebar-item rcx-sidebar-item--level-1"
                         href="#"
                       >
                         <div
@@ -646,7 +646,7 @@ exports[`[SidebarItem Component] renders Condensed without crashing 1`] = `
                       role="listitem"
                     >
                       <a
-                        class="rcx-item rcx-sidebar-item rcx-sidebar-item--level-1"
+                        class="rcx-item rcx-item--inset-md rcx-sidebar-item rcx-sidebar-item--level-1"
                         href="#"
                       >
                         <div
@@ -793,7 +793,7 @@ exports[`[SidebarItem Component] renders CondensedItems without crashing 1`] = `
                   role="group"
                 >
                   <div
-                    class="rcx-item-group-header rcx-sidebar-collapse-group__bar"
+                    class="rcx-item-group-header rcx-item-group-header--inset-md rcx-sidebar-collapse-group__bar"
                   >
                     <div
                       aria-controls="_r_12_"
@@ -864,7 +864,7 @@ exports[`[SidebarItem Component] renders CondensedItems without crashing 1`] = `
                       role="listitem"
                     >
                       <a
-                        class="rcx-item rcx-sidebar-item rcx-sidebar-item--level-1"
+                        class="rcx-item rcx-item--inset-md rcx-sidebar-item rcx-sidebar-item--level-1"
                         href="#"
                       >
                         <div
@@ -961,7 +961,7 @@ exports[`[SidebarItem Component] renders CondensedItems without crashing 1`] = `
                       role="listitem"
                     >
                       <a
-                        class="rcx-item rcx-sidebar-item rcx-sidebar-item--level-1"
+                        class="rcx-item rcx-item--inset-md rcx-sidebar-item rcx-sidebar-item--level-1"
                         href="#"
                       >
                         <div
@@ -1035,7 +1035,7 @@ exports[`[SidebarItem Component] renders CondensedItems without crashing 1`] = `
                       role="listitem"
                     >
                       <a
-                        class="rcx-item rcx-item--selected rcx-sidebar-item rcx-sidebar-item--selected rcx-sidebar-item--level-1"
+                        class="rcx-item rcx-item--inset-md rcx-item--selected rcx-sidebar-item rcx-sidebar-item--selected rcx-sidebar-item--level-1"
                         href="#"
                       >
                         <div
@@ -1103,7 +1103,7 @@ exports[`[SidebarItem Component] renders CondensedItems without crashing 1`] = `
                       role="listitem"
                     >
                       <a
-                        class="rcx-item rcx-sidebar-item rcx-sidebar-item--level-1"
+                        class="rcx-item rcx-item--inset-md rcx-sidebar-item rcx-sidebar-item--level-1"
                         href="#"
                       >
                         <div
@@ -1177,7 +1177,7 @@ exports[`[SidebarItem Component] renders CondensedItems without crashing 1`] = `
                       role="listitem"
                     >
                       <a
-                        class="rcx-item rcx-sidebar-item rcx-sidebar-item--level-1"
+                        class="rcx-item rcx-item--inset-md rcx-sidebar-item rcx-sidebar-item--level-1"
                         href="#"
                       >
                         <div
@@ -1245,7 +1245,7 @@ exports[`[SidebarItem Component] renders CondensedItems without crashing 1`] = `
                       role="listitem"
                     >
                       <a
-                        class="rcx-item rcx-sidebar-item rcx-sidebar-item--level-1"
+                        class="rcx-item rcx-item--inset-md rcx-sidebar-item rcx-sidebar-item--level-1"
                         href="#"
                       >
                         <div
@@ -1319,7 +1319,7 @@ exports[`[SidebarItem Component] renders CondensedItems without crashing 1`] = `
                       role="listitem"
                     >
                       <a
-                        class="rcx-item rcx-sidebar-item rcx-sidebar-item--level-1"
+                        class="rcx-item rcx-item--inset-md rcx-sidebar-item rcx-sidebar-item--level-1"
                         href="#"
                       >
                         <div
@@ -1387,7 +1387,7 @@ exports[`[SidebarItem Component] renders CondensedItems without crashing 1`] = `
                       role="listitem"
                     >
                       <a
-                        class="rcx-item rcx-sidebar-item rcx-sidebar-item--level-1"
+                        class="rcx-item rcx-item--inset-md rcx-sidebar-item rcx-sidebar-item--level-1"
                         href="#"
                       >
                         <div
@@ -1534,7 +1534,7 @@ exports[`[SidebarItem Component] renders Extended without crashing 1`] = `
                   role="group"
                 >
                   <div
-                    class="rcx-item-group-header rcx-sidebar-collapse-group__bar"
+                    class="rcx-item-group-header rcx-item-group-header--inset-md rcx-sidebar-collapse-group__bar"
                   >
                     <div
                       aria-controls="_r_21_"
@@ -1605,7 +1605,7 @@ exports[`[SidebarItem Component] renders Extended without crashing 1`] = `
                       role="listitem"
                     >
                       <a
-                        class="rcx-item rcx-sidebar-item rcx-sidebar-item--level-1"
+                        class="rcx-item rcx-item--inset-md rcx-sidebar-item rcx-sidebar-item--level-1"
                         href="#"
                       >
                         <div
@@ -1701,7 +1701,7 @@ exports[`[SidebarItem Component] renders Extended without crashing 1`] = `
                       role="listitem"
                     >
                       <a
-                        class="rcx-item rcx-sidebar-item rcx-sidebar-item--level-1"
+                        class="rcx-item rcx-item--inset-md rcx-sidebar-item rcx-sidebar-item--level-1"
                         href="#"
                       >
                         <div
@@ -1797,7 +1797,7 @@ exports[`[SidebarItem Component] renders Extended without crashing 1`] = `
                       role="listitem"
                     >
                       <a
-                        class="rcx-item rcx-sidebar-item rcx-sidebar-item--level-1"
+                        class="rcx-item rcx-item--inset-md rcx-sidebar-item rcx-sidebar-item--level-1"
                         href="#"
                       >
                         <div
@@ -1893,7 +1893,7 @@ exports[`[SidebarItem Component] renders Extended without crashing 1`] = `
                       role="listitem"
                     >
                       <a
-                        class="rcx-item rcx-sidebar-item rcx-sidebar-item--level-1"
+                        class="rcx-item rcx-item--inset-md rcx-sidebar-item rcx-sidebar-item--level-1"
                         href="#"
                       >
                         <div
@@ -1989,7 +1989,7 @@ exports[`[SidebarItem Component] renders Extended without crashing 1`] = `
                       role="listitem"
                     >
                       <a
-                        class="rcx-item rcx-sidebar-item rcx-sidebar-item--level-1"
+                        class="rcx-item rcx-item--inset-md rcx-sidebar-item rcx-sidebar-item--level-1"
                         href="#"
                       >
                         <div
@@ -2085,7 +2085,7 @@ exports[`[SidebarItem Component] renders Extended without crashing 1`] = `
                       role="listitem"
                     >
                       <a
-                        class="rcx-item rcx-sidebar-item rcx-sidebar-item--level-1"
+                        class="rcx-item rcx-item--inset-md rcx-sidebar-item rcx-sidebar-item--level-1"
                         href="#"
                       >
                         <div
@@ -2181,7 +2181,7 @@ exports[`[SidebarItem Component] renders Extended without crashing 1`] = `
                       role="listitem"
                     >
                       <a
-                        class="rcx-item rcx-sidebar-item rcx-sidebar-item--level-1"
+                        class="rcx-item rcx-item--inset-md rcx-sidebar-item rcx-sidebar-item--level-1"
                         href="#"
                       >
                         <div
@@ -2277,7 +2277,7 @@ exports[`[SidebarItem Component] renders Extended without crashing 1`] = `
                       role="listitem"
                     >
                       <a
-                        class="rcx-item rcx-sidebar-item rcx-sidebar-item--level-1"
+                        class="rcx-item rcx-item--inset-md rcx-sidebar-item rcx-sidebar-item--level-1"
                         href="#"
                       >
                         <div
@@ -2446,7 +2446,7 @@ exports[`[SidebarItem Component] renders Medium without crashing 1`] = `
                   role="group"
                 >
                   <div
-                    class="rcx-item-group-header rcx-sidebar-collapse-group__bar"
+                    class="rcx-item-group-header rcx-item-group-header--inset-md rcx-sidebar-collapse-group__bar"
                   >
                     <div
                       aria-controls="_r_30_"
@@ -2517,7 +2517,7 @@ exports[`[SidebarItem Component] renders Medium without crashing 1`] = `
                       role="listitem"
                     >
                       <a
-                        class="rcx-item rcx-sidebar-item rcx-sidebar-item--level-1"
+                        class="rcx-item rcx-item--inset-md rcx-sidebar-item rcx-sidebar-item--level-1"
                         href="#"
                       >
                         <div
@@ -2591,7 +2591,7 @@ exports[`[SidebarItem Component] renders Medium without crashing 1`] = `
                       role="listitem"
                     >
                       <a
-                        class="rcx-item rcx-sidebar-item rcx-sidebar-item--level-1"
+                        class="rcx-item rcx-item--inset-md rcx-sidebar-item rcx-sidebar-item--level-1"
                         href="#"
                       >
                         <div
@@ -2665,7 +2665,7 @@ exports[`[SidebarItem Component] renders Medium without crashing 1`] = `
                       role="listitem"
                     >
                       <a
-                        class="rcx-item rcx-sidebar-item rcx-sidebar-item--level-1"
+                        class="rcx-item rcx-item--inset-md rcx-sidebar-item rcx-sidebar-item--level-1"
                         href="#"
                       >
                         <div
@@ -2739,7 +2739,7 @@ exports[`[SidebarItem Component] renders Medium without crashing 1`] = `
                       role="listitem"
                     >
                       <a
-                        class="rcx-item rcx-sidebar-item rcx-sidebar-item--level-1"
+                        class="rcx-item rcx-item--inset-md rcx-sidebar-item rcx-sidebar-item--level-1"
                         href="#"
                       >
                         <div
@@ -2813,7 +2813,7 @@ exports[`[SidebarItem Component] renders Medium without crashing 1`] = `
                       role="listitem"
                     >
                       <a
-                        class="rcx-item rcx-sidebar-item rcx-sidebar-item--level-1"
+                        class="rcx-item rcx-item--inset-md rcx-sidebar-item rcx-sidebar-item--level-1"
                         href="#"
                       >
                         <div
@@ -2887,7 +2887,7 @@ exports[`[SidebarItem Component] renders Medium without crashing 1`] = `
                       role="listitem"
                     >
                       <a
-                        class="rcx-item rcx-sidebar-item rcx-sidebar-item--level-1"
+                        class="rcx-item rcx-item--inset-md rcx-sidebar-item rcx-sidebar-item--level-1"
                         href="#"
                       >
                         <div
@@ -2961,7 +2961,7 @@ exports[`[SidebarItem Component] renders Medium without crashing 1`] = `
                       role="listitem"
                     >
                       <a
-                        class="rcx-item rcx-sidebar-item rcx-sidebar-item--level-1"
+                        class="rcx-item rcx-item--inset-md rcx-sidebar-item rcx-sidebar-item--level-1"
                         href="#"
                       >
                         <div
@@ -3035,7 +3035,7 @@ exports[`[SidebarItem Component] renders Medium without crashing 1`] = `
                       role="listitem"
                     >
                       <a
-                        class="rcx-item rcx-sidebar-item rcx-sidebar-item--level-1"
+                        class="rcx-item rcx-item--inset-md rcx-sidebar-item rcx-sidebar-item--level-1"
                         href="#"
                       >
                         <div
