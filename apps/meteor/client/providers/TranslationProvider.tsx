@@ -125,6 +125,13 @@ const useI18next = (lng: string): typeof i18next => {
 			}
 			return capitalize(value);
 		});
+		// The inverse: a label interpolated mid-sentence reads lowercase; locales that capitalize nouns leave it out
+		i18n.services.formatter?.add('lowercase', (value, lng) => {
+			if (typeof value !== 'string') {
+				return value;
+			}
+			return value.toLocaleLowerCase(lng);
+		});
 	}
 
 	useEffect(() => {

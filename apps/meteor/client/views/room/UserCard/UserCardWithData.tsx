@@ -45,6 +45,7 @@ const UserCardWithData = ({ username, rid, onOpenUserInfo, onClose }: UserCardWi
 		const {
 			_id,
 			name,
+			title,
 			roles = defaultValue,
 			utcOffset = defaultValue,
 			nickname,
@@ -57,6 +58,7 @@ const UserCardWithData = ({ username, rid, onOpenUserInfo, onClose }: UserCardWi
 			_id,
 			name: getUserDisplayName(name, username, showRealNames),
 			username,
+			title,
 			roles: roles && getRoles(roles).map((role, index) => <UserCardRole key={index}>{role}</UserCardRole>),
 			etag: avatarETag,
 			localTime: typeof utcOffset === 'number' && Number.isFinite(utcOffset) && <LocalTime utcOffset={utcOffset} />,

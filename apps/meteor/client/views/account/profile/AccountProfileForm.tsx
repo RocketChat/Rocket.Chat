@@ -33,6 +33,7 @@ import { Controller, useFormContext } from 'react-hook-form';
 
 import type { AccountProfileFormValues } from './getProfileInitialValues';
 import { useAccountProfileSettings } from './useAccountProfileSettings';
+import { USER_PROFILE_FIELD_MAX_LENGTH, USER_PROFILE_LANGUAGES_MAX_COUNT } from '../../../../lib/constants';
 import { getUserEmailAddress } from '../../../../lib/getUserEmailAddress';
 import UserAutoCompleteMultiple from '../../../components/UserAutoCompleteMultiple';
 import { UserStatus as UserStatusIndicator } from '../../../components/UserStatus';
@@ -155,6 +156,9 @@ const AccountProfileForm = (props: AllHTMLAttributes<HTMLFormElement>) => {
 			statusCustomTime,
 			nickname,
 			bio,
+			title,
+			nationality,
+			languages,
 			customFields,
 			statusVisibilityDenied,
 		} = values;
@@ -180,6 +184,14 @@ const AccountProfileForm = (props: AllHTMLAttributes<HTMLFormElement>) => {
 			...(dirtyFields.username && { username }),
 			...(dirtyFields.nickname && { nickname }),
 			...(dirtyFields.bio && { bio }),
+			...(dirtyFields.title && { title }),
+			...(dirtyFields.nationality && { nationality }),
+			...(dirtyFields.languages && {
+				languages: languages
+					.split(',')
+					.map((language) => language.trim())
+					.filter(Boolean),
+			}),
 		};
 		const customFieldsDirty = Boolean(dirtyFields.customFields);
 		const basicInfoDirty = Object.keys(basicInfoData).length > 0 || customFieldsDirty;
@@ -432,6 +444,61 @@ const AccountProfileForm = (props: AllHTMLAttributes<HTMLFormElement>) => {
 						/>
 					</FieldRow>
 					{errors.bio && <FieldError>{errors.bio.message}</FieldError>}
+				</Field>
+				<Field>
+					<FieldLabel>{t('Title')}</FieldLabel>
+					<FieldRow>
+						<Controller
+							control={control}
+							name='title'
+							rules={{
+								maxLength: { value: USER_PROFILE_FIELD_MAX_LENGTH, message: t('Max_length_is', { limit: USER_PROFILE_FIELD_MAX_LENGTH }) },
+							}}
+							render={({ field }) => <TextInput {...field} flexGrow={1} error={errors.title?.message} />}
+						/>
+					</FieldRow>
+					{errors.title && <FieldError>{errors.title.message}</FieldError>}
+				</Field>
+				<Field>
+					<FieldLabel>{t('Nationality')}</FieldLabel>
+					<FieldRow>
+						<Controller
+							control={control}
+							name='nationality'
+							rules={{
+								maxLength: { value: USER_PROFILE_FIELD_MAX_LENGTH, message: t('Max_length_is', { limit: USER_PROFILE_FIELD_MAX_LENGTH }) },
+							}}
+							render={({ field }) => <TextInput {...field} flexGrow={1} error={errors.nationality?.message} />}
+						/>
+					</FieldRow>
+					{errors.nationality && <FieldError>{errors.nationality.message}</FieldError>}
+				</Field>
+				<Field>
+					<FieldLabel>{t('Languages')}</FieldLabel>
+					<FieldRow>
+						<Controller
+							control={control}
+							name='languages'
+							rules={{
+								validate: (value) => {
+									const items = value
+										.split(',')
+										.map((language) => language.trim())
+										.filter(Boolean);
+									if (items.length > USER_PROFILE_LANGUAGES_MAX_COUNT) {
+										return t('Max_number_of_items_is', { limit: USER_PROFILE_LANGUAGES_MAX_COUNT });
+									}
+									if (items.some((language) => language.length > USER_PROFILE_FIELD_MAX_LENGTH)) {
+										return t('Max_length_is', { limit: USER_PROFILE_FIELD_MAX_LENGTH });
+									}
+									return true;
+								},
+							}}
+							render={({ field }) => <TextInput {...field} flexGrow={1} error={errors.languages?.message} />}
+						/>
+					</FieldRow>
+					<FieldHint>{t('Languages_hint')}</FieldHint>
+					{errors.languages && <FieldError>{errors.languages.message}</FieldError>}
 				</Field>
 				<Field>
 					<FieldLabel required>{t('Email')}</FieldLabel>

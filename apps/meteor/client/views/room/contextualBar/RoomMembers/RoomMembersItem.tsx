@@ -1,16 +1,6 @@
 import { useFocusRing } from '@react-aria/focus';
 import type { IRoom } from '@rocket.chat/core-typings';
-import {
-	Option,
-	OptionAvatar,
-	OptionColumn,
-	OptionDescription,
-	OptionMenu,
-	OptionContent,
-	Icon,
-	IconButton,
-	OptionSkeleton,
-} from '@rocket.chat/fuselage';
+import { Option, OptionAvatar, OptionColumn, OptionMenu, OptionContent, Icon, IconButton, OptionSkeleton } from '@rocket.chat/fuselage';
 import { usePrefersReducedMotion } from '@rocket.chat/fuselage-hooks';
 import { UserAvatar } from '@rocket.chat/ui-avatar';
 import type { KeyboardEvent, MouseEvent } from 'react';
@@ -49,7 +39,7 @@ const RoomMembersItem = ({
 	const isInvited = subscription?.status === 'INVITED';
 	const invitationDate = isInvited ? subscription?.ts : undefined;
 	const preventPropagation = usePreventPropagation();
-	const [nameOrUsername, displayUsername] = getUserDisplayNames(name, username, useRealName);
+	const [nameOrUsername] = getUserDisplayNames(name, username, useRealName);
 
 	const statusTooltipHandlers = useUserStatusTooltip(_id);
 
@@ -93,9 +83,7 @@ const RoomMembersItem = ({
 				<UserAvatar username={username || ''} size='x28' />
 			</OptionAvatar>
 			<OptionColumn>{federated ? <Icon name='globe' size='x16' /> : <ReactiveUserStatus uid={_id} />}</OptionColumn>
-			<OptionContent data-qa={`MemberItem-${username}`}>
-				{nameOrUsername} {displayUsername && <OptionDescription>@{displayUsername}</OptionDescription>}
-			</OptionContent>
+			<OptionContent data-qa={`MemberItem-${username}`}>{nameOrUsername}</OptionContent>
 			{subscription?.status === 'INVITED' && (
 				<OptionColumn>
 					<InvitationBadge marginBlockStart={2} size='x20' invitationDate={subscription.ts} />

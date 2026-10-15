@@ -103,7 +103,7 @@ export const useMuteUserAction = (user: Pick<IUser, '_id' | 'username'>, rid: IR
 
 		return roomCanMute && userCanMute && user._id !== ownUserId
 			? {
-					content: t(isMuted ? 'Unmute_user' : 'Mute_user'),
+					content: t(isMuted ? 'Unmute' : 'Mute'),
 					icon: isMuted ? ('mic' as const) : ('mic-off' as const),
 					onClick: action,
 					type: 'management' as UserInfoActionType,

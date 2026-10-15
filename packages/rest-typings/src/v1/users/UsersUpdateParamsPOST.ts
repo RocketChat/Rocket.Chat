@@ -14,6 +14,9 @@ export type UsersUpdateParamsPOST = {
 		statusVisibilityDeniedByAdmin?: string[];
 		bio?: string;
 		nickname?: string;
+		title?: string | null;
+		nationality?: string | null;
+		languages?: string[] | null;
 		statusText?: string;
 		roles?: string[];
 		requirePasswordChange?: boolean;
@@ -60,6 +63,25 @@ const UsersUpdateParamsPostSchema = {
 				},
 				bio: {
 					type: 'string',
+					nullable: true,
+				},
+				title: {
+					type: 'string',
+					maxLength: 260,
+					nullable: true,
+				},
+				nationality: {
+					type: 'string',
+					maxLength: 260,
+					nullable: true,
+				},
+				languages: {
+					type: 'array',
+					items: {
+						type: 'string',
+						maxLength: 260,
+					},
+					maxItems: 20,
 					nullable: true,
 				},
 				nickname: {
