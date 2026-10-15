@@ -32,7 +32,7 @@ const ContactPanelRouter = ({ contactId, context, onOpenInfo, onOpenEdit, onClos
 	}, [isError, onClose]);
 
 	if (contactId === 'new') {
-		return <ContactEdit key={'new'} onSaved={({ _id }) => onOpenInfo(_id)} onClose={onClose} />;
+		return <ContactEdit key='new' onSaved={({ _id }) => onOpenInfo(_id)} onClose={onClose} />;
 	}
 
 	if (!data) {
