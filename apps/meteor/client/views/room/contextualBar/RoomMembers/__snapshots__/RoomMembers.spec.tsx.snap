@@ -1070,7 +1070,7 @@ exports[`renders WithLockedABACRoom without crashing 1`] = `
                 
               </i>
               <h5
-                class="rcx-box rcx-box--full rcx-css-1spko5i"
+                class="rcx-box rcx-box--full rcx-css-1t0ey6j"
                 id="contextualbarTitle"
               >
                 Members
@@ -1107,7 +1107,7 @@ exports[`renders WithLockedABACRoom without crashing 1`] = `
               class="rcx-box rcx-box--full rcx-css-l1qvi5"
             >
               <div
-                class="rcx-box rcx-box--full rcx-css-1mbgoc8"
+                class="rcx-box rcx-box--full rcx-css-1ds37nf"
               >
                 <div
                   aria-hidden="true"
@@ -1139,7 +1139,7 @@ exports[`renders WithLockedABACRoom without crashing 1`] = `
                 aria-expanded="false"
                 aria-haspopup="listbox"
                 aria-labelledby="react-aria-_r_1r_"
-                class="rcx-box rcx-box--full rcx-box--animated rcx-select rcx-css-1vw6rc6"
+                class="rcx-box rcx-box--full rcx-box--animated rcx-select rcx-css-3ejkxj"
                 type="button"
               >
                 <span
@@ -1167,10 +1167,10 @@ exports[`renders WithLockedABACRoom without crashing 1`] = `
               __count__result_found
             </div>
             <div
-              class="rcx-box rcx-box--full rcx-css-nyqak3"
+              class="rcx-box rcx-box--full rcx-css-mmr5oq"
             >
               <span
-                class="rcx-box rcx-box--full rcx-css-11p0js0"
+                class="rcx-box rcx-box--full rcx-css-1ypjvb3"
               >
                 Showing_current_of_total
               </span>
