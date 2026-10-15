@@ -64,15 +64,10 @@ const MonitorsTable = () => {
 		500,
 	);
 
-	const {
-		paginatedQuery,
-		queryKey,
-		current,
-		itemsPerPage,
-		setItemsPerPage: onSetItemsPerPage,
-		setCurrent: onSetCurrent,
-		...paginationProps
-	} = usePagination({ query, getQueryKey: (query) => ['omnichannel', 'monitors', query] });
+	const { paginatedQuery, queryKey, paginationProps } = usePagination({
+		query,
+		getQueryKey: (query) => ['omnichannel', 'monitors', query],
+	});
 
 	const { data, refetch, isLoading, isSuccess, isError } = useQuery({
 		queryKey,
@@ -185,14 +180,7 @@ const MonitorsTable = () => {
 							))}
 						</GenericTableBody>
 					</GenericTable>
-					<Pagination
-						divider
-						current={current}
-						itemsPerPage={itemsPerPage}
-						onSetItemsPerPage={onSetItemsPerPage}
-						onSetCurrent={onSetCurrent}
-						{...paginationProps}
-					/>
+					<Pagination divider {...paginationProps} />
 				</>
 			)}
 			{isError && (

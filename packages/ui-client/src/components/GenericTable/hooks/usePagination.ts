@@ -1,7 +1,8 @@
+import type { Pagination } from '@rocket.chat/fuselage';
 import { useStableCallback } from '@rocket.chat/fuselage-hooks';
 import type { QueryState } from '@tanstack/react-query';
-import { useQueryClient } from '@tanstack/react-query';
-import type { SetStateAction } from 'react';
+import { hashKey, useQueryClient } from '@tanstack/react-query';
+import type { ComponentProps, SetStateAction } from 'react';
 import { useEffect, useMemo, useState } from 'react';
 
 import { useCurrent } from './useCurrent';
@@ -24,13 +25,21 @@ type UsePaginationResult = {
 	itemsPerPage: ReturnType<typeof useItemsPerPage>[0];
 	setItemsPerPage: ReturnType<typeof useItemsPerPage>[1];
 	itemsPerPageLabel: ReturnType<typeof useItemsPerPageLabel>;
-	showingResultsLabel: () => string;
+	showingResultsLabel: ReturnType<typeof useShowingResultsLabel>;
 };
 
-type UsePaginatedQueryResult<TQuery> = UsePaginationResult & {
+type UsePaginatedQueryResult<TQuery> = {
+	page: number;
+	setPage: (page: number) => void;
+	pageCount: number;
 	paginatedQuery: TQuery & QueryPagination;
 	queryKey: readonly unknown[];
-	count: number;
+	paginationProps: Required<
+		Pick<
+			ComponentProps<typeof Pagination>,
+			'count' | 'current' | 'itemsPerPage' | 'itemsPerPageLabel' | 'showingResultsLabel' | 'onSetCurrent' | 'onSetItemsPerPage'
+		>
+	>;
 };
 
 const getPageData = (queryState: QueryState<unknown> | undefined): PageData | undefined => {
@@ -59,15 +68,15 @@ const getPageSize = (pageSize: number, offset: number, data: PageData | undefine
  * TODO: Move `usePagination` outside from `GenericTable` folder
  */
 export function usePagination<TQuery>(options: UsePaginationOptions<TQuery>): UsePaginatedQueryResult<TQuery>;
-export function usePagination(): Omit<UsePaginationResult, 'showingResultsLabel'> & {
-	showingResultsLabel: ReturnType<typeof useShowingResultsLabel>;
-};
-export function usePagination<TQuery>(options?: UsePaginationOptions<TQuery>) {
+export function usePagination(): UsePaginationResult;
+export function usePagination<TQuery>(options?: UsePaginationOptions<TQuery>): UsePaginatedQueryResult<TQuery> | UsePaginationResult {
 	const [itemsPerPage, setItemsPerPage] = useItemsPerPage();
 	const [current, setCurrent] = useCurrent();
 	const itemsPerPageLabel = useItemsPerPageLabel();
 	const showingResultsLabel = useShowingResultsLabel();
 	const queryClient = useQueryClient();
+	const queryHash = options ? hashKey(options.getQueryKey({ ...options.query, offset: 0, count: 0 })) : '';
+	const [pageState, setPageState] = useState({ page: 1, queryHash, itemsPerPage });
 	const [learned, setLearned] = useState<{ itemsPerPage: number; pageSize: number; total: number }>({
 		itemsPerPage,
 		pageSize: itemsPerPage,
@@ -79,22 +88,27 @@ export function usePagination<TQuery>(options?: UsePaginationOptions<TQuery>) {
 		setCurrent(0);
 	}, [itemsPerPage, setCurrent]);
 
+	const page = pageState.queryHash === queryHash && pageState.itemsPerPage === itemsPerPage ? pageState.page : 1;
 	const learnedPageSize = learned.itemsPerPage === itemsPerPage ? learned.pageSize : itemsPerPage;
-	const offset = Math.floor(current / itemsPerPage) * learnedPageSize;
+	const offset = (page - 1) * learnedPageSize;
 	const paginatedQuery = options && { ...options.query, offset, count: learnedPageSize };
 	const queryKey = options && paginatedQuery && options.getQueryKey(paginatedQuery);
 	const data = queryKey && getPageData(queryClient.getQueryState(queryKey));
 	const pageSize = getPageSize(learnedPageSize, offset, data);
 	const total = data?.total ?? (learned.itemsPerPage === itemsPerPage ? learned.total : 0);
+	const pageCount = Math.ceil(total / pageSize);
 
-	const setCurrentPage = useStableCallback((action: SetStateAction<number>) => {
-		const next = typeof action === 'function' ? action(current) : action;
-
+	const setPage = useStableCallback((nextPage: number) => {
 		if (data) {
 			setLearned({ itemsPerPage, pageSize, total });
 		}
 
-		setCurrent(next);
+		setPageState({ page: nextPage, queryHash, itemsPerPage });
+	});
+
+	const onSetCurrent = useStableCallback((action: SetStateAction<number>) => {
+		const nextCurrent = typeof action === 'function' ? action((page - 1) * itemsPerPage) : action;
+		setPage(Math.floor(nextCurrent / itemsPerPage) + 1);
 	});
 
 	const basePagination = useMemo(
@@ -109,16 +123,25 @@ export function usePagination<TQuery>(options?: UsePaginationOptions<TQuery>) {
 		[itemsPerPage, setItemsPerPage, current, setCurrent, itemsPerPageLabel, showingResultsLabel],
 	);
 
-	if (!options) {
+	if (!paginatedQuery || !queryKey) {
 		return basePagination;
 	}
 
 	return {
-		...basePagination,
-		setCurrent: setCurrentPage,
+		page,
+		setPage,
+		pageCount,
 		paginatedQuery,
 		queryKey,
-		count: Math.ceil(total / pageSize) * itemsPerPage,
-		showingResultsLabel: () => showingResultsLabel({ count: total, current: offset, itemsPerPage: data?.count ?? pageSize }),
+		paginationProps: {
+			// TODO: Rename count to total in Fuselage Pagination component
+			count: total,
+			current: (page - 1) * itemsPerPage,
+			itemsPerPage,
+			itemsPerPageLabel,
+			showingResultsLabel: () => showingResultsLabel({ count: total, current: offset, itemsPerPage: data?.count ?? pageSize }),
+			onSetCurrent,
+			onSetItemsPerPage: setItemsPerPage,
+		},
 	};
 }
