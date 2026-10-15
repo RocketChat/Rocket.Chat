@@ -380,8 +380,6 @@ import { IS_EE, URL_MONGODB } from '../../e2e/config/constants';
 
 			await request.get(api('settings/ABAC_Discussion_Enabled_Restore')).set(credentials).expect(400);
 
-			// an unregistered setting answers with the same 400, so the capture is shown to be there
-			// by spending it
 			await setEnforcement(false);
 			expect(await getSettingValueById('Discussion_enabled')).to.be.true;
 		});
