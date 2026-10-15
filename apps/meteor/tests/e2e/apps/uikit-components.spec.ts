@@ -162,8 +162,6 @@ test.describe.serial('Apps > UIKit components', () => {
 	});
 
 	test('should preselect the current conversation in a modal', async ({ api, page }) => {
-		test.fail(true, 'The modal UiKit context has no room id, so default_to_current_conversation has nothing to preselect');
-
 		const seed = Date.now().toString();
 
 		await poHomeChannel.content.dispatchSlashCommand(`/open-uikit-components-test modal ${seed}`);
