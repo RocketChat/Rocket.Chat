@@ -6,11 +6,10 @@ import {
 	GenericTableHeaderCell,
 	GenericTableHeader,
 	GenericTableLoadingRow,
-	usePagination,
+	usePaginatedQuery,
 	GenericNoResults,
 } from '@rocket.chat/ui-client';
 import { useTranslation, useEndpoint } from '@rocket.chat/ui-contexts';
-import { useQuery } from '@tanstack/react-query';
 import { useMemo, useState } from 'react';
 
 import BusinessHoursRow from './BusinessHoursRow';
@@ -30,16 +29,12 @@ const BusinessHoursTable = () => {
 		500,
 	);
 
-	const { paginatedQuery, queryKey, paginationProps } = usePagination({
+	const getBusinessHours = useEndpoint('GET', '/v1/livechat/business-hours');
+	const { data, isLoading, isSuccess, isError, refetch, paginationProps } = usePaginatedQuery({
 		query,
 		getQueryKey: (query) => ['livechat-getBusinessHours', query],
-	});
-
-	const getBusinessHours = useEndpoint('GET', '/v1/livechat/business-hours');
-	const { data, isLoading, isSuccess, isError, refetch } = useQuery({
-		queryKey,
-
-		queryFn: async () => getBusinessHours(paginatedQuery),
+		queryFn: getBusinessHours,
+		itemsKey: 'businessHours',
 	});
 
 	const columns: TableColumnWidth[] = ['auto', 'auto', 'auto', 'x100', 'x100'];

@@ -9,11 +9,10 @@ import {
 	GenericTableHeaderCell,
 	GenericTableLoadingRow,
 	GenericTableRow,
-	usePagination,
+	usePaginatedQuery,
 	GenericNoResults,
 } from '@rocket.chat/ui-client';
 import { useEndpoint, useSetModal } from '@rocket.chat/ui-contexts';
-import { useQuery } from '@tanstack/react-query';
 import { format } from 'date-fns/format';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -40,8 +39,6 @@ const SecurityLogsTable = () => {
 		end: new Date().toISOString(),
 		settingId: '',
 	});
-
-	const { paginatedQuery, queryKey, paginationProps } = usePagination({ query, getQueryKey: (query) => ['audit.settings', query] });
 
 	const handleClearFilters = () => {
 		setSetting('');
@@ -89,12 +86,11 @@ const SecurityLogsTable = () => {
 
 	const getAudits = useEndpoint('GET', '/v1/audit.settings');
 
-	const { data, isLoading, isSuccess } = useQuery({
-		queryKey,
-
-		queryFn: async () => {
-			return getAudits(paginatedQuery);
-		},
+	const { data, isLoading, isSuccess, paginationProps } = usePaginatedQuery({
+		query,
+		getQueryKey: (query) => ['audit.settings', query],
+		queryFn: getAudits,
+		itemsKey: 'events',
 	});
 
 	return (

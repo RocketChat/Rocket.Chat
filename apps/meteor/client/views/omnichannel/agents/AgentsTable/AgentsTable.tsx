@@ -6,7 +6,6 @@ import {
 	GenericTableHeader,
 	GenericTableHeaderCell,
 	GenericTableLoadingTable,
-	usePagination,
 	useSort,
 	GenericNoResults,
 } from '@rocket.chat/ui-client';
@@ -19,7 +18,6 @@ import AgentsTableRow from './AgentsTableRow';
 import FilterByText from '../../../../components/FilterByText';
 import GenericError from '../../../../components/GenericError';
 import { links } from '../../../../lib/links';
-import { omnichannelQueryKeys } from '../../../../lib/queryKeys';
 import { useAgentsQuery } from '../hooks/useAgentsQuery';
 import { useQuery } from '../hooks/useQuery';
 
@@ -34,11 +32,7 @@ const AgentsTable = () => {
 	) as ['name' | 'username' | 'emails.address' | 'statusLivechat', 'asc' | 'desc'];
 
 	const query = useQuery({ text }, debouncedSort);
-	const { paginatedQuery, paginationProps } = usePagination({
-		query,
-		getQueryKey: omnichannelQueryKeys.agents,
-	});
-	const { data, isSuccess, isLoading, isError, refetch } = useAgentsQuery(paginatedQuery);
+	const { data, isSuccess, isLoading, isError, refetch, paginatedQuery, paginationProps } = useAgentsQuery(query);
 
 	const [defaultQuery] = useState(hashKey([paginatedQuery]));
 	const queryHasChanged = defaultQuery !== hashKey([paginatedQuery]);

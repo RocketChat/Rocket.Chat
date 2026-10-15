@@ -25,12 +25,12 @@ import {
 	GenericTableHeaderCell,
 	GenericTableLoadingTable,
 	GenericTableRow,
-	usePagination,
+	usePaginatedQuery,
 	useSort,
 	GenericNoResults,
 } from '@rocket.chat/ui-client';
 import { useTranslation, useToastMessageDispatch, useEndpoint, useSetModal } from '@rocket.chat/ui-contexts';
-import { useMutation, useQuery, hashKey, useQueryClient } from '@tanstack/react-query';
+import { useMutation, hashKey, useQueryClient } from '@tanstack/react-query';
 import { useId, useMemo, useState } from 'react';
 
 import FilterByText from '../../../components/FilterByText';
@@ -66,14 +66,11 @@ const MonitorsTable = () => {
 		500,
 	);
 
-	const { paginatedQuery, queryKey, paginationProps } = usePagination({
+	const { data, refetch, isLoading, isSuccess, isError, paginatedQuery, paginationProps } = usePaginatedQuery({
 		query,
 		getQueryKey: (query) => ['omnichannel', 'monitors', query],
-	});
-
-	const { data, refetch, isLoading, isSuccess, isError } = useQuery({
-		queryKey,
-		queryFn: () => getMonitors(paginatedQuery),
+		queryFn: getMonitors,
+		itemsKey: 'monitors',
 	});
 
 	const [defaultQuery] = useState(hashKey([paginatedQuery]));

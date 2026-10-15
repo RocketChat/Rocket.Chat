@@ -1,8 +1,7 @@
 import type { UsersListStatusParamsGET } from '@rocket.chat/rest-typings';
 import type { useSort } from '@rocket.chat/ui-client';
-import { usePagination } from '@rocket.chat/ui-client';
+import { usePaginatedQuery } from '@rocket.chat/ui-client';
 import { useEndpoint } from '@rocket.chat/ui-contexts';
-import { useQuery } from '@tanstack/react-query';
 import { useMemo } from 'react';
 
 import type { AdminUsersTab, UsersTableSortingOption } from '../AdminUsersPage';
@@ -44,15 +43,16 @@ const useFilteredUsers = ({ searchTerm, sortData, tab, selectedRoles, statusMana
 		};
 	}, [searchTerm, selectedRoles, sortBy, sortDirection, statusManagement, tab]);
 
-	const { paginatedQuery, queryKey, ...paginationData } = usePagination({ query, getQueryKey: (query) => ['users.list', query, tab] });
 	const getUsers = useEndpoint('GET', '/v1/users.listByStatus');
-	const usersListQueryResult = useQuery({
-		queryKey,
-		queryFn: async () => getUsers(paginatedQuery),
+	const usersListQueryResult = usePaginatedQuery({
+		query,
+		getQueryKey: (query) => ['users.list', query, tab],
+		queryFn: getUsers,
+		itemsKey: 'users',
 		meta: {
 			apiErrorToastMessage: true,
 		},
 	});
-	return { usersListQueryResult, paginationData };
+	return { usersListQueryResult, paginationData: usersListQueryResult.paginationProps };
 };
 export default useFilteredUsers;

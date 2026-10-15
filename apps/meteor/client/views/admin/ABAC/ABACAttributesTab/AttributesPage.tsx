@@ -7,11 +7,10 @@ import {
 	GenericTableHeader,
 	GenericTableHeaderCell,
 	GenericTableRow,
-	usePagination,
+	usePaginatedQuery,
 	GenericNoResults,
 } from '@rocket.chat/ui-client';
 import { useEndpoint, useRouter, useSearchParameter } from '@rocket.chat/ui-contexts';
-import { useQuery } from '@tanstack/react-query';
 import { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -42,14 +41,11 @@ const AttributesPage = () => {
 
 	const query = useMemo(() => ({ ...(debouncedText ? { key: debouncedText, values: debouncedText } : {}) }), [debouncedText]);
 
-	const { paginatedQuery, queryKey, paginationProps } = usePagination({
+	const { data, isLoading, paginationProps } = usePaginatedQuery({
 		query,
 		getQueryKey: (query) => ABACQueryKeys.roomAttributes.list(query),
-	});
-
-	const { data, isLoading } = useQuery({
-		queryKey,
-		queryFn: () => getAttributes(paginatedQuery),
+		queryFn: getAttributes,
+		itemsKey: 'attributes',
 	});
 
 	const columns: TableColumnWidth[] = ['auto', 'auto', 40];

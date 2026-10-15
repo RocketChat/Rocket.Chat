@@ -9,12 +9,12 @@ import {
 	GenericTableHeaderCell,
 	GenericTableLoadingTable,
 	GenericTableRow,
-	usePagination,
+	usePaginatedQuery,
 	useSort,
 	GenericNoResults,
 } from '@rocket.chat/ui-client';
 import { useTranslation, useEndpoint } from '@rocket.chat/ui-contexts';
-import { hashKey, useQuery } from '@tanstack/react-query';
+import { hashKey } from '@tanstack/react-query';
 import { useMemo, useState } from 'react';
 
 import AddManager from './AddManager';
@@ -42,12 +42,12 @@ const ManagersTable = () => {
 		500,
 	);
 
-	const { paginatedQuery, queryKey, paginationProps } = usePagination({ query, getQueryKey: omnichannelQueryKeys.managers });
-
 	const getManagers = useEndpoint('GET', '/v1/livechat/users/manager');
-	const { data, isLoading, isSuccess, isError, refetch } = useQuery({
-		queryKey,
-		queryFn: async () => getManagers(paginatedQuery),
+	const { data, isLoading, isSuccess, isError, refetch, paginatedQuery, paginationProps } = usePaginatedQuery({
+		query,
+		getQueryKey: omnichannelQueryKeys.managers,
+		queryFn: getManagers,
+		itemsKey: 'users',
 	});
 
 	const [defaultQuery] = useState(hashKey([paginatedQuery]));

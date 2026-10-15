@@ -6,12 +6,11 @@ import {
 	GenericTableHeader,
 	GenericTableHeaderCell,
 	GenericTableLoadingTable,
-	usePagination,
+	usePaginatedQuery,
 	useSort,
 	GenericNoResults,
 } from '@rocket.chat/ui-client';
 import { useTranslation, useEndpoint } from '@rocket.chat/ui-contexts';
-import { useQuery } from '@tanstack/react-query';
 import type { MutableRefObject } from 'react';
 import { useState, useMemo, useEffect } from 'react';
 
@@ -40,12 +39,12 @@ const CustomSoundsTable = ({ reload, onClick }: CustomSoundsTableProps) => {
 		500,
 	);
 
-	const { paginatedQuery, queryKey, paginationProps } = usePagination({ query, getQueryKey: (query) => ['custom-sounds', query] });
-
 	const getSounds = useEndpoint('GET', '/v1/custom-sounds.list');
-	const { data, refetch, isLoading, isError, isSuccess } = useQuery({
-		queryKey,
-		queryFn: async () => getSounds(paginatedQuery),
+	const { data, refetch, isLoading, isError, isSuccess, paginationProps } = usePaginatedQuery({
+		query,
+		getQueryKey: (query) => ['custom-sounds', query],
+		queryFn: getSounds,
+		itemsKey: 'sounds',
 		refetchOnMount: false,
 	});
 

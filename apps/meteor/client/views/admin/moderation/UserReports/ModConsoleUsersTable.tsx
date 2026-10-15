@@ -7,12 +7,12 @@ import {
 	GenericTableHeaderCell,
 	GenericTableBody,
 	GenericTableHeader,
-	usePagination,
+	usePaginatedQuery,
 	useSort,
 	GenericNoResults,
 } from '@rocket.chat/ui-client';
 import { useEndpoint, useRouter } from '@rocket.chat/ui-contexts';
-import { keepPreviousData, useQuery } from '@tanstack/react-query';
+import { keepPreviousData } from '@tanstack/react-query';
 import { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -48,16 +48,13 @@ const ModConsoleUsersTable = () => {
 		500,
 	);
 
-	const { paginatedQuery, queryKey, paginationProps } = usePagination({
-		query,
-		getQueryKey: (query) => ['moderation', 'userReports', 'fetchAll', query],
-	});
-
 	const getReports = useEndpoint('GET', '/v1/moderation.userReports');
 
-	const { data, isLoading, isSuccess, isError, refetch } = useQuery({
-		queryKey,
-		queryFn: () => getReports(paginatedQuery),
+	const { data, isLoading, isSuccess, isError, refetch, paginationProps } = usePaginatedQuery({
+		query,
+		getQueryKey: (query) => ['moderation', 'userReports', 'fetchAll', query],
+		queryFn: getReports,
+		itemsKey: 'reports',
 		placeholderData: keepPreviousData,
 	});
 

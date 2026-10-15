@@ -7,12 +7,11 @@ import {
 	GenericTableHeaderCell,
 	GenericTableLoadingTable,
 	GenericTableRow,
-	usePagination,
+	usePaginatedQuery,
 	useSort,
 	GenericNoResults,
 } from '@rocket.chat/ui-client';
 import { useRoute, useTranslation, useEndpoint } from '@rocket.chat/ui-contexts';
-import { useQuery } from '@tanstack/react-query';
 import { useMemo, useCallback } from 'react';
 
 import SendTestButton from './SendTestButton';
@@ -38,11 +37,11 @@ const EmailInboxTable = () => {
 		sort: JSON.stringify({ [sortBy]: sortDirection === 'asc' ? 1 : -1 }),
 	};
 
-	const { paginatedQuery, queryKey, paginationProps } = usePagination({ query, getQueryKey: (query) => ['email-list', query] });
-
-	const result = useQuery({
-		queryKey,
-		queryFn: () => endpoint(paginatedQuery),
+	const { paginationProps, ...result } = usePaginatedQuery({
+		query,
+		getQueryKey: (query) => ['email-list', query],
+		queryFn: endpoint,
+		itemsKey: 'emailInboxes',
 	});
 
 	const headers = useMemo(

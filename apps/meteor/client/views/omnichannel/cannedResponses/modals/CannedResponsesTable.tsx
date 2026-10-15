@@ -9,13 +9,13 @@ import {
 	GenericTableLoadingRow,
 	GenericTableRow,
 	GenericTableCell,
-	usePagination,
+	usePaginatedQuery,
 	useSort,
 	GenericNoResults,
 	useFormatDateAndTime,
 } from '@rocket.chat/ui-client';
 import { useTranslation, usePermission, useToastMessageDispatch, useEndpoint, useRouter } from '@rocket.chat/ui-contexts';
-import { hashKey, useQuery } from '@tanstack/react-query';
+import { hashKey } from '@tanstack/react-query';
 import { useMemo, useState } from 'react';
 
 import CannedResponseFilter from './CannedResponseFilter';
@@ -50,17 +50,17 @@ const CannedResponsesTable = () => {
 		[createdBy, debouncedText, sharing, sortBy, sortDirection],
 	);
 
-	const { paginatedQuery, queryKey, paginationProps } = usePagination({ query, getQueryKey: (query) => ['getCannedResponses', query] });
+	const getCannedResponses = useEndpoint('GET', '/v1/canned-responses');
+	const { data, isLoading, isSuccess, paginatedQuery, paginationProps } = usePaginatedQuery({
+		query,
+		getQueryKey: (query) => ['getCannedResponses', query],
+		queryFn: getCannedResponses,
+		itemsKey: 'cannedResponses',
+		refetchOnWindowFocus: false,
+	});
 
 	const [defaultQuery] = useState(hashKey([paginatedQuery]));
 	const queryHasChanged = defaultQuery !== hashKey([paginatedQuery]);
-
-	const getCannedResponses = useEndpoint('GET', '/v1/canned-responses');
-	const { data, isLoading, isSuccess } = useQuery({
-		queryKey,
-		queryFn: () => getCannedResponses(paginatedQuery),
-		refetchOnWindowFocus: false,
-	});
 
 	const handleAddNew = useStableCallback(() => router.navigate('/omnichannel/canned-responses/new'));
 
