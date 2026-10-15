@@ -70,9 +70,9 @@ Removed methods:
 - `followMessage` — use `POST /v1/chat.followMessage`
 - `getChannelHistory` — use `GET /v1/channels.history`
 - `getImportFileData` — use `GET /v1/getImportFileData`
-- `getImportProgress` — use `GET /v1/getCurrentImportOperation`
+- `getImportProgress` — use `GET /v1/getImportProgress`
 - `getLatestImportOperations` — use `GET /v1/getLatestImportOperations`
-- `getMessages` — use `GET /v1/chat.getMessages`
+- `getMessages` — use `POST /v1/chat.getMessages`
 - `getReadReceipts` — use `GET /v1/chat.getMessageReadReceipts`
 - `getRoomById` — use `GET /v1/rooms.info`
 - `getRoomIdByNameOrId`
@@ -155,10 +155,10 @@ Removed methods:
 - `unfollowMessage` — use `POST /v1/chat.unfollowMessage`
 - `unpinMessage` — use `POST /v1/chat.unPinMessage`
 - `unreadMessages` — use `POST /v1/subscriptions.unread`
-- `updateIncomingIntegration` — use `POST /v1/integrations.update`
+- `updateIncomingIntegration` — use `PUT /v1/integrations.update`
 - `updateMessage` — use `POST /v1/chat.update`
 - `updateOAuthApp` — use `POST /v1/oauth-apps.update`
-- `updateOutgoingIntegration` — use `POST /v1/integrations.update`
+- `updateOutgoingIntegration` — use `PUT /v1/integrations.update`
 - `uploadEmojiCustom`
 - `uploadImportFile` — use `POST /v1/uploadImportFile`
 - `UserPresence:setDefaultStatus`
