@@ -6,14 +6,13 @@ import pLimit from 'p-limit';
 
 import type {
 	EvaluableSubject,
+	Evaluation,
 	IPolicyDecisionPoint,
 	IGetDecisionBulkRequest,
 	IGetDecisionBulkResponse,
 	IResourceDecision,
 	NonCompliantPair,
 	ReevaluationUser,
-	RoomEvaluation,
-	SubjectEvaluation,
 } from './types';
 import { HEALTH_CHECK_TIMEOUT } from '../clients/virtru/VirtruClient';
 import type { VirtruClient } from '../clients/virtru/VirtruClient';
@@ -234,7 +233,7 @@ export class VirtruPDP implements IPolicyDecisionPoint {
 		subjects: EvaluableSubject[],
 		attributes: IAbacAttributeDefinition[],
 		object: Pick<IRoom, '_id'>,
-	): Promise<SubjectEvaluation> {
+	): Promise<Evaluation> {
 		const ids = subjects.map(({ _id }) => _id);
 
 		if (!ids.length || !attributes.length) {
@@ -244,7 +243,7 @@ export class VirtruPDP implements IPolicyDecisionPoint {
 		const config = this.client.getConfig();
 		const fqns = buildAttributeFqns(config.attributeNamespace, attributes);
 
-		const evaluation: SubjectEvaluation = { compliant: [], nonCompliant: [], inconclusive: [] };
+		const evaluation: Evaluation = { compliant: [], nonCompliant: [], inconclusive: [] };
 		const decided: EvaluableSubject[] = [];
 		const decisionRequests: IGetDecisionBulkRequest[] = [];
 
@@ -289,8 +288,8 @@ export class VirtruPDP implements IPolicyDecisionPoint {
 
 	// WARNING: pass only rooms that have ABAC attributes. Virtru rejects the whole GetDecisionBulk call
 	// when any resource has an empty FQN list, so a single room without attributes fails every room in the batch.
-	async evaluateSubjectAgainstRooms(subject: EvaluableSubject, rooms: AtLeast<IRoom, '_id' | 'abacAttributes'>[]): Promise<RoomEvaluation> {
-		const evaluation: RoomEvaluation = { compliant: [], nonCompliant: [], inconclusive: [] };
+	async evaluateSubjectAgainstRooms(subject: EvaluableSubject, rooms: AtLeast<IRoom, '_id' | 'abacAttributes'>[]): Promise<Evaluation> {
+		const evaluation: Evaluation = { compliant: [], nonCompliant: [], inconclusive: [] };
 
 		const config = this.client.getConfig();
 		const entityKey = getUserEntityKey(config.defaultEntityKey, subject);
@@ -433,8 +432,8 @@ export class VirtruPDP implements IPolicyDecisionPoint {
 		return nonCompliant;
 	}
 
-	refreshSubjectAttributes(_userIds: string[]): Promise<void> {
-		return Promise.resolve();
+	async refreshSubjectAttributes(_userIds: string[]): Promise<void> {
+		// noop
 	}
 
 	async reevaluateUsers(users: ReevaluationUser[]): Promise<NonCompliantPair[]> {

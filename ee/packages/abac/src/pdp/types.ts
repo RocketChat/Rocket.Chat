@@ -30,15 +30,13 @@ export interface IGetDecisionBulkResponse {
 
 export type ReevaluationUser = Pick<IUser, '_id' | 'emails' | 'username' | '__rooms'>;
 
-export type EvaluableSubject = Pick<IUser, '_id' | 'username' | 'emails'>;
+export type EvaluableSubject = Pick<IUser, '_id' | 'username' | 'emails' | 'abacAttributes'>;
 
-export type SubjectEvaluation = {
+export type Evaluation = {
 	compliant: string[];
 	nonCompliant: string[];
 	inconclusive: string[];
 };
-
-export type RoomEvaluation = SubjectEvaluation;
 
 export type NonCompliantPair = {
 	user: Pick<IUser, '_id' | 'emails' | 'username'>;
@@ -61,9 +59,9 @@ export interface IPolicyDecisionPoint {
 		subjects: EvaluableSubject[],
 		attributes: IAbacAttributeDefinition[],
 		object: Pick<IRoom, '_id'>,
-	): Promise<SubjectEvaluation>;
+	): Promise<Evaluation>;
 
-	evaluateSubjectAgainstRooms(subject: EvaluableSubject, rooms: AtLeast<IRoom, '_id' | 'abacAttributes'>[]): Promise<RoomEvaluation>;
+	evaluateSubjectAgainstRooms(subject: EvaluableSubject, rooms: AtLeast<IRoom, '_id' | 'abacAttributes'>[]): Promise<Evaluation>;
 
 	onRoomAttributesChanged(
 		room: AtLeast<IRoom, '_id' | 't' | 'teamMain' | 'abacAttributes'>,
