@@ -16,6 +16,7 @@ import { useFieldArray, useForm } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 
 import { getErrorMessage } from '../../lib/errorHandling';
+import { contactsQueryKeys } from '../../lib/queryKeys';
 
 export type ContactEditProps = {
 	contact?: Serialized<IContactPublic>;
@@ -92,7 +93,7 @@ const ContactEdit = ({ contact, onSaved, onClose }: ContactEditProps) => {
 		onSuccess: async ({ saved, created }) => {
 			dispatchToastMessage({ type: 'success', message: t(created ? 'Contact_created' : 'Contact_updated') });
 
-			await queryClient.invalidateQueries({ queryKey: ['contacts', 'list'] });
+			await queryClient.invalidateQueries({ queryKey: contactsQueryKeys.list() });
 
 			onSaved(saved);
 		},
