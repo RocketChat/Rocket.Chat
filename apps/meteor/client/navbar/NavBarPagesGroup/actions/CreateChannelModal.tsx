@@ -156,8 +156,10 @@ const CreateChannelModal = ({ teamId = '', mainRoom, onClose, reload, onSuccess,
 	useEffect(() => {
 		if (isAbacManaged) {
 			setValue('isPrivate', true);
+		} else if (canOnlyCreateOneType) {
+			setValue('isPrivate', canOnlyCreateOneType === 'p');
 		}
-	}, [isAbacManaged, setValue]);
+	}, [isAbacManaged, canOnlyCreateOneType, setValue]);
 
 	useEffect(() => {
 		if (federated) {
