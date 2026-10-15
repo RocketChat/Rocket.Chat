@@ -45,7 +45,7 @@ docker run --rm \
   --ipc=host \
   --add-host=host.docker.internal:host-gateway \
   -e TEST_BASE_URL="${BASE_URL}" \
-  -e CI="${CI:-false}" \
+  -e CI \
   -e PACKAGE_DIR="/app/${REL_PACKAGE_PATH}" \
   -v "${MONOREPO_ROOT}:/app" \
   -w "/app/${REL_PACKAGE_PATH}" \
