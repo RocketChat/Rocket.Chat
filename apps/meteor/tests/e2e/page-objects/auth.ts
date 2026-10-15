@@ -93,6 +93,11 @@ export class Login extends Main {
 	get loginIframeError(): Locator {
 		return this.loginIframe.locator('#login-error', { hasText: 'Login failed' });
 	}
+
+	/** Submits the iframe's login form with the keyboard, because right after the cross-origin iframe loads the browser can deliver a click to the outer page instead. */
+	async submitLoginIframe(): Promise<void> {
+		await this.loginIframeSubmitButton.press('Enter');
+	}
 }
 
 export class Registration extends Main {
