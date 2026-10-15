@@ -15,48 +15,6 @@ import { IS_EE } from '../../e2e/config/constants';
 describe('Meteor.methods', () => {
 	before((done) => getCredentials(done));
 
-	describe('[@listCustomUserStatus]', () => {
-		it('should fail if not logged in', async () => {
-			const res = await request
-				.post(methodCall('listCustomUserStatus'))
-				.send({
-					message: JSON.stringify({
-						method: 'listCustomUserStatus',
-						params: [],
-						id: 'id',
-						msg: 'method',
-					}),
-				})
-				.expect('Content-Type', 'application/json')
-				.expect(401);
-
-			expect(res.body).to.have.property('status', 'error');
-			expect(res.body).to.have.property('message');
-		});
-
-		it('should return custom status for the current user', async () => {
-			const res = await request
-				.post(methodCall('listCustomUserStatus'))
-				.set(credentials)
-				.send({
-					message: JSON.stringify({
-						method: 'listCustomUserStatus',
-						params: [],
-						id: 'id',
-						msg: 'method',
-					}),
-				})
-				.expect('Content-Type', 'application/json')
-				.expect(200);
-
-			expect(res.body).to.have.a.property('success', true);
-			expect(res.body).to.have.a.property('message').that.is.a('string');
-
-			const data = JSON.parse(res.body.message);
-			expect(data).to.have.a.property('result').that.is.an('array');
-		});
-	});
-
 	describe('[@permissions:get]', () => {
 		const date = {
 			$date: new Date().getTime(),
@@ -408,26 +366,10 @@ describe('Meteor.methods', () => {
 			).body.channel;
 		});
 
-		before('create direct conversation with user', (done) => {
-			void request
-				.post(methodCall('createDirectMessage'))
-				.set(credentials)
-				.send({
-					message: JSON.stringify({
-						method: 'createDirectMessage',
-						params: [testUser2.username],
-						id: 'id',
-						msg: 'method',
-					}),
-				})
-				.end((_err, res) => {
-					const result = JSON.parse(res.body.message);
-					expect(result.result).to.be.an('object');
-					expect(result.result).to.have.property('rid').that.is.an('string');
+		before('create direct conversation with user', async () => {
+			const res = await request.post(api('im.create')).set(credentials).send({ username: testUser2.username }).expect(200);
 
-					dmId = result.result.rid;
-					done();
-				});
+			dmId = res.body.room._id;
 		});
 
 		before(async () => {

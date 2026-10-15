@@ -13,7 +13,6 @@ import { Registration } from './page-objects';
 import { convertHexToRGB } from './utils/convertHexToRGB';
 import { createCustomRole, deleteCustomRole } from './utils/custom-role';
 import { getUserInfo } from './utils/getUserInfo';
-import { parseMeteorResponse } from './utils/parseMeteorResponse';
 import { saveSettings } from './utils/saveSettings';
 import { setSettingValueById } from './utils/setSettingValueById';
 import type { BaseTest } from './utils/test';
@@ -241,30 +240,6 @@ test.describe('SAML', () => {
 			expect(user?.name).toBe('Saml User 1');
 			expect(user?.emails).toBeDefined();
 			expect(user?.emails?.[0].address).toBe('samluser1@example.com');
-		});
-	});
-
-	test('Allow password change for OAuth users', async ({ api }) => {
-		await test.step("should not send password reset mail if 'Allow Password Change for OAuth Users' setting is disabled", async () => {
-			expect((await setSettingValueById(api, 'Accounts_AllowPasswordChangeForOAuthUsers', false)).status()).toBe(200);
-
-			const response = await api.post('/method.call/sendForgotPasswordEmail', {
-				message: JSON.stringify({ msg: 'method', id: 'id', method: 'sendForgotPasswordEmail', params: ['samluser1@example.com'] }),
-			});
-			const mailSent = await parseMeteorResponse<boolean>(response);
-			expect(response.status()).toBe(200);
-			expect(mailSent).toBe(false);
-		});
-
-		await test.step("should send password reset mail if 'Allow Password Change for OAuth Users' setting is enabled", async () => {
-			expect((await setSettingValueById(api, 'Accounts_AllowPasswordChangeForOAuthUsers', true)).status()).toBe(200);
-
-			const response = await api.post('/method.call/sendForgotPasswordEmail', {
-				message: JSON.stringify({ msg: 'method', id: 'id', method: 'sendForgotPasswordEmail', params: ['samluser1@example.com'] }),
-			});
-			const mailSent = await parseMeteorResponse<boolean>(response);
-			expect(response.status()).toBe(200);
-			expect(mailSent).toBe(true);
 		});
 	});
 
