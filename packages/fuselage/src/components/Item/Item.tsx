@@ -25,6 +25,11 @@ export type ItemProps = {
 	 */
 	focused?: boolean;
 	/**
+	 * Shows the focus ring for focus a script moves, such as a menu's, where the browser's `:focus-visible` also matches on hover.
+	 * Once set, it replaces `:focus-visible` for the row.
+	 */
+	focusVisible?: boolean;
+	/**
 	 * Dims the row and ignores clicks. Set the matching ARIA state through props.
 	 */
 	disabled?: boolean;
@@ -41,6 +46,7 @@ const Item = ({
 	selected,
 	highlighted,
 	focused,
+	focusVisible,
 	disabled,
 	variant,
 	className,
@@ -49,8 +55,21 @@ const Item = ({
 	...props
 }: ItemProps) => {
 	const [descriptionIds, registerDescription] = useIdRegistry();
+	const [titleIds, registerTitle] = useIdRegistry();
 
-	const contextValue = useMemo(() => ({ descriptionIds, registerDescription }), [descriptionIds, registerDescription]);
+	const contextValue = useMemo(
+		() => ({ descriptionIds, registerDescription, registerTitle }),
+		[descriptionIds, registerDescription, registerTitle],
+	);
+
+	// A menu item is named by its titles and described by its labelled icons, as an `ItemLink` is.
+	const isMenuItem = !!props.role?.startsWith('menuitem');
+
+	const ariaLabelledBy = isMenuItem ? (props['aria-labelledby'] ?? (titleIds.join(' ') || undefined)) : props['aria-labelledby'];
+
+	const ariaDescribedBy = isMenuItem
+		? [props['aria-describedby'], ...descriptionIds].filter(Boolean).join(' ') || undefined
+		: props['aria-describedby'];
 
 	const handleClick = onClick
 		? (event: MouseEvent<HTMLElement>) => {
@@ -65,15 +84,19 @@ const Item = ({
 		<ItemContext.Provider value={contextValue}>
 			<Tag
 				{...props}
+				aria-labelledby={ariaLabelledBy}
+				aria-describedby={ariaDescribedBy}
 				className={cx(
 					cxx('rcx-item')({
 						[`inset-${inset}`]: inset !== 'none',
-						clickable: !!onClick,
-						selected: !!selected,
-						highlighted: !!highlighted,
-						focused: !!focused,
-						disabled: !!disabled,
-						danger: variant === 'danger',
+						'clickable': !!onClick,
+						'selected': !!selected,
+						'highlighted': !!highlighted,
+						'focused': !!focused,
+						'focus-managed': focusVisible !== undefined,
+						'focus-visible': !!focusVisible,
+						'disabled': !!disabled,
+						'danger': variant === 'danger',
 					}),
 					className,
 				)}

@@ -114,9 +114,14 @@ $item-group-narrow-width: 320px;
 		}
 	}
 
-	&:focus-visible,
-	&:has(.rcx-item__link:focus-visible) {
+	&:focus-visible:not(.rcx-item--focus-managed),
+	&:has(.rcx-item__link:focus-visible),
+	&.rcx-item--focus-visible {
 		@include focus-ring;
+	}
+
+	&--focus-managed:focus {
+		outline: 0;
 	}
 
 	&.rcx-item--focused {
