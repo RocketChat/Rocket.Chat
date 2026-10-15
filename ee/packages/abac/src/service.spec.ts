@@ -2528,7 +2528,7 @@ describe('AbacService (unit)', () => {
 			const unavailable = { allowed: false, reason: 'unavailable', code: 'error-pdp-unavailable' };
 
 			beforeEach(() => {
-				mockUsersFind.mockReturnValue({
+				mockUsersFindByIds.mockReturnValue({
 					toArray: async () => [
 						{ _id: 'u1', username: 'alice' },
 						{ _id: 'u2', username: 'bob' },
