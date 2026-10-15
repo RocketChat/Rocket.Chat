@@ -328,7 +328,7 @@ With SIP integration enabled *for internal calls*, a single user-to-user call is
 for the leg Rocket.Chat sends to the PBX, and once for the INVITE the PBX routes straight back in.
 An app can tell that *a* SIP leg is involved; it cannot tell that the two legs are one conversation,
 and has no reason to expect two. The two payloads are side by side under
-[What an app receives today](#what-an-app-receives-today).
+[What an app receives today](#what-an-app-receives).
 
 ### How one call becomes two
 

@@ -512,8 +512,8 @@ in `packages/apps` beside the manager that produces them. The dependency runs on
 - `packages/apps/src/server/eventResult/HostEventResult.ts` — `HostEventResult`, derived from the
   app-facing union, and `EventResultMeta`, what the engine tells the host about the app that produced
   a result. `EventResultMeta` lives beside the type that uses it, because `prevent` is the only
-  variant that carries one. See [the prevented-call
-  proposal](../proposals/media-call-prevented-call.md), D2.
+  variant that carries one. See [the prevented
+  call](./0003-media-call-events-for-apps.md#the-prevented-call--the-record-that-replaced-the-toast) in ADR 0003.
 - `packages/apps/src/server/eventResult/makeHostEventResult.ts` — the one place a marked result
   becomes a host one: it drops `@kind` and stamps `meta`, reading the app's name, its i18n namespace
   and its translations of the key the result named off the `ProxiedApp`.

@@ -42,7 +42,7 @@ setting was left at, so turning the window off puts a workspace back exactly whe
 The provider has no say in it. A thread off the call's message is *our* chat panel's, not the provider's
 feature, and an iframed provider renders inside our page — so a Jitsi call in our window threads exactly like a
 call we run ourselves. The provider's `persistentChat` capability decides only the discussion of main-room mode
-(see [Persistent chat](#persistent-chat)), which is what it decided before the window existed.
+(see [Provider Requirements](#provider-requirements)), which is what it decided before the window existed.
 
 `VideoConfService.chatLivesInAThread` is where the server applies exactly that, and `autoFollowCallThread` and
 the thread's title both ask it; `useConferenceEmbedded` mirrors it from the two public settings.
