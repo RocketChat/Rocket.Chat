@@ -241,6 +241,15 @@ $item-group-narrow-width: 320px;
 
 		color: $item-color-font-secondary;
 		@include use-font-scale(c1);
+
+		&--truncate {
+			overflow: hidden;
+			flex: 0 1 auto;
+
+			min-width: 0;
+
+			text-overflow: ellipsis;
+		}
 	}
 
 	&__link {
