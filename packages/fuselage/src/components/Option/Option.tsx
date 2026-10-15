@@ -17,6 +17,8 @@ export type OptionProps<TLabel = ReactNode> = RefAttributes<Element> & {
 	selected?: boolean;
 	className?: BoxProps['className'];
 	icon?: IconProps['name'];
+	/** Names what the `icon` conveys, such as "Federated". Without it, the icon is decorative. */
+	iconLabel?: string;
 	gap?: boolean;
 	avatar?: ReactNode;
 	title?: string;
@@ -58,6 +60,7 @@ function Option<TLabel = ReactNode>({
 	selected,
 	className,
 	icon,
+	iconLabel,
 	gap,
 	avatar,
 	disabled,
@@ -99,7 +102,7 @@ function Option<TLabel = ReactNode>({
 		>
 			{avatar && <ItemMedia className='rcx-option__avatar'>{avatar}</ItemMedia>}
 			{icon && (
-				<ItemIcon className='rcx-option__column'>
+				<ItemIcon className='rcx-option__column' label={iconLabel}>
 					<Icon name={icon} size='x20' className='rcx-option__icon' />
 				</ItemIcon>
 			)}

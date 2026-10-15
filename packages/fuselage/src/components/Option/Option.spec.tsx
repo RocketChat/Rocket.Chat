@@ -62,6 +62,16 @@ describe('Option', () => {
 		expect(getByText('Empty').closest('div.rcx-option__content')).not.toBe(null);
 	});
 
+	it('should name the icon with `iconLabel` and hide it otherwise', () => {
+		const { getByRole, rerender, container } = render(<Option label='rocket.cat' icon='globe' iconLabel='Federated' />);
+
+		expect(getByRole('img', { name: 'Federated' })).toBeInTheDocument();
+
+		rerender(<Option label='rocket.cat' icon='globe' />);
+
+		expect(container.querySelector('.rcx-option__column')).toHaveAttribute('aria-hidden', 'true');
+	});
+
 	it('should call onClick when click', () => {
 		const click = jest.fn();
 
