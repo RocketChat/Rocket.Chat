@@ -62,9 +62,8 @@ apps/meteor ──calls──▶ core-services interface (proxify)
 |---------|------|-------|
 | `yarn dev` (root or `apps/meteor`) | Monolith | **default** for feature work |
 | `yarn ms` (`apps/meteor`) | Microservices | uses `TRANSPORTER` (default TCP); needs the services + broker up |
-| `docker compose -f docker-compose-local.yml up` (from `apps/meteor/`) | Full stack from prebuilt images | Mongo replica set + NATS + Traefik + services; see [getting-started §6](../getting-started.md#6-run-modes) |
 
-The docker stack puts **Traefik** in front: it routes `/websocket` & `/sockjs`
+In a microservices deployment a proxy (**Traefik**) sits in front: it routes `/websocket` & `/sockjs`
 to `ddp-streamer` and everything else to the main app — mirroring how requests
 are split in production.
 

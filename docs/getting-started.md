@@ -164,14 +164,6 @@ export MONGO_URL='mongodb://localhost:27017/rocketchat?replicaSet=rs0'
 | `yarn storybook` | Component Storybook on port 6006 | developing UI in isolation |
 | `yarn build` | Full monorepo build (Turbo) | validate build / local CI |
 
-To bring up the **full microservices stack from prebuilt images** (not from your
-source), use `docker-compose-local.yml` + the root [`.env.example`](../.env.example):
-
-```bash
-cp .env.example .env
-docker compose -f docker-compose-local.yml up
-```
-
 ---
 
 ## 7. Run the tests

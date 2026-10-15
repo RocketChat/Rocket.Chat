@@ -113,6 +113,4 @@ resolution.
 ## Microservices mode (`yarn ms`) won't connect to services
 
 `yarn ms` uses `TRANSPORTER` (default `TCP`). For the real stack with NATS, start
-NATS and the services and set `TRANSPORTER=nats://localhost:4222`. The simplest
-path to the full stack is `docker-compose-local.yml` (see section 6 of
-getting-started).
+NATS and the services and set `TRANSPORTER=nats://localhost:4222`.
