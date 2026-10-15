@@ -12,29 +12,47 @@ jest.mock('../../../hooks/useHasLicenseModule', () => ({
 
 const booleanSetting = { packageValue: false, blocked: false, public: true, type: 'boolean' as const };
 
+const getRoomInfo = jest.fn();
+
 const buildAppRoot = ({ abacEnabled = true, enforceAllRooms = true, requiredAttributeKeys = [] as string[] } = {}) =>
 	mockAppRoot()
 		.withSetting('ABAC_Enabled', abacEnabled, booleanSetting)
 		.withSetting('ABAC_Enforce_All_Rooms', enforceAllRooms, booleanSetting)
-		.withEndpoint('GET', '/v1/rooms.info', () => ({
-			room: undefined,
-			abacRequiredAttributes: requiredAttributeKeys,
-		}))
+		.withEndpoint('GET', '/v1/rooms.info', () => {
+			getRoomInfo();
+			return { room: null, abacRequiredAttributes: requiredAttributeKeys };
+		})
 		.build();
 
 const privateRoomWithoutAttributes = createFakeRoom({ t: 'p', abacAttributes: [] });
+const privateRoomWithAttributes = createFakeRoom({ t: 'p', abacAttributes: [{ key: 'clearance', values: ['SECRET'] }] });
 
 describe('useIsRoomAbacLocked', () => {
 	beforeEach(() => {
 		hasLicenseModule.mockReturnValue(true);
+		getRoomInfo.mockClear();
 	});
 
 	it('should not lock before rooms.info answers', () => {
-		const { result } = renderHook(() => useIsRoomAbacLocked(privateRoomWithoutAttributes._id, privateRoomWithoutAttributes), {
-			wrapper: buildAppRoot(),
+		const { result } = renderHook(() => useIsRoomAbacLocked(privateRoomWithAttributes._id, privateRoomWithAttributes), {
+			wrapper: buildAppRoot({ requiredAttributeKeys: ['clearance', 'releasability'] }),
 		});
 
 		expect(result.current).toBe(false);
+	});
+
+	it('should only call rooms.info for a private room with attributes while enforcement is on', async () => {
+		const publicRoom = createFakeRoom({ t: 'c' });
+
+		renderHook(() => useIsRoomAbacLocked(publicRoom._id, publicRoom), { wrapper: buildAppRoot() });
+		renderHook(() => useIsRoomAbacLocked(privateRoomWithoutAttributes._id, privateRoomWithoutAttributes), { wrapper: buildAppRoot() });
+		renderHook(() => useIsRoomAbacLocked(privateRoomWithAttributes._id, privateRoomWithAttributes), {
+			wrapper: buildAppRoot({ enforceAllRooms: false }),
+		});
+		expect(getRoomInfo).not.toHaveBeenCalled();
+
+		renderHook(() => useIsRoomAbacLocked(privateRoomWithAttributes._id, privateRoomWithAttributes), { wrapper: buildAppRoot() });
+		await waitFor(() => expect(getRoomInfo).toHaveBeenCalledTimes(1));
 	});
 
 	it('should lock an attribute-less private room while enforcement is on', async () => {
@@ -72,7 +90,7 @@ describe('useIsRoomAbacLocked', () => {
 	});
 
 	it('should read the required keys from rooms.info', async () => {
-		const room = createFakeRoom({ t: 'p', abacAttributes: [{ key: 'clearance', values: ['SECRET'] }] });
+		const room = privateRoomWithAttributes;
 
 		const { result: compliant } = renderHook(() => useIsRoomAbacLocked(room._id, room), {
 			wrapper: buildAppRoot({ requiredAttributeKeys: ['clearance'] }),
