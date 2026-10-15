@@ -50,15 +50,7 @@ const CannedResponsesTable = () => {
 		[createdBy, debouncedText, sharing, sortBy, sortDirection],
 	);
 
-	const {
-		paginatedQuery,
-		queryKey,
-		current,
-		itemsPerPage,
-		setItemsPerPage: onSetItemsPerPage,
-		setCurrent: onSetCurrent,
-		...paginationProps
-	} = usePagination({ query, getQueryKey: (query) => ['getCannedResponses', query] });
+	const { paginatedQuery, queryKey, paginationProps } = usePagination({ query, getQueryKey: (query) => ['getCannedResponses', query] });
 
 	const [defaultQuery] = useState(hashKey([paginatedQuery]));
 	const queryHasChanged = defaultQuery !== hashKey([paginatedQuery]);
@@ -181,14 +173,7 @@ const CannedResponsesTable = () => {
 							))}
 						</GenericTableBody>
 					</GenericTable>
-					<Pagination
-						divider
-						current={current}
-						itemsPerPage={itemsPerPage}
-						onSetItemsPerPage={onSetItemsPerPage}
-						onSetCurrent={onSetCurrent}
-						{...paginationProps}
-					/>
+					<Pagination divider {...paginationProps} />
 				</>
 			)}
 		</>

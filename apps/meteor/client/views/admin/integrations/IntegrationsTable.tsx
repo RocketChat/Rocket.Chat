@@ -40,15 +40,7 @@ const IntegrationsTable = ({ type }: IntegrationsTableProps) => {
 		500,
 	);
 
-	const {
-		paginatedQuery,
-		queryKey,
-		current,
-		itemsPerPage,
-		setItemsPerPage: onSetItemsPerPage,
-		setCurrent: onSetCurrent,
-		...paginationProps
-	} = usePagination({ query, getQueryKey: (query) => ['integrations', query] });
+	const { paginatedQuery, queryKey, paginationProps } = usePagination({ query, getQueryKey: (query) => ['integrations', query] });
 
 	const getIntegrations = useEndpoint('GET', '/v1/integrations.list');
 	const { data, isLoading, isSuccess, isError, refetch } = useQuery({
@@ -129,14 +121,7 @@ const IntegrationsTable = ({ type }: IntegrationsTableProps) => {
 								))}
 						</GenericTableBody>
 					</GenericTable>
-					<Pagination
-						divider
-						current={current}
-						itemsPerPage={itemsPerPage}
-						onSetItemsPerPage={onSetItemsPerPage}
-						onSetCurrent={onSetCurrent}
-						{...paginationProps}
-					/>
+					<Pagination divider {...paginationProps} />
 				</>
 			)}
 			{isSuccess && data && data.integrations.length === 0 && <GenericNoResults />}

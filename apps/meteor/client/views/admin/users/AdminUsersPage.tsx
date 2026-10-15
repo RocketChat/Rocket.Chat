@@ -97,7 +97,6 @@ const AdminUsersPage = () => {
 	const handleTabChange = (tab: AdminUsersTab) => {
 		setTab(tab);
 
-		paginationData.setCurrent(0);
 		sortData.setSort(tab === 'pending' ? 'active' : 'name', 'asc');
 	};
 

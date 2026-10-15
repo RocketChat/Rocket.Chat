@@ -43,7 +43,7 @@ const AttributesPage = () => {
 
 	const query = useMemo(() => ({ ...(debouncedText ? { key: debouncedText, values: debouncedText } : {}) }), [debouncedText]);
 
-	const { paginatedQuery, queryKey, current, itemsPerPage, setItemsPerPage, setCurrent, ...paginationProps } = usePagination({
+	const { paginatedQuery, queryKey, paginationProps } = usePagination({
 		query,
 		getQueryKey: (query) => ABACQueryKeys.roomAttributes.list(query),
 	});
@@ -86,14 +86,7 @@ const AttributesPage = () => {
 							))}
 						</GenericTableBody>
 					</GenericTable>
-					<Pagination
-						divider
-						current={current}
-						itemsPerPage={itemsPerPage}
-						onSetItemsPerPage={setItemsPerPage}
-						onSetCurrent={setCurrent}
-						{...paginationProps}
-					/>
+					<Pagination divider {...paginationProps} />
 				</>
 			)}
 		</>
