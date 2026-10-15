@@ -14,6 +14,7 @@ import ContactsTable from './ContactsTable';
 import ContactsTableRow from './ContactsTableRow';
 import type { ContactsColumnKey } from './hooks/useContactsColumns';
 import { useContactsColumns } from './hooks/useContactsColumns';
+import { contactsQueryKeys } from '../../lib/queryKeys';
 import type { CallHistoryTab } from '../mediaCallHistory/CallHistoryPageLayout';
 import CallHistoryPageLayout from '../mediaCallHistory/CallHistoryPageLayout';
 
@@ -42,15 +43,13 @@ const ContactsTab = ({ tab, onChangeTab }: ContactsTabProps) => {
 	}, [debouncedSearchText, setCurrent]);
 
 	const { data, isPending, error, refetch } = useQuery({
-		queryKey: [
-			'contacts',
-			'list',
-			sortProps.sortBy,
-			sortProps.sortDirection,
-			paginationProps.current,
-			paginationProps.itemsPerPage,
-			debouncedSearchText,
-		],
+		queryKey: contactsQueryKeys.list({
+			sortBy: sortProps.sortBy,
+			sortDirection: sortProps.sortDirection,
+			offset: paginationProps.current,
+			count: paginationProps.itemsPerPage,
+			text: debouncedSearchText,
+		}),
 		queryFn: () =>
 			listContacts({
 				count: paginationProps.itemsPerPage,
