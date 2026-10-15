@@ -2,4 +2,4 @@
 '@rocket.chat/meteor': minor
 ---
 
-Allows the `owner`, `moderator` and `leader` roles assigned to a user, instead of to a room, to grant their permissions in every room on the web client, the same way the server and the mobile app already do
+Fixes the web app ignoring roles with the *Rooms* scope (such as `owner`, `moderator`, `leader`, or any custom role with that scope) when they are assigned to a user globally, in *Administration → Users*, instead of in a specific room. The web app now grants the permissions of these roles in every room, as mobile and the API already do. A role assigned in a single room still applies only to that room.
