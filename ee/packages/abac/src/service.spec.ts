@@ -1135,8 +1135,9 @@ describe('AbacService (unit)', () => {
 			entitlementsOf: jest.fn().mockResolvedValue(new Map(Object.entries(held).map(([key, values]) => [key, new Set(values)]))),
 		});
 
-		const restrictToOwned = (enabled: boolean) =>
-			mockSettingsGet.mockImplementation(async (id: string) => (id === 'ABAC_Restrict_To_Owned_Attributes' ? enabled : undefined));
+		const restrictToOwned = (enabled: boolean) => {
+			(service as any).restrictToOwnedAttributes = enabled;
+		};
 
 		beforeEach(() => {
 			mockHasPermission.mockReset().mockResolvedValue(false);
@@ -1463,8 +1464,9 @@ describe('AbacService (unit)', () => {
 			return store;
 		};
 
-		const restrictToOwned = (enabled: boolean) =>
-			mockSettingsGet.mockImplementation(async (id: string) => (id === 'ABAC_Restrict_To_Owned_Attributes' ? enabled : undefined));
+		const restrictToOwned = (enabled: boolean) => {
+			(service as any).restrictToOwnedAttributes = enabled;
+		};
 
 		beforeEach(() => {
 			mockHasPermission.mockReset().mockResolvedValue(false);
@@ -1622,7 +1624,7 @@ describe('AbacService (unit)', () => {
 			mockAbacFind.mockReturnValue({ toArray: async () => [{ key: 'dept', values: ['eng', 'sales'] }] });
 			mockUsersFind.mockReset().mockReturnValue({ toArray: async () => [creator, alice, bob] });
 			mockHasPermission.mockReset().mockResolvedValue(false);
-			mockSettingsGet.mockImplementation(async (id: string) => (id === 'ABAC_Restrict_To_Owned_Attributes' ? true : undefined));
+			(service as any).restrictToOwnedAttributes = true;
 			holding(['eng']);
 		});
 
@@ -1717,7 +1719,7 @@ describe('AbacService (unit)', () => {
 		});
 
 		it('previews values the creator does not hold for a room they stay out of, when restricting to owned attributes is off', async () => {
-			mockSettingsGet.mockImplementation(async () => false);
+			(service as any).restrictToOwnedAttributes = false;
 			const evaluate = usePdp(jest.fn().mockResolvedValue({ compliant: ['alice'], nonCompliant: ['test-user'], inconclusive: [] }));
 
 			const result = await service.previewCreationMembers(['alice'], [{ key: 'dept', values: ['sales'] }], fakeActor, leaving);
