@@ -623,7 +623,8 @@ import { IS_EE, URL_MONGODB } from '../../e2e/config/constants';
 				const res = await preview({ members: [], attributes: { [dept]: ['sales'] }, excludeSelf: true }).expect(200);
 
 				expect(res.body.compliant).to.deep.equal([]);
-				expect(usernamesOf(res.body.nonCompliant)).to.deep.equal([creator.username]);
+				expect(res.body.nonCompliant).to.deep.equal([]);
+				expect(res.body.inconclusive).to.deep.equal([]);
 				expect(res.body.creator).to.equal('nonCompliant');
 			} finally {
 				await setSetting('ABAC_Restrict_To_Owned_Attributes', true);
