@@ -121,7 +121,6 @@ describe('discussionEnforcementOverride (ABAC)', () => {
 
 		it('should not capture a value that is not loaded yet', async () => {
 			workspace({ abacEnabled: true, enforceAllRooms: true });
-			// set past `workspace`, whose default would swallow an explicitly passed `undefined`
 			settingsGetMock.withArgs('Discussion_enabled').returns(undefined);
 
 			await applyDiscussionEnforcementOverride();
@@ -231,7 +230,6 @@ describe('discussionEnforcementOverride (ABAC)', () => {
 
 	describe('booting without the ABAC module', () => {
 		it('should put back a capture the licence down hook never got to, reading it past the cache', async () => {
-			// The setting is enterprise, so the cache answers with its `invalidValue` here.
 			settingsGetMock.withArgs('ABAC_Discussion_Enabled_Restore').returns('');
 			findOneByIdMock.withArgs('ABAC_Discussion_Enabled_Restore').resolves({ _id: 'ABAC_Discussion_Enabled_Restore', value: 'true' });
 
