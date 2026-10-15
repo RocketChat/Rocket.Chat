@@ -25,21 +25,19 @@ export type UsersTableProps = {
 	tab: AdminUsersTab;
 	roleData: { roles: Serialized<Omit<IRole, '_updatedAt'>>[] } | undefined;
 	users: Serialized<DefaultUserInfo>[];
-	total: number;
 	isLoading: boolean;
 	isError: boolean;
 	isSuccess: boolean;
 	onReload: () => void;
 	setUserFilters: Dispatch<SetStateAction<UsersFilters>>;
 	canFilterByUserStatus?: boolean;
-	paginationData: ReturnType<typeof usePagination>;
+	paginationData: ReturnType<typeof usePagination> & { count: number };
 	sortData: ReturnType<typeof useSort<UsersTableSortingOption>>;
 	isSeatsCapExceeded: boolean;
 };
 
 const UsersTable = ({
 	users,
-	total,
 	isLoading,
 	isError,
 	isSuccess,
@@ -220,7 +218,6 @@ const UsersTable = ({
 						divider
 						current={current}
 						itemsPerPage={itemsPerPage}
-						count={total}
 						onSetItemsPerPage={setItemsPerPage}
 						onSetCurrent={setCurrent}
 						{...paginationProps}

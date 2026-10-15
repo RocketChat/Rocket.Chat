@@ -26,7 +26,6 @@ const AttributesPage = () => {
 	const [text, setText] = useState(searchTerm ?? '');
 
 	const debouncedText = useDebouncedValue(text, 400);
-	const { current, itemsPerPage, setItemsPerPage, setCurrent, ...paginationProps } = usePagination();
 	const getAttributes = useEndpoint('GET', '/v1/abac/attributes');
 	const isABACAvailable = useIsABACAvailable();
 
@@ -41,18 +40,16 @@ const AttributesPage = () => {
 		});
 	});
 
-	const query = useMemo(
-		() => ({
-			...(debouncedText ? { key: debouncedText, values: debouncedText } : {}),
-			offset: current,
-			count: itemsPerPage,
-		}),
-		[debouncedText, current, itemsPerPage],
-	);
+	const query = useMemo(() => ({ ...(debouncedText ? { key: debouncedText, values: debouncedText } : {}) }), [debouncedText]);
+
+	const { paginatedQuery, queryKey, current, itemsPerPage, setItemsPerPage, setCurrent, ...paginationProps } = usePagination({
+		query,
+		getQueryKey: (query) => ABACQueryKeys.roomAttributes.list(query),
+	});
 
 	const { data, isLoading } = useQuery({
-		queryKey: ABACQueryKeys.roomAttributes.list(query),
-		queryFn: () => getAttributes(query),
+		queryKey,
+		queryFn: () => getAttributes(paginatedQuery),
 	});
 
 	const columns: TableColumnWidth[] = ['auto', 'auto', 40];
@@ -100,7 +97,6 @@ const AttributesPage = () => {
 						divider
 						current={current}
 						itemsPerPage={itemsPerPage}
-						count={data?.total || 0}
 						onSetItemsPerPage={setItemsPerPage}
 						onSetCurrent={setCurrent}
 						{...paginationProps}

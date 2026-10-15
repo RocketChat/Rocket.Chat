@@ -38,22 +38,29 @@ const CustomEmoji = ({ onClick, reload }: CustomEmojiProps) => {
 
 	const [text, setText] = useState('');
 	const { sortBy, sortDirection, setSort } = useSort<'name'>('name');
-	const { current, itemsPerPage, setItemsPerPage: onSetItemsPerPage, setCurrent: onSetCurrent, ...paginationProps } = usePagination();
 
 	const query = useDebouncedValue(
 		useMemo(
 			() => ({
 				name: text,
 				sort: `{ "${sortBy}": ${sortDirection === 'asc' ? 1 : -1} }`,
-				count: itemsPerPage,
-				offset: current,
 			}),
-			[text, itemsPerPage, current, sortBy, sortDirection],
+			[text, sortBy, sortDirection],
 		),
 		500,
 	);
 
 	const columns: TableColumnWidth[] = ['x200', 'x200'];
+
+	const {
+		paginatedQuery,
+		queryKey,
+		current,
+		itemsPerPage,
+		setItemsPerPage: onSetItemsPerPage,
+		setCurrent: onSetCurrent,
+		...paginationProps
+	} = usePagination({ query, getQueryKey: (query) => ['getEmojiList', query] });
 
 	const headers = useMemo(
 		() => [
@@ -67,8 +74,8 @@ const CustomEmoji = ({ onClick, reload }: CustomEmojiProps) => {
 
 	const getEmojiList = useEndpoint('GET', '/v1/emoji-custom.all');
 	const { data, refetch, isSuccess, isLoading, isError } = useQuery({
-		queryKey: ['getEmojiList', query],
-		queryFn: () => getEmojiList(query),
+		queryKey,
+		queryFn: () => getEmojiList(paginatedQuery),
 	});
 
 	useEffect(() => {
@@ -116,7 +123,6 @@ const CustomEmoji = ({ onClick, reload }: CustomEmojiProps) => {
 						divider
 						current={current}
 						itemsPerPage={itemsPerPage}
-						count={data?.total || 0}
 						onSetItemsPerPage={onSetItemsPerPage}
 						onSetCurrent={onSetCurrent}
 						{...paginationProps}

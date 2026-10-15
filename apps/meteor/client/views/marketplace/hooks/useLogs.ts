@@ -8,8 +8,8 @@ import { marketplaceQueryKeys } from '../../../lib/queryKeys';
 
 export const useLogs = ({
 	appId,
-	current,
-	itemsPerPage,
+	offset,
+	count,
 	logLevel,
 	method,
 	startDate,
@@ -17,8 +17,8 @@ export const useLogs = ({
 	instanceId,
 }: {
 	appId: string;
-	current: number;
-	itemsPerPage: number;
+	offset: number;
+	count: number;
 	logLevel?: '0' | '1' | '2';
 	method?: string;
 	startDate?: string;
@@ -27,15 +27,15 @@ export const useLogs = ({
 }): UseQueryResult<OperationResult<'GET', '/apps/:id/logs'>> => {
 	const query = useMemo(
 		() => ({
-			count: itemsPerPage,
-			offset: current,
+			count,
+			offset,
 			...(logLevel && { logLevel }),
 			...(method && { method }),
 			...(startDate && { startDate }),
 			...(endDate && { endDate }),
 			...(instanceId && { instanceId }),
 		}),
-		[itemsPerPage, current, logLevel, method, startDate, endDate, instanceId],
+		[count, offset, logLevel, method, startDate, endDate, instanceId],
 	);
 	const logs = useEndpoint('GET', '/apps/:id/logs', { id: appId });
 

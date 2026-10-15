@@ -28,7 +28,6 @@ const ModConsoleUsersTable = () => {
 	const { sortBy, sortDirection, setSort } = useSort<
 		'reports.ts' | 'reports.reportedUser.username' | 'reports.reportedUser.createdAt' | 'count'
 	>('reports.ts');
-	const { current, itemsPerPage, setItemsPerPage: onSetItemsPerPage, setCurrent: onSetCurrent, ...paginationProps } = usePagination();
 
 	const [dateRange, setDateRange] = useState<{ start: string | null; end: string | null }>({
 		start: '',
@@ -41,21 +40,29 @@ const ModConsoleUsersTable = () => {
 			() => ({
 				selector: text,
 				sort: JSON.stringify({ [sortBy]: sortDirection === 'asc' ? 1 : -1 }),
-				count: itemsPerPage,
-				offset: current,
 				latest: end ? `${new Date(end).toISOString().slice(0, 10)}T23:59:59.999Z` : undefined,
 				oldest: start ? `${new Date(start).toISOString().slice(0, 10)}T00:00:00.000Z` : undefined,
 			}),
-			[current, end, itemsPerPage, sortBy, sortDirection, start, text],
+			[end, sortBy, sortDirection, start, text],
 		),
 		500,
 	);
 
+	const {
+		paginatedQuery,
+		queryKey,
+		current,
+		itemsPerPage,
+		setItemsPerPage: onSetItemsPerPage,
+		setCurrent: onSetCurrent,
+		...paginationProps
+	} = usePagination({ query, getQueryKey: (query) => ['moderation', 'userReports', 'fetchAll', query] });
+
 	const getReports = useEndpoint('GET', '/v1/moderation.userReports');
 
 	const { data, isLoading, isSuccess, isError, refetch } = useQuery({
-		queryKey: ['moderation', 'userReports', 'fetchAll', query],
-		queryFn: () => getReports(query),
+		queryKey,
+		queryFn: () => getReports(paginatedQuery),
 		placeholderData: keepPreviousData,
 	});
 
@@ -129,7 +136,6 @@ const ModConsoleUsersTable = () => {
 						current={current}
 						divider
 						itemsPerPage={itemsPerPage}
-						count={data?.total || 0}
 						onSetItemsPerPage={onSetItemsPerPage}
 						onSetCurrent={onSetCurrent}
 						{...paginationProps}

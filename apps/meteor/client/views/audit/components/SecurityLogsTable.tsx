@@ -41,7 +41,15 @@ const SecurityLogsTable = () => {
 		settingId: '',
 	});
 
-	const { current, itemsPerPage, setItemsPerPage: onSetItemsPerPage, setCurrent: onSetCurrent, ...paginationProps } = usePagination();
+	const {
+		paginatedQuery,
+		queryKey,
+		current,
+		itemsPerPage,
+		setItemsPerPage: onSetItemsPerPage,
+		setCurrent: onSetCurrent,
+		...paginationProps
+	} = usePagination({ query, getQueryKey: (query) => ['audit.settings', query] });
 
 	const handleClearFilters = () => {
 		setSetting('');
@@ -92,10 +100,10 @@ const SecurityLogsTable = () => {
 	const getAudits = useEndpoint('GET', '/v1/audit.settings');
 
 	const { data, isLoading, isSuccess } = useQuery({
-		queryKey: ['audit.settings', query, itemsPerPage, current],
+		queryKey,
 
 		queryFn: async () => {
-			return getAudits({ ...query, ...(itemsPerPage && { count: itemsPerPage }), ...(current && { offset: current }) });
+			return getAudits(paginatedQuery);
 		},
 	});
 
@@ -208,7 +216,6 @@ const SecurityLogsTable = () => {
 				divider
 				current={current}
 				itemsPerPage={itemsPerPage}
-				count={data?.total || 0}
 				onSetItemsPerPage={onSetItemsPerPage}
 				onSetCurrent={onSetCurrent}
 				{...paginationProps}

@@ -61,12 +61,11 @@ const mockedUsers = [
 	},
 ];
 
-const paginationData = createMockedPagination(mockedUsers.length, 5);
+const paginationData = { ...createMockedPagination(mockedUsers.length, 5), count: 5 };
 
 export const Default = {
 	args: {
 		users: mockedUsers,
-		total: 5,
 		isLoading: false,
 		isSuccess: true,
 		tab: 'all',
@@ -84,7 +83,6 @@ export const Loading = {
 export const NoResults = {
 	args: {
 		users: [],
-		total: 0,
 		isLoading: false,
 		isError: false,
 		isSuccess: true,

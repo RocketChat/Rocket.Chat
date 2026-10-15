@@ -28,17 +28,19 @@ const LogsPage = () => {
 
 	const formatDate = useFormatDateAndTime();
 
-	const { current, itemsPerPage, setItemsPerPage, setCurrent, ...paginationProps } = usePagination();
 	const getLogs = useEndpoint('GET', '/v1/abac/audit');
 	const query = useMemo(
 		() => ({
 			...(startDate && { start: new Date(`${startDate}T00:00:00.000`).toISOString() }),
 			...(endDate && { end: new Date(`${endDate}T23:59:59.999`).toISOString() }),
-			offset: current,
-			count: itemsPerPage,
 		}),
-		[current, itemsPerPage, startDate, endDate],
+		[startDate, endDate],
 	);
+
+	const { paginatedQuery, queryKey, current, itemsPerPage, setItemsPerPage, setCurrent, ...paginationProps } = usePagination({
+		query,
+		getQueryKey: (query) => ABACQueryKeys.logs.list(query),
+	});
 
 	// Whenever the user changes the filter or the text, reset the pagination to the first page
 	useEffect(() => {
@@ -75,8 +77,8 @@ const LogsPage = () => {
 	};
 
 	const { data, isLoading } = useQuery({
-		queryKey: ABACQueryKeys.logs.list(query),
-		queryFn: () => getLogs(query),
+		queryKey,
+		queryFn: () => getLogs(paginatedQuery),
 		select: (data) => ({
 			events: data.events.map((event) => {
 				const eventInfo = {
@@ -226,7 +228,6 @@ const LogsPage = () => {
 						divider
 						current={current}
 						itemsPerPage={itemsPerPage}
-						count={data?.total || 0}
 						onSetItemsPerPage={setItemsPerPage}
 						onSetCurrent={setCurrent}
 						{...paginationProps}

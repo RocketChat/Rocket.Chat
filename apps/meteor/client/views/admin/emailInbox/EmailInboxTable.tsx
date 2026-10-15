@@ -20,7 +20,6 @@ import SendTestButton from './SendTestButton';
 const EmailInboxTable = () => {
 	const t = useTranslation();
 	const router = useRoute('admin-email-inboxes');
-	const { current, itemsPerPage, setItemsPerPage: onSetItemsPerPage, setCurrent: onSetCurrent, ...paginationProps } = usePagination();
 	const { sortBy, sortDirection, setSort } = useSort<'name' | 'email' | 'active'>('name');
 
 	const onClick = useCallback(
@@ -37,13 +36,21 @@ const EmailInboxTable = () => {
 
 	const query = {
 		sort: JSON.stringify({ [sortBy]: sortDirection === 'asc' ? 1 : -1 }),
-		...(itemsPerPage && { count: itemsPerPage }),
-		...(current && { offset: current }),
 	};
 
+	const {
+		paginatedQuery,
+		queryKey,
+		current,
+		itemsPerPage,
+		setItemsPerPage: onSetItemsPerPage,
+		setCurrent: onSetCurrent,
+		...paginationProps
+	} = usePagination({ query, getQueryKey: (query) => ['email-list', query] });
+
 	const result = useQuery({
-		queryKey: ['email-list', query],
-		queryFn: () => endpoint(query),
+		queryKey,
+		queryFn: () => endpoint(paginatedQuery),
 	});
 
 	const headers = useMemo(
@@ -98,7 +105,6 @@ const EmailInboxTable = () => {
 						divider
 						current={current}
 						itemsPerPage={itemsPerPage}
-						count={result.data.count}
 						onSetItemsPerPage={onSetItemsPerPage}
 						onSetCurrent={onSetCurrent}
 						{...paginationProps}

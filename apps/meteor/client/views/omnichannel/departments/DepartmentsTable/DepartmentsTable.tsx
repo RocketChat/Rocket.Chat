@@ -33,7 +33,6 @@ const DepartmentsTable = ({ archived }: DepartmentsTableProps) => {
 	const router = useRouter();
 	const [text, setText] = useState('');
 
-	const { current, itemsPerPage, setItemsPerPage: onSetItemsPerPage, setCurrent: onSetCurrent, ...paginationProps } = usePagination();
 	const { sortBy, sortDirection, setSort } = useSort<'name' | 'description' | 'numAgents' | 'enabled' | 'showOnRegistration'>('name');
 
 	const getDepartments = useEndpoint('GET', archived ? DEPARTMENTS_ENDPOINTS.archived : DEPARTMENTS_ENDPOINTS.department);
@@ -46,22 +45,30 @@ const DepartmentsTable = ({ archived }: DepartmentsTableProps) => {
 				onlyMyDepartments: 'true' as const,
 				text,
 				sort: JSON.stringify({ [sortBy]: sortDirection === 'asc' ? 1 : -1 }),
-				...(current && { offset: current }),
-				...(itemsPerPage && { count: itemsPerPage }),
 			}),
-			[current, itemsPerPage, sortBy, sortDirection, text],
+			[sortBy, sortDirection, text],
 		),
 		500,
 	);
 
+	const {
+		paginatedQuery,
+		queryKey,
+		current,
+		itemsPerPage,
+		setItemsPerPage: onSetItemsPerPage,
+		setCurrent: onSetCurrent,
+		...paginationProps
+	} = usePagination({ query, getQueryKey: (query) => ['livechat-departments', query, archived] });
+
 	const { data, isSuccess, isLoading } = useQuery({
-		queryKey: ['livechat-departments', query, archived],
-		queryFn: async () => getDepartments(query),
+		queryKey,
+		queryFn: async () => getDepartments(paginatedQuery),
 		placeholderData: keepPreviousData,
 	});
 
-	const [defaultQuery] = useState(hashKey([query]));
-	const queryHasChanged = defaultQuery !== hashKey([query]);
+	const [defaultQuery] = useState(hashKey([paginatedQuery]));
+	const queryHasChanged = defaultQuery !== hashKey([paginatedQuery]);
 
 	const columns: TableColumnWidth[] = ['auto', 'auto', 'auto', 'auto', 'auto', 40];
 
@@ -146,7 +153,6 @@ const DepartmentsTable = ({ archived }: DepartmentsTableProps) => {
 						divider
 						current={current}
 						itemsPerPage={itemsPerPage}
-						count={data?.total || 0}
 						onSetItemsPerPage={onSetItemsPerPage}
 						onSetCurrent={onSetCurrent}
 						{...paginationProps}

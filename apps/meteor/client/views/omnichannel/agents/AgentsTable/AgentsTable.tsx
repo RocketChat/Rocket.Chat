@@ -19,6 +19,7 @@ import AgentsTableRow from './AgentsTableRow';
 import FilterByText from '../../../../components/FilterByText';
 import GenericError from '../../../../components/GenericError';
 import { links } from '../../../../lib/links';
+import { omnichannelQueryKeys } from '../../../../lib/queryKeys';
 import { useAgentsQuery } from '../hooks/useAgentsQuery';
 import { useQuery } from '../hooks/useQuery';
 
@@ -32,13 +33,15 @@ const AgentsTable = () => {
 		500,
 	) as ['name' | 'username' | 'emails.address' | 'statusLivechat', 'asc' | 'desc'];
 
-	const { current, itemsPerPage, setItemsPerPage, setCurrent, ...paginationProps } = usePagination();
+	const query = useQuery({ text }, debouncedSort);
+	const { paginatedQuery, queryKey, current, itemsPerPage, setItemsPerPage, setCurrent, ...paginationProps } = usePagination({
+		query,
+		getQueryKey: omnichannelQueryKeys.agents,
+	});
+	const { data, isSuccess, isLoading, isError, refetch } = useAgentsQuery(paginatedQuery);
 
-	const query = useQuery({ text, current, itemsPerPage }, debouncedSort);
-	const { data, isSuccess, isLoading, isError, refetch } = useAgentsQuery(query);
-
-	const [defaultQuery] = useState(hashKey([query]));
-	const queryHasChanged = defaultQuery !== hashKey([query]);
+	const [defaultQuery] = useState(hashKey([paginatedQuery]));
+	const queryHasChanged = defaultQuery !== hashKey([paginatedQuery]);
 
 	const onHeaderClick = useStableCallback((id: 'name' | 'username' | 'emails.address' | 'statusLivechat') => {
 		if (sortBy === id) {
@@ -110,7 +113,6 @@ const AgentsTable = () => {
 						divider
 						current={current}
 						itemsPerPage={itemsPerPage}
-						count={data?.total || 0}
 						onSetItemsPerPage={setItemsPerPage}
 						onSetCurrent={setCurrent}
 						{...paginationProps}
