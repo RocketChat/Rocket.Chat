@@ -23,9 +23,9 @@ export const paginationQueryProperties = {
 		minimum: 0,
 		nullable: true,
 		description:
-			'How many items to return. The workspace caps it: a page holds `min(count, API_Upper_Count_Limit)` ' +
-			'items, so a response can be smaller than asked for — page by what the response carried, never by ' +
-			'this number. Omitted, `API_Default_Count` applies. Zero means every item when ' +
+			'How many items to return. The workspace caps it: for a positive `count`, a page holds at most ' +
+			'`min(count, API_Upper_Count_Limit)` items, so a response can be smaller than asked for — page by what ' +
+			'the response carried, never by this number. Omitted, `API_Default_Count` applies. Zero means every item when ' +
 			'`API_Allow_Infinite_Count` is enabled, and `API_Default_Count` otherwise.',
 	},
 	offset: {
