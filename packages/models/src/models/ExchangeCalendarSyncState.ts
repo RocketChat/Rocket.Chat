@@ -1,6 +1,6 @@
 import type { IExchangeCalendarSyncState, IUser } from '@rocket.chat/core-typings';
 import type { ExchangeCalendarSyncIdentity, IExchangeCalendarSyncStateModel } from '@rocket.chat/model-typings';
-import type { Db, IndexDescription, UpdateResult } from 'mongodb';
+import type { Db, DeleteResult, IndexDescription, UpdateResult } from 'mongodb';
 
 import { BaseRaw } from './BaseRaw';
 
@@ -39,5 +39,13 @@ export class ExchangeCalendarSyncStateRaw extends BaseRaw<IExchangeCalendarSyncS
 
 	public async clearCursorByUserId(uid: IUser['_id']): Promise<UpdateResult> {
 		return this.updateOne({ uid }, { $unset: { cursor: 1 } });
+	}
+
+	public findAllUserIds(): Promise<IUser['_id'][]> {
+		return this.col.distinct('uid');
+	}
+
+	public async removeAll(): Promise<DeleteResult> {
+		return this.deleteMany({});
 	}
 }

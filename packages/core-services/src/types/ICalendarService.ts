@@ -1,4 +1,4 @@
-import type { ICalendarEvent, IUser } from '@rocket.chat/core-typings';
+import type { CalendarEventSource, ICalendarEvent, IUser } from '@rocket.chat/core-typings';
 import type { InsertionModel } from '@rocket.chat/model-typings';
 import type { UpdateResult, DeleteResult } from 'mongodb';
 
@@ -42,5 +42,6 @@ export interface ICalendarService {
 		keepExternalIds: string[],
 		options?: CalendarBatchOptions,
 	): Promise<CalendarBatchResult>;
+	discardImportedBySource(source: CalendarEventSource, refreshPresenceFor: IUser['_id'][]): Promise<number>;
 	refreshBusyPresence(uid: IUser['_id']): Promise<void>;
 }
