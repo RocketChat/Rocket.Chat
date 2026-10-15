@@ -68,10 +68,8 @@ Meteor.startup(async () => {
 			stopCronWatcher?.();
 			stopEnforcementWatcher?.();
 
-			// Before `onInvalidateLicense` resets `ABAC_Enforce_All_Rooms` to its `invalidValue`,
-			// which would otherwise leave the workspace with discussions off and nothing left
-			// watching to turn them back on.
 			const { restoreDiscussionEnabled } = await import('../lib/abac/discussionEnforcementOverride');
+			// must run before onInvalidateLicense resets ABAC_Enforce_All_Rooms
 			await restoreDiscussionEnabled();
 
 			if (await cronJobs.has(VIRTRU_PDP_SYNC_JOB)) {
