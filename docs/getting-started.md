@@ -24,6 +24,9 @@ Node/Yarn versions are pinned in `package.json` (`engines` + `volta`) and in
 `.node-version`. **Use exactly these versions** — mismatches cause obscure build
 errors.
 
+`scripts/check-deps.sh` checks all of the above against the pins in the repo;
+`scripts/check-deps.sh --install` installs what is missing.
+
 MongoDB is **not required** for the first run: Meteor starts a bundled Mongo,
 which already runs as a single-node replica set — enough for the transactions
 and change streams the app relies on. You only need an external Mongo to mirror
