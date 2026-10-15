@@ -1,6 +1,5 @@
 import { Team, isMeteorError } from '@rocket.chat/core-services';
 import {
-	isRoomNativeFederated,
 	type IIntegration,
 	type IMessage,
 	type ITeam,
@@ -43,6 +42,7 @@ import { eraseRoom } from '../../lib/eraseRoom';
 import { findUsersOfRoom } from '../../lib/findUsersOfRoom';
 import { mountIntegrationQueryBasedOnPermissions } from '../../lib/integrations/lib/mountQueriesBasedOnPermission';
 import { openRoom } from '../../lib/openRoom';
+import { invitesByRawUsername } from '../../lib/rooms/invitesByRawUsername';
 import { getUsersHiddenFrom, filterHiddenUsers, redactHiddenUsers } from '../../lib/statusVisibility/hiddenUsers';
 import { normalizeMessagesForUser } from '../../lib/utils/lib/normalizeMessagesForUser';
 import { getChannelHistory } from '../../meteor-methods/messages/getChannelHistory';
@@ -856,9 +856,7 @@ API.v1.post(
 			throw new Meteor.Error('error-room-not-found', 'The required "roomId" or "roomName" param provided does not match any group');
 		}
 
-		// Federated rooms invite by raw username: the federated user record is created
-		// lazily inside addUsersToRoomMethod, so we must not require it to exist locally yet.
-		if (groupRoom && isRoomNativeFederated(groupRoom)) {
+		if (groupRoom && invitesByRawUsername(groupRoom)) {
 			const usernames = await getUsernameListFromParams(this.bodyParams);
 
 			await addUsersToRoomMethod(this.userId, { rid, users: usernames }, this.user);
