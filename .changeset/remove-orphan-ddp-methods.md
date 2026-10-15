@@ -141,4 +141,4 @@ Removed methods:
 - `uploadImportFile` — use `POST /v1/uploadImportFile`
 - `userSetUtcOffset` — use `POST /v1/users.setPreferences`
 
-Methods that look orphan to the static audit but are still reachable indirectly (admin `MethodActionInput` dynamic dispatch, cloud admin actions, the `CachedStore` template-literal call, or `useMethod`/`sdk.call` with a conditional/template-literal name) stay registered. Those are listed under the skip list in `scripts/remove-orphan-ddp-methods.mjs`.
+Methods that look orphan to the static audit but are still reachable indirectly (admin `MethodActionInput` dynamic dispatch, cloud admin actions, the `CachedStore` template-literal call, or `useMethod`/`sdk.call` with a conditional/template-literal name) stay registered.
