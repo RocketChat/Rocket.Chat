@@ -52,20 +52,21 @@ exports[`[SidebarItem Component] renders Condensed without crashing 1`] = `
                   role="group"
                 >
                   <div
-                    class="rcx-box rcx-box--full rcx-sidebar-collapse-group__bar"
+                    class="rcx-item-group-header rcx-sidebar-collapse-group__bar"
                   >
                     <div
                       aria-controls="_r_3_"
                       aria-expanded="true"
-                      class="rcx-box rcx-sidebar-collapse-group__bar-button"
+                      class="rcx-item-group-title rcx-sidebar-collapse-group__bar-button"
+                      id="_r_4_"
                       role="button"
                       tabindex="0"
                     >
                       <div
-                        class="rcx-box rcx-sidebar-collapse-group__heading"
+                        class="rcx-sidebar-collapse-group__heading"
                       >
                         <h4
-                          class="rcx-box rcx-box--full rcx-sidebar-collapse-group__title"
+                          class="rcx-sidebar-collapse-group__title"
                           id="_r_2_"
                         >
                           Label
@@ -83,32 +84,37 @@ exports[`[SidebarItem Component] renders Condensed without crashing 1`] = `
                       </div>
                     </div>
                     <div
-                      class="rcx-box rcx-box--full rcx-sidebar-collapse-group__menu-wrapper rcx-box--animated"
+                      class="rcx-item__actions rcx-item__actions--reveal-hover rcx-sidebar-collapse-group__menu-wrapper"
                     >
-                      <span
-                        class="rcx-box rcx-box--full rcx-sidebar-collapse-group__menu rcx-sidebar-collapse-group__menu"
+                      <div
+                        class="rcx-item__actions-inner"
                       >
-                        <button
-                          aria-expanded="false"
-                          aria-haspopup="true"
-                          aria-label="Options"
-                          class="rcx-box rcx-box--full rcx-button--mini-square rcx-button--square rcx-button--icon rcx-button"
-                          id="react-aria-_r_4_"
-                          title="Options"
-                          type="button"
+                        <span
+                          class="rcx-box rcx-box--full rcx-sidebar-collapse-group__menu rcx-sidebar-collapse-group__menu"
                         >
-                          <i
-                            aria-hidden="true"
-                            class="rcx-box rcx-box--full rcx-icon--name-kebab rcx-icon rcx-css-1tg7yd0"
+                          <button
+                            aria-expanded="false"
+                            aria-haspopup="true"
+                            aria-label="Options"
+                            class="rcx-box rcx-box--full rcx-button--mini-square rcx-button--square rcx-button--icon rcx-button"
+                            id="react-aria-_r_5_"
+                            title="Options"
+                            type="button"
                           >
-                            
-                          </i>
-                        </button>
-                      </span>
+                            <i
+                              aria-hidden="true"
+                              class="rcx-box rcx-box--full rcx-icon--name-kebab rcx-icon rcx-css-1tg7yd0"
+                            >
+                              
+                            </i>
+                          </button>
+                        </span>
+                      </div>
                     </div>
                   </div>
                   <div
-                    class="rcx-box rcx-box--full rcx-sidebar-collapse-group__panel rcx-box--animated rcx-sidebar-collapse-group__panel--expanded"
+                    aria-labelledby="_r_2_"
+                    class="rcx-item-group rcx-sidebar-collapse-group__panel rcx-box--animated rcx-sidebar-collapse-group__panel--expanded"
                     id="_r_3_"
                     role="list"
                   >
@@ -136,7 +142,7 @@ exports[`[SidebarItem Component] renders Condensed without crashing 1`] = `
                         <div
                           aria-hidden="true"
                           class="rcx-item__icon rcx-sidebar-item__icon"
-                          id="_r_6_"
+                          id="_r_7_"
                         >
                           <i
                             aria-hidden="true"
@@ -193,7 +199,7 @@ exports[`[SidebarItem Component] renders Condensed without crashing 1`] = `
                                 aria-haspopup="true"
                                 aria-label="Options"
                                 class="rcx-box rcx-box--full rcx-button--mini-square rcx-button--square rcx-button--icon rcx-button"
-                                id="react-aria-_r_7_"
+                                id="react-aria-_r_8_"
                                 title="Options"
                                 type="button"
                               >
@@ -233,7 +239,7 @@ exports[`[SidebarItem Component] renders Condensed without crashing 1`] = `
                         <div
                           aria-hidden="true"
                           class="rcx-item__icon rcx-sidebar-item__icon rcx-sidebar-item__icon--highlighted"
-                          id="_r_9_"
+                          id="_r_a_"
                         >
                           <i
                             aria-hidden="true"
@@ -267,7 +273,7 @@ exports[`[SidebarItem Component] renders Condensed without crashing 1`] = `
                                 aria-haspopup="true"
                                 aria-label="Options"
                                 class="rcx-box rcx-box--full rcx-button--mini-square rcx-button--square rcx-button--icon rcx-button"
-                                id="react-aria-_r_a_"
+                                id="react-aria-_r_b_"
                                 title="Options"
                                 type="button"
                               >
@@ -307,7 +313,7 @@ exports[`[SidebarItem Component] renders Condensed without crashing 1`] = `
                         <div
                           aria-hidden="true"
                           class="rcx-item__icon rcx-sidebar-item__icon"
-                          id="_r_c_"
+                          id="_r_d_"
                         >
                           <i
                             aria-hidden="true"
@@ -335,7 +341,7 @@ exports[`[SidebarItem Component] renders Condensed without crashing 1`] = `
                                 aria-haspopup="true"
                                 aria-label="Options"
                                 class="rcx-box rcx-box--full rcx-button--mini-square rcx-button--square rcx-button--icon rcx-button"
-                                id="react-aria-_r_d_"
+                                id="react-aria-_r_e_"
                                 title="Options"
                                 type="button"
                               >
@@ -375,7 +381,7 @@ exports[`[SidebarItem Component] renders Condensed without crashing 1`] = `
                         <div
                           aria-hidden="true"
                           class="rcx-item__icon rcx-sidebar-item__icon rcx-sidebar-item__icon--highlighted"
-                          id="_r_f_"
+                          id="_r_g_"
                         >
                           <i
                             aria-hidden="true"
@@ -409,7 +415,7 @@ exports[`[SidebarItem Component] renders Condensed without crashing 1`] = `
                                 aria-haspopup="true"
                                 aria-label="Options"
                                 class="rcx-box rcx-box--full rcx-button--mini-square rcx-button--square rcx-button--icon rcx-button"
-                                id="react-aria-_r_g_"
+                                id="react-aria-_r_h_"
                                 title="Options"
                                 type="button"
                               >
@@ -449,7 +455,7 @@ exports[`[SidebarItem Component] renders Condensed without crashing 1`] = `
                         <div
                           aria-hidden="true"
                           class="rcx-item__icon rcx-sidebar-item__icon"
-                          id="_r_i_"
+                          id="_r_j_"
                         >
                           <i
                             aria-hidden="true"
@@ -477,7 +483,7 @@ exports[`[SidebarItem Component] renders Condensed without crashing 1`] = `
                                 aria-haspopup="true"
                                 aria-label="Options"
                                 class="rcx-box rcx-box--full rcx-button--mini-square rcx-button--square rcx-button--icon rcx-button"
-                                id="react-aria-_r_j_"
+                                id="react-aria-_r_k_"
                                 title="Options"
                                 type="button"
                               >
@@ -517,7 +523,7 @@ exports[`[SidebarItem Component] renders Condensed without crashing 1`] = `
                         <div
                           aria-hidden="true"
                           class="rcx-item__icon rcx-sidebar-item__icon rcx-sidebar-item__icon--highlighted"
-                          id="_r_l_"
+                          id="_r_m_"
                         >
                           <i
                             aria-hidden="true"
@@ -551,7 +557,7 @@ exports[`[SidebarItem Component] renders Condensed without crashing 1`] = `
                                 aria-haspopup="true"
                                 aria-label="Options"
                                 class="rcx-box rcx-box--full rcx-button--mini-square rcx-button--square rcx-button--icon rcx-button"
-                                id="react-aria-_r_m_"
+                                id="react-aria-_r_n_"
                                 title="Options"
                                 type="button"
                               >
@@ -591,7 +597,7 @@ exports[`[SidebarItem Component] renders Condensed without crashing 1`] = `
                         <div
                           aria-hidden="true"
                           class="rcx-item__icon rcx-sidebar-item__icon"
-                          id="_r_o_"
+                          id="_r_p_"
                         >
                           <i
                             aria-hidden="true"
@@ -619,7 +625,7 @@ exports[`[SidebarItem Component] renders Condensed without crashing 1`] = `
                                 aria-haspopup="true"
                                 aria-label="Options"
                                 class="rcx-box rcx-box--full rcx-button--mini-square rcx-button--square rcx-button--icon rcx-button"
-                                id="react-aria-_r_p_"
+                                id="react-aria-_r_q_"
                                 title="Options"
                                 type="button"
                               >
@@ -659,7 +665,7 @@ exports[`[SidebarItem Component] renders Condensed without crashing 1`] = `
                         <div
                           aria-hidden="true"
                           class="rcx-item__icon rcx-sidebar-item__icon rcx-sidebar-item__icon--highlighted"
-                          id="_r_r_"
+                          id="_r_s_"
                         >
                           <i
                             aria-hidden="true"
@@ -693,7 +699,7 @@ exports[`[SidebarItem Component] renders Condensed without crashing 1`] = `
                                 aria-haspopup="true"
                                 aria-label="Options"
                                 class="rcx-box rcx-box--full rcx-button--mini-square rcx-button--square rcx-button--icon rcx-button"
-                                id="react-aria-_r_s_"
+                                id="react-aria-_r_t_"
                                 title="Options"
                                 type="button"
                               >
@@ -754,7 +760,7 @@ exports[`[SidebarItem Component] renders CondensedItems without crashing 1`] = `
               class="rcx-box rcx-box--full rcx-sidebar-accordion-item"
             >
               <div
-                aria-controls="_r_v_"
+                aria-controls="_r_10_"
                 aria-expanded="true"
                 class="rcx-box rcx-box--full rcx-sidebar-accordion-item__bar rcx-box--animated"
                 role="button"
@@ -772,36 +778,37 @@ exports[`[SidebarItem Component] renders CondensedItems without crashing 1`] = `
                 </span>
                 <h5
                   class="rcx-sidebar-accordion-item__title"
-                  id="_r_u_"
+                  id="_r_v_"
                 >
                   Label
                 </h5>
               </div>
               <div
                 class="rcx-sidebar-accordion-item__panel rcx-box--animated rcx-sidebar-accordion-item__panel--expanded"
-                id="_r_v_"
+                id="_r_10_"
               >
                 <div
-                  aria-labelledby="_r_10_"
+                  aria-labelledby="_r_11_"
                   class="rcx-box rcx-box--full rcx-sidebar-collapse-group"
                   role="group"
                 >
                   <div
-                    class="rcx-box rcx-box--full rcx-sidebar-collapse-group__bar"
+                    class="rcx-item-group-header rcx-sidebar-collapse-group__bar"
                   >
                     <div
-                      aria-controls="_r_11_"
+                      aria-controls="_r_12_"
                       aria-expanded="true"
-                      class="rcx-box rcx-sidebar-collapse-group__bar-button"
+                      class="rcx-item-group-title rcx-sidebar-collapse-group__bar-button"
+                      id="_r_13_"
                       role="button"
                       tabindex="0"
                     >
                       <div
-                        class="rcx-box rcx-sidebar-collapse-group__heading"
+                        class="rcx-sidebar-collapse-group__heading"
                       >
                         <h4
-                          class="rcx-box rcx-box--full rcx-sidebar-collapse-group__title"
-                          id="_r_10_"
+                          class="rcx-sidebar-collapse-group__title"
+                          id="_r_11_"
                         >
                           Label
                         </h4>
@@ -818,33 +825,38 @@ exports[`[SidebarItem Component] renders CondensedItems without crashing 1`] = `
                       </div>
                     </div>
                     <div
-                      class="rcx-box rcx-box--full rcx-sidebar-collapse-group__menu-wrapper rcx-box--animated"
+                      class="rcx-item__actions rcx-item__actions--reveal-hover rcx-sidebar-collapse-group__menu-wrapper"
                     >
-                      <span
-                        class="rcx-box rcx-box--full rcx-sidebar-collapse-group__menu rcx-sidebar-collapse-group__menu"
+                      <div
+                        class="rcx-item__actions-inner"
                       >
-                        <button
-                          aria-expanded="false"
-                          aria-haspopup="true"
-                          aria-label="Options"
-                          class="rcx-box rcx-box--full rcx-button--mini-square rcx-button--square rcx-button--icon rcx-button"
-                          id="react-aria-_r_12_"
-                          title="Options"
-                          type="button"
+                        <span
+                          class="rcx-box rcx-box--full rcx-sidebar-collapse-group__menu rcx-sidebar-collapse-group__menu"
                         >
-                          <i
-                            aria-hidden="true"
-                            class="rcx-box rcx-box--full rcx-icon--name-kebab rcx-icon rcx-css-1tg7yd0"
+                          <button
+                            aria-expanded="false"
+                            aria-haspopup="true"
+                            aria-label="Options"
+                            class="rcx-box rcx-box--full rcx-button--mini-square rcx-button--square rcx-button--icon rcx-button"
+                            id="react-aria-_r_14_"
+                            title="Options"
+                            type="button"
                           >
-                            
-                          </i>
-                        </button>
-                      </span>
+                            <i
+                              aria-hidden="true"
+                              class="rcx-box rcx-box--full rcx-icon--name-kebab rcx-icon rcx-css-1tg7yd0"
+                            >
+                              
+                            </i>
+                          </button>
+                        </span>
+                      </div>
                     </div>
                   </div>
                   <div
-                    class="rcx-box rcx-box--full rcx-sidebar-collapse-group__panel rcx-box--animated rcx-sidebar-collapse-group__panel--expanded"
-                    id="_r_11_"
+                    aria-labelledby="_r_11_"
+                    class="rcx-item-group rcx-sidebar-collapse-group__panel rcx-box--animated rcx-sidebar-collapse-group__panel--expanded"
+                    id="_r_12_"
                     role="list"
                   >
                     <div
@@ -871,7 +883,7 @@ exports[`[SidebarItem Component] renders CondensedItems without crashing 1`] = `
                         <div
                           aria-hidden="true"
                           class="rcx-item__icon rcx-sidebar-item__icon"
-                          id="_r_14_"
+                          id="_r_16_"
                         >
                           <i
                             aria-hidden="true"
@@ -928,7 +940,7 @@ exports[`[SidebarItem Component] renders CondensedItems without crashing 1`] = `
                                 aria-haspopup="true"
                                 aria-label="Options"
                                 class="rcx-box rcx-box--full rcx-button--mini-square rcx-button--square rcx-button--icon rcx-button"
-                                id="react-aria-_r_15_"
+                                id="react-aria-_r_17_"
                                 title="Options"
                                 type="button"
                               >
@@ -968,7 +980,7 @@ exports[`[SidebarItem Component] renders CondensedItems without crashing 1`] = `
                         <div
                           aria-hidden="true"
                           class="rcx-item__icon rcx-sidebar-item__icon rcx-sidebar-item__icon--highlighted"
-                          id="_r_17_"
+                          id="_r_19_"
                         >
                           <i
                             aria-hidden="true"
@@ -1002,7 +1014,7 @@ exports[`[SidebarItem Component] renders CondensedItems without crashing 1`] = `
                                 aria-haspopup="true"
                                 aria-label="Options"
                                 class="rcx-box rcx-box--full rcx-button--mini-square rcx-button--square rcx-button--icon rcx-button"
-                                id="react-aria-_r_18_"
+                                id="react-aria-_r_1a_"
                                 title="Options"
                                 type="button"
                               >
@@ -1042,7 +1054,7 @@ exports[`[SidebarItem Component] renders CondensedItems without crashing 1`] = `
                         <div
                           aria-hidden="true"
                           class="rcx-item__icon rcx-sidebar-item__icon"
-                          id="_r_1a_"
+                          id="_r_1c_"
                         >
                           <i
                             aria-hidden="true"
@@ -1070,7 +1082,7 @@ exports[`[SidebarItem Component] renders CondensedItems without crashing 1`] = `
                                 aria-haspopup="true"
                                 aria-label="Options"
                                 class="rcx-box rcx-box--full rcx-button--mini-square rcx-button--square rcx-button--icon rcx-button"
-                                id="react-aria-_r_1b_"
+                                id="react-aria-_r_1d_"
                                 title="Options"
                                 type="button"
                               >
@@ -1110,7 +1122,7 @@ exports[`[SidebarItem Component] renders CondensedItems without crashing 1`] = `
                         <div
                           aria-hidden="true"
                           class="rcx-item__icon rcx-sidebar-item__icon rcx-sidebar-item__icon--highlighted"
-                          id="_r_1d_"
+                          id="_r_1f_"
                         >
                           <i
                             aria-hidden="true"
@@ -1144,7 +1156,7 @@ exports[`[SidebarItem Component] renders CondensedItems without crashing 1`] = `
                                 aria-haspopup="true"
                                 aria-label="Options"
                                 class="rcx-box rcx-box--full rcx-button--mini-square rcx-button--square rcx-button--icon rcx-button"
-                                id="react-aria-_r_1e_"
+                                id="react-aria-_r_1g_"
                                 title="Options"
                                 type="button"
                               >
@@ -1184,7 +1196,7 @@ exports[`[SidebarItem Component] renders CondensedItems without crashing 1`] = `
                         <div
                           aria-hidden="true"
                           class="rcx-item__icon rcx-sidebar-item__icon"
-                          id="_r_1g_"
+                          id="_r_1i_"
                         >
                           <i
                             aria-hidden="true"
@@ -1212,7 +1224,7 @@ exports[`[SidebarItem Component] renders CondensedItems without crashing 1`] = `
                                 aria-haspopup="true"
                                 aria-label="Options"
                                 class="rcx-box rcx-box--full rcx-button--mini-square rcx-button--square rcx-button--icon rcx-button"
-                                id="react-aria-_r_1h_"
+                                id="react-aria-_r_1j_"
                                 title="Options"
                                 type="button"
                               >
@@ -1252,7 +1264,7 @@ exports[`[SidebarItem Component] renders CondensedItems without crashing 1`] = `
                         <div
                           aria-hidden="true"
                           class="rcx-item__icon rcx-sidebar-item__icon rcx-sidebar-item__icon--highlighted"
-                          id="_r_1j_"
+                          id="_r_1l_"
                         >
                           <i
                             aria-hidden="true"
@@ -1286,7 +1298,7 @@ exports[`[SidebarItem Component] renders CondensedItems without crashing 1`] = `
                                 aria-haspopup="true"
                                 aria-label="Options"
                                 class="rcx-box rcx-box--full rcx-button--mini-square rcx-button--square rcx-button--icon rcx-button"
-                                id="react-aria-_r_1k_"
+                                id="react-aria-_r_1m_"
                                 title="Options"
                                 type="button"
                               >
@@ -1326,7 +1338,7 @@ exports[`[SidebarItem Component] renders CondensedItems without crashing 1`] = `
                         <div
                           aria-hidden="true"
                           class="rcx-item__icon rcx-sidebar-item__icon"
-                          id="_r_1m_"
+                          id="_r_1o_"
                         >
                           <i
                             aria-hidden="true"
@@ -1354,7 +1366,7 @@ exports[`[SidebarItem Component] renders CondensedItems without crashing 1`] = `
                                 aria-haspopup="true"
                                 aria-label="Options"
                                 class="rcx-box rcx-box--full rcx-button--mini-square rcx-button--square rcx-button--icon rcx-button"
-                                id="react-aria-_r_1n_"
+                                id="react-aria-_r_1p_"
                                 title="Options"
                                 type="button"
                               >
@@ -1394,7 +1406,7 @@ exports[`[SidebarItem Component] renders CondensedItems without crashing 1`] = `
                         <div
                           aria-hidden="true"
                           class="rcx-item__icon rcx-sidebar-item__icon rcx-sidebar-item__icon--highlighted"
-                          id="_r_1p_"
+                          id="_r_1r_"
                         >
                           <i
                             aria-hidden="true"
@@ -1428,7 +1440,7 @@ exports[`[SidebarItem Component] renders CondensedItems without crashing 1`] = `
                                 aria-haspopup="true"
                                 aria-label="Options"
                                 class="rcx-box rcx-box--full rcx-button--mini-square rcx-button--square rcx-button--icon rcx-button"
-                                id="react-aria-_r_1q_"
+                                id="react-aria-_r_1s_"
                                 title="Options"
                                 type="button"
                               >
@@ -1489,7 +1501,7 @@ exports[`[SidebarItem Component] renders Extended without crashing 1`] = `
               class="rcx-box rcx-box--full rcx-sidebar-accordion-item"
             >
               <div
-                aria-controls="_r_1t_"
+                aria-controls="_r_1v_"
                 aria-expanded="true"
                 class="rcx-box rcx-box--full rcx-sidebar-accordion-item__bar rcx-box--animated"
                 role="button"
@@ -1507,36 +1519,37 @@ exports[`[SidebarItem Component] renders Extended without crashing 1`] = `
                 </span>
                 <h5
                   class="rcx-sidebar-accordion-item__title"
-                  id="_r_1s_"
+                  id="_r_1u_"
                 >
                   Label
                 </h5>
               </div>
               <div
                 class="rcx-sidebar-accordion-item__panel rcx-box--animated rcx-sidebar-accordion-item__panel--expanded"
-                id="_r_1t_"
+                id="_r_1v_"
               >
                 <div
-                  aria-labelledby="_r_1u_"
+                  aria-labelledby="_r_20_"
                   class="rcx-box rcx-box--full rcx-sidebar-collapse-group"
                   role="group"
                 >
                   <div
-                    class="rcx-box rcx-box--full rcx-sidebar-collapse-group__bar"
+                    class="rcx-item-group-header rcx-sidebar-collapse-group__bar"
                   >
                     <div
-                      aria-controls="_r_1v_"
+                      aria-controls="_r_21_"
                       aria-expanded="true"
-                      class="rcx-box rcx-sidebar-collapse-group__bar-button"
+                      class="rcx-item-group-title rcx-sidebar-collapse-group__bar-button"
+                      id="_r_22_"
                       role="button"
                       tabindex="0"
                     >
                       <div
-                        class="rcx-box rcx-sidebar-collapse-group__heading"
+                        class="rcx-sidebar-collapse-group__heading"
                       >
                         <h4
-                          class="rcx-box rcx-box--full rcx-sidebar-collapse-group__title"
-                          id="_r_1u_"
+                          class="rcx-sidebar-collapse-group__title"
+                          id="_r_20_"
                         >
                           Label
                         </h4>
@@ -1553,33 +1566,38 @@ exports[`[SidebarItem Component] renders Extended without crashing 1`] = `
                       </div>
                     </div>
                     <div
-                      class="rcx-box rcx-box--full rcx-sidebar-collapse-group__menu-wrapper rcx-box--animated"
+                      class="rcx-item__actions rcx-item__actions--reveal-hover rcx-sidebar-collapse-group__menu-wrapper"
                     >
-                      <span
-                        class="rcx-box rcx-box--full rcx-sidebar-collapse-group__menu rcx-sidebar-collapse-group__menu"
+                      <div
+                        class="rcx-item__actions-inner"
                       >
-                        <button
-                          aria-expanded="false"
-                          aria-haspopup="true"
-                          aria-label="Options"
-                          class="rcx-box rcx-box--full rcx-button--mini-square rcx-button--square rcx-button--icon rcx-button"
-                          id="react-aria-_r_20_"
-                          title="Options"
-                          type="button"
+                        <span
+                          class="rcx-box rcx-box--full rcx-sidebar-collapse-group__menu rcx-sidebar-collapse-group__menu"
                         >
-                          <i
-                            aria-hidden="true"
-                            class="rcx-box rcx-box--full rcx-icon--name-kebab rcx-icon rcx-css-1tg7yd0"
+                          <button
+                            aria-expanded="false"
+                            aria-haspopup="true"
+                            aria-label="Options"
+                            class="rcx-box rcx-box--full rcx-button--mini-square rcx-button--square rcx-button--icon rcx-button"
+                            id="react-aria-_r_23_"
+                            title="Options"
+                            type="button"
                           >
-                            
-                          </i>
-                        </button>
-                      </span>
+                            <i
+                              aria-hidden="true"
+                              class="rcx-box rcx-box--full rcx-icon--name-kebab rcx-icon rcx-css-1tg7yd0"
+                            >
+                              
+                            </i>
+                          </button>
+                        </span>
+                      </div>
                     </div>
                   </div>
                   <div
-                    class="rcx-box rcx-box--full rcx-sidebar-collapse-group__panel rcx-box--animated rcx-sidebar-collapse-group__panel--expanded"
-                    id="_r_1v_"
+                    aria-labelledby="_r_20_"
+                    class="rcx-item-group rcx-sidebar-collapse-group__panel rcx-box--animated rcx-sidebar-collapse-group__panel--expanded"
+                    id="_r_21_"
                     role="list"
                   >
                     <div
@@ -1612,102 +1630,6 @@ exports[`[SidebarItem Component] renders Extended without crashing 1`] = `
                             <div
                               aria-hidden="true"
                               class="rcx-item__icon rcx-sidebar-item__icon"
-                              id="_r_22_"
-                            >
-                              <i
-                                aria-hidden="true"
-                                class="rcx-box rcx-box--full rcx-icon--name-team rcx-icon rcx-css-4pvxx3"
-                              >
-                                
-                              </i>
-                            </div>
-                            <div
-                              class="rcx-item__title rcx-sidebar-item__title"
-                            >
-                              Marvin Black
-                            </div>
-                            <div
-                              class="rcx-item__meta rcx-sidebar-item__timestamp"
-                            >
-                              12:00
-                            </div>
-                          </div>
-                          <div
-                            class="rcx-item__row rcx-sidebar-item__row"
-                          >
-                            <div
-                              class="rcx-item__description rcx-sidebar-item__subtitle"
-                            >
-                              No messages yet
-                            </div>
-                            <span
-                              class="rcx-box rcx-box--full rcx-badge rcx-badge--secondary rcx-box rcx-box--full rcx-sidebar-item__badge"
-                              title="unread messages"
-                            >
-                              5
-                            </span>
-                            <div
-                              class="rcx-item__actions rcx-item__actions--reveal-hover rcx-sidebar-item__menu-wrapper"
-                            >
-                              <div
-                                class="rcx-item__actions-inner"
-                              >
-                                <span
-                                  class="rcx-box rcx-box--full rcx-sidebar-item__menu rcx-sidebar-item__menu"
-                                >
-                                  <button
-                                    aria-expanded="false"
-                                    aria-haspopup="true"
-                                    aria-label="Options"
-                                    class="rcx-box rcx-box--full rcx-button--mini-square rcx-button--square rcx-button--icon rcx-button"
-                                    id="react-aria-_r_23_"
-                                    title="Options"
-                                    type="button"
-                                  >
-                                    <i
-                                      aria-hidden="true"
-                                      class="rcx-box rcx-box--full rcx-icon--name-kebab rcx-icon rcx-css-1tg7yd0"
-                                    >
-                                      
-                                    </i>
-                                  </button>
-                                </span>
-                              </div>
-                            </div>
-                          </div>
-                        </div>
-                      </a>
-                    </div>
-                    <div
-                      class="rcx-box rcx-box--full rcx-sidebar-item__list-item"
-                      role="listitem"
-                    >
-                      <a
-                        class="rcx-item rcx-sidebar-item rcx-sidebar-item--level-1"
-                        href="#"
-                      >
-                        <div
-                          class="rcx-item__media rcx-sidebar-item__avatar"
-                        >
-                          <figure
-                            class="rcx-box rcx-box--full rcx-avatar rcx-avatar--x36"
-                          >
-                            <img
-                              alt="avatar"
-                              class="rcx-avatar__element rcx-avatar__element--x36"
-                              src="data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 200'%3e%3crect width='100%25' height='100%25' fill='%23158D65'/%3e%3ctext x='50%25' y='50%25' dy='0.36em' text-anchor='middle' pointer-events='none' fill='white' font-size='125' font-family='Helvetica%2c sans-serif'%3eG%3c/text%3e%3c/svg%3e"
-                            />
-                          </figure>
-                        </div>
-                        <div
-                          class="rcx-item__content rcx-sidebar-item__col"
-                        >
-                          <div
-                            class="rcx-item__row rcx-sidebar-item__row"
-                          >
-                            <div
-                              aria-hidden="true"
-                              class="rcx-item__icon rcx-sidebar-item__icon"
                               id="_r_25_"
                             >
                               <i
@@ -1720,7 +1642,7 @@ exports[`[SidebarItem Component] renders Extended without crashing 1`] = `
                             <div
                               class="rcx-item__title rcx-sidebar-item__title"
                             >
-                              Esther Miles
+                              Marvin Black
                             </div>
                             <div
                               class="rcx-item__meta rcx-sidebar-item__timestamp"
@@ -1791,7 +1713,7 @@ exports[`[SidebarItem Component] renders Extended without crashing 1`] = `
                             <img
                               alt="avatar"
                               class="rcx-avatar__element rcx-avatar__element--x36"
-                              src="data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 200'%3e%3crect width='100%25' height='100%25' fill='%237F1B9F'/%3e%3ctext x='50%25' y='50%25' dy='0.36em' text-anchor='middle' pointer-events='none' fill='white' font-size='125' font-family='Helvetica%2c sans-serif'%3eP%3c/text%3e%3c/svg%3e"
+                              src="data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 200'%3e%3crect width='100%25' height='100%25' fill='%23158D65'/%3e%3ctext x='50%25' y='50%25' dy='0.36em' text-anchor='middle' pointer-events='none' fill='white' font-size='125' font-family='Helvetica%2c sans-serif'%3eG%3c/text%3e%3c/svg%3e"
                             />
                           </figure>
                         </div>
@@ -1816,7 +1738,7 @@ exports[`[SidebarItem Component] renders Extended without crashing 1`] = `
                             <div
                               class="rcx-item__title rcx-sidebar-item__title"
                             >
-                              Leroy Jenkins
+                              Esther Miles
                             </div>
                             <div
                               class="rcx-item__meta rcx-sidebar-item__timestamp"
@@ -1887,7 +1809,7 @@ exports[`[SidebarItem Component] renders Extended without crashing 1`] = `
                             <img
                               alt="avatar"
                               class="rcx-avatar__element rcx-avatar__element--x36"
-                              src="data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 200'%3e%3crect width='100%25' height='100%25' fill='%23B68D00'/%3e%3ctext x='50%25' y='50%25' dy='0.36em' text-anchor='middle' pointer-events='none' fill='white' font-size='125' font-family='Helvetica%2c sans-serif'%3eY%3c/text%3e%3c/svg%3e"
+                              src="data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 200'%3e%3crect width='100%25' height='100%25' fill='%237F1B9F'/%3e%3ctext x='50%25' y='50%25' dy='0.36em' text-anchor='middle' pointer-events='none' fill='white' font-size='125' font-family='Helvetica%2c sans-serif'%3eP%3c/text%3e%3c/svg%3e"
                             />
                           </figure>
                         </div>
@@ -1912,7 +1834,7 @@ exports[`[SidebarItem Component] renders Extended without crashing 1`] = `
                             <div
                               class="rcx-item__title rcx-sidebar-item__title"
                             >
-                              Morgan Freeman looooooooooong looooooooooong looooooooooong name
+                              Leroy Jenkins
                             </div>
                             <div
                               class="rcx-item__meta rcx-sidebar-item__timestamp"
@@ -1983,7 +1905,7 @@ exports[`[SidebarItem Component] renders Extended without crashing 1`] = `
                             <img
                               alt="avatar"
                               class="rcx-avatar__element rcx-avatar__element--x36"
-                              src="data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 200'%3e%3crect width='100%25' height='100%25' fill='%2310529E'/%3e%3ctext x='50%25' y='50%25' dy='0.36em' text-anchor='middle' pointer-events='none' fill='white' font-size='125' font-family='Helvetica%2c sans-serif'%3eB%3c/text%3e%3c/svg%3e"
+                              src="data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 200'%3e%3crect width='100%25' height='100%25' fill='%23B68D00'/%3e%3ctext x='50%25' y='50%25' dy='0.36em' text-anchor='middle' pointer-events='none' fill='white' font-size='125' font-family='Helvetica%2c sans-serif'%3eY%3c/text%3e%3c/svg%3e"
                             />
                           </figure>
                         </div>
@@ -2008,7 +1930,7 @@ exports[`[SidebarItem Component] renders Extended without crashing 1`] = `
                             <div
                               class="rcx-item__title rcx-sidebar-item__title"
                             >
-                              John Doe
+                              Morgan Freeman looooooooooong looooooooooong looooooooooong name
                             </div>
                             <div
                               class="rcx-item__meta rcx-sidebar-item__timestamp"
@@ -2079,7 +2001,7 @@ exports[`[SidebarItem Component] renders Extended without crashing 1`] = `
                             <img
                               alt="avatar"
                               class="rcx-avatar__element rcx-avatar__element--x36"
-                              src="data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 200'%3e%3crect width='100%25' height='100%25' fill='%23158D65'/%3e%3ctext x='50%25' y='50%25' dy='0.36em' text-anchor='middle' pointer-events='none' fill='white' font-size='125' font-family='Helvetica%2c sans-serif'%3eG%3c/text%3e%3c/svg%3e"
+                              src="data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 200'%3e%3crect width='100%25' height='100%25' fill='%2310529E'/%3e%3ctext x='50%25' y='50%25' dy='0.36em' text-anchor='middle' pointer-events='none' fill='white' font-size='125' font-family='Helvetica%2c sans-serif'%3eB%3c/text%3e%3c/svg%3e"
                             />
                           </figure>
                         </div>
@@ -2104,7 +2026,7 @@ exports[`[SidebarItem Component] renders Extended without crashing 1`] = `
                             <div
                               class="rcx-item__title rcx-sidebar-item__title"
                             >
-                              Jane Doe
+                              John Doe
                             </div>
                             <div
                               class="rcx-item__meta rcx-sidebar-item__timestamp"
@@ -2175,7 +2097,7 @@ exports[`[SidebarItem Component] renders Extended without crashing 1`] = `
                             <img
                               alt="avatar"
                               class="rcx-avatar__element rcx-avatar__element--x36"
-                              src="data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 200'%3e%3crect width='100%25' height='100%25' fill='%237F1B9F'/%3e%3ctext x='50%25' y='50%25' dy='0.36em' text-anchor='middle' pointer-events='none' fill='white' font-size='125' font-family='Helvetica%2c sans-serif'%3eP%3c/text%3e%3c/svg%3e"
+                              src="data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 200'%3e%3crect width='100%25' height='100%25' fill='%23158D65'/%3e%3ctext x='50%25' y='50%25' dy='0.36em' text-anchor='middle' pointer-events='none' fill='white' font-size='125' font-family='Helvetica%2c sans-serif'%3eG%3c/text%3e%3c/svg%3e"
                             />
                           </figure>
                         </div>
@@ -2200,7 +2122,7 @@ exports[`[SidebarItem Component] renders Extended without crashing 1`] = `
                             <div
                               class="rcx-item__title rcx-sidebar-item__title"
                             >
-                              Baz Qux
+                              Jane Doe
                             </div>
                             <div
                               class="rcx-item__meta rcx-sidebar-item__timestamp"
@@ -2271,7 +2193,7 @@ exports[`[SidebarItem Component] renders Extended without crashing 1`] = `
                             <img
                               alt="avatar"
                               class="rcx-avatar__element rcx-avatar__element--x36"
-                              src="data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 200'%3e%3crect width='100%25' height='100%25' fill='%23B68D00'/%3e%3ctext x='50%25' y='50%25' dy='0.36em' text-anchor='middle' pointer-events='none' fill='white' font-size='125' font-family='Helvetica%2c sans-serif'%3eY%3c/text%3e%3c/svg%3e"
+                              src="data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 200'%3e%3crect width='100%25' height='100%25' fill='%237F1B9F'/%3e%3ctext x='50%25' y='50%25' dy='0.36em' text-anchor='middle' pointer-events='none' fill='white' font-size='125' font-family='Helvetica%2c sans-serif'%3eP%3c/text%3e%3c/svg%3e"
                             />
                           </figure>
                         </div>
@@ -2285,6 +2207,102 @@ exports[`[SidebarItem Component] renders Extended without crashing 1`] = `
                               aria-hidden="true"
                               class="rcx-item__icon rcx-sidebar-item__icon"
                               id="_r_2n_"
+                            >
+                              <i
+                                aria-hidden="true"
+                                class="rcx-box rcx-box--full rcx-icon--name-team rcx-icon rcx-css-4pvxx3"
+                              >
+                                
+                              </i>
+                            </div>
+                            <div
+                              class="rcx-item__title rcx-sidebar-item__title"
+                            >
+                              Baz Qux
+                            </div>
+                            <div
+                              class="rcx-item__meta rcx-sidebar-item__timestamp"
+                            >
+                              12:00
+                            </div>
+                          </div>
+                          <div
+                            class="rcx-item__row rcx-sidebar-item__row"
+                          >
+                            <div
+                              class="rcx-item__description rcx-sidebar-item__subtitle"
+                            >
+                              No messages yet
+                            </div>
+                            <span
+                              class="rcx-box rcx-box--full rcx-badge rcx-badge--secondary rcx-box rcx-box--full rcx-sidebar-item__badge"
+                              title="unread messages"
+                            >
+                              5
+                            </span>
+                            <div
+                              class="rcx-item__actions rcx-item__actions--reveal-hover rcx-sidebar-item__menu-wrapper"
+                            >
+                              <div
+                                class="rcx-item__actions-inner"
+                              >
+                                <span
+                                  class="rcx-box rcx-box--full rcx-sidebar-item__menu rcx-sidebar-item__menu"
+                                >
+                                  <button
+                                    aria-expanded="false"
+                                    aria-haspopup="true"
+                                    aria-label="Options"
+                                    class="rcx-box rcx-box--full rcx-button--mini-square rcx-button--square rcx-button--icon rcx-button"
+                                    id="react-aria-_r_2o_"
+                                    title="Options"
+                                    type="button"
+                                  >
+                                    <i
+                                      aria-hidden="true"
+                                      class="rcx-box rcx-box--full rcx-icon--name-kebab rcx-icon rcx-css-1tg7yd0"
+                                    >
+                                      
+                                    </i>
+                                  </button>
+                                </span>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      </a>
+                    </div>
+                    <div
+                      class="rcx-box rcx-box--full rcx-sidebar-item__list-item"
+                      role="listitem"
+                    >
+                      <a
+                        class="rcx-item rcx-sidebar-item rcx-sidebar-item--level-1"
+                        href="#"
+                      >
+                        <div
+                          class="rcx-item__media rcx-sidebar-item__avatar"
+                        >
+                          <figure
+                            class="rcx-box rcx-box--full rcx-avatar rcx-avatar--x36"
+                          >
+                            <img
+                              alt="avatar"
+                              class="rcx-avatar__element rcx-avatar__element--x36"
+                              src="data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 200'%3e%3crect width='100%25' height='100%25' fill='%23B68D00'/%3e%3ctext x='50%25' y='50%25' dy='0.36em' text-anchor='middle' pointer-events='none' fill='white' font-size='125' font-family='Helvetica%2c sans-serif'%3eY%3c/text%3e%3c/svg%3e"
+                            />
+                          </figure>
+                        </div>
+                        <div
+                          class="rcx-item__content rcx-sidebar-item__col"
+                        >
+                          <div
+                            class="rcx-item__row rcx-sidebar-item__row"
+                          >
+                            <div
+                              aria-hidden="true"
+                              class="rcx-item__icon rcx-sidebar-item__icon"
+                              id="_r_2q_"
                             >
                               <i
                                 aria-hidden="true"
@@ -2332,7 +2350,7 @@ exports[`[SidebarItem Component] renders Extended without crashing 1`] = `
                                     aria-haspopup="true"
                                     aria-label="Options"
                                     class="rcx-box rcx-box--full rcx-button--mini-square rcx-button--square rcx-button--icon rcx-button"
-                                    id="react-aria-_r_2o_"
+                                    id="react-aria-_r_2r_"
                                     title="Options"
                                     type="button"
                                   >
@@ -2395,7 +2413,7 @@ exports[`[SidebarItem Component] renders Medium without crashing 1`] = `
               class="rcx-box rcx-box--full rcx-sidebar-accordion-item"
             >
               <div
-                aria-controls="_r_2r_"
+                aria-controls="_r_2u_"
                 aria-expanded="true"
                 class="rcx-box rcx-box--full rcx-sidebar-accordion-item__bar rcx-box--animated"
                 role="button"
@@ -2413,36 +2431,37 @@ exports[`[SidebarItem Component] renders Medium without crashing 1`] = `
                 </span>
                 <h5
                   class="rcx-sidebar-accordion-item__title"
-                  id="_r_2q_"
+                  id="_r_2t_"
                 >
                   Label
                 </h5>
               </div>
               <div
                 class="rcx-sidebar-accordion-item__panel rcx-box--animated rcx-sidebar-accordion-item__panel--expanded"
-                id="_r_2r_"
+                id="_r_2u_"
               >
                 <div
-                  aria-labelledby="_r_2s_"
+                  aria-labelledby="_r_2v_"
                   class="rcx-box rcx-box--full rcx-sidebar-collapse-group"
                   role="group"
                 >
                   <div
-                    class="rcx-box rcx-box--full rcx-sidebar-collapse-group__bar"
+                    class="rcx-item-group-header rcx-sidebar-collapse-group__bar"
                   >
                     <div
-                      aria-controls="_r_2t_"
+                      aria-controls="_r_30_"
                       aria-expanded="true"
-                      class="rcx-box rcx-sidebar-collapse-group__bar-button"
+                      class="rcx-item-group-title rcx-sidebar-collapse-group__bar-button"
+                      id="_r_31_"
                       role="button"
                       tabindex="0"
                     >
                       <div
-                        class="rcx-box rcx-sidebar-collapse-group__heading"
+                        class="rcx-sidebar-collapse-group__heading"
                       >
                         <h4
-                          class="rcx-box rcx-box--full rcx-sidebar-collapse-group__title"
-                          id="_r_2s_"
+                          class="rcx-sidebar-collapse-group__title"
+                          id="_r_2v_"
                         >
                           Label
                         </h4>
@@ -2459,33 +2478,38 @@ exports[`[SidebarItem Component] renders Medium without crashing 1`] = `
                       </div>
                     </div>
                     <div
-                      class="rcx-box rcx-box--full rcx-sidebar-collapse-group__menu-wrapper rcx-box--animated"
+                      class="rcx-item__actions rcx-item__actions--reveal-hover rcx-sidebar-collapse-group__menu-wrapper"
                     >
-                      <span
-                        class="rcx-box rcx-box--full rcx-sidebar-collapse-group__menu rcx-sidebar-collapse-group__menu"
+                      <div
+                        class="rcx-item__actions-inner"
                       >
-                        <button
-                          aria-expanded="false"
-                          aria-haspopup="true"
-                          aria-label="Options"
-                          class="rcx-box rcx-box--full rcx-button--mini-square rcx-button--square rcx-button--icon rcx-button"
-                          id="react-aria-_r_2u_"
-                          title="Options"
-                          type="button"
+                        <span
+                          class="rcx-box rcx-box--full rcx-sidebar-collapse-group__menu rcx-sidebar-collapse-group__menu"
                         >
-                          <i
-                            aria-hidden="true"
-                            class="rcx-box rcx-box--full rcx-icon--name-kebab rcx-icon rcx-css-1tg7yd0"
+                          <button
+                            aria-expanded="false"
+                            aria-haspopup="true"
+                            aria-label="Options"
+                            class="rcx-box rcx-box--full rcx-button--mini-square rcx-button--square rcx-button--icon rcx-button"
+                            id="react-aria-_r_32_"
+                            title="Options"
+                            type="button"
                           >
-                            
-                          </i>
-                        </button>
-                      </span>
+                            <i
+                              aria-hidden="true"
+                              class="rcx-box rcx-box--full rcx-icon--name-kebab rcx-icon rcx-css-1tg7yd0"
+                            >
+                              
+                            </i>
+                          </button>
+                        </span>
+                      </div>
                     </div>
                   </div>
                   <div
-                    class="rcx-box rcx-box--full rcx-sidebar-collapse-group__panel rcx-box--animated rcx-sidebar-collapse-group__panel--expanded"
-                    id="_r_2t_"
+                    aria-labelledby="_r_2v_"
+                    class="rcx-item-group rcx-sidebar-collapse-group__panel rcx-box--animated rcx-sidebar-collapse-group__panel--expanded"
+                    id="_r_30_"
                     role="list"
                   >
                     <div
@@ -2512,7 +2536,7 @@ exports[`[SidebarItem Component] renders Medium without crashing 1`] = `
                         <div
                           aria-hidden="true"
                           class="rcx-item__icon rcx-sidebar-item__icon"
-                          id="_r_30_"
+                          id="_r_34_"
                         >
                           <i
                             aria-hidden="true"
@@ -2546,7 +2570,7 @@ exports[`[SidebarItem Component] renders Medium without crashing 1`] = `
                                 aria-haspopup="true"
                                 aria-label="Options"
                                 class="rcx-box rcx-box--full rcx-button--mini-square rcx-button--square rcx-button--icon rcx-button"
-                                id="react-aria-_r_31_"
+                                id="react-aria-_r_35_"
                                 title="Options"
                                 type="button"
                               >
@@ -2586,7 +2610,7 @@ exports[`[SidebarItem Component] renders Medium without crashing 1`] = `
                         <div
                           aria-hidden="true"
                           class="rcx-item__icon rcx-sidebar-item__icon"
-                          id="_r_33_"
+                          id="_r_37_"
                         >
                           <i
                             aria-hidden="true"
@@ -2620,7 +2644,7 @@ exports[`[SidebarItem Component] renders Medium without crashing 1`] = `
                                 aria-haspopup="true"
                                 aria-label="Options"
                                 class="rcx-box rcx-box--full rcx-button--mini-square rcx-button--square rcx-button--icon rcx-button"
-                                id="react-aria-_r_34_"
+                                id="react-aria-_r_38_"
                                 title="Options"
                                 type="button"
                               >
@@ -2660,7 +2684,7 @@ exports[`[SidebarItem Component] renders Medium without crashing 1`] = `
                         <div
                           aria-hidden="true"
                           class="rcx-item__icon rcx-sidebar-item__icon"
-                          id="_r_36_"
+                          id="_r_3a_"
                         >
                           <i
                             aria-hidden="true"
@@ -2694,7 +2718,7 @@ exports[`[SidebarItem Component] renders Medium without crashing 1`] = `
                                 aria-haspopup="true"
                                 aria-label="Options"
                                 class="rcx-box rcx-box--full rcx-button--mini-square rcx-button--square rcx-button--icon rcx-button"
-                                id="react-aria-_r_37_"
+                                id="react-aria-_r_3b_"
                                 title="Options"
                                 type="button"
                               >
@@ -2734,7 +2758,7 @@ exports[`[SidebarItem Component] renders Medium without crashing 1`] = `
                         <div
                           aria-hidden="true"
                           class="rcx-item__icon rcx-sidebar-item__icon"
-                          id="_r_39_"
+                          id="_r_3d_"
                         >
                           <i
                             aria-hidden="true"
@@ -2768,7 +2792,7 @@ exports[`[SidebarItem Component] renders Medium without crashing 1`] = `
                                 aria-haspopup="true"
                                 aria-label="Options"
                                 class="rcx-box rcx-box--full rcx-button--mini-square rcx-button--square rcx-button--icon rcx-button"
-                                id="react-aria-_r_3a_"
+                                id="react-aria-_r_3e_"
                                 title="Options"
                                 type="button"
                               >
@@ -2808,7 +2832,7 @@ exports[`[SidebarItem Component] renders Medium without crashing 1`] = `
                         <div
                           aria-hidden="true"
                           class="rcx-item__icon rcx-sidebar-item__icon"
-                          id="_r_3c_"
+                          id="_r_3g_"
                         >
                           <i
                             aria-hidden="true"
@@ -2842,7 +2866,7 @@ exports[`[SidebarItem Component] renders Medium without crashing 1`] = `
                                 aria-haspopup="true"
                                 aria-label="Options"
                                 class="rcx-box rcx-box--full rcx-button--mini-square rcx-button--square rcx-button--icon rcx-button"
-                                id="react-aria-_r_3d_"
+                                id="react-aria-_r_3h_"
                                 title="Options"
                                 type="button"
                               >
@@ -2882,7 +2906,7 @@ exports[`[SidebarItem Component] renders Medium without crashing 1`] = `
                         <div
                           aria-hidden="true"
                           class="rcx-item__icon rcx-sidebar-item__icon"
-                          id="_r_3f_"
+                          id="_r_3j_"
                         >
                           <i
                             aria-hidden="true"
@@ -2916,7 +2940,7 @@ exports[`[SidebarItem Component] renders Medium without crashing 1`] = `
                                 aria-haspopup="true"
                                 aria-label="Options"
                                 class="rcx-box rcx-box--full rcx-button--mini-square rcx-button--square rcx-button--icon rcx-button"
-                                id="react-aria-_r_3g_"
+                                id="react-aria-_r_3k_"
                                 title="Options"
                                 type="button"
                               >
@@ -2956,7 +2980,7 @@ exports[`[SidebarItem Component] renders Medium without crashing 1`] = `
                         <div
                           aria-hidden="true"
                           class="rcx-item__icon rcx-sidebar-item__icon"
-                          id="_r_3i_"
+                          id="_r_3m_"
                         >
                           <i
                             aria-hidden="true"
@@ -2990,7 +3014,7 @@ exports[`[SidebarItem Component] renders Medium without crashing 1`] = `
                                 aria-haspopup="true"
                                 aria-label="Options"
                                 class="rcx-box rcx-box--full rcx-button--mini-square rcx-button--square rcx-button--icon rcx-button"
-                                id="react-aria-_r_3j_"
+                                id="react-aria-_r_3n_"
                                 title="Options"
                                 type="button"
                               >
@@ -3030,7 +3054,7 @@ exports[`[SidebarItem Component] renders Medium without crashing 1`] = `
                         <div
                           aria-hidden="true"
                           class="rcx-item__icon rcx-sidebar-item__icon"
-                          id="_r_3l_"
+                          id="_r_3p_"
                         >
                           <i
                             aria-hidden="true"
@@ -3064,7 +3088,7 @@ exports[`[SidebarItem Component] renders Medium without crashing 1`] = `
                                 aria-haspopup="true"
                                 aria-label="Options"
                                 class="rcx-box rcx-box--full rcx-button--mini-square rcx-button--square rcx-button--icon rcx-button"
-                                id="react-aria-_r_3m_"
+                                id="react-aria-_r_3q_"
                                 title="Options"
                                 type="button"
                               >
