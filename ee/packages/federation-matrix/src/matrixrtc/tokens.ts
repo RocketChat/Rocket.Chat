@@ -3,6 +3,7 @@ import { getMatrixRTCTransportKey } from '@rocket.chat/core-typings';
 import { Logger } from '@rocket.chat/logger';
 import { MatrixRTCMemberships } from '@rocket.chat/models';
 
+import { joinRTCSession } from './session';
 import { requestFederationToken } from './tokens/federation';
 import { requestServiceToken } from './tokens/service';
 
@@ -38,16 +39,14 @@ export async function getRemoteLiveKitToken(
 	}
 
 	const now = new Date();
-	const [publisher, member] = await Promise.all([
-		findRemotePublisher(call.federation, serverName, transport, now),
-		MatrixRTCMemberships.findOneActiveLocal(call._id, user._id, now),
-	]);
+	const publisher = await findRemotePublisher(call.federation, serverName, transport, now);
 	if (!publisher) {
 		throw new Error(`Nobody in conference ${call._id} publishes on ${serverName}'s SFU ${transport}`);
 	}
-	if (!member) {
-		throw new Error(`User ${user._id} has not joined conference ${call._id}`);
-	}
+
+	// A client joining a call that already has remote members asks for their SFU straight away, which can be before
+	// its join has announced the membership the token request names.
+	const member = (await MatrixRTCMemberships.findOneActiveLocal(call._id, user._id, now)) ?? (await joinRTCSession(call, user));
 
 	const { url, serviceUrl } = publisher.transport;
 

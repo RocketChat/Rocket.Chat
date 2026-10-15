@@ -3,6 +3,7 @@ import { FederationRequestError, federationSDK } from '@rocket.chat/federation-s
 import { MatrixRTCMemberships } from '@rocket.chat/models';
 
 import { getOpenIdTokenSubject } from './openid';
+import { joinRTCSession } from './session';
 import { getRemoteLiveKitToken } from './tokens';
 
 jest.mock('@rocket.chat/models', () => ({
@@ -10,6 +11,10 @@ jest.mock('@rocket.chat/models', () => ({
 		findActiveBySession: jest.fn(),
 		findOneActiveLocal: jest.fn(),
 	},
+}));
+
+jest.mock('./session', () => ({
+	joinRTCSession: jest.fn(),
 }));
 
 jest.mock('@rocket.chat/federation-sdk', () => ({
@@ -29,6 +34,7 @@ jest.mock('@rocket.chat/federation-sdk', () => ({
 
 const mockFindActiveBySession = jest.mocked(MatrixRTCMemberships.findActiveBySession);
 const mockFindOneActiveLocal = jest.mocked(MatrixRTCMemberships.findOneActiveLocal);
+const mockJoinRTCSession = jest.mocked(joinRTCSession);
 const mockMakeSignedRequest = jest.mocked(federationSDK.makeSignedRequest);
 const mockGetConfig = jest.mocked(federationSDK.getConfig);
 
@@ -197,6 +203,28 @@ describe('getRemoteLiveKitToken', () => {
 		});
 	});
 
+	// A client joining a call that already has remote members asks for their SFU before its join is announced.
+	it("announces the member's join first when it has not been yet, and names that membership", async () => {
+		sessionWith(bobOn({ type: 'livekit', url: REMOTE_SFU }));
+		mockFindOneActiveLocal.mockResolvedValue(null);
+		mockJoinRTCSession.mockResolvedValue(alice);
+		mockMakeSignedRequest.mockResolvedValue(signedAnswer({ jwt: 'federation-jwt' }));
+
+		expect(await getRemoteLiveKitToken(call, user, 'rc2', REMOTE_SFU)).toEqual({ serverUrl: REMOTE_SFU, token: 'federation-jwt' });
+		expect(mockJoinRTCSession).toHaveBeenCalledWith(call, user);
+		expect(mockMakeSignedRequest).toHaveBeenCalledWith(
+			expect.objectContaining({ signedBody: expect.objectContaining({ member_id: 'alice-member' }) }),
+		);
+	});
+
+	it('does not announce a join that already is', async () => {
+		sessionWith(alice, bobOn({ type: 'livekit', url: REMOTE_SFU }));
+		mockMakeSignedRequest.mockResolvedValue(signedAnswer({ jwt: 'federation-jwt' }));
+
+		await getRemoteLiveKitToken(call, user, 'rc2', REMOTE_SFU);
+		expect(mockJoinRTCSession).not.toHaveBeenCalled();
+	});
+
 	describe('refusals', () => {
 		it('refuses an SFU nobody in the call publishes on', async () => {
 			sessionWith(alice, bobOn({ type: 'livekit', url: REMOTE_SFU }));
@@ -211,11 +239,12 @@ describe('getRemoteLiveKitToken', () => {
 			await expect(getRemoteLiveKitToken(call, user, 'rc1', 'https://rc1/matrixrtc/livekit-jwt')).rejects.toThrow('Nobody');
 		});
 
-		it('refuses a user who has not joined the call', async () => {
+		it('refuses a member whose join cannot be announced', async () => {
 			sessionWith(alice, bobOn({ type: 'livekit', url: REMOTE_SFU }));
 			mockFindOneActiveLocal.mockResolvedValue(null);
+			mockJoinRTCSession.mockRejectedValue(new Error('LiveKit is not configured'));
 
-			await expect(getRemoteLiveKitToken(call, user, 'rc2', REMOTE_SFU)).rejects.toThrow('has not joined');
+			await expect(getRemoteLiveKitToken(call, user, 'rc2', REMOTE_SFU)).rejects.toThrow('LiveKit is not configured');
 			expect(mockMakeSignedRequest).not.toHaveBeenCalled();
 		});
 

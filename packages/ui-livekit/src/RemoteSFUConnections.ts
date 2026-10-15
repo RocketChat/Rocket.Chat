@@ -5,6 +5,12 @@ import type { RemoteSFU, RemoteSFUConnection } from './callConnections';
 export type RemoteSFUCredentials = { serverUrl: string; token: string };
 
 /**
+ * How long to wait before asking an SFU again. A call being set up on both sides can refuse the first token, and a
+ * refusal is otherwise only retried when the set of SFUs changes, which may never happen.
+ */
+const RETRY_DELAYS_MS = [1_000, 3_000];
+
+/**
  * The subscribe-only connections a federated call holds to other homeservers' SFUs: one per SFU that has members in
  * the call, opened when it first appears and closed once it is no longer wanted. Nothing is ever published on them.
  */
@@ -13,11 +19,15 @@ export class RemoteSFUConnections {
 
 	private readonly listeners = new Set<() => void>();
 
-	constructor(private readonly createRoom: () => Room = () => new Room()) {}
+	constructor(
+		private readonly createRoom: () => Room = () => new Room(),
+		private readonly retryDelaysMs: readonly number[] = RETRY_DELAYS_MS,
+	) {}
 
 	/**
 	 * Connects to every SFU in `wanted` not connected yet, with credentials asked for as it appears, and disconnects
-	 * from those no longer in it. One that fails is dropped and reported, so it is asked again when `wanted` next changes.
+	 * from those no longer in it. One that still fails after the retries is dropped and reported, so it is asked again
+	 * when `wanted` next changes.
 	 */
 	sync(
 		wanted: readonly RemoteSFU[],
@@ -63,17 +73,36 @@ export class RemoteSFUConnections {
 		const connection = { sfu, room: this.createRoom() };
 		const isOpen = () => this.connections.includes(connection);
 
-		credentialsFor(sfu)
-			.then(({ serverUrl, token }) => (isOpen() ? connection.room.connect(serverUrl, token) : undefined))
-			.catch((error: unknown) => {
-				// A connection closed on purpose fails its pending connect; that is not worth reporting.
-				if (!isOpen()) {
+		const connect = async (): Promise<void> => {
+			for (let attempt = 0; ; attempt++) {
+				try {
+					const { serverUrl, token } = await credentialsFor(sfu);
+					if (isOpen()) {
+						await connection.room.connect(serverUrl, token);
+					}
 					return;
+				} catch (error) {
+					const delay = this.retryDelaysMs[attempt];
+					if (!isOpen() || delay === undefined) {
+						throw error;
+					}
+					await new Promise((resolve) => setTimeout(resolve, delay));
+					if (!isOpen()) {
+						return;
+					}
 				}
-				void connection.room.disconnect();
-				this.update(this.connections.filter((other) => other !== connection));
-				onError(error);
-			});
+			}
+		};
+
+		connect().catch((error: unknown) => {
+			// A connection closed on purpose fails its pending connect; that is not worth reporting.
+			if (!isOpen()) {
+				return;
+			}
+			void connection.room.disconnect();
+			this.update(this.connections.filter((other) => other !== connection));
+			onError(error);
+		});
 
 		return connection;
 	}

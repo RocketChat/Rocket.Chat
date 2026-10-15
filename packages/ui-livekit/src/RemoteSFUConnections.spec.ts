@@ -17,13 +17,13 @@ const createRoom = (): FakeRoom => ({
 	localParticipant: { publishData: jest.fn(), setMicrophoneEnabled: jest.fn() },
 });
 
-const setup = () => {
+const setup = (retryDelaysMs: readonly number[] = []) => {
 	const rooms: FakeRoom[] = [];
 	const connections = new RemoteSFUConnections(() => {
 		const room = createRoom();
 		rooms.push(room);
 		return room as unknown as Room;
-	});
+	}, retryDelaysMs);
 	const credentialsFor = jest.fn(async ({ serverName }: RemoteSFU) => ({
 		serverUrl: `wss://lk.${serverName}`,
 		token: `token-${serverName}`,
@@ -105,6 +105,32 @@ it('reports an SFU it could not reach and drops it, so it is asked again', async
 	sync(sfu('rc2'));
 	await settle();
 	expect(credentialsFor).toHaveBeenCalledTimes(2);
+});
+
+// Both sides of a call being set up at once can refuse the first token: the member's join may not be announced yet.
+it('asks an SFU again before giving up on it', async () => {
+	const { sync, credentialsFor, onError, roomFor } = setup([10]);
+	credentialsFor.mockRejectedValueOnce(new Error('error-videoconf-federated-token-failed'));
+
+	sync(sfu('rc2'));
+	await new Promise((resolve) => setTimeout(resolve, 30));
+
+	expect(credentialsFor).toHaveBeenCalledTimes(2);
+	expect(onError).not.toHaveBeenCalled();
+	expect(roomFor('rc2')?.connect).toHaveBeenCalledWith('wss://lk.rc2', 'token-rc2');
+});
+
+it('stops asking an SFU dropped while it waits to ask again', async () => {
+	const { sync, credentialsFor, onError } = setup([10]);
+	credentialsFor.mockRejectedValueOnce(new Error('error-videoconf-federated-token-failed'));
+
+	sync(sfu('rc2'));
+	await settle();
+	sync();
+	await new Promise((resolve) => setTimeout(resolve, 30));
+
+	expect(credentialsFor).toHaveBeenCalledTimes(1);
+	expect(onError).not.toHaveBeenCalled();
 });
 
 it('tells its listeners when the connections change, and closes them all at the end', async () => {

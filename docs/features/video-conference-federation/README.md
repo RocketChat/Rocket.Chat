@@ -82,7 +82,9 @@ of a federated room.
 
 ## Outbound (this server's users)
 
-- **Join**: the first `join` or `callConfig` for a local user creates their membership. That means a device id
+- **Join**: the first `join`, `callConfig` or `federatedToken` for a local user creates their membership. A client
+  joining a call that already has remote members asks for their SFU straight away, possibly before its join is
+  announced, so the token request announces it too. That means a device id
   generated for the join, a fresh member id and this server's SFU as the transport. The membership is announced in
   the mode's form. Repeated calls return the same membership. (`FederationMatrix.joinRTCSession`)
 - **Refresh**: each heartbeat (`renewPresence`) re-announces a membership due to expire within 10 minutes, and
@@ -142,7 +144,8 @@ the federation package through `IMatrixRTCLiveKitIssuer`.
 - `callConfig` gives the own SFU and, for a federated call, `federation.serverName`. The roster gives every
   member's `federation` entry.
 - The client opens one subscribe-only connection per `(serverName, transport)` of joined remote members, with a
-  token from `video-conference.federatedToken`, and closes it when those members are gone.
+  token from `video-conference.federatedToken`, and closes it when those members are gone. A token that fails is asked
+  for again twice (after 1 s and 3 s) before the SFU is reported and dropped until the set of SFUs changes.
 - A participant is shown only when their identity matches a roster member's `livekitIdentity` or one of their
   `livekitIdentityAliases` on that connection. Anyone else there watches the SFU from another server. The name and
   avatar come from the roster, not from the identity.
