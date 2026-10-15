@@ -214,14 +214,14 @@ API.v1.post(
 
 		await Promise.all([Team.unsetTeamIdOfRooms(this.user, team), Team.removeAllMembersFromTeam(team._id)]);
 
-		await Team.deleteById(team._id);
-
 		const teamRoom = await Rooms.findOneById<Pick<IRoom, '_id' | 'name' | 'abacAttributes'>>(team.roomId, {
 			projection: { name: 1, abacAttributes: 1 },
 		});
 		if (teamRoom) {
 			await removeRoomAbacAttributes(teamRoom, this.user);
 		}
+
+		await Team.deleteById(team._id);
 
 		return API.v1.success();
 	},

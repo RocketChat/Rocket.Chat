@@ -62,6 +62,8 @@ export const isRoomsAutocompleteChannelAndPrivateWithPaginationProps =
 
 type RoomsAutocompleteAvailableForTeamsProps = { name?: string };
 
+export type RoomAvailableForTeams = Pick<IRoom, '_id' | 'fname' | 'name' | 't' | 'avatarETag' | 'prid'> & { hasAbacAttributes: boolean };
+
 const RoomsAutocompleteAvailableForTeamsSchema = {
 	type: 'object',
 	properties: {
@@ -875,7 +877,7 @@ export type RoomsEndpoints = {
 
 	'/v1/rooms.autocomplete.availableForTeams': {
 		GET: (params: RoomsAutocompleteAvailableForTeamsProps) => {
-			items: IRoom[];
+			items: RoomAvailableForTeams[];
 		};
 	};
 	'/v1/rooms.autocomplete.adminRooms': {
