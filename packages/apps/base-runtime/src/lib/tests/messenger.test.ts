@@ -75,6 +75,130 @@ describe('Messenger', () => {
 		theSpy.mock.restore();
 	});
 
+	it('should leave error.data absent when no logs and no data are supplied', async () => {
+		const theSpy = mock.method(Messenger.ipcChannel, 'send', () => Promise.resolve());
+
+		await Messenger.errorResponse({ id: 'test', error: { code: -32000, message: 'test' } }, context);
+
+		assert.strictEqual(theSpy.mock.calls.length, 1);
+
+		const [responseArgument] = theSpy.mock.calls[0].arguments;
+		const resp = responseArgument as any;
+
+		assert.strictEqual('data' in resp.error, false);
+
+		theSpy.mock.restore();
+	});
+
+	it('should preserve original error.data when no logs exist', async () => {
+		const theSpy = mock.method(Messenger.ipcChannel, 'send', () => Promise.resolve());
+
+		await Messenger.errorResponse({ id: 'test', error: { code: -32000, message: 'test', data: { custom: 'value' } } }, context);
+
+		assert.strictEqual(theSpy.mock.calls.length, 1);
+
+		const [responseArgument] = theSpy.mock.calls[0].arguments;
+		const resp = responseArgument as any;
+
+		assert.deepStrictEqual(resp.error.data, { custom: 'value' });
+
+		theSpy.mock.restore();
+	});
+
+	it('should not mutate original error.data object when adding logs', async () => {
+		const theSpy = mock.method(Messenger.ipcChannel, 'send', () => Promise.resolve());
+		const { logger } = context.context;
+		logger.info('test');
+
+		const originalData = { originalKey: 'originalValue' };
+		await Messenger.errorResponse({ id: 'test', error: { code: -32000, message: 'test', data: originalData } }, context);
+
+		assert.strictEqual(theSpy.mock.calls.length, 1);
+
+		const [responseArgument] = theSpy.mock.calls[0].arguments;
+		const resp = responseArgument as any;
+
+		assert.strictEqual(resp.error.data.originalKey, 'originalValue');
+		assert.strictEqual(resp.error.data.logs.appId, 'test');
+		assert.strictEqual('logs' in originalData, false);
+		assert.notStrictEqual(resp.error.data, originalData);
+
+		theSpy.mock.restore();
+	});
+
+	it('should handle frozen error.data objects without throwing', async () => {
+		const theSpy = mock.method(Messenger.ipcChannel, 'send', () => Promise.resolve());
+		const { logger } = context.context;
+		logger.info('test');
+
+		const frozenData = Object.freeze({ frozenKey: 'frozenValue' });
+		await Messenger.errorResponse({ id: 'test', error: { code: -32000, message: 'test', data: frozenData } }, context);
+
+		assert.strictEqual(theSpy.mock.calls.length, 1);
+
+		const [responseArgument] = theSpy.mock.calls[0].arguments;
+		const resp = responseArgument as any;
+
+		assert.strictEqual(resp.error.data.frozenKey, 'frozenValue');
+		assert.strictEqual(resp.error.data.logs.appId, 'test');
+
+		theSpy.mock.restore();
+	});
+
+	it('should wrap primitive error.data values and attach logs without throwing', async () => {
+		const theSpy = mock.method(Messenger.ipcChannel, 'send', () => Promise.resolve());
+		const { logger } = context.context;
+		logger.info('test');
+
+		await Messenger.errorResponse({ id: 'test', error: { code: -32000, message: 'test', data: 'primitive error details' } }, context);
+
+		assert.strictEqual(theSpy.mock.calls.length, 1);
+
+		const [responseArgument] = theSpy.mock.calls[0].arguments;
+		const resp = responseArgument as any;
+
+		assert.strictEqual(resp.error.data.value, 'primitive error details');
+		assert.strictEqual(resp.error.data.logs.appId, 'test');
+
+		theSpy.mock.restore();
+	});
+
+	it('should handle null error.data when adding logs without throwing', async () => {
+		const theSpy = mock.method(Messenger.ipcChannel, 'send', () => Promise.resolve());
+		const { logger } = context.context;
+		logger.info('test');
+
+		await Messenger.errorResponse({ id: 'test', error: { code: -32000, message: 'test', data: null } }, context);
+
+		assert.strictEqual(theSpy.mock.calls.length, 1);
+
+		const [responseArgument] = theSpy.mock.calls[0].arguments;
+		const resp = responseArgument as any;
+
+		assert.strictEqual(resp.error.data.logs.appId, 'test');
+
+		theSpy.mock.restore();
+	});
+
+	it('should wrap array error.data so logs are not lost', async () => {
+		const theSpy = mock.method(Messenger.ipcChannel, 'send', () => Promise.resolve());
+		const { logger } = context.context;
+		logger.info('test');
+
+		const arrayData = ['err1', 'err2'];
+		await Messenger.errorResponse({ id: 'test', error: { code: -32000, message: 'test', data: arrayData } }, context);
+
+		assert.strictEqual(theSpy.mock.calls.length, 1);
+
+		const [responseArgument] = theSpy.mock.calls[0].arguments;
+		const resp = responseArgument as any;
+
+		assert.deepStrictEqual(resp.error.data.value, ['err1', 'err2']);
+		assert.strictEqual(resp.error.data.logs.appId, 'test');
+
+		theSpy.mock.restore();
+	});
+
 	describe('meta', () => {
 		const meta = { traceId: 'trace-1' };
 
