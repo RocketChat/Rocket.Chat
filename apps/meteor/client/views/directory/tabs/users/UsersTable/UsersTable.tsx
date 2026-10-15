@@ -7,12 +7,11 @@ import {
 	GenericTableHeaderCell,
 	GenericTableBody,
 	GenericTableLoadingTable,
-	usePagination,
+	usePaginatedQuery,
 	useSort,
 	GenericNoResults,
 } from '@rocket.chat/ui-client';
 import { usePermission, useRoute, useTranslation, useEndpoint } from '@rocket.chat/ui-contexts';
-import { useQuery } from '@tanstack/react-query';
 import type { KeyboardEvent, MouseEvent } from 'react';
 import { useCallback, useMemo, useState } from 'react';
 
@@ -74,12 +73,13 @@ const UsersTable = ({ workspace = 'local' }: UsersTableProps) => {
 	);
 
 	const query = useDirectoryQuery({ text }, [sortBy, sortDirection], 'users', workspace);
-	const { paginatedQuery, queryKey, paginationProps } = usePagination({ query, getQueryKey: (query) => ['getDirectoryData', query] });
 	const getDirectoryData = useEndpoint('GET', '/v1/directory');
 
-	const { data, isFetched, isLoading, isError, refetch } = useQuery({
-		queryKey,
-		queryFn: () => getDirectoryData(paginatedQuery),
+	const { data, isFetched, isLoading, isError, refetch, paginationProps } = usePaginatedQuery({
+		query,
+		getQueryKey: (query) => ['getDirectoryData', query],
+		queryFn: getDirectoryData,
+		itemsKey: 'result',
 	});
 
 	const handleClick = useCallback(

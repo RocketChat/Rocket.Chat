@@ -17,12 +17,11 @@ import {
 	GenericTableHeaderCell,
 	GenericTableLoadingTable,
 	GenericTableRow,
-	usePagination,
+	usePaginatedQuery,
 	useSort,
 	GenericNoResults,
 } from '@rocket.chat/ui-client';
 import { useTranslation, useEndpoint } from '@rocket.chat/ui-contexts';
-import { useQuery } from '@tanstack/react-query';
 import type { MutableRefObject } from 'react';
 import { useEffect, useMemo, useState } from 'react';
 
@@ -52,8 +51,6 @@ const CustomEmoji = ({ onClick, reload }: CustomEmojiProps) => {
 
 	const columns: TableColumnWidth[] = ['x200', 'x200'];
 
-	const { paginatedQuery, queryKey, paginationProps } = usePagination({ query, getQueryKey: (query) => ['getEmojiList', query] });
-
 	const headers = useMemo(
 		() => [
 			<GenericTableHeaderCell key='name' direction={sortDirection} active={sortBy === 'name'} onClick={setSort} sort='name'>
@@ -65,9 +62,11 @@ const CustomEmoji = ({ onClick, reload }: CustomEmojiProps) => {
 	);
 
 	const getEmojiList = useEndpoint('GET', '/v1/emoji-custom.all');
-	const { data, refetch, isSuccess, isLoading, isError } = useQuery({
-		queryKey,
-		queryFn: () => getEmojiList(paginatedQuery),
+	const { data, refetch, isSuccess, isLoading, isError, paginationProps } = usePaginatedQuery({
+		query,
+		getQueryKey: (query) => ['getEmojiList', query],
+		queryFn: getEmojiList,
+		itemsKey: 'emojis',
 	});
 
 	useEffect(() => {
