@@ -27,7 +27,6 @@ const SlaTable = ({ reload }: { reload: MutableRefObject<() => void> }) => {
 
 	const [filter, setFilter] = useState('');
 
-	const { current, itemsPerPage, setItemsPerPage: onSetItemsPerPage, setCurrent: onSetCurrent, ...paginationProps } = usePagination();
 	const { sortBy, sortDirection, setSort } = useSort<'name' | 'description' | 'dueTimeInMinutes'>('name');
 
 	const query = useDebouncedValue(
@@ -35,22 +34,30 @@ const SlaTable = ({ reload }: { reload: MutableRefObject<() => void> }) => {
 			() => ({
 				text: filter,
 				sort: JSON.stringify({ [sortBy]: sortDirection === 'asc' ? 1 : -1 }),
-				...(itemsPerPage && { count: itemsPerPage }),
-				...(current && { offset: current }),
 			}),
-			[filter, itemsPerPage, current, sortBy, sortDirection],
+			[filter, sortBy, sortDirection],
 		),
 		500,
 	);
 
+	const {
+		paginatedQuery,
+		queryKey,
+		current,
+		itemsPerPage,
+		setItemsPerPage: onSetItemsPerPage,
+		setCurrent: onSetCurrent,
+		...paginationProps
+	} = usePagination({ query, getQueryKey: (query) => ['/v1/livechat/sla', query] });
+
 	const getSlaData = useEndpoint('GET', '/v1/livechat/sla');
 	const { data, isSuccess, isLoading, refetch } = useQuery({
-		queryKey: ['/v1/livechat/sla', query],
-		queryFn: () => getSlaData(query),
+		queryKey,
+		queryFn: () => getSlaData(paginatedQuery),
 	});
 
-	const [defaultQuery] = useState(hashKey([query]));
-	const queryHasChanged = defaultQuery !== hashKey([query]);
+	const [defaultQuery] = useState(hashKey([paginatedQuery]));
+	const queryHasChanged = defaultQuery !== hashKey([paginatedQuery]);
 
 	useEffect(() => {
 		reload.current = refetch;
@@ -134,7 +141,6 @@ const SlaTable = ({ reload }: { reload: MutableRefObject<() => void> }) => {
 						divider
 						current={current}
 						itemsPerPage={itemsPerPage}
-						count={data?.total || 0}
 						onSetItemsPerPage={onSetItemsPerPage}
 						onSetCurrent={onSetCurrent}
 						{...paginationProps}
