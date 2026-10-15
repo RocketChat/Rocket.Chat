@@ -2,7 +2,7 @@ import { Skeleton } from '../Skeleton';
 import Option from './Option';
 
 const OptionSkeleton = () => (
-	<Option>
+	<Option aria-hidden>
 		<Skeleton width='100%' />
 	</Option>
 );
