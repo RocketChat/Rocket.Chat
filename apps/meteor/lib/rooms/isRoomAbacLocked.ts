@@ -17,8 +17,6 @@ export const isRoomAbacLocked = (room: AbacLockableRoom, { enforcementOn, requir
 		return false;
 	}
 
-	// Enforcement holds `Discussion_enabled` at false, so a discussion that predates it stays locked
-	// whatever it carries.
 	if (isDiscussion(room)) {
 		return true;
 	}
