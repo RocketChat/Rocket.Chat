@@ -99,7 +99,7 @@ const ContactEdit = ({ contact, onSaved, onClose }: ContactEditProps) => {
 		onSuccess: async ({ saved, created }) => {
 			dispatchToastMessage({ type: 'success', message: t(created ? 'Contact_created' : 'Contact_updated') });
 
-			await queryClient.invalidateQueries({ queryKey: contactsQueryKeys.list() });
+			await queryClient.invalidateQueries({ queryKey: contactsQueryKeys.all });
 
 			onSaved(saved);
 		},

@@ -176,6 +176,7 @@ export const contactsQueryKeys = {
 	list: (
 		...args: [query?: { sortBy: ContactsSortableField; sortDirection: 'asc' | 'desc'; offset: number; count: number; text?: string }]
 	) => [...contactsQueryKeys.all, 'list', ...args] as const,
+	info: (contactId: string) => [...contactsQueryKeys.all, 'info', contactId] as const,
 };
 
 export const callHistoryQueryKeys = {

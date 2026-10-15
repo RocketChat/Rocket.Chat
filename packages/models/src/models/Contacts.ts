@@ -75,6 +75,10 @@ export class ContactsRaw extends BaseRaw<IContact> implements IContactsModel {
 		return this.findOne({ uid, ...match, ...(source && { source }) }, { sort: { displayName: 1 }, projection: { _id: 1, displayName: 1 } });
 	}
 
+	public findOneOwnedByUserId(uid: IUser['_id'], contactId: IContact['_id'], source?: IContact['source']): Promise<IContactPublic | null> {
+		return this.findOne({ _id: contactId, uid, ...(source && { source }) }, { projection: PUBLIC_PROJECTION });
+	}
+
 	public countImportedByUserId(uid: IUser['_id']): Promise<number> {
 		return this.countDocuments({ uid, source: OUTLOOK, externalId: { $exists: true } });
 	}

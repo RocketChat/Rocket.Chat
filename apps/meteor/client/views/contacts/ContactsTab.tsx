@@ -1,14 +1,12 @@
-import type { IContactPublic, Serialized } from '@rocket.chat/core-typings';
 import { Pagination } from '@rocket.chat/fuselage';
 import { useDebouncedValue } from '@rocket.chat/fuselage-hooks';
 import { GenericNoResults, GenericTableLoadingRow, usePagination, useSort } from '@rocket.chat/ui-client';
-import { useEndpoint } from '@rocket.chat/ui-contexts';
+import { useEndpoint, useRouteParameter, useRouter } from '@rocket.chat/ui-contexts';
 import { useQuery } from '@tanstack/react-query';
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import ContactEdit from './ContactEdit';
-import ContactInfo from './ContactInfo';
+import ContactPanelRouter from './ContactPanelRouter';
 import ContactsPageFilters from './ContactsPageFilters';
 import ContactsTable from './ContactsTable';
 import ContactsTableRow from './ContactsTableRow';
@@ -23,8 +21,6 @@ type ContactsTabProps = {
 	onChangeTab: (tab: CallHistoryTab) => void;
 };
 
-type Panel = { kind: 'info'; contact: Serialized<IContactPublic> } | { kind: 'form'; contact?: Serialized<IContactPublic> };
-
 const LOADING_ROWS = 4;
 
 const ContactsTab = ({ tab, onChangeTab }: ContactsTabProps) => {
@@ -33,7 +29,14 @@ const ContactsTab = ({ tab, onChangeTab }: ContactsTabProps) => {
 	const { setItemsPerPage, setCurrent, ...paginationProps } = usePagination();
 	const columns = useContactsColumns();
 	const loadingCols = columns.visibleCount + 1;
-	const [panel, setPanel] = useState<Panel>();
+
+	const router = useRouter();
+	const contactId = useRouteParameter('historyId');
+	const context = useRouteParameter('context');
+
+	const openList = useCallback(() => router.navigate('/call-history/contacts'), [router]);
+	const openInfo = useCallback((id: string) => router.navigate(`/call-history/contacts/${id}`), [router]);
+	const openEdit = useCallback((id: string) => router.navigate(`/call-history/contacts/${id}/edit`), [router]);
 
 	const listContacts = useEndpoint('GET', '/v1/contacts.list');
 
@@ -65,30 +68,14 @@ const ContactsTab = ({ tab, onChangeTab }: ContactsTabProps) => {
 		<ContactsPageFilters
 			searchText={searchText}
 			onChangeText={setSearchText}
-			onCreate={() => setPanel({ kind: 'form' })}
+			onCreate={() => openInfo('new')}
 			total={data?.syncedTotal ?? 0}
 		/>
 	);
 
-	const closePanelOf = (contactId: string) => setPanel((current) => (current?.contact?._id === contactId ? undefined : current));
-
-	const contextualBar =
-		panel?.kind === 'info' ? (
-			<ContactInfo
-				contact={panel.contact}
-				onEdit={() => setPanel({ kind: 'form', contact: panel.contact })}
-				onClose={() => setPanel(undefined)}
-			/>
-		) : (
-			panel?.kind === 'form' && (
-				<ContactEdit
-					key={panel.contact?._id ?? 'new'}
-					contact={panel.contact}
-					onSaved={(contact) => setPanel({ kind: 'info', contact })}
-					onClose={() => setPanel(undefined)}
-				/>
-			)
-		);
+	const contextualBar = (
+		<ContactPanelRouter contactId={contactId} context={context} onOpenInfo={openInfo} onOpenEdit={openEdit} onClose={openList} />
+	);
 
 	const pagination = (
 		<Pagination divider count={data?.total || 0} onSetItemsPerPage={setItemsPerPage} onSetCurrent={setCurrent} {...paginationProps} />
@@ -137,9 +124,9 @@ const ContactsTab = ({ tab, onChangeTab }: ContactsTabProps) => {
 							key={contact._id}
 							contact={contact}
 							columns={columns}
-							onClick={() => setPanel({ kind: 'info', contact })}
-							onEdit={() => setPanel({ kind: 'form', contact })}
-							onDeleted={() => closePanelOf(contact._id)}
+							onClick={() => openInfo(contact._id)}
+							onEdit={() => openEdit(contact._id)}
+							onDeleted={() => contactId === contact._id && openList()}
 						/>
 					))}
 				</ContactsTable>

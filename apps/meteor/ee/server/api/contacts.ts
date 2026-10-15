@@ -5,6 +5,7 @@ import type { LocalContactPayload, PaginatedResult } from '@rocket.chat/rest-typ
 import {
 	isContactsCreateProps,
 	isContactsDeleteProps,
+	isContactsInfoProps,
 	isContactsListProps,
 	isContactsUpdateProps,
 	ajv,
@@ -107,6 +108,42 @@ API.v1.get(
 		const syncedTotal = licensed ? await Contacts.countImportedByUserId(userId) : 0;
 
 		return API.v1.success({ items, count: items.length, offset, total, syncedTotal });
+	},
+);
+
+API.v1.get(
+	'contacts.info',
+	{
+		authRequired: true,
+		query: isContactsInfoProps,
+		response: {
+			200: ajv.compile<{ contact: IContactPublic; success: true }>({
+				type: 'object',
+				properties: {
+					contact: { $ref: '#/components/schemas/IContactPublic' },
+					success: { type: 'boolean', enum: [true] },
+				},
+				required: ['contact', 'success'],
+				additionalProperties: false,
+			}),
+			400: validateBadRequestErrorResponse,
+			401: validateUnauthorizedErrorResponse,
+			403: validateForbiddenErrorResponse,
+			404: validateNotFoundErrorResponse,
+		},
+	},
+	async function action() {
+		const contact = await Contacts.findOneOwnedByUserId(
+			this.userId,
+			this.queryParams.contactId,
+			License.hasModule('outlook-calendar') ? undefined : 'local',
+		);
+
+		if (!contact) {
+			return API.v1.notFound();
+		}
+
+		return API.v1.success({ contact });
 	},
 );
 

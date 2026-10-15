@@ -30,6 +30,7 @@ export interface IContactsModel extends IBaseModel<IContact> {
 		phone: { e164: string } | { raw: string },
 		source?: IContact['source'],
 	): Promise<Pick<IContact, '_id' | 'displayName'> | null>;
+	findOneOwnedByUserId(uid: IUser['_id'], contactId: IContact['_id'], source?: IContact['source']): Promise<IContactPublic | null>;
 	countImportedByUserId(uid: IUser['_id']): Promise<number>;
 	createLocal(contact: LocalContact): Promise<IContactPublic | null>;
 	updateLocal(uid: IUser['_id'], contactId: IContact['_id'], contact: LocalContactUpdate): Promise<IContactPublic | null>;
