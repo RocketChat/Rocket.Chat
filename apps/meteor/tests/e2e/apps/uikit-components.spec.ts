@@ -62,7 +62,8 @@ test.describe.serial('Apps > UIKit components', () => {
 
 		await test.step('initial selections render as chips', async () => {
 			await expect(surface.getByText('user2', { exact: true })).toBeVisible();
-			await expect(surface.getByText('general', { exact: true })).toBeVisible();
+			// The channels select and the multi conversations select, which defaults to the current room
+			await expect(surface.getByText('general', { exact: true })).toHaveCount(2);
 		});
 
 		const interactionResponse = page.waitForResponse('**/ui.interaction/*');
