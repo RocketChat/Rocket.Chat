@@ -8,6 +8,8 @@ import type { BaseTest } from './utils/test';
 import { expect, test } from './utils/test';
 
 test.use({ storageState: Users.admin.state });
+// Resizing after the room loads makes the list scroll itself back to the bottom for a moment, undoing the tests' scroll to the top.
+test.use({ viewport: { width: 1023, height: 700 } });
 test.describe.serial('Messaging scroll to bottom', () => {
 	let targetChannel: { name: string; _id: string };
 	let poHomeChannel: HomeChannel;
@@ -73,47 +75,39 @@ test.describe.serial('Messaging scroll to bottom', () => {
 		await deleteChannel(api, targetChannel.name);
 	});
 
-	test('should scroll the main message list to bottom when sending a message in the main channel', async ({ page }) => {
-		await page.setViewportSize({ width: 1023, height: 700 });
-
-		await scrollToTop(poHomeChannel.content.mainMessageListScroller);
+	test('should scroll the main message list to bottom when sending a message in the main channel', async () => {
+		await scrollToTop(poHomeChannel.content.mainMessageList);
 
 		await poHomeChannel.content.sendMessage('main channel message');
 
-		await expectScrolledToBottom(poHomeChannel.content.mainMessageListScroller);
+		await expectScrolledToBottom(poHomeChannel.content.mainMessageList);
 	});
 
-	test('should scroll the thread message list to bottom when sending a message in the thread', async ({ page }) => {
-		await page.setViewportSize({ width: 1023, height: 700 });
-
-		await scrollToTop(poHomeChannel.content.threadMessageListScroller);
+	test('should scroll the thread message list to bottom when sending a message in the thread', async () => {
+		await scrollToTop(poHomeChannel.content.threadMessageList);
 
 		await poHomeChannel.content.sendMessageInThread('new thread reply');
 
-		await expectScrolledToBottom(poHomeChannel.content.threadMessageListScroller);
+		await expectScrolledToBottom(poHomeChannel.content.threadMessageList);
 	});
 
-	test('should not scroll the main channel message list when sending a message in the thread', async ({ page }) => {
-		await page.setViewportSize({ width: 1023, height: 700 });
-
-		await scrollToTop(poHomeChannel.content.mainMessageListScroller);
-		await scrollToTop(poHomeChannel.content.threadMessageListScroller);
+	test('should not scroll the main channel message list when sending a message in the thread', async () => {
+		await scrollToTop(poHomeChannel.content.mainMessageList);
+		await scrollToTop(poHomeChannel.content.threadMessageList);
 
 		await poHomeChannel.content.sendMessageInThread('another thread reply');
 
-		await expectScrolledToBottom(poHomeChannel.content.threadMessageListScroller);
-		await expect(poHomeChannel.content.mainMessageListScroller).toHaveJSProperty('scrollTop', 0);
+		await expectScrolledToBottom(poHomeChannel.content.threadMessageList);
+		await expect(poHomeChannel.content.mainMessageList).toHaveJSProperty('scrollTop', 0);
 	});
 
-	test('should not scroll the thread message list when sending a message in the main channel', async ({ page }) => {
-		await page.setViewportSize({ width: 1023, height: 700 });
-
-		await scrollToTop(poHomeChannel.content.mainMessageListScroller);
-		await scrollToTop(poHomeChannel.content.threadMessageListScroller);
+	test('should not scroll the thread message list when sending a message in the main channel', async () => {
+		await scrollToTop(poHomeChannel.content.mainMessageList);
+		await scrollToTop(poHomeChannel.content.threadMessageList);
 
 		await poHomeChannel.content.sendMessage('another main channel message');
 
-		await expectScrolledToBottom(poHomeChannel.content.mainMessageListScroller);
-		await expect(poHomeChannel.content.threadMessageListScroller).toHaveJSProperty('scrollTop', 0);
+		await expectScrolledToBottom(poHomeChannel.content.mainMessageList);
+		await expect(poHomeChannel.content.threadMessageList).toHaveJSProperty('scrollTop', 0);
 	});
 });
