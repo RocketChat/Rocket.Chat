@@ -93,7 +93,7 @@ function isPlainObject(v: unknown): v is Record<string, unknown> {
 
 	const prototype = Object.getPrototypeOf(v);
 
-	return prototype === null || prototype.constructor === Object;
+	return prototype === null || Object.getOwnPropertyDescriptor(prototype, 'constructor')?.value === Object;
 }
 
 export async function errorResponse(
