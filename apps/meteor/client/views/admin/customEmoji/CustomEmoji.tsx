@@ -41,15 +41,7 @@ const CustomEmoji = ({ onClick, reload }: CustomEmojiProps) => {
 		500,
 	);
 
-	const {
-		paginatedQuery,
-		queryKey,
-		current,
-		itemsPerPage,
-		setItemsPerPage: onSetItemsPerPage,
-		setCurrent: onSetCurrent,
-		...paginationProps
-	} = usePagination({ query, getQueryKey: (query) => ['getEmojiList', query] });
+	const { paginatedQuery, queryKey, paginationProps } = usePagination({ query, getQueryKey: (query) => ['getEmojiList', query] });
 
 	const headers = useMemo(
 		() => [
@@ -110,14 +102,7 @@ const CustomEmoji = ({ onClick, reload }: CustomEmojiProps) => {
 								))}
 						</GenericTableBody>
 					</GenericTable>
-					<Pagination
-						divider
-						current={current}
-						itemsPerPage={itemsPerPage}
-						onSetItemsPerPage={onSetItemsPerPage}
-						onSetCurrent={onSetCurrent}
-						{...paginationProps}
-					/>
+					<Pagination divider {...paginationProps} />
 				</>
 			)}
 			{isSuccess && data && data.emojis.length === 0 && <GenericNoResults />}
