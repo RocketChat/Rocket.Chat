@@ -17,7 +17,7 @@ export type ContactsTableRowProps = {
 };
 
 const ContactsTableRow = ({ contact, columns, onClick, onEdit, onDeleted }: ContactsTableRowProps) => {
-	const { _id, source, displayName, emails, phones, categories, companyName, officeLocation } = contact;
+	const { _id, source, displayName, emails, phones, categories, companyName, officeLocation, _updatedAt } = contact;
 
 	const handleKeyDown = (event: KeyboardEvent<HTMLElement>) => {
 		if (event.key !== 'Enter') {
@@ -33,7 +33,7 @@ const ContactsTableRow = ({ contact, columns, onClick, onEdit, onDeleted }: Cont
 			{columns.isVisible('displayName') && (
 				<GenericTableCell withTruncatedText>
 					<Box display='flex' alignItems='center'>
-						<BaseAvatar size='x28' url={getAvatarURL({ contactId: _id }) ?? ''} />
+						<BaseAvatar size='x28' url={getAvatarURL({ contactId: _id, cache: _updatedAt }) ?? ''} />
 						<Box marginInlineStart={8} fontScale='p2' flexGrow={1} flexShrink={1} flexBasis='0%' withTruncatedText>
 							{displayName}
 						</Box>

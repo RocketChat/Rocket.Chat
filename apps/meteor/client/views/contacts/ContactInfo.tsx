@@ -33,7 +33,7 @@ const ContactInfo = ({ contact, onEdit, onClose }: ContactInfoProps) => {
 	const { t } = useTranslation();
 	const labelOf = useContactLabel();
 	const { canCall, call } = useContactCall();
-	const { _id, source, displayName, emails, phones, categories, companyName, officeLocation } = contact;
+	const { _id, source, displayName, emails, phones, categories, companyName, officeLocation, _updatedAt } = contact;
 
 	// A labelled address says something an unlabelled one does not, so it gets its own field to say it in.
 	const plainEmails = emails.filter(({ label }) => !label);
@@ -50,7 +50,10 @@ const ContactInfo = ({ contact, onEdit, onClose }: ContactInfoProps) => {
 			<ContextualbarScrollableContent>
 				<InfoPanel>
 					<InfoPanelSection>
-						<InfoPanelTitle title={displayName} icon={<BaseAvatar size='x32' url={getAvatarURL({ contactId: _id }) ?? ''} />} />
+						<InfoPanelTitle
+							title={displayName}
+							icon={<BaseAvatar size='x32' url={getAvatarURL({ contactId: _id, cache: _updatedAt }) ?? ''} />}
+						/>
 					</InfoPanelSection>
 					<InfoPanelSection>
 						{!!emails.length && <Divider />}
