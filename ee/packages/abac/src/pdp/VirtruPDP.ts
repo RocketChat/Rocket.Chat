@@ -287,32 +287,21 @@ export class VirtruPDP implements IPolicyDecisionPoint {
 		return evaluation;
 	}
 
+	// WARNING: pass only rooms that have ABAC attributes. Virtru rejects the whole GetDecisionBulk call
+	// when any resource has an empty FQN list, so a single room without attributes fails every room in the batch.
 	async evaluateSubjectAgainstRooms(subject: EvaluableSubject, rooms: AtLeast<IRoom, '_id' | 'abacAttributes'>[]): Promise<RoomEvaluation> {
 		const evaluation: RoomEvaluation = { compliant: [], nonCompliant: [], inconclusive: [] };
-		const attributed: AtLeast<IRoom, '_id' | 'abacAttributes'>[] = [];
-
-		for (const room of rooms) {
-			if (room.abacAttributes?.length) {
-				attributed.push(room);
-			} else {
-				evaluation.compliant.push(room._id);
-			}
-		}
-
-		if (!attributed.length) {
-			return evaluation;
-		}
 
 		const config = this.client.getConfig();
 		const entityKey = getUserEntityKey(config.defaultEntityKey, subject);
 		if (!entityKey) {
 			pdpLogger.warn({ msg: 'User has no entity key for Virtru PDP evaluation, treating as non-compliant', userId: subject._id });
-			evaluation.nonCompliant.push(...attributed.map(({ _id }) => _id));
+			evaluation.nonCompliant.push(...rooms.map(({ _id }) => _id));
 			return evaluation;
 		}
 
 		const responses = await this.getDecisionBulk(
-			attributed.map((room) => ({
+			rooms.map((room) => ({
 				entityIdentifier: {
 					entityChain: {
 						entities: [buildEntityIdentifier(config.defaultEntityKey, entityKey)],
@@ -328,7 +317,7 @@ export class VirtruPDP implements IPolicyDecisionPoint {
 			})),
 		);
 
-		attributed.forEach(({ _id }, index) => {
+		rooms.forEach(({ _id }, index) => {
 			const verdict = classifyDecisions(responses[index]?.resourceDecisions);
 			if (verdict === 'inconclusive') {
 				pdpLogger.warn({ msg: 'Inconclusive PDP decision', rid: _id, userId: subject._id });
