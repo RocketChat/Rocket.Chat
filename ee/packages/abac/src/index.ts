@@ -817,13 +817,8 @@ export class AbacService extends ServiceClass implements IAbacService {
 		await this.ensurePdpAvailable();
 		await this.pdp.checkUsernamesMatchAttributes(usernames, attributes, object);
 
-		void Audit.actionsPerformed(
-			usernames.map((username) => ({
-				subject: { username },
-				object: { _id: object._id, name: object.name },
-				reason: 'system',
-				actionPerformed: 'granted-object-access',
-			})),
+		void Audit.objectAccessGranted(
+			usernames.map((username) => ({ subject: { username }, object: { _id: object._id, name: object.name } })),
 		);
 	}
 
@@ -848,15 +843,10 @@ export class AbacService extends ServiceClass implements IAbacService {
 			const allowed = new Set(evaluation?.compliant);
 
 			if (options?.audit !== false) {
-				void Audit.actionsPerformed(
+				void Audit.objectAccessGranted(
 					subjects
 						.filter(({ _id }) => allowed.has(_id))
-						.map(({ _id, username }) => ({
-							subject: { _id, username },
-							object: { _id: room._id, name: room.name },
-							reason: 'system',
-							actionPerformed: 'granted-object-access',
-						})),
+						.map(({ _id, username }) => ({ subject: { _id, username }, object: { _id: room._id, name: room.name } })),
 				);
 			}
 
@@ -890,8 +880,8 @@ export class AbacService extends ServiceClass implements IAbacService {
 		}
 
 		try {
-			const subject = await Users.findOneById<Pick<IUser, '_id' | 'username' | 'emails'>>(userId, {
-				projection: { _id: 1, username: 1, emails: 1 },
+			const subject = await Users.findOneById<Pick<IUser, '_id' | 'username' | 'emails' | 'abacAttributes'>>(userId, {
+				projection: { _id: 1, username: 1, emails: 1, abacAttributes: 1 },
 			});
 			if (!subject) {
 				return [];
@@ -902,12 +892,10 @@ export class AbacService extends ServiceClass implements IAbacService {
 			const granted = rooms.filter(({ _id }) => permitted.has(_id));
 
 			if (options?.audit !== false) {
-				void Audit.actionsPerformed(
+				void Audit.objectAccessGranted(
 					granted.map((room) => ({
 						subject: { _id: subject._id, username: subject.username },
 						object: { _id: room._id, name: room.name },
-						reason: 'system',
-						actionPerformed: 'granted-object-access',
 					})),
 				);
 			}
