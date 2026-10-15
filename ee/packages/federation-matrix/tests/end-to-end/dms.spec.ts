@@ -678,7 +678,9 @@ const waitForRoomEvent = async (
 
 				// TODO maybe we should allow it
 				it('should fail if a user from rc try to add another user to the group DM', async () => {
-					await addUserToRoomSlashCommand({ usernames: [userDm3], rid: rcRoom1._id, config: rcUserConfig1 });
+					await expect(addUserToRoomSlashCommand({ usernames: [userDm3], rid: rcRoom1._id, config: rcUserConfig1 })).rejects.toThrow(
+						'error-not-authorized',
+					);
 
 					const { members } = await getRoomMembers(rcRoom1._id, rcUserConfig1);
 					expect(members.map((member) => member.username)).not.toContain(userDm3);
@@ -1157,7 +1159,9 @@ const waitForRoomEvent = async (
 
 				// TODO maybe we should allow it
 				it('should fail if a user from rc try to add another user to the group DM', async () => {
-					await addUserToRoomSlashCommand({ usernames: [rcUser3.username], rid: rcRoom._id, config: rcUserConfig2 });
+					await expect(
+						addUserToRoomSlashCommand({ usernames: [rcUser3.username], rid: rcRoom._id, config: rcUserConfig2 }),
+					).rejects.toThrow('error-not-authorized');
 
 					const { members } = await getRoomMembers(rcRoom._id, rcUserConfig2);
 					expect(members.map((member) => member.username)).not.toContain(rcUser3.username);
@@ -1718,11 +1722,13 @@ const waitForRoomEvent = async (
 					expect(dmCreate.body).toHaveProperty('success', true);
 					expect(dmCreate.body).toHaveProperty('room');
 
-					await addUserToRoomSlashCommand({
-						usernames: [federationConfig.hs1.additionalUser1.matrixUserId],
-						rid: dmCreate.body.room._id,
-						config: rcUser1.config,
-					});
+					await expect(
+						addUserToRoomSlashCommand({
+							usernames: [federationConfig.hs1.additionalUser1.matrixUserId],
+							rid: dmCreate.body.room._id,
+							config: rcUser1.config,
+						}),
+					).rejects.toThrow('error-not-authorized');
 
 					const roomInfo = await getRoomInfo(dmCreate.body.room._id, rcUser1.config);
 					expect(roomInfo.room).toHaveProperty('usersCount', 2);
