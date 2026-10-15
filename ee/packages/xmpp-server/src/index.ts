@@ -9,3 +9,6 @@ export { XmppError, InvalidJidError, DomainNotAllowedError, NotJoinedToRemoteRoo
 export type { Logger } from './logger';
 export { resolveXmppServer } from './s2s/dnsResolver';
 export type { XmppDnsResolver, XmppServerAddress } from './s2s/dnsResolver';
+
+export { XMPPServerService } from './service/XMPPServerService';
+export type { InboundHandlerObserver, XMPPServerServiceOptions } from './service/XMPPServerService';
