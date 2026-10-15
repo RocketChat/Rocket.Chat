@@ -30,6 +30,7 @@ import type {
 	Document,
 	UpdateFilter,
 	UpdateOptions,
+	UpdateResult,
 	FindCursor,
 	SortDirection,
 	FindOneAndUpdateOptions,
@@ -1725,6 +1726,38 @@ export class UsersRaw extends BaseRaw<IUser, DefaultFields<IUser>> implements IU
 		return this.countDocuments({
 			federated: true,
 		});
+	}
+
+	upsertXMPPUser(jid: string, origin: string, name?: string): Promise<IUser | null> {
+		return this.findOneAndUpdate(
+			{ username: jid },
+			{
+				$set: {
+					username: jid,
+					...(name && { name }),
+					type: 'user' as const,
+					status: UserStatus.OFFLINE,
+					active: true,
+					roles: ['federated-external'],
+					requirePasswordChange: false,
+					federated: true,
+					xmppFederation: { version: 1 as const, jid, origin },
+					_updatedAt: new Date(),
+				},
+				$setOnInsert: {
+					...(!name && { name: jid }),
+					createdAt: new Date(),
+				},
+			},
+			{
+				upsert: true,
+				returnDocument: 'after',
+			},
+		);
+	}
+
+	updateStatusAndStatusDefaultById(userId: IUser['_id'], status: UserStatus): Promise<UpdateResult> {
+		return this.updateOne({ _id: userId }, { $set: { status, statusDefault: status } });
 	}
 
 	findOnlineUserFromList<T extends Document = ILivechatAgent>(

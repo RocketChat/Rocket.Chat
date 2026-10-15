@@ -337,6 +337,15 @@ export interface IUsersModel extends IBaseModel<IUser> {
 	): Promise<UpdateResult>;
 
 	countFederatedExternalUsers(): Promise<number>;
+
+	/**
+	 * Creates or refreshes the record of a remote XMPP user, whose username is `jid`.
+	 * Without `name`, a new record is named by its JID and an existing one keeps its name.
+	 * The record is `federated` but never gets `federation` ([ADR 0006](../../../../ee/packages/xmpp-server/docs/adr/0006-remote-users-are-local-users-keyed-by-bare-jid.md)).
+	 */
+	upsertXMPPUser(jid: string, origin: string, name?: string): Promise<IUser | null>;
+
+	updateStatusAndStatusDefaultById(userId: IUser['_id'], status: UserStatus): Promise<UpdateResult>;
 	findOnlineUserFromList<T extends Document = ILivechatAgent>(
 		userList: string | string[],
 		isLivechatEnabledWhenAgentIdle?: boolean,
