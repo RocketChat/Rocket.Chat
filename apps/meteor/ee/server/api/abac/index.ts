@@ -46,7 +46,7 @@ const assertLocalAttributeStore = async (): Promise<void> => {
 	}
 };
 
-const forbidden = () => API.v1.forbidden('User does not have the permissions required for this action [error-unauthorized]');
+const FORBIDDEN_MESSAGE = 'User does not have the permissions required for this action [error-unauthorized]';
 
 const getRoomAttributesGrant = async (uid: IUser['_id'], rid: string): Promise<AbacRoomAttributesGrant | undefined> => {
 	if (await hasAllPermissionAsync(uid, ['abac-management', 'manage-abac-admin-rooms'])) {
@@ -80,7 +80,7 @@ const abacEndpoints = API.v1
 
 			const grant = await getRoomAttributesGrant(this.userId, rid);
 			if (!grant) {
-				return forbidden();
+				return API.v1.forbidden(FORBIDDEN_MESSAGE);
 			}
 
 			if (!settings.get('ABAC_Enabled')) {
@@ -519,16 +519,16 @@ const abacEndpoints = API.v1
 			},
 		},
 		async function action() {
+			if (!settings.get('ABAC_Enabled')) {
+				throw new Error('error-abac-not-enabled');
+			}
+
 			const { rid } = this.queryParams;
 
 			if (rid) {
 				const grant = await getRoomAttributesGrant(this.userId, rid);
 				if (!grant) {
-					return forbidden();
-				}
-
-				if (!settings.get('ABAC_Enabled')) {
-					throw new Error('error-abac-not-enabled');
+					return API.v1.forbidden(FORBIDDEN_MESSAGE);
 				}
 
 				return API.v1.success({
@@ -538,11 +538,7 @@ const abacEndpoints = API.v1
 			}
 
 			if (!(await hasPermissionAsync(this.userId, 'create-abac-managed-room'))) {
-				return forbidden();
-			}
-
-			if (!settings.get('ABAC_Enabled')) {
-				throw new Error('error-abac-not-enabled');
+				return API.v1.forbidden(FORBIDDEN_MESSAGE);
 			}
 
 			const { enforcementOn, requiredAttributeKeys } = getRoomAbacLockContext();
@@ -571,20 +567,18 @@ const abacEndpoints = API.v1
 			},
 		},
 		async function action() {
-			const { bodyParams } = this;
+			if (!settings.get('ABAC_Enabled')) {
+				throw new Error('error-abac-not-enabled');
+			}
 
-			if ('rid' in bodyParams) {
-				const { rid, attributes, filter, after, group } = bodyParams;
+			if ('rid' in this.bodyParams) {
+				const { rid, attributes, filter, after, group } = this.bodyParams;
 				const grant = await getRoomAttributesGrant(this.userId, rid);
 				if (!grant) {
-					return forbidden();
+					return API.v1.forbidden(FORBIDDEN_MESSAGE);
 				}
 
-				if (!settings.get('ABAC_Enabled')) {
-					throw new Error('error-abac-not-enabled');
-				}
-
-				const { count } = await getPaginationItems(bodyParams);
+				const { count } = await getPaginationItems(this.bodyParams);
 
 				return API.v1.success(
 					await Abac.previewRoomMembers(rid, attributes, toAbacActor(this.user), { filter, after, count, group }, grant),
@@ -592,14 +586,10 @@ const abacEndpoints = API.v1
 			}
 
 			if (!(await hasPermissionAsync(this.userId, 'create-abac-managed-room'))) {
-				return forbidden();
+				return API.v1.forbidden(FORBIDDEN_MESSAGE);
 			}
 
-			if (!settings.get('ABAC_Enabled')) {
-				throw new Error('error-abac-not-enabled');
-			}
-
-			const { members, attributes, excludeSelf = false } = bodyParams;
+			const { members, attributes, excludeSelf = false } = this.bodyParams;
 			const named = members.filter((username) => username !== this.user.username).length;
 			if (named + (excludeSelf ? 0 : 1) > settings.get<number>('API_User_Limit')) {
 				throw new ClientSafeError('error-abac-preview-too-many-members', 'Too many members to preview');
