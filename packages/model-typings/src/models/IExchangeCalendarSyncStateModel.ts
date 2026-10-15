@@ -1,5 +1,5 @@
 import type { IExchangeCalendarSyncState, IUser } from '@rocket.chat/core-typings';
-import type { UpdateResult } from 'mongodb';
+import type { DeleteResult, UpdateResult } from 'mongodb';
 
 import type { IBaseModel } from './IBaseModel';
 
@@ -16,4 +16,6 @@ export interface IExchangeCalendarSyncStateModel extends IBaseModel<IExchangeCal
 	): Promise<UpdateResult>;
 	setLastError(uid: IUser['_id'], lastError: string): Promise<UpdateResult>;
 	clearCursorByUserId(uid: IUser['_id']): Promise<UpdateResult>;
+	findAllUserIds(): Promise<IUser['_id'][]>;
+	removeAll(): Promise<DeleteResult>;
 }

@@ -21,26 +21,19 @@ export type CalendarSyncRunSummary = {
 	aborted: boolean;
 };
 
-let running = false;
+const emptySummary = (): CalendarSyncRunSummary => ({
+	mailboxes: 0,
+	skipped: 0,
+	upserted: 0,
+	modified: 0,
+	deleted: 0,
+	pruned: 0,
+	failed: 0,
+	aborted: false,
+});
 
-export const runCalendarSync = async (): Promise<CalendarSyncRunSummary> => {
-	const summary: CalendarSyncRunSummary = {
-		mailboxes: 0,
-		skipped: 0,
-		upserted: 0,
-		modified: 0,
-		deleted: 0,
-		pruned: 0,
-		failed: 0,
-		aborted: false,
-	};
-
-	if (running) {
-		logger.warn({ msg: 'Skipping Exchange calendar sync run: the previous one is still in progress' });
-		return summary;
-	}
-
-	running = true;
+const runOnce = async (): Promise<CalendarSyncRunSummary> => {
+	const summary = emptySummary();
 
 	const dirty = new Set<IUser['_id']>();
 
@@ -55,7 +48,7 @@ export const runCalendarSync = async (): Promise<CalendarSyncRunSummary> => {
 		const candidates = iterateMailboxCandidates();
 
 		await forEachWithConcurrency(candidates, MAILBOX_CONCURRENCY, async ({ uid, mailbox }) => {
-			if (summary.aborted) {
+			if (summary.aborted || !isServerSyncEnabled()) {
 				return;
 			}
 
@@ -112,7 +105,24 @@ export const runCalendarSync = async (): Promise<CalendarSyncRunSummary> => {
 	} finally {
 		// Has to run after a throw too, or the schedulers stay armed for an answer the collection no longer holds.
 		await applyDeferredSideEffects(dirty);
-
-		running = false;
 	}
 };
+
+let running: Promise<CalendarSyncRunSummary> | undefined;
+
+export const runCalendarSync = async (): Promise<CalendarSyncRunSummary> => {
+	if (running) {
+		logger.warn({ msg: 'Skipping Exchange calendar sync run: the previous one is still in progress' });
+		return emptySummary();
+	}
+
+	running = runOnce();
+
+	try {
+		return await running;
+	} finally {
+		running = undefined;
+	}
+};
+
+export const whenCalendarSyncSettled = (): Promise<unknown> => running?.catch(() => undefined) ?? Promise.resolve();

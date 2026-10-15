@@ -1,4 +1,4 @@
-import type { ICalendarEvent, IUser } from '@rocket.chat/core-typings';
+import type { CalendarEventSource, ICalendarEvent, IUser } from '@rocket.chat/core-typings';
 import type { DeleteResult, Document, FindCursor, UpdateResult } from 'mongodb';
 
 import type { IBaseModel, InsertionModel } from './IBaseModel';
@@ -44,4 +44,5 @@ export interface ICalendarEventModel extends IBaseModel<ICalendarEvent> {
 		seriesMasterIds: string[],
 		keepExternalIds: string[],
 	): Promise<DeleteResult>;
+	deleteImportedBySource(source: CalendarEventSource): Promise<DeleteResult>;
 }

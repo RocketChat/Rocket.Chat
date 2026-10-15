@@ -1,4 +1,4 @@
-import type { ICalendarEvent, IUser, RocketChatRecordDeleted } from '@rocket.chat/core-typings';
+import type { CalendarEventSource, ICalendarEvent, IUser, RocketChatRecordDeleted } from '@rocket.chat/core-typings';
 import type {
 	CalendarBulkUpsertResult,
 	DocumentWithProjection,
@@ -298,5 +298,9 @@ export class CalendarEventRaw extends BaseRaw<ICalendarEvent> implements ICalend
 			startTime: { $lt: end },
 			$or: [{ endTime: { $gt: start } }, { endTime: { $exists: false }, startTime: { $gte: start } }],
 		});
+	}
+
+	public deleteImportedBySource(source: CalendarEventSource): Promise<DeleteResult> {
+		return this.deleteMany({ source });
 	}
 }
