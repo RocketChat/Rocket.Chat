@@ -1,0 +1,14 @@
+// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
+
+exports[`[TextInput Component] renders without crashing 1`] = `
+<body>
+  <div>
+    <input
+      aria-label="text"
+      class="rcx-box rcx-box--full rcx-box--animated rcx-input-box--type-text rcx-input-box"
+      size="1"
+      type="text"
+    />
+  </div>
+</body>
+`;

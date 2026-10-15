@@ -104,7 +104,7 @@ exports[`renders Default without crashing 1`] = `
           >
             Description 
             <a
-              class="rcx-box rcx-box--full rcx-css-fyntbe"
+              class="rcx-box rcx-box--full rcx-css-11l16nv"
               href="#"
             >
               highlight
@@ -121,12 +121,12 @@ exports[`renders Default without crashing 1`] = `
               class="rcx-box rcx-box--full rcx-css-heem01"
             >
               <div
-                class="rcx-box rcx-box--full rcx-css-18gg2kh"
+                class="rcx-box rcx-box--full rcx-css-tthqrz"
               >
                 Title
               </div>
               <div
-                class="rcx-box rcx-box--full rcx-css-gk1yjz"
+                class="rcx-box rcx-box--full rcx-css-bh8xrr"
               >
                 Subtitle
               </div>
@@ -293,12 +293,12 @@ exports[`renders WithScroll without crashing 1`] = `
               class="rcx-box rcx-box--full rcx-css-heem01"
             >
               <div
-                class="rcx-box rcx-box--full rcx-css-18gg2kh"
+                class="rcx-box rcx-box--full rcx-css-tthqrz"
               >
                 Title
               </div>
               <div
-                class="rcx-box rcx-box--full rcx-css-gk1yjz"
+                class="rcx-box rcx-box--full rcx-css-bh8xrr"
               >
                 Subtitle
               </div>

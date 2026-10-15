@@ -26,7 +26,7 @@ exports[`CannedResponseList Storybook Stories renders Default without crashing 1
               class="rcx-box rcx-box--full rcx-css-1bdyjik rcx-css-1l4fxfb"
             >
               <h5
-                class="rcx-box rcx-box--full rcx-css-1spko5i"
+                class="rcx-box rcx-box--full rcx-css-1t0ey6j"
                 id="contextualbarTitle"
               >
                 Canned_Responses
@@ -56,10 +56,10 @@ exports[`CannedResponseList Storybook Stories renders Default without crashing 1
                 class="rcx-box rcx-box--full rcx-css-t6z7xh"
               >
                 <label
-                  class="rcx-box rcx-box--full rcx-label rcx-box rcx-box--full rcx-box--animated rcx-input-box__wrapper rcx-css-1dtwr38 rcx-css-1eogw2f"
+                  class="rcx-box rcx-box--full rcx-label rcx-box rcx-box--full rcx-box--animated rcx-input-box__wrapper rcx-css-4ye06d rcx-css-1eogw2f"
                 >
                   <input
-                    class="rcx-box rcx-box--full rcx-box--animated rcx-input-box--undecorated rcx-input-box--type-text rcx-input-box rcx-css-1dtwr38"
+                    class="rcx-box rcx-box--full rcx-box--animated rcx-input-box--undecorated rcx-input-box--type-text rcx-input-box rcx-css-4ye06d"
                     placeholder="Search"
                     size="1"
                     type="text"
@@ -76,10 +76,10 @@ exports[`CannedResponseList Storybook Stories renders Default without crashing 1
                   </span>
                 </label>
                 <div
-                  class="rcx-box rcx-box--full rcx-css-1dtwr38 rcx-css-njvvp7"
+                  class="rcx-box rcx-box--full rcx-css-4ye06d rcx-css-njvvp7"
                 >
                   <div
-                    class="rcx-box rcx-box--full rcx-css-1mbgoc8"
+                    class="rcx-box rcx-box--full rcx-css-1ds37nf"
                   >
                     <div
                       aria-hidden="true"
@@ -117,7 +117,7 @@ exports[`CannedResponseList Storybook Stories renders Default without crashing 1
                     aria-haspopup="listbox"
                     aria-label="Type"
                     aria-labelledby="react-aria-_r_8_ react-aria-_r_3_"
-                    class="rcx-box rcx-box--full rcx-box--animated rcx-select rcx-css-1vw6rc6"
+                    class="rcx-box rcx-box--full rcx-box--animated rcx-select rcx-css-3ejkxj"
                     type="button"
                   >
                     <span

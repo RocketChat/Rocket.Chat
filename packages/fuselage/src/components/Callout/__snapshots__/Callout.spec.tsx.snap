@@ -1,0 +1,305 @@
+// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
+
+exports[`[CheckBox Rendering] renders CustomIcon without crashing 1`] = `
+<body>
+  <div>
+    <section
+      class="rcx-box rcx-box--full rcx-callout"
+    >
+      <i
+        aria-hidden="true"
+        class="rcx-box rcx-box--full rcx-icon--name-hash rcx-icon rcx-callout__icon rcx-css-4pvxx3"
+      >
+        
+      </i>
+      <div
+        class="rcx-box rcx-box--full rcx-callout__wrapper"
+      >
+        <div
+          class="rcx-box rcx-box--full rcx-callout__wrapper-content"
+        >
+          <div
+            class="rcx-box rcx-box--full rcx-callout__title"
+          >
+            This is a message with custom icon
+          </div>
+          <div
+            class="rcx-box rcx-box--full rcx-callout__content"
+          >
+            This is a generic description.
+          </div>
+        </div>
+      </div>
+    </section>
+  </div>
+</body>
+`;
+
+exports[`[CheckBox Rendering] renders Danger without crashing 1`] = `
+<body>
+  <div>
+    <section
+      class="rcx-box rcx-box--full rcx-callout rcx-callout--danger"
+    >
+      <i
+        aria-hidden="true"
+        class="rcx-box rcx-box--full rcx-icon--name-ban rcx-icon rcx-callout__icon rcx-css-4pvxx3"
+      >
+        
+      </i>
+      <div
+        class="rcx-box rcx-box--full rcx-callout__wrapper"
+      >
+        <div
+          class="rcx-box rcx-box--full rcx-callout__wrapper-content"
+        >
+          <div
+            class="rcx-box rcx-box--full rcx-callout__title"
+          >
+            This is a danger message
+          </div>
+          <div
+            class="rcx-box rcx-box--full rcx-callout__content"
+          >
+            This is a generic description.
+          </div>
+        </div>
+      </div>
+    </section>
+  </div>
+</body>
+`;
+
+exports[`[CheckBox Rendering] renders Default without crashing 1`] = `
+<body>
+  <div>
+    <section
+      class="rcx-box rcx-box--full rcx-callout"
+    >
+      <i
+        aria-hidden="true"
+        class="rcx-box rcx-box--full rcx-icon--name-info-circled rcx-icon rcx-callout__icon rcx-css-4pvxx3"
+      >
+        
+      </i>
+      <div
+        class="rcx-box rcx-box--full rcx-callout__wrapper"
+      >
+        <div
+          class="rcx-box rcx-box--full rcx-callout__wrapper-content"
+        >
+          <div
+            class="rcx-box rcx-box--full rcx-callout__title"
+          >
+            This is a generic title
+          </div>
+          <div
+            class="rcx-box rcx-box--full rcx-callout__content"
+          >
+            This is a generic description.
+          </div>
+        </div>
+      </div>
+    </section>
+  </div>
+</body>
+`;
+
+exports[`[CheckBox Rendering] renders Info without crashing 1`] = `
+<body>
+  <div>
+    <section
+      class="rcx-box rcx-box--full rcx-callout rcx-callout--info"
+    >
+      <i
+        aria-hidden="true"
+        class="rcx-box rcx-box--full rcx-icon--name-info-circled rcx-icon rcx-callout__icon rcx-css-4pvxx3"
+      >
+        
+      </i>
+      <div
+        class="rcx-box rcx-box--full rcx-callout__wrapper"
+      >
+        <div
+          class="rcx-box rcx-box--full rcx-callout__wrapper-content"
+        >
+          <div
+            class="rcx-box rcx-box--full rcx-callout__title"
+          >
+            This is a info message
+          </div>
+          <div
+            class="rcx-box rcx-box--full rcx-callout__content"
+          >
+            This is a generic description.
+          </div>
+        </div>
+      </div>
+    </section>
+  </div>
+</body>
+`;
+
+exports[`[CheckBox Rendering] renders Success without crashing 1`] = `
+<body>
+  <div>
+    <section
+      class="rcx-box rcx-box--full rcx-callout rcx-callout--success"
+    >
+      <i
+        aria-hidden="true"
+        class="rcx-box rcx-box--full rcx-icon--name-checkmark-circled rcx-icon rcx-callout__icon rcx-css-4pvxx3"
+      >
+        
+      </i>
+      <div
+        class="rcx-box rcx-box--full rcx-callout__wrapper"
+      >
+        <div
+          class="rcx-box rcx-box--full rcx-callout__wrapper-content"
+        >
+          <div
+            class="rcx-box rcx-box--full rcx-callout__title"
+          >
+            This is a success message
+          </div>
+          <div
+            class="rcx-box rcx-box--full rcx-callout__content"
+          >
+            This is a generic description.
+          </div>
+        </div>
+      </div>
+    </section>
+  </div>
+</body>
+`;
+
+exports[`[CheckBox Rendering] renders Warning without crashing 1`] = `
+<body>
+  <div>
+    <section
+      class="rcx-box rcx-box--full rcx-callout rcx-callout--warning"
+    >
+      <i
+        aria-hidden="true"
+        class="rcx-box rcx-box--full rcx-icon--name-warning rcx-icon rcx-callout__icon rcx-css-4pvxx3"
+      >
+        
+      </i>
+      <div
+        class="rcx-box rcx-box--full rcx-callout__wrapper"
+      >
+        <div
+          class="rcx-box rcx-box--full rcx-callout__wrapper-content"
+        >
+          <div
+            class="rcx-box rcx-box--full rcx-callout__title"
+          >
+            This is a warning message
+          </div>
+          <div
+            class="rcx-box rcx-box--full rcx-callout__content"
+          >
+            This is a generic description.
+          </div>
+        </div>
+      </div>
+    </section>
+  </div>
+</body>
+`;
+
+exports[`[CheckBox Rendering] renders WithActions without crashing 1`] = `
+<body>
+  <div>
+    <section
+      class="rcx-box rcx-box--full rcx-callout"
+    >
+      <i
+        aria-hidden="true"
+        class="rcx-box rcx-box--full rcx-icon--name-info-circled rcx-icon rcx-callout__icon rcx-css-4pvxx3"
+      >
+        
+      </i>
+      <div
+        class="rcx-box rcx-box--full rcx-callout__wrapper"
+      >
+        <div
+          class="rcx-box rcx-box--full rcx-callout__wrapper-content"
+        >
+          <div
+            class="rcx-box rcx-box--full rcx-callout__title"
+          >
+            This is a generic title
+          </div>
+          <div
+            class="rcx-box rcx-box--full rcx-callout__content"
+          >
+            This is a generic description.
+          </div>
+        </div>
+        <div
+          class="rcx-box rcx-box--full rcx-callout__actions"
+        >
+          <div
+            class="rcx-button-group rcx-button-group--align-start"
+            role="group"
+          >
+            <button
+              class="rcx-box rcx-box--full rcx-button--small rcx-button"
+              type="button"
+            >
+              <span
+                class="rcx-button--content"
+              >
+                Button
+              </span>
+            </button>
+            <button
+              class="rcx-box rcx-box--full rcx-button--small rcx-button"
+              type="button"
+            >
+              <span
+                class="rcx-button--content"
+              >
+                Button
+              </span>
+            </button>
+          </div>
+        </div>
+      </div>
+    </section>
+  </div>
+</body>
+`;
+
+exports[`[CheckBox Rendering] renders WithDescriptionOnly without crashing 1`] = `
+<body>
+  <div>
+    <section
+      class="rcx-box rcx-box--full rcx-callout"
+    >
+      <i
+        aria-hidden="true"
+        class="rcx-box rcx-box--full rcx-icon--name-info-circled rcx-icon rcx-callout__icon rcx-css-4pvxx3"
+      >
+        
+      </i>
+      <div
+        class="rcx-box rcx-box--full rcx-callout__wrapper"
+      >
+        <div
+          class="rcx-box rcx-box--full rcx-callout__wrapper-content"
+        >
+          <div
+            class="rcx-box rcx-box--full rcx-callout__content"
+          >
+            This is a generic description.
+          </div>
+        </div>
+      </div>
+    </section>
+  </div>
+</body>
+`;

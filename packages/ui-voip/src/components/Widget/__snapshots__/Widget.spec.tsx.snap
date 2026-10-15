@@ -22,7 +22,7 @@ exports[`renders FullWidget without crashing 1`] = `
           Voice_call
         </div>
         <h3
-          class="rcx-box rcx-box--full rcx-css-uge1yt"
+          class="rcx-box rcx-box--full rcx-css-1hearsm"
           id="rcx-media-call-widget-title"
         >
           Incoming Call...
@@ -49,13 +49,13 @@ exports[`renders FullWidget without crashing 1`] = `
         class="rcx-box rcx-box--full rcx-css-1k2ffyh"
       >
         <span
-          class="rcx-box rcx-box--full rcx-css-1gd28qh"
+          class="rcx-box rcx-box--full rcx-css-q4zl0"
         >
            
           On hold
         </span>
         <span
-          class="rcx-box rcx-box--full rcx-css-z06lf7"
+          class="rcx-box rcx-box--full rcx-css-1d5kz2y"
         >
            
           Muted

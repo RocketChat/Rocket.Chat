@@ -31,12 +31,12 @@ exports[`AttributesForm renders NewAttribute without crashing 1`] = `
               id="_r_0_"
             >
               <div
-                class="rcx-box rcx-box--full rcx-css-1jggbrp rcx-css-1fuhgt0"
+                class="rcx-box rcx-box--full rcx-css-j4xsg rcx-css-1fuhgt0"
               >
                 Create an attribute that can later be assigned to rooms.
               </div>
               <div
-                class="rcx-box rcx-box--full rcx-field rcx-css-1jggbrp rcx-css-1fuhgt0"
+                class="rcx-box rcx-box--full rcx-field rcx-css-j4xsg rcx-css-1fuhgt0"
               >
                 <label
                   class="rcx-box rcx-box--full rcx-field__label rcx-label"
@@ -65,7 +65,7 @@ exports[`AttributesForm renders NewAttribute without crashing 1`] = `
                 </span>
               </div>
               <div
-                class="rcx-box rcx-box--full rcx-field rcx-css-1jggbrp rcx-css-1fuhgt0"
+                class="rcx-box rcx-box--full rcx-field rcx-css-j4xsg rcx-css-1fuhgt0"
               >
                 <label
                   class="rcx-box rcx-box--full rcx-field__label rcx-label"
@@ -199,12 +199,12 @@ exports[`AttributesForm renders WithLockedAttributes without crashing 1`] = `
               id="_r_3_"
             >
               <div
-                class="rcx-box rcx-box--full rcx-css-1jggbrp rcx-css-1fuhgt0"
+                class="rcx-box rcx-box--full rcx-css-j4xsg rcx-css-1fuhgt0"
               >
                 Attribute values cannot be edited, but can be added or deleted.
               </div>
               <div
-                class="rcx-box rcx-box--full rcx-field rcx-css-1jggbrp rcx-css-1fuhgt0"
+                class="rcx-box rcx-box--full rcx-field rcx-css-j4xsg rcx-css-1fuhgt0"
               >
                 <label
                   class="rcx-box rcx-box--full rcx-field__label rcx-label"
@@ -233,7 +233,7 @@ exports[`AttributesForm renders WithLockedAttributes without crashing 1`] = `
                 </span>
               </div>
               <div
-                class="rcx-box rcx-box--full rcx-field rcx-css-1jggbrp rcx-css-1fuhgt0"
+                class="rcx-box rcx-box--full rcx-field rcx-css-j4xsg rcx-css-1fuhgt0"
               >
                 <label
                   class="rcx-box rcx-box--full rcx-field__label rcx-label"

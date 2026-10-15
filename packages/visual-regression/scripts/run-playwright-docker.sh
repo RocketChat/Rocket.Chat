@@ -40,7 +40,9 @@ echo "CI: ${CI:-false}"
 echo "UPDATE_SNAPSHOTS: ${UPDATE_SNAPSHOTS}"
 echo "DOCKER_PW_IMAGE: ${DOCKER_PW_IMAGE}"
 
+# Text anti-aliasing differs between architectures, so snapshots are always rendered by the arm64 image.
 docker run --rm \
+  --platform linux/arm64 \
   --init \
   --ipc=host \
   --add-host=host.docker.internal:host-gateway \

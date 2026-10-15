@@ -1,0 +1,26 @@
+import { use, type InputEvent } from 'react';
+
+import { Input } from '../InputBox';
+import type { SelectAnchorParams } from './SelectAnchorParams';
+import { SelectFilteredContext } from './SelectFilteredContext';
+
+type SelectFilteredAnchorProps = SelectAnchorParams;
+
+function SelectFilteredAnchor({ children: _children, ...props }: SelectFilteredAnchorProps) {
+	const { placeholder, filter, setFilter } = use(SelectFilteredContext);
+
+	return (
+		<Input
+			marginInline={4}
+			flexGrow={1}
+			className='rcx-select__focus'
+			placeholder={placeholder}
+			value={filter}
+			onInput={(e: InputEvent<HTMLInputElement>) => setFilter?.(e.currentTarget.value)}
+			{...props}
+			rcx-input-box--undecorated
+		/>
+	);
+}
+
+export default SelectFilteredAnchor;

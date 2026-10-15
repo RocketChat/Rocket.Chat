@@ -33,7 +33,7 @@ exports[`renders IncomingCall without crashing 1`] = `
           Voice_call
         </div>
         <h3
-          class="rcx-box rcx-box--full rcx-css-uge1yt"
+          class="rcx-box rcx-box--full rcx-css-1hearsm"
           id="rcx-media-call-widget-title"
         >
           Incoming call...
@@ -82,7 +82,7 @@ exports[`renders IncomingCall without crashing 1`] = `
             class="rcx-box rcx-box--full rcx-css-jgzlgu"
           >
             <div
-              class="rcx-box rcx-box--full rcx-css-q52znk"
+              class="rcx-box rcx-box--full rcx-css-600jdv"
             >
               <span
                 class="rcx-box rcx-box--full rcx-css-ilfe77"
@@ -107,7 +107,7 @@ exports[`renders IncomingCall without crashing 1`] = `
               </span>
             </div>
             <div
-              class="rcx-box rcx-box--full rcx-css-1c2tjdu"
+              class="rcx-box rcx-box--full rcx-css-65h4yi"
             >
               1234567890
             </div>
@@ -199,7 +199,7 @@ exports[`renders IncomingCallConnecting without crashing 1`] = `
           Voice_call
         </div>
         <h3
-          class="rcx-box rcx-box--full rcx-css-uge1yt"
+          class="rcx-box rcx-box--full rcx-css-1hearsm"
           id="rcx-media-call-widget-title"
         >
           Connecting...
@@ -248,7 +248,7 @@ exports[`renders IncomingCallConnecting without crashing 1`] = `
             class="rcx-box rcx-box--full rcx-css-jgzlgu"
           >
             <div
-              class="rcx-box rcx-box--full rcx-css-q52znk"
+              class="rcx-box rcx-box--full rcx-css-600jdv"
             >
               <span
                 class="rcx-box rcx-box--full rcx-css-ilfe77"
@@ -273,7 +273,7 @@ exports[`renders IncomingCallConnecting without crashing 1`] = `
               </span>
             </div>
             <div
-              class="rcx-box rcx-box--full rcx-css-1c2tjdu"
+              class="rcx-box rcx-box--full rcx-css-65h4yi"
             >
               1234567890
             </div>
@@ -348,7 +348,7 @@ exports[`renders IncomingCallTransfer without crashing 1`] = `
           Voice_call
         </div>
         <h3
-          class="rcx-box rcx-box--full rcx-css-uge1yt"
+          class="rcx-box rcx-box--full rcx-css-1hearsm"
           id="rcx-media-call-widget-title"
         >
           Incoming call transfer...
@@ -377,7 +377,7 @@ exports[`renders IncomingCallTransfer without crashing 1`] = `
         class="rcx-box rcx-box--full rcx-css-1k2ffyh"
       >
         <span
-          class="rcx-box rcx-box--full rcx-css-1gd28qh"
+          class="rcx-box rcx-box--full rcx-css-q4zl0"
         >
            
           From Jason
@@ -407,7 +407,7 @@ exports[`renders IncomingCallTransfer without crashing 1`] = `
             class="rcx-box rcx-box--full rcx-css-jgzlgu"
           >
             <div
-              class="rcx-box rcx-box--full rcx-css-q52znk"
+              class="rcx-box rcx-box--full rcx-css-600jdv"
             >
               <span
                 class="rcx-box rcx-box--full rcx-css-ilfe77"
@@ -432,7 +432,7 @@ exports[`renders IncomingCallTransfer without crashing 1`] = `
               </span>
             </div>
             <div
-              class="rcx-box rcx-box--full rcx-css-1c2tjdu"
+              class="rcx-box rcx-box--full rcx-css-65h4yi"
             >
               1234567890
             </div>
@@ -524,7 +524,7 @@ exports[`renders IncomingCallTransferConnecting without crashing 1`] = `
           Voice_call
         </div>
         <h3
-          class="rcx-box rcx-box--full rcx-css-uge1yt"
+          class="rcx-box rcx-box--full rcx-css-1hearsm"
           id="rcx-media-call-widget-title"
         >
           Connecting...
@@ -553,7 +553,7 @@ exports[`renders IncomingCallTransferConnecting without crashing 1`] = `
         class="rcx-box rcx-box--full rcx-css-1k2ffyh"
       >
         <span
-          class="rcx-box rcx-box--full rcx-css-1gd28qh"
+          class="rcx-box rcx-box--full rcx-css-q4zl0"
         >
            
           From Jason
@@ -583,7 +583,7 @@ exports[`renders IncomingCallTransferConnecting without crashing 1`] = `
             class="rcx-box rcx-box--full rcx-css-jgzlgu"
           >
             <div
-              class="rcx-box rcx-box--full rcx-css-q52znk"
+              class="rcx-box rcx-box--full rcx-css-600jdv"
             >
               <span
                 class="rcx-box rcx-box--full rcx-css-ilfe77"
@@ -608,7 +608,7 @@ exports[`renders IncomingCallTransferConnecting without crashing 1`] = `
               </span>
             </div>
             <div
-              class="rcx-box rcx-box--full rcx-css-1c2tjdu"
+              class="rcx-box rcx-box--full rcx-css-65h4yi"
             >
               1234567890
             </div>
@@ -710,7 +710,7 @@ exports[`renders NewCall without crashing 1`] = `
           Voice_call
         </div>
         <h3
-          class="rcx-box rcx-box--full rcx-css-uge1yt"
+          class="rcx-box rcx-box--full rcx-css-1hearsm"
           id="rcx-media-call-widget-title"
         >
           New_call
@@ -753,7 +753,7 @@ exports[`renders NewCall without crashing 1`] = `
                 <input
                   aria-invalid="false"
                   aria-labelledby="_r_0_"
-                  class="rcx-box rcx-box--full rcx-box--animated rcx-input-box--undecorated rcx-input-box rcx-css-trljwa rcx-css-rcil7k"
+                  class="rcx-box rcx-box--full rcx-box--animated rcx-input-box--undecorated rcx-input-box rcx-css-i9v8z4 rcx-css-rcil7k"
                   value=""
                 />
               </div>
@@ -800,7 +800,7 @@ exports[`renders NewCall without crashing 1`] = `
               class="rcx-box rcx-box--full rcx-css-jgzlgu"
             >
               <div
-                class="rcx-box rcx-box--full rcx-css-q52znk"
+                class="rcx-box rcx-box--full rcx-css-600jdv"
               >
                 <span
                   class="rcx-box rcx-box--full rcx-css-ilfe77"
@@ -825,7 +825,7 @@ exports[`renders NewCall without crashing 1`] = `
                 </span>
               </div>
               <div
-                class="rcx-box rcx-box--full rcx-css-1c2tjdu"
+                class="rcx-box rcx-box--full rcx-css-65h4yi"
               >
                 1234567890
               </div>
@@ -915,12 +915,12 @@ exports[`renders OngoingCall without crashing 1`] = `
           Voice_call
         </div>
         <h3
-          class="rcx-box rcx-box--full rcx-css-uge1yt"
+          class="rcx-box rcx-box--full rcx-css-1hearsm"
           id="rcx-media-call-widget-title"
         >
           <time
             aria-live="off"
-            class="rcx-box rcx-box--full rcx-css-2eyztw"
+            class="rcx-box rcx-box--full rcx-css-9dprfc"
             datetime="PT0H0M0S"
             role="timer"
           >
@@ -990,7 +990,7 @@ exports[`renders OngoingCall without crashing 1`] = `
               class="rcx-box rcx-box--full rcx-css-jgzlgu"
             >
               <div
-                class="rcx-box rcx-box--full rcx-css-q52znk"
+                class="rcx-box rcx-box--full rcx-css-600jdv"
               >
                 <span
                   class="rcx-box rcx-box--full rcx-css-ilfe77"
@@ -1015,7 +1015,7 @@ exports[`renders OngoingCall without crashing 1`] = `
                 </span>
               </div>
               <div
-                class="rcx-box rcx-box--full rcx-css-1c2tjdu"
+                class="rcx-box rcx-box--full rcx-css-65h4yi"
               >
                 1234567890
               </div>
@@ -1144,7 +1144,7 @@ exports[`renders OngoingCallConnecting without crashing 1`] = `
           Voice_call
         </div>
         <h3
-          class="rcx-box rcx-box--full rcx-css-uge1yt"
+          class="rcx-box rcx-box--full rcx-css-1hearsm"
           id="rcx-media-call-widget-title"
         >
           Connecting...
@@ -1210,7 +1210,7 @@ exports[`renders OngoingCallConnecting without crashing 1`] = `
               class="rcx-box rcx-box--full rcx-css-jgzlgu"
             >
               <div
-                class="rcx-box rcx-box--full rcx-css-q52znk"
+                class="rcx-box rcx-box--full rcx-css-600jdv"
               >
                 <span
                   class="rcx-box rcx-box--full rcx-css-ilfe77"
@@ -1235,7 +1235,7 @@ exports[`renders OngoingCallConnecting without crashing 1`] = `
                 </span>
               </div>
               <div
-                class="rcx-box rcx-box--full rcx-css-1c2tjdu"
+                class="rcx-box rcx-box--full rcx-css-65h4yi"
               >
                 1234567890
               </div>
@@ -1365,12 +1365,12 @@ exports[`renders OngoingCallDisabledAllButScreenshare without crashing 1`] = `
           Voice_call
         </div>
         <h3
-          class="rcx-box rcx-box--full rcx-css-uge1yt"
+          class="rcx-box rcx-box--full rcx-css-1hearsm"
           id="rcx-media-call-widget-title"
         >
           <time
             aria-live="off"
-            class="rcx-box rcx-box--full rcx-css-2eyztw"
+            class="rcx-box rcx-box--full rcx-css-9dprfc"
             datetime="PT0H0M0S"
             role="timer"
           >
@@ -1440,7 +1440,7 @@ exports[`renders OngoingCallDisabledAllButScreenshare without crashing 1`] = `
               class="rcx-box rcx-box--full rcx-css-jgzlgu"
             >
               <div
-                class="rcx-box rcx-box--full rcx-css-q52znk"
+                class="rcx-box rcx-box--full rcx-css-600jdv"
               >
                 <span
                   class="rcx-box rcx-box--full rcx-css-ilfe77"
@@ -1465,7 +1465,7 @@ exports[`renders OngoingCallDisabledAllButScreenshare without crashing 1`] = `
                 </span>
               </div>
               <div
-                class="rcx-box rcx-box--full rcx-css-1c2tjdu"
+                class="rcx-box rcx-box--full rcx-css-65h4yi"
               >
                 1234567890
               </div>
@@ -1566,12 +1566,12 @@ exports[`renders OngoingCallDisabledAllFeatures without crashing 1`] = `
           Voice_call
         </div>
         <h3
-          class="rcx-box rcx-box--full rcx-css-uge1yt"
+          class="rcx-box rcx-box--full rcx-css-1hearsm"
           id="rcx-media-call-widget-title"
         >
           <time
             aria-live="off"
-            class="rcx-box rcx-box--full rcx-css-2eyztw"
+            class="rcx-box rcx-box--full rcx-css-9dprfc"
             datetime="PT0H0M0S"
             role="timer"
           >
@@ -1624,7 +1624,7 @@ exports[`renders OngoingCallDisabledAllFeatures without crashing 1`] = `
             class="rcx-box rcx-box--full rcx-css-jgzlgu"
           >
             <div
-              class="rcx-box rcx-box--full rcx-css-q52znk"
+              class="rcx-box rcx-box--full rcx-css-600jdv"
             >
               <span
                 class="rcx-box rcx-box--full rcx-css-ilfe77"
@@ -1649,7 +1649,7 @@ exports[`renders OngoingCallDisabledAllFeatures without crashing 1`] = `
               </span>
             </div>
             <div
-              class="rcx-box rcx-box--full rcx-css-1c2tjdu"
+              class="rcx-box rcx-box--full rcx-css-65h4yi"
             >
               1234567890
             </div>
@@ -1749,12 +1749,12 @@ exports[`renders OngoingCallNoScreenSharingPermission without crashing 1`] = `
           Voice_call
         </div>
         <h3
-          class="rcx-box rcx-box--full rcx-css-uge1yt"
+          class="rcx-box rcx-box--full rcx-css-1hearsm"
           id="rcx-media-call-widget-title"
         >
           <time
             aria-live="off"
-            class="rcx-box rcx-box--full rcx-css-2eyztw"
+            class="rcx-box rcx-box--full rcx-css-9dprfc"
             datetime="PT0H0M0S"
             role="timer"
           >
@@ -1824,7 +1824,7 @@ exports[`renders OngoingCallNoScreenSharingPermission without crashing 1`] = `
               class="rcx-box rcx-box--full rcx-css-jgzlgu"
             >
               <div
-                class="rcx-box rcx-box--full rcx-css-q52znk"
+                class="rcx-box rcx-box--full rcx-css-600jdv"
               >
                 <span
                   class="rcx-box rcx-box--full rcx-css-ilfe77"
@@ -1849,7 +1849,7 @@ exports[`renders OngoingCallNoScreenSharingPermission without crashing 1`] = `
                 </span>
               </div>
               <div
-                class="rcx-box rcx-box--full rcx-css-1c2tjdu"
+                class="rcx-box rcx-box--full rcx-css-65h4yi"
               >
                 1234567890
               </div>
@@ -1964,7 +1964,7 @@ exports[`renders OutgoingCall without crashing 1`] = `
           Voice_call
         </div>
         <h3
-          class="rcx-box rcx-box--full rcx-css-uge1yt"
+          class="rcx-box rcx-box--full rcx-css-1hearsm"
           id="rcx-media-call-widget-title"
         >
           Calling...
@@ -2013,7 +2013,7 @@ exports[`renders OutgoingCall without crashing 1`] = `
             class="rcx-box rcx-box--full rcx-css-jgzlgu"
           >
             <div
-              class="rcx-box rcx-box--full rcx-css-q52znk"
+              class="rcx-box rcx-box--full rcx-css-600jdv"
             >
               <span
                 class="rcx-box rcx-box--full rcx-css-ilfe77"
@@ -2038,7 +2038,7 @@ exports[`renders OutgoingCall without crashing 1`] = `
               </span>
             </div>
             <div
-              class="rcx-box rcx-box--full rcx-css-1c2tjdu"
+              class="rcx-box rcx-box--full rcx-css-65h4yi"
             >
               1234567890
             </div>
@@ -2113,7 +2113,7 @@ exports[`renders OutgoingCallConnecting without crashing 1`] = `
           Voice_call
         </div>
         <h3
-          class="rcx-box rcx-box--full rcx-css-uge1yt"
+          class="rcx-box rcx-box--full rcx-css-1hearsm"
           id="rcx-media-call-widget-title"
         >
           Connecting...
@@ -2162,7 +2162,7 @@ exports[`renders OutgoingCallConnecting without crashing 1`] = `
             class="rcx-box rcx-box--full rcx-css-jgzlgu"
           >
             <div
-              class="rcx-box rcx-box--full rcx-css-q52znk"
+              class="rcx-box rcx-box--full rcx-css-600jdv"
             >
               <span
                 class="rcx-box rcx-box--full rcx-css-ilfe77"
@@ -2187,7 +2187,7 @@ exports[`renders OutgoingCallConnecting without crashing 1`] = `
               </span>
             </div>
             <div
-              class="rcx-box rcx-box--full rcx-css-1c2tjdu"
+              class="rcx-box rcx-box--full rcx-css-65h4yi"
             >
               1234567890
             </div>
@@ -2262,7 +2262,7 @@ exports[`renders OutgoingCallTransfer without crashing 1`] = `
           Voice_call
         </div>
         <h3
-          class="rcx-box rcx-box--full rcx-css-uge1yt"
+          class="rcx-box rcx-box--full rcx-css-1hearsm"
           id="rcx-media-call-widget-title"
         >
           Transferring call...
@@ -2291,7 +2291,7 @@ exports[`renders OutgoingCallTransfer without crashing 1`] = `
         class="rcx-box rcx-box--full rcx-css-1k2ffyh"
       >
         <span
-          class="rcx-box rcx-box--full rcx-css-1gd28qh"
+          class="rcx-box rcx-box--full rcx-css-q4zl0"
         >
            
           Joy transferred call to
@@ -2321,7 +2321,7 @@ exports[`renders OutgoingCallTransfer without crashing 1`] = `
             class="rcx-box rcx-box--full rcx-css-jgzlgu"
           >
             <div
-              class="rcx-box rcx-box--full rcx-css-q52znk"
+              class="rcx-box rcx-box--full rcx-css-600jdv"
             >
               <span
                 class="rcx-box rcx-box--full rcx-css-ilfe77"
@@ -2346,7 +2346,7 @@ exports[`renders OutgoingCallTransfer without crashing 1`] = `
               </span>
             </div>
             <div
-              class="rcx-box rcx-box--full rcx-css-1c2tjdu"
+              class="rcx-box rcx-box--full rcx-css-65h4yi"
             >
               1234567890
             </div>
@@ -2421,7 +2421,7 @@ exports[`renders OutgoingCallTransferConnecting without crashing 1`] = `
           Voice_call
         </div>
         <h3
-          class="rcx-box rcx-box--full rcx-css-uge1yt"
+          class="rcx-box rcx-box--full rcx-css-1hearsm"
           id="rcx-media-call-widget-title"
         >
           Connecting...
@@ -2450,7 +2450,7 @@ exports[`renders OutgoingCallTransferConnecting without crashing 1`] = `
         class="rcx-box rcx-box--full rcx-css-1k2ffyh"
       >
         <span
-          class="rcx-box rcx-box--full rcx-css-1gd28qh"
+          class="rcx-box rcx-box--full rcx-css-q4zl0"
         >
            
           Joy transferred call to
@@ -2480,7 +2480,7 @@ exports[`renders OutgoingCallTransferConnecting without crashing 1`] = `
             class="rcx-box rcx-box--full rcx-css-jgzlgu"
           >
             <div
-              class="rcx-box rcx-box--full rcx-css-q52znk"
+              class="rcx-box rcx-box--full rcx-css-600jdv"
             >
               <span
                 class="rcx-box rcx-box--full rcx-css-ilfe77"
@@ -2505,7 +2505,7 @@ exports[`renders OutgoingCallTransferConnecting without crashing 1`] = `
               </span>
             </div>
             <div
-              class="rcx-box rcx-box--full rcx-css-1c2tjdu"
+              class="rcx-box rcx-box--full rcx-css-65h4yi"
             >
               1234567890
             </div>

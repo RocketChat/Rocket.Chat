@@ -20,13 +20,13 @@ exports[`CallListItem renders Declined without crashing 1`] = `
             ❲
           </i>
           <a
-            class="rcx-box rcx-box--full rcx-css-1rhzkyg rcx-css-149yika"
+            class="rcx-box rcx-box--full rcx-css-1rhzkyg rcx-css-yjbx6w"
             href="/conference/refused"
           >
             Design review
           </a>
           <div
-            class="rcx-box rcx-box--full rcx-css-7j82ur"
+            class="rcx-box rcx-box--full rcx-css-h5c8lq"
           >
             10:00 AM
           </div>
@@ -39,7 +39,7 @@ exports[`CallListItem renders Declined without crashing 1`] = `
             class="rcx-box rcx-box--full rcx-css-1319w2q"
           >
             <div
-              class="rcx-box rcx-box--full rcx-css-1p4sjp4"
+              class="rcx-box rcx-box--full rcx-css-15iirka"
             >
               3 people joined
             </div>
@@ -49,7 +49,7 @@ exports[`CallListItem renders Declined without crashing 1`] = `
             style="gap: 4px;"
           >
             <div
-              class="rcx-box rcx-box--full rcx-css-1p4sjp4"
+              class="rcx-box rcx-box--full rcx-css-15iirka"
             >
               (
               Declined
@@ -83,13 +83,13 @@ exports[`CallListItem renders Joinable without crashing 1`] = `
             ❲
           </i>
           <a
-            class="rcx-box rcx-box--full rcx-css-1rhzkyg rcx-css-149yika"
+            class="rcx-box rcx-box--full rcx-css-1rhzkyg rcx-css-yjbx6w"
             href="/conference/standup"
           >
             Daily standup
           </a>
           <div
-            class="rcx-box rcx-box--full rcx-css-7j82ur"
+            class="rcx-box rcx-box--full rcx-css-h5c8lq"
           >
             10:00 AM
           </div>
@@ -102,7 +102,7 @@ exports[`CallListItem renders Joinable without crashing 1`] = `
             class="rcx-box rcx-box--full rcx-css-1319w2q"
           >
             <div
-              class="rcx-box rcx-box--full rcx-css-1p4sjp4"
+              class="rcx-box rcx-box--full rcx-css-15iirka"
             >
               4 people joined
             </div>
@@ -152,13 +152,13 @@ exports[`CallListItem renders Joined without crashing 1`] = `
             ❲
           </i>
           <a
-            class="rcx-box rcx-box--full rcx-css-1rhzkyg rcx-css-149yika"
+            class="rcx-box rcx-box--full rcx-css-1rhzkyg rcx-css-yjbx6w"
             href="/conference/joined"
           >
             Pairing session
           </a>
           <div
-            class="rcx-box rcx-box--full rcx-css-7j82ur"
+            class="rcx-box rcx-box--full rcx-css-h5c8lq"
           >
             10:00 AM
           </div>
@@ -171,7 +171,7 @@ exports[`CallListItem renders Joined without crashing 1`] = `
             class="rcx-box rcx-box--full rcx-css-1319w2q"
           >
             <div
-              class="rcx-box rcx-box--full rcx-css-1p4sjp4"
+              class="rcx-box rcx-box--full rcx-css-15iirka"
             >
               2 people joined
             </div>
@@ -203,13 +203,13 @@ exports[`CallListItem renders Ringing without crashing 1`] = `
             ❲
           </i>
           <a
-            class="rcx-box rcx-box--full rcx-css-1rhzkyg rcx-css-149yika"
+            class="rcx-box rcx-box--full rcx-css-1rhzkyg rcx-css-yjbx6w"
             href="/conference/ringing"
           >
             Ada Lovelace
           </a>
           <div
-            class="rcx-box rcx-box--full rcx-css-7j82ur"
+            class="rcx-box rcx-box--full rcx-css-h5c8lq"
           >
             <span
               class="rcx-box rcx-box--full rcx-css-18wfy10"
@@ -227,7 +227,7 @@ exports[`CallListItem renders Ringing without crashing 1`] = `
             class="rcx-box rcx-box--full rcx-css-1319w2q"
           >
             <div
-              class="rcx-box rcx-box--full rcx-css-1p4sjp4"
+              class="rcx-box rcx-box--full rcx-css-15iirka"
             >
               1 person joined
             </div>
@@ -290,13 +290,13 @@ exports[`CallListItem renders RingingButDeclined without crashing 1`] = `
             ❲
           </i>
           <a
-            class="rcx-box rcx-box--full rcx-css-1rhzkyg rcx-css-149yika"
+            class="rcx-box rcx-box--full rcx-css-1rhzkyg rcx-css-yjbx6w"
             href="/conference/refused"
           >
             Design review
           </a>
           <div
-            class="rcx-box rcx-box--full rcx-css-7j82ur"
+            class="rcx-box rcx-box--full rcx-css-h5c8lq"
           >
             10:00 AM
           </div>
@@ -309,7 +309,7 @@ exports[`CallListItem renders RingingButDeclined without crashing 1`] = `
             class="rcx-box rcx-box--full rcx-css-1319w2q"
           >
             <div
-              class="rcx-box rcx-box--full rcx-css-1p4sjp4"
+              class="rcx-box rcx-box--full rcx-css-15iirka"
             >
               2 people joined
             </div>
@@ -319,7 +319,7 @@ exports[`CallListItem renders RingingButDeclined without crashing 1`] = `
             style="gap: 4px;"
           >
             <div
-              class="rcx-box rcx-box--full rcx-css-1p4sjp4"
+              class="rcx-box rcx-box--full rcx-css-15iirka"
             >
               (
               Declined
@@ -353,13 +353,13 @@ exports[`CallListItem renders RingingButJoined without crashing 1`] = `
             ❲
           </i>
           <a
-            class="rcx-box rcx-box--full rcx-css-1rhzkyg rcx-css-149yika"
+            class="rcx-box rcx-box--full rcx-css-1rhzkyg rcx-css-yjbx6w"
             href="/conference/answered"
           >
             Standup
           </a>
           <div
-            class="rcx-box rcx-box--full rcx-css-7j82ur"
+            class="rcx-box rcx-box--full rcx-css-h5c8lq"
           >
             10:00 AM
           </div>
@@ -372,7 +372,7 @@ exports[`CallListItem renders RingingButJoined without crashing 1`] = `
             class="rcx-box rcx-box--full rcx-css-1319w2q"
           >
             <div
-              class="rcx-box rcx-box--full rcx-css-1p4sjp4"
+              class="rcx-box rcx-box--full rcx-css-15iirka"
             >
               2 people joined
             </div>
@@ -404,13 +404,13 @@ exports[`CallListItem renders RingingNotHeardHere without crashing 1`] = `
             ❲
           </i>
           <a
-            class="rcx-box rcx-box--full rcx-css-1rhzkyg rcx-css-149yika"
+            class="rcx-box rcx-box--full rcx-css-1rhzkyg rcx-css-yjbx6w"
             href="/conference/ringing"
           >
             Ada Lovelace
           </a>
           <div
-            class="rcx-box rcx-box--full rcx-css-7j82ur"
+            class="rcx-box rcx-box--full rcx-css-h5c8lq"
           >
             <span
               class="rcx-box rcx-box--full rcx-css-18wfy10"
@@ -428,7 +428,7 @@ exports[`CallListItem renders RingingNotHeardHere without crashing 1`] = `
             class="rcx-box rcx-box--full rcx-css-1319w2q"
           >
             <div
-              class="rcx-box rcx-box--full rcx-css-1p4sjp4"
+              class="rcx-box rcx-box--full rcx-css-15iirka"
             >
               1 person joined
             </div>
@@ -478,13 +478,13 @@ exports[`CallListItem renders RingingSilenced without crashing 1`] = `
             ❲
           </i>
           <a
-            class="rcx-box rcx-box--full rcx-css-1rhzkyg rcx-css-149yika"
+            class="rcx-box rcx-box--full rcx-css-1rhzkyg rcx-css-yjbx6w"
             href="/conference/ringing"
           >
             Ada Lovelace
           </a>
           <div
-            class="rcx-box rcx-box--full rcx-css-7j82ur"
+            class="rcx-box rcx-box--full rcx-css-h5c8lq"
           >
             <span
               class="rcx-box rcx-box--full rcx-css-18wfy10"
@@ -502,7 +502,7 @@ exports[`CallListItem renders RingingSilenced without crashing 1`] = `
             class="rcx-box rcx-box--full rcx-css-1319w2q"
           >
             <div
-              class="rcx-box rcx-box--full rcx-css-1p4sjp4"
+              class="rcx-box rcx-box--full rcx-css-15iirka"
             >
               1 person joined
             </div>
@@ -559,13 +559,13 @@ exports[`CallListItem renders SinglePerson without crashing 1`] = `
             ❲
           </i>
           <a
-            class="rcx-box rcx-box--full rcx-css-1rhzkyg rcx-css-149yika"
+            class="rcx-box rcx-box--full rcx-css-1rhzkyg rcx-css-yjbx6w"
             href="/conference/alone"
           >
             Ada Lovelace
           </a>
           <div
-            class="rcx-box rcx-box--full rcx-css-7j82ur"
+            class="rcx-box rcx-box--full rcx-css-h5c8lq"
           >
             10:00 AM
           </div>
@@ -578,7 +578,7 @@ exports[`CallListItem renders SinglePerson without crashing 1`] = `
             class="rcx-box rcx-box--full rcx-css-1319w2q"
           >
             <div
-              class="rcx-box rcx-box--full rcx-css-1p4sjp4"
+              class="rcx-box rcx-box--full rcx-css-15iirka"
             >
               1 person joined
             </div>
