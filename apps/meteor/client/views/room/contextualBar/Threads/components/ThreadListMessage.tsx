@@ -1,18 +1,16 @@
 import type { IMessage } from '@rocket.chat/core-typings';
+import { css } from '@rocket.chat/css-in-js';
 import {
 	Message,
-	MessageLeftContainer,
 	MessageContainer,
 	MessageHeader,
 	MessageName,
 	MessageTimestamp,
 	MessageBody,
-	MessageContainerFixed,
 	MessageStatusIndicatorItem,
 	Box,
 } from '@rocket.chat/fuselage';
 import { MessageAvatar } from '@rocket.chat/ui-avatar';
-import { useTimeAgo } from '@rocket.chat/ui-client';
 import type { ComponentProps, ReactNode } from 'react';
 import { memo } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -20,7 +18,16 @@ import { useTranslation } from 'react-i18next';
 import ThreadListMetrics from './ThreadListMetrics';
 import Emoji from '../../../../../components/Emoji';
 import ThreadMetricsFollow from '../../../../../components/message/content/ThreadMetricsFollow';
-import ThreadMetricsUnreadBadge from '../../../../../components/message/content/ThreadMetricsUnreadBadge';
+import { useThreadListTimeAgo } from '../hooks/useThreadListTimeAgo';
+
+// MessageBody clamps to two lines at the least.
+const singleLineStyle = css`
+	display: -webkit-box;
+	overflow: hidden;
+	word-break: break-word;
+	-webkit-box-orient: vertical;
+	-webkit-line-clamp: 1;
+`;
 
 export type ThreadListMessageProps = {
 	_id: IMessage['_id'];
@@ -60,31 +67,30 @@ const ThreadListMessage = ({
 	...props
 }: ThreadListMessageProps) => {
 	const { t } = useTranslation();
-	const formatDate = useTimeAgo();
+	const formatDate = useThreadListTimeAgo();
 
 	return (
 		<Box className={className}>
-			<Box paddingBlockStart={16} is={Message} {...props}>
-				<MessageLeftContainer>
-					<MessageAvatar emoji={emoji ? <Emoji emojiHandle={emoji} fillContainer /> : undefined} username={username} size='x36' />
-				</MessageLeftContainer>
+			<Box paddingBlock={12} paddingInlineStart={12} paddingInlineEnd={8} is={Message} {...props}>
 				<MessageContainer>
 					<MessageHeader>
+						<Box flexShrink={0} marginInlineEnd={6}>
+							<MessageAvatar emoji={emoji ? <Emoji emojiHandle={emoji} fillContainer /> : undefined} username={username} size='x20' />
+						</Box>
 						<MessageName title={username}>{name}</MessageName>
-						<MessageTimestamp>{formatDate(ts)}</MessageTimestamp>
 						{hasDraft && <MessageStatusIndicatorItem name='pencil' title={t('Unfinished_thread_message')} />}
+						<Box flexGrow={1} />
+						<MessageTimestamp>{formatDate(ts)}</MessageTimestamp>
+						{/* Cancels the metrics item's own end margin, so the bell sits as close to the edge as the avatar does on the other side. */}
+						<Box flexShrink={0} marginInlineStart={4} marginInlineEnd={-4}>
+							<ThreadMetricsFollow following={following} mid={_id} rid={rid} unread={unread} mention={mention} all={all} />
+						</Box>
 					</MessageHeader>
-					<MessageBody clamp={2}>{msg}</MessageBody>
+					<MessageBody>
+						<Box className={singleLineStyle}>{msg}</Box>
+					</MessageBody>
 					<ThreadListMetrics lm={tlm} participants={participants || []} counter={replies} />
 				</MessageContainer>
-				<MessageContainerFixed>
-					<ThreadMetricsFollow following={following} mid={_id} rid={rid} mention={false} unread={false} all={false} />
-					{unread && (
-						<Box marginBlockStart={24}>
-							<ThreadMetricsUnreadBadge unread={unread} mention={mention} all={all} />
-						</Box>
-					)}
-				</MessageContainerFixed>
 			</Box>
 		</Box>
 	);

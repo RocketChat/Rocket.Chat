@@ -6,7 +6,14 @@ import { formatTimeAgo } from '../lib/dateFormat';
 
 const dayFormat = ['h:mm A', 'H:mm'] as const;
 
-export const useTimeAgo = () => {
+type TimeAgoOptions = {
+	/** The moment.js format for dates beyond the last week. */
+	dateFormat?: string;
+	/** The moment.js format for the weekday of dates within the last week, shown before the time. */
+	weekdayFormat?: string;
+};
+
+export const useTimeAgo = ({ dateFormat = 'LL', weekdayFormat = 'dddd' }: TimeAgoOptions = {}) => {
 	const { t } = useTranslation();
 	const clockMode = useUserPreference<1 | 2>('clockMode');
 	const timeFormat = useSetting('Message_TimeFormat', 'LT');
@@ -18,12 +25,12 @@ export const useTimeAgo = () => {
 				sameDayFormat: format,
 				yesterdayLabel: t('Yesterday_at'),
 				lastDayFormat: format,
-				lastWeekFormat: `dddd ${format}`,
-				otherFormat: 'LL',
-				otherYearFormat: 'LL',
+				lastWeekFormat: `${weekdayFormat} ${format}`,
+				otherFormat: dateFormat,
+				otherYearFormat: dateFormat,
 			});
 		},
-		[format, t],
+		[dateFormat, format, t, weekdayFormat],
 	);
 };
 

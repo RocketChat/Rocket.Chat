@@ -17,6 +17,7 @@ import Translate from './icons/Translate';
 
 export type RoomHeaderProps = {
 	room: IRoom;
+	divider?: boolean;
 	slots?: {
 		start?: ReactNode;
 		preContent?: ReactNode;
@@ -32,11 +33,11 @@ export type RoomHeaderProps = {
 	};
 };
 
-const RoomHeader = ({ room, slots = {} }: RoomHeaderProps) => {
+const RoomHeader = ({ room, divider, slots = {} }: RoomHeaderProps) => {
 	const { t } = useTranslation();
 
 	return (
-		<Header>
+		<Header divider={divider}>
 			{slots?.start}
 			<ParentRoom room={room} />
 			{slots?.preContent}

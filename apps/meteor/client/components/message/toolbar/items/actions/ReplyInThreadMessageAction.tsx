@@ -9,6 +9,7 @@ import {
 import { useRouter, useSetting } from '@rocket.chat/ui-contexts';
 import { useTranslation } from 'react-i18next';
 
+import { useOpenThreadOverride } from '../../../../../views/room/contexts/OpenThreadContext';
 import MessageToolbarItem from '../../MessageToolbarItem';
 
 export type ReplyInThreadMessageActionProps = {
@@ -20,6 +21,7 @@ export type ReplyInThreadMessageActionProps = {
 const ReplyInThreadMessageAction = ({ message, room, subscription }: ReplyInThreadMessageActionProps) => {
 	const router = useRouter();
 	const threadsEnabled = useSetting('Threads_enabled', true);
+	const openThread = useOpenThreadOverride();
 	const { t } = useTranslation();
 
 	if (!threadsEnabled || isOmnichannelRoom(room) || !subscription) {
@@ -39,6 +41,12 @@ const ReplyInThreadMessageAction = ({ message, room, subscription }: ReplyInThre
 			title={t('Reply_in_thread')}
 			onClick={(event) => {
 				event.stopPropagation();
+
+				if (openThread) {
+					openThread(message.tmid || message._id);
+					return;
+				}
+
 				const routeName = router.getRouteName();
 
 				if (routeName) {

@@ -16,10 +16,11 @@ export type ThreadListItemProps = {
 	unreadUser: string[];
 	unreadGroup: string[];
 	hasDraft?: boolean;
+	selected?: boolean;
 	onClick: (tmid: IThreadMainMessage['_id']) => void;
 };
 
-const ThreadListItem = ({ thread, unread, unreadUser, unreadGroup, hasDraft, onClick }: ThreadListItemProps) => {
+const ThreadListItem = ({ thread, unread, unreadUser, unreadGroup, hasDraft, selected = false, onClick }: ThreadListItemProps) => {
 	const { t } = useTranslation();
 	const uid = useUserId();
 	const decryptedMsg = useDecryptedMessage(thread);
@@ -44,13 +45,15 @@ const ThreadListItem = ({ thread, unread, unreadUser, unreadGroup, hasDraft, onC
 		<ThreadListMessage
 			className={css`
 				cursor: pointer;
+				background: ${selected ? Palette.surface['surface-selected'] : 'transparent'};
 				&:hover,
 				&:focus {
-					background: ${Palette.surface['surface-hover']};
+					background: ${selected ? Palette.surface['surface-selected'] : Palette.surface['surface-hover']};
 				}
 				border-bottom: 1px solid ${Palette.stroke['stroke-extra-light']} !important;
 			`}
 			tabIndex={0}
+			aria-current={selected || undefined}
 			_id={thread._id}
 			replies={thread.tcount ?? 0}
 			tlm={thread.tlm}
