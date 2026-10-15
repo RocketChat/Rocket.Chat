@@ -1,0 +1,22 @@
+ee/packages/xmpp-server/src/service/XMPPServerService.ts
+  s_22158ff20cd246::t_0052fa8ae74e08 51-53,56,119,123,151-152,235,275,294,309,311,330,332,351,359-371,376,386,399,404,454,480,565,784,786,788-789,889-890
+  s_22158ff20cd246::t_20f579f12ef079 403
+ee/packages/xmpp-server/docs/specs/direct-messages.md
+  s_22158ff20cd246::t_20f579f12ef079 62
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "5aca02aad11e9d65c5c5901a138b834893f972a7",
+  "prompts": {},
+  "sessions": {
+    "s_22158ff20cd246": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "e3bc8f7d-2ca9-481d-9c88-43497a3e53ec",
+        "model": "claude-opus-5-5"
+      },
+      "human_author": "Diego Sampaio <chinello@gmail.com>"
+    }
+  }
+}
