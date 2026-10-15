@@ -41,15 +41,7 @@ const SecurityLogsTable = () => {
 		settingId: '',
 	});
 
-	const {
-		paginatedQuery,
-		queryKey,
-		current,
-		itemsPerPage,
-		setItemsPerPage: onSetItemsPerPage,
-		setCurrent: onSetCurrent,
-		...paginationProps
-	} = usePagination({ query, getQueryKey: (query) => ['audit.settings', query] });
+	const { paginatedQuery, queryKey, paginationProps } = usePagination({ query, getQueryKey: (query) => ['audit.settings', query] });
 
 	const handleClearFilters = () => {
 		setSetting('');
@@ -59,7 +51,6 @@ const SecurityLogsTable = () => {
 			end: new Date().toISOString(),
 			settingId: '',
 		});
-		onSetCurrent(0);
 	};
 
 	const handleApplyFilters = () => {
@@ -69,7 +60,6 @@ const SecurityLogsTable = () => {
 			end: end?.toISOString() ?? new Date().toISOString(),
 			settingId: setting,
 		});
-		onSetCurrent(0);
 	};
 
 	const handleItemClick = ({
@@ -212,14 +202,7 @@ const SecurityLogsTable = () => {
 					</GenericTableBody>
 				</GenericTable>
 			)}
-			<Pagination
-				divider
-				current={current}
-				itemsPerPage={itemsPerPage}
-				onSetItemsPerPage={onSetItemsPerPage}
-				onSetCurrent={onSetCurrent}
-				{...paginationProps}
-			/>
+			<Pagination divider {...paginationProps} />
 		</>
 	);
 };

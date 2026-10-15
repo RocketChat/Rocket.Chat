@@ -43,15 +43,7 @@ const TagsTable = () => {
 		500,
 	);
 
-	const {
-		paginatedQuery,
-		queryKey,
-		current,
-		itemsPerPage,
-		setItemsPerPage: onSetItemsPerPage,
-		setCurrent: onSetCurrent,
-		...paginationProps
-	} = usePagination({ query, getQueryKey: (query) => ['livechat-tags', query] });
+	const { paginatedQuery, queryKey, paginationProps } = usePagination({ query, getQueryKey: (query) => ['livechat-tags', query] });
 
 	const getTags = useEndpoint('GET', '/v1/livechat/tags');
 	const { data, isSuccess, isLoading } = useQuery({
@@ -132,14 +124,7 @@ const TagsTable = () => {
 							))}
 						</GenericTableBody>
 					</GenericTable>
-					<Pagination
-						divider
-						current={current}
-						itemsPerPage={itemsPerPage}
-						onSetItemsPerPage={onSetItemsPerPage}
-						onSetCurrent={onSetCurrent}
-						{...paginationProps}
-					/>
+					<Pagination divider {...paginationProps} />
 				</>
 			)}
 		</>

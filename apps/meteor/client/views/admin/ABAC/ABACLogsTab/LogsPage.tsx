@@ -14,7 +14,7 @@ import {
 } from '@rocket.chat/ui-client';
 import { useEndpoint } from '@rocket.chat/ui-contexts';
 import { useQuery } from '@tanstack/react-query';
-import { useMemo, useEffect, useState } from 'react';
+import { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { ABACQueryKeys } from '../../../../lib/queryKeys';
@@ -37,15 +37,10 @@ const LogsPage = () => {
 		[startDate, endDate],
 	);
 
-	const { paginatedQuery, queryKey, current, itemsPerPage, setItemsPerPage, setCurrent, ...paginationProps } = usePagination({
+	const { paginatedQuery, queryKey, paginationProps } = usePagination({
 		query,
 		getQueryKey: (query) => ABACQueryKeys.logs.list(query),
 	});
-
-	// Whenever the user changes the filter or the text, reset the pagination to the first page
-	useEffect(() => {
-		setCurrent(0);
-	}, [startDate, endDate, setCurrent]);
 
 	const getActionLabel = (action?: AbacAttributeDefinitionChangeType | AbacActionPerformed | null) => {
 		switch (action) {
@@ -224,14 +219,7 @@ const LogsPage = () => {
 							})}
 						</GenericTableBody>
 					</GenericTable>
-					<Pagination
-						divider
-						current={current}
-						itemsPerPage={itemsPerPage}
-						onSetItemsPerPage={setItemsPerPage}
-						onSetCurrent={setCurrent}
-						{...paginationProps}
-					/>
+					<Pagination divider {...paginationProps} />
 				</>
 			)}
 		</>

@@ -39,15 +39,7 @@ const ChatsTable = () => {
 		500,
 	);
 
-	const {
-		paginatedQuery,
-		queryKey,
-		current,
-		itemsPerPage,
-		setItemsPerPage: onSetItemsPerPage,
-		setCurrent: onSetCurrent,
-		...paginationProps
-	} = usePagination({ query, getQueryKey: (query) => ['current-chats', query] });
+	const { paginatedQuery, paginationProps } = usePagination({ query, getQueryKey: (query) => ['current-chats', query] });
 
 	const { data, isLoading, isSuccess, isError, refetch } = useCurrentChats(paginatedQuery);
 
@@ -117,14 +109,7 @@ const ChatsTable = () => {
 							))}
 						</GenericTableBody>
 					</GenericTable>
-					<Pagination
-						divider
-						current={current}
-						itemsPerPage={itemsPerPage}
-						onSetItemsPerPage={onSetItemsPerPage}
-						onSetCurrent={onSetCurrent}
-						{...paginationProps}
-					/>
+					<Pagination divider {...paginationProps} />
 				</>
 			)}
 			{isError && (

@@ -76,15 +76,7 @@ const ChannelsTable = () => {
 
 	const getDirectoryData = useEndpoint('GET', '/v1/directory');
 	const query = useDirectoryQuery({ text }, [sortBy, sortDirection], 'channels');
-	const {
-		paginatedQuery,
-		queryKey,
-		current,
-		itemsPerPage,
-		setItemsPerPage: onSetItemsPerPage,
-		setCurrent: onSetCurrent,
-		...paginationProps
-	} = usePagination({ query, getQueryKey: (query) => ['getDirectoryData', query] });
+	const { paginatedQuery, queryKey, paginationProps } = usePagination({ query, getQueryKey: (query) => ['getDirectoryData', query] });
 	const { data, isFetched, isLoading, isError, refetch } = useQuery({
 		queryKey,
 		queryFn: () => getDirectoryData(paginatedQuery),
@@ -120,14 +112,7 @@ const ChannelsTable = () => {
 							))}
 						</GenericTableBody>
 					</GenericTable>
-					<Pagination
-						divider
-						current={current}
-						itemsPerPage={itemsPerPage}
-						onSetItemsPerPage={onSetItemsPerPage}
-						onSetCurrent={onSetCurrent}
-						{...paginationProps}
-					/>
+					<Pagination divider {...paginationProps} />
 				</>
 			)}
 			{isFetched && data?.result.length === 0 && <GenericNoResults />}

@@ -67,15 +67,7 @@ const AppLogs = ({ id }: AppLogsProps) => {
 		...(endTime && endDate && { endDate: new Date(`${endDate}T${endTime}`).toISOString() }),
 	};
 
-	const {
-		paginatedQuery,
-		queryKey,
-		current,
-		itemsPerPage,
-		setItemsPerPage: onSetItemsPerPage,
-		setCurrent: onSetCurrent,
-		...paginationProps
-	} = usePagination({ query, getQueryKey: (query) => marketplaceQueryKeys.appLogs(id, query) });
+	const { paginatedQuery, paginationProps } = usePagination({ query, getQueryKey: (query) => marketplaceQueryKeys.appLogs(id, query) });
 
 	const [expandedStates, dispatch] = useReducer(expandedReducer, []);
 
@@ -134,14 +126,7 @@ const AppLogs = ({ id }: AppLogsProps) => {
 					</CollapsiblePanel>
 				</CustomScrollbars>
 			)}
-			<Pagination
-				divider
-				current={current}
-				itemsPerPage={itemsPerPage}
-				onSetItemsPerPage={onSetItemsPerPage}
-				onSetCurrent={onSetCurrent}
-				{...paginationProps}
-			/>
+			<Pagination divider {...paginationProps} />
 		</>
 	);
 };

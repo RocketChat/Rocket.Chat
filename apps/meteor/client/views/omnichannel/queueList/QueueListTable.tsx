@@ -84,15 +84,7 @@ const QueueListTable = () => {
 		return query;
 	}, [sortBy, sortDirection, filters.status, filters.departmentId, filters.servedBy]);
 
-	const {
-		paginatedQuery,
-		queryKey,
-		current,
-		itemsPerPage,
-		setItemsPerPage: onSetItemsPerPage,
-		setCurrent: onSetCurrent,
-		...paginationProps
-	} = usePagination({ query, getQueryKey: (query) => ['livechat-queue', query] });
+	const { paginatedQuery, queryKey, paginationProps } = usePagination({ query, getQueryKey: (query) => ['livechat-queue', query] });
 
 	const getUserStatus = (status?: string) => {
 		if (!status) {
@@ -153,14 +145,7 @@ const QueueListTable = () => {
 							))}
 						</GenericTableBody>
 					</GenericTable>
-					<Pagination
-						divider
-						current={current}
-						itemsPerPage={itemsPerPage}
-						onSetItemsPerPage={onSetItemsPerPage}
-						onSetCurrent={onSetCurrent}
-						{...paginationProps}
-					/>
+					<Pagination divider {...paginationProps} />
 				</>
 			)}
 		</>

@@ -4,19 +4,34 @@ import { act, renderHook, waitFor } from '@testing-library/react';
 
 import { usePagination } from './usePagination';
 
-it('should step by the count the server returns when it is lower than requested', async () => {
-	const { result } = renderHook(
-		() => {
-			const pagination = usePagination({ query: {}, getQueryKey: (query) => ['items', query] });
+const renderPagination = (initialQuery: { text: string }) =>
+	renderHook(
+		({ query }) => {
+			const pagination = usePagination({ query, getQueryKey: (query) => ['items', query] });
 			useQuery({ queryKey: pagination.queryKey, queryFn: async () => ({ count: 10, total: 50 }) });
 			return pagination;
 		},
-		{ wrapper: mockAppRoot().build() },
+		{ wrapper: mockAppRoot().build(), initialProps: { query: initialQuery } },
 	);
 
-	await waitFor(() => expect(result.current.count / result.current.itemsPerPage).toBe(5));
+it('should step by the count the server returns when it is lower than requested', async () => {
+	const { result } = renderPagination({ text: '' });
 
-	act(() => result.current.setCurrent(result.current.itemsPerPage));
+	await waitFor(() => expect(result.current.pageCount).toBe(5));
 
-	expect(result.current.paginatedQuery).toEqual({ offset: 10, count: 10 });
+	act(() => result.current.setPage(2));
+
+	expect(result.current.paginatedQuery).toEqual({ text: '', offset: 10, count: 10 });
+});
+
+it('should go back to the first page when the query changes', async () => {
+	const { result, rerender } = renderPagination({ text: '' });
+
+	await waitFor(() => expect(result.current.pageCount).toBe(5));
+
+	act(() => result.current.setPage(3));
+	rerender({ query: { text: 'filter' } });
+
+	expect(result.current.page).toBe(1);
+	expect(result.current.paginatedQuery.offset).toBe(0);
 });

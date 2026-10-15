@@ -40,15 +40,7 @@ const CustomSoundsTable = ({ reload, onClick }: CustomSoundsTableProps) => {
 		500,
 	);
 
-	const {
-		paginatedQuery,
-		queryKey,
-		current,
-		itemsPerPage,
-		setItemsPerPage: onSetItemsPerPage,
-		setCurrent: onSetCurrent,
-		...paginationProps
-	} = usePagination({ query, getQueryKey: (query) => ['custom-sounds', query] });
+	const { paginatedQuery, queryKey, paginationProps } = usePagination({ query, getQueryKey: (query) => ['custom-sounds', query] });
 
 	const getSounds = useEndpoint('GET', '/v1/custom-sounds.list');
 	const { data, refetch, isLoading, isError, isSuccess } = useQuery({
@@ -93,14 +85,7 @@ const CustomSoundsTable = ({ reload, onClick }: CustomSoundsTableProps) => {
 							))}
 						</GenericTableBody>
 					</GenericTable>
-					<Pagination
-						divider
-						current={current}
-						itemsPerPage={itemsPerPage}
-						onSetItemsPerPage={onSetItemsPerPage}
-						onSetCurrent={onSetCurrent}
-						{...paginationProps}
-					/>
+					<Pagination divider {...paginationProps} />
 				</>
 			)}
 			{isSuccess && data?.sounds.length === 0 && <GenericNoResults />}

@@ -93,7 +93,7 @@ const CallHistoryPage = () => {
 		...(debouncedSearchText && { filter: debouncedSearchText }),
 	};
 
-	const { paginatedQuery, queryKey, setItemsPerPage, setCurrent, ...paginationProps } = usePagination({
+	const { paginatedQuery, queryKey, paginationProps } = usePagination({
 		query,
 		getQueryKey: (query) => ['call-history', 'list', query],
 	});
@@ -156,7 +156,7 @@ const CallHistoryPage = () => {
 		return null;
 	})();
 
-	const pagination = <Pagination divider onSetItemsPerPage={setItemsPerPage} onSetCurrent={setCurrent} {...paginationProps} />;
+	const pagination = <Pagination divider {...paginationProps} />;
 
 	if (isPending) {
 		return (

@@ -12,7 +12,7 @@ import {
 } from '@rocket.chat/ui-client';
 import { useEndpoint, useRouter, useSearchParameter } from '@rocket.chat/ui-contexts';
 import { useQuery } from '@tanstack/react-query';
-import { useMemo, useState, useEffect } from 'react';
+import { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import RoomMenu from './RoomMenu';
@@ -53,15 +53,10 @@ const RoomsPage = () => {
 		[debouncedText, filterType],
 	);
 
-	const { paginatedQuery, queryKey, current, itemsPerPage, setItemsPerPage, setCurrent, ...paginationProps } = usePagination({
+	const { paginatedQuery, queryKey, paginationProps } = usePagination({
 		query,
 		getQueryKey: (query) => ABACQueryKeys.rooms.list(query),
 	});
-
-	// Whenever the user changes the filter or the text, reset the pagination to the first page
-	useEffect(() => {
-		setCurrent(0);
-	}, [debouncedText, filterType, setCurrent]);
 
 	const { data, isLoading } = useQuery({
 		queryKey,
@@ -140,14 +135,7 @@ const RoomsPage = () => {
 							))}
 						</GenericTableBody>
 					</GenericTable>
-					<Pagination
-						divider
-						current={current}
-						itemsPerPage={itemsPerPage}
-						onSetItemsPerPage={setItemsPerPage}
-						onSetCurrent={setCurrent}
-						{...paginationProps}
-					/>
+					<Pagination divider {...paginationProps} />
 				</>
 			)}
 		</>

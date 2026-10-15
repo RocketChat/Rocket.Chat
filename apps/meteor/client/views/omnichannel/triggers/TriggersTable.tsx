@@ -25,7 +25,7 @@ const TriggersTable = () => {
 		router.navigate('/omnichannel/triggers/new');
 	});
 
-	const { paginatedQuery, queryKey, current, itemsPerPage, setItemsPerPage, setCurrent, ...paginationProps } = usePagination({
+	const { paginatedQuery, queryKey, paginationProps } = usePagination({
 		query: {},
 		getQueryKey: (query) => ['livechat-triggers', query],
 	});
@@ -82,14 +82,7 @@ const TriggersTable = () => {
 							))}
 						</GenericTableBody>
 					</GenericTable>
-					<Pagination
-						divider
-						current={current}
-						itemsPerPage={itemsPerPage}
-						onSetItemsPerPage={setItemsPerPage}
-						onSetCurrent={setCurrent}
-						{...paginationProps}
-					/>
+					<Pagination divider {...paginationProps} />
 				</>
 			)}
 			{isError && <GenericError buttonAction={refetch} />}

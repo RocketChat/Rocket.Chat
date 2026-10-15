@@ -30,15 +30,10 @@ const BusinessHoursTable = () => {
 		500,
 	);
 
-	const {
-		paginatedQuery,
-		queryKey,
-		current,
-		itemsPerPage,
-		setItemsPerPage: onSetItemsPerPage,
-		setCurrent: onSetCurrent,
-		...paginationProps
-	} = usePagination({ query, getQueryKey: (query) => ['livechat-getBusinessHours', query] });
+	const { paginatedQuery, queryKey, paginationProps } = usePagination({
+		query,
+		getQueryKey: (query) => ['livechat-getBusinessHours', query],
+	});
 
 	const getBusinessHours = useEndpoint('GET', '/v1/livechat/business-hours');
 	const { data, isLoading, isSuccess, isError, refetch } = useQuery({
@@ -81,14 +76,7 @@ const BusinessHoursTable = () => {
 							))}
 						</GenericTableBody>
 					</GenericTable>
-					<Pagination
-						divider
-						current={current}
-						itemsPerPage={itemsPerPage}
-						onSetItemsPerPage={onSetItemsPerPage}
-						onSetCurrent={onSetCurrent}
-						{...paginationProps}
-					/>
+					<Pagination divider {...paginationProps} />
 				</>
 			)}
 			{isError && (

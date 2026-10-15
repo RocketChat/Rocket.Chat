@@ -74,15 +74,7 @@ const UsersTable = ({ workspace = 'local' }: UsersTableProps) => {
 	);
 
 	const query = useDirectoryQuery({ text }, [sortBy, sortDirection], 'users', workspace);
-	const {
-		paginatedQuery,
-		queryKey,
-		current,
-		itemsPerPage,
-		setItemsPerPage: onSetItemsPerPage,
-		setCurrent: onSetCurrent,
-		...paginationProps
-	} = usePagination({ query, getQueryKey: (query) => ['getDirectoryData', query] });
+	const { paginatedQuery, queryKey, paginationProps } = usePagination({ query, getQueryKey: (query) => ['getDirectoryData', query] });
 	const getDirectoryData = useEndpoint('GET', '/v1/directory');
 
 	const { data, isFetched, isLoading, isError, refetch } = useQuery({
@@ -128,14 +120,7 @@ const UsersTable = ({ workspace = 'local' }: UsersTableProps) => {
 							))}
 						</GenericTableBody>
 					</GenericTable>
-					<Pagination
-						divider
-						current={current}
-						itemsPerPage={itemsPerPage}
-						onSetItemsPerPage={onSetItemsPerPage}
-						onSetCurrent={onSetCurrent}
-						{...paginationProps}
-					/>
+					<Pagination divider {...paginationProps} />
 				</>
 			)}
 			{isFetched && data?.result.length === 0 && <GenericNoResults />}
