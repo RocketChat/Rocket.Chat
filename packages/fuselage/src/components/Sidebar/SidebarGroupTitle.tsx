@@ -1,6 +1,8 @@
 import type { AriaAttributes, HTMLAttributes, ReactNode } from 'react';
 
+import { cx } from '../../helpers/composeClassNames';
 import { Chevron } from '../Chevron';
+import { ItemGroupHeader, ItemGroupTitle } from '../Item';
 
 export type SidebarGroupTitleProps = {
 	expanded?: boolean;
@@ -12,29 +14,41 @@ export type SidebarGroupTitleProps = {
 	barProps?: AriaAttributes;
 } & HTMLAttributes<HTMLDivElement>;
 
-export const SidebarGroupTitle = ({ title, titleId, badge, menu, barProps, expanded, empty, role, ...props }: SidebarGroupTitleProps) => (
-	<div
-		className={[
-			'rcx-box rcx-box--full',
+/**
+ * The header of a sidebar group. It renders an `ItemGroupHeader`, so its menu reveals on hover like a row's.
+ */
+export const SidebarGroupTitle = ({
+	title,
+	titleId,
+	badge,
+	menu,
+	barProps,
+	expanded,
+	empty,
+	role,
+	className,
+	...props
+}: SidebarGroupTitleProps) => (
+	<ItemGroupHeader
+		{...(props as Omit<HTMLAttributes<HTMLDivElement>, 'is'>)}
+		className={cx(
 			'rcx-sidebar-collapse-group__bar',
 			!expanded && empty && 'rcx-sidebar-collapse-group__bar--empty',
-			!expanded && badge && 'rcx-sidebar-collapse-group__bar--unread',
-		]
-			.filter(Boolean)
-			.join(' ')}
-		{...props}
+			!expanded && !!badge && 'rcx-sidebar-collapse-group__bar--unread',
+			className,
+		)}
 	>
-		<div className='rcx-box rcx-sidebar-collapse-group__bar-button' role={role} {...barProps}>
-			<div className='rcx-box rcx-sidebar-collapse-group__heading'>
+		<ItemGroupTitle role={role} {...barProps} className='rcx-sidebar-collapse-group__bar-button'>
+			<div className='rcx-sidebar-collapse-group__heading'>
 				{title && (
-					<h4 className='rcx-box rcx-box--full rcx-sidebar-collapse-group__title' id={titleId}>
+					<h4 className='rcx-sidebar-collapse-group__title' id={titleId}>
 						{title}
 					</h4>
 				)}
 				{expanded !== undefined && <Chevron size='x20' right={!expanded} />}
 			</div>
 			{!expanded && badge && badge}
-		</div>
+		</ItemGroupTitle>
 		{menu}
-	</div>
+	</ItemGroupHeader>
 );
