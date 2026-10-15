@@ -1,23 +1,22 @@
 import type { AllHTMLAttributes, ElementType } from 'react';
 
+import { cx } from '../../../helpers/composeClassNames';
+import { Item } from '../../Item';
+
 export type SidebarItemProps = {
 	selected?: boolean;
 	level?: number;
 	is?: ElementType;
 } & AllHTMLAttributes<HTMLAnchorElement>;
 
-export const SidebarItem = ({ selected, level = 1, className, children, is: Tag = 'a', ...props }: SidebarItemProps) => (
-	<Tag
-		className={[
-			'rcx-box rcx-box--full rcx-sidebar-item',
-			selected && 'rcx-sidebar-item--selected',
-			level && `rcx-sidebar-item--level-${level}`,
-			className,
-		]
-			.filter(Boolean)
-			.join(' ')}
+/**
+ * A sidebar row. It renders an `Item`, so its content can also be composed from `Item` parts.
+ */
+export const SidebarItem = ({ selected, level = 1, className, is = 'a', ...props }: SidebarItemProps) => (
+	<Item
 		{...props}
-	>
-		{children}
-	</Tag>
+		is={is}
+		selected={selected}
+		className={cx('rcx-sidebar-item', !!selected && 'rcx-sidebar-item--selected', !!level && `rcx-sidebar-item--level-${level}`, className)}
+	/>
 );
