@@ -115,7 +115,11 @@ describe('SearchAnswerPanel', () => {
 		expect(readMore).toHaveAttribute('aria-expanded', 'false');
 
 		await user.click(readMore);
-		expect(screen.getByRole('button', { name: 'Read less' })).toHaveAttribute('aria-expanded', 'true');
+		const readLess = screen.getByRole('button', { name: 'Read less' });
+		expect(readLess).toHaveAttribute('aria-expanded', 'true');
+
+		await user.click(readLess);
+		expect(screen.getByRole('button', { name: 'Read more' })).toHaveAttribute('aria-expanded', 'false');
 	});
 
 	it('tells admins why the provider failed', () => {

@@ -17,6 +17,7 @@ import {
 import type { AISearchResult } from '@rocket.chat/rest-typings';
 import { MessageAvatar } from '@rocket.chat/ui-avatar';
 import type { ComponentProps, ReactElement } from 'react';
+import { useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import MarkdownText from '../../components/MarkdownText';
@@ -72,6 +73,7 @@ const SearchSourceResult = ({ item }: SearchSourceResultProps): ReactElement => 
 	const { t } = useTranslation();
 	const roomLabel = item.room?.fname || item.room?.name;
 	const href = getMessageHref(item);
+	const messageLinkRef = useRef<HTMLAnchorElement>(null);
 	const username = item.u?.username || item.u?.name || t('Unknown_User');
 	const displayName = item.u?.name || username;
 	const messageTime = formatMessageTime(item.ts);
@@ -122,7 +124,7 @@ const SearchSourceResult = ({ item }: SearchSourceResultProps): ReactElement => 
 				</MessageContainer>
 				{typeof relevanceScore === 'number' && (
 					<MessageContainerFixed>
-						<Box position='relative' zIndex={1}>
+						<Box position='relative' zIndex={1} onClick={() => messageLinkRef.current?.click()}>
 							<MessageRole title={t('Semantic_match_score')}>{relevanceScore}%</MessageRole>
 						</Box>
 					</MessageContainerFixed>
@@ -131,6 +133,7 @@ const SearchSourceResult = ({ item }: SearchSourceResultProps): ReactElement => 
 			{href && (
 				<Box
 					is='a'
+					ref={messageLinkRef}
 					href={href}
 					aria-label={t('Jump_to_message')}
 					position='absolute'

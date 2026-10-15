@@ -60,7 +60,7 @@ const SearchAnswerPanel = ({
 				<Skeleton width='72%' />
 			</Box>
 		);
-	} else if (error && !isLoading) {
+	} else if (error && !isLoading && !disabled) {
 		content = (
 			<Box display='flex' flexDirection='column' alignItems='flex-start' gap={12}>
 				<Box color='danger' fontScale='p2'>

@@ -1,6 +1,6 @@
 import { AI_LICENSE_MODULE, MAX_SEARCH_ANSWER_MESSAGES } from '@rocket.chat/ai-search';
 import { Box, Button, Callout } from '@rocket.chat/fuselage';
-import { Page, PageScrollableContentWithShadow, useFeaturePreview } from '@rocket.chat/ui-client';
+import { Page, PageScrollableContentWithShadow, useDocumentTitle, useFeaturePreview } from '@rocket.chat/ui-client';
 import { useSearchParameter, useSetting } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
 import { useMemo } from 'react';
@@ -16,6 +16,7 @@ import { useHasLicenseModule } from '../../hooks/useHasLicenseModule';
 
 const SearchPage = (): ReactElement => {
 	const { t } = useTranslation();
+	useDocumentTitle(t('Intelligent_Search'));
 	const queryParam = useSearchParameter('q') ?? '';
 	const aiSearchFeatureEnabled = useFeaturePreview('aiSearch');
 	const intelligentSearchEnabled = useSetting('AI_Intelligent_Search_Enabled', false);
