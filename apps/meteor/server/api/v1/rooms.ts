@@ -12,7 +12,7 @@ import {
 	type UserStatus,
 } from '@rocket.chat/core-typings';
 import { Messages, Rooms, Subscriptions, Uploads, Users } from '@rocket.chat/models';
-import type { Notifications } from '@rocket.chat/rest-typings';
+import type { Notifications, RoomAvailableForTeams } from '@rocket.chat/rest-typings';
 import {
 	ajv,
 	ajvQuery,
@@ -920,7 +920,7 @@ API.v1.get(
 		authRequired: true,
 		query: isRoomsAutocompleteAvailableForTeamsProps,
 		response: {
-			200: ajv.compile<{ items: IRoom[] }>({
+			200: ajv.compile<{ items: RoomAvailableForTeams[] }>({
 				type: 'object',
 				properties: {
 					items: { type: 'array', items: { type: 'object' } }, // relaxed: IRoom autocomplete subset
