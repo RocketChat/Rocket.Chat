@@ -54,7 +54,7 @@ $option-color-variant-primary: theme('option-color-variant-primary', colors.stat
 		align-items: flex-start;
 	}
 
-	&__title {
+	&__title:not(.rcx-item-group-header) {
 		@include use-font-scale(c2);
 
 		padding-block: lengths.padding(8) lengths.padding(4);
@@ -81,7 +81,7 @@ $option-color-variant-primary: theme('option-color-variant-primary', colors.stat
 		white-space: nowrap;
 	}
 
-	&__header {
+	&__header:not(.rcx-item-group-header) {
 		@include use-font-scale(micro);
 
 		padding-block: lengths.padding(8);
