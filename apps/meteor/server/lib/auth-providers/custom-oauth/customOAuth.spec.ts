@@ -116,10 +116,8 @@ function setup() {
 		jest.doMock('../../premiumAuthDeprecation', () => ({ warnUnlicensedAuthService: warnUnlicensed }));
 		jest.doMock('../../users/saveUserIdentity', () => ({ saveUserIdentity: saveIdentity }));
 		// Each test gets fresh service registrations and exactly one Accounts wrapper.
-		// eslint-disable-next-line @typescript-eslint/no-require-imports
-		Strategy = require('./customOAuth').CustomOAuthStrategy;
-		// eslint-disable-next-line @typescript-eslint/no-require-imports
-		oauth = require('oauth').OAuth2;
+		Strategy = jest.requireActual<typeof import('./customOAuth')>('./customOAuth').CustomOAuthStrategy;
+		oauth = jest.requireActual<typeof import('oauth')>('oauth').OAuth2;
 	});
 
 	return {
@@ -746,7 +744,7 @@ describe('CustomOAuthStrategy', () => {
 			strategy.userProfile('token', done);
 			expect(done).toHaveBeenCalledTimes(1);
 			expect(get).toHaveBeenCalledWith(strategy.identityPath, 'token', expect.any(Function));
-			expect(done.mock.calls[0][0]).toBeTruthy();
+			expect(done).toHaveBeenCalledWith(JSON.stringify(error));
 			expect(done.mock.calls[0][1]).toBeUndefined();
 			expect(normalize).not.toHaveBeenCalled();
 		});
