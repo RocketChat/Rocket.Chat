@@ -81,6 +81,8 @@ export class AbacService extends ServiceClass implements IAbacService {
 
 	private attributeStoreSetting?: AbacAttributeStoreType;
 
+	private restrictToOwnedAttributes = false;
+
 	private readonly attributeStores: Record<AbacAttributeStoreType, AttributeStoreDescriptor> = {
 		local: { store: new LocalAttributeStore(), isEligible: () => true },
 		virtru: {
@@ -135,6 +137,10 @@ export class AbacService extends ServiceClass implements IAbacService {
 			if (prevSetting !== undefined) {
 				await this.fireEffectiveStoreTransitionIfChanged(prevEffective);
 			}
+		});
+
+		this.onSettingChanged('ABAC_Restrict_To_Owned_Attributes', async ({ setting }): Promise<void> => {
+			this.restrictToOwnedAttributes = setting.value as boolean;
 		});
 
 		this.onSettingChanged('Abac_Cache_Decision_Time_Seconds', async ({ setting }): Promise<void> => {
@@ -280,15 +286,17 @@ export class AbacService extends ServiceClass implements IAbacService {
 	override async started(): Promise<void> {
 		this.decisionCacheTimeout = await Settings.get<number>('Abac_Cache_Decision_Time_Seconds');
 
-		const [abacEnabled, pdpType, attributeStore] = await Promise.all([
+		const [abacEnabled, pdpType, attributeStore, restrictToOwnedAttributes] = await Promise.all([
 			Settings.get<boolean>('ABAC_Enabled'),
 			Settings.get<string>('ABAC_PDP_Type'),
 			Settings.get<string>('ABAC_Attribute_Store'),
+			Settings.get<boolean>('ABAC_Restrict_To_Owned_Attributes'),
 		]);
 
 		this.abacEnabled = abacEnabled;
 		this.pdpTypeSetting = isAbacPdpType(pdpType) ? pdpType : undefined;
 		this.attributeStoreSetting = isAbacAttributeStoreType(attributeStore) ? attributeStore : undefined;
+		this.restrictToOwnedAttributes = restrictToOwnedAttributes;
 
 		if (pdpType !== 'virtru') {
 			this.setPdpStrategy('local');
@@ -632,7 +640,7 @@ export class AbacService extends ServiceClass implements IAbacService {
 		actor: AbacActor,
 		store: IAttributeStore,
 	): Promise<void> {
-		if (!(await Settings.get<boolean>('ABAC_Restrict_To_Owned_Attributes'))) {
+		if (!this.restrictToOwnedAttributes) {
 			return;
 		}
 
@@ -662,7 +670,7 @@ export class AbacService extends ServiceClass implements IAbacService {
 		}));
 		if (
 			this.pdpType !== 'local' ||
-			!(await Settings.get<boolean>('ABAC_Restrict_To_Owned_Attributes')) ||
+			!this.restrictToOwnedAttributes ||
 			(await Authorization.hasPermission(actor._id, 'bypass-abac-store-validation'))
 		) {
 			return sortByKey(definitions);
