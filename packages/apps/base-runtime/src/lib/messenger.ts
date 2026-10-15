@@ -95,7 +95,9 @@ export async function errorResponse(
 	let responseData = data;
 
 	if (logger?.hasEntries()) {
-		if (typeof data === 'object' && data !== null && !Array.isArray(data)) {
+		if (data instanceof Error || Array.isArray(data)) {
+			responseData = { value: data, logs: logger.getLogs() };
+		} else if (typeof data === 'object' && data !== null) {
 			responseData = { ...data, logs: logger.getLogs() };
 		} else if (typeof data !== 'undefined') {
 			responseData = { value: data, logs: logger.getLogs() };

@@ -175,6 +175,7 @@ describe('Messenger', () => {
 		const [responseArgument] = theSpy.mock.calls[0].arguments;
 		const resp = responseArgument as any;
 
+		assert.strictEqual(resp.error.data.value, null);
 		assert.strictEqual(resp.error.data.logs.appId, 'test');
 
 		theSpy.mock.restore();
@@ -194,6 +195,28 @@ describe('Messenger', () => {
 		const resp = responseArgument as any;
 
 		assert.deepStrictEqual(resp.error.data.value, ['err1', 'err2']);
+		assert.strictEqual(resp.error.data.logs.appId, 'test');
+
+		theSpy.mock.restore();
+	});
+
+	it('should preserve Error instances as value alongside logs without dropping message or stack', async () => {
+		const theSpy = mock.method(Messenger.ipcChannel, 'send', () => Promise.resolve());
+		const { logger } = context.context;
+		logger.info('test');
+
+		const errorInstance = new Error('custom error message');
+		errorInstance.cause = new Error('inner cause');
+		await Messenger.errorResponse({ id: 'test', error: { code: -32000, message: 'test', data: errorInstance } }, context);
+
+		assert.strictEqual(theSpy.mock.calls.length, 1);
+
+		const [responseArgument] = theSpy.mock.calls[0].arguments;
+		const resp = responseArgument as any;
+
+		assert.strictEqual(resp.error.data.value, errorInstance);
+		assert.strictEqual(resp.error.data.value.message, 'custom error message');
+		assert.strictEqual((resp.error.data.value.cause as Error).message, 'inner cause');
 		assert.strictEqual(resp.error.data.logs.appId, 'test');
 
 		theSpy.mock.restore();
