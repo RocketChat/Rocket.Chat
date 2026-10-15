@@ -106,11 +106,6 @@ const SearchPage = (): ReactElement => {
 							onRetry={() => void answerResult.refetch()}
 						/>
 					)}
-					{!debouncedQuery && (
-						<Box display='flex' justifyContent='center' color='hint' padding={24}>
-							{t('Intelligent_Search_start_from_top_bar')}
-						</Box>
-					)}
 					{isLoading && (
 						<Box display='flex' justifyContent='center' color='hint' padding={24}>
 							{t('Loading')}

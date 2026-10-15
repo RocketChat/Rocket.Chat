@@ -10,7 +10,7 @@ const renderHeader = (props: Parameters<typeof SearchResultsHeader>[0]) =>
 		wrapper: mockAppRoot()
 			.withTranslations('en', 'core', {
 				Search_results_for: 'Results for <bold>{{query}}</bold>',
-				Intelligent_Search_page_empty_state: 'Use the top search bar to ask a question.',
+				Intelligent_Search_page_empty_state: 'AI search results will appear here',
 				Intelligent_Search_scope_all_rooms: 'Limited to rooms you can access where AI search is enabled',
 			})
 			.build(),
@@ -33,12 +33,5 @@ describe('SearchResultsHeader', () => {
 		expect(screen.getByText('in:general')).toBeInTheDocument();
 		expect(screen.getByText('from:thomas.berger')).toBeInTheDocument();
 		expect(screen.getByText('in:"release notes"')).toBeInTheDocument();
-	});
-
-	it('asks for a query when there is none', () => {
-		renderHeader({ query: '', filters: [] });
-
-		expect(screen.getByText('Use the top search bar to ask a question.')).toBeInTheDocument();
-		expect(screen.queryByRole('heading', { level: 1 })).not.toBeInTheDocument();
 	});
 });

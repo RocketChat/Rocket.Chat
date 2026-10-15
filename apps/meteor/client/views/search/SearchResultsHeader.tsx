@@ -14,10 +14,10 @@ const SearchResultsHeader = ({ query, filters }: SearchResultsHeaderProps): Reac
 
 	return (
 		<Box display='flex' flexDirection='column' marginBlockEnd={40} gap={8}>
-			{query ? (
-				<Box is='h1' display='flex' alignItems='center' fontScale='p1' gap={8} minWidth={0}>
-					<Icon name='search-sparkle' size='x20' />
-					<Box is='span' fontWeight={400} withTruncatedText>
+			<Box is='h1' display='flex' alignItems='center' fontScale='p1' gap={8} minWidth={0}>
+				<Icon name='search-sparkle' size='x20' />
+				<Box is='span' fontWeight={400} withTruncatedText>
+					{query ? (
 						<Trans
 							i18nKey='Search_results_for'
 							values={{ query }}
@@ -25,13 +25,11 @@ const SearchResultsHeader = ({ query, filters }: SearchResultsHeaderProps): Reac
 							shouldUnescape
 							components={{ bold: <Box is='strong' fontWeight={700} /> }}
 						/>
-					</Box>
+					) : (
+						t('Intelligent_Search_page_empty_state')
+					)}
 				</Box>
-			) : (
-				<Box color='hint' fontScale='p2'>
-					{t('Intelligent_Search_page_empty_state')}
-				</Box>
-			)}
+			</Box>
 			<Box color='hint' fontScale='c1'>
 				{t('Intelligent_Search_scope_all_rooms')}
 			</Box>
