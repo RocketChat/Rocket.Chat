@@ -16,7 +16,7 @@ export const useContactsSync = () => {
 		mutationFn: async () => {
 			const result = await syncMyContacts();
 
-			await queryClient.invalidateQueries({ queryKey: contactsQueryKeys.list() });
+			await queryClient.invalidateQueries({ queryKey: contactsQueryKeys.all });
 
 			return result;
 		},

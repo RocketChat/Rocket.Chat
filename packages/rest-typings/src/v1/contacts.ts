@@ -116,6 +116,22 @@ const contactsUpdatePropsSchema: JSONSchemaType<ContactsUpdateProps> = {
 
 export const isContactsUpdateProps = ajv.compile(contactsUpdatePropsSchema);
 
+export type ContactsInfoProps = { contactId: string };
+
+const contactsInfoPropsSchema: JSONSchemaType<ContactsInfoProps> = {
+	type: 'object',
+	properties: {
+		contactId: {
+			type: 'string',
+			minLength: 1,
+		},
+	},
+	required: ['contactId'],
+	additionalProperties: false,
+};
+
+export const isContactsInfoProps = ajvQuery.compile(contactsInfoPropsSchema);
+
 export type ContactsDeleteProps = { contactId: string };
 
 const contactsDeletePropsSchema: JSONSchemaType<ContactsDeleteProps> = {
@@ -135,6 +151,9 @@ export const isContactsDeleteProps = ajv.compile(contactsDeletePropsSchema);
 export type ContactsEndpoints = {
 	'/v1/contacts.list': {
 		GET: (params: ContactsListProps) => PaginatedResult<{ items: IContactPublic[]; syncedTotal: number }>;
+	};
+	'/v1/contacts.info': {
+		GET: (params: ContactsInfoProps) => { contact: IContactPublic };
 	};
 	'/v1/contacts.create': {
 		POST: (params: ContactsCreateProps) => { contact: IContactPublic };

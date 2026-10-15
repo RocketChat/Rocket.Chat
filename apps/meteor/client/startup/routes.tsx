@@ -115,8 +115,8 @@ declare module '@rocket.chat/ui-contexts' {
 			pattern: '/saml/:token';
 		};
 		'call-history': {
-			pathname: `/call-history${`/details/${string}` | '/contacts' | ''}`;
-			pattern: '/call-history/:tab?/:historyId?';
+			pathname: `/call-history${`/details/${string}` | '/contacts' | `/contacts/${string}` | ''}`;
+			pattern: '/call-history/:tab?/:historyId?/:context?';
 		};
 		'search': {
 			pathname: '/search';
@@ -249,7 +249,7 @@ router.defineRoutes([
 		element: appLayout.wrap(<SAMLLoginRoute />),
 	},
 	{
-		path: '/call-history/:tab?/:historyId?',
+		path: '/call-history/:tab?/:historyId?/:context?',
 		id: 'call-history',
 		element: appLayout.wrap(
 			<MainLayout>
