@@ -12248,6 +12248,20 @@ __metadata:
   languageName: unknown
   linkType: soft
 
+"@rocket.chat/visual-regression@workspace:packages/visual-regression":
+  version: 0.0.0-use.local
+  resolution: "@rocket.chat/visual-regression@workspace:packages/visual-regression"
+  dependencies:
+    "@playwright/test": "npm:~1.52.0"
+    "@rocket.chat/tsconfig": "workspace:*"
+    "@types/node": "npm:~24.13.6"
+    eslint: "npm:~10.12.0"
+    typescript: "npm:~5.9.3"
+  bin:
+    visual-regression: ./bin/index.js
+  languageName: unknown
+  linkType: soft
+
 "@rocket.chat/web-ui-registration@workspace:^, @rocket.chat/web-ui-registration@workspace:packages/web-ui-registration":
   version: 0.0.0-use.local
   resolution: "@rocket.chat/web-ui-registration@workspace:packages/web-ui-registration"
