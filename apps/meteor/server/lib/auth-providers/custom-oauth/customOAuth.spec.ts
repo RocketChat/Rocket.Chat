@@ -180,7 +180,7 @@ describe('CustomOAuthStrategy', () => {
 			expect(env.createStrategy({ pkce }).options.pkce).toBe(pkce);
 		});
 
-		it('defaults identity and token paths, claims and token parameter names', () => {
+		it('defaults stored paths, claims and token parameter names', () => {
 			const strategy = env.createStrategy({ tokenPath: '', identityPath: '' });
 			expect(strategy.tokenPath).toBe('https://identity.example.com/oauth/token');
 			expect(strategy.identityPath).toBe('https://identity.example.com/me');
@@ -484,6 +484,7 @@ describe('CustomOAuthStrategy', () => {
 					commit.resolve();
 					await result;
 				}
+				await new Promise(setImmediate);
 				expect(env.session.startTransaction).toHaveBeenCalledTimes(1);
 				expect(env.updater.set).toHaveBeenCalledTimes(2);
 				expect(env.updater.set).toHaveBeenCalledWith('emails', [{ address: identity.email, verified: true }]);
@@ -529,21 +530,25 @@ describe('CustomOAuthStrategy', () => {
 				expect(env.session.commitTransaction).toHaveBeenCalledTimes(1);
 			});
 
-			it.each(['email', 'username'] as const)(
-				'only updates the service ID when linking by %s without an email change',
-				async (keyField) => {
-					env.createStrategy({ keyField, mergeUsers: true }, 'github');
-					env.users.findOneByEmailAddressAndServiceNameIgnoringCase.mockResolvedValue(makeUser());
-					await login(keyField === 'email' ? identity : { ...identity, email: undefined });
-					expect(env.updater.set.mock.calls).toEqual([['services.github.id', identity.id]]);
-					expect(env.users.updateFromUpdater).toHaveBeenCalledTimes(1);
-					expect(env.session.commitTransaction).toHaveBeenCalledTimes(1);
-				},
-			);
+			it.each([
+				['email', 'findOneByEmailAddressAndServiceNameIgnoringCase', identity],
+				['username', 'findOneByUsernameAndServiceNameIgnoringCase', { ...identity, email: undefined }],
+			] as const)('only updates the service ID when linking by %s without an email change', async (keyField, lookupMethod, data) => {
+				env.createStrategy({ keyField, mergeUsers: true }, 'github');
+				env.users[lookupMethod].mockResolvedValue(makeUser());
+				await login(data);
+				expect(env.users[lookupMethod]).toHaveBeenCalledTimes(1);
+				expect(env.updater.set.mock.calls).toEqual([['services.github.id', identity.id]]);
+				expect(env.users.updateFromUpdater).toHaveBeenCalledTimes(1);
+				expect(env.session.commitTransaction).toHaveBeenCalledTimes(1);
+			});
 
 			it('does not notify when the committed user can no longer be loaded', async () => {
-				env.users.findOneById.mockResolvedValue(null);
+				const loadedUser = Promise.withResolvers<IUser | null>();
+				env.users.findOneById.mockReturnValue(loadedUser.promise);
 				await login();
+				loadedUser.resolve(null);
+				await new Promise(setImmediate);
 				expect(env.session.commitTransaction).toHaveBeenCalled();
 				expect(env.users.findOneById).toHaveBeenCalledWith('local-user', expect.any(Object));
 				expect(env.notify).not.toHaveBeenCalled();
@@ -579,9 +584,9 @@ describe('CustomOAuthStrategy', () => {
 
 			it('still ends the session if aborting the transaction fails', async () => {
 				env.users.updateFromUpdater.mockRejectedValue(new Error('update failed'));
-				const error = new Error('abort failed');
-				env.session.abortTransaction.mockRejectedValue(error);
-				await expect(login()).rejects.toBe(error);
+				env.session.abortTransaction.mockRejectedValue(new Error('abort failed'));
+				await expect(login()).rejects.toThrow();
+				expect(env.users.updateFromUpdater).toHaveBeenCalledTimes(1);
 				expect(env.session.abortTransaction).toHaveBeenCalledTimes(1);
 				expect(env.session.endSession).toHaveBeenCalledTimes(1);
 				expect(env.notify).not.toHaveBeenCalled();
@@ -734,13 +739,16 @@ describe('CustomOAuthStrategy', () => {
 			expect(get).not.toHaveBeenCalled();
 		});
 
-		it('forwards the provider request failure', () => {
+		it('reports a provider request failure without normalizing or returning a profile', () => {
 			const error = { statusCode: 401, data: 'expired token' };
-			get.mockImplementation((_url, _token, callback) => callback(error));
+			const normalize = jest.spyOn(strategy, 'normalizeIdentity');
+			get.mockImplementation((_url, _token, callback) => callback(error, '{"login":"alice"}'));
 			strategy.userProfile('token', done);
 			expect(done).toHaveBeenCalledTimes(1);
 			expect(get).toHaveBeenCalledWith(strategy.identityPath, 'token', expect.any(Function));
-			expect(done).toHaveBeenCalledWith(JSON.stringify(error));
+			expect(done.mock.calls[0][0]).toBeTruthy();
+			expect(done.mock.calls[0][1]).toBeUndefined();
+			expect(normalize).not.toHaveBeenCalled();
 		});
 
 		it.each([
@@ -775,7 +783,6 @@ describe('CustomOAuthStrategy', () => {
 		it.each([
 			['invalid JSON', '{', 'SyntaxError'],
 			['missing username', '{}', 'Failed to extract username'],
-			['null identity', 'null', 'Failed to extract username'],
 		])('returns a descriptive parsing or normalization failure for %s', (_label, body, cause) => {
 			respondWith(body);
 			strategy.userProfile('token', done);
@@ -785,6 +792,16 @@ describe('CustomOAuthStrategy', () => {
 				expect.objectContaining({ message: expect.stringContaining(`Failed to parse identity from test at ${strategy.identityPath}.`) }),
 			);
 			expect(done.mock.calls[0][0].message).toContain(cause);
+		});
+
+		it.each(['login', undefined])('rejects a null identity with username mapping %s without returning a profile', (usernameField) => {
+			strategy = env.createStrategy({ usernameField });
+			respondWith('null');
+			strategy.userProfile('token', done);
+			expect(get).toHaveBeenCalledTimes(1);
+			expect(done).toHaveBeenCalledTimes(1);
+			expect(done.mock.calls[0][0]).toBeInstanceOf(Error);
+			expect(done.mock.calls[0][1]).toBeUndefined();
 		});
 	});
 });
