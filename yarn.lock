@@ -10991,6 +10991,7 @@ __metadata:
     iconv-lite: "npm:^0.6.3"
     image-size: "patch:image-size@npm%3A1.2.1#~/.yarn/patches/image-size-npm-1.2.1-e285f3c080.patch"
     imap: "npm:^0.8.19"
+    invariant: "npm:^2.2.4"
     ip-range-check: "npm:^0.2.1"
     is-svg: "npm:^5.1.0"
     isolated-vm: "npm:6.2.0"

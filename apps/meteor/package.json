@@ -238,6 +238,7 @@
 		"iconv-lite": "^0.6.3",
 		"image-size": "patch:image-size@npm%3A1.2.1#~/.yarn/patches/image-size-npm-1.2.1-e285f3c080.patch",
 		"imap": "^0.8.19",
+		"invariant": "^2.2.4",
 		"ip-range-check": "^0.2.1",
 		"is-svg": "^5.1.0",
 		"isolated-vm": "6.2.0",
