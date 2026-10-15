@@ -13,6 +13,7 @@ import {
 	MessageRole,
 	MessageTimestamp,
 	MessageUsername,
+	MessageNameContainer,
 } from '@rocket.chat/fuselage';
 import type { AISearchResult } from '@rocket.chat/rest-typings';
 import { MessageAvatar } from '@rocket.chat/ui-avatar';
@@ -96,13 +97,15 @@ const SearchSourceResult = ({ item }: SearchSourceResultProps): ReactElement => 
 				</MessageLeftContainer>
 				<MessageContainer>
 					<MessageHeader>
-						<MessageName title={displayName}>{displayName}</MessageName>
-						{item.u?.username && (
-							<>
-								{' '}
-								<MessageUsername>@{item.u.username}</MessageUsername>
-							</>
-						)}
+						<MessageNameContainer>
+							<MessageName title={displayName}>{displayName}</MessageName>
+							{item.u?.username && (
+								<>
+									{' '}
+									<MessageUsername>@{item.u.username}</MessageUsername>
+								</>
+							)}
+						</MessageNameContainer>
 						{roomLabel && (
 							<MessageRole>
 								<Box display='flex' alignItems='center' gap={4}>
