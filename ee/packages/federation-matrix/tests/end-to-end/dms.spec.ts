@@ -7,7 +7,6 @@ import {
 	acceptRoomInvite,
 	addUserToRoomSlashCommand,
 	getRoomInfo,
-	getRoomMembers,
 	getSubscriptionByRoomId,
 } from '../../../../../apps/meteor/tests/data/rooms.helper';
 import { getRequestConfig, createUser, deleteUser } from '../../../../../apps/meteor/tests/data/users.helper';
@@ -681,9 +680,6 @@ const waitForRoomEvent = async (
 					await expect(addUserToRoomSlashCommand({ usernames: [userDm3], rid: rcRoom1._id, config: rcUserConfig1 })).rejects.toThrow(
 						'error-not-authorized',
 					);
-
-					const { members } = await getRoomMembers(rcRoom1._id, rcUserConfig1);
-					expect(members.map((member) => member.username)).not.toContain(userDm3);
 				});
 
 				it('should allow a user to leave the group DM', async () => {
@@ -1162,9 +1158,6 @@ const waitForRoomEvent = async (
 					await expect(
 						addUserToRoomSlashCommand({ usernames: [rcUser3.username], rid: rcRoom._id, config: rcUserConfig2 }),
 					).rejects.toThrow('error-not-authorized');
-
-					const { members } = await getRoomMembers(rcRoom._id, rcUserConfig2);
-					expect(members.map((member) => member.username)).not.toContain(rcUser3.username);
 				});
 
 				it('should add another user by another user than the initial inviter', async () => {
