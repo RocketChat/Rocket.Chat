@@ -12,6 +12,7 @@ import SearchSourceResult from './SearchSourceResult';
 import { useAISearchAnswer } from './hooks/useAISearchAnswer';
 import { useAISearchResults } from './hooks/useAISearchResults';
 import AISearchErrorCallout from '../../components/AISearchErrorCallout';
+import ResultsLiveRegion from '../../components/ResultsLiveRegion';
 import { useHasLicenseModule } from '../../hooks/useHasLicenseModule';
 
 const SearchPage = (): ReactElement => {
@@ -106,6 +107,7 @@ const SearchPage = (): ReactElement => {
 							onRetry={() => void answerResult.refetch()}
 						/>
 					)}
+					<ResultsLiveRegion shouldAnnounce={true} itemCount={intelligent.length} isLoading={isLoading} />
 					{isLoading && (
 						<Box display='flex' flexDirection='column' justifyContent='center'>
 							<Skeleton width='100%' />
