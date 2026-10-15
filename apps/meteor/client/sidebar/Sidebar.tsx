@@ -3,7 +3,7 @@ import { useUserPreference } from '@rocket.chat/ui-contexts';
 import { memo } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import InboxHeader from './InboxHeader';
+import Inbox from './Inbox';
 import SidebarRoomList from './RoomList';
 import TeamsPanel from './TeamsPanel';
 import { useTeamsPanel } from './TeamsPanel/hooks/useTeamsPanel';
@@ -30,14 +30,8 @@ const Sidebar = () => {
 				.join(' ')}
 		>
 			<BannerSection />
-			{teamsPanelOpen ? (
-				<TeamsPanel />
-			) : (
-				<>
-					{railEnabled && <InboxHeader />}
-					<SidebarRoomList />
-				</>
-			)}
+			{teamsPanelOpen && <TeamsPanel />}
+			{!teamsPanelOpen && (railEnabled ? <Inbox /> : <SidebarRoomList />)}
 			<NowPlayingSection />
 			<SidebarFooter />
 		</FuselageSidebar>

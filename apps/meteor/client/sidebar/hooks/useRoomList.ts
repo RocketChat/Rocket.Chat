@@ -70,7 +70,20 @@ export const buildUnreadInfo = (roomsToCount: SubscriptionWithRoom[]): GroupUnre
 export const isUnreadRoom = (room: SubscriptionWithRoom): boolean =>
 	!room.hideUnreadStatus && Boolean(room.alert || room.unread || room.tunread?.length);
 
-export const useRoomList = ({ collapsedGroups }: { collapsedGroups?: string[] }): useRoomListReturnType => {
+const matchesFilter = (room: { fname?: string; name?: string }, text: string) =>
+	(room.fname || room.name || '').toLocaleLowerCase().includes(text);
+
+/**
+ * `filterText` narrows the list to the rooms whose name matches: every group is shown expanded, and groups left with
+ * no matching room are left out.
+ */
+export const useRoomList = ({
+	collapsedGroups,
+	filterText = '',
+}: {
+	collapsedGroups?: string[];
+	filterText?: string;
+}): useRoomListReturnType => {
 	const showOmnichannel = useOmnichannelEnabled();
 
 	const { data: { isEnterprise = false } = {} } = useIsEnterprise();
@@ -99,7 +112,8 @@ export const useRoomList = ({ collapsedGroups }: { collapsedGroups?: string[] })
 
 	const groups = useDebouncedValue(
 		useMemo(() => {
-			const isCollapsed = (key: string) => collapsedGroups?.includes(key) ?? false;
+			const text = filterText.trim().toLocaleLowerCase();
+			const isCollapsed = (key: string) => !text && (collapsedGroups?.includes(key) ?? false);
 
 			const unfilteredGroups = new Map<string, Set<SubscriptionWithRoom>>();
 			categoryList.forEach((category) => {
@@ -107,6 +121,10 @@ export const useRoomList = ({ collapsedGroups }: { collapsedGroups?: string[] })
 			});
 
 			rooms.forEach((room) => {
+				if (text && !matchesFilter(room, text)) {
+					return;
+				}
+
 				const roomCategory = getRoomCategory(room, {
 					groups: unfilteredGroups,
 					hasIncomingCalls: (rid: SubscriptionWithRoom['rid']) => {
@@ -128,7 +146,8 @@ export const useRoomList = ({ collapsedGroups }: { collapsedGroups?: string[] })
 			});
 
 			if (unfilteredGroups.has('Incoming_Livechats')) {
-				unfilteredGroups.set('Incoming_Livechats', new Set(queue) as unknown as Set<SubscriptionWithRoom>);
+				const matchingQueue = text ? queue.filter((inquiry) => matchesFilter(inquiry, text)) : queue;
+				unfilteredGroups.set('Incoming_Livechats', new Set(matchingQueue) as unknown as Set<SubscriptionWithRoom>);
 			}
 
 			const makeGroup = (key: string, set: Set<SubscriptionWithRoom>): SidebarRoomListGroup => {
@@ -172,7 +191,7 @@ export const useRoomList = ({ collapsedGroups }: { collapsedGroups?: string[] })
 
 			const groups = filterGroupVisibility(unfilteredGroups, isEnterprise, makeGroup);
 
-			return groups;
+			return text ? groups.filter((group) => group.rooms.length > 0) : groups;
 		}, [
 			categoryList,
 			rooms,
@@ -185,6 +204,7 @@ export const useRoomList = ({ collapsedGroups }: { collapsedGroups?: string[] })
 			isShowUnreads,
 			isKeepUnreadsOnTop,
 			openedRoom,
+			filterText,
 		]),
 		50,
 	);

@@ -4,27 +4,32 @@ import { useTranslation } from 'react-i18next';
 
 import SidebarPanelHeader from './components/SidebarPanelHeader';
 import { useCreateNewMenu } from '../navbar/NavBarPagesGroup/hooks/useCreateNewMenu';
-import { useSortMenu } from '../navbar/NavBarPagesGroup/hooks/useSortMenu';
+
+type InboxHeaderProps = {
+	searchId: string;
+	searchOpen: boolean;
+	onToggleSearch: () => void;
+};
 
 /**
- * Header of the default sidebar when the sidebar rail is on. It holds the room list's preferences (display, sort
- * and grouping) and the create new menu, which the rail kept as items of its own before.
+ * Header of the default sidebar when the sidebar rail is on: search, as in the Teams panel, and the create new menu.
+ * The room list preferences (display, sort, grouping) live in the rail, since they also shape the Teams panel.
  */
-const InboxHeader = () => {
+const InboxHeader = ({ searchId, searchOpen, onToggleSearch }: InboxHeaderProps) => {
 	const { t } = useTranslation();
-	const preferencesSections = useSortMenu();
 	const createNewSections = useCreateNewMenu();
 
 	return (
 		<SidebarPanelHeader title={t('Inbox')}>
-			<GenericMenu
-				icon='customize'
-				title={t('Preferences')}
-				sections={preferencesSections}
-				selectionMode='multiple'
-				is={IconButton}
+			<IconButton
+				icon='magnifier'
 				small
-				placement='bottom-end'
+				title={t('Search')}
+				aria-label={t('Search_rooms')}
+				aria-expanded={searchOpen}
+				aria-controls={searchId}
+				pressed={searchOpen}
+				onClick={onToggleSearch}
 			/>
 			{createNewSections.length > 0 && (
 				<GenericMenu icon='pencil-box' title={t('Create_new')} sections={createNewSections} is={IconButton} small placement='bottom-end' />

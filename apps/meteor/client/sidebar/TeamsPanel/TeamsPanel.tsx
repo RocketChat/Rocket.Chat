@@ -1,8 +1,7 @@
 import { css } from '@rocket.chat/css-in-js';
-import { Box, Icon, IconButton, TextInput } from '@rocket.chat/fuselage';
+import { Box, IconButton } from '@rocket.chat/fuselage';
 import { useDebouncedValue } from '@rocket.chat/fuselage-hooks';
 import { usePermission, useUserId, useUserPreference } from '@rocket.chat/ui-contexts';
-import type { ChangeEvent, KeyboardEvent } from 'react';
 import { useId, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -19,6 +18,7 @@ import { useCreateRoomModal } from '../../navbar/NavBarPagesGroup/hooks/useCreat
 import RoomListRow from '../RoomList/RoomListRow';
 import RoomListRowWrapper from '../RoomList/RoomListRowWrapper';
 import SidebarPanelHeader from '../components/SidebarPanelHeader';
+import SidebarPanelSearch from '../components/SidebarPanelSearch';
 import SidebarVirtualList from '../components/SidebarVirtualList';
 import { useAvatarTemplate } from '../hooks/useAvatarTemplate';
 import { usePreventDefault } from '../hooks/usePreventDefault';
@@ -54,7 +54,9 @@ const TeamsPanel = () => {
 
 	const [searchOpen, setSearchOpen] = useState(false);
 	const [filterText, setFilterText] = useState('');
-	const debouncedFilterText = useDebouncedValue(filterText, 100);
+	const debouncedSearchText = useDebouncedValue(filterText, 100);
+	// Closing the search shows every team at once, without waiting for the debounce to catch up.
+	const debouncedFilterText = searchOpen ? debouncedSearchText : '';
 
 	// Closing the search also clears it, so the panel goes back to the full list of teams.
 	const toggleSearch = () => {
@@ -133,19 +135,13 @@ const TeamsPanel = () => {
 				{canCreateTeam && <IconButton icon='pencil-box' small title={t('Teams_New_Title')} onClick={() => createTeam()} />}
 			</SidebarPanelHeader>
 			{hasTeams && searchOpen && (
-				<Box paddingInline={16} paddingBlock={8}>
-					<TextInput
-						id={searchId}
-						small
-						autoFocus
-						value={filterText}
-						onChange={(event: ChangeEvent<HTMLInputElement>) => setFilterText(event.currentTarget.value)}
-						onKeyDown={(event: KeyboardEvent<HTMLInputElement>) => event.key === 'Escape' && toggleSearch()}
-						placeholder={t('Teams_panel_search_placeholder')}
-						aria-label={t('Teams_panel_search_placeholder')}
-						endAddon={<Icon name='magnifier' size='x16' />}
-					/>
-				</Box>
+				<SidebarPanelSearch
+					id={searchId}
+					value={filterText}
+					placeholder={t('Teams_panel_search_placeholder')}
+					onChange={setFilterText}
+					onClose={toggleSearch}
+				/>
 			)}
 			{!hasTeams && <TeamsPanelEmpty />}
 			{hasTeams && teams.length === 0 && (
