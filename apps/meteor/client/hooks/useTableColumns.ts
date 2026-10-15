@@ -10,6 +10,7 @@ export type TableColumns<TKey extends string> = {
 	isVisible: (key: TKey) => boolean;
 	isDisabled: (key: TKey) => boolean;
 	toggle: (key: TKey) => void;
+	visibleCount: number;
 };
 
 /**
@@ -33,5 +34,5 @@ export const useTableColumns = <TKey extends string>(storageKey: string, columns
 		[isDisabled, setHidden],
 	);
 
-	return { isVisible, isDisabled, toggle };
+	return { isVisible, isDisabled, toggle, visibleCount: columns.filter(({ key }) => isVisible(key)).length };
 };
