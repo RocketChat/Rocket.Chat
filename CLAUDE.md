@@ -52,6 +52,8 @@ Read the doc that matches the task instead of scanning `docs/` wholesale.
 
 ### Build and tooling
 
+- [docs/getting-started.md](docs/getting-started.md) — run from source: prerequisites (`scripts/check-deps.sh`), install, run modes, tests
+- [docs/local-dev/troubleshooting.md](docs/local-dev/troubleshooting.md) — common local build/run failures and their fixes
 - [docs/meteor-modern-stack.md](docs/meteor-modern-stack.md) — Meteor modern build stack, file-watching caveats
 - [docs/coverage.md](docs/coverage.md) — coverage instrumentation in build and CI
 - [docs/npm-publishing.md](docs/npm-publishing.md) — how the public packages reach npm: `release.yml`, changesets, OIDC trusted publishing, provenance
