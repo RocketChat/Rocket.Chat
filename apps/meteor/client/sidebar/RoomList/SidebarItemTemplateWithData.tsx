@@ -93,7 +93,7 @@ const SidebarItemTemplateWithData = ({
 	);
 
 	const titleIcon = getSubscriptionDraft(room) ? (
-		<Icon name='pencil' size='x12' title={room.draft ? t('Unfinished_message') : t('Unfinished_thread_message')} />
+		<Icon name='pencil' size='x12' title={room.draft ? t('Draft') : t('Thread_draft')} />
 	) : undefined;
 
 	const actions = useMemo(
