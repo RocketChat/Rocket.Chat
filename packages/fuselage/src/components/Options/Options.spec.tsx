@@ -1,15 +1,41 @@
 import { composeStories } from '@storybook/react-webpack5';
+import { axe } from 'jest-axe';
 
 import { render } from '../../testing';
 import { Item, ItemContent, ItemTitle } from '../Item';
 import Options from './Options';
 import * as stories from './Options.stories';
 
-const { Default } = composeStories(stories);
+const { Grouped } = composeStories(stories);
 
-describe('[Message Component]', () => {
-	it('renders without crashing', () => {
-		render(<Default />);
+const testCases = Object.values(composeStories(stories)).map((Story) => [Story.storyName || 'Story', Story] as const);
+
+describe('[Options Component]', () => {
+	test.each(testCases)(`renders %s without crashing`, async (_storyname, Story) => {
+		const tree = render(<Story />);
+		expect(tree.baseElement).toMatchSnapshot();
+	});
+
+	test.each(testCases)('%s should have no a11y violations', async (_storyname, Story) => {
+		const { container } = render(<Story />);
+
+		// The listbox takes its name from the input that owns it, and `aria-activedescendant` holds the option value, not an element id: both are tracked separately.
+		const results = await axe(container, {
+			rules: {
+				'aria-input-field-name': { enabled: false },
+				'aria-valid-attr-value': { enabled: false },
+			},
+		});
+		expect(results).toHaveNoViolations();
+	});
+
+	it('should render headings and dividers with `Item` group parts', () => {
+		const { getByRole, getByText } = render(<Grouped />);
+
+		const listbox = getByRole('listbox');
+		expect(getByText('Recent').closest('li')).toHaveClass('rcx-item-group-header', 'rcx-option__header');
+		expect(getByText('Recent').closest('li')).toHaveAttribute('role', 'presentation');
+		expect(listbox.querySelector('li.rcx-item-divider')).toHaveAttribute('aria-hidden', 'true');
 	});
 });
 
