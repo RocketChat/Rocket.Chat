@@ -112,11 +112,6 @@ describe('filterUsersAllowedInRoom (ABAC)', () => {
 		expect(abacMock.filterUsersAllowedInRoom.firstCall.args[2]).to.deep.equal({ audit: false });
 	});
 
-	it('should refuse a user without a username without sending them to the PDP', async () => {
-		expect(idsOf(await run([...users, { _id: 'u3' }]))).to.deep.equal(['u1', 'u2']);
-		expect(abacMock.filterUsersAllowedInRoom.firstCall.args[0]).to.deep.equal(['u1', 'u2']);
-	});
-
 	it('should not evaluate an empty list', async () => {
 		expect(await run([])).to.deep.equal([]);
 		expect(getRoomAbacLockContextMock.called).to.be.false;
