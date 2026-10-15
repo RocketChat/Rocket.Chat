@@ -2,8 +2,10 @@ import type { Keys as Icons } from '@rocket.chat/icons';
 import type { LinkHTMLAttributes, ReactNode } from 'react';
 
 import { appendClassName } from '../../helpers/appendClassName';
+import { cx } from '../../helpers/composeClassNames';
 import { patchChildren } from '../../helpers/patchChildren';
 import { Icon } from '../Icon';
+import { Item, ItemActions, ItemIcon, ItemTitle, type ItemProps } from '../Item';
 
 export type SidebarLinkProps = {
 	selected?: boolean;
@@ -12,28 +14,37 @@ export type SidebarLinkProps = {
 	menu?: ReactNode;
 } & LinkHTMLAttributes<HTMLAnchorElement>;
 
-const SidebarLink = ({ selected, icon, badge, menu, ...props }: SidebarLinkProps) => (
-	<a
+const SidebarLink = ({ selected, icon, badge, menu, className, children, ...props }: SidebarLinkProps) => (
+	<Item
+		is='a'
 		role='link'
 		tabIndex={0}
-		className={['rcx-box rcx-box--full', 'rcx-sidebar-link', 'rcx-sidebar-item', selected && 'rcx-sidebar-item--selected']
-			.filter(Boolean)
-			.join(' ')}
+		selected={selected}
+		className={cx('rcx-sidebar-link', 'rcx-sidebar-item', !!selected && 'rcx-sidebar-item--selected', className)}
 		onClick={(e) => e.stopPropagation()}
 		onKeyDown={(e) => e.code === 'Enter' && e.stopPropagation()}
-		{...props}
+		{...(props as Omit<ItemProps, 'is' | 'selected'>)}
 	>
-		{icon && <Icon name={icon} size='x20' className='rcx-sidebar-item__icon' />}
-		<span className='rcx-box rcx-box--full rcx-sidebar-item__title'>{props.children}</span>
+		{icon && (
+			<ItemIcon className='rcx-sidebar-item__icon'>
+				<Icon name={icon} size='x20' />
+			</ItemIcon>
+		)}
+		<ItemTitle is='span' className='rcx-sidebar-item__title'>
+			{children}
+		</ItemTitle>
 		{badge}
-		{menu &&
-			patchChildren(
-				<span className='rcx-box rcx-box--full rcx-sidebar-item__menu-wrapper'>{menu}</span>,
-				(childProps: { className: string | string[] }) => ({
-					className: appendClassName(childProps.className, 'rcx-box rcx-box--full rcx-sidebar-item__menu rcx-box--animated'),
-				}),
-			)}
-	</a>
+		{menu && (
+			<ItemActions reveal='hover' className='rcx-sidebar-item__menu-wrapper'>
+				{patchChildren(
+					<span className='rcx-box rcx-box--full rcx-sidebar-item__menu'>{menu}</span>,
+					(childProps: { className: string | string[] }) => ({
+						className: appendClassName(childProps.className, 'rcx-sidebar-item__menu'),
+					}),
+				)}
+			</ItemActions>
+		)}
+	</Item>
 );
 
 export default SidebarLink;
