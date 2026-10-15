@@ -6,9 +6,7 @@ import { Virtuoso } from 'react-virtuoso';
 import { prevent } from '../../helpers/prevent';
 import { AnimatedVisibility } from '../AnimatedVisibility';
 import { Box, type BoxProps } from '../Box';
-import { CheckBox } from '../CheckBox';
-import type { OptionProps } from '../Option';
-import { Option } from '../Option';
+import { CheckOption, Option } from '../Option';
 import { Tile } from '../Tile';
 
 export type OptionsPaginatedProps = Omit<BoxProps, 'ref' | 'onSelect'> &
@@ -34,15 +32,7 @@ export type OptionsPaginatedProps = Omit<BoxProps, 'ref' | 'onSelect'> &
 
 export const Empty = memo(() => <Option label='Empty' />);
 
-type CheckOptionProps = OptionProps;
-
-export const CheckOption = memo(function CheckOption({ selected, children: label, ...options }: CheckOptionProps) {
-	return (
-		<Option label={label as string} selected={selected} {...options}>
-			<CheckBox checked={selected} />
-		</Option>
-	);
-});
+export { CheckOption };
 
 /**
  * An input for selection of options.
