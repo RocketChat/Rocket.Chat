@@ -35,7 +35,7 @@ const ContactMenu = ({ contact, onEdit, onDeleted }: ContactMenuProps) => {
 		},
 		onError: (error) => dispatchToastMessage({ type: 'error', message: getErrorMessage(error, 'Contact_delete_failed') }),
 		onSettled: async () => {
-			await queryClient.invalidateQueries({ queryKey: contactsQueryKeys.list() });
+			await queryClient.invalidateQueries({ queryKey: contactsQueryKeys.all });
 
 			setModal(null);
 		},
