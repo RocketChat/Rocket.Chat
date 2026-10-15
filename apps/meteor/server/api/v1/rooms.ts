@@ -1,17 +1,17 @@
 import { FederationMatrix, ClientSafeError, Room, Team } from '@rocket.chat/core-services';
 import {
-	isPrivateRoom,
-	isPublicRoom,
-	type IMessage,
 	type IRoom,
 	type IRoomAbacRedaction,
+	type IMessage,
 	type IUpload,
-	type IUser,
 	type RequiredField,
 	type RoomAdminFieldsType,
+	isPrivateRoom,
+	isPublicRoom,
+	type IUser,
 	type UserStatus,
 } from '@rocket.chat/core-typings';
-import { Messages, Rooms, Subscriptions, Uploads, Users } from '@rocket.chat/models';
+import { Messages, Rooms, Users, Uploads, Subscriptions } from '@rocket.chat/models';
 import type { Notifications } from '@rocket.chat/rest-typings';
 import {
 	ajv,
@@ -80,8 +80,8 @@ import { saveRoomSettings } from '../../meteor-methods/rooms/saveRoomSettings';
 import { toggleFavoriteMethod } from '../../meteor-methods/rooms/toggleFavorite';
 import { executeUnarchiveRoom } from '../../meteor-methods/rooms/unarchiveRoom';
 import { unmuteUserInRoom } from '../../meteor-methods/rooms/unmuteUserInRoom';
-import type { NotificationFieldType } from '../../meteor-methods/users/saveNotificationSettings';
 import { saveNotificationSettingsMethod } from '../../meteor-methods/users/saveNotificationSettings';
+import type { NotificationFieldType } from '../../meteor-methods/users/saveNotificationSettings';
 import { roomsGetMethod } from '../../publications/room';
 import { settings } from '../../settings';
 import type { ExtractRoutesFromAPI } from '../ApiClass';

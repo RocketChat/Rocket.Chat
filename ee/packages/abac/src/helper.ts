@@ -8,7 +8,7 @@ import {
 	AbacInvalidAttributeValuesError,
 	AbacRoomNotFoundError,
 } from './errors';
-import type { IResourceDecision, SubjectEvaluation } from './pdp/types';
+import type { Evaluation, IResourceDecision } from './pdp/types';
 
 export const MAX_ABAC_ATTRIBUTE_KEYS = 10;
 export const MAX_ABAC_ATTRIBUTE_VALUES = 10;
@@ -316,7 +316,7 @@ export function diffAttributeSets(
 
 export const stripTrailingSlashes = (value: string): string => value.replace(/\/+$/, '');
 
-export const classifyDecisions = (decisions: IResourceDecision[] = []): keyof SubjectEvaluation => {
+export const classifyDecisions = (decisions: IResourceDecision[] = []): keyof Evaluation => {
 	if (decisions.some((rd) => rd.decision === 'DECISION_DENY')) {
 		return 'nonCompliant';
 	}
