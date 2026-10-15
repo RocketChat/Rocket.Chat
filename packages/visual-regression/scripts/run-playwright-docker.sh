@@ -13,10 +13,10 @@ PACKAGE_DIR="${PACKAGE_DIR:-$(pwd)}"
 MONOREPO_ROOT="$(git -C "${PACKAGE_DIR}" rev-parse --show-toplevel)"
 
 # Relative path of consuming package inside the monorepo (e.g. packages/fuselage)
-REL_PACKAGE_PATH="$(node -e "console.log(require('path').relative('${MONOREPO_ROOT}', '${PACKAGE_DIR}'))")"
+REL_PACKAGE_PATH="$(node -e 'console.log(require("path").relative(process.argv[1], process.argv[2]))' "${MONOREPO_ROOT}" "${PACKAGE_DIR}")"
 
 TOOL_DIR="$(cd "$(dirname "$0")/.." && pwd)"
-REL_TOOL_PATH="$(node -e "console.log(require('path').relative('${MONOREPO_ROOT}', '${TOOL_DIR}'))")"
+REL_TOOL_PATH="$(node -e 'console.log(require("path").relative(process.argv[1], process.argv[2]))' "${MONOREPO_ROOT}" "${TOOL_DIR}")"
 
 BASE_URL="http://host.docker.internal:6006"
 
@@ -27,7 +27,7 @@ case "$*" in
 esac
 
 # Read the Playwright version from this tool's package.json.
-PLAYWRIGHT_VERSION="$(node -e "console.log(require('${TOOL_DIR}/package.json').dependencies['@playwright/test'].replace(/^[^0-9]*/, ''))")"
+PLAYWRIGHT_VERSION="$(node -e 'console.log(require(process.argv[1]).dependencies["@playwright/test"].replace(/^[^0-9]*/, ""))' "${TOOL_DIR}/package.json")"
 
 DOCKER_PW_IMAGE="mcr.microsoft.com/playwright:v${PLAYWRIGHT_VERSION}-noble"
 
