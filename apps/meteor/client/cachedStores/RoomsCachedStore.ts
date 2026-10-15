@@ -53,6 +53,7 @@ class RoomsCachedStore extends PrivateCachedStore<IRoom> {
 			source: (room as IOmnichannelRoom | undefined)?.source,
 			queuedAt: (room as IOmnichannelRoom | undefined)?.queuedAt,
 			federated: room.federated,
+			xmppFederation: room.xmppFederation,
 			abacAttributes: room.abacAttributes,
 			...(isRoomNativeFederated(room) && {
 				federation: room.federation,

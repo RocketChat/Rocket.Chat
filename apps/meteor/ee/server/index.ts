@@ -16,6 +16,7 @@ import './meteor-methods/getReadReceipts';
 import './meteor-methods/samlLogout';
 import './patches';
 import './hooks/federation';
+import './hooks/xmpp';
 
 export * from './startup/apps';
 export { registerEEBroker } from './startup';
