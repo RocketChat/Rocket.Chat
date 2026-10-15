@@ -12,6 +12,7 @@ import {
 } from '@rocket.chat/ui-client';
 import { useEndpoint, useToastMessageDispatch } from '@rocket.chat/ui-contexts';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { useId } from 'react';
 import { useFieldArray, useForm } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 
@@ -35,10 +36,29 @@ type ContactForm = {
 /** Same cap the endpoint enforces, so the form cannot build a body the API would reject. */
 const MAX_ENTRIES = 10;
 
+const toContactPayload = ({ givenName, surname, emails, phones, companyName }: ContactForm) => {
+	const filledEmails = emails
+		.filter(({ address }) => address.trim())
+		.map(({ address, label }) => ({ address: address.trim(), ...(label.trim() && { label: label.trim() }) }));
+
+	const filledPhones = phones
+		.filter(({ raw }) => raw.trim())
+		.map(({ raw, label }) => ({ raw: raw.trim(), ...(label.trim() && { label: label.trim() }) }));
+
+	return {
+		givenName,
+		...(surname && { surname }),
+		...(companyName && { companyName }),
+		...(filledEmails.length && { emails: filledEmails }),
+		...(filledPhones.length && { phones: filledPhones }),
+	};
+};
+
 const ContactEdit = ({ contact, onSaved, onClose }: ContactEditProps) => {
 	const { t } = useTranslation();
 	const queryClient = useQueryClient();
 	const dispatchToastMessage = useToastMessageDispatch();
+	const contactFormId = useId();
 	const createContact = useEndpoint('POST', '/v1/contacts.create');
 	const updateContact = useEndpoint('POST', '/v1/contacts.update');
 
@@ -63,22 +83,8 @@ const ContactEdit = ({ contact, onSaved, onClose }: ContactEditProps) => {
 	const phoneFields = useFieldArray({ control, name: 'phones' });
 
 	const save = useMutation({
-		mutationFn: async ({ givenName, surname, emails, phones, companyName }: ContactForm) => {
-			const filledEmails = emails
-				.filter(({ address }) => address.trim())
-				.map(({ address, label }) => ({ address: address.trim(), ...(label.trim() && { label: label.trim() }) }));
-
-			const filledPhones = phones
-				.filter(({ raw }) => raw.trim())
-				.map(({ raw, label }) => ({ raw: raw.trim(), ...(label.trim() && { label: label.trim() }) }));
-
-			const fields = {
-				givenName,
-				...(surname && { surname }),
-				...(companyName && { companyName }),
-				...(filledEmails.length && { emails: filledEmails }),
-				...(filledPhones.length && { phones: filledPhones }),
-			};
+		mutationFn: async (form: ContactForm) => {
+			const fields = toContactPayload(form);
 
 			if (contact) {
 				const { contact: updated } = await updateContact({ contactId: contact._id, ...fields });
@@ -107,7 +113,7 @@ const ContactEdit = ({ contact, onSaved, onClose }: ContactEditProps) => {
 				<ContextualbarTitle>{contact ? t('Edit_contact') : t('Create_contact')}</ContextualbarTitle>
 				<ContextualbarClose onClick={onClose} />
 			</ContextualbarHeader>
-			<ContextualbarScrollableContent is='form' id='contact-form' onSubmit={handleSubmit((data) => save.mutate(data))}>
+			<ContextualbarScrollableContent is='form' id={contactFormId} onSubmit={handleSubmit((data) => save.mutate(data))}>
 				<FieldGroup>
 					<Field>
 						<FieldLabel required>{t('First_name')}</FieldLabel>
@@ -226,7 +232,7 @@ const ContactEdit = ({ contact, onSaved, onClose }: ContactEditProps) => {
 					<Button type='button' onClick={onClose}>
 						{t('Cancel')}
 					</Button>
-					<Button primary type='submit' form='contact-form' loading={save.isPending}>
+					<Button primary type='submit' form={contactFormId} loading={save.isPending}>
 						{t('Save')}
 					</Button>
 				</ButtonGroup>
