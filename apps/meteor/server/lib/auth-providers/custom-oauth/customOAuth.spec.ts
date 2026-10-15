@@ -1,4 +1,5 @@
 import type { IUser, OAuthConfiguration } from '@rocket.chat/core-typings';
+import type { IUsersModel } from '@rocket.chat/model-typings';
 import type { Accounts } from 'meteor/accounts-base';
 import type { OAuth2 } from 'oauth';
 
@@ -108,7 +109,8 @@ function setup() {
 		);
 		jest.doMock('@rocket.chat/core-services', () => ({ LDAP: { loginAuthenticatedUserRequest: ldapLogin } }));
 		jest.doMock('@rocket.chat/logger', () => ({ Logger: jest.fn(() => ({ debug: jest.fn() })) }));
-		jest.doMock('@rocket.chat/models', () => ({ Users: users }));
+		const { registerModel } = jest.requireActual<typeof import('@rocket.chat/models')>('@rocket.chat/models');
+		registerModel('IUsersModel', users as unknown as IUsersModel);
 		jest.doMock('../../../database/utils', () => ({ client: { startSession } }));
 		jest.doMock('../../../settings/cached', () => ({ settings }));
 		jest.doMock('../../callbacks', () => ({ callbacks: { run: runCallback } }));
