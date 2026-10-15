@@ -1,9 +1,9 @@
 import { useEndpoint } from '@rocket.chat/ui-contexts';
 import { useQuery } from '@tanstack/react-query';
-import { useEffect } from 'react';
 
 import ContactEdit from './ContactEdit';
 import ContactInfo from './ContactInfo';
+import ContactNotFound from './ContactNotFound';
 import { contactsQueryKeys } from '../../lib/queryKeys';
 
 export type ContactPanelRouterProps = {
@@ -25,14 +25,12 @@ const ContactPanelRouter = ({ contactId, context, onOpenInfo, onOpenEdit, onClos
 		enabled: isStored,
 	});
 
-	useEffect(() => {
-		if (isError) {
-			onClose();
-		}
-	}, [isError, onClose]);
-
 	if (contactId === 'new') {
 		return <ContactEdit key='new' onSaved={({ _id }) => onOpenInfo(_id)} onClose={onClose} />;
+	}
+
+	if (isError) {
+		return <ContactNotFound onClose={onClose} />;
 	}
 
 	if (!data) {
