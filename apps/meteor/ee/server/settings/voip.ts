@@ -2,7 +2,7 @@ import { settingsRegistry } from '../../../server/settings';
 
 const iceServerUrl = { type: 'string', pattern: '^(stun|stuns|turn|turns):' };
 
-const turnServersSchema = {
+export const turnServersSchema = {
 	type: 'array',
 	items: {
 		type: 'object',
