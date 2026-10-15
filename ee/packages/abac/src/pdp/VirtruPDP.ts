@@ -21,7 +21,7 @@ import { HEALTH_CHECK_TIMEOUT } from '../clients/virtru/VirtruClient';
 import type { VirtruClient } from '../clients/virtru/VirtruClient';
 import { buildEntityIdentifier, buildAttributeFqns, getUserEntityKey } from '../clients/virtru/identity';
 import { OnlyCompliantCanBeAddedToRoomError, PdpHealthCheckError } from '../errors';
-import { classifyDecisions, previewRetainingEveryone, previewWindowInSteps, readRoomMembersWindow, verdictsOf } from '../helper';
+import { classifyDecisions, previewRetainingEveryone, previewRoomMembersInSteps, verdictsOf } from '../helper';
 import { logger } from '../logger';
 
 const pdpLogger = logger.section('VirtruPDP');
@@ -380,9 +380,11 @@ export class VirtruPDP implements IPolicyDecisionPoint {
 			return previewRetainingEveryone(members, page);
 		}
 
-		const window = await readRoomMembersWindow(members, page);
-		return previewWindowInSteps(window, page, PREVIEW_EVALUATION_STEP, async (subjects) =>
-			verdictsOf(await this.evaluateSubjectsAgainstAttributes(subjects, attributes, room)),
+		return previewRoomMembersInSteps(
+			members,
+			page,
+			async (subjects) => verdictsOf(await this.evaluateSubjectsAgainstAttributes(subjects, attributes, room)),
+			PREVIEW_EVALUATION_STEP,
 		);
 	}
 
