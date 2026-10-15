@@ -6,5 +6,6 @@
 		"moduleResolution": "nodenext",
 		"noEmit": true
 	},
-	"include": ["playwright.config.ts", "test"]
+	"include": ["playwright.config.ts", "test"],
+	"exclude": ["node_modules"]
 }
