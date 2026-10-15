@@ -195,7 +195,7 @@ exports[`renders ConfirmRegenerate without crashing 1`] = `
                   <td
                     class="rcx-box rcx-box--full rcx-table__cell rcx-css-1oii38d"
                   >
-                    January 10th, 2026 9:00 AM
+                    January 10th, 2026 12:00 PM
                   </td>
                   <td
                     class="rcx-box rcx-box--full rcx-table__cell rcx-css-1oii38d"
@@ -256,7 +256,7 @@ exports[`renders ConfirmRegenerate without crashing 1`] = `
                   <td
                     class="rcx-box rcx-box--full rcx-table__cell rcx-css-1oii38d"
                   >
-                    March 2nd, 2026 5:30 AM
+                    March 2nd, 2026 8:30 AM
                   </td>
                   <td
                     class="rcx-box rcx-box--full rcx-table__cell rcx-css-1oii38d"
@@ -742,7 +742,7 @@ exports[`renders ConfirmRemove without crashing 1`] = `
                   <td
                     class="rcx-box rcx-box--full rcx-table__cell rcx-css-1oii38d"
                   >
-                    January 10th, 2026 9:00 AM
+                    January 10th, 2026 12:00 PM
                   </td>
                   <td
                     class="rcx-box rcx-box--full rcx-table__cell rcx-css-1oii38d"
@@ -803,7 +803,7 @@ exports[`renders ConfirmRemove without crashing 1`] = `
                   <td
                     class="rcx-box rcx-box--full rcx-table__cell rcx-css-1oii38d"
                   >
-                    March 2nd, 2026 5:30 AM
+                    March 2nd, 2026 8:30 AM
                   </td>
                   <td
                     class="rcx-box rcx-box--full rcx-table__cell rcx-css-1oii38d"
@@ -2207,7 +2207,7 @@ exports[`renders TokenGenerated without crashing 1`] = `
                   <td
                     class="rcx-box rcx-box--full rcx-table__cell rcx-css-1oii38d"
                   >
-                    January 10th, 2026 9:00 AM
+                    January 10th, 2026 12:00 PM
                   </td>
                   <td
                     class="rcx-box rcx-box--full rcx-table__cell rcx-css-1oii38d"
@@ -2268,7 +2268,7 @@ exports[`renders TokenGenerated without crashing 1`] = `
                   <td
                     class="rcx-box rcx-box--full rcx-table__cell rcx-css-1oii38d"
                   >
-                    March 2nd, 2026 5:30 AM
+                    March 2nd, 2026 8:30 AM
                   </td>
                   <td
                     class="rcx-box rcx-box--full rcx-table__cell rcx-css-1oii38d"
@@ -2758,7 +2758,7 @@ exports[`renders WithTokens without crashing 1`] = `
                   <td
                     class="rcx-box rcx-box--full rcx-table__cell rcx-css-1oii38d"
                   >
-                    January 10th, 2026 9:00 AM
+                    January 10th, 2026 12:00 PM
                   </td>
                   <td
                     class="rcx-box rcx-box--full rcx-table__cell rcx-css-1oii38d"
@@ -2819,7 +2819,7 @@ exports[`renders WithTokens without crashing 1`] = `
                   <td
                     class="rcx-box rcx-box--full rcx-table__cell rcx-css-1oii38d"
                   >
-                    March 2nd, 2026 5:30 AM
+                    March 2nd, 2026 8:30 AM
                   </td>
                   <td
                     class="rcx-box rcx-box--full rcx-table__cell rcx-css-1oii38d"

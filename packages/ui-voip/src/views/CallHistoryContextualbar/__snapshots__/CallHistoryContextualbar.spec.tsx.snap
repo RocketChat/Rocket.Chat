@@ -221,7 +221,7 @@ exports[`renders Default without crashing 1`] = `
                       <div
                         class="rcx-box rcx-box--full rcx-css-clshan"
                       >
-                        Friday, February 7, 2025 at 9:00:00 AM
+                        Friday, February 7, 2025 at 12:00:00 PM
                       </div>
                     </div>
                   </div>
@@ -558,7 +558,7 @@ exports[`renders ExternalContact without crashing 1`] = `
                       <div
                         class="rcx-box rcx-box--full rcx-css-clshan"
                       >
-                        Friday, February 7, 2025 at 9:00:00 AM
+                        Friday, February 7, 2025 at 12:00:00 PM
                       </div>
                     </div>
                   </div>
@@ -890,7 +890,7 @@ exports[`renders PreventedWithReason without crashing 1`] = `
                       <div
                         class="rcx-box rcx-box--full rcx-css-clshan"
                       >
-                        Friday, February 7, 2025 at 9:00:00 AM
+                        Friday, February 7, 2025 at 12:00:00 PM
                       </div>
                     </div>
                   </div>
@@ -1252,7 +1252,7 @@ exports[`renders PreventedWithTranslatedReason without crashing 1`] = `
                       <div
                         class="rcx-box rcx-box--full rcx-css-clshan"
                       >
-                        Friday, February 7, 2025 at 9:00:00 AM
+                        Friday, February 7, 2025 at 12:00:00 PM
                       </div>
                     </div>
                   </div>
@@ -1609,7 +1609,7 @@ exports[`renders PreventedWithoutReason without crashing 1`] = `
                       <div
                         class="rcx-box rcx-box--full rcx-css-clshan"
                       >
-                        Friday, February 7, 2025 at 9:00:00 AM
+                        Friday, February 7, 2025 at 12:00:00 PM
                       </div>
                     </div>
                   </div>
