@@ -10,6 +10,7 @@ import { sleep } from '../../data/livechat/utils';
 import { updateSetting } from '../../data/permissions.helper';
 import { createRoom, deleteRoom } from '../../data/rooms.helper';
 import { createTeam, deleteTeam } from '../../data/teams.helper';
+import { adminUsername } from '../../data/user';
 import { IS_EE, URL_MONGODB } from '../../e2e/config/constants';
 
 (IS_EE ? describe : describe.skip)('[ABAC Room Lifecycle] (Enterprise Only)', function () {
@@ -211,6 +212,49 @@ import { IS_EE, URL_MONGODB } from '../../e2e/config/constants';
 					expect(res.body).to.include({ errorType: 'error-action-not-allowed' });
 				});
 
+			expect(await findRoom(team.roomId)).to.have.deep.property('abacAttributes', attributes);
+		});
+
+		it('leaves the name unchanged when a combined rename and public switch is refused', async () => {
+			await request
+				.post(api('teams.update'))
+				.set(credentials)
+				.send({ teamId: team._id, data: { name: `${team.name}-renamed`, type: TeamType.PUBLIC } })
+				.expect(400)
+				.expect((res) => {
+					expect(res.body).to.include({ errorType: 'error-action-not-allowed' });
+				});
+
+			await request
+				.get(api('rooms.info'))
+				.set(credentials)
+				.query({ roomId: team.roomId })
+				.expect(200)
+				.expect((res) => {
+					expect(res.body.room).to.include({ name: team.name, t: 'p' });
+				});
+		});
+
+		it('keeps the room private and its attributes when the new name is rejected', async () => {
+			await setAbacEnabled(false);
+
+			await request
+				.post(api('teams.update'))
+				.set(credentials)
+				.send({ teamId: team._id, data: { name: adminUsername, type: TeamType.PUBLIC } })
+				.expect(400)
+				.expect((res) => {
+					expect(res.body).to.include({ errorType: 'error-duplicate-handle' });
+				});
+
+			await request
+				.get(api('rooms.info'))
+				.set(credentials)
+				.query({ roomId: team.roomId })
+				.expect(200)
+				.expect((res) => {
+					expect(res.body.room).to.include({ name: team.name, t: 'p' });
+				});
 			expect(await findRoom(team.roomId)).to.have.deep.property('abacAttributes', attributes);
 		});
 

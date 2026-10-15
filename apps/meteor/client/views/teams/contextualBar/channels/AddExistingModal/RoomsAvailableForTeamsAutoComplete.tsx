@@ -36,19 +36,22 @@ const RoomsAvailableForTeamsAutoComplete = ({ value, onChange, onAbacRoomsChange
 				name: roomCoordinator.getRoomName(room.t, { _id: room._id, name: room.name, fname: room.fname, prid: room.prid }),
 				type: room.t,
 				avatarETag: room.avatarETag,
-				hasAbacAttributes: !!room.abacAttributes?.length,
+				hasAbacAttributes: room.hasAbacAttributes,
 			},
 		}));
 	}, [data]);
 
 	const handleChange = useStableCallback((selected: string | string[]) => {
+		const selectedIds = Array.isArray(selected) ? selected : [selected];
+
 		for (const { value, label } of options) {
 			if (label.hasAbacAttributes) {
 				abacRoomNames.current.set(value, label.name);
+			} else {
+				abacRoomNames.current.delete(value);
 			}
 		}
 
-		const selectedIds = Array.isArray(selected) ? selected : [selected];
 		onAbacRoomsChange?.(selectedIds.flatMap((id) => abacRoomNames.current.get(id) ?? []));
 		onChange(selected);
 	});
