@@ -1,12 +1,12 @@
 import { Icon, type IconProps } from '../Icon';
-import OptionColumn from './OptionColumn';
+import { ItemIcon } from '../Item';
 
 export type OptionIconProps = IconProps;
 
 const OptionIcon = (props: OptionIconProps) => (
-	<OptionColumn>
+	<ItemIcon className='rcx-option__column'>
 		<Icon size='x20' rcx-option__icon {...props} />
-	</OptionColumn>
+	</ItemIcon>
 );
 
 export default OptionIcon;
