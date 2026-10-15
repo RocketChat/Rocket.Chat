@@ -12,7 +12,7 @@ export type ContactInfoEntryProps = {
 
 const ContactInfoEntry = ({ text, actionIcon, actionLabel, onAction }: ContactInfoEntryProps) => {
 	const { t } = useTranslation();
-	const { copy } = useClipboardWithToast(text);
+	const { copy, hasCopied } = useClipboardWithToast(text);
 
 	return (
 		<Box display='flex' alignItems='center' justifyContent='space-between'>
@@ -21,7 +21,7 @@ const ContactInfoEntry = ({ text, actionIcon, actionLabel, onAction }: ContactIn
 			</Box>
 			<Box display='flex' flexShrink={0}>
 				<IconButton tiny icon={actionIcon} title={actionLabel} aria-label={actionLabel} disabled={!onAction} onClick={onAction} />
-				<IconButton tiny icon='copy' title={t('Copy')} aria-label={t('Copy')} onClick={() => copy()} />
+				<IconButton tiny icon='copy' title={t('Copy')} aria-label={t('Copy')} disabled={hasCopied} onClick={() => copy()} />
 			</Box>
 		</Box>
 	);
