@@ -6,7 +6,6 @@ import {
 	GenericTableHeader,
 	GenericTableHeaderCell,
 	GenericTableLoadingTable,
-	usePagination,
 	useSort,
 	GenericNoResults,
 } from '@rocket.chat/ui-client';
@@ -39,9 +38,7 @@ const ChatsTable = () => {
 		500,
 	);
 
-	const { paginatedQuery, paginationProps } = usePagination({ query, getQueryKey: (query) => ['current-chats', query] });
-
-	const { data, isLoading, isSuccess, isError, refetch } = useCurrentChats(paginatedQuery);
+	const { data, isLoading, isSuccess, isError, refetch, paginatedQuery, paginationProps } = useCurrentChats(query);
 
 	const [defaultQuery] = useState(hashKey([paginatedQuery]));
 	const queryHasChanged = defaultQuery !== hashKey([paginatedQuery]);

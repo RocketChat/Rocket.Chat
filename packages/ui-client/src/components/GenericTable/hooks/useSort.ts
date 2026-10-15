@@ -8,11 +8,11 @@ export const useSort = <T extends string>(
 ): {
 	sortBy: T;
 	sortDirection: Direction;
-	setSort: (sortBy: T, direction?: Direction | undefined) => void;
+	setSort: (sortBy: T, direction?: Direction) => void;
 } => {
 	const [sort, _setSort] = useState<[T, Direction]>(() => [by, initialDirection]);
 
-	const setSort = useCallback((id: T, direction?: Direction | undefined) => {
+	const setSort = useCallback((id: T, direction?: Direction) => {
 		_setSort(([sortBy, sortDirection]) => {
 			if (direction) {
 				return [id, direction];

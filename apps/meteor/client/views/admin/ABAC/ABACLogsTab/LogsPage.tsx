@@ -8,12 +8,11 @@ import {
 	GenericTableHeader,
 	GenericTableHeaderCell,
 	GenericTableRow,
-	usePagination,
+	usePaginatedQuery,
 	GenericNoResults,
 	useFormatDateAndTime,
 } from '@rocket.chat/ui-client';
 import { useEndpoint } from '@rocket.chat/ui-contexts';
-import { useQuery } from '@tanstack/react-query';
 import { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -37,9 +36,15 @@ const LogsPage = () => {
 		[startDate, endDate],
 	);
 
-	const { paginatedQuery, queryKey, paginationProps } = usePagination({
+	const {
+		data: logs,
+		isLoading,
+		paginationProps,
+	} = usePaginatedQuery({
 		query,
 		getQueryKey: (query) => ABACQueryKeys.logs.list(query),
+		queryFn: getLogs,
+		itemsKey: 'events',
 	});
 
 	const getActionLabel = (action?: AbacAttributeDefinitionChangeType | AbacActionPerformed | null) => {
@@ -71,86 +76,82 @@ const LogsPage = () => {
 		}
 	};
 
-	const { data, isLoading } = useQuery({
-		queryKey,
-		queryFn: () => getLogs(paginatedQuery),
-		select: (data) => ({
-			events: data.events.map((event) => {
-				const eventInfo = {
-					id: event._id,
-					user: event.actor?.type === 'user' ? event.actor.username : t('System'),
-					...(event.actor?.type === 'user' && { userAvatar: <UserAvatar size='x28' userId={event.actor._id} /> }),
-					timestamp: new Date(event.ts),
-					element: t('ABAC_Room'),
-					action: getActionLabel(event.data?.find((item) => item.key === 'change')?.value),
-					room: undefined,
-				};
-				switch (event.t) {
-					case 'abac.attribute.changed':
-						return {
-							...eventInfo,
-							element: t('ABAC_Room_Attribute'),
-							name: event.data?.find((item) => item.key === 'attributeKey')?.value ?? '',
-						};
-					case 'abac.action.performed':
-						return {
-							...eventInfo,
-							name: event.data?.find((item) => item.key === 'subject')?.value?.username ?? '',
-							action: getActionLabel(event.data?.find((item) => item.key === 'action')?.value),
-							room: event.data?.find((item) => item.key === 'object')?.value?.name ?? '',
-							element: t('ABAC_room_membership'),
-						};
-					case 'abac.object.attribute.changed': {
-						const app = event.data?.find((item) => item.key === 'app')?.value;
-						return {
-							...eventInfo,
-							...(app && { user: t('ABAC_User_via_App', { username: eventInfo.user, appName: app.name ?? app._id }) }),
-							name:
-								event.data
-									?.find((item) => item.key === 'current')
-									?.value?.map((item) => item.key)
-									.join(', ') ?? t('Empty'),
-							room: event.data?.find((item) => item.key === 'room')?.value?.name ?? '',
-						};
-					}
-					case 'abac.object.attributes.removed':
-						return {
-							...eventInfo,
-							name:
-								event.data
-									?.find((item) => item.key === 'current')
-									?.value?.map((item) => item.key)
-									.join(', ') ?? t('Empty'),
-							room: event.data?.find((item) => item.key === 'room')?.value?.name ?? '',
-						};
-					case 'abac.attribute.store.switched':
-						return {
-							...eventInfo,
-							element: t('ABAC_Attribute_Store'),
-							action: t('ABAC_Attribute_Store_Switched'),
-							name: `${event.data?.find((item) => item.key === 'from')?.value} -> ${event.data?.find((item) => item.key === 'to')?.value}`,
-							room: t('ABAC_Rooms_Affected', { count: Number(event.data?.find((item) => item.key === 'roomsAffected')?.value ?? 0) }),
-						};
-					case 'abac.membership.evaluated':
-						return {
-							...eventInfo,
-							element: t('ABAC_room_membership'),
-							action: t('ABAC_Membership_Evaluated'),
-							name:
-								event.data
-									?.find((item) => item.key === 'subjects')
-									?.value?.map((item) => item.username)
-									.join(', ') ?? '',
-						};
-					default:
-						return null;
+	const data = logs && {
+		events: logs.events.map((event) => {
+			const eventInfo = {
+				id: event._id,
+				user: event.actor?.type === 'user' ? event.actor.username : t('System'),
+				...(event.actor?.type === 'user' && { userAvatar: <UserAvatar size='x28' userId={event.actor._id} /> }),
+				timestamp: new Date(event.ts),
+				element: t('ABAC_Room'),
+				action: getActionLabel(event.data?.find((item) => item.key === 'change')?.value),
+				room: undefined,
+			};
+			switch (event.t) {
+				case 'abac.attribute.changed':
+					return {
+						...eventInfo,
+						element: t('ABAC_Room_Attribute'),
+						name: event.data?.find((item) => item.key === 'attributeKey')?.value ?? '',
+					};
+				case 'abac.action.performed':
+					return {
+						...eventInfo,
+						name: event.data?.find((item) => item.key === 'subject')?.value?.username ?? '',
+						action: getActionLabel(event.data?.find((item) => item.key === 'action')?.value),
+						room: event.data?.find((item) => item.key === 'object')?.value?.name ?? '',
+						element: t('ABAC_room_membership'),
+					};
+				case 'abac.object.attribute.changed': {
+					const app = event.data?.find((item) => item.key === 'app')?.value;
+					return {
+						...eventInfo,
+						...(app && { user: t('ABAC_User_via_App', { username: eventInfo.user, appName: app.name ?? app._id }) }),
+						name:
+							event.data
+								?.find((item) => item.key === 'current')
+								?.value?.map((item) => item.key)
+								.join(', ') ?? t('Empty'),
+						room: event.data?.find((item) => item.key === 'room')?.value?.name ?? '',
+					};
 				}
-			}),
-			count: data.count,
-			offset: data.offset,
-			total: data.total,
+				case 'abac.object.attributes.removed':
+					return {
+						...eventInfo,
+						name:
+							event.data
+								?.find((item) => item.key === 'current')
+								?.value?.map((item) => item.key)
+								.join(', ') ?? t('Empty'),
+						room: event.data?.find((item) => item.key === 'room')?.value?.name ?? '',
+					};
+				case 'abac.attribute.store.switched':
+					return {
+						...eventInfo,
+						element: t('ABAC_Attribute_Store'),
+						action: t('ABAC_Attribute_Store_Switched'),
+						name: `${event.data?.find((item) => item.key === 'from')?.value} -> ${event.data?.find((item) => item.key === 'to')?.value}`,
+						room: t('ABAC_Rooms_Affected', { count: Number(event.data?.find((item) => item.key === 'roomsAffected')?.value ?? 0) }),
+					};
+				case 'abac.membership.evaluated':
+					return {
+						...eventInfo,
+						element: t('ABAC_room_membership'),
+						action: t('ABAC_Membership_Evaluated'),
+						name:
+							event.data
+								?.find((item) => item.key === 'subjects')
+								?.value?.map((item) => item.username)
+								.join(', ') ?? '',
+					};
+				default:
+					return null;
+			}
 		}),
-	});
+		count: logs.count,
+		offset: logs.offset,
+		total: logs.total,
+	};
 
 	return (
 		<>

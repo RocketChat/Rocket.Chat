@@ -1,11 +1,10 @@
 import type { CallHistoryItem, Serialized } from '@rocket.chat/core-typings';
 import { Pagination } from '@rocket.chat/fuselage';
 import { useDebouncedValue } from '@rocket.chat/fuselage-hooks';
-import { useSort, usePagination, GenericTableLoadingRow, GenericNoResults } from '@rocket.chat/ui-client';
+import { useSort, usePaginatedQuery, GenericTableLoadingRow, GenericNoResults } from '@rocket.chat/ui-client';
 import { useEndpoint, useRouteParameter, useRouter } from '@rocket.chat/ui-contexts';
 import { MediaCallHistoryTable, isCallHistoryUnknownContact, isCallHistoryInternalContact } from '@rocket.chat/ui-voip';
 import type { CallHistoryContact } from '@rocket.chat/ui-voip';
-import { useQuery } from '@tanstack/react-query';
 import { useCallback, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -93,11 +92,6 @@ const CallHistoryPage = () => {
 		...(debouncedSearchText && { filter: debouncedSearchText }),
 	};
 
-	const { paginatedQuery, queryKey, paginationProps } = usePagination({
-		query,
-		getQueryKey: (query) => ['call-history', 'list', query],
-	});
-
 	const onClickRow = useCallback(
 		(rid: string, _id: string) => {
 			router.navigate(`/call-history/details/${_id}`);
@@ -126,9 +120,11 @@ const CallHistoryPage = () => {
 		setTab(null);
 	}, [setTab, historyId, onClickRow, tab?.rid]);
 
-	const { data, isPending, error, refetch } = useQuery({
-		queryKey,
-		queryFn: () => getCallHistory(paginatedQuery),
+	const { data, isPending, error, refetch, paginationProps } = usePaginatedQuery({
+		query,
+		getQueryKey: (query) => ['call-history', 'list', query],
+		queryFn: getCallHistory,
+		itemsKey: 'items',
 	});
 
 	const tableData = useMemo(() => {
