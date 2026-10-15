@@ -82,6 +82,47 @@ export function addSettings(): Promise<void> {
 					});
 				});
 
+				await this.section('VoIP_TeamCollab_ExternalCallHistory', async function () {
+					await this.add('VoIP_TeamCollab_ExternalCallHistory_Enabled', false, {
+						type: 'boolean',
+						public: true,
+						invalidValue: false,
+						i18nDescription: 'VoIP_TeamCollab_ExternalCallHistory_Enabled_Description',
+					});
+
+					const enableQuery = { _id: 'VoIP_TeamCollab_ExternalCallHistory_Enabled', value: true };
+
+					await this.add('VoIP_TeamCollab_ExternalCallHistory_Host', '', {
+						type: 'string',
+						public: false,
+						invalidValue: '',
+						enableQuery,
+					});
+
+					await this.add('VoIP_TeamCollab_ExternalCallHistory_User', '', {
+						type: 'string',
+						public: false,
+						invalidValue: '',
+						enableQuery,
+					});
+
+					await this.add('VoIP_TeamCollab_ExternalCallHistory_Password', '', {
+						type: 'password',
+						public: false,
+						secret: true,
+						invalidValue: '',
+						enableQuery,
+					});
+
+					await this.add('VoIP_TeamCollab_ExternalCallHistory_Timeout', 10000, {
+						type: 'int',
+						public: false,
+						invalidValue: 10000,
+						enableQuery,
+						i18nDescription: 'VoIP_TeamCollab_ExternalCallHistory_Timeout_Description',
+					});
+				});
+
 				await this.section('VoIP_TeamCollab_AdvancedFeatures', async function () {
 					const enableQuery = { _id: 'Pexip_Integration_Enabled', value: true };
 
