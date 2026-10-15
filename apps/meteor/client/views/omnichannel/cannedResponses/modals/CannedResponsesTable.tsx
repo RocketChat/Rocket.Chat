@@ -38,7 +38,6 @@ const CannedResponsesTable = () => {
 	const [text, setText] = useState('');
 	const debouncedText = useDebouncedValue(text, 500);
 
-	const { current, itemsPerPage, setItemsPerPage: onSetItemsPerPage, setCurrent: onSetCurrent, ...paginationProps } = usePagination();
 	const { sortBy, setSort, sortDirection } = useSort<'shortcut' | 'scope' | 'tags' | '_createdAt' | 'createdBy'>('shortcut');
 
 	const query = useMemo(
@@ -47,19 +46,27 @@ const CannedResponsesTable = () => {
 			sort: JSON.stringify({ [sortBy]: sortDirection === 'asc' ? 1 : -1 }),
 			...(sharing && { scope: sharing }),
 			...(createdBy && createdBy !== 'all' && { createdBy }),
-			...(itemsPerPage && { count: itemsPerPage }),
-			...(current && { offset: current }),
 		}),
-		[createdBy, current, debouncedText, itemsPerPage, sharing, sortBy, sortDirection],
+		[createdBy, debouncedText, sharing, sortBy, sortDirection],
 	);
 
-	const [defaultQuery] = useState(hashKey([query]));
-	const queryHasChanged = defaultQuery !== hashKey([query]);
+	const {
+		paginatedQuery,
+		queryKey,
+		current,
+		itemsPerPage,
+		setItemsPerPage: onSetItemsPerPage,
+		setCurrent: onSetCurrent,
+		...paginationProps
+	} = usePagination({ query, getQueryKey: (query) => ['getCannedResponses', query] });
+
+	const [defaultQuery] = useState(hashKey([paginatedQuery]));
+	const queryHasChanged = defaultQuery !== hashKey([paginatedQuery]);
 
 	const getCannedResponses = useEndpoint('GET', '/v1/canned-responses');
 	const { data, isLoading, isSuccess } = useQuery({
-		queryKey: ['getCannedResponses', query],
-		queryFn: () => getCannedResponses(query),
+		queryKey,
+		queryFn: () => getCannedResponses(paginatedQuery),
 		refetchOnWindowFocus: false,
 	});
 
@@ -178,7 +185,6 @@ const CannedResponsesTable = () => {
 						divider
 						current={current}
 						itemsPerPage={itemsPerPage}
-						count={data?.total || 0}
 						onSetItemsPerPage={onSetItemsPerPage}
 						onSetCurrent={onSetCurrent}
 						{...paginationProps}

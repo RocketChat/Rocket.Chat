@@ -75,7 +75,6 @@ const CallHistoryPage = () => {
 	const sortProps = useSort<'contact' | 'type' | 'status' | 'timestamp'>('timestamp', 'desc');
 
 	const getCallHistory = useEndpoint('GET', '/v1/call-history.list');
-	const { setItemsPerPage, setCurrent, ...paginationProps } = usePagination();
 
 	const router = useRouter();
 	const historyId = useRouteParameter('historyId');
@@ -85,6 +84,19 @@ const CallHistoryPage = () => {
 	const { searchText, type, states } = filterProps;
 
 	const debouncedSearchText = useDebouncedValue(searchText, 400);
+
+	const stateFilter = getStateFilter(states);
+	const query = {
+		sort: JSON.stringify(getSort(sortProps.sortBy, sortProps.sortDirection)),
+		...(type !== 'all' && { direction: type }),
+		...(stateFilter && { state: stateFilter }),
+		...(debouncedSearchText && { filter: debouncedSearchText }),
+	};
+
+	const { paginatedQuery, queryKey, setItemsPerPage, setCurrent, ...paginationProps } = usePagination({
+		query,
+		getQueryKey: (query) => ['call-history', 'list', query],
+	});
 
 	const onClickRow = useCallback(
 		(rid: string, _id: string) => {
@@ -115,30 +127,8 @@ const CallHistoryPage = () => {
 	}, [setTab, historyId, onClickRow, tab?.rid]);
 
 	const { data, isPending, error, refetch } = useQuery({
-		queryKey: [
-			'call-history',
-			'list',
-			sortProps.sortBy,
-			sortProps.sortDirection,
-			paginationProps.current,
-			paginationProps.itemsPerPage,
-			type,
-			states,
-			debouncedSearchText,
-		],
-		queryFn: () => {
-			const sort = getSort(sortProps.sortBy, sortProps.sortDirection);
-			const stateFilter = getStateFilter(states);
-
-			return getCallHistory({
-				count: paginationProps.itemsPerPage,
-				offset: paginationProps.current,
-				sort: JSON.stringify(sort),
-				...(type !== 'all' && { direction: type }),
-				...(stateFilter && { state: stateFilter }),
-				...(debouncedSearchText && { filter: debouncedSearchText }),
-			});
-		},
+		queryKey,
+		queryFn: () => getCallHistory(paginatedQuery),
 	});
 
 	const tableData = useMemo(() => {
@@ -166,9 +156,7 @@ const CallHistoryPage = () => {
 		return null;
 	})();
 
-	const pagination = (
-		<Pagination divider count={data?.total || 0} onSetItemsPerPage={setItemsPerPage} onSetCurrent={setCurrent} {...paginationProps} />
-	);
+	const pagination = <Pagination divider onSetItemsPerPage={setItemsPerPage} onSetCurrent={setCurrent} {...paginationProps} />;
 
 	if (isPending) {
 		return (
