@@ -1,15 +1,8 @@
-import { CheckBox } from '@rocket.chat/fuselage';
-import {
-	GenericMenu,
-	GenericTable,
-	GenericTableBody,
-	GenericTableCell,
-	GenericTableHeader,
-	GenericTableHeaderCell,
-} from '@rocket.chat/ui-client';
+import { GenericTable, GenericTableBody, GenericTableCell, GenericTableHeader, GenericTableHeaderCell } from '@rocket.chat/ui-client';
 import type { ReactNode } from 'react';
 import { useTranslation } from 'react-i18next';
 
+import ContactsColumnsMenu from './ContactsColumnsMenu';
 import type { ContactsColumnKey, ContactsColumns } from './hooks/useContactsColumns';
 import { CONTACT_COLUMNS } from './hooks/useContactsColumns';
 
@@ -38,35 +31,7 @@ const ContactsTable = ({ sort, columns, children }: ContactsTableProps) => {
 					</GenericTableHeaderCell>
 				))}
 				<GenericTableCell key='menu' width={44} is='td'>
-					<GenericMenu
-						title={t('Show_columns')}
-						icon='kebab'
-						selectionMode='multiple'
-						selectedKeys={CONTACT_COLUMNS.filter(({ key }) => columns.isVisible(key)).map(({ key }) => key)}
-						sections={[
-							{
-								title: t('Show_columns'),
-								items: CONTACT_COLUMNS.map(({ key, label }) => ({
-									id: key,
-									content: t(label),
-									textValue: t(label),
-									disabled: columns.isDisabled(key),
-									addon: (
-										<CheckBox
-											checked={columns.isVisible(key)}
-											disabled={columns.isDisabled(key)}
-											onClick={(e) => {
-												e.stopPropagation();
-											}}
-											tabIndex={-1}
-											aria-hidden='true'
-										/>
-									),
-									onClick: () => columns.toggle(key),
-								})),
-							},
-						]}
-					/>
+					<ContactsColumnsMenu columns={columns} />
 				</GenericTableCell>
 			</GenericTableHeader>
 			<GenericTableBody>{children}</GenericTableBody>
