@@ -51,7 +51,7 @@ import {
 	stripTrailingSlashes,
 } from './helper';
 import { logger } from './logger';
-import type { IPolicyDecisionPoint, SubjectEvaluation, VirtruPDPConfig } from './pdp';
+import type { Evaluation, IPolicyDecisionPoint, VirtruPDPConfig } from './pdp';
 import { LocalPDP, VirtruPDP } from './pdp';
 import { LocalAttributeStore, VirtruAttributeStore } from './store';
 import type { AttributeStoreDescriptor, AttributeStoreSelectionContext, IAttributeStore } from './store';
@@ -716,7 +716,7 @@ export class AbacService extends ServiceClass implements IAbacService {
 			{ projection: { _id: 1, username: 1, name: 1, emails: 1 } },
 		).toArray();
 
-		let evaluation: SubjectEvaluation;
+		let evaluation: Evaluation;
 		try {
 			evaluation = await pdp.evaluateSubjectsAgainstAttributes(subjects, validation.attributes, { _id: 'room-creation' });
 		} catch (err) {

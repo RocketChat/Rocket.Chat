@@ -52,7 +52,7 @@ export function toCreationDenial(
 	throw err;
 }
 
-export function verdictOf({ compliant, nonCompliant }: SubjectEvaluation, id: string): AbacMembershipVerdict {
+export function verdictOf({ compliant, nonCompliant }: Evaluation, id: string): AbacMembershipVerdict {
 	if (compliant.includes(id)) {
 		return 'compliant';
 	}
