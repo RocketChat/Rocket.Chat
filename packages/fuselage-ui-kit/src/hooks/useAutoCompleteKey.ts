@@ -1,4 +1,4 @@
-import { useRef } from 'react';
+import { useState } from 'react';
 
 /**
  * Key that changes once every selected value has its option loaded, and stays put afterwards.
@@ -6,12 +6,15 @@ import { useRef } from 'react';
  * remounting again on a later search would drop the focus and the open dropdown while the user types.
  */
 export const useAutoCompleteKey = (value: string | string[] | undefined, options: { value: string }[] | undefined) => {
-	const loaded = useRef(false);
+	const [wasLoaded, setWasLoaded] = useState(false);
 
-	if (!loaded.current) {
-		const selected = ([] as (string | undefined)[]).concat(value).filter(Boolean);
-		loaded.current = selected.every((item) => options?.some((option) => option.value === item));
+	const selected = ([] as (string | undefined)[]).concat(value).filter(Boolean);
+	const loaded = wasLoaded || selected.every((item) => options?.some((option) => option.value === item));
+
+	// Set during render rather than in an effect, so React discards it along with a render that never commits.
+	if (loaded && !wasLoaded) {
+		setWasLoaded(true);
 	}
 
-	return loaded.current ? 'selection-loaded' : 'selection-loading';
+	return loaded ? 'selection-loaded' : 'selection-loading';
 };
