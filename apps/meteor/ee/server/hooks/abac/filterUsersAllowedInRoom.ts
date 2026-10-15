@@ -25,8 +25,13 @@ filterUsersAllowedInRoom.patch(async (next, users, room, options) => {
 		return candidates;
 	}
 
-	const evaluable = candidates.filter(({ username }) => username).map(({ _id }) => _id);
-	const allowed = new Set(await Abac.filterUsersAllowedInRoom(evaluable, room, { audit: options?.audit }));
+	const allowed = new Set(
+		await Abac.filterUsersAllowedInRoom(
+			candidates.map(({ _id }) => _id),
+			room,
+			{ audit: options?.audit },
+		),
+	);
 
 	return candidates.filter(({ _id }) => allowed.has(_id));
 });
