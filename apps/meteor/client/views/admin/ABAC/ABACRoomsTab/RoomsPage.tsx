@@ -31,7 +31,6 @@ const RoomsPage = () => {
 	const [text, setText] = useState(searchTerm ?? '');
 	const [filterType, setFilterType] = useState<'all' | 'roomName' | 'attribute' | 'value'>(searchType ?? 'all');
 	const debouncedText = useDebouncedValue(text, 200);
-	const { current, itemsPerPage, setItemsPerPage, setCurrent, ...paginationProps } = usePagination();
 	const getRooms = useEndpoint('GET', '/v1/abac/rooms');
 	const isABACAvailable = useIsABACAvailable();
 	const isExternalStore = useIsExternalAttributeStore();
@@ -50,11 +49,14 @@ const RoomsPage = () => {
 		() => ({
 			...(debouncedText ? { filter: debouncedText } : {}),
 			...(filterType !== 'all' ? { filterType } : {}),
-			offset: current,
-			count: itemsPerPage,
 		}),
-		[debouncedText, current, itemsPerPage, filterType],
+		[debouncedText, filterType],
 	);
+
+	const { paginatedQuery, queryKey, current, itemsPerPage, setItemsPerPage, setCurrent, ...paginationProps } = usePagination({
+		query,
+		getQueryKey: (query) => ABACQueryKeys.rooms.list(query),
+	});
 
 	// Whenever the user changes the filter or the text, reset the pagination to the first page
 	useEffect(() => {
@@ -62,8 +64,8 @@ const RoomsPage = () => {
 	}, [debouncedText, filterType, setCurrent]);
 
 	const { data, isLoading } = useQuery({
-		queryKey: ABACQueryKeys.rooms.list(query),
-		queryFn: () => getRooms(query),
+		queryKey,
+		queryFn: () => getRooms(paginatedQuery),
 		...(isExternalStore && { staleTime: 0, gcTime: 0 }),
 	});
 
@@ -142,7 +144,6 @@ const RoomsPage = () => {
 						divider
 						current={current}
 						itemsPerPage={itemsPerPage}
-						count={data?.total || 0}
 						onSetItemsPerPage={setItemsPerPage}
 						onSetCurrent={setCurrent}
 						{...paginationProps}

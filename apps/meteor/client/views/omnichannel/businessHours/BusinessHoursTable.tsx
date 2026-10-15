@@ -20,25 +20,31 @@ const BusinessHoursTable = () => {
 	const t = useTranslation();
 	const [text, setText] = useState('');
 
-	const { current, itemsPerPage, setItemsPerPage: onSetItemsPerPage, setCurrent: onSetCurrent, ...paginationProps } = usePagination();
-
 	const query = useDebouncedValue(
 		useMemo(
 			() => ({
 				name: text,
-				...(itemsPerPage && { count: itemsPerPage }),
-				...(current && { offset: current }),
 			}),
-			[text, itemsPerPage, current],
+			[text],
 		),
 		500,
 	);
 
+	const {
+		paginatedQuery,
+		queryKey,
+		current,
+		itemsPerPage,
+		setItemsPerPage: onSetItemsPerPage,
+		setCurrent: onSetCurrent,
+		...paginationProps
+	} = usePagination({ query, getQueryKey: (query) => ['livechat-getBusinessHours', query] });
+
 	const getBusinessHours = useEndpoint('GET', '/v1/livechat/business-hours');
 	const { data, isLoading, isSuccess, isError, refetch } = useQuery({
-		queryKey: ['livechat-getBusinessHours', query],
+		queryKey,
 
-		queryFn: async () => getBusinessHours(query),
+		queryFn: async () => getBusinessHours(paginatedQuery),
 	});
 
 	const columns: TableColumnWidth[] = ['auto', 'auto', 'auto', 'x100', 'x100'];
@@ -79,7 +85,6 @@ const BusinessHoursTable = () => {
 						divider
 						current={current}
 						itemsPerPage={itemsPerPage}
-						count={data.total || 0}
 						onSetItemsPerPage={onSetItemsPerPage}
 						onSetCurrent={onSetCurrent}
 						{...paginationProps}

@@ -28,7 +28,6 @@ const ChannelsTable = () => {
 	const channelRoute = useRoute('channel');
 	const groupsRoute = useRoute('group');
 
-	const { current, itemsPerPage, setItemsPerPage: onSetItemsPerPage, setCurrent: onSetCurrent, ...paginationProps } = usePagination();
 	const { sortBy, sortDirection, setSort } = useSort<'name' | 'usersCount' | 'lastMessage' | 'createdAt'>('name');
 
 	const columns: TableColumnWidth[] = ['auto', '100px', ...(mediaQuery ? (['150px', '150px', '150px'] as const) : [])];
@@ -76,10 +75,19 @@ const ChannelsTable = () => {
 	);
 
 	const getDirectoryData = useEndpoint('GET', '/v1/directory');
-	const query = useDirectoryQuery({ text, current, itemsPerPage }, [sortBy, sortDirection], 'channels');
+	const query = useDirectoryQuery({ text }, [sortBy, sortDirection], 'channels');
+	const {
+		paginatedQuery,
+		queryKey,
+		current,
+		itemsPerPage,
+		setItemsPerPage: onSetItemsPerPage,
+		setCurrent: onSetCurrent,
+		...paginationProps
+	} = usePagination({ query, getQueryKey: (query) => ['getDirectoryData', query] });
 	const { data, isFetched, isLoading, isError, refetch } = useQuery({
-		queryKey: ['getDirectoryData', query],
-		queryFn: () => getDirectoryData(query),
+		queryKey,
+		queryFn: () => getDirectoryData(paginatedQuery),
 	});
 
 	const onClick = useMemo(
@@ -116,7 +124,6 @@ const ChannelsTable = () => {
 						divider
 						current={current}
 						itemsPerPage={itemsPerPage}
-						count={data?.total || 0}
 						onSetItemsPerPage={onSetItemsPerPage}
 						onSetCurrent={onSetCurrent}
 						{...paginationProps}

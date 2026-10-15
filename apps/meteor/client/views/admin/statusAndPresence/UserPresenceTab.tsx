@@ -17,6 +17,7 @@ import type { ManagedPresenceUser } from './useManagedPresenceUsers';
 import { useManagedPresenceUsers } from './useManagedPresenceUsers';
 import FilterByText from '../../../components/FilterByText';
 import GenericError from '../../../components/GenericError';
+import { managedPresenceQueryKeys } from '../../../lib/queryKeys';
 
 export type UserPresenceTabProps = {
 	onEdit: (user?: ManagedPresenceUser) => void;
@@ -25,18 +26,27 @@ export type UserPresenceTabProps = {
 const UserPresenceTab = ({ onEdit }: UserPresenceTabProps) => {
 	const { t } = useTranslation();
 	const [text, setText] = useState('');
-	const { current, itemsPerPage, setItemsPerPage: onSetItemsPerPage, setCurrent: onSetCurrent, ...paginationProps } = usePagination();
 
 	const query = useDebouncedValue(
-		useMemo(() => ({ searchTerm: text, count: itemsPerPage, offset: current }), [text, itemsPerPage, current]),
+		useMemo(() => ({ searchTerm: text }), [text]),
 		500,
 	);
+
+	const {
+		paginatedQuery,
+		queryKey,
+		current,
+		itemsPerPage,
+		setItemsPerPage: onSetItemsPerPage,
+		setCurrent: onSetCurrent,
+		...paginationProps
+	} = usePagination({ query, getQueryKey: (query) => managedPresenceQueryKeys.list(query) });
 
 	useEffect(() => {
 		onSetCurrent(0);
 	}, [text, onSetCurrent]);
 
-	const { data, isLoading, isSuccess, isError, refetch } = useManagedPresenceUsers(query);
+	const { data, isLoading, isSuccess, isError, refetch } = useManagedPresenceUsers(paginatedQuery);
 
 	const columns: TableColumnWidth[] = ['auto', 'auto', 'auto', 'x48'];
 
@@ -72,7 +82,6 @@ const UserPresenceTab = ({ onEdit }: UserPresenceTabProps) => {
 							divider
 							current={current}
 							itemsPerPage={itemsPerPage}
-							count={data.total}
 							onSetItemsPerPage={onSetItemsPerPage}
 							onSetCurrent={onSetCurrent}
 							{...paginationProps}
