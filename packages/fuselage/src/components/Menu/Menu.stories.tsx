@@ -10,6 +10,8 @@ import type { IconButtonProps } from '../Button';
 import { IconButton } from '../Button';
 import { ButtonGroup } from '../ButtonGroup';
 import { CheckBox } from '../CheckBox';
+import { Icon } from '../Icon';
+import { ItemActions, ItemContent, ItemIcon, ItemTitle } from '../Item';
 import { NavBarGroup, NavBarItem } from '../NavBar';
 import { RadioButton } from '../RadioButton';
 import { ToggleSwitch } from '../ToggleSwitch';
@@ -420,3 +422,49 @@ export const WithRichSubmenuTrigger: StoryFn<typeof Menu> = (args) => (
 WithRichSubmenuTrigger.args = {
 	onAction: action('click'),
 };
+
+export const WithItemParts: StoryFn<typeof Menu> = (args) => (
+	<Menu title='Preferences' {...args}>
+		<MenuSection title='Status'>
+			<MenuItem key='online' textValue='Online'>
+				<ItemIcon label='Selected'>
+					<Icon name='check' size='x20' />
+				</ItemIcon>
+				<ItemContent>
+					<ItemTitle>Online</ItemTitle>
+				</ItemContent>
+			</MenuItem>
+			<MenuItem key='away' textValue='Away'>
+				<ItemIcon />
+				<ItemContent>
+					<ItemTitle>Away</ItemTitle>
+				</ItemContent>
+			</MenuItem>
+		</MenuSection>
+		<MenuSection title='Preferences'>
+			<MenuItem key='notifications' textValue='Notifications'>
+				<ItemIcon>
+					<Icon name='bell' size='x20' />
+				</ItemIcon>
+				<ItemContent>
+					<ItemTitle>Notifications</ItemTitle>
+				</ItemContent>
+				<ItemActions>
+					<ToggleSwitch checked onChange={() => undefined} />
+				</ItemActions>
+			</MenuItem>
+			<MenuSubmenuTrigger key='theme' textValue='Theme'>
+				<MenuItem>
+					<ItemIcon>
+						<Icon name='palette' size='x20' />
+					</ItemIcon>
+					<ItemContent>
+						<ItemTitle>Theme</ItemTitle>
+					</ItemContent>
+				</MenuItem>
+				<MenuItem key='light'>Light</MenuItem>
+				<MenuItem key='dark'>Dark</MenuItem>
+			</MenuSubmenuTrigger>
+		</MenuSection>
+	</Menu>
+);

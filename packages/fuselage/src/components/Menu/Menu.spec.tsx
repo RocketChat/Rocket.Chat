@@ -9,7 +9,7 @@ import { render } from '../../testing';
 
 withResizeObserverMock();
 
-const { Simple, Complex, WithSections, WithSubmenu, WithRichSubmenuTrigger } = composeStories(stories);
+const { Simple, Complex, WithSections, WithSubmenu, WithRichSubmenuTrigger, WithItemParts } = composeStories(stories);
 
 const testCases = Object.values(composeStories(stories)).map((Story) => [Story.storyName || 'Story', Story]);
 
@@ -111,6 +111,56 @@ describe('[Menu Component]', () => {
 			await userEvent.click(profileItem);
 
 			expect(screen.queryByRole('menuitem', { name: 'Profile' })).not.toBeInTheDocument();
+		});
+	});
+
+	describe('Item parts', () => {
+		it('should render menu items and submenu triggers as Item rows', async () => {
+			render(<WithItemParts {...WithItemParts.args} />);
+
+			await userEvent.click(screen.getByRole('button'));
+
+			const items = await screen.findAllByRole('menuitem');
+			expect(items).toHaveLength(4);
+			items.forEach((item) => expect(item).toHaveClass('rcx-item'));
+		});
+
+		it('should name a menu item by its title and describe it with its labelled ItemIcon', async () => {
+			render(<WithItemParts {...WithItemParts.args} />);
+
+			await userEvent.click(screen.getByRole('button'));
+
+			const online = await screen.findByRole('menuitem', { name: 'Online' });
+			const icon = screen.getByRole('img', { name: 'Selected' });
+			expect(online).toHaveAttribute('aria-describedby', icon.id);
+			expect(screen.getByRole('menuitem', { name: 'Away' })).not.toHaveAttribute('aria-describedby');
+		});
+
+		it('should show the focus ring only for keyboard focus', async () => {
+			const user = userEvent.setup();
+			render(<WithItemParts {...WithItemParts.args} />);
+
+			await user.click(screen.getByRole('button'));
+
+			const away = await screen.findByRole('menuitem', { name: 'Away' });
+			await user.hover(away);
+			await waitFor(() => expect(away).toHaveClass('rcx-item--focused'));
+			expect(away).not.toHaveClass('rcx-item--focus-visible');
+
+			await user.keyboard('{ArrowDown}');
+			const notifications = screen.getByRole('menuitem', {
+				name: 'Notifications',
+			});
+			await waitFor(() => expect(notifications).toHaveClass('rcx-item--focus-visible'));
+		});
+
+		it('should name each section group by its title', async () => {
+			render(<WithItemParts {...WithItemParts.args} />);
+
+			await userEvent.click(screen.getByRole('button'));
+
+			expect(await screen.findByRole('group', { name: 'Status' })).toBeInTheDocument();
+			expect(screen.getByRole('group', { name: 'Preferences' })).toBeInTheDocument();
 		});
 	});
 

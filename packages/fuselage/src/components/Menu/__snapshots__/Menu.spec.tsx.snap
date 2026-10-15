@@ -405,6 +405,33 @@ exports[`[Menu Component] renders WithCustomButton without crashing 1`] = `
 </body>
 `;
 
+exports[`[Menu Component] renders WithItemParts without crashing 1`] = `
+<body>
+  <div>
+    <div
+      class="rcx-box rcx-box--full rcx-css-1g0mbnm"
+    >
+      <button
+        aria-expanded="false"
+        aria-haspopup="true"
+        aria-label="Preferences"
+        class="rcx-box rcx-box--full rcx-button--small-square rcx-button--square rcx-button--icon rcx-button"
+        id="react-aria-_r_10_"
+        title="Preferences"
+        type="button"
+      >
+        <i
+          aria-hidden="true"
+          class="rcx-box rcx-box--full rcx-icon--name-kebab rcx-icon rcx-css-4pvxx3"
+        >
+          
+        </i>
+      </button>
+    </div>
+  </div>
+</body>
+`;
+
 exports[`[Menu Component] renders WithRichSubmenuTrigger without crashing 1`] = `
 <body>
   <div>
@@ -416,7 +443,7 @@ exports[`[Menu Component] renders WithRichSubmenuTrigger without crashing 1`] = 
         aria-haspopup="true"
         aria-label="Menu with rich submenu triggers"
         class="rcx-box rcx-box--full rcx-button--small-square rcx-button--square rcx-button--icon rcx-button"
-        id="react-aria-_r_10_"
+        id="react-aria-_r_12_"
         title="Menu with rich submenu triggers"
         type="button"
       >
@@ -443,7 +470,7 @@ exports[`[Menu Component] renders WithSections without crashing 1`] = `
         aria-haspopup="true"
         aria-label="Menu with Sections"
         class="rcx-box rcx-box--full rcx-button--small-square rcx-button--square rcx-button--icon rcx-button"
-        id="react-aria-_r_12_"
+        id="react-aria-_r_14_"
         title="Menu with Sections"
         type="button"
       >
@@ -470,7 +497,7 @@ exports[`[Menu Component] renders WithSubmenu without crashing 1`] = `
         aria-haspopup="true"
         aria-label="Menu with Submenu"
         class="rcx-box rcx-box--full rcx-button--small-square rcx-button--square rcx-button--icon rcx-button"
-        id="react-aria-_r_14_"
+        id="react-aria-_r_16_"
         title="Menu with Submenu"
         type="button"
       >
