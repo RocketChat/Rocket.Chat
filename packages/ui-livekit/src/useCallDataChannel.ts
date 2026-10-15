@@ -20,6 +20,9 @@ import {
 	sweepReactions,
 } from './callDataProtocol';
 import type { CallPerson } from './callParticipants';
+import type { FederatedSignals } from './useFederatedSignals';
+
+const NO_HANDS: HandsMap = {};
 
 export type CallDataChannelPeers = {
 	/** Names the reader's own hand and reactions. */
@@ -30,6 +33,11 @@ export type CallDataChannelPeers = {
 	personOf: (sfu: CallSFU, participant: Pick<Participant, 'identity' | 'name'>) => CallPerson | undefined;
 	/** The identity a person goes by on their own SFU, which is what a mute request has to name. */
 	targetOf: (personId: string) => string | undefined;
+	/**
+	 * In a federated call, where hands and reactions cross homeservers: those of other servers' members come from
+	 * here instead of their SFUs, and the reader's go out through here as well as over the call.
+	 */
+	federation?: FederatedSignals;
 };
 
 /**
@@ -37,10 +45,13 @@ export type CallDataChannelPeers = {
  *
  * The data channel does not replay, so a late joiner only learns of hands raised before they arrived because each
  * raiser rebroadcasts theirs when someone connects.
+ *
+ * In a federated call, other servers' members raise hands and react in the room, which every Matrix client reads,
+ * so theirs are taken from there alone: their data channel would only repeat them.
  */
 export const useCallDataChannel = (
 	localParticipant: LocalParticipant,
-	{ selfId, connections, personOf, targetOf }: CallDataChannelPeers,
+	{ selfId, connections, personOf, targetOf, federation }: CallDataChannelPeers,
 ) => {
 	const { t } = useTranslation();
 	const dispatchToastMessage = useToastMessageDispatch();
@@ -58,6 +69,7 @@ export const useCallDataChannel = (
 			const onData = (payload: Uint8Array, participant?: RemoteParticipant) => {
 				const msg = parseMessage(payload);
 				if (!msg) return;
+				if (federation && !sfu.local && msg.type !== 'mute') return;
 				const sender = participant && personOf(sfu, participant);
 				if (participant && !sender) return;
 				if (msg.type === 'hand') {
@@ -106,7 +118,39 @@ export const useCallDataChannel = (
 
 		const stops = connections.map(listen);
 		return () => stops.forEach((stop) => stop());
-	}, [connections, personOf, selfId, localParticipant, dispatchToastMessage, t]);
+	}, [connections, personOf, selfId, localParticipant, dispatchToastMessage, t, federation]);
+
+	const remoteHands = federation?.hands ?? NO_HANDS;
+	const knownRemoteHandsRef = useRef<HandsMap | undefined>(undefined);
+
+	// A hand already up when the reader arrives is not news, any more than a rebroadcast one is.
+	useEffect(() => {
+		const known = knownRemoteHandsRef.current;
+		knownRemoteHandsRef.current = remoteHands;
+		if (!known) {
+			Object.keys(remoteHands).forEach((id) => announcedHandsRef.current.add(id));
+			return;
+		}
+
+		Object.keys(known)
+			.filter((id) => !(id in remoteHands))
+			.forEach((id) => announcedHandsRef.current.delete(id));
+
+		const raised = Object.keys(remoteHands).filter((id) => !announcedHandsRef.current.has(id));
+		raised.forEach((id) => announcedHandsRef.current.add(id));
+		if (raised.length > 0) {
+			playHandRaiseChime();
+		}
+	}, [remoteHands]);
+
+	const subscribeRemoteReactions = federation?.subscribeReactions;
+	useEffect(
+		() =>
+			subscribeRemoteReactions?.(({ uid, emoji, reactionId }) => {
+				setActiveReactions((prev) => [...prev, createReaction(uid, emoji, Date.now(), reactionId)]);
+			}),
+		[subscribeRemoteReactions],
+	);
 
 	// One interval rather than a timer per reaction, so a burst of them does not fan out into many timers.
 	useEffect(() => {
@@ -128,8 +172,9 @@ export const useCallDataChannel = (
 			void localParticipant.publishData(encode({ type: 'reaction', emoji, reactionId }), { reliable: false }).catch((err) => {
 				console.warn('reaction publish failed', err);
 			});
+			federation?.react(emoji);
 		},
-		[localParticipant, selfId],
+		[localParticipant, selfId, federation],
 	);
 
 	useEffect(() => {
@@ -161,7 +206,8 @@ export const useCallDataChannel = (
 		void localParticipant.publishData(encode({ type: 'hand', raised, raisedAt }), { reliable: true }).catch((err) => {
 			console.warn('raise-hand publish failed', err);
 		});
-	}, [localHandRaised, localParticipant, selfId]);
+		federation?.raiseHand(raised);
+	}, [localHandRaised, localParticipant, selfId, federation]);
 
 	const muteParticipant = useCallback(
 		(personId: string) => {
@@ -174,7 +220,7 @@ export const useCallDataChannel = (
 		[localParticipant, targetOf],
 	);
 
-	const raisedHands = useMemo(() => orderRaisedHands(handsMap), [handsMap]);
+	const raisedHands = useMemo(() => orderRaisedHands({ ...handsMap, ...remoteHands }), [handsMap, remoteHands]);
 
 	// Someone who leaves leaves the queue, so the positions behind them stay right.
 	useEffect(() => {

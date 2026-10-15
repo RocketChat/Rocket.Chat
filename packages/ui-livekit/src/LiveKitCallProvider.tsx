@@ -33,6 +33,7 @@ import type { CallRoster } from './callRoster';
 import { useCallDataChannel } from './useCallDataChannel';
 import { useCallDeviceSwitching } from './useCallDeviceSwitching';
 import { useCallDiagnostics } from './useCallDiagnostics';
+import type { FederatedSignals } from './useFederatedSignals';
 import { useLiveKitTransport } from './useLiveKitTransport';
 import { useRemoteSFUParticipants } from './useRemoteSFUParticipants';
 import { useSendResolution } from './useSendResolution';
@@ -51,6 +52,8 @@ export type LiveKitCallProviderProps = {
 	roster?: CallRoster;
 	/** The other homeservers' SFUs a federated call watches, where the members they host publish. */
 	remoteSFUs?: readonly RemoteSFUConnection[];
+	/** How hands and reactions cross homeservers in a federated call. */
+	federatedSignals?: FederatedSignals;
 	children: ReactNode;
 };
 
@@ -83,6 +86,7 @@ export const LiveKitCallProvider = ({
 	onEnded,
 	roster,
 	remoteSFUs = NO_REMOTE_SFUS,
+	federatedSignals,
 	children,
 }: LiveKitCallProviderProps) => {
 	const dispatchToastMessage = useToastMessageDispatch();
@@ -247,6 +251,7 @@ export const LiveKitCallProvider = ({
 			connections,
 			personOf,
 			targetOf,
+			federation: federated ? federatedSignals : undefined,
 		},
 	);
 

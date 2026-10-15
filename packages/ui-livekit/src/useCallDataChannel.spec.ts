@@ -149,3 +149,95 @@ it('takes a member out of the queue when they leave their SFU', () => {
 
 	expect(result.current.raisedHands).toEqual([]);
 });
+
+describe('in a federated call', () => {
+	const federation = (hands: Record<string, number> = {}) => {
+		let deliver: ((reaction: { uid: string; emoji: string; reactionId: string }) => void) | undefined;
+		return {
+			hands,
+			subscribeReactions: jest.fn((listener) => {
+				deliver = listener;
+				return () => {
+					deliver = undefined;
+				};
+			}),
+			raiseHand: jest.fn(),
+			react: jest.fn(),
+			deliver: (reaction: { uid: string; emoji: string; reactionId: string }) => act(() => deliver?.(reaction)),
+		};
+	};
+
+	const renderFederated = (signals: ReturnType<typeof federation>) =>
+		renderHook(
+			({ signals: current }) =>
+				useCallDataChannel(localParticipant as unknown as LocalParticipant, {
+					selfId: 'me',
+					connections,
+					personOf,
+					targetOf,
+					federation: current,
+				}),
+			{ initialProps: { signals } },
+		);
+
+	// Their server tells the room, and the room is what reaches us: the data channel would only say it twice.
+	it('takes the hands and reactions of other servers’ members from the room, not from their SFU', () => {
+		const signals = federation();
+		const { result } = renderFederated(signals);
+
+		send(rc2Room, 'h-carol', { type: 'hand', raised: true, raisedAt: 10 });
+		send(rc2Room, 'h-carol', { type: 'reaction', emoji: '👍' });
+
+		expect(result.current.raisedHands).toEqual([]);
+		expect(result.current.activeReactions).toEqual([]);
+	});
+
+	it('still hears this server’s members over the call', () => {
+		const { result } = renderFederated(federation());
+
+		send(ownRoom, 'h-alice', { type: 'hand', raised: true, raisedAt: 10 });
+
+		expect(result.current.raisedHands).toEqual([{ id: 'alice', raisedAt: 10 }]);
+	});
+
+	it('still obeys a mute request from a member of another server', () => {
+		renderFederated(federation());
+
+		send(rc2Room, 'h-carol', { type: 'mute', target: 'h-me' });
+
+		expect(localParticipant.setMicrophoneEnabled).toHaveBeenCalledWith(false);
+	});
+
+	it('queues the hands the room says other servers’ members raised, with this server’s', () => {
+		const { result } = renderFederated(federation({ carol: 5 }));
+
+		send(ownRoom, 'h-alice', { type: 'hand', raised: true, raisedAt: 10 });
+
+		expect(result.current.raisedHands).toEqual([
+			{ id: 'carol', raisedAt: 5 },
+			{ id: 'alice', raisedAt: 10 },
+		]);
+	});
+
+	it('shows the reactions the room says other servers’ members made', () => {
+		const signals = federation();
+		const { result } = renderFederated(signals);
+
+		signals.deliver({ uid: 'carol', emoji: '👏', reactionId: '$reaction' });
+
+		expect(result.current.activeReactions).toEqual([expect.objectContaining({ id: '$reaction', participantId: 'carol', emoji: '👏' })]);
+	});
+
+	it('tells the room about the reader’s hand and reactions, as well as the call', () => {
+		const signals = federation();
+		const { result } = renderFederated(signals);
+
+		act(() => result.current.toggleHand());
+		act(() => result.current.sendReaction('🎉'));
+		act(() => result.current.toggleHand());
+
+		expect(signals.raiseHand.mock.calls).toEqual([[true], [false]]);
+		expect(signals.react).toHaveBeenCalledWith('🎉');
+		expect(decodedPublishes().map(({ type }) => type)).toEqual(['hand', 'reaction', 'hand']);
+	});
+});

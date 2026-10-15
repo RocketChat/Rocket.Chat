@@ -7,9 +7,10 @@ import { LiveKitCallProvider } from './LiveKitCallProvider';
 import type { CallPerson } from './callParticipants';
 import type { CallMember } from './callRoster';
 import { createCallRoster } from './callRoster';
+import { useFederatedSignals } from './useFederatedSignals';
 import { useRemoteSFUConnections } from './useRemoteSFUConnections';
 
-export type MultiSFUCallProviderProps = Omit<LiveKitCallProviderProps, 'roster' | 'remoteSFUs'> & {
+export type MultiSFUCallProviderProps = Omit<LiveKitCallProviderProps, 'roster' | 'remoteSFUs' | 'federatedSignals'> & {
 	/** The conference's roster, kept current: in a federated call, it says where each member publishes and as whom. */
 	members: readonly CallMember[];
 };
@@ -34,8 +35,9 @@ export const MultiSFUCallProvider = ({ members, ...props }: MultiSFUCallProvider
 
 	const roster = useMemo(() => createCallRoster(members, describe), [members, describe]);
 	const remoteSFUs = useRemoteSFUConnections(props.callId, props.connect, members);
+	const federatedSignals = useFederatedSignals(props.callId, members);
 
-	return <LiveKitCallProvider {...props} roster={roster} remoteSFUs={remoteSFUs} />;
+	return <LiveKitCallProvider {...props} roster={roster} remoteSFUs={remoteSFUs} federatedSignals={federatedSignals} />;
 };
 
 export default MultiSFUCallProvider;
