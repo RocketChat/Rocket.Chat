@@ -68,7 +68,7 @@ export class MediaCallCastDirector implements IMediaCallCastDirector {
 		options: GetActorContactOptions,
 		defaultContactInfo?: MediaCallContactInformation,
 	): Promise<MediaCallContact | null> {
-		const user = await Users.findOneById<Pick<IUser, '_id' | 'name' | 'username' | 'sipExtension'>>(userId, {
+		const user = await Users.findOneById<MinimalUserData>(userId, {
 			projection: { name: 1, username: 1, sipExtension: 1 },
 		});
 		if (!user) {
@@ -83,12 +83,10 @@ export class MediaCallCastDirector implements IMediaCallCastDirector {
 		options: GetActorContactOptions,
 		defaultContactInfo?: MediaCallContactInformation,
 	): Promise<MediaCallContact | null> {
-		const user = await Users.findOneBySipExtension<Pick<IUser, '_id' | 'name' | 'username' | 'sipExtension'>>(sipExtension, {
-			projection: { name: 1, username: 1, sipExtension: 1 },
-		});
+		const user = await this.findUserBySipExtension(sipExtension);
 
 		const list = user
-			? this.buildContactListForUser(user, defaultContactInfo)
+			? this.buildContactListForUser(user, defaultContactInfo, sipExtension)
 			: await this.buildContactListForExtension(sipExtension, defaultContactInfo);
 
 		return this.getContactFromList(list, options);
@@ -126,6 +124,33 @@ export class MediaCallCastDirector implements IMediaCallCastDirector {
 		return null;
 	}
 
+	protected async findUserBySipExtension(sipExtension: string): Promise<MinimalUserData | null> {
+		if (!sipExtension) {
+			return null;
+		}
+
+		const options = {
+			projection: { name: 1, username: 1, sipExtension: 1 },
+		};
+
+		const user = await Users.findOneBySipExtension<MinimalUserData>(sipExtension, options);
+
+		if (user) {
+			return user;
+		}
+
+		if (sipExtension.startsWith('+')) {
+			const normalizedSipExtension = this.normalizeSipExtension(sipExtension);
+			if (!normalizedSipExtension) {
+				return null;
+			}
+
+			return Users.findOneBySipExtension<MinimalUserData>(normalizedSipExtension, options);
+		}
+
+		return Users.findOneBySipExtension<MinimalUserData>(`+${sipExtension}`, options);
+	}
+
 	protected async getAgentForUserActorAndRole(actor: MediaCallContact, role: CallRole): Promise<UserActorAgent | null> {
 		return new UserActorAgent(actor, role);
 	}
@@ -134,16 +159,20 @@ export class MediaCallCastDirector implements IMediaCallCastDirector {
 		return new BroadcastActorAgent(actor, role);
 	}
 
-	protected buildContactListForUser(user: MinimalUserData, defaultContactInfo?: MediaCallContactInformation): ContactList {
+	protected buildContactListForUser(user: MinimalUserData, defaultContactInfo?: MediaCallContactInformation, sipId?: string): ContactList {
 		const { name: displayName, username, sipExtension, _id: id } = user;
+
+		const normalizedSipExtension = sipExtension && this.normalizeSipExtension(sipExtension);
 
 		const data: Partial<MediaCallContact> = {
 			...defaultContactInfo,
 			uid: id,
 			...(displayName && { displayName }),
 			...(username && { username }),
-			...(sipExtension && { sipExtension }),
+			...(sipExtension && { sipExtension: normalizedSipExtension || sipExtension }),
 		};
+
+		const sipContactId = sipId || sipExtension;
 
 		return {
 			user: {
@@ -151,11 +180,11 @@ export class MediaCallCastDirector implements IMediaCallCastDirector {
 				type: 'user',
 				id,
 			},
-			sip: sipExtension
+			sip: sipContactId
 				? {
 						...data,
 						type: 'sip',
-						id: sipExtension,
+						id: sipContactId,
 					}
 				: null,
 		};
@@ -165,11 +194,12 @@ export class MediaCallCastDirector implements IMediaCallCastDirector {
 		sipExtension: string,
 		defaultContactInfo?: MediaCallContactInformation,
 	): Promise<ContactList> {
-		const user = await this.findUserByPhone(sipExtension);
+		const normalizedSipExtension = sipExtension && this.normalizeSipExtension(sipExtension);
+		const user = await this.findUserByPhone(normalizedSipExtension || sipExtension);
 
 		const data: Partial<MediaCallContact> = {
 			...defaultContactInfo,
-			...(sipExtension && { sipExtension }),
+			...(sipExtension && { sipExtension: normalizedSipExtension || sipExtension }),
 			...(user?.username && { username: user.username }),
 			...(user?.name && { displayName: user.name }),
 		};
@@ -191,5 +221,13 @@ export class MediaCallCastDirector implements IMediaCallCastDirector {
 
 		const preferredActor = options.preferredType && list[options.preferredType];
 		return preferredActor || list.user || list.sip || null;
+	}
+
+	protected normalizeSipExtension(sipExtension: string): string {
+		if (!sipExtension.startsWith('+')) {
+			return sipExtension;
+		}
+
+		return sipExtension.substring(1, sipExtension.length);
 	}
 }
