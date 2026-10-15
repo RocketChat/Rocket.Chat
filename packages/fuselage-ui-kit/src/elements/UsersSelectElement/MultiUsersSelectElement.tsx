@@ -1,6 +1,6 @@
 import { Box, Chip, AutoComplete, Option, OptionAvatar, OptionContent, OptionDescription } from '@rocket.chat/fuselage';
 import { useDebouncedValue } from '@rocket.chat/fuselage-hooks';
-import { UserAvatar } from '@rocket.chat/ui-avatar';
+import { ITEM_MEDIA_SIZE, UserAvatar } from '@rocket.chat/ui-avatar';
 import type * as UiKit from '@rocket.chat/ui-kit';
 import { memo, useCallback, useState } from 'react';
 
@@ -46,7 +46,7 @@ const MultiUsersSelectElement = ({ block, context }: MultiUsersSelectElementProp
 			renderItem={({ value, label, ...props }) => (
 				<Option key={value} {...props}>
 					<OptionAvatar>
-						<UserAvatar username={value} size='x20' />
+						<UserAvatar username={value} size={ITEM_MEDIA_SIZE.condensed} />
 					</OptionAvatar>
 					<OptionContent>
 						{label} <OptionDescription>({value})</OptionDescription>

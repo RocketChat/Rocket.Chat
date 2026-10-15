@@ -3,3 +3,4 @@ export { default as AppAvatar } from './components/AppAvatar';
 export { default as RoomAvatar } from './components/RoomAvatar';
 export { default as UserAvatar } from './components/UserAvatar';
 export { default as MessageAvatar } from './components/MessageAvatar';
+export { ITEM_MEDIA_SIZE, type ItemMediaSizeName } from './itemMediaSize';

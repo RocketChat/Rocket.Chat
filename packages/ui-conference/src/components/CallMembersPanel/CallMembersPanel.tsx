@@ -1,5 +1,5 @@
-import { Box, Button } from '@rocket.chat/fuselage';
-import { MembersListDivider } from '@rocket.chat/ui-client';
+import { Box, Button, ItemGroup, ItemGroupHeader, ItemGroupTitle } from '@rocket.chat/fuselage';
+import type { TranslationKey } from '@rocket.chat/ui-contexts';
 import { useSetModal, useToastMessageDispatch } from '@rocket.chat/ui-contexts';
 import { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -58,6 +58,15 @@ const CallMembersPanel = ({ inCall, onClose }: CallMembersPanelProps) => {
 		() => composeCallParticipants(claimants, provider?.participants ?? NO_PARTICIPANTS),
 		[claimants, provider?.participants],
 	);
+
+	// The lobby first, because everyone in it is waiting on somebody in this panel to let them in.
+	const groups = (
+		[
+			{ title: 'Waiting_to_join', entries: waiting },
+			{ title: 'In_call', entries: present },
+			{ title: 'Not_in_the_call', entries: absent },
+		] satisfies { title: TranslationKey; entries: CallParticipantEntry[] }[]
+	).filter(({ entries }) => entries.length > 0);
 
 	// A set rather than one pending request: ringing a second member put the first back in reach.
 	const [ringingMembers, setRingingMembers] = useState<string[]>([]);
@@ -128,39 +137,22 @@ const CallMembersPanel = ({ inCall, onClose }: CallMembersPanelProps) => {
 				)}
 			</CallPanelHeader>
 
-			{/* Said out loud, because the rows are Fuselage `Option`s — `li` elements in a plain box, which made
-			    them neither countable nor individually referrable.
-
-			    A list per group rather than one list around everything: the dividers between the groups are not
-			    list items, and a `list` whose children are not `listitem`s is a list a screen reader may skip or
-			    miscount. Each group is its own list, named by the divider that heads it, and the box around them
-			    is a `group` so the panel still has one handle. */}
-			<Box role='group' aria-label={t('Members')} flexGrow={1} overflowY='auto'>
-				{/* First, because everyone here is waiting on somebody in this panel to let them in. */}
-				{waiting.length > 0 && (
-					<>
-						<MembersListDivider title='Waiting_to_join' count={waiting.length} />
-						<Box role='list' aria-label={t('Waiting_to_join')}>
-							{waiting.map(renderEntry)}
+			{/* A list per group rather than one list around everything, so each group is named by its own heading and
+			    the box around them is a `group` so the panel still has one handle. The heading is hidden from the
+			    list's contents: it already names the list, and a `list` should report only its rows. */}
+			<Box role='group' aria-label={t('Members')} flexGrow={1} overflowY='auto' paddingBlock={12}>
+				{groups.map(({ title, entries }) => (
+					<ItemGroup key={title} role='list' aria-label={t(title)}>
+						<Box aria-hidden>
+							<ItemGroupHeader inset='lg'>
+								<ItemGroupTitle>
+									{t(title)} ({entries.length})
+								</ItemGroupTitle>
+							</ItemGroupHeader>
 						</Box>
-					</>
-				)}
-				{present.length > 0 && (
-					<>
-						<MembersListDivider title='In_call' count={present.length} />
-						<Box role='list' aria-label={t('In_call')}>
-							{present.map(renderEntry)}
-						</Box>
-					</>
-				)}
-				{absent.length > 0 && (
-					<>
-						<MembersListDivider title='Not_in_the_call' count={absent.length} />
-						<Box role='list' aria-label={t('Not_in_the_call')}>
-							{absent.map(renderEntry)}
-						</Box>
-					</>
-				)}
+						{entries.map(renderEntry)}
+					</ItemGroup>
+				))}
 			</Box>
 		</>
 	);

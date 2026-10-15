@@ -18,10 +18,8 @@ const cancel = (handle: IdleHandle) => {
 };
 
 /**
- * Defers mounting the sidebar item's RoomMenu until the browser is idle. The menu's hooks
- * (useUserSubscription, usePermission, useSetting, useOmnichannelPrioritiesMenu, useUserPresence)
- * are not cheap to run synchronously inside the same pointerover/click task as a room navigation,
- * so we let the browser finish more urgent work first.
+ * Defers mounting a list row's menu until the browser is idle, so pointing at or clicking a row
+ * does not pay for its menu in the same task. Focus mounts it right away.
  */
 export const useDeferredMenuMount = () => {
 	const [mounted, setMounted] = useState(typeof window !== 'undefined' && !!window.DISABLE_ANIMATION);

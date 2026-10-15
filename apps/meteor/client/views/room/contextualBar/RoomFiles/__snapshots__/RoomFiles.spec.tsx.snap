@@ -150,7 +150,7 @@ exports[`renders Default without crashing 1`] = `
               __count__result_found
             </div>
             <div
-              class="rcx-box rcx-box--full rcx-css-kotrsu"
+              class="rcx-box rcx-box--full rcx-css-1l2fsf2"
               id="_r_0_"
             >
               <div
@@ -368,7 +368,7 @@ exports[`renders Empty without crashing 1`] = `
               No_results_found
             </div>
             <div
-              class="rcx-box rcx-box--full rcx-css-kotrsu"
+              class="rcx-box rcx-box--full rcx-css-1l2fsf2"
               id="_r_a_"
             >
               <div
