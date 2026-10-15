@@ -1,5 +1,5 @@
 import { AI_LICENSE_MODULE, MAX_SEARCH_ANSWER_MESSAGES } from '@rocket.chat/ai-search';
-import { Box, Button, Callout } from '@rocket.chat/fuselage';
+import { Box, Button, Callout, Skeleton } from '@rocket.chat/fuselage';
 import { Page, PageScrollableContentWithShadow, useDocumentTitle, useFeaturePreview } from '@rocket.chat/ui-client';
 import { useSearchParameter, useSetting } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
@@ -107,8 +107,10 @@ const SearchPage = (): ReactElement => {
 						/>
 					)}
 					{isLoading && (
-						<Box display='flex' justifyContent='center' color='hint' padding={24}>
-							{t('Loading')}
+						<Box display='flex' flexDirection='column' justifyContent='center'>
+							<Skeleton width='100%' />
+							<Skeleton width='100%' />
+							<Skeleton width='100%' />
 						</Box>
 					)}
 					{debouncedQuery && !isLoading && !searchError && intelligent.length === 0 && (
