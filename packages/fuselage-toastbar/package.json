@@ -43,7 +43,7 @@
 		"react-timing-hooks": "~5.2.0"
 	},
 	"devDependencies": {
-		"@rocket.chat/fuselage": "^0.95.0",
+		"@rocket.chat/fuselage": "^0.96.0",
 		"@rocket.chat/fuselage-hooks": "workspace:^",
 		"@rocket.chat/jest-presets": "workspace:~",
 		"@rocket.chat/storybook-config": "workspace:~",

@@ -39,7 +39,7 @@
 		"@rocket.chat/styled": "workspace:~"
 	},
 	"devDependencies": {
-		"@rocket.chat/fuselage": "^0.95.0",
+		"@rocket.chat/fuselage": "^0.96.0",
 		"@rocket.chat/jest-presets": "workspace:~",
 		"@rocket.chat/storybook-config": "workspace:~",
 		"@rocket.chat/storybook-dark-mode": "workspace:~",
