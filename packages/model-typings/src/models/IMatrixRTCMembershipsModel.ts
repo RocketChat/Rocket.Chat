@@ -51,6 +51,12 @@ export interface IMatrixRTCMembershipsModel extends IBaseModel<IMatrixRTCMembers
 	/** The membership whose member sent a ring, by the ring's event. */
 	findOneByNotificationEventId(eventId: string): Promise<IMatrixRTCMembership | null>;
 
+	/** Records the reaction that raised a member's hand, or forgets it once the hand is down. */
+	setHandById(_id: IMatrixRTCMembership['_id'], hand: IMatrixRTCMembership['hand'] | null): Promise<UpdateResult>;
+
+	/** The membership of another server's member whose hand a reaction raised, by that reaction's event. */
+	findOneRemoteByHandEventId(mrid: string, eventId: string): Promise<IMatrixRTCMembership | null>;
+
 	/** The membership of another server's member whose latest ring in a conference rang a Matrix user. */
 	findOneRemoteRinging(callId: IVideoConference['_id'], userId: string): Promise<IMatrixRTCMembership | null>;
 }

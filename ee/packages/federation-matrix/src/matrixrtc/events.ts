@@ -28,6 +28,12 @@ export const NOTIFICATION_STICKY_DURATION_MS = RING_LIFETIME_MS + 20_000;
 
 export const DECLINE_STICKY_DURATION_MS = 120_000;
 
+/** A raised hand is this reaction to the raiser's own membership; lowering it redacts the reaction. */
+export const RAISED_HAND_REACTION_KEY = '🖐️';
+
+/** A reaction in a call, which Element Call shows over the reacting member's tile. */
+export const CALL_REACTION_EVENT_TYPE = 'io.element.call.reaction';
+
 /** Beyond this gap between `sender_ts` and `origin_server_ts`, Element Web trusts the server's clock. */
 const SENDER_CLOCK_TOLERANCE_MS = 15_000;
 
@@ -417,4 +423,34 @@ export const buildRtcNotification = ({
 export const buildRtcDecline = (notificationEventId: string): Record<string, unknown> => ({
 	'm.relates_to': { rel_type: 'm.reference', event_id: notificationEventId },
 	'msc4354_sticky_key': notificationEventId,
+});
+
+/** Clients differ on the emoji presentation selector, so a raised hand is told by the hand alone. */
+const isRaisedHandKey = (key: unknown): boolean =>
+	isString(key) && key.replace(/\uFE0F/g, '') === RAISED_HAND_REACTION_KEY.replace(/\uFE0F/g, '');
+
+/** The membership a reaction raises its sender's hand on, if it is a raised hand at all. */
+export function parseRaisedHand(event: MatrixRTCPdu): { membershipEventId: string } | undefined {
+	const relation = event.content['m.relates_to'];
+	if (!isRecord(relation) || relation.rel_type !== 'm.annotation' || !isString(relation.event_id) || !isRaisedHandKey(relation.key)) {
+		return undefined;
+	}
+
+	return { membershipEventId: relation.event_id };
+}
+
+/** A call reaction and the membership of the member it is from. Element Call shows only its first character. */
+export function parseCallReaction(event: MatrixRTCPdu): { membershipEventId: string; emoji: string } | undefined {
+	const relation = event.content['m.relates_to'];
+	const { emoji } = event.content;
+	if (!isRecord(relation) || relation.rel_type !== 'm.reference' || !isString(relation.event_id) || !isString(emoji) || !emoji.trim()) {
+		return undefined;
+	}
+
+	return { membershipEventId: relation.event_id, emoji };
+}
+
+export const buildCallReaction = (membershipEventId: string, emoji: string): Record<string, unknown> => ({
+	'm.relates_to': { rel_type: 'm.reference', event_id: membershipEventId },
+	emoji,
 });

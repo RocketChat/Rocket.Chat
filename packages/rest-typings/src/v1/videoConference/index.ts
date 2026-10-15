@@ -81,6 +81,19 @@ export type VideoConferenceEndpoints = {
 		GET: (params: { callId: string; serverName: string; transport: string }) => { serverUrl: string; token: string };
 	};
 
+	/**
+	 * Raises or lowers the caller's hand in a federated conference, for the members of other servers: those of this
+	 * server learn it over the call itself.
+	 */
+	'/v1/video-conference.hand': {
+		POST: (params: { callId: string; raised: boolean }) => void;
+	};
+
+	/** Shows the members of other servers in a federated conference a reaction of the caller's. */
+	'/v1/video-conference.reaction': {
+		POST: (params: { callId: string; emoji: string }) => void;
+	};
+
 	'/v1/video-conference.cancel': {
 		POST: (params: VideoConfCallIdProps) => void;
 	};

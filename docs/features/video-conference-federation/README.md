@@ -149,8 +149,30 @@ the federation package through `IMatrixRTCLiveKitIssuer`.
 - A participant is shown only when their identity matches a roster member's `livekitIdentity` or one of their
   `livekitIdentityAliases` on that connection. Anyone else there watches the SFU from another server. The name and
   avatar come from the roster, not from the identity.
-- Hands, reactions and mute requests go over the data channel of the member's own SFU, which other servers'
-  members watch.
+- Hands and reactions of this server's members, and every mute request, go over the data channel of the sender's
+  own SFU. Those of other servers' members come from the room instead (see [Hands and
+  reactions](#hands-and-reactions)), and what their SFUs' data channels carry is ignored, so nothing shows twice.
+
+## Hands and reactions
+
+They cross homeservers the way Element Call sends them, so Rocket.Chat and Element users see each other's:
+
+| | Event | Content |
+| --- | --- | --- |
+| Hand up | `m.reaction` | `m.relates_to: { rel_type: m.annotation, event_id: <sender's current membership>, key: "🖐️" }` |
+| Hand down | `m.room.redaction` | of that reaction |
+| Reaction | `io.element.call.reaction` | `m.relates_to: { rel_type: m.reference, event_id: <sender's current membership> }`, `emoji` |
+
+- **Out**: in a federated call, the client also posts its hand to `video-conference.hand` and its reactions to
+  `video-conference.reaction`, and the server sends them over the member's announced membership. The reaction that
+  raised a hand is kept on the membership, which lowering it redacts. A refresh replaces the membership event, so a
+  raised hand is raised again on the new one and the old reaction redacted: readers only count a hand on the
+  current one.
+- **In**: an event counts only when it relates to a membership of its own sender. A raised hand is kept on the
+  remote membership and shown as `handRaisedAt` on the member's roster entry, so a member arriving later sees it. A
+  reaction is passed to this server's members in the call over the `video-conference` stream (`<callId>/reaction`),
+  and dropped if it arrives over 30 s after it was sent.
+- Mute requests stay Rocket.Chat's own: Element Call has no request to mute someone else.
 
 ## Settings
 
@@ -173,4 +195,4 @@ LiveKit must be configured as for any native call ([native-video-conference](../
   creates them ahead of the first token.
 - A server joining a room mid-call learns of Synapse members only when they refresh (up to an hour): Synapse does
   not push existing sticky events to newly joined servers yet.
-- Hands, reactions and mute requests are Rocket.Chat's own data-channel messages; Element Call does not read them.
+- Mute requests reach only Rocket.Chat clients. A user on two devices has one hand, kept on their latest membership.

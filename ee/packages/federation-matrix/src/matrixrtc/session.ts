@@ -18,13 +18,16 @@ import { getMatrixRTCProfile } from './config';
 import type { MatrixRTCProfile } from './config';
 import {
 	CALL_MEMBER_EVENT_TYPE,
+	CALL_REACTION_EVENT_TYPE,
 	COMPAT_MEMBERSHIP_EXPIRY_MS,
 	DECLINE_STICKY_DURATION_MS,
 	MEMBERSHIP_STICKY_DURATION_MS,
 	NOTIFICATION_STICKY_DURATION_MS,
+	RAISED_HAND_REACTION_KEY,
 	RTC_DECLINE_EVENT_TYPES,
 	RTC_MEMBER_EVENT_TYPES,
 	RTC_NOTIFICATION_EVENT_TYPES,
+	buildCallReaction,
 	buildCompatMembership,
 	buildCompatMembershipLeave,
 	buildRtcDecline,
@@ -253,6 +256,52 @@ async function refreshMembership(membership: IMatrixRTCMembership, now: Date): P
 	return { ...membership, eventId, expiresAt };
 }
 
+/** Raises a member's hand: a reaction to the membership other servers know them by, which lowering it redacts. */
+async function raiseHandOn(membership: IMatrixRTCMembership, raisedAt: Date): Promise<IMatrixRTCMembership> {
+	const { _id, mrid, userId, eventId } = membership;
+	if (!eventId) {
+		throw new Error(`Membership ${_id} has no announcement for a hand to be raised on`);
+	}
+
+	const reactionEventId = await federationSDK.sendReaction(mrid, eventId, RAISED_HAND_REACTION_KEY, userId);
+	const hand = { eventId: reactionEventId, raisedAt };
+	await MatrixRTCMemberships.setHandById(_id, hand);
+
+	return { ...membership, hand };
+}
+
+async function lowerHandOf(membership: IMatrixRTCMembership): Promise<IMatrixRTCMembership> {
+	const { _id, mrid, hand } = membership;
+	if (!hand) {
+		return membership;
+	}
+
+	await federationSDK.redactMessage(mrid, hand.eventId as EventID);
+	await MatrixRTCMemberships.setHandById(_id, null);
+
+	const { hand: _, ...lowered } = membership;
+	return lowered;
+}
+
+/**
+ * A raised hand reacts to the event that announced the membership, and readers only count it while that event is the
+ * member's current one: a refresh replaces it, so the hand is raised again on the new one.
+ */
+async function moveHand(previous: IMatrixRTCMembership, refreshed: IMatrixRTCMembership): Promise<IMatrixRTCMembership> {
+	if (!previous.hand || previous.eventId === refreshed.eventId) {
+		return refreshed;
+	}
+
+	const raised = await raiseHandOn(refreshed, previous.hand.raisedAt);
+	try {
+		await federationSDK.redactMessage(previous.mrid as RoomID, previous.hand.eventId as EventID);
+	} catch (err) {
+		logger.warn({ msg: 'Failed to redact the hand a refreshed membership replaced', membershipId: previous._id, err });
+	}
+
+	return raised;
+}
+
 /** Keeps a membership counting: a failed refresh leaves the one that still counts, and the next renewal tries again. */
 async function refreshIfDue(membership: IMatrixRTCMembership, now: Date): Promise<IMatrixRTCMembership> {
 	if (membership.expiresAt.getTime() - now.getTime() > MEMBERSHIP_REFRESH_HEADROOM_MS) {
@@ -260,7 +309,7 @@ async function refreshIfDue(membership: IMatrixRTCMembership, now: Date): Promis
 	}
 
 	try {
-		return await refreshMembership(membership, now);
+		return await moveHand(membership, await refreshMembership(membership, now));
 	} catch (err) {
 		logger.error({ msg: 'Failed to refresh a MatrixRTC membership', membershipId: membership._id, callId: membership.callId, err });
 		return membership;
@@ -384,4 +433,39 @@ export async function declineRTCSession(call: IVideoConference, user: IUser): Pr
 		userId as UserID,
 		DECLINE_STICKY_DURATION_MS,
 	);
+}
+
+/** This server's user's membership in a federated conference, which their hand and reactions relate to. */
+async function announcedMembershipOf(call: IVideoConference, user: IUser): Promise<IMatrixRTCMembership & { eventId: string }> {
+	const membership = await MatrixRTCMemberships.findOneActiveLocal(call._id, user._id);
+	if (!membership?.eventId) {
+		throw new Error(`User ${user._id} has no membership in conference ${call._id} to relate to`);
+	}
+
+	return membership as IMatrixRTCMembership & { eventId: string };
+}
+
+/**
+ * Raises or lowers, for the members of other servers, the hand of one of this server's users. Serialized with the
+ * member's join and refreshes, which may replace the event the hand relates to.
+ */
+export async function sendRTCHand(call: IVideoConference, user: IUser, raised: boolean): Promise<void> {
+	sessionOf(call);
+
+	await perMember(memberKey(call._id, user._id), async () => {
+		const membership = await announcedMembershipOf(call, user);
+		if (raised === Boolean(membership.hand)) {
+			return;
+		}
+
+		await (raised ? raiseHandOn(membership, new Date()) : lowerHandOf(membership));
+	});
+}
+
+/** Shows the members of other servers a reaction of one of this server's users, over their membership. */
+export async function sendRTCReaction(call: IVideoConference, user: IUser, emoji: string): Promise<void> {
+	const { mrid } = sessionOf(call);
+	const membership = await announcedMembershipOf(call, user);
+
+	await federationSDK.sendCustomEvent(mrid, CALL_REACTION_EVENT_TYPE, buildCallReaction(membership.eventId, emoji), membership.userId);
 }

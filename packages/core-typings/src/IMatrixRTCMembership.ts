@@ -56,6 +56,8 @@ export interface IMatrixRTCMembership extends IRocketChatRecord {
 	callIntent?: 'audio' | 'video';
 	/** The latest ring the member sent, and the Matrix users it rang: what a decline relates to. */
 	notification?: { eventId: string; userIds: string[] };
+	/** The member's raised hand: the reaction that raised it, which lowering it redacts. */
+	hand?: { eventId: string; raisedAt: Date };
 	joinedAt: Date;
 	/** Past this, the membership no longer counts, whether or not a leave ever arrives. */
 	expiresAt: Date;
@@ -71,13 +73,15 @@ export const getVideoConferenceMemberFederation = ({
 	livekitIdentity,
 	livekitIdentityAliases,
 	local,
+	hand,
 }: Pick<
 	IMatrixRTCMembership,
-	'serverName' | 'transport' | 'livekitIdentity' | 'livekitIdentityAliases' | 'local'
+	'serverName' | 'transport' | 'livekitIdentity' | 'livekitIdentityAliases' | 'local' | 'hand'
 >): VideoConferenceMemberFederation => ({
 	serverName,
 	transport: getMatrixRTCTransportKey(transport),
 	livekitIdentity,
 	...(livekitIdentityAliases && { livekitIdentityAliases }),
 	local,
+	...(!local && hand && { handRaisedAt: hand.raisedAt }),
 });

@@ -41,7 +41,15 @@ import {
 	toInternalQuoteMessageFormat,
 } from './helpers/message.parsers';
 import { validateFederatedUsername } from './helpers/validateFederatedUsername';
-import { declineRTCSession, getRemoteLiveKitToken, joinRTCSession, leaveRTCSession, notifyRTCSession } from './matrixrtc';
+import {
+	declineRTCSession,
+	getRemoteLiveKitToken,
+	joinRTCSession,
+	leaveRTCSession,
+	notifyRTCSession,
+	sendRTCHand,
+	sendRTCReaction,
+} from './matrixrtc';
 import { MatrixMediaService } from './services/MatrixMediaService';
 import { shortnameToUnicode } from './utils/emojiConverter';
 
@@ -1257,6 +1265,14 @@ export class FederationMatrix extends ServiceClass implements IFederationMatrixS
 
 	async declineRTCSession(call: IVideoConference, user: IUser): Promise<void> {
 		return declineRTCSession(call, user);
+	}
+
+	async sendRTCHand(call: IVideoConference, user: IUser, raised: boolean): Promise<void> {
+		return sendRTCHand(call, user, raised);
+	}
+
+	async sendRTCReaction(call: IVideoConference, user: IUser, emoji: string): Promise<void> {
+		return sendRTCReaction(call, user, emoji);
 	}
 
 	async getRemoteLiveKitToken(

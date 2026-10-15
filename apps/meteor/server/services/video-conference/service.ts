@@ -1606,6 +1606,15 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 		}
 	}
 
+	public async broadcastFederatedReaction(
+		callId: VideoConference['_id'],
+		uid: IUser['_id'],
+		emoji: string,
+		reactionId: string,
+	): Promise<void> {
+		void api.broadcast('video-conference.reaction', { callId, uid, emoji, reactionId });
+	}
+
 	public async ringFromFederation(callId: VideoConference['_id'], callerId: IUser['_id'], uids: IUser['_id'][]): Promise<void> {
 		const call = await VideoConferenceModel.findOneById(callId);
 		if (!call || call.endedAt) {

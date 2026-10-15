@@ -76,5 +76,7 @@ export interface IVideoConfService {
 	expireFederatedMemberships(now?: Date): Promise<void>;
 	/** Rings this server's users, as any ring does, for a member of another server calling them in a federated conference. */
 	ringFromFederation(callId: VideoConference['_id'], callerId: IUser['_id'], uids: IUser['_id'][]): Promise<void>;
+	/** Shows this server's members of a federated conference a reaction from a member of another server. */
+	broadcastFederatedReaction(callId: VideoConference['_id'], uid: IUser['_id'], emoji: string, reactionId: string): Promise<void>;
 	createVoIP(data: InsertionModel<IVoIPVideoConference>): Promise<IVoIPVideoConference['_id'] | undefined>;
 }

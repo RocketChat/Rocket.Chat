@@ -6,7 +6,15 @@ import { MatrixRTCMemberships } from '@rocket.chat/models';
 import { configureMatrixRTC } from './config';
 import { legacyLiveKitIdentityFor, liveKitIdentityFor } from './derive';
 import { setMatrixRTCLiveKitIssuer } from './issuer';
-import { MEMBERSHIP_REFRESH_HEADROOM_MS, declineRTCSession, joinRTCSession, leaveRTCSession, notifyRTCSession } from './session';
+import {
+	MEMBERSHIP_REFRESH_HEADROOM_MS,
+	declineRTCSession,
+	joinRTCSession,
+	leaveRTCSession,
+	notifyRTCSession,
+	sendRTCHand,
+	sendRTCReaction,
+} from './session';
 
 jest.mock('@rocket.chat/core-services', () => ({
 	VideoConf: { setMemberFederation: jest.fn() },
@@ -21,6 +29,7 @@ jest.mock('@rocket.chat/models', () => ({
 		removeByIds: jest.fn(),
 		setNotificationById: jest.fn(),
 		findOneRemoteRinging: jest.fn(),
+		setHandById: jest.fn(),
 	},
 }));
 
@@ -31,6 +40,9 @@ jest.mock('@rocket.chat/federation-sdk', () => ({
 		getEventById: jest.fn(),
 		sendStateEvent: jest.fn(),
 		sendStickyEvent: jest.fn(),
+		sendReaction: jest.fn(),
+		redactMessage: jest.fn(),
+		sendCustomEvent: jest.fn(),
 	},
 }));
 
@@ -250,6 +262,22 @@ describe('joinRTCSession', () => {
 			await joinRTCSession(call, alice);
 
 			expect(sdk.sendStateEvent.mock.calls[0][3]).toMatchObject({ created_ts: SENT_AT, expires: 12 * HOUR });
+		});
+
+		// Element Call counts a hand only while the event it reacts to is the member's current membership.
+		it('raises a raised hand again on the refreshed membership, and takes back the old one', async () => {
+			jest.setSystemTime(SENT_AT + 4 * HOUR - 1000);
+			const raisedAt = new Date(SENT_AT + HOUR);
+			memberships.findOneActiveLocal.mockResolvedValue(storedMembership({ hand: { eventId: '$hand', raisedAt } }));
+			sdk.sendStateEvent.mockResolvedValue({ eventId: '$refresh' } as any);
+			sdk.sendReaction.mockResolvedValue('$hand2');
+
+			const membership = await joinRTCSession(call, alice);
+
+			expect(sdk.sendReaction).toHaveBeenCalledWith('!abc:rc.example.com', '$refresh', '🖐️', '@alice:rc.example.com');
+			expect(sdk.redactMessage).toHaveBeenCalledWith('!abc:rc.example.com', '$hand');
+			expect(memberships.setHandById).toHaveBeenCalledWith('membership1', { eventId: '$hand2', raisedAt });
+			expect(membership.hand).toEqual({ eventId: '$hand2', raisedAt });
 		});
 
 		it('keeps the membership that still counts when the refresh fails', async () => {
@@ -520,5 +548,73 @@ describe('the Matrix 2.0 profiles', () => {
 
 		expect(sdk.sendStickyEvent).not.toHaveBeenCalled();
 		expect(memberships.removeByIds).toHaveBeenCalledWith(['membership1']);
+	});
+});
+
+describe('sendRTCHand', () => {
+	beforeEach(() => {
+		jest.clearAllMocks();
+		jest.useFakeTimers({ now: SENT_AT, doNotFake: ['nextTick', 'setImmediate', 'queueMicrotask'] });
+		sdk.sendReaction.mockResolvedValue('$hand');
+		sdk.redactMessage.mockResolvedValue('$redaction');
+	});
+
+	afterEach(() => {
+		jest.useRealTimers();
+	});
+
+	it('raises the hand as Element Call does: the hand emoji, annotating the member own membership', async () => {
+		memberships.findOneActiveLocal.mockResolvedValue(storedMembership());
+
+		await sendRTCHand(call, alice, true);
+
+		expect(sdk.sendReaction).toHaveBeenCalledWith('!abc:rc.example.com', '$join', '🖐️', '@alice:rc.example.com');
+		expect(memberships.setHandById).toHaveBeenCalledWith('membership1', { eventId: '$hand', raisedAt: new Date(SENT_AT) });
+	});
+
+	it('lowers it by redacting the reaction that raised it', async () => {
+		memberships.findOneActiveLocal.mockResolvedValue(storedMembership({ hand: { eventId: '$hand', raisedAt: new Date(SENT_AT) } }));
+
+		await sendRTCHand(call, alice, false);
+
+		expect(sdk.redactMessage).toHaveBeenCalledWith('!abc:rc.example.com', '$hand');
+		expect(memberships.setHandById).toHaveBeenCalledWith('membership1', null);
+	});
+
+	it('sends nothing when the hand already is where it was asked to be', async () => {
+		memberships.findOneActiveLocal.mockResolvedValue(storedMembership({ hand: { eventId: '$hand', raisedAt: new Date(SENT_AT) } }));
+		await sendRTCHand(call, alice, true);
+
+		memberships.findOneActiveLocal.mockResolvedValue(storedMembership());
+		await sendRTCHand(call, alice, false);
+
+		expect(sdk.sendReaction).not.toHaveBeenCalled();
+		expect(sdk.redactMessage).not.toHaveBeenCalled();
+	});
+
+	it('cannot raise a hand for a member who is not announced: it would relate to nothing', async () => {
+		memberships.findOneActiveLocal.mockResolvedValue(null);
+
+		await expect(sendRTCHand(call, alice, true)).rejects.toThrow('no membership');
+		expect(sdk.sendReaction).not.toHaveBeenCalled();
+	});
+});
+
+describe('sendRTCReaction', () => {
+	beforeEach(() => {
+		jest.clearAllMocks();
+	});
+
+	it('sends the reaction as Element Call does, referencing the member own membership', async () => {
+		memberships.findOneActiveLocal.mockResolvedValue(storedMembership());
+
+		await sendRTCReaction(call, alice, '🎉');
+
+		expect(sdk.sendCustomEvent).toHaveBeenCalledWith(
+			'!abc:rc.example.com',
+			'io.element.call.reaction',
+			{ 'm.relates_to': { rel_type: 'm.reference', event_id: '$join' }, 'emoji': '🎉' },
+			'@alice:rc.example.com',
+		);
 	});
 });

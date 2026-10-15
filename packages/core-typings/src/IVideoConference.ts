@@ -93,6 +93,11 @@ export type VideoConferenceMemberFederation = {
 	livekitIdentity: string;
 	/** Other identities the member may publish as: see `IMatrixRTCMembership.livekitIdentityAliases`. */
 	livekitIdentityAliases?: string[];
+	/**
+	 * When a member of another server raised their hand, as the room says. Hands of this server's members travel over
+	 * the call itself, so theirs are never here.
+	 */
+	handRaisedAt?: Date;
 	/** A member of this server, publishing on its own SFU. */
 	local: boolean;
 };

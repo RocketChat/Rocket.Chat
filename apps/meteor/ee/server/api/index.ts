@@ -11,3 +11,4 @@ import './abac';
 import './mcp';
 import './videoConferenceCallConfig';
 import './videoConferenceFederatedToken';
+import './videoConferenceFederatedSignals';

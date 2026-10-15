@@ -54,6 +54,10 @@ export interface IFederationMatrixService {
 	notifyRTCSession(call: IVideoConference, caller: IUser, targets: IUser[], kind: 'ring' | 'notification'): Promise<void>;
 	/** Turns down, for one of this server's users, a ring that came from another server. */
 	declineRTCSession(call: IVideoConference, user: IUser): Promise<void>;
+	/** Raises or lowers, for the members of other servers, the hand of one of this server's users in a federated conference. */
+	sendRTCHand(call: IVideoConference, user: IUser, raised: boolean): Promise<void>;
+	/** Shows the members of other servers a reaction of one of this server's users in a federated conference. */
+	sendRTCReaction(call: IVideoConference, user: IUser, emoji: string): Promise<void>;
 	/** A token for one of this server's users to watch, on another homeserver's SFU, the members it hosts. */
 	getRemoteLiveKitToken(
 		call: IVideoConference,

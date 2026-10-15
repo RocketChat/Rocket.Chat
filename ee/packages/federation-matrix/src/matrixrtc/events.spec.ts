@@ -7,7 +7,10 @@ import {
 	buildRtcNotification,
 	compatMembershipStateKey,
 	isNotificationLive,
+	buildCallReaction,
+	parseCallReaction,
 	parseCompatMembership,
+	parseRaisedHand,
 	parseRtcDecline,
 	parseRtcMembership,
 	parseRtcNotification,
@@ -394,5 +397,58 @@ describe('declines', () => {
 
 	it('builds the decline js-sdk sends', () => {
 		expect(buildRtcDecline('$notification_event_id')).toEqual(declineContent);
+	});
+});
+
+// What Element Call 0.26 sends (its `ReactionsSenderProvider`): a hand is a reaction to the raiser's own membership,
+// and a call reaction references it.
+describe('raised hands', () => {
+	const handEvent = (relation: Record<string, unknown>) => ({
+		sender: '@alice:example.com',
+		origin_server_ts: 1,
+		content: { 'm.relates_to': relation },
+	});
+
+	it('reads the hand Element Call raises, on the membership it annotates', () => {
+		expect(parseRaisedHand(handEvent({ rel_type: 'm.annotation', event_id: '$member', key: '🖐️' }))).toEqual({
+			membershipEventId: '$member',
+		});
+	});
+
+	it('reads a hand sent without the emoji presentation selector', () => {
+		expect(parseRaisedHand(handEvent({ rel_type: 'm.annotation', event_id: '$member', key: '\u{1F590}' }))).toBeDefined();
+	});
+
+	it('takes any other reaction for what it is', () => {
+		expect(parseRaisedHand(handEvent({ rel_type: 'm.annotation', event_id: '$member', key: '👍' }))).toBeUndefined();
+		expect(parseRaisedHand(handEvent({ rel_type: 'm.reference', event_id: '$member', key: '🖐️' }))).toBeUndefined();
+	});
+});
+
+describe('call reactions', () => {
+	it('reads the reaction Element Call sends, and the membership it is from', () => {
+		const event = {
+			sender: '@alice:example.com',
+			origin_server_ts: 1,
+			content: { 'm.relates_to': { rel_type: 'm.reference', event_id: '$member' }, 'emoji': '👍', 'name': 'thumbsup' },
+		};
+
+		expect(parseCallReaction(event)).toEqual({ membershipEventId: '$member', emoji: '👍' });
+	});
+
+	it('ignores one without an emoji, as Element Call does', () => {
+		const event = {
+			sender: '@alice:example.com',
+			origin_server_ts: 1,
+			content: { 'm.relates_to': { rel_type: 'm.reference', event_id: '$m' } },
+		};
+
+		expect(parseCallReaction(event)).toBeUndefined();
+	});
+
+	it('builds what it reads', () => {
+		const event = { sender: '@alice:example.com', origin_server_ts: 1, content: buildCallReaction('$member', '🎉') };
+
+		expect(parseCallReaction(event)).toEqual({ membershipEventId: '$member', emoji: '🎉' });
 	});
 });

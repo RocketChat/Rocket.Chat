@@ -7,7 +7,13 @@ import { handleMatrixRTCEvent } from './inbound';
 import { getOrCreateFederatedUser } from '../helpers/getOrCreateFederatedUser';
 
 jest.mock('@rocket.chat/core-services', () => ({
-	VideoConf: { syncFederatedSession: jest.fn(), ringFromFederation: jest.fn(), declineCall: jest.fn() },
+	VideoConf: {
+		syncFederatedSession: jest.fn(),
+		ringFromFederation: jest.fn(),
+		declineCall: jest.fn(),
+		setMemberFederation: jest.fn(),
+		broadcastFederatedReaction: jest.fn(),
+	},
 }));
 
 jest.mock('@rocket.chat/models', () => ({
@@ -18,6 +24,8 @@ jest.mock('@rocket.chat/models', () => ({
 		removeByIds: jest.fn(),
 		setNotificationById: jest.fn(),
 		findOneByNotificationEventId: jest.fn(),
+		setHandById: jest.fn(),
+		findOneRemoteByHandEventId: jest.fn(),
 	},
 	Rooms: { findOneFederatedByMrid: jest.fn() },
 	Users: { find: jest.fn() },
@@ -513,5 +521,119 @@ describe('rings and declines from other servers', () => {
 
 			expect(declineCall).not.toHaveBeenCalled();
 		});
+	});
+});
+
+// What Element Call 0.26 sends: a hand is a reaction to the raiser's own membership, lowered by redacting it, and a
+// call reaction references that membership.
+describe('hands and reactions from other servers', () => {
+	const setMemberFederation = jest.mocked(VideoConf.setMemberFederation);
+	const broadcastFederatedReaction = jest.mocked(VideoConf.broadcastFederatedReaction);
+
+	const bob = {
+		_id: 'm-bob',
+		uid: 'bob',
+		callId: 'call1',
+		mrid: MRID,
+		local: false,
+		userId: '@bob:remote.example.org',
+		eventId: '$bob_membership',
+		serverName: 'remote.example.org',
+		transport: { type: 'livekit', serviceUrl: SERVICE_URL },
+		livekitIdentity: '@bob:remote.example.org:BOBDEVICE',
+		livekitIdentityAliases: [],
+	};
+
+	const fromBob = (type: string, content: Record<string, unknown>, extra: Record<string, unknown> = {}) =>
+		({
+			event_id: '$event',
+			event: { type, room_id: MRID, sender: '@bob:remote.example.org', origin_server_ts: NOW - 1000, content, ...extra },
+		}) as any;
+
+	const raiseHand = () => fromBob('m.reaction', { 'm.relates_to': { rel_type: 'm.annotation', event_id: '$bob_membership', key: '🖐️' } });
+
+	beforeEach(() => {
+		jest.clearAllMocks();
+		jest.useFakeTimers({ now: NOW, doNotFake: ['nextTick', 'setImmediate', 'queueMicrotask'] });
+		configureMatrixRTC({ enabled: true, profile: 'compatibility' });
+		sdk.getConfig.mockReturnValue('rc.example.com' as any);
+		rooms.findOneFederatedByMrid.mockResolvedValue(room as any);
+		memberships.findOne.mockResolvedValue(bob as any);
+	});
+
+	afterEach(() => {
+		jest.useRealTimers();
+	});
+
+	it('raises the hand of the member whose own membership the reaction annotates, on their roster entry', async () => {
+		await handleMatrixRTCEvent(raiseHand());
+
+		expect(memberships.findOne).toHaveBeenCalledWith({
+			mrid: MRID,
+			eventId: '$bob_membership',
+			userId: '@bob:remote.example.org',
+			local: false,
+		});
+		expect(memberships.setHandById).toHaveBeenCalledWith('m-bob', { eventId: '$event', raisedAt: new Date(NOW - 1000) });
+		expect(setMemberFederation).toHaveBeenCalledWith(
+			'call1',
+			'bob',
+			expect.objectContaining({ serverName: 'remote.example.org', local: false, handRaisedAt: new Date(NOW - 1000) }),
+		);
+	});
+
+	it('ignores a hand raised on someone else membership', async () => {
+		memberships.findOne.mockResolvedValue(null);
+
+		await handleMatrixRTCEvent(raiseHand());
+
+		expect(memberships.setHandById).not.toHaveBeenCalled();
+		expect(setMemberFederation).not.toHaveBeenCalled();
+	});
+
+	it('lowers the hand when the reaction that raised it is redacted', async () => {
+		memberships.findOneRemoteByHandEventId.mockResolvedValue({ ...bob, hand: { eventId: '$hand', raisedAt: new Date(NOW) } } as any);
+
+		await handleMatrixRTCEvent(fromBob('m.room.redaction', {}, { redacts: '$hand' }));
+
+		expect(memberships.findOneRemoteByHandEventId).toHaveBeenCalledWith(MRID, '$hand');
+		expect(memberships.setHandById).toHaveBeenCalledWith('m-bob', null);
+		expect(setMemberFederation.mock.calls[0][2]).not.toHaveProperty('handRaisedAt');
+	});
+
+	it('reads the redacted event from the content, where room version 11 puts it', async () => {
+		memberships.findOneRemoteByHandEventId.mockResolvedValue({ ...bob, hand: { eventId: '$hand', raisedAt: new Date(NOW) } } as any);
+
+		await handleMatrixRTCEvent(fromBob('m.room.redaction', { redacts: '$hand' }));
+
+		expect(memberships.setHandById).toHaveBeenCalledWith('m-bob', null);
+	});
+
+	it('ignores redactions of anything but a raised hand', async () => {
+		memberships.findOneRemoteByHandEventId.mockResolvedValue(null);
+
+		await handleMatrixRTCEvent(fromBob('m.room.redaction', {}, { redacts: '$message' }));
+
+		expect(memberships.setHandById).not.toHaveBeenCalled();
+	});
+
+	it('shows this server members a reaction from a member of another server', async () => {
+		await handleMatrixRTCEvent(
+			fromBob('io.element.call.reaction', { 'm.relates_to': { rel_type: 'm.reference', event_id: '$bob_membership' }, 'emoji': '👏' }),
+		);
+
+		expect(broadcastFederatedReaction).toHaveBeenCalledWith('call1', 'bob', '👏', '$event');
+	});
+
+	it('lets a reaction that arrives long after it was sent go', async () => {
+		const late = fromBob('io.element.call.reaction', {
+			'm.relates_to': { rel_type: 'm.reference', event_id: '$bob_membership' },
+			'emoji': '👏',
+		});
+		late.event.origin_server_ts = NOW - 60_000;
+
+		await handleMatrixRTCEvent(late);
+
+		expect(broadcastFederatedReaction).not.toHaveBeenCalled();
 	});
 });

@@ -83,6 +83,14 @@ export class MatrixRTCMembershipsRaw extends BaseRaw<IMatrixRTCMembership> imple
 		return this.findOne({ 'notification.eventId': eventId });
 	}
 
+	setHandById(_id: IMatrixRTCMembership['_id'], hand: IMatrixRTCMembership['hand'] | null): Promise<UpdateResult> {
+		return this.updateOne({ _id }, hand ? { $set: { hand } } : { $unset: { hand: 1 } });
+	}
+
+	findOneRemoteByHandEventId(mrid: string, eventId: string): Promise<IMatrixRTCMembership | null> {
+		return this.findOne({ mrid, 'local': false, 'hand.eventId': eventId });
+	}
+
 	findOneRemoteRinging(callId: IVideoConference['_id'], userId: string): Promise<IMatrixRTCMembership | null> {
 		return this.findOne({ callId, 'local': false, 'notification.userIds': userId }, { sort: { _updatedAt: -1 } });
 	}

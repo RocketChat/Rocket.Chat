@@ -197,6 +197,10 @@ export class ListenersModule {
 			notifications.notifyVideoConferenceUpdatedInThisInstance(callId);
 		});
 
+		service.onEvent('video-conference.reaction', ({ callId, ...reaction }) => {
+			notifications.notifyVideoConferenceReactionInThisInstance(callId, reaction);
+		});
+
 		service.onEvent('presence.status', ({ user }) => {
 			const { _id, username, name, status, statusText, statusSource, statusExpiresAt, roles } = user;
 			if (!status || !username) {

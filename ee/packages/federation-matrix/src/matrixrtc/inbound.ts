@@ -1,5 +1,10 @@
 import { VideoConf } from '@rocket.chat/core-services';
-import { isRoomNativeFederated, isUserNativeFederated, VideoConferenceStatus } from '@rocket.chat/core-typings';
+import {
+	getVideoConferenceMemberFederation,
+	isRoomNativeFederated,
+	isUserNativeFederated,
+	VideoConferenceStatus,
+} from '@rocket.chat/core-typings';
 import type { IMatrixRTCMembership, IRoomNativeFederated, IUser } from '@rocket.chat/core-typings';
 import { federationSDK } from '@rocket.chat/federation-sdk';
 import type { HomeserverEventSignatures, RoomID } from '@rocket.chat/federation-sdk';
@@ -10,11 +15,14 @@ import { isMatrixRTCEnabled } from './config';
 import { MATRIXRTC_ROOM_CALL_SLOT_ID } from './derive';
 import {
 	CALL_MEMBER_EVENT_TYPE,
+	CALL_REACTION_EVENT_TYPE,
 	RTC_DECLINE_EVENT_TYPES,
 	RTC_MEMBER_EVENT_TYPES,
 	RTC_NOTIFICATION_EVENT_TYPES,
 	isNotificationLive,
+	parseCallReaction,
 	parseCompatMembership,
+	parseRaisedHand,
 	parseRtcDecline,
 	parseRtcMembership,
 	parseRtcNotification,
@@ -33,6 +41,9 @@ type MatrixEvent = HomeserverEventSignatures['homeserver.matrix.event'];
 type ActiveStickyEvent = Awaited<ReturnType<typeof federationSDK.getActiveStickyEvents>>[number];
 
 export type RemoteMembership = Omit<IMatrixRTCMembership, '_id' | '_updatedAt' | 'callId' | 'local'>;
+
+/** A reaction is a passing moment: one this late, from a server catching up, is no longer worth showing. */
+const REACTION_FRESHNESS_MS = 30_000;
 
 /** The services a rebuild reports to may still be starting when calls first become possible. */
 const STARTUP_REBUILD_DELAY_MS = 10_000;
@@ -262,7 +273,60 @@ async function recordDecline({ event }: MatrixEvent): Promise<void> {
 	await VideoConf.declineCall(decliner._id, ringer.callId);
 }
 
-type RTCEventKind = 'session' | 'ring' | 'decline';
+/** A member of another server whose call an event is about: the membership it relates to has to be the sender's own. */
+const remoteMembershipAt = (mrid: string, membershipEventId: string, sender: string): Promise<IMatrixRTCMembership | null> =>
+	MatrixRTCMemberships.findOne({ mrid, eventId: membershipEventId, userId: sender, local: false });
+
+/** The member's roster entry follows their membership, raised hand included. */
+const showOnRoster = async (membership: IMatrixRTCMembership): Promise<void> => {
+	if (membership.callId) {
+		await VideoConf.setMemberFederation(membership.callId, membership.uid, getVideoConferenceMemberFederation(membership));
+	}
+};
+
+async function recordRaisedHand(room: IRoomNativeFederated, { event, event_id: eventId }: MatrixEvent): Promise<void> {
+	const raise = parseRaisedHand(event);
+	const membership = raise && (await remoteMembershipAt(room.federation.mrid, raise.membershipEventId, event.sender));
+	if (!membership) {
+		return;
+	}
+
+	const hand = { eventId, raisedAt: new Date(event.origin_server_ts) };
+	await MatrixRTCMemberships.setHandById(membership._id, hand);
+	await showOnRoster({ ...membership, hand });
+}
+
+/** A redaction lowers a hand only when it redacts the reaction that raised it. */
+async function recordLoweredHand(room: IRoomNativeFederated, { event }: MatrixEvent): Promise<void> {
+	// Top-level up to room version 10, in the content from version 11.
+	const redacts = event.redacts ?? event.content.redacts;
+	if (typeof redacts !== 'string') {
+		return;
+	}
+
+	const membership = await MatrixRTCMemberships.findOneRemoteByHandEventId(room.federation.mrid, redacts);
+	if (!membership) {
+		return;
+	}
+
+	await MatrixRTCMemberships.setHandById(membership._id, null);
+	const { hand: _, ...lowered } = membership;
+	await showOnRoster(lowered);
+}
+
+async function relayReaction(room: IRoomNativeFederated, { event, event_id: eventId }: MatrixEvent): Promise<void> {
+	const reaction = parseCallReaction(event);
+	if (!reaction || Date.now() - event.origin_server_ts > REACTION_FRESHNESS_MS) {
+		return;
+	}
+
+	const membership = await remoteMembershipAt(room.federation.mrid, reaction.membershipEventId, event.sender);
+	if (membership?.callId) {
+		await VideoConf.broadcastFederatedReaction(membership.callId, membership.uid, reaction.emoji, eventId);
+	}
+}
+
+type RTCEventKind = 'session' | 'ring' | 'decline' | 'hand' | 'lowered-hand' | 'reaction';
 
 const kindOf = async (event: MatrixEvent['event']): Promise<RTCEventKind | undefined> => {
 	if (!isOwnUser(event.sender)) {
@@ -274,6 +338,15 @@ const kindOf = async (event: MatrixEvent['event']): Promise<RTCEventKind | undef
 		}
 		if (RTC_DECLINE_TYPES.has(event.type)) {
 			return 'decline';
+		}
+		if (event.type === 'm.reaction' && parseRaisedHand(event)) {
+			return 'hand';
+		}
+		if (event.type === 'm.room.redaction') {
+			return 'lowered-hand';
+		}
+		if (event.type === CALL_REACTION_EVENT_TYPE) {
+			return 'reaction';
 		}
 	}
 
@@ -306,6 +379,12 @@ export async function handleMatrixRTCEvent(payload: MatrixEvent): Promise<void> 
 			return perRoom(room.federation.mrid, () => ringLocalUsers(room, payload));
 		case 'decline':
 			return perRoom(room.federation.mrid, () => recordDecline(payload));
+		case 'hand':
+			return perRoom(room.federation.mrid, () => recordRaisedHand(room, payload));
+		case 'lowered-hand':
+			return perRoom(room.federation.mrid, () => recordLoweredHand(room, payload));
+		case 'reaction':
+			return perRoom(room.federation.mrid, () => relayReaction(room, payload));
 	}
 }
 
