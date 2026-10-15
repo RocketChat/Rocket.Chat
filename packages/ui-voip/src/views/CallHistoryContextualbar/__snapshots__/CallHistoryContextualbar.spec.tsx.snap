@@ -29,7 +29,7 @@ exports[`renders Default without crashing 1`] = `
               
             </i>
             <h5
-              class="rcx-box rcx-box--full rcx-css-1spko5i"
+              class="rcx-box rcx-box--full rcx-css-1t0ey6j"
               id="contextualbarTitle"
             >
               Call info
@@ -97,7 +97,7 @@ exports[`renders Default without crashing 1`] = `
                   class="rcx-box rcx-box--full rcx-css-15qq8ie"
                 >
                   <div
-                    class="rcx-box rcx-box--full rcx-css-6p94m3"
+                    class="rcx-box rcx-box--full rcx-css-1xbitfv"
                   >
                     <div
                       class="rcx-box rcx-box--full rcx-css-ilfe77"
@@ -149,7 +149,7 @@ exports[`renders Default without crashing 1`] = `
                     class="rcx-box rcx-box--full rcx-css-6jv9ad"
                   >
                     <div
-                      class="rcx-box rcx-box--full rcx-css-12j6r2z"
+                      class="rcx-box rcx-box--full rcx-css-1rtnzoi"
                     >
                       <i
                         aria-hidden="true"
@@ -219,9 +219,9 @@ exports[`renders Default without crashing 1`] = `
                       class="rcx-box rcx-box--full rcx-css-m8ijko"
                     >
                       <div
-                        class="rcx-box rcx-box--full rcx-css-1po16l8"
+                        class="rcx-box rcx-box--full rcx-css-clshan"
                       >
-                        Friday, February 7, 2025 at 12:00:00 PM
+                        Friday, February 7, 2025 at 9:00:00 AM
                       </div>
                     </div>
                   </div>
@@ -229,12 +229,12 @@ exports[`renders Default without crashing 1`] = `
                     class="rcx-box rcx-box--full rcx-css-6jv9ad"
                   >
                     <div
-                      class="rcx-box rcx-box--full rcx-css-1po16l8"
+                      class="rcx-box rcx-box--full rcx-css-clshan"
                     >
                       Call ID
                     </div>
                     <div
-                      class="rcx-box rcx-box--full rcx-css-6hwe8l rcx-css-wto7m1"
+                      class="rcx-box rcx-box--full rcx-css-6hwe8l rcx-css-1bttmoy"
                     >
                       1234567890
                     </div>
@@ -243,12 +243,12 @@ exports[`renders Default without crashing 1`] = `
                     class="rcx-box rcx-box--full rcx-css-6jv9ad"
                   >
                     <div
-                      class="rcx-box rcx-box--full rcx-css-1po16l8"
+                      class="rcx-box rcx-box--full rcx-css-clshan"
                     >
                       Voice call extension
                     </div>
                     <div
-                      class="rcx-box rcx-box--full rcx-css-6hwe8l rcx-css-wto7m1"
+                      class="rcx-box rcx-box--full rcx-css-6hwe8l rcx-css-1bttmoy"
                     >
                       0000
                     </div>
@@ -392,7 +392,7 @@ exports[`renders ExternalContact without crashing 1`] = `
               
             </i>
             <h5
-              class="rcx-box rcx-box--full rcx-css-1spko5i"
+              class="rcx-box rcx-box--full rcx-css-1t0ey6j"
               id="contextualbarTitle"
             >
               Call info
@@ -460,7 +460,7 @@ exports[`renders ExternalContact without crashing 1`] = `
                   class="rcx-box rcx-box--full rcx-css-15qq8ie"
                 >
                   <div
-                    class="rcx-box rcx-box--full rcx-css-6p94m3"
+                    class="rcx-box rcx-box--full rcx-css-1xbitfv"
                   >
                     <div
                       class="rcx-box rcx-box--full rcx-css-ilfe77"
@@ -486,7 +486,7 @@ exports[`renders ExternalContact without crashing 1`] = `
                     class="rcx-box rcx-box--full rcx-css-6jv9ad"
                   >
                     <div
-                      class="rcx-box rcx-box--full rcx-css-12j6r2z"
+                      class="rcx-box rcx-box--full rcx-css-1rtnzoi"
                     >
                       <i
                         aria-hidden="true"
@@ -556,9 +556,9 @@ exports[`renders ExternalContact without crashing 1`] = `
                       class="rcx-box rcx-box--full rcx-css-m8ijko"
                     >
                       <div
-                        class="rcx-box rcx-box--full rcx-css-1po16l8"
+                        class="rcx-box rcx-box--full rcx-css-clshan"
                       >
-                        Friday, February 7, 2025 at 12:00:00 PM
+                        Friday, February 7, 2025 at 9:00:00 AM
                       </div>
                     </div>
                   </div>
@@ -566,12 +566,12 @@ exports[`renders ExternalContact without crashing 1`] = `
                     class="rcx-box rcx-box--full rcx-css-6jv9ad"
                   >
                     <div
-                      class="rcx-box rcx-box--full rcx-css-1po16l8"
+                      class="rcx-box rcx-box--full rcx-css-clshan"
                     >
                       Call ID
                     </div>
                     <div
-                      class="rcx-box rcx-box--full rcx-css-6hwe8l rcx-css-wto7m1"
+                      class="rcx-box rcx-box--full rcx-css-6hwe8l rcx-css-1bttmoy"
                     >
                       1234567890
                     </div>
@@ -699,7 +699,7 @@ exports[`renders PreventedWithReason without crashing 1`] = `
               
             </i>
             <h5
-              class="rcx-box rcx-box--full rcx-css-1spko5i"
+              class="rcx-box rcx-box--full rcx-css-1t0ey6j"
               id="contextualbarTitle"
             >
               Call info
@@ -767,7 +767,7 @@ exports[`renders PreventedWithReason without crashing 1`] = `
                   class="rcx-box rcx-box--full rcx-css-15qq8ie"
                 >
                   <div
-                    class="rcx-box rcx-box--full rcx-css-6p94m3"
+                    class="rcx-box rcx-box--full rcx-css-1xbitfv"
                   >
                     <div
                       class="rcx-box rcx-box--full rcx-css-ilfe77"
@@ -819,7 +819,7 @@ exports[`renders PreventedWithReason without crashing 1`] = `
                     class="rcx-box rcx-box--full rcx-css-6jv9ad"
                   >
                     <div
-                      class="rcx-box rcx-box--full rcx-css-12j6r2z"
+                      class="rcx-box rcx-box--full rcx-css-1rtnzoi"
                     >
                       <i
                         aria-hidden="true"
@@ -883,14 +883,14 @@ exports[`renders PreventedWithReason without crashing 1`] = `
                       class="rcx-box rcx-box--full rcx-css-m8ijko"
                     >
                       <div
-                        class="rcx-box rcx-box--full rcx-css-1po16l8"
+                        class="rcx-box rcx-box--full rcx-css-clshan"
                       >
                         Prevented by app: Call Policy
                       </div>
                       <div
-                        class="rcx-box rcx-box--full rcx-css-1po16l8"
+                        class="rcx-box rcx-box--full rcx-css-clshan"
                       >
-                        Friday, February 7, 2025 at 12:00:00 PM
+                        Friday, February 7, 2025 at 9:00:00 AM
                       </div>
                     </div>
                   </div>
@@ -898,12 +898,12 @@ exports[`renders PreventedWithReason without crashing 1`] = `
                     class="rcx-box rcx-box--full rcx-css-6jv9ad"
                   >
                     <div
-                      class="rcx-box rcx-box--full rcx-css-1po16l8"
+                      class="rcx-box rcx-box--full rcx-css-clshan"
                     >
                       Call ID
                     </div>
                     <div
-                      class="rcx-box rcx-box--full rcx-css-6hwe8l rcx-css-wto7m1"
+                      class="rcx-box rcx-box--full rcx-css-6hwe8l rcx-css-1bttmoy"
                     >
                       1234567890
                     </div>
@@ -912,12 +912,12 @@ exports[`renders PreventedWithReason without crashing 1`] = `
                     class="rcx-box rcx-box--full rcx-css-6jv9ad"
                   >
                     <div
-                      class="rcx-box rcx-box--full rcx-css-1po16l8"
+                      class="rcx-box rcx-box--full rcx-css-clshan"
                     >
                       Voice call extension
                     </div>
                     <div
-                      class="rcx-box rcx-box--full rcx-css-6hwe8l rcx-css-wto7m1"
+                      class="rcx-box rcx-box--full rcx-css-6hwe8l rcx-css-1bttmoy"
                     >
                       0000
                     </div>
@@ -1061,7 +1061,7 @@ exports[`renders PreventedWithTranslatedReason without crashing 1`] = `
               
             </i>
             <h5
-              class="rcx-box rcx-box--full rcx-css-1spko5i"
+              class="rcx-box rcx-box--full rcx-css-1t0ey6j"
               id="contextualbarTitle"
             >
               Call info
@@ -1129,7 +1129,7 @@ exports[`renders PreventedWithTranslatedReason without crashing 1`] = `
                   class="rcx-box rcx-box--full rcx-css-15qq8ie"
                 >
                   <div
-                    class="rcx-box rcx-box--full rcx-css-6p94m3"
+                    class="rcx-box rcx-box--full rcx-css-1xbitfv"
                   >
                     <div
                       class="rcx-box rcx-box--full rcx-css-ilfe77"
@@ -1181,7 +1181,7 @@ exports[`renders PreventedWithTranslatedReason without crashing 1`] = `
                     class="rcx-box rcx-box--full rcx-css-6jv9ad"
                   >
                     <div
-                      class="rcx-box rcx-box--full rcx-css-12j6r2z"
+                      class="rcx-box rcx-box--full rcx-css-1rtnzoi"
                     >
                       <i
                         aria-hidden="true"
@@ -1245,14 +1245,14 @@ exports[`renders PreventedWithTranslatedReason without crashing 1`] = `
                       class="rcx-box rcx-box--full rcx-css-m8ijko"
                     >
                       <div
-                        class="rcx-box rcx-box--full rcx-css-1po16l8"
+                        class="rcx-box rcx-box--full rcx-css-clshan"
                       >
                         Prevented by app: Call Policy
                       </div>
                       <div
-                        class="rcx-box rcx-box--full rcx-css-1po16l8"
+                        class="rcx-box rcx-box--full rcx-css-clshan"
                       >
-                        Friday, February 7, 2025 at 12:00:00 PM
+                        Friday, February 7, 2025 at 9:00:00 AM
                       </div>
                     </div>
                   </div>
@@ -1260,12 +1260,12 @@ exports[`renders PreventedWithTranslatedReason without crashing 1`] = `
                     class="rcx-box rcx-box--full rcx-css-6jv9ad"
                   >
                     <div
-                      class="rcx-box rcx-box--full rcx-css-1po16l8"
+                      class="rcx-box rcx-box--full rcx-css-clshan"
                     >
                       Call ID
                     </div>
                     <div
-                      class="rcx-box rcx-box--full rcx-css-6hwe8l rcx-css-wto7m1"
+                      class="rcx-box rcx-box--full rcx-css-6hwe8l rcx-css-1bttmoy"
                     >
                       1234567890
                     </div>
@@ -1274,12 +1274,12 @@ exports[`renders PreventedWithTranslatedReason without crashing 1`] = `
                     class="rcx-box rcx-box--full rcx-css-6jv9ad"
                   >
                     <div
-                      class="rcx-box rcx-box--full rcx-css-1po16l8"
+                      class="rcx-box rcx-box--full rcx-css-clshan"
                     >
                       Voice call extension
                     </div>
                     <div
-                      class="rcx-box rcx-box--full rcx-css-6hwe8l rcx-css-wto7m1"
+                      class="rcx-box rcx-box--full rcx-css-6hwe8l rcx-css-1bttmoy"
                     >
                       0000
                     </div>
@@ -1423,7 +1423,7 @@ exports[`renders PreventedWithoutReason without crashing 1`] = `
               
             </i>
             <h5
-              class="rcx-box rcx-box--full rcx-css-1spko5i"
+              class="rcx-box rcx-box--full rcx-css-1t0ey6j"
               id="contextualbarTitle"
             >
               Call info
@@ -1491,7 +1491,7 @@ exports[`renders PreventedWithoutReason without crashing 1`] = `
                   class="rcx-box rcx-box--full rcx-css-15qq8ie"
                 >
                   <div
-                    class="rcx-box rcx-box--full rcx-css-6p94m3"
+                    class="rcx-box rcx-box--full rcx-css-1xbitfv"
                   >
                     <div
                       class="rcx-box rcx-box--full rcx-css-ilfe77"
@@ -1543,7 +1543,7 @@ exports[`renders PreventedWithoutReason without crashing 1`] = `
                     class="rcx-box rcx-box--full rcx-css-6jv9ad"
                   >
                     <div
-                      class="rcx-box rcx-box--full rcx-css-12j6r2z"
+                      class="rcx-box rcx-box--full rcx-css-1rtnzoi"
                     >
                       <i
                         aria-hidden="true"
@@ -1607,9 +1607,9 @@ exports[`renders PreventedWithoutReason without crashing 1`] = `
                       class="rcx-box rcx-box--full rcx-css-m8ijko"
                     >
                       <div
-                        class="rcx-box rcx-box--full rcx-css-1po16l8"
+                        class="rcx-box rcx-box--full rcx-css-clshan"
                       >
-                        Friday, February 7, 2025 at 12:00:00 PM
+                        Friday, February 7, 2025 at 9:00:00 AM
                       </div>
                     </div>
                   </div>
@@ -1617,12 +1617,12 @@ exports[`renders PreventedWithoutReason without crashing 1`] = `
                     class="rcx-box rcx-box--full rcx-css-6jv9ad"
                   >
                     <div
-                      class="rcx-box rcx-box--full rcx-css-1po16l8"
+                      class="rcx-box rcx-box--full rcx-css-clshan"
                     >
                       Call ID
                     </div>
                     <div
-                      class="rcx-box rcx-box--full rcx-css-6hwe8l rcx-css-wto7m1"
+                      class="rcx-box rcx-box--full rcx-css-6hwe8l rcx-css-1bttmoy"
                     >
                       1234567890
                     </div>
@@ -1631,12 +1631,12 @@ exports[`renders PreventedWithoutReason without crashing 1`] = `
                     class="rcx-box rcx-box--full rcx-css-6jv9ad"
                   >
                     <div
-                      class="rcx-box rcx-box--full rcx-css-1po16l8"
+                      class="rcx-box rcx-box--full rcx-css-clshan"
                     >
                       Voice call extension
                     </div>
                     <div
-                      class="rcx-box rcx-box--full rcx-css-6hwe8l rcx-css-wto7m1"
+                      class="rcx-box rcx-box--full rcx-css-6hwe8l rcx-css-1bttmoy"
                     >
                       0000
                     </div>

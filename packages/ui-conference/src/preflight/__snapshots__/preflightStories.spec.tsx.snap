@@ -317,11 +317,11 @@ exports[`preflight stories renders PreflightDevices CameraMenuOpen without crash
                     class="rcx-option__content"
                   >
                     <div
-                      class="rcx-box rcx-box--full rcx-css-1qw20w4"
+                      class="rcx-box rcx-box--full rcx-css-f39bd5"
                       title="FaceTime HD Camera"
                     >
                       <span
-                        class="rcx-box rcx-box--full rcx-css-1te28na"
+                        class="rcx-box rcx-box--full rcx-css-1oii38d"
                       >
                         FaceTime HD Camera
                       </span>
@@ -363,11 +363,11 @@ exports[`preflight stories renders PreflightDevices CameraMenuOpen without crash
                     class="rcx-option__content"
                   >
                     <div
-                      class="rcx-box rcx-box--full rcx-css-1qw20w4"
+                      class="rcx-box rcx-box--full rcx-css-f39bd5"
                       title="Logitech BRIO"
                     >
                       <span
-                        class="rcx-box rcx-box--full rcx-css-1te28na"
+                        class="rcx-box rcx-box--full rcx-css-1oii38d"
                       >
                         Logitech BRIO
                       </span>
@@ -429,11 +429,11 @@ exports[`preflight stories renders PreflightDevices CameraMenuOpen without crash
                     class="rcx-option__content"
                   >
                     <div
-                      class="rcx-box rcx-box--full rcx-css-1qw20w4"
+                      class="rcx-box rcx-box--full rcx-css-f39bd5"
                       title="Auto"
                     >
                       <span
-                        class="rcx-box rcx-box--full rcx-css-1te28na"
+                        class="rcx-box rcx-box--full rcx-css-1oii38d"
                       >
                         Auto
                       </span>
@@ -475,11 +475,11 @@ exports[`preflight stories renders PreflightDevices CameraMenuOpen without crash
                     class="rcx-option__content"
                   >
                     <div
-                      class="rcx-box rcx-box--full rcx-css-1qw20w4"
+                      class="rcx-box rcx-box--full rcx-css-f39bd5"
                       title="1080p"
                     >
                       <span
-                        class="rcx-box rcx-box--full rcx-css-1te28na"
+                        class="rcx-box rcx-box--full rcx-css-1oii38d"
                       >
                         1080p
                       </span>
@@ -520,11 +520,11 @@ exports[`preflight stories renders PreflightDevices CameraMenuOpen without crash
                     class="rcx-option__content"
                   >
                     <div
-                      class="rcx-box rcx-box--full rcx-css-1qw20w4"
+                      class="rcx-box rcx-box--full rcx-css-f39bd5"
                       title="720p"
                     >
                       <span
-                        class="rcx-box rcx-box--full rcx-css-1te28na"
+                        class="rcx-box rcx-box--full rcx-css-1oii38d"
                       >
                         720p
                       </span>
@@ -565,11 +565,11 @@ exports[`preflight stories renders PreflightDevices CameraMenuOpen without crash
                     class="rcx-option__content"
                   >
                     <div
-                      class="rcx-box rcx-box--full rcx-css-1qw20w4"
+                      class="rcx-box rcx-box--full rcx-css-f39bd5"
                       title="360p"
                     >
                       <span
-                        class="rcx-box rcx-box--full rcx-css-1te28na"
+                        class="rcx-box rcx-box--full rcx-css-1oii38d"
                       >
                         360p
                       </span>
@@ -610,11 +610,11 @@ exports[`preflight stories renders PreflightDevices CameraMenuOpen without crash
                     class="rcx-option__content"
                   >
                     <div
-                      class="rcx-box rcx-box--full rcx-css-1qw20w4"
+                      class="rcx-box rcx-box--full rcx-css-f39bd5"
                       title="180p"
                     >
                       <span
-                        class="rcx-box rcx-box--full rcx-css-1te28na"
+                        class="rcx-box rcx-box--full rcx-css-1oii38d"
                       >
                         180p
                       </span>

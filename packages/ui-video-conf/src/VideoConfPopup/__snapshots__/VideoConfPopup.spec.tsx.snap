@@ -70,7 +70,7 @@ exports[`renders StartCall without crashing 1`] = `
               class="rcx-box rcx-box--full rcx-css-127j9mz"
             >
               <div
-                class="rcx-box rcx-box--full rcx-css-1rfo3kt"
+                class="rcx-box rcx-box--full rcx-css-wh4qkb"
               >
                 Start Call
               </div>
@@ -123,7 +123,7 @@ exports[`renders StartCall without crashing 1`] = `
                 />
               </figure>
               <div
-                class="rcx-box rcx-box--full rcx-css-1iqy4x3"
+                class="rcx-box rcx-box--full rcx-css-yckkto"
               >
                 <i
                   aria-hidden="true"
@@ -132,7 +132,7 @@ exports[`renders StartCall without crashing 1`] = `
                   
                 </i>
                 <div
-                  class="rcx-box rcx-box--full rcx-css-rnm2z7"
+                  class="rcx-box rcx-box--full rcx-css-ja175t"
                 >
                   Room Name
                 </div>

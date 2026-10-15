@@ -24,7 +24,7 @@ exports[`renders Default without crashing 1`] = `
           class="rcx-box rcx-box--full rcx-field__row"
         >
           <div
-            class="rcx-css-146twpt"
+            class="rcx-css-1w00u9"
             id="react-aria-_r_0_"
             role="group"
           >
@@ -43,11 +43,11 @@ exports[`renders Default without crashing 1`] = `
               </span>
             </label>
             <div
-              class="rcx-css-vkh2sr"
+              class="rcx-css-1da7nzn"
               style="position: relative;"
             >
               <div
-                class="rcx-css-5ps27r"
+                class="rcx-css-1e4hr11"
                 style="position: absolute; left: 0%; transform: translate(-50%, -50%);"
               >
                 <div
@@ -102,7 +102,7 @@ exports[`renders Disabled without crashing 1`] = `
           class="rcx-box rcx-box--full rcx-field__row"
         >
           <div
-            class="rcx-css-146twpt"
+            class="rcx-css-1w00u9"
             id="react-aria-_r_6_"
             role="group"
           >
@@ -121,11 +121,11 @@ exports[`renders Disabled without crashing 1`] = `
               </span>
             </label>
             <div
-              class="rcx-css-1usji5y"
+              class="rcx-css-leve3a"
               style="position: relative;"
             >
               <div
-                class="rcx-css-1laaycj"
+                class="rcx-css-1p5ydhf"
                 style="position: absolute; left: 0%; transform: translate(-50%, -50%);"
               >
                 <div
@@ -189,7 +189,7 @@ exports[`renders WithHint without crashing 1`] = `
           class="rcx-box rcx-box--full rcx-field__row"
         >
           <div
-            class="rcx-css-146twpt"
+            class="rcx-css-1w00u9"
             id="react-aria-_r_c_"
             role="group"
           >
@@ -208,11 +208,11 @@ exports[`renders WithHint without crashing 1`] = `
               </span>
             </label>
             <div
-              class="rcx-css-14xs94t"
+              class="rcx-css-1n45kth"
               style="position: relative;"
             >
               <div
-                class="rcx-css-5ps27r"
+                class="rcx-css-1e4hr11"
                 style="position: absolute; left: 50%; transform: translate(-50%, -50%);"
               >
                 <div
@@ -279,7 +279,7 @@ exports[`renders WithResetButton without crashing 1`] = `
           class="rcx-box rcx-box--full rcx-field__row"
         >
           <div
-            class="rcx-css-146twpt"
+            class="rcx-css-1w00u9"
             id="react-aria-_r_i_"
             role="group"
           >
@@ -298,11 +298,11 @@ exports[`renders WithResetButton without crashing 1`] = `
               </span>
             </label>
             <div
-              class="rcx-css-14xs94t"
+              class="rcx-css-1n45kth"
               style="position: relative;"
             >
               <div
-                class="rcx-css-5ps27r"
+                class="rcx-css-1e4hr11"
                 style="position: absolute; left: 50%; transform: translate(-50%, -50%);"
               >
                 <div
@@ -357,7 +357,7 @@ exports[`renders WithValue without crashing 1`] = `
           class="rcx-box rcx-box--full rcx-field__row"
         >
           <div
-            class="rcx-css-146twpt"
+            class="rcx-css-1w00u9"
             id="react-aria-_r_o_"
             role="group"
           >
@@ -376,11 +376,11 @@ exports[`renders WithValue without crashing 1`] = `
               </span>
             </label>
             <div
-              class="rcx-css-14xs94t"
+              class="rcx-css-1n45kth"
               style="position: relative;"
             >
               <div
-                class="rcx-css-5ps27r"
+                class="rcx-css-1e4hr11"
                 style="position: absolute; left: 50%; transform: translate(-50%, -50%);"
               >
                 <div

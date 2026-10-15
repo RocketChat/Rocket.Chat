@@ -13,7 +13,7 @@ exports[`renders Default without crashing 1`] = `
           class="rcx-box rcx-box--full rcx-css-y0zm3a"
         >
           <h1
-            class="rcx-box rcx-box--full rcx-css-19z81xy"
+            class="rcx-box rcx-box--full rcx-css-1qxix5i"
           >
             Feature preview
           </h1>
@@ -49,12 +49,12 @@ exports[`renders Default without crashing 1`] = `
                   class="rcx-box rcx-box--full"
                 >
                   <div
-                    class="rcx-box rcx-box--full rcx-css-xyfnrl rcx-css-309749"
+                    class="rcx-box rcx-box--full rcx-css-13pwzu2 rcx-css-i99h2p"
                   >
                     Welcome to the features preview page! Here, you can enable the latest cutting-edge features that are currently under development and not yet officially released.
                   </div>
                   <section
-                    class="rcx-box rcx-box--full rcx-callout rcx-css-xyfnrl rcx-css-6jv9ad"
+                    class="rcx-box rcx-box--full rcx-callout rcx-css-13pwzu2 rcx-css-6jv9ad"
                   >
                     <i
                       aria-hidden="true"
@@ -305,7 +305,7 @@ exports[`renders NoFeatures without crashing 1`] = `
           class="rcx-box rcx-box--full rcx-css-y0zm3a"
         >
           <h1
-            class="rcx-box rcx-box--full rcx-css-19z81xy"
+            class="rcx-box rcx-box--full rcx-css-1qxix5i"
           >
             Feature preview
           </h1>

@@ -38,7 +38,7 @@ exports[`renders Default without crashing 1`] = `
                 </i>
               </button>
               <h5
-                class="rcx-box rcx-box--full rcx-css-1spko5i"
+                class="rcx-box rcx-box--full rcx-css-1t0ey6j"
                 id="contextualbarTitle"
               >
                 Invite users
@@ -116,7 +116,7 @@ exports[`renders Default without crashing 1`] = `
                       </label>
                     </span>
                     <div
-                      class="rcx-box rcx-box--full rcx-css-14258hb"
+                      class="rcx-box rcx-box--full rcx-css-14tolnz"
                     >
                       Expire on February 4, 2020 4:45 PM.
                     </div>
@@ -228,7 +228,7 @@ exports[`renders InviteEdit without crashing 1`] = `
                 </i>
               </button>
               <h5
-                class="rcx-box rcx-box--full rcx-css-1spko5i"
+                class="rcx-box rcx-box--full rcx-css-1t0ey6j"
                 id="contextualbarTitle"
               >
                 Invite users
@@ -284,7 +284,7 @@ exports[`renders InviteEdit without crashing 1`] = `
                       class="rcx-box rcx-box--full rcx-field__row"
                     >
                       <div
-                        class="rcx-box rcx-box--full rcx-css-1mbgoc8"
+                        class="rcx-box rcx-box--full rcx-css-1ds37nf"
                       >
                         <div
                           aria-hidden="true"
@@ -332,7 +332,7 @@ exports[`renders InviteEdit without crashing 1`] = `
                         aria-expanded="false"
                         aria-haspopup="listbox"
                         aria-labelledby="react-aria-_r_c_"
-                        class="rcx-box rcx-box--full rcx-box--animated rcx-select rcx-css-1vw6rc6"
+                        class="rcx-box rcx-box--full rcx-box--animated rcx-select rcx-css-3ejkxj"
                         id="_r_3_"
                         type="button"
                       >
@@ -364,7 +364,7 @@ exports[`renders InviteEdit without crashing 1`] = `
                       class="rcx-box rcx-box--full rcx-field__row"
                     >
                       <div
-                        class="rcx-box rcx-box--full rcx-css-1mbgoc8"
+                        class="rcx-box rcx-box--full rcx-css-1ds37nf"
                       >
                         <div
                           aria-hidden="true"
@@ -417,7 +417,7 @@ exports[`renders InviteEdit without crashing 1`] = `
                         aria-expanded="false"
                         aria-haspopup="listbox"
                         aria-labelledby="react-aria-_r_k_"
-                        class="rcx-box rcx-box--full rcx-box--animated rcx-select rcx-css-1vw6rc6"
+                        class="rcx-box rcx-box--full rcx-box--animated rcx-select rcx-css-3ejkxj"
                         id="_r_4_"
                         type="button"
                       >
@@ -558,7 +558,7 @@ exports[`renders InviteError without crashing 1`] = `
                 </i>
               </button>
               <h5
-                class="rcx-box rcx-box--full rcx-css-1spko5i"
+                class="rcx-box rcx-box--full rcx-css-1t0ey6j"
                 id="contextualbarTitle"
               >
                 Invite users
@@ -602,7 +602,7 @@ exports[`renders InviteError without crashing 1`] = `
                   class="rcx-box rcx-box--full rcx-css-zg7o7h"
                 >
                   <section
-                    class="rcx-box rcx-box--full rcx-callout rcx-callout--danger rcx-css-1jggbrp rcx-css-1fuhgt0"
+                    class="rcx-box rcx-box--full rcx-callout rcx-callout--danger rcx-css-j4xsg rcx-css-1fuhgt0"
                   >
                     <i
                       aria-hidden="true"
@@ -731,7 +731,7 @@ exports[`renders InviteLoading without crashing 1`] = `
                 </i>
               </button>
               <h5
-                class="rcx-box rcx-box--full rcx-css-1spko5i"
+                class="rcx-box rcx-box--full rcx-css-1t0ey6j"
                 id="contextualbarTitle"
               >
                 Invite users
@@ -775,7 +775,7 @@ exports[`renders InviteLoading without crashing 1`] = `
                   class="rcx-box rcx-box--full rcx-css-zg7o7h"
                 >
                   <span
-                    class="rcx-skeleton rcx-skeleton--text rcx-css-1jggbrp rcx-css-1qcz93u"
+                    class="rcx-skeleton rcx-skeleton--text rcx-css-j4xsg rcx-css-1qcz93u"
                   />
                 </div>
               </div>

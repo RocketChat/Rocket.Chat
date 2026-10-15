@@ -4,12 +4,12 @@ exports[`renders Default without crashing 1`] = `
 <body>
   <div>
     <div
-      class="rcx-box rcx-box--full rcx-box--focusable rcx-css-1itjqx1 rcx-css-vdozx2"
+      class="rcx-box rcx-box--full rcx-box--focusable rcx-css-1itjqx1 rcx-css-bg3h97"
       role="button"
       tabindex="0"
     >
       <div
-        class="rcx-box rcx-box--full rcx-css-1n09zs3"
+        class="rcx-box rcx-box--full rcx-css-gypsxj"
       >
         Announcement
       </div>
@@ -22,12 +22,12 @@ exports[`renders NotClickable without crashing 1`] = `
 <body>
   <div>
     <div
-      class="rcx-box rcx-box--full rcx-box--focusable rcx-css-h1m43b rcx-css-vdozx2"
+      class="rcx-box rcx-box--full rcx-box--focusable rcx-css-h1m43b rcx-css-bg3h97"
       role="banner"
       tabindex="-1"
     >
       <div
-        class="rcx-box rcx-box--full rcx-css-1n09zs3"
+        class="rcx-box rcx-box--full rcx-css-gypsxj"
       >
         Announcement
       </div>
@@ -40,12 +40,12 @@ exports[`renders WithLink without crashing 1`] = `
 <body>
   <div>
     <div
-      class="rcx-box rcx-box--full rcx-box--focusable rcx-css-1itjqx1 rcx-css-vdozx2"
+      class="rcx-box rcx-box--full rcx-box--focusable rcx-css-1itjqx1 rcx-css-bg3h97"
       role="button"
       tabindex="0"
     >
       <div
-        class="rcx-box rcx-box--full rcx-css-1n09zs3"
+        class="rcx-box rcx-box--full rcx-css-gypsxj"
       >
         <a
           href="https://rocket.chat"

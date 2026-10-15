@@ -27,7 +27,7 @@
 	"devDependencies": {
 		"@rocket.chat/core-typings": "workspace:^",
 		"@rocket.chat/css-in-js": "workspace:~",
-		"@rocket.chat/fuselage": "^0.95.0",
+		"@rocket.chat/fuselage": "workspace:~",
 		"@rocket.chat/fuselage-forms": "workspace:^",
 		"@rocket.chat/fuselage-hooks": "workspace:^",
 		"@rocket.chat/icons": "workspace:~",
