@@ -1,7 +1,23 @@
 import type { Meta, StoryObj } from '@storybook/react-webpack5';
 
-import { SidebarListItem } from '.';
-import { GenericCondensedItem, GenericExtendedItem, GenericMediumItem, decorators } from '../helpers';
+import {
+	SidebarItem,
+	SidebarItemActions,
+	SidebarItemAvatarWrapper,
+	SidebarItemBadge,
+	SidebarItemCol,
+	SidebarItemContent,
+	SidebarItemIcon,
+	SidebarItemLink,
+	SidebarItemMenu,
+	SidebarItemRow,
+	SidebarItemTimestamp,
+	SidebarItemTitle,
+	SidebarListItem,
+} from '.';
+import { Avatar } from '../../Avatar';
+import { IconButton } from '../../Button';
+import { GenericCondensedItem, GenericExtendedItem, GenericMediumItem, MenuTemplate, decorators, leterAvatarUrls } from '../helpers';
 
 export default {
 	title: 'Navigation/Sidebar/Item',
@@ -62,4 +78,99 @@ export const Extended: Story = {
 			))}
 		</>
 	),
+};
+
+type RoomRowProps = {
+	name: string;
+	avatar: string;
+	viewMode: 'condensed' | 'medium' | 'extended';
+	selected?: boolean;
+	unread?: number;
+	ringing?: boolean;
+};
+
+const avatarSizes = {
+	condensed: 'x20',
+	medium: 'x28',
+	extended: 'x36',
+} as const;
+
+const RoomRow = ({ name, avatar, viewMode, selected, unread, ringing }: RoomRowProps) => {
+	const icon = <SidebarItemIcon icon='hashtag-lock' label='Private channel' />;
+	const title = (
+		<SidebarItemTitle unread={!!unread}>
+			<SidebarItemLink href={`#${name}`} aria-current={selected ? 'page' : undefined}>
+				{name}
+			</SidebarItemLink>
+		</SidebarItemTitle>
+	);
+	const badge = !!unread && <SidebarItemBadge title={`${unread} unread messages`}>{unread}</SidebarItemBadge>;
+	const menu = (
+		<SidebarItemMenu>
+			<MenuTemplate />
+		</SidebarItemMenu>
+	);
+	const callActions = (
+		<SidebarItemActions>
+			<IconButton mini secondary success icon='phone' aria-label={`Accept call from ${name}`} />
+			<IconButton mini danger secondary icon='phone-off' aria-label={`Reject call from ${name}`} />
+		</SidebarItemActions>
+	);
+
+	return (
+		<SidebarListItem>
+			<SidebarItem is='div' selected={selected} highlighted={!!unread}>
+				<SidebarItemAvatarWrapper>
+					<Avatar size={avatarSizes[viewMode]} url={avatar} alt='' />
+				</SidebarItemAvatarWrapper>
+				{viewMode === 'extended' ? (
+					<SidebarItemCol>
+						<SidebarItemRow>
+							{icon}
+							{title}
+							<SidebarItemTimestamp unread={!!unread}>12:45</SidebarItemTimestamp>
+						</SidebarItemRow>
+						<SidebarItemRow>
+							<SidebarItemContent unread={!!unread}>{ringing ? 'Calling…' : 'Mockups are ready for review'}</SidebarItemContent>
+							{badge}
+							{ringing && callActions}
+							{menu}
+						</SidebarItemRow>
+					</SidebarItemCol>
+				) : (
+					<>
+						{icon}
+						{title}
+						{badge}
+						{ringing && callActions}
+						{menu}
+					</>
+				)}
+			</SidebarItem>
+		</SidebarListItem>
+	);
+};
+
+const RoomRows = ({ viewMode }: Pick<RoomRowProps, 'viewMode'>) => (
+	<>
+		<RoomRow name='design-team' avatar={leterAvatarUrls[0]} viewMode={viewMode} />
+		<RoomRow name='product' avatar={leterAvatarUrls[1]} viewMode={viewMode} unread={3} />
+		<RoomRow name='marketing' avatar={leterAvatarUrls[2]} viewMode={viewMode} selected />
+		<RoomRow name='support' avatar={leterAvatarUrls[3]} viewMode={viewMode} ringing />
+	</>
+);
+
+export const RoomRowCondensed: Story = {
+	name: 'Room row: condensed',
+	render: () => <RoomRows viewMode='condensed' />,
+};
+
+export const RoomRowMedium: Story = {
+	name: 'Room row: medium',
+	render: () => <RoomRows viewMode='medium' />,
+};
+
+export const RoomRowExtended: Story = {
+	name: 'Room row: extended',
+	render: () => <RoomRows viewMode='extended' />,
 };
