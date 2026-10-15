@@ -4,28 +4,24 @@ import { useEndpoint } from '@rocket.chat/ui-contexts';
 import { useQuery } from '@tanstack/react-query';
 
 import { roomsQueryKeys } from '../../../lib/queryKeys';
-import { useIsABACAvailable } from '../../admin/ABAC/hooks/useIsABACAvailable';
 
 type RoomAbacInfo = Pick<Serialized<OperationResult<'GET', '/v1/rooms.info'>>, 'abacRequiredAttributes' | 'classificationBanner'>;
 
 export const useRoomAbacInfo = <TData = RoomAbacInfo>(
 	rid: IRoom['_id'],
 	abacAttributes: IRoom['abacAttributes'],
-	select?: (data: RoomAbacInfo) => TData,
+	{ enabled, select }: { enabled: boolean; select?: (data: RoomAbacInfo) => TData },
 ) => {
-	const isABACAvailable = useIsABACAvailable();
 	const getRoomInfo = useEndpoint('GET', '/v1/rooms.info');
 
 	return useQuery({
-		queryKey: roomsQueryKeys.abacInfo(rid, abacAttributes, isABACAvailable),
+		queryKey: roomsQueryKeys.abacInfo(rid, abacAttributes),
 		queryFn: async (): Promise<RoomAbacInfo> => {
-			if (!isABACAvailable) {
-				return {};
-			}
-
 			const { abacRequiredAttributes, classificationBanner } = await getRoomInfo({ roomId: rid });
 			return { abacRequiredAttributes, classificationBanner };
 		},
+		staleTime: 15_000,
+		enabled,
 		select,
 	});
 };
