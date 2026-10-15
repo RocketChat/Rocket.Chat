@@ -50,6 +50,8 @@ $item-group-narrow-width: 320px;
 
 @mixin reveal-actions {
 	.rcx-item__actions--reveal-hover {
+		margin-inline-start: 0;
+
 		opacity: 1;
 		grid-template-columns: 1fr;
 	}
@@ -186,12 +188,14 @@ $item-group-narrow-width: 320px;
 	}
 
 	&__row {
+		--rcx-item-gap: #{lengths.margin(4)};
+
 		display: flex;
 		align-items: center;
 
 		min-width: 0;
 
-		gap: lengths.margin(4);
+		gap: var(--rcx-item-gap);
 	}
 
 	&__title {
@@ -279,6 +283,7 @@ $item-group-narrow-width: 320px;
 
 			transition:
 				grid-template-columns $item-reveal-duration ease,
+				margin-inline-start $item-reveal-duration ease,
 				opacity $item-reveal-duration ease;
 
 			opacity: 0;
@@ -302,6 +307,7 @@ $item-group-narrow-width: 320px;
 }
 
 .rcx-item-group-header {
+	--rcx-item-gap: #{lengths.margin(4)};
 	--rcx-item-inset-inline: 0;
 
 	position: relative;
@@ -321,7 +327,7 @@ $item-group-narrow-width: 320px;
 	border-radius: lengths.border-radius(small);
 
 	font-family: font-family('sans');
-	gap: lengths.margin(4);
+	gap: var(--rcx-item-gap);
 	@include use-font-scale(c2);
 	@include inset-slots;
 	@include inset-scale;
@@ -441,6 +447,11 @@ $item-group-narrow-width: 320px;
 	.rcx-item {
 		padding-block: lengths.padding(8);
 	}
+}
+
+// A hidden reveal-on-hover `ItemActions` takes no room, so it also cancels the gap in front of it.
+:where(.rcx-item, .rcx-item__row, .rcx-item-group-header) > .rcx-item__actions--reveal-hover {
+	margin-inline-start: calc(var(--rcx-item-gap) * -1);
 }
 
 @media (hover: none) {
