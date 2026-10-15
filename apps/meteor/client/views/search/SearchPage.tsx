@@ -107,7 +107,7 @@ const SearchPage = (): ReactElement => {
 							onRetry={() => void answerResult.refetch()}
 						/>
 					)}
-					<ResultsLiveRegion shouldAnnounce={true} itemCount={intelligent.length} isLoading={isLoading} />
+					<ResultsLiveRegion shouldAnnounce={false} itemCount={intelligent.length} isLoading={isLoading} />
 					{isLoading && (
 						<Box display='flex' flexDirection='column' justifyContent='center'>
 							<Skeleton width='100%' />
