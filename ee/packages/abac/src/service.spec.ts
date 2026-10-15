@@ -50,6 +50,7 @@ const mockUnsetAbacAttributesById = jest.fn();
 const mockRoomsUnsetAllAbacAttributes = jest.fn();
 const mockSettingsSet = jest.fn();
 const mockUsersFind = jest.fn();
+const mockUsersFindByIds = jest.fn();
 const mockUsersFindOneById = jest.fn();
 const mockUsersUpdateOne = jest.fn();
 const mockUsersSetAbacAttributesById = jest.fn();
@@ -91,6 +92,7 @@ jest.mock('@rocket.chat/models', () => ({
 	},
 	Users: {
 		find: (...args: any[]) => mockUsersFind(...args),
+		findByIds: (...args: any[]) => mockUsersFindByIds(...args),
 		findOneById: (...args: any[]) => mockUsersFindOneById(...args),
 		findActiveByRoomIds: (...args: any[]) => mockUsersFindActiveByRoomIds(...args),
 		findUsersByIdentifiers: (...args: any[]) => mockUsersFindUsersByIdentifiers(...args),
@@ -1324,7 +1326,7 @@ describe('AbacService (unit)', () => {
 		const auditedPairs = () => auditedEvents().map(({ data }: any) => `${data.subject.username}@${data.object._id}`);
 
 		beforeEach(() => {
-			mockUsersFind.mockReset();
+			mockUsersFindByIds.mockReset();
 			mockUsersFindOneById.mockReset();
 			mockCreateAuditServerEvents.mockReset();
 		});
@@ -1337,7 +1339,7 @@ describe('AbacService (unit)', () => {
 			];
 
 			beforeEach(() => {
-				mockUsersFind.mockReturnValue({ toArray: async () => subjects });
+				mockUsersFindByIds.mockReturnValue({ toArray: async () => subjects });
 			});
 
 			it('admits every user to a room without attributes, without asking the PDP', async () => {
@@ -1357,10 +1359,7 @@ describe('AbacService (unit)', () => {
 				await expect(service.filterUsersAllowedInRoom(['u1', 'u2', 'u3'], room)).resolves.toEqual(['u1', 'u3']);
 				expect(pdp.evaluateSubjectsAgainstAttributes).toHaveBeenCalledTimes(1);
 				expect(pdp.evaluateSubjectsAgainstAttributes).toHaveBeenCalledWith(subjects, attributes, room);
-				expect(mockUsersFind).toHaveBeenCalledWith(
-					{ _id: { $in: ['u1', 'u2', 'u3'] } },
-					{ projection: { _id: 1, username: 1, emails: 1 } },
-				);
+				expect(mockUsersFindByIds).toHaveBeenCalledWith(['u1', 'u2', 'u3'], { projection: { _id: 1, username: 1, emails: 1 } });
 			});
 
 			it('refuses the inconclusive users', async () => {
@@ -1401,7 +1400,7 @@ describe('AbacService (unit)', () => {
 				(service as any).pdp = null;
 
 				await expect(service.filterUsersAllowedInRoom(['u1'], room)).resolves.toEqual([]);
-				expect(mockUsersFind).not.toHaveBeenCalled();
+				expect(mockUsersFindByIds).not.toHaveBeenCalled();
 			});
 
 			it('refuses everyone without asking when the PDP is unavailable', async () => {
