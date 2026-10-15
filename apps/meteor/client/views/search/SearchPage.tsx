@@ -109,7 +109,7 @@ const SearchPage = (): ReactElement => {
 					)}
 					<ResultsLiveRegion shouldAnnounce={false} itemCount={intelligent.length} isLoading={isLoading} />
 					{isLoading && (
-						<Box display='flex' flexDirection='column' justifyContent='center'>
+						<Box aria-busy={isLoading} display='flex' flexDirection='column' justifyContent='center'>
 							<Skeleton width='100%' />
 							<Skeleton width='100%' />
 							<Skeleton width='100%' />

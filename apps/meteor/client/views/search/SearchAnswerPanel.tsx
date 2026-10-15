@@ -88,10 +88,9 @@ const SearchAnswerPanel = ({
 			<Card role='region' aria-labelledby={titleId}>
 				<CardHeader>
 					<FramedIcon icon='stars' size={20} />
-					<CardTitle id={titleId}>{t('Search_AI_answer')}</CardTitle>
-					<Box is='span' display='flex' role='img' title={info} aria-label={info}>
-						<Icon name='info-circled' size='x16' color='hint' />
-					</Box>
+					<CardTitle id={titleId} info={info}>
+						{t('Search_AI_answer')}
+					</CardTitle>
 				</CardHeader>
 				<CardBody flexDirection='column'>{content}</CardBody>
 			</Card>
