@@ -205,6 +205,30 @@ const MessageBox = ({
 		}
 
 		switch (event.key) {
+			case 'Tab': {
+				const { value, selectionStart, selectionEnd } = input;
+				if (selectionStart !== selectionEnd) {
+					return;
+				}
+
+				const lineStart = value.lastIndexOf('\n', Math.max(0, selectionStart - 1)) + 1;
+				const lineEnd = value.indexOf('\n', selectionStart);
+				const currentLine = value.slice(lineStart, lineEnd === -1 ? value.length : lineEnd);
+				const isListLine = /^[ \t]*(?:[-*]|[0-9]+\.)[ \t]/.test(currentLine);
+
+				if (!isListLine) {
+					return;
+				}
+
+				event.preventDefault();
+				const cursorOffset = selectionStart - lineStart;
+				input.setSelectionRange(lineStart, lineStart);
+				chat.composer?.insertText('  ');
+				const nextCursor = lineStart + 2 + cursorOffset;
+				input.setSelectionRange(nextCursor, nextCursor);
+				return;
+			}
+
 			case 'Escape': {
 				closeEditing(event);
 				if (!input.value.trim()) onEscape?.();

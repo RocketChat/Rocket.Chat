@@ -4,15 +4,20 @@ import { blockSourceOf } from './sourceOf';
 
 type Block = MessageParser.Root[number];
 
+const countListItems = (items: MessageParser.ListItem[]): number =>
+	items.reduce((total, item) => total + 1 + (item.children?.length ? countListItems(item.children) : 0), 0);
+
 // How many source lines a block covers, so the next block can be lined up with the line it started
 // on.
 const lineSpanOf = (block: Block, source: string): number => {
 	switch (block.type) {
 		case 'QUOTE':
 		case 'TASKS':
+			return block.value.length;
+
 		case 'UNORDERED_LIST':
 		case 'ORDERED_LIST':
-			return block.value.length;
+			return countListItems(block.value);
 
 		case 'CODE':
 		case 'SPOILER_BLOCK':

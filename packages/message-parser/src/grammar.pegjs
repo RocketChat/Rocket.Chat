@@ -44,6 +44,77 @@ let skipBold = false;
 let skipItalic = false;
 let skipStrikethrough = false;
 let skipReferences = false;
+
+function buildNestedList(items) {
+  if (!items || !items.length) return items;
+
+  const root = [];
+  const stack = [{ children: root, indent: -1 }];
+
+  for (const item of items) {
+    const indent = item.indent || 0;
+
+    while (stack.length > 1 && stack[stack.length - 1].indent >= indent) {
+      stack.pop();
+    }
+
+    const cleanItem = {
+      type: item.type,
+      value: item.value,
+      ...(item.number !== undefined && { number: item.number }),
+    };
+
+    const parent = stack[stack.length - 1];
+    parent.children.push(cleanItem);
+
+    cleanItem.children = [];
+
+    stack.push({ children: cleanItem.children, indent });
+  }
+
+  function cleanEmptyChildren(listItems) {
+    for (const item of listItems) {
+      if (item.children && !item.children.length) {
+        delete item.children;
+      } else if (item.children) {
+        cleanEmptyChildren(item.children);
+      }
+    }
+  }
+
+  cleanEmptyChildren(root);
+
+  return root;
+}
+
+let listSegmentMarker = null;
+let listSegmentBaseIndent = null;
+
+function resetListSegment() {
+  listSegmentMarker = null;
+  listSegmentBaseIndent = null;
+}
+
+function acceptsListItem(item) {
+  const indent = item.indent || 0;
+  const marker = item.marker;
+
+  if (listSegmentMarker === null) {
+    listSegmentMarker = marker;
+    listSegmentBaseIndent = indent;
+    return true;
+  }
+
+  if (indent > listSegmentBaseIndent) {
+    return true;
+  }
+
+  if (indent === listSegmentBaseIndent && marker === listSegmentMarker) {
+    return true;
+  }
+
+  return false;
+}
 }}
 
 Start
@@ -63,8 +134,7 @@ Blocks
   / Table
   / Heading
   / Tasks
-  / OrderedList
-  / UnorderedList
+  / List
   / Katex
   / LineBreak
 
@@ -203,32 +273,49 @@ TaskFlag = "x" { return true; } / " " { return false; }
 
 /**
  *
- * Ordered List
+ * Lists (ordered / unordered), including nested and mixed nested markers.
  * e.g:
  *  1. Item One
+ *    - Nested unordered
  *  2. Item Two
- *  3. Item Three
  *
- */
-OrderedList = items:OrderedListItem+ { return orderedList(items); }
-
-OrderedListItem = number:Digits "." [ \t]+ text:Inline { return listItem(text, parseInt(number, 10)); }
-
-/**
- *
- * Unordered List
- * e.g:
  *  - Item One
+ *    1. Nested ordered
  *  - Item Two
- *  * Item Three
- *  * Item Four
+ *
+ * Same-level marker changes (`-` then `*`, or `-` then `1.`) start a new list.
  *
  */
-UnorderedList = items:(UnorderedListHyphenItem+ / UnorderedListAsteriskItem+) { return unorderedList(items); }
+List = &{ resetListSegment(); return true; } items:ListItemInSegment+ {
+  resetListSegment();
+  const nested = buildNestedList(items);
+  return items[0].number !== undefined ? orderedList(nested) : unorderedList(nested);
+}
 
-UnorderedListHyphenItem = "-" [ \t]+ text:Inline { return listItem(text); }
+ListItemInSegment = item:AnyListItem &{ return acceptsListItem(item); } { return item; }
 
-UnorderedListAsteriskItem = "*" [ \t]+ text:UnorderedListItemContent { return listItem(text); }
+AnyListItem = OrderedListItem / UnorderedListHyphenItem / UnorderedListAsteriskItem
+
+OrderedListItem = indent:$[ \t]* number:Digits "." [ \t]+ text:Inline {
+  const item = listItem(text, parseInt(number, 10));
+  item.indent = indent.length;
+  item.marker = 'ordered';
+  return item;
+}
+
+UnorderedListHyphenItem = indent:$[ \t]* "-" [ \t]+ text:Inline {
+  const item = listItem(text);
+  item.indent = indent.length;
+  item.marker = '-';
+  return item;
+}
+
+UnorderedListAsteriskItem = indent:$[ \t]* "*" [ \t]+ text:UnorderedListItemContent {
+  const item = listItem(text);
+  item.indent = indent.length;
+  item.marker = '*';
+  return item;
+}
 
 UnorderedListItemContent = value:UnorderedListItemContentItem+ !"*" EndOfLine? { return reducePlainTexts(value); }
 

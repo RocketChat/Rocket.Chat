@@ -57,10 +57,11 @@ export const mentionChannel = (value: string) => ({
 export const orderedList = generate('ORDERED_LIST');
 export const unorderedList = generate('UNORDERED_LIST');
 
-export const listItem = (value: unknown[], number?: number) => ({
+export const listItem = (value: unknown[], number?: number, children?: unknown[]) => ({
 	type: 'LIST_ITEM' as const,
 	value,
 	...(number !== undefined ? { number } : {}),
+	...(children !== undefined && children.length > 0 ? { children } : {}),
 });
 
 export const mentionUser = (value: string) => ({
