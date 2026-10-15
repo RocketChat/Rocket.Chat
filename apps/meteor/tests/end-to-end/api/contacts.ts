@@ -94,7 +94,8 @@ describe('[Contacts]', () => {
 					.expect(200);
 
 				created.push(res.body.contact._id);
-				expect(res.body.contact).to.include({ displayName: 'John Doe', source: 'local', uid: credentials['X-User-Id'] });
+				expect(res.body.contact).to.include({ displayName: 'John Doe', source: 'local' });
+				expect(res.body.contact).to.not.have.property('uid');
 			});
 
 			it('should key a national number off the configured region, and leave an unresolvable one without a key', async () => {
@@ -146,6 +147,36 @@ describe('[Contacts]', () => {
 				const res = await listContacts({ sort: JSON.stringify({ uid: 1 }) }).expect(400);
 
 				expect(res.body).to.have.property('error', 'error-invalid-sort-keys');
+			});
+		});
+
+		describe('[/contacts.info]', () => {
+			const getContact = (as: Credentials, contactId: string) => request.get(api('contacts.info')).set(as).query({ contactId });
+
+			it('should answer with a contact the caller owns', async () => {
+				const res = await getContact(credentials, ownLocalContactId).expect('Content-Type', 'application/json').expect(200);
+
+				expect(res.body.contact).to.include({ _id: ownLocalContactId, source: 'local' });
+			});
+
+			it('should answer with a contact the sync owns, which the caller may read even without owning the folder', async () => {
+				const res = await getContact(credentials, syncedId).expect(200);
+
+				expect(res.body.contact).to.include({ _id: syncedId, displayName: syncedName, source: 'outlook' });
+			});
+
+			it('should answer 404 for a contact that belongs to someone else', async () => {
+				await getContact(credentials, otherContactId).expect(404);
+			});
+
+			it('should answer 404 for a contact that does not exist', async () => {
+				await getContact(credentials, `contacts.absent-${stamp}`).expect(404);
+			});
+
+			it('should leave out the fields only the sync reads', async () => {
+				const res = await getContact(credentials, syncedId).expect(200);
+
+				expect(res.body.contact).to.not.have.any.keys('uid', 'externalId', 'folderId', 'lastSyncAt');
 			});
 		});
 
@@ -215,28 +246,42 @@ describe('[Contacts]', () => {
 	});
 
 	(!IS_EE ? describe : describe.skip)('[without the outlook-calendar license]', () => {
-		it('should leave the contacts the sync brought in out of the list', async () => {
-			const res = await listContacts().expect('Content-Type', 'application/json').expect(200);
+		describe('[/contacts.list]', () => {
+			it('should leave the contacts the sync brought in out of the list', async () => {
+				const res = await listContacts().expect('Content-Type', 'application/json').expect(200);
 
-			expect(res.body.items.map(({ _id }: IContact) => _id)).to.not.include(syncedId);
+				expect(res.body.items.map(({ _id }: IContact) => _id)).to.not.include(syncedId);
+			});
+
+			it('should still list the contacts the user created', async () => {
+				const res = await listContacts().expect(200);
+
+				expect(res.body.items.map(({ _id }: IContact) => _id)).to.include(ownLocalContactId);
+			});
+
+			it('should report no synced contacts at all, rather than a count nothing backs', async () => {
+				const res = await listContacts().expect(200);
+
+				expect(res.body.syncedTotal).to.be.equal(0);
+			});
+
+			it('should not reach a synced contact through the search either', async () => {
+				const res = await listContacts({ text: syncedName }).expect(200);
+
+				expect(res.body.items).to.be.an('array').that.is.empty;
+			});
 		});
 
-		it('should still list the contacts the user created', async () => {
-			const res = await listContacts().expect(200);
+		describe('[/contacts.info]', () => {
+			it('should answer 404 for a synced contact asked for by id', async () => {
+				await request.get(api('contacts.info')).set(credentials).query({ contactId: syncedId }).expect(404);
+			});
 
-			expect(res.body.items.map(({ _id }: IContact) => _id)).to.include(ownLocalContactId);
-		});
+			it('should still answer for a contact the user created', async () => {
+				const res = await request.get(api('contacts.info')).set(credentials).query({ contactId: ownLocalContactId }).expect(200);
 
-		it('should report no synced contacts at all, rather than a count nothing backs', async () => {
-			const res = await listContacts().expect(200);
-
-			expect(res.body.syncedTotal).to.be.equal(0);
-		});
-
-		it('should not reach a synced contact through the search either', async () => {
-			const res = await listContacts({ text: syncedName }).expect(200);
-
-			expect(res.body.items).to.be.an('array').that.is.empty;
+				expect(res.body.contact).to.include({ _id: ownLocalContactId, source: 'local' });
+			});
 		});
 	});
 });
