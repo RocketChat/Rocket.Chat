@@ -86,6 +86,8 @@ export class AppCommandsBridge extends CommandBridge {
 
 		item.params = command.i18nParamsExample ? command.i18nParamsExample : item.params;
 		item.description = command.i18nDescription ?? item.description;
+		item.permission = command.permission ? command.permission : item.permission;
+		item.callback = this._appCommandExecutor.bind(this);
 		item.providesPreview = command.providesPreview;
 		item.previewer = command.previewer ? this._appCommandPreviewer.bind(this) : item.previewer;
 		item.previewCallback = (
