@@ -52,7 +52,7 @@ function Options<TValue extends string | number = string | number, TLabel = Reac
 			return;
 		}
 		const { current } = liRef;
-		const li = current?.querySelector<HTMLLIElement>('.rcx-option--focus');
+		const li = current?.querySelector<HTMLLIElement>('.rcx-option--focus, .rcx-item--focused');
 		if (!li) {
 			return;
 		}
