@@ -11,6 +11,8 @@ export type AbacRoomCreationRootOptions = {
 	assignableAttributes?: () => unknown;
 	membershipPreview?: () => unknown;
 	createTeam?: () => unknown;
+	createChannel?: () => unknown;
+	createGroup?: () => unknown;
 };
 
 export const mockAbacRoomCreationRoot = ({
@@ -27,6 +29,8 @@ export const mockAbacRoomCreationRoot = ({
 		creator: 'compliant',
 	}),
 	createTeam = () => ({ team: { roomId: 'team-room' } }),
+	createChannel = () => ({ channel: { _id: 'channel-room' } }),
+	createGroup = () => ({ group: { _id: 'group-room' } }),
 }: AbacRoomCreationRootOptions = {}) =>
 	[...permissions, ...(federation ? ['access-federation'] : [])]
 		.reduce(
@@ -53,6 +57,8 @@ export const mockAbacRoomCreationRoot = ({
 				)
 				.withEndpoint('POST', '/v1/abac/rooms.evaluateMembership', jest.fn().mockImplementation(membershipPreview))
 				.withEndpoint('POST', '/v1/teams.create', jest.fn().mockImplementation(createTeam))
+				.withEndpoint('POST', '/v1/channels.create', jest.fn().mockImplementation(createChannel))
+				.withEndpoint('POST', '/v1/groups.create', jest.fn().mockImplementation(createGroup))
 				.withEndpoint(
 					'GET',
 					'/v1/rooms.nameExists',

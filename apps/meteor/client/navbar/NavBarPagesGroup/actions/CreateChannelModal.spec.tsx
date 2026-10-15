@@ -141,6 +141,33 @@ describe('CreateChannelModal', () => {
 			expect(screen.getByRole('button', { name: 'Next' })).toBeEnabled();
 		});
 
+		it('should create a federated room as a public channel for a creator who can only create public channels under enforcement', async () => {
+			const createChannel = jest.fn(() => ({ channel: { _id: 'channel-room' } }));
+			const createGroup = jest.fn(() => ({ group: { _id: 'group-room' } }));
+			render(<CreateChannelModalWithData onClose={() => null} />, {
+				wrapper: abacRoot({
+					enforced: true,
+					federation: true,
+					permissions: ['create-abac-managed-room', 'create-c'],
+					createChannel,
+					createGroup,
+				}),
+			});
+
+			const federated = await screen.findByLabelText('Federation_Matrix_Federated');
+			await waitFor(() => expect(federated).toBeEnabled());
+			await userEvent.type(screen.getByRole('textbox', { name: 'Name' }), 'open');
+			await userEvent.click(federated);
+
+			expect(screen.getByLabelText('Private')).not.toBeChecked();
+
+			await userEvent.click(screen.getByRole('button', { name: 'Next' }));
+			await userEvent.click(await screen.findByRole('button', { name: 'Create' }));
+
+			await waitFor(() => expect(createChannel).toHaveBeenCalled());
+			expect(createGroup).not.toHaveBeenCalled();
+		});
+
 		it('should pre-fill the required attributes without a Remove button, and let optional rows be added and removed', async () => {
 			render(<CreateChannelModalWithData onClose={() => null} />, {
 				wrapper: abacRoot({
