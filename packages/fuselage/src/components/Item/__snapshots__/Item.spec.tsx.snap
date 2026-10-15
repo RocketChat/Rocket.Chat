@@ -1936,6 +1936,256 @@ exports[`[Item Rendering] renders Heights without crashing 1`] = `
 </body>
 `;
 
+exports[`[Item Rendering] renders HiddenActions without crashing 1`] = `
+<body>
+  <div>
+    <div
+      class="rcx-box rcx-box--full rcx-css-8sgarf"
+    >
+      <div
+        class="rcx-box rcx-box--full rcx-css-1rmybwj"
+      >
+        Rows: without actions, then with reveal="hover" actions
+      </div>
+      <div
+        class="rcx-box rcx-box--full rcx-css-m5e0pf"
+      >
+        <ul
+          aria-label="Rows"
+          class="rcx-item-group"
+        >
+          <li
+            class="rcx-item"
+          >
+            <div
+              class="rcx-item__content"
+            >
+              <div
+                class="rcx-item__title"
+                id="_r_2d_"
+              >
+                design-team
+              </div>
+            </div>
+            <span
+              class="rcx-box rcx-box--full rcx-badge rcx-badge--primary"
+            >
+              3
+            </span>
+          </li>
+          <li
+            class="rcx-item"
+          >
+            <div
+              class="rcx-item__content"
+            >
+              <div
+                class="rcx-item__title"
+                id="_r_2e_"
+              >
+                design-team
+              </div>
+            </div>
+            <span
+              class="rcx-box rcx-box--full rcx-badge rcx-badge--primary"
+            >
+              3
+            </span>
+            <div
+              class="rcx-item__actions rcx-item__actions--reveal-hover"
+            >
+              <div
+                class="rcx-item__actions-inner"
+              >
+                <button
+                  aria-label="Options for design-team"
+                  class="rcx-box rcx-box--full rcx-button--mini-square rcx-button--square rcx-button--icon rcx-button"
+                  type="button"
+                >
+                  <i
+                    aria-hidden="true"
+                    class="rcx-box rcx-box--full rcx-icon--name-kebab rcx-icon rcx-css-1tg7yd0"
+                  >
+                    
+                  </i>
+                </button>
+              </div>
+            </div>
+          </li>
+        </ul>
+      </div>
+      <div
+        class="rcx-box rcx-box--full rcx-css-1rmybwj"
+      >
+        Extended rows: without actions, then with reveal="hover" actions
+      </div>
+      <div
+        class="rcx-box rcx-box--full rcx-css-m5e0pf"
+      >
+        <ul
+          aria-label="Extended rows"
+          class="rcx-item-group"
+        >
+          <li
+            class="rcx-item"
+          >
+            <div
+              class="rcx-item__content"
+            >
+              <div
+                class="rcx-item__row"
+              >
+                <div
+                  class="rcx-item__title"
+                  id="_r_2f_"
+                >
+                  design-team
+                </div>
+                <div
+                  class="rcx-item__meta"
+                >
+                  12:45
+                </div>
+              </div>
+              <div
+                class="rcx-item__row"
+              >
+                <div
+                  class="rcx-item__description"
+                >
+                  Mockups are ready
+                </div>
+                <span
+                  class="rcx-box rcx-box--full rcx-badge rcx-badge--primary"
+                >
+                  3
+                </span>
+              </div>
+            </div>
+          </li>
+          <li
+            class="rcx-item"
+          >
+            <div
+              class="rcx-item__content"
+            >
+              <div
+                class="rcx-item__row"
+              >
+                <div
+                  class="rcx-item__title"
+                  id="_r_2g_"
+                >
+                  design-team
+                </div>
+                <div
+                  class="rcx-item__meta"
+                >
+                  12:45
+                </div>
+              </div>
+              <div
+                class="rcx-item__row"
+              >
+                <div
+                  class="rcx-item__description"
+                >
+                  Mockups are ready
+                </div>
+                <span
+                  class="rcx-box rcx-box--full rcx-badge rcx-badge--primary"
+                >
+                  3
+                </span>
+                <div
+                  class="rcx-item__actions rcx-item__actions--reveal-hover"
+                >
+                  <div
+                    class="rcx-item__actions-inner"
+                  >
+                    <button
+                      aria-label="Options for design-team"
+                      class="rcx-box rcx-box--full rcx-button--mini-square rcx-button--square rcx-button--icon rcx-button"
+                      type="button"
+                    >
+                      <i
+                        aria-hidden="true"
+                        class="rcx-box rcx-box--full rcx-icon--name-kebab rcx-icon rcx-css-1tg7yd0"
+                      >
+                        
+                      </i>
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </li>
+        </ul>
+      </div>
+      <div
+        class="rcx-box rcx-box--full rcx-css-1rmybwj"
+      >
+        Group headers: without actions, then with reveal="hover" actions
+      </div>
+      <div
+        class="rcx-box rcx-box--full rcx-css-m5e0pf"
+      >
+        <div
+          class="rcx-item-group-header"
+        >
+          <div
+            class="rcx-item-group-title"
+            id="_r_2h_"
+          >
+            Favorites
+          </div>
+          <span
+            class="rcx-box rcx-box--full rcx-badge rcx-badge--primary"
+          >
+            3
+          </span>
+        </div>
+        <div
+          class="rcx-item-group-header"
+        >
+          <div
+            class="rcx-item-group-title"
+            id="_r_2i_"
+          >
+            Favorites
+          </div>
+          <span
+            class="rcx-box rcx-box--full rcx-badge rcx-badge--primary"
+          >
+            3
+          </span>
+          <div
+            class="rcx-item__actions rcx-item__actions--reveal-hover"
+          >
+            <div
+              class="rcx-item__actions-inner"
+            >
+              <button
+                aria-label="Options for Favorites"
+                class="rcx-box rcx-box--full rcx-button--mini-square rcx-button--square rcx-button--icon rcx-button"
+                type="button"
+              >
+                <i
+                  aria-hidden="true"
+                  class="rcx-box rcx-box--full rcx-icon--name-kebab rcx-icon rcx-css-1tg7yd0"
+                >
+                  
+                </i>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</body>
+`;
+
 exports[`[Item Rendering] renders Icons without crashing 1`] = `
 <body>
   <div>
@@ -1971,7 +2221,7 @@ exports[`[Item Rendering] renders Icons without crashing 1`] = `
               <div
                 aria-label="Public channel"
                 class="rcx-item__icon"
-                id="_r_2d_"
+                id="_r_2j_"
                 role="img"
               >
                 <i
@@ -1983,10 +2233,10 @@ exports[`[Item Rendering] renders Icons without crashing 1`] = `
               </div>
               <div
                 class="rcx-item__title"
-                id="_r_2e_"
+                id="_r_2k_"
               >
                 <a
-                  aria-describedby="_r_2d_"
+                  aria-describedby="_r_2j_"
                   class="rcx-item__link"
                   href="#general"
                 >
@@ -2012,7 +2262,7 @@ exports[`[Item Rendering] renders Icons without crashing 1`] = `
                 aria-haspopup="true"
                 aria-label="Options for general"
                 class="rcx-box rcx-box--full rcx-button--mini-square rcx-button--square rcx-button--icon rcx-button"
-                id="react-aria-_r_2f_"
+                id="react-aria-_r_2l_"
                 title="Options"
                 type="button"
               >
@@ -2051,7 +2301,7 @@ exports[`[Item Rendering] renders Icons without crashing 1`] = `
               <div
                 aria-label="Team"
                 class="rcx-item__icon"
-                id="_r_2h_"
+                id="_r_2n_"
                 role="img"
               >
                 <i
@@ -2063,10 +2313,10 @@ exports[`[Item Rendering] renders Icons without crashing 1`] = `
               </div>
               <div
                 class="rcx-item__title"
-                id="_r_2i_"
+                id="_r_2o_"
               >
                 <a
-                  aria-describedby="_r_2h_"
+                  aria-describedby="_r_2n_"
                   class="rcx-item__link"
                   href="#design-system"
                 >
@@ -2092,7 +2342,7 @@ exports[`[Item Rendering] renders Icons without crashing 1`] = `
                 aria-haspopup="true"
                 aria-label="Options for design-system"
                 class="rcx-box rcx-box--full rcx-button--mini-square rcx-button--square rcx-button--icon rcx-button"
-                id="react-aria-_r_2j_"
+                id="react-aria-_r_2p_"
                 title="Options"
                 type="button"
               >
@@ -2131,7 +2381,7 @@ exports[`[Item Rendering] renders Icons without crashing 1`] = `
               <div
                 aria-label="Private channel"
                 class="rcx-item__icon"
-                id="_r_2l_"
+                id="_r_2r_"
                 role="img"
               >
                 <i
@@ -2143,10 +2393,10 @@ exports[`[Item Rendering] renders Icons without crashing 1`] = `
               </div>
               <div
                 class="rcx-item__title"
-                id="_r_2m_"
+                id="_r_2s_"
               >
                 <a
-                  aria-describedby="_r_2l_"
+                  aria-describedby="_r_2r_"
                   class="rcx-item__link"
                   href="#ops-oncall"
                 >
@@ -2172,7 +2422,7 @@ exports[`[Item Rendering] renders Icons without crashing 1`] = `
                 aria-haspopup="true"
                 aria-label="Options for ops-oncall"
                 class="rcx-box rcx-box--full rcx-button--mini-square rcx-button--square rcx-button--icon rcx-button"
-                id="react-aria-_r_2n_"
+                id="react-aria-_r_2t_"
                 title="Options"
                 type="button"
               >
@@ -2211,7 +2461,7 @@ exports[`[Item Rendering] renders Icons without crashing 1`] = `
               <div
                 aria-label="Public channel"
                 class="rcx-item__icon"
-                id="_r_2p_"
+                id="_r_2v_"
                 role="img"
               >
                 <i
@@ -2223,10 +2473,10 @@ exports[`[Item Rendering] renders Icons without crashing 1`] = `
               </div>
               <div
                 class="rcx-item__title"
-                id="_r_2q_"
+                id="_r_30_"
               >
                 <a
-                  aria-describedby="_r_2p_"
+                  aria-describedby="_r_2v_"
                   class="rcx-item__link"
                   href="#qa-release"
                 >
@@ -2246,7 +2496,7 @@ exports[`[Item Rendering] renders Icons without crashing 1`] = `
                 aria-haspopup="true"
                 aria-label="Options for qa-release"
                 class="rcx-box rcx-box--full rcx-button--mini-square rcx-button--square rcx-button--icon rcx-button"
-                id="react-aria-_r_2r_"
+                id="react-aria-_r_31_"
                 title="Options"
                 type="button"
               >
@@ -2285,7 +2535,7 @@ exports[`[Item Rendering] renders Icons without crashing 1`] = `
               <div
                 aria-label="Away"
                 class="rcx-item__icon"
-                id="_r_2t_"
+                id="_r_33_"
                 role="img"
               >
                 <svg
@@ -2305,10 +2555,10 @@ exports[`[Item Rendering] renders Icons without crashing 1`] = `
               </div>
               <div
                 class="rcx-item__title"
-                id="_r_2u_"
+                id="_r_34_"
               >
                 <a
-                  aria-describedby="_r_2t_"
+                  aria-describedby="_r_33_"
                   class="rcx-item__link"
                   href="#kenji"
                 >
@@ -2328,7 +2578,7 @@ exports[`[Item Rendering] renders Icons without crashing 1`] = `
                 aria-haspopup="true"
                 aria-label="Options for Kenji Takahashi"
                 class="rcx-box rcx-box--full rcx-button--mini-square rcx-button--square rcx-button--icon rcx-button"
-                id="react-aria-_r_2v_"
+                id="react-aria-_r_35_"
                 title="Options"
                 type="button"
               >
@@ -2367,7 +2617,7 @@ exports[`[Item Rendering] renders Icons without crashing 1`] = `
               <div
                 aria-label="Online"
                 class="rcx-item__icon"
-                id="_r_31_"
+                id="_r_37_"
                 role="img"
               >
                 <svg
@@ -2385,10 +2635,10 @@ exports[`[Item Rendering] renders Icons without crashing 1`] = `
               </div>
               <div
                 class="rcx-item__title"
-                id="_r_32_"
+                id="_r_38_"
               >
                 <a
-                  aria-describedby="_r_31_"
+                  aria-describedby="_r_37_"
                   class="rcx-item__link"
                   href="#mariana"
                 >
@@ -2414,7 +2664,7 @@ exports[`[Item Rendering] renders Icons without crashing 1`] = `
                 aria-haspopup="true"
                 aria-label="Options for Mariana Kovač"
                 class="rcx-box rcx-box--full rcx-button--mini-square rcx-button--square rcx-button--icon rcx-button"
-                id="react-aria-_r_33_"
+                id="react-aria-_r_39_"
                 title="Options"
                 type="button"
               >
@@ -2453,7 +2703,7 @@ exports[`[Item Rendering] renders Icons without crashing 1`] = `
               <div
                 aria-label="Offline"
                 class="rcx-item__icon"
-                id="_r_35_"
+                id="_r_3b_"
                 role="img"
               >
                 <svg
@@ -2476,10 +2726,10 @@ exports[`[Item Rendering] renders Icons without crashing 1`] = `
               </div>
               <div
                 class="rcx-item__title"
-                id="_r_36_"
+                id="_r_3c_"
               >
                 <a
-                  aria-describedby="_r_35_"
+                  aria-describedby="_r_3b_"
                   class="rcx-item__link"
                   href="#priya"
                 >
@@ -2499,7 +2749,7 @@ exports[`[Item Rendering] renders Icons without crashing 1`] = `
                 aria-haspopup="true"
                 aria-label="Options for Priya Nair"
                 class="rcx-box rcx-box--full rcx-button--mini-square rcx-button--square rcx-button--icon rcx-button"
-                id="react-aria-_r_37_"
+                id="react-aria-_r_3d_"
                 title="Options"
                 type="button"
               >
@@ -2538,7 +2788,7 @@ exports[`[Item Rendering] renders Icons without crashing 1`] = `
               <div
                 aria-label="Discussion"
                 class="rcx-item__icon"
-                id="_r_39_"
+                id="_r_3f_"
                 role="img"
               >
                 <i
@@ -2550,10 +2800,10 @@ exports[`[Item Rendering] renders Icons without crashing 1`] = `
               </div>
               <div
                 class="rcx-item__title"
-                id="_r_3a_"
+                id="_r_3g_"
               >
                 <a
-                  aria-describedby="_r_39_"
+                  aria-describedby="_r_3f_"
                   class="rcx-item__link"
                   href="#item-api"
                 >
@@ -2579,7 +2829,7 @@ exports[`[Item Rendering] renders Icons without crashing 1`] = `
                 aria-haspopup="true"
                 aria-label="Options for Item API review"
                 class="rcx-box rcx-box--full rcx-button--mini-square rcx-button--square rcx-button--icon rcx-button"
-                id="react-aria-_r_3b_"
+                id="react-aria-_r_3h_"
                 title="Options"
                 type="button"
               >
@@ -2640,7 +2890,7 @@ exports[`[Item Rendering] renders Insets without crashing 1`] = `
               >
                 <div
                   class="rcx-item__title"
-                  id="_r_3d_"
+                  id="_r_3j_"
                 >
                   <button
                     class="rcx-item__link"
@@ -2705,7 +2955,7 @@ exports[`[Item Rendering] renders Insets without crashing 1`] = `
               >
                 <div
                   class="rcx-item__title"
-                  id="_r_3e_"
+                  id="_r_3k_"
                 >
                   <button
                     class="rcx-item__link"
@@ -2770,7 +3020,7 @@ exports[`[Item Rendering] renders Insets without crashing 1`] = `
               >
                 <div
                   class="rcx-item__title"
-                  id="_r_3f_"
+                  id="_r_3l_"
                 >
                   <button
                     class="rcx-item__link"
@@ -2835,7 +3085,7 @@ exports[`[Item Rendering] renders Insets without crashing 1`] = `
               >
                 <div
                   class="rcx-item__title"
-                  id="_r_3g_"
+                  id="_r_3m_"
                 >
                   <button
                     class="rcx-item__link"
@@ -2881,7 +3131,7 @@ exports[`[Item Rendering] renders MenuSections without crashing 1`] = `
         role="menu"
       >
         <div
-          aria-labelledby="_r_3h_"
+          aria-labelledby="_r_3n_"
           class="rcx-item-group"
           role="group"
         >
@@ -2891,13 +3141,13 @@ exports[`[Item Rendering] renders MenuSections without crashing 1`] = `
           >
             <div
               class="rcx-item-group-title"
-              id="_r_3h_"
+              id="_r_3n_"
             >
               Room
             </div>
           </div>
           <div
-            aria-labelledby="_r_3i_"
+            aria-labelledby="_r_3o_"
             class="rcx-item rcx-item--inset-md rcx-item--focused"
             role="menuitem"
             tabindex="-1"
@@ -2917,14 +3167,14 @@ exports[`[Item Rendering] renders MenuSections without crashing 1`] = `
             >
               <div
                 class="rcx-item__title"
-                id="_r_3i_"
+                id="_r_3o_"
               >
                 Favorite
               </div>
             </div>
           </div>
           <div
-            aria-labelledby="_r_3j_"
+            aria-labelledby="_r_3p_"
             class="rcx-item rcx-item--inset-md"
             role="menuitem"
             tabindex="-1"
@@ -2944,7 +3194,7 @@ exports[`[Item Rendering] renders MenuSections without crashing 1`] = `
             >
               <div
                 class="rcx-item__title"
-                id="_r_3j_"
+                id="_r_3p_"
               >
                 Mark as read
               </div>
@@ -2956,7 +3206,7 @@ exports[`[Item Rendering] renders MenuSections without crashing 1`] = `
             </div>
           </div>
           <div
-            aria-labelledby="_r_3k_"
+            aria-labelledby="_r_3q_"
             class="rcx-item rcx-item--inset-md"
             role="menuitem"
             tabindex="-1"
@@ -2976,7 +3226,7 @@ exports[`[Item Rendering] renders MenuSections without crashing 1`] = `
             >
               <div
                 class="rcx-item__title"
-                id="_r_3k_"
+                id="_r_3q_"
               >
                 Mute notifications
               </div>
@@ -2988,7 +3238,7 @@ exports[`[Item Rendering] renders MenuSections without crashing 1`] = `
           role="separator"
         />
         <div
-          aria-labelledby="_r_3l_"
+          aria-labelledby="_r_3r_"
           class="rcx-item-group"
           role="group"
         >
@@ -2998,14 +3248,14 @@ exports[`[Item Rendering] renders MenuSections without crashing 1`] = `
           >
             <div
               class="rcx-item-group-title"
-              id="_r_3l_"
+              id="_r_3r_"
             >
               Status
             </div>
           </div>
           <div
             aria-checked="true"
-            aria-labelledby="_r_3m_"
+            aria-labelledby="_r_3s_"
             class="rcx-item rcx-item--inset-md"
             role="menuitemradio"
             tabindex="-1"
@@ -3015,7 +3265,7 @@ exports[`[Item Rendering] renders MenuSections without crashing 1`] = `
             >
               <div
                 class="rcx-item__title"
-                id="_r_3m_"
+                id="_r_3s_"
               >
                 Online
               </div>
@@ -3029,7 +3279,7 @@ exports[`[Item Rendering] renders MenuSections without crashing 1`] = `
           </div>
           <div
             aria-checked="false"
-            aria-labelledby="_r_3n_"
+            aria-labelledby="_r_3t_"
             class="rcx-item rcx-item--inset-md"
             role="menuitemradio"
             tabindex="-1"
@@ -3039,7 +3289,7 @@ exports[`[Item Rendering] renders MenuSections without crashing 1`] = `
             >
               <div
                 class="rcx-item__title"
-                id="_r_3n_"
+                id="_r_3t_"
               >
                 Busy
               </div>
@@ -3051,7 +3301,7 @@ exports[`[Item Rendering] renders MenuSections without crashing 1`] = `
           role="separator"
         />
         <div
-          aria-labelledby="_r_3o_"
+          aria-labelledby="_r_3u_"
           class="rcx-item rcx-item--inset-md rcx-item--danger"
           role="menuitem"
           tabindex="-1"
@@ -3071,7 +3321,7 @@ exports[`[Item Rendering] renders MenuSections without crashing 1`] = `
           >
             <div
               class="rcx-item__title"
-              id="_r_3o_"
+              id="_r_3u_"
             >
               Leave room
             </div>
@@ -3090,7 +3340,7 @@ exports[`[Item Rendering] renders NarrowList without crashing 1`] = `
       class="rcx-box rcx-box--full rcx-css-gbrkxo"
     >
       <ul
-        aria-labelledby="_r_3p_"
+        aria-labelledby="_r_3v_"
         class="rcx-item-group"
       >
         <li
@@ -3099,7 +3349,7 @@ exports[`[Item Rendering] renders NarrowList without crashing 1`] = `
         >
           <div
             class="rcx-item-group-title"
-            id="_r_3p_"
+            id="_r_3v_"
           >
             Members
           </div>
@@ -3132,7 +3382,7 @@ exports[`[Item Rendering] renders NarrowList without crashing 1`] = `
           <div
             aria-label="Away"
             class="rcx-item__icon"
-            id="_r_3q_"
+            id="_r_40_"
             role="img"
           >
             <svg
@@ -3155,10 +3405,10 @@ exports[`[Item Rendering] renders NarrowList without crashing 1`] = `
           >
             <div
               class="rcx-item__title"
-              id="_r_3r_"
+              id="_r_41_"
             >
               <button
-                aria-describedby="_r_3q_"
+                aria-describedby="_r_40_"
                 class="rcx-item__link"
                 type="button"
               >
@@ -3213,7 +3463,7 @@ exports[`[Item Rendering] renders NarrowList without crashing 1`] = `
           <div
             aria-label="Offline"
             class="rcx-item__icon"
-            id="_r_3s_"
+            id="_r_42_"
             role="img"
           >
             <svg
@@ -3239,10 +3489,10 @@ exports[`[Item Rendering] renders NarrowList without crashing 1`] = `
           >
             <div
               class="rcx-item__title"
-              id="_r_3t_"
+              id="_r_43_"
             >
               <button
-                aria-describedby="_r_3s_"
+                aria-describedby="_r_42_"
                 class="rcx-item__link"
                 type="button"
               >
@@ -3297,7 +3547,7 @@ exports[`[Item Rendering] renders NarrowList without crashing 1`] = `
           <div
             aria-label="Online"
             class="rcx-item__icon"
-            id="_r_3u_"
+            id="_r_44_"
             role="img"
           >
             <svg
@@ -3318,10 +3568,10 @@ exports[`[Item Rendering] renders NarrowList without crashing 1`] = `
           >
             <div
               class="rcx-item__title"
-              id="_r_3v_"
+              id="_r_45_"
             >
               <button
-                aria-describedby="_r_3u_"
+                aria-describedby="_r_44_"
                 class="rcx-item__link"
                 type="button"
               >
@@ -3376,7 +3626,7 @@ exports[`[Item Rendering] renders NarrowList without crashing 1`] = `
           <div
             aria-label="Busy"
             class="rcx-item__icon"
-            id="_r_40_"
+            id="_r_46_"
             role="img"
           >
             <svg
@@ -3399,10 +3649,10 @@ exports[`[Item Rendering] renders NarrowList without crashing 1`] = `
           >
             <div
               class="rcx-item__title"
-              id="_r_41_"
+              id="_r_47_"
             >
               <button
-                aria-describedby="_r_40_"
+                aria-describedby="_r_46_"
                 class="rcx-item__link"
                 type="button"
               >
@@ -3472,7 +3722,7 @@ exports[`[Item Rendering] renders RoomFiles without crashing 1`] = `
           >
             <div
               class="rcx-item__title"
-              id="_r_42_"
+              id="_r_48_"
             >
               <a
                 class="rcx-item__link"
@@ -3550,7 +3800,7 @@ exports[`[Item Rendering] renders RoomFiles without crashing 1`] = `
           >
             <div
               class="rcx-item__title"
-              id="_r_43_"
+              id="_r_49_"
             >
               <a
                 class="rcx-item__link"
@@ -3628,7 +3878,7 @@ exports[`[Item Rendering] renders RoomFiles without crashing 1`] = `
           >
             <div
               class="rcx-item__title"
-              id="_r_44_"
+              id="_r_4a_"
             >
               <a
                 class="rcx-item__link"
@@ -3701,7 +3951,7 @@ exports[`[Item Rendering] renders RoomMembers without crashing 1`] = `
       class="rcx-box rcx-box--full rcx-css-220ax2"
     >
       <ul
-        aria-labelledby="_r_45_"
+        aria-labelledby="_r_4b_"
         class="rcx-item-group"
       >
         <li
@@ -3710,7 +3960,7 @@ exports[`[Item Rendering] renders RoomMembers without crashing 1`] = `
         >
           <div
             class="rcx-item-group-title"
-            id="_r_45_"
+            id="_r_4b_"
           >
             Owners
           </div>
@@ -3743,7 +3993,7 @@ exports[`[Item Rendering] renders RoomMembers without crashing 1`] = `
           <div
             aria-label="Away"
             class="rcx-item__icon"
-            id="_r_46_"
+            id="_r_4c_"
             role="img"
           >
             <svg
@@ -3766,10 +4016,10 @@ exports[`[Item Rendering] renders RoomMembers without crashing 1`] = `
           >
             <div
               class="rcx-item__title"
-              id="_r_47_"
+              id="_r_4d_"
             >
               <button
-                aria-describedby="_r_46_"
+                aria-describedby="_r_4c_"
                 class="rcx-item__link"
                 type="button"
               >
@@ -3807,7 +4057,7 @@ exports[`[Item Rendering] renders RoomMembers without crashing 1`] = `
         </li>
       </ul>
       <ul
-        aria-labelledby="_r_48_"
+        aria-labelledby="_r_4e_"
         class="rcx-item-group"
       >
         <li
@@ -3816,7 +4066,7 @@ exports[`[Item Rendering] renders RoomMembers without crashing 1`] = `
         >
           <div
             class="rcx-item-group-title"
-            id="_r_48_"
+            id="_r_4e_"
           >
             Moderators
           </div>
@@ -3849,7 +4099,7 @@ exports[`[Item Rendering] renders RoomMembers without crashing 1`] = `
           <div
             aria-label="Offline"
             class="rcx-item__icon"
-            id="_r_49_"
+            id="_r_4f_"
             role="img"
           >
             <svg
@@ -3875,10 +4125,10 @@ exports[`[Item Rendering] renders RoomMembers without crashing 1`] = `
           >
             <div
               class="rcx-item__title"
-              id="_r_4a_"
+              id="_r_4g_"
             >
               <button
-                aria-describedby="_r_49_"
+                aria-describedby="_r_4f_"
                 class="rcx-item__link"
                 type="button"
               >
@@ -3916,7 +4166,7 @@ exports[`[Item Rendering] renders RoomMembers without crashing 1`] = `
         </li>
       </ul>
       <ul
-        aria-labelledby="_r_4b_"
+        aria-labelledby="_r_4h_"
         class="rcx-item-group"
       >
         <li
@@ -3925,7 +4175,7 @@ exports[`[Item Rendering] renders RoomMembers without crashing 1`] = `
         >
           <div
             class="rcx-item-group-title"
-            id="_r_4b_"
+            id="_r_4h_"
           >
             Members
           </div>
@@ -3958,7 +4208,7 @@ exports[`[Item Rendering] renders RoomMembers without crashing 1`] = `
           <div
             aria-label="Online"
             class="rcx-item__icon"
-            id="_r_4c_"
+            id="_r_4i_"
             role="img"
           >
             <svg
@@ -3979,10 +4229,10 @@ exports[`[Item Rendering] renders RoomMembers without crashing 1`] = `
           >
             <div
               class="rcx-item__title"
-              id="_r_4d_"
+              id="_r_4j_"
             >
               <button
-                aria-describedby="_r_4c_"
+                aria-describedby="_r_4i_"
                 class="rcx-item__link"
                 type="button"
               >
@@ -4037,7 +4287,7 @@ exports[`[Item Rendering] renders RoomMembers without crashing 1`] = `
           <div
             aria-label="Busy"
             class="rcx-item__icon"
-            id="_r_4e_"
+            id="_r_4k_"
             role="img"
           >
             <svg
@@ -4060,10 +4310,10 @@ exports[`[Item Rendering] renders RoomMembers without crashing 1`] = `
           >
             <div
               class="rcx-item__title"
-              id="_r_4f_"
+              id="_r_4l_"
             >
               <button
-                aria-describedby="_r_4e_"
+                aria-describedby="_r_4k_"
                 class="rcx-item__link"
                 type="button"
               >
@@ -4117,7 +4367,7 @@ exports[`[Item Rendering] renders SearchResults without crashing 1`] = `
         role="listbox"
       >
         <ul
-          aria-labelledby="_r_4g_"
+          aria-labelledby="_r_4m_"
           class="rcx-item-group"
           role="group"
         >
@@ -4127,7 +4377,7 @@ exports[`[Item Rendering] renders SearchResults without crashing 1`] = `
           >
             <div
               class="rcx-item-group-title"
-              id="_r_4g_"
+              id="_r_4m_"
             >
               Recent
             </div>
@@ -4154,7 +4404,7 @@ exports[`[Item Rendering] renders SearchResults without crashing 1`] = `
             <div
               aria-label="Public channel"
               class="rcx-item__icon"
-              id="_r_4h_"
+              id="_r_4n_"
               role="img"
             >
               <i
@@ -4169,7 +4419,7 @@ exports[`[Item Rendering] renders SearchResults without crashing 1`] = `
             >
               <div
                 class="rcx-item__title"
-                id="_r_4i_"
+                id="_r_4o_"
               >
                 general
               </div>
@@ -4197,7 +4447,7 @@ exports[`[Item Rendering] renders SearchResults without crashing 1`] = `
             <div
               aria-label="Team"
               class="rcx-item__icon"
-              id="_r_4j_"
+              id="_r_4p_"
               role="img"
             >
               <i
@@ -4212,7 +4462,7 @@ exports[`[Item Rendering] renders SearchResults without crashing 1`] = `
             >
               <div
                 class="rcx-item__title"
-                id="_r_4k_"
+                id="_r_4q_"
               >
                 design-system
               </div>
@@ -4240,7 +4490,7 @@ exports[`[Item Rendering] renders SearchResults without crashing 1`] = `
             <div
               aria-label="Private channel"
               class="rcx-item__icon"
-              id="_r_4l_"
+              id="_r_4r_"
               role="img"
             >
               <i
@@ -4255,7 +4505,7 @@ exports[`[Item Rendering] renders SearchResults without crashing 1`] = `
             >
               <div
                 class="rcx-item__title"
-                id="_r_4m_"
+                id="_r_4s_"
               >
                 ops-oncall
               </div>
@@ -4303,7 +4553,7 @@ exports[`[Item Rendering] renders SelectOptions without crashing 1`] = `
           >
             <div
               class="rcx-item__title"
-              id="_r_4n_"
+              id="_r_4t_"
             >
               Kenji Takahashi
                
@@ -4339,7 +4589,7 @@ exports[`[Item Rendering] renders SelectOptions without crashing 1`] = `
           >
             <div
               class="rcx-item__title"
-              id="_r_4o_"
+              id="_r_4u_"
             >
               Gabriel Henriques
                
@@ -4375,7 +4625,7 @@ exports[`[Item Rendering] renders SelectOptions without crashing 1`] = `
           >
             <div
               class="rcx-item__title"
-              id="_r_4p_"
+              id="_r_4v_"
             >
               Ana Ribeiro
                
@@ -4417,7 +4667,7 @@ exports[`[Item Rendering] renders SelectOptions without crashing 1`] = `
           >
             <div
               class="rcx-item__title"
-              id="_r_4q_"
+              id="_r_50_"
             >
               Sam Bello
                
@@ -4518,7 +4768,7 @@ exports[`[Item Rendering] renders SidebarRoomList without crashing 1`] = `
                 <div
                   aria-label="Public channel"
                   class="rcx-item__icon"
-                  id="_r_4s_"
+                  id="_r_52_"
                   role="img"
                 >
                   <i
@@ -4530,10 +4780,10 @@ exports[`[Item Rendering] renders SidebarRoomList without crashing 1`] = `
                 </div>
                 <div
                   class="rcx-item__title"
-                  id="_r_4t_"
+                  id="_r_53_"
                 >
                   <a
-                    aria-describedby="_r_4s_"
+                    aria-describedby="_r_52_"
                     class="rcx-item__link"
                     href="#general"
                   >
@@ -4571,7 +4821,7 @@ exports[`[Item Rendering] renders SidebarRoomList without crashing 1`] = `
                       aria-haspopup="true"
                       aria-label="Options for general"
                       class="rcx-box rcx-box--full rcx-button--mini-square rcx-button--square rcx-button--icon rcx-button"
-                      id="react-aria-_r_4u_"
+                      id="react-aria-_r_54_"
                       title="Options"
                       type="button"
                     >
@@ -4612,7 +4862,7 @@ exports[`[Item Rendering] renders SidebarRoomList without crashing 1`] = `
                 <div
                   aria-label="Team"
                   class="rcx-item__icon"
-                  id="_r_50_"
+                  id="_r_56_"
                   role="img"
                 >
                   <i
@@ -4624,11 +4874,11 @@ exports[`[Item Rendering] renders SidebarRoomList without crashing 1`] = `
                 </div>
                 <div
                   class="rcx-item__title"
-                  id="_r_51_"
+                  id="_r_57_"
                 >
                   <a
                     aria-current="page"
-                    aria-describedby="_r_50_"
+                    aria-describedby="_r_56_"
                     class="rcx-item__link"
                     href="#design-system"
                   >
@@ -4666,7 +4916,7 @@ exports[`[Item Rendering] renders SidebarRoomList without crashing 1`] = `
                       aria-haspopup="true"
                       aria-label="Options for design-system"
                       class="rcx-box rcx-box--full rcx-button--mini-square rcx-button--square rcx-button--icon rcx-button"
-                      id="react-aria-_r_52_"
+                      id="react-aria-_r_58_"
                       title="Options"
                       type="button"
                     >
@@ -4707,7 +4957,7 @@ exports[`[Item Rendering] renders SidebarRoomList without crashing 1`] = `
                 <div
                   aria-label="Private channel"
                   class="rcx-item__icon"
-                  id="_r_54_"
+                  id="_r_5a_"
                   role="img"
                 >
                   <i
@@ -4719,10 +4969,10 @@ exports[`[Item Rendering] renders SidebarRoomList without crashing 1`] = `
                 </div>
                 <div
                   class="rcx-item__title"
-                  id="_r_55_"
+                  id="_r_5b_"
                 >
                   <a
-                    aria-describedby="_r_54_"
+                    aria-describedby="_r_5a_"
                     class="rcx-item__link"
                     href="#ops-oncall"
                   >
@@ -4760,7 +5010,7 @@ exports[`[Item Rendering] renders SidebarRoomList without crashing 1`] = `
                       aria-haspopup="true"
                       aria-label="Options for ops-oncall"
                       class="rcx-box rcx-box--full rcx-button--mini-square rcx-button--square rcx-button--icon rcx-button"
-                      id="react-aria-_r_56_"
+                      id="react-aria-_r_5c_"
                       title="Options"
                       type="button"
                     >
@@ -4854,7 +5104,7 @@ exports[`[Item Rendering] renders SidebarRoomList without crashing 1`] = `
                 <div
                   aria-label="Away"
                   class="rcx-item__icon"
-                  id="_r_59_"
+                  id="_r_5f_"
                   role="img"
                 >
                   <svg
@@ -4874,10 +5124,10 @@ exports[`[Item Rendering] renders SidebarRoomList without crashing 1`] = `
                 </div>
                 <div
                   class="rcx-item__title"
-                  id="_r_5a_"
+                  id="_r_5g_"
                 >
                   <a
-                    aria-describedby="_r_59_"
+                    aria-describedby="_r_5f_"
                     class="rcx-item__link"
                     href="#kenji"
                   >
@@ -4909,7 +5159,7 @@ exports[`[Item Rendering] renders SidebarRoomList without crashing 1`] = `
                       aria-haspopup="true"
                       aria-label="Options for Kenji Takahashi"
                       class="rcx-box rcx-box--full rcx-button--mini-square rcx-button--square rcx-button--icon rcx-button"
-                      id="react-aria-_r_5b_"
+                      id="react-aria-_r_5h_"
                       title="Options"
                       type="button"
                     >
@@ -4950,7 +5200,7 @@ exports[`[Item Rendering] renders SidebarRoomList without crashing 1`] = `
                 <div
                   aria-label="Online"
                   class="rcx-item__icon"
-                  id="_r_5d_"
+                  id="_r_5j_"
                   role="img"
                 >
                   <svg
@@ -4968,10 +5218,10 @@ exports[`[Item Rendering] renders SidebarRoomList without crashing 1`] = `
                 </div>
                 <div
                   class="rcx-item__title"
-                  id="_r_5e_"
+                  id="_r_5k_"
                 >
                   <a
-                    aria-describedby="_r_5d_"
+                    aria-describedby="_r_5j_"
                     class="rcx-item__link"
                     href="#mariana"
                   >
@@ -5009,7 +5259,7 @@ exports[`[Item Rendering] renders SidebarRoomList without crashing 1`] = `
                       aria-haspopup="true"
                       aria-label="Options for Mariana Kovač"
                       class="rcx-box rcx-box--full rcx-button--mini-square rcx-button--square rcx-button--icon rcx-button"
-                      id="react-aria-_r_5f_"
+                      id="react-aria-_r_5l_"
                       title="Options"
                       type="button"
                     >
@@ -5050,7 +5300,7 @@ exports[`[Item Rendering] renders SidebarRoomList without crashing 1`] = `
                 <div
                   aria-label="Offline"
                   class="rcx-item__icon"
-                  id="_r_5h_"
+                  id="_r_5n_"
                   role="img"
                 >
                   <svg
@@ -5073,10 +5323,10 @@ exports[`[Item Rendering] renders SidebarRoomList without crashing 1`] = `
                 </div>
                 <div
                   class="rcx-item__title"
-                  id="_r_5i_"
+                  id="_r_5o_"
                 >
                   <a
-                    aria-describedby="_r_5h_"
+                    aria-describedby="_r_5n_"
                     class="rcx-item__link"
                     href="#priya"
                   >
@@ -5108,7 +5358,7 @@ exports[`[Item Rendering] renders SidebarRoomList without crashing 1`] = `
                       aria-haspopup="true"
                       aria-label="Options for Priya Nair"
                       class="rcx-box rcx-box--full rcx-button--mini-square rcx-button--square rcx-button--icon rcx-button"
-                      id="react-aria-_r_5j_"
+                      id="react-aria-_r_5p_"
                       title="Options"
                       type="button"
                     >
@@ -5209,7 +5459,7 @@ exports[`[Item Rendering] renders SidebarRoomList without crashing 1`] = `
                 <div
                   aria-label="Discussion"
                   class="rcx-item__icon"
-                  id="_r_5m_"
+                  id="_r_5s_"
                   role="img"
                 >
                   <i
@@ -5221,10 +5471,10 @@ exports[`[Item Rendering] renders SidebarRoomList without crashing 1`] = `
                 </div>
                 <div
                   class="rcx-item__title"
-                  id="_r_5n_"
+                  id="_r_5t_"
                 >
                   <a
-                    aria-describedby="_r_5m_"
+                    aria-describedby="_r_5s_"
                     class="rcx-item__link"
                     href="#item-api"
                   >
@@ -5262,7 +5512,7 @@ exports[`[Item Rendering] renders SidebarRoomList without crashing 1`] = `
                       aria-haspopup="true"
                       aria-label="Options for Item API review"
                       class="rcx-box rcx-box--full rcx-button--mini-square rcx-button--square rcx-button--icon rcx-button"
-                      id="react-aria-_r_5o_"
+                      id="react-aria-_r_5u_"
                       title="Options"
                       type="button"
                     >
@@ -5321,7 +5571,7 @@ exports[`[Item Rendering] renders Skeletons without crashing 1`] = `
               >
                 <div
                   class="rcx-item__title"
-                  id="_r_5q_"
+                  id="_r_60_"
                 >
                   <span
                     class="rcx-skeleton rcx-skeleton--text rcx-css-15gkgsp"
@@ -5345,7 +5595,7 @@ exports[`[Item Rendering] renders Skeletons without crashing 1`] = `
               >
                 <div
                   class="rcx-item__title"
-                  id="_r_5r_"
+                  id="_r_61_"
                 >
                   <span
                     class="rcx-skeleton rcx-skeleton--text rcx-css-15gkgsp"
@@ -5386,7 +5636,7 @@ exports[`[Item Rendering] renders Skeletons without crashing 1`] = `
               >
                 <div
                   class="rcx-item__title"
-                  id="_r_5s_"
+                  id="_r_62_"
                 >
                   <span
                     class="rcx-skeleton rcx-skeleton--text rcx-css-15gkgsp"
@@ -5410,7 +5660,7 @@ exports[`[Item Rendering] renders Skeletons without crashing 1`] = `
               >
                 <div
                   class="rcx-item__title"
-                  id="_r_5t_"
+                  id="_r_63_"
                 >
                   <span
                     class="rcx-skeleton rcx-skeleton--text rcx-css-15gkgsp"
@@ -5451,7 +5701,7 @@ exports[`[Item Rendering] renders Skeletons without crashing 1`] = `
               >
                 <div
                   class="rcx-item__title"
-                  id="_r_5u_"
+                  id="_r_64_"
                 >
                   <span
                     class="rcx-skeleton rcx-skeleton--text rcx-css-15gkgsp"
@@ -5482,7 +5732,7 @@ exports[`[Item Rendering] renders Skeletons without crashing 1`] = `
               >
                 <div
                   class="rcx-item__title"
-                  id="_r_5v_"
+                  id="_r_65_"
                 >
                   <span
                     class="rcx-skeleton rcx-skeleton--text rcx-css-15gkgsp"
@@ -5548,7 +5798,7 @@ exports[`[Item Rendering] renders States without crashing 1`] = `
                 <div
                   aria-label="Public channel"
                   class="rcx-item__icon"
-                  id="_r_60_"
+                  id="_r_66_"
                   role="img"
                 >
                   <i
@@ -5560,10 +5810,10 @@ exports[`[Item Rendering] renders States without crashing 1`] = `
                 </div>
                 <div
                   class="rcx-item__title"
-                  id="_r_61_"
+                  id="_r_67_"
                 >
                   <a
-                    aria-describedby="_r_60_"
+                    aria-describedby="_r_66_"
                     class="rcx-item__link"
                     href="#qa-release"
                   >
@@ -5583,7 +5833,7 @@ exports[`[Item Rendering] renders States without crashing 1`] = `
                   aria-haspopup="true"
                   aria-label="Options for qa-release"
                   class="rcx-box rcx-box--full rcx-button--mini-square rcx-button--square rcx-button--icon rcx-button"
-                  id="react-aria-_r_62_"
+                  id="react-aria-_r_68_"
                   title="Options"
                   type="button"
                 >
@@ -5622,7 +5872,7 @@ exports[`[Item Rendering] renders States without crashing 1`] = `
                 <div
                   aria-label="Public channel"
                   class="rcx-item__icon"
-                  id="_r_64_"
+                  id="_r_6a_"
                   role="img"
                 >
                   <i
@@ -5634,11 +5884,11 @@ exports[`[Item Rendering] renders States without crashing 1`] = `
                 </div>
                 <div
                   class="rcx-item__title"
-                  id="_r_65_"
+                  id="_r_6b_"
                 >
                   <a
                     aria-current="page"
-                    aria-describedby="_r_64_"
+                    aria-describedby="_r_6a_"
                     class="rcx-item__link"
                     href="#qa-release"
                   >
@@ -5658,7 +5908,7 @@ exports[`[Item Rendering] renders States without crashing 1`] = `
                   aria-haspopup="true"
                   aria-label="Options for qa-release"
                   class="rcx-box rcx-box--full rcx-button--mini-square rcx-button--square rcx-button--icon rcx-button"
-                  id="react-aria-_r_66_"
+                  id="react-aria-_r_6c_"
                   title="Options"
                   type="button"
                 >
@@ -5697,7 +5947,7 @@ exports[`[Item Rendering] renders States without crashing 1`] = `
                 <div
                   aria-label="Team"
                   class="rcx-item__icon"
-                  id="_r_68_"
+                  id="_r_6e_"
                   role="img"
                 >
                   <i
@@ -5709,10 +5959,10 @@ exports[`[Item Rendering] renders States without crashing 1`] = `
                 </div>
                 <div
                   class="rcx-item__title"
-                  id="_r_69_"
+                  id="_r_6f_"
                 >
                   <a
-                    aria-describedby="_r_68_"
+                    aria-describedby="_r_6e_"
                     class="rcx-item__link"
                     href="#design-system"
                   >
@@ -5738,7 +5988,7 @@ exports[`[Item Rendering] renders States without crashing 1`] = `
                   aria-haspopup="true"
                   aria-label="Options for design-system"
                   class="rcx-box rcx-box--full rcx-button--mini-square rcx-button--square rcx-button--icon rcx-button"
-                  id="react-aria-_r_6a_"
+                  id="react-aria-_r_6g_"
                   title="Options"
                   type="button"
                 >
@@ -5765,7 +6015,7 @@ exports[`[Item Rendering] renders States without crashing 1`] = `
         role="menu"
       >
         <div
-          aria-labelledby="_r_6c_"
+          aria-labelledby="_r_6i_"
           class="rcx-item rcx-item--inset-md rcx-item--focused"
           role="menuitem"
           tabindex="-1"
@@ -5785,7 +6035,7 @@ exports[`[Item Rendering] renders States without crashing 1`] = `
           >
             <div
               class="rcx-item__title"
-              id="_r_6c_"
+              id="_r_6i_"
             >
               Favorite (focused)
             </div>
@@ -5793,7 +6043,7 @@ exports[`[Item Rendering] renders States without crashing 1`] = `
         </div>
         <div
           aria-disabled="true"
-          aria-labelledby="_r_6d_"
+          aria-labelledby="_r_6j_"
           class="rcx-item rcx-item--inset-md rcx-item--disabled"
           role="menuitem"
           tabindex="-1"
@@ -5813,14 +6063,14 @@ exports[`[Item Rendering] renders States without crashing 1`] = `
           >
             <div
               class="rcx-item__title"
-              id="_r_6d_"
+              id="_r_6j_"
             >
               Mute notifications (disabled)
             </div>
           </div>
         </div>
         <div
-          aria-labelledby="_r_6e_"
+          aria-labelledby="_r_6k_"
           class="rcx-item rcx-item--inset-md rcx-item--danger"
           role="menuitem"
           tabindex="-1"
@@ -5840,7 +6090,7 @@ exports[`[Item Rendering] renders States without crashing 1`] = `
           >
             <div
               class="rcx-item__title"
-              id="_r_6e_"
+              id="_r_6k_"
             >
               Leave room (danger)
             </div>
