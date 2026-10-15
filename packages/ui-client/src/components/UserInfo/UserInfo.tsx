@@ -1,7 +1,7 @@
 import type { IUser, Serialized } from '@rocket.chat/core-typings';
 import { Box, Margins, Tag } from '@rocket.chat/fuselage';
 import type { ReactNode } from 'react';
-import { memo, useContext, useId } from 'react';
+import { memo, useId } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { useTimeAgo } from '../../hooks/useTimeAgo';
@@ -9,7 +9,6 @@ import { useUserCustomFields } from '../../hooks/useUserCustomFields';
 import { useUserDisplayName } from '../../hooks/useUserDisplayName';
 import { ContextualbarScrollableContent } from '../Contextualbar';
 import { InfoPanel, InfoPanelActionGroup, InfoPanelField, InfoPanelLabel, InfoPanelSection, InfoPanelText } from '../InfoPanel';
-import { MarkdownTextContext } from '../MarkdownTextContext';
 import UTCClock from '../UTCClock';
 import { UserCardRoles, UserCardUsername } from '../UserCard';
 import UserInfoABACAttributes from './UserInfoABACAttributes';
@@ -36,6 +35,8 @@ type UserInfoDataProps = Serialized<
 >;
 
 export type UserInfoProps = UserInfoDataProps & {
+	/** Renders the bio and the custom field values. They are shown as plain text when it is not provided. */
+	renderMarkdown?: (content: string) => ReactNode;
 	status: ReactNode;
 	customStatus?: ReactNode;
 	email?: string;
@@ -45,6 +46,8 @@ export type UserInfoProps = UserInfoDataProps & {
 	reason?: string;
 	invitationDate?: string;
 };
+
+const renderPlainText = (content: string): ReactNode => content;
 
 const UserInfo = ({
 	username,
@@ -68,13 +71,13 @@ const UserInfo = ({
 	freeSwitchExtension,
 	abacAttributes,
 	invitationDate,
+	renderMarkdown = renderPlainText,
 	...props
 }: UserInfoProps) => {
 	const { t } = useTranslation();
 	const timeAgo = useTimeAgo();
 	const userDisplayName = useUserDisplayName({ name, username });
 	const userCustomFields = useUserCustomFields(customFields);
-	const MarkdownText = useContext(MarkdownTextContext);
 	const usernameId = useId();
 
 	return (
@@ -138,7 +141,7 @@ const UserInfo = ({
 						<InfoPanelField>
 							<InfoPanelLabel>{t('Bio')}</InfoPanelLabel>
 							<UserInfoCopyableText text={bio} label={t('Bio')} withTruncatedText={false}>
-								<MarkdownText variant='inline' content={bio} />
+								{renderMarkdown(bio)}
 							</UserInfoCopyableText>
 						</InfoPanelField>
 					)}
@@ -194,7 +197,7 @@ const UserInfo = ({
 								<InfoPanelField key={customField.value}>
 									<InfoPanelLabel>{t(customField.label)}</InfoPanelLabel>
 									<UserInfoCopyableText text={customField.value} label={t(customField.label)}>
-										<MarkdownText content={customField.value} variant='inline' />
+										{renderMarkdown(customField.value)}
 									</UserInfoCopyableText>
 								</InfoPanelField>
 							),
