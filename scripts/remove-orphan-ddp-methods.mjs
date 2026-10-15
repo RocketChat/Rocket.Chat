@@ -40,6 +40,7 @@ const NEVER_REMOVE = new Set([
 	// admin "method-action" buttons in settings UI
 	'OEmbedCacheCleanup',
 	'restart_server',
+	'sendSMTPTestEmail',
 	'crowd_sync_users',
 	'crowd_test_connection',
 	'loadLocale',

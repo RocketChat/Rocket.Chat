@@ -119,7 +119,6 @@ Removed methods:
 - `saveUserPreferences` — use `POST /v1/users.setPreferences`
 - `sendMessage` — use `POST /v1/chat.sendMessage`
 - `sendMessageLivechat`
-- `sendSMTPTestEmail`
 - `setAvatarFromService` — use `POST /v1/users.setAvatar`
 - `setEmail` — use `POST /v1/users.update`
 - `setRealName` — use `POST /v1/users.update`
