@@ -191,6 +191,27 @@ services:
     depends_on:
       - nats
 
+  xmpp-server-service:
+    build:
+      dockerfile: ${GITHUB_WORKSPACE:-}/ee/apps/Dockerfile
+      context: out/xmpp-server-service
+      target: release-standard
+      x-bake:
+        platforms:
+          - linux/amd64
+          - linux/arm64
+      args:
+        SERVICE: xmpp-server-service
+    image: ghcr.io/${LOWERCASE_REPOSITORY}/xmpp-server-service:${DOCKER_TAG}
+    environment:
+      - MONGO_URL=mongodb://mongo:27017/rocketchat?replicaSet=rs0
+      - 'TRANSPORTER=${TRANSPORTER:-}'
+      - MOLECULER_LOG_LEVEL=info
+    extra_hosts:
+      - 'host.docker.internal:host-gateway'
+    depends_on:
+      - nats
+
   nats:
     image: nats:2.6-alpine
 
