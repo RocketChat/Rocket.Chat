@@ -39,7 +39,7 @@
 	},
 	"dependencies": {
 		"@rocket.chat/emitter": "workspace:~",
-		"@rocket.chat/fuselage-tokens": "workspace:^"
+		"@rocket.chat/fuselage-tokens": "0.36.0"
 	},
 	"devDependencies": {
 		"@rocket.chat/jest-presets": "workspace:~",

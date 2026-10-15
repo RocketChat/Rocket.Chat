@@ -35,7 +35,7 @@
 		"typecheck": "tsc --noEmit"
 	},
 	"dependencies": {
-		"@rocket.chat/fuselage-tokens": "workspace:^",
+		"@rocket.chat/fuselage-tokens": "0.36.0",
 		"@rocket.chat/styled": "workspace:~"
 	},
 	"devDependencies": {

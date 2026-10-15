@@ -34,7 +34,7 @@
 	},
 	"dependencies": {
 		"@rocket.chat/fuselage-hooks": "workspace:^",
-		"@rocket.chat/fuselage-tokens": "workspace:^",
+		"@rocket.chat/fuselage-tokens": "0.36.0",
 		"@rocket.chat/logo": "workspace:~",
 		"@rocket.chat/styled": "workspace:~"
 	},
