@@ -4,7 +4,7 @@ exports[`renders Empty without crashing 1`] = `
 <body>
   <div>
     <div
-      class="rcx-box rcx-box--full rcx-input-box__wrapper rcx-css-1t5etly"
+      class="rcx-box rcx-box--full rcx-input-box__wrapper rcx-css-1jk1dkw"
       role="group"
     >
       <div
@@ -187,7 +187,7 @@ exports[`renders WithText without crashing 1`] = `
 <body>
   <div>
     <div
-      class="rcx-box rcx-box--full rcx-input-box__wrapper rcx-css-1t5etly"
+      class="rcx-box rcx-box--full rcx-input-box__wrapper rcx-css-1jk1dkw"
       role="group"
     >
       <div
