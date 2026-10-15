@@ -79,11 +79,11 @@ user-quota=12
 total-quota=1200
 ```
 
-TURN over TLS on 443 (`turns:` URIs) gets through restrictive corporate networks that only allow HTTPS. If your media servers live on a private network the TURN server must reach, add an `allowed-peer-ip` for exactly those addresses instead of dropping the denied ranges.
+TURN over TLS on 443 (`turns:` URIs) can get through restrictive networks that allow outbound TLS on 443; proxies that inspect HTTPS traffic still block it. If your media servers live on a private network the TURN server must reach, add an `allowed-peer-ip` for exactly those addresses instead of dropping the denied ranges.
 
 ## Shared secret credential lifetime (`ttl`)
 
-- Credentials are minted once per call, when it is created, and are not refreshed while it lasts.
+- Credentials are minted whenever a participant receives the call's `new` signal: when the call is created, and again when a reconnecting client resyncs it. A peer connection that already exists keeps the credentials it started with.
 - An allocation that already exists keeps relaying after its credentials expire. New allocations, which happen on ICE restarts after a network change, need valid credentials: a call whose network changes after the lifetime has passed will not recover. Keep the lifetime longer than your longest expected call.
 - A deactivated user's credentials stay valid until they expire. Shorter lifetimes shrink that window.
 
