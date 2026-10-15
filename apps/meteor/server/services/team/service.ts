@@ -35,7 +35,7 @@ import { getSubscribedRoomsForUserWithDetails } from '../../lib/rooms/getRoomsWi
 import { removeRoomAbacAttributes } from '../../lib/rooms/removeRoomAbacAttributes';
 import { removeUserFromRoom } from '../../lib/rooms/removeUserFromRoom';
 import { saveRoomName } from '../../lib/rooms/settings';
-import { saveRoomType } from '../../lib/rooms/settings/saveRoomType';
+import { assertAbacRoomStaysPrivate, saveRoomType } from '../../lib/rooms/settings/saveRoomType';
 import { omitStatusVisibilityConfig } from '../../lib/statusVisibility/redactStatus';
 import { checkUsernameAvailability } from '../../lib/users/checkUsernameAvailability';
 import { settings } from '../../settings';
@@ -186,13 +186,23 @@ export class TeamService extends ServiceClassInternal implements ITeamService {
 		}
 
 		const { name, type, updateRoom = true } = updateData;
+		const roomType = type === TeamType.PRIVATE ? 'p' : 'c';
+
+		if (updateRoom && typeof type !== 'undefined') {
+			const room = await Rooms.findOneById<Pick<IRoom, 't' | 'abacAttributes'>>(team.roomId, {
+				projection: { t: 1, abacAttributes: 1 },
+			});
+			if (room) {
+				assertAbacRoomStaysPrivate(room, roomType);
+			}
+		}
 
 		if (updateRoom && name) {
 			await saveRoomName(team.roomId, name, user);
 		}
 
 		if (updateRoom && typeof type !== 'undefined') {
-			await saveRoomType(team.roomId, type === TeamType.PRIVATE ? 'p' : 'c', user);
+			await saveRoomType(team.roomId, roomType, user);
 		}
 
 		await Team.updateNameAndType(teamId, updateData);
