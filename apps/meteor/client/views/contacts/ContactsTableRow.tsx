@@ -20,7 +20,7 @@ const ContactsTableRow = ({ contact, columns, onClick, onEdit, onDeleted }: Cont
 	const { _id, source, displayName, emails, phones, categories, companyName, officeLocation } = contact;
 
 	const handleKeyDown = (event: KeyboardEvent<HTMLElement>) => {
-		if (event.key !== 'Enter' && event.key !== ' ') {
+		if (event.key !== 'Enter') {
 			return;
 		}
 
