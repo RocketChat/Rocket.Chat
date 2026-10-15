@@ -56,7 +56,7 @@ numbers and booleans, so there is usually nothing to coerce. `ajv` is the instan
 
 - The validator is used for **query parameters** (query string).
 - **GET** routes (or any method that only reads query params).
-- The schema has properties of type `number`, `integer`, or `boolean` that come from the URL.
+- The schema has properties of type `array` that come from the URL, since a single `?types=c` must still satisfy them.
 
 Examples of validators that should use `ajvQuery`:
 
@@ -106,7 +106,7 @@ Because `ajv` coerces, a `null` in a field declared only as `string` or `number`
 A video conference user object may have `avatarETag: null`. The response schema must account for this:
 
 ```ts
-// WRONG — null is coerced to "" instead of kept
+// WRONG — passes validation silently, so the schema hides that the field can be null
 { type: 'string' }
 
 // CORRECT
@@ -127,7 +127,7 @@ Schemas using `oneOf` with strict enum discriminators (e.g. `type: { enum: ['dir
    - Result: "must be array" / "invalid-params" error.
 
 2. **Using `ajvQuery` for body**:
-   - Usually works, but coercion can hide incorrect types (e.g. string where a number was expected). For body, the standard is to use `ajv` and require the client to send the correct types in the JSON.
+   - Usually works, but `ajvQuery` also wraps a scalar into a one-item array, which can hide a client sending one value where a list was expected. For body, the standard is to use `ajv`.
 
 3. **Response schemas with `null` fields**:
    - Without `nullable: true`, `null` is coerced to `""` or `0` and validation passes anyway.
