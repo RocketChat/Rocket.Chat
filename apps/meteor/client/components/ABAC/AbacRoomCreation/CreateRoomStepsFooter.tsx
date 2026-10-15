@@ -18,7 +18,13 @@ const CreateRoomStepsFooter = ({ index, total, onCancel, onBack, submitDisabled,
 		<ModalFooter justifyContent={isStepped ? 'space-between' : undefined}>
 			{isStepped && <ModalFooterAnnotation>{t('Step_of_total', { step: index + 1, total })}</ModalFooterAnnotation>}
 			<ModalFooterControllers>
-				{index === 0 ? <Button onClick={onCancel}>{t('Cancel')}</Button> : <Button onClick={onBack}>{t('Back')}</Button>}
+				{index === 0 ? (
+					<Button onClick={onCancel}>{t('Cancel')}</Button>
+				) : (
+					<Button onClick={onBack} disabled={isSubmitting}>
+						{t('Back')}
+					</Button>
+				)}
 				<Button type='submit' primary disabled={submitDisabled} loading={isSubmitting}>
 					{index === total - 1 ? t('Create') : t('Next')}
 				</Button>
