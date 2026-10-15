@@ -1,0 +1,23 @@
+{
+  "timestamp": "2026-10-15T18:29:22Z",
+  "tag": "pr-42523",
+  "total": 2513614936,
+  "services": {
+    "account-service": 125052030,
+    "account-service-fips": 109050144,
+    "authorization-service": 124463904,
+    "authorization-service-fips": 108462650,
+    "ddp-streamer-service": 145790411,
+    "ddp-streamer-service-fips": 129788819,
+    "omnichannel-transcript-service": 157800396,
+    "omnichannel-transcript-service-fips": 141802204,
+    "presence-service": 126383600,
+    "presence-service-fips": 110378889,
+    "queue-worker-service": 157777002,
+    "queue-worker-service-fips": 141776468,
+    "rocketchat": 317741556,
+    "rocketchat-cov": 323749301,
+    "rocketchat-fips": 293597562
+  },
+  "commit": "00e3b048f06bd1c16ab04ad6fcf40309f32a35e5"
+}
