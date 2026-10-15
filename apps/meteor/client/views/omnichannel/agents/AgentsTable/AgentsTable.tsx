@@ -35,7 +35,7 @@ const AgentsTable = () => {
 	) as ['name' | 'username' | 'emails.address' | 'statusLivechat', 'asc' | 'desc'];
 
 	const query = useQuery({ text }, debouncedSort);
-	const { paginatedQuery, queryKey, current, itemsPerPage, setItemsPerPage, setCurrent, ...paginationProps } = usePagination({
+	const { paginatedQuery, paginationProps } = usePagination({
 		query,
 		getQueryKey: omnichannelQueryKeys.agents,
 	});
@@ -110,14 +110,7 @@ const AgentsTable = () => {
 							))}
 						</GenericTableBody>
 					</GenericTable>
-					<Pagination
-						divider
-						current={current}
-						itemsPerPage={itemsPerPage}
-						onSetItemsPerPage={setItemsPerPage}
-						onSetCurrent={setCurrent}
-						{...paginationProps}
-					/>
+					<Pagination divider {...paginationProps} />
 				</>
 			)}
 			{isError && <GenericError buttonAction={refetch} />}

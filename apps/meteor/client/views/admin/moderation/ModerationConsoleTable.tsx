@@ -49,15 +49,10 @@ const ModerationConsoleTable = () => {
 		500,
 	);
 
-	const {
-		paginatedQuery,
-		queryKey,
-		current,
-		itemsPerPage,
-		setItemsPerPage: onSetItemsPerPage,
-		setCurrent: onSetCurrent,
-		...paginationProps
-	} = usePagination({ query, getQueryKey: (query) => ['moderation', 'msgReports', 'fetchAll', query] });
+	const { paginatedQuery, queryKey, paginationProps } = usePagination({
+		query,
+		getQueryKey: (query) => ['moderation', 'msgReports', 'fetchAll', query],
+	});
 
 	const getReports = useEndpoint('GET', '/v1/moderation.reportsByUsers');
 
@@ -132,14 +127,7 @@ const ModerationConsoleTable = () => {
 							))}
 						</GenericTableBody>
 					</GenericTable>
-					<Pagination
-						current={current}
-						divider
-						itemsPerPage={itemsPerPage}
-						onSetItemsPerPage={onSetItemsPerPage}
-						onSetCurrent={onSetCurrent}
-						{...paginationProps}
-					/>
+					<Pagination divider {...paginationProps} />
 				</>
 			)}
 			{isSuccess && data.reports.length === 0 && <GenericNoResults />}

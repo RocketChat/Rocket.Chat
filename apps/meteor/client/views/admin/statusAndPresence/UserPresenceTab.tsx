@@ -9,7 +9,7 @@ import {
 	usePagination,
 	GenericNoResults,
 } from '@rocket.chat/ui-client';
-import { useEffect, useMemo, useState } from 'react';
+import { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import UserPresenceTabRow from './UserPresenceTabRow';
@@ -32,19 +32,10 @@ const UserPresenceTab = ({ onEdit }: UserPresenceTabProps) => {
 		500,
 	);
 
-	const {
-		paginatedQuery,
-		queryKey,
-		current,
-		itemsPerPage,
-		setItemsPerPage: onSetItemsPerPage,
-		setCurrent: onSetCurrent,
-		...paginationProps
-	} = usePagination({ query, getQueryKey: (query) => managedPresenceQueryKeys.list(query) });
-
-	useEffect(() => {
-		onSetCurrent(0);
-	}, [text, onSetCurrent]);
+	const { paginatedQuery, paginationProps } = usePagination({
+		query,
+		getQueryKey: (query) => managedPresenceQueryKeys.list(query),
+	});
 
 	const { data, isLoading, isSuccess, isError, refetch } = useManagedPresenceUsers(paginatedQuery);
 
@@ -77,16 +68,7 @@ const UserPresenceTab = ({ onEdit }: UserPresenceTabProps) => {
 							{isSuccess && data.users.map((user) => <UserPresenceTabRow key={user._id} user={user} onClick={onEdit} />)}
 						</GenericTableBody>
 					</GenericTable>
-					{isSuccess && (
-						<Pagination
-							divider
-							current={current}
-							itemsPerPage={itemsPerPage}
-							onSetItemsPerPage={onSetItemsPerPage}
-							onSetCurrent={onSetCurrent}
-							{...paginationProps}
-						/>
-					)}
+					{isSuccess && <Pagination divider {...paginationProps} />}
 				</>
 			)}
 		</>

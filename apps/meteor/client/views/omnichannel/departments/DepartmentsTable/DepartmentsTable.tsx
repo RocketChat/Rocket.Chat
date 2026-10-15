@@ -51,15 +51,10 @@ const DepartmentsTable = ({ archived }: DepartmentsTableProps) => {
 		500,
 	);
 
-	const {
-		paginatedQuery,
-		queryKey,
-		current,
-		itemsPerPage,
-		setItemsPerPage: onSetItemsPerPage,
-		setCurrent: onSetCurrent,
-		...paginationProps
-	} = usePagination({ query, getQueryKey: (query) => ['livechat-departments', query, archived] });
+	const { paginatedQuery, queryKey, paginationProps } = usePagination({
+		query,
+		getQueryKey: (query) => ['livechat-departments', query, archived],
+	});
 
 	const { data, isSuccess, isLoading } = useQuery({
 		queryKey,
@@ -149,14 +144,7 @@ const DepartmentsTable = ({ archived }: DepartmentsTableProps) => {
 							))}
 						</GenericTableBody>
 					</GenericTable>
-					<Pagination
-						divider
-						current={current}
-						itemsPerPage={itemsPerPage}
-						onSetItemsPerPage={onSetItemsPerPage}
-						onSetCurrent={onSetCurrent}
-						{...paginationProps}
-					/>
+					<Pagination divider {...paginationProps} />
 				</>
 			)}
 		</>

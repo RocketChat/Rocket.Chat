@@ -40,15 +40,7 @@ const SlaTable = ({ reload }: { reload: MutableRefObject<() => void> }) => {
 		500,
 	);
 
-	const {
-		paginatedQuery,
-		queryKey,
-		current,
-		itemsPerPage,
-		setItemsPerPage: onSetItemsPerPage,
-		setCurrent: onSetCurrent,
-		...paginationProps
-	} = usePagination({ query, getQueryKey: (query) => ['/v1/livechat/sla', query] });
+	const { paginatedQuery, queryKey, paginationProps } = usePagination({ query, getQueryKey: (query) => ['/v1/livechat/sla', query] });
 
 	const getSlaData = useEndpoint('GET', '/v1/livechat/sla');
 	const { data, isSuccess, isLoading, refetch } = useQuery({
@@ -137,14 +129,7 @@ const SlaTable = ({ reload }: { reload: MutableRefObject<() => void> }) => {
 							))}
 						</GenericTableBody>
 					</GenericTable>
-					<Pagination
-						divider
-						current={current}
-						itemsPerPage={itemsPerPage}
-						onSetItemsPerPage={onSetItemsPerPage}
-						onSetCurrent={onSetCurrent}
-						{...paginationProps}
-					/>
+					<Pagination divider {...paginationProps} />
 				</>
 			)}
 		</>

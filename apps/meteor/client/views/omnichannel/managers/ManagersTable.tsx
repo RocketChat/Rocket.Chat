@@ -42,15 +42,7 @@ const ManagersTable = () => {
 		500,
 	);
 
-	const {
-		paginatedQuery,
-		queryKey,
-		current,
-		itemsPerPage,
-		setItemsPerPage: onSetItemsPerPage,
-		setCurrent: onSetCurrent,
-		...paginationProps
-	} = usePagination({ query, getQueryKey: omnichannelQueryKeys.managers });
+	const { paginatedQuery, queryKey, paginationProps } = usePagination({ query, getQueryKey: omnichannelQueryKeys.managers });
 
 	const getManagers = useEndpoint('GET', '/v1/livechat/users/manager');
 	const { data, isLoading, isSuccess, isError, refetch } = useQuery({
@@ -138,14 +130,7 @@ const ManagersTable = () => {
 							))}
 						</GenericTableBody>
 					</GenericTable>
-					<Pagination
-						divider
-						current={current}
-						itemsPerPage={itemsPerPage}
-						onSetItemsPerPage={onSetItemsPerPage}
-						onSetCurrent={onSetCurrent}
-						{...paginationProps}
-					/>
+					<Pagination divider {...paginationProps} />
 				</>
 			)}
 			{isError && <GenericError buttonAction={refetch} />}
