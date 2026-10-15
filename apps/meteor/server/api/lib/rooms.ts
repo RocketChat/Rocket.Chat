@@ -1,5 +1,6 @@
 import type { IRoom, IRoomAbacRedaction, ISubscription, RoomAdminFieldsType, RoomType } from '@rocket.chat/core-typings';
 import { Rooms, Subscriptions } from '@rocket.chat/models';
+import type { RoomAvailableForTeams } from '@rocket.chat/rest-typings';
 import type { FindOptions, Sort } from 'mongodb';
 
 import { scopeAdminRoomsForAbac } from './scopeAdminRoomsForAbac';
@@ -174,7 +175,7 @@ export async function findChannelAndPrivateAutocompleteWithPagination({
 }
 
 export async function findRoomsAvailableForTeams({ uid, name }: { uid: string; name?: string }): Promise<{
-	items: IRoom[];
+	items: RoomAvailableForTeams[];
 }> {
 	const options: FindOptions<IRoom> = {
 		projection: {
@@ -198,6 +199,6 @@ export async function findRoomsAvailableForTeams({ uid, name }: { uid: string; n
 	const rooms = await Rooms.findChannelAndGroupListWithoutTeamsByNameStartingByOwner(name, userRooms, options).toArray();
 
 	return {
-		items: rooms,
+		items: rooms.map(({ abacAttributes, ...room }) => ({ ...room, hasAbacAttributes: !!abacAttributes?.length })),
 	};
 }
