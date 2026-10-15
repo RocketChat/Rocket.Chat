@@ -1,3 +1,4 @@
+import * as rocketChatInfo from '../../../rocketchat.info';
 import { PublicSettings } from '../../stores';
 import { watch } from '../watch';
 
@@ -25,6 +26,11 @@ if (window.RocketChatDesktop) {
 
 			if (id === '/app/settings/client/index.ts') {
 				return fakeSettingsModule;
+			}
+
+			// desktop app 4.18.2 and earlier load the server version only from its old path in app/utils
+			if (id === '/app/utils/rocketchat.info') {
+				return rocketChatInfo;
 			}
 
 			return fn(id);
