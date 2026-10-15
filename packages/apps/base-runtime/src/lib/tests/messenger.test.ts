@@ -232,6 +232,42 @@ describe('Messenger', () => {
 		theSpy.mock.restore();
 	});
 
+	it('should wrap non-plain error.data objects as value and preserve them through IPC serialization alongside logs', async () => {
+		const theSpy = mock.method(Messenger.ipcChannel, 'send', () => Promise.resolve());
+		const { logger } = context.context;
+		logger.info('test');
+
+		const date = new Date('2026-01-01T00:00:00.000Z');
+		await Messenger.errorResponse({ id: 'test-date', error: { code: -32000, message: 'test', data: date } }, context);
+
+		const map = new Map([['key', 'val']]);
+		await Messenger.errorResponse({ id: 'test-map', error: { code: -32000, message: 'test', data: map } }, context);
+
+		assert.strictEqual(theSpy.mock.calls.length, 2);
+
+		const [dateCall, mapCall] = theSpy.mock.calls;
+		const respDate = dateCall.arguments[0] as any;
+		const respMap = mapCall.arguments[0] as any;
+
+		assert.strictEqual(respDate.error.data.value, date);
+		assert.strictEqual(respDate.error.data.logs.appId, 'test');
+
+		const clonedDate = v8.deserialize(v8.serialize(sanitizeForIpc(respDate))) as any;
+		assert.ok(clonedDate.error.data.value instanceof Date);
+		assert.strictEqual(clonedDate.error.data.value.toISOString(), date.toISOString());
+		assert.strictEqual(clonedDate.error.data.logs.appId, 'test');
+
+		assert.strictEqual(respMap.error.data.value, map);
+		assert.strictEqual(respMap.error.data.logs.appId, 'test');
+
+		const clonedMap = v8.deserialize(v8.serialize(sanitizeForIpc(respMap))) as any;
+		assert.ok(clonedMap.error.data.value instanceof Map);
+		assert.strictEqual(clonedMap.error.data.value.get('key'), 'val');
+		assert.strictEqual(clonedMap.error.data.logs.appId, 'test');
+
+		theSpy.mock.restore();
+	});
+
 	describe('meta', () => {
 		const meta = { traceId: 'trace-1' };
 

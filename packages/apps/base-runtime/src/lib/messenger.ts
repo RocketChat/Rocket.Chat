@@ -86,6 +86,16 @@ export async function sendMethodNotFound(id: jsonrpc.ID): Promise<void> {
 	await ipcChannel.send(rpc);
 }
 
+function isPlainObject(v: unknown): v is Record<string, unknown> {
+	if (typeof v !== 'object' || v === null || Array.isArray(v)) {
+		return false;
+	}
+
+	const prototype = Object.getPrototypeOf(v);
+
+	return prototype === null || prototype.constructor === Object;
+}
+
 export async function errorResponse(
 	{ error: { message, code = -32000, data }, id, meta }: ErrorResponseDescriptor,
 	req?: RequestContext,
@@ -95,9 +105,7 @@ export async function errorResponse(
 	let responseData = data;
 
 	if (logger?.hasEntries()) {
-		if (data instanceof Error || Array.isArray(data)) {
-			responseData = { value: data, logs: logger.getLogs() };
-		} else if (typeof data === 'object' && data !== null) {
+		if (isPlainObject(data)) {
 			responseData = { ...data, logs: logger.getLogs() };
 		} else if (typeof data !== 'undefined') {
 			responseData = { value: data, logs: logger.getLogs() };
