@@ -90,14 +90,7 @@ if [ "$(uname)" = "Darwin" ]; then
 	if has watchman; then ok "watchman $(watchman --version)"; else warn "watchman not found — run: brew install watchman"; fi
 fi
 
-echo "Workspace dependencies"
-if [ ! -f "$ROOT/node_modules/.yarn-state.yml" ] && [ $INSTALL -eq 1 ] && [ $FAILED -eq 0 ]; then
-	(cd "$ROOT" && yarn install)
-fi
-if [ -f "$ROOT/node_modules/.yarn-state.yml" ]; then ok "node_modules installed"
-else fail "node_modules missing — run: yarn"; fi
-
 echo
-if [ $FAILED -eq 0 ]; then echo "All set. Start the app with: yarn dev"
+if [ $FAILED -eq 0 ]; then echo "All set. Install the workspace with: yarn"
 else echo "Some requirements are missing.$([ $INSTALL -eq 0 ] && echo ' Re-run with --install to fix what can be fixed automatically.')"; fi
 exit $FAILED
