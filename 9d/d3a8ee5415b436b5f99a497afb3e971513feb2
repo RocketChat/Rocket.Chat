@@ -1,0 +1,32 @@
+ee/packages/xmpp-server/src/muc/stanzas.ts
+  s_22158ff20cd246::t_7fdcf501a53b01 12-16,25
+ee/packages/xmpp-server/src/XMPPServer.ts
+  s_22158ff20cd246::t_7fdcf501a53b01 229
+ee/packages/xmpp-server/src/muc/RemoteMucSession.ts
+  s_22158ff20cd246::t_7fdcf501a53b01 16,55,115,130-131
+  s_22158ff20cd246::t_0a47b2f9de6249 4
+ee/packages/xmpp-server/src/muc/stanzas.spec.ts
+  s_22158ff20cd246::t_dd71a769b42b29 8
+  s_22158ff20cd246::t_82b926e9eb496a 36,47
+ee/packages/xmpp-server/src/muc/MucRoom.ts
+  s_22158ff20cd246::t_7fdcf501a53b01 145,204
+  s_22158ff20cd246::t_0a47b2f9de6249 9,136-137
+ee/packages/xmpp-server/src/muc/RemoteMucSession.spec.ts
+  s_22158ff20cd246::t_7fdcf501a53b01 16
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "9dd3a8ee5415b436b5f99a497afb3e971513feb2",
+  "prompts": {},
+  "sessions": {
+    "s_22158ff20cd246": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "e3bc8f7d-2ca9-481d-9c88-43497a3e53ec",
+        "model": "claude-opus-5-5"
+      },
+      "human_author": "Diego Sampaio <chinello@gmail.com>"
+    }
+  }
+}
