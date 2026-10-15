@@ -1,6 +1,6 @@
 import type { ILogItem } from '@rocket.chat/core-typings';
 import { Box, Pagination } from '@rocket.chat/fuselage';
-import { CustomScrollbars, usePagination, GenericNoResults, GenericError } from '@rocket.chat/ui-client';
+import { CustomScrollbars, GenericNoResults, GenericError } from '@rocket.chat/ui-client';
 import { useRouter } from '@rocket.chat/ui-contexts';
 import { useEffect, useMemo, useReducer } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -9,7 +9,6 @@ import AppLogsItem from './AppLogsItem';
 import { CollapsiblePanel } from './Components/CollapsiblePanel';
 import { AppLogsFilter } from './Filters/AppLogsFilter';
 import { useAppLogsFilterFormContext } from './useAppLogsFilterForm';
-import { marketplaceQueryKeys } from '../../../../../lib/queryKeys';
 import AccordionLoading from '../../../components/AccordionLoading';
 import { useLogs } from '../../../hooks/useLogs';
 
@@ -66,8 +65,6 @@ const AppLogs = ({ id }: AppLogsProps) => {
 		...(endTime && endDate && { endDate: new Date(`${endDate}T${endTime}`).toISOString() }),
 	};
 
-	const { paginatedQuery, paginationProps } = usePagination({ query, getQueryKey: (query) => marketplaceQueryKeys.appLogs(id, query) });
-
 	const [expandedStates, dispatch] = useReducer(expandedReducer, []);
 
 	const handleExpand = ({ id, expanded }: { id: string; expanded: boolean }) => dispatch({ id, expanded, type: 'update' });
@@ -76,7 +73,7 @@ const AppLogs = ({ id }: AppLogsProps) => {
 
 	const handleCollapseAll = () => dispatch({ type: 'reset-all' });
 
-	const { data, isSuccess, isError, error, refetch, isFetching } = useLogs({ appId: id, ...paginatedQuery });
+	const { data, isSuccess, isError, error, refetch, isFetching, paginationProps } = useLogs({ appId: id, ...query });
 
 	useEffect(() => {
 		if (isSuccess) {

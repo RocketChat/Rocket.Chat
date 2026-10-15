@@ -1,5 +1,6 @@
 import type { IUser, Serialized } from '@rocket.chat/core-typings';
 import type { OperationResult } from '@rocket.chat/rest-typings';
+import { usePaginatedQuery } from '@rocket.chat/ui-client';
 import { useEndpoint } from '@rocket.chat/ui-contexts';
 import { useQuery } from '@tanstack/react-query';
 
@@ -28,12 +29,14 @@ const toManagedPresenceUser = ({
 export const hasAdminStatusRules = (user?: { presenceDisabledByAdmin?: boolean; statusVisibilityDeniedByAdmin?: string[] }): boolean =>
 	Boolean(user?.presenceDisabledByAdmin || user?.statusVisibilityDeniedByAdmin?.length);
 
-export const useManagedPresenceUsers = ({ searchTerm, count, offset }: { searchTerm: string; count: number; offset: number }) => {
+export const useManagedPresenceUsers = (query: { searchTerm: string }) => {
 	const listStatusVisibility = useEndpoint('GET', '/v1/users.listStatusVisibility');
 
-	return useQuery({
-		queryKey: managedPresenceQueryKeys.list({ searchTerm, count, offset }),
-		queryFn: () => listStatusVisibility({ searchTerm, count, offset }),
+	return usePaginatedQuery({
+		query,
+		getQueryKey: (query) => managedPresenceQueryKeys.list(query),
+		queryFn: listStatusVisibility,
+		itemsKey: 'users',
 		meta: {
 			apiErrorToastMessage: true,
 		},

@@ -6,7 +6,6 @@ import {
 	GenericTableHeaderCell,
 	GenericTableBody,
 	GenericTableLoadingTable,
-	usePagination,
 	GenericNoResults,
 	GenericError,
 } from '@rocket.chat/ui-client';
@@ -17,7 +16,6 @@ import UserPresenceTabRow from './UserPresenceTabRow';
 import type { ManagedPresenceUser } from './useManagedPresenceUsers';
 import { useManagedPresenceUsers } from './useManagedPresenceUsers';
 import FilterByText from '../../../components/FilterByText';
-import { managedPresenceQueryKeys } from '../../../lib/queryKeys';
 
 export type UserPresenceTabProps = {
 	onEdit: (user?: ManagedPresenceUser) => void;
@@ -32,12 +30,7 @@ const UserPresenceTab = ({ onEdit }: UserPresenceTabProps) => {
 		500,
 	);
 
-	const { paginatedQuery, paginationProps } = usePagination({
-		query,
-		getQueryKey: (query) => managedPresenceQueryKeys.list(query),
-	});
-
-	const { data, isLoading, isSuccess, isError, refetch } = useManagedPresenceUsers(paginatedQuery);
+	const { data, isLoading, isSuccess, isError, refetch, paginationProps } = useManagedPresenceUsers(query);
 
 	const columns: TableColumnWidth[] = ['auto', 'auto', 'auto', 'x48'];
 

@@ -1,14 +1,17 @@
 import type { GETLivechatRoomsParams, OperationResult } from '@rocket.chat/rest-typings';
+import { usePaginatedQuery } from '@rocket.chat/ui-client';
 import { useEndpoint } from '@rocket.chat/ui-contexts';
-import type { UseQueryResult } from '@tanstack/react-query';
-import { useQuery } from '@tanstack/react-query';
 
-export const useCurrentChats = (query: GETLivechatRoomsParams): UseQueryResult<OperationResult<'GET', '/v1/livechat/rooms'>> => {
+type CurrentChatsResult = OperationResult<'GET', '/v1/livechat/rooms'>;
+
+export const useCurrentChats = (query: GETLivechatRoomsParams) => {
 	const currentChats = useEndpoint('GET', '/v1/livechat/rooms');
 
-	return useQuery({
-		queryKey: ['current-chats', query],
-		queryFn: () => currentChats(query),
+	return usePaginatedQuery<GETLivechatRoomsParams, CurrentChatsResult>({
+		query,
+		getQueryKey: (query) => ['current-chats', query],
+		queryFn: (query) => currentChats(query) as unknown as Promise<CurrentChatsResult>,
+		itemsKey: 'rooms',
 
 		// TODO: Update this to use an stream of room changes instead of polling
 		refetchOnWindowFocus: false,
