@@ -69,3 +69,16 @@ export const InvitedUser = {
 		invitationDate: '2025-01-01T12:00:00Z',
 	},
 };
+
+export const WithPhoneNumbers = {
+	render: Template,
+
+	args: {
+		phoneNumbers: (
+			<ul>
+				<li>+55 11 99999-9999 (Mobile)</li>
+				<li>+55 11 88888-8888 (Work)</li>
+			</ul>
+		),
+	},
+};

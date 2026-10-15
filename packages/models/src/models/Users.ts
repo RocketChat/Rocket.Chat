@@ -2046,7 +2046,7 @@ export class UsersRaw extends BaseRaw<IUser, DefaultFields<IUser>> implements IU
 	getAgentInfo(
 		agentId: IUser['_id'],
 		showAgentEmail = false,
-	): Promise<Pick<ILivechatAgent, '_id' | 'name' | 'username' | 'phone' | 'customFields' | 'status' | 'livechat' | 'emails'> | null> {
+	): Promise<Pick<ILivechatAgent, '_id' | 'name' | 'username' | 'phones' | 'customFields' | 'status' | 'livechat' | 'emails'> | null> {
 		// TODO: Create class Agent
 		const query = {
 			_id: agentId,
@@ -2056,7 +2056,7 @@ export class UsersRaw extends BaseRaw<IUser, DefaultFields<IUser>> implements IU
 			projection: {
 				name: 1,
 				username: 1,
-				phone: 1,
+				phones: 1,
 				customFields: 1,
 				status: 1,
 				livechat: 1,
@@ -3028,6 +3028,11 @@ export class UsersRaw extends BaseRaw<IUser, DefaultFields<IUser>> implements IU
 						},
 					}),
 		};
+		return this.updateOne({ _id }, update);
+	}
+
+	setPhones(_id: IUser['_id'], phones: IUser['phones']) {
+		const update: UpdateFilter<IUser> = phones?.length ? { $set: { phones } } : { $unset: { phones: 1 } };
 		return this.updateOne({ _id }, update);
 	}
 

@@ -26,7 +26,6 @@ type UserInfoDataProps = Serialized<
 		| 'lastLogin'
 		| 'avatarETag'
 		| 'utcOffset'
-		| 'phone'
 		| 'createdAt'
 		| 'canViewAllInfo'
 		| 'customFields'
@@ -38,6 +37,7 @@ type UserInfoDataProps = Serialized<
 export type UserInfoProps = UserInfoDataProps & {
 	status: ReactNode;
 	customStatus?: ReactNode;
+	phoneNumbers?: ReactNode;
 	email?: string;
 	verified?: boolean;
 	actions: ReactNode;
@@ -55,7 +55,7 @@ const UserInfo = ({
 	avatarETag,
 	roles,
 	utcOffset,
-	phone,
+	phoneNumbers,
 	email,
 	verified,
 	createdAt,
@@ -150,14 +150,10 @@ const UserInfo = ({
 						</InfoPanelField>
 					)}
 
-					{phone && (
-						<InfoPanelField>
-							<InfoPanelLabel>{t('Phone')}</InfoPanelLabel>
-							<UserInfoCopyableText text={phone} label={t('Phone')}>
-								<Box is='a' withTruncatedText href={`tel:${phone}`}>
-									{phone}
-								</Box>
-							</UserInfoCopyableText>
+					{phoneNumbers && (
+						<InfoPanelField is='dl'>
+							<InfoPanelLabel is='dt'>{t('Phone_Numbers')}</InfoPanelLabel>
+							<InfoPanelText is='dd'>{phoneNumbers}</InfoPanelText>
 						</InfoPanelField>
 					)}
 
