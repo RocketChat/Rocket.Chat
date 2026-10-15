@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/react-webpack5';
 
-import { SidebarListItem } from '../..';
+import { SidebarListItem } from '.';
 import { GenericCondensedItem, GenericExtendedItem, GenericMediumItem, decorators } from '../helpers';
 
 export default {
