@@ -3,6 +3,7 @@ import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { useTranslation } from 'react-i18next';
 
 import { getErrorMessage } from '../../../lib/errorHandling';
+import { contactsQueryKeys } from '../../../lib/queryKeys';
 
 export const useContactsSync = () => {
 	const { t } = useTranslation();
@@ -15,7 +16,7 @@ export const useContactsSync = () => {
 		mutationFn: async () => {
 			const result = await syncMyContacts();
 
-			await queryClient.invalidateQueries({ queryKey: ['contacts', 'list'] });
+			await queryClient.invalidateQueries({ queryKey: contactsQueryKeys.list() });
 
 			return result;
 		},
