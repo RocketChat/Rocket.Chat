@@ -55,7 +55,7 @@ exports[`renders FullWidget without crashing 1`] = `
           On hold
         </span>
         <span
-          class="rcx-box rcx-box--full rcx-css-z06lf7"
+          class="rcx-box rcx-box--full rcx-css-b92gxg"
         >
            
           Muted
