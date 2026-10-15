@@ -67,6 +67,20 @@ test.each([
 		],
 	],
 	[
+		'- a\n    - b\n  - c\n   - d',
+		[
+			unorderedList([
+				listItem([plain('a')], undefined, [
+					unorderedList([listItem([plain('b')]), listItem([plain('c')], undefined, [unorderedList([listItem([plain('d')])])])]),
+				]),
+			]),
+		],
+	],
+	[
+		'- a\n    - b\n \t- c',
+		[unorderedList([listItem([plain('a')], undefined, [unorderedList([listItem([plain('b')]), listItem([plain('c')])])])])],
+	],
+	[
 		`
 - Item
   not a list line

@@ -151,7 +151,7 @@ type NestedListLine = {
 	item: ListItem | Task;
 };
 
-const indentWidth = (indent: string) => [...indent].reduce((width, char) => width + (char === '\t' ? 4 : 1), 0);
+const indentWidth = (indent: string) => [...indent].reduce((width, char) => width + (char === '\t' ? 4 - (width % 4) : 1), 0);
 
 // Groups indented list lines into lists by marker, nesting each line under the closest less-indented item above it.
 export const nestedLists = (lines: NestedListLine[]): NestedList[] => {
@@ -165,9 +165,10 @@ export const nestedLists = (lines: NestedListLine[]): NestedList[] => {
 		const items: (ListItem | Task)[] = [];
 
 		while (i < lines.length && lines[i].marker === marker && widths[i] <= width) {
+			const itemWidth = widths[i];
 			const { item } = lines[i++];
 			const start = i;
-			while (i < lines.length && widths[i] > width) {
+			while (i < lines.length && widths[i] > itemWidth) {
 				i++;
 			}
 			items.push(start < i ? { ...item, nested: nestedLists(lines.slice(start, i)) } : item);

@@ -302,6 +302,7 @@ describe('markup the renderer cannot reproduce', () => {
 		['several big emoji', '😄 😄'],
 		['spoiler block with a blank line before its closing fence', '||\nsecret\n\n||'],
 		['code block with a leading empty line', '```\n\nconst a = 1;\n```'],
+		['four-backtick code with spaces after its closing fence', '````\nx\n````  '],
 	])('does not reproduce %s, so the caller must guard the text', (_label, text) => {
 		expect(textOf(mountSource(text))).not.toBe(text);
 	});

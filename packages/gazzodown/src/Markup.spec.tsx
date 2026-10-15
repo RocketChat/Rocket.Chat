@@ -176,7 +176,7 @@ it('renders a nested list inside its parent item', () => {
 	const [outer, inner] = screen.getAllByRole('list');
 	expect(outer.tagName).toBe('UL');
 	expect(inner.tagName).toBe('OL');
-	expect(outer).toContainElement(inner);
+	expect(screen.getAllByRole('listitem')[0]).toContainElement(inner);
 	expect(inner).toHaveTextContent('Child');
 	expect(screen.getAllByRole('listitem')).toHaveLength(3);
 });

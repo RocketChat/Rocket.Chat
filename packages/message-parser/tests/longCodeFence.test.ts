@@ -16,6 +16,7 @@ test.each([
 	],
 	['````js\nconst a = 1;\n````', [code([codeLine(plain('const a = 1;'))], 'js')]],
 	['`````\n````\ninner\n````\n`````', [code([codeLine(plain('````')), codeLine(plain('inner')), codeLine(plain('````'))])]],
+	['````\n`````\nx\n````', [code([codeLine(plain('`````')), codeLine(plain('x'))])]],
 	['````\nx\n````\nafter', [code([codeLine(plain('x'))]), lineBreak(), paragraph([plain('after')])]],
 	['````\n````', [paragraph([plain('````')]), paragraph([plain('````')])]],
 	['````\nunclosed\n```', [paragraph([plain('````')]), paragraph([plain('unclosed')]), paragraph([plain('```')])]],
