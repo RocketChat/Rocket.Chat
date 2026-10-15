@@ -716,7 +716,9 @@ export class AbacService extends ServiceClass implements IAbacService {
 			return { allowed: false, reason: 'unavailable', code: AbacErrorCode.PdpUnavailable };
 		}
 
-		const members = new Map(subjects.map(({ _id, username, name }) => [_id, { _id, username, name }]));
+		const members = new Map(
+			subjects.filter(({ _id }) => creatorJoins || _id !== actor._id).map(({ _id, username, name }) => [_id, { _id, username, name }]),
+		);
 		const toMembers = (ids: string[]) => ids.flatMap((id) => members.get(id) ?? []);
 
 		return {
