@@ -39,9 +39,18 @@ describe('resolveCallerContact', () => {
 			expect(findOneByUserIdAndPhone).toHaveBeenCalledWith(UID, { e164: '+541143211000' }, undefined);
 		});
 
-		it('never asks for a number it could not key, which would search the collection for nothing', async () => {
-			await expect(resolveCallerContact(UID, 'anonymous')).resolves.toBeUndefined();
-			expect(findOneByUserIdAndPhone).not.toHaveBeenCalled();
+		it('falls back to what arrived for a number no region could key, rather than giving up on it', async () => {
+			await resolveCallerContact(UID, 'anonymous');
+
+			expect(findOneByUserIdAndPhone).toHaveBeenCalledWith(UID, { raw: 'anonymous' }, undefined);
+		});
+
+		it('falls back to what arrived for a national number while no region is configured', async () => {
+			settingsOf({ Exchange_Contacts_Default_Region: undefined });
+			findOneByUserIdAndPhone.mockResolvedValue({ _id: 'c1', displayName: 'Ana' });
+
+			await expect(resolveCallerContact(UID, '011 4321-1000')).resolves.toEqual({ _id: 'c1', displayName: 'Ana' });
+			expect(findOneByUserIdAndPhone).toHaveBeenCalledWith(UID, { raw: '011 4321-1000' }, undefined);
 		});
 
 		it('still resolves an international number when no default region is configured', async () => {
