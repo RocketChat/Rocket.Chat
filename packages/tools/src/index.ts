@@ -9,6 +9,7 @@ export * from './getHeader';
 export * from './getLoginExpiration';
 export * from './getObjectKeys';
 export * from './isAbsoluteURL';
+export * from './isBareJid';
 export * from './isObject';
 export * from './isRecord';
 export * from './isTruthy';
