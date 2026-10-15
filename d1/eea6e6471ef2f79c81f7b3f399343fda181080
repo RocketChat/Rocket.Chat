@@ -1,0 +1,21 @@
+ee/apps/xmpp-server-service/tsconfig.json
+  s_65f0216a852574::t_7d574b0de2633b 4
+eslint.config.mjs
+  s_65f0216a852574::t_55e87d07d11b93 504-505
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "d1eea6e6471ef2f79c81f7b3f399343fda181080",
+  "prompts": {},
+  "sessions": {
+    "s_65f0216a852574": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "b31b029c-05ce-4bd3-8ee9-2d0eb9343884",
+        "model": "claude-opus-5-5"
+      },
+      "human_author": "Diego Sampaio <chinello@gmail.com>"
+    }
+  }
+}

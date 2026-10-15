@@ -1,0 +1,25 @@
+ee/packages/xmpp-server/tests/end-to-end/helper/rocketchat.ts
+  s_0dfed31b94683c::t_af46ce0490d54c 10,13,131,217-218
+  s_0dfed31b94683c::t_634995c7f3cc36 215
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "aaf0d0561752c07733f5e41524daf2f6537fbbf1",
+  "prompts": {},
+  "humans": {
+    "h_4c386397e672f4": {
+      "author": "Diego Sampaio <chinello@gmail.com>"
+    }
+  },
+  "sessions": {
+    "s_0dfed31b94683c": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "cd914d9d-c63e-4de3-b863-6195aed8137f",
+        "model": "claude-opus-5-5"
+      },
+      "human_author": "Diego Sampaio <chinello@gmail.com>"
+    }
+  }
+}
