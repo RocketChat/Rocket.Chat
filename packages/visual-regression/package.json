@@ -10,7 +10,7 @@
 		"typecheck": "tsc --noEmit"
 	},
 	"dependencies": {
-		"@playwright/test": "~1.62.1"
+		"@playwright/test": "~1.52.0"
 	},
 	"devDependencies": {
 		"@rocket.chat/tsconfig": "workspace:*",
