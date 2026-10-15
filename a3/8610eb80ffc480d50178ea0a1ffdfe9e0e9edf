@@ -1,0 +1,25 @@
+ee/packages/xmpp-server/package.json
+  s_d1e6ba44e60ea7::t_61743322a44e56 24
+  s_d1e6ba44e60ea7::t_e51e934fb71147 34,37-38
+ee/apps/xmpp-server-service/package.json
+  s_d1e6ba44e60ea7::t_52b0cf93f090bd 28-29
+  s_d1e6ba44e60ea7::t_66a2a0db88f16a 39
+yarn.lock
+  s_d1e6ba44e60ea7::t_22192986075156 3926,12326,12328-12329,12346,12351,12355-12356,12915,15996,18984-18986,18988-18993,23860-23862,23881,25004,25023,27985,30413,30637
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "a38610eb80ffc480d50178ea0a1ffdfe9e0e9edf",
+  "prompts": {},
+  "sessions": {
+    "s_d1e6ba44e60ea7": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "6fece5ee-abbd-4b33-82ab-1ddafbd16077",
+        "model": "claude-opus-5-5"
+      },
+      "human_author": "Diego Sampaio <chinello@gmail.com>"
+    }
+  }
+}
