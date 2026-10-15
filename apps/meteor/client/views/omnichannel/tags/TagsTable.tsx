@@ -8,12 +8,12 @@ import {
 	GenericTableHeaderCell,
 	GenericTableBody,
 	GenericTableLoadingRow,
-	usePagination,
+	usePaginatedQuery,
 	useSort,
 	GenericNoResults,
 } from '@rocket.chat/ui-client';
 import { useTranslation, useEndpoint, useRouter } from '@rocket.chat/ui-contexts';
-import { useQuery, hashKey } from '@tanstack/react-query';
+import { hashKey } from '@tanstack/react-query';
 import { useMemo, useState } from 'react';
 
 import { useRemoveTag } from './useRemoveTag';
@@ -43,12 +43,12 @@ const TagsTable = () => {
 		500,
 	);
 
-	const { paginatedQuery, queryKey, paginationProps } = usePagination({ query, getQueryKey: (query) => ['livechat-tags', query] });
-
 	const getTags = useEndpoint('GET', '/v1/livechat/tags');
-	const { data, isSuccess, isLoading } = useQuery({
-		queryKey,
-		queryFn: async () => getTags(paginatedQuery),
+	const { data, isSuccess, isLoading, paginatedQuery, paginationProps } = usePaginatedQuery({
+		query,
+		getQueryKey: (query) => ['livechat-tags', query],
+		queryFn: getTags,
+		itemsKey: 'tags',
 		refetchOnWindowFocus: false,
 	});
 

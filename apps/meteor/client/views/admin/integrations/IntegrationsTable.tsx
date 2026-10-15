@@ -7,12 +7,11 @@ import {
 	GenericTableHeader,
 	GenericTableHeaderCell,
 	GenericTableLoadingTable,
-	usePagination,
+	usePaginatedQuery,
 	useSort,
 	GenericNoResults,
 } from '@rocket.chat/ui-client';
 import { useEndpoint, useRoute, useTranslation, useLayout } from '@rocket.chat/ui-contexts';
-import { useQuery } from '@tanstack/react-query';
 import { useMemo, useCallback, useState } from 'react';
 
 import IntegrationRow from './IntegrationRow';
@@ -40,12 +39,12 @@ const IntegrationsTable = ({ type }: IntegrationsTableProps) => {
 		500,
 	);
 
-	const { paginatedQuery, queryKey, paginationProps } = usePagination({ query, getQueryKey: (query) => ['integrations', query] });
-
 	const getIntegrations = useEndpoint('GET', '/v1/integrations.list');
-	const { data, isLoading, isSuccess, isError, refetch } = useQuery({
-		queryKey,
-		queryFn: async () => getIntegrations(paginatedQuery),
+	const { data, isLoading, isSuccess, isError, refetch, paginationProps } = usePaginatedQuery({
+		query,
+		getQueryKey: (query) => ['integrations', query],
+		queryFn: getIntegrations,
+		itemsKey: 'integrations',
 	});
 
 	const onClick = useCallback(

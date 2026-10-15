@@ -6,12 +6,12 @@ import {
 	GenericTableHeaderCell,
 	GenericTableBody,
 	GenericTableLoadingRow,
-	usePagination,
+	usePaginatedQuery,
 	useSort,
 	GenericNoResults,
 } from '@rocket.chat/ui-client';
 import { useEndpoint, useRouter } from '@rocket.chat/ui-contexts';
-import { useQuery, hashKey } from '@tanstack/react-query';
+import { hashKey } from '@tanstack/react-query';
 import { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -37,12 +37,12 @@ const UnitsTable = () => {
 		500,
 	);
 
-	const { paginatedQuery, queryKey, paginationProps } = usePagination({ query, getQueryKey: (query) => ['livechat-units', query] });
-
 	const getUnits = useEndpoint('GET', '/v1/livechat/units');
-	const { isSuccess, isLoading, data } = useQuery({
-		queryKey,
-		queryFn: async () => getUnits(paginatedQuery),
+	const { isSuccess, isLoading, data, paginatedQuery, paginationProps } = usePaginatedQuery({
+		query,
+		getQueryKey: (query) => ['livechat-units', query],
+		queryFn: getUnits,
+		itemsKey: 'units',
 	});
 
 	const [defaultQuery] = useState(hashKey([paginatedQuery]));

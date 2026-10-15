@@ -9,12 +9,12 @@ import {
 	GenericTableHeaderCell,
 	GenericTableLoadingTable,
 	GenericTableRow,
-	usePagination,
+	usePaginatedQuery,
 	useSort,
 	GenericNoResults,
 } from '@rocket.chat/ui-client';
 import { useTranslation, useEndpoint, useRouter } from '@rocket.chat/ui-contexts';
-import { useQuery, hashKey, keepPreviousData } from '@tanstack/react-query';
+import { hashKey, keepPreviousData } from '@tanstack/react-query';
 import { useState, useMemo } from 'react';
 
 import DepartmentItemMenu from './DepartmentItemMenu';
@@ -51,14 +51,11 @@ const DepartmentsTable = ({ archived }: DepartmentsTableProps) => {
 		500,
 	);
 
-	const { paginatedQuery, queryKey, paginationProps } = usePagination({
+	const { data, isSuccess, isLoading, paginatedQuery, paginationProps } = usePaginatedQuery({
 		query,
 		getQueryKey: (query) => ['livechat-departments', query, archived],
-	});
-
-	const { data, isSuccess, isLoading } = useQuery({
-		queryKey,
-		queryFn: async () => getDepartments(paginatedQuery),
+		queryFn: getDepartments,
+		itemsKey: 'departments',
 		placeholderData: keepPreviousData,
 	});
 

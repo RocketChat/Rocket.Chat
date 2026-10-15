@@ -10,12 +10,11 @@ import {
 	GenericTableRow,
 	GenericTableCell,
 	GenericTableLoadingRow,
-	usePagination,
+	usePaginatedQuery,
 	useSort,
 	GenericNoResults,
 } from '@rocket.chat/ui-client';
 import { useTranslation, useEndpoint } from '@rocket.chat/ui-contexts';
-import { useQuery } from '@tanstack/react-query';
 import { useMemo, useState } from 'react';
 
 import { QueueListFilter } from './QueueListFilter';
@@ -84,8 +83,6 @@ const QueueListTable = () => {
 		return query;
 	}, [sortBy, sortDirection, filters.status, filters.departmentId, filters.servedBy]);
 
-	const { paginatedQuery, queryKey, paginationProps } = usePagination({ query, getQueryKey: (query) => ['livechat-queue', query] });
-
 	const getUserStatus = (status?: string) => {
 		if (!status) {
 			return t('Offline');
@@ -106,9 +103,11 @@ const QueueListTable = () => {
 	};
 
 	const getLivechatQueue = useEndpoint('GET', '/v1/livechat/queue');
-	const { data, isSuccess, isLoading } = useQuery({
-		queryKey,
-		queryFn: async () => getLivechatQueue(paginatedQuery),
+	const { data, isSuccess, isLoading, paginationProps } = usePaginatedQuery({
+		query,
+		getQueryKey: (query) => ['livechat-queue', query],
+		queryFn: getLivechatQueue,
+		itemsKey: 'queue',
 	});
 
 	return (

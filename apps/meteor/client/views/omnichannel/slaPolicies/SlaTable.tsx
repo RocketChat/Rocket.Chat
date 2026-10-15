@@ -8,12 +8,12 @@ import {
 	GenericTableBody,
 	GenericTableRow,
 	GenericTableCell,
-	usePagination,
+	usePaginatedQuery,
 	useSort,
 	GenericNoResults,
 } from '@rocket.chat/ui-client';
 import { useTranslation, useEndpoint, useRouter } from '@rocket.chat/ui-contexts';
-import { useQuery, hashKey } from '@tanstack/react-query';
+import { hashKey } from '@tanstack/react-query';
 import type { MutableRefObject } from 'react';
 import { useMemo, useState, useEffect } from 'react';
 
@@ -40,12 +40,12 @@ const SlaTable = ({ reload }: { reload: MutableRefObject<() => void> }) => {
 		500,
 	);
 
-	const { paginatedQuery, queryKey, paginationProps } = usePagination({ query, getQueryKey: (query) => ['/v1/livechat/sla', query] });
-
 	const getSlaData = useEndpoint('GET', '/v1/livechat/sla');
-	const { data, isSuccess, isLoading, refetch } = useQuery({
-		queryKey,
-		queryFn: () => getSlaData(paginatedQuery),
+	const { data, isSuccess, isLoading, refetch, paginatedQuery, paginationProps } = usePaginatedQuery({
+		query,
+		getQueryKey: (query) => ['/v1/livechat/sla', query],
+		queryFn: getSlaData,
+		itemsKey: 'sla',
 	});
 
 	const [defaultQuery] = useState(hashKey([paginatedQuery]));

@@ -6,11 +6,11 @@ import {
 	GenericTableBody,
 	GenericTableHeaderCell,
 	GenericTableLoadingRow,
-	usePagination,
+	usePaginatedQuery,
 	GenericNoResults,
 } from '@rocket.chat/ui-client';
 import { useTranslation, useEndpoint, useRouter } from '@rocket.chat/ui-contexts';
-import { useQuery, hashKey } from '@tanstack/react-query';
+import { hashKey } from '@tanstack/react-query';
 import { useState } from 'react';
 
 import TriggersRow from './TriggersRow';
@@ -25,15 +25,12 @@ const TriggersTable = () => {
 		router.navigate('/omnichannel/triggers/new');
 	});
 
-	const { paginatedQuery, queryKey, paginationProps } = usePagination({
+	const getTriggers = useEndpoint('GET', '/v1/livechat/triggers');
+	const { data, refetch, isSuccess, isLoading, isError, paginatedQuery, paginationProps } = usePaginatedQuery({
 		query: {},
 		getQueryKey: (query) => ['livechat-triggers', query],
-	});
-
-	const getTriggers = useEndpoint('GET', '/v1/livechat/triggers');
-	const { data, refetch, isSuccess, isLoading, isError } = useQuery({
-		queryKey,
-		queryFn: async () => getTriggers(paginatedQuery),
+		queryFn: getTriggers,
+		itemsKey: 'triggers',
 	});
 
 	const [defaultQuery] = useState(hashKey([paginatedQuery]));
