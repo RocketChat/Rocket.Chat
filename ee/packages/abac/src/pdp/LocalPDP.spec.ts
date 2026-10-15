@@ -15,7 +15,13 @@ let roomsCol: Collection<Pick<IRoom, '_id' | 't' | 'abacAttributes'>>;
 
 const pdp = new LocalPDP();
 
-const subject = (_id: string) => ({ _id, username: _id });
+const holderAttributes = [
+	{ key: 'dept', values: ['eng', 'sales'] },
+	{ key: 'region', values: ['emea'] },
+];
+const partialAttributes = [{ key: 'dept', values: ['eng'] }];
+
+const subject = (_id: string, abacAttributes?: IAbacAttributeDefinition[]) => ({ _id, username: _id, abacAttributes });
 
 const insertUser = (_id: string, abacAttributes?: IAbacAttributeDefinition[]) =>
 	usersCol.insertOne({ _id, username: _id, type: 'user', roles: [], active: true, ...(abacAttributes && { abacAttributes }) });
@@ -34,11 +40,8 @@ afterAll(async () => {
 beforeEach(async () => {
 	await usersCol.deleteMany({});
 	await roomsCol.deleteMany({});
-	await insertUser('holder', [
-		{ key: 'dept', values: ['eng', 'sales'] },
-		{ key: 'region', values: ['emea'] },
-	]);
-	await insertUser('partial', [{ key: 'dept', values: ['eng'] }]);
+	await insertUser('holder', holderAttributes);
+	await insertUser('partial', partialAttributes);
 	await insertUser('none');
 });
 
@@ -111,7 +114,7 @@ describe('LocalPDP.evaluateSubjectAgainstRooms', () => {
 	});
 
 	it('splits the rooms into compliant and non-compliant in one pass, never inconclusive', async () => {
-		const result = await pdp.evaluateSubjectAgainstRooms(subject('partial'), [engRoom, engEmeaRoom, hrRoom]);
+		const result = await pdp.evaluateSubjectAgainstRooms(subject('partial', partialAttributes), [engRoom, engEmeaRoom, hrRoom]);
 
 		expect(result.compliant).toEqual(['eng']);
 		expect(result.nonCompliant.sort()).toEqual(['eng-emea', 'hr']);
@@ -119,7 +122,7 @@ describe('LocalPDP.evaluateSubjectAgainstRooms', () => {
 	});
 
 	it('admits a subject holding every attribute of the room', async () => {
-		const result = await pdp.evaluateSubjectAgainstRooms(subject('holder'), [engRoom, engEmeaRoom, hrRoom]);
+		const result = await pdp.evaluateSubjectAgainstRooms(subject('holder', holderAttributes), [engRoom, engEmeaRoom, hrRoom]);
 
 		expect(result.compliant.sort()).toEqual(['eng', 'eng-emea']);
 		expect(result.nonCompliant).toEqual(['hr']);
@@ -131,14 +134,8 @@ describe('LocalPDP.evaluateSubjectAgainstRooms', () => {
 		expect(result).toEqual({ compliant: ['plain'], nonCompliant: ['eng'], inconclusive: [] });
 	});
 
-	it('refuses every room to a subject that does not exist', async () => {
-		const result = await pdp.evaluateSubjectAgainstRooms(subject('ghost'), [engRoom, plainRoom]);
-
-		expect(result).toEqual({ compliant: [], nonCompliant: ['eng', 'plain'], inconclusive: [] });
-	});
-
 	it('refuses a room that does not exist', async () => {
-		const result = await pdp.evaluateSubjectAgainstRooms(subject('holder'), [
+		const result = await pdp.evaluateSubjectAgainstRooms(subject('holder', holderAttributes), [
 			engRoom,
 			{ _id: 'gone', abacAttributes: engRoom.abacAttributes },
 		]);

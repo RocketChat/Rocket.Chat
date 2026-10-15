@@ -479,14 +479,9 @@ export class TeamService extends ServiceClassInternal implements ITeamService {
 				room,
 				{ audit: false },
 			);
-			const allowedIds = new Set(allowed.map(({ _id }) => _id));
 
-			for await (const m of teamMembers.records) {
-				if (!allowedIds.has(m.user._id)) {
-					continue;
-				}
-
-				if (await addUserToRoom(room._id, m.user, user)) {
+			for (const member of allowed) {
+				if (await addUserToRoom(room._id, member, user)) {
 					room.usersCount++;
 				}
 			}
