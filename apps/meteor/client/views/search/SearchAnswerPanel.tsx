@@ -1,4 +1,4 @@
-import { Box, Button, Card, CardBody, CardHeader, CardTitle, FramedIcon, Icon, Skeleton, CardControls } from '@rocket.chat/fuselage';
+import { Box, Button, Card, CardBody, CardHeader, CardTitle, FramedIcon, Skeleton, CardControls } from '@rocket.chat/fuselage';
 import type { TranslationKey } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
 import { useId } from 'react';

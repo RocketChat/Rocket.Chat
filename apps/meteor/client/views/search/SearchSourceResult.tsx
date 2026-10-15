@@ -17,6 +17,7 @@ import {
 } from '@rocket.chat/fuselage';
 import type { AISearchResult } from '@rocket.chat/rest-typings';
 import { MessageAvatar } from '@rocket.chat/ui-avatar';
+import { useUserPreference, useLayout } from '@rocket.chat/ui-contexts';
 import type { ComponentProps, ReactElement } from 'react';
 import { useRef } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -79,18 +80,11 @@ const SearchSourceResult = ({ item }: SearchSourceResultProps): ReactElement => 
 	const displayName = item.u?.name || username;
 	const messageTime = formatMessageTime(item.ts);
 	const relevanceScore = typeof item.score === 'number' ? Math.max(0, Math.min(100, Math.round(item.score * 100))) : undefined;
+	const { isMobile } = useLayout();
+	const showUsername = Boolean(!useUserPreference<boolean>('hideUsernames') && !isMobile);
 
 	return (
-		<Box
-			is='article'
-			role='listitem'
-			position='relative'
-			borderBlockEndWidth='default'
-			borderBlockEndStyle='solid'
-			borderBlockEndColor='extra-light'
-			paddingBlockStart={16}
-			paddingBlockEnd={16}
-		>
+		<Box is='article' role='listitem' position='relative' paddingBlockStart={4} paddingBlockEnd={4}>
 			<Message clickable={Boolean(href)}>
 				<MessageLeftContainer>
 					<MessageAvatar username={username} size='x36' />
@@ -99,7 +93,7 @@ const SearchSourceResult = ({ item }: SearchSourceResultProps): ReactElement => 
 					<MessageHeader>
 						<MessageNameContainer>
 							<MessageName title={displayName}>{displayName}</MessageName>
-							{item.u?.username && (
+							{showUsername && item.u?.username && (
 								<>
 									{' '}
 									<MessageUsername>@{item.u.username}</MessageUsername>
