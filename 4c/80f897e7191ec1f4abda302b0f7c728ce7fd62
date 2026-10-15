@@ -1,0 +1,21 @@
+packages/core-typings/package.json
+  s_4557b2972c54ed::t_50c133bd8d7f0a 23
+yarn.lock
+  s_4557b2972c54ed::t_48c4dcf94db046 9796,10208
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "4c80f897e7191ec1f4abda302b0f7c728ce7fd62",
+  "prompts": {},
+  "sessions": {
+    "s_4557b2972c54ed": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "3dbb9552-fc96-44bd-8a5c-e45d8b819c20",
+        "model": "claude-opus-5-5"
+      },
+      "human_author": "Diego Sampaio <chinello@gmail.com>"
+    }
+  }
+}
