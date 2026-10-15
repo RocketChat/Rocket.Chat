@@ -9,6 +9,8 @@ export type GroupsCreateProps = {
 		broadcast: boolean;
 		encrypted: boolean;
 		teamId?: string;
+		federated?: boolean;
+		topic?: string;
 	};
 	excludeSelf?: boolean;
 };
