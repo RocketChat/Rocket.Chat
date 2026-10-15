@@ -6,19 +6,10 @@ The `@rocket.chat/rest-typings` package uses two [AJV](https://ajv.js.org/) inst
 
 ## Instance definitions
 
-Both are created in `packages/rest-typings/src/v1/Ajv.ts` with the same configuration except for one option:
+Both are created in `packages/rest-typings/src/v1/Ajv.ts` with the same configuration except for `coerceTypes`:
 
-| Option            | `ajv`   | `ajvQuery` |
-|-------------------|---------|------------|
-| `coerceTypes`     | `true`  | `'array'`  |
-| `allowUnionTypes` | `true`  | `true`     |
-| `code.source`     | `true`  | `true`     |
-| `discriminator`   | `true`  | `true`     |
-
-In short:
-
-- **`ajv`**: coerces scalars, so the string `"50"` satisfies a `number` and `"true"` a `boolean`.
-- **`ajvQuery`**: does that too, and additionally coerces between a scalar and a one-item array, so `?types=c` satisfies an `array` of strings.
+- **`ajv`** (`true`): coerces scalars, so the string `"50"` satisfies a `number` and `"true"` a `boolean`.
+- **`ajvQuery`** (`'array'`): does that too, and additionally coerces between a scalar and a one-item array, so `?types=c` satisfies an `array` of strings.
 
 Custom formats (`addFormats`) and keywords (e.g. `isNotEmpty`) are registered on both instances.
 
