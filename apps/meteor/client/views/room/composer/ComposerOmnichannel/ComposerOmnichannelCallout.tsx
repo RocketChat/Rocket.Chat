@@ -5,7 +5,7 @@ import { useQuery } from '@tanstack/react-query';
 import { useId } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { isSameChannel } from '../../../../../app/livechat/lib/isSameChannel';
+import { isSameChannel } from '../../../../../lib/livechat/isSameChannel';
 import { useBlockChannel } from '../../../omnichannel/contactInfo/tabs/ContactInfoChannels/useBlockChannel';
 import { useOmnichannelRoom } from '../../contexts/RoomContext';
 

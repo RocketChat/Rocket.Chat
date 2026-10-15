@@ -32,7 +32,7 @@ const { sendUsageReport } = proxyquire.noCallThru().load('./sendUsageReport', {
 	'../index': { statistics: mocks.statistics },
 	'../../cloud': { getWorkspaceAccessToken: mocks.getWorkspaceAccessToken },
 	'meteor/meteor': { Meteor: mocks.Meteor },
-	'../../../../app/utils/rocketchat.info': { Info: mocks.Info },
+	'../../../../rocketchat.info': { Info: mocks.Info },
 });
 
 describe('sendUsageReport', () => {

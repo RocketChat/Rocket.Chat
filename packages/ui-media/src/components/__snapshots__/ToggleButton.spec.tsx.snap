@@ -1,5 +1,26 @@
 // Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
 
+exports[`renders PressedInfo without crashing 1`] = `
+<body>
+  <div>
+    <button
+      aria-label="Raise hand"
+      class="rcx-box rcx-box--full rcx-button--medium-square rcx-button--icon-secondary rcx-button--square rcx-button--icon rcx-button"
+      label="Raise hand"
+      title="Lower hand"
+      type="button"
+    >
+      <i
+        aria-hidden="true"
+        class="rcx-box rcx-box--full rcx-icon--name-hand rcx-icon rcx-css-1dxovkr"
+      >
+        
+      </i>
+    </button>
+  </div>
+</body>
+`;
+
 exports[`renders ToggleButtonStory without crashing 1`] = `
 <body>
   <div>

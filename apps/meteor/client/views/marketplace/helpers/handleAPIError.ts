@@ -1,4 +1,4 @@
-import { t } from '../../../../app/utils/lib/i18n';
+import { t } from '../../../../lib/i18n';
 import { dispatchToastMessage } from '../../../lib/toast';
 
 const shouldHandleErrorAsWarning = (message: string): boolean => {

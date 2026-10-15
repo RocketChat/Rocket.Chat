@@ -6,6 +6,7 @@ import CallReactions, { type CallReaction } from './CallReactions';
 import CallStage, { type StageLayout } from './CallStage';
 import { useCallActions, useCallState } from './context';
 import { handPositionsOf } from './lib/raisedHands';
+import { latestReactionBySender } from './lib/reactions';
 
 export type CallStageAreaProps = {
 	layout: StageLayout;
@@ -43,6 +44,7 @@ const CallStageArea = ({ layout }: CallStageAreaProps) => {
 	);
 
 	const handPositions = useMemo(() => handPositionsOf(raisedHands), [raisedHands]);
+	const tileReactions = useMemo(() => latestReactionBySender(activeReactions), [activeReactions]);
 
 	// Named from everyone in the call rather than from whoever has a tile, so a sender without one still arrives named.
 	const reactions = useMemo((): CallReaction[] => {
@@ -70,6 +72,7 @@ const CallStageArea = ({ layout }: CallStageAreaProps) => {
 					remoteParticipants={remoteParticipants}
 					onStopLocalScreenShare={toggleScreenShare}
 					handPositions={handPositions}
+					reactions={tileReactions}
 					layout={layout}
 				/>
 				<CallReactions reactions={reactions} />

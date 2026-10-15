@@ -1,6 +1,8 @@
 import { css } from '@rocket.chat/css-in-js';
 import { Box, Palette, borderRadius } from '@rocket.chat/fuselage';
 
+import { REACTION_VISIBLE_MS } from './lib/reactions';
+
 export type CallReaction = {
 	id: string;
 	emoji: string;
@@ -35,8 +37,8 @@ const reactionStyles = css`
 	align-items: center;
 	gap: 0.5rem;
 	max-width: 100%;
-	// Each one lives for the same three seconds the sender's copy does, then takes itself off the layer.
-	animation: rcx-call-reaction-rise 3s ease-out forwards;
+	// Each one lives for the same time the sender's copy does, then takes itself off the layer.
+	animation: rcx-call-reaction-rise ${REACTION_VISIBLE_MS}ms ease-out forwards;
 
 	@keyframes rcx-call-reaction-rise {
 		0% {

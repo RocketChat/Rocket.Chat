@@ -1,8 +1,8 @@
 import { errCodes, federationSDK } from '@rocket.chat/federation-sdk';
-import type { Context } from 'hono';
+import type { Context, MiddlewareHandler } from 'hono';
 import { createMiddleware } from 'hono/factory';
 
-export const isAuthenticatedMiddleware = () =>
+export const isAuthenticatedMiddleware = (): MiddlewareHandler =>
 	createMiddleware(async (c: Context, next) => {
 		try {
 			const { method } = c.req;

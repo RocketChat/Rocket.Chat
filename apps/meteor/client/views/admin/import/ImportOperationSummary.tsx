@@ -11,7 +11,7 @@ import {
 	ImportPreparingStartedStates,
 	ImportingStartedStates,
 	ProgressStep,
-} from '../../../../app/importer/lib/ImporterProgressStep';
+} from '../../../../lib/importer/ImporterProgressStep';
 
 export type ImportOperationSummaryProps = {
 	type: string;

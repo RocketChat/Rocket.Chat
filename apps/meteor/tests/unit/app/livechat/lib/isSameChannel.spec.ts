@@ -2,7 +2,7 @@ import type { ILivechatContactVisitorAssociation } from '@rocket.chat/core-typin
 import { OmnichannelSourceType } from '@rocket.chat/core-typings';
 import { expect } from 'chai';
 
-import { isSameChannel } from '../../../../../app/livechat/lib/isSameChannel';
+import { isSameChannel } from '../../../../../lib/livechat/isSameChannel';
 
 const association = ({
 	visitorId = 'visitor-1',

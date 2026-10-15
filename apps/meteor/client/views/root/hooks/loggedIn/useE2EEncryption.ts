@@ -2,7 +2,7 @@ import { isE2EEPinnedMessage, type IRoom, type IMessage } from '@rocket.chat/cor
 import { useUserId, useSetting, useRouter, useLayout, useUser } from '@rocket.chat/ui-contexts';
 import { useEffect, useRef } from 'react';
 
-import { MentionsParser } from '../../../../../app/mentions/lib/MentionsParser';
+import { MentionsParser } from '../../../../../lib/MentionsParser';
 import { e2e } from '../../../../lib/e2ee';
 import { onClientBeforeSendMessage } from '../../../../lib/onClientBeforeSendMessage';
 import { onClientMessageReceived } from '../../../../lib/onClientMessageReceived';
