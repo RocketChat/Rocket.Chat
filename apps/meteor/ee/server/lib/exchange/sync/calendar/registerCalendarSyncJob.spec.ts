@@ -6,6 +6,10 @@ const add = jest.fn();
 const remove = jest.fn();
 const watchMultiple = jest.fn();
 const stopWatching = jest.fn();
+const discardImportedBySource = jest.fn();
+const removeAll = jest.fn();
+const whenCalendarSyncSettled = jest.fn();
+const findAllUserIds = jest.fn();
 
 jest.mock('../../../../../../server/settings', () => ({
 	settings: { get: (key: string) => get(key), watchMultiple: (...args: unknown[]) => watchMultiple(...args) },
@@ -17,7 +21,13 @@ jest.mock('@rocket.chat/cron', () => ({
 		remove: (...args: unknown[]) => remove(...args),
 	},
 }));
-jest.mock('./runCalendarSync', () => ({ runCalendarSync: jest.fn() }));
+jest.mock('./runCalendarSync', () => ({ runCalendarSync: jest.fn(), whenCalendarSyncSettled: () => whenCalendarSyncSettled() }));
+jest.mock('@rocket.chat/core-services', () => ({
+	Calendar: { discardImportedBySource: (...args: unknown[]) => discardImportedBySource(...args) },
+}));
+jest.mock('@rocket.chat/models', () => ({
+	ExchangeCalendarSyncState: { findAllUserIds: () => findAllUserIds(), removeAll: () => removeAll() },
+}));
 
 describe('configureCalendarSyncJob', () => {
 	const settingsOf = (over: Record<string, unknown> = {}) => {
@@ -102,6 +112,10 @@ describe('registerCalendarSyncJob', () => {
 		add.mockResolvedValue(undefined);
 		remove.mockResolvedValue(undefined);
 		watchMultiple.mockReturnValue(stopWatching);
+		discardImportedBySource.mockResolvedValue(0);
+		removeAll.mockResolvedValue(undefined);
+		whenCalendarSyncSettled.mockResolvedValue(undefined);
+		findAllUserIds.mockResolvedValue([]);
 		get.mockImplementation((key: string) => ({ Outlook_Calendar_Enabled: true, Exchange_Mode: 'server' })[key]);
 	});
 
@@ -140,6 +154,56 @@ describe('registerCalendarSyncJob', () => {
 		await flush();
 
 		expect(add).not.toHaveBeenCalled();
+	});
+
+	it('discards what the sync imported, and the cursors with it, when it is switched off', async () => {
+		registerCalendarSyncJob();
+
+		await watchMultiple.mock.calls[0][1]();
+		await flush();
+
+		get.mockImplementation((key: string) => ({ Outlook_Calendar_Enabled: true, Exchange_Mode: 'legacy' })[key]);
+
+		await watchMultiple.mock.calls[0][1]();
+		await flush();
+
+		expect(discardImportedBySource).toHaveBeenCalledWith('outlook', []);
+		expect(removeAll).toHaveBeenCalled();
+	});
+
+	it('refreshes the presence of every mailbox the sync had touched', async () => {
+		findAllUserIds.mockResolvedValue(['u1', 'u2']);
+		removeAll.mockImplementation(async () => findAllUserIds.mockResolvedValue([]));
+
+		registerCalendarSyncJob();
+		const notify = watchMultiple.mock.calls[0][1];
+
+		await notify();
+		await flush();
+
+		get.mockImplementation((key: string) => ({ Outlook_Calendar_Enabled: true, Exchange_Mode: 'legacy' })[key]);
+
+		await notify();
+		await flush();
+
+		expect(discardImportedBySource).toHaveBeenCalledWith('outlook', ['u1', 'u2']);
+	});
+
+	it('leaves the imported events alone when the cursors cannot be cleared', async () => {
+		registerCalendarSyncJob();
+		const notify = watchMultiple.mock.calls[0][1];
+
+		await notify();
+		await flush();
+
+		removeAll.mockRejectedValueOnce(new Error('mongo is down'));
+
+		get.mockImplementation((key: string) => ({ Outlook_Calendar_Enabled: true, Exchange_Mode: 'legacy' })[key]);
+
+		await notify();
+		await flush();
+
+		expect(discardImportedBySource).not.toHaveBeenCalled();
 	});
 
 	it('stops watching and drops the job when the returned cleanup runs', async () => {

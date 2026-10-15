@@ -1,7 +1,9 @@
+import { Calendar } from '@rocket.chat/core-services';
 import { cronJobs } from '@rocket.chat/cron';
+import { ExchangeCalendarSyncState } from '@rocket.chat/models';
 import { isValidCron } from 'cron-validator';
 
-import { runCalendarSync } from './runCalendarSync';
+import { runCalendarSync, whenCalendarSyncSettled } from './runCalendarSync';
 import { settings } from '../../../../../../server/settings';
 import { logger } from '../../logger';
 import { scrubForLog } from '../../scrub';
@@ -16,6 +18,19 @@ const stopCalendarSyncJob = async (): Promise<void> => {
 	if (await cronJobs.has(CALENDAR_SYNC_JOB)) {
 		await cronJobs.remove(CALENDAR_SYNC_JOB);
 	}
+};
+
+export const isServerSyncOn = (): boolean =>
+	Boolean(settings.get<boolean>('Outlook_Calendar_Enabled')) && settings.get<string>('Exchange_Mode') === 'server';
+
+const discardServerSyncedCalendarEvents = async (): Promise<void> => {
+	const uids = await ExchangeCalendarSyncState.findAllUserIds();
+
+	await ExchangeCalendarSyncState.removeAll();
+
+	const deleted = await Calendar.discardImportedBySource('outlook', uids);
+
+	logger.info({ msg: 'Discarded what the server-to-server Exchange calendar sync had imported', deleted });
 };
 
 const fitHours = (hours: number): number => {
@@ -37,7 +52,7 @@ const intervalToCron = (hours: number): string => {
 export const configureCalendarSyncJob = async (isCurrent: () => boolean = () => true): Promise<void> => {
 	await stopCalendarSyncJob();
 
-	if (!settings.get<boolean>('Outlook_Calendar_Enabled') || settings.get<string>('Exchange_Mode') !== 'server') {
+	if (!isServerSyncOn()) {
 		return;
 	}
 
@@ -66,13 +81,30 @@ export const configureCalendarSyncJob = async (isCurrent: () => boolean = () => 
 export const registerCalendarSyncJob = (): (() => void) => {
 	let generation = 0;
 	let stopped = false;
+	let wasOn = false;
 
-	const stopWatching = settings.watchMultiple(WATCHED_SETTINGS, () => {
+	const stopWatching = settings.watchMultiple(WATCHED_SETTINGS, async () => {
 		const started = ++generation;
+		const on = isServerSyncOn();
+		const turnedOff = wasOn && !on;
+		wasOn = on;
 
-		void configureCalendarSyncJob(() => !stopped && generation === started).catch((err) =>
-			logger.error({ msg: 'Could not configure the Exchange calendar sync job', err: scrubForLog(err) }),
-		);
+		const isCurrent = () => !stopped && generation === started;
+
+		try {
+			await configureCalendarSyncJob(isCurrent);
+
+			if (turnedOff) {
+				// In case a sync is in process
+				await whenCalendarSyncSettled();
+
+				if (isCurrent() && !isServerSyncOn()) {
+					await discardServerSyncedCalendarEvents();
+				}
+			}
+		} catch (err) {
+			logger.error({ msg: 'Could not configure the Exchange calendar sync job', err: scrubForLog(err) });
+		}
 	});
 
 	return () => {

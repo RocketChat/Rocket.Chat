@@ -1,6 +1,6 @@
 import type { CalendarBatchOptions, CalendarBatchResult, ICalendarService } from '@rocket.chat/core-services';
 import { Presence, ServiceClassInternal, api } from '@rocket.chat/core-services';
-import type { IUser, ICalendarEvent } from '@rocket.chat/core-typings';
+import type { CalendarEventSource, IUser, ICalendarEvent } from '@rocket.chat/core-typings';
 import { UserStatus } from '@rocket.chat/core-typings';
 import { cronJobs } from '@rocket.chat/cron';
 import { License } from '@rocket.chat/license';
@@ -289,6 +289,16 @@ export class CalendarService extends ServiceClassInternal implements ICalendarSe
 		);
 
 		return this.finishDeletion(uid, deletedCount, options);
+	}
+
+	public async discardImportedBySource(source: CalendarEventSource, refreshPresenceFor: IUser['_id'][]): Promise<number> {
+		const { deletedCount } = await CalendarEvent.deleteImportedBySource(source);
+
+		if (deletedCount) {
+			await this.applyBatchSideEffects(refreshPresenceFor);
+		}
+
+		return deletedCount;
 	}
 
 	public async refreshBusyPresence(uid: IUser['_id']): Promise<void> {
