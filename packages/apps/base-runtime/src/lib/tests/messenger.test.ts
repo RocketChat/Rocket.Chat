@@ -1,5 +1,8 @@
 import * as assert from 'node:assert';
 import { after, beforeEach, describe, it, mock } from 'node:test';
+import * as v8 from 'node:v8';
+
+import { sanitizeForIpc } from '@rocket.chat/apps/dist/lib/IpcSanitizer';
 
 import { AppObjectRegistry } from '../../AppObjectRegistry';
 import { createMockRequest } from '../../handlers/tests/helpers/mod';
@@ -215,9 +218,16 @@ describe('Messenger', () => {
 		const resp = responseArgument as any;
 
 		assert.strictEqual(resp.error.data.value, errorInstance);
-		assert.strictEqual(resp.error.data.value.message, 'custom error message');
-		assert.strictEqual((resp.error.data.value.cause as Error).message, 'inner cause');
-		assert.strictEqual(resp.error.data.logs.appId, 'test');
+
+		const sanitized = sanitizeForIpc(resp);
+		const cloned = v8.deserialize(v8.serialize(sanitized)) as any;
+
+		assert.ok(cloned.error.data.value instanceof Error);
+		assert.strictEqual(cloned.error.data.value.message, 'custom error message');
+		assert.strictEqual(cloned.error.data.value.stack, errorInstance.stack);
+		assert.ok(cloned.error.data.value.cause instanceof Error);
+		assert.strictEqual((cloned.error.data.value.cause as Error).message, 'inner cause');
+		assert.strictEqual(cloned.error.data.logs.appId, 'test');
 
 		theSpy.mock.restore();
 	});
