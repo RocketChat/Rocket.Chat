@@ -77,8 +77,8 @@ jobs:
     needs: [changes]
     if: needs.changes.outputs.fuselage == 'true'
 
-    # the snapshots are rendered by the x64 Playwright image; ARM rasterizes differently
-    runs-on: ubuntu-24.04
+    # the snapshots are rendered by the arm64 Playwright image, which runs natively here
+    runs-on: ubuntu-24.04-arm
     permissions:
       contents: read
 
