@@ -1652,7 +1652,15 @@ describe('AbacService (unit)', () => {
 
 			const result = await service.previewCreationMembers(['alice', 'bob'], attributes, fakeActor, leaving);
 
-			expect(result).toMatchObject({ allowed: true, preview: { creator: 'inconclusive' } });
+			expect(result).toEqual({
+				allowed: true,
+				preview: {
+					compliant: [{ _id: 'alice', username: 'alice', name: 'Alice' }],
+					nonCompliant: [],
+					inconclusive: [{ _id: 'bob', username: 'bob', name: 'Bob' }],
+					creator: 'inconclusive',
+				},
+			});
 		});
 
 		it('refuses a joining creator the PDP would not admit, as creation does', async () => {
