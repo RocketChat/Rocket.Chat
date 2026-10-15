@@ -26,7 +26,6 @@ export type CustomSoundsTableProps = {
 const CustomSoundsTable = ({ reload, onClick }: CustomSoundsTableProps) => {
 	const t = useTranslation();
 	const { sortBy, sortDirection, setSort } = useSort<'name'>('name');
-	const { current, itemsPerPage, setItemsPerPage: onSetItemsPerPage, setCurrent: onSetCurrent, ...paginationProps } = usePagination();
 
 	const [text, setText] = useState('');
 
@@ -35,18 +34,26 @@ const CustomSoundsTable = ({ reload, onClick }: CustomSoundsTableProps) => {
 			() => ({
 				name: text,
 				sort: `{ "${sortBy}": ${sortDirection === 'asc' ? 1 : -1} }`,
-				...(itemsPerPage && { count: itemsPerPage }),
-				...(current && { offset: current }),
 			}),
-			[text, itemsPerPage, current, sortBy, sortDirection],
+			[text, sortBy, sortDirection],
 		),
 		500,
 	);
 
+	const {
+		paginatedQuery,
+		queryKey,
+		current,
+		itemsPerPage,
+		setItemsPerPage: onSetItemsPerPage,
+		setCurrent: onSetCurrent,
+		...paginationProps
+	} = usePagination({ query, getQueryKey: (query) => ['custom-sounds', query] });
+
 	const getSounds = useEndpoint('GET', '/v1/custom-sounds.list');
 	const { data, refetch, isLoading, isError, isSuccess } = useQuery({
-		queryKey: ['custom-sounds', query],
-		queryFn: async () => getSounds(query),
+		queryKey,
+		queryFn: async () => getSounds(paginatedQuery),
 		refetchOnMount: false,
 	});
 
@@ -90,7 +97,6 @@ const CustomSoundsTable = ({ reload, onClick }: CustomSoundsTableProps) => {
 						divider
 						current={current}
 						itemsPerPage={itemsPerPage}
-						count={data?.total || 0}
 						onSetItemsPerPage={onSetItemsPerPage}
 						onSetCurrent={onSetCurrent}
 						{...paginationProps}

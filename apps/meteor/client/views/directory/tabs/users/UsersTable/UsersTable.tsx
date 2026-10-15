@@ -33,7 +33,6 @@ const UsersTable = ({ workspace = 'local' }: UsersTableProps) => {
 	const [text, setText] = useState('');
 	const canViewFullOtherUserInfo = usePermission('view-full-other-user-info');
 
-	const { current, itemsPerPage, setItemsPerPage: onSetItemsPerPage, setCurrent: onSetCurrent, ...paginationProps } = usePagination();
 	const { sortBy, sortDirection, setSort } = useSort<'name' | 'email' | 'origin' | 'createdAt'>('name');
 
 	const columns: TableColumnWidth[] = [
@@ -74,12 +73,21 @@ const UsersTable = ({ workspace = 'local' }: UsersTableProps) => {
 		[setSort, sortBy, sortDirection, t, mediaQuery, canViewFullOtherUserInfo, federation],
 	);
 
-	const query = useDirectoryQuery({ text, current, itemsPerPage }, [sortBy, sortDirection], 'users', workspace);
+	const query = useDirectoryQuery({ text }, [sortBy, sortDirection], 'users', workspace);
+	const {
+		paginatedQuery,
+		queryKey,
+		current,
+		itemsPerPage,
+		setItemsPerPage: onSetItemsPerPage,
+		setCurrent: onSetCurrent,
+		...paginationProps
+	} = usePagination({ query, getQueryKey: (query) => ['getDirectoryData', query] });
 	const getDirectoryData = useEndpoint('GET', '/v1/directory');
 
 	const { data, isFetched, isLoading, isError, refetch } = useQuery({
-		queryKey: ['getDirectoryData', query],
-		queryFn: () => getDirectoryData(query),
+		queryKey,
+		queryFn: () => getDirectoryData(paginatedQuery),
 	});
 
 	const handleClick = useCallback(
@@ -124,7 +132,6 @@ const UsersTable = ({ workspace = 'local' }: UsersTableProps) => {
 						divider
 						current={current}
 						itemsPerPage={itemsPerPage}
-						count={data?.total || 0}
 						onSetItemsPerPage={onSetItemsPerPage}
 						onSetCurrent={onSetCurrent}
 						{...paginationProps}
