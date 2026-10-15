@@ -321,16 +321,33 @@ export class NotificationsModule {
 
 					const callId = 'callId' in params && typeof params.callId === 'string' ? params.callId : '';
 					const uid = 'uid' in params && typeof params.uid === 'string' ? params.uid : '';
-					const rid = 'rid' in params && typeof params.rid === 'string' ? params.rid : '';
 
-					if (rid && rid !== roomId) {
+					if (!callId || !uid) {
+						return false;
+					}
+
+					if ('rid' in params) {
+						if (typeof params.rid !== 'string' || !params.rid || params.rid !== roomId) {
+							return false;
+						}
+					} else {
+						params.rid = roomId;
+					}
+
+					const call = await VideoConference.findOneById(callId, { projection: { rid: 1, createdBy: 1 } });
+					if (!call || call.rid !== roomId) {
+						return false;
+					}
+
+					const creatorId = typeof call.createdBy === 'object' && call.createdBy ? call.createdBy._id : call.createdBy;
+					if (videoAction === 'end' && creatorId !== this.userId) {
 						return false;
 					}
 
 					const isValid = await VideoConf.validateAction(videoAction, this.userId, {
 						callId,
 						uid,
-						rid: rid || roomId,
+						rid: params.rid,
 					});
 
 					if (!isValid) {
