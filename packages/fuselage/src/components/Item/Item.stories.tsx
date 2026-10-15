@@ -969,3 +969,39 @@ export const SelectOptions: Story = {
 		</Box>
 	),
 };
+
+const commands = [
+	{
+		command: '/invite',
+		params: '@username',
+		description: 'Invite one user to join this channel',
+	},
+	{ command: '/leave', description: 'Leave the current channel' },
+	{
+		command: '/invite-all-from',
+		params: '#room',
+		description: 'Invite all users from another room to join this channel',
+	},
+];
+
+export const CommandSuggestions: Story = {
+	render: () => (
+		<Box width='x320' backgroundColor='light' paddingBlock={8} elevation='2'>
+			<ItemGroup is='ul' role='listbox' aria-label='Commands'>
+				{commands.map(({ command, params, description }, index) => (
+					<Item key={command} is='li' role='option' aria-selected={index === 0} focused={index === 0} inset='md'>
+						<ItemContent>
+							<ItemTitle>
+								{command}
+								{params && <ItemDescription inline>{params}</ItemDescription>}
+							</ItemTitle>
+						</ItemContent>
+						<ItemMeta truncate title={description}>
+							{description}
+						</ItemMeta>
+					</Item>
+				))}
+			</ItemGroup>
+		</Box>
+	),
+};
