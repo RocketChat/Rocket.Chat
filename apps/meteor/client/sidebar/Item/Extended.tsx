@@ -9,11 +9,9 @@ import {
 	SidebarItemMenu,
 	IconButton,
 } from '@rocket.chat/fuselage';
-import { useShortTimeAgo } from '@rocket.chat/ui-client';
+import { useShortTimeAgo, useDeferredMenuMount } from '@rocket.chat/ui-client';
 import type { HTMLAttributes, ReactNode } from 'react';
 import { memo } from 'react';
-
-import { useDeferredMenuMount } from './useDeferredMenuMount';
 
 export type ExtendedProps = {
 	icon?: ReactNode;
