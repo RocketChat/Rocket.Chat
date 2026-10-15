@@ -11,8 +11,7 @@ import {
 	findOwnedValues,
 	findUnownedValues,
 	previewRetainingEveryone,
-	previewWindowInSteps,
-	readRoomMembersWindow,
+	previewRoomMembersInSteps,
 	verdictsOf,
 	withAttributeValues,
 } from '../helper';
@@ -83,8 +82,7 @@ export class LocalPDP implements IPolicyDecisionPoint {
 			return previewRetainingEveryone(members, page);
 		}
 
-		const window = await readRoomMembersWindow(members, page);
-		return previewWindowInSteps(window, page, window.subjects.length, async (subjects) =>
+		return previewRoomMembersInSteps(members, page, async (subjects) =>
 			verdictsOf(await this.evaluateSubjectsAgainstAttributes(subjects, attributes, room)),
 		);
 	}

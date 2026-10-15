@@ -102,8 +102,14 @@ jest.mock('@rocket.chat/models', () => ({
 		findOneAndUpdate: (...args: any[]) => mockAbacFindOneAndUpdate(...args),
 		deleteOne: (...args: any[]) => mockAbacDeleteOne(...args),
 		removeById: (...args: any[]) => mockAbacDeleteOne(...args),
-		find: (...args: any[]) => mockAbacFind(...args),
-		findAll: (...args: any[]) => mockAbacFindAll(...args),
+		find: (...args: any[]) => {
+			const cursor = mockAbacFind(...args);
+			return { ...cursor, map: (fn: (doc: any) => unknown) => ({ toArray: async () => (await cursor.toArray()).map(fn) }) };
+		},
+		findAll: (...args: any[]) => {
+			const cursor = mockAbacFindAll(...args);
+			return { ...cursor, map: (fn: (doc: any) => unknown) => ({ toArray: async () => (await cursor.toArray()).map(fn) }) };
+		},
 	},
 	Users: {
 		find: (...args: any[]) => mockUsersFind(...args),
@@ -625,17 +631,13 @@ describe('AbacService (unit)', () => {
 				],
 			};
 
-			let enforcing: boolean;
+			const enforce = () => {
+				(service as any).enforceAllRooms = true;
+			};
 
 			beforeEach(() => {
-				enforcing = false;
 				mockHasPermission.mockReset().mockResolvedValue(false);
-				mockSettingsGet.mockImplementation(async (id: string) => {
-					if (id === 'ABAC_Required_Attributes') {
-						return ['dept', 'clearance'];
-					}
-					return id === 'ABAC_Enforce_All_Rooms' ? enforcing : undefined;
-				});
+				(service as any).requiredAttributeKeys = new Set(['dept', 'clearance']);
 				const definitions = [
 					{ key: 'dept', values: ['eng', 'sales'] },
 					{ key: 'region', values: ['emea', 'apac'] },
@@ -648,7 +650,6 @@ describe('AbacService (unit)', () => {
 			});
 
 			afterEach(() => {
-				mockSettingsGet.mockReset();
 				mockHasPermission.mockReset();
 			});
 
@@ -656,7 +657,7 @@ describe('AbacService (unit)', () => {
 				service.setRoomAbacAttributes('r1', attributes, fakeActor, grant);
 
 			it('refuses a room-scoped editor removing every attribute while enforcement is on', async () => {
-				enforcing = true;
+				enforce();
 
 				await expect(writeAs({})).rejects.toMatchObject({ code: 'error-abac-room-attributes-cleared' });
 				expect(mockUnsetAbacAttributesById).not.toHaveBeenCalled();
@@ -689,7 +690,7 @@ describe('AbacService (unit)', () => {
 			});
 
 			it('leaves an editor holding the ABAC admin permissions unrestricted', async () => {
-				enforcing = true;
+				enforce();
 
 				await writeAs({ region: ['emea'] }, 'manage-abac-admin-rooms');
 				await writeAs({}, 'manage-abac-admin-rooms');
@@ -699,7 +700,7 @@ describe('AbacService (unit)', () => {
 			});
 
 			it('refuses the same in the preview', async () => {
-				enforcing = true;
+				enforce();
 				(service as any).pdp = {
 					isAvailable: jest.fn().mockResolvedValue(true),
 					needsEvaluation: jest.fn(),

@@ -121,8 +121,6 @@ export async function withRoomRoles(rid: IRoom['_id'], members: AbacRoomPreviewM
 
 export const PREVIEW_SCAN_LIMIT = 1000;
 
-export type RoomMembersWindow = { subjects: PreviewSubject[]; more: boolean; total?: number };
-
 const searchOf = (filter?: string): Filter<IUser>[] => {
 	if (!filter) {
 		return [];
@@ -131,42 +129,32 @@ const searchOf = (filter?: string): Filter<IUser>[] => {
 	return [{ $or: [{ username: search }, { name: search }] }];
 };
 
-export async function readRoomMembersWindow(
-	members: Filter<IUser>,
+export async function previewRoomMembersInSteps(
+	population: Filter<IUser>,
 	{ filter, after, count, group }: AbacRoomMembershipPreviewPage,
-): Promise<RoomMembersWindow> {
+	verdictsFor: (subjects: PreviewSubject[]) => Promise<(id: string) => AbacMembershipVerdict>,
+	step?: number,
+): Promise<RoomMembersPreview> {
 	const size = group ? PREVIEW_SCAN_LIMIT : count;
-	const population = [members, ...searchOf(filter)];
+	const searched = [population, ...searchOf(filter)];
 	const range = after ? [membersAfter(after)] : [];
 
-	const read = await Users.find<PreviewSubject>(
-		{ $and: [...population, ...range] },
-		{ ...PREVIEW_READ_OPTIONS, limit: size + 1 },
-	).toArray();
-	const total = after ? undefined : await Users.countDocuments({ $and: population });
-
-	return { subjects: read.slice(0, size), more: read.length > size, ...(total !== undefined && { total }) };
-}
-
-export async function previewWindowInSteps(
-	window: RoomMembersWindow,
-	{ count, group }: AbacRoomMembershipPreviewPage,
-	step: number,
-	verdictsFor: (subjects: PreviewSubject[]) => Promise<(id: string) => AbacMembershipVerdict>,
-): Promise<RoomMembersPreview> {
-	const { subjects, more, total } = window;
+	const read = await Users.find<PreviewSubject>({ $and: [...searched, ...range] }, { ...PREVIEW_READ_OPTIONS, limit: size + 1 }).toArray();
+	const subjects = read.slice(0, size);
+	const batchSize = step !== undefined && step >= 1 ? step : subjects.length;
 	const members: AbacRoomPreviewMember[] = [];
 	let checked = 0;
 
 	while (checked < subjects.length && members.length < count) {
-		const batch = subjects.slice(checked, checked + step);
+		const batch = subjects.slice(checked, checked + batchSize);
 		const verdictFor = await verdictsFor(batch);
 		members.push(...toPreviewMembers(batch, verdictFor).filter(({ verdict }) => !group || isInGroup(group, verdict)));
 		checked += batch.length;
 	}
 
 	const last = subjects[checked - 1];
-	const next = last && (checked < subjects.length || more) ? toPreviewCursor(last) : undefined;
+	const next = last && checked < read.length ? toPreviewCursor(last) : undefined;
+	const total = after ? undefined : await Users.countDocuments({ $and: searched });
 
 	return { members, checked, ...(total !== undefined && { total }), ...(next && { next }) };
 }
@@ -178,8 +166,7 @@ export async function previewRetainingEveryone(members: Filter<IUser>, page: Aba
 		return { members: [], checked: remaining, ...(!page.after && { total: remaining }) };
 	}
 
-	const window = await readRoomMembersWindow(members, { ...page, group: undefined });
-	return previewWindowInSteps(window, page, window.subjects.length, async () => () => 'compliant');
+	return previewRoomMembersInSteps(members, { ...page, group: undefined }, async () => () => 'compliant');
 }
 
 export function toAttributeMap(attributes: IAbacAttributeDefinition[]): Record<string, string[]> {
@@ -370,7 +357,9 @@ const getAttributeDefinitionsFromDb = async (keys: string[]) =>
 	AbacAttributes.find({ key: { $in: keys } }, { projection: { key: 1, values: 1 } }).toArray();
 
 export const listAttributeDefinitions = async (): Promise<IAbacAttributeDefinition[]> =>
-	(await AbacAttributes.findAll({ projection: { key: 1, values: 1 } }).toArray()).map(({ key, values }) => ({ key, values }));
+	AbacAttributes.findAll({ projection: { key: 1, values: 1 } })
+		.map(({ key, values }) => ({ key, values }))
+		.toArray();
 
 const getAttributeDefinitionsCached = mem(getAttributeDefinitionsFromDb, {
 	maxAge: 30_000,
