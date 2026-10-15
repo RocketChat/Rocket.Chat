@@ -25,11 +25,14 @@ type ContactsTabProps = {
 
 type Panel = { kind: 'info'; contact: Serialized<IContactPublic> } | { kind: 'form'; contact?: Serialized<IContactPublic> };
 
+const LOADING_ROWS = 4;
+
 const ContactsTab = ({ tab, onChangeTab }: ContactsTabProps) => {
 	const { t } = useTranslation();
 	const sortProps = useSort<ContactsColumnKey>('displayName', 'asc');
 	const { setItemsPerPage, setCurrent, ...paginationProps } = usePagination();
 	const columns = useContactsColumns();
+	const loadingCols = columns.visibleCount + 1;
 	const [panel, setPanel] = useState<Panel>();
 
 	const listContacts = useEndpoint('GET', '/v1/contacts.list');
@@ -95,10 +98,9 @@ const ContactsTab = ({ tab, onChangeTab }: ContactsTabProps) => {
 		return (
 			<CallHistoryPageLayout filters={contactFilters} contextualBar={contextualBar} tab={tab} onChangeTab={onChangeTab}>
 				<ContactsTable sort={sortProps} columns={columns}>
-					<GenericTableLoadingRow cols={7} />
-					<GenericTableLoadingRow cols={7} />
-					<GenericTableLoadingRow cols={7} />
-					<GenericTableLoadingRow cols={7} />
+					{Array.from({ length: LOADING_ROWS }, (_, index) => (
+						<GenericTableLoadingRow key={index} cols={loadingCols} />
+					))}
 				</ContactsTable>
 				{pagination}
 			</CallHistoryPageLayout>
