@@ -241,6 +241,11 @@ describe('CustomOAuthStrategy', () => {
 			expect(env.accounts.addAutopublishFields).toHaveBeenCalledWith(fields);
 		});
 
+		it.each([null, 'invalid'])('ignores invalid autopublish configuration %s', (addAutopublishFields) => {
+			env.createStrategy({ addAutopublishFields: addAutopublishFields as unknown as Config['addAutopublishFields'] });
+			expect(env.accounts.addAutopublishFields).not.toHaveBeenCalled();
+		});
+
 		it('trims identity field mappings', () => {
 			const strategy = env.createStrategy({
 				usernameField: ' profile.login ',
@@ -258,6 +263,20 @@ describe('CustomOAuthStrategy', () => {
 	});
 
 	describe('identity extraction', () => {
+		it.each(['usernameField', 'emailField', 'nameField', 'avatarField'] as const)(
+			'preserves provider identity fields when %s is omitted',
+			(field) => {
+				const strategy = env.createStrategy({ [field]: undefined });
+				const identity = { id: 'external-id', username: 'alice', email: 'alice@example.com', name: 'Alice Smith' };
+				expect(strategy.normalizeIdentity({ ...identity })).toEqual(identity);
+			},
+		);
+
+		it('preserves the provider avatar URL when no avatar mapping is configured', () => {
+			const avatarUrl = 'https://identity.example.com/avatar.png';
+			expect(env.createStrategy().normalizeIdentity({ id: 'external-id', avatarUrl }).avatarUrl).toBe(avatarUrl);
+		});
+
 		it('maps nested fields and templates and renames invalid persisted properties', () => {
 			const strategy = env.createStrategy({
 				usernameField: 'profile.login',
@@ -350,6 +369,17 @@ describe('CustomOAuthStrategy', () => {
 		] as const;
 		const login = (data: Record<string, unknown> = identity, service = 'github') =>
 			env.accounts.updateOrCreateUserFromExternalService(service, data, {});
+
+		it('delegates account creation without linking an existing user when keyField is omitted', async () => {
+			env.createStrategy({ keyField: undefined }, 'github');
+			await login();
+			expect(env.originalAccountOperation).toHaveBeenCalledWith('github', identity, {});
+			for (const method of lookupMethods) {
+				expect(env.users[method]).not.toHaveBeenCalled();
+			}
+			expect(env.runCallback).not.toHaveBeenCalled();
+			expect(env.startSession).not.toHaveBeenCalled();
+		});
 
 		it.each([
 			['different service', 'gitlab', identity],
