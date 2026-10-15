@@ -76,6 +76,9 @@ const MASS_REMOVAL_SUMMARY_THRESHOLD = 5;
 
 type CreationDenial = Extract<AbacCreationAttributesResult, { allowed: false }>;
 
+const toRequiredAttributeKeys = (value: unknown): Set<string> =>
+	new Set(Array.isArray(value) ? value.filter((key): key is string => typeof key === 'string').map((key) => key.trim()) : []);
+
 export class AbacService extends ServiceClass implements IAbacService {
 	protected name = 'abac';
 
@@ -97,6 +100,10 @@ export class AbacService extends ServiceClass implements IAbacService {
 	private pdpTypeSetting?: AbacPdpType;
 
 	private attributeStoreSetting?: AbacAttributeStoreType;
+
+	private enforceAllRooms = false;
+
+	private requiredAttributeKeys = new Set<string>();
 
 	private readonly attributeStores: Record<AbacAttributeStoreType, AttributeStoreDescriptor> = {
 		local: { store: new LocalAttributeStore(), isEligible: () => true },
@@ -160,6 +167,14 @@ export class AbacService extends ServiceClass implements IAbacService {
 			if (typeof value === 'boolean' && this.pdp instanceof LocalPDP) {
 				this.pdp.setRestrictToOwnedAttributes(value);
 			}
+		});
+
+		this.onSettingChanged('ABAC_Enforce_All_Rooms', async ({ setting }): Promise<void> => {
+			this.enforceAllRooms = setting.value as boolean;
+		});
+
+		this.onSettingChanged('ABAC_Required_Attributes', async ({ setting }): Promise<void> => {
+			this.requiredAttributeKeys = toRequiredAttributeKeys(setting.value);
 		});
 
 		this.onSettingChanged('Abac_Cache_Decision_Time_Seconds', async ({ setting }): Promise<void> => {
@@ -305,16 +320,20 @@ export class AbacService extends ServiceClass implements IAbacService {
 	override async started(): Promise<void> {
 		this.decisionCacheTimeout = await Settings.get<number>('Abac_Cache_Decision_Time_Seconds');
 
-		const [abacEnabled, pdpType, attributeStore, restrictToOwnedAttributes] = await Promise.all([
+		const [abacEnabled, pdpType, attributeStore, restrictToOwnedAttributes, enforceAllRooms, requiredAttributes] = await Promise.all([
 			Settings.get<boolean>('ABAC_Enabled'),
 			Settings.get<string>('ABAC_PDP_Type'),
 			Settings.get<string>('ABAC_Attribute_Store'),
 			Settings.get<boolean>('ABAC_Restrict_To_Owned_Attributes'),
+			Settings.get<boolean>('ABAC_Enforce_All_Rooms'),
+			Settings.get<string[]>('ABAC_Required_Attributes'),
 		]);
 
 		this.abacEnabled = abacEnabled;
 		this.pdpTypeSetting = isAbacPdpType(pdpType) ? pdpType : undefined;
 		this.attributeStoreSetting = isAbacAttributeStoreType(attributeStore) ? attributeStore : undefined;
+		this.enforceAllRooms = enforceAllRooms;
+		this.requiredAttributeKeys = toRequiredAttributeKeys(requiredAttributes);
 
 		if (pdpType !== 'virtru') {
 			this.setPdpStrategy('local', restrictToOwnedAttributes);
@@ -824,7 +843,7 @@ export class AbacService extends ServiceClass implements IAbacService {
 
 	private async assertKeepsRequiredAttributes(room: IRoom, next: IAbacAttributeDefinition[]): Promise<void> {
 		if (!next.length) {
-			if (room.abacAttributes?.length && (await Settings.get<boolean>('ABAC_Enforce_All_Rooms'))) {
+			if (room.abacAttributes?.length && this.enforceAllRooms) {
 				throw new AbacRoomAttributesClearedError();
 			}
 			return;
@@ -832,10 +851,8 @@ export class AbacService extends ServiceClass implements IAbacService {
 
 		const kept = new Set(next.map(({ key }) => key));
 
-		const configured = await Settings.get<string[]>('ABAC_Required_Attributes');
-		const required = new Set(Array.isArray(configured) ? configured.map((key) => key.trim()) : []);
 		const removed = (room.abacAttributes ?? [])
-			.filter(({ key, values }) => required.has(key) && values.length && !kept.has(key))
+			.filter(({ key, values }) => this.requiredAttributeKeys.has(key) && values.length && !kept.has(key))
 			.map(({ key }) => key);
 
 		if (removed.length) {
@@ -844,7 +861,7 @@ export class AbacService extends ServiceClass implements IAbacService {
 	}
 
 	private changeNeedsEvaluation(previous: IAbacAttributeDefinition[], next: IAbacAttributeDefinition[]): boolean {
-		return !!this.pdp?.needsEvaluation(diffAttributeSets(previous, next));
+		return this.pdp?.needsEvaluation(diffAttributeSets(previous, next)) ?? false;
 	}
 
 	async previewRoomMembers(
@@ -854,15 +871,10 @@ export class AbacService extends ServiceClass implements IAbacService {
 		page: AbacRoomMembershipPreviewPage,
 		grant: AbacRoomAttributesGrant,
 	): Promise<IAbacRoomMembershipPreview> {
-		await this.ensurePdpAvailable();
+		const pdp = await this.ensurePdpAvailable();
 		const room = await getAbacRoom(rid);
 		const store = await this.resolveAttributeStore();
 		const normalized = await this.assertRoomAttributesAssignable(store, room, attributes, actor, grant);
-
-		const { pdp } = this;
-		if (!pdp) {
-			throw new PdpUnavailableError();
-		}
 
 		const evaluatedAgainst = pdp.needsEvaluation(diffAttributeSets(room.abacAttributes || [], normalized)) ? normalized : [];
 		const firstPage = !page.after && !page.filter;
@@ -1261,10 +1273,12 @@ export class AbacService extends ServiceClass implements IAbacService {
 
 	private pdpType: AbacPdpType = 'local';
 
-	private async ensurePdpAvailable(): Promise<void> {
-		if (!(await this.pdp?.isAvailable())) {
+	private async ensurePdpAvailable(): Promise<IPolicyDecisionPoint> {
+		const { pdp } = this;
+		if (!pdp || !(await pdp.isAvailable())) {
 			throw new PdpUnavailableError();
 		}
+		return pdp;
 	}
 
 	private async removeUserFromRoom(
