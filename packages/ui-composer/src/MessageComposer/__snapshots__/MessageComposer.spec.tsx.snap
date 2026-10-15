@@ -983,7 +983,7 @@ exports[`renders WithHints without crashing 1`] = `
         <strong>
           esc
         </strong>
-         to cancel · 
+         to cancel ·
         <strong>
           enter
         </strong>
@@ -991,7 +991,7 @@ exports[`renders WithHints without crashing 1`] = `
       </div>
     </div>
     <div
-      class="rcx-box rcx-box--full rcx-input-box__wrapper rcx-css-1t5etly"
+      class="rcx-box rcx-box--full rcx-input-box__wrapper rcx-css-1jk1dkw"
       role="group"
     >
       <textarea
