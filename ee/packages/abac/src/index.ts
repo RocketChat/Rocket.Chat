@@ -837,15 +837,15 @@ export class AbacService extends ServiceClass implements IAbacService {
 			return userIds;
 		}
 
-		if (!this.pdp || !(await this.pdp.isAvailable())) {
+		if (!(await this.pdp?.isAvailable())) {
 			logger.warn({ msg: 'PDP unavailable, no user admitted to the ABAC room', rid: room._id });
 			return [];
 		}
 
 		try {
-			const subjects = await Users.find({ _id: { $in: userIds } }, { projection: { _id: 1, username: 1, emails: 1 } }).toArray();
-			const { compliant } = await this.pdp.evaluateSubjectsAgainstAttributes(subjects, attributes, room);
-			const allowed = new Set(compliant);
+			const subjects = await Users.findByIds(userIds, { projection: { _id: 1, username: 1, emails: 1 } }).toArray();
+			const evaluation = await this.pdp?.evaluateSubjectsAgainstAttributes(subjects, attributes, room);
+			const allowed = new Set(evaluation?.compliant);
 
 			if (options?.audit !== false) {
 				void Audit.actionsPerformed(
@@ -876,14 +876,14 @@ export class AbacService extends ServiceClass implements IAbacService {
 			return [];
 		}
 
-		if (!this.pdp || !(await this.pdp.isAvailable())) {
+		if (!(await this.pdp?.isAvailable())) {
 			logger.warn({ msg: 'PDP unavailable, no ABAC room admits the user', uid: userId });
 			return [];
 		}
 
 		if (options?.refreshAttributes) {
 			try {
-				await this.pdp.refreshSubjectAttributes([userId]);
+				await this.pdp?.refreshSubjectAttributes([userId]);
 			} catch (err) {
 				logger.error({ msg: 'Failed to refresh the user attributes before evaluating the ABAC rooms', uid: userId, err });
 			}
@@ -897,8 +897,8 @@ export class AbacService extends ServiceClass implements IAbacService {
 				return [];
 			}
 
-			const { compliant } = await this.pdp.evaluateSubjectAgainstRooms(subject, rooms);
-			const permitted = new Set(compliant);
+			const evaluation = await this.pdp?.evaluateSubjectAgainstRooms(subject, rooms);
+			const permitted = new Set(evaluation?.compliant);
 			const granted = rooms.filter(({ _id }) => permitted.has(_id));
 
 			if (options?.audit !== false) {
