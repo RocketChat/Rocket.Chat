@@ -23,6 +23,7 @@ export function SidebarCollapseGroup({
 	children,
 	badge,
 	menu,
+	actions: _actions,
 	title,
 	empty,
 	role = 'group',
