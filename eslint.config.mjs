@@ -522,6 +522,8 @@ export default [
 			'ee/packages/federation-matrix/tests/end-to-end/@(ban|dms|first-contact|messaging|permissions|presence|room|typing).spec.ts',
 			'ee/packages/federation-matrix/tests/helper/ddp-listener.ts',
 			'ee/packages/pdf-worker/.storybook/preview.tsx',
+			'ee/packages/xmpp-server/tests/end-to-end/@(connectivity|hosted-muc|presence|remote-muc).spec.ts',
+			'ee/packages/xmpp-server/tests/end-to-end/helper/@(config|rocketchat).ts',
 			'packages/gazzodown/.storybook/preview.tsx',
 		],
 		rules: {
