@@ -6,6 +6,6 @@ export type OptionsEmptyProps = {
 	customEmpty?: string;
 };
 
-const OptionsEmpty = ({ customEmpty }: OptionsEmptyProps) => <Option label={customEmpty || 'Empty'} />;
+const OptionsEmpty = ({ customEmpty }: OptionsEmptyProps) => <Option role='option' disabled label={customEmpty || 'Empty'} />;
 
 export default memo(OptionsEmpty);
