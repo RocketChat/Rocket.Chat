@@ -4,6 +4,10 @@ export function isFederationEnabled(): boolean {
 	return settings.get<boolean>('Federation_Service_Enabled');
 }
 
+export function isXMPPServerEnabled(): boolean {
+	return settings.get<boolean>('XMPP_Server_Enabled') && settings.get<string>('XMPP_Server_Domain') !== '';
+}
+
 export function throwIfFederationNotEnabled(): void {
 	if (!isFederationEnabled()) {
 		throw new Error('Federation is not enabled');
