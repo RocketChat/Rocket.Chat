@@ -12,6 +12,7 @@ import type {
 	IAbacAttribute,
 	IAbacAttributeDefinition,
 	IAbacRoomMembershipPreview,
+	AbacMembershipVerdict,
 	IRoom,
 	IRoomAbacRedaction,
 	AtLeast,
@@ -891,36 +892,47 @@ export class AbacService extends ServiceClass implements IAbacService {
 		let preview: IAbacRoomMembershipPreview;
 		try {
 			const { pdp } = this;
-			const evaluated = evaluatedAgainst.length
-				? pdp &&
-					(await previewRoomMembersInSteps(
-						rid,
-						page,
-						(subjects) => pdp.evaluateSubjectsAgainstAttributes(subjects, evaluatedAgainst, room),
-						pdp.previewStep,
-					))
-				: await previewRetainingEveryone(rid, page);
+			const [evaluated, editor] = await Promise.all([
+				evaluatedAgainst.length
+					? pdp &&
+						previewRoomMembersInSteps(
+							rid,
+							page,
+							(subjects) => pdp.evaluateSubjectsAgainstAttributes(subjects, evaluatedAgainst, room),
+							pdp.previewStep,
+						)
+					: previewRetainingEveryone(rid, page),
+				firstPage && this.previewEditorVerdict(actor, room, evaluatedAgainst),
+			]);
 			if (!evaluated) {
 				throw new PdpUnavailableError();
 			}
 
-			const editor = firstPage && (await Users.findOneByIdAndRoomId<PreviewSubject>(actor._id, rid, PREVIEW_READ_OPTIONS));
-			const editorEvaluation = editor && (await this.pdp?.evaluateSubjectsAgainstAttributes([editor], evaluatedAgainst, room));
-			if (editor && !editorEvaluation) {
-				throw new PdpUnavailableError();
-			}
-
-			preview = {
-				...evaluated,
-				count: evaluated.members.length,
-				...(editor && editorEvaluation && { editor: verdictOf(editorEvaluation, editor._id) }),
-			};
+			preview = { ...evaluated, count: evaluated.members.length, ...(editor && { editor }) };
 		} catch (err) {
 			logger.error({ msg: 'ABAC room membership preview failed', rid, err });
 			throw new PdpUnavailableError();
 		}
 
 		return { ...preview, members: await withRoomRoles(rid, preview.members) };
+	}
+
+	private async previewEditorVerdict(
+		actor: AbacActor,
+		room: IRoom,
+		attributes: IAbacAttributeDefinition[],
+	): Promise<AbacMembershipVerdict | undefined> {
+		const editor = await Users.findOneByIdAndRoomId<PreviewSubject>(actor._id, room._id, PREVIEW_READ_OPTIONS);
+		if (!editor) {
+			return undefined;
+		}
+
+		const evaluation = await this.pdp?.evaluateSubjectsAgainstAttributes([editor], attributes, room);
+		if (!evaluation) {
+			throw new PdpUnavailableError();
+		}
+
+		return verdictOf(evaluation, editor._id);
 	}
 
 	async setRoomAbacAttributes(

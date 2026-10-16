@@ -2158,6 +2158,25 @@ describe('AbacService (unit)', () => {
 			expect(preview.editor).toBe('nonCompliant');
 		});
 
+		it('looks up the editor without waiting for the page evaluation', async () => {
+			let markEditorLookedUp = (): void => undefined;
+			const editorLookedUp = new Promise<void>((resolve) => {
+				markEditorLookedUp = resolve;
+			});
+			mockUsersFindOneByIdAndRoomId.mockImplementation(async () => {
+				markEditorLookedUp();
+				return null;
+			});
+			usePdp({
+				evaluateSubjectsAgainstAttributes: jest.fn(async (subjects: { _id: string }[]) => {
+					await editorLookedUp;
+					return { compliant: [], nonCompliant: subjects.map(({ _id }) => _id), inconclusive: [] };
+				}),
+			});
+
+			await expect(previewAs(adding)).resolves.toMatchObject({ members: [listedAlice] });
+		});
+
 		it('leaves out the editor when they are not a member', async () => {
 			usePdp();
 
