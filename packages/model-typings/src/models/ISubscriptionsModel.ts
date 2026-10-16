@@ -22,6 +22,15 @@ import type { DocumentWithProjection, FindOptionsWithProjection } from '../types
 export interface ISubscriptionsModel extends IBaseModel<ISubscription> {
 	getBadgeCount(uid: string): Promise<number>;
 
+	countReadersByRoomIdAndMessageTs(rid: string, messageTs: Date, excludeUserId?: string): Promise<number>;
+
+	findReaderUsersByRoomIdAndMessageTs(
+		rid: string,
+		messageTs: Date,
+		excludeUserId: string | undefined,
+		limit: number,
+	): Promise<Array<Pick<IUser, '_id' | 'name' | 'username'>>>;
+
 	findOneByRoomIdAndUserId<T extends Document = ISubscription, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(
 		rid: string,
 		uid: string,

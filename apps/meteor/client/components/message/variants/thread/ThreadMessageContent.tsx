@@ -7,6 +7,7 @@ import { memo } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import MessageContentBody from '../../MessageContentBody';
+import { ReadCountBadge } from '../../ReadCountBadge';
 import ReadReceiptIndicator from '../../ReadReceiptIndicator';
 import Attachments from '../../content/Attachments';
 import BroadcastMetrics from '../../content/BroadcastMetrics';
@@ -103,6 +104,8 @@ const ThreadMessageContent = ({ message }: ThreadMessageContentProps) => {
 			{broadcast && !!messageUser.username && normalizedMessage.u._id !== uid && (
 				<BroadcastMetrics username={messageUser.username} message={normalizedMessage} />
 			)}
+
+			<ReadCountBadge messageId={normalizedMessage._id} roomId={normalizedMessage.rid} senderId={normalizedMessage.u._id} />
 
 			{readReceiptEnabled && <ReadReceiptIndicator mid={normalizedMessage._id} unread={normalizedMessage.unread} />}
 		</>

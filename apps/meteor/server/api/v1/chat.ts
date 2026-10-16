@@ -25,6 +25,8 @@ import {
 	isChatSyncThreadMessagesProps,
 	isChatGetStarredMessagesProps,
 	isChatGetDiscussionsProps,
+	isChatGetMessageReadCountProps,
+	isChatGetMessageReadersProps,
 	validateBadRequestErrorResponse,
 	validateNotFoundErrorResponse,
 	validateUnauthorizedErrorResponse,
@@ -45,6 +47,8 @@ import { executeSetReaction } from '../../lib/messaging/reactions/setReaction';
 import { starMessage } from '../../lib/messaging/stars/starMessage';
 import { readThread } from '../../lib/messaging/threads/functions';
 import { reportMessage } from '../../lib/moderation/reportMessage';
+import { getMessageReadCount as getMessageReadCountHelper } from '../../../app/read-counter/server/getMessageReadCount';
+import { getMessageReaders as getMessageReadersHelper } from '../../../app/read-counter/server/getMessageReaders';
 import { normalizeMessagesForUser } from '../../lib/utils/lib/normalizeMessagesForUser';
 import { followMessage } from '../../meteor-methods/messages/followMessage';
 import { getSingleMessage } from '../../meteor-methods/messages/getSingleMessage';
@@ -131,6 +135,48 @@ const isChatUnstarMessageLocalProps = ajv.compile<ChatUnstarMessageLocal>(ChatUn
 const isChatFollowMessageLocalProps = ajv.compile<ChatFollowMessageLocal>(ChatFollowMessageLocalSchema);
 
 const isChatUnfollowMessageLocalProps = ajv.compile<ChatUnfollowMessageLocal>(ChatUnfollowMessageLocalSchema);
+
+API.v1.addRoute(
+	'chat.getMessageReadCount',
+	{
+		authRequired: true,
+		validateParams: isChatGetMessageReadCountProps,
+	},
+	{
+		async get() {
+			const { messageId } = this.queryParams;
+
+			const result = await getMessageReadCountHelper(messageId, this.userId);
+
+			if (!result) {
+				return API.v1.failure('The required "messageId" param is missing or invalid.');
+			}
+
+			return API.v1.success(result);
+		},
+	},
+);
+
+API.v1.addRoute(
+	'chat.getMessageReaders',
+	{
+		authRequired: true,
+		validateParams: isChatGetMessageReadersProps,
+	},
+	{
+		async get() {
+			const { messageId, limit } = this.queryParams;
+
+			const result = await getMessageReadersHelper(messageId, this.userId, typeof limit === 'string' ? Number(limit) : limit);
+
+			if (!result) {
+				return API.v1.failure('The required "messageId" param is missing or invalid.');
+			}
+
+			return API.v1.success(result);
+		},
+	},
+);
 
 type ChatPinMessage = {
 	messageId: IMessage['_id'];

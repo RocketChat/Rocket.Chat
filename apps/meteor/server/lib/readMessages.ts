@@ -1,4 +1,5 @@
 import type { IRoom, IUser } from '@rocket.chat/core-typings';
+import { api } from '@rocket.chat/core-services';
 import { NotificationQueue, Subscriptions } from '@rocket.chat/models';
 
 import { callbacks } from './callbacks';
@@ -19,6 +20,7 @@ export async function readMessages(room: IRoom, uid: IUser['_id'], readThreads: 
 	const setAsReadResponse = await Subscriptions.setAsReadByRoomIdAndUserId(room._id, uid, readThreads, alert);
 	if (setAsReadResponse.modifiedCount) {
 		void notifyOnSubscriptionChangedByRoomIdAndUserId(room._id, uid);
+		void api.broadcast('notify.readCountsChanged', { rid: room._id });
 	}
 
 	await NotificationQueue.clearQueueByUserId(uid);

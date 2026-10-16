@@ -77,6 +77,78 @@ export class SubscriptionsRaw extends BaseRaw<ISubscription> implements ISubscri
 		return result?.total || 0;
 	}
 
+	private readersByRoomIdAndMessageTsMatch(rid: string, messageTs: Date, excludeUserId?: string): Filter<ISubscription> {
+		return {
+			rid,
+			archived: { $ne: true },
+			ls: { $gte: messageTs },
+			'u._id': {
+				...(excludeUserId ? { $ne: excludeUserId } : {}),
+				$exists: true,
+			},
+		};
+	}
+
+	private readersActiveUsersPipeline(rid: string, messageTs: Date, excludeUserId?: string) {
+		return [
+			{
+				$match: this.readersByRoomIdAndMessageTsMatch(rid, messageTs, excludeUserId),
+			},
+			{
+				$lookup: {
+					from: 'users',
+					localField: 'u._id',
+					foreignField: '_id',
+					as: 'user',
+				},
+			},
+			{ $unwind: '$user' },
+			{
+				$match: {
+					'user.active': true,
+				},
+			},
+		];
+	}
+
+	async countReadersByRoomIdAndMessageTs(rid: string, messageTs: Date, excludeUserId?: string): Promise<number> {
+		const [result] = await this.col
+			.aggregate<{ count: number }>([...this.readersActiveUsersPipeline(rid, messageTs, excludeUserId), { $count: 'count' }])
+			.toArray();
+
+		return result?.count ?? 0;
+	}
+
+	async findReaderUsersByRoomIdAndMessageTs(
+		rid: string,
+		messageTs: Date,
+		excludeUserId: string | undefined,
+		limit: number,
+	): Promise<Array<Pick<IUser, '_id' | 'name' | 'username'>>> {
+		const safeLimit = Math.min(Math.max(Math.trunc(limit) || 1, 1), 100);
+
+		return this.col
+			.aggregate<Pick<IUser, '_id' | 'name' | 'username'>>([
+				...this.readersActiveUsersPipeline(rid, messageTs, excludeUserId),
+				{
+					$sort: {
+						'user.username': 1,
+					},
+				},
+				{
+					$limit: safeLimit,
+				},
+				{
+					$project: {
+						_id: '$user._id',
+						name: '$user.name',
+						username: '$user.username',
+					},
+				},
+			])
+			.toArray();
+	}
+
 	findOneByRoomIdAndUserId<T extends Document = ISubscription, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(
 		rid: string,
 		uid: string,

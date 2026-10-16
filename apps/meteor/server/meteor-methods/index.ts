@@ -99,6 +99,7 @@ import './rooms/channelsList';
 import './rooms/cleanRoomHistory';
 import './rooms/createChannel';
 import './rooms/createPrivateGroup';
+import './rooms/getMessageReadCount';
 import './rooms/getRoomById';
 import './rooms/getRoomIdByNameOrId';
 import './rooms/getRoomJoinCode';
