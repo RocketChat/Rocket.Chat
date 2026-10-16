@@ -17,7 +17,7 @@ import {
 	actionWithLinearScale,
 } from './action';
 import { contextWithPlainText, contextWithMrkdwn, contextWithImage, contextWithAllElements } from './context';
-import { contextActions } from './contextActions';
+import { contextActions, contextActionsWithFeedback } from './contextActions';
 import { divider } from './divider';
 import { header } from './header';
 import { imageWithTitle, imageWithoutTitle } from './image';
@@ -376,6 +376,10 @@ const BlocksTree: Item = [
 			{
 				label: 'Icon buttons',
 				payload: contextActions,
+			},
+			{
+				label: 'Feedback buttons',
+				payload: contextActionsWithFeedback,
 			},
 		],
 	},

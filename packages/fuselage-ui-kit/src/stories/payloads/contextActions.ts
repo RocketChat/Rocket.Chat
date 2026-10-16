@@ -29,3 +29,23 @@ export const contextActions: readonly UiKit.LayoutBlock[] = [
 		],
 	},
 ] as const;
+
+export const contextActionsWithFeedback: readonly UiKit.LayoutBlock[] = [
+	{
+		type: 'markdown',
+		text: 'You can reset your password from **Account > Security**.',
+	},
+	{
+		type: 'context_actions',
+		elements: [
+			{
+				type: 'feedback_buttons',
+				appId: 'app-id',
+				blockId: 'block-id',
+				actionId: 'rate-answer',
+				positive_button: { text: { type: 'plain_text', text: 'Good answer' }, value: 'good' },
+				negative_button: { text: { type: 'plain_text', text: 'Bad answer' }, value: 'bad' },
+			},
+		],
+	},
+] as const;
