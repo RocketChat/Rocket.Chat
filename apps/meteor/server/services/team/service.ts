@@ -107,11 +107,8 @@ export class TeamService extends ServiceClassInternal implements ITeamService {
 				roomId = createdRoom._id;
 				skippedMembers = createdRoom.skippedMembers;
 			}
-			const skippedIds = new Set(
-				skippedMembers?.length
-					? (await Users.findUsersByUsernames(skippedMembers, { projection: { _id: 1 } }).toArray()).map(({ _id }) => _id)
-					: [],
-			);
+			const skippedUsernames = new Set(skippedMembers);
+			const skippedIds = new Set(membersResult.filter(({ username }) => username && skippedUsernames.has(username)).map(({ _id }) => _id));
 
 			const result = await Team.insertOne(teamData);
 			const teamId = result.insertedId;
