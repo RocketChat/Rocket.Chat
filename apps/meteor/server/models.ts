@@ -49,6 +49,7 @@ import {
 	OAuthAppsRaw,
 	OAuthAuthCodesRaw,
 	LoginCodesRaw,
+	UiKitViewsRaw,
 	OAuthRefreshTokensRaw,
 	OEmbedCacheRaw,
 	PermissionsRaw,
@@ -137,6 +138,7 @@ registerModel('IOAuthAccessTokensModel', new OAuthAccessTokensRaw(db));
 registerModel('IOAuthAppsModel', new OAuthAppsRaw(db));
 registerModel('IOAuthAuthCodesModel', new OAuthAuthCodesRaw(db));
 registerModel('ILoginCodesModel', new LoginCodesRaw(db));
+registerModel('IUiKitViewsModel', new UiKitViewsRaw(db));
 registerModel('IOAuthRefreshTokensModel', new OAuthRefreshTokensRaw(db));
 registerModel('IOEmbedCacheModel', new OEmbedCacheRaw(db));
 registerModel('IPermissionsModel', new PermissionsRaw(db, trashCollection));
