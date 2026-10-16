@@ -81,6 +81,25 @@ describe('renderComposerContent', () => {
 		expect(renderMock).toHaveBeenCalledWith(expect.anything(), 'a *b*');
 	});
 
+	it('parses non-breaking spaces as regular spaces so a mention can follow another mention', () => {
+		renderMock.mockReturnValue('<span>@here @john.doe\n</span>');
+
+		render(mountInput('@here\u00a0@john.doe'));
+
+		const [tokens, source] = renderMock.mock.calls[0];
+		expect(source).toBe('@here @john.doe');
+		expect(tokens).toMatchObject([
+			{
+				type: 'PARAGRAPH',
+				value: [
+					{ type: 'MENTION_USER', value: { value: 'here' } },
+					{ type: 'PLAIN_TEXT', value: ' ' },
+					{ type: 'MENTION_USER', value: { value: 'john.doe' } },
+				],
+			},
+		]);
+	});
+
 	it('keeps the rendered markup when it holds the same text as the source', () => {
 		renderMock.mockReturnValue('<span>a <strong>b</strong>\n</span>');
 

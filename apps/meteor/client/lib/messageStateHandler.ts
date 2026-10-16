@@ -14,7 +14,7 @@ export const renderComposerContent = (
 	parseOptions: Options,
 	{ selectionStart, selectionEnd }: { selectionStart: number; selectionEnd: number },
 ): void => {
-	const text = target.innerText;
+	const text = target.innerText.replace(/\u00a0/g, ' ');
 	const source = text === '' ? '\n' : text;
 
 	// Parse the raw text and render the AST through the gazzodown-alt WYSIWYG components

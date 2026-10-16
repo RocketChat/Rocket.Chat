@@ -23,7 +23,7 @@ export const createRichTextComposerAPI = (
 		input.focus();
 	};
 
-	const getText = (): string => input.innerText.replace(/\n$/, '');
+	const getText = (): string => input.innerText.replace(/\n$/, '').replace(/\u00a0/g, ' ');
 
 	const setText: SetText = (text, { selection, skipFocus } = {}) => {
 		!skipFocus && focus();
