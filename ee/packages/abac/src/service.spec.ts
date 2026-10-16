@@ -673,12 +673,20 @@ describe('AbacService (unit)', () => {
 				expect(mockUnsetAbacAttributesById).toHaveBeenCalledWith('r1');
 			});
 
-			it('refuses a room-scoped editor removing a required attribute the room carries', async () => {
+			it('refuses a room-scoped editor removing a required attribute the room carries while enforcement is on', async () => {
+				enforce();
+
 				await expect(writeAs({ region: ['emea'] })).rejects.toMatchObject({
 					code: 'error-abac-required-attributes-removed',
 					details: { keys: ['dept'] },
 				});
 				expect(mockSetAbacAttributesById).not.toHaveBeenCalled();
+			});
+
+			it('lets a room-scoped editor remove a required attribute while enforcement is off', async () => {
+				await writeAs({ region: ['emea'] });
+
+				expect(mockSetAbacAttributesById).toHaveBeenCalledWith('r1', [{ key: 'region', values: ['emea'] }]);
 			});
 
 			it('lets a room-scoped editor change the values of a required attribute and remove one that is not required', async () => {
