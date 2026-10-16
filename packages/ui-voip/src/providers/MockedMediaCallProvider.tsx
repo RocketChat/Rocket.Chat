@@ -143,6 +143,8 @@ const MockedMediaCallProvider = ({
 		onHold,
 		onDeviceChange,
 		onForward,
+		onSwapCalls: () => console.log('swap calls'),
+		onCompleteTransfer: () => console.log('complete transfer'),
 		onTone,
 		onEndCall,
 		onCall,
