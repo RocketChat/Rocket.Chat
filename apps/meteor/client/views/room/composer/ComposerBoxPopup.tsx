@@ -7,6 +7,8 @@ import type { ReactNode } from 'react';
 import { useEffect, memo, useMemo, useRef, useId } from 'react';
 import { useTranslation } from 'react-i18next';
 
+import { getActiveDescendantOptionProps } from '../../../hooks/useActiveDescendant';
+
 export type ComposerBoxPopupProps<
 	T extends {
 		_id: string;
@@ -16,8 +18,11 @@ export type ComposerBoxPopupProps<
 > = {
 	title?: string;
 	focused?: T;
+	focusVisible?: boolean;
+	listboxId?: string;
 	items: UseQueryResult<T[]>[];
 	select: (item: T) => void;
+	hover?: (item: T) => void;
 	renderItem?: ({ item }: { item: T }) => ReactNode;
 };
 
@@ -27,7 +32,16 @@ function ComposerBoxPopup<
 		sort?: number;
 		disabled?: boolean;
 	},
->({ title, items, focused, select, renderItem = ({ item }: { item: T }) => <>{JSON.stringify(item)}</> }: ComposerBoxPopupProps<T>) {
+>({
+	title,
+	items,
+	focused,
+	focusVisible = false,
+	listboxId,
+	select,
+	hover,
+	renderItem = ({ item }: { item: T }) => <>{JSON.stringify(item)}</>,
+}: ComposerBoxPopupProps<T>) {
 	const { t } = useTranslation();
 	const id = useId();
 	const composerBoxPopupRef = useRef<HTMLElement>(null);
@@ -99,7 +113,13 @@ function ComposerBoxPopup<
 							</Item>
 						)}
 						{isLoading && <ItemSkeleton mediaSize={ITEM_MEDIA_SIZE.medium} inset='md' />}
-						<ItemGroup role='listbox' aria-labelledby={title ? id : undefined} aria-busy={isLoading}>
+						<ItemGroup
+							id={listboxId}
+							role='listbox'
+							aria-labelledby={title ? id : undefined}
+							aria-label={title ? undefined : t('Results')}
+							aria-busy={isLoading}
+						>
 							{itemsFlat.map((item, index) => (
 								<Item
 									key={index}
@@ -107,11 +127,9 @@ function ComposerBoxPopup<
 									role='option'
 									inset='md'
 									title={getOptionTitle(item)}
-									focused={item === focused}
-									aria-selected={item === focused}
+									{...getActiveDescendantOptionProps(item === focused, focusVisible, () => !item.disabled && hover?.(item))}
 									disabled={item.disabled}
 									aria-disabled={item.disabled || undefined}
-									tabIndex={-1}
 									onClick={() => select(item)}
 								>
 									{renderItem({ item: { ...item, variant } })}

@@ -4,8 +4,10 @@ import { Random } from '@rocket.chat/random';
 import { useEndpoint } from '@rocket.chat/ui-contexts';
 import type { ForwardedRef, ReactNode } from 'react';
 import { forwardRef, useEffect, useId, useImperativeHandle } from 'react';
+import { useTranslation } from 'react-i18next';
 
 import type { ComposerBoxPopupProps } from './ComposerBoxPopup';
+import { getActiveDescendantOptionProps } from '../../../hooks/useActiveDescendant';
 import { useChat } from '../contexts/ChatContext';
 
 type ComposerBoxPopupPreviewItem = { _id: string; type: 'image' | 'video' | 'audio' | 'text' | 'other'; value: string; sort?: number };
@@ -24,7 +26,7 @@ export type ComposerBoxPopupPreviewProps = ComposerBoxPopupProps<ComposerBoxPopu
 };
 
 const ComposerBoxPopupPreview = forwardRef(function ComposerBoxPopupPreview(
-	{ focused, items, title, rid, tmid, select, suspended }: ComposerBoxPopupPreviewProps,
+	{ focused, focusVisible = false, listboxId, items, title, rid, tmid, select, hover, suspended }: ComposerBoxPopupPreviewProps,
 	ref: ForwardedRef<
 		| {
 				getFilter?: () => unknown;
@@ -33,6 +35,7 @@ const ComposerBoxPopupPreview = forwardRef(function ComposerBoxPopupPreview(
 		| undefined
 	>,
 ) {
+	const { t } = useTranslation();
 	const id = useId();
 	const chat = useChat();
 	const executeSlashCommandPreviewEndpoint = useEndpoint('POST', '/v1/commands.preview');
@@ -121,6 +124,7 @@ const ComposerBoxPopupPreview = forwardRef(function ComposerBoxPopupPreview(
 					</Box>
 				)}
 				<Box
+					id={listboxId && `${listboxId}-preview`}
 					role='listbox'
 					display='flex'
 					overflow='auto'
@@ -128,6 +132,7 @@ const ComposerBoxPopupPreview = forwardRef(function ComposerBoxPopupPreview(
 					gap={4}
 					className={optionsStyle}
 					aria-labelledby={title ? id : undefined}
+					aria-label={title ? undefined : t('Preview')}
 					aria-busy={isLoading}
 				>
 					{isLoading &&
@@ -141,11 +146,9 @@ const ComposerBoxPopupPreview = forwardRef(function ComposerBoxPopupPreview(
 								key={item._id}
 								id={`popup-item-${item._id}`}
 								role='option'
-								aria-selected={item === focused}
-								tabIndex={-1}
+								{...getActiveDescendantOptionProps(item === focused, focusVisible, () => hover?.(item))}
 								onClick={() => select(item)}
 								selected={item === focused}
-								focusVisible={item === focused}
 							>
 								{item.type === 'image' && <img src={item.value} alt={item._id} />}
 								{item.type === 'audio' && (
