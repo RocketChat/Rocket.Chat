@@ -25,6 +25,7 @@ import {
 	GETAbacAuditEventsResponseSchema,
 	GETAbacPdpHealthResponseSchema,
 	GETAbacPdpHealthErrorResponseSchema,
+	GETAbacAttributeKeysResponseSchema,
 } from './schemas';
 import { API } from '../../../../server/api';
 import type { ExtractRoutesFromAPI } from '../../../../server/api/ApiClass';
@@ -463,6 +464,26 @@ const abacEndpoints = API.v1
 				offset,
 				total,
 			});
+		},
+	)
+
+	.get(
+		'abac/attributes.listKeys',
+		{
+			authRequired: true,
+			permissionsRequired: ['manage-abac-admin-settings'],
+			license: ['abac'],
+			response: {
+				200: GETAbacAttributeKeysResponseSchema,
+				400: GenericErrorSchema,
+				401: validateUnauthorizedErrorResponse,
+				403: validateUnauthorizedErrorResponse,
+			},
+		},
+		async function action() {
+			const keys = (await Abac.listAbacAttributeKeys(getActorFromUser(this.user))).sort((a, b) => a.localeCompare(b));
+
+			return API.v1.success({ data: keys.map((key) => ({ key, label: key })) });
 		},
 	);
 

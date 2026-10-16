@@ -24,6 +24,7 @@ module.exports = {
 		'server/ufs/*.spec.ts',
 		'ee/server/lib/ldap/*.spec.ts',
 		'ee/server/lib/livekit/*.spec.ts',
+		'ee/server/hooks/abac/*.spec.ts',
 		'ee/tests/**/*.tests.ts',
 		'ee/tests/**/*.spec.ts',
 		'tests/unit/app/**/*.spec.ts',
@@ -45,6 +46,7 @@ module.exports = {
 		'server/lib/utils/**/*.spec.ts',
 		'lib/mapLivechatContactConflicts.spec.ts',
 		'lib/videoConference/*.spec.ts',
+		'lib/rooms/*.spec.ts',
 		'server/services/video-conference/**/*.spec.ts',
 	],
 };

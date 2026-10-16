@@ -103,6 +103,14 @@ export class VirtruAttributeStore implements IAttributeStore {
 		};
 	}
 
+	async listAttributeKeys(actor: AbacActor | undefined): Promise<string[]> {
+		if (!actor) {
+			throw new AbacEntityResolutionFailedError();
+		}
+
+		return (await this.getEntitlements(actor)).map(({ key }) => key);
+	}
+
 	async entitlementsOf(actor: AbacActor): Promise<AttributeEntitlements> {
 		const defs = await this.getEntitlements(actor);
 		return new Map(defs.map((d) => [d.key, new Set(d.values)]));
