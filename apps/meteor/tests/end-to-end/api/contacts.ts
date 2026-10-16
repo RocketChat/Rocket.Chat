@@ -98,19 +98,20 @@ describe('[Contacts]', () => {
 				expect(res.body.contact).to.not.have.property('uid');
 			});
 
-			it('should key a national number off the configured region, and leave an unresolvable one without a key', async () => {
+			it('should key a number carrying its own country code, and leave a national one without a key', async () => {
 				const res = await request
 					.post(api('contacts.create'))
 					.set(credentials)
 					.send({
 						givenName: 'John',
-						phones: [{ raw: '011 4321-1000', label: 'work' }, { raw: 'ext. 204' }],
+						phones: [{ raw: '+54 11 4321-1000', label: 'work' }, { raw: '011 4321-1000' }, { raw: 'ext. 204' }],
 					})
 					.expect(200);
 
 				created.push(res.body.contact._id);
 				expect(res.body.contact.phones).to.deep.equal([
-					{ raw: '011 4321-1000', e164: '+541143211000', label: 'work' },
+					{ raw: '+54 11 4321-1000', e164: '+541143211000', label: 'work' },
+					{ raw: '011 4321-1000' },
 					{ raw: 'ext. 204' },
 				]);
 			});
