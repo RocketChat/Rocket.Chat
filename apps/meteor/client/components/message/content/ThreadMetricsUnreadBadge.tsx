@@ -33,7 +33,7 @@ const ThreadMetricsUnreadBadge = ({ unread, mention, all }: ThreadMetricsUnreadB
 
 	const [variant, title] = result;
 
-	return <Badge small variant={variant} role='status' title={t(title)} />;
+	return <Badge small variant={variant} role='status' title={t(title)} aria-label={t(title)} />;
 };
 
 export default ThreadMetricsUnreadBadge;

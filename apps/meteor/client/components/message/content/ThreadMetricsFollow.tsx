@@ -39,6 +39,8 @@ const ThreadMetricsFollow = ({ following, mid, rid, unread, mention, all }: Thre
 		<MessageMetricsItem data-rid={rid}>
 			<MessageMetricsFollowing
 				title={t(following ? 'Following' : 'Not_following')}
+				aria-label={t('Follow_message')}
+				aria-pressed={following}
 				name={following ? 'bell' : 'bell-off'}
 				onClick={handleFollow}
 				badge={<ThreadMetricsBadge unread={unread} mention={mention} all={all} />}

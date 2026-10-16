@@ -23,13 +23,12 @@ function DiscussionListRow({ discussion, showRealNames, onClick }: DiscussionLis
 
 	return (
 		<DiscussionsListItem
-			_id={discussion._id}
 			emoji={discussion.emoji}
 			dcount={discussion.dcount}
 			dlm={discussion.dlm}
 			name={showRealNames ? name : discussion.u.username}
 			username={discussion.u.username}
-			data-drid={discussion.drid}
+			drid={discussion.drid}
 			ts={discussion.ts}
 			msg={msg}
 			formatDate={formatDate}
