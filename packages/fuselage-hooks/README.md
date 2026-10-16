@@ -14,7 +14,7 @@ The hooks do not depend on Fuselage components, so you can use them in any React
 npm install @rocket.chat/fuselage-hooks react
 ```
 
-`react` is a peer dependency. The package ships CommonJS and ES module builds with TypeScript declarations.
+`react` is a peer dependency; the hooks need React 18 or later. The package ships CommonJS and ES module builds with TypeScript declarations.
 
 ## Usage
 
@@ -81,15 +81,17 @@ function useLayoutMode() {
 
 ```tsx
 import { useMergedRefs } from '@rocket.chat/fuselage-hooks';
-import { useRef, type Ref } from 'react';
+import { forwardRef, useRef, type ComponentProps } from 'react';
 
-function Input({ ref, ...props }: { ref?: Ref<HTMLInputElement> }) {
+const Input = forwardRef<HTMLInputElement, ComponentProps<'input'>>(function Input(props, ref) {
 	const innerRef = useRef<HTMLInputElement>(null);
 	const mergedRef = useMergedRefs(ref, innerRef);
 
 	return <input ref={mergedRef} {...props} />;
-}
+});
 ```
+
+On React 19 you can drop `forwardRef` and read `ref` from the props instead.
 
 ### Persist state in web storage
 
