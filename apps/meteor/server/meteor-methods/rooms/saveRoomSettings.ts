@@ -40,6 +40,7 @@ type RoomSettings = {
 	systemMessages: MessageTypesValues[];
 	default: boolean;
 	joinCode: string;
+    disableLinkPreviews: boolean;
 	retentionEnabled: boolean;
 	retentionMaxAge: number;
 	retentionExcludePinned: boolean;
@@ -171,6 +172,14 @@ const validators: RoomSettingsValidators = {
 	async roomTopic({ room, value }) {
 		guardABACManagedField(room, value, room.topic, 'topic');
 	},
+	async disableLinkPreviews({ value }) {
+	if (!Match.test(value, Boolean)) {
+		throw new Meteor.Error(
+			'error-invalid-parameter',
+			'disableLinkPreviews must be a boolean',
+		  );
+	    }
+    },
 	async roomDescription({ room, value }) {
 		guardABACManagedField(room, value, room.description, 'description');
 	},
@@ -357,6 +366,11 @@ const settingSavers: RoomSettingsSavers = {
 	async retentionEnabled({ value, rid }) {
 		await Rooms.saveRetentionEnabledById(rid, value);
 	},
+
+    async disableLinkPreviews({ value, rid }) {
+	    await Rooms.saveDisableLinkPreviewsById(rid, value);
+    },
+
 	async retentionMaxAge({ value, rid }) {
 		await Rooms.saveRetentionMaxAgeById(rid, value);
 	},
@@ -409,6 +423,7 @@ const fields: (keyof RoomSettings)[] = [
 	'systemMessages',
 	'default',
 	'joinCode',
+	'disableLinkPreviews',
 	'retentionEnabled',
 	'retentionMaxAge',
 	'retentionExcludePinned',
