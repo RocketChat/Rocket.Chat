@@ -6,6 +6,7 @@ code: [src/stream/, src/s2s/, src/xml/, src/router/StanzaRouter.ts, src/config.t
 tests:
   [
     src/xml/StanzaParser.spec.ts,
+    src/stream/XmppStream.spec.ts,
     src/s2s/dialback.spec.ts,
     src/s2s/dnsResolver.spec.ts,
     src/s2s/S2SManager.spec.ts,
@@ -45,7 +46,9 @@ spoof check, domain lists) and the authentication (STARTTLS, SASL EXTERNAL, dial
   `<required/>` when TLS is required, and no authentication mechanism is offered before the
   stream is secured. A `<starttls/>` request is answered with `<proceed/>`, the socket is
   upgraded, and the stream restarts with a fresh stream id. A request without TLS material,
-  or on an already secure stream, is answered with `<failure/>` and the stream closed.
+  or on an already secure stream, is answered with `<failure/>` and the stream closed. TLS
+  material that cannot be loaded fails that one upgrade, in either direction, and closes
+  only that stream.
 - **R4** After TLS, SASL `EXTERNAL` is offered when the peer certificate verifies for the
   domain the stream header claimed. An `<auth mechanism='EXTERNAL'/>` whose authzid (or, for
   `=`, the stream `from`) is an allowed domain and matches the certificate authenticates that

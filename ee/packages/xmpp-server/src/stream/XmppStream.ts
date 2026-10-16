@@ -97,45 +97,48 @@ export class XmppStream extends Emitter<XmppStreamEvents> {
 
 	/**
 	 * Upgrades the underlying socket to TLS. The caller must have sent/received
-	 * `<proceed/>` already. Rejects (and destroys the socket) on handshake timeout.
+	 * `<proceed/>` already. Rejects (and destroys the socket) when the TLS material
+	 * cannot be loaded or the handshake fails or times out.
 	 */
 	upgradeToTls(options: tls.TlsOptions & { isServer: boolean; servername?: string }): Promise<tls.TLSSocket> {
 		return new Promise((resolve, reject) => {
 			const rawSocket = this.socket;
 			this.detachSocket(rawSocket);
 
+			let tlsSocket: tls.TLSSocket;
+			try {
+				tlsSocket = options.isServer
+					? new tls.TLSSocket(rawSocket, {
+							isServer: true,
+							secureContext: tls.createSecureContext(options),
+							requestCert: true,
+							rejectUnauthorized: false,
+						})
+					: tls.connect({
+							socket: rawSocket,
+							servername: options.servername,
+							cert: options.cert,
+							key: options.key,
+							ca: options.ca,
+							rejectUnauthorized: false,
+						});
+			} catch (error) {
+				rawSocket.destroy();
+				reject(error instanceof Error ? error : new Error(String(error)));
+				return;
+			}
+
 			const timeout = setTimeout(() => {
 				tlsSocket.destroy();
 				reject(new Error('TLS handshake timeout'));
 			}, TLS_HANDSHAKE_TIMEOUT_MS);
 
-			const onEstablished = () => {
+			tlsSocket.once(options.isServer ? 'secure' : 'secureConnect', () => {
 				clearTimeout(timeout);
 				this.socket = tlsSocket;
 				this.attachSocket(tlsSocket);
 				resolve(tlsSocket);
-			};
-
-			let tlsSocket: tls.TLSSocket;
-			if (options.isServer) {
-				tlsSocket = new tls.TLSSocket(rawSocket, {
-					isServer: true,
-					secureContext: tls.createSecureContext(options),
-					requestCert: true,
-					rejectUnauthorized: false,
-				});
-				tlsSocket.once('secure', onEstablished);
-			} else {
-				tlsSocket = tls.connect({
-					socket: rawSocket,
-					servername: options.servername,
-					cert: options.cert,
-					key: options.key,
-					ca: options.ca,
-					rejectUnauthorized: false,
-				});
-				tlsSocket.once('secureConnect', onEstablished);
-			}
+			});
 
 			tlsSocket.once('error', (error: Error) => {
 				clearTimeout(timeout);
