@@ -71,11 +71,8 @@ export type PreviewSubject = Pick<IUser, '_id' | 'username' | 'name' | 'emails'>
 
 export const PREVIEW_READ_OPTIONS = { projection: { _id: 1, username: 1, name: 1, emails: 1 } } as const;
 
-export const isInGroup = (group: AbacMembershipGroup, verdict: AbacMembershipVerdict): boolean =>
+const isInGroup = (group: AbacMembershipGroup, verdict: AbacMembershipVerdict): boolean =>
 	(group === 'loses') === (verdict !== 'compliant');
-
-export const toPreviewMembers = (subjects: PreviewSubject[], verdictFor: (id: string) => AbacMembershipVerdict): AbacRoomPreviewMember[] =>
-	subjects.map(({ _id, username, name }) => ({ _id, username, name, verdict: verdictFor(_id) }));
 
 export async function withRoomRoles(rid: IRoom['_id'], members: AbacRoomPreviewMember[]): Promise<AbacRoomPreviewMember[]> {
 	if (!members.length) {
@@ -118,7 +115,11 @@ export async function previewRoomMembersInSteps(
 	while (checked < subjects.length && members.length < count) {
 		const batch = subjects.slice(checked, checked + batchSize);
 		const verdictFor = await verdictsFor(batch);
-		members.push(...toPreviewMembers(batch, verdictFor).filter(({ verdict }) => !group || isInGroup(group, verdict)));
+		members.push(
+			...batch
+				.map(({ _id, username, name }) => ({ _id, username, name, verdict: verdictFor(_id) }))
+				.filter(({ verdict }) => !group || isInGroup(group, verdict)),
+		);
 		checked += batch.length;
 	}
 
