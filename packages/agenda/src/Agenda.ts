@@ -642,7 +642,7 @@ export class Agenda extends EventEmitter {
 
 	public stop(): Promise<void> {
 		debug('Agenda.stop called, clearing interval for processJobs()');
-		clearInterval(this._processInterval as NodeJS.Timeout);
+		clearInterval(this._processInterval);
 		this._processInterval = undefined;
 
 		return this._unlockJobs();
