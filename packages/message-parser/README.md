@@ -137,7 +137,9 @@ Inline:
 | Color (when enabled)          | `color:#ff0000`                                                | `COLOR`                    |
 | Inline KaTeX (when enabled)   | `$x^2$`, `\(x^2\)`                                             | `INLINE_KATEX`             |
 
-A backslash escapes a markup character: `\*not bold\*` stays plain text. Bold, italic and strikethrough can be nested inside each other.
+A backslash escapes only these characters: `*`, `_`, `~`, `` ` ``, `#` and `.`. Each backslash escapes a single character, so `\*not bold\*` stays plain text, but strikethrough needs both tildes escaped: `\~\~not struck\~\~`. Two other escapes exist: `\<t:1700000000:R>` keeps a timestamp as plain text, and `\|` escapes a pipe inside a table cell. Before any other character the backslash stays in the text and the markup still applies: `\[link](https://example.com)` renders a backslash followed by a link, and `\@john` a backslash followed by a mention.
+
+Bold, italic and strikethrough can be nested inside each other.
 
 ### Tables
 
