@@ -5,6 +5,7 @@ import type { AriaListBoxOptions } from 'react-aria';
 import { useListBox, useListBoxSection, useOption } from 'react-aria';
 import type { ListState } from 'react-stately';
 
+import { ItemGroup, ItemGroupHeader, ItemGroupTitle } from '../Item';
 import { Option } from '../Option';
 
 type ListBoxProps = AriaListBoxOptions<unknown> & {
@@ -47,20 +48,18 @@ function ListBoxSection({ section, state }: SectionProps) {
 	});
 
 	return (
-		<>
-			<li {...itemProps} className='pt-2'>
-				{section.rendered && (
-					<span {...headingProps} className='text-xs font-bold uppercase text-gray-500 mx-3'>
-						{section.rendered}
-					</span>
-				)}
-				<ul {...groupProps}>
-					{[...section.childNodes].map((node) => (
-						<OptionAria key={node.key} item={node} state={state} />
-					))}
-				</ul>
-			</li>
-		</>
+		<li {...itemProps}>
+			{section.rendered && (
+				<ItemGroupHeader inset='md'>
+					<ItemGroupTitle {...headingProps}>{section.rendered}</ItemGroupTitle>
+				</ItemGroupHeader>
+			)}
+			<ItemGroup is='ul' {...groupProps}>
+				{[...section.childNodes].map((node) => (
+					<OptionAria key={node.key} item={node} state={state} />
+				))}
+			</ItemGroup>
+		</li>
 	);
 }
 

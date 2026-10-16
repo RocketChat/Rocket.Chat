@@ -43,7 +43,7 @@ test('unchecks the option checkbox on deselect', async () => {
 	expect(await screen.findByRole('listbox')).toBeInTheDocument();
 
 	const option = screen.getByRole('option', { name: /a teste 1/ });
-	const checkbox = within(option).getByRole('checkbox');
+	const checkbox = within(option).getByRole('checkbox', { hidden: true });
 
 	expect(option).toHaveAttribute('aria-selected', 'false');
 	expect(checkbox).not.toBeChecked();

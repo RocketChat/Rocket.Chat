@@ -462,6 +462,79 @@ export const Actions: Story = {
 	),
 };
 
+const HiddenActionsMenu = ({ label }: { label: string }) => (
+	<ItemActions reveal='hover'>
+		<IconButton mini icon='kebab' aria-label={`Options for ${label}`} />
+	</ItemActions>
+);
+
+export const HiddenActions: Story = {
+	render: () => (
+		<Box display='flex' flexDirection='column' width='x280'>
+			<Caption>Rows: without actions, then with reveal=&quot;hover&quot; actions</Caption>
+			<SidebarSurface>
+				<ItemGroup is='ul' aria-label='Rows'>
+					<Item is='li'>
+						<ItemContent>
+							<ItemTitle>design-team</ItemTitle>
+						</ItemContent>
+						<Badge variant='primary'>3</Badge>
+					</Item>
+					<Item is='li'>
+						<ItemContent>
+							<ItemTitle>design-team</ItemTitle>
+						</ItemContent>
+						<Badge variant='primary'>3</Badge>
+						<HiddenActionsMenu label='design-team' />
+					</Item>
+				</ItemGroup>
+			</SidebarSurface>
+			<Caption>Extended rows: without actions, then with reveal=&quot;hover&quot; actions</Caption>
+			<SidebarSurface>
+				<ItemGroup is='ul' aria-label='Extended rows'>
+					<Item is='li'>
+						<ItemContent>
+							<ItemRow>
+								<ItemTitle>design-team</ItemTitle>
+								<ItemMeta>12:45</ItemMeta>
+							</ItemRow>
+							<ItemRow>
+								<ItemDescription>Mockups are ready</ItemDescription>
+								<Badge variant='primary'>3</Badge>
+							</ItemRow>
+						</ItemContent>
+					</Item>
+					<Item is='li'>
+						<ItemContent>
+							<ItemRow>
+								<ItemTitle>design-team</ItemTitle>
+								<ItemMeta>12:45</ItemMeta>
+							</ItemRow>
+							<ItemRow>
+								<ItemDescription>Mockups are ready</ItemDescription>
+								<Badge variant='primary'>3</Badge>
+								<HiddenActionsMenu label='design-team' />
+							</ItemRow>
+						</ItemContent>
+					</Item>
+				</ItemGroup>
+			</SidebarSurface>
+			<Caption>Group headers: without actions, then with reveal=&quot;hover&quot; actions</Caption>
+			<SidebarSurface>
+				<ItemGroupHeader>
+					<ItemGroupTitle>Favorites</ItemGroupTitle>
+					<Badge variant='primary'>3</Badge>
+				</ItemGroupHeader>
+				<ItemGroupHeader>
+					<ItemGroupTitle>Favorites</ItemGroupTitle>
+					<Badge variant='primary'>3</Badge>
+					<HiddenActionsMenu label='Favorites' />
+				</ItemGroupHeader>
+			</SidebarSurface>
+		</Box>
+	),
+};
+
 export const Icons: Story = {
 	render: () => (
 		<SidebarSurface>

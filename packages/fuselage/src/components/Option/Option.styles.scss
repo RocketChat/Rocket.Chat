@@ -15,20 +15,46 @@ $option-color-variant-primary: theme('option-color-variant-primary', colors.stat
 	margin-inline: lengths.margin(4);
 }
 
+// Inside an `Item` the row owns layout and states; these rules only style a bare `.rcx-option`, as `MenuOption` renders.
 .rcx-option {
-	@include clickable;
-	@include use-font-scale(p2);
+	&:not(.rcx-item) {
+		@include clickable;
+		@include use-font-scale(p2);
 
-	display: list-item;
+		display: list-item;
 
-	padding-block: lengths.padding(4);
-	padding-inline: lengths.padding(12) lengths.padding(24);
+		padding-block: lengths.padding(4);
+		padding-inline: lengths.padding(12) lengths.padding(24);
 
-	list-style: none;
+		list-style: none;
 
-	color: colors.font(default);
+		color: colors.font(default);
 
-	&__title {
+		&:hover,
+		&.rcx-option--focus {
+			background: colors.surface(hover);
+		}
+
+		&.rcx-option--selected {
+			background: colors.surface(selected);
+		}
+
+		&.rcx-option--disabled {
+			cursor: not-allowed;
+
+			color: colors.font(disabled);
+		}
+
+		&.rcx-option--danger {
+			color: $option-color-variant-danger;
+		}
+	}
+
+	&--align-top.rcx-item {
+		align-items: flex-start;
+	}
+
+	&__title:not(.rcx-item-group-header) {
 		@include use-font-scale(c2);
 
 		padding-block: lengths.padding(8) lengths.padding(4);
@@ -37,26 +63,15 @@ $option-color-variant-primary: theme('option-color-variant-primary', colors.stat
 		color: colors.font(default);
 	}
 
-	&__wrapper {
-		display: flex;
-		align-items: center;
-
-		margin-inline: lengths.margin(-2);
-
-		&--align-top {
-			align-items: flex-start !important;
-		}
-	}
-
 	&__icon {
 		color: inherit;
 	}
 
-	&__avatar {
+	&__avatar:not(.rcx-item__media) {
 		@extend %column;
 	}
 
-	&__content {
+	&__content:not(.rcx-item__content) {
 		@include use-text-ellipsis;
 		@extend %column;
 		flex: 1 1 100%;
@@ -66,7 +81,7 @@ $option-color-variant-primary: theme('option-color-variant-primary', colors.stat
 		white-space: nowrap;
 	}
 
-	&__header {
+	&__header:not(.rcx-item-group-header) {
 		@include use-font-scale(micro);
 
 		padding-block: lengths.padding(8);
@@ -77,7 +92,7 @@ $option-color-variant-primary: theme('option-color-variant-primary', colors.stat
 		font-weight: 400;
 	}
 
-	&__menu-wrapper {
+	&__menu-wrapper:not(.rcx-item__actions) {
 		flex-shrink: 0;
 
 		width: 0;
@@ -93,7 +108,7 @@ $option-color-variant-primary: theme('option-color-variant-primary', colors.stat
 		}
 	}
 
-	&__column {
+	&__column:not(.rcx-item__icon, .rcx-item__media) {
 		@extend %column;
 		display: flex;
 
@@ -104,7 +119,7 @@ $option-color-variant-primary: theme('option-color-variant-primary', colors.stat
 		min-height: lengths.size(20);
 	}
 
-	&__input {
+	&__input:not(.rcx-item__actions) {
 		display: flex;
 
 		justify-content: flex-end;
@@ -115,7 +130,7 @@ $option-color-variant-primary: theme('option-color-variant-primary', colors.stat
 		margin-inline: lengths.margin(16) lengths.margin(-12);
 	}
 
-	&__description {
+	&__description:not(.rcx-item__description) {
 		@include use-font-scale(p2);
 		@extend %column;
 		display: inline;
@@ -134,23 +149,8 @@ $option-color-variant-primary: theme('option-color-variant-primary', colors.stat
 		color: colors.font(secondary-info);
 	}
 
-	&:hover,
-	&--focus {
-		background: colors.surface(hover);
-	}
-
-	&--selected {
-		background: colors.surface(selected);
-	}
-
-	&--disabled {
-		cursor: not-allowed;
-
-		color: colors.font(disabled);
-	}
-
-	&:hover &__menu-wrapper,
-	&:focus-within &__menu-wrapper {
+	&:hover &__menu-wrapper:not(.rcx-item__actions),
+	&:focus-within &__menu-wrapper:not(.rcx-item__actions) {
 		display: flex;
 		align-items: center;
 
@@ -159,12 +159,18 @@ $option-color-variant-primary: theme('option-color-variant-primary', colors.stat
 		opacity: 1;
 	}
 
-	&--success {
-		color: $option-color-variant-success;
+	&__column.rcx-item__media,
+	&__input.rcx-item__actions {
+		min-width: lengths.size(20);
+		min-height: lengths.size(20);
 	}
 
-	&--danger {
-		color: $option-color-variant-danger;
+	&__input.rcx-item__actions {
+		justify-content: flex-end;
+	}
+
+	&--success {
+		color: $option-color-variant-success;
 	}
 
 	&--warning {

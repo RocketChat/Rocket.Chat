@@ -127,3 +127,23 @@ export const CustomEmpty: Story = {
 		</Box>
 	),
 };
+
+export const Grouped: Story = {
+	args: {
+		cursor: 1,
+		options: [
+			['recent', 'Recent', false, false, 'heading'],
+			[1, 'a teste 1'],
+			[2, 'b teste 2'],
+			['divider', '', false, false, 'divider'],
+			['all', 'All', false, false, 'heading'],
+			[3, 'c teste 3', true],
+			[4, 'd teste 4'],
+		],
+	},
+	render: (args) => (
+		<Box position='relative' maxWidth={250}>
+			<Options {...args} ref={createRef()} />
+		</Box>
+	),
+};

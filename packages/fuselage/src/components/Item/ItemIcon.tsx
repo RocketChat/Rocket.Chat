@@ -8,7 +8,7 @@ export type ItemIconProps = {
 	is?: ElementType;
 	/**
 	 * Names what the icon conveys, such as "Private channel" or "Away".
-	 * The label also describes the row's `ItemLink`. Without it, the icon is decorative.
+	 * The label also describes the row's `ItemLink`, or the row itself when it is a menu item. Without it, the icon is decorative.
 	 */
 	label?: string;
 } & Omit<AllHTMLAttributes<HTMLElement>, 'is' | 'label'> &

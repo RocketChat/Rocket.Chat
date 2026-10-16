@@ -2213,31 +2213,34 @@ exports[`call stories renders CallRaisedHands QueueOpen without crashing 1`] = `
             role="presentation"
           >
             <div
-              class="rcx-option__title"
-              id="react-aria-_r_1n_"
-              role="presentation"
+              class="rcx-item-group-header rcx-item-group-header--inset-md"
             >
-              Raised hands
+              <div
+                class="rcx-item-group-title"
+                id="react-aria-_r_1n_"
+                role="presentation"
+              >
+                Raised hands
+              </div>
             </div>
             <div
               aria-labelledby="react-aria-_r_1n_"
-              class="rcx-box rcx-box--full rcx-css-8q5c1d"
               role="group"
             >
               <label
-                aria-disabled="false"
-                aria-selected="false"
-                class="rcx-option"
+                aria-labelledby="_r_1t_"
+                class="rcx-item rcx-item--inset-md rcx-item--clickable rcx-item--focus-managed"
                 data-key="alan"
-                id="react-aria-_r_1r_"
+                id="react-aria-_r_1s_"
                 role="menuitem"
                 tabindex="-1"
               >
                 <div
-                  class="rcx-option__wrapper"
+                  class="rcx-item__content rcx-option__content"
                 >
                   <div
-                    class="rcx-option__content"
+                    class="rcx-item__title"
+                    id="_r_1t_"
                   >
                     <div
                       class="rcx-box rcx-box--full rcx-css-14a3adr"
@@ -2259,19 +2262,19 @@ exports[`call stories renders CallRaisedHands QueueOpen without crashing 1`] = `
                 </div>
               </label>
               <label
-                aria-disabled="false"
-                aria-selected="false"
-                class="rcx-option"
+                aria-labelledby="_r_22_"
+                class="rcx-item rcx-item--inset-md rcx-item--clickable rcx-item--focus-managed"
                 data-key="ada"
-                id="react-aria-_r_1v_"
+                id="react-aria-_r_21_"
                 role="menuitem"
                 tabindex="-1"
               >
                 <div
-                  class="rcx-option__wrapper"
+                  class="rcx-item__content rcx-option__content"
                 >
                   <div
-                    class="rcx-option__content"
+                    class="rcx-item__title"
+                    id="_r_22_"
                   >
                     <div
                       class="rcx-box rcx-box--full rcx-css-14a3adr"
@@ -2293,19 +2296,19 @@ exports[`call stories renders CallRaisedHands QueueOpen without crashing 1`] = `
                 </div>
               </label>
               <label
-                aria-disabled="false"
-                aria-selected="false"
-                class="rcx-option"
+                aria-labelledby="_r_27_"
+                class="rcx-item rcx-item--inset-md rcx-item--clickable rcx-item--focus-managed"
                 data-key="grace"
-                id="react-aria-_r_23_"
+                id="react-aria-_r_26_"
                 role="menuitem"
                 tabindex="-1"
               >
                 <div
-                  class="rcx-option__wrapper"
+                  class="rcx-item__content rcx-option__content"
                 >
                   <div
-                    class="rcx-option__content"
+                    class="rcx-item__title"
+                    id="_r_27_"
                   >
                     <div
                       class="rcx-box rcx-box--full rcx-css-14a3adr"
@@ -2339,7 +2342,7 @@ exports[`call stories renders CallRaisedHands QueueOpen without crashing 1`] = `
     >
       <button
         aria-label="Dismiss"
-        id="react-aria-_r_24_"
+        id="react-aria-_r_28_"
         style="width: 1px; height: 1px;"
         tabindex="-1"
       />
@@ -3805,7 +3808,7 @@ exports[`call stories renders CameraPicker CameraOff without crashing 1`] = `
           aria-haspopup="true"
           aria-label="Camera options"
           class="rcx-box rcx-box--full rcx-split-button__trigger rcx-button--large-square rcx-button--icon-secondary-danger rcx-button--square rcx-button--icon rcx-button rcx-css-1wk08i8"
-          id="react-aria-_r_25_"
+          id="react-aria-_r_29_"
           label="Camera options"
           title="Camera"
           type="button"
@@ -3837,7 +3840,7 @@ exports[`call stories renders CameraPicker CameraOn without crashing 1`] = `
           aria-haspopup="true"
           aria-label="Camera options"
           class="rcx-box rcx-box--full rcx-split-button__trigger rcx-button--large-square rcx-button--icon-secondary rcx-button--square rcx-button--icon rcx-button rcx-css-1wk08i8"
-          id="react-aria-_r_27_"
+          id="react-aria-_r_2b_"
           label="Camera options"
           title="Camera"
           type="button"
@@ -3897,12 +3900,12 @@ exports[`call stories renders CameraPicker Open without crashing 1`] = `
         style="background-color: rgb(31, 35, 41); border-radius: 4px; display: flex; flex-direction: column; height: auto; overflow: hidden;"
       >
         <button
-          aria-controls="react-aria-_r_2a_"
+          aria-controls="react-aria-_r_2e_"
           aria-expanded="true"
           aria-haspopup="true"
           aria-label="Camera options"
           class="rcx-box rcx-box--full rcx-split-button__trigger rcx-button--icon-pressed rcx-button--large-square rcx-button--icon-secondary-pressed rcx-button--icon-secondary rcx-button--square rcx-button--icon rcx-button rcx-css-1wk08i8"
-          id="react-aria-_r_29_"
+          id="react-aria-_r_2d_"
           label="Camera options"
           title="Camera"
           type="button"
@@ -3933,7 +3936,7 @@ exports[`call stories renders CameraPicker Open without crashing 1`] = `
     >
       <button
         aria-label="Dismiss"
-        id="react-aria-_r_2b_"
+        id="react-aria-_r_2f_"
         style="width: 1px; height: 1px;"
         tabindex="-1"
       />
@@ -3947,8 +3950,8 @@ exports[`call stories renders CameraPicker Open without crashing 1`] = `
         class="rcx-box rcx-box--full rcx-css-xvdgy9"
       >
         <div
-          aria-labelledby="react-aria-_r_29_"
-          id="react-aria-_r_2a_"
+          aria-labelledby="react-aria-_r_2d_"
+          id="react-aria-_r_2e_"
           role="menu"
           tabindex="0"
         >
@@ -3956,32 +3959,35 @@ exports[`call stories renders CameraPicker Open without crashing 1`] = `
             role="presentation"
           >
             <div
-              class="rcx-option__title"
-              id="react-aria-_r_2c_"
-              role="presentation"
+              class="rcx-item-group-header rcx-item-group-header--inset-md"
             >
-              Camera
+              <div
+                class="rcx-item-group-title"
+                id="react-aria-_r_2g_"
+                role="presentation"
+              >
+                Camera
+              </div>
             </div>
             <div
-              aria-labelledby="react-aria-_r_2c_"
-              class="rcx-box rcx-box--full rcx-css-8q5c1d"
+              aria-labelledby="react-aria-_r_2g_"
               role="group"
             >
               <label
                 aria-checked="false"
-                aria-disabled="false"
-                aria-selected="false"
-                class="rcx-option"
+                aria-labelledby="_r_2m_"
+                class="rcx-item rcx-item--inset-md rcx-item--clickable rcx-item--focus-managed"
                 data-key="facetime-videoinput"
-                id="react-aria-_r_2g_"
+                id="react-aria-_r_2l_"
                 role="menuitemradio"
                 tabindex="-1"
               >
                 <div
-                  class="rcx-option__wrapper"
+                  class="rcx-item__content rcx-option__content"
                 >
                   <div
-                    class="rcx-option__content"
+                    class="rcx-item__title"
+                    id="_r_2m_"
                   >
                     <div
                       class="rcx-box rcx-box--full rcx-css-f39bd5"
@@ -3994,40 +4000,40 @@ exports[`call stories renders CameraPicker Open without crashing 1`] = `
                       </span>
                     </div>
                   </div>
-                  <div
-                    class="rcx-option__input"
+                </div>
+                <div
+                  class="rcx-item__actions rcx-option__input"
+                >
+                  <label
+                    class="rcx-box rcx-box--full rcx-radio-button"
                   >
-                    <label
-                      class="rcx-box rcx-box--full rcx-radio-button"
-                    >
-                      <input
-                        checked=""
-                        class="rcx-box rcx-box--full rcx-radio-button__input"
-                        type="radio"
-                      />
-                      <i
-                        aria-hidden="true"
-                        class="rcx-box rcx-box--full rcx-radio-button__fake"
-                      />
-                    </label>
-                  </div>
+                    <input
+                      checked=""
+                      class="rcx-box rcx-box--full rcx-radio-button__input"
+                      type="radio"
+                    />
+                    <i
+                      aria-hidden="true"
+                      class="rcx-box rcx-box--full rcx-radio-button__fake"
+                    />
+                  </label>
                 </div>
               </label>
               <label
                 aria-checked="false"
-                aria-disabled="false"
-                aria-selected="false"
-                class="rcx-option"
+                aria-labelledby="_r_2r_"
+                class="rcx-item rcx-item--inset-md rcx-item--clickable rcx-item--focus-managed"
                 data-key="brio-videoinput"
-                id="react-aria-_r_2k_"
+                id="react-aria-_r_2q_"
                 role="menuitemradio"
                 tabindex="-1"
               >
                 <div
-                  class="rcx-option__wrapper"
+                  class="rcx-item__content rcx-option__content"
                 >
                   <div
-                    class="rcx-option__content"
+                    class="rcx-item__title"
+                    id="_r_2r_"
                   >
                     <div
                       class="rcx-box rcx-box--full rcx-css-f39bd5"
@@ -4040,60 +4046,63 @@ exports[`call stories renders CameraPicker Open without crashing 1`] = `
                       </span>
                     </div>
                   </div>
-                  <div
-                    class="rcx-option__input"
+                </div>
+                <div
+                  class="rcx-item__actions rcx-option__input"
+                >
+                  <label
+                    class="rcx-box rcx-box--full rcx-radio-button"
                   >
-                    <label
-                      class="rcx-box rcx-box--full rcx-radio-button"
-                    >
-                      <input
-                        class="rcx-box rcx-box--full rcx-radio-button__input"
-                        type="radio"
-                      />
-                      <i
-                        aria-hidden="true"
-                        class="rcx-box rcx-box--full rcx-radio-button__fake"
-                      />
-                    </label>
-                  </div>
+                    <input
+                      class="rcx-box rcx-box--full rcx-radio-button__input"
+                      type="radio"
+                    />
+                    <i
+                      aria-hidden="true"
+                      class="rcx-box rcx-box--full rcx-radio-button__fake"
+                    />
+                  </label>
                 </div>
               </label>
             </div>
           </div>
-          <hr
-            class="rcx-box rcx-box--full rcx-divider"
+          <div
+            class="rcx-item-divider"
             role="separator"
           />
           <div
             role="presentation"
           >
             <div
-              class="rcx-option__title"
-              id="react-aria-_r_2l_"
-              role="presentation"
+              class="rcx-item-group-header rcx-item-group-header--inset-md"
             >
-              Send resolution (maximum)
+              <div
+                class="rcx-item-group-title"
+                id="react-aria-_r_2s_"
+                role="presentation"
+              >
+                Send resolution (maximum)
+              </div>
             </div>
             <div
-              aria-labelledby="react-aria-_r_2l_"
-              class="rcx-box rcx-box--full rcx-css-8q5c1d"
+              aria-labelledby="react-aria-_r_2s_"
               role="group"
             >
               <label
                 aria-checked="false"
-                aria-disabled="false"
-                aria-selected="false"
-                class="rcx-option"
+                aria-labelledby="_r_32_"
+                class="rcx-item rcx-item--inset-md rcx-item--clickable rcx-item--focus-managed"
                 data-key="choice:0:auto"
-                id="react-aria-_r_2p_"
+                id="react-aria-_r_31_"
                 role="menuitemradio"
                 tabindex="-1"
               >
                 <div
-                  class="rcx-option__wrapper"
+                  class="rcx-item__content rcx-option__content"
                 >
                   <div
-                    class="rcx-option__content"
+                    class="rcx-item__title"
+                    id="_r_32_"
                   >
                     <div
                       class="rcx-box rcx-box--full rcx-css-f39bd5"
@@ -4111,40 +4120,40 @@ exports[`call stories renders CameraPicker Open without crashing 1`] = `
                       </span>
                     </div>
                   </div>
-                  <div
-                    class="rcx-option__input"
+                </div>
+                <div
+                  class="rcx-item__actions rcx-option__input"
+                >
+                  <label
+                    class="rcx-box rcx-box--full rcx-radio-button"
                   >
-                    <label
-                      class="rcx-box rcx-box--full rcx-radio-button"
-                    >
-                      <input
-                        checked=""
-                        class="rcx-box rcx-box--full rcx-radio-button__input"
-                        type="radio"
-                      />
-                      <i
-                        aria-hidden="true"
-                        class="rcx-box rcx-box--full rcx-radio-button__fake"
-                      />
-                    </label>
-                  </div>
+                    <input
+                      checked=""
+                      class="rcx-box rcx-box--full rcx-radio-button__input"
+                      type="radio"
+                    />
+                    <i
+                      aria-hidden="true"
+                      class="rcx-box rcx-box--full rcx-radio-button__fake"
+                    />
+                  </label>
                 </div>
               </label>
               <label
                 aria-checked="false"
-                aria-disabled="false"
-                aria-selected="false"
-                class="rcx-option"
+                aria-labelledby="_r_37_"
+                class="rcx-item rcx-item--inset-md rcx-item--clickable rcx-item--focus-managed"
                 data-key="choice:0:h1080"
-                id="react-aria-_r_2t_"
+                id="react-aria-_r_36_"
                 role="menuitemradio"
                 tabindex="-1"
               >
                 <div
-                  class="rcx-option__wrapper"
+                  class="rcx-item__content rcx-option__content"
                 >
                   <div
-                    class="rcx-option__content"
+                    class="rcx-item__title"
+                    id="_r_37_"
                   >
                     <div
                       class="rcx-box rcx-box--full rcx-css-f39bd5"
@@ -4157,39 +4166,39 @@ exports[`call stories renders CameraPicker Open without crashing 1`] = `
                       </span>
                     </div>
                   </div>
-                  <div
-                    class="rcx-option__input"
+                </div>
+                <div
+                  class="rcx-item__actions rcx-option__input"
+                >
+                  <label
+                    class="rcx-box rcx-box--full rcx-radio-button"
                   >
-                    <label
-                      class="rcx-box rcx-box--full rcx-radio-button"
-                    >
-                      <input
-                        class="rcx-box rcx-box--full rcx-radio-button__input"
-                        type="radio"
-                      />
-                      <i
-                        aria-hidden="true"
-                        class="rcx-box rcx-box--full rcx-radio-button__fake"
-                      />
-                    </label>
-                  </div>
+                    <input
+                      class="rcx-box rcx-box--full rcx-radio-button__input"
+                      type="radio"
+                    />
+                    <i
+                      aria-hidden="true"
+                      class="rcx-box rcx-box--full rcx-radio-button__fake"
+                    />
+                  </label>
                 </div>
               </label>
               <label
                 aria-checked="false"
-                aria-disabled="false"
-                aria-selected="false"
-                class="rcx-option"
+                aria-labelledby="_r_3c_"
+                class="rcx-item rcx-item--inset-md rcx-item--clickable rcx-item--focus-managed"
                 data-key="choice:0:h720"
-                id="react-aria-_r_31_"
+                id="react-aria-_r_3b_"
                 role="menuitemradio"
                 tabindex="-1"
               >
                 <div
-                  class="rcx-option__wrapper"
+                  class="rcx-item__content rcx-option__content"
                 >
                   <div
-                    class="rcx-option__content"
+                    class="rcx-item__title"
+                    id="_r_3c_"
                   >
                     <div
                       class="rcx-box rcx-box--full rcx-css-f39bd5"
@@ -4202,39 +4211,39 @@ exports[`call stories renders CameraPicker Open without crashing 1`] = `
                       </span>
                     </div>
                   </div>
-                  <div
-                    class="rcx-option__input"
+                </div>
+                <div
+                  class="rcx-item__actions rcx-option__input"
+                >
+                  <label
+                    class="rcx-box rcx-box--full rcx-radio-button"
                   >
-                    <label
-                      class="rcx-box rcx-box--full rcx-radio-button"
-                    >
-                      <input
-                        class="rcx-box rcx-box--full rcx-radio-button__input"
-                        type="radio"
-                      />
-                      <i
-                        aria-hidden="true"
-                        class="rcx-box rcx-box--full rcx-radio-button__fake"
-                      />
-                    </label>
-                  </div>
+                    <input
+                      class="rcx-box rcx-box--full rcx-radio-button__input"
+                      type="radio"
+                    />
+                    <i
+                      aria-hidden="true"
+                      class="rcx-box rcx-box--full rcx-radio-button__fake"
+                    />
+                  </label>
                 </div>
               </label>
               <label
                 aria-checked="false"
-                aria-disabled="false"
-                aria-selected="false"
-                class="rcx-option"
+                aria-labelledby="_r_3h_"
+                class="rcx-item rcx-item--inset-md rcx-item--clickable rcx-item--focus-managed"
                 data-key="choice:0:h360"
-                id="react-aria-_r_35_"
+                id="react-aria-_r_3g_"
                 role="menuitemradio"
                 tabindex="-1"
               >
                 <div
-                  class="rcx-option__wrapper"
+                  class="rcx-item__content rcx-option__content"
                 >
                   <div
-                    class="rcx-option__content"
+                    class="rcx-item__title"
+                    id="_r_3h_"
                   >
                     <div
                       class="rcx-box rcx-box--full rcx-css-f39bd5"
@@ -4247,39 +4256,39 @@ exports[`call stories renders CameraPicker Open without crashing 1`] = `
                       </span>
                     </div>
                   </div>
-                  <div
-                    class="rcx-option__input"
+                </div>
+                <div
+                  class="rcx-item__actions rcx-option__input"
+                >
+                  <label
+                    class="rcx-box rcx-box--full rcx-radio-button"
                   >
-                    <label
-                      class="rcx-box rcx-box--full rcx-radio-button"
-                    >
-                      <input
-                        class="rcx-box rcx-box--full rcx-radio-button__input"
-                        type="radio"
-                      />
-                      <i
-                        aria-hidden="true"
-                        class="rcx-box rcx-box--full rcx-radio-button__fake"
-                      />
-                    </label>
-                  </div>
+                    <input
+                      class="rcx-box rcx-box--full rcx-radio-button__input"
+                      type="radio"
+                    />
+                    <i
+                      aria-hidden="true"
+                      class="rcx-box rcx-box--full rcx-radio-button__fake"
+                    />
+                  </label>
                 </div>
               </label>
               <label
                 aria-checked="false"
-                aria-disabled="false"
-                aria-selected="false"
-                class="rcx-option"
+                aria-labelledby="_r_3m_"
+                class="rcx-item rcx-item--inset-md rcx-item--clickable rcx-item--focus-managed"
                 data-key="choice:0:h180"
-                id="react-aria-_r_39_"
+                id="react-aria-_r_3l_"
                 role="menuitemradio"
                 tabindex="-1"
               >
                 <div
-                  class="rcx-option__wrapper"
+                  class="rcx-item__content rcx-option__content"
                 >
                   <div
-                    class="rcx-option__content"
+                    class="rcx-item__title"
+                    id="_r_3m_"
                   >
                     <div
                       class="rcx-box rcx-box--full rcx-css-f39bd5"
@@ -4292,22 +4301,22 @@ exports[`call stories renders CameraPicker Open without crashing 1`] = `
                       </span>
                     </div>
                   </div>
-                  <div
-                    class="rcx-option__input"
+                </div>
+                <div
+                  class="rcx-item__actions rcx-option__input"
+                >
+                  <label
+                    class="rcx-box rcx-box--full rcx-radio-button"
                   >
-                    <label
-                      class="rcx-box rcx-box--full rcx-radio-button"
-                    >
-                      <input
-                        class="rcx-box rcx-box--full rcx-radio-button__input"
-                        type="radio"
-                      />
-                      <i
-                        aria-hidden="true"
-                        class="rcx-box rcx-box--full rcx-radio-button__fake"
-                      />
-                    </label>
-                  </div>
+                    <input
+                      class="rcx-box rcx-box--full rcx-radio-button__input"
+                      type="radio"
+                    />
+                    <i
+                      aria-hidden="true"
+                      class="rcx-box rcx-box--full rcx-radio-button__fake"
+                    />
+                  </label>
                 </div>
               </label>
             </div>
@@ -4323,7 +4332,7 @@ exports[`call stories renders CameraPicker Open without crashing 1`] = `
     >
       <button
         aria-label="Dismiss"
-        id="react-aria-_r_3a_"
+        id="react-aria-_r_3n_"
         style="width: 1px; height: 1px;"
         tabindex="-1"
       />

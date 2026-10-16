@@ -1,6 +1,7 @@
 .rcx-options {
 	&:hover {
-		.rcx-option--focus:not(.rcx-option--selected):not(:hover) {
+		.rcx-option--focus:not(.rcx-option--selected):not(:hover),
+		.rcx-item--focused:not(.rcx-item--selected):not(:hover) {
 			background: initial;
 		}
 	}
