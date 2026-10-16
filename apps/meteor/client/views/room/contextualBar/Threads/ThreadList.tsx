@@ -20,6 +20,7 @@ import { Virtuoso } from 'react-virtuoso';
 import ThreadListItem from './components/ThreadListItem';
 import { useThreadsList } from './hooks/useThreadsList';
 import ResultsLiveRegion from '../../../../components/ResultsLiveRegion';
+import { virtuosoListComponents } from '../../../../components/VirtuosoList';
 import { useItemListNavigation } from '../../../../hooks/useItemListNavigation';
 import { getErrorMessage } from '../../../../lib/errorHandling';
 import { useRoom, useRoomSubscription } from '../../contexts/RoomContext';
@@ -170,6 +171,8 @@ const ThreadList = () => {
 										width: inlineSize,
 									}}
 									totalCount={itemCount}
+									components={virtuosoListComponents}
+									context={{ 'aria-label': t('Threads') }}
 									endReached={() => fetchNextPage()}
 									overscan={25}
 									data={items}

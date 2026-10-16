@@ -86,6 +86,7 @@ const ContactInfoHistory = ({ contact, setChatId }: ContactInfoHistoryProps) => 
 							value={type}
 							onChange={handleChangeFilter}
 							placeholder={t('Filter')}
+							aria-label={t('Filter')}
 							options={historyFilterOptions}
 							disabled={type === 'all' && data?.history.length === 0}
 						/>
@@ -113,7 +114,7 @@ const ContactInfoHistory = ({ contact, setChatId }: ContactInfoHistoryProps) => 
 							{t('Showing_current_of_total', { current: data?.history.length, total: data?.total })}
 						</Box>
 					</Box>
-					<Box role='list' height='100%' overflow='hidden' flexShrink={1} ref={historyListRef}>
+					<Box role='list' aria-label={t('History')} height='100%' overflow='hidden' flexShrink={1} ref={historyListRef}>
 						<VirtualizedScrollbars>
 							<Virtuoso
 								totalCount={data.history.length}

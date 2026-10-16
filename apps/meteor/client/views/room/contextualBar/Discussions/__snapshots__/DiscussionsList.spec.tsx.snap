@@ -98,7 +98,9 @@ exports[`renders Default with stable structure 1`] = `
               >
                 <div>
                   <ul
+                    aria-label="Discussions"
                     data-testid="discussions-virtual-list"
+                    role="list"
                     style="margin: 0px; padding: 0px; list-style: none; height: 100%;"
                   >
                     <li>

@@ -99,6 +99,7 @@ function DiscussionsList({
 						{discussions.length > 0 && (
 							<Box height='full' width='full' style={{ minHeight: 0 }}>
 								<PaginatedVirtualList
+									aria-label={t('Discussions')}
 									items={discussions}
 									totalCount={itemCount}
 									overscan={25}
