@@ -11,7 +11,7 @@ The Rocket.Chat web client uses this package, and [`@rocket.chat/ddp-client`](ht
 - Typed `get`, `post`, `put` and `delete` methods.
 - Authentication through `X-User-Id` / `X-Auth-Token` headers.
 - Automatic retry on two-factor authentication challenges, through a handler you provide.
-- Middleware around every request.
+- Middleware around every request except uploads.
 - File uploads with progress events.
 
 ## Installation
@@ -106,11 +106,11 @@ client.handleTwoFactorChallenge(async ({ method, emailOrUsername, invalidAttempt
 });
 ```
 
-Without a handler, the request rejects with the `400` response.
+Without a handler, the request rejects with the `400` response. Uploads are not retried: `upload()` bypasses `send()`, where the retry happens.
 
 ### Middleware
 
-`use()` wraps `send()`, the method every request goes through. A middleware receives the `send()` arguments and a `next` function.
+`use()` wraps `send()`, the method `get()`, `post()`, `put()` and `delete()` go through. `upload()` does not use `send()`, so middleware never sees uploads. A middleware receives the `send()` arguments and a `next` function.
 
 ```ts
 client.use(async ([endpoint, method, options], next) => {
