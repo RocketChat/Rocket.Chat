@@ -1,5 +1,38 @@
 import { create } from 'zustand';
 
+const isBinaryLike = (value: unknown): value is { $binary: string } =>
+	typeof value === 'object' && value !== null && typeof (value as { $binary?: unknown }).$binary === 'string';
+
+/**
+ * Derives a stable string key for a document's `_id`.
+ *
+ * `_id` is typed as `string`, but records coming from DDP/EJSON, imports or manual database
+ * writes can carry other representations of an id (a BSON ObjectId instance, an EJSON binary
+ * wrapper, etc). Using such a value directly as a `Map` key relies on object identity: every
+ * time an "equal" but distinct instance of the same id arrives, it collides with nothing and a
+ * duplicate entry is stored instead of replacing the previous one. Normalizing to a string here
+ * keeps `store`/`storeMany`/`has`/`get`/`delete` consistent regardless of how the id arrived.
+ */
+const normalizeId = <TId>(id: TId): TId | string => {
+	if (typeof id === 'string' || typeof id !== 'object' || id === null) {
+		return id;
+	}
+
+	if (typeof (id as { toHexString?: unknown }).toHexString === 'function') {
+		return (id as unknown as { toHexString: () => string }).toHexString();
+	}
+
+	if (isBinaryLike(id)) {
+		return id.$binary;
+	}
+
+	if ('buffer' in id && isBinaryLike((id as { buffer: unknown }).buffer)) {
+		return (id as unknown as { buffer: { $binary: string } }).buffer.$binary;
+	}
+
+	return JSON.stringify(id);
+};
+
 export interface IDocumentMapStore<T extends { _id: string }> {
 	readonly records: ReadonlyMap<T['_id'], T>;
 	/**
@@ -169,8 +202,8 @@ export interface IDocumentMapStoreHooks<T extends { _id: string }> {
 export const createDocumentMapStore = <T extends { _id: string }>({ onInvalidate, onInvalidateAll }: IDocumentMapStoreHooks<T> = {}) =>
 	create<IDocumentMapStore<T>>()((set, get) => ({
 		records: new Map(),
-		has: (id: T['_id']) => get().records.has(id),
-		get: (id: T['_id']) => get().records.get(id),
+		has: (id: T['_id']) => get().records.has(normalizeId(id)),
+		get: (id: T['_id']) => get().records.get(normalizeId(id)),
 		some: (predicate: (record: T) => boolean) => {
 			for (const record of get().records.values()) {
 				if (predicate(record)) return true;
@@ -213,11 +246,11 @@ export const createDocumentMapStore = <T extends { _id: string }>({ onInvalidate
 			return index;
 		},
 		replaceAll: (records: T[]) => {
-			set({ records: new Map(records.map((record) => [record._id, record])) });
+			set({ records: new Map(records.map((record) => [normalizeId(record._id), record])) });
 			onInvalidateAll?.();
 		},
 		store: (doc) => {
-			set((state) => ({ records: new Map(state.records).set(doc._id, doc) }));
+			set((state) => ({ records: new Map(state.records).set(normalizeId(doc._id), doc) }));
 			onInvalidate?.(doc);
 		},
 		storeMany: (docs) => {
@@ -225,7 +258,7 @@ export const createDocumentMapStore = <T extends { _id: string }>({ onInvalidate
 				const records = new Map(state.records);
 
 				for (const doc of docs) {
-					records.set(doc._id, doc);
+					records.set(normalizeId(doc._id), doc);
 				}
 
 				return { records };
@@ -233,11 +266,12 @@ export const createDocumentMapStore = <T extends { _id: string }>({ onInvalidate
 			onInvalidate?.(...docs);
 		},
 		delete: (_id) => {
+			const key = normalizeId(_id);
 			const affected: T[] = [];
 			set((state) => {
 				const records = new Map(state.records);
-				if (onInvalidate) affected.push(state.records.get(_id)!);
-				records.delete(_id);
+				if (onInvalidate) affected.push(state.records.get(key)!);
+				records.delete(key);
 				return { records };
 			});
 			onInvalidate?.(...affected);
@@ -250,10 +284,10 @@ export const createDocumentMapStore = <T extends { _id: string }>({ onInvalidate
 				for (const record of state.records.values()) {
 					if (predicate(record)) {
 						const newRecord = modifier(record);
-						records.set(record._id, newRecord);
+						records.set(normalizeId(newRecord._id), newRecord);
 						if (onInvalidate) affected.push(newRecord);
 					} else {
-						records.set(record._id, record);
+						records.set(normalizeId(record._id), record);
 					}
 				}
 
@@ -269,10 +303,10 @@ export const createDocumentMapStore = <T extends { _id: string }>({ onInvalidate
 			for await (const record of get().records.values()) {
 				if (predicate(record)) {
 					const newRecord = await modifier(record);
-					records.set(record._id, newRecord);
+					records.set(normalizeId(newRecord._id), newRecord);
 					if (onInvalidate) affected.push(newRecord);
 				} else {
-					records.set(record._id, record);
+					records.set(normalizeId(record._id), record);
 				}
 			}
 
@@ -289,7 +323,7 @@ export const createDocumentMapStore = <T extends { _id: string }>({ onInvalidate
 						if (onInvalidate) affected.push(record);
 						continue;
 					}
-					records.set(record._id, record);
+					records.set(normalizeId(record._id), record);
 				}
 
 				return { records };
