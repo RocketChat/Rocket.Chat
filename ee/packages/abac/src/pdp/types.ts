@@ -30,6 +30,14 @@ export interface IGetDecisionBulkResponse {
 
 export type ReevaluationUser = Pick<IUser, '_id' | 'emails' | 'username' | '__rooms'>;
 
+export type EvaluableSubject = Pick<IUser, '_id' | 'username' | 'emails' | 'abacAttributes'>;
+
+export type Evaluation = {
+	compliant: string[];
+	nonCompliant: string[];
+	inconclusive: string[];
+};
+
 export type NonCompliantPair = {
 	user: Pick<IUser, '_id' | 'emails' | 'username'>;
 	room: AtLeast<IRoom, '_id' | 'abacAttributes'>;
@@ -47,6 +55,14 @@ export interface IPolicyDecisionPoint {
 
 	checkUsernamesMatchAttributes(usernames: string[], attributes: IAbacAttributeDefinition[], object: IRoom): Promise<void>;
 
+	evaluateSubjectsAgainstAttributes(
+		subjects: EvaluableSubject[],
+		attributes: IAbacAttributeDefinition[],
+		object: Pick<IRoom, '_id'>,
+	): Promise<Evaluation>;
+
+	evaluateSubjectAgainstRooms(subject: EvaluableSubject, rooms: AtLeast<IRoom, '_id' | 'abacAttributes'>[]): Promise<Evaluation>;
+
 	onRoomAttributesChanged(
 		room: AtLeast<IRoom, '_id' | 't' | 'teamMain' | 'abacAttributes'>,
 		newAttributes: IAbacAttributeDefinition[],
@@ -62,6 +78,8 @@ export interface IPolicyDecisionPoint {
 	): Promise<NonCompliantPair[]>;
 
 	reevaluateUsers(users: ReevaluationUser[]): Promise<void | NonCompliantPair[]>;
+
+	refreshSubjectAttributes(userIds: string[]): Promise<void>;
 }
 
 export interface IVirtruPDPConfig {
