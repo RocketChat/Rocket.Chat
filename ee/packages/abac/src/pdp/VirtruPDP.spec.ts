@@ -621,19 +621,6 @@ describe('VirtruPDP.previewRoomMembers', () => {
 
 		expect(preview).toMatchObject({ members: [{ _id: 'alice', verdict: 'inconclusive' }] });
 	});
-
-	it('retains everyone without asking the PDP when there is nothing to evaluate against', async () => {
-		readsMembers([alice, bob]);
-		const apiCall = jest.fn();
-		const pdp = new VirtruPDP(mkClient({ apiCall }));
-
-		const retains = await pdp.previewRoomMembers(room, [], { count: 2 });
-		const loses = await pdp.previewRoomMembers(room, [], { count: 2, group: 'loses' });
-
-		expect(retains).toMatchObject({ members: [{ verdict: 'compliant' }, { verdict: 'compliant' }], checked: 2, total: 3 });
-		expect(loses).toEqual({ members: [], checked: 3, total: 3 });
-		expect(apiCall).not.toHaveBeenCalled();
-	});
 });
 
 describe('VirtruPDP.onSubjectAttributesChanged', () => {

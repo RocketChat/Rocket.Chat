@@ -2,7 +2,7 @@ import type { IAbacAttributeDefinition, IRoom, IUser } from '@rocket.chat/core-t
 import type { Collection } from 'mongodb';
 
 import { LocalPDP } from './LocalPDP';
-import { PREVIEW_SCAN_LIMIT } from '../helper';
+import { PREVIEW_SCAN_LIMIT, previewRetainingEveryone } from '../helper';
 import { acquireSharedInMemoryMongo, type SharedMongoConnection } from '../test-helpers/mongoMemoryServer';
 
 jest.mock('@rocket.chat/core-services', () => ({
@@ -297,8 +297,8 @@ describe('LocalPDP.previewRoomMembers', () => {
 	});
 
 	it('retains everyone when there is nothing to evaluate against', async () => {
-		const retains = await pdp.previewRoomMembers(room, [], { count: 10 });
-		const loses = await pdp.previewRoomMembers(room, [], { count: 10, group: 'loses' });
+		const retains = await previewRetainingEveryone(room._id, { count: 10 });
+		const loses = await previewRetainingEveryone(room._id, { count: 10, group: 'loses' });
 
 		expect(retains.members.every(({ verdict }) => verdict === 'compliant')).toBe(true);
 		expect(loses).toEqual({ members: [], checked: 3, total: 3 });
