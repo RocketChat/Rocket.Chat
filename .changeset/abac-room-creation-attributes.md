@@ -7,10 +7,8 @@
 '@rocket.chat/rest-typings': minor
 ---
 
-Adds ABAC attributes to room creation. `groups.create` and `teams.create` accept an `abacAttributes` map, and the room is created with its attributes in the same call, so a creator who is not an administrator no longer needs the ABAC admin endpoints to restrict their room. Setting attributes at creation requires the new **Create ABAC-managed rooms** permission, which users hold by default.
+Allows private rooms and teams to be created with ABAC attributes in one step, so users no longer need an administrator to restrict a room they create. `groups.create` and `teams.create` accept an `abacAttributes` map; creating a room with attributes requires the new **Create ABAC-managed rooms** permission, granted to users by default.
 
-A creator can only assign what they may hold. With the local Policy Decision Point, the new **Restrict room creators to attributes they hold** setting, on by default, limits them to their own attribute values; with Virtru, they are limited to the values Virtru entitles them to. A refusal names the attribute, and when access decisions are unavailable the room is not created. Holders of **Bypass ABAC store validation** skip that check, and the audit log records when they do.
+Users can only assign attribute values they hold themselves, or, with Virtru, values Virtru entitles them to. Without Virtru, administrators can lift this with the new **Restrict room creators to attributes they hold** setting. Members who do not meet the room's attributes are not added, and the response lists them in `skippedMembers`. `POST /v1/abac/attributes.checkAssignability` checks a set of attributes without creating the room. Every room created with attributes is recorded in the ABAC audit log.
 
-Members named at creation who do not carry the room's attributes are left out, and the response lists them in `skippedMembers`. The creator is never left out this way: if they would not be admitted, the room is not created, unless the request leaves them out with `excludeSelf`. `POST /v1/abac/attributes.checkAssignability` gives the same answers before creating, and takes the same `excludeSelf`.
-
-While enforcement is on, a private channel or team can only be created carrying every attribute the workspace requires.
+While ABAC enforcement is on, new private rooms and teams must carry every attribute the workspace requires.
