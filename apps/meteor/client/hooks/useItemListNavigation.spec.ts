@@ -1,7 +1,7 @@
 import { createFocusManager } from '@react-aria/focus';
 import { renderHook, act, fireEvent, createEvent } from '@testing-library/react';
 
-import { useMembersListNavigation } from './useMembersListNavigation';
+import { useItemListNavigation } from './useItemListNavigation';
 
 jest.mock('@react-aria/focus', () => ({
 	createFocusManager: jest.fn(),
@@ -25,11 +25,11 @@ afterAll(() => {
 
 beforeEach(() => {
 	(createFocusManager as jest.Mock).mockReturnValue(mockFocusManager);
-	mockFocusManager.focusNext.mockReset().mockReturnValue(createMemberButton());
-	mockFocusManager.focusPrevious.mockReset().mockReturnValue(createMemberButton());
+	mockFocusManager.focusNext.mockReset().mockReturnValue(createItemLink());
+	mockFocusManager.focusPrevious.mockReset().mockReturnValue(createItemLink());
 });
 
-const createMemberButton = () => {
+const createItemLink = () => {
 	const button = document.createElement('button');
 	button.className = 'rcx-item__link';
 	return button;
@@ -38,7 +38,7 @@ const createMemberButton = () => {
 const createList = (itemCount = 2) => {
 	const container = document.createElement('div');
 	const items = Array.from({ length: itemCount }, () => {
-		const li = createMemberButton();
+		const li = createItemLink();
 		container.appendChild(li);
 		return li;
 	});
@@ -47,8 +47,8 @@ const createList = (itemCount = 2) => {
 };
 
 const setupHook = (container: HTMLElement) => {
-	const { result } = renderHook(() => useMembersListNavigation());
-	act(() => result.current.membersListRef(container));
+	const { result } = renderHook(() => useItemListNavigation());
+	act(() => result.current(container));
 	return result;
 };
 
@@ -60,7 +60,7 @@ it('creates a focus manager scoped to the list node', () => {
 	cleanup();
 });
 
-it('calls focusNext with a member-button predicate on ArrowDown', () => {
+it('calls focusNext with an item-link predicate on ArrowDown', () => {
 	const { container, items, cleanup } = createList();
 	setupHook(container);
 
@@ -70,13 +70,13 @@ it('calls focusNext with a member-button predicate on ArrowDown', () => {
 	expect(mockFocusManager.focusPrevious).not.toHaveBeenCalled();
 
 	const { accept } = mockFocusManager.focusNext.mock.calls[0][0];
-	expect(accept(createMemberButton())).toBe(true);
+	expect(accept(createItemLink())).toBe(true);
 	expect(accept(document.createElement('div'))).toBe(false);
 	expect(accept(document.createElement('button'))).toBe(false);
 	cleanup();
 });
 
-it('calls focusPrevious with a member-button predicate on ArrowUp', () => {
+it('calls focusPrevious with an item-link predicate on ArrowUp', () => {
 	const { container, items, cleanup } = createList();
 	setupHook(container);
 
@@ -86,12 +86,12 @@ it('calls focusPrevious with a member-button predicate on ArrowUp', () => {
 	expect(mockFocusManager.focusNext).not.toHaveBeenCalled();
 
 	const { accept } = mockFocusManager.focusPrevious.mock.calls[0][0];
-	expect(accept(createMemberButton())).toBe(true);
+	expect(accept(createItemLink())).toBe(true);
 	expect(accept(document.createElement('div'))).toBe(false);
 	cleanup();
 });
 
-it('ignores events whose target is not a member button', () => {
+it('ignores events whose target is not an item link', () => {
 	const { container, cleanup } = createList(0);
 	setupHook(container);
 
@@ -131,7 +131,7 @@ it('removes the event listener when called with null', () => {
 	const { container, items, cleanup } = createList();
 	const result = setupHook(container);
 
-	act(() => result.current.membersListRef(null));
+	act(() => result.current(null));
 	const afterNull = createEvent.keyDown(items[0], { key: 'ArrowDown' });
 	fireEvent(items[0], afterNull);
 
@@ -143,7 +143,7 @@ it('replaces the listener without duplicating it when called twice with the same
 	const { container, items, cleanup } = createList();
 	const result = setupHook(container);
 
-	act(() => result.current.membersListRef(container));
+	act(() => result.current(container));
 	const secondCall = createEvent.keyDown(items[0], { key: 'ArrowDown' });
 	fireEvent(items[0], secondCall);
 
@@ -159,6 +159,7 @@ describe('when the adjacent item is outside the render window', () => {
 
 	const createScrollableSetup = (initialScrollTop = 0) => {
 		const scroller = document.createElement('div');
+		scroller.dataset.virtuosoScroller = 'true';
 		scroller.scrollTop = initialScrollTop;
 		const listNode = document.createElement('div');
 		scroller.appendChild(listNode);
@@ -167,7 +168,7 @@ describe('when the adjacent item is outside the render window', () => {
 		const row = document.createElement('div');
 		row.className = 'rcx-item';
 		Object.defineProperty(row, 'offsetHeight', { configurable: true, get: () => 36 });
-		const li = createMemberButton();
+		const li = createItemLink();
 		row.appendChild(li);
 		listNode.appendChild(row);
 
