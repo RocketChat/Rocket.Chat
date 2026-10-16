@@ -22,6 +22,7 @@ let room: IRoom;
 
 jest.mock('../../views/room/contexts/RoomContext', () => ({
 	useRoom: () => room,
+	useUserIsSubscribed: () => true,
 }));
 
 const nativeFederatedRoom = () =>
