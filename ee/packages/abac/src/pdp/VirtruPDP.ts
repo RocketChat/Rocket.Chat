@@ -391,13 +391,12 @@ export class VirtruPDP implements IPolicyDecisionPoint {
 		attributes: IAbacAttributeDefinition[],
 		page: AbacRoomMembershipPreviewPage,
 	): Promise<RoomMembersPreview> {
-		const members = { active: true, __rooms: room._id };
 		if (!attributes.length) {
-			return previewRetainingEveryone(members, page);
+			return previewRetainingEveryone(room._id, page);
 		}
 
 		return previewRoomMembersInSteps(
-			members,
+			room._id,
 			page,
 			async (subjects) => verdictsOf(await this.evaluateSubjectsAgainstAttributes(subjects, attributes, room)),
 			PREVIEW_EVALUATION_STEP,
