@@ -35,7 +35,7 @@ module.exports = {
 };
 ```
 
-Then import the grammar. The generated module exports `parse`, `SyntaxError` and `StartRules`:
+Then import the grammar. The generated module exports `parse` and `SyntaxError`; from Peggy 4 on, it also exports `StartRules`, the list of allowed start rules:
 
 ```js
 import { parse } from './grammar.pegjs';
