@@ -13,7 +13,8 @@
 	},
 	"repository": {
 		"type": "git",
-		"url": "git+https://github.com/RocketChat/Rocket.Chat.git"
+		"url": "git+https://github.com/RocketChat/Rocket.Chat.git",
+		"directory": "packages/apps-engine"
 	},
 	"license": "MIT",
 	"author": {
@@ -75,9 +76,6 @@
 	},
 	"volta": {
 		"extends": "../../package.json"
-	},
-	"publishConfig": {
-		"access": "public"
 	},
 	"installConfig": {
 		"hoistingLimits": "workspaces"
