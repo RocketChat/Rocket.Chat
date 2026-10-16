@@ -131,13 +131,11 @@ export class RemoteMucSession {
 		if (isOwnReflection) {
 			return;
 		}
-		// Room-assigned XEP-0359 id first: see ../../docs/adr/0007-inbound-messages-are-deduplicated-by-federation-event-id.md
 		const originId = message.getChild('origin-id', NS_SID)?.attrs.id ?? message.attrs.id;
-		const stanzaId = message.getChild('stanza-id', NS_SID)?.attrs.id ?? message.attrs.id;
 		this.deps.onMessage({
 			fromNick: nick,
 			body,
-			id: stanzaId,
+			id: message.getChild('stanza-id', NS_SID)?.attrs.id,
 			originId,
 			senderId: message.attrs.id,
 			occupantId: message.getChild('occupant-id', NS_OCCUPANT_ID)?.attrs.id,
