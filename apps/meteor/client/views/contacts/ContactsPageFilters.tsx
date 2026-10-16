@@ -20,8 +20,8 @@ const ContactsPageFilters = ({ onChangeText, onCreate, searchText, total }: Cont
 	const isContactSyncEnabled = useSetting('Exchange_Contacts_Sync_Enabled', false);
 
 	return (
-		<Box marginBlock='x8' display='flex' flexWrap='wrap' alignItems='center' justifyContent='center'>
-			<Box minWidth='x224' display='flex' margin='x4' flexGrow={1} flexShrink={0}>
+		<Box marginBlock='x16' display='flex' flexWrap='wrap' alignItems='center' justifyContent='center'>
+			<Box minWidth='x224' display='flex' flexGrow={1} flexShrink={0}>
 				<TextInput
 					alignItems='center'
 					placeholder={t('Search_contacts')}
@@ -30,7 +30,7 @@ const ContactsPageFilters = ({ onChangeText, onCreate, searchText, total }: Cont
 					value={searchText}
 				/>
 			</Box>
-			<Box display='flex' margin='x4' alignItems='center'>
+			<Box display='flex' marginInline='x8' alignItems='center'>
 				<ButtonGroup>
 					{isExchangeIntegrationEnabled && isServerManaged && isContactSyncEnabled && (
 						<Button icon='reload' loading={syncContacts.isPending} onClick={() => syncContacts.mutate()}>
