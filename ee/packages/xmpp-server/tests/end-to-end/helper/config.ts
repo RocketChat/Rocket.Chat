@@ -34,3 +34,9 @@ export const DUPLICATE_SETTLE_MS = 3000;
 
 /** Suffix that keeps names unique across runs, so leftovers of an aborted run never collide. */
 export const uniqueSuffix = (): string => `${Date.now().toString(36)}${Math.random().toString(36).slice(2, 6)}`;
+
+/** The same JID with its domain in upper case, as a user might type it. */
+export const withUppercaseDomain = (jid: string): string => {
+	const at = jid.lastIndexOf('@');
+	return `${jid.slice(0, at)}@${jid.slice(at + 1).toUpperCase()}`;
+};

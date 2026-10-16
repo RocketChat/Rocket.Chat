@@ -11,7 +11,7 @@ import {
 	isUserNativeFederated,
 } from '@rocket.chat/core-typings';
 import { Rooms, Subscriptions, Users } from '@rocket.chat/models';
-import { isBareJid } from '@rocket.chat/tools';
+import { isBareJid, normalizeBareJid } from '@rocket.chat/tools';
 
 import { createDirectRoom } from './createDirectRoom';
 import { filterUsersAllowedInRoom } from './filterUsersAllowedInRoom';
@@ -90,11 +90,11 @@ async function createUsersSubscriptions({
 		return;
 	}
 
-	if (isRoomXMPPHostedMuc(room)) {
-		const jids = members.filter(isBareJid);
-		if (jids.length) {
-			await XMPPServer.ensureXMPPUsersExistLocally(jids);
-		}
+	// A typed JID names the user record of that XMPP account, however its domain was spelled
+	const memberUsernames = isRoomXMPPHostedMuc(room) ? members.map((member) => normalizeBareJid(member) ?? member) : members;
+	const jids = isRoomXMPPHostedMuc(room) ? memberUsernames.filter(isBareJid) : [];
+	if (jids.length) {
+		await XMPPServer.ensureXMPPUsersExistLocally(jids);
 	}
 
 	const subs = [];
@@ -103,7 +103,7 @@ async function createUsersSubscriptions({
 
 	const memberIdAndRolePriorityMap: Record<IUser['_id'], number> = {};
 
-	const { allowedMembers, skippedMembers } = await filterMembersAllowedInRoom(members, room);
+	const { allowedMembers, skippedMembers } = await filterMembersAllowedInRoom(memberUsernames, room);
 
 	const membersCursor = Users.findUsersByUsernames(allowedMembers);
 
@@ -195,7 +195,7 @@ export const createRoom = async <T extends RoomType>(
 		skippedMembers?: string[];
 	}
 > => {
-	const { teamId, ...extraData } = roomExtraData || ({} as IRoom);
+	const { teamId, ...extraData } = roomExtraData || {};
 
 	// TODO: use a shared helper to check whether a user is federated
 	const hasFederatedMembers = members.some((member) => {
@@ -231,7 +231,7 @@ export const createRoom = async <T extends RoomType>(
 	}
 
 	if (type === 'd') {
-		return createDirectRoom(members as IUser[], extraData, { ...options, creator: options?.creator || owner?._id });
+		return createDirectRoom(members, extraData, { ...options, creator: options?.creator || owner?._id });
 	}
 
 	const memberList = [...members];
