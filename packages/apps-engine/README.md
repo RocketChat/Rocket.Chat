@@ -85,7 +85,12 @@ export class HelloApp extends App implements IPostMessageSent {
 
 `extendConfiguration` runs when the App is initialized. Use the `IConfigurationExtend` accessors to declare what the App provides: `settings`, `slashCommands`, `api`, `ui`, `scheduler`, `externalComponents`, `videoConfProviders`, `outboundCommunication` and `http`.
 
-The lifecycle methods `onEnable`, `onDisable`, `onInstall`, `onUninstall`, `onUpdate`, `onSettingUpdated` and `onPreSettingUpdate` have empty default implementations; override the ones you need.
+Override the lifecycle methods you need. Two have defaults that matter if you override them:
+
+- `onEnable` returns `true`. Return `false` to keep the App from being enabled.
+- `onPreSettingUpdate` returns `context.newSetting`, so the proposed value is saved. Return a different setting to change what gets saved.
+
+`onDisable`, `onInstall`, `onUninstall`, `onUpdate` and `onSettingUpdated` do nothing by default.
 
 ### Slash commands
 
