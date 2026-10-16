@@ -4,7 +4,7 @@ import { useFormatTime } from './useFormatTime';
 
 export const useTimezoneTime = (offset: number, interval = 1000): string => {
 	const [now, setNow] = useState(() => new Date());
-	const format = useFormatTime();
+	const format = useFormatTime('none');
 
 	useEffect(() => {
 		if (offset === undefined) {
