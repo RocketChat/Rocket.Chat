@@ -46,8 +46,6 @@ const assertLocalAttributeStore = async (): Promise<void> => {
 	}
 };
 
-const FORBIDDEN_MESSAGE = 'User does not have the permissions required for this action [error-unauthorized]';
-
 const getRoomAttributesGrant = async (uid: IUser['_id'], rid: string): Promise<AbacRoomAttributesGrant | undefined> => {
 	if (await hasAllPermissionAsync(uid, ['abac-management', 'manage-abac-admin-rooms'])) {
 		return 'manage-abac-admin-rooms';
@@ -80,7 +78,7 @@ const abacEndpoints = API.v1
 
 			const grant = await getRoomAttributesGrant(this.userId, rid);
 			if (!grant) {
-				return API.v1.forbidden(FORBIDDEN_MESSAGE);
+				return API.v1.forbidden('User does not have the permissions required for this action [error-unauthorized]');
 			}
 
 			if (!settings.get('ABAC_Enabled')) {
@@ -528,7 +526,7 @@ const abacEndpoints = API.v1
 			if (rid) {
 				const grant = await getRoomAttributesGrant(this.userId, rid);
 				if (!grant) {
-					return API.v1.forbidden(FORBIDDEN_MESSAGE);
+					return API.v1.forbidden('User does not have the permissions required for this action [error-unauthorized]');
 				}
 
 				return API.v1.success({
@@ -538,7 +536,7 @@ const abacEndpoints = API.v1
 			}
 
 			if (!(await hasPermissionAsync(this.userId, 'create-abac-managed-room'))) {
-				return API.v1.forbidden(FORBIDDEN_MESSAGE);
+				return API.v1.forbidden('User does not have the permissions required for this action [error-unauthorized]');
 			}
 
 			const { enforcementOn, requiredAttributeKeys } = getRoomAbacLockContext();
@@ -575,7 +573,7 @@ const abacEndpoints = API.v1
 				const { rid, attributes, filter, after, group } = this.bodyParams;
 				const grant = await getRoomAttributesGrant(this.userId, rid);
 				if (!grant) {
-					return API.v1.forbidden(FORBIDDEN_MESSAGE);
+					return API.v1.forbidden('User does not have the permissions required for this action [error-unauthorized]');
 				}
 
 				const { count } = await getPaginationItems(this.bodyParams);
@@ -586,7 +584,7 @@ const abacEndpoints = API.v1
 			}
 
 			if (!(await hasPermissionAsync(this.userId, 'create-abac-managed-room'))) {
-				return API.v1.forbidden(FORBIDDEN_MESSAGE);
+				return API.v1.forbidden('User does not have the permissions required for this action [error-unauthorized]');
 			}
 
 			const { members, attributes, excludeSelf = false } = this.bodyParams;
