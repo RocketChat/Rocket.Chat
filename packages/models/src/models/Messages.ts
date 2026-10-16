@@ -65,7 +65,7 @@ export class MessagesRaw extends BaseRaw<IMessage> implements IMessagesModel {
 			{ key: { drid: 1 }, sparse: true },
 
 			// threads
-			{ key: { tmid: 1 }, sparse: true },
+			{ key: { tmid: 1, ts: -1 }, partialFilterExpression: { tmid: { $exists: true } } },
 			{ key: { tcount: 1, tlm: 1 }, sparse: true },
 			{ key: { rid: 1, tlm: -1 }, partialFilterExpression: { tcount: { $exists: true } } }, // used for the List Threads
 			{ key: { rid: 1, tcount: 1 } }, // used for the List Threads Count
