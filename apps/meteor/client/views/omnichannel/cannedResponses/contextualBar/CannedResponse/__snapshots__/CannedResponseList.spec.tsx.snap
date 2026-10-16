@@ -47,93 +47,89 @@ exports[`CannedResponseList Storybook Stories renders Default without crashing 1
             </div>
           </div>
           <div
-            class="rcx-box rcx-box--full rcx-vertical-bar__content rcx-css-10ikbhr"
+            class="rcx-box rcx-box--full rcx-vertical-bar__section rcx-css-16arwmq"
           >
+            <label
+              class="rcx-box rcx-box--full rcx-label rcx-box rcx-box--full rcx-box--animated rcx-input-box__wrapper"
+            >
+              <input
+                class="rcx-box rcx-box--full rcx-box--animated rcx-input-box--undecorated rcx-input-box--type-text rcx-input-box"
+                placeholder="Search"
+                size="1"
+                type="text"
+              />
+              <span
+                class="rcx-box rcx-box--full rcx-input-box__addon"
+              >
+                <i
+                  aria-hidden="true"
+                  class="rcx-box rcx-box--full rcx-icon--name-magnifier rcx-icon rcx-css-4pvxx3"
+                >
+                  
+                </i>
+              </span>
+            </label>
             <div
-              class="rcx-box rcx-box--full rcx-css-cb0t7p"
+              class="rcx-box rcx-box--full rcx-css-l1qvi5"
             >
               <div
-                class="rcx-box rcx-box--full rcx-css-t6z7xh"
+                class="rcx-box rcx-box--full rcx-css-1ds37nf"
               >
-                <label
-                  class="rcx-box rcx-box--full rcx-label rcx-box rcx-box--full rcx-box--animated rcx-input-box__wrapper rcx-css-4ye06d rcx-css-1eogw2f"
-                >
-                  <input
-                    class="rcx-box rcx-box--full rcx-box--animated rcx-input-box--undecorated rcx-input-box--type-text rcx-input-box rcx-css-4ye06d"
-                    placeholder="Search"
-                    size="1"
-                    type="text"
-                  />
-                  <span
-                    class="rcx-box rcx-box--full rcx-input-box__addon"
-                  >
-                    <i
-                      aria-hidden="true"
-                      class="rcx-box rcx-box--full rcx-icon--name-magnifier rcx-icon rcx-css-4pvxx3"
-                    >
-                      
-                    </i>
-                  </span>
-                </label>
                 <div
-                  class="rcx-box rcx-box--full rcx-css-4ye06d rcx-css-njvvp7"
+                  aria-hidden="true"
+                  data-a11y-ignore="aria-hidden-focus"
+                  data-react-aria-prevent-focus="true"
+                  data-testid="hidden-select-container"
+                  style="border: 0px; clip-path: inset(50%); height: 1px; margin: -1px; overflow: hidden; padding: 0px; position: absolute; width: 1px; white-space: nowrap;"
                 >
-                  <div
-                    class="rcx-box rcx-box--full rcx-css-1ds37nf"
-                  >
-                    <div
-                      aria-hidden="true"
-                      data-a11y-ignore="aria-hidden-focus"
-                      data-react-aria-prevent-focus="true"
-                      data-testid="hidden-select-container"
-                      style="border: 0px; clip-path: inset(50%); height: 1px; margin: -1px; overflow: hidden; padding: 0px; position: absolute; width: 1px; white-space: nowrap;"
+                  <label>
+                    <select
+                      tabindex="-1"
                     >
-                      <label>
-                        <select
-                          tabindex="-1"
-                        >
-                          <option />
-                          <option
-                            value="all"
-                          >
-                            all
-                          </option>
-                          <option
-                            value="global"
-                          >
-                            global
-                          </option>
-                          <option
-                            value="user"
-                          >
-                            user
-                          </option>
-                        </select>
-                      </label>
-                    </div>
-                  </div>
-                  <button
-                    aria-expanded="false"
-                    aria-haspopup="listbox"
-                    aria-label="Type"
-                    aria-labelledby="react-aria-_r_8_ react-aria-_r_3_"
-                    class="rcx-box rcx-box--full rcx-box--animated rcx-select rcx-css-3ejkxj"
-                    type="button"
-                  >
-                    <span
-                      class="rcx-box rcx-box--full rcx-css-az37y0"
-                      id="react-aria-_r_8_"
-                    />
-                    <i
-                      aria-hidden="true"
-                      class="rcx-box rcx-box--full rcx-icon--name-chevron-down rcx-icon rcx-css-l5txo2"
-                    >
-                      
-                    </i>
-                  </button>
+                      <option />
+                      <option
+                        value="all"
+                      >
+                        all
+                      </option>
+                      <option
+                        value="global"
+                      >
+                        global
+                      </option>
+                      <option
+                        value="user"
+                      >
+                        user
+                      </option>
+                    </select>
+                  </label>
                 </div>
               </div>
+              <button
+                aria-expanded="false"
+                aria-haspopup="listbox"
+                aria-label="Type"
+                aria-labelledby="react-aria-_r_8_ react-aria-_r_3_"
+                class="rcx-box rcx-box--full rcx-box--animated rcx-select rcx-css-3ejkxj"
+                type="button"
+              >
+                <span
+                  class="rcx-box rcx-box--full rcx-css-az37y0"
+                  id="react-aria-_r_8_"
+                />
+                <i
+                  aria-hidden="true"
+                  class="rcx-box rcx-box--full rcx-icon--name-chevron-down rcx-icon rcx-css-l5txo2"
+                >
+                  
+                </i>
+              </button>
             </div>
+          </div>
+          <div
+            class="rcx-box rcx-box--full rcx-vertical-bar__content rcx-css-10ikbhr"
+          >
             <div
               class="rcx-box rcx-box--full rcx-css-om2mbq"
             >
