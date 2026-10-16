@@ -70,6 +70,28 @@ export const WithABACRoom = {
 	},
 };
 
+export const WithLockedABACRoom = {
+	args: {
+		isSuccess: true,
+		members: [
+			{
+				_id: 'rocket.cat',
+				username: 'rocket.cat',
+				status: UserStatus.ONLINE,
+				name: 'Rocket.Cat',
+				roles: ['user'],
+				subscription: {
+					_id: 'sub-rocket.cat',
+					ts: '2025-01-01T00:00:00Z',
+				},
+			},
+		],
+		isAbacLocked: true,
+		onClickAdd: action('onClickAdd'),
+		onClickInvite: action('onClickInvite'),
+	},
+};
+
 export const WithInvitedMember = {
 	args: {
 		isSuccess: true,

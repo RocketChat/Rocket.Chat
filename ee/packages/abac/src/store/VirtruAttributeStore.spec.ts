@@ -48,6 +48,26 @@ describe('VirtruAttributeStore.entitlementsOf / list', () => {
 		expect(r).toMatchObject({ offset: 0, total: 2 });
 	});
 
+	it('listAttributeKeys returns every entitled key, unaffected by list pagination', async () => {
+		const apiCall = jest.fn().mockResolvedValue({
+			entitlements: [
+				{
+					actionsPerAttributeValueFqn: {
+						'https://example.com/attr/clearance/value/secret': {},
+						'https://example.com/attr/team/value/blue': {},
+					},
+				},
+			],
+		});
+		const store = new VirtruAttributeStore(mkClient({ apiCall }));
+		await expect(store.listAttributeKeys(actor)).resolves.toEqual(expect.arrayContaining(['clearance', 'team']));
+	});
+
+	it('listAttributeKeys without an actor throws entity resolution failed', async () => {
+		const store = new VirtruAttributeStore(mkClient({ apiCall: jest.fn() }));
+		await expect(store.listAttributeKeys(undefined)).rejects.toMatchObject({ code: 'error-virtru-entity-resolution-failed' });
+	});
+
 	it('malformed FQNs from PDP are skipped, valid ones returned', async () => {
 		const apiCall = jest.fn().mockResolvedValue({
 			entitlements: [
