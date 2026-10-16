@@ -50,4 +50,30 @@ describe('MucService.handlePossibleInvite', () => {
 		expect(muc.handlePossibleInvite(direct, 'bob@rc.tld')).toBe(true);
 		expect(invites).toEqual([]);
 	});
+
+	it('emits the inviter as a normalized bare JID (remote-muc R1)', () => {
+		const { muc, invites } = setup();
+		const mediated = p(
+			`<message from='team@conference.remote.tld' to='bob@rc.tld'><x xmlns='http://jabber.org/protocol/muc#user'><invite from='Alice@Remote.TLD/phone'/></x></message>`,
+		);
+
+		muc.handlePossibleInvite(mediated, 'bob@rc.tld');
+
+		expect(invites).toEqual([expect.objectContaining({ fromJid: 'Alice@remote.tld' })]);
+	});
+
+	it.each([
+		['names no account', 'admin'],
+		['names an account on our domain', 'admin@rc.tld'],
+		['names an occupant of our MUC service', 'room@conference.rc.tld'],
+	])('emits the room as the inviter when the invitation %s (remote-muc R1, addressing R11)', (_, from) => {
+		const { muc, invites } = setup();
+		const mediated = p(
+			`<message from='team@conference.remote.tld' to='bob@rc.tld'><x xmlns='http://jabber.org/protocol/muc#user'><invite from='${from}'/></x></message>`,
+		);
+
+		muc.handlePossibleInvite(mediated, 'bob@rc.tld');
+
+		expect(invites).toEqual([expect.objectContaining({ fromJid: 'team@conference.remote.tld' })]);
+	});
 });

@@ -2,12 +2,14 @@
 status: implemented
 standards: [RFC 6122, XEP-0106]
 adrs: [0006, 0011, 0015]
-code: [src/jid/, src/service/helpers/jid.ts, src/service/helpers/xmppUser.ts, src/muc/RemoteMucSession.ts, src/XMPPServer.ts]
+code: [src/jid/, src/service/helpers/jid.ts, src/service/helpers/remoteRoom.ts, src/service/helpers/xmppUser.ts, src/muc/RemoteMucSession.ts, src/XMPPServer.ts]
 tests:
   [
     src/jid/escaping.spec.ts,
     src/jid/normalize.spec.ts,
+    src/service/helpers/remoteRoom.spec.ts,
     src/service/helpers/xmppUser.spec.ts,
+    src/muc/MucService.spec.ts,
     tests/integration/muc.spec.ts,
     tests/end-to-end/remote-muc.spec.ts,
   ]
@@ -48,11 +50,14 @@ localparts, and compare domains the way DNS does.
 - **R9** A remote account has one user record, however many DMs, hosted rooms and remote
   rooms it appears in: every path that knows the sender's real JID upserts the record of
   that bare JID. A remote room that does not tell us an occupant's real JID gets a record of
-  its own for them, keyed `<nick>#<room JID>`
+  its own for them, keyed `<nick>#<room JID>` with the nick escaped per XEP-0106
   ([remote-muc R6](remote-muc.md), [ADR 0015](../adr/0015-remote-room-occupants-are-the-user-their-disclosed-jid-names.md)).
 - **R10** A remote user's display name is the nick they were last seen under: the nick they
   joined a hosted room with, or the one they last spoke under in any room. A record created without a nick (a DM, an invitation, a typed JID)
   is named by its bare JID, and an upsert without a nick keeps the name already stored.
+- **R11** No remote address resolves to a local account. A record is created or updated
+  only for a `<localpart>@<domain>` address, and only when no user other than a remote XMPP
+  user holds that username; otherwise the upsert fails and nothing is stored for the stanza.
 
 ## Design
 
@@ -62,8 +67,10 @@ and the dialback flow call it on every domain they compare. `src/service/helpers
 `toBareJid` and `domainOfJid` for the service, and `normalizeUserBareJid` normalizes the
 real JIDs remote rooms disclose before they become usernames. `createOrUpdateXMPPUser` in
 `src/service/helpers/xmppUser.ts` is the single upsert behind R9 and R10: it reduces the JID
-to its bare form and hands it to `Users.upsertXMPPUser` in `packages/models`, which stores the
-record and decides which name survives.
+to its bare form, refuses anything without a localpart and a domain, and hands it to
+`Users.upsertXMPPUser` in `packages/models`, which stores the record and decides which name
+survives. The upsert matches remote XMPP users only, so a username a local user holds hits
+the unique index instead of that user (R11).
 
 ## Out of scope
 

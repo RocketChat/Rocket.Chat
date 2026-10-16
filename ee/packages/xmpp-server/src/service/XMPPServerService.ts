@@ -23,7 +23,7 @@ import { domainOfJid, toBareJid } from './helpers/jid';
 import { deriveInboundMessageId } from './helpers/messageId';
 import type { InboundMessageKey } from './helpers/messageId';
 import { mapPresenceToStatus, mapStatusToPresence } from './helpers/presence';
-import { mirroredRoomDisplayName, mirroredRoomName } from './helpers/remoteRoom';
+import { mirroredRoomDisplayName, mirroredRoomName, perRoomOccupantJid } from './helpers/remoteRoom';
 import { createOrUpdateXMPPUser } from './helpers/xmppUser';
 import type { XmppDnsResolver } from '../s2s/dnsResolver';
 
@@ -695,7 +695,7 @@ export class XMPPServerService extends ServiceClass implements IXMPPServerServic
 			return;
 		}
 		// Without a real JID nothing ties the nick to the same person in another room
-		const author = await createOrUpdateXMPPUser({ jid: fromJid ?? `${fromNick}#${roomJid}`, name: fromNick });
+		const author = await createOrUpdateXMPPUser({ jid: fromJid ?? perRoomOccupantJid(fromNick, roomJid), name: fromNick });
 		await this.ensureRemoteRoomMember(room, author);
 		await this.receiveMessage({
 			rid: room._id,

@@ -1,5 +1,6 @@
 import { domainOfJid, toBareJid } from './jid';
 import { createOrUpdateXMPPUser } from './xmppUser';
+import { InvalidJidError } from '../../errors';
 
 const upsertXMPPUser = jest.fn();
 
@@ -42,5 +43,12 @@ describe('createOrUpdateXMPPUser (addressing R9, R10)', () => {
 		await createOrUpdateXMPPUser({ jid: 'alice@remote.tld' });
 
 		expect(upsertXMPPUser).toHaveBeenCalledWith('alice@remote.tld', 'remote.tld', undefined);
+	});
+
+	it('refuses an address that is not `local@domain`, which could be a local username (addressing R11)', async () => {
+		for (const jid of ['admin', 'admin/x#room@conference.remote.tld', '@remote.tld', 'admin@']) {
+			await expect(createOrUpdateXMPPUser({ jid })).rejects.toThrow(InvalidJidError);
+		}
+		expect(upsertXMPPUser).not.toHaveBeenCalled();
 	});
 });

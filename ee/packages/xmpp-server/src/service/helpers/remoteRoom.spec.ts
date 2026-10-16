@@ -1,4 +1,4 @@
-import { mirroredRoomDisplayName, mirroredRoomName } from './remoteRoom';
+import { mirroredRoomDisplayName, mirroredRoomName, perRoomOccupantJid } from './remoteRoom';
 
 describe('mirroredRoomName', () => {
 	it('is the room JID with characters a room name may not hold replaced, plus a hash of the JID (remote-muc R1)', () => {
@@ -20,5 +20,16 @@ describe('mirroredRoomDisplayName', () => {
 	it('shows the localpart and the MUC domain as `<localpart>:<domain>` (remote-muc R1)', () => {
 		expect(mirroredRoomDisplayName('dev@conference.a.example')).toBe('dev:conference.a.example');
 		expect(mirroredRoomDisplayName('café@muc.example')).toBe('café:muc.example');
+	});
+});
+
+describe('perRoomOccupantJid', () => {
+	it('is `<nick>#<room JID>` (addressing R9)', () => {
+		expect(perRoomOccupantJid('ally', 'dev@conference.a.example')).toBe('ally#dev@conference.a.example');
+	});
+
+	it('escapes the nick, so no nick turns the key into another address (addressing R11)', () => {
+		expect(perRoomOccupantJid('admin/x', 'dev@conference.a.example')).toBe('admin\\2fx#dev@conference.a.example');
+		expect(perRoomOccupantJid('a@b', 'dev@conference.a.example')).toBe('a\\40b#dev@conference.a.example');
 	});
 });
