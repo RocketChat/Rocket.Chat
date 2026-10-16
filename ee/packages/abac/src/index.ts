@@ -73,7 +73,7 @@ import type { AttributeStoreDescriptor, AttributeStoreSelectionContext, IAttribu
 // Limit concurrent user removals to avoid overloading the server with too many operations at once
 const limit = pLimit(20);
 
-const MASS_REMOVAL_SUMMARY_THRESHOLD = 5;
+const MASS_REMOVAL_SUMMARY_THRESHOLD = 50;
 
 type CreationDenial = Extract<AbacCreationAttributesResult, { allowed: false }>;
 

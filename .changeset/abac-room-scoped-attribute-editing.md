@@ -14,4 +14,4 @@ Adds the **Edit room ABAC attributes** permission, scoped to a room and held by 
 
 With the Virtru Policy Decision Point, an attribute change made by a user now also removes members whose access the Policy Decision Point cannot decide, and a change that only removes values or attributes is evaluated as well, since the platform's rules can narrow access on removal. Background re-evaluation still keeps undecided members.
 
-When an attribute change removes five or more members, the room gets one system message with the number removed instead of one message per member.
+When an attribute change removes 50 or more members, the room gets one system message with the number removed instead of one message per member.
