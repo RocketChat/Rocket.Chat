@@ -5,6 +5,7 @@ import { axe } from 'jest-axe';
 
 import CannedResponseList from './CannedResponseList';
 import * as stories from './CannedResponseList.stories';
+import { expectListSemantics, listWrapper } from '../../../../../../tests/mocks/utils/listContract';
 
 const testCases = Object.values(composeStories(stories)).map((Story) => [Story.storyName || 'Story', Story]);
 
@@ -123,4 +124,11 @@ describe('CannedResponseList', () => {
 			expect(screen.queryByText('Create')).not.toBeInTheDocument();
 		});
 	});
+});
+
+it('follows the semantics of a list of rows', async () => {
+	const { Default } = composeStories(stories);
+	render(<Default />, { wrapper: listWrapper() });
+
+	await expectListSemantics('Canned_Responses');
 });

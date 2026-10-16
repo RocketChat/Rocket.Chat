@@ -6,6 +6,7 @@ import * as React from 'react';
 import { Children, forwardRef, isValidElement } from 'react';
 
 import * as stories from './DiscussionsList.stories';
+import { expectListSemantics, listWrapper } from '../../../../../tests/mocks/utils/listContract';
 
 jest.mock('../../../../lib/rooms/roomCoordinator', () => ({
 	roomCoordinator: {
@@ -120,4 +121,10 @@ test.each(testCases)('%s should have no a11y violations', async (_storyname, Sto
 
 	const results = await axe(container);
 	expect(results).toHaveNoViolations();
+});
+
+it('follows the semantics of a list of rows', async () => {
+	render(<composed.Default />, { wrapper: listWrapper() });
+
+	await expectListSemantics('Discussions');
 });

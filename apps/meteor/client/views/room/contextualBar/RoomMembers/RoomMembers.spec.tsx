@@ -3,6 +3,7 @@ import { render } from '@testing-library/react';
 import { axe } from 'jest-axe';
 
 import * as stories from './RoomMembers.stories';
+import { expectListSemantics, listWrapper } from '../../../../../tests/mocks/utils/listContract';
 
 jest.mock('../../hooks/useUserInfoActions', () => ({
 	useUserInfoActions: jest.fn(),
@@ -20,4 +21,11 @@ test.each(testCases)('%s should have no a11y violations', async (_storyname, Sto
 	// Disable 'nested-interactive' rule because our `Select` component is still not a11y compliant
 	const results = await axe(container, { rules: { 'nested-interactive': { enabled: false } } });
 	expect(results).toHaveNoViolations();
+});
+
+it('follows the semantics of a list of rows', async () => {
+	const { Default } = composeStories(stories);
+	render(<Default />, { wrapper: listWrapper() });
+
+	await expectListSemantics('Members');
 });
