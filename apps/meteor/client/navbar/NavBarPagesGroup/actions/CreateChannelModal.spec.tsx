@@ -1,5 +1,5 @@
 import { mockAppRoot } from '@rocket.chat/mock-providers';
-import { render, screen, waitFor } from '@testing-library/react';
+import { render, screen, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 
 import CreateChannelModal from './CreateChannelModal';
@@ -13,6 +13,19 @@ const goToAttributesStep = async () => {
 	await userEvent.type(await screen.findByRole('textbox', { name: 'Name' }), 'restricted');
 	await userEvent.click(screen.getByRole('button', { name: 'Next' }));
 	expect(await screen.findByText('ABAC_Room_Attributes')).toBeInTheDocument();
+};
+
+const selectAttributeValue = async (value: string) => {
+	const comboboxes = screen.getAllByRole('combobox');
+	await userEvent.click(comboboxes[comboboxes.length - 1]);
+
+	const listboxes = await screen.findAllByRole('listbox', { hidden: true });
+	const option = listboxes.map((element) => within(element).queryByText(value)).find(Boolean);
+	if (!option) {
+		throw new Error(`Could not find the option ${value}`);
+	}
+
+	await userEvent.click(option);
 };
 
 describe('CreateChannelModal', () => {
@@ -67,6 +80,33 @@ describe('CreateChannelModal', () => {
 			expect(screen.getByText('Step 2 of 4')).toBeInTheDocument();
 		});
 
+		it('should walk the four steps and create the private channel with its attributes', async () => {
+			const createGroup = jest.fn(() => ({ group: { _id: 'group-room' } }));
+			const createChannel = jest.fn(() => ({ channel: { _id: 'channel-room' } }));
+			render(<CreateChannelModalWithData onClose={() => null} />, {
+				wrapper: abacRoot({ requiredAttributes: ['dept'], createGroup, createChannel }),
+			});
+
+			await userEvent.click(await screen.findByLabelText('ABAC_Managed'));
+			await goToAttributesStep();
+
+			await selectAttributeValue('eng');
+			await userEvent.click(screen.getByRole('button', { name: 'Next' }));
+			expect(await screen.findByText('Step 3 of 4')).toBeInTheDocument();
+
+			await userEvent.click(screen.getByRole('button', { name: 'Next' }));
+			expect(await screen.findByText('Step 4 of 4')).toBeInTheDocument();
+
+			const create = await screen.findByRole('button', { name: 'Create' });
+			await waitFor(() => expect(create).toBeEnabled());
+			await userEvent.click(create);
+
+			await waitFor(() =>
+				expect(createGroup).toHaveBeenCalledWith(expect.objectContaining({ name: 'restricted', abacAttributes: { dept: ['eng'] } })),
+			);
+			expect(createChannel).not.toHaveBeenCalled();
+		});
+
 		it('should lock ABAC-managed on under enforcement and say why', async () => {
 			render(<CreateChannelModalWithData onClose={() => null} />, { wrapper: abacRoot({ enforced: true }) });
 
@@ -102,6 +142,7 @@ describe('CreateChannelModal', () => {
 
 			expect(await screen.findByText('ABAC_Room_Creation_Not_Allowed')).toBeInTheDocument();
 			expect(screen.getByRole('button', { name: 'Next' })).toBeDisabled();
+			expect(screen.getByText('Step 1 of 2')).toBeInTheDocument();
 		});
 
 		it('should release ABAC-managed and Private for a federated room under enforcement, and take them back when Federated is off', async () => {

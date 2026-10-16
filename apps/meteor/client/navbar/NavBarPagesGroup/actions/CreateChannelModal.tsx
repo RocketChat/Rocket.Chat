@@ -1,16 +1,5 @@
 import type { IAbacAttributeDefinition, IRoom } from '@rocket.chat/core-typings';
-import {
-	Box,
-	Modal,
-	Icon,
-	Accordion,
-	AccordionItem,
-	Callout,
-	ModalHeader,
-	ModalTitle,
-	ModalClose,
-	ModalContent,
-} from '@rocket.chat/fuselage';
+import { Box, Modal, Icon, Callout, ModalHeader, ModalTitle, ModalClose } from '@rocket.chat/fuselage';
 import { TextInput, Field, ToggleSwitch, FieldGroup, FieldLabel, FieldRow, FieldError, FieldHint } from '@rocket.chat/fuselage-forms';
 import type { TranslationKey } from '@rocket.chat/ui-contexts';
 import {
@@ -26,15 +15,13 @@ import { useId, useEffect, useMemo } from 'react';
 import { useForm, Controller, FormProvider } from 'react-hook-form';
 
 import { useEncryptedRoomDescription } from './useEncryptedRoomDescription';
-import AbacMembershipPreview from '../../../components/ABAC/AbacMembershipPreview/AbacMembershipPreview';
 import type { AbacRoomCreation } from '../../../components/ABAC/AbacRoomCreation';
 import {
-	AbacAttributesStep,
 	AbacManagedField,
-	CreateRoomStepsFooter,
+	CreateRoomSteps,
+	getInitialAbacAttributes,
 	isAbacCreationBlocked,
 	useAbacCreationFlow,
-	useCreateRoomSteps,
 } from '../../../components/ABAC/AbacRoomCreation';
 import UserAutoCompleteMultiple from '../../../components/UserAutoCompleteMultiple';
 import { useCreateChannelTypePermission } from '../../../hooks/useCreateChannelTypePermission';
@@ -88,13 +75,7 @@ const getNameIcon = (isAbacManaged: boolean, isPrivate: boolean): ComponentProps
 	return isPrivate ? 'hashtag-lock' : 'hashtag';
 };
 
-const getCreationBlockedKey = (canUseFederation: boolean): TranslationKey =>
-	canUseFederation ? 'ABAC_Room_Creation_Federated_Only' : 'ABAC_Room_Creation_Not_Allowed';
-
 const hasExternalMembers = (members: string[]): boolean => members.some((member) => member.startsWith('@'));
-
-const initialAttributes = (abac?: AbacRoomCreation): IAbacAttributeDefinition[] =>
-	abac?.requiredAttributes.length ? abac.requiredAttributes.map((key) => ({ key, values: [] })) : [{ key: '', values: [] }];
 
 const CreateChannelModal = ({ teamId = '', mainRoom, onClose, reload, onSuccess, abac }: CreateChannelModalProps) => {
 	const t = useTranslation();
@@ -135,7 +116,7 @@ const CreateChannelModal = ({ teamId = '', mainRoom, onClose, reload, onSuccess,
 			broadcast: false,
 			federated: false,
 			isAbacManaged: Boolean(abac?.enforced),
-			attributes: initialAttributes(abac),
+			attributes: getInitialAbacAttributes(abac),
 		},
 	});
 
@@ -150,8 +131,7 @@ const CreateChannelModal = ({ teamId = '', mainRoom, onClose, reload, onSuccess,
 	const { isPrivate, broadcast, readOnly, federated, encrypted, isAbacManaged, members, attributes } = watch();
 
 	const creationBlocked = isAbacCreationBlocked(abac, canCreatePrivate, federated);
-	const { step, index, total, isLast, next, back } = useCreateRoomSteps(Boolean(abac), isAbacManaged);
-	const abacFlow = useAbacCreationFlow({ abac, isAbacManaged, step, members, attributes });
+	const abacFlow = useAbacCreationFlow({ abac, isAbacManaged, members, attributes });
 
 	useEffect(() => {
 		if (isAbacManaged) {
@@ -250,17 +230,7 @@ const CreateChannelModal = ({ teamId = '', mainRoom, onClose, reload, onSuccess,
 		}
 	};
 
-	const handleStepSubmit = handleSubmit(async (data) => {
-		if (isLast) {
-			return handleCreateChannel(data);
-		}
-
-		if (step === 'attributes' && !(await abacFlow.confirmAttributes())) {
-			return;
-		}
-
-		next();
-	});
+	const handleStepSubmit = handleSubmit((data) => abacFlow.submitStep(() => handleCreateChannel(data)));
 
 	const e2eDisabled = useMemo<boolean>(
 		() => !isPrivate || Boolean(!e2eEnabled) || federated || (e2eEnforcedForPrivate && isPrivate),
@@ -339,12 +309,18 @@ const CreateChannelModal = ({ teamId = '', mainRoom, onClose, reload, onSuccess,
 					<ModalTitle id={`${createChannelFormId}-title`}>{t('Create_channel')}</ModalTitle>
 					<ModalClose tabIndex={-1} title={t('Close')} onClick={onClose} />
 				</ModalHeader>
-				<ModalContent marginBlockEnd={2}>
-					{step === 'details' && (
+				<CreateRoomSteps
+					abac={abac}
+					flow={abacFlow}
+					security={securityFields}
+					onCancel={onClose}
+					submitDisabled={creationBlocked}
+					isSubmitting={isSubmitting}
+					details={
 						<>
 							{creationBlocked && (
 								<Callout type='danger' marginBlockEnd={16}>
-									{t(getCreationBlockedKey(canUseFederation))}
+									{t(canUseFederation ? 'ABAC_Room_Creation_Federated_Only' : 'ABAC_Room_Creation_Not_Allowed')}
 								</Callout>
 							)}
 							<FieldGroup marginBlockEnd={24}>
@@ -411,39 +387,8 @@ const CreateChannelModal = ({ teamId = '', mainRoom, onClose, reload, onSuccess,
 									<FieldHint>{isPrivate ? t('People_can_only_join_by_being_invited') : t('Anyone_can_access')}</FieldHint>
 								</Field>
 							</FieldGroup>
-							{total === 1 && (
-								<Accordion>
-									<AccordionItem title={t('Advanced_settings')}>{securityFields}</AccordionItem>
-								</Accordion>
-							)}
 						</>
-					)}
-					{step === 'attributes' && (
-						<AbacAttributesStep
-							requiredKeys={abac?.requiredAttributes ?? []}
-							assignable={abacFlow.assignable.data}
-							isPending={abacFlow.assignable.isPending}
-							error={abacFlow.assignable.error}
-							assignabilityError={abacFlow.assignabilityError}
-						/>
-					)}
-					{step === 'security' && securityFields}
-					{step === 'preview' && (
-						<AbacMembershipPreview
-							data={abacFlow.preview.data}
-							isPending={abacFlow.preview.isPending}
-							isError={abacFlow.preview.isError}
-							error={abacFlow.preview.error}
-						/>
-					)}
-				</ModalContent>
-				<CreateRoomStepsFooter
-					index={index}
-					total={total}
-					onCancel={onClose}
-					onBack={back}
-					submitDisabled={creationBlocked || abacFlow.isStepBlocked}
-					isSubmitting={total > 1 && isSubmitting}
+					}
 				/>
 			</Modal>
 		</FormProvider>

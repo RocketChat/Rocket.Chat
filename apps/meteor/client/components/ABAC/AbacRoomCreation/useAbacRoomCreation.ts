@@ -1,12 +1,30 @@
-import { usePermission, useSetting } from '@rocket.chat/ui-contexts';
+import type { Serialized } from '@rocket.chat/core-typings';
+import type { OperationResult } from '@rocket.chat/rest-typings';
+import { useEndpoint, usePermission, useSetting } from '@rocket.chat/ui-contexts';
+import { useQuery } from '@tanstack/react-query';
 
-import { useAssignableAttributes } from './useAssignableAttributeList';
 import { useHasLicenseModule } from '../../../hooks/useHasLicenseModule';
+import { ABACQueryKeys } from '../../../lib/queryKeys';
 
 export type AbacRoomCreation = {
 	enforced: boolean;
 	requiredAttributes: string[];
 	canCreateManaged: boolean;
+};
+
+type AssignableAttributes = Serialized<OperationResult<'GET', '/v1/abac/attributes.listAssignable'>>;
+
+export const useAssignableAttributes = <TData = AssignableAttributes>(enabled: boolean, select?: (data: AssignableAttributes) => TData) => {
+	const getAssignableAttributes = useEndpoint('GET', '/v1/abac/attributes.listAssignable');
+
+	return useQuery({
+		queryKey: ABACQueryKeys.assignableAttributes(),
+		queryFn: () => getAssignableAttributes(),
+		enabled,
+		select,
+		staleTime: 15_000,
+		refetchOnWindowFocus: false,
+	});
 };
 
 export const isAbacCreationBlocked = (abac: AbacRoomCreation | undefined, canCreatePrivate: boolean, federated = false): boolean =>

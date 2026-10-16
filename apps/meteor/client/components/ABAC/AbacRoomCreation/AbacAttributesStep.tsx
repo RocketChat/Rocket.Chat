@@ -9,7 +9,7 @@ import AbacErrorCallout from '../AbacErrorCallout';
 
 const MAX_ATTRIBUTES = 10;
 
-export type AbacAttributesFormData = {
+type AbacAttributesFormData = {
 	attributes: IAbacAttributeDefinition[];
 };
 
