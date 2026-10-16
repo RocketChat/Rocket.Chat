@@ -5,6 +5,8 @@ import type { IUser } from '@rocket.chat/apps-engine/definition/users';
 import { api } from '@rocket.chat/core-services';
 import type * as UiKit from '@rocket.chat/ui-kit';
 
+import { recordInteractionView } from '../../../lib/uikit/recordedViews';
+
 export class UiInteractionBridge extends AppsEngineUiInteractionBridge {
 	constructor(private readonly orch: IAppServerOrchestrator) {
 		super();
@@ -18,6 +20,8 @@ export class UiInteractionBridge extends AppsEngineUiInteractionBridge {
 		if (!app) {
 			throw new Error('Invalid app provided');
 		}
+
+		await recordInteractionView(interaction, appId, user.id);
 
 		void api.broadcast('notify.uiInteraction', user.id, interaction as UiKit.ServerInteraction);
 	}
