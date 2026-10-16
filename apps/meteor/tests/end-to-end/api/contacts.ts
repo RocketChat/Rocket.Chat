@@ -98,7 +98,7 @@ describe('[Contacts]', () => {
 				expect(res.body.contact).to.not.have.property('uid');
 			});
 
-			it('should key a number carrying its own country code, and leave a national one without a key', async () => {
+			it('should ignore the configured region, which only keys the numbers Exchange syncs', async () => {
 				const res = await request
 					.post(api('contacts.create'))
 					.set(credentials)
