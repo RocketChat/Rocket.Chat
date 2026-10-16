@@ -172,4 +172,11 @@ export const Audit = {
 	attributeStoreSwitched: async (from: AbacAttributeStoreType, to: AbacAttributeStoreType, roomsAffected: number) => {
 		return audit('abac.attribute.store.switched', { from, to, reason: 'attribute-store-switch', roomsAffected }, { type: 'system' });
 	},
+	membershipEvaluated: async (attributes: IAbacAttributeDefinition[], subjects: MinimalUser[], actor: AbacActor) => {
+		return audit(
+			'abac.membership.evaluated',
+			{ reason: 'api', attributes, subjects },
+			{ type: 'user', _id: actor._id, username: actor.username!, ip: '0.0.0.0', useragent: '' },
+		);
+	},
 };

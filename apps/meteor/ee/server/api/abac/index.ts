@@ -447,6 +447,7 @@ const abacEndpoints = API.v1
 							'abac.object.attributes.removed',
 							'abac.action.performed',
 							'abac.attribute.store.switched',
+							'abac.membership.evaluated',
 						],
 					},
 				},
@@ -467,6 +468,7 @@ const abacEndpoints = API.v1
 					| IServerEvents['abac.object.attribute.changed']
 					| IServerEvents['abac.object.attributes.removed']
 					| IServerEvents['abac.attribute.store.switched']
+					| IServerEvents['abac.membership.evaluated']
 				)[],
 				count: events.length,
 				offset,
@@ -558,6 +560,10 @@ const abacEndpoints = API.v1
 			authRequired: true,
 			permissionsRequired: ['create-abac-managed-room'],
 			license: ['abac'],
+			rateLimiterOptions: {
+				numRequestsAllowed: 10,
+				intervalTimeInMS: 60000,
+			},
 			body: POSTAbacMembershipPreviewBodySchema,
 			response: {
 				200: POSTAbacMembershipPreviewResponseSchema,

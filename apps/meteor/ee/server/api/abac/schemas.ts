@@ -282,6 +282,7 @@ export const GETAbacAuditEventsResponseSchema = ajv.compile<{
 		| IServerEvents['abac.object.attribute.changed']
 		| IServerEvents['abac.object.attributes.removed']
 		| IServerEvents['abac.attribute.store.switched']
+		| IServerEvents['abac.membership.evaluated']
 	)[];
 	count: number;
 	offset: number;

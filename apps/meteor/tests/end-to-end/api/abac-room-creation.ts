@@ -69,6 +69,19 @@ import { IS_EE, URL_MONGODB } from '../../e2e/config/constants';
 			.map(({ u }) => u.username)
 			.toArray();
 
+	type AuditEvent = { t: string; actor?: { username?: string }; data: Array<{ key: string; value: any }> };
+
+	const waitForAuditEntry = async (matches: (event: AuditEvent) => boolean): Promise<AuditEvent | undefined> => {
+		for (let attempt = 0; attempt < 10; attempt++) {
+			await sleep(200);
+			const audit = await request.get(`${v1}/abac/audit`).set(credentials).query({ count: 100 }).expect(200);
+			const entry = (audit.body.events as AuditEvent[]).find(matches);
+			if (entry) {
+				return entry;
+			}
+		}
+	};
+
 	before((done) => getCredentials(done));
 
 	before(async function () {
@@ -263,21 +276,12 @@ import { IS_EE, URL_MONGODB } from '../../e2e/config/constants';
 			const roomId = res.body.group._id;
 			track(roomId);
 
-			type AuditEvent = { t: string; data: Array<{ key: string; value: any }> };
-			const findEntry = (events: AuditEvent[]) =>
-				events.find(
-					(e) =>
-						e.t === 'abac.object.attribute.changed' &&
-						e.data.some(({ key, value }) => key === 'room' && value?._id === roomId) &&
-						e.data.some(({ key, value }) => key === 'change' && value === 'created'),
-				);
-
-			let entry: AuditEvent | undefined;
-			for (let attempt = 0; attempt < 10 && !entry; attempt++) {
-				await sleep(200);
-				const audit = await request.get(`${v1}/abac/audit`).set(credentials).query({ count: 100 }).expect(200);
-				entry = findEntry(audit.body.events);
-			}
+			const entry = await waitForAuditEntry(
+				(e) =>
+					e.t === 'abac.object.attribute.changed' &&
+					e.data.some(({ key, value }) => key === 'room' && value?._id === roomId) &&
+					e.data.some(({ key, value }) => key === 'change' && value === 'created'),
+			);
 
 			expect(entry, 'creation audit entry').to.exist;
 			expect(entry?.data.find(({ key }) => key === 'current')?.value).to.deep.equal([{ key: dept, values: ['eng'] }]);
@@ -643,6 +647,23 @@ import { IS_EE, URL_MONGODB } from '../../e2e/config/constants';
 			expect([...usernamesOf(answer.body.nonCompliant), ...usernamesOf(answer.body.inconclusive)]).to.deep.equal(
 				creation.body.skippedMembers,
 			);
+		});
+
+		it('records who was evaluated against which attributes in the audit log', async () => {
+			await preview({ members: [unattributedUser.username], attributes: { [dept]: ['eng'] } }).expect(200);
+
+			const entry = await waitForAuditEntry(
+				(e) =>
+					e.t === 'abac.membership.evaluated' &&
+					e.actor?.username === creator.username &&
+					e.data.some(({ key, value }) => key === 'subjects' && value?.[0]?.username === unattributedUser.username),
+			);
+
+			expect(entry, 'membership evaluation audit entry').to.exist;
+			expect(entry?.data.find(({ key }) => key === 'attributes')?.value).to.deep.equal([{ key: dept, values: ['eng'] }]);
+			expect(entry?.data.find(({ key }) => key === 'subjects')?.value).to.deep.equal([
+				{ _id: unattributedUser._id, username: unattributedUser.username },
+			]);
 		});
 
 		it('is refused while ABAC is disabled', async () => {

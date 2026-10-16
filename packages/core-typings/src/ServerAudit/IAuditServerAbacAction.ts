@@ -78,6 +78,14 @@ export interface IServerEventAbacAttributeStoreSwitched extends IAuditServerEven
 	t: 'abac.attribute.store.switched';
 }
 
+export interface IServerEventAbacMembershipEvaluated extends IAuditServerEventType<
+	| { key: 'reason'; value: AbacAuditReason }
+	| { key: 'attributes'; value: IAbacAttributeDefinition[] }
+	| { key: 'subjects'; value: MinimalUser[] }
+> {
+	t: 'abac.membership.evaluated';
+}
+
 // Utility type to extract all ABAC-related server event names
 // (ensures that only events prefixed with "abac." are included)
 export type AbacAuditServerEventKey = Extract<keyof IServerEvents, `abac.${string}`>;

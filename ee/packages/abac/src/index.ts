@@ -725,7 +725,8 @@ export class AbacService extends ServiceClass implements IAbacService {
 			Users.findOneById(actor._id, { projection }),
 			Users.findUsersByUsernames(usernames, { projection }).toArray(),
 		]);
-		const subjects = creator ? [creator, ...named.filter(({ _id }) => _id !== creator._id)] : named;
+		const others = named.filter(({ _id }) => _id !== actor._id);
+		const subjects = creator ? [creator, ...others] : others;
 
 		let evaluation: Evaluation | undefined;
 		try {
@@ -738,6 +739,12 @@ export class AbacService extends ServiceClass implements IAbacService {
 		if (!evaluation) {
 			return { allowed: false, reason: 'unavailable', code: AbacErrorCode.PdpUnavailable };
 		}
+
+		void Audit.membershipEvaluated(
+			validation.attributes,
+			others.map(({ _id, username }) => ({ _id, username })),
+			actor,
+		);
 
 		const members = new Map(
 			subjects.filter(({ _id }) => creatorJoins || _id !== actor._id).map(({ _id, username, name }) => [_id, { _id, username, name }]),
