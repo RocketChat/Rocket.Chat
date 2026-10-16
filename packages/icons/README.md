@@ -60,17 +60,7 @@ The characters live in the Unicode Private Use Area, so the font must be loaded 
 
 ### As SVG files
 
-Each icon is also available as a standalone SVG. Inlined in the page, it takes the current text color; loaded through `<img>`, it renders black.
-
-```html
-<img src="node_modules/@rocket.chat/icons/dist/svg/bell.svg" alt="" width="20" height="20" />
-```
-
-With a bundler that resolves asset imports:
-
-```ts
-import bellUrl from '@rocket.chat/icons/dist/svg/bell.svg';
-```
+Each icon is also available as a standalone SVG in `dist/svg/`, drawn with `fill="currentColor"`. Inline its markup in the page so the icon takes the current text color. We don't recommend loading these files through `<img>`: the icon then renders black and cannot follow the surrounding color.
 
 ### As an SVG sprite
 
