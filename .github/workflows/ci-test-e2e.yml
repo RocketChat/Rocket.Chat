@@ -295,7 +295,7 @@ jobs:
 
       - name: Store playwright test trace
         if: inputs.type == 'ui' && always()
-        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
           name: playwright-test-trace-${{ inputs.release }}${{ inputs.fips && '-fips' || '' }}-${{ matrix.mongodb-version }}-${{ matrix.shard }}
           path: ./apps/meteor/tests/e2e/.playwright*
@@ -315,7 +315,7 @@ jobs:
 
       - name: Store coverage
         if: inputs.coverage == matrix.mongodb-version
-        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
           name: coverage-${{ inputs.type }}-${{ matrix.shard }}
           path: /tmp/coverage
