@@ -137,7 +137,10 @@ class ReadReceiptClass {
 		}
 	}
 
-	async getReceipts(message: Pick<IMessage, '_id' | 'receiptsArchived'>): Promise<IReadReceiptWithUser[]> {
+	async getReceipts(
+		message: Pick<IMessage, '_id' | 'receiptsArchived'>,
+		options?: { offset?: number; count?: number },
+	): Promise<IReadReceiptWithUser[]> {
 		// Query hot storage (always)
 		const hotReceipts = await ReadReceipts.findByMessageId(message._id).toArray();
 
@@ -148,7 +151,13 @@ class ReadReceiptClass {
 		}
 
 		// Combine receipts from both storages
-		const receipts = [...new Map([...hotReceipts, ...coldReceipts].map((receipt) => [receipt._id, receipt])).values()];
+		let receipts = [...new Map([...hotReceipts, ...coldReceipts].map((receipt) => [receipt._id, receipt])).values()];
+
+		if (options?.offset !== undefined || options?.count !== undefined) {
+			const offset = options.offset ?? 0;
+			const count = options.count ?? receipts.length;
+			receipts = receipts.slice(offset, offset + count);
+		}
 
 		// get unique receipts user ids
 		const userIds = [...new Set(receipts.map((receipt) => receipt.userId))];
