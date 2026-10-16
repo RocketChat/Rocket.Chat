@@ -19,17 +19,7 @@ const IconButtonElement = ({ block, context }: IconButtonElementProps) => {
 
 	if (url && UiKit.isSafeUrl(url)) {
 		return (
-			<IconButton
-				small
-				is='a'
-				target='_blank'
-				disabled={loading}
-				icon={iconName}
-				href={url}
-				onClick={handleClick}
-				aria-label={label}
-				title={label}
-			/>
+			<IconButton small is='a' target='_blank' disabled={loading} icon={iconName} href={url} onClick={handleClick} aria-label={label} />
 		);
 	}
 
@@ -39,7 +29,6 @@ const IconButtonElement = ({ block, context }: IconButtonElementProps) => {
 			color={variant === 'default' ? 'default' : 'danger'}
 			small
 			aria-label={label}
-			title={label}
 			disabled={loading}
 			value={value}
 			onClick={handleClick}

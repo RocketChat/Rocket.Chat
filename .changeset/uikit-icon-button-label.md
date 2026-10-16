@@ -3,4 +3,4 @@
 '@rocket.chat/meteor': patch
 ---
 
-Fixes UiKit `icon_button` elements having no accessible name or tooltip: their `label` now names the button for screen readers and shows on hover.
+Fixes UiKit `icon_button` elements having no accessible name: their `label` now names the button for screen readers.
