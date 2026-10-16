@@ -1,6 +1,12 @@
 import type { RocketChatAssociationModel } from '../metadata';
 import type { AppVideoConference } from '../videoConferences';
 
+/**
+ * Builds a video conference before it is opened.
+ *
+ * Get one from `IModifyCreator.startVideoConference`; the conference exists
+ * once `IModifyCreator.finish` is called with it.
+ */
 export interface IVideoConferenceBuilder {
 	kind: RocketChatAssociationModel.VIDEO_CONFERENCE;
 

@@ -6,32 +6,48 @@ import type { VideoConference } from '../videoConferences/IVideoConference';
 import type { IVideoConferenceUser } from '../videoConferences/IVideoConferenceUser';
 
 /**
- * Represents a video conference provider
+ * A video conference service an App makes available to the workspace.
+ *
+ * Register one from `IVideoConfProvidersExtend.provideVideoConfProvider`. The
+ * two required methods turn a conference into a URL; everything else lets the
+ * provider follow along and react.
  */
 export interface IVideoConfProvider {
+	/** The provider's name, which administrators pick it by. */
 	name: string;
 
+	/**
+	 * What the provider lets Rocket.Chat control.
+	 *
+	 * Rocket.Chat hides the corresponding UI for anything left out, so declare
+	 * only what `customizeUrl` and `generateUrl` actually honour.
+	 */
 	capabilities?: {
-		// Indicates if Rocket.Chat can determine if the user's microphone will start muted or not
+		/** Rocket.Chat can decide whether the user's microphone starts muted. */
 		mic?: boolean;
-		// Indicates if Rocket.Chat can determine if the user's camera will start turned on or not
+		/** Rocket.Chat can decide whether the user's camera starts on. */
 		cam?: boolean;
-		// Indicates if Rocket.Chat can send a custom title for the video conferences
+		/** Rocket.Chat can set a custom title on a conference. */
 		title?: boolean;
-		// Indicates if the provider supports Rocket.Chat's Persistent Chat feature on its conferences.
+		/** The provider supports Rocket.Chat's Persistent Chat on its conferences. */
 		persistentChat?: boolean;
 	};
 
-	// Optional function that can be used to determine if the provider is ready to use or still needs to be configured
+	/**
+	 * Reports whether the provider can be used yet.
+	 *
+	 * Return false while a setting the provider needs is still empty:
+	 * Rocket.Chat then keeps it out of the list administrators choose from.
+	 */
 	isFullyConfigured?(read: IRead, modify: IModify, http: IHttp, persis: IPersistence): Promise<boolean>;
 
-	// Optional function to run when a new video conference is created on this provider
+	/** Called after a conference opens on this provider. */
 	onNewVideoConference?(call: VideoConference, read: IRead, modify: IModify, http: IHttp, persis: IPersistence): Promise<void>;
 
-	// Optional function to run when a video conference from this provider is changed by rocket.chat
+	/** Called after Rocket.Chat changes a conference of this provider. */
 	onVideoConferenceChanged?(call: VideoConference, read: IRead, modify: IModify, http: IHttp, persis: IPersistence): Promise<void>;
 
-	// Optional function to run when a new user joins a video conference from this provider
+	/** Called after a user joins a conference of this provider. */
 	onUserJoin?(
 		call: VideoConference,
 		user: IVideoConferenceUser | undefined,
@@ -41,7 +57,11 @@ export interface IVideoConfProvider {
 		persis: IPersistence,
 	): Promise<void>;
 
-	// Optional function to run when the 'info' button of a video conference is clicked - must return blocks for a UiKit modal
+	/**
+	 * Called when a user opens a conference's info panel.
+	 *
+	 * Return the UIKit blocks to render in the modal.
+	 */
 	getVideoConferenceInfo?(
 		call: VideoConference,
 		user: IVideoConferenceUser | undefined,
@@ -52,11 +72,16 @@ export interface IVideoConfProvider {
 	): Promise<Array<IBlock>>;
 
 	/**
-	 * The function which gets called when a new video conference url is requested
+	 * Creates the conference on the external service and returns its URL.
+	 *
+	 * Called once per conference. Everyone who joins starts from this URL.
 	 */
 	generateUrl(call: VideoConfData, read: IRead, modify: IModify, http: IHttp, persis: IPersistence): Promise<string>;
 	/**
-	 * The function which gets called whenever a user join url is requested
+	 * Turns the conference's URL into the one this user should open.
+	 *
+	 * Called every time somebody joins, so this is where a per-user token or the
+	 * requested microphone and camera state belongs.
 	 */
 	customizeUrl(
 		call: VideoConfDataExtended,

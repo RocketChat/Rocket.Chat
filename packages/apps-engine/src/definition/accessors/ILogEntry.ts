@@ -1,3 +1,4 @@
+/** How serious a log entry is, which decides where it is shown. */
 export enum LogMessageSeverity {
 	DEBUG = 'debug',
 	INFORMATION = 'info',

@@ -1,7 +1,8 @@
 import type { INetworkingPermission, IPermission, IReadSettingPermission, IWorkspaceTokenPermission } from '../permissions/IPermission';
 
 /**
- * @description
+ * Every permission an App can ask for, named so that the manifest never has to
+ * spell one out as a string.
  *
  * App Permission naming rules:
  *
@@ -130,8 +131,8 @@ export const AppPermissions = {
 };
 
 /**
- * @description
- * Default permissions for apps
+ * Default permissions for apps.
+ *
  * Used to ensure backward compatibility with apps
  * that were developed before the permission system was introduced.
  */

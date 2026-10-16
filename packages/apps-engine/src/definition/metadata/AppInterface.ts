@@ -1,3 +1,10 @@
+/**
+ * The name of every event handler interface an App can implement.
+ *
+ * An App lists in `IAppInfo.implements` the handlers it wants the host to call,
+ * and in `IAppInfo.essentials` the ones whose failure must abort the action
+ * that triggered them.
+ */
 export enum AppInterface {
 	// Bot
 	IPostMessageSentToBot = 'IPostMessageSentToBot',

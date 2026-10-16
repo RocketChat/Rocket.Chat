@@ -11,7 +11,9 @@ export interface IUserBuilder {
 
 	/**
 	 * Provides a convient way to set the data for the user.
-	 * Note: Providing an "id" field here will be ignored.
+	 *
+	 * > [!NOTE]
+	 * > Providing an `id` field here will be ignored.
 	 *
 	 * @param user the user data to set
 	 */

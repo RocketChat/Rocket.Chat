@@ -10,11 +10,23 @@ import type { IAuthData, IOAuth2Client, IOAuth2ClientOptions } from './IOAuth2';
 import { SettingType } from '../settings';
 import type { IUser } from '../users';
 
+/** How an OAuth2 token is asked for. */
 export enum GrantType {
+	/** Trades a refresh token for a new access token. */
 	RefreshToken = 'refresh_token',
+	/** Trades the code from the authorization redirect for the first token. */
 	AuthorizationCode = 'authorization_code',
 }
 
+/**
+ * Signs a Rocket.Chat user into an outside service over OAuth2, on the App's
+ * behalf.
+ *
+ * Calling `setup` from the App's `extendConfiguration` registers the settings
+ * that hold the client credentials and the endpoint the service redirects
+ * back to. The tokens are kept in the App's own persistence, against the user
+ * they belong to, so an App does not implement the flow itself.
+ */
 export class OAuth2Client implements IOAuth2Client {
 	private defaultContents = {
 		success: `<div style="display: flex;align-items: center;justify-content: center; height: 100%;">\

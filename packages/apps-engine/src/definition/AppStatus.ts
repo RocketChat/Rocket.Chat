@@ -1,3 +1,9 @@
+/**
+ * The point an App has reached in its lifecycle.
+ *
+ * Every value other than the enabled ones means the App is not running:
+ * use {@link AppStatusUtils} instead of comparing against individual members.
+ */
 export enum AppStatus {
 	/** The status is known, aka not been constructed the proper way. */
 	UNKNOWN = 'unknown',
@@ -26,12 +32,19 @@ export enum AppStatus {
 	ERROR_DISABLED = 'error_disabled',
 	/** The App was manually disabled by a user. */
 	MANUALLY_DISABLED = 'manually_disabled',
+	/** The App was disabled because one of its required settings has no valid value. */
 	INVALID_SETTINGS_DISABLED = 'invalid_settings_disabled',
 	/** The App was disabled due to other circumstances. */
 	DISABLED = 'disabled',
 }
 
+/**
+ * Groups the {@link AppStatus} members into the three questions callers actually ask.
+ *
+ * Use the {@link AppStatusUtils} singleton rather than instantiating this class.
+ */
 export class AppStatusUtilsDef {
+	/** Whether the App is running, no matter who enabled it. */
 	public isEnabled(status: AppStatus): boolean {
 		switch (status) {
 			case AppStatus.AUTO_ENABLED:
@@ -42,6 +55,11 @@ export class AppStatusUtilsDef {
 		}
 	}
 
+	/**
+	 * Whether the App has been stopped for a known reason.
+	 *
+	 * A freshly constructed or initialized App is neither enabled nor disabled.
+	 */
 	public isDisabled(status: AppStatus): boolean {
 		switch (status) {
 			case AppStatus.COMPILER_ERROR_DISABLED:
@@ -57,9 +75,11 @@ export class AppStatusUtilsDef {
 		}
 	}
 
+	/** Whether the App was stopped by a failure, as opposed to a user or a license decision. */
 	public isError(status: AppStatus): boolean {
 		return [AppStatus.ERROR_DISABLED, AppStatus.COMPILER_ERROR_DISABLED].includes(status);
 	}
 }
 
+/** The shared {@link AppStatusUtilsDef} instance. */
 export const AppStatusUtils = new AppStatusUtilsDef();

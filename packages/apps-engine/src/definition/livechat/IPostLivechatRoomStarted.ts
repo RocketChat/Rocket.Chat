@@ -9,7 +9,7 @@ export interface IPostLivechatRoomStarted {
 	/**
 	 * Method called *after* a livechat room is started.
 	 *
-	 * @param livechatRoom The livechat room which is started.
+	 * @param room The livechat room which is started.
 	 * @param read An accessor to the environment
 	 * @param http An accessor to the outside world
 	 * @param persis An accessor to the App's persistence

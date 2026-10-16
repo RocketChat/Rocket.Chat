@@ -1,3 +1,9 @@
+/**
+ * What a slash command offers the user before they run it.
+ *
+ * An `ISlashCommand` builds one from what the user has typed so far; picking
+ * an item runs the command's `executePreviewItem`.
+ */
 export interface ISlashCommandPreview {
 	/** The i18n string of the title of the preview. */
 	i18nTitle: string;
@@ -5,6 +11,7 @@ export interface ISlashCommandPreview {
 	items: Array<ISlashCommandPreviewItem>;
 }
 
+/** One choice in an {@link ISlashCommandPreview}. */
 export interface ISlashCommandPreviewItem {
 	/** An internal id value of the preview item. */
 	id: string;
@@ -14,6 +21,7 @@ export interface ISlashCommandPreviewItem {
 	value: string;
 }
 
+/** How a preview item is rendered, and with it what its `value` holds. */
 export enum SlashCommandPreviewItemType {
 	/** Represents image preview. Could be `png`, `gif`, etc. */
 	IMAGE = 'image',

@@ -12,7 +12,9 @@ export interface IRoomBuilder {
 
 	/**
 	 * Provides a convient way to set the data for the room.
-	 * Note: Providing an "id" field here will be ignored.
+	 *
+	 * > [!NOTE]
+	 * > Providing an `id` field here will be ignored.
 	 *
 	 * @param room the room data to set
 	 */
@@ -153,7 +155,10 @@ export interface IRoomBuilder {
 
 	/**
 	 * Adds a custom field to the room.
-	 * Note: This will replace an existing field with the same key should it exist already.
+	 *
+	 * > [!NOTE]
+	 * > A key that already exists is replaced rather than rejected, unlike the
+	 * > custom fields of a message.
 	 *
 	 * @param key the name of the key
 	 * @param value the value of the custom field
@@ -180,7 +185,9 @@ export interface IRoomBuilder {
 
 	/**
 	 * Gets the resulting room that has been built up to the point of calling this method.
-	 * Note: modifying the returned value will have no effect.
+	 *
+	 * > [!NOTE]
+	 * > Modifying the returned value will have no effect.
 	 */
 	getRoom(): IRoom;
 }

@@ -1,6 +1,12 @@
 import type { IMessage } from '../messages';
 import type { IUser } from '../users';
 
+/**
+ * Reports messages to the workspace's moderation queue, and settles reports
+ * already in it.
+ *
+ * It needs the `moderation.write` permission.
+ */
 export interface IModerationModify {
 	/**
 	 * Provides a way for Apps to report a message.

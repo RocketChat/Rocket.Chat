@@ -44,8 +44,11 @@ export interface IExternalComponent {
 	state?: IExternalComponentState;
 }
 
+/** Where Rocket.Chat renders an external component. */
 export enum ExternalComponentLocation {
+	/** In a panel beside the room, which stays open while the user reads. */
 	CONTEXTUAL_BAR = 'CONTEXTUAL_BAR',
 
+	/** In a dialog over the workspace, which the user has to close to carry on. */
 	MODAL = 'MODAL',
 }

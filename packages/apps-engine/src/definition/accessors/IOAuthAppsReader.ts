@@ -1,5 +1,11 @@
 import type { IOAuthApp } from './IOAuthApp';
 
+/**
+ * Reads the OAuth clients an App registered on the workspace.
+ *
+ * An App can only reach the clients it registered. It needs the
+ * `oauth-app.read` permission.
+ */
 export interface IOAuthAppsReader {
 	/**
 	 * Returns the OAuth app info by its id

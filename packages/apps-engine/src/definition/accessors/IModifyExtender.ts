@@ -3,6 +3,13 @@ import type { IMessageExtender } from './IMessageExtender';
 import type { IRoomExtender } from './IRoomExtender';
 import type { IVideoConferenceExtender } from './IVideoConferenceExtend';
 
+/**
+ * Adds to a record without overwriting what another App put there.
+ *
+ * An extender can only append — a second App extending the same message adds
+ * to it rather than replacing the first App's work. Use `IModifyUpdater` when
+ * a value really has to be replaced.
+ */
 export interface IModifyExtender {
 	/**
 	 * Modifies a message in a non-destructive way: Properties can be added to it,
@@ -32,7 +39,9 @@ export interface IModifyExtender {
 
 	/**
 	 * Finishes the extending process, saving the object to the database.
-	 * Note: If there is an issue or error while updating, this will throw an error.
+	 *
+	 * > [!WARNING]
+	 * > This throws when the save fails, so nothing is written silently.
 	 *
 	 * @param extender the extender instance
 	 */

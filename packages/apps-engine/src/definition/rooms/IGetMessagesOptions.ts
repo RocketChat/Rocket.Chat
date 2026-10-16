@@ -1,11 +1,17 @@
 import type { RoomType } from './RoomType';
 
+/** The fields a room's messages can be sorted by. */
 export const GetMessagesSortableFields = ['createdAt'] as const;
 
+/** Which of a room's messages to read, and in what order. */
 export type GetMessagesOptions = {
+	/** How many messages to return at most. */
 	limit: number;
+	/** How many messages to pass over before returning any. */
 	skip: number;
+	/** The order to return the messages in. */
 	sort: Record<(typeof GetMessagesSortableFields)[number], 'asc' | 'desc'>;
+	/** Whether replies inside a thread count, or only the messages in the room itself. */
 	showThreadMessages: boolean;
 };
 
@@ -37,7 +43,10 @@ export type GetRoomsFilters = {
 	teams?: boolean;
 };
 
+/** How much of a room listing to read at a time. */
 export type GetRoomsOptions = {
+	/** How many rooms to return at most. */
 	limit?: number;
+	/** How many rooms to pass over before returning any. */
 	skip?: number;
 };

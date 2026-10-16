@@ -81,6 +81,12 @@ export interface IOAuth2ClientOptions {
 	) => Promise<{ responseContent?: string } | undefined>;
 }
 
+/**
+ * The OAuth2 client an App drives to sign a user into an outside service.
+ *
+ * `OAuth2Client` implements it; an App instantiates that rather than writing
+ * its own.
+ */
 export interface IOAuth2Client {
 	/**
 	 * This method will set all necessary configuration for the client

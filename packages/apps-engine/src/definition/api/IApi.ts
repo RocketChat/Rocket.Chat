@@ -18,6 +18,7 @@ export interface IApi {
 	endpoints: Array<IApiEndpoint>;
 }
 
+/** How hard an App's API is to find from outside the workspace. */
 export enum ApiVisibility {
 	/**
 	 * A public Api has a fixed format for a url. Using it enables an
@@ -43,6 +44,7 @@ export enum ApiVisibility {
 	PRIVATE,
 }
 
+/** What an App's API requires of a caller. */
 export enum ApiSecurity {
 	/**
 	 * No security check will be executed agains the calls made to this URL

@@ -53,6 +53,7 @@ jspm_packages
 /definition
 /server
 /lib
+/docs
 
 .DS_Store
 .idea/

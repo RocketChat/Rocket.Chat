@@ -1,125 +1,177 @@
-## Thoughts While Working (for docs)
-- Apps which don't provide a valid uuid4 id will be assigned one, but this is not recommended and your App should provide an id
-- The language strings are only done on the clients (`TAPi18next.addResourceBundle(lang, projectName, translations);`)
-- The implementer of this should restrict the server setting access and environmental variables. Idea is to allow the implementer to have a default set of restricted ones while letting the admin/owner of the server to restrict it even further or lift the restriction on some more. Simple interface with settings and checkbox to allow/disallow them.  :thinking:
+# @rocket.chat/apps-engine
 
-## What does the Apps-Engine enable you to do?
-The Apps-Engine is Rocket.Chat's _plugin framework_ - it provides the APIs for Rocket.Chat Apps to interact with the host system.
+The public API and type definitions for building Rocket.Chat Apps.
 
-Currently, a Rocket.Chat App can:
-- Listen to message events
-  - before/after sent
-  - before/after updated
-  - before/after deleted
-- Listen to room events
-  - before/after created
-  - before/after deleted
-- Send messages to users and livechat visitors
-- Register new slash commands
-- Register new HTTP endpoints
+A Rocket.Chat App is a TypeScript package that runs inside a Rocket.Chat
+workspace. It listens to what happens there, adds to the interface, and talks to
+services outside. This package is what an App is written against: it declares
+the classes it extends, the interfaces it implements, and the accessors it
+reaches the workspace through.
 
-Some features the Engine allows Apps to use:
-- Key-Value Storage system
-- App specific settings
+The workspace supplies the implementation at runtime, so an App depends on this
+package only to compile.
 
-## Development environment with Rocket.Chat
-When developing new functionalities, you need to integrate the local version of the Apps-Engine with your local version of Rocket.Chat.
+> [!NOTE]
+> Full guides, tutorials and the App submission process live at
+> [developer.rocket.chat](https://developer.rocket.chat/docs/rocketchat-apps-engine).
+> This page is the short version.
 
-First of all, make sure you've installed all required packages and compiled the changes you've made to the Apps-Engine, since that is what Rocket.Chat will execute:
+## Quick start
+
+Install the CLI and scaffold an App:
+
 ```sh
-npm install
-npm run compile
+npm install -g @rocket.chat/apps-cli
+rc-apps create
 ```
 
-Now, you need to setup a local Rocket.Chat server, [so head to the project's README for instructions on getting started](https://github.com/RocketChat/Rocket.Chat#development) (if you haven't already). Make sure to actually clone the repo, since you will probably need to add some code to it in order to make your new functionality work.
+The generated project already depends on this package and contains the two files
+every App needs: an `app.json` manifest and a class extending `App`.
 
-After that, `cd` into Rocket.Chat folder and run:
+```ts
+import { App } from '@rocket.chat/apps-engine/definition/App';
+import type { IAppAccessors, IConfigurationExtend, ILogger } from '@rocket.chat/apps-engine/definition/accessors';
+import type { IAppInfo } from '@rocket.chat/apps-engine/definition/metadata';
+
+export class HelloWorldApp extends App {
+	constructor(info: IAppInfo, logger: ILogger, accessors: IAppAccessors) {
+		super(info, logger, accessors);
+	}
+
+	protected async extendConfiguration(configuration: IConfigurationExtend): Promise<void> {
+		await configuration.slashCommands.provideSlashCommand(new HelloCommand());
+	}
+}
+```
+
+`extendConfiguration` runs once, when the workspace loads the App. Everything the
+App offers — slash commands, settings, HTTP endpoints, UI buttons, scheduled
+jobs — is registered from there.
+
+A slash command implements `ISlashCommand`. The accessors it is handed are how it
+reaches the workspace: `read` to look things up, `modify` to change them, `http`
+to call out, `persis` to store data of its own. Take only the ones you need —
+the example below stops at `modify`.
+
+```ts
+import type { IModify, IRead } from '@rocket.chat/apps-engine/definition/accessors';
+import type { ISlashCommand, SlashCommandContext } from '@rocket.chat/apps-engine/definition/slashcommands';
+
+class HelloCommand implements ISlashCommand {
+	public command = 'hello';
+
+	public i18nParamsExample = '';
+
+	public i18nDescription = 'Says hello back';
+
+	public providesPreview = false;
+
+	public async executor(context: SlashCommandContext, read: IRead, modify: IModify): Promise<void> {
+		const creator = modify.getCreator();
+		const message = creator.startMessage().setRoom(context.getRoom()).setText(`Hello, ${context.getSender().name}!`);
+
+		await creator.finish(message);
+	}
+}
+```
+
+Nothing is written until `finish` is called with the builder, so a message can be
+passed around and changed first.
+
+To install the App on a local workspace:
+
 ```sh
-meteor npm install PATH_TO_APPS_ENGINE
+rc-apps deploy --url http://localhost:3000 --username <admin> --password <password>
 ```
 
-Where `PATH_TO_APPS_ENGINE` is the path to the Apps-Engine repo you've cloned.
+`rc-apps watch` takes the same flags and redeploys on every change, which is the
+loop to work in.
 
-That's it! Now when you start Rocket.Chat with the `meteor` command, it will use your local Apps-Engine instead of the one on NPM :)
+## What an App can do
 
-Whenever you make changes to the engine, run `npm run compile` again - meteor will take care of restarting the server due to the changes.
+Register its own surfaces:
 
-## Troubleshooting
-1. Sometimes, when you update the Apps-Engine code and compile it while Rocket.Chat is running, you might run on errors similar to these:
+- slash commands
+- HTTP endpoints, public or private
+- settings an administrator fills in
+- UI action buttons, modals and contextual bars built from UIKit blocks
+- scheduled jobs
+- video conference and outbound messaging providers
 
+React to what happens in the workspace, by implementing the matching handler
+interface:
+
+- messages sent, updated, deleted, reacted to, pinned, starred or reported
+- rooms created or deleted, and users joining or leaving them
+- users created, updated, deleted, logging in or out
+- Livechat conversations starting, being assigned, transferred or closed
+- media calls, file uploads and outgoing email
+
+A handler named `Post…` runs after the action is final and only observes. One
+named `Pre…` runs before, and the suffix says what it may do. For a given event
+they run in this order:
+
+1. `Pre…Prevent` — decides whether the action happens at all
+2. `Pre…Extend` — adds to the data without overwriting what is there
+3. `Pre…Modify` — changes the data freely
+4. `Post…` — observes the finished action
+
+So: reach for `Extend` when adding an attachment to somebody else's message, and
+`Modify` only when a value really has to be replaced.
+
+Reach outside its own code, through the accessors:
+
+- read and write rooms, messages, users, uploads and Livechat records
+- call external HTTP services
+- store data of its own, keyed to a room, message or user
+- sign a user into an outside service over OAuth2
+
+Every one of these is gated by a permission the App declares in its manifest.
+
+## Versioning
+
+An App declares the Apps-Engine version it needs in its manifest:
+
+```json
+{
+	"requiredApiVersion": "^1.66.0"
+}
 ```
-Unable to resolve some modules:
 
-  "@rocket.chat/apps-engine/definition/AppStatus" in
-/Users/dev/rocket.chat/Rocket.Chat/app/apps/client/admin/helpers.js (web.browser)
+A workspace refuses to install an App whose required version it cannot satisfy,
+so this is the number that decides where the App runs. This package follows
+[semver](https://semver.org): a minor release adds to the API, a major release
+may remove from it.
 
-If you notice problems related to these missing modules, consider running:
+## API reference
 
-  meteor npm install --save @rocket.chat/apps-engine
+The generated TypeDoc reference documents every exported symbol:
+
+```sh
+yarn gen-doc
 ```
 
-Simply restart the meteor process and it should be fixed.
+## Contributing
 
-2. Sometimes when using `meteor npm install PATH_TO_APPS_ENGINE` will cause the following error :-
+The Apps-Engine lives in the
+[Rocket.Chat monorepo](https://github.com/RocketChat/Rocket.Chat) under
+`packages/apps-engine`. See the repository's
+[contributing guide](https://github.com/RocketChat/Rocket.Chat/blob/develop/.github/CONTRIBUTING.md)
+to get a development workspace running.
 
-```
-npm ERR! code ENOENT
-npm ERR! syscall rename
-npm ERR! path PATH_TO_ROCKETCHAT/node_modules/.staging/@rocket.chat/apps-engine-c7135600/node_modules/@babel/code-frame
-npm ERR! dest PATH_TO_ROCKETCHAT/node_modules/.staging/@babel/code-frame-f3697825
-npm ERR! errno -2
-npm ERR! enoent ENOENT: no such file or directory, rename 'PATH_TO_ROCKETCHAT/node_modules/.staging/@rocket.chat/apps-engine-c7135600/node_modules/@babel/code-frame' -> 'PATH_TO_ROCKETCHAT/node_modules/.staging/@babel/code-frame-f3697825'
-npm ERR! enoent This is related to npm not being able to find a file.
-npm ERR! enoent 
-```
-Here `PATH_TO_ROCKETCHAT` is the path to the main rocketchat server repo in your system
-To correct this we reinstall the package once again deleting the previous package
-```
-~/Rocket.Chat$ rm -rf node_modules/@rocket.chat/apps-engine
-~/Rocket.Chat$ cd PATH_TO_APP_ENGINE
-~/Rocket.Chat.Apps-engine$ npm install
-~/Rocket.Chat.Apps-engine$ cd PATH_TO_ROCKETCHAT
-~/Rocket.Chat$ meteor npm install ../Rocket.Chat.Apps-engine
-```
+The engine only declares this API. A host — Rocket.Chat itself — implements it by
+supplying the storage and bridges the definitions expect.
 
-## Implementer Needs to Implement:
-- `src/server/storage/AppStorage`
-- `src/server/storage/AppLogStorage`
-- `src/server/bridges/*`
+## Engage with us
 
-## Testing Framework:
-Makes great usage of TypeScript and decorators: https://github.com/alsatian-test/alsatian/wiki
-* To run the tests do: `npm run unit-tests`
-* To generate the coverage information: `npm run check-coverage`
-* To view the coverage: `npm run view-coverage`
+### Share your story
 
-# Rocket.Chat Apps TypeScript Definitions
+We'd love to hear about [your experience](https://survey.zohopublic.com/zs/e4BUFG)
+and potentially feature it on our
+[Blog](https://rocket.chat/case-studies/?utm_source=github&utm_medium=readme&utm_campaign=community).
 
-## Handlers
-Handlers are essentially "listeners" for different events, except there are various ways to handle an event.
-When something happens there is `pre` and `post` handlers.
-The set of `pre` handlers happens before the event is finalized.
-The set of `post` handlers happens after the event is finalized.
-With that said, the rule of thumb is that if you are going to modify, extend, or change the data backing the event then that should be done in the `pre` handlers. If you are simply wanting to listen for when something happens and not modify anything, then the `post` is the way to go.
+### Subscribe for Updates
 
-The order in which they happen is:
-* Pre**Event**Prevent
-* Pre**Event**Extend
-* Pre**Event**Modify
-* Post**Event**
-
-Here is an explanation of what each of them means:
-* **Prevent**: This is ran to determine whether the event should be prevented or not.
-* **Extend**: This is ran to allow extending the data without being destructive of the data (adding an attachment to a message for example).
-* **Modify**: This is ran and allows for destructive changes to the data (change any and everything).
-* Post**Event**: Is mostly for simple listening and no changes can be made to the data.
-
-## Generating/Updating Documentation
-To update or generate the documentation, please commit your changes first and then in a second commit provide the updated documentation.
-
-# Engage with us
-## Share your story
-We’d love to hear about [your experience](https://survey.zohopublic.com/zs/e4BUFG) and potentially feature it on our [Blog](https://rocket.chat/case-studies/?utm_source=github&utm_medium=readme&utm_campaign=community).
-
-## Subscribe for Updates
-Once a month our marketing team releases an email update with news about product releases, company related topics, events and use cases. [Sign Up!](https://rocket.chat/newsletter/?utm_source=github&utm_medium=readme&utm_campaign=community)
+Once a month our marketing team releases an email update with news about product
+releases, company related topics, events and use cases.
+[Sign Up!](https://rocket.chat/newsletter/?utm_source=github&utm_medium=readme&utm_campaign=community)
