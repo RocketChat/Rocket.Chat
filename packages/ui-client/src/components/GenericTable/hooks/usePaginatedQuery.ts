@@ -39,7 +39,7 @@ export type UsePaginatedQueryResult<TData, TQuery = unknown> = PaginatedQuerySta
 
 type UsePaginatedQueryOptions<TQuery, TData extends { total: number }> = Omit<UseQueryOptions<TData>, 'queryKey' | 'queryFn' | 'select'> & {
 	query: TQuery;
-	getQueryKey: (query: TQuery & QueryPagination) => readonly unknown[];
+	queryKey: readonly unknown[];
 	queryFn: (query: TQuery & QueryPagination) => Promise<TData>;
 	itemsKey: keyof TData;
 };
@@ -62,7 +62,7 @@ const getOffsets = (start: number, itemsPerPage: number, returned: number | unde
 
 export const usePaginatedQuery = <TQuery, TData extends { total: number }>({
 	query,
-	getQueryKey,
+	queryKey,
 	queryFn,
 	itemsKey,
 	...queryOptions
@@ -72,11 +72,11 @@ export const usePaginatedQuery = <TQuery, TData extends { total: number }>({
 	const showingResultsLabel = useShowingResultsLabel();
 	const queryClient = useQueryClient();
 
-	const firstPageKey = hashKey(getQueryKey({ ...query, offset: 0, count: itemsPerPage }));
-	const [pageState, setPageState] = useState({ page: 1, firstPageKey });
-	const page = pageState.firstPageKey === firstPageKey ? pageState.page : 1;
+	const resetKey = hashKey([queryKey, itemsPerPage]);
+	const [pageState, setPageState] = useState({ page: 1, resetKey });
+	const page = pageState.resetKey === resetKey ? pageState.page : 1;
 
-	const setPage = useStableCallback((nextPage: number) => setPageState({ page: nextPage, firstPageKey }));
+	const setPage = useStableCallback((nextPage: number) => setPageState({ page: nextPage, resetKey }));
 
 	const onSetCurrent = useStableCallback((action: SetStateAction<number>) => {
 		const current = typeof action === 'function' ? action((page - 1) * itemsPerPage) : action;
@@ -85,7 +85,7 @@ export const usePaginatedQuery = <TQuery, TData extends { total: number }>({
 
 	const start = (page - 1) * itemsPerPage;
 	const paginatedQuery = { ...query, offset: start, count: itemsPerPage };
-	const firstData = queryClient.getQueryData<TData>(getQueryKey(paginatedQuery));
+	const firstData = queryClient.getQueryData<TData>([...queryKey, { offset: start, count: itemsPerPage }]);
 	const offsets = getOffsets(start, itemsPerPage, firstData && getItems(firstData, itemsKey).length, firstData?.total ?? 0);
 
 	const combine = useCallback(
@@ -119,12 +119,12 @@ export const usePaginatedQuery = <TQuery, TData extends { total: number }>({
 
 	const result = useQueries({
 		queries: offsets.map((offset) => {
-			const chunkQuery = { ...query, offset, count: start + itemsPerPage - offset };
+			const pagination = { offset, count: start + itemsPerPage - offset };
 
 			return {
 				...queryOptions,
-				queryKey: getQueryKey(chunkQuery),
-				queryFn: () => queryFn(chunkQuery),
+				queryKey: [...queryKey, pagination],
+				queryFn: () => queryFn({ ...query, ...pagination }),
 			};
 		}),
 		combine,

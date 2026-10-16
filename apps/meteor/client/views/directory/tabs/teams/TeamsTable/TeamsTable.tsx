@@ -57,7 +57,7 @@ const TeamsTable = () => {
 	const query = useDirectoryQuery({ text }, [sortBy, sortDirection], 'teams');
 	const { data, isFetched, isLoading, isError, refetch, paginationProps } = usePaginatedQuery({
 		query,
-		getQueryKey: (query) => ['getDirectoryData', query],
+		queryKey: ['getDirectoryData', query],
 		queryFn: getDirectoryData,
 		itemsKey: 'result',
 	});

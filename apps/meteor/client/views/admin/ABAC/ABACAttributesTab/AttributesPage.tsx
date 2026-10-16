@@ -44,7 +44,7 @@ const AttributesPage = () => {
 
 	const { data, isLoading, paginationProps } = usePaginatedQuery({
 		query,
-		getQueryKey: (query) => ABACQueryKeys.roomAttributes.list(query),
+		queryKey: ABACQueryKeys.roomAttributes.list(query),
 		queryFn: getAttributes,
 		itemsKey: 'attributes',
 	});

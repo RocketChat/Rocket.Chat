@@ -45,7 +45,7 @@ const ManagersTable = () => {
 	const getManagers = useEndpoint('GET', '/v1/livechat/users/manager');
 	const { data, isLoading, isSuccess, isError, refetch, paginatedQuery, paginationProps } = usePaginatedQuery({
 		query,
-		getQueryKey: omnichannelQueryKeys.managers,
+		queryKey: omnichannelQueryKeys.managers(query),
 		queryFn: getManagers,
 		itemsKey: 'users',
 	});
