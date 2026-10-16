@@ -2,7 +2,6 @@ import type { AbacCreationAttributesResult, AbacRoomMembershipPreviewPage } from
 import type {
 	AbacMembershipGroup,
 	AbacMembershipVerdict,
-	AbacPreviewCursor,
 	AbacRoomPreviewMember,
 	ILDAPEntry,
 	IAbacAttributeDefinition,
@@ -11,9 +10,7 @@ import type {
 	IUser,
 } from '@rocket.chat/core-typings';
 import { AbacAttributes, Rooms, Subscriptions, Users } from '@rocket.chat/models';
-import { escapeRegExp } from '@rocket.chat/tools';
 import mem from 'mem';
-import type { Filter } from 'mongodb';
 
 import {
 	AbacAttributeDefinitionNotFoundError,
@@ -70,19 +67,9 @@ export function verdictsOf(evaluation: Evaluation): (id: string) => AbacMembersh
 	return (id) => verdicts.get(id) ?? 'inconclusive';
 }
 
-const membersAfter = ({ _id, username }: AbacPreviewCursor): Filter<IUser> =>
-	typeof username === 'string'
-		? { $or: [{ username: { $gt: username } }, { username, _id: { $gt: _id } }] }
-		: { $or: [{ username: { $type: 'string' } }, { username: { $not: { $type: 'string' } }, _id: { $gt: _id } }] };
-
-const toPreviewCursor = ({ _id, username }: AbacPreviewCursor): AbacPreviewCursor => ({
-	_id,
-	...(typeof username === 'string' && { username }),
-});
-
 export type PreviewSubject = Pick<IUser, '_id' | 'username' | 'name' | 'emails'>;
 
-export const PREVIEW_READ_OPTIONS = { projection: { _id: 1, username: 1, name: 1, emails: 1 }, sort: { username: 1, _id: 1 } } as const;
+export const PREVIEW_READ_OPTIONS = { projection: { _id: 1, username: 1, name: 1, emails: 1 } } as const;
 
 export const isInGroup = (group: AbacMembershipGroup, verdict: AbacMembershipVerdict): boolean =>
 	(group === 'loses') === (verdict !== 'compliant');
@@ -110,25 +97,19 @@ export async function withRoomRoles(rid: IRoom['_id'], members: AbacRoomPreviewM
 
 export const PREVIEW_SCAN_LIMIT = 1000;
 
-const searchOf = (filter?: string): Filter<IUser>[] => {
-	if (!filter) {
-		return [];
-	}
-	const search = new RegExp(escapeRegExp(filter), 'i');
-	return [{ $or: [{ username: search }, { name: search }] }];
-};
-
 export async function previewRoomMembersInSteps(
-	population: Filter<IUser>,
+	rid: IRoom['_id'],
 	{ filter, after, count, group }: AbacRoomMembershipPreviewPage,
 	verdictsFor: (subjects: PreviewSubject[]) => Promise<(id: string) => AbacMembershipVerdict>,
 	step?: number,
 ): Promise<RoomMembersPreview> {
 	const size = group ? PREVIEW_SCAN_LIMIT : count;
-	const searched = [population, ...searchOf(filter)];
-	const range = after ? [membersAfter(after)] : [];
 
-	const read = await Users.find<PreviewSubject>({ $and: [...searched, ...range] }, { ...PREVIEW_READ_OPTIONS, limit: size + 1 }).toArray();
+	const read = await Users.findActiveByRoomIdAfterUsername<PreviewSubject>(
+		rid,
+		{ search: filter, after, limit: size + 1 },
+		PREVIEW_READ_OPTIONS,
+	).toArray();
 	const subjects = read.slice(0, size);
 	const batchSize = step !== undefined && step >= 1 ? step : subjects.length;
 	const members: AbacRoomPreviewMember[] = [];
@@ -142,20 +123,19 @@ export async function previewRoomMembersInSteps(
 	}
 
 	const last = subjects[checked - 1];
-	const next = last && checked < read.length ? toPreviewCursor(last) : undefined;
-	const total = after ? undefined : await Users.countDocuments({ $and: searched });
+	const next = last?.username && checked < read.length ? { _id: last._id, username: last.username } : undefined;
+	const total = after ? undefined : await Users.countActiveByRoomIdAfterUsername(rid, { search: filter });
 
 	return { members, checked, ...(total !== undefined && { total }), ...(next && { next }) };
 }
 
-export async function previewRetainingEveryone(members: Filter<IUser>, page: AbacRoomMembershipPreviewPage): Promise<RoomMembersPreview> {
+export async function previewRetainingEveryone(rid: IRoom['_id'], page: AbacRoomMembershipPreviewPage): Promise<RoomMembersPreview> {
 	if (page.group === 'loses') {
-		const range = page.after ? [membersAfter(page.after)] : [];
-		const remaining = await Users.countDocuments({ $and: [members, ...searchOf(page.filter), ...range] });
+		const remaining = await Users.countActiveByRoomIdAfterUsername(rid, { search: page.filter, after: page.after });
 		return { members: [], checked: remaining, ...(!page.after && { total: remaining }) };
 	}
 
-	return previewRoomMembersInSteps(members, { ...page, group: undefined }, async () => () => 'compliant');
+	return previewRoomMembersInSteps(rid, { ...page, group: undefined }, async () => () => 'compliant');
 }
 
 const filterValuesByOwnership = (

@@ -63,7 +63,7 @@ const mockUsersFind = jest.fn();
 const mockUsersFindUsersByUsernames = jest.fn();
 const mockUsersFindByIds = jest.fn();
 const mockUsersFindOneById = jest.fn();
-const mockUsersFindOne = jest.fn();
+const mockUsersFindOneByIdAndRoomId = jest.fn();
 const mockUsersUpdateOne = jest.fn();
 const mockUsersSetAbacAttributesById = jest.fn();
 const mockUsersUnsetAbacAttributesById = jest.fn();
@@ -116,7 +116,7 @@ jest.mock('@rocket.chat/models', () => ({
 		findUsersByUsernames: (...args: any[]) => mockUsersFindUsersByUsernames(...args),
 		findByIds: (...args: any[]) => mockUsersFindByIds(...args),
 		findOneById: (...args: any[]) => mockUsersFindOneById(...args),
-		findOne: (...args: any[]) => mockUsersFindOne(...args),
+		findOneByIdAndRoomId: (...args: any[]) => mockUsersFindOneByIdAndRoomId(...args),
 		findActiveByRoomIds: (...args: any[]) => mockUsersFindActiveByRoomIds(...args),
 		findUsersByIdentifiers: (...args: any[]) => mockUsersFindUsersByIdentifiers(...args),
 		setAbacAttributesById: (...args: any[]) => mockUsersSetAbacAttributesById(...args),
@@ -2050,7 +2050,7 @@ describe('AbacService (unit)', () => {
 			mockFindOneByIdAndType.mockResolvedValue(room);
 			mockAbacFind.mockReturnValue({ toArray: async () => [{ key: 'dept', values: ['eng', 'sales', 'ops'] }] });
 			mockHasPermission.mockReset().mockResolvedValue(false);
-			mockUsersFindOne.mockReset().mockResolvedValue(null);
+			mockUsersFindOneByIdAndRoomId.mockReset().mockResolvedValue(null);
 			mockSubscriptionsFindByRoomIdAndUserIds.mockReset().mockReturnValue({ toArray: async () => [] });
 		});
 
@@ -2094,7 +2094,7 @@ describe('AbacService (unit)', () => {
 			await previewAs(adding, { after: { _id: 'alice', username: 'alice' } });
 			await previewAs(adding, { filter: 'a' });
 
-			expect(mockUsersFindOne).not.toHaveBeenCalled();
+			expect(mockUsersFindOneByIdAndRoomId).not.toHaveBeenCalled();
 		});
 
 		it('evaluates against nothing when the change adds nothing, as the write evicts nobody', async () => {
@@ -2108,12 +2108,12 @@ describe('AbacService (unit)', () => {
 
 		it("reports the editor's own verdict when they are a member", async () => {
 			const editor = { _id: fakeActor._id, username: 'testuser', name: 'Test', emails: [] };
-			mockUsersFindOne.mockResolvedValue(editor);
+			mockUsersFindOneByIdAndRoomId.mockResolvedValue(editor);
 			const { evaluateSubjectsAgainstAttributes } = usePdp();
 
 			const preview = await previewAs(adding);
 
-			expect(mockUsersFindOne.mock.calls[0][0]).toEqual({ _id: fakeActor._id, __rooms: 'r1' });
+			expect(mockUsersFindOneByIdAndRoomId).toHaveBeenCalledWith(fakeActor._id, 'r1', expect.anything());
 			expect(evaluateSubjectsAgainstAttributes).toHaveBeenCalledWith([editor], required, room);
 			expect(preview.editor).toBe('nonCompliant');
 		});
