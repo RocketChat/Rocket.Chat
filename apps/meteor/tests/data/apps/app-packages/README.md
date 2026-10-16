@@ -700,11 +700,12 @@ export class UiKitRoomTestApp extends App implements IUIKitInteractionHandler {
 
 File name: `uikit-components-test_0.0.1.zip`
 
-An app that renders the UIKit blocks and elements whose options or values come from the server: the user, channel and conversation selects (single and multi), the number, email and URL inputs, the date-time picker, and the header and markdown blocks. It provides a slash command (`open-uikit-components-test`) with three actions:
+An app that renders the UIKit blocks and elements whose options or values come from the server: the user, channel and conversation selects (single and multi), the number, email and URL inputs, the date-time picker, and the header and markdown blocks. It also sends the display blocks: table, video, and context actions with feedback buttons. It provides a slash command (`open-uikit-components-test`) with four actions:
 
 - `modal` - Opens a modal with every element, most of them in input blocks, plus a users select as a section accessory
 - `ctx` - Opens a contextual bar with the same blocks
 - `message` - Sends a message with the header and markdown blocks, and a users select in an actions block
+- `display` - Sends a message with a table, a video, and a `context_actions` block holding feedback buttons and an icon button
 
 It also takes a second argument with a random "seed" used to identify the current execution context. The view id is `<action>-<seed>`.
 
@@ -715,7 +716,7 @@ Each input block has a fixed `blockId` and `actionId`, so a test can read a valu
 - `executeViewSubmitHandler`: `view_submit_id`, and `view_submit_state` (the view state, as JSON)
 - `executeBlockActionHandler`: `block_action_actionId`, `block_action_value` (as JSON), `block_action_room`, `block_action_container`, and `block_action_view` (the container id)
 
-The block literals are cast to `LayoutBlock[]`, because the `@rocket.chat/ui-kit` element types require the `appId` and `blockId` that the engine fills in.
+The block literals are cast to `LayoutBlock[]` through `unknown`, because the `@rocket.chat/ui-kit` element types require the `appId` and `blockId` that the engine fills in.
 
 <details>
 <summary>App source code</summary>
@@ -838,7 +839,55 @@ const viewBlocks = () =>
 				placeholder: { type: 'plain_text', text: 'Accessory user' },
 			},
 		},
-	] as LayoutBlock[];
+	] as unknown as LayoutBlock[];
+
+// Message blocks that only display content, plus the context actions that rate or act on the message.
+const displayBlocks = () =>
+	[
+		{
+			type: 'table',
+			blockId: 'table',
+			column_settings: [null, { align: 'right' }],
+			rows: [
+				[
+					{ type: 'raw_text', text: 'Service' },
+					{ type: 'raw_text', text: 'Uptime' },
+				],
+				[
+					{ type: 'mrkdwn', text: '**API**' },
+					{ type: 'raw_text', text: '99.98%' },
+				],
+			],
+		},
+		{
+			type: 'video',
+			blockId: 'video',
+			video_url: 'https://www.youtube.com/embed/aqz-KE-bpKQ',
+			thumbnail_url: 'https://i.ytimg.com/vi/aqz-KE-bpKQ/hqdefault.jpg',
+			alt_text: 'Big Buck Bunny, an animated short film',
+			title: { type: 'plain_text', text: 'Big Buck Bunny' },
+			provider_name: 'YouTube',
+		},
+		{
+			type: 'context_actions',
+			blockId: 'context_actions',
+			elements: [
+				{
+					type: 'feedback_buttons',
+					actionId: 'feedback',
+					positive_button: { text: { type: 'plain_text', text: 'Good answer' }, value: 'good' },
+					negative_button: { text: { type: 'plain_text', text: 'Bad answer' }, value: 'bad' },
+				},
+				{
+					type: 'icon_button',
+					actionId: 'details',
+					icon: { type: 'icon', icon: 'info', variant: 'default' },
+					label: 'Show details',
+					value: 'details',
+				},
+			],
+		},
+	] as unknown as LayoutBlock[];
 
 const messageBlocks = () =>
 	[
@@ -855,7 +904,7 @@ const messageBlocks = () =>
 				},
 			],
 		},
-	] as LayoutBlock[];
+	] as unknown as LayoutBlock[];
 
 export class UiKitComponentsTestApp extends App implements IUIKitInteractionHandler {
 	constructor(info: IAppInfo, logger: ILogger, accessors: IAppAccessors) {
@@ -924,8 +973,12 @@ export class UiKitComponentsTestApp extends App implements IUIKitInteractionHand
 					);
 				}
 
-				if (action === 'message') {
-					const msg = modify.getCreator().startMessage().setRoom(context.getRoom()).setBlocks(messageBlocks());
+				if (action === 'message' || action === 'display') {
+					const msg = modify
+						.getCreator()
+						.startMessage()
+						.setRoom(context.getRoom())
+						.setBlocks(action === 'message' ? messageBlocks() : displayBlocks());
 
 					await modify.getCreator().finish(msg);
 				}
