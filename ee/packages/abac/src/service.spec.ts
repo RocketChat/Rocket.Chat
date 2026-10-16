@@ -2544,12 +2544,22 @@ describe('AbacService (unit)', () => {
 				await expect(service.evaluateUsersAllowedInRoom(['u1', 'u2'], room)).resolves.toEqual({ allowed: true, userIds: ['u2'] });
 			});
 
-			it('writes no audit, leaving it to the add that follows', async () => {
+			it('writes one audit entry per admitted user', async () => {
+				usePdp({
+					evaluateSubjectsAgainstAttributes: jest.fn().mockResolvedValue({ compliant: ['u2'], nonCompliant: ['u1'], inconclusive: [] }),
+				});
+
+				await service.evaluateUsersAllowedInRoom(['u1', 'u2'], room);
+
+				expect(auditedPairs()).toEqual(['bob@r1']);
+			});
+
+			it('writes no audit when asked not to', async () => {
 				usePdp({
 					evaluateSubjectsAgainstAttributes: jest.fn().mockResolvedValue({ compliant: ['u1', 'u2'], nonCompliant: [], inconclusive: [] }),
 				});
 
-				await service.evaluateUsersAllowedInRoom(['u1', 'u2'], room);
+				await service.evaluateUsersAllowedInRoom(['u1', 'u2'], room, { audit: false });
 
 				expect(mockCreateAuditServerEvents).not.toHaveBeenCalled();
 			});

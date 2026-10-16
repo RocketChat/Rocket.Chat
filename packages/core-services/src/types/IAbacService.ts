@@ -104,6 +104,7 @@ export interface IAbacService {
 	evaluateUsersAllowedInRoom(
 		userIds: string[],
 		room: Pick<IRoom, '_id' | 'name' | 'abacAttributes'>,
+		options?: { audit?: boolean },
 	): Promise<AbacUsersAllowedInRoomResult>;
 	filterRoomsAllowedForUser(
 		userId: string,
