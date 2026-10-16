@@ -275,14 +275,28 @@ import { IS_EE, URL_MONGODB } from '../../e2e/config/constants';
 			expect(offered(res)).to.deep.equal({ key: dept, values: ['eng', 'sales', 'ops'] });
 		});
 
-		it('lists the required attribute keys while enforcement is off too', async () => {
+		it('lists no required attribute keys while enforcement is off', async () => {
 			await setSetting('ABAC_Required_Attributes', [dept]);
+
+			try {
+				const res = await assignable(ownedRoomId).expect(200);
+
+				expect(res.body.requiredKeys).to.deep.equal([]);
+			} finally {
+				await setSetting('ABAC_Required_Attributes', []);
+			}
+		});
+
+		it('lists the required attribute keys while enforcement is on', async () => {
+			await setSetting('ABAC_Required_Attributes', [dept]);
+			await setSetting('ABAC_Enforce_All_Rooms', true);
 
 			try {
 				const res = await assignable(ownedRoomId).expect(200);
 
 				expect(res.body.requiredKeys).to.deep.equal([dept]);
 			} finally {
+				await setSetting('ABAC_Enforce_All_Rooms', false);
 				await setSetting('ABAC_Required_Attributes', []);
 			}
 		});
