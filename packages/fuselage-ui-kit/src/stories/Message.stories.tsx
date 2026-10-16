@@ -146,3 +146,5 @@ export const Table = createStory(payloads.table);
 export const Video = createStory(payloads.video);
 
 export const ContextActions = createStory(payloads.contextActions);
+
+export const ContextActionsWithFeedback = createStory(payloads.contextActionsWithFeedback);

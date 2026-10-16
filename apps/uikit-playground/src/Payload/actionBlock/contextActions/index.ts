@@ -25,3 +25,19 @@ export const contextActions: readonly LayoutBlock[] = [
 		],
 	},
 ];
+
+export const contextActionsWithFeedback: readonly LayoutBlock[] = [
+	{
+		type: 'context_actions',
+		elements: [
+			{
+				type: 'feedback_buttons',
+				appId: 'app-id',
+				blockId: 'block-id',
+				actionId: 'rate-answer',
+				positive_button: { text: { type: 'plain_text', text: 'Good answer' }, value: 'good' },
+				negative_button: { text: { type: 'plain_text', text: 'Bad answer' }, value: 'bad' },
+			},
+		],
+	},
+];

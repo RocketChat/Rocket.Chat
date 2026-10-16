@@ -14,6 +14,7 @@ export type { ConversationsSelectElement } from './blocks/elements/Conversations
 export type { ConversationsSelectFilter } from './blocks/elements/ConversationsSelectFilter';
 export type { DatePickerElement } from './blocks/elements/DatePickerElement';
 export type { DateTimePickerElement } from './blocks/elements/DateTimePickerElement';
+export type { FeedbackButton, FeedbackButtonsElement } from './blocks/elements/FeedbackButtonsElement';
 export type { ImageElement } from './blocks/elements/ImageElement';
 export type { LinearScaleElement } from './blocks/elements/LinearScaleElement';
 export type { MultiStaticSelectElement } from './blocks/elements/MultiStaticSelectElement';

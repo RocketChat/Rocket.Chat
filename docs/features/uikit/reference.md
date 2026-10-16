@@ -61,7 +61,7 @@ Source: [`packages/ui-kit/src/blocks/layout/ContextActionsBlock.ts`](../../../pa
 | Field | Type | Required | Notes |
 | --- | --- | --- | --- |
 | `type` | `'context_actions'` | yes | A compact row of actions about the message it closes, such as copying or reporting it. |
-| `elements` | `readonly IconButtonElement[]` | yes | Each element gets the block's `appId` and `blockId` when it has none. |
+| `elements` | `readonly (FeedbackButtonsElement \| IconButtonElement)[]` | yes | Each element gets the block's `appId` and `blockId` when it has none. |
 | `appId` | `string` | no |  |
 | `blockId` | `string` | no |  |
 
@@ -335,6 +335,21 @@ Source: [`packages/ui-kit/src/blocks/elements/EmailTextInputElement.ts`](../../.
 | `actionId` | `string` | yes |  |
 | `confirm` | `ConfirmationDialog` | no |  |
 | `dispatchActionConfig` | `InputElementDispatchAction[]` | no |  |
+
+### `feedback_buttons`
+
+Source: [`packages/ui-kit/src/blocks/elements/FeedbackButtonsElement.ts`](../../../packages/ui-kit/src/blocks/elements/FeedbackButtonsElement.ts)
+
+| Field | Type | Required | Notes |
+| --- | --- | --- | --- |
+| `type` | `'feedback_buttons'` | yes | A thumbs up and a thumbs down button, to rate the message they close. Only accepted in `context_actions`. |
+| `positive_button` | `FeedbackButton` | yes | `{ text: PlainText; value: string; accessibility_label?: string }`. `text` names the button and shows on hover; `accessibility_label` replaces it for screen readers. |
+| `negative_button` | `FeedbackButton` | yes | Same shape as `positive_button`. |
+| `appId` | `string` | yes |  |
+| `blockId` | `string` | yes |  |
+| `actionId` | `string` | yes |  |
+
+A click sends a `blockAction` whose `value` is the clicked button's `value`, and marks that button as pressed.
 
 ### `icon`
 
