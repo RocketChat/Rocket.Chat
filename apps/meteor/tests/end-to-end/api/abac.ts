@@ -4,6 +4,7 @@ import { expect } from 'chai';
 import { before, after, describe, it } from 'mocha';
 import { MongoClient } from 'mongodb';
 
+import { addAbacAttributesToUserDirectly } from '../../data/abac.helper';
 import { api, getCredentials, request, credentials } from '../../data/api-data';
 import { sleep } from '../../data/livechat/utils';
 import {
@@ -23,25 +24,13 @@ import { adminEmail, adminUsername, password } from '../../data/user';
 import { createUser, deleteUser, login } from '../../data/users.helper';
 import { IS_EE, URL_MONGODB } from '../../e2e/config/constants';
 
-// NOTE: This manipulates the DB directly to add ABAC attributes to a user
-// The idea is to avoid having to go through LDAP to add info to the user
-let connection: MongoClient;
-const addAbacAttributesToUserDirectly = async (userId: string, abacAttributes: IAbacAttributeDefinition[]) => {
-	await connection.db().collection('users').updateOne(
-		{
-			// @ts-expect-error - collection types for _id
-			_id: userId,
-		},
-		{ $set: { abacAttributes } },
-	);
-};
-
 (IS_EE ? describe : describe.skip)('[ABAC] (Enterprise Only)', function () {
 	this.retries(0);
 
 	let testRoom: IRoom;
 	let unauthorizedUser: IUser;
 	let unauthorizedCredentials: Credentials;
+	let connection: MongoClient;
 
 	const initialKey = `attr_${Date.now()}`;
 	const updatedKey = `${initialKey}_renamed`;
@@ -73,11 +62,18 @@ const addAbacAttributesToUserDirectly = async (userId: string, abacAttributes: I
 		await deleteRoom({ type: 'p', roomId: testRoom._id });
 		await deleteUser(unauthorizedUser);
 		await updateSetting('ABAC_Enabled', false);
-
 		await connection.close();
 	});
 
 	const v1 = '/api/v1';
+
+	const clearDefaultFlag = async (roomIds: string[]): Promise<void> => {
+		await Promise.all(
+			roomIds
+				.filter(Boolean)
+				.map((rid) => request.post(`${v1}/rooms.saveRoomSettings`).set(credentials).send({ rid, default: false }).expect(200)),
+		);
+	};
 
 	describe('Permission & Authentication', () => {
 		it('GET /api/v1/abac/attributes should return 401 when not authenticated', async () => {
@@ -208,6 +204,10 @@ const addAbacAttributesToUserDirectly = async (userId: string, abacAttributes: I
 
 				it('GET /abac/pdp/health should return 403', async () => {
 					await request.get(`${v1}/abac/pdp/health`).set(credentials).expect(403);
+				});
+
+				it('GET /abac/attributes.listKeys should return 403', async () => {
+					await request.get(`${v1}/abac/attributes.listKeys`).set(credentials).expect(403);
 				});
 			});
 
@@ -539,8 +539,8 @@ const addAbacAttributesToUserDirectly = async (userId: string, abacAttributes: I
 					.send({ key: auditAttrKey, values: ['v1'] })
 					.expect(200);
 
-				await addAbacAttributesToUserDirectly(auditUser._id, [{ key: auditAttrKey, values: ['v1'] }]);
-				await addAbacAttributesToUserDirectly(credentials['X-User-Id'], [{ key: auditAttrKey, values: ['v1'] }]);
+				await addAbacAttributesToUserDirectly(connection, auditUser._id, [{ key: auditAttrKey, values: ['v1'] }]);
+				await addAbacAttributesToUserDirectly(connection, credentials['X-User-Id'], [{ key: auditAttrKey, values: ['v1'] }]);
 
 				const roomRes = await createRoom({ type: 'p', name: `abac-audit-user-room-${Date.now()}`, members: [auditUser.username!] });
 				auditRoom = roomRes.body.group as IRoom;
@@ -696,7 +696,7 @@ const addAbacAttributesToUserDirectly = async (userId: string, abacAttributes: I
 					.send({ key: key2, values: ['value2'] })
 					.expect(200);
 
-				await addAbacAttributesToUserDirectly(credentials['X-User-Id'], [
+				await addAbacAttributesToUserDirectly(connection, credentials['X-User-Id'], [
 					{ key: key1, values: ['value1'] },
 					{ key: key2, values: ['value2'] },
 				]);
@@ -756,7 +756,7 @@ const addAbacAttributesToUserDirectly = async (userId: string, abacAttributes: I
 		});
 	});
 
-	describe('Default and Team Default Room Restrictions', () => {
+	describe('Default and Team Default Room ABAC Attributes', () => {
 		let privateDefaultRoomId: string;
 		let teamId: string;
 		let teamPrivateRoomId: string;
@@ -766,7 +766,7 @@ const addAbacAttributesToUserDirectly = async (userId: string, abacAttributes: I
 		const teamName = `abac-team-${Date.now()}`;
 		const teamNameMainRoom = `abac-team-main-save-settings-${Date.now()}`;
 
-		before('create team main room for rooms.saveRoomSettings default restriction test', async () => {
+		before('create team main room for the rooms.saveRoomSettings default flag test', async () => {
 			const createTeamMain = await request
 				.post(`${v1}/teams.create`)
 				.set(credentials)
@@ -819,33 +819,7 @@ const addAbacAttributesToUserDirectly = async (userId: string, abacAttributes: I
 			}
 		});
 
-		it('should fail adding ABAC attribute to private default room', async () => {
-			await request
-				.post(`${v1}/abac/rooms/${privateDefaultRoomId}/attributes/${localAbacKey}`)
-				.set(credentials)
-				.send({ values: ['red'] })
-				.expect(400)
-				.expect((res) => {
-					expect(res.body.success).to.be.false;
-					expect(res.body.error).to.include('error-cannot-convert-default-room-to-abac');
-				});
-		});
-
-		it('should fail adding ABAC attribute to team default private room', async () => {
-			await request
-				.post(`${v1}/abac/rooms/${teamDefaultRoomId}/attributes/${localAbacKey}`)
-				.set(credentials)
-				.send({ values: ['red'] })
-				.expect(400)
-				.expect((res) => {
-					expect(res.body.success).to.be.false;
-					expect(res.body.error).to.include('error-cannot-convert-default-room-to-abac');
-				});
-		});
-
-		it('should allow adding ABAC attribute after removing default flag from private room', async () => {
-			await request.post(`${v1}/rooms.saveRoomSettings`).set(credentials).send({ rid: privateDefaultRoomId, default: false }).expect(200);
-
+		it('should allow adding ABAC attribute to private default room', async () => {
 			await request
 				.post(`${v1}/abac/rooms/${privateDefaultRoomId}/attributes/${localAbacKey}`)
 				.set(credentials)
@@ -856,37 +830,18 @@ const addAbacAttributesToUserDirectly = async (userId: string, abacAttributes: I
 				});
 		});
 
-		it('should allow adding ABAC attribute after removing team default flag', async () => {
-			await request
-				.post(`${v1}/teams.updateRoom`)
-				.set(credentials)
-				// TODO: teamId is accepted but never used by the endpoint handler — callers should stop sending it
-				.send({ teamId, roomId: teamDefaultRoomId, isDefault: false })
-				.expect(200);
-
+		it('should allow adding ABAC attribute to team default private room', async () => {
 			await request
 				.post(`${v1}/abac/rooms/${teamDefaultRoomId}/attributes/${localAbacKey}`)
 				.set(credentials)
-				.send({ values: ['green'] })
+				.send({ values: ['red'] })
 				.expect(200)
 				.expect((res) => {
 					expect(res.body.success).to.be.true;
 				});
 		});
 
-		it('should enforce restriction on team main room when default using rooms.saveRoomSettings', async () => {
-			await request
-				.post(`${v1}/abac/rooms/${mainRoomIdSaveSettings}/attributes/${localAbacKey}`)
-				.set(credentials)
-				.send({ values: ['red'] })
-				.expect(400)
-				.expect((res) => {
-					expect(res.body.success).to.be.false;
-					expect(res.body.error).to.include('error-cannot-convert-default-room-to-abac');
-				});
-
-			await request.post(`${v1}/rooms.saveRoomSettings`).set(credentials).send({ rid: mainRoomIdSaveSettings, default: false }).expect(200);
-
+		it('should allow adding ABAC attribute to a team main room that is default', async () => {
 			await request
 				.post(`${v1}/abac/rooms/${mainRoomIdSaveSettings}/attributes/${localAbacKey}`)
 				.set(credentials)
@@ -929,6 +884,8 @@ const addAbacAttributesToUserDirectly = async (userId: string, abacAttributes: I
 		});
 
 		after(async () => {
+			await clearDefaultFlag([privateDefaultRoomId, mainRoomIdSaveSettings]);
+
 			await deleteRoom({ type: 'p', roomId: privateDefaultRoomId });
 			await deleteTeam(credentials, teamName);
 			await deleteTeam(credentials, teamNameMainRoom);
@@ -986,12 +943,15 @@ const addAbacAttributesToUserDirectly = async (userId: string, abacAttributes: I
 		});
 	});
 
-	describe('ABAC Managed Room Default Conversion Restrictions', () => {
+	describe('ABAC Managed Room Default Conversion', () => {
 		const conversionAttrKey = `conversion_test_${Date.now()}`;
 		const teamName = `abac-conversion-team-${Date.now()}`;
 		let abacRoomId: string;
 		let teamIdForConversion: string;
 		let teamRoomId: string;
+		let skippedRoomId: string;
+		let noAttrUser: IUser;
+		let lateNoAttrUser: IUser;
 
 		before('create attribute definition and ABAC-managed private room', async () => {
 			await request
@@ -1033,31 +993,87 @@ const addAbacAttributesToUserDirectly = async (userId: string, abacAttributes: I
 		});
 
 		after(async () => {
+			await clearDefaultFlag([abacRoomId]);
+
+			if (skippedRoomId) {
+				await deleteRoom({ type: 'p', roomId: skippedRoomId });
+			}
+			if (noAttrUser) {
+				await deleteUser(noAttrUser);
+			}
+			if (lateNoAttrUser) {
+				await deleteUser(lateNoAttrUser);
+			}
 			await Promise.all([deleteTeam(credentials, teamName), deleteRoom({ type: 'p', roomId: abacRoomId })]);
 		});
 
-		it('should fail converting ABAC-managed private room into default room', async () => {
+		it('should allow converting ABAC-managed private room into default room', async () => {
 			await request
 				.post(`${v1}/rooms.saveRoomSettings`)
 				.set(credentials)
 				.send({ rid: abacRoomId, default: true })
-				.expect(400)
+				.expect(200)
 				.expect((res) => {
-					expect(res.body.success).to.be.false;
-					expect(res.body.error).to.include('Setting an ABAC managed room as default is not allowed [error-action-not-allowed]');
+					expect(res.body.success).to.be.true;
 				});
 		});
 
-		it('should fail converting ABAC-managed team room into team default room', async () => {
+		it('should allow converting ABAC-managed team room into team default room', async () => {
 			await request
 				.post(`${v1}/teams.updateRoom`)
 				.set(credentials)
 				// TODO: teamId is accepted but never used by the endpoint handler — callers should stop sending it
 				.send({ teamId: teamIdForConversion, roomId: teamRoomId, isDefault: true })
-				.expect(400)
+				.expect(200)
 				.expect((res) => {
-					expect(res.body.success).to.be.false;
-					expect(res.body.error).to.include('error-room-is-abac-managed');
+					expect(res.body.success).to.be.true;
+					expect(res.body.room).to.have.property('teamDefault', true);
+				});
+		});
+
+		it('should skip team members that do not carry the room attributes instead of failing the conversion', async () => {
+			noAttrUser = await createUser();
+
+			await request
+				.post(`${v1}/teams.addMembers`)
+				.set(credentials)
+				.send({ teamId: teamIdForConversion, members: [{ userId: noAttrUser._id, roles: ['member'] }] })
+				.expect(200);
+
+			const skippedRoom = await createRoom({
+				type: 'p',
+				name: `abac-skipped-member-room-${Date.now()}`,
+				extraData: { teamId: teamIdForConversion },
+			});
+			skippedRoomId = skippedRoom.body.group._id;
+
+			await request
+				.post(`${v1}/abac/rooms/${skippedRoomId}/attributes/${conversionAttrKey}`)
+				.set(credentials)
+				.send({ values: ['alpha'] })
+				.expect(200);
+
+			await request
+				.post(`${v1}/teams.updateRoom`)
+				.set(credentials)
+				.send({ roomId: skippedRoomId, isDefault: true })
+				.expect(200)
+				.expect((res) => {
+					expect(res.body.success).to.be.true;
+					expect(res.body.room).to.have.property('teamDefault', true);
+				});
+		});
+
+		it('should add a member to the team even when a team default room refuses them', async () => {
+			lateNoAttrUser = await createUser();
+
+			await request
+				.post(`${v1}/teams.addMembers`)
+				.set(credentials)
+				.send({ teamId: teamIdForConversion, members: [{ userId: lateNoAttrUser._id, roles: ['member'] }] })
+				.expect(200)
+				.expect((res) => {
+					expect(res.body.success).to.be.true;
 				});
 		});
 	});
@@ -1707,7 +1723,7 @@ const addAbacAttributesToUserDirectly = async (userId: string, abacAttributes: I
 						expect(res.body).to.have.property('success', true);
 					});
 
-				await addAbacAttributesToUserDirectly(credentials['X-User-Id'], [{ key: validateAttrKey, values: ['one'] }]);
+				await addAbacAttributesToUserDirectly(connection, credentials['X-User-Id'], [{ key: validateAttrKey, values: ['one'] }]);
 
 				await request
 					.post(`${v1}/abac/rooms/${plainRoomId}/attributes/${validateAttrKey}`)
@@ -1756,7 +1772,7 @@ const addAbacAttributesToUserDirectly = async (userId: string, abacAttributes: I
 						expect(res.body).to.have.property('success', true);
 					});
 
-				await addAbacAttributesToUserDirectly(credentials['X-User-Id'], [{ key: inviteAttrKey, values: ['one'] }]);
+				await addAbacAttributesToUserDirectly(connection, credentials['X-User-Id'], [{ key: inviteAttrKey, values: ['one'] }]);
 
 				await request
 					.post(`${v1}/abac/rooms/${managedRoomId}/attributes/${inviteAttrKey}`)
@@ -1839,7 +1855,7 @@ const addAbacAttributesToUserDirectly = async (userId: string, abacAttributes: I
 				.expect(200);
 
 			// We have to add them directly cause otherwise the abac engine would kick the user from the room after the attribute is added
-			await addAbacAttributesToUserDirectly(credentials['X-User-Id'], [{ key: accessAttrKey, values: ['v1'] }]);
+			await addAbacAttributesToUserDirectly(connection, credentials['X-User-Id'], [{ key: accessAttrKey, values: ['v1'] }]);
 
 			// Create two private rooms: one will stay without attributes, the other will get the attribute
 			roomWithoutAttr = (await createRoom({ type: 'p', name: `abac-access-noattr-${Date.now()}` })).body.group;
@@ -1908,7 +1924,7 @@ const addAbacAttributesToUserDirectly = async (userId: string, abacAttributes: I
 					.send({ key: enabledAccessAttrKey, values: ['v1'] })
 					.expect(200);
 
-				await addAbacAttributesToUserDirectly(credentials['X-User-Id'], [{ key: enabledAccessAttrKey, values: ['v1'] }]);
+				await addAbacAttributesToUserDirectly(connection, credentials['X-User-Id'], [{ key: enabledAccessAttrKey, values: ['v1'] }]);
 
 				managedRoom = (await createRoom({ type: 'p', name: `abac-access-disabled-${Date.now()}` })).body.group;
 
@@ -1931,7 +1947,7 @@ const addAbacAttributesToUserDirectly = async (userId: string, abacAttributes: I
 					.expect(200);
 
 				enabledUser = createUserRes.body.user;
-				await addAbacAttributesToUserDirectly(enabledUser._id, [{ key: enabledAccessAttrKey, values: ['v1'] }]);
+				await addAbacAttributesToUserDirectly(connection, enabledUser._id, [{ key: enabledAccessAttrKey, values: ['v1'] }]);
 
 				await updateSetting('ABAC_Enabled', false);
 			});
@@ -1956,7 +1972,7 @@ const addAbacAttributesToUserDirectly = async (userId: string, abacAttributes: I
 			});
 
 			it('INVITE: should still fail after user loses attributes when ABAC is disabled', async () => {
-				await addAbacAttributesToUserDirectly(enabledUser._id, [{ key: enabledAccessAttrKey, values: [] }]);
+				await addAbacAttributesToUserDirectly(connection, enabledUser._id, [{ key: enabledAccessAttrKey, values: [] }]);
 
 				await request
 					.post(`${v1}/groups.invite`)
@@ -1991,8 +2007,8 @@ const addAbacAttributesToUserDirectly = async (userId: string, abacAttributes: I
 
 			cacheUser = await createUser();
 			cacheUserCreds = await login(cacheUser.username, password);
-			await addAbacAttributesToUserDirectly(cacheUser._id, [{ key: cacheAttrKey, values: ['on'] }]);
-			await addAbacAttributesToUserDirectly(credentials['X-User-Id'], [{ key: cacheAttrKey, values: ['on'] }]);
+			await addAbacAttributesToUserDirectly(connection, cacheUser._id, [{ key: cacheAttrKey, values: ['on'] }]);
+			await addAbacAttributesToUserDirectly(connection, credentials['X-User-Id'], [{ key: cacheAttrKey, values: ['on'] }]);
 
 			await request
 				.post(`${v1}/abac/rooms/${cacheRoom._id}/attributes/${cacheAttrKey}`)
@@ -2034,7 +2050,7 @@ const addAbacAttributesToUserDirectly = async (userId: string, abacAttributes: I
 		});
 
 		it('ACCESS: user retains access within cache after losing attributes', async () => {
-			await addAbacAttributesToUserDirectly(cacheUser._id, []);
+			await addAbacAttributesToUserDirectly(connection, cacheUser._id, []);
 
 			await request
 				.get(`/api/v1/groups.history`)
@@ -2072,7 +2088,7 @@ const addAbacAttributesToUserDirectly = async (userId: string, abacAttributes: I
 		});
 
 		it('ACCESS: user can be re invited to the room and access history', async () => {
-			await addAbacAttributesToUserDirectly(cacheUser._id, [{ key: cacheAttrKey, values: ['on'] }]);
+			await addAbacAttributesToUserDirectly(connection, cacheUser._id, [{ key: cacheAttrKey, values: ['on'] }]);
 			await request
 				.post(`${v1}/groups.invite`)
 				.set(credentials)
@@ -2126,8 +2142,8 @@ const addAbacAttributesToUserDirectly = async (userId: string, abacAttributes: I
 
 			projUser = await createUser();
 			projUserCreds = await login(projUser.username, password);
-			await addAbacAttributesToUserDirectly(projUser._id, [{ key: projAttrKey, values: ['on'] }]);
-			await addAbacAttributesToUserDirectly(credentials['X-User-Id'], [{ key: projAttrKey, values: ['on'] }]);
+			await addAbacAttributesToUserDirectly(connection, projUser._id, [{ key: projAttrKey, values: ['on'] }]);
+			await addAbacAttributesToUserDirectly(connection, credentials['X-User-Id'], [{ key: projAttrKey, values: ['on'] }]);
 
 			await request
 				.post(`${v1}/abac/rooms/${projRoom._id}/attributes/${projAttrKey}`)
@@ -2170,7 +2186,7 @@ const addAbacAttributesToUserDirectly = async (userId: string, abacAttributes: I
 		});
 
 		it('PROJECTION: member that lost its attributes is denied while still subscribed', async () => {
-			await addAbacAttributesToUserDirectly(projUser._id, []);
+			await addAbacAttributesToUserDirectly(connection, projUser._id, []);
 
 			await request
 				.get(`${v1}/groups.messages`)
@@ -2228,7 +2244,7 @@ const addAbacAttributesToUserDirectly = async (userId: string, abacAttributes: I
 				.set(credentials)
 				.send({ key: bannerAttrKey, values: ['TS', 'U'] })
 				.expect(200);
-			await addAbacAttributesToUserDirectly(credentials['X-User-Id'], [{ key: bannerAttrKey, values: ['TS'] }]);
+			await addAbacAttributesToUserDirectly(connection, credentials['X-User-Id'], [{ key: bannerAttrKey, values: ['TS'] }]);
 
 			bannerRoom = (await createRoom({ type: 'p', name: `abac-banner-room-${Date.now()}` })).body.group;
 			plainRoom = (await createRoom({ type: 'p', name: `abac-plain-room-${Date.now()}` })).body.group;
@@ -2404,7 +2420,7 @@ const addAbacAttributesToUserDirectly = async (userId: string, abacAttributes: I
 				.expect(200);
 		});
 
-		it('should NOT list a default private room even if attempt to add attribute fails', async () => {
+		it('should list a default private room that carries attributes', async () => {
 			const defaultRoomId = (await createRoom({ type: 'p', name: `abac-list-default-${Date.now()}` })).body.group._id;
 			await request.post(`${v1}/rooms.saveRoomSettings`).set(credentials).send({ rid: defaultRoomId, default: true }).expect(200);
 			const defKey = `list_def_attr_${Date.now()}`;
@@ -2417,10 +2433,10 @@ const addAbacAttributesToUserDirectly = async (userId: string, abacAttributes: I
 				.post(`${v1}/abac/rooms/${defaultRoomId}/attributes/${defKey}`)
 				.set(credentials)
 				.send({ values: ['one'] })
-				.expect(400);
+				.expect(200);
 			const res = await request.get(`${v1}/abac/rooms`).set(credentials).expect(200);
 			const ids = res.body.rooms.map((r: any) => r._id);
-			expect(ids).to.not.include(defaultRoomId);
+			expect(ids).to.include(defaultRoomId);
 			await request.post(`${v1}/rooms.saveRoomSettings`).set(credentials).send({ rid: defaultRoomId, default: false }).expect(200);
 			await deleteRoom({ type: 'p', roomId: defaultRoomId });
 		});
@@ -2804,9 +2820,9 @@ const addAbacAttributesToUserDirectly = async (userId: string, abacAttributes: I
 				const davidUser = await request.get(`${v1}/users.info`).set(credentials).query({ username: 'david.scott' }).expect(200);
 				const sergeiUser = await request.get(`${v1}/users.info`).set(credentials).query({ username: 'sergei.krikalev' }).expect(200);
 
-				await addAbacAttributesToUserDirectly(davidUser.body.user._id, [{ key: 'department', values: ['navControl'] }]);
-				await addAbacAttributesToUserDirectly(sergeiUser.body.user._id, [{ key: 'department', values: ['navControl'] }]);
-				await addAbacAttributesToUserDirectly(credentials['X-User-Id'], [{ key: 'department', values: ['navControl'] }]);
+				await addAbacAttributesToUserDirectly(connection, davidUser.body.user._id, [{ key: 'department', values: ['navControl'] }]);
+				await addAbacAttributesToUserDirectly(connection, sergeiUser.body.user._id, [{ key: 'department', values: ['navControl'] }]);
+				await addAbacAttributesToUserDirectly(connection, credentials['X-User-Id'], [{ key: 'department', values: ['navControl'] }]);
 
 				await request
 					.post(`${v1}/abac/rooms/${roomIdWithAbac}/attributes/department`)
@@ -3213,12 +3229,70 @@ const addAbacAttributesToUserDirectly = async (userId: string, abacAttributes: I
 			expect(res.body).to.have.property('error', 'not-allowed');
 		});
 	});
+
+	describe('[GET] /abac/attributes.listKeys', () => {
+		const keyPrefix = `keys_${Date.now()}`;
+		const createdKeys = [`${keyPrefix}_zulu`, `${keyPrefix}_alpha`];
+		const createdIds: string[] = [];
+
+		const findAttributeId = async (key: string): Promise<string> => {
+			const res = await request.get(`${v1}/abac/attributes`).set(credentials).query({ key }).expect(200);
+			const found = res.body.attributes.find((attribute: any) => attribute.key === key);
+			expect(found, `attribute ${key} was created but is not listed`).to.exist;
+			return found._id;
+		};
+
+		before(async () => {
+			await updateSetting('ABAC_Enabled', true);
+
+			for (const key of createdKeys) {
+				await request
+					.post(`${v1}/abac/attributes`)
+					.set(credentials)
+					.send({ key, values: ['v1'] })
+					.expect(200);
+				createdIds.push(await findAttributeId(key));
+			}
+		});
+
+		after(async () => {
+			for (const _id of createdIds) {
+				await request.delete(`${v1}/abac/attributes/${_id}`).set(credentials).expect(200);
+			}
+			await updateSetting('ABAC_Enabled', false);
+		});
+
+		it('should return 401 when not authenticated', async () => {
+			await request.get(`${v1}/abac/attributes.listKeys`).expect(401);
+		});
+
+		it('should return every registered key as a { key, label } option', async () => {
+			const res = await request.get(`${v1}/abac/attributes.listKeys`).set(credentials).expect(200);
+
+			expect(res.body).to.have.property('success', true);
+			expect(res.body).to.have.property('data').that.is.an('array');
+
+			const keys = res.body.data.map(({ key }: { key: string }) => key);
+			expect(keys).to.include.members(createdKeys);
+
+			res.body.data.forEach(({ key, label }: { key: string; label: string }) => expect(label).to.equal(key));
+		});
+
+		it('should return the keys sorted', async () => {
+			const res = await request.get(`${v1}/abac/attributes.listKeys`).set(credentials).expect(200);
+
+			const keys: string[] = res.body.data.map(({ key }: { key: string }) => key);
+
+			expect(keys).to.deep.equal([...keys].sort((a, b) => a.localeCompare(b)));
+		});
+	});
 });
 
 (IS_EE ? describe : describe.skip)('[ABAC] External PDP (mock-server)', function () {
 	this.retries(0);
 
 	const attrKey = `ext_pdp_attr_${Date.now()}`;
+	let connection: MongoClient;
 
 	before((done) => {
 		getCredentials(done);
@@ -3264,7 +3338,6 @@ const addAbacAttributesToUserDirectly = async (userId: string, abacAttributes: I
 		await mockServerReset();
 		await updateSetting('ABAC_PDP_Type', 'local');
 		await updateSetting('ABAC_Enabled', false);
-
 		await connection.close();
 	});
 
@@ -3846,7 +3919,7 @@ const addAbacAttributesToUserDirectly = async (userId: string, abacAttributes: I
 
 		before(async () => {
 			userWithAttrs = await createUser({ verified: true });
-			await addAbacAttributesToUserDirectly(userWithAttrs._id, [{ key: attrKey, values: ['alpha'] }]);
+			await addAbacAttributesToUserDirectly(connection, userWithAttrs._id, [{ key: attrKey, values: ['alpha'] }]);
 		});
 
 		after(async () => {
