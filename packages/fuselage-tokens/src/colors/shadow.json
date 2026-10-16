@@ -3,6 +3,7 @@
     "light": {
       "highlight": { "value": "{colors.b200}" },
       "danger": { "value": "{colors.r100}" },
+      "extra-light-error": { "value": "{colors.r200}" },
       "elevation-border": { "value": "{colors.n250}" },
       "elevation-1": { "value": "rgba(47, 52, 61, 0.1)", "type": "color" },
       "elevation-2x": { "value": "rgba(47, 52, 61, 0.08)", "type": "color" },
@@ -11,6 +12,7 @@
     "high-contrast": {
       "highlight": { "value": "{colors.b200}" },
       "danger": { "value": "{colors.r100}" },
+      "extra-light-error": { "value": "{colors.r200}" },
       "elevation-border": { "value": "{colors.n250}" },
       "elevation-1": { "value": "rgba(47, 52, 61, 0.1)", "type": "color" },
       "elevation-2x": { "value": "rgba(47, 52, 61, 0.08)", "type": "color" },
@@ -19,6 +21,7 @@
     "dark": {
       "highlight": { "value": "{colors.b200}" },
       "danger": { "value": "{colors.r100}" },
+      "extra-light-error": { "value": "{colors.r200}" },
       "elevation-border": { "value": "#2F343D", "type": "color" },
       "elevation-1": { "value": "rgba(9, 9, 9, 0.35)", "type": "color" },
       "elevation-2x": { "value": "rgba(9, 9, 9, 0.3)", "type": "color" },
