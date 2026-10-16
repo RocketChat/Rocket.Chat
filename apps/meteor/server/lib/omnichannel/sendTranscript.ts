@@ -29,6 +29,17 @@ const logger = new Logger('Livechat-SendTranscript');
 
 const DOMPurify = createDOMPurify(new JSDOM('').window);
 
+/**
+ * Sends an omnichannel room conversation transcript to a specified email address.
+ *
+ * @param params - Parameters for sending the transcript.
+ * @param params.token - Visitor authentication token.
+ * @param params.rid - Omnichannel room ID.
+ * @param params.email - Target email address for the transcript.
+ * @param params.subject - Optional email subject line.
+ * @param params.user - User requesting the transcript.
+ * @returns Promise resolving to true if sent successfully.
+ */
 export async function sendTranscript({
 	token,
 	rid,
@@ -117,7 +128,7 @@ export async function sendTranscript({
 
 		if (message.attachments && message.attachments?.length > 0) {
 			messageContent = message.attachments[0].description || '';
-			escapeHtml(messageContent);
+			messageContent = escapeHtml(messageContent);
 
 			for await (const attachment of message.attachments) {
 				if (!isFileAttachment(attachment)) {
