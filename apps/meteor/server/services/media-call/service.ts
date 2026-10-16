@@ -30,7 +30,7 @@ import {
 } from './appEvents';
 import { logger } from './logger';
 import { sendVoipPushNotification } from './push/sendVoipPushNotification';
-import { turnServersSchema } from '../../../ee/server/settings/voip';
+import { turnServersSchema } from '../../../ee/server/settings/turnServersSchema';
 import { i18n } from '../../lib/i18n';
 import { sendMessage } from '../../lib/messages/sendMessage';
 import { createDirectMessage } from '../../meteor-methods/messages/createDirectMessage';
