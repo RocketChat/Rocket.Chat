@@ -11,7 +11,7 @@ import { settings } from '../../../settings';
 import { isABACManagedRoom } from '../../authorization/isABACManagedRoom';
 import { i18n } from '../../i18n';
 import { notifyOnSubscriptionChangedByRoomId } from '../../notifyListener';
-import { removeRoomAbacAttributes } from '../removeRoomAbacAttributes';
+import { assertCanRemoveRoomAbacAttributes, removeRoomAbacAttributes } from '../removeRoomAbacAttributes';
 import { roomCoordinator } from '../roomCoordinator';
 
 export const assertAbacRoomStaysPrivate = (room: Pick<IRoom, 't' | 'abacAttributes'>, roomType: IRoom['t']): void => {
@@ -55,6 +55,10 @@ export const saveRoomType = async function (
 	}
 
 	assertAbacRoomStaysPrivate(room, roomType);
+
+	if (isPublicRoom({ t: roomType })) {
+		await assertCanRemoveRoomAbacAttributes(room, user);
+	}
 
 	const result = await Promise.all([Rooms.setTypeById(rid, roomType), Subscriptions.updateTypeByRoomId(rid, roomType)]);
 
