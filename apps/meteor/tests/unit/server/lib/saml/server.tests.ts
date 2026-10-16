@@ -332,6 +332,55 @@ describe('SAML', () => {
 				const inflated = zlib.inflateRawSync(Buffer.from(params.get('SAMLResponse') ?? '', 'base64')).toString();
 				expect(inflated).to.be.equal('logout-response');
 			});
+
+			it('should report compression errors through the callback', async () => {
+				const compressionError = new Error('compression failed');
+				const deflateRaw = sinon.stub().callsFake((_response: string, callback: (error: Error) => void) => callback(compressionError));
+				const { SAMLServiceProvider: FailingSAMLServiceProvider } = proxyquire
+					.noCallThru()
+					.load('../../../../../server/lib/saml/lib/ServiceProvider', {
+						...meteorStub,
+						'node:zlib': { default: { deflateRaw }, __esModule: true },
+					});
+				const failingServiceProvider = new FailingSAMLServiceProvider(serviceProviderOptions);
+
+				await new Promise<void>((resolve, reject) => {
+					failingServiceProvider.logoutResponseToUrl('logout-response', undefined, (err: unknown, url?: string) => {
+						try {
+							expect(err).to.equal(compressionError);
+							expect(url).to.be.undefined;
+							resolve();
+						} catch (error) {
+							reject(error);
+						}
+					});
+				});
+			});
+
+			it('should report errors thrown by the success callback', async () => {
+				const callbackError = new Error('callback failed');
+				let callbackCalls = 0;
+
+				await new Promise<void>((resolve, reject) => {
+					serviceProvider.logoutResponseToUrl('logout-response', undefined, (err: unknown, url?: string) => {
+						callbackCalls += 1;
+
+						if (callbackCalls === 1) {
+							expect(err).to.be.null;
+							expect(url).to.be.a('string');
+							throw callbackError;
+						}
+
+						try {
+							expect(err).to.equal(callbackError);
+							expect(url).to.be.undefined;
+							resolve();
+						} catch (error) {
+							reject(error);
+						}
+					});
+				});
+			});
 		});
 	});
 
