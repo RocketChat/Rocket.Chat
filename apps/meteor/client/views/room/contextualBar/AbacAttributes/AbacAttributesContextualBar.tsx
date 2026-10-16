@@ -4,8 +4,8 @@ import { useMemo } from 'react';
 
 import AbacAttributesInfo from './AbacAttributesInfo';
 import AbacAttributesManage from './AbacAttributesManage';
-import { ABAC_ATTRIBUTES_MANAGE_CONTEXT, ABAC_ATTRIBUTES_TAB } from './abacAttributesTab';
 import { useAssignableAttributes } from '../../../../components/ABAC/AbacRoomCreation';
+import { ABAC_ATTRIBUTES_MANAGE_CONTEXT, ABAC_ATTRIBUTES_TAB } from '../../../../lib/constants';
 import { useRoom } from '../../contexts/RoomContext';
 
 const AbacAttributesContextualBar = () => {
