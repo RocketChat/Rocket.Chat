@@ -26,6 +26,10 @@ import type { Evaluation, IResourceDecision, RoomMembersPreview } from './pdp/ty
 
 export const MAX_ABAC_ATTRIBUTE_KEYS = 10;
 export const MAX_ABAC_ATTRIBUTE_VALUES = 10;
+export const PREVIEW_SCAN_LIMIT = 1000;
+export const PREVIEW_READ_OPTIONS = { projection: { _id: 1, username: 1, name: 1, emails: 1 } } as const;
+
+const MEMBERSHIP_VERDICTS: AbacMembershipVerdict[] = ['compliant', 'nonCompliant', 'inconclusive'];
 
 const isAttributeDefinition = (value: unknown): value is IAbacAttributeDefinition =>
 	typeof value === 'object' &&
@@ -71,16 +75,12 @@ export function verdictOf({ compliant, nonCompliant }: Evaluation, id: string): 
 	return 'inconclusive';
 }
 
-const MEMBERSHIP_VERDICTS: AbacMembershipVerdict[] = ['compliant', 'nonCompliant', 'inconclusive'];
-
 export function verdictsOf(evaluation: Evaluation): (id: string) => AbacMembershipVerdict {
 	const verdicts = new Map(MEMBERSHIP_VERDICTS.flatMap((verdict) => evaluation[verdict].map((id) => [id, verdict] as const)));
 	return (id) => verdicts.get(id) ?? 'inconclusive';
 }
 
 export type PreviewSubject = Pick<IUser, '_id' | 'username' | 'name' | 'emails'>;
-
-export const PREVIEW_READ_OPTIONS = { projection: { _id: 1, username: 1, name: 1, emails: 1 } } as const;
 
 const isInGroup = (group: AbacMembershipGroup, verdict: AbacMembershipVerdict): boolean =>
 	(group === 'loses') === (verdict !== 'compliant');
@@ -102,8 +102,6 @@ export async function withRoomRoles(rid: IRoom['_id'], members: AbacRoomPreviewM
 		return roles ? { ...member, roles } : member;
 	});
 }
-
-export const PREVIEW_SCAN_LIMIT = 1000;
 
 export async function previewRoomMembersInSteps(
 	rid: IRoom['_id'],
