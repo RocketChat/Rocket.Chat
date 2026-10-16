@@ -74,6 +74,7 @@ const NavBarAISearchInput = () => {
 
 	const handleClearText = useStableCallback(() => {
 		handleTextChange('');
+		clearFilters();
 		setFocus('filterText');
 	});
 
