@@ -1,18 +1,27 @@
 import { Box, Modal } from '@rocket.chat/fuselage';
-import type { ComponentProps } from 'react';
-import { useEffect } from 'react';
+import type { ComponentProps, RefObject } from 'react';
+import { useEffect, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 
-const iframeMsgListener = (confirm: (data: any) => void, cancel: () => void) => (e: MessageEvent<any>) => {
-	let data;
-	try {
-		data = JSON.parse(e.data);
-	} catch (e) {
-		return;
-	}
+const iframeMsgListener =
+	(iframeRef: RefObject<HTMLIFrameElement | null>, confirm: (data: any) => void, cancel: () => void) => (e: MessageEvent<any>) => {
+		if (e.source !== iframeRef.current?.contentWindow) {
+			return;
+		}
 
-	data.result ? confirm(data) : cancel();
-};
+		let data;
+		try {
+			data = JSON.parse(e.data);
+		} catch (e) {
+			return;
+		}
+
+		if (data.result) {
+			confirm(data);
+		} else {
+			cancel();
+		}
+	};
 
 export type IframeModalProps = {
 	url: string;
@@ -23,9 +32,10 @@ export type IframeModalProps = {
 
 const IframeModal = ({ url, confirm, cancel, wrapperHeight = 'x360', ...props }: IframeModalProps) => {
 	const { t } = useTranslation();
+	const iframeRef = useRef<HTMLIFrameElement>(null);
 
 	useEffect(() => {
-		const listener = iframeMsgListener(confirm, cancel);
+		const listener = iframeMsgListener(iframeRef, confirm, cancel);
 
 		window.addEventListener('message', listener);
 
@@ -37,7 +47,7 @@ const IframeModal = ({ url, confirm, cancel, wrapperHeight = 'x360', ...props }:
 	return (
 		<Modal height={wrapperHeight} {...props}>
 			<Box padding='x12' width='full' height='full' flexGrow={1} backgroundColor='white' borderRadius='large'>
-				<iframe title={t('Marketplace_apps')} style={{ border: 'none', height: '100%', width: '100%' }} src={url} />
+				<iframe ref={iframeRef} title={t('Marketplace_apps')} style={{ border: 'none', height: '100%', width: '100%' }} src={url} />
 			</Box>
 		</Modal>
 	);
