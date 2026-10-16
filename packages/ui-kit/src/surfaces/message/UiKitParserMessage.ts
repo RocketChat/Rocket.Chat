@@ -15,6 +15,7 @@ export const messageSurfaceLayoutBlockTypes = [
 	'preview',
 	'section',
 	'table',
+	'video',
 	'video_conf',
 ] as const satisfies readonly RenderableLayoutBlock['type'][];
 

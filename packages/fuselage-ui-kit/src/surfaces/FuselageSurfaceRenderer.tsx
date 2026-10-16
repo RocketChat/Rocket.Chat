@@ -13,6 +13,7 @@ import MarkdownBlock from '../blocks/MarkdownBlock';
 import PreviewBlock from '../blocks/PreviewBlock';
 import SectionBlock from '../blocks/SectionBlock';
 import TableBlock from '../blocks/TableBlock';
+import VideoBlock from '../blocks/VideoBlock';
 import { AppIdProvider } from '../contexts/AppIdContext';
 import ButtonElement from '../elements/ButtonElement';
 import ChannelsSelectElement from '../elements/ChannelsSelectElement/ChannelsSelectElement';
@@ -332,6 +333,18 @@ export abstract class FuselageSurfaceRenderer extends UiKit.SurfaceRenderer<Reac
 			return (
 				<AppIdProvider key={index} appId={block.appId}>
 					<TableBlock block={block} context={context} index={index} surfaceRenderer={this} />
+				</AppIdProvider>
+			);
+		}
+
+		return null;
+	}
+
+	video(block: UiKit.VideoBlock, context: UiKit.BlockContext, index: number): ReactElement<any> | null {
+		if (context === UiKit.BlockContext.BLOCK) {
+			return (
+				<AppIdProvider key={index} appId={block.appId}>
+					<VideoBlock block={block} context={context} index={index} surfaceRenderer={this} />
 				</AppIdProvider>
 			);
 		}
