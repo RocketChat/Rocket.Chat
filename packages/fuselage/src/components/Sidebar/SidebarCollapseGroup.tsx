@@ -1,5 +1,7 @@
 import type { HTMLAttributes, ReactNode, RefAttributes } from 'react';
 
+import { cx } from '../../helpers/composeClassNames';
+import { ItemGroup } from '../Item';
 import { SidebarGroupTitle } from './SidebarGroupTitle';
 import { useCollapse } from './hooks/useCollapse';
 
@@ -23,6 +25,7 @@ export function SidebarCollapseGroup({
 	children,
 	badge,
 	menu,
+	actions: _actions,
 	title,
 	empty,
 	role = 'group',
@@ -48,19 +51,18 @@ export function SidebarCollapseGroup({
 				barProps={barProps}
 				role='button'
 			/>
-			<div
+			<ItemGroup
 				role='list'
+				aria-labelledby={titleId}
 				ref={ref}
-				className={[
-					'rcx-box rcx-box--full rcx-sidebar-collapse-group__panel rcx-box--animated',
+				className={cx(
+					'rcx-sidebar-collapse-group__panel rcx-box--animated',
 					panelExpanded && 'rcx-sidebar-collapse-group__panel--expanded',
-				]
-					.filter(Boolean)
-					.join(' ')}
+				)}
 				id={panelId}
 			>
 				{children}
-			</div>
+			</ItemGroup>
 		</div>
 	);
 }

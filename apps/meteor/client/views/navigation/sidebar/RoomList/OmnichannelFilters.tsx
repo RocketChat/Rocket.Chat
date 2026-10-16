@@ -16,7 +16,7 @@ const OmnichannelFilters = () => {
 
 	return (
 		<>
-			<Box role='tablist' aria-label={t('Omnichannel_filters')} aria-orientation='vertical'>
+			<Box role='tablist' paddingInline={4} aria-label={t('Omnichannel_filters')} aria-orientation='vertical'>
 				<RoomListFiltersItem group='inProgress' icon={sidePanelFiltersConfig.inProgress.icon} />
 				{canViewOmnichannelQueue && <RoomListFiltersItem group='queue' icon={sidePanelFiltersConfig.queue.icon} />}
 				<RoomListFiltersItem group='onHold' icon={sidePanelFiltersConfig.onHold.icon} />

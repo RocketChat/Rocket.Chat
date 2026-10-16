@@ -65,7 +65,7 @@ exports[`renders Default without crashing 1`] = `
           class="rcx-box rcx-box--full rcx-css-1aw2eor"
         >
           <div
-            class="rcx-sidepanel-list"
+            class="rcx-item-group rcx-sidepanel-list"
             role="list"
           >
             <div
@@ -73,17 +73,17 @@ exports[`renders Default without crashing 1`] = `
               role="listitem"
             >
               <a
-                class="rcx-box rcx-box--full rcx-sidebar-item rcx-sidebar-item--level-2"
+                class="rcx-item rcx-item--inset-md rcx-sidebar-item rcx-sidebar-item--level-2"
                 href="#"
               >
                 <div
-                  class="rcx-box rcx-box--full rcx-sidebar-item__col"
+                  class="rcx-item__content rcx-sidebar-item__col"
                 >
                   <div
-                    class="rcx-box rcx-box--full rcx-sidebar-item__row"
+                    class="rcx-item__row rcx-sidebar-item__row"
                   >
                     <div
-                      class="rcx-box rcx-box--full rcx-sidebar-item__avatar"
+                      class="rcx-item__media rcx-sidebar-item__avatar"
                     >
                       <figure
                         class="rcx-box rcx-box--full rcx-avatar rcx-avatar--x20"
@@ -96,7 +96,9 @@ exports[`renders Default without crashing 1`] = `
                       </figure>
                     </div>
                     <div
-                      class="rcx-box rcx-box--full rcx-sidebar-item__icon rcx-sidebar-item__icon--highlighted"
+                      aria-hidden="true"
+                      class="rcx-item__icon rcx-sidebar-item__icon rcx-sidebar-item__icon--highlighted"
+                      id="_r_0_"
                     >
                       <i
                         aria-hidden="true"
@@ -106,21 +108,22 @@ exports[`renders Default without crashing 1`] = `
                       </i>
                     </div>
                     <div
-                      class="rcx-box rcx-box--full rcx-sidebar-item__title rcx-sidebar-item__title--highlighted"
+                      class="rcx-item__title rcx-sidebar-item__title rcx-sidebar-item__title--highlighted"
+                      id="_r_1_"
                     >
                       Marvin Black
                     </div>
                     <div
-                      class="rcx-box rcx-box--full rcx-sidebar-item__timestamp"
+                      class="rcx-item__meta rcx-sidebar-item__timestamp"
                     >
                       11:22:21 AM
                     </div>
                   </div>
                   <div
-                    class="rcx-box rcx-box--full rcx-sidebar-item__row"
+                    class="rcx-item__row rcx-sidebar-item__row"
                   >
                     <div
-                      class="rcx-box rcx-box--full rcx-sidebar-item__subtitle rcx-sidebar-item__subtitle--highlighted"
+                      class="rcx-item__description rcx-sidebar-item__subtitle rcx-sidebar-item__subtitle--highlighted"
                     >
                       Lorem Ipsum Indolor Dolor Ipsum Ipsum
                     </div>
@@ -147,28 +150,32 @@ exports[`renders Default without crashing 1`] = `
                       3
                     </span>
                     <div
-                      class="rcx-box rcx-box--full rcx-sidebar-item__menu-wrapper rcx-box--animated"
+                      class="rcx-item__actions rcx-item__actions--reveal-hover rcx-sidebar-item__menu-wrapper"
                     >
-                      <span
-                        class="rcx-box rcx-box--full rcx-sidebar-item__menu rcx-sidebar-item__menu"
+                      <div
+                        class="rcx-item__actions-inner"
                       >
-                        <button
-                          aria-expanded="false"
-                          aria-haspopup="true"
-                          aria-label="Options"
-                          class="rcx-box rcx-box--full rcx-button--mini-square rcx-button--square rcx-button--icon rcx-button"
-                          id="react-aria-_r_0_"
-                          title="Options"
-                          type="button"
+                        <span
+                          class="rcx-box rcx-box--full rcx-sidebar-item__menu rcx-sidebar-item__menu"
                         >
-                          <i
-                            aria-hidden="true"
-                            class="rcx-box rcx-box--full rcx-icon--name-kebab rcx-icon rcx-css-1tg7yd0"
+                          <button
+                            aria-expanded="false"
+                            aria-haspopup="true"
+                            aria-label="Options"
+                            class="rcx-box rcx-box--full rcx-button--mini-square rcx-button--square rcx-button--icon rcx-button"
+                            id="react-aria-_r_2_"
+                            title="Options"
+                            type="button"
                           >
-                            
-                          </i>
-                        </button>
-                      </span>
+                            <i
+                              aria-hidden="true"
+                              class="rcx-box rcx-box--full rcx-icon--name-kebab rcx-icon rcx-css-1tg7yd0"
+                            >
+                              
+                            </i>
+                          </button>
+                        </span>
+                      </div>
                     </div>
                   </div>
                 </div>
@@ -179,17 +186,17 @@ exports[`renders Default without crashing 1`] = `
               role="listitem"
             >
               <a
-                class="rcx-box rcx-box--full rcx-sidebar-item rcx-sidebar-item--level-2"
+                class="rcx-item rcx-item--inset-md rcx-sidebar-item rcx-sidebar-item--level-2"
                 href="#"
               >
                 <div
-                  class="rcx-box rcx-box--full rcx-sidebar-item__col"
+                  class="rcx-item__content rcx-sidebar-item__col"
                 >
                   <div
-                    class="rcx-box rcx-box--full rcx-sidebar-item__row"
+                    class="rcx-item__row rcx-sidebar-item__row"
                   >
                     <div
-                      class="rcx-box rcx-box--full rcx-sidebar-item__avatar"
+                      class="rcx-item__media rcx-sidebar-item__avatar"
                     >
                       <figure
                         class="rcx-box rcx-box--full rcx-avatar rcx-avatar--x20"
@@ -202,7 +209,9 @@ exports[`renders Default without crashing 1`] = `
                       </figure>
                     </div>
                     <div
-                      class="rcx-box rcx-box--full rcx-sidebar-item__icon"
+                      aria-hidden="true"
+                      class="rcx-item__icon rcx-sidebar-item__icon"
+                      id="_r_4_"
                     >
                       <i
                         aria-hidden="true"
@@ -212,21 +221,22 @@ exports[`renders Default without crashing 1`] = `
                       </i>
                     </div>
                     <div
-                      class="rcx-box rcx-box--full rcx-sidebar-item__title"
+                      class="rcx-item__title rcx-sidebar-item__title"
+                      id="_r_5_"
                     >
                       Esther Miles
                     </div>
                     <div
-                      class="rcx-box rcx-box--full rcx-sidebar-item__timestamp"
+                      class="rcx-item__meta rcx-sidebar-item__timestamp"
                     >
                       11:22:21 AM
                     </div>
                   </div>
                   <div
-                    class="rcx-box rcx-box--full rcx-sidebar-item__row"
+                    class="rcx-item__row rcx-sidebar-item__row"
                   >
                     <div
-                      class="rcx-box rcx-box--full rcx-sidebar-item__subtitle"
+                      class="rcx-item__description rcx-sidebar-item__subtitle"
                     >
                       Lorem Ipsum Indolor Dolor Ipsum Ipsum
                     </div>
@@ -253,28 +263,32 @@ exports[`renders Default without crashing 1`] = `
                       4
                     </span>
                     <div
-                      class="rcx-box rcx-box--full rcx-sidebar-item__menu-wrapper rcx-box--animated"
+                      class="rcx-item__actions rcx-item__actions--reveal-hover rcx-sidebar-item__menu-wrapper"
                     >
-                      <span
-                        class="rcx-box rcx-box--full rcx-sidebar-item__menu rcx-sidebar-item__menu"
+                      <div
+                        class="rcx-item__actions-inner"
                       >
-                        <button
-                          aria-expanded="false"
-                          aria-haspopup="true"
-                          aria-label="Options"
-                          class="rcx-box rcx-box--full rcx-button--mini-square rcx-button--square rcx-button--icon rcx-button"
-                          id="react-aria-_r_2_"
-                          title="Options"
-                          type="button"
+                        <span
+                          class="rcx-box rcx-box--full rcx-sidebar-item__menu rcx-sidebar-item__menu"
                         >
-                          <i
-                            aria-hidden="true"
-                            class="rcx-box rcx-box--full rcx-icon--name-kebab rcx-icon rcx-css-1tg7yd0"
+                          <button
+                            aria-expanded="false"
+                            aria-haspopup="true"
+                            aria-label="Options"
+                            class="rcx-box rcx-box--full rcx-button--mini-square rcx-button--square rcx-button--icon rcx-button"
+                            id="react-aria-_r_6_"
+                            title="Options"
+                            type="button"
                           >
-                            
-                          </i>
-                        </button>
-                      </span>
+                            <i
+                              aria-hidden="true"
+                              class="rcx-box rcx-box--full rcx-icon--name-kebab rcx-icon rcx-css-1tg7yd0"
+                            >
+                              
+                            </i>
+                          </button>
+                        </span>
+                      </div>
                     </div>
                   </div>
                 </div>
@@ -285,17 +299,17 @@ exports[`renders Default without crashing 1`] = `
               role="listitem"
             >
               <a
-                class="rcx-box rcx-box--full rcx-sidebar-item rcx-sidebar-item--level-2"
+                class="rcx-item rcx-item--inset-md rcx-sidebar-item rcx-sidebar-item--level-2"
                 href="#"
               >
                 <div
-                  class="rcx-box rcx-box--full rcx-sidebar-item__col"
+                  class="rcx-item__content rcx-sidebar-item__col"
                 >
                   <div
-                    class="rcx-box rcx-box--full rcx-sidebar-item__row"
+                    class="rcx-item__row rcx-sidebar-item__row"
                   >
                     <div
-                      class="rcx-box rcx-box--full rcx-sidebar-item__avatar"
+                      class="rcx-item__media rcx-sidebar-item__avatar"
                     >
                       <figure
                         class="rcx-box rcx-box--full rcx-avatar rcx-avatar--x20"
@@ -308,7 +322,9 @@ exports[`renders Default without crashing 1`] = `
                       </figure>
                     </div>
                     <div
-                      class="rcx-box rcx-box--full rcx-sidebar-item__icon"
+                      aria-hidden="true"
+                      class="rcx-item__icon rcx-sidebar-item__icon"
+                      id="_r_8_"
                     >
                       <i
                         aria-hidden="true"
@@ -318,21 +334,22 @@ exports[`renders Default without crashing 1`] = `
                       </i>
                     </div>
                     <div
-                      class="rcx-box rcx-box--full rcx-sidebar-item__title"
+                      class="rcx-item__title rcx-sidebar-item__title"
+                      id="_r_9_"
                     >
                       Leroy Jenkins
                     </div>
                     <div
-                      class="rcx-box rcx-box--full rcx-sidebar-item__timestamp"
+                      class="rcx-item__meta rcx-sidebar-item__timestamp"
                     >
                       11:22:21 AM
                     </div>
                   </div>
                   <div
-                    class="rcx-box rcx-box--full rcx-sidebar-item__row"
+                    class="rcx-item__row rcx-sidebar-item__row"
                   >
                     <div
-                      class="rcx-box rcx-box--full rcx-sidebar-item__subtitle"
+                      class="rcx-item__description rcx-sidebar-item__subtitle"
                     >
                       Lorem Ipsum Indolor Dolor Ipsum Ipsum
                     </div>
@@ -359,28 +376,32 @@ exports[`renders Default without crashing 1`] = `
                       5
                     </span>
                     <div
-                      class="rcx-box rcx-box--full rcx-sidebar-item__menu-wrapper rcx-box--animated"
+                      class="rcx-item__actions rcx-item__actions--reveal-hover rcx-sidebar-item__menu-wrapper"
                     >
-                      <span
-                        class="rcx-box rcx-box--full rcx-sidebar-item__menu rcx-sidebar-item__menu"
+                      <div
+                        class="rcx-item__actions-inner"
                       >
-                        <button
-                          aria-expanded="false"
-                          aria-haspopup="true"
-                          aria-label="Options"
-                          class="rcx-box rcx-box--full rcx-button--mini-square rcx-button--square rcx-button--icon rcx-button"
-                          id="react-aria-_r_4_"
-                          title="Options"
-                          type="button"
+                        <span
+                          class="rcx-box rcx-box--full rcx-sidebar-item__menu rcx-sidebar-item__menu"
                         >
-                          <i
-                            aria-hidden="true"
-                            class="rcx-box rcx-box--full rcx-icon--name-kebab rcx-icon rcx-css-1tg7yd0"
+                          <button
+                            aria-expanded="false"
+                            aria-haspopup="true"
+                            aria-label="Options"
+                            class="rcx-box rcx-box--full rcx-button--mini-square rcx-button--square rcx-button--icon rcx-button"
+                            id="react-aria-_r_a_"
+                            title="Options"
+                            type="button"
                           >
-                            
-                          </i>
-                        </button>
-                      </span>
+                            <i
+                              aria-hidden="true"
+                              class="rcx-box rcx-box--full rcx-icon--name-kebab rcx-icon rcx-css-1tg7yd0"
+                            >
+                              
+                            </i>
+                          </button>
+                        </span>
+                      </div>
                     </div>
                   </div>
                 </div>
@@ -391,17 +412,17 @@ exports[`renders Default without crashing 1`] = `
               role="listitem"
             >
               <a
-                class="rcx-box rcx-box--full rcx-sidebar-item rcx-sidebar-item--level-2"
+                class="rcx-item rcx-item--inset-md rcx-sidebar-item rcx-sidebar-item--level-2"
                 href="#"
               >
                 <div
-                  class="rcx-box rcx-box--full rcx-sidebar-item__col"
+                  class="rcx-item__content rcx-sidebar-item__col"
                 >
                   <div
-                    class="rcx-box rcx-box--full rcx-sidebar-item__row"
+                    class="rcx-item__row rcx-sidebar-item__row"
                   >
                     <div
-                      class="rcx-box rcx-box--full rcx-sidebar-item__avatar"
+                      class="rcx-item__media rcx-sidebar-item__avatar"
                     >
                       <figure
                         class="rcx-box rcx-box--full rcx-avatar rcx-avatar--x20"
@@ -414,7 +435,9 @@ exports[`renders Default without crashing 1`] = `
                       </figure>
                     </div>
                     <div
-                      class="rcx-box rcx-box--full rcx-sidebar-item__icon"
+                      aria-hidden="true"
+                      class="rcx-item__icon rcx-sidebar-item__icon"
+                      id="_r_c_"
                     >
                       <i
                         aria-hidden="true"
@@ -424,21 +447,22 @@ exports[`renders Default without crashing 1`] = `
                       </i>
                     </div>
                     <div
-                      class="rcx-box rcx-box--full rcx-sidebar-item__title"
+                      class="rcx-item__title rcx-sidebar-item__title"
+                      id="_r_d_"
                     >
                       Morgan Freeman looooooooooong looooooooooong looooooooooong name
                     </div>
                     <div
-                      class="rcx-box rcx-box--full rcx-sidebar-item__timestamp"
+                      class="rcx-item__meta rcx-sidebar-item__timestamp"
                     >
                       11:22:21 AM
                     </div>
                   </div>
                   <div
-                    class="rcx-box rcx-box--full rcx-sidebar-item__row"
+                    class="rcx-item__row rcx-sidebar-item__row"
                   >
                     <div
-                      class="rcx-box rcx-box--full rcx-sidebar-item__subtitle"
+                      class="rcx-item__description rcx-sidebar-item__subtitle"
                     >
                       Lorem Ipsum Indolor Dolor Ipsum Ipsum
                     </div>
@@ -465,28 +489,32 @@ exports[`renders Default without crashing 1`] = `
                       6
                     </span>
                     <div
-                      class="rcx-box rcx-box--full rcx-sidebar-item__menu-wrapper rcx-box--animated"
+                      class="rcx-item__actions rcx-item__actions--reveal-hover rcx-sidebar-item__menu-wrapper"
                     >
-                      <span
-                        class="rcx-box rcx-box--full rcx-sidebar-item__menu rcx-sidebar-item__menu"
+                      <div
+                        class="rcx-item__actions-inner"
                       >
-                        <button
-                          aria-expanded="false"
-                          aria-haspopup="true"
-                          aria-label="Options"
-                          class="rcx-box rcx-box--full rcx-button--mini-square rcx-button--square rcx-button--icon rcx-button"
-                          id="react-aria-_r_6_"
-                          title="Options"
-                          type="button"
+                        <span
+                          class="rcx-box rcx-box--full rcx-sidebar-item__menu rcx-sidebar-item__menu"
                         >
-                          <i
-                            aria-hidden="true"
-                            class="rcx-box rcx-box--full rcx-icon--name-kebab rcx-icon rcx-css-1tg7yd0"
+                          <button
+                            aria-expanded="false"
+                            aria-haspopup="true"
+                            aria-label="Options"
+                            class="rcx-box rcx-box--full rcx-button--mini-square rcx-button--square rcx-button--icon rcx-button"
+                            id="react-aria-_r_e_"
+                            title="Options"
+                            type="button"
                           >
-                            
-                          </i>
-                        </button>
-                      </span>
+                            <i
+                              aria-hidden="true"
+                              class="rcx-box rcx-box--full rcx-icon--name-kebab rcx-icon rcx-css-1tg7yd0"
+                            >
+                              
+                            </i>
+                          </button>
+                        </span>
+                      </div>
                     </div>
                   </div>
                 </div>
@@ -497,17 +525,17 @@ exports[`renders Default without crashing 1`] = `
               role="listitem"
             >
               <a
-                class="rcx-box rcx-box--full rcx-sidebar-item rcx-sidebar-item--level-2"
+                class="rcx-item rcx-item--inset-md rcx-sidebar-item rcx-sidebar-item--level-2"
                 href="#"
               >
                 <div
-                  class="rcx-box rcx-box--full rcx-sidebar-item__col"
+                  class="rcx-item__content rcx-sidebar-item__col"
                 >
                   <div
-                    class="rcx-box rcx-box--full rcx-sidebar-item__row"
+                    class="rcx-item__row rcx-sidebar-item__row"
                   >
                     <div
-                      class="rcx-box rcx-box--full rcx-sidebar-item__avatar"
+                      class="rcx-item__media rcx-sidebar-item__avatar"
                     >
                       <figure
                         class="rcx-box rcx-box--full rcx-avatar rcx-avatar--x20"
@@ -520,7 +548,9 @@ exports[`renders Default without crashing 1`] = `
                       </figure>
                     </div>
                     <div
-                      class="rcx-box rcx-box--full rcx-sidebar-item__icon"
+                      aria-hidden="true"
+                      class="rcx-item__icon rcx-sidebar-item__icon"
+                      id="_r_g_"
                     >
                       <i
                         aria-hidden="true"
@@ -530,21 +560,22 @@ exports[`renders Default without crashing 1`] = `
                       </i>
                     </div>
                     <div
-                      class="rcx-box rcx-box--full rcx-sidebar-item__title"
+                      class="rcx-item__title rcx-sidebar-item__title"
+                      id="_r_h_"
                     >
                       John Doe
                     </div>
                     <div
-                      class="rcx-box rcx-box--full rcx-sidebar-item__timestamp"
+                      class="rcx-item__meta rcx-sidebar-item__timestamp"
                     >
                       11:22:21 AM
                     </div>
                   </div>
                   <div
-                    class="rcx-box rcx-box--full rcx-sidebar-item__row"
+                    class="rcx-item__row rcx-sidebar-item__row"
                   >
                     <div
-                      class="rcx-box rcx-box--full rcx-sidebar-item__subtitle"
+                      class="rcx-item__description rcx-sidebar-item__subtitle"
                     >
                       Lorem Ipsum Indolor Dolor Ipsum Ipsum
                     </div>
@@ -571,28 +602,32 @@ exports[`renders Default without crashing 1`] = `
                       7
                     </span>
                     <div
-                      class="rcx-box rcx-box--full rcx-sidebar-item__menu-wrapper rcx-box--animated"
+                      class="rcx-item__actions rcx-item__actions--reveal-hover rcx-sidebar-item__menu-wrapper"
                     >
-                      <span
-                        class="rcx-box rcx-box--full rcx-sidebar-item__menu rcx-sidebar-item__menu"
+                      <div
+                        class="rcx-item__actions-inner"
                       >
-                        <button
-                          aria-expanded="false"
-                          aria-haspopup="true"
-                          aria-label="Options"
-                          class="rcx-box rcx-box--full rcx-button--mini-square rcx-button--square rcx-button--icon rcx-button"
-                          id="react-aria-_r_8_"
-                          title="Options"
-                          type="button"
+                        <span
+                          class="rcx-box rcx-box--full rcx-sidebar-item__menu rcx-sidebar-item__menu"
                         >
-                          <i
-                            aria-hidden="true"
-                            class="rcx-box rcx-box--full rcx-icon--name-kebab rcx-icon rcx-css-1tg7yd0"
+                          <button
+                            aria-expanded="false"
+                            aria-haspopup="true"
+                            aria-label="Options"
+                            class="rcx-box rcx-box--full rcx-button--mini-square rcx-button--square rcx-button--icon rcx-button"
+                            id="react-aria-_r_i_"
+                            title="Options"
+                            type="button"
                           >
-                            
-                          </i>
-                        </button>
-                      </span>
+                            <i
+                              aria-hidden="true"
+                              class="rcx-box rcx-box--full rcx-icon--name-kebab rcx-icon rcx-css-1tg7yd0"
+                            >
+                              
+                            </i>
+                          </button>
+                        </span>
+                      </div>
                     </div>
                   </div>
                 </div>
@@ -603,17 +638,17 @@ exports[`renders Default without crashing 1`] = `
               role="listitem"
             >
               <a
-                class="rcx-box rcx-box--full rcx-sidebar-item rcx-sidebar-item--level-2"
+                class="rcx-item rcx-item--inset-md rcx-sidebar-item rcx-sidebar-item--level-2"
                 href="#"
               >
                 <div
-                  class="rcx-box rcx-box--full rcx-sidebar-item__col"
+                  class="rcx-item__content rcx-sidebar-item__col"
                 >
                   <div
-                    class="rcx-box rcx-box--full rcx-sidebar-item__row"
+                    class="rcx-item__row rcx-sidebar-item__row"
                   >
                     <div
-                      class="rcx-box rcx-box--full rcx-sidebar-item__avatar"
+                      class="rcx-item__media rcx-sidebar-item__avatar"
                     >
                       <figure
                         class="rcx-box rcx-box--full rcx-avatar rcx-avatar--x20"
@@ -626,7 +661,9 @@ exports[`renders Default without crashing 1`] = `
                       </figure>
                     </div>
                     <div
-                      class="rcx-box rcx-box--full rcx-sidebar-item__icon"
+                      aria-hidden="true"
+                      class="rcx-item__icon rcx-sidebar-item__icon"
+                      id="_r_k_"
                     >
                       <i
                         aria-hidden="true"
@@ -636,21 +673,22 @@ exports[`renders Default without crashing 1`] = `
                       </i>
                     </div>
                     <div
-                      class="rcx-box rcx-box--full rcx-sidebar-item__title"
+                      class="rcx-item__title rcx-sidebar-item__title"
+                      id="_r_l_"
                     >
                       Jane Doe
                     </div>
                     <div
-                      class="rcx-box rcx-box--full rcx-sidebar-item__timestamp"
+                      class="rcx-item__meta rcx-sidebar-item__timestamp"
                     >
                       11:22:21 AM
                     </div>
                   </div>
                   <div
-                    class="rcx-box rcx-box--full rcx-sidebar-item__row"
+                    class="rcx-item__row rcx-sidebar-item__row"
                   >
                     <div
-                      class="rcx-box rcx-box--full rcx-sidebar-item__subtitle"
+                      class="rcx-item__description rcx-sidebar-item__subtitle"
                     >
                       Lorem Ipsum Indolor Dolor Ipsum Ipsum
                     </div>
@@ -677,28 +715,32 @@ exports[`renders Default without crashing 1`] = `
                       8
                     </span>
                     <div
-                      class="rcx-box rcx-box--full rcx-sidebar-item__menu-wrapper rcx-box--animated"
+                      class="rcx-item__actions rcx-item__actions--reveal-hover rcx-sidebar-item__menu-wrapper"
                     >
-                      <span
-                        class="rcx-box rcx-box--full rcx-sidebar-item__menu rcx-sidebar-item__menu"
+                      <div
+                        class="rcx-item__actions-inner"
                       >
-                        <button
-                          aria-expanded="false"
-                          aria-haspopup="true"
-                          aria-label="Options"
-                          class="rcx-box rcx-box--full rcx-button--mini-square rcx-button--square rcx-button--icon rcx-button"
-                          id="react-aria-_r_a_"
-                          title="Options"
-                          type="button"
+                        <span
+                          class="rcx-box rcx-box--full rcx-sidebar-item__menu rcx-sidebar-item__menu"
                         >
-                          <i
-                            aria-hidden="true"
-                            class="rcx-box rcx-box--full rcx-icon--name-kebab rcx-icon rcx-css-1tg7yd0"
+                          <button
+                            aria-expanded="false"
+                            aria-haspopup="true"
+                            aria-label="Options"
+                            class="rcx-box rcx-box--full rcx-button--mini-square rcx-button--square rcx-button--icon rcx-button"
+                            id="react-aria-_r_m_"
+                            title="Options"
+                            type="button"
                           >
-                            
-                          </i>
-                        </button>
-                      </span>
+                            <i
+                              aria-hidden="true"
+                              class="rcx-box rcx-box--full rcx-icon--name-kebab rcx-icon rcx-css-1tg7yd0"
+                            >
+                              
+                            </i>
+                          </button>
+                        </span>
+                      </div>
                     </div>
                   </div>
                 </div>
@@ -709,17 +751,17 @@ exports[`renders Default without crashing 1`] = `
               role="listitem"
             >
               <a
-                class="rcx-box rcx-box--full rcx-sidebar-item rcx-sidebar-item--level-2"
+                class="rcx-item rcx-item--inset-md rcx-sidebar-item rcx-sidebar-item--level-2"
                 href="#"
               >
                 <div
-                  class="rcx-box rcx-box--full rcx-sidebar-item__col"
+                  class="rcx-item__content rcx-sidebar-item__col"
                 >
                   <div
-                    class="rcx-box rcx-box--full rcx-sidebar-item__row"
+                    class="rcx-item__row rcx-sidebar-item__row"
                   >
                     <div
-                      class="rcx-box rcx-box--full rcx-sidebar-item__avatar"
+                      class="rcx-item__media rcx-sidebar-item__avatar"
                     >
                       <figure
                         class="rcx-box rcx-box--full rcx-avatar rcx-avatar--x20"
@@ -732,7 +774,9 @@ exports[`renders Default without crashing 1`] = `
                       </figure>
                     </div>
                     <div
-                      class="rcx-box rcx-box--full rcx-sidebar-item__icon"
+                      aria-hidden="true"
+                      class="rcx-item__icon rcx-sidebar-item__icon"
+                      id="_r_o_"
                     >
                       <i
                         aria-hidden="true"
@@ -742,21 +786,22 @@ exports[`renders Default without crashing 1`] = `
                       </i>
                     </div>
                     <div
-                      class="rcx-box rcx-box--full rcx-sidebar-item__title"
+                      class="rcx-item__title rcx-sidebar-item__title"
+                      id="_r_p_"
                     >
                       Baz Qux
                     </div>
                     <div
-                      class="rcx-box rcx-box--full rcx-sidebar-item__timestamp"
+                      class="rcx-item__meta rcx-sidebar-item__timestamp"
                     >
                       11:22:21 AM
                     </div>
                   </div>
                   <div
-                    class="rcx-box rcx-box--full rcx-sidebar-item__row"
+                    class="rcx-item__row rcx-sidebar-item__row"
                   >
                     <div
-                      class="rcx-box rcx-box--full rcx-sidebar-item__subtitle"
+                      class="rcx-item__description rcx-sidebar-item__subtitle"
                     >
                       Lorem Ipsum Indolor Dolor Ipsum Ipsum
                     </div>
@@ -783,28 +828,32 @@ exports[`renders Default without crashing 1`] = `
                       9
                     </span>
                     <div
-                      class="rcx-box rcx-box--full rcx-sidebar-item__menu-wrapper rcx-box--animated"
+                      class="rcx-item__actions rcx-item__actions--reveal-hover rcx-sidebar-item__menu-wrapper"
                     >
-                      <span
-                        class="rcx-box rcx-box--full rcx-sidebar-item__menu rcx-sidebar-item__menu"
+                      <div
+                        class="rcx-item__actions-inner"
                       >
-                        <button
-                          aria-expanded="false"
-                          aria-haspopup="true"
-                          aria-label="Options"
-                          class="rcx-box rcx-box--full rcx-button--mini-square rcx-button--square rcx-button--icon rcx-button"
-                          id="react-aria-_r_c_"
-                          title="Options"
-                          type="button"
+                        <span
+                          class="rcx-box rcx-box--full rcx-sidebar-item__menu rcx-sidebar-item__menu"
                         >
-                          <i
-                            aria-hidden="true"
-                            class="rcx-box rcx-box--full rcx-icon--name-kebab rcx-icon rcx-css-1tg7yd0"
+                          <button
+                            aria-expanded="false"
+                            aria-haspopup="true"
+                            aria-label="Options"
+                            class="rcx-box rcx-box--full rcx-button--mini-square rcx-button--square rcx-button--icon rcx-button"
+                            id="react-aria-_r_q_"
+                            title="Options"
+                            type="button"
                           >
-                            
-                          </i>
-                        </button>
-                      </span>
+                            <i
+                              aria-hidden="true"
+                              class="rcx-box rcx-box--full rcx-icon--name-kebab rcx-icon rcx-css-1tg7yd0"
+                            >
+                              
+                            </i>
+                          </button>
+                        </span>
+                      </div>
                     </div>
                   </div>
                 </div>
@@ -815,17 +864,17 @@ exports[`renders Default without crashing 1`] = `
               role="listitem"
             >
               <a
-                class="rcx-box rcx-box--full rcx-sidebar-item rcx-sidebar-item--level-2"
+                class="rcx-item rcx-item--inset-md rcx-sidebar-item rcx-sidebar-item--level-2"
                 href="#"
               >
                 <div
-                  class="rcx-box rcx-box--full rcx-sidebar-item__col"
+                  class="rcx-item__content rcx-sidebar-item__col"
                 >
                   <div
-                    class="rcx-box rcx-box--full rcx-sidebar-item__row"
+                    class="rcx-item__row rcx-sidebar-item__row"
                   >
                     <div
-                      class="rcx-box rcx-box--full rcx-sidebar-item__avatar"
+                      class="rcx-item__media rcx-sidebar-item__avatar"
                     >
                       <figure
                         class="rcx-box rcx-box--full rcx-avatar rcx-avatar--x20"
@@ -838,7 +887,9 @@ exports[`renders Default without crashing 1`] = `
                       </figure>
                     </div>
                     <div
-                      class="rcx-box rcx-box--full rcx-sidebar-item__icon"
+                      aria-hidden="true"
+                      class="rcx-item__icon rcx-sidebar-item__icon"
+                      id="_r_s_"
                     >
                       <i
                         aria-hidden="true"
@@ -848,21 +899,22 @@ exports[`renders Default without crashing 1`] = `
                       </i>
                     </div>
                     <div
-                      class="rcx-box rcx-box--full rcx-sidebar-item__title"
+                      class="rcx-item__title rcx-sidebar-item__title"
+                      id="_r_t_"
                     >
                       Alice Bob
                     </div>
                     <div
-                      class="rcx-box rcx-box--full rcx-sidebar-item__timestamp"
+                      class="rcx-item__meta rcx-sidebar-item__timestamp"
                     >
                       11:22:21 AM
                     </div>
                   </div>
                   <div
-                    class="rcx-box rcx-box--full rcx-sidebar-item__row"
+                    class="rcx-item__row rcx-sidebar-item__row"
                   >
                     <div
-                      class="rcx-box rcx-box--full rcx-sidebar-item__subtitle"
+                      class="rcx-item__description rcx-sidebar-item__subtitle"
                     >
                       Lorem Ipsum Indolor Dolor Ipsum Ipsum
                     </div>
@@ -889,28 +941,32 @@ exports[`renders Default without crashing 1`] = `
                       10
                     </span>
                     <div
-                      class="rcx-box rcx-box--full rcx-sidebar-item__menu-wrapper rcx-box--animated"
+                      class="rcx-item__actions rcx-item__actions--reveal-hover rcx-sidebar-item__menu-wrapper"
                     >
-                      <span
-                        class="rcx-box rcx-box--full rcx-sidebar-item__menu rcx-sidebar-item__menu"
+                      <div
+                        class="rcx-item__actions-inner"
                       >
-                        <button
-                          aria-expanded="false"
-                          aria-haspopup="true"
-                          aria-label="Options"
-                          class="rcx-box rcx-box--full rcx-button--mini-square rcx-button--square rcx-button--icon rcx-button"
-                          id="react-aria-_r_e_"
-                          title="Options"
-                          type="button"
+                        <span
+                          class="rcx-box rcx-box--full rcx-sidebar-item__menu rcx-sidebar-item__menu"
                         >
-                          <i
-                            aria-hidden="true"
-                            class="rcx-box rcx-box--full rcx-icon--name-kebab rcx-icon rcx-css-1tg7yd0"
+                          <button
+                            aria-expanded="false"
+                            aria-haspopup="true"
+                            aria-label="Options"
+                            class="rcx-box rcx-box--full rcx-button--mini-square rcx-button--square rcx-button--icon rcx-button"
+                            id="react-aria-_r_u_"
+                            title="Options"
+                            type="button"
                           >
-                            
-                          </i>
-                        </button>
-                      </span>
+                            <i
+                              aria-hidden="true"
+                              class="rcx-box rcx-box--full rcx-icon--name-kebab rcx-icon rcx-css-1tg7yd0"
+                            >
+                              
+                            </i>
+                          </button>
+                        </span>
+                      </div>
                     </div>
                   </div>
                 </div>
@@ -921,17 +977,17 @@ exports[`renders Default without crashing 1`] = `
               role="listitem"
             >
               <a
-                class="rcx-box rcx-box--full rcx-sidebar-item rcx-sidebar-item--level-2"
+                class="rcx-item rcx-item--inset-md rcx-sidebar-item rcx-sidebar-item--level-2"
                 href="#"
               >
                 <div
-                  class="rcx-box rcx-box--full rcx-sidebar-item__col"
+                  class="rcx-item__content rcx-sidebar-item__col"
                 >
                   <div
-                    class="rcx-box rcx-box--full rcx-sidebar-item__row"
+                    class="rcx-item__row rcx-sidebar-item__row"
                   >
                     <div
-                      class="rcx-box rcx-box--full rcx-sidebar-item__avatar"
+                      class="rcx-item__media rcx-sidebar-item__avatar"
                     >
                       <figure
                         class="rcx-box rcx-box--full rcx-avatar rcx-avatar--x20"
@@ -944,7 +1000,9 @@ exports[`renders Default without crashing 1`] = `
                       </figure>
                     </div>
                     <div
-                      class="rcx-box rcx-box--full rcx-sidebar-item__icon"
+                      aria-hidden="true"
+                      class="rcx-item__icon rcx-sidebar-item__icon"
+                      id="_r_10_"
                     >
                       <i
                         aria-hidden="true"
@@ -954,21 +1012,22 @@ exports[`renders Default without crashing 1`] = `
                       </i>
                     </div>
                     <div
-                      class="rcx-box rcx-box--full rcx-sidebar-item__title"
+                      class="rcx-item__title rcx-sidebar-item__title"
+                      id="_r_11_"
                     >
                       Charlie Delta
                     </div>
                     <div
-                      class="rcx-box rcx-box--full rcx-sidebar-item__timestamp"
+                      class="rcx-item__meta rcx-sidebar-item__timestamp"
                     >
                       11:22:21 AM
                     </div>
                   </div>
                   <div
-                    class="rcx-box rcx-box--full rcx-sidebar-item__row"
+                    class="rcx-item__row rcx-sidebar-item__row"
                   >
                     <div
-                      class="rcx-box rcx-box--full rcx-sidebar-item__subtitle"
+                      class="rcx-item__description rcx-sidebar-item__subtitle"
                     >
                       Lorem Ipsum Indolor Dolor Ipsum Ipsum
                     </div>
@@ -995,28 +1054,32 @@ exports[`renders Default without crashing 1`] = `
                       11
                     </span>
                     <div
-                      class="rcx-box rcx-box--full rcx-sidebar-item__menu-wrapper rcx-box--animated"
+                      class="rcx-item__actions rcx-item__actions--reveal-hover rcx-sidebar-item__menu-wrapper"
                     >
-                      <span
-                        class="rcx-box rcx-box--full rcx-sidebar-item__menu rcx-sidebar-item__menu"
+                      <div
+                        class="rcx-item__actions-inner"
                       >
-                        <button
-                          aria-expanded="false"
-                          aria-haspopup="true"
-                          aria-label="Options"
-                          class="rcx-box rcx-box--full rcx-button--mini-square rcx-button--square rcx-button--icon rcx-button"
-                          id="react-aria-_r_g_"
-                          title="Options"
-                          type="button"
+                        <span
+                          class="rcx-box rcx-box--full rcx-sidebar-item__menu rcx-sidebar-item__menu"
                         >
-                          <i
-                            aria-hidden="true"
-                            class="rcx-box rcx-box--full rcx-icon--name-kebab rcx-icon rcx-css-1tg7yd0"
+                          <button
+                            aria-expanded="false"
+                            aria-haspopup="true"
+                            aria-label="Options"
+                            class="rcx-box rcx-box--full rcx-button--mini-square rcx-button--square rcx-button--icon rcx-button"
+                            id="react-aria-_r_12_"
+                            title="Options"
+                            type="button"
                           >
-                            
-                          </i>
-                        </button>
-                      </span>
+                            <i
+                              aria-hidden="true"
+                              class="rcx-box rcx-box--full rcx-icon--name-kebab rcx-icon rcx-css-1tg7yd0"
+                            >
+                              
+                            </i>
+                          </button>
+                        </span>
+                      </div>
                     </div>
                   </div>
                 </div>
@@ -1027,17 +1090,17 @@ exports[`renders Default without crashing 1`] = `
               role="listitem"
             >
               <a
-                class="rcx-box rcx-box--full rcx-sidebar-item rcx-sidebar-item--level-2"
+                class="rcx-item rcx-item--inset-md rcx-sidebar-item rcx-sidebar-item--level-2"
                 href="#"
               >
                 <div
-                  class="rcx-box rcx-box--full rcx-sidebar-item__col"
+                  class="rcx-item__content rcx-sidebar-item__col"
                 >
                   <div
-                    class="rcx-box rcx-box--full rcx-sidebar-item__row"
+                    class="rcx-item__row rcx-sidebar-item__row"
                   >
                     <div
-                      class="rcx-box rcx-box--full rcx-sidebar-item__avatar"
+                      class="rcx-item__media rcx-sidebar-item__avatar"
                     >
                       <figure
                         class="rcx-box rcx-box--full rcx-avatar rcx-avatar--x20"
@@ -1050,7 +1113,9 @@ exports[`renders Default without crashing 1`] = `
                       </figure>
                     </div>
                     <div
-                      class="rcx-box rcx-box--full rcx-sidebar-item__icon"
+                      aria-hidden="true"
+                      class="rcx-item__icon rcx-sidebar-item__icon"
+                      id="_r_14_"
                     >
                       <i
                         aria-hidden="true"
@@ -1060,21 +1125,22 @@ exports[`renders Default without crashing 1`] = `
                       </i>
                     </div>
                     <div
-                      class="rcx-box rcx-box--full rcx-sidebar-item__title"
+                      class="rcx-item__title rcx-sidebar-item__title"
+                      id="_r_15_"
                     >
                       Eve Mallory
                     </div>
                     <div
-                      class="rcx-box rcx-box--full rcx-sidebar-item__timestamp"
+                      class="rcx-item__meta rcx-sidebar-item__timestamp"
                     >
                       11:22:21 AM
                     </div>
                   </div>
                   <div
-                    class="rcx-box rcx-box--full rcx-sidebar-item__row"
+                    class="rcx-item__row rcx-sidebar-item__row"
                   >
                     <div
-                      class="rcx-box rcx-box--full rcx-sidebar-item__subtitle"
+                      class="rcx-item__description rcx-sidebar-item__subtitle"
                     >
                       Lorem Ipsum Indolor Dolor Ipsum Ipsum
                     </div>
@@ -1101,28 +1167,32 @@ exports[`renders Default without crashing 1`] = `
                       12
                     </span>
                     <div
-                      class="rcx-box rcx-box--full rcx-sidebar-item__menu-wrapper rcx-box--animated"
+                      class="rcx-item__actions rcx-item__actions--reveal-hover rcx-sidebar-item__menu-wrapper"
                     >
-                      <span
-                        class="rcx-box rcx-box--full rcx-sidebar-item__menu rcx-sidebar-item__menu"
+                      <div
+                        class="rcx-item__actions-inner"
                       >
-                        <button
-                          aria-expanded="false"
-                          aria-haspopup="true"
-                          aria-label="Options"
-                          class="rcx-box rcx-box--full rcx-button--mini-square rcx-button--square rcx-button--icon rcx-button"
-                          id="react-aria-_r_i_"
-                          title="Options"
-                          type="button"
+                        <span
+                          class="rcx-box rcx-box--full rcx-sidebar-item__menu rcx-sidebar-item__menu"
                         >
-                          <i
-                            aria-hidden="true"
-                            class="rcx-box rcx-box--full rcx-icon--name-kebab rcx-icon rcx-css-1tg7yd0"
+                          <button
+                            aria-expanded="false"
+                            aria-haspopup="true"
+                            aria-label="Options"
+                            class="rcx-box rcx-box--full rcx-button--mini-square rcx-button--square rcx-button--icon rcx-button"
+                            id="react-aria-_r_16_"
+                            title="Options"
+                            type="button"
                           >
-                            
-                          </i>
-                        </button>
-                      </span>
+                            <i
+                              aria-hidden="true"
+                              class="rcx-box rcx-box--full rcx-icon--name-kebab rcx-icon rcx-css-1tg7yd0"
+                            >
+                              
+                            </i>
+                          </button>
+                        </span>
+                      </div>
                     </div>
                   </div>
                 </div>
@@ -1133,17 +1203,17 @@ exports[`renders Default without crashing 1`] = `
               role="listitem"
             >
               <a
-                class="rcx-box rcx-box--full rcx-sidebar-item rcx-sidebar-item--level-2"
+                class="rcx-item rcx-item--inset-md rcx-sidebar-item rcx-sidebar-item--level-2"
                 href="#"
               >
                 <div
-                  class="rcx-box rcx-box--full rcx-sidebar-item__col"
+                  class="rcx-item__content rcx-sidebar-item__col"
                 >
                   <div
-                    class="rcx-box rcx-box--full rcx-sidebar-item__row"
+                    class="rcx-item__row rcx-sidebar-item__row"
                   >
                     <div
-                      class="rcx-box rcx-box--full rcx-sidebar-item__avatar"
+                      class="rcx-item__media rcx-sidebar-item__avatar"
                     >
                       <figure
                         class="rcx-box rcx-box--full rcx-avatar rcx-avatar--x20"
@@ -1156,7 +1226,9 @@ exports[`renders Default without crashing 1`] = `
                       </figure>
                     </div>
                     <div
-                      class="rcx-box rcx-box--full rcx-sidebar-item__icon"
+                      aria-hidden="true"
+                      class="rcx-item__icon rcx-sidebar-item__icon"
+                      id="_r_18_"
                     >
                       <i
                         aria-hidden="true"
@@ -1166,21 +1238,22 @@ exports[`renders Default without crashing 1`] = `
                       </i>
                     </div>
                     <div
-                      class="rcx-box rcx-box--full rcx-sidebar-item__title"
+                      class="rcx-item__title rcx-sidebar-item__title"
+                      id="_r_19_"
                     >
                       Marvin Black
                     </div>
                     <div
-                      class="rcx-box rcx-box--full rcx-sidebar-item__timestamp"
+                      class="rcx-item__meta rcx-sidebar-item__timestamp"
                     >
                       11:22:21 AM
                     </div>
                   </div>
                   <div
-                    class="rcx-box rcx-box--full rcx-sidebar-item__row"
+                    class="rcx-item__row rcx-sidebar-item__row"
                   >
                     <div
-                      class="rcx-box rcx-box--full rcx-sidebar-item__subtitle"
+                      class="rcx-item__description rcx-sidebar-item__subtitle"
                     >
                       Lorem Ipsum Indolor Dolor Ipsum Ipsum
                     </div>
@@ -1207,28 +1280,32 @@ exports[`renders Default without crashing 1`] = `
                       13
                     </span>
                     <div
-                      class="rcx-box rcx-box--full rcx-sidebar-item__menu-wrapper rcx-box--animated"
+                      class="rcx-item__actions rcx-item__actions--reveal-hover rcx-sidebar-item__menu-wrapper"
                     >
-                      <span
-                        class="rcx-box rcx-box--full rcx-sidebar-item__menu rcx-sidebar-item__menu"
+                      <div
+                        class="rcx-item__actions-inner"
                       >
-                        <button
-                          aria-expanded="false"
-                          aria-haspopup="true"
-                          aria-label="Options"
-                          class="rcx-box rcx-box--full rcx-button--mini-square rcx-button--square rcx-button--icon rcx-button"
-                          id="react-aria-_r_k_"
-                          title="Options"
-                          type="button"
+                        <span
+                          class="rcx-box rcx-box--full rcx-sidebar-item__menu rcx-sidebar-item__menu"
                         >
-                          <i
-                            aria-hidden="true"
-                            class="rcx-box rcx-box--full rcx-icon--name-kebab rcx-icon rcx-css-1tg7yd0"
+                          <button
+                            aria-expanded="false"
+                            aria-haspopup="true"
+                            aria-label="Options"
+                            class="rcx-box rcx-box--full rcx-button--mini-square rcx-button--square rcx-button--icon rcx-button"
+                            id="react-aria-_r_1a_"
+                            title="Options"
+                            type="button"
                           >
-                            
-                          </i>
-                        </button>
-                      </span>
+                            <i
+                              aria-hidden="true"
+                              class="rcx-box rcx-box--full rcx-icon--name-kebab rcx-icon rcx-css-1tg7yd0"
+                            >
+                              
+                            </i>
+                          </button>
+                        </span>
+                      </div>
                     </div>
                   </div>
                 </div>
@@ -1239,17 +1316,17 @@ exports[`renders Default without crashing 1`] = `
               role="listitem"
             >
               <a
-                class="rcx-box rcx-box--full rcx-sidebar-item rcx-sidebar-item--level-2"
+                class="rcx-item rcx-item--inset-md rcx-sidebar-item rcx-sidebar-item--level-2"
                 href="#"
               >
                 <div
-                  class="rcx-box rcx-box--full rcx-sidebar-item__col"
+                  class="rcx-item__content rcx-sidebar-item__col"
                 >
                   <div
-                    class="rcx-box rcx-box--full rcx-sidebar-item__row"
+                    class="rcx-item__row rcx-sidebar-item__row"
                   >
                     <div
-                      class="rcx-box rcx-box--full rcx-sidebar-item__avatar"
+                      class="rcx-item__media rcx-sidebar-item__avatar"
                     >
                       <figure
                         class="rcx-box rcx-box--full rcx-avatar rcx-avatar--x20"
@@ -1262,7 +1339,9 @@ exports[`renders Default without crashing 1`] = `
                       </figure>
                     </div>
                     <div
-                      class="rcx-box rcx-box--full rcx-sidebar-item__icon"
+                      aria-hidden="true"
+                      class="rcx-item__icon rcx-sidebar-item__icon"
+                      id="_r_1c_"
                     >
                       <i
                         aria-hidden="true"
@@ -1272,21 +1351,22 @@ exports[`renders Default without crashing 1`] = `
                       </i>
                     </div>
                     <div
-                      class="rcx-box rcx-box--full rcx-sidebar-item__title"
+                      class="rcx-item__title rcx-sidebar-item__title"
+                      id="_r_1d_"
                     >
                       Esther Miles
                     </div>
                     <div
-                      class="rcx-box rcx-box--full rcx-sidebar-item__timestamp"
+                      class="rcx-item__meta rcx-sidebar-item__timestamp"
                     >
                       11:22:21 AM
                     </div>
                   </div>
                   <div
-                    class="rcx-box rcx-box--full rcx-sidebar-item__row"
+                    class="rcx-item__row rcx-sidebar-item__row"
                   >
                     <div
-                      class="rcx-box rcx-box--full rcx-sidebar-item__subtitle"
+                      class="rcx-item__description rcx-sidebar-item__subtitle"
                     >
                       Lorem Ipsum Indolor Dolor Ipsum Ipsum
                     </div>
@@ -1313,28 +1393,32 @@ exports[`renders Default without crashing 1`] = `
                       14
                     </span>
                     <div
-                      class="rcx-box rcx-box--full rcx-sidebar-item__menu-wrapper rcx-box--animated"
+                      class="rcx-item__actions rcx-item__actions--reveal-hover rcx-sidebar-item__menu-wrapper"
                     >
-                      <span
-                        class="rcx-box rcx-box--full rcx-sidebar-item__menu rcx-sidebar-item__menu"
+                      <div
+                        class="rcx-item__actions-inner"
                       >
-                        <button
-                          aria-expanded="false"
-                          aria-haspopup="true"
-                          aria-label="Options"
-                          class="rcx-box rcx-box--full rcx-button--mini-square rcx-button--square rcx-button--icon rcx-button"
-                          id="react-aria-_r_m_"
-                          title="Options"
-                          type="button"
+                        <span
+                          class="rcx-box rcx-box--full rcx-sidebar-item__menu rcx-sidebar-item__menu"
                         >
-                          <i
-                            aria-hidden="true"
-                            class="rcx-box rcx-box--full rcx-icon--name-kebab rcx-icon rcx-css-1tg7yd0"
+                          <button
+                            aria-expanded="false"
+                            aria-haspopup="true"
+                            aria-label="Options"
+                            class="rcx-box rcx-box--full rcx-button--mini-square rcx-button--square rcx-button--icon rcx-button"
+                            id="react-aria-_r_1e_"
+                            title="Options"
+                            type="button"
                           >
-                            
-                          </i>
-                        </button>
-                      </span>
+                            <i
+                              aria-hidden="true"
+                              class="rcx-box rcx-box--full rcx-icon--name-kebab rcx-icon rcx-css-1tg7yd0"
+                            >
+                              
+                            </i>
+                          </button>
+                        </span>
+                      </div>
                     </div>
                   </div>
                 </div>
@@ -1345,17 +1429,17 @@ exports[`renders Default without crashing 1`] = `
               role="listitem"
             >
               <a
-                class="rcx-box rcx-box--full rcx-sidebar-item rcx-sidebar-item--level-2"
+                class="rcx-item rcx-item--inset-md rcx-sidebar-item rcx-sidebar-item--level-2"
                 href="#"
               >
                 <div
-                  class="rcx-box rcx-box--full rcx-sidebar-item__col"
+                  class="rcx-item__content rcx-sidebar-item__col"
                 >
                   <div
-                    class="rcx-box rcx-box--full rcx-sidebar-item__row"
+                    class="rcx-item__row rcx-sidebar-item__row"
                   >
                     <div
-                      class="rcx-box rcx-box--full rcx-sidebar-item__avatar"
+                      class="rcx-item__media rcx-sidebar-item__avatar"
                     >
                       <figure
                         class="rcx-box rcx-box--full rcx-avatar rcx-avatar--x20"
@@ -1368,7 +1452,9 @@ exports[`renders Default without crashing 1`] = `
                       </figure>
                     </div>
                     <div
-                      class="rcx-box rcx-box--full rcx-sidebar-item__icon"
+                      aria-hidden="true"
+                      class="rcx-item__icon rcx-sidebar-item__icon"
+                      id="_r_1g_"
                     >
                       <i
                         aria-hidden="true"
@@ -1378,21 +1464,22 @@ exports[`renders Default without crashing 1`] = `
                       </i>
                     </div>
                     <div
-                      class="rcx-box rcx-box--full rcx-sidebar-item__title"
+                      class="rcx-item__title rcx-sidebar-item__title"
+                      id="_r_1h_"
                     >
                       Leroy Jenkins
                     </div>
                     <div
-                      class="rcx-box rcx-box--full rcx-sidebar-item__timestamp"
+                      class="rcx-item__meta rcx-sidebar-item__timestamp"
                     >
                       11:22:21 AM
                     </div>
                   </div>
                   <div
-                    class="rcx-box rcx-box--full rcx-sidebar-item__row"
+                    class="rcx-item__row rcx-sidebar-item__row"
                   >
                     <div
-                      class="rcx-box rcx-box--full rcx-sidebar-item__subtitle"
+                      class="rcx-item__description rcx-sidebar-item__subtitle"
                     >
                       Lorem Ipsum Indolor Dolor Ipsum Ipsum
                     </div>
@@ -1419,28 +1506,32 @@ exports[`renders Default without crashing 1`] = `
                       15
                     </span>
                     <div
-                      class="rcx-box rcx-box--full rcx-sidebar-item__menu-wrapper rcx-box--animated"
+                      class="rcx-item__actions rcx-item__actions--reveal-hover rcx-sidebar-item__menu-wrapper"
                     >
-                      <span
-                        class="rcx-box rcx-box--full rcx-sidebar-item__menu rcx-sidebar-item__menu"
+                      <div
+                        class="rcx-item__actions-inner"
                       >
-                        <button
-                          aria-expanded="false"
-                          aria-haspopup="true"
-                          aria-label="Options"
-                          class="rcx-box rcx-box--full rcx-button--mini-square rcx-button--square rcx-button--icon rcx-button"
-                          id="react-aria-_r_o_"
-                          title="Options"
-                          type="button"
+                        <span
+                          class="rcx-box rcx-box--full rcx-sidebar-item__menu rcx-sidebar-item__menu"
                         >
-                          <i
-                            aria-hidden="true"
-                            class="rcx-box rcx-box--full rcx-icon--name-kebab rcx-icon rcx-css-1tg7yd0"
+                          <button
+                            aria-expanded="false"
+                            aria-haspopup="true"
+                            aria-label="Options"
+                            class="rcx-box rcx-box--full rcx-button--mini-square rcx-button--square rcx-button--icon rcx-button"
+                            id="react-aria-_r_1i_"
+                            title="Options"
+                            type="button"
                           >
-                            
-                          </i>
-                        </button>
-                      </span>
+                            <i
+                              aria-hidden="true"
+                              class="rcx-box rcx-box--full rcx-icon--name-kebab rcx-icon rcx-css-1tg7yd0"
+                            >
+                              
+                            </i>
+                          </button>
+                        </span>
+                      </div>
                     </div>
                   </div>
                 </div>
@@ -1451,17 +1542,17 @@ exports[`renders Default without crashing 1`] = `
               role="listitem"
             >
               <a
-                class="rcx-box rcx-box--full rcx-sidebar-item rcx-sidebar-item--level-2"
+                class="rcx-item rcx-item--inset-md rcx-sidebar-item rcx-sidebar-item--level-2"
                 href="#"
               >
                 <div
-                  class="rcx-box rcx-box--full rcx-sidebar-item__col"
+                  class="rcx-item__content rcx-sidebar-item__col"
                 >
                   <div
-                    class="rcx-box rcx-box--full rcx-sidebar-item__row"
+                    class="rcx-item__row rcx-sidebar-item__row"
                   >
                     <div
-                      class="rcx-box rcx-box--full rcx-sidebar-item__avatar"
+                      class="rcx-item__media rcx-sidebar-item__avatar"
                     >
                       <figure
                         class="rcx-box rcx-box--full rcx-avatar rcx-avatar--x20"
@@ -1474,7 +1565,9 @@ exports[`renders Default without crashing 1`] = `
                       </figure>
                     </div>
                     <div
-                      class="rcx-box rcx-box--full rcx-sidebar-item__icon"
+                      aria-hidden="true"
+                      class="rcx-item__icon rcx-sidebar-item__icon"
+                      id="_r_1k_"
                     >
                       <i
                         aria-hidden="true"
@@ -1484,21 +1577,22 @@ exports[`renders Default without crashing 1`] = `
                       </i>
                     </div>
                     <div
-                      class="rcx-box rcx-box--full rcx-sidebar-item__title"
+                      class="rcx-item__title rcx-sidebar-item__title"
+                      id="_r_1l_"
                     >
                       Morgan Freeman looooooooooong looooooooooong looooooooooong name
                     </div>
                     <div
-                      class="rcx-box rcx-box--full rcx-sidebar-item__timestamp"
+                      class="rcx-item__meta rcx-sidebar-item__timestamp"
                     >
                       11:22:21 AM
                     </div>
                   </div>
                   <div
-                    class="rcx-box rcx-box--full rcx-sidebar-item__row"
+                    class="rcx-item__row rcx-sidebar-item__row"
                   >
                     <div
-                      class="rcx-box rcx-box--full rcx-sidebar-item__subtitle"
+                      class="rcx-item__description rcx-sidebar-item__subtitle"
                     >
                       Lorem Ipsum Indolor Dolor Ipsum Ipsum
                     </div>
@@ -1525,28 +1619,32 @@ exports[`renders Default without crashing 1`] = `
                       16
                     </span>
                     <div
-                      class="rcx-box rcx-box--full rcx-sidebar-item__menu-wrapper rcx-box--animated"
+                      class="rcx-item__actions rcx-item__actions--reveal-hover rcx-sidebar-item__menu-wrapper"
                     >
-                      <span
-                        class="rcx-box rcx-box--full rcx-sidebar-item__menu rcx-sidebar-item__menu"
+                      <div
+                        class="rcx-item__actions-inner"
                       >
-                        <button
-                          aria-expanded="false"
-                          aria-haspopup="true"
-                          aria-label="Options"
-                          class="rcx-box rcx-box--full rcx-button--mini-square rcx-button--square rcx-button--icon rcx-button"
-                          id="react-aria-_r_q_"
-                          title="Options"
-                          type="button"
+                        <span
+                          class="rcx-box rcx-box--full rcx-sidebar-item__menu rcx-sidebar-item__menu"
                         >
-                          <i
-                            aria-hidden="true"
-                            class="rcx-box rcx-box--full rcx-icon--name-kebab rcx-icon rcx-css-1tg7yd0"
+                          <button
+                            aria-expanded="false"
+                            aria-haspopup="true"
+                            aria-label="Options"
+                            class="rcx-box rcx-box--full rcx-button--mini-square rcx-button--square rcx-button--icon rcx-button"
+                            id="react-aria-_r_1m_"
+                            title="Options"
+                            type="button"
                           >
-                            
-                          </i>
-                        </button>
-                      </span>
+                            <i
+                              aria-hidden="true"
+                              class="rcx-box rcx-box--full rcx-icon--name-kebab rcx-icon rcx-css-1tg7yd0"
+                            >
+                              
+                            </i>
+                          </button>
+                        </span>
+                      </div>
                     </div>
                   </div>
                 </div>
@@ -1557,17 +1655,17 @@ exports[`renders Default without crashing 1`] = `
               role="listitem"
             >
               <a
-                class="rcx-box rcx-box--full rcx-sidebar-item rcx-sidebar-item--level-2"
+                class="rcx-item rcx-item--inset-md rcx-sidebar-item rcx-sidebar-item--level-2"
                 href="#"
               >
                 <div
-                  class="rcx-box rcx-box--full rcx-sidebar-item__col"
+                  class="rcx-item__content rcx-sidebar-item__col"
                 >
                   <div
-                    class="rcx-box rcx-box--full rcx-sidebar-item__row"
+                    class="rcx-item__row rcx-sidebar-item__row"
                   >
                     <div
-                      class="rcx-box rcx-box--full rcx-sidebar-item__avatar"
+                      class="rcx-item__media rcx-sidebar-item__avatar"
                     >
                       <figure
                         class="rcx-box rcx-box--full rcx-avatar rcx-avatar--x20"
@@ -1580,7 +1678,9 @@ exports[`renders Default without crashing 1`] = `
                       </figure>
                     </div>
                     <div
-                      class="rcx-box rcx-box--full rcx-sidebar-item__icon"
+                      aria-hidden="true"
+                      class="rcx-item__icon rcx-sidebar-item__icon"
+                      id="_r_1o_"
                     >
                       <i
                         aria-hidden="true"
@@ -1590,21 +1690,22 @@ exports[`renders Default without crashing 1`] = `
                       </i>
                     </div>
                     <div
-                      class="rcx-box rcx-box--full rcx-sidebar-item__title"
+                      class="rcx-item__title rcx-sidebar-item__title"
+                      id="_r_1p_"
                     >
                       John Doe
                     </div>
                     <div
-                      class="rcx-box rcx-box--full rcx-sidebar-item__timestamp"
+                      class="rcx-item__meta rcx-sidebar-item__timestamp"
                     >
                       11:22:21 AM
                     </div>
                   </div>
                   <div
-                    class="rcx-box rcx-box--full rcx-sidebar-item__row"
+                    class="rcx-item__row rcx-sidebar-item__row"
                   >
                     <div
-                      class="rcx-box rcx-box--full rcx-sidebar-item__subtitle"
+                      class="rcx-item__description rcx-sidebar-item__subtitle"
                     >
                       Lorem Ipsum Indolor Dolor Ipsum Ipsum
                     </div>
@@ -1631,28 +1732,32 @@ exports[`renders Default without crashing 1`] = `
                       17
                     </span>
                     <div
-                      class="rcx-box rcx-box--full rcx-sidebar-item__menu-wrapper rcx-box--animated"
+                      class="rcx-item__actions rcx-item__actions--reveal-hover rcx-sidebar-item__menu-wrapper"
                     >
-                      <span
-                        class="rcx-box rcx-box--full rcx-sidebar-item__menu rcx-sidebar-item__menu"
+                      <div
+                        class="rcx-item__actions-inner"
                       >
-                        <button
-                          aria-expanded="false"
-                          aria-haspopup="true"
-                          aria-label="Options"
-                          class="rcx-box rcx-box--full rcx-button--mini-square rcx-button--square rcx-button--icon rcx-button"
-                          id="react-aria-_r_s_"
-                          title="Options"
-                          type="button"
+                        <span
+                          class="rcx-box rcx-box--full rcx-sidebar-item__menu rcx-sidebar-item__menu"
                         >
-                          <i
-                            aria-hidden="true"
-                            class="rcx-box rcx-box--full rcx-icon--name-kebab rcx-icon rcx-css-1tg7yd0"
+                          <button
+                            aria-expanded="false"
+                            aria-haspopup="true"
+                            aria-label="Options"
+                            class="rcx-box rcx-box--full rcx-button--mini-square rcx-button--square rcx-button--icon rcx-button"
+                            id="react-aria-_r_1q_"
+                            title="Options"
+                            type="button"
                           >
-                            
-                          </i>
-                        </button>
-                      </span>
+                            <i
+                              aria-hidden="true"
+                              class="rcx-box rcx-box--full rcx-icon--name-kebab rcx-icon rcx-css-1tg7yd0"
+                            >
+                              
+                            </i>
+                          </button>
+                        </span>
+                      </div>
                     </div>
                   </div>
                 </div>
@@ -1663,17 +1768,17 @@ exports[`renders Default without crashing 1`] = `
               role="listitem"
             >
               <a
-                class="rcx-box rcx-box--full rcx-sidebar-item rcx-sidebar-item--level-2"
+                class="rcx-item rcx-item--inset-md rcx-sidebar-item rcx-sidebar-item--level-2"
                 href="#"
               >
                 <div
-                  class="rcx-box rcx-box--full rcx-sidebar-item__col"
+                  class="rcx-item__content rcx-sidebar-item__col"
                 >
                   <div
-                    class="rcx-box rcx-box--full rcx-sidebar-item__row"
+                    class="rcx-item__row rcx-sidebar-item__row"
                   >
                     <div
-                      class="rcx-box rcx-box--full rcx-sidebar-item__avatar"
+                      class="rcx-item__media rcx-sidebar-item__avatar"
                     >
                       <figure
                         class="rcx-box rcx-box--full rcx-avatar rcx-avatar--x20"
@@ -1686,7 +1791,9 @@ exports[`renders Default without crashing 1`] = `
                       </figure>
                     </div>
                     <div
-                      class="rcx-box rcx-box--full rcx-sidebar-item__icon"
+                      aria-hidden="true"
+                      class="rcx-item__icon rcx-sidebar-item__icon"
+                      id="_r_1s_"
                     >
                       <i
                         aria-hidden="true"
@@ -1696,21 +1803,22 @@ exports[`renders Default without crashing 1`] = `
                       </i>
                     </div>
                     <div
-                      class="rcx-box rcx-box--full rcx-sidebar-item__title"
+                      class="rcx-item__title rcx-sidebar-item__title"
+                      id="_r_1t_"
                     >
                       Jane Doe
                     </div>
                     <div
-                      class="rcx-box rcx-box--full rcx-sidebar-item__timestamp"
+                      class="rcx-item__meta rcx-sidebar-item__timestamp"
                     >
                       11:22:21 AM
                     </div>
                   </div>
                   <div
-                    class="rcx-box rcx-box--full rcx-sidebar-item__row"
+                    class="rcx-item__row rcx-sidebar-item__row"
                   >
                     <div
-                      class="rcx-box rcx-box--full rcx-sidebar-item__subtitle"
+                      class="rcx-item__description rcx-sidebar-item__subtitle"
                     >
                       Lorem Ipsum Indolor Dolor Ipsum Ipsum
                     </div>
@@ -1737,28 +1845,32 @@ exports[`renders Default without crashing 1`] = `
                       18
                     </span>
                     <div
-                      class="rcx-box rcx-box--full rcx-sidebar-item__menu-wrapper rcx-box--animated"
+                      class="rcx-item__actions rcx-item__actions--reveal-hover rcx-sidebar-item__menu-wrapper"
                     >
-                      <span
-                        class="rcx-box rcx-box--full rcx-sidebar-item__menu rcx-sidebar-item__menu"
+                      <div
+                        class="rcx-item__actions-inner"
                       >
-                        <button
-                          aria-expanded="false"
-                          aria-haspopup="true"
-                          aria-label="Options"
-                          class="rcx-box rcx-box--full rcx-button--mini-square rcx-button--square rcx-button--icon rcx-button"
-                          id="react-aria-_r_u_"
-                          title="Options"
-                          type="button"
+                        <span
+                          class="rcx-box rcx-box--full rcx-sidebar-item__menu rcx-sidebar-item__menu"
                         >
-                          <i
-                            aria-hidden="true"
-                            class="rcx-box rcx-box--full rcx-icon--name-kebab rcx-icon rcx-css-1tg7yd0"
+                          <button
+                            aria-expanded="false"
+                            aria-haspopup="true"
+                            aria-label="Options"
+                            class="rcx-box rcx-box--full rcx-button--mini-square rcx-button--square rcx-button--icon rcx-button"
+                            id="react-aria-_r_1u_"
+                            title="Options"
+                            type="button"
                           >
-                            
-                          </i>
-                        </button>
-                      </span>
+                            <i
+                              aria-hidden="true"
+                              class="rcx-box rcx-box--full rcx-icon--name-kebab rcx-icon rcx-css-1tg7yd0"
+                            >
+                              
+                            </i>
+                          </button>
+                        </span>
+                      </div>
                     </div>
                   </div>
                 </div>
@@ -1769,17 +1881,17 @@ exports[`renders Default without crashing 1`] = `
               role="listitem"
             >
               <a
-                class="rcx-box rcx-box--full rcx-sidebar-item rcx-sidebar-item--level-2"
+                class="rcx-item rcx-item--inset-md rcx-sidebar-item rcx-sidebar-item--level-2"
                 href="#"
               >
                 <div
-                  class="rcx-box rcx-box--full rcx-sidebar-item__col"
+                  class="rcx-item__content rcx-sidebar-item__col"
                 >
                   <div
-                    class="rcx-box rcx-box--full rcx-sidebar-item__row"
+                    class="rcx-item__row rcx-sidebar-item__row"
                   >
                     <div
-                      class="rcx-box rcx-box--full rcx-sidebar-item__avatar"
+                      class="rcx-item__media rcx-sidebar-item__avatar"
                     >
                       <figure
                         class="rcx-box rcx-box--full rcx-avatar rcx-avatar--x20"
@@ -1792,7 +1904,9 @@ exports[`renders Default without crashing 1`] = `
                       </figure>
                     </div>
                     <div
-                      class="rcx-box rcx-box--full rcx-sidebar-item__icon"
+                      aria-hidden="true"
+                      class="rcx-item__icon rcx-sidebar-item__icon"
+                      id="_r_20_"
                     >
                       <i
                         aria-hidden="true"
@@ -1802,21 +1916,22 @@ exports[`renders Default without crashing 1`] = `
                       </i>
                     </div>
                     <div
-                      class="rcx-box rcx-box--full rcx-sidebar-item__title"
+                      class="rcx-item__title rcx-sidebar-item__title"
+                      id="_r_21_"
                     >
                       Baz Qux
                     </div>
                     <div
-                      class="rcx-box rcx-box--full rcx-sidebar-item__timestamp"
+                      class="rcx-item__meta rcx-sidebar-item__timestamp"
                     >
                       11:22:21 AM
                     </div>
                   </div>
                   <div
-                    class="rcx-box rcx-box--full rcx-sidebar-item__row"
+                    class="rcx-item__row rcx-sidebar-item__row"
                   >
                     <div
-                      class="rcx-box rcx-box--full rcx-sidebar-item__subtitle"
+                      class="rcx-item__description rcx-sidebar-item__subtitle"
                     >
                       Lorem Ipsum Indolor Dolor Ipsum Ipsum
                     </div>
@@ -1843,28 +1958,32 @@ exports[`renders Default without crashing 1`] = `
                       19
                     </span>
                     <div
-                      class="rcx-box rcx-box--full rcx-sidebar-item__menu-wrapper rcx-box--animated"
+                      class="rcx-item__actions rcx-item__actions--reveal-hover rcx-sidebar-item__menu-wrapper"
                     >
-                      <span
-                        class="rcx-box rcx-box--full rcx-sidebar-item__menu rcx-sidebar-item__menu"
+                      <div
+                        class="rcx-item__actions-inner"
                       >
-                        <button
-                          aria-expanded="false"
-                          aria-haspopup="true"
-                          aria-label="Options"
-                          class="rcx-box rcx-box--full rcx-button--mini-square rcx-button--square rcx-button--icon rcx-button"
-                          id="react-aria-_r_10_"
-                          title="Options"
-                          type="button"
+                        <span
+                          class="rcx-box rcx-box--full rcx-sidebar-item__menu rcx-sidebar-item__menu"
                         >
-                          <i
-                            aria-hidden="true"
-                            class="rcx-box rcx-box--full rcx-icon--name-kebab rcx-icon rcx-css-1tg7yd0"
+                          <button
+                            aria-expanded="false"
+                            aria-haspopup="true"
+                            aria-label="Options"
+                            class="rcx-box rcx-box--full rcx-button--mini-square rcx-button--square rcx-button--icon rcx-button"
+                            id="react-aria-_r_22_"
+                            title="Options"
+                            type="button"
                           >
-                            
-                          </i>
-                        </button>
-                      </span>
+                            <i
+                              aria-hidden="true"
+                              class="rcx-box rcx-box--full rcx-icon--name-kebab rcx-icon rcx-css-1tg7yd0"
+                            >
+                              
+                            </i>
+                          </button>
+                        </span>
+                      </div>
                     </div>
                   </div>
                 </div>
@@ -1875,17 +1994,17 @@ exports[`renders Default without crashing 1`] = `
               role="listitem"
             >
               <a
-                class="rcx-box rcx-box--full rcx-sidebar-item rcx-sidebar-item--level-2"
+                class="rcx-item rcx-item--inset-md rcx-sidebar-item rcx-sidebar-item--level-2"
                 href="#"
               >
                 <div
-                  class="rcx-box rcx-box--full rcx-sidebar-item__col"
+                  class="rcx-item__content rcx-sidebar-item__col"
                 >
                   <div
-                    class="rcx-box rcx-box--full rcx-sidebar-item__row"
+                    class="rcx-item__row rcx-sidebar-item__row"
                   >
                     <div
-                      class="rcx-box rcx-box--full rcx-sidebar-item__avatar"
+                      class="rcx-item__media rcx-sidebar-item__avatar"
                     >
                       <figure
                         class="rcx-box rcx-box--full rcx-avatar rcx-avatar--x20"
@@ -1898,7 +2017,9 @@ exports[`renders Default without crashing 1`] = `
                       </figure>
                     </div>
                     <div
-                      class="rcx-box rcx-box--full rcx-sidebar-item__icon"
+                      aria-hidden="true"
+                      class="rcx-item__icon rcx-sidebar-item__icon"
+                      id="_r_24_"
                     >
                       <i
                         aria-hidden="true"
@@ -1908,21 +2029,22 @@ exports[`renders Default without crashing 1`] = `
                       </i>
                     </div>
                     <div
-                      class="rcx-box rcx-box--full rcx-sidebar-item__title"
+                      class="rcx-item__title rcx-sidebar-item__title"
+                      id="_r_25_"
                     >
                       Alice Bob
                     </div>
                     <div
-                      class="rcx-box rcx-box--full rcx-sidebar-item__timestamp"
+                      class="rcx-item__meta rcx-sidebar-item__timestamp"
                     >
                       11:22:21 AM
                     </div>
                   </div>
                   <div
-                    class="rcx-box rcx-box--full rcx-sidebar-item__row"
+                    class="rcx-item__row rcx-sidebar-item__row"
                   >
                     <div
-                      class="rcx-box rcx-box--full rcx-sidebar-item__subtitle"
+                      class="rcx-item__description rcx-sidebar-item__subtitle"
                     >
                       Lorem Ipsum Indolor Dolor Ipsum Ipsum
                     </div>
@@ -1949,28 +2071,32 @@ exports[`renders Default without crashing 1`] = `
                       20
                     </span>
                     <div
-                      class="rcx-box rcx-box--full rcx-sidebar-item__menu-wrapper rcx-box--animated"
+                      class="rcx-item__actions rcx-item__actions--reveal-hover rcx-sidebar-item__menu-wrapper"
                     >
-                      <span
-                        class="rcx-box rcx-box--full rcx-sidebar-item__menu rcx-sidebar-item__menu"
+                      <div
+                        class="rcx-item__actions-inner"
                       >
-                        <button
-                          aria-expanded="false"
-                          aria-haspopup="true"
-                          aria-label="Options"
-                          class="rcx-box rcx-box--full rcx-button--mini-square rcx-button--square rcx-button--icon rcx-button"
-                          id="react-aria-_r_12_"
-                          title="Options"
-                          type="button"
+                        <span
+                          class="rcx-box rcx-box--full rcx-sidebar-item__menu rcx-sidebar-item__menu"
                         >
-                          <i
-                            aria-hidden="true"
-                            class="rcx-box rcx-box--full rcx-icon--name-kebab rcx-icon rcx-css-1tg7yd0"
+                          <button
+                            aria-expanded="false"
+                            aria-haspopup="true"
+                            aria-label="Options"
+                            class="rcx-box rcx-box--full rcx-button--mini-square rcx-button--square rcx-button--icon rcx-button"
+                            id="react-aria-_r_26_"
+                            title="Options"
+                            type="button"
                           >
-                            
-                          </i>
-                        </button>
-                      </span>
+                            <i
+                              aria-hidden="true"
+                              class="rcx-box rcx-box--full rcx-icon--name-kebab rcx-icon rcx-css-1tg7yd0"
+                            >
+                              
+                            </i>
+                          </button>
+                        </span>
+                      </div>
                     </div>
                   </div>
                 </div>
@@ -1981,17 +2107,17 @@ exports[`renders Default without crashing 1`] = `
               role="listitem"
             >
               <a
-                class="rcx-box rcx-box--full rcx-sidebar-item rcx-sidebar-item--level-2"
+                class="rcx-item rcx-item--inset-md rcx-sidebar-item rcx-sidebar-item--level-2"
                 href="#"
               >
                 <div
-                  class="rcx-box rcx-box--full rcx-sidebar-item__col"
+                  class="rcx-item__content rcx-sidebar-item__col"
                 >
                   <div
-                    class="rcx-box rcx-box--full rcx-sidebar-item__row"
+                    class="rcx-item__row rcx-sidebar-item__row"
                   >
                     <div
-                      class="rcx-box rcx-box--full rcx-sidebar-item__avatar"
+                      class="rcx-item__media rcx-sidebar-item__avatar"
                     >
                       <figure
                         class="rcx-box rcx-box--full rcx-avatar rcx-avatar--x20"
@@ -2004,7 +2130,9 @@ exports[`renders Default without crashing 1`] = `
                       </figure>
                     </div>
                     <div
-                      class="rcx-box rcx-box--full rcx-sidebar-item__icon"
+                      aria-hidden="true"
+                      class="rcx-item__icon rcx-sidebar-item__icon"
+                      id="_r_28_"
                     >
                       <i
                         aria-hidden="true"
@@ -2014,21 +2142,22 @@ exports[`renders Default without crashing 1`] = `
                       </i>
                     </div>
                     <div
-                      class="rcx-box rcx-box--full rcx-sidebar-item__title"
+                      class="rcx-item__title rcx-sidebar-item__title"
+                      id="_r_29_"
                     >
                       Charlie Delta
                     </div>
                     <div
-                      class="rcx-box rcx-box--full rcx-sidebar-item__timestamp"
+                      class="rcx-item__meta rcx-sidebar-item__timestamp"
                     >
                       11:22:21 AM
                     </div>
                   </div>
                   <div
-                    class="rcx-box rcx-box--full rcx-sidebar-item__row"
+                    class="rcx-item__row rcx-sidebar-item__row"
                   >
                     <div
-                      class="rcx-box rcx-box--full rcx-sidebar-item__subtitle"
+                      class="rcx-item__description rcx-sidebar-item__subtitle"
                     >
                       Lorem Ipsum Indolor Dolor Ipsum Ipsum
                     </div>
@@ -2055,28 +2184,32 @@ exports[`renders Default without crashing 1`] = `
                       21
                     </span>
                     <div
-                      class="rcx-box rcx-box--full rcx-sidebar-item__menu-wrapper rcx-box--animated"
+                      class="rcx-item__actions rcx-item__actions--reveal-hover rcx-sidebar-item__menu-wrapper"
                     >
-                      <span
-                        class="rcx-box rcx-box--full rcx-sidebar-item__menu rcx-sidebar-item__menu"
+                      <div
+                        class="rcx-item__actions-inner"
                       >
-                        <button
-                          aria-expanded="false"
-                          aria-haspopup="true"
-                          aria-label="Options"
-                          class="rcx-box rcx-box--full rcx-button--mini-square rcx-button--square rcx-button--icon rcx-button"
-                          id="react-aria-_r_14_"
-                          title="Options"
-                          type="button"
+                        <span
+                          class="rcx-box rcx-box--full rcx-sidebar-item__menu rcx-sidebar-item__menu"
                         >
-                          <i
-                            aria-hidden="true"
-                            class="rcx-box rcx-box--full rcx-icon--name-kebab rcx-icon rcx-css-1tg7yd0"
+                          <button
+                            aria-expanded="false"
+                            aria-haspopup="true"
+                            aria-label="Options"
+                            class="rcx-box rcx-box--full rcx-button--mini-square rcx-button--square rcx-button--icon rcx-button"
+                            id="react-aria-_r_2a_"
+                            title="Options"
+                            type="button"
                           >
-                            
-                          </i>
-                        </button>
-                      </span>
+                            <i
+                              aria-hidden="true"
+                              class="rcx-box rcx-box--full rcx-icon--name-kebab rcx-icon rcx-css-1tg7yd0"
+                            >
+                              
+                            </i>
+                          </button>
+                        </span>
+                      </div>
                     </div>
                   </div>
                 </div>
@@ -2087,17 +2220,17 @@ exports[`renders Default without crashing 1`] = `
               role="listitem"
             >
               <a
-                class="rcx-box rcx-box--full rcx-sidebar-item rcx-sidebar-item--level-2"
+                class="rcx-item rcx-item--inset-md rcx-sidebar-item rcx-sidebar-item--level-2"
                 href="#"
               >
                 <div
-                  class="rcx-box rcx-box--full rcx-sidebar-item__col"
+                  class="rcx-item__content rcx-sidebar-item__col"
                 >
                   <div
-                    class="rcx-box rcx-box--full rcx-sidebar-item__row"
+                    class="rcx-item__row rcx-sidebar-item__row"
                   >
                     <div
-                      class="rcx-box rcx-box--full rcx-sidebar-item__avatar"
+                      class="rcx-item__media rcx-sidebar-item__avatar"
                     >
                       <figure
                         class="rcx-box rcx-box--full rcx-avatar rcx-avatar--x20"
@@ -2110,7 +2243,9 @@ exports[`renders Default without crashing 1`] = `
                       </figure>
                     </div>
                     <div
-                      class="rcx-box rcx-box--full rcx-sidebar-item__icon"
+                      aria-hidden="true"
+                      class="rcx-item__icon rcx-sidebar-item__icon"
+                      id="_r_2c_"
                     >
                       <i
                         aria-hidden="true"
@@ -2120,21 +2255,22 @@ exports[`renders Default without crashing 1`] = `
                       </i>
                     </div>
                     <div
-                      class="rcx-box rcx-box--full rcx-sidebar-item__title"
+                      class="rcx-item__title rcx-sidebar-item__title"
+                      id="_r_2d_"
                     >
                       Eve Mallory
                     </div>
                     <div
-                      class="rcx-box rcx-box--full rcx-sidebar-item__timestamp"
+                      class="rcx-item__meta rcx-sidebar-item__timestamp"
                     >
                       11:22:21 AM
                     </div>
                   </div>
                   <div
-                    class="rcx-box rcx-box--full rcx-sidebar-item__row"
+                    class="rcx-item__row rcx-sidebar-item__row"
                   >
                     <div
-                      class="rcx-box rcx-box--full rcx-sidebar-item__subtitle"
+                      class="rcx-item__description rcx-sidebar-item__subtitle"
                     >
                       Lorem Ipsum Indolor Dolor Ipsum Ipsum
                     </div>
@@ -2161,28 +2297,32 @@ exports[`renders Default without crashing 1`] = `
                       22
                     </span>
                     <div
-                      class="rcx-box rcx-box--full rcx-sidebar-item__menu-wrapper rcx-box--animated"
+                      class="rcx-item__actions rcx-item__actions--reveal-hover rcx-sidebar-item__menu-wrapper"
                     >
-                      <span
-                        class="rcx-box rcx-box--full rcx-sidebar-item__menu rcx-sidebar-item__menu"
+                      <div
+                        class="rcx-item__actions-inner"
                       >
-                        <button
-                          aria-expanded="false"
-                          aria-haspopup="true"
-                          aria-label="Options"
-                          class="rcx-box rcx-box--full rcx-button--mini-square rcx-button--square rcx-button--icon rcx-button"
-                          id="react-aria-_r_16_"
-                          title="Options"
-                          type="button"
+                        <span
+                          class="rcx-box rcx-box--full rcx-sidebar-item__menu rcx-sidebar-item__menu"
                         >
-                          <i
-                            aria-hidden="true"
-                            class="rcx-box rcx-box--full rcx-icon--name-kebab rcx-icon rcx-css-1tg7yd0"
+                          <button
+                            aria-expanded="false"
+                            aria-haspopup="true"
+                            aria-label="Options"
+                            class="rcx-box rcx-box--full rcx-button--mini-square rcx-button--square rcx-button--icon rcx-button"
+                            id="react-aria-_r_2e_"
+                            title="Options"
+                            type="button"
                           >
-                            
-                          </i>
-                        </button>
-                      </span>
+                            <i
+                              aria-hidden="true"
+                              class="rcx-box rcx-box--full rcx-icon--name-kebab rcx-icon rcx-css-1tg7yd0"
+                            >
+                              
+                            </i>
+                          </button>
+                        </span>
+                      </div>
                     </div>
                   </div>
                 </div>

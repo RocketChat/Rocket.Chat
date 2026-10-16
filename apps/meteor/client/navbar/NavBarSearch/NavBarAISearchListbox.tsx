@@ -4,7 +4,7 @@ import { emptySearchFilters, type NavBarSearchFormValues } from '@rocket.chat/ai
 import { Tile } from '@rocket.chat/fuselage';
 import { useOutsideClick, useStableCallback } from '@rocket.chat/fuselage-hooks';
 import { CustomScrollbars } from '@rocket.chat/ui-client';
-import { useRef } from 'react';
+import { useMemo, useRef } from 'react';
 import { useFormContext } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 
@@ -13,7 +13,7 @@ import NavBarSearchIntelligentSection from './NavBarSearchIntelligentSection';
 import NavBarSearchRoomSection from './NavBarSearchRoomSection';
 import { useAISearchItems } from './hooks/useAISearchItems';
 import { useAISearchRooms } from './hooks/useAISearchRooms';
-import { useListboxNavigation } from './hooks/useSearchNavigation';
+import { useSyncSearchOptions } from './hooks/useSearchActiveOption';
 import ResultsLiveRegion from '../../components/ResultsLiveRegion';
 
 export type NavBarAISearchListBoxProps = {
@@ -27,7 +27,6 @@ const NavBarAISearchListBox = ({ state, overlayProps, aiSearchActive, aiSearchAv
 	const { t } = useTranslation();
 	const containerRef = useRef<HTMLElement>(null);
 
-	const handleKeyDown = useListboxNavigation(state);
 	useOutsideClick([containerRef], state.close);
 
 	const { resetField, setValue, watch } = useFormContext<NavBarSearchFormValues>();
@@ -41,6 +40,7 @@ const NavBarAISearchListBox = ({ state, overlayProps, aiSearchActive, aiSearchAv
 
 	const { data: aiItems, isFetching } = useAISearchItems(filterText, appliedFilters, aiSearchActive);
 	const { items: rooms, isLoading } = useAISearchRooms(aiSearchActive ? aiItems.searchText : filterText);
+	useSyncSearchOptions(useMemo(() => [rooms, aiItems], [rooms, aiItems]));
 	const itemCount = rooms.length + aiItems.intelligent.length + aiItems.filterSuggestions.length;
 	const isSearchLoading = isLoading || isFetching;
 	const listboxLabel = aiSearchActive ? t('AI_Search_results') : t('Channels');
@@ -61,7 +61,14 @@ const NavBarAISearchListBox = ({ state, overlayProps, aiSearchActive, aiSearchAv
 		>
 			<ResultsLiveRegion shouldAnnounce={!isSearchLoading} itemCount={itemCount} isLoading={isSearchLoading} />
 			<CustomScrollbars>
-				<div {...overlayProps} role='listbox' aria-label={listboxLabel} aria-busy={isSearchLoading} tabIndex={-1} onKeyDown={handleKeyDown}>
+				<div
+					{...overlayProps}
+					role='listbox'
+					aria-label={listboxLabel}
+					aria-busy={isSearchLoading}
+					tabIndex={-1}
+					onMouseDown={(event) => event.preventDefault()}
+				>
 					<NavBarSearchIntelligentSection items={aiItems.intelligent} onSelect={handleSelect} onClose={state.close} />
 					<NavBarSearchFilterSuggestions suggestions={aiItems.filterSuggestions} />
 					<NavBarSearchRoomSection

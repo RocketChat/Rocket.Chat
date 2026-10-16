@@ -23,10 +23,10 @@ import {
 	SidebarItemTitle,
 	SidebarListItem,
 } from '.';
-import { Menu, MenuItem } from '../..';
 import { Avatar } from '../Avatar';
 import { Box } from '../Box';
 import { IconButton } from '../Button';
+import { Menu, MenuItem } from '../Menu';
 import type { SidebarItemProps } from './SidebarItem/SidebarItem';
 
 export const leterAvatarUrls = [
