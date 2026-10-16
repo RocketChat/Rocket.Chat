@@ -1,0 +1,19 @@
+apps/meteor/client/lib/authorization/createAuthorizationFunctions.ts
+  s_d5b766d9546b5e::t_baf1a7e2d5d5bf 59
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.2",
+  "base_commit_sha": "a8d8be4a76e6ad79b70d2dd8b451ea47a7785c99",
+  "prompts": {},
+  "sessions": {
+    "s_d5b766d9546b5e": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "e8d9e7c5-7855-4359-bb24-f84c2c7c179e",
+        "model": "claude-opus-5-5"
+      },
+      "human_author": "Ricardo Garim <rswarovsky@gmail.com>"
+    }
+  }
+}
