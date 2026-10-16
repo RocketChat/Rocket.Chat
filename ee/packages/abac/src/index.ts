@@ -230,6 +230,13 @@ export class AbacService extends ServiceClass implements IAbacService {
 		if (!(await License.hasModule('abac'))) {
 			return;
 		}
+
+		try {
+			await Settings.set('ABAC_Required_Attributes', []);
+		} catch (err) {
+			logger.error({ msg: 'Failed to clear ABAC_Required_Attributes on attribute store switch', err });
+		}
+
 		const { modifiedCount } = await Rooms.unsetAllAbacAttributes();
 		if (modifiedCount > 0) {
 			void Audit.attributeStoreSwitched(from, to, modifiedCount);
@@ -356,6 +363,10 @@ export class AbacService extends ServiceClass implements IAbacService {
 		total: number;
 	}> {
 		return (await this.resolveAttributeStore()).list(actor, filters);
+	}
+
+	async listAbacAttributeKeys(actor?: AbacActor): Promise<string[]> {
+		return (await this.resolveAttributeStore()).listAttributeKeys(actor);
 	}
 
 	async listAbacRooms(
@@ -806,9 +817,94 @@ export class AbacService extends ServiceClass implements IAbacService {
 		await this.ensurePdpAvailable();
 		await this.pdp.checkUsernamesMatchAttributes(usernames, attributes, object);
 
-		usernames.forEach((username) => {
-			void Audit.actionPerformed({ username }, { _id: object._id, name: object.name }, 'system', 'granted-object-access');
-		});
+		void Audit.objectAccessGranted(
+			usernames.map((username) => ({ subject: { username }, object: { _id: object._id, name: object.name } })),
+		);
+	}
+
+	async filterUsersAllowedInRoom(
+		userIds: string[],
+		room: Pick<IRoom, '_id' | 'name' | 'abacAttributes'>,
+		options?: { audit?: boolean },
+	): Promise<string[]> {
+		const attributes = room.abacAttributes ?? [];
+		if (!userIds.length || !attributes.length) {
+			return userIds;
+		}
+
+		if (!(await this.pdp?.isAvailable())) {
+			logger.warn({ msg: 'PDP unavailable, no user admitted to the ABAC room', rid: room._id });
+			return [];
+		}
+
+		try {
+			const subjects = await Users.findByIds(userIds, { projection: { _id: 1, username: 1, emails: 1 } }).toArray();
+			const evaluation = await this.pdp?.evaluateSubjectsAgainstAttributes(subjects, attributes, room);
+			const allowed = new Set(evaluation?.compliant);
+
+			if (options?.audit !== false) {
+				void Audit.objectAccessGranted(
+					subjects
+						.filter(({ _id }) => allowed.has(_id))
+						.map(({ _id, username }) => ({ subject: { _id, username }, object: { _id: room._id, name: room.name } })),
+				);
+			}
+
+			return userIds.filter((id) => allowed.has(id));
+		} catch (err) {
+			logger.error({ msg: 'Failed to evaluate users against the ABAC room', rid: room._id, err });
+			return [];
+		}
+	}
+
+	async filterRoomsAllowedForUser(
+		userId: string,
+		rooms: Pick<IRoom, '_id' | 'name' | 'abacAttributes'>[],
+		options?: { refreshAttributes?: boolean; audit?: boolean },
+	): Promise<string[]> {
+		if (!rooms.length) {
+			return [];
+		}
+
+		if (!(await this.pdp?.isAvailable())) {
+			logger.warn({ msg: 'PDP unavailable, no ABAC room admits the user', uid: userId });
+			return [];
+		}
+
+		if (options?.refreshAttributes) {
+			try {
+				await this.pdp?.refreshSubjectAttributes([userId]);
+			} catch (err) {
+				logger.error({ msg: 'Failed to refresh the user attributes before evaluating the ABAC rooms', uid: userId, err });
+			}
+		}
+
+		try {
+			const subject = await Users.findOneById<Pick<IUser, '_id' | 'username' | 'emails' | 'abacAttributes'>>(userId, {
+				projection: { _id: 1, username: 1, emails: 1, abacAttributes: 1 },
+			});
+			if (!subject) {
+				return [];
+			}
+
+			const evaluation = await this.pdp?.evaluateSubjectAgainstRooms(subject, rooms);
+			const permitted = new Set(evaluation?.compliant);
+			const granted = rooms.filter(({ _id }) => permitted.has(_id));
+
+			if (options?.audit !== false) {
+				void Audit.objectAccessGranted(
+					granted.map((room) => ({
+						subject: { _id: subject._id, username: subject.username },
+						object: { _id: room._id, name: room.name },
+					})),
+				);
+			}
+
+			return granted.map(({ _id }) => _id);
+		} catch (err) {
+			logger.error({ msg: 'Failed to evaluate the ABAC rooms for the user', uid: userId, err });
+			return [];
+		}
 	}
 
 	private pdpType: AbacPdpType = 'local';

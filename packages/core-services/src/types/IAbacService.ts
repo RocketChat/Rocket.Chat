@@ -23,6 +23,7 @@ export interface IAbacService {
 		},
 		actor?: AbacActor,
 	): Promise<{ attributes: Pick<IAbacAttribute, '_id' | 'key' | 'values'>[]; offset: number; count: number; total: number }>;
+	listAbacAttributeKeys(actor?: AbacActor): Promise<string[]>;
 	listAbacRooms(
 		filters?: {
 			offset?: number;
@@ -42,6 +43,16 @@ export interface IAbacService {
 	addRoomAbacAttributeByKey(rid: string, key: string, values: string[], actor: AbacActor | undefined): Promise<void>;
 	replaceRoomAbacAttributeByKey(rid: string, key: string, values: string[], actor: AbacActor | undefined): Promise<void>;
 	checkUsernamesMatchAttributes(usernames: string[], attributes: IAbacAttributeDefinition[], object: IRoom): Promise<void>;
+	filterUsersAllowedInRoom(
+		userIds: string[],
+		room: Pick<IRoom, '_id' | 'name' | 'abacAttributes'>,
+		options?: { audit?: boolean },
+	): Promise<string[]>;
+	filterRoomsAllowedForUser(
+		userId: string,
+		rooms: Pick<IRoom, '_id' | 'name' | 'abacAttributes'>[],
+		options?: { refreshAttributes?: boolean; audit?: boolean },
+	): Promise<string[]>;
 	canAccessObject(
 		room: Pick<IRoom, '_id' | 't' | 'teamId' | 'prid' | 'abacAttributes'>,
 		user: Pick<IUser, '_id'>,
