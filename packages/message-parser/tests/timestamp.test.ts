@@ -53,6 +53,9 @@ test.each([
 	['<t:2025-07-22T10:00:00.000+00:00:R>', '1753178400', 'R' as const],
 	['<t:2025-07-22T10:00:00+00:00:R>', '1753178400', 'R' as const],
 	['<t:2025-07-24T20:19:58.154+00:00:R>', '1753388398', 'R' as const],
+	// Beyond the 2038-01-19 32-bit boundary: must not overflow to a negative
+	// (previously `| 0` turned this into -2085978496 -> a 1903 date).
+	['<t:2040-01-01T00:00:00.000+00:00:R>', '2208988800', 'R' as const],
 ])('parses %p', (input, value, format) => {
 	const node = timestampNode(value, format, [0, input.length]);
 	expect(parse(input)).toEqual([paragraph([node])]);
@@ -73,6 +76,29 @@ describe('relative hour timestamp parsing', () => {
 		['<t:10:00+00:00:R>', '1753178400', 'R' as const],
 		['<t:10:00:05+00:00>', '1753178405', 't' as const],
 		['<t:10:00+00:00>', '1753178400', 't' as const],
+	])('parses %p', (input, value, format) => {
+		const node = timestampNode(value, format, [0, input.length]);
+		expect(parse(input)).toEqual([paragraph([node])]);
+	});
+});
+
+describe('relative hour timestamp parsing beyond the 2038 boundary', () => {
+	beforeAll(() => {
+		jest.useFakeTimers();
+		// The hour-only path builds its date from the current clock, so it only
+		// overflows once the machine clock is past 2038-01-19. Pin the clock to
+		// 2040 to exercise that branch (previously `| 0` wrapped it negative).
+		jest.setSystemTime(new Date('2040-01-01T00:00:00.000Z'));
+	});
+
+	afterAll(() => {
+		jest.useRealTimers();
+	});
+
+	test.each([
+		['<t:10:00+00:00>', '2209024800', 't' as const],
+		['<t:10:00:05+00:00>', '2209024805', 't' as const],
+		['<t:10:00:00+00:00:R>', '2209024800', 'R' as const],
 	])('parses %p', (input, value, format) => {
 		const node = timestampNode(value, format, [0, input.length]);
 		expect(parse(input)).toEqual([paragraph([node])]);
