@@ -1,0 +1,43 @@
+ee/packages/xmpp-server/src/service/helpers/jid.ts
+  s_22158ff20cd246::t_02b6d7ac23fde6 1-7
+ee/packages/xmpp-server/src/service/helpers/presence.ts
+  s_22158ff20cd246::t_02b6d7ac23fde6 1-33
+ee/packages/xmpp-server/src/service/helpers/messageId.spec.ts
+  s_22158ff20cd246::t_02b6d7ac23fde6 1-31
+ee/packages/xmpp-server/src/index.ts
+  s_22158ff20cd246::t_02b6d7ac23fde6 12-14
+ee/packages/xmpp-server/src/service/configuration.ts
+  s_22158ff20cd246::t_02b6d7ac23fde6 1-54
+ee/packages/xmpp-server/src/service/helpers/remoteRoom.spec.ts
+  s_22158ff20cd246::t_02b6d7ac23fde6 1-24
+ee/packages/xmpp-server/src/service/helpers/messageId.ts
+  s_22158ff20cd246::t_02b6d7ac23fde6 1-33
+ee/packages/xmpp-server/src/service/helpers/remoteRoom.ts
+  s_22158ff20cd246::t_02b6d7ac23fde6 1-14
+ee/packages/xmpp-server/src/service/helpers/xmppUser.spec.ts
+  s_22158ff20cd246::t_02b6d7ac23fde6 1-46
+ee/packages/xmpp-server/tests/integration/service-observer.spec.ts
+  s_22158ff20cd246::t_02b6d7ac23fde6 1-141
+ee/packages/xmpp-server/src/service/XMPPServerService.ts
+  s_22158ff20cd246::t_02b6d7ac23fde6 1-893
+ee/packages/xmpp-server/src/service/helpers/xmppUser.ts
+  s_22158ff20cd246::t_02b6d7ac23fde6 1-16
+ee/packages/xmpp-server/src/service/helpers/presence.spec.ts
+  s_22158ff20cd246::t_02b6d7ac23fde6 1-23
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "7d64e9f5b19f1a29166feafa0e59b7815cf8aad3",
+  "prompts": {},
+  "sessions": {
+    "s_22158ff20cd246": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "e3bc8f7d-2ca9-481d-9c88-43497a3e53ec",
+        "model": "claude-opus-5-5"
+      },
+      "human_author": "Diego Sampaio <chinello@gmail.com>"
+    }
+  }
+}

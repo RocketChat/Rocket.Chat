@@ -1,0 +1,30 @@
+apps/meteor/ee/server/hooks/xmpp/index.ts
+  s_bf193bee63afbe::t_de81aad0d5be1c 91-100
+apps/meteor/client/navbar/NavBarPagesGroup/actions/CreateChannelModal.tsx
+  s_bf193bee63afbe::t_de81aad0d5be1c 155,158,228-229,360
+  s_bf193bee63afbe::t_dc465a3a3d9378 374-376
+ee/packages/xmpp-server/docs/specs/hosted-muc.md
+  s_bf193bee63afbe::t_c4b3ba710ff933 14-15,41-43
+apps/meteor/server/lib/e2e/beforeCreateRoom.ts
+  s_bf193bee63afbe::t_de81aad0d5be1c 11-15
+ee/packages/xmpp-server/tests/end-to-end/hosted-muc.spec.ts
+  s_bf193bee63afbe::t_137a21ee6a2535 72,77
+  s_bf193bee63afbe::t_c4b3ba710ff933 15,22,65-71,73-76,78-91
+  s_bf193bee63afbe::t_2f4f7383d8a683 92
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "6b2ae34be4c01d5cb8978c6323ecc55815ccdd91",
+  "prompts": {},
+  "sessions": {
+    "s_bf193bee63afbe": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "0f126c7e-b9e6-435d-856c-ef1cd07242d5",
+        "model": "claude-opus-5-5"
+      },
+      "human_author": "Diego Sampaio <chinello@gmail.com>"
+    }
+  }
+}
