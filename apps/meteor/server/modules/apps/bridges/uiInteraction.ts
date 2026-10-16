@@ -6,6 +6,7 @@ import { api } from '@rocket.chat/core-services';
 import type * as UiKit from '@rocket.chat/ui-kit';
 
 import { reportInvalidInteractionBlocks } from '../../../lib/uikit/reportInvalidBlocks';
+import { recordInteractionView } from '../../../lib/uikit/recordedViews';
 
 export class UiInteractionBridge extends AppsEngineUiInteractionBridge {
 	constructor(private readonly orch: IAppServerOrchestrator) {
@@ -22,6 +23,7 @@ export class UiInteractionBridge extends AppsEngineUiInteractionBridge {
 		}
 
 		reportInvalidInteractionBlocks(interaction, { where: 'ui interaction push', appId, userId: user.id });
+		await recordInteractionView(interaction, appId, user.id);
 
 		void api.broadcast('notify.uiInteraction', user.id, interaction as UiKit.ServerInteraction);
 	}
