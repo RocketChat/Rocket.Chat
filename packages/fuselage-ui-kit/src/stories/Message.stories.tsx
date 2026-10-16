@@ -144,3 +144,5 @@ export const InfoCardMultipleIcons = createStory(payloads.infoCardMultipleIcons)
 export const Table = createStory(payloads.table);
 
 export const Video = createStory(payloads.video);
+
+export const ContextActions = createStory(payloads.contextActions);

@@ -54,6 +54,17 @@ Source: [`packages/ui-kit/src/blocks/layout/ContextBlock.ts`](../../../packages/
 | `appId` | `string` | no |  |
 | `blockId` | `string` | no |  |
 
+### `context_actions`
+
+Source: [`packages/ui-kit/src/blocks/layout/ContextActionsBlock.ts`](../../../packages/ui-kit/src/blocks/layout/ContextActionsBlock.ts)
+
+| Field | Type | Required | Notes |
+| --- | --- | --- | --- |
+| `type` | `'context_actions'` | yes | A compact row of actions about the message it closes, such as copying or reporting it. |
+| `elements` | `readonly IconButtonElement[]` | yes | Each element gets the block's `appId` and `blockId` when it has none. |
+| `appId` | `string` | no |  |
+| `blockId` | `string` | no |  |
+
 ### `divider`
 
 Source: [`packages/ui-kit/src/blocks/layout/DividerBlock.ts`](../../../packages/ui-kit/src/blocks/layout/DividerBlock.ts)

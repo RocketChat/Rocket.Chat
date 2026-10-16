@@ -12,3 +12,4 @@ export * from './preview';
 export * from './infoCard';
 export * from './table';
 export * from './video';
+export * from './contextActions';
