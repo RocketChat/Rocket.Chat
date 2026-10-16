@@ -32,6 +32,15 @@ export function normalizeUserBareJid(jid: string): string {
 	return `${local}@${normalizeDomain(bare.slice(at + 1))}`;
 }
 
+/** `jid` with its domainpart replaced by `domain`, localpart and resource kept as they are. */
+export function withDomain(jid: string, domain: string): string {
+	const slash = jid.indexOf('/');
+	const bare = slash === -1 ? jid : jid.slice(0, slash);
+	const resource = slash === -1 ? '' : jid.slice(slash);
+	const at = bare.lastIndexOf('@');
+	return `${bare.slice(0, at + 1)}${domain}${resource}`;
+}
+
 /** A room's bare JID in the one spelling every reference to that room maps to; throws for anything that names no room. */
 export function normalizeRoomJid(jid: string): string {
 	const bare = normalizeUserBareJid(jid);

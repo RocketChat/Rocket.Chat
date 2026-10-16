@@ -4,7 +4,7 @@ import type Element from 'ltx/lib/Element';
 
 import type { ResolvedXMPPServerConfig } from '../config';
 import { InvalidJidError } from '../errors';
-import { isDomainAllowed, normalizeDomain } from '../jid/normalize';
+import { isDomainAllowed, normalizeDomain, withDomain } from '../jid/normalize';
 import type { Logger } from '../logger';
 import { XmppStream } from './XmppStream';
 import type { DialbackVerdict } from '../s2s/dialback';
@@ -325,6 +325,9 @@ export class InboundSession {
 			return this.stream.close({ condition: 'host-unknown' });
 		}
 
+		// Everything past this point compares JIDs, so each domain gets one spelling (addressing R4)
+		stanza.attrs.from = withDomain(from, fromDomain);
+		stanza.attrs.to = withDomain(to, toDomain);
 		this.deps.onStanza(stanza, this);
 	}
 

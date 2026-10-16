@@ -2,7 +2,16 @@
 status: implemented
 standards: [RFC 6122, XEP-0106]
 adrs: [0006, 0011, 0015]
-code: [src/jid/, src/service/helpers/jid.ts, src/service/helpers/remoteRoom.ts, src/service/helpers/xmppUser.ts, src/muc/RemoteMucSession.ts, src/XMPPServer.ts]
+code:
+  [
+    src/jid/,
+    src/stream/InboundSession.ts,
+    src/service/helpers/jid.ts,
+    src/service/helpers/remoteRoom.ts,
+    src/service/helpers/xmppUser.ts,
+    src/muc/RemoteMucSession.ts,
+    src/XMPPServer.ts,
+  ]
 tests:
   [
     src/jid/escaping.spec.ts,
@@ -10,6 +19,7 @@ tests:
     src/service/helpers/remoteRoom.spec.ts,
     src/service/helpers/xmppUser.spec.ts,
     src/muc/MucService.spec.ts,
+    tests/integration/inbound-addressing.spec.ts,
     tests/integration/muc.spec.ts,
     tests/end-to-end/remote-muc.spec.ts,
   ]
@@ -40,7 +50,9 @@ localparts, and compare domains the way DNS does.
   ([ADR 0006](../adr/0006-remote-users-are-local-users-keyed-by-bare-jid.md)).
 - **R4** Domains are normalized before any comparison: trimmed, trailing dot removed, IDNA
   converted to ASCII, lowercased. A domain that does not survive the conversion raises
-  `InvalidJidError` and the stanza or stream carrying it is rejected.
+  `InvalidJidError` and the stanza or stream carrying it is rejected. An accepted inbound
+  stanza's `from` and `to` carry their domains in normalized form, so a remote account has
+  one record and a message one event id however the peer spells its domain.
 - **R5** Allow and deny lists are evaluated on normalized domains. A domain on the deny list
   is refused regardless of the allow list; an empty allow list allows every domain.
 - **R6** The MUC service domain is `<subdomain>.<domain>`, normalized the same way.

@@ -1,6 +1,7 @@
 import net from 'node:net';
 
 import { Emitter } from '@rocket.chat/emitter';
+import type Element from 'ltx/lib/Element';
 
 import { resolveConfig } from '../../src/config';
 import type { XMPPServerEventMap } from '../../src/events';
@@ -22,6 +23,16 @@ const silentLogger: Logger = {
 };
 
 const secretOf = (domain: string) => `secret-of-${domain}`;
+
+async function waitUntil(condition: () => boolean, timeoutMs = 5000): Promise<void> {
+	const deadline = Date.now() + timeoutMs;
+	while (!condition()) {
+		if (Date.now() > deadline) {
+			throw new Error('Timed out');
+		}
+		await new Promise((resolve) => setTimeout(resolve, 20));
+	}
+}
 
 /** A peer speaking raw XML to the server under test, so it can send what a real server never would. */
 class RawPeer {
@@ -86,6 +97,7 @@ describe('Inbound stanza addressing (s2s-connectivity R6)', () => {
 
 	const managers: S2SManager[] = [];
 	const peers: RawPeer[] = [];
+	const dispatched: Element[] = [];
 
 	const startServer = async (domain: string): Promise<void> => {
 		const manager = new S2SManager({
@@ -100,7 +112,9 @@ describe('Inbound stanza addressing (s2s-connectivity R6)', () => {
 			logger: silentLogger,
 			resolver: loopbackResolver,
 			events: new Emitter<XMPPServerEventMap>(),
-			onStanza: () => undefined,
+			onStanza: (stanza) => {
+				dispatched.push(stanza);
+			},
 		});
 		await manager.startListener();
 		managers.push(manager);
@@ -124,6 +138,7 @@ describe('Inbound stanza addressing (s2s-connectivity R6)', () => {
 
 	afterEach(() => {
 		peers.splice(0).forEach((peer) => peer.destroy());
+		dispatched.length = 0;
 	});
 
 	afterAll(async () => {
@@ -156,5 +171,12 @@ describe('Inbound stanza addressing (s2s-connectivity R6)', () => {
 		const peer = await authenticatedPeer();
 		peer.write(stanza);
 		expect(await peer.streamError()).toBe('improper-addressing');
+	});
+
+	it('dispatches a stanza with both domains in their normalized spelling (addressing R4)', async () => {
+		const peer = await authenticatedPeer();
+		peer.write(`<message from='alice@A.Localhost./phone' to='Bob@B.LOCALHOST'><body>x</body></message>`);
+		await waitUntil(() => dispatched.length > 0);
+		expect(dispatched[0].attrs).toMatchObject({ from: 'alice@a.localhost/phone', to: 'Bob@b.localhost' });
 	});
 });
