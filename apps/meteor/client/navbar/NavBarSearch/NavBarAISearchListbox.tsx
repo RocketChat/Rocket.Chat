@@ -98,6 +98,8 @@ const NavBarAISearchListBox = ({
 								<ToggleSwitch aria-labelledby={aiSearchLabelId} checked={aiSearchActive} onChange={handleToggleAISearch} />
 							</Box>
 							{aiSearchActive && <NavBarSearchFilterTypeRow draft={aiItems.draft} />}
+							<NavBarSearchFilterSuggestions suggestions={aiItems.filterSuggestions} />
+							{aiSearchAvailable && <Divider marginBlockStart={12} />}
 							{hasAISearchProblem && (
 								<AISearchErrorCallout
 									role='alert'
@@ -120,8 +122,6 @@ const NavBarAISearchListBox = ({
 							onKeyDown={handleKeyDown}
 						>
 							<NavBarSearchIntelligentSection items={aiItems.intelligent} onSelect={handleSelect} onClose={state.close} />
-							<NavBarSearchFilterSuggestions suggestions={aiItems.filterSuggestions} />
-							{aiSearchAvailable && <Divider marginBlockStart={12} />}
 							<NavBarSearchRoomSection
 								filterText={filterText}
 								itemCount={itemCount}
