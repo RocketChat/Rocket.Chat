@@ -43,7 +43,7 @@ const SlaTable = ({ reload }: { reload: MutableRefObject<() => void> }) => {
 	const getSlaData = useEndpoint('GET', '/v1/livechat/sla');
 	const { data, isSuccess, isLoading, refetch, paginatedQuery, paginationProps } = usePaginatedQuery({
 		query,
-		getQueryKey: (query) => ['/v1/livechat/sla', query],
+		queryKey: ['/v1/livechat/sla', query],
 		queryFn: getSlaData,
 		itemsKey: 'sla',
 	});

@@ -39,7 +39,7 @@ const EmailInboxTable = () => {
 
 	const { paginationProps, ...result } = usePaginatedQuery({
 		query,
-		getQueryKey: (query) => ['email-list', query],
+		queryKey: ['email-list', query],
 		queryFn: endpoint,
 		itemsKey: 'emailInboxes',
 	});

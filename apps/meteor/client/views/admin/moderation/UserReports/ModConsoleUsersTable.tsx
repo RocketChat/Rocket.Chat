@@ -52,7 +52,7 @@ const ModConsoleUsersTable = () => {
 
 	const { data, isLoading, isSuccess, isError, refetch, paginationProps } = usePaginatedQuery({
 		query,
-		getQueryKey: (query) => ['moderation', 'userReports', 'fetchAll', query],
+		queryKey: ['moderation', 'userReports', 'fetchAll', query],
 		queryFn: getReports,
 		itemsKey: 'reports',
 		placeholderData: keepPreviousData,

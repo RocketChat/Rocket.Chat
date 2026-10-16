@@ -13,7 +13,7 @@ export const useCurrentContacts = (query: CurrentContactsQuery) => {
 
 	return usePaginatedQuery<CurrentContactsQuery, CurrentContactsResult>({
 		query,
-		getQueryKey: (query) => ['current-contacts', query],
+		queryKey: ['current-contacts', query],
 		queryFn: (query) => currentContacts(query) as unknown as Promise<CurrentContactsResult>,
 		itemsKey: 'contacts',
 	});

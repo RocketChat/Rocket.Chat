@@ -122,7 +122,7 @@ const CallHistoryPage = () => {
 
 	const { data, isPending, error, refetch, paginationProps } = usePaginatedQuery({
 		query,
-		getQueryKey: (query) => ['call-history', 'list', query],
+		queryKey: ['call-history', 'list', query],
 		queryFn: getCallHistory,
 		itemsKey: 'items',
 	});
