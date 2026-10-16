@@ -1208,39 +1208,19 @@ export class AbacService extends ServiceClass implements IAbacService {
 		room: Pick<IRoom, '_id' | 'name' | 'abacAttributes'>,
 		options?: { audit?: boolean },
 	): Promise<string[]> {
-		const result = await this.evaluateSubjectsAllowedInRoom(userIds, room);
-		if (!result.allowed) {
-			return [];
-		}
+		const result = await this.evaluateUsersAllowedInRoom(userIds, room, options);
 
-		if (options?.audit !== false) {
-			void Audit.objectAccessGranted(
-				result.admitted.map(({ _id, username }) => ({ subject: { _id, username }, object: { _id: room._id, name: room.name } })),
-			);
-		}
-
-		return result.userIds;
+		return result.allowed ? result.userIds : [];
 	}
 
 	async evaluateUsersAllowedInRoom(
 		userIds: string[],
 		room: Pick<IRoom, '_id' | 'name' | 'abacAttributes'>,
+		options?: { audit?: boolean },
 	): Promise<AbacUsersAllowedInRoomResult> {
-		const result = await this.evaluateSubjectsAllowedInRoom(userIds, room);
-
-		return result.allowed ? { allowed: true, userIds: result.userIds } : result;
-	}
-
-	private async evaluateSubjectsAllowedInRoom(
-		userIds: string[],
-		room: Pick<IRoom, '_id' | 'name' | 'abacAttributes'>,
-	): Promise<
-		| { allowed: true; userIds: string[]; admitted: Pick<IUser, '_id' | 'username'>[] }
-		| Extract<AbacUsersAllowedInRoomResult, { allowed: false }>
-	> {
 		const attributes = room.abacAttributes ?? [];
 		if (!userIds.length || !attributes.length) {
-			return { allowed: true, userIds, admitted: [] };
+			return { allowed: true, userIds };
 		}
 
 		if (!(await this.pdp?.isAvailable())) {
@@ -1253,11 +1233,15 @@ export class AbacService extends ServiceClass implements IAbacService {
 			const evaluation = await this.pdp?.evaluateSubjectsAgainstAttributes(subjects, attributes, room);
 			const allowed = new Set(evaluation?.compliant);
 
-			return {
-				allowed: true,
-				userIds: userIds.filter((id) => allowed.has(id)),
-				admitted: subjects.filter(({ _id }) => allowed.has(_id)),
-			};
+			if (options?.audit !== false) {
+				void Audit.objectAccessGranted(
+					subjects
+						.filter(({ _id }) => allowed.has(_id))
+						.map(({ _id, username }) => ({ subject: { _id, username }, object: { _id: room._id, name: room.name } })),
+				);
+			}
+
+			return { allowed: true, userIds: userIds.filter((id) => allowed.has(id)) };
 		} catch (err) {
 			logger.error({ msg: 'Failed to evaluate users against the ABAC room', rid: room._id, err });
 			return { allowed: false, reason: 'unavailable', code: AbacErrorCode.PdpUnavailable };

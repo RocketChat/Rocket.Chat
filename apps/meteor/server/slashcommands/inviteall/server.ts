@@ -5,7 +5,6 @@
 
 import { api, isMeteorError } from '@rocket.chat/core-services';
 import type { IRoom, SlashCommand, SlashCommandCallbackParams } from '@rocket.chat/core-typings';
-import { Logger } from '@rocket.chat/logger';
 import { Rooms, Subscriptions, Users } from '@rocket.chat/models';
 import { Meteor } from 'meteor/meteor';
 
@@ -18,8 +17,6 @@ import { addUsersToRoomMethod, assertCanAddUsersToRoom } from '../../meteor-meth
 import { createChannelMethod } from '../../meteor-methods/rooms/createChannel';
 import { createPrivateGroupMethod } from '../../meteor-methods/rooms/createPrivateGroup';
 import { settings } from '../../settings';
-
-const logger = new Logger('SlashCommandInviteAll');
 
 type InvitedMember = Required<AbacEvaluableUser>;
 
@@ -156,10 +153,6 @@ function inviteAll<T extends string>(type: T): SlashCommand<T>['callback'] {
 			const error = isMeteorError(e) && typeof e.error === 'string' ? e.error : undefined;
 			const key = error === 'cant-invite-for-direct-room' ? 'Cannot_invite_users_to_direct_rooms' : error;
 			const translationKey = key && i18n.exists(key) ? key : undefined;
-
-			if (!translationKey) {
-				logger.error({ msg: 'Failed to invite all users to room', err: e, rid: message.rid, uid: userId });
-			}
 
 			void api.broadcast('notify.ephemeralMessage', userId, message.rid, {
 				msg: i18n.t(translationKey ?? 'Error_something_went_wrong', { lng }),
