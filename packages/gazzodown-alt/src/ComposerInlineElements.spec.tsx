@@ -109,7 +109,7 @@ describe('links', () => {
 	});
 });
 
-// TODO: As we implement these nodes, remove these tests
+// These tests document the fallback behavior for nodes without dedicated composer renderers.
 describe('nodes routed through the source fallback', () => {
 	it('prints a timestamp as the markup it was parsed from', () => {
 		const source = 'at <t:1700000000:t> ok';
