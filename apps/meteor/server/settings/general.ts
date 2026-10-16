@@ -3,7 +3,7 @@ import { settingsRegistry } from '.';
 export const createGeneralSettings = async () => {
 	await settingsRegistry.addGroup('General', async function () {
 		await this.section('REST API', async function () {
-			await this.add('API_Upper_Count_Limit', 100, { type: 'int', public: false });
+			await this.add('API_Upper_Count_Limit', 100, { type: 'int', public: true });
 			await this.add('API_Default_Count', 50, { type: 'int', public: false });
 			await this.add('API_Allow_Infinite_Count', true, { type: 'boolean', public: false });
 			await this.add('API_Enable_Direct_Message_History_EndPoint', false, {
