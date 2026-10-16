@@ -49,7 +49,6 @@ export const useChannelsData = ({ filter, enabled = true, selected = [] }: useCh
 				const { room } = await getRoomInfo({ roomId });
 				return { value: roomId, label: { name: room?.name || room?.fname || roomId, avatarETag: room?.avatarETag, type: room?.t ?? 'c' } };
 			},
-			staleTime: Infinity,
 		})),
 		combine: (results) => results.flatMap(({ data }) => (data ? [data] : [])),
 	});

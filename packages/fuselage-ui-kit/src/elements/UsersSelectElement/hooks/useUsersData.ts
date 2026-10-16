@@ -41,7 +41,6 @@ export const useUsersData = ({ filter, selected = [] }: useUsersDataProps) => {
 				const { user } = await getUserInfo({ username });
 				return { value: username, label: user.name || username };
 			},
-			staleTime: Infinity,
 		})),
 		combine: (results) => results.flatMap(({ data }) => (data ? [data] : [])),
 	});
