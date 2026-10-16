@@ -1,5 +1,6 @@
 import assert from 'node:assert/strict';
 import { after, before, describe, it } from 'node:test';
+import { setTimeout as sleep } from 'node:timers/promises';
 
 import { federationPolling, uniqueSuffix } from './helper/config';
 import { isPresenceFrom } from './helper/predicates';
@@ -9,6 +10,7 @@ import {
 	createLocalUser,
 	findUser,
 	overrideSetting,
+	setSetting,
 	setStatus,
 	teardown,
 	waitForDirectMessageWith,
@@ -18,6 +20,9 @@ import type { LocalUser, RocketChat } from './helper/rocketchat';
 import { assertFederationReachable, registerXmppUser, setupSuite } from './helper/suite';
 import type { XmppUser } from './helper/xmpp-client';
 import { retry } from '../../../../../apps/meteor/tests/end-to-end/api/helpers/retry';
+
+const SETTING_PROPAGATION_MS = 2000;
+const DELIVERY_WINDOW_MS = 4000;
 
 const isSubscriptionReply =
 	(from: string, type: 'subscribed' | 'unsubscribed'): Predicate =>
@@ -57,6 +62,25 @@ describe('XMPP federation: presence', () => {
 		await bob.sendPresence({ to: local.jid, type: 'subscribe' });
 		await bob.waitFor(isSubscriptionReply(local.jid, 'unsubscribed'), 'the subscription refusal');
 		assert.equal(bob.received(isSubscriptionReply(local.jid, 'subscribed')).length, 0);
+	});
+
+	it('answers no subscription request while presence is off (R5)', async () => {
+		try {
+			await setSetting(rc, 'XMPP_Server_Presence_Enabled', false);
+			await sleep(SETTING_PROPAGATION_MS);
+
+			const after = alice.cursor();
+			await alice.sendPresence({ to: local.jid, type: 'subscribe' });
+			await sleep(DELIVERY_WINDOW_MS);
+			const answers = alice.received(
+				(stanza) => isPresenceFrom(local.jid)(stanza) && ['subscribed', 'subscribe', 'unsubscribed'].includes(stanza.attrs.type),
+				after,
+			);
+			assert.equal(answers.length, 0);
+		} finally {
+			await setSetting(rc, 'XMPP_Server_Presence_Enabled', true);
+			await sleep(SETTING_PROPAGATION_MS);
+		}
 	});
 
 	// Known defect: ../../docs/specs/presence.md#d2-rocketchat-status-changes-do-not-reach-xmpp-contacts

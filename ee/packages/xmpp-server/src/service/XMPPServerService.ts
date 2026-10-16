@@ -865,7 +865,7 @@ export class XMPPServerService extends ServiceClass implements IXMPPServerServic
 
 	/** Accepts a presence subscription only from a remote user who shares a DM with the addressee. */
 	private async onSubscriptionRequest(event: { from: string; to: string }): Promise<void> {
-		if (!this.server) {
+		if (!this.server || !this.presenceEnabled) {
 			return;
 		}
 		const localUsername = toBareJid(event.to).split('@')[0];
