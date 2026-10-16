@@ -5,6 +5,7 @@ import { axe } from 'jest-axe';
 
 import CannedResponseList from './CannedResponseList';
 import * as stories from './CannedResponseList.stories';
+import { expectListKeyboard, listWrapper } from '../../../../../../tests/mocks/utils/listContract';
 
 const testCases = Object.values(composeStories(stories)).map((Story) => [Story.storyName || 'Story', Story]);
 
@@ -123,4 +124,11 @@ describe('CannedResponseList', () => {
 			expect(screen.queryByText('Create')).not.toBeInTheDocument();
 		});
 	});
+});
+
+it('follows the keyboard model of a list of rows', async () => {
+	const { Default } = composeStories(stories);
+	render(<Default />, { wrapper: listWrapper() });
+
+	await expectListKeyboard(screen.getByTestId('virtuoso-item-list'));
 });
