@@ -167,7 +167,7 @@ Escape a literal pipe inside a cell as `\|`. Cells can contain inline markup.
 `{time}` can be:
 
 - a 10-digit Unix timestamp, e.g. `<t:1700000000>`;
-- an ISO 8601 date and time, with optional milliseconds and UTC offset, e.g. `<t:2025-07-22T10:00:00.000+00:00>`;
+- a date and time in the form `YYYY-MM-DDTHH:MM:SS`, optionally followed by three-digit milliseconds (`.sss`) and a numeric UTC offset (`+HH:MM` or `-HH:MM`), e.g. `<t:2025-07-22T10:00:00.000+00:00>`. Other ISO 8601 forms, such as a `Z` suffix (`<t:2025-07-22T10:00:00Z>`), a `+HHMM` offset or a time without seconds, are not recognized and stay plain text. Without an offset, the time is read in the time zone of the environment that parses the message, so include one;
 - a time of day with a UTC offset, e.g. `<t:10:00+00:00>` or `<t:10:00:05-03:00>`. The date is the current UTC date when the message is parsed, not the local date in that offset: near midnight it can be a day apart, and the same message parsed on another day resolves to that day.
 
 The node stores the time as a Unix timestamp string. `{format}` defaults to `t`:
