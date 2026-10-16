@@ -522,6 +522,8 @@ const abacEndpoints = API.v1
 			}
 
 			const { rid } = this.queryParams;
+			const { enforcementOn, requiredAttributeKeys } = getRoomAbacLockContext();
+			const requiredKeys = enforcementOn ? requiredAttributeKeys : [];
 
 			if (rid) {
 				const grant = await getRoomAttributesGrant(this.userId, rid);
@@ -531,7 +533,7 @@ const abacEndpoints = API.v1
 
 				return API.v1.success({
 					attributes: await Abac.listRoomAssignableAttributes(rid, toAbacActor(this.user), grant),
-					requiredKeys: getRoomAbacLockContext().requiredAttributeKeys,
+					requiredKeys,
 				});
 			}
 
@@ -539,11 +541,9 @@ const abacEndpoints = API.v1
 				return API.v1.forbidden('User does not have the permissions required for this action [error-unauthorized]');
 			}
 
-			const { enforcementOn, requiredAttributeKeys } = getRoomAbacLockContext();
-
 			return API.v1.success({
 				attributes: await Abac.listAssignableAttributes(toAbacActor(this.user)),
-				requiredKeys: enforcementOn ? requiredAttributeKeys : [],
+				requiredKeys,
 			});
 		},
 	)
