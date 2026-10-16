@@ -19,6 +19,7 @@ import { Virtuoso } from 'react-virtuoso';
 
 import Item from './Item';
 import WrapCannedResponse from './WrapCannedResponse';
+import { useItemListNavigation } from '../../../../../hooks/useItemListNavigation';
 import { useCanCreateCannedResponse } from '../../hooks/useCanCreateCannedResponse';
 
 export type CannedResponseListProps = {
@@ -60,6 +61,7 @@ const CannedResponseList = ({
 	const { context: cannedId } = useRoomToolbox();
 	const canCreateCannedResponse = useCanCreateCannedResponse();
 
+	const cannedListRef = useItemListNavigation();
 	const { ref, contentBoxSize: { inlineSize = 378 } = {} } = useResizeObserver<HTMLElement>({
 		debounceDelay: 200,
 	});
@@ -100,7 +102,7 @@ const CannedResponseList = ({
 			<ContextualbarContent paddingInline={0} ref={ref}>
 				{itemCount === 0 && <ContextualbarEmptyContent title={t('No_Canned_Responses')} />}
 				{itemCount > 0 && cannedItems.length > 0 && (
-					<Box flexGrow={1} flexShrink={1} overflow='hidden' display='flex'>
+					<Box flexGrow={1} flexShrink={1} overflow='hidden' display='flex' ref={cannedListRef}>
 						<VirtualizedScrollbars>
 							<Virtuoso
 								style={{ width: inlineSize }}
