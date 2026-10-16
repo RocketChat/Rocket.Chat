@@ -45,6 +45,8 @@ We support different methods of deployment for different needs. Choose your meth
 
 - Looking for a custom cloud-hosted solution without handling infrastructure? Check out our premium, dedicated [cloud hosting options](https://docs.rocket.chat/docs/rocketchat-cloud-hosting-service-level-agreement-sla) that adapt to your needs.
 
+- One-click managed hosting is available [via Zenith](https://zenith.hosting/host/rocket-chat), with storage, backups and email handled for you.
+
 - Interested in decentralized communication? Enable [federation](https://docs.rocket.chat/docs/rocketchat-native-federation) to securely communicate and share resources across a federated network.
 
 # 📱 Desktop and mobile apps
