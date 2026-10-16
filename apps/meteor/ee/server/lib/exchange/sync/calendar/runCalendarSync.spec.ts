@@ -8,6 +8,7 @@ const syncCalendarWindow = jest.fn();
 const applyDeferredSideEffects = jest.fn();
 const getExchangeProvider = jest.fn();
 const isServerSyncEnabled = jest.fn();
+const getCalendarSyncWindow = jest.fn();
 const candidates = jest.fn();
 
 jest.mock('./syncCalendarWindow', () => ({ syncCalendarWindow: (...args: unknown[]) => syncCalendarWindow(...args) }));
@@ -17,7 +18,7 @@ jest.mock('./applyDeferredSideEffects', () => ({
 jest.mock('../resolveMailboxes', () => ({ iterateMailboxCandidates: () => candidates() }));
 jest.mock('../../ExchangeProviderRegistry', () => ({
 	getExchangeProvider: () => getExchangeProvider(),
-	getCalendarSyncWindow: () => ({ start: new Date('2026-09-07T00:00:00Z'), end: new Date('2026-09-09T00:00:00Z') }),
+	getCalendarSyncWindow: (...args: unknown[]) => getCalendarSyncWindow(...args),
 	isServerSyncEnabled: () => isServerSyncEnabled(),
 }));
 
@@ -32,7 +33,7 @@ const outcome = (over: Partial<CalendarSyncOutcome> = {}): CalendarSyncOutcome =
 	...over,
 });
 
-const from = (items: { uid: string; mailbox?: string }[]) =>
+const from = (items: { uid: string; mailbox?: string; utcOffset?: number }[]) =>
 	async function* () {
 		yield* items;
 	};
@@ -51,6 +52,7 @@ describe('runCalendarSync', () => {
 	beforeEach(() => {
 		jest.clearAllMocks();
 		isServerSyncEnabled.mockReturnValue(true);
+		getCalendarSyncWindow.mockReturnValue({ start: new Date('2026-09-07T00:00:00Z'), end: new Date('2026-09-09T00:00:00Z') });
 		getExchangeProvider.mockReturnValue({ id: 'ews' });
 		syncCalendarWindow.mockResolvedValue(outcome());
 		applyDeferredSideEffects.mockResolvedValue(undefined);
@@ -64,6 +66,22 @@ describe('runCalendarSync', () => {
 
 		expect(summary).toMatchObject({ skipped: 1, mailboxes: 1 });
 		expect(syncCalendarWindow).toHaveBeenCalledTimes(1);
+	});
+
+	it('gives each mailbox the window of its own owner', async () => {
+		candidates.mockImplementation(
+			from([
+				{ uid: 'a', mailbox: 'a@x', utcOffset: 9 },
+				{ uid: 'b', mailbox: 'b@x', utcOffset: -4 },
+			]),
+		);
+		const windowOf = (utcOffset: number) => ({ start: new Date(2026, 8, 7, utcOffset), end: new Date(2026, 8, 9, utcOffset) });
+		getCalendarSyncWindow.mockImplementation((_now: Date, utcOffset: number) => windowOf(utcOffset));
+
+		await runCalendarSync();
+
+		expect(syncCalendarWindow).toHaveBeenCalledWith(expect.anything(), 'a', 'a@x', windowOf(9));
+		expect(syncCalendarWindow).toHaveBeenCalledWith(expect.anything(), 'b', 'b@x', windowOf(-4));
 	});
 
 	it('adds up the counters of every mailbox', async () => {

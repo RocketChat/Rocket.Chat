@@ -64,7 +64,7 @@ describe('iterateMailboxCandidates', () => {
 				roles: { $ne: 'guest' },
 				emails: { $elemMatch: { verified: true } },
 			}),
-			expect.objectContaining({ projection: { emails: 1 }, sort: { _id: 1 } }),
+			expect.objectContaining({ projection: { emails: 1, utcOffset: 1 }, sort: { _id: 1 } }),
 		);
 	});
 

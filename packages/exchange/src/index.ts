@@ -3,6 +3,7 @@ export type * from './definition/types';
 export { ExchangeError, isExchangeError } from './errors';
 export type { ExchangeErrorCode } from './errors';
 export { logger } from './logger';
+export { scrubForLog } from './scrub';
 export { EwsTransport } from './ews/EwsTransport';
 export type { EwsTransportConfig } from './ews/EwsTransport';
 export { ExchangeEwsProvider } from './ews/ExchangeEwsProvider';

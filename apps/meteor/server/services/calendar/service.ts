@@ -110,7 +110,9 @@ export class CalendarService extends ServiceClassInternal implements ICalendarSe
 	}
 
 	public async list(uid: IUser['_id'], date: Date, options?: { excludeOutlook?: boolean }): Promise<ICalendarEvent[]> {
-		return CalendarEvent.findByUserIdAndDate(uid, date, options).toArray();
+		const user = await Users.findOneById<Pick<IUser, 'utcOffset'>>(uid, { projection: { utcOffset: 1 } });
+
+		return CalendarEvent.findByUserIdAndDate(uid, date, { ...options, utcOffset: user?.utcOffset }).toArray();
 	}
 
 	public async update(
