@@ -77,12 +77,11 @@ export class LocalPDP implements IPolicyDecisionPoint {
 		attributes: IAbacAttributeDefinition[],
 		page: AbacRoomMembershipPreviewPage,
 	): Promise<RoomMembersPreview> {
-		const members = { active: true, __rooms: room._id };
 		if (!attributes.length) {
-			return previewRetainingEveryone(members, page);
+			return previewRetainingEveryone(room._id, page);
 		}
 
-		return previewRoomMembersInSteps(members, page, async (subjects) =>
+		return previewRoomMembersInSteps(room._id, page, async (subjects) =>
 			verdictsOf(await this.evaluateSubjectsAgainstAttributes(subjects, attributes, room)),
 		);
 	}

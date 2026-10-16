@@ -9,8 +9,8 @@ jest.mock('@rocket.chat/server-fetch', () => ({ serverFetch: (...a: unknown[]) =
 const usersFindOneById = jest.fn();
 const usersFindByUsernames = jest.fn();
 const usersFindActiveByRoomIds = jest.fn();
-const usersFind = jest.fn();
-const usersCountDocuments = jest.fn();
+const usersFindActiveByRoomIdAfterUsername = jest.fn();
+const usersCountActiveByRoomIdAfterUsername = jest.fn();
 const roomsFindPrivateRoomsByIdsWithAbacAttributes = jest.fn();
 
 jest.mock('@rocket.chat/models', () => ({
@@ -18,8 +18,8 @@ jest.mock('@rocket.chat/models', () => ({
 		findOneById: (...a: unknown[]) => usersFindOneById(...a),
 		findByUsernames: (...a: unknown[]) => usersFindByUsernames(...a),
 		findActiveByRoomIds: (...a: unknown[]) => usersFindActiveByRoomIds(...a),
-		find: (...a: unknown[]) => usersFind(...a),
-		countDocuments: (...a: unknown[]) => usersCountDocuments(...a),
+		findActiveByRoomIdAfterUsername: (...a: unknown[]) => usersFindActiveByRoomIdAfterUsername(...a),
+		countActiveByRoomIdAfterUsername: (...a: unknown[]) => usersCountActiveByRoomIdAfterUsername(...a),
 	},
 	Rooms: {
 		findPrivateRoomsByIdsWithAbacAttributes: (...a: unknown[]) => roomsFindPrivateRoomsByIdsWithAbacAttributes(...a),
@@ -69,8 +69,8 @@ beforeEach(() => {
 	usersFindOneById.mockReset();
 	usersFindByUsernames.mockReset();
 	usersFindActiveByRoomIds.mockReset();
-	usersFind.mockReset();
-	usersCountDocuments.mockReset();
+	usersFindActiveByRoomIdAfterUsername.mockReset();
+	usersCountActiveByRoomIdAfterUsername.mockReset();
 	roomsFindPrivateRoomsByIdsWithAbacAttributes.mockReset();
 });
 
@@ -534,10 +534,10 @@ describe('VirtruPDP.previewRoomMembers', () => {
 	const member = (username: string) => ({ ...user({ _id: username, username }), name: username.toUpperCase() });
 	const [alice, bob, carol] = ['alice', 'bob', 'carol'].map(member);
 
-	const readsMembers = (checked: ReturnType<typeof member>[]) => usersFind.mockReturnValueOnce(cursor(checked));
+	const readsMembers = (checked: ReturnType<typeof member>[]) => usersFindActiveByRoomIdAfterUsername.mockReturnValueOnce(cursor(checked));
 
 	beforeEach(() => {
-		usersCountDocuments.mockResolvedValue(3);
+		usersCountActiveByRoomIdAfterUsername.mockResolvedValue(3);
 	});
 
 	const deciding = (pdp: VirtruPDP, removed: string[]) =>
@@ -557,9 +557,8 @@ describe('VirtruPDP.previewRoomMembers', () => {
 
 		const preview = await pdp.previewRoomMembers(room, attrs, { count: 2 });
 
-		expect(usersFind.mock.calls[0][0]).toEqual({ $and: [{ active: true, __rooms: 'r1' }] });
-		expect(usersFind.mock.calls[0][1]).toMatchObject({ sort: { username: 1, _id: 1 }, limit: 3 });
-		expect(usersCountDocuments).toHaveBeenCalledWith({ $and: [{ active: true, __rooms: 'r1' }] });
+		expect(usersFindActiveByRoomIdAfterUsername).toHaveBeenCalledWith('r1', { limit: 3 }, expect.anything());
+		expect(usersCountActiveByRoomIdAfterUsername).toHaveBeenCalledWith('r1', {});
 		expect(preview).toEqual({
 			members: [
 				{ _id: 'alice', username: 'alice', name: 'ALICE', verdict: 'nonCompliant' },
@@ -578,7 +577,7 @@ describe('VirtruPDP.previewRoomMembers', () => {
 
 		const preview = await pdp.previewRoomMembers(room, attrs, { count: 1, group: 'retains' });
 
-		expect(usersFind.mock.calls[0][1]).toMatchObject({ limit: PREVIEW_SCAN_LIMIT + 1 });
+		expect(usersFindActiveByRoomIdAfterUsername.mock.calls[0][1]).toMatchObject({ limit: PREVIEW_SCAN_LIMIT + 1 });
 		expect(preview.members.map(({ _id }) => _id)).toEqual(['bob', 'carol']);
 		expect(preview).toMatchObject({ checked: 3, total: 3 });
 		expect(preview).not.toHaveProperty('next');
