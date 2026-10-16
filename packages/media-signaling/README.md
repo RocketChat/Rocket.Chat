@@ -89,13 +89,14 @@ current?.transfer({ type: 'user', id: 'other-user-id' });
 current?.hangup();
 ```
 
-To play the remote audio, attach the remote participant's stream to an `<audio>` element:
+To play the remote audio, attach the remote participant's stream to an `<audio>` element. The stream is not available when the call is created, so update the element whenever the call's streams change:
 
 ```ts
-const remote = call.remoteParticipants[0]?.getMediaStream();
-if (remote) {
-	audioElement.srcObject = remote.stream;
-}
+session.on('newCall', ({ call }) => {
+	call.emitter.on('streamChange', () => {
+		audioElement.srcObject = call.remoteParticipants[0]?.getMediaStream()?.stream ?? null;
+	});
+});
 ```
 
 ## API
