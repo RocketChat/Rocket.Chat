@@ -140,7 +140,9 @@ exports[`renders Default without crashing 1`] = `
                             </div>
                           </div>
                           <div
+                            aria-labelledby="_r_2_"
                             class="rcx-item__actions rcx-item__actions--reveal-hover"
+                            role="group"
                           >
                             <div
                               class="rcx-item__actions-inner"
@@ -216,7 +218,9 @@ exports[`renders Default without crashing 1`] = `
                             </div>
                           </div>
                           <div
+                            aria-labelledby="_r_6_"
                             class="rcx-item__actions rcx-item__actions--reveal-hover"
+                            role="group"
                           >
                             <div
                               class="rcx-item__actions-inner"
@@ -304,7 +308,9 @@ exports[`renders Default without crashing 1`] = `
                             </div>
                           </div>
                           <div
+                            aria-labelledby="_r_a_"
                             class="rcx-item__actions rcx-item__actions--reveal-hover"
+                            role="group"
                           >
                             <div
                               class="rcx-item__actions-inner"
@@ -878,7 +884,9 @@ exports[`renders WithRealNames without crashing 1`] = `
                             </div>
                           </div>
                           <div
+                            aria-labelledby="_r_i_"
                             class="rcx-item__actions rcx-item__actions--reveal-hover"
+                            role="group"
                           >
                             <div
                               class="rcx-item__actions-inner"
@@ -960,7 +968,9 @@ exports[`renders WithRealNames without crashing 1`] = `
                             </div>
                           </div>
                           <div
+                            aria-labelledby="_r_m_"
                             class="rcx-item__actions rcx-item__actions--reveal-hover"
+                            role="group"
                           >
                             <div
                               class="rcx-item__actions-inner"
@@ -1054,7 +1064,9 @@ exports[`renders WithRealNames without crashing 1`] = `
                             </div>
                           </div>
                           <div
+                            aria-labelledby="_r_q_"
                             class="rcx-item__actions rcx-item__actions--reveal-hover"
+                            role="group"
                           >
                             <div
                               class="rcx-item__actions-inner"

@@ -187,7 +187,9 @@ exports[`[SidebarItem Component] renders Condensed without crashing 1`] = `
                           </button>
                         </div>
                         <div
+                          aria-labelledby="_r_8_"
                           class="rcx-item__actions rcx-item__actions--reveal-hover rcx-sidebar-item__menu-wrapper"
+                          role="group"
                         >
                           <div
                             class="rcx-item__actions-inner"
@@ -262,7 +264,9 @@ exports[`[SidebarItem Component] renders Condensed without crashing 1`] = `
                           5
                         </span>
                         <div
+                          aria-labelledby="_r_c_"
                           class="rcx-item__actions rcx-item__actions--reveal-hover rcx-sidebar-item__menu-wrapper"
+                          role="group"
                         >
                           <div
                             class="rcx-item__actions-inner"
@@ -331,7 +335,9 @@ exports[`[SidebarItem Component] renders Condensed without crashing 1`] = `
                           Leroy Jenkins
                         </div>
                         <div
+                          aria-labelledby="_r_g_"
                           class="rcx-item__actions rcx-item__actions--reveal-hover rcx-sidebar-item__menu-wrapper"
+                          role="group"
                         >
                           <div
                             class="rcx-item__actions-inner"
@@ -406,7 +412,9 @@ exports[`[SidebarItem Component] renders Condensed without crashing 1`] = `
                           5
                         </span>
                         <div
+                          aria-labelledby="_r_k_"
                           class="rcx-item__actions rcx-item__actions--reveal-hover rcx-sidebar-item__menu-wrapper"
+                          role="group"
                         >
                           <div
                             class="rcx-item__actions-inner"
@@ -475,7 +483,9 @@ exports[`[SidebarItem Component] renders Condensed without crashing 1`] = `
                           John Doe
                         </div>
                         <div
+                          aria-labelledby="_r_o_"
                           class="rcx-item__actions rcx-item__actions--reveal-hover rcx-sidebar-item__menu-wrapper"
+                          role="group"
                         >
                           <div
                             class="rcx-item__actions-inner"
@@ -550,7 +560,9 @@ exports[`[SidebarItem Component] renders Condensed without crashing 1`] = `
                           5
                         </span>
                         <div
+                          aria-labelledby="_r_s_"
                           class="rcx-item__actions rcx-item__actions--reveal-hover rcx-sidebar-item__menu-wrapper"
+                          role="group"
                         >
                           <div
                             class="rcx-item__actions-inner"
@@ -619,7 +631,9 @@ exports[`[SidebarItem Component] renders Condensed without crashing 1`] = `
                           Baz Qux
                         </div>
                         <div
+                          aria-labelledby="_r_10_"
                           class="rcx-item__actions rcx-item__actions--reveal-hover rcx-sidebar-item__menu-wrapper"
+                          role="group"
                         >
                           <div
                             class="rcx-item__actions-inner"
@@ -694,7 +708,9 @@ exports[`[SidebarItem Component] renders Condensed without crashing 1`] = `
                           5
                         </span>
                         <div
+                          aria-labelledby="_r_14_"
                           class="rcx-item__actions rcx-item__actions--reveal-hover rcx-sidebar-item__menu-wrapper"
+                          role="group"
                         >
                           <div
                             class="rcx-item__actions-inner"
@@ -936,7 +952,9 @@ exports[`[SidebarItem Component] renders CondensedItems without crashing 1`] = `
                           </button>
                         </div>
                         <div
+                          aria-labelledby="_r_1f_"
                           class="rcx-item__actions rcx-item__actions--reveal-hover rcx-sidebar-item__menu-wrapper"
+                          role="group"
                         >
                           <div
                             class="rcx-item__actions-inner"
@@ -1011,7 +1029,9 @@ exports[`[SidebarItem Component] renders CondensedItems without crashing 1`] = `
                           5
                         </span>
                         <div
+                          aria-labelledby="_r_1j_"
                           class="rcx-item__actions rcx-item__actions--reveal-hover rcx-sidebar-item__menu-wrapper"
+                          role="group"
                         >
                           <div
                             class="rcx-item__actions-inner"
@@ -1080,7 +1100,9 @@ exports[`[SidebarItem Component] renders CondensedItems without crashing 1`] = `
                           Leroy Jenkins
                         </div>
                         <div
+                          aria-labelledby="_r_1n_"
                           class="rcx-item__actions rcx-item__actions--reveal-hover rcx-sidebar-item__menu-wrapper"
+                          role="group"
                         >
                           <div
                             class="rcx-item__actions-inner"
@@ -1155,7 +1177,9 @@ exports[`[SidebarItem Component] renders CondensedItems without crashing 1`] = `
                           5
                         </span>
                         <div
+                          aria-labelledby="_r_1r_"
                           class="rcx-item__actions rcx-item__actions--reveal-hover rcx-sidebar-item__menu-wrapper"
+                          role="group"
                         >
                           <div
                             class="rcx-item__actions-inner"
@@ -1224,7 +1248,9 @@ exports[`[SidebarItem Component] renders CondensedItems without crashing 1`] = `
                           John Doe
                         </div>
                         <div
+                          aria-labelledby="_r_1v_"
                           class="rcx-item__actions rcx-item__actions--reveal-hover rcx-sidebar-item__menu-wrapper"
+                          role="group"
                         >
                           <div
                             class="rcx-item__actions-inner"
@@ -1299,7 +1325,9 @@ exports[`[SidebarItem Component] renders CondensedItems without crashing 1`] = `
                           5
                         </span>
                         <div
+                          aria-labelledby="_r_23_"
                           class="rcx-item__actions rcx-item__actions--reveal-hover rcx-sidebar-item__menu-wrapper"
+                          role="group"
                         >
                           <div
                             class="rcx-item__actions-inner"
@@ -1368,7 +1396,9 @@ exports[`[SidebarItem Component] renders CondensedItems without crashing 1`] = `
                           Baz Qux
                         </div>
                         <div
+                          aria-labelledby="_r_27_"
                           class="rcx-item__actions rcx-item__actions--reveal-hover rcx-sidebar-item__menu-wrapper"
+                          role="group"
                         >
                           <div
                             class="rcx-item__actions-inner"
@@ -1443,7 +1473,9 @@ exports[`[SidebarItem Component] renders CondensedItems without crashing 1`] = `
                           5
                         </span>
                         <div
+                          aria-labelledby="_r_2b_"
                           class="rcx-item__actions rcx-item__actions--reveal-hover rcx-sidebar-item__menu-wrapper"
+                          role="group"
                         >
                           <div
                             class="rcx-item__actions-inner"
@@ -1682,7 +1714,9 @@ exports[`[SidebarItem Component] renders Extended without crashing 1`] = `
                               5
                             </span>
                             <div
+                              aria-labelledby="_r_2m_"
                               class="rcx-item__actions rcx-item__actions--reveal-hover rcx-sidebar-item__menu-wrapper"
+                              role="group"
                             >
                               <div
                                 class="rcx-item__actions-inner"
@@ -1779,7 +1813,9 @@ exports[`[SidebarItem Component] renders Extended without crashing 1`] = `
                               5
                             </span>
                             <div
+                              aria-labelledby="_r_2q_"
                               class="rcx-item__actions rcx-item__actions--reveal-hover rcx-sidebar-item__menu-wrapper"
+                              role="group"
                             >
                               <div
                                 class="rcx-item__actions-inner"
@@ -1876,7 +1912,9 @@ exports[`[SidebarItem Component] renders Extended without crashing 1`] = `
                               5
                             </span>
                             <div
+                              aria-labelledby="_r_2u_"
                               class="rcx-item__actions rcx-item__actions--reveal-hover rcx-sidebar-item__menu-wrapper"
+                              role="group"
                             >
                               <div
                                 class="rcx-item__actions-inner"
@@ -1973,7 +2011,9 @@ exports[`[SidebarItem Component] renders Extended without crashing 1`] = `
                               5
                             </span>
                             <div
+                              aria-labelledby="_r_32_"
                               class="rcx-item__actions rcx-item__actions--reveal-hover rcx-sidebar-item__menu-wrapper"
+                              role="group"
                             >
                               <div
                                 class="rcx-item__actions-inner"
@@ -2070,7 +2110,9 @@ exports[`[SidebarItem Component] renders Extended without crashing 1`] = `
                               5
                             </span>
                             <div
+                              aria-labelledby="_r_36_"
                               class="rcx-item__actions rcx-item__actions--reveal-hover rcx-sidebar-item__menu-wrapper"
+                              role="group"
                             >
                               <div
                                 class="rcx-item__actions-inner"
@@ -2167,7 +2209,9 @@ exports[`[SidebarItem Component] renders Extended without crashing 1`] = `
                               5
                             </span>
                             <div
+                              aria-labelledby="_r_3a_"
                               class="rcx-item__actions rcx-item__actions--reveal-hover rcx-sidebar-item__menu-wrapper"
+                              role="group"
                             >
                               <div
                                 class="rcx-item__actions-inner"
@@ -2264,7 +2308,9 @@ exports[`[SidebarItem Component] renders Extended without crashing 1`] = `
                               5
                             </span>
                             <div
+                              aria-labelledby="_r_3e_"
                               class="rcx-item__actions rcx-item__actions--reveal-hover rcx-sidebar-item__menu-wrapper"
+                              role="group"
                             >
                               <div
                                 class="rcx-item__actions-inner"
@@ -2361,7 +2407,9 @@ exports[`[SidebarItem Component] renders Extended without crashing 1`] = `
                               5
                             </span>
                             <div
+                              aria-labelledby="_r_3i_"
                               class="rcx-item__actions rcx-item__actions--reveal-hover rcx-sidebar-item__menu-wrapper"
+                              role="group"
                             >
                               <div
                                 class="rcx-item__actions-inner"
@@ -2582,7 +2630,9 @@ exports[`[SidebarItem Component] renders Medium without crashing 1`] = `
                           5
                         </span>
                         <div
+                          aria-labelledby="_r_3t_"
                           class="rcx-item__actions rcx-item__actions--reveal-hover rcx-sidebar-item__menu-wrapper"
+                          role="group"
                         >
                           <div
                             class="rcx-item__actions-inner"
@@ -2657,7 +2707,9 @@ exports[`[SidebarItem Component] renders Medium without crashing 1`] = `
                           5
                         </span>
                         <div
+                          aria-labelledby="_r_41_"
                           class="rcx-item__actions rcx-item__actions--reveal-hover rcx-sidebar-item__menu-wrapper"
+                          role="group"
                         >
                           <div
                             class="rcx-item__actions-inner"
@@ -2732,7 +2784,9 @@ exports[`[SidebarItem Component] renders Medium without crashing 1`] = `
                           5
                         </span>
                         <div
+                          aria-labelledby="_r_45_"
                           class="rcx-item__actions rcx-item__actions--reveal-hover rcx-sidebar-item__menu-wrapper"
+                          role="group"
                         >
                           <div
                             class="rcx-item__actions-inner"
@@ -2807,7 +2861,9 @@ exports[`[SidebarItem Component] renders Medium without crashing 1`] = `
                           5
                         </span>
                         <div
+                          aria-labelledby="_r_49_"
                           class="rcx-item__actions rcx-item__actions--reveal-hover rcx-sidebar-item__menu-wrapper"
+                          role="group"
                         >
                           <div
                             class="rcx-item__actions-inner"
@@ -2882,7 +2938,9 @@ exports[`[SidebarItem Component] renders Medium without crashing 1`] = `
                           5
                         </span>
                         <div
+                          aria-labelledby="_r_4d_"
                           class="rcx-item__actions rcx-item__actions--reveal-hover rcx-sidebar-item__menu-wrapper"
+                          role="group"
                         >
                           <div
                             class="rcx-item__actions-inner"
@@ -2957,7 +3015,9 @@ exports[`[SidebarItem Component] renders Medium without crashing 1`] = `
                           5
                         </span>
                         <div
+                          aria-labelledby="_r_4h_"
                           class="rcx-item__actions rcx-item__actions--reveal-hover rcx-sidebar-item__menu-wrapper"
+                          role="group"
                         >
                           <div
                             class="rcx-item__actions-inner"
@@ -3032,7 +3092,9 @@ exports[`[SidebarItem Component] renders Medium without crashing 1`] = `
                           5
                         </span>
                         <div
+                          aria-labelledby="_r_4l_"
                           class="rcx-item__actions rcx-item__actions--reveal-hover rcx-sidebar-item__menu-wrapper"
+                          role="group"
                         >
                           <div
                             class="rcx-item__actions-inner"
@@ -3107,7 +3169,9 @@ exports[`[SidebarItem Component] renders Medium without crashing 1`] = `
                           5
                         </span>
                         <div
+                          aria-labelledby="_r_4p_"
                           class="rcx-item__actions rcx-item__actions--reveal-hover rcx-sidebar-item__menu-wrapper"
+                          role="group"
                         >
                           <div
                             class="rcx-item__actions-inner"
@@ -3326,7 +3390,9 @@ exports[`[SidebarItem Component] renders RoomRowCondensed without crashing 1`] =
                           </a>
                         </div>
                         <div
+                          aria-labelledby="_r_54_"
                           class="rcx-item__actions rcx-item__actions--reveal-hover rcx-sidebar-item__menu-wrapper"
+                          role="group"
                         >
                           <div
                             class="rcx-item__actions-inner"
@@ -3407,7 +3473,9 @@ exports[`[SidebarItem Component] renders RoomRowCondensed without crashing 1`] =
                           3
                         </span>
                         <div
+                          aria-labelledby="_r_58_"
                           class="rcx-item__actions rcx-item__actions--reveal-hover rcx-sidebar-item__menu-wrapper"
+                          role="group"
                         >
                           <div
                             class="rcx-item__actions-inner"
@@ -3483,7 +3551,9 @@ exports[`[SidebarItem Component] renders RoomRowCondensed without crashing 1`] =
                           </a>
                         </div>
                         <div
+                          aria-labelledby="_r_5c_"
                           class="rcx-item__actions rcx-item__actions--reveal-hover rcx-sidebar-item__menu-wrapper"
+                          role="group"
                         >
                           <div
                             class="rcx-item__actions-inner"
@@ -3558,7 +3628,9 @@ exports[`[SidebarItem Component] renders RoomRowCondensed without crashing 1`] =
                           </a>
                         </div>
                         <div
+                          aria-labelledby="_r_5g_"
                           class="rcx-item__actions rcx-sidebar-item__actions"
+                          role="group"
                         >
                           <button
                             aria-label="Accept call from support"
@@ -3586,7 +3658,9 @@ exports[`[SidebarItem Component] renders RoomRowCondensed without crashing 1`] =
                           </button>
                         </div>
                         <div
+                          aria-labelledby="_r_5g_"
                           class="rcx-item__actions rcx-item__actions--reveal-hover rcx-sidebar-item__menu-wrapper"
+                          role="group"
                         >
                           <div
                             class="rcx-item__actions-inner"
@@ -3825,7 +3899,9 @@ exports[`[SidebarItem Component] renders RoomRowExtended without crashing 1`] = 
                               Mockups are ready for review
                             </div>
                             <div
+                              aria-labelledby="_r_5r_"
                               class="rcx-item__actions rcx-item__actions--reveal-hover rcx-sidebar-item__menu-wrapper"
+                              role="group"
                             >
                               <div
                                 class="rcx-item__actions-inner"
@@ -3928,7 +4004,9 @@ exports[`[SidebarItem Component] renders RoomRowExtended without crashing 1`] = 
                               3
                             </span>
                             <div
+                              aria-labelledby="_r_5v_"
                               class="rcx-item__actions rcx-item__actions--reveal-hover rcx-sidebar-item__menu-wrapper"
+                              role="group"
                             >
                               <div
                                 class="rcx-item__actions-inner"
@@ -4026,7 +4104,9 @@ exports[`[SidebarItem Component] renders RoomRowExtended without crashing 1`] = 
                               Mockups are ready for review
                             </div>
                             <div
+                              aria-labelledby="_r_63_"
                               class="rcx-item__actions rcx-item__actions--reveal-hover rcx-sidebar-item__menu-wrapper"
+                              role="group"
                             >
                               <div
                                 class="rcx-item__actions-inner"
@@ -4123,7 +4203,9 @@ exports[`[SidebarItem Component] renders RoomRowExtended without crashing 1`] = 
                               Calling…
                             </div>
                             <div
+                              aria-labelledby="_r_67_"
                               class="rcx-item__actions rcx-sidebar-item__actions"
+                              role="group"
                             >
                               <button
                                 aria-label="Accept call from support"
@@ -4151,7 +4233,9 @@ exports[`[SidebarItem Component] renders RoomRowExtended without crashing 1`] = 
                               </button>
                             </div>
                             <div
+                              aria-labelledby="_r_67_"
                               class="rcx-item__actions rcx-item__actions--reveal-hover rcx-sidebar-item__menu-wrapper"
+                              role="group"
                             >
                               <div
                                 class="rcx-item__actions-inner"
@@ -4372,7 +4456,9 @@ exports[`[SidebarItem Component] renders RoomRowMedium without crashing 1`] = `
                           </a>
                         </div>
                         <div
+                          aria-labelledby="_r_6i_"
                           class="rcx-item__actions rcx-item__actions--reveal-hover rcx-sidebar-item__menu-wrapper"
+                          role="group"
                         >
                           <div
                             class="rcx-item__actions-inner"
@@ -4453,7 +4539,9 @@ exports[`[SidebarItem Component] renders RoomRowMedium without crashing 1`] = `
                           3
                         </span>
                         <div
+                          aria-labelledby="_r_6m_"
                           class="rcx-item__actions rcx-item__actions--reveal-hover rcx-sidebar-item__menu-wrapper"
+                          role="group"
                         >
                           <div
                             class="rcx-item__actions-inner"
@@ -4529,7 +4617,9 @@ exports[`[SidebarItem Component] renders RoomRowMedium without crashing 1`] = `
                           </a>
                         </div>
                         <div
+                          aria-labelledby="_r_6q_"
                           class="rcx-item__actions rcx-item__actions--reveal-hover rcx-sidebar-item__menu-wrapper"
+                          role="group"
                         >
                           <div
                             class="rcx-item__actions-inner"
@@ -4604,7 +4694,9 @@ exports[`[SidebarItem Component] renders RoomRowMedium without crashing 1`] = `
                           </a>
                         </div>
                         <div
+                          aria-labelledby="_r_6u_"
                           class="rcx-item__actions rcx-sidebar-item__actions"
+                          role="group"
                         >
                           <button
                             aria-label="Accept call from support"
@@ -4632,7 +4724,9 @@ exports[`[SidebarItem Component] renders RoomRowMedium without crashing 1`] = `
                           </button>
                         </div>
                         <div
+                          aria-labelledby="_r_6u_"
                           class="rcx-item__actions rcx-item__actions--reveal-hover rcx-sidebar-item__menu-wrapper"
+                          role="group"
                         >
                           <div
                             class="rcx-item__actions-inner"
