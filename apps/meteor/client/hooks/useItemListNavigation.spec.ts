@@ -1,16 +1,6 @@
-import { createFocusManager } from '@react-aria/focus';
 import { renderHook, act, fireEvent, createEvent } from '@testing-library/react';
 
 import { useItemListNavigation } from './useItemListNavigation';
-
-jest.mock('@react-aria/focus', () => ({
-	createFocusManager: jest.fn(),
-}));
-
-const mockFocusManager = {
-	focusNext: jest.fn(),
-	focusPrevious: jest.fn(),
-};
 
 beforeAll(() => {
 	jest.spyOn(window, 'requestAnimationFrame').mockImplementation((cb) => {
@@ -23,188 +13,260 @@ afterAll(() => {
 	jest.restoreAllMocks();
 });
 
-beforeEach(() => {
-	(createFocusManager as jest.Mock).mockReturnValue(mockFocusManager);
-	mockFocusManager.focusNext.mockReset().mockReturnValue(createItemLink());
-	mockFocusManager.focusPrevious.mockReset().mockReturnValue(createItemLink());
+afterEach(() => {
+	document.body.innerHTML = '';
 });
 
-const createItemLink = () => {
-	const button = document.createElement('button');
-	button.className = 'rcx-item__link';
-	return button;
+const createRow = (label: string, { withAction = false } = {}) => {
+	const row = document.createElement('div');
+	row.className = 'rcx-item';
+
+	const link = document.createElement('button');
+	link.className = 'rcx-item__link';
+	link.textContent = label;
+	row.appendChild(link);
+
+	let action: HTMLButtonElement | undefined;
+	if (withAction) {
+		const actions = document.createElement('div');
+		actions.className = 'rcx-item__actions';
+		action = document.createElement('button');
+		action.textContent = `${label} menu`;
+		actions.appendChild(action);
+		row.appendChild(actions);
+	}
+
+	return { row, link, action };
 };
 
-const createList = (itemCount = 2) => {
-	const container = document.createElement('div');
-	const items = Array.from({ length: itemCount }, () => {
-		const li = createItemLink();
-		container.appendChild(li);
-		return li;
+const setup = ({ rowCount = 3, withAction = false } = {}) => {
+	const before = document.createElement('button');
+	before.textContent = 'before';
+
+	const scroller = document.createElement('div');
+	scroller.dataset.virtuosoScroller = 'true';
+	const list = document.createElement('div');
+	scroller.appendChild(list);
+
+	const after = document.createElement('button');
+	after.textContent = 'after';
+
+	document.body.append(before, scroller, after);
+
+	const rows = Array.from({ length: rowCount }, (_, index) => {
+		const created = createRow(`row ${index}`, { withAction });
+		list.appendChild(created.row);
+		return created;
 	});
-	document.body.appendChild(container);
-	return { container, items, cleanup: () => document.body.removeChild(container) };
-};
 
-const setupHook = (container: HTMLElement) => {
 	const { result } = renderHook(() => useItemListNavigation());
-	act(() => result.current(container));
-	return result;
+	act(() => result.current(list));
+
+	return { before, after, scroller, list, rows, ref: result.current };
 };
 
-it('creates a focus manager scoped to the list node', () => {
-	const { container, cleanup } = createList();
-	setupHook(container);
+const pressKey = (target: HTMLElement, key: string, init: KeyboardEventInit = {}) => {
+	const event = createEvent.keyDown(target, { key, ...init });
+	fireEvent(target, event);
+	return event;
+};
 
-	expect(createFocusManager).toHaveBeenCalledWith({ current: container });
-	cleanup();
-});
+describe('arrow keys between rows', () => {
+	it('moves focus to the next and previous `ItemLink`', () => {
+		const { rows } = setup();
+		rows[1].link.focus();
 
-it('calls focusNext with an item-link predicate on ArrowDown', () => {
-	const { container, items, cleanup } = createList();
-	setupHook(container);
+		pressKey(rows[1].link, 'ArrowDown');
+		expect(document.activeElement).toBe(rows[2].link);
 
-	fireEvent.keyDown(items[0], { key: 'ArrowDown' });
-
-	expect(mockFocusManager.focusNext).toHaveBeenCalledTimes(1);
-	expect(mockFocusManager.focusPrevious).not.toHaveBeenCalled();
-
-	const { accept } = mockFocusManager.focusNext.mock.calls[0][0];
-	expect(accept(createItemLink())).toBe(true);
-	expect(accept(document.createElement('div'))).toBe(false);
-	expect(accept(document.createElement('button'))).toBe(false);
-	cleanup();
-});
-
-it('calls focusPrevious with an item-link predicate on ArrowUp', () => {
-	const { container, items, cleanup } = createList();
-	setupHook(container);
-
-	fireEvent.keyDown(items[1], { key: 'ArrowUp' });
-
-	expect(mockFocusManager.focusPrevious).toHaveBeenCalledTimes(1);
-	expect(mockFocusManager.focusNext).not.toHaveBeenCalled();
-
-	const { accept } = mockFocusManager.focusPrevious.mock.calls[0][0];
-	expect(accept(createItemLink())).toBe(true);
-	expect(accept(document.createElement('div'))).toBe(false);
-	cleanup();
-});
-
-it('ignores events whose target is not an item link', () => {
-	const { container, cleanup } = createList(0);
-	setupHook(container);
-
-	const div = document.createElement('div');
-	container.appendChild(div);
-	fireEvent.keyDown(div, { key: 'ArrowDown' });
-
-	expect(mockFocusManager.focusNext).not.toHaveBeenCalled();
-	cleanup();
-});
-
-it('ignores non-arrow keys', () => {
-	const { container, items, cleanup } = createList();
-	setupHook(container);
-
-	['Enter', 'Tab', ' ', 'Escape'].forEach((key) => fireEvent.keyDown(items[0], { key }));
-
-	expect(mockFocusManager.focusNext).not.toHaveBeenCalled();
-	expect(mockFocusManager.focusPrevious).not.toHaveBeenCalled();
-	cleanup();
-});
-
-it('prevents default and stops propagation on arrow keys', () => {
-	const { container, items, cleanup } = createList();
-	setupHook(container);
-
-	const event = createEvent.keyDown(items[0], { key: 'ArrowDown' });
-	jest.spyOn(event, 'stopPropagation');
-	fireEvent(items[0], event);
-
-	expect(event.defaultPrevented).toBe(true);
-	expect(event.stopPropagation).toHaveBeenCalled();
-	cleanup();
-});
-
-it('removes the event listener when called with null', () => {
-	const { container, items, cleanup } = createList();
-	const result = setupHook(container);
-
-	act(() => result.current(null));
-	const afterNull = createEvent.keyDown(items[0], { key: 'ArrowDown' });
-	fireEvent(items[0], afterNull);
-
-	expect(mockFocusManager.focusNext).not.toHaveBeenCalled();
-	cleanup();
-});
-
-it('replaces the listener without duplicating it when called twice with the same node', () => {
-	const { container, items, cleanup } = createList();
-	const result = setupHook(container);
-
-	act(() => result.current(container));
-	const secondCall = createEvent.keyDown(items[0], { key: 'ArrowDown' });
-	fireEvent(items[0], secondCall);
-
-	expect(mockFocusManager.focusNext).toHaveBeenCalledTimes(1);
-	cleanup();
-});
-
-describe('when the adjacent item is outside the render window', () => {
-	beforeEach(() => {
-		mockFocusManager.focusNext.mockReturnValue(null);
-		mockFocusManager.focusPrevious.mockReturnValue(null);
+		pressKey(rows[2].link, 'ArrowUp');
+		pressKey(rows[1].link, 'ArrowUp');
+		expect(document.activeElement).toBe(rows[0].link);
 	});
 
-	const createScrollableSetup = (initialScrollTop = 0) => {
-		const scroller = document.createElement('div');
-		scroller.dataset.virtuosoScroller = 'true';
-		scroller.scrollTop = initialScrollTop;
-		const listNode = document.createElement('div');
-		scroller.appendChild(listNode);
-		document.body.appendChild(scroller);
+	it('skips the row actions', () => {
+		const { rows } = setup({ withAction: true });
+		rows[0].link.focus();
 
-		const row = document.createElement('div');
-		row.className = 'rcx-item';
-		Object.defineProperty(row, 'offsetHeight', { configurable: true, get: () => 36 });
-		const li = createItemLink();
-		row.appendChild(li);
-		listNode.appendChild(row);
+		pressKey(rows[0].link, 'ArrowDown');
 
-		setupHook(listNode);
+		expect(document.activeElement).toBe(rows[1].link);
+	});
 
-		return { scroller, li, cleanup: () => document.body.removeChild(scroller) };
-	};
+	it('prevents the default scroll and stops propagation', () => {
+		const { rows } = setup();
+		rows[0].link.focus();
 
-	it('scrolls down by one item height and retries focusNext', () => {
-		const { scroller, li, cleanup } = createScrollableSetup(0);
+		const event = createEvent.keyDown(rows[0].link, { key: 'ArrowDown' });
+		jest.spyOn(event, 'stopPropagation');
+		fireEvent(rows[0].link, event);
 
-		fireEvent.keyDown(li, { key: 'ArrowDown' });
+		expect(event.defaultPrevented).toBe(true);
+		expect(event.stopPropagation).toHaveBeenCalled();
+	});
+
+	it('ignores keys pressed outside an `ItemLink`', () => {
+		const { list, rows } = setup();
+		const other = document.createElement('button');
+		list.appendChild(other);
+		other.focus();
+
+		pressKey(other, 'ArrowUp');
+
+		expect(document.activeElement).toBe(other);
+		expect(rows[0].link).not.toBe(document.activeElement);
+	});
+
+	it('stops listening when the ref is detached', () => {
+		const { rows, ref } = setup();
+		act(() => ref(null));
+		rows[0].link.focus();
+
+		pressKey(rows[0].link, 'ArrowDown');
+
+		expect(document.activeElement).toBe(rows[0].link);
+	});
+});
+
+describe('when the adjacent row is outside the render window', () => {
+	const setHeight = (element: HTMLElement, height: number) =>
+		Object.defineProperty(element, 'offsetHeight', { configurable: true, get: () => height });
+
+	it('scrolls down by one row and retries', () => {
+		const { scroller, rows } = setup({ rowCount: 1 });
+		setHeight(rows[0].row, 36);
+		rows[0].link.focus();
+
+		pressKey(rows[0].link, 'ArrowDown');
 
 		expect(scroller.scrollTop).toBe(36);
-		expect(mockFocusManager.focusNext).toHaveBeenCalledTimes(2);
-		cleanup();
 	});
 
-	it('scrolls up by one item height and retries focusPrevious', () => {
-		const { scroller, li, cleanup } = createScrollableSetup(100);
+	it('scrolls up by one row and retries', () => {
+		const { scroller, rows } = setup({ rowCount: 1 });
+		setHeight(rows[0].row, 36);
+		scroller.scrollTop = 100;
+		rows[0].link.focus();
 
-		fireEvent.keyDown(li, { key: 'ArrowUp' });
+		pressKey(rows[0].link, 'ArrowUp');
 
 		expect(scroller.scrollTop).toBe(64);
-		expect(mockFocusManager.focusPrevious).toHaveBeenCalledTimes(2);
-		cleanup();
 	});
 
-	it('does not scroll or retry when the item has no height', () => {
-		const { container, items, cleanup } = createList();
-		setupHook(container);
+	it('does not scroll when the row has no height', () => {
+		const { scroller, rows } = setup({ rowCount: 1 });
+		rows[0].link.focus();
 
-		// offsetHeight defaults to 0 in jsdom — the fallback is skipped
-		fireEvent.keyDown(items[0], { key: 'ArrowDown' });
+		pressKey(rows[0].link, 'ArrowDown');
 
-		expect(mockFocusManager.focusNext).toHaveBeenCalledTimes(1);
-		cleanup();
+		expect(scroller.scrollTop).toBe(0);
+	});
+});
+
+describe('arrow keys within a row', () => {
+	it('moves from the `ItemLink` to the first action and back', () => {
+		const { rows } = setup({ withAction: true });
+		rows[1].link.focus();
+
+		pressKey(rows[1].link, 'ArrowRight');
+		expect(document.activeElement).toBe(rows[1].action);
+
+		pressKey(rows[1].action!, 'ArrowLeft');
+		expect(document.activeElement).toBe(rows[1].link);
+	});
+
+	it('swaps the directions in right-to-left layouts', () => {
+		const { rows } = setup({ withAction: true });
+		// jsdom does not inherit `direction` into the computed style
+		rows[0].row.style.direction = 'rtl';
+		rows[0].link.focus();
+
+		pressKey(rows[0].link, 'ArrowRight');
+		expect(document.activeElement).toBe(rows[0].link);
+
+		pressKey(rows[0].link, 'ArrowLeft');
+		expect(document.activeElement).toBe(rows[0].action);
+	});
+
+	it('stays on the `ItemLink` when the row has no focusable action', () => {
+		const { rows } = setup();
+		rows[0].link.focus();
+
+		const event = pressKey(rows[0].link, 'ArrowRight');
+
+		expect(document.activeElement).toBe(rows[0].link);
+		expect(event.defaultPrevented).toBe(false);
+	});
+});
+
+describe('Tab', () => {
+	it('leaves the list forwards from any row', () => {
+		const { after, rows } = setup({ withAction: true });
+		rows[0].link.focus();
+
+		const event = pressKey(rows[0].link, 'Tab');
+
+		expect(event.defaultPrevented).toBe(true);
+		expect(document.activeElement).toBe(after);
+	});
+
+	it('leaves the list backwards from any row', () => {
+		const { before, rows } = setup({ withAction: true });
+		rows[2].action!.focus();
+
+		pressKey(rows[2].action!, 'Tab', { shiftKey: true });
+
+		expect(document.activeElement).toBe(before);
+	});
+
+	it('keeps the browser default when nothing is focusable outside the list', () => {
+		const { before, after, rows } = setup();
+		before.remove();
+		after.remove();
+		rows[0].link.focus();
+
+		const event = pressKey(rows[0].link, 'Tab');
+
+		expect(event.defaultPrevented).toBe(false);
+	});
+});
+
+describe('coming back by keyboard', () => {
+	const mockFocusVisible = (element: HTMLElement) => {
+		const { matches } = element;
+		jest.spyOn(element, 'matches').mockImplementation((selector) => selector === ':focus-visible' || matches.call(element, selector));
+	};
+
+	it('returns to the row focused last', () => {
+		const { before, rows } = setup();
+		rows[1].link.focus();
+		before.focus();
+
+		mockFocusVisible(rows[0].link);
+		rows[0].link.focus();
+
+		expect(document.activeElement).toBe(rows[1].link);
+	});
+
+	it('keeps a pointer focus where it lands', () => {
+		const { before, rows } = setup();
+		rows[1].link.focus();
+		before.focus();
+
+		rows[0].link.focus();
+
+		expect(document.activeElement).toBe(rows[0].link);
+	});
+
+	it('keeps the focus where it lands when the last row is no longer rendered', () => {
+		const { before, rows } = setup();
+		rows[1].link.focus();
+		before.focus();
+		rows[1].row.remove();
+
+		mockFocusVisible(rows[0].link);
+		rows[0].link.focus();
+
+		expect(document.activeElement).toBe(rows[0].link);
 	});
 });
