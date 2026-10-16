@@ -50,7 +50,7 @@ const Item = ({ data, allowUse, onClickItem, onClickUse }: ItemProps) => {
 			</ItemContent>
 			{allowUse && (
 				<ItemActions reveal='hover'>
-					<Button small onClick={(e): void => onClickUse(e, data.text)}>
+					<Button small aria-label={t('Use_canned_response', { shortcut: data.shortcut })} onClick={(e): void => onClickUse(e, data.text)}>
 						{t('Use')}
 					</Button>
 				</ItemActions>
