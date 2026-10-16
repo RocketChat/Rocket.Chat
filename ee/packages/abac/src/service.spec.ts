@@ -2194,36 +2194,36 @@ describe('AbacService (unit)', () => {
 		});
 
 		it('keeps one message per removed member below the threshold', async () => {
-			evicting(4);
+			evicting(49);
 
 			await (service as any).onRoomAttributesChanged(room, attributes, fakeActor);
 
-			expect(mockRoomRemoveUserFromRoom).toHaveBeenCalledTimes(4);
+			expect(mockRoomRemoveUserFromRoom).toHaveBeenCalledTimes(49);
 			expect(mockRoomRemoveUserFromRoom.mock.calls.every(([, , options]) => !options.skipSystemMessage)).toBe(true);
 			expect(mockSaveSystemMessage).not.toHaveBeenCalled();
 		});
 
 		it('replaces the per-member messages with one that names nobody from the threshold on', async () => {
-			evicting(5);
+			evicting(50);
 
 			await (service as any).onRoomAttributesChanged(room, attributes, fakeActor);
 
 			expect(mockRoomRemoveUserFromRoom.mock.calls.every(([, , options]) => options.skipSystemMessage === true)).toBe(true);
 			expect(mockSaveSystemMessage).toHaveBeenCalledTimes(1);
-			expect(mockSaveSystemMessage).toHaveBeenCalledWith('abac-removed-users-from-room', 'r1', '5', fakeActor);
+			expect(mockSaveSystemMessage).toHaveBeenCalledWith('abac-removed-users-from-room', 'r1', '50', fakeActor);
 		});
 
 		it('counts only the members actually removed', async () => {
-			evicting(6);
+			evicting(51);
 			mockRoomRemoveUserFromRoom.mockRejectedValueOnce(new Error('app prevented'));
 
 			await (service as any).onRoomAttributesChanged(room, attributes, fakeActor);
 
-			expect(mockSaveSystemMessage).toHaveBeenCalledWith('abac-removed-users-from-room', 'r1', '5', fakeActor);
+			expect(mockSaveSystemMessage).toHaveBeenCalledWith('abac-removed-users-from-room', 'r1', '50', fakeActor);
 		});
 
 		it('keeps one message per removed member when no one made the change', async () => {
-			evicting(6);
+			evicting(51);
 
 			await (service as any).onRoomAttributesChanged(room, attributes);
 
