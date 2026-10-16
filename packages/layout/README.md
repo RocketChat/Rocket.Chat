@@ -16,7 +16,7 @@ It is built with [Fuselage](https://www.npmjs.com/package/@rocket.chat/fuselage)
 ## Installation
 
 ```sh
-npm install @rocket.chat/layout @rocket.chat/fuselage @rocket.chat/icons react react-dom react-i18next i18next react-virtuoso
+npm install @rocket.chat/layout @rocket.chat/fuselage @rocket.chat/icons react@19 react-dom@19 react-i18next i18next react-virtuoso
 ```
 
 Peer dependencies: `@rocket.chat/fuselage`, `react` and `react-dom` (19 or later) and `react-i18next` (which itself needs `i18next`). `@rocket.chat/icons` and `react-virtuoso` are peer dependencies of Fuselage, and the icon font comes from `@rocket.chat/icons`. The package ships both CommonJS and ES modules, with TypeScript declarations.

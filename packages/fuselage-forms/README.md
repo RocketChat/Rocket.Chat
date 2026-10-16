@@ -14,7 +14,7 @@ This package wraps the field and input components of [`@rocket.chat/fuselage`](h
 ## Installation
 
 ```sh
-npm install @rocket.chat/fuselage-forms @rocket.chat/fuselage @rocket.chat/fuselage-hooks react react-dom
+npm install @rocket.chat/fuselage-forms @rocket.chat/fuselage @rocket.chat/fuselage-hooks react@19 react-dom@19
 ```
 
 `@rocket.chat/fuselage`, `@rocket.chat/fuselage-hooks`, `react` and `react-dom` are peer dependencies. `@rocket.chat/fuselage` has its own peer dependencies and stylesheet; see its README. The components rely on React 19 (they read `ref` as a regular prop).
