@@ -207,4 +207,4 @@ Each stream is a virtual collection named `stream-<name>`. The server stores not
 
 ## License
 
-Rocket.Chat Enterprise Edition (EE) License — see [LICENSE](LICENSE).
+MIT — see [LICENSE](https://github.com/RocketChat/Rocket.Chat/blob/develop/LICENSE).

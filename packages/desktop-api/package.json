@@ -7,6 +7,7 @@
 		"url": "git+https://github.com/RocketChat/Rocket.Chat.git",
 		"directory": "packages/desktop-api"
 	},
+	"license": "MIT",
 	"type": "module",
 	"exports": {
 		".": {
