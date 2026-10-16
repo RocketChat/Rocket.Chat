@@ -2,7 +2,6 @@ import type { ILivechatDepartment, IOmnichannelCannedResponse } from '@rocket.ch
 import {
 	Box,
 	Button,
-	Icon,
 	Item as FuselageItem,
 	ItemActions,
 	ItemContent,
@@ -55,7 +54,6 @@ const Item = ({ data, allowUse, onClickItem, onClickUse }: ItemProps) => {
 					</Button>
 				</ItemActions>
 			)}
-			<Icon name='chevron-left' size='x24' color='hint' />
 		</FuselageItem>
 	);
 };
