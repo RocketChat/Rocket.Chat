@@ -48,7 +48,6 @@ const RoomListCollapser = ({
 					</Badge>
 				) : undefined
 			}
-			aria-label={expanded ? t('Collapse_group', { group: title }) : t('Expand_group', { group: title })}
 			onClick={onClick}
 			onKeyDown={toggleOnEnterOrSpace}
 			{...props}
