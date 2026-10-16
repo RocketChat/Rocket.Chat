@@ -12,6 +12,7 @@ import type { MarkdownBlock } from './layout/MarkdownBlock';
 import type { PreviewBlock } from './layout/PreviewBlock';
 import type { SectionBlock } from './layout/SectionBlock';
 import type { TableBlock } from './layout/TableBlock';
+import type { VideoBlock } from './layout/VideoBlock';
 import type { VideoConferenceBlock } from './layout/VideoConferenceBlock';
 
 export type LayoutBlock =
@@ -25,6 +26,7 @@ export type LayoutBlock =
 	| InputBlock
 	| MarkdownBlock
 	| SectionBlock
+	| VideoBlock
 	| TableBlock
 	| VideoConferenceBlock
 	| CalloutBlock

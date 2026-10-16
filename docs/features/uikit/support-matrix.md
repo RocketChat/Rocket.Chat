@@ -10,7 +10,7 @@ Each surface has one list of accepted layout blocks, exported by `@rocket.chat/u
 
 ## Divergences
 
-- **Livechat, message blocks**: `callout`, `header`, `info_card`, `input`, `markdown`, `preview`, `table` and `video_conf` are accepted, but Livechat's `MessageParser` has no method for them, so they render as nothing in the widget.
+- **Livechat, message blocks**: `callout`, `header`, `info_card`, `input`, `markdown`, `preview`, `table`, `video` and `video_conf` are accepted, but Livechat's `MessageParser` has no method for them, so they render as nothing in the widget.
 - **element `multi_static_select` in Livechat**: the method exists but returns `null`.
 - **`attachment` surface**: has a parser and a list, but no client renderer.
 
@@ -31,8 +31,9 @@ Each surface has one list of accepted layout blocks, exported by `@rocket.chat/u
 | `markdown` | ✅ | — | ✅ | — | ✅ | — |
 | `preview` | ✅ | — | ✅ | ✅ | ✅ | — |
 | `section` | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
-| `table` | ✅ | — | ✅ | — | ✅ | — |
 | `tab_navigation` | — | — | — | — | ✅ | — |
+| `table` | ✅ | — | ✅ | — | ✅ | — |
+| `video` | ✅ | — | ✅ | — | ✅ | — |
 | `video_conf` | ✅ | — | — | — | — | — |
 
 `input` in a message has no view state to submit to: its elements only reach the app through `dispatchActionConfig` (see [interactions.md](interactions.md#when-an-element-sends-blockaction)).

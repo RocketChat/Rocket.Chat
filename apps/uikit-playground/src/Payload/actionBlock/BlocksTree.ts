@@ -56,6 +56,7 @@ import {
 	sectionWithUsersSelect,
 } from './section';
 import { table } from './table';
+import { video } from './video';
 import { actionWithCheckbox } from '../action/checkbox';
 import { actionWithRadioButton } from '../action/radioButton';
 import { actionWithTimePicker } from '../action/timePicker';
@@ -356,6 +357,15 @@ const BlocksTree: Item = [
 			{
 				label: 'Service uptime',
 				payload: table,
+			},
+		],
+	},
+	{
+		label: 'video',
+		branches: [
+			{
+				label: 'Embedded video',
+				payload: video,
 			},
 		],
 	},
