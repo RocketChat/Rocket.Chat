@@ -228,6 +228,20 @@ export interface IUsersModel extends IBaseModel<IUser> {
 		roomIds: IRoom['_id'][],
 		options?: O,
 	): FindCursor<DocumentWithProjection<T, O>>;
+	findActiveByRoomIdAfterUsername<T extends Document = IUser>(
+		roomId: IRoom['_id'],
+		range: { search?: string; after?: Required<Pick<IUser, '_id' | 'username'>>; limit: number },
+		options?: FindOptions<IUser>,
+	): FindCursor<T>;
+	countActiveByRoomIdAfterUsername(
+		roomId: IRoom['_id'],
+		range?: { search?: string; after?: Required<Pick<IUser, '_id' | 'username'>> },
+	): Promise<number>;
+	findOneByIdAndRoomId<T extends Document = IUser>(
+		userId: IUser['_id'],
+		roomId: IRoom['_id'],
+		options?: FindOptions<IUser>,
+	): Promise<T | null>;
 	setCasExternalIdByUsername(username: string): Promise<IUser | null>;
 
 	updateStatusText(_id: IUser['_id'], statusText: string, options?: UpdateOptions): Promise<UpdateResult>;

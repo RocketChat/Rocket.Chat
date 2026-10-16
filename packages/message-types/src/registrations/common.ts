@@ -234,6 +234,6 @@ export default (instance: MessageTypes) => {
 	instance.registerType({
 		id: 'abac-removed-users-from-room',
 		system: true,
-		text: (t, message) => t('abac_removed_users_from_the_room', { count: Number(message.msg) || 0 }),
+		text: (t, message) => t('abac_removed_users_from_the_room', { count: Number(message.msg) }),
 	});
 };

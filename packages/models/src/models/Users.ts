@@ -167,6 +167,52 @@ export class UsersRaw extends BaseRaw<IUser, DefaultFields<IUser>> implements IU
 		return this.find<T, O>({ active: true, __rooms: { $in: roomIds } }, options);
 	}
 
+	private activeByRoomIdAfterUsernameQuery(
+		roomId: IRoom['_id'],
+		{ search, after }: { search?: string; after?: Required<Pick<IUser, '_id' | 'username'>> },
+	): Filter<IUser> {
+		const conditions: Filter<IUser>[] = [];
+
+		if (search) {
+			const regex = new RegExp(escapeRegExp(search), 'i');
+			conditions.push({ $or: [{ username: regex }, { name: regex }] });
+		}
+
+		if (after) {
+			const { _id, username } = after;
+			conditions.push({ $or: [{ username: { $gt: username } }, { username, _id: { $gt: _id } }] });
+		}
+
+		return { active: true, __rooms: roomId, ...(conditions.length > 0 && { $and: conditions }) };
+	}
+
+	findActiveByRoomIdAfterUsername<T extends Document = IUser>(
+		roomId: IRoom['_id'],
+		{ search, after, limit }: { search?: string; after?: Required<Pick<IUser, '_id' | 'username'>>; limit: number },
+		options?: FindOptions<IUser>,
+	): FindCursor<T> {
+		return this.find<T>(this.activeByRoomIdAfterUsernameQuery(roomId, { search, after }), {
+			...options,
+			sort: { username: 1, _id: 1 },
+			limit,
+		});
+	}
+
+	countActiveByRoomIdAfterUsername(
+		roomId: IRoom['_id'],
+		range: { search?: string; after?: Required<Pick<IUser, '_id' | 'username'>> } = {},
+	): Promise<number> {
+		return this.countDocuments(this.activeByRoomIdAfterUsernameQuery(roomId, range));
+	}
+
+	findOneByIdAndRoomId<T extends Document = IUser>(
+		userId: IUser['_id'],
+		roomId: IRoom['_id'],
+		options?: FindOptions<IUser>,
+	): Promise<T | null> {
+		return this.findOne<T>({ _id: userId, __rooms: roomId }, options);
+	}
+
 	setCasExternalIdByUsername(username: string): Promise<IUser | null> {
 		// #TODO: Remove regex based search
 		const regex = new RegExp(`^${escapeRegExp(username)}$`, 'i');
