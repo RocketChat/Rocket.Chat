@@ -3,6 +3,7 @@ import type { ICreatedRoom, IUser } from '@rocket.chat/core-typings';
 import type { ServerMethods } from '@rocket.chat/ddp-client';
 import { validateFederatedUsername } from '@rocket.chat/federation-matrix';
 import { Rooms, Users } from '@rocket.chat/models';
+import { isBareJid } from '@rocket.chat/tools';
 import { check, Match } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
 
@@ -10,7 +11,7 @@ import { RateLimiterClass as RateLimiter } from '../../lib/RateLimiter';
 import { hasPermissionAsync } from '../../lib/authorization/hasPermission';
 import { callbacks } from '../../lib/callbacks';
 import { createRoom } from '../../lib/rooms/createRoom';
-import { isFederationEnabled } from '../../services/federation/utils';
+import { isFederationEnabled, isXMPPServerEnabled } from '../../services/federation/utils';
 import { settings } from '../../settings';
 
 export async function createDirectMessage(
@@ -63,6 +64,10 @@ export async function createDirectMessage(
 			const to: IUser | null = await Users.findOneByUsernameIgnoringCase(username);
 			if (to) {
 				return to;
+			}
+
+			if (isXMPPServerEnabled() && isBareJid(username)) {
+				return username;
 			}
 
 			throw new Meteor.Error('error-invalid-user', 'Invalid user', {

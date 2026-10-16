@@ -9,6 +9,7 @@ code:
     src/XMPPServer.ts,
     src/service/XMPPServerService.ts,
     apps/meteor/ee/server/hooks/xmpp/index.ts,
+    apps/meteor/server/meteor-methods/messages/createDirectMessage.ts,
   ]
 tests: [src/handlers/parse.spec.ts, tests/integration/routing.spec.ts, tests/end-to-end/direct-messages.spec.ts]
 ---
@@ -51,7 +52,8 @@ pre-arranging anything.
 - **R6** The sender does not receive their own message back from the remote side; the
   outgoing hook ignores anything carrying a federation stamp.
 - **R7** When a local user opens a DM by typing a bare JID, the remote user record is created
-  and the room stamped before the first message is sent.
+  and the room stamped before the first message is sent, whether the JID is new to
+  Rocket.Chat or already has a user record.
 - **R8** Delivery is at most once. A message that cannot be delivered (unreachable domain
   after backoff, full queue) is logged on the service; the sender is not told.
 - **R9** An edit by the author is sent as a correction ([message-corrections](message-corrections.md)).
