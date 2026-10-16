@@ -9802,7 +9802,7 @@ __metadata:
     mongodb: "npm:6.16.0"
     ts-patch: "npm:^3.3.0"
     typescript: "npm:~5.9.3"
-    typia: "patch:typia@npm%3A9.7.2#~/.yarn/patches/typia-npm-9.7.2-5c5d9c80b4.patch"
+    typia: "npm:9.7.2"
     zod: "npm:~4.3.6"
   languageName: unknown
   linkType: soft
@@ -12130,7 +12130,7 @@ __metadata:
     jest: "npm:~30.5.2"
     ts-patch: "npm:^3.3.0"
     typescript: "npm:~5.9.3"
-    typia: "patch:typia@npm%3A9.7.2#~/.yarn/patches/typia-npm-9.7.2-5c5d9c80b4.patch"
+    typia: "npm:9.7.2"
   peerDependencies:
     "@rocket.chat/icons": "*"
   languageName: unknown
