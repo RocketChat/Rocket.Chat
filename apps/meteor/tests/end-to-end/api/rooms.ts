@@ -500,6 +500,46 @@ describe('[Rooms]', () => {
 				});
 		});
 
+		it('rooms.mediaConfirm should be idempotent for an already confirmed fileId', async () => {
+			let confirmedFileId!: string;
+
+			await request
+				.post(api(`rooms.media/${testChannel._id}`))
+				.set(credentials)
+				.attach('file', imgURL)
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					confirmedFileId = res.body.file._id;
+				});
+
+			let firstMessageId!: string;
+			await request
+				.post(api(`rooms.mediaConfirm/${testChannel._id}/${confirmedFileId}`))
+				.set(credentials)
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.property('message');
+					firstMessageId = res.body.message._id;
+				});
+
+			// A duplicate confirm for the same fileId must not insert a second message;
+			// it must return the same message created by the first confirm (issue #41886).
+			await request
+				.post(api(`rooms.mediaConfirm/${testChannel._id}/${confirmedFileId}`))
+				.set(credentials)
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.property('message');
+					expect(res.body.message).to.have.property('_id', firstMessageId);
+				});
+		});
+
 		it('should upload a LST file to room', async () => {
 			let fileId;
 			await request
