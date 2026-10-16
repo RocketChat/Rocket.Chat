@@ -1,8 +1,7 @@
 import { IconButton, SidebarItem, SidebarItemAvatarWrapper, SidebarItemMenu, SidebarItemTitle } from '@rocket.chat/fuselage';
+import { useDeferredMenuMount } from '@rocket.chat/ui-client';
 import type { HTMLAttributes, ReactNode } from 'react';
 import { memo } from 'react';
-
-import { useDeferredMenuMount } from './useDeferredMenuMount';
 
 export type MediumProps = {
 	title: ReactNode;

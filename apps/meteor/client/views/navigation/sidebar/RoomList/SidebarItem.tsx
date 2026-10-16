@@ -6,11 +6,10 @@ import {
 	SidebarItemTitle,
 } from '@rocket.chat/fuselage';
 import { RoomAvatar } from '@rocket.chat/ui-avatar';
+import { useDeferredMenuMount } from '@rocket.chat/ui-client';
 import type { SubscriptionWithRoom } from '@rocket.chat/ui-contexts';
 import type { HTMLAttributes, ReactNode } from 'react';
 import { memo } from 'react';
-
-import { useDeferredMenuMount } from '../../../../sidebar/Item/useDeferredMenuMount';
 
 export type SidebarItemProps = {
 	title: ReactNode;
