@@ -335,9 +335,9 @@ const PreviewCursor = {
 	type: 'object',
 	properties: {
 		_id: { type: 'string', minLength: 1 },
-		username: { type: 'string' },
+		username: { type: 'string', minLength: 1 },
 	},
-	required: ['_id'],
+	required: ['_id', 'username'],
 	additionalProperties: false,
 };
 
