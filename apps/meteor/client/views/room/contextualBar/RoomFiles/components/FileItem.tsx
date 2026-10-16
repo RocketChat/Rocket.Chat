@@ -51,16 +51,20 @@ const FileItem = ({ rid, fileData, onClickDelete }: FileItemProps) => {
 					<ItemContent>
 						<ItemRow>
 							<ItemTitle>
-								<ItemLink
-									href={path ?? ''}
-									download
-									rel='noopener noreferrer'
-									target='_blank'
-									title={displayName}
-									{...(isEncrypted && { onClick, onContextMenu })}
-								>
-									{displayName}
-								</ItemLink>
+								{path ? (
+									<ItemLink
+										href={path}
+										download
+										rel='noopener noreferrer'
+										target='_blank'
+										title={displayName}
+										{...(isEncrypted && { onClick, onContextMenu })}
+									>
+										{displayName}
+									</ItemLink>
+								) : (
+									displayName
+								)}
 							</ItemTitle>
 							<ItemMeta>{format(uploadedAt)}</ItemMeta>
 						</ItemRow>
