@@ -1,0 +1,11 @@
+apps/meteor/client/lib/authorization/createAuthorizationFunctions.spec.ts
+  ai_agent 302-312
+apps/meteor/client/lib/authorization/createAuthorizationFunctions.ts
+  ai_agent 59
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.2",
+  "base_commit_sha": "bab8bb199ec82237c4a04105ac6148aae8f8b165",
+  "prompts": {}
+}
