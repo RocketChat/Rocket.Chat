@@ -35,6 +35,8 @@ const VideoBlock = ({ className, block, surfaceRenderer }: VideoBlockProps) => {
 						allow='autoplay; encrypted-media; picture-in-picture; fullscreen'
 						allowFullScreen
 						sandbox='allow-scripts allow-same-origin allow-presentation allow-popups'
+						// Players such as YouTube refuse to play without the embedding page's origin.
+						referrerPolicy='strict-origin-when-cross-origin'
 						style={{ width: '100%', height: '100%', border: 0 }}
 					/>
 				) : (
