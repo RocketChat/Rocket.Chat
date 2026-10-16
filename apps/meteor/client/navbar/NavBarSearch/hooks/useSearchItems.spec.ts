@@ -65,4 +65,31 @@ describe('useSearchItems', () => {
 			expect(result.current.items).toHaveLength(2);
 		});
 	});
+
+	it('should ignore leading and trailing whitespace in the search term', async () => {
+		const wrapper = mockAppRoot()
+			.withSubscriptions([
+				{
+					_id: 'room_123',
+					t: 'c',
+					name: 'general',
+					fname: 'general',
+				} as unknown as SubscriptionWithRoom,
+			])
+			.withEndpoint('GET', '/v1/spotlight', () => ({
+				users: [],
+				rooms: [],
+			}))
+			.build();
+
+		const { result } = renderHook(() => useSearchItems('  general  '), {
+			wrapper,
+		});
+
+		await waitFor(() => {
+			expect(result.current.items).toHaveLength(1);
+		});
+
+		expect(result.current.items[0].name).toBe('general');
+	});
 });
