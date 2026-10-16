@@ -54,6 +54,17 @@ Source: [`packages/ui-kit/src/blocks/layout/ContextBlock.ts`](../../../packages/
 | `appId` | `string` | no |  |
 | `blockId` | `string` | no |  |
 
+### `context_actions`
+
+Source: [`packages/ui-kit/src/blocks/layout/ContextActionsBlock.ts`](../../../packages/ui-kit/src/blocks/layout/ContextActionsBlock.ts)
+
+| Field | Type | Required | Notes |
+| --- | --- | --- | --- |
+| `type` | `'context_actions'` | yes | A compact row of actions about the message it closes, such as copying or reporting it. |
+| `elements` | `readonly (FeedbackButtonsElement \| IconButtonElement)[]` | yes | Each element gets the block's `appId` and `blockId` when it has none. |
+| `appId` | `string` | no |  |
+| `blockId` | `string` | no |  |
+
 ### `divider`
 
 Source: [`packages/ui-kit/src/blocks/layout/DividerBlock.ts`](../../../packages/ui-kit/src/blocks/layout/DividerBlock.ts)
@@ -154,6 +165,18 @@ Source: [`packages/ui-kit/src/blocks/layout/SectionBlock.ts`](../../../packages/
 | `appId` | `string` | no |  |
 | `blockId` | `string` | no |  |
 
+### `table`
+
+Source: [`packages/ui-kit/src/blocks/layout/TableBlock.ts`](../../../packages/ui-kit/src/blocks/layout/TableBlock.ts)
+
+| Field | Type | Required | Notes |
+| --- | --- | --- | --- |
+| `type` | `'table'` | yes | Rows of cells shown as a table; the first row is the header. |
+| `rows` | `readonly (readonly TableCell[])[]` | yes | A cell is `{ type: 'raw_text', text }`, shown as is, or a text object (`plain_text`, `mrkdwn`). |
+| `column_settings` | `readonly ({ align?: 'left' \| 'center' \| 'right'; is_wrapped?: boolean } \| null)[]` | no | Settings for each column, by position; `null` keeps a column's defaults. Text is truncated unless `is_wrapped`. |
+| `appId` | `string` | no |  |
+| `blockId` | `string` | no |  |
+
 ### `tab_navigation`
 
 Source: [`packages/ui-kit/src/blocks/layout/ExperimentalTabNavigationBlock.ts`](../../../packages/ui-kit/src/blocks/layout/ExperimentalTabNavigationBlock.ts)
@@ -162,6 +185,25 @@ Source: [`packages/ui-kit/src/blocks/layout/ExperimentalTabNavigationBlock.ts`](
 | --- | --- | --- | --- |
 | `type` | `'tab_navigation'` | yes |  |
 | `tabs` | `readonly ExperimentalTabElement[]` | yes |  |
+| `appId` | `string` | no |  |
+| `blockId` | `string` | no |  |
+
+### `video`
+
+Source: [`packages/ui-kit/src/blocks/layout/VideoBlock.ts`](../../../packages/ui-kit/src/blocks/layout/VideoBlock.ts)
+
+| Field | Type | Required | Notes |
+| --- | --- | --- | --- |
+| `type` | `'video'` | yes | A video shown as its thumbnail, which plays in place once clicked. |
+| `video_url` | `string` | yes | An embeddable page that plays the video, loaded in a sandboxed frame on click. Only `https` URLs that pass `isSafeUrl` play; any other URL leaves the thumbnail inert. |
+| `thumbnail_url` | `string` | yes |  |
+| `alt_text` | `string` | yes | Describes the video for screen readers and when the thumbnail does not load. |
+| `title` | `PlainText` | yes |  |
+| `title_url` | `string` | no | Opened in a new tab when the title is clicked. |
+| `description` | `PlainText` | no |  |
+| `author_name` | `string` | no |  |
+| `provider_name` | `string` | no |  |
+| `provider_icon_url` | `string` | no |  |
 | `appId` | `string` | no |  |
 | `blockId` | `string` | no |  |
 
@@ -293,6 +335,21 @@ Source: [`packages/ui-kit/src/blocks/elements/EmailTextInputElement.ts`](../../.
 | `actionId` | `string` | yes |  |
 | `confirm` | `ConfirmationDialog` | no |  |
 | `dispatchActionConfig` | `InputElementDispatchAction[]` | no |  |
+
+### `feedback_buttons`
+
+Source: [`packages/ui-kit/src/blocks/elements/FeedbackButtonsElement.ts`](../../../packages/ui-kit/src/blocks/elements/FeedbackButtonsElement.ts)
+
+| Field | Type | Required | Notes |
+| --- | --- | --- | --- |
+| `type` | `'feedback_buttons'` | yes | A thumbs up and a thumbs down button, to rate the message they close. Only accepted in `context_actions`. |
+| `positive_button` | `FeedbackButton` | yes | `{ text: PlainText; value: string; accessibility_label?: string }`. `text` names the button and shows on hover; `accessibility_label` replaces it for screen readers. |
+| `negative_button` | `FeedbackButton` | yes | Same shape as `positive_button`. |
+| `appId` | `string` | yes |  |
+| `blockId` | `string` | yes |  |
+| `actionId` | `string` | yes |  |
+
+A click sends a `blockAction` whose `value` is the clicked button's `value`, and marks that button as pressed.
 
 ### `icon`
 

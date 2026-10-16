@@ -140,3 +140,11 @@ export const PreviewWithExternalUrl = createStory(payloads.previewWithExternalUr
 export const InfoCard = createStory(payloads.infoCard);
 export const InfoCardMultiple = createStory(payloads.infoCardMultiple);
 export const InfoCardMultipleIcons = createStory(payloads.infoCardMultipleIcons);
+
+export const Table = createStory(payloads.table);
+
+export const Video = createStory(payloads.video);
+
+export const ContextActions = createStory(payloads.contextActions);
+
+export const ContextActionsWithFeedback = createStory(payloads.contextActionsWithFeedback);
