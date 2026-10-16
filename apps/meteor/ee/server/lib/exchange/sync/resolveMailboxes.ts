@@ -4,9 +4,9 @@ import type { Filter } from 'mongodb';
 
 const PAGE_SIZE = 500;
 
-type SyncCandidate = Pick<IUser, '_id' | 'emails'>;
+type SyncCandidate = Pick<IUser, '_id' | 'emails' | 'utcOffset'>;
 
-type MailboxCandidate = { uid: IUser['_id']; mailbox?: string };
+type MailboxCandidate = { uid: IUser['_id']; mailbox?: string; utcOffset?: number };
 
 const buildQuery = (lastId?: string): Filter<IUser> => ({
 	type: { $nin: ['app', 'bot'] },
@@ -24,7 +24,7 @@ export async function* iterateMailboxCandidates(pageSize = PAGE_SIZE): AsyncGene
 
 	for (;;) {
 		const page = await Users.findActive<SyncCandidate>(buildQuery(lastId), {
-			projection: { emails: 1 },
+			projection: { emails: 1, utcOffset: 1 },
 			sort: { _id: 1 },
 			limit: pageSize,
 		}).toArray();
@@ -34,7 +34,7 @@ export async function* iterateMailboxCandidates(pageSize = PAGE_SIZE): AsyncGene
 		}
 
 		for (const user of page) {
-			yield { uid: user._id, mailbox: resolveMailbox(user) };
+			yield { uid: user._id, mailbox: resolveMailbox(user), utcOffset: user.utcOffset };
 		}
 
 		if (page.length < pageSize) {

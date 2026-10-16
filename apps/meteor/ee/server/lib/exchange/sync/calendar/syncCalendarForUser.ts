@@ -21,8 +21,8 @@ export const syncCalendarForUser = async (uid: IUser['_id']): Promise<CalendarSy
 	try {
 		const provider = getExchangeProvider();
 
-		const user = await Users.findOneById<Pick<IUser, '_id' | 'emails'>>(uid, {
-			projection: { emails: 1 },
+		const user = await Users.findOneById<Pick<IUser, '_id' | 'emails' | 'utcOffset'>>(uid, {
+			projection: { emails: 1, utcOffset: 1 },
 		});
 
 		const mailbox = user && resolveMailbox(user);
@@ -35,7 +35,7 @@ export const syncCalendarForUser = async (uid: IUser['_id']): Promise<CalendarSy
 			throw new ExchangeError('mailbox-not-found', 'No mailbox could be resolved for this user');
 		}
 
-		const outcome = await syncCalendarWindow(provider, uid, mailbox, getCalendarSyncWindow());
+		const outcome = await syncCalendarWindow(provider, uid, mailbox, getCalendarSyncWindow(new Date(), user.utcOffset));
 
 		changed = outcome.changed;
 
