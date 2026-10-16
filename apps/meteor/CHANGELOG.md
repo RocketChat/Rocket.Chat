@@ -1,5 +1,20 @@
 # @rocket.chat/meteor
 
+## 8.6.3
+
+### Patch Changes
+
+- Bump @rocket.chat/meteor version.
+
+- Bump @rocket.chat/meteor version.
+
+- <details><summary>Updated dependencies [c9ce427e82a724a8dd5b07fc0c993cec4cb3d3d9, 9a83a3e839e89964d20cf671f59a61cb9f045107]:</summary>
+
+  - @rocket.chat/apps@0.7.2
+  - @rocket.chat/core-typings@8.6.3
+  - @rocket.chat/rest-typings@8.6.3
+  </details>
+
 ## 8.6.2
 
 ### Patch Changes
