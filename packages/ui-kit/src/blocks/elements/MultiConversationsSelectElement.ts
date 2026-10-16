@@ -12,7 +12,7 @@ export type MultiConversationsSelectElement = Actionable<{
 	max_selected_items?: number;
 	/** Starts with the conversation the view was opened from when nothing else is selected. */
 	default_to_current_conversation?: boolean;
-	/** Which kinds of conversation to list; `im` and `mpim` both cover direct messages. */
+	/** Which kinds of conversation to list: `im` is a direct message with one person, `mpim` one with several. */
 	filter?: ConversationsSelectFilter;
 	focus_on_load?: boolean;
 }>;

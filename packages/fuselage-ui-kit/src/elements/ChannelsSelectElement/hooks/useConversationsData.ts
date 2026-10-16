@@ -10,9 +10,23 @@ type UseConversationsDataProps = {
 	include?: ConversationsSelectFilter['include'];
 };
 
-// ponytail: subscriptions do not tell a direct message from a group direct message, so im and mpim both mean 'd'
-const roomTypesByKind = { public: 'c', private: 'p', im: 'd', mpim: 'd' } as const;
-const allConversationKinds = Object.keys(roomTypesByKind) as (keyof typeof roomTypesByKind)[];
+type ConversationKind = NonNullable<ConversationsSelectFilter['include']>[number];
+
+const allConversationKinds: ConversationKind[] = ['public', 'private', 'im', 'mpim'];
+
+// ponytail: a group direct message is told apart by its name, the other members' usernames joined with ', '; breaks only if usernames may contain commas
+const getConversationKind = ({ t, name }: { t: string; name?: string }): ConversationKind | undefined => {
+	switch (t) {
+		case 'c':
+			return 'public';
+		case 'p':
+			return 'private';
+		case 'd':
+			return name?.includes(',') ? 'mpim' : 'im';
+		default:
+			return undefined;
+	}
+};
 
 // ponytail: shows the first matches only; page through subscriptions if users need to scroll past them
 const maxOptions = 50;
@@ -30,9 +44,11 @@ export const useConversationsData = ({ filter, enabled = true, selected = [], in
 	return useMemo(() => {
 		const term = filter.toLowerCase();
 		// Without `include`, every conversation kind is listed, and nothing else (no livechat rooms).
-		const allowedTypes = (include ?? allConversationKinds).map((kind) => roomTypesByKind[kind]);
-		const matches = ({ name, fname, t }: { name?: string; fname?: string; t: string }) =>
-			allowedTypes.some((type) => type === t) && (!term || [name, fname].some((value) => value?.toLowerCase().includes(term)));
+		const allowedKinds = include ?? allConversationKinds;
+		const matches = ({ name, fname, t }: { name?: string; fname?: string; t: string }) => {
+			const kind = getConversationKind({ t, name });
+			return !!kind && allowedKinds.includes(kind) && (!term || [name, fname].some((value) => value?.toLowerCase().includes(term)));
+		};
 
 		const found = subscriptions?.filter(matches).slice(0, maxOptions) ?? [];
 		const selectedOutsideResults =

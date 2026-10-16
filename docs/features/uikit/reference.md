@@ -239,7 +239,7 @@ Source: [`packages/ui-kit/src/blocks/elements/ConversationsSelectElement.ts`](..
 | `placeholder` | `PlainText` | no |  |
 | `initial_conversation` | `string` | no | Id of the room selected when the view opens. |
 | `default_to_current_conversation` | `boolean` | no | Starts with the conversation the view was opened from when nothing else is selected. Messages, contextual bars and modals use the room on screen; with no room open, or in a banner, nothing is preselected. |
-| `filter` | `{ include?: ('public' \| 'private' \| 'im' \| 'mpim')[] }` | no | Which kinds of conversation to list; `im` and `mpim` both cover direct messages. |
+| `filter` | `{ include?: ('public' \| 'private' \| 'im' \| 'mpim')[] }` | no | Which kinds of conversation to list: `im` is a direct message with one person, `mpim` one with several. |
 | `focus_on_load` | `boolean` | no | Focuses the field when the view opens. |
 | `appId` | `string` | yes |  |
 | `blockId` | `string` | yes |  |
@@ -378,7 +378,7 @@ Source: [`packages/ui-kit/src/blocks/elements/MultiConversationsSelectElement.ts
 | `initial_conversations` | `string[]` | no | Ids of the rooms selected when the view opens. |
 | `max_selected_items` | `number` | no | Most conversations that can be selected. |
 | `default_to_current_conversation` | `boolean` | no | Starts with the conversation the view was opened from when nothing else is selected. Messages, contextual bars and modals use the room on screen; with no room open, or in a banner, nothing is preselected. |
-| `filter` | `{ include?: ('public' \| 'private' \| 'im' \| 'mpim')[] }` | no | Which kinds of conversation to list; `im` and `mpim` both cover direct messages. |
+| `filter` | `{ include?: ('public' \| 'private' \| 'im' \| 'mpim')[] }` | no | Which kinds of conversation to list: `im` is a direct message with one person, `mpim` one with several. |
 | `focus_on_load` | `boolean` | no | Focuses the field when the view opens. |
 | `appId` | `string` | yes |  |
 | `blockId` | `string` | yes |  |

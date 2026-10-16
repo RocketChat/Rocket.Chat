@@ -8,6 +8,7 @@ const subscriptions = [
 	{ rid: 'general', name: 'general', fname: 'General', t: 'c' },
 	{ rid: 'secret', name: 'secret-group', t: 'p' },
 	{ rid: 'dm', name: 'john.doe', fname: 'Jonathan Smith', t: 'd' },
+	{ rid: 'group-dm', name: 'jane.roe, mary.major', fname: 'Jane Roe, Mary Major', t: 'd' },
 	{ rid: 'livechat', name: 'visitor', fname: 'Visitor', t: 'l' },
 ] as ISubscription[];
 
@@ -28,6 +29,7 @@ it('lists every conversation the user belongs to, direct messages included and l
 			{ value: 'general', label: { name: 'General', avatarETag: undefined, type: 'c' } },
 			{ value: 'secret', label: { name: 'secret-group', avatarETag: undefined, type: 'p' } },
 			{ value: 'dm', label: { name: 'Jonathan Smith', avatarETag: undefined, type: 'd' } },
+			{ value: 'group-dm', label: { name: 'Jane Roe, Mary Major', avatarETag: undefined, type: 'd' } },
 		]),
 	);
 });
@@ -44,7 +46,12 @@ it.each([
 it.each([
 	[['public'], ['general']],
 	[['private'], ['secret']],
-	[['im', 'mpim'], ['dm']],
+	[['im'], ['dm']],
+	[['mpim'], ['group-dm']],
+	[
+		['im', 'mpim'],
+		['dm', 'group-dm'],
+	],
 	[
 		['public', 'private'],
 		['general', 'secret'],
