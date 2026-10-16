@@ -3,6 +3,7 @@ import type { ICreatedRoom, IUser } from '@rocket.chat/core-typings';
 import type { ServerMethods } from '@rocket.chat/ddp-client';
 import { validateFederatedUsername } from '@rocket.chat/federation-matrix';
 import { Rooms, Users } from '@rocket.chat/models';
+import { normalizeBareJid } from '@rocket.chat/tools';
 import { check, Match } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
 
@@ -10,7 +11,7 @@ import { RateLimiterClass as RateLimiter } from '../../lib/RateLimiter';
 import { hasPermissionAsync } from '../../lib/authorization/hasPermission';
 import { callbacks } from '../../lib/callbacks';
 import { createRoom } from '../../lib/rooms/createRoom';
-import { isFederationEnabled } from '../../services/federation/utils';
+import { isFederationEnabled, isXMPPServerEnabled } from '../../services/federation/utils';
 import { settings } from '../../settings';
 
 export async function createDirectMessage(
@@ -60,9 +61,15 @@ export async function createDirectMessage(
 				return username;
 			}
 
-			const to: IUser | null = await Users.findOneByUsernameIgnoringCase(username);
+			// A typed JID names the user record of that XMPP account, however its domain was spelled
+			const jid = isXMPPServerEnabled() ? normalizeBareJid(username) : undefined;
+			const to: IUser | null = await Users.findOneByUsernameIgnoringCase(jid ?? username);
 			if (to) {
 				return to;
+			}
+
+			if (jid) {
+				return jid;
 			}
 
 			throw new Meteor.Error('error-invalid-user', 'Invalid user', {
