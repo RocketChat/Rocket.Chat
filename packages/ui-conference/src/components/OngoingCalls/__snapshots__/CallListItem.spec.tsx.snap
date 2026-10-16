@@ -51,7 +51,9 @@ exports[`CallListItem renders Declined without crashing 1`] = `
               </div>
             </div>
             <div
+              aria-labelledby="_r_0_"
               class="rcx-item__actions"
+              role="group"
             >
               <div
                 class="rcx-box rcx-box--full rcx-css-15iirka"
@@ -120,7 +122,9 @@ exports[`CallListItem renders Joinable without crashing 1`] = `
               </div>
             </div>
             <div
+              aria-labelledby="_r_1_"
               class="rcx-item__actions"
+              role="group"
             >
               <button
                 aria-label="Decline"
@@ -258,7 +262,9 @@ exports[`CallListItem renders Ringing without crashing 1`] = `
               </div>
             </div>
             <div
+              aria-labelledby="_r_3_"
               class="rcx-item__actions"
+              role="group"
             >
               <button
                 aria-label="Silence"
@@ -346,7 +352,9 @@ exports[`CallListItem renders RingingButDeclined without crashing 1`] = `
               </div>
             </div>
             <div
+              aria-labelledby="_r_4_"
               class="rcx-item__actions"
+              role="group"
             >
               <div
                 class="rcx-box rcx-box--full rcx-css-15iirka"
@@ -478,7 +486,9 @@ exports[`CallListItem renders RingingNotHeardHere without crashing 1`] = `
               </div>
             </div>
             <div
+              aria-labelledby="_r_6_"
               class="rcx-item__actions"
+              role="group"
             >
               <button
                 aria-label="Decline"
@@ -558,7 +568,9 @@ exports[`CallListItem renders RingingSilenced without crashing 1`] = `
               </div>
             </div>
             <div
+              aria-labelledby="_r_7_"
               class="rcx-item__actions"
+              role="group"
             >
               <i
                 aria-hidden="true"
@@ -640,7 +652,9 @@ exports[`CallListItem renders SinglePerson without crashing 1`] = `
               </div>
             </div>
             <div
+              aria-labelledby="_r_8_"
               class="rcx-item__actions"
+              role="group"
             >
               <button
                 aria-label="Decline"
