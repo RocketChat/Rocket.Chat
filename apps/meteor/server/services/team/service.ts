@@ -32,7 +32,7 @@ import { addUserToRoom } from '../../lib/rooms/addUserToRoom';
 import { filterDefaultChannelsForUser } from '../../lib/rooms/filterDefaultChannelsForUser';
 import { filterUsersAllowedInRoom } from '../../lib/rooms/filterUsersAllowedInRoom';
 import { getSubscribedRoomsForUserWithDetails } from '../../lib/rooms/getRoomsWithSingleOwner';
-import { removeRoomAbacAttributes } from '../../lib/rooms/removeRoomAbacAttributes';
+import { assertCanRemoveRoomAbacAttributes, removeRoomAbacAttributes } from '../../lib/rooms/removeRoomAbacAttributes';
 import { removeUserFromRoom } from '../../lib/rooms/removeUserFromRoom';
 import { saveRoomName } from '../../lib/rooms/settings';
 import { assertAbacRoomStaysPrivate, saveRoomType } from '../../lib/rooms/settings/saveRoomType';
@@ -68,6 +68,15 @@ export class TeamService extends ServiceClassInternal implements ITeamService {
 		});
 		if (!createdBy) {
 			throw new Error('invalid-user');
+		}
+
+		const convertedRoom = room.id
+			? await Rooms.findOneById<Pick<IRoom, '_id' | 'name' | 'abacAttributes'>>(room.id, {
+					projection: { name: 1, abacAttributes: 1 },
+				})
+			: null;
+		if (convertedRoom) {
+			await assertCanRemoveRoomAbacAttributes(convertedRoom, createdBy);
 		}
 
 		// TODO add validations to `data` and `members`
@@ -140,13 +149,8 @@ export class TeamService extends ServiceClassInternal implements ITeamService {
 
 			await TeamMember.insertMany(membersList.filter(({ userId }) => !skippedIds.has(userId)));
 
-			if (room.id) {
-				const convertedRoom = await Rooms.findOneById<Pick<IRoom, '_id' | 'name' | 'abacAttributes'>>(room.id, {
-					projection: { name: 1, abacAttributes: 1 },
-				});
-				if (convertedRoom) {
-					await removeRoomAbacAttributes(convertedRoom, createdBy);
-				}
+			if (convertedRoom) {
+				await removeRoomAbacAttributes(convertedRoom, createdBy);
 			}
 
 			await Rooms.setTeamMainById(roomId, teamId);
@@ -388,6 +392,8 @@ export class TeamService extends ServiceClassInternal implements ITeamService {
 			if (!canSeeRoom) {
 				throw new Error('invalid-room');
 			}
+
+			await assertCanRemoveRoomAbacAttributes(room, user);
 		}
 
 		for await (const room of validRooms) {
