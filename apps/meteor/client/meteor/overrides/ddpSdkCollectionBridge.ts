@@ -62,12 +62,39 @@ const shouldBridgeToMeteor = (frame: ParsedDdpFrame): boolean => {
 	return false;
 };
 
+const pendingMeteorLogins = new Set<string>();
+const withheldMeteorLogins = new Set<string>();
+
+export const trackMeteorLogin = (id: string): void => {
+	pendingMeteorLogins.add(id);
+};
+
+/**
+ * Meteor logs the user out on any failed login, but a 500 only means the server could not complete it
+ * (e.g. the account service is unavailable mid-rollout), not that the token is bad. Such results are
+ * kept from Meteor and the socket is dropped, so Meteor resends the login once the SDK reconnects.
+ */
+const withholdRetryableLoginFailure = (frame: ParsedDdpFrame): boolean => {
+	if (frame.msg === 'updated') {
+		const methods = Array.isArray(frame.methods) ? (frame.methods as unknown[]) : [];
+		return methods.filter((id) => typeof id === 'string' && withheldMeteorLogins.delete(id)).length > 0;
+	}
+
+	if (frame.msg !== 'result' || typeof frame.id !== 'string' || !pendingMeteorLogins.delete(frame.id)) return false;
+	if ((frame.error as { error?: unknown } | undefined)?.error !== 500) return false;
+
+	withheldMeteorLogins.add(frame.id);
+	getDdpSdk().connection.ws?.close();
+	return true;
+};
+
 export const installDdpSdkCollectionBridge = (): void => {
 	const sdk = getDdpSdk();
 	const { ddp } = sdk.client as unknown as { ddp: { onMessage: (cb: (payload: ParsedDdpFrame) => void) => () => void } };
 	if (!ddp?.onMessage) return;
 
 	ddp.onMessage((frame) => {
+		if (withholdRetryableLoginFailure(frame)) return;
 		if (!shouldBridgeToMeteor(frame)) return;
 
 		// `_streamHandlers.onMessage` returns a Promise (the message handler is an
