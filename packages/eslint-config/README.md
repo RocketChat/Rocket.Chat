@@ -47,7 +47,7 @@ npx eslint .
 
 ### Adding your own settings
 
-The default export is an array of flat config objects. Spread it and add your own entries after it:
+The default export is an array of flat config objects. Spread it and add your own entries after it. The example also imports `globals`, which this package depends on but does not re-export; install it too (`npm install --save-dev globals`) so strict package managers resolve it:
 
 ```js
 import rocketChatConfig from '@rocket.chat/eslint-config';

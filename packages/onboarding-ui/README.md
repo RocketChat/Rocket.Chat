@@ -11,10 +11,10 @@ Pages are built with [Fuselage](https://www.npmjs.com/package/@rocket.chat/fusel
 ## Installation
 
 ```sh
-npm install @rocket.chat/onboarding-ui @rocket.chat/fuselage @rocket.chat/fuselage-hooks @rocket.chat/icons @rocket.chat/layout @rocket.chat/logo @rocket.chat/styled react react-dom react-i18next react-virtuoso
+npm install @rocket.chat/onboarding-ui @rocket.chat/fuselage @rocket.chat/fuselage-hooks @rocket.chat/icons @rocket.chat/layout @rocket.chat/logo @rocket.chat/styled react react-dom react-i18next i18next react-virtuoso
 ```
 
-All the packages after `@rocket.chat/onboarding-ui` are peer dependencies, except `react-virtuoso`, which is a peer dependency of Fuselage. The package ships both CommonJS and ES modules, with TypeScript declarations.
+All the packages after `@rocket.chat/onboarding-ui` are peer dependencies, except two: `i18next`, which `react-i18next` needs and the setup below imports, and `react-virtuoso`, a peer dependency of Fuselage. The package ships both CommonJS and ES modules, with TypeScript declarations.
 
 Load Fuselage's styles and the icon font once in your app:
 

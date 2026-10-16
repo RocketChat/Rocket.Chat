@@ -19,6 +19,12 @@ npm install @rocket.chat/fuselage @rocket.chat/fuselage-hooks @rocket.chat/icons
 
 `@rocket.chat/fuselage-hooks`, `@rocket.chat/icons`, `react`, `react-dom` and `react-virtuoso` are peer dependencies. The package is developed against React 19.
 
+To write your own styles with `css`, as in the [Themes](#themes) example, also install `@rocket.chat/css-in-js`. Fuselage depends on it but does not re-export it, so strict package managers such as pnpm won't resolve a direct import otherwise:
+
+```sh
+npm install @rocket.chat/css-in-js
+```
+
 The package ships a CommonJS bundle (with development and production builds picked by `process.env.NODE_ENV`), TypeScript declarations, and a stylesheet. It is meant to be consumed through a bundler that can import CSS.
 
 ## Usage
@@ -115,7 +121,7 @@ import { PaletteStyleTag } from '@rocket.chat/fuselage';
 
 `theme` accepts `light` (default), `dark` and `high-contrast`. Use `selector` to scope the palette to part of the page, or `palette` to pass your own CSS.
 
-To read palette values in your own styles, use `Palette`. Each entry stringifies to a `var(--rcx-color-…)` reference with a fallback value:
+To read palette values in your own styles, use `Palette`. Each entry stringifies to a `var(--rcx-color-…)` reference with a fallback value. This example uses `@rocket.chat/css-in-js`, which you install separately (see [Installation](#installation)):
 
 ```ts
 import { css } from '@rocket.chat/css-in-js';
