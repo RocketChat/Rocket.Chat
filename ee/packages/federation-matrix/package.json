@@ -29,7 +29,7 @@
 		"@rocket.chat/network-broker": "workspace:^",
 		"@rocket.chat/rest-typings": "workspace:^",
 		"emojibase": "^17.0.0",
-		"emojibase-data": "^16.0.3",
+		"emojibase-data": "^17.0.0",
 		"lodash.debounce": "^4.0.8",
 		"marked": "^16.1.2",
 		"mem": "^8.1.1",

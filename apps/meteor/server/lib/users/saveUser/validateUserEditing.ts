@@ -18,7 +18,7 @@ export const canEditExtension = async (newExtension?: string) => {
 		return false;
 	}
 
-	if (newExtension && (await Users.findOneByFreeSwitchExtension(newExtension, { projection: { _id: 1 } }))) {
+	if (newExtension && (await Users.findOneBySipExtension(newExtension, { projection: { _id: 1 } }))) {
 		throw new MeteorError('error-extension-not-available', 'Extension is already assigned to another user');
 	}
 
@@ -122,10 +122,7 @@ export async function validateUserEditing(userId: IUser['_id'], userData: Update
 		});
 	}
 
-	if (
-		isEditingField(user.freeSwitchExtension ?? '', userData.freeSwitchExtension) &&
-		!(await canEditExtension(userData.freeSwitchExtension))
-	) {
+	if (isEditingField(user.sipExtension ?? '', userData.sipExtension) && !(await canEditExtension(userData.sipExtension))) {
 		throw new MeteorError('error-action-not-allowed', 'Edit user voice call extension is not allowed', {
 			method: 'insertOrUpdateUser',
 			action: 'Update_user',

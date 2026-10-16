@@ -52,7 +52,6 @@ export { useLoadLanguage } from './hooks/useLoadLanguage';
 export { useLoginWithPassword } from './hooks/useLoginWithPassword';
 export { useLoginServices } from './hooks/useLoginServices';
 export { useLoginWithService } from './hooks/useLoginWithService';
-export { useLoginWithCustomOauth } from './hooks/useLoginWithCustomOauth';
 export { useLoginWithIframe } from './hooks/useLoginWithIframe';
 export { useLoginWithToken } from './hooks/useLoginWithToken';
 export { useLoginWithTokenRoute } from './hooks/useLoginWithTokenRoute';

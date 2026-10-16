@@ -44,8 +44,8 @@ API.v1.get(
 	},
 	async function action() {
 		const { offset, count } = await getPaginationItems(this.queryParams);
-		const { sort, query } = await this.parseJsonQuery();
-		const emailInboxes = await findEmailInboxes({ query, pagination: { offset, count, sort } });
+		const { sort } = await this.parseJsonQuery();
+		const emailInboxes = await findEmailInboxes({ pagination: { offset, count, sort } });
 
 		return API.v1.success(emailInboxes);
 	},

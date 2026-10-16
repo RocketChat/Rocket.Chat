@@ -1,11 +1,4 @@
-import type {
-	FacebookOAuthConfiguration,
-	ISetting,
-	ISettingColor,
-	LoginServiceConfiguration,
-	TwitterOAuthConfiguration,
-	OAuthConfiguration,
-} from '@rocket.chat/core-typings';
+import type { ISetting, ISettingColor, LoginServiceConfiguration, OAuthConfiguration } from '@rocket.chat/core-typings';
 import { isActionSettingWithEndpoint, isSettingAction, isSettingColor } from '@rocket.chat/core-typings';
 import { LoginServiceConfiguration as LoginServiceConfigurationModel, Settings } from '@rocket.chat/models';
 import {
@@ -152,13 +145,12 @@ API.v1.get(
 	},
 	async function action() {
 		const { offset, count } = await getPaginationItems(this.queryParams);
-		const { sort, fields, query } = await this.parseJsonQuery();
+		const { sort, fields } = await this.parseJsonQuery();
 		const { _id } = this.queryParams;
 
 		const parsedQueryId = typeof _id === 'string' && _id ? { _id: { $in: _id.split(',').map((id) => id.trim()) } } : {};
 
 		const ourQuery = {
-			...query,
 			...parsedQueryId,
 			hidden: { $ne: true },
 			public: true,
@@ -185,7 +177,6 @@ API.v1.get(
 	},
 	async function action() {
 		const oAuthServicesEnabled = await LoginServiceConfigurationModel.find({}, { projection: { secret: 0 } }).toArray();
-		const isPassportFlowEnabled = settings.get<boolean>('Accounts_OAuth_Use_Modern_Flow');
 
 		return API.v1.success({
 			services: oAuthServicesEnabled.map((service) => {
@@ -202,25 +193,20 @@ API.v1.get(
 					return { ...service, hideButtonOnMobile: false };
 				}
 
-				if (
-					(service as OAuthConfiguration).custom ||
-					(service.service && (service.service === 'wordpress' || service.service === 'saml'))
-				) {
-					return { ...service, hideButtonOnMobile: isPassportFlowEnabled };
+				//	Older mobile app versions only support the legacy Meteor OAuth flow, so they must hide these buttons.
+				if ((service as OAuthConfiguration).custom || service.service === 'saml') {
+					return { ...service, hideButtonOnMobile: true };
 				}
 
 				return {
 					_id: service._id,
 					name: service.service,
-					clientId:
-						(service as FacebookOAuthConfiguration).appId ||
-						(service as OAuthConfiguration).clientId ||
-						(service as TwitterOAuthConfiguration).consumerKey,
+					clientId: (service as OAuthConfiguration).clientId,
 					buttonLabelText: service.buttonLabelText || '',
 					buttonColor: service.buttonColor || '',
 					buttonLabelColor: service.buttonLabelColor || '',
 					custom: false,
-					hideButtonOnMobile: isPassportFlowEnabled,
+					hideButtonOnMobile: true,
 				};
 			}),
 		});
@@ -332,17 +318,15 @@ API.v1.get(
 	async function action() {
 		const { includeDefaults } = this.queryParams;
 		const { offset, count } = await getPaginationItems(this.queryParams);
-		const { sort, fields, query } = await this.parseJsonQuery();
+		const { sort, fields } = await this.parseJsonQuery();
 
-		let ourQuery: Parameters<typeof Settings.find>[0] = {
+		const ourQuery: Parameters<typeof Settings.find>[0] = {
 			hidden: { $ne: true },
 		};
 
 		if (!(await hasPermissionAsync(this.user, 'view-privileged-setting'))) {
 			ourQuery.public = true;
 		}
-
-		ourQuery = Object.assign({}, query, ourQuery);
 
 		if (includeDefaults) {
 			fields.packageValue = 1;

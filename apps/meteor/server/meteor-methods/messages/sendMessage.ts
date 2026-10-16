@@ -1,19 +1,13 @@
 import { api } from '@rocket.chat/core-services';
 import type { AtLeast, IMessage, IUser } from '@rocket.chat/core-typings';
-import type { ServerMethods } from '@rocket.chat/ddp-client';
 import type { RocketchatI18nKeys } from '@rocket.chat/i18n';
-import { MessageTypes } from '@rocket.chat/message-types';
 import { Messages, Users } from '@rocket.chat/models';
 import type { TOptions } from 'i18next';
-import { check, Match } from 'meteor/check';
+import { check } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
 import moment from 'moment';
 
-import { RateLimiterClass as RateLimiter } from '../../lib/RateLimiter';
 import { canSendMessageAsync } from '../../lib/authorization/canSendMessage';
-import { hasPermissionAsync } from '../../lib/authorization/hasPermission';
-import { applyAirGappedRestrictionsValidation } from '../../lib/cloud/license/airGappedRestrictionsWrapper';
-import { methodDeprecationLogger } from '../../lib/deprecationWarningLogger';
 import { i18n } from '../../lib/i18n';
 import { SystemLogger } from '../../lib/logger/system';
 import { sendMessage } from '../../lib/messages/sendMessage';
@@ -127,61 +121,3 @@ export async function executeSendMessage(
 		throw err;
 	}
 }
-
-declare module '@rocket.chat/ddp-client' {
-	// eslint-disable-next-line @typescript-eslint/naming-convention
-	interface ServerMethods {
-		sendMessage(message: AtLeast<IMessage, '_id' | 'rid' | 'msg'>, previewUrls?: string[]): any;
-	}
-}
-
-Meteor.methods<ServerMethods>({
-	async sendMessage(message, previewUrls) {
-		methodDeprecationLogger.method('sendMessage', '9.0.0', '/v1/chat.sendMessage');
-
-		check(message, {
-			_id: Match.Maybe(String),
-			rid: Match.Maybe(String),
-			msg: Match.Maybe(String),
-			tmid: Match.Maybe(String),
-			tshow: Match.Maybe(Boolean),
-			ts: Match.Maybe(Date),
-			t: Match.Maybe(String),
-			bot: Match.Maybe(Object),
-			content: Match.Maybe(Object),
-			e2e: Match.Maybe(String),
-			e2eMentions: Match.Maybe(Object),
-			customFields: Match.Maybe(Object),
-			federation: Match.Maybe(Object),
-			groupable: Match.Maybe(Boolean),
-			sentByEmail: Match.Maybe(Boolean),
-		});
-
-		const user = (await Meteor.userAsync()) as IUser;
-		if (!user) {
-			throw new Meteor.Error('error-invalid-user', 'Invalid user', {
-				method: 'sendMessage',
-			});
-		}
-
-		if (MessageTypes.isSystemMessage(message)) {
-			throw new Error("Cannot send system messages using 'sendMessage'");
-		}
-
-		try {
-			return await applyAirGappedRestrictionsValidation(() => executeSendMessage(user, message, { previewUrls }));
-		} catch (error: any) {
-			if (['error-not-allowed', 'restricted-workspace'].includes(error.error || error.message)) {
-				throw new Meteor.Error(error.error || error.message, error.reason, {
-					method: 'sendMessage',
-				});
-			}
-		}
-	},
-});
-// Limit a user, who does not have the "bot" role, to sending 5 msgs/second
-RateLimiter.limitMethod('sendMessage', 5, 1000, {
-	async userId(userId: IUser['_id']) {
-		return !(await hasPermissionAsync(userId, 'send-many-messages'));
-	},
-});
