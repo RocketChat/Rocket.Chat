@@ -14,6 +14,7 @@ import { useTranslation, useUser } from '@rocket.chat/ui-contexts';
 import { Virtuoso } from 'react-virtuoso';
 
 import OutlookEventItem from './OutlookEventItem';
+import { virtuosoListComponents } from '../../../components/VirtuosoList';
 import { useItemListNavigation } from '../../../hooks/useItemListNavigation';
 import { getErrorMessage } from '../../../lib/errorHandling';
 import { useOutlookAuthentication } from '../hooks/useOutlookAuthentication';
@@ -78,6 +79,8 @@ const OutlookEventsList = ({ onClose, changeRoute }: OutlookEventsListProps) => 
 									width: inlineSize,
 								}}
 								totalCount={total}
+								components={virtuosoListComponents}
+								context={{ 'aria-label': t('Outlook_calendar') }}
 								overscan={25}
 								data={calendarEvents}
 								itemContent={(_index, calendarData) => <OutlookEventItem {...calendarData} />}

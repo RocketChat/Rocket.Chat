@@ -98,7 +98,9 @@ exports[`renders Default with stable structure 1`] = `
               >
                 <div>
                   <ul
+                    aria-label="Discussions"
                     data-testid="discussions-virtual-list"
+                    role="list"
                     style="margin: 0px; padding: 0px; list-style: none; height: 100%;"
                   >
                     <li>
@@ -200,6 +202,10 @@ exports[`renders Default with stable structure 1`] = `
                     <li>
                       <div>
                         <div
+                          aria-hidden="true"
+                          class="rcx-item-divider"
+                        />
+                        <div
                           class="rcx-item rcx-item--inset-lg"
                         >
                           <div
@@ -295,6 +301,10 @@ exports[`renders Default with stable structure 1`] = `
                     </li>
                     <li>
                       <div>
+                        <div
+                          aria-hidden="true"
+                          class="rcx-item-divider"
+                        />
                         <div
                           class="rcx-item rcx-item--inset-lg"
                         >
@@ -392,6 +402,10 @@ exports[`renders Default with stable structure 1`] = `
                     <li>
                       <div>
                         <div
+                          aria-hidden="true"
+                          class="rcx-item-divider"
+                        />
+                        <div
                           class="rcx-item rcx-item--inset-lg"
                         >
                           <div
@@ -487,6 +501,10 @@ exports[`renders Default with stable structure 1`] = `
                     </li>
                     <li>
                       <div>
+                        <div
+                          aria-hidden="true"
+                          class="rcx-item-divider"
+                        />
                         <div
                           class="rcx-item rcx-item--inset-lg"
                         >
@@ -584,6 +602,10 @@ exports[`renders Default with stable structure 1`] = `
                     <li>
                       <div>
                         <div
+                          aria-hidden="true"
+                          class="rcx-item-divider"
+                        />
+                        <div
                           class="rcx-item rcx-item--inset-lg"
                         >
                           <div
@@ -679,6 +701,10 @@ exports[`renders Default with stable structure 1`] = `
                     </li>
                     <li>
                       <div>
+                        <div
+                          aria-hidden="true"
+                          class="rcx-item-divider"
+                        />
                         <div
                           class="rcx-item rcx-item--inset-lg"
                         >
@@ -776,6 +802,10 @@ exports[`renders Default with stable structure 1`] = `
                     <li>
                       <div>
                         <div
+                          aria-hidden="true"
+                          class="rcx-item-divider"
+                        />
+                        <div
                           class="rcx-item rcx-item--inset-lg"
                         >
                           <div
@@ -872,6 +902,10 @@ exports[`renders Default with stable structure 1`] = `
                     <li>
                       <div>
                         <div
+                          aria-hidden="true"
+                          class="rcx-item-divider"
+                        />
+                        <div
                           class="rcx-item rcx-item--inset-lg"
                         >
                           <div
@@ -967,6 +1001,10 @@ exports[`renders Default with stable structure 1`] = `
                     </li>
                     <li>
                       <div>
+                        <div
+                          aria-hidden="true"
+                          class="rcx-item-divider"
+                        />
                         <div
                           class="rcx-item rcx-item--inset-lg"
                         >

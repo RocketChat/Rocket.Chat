@@ -1,5 +1,5 @@
 import type { IMessage, IThreadMainMessage } from '@rocket.chat/core-typings';
-import { Box, Icon, TextInput, Select, Callout, Throbber } from '@rocket.chat/fuselage';
+import { Box, Icon, ItemDivider, TextInput, Select, Callout, Throbber } from '@rocket.chat/fuselage';
 import { useResizeObserver, useAutoFocus, useLocalStorage, useDebouncedValue } from '@rocket.chat/fuselage-hooks';
 import {
 	VirtualizedScrollbars,
@@ -20,6 +20,7 @@ import { Virtuoso } from 'react-virtuoso';
 import ThreadListItem from './components/ThreadListItem';
 import { useThreadsList } from './hooks/useThreadsList';
 import ResultsLiveRegion from '../../../../components/ResultsLiveRegion';
+import { virtuosoListComponents } from '../../../../components/VirtuosoList';
 import { getErrorMessage } from '../../../../lib/errorHandling';
 import { useRoom, useRoomSubscription } from '../../contexts/RoomContext';
 import { useGoToThread } from '../../hooks/useGoToThread';
@@ -168,18 +169,23 @@ const ThreadList = () => {
 										width: inlineSize,
 									}}
 									totalCount={itemCount}
+									components={virtuosoListComponents}
+									context={{ 'aria-label': t('Threads') }}
 									endReached={() => fetchNextPage()}
 									overscan={25}
 									data={items}
-									itemContent={(_index, data: IThreadMainMessage) => (
-										<ThreadListItem
-											thread={data}
-											unread={subscription?.tunread ?? []}
-											unreadUser={subscription?.tunreadUser ?? []}
-											unreadGroup={subscription?.tunreadGroup ?? []}
-											hasDraft={Boolean(subscription?.threadDrafts?.[data._id])}
-											onClick={handleThreadClick}
-										/>
+									itemContent={(index, data: IThreadMainMessage) => (
+										<>
+											{index > 0 && <ItemDivider aria-hidden />}
+											<ThreadListItem
+												thread={data}
+												unread={subscription?.tunread ?? []}
+												unreadUser={subscription?.tunreadUser ?? []}
+												unreadGroup={subscription?.tunreadGroup ?? []}
+												hasDraft={Boolean(subscription?.threadDrafts?.[data._id])}
+												onClick={handleThreadClick}
+											/>
+										</>
 									)}
 								/>
 							</VirtualizedScrollbars>

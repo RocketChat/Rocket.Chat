@@ -1,5 +1,5 @@
 import type { IDiscussionMessage } from '@rocket.chat/core-typings';
-import { Box, Icon, TextInput, Callout, Throbber } from '@rocket.chat/fuselage';
+import { Box, Icon, ItemDivider, TextInput, Callout, Throbber } from '@rocket.chat/fuselage';
 import { useAutoFocus } from '@rocket.chat/fuselage-hooks';
 import {
 	ContextualbarHeader,
@@ -97,12 +97,16 @@ function DiscussionsList({
 						{discussions.length > 0 && (
 							<Box height='full' width='full' style={{ minHeight: 0 }}>
 								<PaginatedVirtualList
+									aria-label={t('Discussions')}
 									items={discussions}
 									totalCount={itemCount}
 									overscan={25}
 									onEndReached={isPending ? undefined : loadMoreItems}
-									renderItem={(discussion) => (
-										<DiscussionsListRow discussion={discussion} showRealNames={showRealNames} onClick={onClick} />
+									renderItem={(discussion, index) => (
+										<>
+											{index > 0 && <ItemDivider aria-hidden />}
+											<DiscussionsListRow discussion={discussion} showRealNames={showRealNames} onClick={onClick} />
+										</>
 									)}
 								/>
 							</Box>
