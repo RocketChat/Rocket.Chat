@@ -63,7 +63,7 @@ export type XMPPServerEventMap = {
 		/** The sender's bare real JID, when the room disclosed it to any of our sessions; never one of our own domains. */
 		fromJid?: string;
 		body: string;
-		/** The room-assigned XEP-0359 stanza id when present, otherwise the sender's. */
+		/** The XEP-0359 stanza id the room stamped on the message, when it stamped one. */
 		id?: string;
 		/** The id the sender gave the message, which survives the room assigning its own. */
 		originId?: string;

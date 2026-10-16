@@ -2,8 +2,20 @@
 status: partial
 standards: [XEP-0359]
 adrs: [0007, 0009]
-code: [src/muc/RemoteMucSession.ts, src/service/XMPPServerService.ts, apps/meteor/ee/server/hooks/xmpp/index.ts]
-tests: [src/muc/RemoteMucSession.spec.ts, tests/end-to-end/direct-messages.spec.ts, tests/end-to-end/remote-muc.spec.ts]
+code:
+  [
+    src/muc/RemoteMucSession.ts,
+    src/service/XMPPServerService.ts,
+    src/service/helpers/messageId.ts,
+    apps/meteor/ee/server/hooks/xmpp/index.ts,
+  ]
+tests:
+  [
+    src/muc/RemoteMucSession.spec.ts,
+    src/service/helpers/messageId.spec.ts,
+    tests/end-to-end/direct-messages.spec.ts,
+    tests/end-to-end/remote-muc.spec.ts,
+  ]
 ---
 
 # Spec: Message deduplication
@@ -23,11 +35,17 @@ way. Without a dedup rule a three-member mirrored room stores every message thre
 
 ## Behaviour
 
-- **R1** An inbound message is stored with `federation.eventId = 'xmpp:<origin domain>:<id>'`.
-  A message whose event id is already stored is dropped.
-- **R2** `<id>` is the XEP-0359 `<stanza-id/>` the room assigned when the stanza carries one,
-  otherwise the stanza `id`, otherwise a random id. The origin domain is the sender's domain
-  for a DM and a hosted room, and the room's domain for a remote room.
+- **R1** An inbound message is stored with a `federation.eventId` that every copy of it
+  shares and no other message has. A message whose event id is already stored is dropped.
+- **R2** The event id is `xmpp:<origin domain>:<rid>:<key>`. `<key>` is the XEP-0359
+  `<stanza-id/>` the room assigned when the stanza carries one. Otherwise it is a digest of
+  the author and the stanza `id`, since a sender's ids are unique only among its own
+  messages: two senders, or one sender in two rooms, may reuse an id. Without either, the
+  event id is random. The author is the bare JID in a DM and a hosted room, and the nick
+  plus XEP-0421 occupant id in a remote room
+  ([ADR 0014](../adr/0014-inbound-message-id-is-derived-from-room-author-and-sender-id.md)).
+  The origin domain is the sender's domain for a DM and a hosted room, and the room's
+  domain for a remote room.
 - **R3** In a remote room, a `groupchat` from the session's own nick is ignored, and a message
   whose replace id, or the id its sender gave it (the XEP-0359 `<origin-id/>`, otherwise the
   stanza `id`), is the `_id` of a stored Rocket.Chat message is ignored: it is our own relay
@@ -42,15 +60,16 @@ way. Without a dedup rule a three-member mirrored room stores every message thre
 
 ## Design
 
-`saveFederatedMessage` in the service computes the event id, looks it up with
+`receiveMessage` in the service computes the event id with `deriveInboundEventId`
+(`src/service/helpers/messageId.ts`), looks it up with
 `Messages.findOneByFederationId` and inserts; every inbound path goes through it. For R6 it
 holds the event id in an in-memory set from the lookup until the insert settles, and drops
 any copy whose id is in the set. That is enough because the service runs as one process per
 XMPP domain ([ADR 0002](../adr/0002-integration-service-runs-only-as-a-microservice.md)); it
 avoids a unique index on `federation.eventId`, a field Matrix federation writes too.
 
-`RemoteMucSession.handleMessage` skips the own nick and reports two ids: the room's stanza id
-for deduplication and the sender's id for R3. `onRemoteMucMessage` does the own-relay lookup
+`RemoteMucSession.handleMessage` skips the own nick and reports the room's stanza id, when
+the room stamped one, apart from the sender's ids, which R2 and R3 need. `onRemoteMucMessage` does the own-relay lookup
 by `_id` with the replace id or the sender's id. R3 relies on the room keeping the sender's
 `id` attribute on the reflection, as XEP-0045 §7.4 asks and as ejabberd and Prosody do.
 

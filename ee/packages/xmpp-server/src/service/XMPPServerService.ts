@@ -20,8 +20,8 @@ import { normalizeDomain } from '../jid/normalize';
 import type { Logger as CoreLogger } from '../logger';
 import { isXMPPSettingKey, readXMPPServerConfiguration } from './configuration';
 import { domainOfJid, toBareJid } from './helpers/jid';
-import { deriveInboundMessageId } from './helpers/messageId';
-import type { InboundMessageKey } from './helpers/messageId';
+import { deriveInboundEventId, deriveInboundMessageId } from './helpers/messageId';
+import type { InboundEventKey, InboundMessageKey } from './helpers/messageId';
 import { mapPresenceToStatus, mapStatusToPresence } from './helpers/presence';
 import { mirroredRoomDisplayName, mirroredRoomName, perRoomOccupantJid } from './helpers/remoteRoom';
 import { createOrUpdateXMPPUser } from './helpers/xmppUser';
@@ -53,14 +53,9 @@ const coreRoomIdOf = (mucJid: string): string => mucJid.split('@')[0];
 const isRemoteUsername = (username: string): boolean => username.includes('@');
 
 /** A message from the wire, in whichever kind of room it arrived. */
-type InboundMessage = Pick<InboundMessageKey, 'rid' | 'authorKey'> & {
+type InboundMessage = InboundEventKey & {
 	author: IUser;
-	/** Scopes the event id: the sender's domain, or the room's for a remote room. */
-	originDomain: string;
 	body: string;
-	/** Deduplicates copies: the room-assigned id when there is one, otherwise the sender's. */
-	stanzaId?: string;
-	senderId?: string;
 	replaceId?: string;
 };
 
@@ -501,7 +496,6 @@ export class XMPPServerService extends ServiceClass implements IXMPPServerServic
 			authorKey: remoteJid,
 			originDomain: domainOfJid(remoteJid),
 			body: event.body,
-			stanzaId: event.id,
 			senderId: event.id,
 			replaceId: event.replaceId,
 		});
@@ -666,7 +660,6 @@ export class XMPPServerService extends ServiceClass implements IXMPPServerServic
 			authorKey: authorJid,
 			originDomain: domainOfJid(fromJid),
 			body,
-			stanzaId: id,
 			senderId: id,
 			replaceId,
 		});
@@ -678,7 +671,7 @@ export class XMPPServerService extends ServiceClass implements IXMPPServerServic
 		fromNick,
 		fromJid,
 		body,
-		id: stanzaId,
+		id: roomStanzaId,
 		originId,
 		senderId,
 		occupantId,
@@ -704,7 +697,7 @@ export class XMPPServerService extends ServiceClass implements IXMPPServerServic
 			authorKey: occupantId ? `${fromNick}\0${occupantId}` : fromNick,
 			originDomain: domainOfJid(roomJid),
 			body,
-			stanzaId,
+			roomStanzaId,
 			senderId,
 			replaceId,
 		});
@@ -728,7 +721,7 @@ export class XMPPServerService extends ServiceClass implements IXMPPServerServic
 
 	/** Stores an inbound message, or applies it to the one it corrects, once however many copies arrive and however close together. */
 	private async receiveMessage(message: InboundMessage): Promise<void> {
-		const eventId = `xmpp:${message.originDomain}:${message.stanzaId ?? Random.id()}`;
+		const eventId = deriveInboundEventId(message) ?? `xmpp:${message.originDomain}:${Random.id()}`;
 		if (this.eventIdsBeingSaved.has(eventId)) {
 			return;
 		}

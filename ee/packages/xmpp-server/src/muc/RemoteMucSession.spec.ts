@@ -67,7 +67,7 @@ describe('RemoteMucSession', () => {
 			),
 		);
 
-		expect(onMessage).toHaveBeenCalledWith(expect.objectContaining({ fromNick: 'bob', body: 'fixed', id: 'm2', replaceId: 'm1' }));
+		expect(onMessage).toHaveBeenCalledWith(expect.objectContaining({ fromNick: 'bob', body: 'fixed', senderId: 'm2', replaceId: 'm1' }));
 	});
 
 	it('reports the id attribute a correction references and the XEP-0421 occupant id, whatever id the room assigned (message-corrections R4)', () => {
@@ -140,6 +140,6 @@ describe('RemoteMucSession', () => {
 			),
 		);
 
-		expect(onMessage).toHaveBeenCalledWith(expect.objectContaining({ id: 'client-id', originId: 'origin' }));
+		expect(onMessage).toHaveBeenCalledWith(expect.objectContaining({ id: undefined, senderId: 'client-id', originId: 'origin' }));
 	});
 });

@@ -1,4 +1,4 @@
-import { createHmac } from 'node:crypto';
+import { createHash, createHmac } from 'node:crypto';
 
 const SCHEME = 'xmpp-msg-v1';
 
@@ -30,4 +30,29 @@ export function deriveInboundMessageId(secret: string, { rid, authorKey, senderI
 		value /= base;
 	}
 	return id;
+}
+
+export type InboundEventKey = Pick<InboundMessageKey, 'rid' | 'authorKey'> & {
+	/** The sender's domain, or the room's for a remote room. */
+	originDomain: string;
+	/** The XEP-0359 id the room stamped on the message. */
+	roomStanzaId?: string;
+	senderId?: string;
+};
+
+/**
+ * The `federation.eventId` every copy of one inbound message shares (message-deduplication R2).
+ * A room's own id is unique in the room; a sender's id is unique only among that sender's messages.
+ */
+export function deriveInboundEventId({ originDomain, rid, authorKey, roomStanzaId, senderId }: InboundEventKey): string | undefined {
+	if (roomStanzaId) {
+		return `xmpp:${originDomain}:${rid}:${roomStanzaId}`;
+	}
+	if (senderId) {
+		const digest = createHash('sha256')
+			.update(JSON.stringify([authorKey, senderId]))
+			.digest('base64url');
+		return `xmpp:${originDomain}:${rid}:${digest}`;
+	}
+	return undefined;
 }
