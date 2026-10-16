@@ -116,7 +116,7 @@ The object bound to `this` inside a `RocketChat(fn)` callback (also available as
 | `pageVisited(change)`                         | Reports the current page to the agent. The loader already reports URL and title changes on its own.                                                                                                                                                      |
 | `showWidget()` / `hideWidget()`               | Shows or hides the widget.                                                                                                                                                                                                                               |
 | `maximizeWidget()` / `minimizeWidget()`       | Opens or collapses the chat window.                                                                                                                                                                                                                      |
-| `clearAllCallbacks()`                         | Removes every callback registered with the `on*` methods.                                                                                                                                                                                                |
+| `clearAllCallbacks()`                         | Meant to remove every callback registered with the `on*` methods, but currently removes none of them. The `on*` methods return nothing, so registered callbacks cannot be removed.                                                                       |
 
 ### Callbacks
 
