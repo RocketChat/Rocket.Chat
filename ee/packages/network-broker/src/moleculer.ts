@@ -71,7 +71,7 @@ class EJSONSerializer extends Base {
 	}
 }
 
-export function startBroker(options: Moleculer.BrokerOptions = {}): MoleculerBroker {
+export function startMoleculerBroker(options: Moleculer.BrokerOptions = {}): MoleculerBroker {
 	const network = new ServiceBroker({
 		namespace: MS_NAMESPACE,
 		skipProcessEventRegistration: SKIP_PROCESS_EVENT_REGISTRATION === 'true',

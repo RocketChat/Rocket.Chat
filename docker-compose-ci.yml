@@ -18,6 +18,7 @@ services:
       - MONGO_URL=mongodb://mongo:27017/rocketchat?replicaSet=rs0
       - 'MONGO_OPLOG_URL=${MONGO_OPLOG_URL:-}'
       - 'TRANSPORTER=${TRANSPORTER:-}'
+      - 'BROKER=${BROKER:-}'
       - MOLECULER_LOG_LEVEL=info
       - 'ROCKETCHAT_LICENSE=${ENTERPRISE_LICENSE:-}'
       - 'COVERAGE_DIR=${COVERAGE_DIR:-}'
@@ -71,6 +72,7 @@ services:
     environment:
       - MONGO_URL=mongodb://mongo:27017/rocketchat?replicaSet=rs0
       - 'TRANSPORTER=${TRANSPORTER:-}'
+      - 'BROKER=${BROKER:-}'
       - MOLECULER_LOG_LEVEL=info
     extra_hosts:
       - 'host.docker.internal:host-gateway'
@@ -92,6 +94,7 @@ services:
     environment:
       - MONGO_URL=mongodb://mongo:27017/rocketchat?replicaSet=rs0
       - 'TRANSPORTER=${TRANSPORTER:-}'
+      - 'BROKER=${BROKER:-}'
       - MOLECULER_LOG_LEVEL=info
     extra_hosts:
       - 'host.docker.internal:host-gateway'
@@ -113,6 +116,7 @@ services:
     environment:
       - MONGO_URL=mongodb://mongo:27017/rocketchat?replicaSet=rs0
       - 'TRANSPORTER=${TRANSPORTER:-}'
+      - 'BROKER=${BROKER:-}'
       - MOLECULER_LOG_LEVEL=info
     extra_hosts:
       - 'host.docker.internal:host-gateway'
@@ -134,6 +138,7 @@ services:
     environment:
       - MONGO_URL=mongodb://mongo:27017/rocketchat?replicaSet=rs0
       - 'TRANSPORTER=${TRANSPORTER:-}'
+      - 'BROKER=${BROKER:-}'
       - MOLECULER_LOG_LEVEL=info
     extra_hosts:
       - 'host.docker.internal:host-gateway'
@@ -161,6 +166,7 @@ services:
     environment:
       - MONGO_URL=mongodb://mongo:27017/rocketchat?replicaSet=rs0
       - 'TRANSPORTER=${TRANSPORTER:-}'
+      - 'BROKER=${BROKER:-}'
       - MOLECULER_LOG_LEVEL=info
     extra_hosts:
       - 'host.docker.internal:host-gateway'
@@ -183,6 +189,7 @@ services:
       - 'TEST_MODE=${TEST_MODE:-true}'
       - MONGO_URL=mongodb://mongo:27017/rocketchat?replicaSet=rs0
       - 'TRANSPORTER=${TRANSPORTER:-}'
+      - 'BROKER=${BROKER:-}'
       - MOLECULER_LOG_LEVEL=info
     extra_hosts:
       - 'host.docker.internal:host-gateway'
