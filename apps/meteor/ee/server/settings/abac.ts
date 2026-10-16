@@ -3,6 +3,7 @@ import bannersConfigSchema from '@rocket.chat/abac/docs/classification-banners.s
 import { settingsRegistry } from '../../../server/settings';
 
 const abacEnabledQuery = { _id: 'ABAC_Enabled', value: true };
+const enforceAllRoomsQuery = [abacEnabledQuery, { _id: 'ABAC_Enforce_All_Rooms', value: true }];
 const virtruPdpQuery = [abacEnabledQuery, { _id: 'ABAC_PDP_Type', value: 'virtru' }];
 
 export function addSettings(): Promise<void> {
@@ -27,7 +28,7 @@ export function addSettings(): Promise<void> {
 					invalidValue: [],
 					section: 'ABAC',
 					i18nDescription: 'ABAC_Required_Attributes_Description',
-					enableQuery: abacEnabledQuery,
+					enableQuery: enforceAllRoomsQuery,
 				});
 				await this.add('ABAC_Enforce_All_Rooms', false, {
 					type: 'boolean',
