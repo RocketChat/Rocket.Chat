@@ -35,7 +35,7 @@ export const performUserRemoval = async function (
 	// TODO: move before callbacks to service
 	await beforeLeaveRoomCallback.run(user, room);
 
-	if (subscription && !options?.skipSystemMessage) {
+	if (!options?.skipSystemMessage) {
 		if (options?.customSystemMessage) {
 			await Message.saveSystemMessage(options?.customSystemMessage, room._id, user.username || '', user);
 		} else if (options?.byUser) {

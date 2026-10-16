@@ -76,9 +76,6 @@ const MASS_REMOVAL_SUMMARY_THRESHOLD = 50;
 
 type CreationDenial = Extract<AbacCreationAttributesResult, { allowed: false }>;
 
-const toRequiredAttributeKeys = (value: unknown): Set<string> =>
-	new Set(Array.isArray(value) ? value.filter((key): key is string => typeof key === 'string').map((key) => key.trim()) : []);
-
 export class AbacService extends ServiceClass implements IAbacService {
 	protected name = 'abac';
 
@@ -174,7 +171,7 @@ export class AbacService extends ServiceClass implements IAbacService {
 		});
 
 		this.onSettingChanged('ABAC_Required_Attributes', async ({ setting }): Promise<void> => {
-			this.requiredAttributeKeys = toRequiredAttributeKeys(setting.value);
+			this.requiredAttributeKeys = new Set(setting.value as string[]);
 		});
 
 		this.onSettingChanged('Abac_Cache_Decision_Time_Seconds', async ({ setting }): Promise<void> => {
@@ -333,7 +330,7 @@ export class AbacService extends ServiceClass implements IAbacService {
 		this.pdpTypeSetting = isAbacPdpType(pdpType) ? pdpType : undefined;
 		this.attributeStoreSetting = isAbacAttributeStoreType(attributeStore) ? attributeStore : undefined;
 		this.enforceAllRooms = enforceAllRooms;
-		this.requiredAttributeKeys = toRequiredAttributeKeys(requiredAttributes);
+		this.requiredAttributeKeys = new Set(requiredAttributes);
 
 		if (pdpType !== 'virtru') {
 			this.setPdpStrategy('local', restrictToOwnedAttributes);
@@ -871,25 +868,31 @@ export class AbacService extends ServiceClass implements IAbacService {
 		page: AbacRoomMembershipPreviewPage,
 		grant: AbacRoomAttributesGrant,
 	): Promise<IAbacRoomMembershipPreview> {
-		const pdp = await this.ensurePdpAvailable();
+		await this.ensurePdpAvailable();
 		const room = await getAbacRoom(rid);
 		const store = await this.resolveAttributeStore();
 		const normalized = await this.assertRoomAttributesAssignable(store, room, attributes, actor, grant);
 
-		const evaluatedAgainst = pdp.needsEvaluation(diffAttributeSets(room.abacAttributes || [], normalized)) ? normalized : [];
+		const evaluatedAgainst = this.changeNeedsEvaluation(room.abacAttributes || [], normalized) ? normalized : [];
 		const firstPage = !page.after && !page.filter;
 
 		let preview: IAbacRoomMembershipPreview;
 		try {
-			const evaluated = await pdp.previewRoomMembers(room, evaluatedAgainst, page);
-			const editor =
-				firstPage &&
-				(await Users.findOne<PreviewSubject>({ _id: actor._id, __rooms: rid }, { projection: PREVIEW_READ_OPTIONS.projection }));
+			const evaluated = await this.pdp?.previewRoomMembers(room, evaluatedAgainst, page);
+			if (!evaluated) {
+				throw new PdpUnavailableError();
+			}
+
+			const editor = firstPage && (await Users.findOneByIdAndRoomId<PreviewSubject>(actor._id, rid, PREVIEW_READ_OPTIONS));
+			const editorEvaluation = editor && (await this.pdp?.evaluateSubjectsAgainstAttributes([editor], evaluatedAgainst, room));
+			if (editor && !editorEvaluation) {
+				throw new PdpUnavailableError();
+			}
 
 			preview = {
 				...evaluated,
 				count: evaluated.members.length,
-				...(editor && { editor: verdictsOf(await pdp.evaluateSubjectsAgainstAttributes([editor], evaluatedAgainst, room))(editor._id) }),
+				...(editor && editorEvaluation && { editor: verdictsOf(editorEvaluation)(editor._id) }),
 			};
 		} catch (err) {
 			logger.error({ msg: 'ABAC room membership preview failed', rid, err });
@@ -1273,12 +1276,10 @@ export class AbacService extends ServiceClass implements IAbacService {
 
 	private pdpType: AbacPdpType = 'local';
 
-	private async ensurePdpAvailable(): Promise<IPolicyDecisionPoint> {
-		const { pdp } = this;
-		if (!pdp || !(await pdp.isAvailable())) {
+	private async ensurePdpAvailable(): Promise<void> {
+		if (!(await this.pdp?.isAvailable())) {
 			throw new PdpUnavailableError();
 		}
-		return pdp;
 	}
 
 	private async removeUserFromRoom(
