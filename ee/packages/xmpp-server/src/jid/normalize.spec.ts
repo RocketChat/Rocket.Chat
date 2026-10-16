@@ -1,5 +1,5 @@
 import { InvalidJidError } from '../errors';
-import { isDomainAllowed, normalizeDomain, normalizeRoomJid, normalizeUserBareJid } from './normalize';
+import { isDomainAllowed, normalizeDomain, normalizeRoomJid, normalizeUserBareJid, withDomain } from './normalize';
 
 describe('normalizeUserBareJid', () => {
 	it('drops the resource and normalizes the domain only', () => {
@@ -11,6 +11,14 @@ describe('normalizeUserBareJid', () => {
 		expect(() => normalizeUserBareJid('@remote.tld')).toThrow(InvalidJidError);
 		expect(() => normalizeUserBareJid('a@b@remote.tld')).toThrow(InvalidJidError);
 		expect(() => normalizeUserBareJid('alice@')).toThrow(InvalidJidError);
+	});
+});
+
+describe('withDomain', () => {
+	it('replaces only the domainpart', () => {
+		expect(withDomain('Alice@Remote.TLD./phone/a@b', 'remote.tld')).toBe('Alice@remote.tld/phone/a@b');
+		expect(withDomain('Alice@Remote.TLD', 'remote.tld')).toBe('Alice@remote.tld');
+		expect(withDomain('Remote.TLD', 'remote.tld')).toBe('remote.tld');
 	});
 });
 
