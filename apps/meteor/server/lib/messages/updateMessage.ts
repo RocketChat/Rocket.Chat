@@ -7,6 +7,7 @@ import { afterSaveMessage } from '../../hooks/messages/afterSaveMessage';
 import { settings } from '../../settings';
 import { validateCustomMessageFields } from '../messaging/validateCustomMessageFields';
 import { notifyOnRoomChangedById } from '../notifyListener';
+import { reportInvalidBlocks } from '../uikit/reportInvalidBlocks';
 
 export const updateMessage = async function (
 	{
@@ -40,6 +41,13 @@ export const updateMessage = async function (
 			Object.assign(messageData, result);
 		}
 	}
+
+	// Stored blocks were checked when saved, so only blocks this edit or an app hook replaced are checked.
+	reportInvalidBlocks(messageData.blocks === originalMessage.blocks ? undefined : messageData.blocks, {
+		where: 'message update',
+		rid: messageData.rid,
+		userId: user._id,
+	});
 
 	// If we keep history of edits, insert a new message to store history information
 	if (settings.get('Message_KeepHistory')) {

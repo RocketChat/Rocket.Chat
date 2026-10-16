@@ -7,6 +7,10 @@
 		".": {
 			"types": "./dist/index.d.ts",
 			"default": "./dist/index.js"
+		},
+		"./validateLayoutBlocks": {
+			"types": "./validateLayoutBlocks.d.ts",
+			"default": "./validateLayoutBlocks.js"
 		}
 	},
 	"homepage": "https://rocket.chat",
@@ -26,7 +30,9 @@
 	"main": "dist/index.js",
 	"types": "dist/index.d.ts",
 	"files": [
-		"/dist"
+		"/dist",
+		"/validateLayoutBlocks.js",
+		"/validateLayoutBlocks.d.ts"
 	],
 	"scripts": {
 		".:build:clean": "rimraf dist",
