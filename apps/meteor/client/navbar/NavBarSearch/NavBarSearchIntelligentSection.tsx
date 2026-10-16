@@ -43,6 +43,7 @@ const NavBarSearchIntelligentSection = ({ items, onSelect, onClose }: NavBarSear
 				<NavBarSearchMessageRow key={`intelligent-${item._id}`} item={item} onClick={onSelect} />
 			))}
 			<NavBarSearchItem
+				id='search-view-all-results'
 				title={t('View_all_results')}
 				avatar={null}
 				icon={<SidebarItemIcon icon={<Icon name='arrow-forward' size='x16' />} />}

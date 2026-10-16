@@ -10,8 +10,8 @@ import { useTranslation } from 'react-i18next';
 import NavBarSearchItemSkeleton from './NavBarSearchItemSkeleton';
 import NavBarSearchNoResults from './NavBarSearchNoResults';
 import NavBarSearchRow from './NavBarSearchRow';
+import { useSyncSearchOptions } from './hooks/useSearchActiveOption';
 import { useSearchItems } from './hooks/useSearchItems';
-import { useListboxNavigation } from './hooks/useSearchNavigation';
 import ResultsLiveRegion from '../../components/ResultsLiveRegion';
 
 export type NavBarSearchListBoxProps = {
@@ -23,7 +23,6 @@ const NavBarSearchListBox = ({ state, overlayProps }: NavBarSearchListBoxProps) 
 	const { t } = useTranslation();
 	const containerRef = useRef<HTMLElement>(null);
 
-	const handleKeyDown = useListboxNavigation(state);
 	useOutsideClick([containerRef], state.close);
 
 	const { resetField, watch } = useFormContext();
@@ -35,6 +34,7 @@ const NavBarSearchListBox = ({ state, overlayProps }: NavBarSearchListBoxProps) 
 	});
 
 	const { items, isLoading } = useSearchItems(filterText);
+	useSyncSearchOptions(items);
 
 	return (
 		<Tile
@@ -52,7 +52,14 @@ const NavBarSearchListBox = ({ state, overlayProps }: NavBarSearchListBoxProps) 
 		>
 			<ResultsLiveRegion shouldAnnounce={!isLoading} itemCount={items.length} isLoading={isLoading} />
 			<CustomScrollbars>
-				<div {...overlayProps} role='listbox' aria-label={t('Channels')} aria-busy={isLoading} tabIndex={-1} onKeyDown={handleKeyDown}>
+				<div
+					{...overlayProps}
+					role='listbox'
+					aria-label={t('Channels')}
+					aria-busy={isLoading}
+					tabIndex={-1}
+					onMouseDown={(event) => event.preventDefault()}
+				>
 					{items.length === 0 && !isLoading && <NavBarSearchNoResults />}
 					{items.length > 0 && (
 						<ItemGroupHeader inset='md' aria-hidden>
