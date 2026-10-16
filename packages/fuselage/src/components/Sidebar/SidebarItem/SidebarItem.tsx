@@ -9,6 +9,14 @@ export type SidebarItemProps = {
 	 * Emphasizes the row, such as a room with unread messages.
 	 */
 	highlighted?: boolean;
+	/**
+	 * Shows the row as a listbox's active descendant.
+	 */
+	focused?: boolean;
+	/**
+	 * Shows the focus ring for an active descendant reached from the keyboard.
+	 */
+	focusVisible?: boolean;
 	level?: number;
 	/**
 	 * The row element. The default anchor makes the whole row a link.
@@ -23,6 +31,8 @@ export type SidebarItemProps = {
 export const SidebarItem = ({
 	selected,
 	highlighted,
+	focused,
+	focusVisible,
 	level = 1,
 	className,
 	is = 'a',
@@ -42,6 +52,8 @@ export const SidebarItem = ({
 			inset='md'
 			selected={selected}
 			highlighted={highlighted}
+			focused={focused}
+			focusVisible={focusVisible}
 			className={cx(
 				'rcx-sidebar-item',
 				!!selected && 'rcx-sidebar-item--selected',
