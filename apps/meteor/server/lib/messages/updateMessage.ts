@@ -8,6 +8,7 @@ import { afterSaveMessage } from '../../hooks/messages/afterSaveMessage';
 import { settings } from '../../settings';
 import { validateCustomMessageFields } from '../messaging/validateCustomMessageFields';
 import { notifyOnRoomChangedById } from '../notifyListener';
+import { reportInvalidBlocks } from '../uikit/reportInvalidBlocks';
 
 export const updateMessage = async function (
 	{
@@ -59,6 +60,8 @@ export const updateMessage = async function (
 	if (!room) {
 		return;
 	}
+
+	reportInvalidBlocks(messageData.blocks, { where: 'message update', rid: messageData.rid, userId: user._id });
 
 	messageData = await Message.beforeSave({ message: messageData, room, user, previewUrls, parseUrls });
 
