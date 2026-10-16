@@ -33,7 +33,6 @@ const ContactsColumnsMenu = ({ columns }: ContactsColumnsMenuProps) => {
 								onClick={(e) => {
 									e.stopPropagation();
 								}}
-								tabIndex={-1}
 								aria-hidden='true'
 							/>
 						),
