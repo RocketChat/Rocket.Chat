@@ -39,6 +39,7 @@ export const useAISearchResults = (queryParam: string, enabled: boolean) => {
 
 	return {
 		query,
+		filters,
 		intelligent,
 		meta: result.data?.meta,
 		hasMoreResults,

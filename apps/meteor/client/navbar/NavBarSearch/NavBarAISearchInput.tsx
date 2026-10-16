@@ -4,7 +4,7 @@ import { useOverlayTriggerState } from '@react-stately/overlays';
 import type { NavBarSearchFormValues } from '@rocket.chat/ai-search';
 import { Box, TextInput } from '@rocket.chat/fuselage';
 import { useMergedRefs, useStableCallback } from '@rocket.chat/fuselage-hooks';
-import type { ChangeEvent, KeyboardEvent } from 'react';
+import type { ChangeEvent } from 'react';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { useFormContext, useWatch } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
@@ -40,7 +40,7 @@ const NavBarAISearchInput = () => {
 	const handleClick = useSearchClick(state);
 
 	const { aiSearchActive, canSearchWithAIFromTopBar, handleToggleAISearch: toggleAISearch } = useNavBarAISearch({ setFocus, state, t });
-	const { filters, removeFilter, removeLastFilter, clearFilters, clearQuery, handleTextChange } = useSearchFilters({ aiSearchActive });
+	const { filters, removeFilter, clearFilters, clearQuery, handleTextChange } = useSearchFilters({ aiSearchActive });
 	const [filtersRequested, setFiltersRequested] = useState(false);
 	const filtersOpen = filtersRequested && filters.length > 0;
 
@@ -51,16 +51,6 @@ const NavBarAISearchInput = () => {
 		registerOnChange(event);
 		setFiltersRequested(false);
 		handleTextChange(event.currentTarget.value);
-	});
-
-	const handleKeyDown = useStableCallback((event: KeyboardEvent<HTMLInputElement>) => {
-		if (event.key === 'Backspace' && !event.currentTarget.value && filters.length) {
-			event.preventDefault();
-			removeLastFilter();
-			return;
-		}
-
-		handleSearchKeyDown(event);
 	});
 
 	const handleEscSearch = useCallback(() => {
@@ -84,6 +74,7 @@ const NavBarAISearchInput = () => {
 
 	const handleClearText = useStableCallback(() => {
 		handleTextChange('');
+		clearFilters();
 		setFocus('filterText');
 	});
 
@@ -116,7 +107,7 @@ const NavBarAISearchInput = () => {
 				aria-haspopup={filtersOpen ? 'dialog' : 'listbox'}
 				onChange={handleChange}
 				onFocus={handleFocus}
-				onKeyDown={handleKeyDown}
+				onKeyDown={handleSearchKeyDown}
 				onClick={handleClick}
 				autoComplete='off'
 				placeholder={placeholder}

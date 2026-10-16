@@ -24,14 +24,6 @@ export const useSearchFilters = ({ aiSearchActive = false }: { aiSearchActive?: 
 		setFocus('filterText');
 	});
 
-	const removeLastFilter = useStableCallback(() => {
-		const current = getValues('filters');
-
-		if (current.length) {
-			setFilters(current.slice(0, -1));
-		}
-	});
-
 	const clearFilters = useStableCallback(() => {
 		setFilters([]);
 		setFocus('filterText');
@@ -76,7 +68,6 @@ export const useSearchFilters = ({ aiSearchActive = false }: { aiSearchActive?: 
 	return {
 		filters,
 		removeFilter,
-		removeLastFilter,
 		clearFilters,
 		clearQuery,
 		startFilter,

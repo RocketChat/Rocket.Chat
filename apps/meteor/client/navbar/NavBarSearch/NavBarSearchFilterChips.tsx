@@ -1,5 +1,5 @@
 import type { AppliedFilter } from '@rocket.chat/ai-search';
-import { getAppliedFilterLabel, getSearchFilterConfig } from '@rocket.chat/ai-search';
+import { getSearchFilterConfig, serializeSearchQuery } from '@rocket.chat/ai-search';
 import { Box, Chip, Icon } from '@rocket.chat/fuselage';
 import type { ReactElement } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -26,7 +26,7 @@ const NavBarSearchFilterChips = ({ filters, onRemove, wrap = false }: NavBarSear
 			{...(!wrap && { maxWidth: 'x320', overflow: 'auto' })}
 		>
 			{filters.map((filter) => {
-				const label = getAppliedFilterLabel(filter);
+				const label = serializeSearchQuery({ text: '', filters: [filter] });
 				const { title } = getSearchFilterConfig(filter.key);
 
 				return (
