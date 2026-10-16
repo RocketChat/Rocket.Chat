@@ -56,7 +56,6 @@ import {
 	toAttributeDefinitions,
 	listAttributeDefinitions,
 	verdictOf,
-	verdictsOf,
 	withRoomRoles,
 	PREVIEW_READ_OPTIONS,
 	type PreviewSubject,
@@ -892,7 +891,7 @@ export class AbacService extends ServiceClass implements IAbacService {
 			preview = {
 				...evaluated,
 				count: evaluated.members.length,
-				...(editor && editorEvaluation && { editor: verdictsOf(editorEvaluation)(editor._id) }),
+				...(editor && editorEvaluation && { editor: verdictOf(editorEvaluation, editor._id) }),
 			};
 		} catch (err) {
 			logger.error({ msg: 'ABAC room membership preview failed', rid, err });
@@ -1291,7 +1290,7 @@ export class AbacService extends ServiceClass implements IAbacService {
 		return Room.removeUserFromRoom(room._id, user, {
 			skipAppPreEvents: true,
 			customSystemMessage: 'abac-removed-user-from-room' as const,
-			...(skipSystemMessage && { skipSystemMessage }),
+			skipSystemMessage,
 		})
 			.then(() => {
 				void Audit.actionPerformed(
