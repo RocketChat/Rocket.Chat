@@ -1,5 +1,5 @@
 import { api, MediaCall, Settings, VideoConf } from '@rocket.chat/core-services';
-import { Subscriptions, Users } from '@rocket.chat/models';
+import { Subscriptions, Users, VideoConference } from '@rocket.chat/models';
 
 import { NotificationsModule } from './notifications.module';
 import { Streamer } from './streamer.module';
@@ -18,6 +18,9 @@ jest.mock('@rocket.chat/models', () => ({
 		findByRoomIdAndNotUserId: jest.fn(),
 	},
 	Users: {
+		findOneById: jest.fn(),
+	},
+	VideoConference: {
 		findOneById: jest.fn(),
 	},
 }));
@@ -48,6 +51,7 @@ const validateAction = jest.mocked(VideoConf.validateAction);
 const processSerializedSignal = jest.mocked(MediaCall.processSerializedSignal);
 const countByRoomIdAndUserId = jest.mocked(Subscriptions.countByRoomIdAndUserId);
 const findByRoomIdAndNotUserId = jest.mocked(Subscriptions.findByRoomIdAndNotUserId);
+const videoConferenceFindOneById = jest.mocked(VideoConference.findOneById);
 
 describe('NotificationsModule', () => {
 	let notifications: NotificationsModule;
@@ -117,6 +121,14 @@ describe('NotificationsModule', () => {
 			);
 
 		beforeEach(() => {
+			validateAction.mockReset();
+			validateAction.mockResolvedValue(true);
+			videoConferenceFindOneById.mockReset();
+			videoConferenceFindOneById.mockResolvedValue({
+				_id: '123',
+				rid: 'room1',
+				createdBy: { _id: 'attacker' },
+			} as any);
 			countByRoomIdAndUserId.mockReset();
 			countByRoomIdAndUserId.mockResolvedValue(1); // attacker is subscribed to the room
 			findByRoomIdAndNotUserId.mockReset();
@@ -149,16 +161,220 @@ describe('NotificationsModule', () => {
 			expect(emitSpy).not.toHaveBeenCalled();
 		});
 
-		['video-conference', 'userData'].forEach((event) => {
-			it(`should relay "${event}" event to other room members`, async () => {
-				const emitSpy = jest.spyOn(notifications.streamUser, 'emit');
+		it('should relay "userData" event to other room members', async () => {
+			const emitSpy = jest.spyOn(notifications.streamUser, 'emit');
 
-				const result = await writeAllowed(`room1/${event}`, { foo: 'bar' });
+			const result = await writeAllowed('room1/userData', { foo: 'bar' });
 
-				expect(result).toBe(false);
-				expect(findByRoomIdAndNotUserId).toHaveBeenCalled();
-				expect(emitSpy).toHaveBeenCalled();
+			expect(result).toBe(false);
+			expect(findByRoomIdAndNotUserId).toHaveBeenCalled();
+			expect(emitSpy).toHaveBeenCalled();
+		});
+
+		it('should accept "video-conference" and delegate authorization to VideoConf.validateAction before relaying', async () => {
+			const emitSpy = jest.spyOn(notifications.streamUser, 'emit');
+
+			const payload = {
+				action: 'call-start',
+				params: { callId: '123', uid: 'victim', rid: 'room1' },
+			};
+			const result = await writeAllowed('room1/video-conference', payload);
+
+			expect(result).toBe(false);
+			expect(videoConferenceFindOneById).toHaveBeenCalledWith('123', { projection: { rid: 1, createdBy: 1 } });
+			expect(validateAction).toHaveBeenCalledTimes(1);
+			expect(validateAction).toHaveBeenCalledWith('call-start', 'attacker', { callId: '123', uid: 'victim', rid: 'room1' });
+			expect(findByRoomIdAndNotUserId).toHaveBeenCalled();
+			expect(emitSpy).toHaveBeenCalledWith('victim/video-conference', payload);
+		});
+
+		it('should default rid to event roomId and normalize forwarded payload when params.rid is omitted in "video-conference"', async () => {
+			const emitSpy = jest.spyOn(notifications.streamUser, 'emit');
+
+			const payload = {
+				action: 'call-start',
+				params: { callId: '123', uid: 'victim' },
+			};
+			const result = await writeAllowed('room1/video-conference', payload);
+
+			expect(result).toBe(false);
+			expect(payload.params).toHaveProperty('rid', 'room1');
+			expect(validateAction).toHaveBeenCalledWith('call-start', 'attacker', { callId: '123', uid: 'victim', rid: 'room1' });
+			expect(findByRoomIdAndNotUserId).toHaveBeenCalled();
+			expect(emitSpy).toHaveBeenCalledWith('victim/video-conference', {
+				action: 'call-start',
+				params: { callId: '123', uid: 'victim', rid: 'room1' },
 			});
+		});
+
+		it('should reject explicitly present params.rid if it is not a non-empty string', async () => {
+			const emitSpy = jest.spyOn(notifications.streamUser, 'emit');
+
+			const resultNonString = await writeAllowed('room1/video-conference', {
+				action: 'call-start',
+				params: { callId: '123', uid: 'victim', rid: 123 },
+			});
+			const resultEmpty = await writeAllowed('room1/video-conference', {
+				action: 'call-start',
+				params: { callId: '123', uid: 'victim', rid: '' },
+			});
+
+			expect(resultNonString).toBe(false);
+			expect(resultEmpty).toBe(false);
+			expect(videoConferenceFindOneById).not.toHaveBeenCalled();
+			expect(validateAction).not.toHaveBeenCalled();
+			expect(findByRoomIdAndNotUserId).not.toHaveBeenCalled();
+			expect(emitSpy).not.toHaveBeenCalled();
+		});
+
+		it('should deny and not relay "video-conference" if stored call does not belong to roomId', async () => {
+			videoConferenceFindOneById.mockResolvedValue({
+				_id: '123',
+				rid: 'otherRoom',
+				createdBy: { _id: 'attacker' },
+			} as any);
+			const emitSpy = jest.spyOn(notifications.streamUser, 'emit');
+
+			const result = await writeAllowed('room1/video-conference', {
+				action: 'call-start',
+				params: { callId: '123', uid: 'victim', rid: 'room1' },
+			});
+
+			expect(result).toBe(false);
+			expect(validateAction).not.toHaveBeenCalled();
+			expect(findByRoomIdAndNotUserId).not.toHaveBeenCalled();
+			expect(emitSpy).not.toHaveBeenCalled();
+		});
+
+		it('should deny and not relay "video-conference" if call does not exist', async () => {
+			videoConferenceFindOneById.mockResolvedValue(null);
+			const emitSpy = jest.spyOn(notifications.streamUser, 'emit');
+
+			const result = await writeAllowed('room1/video-conference', {
+				action: 'call-start',
+				params: { callId: '123', uid: 'victim', rid: 'room1' },
+			});
+
+			expect(result).toBe(false);
+			expect(validateAction).not.toHaveBeenCalled();
+			expect(findByRoomIdAndNotUserId).not.toHaveBeenCalled();
+			expect(emitSpy).not.toHaveBeenCalled();
+		});
+
+		it('should deny and not relay action: "end" if caller is not the creator of the call', async () => {
+			videoConferenceFindOneById.mockResolvedValue({
+				_id: '123',
+				rid: 'room1',
+				createdBy: { _id: 'otherUser' },
+			} as any);
+			const emitSpy = jest.spyOn(notifications.streamUser, 'emit');
+
+			const result = await writeAllowed('room1/video-conference', {
+				action: 'end',
+				params: { callId: '123', uid: 'victim', rid: 'room1' },
+			});
+
+			expect(result).toBe(false);
+			expect(validateAction).not.toHaveBeenCalled();
+			expect(findByRoomIdAndNotUserId).not.toHaveBeenCalled();
+			expect(emitSpy).not.toHaveBeenCalled();
+		});
+
+		it('should allow action: "end" if caller is the creator of the call', async () => {
+			videoConferenceFindOneById.mockResolvedValue({
+				_id: '123',
+				rid: 'room1',
+				createdBy: { _id: 'attacker' },
+			} as any);
+			const emitSpy = jest.spyOn(notifications.streamUser, 'emit');
+
+			const result = await writeAllowed('room1/video-conference', {
+				action: 'end',
+				params: { callId: '123', uid: 'victim', rid: 'room1' },
+			});
+
+			expect(result).toBe(false);
+			expect(validateAction).toHaveBeenCalledTimes(1);
+			expect(validateAction).toHaveBeenCalledWith('end', 'attacker', { callId: '123', uid: 'victim', rid: 'room1' });
+			expect(findByRoomIdAndNotUserId).toHaveBeenCalled();
+			expect(emitSpy).toHaveBeenCalledWith('victim/video-conference', {
+				action: 'end',
+				params: { callId: '123', uid: 'victim', rid: 'room1' },
+			});
+		});
+
+		it('should deny and not relay "video-conference" if VideoConf.validateAction rejects', async () => {
+			validateAction.mockResolvedValue(false);
+			const emitSpy = jest.spyOn(notifications.streamUser, 'emit');
+
+			const result = await writeAllowed('room1/video-conference', {
+				action: 'call-start',
+				params: { callId: '123', uid: 'victim', rid: 'room1' },
+			});
+
+			expect(result).toBe(false);
+			expect(validateAction).toHaveBeenCalledTimes(1);
+			expect(findByRoomIdAndNotUserId).not.toHaveBeenCalled();
+			expect(emitSpy).not.toHaveBeenCalled();
+		});
+
+		it('should deny and not relay "video-conference" if payload is missing action', async () => {
+			const emitSpy = jest.spyOn(notifications.streamUser, 'emit');
+
+			const result = await writeAllowed('room1/video-conference', {
+				params: { callId: '123', uid: 'victim', rid: 'room1' },
+			});
+
+			expect(result).toBe(false);
+			expect(validateAction).not.toHaveBeenCalled();
+			expect(findByRoomIdAndNotUserId).not.toHaveBeenCalled();
+			expect(emitSpy).not.toHaveBeenCalled();
+		});
+
+		it('should deny and not relay "video-conference" if payload is missing params', async () => {
+			const emitSpy = jest.spyOn(notifications.streamUser, 'emit');
+
+			const result = await writeAllowed('room1/video-conference', {
+				action: 'call-start',
+			});
+
+			expect(result).toBe(false);
+			expect(validateAction).not.toHaveBeenCalled();
+			expect(findByRoomIdAndNotUserId).not.toHaveBeenCalled();
+			expect(emitSpy).not.toHaveBeenCalled();
+		});
+
+		it('should deny and not relay "video-conference" if params is missing callId or uid', async () => {
+			const emitSpy = jest.spyOn(notifications.streamUser, 'emit');
+
+			const missingCallId = await writeAllowed('room1/video-conference', {
+				action: 'call-start',
+				params: { uid: 'victim', rid: 'room1' },
+			});
+			const missingUid = await writeAllowed('room1/video-conference', {
+				action: 'call-start',
+				params: { callId: '123', rid: 'room1' },
+			});
+
+			expect(missingCallId).toBe(false);
+			expect(missingUid).toBe(false);
+			expect(validateAction).not.toHaveBeenCalled();
+			expect(findByRoomIdAndNotUserId).not.toHaveBeenCalled();
+			expect(emitSpy).not.toHaveBeenCalled();
+		});
+
+		it('should deny and not relay "video-conference" if params.rid does not match roomId', async () => {
+			const emitSpy = jest.spyOn(notifications.streamUser, 'emit');
+
+			const result = await writeAllowed('room1/video-conference', {
+				action: 'call-start',
+				params: { callId: '123', uid: 'victim', rid: 'differentRoom' },
+			});
+
+			expect(result).toBe(false);
+			expect(validateAction).not.toHaveBeenCalled();
+			expect(findByRoomIdAndNotUserId).not.toHaveBeenCalled();
+			expect(emitSpy).not.toHaveBeenCalled();
 		});
 	});
 

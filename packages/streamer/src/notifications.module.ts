@@ -304,6 +304,57 @@ export class NotificationsModule {
 				['video-conference', 'userData'].includes(e) &&
 				(await Subscriptions.countByRoomIdAndUserId(roomId, this.userId)) > 0
 			) {
+				if (e === 'video-conference') {
+					const [data] = args;
+					if (!data || typeof data !== 'object') {
+						return false;
+					}
+
+					const { action: videoAction, params } = data as {
+						action: string | undefined;
+						params: { callId?: string; uid?: string; rid?: string };
+					};
+
+					if (!videoAction || typeof videoAction !== 'string' || !params || typeof params !== 'object') {
+						return false;
+					}
+
+					const callId = 'callId' in params && typeof params.callId === 'string' ? params.callId : '';
+					const uid = 'uid' in params && typeof params.uid === 'string' ? params.uid : '';
+
+					if (!callId || !uid) {
+						return false;
+					}
+
+					if ('rid' in params) {
+						if (typeof params.rid !== 'string' || !params.rid || params.rid !== roomId) {
+							return false;
+						}
+					} else {
+						params.rid = roomId;
+					}
+
+					const call = await VideoConference.findOneById(callId, { projection: { rid: 1, createdBy: 1 } });
+					if (!call || call.rid !== roomId) {
+						return false;
+					}
+
+					const creatorId = typeof call.createdBy === 'object' && call.createdBy ? call.createdBy._id : call.createdBy;
+					if (videoAction === 'end' && creatorId !== this.userId) {
+						return false;
+					}
+
+					const isValid = await VideoConf.validateAction(videoAction, this.userId, {
+						callId,
+						uid,
+						rid: params.rid,
+					});
+
+					if (!isValid) {
+						return false;
+					}
+				}
+
 				const subscriptions: ISubscription[] = await Subscriptions.findByRoomIdAndNotUserId(roomId, this.userId, {
 					projection: { 'u._id': 1, '_id': 0 },
 				}).toArray();
