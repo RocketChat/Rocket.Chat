@@ -158,7 +158,7 @@ They run in this order:
 3. `Pre<Event>Modify` can change anything in the data.
 4. `Post<Event>` is for listening. Changes to the data are not possible here.
 
-Each handler can also implement an optional `check<Handler>` method (for example `checkPostMessageSent`). When it returns `false`, the handler is skipped.
+Some handlers also declare an optional `check<Handler>` method (for example `checkPostMessageSent`). When it returns `false`, the handler is skipped. Only the handlers for messages being sent, updated or deleted and for rooms being created or deleted have one; the others, such as `IPostUserCreated`, always run.
 
 ### UiKit
 
