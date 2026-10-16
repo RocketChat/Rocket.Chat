@@ -154,6 +154,18 @@ Source: [`packages/ui-kit/src/blocks/layout/SectionBlock.ts`](../../../packages/
 | `appId` | `string` | no |  |
 | `blockId` | `string` | no |  |
 
+### `table`
+
+Source: [`packages/ui-kit/src/blocks/layout/TableBlock.ts`](../../../packages/ui-kit/src/blocks/layout/TableBlock.ts)
+
+| Field | Type | Required | Notes |
+| --- | --- | --- | --- |
+| `type` | `'table'` | yes | Rows of cells shown as a table; the first row is the header. |
+| `rows` | `readonly (readonly TableCell[])[]` | yes | A cell is `{ type: 'raw_text', text }`, shown as is, or a text object (`plain_text`, `mrkdwn`). |
+| `column_settings` | `readonly ({ align?: 'left' \| 'center' \| 'right'; is_wrapped?: boolean } \| null)[]` | no | Settings for each column, by position; `null` keeps a column's defaults. Text is truncated unless `is_wrapped`. |
+| `appId` | `string` | no |  |
+| `blockId` | `string` | no |  |
+
 ### `tab_navigation`
 
 Source: [`packages/ui-kit/src/blocks/layout/ExperimentalTabNavigationBlock.ts`](../../../packages/ui-kit/src/blocks/layout/ExperimentalTabNavigationBlock.ts)

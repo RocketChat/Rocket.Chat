@@ -55,6 +55,7 @@ import {
 	sectionWithCheckbox,
 	sectionWithUsersSelect,
 } from './section';
+import { table } from './table';
 import { actionWithCheckbox } from '../action/checkbox';
 import { actionWithRadioButton } from '../action/radioButton';
 import { actionWithTimePicker } from '../action/timePicker';
@@ -346,6 +347,15 @@ const BlocksTree: Item = [
 			{
 				label: 'Release notes',
 				payload: markdown,
+			},
+		],
+	},
+	{
+		label: 'table',
+		branches: [
+			{
+				label: 'Service uptime',
+				payload: table,
 			},
 		],
 	},

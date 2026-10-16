@@ -15,4 +15,5 @@ export const LayoutBlockType = {
 	CALLOUT: 'callout',
 	TAB_NAVIGATION: 'tab_navigation',
 	INFO_CARD: 'info_card',
+	TABLE: 'table',
 } as const satisfies Record<Uppercase<LayoutBlock['type']>, LayoutBlock['type']>;
