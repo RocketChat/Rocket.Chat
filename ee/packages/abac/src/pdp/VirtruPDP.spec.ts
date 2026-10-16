@@ -282,6 +282,36 @@ describe('VirtruPDP.checkUsernamesMatchAttributes', () => {
 	});
 });
 
+describe('VirtruPDP.assertCreatorMayAssign', () => {
+	const attrs = [{ key: 'clearance', values: ['secret'] }];
+	const actor = { _id: 'u1', username: 'bob' };
+	const decision = (value: Decision) => ({
+		decisionResponses: [{ resourceDecisions: [{ ephemeralResourceId: 'room-creation', decision: value }] }],
+	});
+
+	it('admits a creator Virtru permits the attributes', async () => {
+		usersFindByUsernames.mockReturnValue(cursor([user()]));
+		const pdp = new VirtruPDP(mkClient({ apiCall: jest.fn().mockResolvedValue(decision('DECISION_PERMIT')) }));
+
+		await expect(pdp.assertCreatorMayAssign(attrs, actor)).resolves.toEqual({ creatorAdmitted: true });
+	});
+
+	it('refuses a creator Virtru denies the attributes', async () => {
+		usersFindByUsernames.mockReturnValue(cursor([user()]));
+		const pdp = new VirtruPDP(mkClient({ apiCall: jest.fn().mockResolvedValue(decision('DECISION_DENY')) }));
+
+		await expect(pdp.assertCreatorMayAssign(attrs, actor)).rejects.toBeInstanceOf(OnlyCompliantCanBeAddedToRoomError);
+	});
+
+	it('refuses a creator without a username rather than asking Virtru about nobody', async () => {
+		const apiCall = jest.fn();
+		const pdp = new VirtruPDP(mkClient({ apiCall }));
+
+		await expect(pdp.assertCreatorMayAssign(attrs, { _id: 'u1' })).rejects.toBeInstanceOf(OnlyCompliantCanBeAddedToRoomError);
+		expect(apiCall).not.toHaveBeenCalled();
+	});
+});
+
 describe('VirtruPDP.evaluateSubjectsAgainstAttributes', () => {
 	const room = { _id: 'r1' };
 	const attrs = [{ key: 'clearance', values: ['secret'] }];

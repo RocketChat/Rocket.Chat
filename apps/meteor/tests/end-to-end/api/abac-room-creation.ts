@@ -208,11 +208,11 @@ import { IS_EE, URL_MONGODB } from '../../e2e/config/constants';
 				.expect(200);
 		});
 
-		it('is refused an attribute the workspace does not define', async () => {
+		it('answers an attribute the workspace does not define as it answers one the creator does not hold', async () => {
 			await createGroup({ abacAttributes: { [`rc-undefined-${suffix}`]: ['x'] } })
 				.expect(400)
 				.expect((res) => {
-					expect(res.body).to.have.property('errorType', 'error-abac-invalid-attributes');
+					expect(res.body).to.have.property('errorType', 'error-abac-attribute-not-assignable');
 				});
 		});
 

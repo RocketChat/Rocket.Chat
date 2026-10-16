@@ -4285,7 +4285,7 @@ import { IS_EE, URL_MONGODB } from '../../e2e/config/constants';
 
 					const res = await preview(undefined, true).expect(200);
 					expect(res.body.compliant).to.deep.equal([]);
-					expect(res.body.inconclusive.map(({ _id }: IUser) => _id)).to.deep.equal([creatorV.user._id]);
+					expect(res.body.inconclusive).to.deep.equal([]);
 					expect(res.body.creator).to.equal('inconclusive');
 				});
 

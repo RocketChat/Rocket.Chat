@@ -1,3 +1,4 @@
+import type { AbacActor } from '@rocket.chat/core-services';
 import type { IAbacAttributeDefinition, IRoom, IUser, AtLeast } from '@rocket.chat/core-typings';
 
 export type IEntityIdentifier = { emailAddress: string } | { id: string };
@@ -54,6 +55,10 @@ export interface IPolicyDecisionPoint {
 	): Promise<{ granted: boolean; userToRemove?: IUser }>;
 
 	checkUsernamesMatchAttributes(usernames: string[], attributes: IAbacAttributeDefinition[], object: Pick<IRoom, '_id'>): Promise<void>;
+
+	assertCreatorMayAssign(attributes: IAbacAttributeDefinition[], actor: AbacActor): Promise<{ creatorAdmitted: boolean }>;
+
+	filterAssignableAttributes(definitions: IAbacAttributeDefinition[], actor: AbacActor): Promise<IAbacAttributeDefinition[]>;
 
 	evaluateSubjectsAgainstAttributes(
 		subjects: EvaluableSubject[],

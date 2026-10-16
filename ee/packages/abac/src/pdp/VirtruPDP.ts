@@ -1,3 +1,4 @@
+import type { AbacActor } from '@rocket.chat/core-services';
 import type { IAbacAttributeDefinition, IRoom, IUser, AtLeast } from '@rocket.chat/core-typings';
 import { Rooms, Users } from '@rocket.chat/models';
 import { serverFetch } from '@rocket.chat/server-fetch';
@@ -231,6 +232,19 @@ export class VirtruPDP implements IPolicyDecisionPoint {
 		if (nonCompliant.length || inconclusive.length) {
 			throw new OnlyCompliantCanBeAddedToRoomError();
 		}
+	}
+
+	async assertCreatorMayAssign(attributes: IAbacAttributeDefinition[], actor: AbacActor): Promise<{ creatorAdmitted: boolean }> {
+		if (!actor.username) {
+			throw new OnlyCompliantCanBeAddedToRoomError();
+		}
+
+		await this.checkUsernamesMatchAttributes([actor.username], attributes, { _id: 'room-creation' });
+		return { creatorAdmitted: true };
+	}
+
+	async filterAssignableAttributes(definitions: IAbacAttributeDefinition[], _actor: AbacActor): Promise<IAbacAttributeDefinition[]> {
+		return definitions;
 	}
 
 	async evaluateSubjectsAgainstAttributes(

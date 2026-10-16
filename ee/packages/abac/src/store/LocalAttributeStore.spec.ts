@@ -4,14 +4,10 @@ const ensureMock = jest.fn();
 jest.mock('../helper', () => ({ ensureAttributeDefinitionsExist: (...a: unknown[]) => ensureMock(...a) }));
 const findPaginated = jest.fn();
 const findAllKeys = jest.fn();
-const findOneById = jest.fn();
 jest.mock('@rocket.chat/models', () => ({
 	AbacAttributes: {
 		findPaginated: (...a: unknown[]) => findPaginated(...a),
 		findAllKeys: (...a: unknown[]) => findAllKeys(...a),
-	},
-	Users: {
-		findOneById: (...a: unknown[]) => findOneById(...a),
 	},
 }));
 
@@ -21,7 +17,6 @@ beforeEach(() => {
 	ensureMock.mockReset();
 	findPaginated.mockReset();
 	findAllKeys.mockReset();
-	findOneById.mockReset();
 });
 
 describe('LocalAttributeStore', () => {
@@ -42,16 +37,9 @@ describe('LocalAttributeStore', () => {
 		await expect(new LocalAttributeStore().assertCanModifyRoom({ _id: 'r', abacAttributes: [] }, actor)).resolves.toBeUndefined();
 	});
 
-	it('entitlementsOf returns the attributes the actor holds', async () => {
-		findOneById.mockResolvedValue({ abacAttributes: [{ key: 'dept', values: ['eng', 'sales'] }] });
+	it('entitlementsOf returns the everything sentinel (empty map)', async () => {
 		const e = await new LocalAttributeStore().entitlementsOf(actor);
-		expect(findOneById).toHaveBeenCalledWith('u', { projection: { abacAttributes: 1 } });
-		expect(e).toEqual(new Map([['dept', new Set(['eng', 'sales'])]]));
-	});
-
-	it('entitlementsOf returns nothing for an actor holding no attributes', async () => {
-		findOneById.mockResolvedValue({});
-		await expect(new LocalAttributeStore().entitlementsOf(actor)).resolves.toEqual(new Map());
+		expect(e.size).toBe(0);
 	});
 
 	it('list queries AbacAttributes paginated (no filters)', async () => {
