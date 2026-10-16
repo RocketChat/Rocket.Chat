@@ -23,6 +23,7 @@ exports[`CallListItem renders Declined without crashing 1`] = `
             </i>
             <div
               class="rcx-item__title"
+              id="_r_0_"
             >
               <a
                 class="rcx-item__link"
@@ -91,6 +92,7 @@ exports[`CallListItem renders Joinable without crashing 1`] = `
             </i>
             <div
               class="rcx-item__title"
+              id="_r_1_"
             >
               <a
                 class="rcx-item__link"
@@ -165,6 +167,7 @@ exports[`CallListItem renders Joined without crashing 1`] = `
             </i>
             <div
               class="rcx-item__title"
+              id="_r_2_"
             >
               <a
                 class="rcx-item__link"
@@ -222,6 +225,7 @@ exports[`CallListItem renders Ringing without crashing 1`] = `
             </i>
             <div
               class="rcx-item__title"
+              id="_r_3_"
             >
               <a
                 class="rcx-item__link"
@@ -314,6 +318,7 @@ exports[`CallListItem renders RingingButDeclined without crashing 1`] = `
             </i>
             <div
               class="rcx-item__title"
+              id="_r_4_"
             >
               <a
                 class="rcx-item__link"
@@ -382,6 +387,7 @@ exports[`CallListItem renders RingingButJoined without crashing 1`] = `
             </i>
             <div
               class="rcx-item__title"
+              id="_r_5_"
             >
               <a
                 class="rcx-item__link"
@@ -439,6 +445,7 @@ exports[`CallListItem renders RingingNotHeardHere without crashing 1`] = `
             </i>
             <div
               class="rcx-item__title"
+              id="_r_6_"
             >
               <a
                 class="rcx-item__link"
@@ -518,6 +525,7 @@ exports[`CallListItem renders RingingSilenced without crashing 1`] = `
             </i>
             <div
               class="rcx-item__title"
+              id="_r_7_"
             >
               <a
                 class="rcx-item__link"
@@ -604,6 +612,7 @@ exports[`CallListItem renders SinglePerson without crashing 1`] = `
             </i>
             <div
               class="rcx-item__title"
+              id="_r_8_"
             >
               <a
                 class="rcx-item__link"
