@@ -4301,6 +4301,7 @@ import { IS_EE, URL_MONGODB } from '../../e2e/config/constants';
 
 		describe('bypass-abac-store-validation permission (spec §4.2)', () => {
 			let adminBypass: { user: IUser; creds: Credentials };
+			const createdRoomIds: string[] = [];
 
 			before(async function () {
 				this.timeout(15000);
@@ -4310,6 +4311,7 @@ import { IS_EE, URL_MONGODB } from '../../e2e/config/constants';
 
 			after(async () => {
 				await mockServerReset();
+				await Promise.all(createdRoomIds.map((roomId) => request.post(api('rooms.delete')).set(credentials).send({ roomId }).expect(200)));
 				await updatePermission('bypass-abac-store-validation', []);
 				await deleteUser(adminBypass.user);
 			});
@@ -4324,10 +4326,9 @@ import { IS_EE, URL_MONGODB } from '../../e2e/config/constants';
 					.set(adminBypass.creds)
 					.send({ name: `vstore-bypass-create-${Date.now()}`, excludeSelf: true, abacAttributes: { team: ['blue'] } })
 					.expect(200);
+				createdRoomIds.push(res.body.group._id);
 
 				expect(res.body.group.abacAttributes).to.deep.equal([{ key: 'team', values: ['blue'] }]);
-
-				await request.post(api('rooms.delete')).set(credentials).send({ roomId: res.body.group._id }).expect(200);
 			});
 
 			it('skips validateAssignable: assigns a value the admin is not entitled to → 200', async () => {
