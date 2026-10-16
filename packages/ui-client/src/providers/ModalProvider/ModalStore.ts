@@ -17,30 +17,34 @@ class ModalStore extends Emitter<{ update: void }> {
 
 	// open function erases all other modals from the stack
 	open = (node: ReactNode, region?: symbol): ModalInstance => {
-		this.modalStack = [{ node, region }];
+		const modal = { node, region };
+		this.modalStack = [modal];
 		this.update();
 
-		return {
-			close: () => {
-				this.modalStack = this.modalStack.filter((modal) => modal !== this.current);
-				this.update();
-			},
-			cancel: this.close,
-		};
+		return this.createInstance(modal);
 	};
 
 	push = (node: ReactNode, region?: symbol): ModalInstance => {
-		this.modalStack = [...this.modalStack, { node, region }];
+		const modal = { node, region };
+		this.modalStack = [...this.modalStack, modal];
 		this.update();
 
-		return {
-			close: () => {
-				this.modalStack = this.modalStack.filter((modal) => modal !== this.current);
-				this.update();
-			},
-			cancel: this.close,
-		};
+		return this.createInstance(modal);
 	};
+
+	// An instance removes its own modal, wherever it sits in the stack, and does nothing once that modal is gone.
+	private createInstance(modal: ModalWithRegion): ModalInstance {
+		const remove = () => {
+			if (!this.modalStack.includes(modal)) {
+				return;
+			}
+
+			this.modalStack = this.modalStack.filter((entry) => entry !== modal);
+			this.update();
+		};
+
+		return { close: remove, cancel: remove };
+	}
 
 	close = (): void => {
 		this.modalStack = this.modalStack.slice(0, -1);
