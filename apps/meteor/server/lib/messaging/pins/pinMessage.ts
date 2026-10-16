@@ -92,8 +92,12 @@ export async function pinMessage(message: IMessage, userId: string, pinnedAt?: D
 	originalMessage = await Message.beforeSave({ message: originalMessage, room, user: me });
 
 	await Messages.setPinnedByIdAndUserId(originalMessage._id, originalMessage.pinnedBy, originalMessage.pinned);
+	void notifyOnMessageChange({
+		id: originalMessage._id,
+	});
 	if (isTheLastMessage(room, originalMessage)) {
 		await Rooms.setLastMessagePinned(room._id, originalMessage.pinnedBy, originalMessage.pinned);
+		void notifyOnRoomChangedById(room._id);
 	}
 
 	const attachments: MessageAttachment[] = [];
@@ -119,7 +123,8 @@ export async function pinMessage(message: IMessage, userId: string, pinnedAt?: D
 				author_icon: getUserAvatarURL(originalMessage.u.username),
 				...(originalMessage.content && { content: originalMessage.content }),
 				ts: originalMessage.ts,
-				attachments: attachments.map(recursiveRemove),
+				// `map` would pass the array index as `recursiveRemove`'s depth argument.
+				attachments: attachments.map((attachment) => recursiveRemove(attachment)).filter(isTruthy),
 			},
 		],
 	});

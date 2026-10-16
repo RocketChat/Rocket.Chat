@@ -1,7 +1,7 @@
 import type { AudioAttachmentProps } from '@rocket.chat/core-typings';
 import { AudioPlayerControls, Box } from '@rocket.chat/fuselage';
 import { useMediaUrl } from '@rocket.chat/ui-contexts';
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 
 import { useMediaPlayer } from '../../../../../providers/MediaPlayerProvider';
 import type { PersistentAudioTrack } from '../../../../../providers/MediaPlayerProvider';
@@ -9,12 +9,17 @@ import MarkdownText from '../../../../MarkdownText';
 import MessageCollapsible from '../../../MessageCollapsible';
 import MessageContentBody from '../../../MessageContentBody';
 
-/** Extra context about the message that owns this audio, used by the shared player. */
 export type AudioAttachmentSource = {
 	rid?: string;
 	mid?: string;
 	username?: string;
 	name?: string;
+	ts?: Date;
+	drid?: string;
+	pinned?: boolean;
+	originMid?: string;
+	originTs?: Date;
+	originRid?: string;
 };
 
 type AudioAttachmentComponentProps = AudioAttachmentProps & {
@@ -36,7 +41,7 @@ const AudioAttachment = ({
 	const getURL = useMediaUrl();
 	const src = useMemo(() => getURL(url), [getURL, url]);
 
-	const { play, toggle, seek, cyclePlaybackRate, isActive, playing, currentTime, duration, playbackRate } = useMediaPlayer();
+	const { play, toggle, seek, cyclePlaybackRate, isActive, updateTrack, playing, currentTime, duration, playbackRate } = useMediaPlayer();
 
 	const track = useMemo<PersistentAudioTrack>(
 		() => ({
@@ -49,11 +54,39 @@ const AudioAttachment = ({
 			mid: source?.mid,
 			username: source?.username,
 			name: source?.name,
+			ts: source?.ts,
+			drid: source?.drid,
+			pinned: source?.pinned,
+			originMid: source?.originMid,
+			originTs: source?.originTs,
+			originRid: source?.originRid,
 		}),
-		[source?.mid, source?.rid, source?.username, source?.name, url, src, type, title, size],
+		[
+			source?.mid,
+			source?.rid,
+			source?.username,
+			source?.name,
+			source?.ts,
+			source?.drid,
+			source?.pinned,
+			source?.originMid,
+			source?.originTs,
+			source?.originRid,
+			url,
+			src,
+			type,
+			title,
+			size,
+		],
 	);
 
 	const active = isActive(track.id);
+
+	useEffect(() => {
+		if (active) {
+			updateTrack(track);
+		}
+	}, [active, track, updateTrack]);
 	const [previewDuration, setPreviewDuration] = useState(0);
 
 	return (

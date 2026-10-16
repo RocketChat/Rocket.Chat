@@ -26,6 +26,7 @@ import { useTranslation } from 'react-i18next';
 import MessageContentBody from '../../../../components/message/MessageContentBody';
 import StatusIndicators from '../../../../components/message/StatusIndicators';
 import Attachments from '../../../../components/message/content/Attachments';
+import type { AudioAttachmentSource } from '../../../../components/message/content/attachments/file/AudioAttachment';
 import UiKitMessageBlock from '../../../../components/message/uikit/UiKitMessageBlock';
 import { useFormatDate } from '../../../../hooks/useFormatDate';
 import { toPlainTextRoot } from '../../../../lib/toPlainTextRoot';
@@ -48,6 +49,16 @@ const ContactHistoryMessage = ({ message, sequential, isNewDay, showUserAvatar }
 	const quotes = message?.attachments?.filter(isQuoteAttachment) || [];
 
 	const attachments = message?.attachments?.filter((attachment: MessageAttachment) => !isQuoteAttachment(attachment)) || [];
+
+	const source: AudioAttachmentSource = {
+		rid: message.rid,
+		mid: message._id,
+		username: message.u.username,
+		name: message.u.name,
+		ts: message.ts,
+		pinned: message.pinned,
+		drid: message.drid,
+	};
 
 	if (message.t === 'livechat-close') {
 		return (
@@ -115,7 +126,7 @@ const ContactHistoryMessage = ({ message, sequential, isNewDay, showUserAvatar }
 							<StatusIndicators message={message} />
 						</MessageHeaderTemplate>
 					)}
-					{!!quotes?.length && <Attachments attachments={quotes} />}
+					{!!quotes?.length && <Attachments attachments={quotes} source={source} />}
 					{!message.blocks && (
 						<MessageContentBody
 							data-qa-type='message-body'
@@ -125,7 +136,7 @@ const ContactHistoryMessage = ({ message, sequential, isNewDay, showUserAvatar }
 						/>
 					)}
 					{message.blocks && <UiKitMessageBlock rid={message.rid} mid={message._id} blocks={message.blocks} />}
-					{!!attachments && <Attachments attachments={attachments} />}
+					{!!attachments && <Attachments attachments={attachments} source={source} />}
 				</MessageContainer>
 			</MessageTemplate>
 		</>

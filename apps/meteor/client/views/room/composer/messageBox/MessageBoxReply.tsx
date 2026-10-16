@@ -39,6 +39,15 @@ const MessageBoxReply = ({ reply }: MessageBoxReplyProps) => {
 								collapsed: true,
 							} as MessageQuoteAttachment
 						}
+						source={{
+							rid: reply.rid,
+							mid: reply._id,
+							username: reply.u.username,
+							name: reply.u.name,
+							ts: reply.ts,
+							drid: reply.drid,
+							pinned: reply.pinned,
+						}}
 					/>
 				</AttachmentProvider>
 				<Box
