@@ -1,29 +1,26 @@
 import type { IDiscussionMessage } from '@rocket.chat/core-typings';
 import {
-	Box,
-	Message,
-	MessageLeftContainer,
-	MessageContainer,
-	MessageHeader,
-	MessageName,
-	MessageTimestamp,
-	MessageBody,
-	MessageBlock,
+	Item,
+	ItemContent,
+	ItemDescription,
+	ItemLink,
+	ItemMedia,
+	ItemMeta,
+	ItemRow,
+	ItemTitle,
 	MessageMetrics,
 	MessageMetricsItem,
-	MessageMetricsItemLabel,
 	MessageMetricsItemIcon,
+	MessageMetricsItemLabel,
 } from '@rocket.chat/fuselage';
-import { MessageAvatar } from '@rocket.chat/ui-avatar';
-import type { ComponentProps, ReactNode } from 'react';
-import { memo } from 'react';
+import { ITEM_MEDIA_SIZE, MessageAvatar } from '@rocket.chat/ui-avatar';
+import type { MouseEvent, ReactNode } from 'react';
+import { memo, useId } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import Emoji from '../../../../../components/Emoji';
-import { clickableItem } from '../../../../../lib/clickableItem';
 
 export type DiscussionListItemProps = {
-	_id: IDiscussionMessage['_id'];
 	msg: ReactNode;
 	dcount: number;
 	dlm: Date | undefined;
@@ -32,10 +29,11 @@ export type DiscussionListItemProps = {
 	name?: IDiscussionMessage['u']['name'];
 	ts: IDiscussionMessage['ts'];
 	emoji: IDiscussionMessage['emoji'];
-} & Omit<ComponentProps<typeof Box>, 'is'>;
+	drid?: IDiscussionMessage['drid'];
+	onClick?: (event: MouseEvent<HTMLElement>) => void;
+};
 
 const DiscussionListItem = ({
-	_id,
 	msg,
 	username,
 	name = username,
@@ -43,46 +41,56 @@ const DiscussionListItem = ({
 	dcount,
 	formatDate,
 	dlm,
-	className = [],
 	emoji,
-	...props
+	drid,
+	onClick,
 }: DiscussionListItemProps) => {
 	const { t } = useTranslation();
+	const messageId = useId();
+
 	return (
-		<Box is={Message} {...props} className={className} paddingBlockStart={16} paddingBlockEnd={8}>
-			<MessageLeftContainer>
-				<MessageAvatar emoji={emoji ? <Emoji emojiHandle={emoji} fillContainer /> : undefined} username={username} size='x36' />
-			</MessageLeftContainer>
-			<MessageContainer>
-				<MessageHeader>
-					<MessageName title={username}>{name}</MessageName>
-					<MessageTimestamp>{formatDate(ts)}</MessageTimestamp>
-				</MessageHeader>
-				<MessageBody clamp={2}>{msg}</MessageBody>
-				<MessageBlock>
-					<MessageMetrics>
-						{!dcount && (
-							<MessageMetricsItem>
-								<MessageMetricsItemLabel>{t('No_messages_yet')}</MessageMetricsItemLabel>
-							</MessageMetricsItem>
-						)}
-						{!!dcount && (
-							<MessageMetricsItem>
-								<MessageMetricsItemIcon name='discussion' />
-								<MessageMetricsItemLabel>{dcount}</MessageMetricsItemLabel>
-							</MessageMetricsItem>
-						)}
-						{!!dcount && (
-							<MessageMetricsItem>
-								<MessageMetricsItemIcon name='clock' />
-								<MessageMetricsItemLabel>{dlm ? formatDate(dlm) : undefined}</MessageMetricsItemLabel>
-							</MessageMetricsItem>
-						)}
-					</MessageMetrics>
-				</MessageBlock>
-			</MessageContainer>
-		</Box>
+		<Item inset='lg'>
+			<ItemMedia>
+				<MessageAvatar
+					emoji={emoji ? <Emoji emojiHandle={emoji} fillContainer /> : undefined}
+					username={username}
+					size={ITEM_MEDIA_SIZE.extended}
+				/>
+			</ItemMedia>
+			<ItemContent>
+				<ItemRow>
+					<ItemTitle>
+						<ItemLink is='button' data-drid={drid} aria-describedby={messageId} onClick={onClick}>
+							{name}
+						</ItemLink>
+					</ItemTitle>
+					<ItemMeta>{formatDate(ts)}</ItemMeta>
+				</ItemRow>
+				<ItemDescription id={messageId} clamp={2}>
+					{msg}
+				</ItemDescription>
+				<MessageMetrics>
+					{!dcount && (
+						<MessageMetricsItem>
+							<MessageMetricsItemLabel>{t('No_messages_yet')}</MessageMetricsItemLabel>
+						</MessageMetricsItem>
+					)}
+					{!!dcount && (
+						<MessageMetricsItem>
+							<MessageMetricsItemIcon name='discussion' />
+							<MessageMetricsItemLabel>{dcount}</MessageMetricsItemLabel>
+						</MessageMetricsItem>
+					)}
+					{!!dcount && dlm && (
+						<MessageMetricsItem>
+							<MessageMetricsItemIcon name='clock' />
+							<MessageMetricsItemLabel>{formatDate(dlm)}</MessageMetricsItemLabel>
+						</MessageMetricsItem>
+					)}
+				</MessageMetrics>
+			</ItemContent>
+		</Item>
 	);
 };
 
-export default memo(clickableItem(DiscussionListItem));
+export default memo(DiscussionListItem);

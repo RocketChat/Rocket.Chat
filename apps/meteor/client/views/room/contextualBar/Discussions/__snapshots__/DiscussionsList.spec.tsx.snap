@@ -59,7 +59,7 @@ exports[`renders Default with stable structure 1`] = `
               class="rcx-box rcx-box--full rcx-label rcx-box rcx-box--full rcx-box--animated rcx-input-box__wrapper"
             >
               <input
-                aria-controls="_r_6_"
+                aria-controls="_r_q_"
                 aria-label="Search_Messages"
                 class="rcx-box rcx-box--full rcx-box--animated rcx-input-box--undecorated rcx-input-box--type-text rcx-input-box"
                 placeholder="Search_Messages"
@@ -90,7 +90,7 @@ exports[`renders Default with stable structure 1`] = `
             </div>
             <div
               class="rcx-box rcx-box--full rcx-css-4k230l"
-              id="_r_6_"
+              id="_r_q_"
             >
               <div
                 class="rcx-box rcx-box--full rcx-css-1cb6i7s"
@@ -104,12 +104,10 @@ exports[`renders Default with stable structure 1`] = `
                     <li>
                       <div>
                         <div
-                          class="rcx-message rcx-message--clickable rcx-box rcx-box--full rcx-css-c3sy3b rcx-css-mg522s"
-                          data-drid="drid-0"
-                          tabindex="0"
+                          class="rcx-item rcx-item--inset-lg"
                         >
                           <div
-                            class="rcx-box rcx-box--full rcx-message-container rcx-message-container--left"
+                            class="rcx-item__media"
                           >
                             <figure
                               class="rcx-box rcx-box--full rcx-avatar rcx-avatar--x36"
@@ -125,72 +123,72 @@ exports[`renders Default with stable structure 1`] = `
                             </figure>
                           </div>
                           <div
-                            class="rcx-box rcx-box--full rcx-message-container"
+                            class="rcx-item__content"
                           >
                             <div
-                              class="rcx-box rcx-box--full rcx-message-header"
+                              class="rcx-item__row"
                             >
                               <div
-                                class="rcx-box rcx-box--full rcx-message-header__wrapper"
+                                class="rcx-item__title"
+                                id="_r_t_"
                               >
-                                <span
-                                  class="rcx-box rcx-box--full rcx-message-header__name"
-                                  title="user.name"
+                                <button
+                                  aria-describedby="_r_s_"
+                                  class="rcx-item__link"
+                                  data-drid="drid-0"
+                                  type="button"
                                 >
                                   user.name
-                                </span>
-                                <span
-                                  class="rcx-box rcx-box--full rcx-message-header__time"
-                                >
-                                  January 1st, 2024
-                                </span>
+                                </button>
+                              </div>
+                              <div
+                                class="rcx-item__meta"
+                              >
+                                January 1st, 2024
                               </div>
                             </div>
                             <div
-                              class="rcx-message-body rcx-message-body--clamp rcx-message-body--clamp-2"
+                              class="rcx-item__description rcx-item__description--clamp rcx-item__description--clamp-2"
+                              id="_r_s_"
                             >
                               <div>
                                 Discussion 0
                               </div>
                             </div>
                             <div
-                              class="rcx-box rcx-box--full rcx-message-block"
+                              class="rcx-message-metrics__content-item"
                             >
                               <div
-                                class="rcx-message-metrics__content-item"
+                                class="rcx-message-metrics__content-wrapper"
                               >
                                 <div
-                                  class="rcx-message-metrics__content-wrapper"
+                                  class="rcx-message-metrics__item"
                                 >
-                                  <div
-                                    class="rcx-message-metrics__item"
+                                  <i
+                                    aria-hidden="true"
+                                    class="rcx-box rcx-box--full rcx-icon--name-discussion rcx-icon rcx-css-4pvxx3"
                                   >
-                                    <i
-                                      aria-hidden="true"
-                                      class="rcx-box rcx-box--full rcx-icon--name-discussion rcx-icon rcx-css-4pvxx3"
-                                    >
-                                      
-                                    </i>
-                                    <div
-                                      class="rcx-message-metrics__item-label"
-                                    >
-                                      5
-                                    </div>
+                                    
+                                  </i>
+                                  <div
+                                    class="rcx-message-metrics__item-label"
+                                  >
+                                    5
                                   </div>
-                                  <div
-                                    class="rcx-message-metrics__item"
+                                </div>
+                                <div
+                                  class="rcx-message-metrics__item"
+                                >
+                                  <i
+                                    aria-hidden="true"
+                                    class="rcx-box rcx-box--full rcx-icon--name-clock rcx-icon rcx-css-4pvxx3"
                                   >
-                                    <i
-                                      aria-hidden="true"
-                                      class="rcx-box rcx-box--full rcx-icon--name-clock rcx-icon rcx-css-4pvxx3"
-                                    >
-                                      
-                                    </i>
-                                    <div
-                                      class="rcx-message-metrics__item-label"
-                                    >
-                                      January 1st, 2024
-                                    </div>
+                                    
+                                  </i>
+                                  <div
+                                    class="rcx-message-metrics__item-label"
+                                  >
+                                    January 1st, 2024
                                   </div>
                                 </div>
                               </div>
@@ -202,12 +200,14 @@ exports[`renders Default with stable structure 1`] = `
                     <li>
                       <div>
                         <div
-                          class="rcx-message rcx-message--clickable rcx-box rcx-box--full rcx-css-c3sy3b rcx-css-mg522s"
-                          data-drid="drid-1"
-                          tabindex="0"
+                          aria-hidden="true"
+                          class="rcx-item-divider"
+                        />
+                        <div
+                          class="rcx-item rcx-item--inset-lg"
                         >
                           <div
-                            class="rcx-box rcx-box--full rcx-message-container rcx-message-container--left"
+                            class="rcx-item__media"
                           >
                             <figure
                               class="rcx-box rcx-box--full rcx-avatar rcx-avatar--x36"
@@ -223,72 +223,72 @@ exports[`renders Default with stable structure 1`] = `
                             </figure>
                           </div>
                           <div
-                            class="rcx-box rcx-box--full rcx-message-container"
+                            class="rcx-item__content"
                           >
                             <div
-                              class="rcx-box rcx-box--full rcx-message-header"
+                              class="rcx-item__row"
                             >
                               <div
-                                class="rcx-box rcx-box--full rcx-message-header__wrapper"
+                                class="rcx-item__title"
+                                id="_r_v_"
                               >
-                                <span
-                                  class="rcx-box rcx-box--full rcx-message-header__name"
-                                  title="user.name"
+                                <button
+                                  aria-describedby="_r_u_"
+                                  class="rcx-item__link"
+                                  data-drid="drid-1"
+                                  type="button"
                                 >
                                   user.name
-                                </span>
-                                <span
-                                  class="rcx-box rcx-box--full rcx-message-header__time"
-                                >
-                                  January 1st, 2024
-                                </span>
+                                </button>
+                              </div>
+                              <div
+                                class="rcx-item__meta"
+                              >
+                                January 1st, 2024
                               </div>
                             </div>
                             <div
-                              class="rcx-message-body rcx-message-body--clamp rcx-message-body--clamp-2"
+                              class="rcx-item__description rcx-item__description--clamp rcx-item__description--clamp-2"
+                              id="_r_u_"
                             >
                               <div>
                                 Discussion 1
                               </div>
                             </div>
                             <div
-                              class="rcx-box rcx-box--full rcx-message-block"
+                              class="rcx-message-metrics__content-item"
                             >
                               <div
-                                class="rcx-message-metrics__content-item"
+                                class="rcx-message-metrics__content-wrapper"
                               >
                                 <div
-                                  class="rcx-message-metrics__content-wrapper"
+                                  class="rcx-message-metrics__item"
                                 >
-                                  <div
-                                    class="rcx-message-metrics__item"
+                                  <i
+                                    aria-hidden="true"
+                                    class="rcx-box rcx-box--full rcx-icon--name-discussion rcx-icon rcx-css-4pvxx3"
                                   >
-                                    <i
-                                      aria-hidden="true"
-                                      class="rcx-box rcx-box--full rcx-icon--name-discussion rcx-icon rcx-css-4pvxx3"
-                                    >
-                                      
-                                    </i>
-                                    <div
-                                      class="rcx-message-metrics__item-label"
-                                    >
-                                      5
-                                    </div>
+                                    
+                                  </i>
+                                  <div
+                                    class="rcx-message-metrics__item-label"
+                                  >
+                                    5
                                   </div>
-                                  <div
-                                    class="rcx-message-metrics__item"
+                                </div>
+                                <div
+                                  class="rcx-message-metrics__item"
+                                >
+                                  <i
+                                    aria-hidden="true"
+                                    class="rcx-box rcx-box--full rcx-icon--name-clock rcx-icon rcx-css-4pvxx3"
                                   >
-                                    <i
-                                      aria-hidden="true"
-                                      class="rcx-box rcx-box--full rcx-icon--name-clock rcx-icon rcx-css-4pvxx3"
-                                    >
-                                      
-                                    </i>
-                                    <div
-                                      class="rcx-message-metrics__item-label"
-                                    >
-                                      January 1st, 2024
-                                    </div>
+                                    
+                                  </i>
+                                  <div
+                                    class="rcx-message-metrics__item-label"
+                                  >
+                                    January 1st, 2024
                                   </div>
                                 </div>
                               </div>
@@ -300,12 +300,14 @@ exports[`renders Default with stable structure 1`] = `
                     <li>
                       <div>
                         <div
-                          class="rcx-message rcx-message--clickable rcx-box rcx-box--full rcx-css-c3sy3b rcx-css-mg522s"
-                          data-drid="drid-2"
-                          tabindex="0"
+                          aria-hidden="true"
+                          class="rcx-item-divider"
+                        />
+                        <div
+                          class="rcx-item rcx-item--inset-lg"
                         >
                           <div
-                            class="rcx-box rcx-box--full rcx-message-container rcx-message-container--left"
+                            class="rcx-item__media"
                           >
                             <figure
                               class="rcx-box rcx-box--full rcx-avatar rcx-avatar--x36"
@@ -321,72 +323,72 @@ exports[`renders Default with stable structure 1`] = `
                             </figure>
                           </div>
                           <div
-                            class="rcx-box rcx-box--full rcx-message-container"
+                            class="rcx-item__content"
                           >
                             <div
-                              class="rcx-box rcx-box--full rcx-message-header"
+                              class="rcx-item__row"
                             >
                               <div
-                                class="rcx-box rcx-box--full rcx-message-header__wrapper"
+                                class="rcx-item__title"
+                                id="_r_11_"
                               >
-                                <span
-                                  class="rcx-box rcx-box--full rcx-message-header__name"
-                                  title="user.name"
+                                <button
+                                  aria-describedby="_r_10_"
+                                  class="rcx-item__link"
+                                  data-drid="drid-2"
+                                  type="button"
                                 >
                                   user.name
-                                </span>
-                                <span
-                                  class="rcx-box rcx-box--full rcx-message-header__time"
-                                >
-                                  January 1st, 2024
-                                </span>
+                                </button>
+                              </div>
+                              <div
+                                class="rcx-item__meta"
+                              >
+                                January 1st, 2024
                               </div>
                             </div>
                             <div
-                              class="rcx-message-body rcx-message-body--clamp rcx-message-body--clamp-2"
+                              class="rcx-item__description rcx-item__description--clamp rcx-item__description--clamp-2"
+                              id="_r_10_"
                             >
                               <div>
                                 Discussion 2
                               </div>
                             </div>
                             <div
-                              class="rcx-box rcx-box--full rcx-message-block"
+                              class="rcx-message-metrics__content-item"
                             >
                               <div
-                                class="rcx-message-metrics__content-item"
+                                class="rcx-message-metrics__content-wrapper"
                               >
                                 <div
-                                  class="rcx-message-metrics__content-wrapper"
+                                  class="rcx-message-metrics__item"
                                 >
-                                  <div
-                                    class="rcx-message-metrics__item"
+                                  <i
+                                    aria-hidden="true"
+                                    class="rcx-box rcx-box--full rcx-icon--name-discussion rcx-icon rcx-css-4pvxx3"
                                   >
-                                    <i
-                                      aria-hidden="true"
-                                      class="rcx-box rcx-box--full rcx-icon--name-discussion rcx-icon rcx-css-4pvxx3"
-                                    >
-                                      
-                                    </i>
-                                    <div
-                                      class="rcx-message-metrics__item-label"
-                                    >
-                                      5
-                                    </div>
+                                    
+                                  </i>
+                                  <div
+                                    class="rcx-message-metrics__item-label"
+                                  >
+                                    5
                                   </div>
-                                  <div
-                                    class="rcx-message-metrics__item"
+                                </div>
+                                <div
+                                  class="rcx-message-metrics__item"
+                                >
+                                  <i
+                                    aria-hidden="true"
+                                    class="rcx-box rcx-box--full rcx-icon--name-clock rcx-icon rcx-css-4pvxx3"
                                   >
-                                    <i
-                                      aria-hidden="true"
-                                      class="rcx-box rcx-box--full rcx-icon--name-clock rcx-icon rcx-css-4pvxx3"
-                                    >
-                                      
-                                    </i>
-                                    <div
-                                      class="rcx-message-metrics__item-label"
-                                    >
-                                      January 1st, 2024
-                                    </div>
+                                    
+                                  </i>
+                                  <div
+                                    class="rcx-message-metrics__item-label"
+                                  >
+                                    January 1st, 2024
                                   </div>
                                 </div>
                               </div>
@@ -398,12 +400,14 @@ exports[`renders Default with stable structure 1`] = `
                     <li>
                       <div>
                         <div
-                          class="rcx-message rcx-message--clickable rcx-box rcx-box--full rcx-css-c3sy3b rcx-css-mg522s"
-                          data-drid="drid-3"
-                          tabindex="0"
+                          aria-hidden="true"
+                          class="rcx-item-divider"
+                        />
+                        <div
+                          class="rcx-item rcx-item--inset-lg"
                         >
                           <div
-                            class="rcx-box rcx-box--full rcx-message-container rcx-message-container--left"
+                            class="rcx-item__media"
                           >
                             <figure
                               class="rcx-box rcx-box--full rcx-avatar rcx-avatar--x36"
@@ -419,72 +423,72 @@ exports[`renders Default with stable structure 1`] = `
                             </figure>
                           </div>
                           <div
-                            class="rcx-box rcx-box--full rcx-message-container"
+                            class="rcx-item__content"
                           >
                             <div
-                              class="rcx-box rcx-box--full rcx-message-header"
+                              class="rcx-item__row"
                             >
                               <div
-                                class="rcx-box rcx-box--full rcx-message-header__wrapper"
+                                class="rcx-item__title"
+                                id="_r_13_"
                               >
-                                <span
-                                  class="rcx-box rcx-box--full rcx-message-header__name"
-                                  title="user.name"
+                                <button
+                                  aria-describedby="_r_12_"
+                                  class="rcx-item__link"
+                                  data-drid="drid-3"
+                                  type="button"
                                 >
                                   user.name
-                                </span>
-                                <span
-                                  class="rcx-box rcx-box--full rcx-message-header__time"
-                                >
-                                  January 1st, 2024
-                                </span>
+                                </button>
+                              </div>
+                              <div
+                                class="rcx-item__meta"
+                              >
+                                January 1st, 2024
                               </div>
                             </div>
                             <div
-                              class="rcx-message-body rcx-message-body--clamp rcx-message-body--clamp-2"
+                              class="rcx-item__description rcx-item__description--clamp rcx-item__description--clamp-2"
+                              id="_r_12_"
                             >
                               <div>
                                 Discussion 3
                               </div>
                             </div>
                             <div
-                              class="rcx-box rcx-box--full rcx-message-block"
+                              class="rcx-message-metrics__content-item"
                             >
                               <div
-                                class="rcx-message-metrics__content-item"
+                                class="rcx-message-metrics__content-wrapper"
                               >
                                 <div
-                                  class="rcx-message-metrics__content-wrapper"
+                                  class="rcx-message-metrics__item"
                                 >
-                                  <div
-                                    class="rcx-message-metrics__item"
+                                  <i
+                                    aria-hidden="true"
+                                    class="rcx-box rcx-box--full rcx-icon--name-discussion rcx-icon rcx-css-4pvxx3"
                                   >
-                                    <i
-                                      aria-hidden="true"
-                                      class="rcx-box rcx-box--full rcx-icon--name-discussion rcx-icon rcx-css-4pvxx3"
-                                    >
-                                      
-                                    </i>
-                                    <div
-                                      class="rcx-message-metrics__item-label"
-                                    >
-                                      5
-                                    </div>
+                                    
+                                  </i>
+                                  <div
+                                    class="rcx-message-metrics__item-label"
+                                  >
+                                    5
                                   </div>
-                                  <div
-                                    class="rcx-message-metrics__item"
+                                </div>
+                                <div
+                                  class="rcx-message-metrics__item"
+                                >
+                                  <i
+                                    aria-hidden="true"
+                                    class="rcx-box rcx-box--full rcx-icon--name-clock rcx-icon rcx-css-4pvxx3"
                                   >
-                                    <i
-                                      aria-hidden="true"
-                                      class="rcx-box rcx-box--full rcx-icon--name-clock rcx-icon rcx-css-4pvxx3"
-                                    >
-                                      
-                                    </i>
-                                    <div
-                                      class="rcx-message-metrics__item-label"
-                                    >
-                                      January 1st, 2024
-                                    </div>
+                                    
+                                  </i>
+                                  <div
+                                    class="rcx-message-metrics__item-label"
+                                  >
+                                    January 1st, 2024
                                   </div>
                                 </div>
                               </div>
@@ -496,12 +500,14 @@ exports[`renders Default with stable structure 1`] = `
                     <li>
                       <div>
                         <div
-                          class="rcx-message rcx-message--clickable rcx-box rcx-box--full rcx-css-c3sy3b rcx-css-mg522s"
-                          data-drid="drid-4"
-                          tabindex="0"
+                          aria-hidden="true"
+                          class="rcx-item-divider"
+                        />
+                        <div
+                          class="rcx-item rcx-item--inset-lg"
                         >
                           <div
-                            class="rcx-box rcx-box--full rcx-message-container rcx-message-container--left"
+                            class="rcx-item__media"
                           >
                             <figure
                               class="rcx-box rcx-box--full rcx-avatar rcx-avatar--x36"
@@ -517,72 +523,72 @@ exports[`renders Default with stable structure 1`] = `
                             </figure>
                           </div>
                           <div
-                            class="rcx-box rcx-box--full rcx-message-container"
+                            class="rcx-item__content"
                           >
                             <div
-                              class="rcx-box rcx-box--full rcx-message-header"
+                              class="rcx-item__row"
                             >
                               <div
-                                class="rcx-box rcx-box--full rcx-message-header__wrapper"
+                                class="rcx-item__title"
+                                id="_r_15_"
                               >
-                                <span
-                                  class="rcx-box rcx-box--full rcx-message-header__name"
-                                  title="user.name"
+                                <button
+                                  aria-describedby="_r_14_"
+                                  class="rcx-item__link"
+                                  data-drid="drid-4"
+                                  type="button"
                                 >
                                   user.name
-                                </span>
-                                <span
-                                  class="rcx-box rcx-box--full rcx-message-header__time"
-                                >
-                                  January 1st, 2024
-                                </span>
+                                </button>
+                              </div>
+                              <div
+                                class="rcx-item__meta"
+                              >
+                                January 1st, 2024
                               </div>
                             </div>
                             <div
-                              class="rcx-message-body rcx-message-body--clamp rcx-message-body--clamp-2"
+                              class="rcx-item__description rcx-item__description--clamp rcx-item__description--clamp-2"
+                              id="_r_14_"
                             >
                               <div>
                                 Discussion 4
                               </div>
                             </div>
                             <div
-                              class="rcx-box rcx-box--full rcx-message-block"
+                              class="rcx-message-metrics__content-item"
                             >
                               <div
-                                class="rcx-message-metrics__content-item"
+                                class="rcx-message-metrics__content-wrapper"
                               >
                                 <div
-                                  class="rcx-message-metrics__content-wrapper"
+                                  class="rcx-message-metrics__item"
                                 >
-                                  <div
-                                    class="rcx-message-metrics__item"
+                                  <i
+                                    aria-hidden="true"
+                                    class="rcx-box rcx-box--full rcx-icon--name-discussion rcx-icon rcx-css-4pvxx3"
                                   >
-                                    <i
-                                      aria-hidden="true"
-                                      class="rcx-box rcx-box--full rcx-icon--name-discussion rcx-icon rcx-css-4pvxx3"
-                                    >
-                                      
-                                    </i>
-                                    <div
-                                      class="rcx-message-metrics__item-label"
-                                    >
-                                      5
-                                    </div>
+                                    
+                                  </i>
+                                  <div
+                                    class="rcx-message-metrics__item-label"
+                                  >
+                                    5
                                   </div>
-                                  <div
-                                    class="rcx-message-metrics__item"
+                                </div>
+                                <div
+                                  class="rcx-message-metrics__item"
+                                >
+                                  <i
+                                    aria-hidden="true"
+                                    class="rcx-box rcx-box--full rcx-icon--name-clock rcx-icon rcx-css-4pvxx3"
                                   >
-                                    <i
-                                      aria-hidden="true"
-                                      class="rcx-box rcx-box--full rcx-icon--name-clock rcx-icon rcx-css-4pvxx3"
-                                    >
-                                      
-                                    </i>
-                                    <div
-                                      class="rcx-message-metrics__item-label"
-                                    >
-                                      January 1st, 2024
-                                    </div>
+                                    
+                                  </i>
+                                  <div
+                                    class="rcx-message-metrics__item-label"
+                                  >
+                                    January 1st, 2024
                                   </div>
                                 </div>
                               </div>
@@ -594,12 +600,14 @@ exports[`renders Default with stable structure 1`] = `
                     <li>
                       <div>
                         <div
-                          class="rcx-message rcx-message--clickable rcx-box rcx-box--full rcx-css-c3sy3b rcx-css-mg522s"
-                          data-drid="drid-5"
-                          tabindex="0"
+                          aria-hidden="true"
+                          class="rcx-item-divider"
+                        />
+                        <div
+                          class="rcx-item rcx-item--inset-lg"
                         >
                           <div
-                            class="rcx-box rcx-box--full rcx-message-container rcx-message-container--left"
+                            class="rcx-item__media"
                           >
                             <figure
                               class="rcx-box rcx-box--full rcx-avatar rcx-avatar--x36"
@@ -615,72 +623,72 @@ exports[`renders Default with stable structure 1`] = `
                             </figure>
                           </div>
                           <div
-                            class="rcx-box rcx-box--full rcx-message-container"
+                            class="rcx-item__content"
                           >
                             <div
-                              class="rcx-box rcx-box--full rcx-message-header"
+                              class="rcx-item__row"
                             >
                               <div
-                                class="rcx-box rcx-box--full rcx-message-header__wrapper"
+                                class="rcx-item__title"
+                                id="_r_17_"
                               >
-                                <span
-                                  class="rcx-box rcx-box--full rcx-message-header__name"
-                                  title="user.name"
+                                <button
+                                  aria-describedby="_r_16_"
+                                  class="rcx-item__link"
+                                  data-drid="drid-5"
+                                  type="button"
                                 >
                                   user.name
-                                </span>
-                                <span
-                                  class="rcx-box rcx-box--full rcx-message-header__time"
-                                >
-                                  January 1st, 2024
-                                </span>
+                                </button>
+                              </div>
+                              <div
+                                class="rcx-item__meta"
+                              >
+                                January 1st, 2024
                               </div>
                             </div>
                             <div
-                              class="rcx-message-body rcx-message-body--clamp rcx-message-body--clamp-2"
+                              class="rcx-item__description rcx-item__description--clamp rcx-item__description--clamp-2"
+                              id="_r_16_"
                             >
                               <div>
                                 Discussion 5
                               </div>
                             </div>
                             <div
-                              class="rcx-box rcx-box--full rcx-message-block"
+                              class="rcx-message-metrics__content-item"
                             >
                               <div
-                                class="rcx-message-metrics__content-item"
+                                class="rcx-message-metrics__content-wrapper"
                               >
                                 <div
-                                  class="rcx-message-metrics__content-wrapper"
+                                  class="rcx-message-metrics__item"
                                 >
-                                  <div
-                                    class="rcx-message-metrics__item"
+                                  <i
+                                    aria-hidden="true"
+                                    class="rcx-box rcx-box--full rcx-icon--name-discussion rcx-icon rcx-css-4pvxx3"
                                   >
-                                    <i
-                                      aria-hidden="true"
-                                      class="rcx-box rcx-box--full rcx-icon--name-discussion rcx-icon rcx-css-4pvxx3"
-                                    >
-                                      
-                                    </i>
-                                    <div
-                                      class="rcx-message-metrics__item-label"
-                                    >
-                                      5
-                                    </div>
+                                    
+                                  </i>
+                                  <div
+                                    class="rcx-message-metrics__item-label"
+                                  >
+                                    5
                                   </div>
-                                  <div
-                                    class="rcx-message-metrics__item"
+                                </div>
+                                <div
+                                  class="rcx-message-metrics__item"
+                                >
+                                  <i
+                                    aria-hidden="true"
+                                    class="rcx-box rcx-box--full rcx-icon--name-clock rcx-icon rcx-css-4pvxx3"
                                   >
-                                    <i
-                                      aria-hidden="true"
-                                      class="rcx-box rcx-box--full rcx-icon--name-clock rcx-icon rcx-css-4pvxx3"
-                                    >
-                                      
-                                    </i>
-                                    <div
-                                      class="rcx-message-metrics__item-label"
-                                    >
-                                      January 1st, 2024
-                                    </div>
+                                    
+                                  </i>
+                                  <div
+                                    class="rcx-message-metrics__item-label"
+                                  >
+                                    January 1st, 2024
                                   </div>
                                 </div>
                               </div>
@@ -692,12 +700,14 @@ exports[`renders Default with stable structure 1`] = `
                     <li>
                       <div>
                         <div
-                          class="rcx-message rcx-message--clickable rcx-box rcx-box--full rcx-css-c3sy3b rcx-css-mg522s"
-                          data-drid="drid-6"
-                          tabindex="0"
+                          aria-hidden="true"
+                          class="rcx-item-divider"
+                        />
+                        <div
+                          class="rcx-item rcx-item--inset-lg"
                         >
                           <div
-                            class="rcx-box rcx-box--full rcx-message-container rcx-message-container--left"
+                            class="rcx-item__media"
                           >
                             <figure
                               class="rcx-box rcx-box--full rcx-avatar rcx-avatar--x36"
@@ -713,72 +723,72 @@ exports[`renders Default with stable structure 1`] = `
                             </figure>
                           </div>
                           <div
-                            class="rcx-box rcx-box--full rcx-message-container"
+                            class="rcx-item__content"
                           >
                             <div
-                              class="rcx-box rcx-box--full rcx-message-header"
+                              class="rcx-item__row"
                             >
                               <div
-                                class="rcx-box rcx-box--full rcx-message-header__wrapper"
+                                class="rcx-item__title"
+                                id="_r_19_"
                               >
-                                <span
-                                  class="rcx-box rcx-box--full rcx-message-header__name"
-                                  title="user.name"
+                                <button
+                                  aria-describedby="_r_18_"
+                                  class="rcx-item__link"
+                                  data-drid="drid-6"
+                                  type="button"
                                 >
                                   user.name
-                                </span>
-                                <span
-                                  class="rcx-box rcx-box--full rcx-message-header__time"
-                                >
-                                  January 1st, 2024
-                                </span>
+                                </button>
+                              </div>
+                              <div
+                                class="rcx-item__meta"
+                              >
+                                January 1st, 2024
                               </div>
                             </div>
                             <div
-                              class="rcx-message-body rcx-message-body--clamp rcx-message-body--clamp-2"
+                              class="rcx-item__description rcx-item__description--clamp rcx-item__description--clamp-2"
+                              id="_r_18_"
                             >
                               <div>
                                 Discussion 6
                               </div>
                             </div>
                             <div
-                              class="rcx-box rcx-box--full rcx-message-block"
+                              class="rcx-message-metrics__content-item"
                             >
                               <div
-                                class="rcx-message-metrics__content-item"
+                                class="rcx-message-metrics__content-wrapper"
                               >
                                 <div
-                                  class="rcx-message-metrics__content-wrapper"
+                                  class="rcx-message-metrics__item"
                                 >
-                                  <div
-                                    class="rcx-message-metrics__item"
+                                  <i
+                                    aria-hidden="true"
+                                    class="rcx-box rcx-box--full rcx-icon--name-discussion rcx-icon rcx-css-4pvxx3"
                                   >
-                                    <i
-                                      aria-hidden="true"
-                                      class="rcx-box rcx-box--full rcx-icon--name-discussion rcx-icon rcx-css-4pvxx3"
-                                    >
-                                      
-                                    </i>
-                                    <div
-                                      class="rcx-message-metrics__item-label"
-                                    >
-                                      5
-                                    </div>
+                                    
+                                  </i>
+                                  <div
+                                    class="rcx-message-metrics__item-label"
+                                  >
+                                    5
                                   </div>
-                                  <div
-                                    class="rcx-message-metrics__item"
+                                </div>
+                                <div
+                                  class="rcx-message-metrics__item"
+                                >
+                                  <i
+                                    aria-hidden="true"
+                                    class="rcx-box rcx-box--full rcx-icon--name-clock rcx-icon rcx-css-4pvxx3"
                                   >
-                                    <i
-                                      aria-hidden="true"
-                                      class="rcx-box rcx-box--full rcx-icon--name-clock rcx-icon rcx-css-4pvxx3"
-                                    >
-                                      
-                                    </i>
-                                    <div
-                                      class="rcx-message-metrics__item-label"
-                                    >
-                                      January 1st, 2024
-                                    </div>
+                                    
+                                  </i>
+                                  <div
+                                    class="rcx-message-metrics__item-label"
+                                  >
+                                    January 1st, 2024
                                   </div>
                                 </div>
                               </div>
@@ -790,12 +800,14 @@ exports[`renders Default with stable structure 1`] = `
                     <li>
                       <div>
                         <div
-                          class="rcx-message rcx-message--clickable rcx-box rcx-box--full rcx-css-c3sy3b rcx-css-mg522s"
-                          data-drid="drid-7"
-                          tabindex="0"
+                          aria-hidden="true"
+                          class="rcx-item-divider"
+                        />
+                        <div
+                          class="rcx-item rcx-item--inset-lg"
                         >
                           <div
-                            class="rcx-box rcx-box--full rcx-message-container rcx-message-container--left"
+                            class="rcx-item__media"
                           >
                             <figure
                               class="rcx-box rcx-box--full rcx-avatar rcx-avatar--x36"
@@ -811,72 +823,72 @@ exports[`renders Default with stable structure 1`] = `
                             </figure>
                           </div>
                           <div
-                            class="rcx-box rcx-box--full rcx-message-container"
+                            class="rcx-item__content"
                           >
                             <div
-                              class="rcx-box rcx-box--full rcx-message-header"
+                              class="rcx-item__row"
                             >
                               <div
-                                class="rcx-box rcx-box--full rcx-message-header__wrapper"
+                                class="rcx-item__title"
+                                id="_r_1b_"
                               >
-                                <span
-                                  class="rcx-box rcx-box--full rcx-message-header__name"
-                                  title="user.name"
+                                <button
+                                  aria-describedby="_r_1a_"
+                                  class="rcx-item__link"
+                                  data-drid="drid-7"
+                                  type="button"
                                 >
                                   user.name
-                                </span>
-                                <span
-                                  class="rcx-box rcx-box--full rcx-message-header__time"
-                                >
-                                  January 1st, 2024
-                                </span>
+                                </button>
+                              </div>
+                              <div
+                                class="rcx-item__meta"
+                              >
+                                January 1st, 2024
                               </div>
                             </div>
                             <div
-                              class="rcx-message-body rcx-message-body--clamp rcx-message-body--clamp-2"
+                              class="rcx-item__description rcx-item__description--clamp rcx-item__description--clamp-2"
+                              id="_r_1a_"
                             >
                               <div>
                                 Discussion 7
                               </div>
                             </div>
                             <div
-                              class="rcx-box rcx-box--full rcx-message-block"
+                              class="rcx-message-metrics__content-item"
                             >
                               <div
-                                class="rcx-message-metrics__content-item"
+                                class="rcx-message-metrics__content-wrapper"
                               >
                                 <div
-                                  class="rcx-message-metrics__content-wrapper"
+                                  class="rcx-message-metrics__item"
                                 >
-                                  <div
-                                    class="rcx-message-metrics__item"
+                                  <i
+                                    aria-hidden="true"
+                                    class="rcx-box rcx-box--full rcx-icon--name-discussion rcx-icon rcx-css-4pvxx3"
                                   >
-                                    <i
-                                      aria-hidden="true"
-                                      class="rcx-box rcx-box--full rcx-icon--name-discussion rcx-icon rcx-css-4pvxx3"
-                                    >
-                                      
-                                    </i>
-                                    <div
-                                      class="rcx-message-metrics__item-label"
-                                    >
-                                      5
-                                    </div>
+                                    
+                                  </i>
+                                  <div
+                                    class="rcx-message-metrics__item-label"
+                                  >
+                                    5
                                   </div>
-                                  <div
-                                    class="rcx-message-metrics__item"
+                                </div>
+                                <div
+                                  class="rcx-message-metrics__item"
+                                >
+                                  <i
+                                    aria-hidden="true"
+                                    class="rcx-box rcx-box--full rcx-icon--name-clock rcx-icon rcx-css-4pvxx3"
                                   >
-                                    <i
-                                      aria-hidden="true"
-                                      class="rcx-box rcx-box--full rcx-icon--name-clock rcx-icon rcx-css-4pvxx3"
-                                    >
-                                      
-                                    </i>
-                                    <div
-                                      class="rcx-message-metrics__item-label"
-                                    >
-                                      January 1st, 2024
-                                    </div>
+                                    
+                                  </i>
+                                  <div
+                                    class="rcx-message-metrics__item-label"
+                                  >
+                                    January 1st, 2024
                                   </div>
                                 </div>
                               </div>
@@ -888,12 +900,14 @@ exports[`renders Default with stable structure 1`] = `
                     <li>
                       <div>
                         <div
-                          class="rcx-message rcx-message--clickable rcx-box rcx-box--full rcx-css-c3sy3b rcx-css-mg522s"
-                          data-drid="drid-8"
-                          tabindex="0"
+                          aria-hidden="true"
+                          class="rcx-item-divider"
+                        />
+                        <div
+                          class="rcx-item rcx-item--inset-lg"
                         >
                           <div
-                            class="rcx-box rcx-box--full rcx-message-container rcx-message-container--left"
+                            class="rcx-item__media"
                           >
                             <figure
                               class="rcx-box rcx-box--full rcx-avatar rcx-avatar--x36"
@@ -909,72 +923,72 @@ exports[`renders Default with stable structure 1`] = `
                             </figure>
                           </div>
                           <div
-                            class="rcx-box rcx-box--full rcx-message-container"
+                            class="rcx-item__content"
                           >
                             <div
-                              class="rcx-box rcx-box--full rcx-message-header"
+                              class="rcx-item__row"
                             >
                               <div
-                                class="rcx-box rcx-box--full rcx-message-header__wrapper"
+                                class="rcx-item__title"
+                                id="_r_1d_"
                               >
-                                <span
-                                  class="rcx-box rcx-box--full rcx-message-header__name"
-                                  title="user.name"
+                                <button
+                                  aria-describedby="_r_1c_"
+                                  class="rcx-item__link"
+                                  data-drid="drid-8"
+                                  type="button"
                                 >
                                   user.name
-                                </span>
-                                <span
-                                  class="rcx-box rcx-box--full rcx-message-header__time"
-                                >
-                                  January 1st, 2024
-                                </span>
+                                </button>
+                              </div>
+                              <div
+                                class="rcx-item__meta"
+                              >
+                                January 1st, 2024
                               </div>
                             </div>
                             <div
-                              class="rcx-message-body rcx-message-body--clamp rcx-message-body--clamp-2"
+                              class="rcx-item__description rcx-item__description--clamp rcx-item__description--clamp-2"
+                              id="_r_1c_"
                             >
                               <div>
                                 Discussion 8
                               </div>
                             </div>
                             <div
-                              class="rcx-box rcx-box--full rcx-message-block"
+                              class="rcx-message-metrics__content-item"
                             >
                               <div
-                                class="rcx-message-metrics__content-item"
+                                class="rcx-message-metrics__content-wrapper"
                               >
                                 <div
-                                  class="rcx-message-metrics__content-wrapper"
+                                  class="rcx-message-metrics__item"
                                 >
-                                  <div
-                                    class="rcx-message-metrics__item"
+                                  <i
+                                    aria-hidden="true"
+                                    class="rcx-box rcx-box--full rcx-icon--name-discussion rcx-icon rcx-css-4pvxx3"
                                   >
-                                    <i
-                                      aria-hidden="true"
-                                      class="rcx-box rcx-box--full rcx-icon--name-discussion rcx-icon rcx-css-4pvxx3"
-                                    >
-                                      
-                                    </i>
-                                    <div
-                                      class="rcx-message-metrics__item-label"
-                                    >
-                                      5
-                                    </div>
+                                    
+                                  </i>
+                                  <div
+                                    class="rcx-message-metrics__item-label"
+                                  >
+                                    5
                                   </div>
-                                  <div
-                                    class="rcx-message-metrics__item"
+                                </div>
+                                <div
+                                  class="rcx-message-metrics__item"
+                                >
+                                  <i
+                                    aria-hidden="true"
+                                    class="rcx-box rcx-box--full rcx-icon--name-clock rcx-icon rcx-css-4pvxx3"
                                   >
-                                    <i
-                                      aria-hidden="true"
-                                      class="rcx-box rcx-box--full rcx-icon--name-clock rcx-icon rcx-css-4pvxx3"
-                                    >
-                                      
-                                    </i>
-                                    <div
-                                      class="rcx-message-metrics__item-label"
-                                    >
-                                      January 1st, 2024
-                                    </div>
+                                    
+                                  </i>
+                                  <div
+                                    class="rcx-message-metrics__item-label"
+                                  >
+                                    January 1st, 2024
                                   </div>
                                 </div>
                               </div>
@@ -986,12 +1000,14 @@ exports[`renders Default with stable structure 1`] = `
                     <li>
                       <div>
                         <div
-                          class="rcx-message rcx-message--clickable rcx-box rcx-box--full rcx-css-c3sy3b rcx-css-mg522s"
-                          data-drid="drid-9"
-                          tabindex="0"
+                          aria-hidden="true"
+                          class="rcx-item-divider"
+                        />
+                        <div
+                          class="rcx-item rcx-item--inset-lg"
                         >
                           <div
-                            class="rcx-box rcx-box--full rcx-message-container rcx-message-container--left"
+                            class="rcx-item__media"
                           >
                             <figure
                               class="rcx-box rcx-box--full rcx-avatar rcx-avatar--x36"
@@ -1007,72 +1023,72 @@ exports[`renders Default with stable structure 1`] = `
                             </figure>
                           </div>
                           <div
-                            class="rcx-box rcx-box--full rcx-message-container"
+                            class="rcx-item__content"
                           >
                             <div
-                              class="rcx-box rcx-box--full rcx-message-header"
+                              class="rcx-item__row"
                             >
                               <div
-                                class="rcx-box rcx-box--full rcx-message-header__wrapper"
+                                class="rcx-item__title"
+                                id="_r_1f_"
                               >
-                                <span
-                                  class="rcx-box rcx-box--full rcx-message-header__name"
-                                  title="user.name"
+                                <button
+                                  aria-describedby="_r_1e_"
+                                  class="rcx-item__link"
+                                  data-drid="drid-9"
+                                  type="button"
                                 >
                                   user.name
-                                </span>
-                                <span
-                                  class="rcx-box rcx-box--full rcx-message-header__time"
-                                >
-                                  January 1st, 2024
-                                </span>
+                                </button>
+                              </div>
+                              <div
+                                class="rcx-item__meta"
+                              >
+                                January 1st, 2024
                               </div>
                             </div>
                             <div
-                              class="rcx-message-body rcx-message-body--clamp rcx-message-body--clamp-2"
+                              class="rcx-item__description rcx-item__description--clamp rcx-item__description--clamp-2"
+                              id="_r_1e_"
                             >
                               <div>
                                 Discussion 9
                               </div>
                             </div>
                             <div
-                              class="rcx-box rcx-box--full rcx-message-block"
+                              class="rcx-message-metrics__content-item"
                             >
                               <div
-                                class="rcx-message-metrics__content-item"
+                                class="rcx-message-metrics__content-wrapper"
                               >
                                 <div
-                                  class="rcx-message-metrics__content-wrapper"
+                                  class="rcx-message-metrics__item"
                                 >
-                                  <div
-                                    class="rcx-message-metrics__item"
+                                  <i
+                                    aria-hidden="true"
+                                    class="rcx-box rcx-box--full rcx-icon--name-discussion rcx-icon rcx-css-4pvxx3"
                                   >
-                                    <i
-                                      aria-hidden="true"
-                                      class="rcx-box rcx-box--full rcx-icon--name-discussion rcx-icon rcx-css-4pvxx3"
-                                    >
-                                      
-                                    </i>
-                                    <div
-                                      class="rcx-message-metrics__item-label"
-                                    >
-                                      5
-                                    </div>
+                                    
+                                  </i>
+                                  <div
+                                    class="rcx-message-metrics__item-label"
+                                  >
+                                    5
                                   </div>
-                                  <div
-                                    class="rcx-message-metrics__item"
+                                </div>
+                                <div
+                                  class="rcx-message-metrics__item"
+                                >
+                                  <i
+                                    aria-hidden="true"
+                                    class="rcx-box rcx-box--full rcx-icon--name-clock rcx-icon rcx-css-4pvxx3"
                                   >
-                                    <i
-                                      aria-hidden="true"
-                                      class="rcx-box rcx-box--full rcx-icon--name-clock rcx-icon rcx-css-4pvxx3"
-                                    >
-                                      
-                                    </i>
-                                    <div
-                                      class="rcx-message-metrics__item-label"
-                                    >
-                                      January 1st, 2024
-                                    </div>
+                                    
+                                  </i>
+                                  <div
+                                    class="rcx-message-metrics__item-label"
+                                  >
+                                    January 1st, 2024
                                   </div>
                                 </div>
                               </div>
@@ -1186,7 +1202,7 @@ exports[`renders Empty with stable structure 1`] = `
               class="rcx-box rcx-box--full rcx-label rcx-box rcx-box--full rcx-box--animated rcx-input-box__wrapper"
             >
               <input
-                aria-controls="_r_8_"
+                aria-controls="_r_1g_"
                 aria-label="Search_Messages"
                 class="rcx-box rcx-box--full rcx-box--animated rcx-input-box--undecorated rcx-input-box--type-text rcx-input-box"
                 placeholder="Search_Messages"
@@ -1217,7 +1233,7 @@ exports[`renders Empty with stable structure 1`] = `
             </div>
             <div
               class="rcx-box rcx-box--full rcx-css-4k230l"
-              id="_r_8_"
+              id="_r_1g_"
             >
               <div
                 class="rcx-box rcx-box--full rcx-vertical-bar__content rcx-css-r8c38r"

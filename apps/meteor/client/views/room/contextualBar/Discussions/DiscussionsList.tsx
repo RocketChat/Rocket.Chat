@@ -1,5 +1,5 @@
 import type { IDiscussionMessage } from '@rocket.chat/core-typings';
-import { Box, Icon, TextInput, Callout, Throbber } from '@rocket.chat/fuselage';
+import { Box, Icon, ItemDivider, TextInput, Callout, Throbber } from '@rocket.chat/fuselage';
 import { useAutoFocus } from '@rocket.chat/fuselage-hooks';
 import {
 	ContextualbarHeader,
@@ -20,7 +20,7 @@ import { useTranslation } from 'react-i18next';
 import DiscussionsListRow from './DiscussionsListRow';
 import { PaginatedVirtualList } from '../../../../components/PaginatedVirtualList';
 import ResultsLiveRegion from '../../../../components/ResultsLiveRegion';
-import { useMessageRowListNavigation } from '../../../../hooks/useMessageRowListNavigation';
+import { useItemListNavigation } from '../../../../hooks/useItemListNavigation';
 import { useGoToRoom } from '../../hooks/useGoToRoom';
 
 export type DiscussionsListProps = {
@@ -48,7 +48,7 @@ function DiscussionsList({
 }: DiscussionsListProps) {
 	const { t } = useTranslation();
 	const discussionListId = useId();
-	const discussionListRef = useMessageRowListNavigation();
+	const discussionListRef = useItemListNavigation();
 
 	const showRealNames = useSetting('UI_Use_Real_Name', false);
 	const inputRef = useAutoFocus(true);
@@ -103,8 +103,11 @@ function DiscussionsList({
 									totalCount={itemCount}
 									overscan={25}
 									onEndReached={isPending ? undefined : loadMoreItems}
-									renderItem={(discussion) => (
-										<DiscussionsListRow discussion={discussion} showRealNames={showRealNames} onClick={onClick} />
+									renderItem={(discussion, index) => (
+										<>
+											{index > 0 && <ItemDivider aria-hidden />}
+											<DiscussionsListRow discussion={discussion} showRealNames={showRealNames} onClick={onClick} />
+										</>
 									)}
 								/>
 							</Box>

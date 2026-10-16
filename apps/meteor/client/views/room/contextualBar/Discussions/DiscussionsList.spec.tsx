@@ -126,6 +126,5 @@ test.each(testCases)('%s should have no a11y violations', async (_storyname, Sto
 it('follows the keyboard model of a list of rows', async () => {
 	render(<composed.Default />, { wrapper: listWrapper() });
 
-	const list = screen.getByTestId('discussions-virtual-list');
-	await expectListKeyboard(list, list.querySelector<HTMLElement>('.rcx-message[tabindex="0"]') ?? undefined);
+	await expectListKeyboard(screen.getByTestId('discussions-virtual-list'));
 });
