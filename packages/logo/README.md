@@ -62,9 +62,15 @@ The build also writes the default red logo to:
 - `@rocket.chat/logo/dist/logo.svg`
 - `@rocket.chat/logo/dist/logo.png` (1000 px wide)
 
-```html
-<img src="node_modules/@rocket.chat/logo/dist/logo.svg" alt="Rocket.Chat" />
+These are files on disk, not URLs your app serves. With a bundler that handles asset imports, import the file to get a URL:
+
+```tsx
+import logoUrl from '@rocket.chat/logo/dist/logo.svg';
+
+const Logo = () => <img src={logoUrl} alt='Rocket.Chat' />;
 ```
+
+Without one, copy the file into a directory your server publishes and point `src` at its URL there.
 
 ## API
 
