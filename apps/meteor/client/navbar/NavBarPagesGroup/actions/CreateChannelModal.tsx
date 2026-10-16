@@ -182,10 +182,10 @@ const CreateChannelModal = ({ teamId = '', mainRoom, onClose, reload, onSuccess,
 	}, [isPrivate, setValue]);
 
 	useEffect(() => {
-		if (isPrivate && e2eEnforcedForPrivate && !federated) {
+		if (isPrivate && e2eEnforcedForPrivate && !federated && !xmppFederated) {
 			setValue('encrypted', true);
 		}
-	}, [isPrivate, e2eEnforcedForPrivate, federated, setValue]);
+	}, [isPrivate, e2eEnforcedForPrivate, federated, xmppFederated, setValue]);
 
 	useEffect(() => {
 		setValue('readOnly', broadcast);
@@ -260,8 +260,8 @@ const CreateChannelModal = ({ teamId = '', mainRoom, onClose, reload, onSuccess,
 	const handleStepSubmit = handleSubmit((data) => abacFlow.submitStep(() => handleCreateChannel(data)));
 
 	const e2eDisabled = useMemo<boolean>(
-		() => !isPrivate || Boolean(!e2eEnabled) || federated || (e2eEnforcedForPrivate && isPrivate),
-		[e2eEnabled, federated, isPrivate, e2eEnforcedForPrivate],
+		() => !isPrivate || Boolean(!e2eEnabled) || federated || xmppFederated || (e2eEnforcedForPrivate && isPrivate),
+		[e2eEnabled, federated, xmppFederated, isPrivate, e2eEnforcedForPrivate],
 	);
 
 	const createChannelFormId = useId();
@@ -321,7 +321,7 @@ const CreateChannelModal = ({ teamId = '', mainRoom, onClose, reload, onSuccess,
 						control={control}
 						name='readOnly'
 						render={({ field: { value, ...field } }) => (
-							<ToggleSwitch {...field} checked={value} disabled={!canSetReadOnly || broadcast || federated} />
+							<ToggleSwitch {...field} checked={value} disabled={!canSetReadOnly || broadcast || federated || xmppFederated} />
 						)}
 					/>
 				</FieldRow>
@@ -333,7 +333,7 @@ const CreateChannelModal = ({ teamId = '', mainRoom, onClose, reload, onSuccess,
 					<Controller
 						control={control}
 						name='broadcast'
-						render={({ field: { value, ...field } }) => <ToggleSwitch {...field} checked={value} disabled={!!federated} />}
+						render={({ field: { value, ...field } }) => <ToggleSwitch {...field} checked={value} disabled={federated || xmppFederated} />}
 					/>
 				</FieldRow>
 				{broadcast && <FieldHint>{t('Broadcast_hint_enabled', { roomType: 'channel' })}</FieldHint>}

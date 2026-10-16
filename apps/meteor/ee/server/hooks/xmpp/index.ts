@@ -88,7 +88,16 @@ beforeCreateRoomCallback.add(
 		}
 		delete data.xmppFederated;
 
-		if (!xmppEnabled() || data.federated || !data.name) {
+		if (!xmppEnabled()) {
+			throw new ClientSafeError('error-xmpp-federation-disabled', 'XMPP federation is not enabled');
+		}
+		if (data.federated || data.encrypted || data.ro) {
+			throw new ClientSafeError(
+				'error-xmpp-room-options-not-allowed',
+				'An XMPP federated room cannot also be Matrix federated, encrypted, read-only or broadcast',
+			);
+		}
+		if (!data.name) {
 			return;
 		}
 

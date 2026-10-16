@@ -12,12 +12,14 @@ import {
 	deleteRoomOnCleanup,
 	expectStoredOnce,
 	findUser,
+	getSetting,
 	inviteToRoom,
 	kickFromRoom,
 	leaveRoom,
 	listMemberUsernames,
 	sendMessage,
 	setRoomTopic,
+	setSetting,
 	setRoomType,
 	teardown,
 	updateMessage,
@@ -59,6 +61,34 @@ describe('XMPP federation: rooms hosted by Rocket.Chat', () => {
 	});
 
 	after(() => teardown(rc));
+
+	describe('creation', () => {
+		const conflicting = [
+			['encrypted', { extraData: { xmppFederated: true, encrypted: true } }],
+			['read-only', { readOnly: true, extraData: { xmppFederated: true } }],
+			['broadcast', { extraData: { xmppFederated: true, broadcast: true } }],
+		] as const;
+
+		conflicting.forEach(([option, params]) => {
+			it(`refuses a room that is also ${option} (R1)`, async () => {
+				const res = await createRoom({ type: 'p', name: `xe2e-${option}-${uniqueSuffix()}`, config: owner.config, ...params });
+				assert.equal((res.body as { errorType?: string }).errorType, 'error-xmpp-room-options-not-allowed');
+			});
+		});
+
+		it('creates an unencrypted group where the workspace forces encryption on private rooms (R1)', async () => {
+			const settings = ['E2E_Enable', 'E2E_Force_Encryption_For_Private_Rooms'];
+			const originals = await Promise.all(settings.map((id) => getSetting(rc, id)));
+			try {
+				await Promise.all(settings.map((id) => setSetting(rc, id, true)));
+				const room = await createHostedRoom(rc, owner, { type: 'p', name: `xe2e-forced-${uniqueSuffix()}` });
+				mucJidOf(room);
+				assert.ok(!room.encrypted);
+			} finally {
+				await Promise.all(settings.map((id, i) => setSetting(rc, id, originals[i])));
+			}
+		});
+	});
 
 	describe('public channel', () => {
 		let room: IRoom;

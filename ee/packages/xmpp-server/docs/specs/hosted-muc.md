@@ -11,6 +11,8 @@ code:
     src/XMPPServer.ts,
     src/service/XMPPServerService.ts,
     apps/meteor/ee/server/hooks/xmpp/index.ts,
+    apps/meteor/server/lib/e2e/beforeCreateRoom.ts,
+    apps/meteor/client/navbar/NavBarPagesGroup/actions/CreateChannelModal.tsx,
   ]
 tests: [src/muc/MucRoom.spec.ts, src/muc/stanzas.spec.ts, tests/integration/muc.spec.ts, tests/end-to-end/hosted-muc.spec.ts]
 ---
@@ -36,6 +38,9 @@ history in Rocket.Chat and lets remote users join with nothing but a room addres
 - **R1** A room created with the XMPP Federated toggle is stamped
   `xmppFederation: { role: 'host-muc', muc: '<escaped name>@<MUC domain>', origin: <domain> }`.
   No other room is reachable on the MUC domain ([ADR 0008](../adr/0008-only-dedicated-xmpp-rooms-are-exposed.md)).
+  Creating one is refused while XMPP federation is not enabled, and when it would also be
+  Matrix federated, encrypted, read-only or broadcast. A workspace that forces encryption
+  on private rooms does not apply it to XMPP federated groups.
 - **R2** The room is registered with the protocol core when it is created and again on every
   service start, with its topic as subject and each Rocket.Chat member as a virtual occupant
   (role `moderator` for the owner, `participant` otherwise). It is registered again whenever
