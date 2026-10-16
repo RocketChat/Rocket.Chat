@@ -99,6 +99,7 @@ interface IUserServices extends IOAuthUserServices {
 		code: string;
 		expire: Date;
 		attempts: number;
+		sentAt?: Date;
 	};
 
 	/**

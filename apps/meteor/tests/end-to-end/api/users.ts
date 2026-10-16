@@ -13,6 +13,7 @@ import type { Response } from 'supertest';
 
 import { sleep } from '../../../lib/utils/sleep';
 import { getCredentials, api, request, credentials, apiEmail, apiUsername, wait, reservedWords } from '../../data/api-data';
+import { withDatabase } from '../../data/database.helper';
 import { imgURL, tiffURL } from '../../data/interactions';
 import { createAgent, makeAgentAvailable } from '../../data/livechat/rooms';
 import { removeAgent, getAgent } from '../../data/livechat/users';
@@ -6623,6 +6624,84 @@ describe('[Users]', () => {
 				.expect(400)
 				.expect((res: Response) => {
 					expect(res.body).to.have.property('success', false);
+				});
+		});
+
+		describe('when the user has email two-factor authentication', () => {
+			let user: TestUser<IUser>;
+
+			const seedPendingCode = (sentAt: Date) =>
+				updateUserInDb(user._id, {
+					'services.emailCode': { code: 'pending-code', expire: new Date(Date.now() + 3_600_000), attempts: 0, sentAt },
+				} as unknown as Partial<IUser>);
+
+			const storedCode = async () => {
+				const stored = await withDatabase((db) =>
+					db.collection<IUser>('users').findOne({ _id: user._id }, { projection: { 'services.emailCode.code': 1 } }),
+				);
+				return stored?.services?.emailCode?.code;
+			};
+
+			before(async () => {
+				user = await createUser({ verified: true });
+				await updateUserInDb(user._id, { 'services.email2fa': { enabled: true, changedAt: new Date() } } as unknown as Partial<IUser>);
+			});
+
+			after(() => deleteUser(user));
+
+			it('should keep the pending code when another one is requested within a minute', async () => {
+				await seedPendingCode(new Date());
+
+				await request.post(api('users.2fa.sendEmailCode')).send({ emailOrUsername: user.username }).expect(200);
+
+				expect(await storedCode()).to.equal('pending-code');
+			});
+
+			it('should replace the pending code once a minute has passed', async () => {
+				await seedPendingCode(new Date(Date.now() - 61_000));
+
+				await request.post(api('users.2fa.sendEmailCode')).send({ emailOrUsername: user.username }).expect(200);
+
+				expect(await storedCode()).to.not.equal('pending-code');
+			});
+		});
+	});
+
+	describe('[/twoFactorChallenges.verifyChallenge]', () => {
+		const insertChallenge = (challenge: Record<string, unknown>) =>
+			withDatabase((db) =>
+				db.collection('rocketchat_two_factor_challenges').insertOne({
+					userId: credentials['X-User-Id'],
+					method: 'email',
+					createdAt: new Date(),
+					expireAt: new Date(Date.now() + 60_000),
+					...challenge,
+				} as any),
+			);
+
+		it('should not log in with a challenge that only allows resending the code', async () => {
+			const challengeId = `resend-${Date.now()}`;
+			await insertChallenge({ _id: challengeId, purpose: 'resend' });
+
+			await request
+				.post(api('twoFactorChallenges.verifyChallenge'))
+				.send({ challengeId, code: '123456' })
+				.expect(400)
+				.expect((res: Response) => {
+					expect(res.body).to.have.property('errorType', 'error-challenge-not-found');
+				});
+		});
+
+		it('should still check the code of a challenge stored before challenges had a purpose', async () => {
+			const challengeId = `legacy-${Date.now()}`;
+			await insertChallenge({ _id: challengeId });
+
+			await request
+				.post(api('twoFactorChallenges.verifyChallenge'))
+				.send({ challengeId, code: '123456' })
+				.expect(400)
+				.expect((res: Response) => {
+					expect(res.body).to.have.property('error', 'error-invalid-code');
 				});
 		});
 	});

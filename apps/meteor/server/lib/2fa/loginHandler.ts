@@ -43,7 +43,7 @@ callbacks.add(
 		await checkCodeForUser({
 			user: login.user,
 			code: totp?.code,
-			options: { disablePasswordFallback: true },
+			options: { disablePasswordFallback: true, issueResendChallenge: true },
 		});
 
 		return login;
