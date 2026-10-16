@@ -34,7 +34,6 @@ it('should return an empty array of items if have license and not have permissio
 					activeModules: ['auditing'],
 				},
 			}))
-			.withMethod('license:getModules', () => ['auditing'])
 			.withJohnDoe()
 			.build(),
 	});
