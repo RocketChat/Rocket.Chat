@@ -162,7 +162,7 @@ const pagedRoom =
 			checked,
 			...(!after && { total: population.length }),
 			...(!after && !filter && { editor: 'compliant' as const }),
-			...(start + checked < population.length && last && { next: { _id: last._id, username: last.username } }),
+			...(start + checked < population.length && last && { next: { _id: last._id, username: last._id } }),
 		};
 	};
 
@@ -239,7 +239,7 @@ export const PartialList: Story = {
 			return pageOf(members, {
 				checked: 25,
 				...(!after && { total: 1500 }),
-				...(members.length > 0 && { next: { _id: members[0]._id, username: members[0].username } }),
+				...(members.length > 0 && { next: { _id: members[0]._id, username: members[0]._id } }),
 			});
 		}),
 	],
