@@ -45,7 +45,7 @@ Feel free to check the [issues](https://github.com/RocketChat/Rocket.Chat/issues
 
 ### Building
 
-As this package dependends on others in this monorepo, before anything run the following at the root directory:
+As this package depends on others in this monorepo, before anything, run the following at the root directory:
 
 <!--yarn(build)-->
 
@@ -57,8 +57,8 @@ yarn build
 
 ### Linting
 
-To ensure the source is matching our coding style, we perform [linting](<https://en.wikipedia.org/wiki/Lint_(software)>).
-Before commiting, check if your code fits our style by running:
+To ensure the source matches our coding style, we perform [linting](<https://en.wikipedia.org/wiki/Lint_(software)>).
+Before committing, check if your code fits our style by running:
 
 <!--yarn(lint)-->
 
@@ -80,7 +80,7 @@ yarn lint-and-fix
 
 ### Running tests
 
-Whenever possible, add tests to describe exactly what your code do. You can run them by yourself:
+Whenever possible, add tests to describe exactly what your code does. You can run them locally:
 
 <!--yarn(test)-->
 
