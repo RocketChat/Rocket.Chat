@@ -109,7 +109,7 @@ yarn workspace @rocket.chat/icons build
 yarn workspace @rocket.chat/icons lint
 ```
 
-To add an icon, put its SVG in `src/` and run `build`. Use the `.dir.svg` suffix for icons that should mirror in right-to-left layouts. The build assigns a font character to every new icon and records it in `glyphsMapping.json`; commit that file too, so existing icons keep their characters.
+To add an icon, put its SVG in `src/` and run `build`. Use the `.dir.svg` suffix for icons that should mirror in right-to-left layouts. The build assigns a font character to every new icon and records it in `glyphsMapping.json`; commit that file too, so existing icons keep their characters. The full guide, including the design and naming conventions, is in [docs/frontend/adding-icons.md](https://github.com/RocketChat/Rocket.Chat/blob/develop/docs/frontend/adding-icons.md).
 
 ## License
 
