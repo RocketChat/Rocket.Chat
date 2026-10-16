@@ -6,7 +6,7 @@ const hasNumericBounds = (setting: ISetting): setting is ISetting & { minValue?:
 };
 
 export const checkSettingValueBounds = (setting: ISetting, value?: ISetting['value']): void => {
-	if (!hasNumericBounds(setting) || !value) {
+	if (!hasNumericBounds(setting) || value === undefined || value === null || value === '') {
 		return;
 	}
 
