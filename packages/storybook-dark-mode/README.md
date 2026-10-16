@@ -16,7 +16,7 @@ The addon:
 ## Installation
 
 ```sh
-npm install --save-dev @rocket.chat/storybook-dark-mode storybook react react-dom
+npm install --save-dev @rocket.chat/storybook-dark-mode storybook@9 react react-dom
 ```
 
 Peer dependencies: `storybook` 9 (`^9.0.0`), `react` and `react-dom`.
