@@ -589,15 +589,11 @@ export class AbacService extends ServiceClass implements IAbacService {
 		}
 
 		const authorityFirst = this.pdpType === 'local';
-		let creatorAdmitted = false;
 
 		// Local PDP: a creator who does not hold a value must not learn whether it is defined.
-		if (!bypassed && authorityFirst) {
-			const authority = await this.checkCreatorAuthority(normalized, actor, store);
-			if (!authority.allowed) {
-				return authority;
-			}
-			creatorAdmitted = authority.creatorAdmitted;
+		let authority = !bypassed && authorityFirst ? await this.checkCreatorAuthority(normalized, actor, store) : undefined;
+		if (authority && !authority.allowed) {
+			return authority;
 		}
 
 		if (store === this.attributeStores.local.store) {
@@ -610,14 +606,13 @@ export class AbacService extends ServiceClass implements IAbacService {
 
 		// Virtru PDP: asked only after the existence check, so undefined attributes never reach Virtru.
 		if (!bypassed && !authorityFirst) {
-			const authority = await this.checkCreatorAuthority(normalized, actor, store);
+			authority = await this.checkCreatorAuthority(normalized, actor, store);
 			if (!authority.allowed) {
 				return authority;
 			}
-			creatorAdmitted = authority.creatorAdmitted;
 		}
 
-		if (creatorJoins && !creatorAdmitted) {
+		if (creatorJoins && !authority?.creatorAdmitted) {
 			try {
 				await this.assertPdpPermitsCreator(normalized, actor);
 			} catch (err) {
@@ -677,10 +672,7 @@ export class AbacService extends ServiceClass implements IAbacService {
 			return sortByKey(Array.from(await store.entitlementsOf(actor), ([key, values]) => ({ key, values: [...values] })));
 		}
 
-		const definitions = (await AbacAttributes.findAll({ projection: { key: 1, values: 1 } }).toArray()).map(({ key, values }) => ({
-			key,
-			values,
-		}));
+		const definitions = await AbacAttributes.findAll({ projection: { _id: 0, key: 1, values: 1 } }).toArray();
 		if (await Authorization.hasPermission(actor._id, 'bypass-abac-store-validation')) {
 			return sortByKey(definitions);
 		}
@@ -726,15 +718,14 @@ export class AbacService extends ServiceClass implements IAbacService {
 		const others = named.filter(({ _id }) => _id !== actor._id);
 		const subjects = creator ? [creator, ...others] : others;
 
-		let evaluation: Evaluation | undefined;
+		let evaluation: Evaluation;
 		try {
-			evaluation = await this.pdp?.evaluateSubjectsAgainstAttributes(subjects, validation.attributes, { _id: 'room-creation' });
+			if (!this.pdp) {
+				throw new PdpUnavailableError();
+			}
+			evaluation = await this.pdp.evaluateSubjectsAgainstAttributes(subjects, validation.attributes, { _id: 'room-creation' });
 		} catch (err) {
 			logger.error({ msg: 'ABAC membership preview failed', err });
-			return { allowed: false, reason: 'unavailable', code: AbacErrorCode.PdpUnavailable };
-		}
-
-		if (!evaluation) {
 			return { allowed: false, reason: 'unavailable', code: AbacErrorCode.PdpUnavailable };
 		}
 
