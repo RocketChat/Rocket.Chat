@@ -109,6 +109,7 @@ exports[`renders Default without crashing 1`] = `
                     </div>
                     <div
                       class="rcx-item__title rcx-sidebar-item__title rcx-sidebar-item__title--highlighted"
+                      id="_r_1_"
                     >
                       Marvin Black
                     </div>
@@ -162,7 +163,7 @@ exports[`renders Default without crashing 1`] = `
                             aria-haspopup="true"
                             aria-label="Options"
                             class="rcx-box rcx-box--full rcx-button--mini-square rcx-button--square rcx-button--icon rcx-button"
-                            id="react-aria-_r_1_"
+                            id="react-aria-_r_2_"
                             title="Options"
                             type="button"
                           >
@@ -210,7 +211,7 @@ exports[`renders Default without crashing 1`] = `
                     <div
                       aria-hidden="true"
                       class="rcx-item__icon rcx-sidebar-item__icon"
-                      id="_r_3_"
+                      id="_r_4_"
                     >
                       <i
                         aria-hidden="true"
@@ -221,6 +222,7 @@ exports[`renders Default without crashing 1`] = `
                     </div>
                     <div
                       class="rcx-item__title rcx-sidebar-item__title"
+                      id="_r_5_"
                     >
                       Esther Miles
                     </div>
@@ -274,7 +276,7 @@ exports[`renders Default without crashing 1`] = `
                             aria-haspopup="true"
                             aria-label="Options"
                             class="rcx-box rcx-box--full rcx-button--mini-square rcx-button--square rcx-button--icon rcx-button"
-                            id="react-aria-_r_4_"
+                            id="react-aria-_r_6_"
                             title="Options"
                             type="button"
                           >
@@ -322,7 +324,7 @@ exports[`renders Default without crashing 1`] = `
                     <div
                       aria-hidden="true"
                       class="rcx-item__icon rcx-sidebar-item__icon"
-                      id="_r_6_"
+                      id="_r_8_"
                     >
                       <i
                         aria-hidden="true"
@@ -333,6 +335,7 @@ exports[`renders Default without crashing 1`] = `
                     </div>
                     <div
                       class="rcx-item__title rcx-sidebar-item__title"
+                      id="_r_9_"
                     >
                       Leroy Jenkins
                     </div>
@@ -371,118 +374,6 @@ exports[`renders Default without crashing 1`] = `
                       title="unread messages"
                     >
                       5
-                    </span>
-                    <div
-                      class="rcx-item__actions rcx-item__actions--reveal-hover rcx-sidebar-item__menu-wrapper"
-                    >
-                      <div
-                        class="rcx-item__actions-inner"
-                      >
-                        <span
-                          class="rcx-box rcx-box--full rcx-sidebar-item__menu rcx-sidebar-item__menu"
-                        >
-                          <button
-                            aria-expanded="false"
-                            aria-haspopup="true"
-                            aria-label="Options"
-                            class="rcx-box rcx-box--full rcx-button--mini-square rcx-button--square rcx-button--icon rcx-button"
-                            id="react-aria-_r_7_"
-                            title="Options"
-                            type="button"
-                          >
-                            <i
-                              aria-hidden="true"
-                              class="rcx-box rcx-box--full rcx-icon--name-kebab rcx-icon rcx-css-1tg7yd0"
-                            >
-                              
-                            </i>
-                          </button>
-                        </span>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </a>
-            </div>
-            <div
-              class="rcx-sidepanel-list__item"
-              role="listitem"
-            >
-              <a
-                class="rcx-item rcx-item--inset-md rcx-sidebar-item rcx-sidebar-item--level-2"
-                href="#"
-              >
-                <div
-                  class="rcx-item__content rcx-sidebar-item__col"
-                >
-                  <div
-                    class="rcx-item__row rcx-sidebar-item__row"
-                  >
-                    <div
-                      class="rcx-item__media rcx-sidebar-item__avatar"
-                    >
-                      <figure
-                        class="rcx-box rcx-box--full rcx-avatar rcx-avatar--x20"
-                      >
-                        <img
-                          alt="avatar"
-                          class="rcx-avatar__element rcx-avatar__element--x20"
-                          src="data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 200'%3e%3crect width='100%25' height='100%25' fill='%23B68D00'/%3e%3ctext x='50%25' y='50%25' dy='0.36em' text-anchor='middle' pointer-events='none' fill='white' font-size='125' font-family='Helvetica%2c sans-serif'%3eY%3c/text%3e%3c/svg%3e"
-                        />
-                      </figure>
-                    </div>
-                    <div
-                      aria-hidden="true"
-                      class="rcx-item__icon rcx-sidebar-item__icon"
-                      id="_r_9_"
-                    >
-                      <i
-                        aria-hidden="true"
-                        class="rcx-box rcx-box--full rcx-icon--name-team rcx-icon rcx-css-4pvxx3"
-                      >
-                        
-                      </i>
-                    </div>
-                    <div
-                      class="rcx-item__title rcx-sidebar-item__title"
-                    >
-                      Morgan Freeman looooooooooong looooooooooong looooooooooong name
-                    </div>
-                    <div
-                      class="rcx-item__meta rcx-sidebar-item__timestamp"
-                    >
-                      11:22:21 AM
-                    </div>
-                  </div>
-                  <div
-                    class="rcx-item__row rcx-sidebar-item__row"
-                  >
-                    <div
-                      class="rcx-item__description rcx-sidebar-item__subtitle"
-                    >
-                      Lorem Ipsum Indolor Dolor Ipsum Ipsum
-                    </div>
-                    <span
-                      class="rcx-box rcx-box--full rcx-tag  rcx-css-82wnk2"
-                      role="button"
-                    >
-                      <span
-                        class="rcx-tag__inner"
-                      >
-                        <i
-                          aria-hidden="true"
-                          class="rcx-box rcx-box--full rcx-icon--name-team rcx-icon rcx-css-nbjs1j"
-                        >
-                          
-                        </i>
-                        Team title
-                      </span>
-                    </span>
-                    <span
-                      class="rcx-box rcx-box--full rcx-badge rcx-badge--secondary rcx-box rcx-box--full rcx-sidebar-item__badge"
-                      title="unread messages"
-                    >
-                      6
                     </span>
                     <div
                       class="rcx-item__actions rcx-item__actions--reveal-hover rcx-sidebar-item__menu-wrapper"
@@ -539,7 +430,7 @@ exports[`renders Default without crashing 1`] = `
                         <img
                           alt="avatar"
                           class="rcx-avatar__element rcx-avatar__element--x20"
-                          src="data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 200'%3e%3crect width='100%25' height='100%25' fill='%2310529E'/%3e%3ctext x='50%25' y='50%25' dy='0.36em' text-anchor='middle' pointer-events='none' fill='white' font-size='125' font-family='Helvetica%2c sans-serif'%3eB%3c/text%3e%3c/svg%3e"
+                          src="data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 200'%3e%3crect width='100%25' height='100%25' fill='%23B68D00'/%3e%3ctext x='50%25' y='50%25' dy='0.36em' text-anchor='middle' pointer-events='none' fill='white' font-size='125' font-family='Helvetica%2c sans-serif'%3eY%3c/text%3e%3c/svg%3e"
                         />
                       </figure>
                     </div>
@@ -557,6 +448,120 @@ exports[`renders Default without crashing 1`] = `
                     </div>
                     <div
                       class="rcx-item__title rcx-sidebar-item__title"
+                      id="_r_d_"
+                    >
+                      Morgan Freeman looooooooooong looooooooooong looooooooooong name
+                    </div>
+                    <div
+                      class="rcx-item__meta rcx-sidebar-item__timestamp"
+                    >
+                      11:22:21 AM
+                    </div>
+                  </div>
+                  <div
+                    class="rcx-item__row rcx-sidebar-item__row"
+                  >
+                    <div
+                      class="rcx-item__description rcx-sidebar-item__subtitle"
+                    >
+                      Lorem Ipsum Indolor Dolor Ipsum Ipsum
+                    </div>
+                    <span
+                      class="rcx-box rcx-box--full rcx-tag  rcx-css-82wnk2"
+                      role="button"
+                    >
+                      <span
+                        class="rcx-tag__inner"
+                      >
+                        <i
+                          aria-hidden="true"
+                          class="rcx-box rcx-box--full rcx-icon--name-team rcx-icon rcx-css-nbjs1j"
+                        >
+                          
+                        </i>
+                        Team title
+                      </span>
+                    </span>
+                    <span
+                      class="rcx-box rcx-box--full rcx-badge rcx-badge--secondary rcx-box rcx-box--full rcx-sidebar-item__badge"
+                      title="unread messages"
+                    >
+                      6
+                    </span>
+                    <div
+                      class="rcx-item__actions rcx-item__actions--reveal-hover rcx-sidebar-item__menu-wrapper"
+                    >
+                      <div
+                        class="rcx-item__actions-inner"
+                      >
+                        <span
+                          class="rcx-box rcx-box--full rcx-sidebar-item__menu rcx-sidebar-item__menu"
+                        >
+                          <button
+                            aria-expanded="false"
+                            aria-haspopup="true"
+                            aria-label="Options"
+                            class="rcx-box rcx-box--full rcx-button--mini-square rcx-button--square rcx-button--icon rcx-button"
+                            id="react-aria-_r_e_"
+                            title="Options"
+                            type="button"
+                          >
+                            <i
+                              aria-hidden="true"
+                              class="rcx-box rcx-box--full rcx-icon--name-kebab rcx-icon rcx-css-1tg7yd0"
+                            >
+                              
+                            </i>
+                          </button>
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </a>
+            </div>
+            <div
+              class="rcx-sidepanel-list__item"
+              role="listitem"
+            >
+              <a
+                class="rcx-item rcx-item--inset-md rcx-sidebar-item rcx-sidebar-item--level-2"
+                href="#"
+              >
+                <div
+                  class="rcx-item__content rcx-sidebar-item__col"
+                >
+                  <div
+                    class="rcx-item__row rcx-sidebar-item__row"
+                  >
+                    <div
+                      class="rcx-item__media rcx-sidebar-item__avatar"
+                    >
+                      <figure
+                        class="rcx-box rcx-box--full rcx-avatar rcx-avatar--x20"
+                      >
+                        <img
+                          alt="avatar"
+                          class="rcx-avatar__element rcx-avatar__element--x20"
+                          src="data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 200'%3e%3crect width='100%25' height='100%25' fill='%2310529E'/%3e%3ctext x='50%25' y='50%25' dy='0.36em' text-anchor='middle' pointer-events='none' fill='white' font-size='125' font-family='Helvetica%2c sans-serif'%3eB%3c/text%3e%3c/svg%3e"
+                        />
+                      </figure>
+                    </div>
+                    <div
+                      aria-hidden="true"
+                      class="rcx-item__icon rcx-sidebar-item__icon"
+                      id="_r_g_"
+                    >
+                      <i
+                        aria-hidden="true"
+                        class="rcx-box rcx-box--full rcx-icon--name-team rcx-icon rcx-css-4pvxx3"
+                      >
+                        
+                      </i>
+                    </div>
+                    <div
+                      class="rcx-item__title rcx-sidebar-item__title"
+                      id="_r_h_"
                     >
                       John Doe
                     </div>
@@ -610,7 +615,7 @@ exports[`renders Default without crashing 1`] = `
                             aria-haspopup="true"
                             aria-label="Options"
                             class="rcx-box rcx-box--full rcx-button--mini-square rcx-button--square rcx-button--icon rcx-button"
-                            id="react-aria-_r_d_"
+                            id="react-aria-_r_i_"
                             title="Options"
                             type="button"
                           >
@@ -658,7 +663,7 @@ exports[`renders Default without crashing 1`] = `
                     <div
                       aria-hidden="true"
                       class="rcx-item__icon rcx-sidebar-item__icon"
-                      id="_r_f_"
+                      id="_r_k_"
                     >
                       <i
                         aria-hidden="true"
@@ -669,6 +674,7 @@ exports[`renders Default without crashing 1`] = `
                     </div>
                     <div
                       class="rcx-item__title rcx-sidebar-item__title"
+                      id="_r_l_"
                     >
                       Jane Doe
                     </div>
@@ -707,230 +713,6 @@ exports[`renders Default without crashing 1`] = `
                       title="unread messages"
                     >
                       8
-                    </span>
-                    <div
-                      class="rcx-item__actions rcx-item__actions--reveal-hover rcx-sidebar-item__menu-wrapper"
-                    >
-                      <div
-                        class="rcx-item__actions-inner"
-                      >
-                        <span
-                          class="rcx-box rcx-box--full rcx-sidebar-item__menu rcx-sidebar-item__menu"
-                        >
-                          <button
-                            aria-expanded="false"
-                            aria-haspopup="true"
-                            aria-label="Options"
-                            class="rcx-box rcx-box--full rcx-button--mini-square rcx-button--square rcx-button--icon rcx-button"
-                            id="react-aria-_r_g_"
-                            title="Options"
-                            type="button"
-                          >
-                            <i
-                              aria-hidden="true"
-                              class="rcx-box rcx-box--full rcx-icon--name-kebab rcx-icon rcx-css-1tg7yd0"
-                            >
-                              
-                            </i>
-                          </button>
-                        </span>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </a>
-            </div>
-            <div
-              class="rcx-sidepanel-list__item"
-              role="listitem"
-            >
-              <a
-                class="rcx-item rcx-item--inset-md rcx-sidebar-item rcx-sidebar-item--level-2"
-                href="#"
-              >
-                <div
-                  class="rcx-item__content rcx-sidebar-item__col"
-                >
-                  <div
-                    class="rcx-item__row rcx-sidebar-item__row"
-                  >
-                    <div
-                      class="rcx-item__media rcx-sidebar-item__avatar"
-                    >
-                      <figure
-                        class="rcx-box rcx-box--full rcx-avatar rcx-avatar--x20"
-                      >
-                        <img
-                          alt="avatar"
-                          class="rcx-avatar__element rcx-avatar__element--x20"
-                          src="data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 200'%3e%3crect width='100%25' height='100%25' fill='%237F1B9F'/%3e%3ctext x='50%25' y='50%25' dy='0.36em' text-anchor='middle' pointer-events='none' fill='white' font-size='125' font-family='Helvetica%2c sans-serif'%3eP%3c/text%3e%3c/svg%3e"
-                        />
-                      </figure>
-                    </div>
-                    <div
-                      aria-hidden="true"
-                      class="rcx-item__icon rcx-sidebar-item__icon"
-                      id="_r_i_"
-                    >
-                      <i
-                        aria-hidden="true"
-                        class="rcx-box rcx-box--full rcx-icon--name-team rcx-icon rcx-css-4pvxx3"
-                      >
-                        
-                      </i>
-                    </div>
-                    <div
-                      class="rcx-item__title rcx-sidebar-item__title"
-                    >
-                      Baz Qux
-                    </div>
-                    <div
-                      class="rcx-item__meta rcx-sidebar-item__timestamp"
-                    >
-                      11:22:21 AM
-                    </div>
-                  </div>
-                  <div
-                    class="rcx-item__row rcx-sidebar-item__row"
-                  >
-                    <div
-                      class="rcx-item__description rcx-sidebar-item__subtitle"
-                    >
-                      Lorem Ipsum Indolor Dolor Ipsum Ipsum
-                    </div>
-                    <span
-                      class="rcx-box rcx-box--full rcx-tag  rcx-css-82wnk2"
-                      role="button"
-                    >
-                      <span
-                        class="rcx-tag__inner"
-                      >
-                        <i
-                          aria-hidden="true"
-                          class="rcx-box rcx-box--full rcx-icon--name-team rcx-icon rcx-css-nbjs1j"
-                        >
-                          
-                        </i>
-                        Team title
-                      </span>
-                    </span>
-                    <span
-                      class="rcx-box rcx-box--full rcx-badge rcx-badge--secondary rcx-box rcx-box--full rcx-sidebar-item__badge"
-                      title="unread messages"
-                    >
-                      9
-                    </span>
-                    <div
-                      class="rcx-item__actions rcx-item__actions--reveal-hover rcx-sidebar-item__menu-wrapper"
-                    >
-                      <div
-                        class="rcx-item__actions-inner"
-                      >
-                        <span
-                          class="rcx-box rcx-box--full rcx-sidebar-item__menu rcx-sidebar-item__menu"
-                        >
-                          <button
-                            aria-expanded="false"
-                            aria-haspopup="true"
-                            aria-label="Options"
-                            class="rcx-box rcx-box--full rcx-button--mini-square rcx-button--square rcx-button--icon rcx-button"
-                            id="react-aria-_r_j_"
-                            title="Options"
-                            type="button"
-                          >
-                            <i
-                              aria-hidden="true"
-                              class="rcx-box rcx-box--full rcx-icon--name-kebab rcx-icon rcx-css-1tg7yd0"
-                            >
-                              
-                            </i>
-                          </button>
-                        </span>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </a>
-            </div>
-            <div
-              class="rcx-sidepanel-list__item"
-              role="listitem"
-            >
-              <a
-                class="rcx-item rcx-item--inset-md rcx-sidebar-item rcx-sidebar-item--level-2"
-                href="#"
-              >
-                <div
-                  class="rcx-item__content rcx-sidebar-item__col"
-                >
-                  <div
-                    class="rcx-item__row rcx-sidebar-item__row"
-                  >
-                    <div
-                      class="rcx-item__media rcx-sidebar-item__avatar"
-                    >
-                      <figure
-                        class="rcx-box rcx-box--full rcx-avatar rcx-avatar--x20"
-                      >
-                        <img
-                          alt="avatar"
-                          class="rcx-avatar__element rcx-avatar__element--x20"
-                          src="data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 200'%3e%3crect width='100%25' height='100%25' fill='%23B68D00'/%3e%3ctext x='50%25' y='50%25' dy='0.36em' text-anchor='middle' pointer-events='none' fill='white' font-size='125' font-family='Helvetica%2c sans-serif'%3eY%3c/text%3e%3c/svg%3e"
-                        />
-                      </figure>
-                    </div>
-                    <div
-                      aria-hidden="true"
-                      class="rcx-item__icon rcx-sidebar-item__icon"
-                      id="_r_l_"
-                    >
-                      <i
-                        aria-hidden="true"
-                        class="rcx-box rcx-box--full rcx-icon--name-team rcx-icon rcx-css-4pvxx3"
-                      >
-                        
-                      </i>
-                    </div>
-                    <div
-                      class="rcx-item__title rcx-sidebar-item__title"
-                    >
-                      Alice Bob
-                    </div>
-                    <div
-                      class="rcx-item__meta rcx-sidebar-item__timestamp"
-                    >
-                      11:22:21 AM
-                    </div>
-                  </div>
-                  <div
-                    class="rcx-item__row rcx-sidebar-item__row"
-                  >
-                    <div
-                      class="rcx-item__description rcx-sidebar-item__subtitle"
-                    >
-                      Lorem Ipsum Indolor Dolor Ipsum Ipsum
-                    </div>
-                    <span
-                      class="rcx-box rcx-box--full rcx-tag  rcx-css-82wnk2"
-                      role="button"
-                    >
-                      <span
-                        class="rcx-tag__inner"
-                      >
-                        <i
-                          aria-hidden="true"
-                          class="rcx-box rcx-box--full rcx-icon--name-team rcx-icon rcx-css-nbjs1j"
-                        >
-                          
-                        </i>
-                        Team title
-                      </span>
-                    </span>
-                    <span
-                      class="rcx-box rcx-box--full rcx-badge rcx-badge--secondary rcx-box rcx-box--full rcx-sidebar-item__badge"
-                      title="unread messages"
-                    >
-                      10
                     </span>
                     <div
                       class="rcx-item__actions rcx-item__actions--reveal-hover rcx-sidebar-item__menu-wrapper"
@@ -987,7 +769,7 @@ exports[`renders Default without crashing 1`] = `
                         <img
                           alt="avatar"
                           class="rcx-avatar__element rcx-avatar__element--x20"
-                          src="data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 200'%3e%3crect width='100%25' height='100%25' fill='%2310529E'/%3e%3ctext x='50%25' y='50%25' dy='0.36em' text-anchor='middle' pointer-events='none' fill='white' font-size='125' font-family='Helvetica%2c sans-serif'%3eB%3c/text%3e%3c/svg%3e"
+                          src="data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 200'%3e%3crect width='100%25' height='100%25' fill='%237F1B9F'/%3e%3ctext x='50%25' y='50%25' dy='0.36em' text-anchor='middle' pointer-events='none' fill='white' font-size='125' font-family='Helvetica%2c sans-serif'%3eP%3c/text%3e%3c/svg%3e"
                         />
                       </figure>
                     </div>
@@ -1005,8 +787,9 @@ exports[`renders Default without crashing 1`] = `
                     </div>
                     <div
                       class="rcx-item__title rcx-sidebar-item__title"
+                      id="_r_p_"
                     >
-                      Charlie Delta
+                      Baz Qux
                     </div>
                     <div
                       class="rcx-item__meta rcx-sidebar-item__timestamp"
@@ -1042,7 +825,7 @@ exports[`renders Default without crashing 1`] = `
                       class="rcx-box rcx-box--full rcx-badge rcx-badge--secondary rcx-box rcx-box--full rcx-sidebar-item__badge"
                       title="unread messages"
                     >
-                      11
+                      9
                     </span>
                     <div
                       class="rcx-item__actions rcx-item__actions--reveal-hover rcx-sidebar-item__menu-wrapper"
@@ -1058,231 +841,7 @@ exports[`renders Default without crashing 1`] = `
                             aria-haspopup="true"
                             aria-label="Options"
                             class="rcx-box rcx-box--full rcx-button--mini-square rcx-button--square rcx-button--icon rcx-button"
-                            id="react-aria-_r_p_"
-                            title="Options"
-                            type="button"
-                          >
-                            <i
-                              aria-hidden="true"
-                              class="rcx-box rcx-box--full rcx-icon--name-kebab rcx-icon rcx-css-1tg7yd0"
-                            >
-                              
-                            </i>
-                          </button>
-                        </span>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </a>
-            </div>
-            <div
-              class="rcx-sidepanel-list__item"
-              role="listitem"
-            >
-              <a
-                class="rcx-item rcx-item--inset-md rcx-sidebar-item rcx-sidebar-item--level-2"
-                href="#"
-              >
-                <div
-                  class="rcx-item__content rcx-sidebar-item__col"
-                >
-                  <div
-                    class="rcx-item__row rcx-sidebar-item__row"
-                  >
-                    <div
-                      class="rcx-item__media rcx-sidebar-item__avatar"
-                    >
-                      <figure
-                        class="rcx-box rcx-box--full rcx-avatar rcx-avatar--x20"
-                      >
-                        <img
-                          alt="avatar"
-                          class="rcx-avatar__element rcx-avatar__element--x20"
-                          src="data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 200'%3e%3crect width='100%25' height='100%25' fill='%23158D65'/%3e%3ctext x='50%25' y='50%25' dy='0.36em' text-anchor='middle' pointer-events='none' fill='white' font-size='125' font-family='Helvetica%2c sans-serif'%3eG%3c/text%3e%3c/svg%3e"
-                        />
-                      </figure>
-                    </div>
-                    <div
-                      aria-hidden="true"
-                      class="rcx-item__icon rcx-sidebar-item__icon"
-                      id="_r_r_"
-                    >
-                      <i
-                        aria-hidden="true"
-                        class="rcx-box rcx-box--full rcx-icon--name-team rcx-icon rcx-css-4pvxx3"
-                      >
-                        
-                      </i>
-                    </div>
-                    <div
-                      class="rcx-item__title rcx-sidebar-item__title"
-                    >
-                      Eve Mallory
-                    </div>
-                    <div
-                      class="rcx-item__meta rcx-sidebar-item__timestamp"
-                    >
-                      11:22:21 AM
-                    </div>
-                  </div>
-                  <div
-                    class="rcx-item__row rcx-sidebar-item__row"
-                  >
-                    <div
-                      class="rcx-item__description rcx-sidebar-item__subtitle"
-                    >
-                      Lorem Ipsum Indolor Dolor Ipsum Ipsum
-                    </div>
-                    <span
-                      class="rcx-box rcx-box--full rcx-tag  rcx-css-82wnk2"
-                      role="button"
-                    >
-                      <span
-                        class="rcx-tag__inner"
-                      >
-                        <i
-                          aria-hidden="true"
-                          class="rcx-box rcx-box--full rcx-icon--name-team rcx-icon rcx-css-nbjs1j"
-                        >
-                          
-                        </i>
-                        Team title
-                      </span>
-                    </span>
-                    <span
-                      class="rcx-box rcx-box--full rcx-badge rcx-badge--secondary rcx-box rcx-box--full rcx-sidebar-item__badge"
-                      title="unread messages"
-                    >
-                      12
-                    </span>
-                    <div
-                      class="rcx-item__actions rcx-item__actions--reveal-hover rcx-sidebar-item__menu-wrapper"
-                    >
-                      <div
-                        class="rcx-item__actions-inner"
-                      >
-                        <span
-                          class="rcx-box rcx-box--full rcx-sidebar-item__menu rcx-sidebar-item__menu"
-                        >
-                          <button
-                            aria-expanded="false"
-                            aria-haspopup="true"
-                            aria-label="Options"
-                            class="rcx-box rcx-box--full rcx-button--mini-square rcx-button--square rcx-button--icon rcx-button"
-                            id="react-aria-_r_s_"
-                            title="Options"
-                            type="button"
-                          >
-                            <i
-                              aria-hidden="true"
-                              class="rcx-box rcx-box--full rcx-icon--name-kebab rcx-icon rcx-css-1tg7yd0"
-                            >
-                              
-                            </i>
-                          </button>
-                        </span>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </a>
-            </div>
-            <div
-              class="rcx-sidepanel-list__item"
-              role="listitem"
-            >
-              <a
-                class="rcx-item rcx-item--inset-md rcx-sidebar-item rcx-sidebar-item--level-2"
-                href="#"
-              >
-                <div
-                  class="rcx-item__content rcx-sidebar-item__col"
-                >
-                  <div
-                    class="rcx-item__row rcx-sidebar-item__row"
-                  >
-                    <div
-                      class="rcx-item__media rcx-sidebar-item__avatar"
-                    >
-                      <figure
-                        class="rcx-box rcx-box--full rcx-avatar rcx-avatar--x20"
-                      >
-                        <img
-                          alt="avatar"
-                          class="rcx-avatar__element rcx-avatar__element--x20"
-                          src="data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 200'%3e%3crect width='100%25' height='100%25' fill='%237F1B9F'/%3e%3ctext x='50%25' y='50%25' dy='0.36em' text-anchor='middle' pointer-events='none' fill='white' font-size='125' font-family='Helvetica%2c sans-serif'%3eP%3c/text%3e%3c/svg%3e"
-                        />
-                      </figure>
-                    </div>
-                    <div
-                      aria-hidden="true"
-                      class="rcx-item__icon rcx-sidebar-item__icon"
-                      id="_r_u_"
-                    >
-                      <i
-                        aria-hidden="true"
-                        class="rcx-box rcx-box--full rcx-icon--name-team rcx-icon rcx-css-4pvxx3"
-                      >
-                        
-                      </i>
-                    </div>
-                    <div
-                      class="rcx-item__title rcx-sidebar-item__title"
-                    >
-                      Marvin Black
-                    </div>
-                    <div
-                      class="rcx-item__meta rcx-sidebar-item__timestamp"
-                    >
-                      11:22:21 AM
-                    </div>
-                  </div>
-                  <div
-                    class="rcx-item__row rcx-sidebar-item__row"
-                  >
-                    <div
-                      class="rcx-item__description rcx-sidebar-item__subtitle"
-                    >
-                      Lorem Ipsum Indolor Dolor Ipsum Ipsum
-                    </div>
-                    <span
-                      class="rcx-box rcx-box--full rcx-tag  rcx-css-82wnk2"
-                      role="button"
-                    >
-                      <span
-                        class="rcx-tag__inner"
-                      >
-                        <i
-                          aria-hidden="true"
-                          class="rcx-box rcx-box--full rcx-icon--name-team rcx-icon rcx-css-nbjs1j"
-                        >
-                          
-                        </i>
-                        Team title
-                      </span>
-                    </span>
-                    <span
-                      class="rcx-box rcx-box--full rcx-badge rcx-badge--secondary rcx-box rcx-box--full rcx-sidebar-item__badge"
-                      title="unread messages"
-                    >
-                      13
-                    </span>
-                    <div
-                      class="rcx-item__actions rcx-item__actions--reveal-hover rcx-sidebar-item__menu-wrapper"
-                    >
-                      <div
-                        class="rcx-item__actions-inner"
-                      >
-                        <span
-                          class="rcx-box rcx-box--full rcx-sidebar-item__menu rcx-sidebar-item__menu"
-                        >
-                          <button
-                            aria-expanded="false"
-                            aria-haspopup="true"
-                            aria-label="Options"
-                            class="rcx-box rcx-box--full rcx-button--mini-square rcx-button--square rcx-button--icon rcx-button"
-                            id="react-aria-_r_v_"
+                            id="react-aria-_r_q_"
                             title="Options"
                             type="button"
                           >
@@ -1330,7 +889,7 @@ exports[`renders Default without crashing 1`] = `
                     <div
                       aria-hidden="true"
                       class="rcx-item__icon rcx-sidebar-item__icon"
-                      id="_r_11_"
+                      id="_r_s_"
                     >
                       <i
                         aria-hidden="true"
@@ -1341,8 +900,9 @@ exports[`renders Default without crashing 1`] = `
                     </div>
                     <div
                       class="rcx-item__title rcx-sidebar-item__title"
+                      id="_r_t_"
                     >
-                      Esther Miles
+                      Alice Bob
                     </div>
                     <div
                       class="rcx-item__meta rcx-sidebar-item__timestamp"
@@ -1378,7 +938,120 @@ exports[`renders Default without crashing 1`] = `
                       class="rcx-box rcx-box--full rcx-badge rcx-badge--secondary rcx-box rcx-box--full rcx-sidebar-item__badge"
                       title="unread messages"
                     >
-                      14
+                      10
+                    </span>
+                    <div
+                      class="rcx-item__actions rcx-item__actions--reveal-hover rcx-sidebar-item__menu-wrapper"
+                    >
+                      <div
+                        class="rcx-item__actions-inner"
+                      >
+                        <span
+                          class="rcx-box rcx-box--full rcx-sidebar-item__menu rcx-sidebar-item__menu"
+                        >
+                          <button
+                            aria-expanded="false"
+                            aria-haspopup="true"
+                            aria-label="Options"
+                            class="rcx-box rcx-box--full rcx-button--mini-square rcx-button--square rcx-button--icon rcx-button"
+                            id="react-aria-_r_u_"
+                            title="Options"
+                            type="button"
+                          >
+                            <i
+                              aria-hidden="true"
+                              class="rcx-box rcx-box--full rcx-icon--name-kebab rcx-icon rcx-css-1tg7yd0"
+                            >
+                              
+                            </i>
+                          </button>
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </a>
+            </div>
+            <div
+              class="rcx-sidepanel-list__item"
+              role="listitem"
+            >
+              <a
+                class="rcx-item rcx-item--inset-md rcx-sidebar-item rcx-sidebar-item--level-2"
+                href="#"
+              >
+                <div
+                  class="rcx-item__content rcx-sidebar-item__col"
+                >
+                  <div
+                    class="rcx-item__row rcx-sidebar-item__row"
+                  >
+                    <div
+                      class="rcx-item__media rcx-sidebar-item__avatar"
+                    >
+                      <figure
+                        class="rcx-box rcx-box--full rcx-avatar rcx-avatar--x20"
+                      >
+                        <img
+                          alt="avatar"
+                          class="rcx-avatar__element rcx-avatar__element--x20"
+                          src="data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 200'%3e%3crect width='100%25' height='100%25' fill='%2310529E'/%3e%3ctext x='50%25' y='50%25' dy='0.36em' text-anchor='middle' pointer-events='none' fill='white' font-size='125' font-family='Helvetica%2c sans-serif'%3eB%3c/text%3e%3c/svg%3e"
+                        />
+                      </figure>
+                    </div>
+                    <div
+                      aria-hidden="true"
+                      class="rcx-item__icon rcx-sidebar-item__icon"
+                      id="_r_10_"
+                    >
+                      <i
+                        aria-hidden="true"
+                        class="rcx-box rcx-box--full rcx-icon--name-team rcx-icon rcx-css-4pvxx3"
+                      >
+                        
+                      </i>
+                    </div>
+                    <div
+                      class="rcx-item__title rcx-sidebar-item__title"
+                      id="_r_11_"
+                    >
+                      Charlie Delta
+                    </div>
+                    <div
+                      class="rcx-item__meta rcx-sidebar-item__timestamp"
+                    >
+                      11:22:21 AM
+                    </div>
+                  </div>
+                  <div
+                    class="rcx-item__row rcx-sidebar-item__row"
+                  >
+                    <div
+                      class="rcx-item__description rcx-sidebar-item__subtitle"
+                    >
+                      Lorem Ipsum Indolor Dolor Ipsum Ipsum
+                    </div>
+                    <span
+                      class="rcx-box rcx-box--full rcx-tag  rcx-css-82wnk2"
+                      role="button"
+                    >
+                      <span
+                        class="rcx-tag__inner"
+                      >
+                        <i
+                          aria-hidden="true"
+                          class="rcx-box rcx-box--full rcx-icon--name-team rcx-icon rcx-css-nbjs1j"
+                        >
+                          
+                        </i>
+                        Team title
+                      </span>
+                    </span>
+                    <span
+                      class="rcx-box rcx-box--full rcx-badge rcx-badge--secondary rcx-box rcx-box--full rcx-sidebar-item__badge"
+                      title="unread messages"
+                    >
+                      11
                     </span>
                     <div
                       class="rcx-item__actions rcx-item__actions--reveal-hover rcx-sidebar-item__menu-wrapper"
@@ -1435,7 +1108,7 @@ exports[`renders Default without crashing 1`] = `
                         <img
                           alt="avatar"
                           class="rcx-avatar__element rcx-avatar__element--x20"
-                          src="data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 200'%3e%3crect width='100%25' height='100%25' fill='%2310529E'/%3e%3ctext x='50%25' y='50%25' dy='0.36em' text-anchor='middle' pointer-events='none' fill='white' font-size='125' font-family='Helvetica%2c sans-serif'%3eB%3c/text%3e%3c/svg%3e"
+                          src="data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 200'%3e%3crect width='100%25' height='100%25' fill='%23158D65'/%3e%3ctext x='50%25' y='50%25' dy='0.36em' text-anchor='middle' pointer-events='none' fill='white' font-size='125' font-family='Helvetica%2c sans-serif'%3eG%3c/text%3e%3c/svg%3e"
                         />
                       </figure>
                     </div>
@@ -1453,8 +1126,9 @@ exports[`renders Default without crashing 1`] = `
                     </div>
                     <div
                       class="rcx-item__title rcx-sidebar-item__title"
+                      id="_r_15_"
                     >
-                      Leroy Jenkins
+                      Eve Mallory
                     </div>
                     <div
                       class="rcx-item__meta rcx-sidebar-item__timestamp"
@@ -1490,7 +1164,7 @@ exports[`renders Default without crashing 1`] = `
                       class="rcx-box rcx-box--full rcx-badge rcx-badge--secondary rcx-box rcx-box--full rcx-sidebar-item__badge"
                       title="unread messages"
                     >
-                      15
+                      12
                     </span>
                     <div
                       class="rcx-item__actions rcx-item__actions--reveal-hover rcx-sidebar-item__menu-wrapper"
@@ -1506,119 +1180,7 @@ exports[`renders Default without crashing 1`] = `
                             aria-haspopup="true"
                             aria-label="Options"
                             class="rcx-box rcx-box--full rcx-button--mini-square rcx-button--square rcx-button--icon rcx-button"
-                            id="react-aria-_r_15_"
-                            title="Options"
-                            type="button"
-                          >
-                            <i
-                              aria-hidden="true"
-                              class="rcx-box rcx-box--full rcx-icon--name-kebab rcx-icon rcx-css-1tg7yd0"
-                            >
-                              
-                            </i>
-                          </button>
-                        </span>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </a>
-            </div>
-            <div
-              class="rcx-sidepanel-list__item"
-              role="listitem"
-            >
-              <a
-                class="rcx-item rcx-item--inset-md rcx-sidebar-item rcx-sidebar-item--level-2"
-                href="#"
-              >
-                <div
-                  class="rcx-item__content rcx-sidebar-item__col"
-                >
-                  <div
-                    class="rcx-item__row rcx-sidebar-item__row"
-                  >
-                    <div
-                      class="rcx-item__media rcx-sidebar-item__avatar"
-                    >
-                      <figure
-                        class="rcx-box rcx-box--full rcx-avatar rcx-avatar--x20"
-                      >
-                        <img
-                          alt="avatar"
-                          class="rcx-avatar__element rcx-avatar__element--x20"
-                          src="data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 200'%3e%3crect width='100%25' height='100%25' fill='%23158D65'/%3e%3ctext x='50%25' y='50%25' dy='0.36em' text-anchor='middle' pointer-events='none' fill='white' font-size='125' font-family='Helvetica%2c sans-serif'%3eG%3c/text%3e%3c/svg%3e"
-                        />
-                      </figure>
-                    </div>
-                    <div
-                      aria-hidden="true"
-                      class="rcx-item__icon rcx-sidebar-item__icon"
-                      id="_r_17_"
-                    >
-                      <i
-                        aria-hidden="true"
-                        class="rcx-box rcx-box--full rcx-icon--name-team rcx-icon rcx-css-4pvxx3"
-                      >
-                        
-                      </i>
-                    </div>
-                    <div
-                      class="rcx-item__title rcx-sidebar-item__title"
-                    >
-                      Morgan Freeman looooooooooong looooooooooong looooooooooong name
-                    </div>
-                    <div
-                      class="rcx-item__meta rcx-sidebar-item__timestamp"
-                    >
-                      11:22:21 AM
-                    </div>
-                  </div>
-                  <div
-                    class="rcx-item__row rcx-sidebar-item__row"
-                  >
-                    <div
-                      class="rcx-item__description rcx-sidebar-item__subtitle"
-                    >
-                      Lorem Ipsum Indolor Dolor Ipsum Ipsum
-                    </div>
-                    <span
-                      class="rcx-box rcx-box--full rcx-tag  rcx-css-82wnk2"
-                      role="button"
-                    >
-                      <span
-                        class="rcx-tag__inner"
-                      >
-                        <i
-                          aria-hidden="true"
-                          class="rcx-box rcx-box--full rcx-icon--name-team rcx-icon rcx-css-nbjs1j"
-                        >
-                          
-                        </i>
-                        Team title
-                      </span>
-                    </span>
-                    <span
-                      class="rcx-box rcx-box--full rcx-badge rcx-badge--secondary rcx-box rcx-box--full rcx-sidebar-item__badge"
-                      title="unread messages"
-                    >
-                      16
-                    </span>
-                    <div
-                      class="rcx-item__actions rcx-item__actions--reveal-hover rcx-sidebar-item__menu-wrapper"
-                    >
-                      <div
-                        class="rcx-item__actions-inner"
-                      >
-                        <span
-                          class="rcx-box rcx-box--full rcx-sidebar-item__menu rcx-sidebar-item__menu"
-                        >
-                          <button
-                            aria-expanded="false"
-                            aria-haspopup="true"
-                            aria-label="Options"
-                            class="rcx-box rcx-box--full rcx-button--mini-square rcx-button--square rcx-button--icon rcx-button"
-                            id="react-aria-_r_18_"
+                            id="react-aria-_r_16_"
                             title="Options"
                             type="button"
                           >
@@ -1666,7 +1228,7 @@ exports[`renders Default without crashing 1`] = `
                     <div
                       aria-hidden="true"
                       class="rcx-item__icon rcx-sidebar-item__icon"
-                      id="_r_1a_"
+                      id="_r_18_"
                     >
                       <i
                         aria-hidden="true"
@@ -1677,8 +1239,9 @@ exports[`renders Default without crashing 1`] = `
                     </div>
                     <div
                       class="rcx-item__title rcx-sidebar-item__title"
+                      id="_r_19_"
                     >
-                      John Doe
+                      Marvin Black
                     </div>
                     <div
                       class="rcx-item__meta rcx-sidebar-item__timestamp"
@@ -1714,7 +1277,7 @@ exports[`renders Default without crashing 1`] = `
                       class="rcx-box rcx-box--full rcx-badge rcx-badge--secondary rcx-box rcx-box--full rcx-sidebar-item__badge"
                       title="unread messages"
                     >
-                      17
+                      13
                     </span>
                     <div
                       class="rcx-item__actions rcx-item__actions--reveal-hover rcx-sidebar-item__menu-wrapper"
@@ -1730,7 +1293,7 @@ exports[`renders Default without crashing 1`] = `
                             aria-haspopup="true"
                             aria-label="Options"
                             class="rcx-box rcx-box--full rcx-button--mini-square rcx-button--square rcx-button--icon rcx-button"
-                            id="react-aria-_r_1b_"
+                            id="react-aria-_r_1a_"
                             title="Options"
                             type="button"
                           >
@@ -1778,7 +1341,7 @@ exports[`renders Default without crashing 1`] = `
                     <div
                       aria-hidden="true"
                       class="rcx-item__icon rcx-sidebar-item__icon"
-                      id="_r_1d_"
+                      id="_r_1c_"
                     >
                       <i
                         aria-hidden="true"
@@ -1789,8 +1352,9 @@ exports[`renders Default without crashing 1`] = `
                     </div>
                     <div
                       class="rcx-item__title rcx-sidebar-item__title"
+                      id="_r_1d_"
                     >
-                      Jane Doe
+                      Esther Miles
                     </div>
                     <div
                       class="rcx-item__meta rcx-sidebar-item__timestamp"
@@ -1826,7 +1390,7 @@ exports[`renders Default without crashing 1`] = `
                       class="rcx-box rcx-box--full rcx-badge rcx-badge--secondary rcx-box rcx-box--full rcx-sidebar-item__badge"
                       title="unread messages"
                     >
-                      18
+                      14
                     </span>
                     <div
                       class="rcx-item__actions rcx-item__actions--reveal-hover rcx-sidebar-item__menu-wrapper"
@@ -1901,6 +1465,459 @@ exports[`renders Default without crashing 1`] = `
                     </div>
                     <div
                       class="rcx-item__title rcx-sidebar-item__title"
+                      id="_r_1h_"
+                    >
+                      Leroy Jenkins
+                    </div>
+                    <div
+                      class="rcx-item__meta rcx-sidebar-item__timestamp"
+                    >
+                      11:22:21 AM
+                    </div>
+                  </div>
+                  <div
+                    class="rcx-item__row rcx-sidebar-item__row"
+                  >
+                    <div
+                      class="rcx-item__description rcx-sidebar-item__subtitle"
+                    >
+                      Lorem Ipsum Indolor Dolor Ipsum Ipsum
+                    </div>
+                    <span
+                      class="rcx-box rcx-box--full rcx-tag  rcx-css-82wnk2"
+                      role="button"
+                    >
+                      <span
+                        class="rcx-tag__inner"
+                      >
+                        <i
+                          aria-hidden="true"
+                          class="rcx-box rcx-box--full rcx-icon--name-team rcx-icon rcx-css-nbjs1j"
+                        >
+                          
+                        </i>
+                        Team title
+                      </span>
+                    </span>
+                    <span
+                      class="rcx-box rcx-box--full rcx-badge rcx-badge--secondary rcx-box rcx-box--full rcx-sidebar-item__badge"
+                      title="unread messages"
+                    >
+                      15
+                    </span>
+                    <div
+                      class="rcx-item__actions rcx-item__actions--reveal-hover rcx-sidebar-item__menu-wrapper"
+                    >
+                      <div
+                        class="rcx-item__actions-inner"
+                      >
+                        <span
+                          class="rcx-box rcx-box--full rcx-sidebar-item__menu rcx-sidebar-item__menu"
+                        >
+                          <button
+                            aria-expanded="false"
+                            aria-haspopup="true"
+                            aria-label="Options"
+                            class="rcx-box rcx-box--full rcx-button--mini-square rcx-button--square rcx-button--icon rcx-button"
+                            id="react-aria-_r_1i_"
+                            title="Options"
+                            type="button"
+                          >
+                            <i
+                              aria-hidden="true"
+                              class="rcx-box rcx-box--full rcx-icon--name-kebab rcx-icon rcx-css-1tg7yd0"
+                            >
+                              
+                            </i>
+                          </button>
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </a>
+            </div>
+            <div
+              class="rcx-sidepanel-list__item"
+              role="listitem"
+            >
+              <a
+                class="rcx-item rcx-item--inset-md rcx-sidebar-item rcx-sidebar-item--level-2"
+                href="#"
+              >
+                <div
+                  class="rcx-item__content rcx-sidebar-item__col"
+                >
+                  <div
+                    class="rcx-item__row rcx-sidebar-item__row"
+                  >
+                    <div
+                      class="rcx-item__media rcx-sidebar-item__avatar"
+                    >
+                      <figure
+                        class="rcx-box rcx-box--full rcx-avatar rcx-avatar--x20"
+                      >
+                        <img
+                          alt="avatar"
+                          class="rcx-avatar__element rcx-avatar__element--x20"
+                          src="data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 200'%3e%3crect width='100%25' height='100%25' fill='%23158D65'/%3e%3ctext x='50%25' y='50%25' dy='0.36em' text-anchor='middle' pointer-events='none' fill='white' font-size='125' font-family='Helvetica%2c sans-serif'%3eG%3c/text%3e%3c/svg%3e"
+                        />
+                      </figure>
+                    </div>
+                    <div
+                      aria-hidden="true"
+                      class="rcx-item__icon rcx-sidebar-item__icon"
+                      id="_r_1k_"
+                    >
+                      <i
+                        aria-hidden="true"
+                        class="rcx-box rcx-box--full rcx-icon--name-team rcx-icon rcx-css-4pvxx3"
+                      >
+                        
+                      </i>
+                    </div>
+                    <div
+                      class="rcx-item__title rcx-sidebar-item__title"
+                      id="_r_1l_"
+                    >
+                      Morgan Freeman looooooooooong looooooooooong looooooooooong name
+                    </div>
+                    <div
+                      class="rcx-item__meta rcx-sidebar-item__timestamp"
+                    >
+                      11:22:21 AM
+                    </div>
+                  </div>
+                  <div
+                    class="rcx-item__row rcx-sidebar-item__row"
+                  >
+                    <div
+                      class="rcx-item__description rcx-sidebar-item__subtitle"
+                    >
+                      Lorem Ipsum Indolor Dolor Ipsum Ipsum
+                    </div>
+                    <span
+                      class="rcx-box rcx-box--full rcx-tag  rcx-css-82wnk2"
+                      role="button"
+                    >
+                      <span
+                        class="rcx-tag__inner"
+                      >
+                        <i
+                          aria-hidden="true"
+                          class="rcx-box rcx-box--full rcx-icon--name-team rcx-icon rcx-css-nbjs1j"
+                        >
+                          
+                        </i>
+                        Team title
+                      </span>
+                    </span>
+                    <span
+                      class="rcx-box rcx-box--full rcx-badge rcx-badge--secondary rcx-box rcx-box--full rcx-sidebar-item__badge"
+                      title="unread messages"
+                    >
+                      16
+                    </span>
+                    <div
+                      class="rcx-item__actions rcx-item__actions--reveal-hover rcx-sidebar-item__menu-wrapper"
+                    >
+                      <div
+                        class="rcx-item__actions-inner"
+                      >
+                        <span
+                          class="rcx-box rcx-box--full rcx-sidebar-item__menu rcx-sidebar-item__menu"
+                        >
+                          <button
+                            aria-expanded="false"
+                            aria-haspopup="true"
+                            aria-label="Options"
+                            class="rcx-box rcx-box--full rcx-button--mini-square rcx-button--square rcx-button--icon rcx-button"
+                            id="react-aria-_r_1m_"
+                            title="Options"
+                            type="button"
+                          >
+                            <i
+                              aria-hidden="true"
+                              class="rcx-box rcx-box--full rcx-icon--name-kebab rcx-icon rcx-css-1tg7yd0"
+                            >
+                              
+                            </i>
+                          </button>
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </a>
+            </div>
+            <div
+              class="rcx-sidepanel-list__item"
+              role="listitem"
+            >
+              <a
+                class="rcx-item rcx-item--inset-md rcx-sidebar-item rcx-sidebar-item--level-2"
+                href="#"
+              >
+                <div
+                  class="rcx-item__content rcx-sidebar-item__col"
+                >
+                  <div
+                    class="rcx-item__row rcx-sidebar-item__row"
+                  >
+                    <div
+                      class="rcx-item__media rcx-sidebar-item__avatar"
+                    >
+                      <figure
+                        class="rcx-box rcx-box--full rcx-avatar rcx-avatar--x20"
+                      >
+                        <img
+                          alt="avatar"
+                          class="rcx-avatar__element rcx-avatar__element--x20"
+                          src="data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 200'%3e%3crect width='100%25' height='100%25' fill='%237F1B9F'/%3e%3ctext x='50%25' y='50%25' dy='0.36em' text-anchor='middle' pointer-events='none' fill='white' font-size='125' font-family='Helvetica%2c sans-serif'%3eP%3c/text%3e%3c/svg%3e"
+                        />
+                      </figure>
+                    </div>
+                    <div
+                      aria-hidden="true"
+                      class="rcx-item__icon rcx-sidebar-item__icon"
+                      id="_r_1o_"
+                    >
+                      <i
+                        aria-hidden="true"
+                        class="rcx-box rcx-box--full rcx-icon--name-team rcx-icon rcx-css-4pvxx3"
+                      >
+                        
+                      </i>
+                    </div>
+                    <div
+                      class="rcx-item__title rcx-sidebar-item__title"
+                      id="_r_1p_"
+                    >
+                      John Doe
+                    </div>
+                    <div
+                      class="rcx-item__meta rcx-sidebar-item__timestamp"
+                    >
+                      11:22:21 AM
+                    </div>
+                  </div>
+                  <div
+                    class="rcx-item__row rcx-sidebar-item__row"
+                  >
+                    <div
+                      class="rcx-item__description rcx-sidebar-item__subtitle"
+                    >
+                      Lorem Ipsum Indolor Dolor Ipsum Ipsum
+                    </div>
+                    <span
+                      class="rcx-box rcx-box--full rcx-tag  rcx-css-82wnk2"
+                      role="button"
+                    >
+                      <span
+                        class="rcx-tag__inner"
+                      >
+                        <i
+                          aria-hidden="true"
+                          class="rcx-box rcx-box--full rcx-icon--name-team rcx-icon rcx-css-nbjs1j"
+                        >
+                          
+                        </i>
+                        Team title
+                      </span>
+                    </span>
+                    <span
+                      class="rcx-box rcx-box--full rcx-badge rcx-badge--secondary rcx-box rcx-box--full rcx-sidebar-item__badge"
+                      title="unread messages"
+                    >
+                      17
+                    </span>
+                    <div
+                      class="rcx-item__actions rcx-item__actions--reveal-hover rcx-sidebar-item__menu-wrapper"
+                    >
+                      <div
+                        class="rcx-item__actions-inner"
+                      >
+                        <span
+                          class="rcx-box rcx-box--full rcx-sidebar-item__menu rcx-sidebar-item__menu"
+                        >
+                          <button
+                            aria-expanded="false"
+                            aria-haspopup="true"
+                            aria-label="Options"
+                            class="rcx-box rcx-box--full rcx-button--mini-square rcx-button--square rcx-button--icon rcx-button"
+                            id="react-aria-_r_1q_"
+                            title="Options"
+                            type="button"
+                          >
+                            <i
+                              aria-hidden="true"
+                              class="rcx-box rcx-box--full rcx-icon--name-kebab rcx-icon rcx-css-1tg7yd0"
+                            >
+                              
+                            </i>
+                          </button>
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </a>
+            </div>
+            <div
+              class="rcx-sidepanel-list__item"
+              role="listitem"
+            >
+              <a
+                class="rcx-item rcx-item--inset-md rcx-sidebar-item rcx-sidebar-item--level-2"
+                href="#"
+              >
+                <div
+                  class="rcx-item__content rcx-sidebar-item__col"
+                >
+                  <div
+                    class="rcx-item__row rcx-sidebar-item__row"
+                  >
+                    <div
+                      class="rcx-item__media rcx-sidebar-item__avatar"
+                    >
+                      <figure
+                        class="rcx-box rcx-box--full rcx-avatar rcx-avatar--x20"
+                      >
+                        <img
+                          alt="avatar"
+                          class="rcx-avatar__element rcx-avatar__element--x20"
+                          src="data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 200'%3e%3crect width='100%25' height='100%25' fill='%23B68D00'/%3e%3ctext x='50%25' y='50%25' dy='0.36em' text-anchor='middle' pointer-events='none' fill='white' font-size='125' font-family='Helvetica%2c sans-serif'%3eY%3c/text%3e%3c/svg%3e"
+                        />
+                      </figure>
+                    </div>
+                    <div
+                      aria-hidden="true"
+                      class="rcx-item__icon rcx-sidebar-item__icon"
+                      id="_r_1s_"
+                    >
+                      <i
+                        aria-hidden="true"
+                        class="rcx-box rcx-box--full rcx-icon--name-team rcx-icon rcx-css-4pvxx3"
+                      >
+                        
+                      </i>
+                    </div>
+                    <div
+                      class="rcx-item__title rcx-sidebar-item__title"
+                      id="_r_1t_"
+                    >
+                      Jane Doe
+                    </div>
+                    <div
+                      class="rcx-item__meta rcx-sidebar-item__timestamp"
+                    >
+                      11:22:21 AM
+                    </div>
+                  </div>
+                  <div
+                    class="rcx-item__row rcx-sidebar-item__row"
+                  >
+                    <div
+                      class="rcx-item__description rcx-sidebar-item__subtitle"
+                    >
+                      Lorem Ipsum Indolor Dolor Ipsum Ipsum
+                    </div>
+                    <span
+                      class="rcx-box rcx-box--full rcx-tag  rcx-css-82wnk2"
+                      role="button"
+                    >
+                      <span
+                        class="rcx-tag__inner"
+                      >
+                        <i
+                          aria-hidden="true"
+                          class="rcx-box rcx-box--full rcx-icon--name-team rcx-icon rcx-css-nbjs1j"
+                        >
+                          
+                        </i>
+                        Team title
+                      </span>
+                    </span>
+                    <span
+                      class="rcx-box rcx-box--full rcx-badge rcx-badge--secondary rcx-box rcx-box--full rcx-sidebar-item__badge"
+                      title="unread messages"
+                    >
+                      18
+                    </span>
+                    <div
+                      class="rcx-item__actions rcx-item__actions--reveal-hover rcx-sidebar-item__menu-wrapper"
+                    >
+                      <div
+                        class="rcx-item__actions-inner"
+                      >
+                        <span
+                          class="rcx-box rcx-box--full rcx-sidebar-item__menu rcx-sidebar-item__menu"
+                        >
+                          <button
+                            aria-expanded="false"
+                            aria-haspopup="true"
+                            aria-label="Options"
+                            class="rcx-box rcx-box--full rcx-button--mini-square rcx-button--square rcx-button--icon rcx-button"
+                            id="react-aria-_r_1u_"
+                            title="Options"
+                            type="button"
+                          >
+                            <i
+                              aria-hidden="true"
+                              class="rcx-box rcx-box--full rcx-icon--name-kebab rcx-icon rcx-css-1tg7yd0"
+                            >
+                              
+                            </i>
+                          </button>
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </a>
+            </div>
+            <div
+              class="rcx-sidepanel-list__item"
+              role="listitem"
+            >
+              <a
+                class="rcx-item rcx-item--inset-md rcx-sidebar-item rcx-sidebar-item--level-2"
+                href="#"
+              >
+                <div
+                  class="rcx-item__content rcx-sidebar-item__col"
+                >
+                  <div
+                    class="rcx-item__row rcx-sidebar-item__row"
+                  >
+                    <div
+                      class="rcx-item__media rcx-sidebar-item__avatar"
+                    >
+                      <figure
+                        class="rcx-box rcx-box--full rcx-avatar rcx-avatar--x20"
+                      >
+                        <img
+                          alt="avatar"
+                          class="rcx-avatar__element rcx-avatar__element--x20"
+                          src="data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 200'%3e%3crect width='100%25' height='100%25' fill='%2310529E'/%3e%3ctext x='50%25' y='50%25' dy='0.36em' text-anchor='middle' pointer-events='none' fill='white' font-size='125' font-family='Helvetica%2c sans-serif'%3eB%3c/text%3e%3c/svg%3e"
+                        />
+                      </figure>
+                    </div>
+                    <div
+                      aria-hidden="true"
+                      class="rcx-item__icon rcx-sidebar-item__icon"
+                      id="_r_20_"
+                    >
+                      <i
+                        aria-hidden="true"
+                        class="rcx-box rcx-box--full rcx-icon--name-team rcx-icon rcx-css-4pvxx3"
+                      >
+                        
+                      </i>
+                    </div>
+                    <div
+                      class="rcx-item__title rcx-sidebar-item__title"
+                      id="_r_21_"
                     >
                       Baz Qux
                     </div>
@@ -1954,7 +1971,7 @@ exports[`renders Default without crashing 1`] = `
                             aria-haspopup="true"
                             aria-label="Options"
                             class="rcx-box rcx-box--full rcx-button--mini-square rcx-button--square rcx-button--icon rcx-button"
-                            id="react-aria-_r_1h_"
+                            id="react-aria-_r_22_"
                             title="Options"
                             type="button"
                           >
@@ -2002,7 +2019,7 @@ exports[`renders Default without crashing 1`] = `
                     <div
                       aria-hidden="true"
                       class="rcx-item__icon rcx-sidebar-item__icon"
-                      id="_r_1j_"
+                      id="_r_24_"
                     >
                       <i
                         aria-hidden="true"
@@ -2013,6 +2030,7 @@ exports[`renders Default without crashing 1`] = `
                     </div>
                     <div
                       class="rcx-item__title rcx-sidebar-item__title"
+                      id="_r_25_"
                     >
                       Alice Bob
                     </div>
@@ -2066,7 +2084,7 @@ exports[`renders Default without crashing 1`] = `
                             aria-haspopup="true"
                             aria-label="Options"
                             class="rcx-box rcx-box--full rcx-button--mini-square rcx-button--square rcx-button--icon rcx-button"
-                            id="react-aria-_r_1k_"
+                            id="react-aria-_r_26_"
                             title="Options"
                             type="button"
                           >
@@ -2114,7 +2132,7 @@ exports[`renders Default without crashing 1`] = `
                     <div
                       aria-hidden="true"
                       class="rcx-item__icon rcx-sidebar-item__icon"
-                      id="_r_1m_"
+                      id="_r_28_"
                     >
                       <i
                         aria-hidden="true"
@@ -2125,6 +2143,7 @@ exports[`renders Default without crashing 1`] = `
                     </div>
                     <div
                       class="rcx-item__title rcx-sidebar-item__title"
+                      id="_r_29_"
                     >
                       Charlie Delta
                     </div>
@@ -2178,7 +2197,7 @@ exports[`renders Default without crashing 1`] = `
                             aria-haspopup="true"
                             aria-label="Options"
                             class="rcx-box rcx-box--full rcx-button--mini-square rcx-button--square rcx-button--icon rcx-button"
-                            id="react-aria-_r_1n_"
+                            id="react-aria-_r_2a_"
                             title="Options"
                             type="button"
                           >
@@ -2226,7 +2245,7 @@ exports[`renders Default without crashing 1`] = `
                     <div
                       aria-hidden="true"
                       class="rcx-item__icon rcx-sidebar-item__icon"
-                      id="_r_1p_"
+                      id="_r_2c_"
                     >
                       <i
                         aria-hidden="true"
@@ -2237,6 +2256,7 @@ exports[`renders Default without crashing 1`] = `
                     </div>
                     <div
                       class="rcx-item__title rcx-sidebar-item__title"
+                      id="_r_2d_"
                     >
                       Eve Mallory
                     </div>
@@ -2290,7 +2310,7 @@ exports[`renders Default without crashing 1`] = `
                             aria-haspopup="true"
                             aria-label="Options"
                             class="rcx-box rcx-box--full rcx-button--mini-square rcx-button--square rcx-button--icon rcx-button"
-                            id="react-aria-_r_1q_"
+                            id="react-aria-_r_2e_"
                             title="Options"
                             type="button"
                           >
