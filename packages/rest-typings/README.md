@@ -92,7 +92,24 @@ The new path is then accepted by every client typed with this package.
 
 ### Experimental endpoints
 
-Endpoints under `/api/experimental/` are typed by `ExperimentalEndpoints`. They are not part of `Endpoints`, so typed clients do not see them unless you import that type. They carry no semver promise and may change or disappear in any release.
+Endpoints under `/api/experimental/` are typed by `ExperimentalEndpoints`. They carry no semver promise and may change or disappear in any release.
+
+They are not part of `Endpoints`, and importing `ExperimentalEndpoints` does not add them to it. Clients typed against `Endpoints`, such as `@rocket.chat/api-client` and `@rocket.chat/ddp-client`, keep rejecting these paths. To call one with types, type the call against `ExperimentalEndpoints` yourself:
+
+```ts
+import type { ExperimentalEndpoints } from '@rocket.chat/rest-typings';
+
+type SetCategory = ExperimentalEndpoints['/experimental/rooms.setCategory']['POST'];
+
+const setCategory = async (params: Parameters<SetCategory>[0]): Promise<ReturnType<SetCategory>> => {
+	const response = await fetch(`${serverUrl}/api/experimental/rooms.setCategory`, {
+		method: 'POST',
+		headers: { 'Content-Type': 'application/json', 'X-User-Id': userId, 'X-Auth-Token': authToken },
+		body: JSON.stringify(params),
+	});
+	return response.json();
+};
+```
 
 ## API
 
