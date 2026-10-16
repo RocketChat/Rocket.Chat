@@ -10,7 +10,7 @@ const SidepanelListWrapper: Components<unknown, VirtuosoListContext>['List'] = f
 	{ context, ...props },
 	ref,
 ) {
-	const { sidebarListRef } = useSidebarListNavigation();
+	const sidebarListRef = useSidebarListNavigation();
 	const mergedRefs = useMergedRefsV2(ref, sidebarListRef);
 
 	return <SidepanelList aria-label={context?.['aria-label']} ref={mergedRefs} {...props} />;
