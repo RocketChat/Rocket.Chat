@@ -68,6 +68,13 @@ export const updateGroupDMsName = async (
 		}
 
 		const members = getMembers(room.uids);
+
+		// a group DM left with two or fewer members (e.g. after a user deletion) would get the same
+		// subscription name as the 1:1 DM between them, which the unique index rejects
+		if (members.length <= 2) {
+			continue;
+		}
+
 		const sortedMembers = members.sort(sortUsersAlphabetically);
 
 		const subs = Subscriptions.findByRoomId(room._id, { projection: { '_id': 1, 'u._id': 1 }, session });
