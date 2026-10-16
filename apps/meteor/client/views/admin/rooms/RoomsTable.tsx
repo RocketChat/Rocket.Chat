@@ -53,7 +53,7 @@ const RoomsTable = ({ reload }: { reload: MutableRefObject<() => void> }) => {
 
 	const { data, refetch, isSuccess, isLoading, isError, paginationProps } = usePaginatedQuery({
 		query,
-		getQueryKey: (query) => ['rooms', query, 'admin'],
+		queryKey: ['rooms', query, 'admin'],
 		queryFn: getAdminRooms,
 		itemsKey: 'rooms',
 	});

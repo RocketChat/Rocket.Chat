@@ -42,7 +42,7 @@ const IntegrationsTable = ({ type }: IntegrationsTableProps) => {
 	const getIntegrations = useEndpoint('GET', '/v1/integrations.list');
 	const { data, isLoading, isSuccess, isError, refetch, paginationProps } = usePaginatedQuery({
 		query,
-		getQueryKey: (query) => ['integrations', query],
+		queryKey: ['integrations', query],
 		queryFn: getIntegrations,
 		itemsKey: 'integrations',
 	});

@@ -9,7 +9,7 @@ export const useCurrentChats = (query: GETLivechatRoomsParams) => {
 
 	return usePaginatedQuery<GETLivechatRoomsParams, CurrentChatsResult>({
 		query,
-		getQueryKey: (query) => ['current-chats', query],
+		queryKey: ['current-chats', query],
 		queryFn: (query) => currentChats(query) as unknown as Promise<CurrentChatsResult>,
 		itemsKey: 'rooms',
 

@@ -70,7 +70,7 @@ const UsersInRolePage = ({ role }: UsersInRolePageProps) => {
 
 	const { data, isLoading, isSuccess, refetch, isError, paginationProps } = usePaginatedQuery({
 		query,
-		getQueryKey: (query) => ['getUsersInRole', _id, query],
+		queryKey: ['getUsersInRole', _id, query],
 		queryFn: getUsersInRoleEndpoint,
 		itemsKey: 'users',
 	});

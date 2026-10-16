@@ -77,7 +77,7 @@ const UsersTable = ({ workspace = 'local' }: UsersTableProps) => {
 
 	const { data, isFetched, isLoading, isError, refetch, paginationProps } = usePaginatedQuery({
 		query,
-		getQueryKey: (query) => ['getDirectoryData', query],
+		queryKey: ['getDirectoryData', query],
 		queryFn: getDirectoryData,
 		itemsKey: 'result',
 	});

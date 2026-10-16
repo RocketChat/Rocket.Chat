@@ -53,7 +53,7 @@ const DepartmentsTable = ({ archived }: DepartmentsTableProps) => {
 
 	const { data, isSuccess, isLoading, paginatedQuery, paginationProps } = usePaginatedQuery({
 		query,
-		getQueryKey: (query) => ['livechat-departments', query, archived],
+		queryKey: ['livechat-departments', query, archived],
 		queryFn: getDepartments,
 		itemsKey: 'departments',
 		placeholderData: keepPreviousData,

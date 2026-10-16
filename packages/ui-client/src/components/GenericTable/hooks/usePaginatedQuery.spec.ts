@@ -12,13 +12,10 @@ const getSounds = jest.fn(async ({ offset, count }: { offset: number; count: num
 });
 
 const renderPaginatedQuery = (initialQuery: { text: string }) =>
-	renderHook(
-		({ query }) => usePaginatedQuery({ query, getQueryKey: (query) => ['sounds', query], queryFn: getSounds, itemsKey: 'sounds' }),
-		{
-			wrapper: mockAppRoot().build(),
-			initialProps: { query: initialQuery },
-		},
-	);
+	renderHook(({ query }) => usePaginatedQuery({ query, queryKey: ['sounds', query], queryFn: getSounds, itemsKey: 'sounds' }), {
+		wrapper: mockAppRoot().build(),
+		initialProps: { query: initialQuery },
+	});
 
 beforeEach(() => {
 	getSounds.mockClear();

@@ -64,7 +64,7 @@ const CustomEmoji = ({ onClick, reload }: CustomEmojiProps) => {
 	const getEmojiList = useEndpoint('GET', '/v1/emoji-custom.all');
 	const { data, refetch, isSuccess, isLoading, isError, paginationProps } = usePaginatedQuery({
 		query,
-		getQueryKey: (query) => ['getEmojiList', query],
+		queryKey: ['getEmojiList', query],
 		queryFn: getEmojiList,
 		itemsKey: 'emojis',
 	});
