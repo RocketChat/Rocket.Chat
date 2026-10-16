@@ -56,6 +56,7 @@ import {
 	toAttributeDefinitions,
 	listAttributeDefinitions,
 	verdictOf,
+	previewRetainingEveryone,
 	withRoomRoles,
 	PREVIEW_READ_OPTIONS,
 	type PreviewSubject,
@@ -877,7 +878,9 @@ export class AbacService extends ServiceClass implements IAbacService {
 
 		let preview: IAbacRoomMembershipPreview;
 		try {
-			const evaluated = await this.pdp?.previewRoomMembers(room, evaluatedAgainst, page);
+			const evaluated = evaluatedAgainst.length
+				? await this.pdp?.previewRoomMembers(room, evaluatedAgainst, page)
+				: await previewRetainingEveryone(rid, page);
 			if (!evaluated) {
 				throw new PdpUnavailableError();
 			}
