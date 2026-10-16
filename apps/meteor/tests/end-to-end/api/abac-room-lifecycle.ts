@@ -1,4 +1,5 @@
-import type { IRoom, ITeam } from '@rocket.chat/core-typings';
+import type { Credentials } from '@rocket.chat/api-client';
+import type { IRoom, ITeam, IUser } from '@rocket.chat/core-typings';
 import { TeamType } from '@rocket.chat/core-typings';
 import { expect } from 'chai';
 import { before, after, describe, it } from 'mocha';
@@ -7,10 +8,11 @@ import { MongoClient } from 'mongodb';
 import { addAbacAttributesToUserDirectly, setRoomAbacAttributesDirectly } from '../../data/abac.helper';
 import { api, getCredentials, request, credentials } from '../../data/api-data';
 import { sleep } from '../../data/livechat/utils';
-import { updateSetting } from '../../data/permissions.helper';
-import { createRoom, deleteRoom } from '../../data/rooms.helper';
+import { updatePermission, updateSetting } from '../../data/permissions.helper';
+import { actionRoom, createRoom, deleteRoom } from '../../data/rooms.helper';
 import { createTeam, deleteTeam } from '../../data/teams.helper';
-import { adminUsername } from '../../data/user';
+import { adminUsername, password } from '../../data/user';
+import { createUser, deleteUser, login } from '../../data/users.helper';
 import { IS_EE, URL_MONGODB } from '../../e2e/config/constants';
 
 (IS_EE ? describe : describe.skip)('[ABAC Room Lifecycle] (Enterprise Only)', function () {
@@ -268,6 +270,118 @@ import { IS_EE, URL_MONGODB } from '../../e2e/config/constants';
 				.expect(200);
 
 			expect(await findRoom(team.roomId)).to.not.have.property('abacAttributes');
+		});
+	});
+
+	describe('removing attributes without permission to edit them', () => {
+		const roomIds: IRoom['_id'][] = [];
+		const teamNames: string[] = [];
+		let owner: IUser;
+		let ownerCredentials: Credentials;
+
+		const createOwnedGroup = async (name: string): Promise<IRoom['_id']> => {
+			const room = await createRoom({ type: 'p', name, credentials: ownerCredentials });
+			return room.body.group._id;
+		};
+
+		const createOwnedAbacGroup = async (name: string): Promise<IRoom['_id']> => {
+			const roomId = await createOwnedGroup(name);
+			roomIds.push(roomId);
+			await setRoomAbacAttributesDirectly(connection, roomId, attributes);
+			return roomId;
+		};
+
+		const createOwnedTeam = async (name: string): Promise<ITeam> => {
+			teamNames.push(name);
+			return createTeam(ownerCredentials, name, TeamType.PRIVATE);
+		};
+
+		const expectNotAuthorized = (res: { body: Record<string, unknown> }) => {
+			expect(res.body).to.include({ errorType: 'error-abac-not-authorized-to-modify-room' });
+		};
+
+		before(async () => {
+			owner = await createUser();
+			ownerCredentials = await login(owner.username, password);
+			await addAbacAttributesToUserDirectly(connection, owner._id, attributes);
+			await updatePermission('edit-room-abac-attributes', ['admin']);
+		});
+
+		after(async () => {
+			await updatePermission('edit-room-abac-attributes', ['admin', 'owner']);
+			await setAbacEnabled(true);
+			await Promise.all(
+				roomIds.map((roomId) => actionRoom({ action: 'delete', type: 'p', roomId, overrideCredentials: ownerCredentials })),
+			);
+			await Promise.all(teamNames.map((name) => deleteTeam(credentials, name)));
+			await deleteUser(owner);
+		});
+
+		it('refuses to convert the room to a team', async () => {
+			const roomId = await createOwnedAbacGroup(`abac-lifecycle-guard-to-team-${Date.now()}`);
+
+			await request.post(api('groups.convertToTeam')).set(ownerCredentials).send({ roomId }).expect(400).expect(expectNotAuthorized);
+
+			const room = await findRoom(roomId);
+			expect(room).to.have.deep.property('abacAttributes', attributes);
+			expect(room).to.not.have.property('teamMain');
+		});
+
+		it('still converts a room without attributes to a team', async () => {
+			const name = `abac-lifecycle-guard-plain-${Date.now()}`;
+			const roomId = await createOwnedGroup(name);
+			teamNames.push(name);
+
+			await request.post(api('groups.convertToTeam')).set(ownerCredentials).send({ roomId }).expect(200);
+		});
+
+		it('refuses to move the room into a team', async () => {
+			const team = await createOwnedTeam(`abac-lifecycle-guard-move-${Date.now()}`);
+			const roomId = await createOwnedAbacGroup(`abac-lifecycle-guard-move-in-${Date.now()}`);
+
+			await request
+				.post(api('teams.addRooms'))
+				.set(ownerCredentials)
+				.send({ teamId: team._id, rooms: [roomId] })
+				.expect(400)
+				.expect(expectNotAuthorized);
+
+			const room = await findRoom(roomId);
+			expect(room).to.have.deep.property('abacAttributes', attributes);
+			expect(room).to.not.have.property('teamId');
+		});
+
+		it('refuses to convert the team to a channel', async () => {
+			const team = await createOwnedTeam(`abac-lifecycle-guard-to-channel-${Date.now()}`);
+			await setRoomAbacAttributesDirectly(connection, team.roomId, attributes);
+
+			await request
+				.post(api('teams.convertToChannel'))
+				.set(ownerCredentials)
+				.send({ teamId: team._id })
+				.expect(400)
+				.expect(expectNotAuthorized);
+
+			const room = await findRoom(team.roomId);
+			expect(room).to.have.deep.property('abacAttributes', attributes);
+			expect(room).to.have.property('teamMain', true);
+		});
+
+		it('refuses to make the room public while ABAC is disabled', async () => {
+			const roomId = await createOwnedAbacGroup(`abac-lifecycle-guard-public-${Date.now()}`);
+			await setAbacEnabled(false);
+
+			await request
+				.post(api('rooms.saveRoomSettings'))
+				.set(ownerCredentials)
+				.send({ rid: roomId, roomType: 'c' })
+				.expect(400)
+				.expect(expectNotAuthorized);
+
+			const room = await findRoom(roomId);
+			expect(room).to.have.deep.property('abacAttributes', attributes);
+			expect(room).to.have.property('t', 'p');
+			await setAbacEnabled(true);
 		});
 	});
 });
