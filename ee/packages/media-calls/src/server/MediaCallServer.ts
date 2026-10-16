@@ -314,10 +314,11 @@ export class MediaCallServer implements IMediaCallServer {
 	}
 
 	/**
-	 * Resolves contacts for a `cti` call. Unlike a webrtc/sip call, the callee is the opaque dial
-	 * target the app will route, so it is NOT resolved through SIP routing or required to be an
-	 * extension — it is kept as the app-backed (`sip`-typed) leg. Only the caller (a Rocket.Chat user)
-	 * is resolved and permission-checked.
+	 * Resolves contacts for a `cti` call. The callee is always the app-backed leg — the app places the
+	 * call on the gateway and dials the callee's id — so it is kept `sip`-typed and its id has to be
+	 * something dialable. A Rocket.Chat user is therefore reached through their extension rather than
+	 * their user id, with `uid` still recording who was called. Unlike a webrtc/sip call the callee is
+	 * not routed by Rocket.Chat, so any other id is passed through as the app's own dial target.
 	 */
 	private async parseCtiCallContacts(params: InternalCallParams): Promise<InternalCallParams> {
 		if (!this.settings.cti.enabled) {
@@ -342,7 +343,11 @@ export class MediaCallServer implements IMediaCallServer {
 			throw new CallRejectedError('invalid-call-params');
 		}
 
-		const callee: MediaCallContact = { ...params.callee, type: 'sip' };
+		const callee = await mediaCallDirector.cast.getContactForActor(params.callee, { requiredType: 'sip' });
+		if (!callee) {
+			logger.debug({ msg: 'Failed to resolve a dialable cti callee', callee: params.callee });
+			throw new CallRejectedError('invalid-call-params');
+		}
 
 		return {
 			...params,
