@@ -15,6 +15,12 @@ jest.mock('@rocket.chat/fuselage-hooks', () => {
 	};
 });
 
+jest.mock('@rocket.chat/ui-contexts', () => ({
+	useEndpoint: () => jest.fn().mockResolvedValue(undefined),
+	useUser: () => ({ _id: 'user-id', settings: { preferences: {} } }),
+	useUserPreference: <T,>(_key: string, defaultValue: T) => defaultValue,
+}));
+
 jest.mock('../../lib/emoji', () => ({
 	emoji: { packages: { base: { emojisByCategory: { recent: [] } } } },
 	getFrequentEmoji: jest.fn(() => []),
