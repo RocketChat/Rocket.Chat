@@ -42,7 +42,7 @@ const LogsPage = () => {
 		paginationProps,
 	} = usePaginatedQuery({
 		query,
-		getQueryKey: (query) => ABACQueryKeys.logs.list(query),
+		queryKey: ABACQueryKeys.logs.list(query),
 		queryFn: getLogs,
 		itemsKey: 'events',
 	});

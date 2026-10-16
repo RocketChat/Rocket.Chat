@@ -28,7 +28,7 @@ const TriggersTable = () => {
 	const getTriggers = useEndpoint('GET', '/v1/livechat/triggers');
 	const { data, refetch, isSuccess, isLoading, isError, paginatedQuery, paginationProps } = usePaginatedQuery({
 		query: {},
-		getQueryKey: (query) => ['livechat-triggers', query],
+		queryKey: ['livechat-triggers'],
 		queryFn: getTriggers,
 		itemsKey: 'triggers',
 	});

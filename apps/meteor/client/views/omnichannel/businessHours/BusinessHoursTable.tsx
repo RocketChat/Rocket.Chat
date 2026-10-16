@@ -32,7 +32,7 @@ const BusinessHoursTable = () => {
 	const getBusinessHours = useEndpoint('GET', '/v1/livechat/business-hours');
 	const { data, isLoading, isSuccess, isError, refetch, paginationProps } = usePaginatedQuery({
 		query,
-		getQueryKey: (query) => ['livechat-getBusinessHours', query],
+		queryKey: ['livechat-getBusinessHours', query],
 		queryFn: getBusinessHours,
 		itemsKey: 'businessHours',
 	});

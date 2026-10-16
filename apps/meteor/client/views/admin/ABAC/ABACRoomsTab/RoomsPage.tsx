@@ -54,7 +54,7 @@ const RoomsPage = () => {
 
 	const { data, isLoading, paginationProps } = usePaginatedQuery({
 		query,
-		getQueryKey: (query) => ABACQueryKeys.rooms.list(query),
+		queryKey: ABACQueryKeys.rooms.list(query),
 		queryFn: getRooms,
 		itemsKey: 'rooms',
 		...(isExternalStore && { staleTime: 0, gcTime: 0 }),

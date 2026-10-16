@@ -40,7 +40,7 @@ const DeviceManagementAdminTable = () => {
 	const listAllSessions = useEndpoint('GET', '/v1/sessions/list.all');
 	const queryResult = usePaginatedQuery({
 		query,
-		getQueryKey: (query) => deviceManagementQueryKeys.sessions(query),
+		queryKey: deviceManagementQueryKeys.sessions(query),
 		queryFn: listAllSessions,
 		itemsKey: 'sessions',
 	});

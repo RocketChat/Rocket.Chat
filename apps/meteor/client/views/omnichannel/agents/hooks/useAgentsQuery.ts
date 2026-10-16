@@ -9,7 +9,7 @@ export const useAgentsQuery = (query: PaginatedRequest = {}) => {
 
 	return usePaginatedQuery({
 		query,
-		getQueryKey: omnichannelQueryKeys.agents,
+		queryKey: omnichannelQueryKeys.agents(query),
 		queryFn: getAgents,
 		itemsKey: 'users',
 	});

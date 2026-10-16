@@ -46,7 +46,7 @@ const TagsTable = () => {
 	const getTags = useEndpoint('GET', '/v1/livechat/tags');
 	const { data, isSuccess, isLoading, paginatedQuery, paginationProps } = usePaginatedQuery({
 		query,
-		getQueryKey: (query) => ['livechat-tags', query],
+		queryKey: ['livechat-tags', query],
 		queryFn: getTags,
 		itemsKey: 'tags',
 		refetchOnWindowFocus: false,

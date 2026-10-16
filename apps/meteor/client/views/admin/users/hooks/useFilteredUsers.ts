@@ -46,7 +46,7 @@ const useFilteredUsers = ({ searchTerm, sortData, tab, selectedRoles, statusMana
 	const getUsers = useEndpoint('GET', '/v1/users.listByStatus');
 	const usersListQueryResult = usePaginatedQuery({
 		query,
-		getQueryKey: (query) => ['users.list', query, tab],
+		queryKey: ['users.list', query, tab],
 		queryFn: getUsers,
 		itemsKey: 'users',
 		meta: {

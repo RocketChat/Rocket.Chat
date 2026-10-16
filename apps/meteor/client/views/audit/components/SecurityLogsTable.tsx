@@ -88,7 +88,7 @@ const SecurityLogsTable = () => {
 
 	const { data, isLoading, isSuccess, paginationProps } = usePaginatedQuery({
 		query,
-		getQueryKey: (query) => ['audit.settings', query],
+		queryKey: ['audit.settings', query],
 		queryFn: getAudits,
 		itemsKey: 'events',
 	});
