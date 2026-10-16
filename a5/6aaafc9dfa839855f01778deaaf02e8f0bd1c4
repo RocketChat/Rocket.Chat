@@ -1,0 +1,30 @@
+apps/meteor/ee/server/hooks/xmpp/index.ts
+  s_22158ff20cd246::t_d51c6bc929ea16 12
+packages/tools/src/isBareJid.ts
+  s_22158ff20cd246::t_4f358859426ad1 1,3-27
+  s_22158ff20cd246::t_754a9dba082559 2
+packages/tools/src/index.ts
+  s_22158ff20cd246::t_a27c9eedd63dfc 12
+apps/meteor/client/components/UserAutoCompleteMultiple/UserAutoCompleteMultiple.tsx
+  s_22158ff20cd246::t_d51c6bc929ea16 3,58
+apps/meteor/server/lib/rooms/createRoom.ts
+  s_22158ff20cd246::t_d51c6bc929ea16 14,93
+packages/tools/src/isBareJid.spec.ts
+  s_22158ff20cd246::t_670aaa3a005a43 1-49
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "a56aaafc9dfa839855f01778deaaf02e8f0bd1c4",
+  "prompts": {},
+  "sessions": {
+    "s_22158ff20cd246": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "e3bc8f7d-2ca9-481d-9c88-43497a3e53ec",
+        "model": "claude-opus-5-5"
+      },
+      "human_author": "Diego Sampaio <chinello@gmail.com>"
+    }
+  }
+}

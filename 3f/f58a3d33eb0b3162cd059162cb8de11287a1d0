@@ -1,0 +1,135 @@
+CLAUDE.md
+  s_22158ff20cd246::t_ef4c82a028cff6 66
+docs/features/xmpp-server.md
+  s_22158ff20cd246::t_322977787228fb 1-22
+ee/packages/xmpp-server/.claude/skills/xmpp-intent/SKILL.md
+  s_22158ff20cd246::t_d4b3cf7dc845e9 1-61
+ee/packages/xmpp-server/.claude/skills/xmpp-plan/SKILL.md
+  s_22158ff20cd246::t_b830305591f812 1-61
+ee/packages/xmpp-server/.claude/skills/xmpp-spec/SKILL.md
+  s_22158ff20cd246::t_ea989e39d5fa68 1-72
+ee/packages/xmpp-server/.claude/skills/xmpp-spec/references/requirement-checklist.md
+  s_22158ff20cd246::t_e1413e60181feb 1-46
+ee/packages/xmpp-server/CLAUDE.md
+  s_22158ff20cd246::t_02cf229d981aa8 1-59
+ee/packages/xmpp-server/README.md
+  s_22158ff20cd246::t_4ad9fed89324cb 1-37
+ee/packages/xmpp-server/docs/README.md
+  s_22158ff20cd246::t_ca48840aa9a301 1-333
+ee/packages/xmpp-server/docs/adr/0001-protocol-core-has-no-rocketchat-dependency.md
+  s_22158ff20cd246::t_0c4b4418ab872f 1-49
+ee/packages/xmpp-server/docs/adr/0002-integration-service-runs-only-as-a-microservice.md
+  s_22158ff20cd246::t_bd612c1cd64d45 1-38
+ee/packages/xmpp-server/docs/adr/0003-xml-via-ltx-and-xmpp-jid.md
+  s_22158ff20cd246::t_58524789b4ed0c 1-34
+ee/packages/xmpp-server/docs/adr/0004-starttls-required-sasl-external-preferred-dialback-fallback.md
+  s_22158ff20cd246::t_9a90d98979a523 1-48
+ee/packages/xmpp-server/docs/adr/0005-peer-certificates-name-a-domain-by-dnsname-srvname-or-xmppaddr.md
+  s_22158ff20cd246::t_86aed61537fddf 1-53
+ee/packages/xmpp-server/docs/adr/0006-remote-users-are-local-users-keyed-by-bare-jid.md
+  s_22158ff20cd246::t_d6d3f9011f491b 1-48
+ee/packages/xmpp-server/docs/adr/0007-inbound-messages-are-deduplicated-by-federation-event-id.md
+  s_22158ff20cd246::t_456fef651fdefc 1-42
+ee/packages/xmpp-server/docs/adr/0008-only-dedicated-xmpp-rooms-are-exposed.md
+  s_22158ff20cd246::t_2b2c626d1bcd2f 1-57
+ee/packages/xmpp-server/docs/adr/0009-one-remote-muc-session-per-local-member.md
+  s_22158ff20cd246::t_b27b528fa85a36 1-48
+ee/packages/xmpp-server/docs/adr/0010-presence-subscriptions-auto-accepted-only-from-dm-partners.md
+  s_22158ff20cd246::t_9a6484aaceadf1 1-35
+ee/packages/xmpp-server/docs/adr/0011-domain-normalization-is-idna-and-lowercase.md
+  s_22158ff20cd246::t_fb62a4003dbf0e 1-60
+ee/packages/xmpp-server/docs/adr/0012-core-state-is-ephemeral-and-rebuilt-from-the-database.md
+  s_22158ff20cd246::t_91d90c8ebdab01 1-42
+ee/packages/xmpp-server/docs/adr/0013-reconfigure-restarts-the-listener-only-for-listener-settings.md
+  s_22158ff20cd246::t_84391d582b6e8a 1-38
+ee/packages/xmpp-server/docs/adr/0014-inbound-message-id-is-derived-from-room-author-and-sender-id.md
+  s_22158ff20cd246::t_774f1200f36bfa 1-76
+ee/packages/xmpp-server/docs/adr/0015-remote-room-occupants-are-the-user-their-disclosed-jid-names.md
+  s_22158ff20cd246::t_4576a6e3aa18df 1-98
+ee/packages/xmpp-server/docs/adr/0016-a-hosted-room-message-stanza-id-is-its-rocketchat-id.md
+  s_22158ff20cd246::t_c509f682730af9 1-62
+ee/packages/xmpp-server/docs/architecture.md
+  s_22158ff20cd246::t_a97ffa9cf34616 1-279
+ee/packages/xmpp-server/docs/compliance.md
+  s_22158ff20cd246::t_30f1e5b51aee52 1-58
+ee/packages/xmpp-server/docs/examples.md
+  s_22158ff20cd246::t_af2fa7f9e1bb26 1-219
+ee/packages/xmpp-server/docs/intents/README.md
+  s_22158ff20cd246::t_a964cabf7209d5 1
+ee/packages/xmpp-server/docs/intents/accreditation-readiness.md
+  s_22158ff20cd246::t_20e06a8aa517bd 1-87
+ee/packages/xmpp-server/docs/intents/connection-recovery.md
+  s_22158ff20cd246::t_b3bb65e0faf4d2 1-115
+ee/packages/xmpp-server/docs/intents/federation-authorization.md
+  s_22158ff20cd246::t_4f541b3dc7d2db 1-104
+ee/packages/xmpp-server/docs/intents/interop-certification.md
+  s_22158ff20cd246::t_ce6d3bce95957e 1-72
+ee/packages/xmpp-server/docs/intents/joining-remote-rooms.md
+  s_22158ff20cd246::t_af46159c0b9ed4 1-52
+ee/packages/xmpp-server/docs/intents/message-ordering.md
+  s_22158ff20cd246::t_45f409f0899b68 1-54
+ee/packages/xmpp-server/docs/intents/protocol-isolation.md
+  s_22158ff20cd246::t_2be7a19ab11336 1-85
+ee/packages/xmpp-server/docs/intents/room-history.md
+  s_22158ff20cd246::t_a0ad7c9ea2c8f4 1-84
+ee/packages/xmpp-server/docs/intents/scale-and-availability.md
+  s_22158ff20cd246::t_7c4085503e38c5 1-83
+ee/packages/xmpp-server/docs/operations.md
+  s_22158ff20cd246::t_31c840d3ec1e7f 1-342
+ee/packages/xmpp-server/docs/plans/README.md
+  s_22158ff20cd246::t_552968ee6eb189 1
+ee/packages/xmpp-server/docs/specs/addressing.md
+  s_22158ff20cd246::t_dbeb9c35336ca5 1-89
+ee/packages/xmpp-server/docs/specs/chat-states.md
+  s_22158ff20cd246::t_9cdb50bf97bb2f 1-77
+ee/packages/xmpp-server/docs/specs/configuration-and-lifecycle.md
+  s_22158ff20cd246::t_624990dd29cb48 1-105
+ee/packages/xmpp-server/docs/specs/delivery-receipts.md
+  s_22158ff20cd246::t_728394eb0869ab 1-72
+ee/packages/xmpp-server/docs/specs/direct-messages.md
+  s_22158ff20cd246::t_cc8b871aa00897 1-94
+ee/packages/xmpp-server/docs/specs/file-transfer.md
+  s_22158ff20cd246::t_95e17909739e74 1-119
+ee/packages/xmpp-server/docs/specs/hosted-muc.md
+  s_22158ff20cd246::t_926e288e34a280 1-169
+ee/packages/xmpp-server/docs/specs/message-corrections.md
+  s_22158ff20cd246::t_c05fb24ea0cf01 1-121
+ee/packages/xmpp-server/docs/specs/message-deduplication.md
+  s_22158ff20cd246::t_57f299edca330f 1-83
+ee/packages/xmpp-server/docs/specs/message-retraction.md
+  s_22158ff20cd246::t_7eeb2045d2212a 1-84
+ee/packages/xmpp-server/docs/specs/ping.md
+  s_22158ff20cd246::t_2b699cd8130bfb 1-49
+ee/packages/xmpp-server/docs/specs/presence.md
+  s_22158ff20cd246::t_f38ba26ca00387 1-98
+ee/packages/xmpp-server/docs/specs/remote-muc.md
+  s_22158ff20cd246::t_249131f333dd87 1-170
+ee/packages/xmpp-server/docs/specs/s2s-connectivity.md
+  s_22158ff20cd246::t_6021608dc2a313 1-152
+ee/packages/xmpp-server/docs/specs/service-discovery.md
+  s_22158ff20cd246::t_18b06af3500cf7 1-67
+ee/packages/xmpp-server/docs/templates/adr.md
+  s_22158ff20cd246::t_2fa1889b7ffef1 1-22
+ee/packages/xmpp-server/docs/templates/intent.md
+  s_22158ff20cd246::t_fdc75995be292b 1-27
+ee/packages/xmpp-server/docs/templates/plan.md
+  s_22158ff20cd246::t_500cb3c5ed51a6 1-25
+ee/packages/xmpp-server/docs/templates/spec.md
+  s_22158ff20cd246::t_b2fde454e0c5b1 1-57
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "3ff58a3d33eb0b3162cd059162cb8de11287a1d0",
+  "prompts": {},
+  "sessions": {
+    "s_22158ff20cd246": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "e3bc8f7d-2ca9-481d-9c88-43497a3e53ec",
+        "model": "claude-opus-5-5"
+      },
+      "human_author": "Diego Sampaio <chinello@gmail.com>"
+    }
+  }
+}

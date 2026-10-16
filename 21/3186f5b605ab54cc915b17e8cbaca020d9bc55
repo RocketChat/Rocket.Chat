@@ -1,0 +1,25 @@
+apps/meteor/server/lib/rooms/invitesByRawUsername.ts
+  s_22158ff20cd246::t_27198e639d485f 1-5
+apps/meteor/server/api/v1/groups.ts
+  s_22158ff20cd246::t_87c696e7d27dd7 43
+  s_22158ff20cd246::t_6f5a69573b4744 862
+apps/meteor/server/api/v1/channels.ts
+  s_22158ff20cd246::t_6f5a69573b4744 1411
+  s_22158ff20cd246::t_87c696e7d27dd7 53
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "213186f5b605ab54cc915b17e8cbaca020d9bc55",
+  "prompts": {},
+  "sessions": {
+    "s_22158ff20cd246": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "e3bc8f7d-2ca9-481d-9c88-43497a3e53ec",
+        "model": "claude-opus-5-5"
+      },
+      "human_author": "Diego Sampaio <chinello@gmail.com>"
+    }
+  }
+}

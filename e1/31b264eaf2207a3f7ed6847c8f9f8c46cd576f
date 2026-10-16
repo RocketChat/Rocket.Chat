@@ -1,0 +1,21 @@
+apps/meteor/server/lib/callbacks.ts
+  s_22158ff20cd246::t_99b108d1f06000 83
+apps/meteor/ee/server/hooks/xmpp/index.ts
+  s_22158ff20cd246::t_1e577511f3ba63 56
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "e131b264eaf2207a3f7ed6847c8f9f8c46cd576f",
+  "prompts": {},
+  "sessions": {
+    "s_22158ff20cd246": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "e3bc8f7d-2ca9-481d-9c88-43497a3e53ec",
+        "model": "claude-opus-5-5"
+      },
+      "human_author": "Diego Sampaio <chinello@gmail.com>"
+    }
+  }
+}

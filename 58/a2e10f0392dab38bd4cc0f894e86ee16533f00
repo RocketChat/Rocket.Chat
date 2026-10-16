@@ -1,0 +1,24 @@
+ee/packages/xmpp-server/src/muc/MucRoom.ts
+  s_22158ff20cd246::t_5607cd92ace35a 128-130,216-218
+ee/packages/xmpp-server/src/muc/MucRoom.spec.ts
+  s_22158ff20cd246::t_200f2f9706c310 43-54,58-66
+  s_22158ff20cd246::t_5607cd92ace35a 55-57
+ee/packages/xmpp-server/docs/specs/hosted-muc.md
+  s_22158ff20cd246::t_f94d78a2f80a84 56-58
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "58a2e10f0392dab38bd4cc0f894e86ee16533f00",
+  "prompts": {},
+  "sessions": {
+    "s_22158ff20cd246": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "e3bc8f7d-2ca9-481d-9c88-43497a3e53ec",
+        "model": "claude-opus-5-5"
+      },
+      "human_author": "Diego Sampaio <chinello@gmail.com>"
+    }
+  }
+}

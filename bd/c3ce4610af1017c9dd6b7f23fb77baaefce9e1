@@ -1,0 +1,14 @@
+apps/meteor/client/hooks/roomActions/useVideoCallRoomAction.federation.spec.tsx
+  h_4c386397e672f4 25
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "bdc3ce4610af1017c9dd6b7f23fb77baaefce9e1",
+  "prompts": {},
+  "humans": {
+    "h_4c386397e672f4": {
+      "author": "Diego Sampaio <chinello@gmail.com>"
+    }
+  }
+}
