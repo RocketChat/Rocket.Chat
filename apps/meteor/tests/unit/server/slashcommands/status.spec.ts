@@ -106,6 +106,18 @@ describe('/status and presence slash commands', () => {
 			await slashCommand.runCommand('status', { params: 'invisible' });
 			sinon.assert.calledOnceWithExactly(setStatus, { _id: 'actor', language: 'pt' }, UserStatus.OFFLINE, '');
 		});
+
+		it('normalizes empty status text to undefined for /status away when message editing is disabled', async () => {
+			slashCommand.settings.get.withArgs('Accounts_AllowUserStatusMessageChange').returns(false);
+			await slashCommand.runCommand('status', { params: 'away' });
+			sinon.assert.calledOnceWithExactly(setStatus, { _id: 'actor', language: 'pt' }, UserStatus.AWAY, undefined);
+		});
+
+		it('leaves no-argument /status unchanged when message editing is disabled', async () => {
+			slashCommand.settings.get.withArgs('Accounts_AllowUserStatusMessageChange').returns(false);
+			await slashCommand.runCommand('status');
+			sinon.assert.calledOnceWithExactly(setStatus, { _id: 'actor', language: 'pt' }, undefined, '');
+		});
 	});
 
 	describe('/away', () => {
@@ -118,6 +130,18 @@ describe('/status and presence slash commands', () => {
 		it('sets status to away with custom text', async () => {
 			await slashCommand.runCommand('away', { params: 'be right back' });
 			sinon.assert.calledOnceWithExactly(setStatus, { _id: 'actor', language: 'pt' }, UserStatus.AWAY, 'be right back');
+		});
+
+		it('normalizes empty status text to undefined when message editing is disabled', async () => {
+			slashCommand.settings.get.withArgs('Accounts_AllowUserStatusMessageChange').returns(false);
+			await slashCommand.runCommand('away');
+			sinon.assert.calledOnceWithExactly(setStatus, { _id: 'actor', language: 'pt' }, UserStatus.AWAY, undefined);
+		});
+
+		it('preserves empty status text when message editing is enabled', async () => {
+			slashCommand.settings.get.withArgs('Accounts_AllowUserStatusMessageChange').returns(true);
+			await slashCommand.runCommand('away');
+			sinon.assert.calledOnceWithExactly(setStatus, { _id: 'actor', language: 'pt' }, UserStatus.AWAY, '');
 		});
 	});
 

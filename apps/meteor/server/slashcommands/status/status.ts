@@ -28,7 +28,11 @@ const executeSetUserStatus = async (
 		return;
 	}
 	try {
-		await setUserStatusMethod(user, statusType, statusText);
+		const allowMessageChange = settings.get('Accounts_AllowUserStatusMessageChange') ?? true;
+		const normalizedStatusText =
+			statusType !== undefined && !allowMessageChange && statusText === '' ? undefined : statusText;
+
+		await setUserStatusMethod(user, statusType, normalizedStatusText);
 
 		void api.broadcast('notify.ephemeralMessage', userId, message.rid, {
 			msg: i18n.t('StatusMessage_Changed_Successfully', { lng }),
