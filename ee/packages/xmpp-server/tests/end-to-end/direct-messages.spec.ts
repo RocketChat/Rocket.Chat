@@ -4,7 +4,7 @@ import { setTimeout as sleep } from 'node:timers/promises';
 
 import type { IRoom } from '@rocket.chat/core-typings';
 
-import { uniqueSuffix } from './helper/config';
+import { uniqueSuffix, withUppercaseDomain } from './helper/config';
 import { isChat, replacedId } from './helper/predicates';
 import {
 	createDirectMessage,
@@ -74,6 +74,11 @@ describe('XMPP federation: direct messages', () => {
 		const sent = await sendMessage(local, room._id, text);
 		const received = await alice.waitFor(isChat({ from: local.jid, body: text }), 'the DM from Rocket.Chat');
 		assert.equal(received.attrs.id, sent._id);
+	});
+
+	it('reuses the DM when the JID is typed with another spelling of its domain (R7, addressing R4)', async () => {
+		const room = await createDirectMessage(rc, local, withUppercaseDomain(alice.bareJid));
+		assert.equal(room._id, dm._id);
 	});
 
 	it('opens a DM with a JID Rocket.Chat has never seen, and delivers to it (R7)', async () => {

@@ -3,7 +3,7 @@ import { after, before, describe, it } from 'node:test';
 
 import type { IRoom } from '@rocket.chat/core-typings';
 
-import { federationPolling, uniqueSuffix } from './helper/config';
+import { federationPolling, uniqueSuffix, withUppercaseDomain } from './helper/config';
 import { isGroupchat, isOccupantPresence, isRoomInvite, isRoomSubject, replacedId, statusCodes } from './helper/predicates';
 import {
 	createHostedRoom,
@@ -74,6 +74,23 @@ describe('XMPP federation: rooms hosted by Rocket.Chat', () => {
 				const res = await createRoom({ type: 'p', name: `xe2e-${option}-${uniqueSuffix()}`, config: owner.config, ...params });
 				assert.equal((res.body as { errorType?: string }).errorType, 'error-xmpp-room-options-not-allowed');
 			});
+		});
+
+		it('takes a member JID typed with another spelling of its domain as that XMPP user (R11, addressing R4)', async () => {
+			const room = await createHostedRoom(rc, owner, {
+				type: 'p',
+				name: `xe2e-spelling-${uniqueSuffix()}`,
+				members: [withUppercaseDomain(alice.bareJid)],
+			});
+			const usernames = await listMemberUsernames(owner, room);
+			assert.ok(usernames.includes(alice.bareJid), `expected ${alice.bareJid} among ${usernames.join(', ')}`);
+			assert.ok(!usernames.includes(withUppercaseDomain(alice.bareJid)));
+		});
+
+		it('adds a JID typed with another spelling of its domain as that XMPP user (addressing R4)', async () => {
+			const room = await createHostedRoom(rc, owner, { type: 'p', name: `xe2e-spelling-add-${uniqueSuffix()}` });
+			await inviteToRoom(owner, room, withUppercaseDomain(alice.bareJid));
+			await waitForMember(owner, room, alice.bareJid);
 		});
 
 		it('creates an unencrypted group where the workspace forces encryption on private rooms (R1)', async () => {

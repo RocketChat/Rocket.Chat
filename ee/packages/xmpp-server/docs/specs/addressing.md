@@ -11,6 +11,10 @@ code:
     src/service/helpers/xmppUser.ts,
     src/muc/RemoteMucSession.ts,
     src/XMPPServer.ts,
+    packages/tools/src/isBareJid.ts,
+    apps/meteor/server/meteor-methods/messages/createDirectMessage.ts,
+    apps/meteor/server/meteor-methods/rooms/addUsersToRoom.ts,
+    apps/meteor/server/lib/rooms/createRoom.ts,
   ]
 tests:
   [
@@ -21,6 +25,9 @@ tests:
     src/muc/MucService.spec.ts,
     tests/integration/inbound-addressing.spec.ts,
     tests/integration/muc.spec.ts,
+    packages/tools/src/isBareJid.spec.ts,
+    tests/end-to-end/direct-messages.spec.ts,
+    tests/end-to-end/hosted-muc.spec.ts,
     tests/end-to-end/remote-muc.spec.ts,
   ]
 ---
@@ -52,7 +59,10 @@ localparts, and compare domains the way DNS does.
   converted to ASCII, lowercased. A domain that does not survive the conversion raises
   `InvalidJidError` and the stanza or stream carrying it is rejected. An accepted inbound
   stanza's `from` and `to` carry their domains in normalized form, so a remote account has
-  one record and a message one event id however the peer spells its domain.
+  one record and a message one event id however the peer spells its domain. A JID a
+  Rocket.Chat user types, opening a DM or adding a member to an XMPP room, is taken with its
+  domain normalized the same way, internationalized domains included, so it names the record
+  a stanza from that account does.
 - **R5** Allow and deny lists are evaluated on normalized domains. A domain on the deny list
   is refused regardless of the allow list; an empty allow list allows every domain.
 - **R6** The MUC service domain is `<subdomain>.<domain>`, normalized the same way.
