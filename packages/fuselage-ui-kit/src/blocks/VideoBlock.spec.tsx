@@ -27,7 +27,9 @@ it('shows the thumbnail and only loads the player once the video is clicked', as
 
 	await userEvent.click(screen.getByRole('button', { name: 'Release walkthrough' }));
 
-	expect(screen.getByTitle('Release walkthrough')).toHaveAttribute('src', 'https://player.example.com/embed/1');
+	const player = screen.getByTitle('Release walkthrough');
+	expect(player).toHaveAttribute('src', 'https://player.example.com/embed/1');
+	expect(player).toHaveAttribute('referrerpolicy', 'strict-origin-when-cross-origin');
 });
 
 it('links the title and shows the provider and the author', () => {
