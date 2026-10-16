@@ -8,8 +8,6 @@ describe('parseMessageSearchQuery', () => {
 		user: createFakeUser(),
 	};
 
-	const utcOffset = new Date().getTimezoneOffset() / 60;
-
 	[
 		{
 			text: 'from:rodrigo mention:gabriel chat',
@@ -175,17 +173,17 @@ describe('parseMessageSearchQuery', () => {
 		},
 		{
 			text: 'before:01-01-2023',
-			query: { ts: { $lte: new Date(2023, 0, 1, utcOffset) } },
+			query: { ts: { $lte: new Date(Date.UTC(2023, 0, 1)) } },
 			options: { projection: {}, sort: { ts: -1 }, skip: 0, limit: 20 },
 		},
 		{
 			text: 'after:01-01-2023',
-			query: { ts: { $gte: new Date(2023, 0, 2, utcOffset) } },
+			query: { ts: { $gte: new Date(Date.UTC(2023, 0, 2)) } },
 			options: { projection: {}, sort: { ts: -1 }, skip: 0, limit: 20 },
 		},
 		{
 			text: 'on:01-01-2023',
-			query: { ts: { $gte: new Date(2023, 0, 1, utcOffset), $lt: new Date(2023, 0, 2, utcOffset) } },
+			query: { ts: { $gte: new Date(Date.UTC(2023, 0, 1)), $lt: new Date(Date.UTC(2023, 0, 2)) } },
 			options: { projection: {}, sort: { ts: -1 }, skip: 0, limit: 20 },
 		},
 		{
@@ -203,6 +201,30 @@ describe('parseMessageSearchQuery', () => {
 			const { query, options } = parseMessageSearchQuery(text, params);
 			expect(query).to.deep.equal(expectedQuery);
 			expect(options).to.deep.equal(expectedOptions);
+		});
+	});
+
+	describe('date filters in the user timezone', () => {
+		const tsFor = (text: string, utcOffset: number) => parseMessageSearchQuery(text, { user: createFakeUser({ utcOffset }) }).query.ts;
+
+		[
+			{ utcOffset: 9, start: '2026-01-09T15:00:00.000Z', end: '2026-01-10T15:00:00.000Z' },
+			{ utcOffset: 5.5, start: '2026-01-09T18:30:00.000Z', end: '2026-01-10T18:30:00.000Z' },
+			{ utcOffset: -5, start: '2026-01-10T05:00:00.000Z', end: '2026-01-11T05:00:00.000Z' },
+		].forEach(({ utcOffset, start, end }) => {
+			describe(`for a user at UTC${utcOffset >= 0 ? '+' : ''}${utcOffset}`, () => {
+				it('should match the whole local day with "on:"', () => {
+					expect(tsFor('on:10/01/2026', utcOffset)).to.deep.equal({ $gte: new Date(start), $lt: new Date(end) });
+				});
+
+				it('should end at the start of the local day with "before:"', () => {
+					expect(tsFor('before:10/01/2026', utcOffset)).to.deep.equal({ $lte: new Date(start) });
+				});
+
+				it('should begin at the end of the local day with "after:"', () => {
+					expect(tsFor('after:10/01/2026', utcOffset)).to.deep.equal({ $gte: new Date(end) });
+				});
+			});
 		});
 	});
 });
