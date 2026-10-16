@@ -12,10 +12,8 @@ export type MatrixRTCMode = 'matrix_2_0' | 'compatibility';
 /** Where a member publishes their media, as their membership announces it. */
 export type MatrixRTCLiveKitTransport = {
 	type: 'livekit';
-	/** The SFU's WebSocket address, announced by Matrix 2.0 memberships. */
-	url?: string;
-	/** The service that issues tokens for that SFU, announced by compatibility memberships. */
-	serviceUrl?: string;
+	/** The service that issues tokens for the member's SFU. */
+	serviceUrl: string;
 };
 
 /**
@@ -63,8 +61,8 @@ export interface IMatrixRTCMembership extends IRocketChatRecord {
 	expiresAt: Date;
 }
 
-/** The key that tells one SFU of a federated call from another: its address, or its token service's address. */
-export const getMatrixRTCTransportKey = (transport: MatrixRTCLiveKitTransport): string => transport.url || transport.serviceUrl || '';
+/** The key that tells one SFU of a federated call from another: its token service's address. */
+export const getMatrixRTCTransportKey = (transport: MatrixRTCLiveKitTransport): string => transport.serviceUrl;
 
 /** Where a member publishes, as a conference's roster tells clients: from the member's latest membership. */
 export const getVideoConferenceMemberFederation = ({

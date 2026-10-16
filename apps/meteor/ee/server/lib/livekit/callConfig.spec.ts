@@ -147,14 +147,6 @@ describe('getCallConfig', () => {
 			});
 		});
 
-		it('tells the SFUs of a session apart by their address when the membership announces one', async () => {
-			joinRTCSession.resolves({ ...membership, transport: { type: 'livekit', url: 'wss://livekit.example.com' } });
-
-			const result = await getCallConfig('call', user);
-
-			expect(result.config.federation.transport).to.equal('wss://livekit.example.com');
-		});
-
 		it('reports a session it could not join, minting nothing', async () => {
 			joinRTCSession.rejects(new Error('federation is off'));
 

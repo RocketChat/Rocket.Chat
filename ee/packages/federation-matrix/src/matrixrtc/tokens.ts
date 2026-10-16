@@ -1,13 +1,9 @@
 import type { IMatrixRTCMembership, IUser, IVideoConference } from '@rocket.chat/core-typings';
 import { getMatrixRTCTransportKey } from '@rocket.chat/core-typings';
-import { Logger } from '@rocket.chat/logger';
 import { MatrixRTCMemberships } from '@rocket.chat/models';
 
 import { joinRTCSession } from './session';
-import { requestFederationToken } from './tokens/federation';
 import { requestServiceToken } from './tokens/service';
-
-const logger = new Logger('MatrixRTCTokens');
 
 /** A remote member publishing on the SFU that `serverName` and `transport` name, if anyone still is. */
 async function findRemotePublisher(
@@ -48,23 +44,5 @@ export async function getRemoteLiveKitToken(
 	// its join has announced the membership the token request names.
 	const member = (await MatrixRTCMemberships.findOneActiveLocal(call._id, user._id, now)) ?? (await joinRTCSession(call, user));
 
-	const { url, serviceUrl } = publisher.transport;
-
-	// Deployed Matrix clients only know token services, so a service is asked first whenever one is announced.
-	if (serviceUrl) {
-		try {
-			return await requestServiceToken(serviceUrl, member);
-		} catch (err) {
-			if (!url) {
-				throw err;
-			}
-			logger.warn({ msg: 'The token service of a remote SFU refused a token; asking its homeserver', serverName, serviceUrl, err });
-		}
-	}
-
-	if (!url) {
-		throw new Error(`The membership of ${publisher.userId} names no SFU`);
-	}
-
-	return requestFederationToken(publisher.serverName, url, member);
+	return requestServiceToken(publisher.transport.serviceUrl, member);
 }

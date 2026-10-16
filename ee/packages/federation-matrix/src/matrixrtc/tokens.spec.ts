@@ -1,5 +1,5 @@
 import type { IMatrixRTCMembership, IUser, IVideoConference } from '@rocket.chat/core-typings';
-import { FederationRequestError, federationSDK } from '@rocket.chat/federation-sdk';
+import { federationSDK } from '@rocket.chat/federation-sdk';
 import { MatrixRTCMemberships } from '@rocket.chat/models';
 
 import { getOpenIdTokenSubject } from './openid';
@@ -20,22 +20,12 @@ jest.mock('./session', () => ({
 jest.mock('@rocket.chat/federation-sdk', () => ({
 	federationSDK: {
 		getConfig: jest.fn(),
-		makeSignedRequest: jest.fn(),
-	},
-	FederationRequestError: class extends Error {
-		constructor(
-			readonly response: { status: number },
-			text: string,
-		) {
-			super(`Federation request failed: ${response.status} ${text}`);
-		}
 	},
 }));
 
 const mockFindActiveBySession = jest.mocked(MatrixRTCMemberships.findActiveBySession);
 const mockFindOneActiveLocal = jest.mocked(MatrixRTCMemberships.findOneActiveLocal);
 const mockJoinRTCSession = jest.mocked(joinRTCSession);
-const mockMakeSignedRequest = jest.mocked(federationSDK.makeSignedRequest);
 const mockGetConfig = jest.mocked(federationSDK.getConfig);
 
 const MRID = '!room:rc1';
@@ -62,11 +52,6 @@ const alice = membership({
 const bobOn = (transport: IMatrixRTCMembership['transport']) =>
 	membership({ local: false, uid: 'bob-id', userId: '@bob:rc2', serverName: 'rc2', deviceId: 'BOB', memberId: 'bob-member', transport });
 
-const signedAnswer = (body: unknown) => ({ json: async () => body }) as Awaited<ReturnType<typeof federationSDK.makeSignedRequest>>;
-
-const rejection = (status: number, body: unknown) =>
-	new FederationRequestError({ status } as ConstructorParameters<typeof FederationRequestError>[0], JSON.stringify(body));
-
 const serviceAnswer = (status: number, body: unknown) => new Response(JSON.stringify(body), { status });
 
 describe('getRemoteLiveKitToken', () => {
@@ -88,54 +73,6 @@ describe('getRemoteLiveKitToken', () => {
 
 	afterEach(() => fetchSpy.mockRestore());
 
-	describe('from a member announcing their SFU by its address (MSC4195)', () => {
-		beforeEach(() => sessionWith(alice, bobOn({ type: 'livekit', url: REMOTE_SFU })));
-
-		it("asks the member's homeserver, naming our member both ways lk-jwt-service reads it", async () => {
-			mockMakeSignedRequest.mockResolvedValue(signedAnswer({ jwt: 'remote-jwt' }));
-
-			expect(await getRemoteLiveKitToken(call, user, 'rc2', REMOTE_SFU)).toEqual({ serverUrl: REMOTE_SFU, token: 'remote-jwt' });
-			expect(mockMakeSignedRequest).toHaveBeenCalledWith({
-				method: 'POST',
-				domain: 'rc2',
-				uri: '/_matrix/federation/unstable/io.element.msc4195/rtc/livekit/get_token',
-				signedBody: {
-					url: REMOTE_SFU,
-					user_id: '@alice:rc1',
-					room_id: MRID,
-					slot_id: SLOT,
-					member_id: 'alice-member',
-					member: { id: 'alice-member', claimed_user_id: '@alice:rc1', claimed_device_id: 'ALICEDEVICE' },
-				},
-			});
-			expect(fetchSpy).not.toHaveBeenCalled();
-		});
-
-		it('falls back to the stable path on a homeserver that does not know the unstable one', async () => {
-			mockMakeSignedRequest
-				.mockRejectedValueOnce(rejection(404, { errcode: 'M_UNRECOGNIZED' }))
-				.mockResolvedValueOnce(signedAnswer({ jwt: 'remote-jwt' }));
-
-			expect(await getRemoteLiveKitToken(call, user, 'rc2', REMOTE_SFU)).toEqual({ serverUrl: REMOTE_SFU, token: 'remote-jwt' });
-			expect(mockMakeSignedRequest).toHaveBeenLastCalledWith(
-				expect.objectContaining({ uri: '/_matrix/federation/v1/rtc/livekit/get_token' }),
-			);
-		});
-
-		it('takes a refusal as final', async () => {
-			mockMakeSignedRequest.mockRejectedValue(rejection(403, { errcode: 'M_FORBIDDEN' }));
-
-			await expect(getRemoteLiveKitToken(call, user, 'rc2', REMOTE_SFU)).rejects.toThrow('403');
-			expect(mockMakeSignedRequest).toHaveBeenCalledTimes(1);
-		});
-
-		it('refuses an answer without a token', async () => {
-			mockMakeSignedRequest.mockResolvedValue(signedAnswer({}));
-
-			await expect(getRemoteLiveKitToken(call, user, 'rc2', REMOTE_SFU)).rejects.toThrow('without a token');
-		});
-	});
-
 	describe('from a member announcing a token service (livekit_service_url)', () => {
 		beforeEach(() => sessionWith(alice, bobOn({ type: 'livekit', serviceUrl: REMOTE_SERVICE })));
 
@@ -153,7 +90,6 @@ describe('getRemoteLiveKitToken', () => {
 				member: { id: 'alice-member', claimed_user_id: '@alice:rc1', claimed_device_id: 'ALICEDEVICE' },
 			});
 			expect(getOpenIdTokenSubject(body.openid_token.access_token)).toBe('@alice:rc1');
-			expect(mockMakeSignedRequest).not.toHaveBeenCalled();
 		});
 
 		it('falls back to /sfu/get on a service that predates /get_token', async () => {
@@ -183,54 +119,32 @@ describe('getRemoteLiveKitToken', () => {
 		});
 	});
 
-	describe('from a member announcing both', () => {
-		const transport = { type: 'livekit' as const, url: REMOTE_SFU, serviceUrl: REMOTE_SERVICE };
-
-		beforeEach(() => sessionWith(alice, bobOn(transport)));
-
-		it('asks the token service first', async () => {
-			fetchSpy.mockResolvedValue(serviceAnswer(200, { url: REMOTE_SFU, jwt: 'service-jwt' }));
-
-			expect(await getRemoteLiveKitToken(call, user, 'rc2', REMOTE_SFU)).toEqual({ serverUrl: REMOTE_SFU, token: 'service-jwt' });
-			expect(mockMakeSignedRequest).not.toHaveBeenCalled();
-		});
-
-		it("asks the member's homeserver when the token service refuses", async () => {
-			fetchSpy.mockResolvedValue(serviceAnswer(500, {}));
-			mockMakeSignedRequest.mockResolvedValue(signedAnswer({ jwt: 'federation-jwt' }));
-
-			expect(await getRemoteLiveKitToken(call, user, 'rc2', REMOTE_SFU)).toEqual({ serverUrl: REMOTE_SFU, token: 'federation-jwt' });
-		});
-	});
-
 	// A client joining a call that already has remote members asks for their SFU before its join is announced.
 	it("announces the member's join first when it has not been yet, and names that membership", async () => {
-		sessionWith(bobOn({ type: 'livekit', url: REMOTE_SFU }));
+		sessionWith(bobOn({ type: 'livekit', serviceUrl: REMOTE_SERVICE }));
 		mockFindOneActiveLocal.mockResolvedValue(null);
 		mockJoinRTCSession.mockResolvedValue(alice);
-		mockMakeSignedRequest.mockResolvedValue(signedAnswer({ jwt: 'federation-jwt' }));
+		fetchSpy.mockResolvedValue(serviceAnswer(200, { url: REMOTE_SFU, jwt: 'remote-jwt' }));
 
-		expect(await getRemoteLiveKitToken(call, user, 'rc2', REMOTE_SFU)).toEqual({ serverUrl: REMOTE_SFU, token: 'federation-jwt' });
+		expect(await getRemoteLiveKitToken(call, user, 'rc2', REMOTE_SERVICE)).toEqual({ serverUrl: REMOTE_SFU, token: 'remote-jwt' });
 		expect(mockJoinRTCSession).toHaveBeenCalledWith(call, user);
-		expect(mockMakeSignedRequest).toHaveBeenCalledWith(
-			expect.objectContaining({ signedBody: expect.objectContaining({ member_id: 'alice-member' }) }),
-		);
+		expect(fetchedBodies()[0][1]).toMatchObject({ member: { id: 'alice-member' } });
 	});
 
 	it('does not announce a join that already is', async () => {
-		sessionWith(alice, bobOn({ type: 'livekit', url: REMOTE_SFU }));
-		mockMakeSignedRequest.mockResolvedValue(signedAnswer({ jwt: 'federation-jwt' }));
+		sessionWith(alice, bobOn({ type: 'livekit', serviceUrl: REMOTE_SERVICE }));
+		fetchSpy.mockResolvedValue(serviceAnswer(200, { url: REMOTE_SFU, jwt: 'remote-jwt' }));
 
-		await getRemoteLiveKitToken(call, user, 'rc2', REMOTE_SFU);
+		await getRemoteLiveKitToken(call, user, 'rc2', REMOTE_SERVICE);
 		expect(mockJoinRTCSession).not.toHaveBeenCalled();
 	});
 
 	describe('refusals', () => {
 		it('refuses an SFU nobody in the call publishes on', async () => {
-			sessionWith(alice, bobOn({ type: 'livekit', url: REMOTE_SFU }));
+			sessionWith(alice, bobOn({ type: 'livekit', serviceUrl: REMOTE_SERVICE }));
 
-			await expect(getRemoteLiveKitToken(call, user, 'rc2', 'wss://livekit.elsewhere')).rejects.toThrow('Nobody');
-			await expect(getRemoteLiveKitToken(call, user, 'rc3', REMOTE_SFU)).rejects.toThrow('Nobody');
+			await expect(getRemoteLiveKitToken(call, user, 'rc2', 'https://elsewhere/livekit/jwt')).rejects.toThrow('Nobody');
+			await expect(getRemoteLiveKitToken(call, user, 'rc3', REMOTE_SERVICE)).rejects.toThrow('Nobody');
 		});
 
 		it("never asks for this server's own SFU, even when a local member names it", async () => {
@@ -240,16 +154,18 @@ describe('getRemoteLiveKitToken', () => {
 		});
 
 		it('refuses a member whose join cannot be announced', async () => {
-			sessionWith(alice, bobOn({ type: 'livekit', url: REMOTE_SFU }));
+			sessionWith(alice, bobOn({ type: 'livekit', serviceUrl: REMOTE_SERVICE }));
 			mockFindOneActiveLocal.mockResolvedValue(null);
 			mockJoinRTCSession.mockRejectedValue(new Error('LiveKit is not configured'));
 
-			await expect(getRemoteLiveKitToken(call, user, 'rc2', REMOTE_SFU)).rejects.toThrow('LiveKit is not configured');
-			expect(mockMakeSignedRequest).not.toHaveBeenCalled();
+			await expect(getRemoteLiveKitToken(call, user, 'rc2', REMOTE_SERVICE)).rejects.toThrow('LiveKit is not configured');
+			expect(fetchSpy).not.toHaveBeenCalled();
 		});
 
 		it('refuses a conference that does not mirror a session', async () => {
-			await expect(getRemoteLiveKitToken({ _id: 'call' } as IVideoConference, user, 'rc2', REMOTE_SFU)).rejects.toThrow('does not mirror');
+			await expect(getRemoteLiveKitToken({ _id: 'call' } as IVideoConference, user, 'rc2', REMOTE_SERVICE)).rejects.toThrow(
+				'does not mirror',
+			);
 		});
 	});
 });

@@ -99,25 +99,21 @@ const isMatrixUserId = (value: string): boolean => /^@[^:\s]+:\S+$/.test(value);
 
 const callIntentOf = (value: unknown): CallIntent | undefined => (value === 'audio' || value === 'video' ? value : undefined);
 
-/** Undefined for any other kind of transport, or one that names neither an SFU nor a token service. */
+/**
+ * Undefined for any other kind of transport, or one that names no token service: an SFU announced only by its
+ * address is reached through MSC4195, which this server does not take part in.
+ */
 const liveKitTransportOf = (value: unknown): MatrixRTCLiveKitTransport | undefined => {
-	if (!isRecord(value) || value.type !== 'livekit') {
+	if (!isRecord(value) || value.type !== 'livekit' || !isString(value.livekit_service_url) || !value.livekit_service_url) {
 		return undefined;
 	}
 
-	const url = isString(value.url) && value.url ? value.url : undefined;
-	const serviceUrl = isString(value.livekit_service_url) && value.livekit_service_url ? value.livekit_service_url : undefined;
-	if (!url && !serviceUrl) {
-		return undefined;
-	}
-
-	return { type: 'livekit', ...(url && { url }), ...(serviceUrl && { serviceUrl }) };
+	return { type: 'livekit', serviceUrl: value.livekit_service_url };
 };
 
-const publishedTransportOf = ({ url, serviceUrl }: MatrixRTCLiveKitTransport): Record<string, string> => ({
+const publishedTransportOf = ({ serviceUrl }: MatrixRTCLiveKitTransport): Record<string, string> => ({
 	type: 'livekit',
-	...(url && { url }),
-	...(serviceUrl && { livekit_service_url: serviceUrl }),
+	livekit_service_url: serviceUrl,
 });
 
 type CompatContent = {

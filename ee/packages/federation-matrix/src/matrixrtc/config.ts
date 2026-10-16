@@ -2,7 +2,7 @@
  * The forms this server can announce its users' call memberships in, one per Element Call generation. Every form is
  * always read, whichever one is announced.
  */
-export const MATRIXRTC_PROFILES = ['compatibility', 'matrix_2_0', 'matrix_2_0_msc4195'] as const;
+export const MATRIXRTC_PROFILES = ['compatibility', 'matrix_2_0'] as const;
 
 export type MatrixRTCProfile = (typeof MATRIXRTC_PROFILES)[number];
 

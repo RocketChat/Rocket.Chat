@@ -15,7 +15,6 @@ import { Logger } from '@rocket.chat/logger';
 import { MatrixRTCMemberships } from '@rocket.chat/models';
 
 import { getMatrixRTCProfile } from './config';
-import type { MatrixRTCProfile } from './config';
 import {
 	CALL_MEMBER_EVENT_TYPE,
 	CALL_REACTION_EVENT_TYPE,
@@ -39,7 +38,6 @@ import {
 import type { CallIntent } from './events';
 import { localLiveKitIdentityFor } from './identities';
 import { getMatrixRTCLiveKitIssuer } from './issuer';
-import type { MatrixRTCOwnTransport } from './issuer';
 import { createKeyedQueue } from './keyedQueue';
 
 const logger = new Logger('MatrixRTCSession');
@@ -92,10 +90,6 @@ const originServerTsOf = async (eventId: EventID): Promise<number | undefined> =
 
 type Announcement = Pick<IMatrixRTCMembership, 'mode' | 'memberId' | 'stateKey' | 'eventId' | 'joinedAt' | 'expiresAt'>;
 
-/** What this server's members publish on: its SFU, named the way the profile's readers connect to it. */
-const transportFor = (profile: MatrixRTCProfile, { url, serviceUrl }: MatrixRTCOwnTransport): MatrixRTCLiveKitTransport =>
-	profile === 'matrix_2_0_msc4195' ? { type: 'livekit', url } : { type: 'livekit', serviceUrl };
-
 const sendCompatMembership = async ({
 	mrid,
 	userId,
@@ -144,10 +138,6 @@ async function announceCompatMembership(
 	{ userId, deviceId, transport }: Pick<IMatrixRTCMembership, 'userId' | 'deviceId' | 'transport'>,
 	now: Date,
 ): Promise<Announcement> {
-	if (!transport.serviceUrl) {
-		throw new Error('A compatibility membership names the token service of an SFU');
-	}
-
 	const stateKey = compatMembershipStateKey(userId, deviceId, await roomVersionOf(mrid));
 	const eventId = await sendCompatMembership({
 		mrid,
@@ -193,7 +183,7 @@ async function announceMembership(call: IVideoConference, user: IUser, now: Date
 	const profile = getMatrixRTCProfile();
 	const userId = matrixUserIdOf(user);
 	const deviceId = generateDeviceId();
-	const transport = transportFor(profile, ownTransport);
+	const transport: MatrixRTCLiveKitTransport = { type: 'livekit', serviceUrl: ownTransport.serviceUrl };
 
 	const announcement =
 		profile === 'compatibility'
@@ -235,7 +225,7 @@ async function refreshMembership(membership: IMatrixRTCMembership, now: Date): P
 		return { ...membership, eventId, expiresAt };
 	}
 
-	if (!stateKey || !transport.serviceUrl) {
+	if (!stateKey) {
 		throw new Error(`Membership ${membership._id} lacks what its compatibility announcement needs`);
 	}
 

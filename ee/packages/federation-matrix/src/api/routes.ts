@@ -10,7 +10,6 @@ import { getMatrixMediaBridgeRoutes } from './_matrix/media-bridge';
 import { getMatrixOpenIdRoutes } from './_matrix/openid';
 import { getMatrixProfilesRoutes } from './_matrix/profiles';
 import { getMatrixRoomsRoutes } from './_matrix/rooms';
-import { getMatrixRTCRoutes } from './_matrix/rtc';
 import { getMatrixSendJoinRoutes } from './_matrix/send-join';
 import { getMatrixSendLeaveRoutes } from './_matrix/send-leave';
 import { getMatrixTransactionsRoutes } from './_matrix/transactions';
@@ -44,8 +43,7 @@ export const getFederationRoutes = (
 		.use(getMatrixTransactionsRoutes())
 		.use(getMatrixMediaRoutes())
 		.use(getMatrixSendLeaveRoutes())
-		.use(getMatrixMakeLeaveRoutes())
-		.use(getMatrixRTCRoutes());
+		.use(getMatrixMakeLeaveRoutes());
 
 	wellKnown.use(isFederationEnabledMiddleware).use(isLicenseEnabledMiddleware).use(getWellKnownRoutes());
 

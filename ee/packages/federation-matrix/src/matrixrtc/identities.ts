@@ -1,5 +1,5 @@
 import type { MatrixRTCProfile } from './config';
-import { legacyLiveKitIdentityFor, liveKitIdentityFor, sfuGetLiveKitIdentityFor } from './derive';
+import { legacyLiveKitIdentityFor, sfuGetLiveKitIdentityFor } from './derive';
 import type { AnnouncedMembership } from './events';
 
 type Member = Pick<AnnouncedMembership, 'userId' | 'deviceId' | 'memberId'>;
@@ -11,8 +11,6 @@ export const localLiveKitIdentityFor = (profile: MatrixRTCProfile, { userId, dev
 			return sfuGetLiveKitIdentityFor(userId, deviceId);
 		case 'matrix_2_0':
 			return legacyLiveKitIdentityFor(userId, deviceId, memberId);
-		case 'matrix_2_0_msc4195':
-			return liveKitIdentityFor(userId, memberId);
 	}
 };
 
@@ -26,17 +24,11 @@ export const remoteLiveKitIdentitiesFor = ({
 	userId,
 	deviceId,
 	memberId,
-	transport,
-}: Member & Pick<AnnouncedMembership, 'form' | 'transport'>): { livekitIdentity: string; livekitIdentityAliases: string[] } => {
+}: Member & Pick<AnnouncedMembership, 'form'>): { livekitIdentity: string; livekitIdentityAliases: string[] } => {
 	const candidates =
 		form === 'compatibility'
-			? [sfuGetLiveKitIdentityFor(userId, deviceId), ...(transport.url ? [liveKitIdentityFor(userId, memberId)] : [])]
-			: [
-					...(transport.serviceUrl
-						? [legacyLiveKitIdentityFor(userId, deviceId, memberId), sfuGetLiveKitIdentityFor(userId, deviceId)]
-						: []),
-					...(transport.url ? [liveKitIdentityFor(userId, memberId)] : []),
-				];
+			? [sfuGetLiveKitIdentityFor(userId, deviceId)]
+			: [legacyLiveKitIdentityFor(userId, deviceId, memberId), sfuGetLiveKitIdentityFor(userId, deviceId)];
 
 	const [livekitIdentity, ...livekitIdentityAliases] = [...new Set(candidates)];
 

@@ -13,12 +13,6 @@ const hashOf = (...inputs: string[]): string => createHash('sha256').update(JSON
 export const liveKitRoomAliasFor = (matrixRoomId: string, slotId: string): string => hashOf(matrixRoomId, slotId);
 
 /**
- * The LiveKit identity MSC4195 gives a Matrix 2.0 member announcing an SFU by its `url`: fresh for every join,
- * since the member id is.
- */
-export const liveKitIdentityFor = (matrixUserId: string, memberId: string): string => hashOf(matrixUserId, memberId);
-
-/**
  * The LiveKit identity deployed Element Call expects of a Matrix 2.0 member announcing a `livekit_service_url`, and
  * the one lk-jwt-service's OpenID `/get_token` mints.
  */

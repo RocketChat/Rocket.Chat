@@ -117,7 +117,7 @@ const stickyMember = ({
 		content: content ?? {
 			slot_id: 'm.call#ROOM',
 			application: { type: 'm.call' },
-			transports: { published: [{ type: 'livekit', url: 'wss://sfu.remote.example.org' }], can_subscribe: ['livekit'] },
+			transports: { published: [{ type: 'livekit', livekit_service_url: SERVICE_URL }], can_subscribe: ['livekit'] },
 			member: { user_id: userId, device_id: 'DEVICEB', id: memberId },
 			versions: [],
 			msc4354_sticky_key: memberId,
@@ -261,7 +261,7 @@ describe('handleMatrixRTCEvent', () => {
 			sdk.getLatestRoomState.mockResolvedValue(stateOf(joined('@bob:remote.example.org')) as any);
 		});
 
-		it('records the member with the expiry the server gives and the identities MSC4195 readers derive', async () => {
+		it('records the member with the expiry the server gives and every identity Element Call may know them by', async () => {
 			sdk.getActiveStickyEvents.mockImplementation(async (_roomId, options) =>
 				options?.type === 'org.matrix.msc4143.rtc.member' ? [stickyMember({ eventId: '$a', expiresAt: NOW + HOUR - 1000 })] : [],
 			);
@@ -275,9 +275,9 @@ describe('handleMatrixRTCEvent', () => {
 					mode: 'matrix_2_0',
 					memberId: 'member-1',
 					eventId: '$a',
-					transport: { type: 'livekit', url: 'wss://sfu.remote.example.org' },
+					transport: { type: 'livekit', serviceUrl: SERVICE_URL },
 					livekitIdentity: expect.any(String),
-					livekitIdentityAliases: [],
+					livekitIdentityAliases: ['@bob:remote.example.org:DEVICEB'],
 					expiresAt: new Date(NOW + HOUR - 1000),
 				}),
 			);

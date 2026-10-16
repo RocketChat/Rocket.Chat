@@ -278,6 +278,7 @@ describe('sticky memberships', () => {
 		['subscribable transports that are not strings', { transports: { published: [], can_subscribe: [1] } }],
 		['a member id that is not the sticky key', { member: { device_id: 'ABCDEFGHIJ', user_id: '@alice:example.com', id: 'other' } }],
 		['nothing to publish on but a full mesh', { transports: { published: [{ type: 'full_mesh' }] } }],
+		['an SFU named only by its address (MSC4195)', { transports: { published: [{ type: 'livekit', url: 'wss://sfu.example.com' }] } }],
 	])('treats content with %s as gone', (_, override) => {
 		expect(parseRtcMembership(sticky({ ...rtcJoinContent(), ...override }), { now })).toMatchObject({ kind: 'leave' });
 	});
@@ -292,12 +293,6 @@ describe('sticky memberships', () => {
 		expect(parseRtcMembership(sticky({ ...content, sticky_key: MEMBER_ID }), { now })).toMatchObject({ kind: 'join', memberId: MEMBER_ID });
 	});
 
-	it('reads the SFU address of an MSC4195 member', () => {
-		const content = { ...rtcJoinContent(), transports: { published: [{ type: 'livekit', url: 'wss://sfu.example.com' }] } };
-
-		expect(parseRtcMembership(sticky(content), { now })).toMatchObject({ transport: { type: 'livekit', url: 'wss://sfu.example.com' } });
-	});
-
 	it('builds the join js-sdk sends', () => {
 		expect(
 			buildRtcMembership({
@@ -310,15 +305,14 @@ describe('sticky memberships', () => {
 		).toEqual(rtcJoinContent());
 	});
 
-	it('builds the MSC4195 join, naming the SFU itself', () => {
+	it('builds a join without a call intent', () => {
 		const content = buildRtcMembership({
 			userId: '@alice:example.com',
 			deviceId: 'ABCDEFGHIJ',
 			memberId: MEMBER_ID,
-			transport: { type: 'livekit', url: 'wss://sfu.example.com' },
+			transport: { type: 'livekit', serviceUrl: 'https://matrix-rtc.example.com/livekit/jwt' },
 		});
 
-		expect(content.transports).toEqual({ published: [{ type: 'livekit', url: 'wss://sfu.example.com' }], can_subscribe: ['livekit'] });
 		expect(content.application).toEqual({ type: 'm.call' });
 	});
 

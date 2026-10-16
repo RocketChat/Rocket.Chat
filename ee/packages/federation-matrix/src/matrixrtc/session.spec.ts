@@ -4,7 +4,7 @@ import { federationSDK } from '@rocket.chat/federation-sdk';
 import { MatrixRTCMemberships } from '@rocket.chat/models';
 
 import { configureMatrixRTC } from './config';
-import { legacyLiveKitIdentityFor, liveKitIdentityFor } from './derive';
+import { legacyLiveKitIdentityFor } from './derive';
 import { setMatrixRTCLiveKitIssuer } from './issuer';
 import {
 	MEMBERSHIP_REFRESH_HEADROOM_MS,
@@ -424,7 +424,7 @@ describe('declineRTCSession', () => {
 	});
 });
 
-describe('the Matrix 2.0 profiles', () => {
+describe('the Matrix 2.0 profile', () => {
 	const WSS = 'wss://sfu.rc.example.com';
 
 	const stickyMembership = (overrides: Partial<IMatrixRTCMembership> = {}): IMatrixRTCMembership =>
@@ -494,19 +494,6 @@ describe('the Matrix 2.0 profiles', () => {
 		});
 		expect(membership).not.toHaveProperty('stateKey');
 		expect(setMemberFederation).toHaveBeenCalledWith('call1', 'alice-id', expect.objectContaining({ transport: SERVICE_URL }));
-	});
-
-	it('names the SFU itself in matrix_2_0_msc4195, and mints the MSC4195 identity', async () => {
-		configureMatrixRTC({ enabled: true, profile: 'matrix_2_0_msc4195' });
-
-		const membership = await joinRTCSession(call, alice);
-
-		expect(sdk.sendStickyEvent.mock.calls[0][2]).toMatchObject({ transports: { published: [{ type: 'livekit', url: WSS }] } });
-		expect(membership).toMatchObject({
-			transport: { type: 'livekit', url: WSS },
-			livekitIdentity: liveKitIdentityFor('@alice:rc.example.com', membership.memberId),
-		});
-		expect(setMemberFederation).toHaveBeenCalledWith('call1', 'alice-id', expect.objectContaining({ transport: WSS }));
 	});
 
 	it('sends the same membership again before the hour runs out', async () => {

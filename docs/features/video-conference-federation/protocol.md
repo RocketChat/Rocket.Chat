@@ -528,7 +528,8 @@ What this means for Rocket.Chat:
   `@user:server:DEVICE` (`membershipID`). This works for every generation.
 - **matrix_2_0**: no single identity satisfies Released/Main and In flight together. For deployed Element Call,
   publish `livekit_service_url` only and mint `H([user_id, device_id, member_id])`. For the MSC and In flight, publish
-  `url` and mint `H([user_id, member_id])`. Rocket.Chat↔Rocket.Chat can use either. Keep the derivation selectable.
+  `url` and mint `H([user_id, member_id])`. Rocket.Chat implements only the deployed one, since nothing can watch a
+  `url`-only SFU until clients ask their homeserver for tokens (§5.1).
 
 ### 4.2 LiveKit room name
 

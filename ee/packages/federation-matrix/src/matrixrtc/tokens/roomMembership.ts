@@ -18,7 +18,3 @@ const verifyingMembership = async (roomId: string, check: () => Promise<boolean>
 /** Whether a user is joined to a room, as this server sees it: nobody is, in a room this server does not know. */
 export const isUserJoined = (roomId: string, userId: string): Promise<boolean> =>
 	verifyingMembership(roomId, () => federationSDK.isUserJoined(roomId as RoomID, userId as UserID));
-
-/** Whether a homeserver has users joined to a room, as this server sees it. */
-export const isServerJoined = (roomId: string, serverName: string): Promise<boolean> =>
-	verifyingMembership(roomId, async () => (await federationSDK.getJoinedServers(roomId as RoomID)).includes(serverName));

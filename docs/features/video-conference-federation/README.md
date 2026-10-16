@@ -36,10 +36,13 @@ profile is always **read**:
 | --- | --- | --- | --- | --- |
 | `compatibility` (default) | state `org.matrix.msc3401.call.member`, one per device | `livekit_service_url` | `@user:server:DEVICE` | OpenID at our lk-jwt-service-compatible endpoint |
 | `matrix_2_0` | sticky `org.matrix.msc4143.rtc.member` (MSC4354), fresh `member.id` per join | `livekit_service_url` | `H([user, device, member.id])` | OpenID at our lk-jwt-service-compatible endpoint |
-| `matrix_2_0_msc4195` | as `matrix_2_0` | `url` (the SFU itself) | `H([user, member.id])` | their homeserver asks ours: MSC4195 federation `get_token` |
 
-`compatibility` and `matrix_2_0` are what deployed Element Call does in its two modes, while `matrix_2_0_msc4195` is
-where MSC4195 and the next Element Call are going. Rocket.Chat ↔ Rocket.Chat works in all three.
+These are what deployed Element Call does in its two modes, and both work with it and between Rocket.Chat servers.
+
+Homeserver-issued tokens (MSC4195) are not supported. This server never names its SFU by its address (`url`) alone,
+and a membership that does is not read, so its member stays out of the call here: watching that SFU takes a token
+from the member's homeserver, which no deployed Element Call asks for either
+([protocol §4.1](protocol.md#41-what-element-expects-per-generation), [§5](protocol.md#5-token-issuance)).
 
 Reading a remote membership yields every identity its sender may publish as (`livekitIdentity` plus
 `livekitIdentityAliases`), since the same membership maps to different identities in different client generations.
@@ -50,7 +53,7 @@ events. A ring relates (`m.reference`) to the caller's membership event and ment
 ## Data model
 
 - **`IMatrixRTCMembership`** (`rocketchat_matrix_rtc_memberships`): one device's presence in one session, local or
-  remote. It holds the member's transport (SFU address or token service), their LiveKit identity, their homeserver,
+  remote. It holds the member's transport (their SFU's token service), their LiveKit identity, their homeserver,
   the event that announced them and when the membership stops counting (`expiresAt`). A user is in a federated call
   while any of their memberships counts.
 - **`IVideoConference.federation`** `{ mrid, slotId }`: the session a conference mirrors.
@@ -120,15 +123,14 @@ membership, notification and decline types.
 | Who | For which SFU | How |
 | --- | --- | --- |
 | Local user | this server's | `video-conference.callConfig`: publish + subscribe, identity from their membership, `federation` block in the answer |
-| Local user | another server's | `video-conference.federatedToken` → this server fetches it (`FederationMatrix.getRemoteLiveKitToken`): with an OpenID token from this server at the membership's `livekit_service_url`, or through MSC4195 federation `get_token` when the membership announces only a `url` |
-| Remote user | this server's | OpenID at this server's lk-jwt-service-compatible endpoint, checked through `/_matrix/federation/v1/openid/userinfo`; or MSC4195 federation `get_token`, signed by their homeserver |
+| Local user | another server's | `video-conference.federatedToken` → this server fetches it (`FederationMatrix.getRemoteLiveKitToken`): with an OpenID token from this server at the membership's `livekit_service_url` |
+| Remote user | this server's | OpenID at this server's lk-jwt-service-compatible endpoint, checked through `/_matrix/federation/v1/openid/userinfo` |
 
 Endpoints this server serves for other servers' members:
 
 | Path | Auth | For |
 | --- | --- | --- |
 | `GET /_matrix/federation/v1/openid/userinfo` | none (token in the query) | vouching for this server's users |
-| `POST /_matrix/federation/{unstable/io.element.msc4195,v1}/rtc/livekit/get_token` | X-Matrix | `matrix_2_0_msc4195` members of other servers |
 | `POST /matrixrtc/livekit-jwt/{get_token,sfu/get}`, `GET …/healthz` | OpenID in the body, CORS open | lk-jwt-service clients: `compatibility` and `matrix_2_0` members, Element Call |
 
 `/matrixrtc/livekit-jwt` is the `livekit_service_url` this server announces. Unlike lk-jwt-service, its OpenID
@@ -179,7 +181,7 @@ They cross homeservers the way Element Call sends them, so Rocket.Chat and Eleme
 | Setting | Purpose |
 | --- | --- |
 | `Federation_Service_MatrixRTC_Enabled` | Allows calls in federated rooms. Public, so the call button can follow it. |
-| `Federation_Service_MatrixRTC_Mode` | `compatibility`, `matrix_2_0` or `matrix_2_0_msc4195`: the profile this server announces memberships in (see [Signalling](#signalling-memberships-in-the-matrix-room)). |
+| `Federation_Service_MatrixRTC_Mode` | `compatibility` or `matrix_2_0`: the profile this server announces memberships in (see [Signalling](#signalling-memberships-in-the-matrix-room)). |
 
 LiveKit must be configured as for any native call ([native-video-conference](../native-video-conference/README.md)).
 
