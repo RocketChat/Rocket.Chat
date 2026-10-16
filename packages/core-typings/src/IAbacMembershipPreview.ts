@@ -2,7 +2,7 @@ import type { IUser } from './IUser';
 
 export type AbacPreviewMember = Pick<IUser, '_id' | 'username' | 'name'>;
 
-export type AbacPreviewCursor = Pick<IUser, '_id' | 'username'>;
+export type AbacPreviewCursor = Required<Pick<IUser, '_id' | 'username'>>;
 
 export type AbacMembershipVerdict = 'compliant' | 'nonCompliant' | 'inconclusive';
 
