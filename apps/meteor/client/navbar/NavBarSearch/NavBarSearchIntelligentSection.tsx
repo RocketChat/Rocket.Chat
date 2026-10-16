@@ -55,9 +55,6 @@ const NavBarSearchIntelligentSection = ({ items, onSelect, onClose }: NavBarSear
 					onClick={onClose}
 				/>
 			</Box>
-			<Box color='hint' fontScale='c1' paddingInline={12} marginBlockEnd={4}>
-				{t('AI_Search_related_messages', { count: items.length })}
-			</Box>
 			<Box className={sectionInsetStyle}>
 				{items.map((item) => (
 					<NavBarSearchMessageRow key={`intelligent-${item._id}`} item={item} onClick={onSelect} />

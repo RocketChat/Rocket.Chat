@@ -643,10 +643,6 @@
   "AI_Search_feature_disabled_description": "Turn on AI search in feature preview before using the dedicated AI search page.",
   "AI_Search_feature_disabled_title": "AI search experience is off",
   "AI_Search_license_required_tooltip": "AI search requires the Rocket.Chat AI add-on. Contact sales to enable it.",
-  "AI_Search_related_messages": {
-    "one": "{{count}} related message",
-    "other": "{{count}} related messages"
-  },
   "AI_Search_results": "AI search results",
   "AirGapped_Restriction_Warning": "**Your air-gapped workspace will enter read-only mode in {{remainingDays}} days.** \n Users will still be able to access rooms and read existing messages but will be unable to send new messages. \n Reconnect it to the internet or [upgrade to a premium license](https://go.rocket.chat/i/air-gapped) to prevent this.",
   "Airgapped_workspace_restriction": "This air-gapped workspace is in read-only mode. <1>Connect it to the internet or upgrade to a Premium plan to restore full functionality.</1>",
@@ -6027,6 +6023,7 @@
   "Search_filter_from_users": "Messages from @{{value}}",
   "Search_filter_in": "Room",
   "Search_filter_in_rooms": "Messages in #{{value}}",
+  "Search_filter_suggestions": "Filter suggestions",
   "Search_filters_with_count": "Filters ({{count}})",
   "Search_for_a_more_general_term": "Search for a more general term",
   "Search_for_a_more_specific_term": "Search for a more specific term",
