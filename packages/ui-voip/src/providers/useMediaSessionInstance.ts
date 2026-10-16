@@ -78,6 +78,8 @@ class MediaSessionStore extends Emitter<MediaSessionStoreEventMap> {
 
 	private popoutWindow: Window | undefined;
 
+	private iceServers: RTCIceServer[] = [];
+
 	constructor() {
 		super();
 	}
@@ -209,6 +211,7 @@ class MediaSessionStore extends Emitter<MediaSessionStoreEventMap> {
 			displayMediaFactory: (...args) => this.getDisplayMedia(...args),
 			mediaStreamFactory: (...args) => this.getUserMedia(...args),
 			randomStringFactory,
+			iceServers: this.iceServers,
 			oldSessionId: this.getOldSessionId(userId),
 			logger: this.logger,
 			features: ['audio', 'screen-share', 'transfer', 'hold'],
@@ -247,6 +250,11 @@ class MediaSessionStore extends Emitter<MediaSessionStoreEventMap> {
 		return () => {
 			this.sendSignalFn = null;
 		};
+	}
+
+	public setIceServers(iceServers: RTCIceServer[]) {
+		this.iceServers = iceServers;
+		this.sessionInstance?.setIceServers(iceServers);
 	}
 
 	public setWebRTCProcessorFactory(factory: (config: WebRTCProcessorConfig) => MediaCallWebRTCProcessor) {
@@ -290,10 +298,12 @@ export const useMediaSessionInstance = (userId?: string, enabled = true) => {
 	const dispatchToastMessage = useToastMessageDispatch();
 
 	useEffect(() => {
-		mediaSession.setWebRTCProcessorFactory(
-			(config) => new MediaCallWebRTCProcessor({ ...config, rtc: { ...config.rtc, iceServers }, iceGatheringTimeout }),
-		);
-	}, [iceServers, iceGatheringTimeout]);
+		mediaSession.setIceServers(iceServers);
+	}, [iceServers]);
+
+	useEffect(() => {
+		mediaSession.setWebRTCProcessorFactory((config) => new MediaCallWebRTCProcessor({ ...config, iceGatheringTimeout }));
+	}, [iceGatheringTimeout]);
 
 	useEffect(() => {
 		// TODO: This stream is not typed.
