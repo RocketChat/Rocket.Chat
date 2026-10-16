@@ -24,7 +24,13 @@ const ImageGalleryProvider = ({ children }: ImageGalleryProviderProps) => {
 			}
 			if (target?.classList.contains('gallery-item')) {
 				const id = target.closest('.gallery-item-container')?.getAttribute('data-id') || undefined;
-				return setImageId(target.dataset.id || id);
+				const imageId = target.dataset.id || id;
+
+				if (imageId) {
+					return setImageId(imageId);
+				}
+
+				return setSingleImageUrl(target.dataset.src);
 			}
 			if (target?.classList.contains('gallery-item-container')) {
 				return setImageId(target.dataset.id);
