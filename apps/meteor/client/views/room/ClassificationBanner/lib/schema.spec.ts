@@ -53,6 +53,26 @@ describe('classification banners JSON schema (v1 enforcement contract)', () => {
 	});
 
 	it.each([
+		['a single nonAbacBanner', { enabled: true, text: 'UNCLASSIFIED', color: '#007a33' }],
+		[
+			'a single nonAbacBanner with a match',
+			{ enabled: true, text: 'UNCLASSIFIED', color: '#007a33', match: { type: ['private'], federated: true } },
+		],
+		[
+			'a list of nonAbacBanner entries',
+			[
+				{ enabled: true, text: 'PERSONAL', color: '#502b85', match: { type: ['direct', 'groupDirect'] } },
+				{ enabled: false, text: 'EXTERNAL', color: '#6C727A', match: { type: ['omnichannel'] } },
+				{ enabled: true, text: 'TEAM', color: '#0033a0', match: { team: true, discussion: false } },
+				{ enabled: true, text: 'UNCLASSIFIED', color: '#007a33' },
+			],
+		],
+		['a match with an empty type list', { enabled: true, text: 'UNCLASSIFIED', color: '#007a33', match: { type: [] } }],
+	])('accepts a document with %s', (_name, nonAbacBanner) => {
+		expect(validate({ ...validConfig, nonAbacBanner })).toBe(true);
+	});
+
+	it.each([
 		['wrong version', { ...validConfig, version: 2 }],
 		['missing banner option (colorMode)', { ...validConfig, banner: { ...banner, colorMode: undefined } }],
 		['empty delimiter', { ...validConfig, banner: { ...banner, delimiter: '' } }],
@@ -73,6 +93,24 @@ describe('classification banners JSON schema (v1 enforcement contract)', () => {
 		['identical duplicate values', { ...validConfig, attributes: [{ ...attribute, values: [value, value] }] }],
 		['value with 3-digit color', { ...validConfig, attributes: [{ ...attribute, values: [{ ...value, color: '#fff' }] }] }],
 		['value missing label', { ...validConfig, attributes: [{ ...attribute, values: [{ ...value, label: undefined }] }] }],
+		['nonAbacBanner missing enabled', { ...validConfig, nonAbacBanner: { text: 'X', color: '#000000' } }],
+		['nonAbacBanner missing text', { ...validConfig, nonAbacBanner: { enabled: true, color: '#000000' } }],
+		['nonAbacBanner with empty text', { ...validConfig, nonAbacBanner: { enabled: true, text: '', color: '#000000' } }],
+		['nonAbacBanner missing color', { ...validConfig, nonAbacBanner: { enabled: true, text: 'X' } }],
+		['nonAbacBanner with 3-digit color', { ...validConfig, nonAbacBanner: { enabled: true, text: 'X', color: '#fff' } }],
+		['unknown nonAbacBanner option', { ...validConfig, nonAbacBanner: { enabled: true, text: 'X', color: '#000000', position: 'top' } }],
+		['empty nonAbacBanner list', { ...validConfig, nonAbacBanner: [] }],
+		['invalid entry in a nonAbacBanner list', { ...validConfig, nonAbacBanner: [{ enabled: true, text: 'X' }] }],
+		['unknown match type', { ...validConfig, nonAbacBanner: { enabled: true, text: 'X', color: '#000000', match: { type: ['channel'] } } }],
+		[
+			'duplicate match type',
+			{ ...validConfig, nonAbacBanner: { enabled: true, text: 'X', color: '#000000', match: { type: ['direct', 'direct'] } } },
+		],
+		['unknown match key', { ...validConfig, nonAbacBanner: { enabled: true, text: 'X', color: '#000000', match: { encrypted: true } } }],
+		[
+			'non-boolean match flag',
+			{ ...validConfig, nonAbacBanner: { enabled: true, text: 'X', color: '#000000', match: { federated: 'yes' } } },
+		],
 	])('rejects %s', (_name, config) => {
 		expect(validate(config)).toBe(false);
 	});
