@@ -1,7 +1,6 @@
 import { Team } from '@rocket.chat/core-services';
 import type { IRoom, IRoomWithRetentionPolicy, IUser, MessageTypesValues, ITeam, RequiredField } from '@rocket.chat/core-typings';
 import { TeamType } from '@rocket.chat/core-typings';
-import type { ServerMethods } from '@rocket.chat/ddp-client';
 import { Rooms, Users } from '@rocket.chat/models';
 import { Match } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
@@ -383,18 +382,6 @@ const settingSavers: RoomSettingsSavers = {
 	},
 };
 
-declare module '@rocket.chat/ddp-client' {
-	// eslint-disable-next-line @typescript-eslint/naming-convention
-	interface ServerMethods {
-		saveRoomSettings(rid: IRoom['_id'], settings: Partial<RoomSettings>): Promise<{ result: true; rid: IRoom['_id'] }>;
-		saveRoomSettings<RoomSettingName extends keyof RoomSettings>(
-			rid: IRoom['_id'],
-			setting: RoomSettingName,
-			value: RoomSettings[RoomSettingName],
-		): Promise<{ result: true; rid: IRoom['_id'] }>;
-	}
-}
-
 const fields: (keyof RoomSettings)[] = [
 	'roomAvatar',
 	'featured',
@@ -553,16 +540,3 @@ export async function saveRoomSettings(
 		rid: room._id,
 	};
 }
-
-Meteor.methods<ServerMethods>({
-	saveRoomSettings: (...args) => {
-		const userId = Meteor.userId();
-		if (!userId) {
-			throw new Meteor.Error('error-invalid-user', 'Invalid user', {
-				function: 'RocketChat.saveRoomName',
-			});
-		}
-
-		return saveRoomSettings(userId, ...args);
-	},
-});

@@ -899,6 +899,21 @@ describe('[Users]', () => {
 			expect(res.body).to.have.property('error').and.to.be.equal('The username provided is not valid');
 		});
 
+		it('should return an error when trying register new user without an email', async () => {
+			const res = await request
+				.post(api('users.register'))
+				.send({
+					name: 'name',
+					username: `no-email-${Date.now()}`,
+					pass: password,
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(400);
+
+			expect(res.body).to.have.property('success', false);
+			expect(res.body).to.have.property('errorType', 'error-invalid-params');
+		});
+
 		it('should return an error when trying register new user with an existing username', async () => {
 			const res = await request
 				.post(api('users.register'))

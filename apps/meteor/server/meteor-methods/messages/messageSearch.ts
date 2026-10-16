@@ -1,26 +1,15 @@
 import type { ISubscription } from '@rocket.chat/core-typings';
-import type { ServerMethods } from '@rocket.chat/ddp-client';
 import { Logger } from '@rocket.chat/logger';
 import { Messages, Subscriptions, Users } from '@rocket.chat/models';
 import { Match, check } from 'meteor/check';
-import { Meteor } from 'meteor/meteor';
 
 import { readSecondaryPreferred } from '../../database/readSecondaryPreferred';
 import { canAccessRoomIdAsync } from '../../lib/authorization/canAccessRoom';
-import { methodDeprecationLogger } from '../../lib/deprecationWarningLogger';
 import { parseMessageSearchQuery } from '../../lib/parseMessageSearchQuery';
 import type { IRawSearchResult } from '../../lib/search/model/ISearchResult';
 import { settings } from '../../settings';
 
 const logger = new Logger('MessageSearch');
-
-declare module '@rocket.chat/ddp-client' {
-	// eslint-disable-next-line @typescript-eslint/naming-convention
-	interface ServerMethods {
-		messageSearch(text: string, rid?: string, limit?: number, offset?: number): IRawSearchResult | false;
-	}
-}
-
 export const messageSearch = async function (
 	userId: string,
 	text: string,
@@ -105,17 +94,3 @@ export const messageSearch = async function (
 		throw new Error('error-while-finding-messages', { cause: error });
 	}
 };
-
-Meteor.methods<ServerMethods>({
-	async messageSearch(text, rid, limit, offset) {
-		methodDeprecationLogger.method('messageSearch', '9.0.0', '/v1/chat.search');
-		const currentUserId = Meteor.userId();
-		if (!currentUserId) {
-			throw new Meteor.Error('error-invalid-user', 'Invalid user', {
-				method: 'messageSearch',
-			});
-		}
-
-		return messageSearch(currentUserId, text, rid, limit, offset);
-	},
-});
