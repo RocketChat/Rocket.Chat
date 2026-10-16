@@ -1,5 +1,5 @@
 import { LDAPEnterprise } from '@rocket.chat/core-services';
-import type { AbacActor, AbacRoomMembershipPreviewPage } from '@rocket.chat/core-services';
+import type { AbacActor } from '@rocket.chat/core-services';
 import type { IAbacAttributeDefinition, IRoom, AtLeast, IUser } from '@rocket.chat/core-typings';
 import { Rooms, Users } from '@rocket.chat/models';
 
@@ -10,11 +10,9 @@ import {
 	buildRoomNonCompliantConditionsFromSubject,
 	findOwnedValues,
 	findUnownedValues,
-	previewRoomMembersInSteps,
-	verdictsOf,
 	withAttributeValues,
 } from '../helper';
-import type { AttributeSetChange, EvaluableSubject, Evaluation, IPolicyDecisionPoint, ReevaluationUser, RoomMembersPreview } from './types';
+import type { AttributeSetChange, EvaluableSubject, Evaluation, IPolicyDecisionPoint, ReevaluationUser } from './types';
 
 export class LocalPDP implements IPolicyDecisionPoint {
 	constructor(private restrictToOwnedAttributes = false) {}
@@ -69,16 +67,6 @@ export class LocalPDP implements IPolicyDecisionPoint {
 
 	needsEvaluation({ added }: AttributeSetChange): boolean {
 		return added;
-	}
-
-	async previewRoomMembers(
-		room: AtLeast<IRoom, '_id' | 'abacAttributes'>,
-		attributes: IAbacAttributeDefinition[],
-		page: AbacRoomMembershipPreviewPage,
-	): Promise<RoomMembersPreview> {
-		return previewRoomMembersInSteps(room._id, page, async (subjects) =>
-			verdictsOf(await this.evaluateSubjectsAgainstAttributes(subjects, attributes, room)),
-		);
 	}
 
 	async onSubjectAttributesChanged(user: IUser, _next: IAbacAttributeDefinition[]): Promise<Pick<IRoom, '_id' | 'name'>[]> {

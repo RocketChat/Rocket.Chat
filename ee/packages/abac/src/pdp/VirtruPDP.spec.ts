@@ -1,5 +1,7 @@
+import type { AbacRoomMembershipPreviewPage } from '@rocket.chat/core-services';
+
 import { OnlyCompliantCanBeAddedToRoomError, PdpHealthCheckError } from '../errors';
-import { PREVIEW_SCAN_LIMIT } from '../helper';
+import { PREVIEW_SCAN_LIMIT, previewRoomMembersInSteps } from '../helper';
 import { getDeniedSubjects, VirtruPDP } from './VirtruPDP';
 import type { Decision } from './types';
 
@@ -528,9 +530,11 @@ describe('VirtruPDP.needsEvaluation', () => {
 	});
 });
 
-describe('VirtruPDP.previewRoomMembers', () => {
+describe('previewRoomMembersInSteps with VirtruPDP', () => {
 	const room = { _id: 'r1', abacAttributes: [] };
 	const attrs = [{ key: 'clearance', values: ['secret'] }];
+	const previewMembers = (pdp: VirtruPDP, page: AbacRoomMembershipPreviewPage) =>
+		previewRoomMembersInSteps(room._id, page, (subjects) => pdp.evaluateSubjectsAgainstAttributes(subjects, attrs, room), pdp.previewStep);
 	const member = (username: string) => ({ ...user({ _id: username, username }), name: username.toUpperCase() });
 	const [alice, bob, carol] = ['alice', 'bob', 'carol'].map(member);
 
@@ -555,7 +559,7 @@ describe('VirtruPDP.previewRoomMembers', () => {
 		const pdp = new VirtruPDP(mkClient());
 		deciding(pdp, ['alice']);
 
-		const preview = await pdp.previewRoomMembers(room, attrs, { count: 2 });
+		const preview = await previewMembers(pdp, { count: 2 });
 
 		expect(usersFindActiveByRoomIdAfterUsername).toHaveBeenCalledWith('r1', { limit: 3 }, expect.anything());
 		expect(usersCountActiveByRoomIdAfterUsername).toHaveBeenCalledWith('r1', {});
@@ -575,7 +579,7 @@ describe('VirtruPDP.previewRoomMembers', () => {
 		const pdp = new VirtruPDP(mkClient());
 		deciding(pdp, ['alice']);
 
-		const preview = await pdp.previewRoomMembers(room, attrs, { count: 1, group: 'retains' });
+		const preview = await previewMembers(pdp, { count: 1, group: 'retains' });
 
 		expect(usersFindActiveByRoomIdAfterUsername.mock.calls[0][1]).toMatchObject({ limit: PREVIEW_SCAN_LIMIT + 1 });
 		expect(preview.members.map(({ _id }) => _id)).toEqual(['bob', 'carol']);
@@ -592,7 +596,7 @@ describe('VirtruPDP.previewRoomMembers', () => {
 			const pdp = new VirtruPDP(mkClient());
 			const evaluate = deciding(pdp, []);
 
-			const preview = await pdp.previewRoomMembers(room, attrs, { count: 2, group: 'retains' });
+			const preview = await previewMembers(pdp, { count: 2, group: 'retains' });
 
 			expect(asked(evaluate)).toEqual([800]);
 			expect(preview.members).toHaveLength(800);
@@ -604,7 +608,7 @@ describe('VirtruPDP.previewRoomMembers', () => {
 			const pdp = new VirtruPDP(mkClient());
 			const evaluate = deciding(pdp, [crowd[5]._id]);
 
-			const preview = await pdp.previewRoomMembers(room, attrs, { count: 2, group: 'loses' });
+			const preview = await previewMembers(pdp, { count: 2, group: 'loses' });
 
 			expect(asked(evaluate)).toEqual([800, PREVIEW_SCAN_LIMIT - 800]);
 			expect(preview.members.map(({ _id }) => _id)).toEqual([crowd[5]._id]);
@@ -617,7 +621,7 @@ describe('VirtruPDP.previewRoomMembers', () => {
 		const pdp = new VirtruPDP(mkClient());
 		jest.spyOn(pdp, 'evaluateSubjectsAgainstAttributes').mockResolvedValue({ compliant: [], nonCompliant: [], inconclusive: ['alice'] });
 
-		const preview = await pdp.previewRoomMembers(room, attrs, { count: 2, group: 'loses' });
+		const preview = await previewMembers(pdp, { count: 2, group: 'loses' });
 
 		expect(preview).toMatchObject({ members: [{ _id: 'alice', verdict: 'inconclusive' }] });
 	});
