@@ -14,7 +14,7 @@ RUN apt-get update && apt-get install -y \
 ENV NVM_DIR /usr/local/nvm
 RUN mkdir -p $NVM_DIR && \
     curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.3/install.sh | bash && \
-    bash -c ". $NVM_DIR/nvm.sh && nvm install $(jq -r '.engines.node' /tmp/package.json) && npm install -g yarn"
+    bash -c ". $NVM_DIR/nvm.sh && nvm install $(jq -r '.volta.node' /tmp/package.json) && npm install -g yarn"
 
 RUN echo "export NVM_DIR=$NVM_DIR" >> /etc/bash.bashrc && \
     echo "[ -s \"$NVM_DIR/nvm.sh\" ] && \. \"$NVM_DIR/nvm.sh\"" >> /etc/bash.bashrc
