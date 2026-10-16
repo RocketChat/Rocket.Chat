@@ -818,7 +818,10 @@ export class AbacService extends ServiceClass implements IAbacService {
 		actor: AbacActor,
 		grant: AbacRoomAttributesGrant,
 	): Promise<IAbacAttributeDefinition[]> {
-		await this.enforceCanModifyRoom(store, room, actor);
+		const bypassed = await Authorization.hasPermission(actor._id, 'bypass-abac-store-validation');
+		if (!bypassed) {
+			await store.assertCanModifyRoom(room, actor);
+		}
 
 		const normalized = validateAndNormalizeAttributes(attributes);
 
@@ -826,9 +829,11 @@ export class AbacService extends ServiceClass implements IAbacService {
 			await this.assertKeepsRequiredAttributes(room, normalized);
 		}
 
-		await this.enforceStoreValidation(store, normalized, actor);
+		if (!bypassed) {
+			await store.validateAssignable(normalized, actor);
+		}
 
-		if (await this.limitsToAssignableValues(grant, actor)) {
+		if (grant === 'edit-room-abac-attributes' && !bypassed) {
 			const unassignable = await this.pdp?.findUnassignableValues(normalized, actor, room.abacAttributes);
 			if (!unassignable) {
 				throw new PdpUnavailableError();

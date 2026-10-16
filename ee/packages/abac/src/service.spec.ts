@@ -2166,6 +2166,14 @@ describe('AbacService (unit)', () => {
 			expect(preview).not.toHaveProperty('editor');
 		});
 
+		it('looks up the store-validation bypass once per preview', async () => {
+			usePdp();
+
+			await previewAs(adding, {}, 'edit-room-abac-attributes');
+
+			expect(mockHasPermission.mock.calls.filter(([, permission]) => permission === 'bypass-abac-store-validation')).toHaveLength(1);
+		});
+
 		it('refuses attributes the write would refuse, before asking the PDP', async () => {
 			const { evaluateSubjectsAgainstAttributes } = usePdp();
 
