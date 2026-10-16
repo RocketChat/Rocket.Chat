@@ -126,6 +126,34 @@ export class MediaCallsRaw extends BaseRaw<IMediaCall> implements IMediaCallsMod
 		);
 	}
 
+	public async replaceActiveCallContractById(
+		callId: string,
+		role: 'caller' | 'callee',
+		data: { oldContractId: string; newContractId: string; supportedFeatures: string[] },
+		expiresAt: Date,
+	): Promise<IMediaCall | null> {
+		const { oldContractId, newContractId, supportedFeatures } = data;
+		return this.findOneAndUpdate(
+			{
+				_id: callId,
+				state: 'active',
+				[`${role}.contractId`]: oldContractId,
+			},
+			{
+				$set: {
+					[`${role}.contractId`]: newContractId,
+					expiresAt,
+				},
+				$pull: {
+					features: {
+						$nin: supportedFeatures,
+					},
+				},
+			},
+			{ returnDocument: 'after' },
+		);
+	}
+
 	public async hangupCallById(callId: string, params?: { endedBy?: IMediaCall['endedBy']; reason?: string }): Promise<IMediaCall | null> {
 		const { endedBy, reason } = params || {};
 
