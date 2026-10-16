@@ -68,7 +68,7 @@ const MonitorsTable = () => {
 
 	const { data, refetch, isLoading, isSuccess, isError, paginatedQuery, paginationProps } = usePaginatedQuery({
 		query,
-		getQueryKey: (query) => ['omnichannel', 'monitors', query],
+		queryKey: ['omnichannel', 'monitors', query],
 		queryFn: getMonitors,
 		itemsKey: 'monitors',
 	});

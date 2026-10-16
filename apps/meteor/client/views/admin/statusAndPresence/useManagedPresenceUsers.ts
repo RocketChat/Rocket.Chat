@@ -34,7 +34,7 @@ export const useManagedPresenceUsers = (query: { searchTerm: string }) => {
 
 	return usePaginatedQuery({
 		query,
-		getQueryKey: (query) => managedPresenceQueryKeys.list(query),
+		queryKey: managedPresenceQueryKeys.list(query),
 		queryFn: listStatusVisibility,
 		itemsKey: 'users',
 		meta: {

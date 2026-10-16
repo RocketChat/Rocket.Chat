@@ -53,7 +53,7 @@ const CannedResponsesTable = () => {
 	const getCannedResponses = useEndpoint('GET', '/v1/canned-responses');
 	const { data, isLoading, isSuccess, paginatedQuery, paginationProps } = usePaginatedQuery({
 		query,
-		getQueryKey: (query) => ['getCannedResponses', query],
+		queryKey: ['getCannedResponses', query],
 		queryFn: getCannedResponses,
 		itemsKey: 'cannedResponses',
 		refetchOnWindowFocus: false,

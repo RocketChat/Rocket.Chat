@@ -105,7 +105,7 @@ const QueueListTable = () => {
 	const getLivechatQueue = useEndpoint('GET', '/v1/livechat/queue');
 	const { data, isSuccess, isLoading, paginationProps } = usePaginatedQuery({
 		query,
-		getQueryKey: (query) => ['livechat-queue', query],
+		queryKey: ['livechat-queue', query],
 		queryFn: getLivechatQueue,
 		itemsKey: 'queue',
 	});

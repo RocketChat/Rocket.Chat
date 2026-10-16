@@ -191,8 +191,6 @@ export const marketplaceQueryKeys = {
 			startDate?: string | undefined;
 			method?: string | undefined;
 			logLevel?: '0' | '1' | '2' | undefined;
-			count: number;
-			offset: number;
 		},
 	) => [...marketplaceQueryKeys.app(appId), 'logs', query] as const,
 } as const;

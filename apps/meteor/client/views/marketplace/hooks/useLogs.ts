@@ -33,7 +33,7 @@ export const useLogs = ({
 
 	return usePaginatedQuery({
 		query,
-		getQueryKey: (query) => marketplaceQueryKeys.appLogs(appId, query),
+		queryKey: marketplaceQueryKeys.appLogs(appId, query),
 		queryFn: logs,
 		itemsKey: 'logs',
 	});

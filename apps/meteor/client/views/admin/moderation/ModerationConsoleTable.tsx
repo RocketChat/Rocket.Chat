@@ -53,7 +53,7 @@ const ModerationConsoleTable = () => {
 
 	const { data, isLoading, isSuccess, paginationProps } = usePaginatedQuery({
 		query,
-		getQueryKey: (query) => ['moderation', 'msgReports', 'fetchAll', query],
+		queryKey: ['moderation', 'msgReports', 'fetchAll', query],
 		queryFn: getReports,
 		itemsKey: 'reports',
 		meta: {
