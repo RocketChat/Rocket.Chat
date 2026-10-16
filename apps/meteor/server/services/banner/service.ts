@@ -89,9 +89,16 @@ export class BannerService extends ServiceClassInternal implements IBannerServic
 
 		const banner = await Banners.findOneById(bannerId);
 		if (!banner) {
-			const { matchedCount } = await Users.setBannerReadById(userId, bannerId);
+			const normalizedId = bannerId.replace(/\./g, '_');
+			let { matchedCount } = await Users.setBannerReadById(userId, bannerId);
 
-			if (!matchedCount) {
+			if (!matchedCount && normalizedId !== bannerId) {
+				({ matchedCount } = await Users.setBannerReadById(userId, normalizedId));
+			}
+
+			const isSystemUserBanner = bannerId.startsWith('versionUpdate-') || bannerId.startsWith('alert-');
+
+			if (!matchedCount && !isSystemUserBanner) {
 				throw new Error('Banner not found');
 			}
 
@@ -100,6 +107,7 @@ export class BannerService extends ServiceClassInternal implements IBannerServic
 				clientAction: 'updated',
 				diff: {
 					[`banners.${bannerId}.read`]: true,
+					[`banners.${normalizedId}.read`]: true,
 				},
 			});
 

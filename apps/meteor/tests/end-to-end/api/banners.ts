@@ -145,6 +145,30 @@ describe('banners', () => {
 
 				expect(banners).to.not.have.property('an-unknown-banner-id');
 			});
+
+			it('should succeed when dismissing a version update banner even if not present in user record', async () => {
+				const res = await request
+					.post(api('banners.dismiss'))
+					.set(credentials)
+					.send({
+						bannerId: 'versionUpdate-8_8_1',
+					})
+					.expect(200);
+
+				expect(res.body).to.have.property('success', true);
+			});
+
+			it('should succeed when dismissing a version update banner with dots in id', async () => {
+				const res = await request
+					.post(api('banners.dismiss'))
+					.set(credentials)
+					.send({
+						bannerId: 'versionUpdate-8.8.1',
+					})
+					.expect(200);
+
+				expect(res.body).to.have.property('success', true);
+			});
 		});
 	});
 
