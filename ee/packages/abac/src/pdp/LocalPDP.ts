@@ -10,7 +10,6 @@ import {
 	buildRoomNonCompliantConditionsFromSubject,
 	findOwnedValues,
 	findUnownedValues,
-	previewRetainingEveryone,
 	previewRoomMembersInSteps,
 	verdictsOf,
 	withAttributeValues,
@@ -77,10 +76,6 @@ export class LocalPDP implements IPolicyDecisionPoint {
 		attributes: IAbacAttributeDefinition[],
 		page: AbacRoomMembershipPreviewPage,
 	): Promise<RoomMembersPreview> {
-		if (!attributes.length) {
-			return previewRetainingEveryone(room._id, page);
-		}
-
 		return previewRoomMembersInSteps(room._id, page, async (subjects) =>
 			verdictsOf(await this.evaluateSubjectsAgainstAttributes(subjects, attributes, room)),
 		);

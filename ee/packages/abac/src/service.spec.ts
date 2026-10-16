@@ -64,6 +64,8 @@ const mockUsersFindUsersByUsernames = jest.fn();
 const mockUsersFindByIds = jest.fn();
 const mockUsersFindOneById = jest.fn();
 const mockUsersFindOneByIdAndRoomId = jest.fn();
+const mockUsersFindActiveByRoomIdAfterUsername = jest.fn();
+const mockUsersCountActiveByRoomIdAfterUsername = jest.fn();
 const mockUsersUpdateOne = jest.fn();
 const mockUsersSetAbacAttributesById = jest.fn();
 const mockUsersUnsetAbacAttributesById = jest.fn();
@@ -117,6 +119,8 @@ jest.mock('@rocket.chat/models', () => ({
 		findByIds: (...args: any[]) => mockUsersFindByIds(...args),
 		findOneById: (...args: any[]) => mockUsersFindOneById(...args),
 		findOneByIdAndRoomId: (...args: any[]) => mockUsersFindOneByIdAndRoomId(...args),
+		findActiveByRoomIdAfterUsername: (...args: any[]) => mockUsersFindActiveByRoomIdAfterUsername(...args),
+		countActiveByRoomIdAfterUsername: (...args: any[]) => mockUsersCountActiveByRoomIdAfterUsername(...args),
 		findActiveByRoomIds: (...args: any[]) => mockUsersFindActiveByRoomIds(...args),
 		findUsersByIdentifiers: (...args: any[]) => mockUsersFindUsersByIdentifiers(...args),
 		setAbacAttributesById: (...args: any[]) => mockUsersSetAbacAttributesById(...args),
@@ -2097,13 +2101,23 @@ describe('AbacService (unit)', () => {
 			expect(mockUsersFindOneByIdAndRoomId).not.toHaveBeenCalled();
 		});
 
-		it('evaluates against nothing when the change adds nothing, as the write evicts nobody', async () => {
+		it('retains everyone without asking the PDP when the change adds nothing, as the write evicts nobody', async () => {
 			mockFindOneByIdAndType.mockResolvedValue({ ...room, abacAttributes: required });
+			mockUsersFindActiveByRoomIdAfterUsername.mockReturnValue({
+				toArray: async () => [{ _id: 'alice', username: 'alice', name: 'ALICE' }],
+			});
+			mockUsersCountActiveByRoomIdAfterUsername.mockResolvedValue(1);
 			const { previewRoomMembers } = usePdp();
 
-			await previewAs({ dept: ['eng'] });
+			const preview = await previewAs({ dept: ['eng'] });
 
-			expect(previewRoomMembers).toHaveBeenCalledWith(expect.anything(), [], expect.anything());
+			expect(previewRoomMembers).not.toHaveBeenCalled();
+			expect(preview).toEqual({
+				members: [{ _id: 'alice', username: 'alice', name: 'ALICE', verdict: 'compliant' }],
+				count: 1,
+				checked: 1,
+				total: 1,
+			});
 		});
 
 		it("reports the editor's own verdict when they are a member", async () => {
