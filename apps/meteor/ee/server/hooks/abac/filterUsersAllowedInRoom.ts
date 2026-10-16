@@ -53,7 +53,7 @@ filterUsersAllowedInRoomOrThrow.patch(async (next, users, room) => {
 	}
 
 	const evaluable = candidates.filter(({ username }) => username).map(({ _id }) => _id);
-	const result = await Abac.evaluateUsersAllowedInRoom(evaluable, room);
+	const result = await Abac.evaluateUsersAllowedInRoom(evaluable, room, { audit: false });
 
 	if (!result.allowed) {
 		throw new AbacContractError(AbacErrorCode.DecisionUnavailable, { cause: result.code });
