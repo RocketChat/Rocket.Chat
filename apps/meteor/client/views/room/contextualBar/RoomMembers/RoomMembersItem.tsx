@@ -21,6 +21,7 @@ import UserActions from './RoomMembersActions';
 import { getUserDisplayNames } from '../../../../../lib/getUserDisplayNames';
 import InvitationBadge from '../../../../components/InvitationBadge';
 import { ReactiveUserStatus } from '../../../../components/UserStatus';
+import { STATUS_LABEL_KEYS } from '../../../../components/UserStatusText';
 import { useUserStatusTooltip } from '../../../../hooks/useUserStatusTooltip';
 import type { RoomMember } from '../../../hooks/useMembersList';
 
@@ -46,7 +47,7 @@ const RoomMembersItem = ({
 	const { t } = useTranslation();
 	const { mounted: menuVisibility, requestMount, mountNow } = useDeferredMenuMount();
 	const status = useUserPresence(_id)?.status;
-	const statusLabel = federated ? t('Federated') : status && t(status);
+	const statusLabel = federated ? t('Federated') : status && t(STATUS_LABEL_KEYS[status]);
 	const isInvited = subscription?.status === 'INVITED';
 	const invitationDate = isInvited ? subscription?.ts : undefined;
 	const [nameOrUsername, displayUsername] = getUserDisplayNames(name, username, useRealName);

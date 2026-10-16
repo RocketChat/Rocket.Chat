@@ -13,9 +13,9 @@ The list is a `role=list` with an accessible name, and it owns its rows: each ro
 
 ## A row
 
-- A row is an `Item`, never a clickable `div`. Its one focus target is an `ItemLink`: a link when the row navigates, a button otherwise.
+- A row is never a clickable `div`. In lists of `Item` rows, the row is an `Item` and its one focus target is an `ItemLink`: a link when the row navigates, a button otherwise. Sidebar rooms follow the same shape with `SidebarItem` and `SidebarItemLink`; message rows are described below.
 - The `ItemLink` is the row's name. Point `aria-describedby` at the text that explains it, such as a message preview, and clamp long previews with `ItemDescription`'s `clamp`.
-- A row with nothing to open still gets a disabled `ItemLink`, so the keyboard can land on it and reach its actions.
+- A row with nothing to open still gets an `ItemLink`, with `aria-disabled` rather than `disabled`, so the keyboard can land on it and reach its actions.
 
 ## Actions
 
@@ -34,7 +34,7 @@ State goes in the name or in ARIA attributes, never only in color:
 ## Group headers and messages
 
 - Group headers are `listitem`s holding a `SidebarCollapseGroup`, named after the group title. The toggle states whether the group is expanded with `aria-expanded`, so its name does not repeat the action.
-- Message rows are `listitem`s named with `aria-labelledby` after their author, text and time, for user and system messages alike.
+- Message rows are `listitem`s named with `aria-labelledby`, for user and system messages alike: after their author, text and time when the message starts a group, and after their text alone when it continues one.
 
 ## Testing
 
