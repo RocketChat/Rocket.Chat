@@ -8,6 +8,8 @@ export const appCausingNestedRequests = path.resolve(__dirname, './nested-reques
 
 export const appUiKitRoomTest = path.resolve(__dirname, './uikit-room-test_0.0.1.zip');
 
+export const appUiKitComponentsTest = path.resolve(__dirname, './uikit-components-test_0.0.1.zip');
+
 export const appUpdateStatusTest = path.resolve(__dirname, './update-status-test_0.0.1.zip');
 
 export const appUpdateTest = path.resolve(__dirname, './app-update-test_0.0.1.zip');
