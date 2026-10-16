@@ -12,6 +12,7 @@ import {
 	ItemTitle,
 } from '@rocket.chat/fuselage';
 import { useFormatDateAndTime } from '@rocket.chat/ui-client';
+import { useTranslation } from 'react-i18next';
 
 import FileItemMenu from './FileItemMenu';
 import ImageItem from './ImageItem';
@@ -27,6 +28,7 @@ export type FileItemProps = {
 };
 
 const FileItem = ({ rid, fileData, onClickDelete }: FileItemProps) => {
+	const { t } = useTranslation();
 	const format = useFormatDateAndTime();
 	const { _id, path, name, uploadedAt, type, typeGroup, user, description } = fileData;
 
@@ -35,11 +37,12 @@ const FileItem = ({ rid, fileData, onClickDelete }: FileItemProps) => {
 	const shouldDisplayPreview = typeGroup === 'image' && !!type && isPreviewableImage(type);
 	const isEncrypted = !!path?.includes('/file-decrypt/');
 	const extension = getFileExtension(name);
+	const displayName = name || t('Unnamed');
 
 	return (
 		<Item inset='lg'>
 			{shouldDisplayPreview ? (
-				<ImageItem id={_id} url={path} name={name} username={normalizedUsername} timestamp={format(uploadedAt)} alt={description} />
+				<ImageItem id={_id} url={path} name={displayName} username={normalizedUsername} timestamp={format(uploadedAt)} alt={description} />
 			) : (
 				<>
 					<ItemMedia>
@@ -53,10 +56,10 @@ const FileItem = ({ rid, fileData, onClickDelete }: FileItemProps) => {
 									download
 									rel='noopener noreferrer'
 									target='_blank'
-									title={name}
+									title={displayName}
 									{...(isEncrypted && { onClick, onContextMenu })}
 								>
-									{name}
+									{displayName}
 								</ItemLink>
 							</ItemTitle>
 							<ItemMeta>{format(uploadedAt)}</ItemMeta>
