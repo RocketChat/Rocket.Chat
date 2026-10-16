@@ -40,7 +40,7 @@
 		$style: map.get($styles, $value);
 
 		@if $style != null {
-			$value-pseudo-class: if(sass($value == unchecked): ''; else: ':#{$value}');
+			$value-pseudo-class: if($value == unchecked, '', ':#{$value}');
 			$input: #{&}__input#{$value-pseudo-class};
 
 			@at-root &__input#{$value-pseudo-class} + &__fake {
