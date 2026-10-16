@@ -29,7 +29,7 @@ export async function savePageHistory(token: string, roomId: string | undefined,
 			page: PageInfo;
 			token: string;
 		};
-		expireAt?: number;
+		expireAt?: Date;
 		_hidden?: boolean;
 	} = {
 		navigation: {
@@ -42,7 +42,7 @@ export async function savePageHistory(token: string, roomId: string | undefined,
 		livechatLogger.warn({ msg: 'Saving page history without room id for visitor', token });
 		// keep history of unregistered visitors for 1 month
 		const keepHistoryMiliseconds = 2592000000;
-		extraData.expireAt = new Date().getTime() + keepHistoryMiliseconds;
+		extraData.expireAt = new Date(new Date().getTime() + keepHistoryMiliseconds);
 	}
 
 	if (!settings.get('Livechat_Visitor_navigation_as_a_message')) {
