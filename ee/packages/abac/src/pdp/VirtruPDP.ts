@@ -248,19 +248,11 @@ export class VirtruPDP implements IPolicyDecisionPoint {
 		return { creatorAdmitted: true };
 	}
 
-	async findUnassignableValues(
-		_attributes: IAbacAttributeDefinition[],
-		_actor: AbacActor,
-		_alreadyAssigned?: IAbacAttributeDefinition[],
-	): Promise<IAbacAttributeDefinition[]> {
+	async findUnassignableValues(_attributes: IAbacAttributeDefinition[], _actor: AbacActor): Promise<IAbacAttributeDefinition[]> {
 		return [];
 	}
 
-	async filterAssignableAttributes(
-		definitions: IAbacAttributeDefinition[],
-		_actor: AbacActor,
-		_alreadyAssigned?: IAbacAttributeDefinition[],
-	): Promise<IAbacAttributeDefinition[]> {
+	async filterAssignableAttributes(definitions: IAbacAttributeDefinition[], _actor: AbacActor): Promise<IAbacAttributeDefinition[]> {
 		return definitions;
 	}
 
@@ -371,10 +363,7 @@ export class VirtruPDP implements IPolicyDecisionPoint {
 			return [];
 		}
 
-		const users: IUser[] = [];
-		for await (const user of Users.findActiveByRoomIds([room._id])) {
-			users.push(user);
-		}
+		const users = await Users.findActiveByRoomIds([room._id]).toArray();
 
 		const { compliant } = await this.evaluateSubjectsAgainstAttributes(users, newAttributes, room);
 		const kept = new Set(compliant);

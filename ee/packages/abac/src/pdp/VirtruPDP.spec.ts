@@ -437,7 +437,7 @@ describe('VirtruPDP.onRoomAttributesChanged', () => {
 
 	it('returns user as non-compliant when entity key missing (no API request for that user)', async () => {
 		const u = user({ emails: [] });
-		usersFindActiveByRoomIds.mockReturnValue(asyncIterable([u]));
+		usersFindActiveByRoomIds.mockReturnValue(cursor([u]));
 		const apiCall = jest.fn();
 		const pdp = new VirtruPDP(mkClient({ apiCall }));
 		const result = await pdp.onRoomAttributesChanged(room, newAttrs);
@@ -446,7 +446,7 @@ describe('VirtruPDP.onRoomAttributesChanged', () => {
 	});
 
 	it('returns [] when all users are DECISION_PERMIT', async () => {
-		usersFindActiveByRoomIds.mockReturnValue(asyncIterable([user()]));
+		usersFindActiveByRoomIds.mockReturnValue(cursor([user()]));
 		const apiCall = jest.fn().mockResolvedValue(permitFor(['r1']));
 		const pdp = new VirtruPDP(mkClient({ apiCall }));
 		const result = await pdp.onRoomAttributesChanged(room, newAttrs);
@@ -456,7 +456,7 @@ describe('VirtruPDP.onRoomAttributesChanged', () => {
 	it('returns users that are DENIED', async () => {
 		const u1 = user();
 		const u2 = user({ _id: 'u2', username: 'alice', emails: [{ address: 'a@x.com', verified: true }] });
-		usersFindActiveByRoomIds.mockReturnValue(asyncIterable([u1, u2]));
+		usersFindActiveByRoomIds.mockReturnValue(cursor([u1, u2]));
 		const apiCall = jest.fn().mockResolvedValue({
 			decisionResponses: [
 				{ resourceDecisions: [{ ephemeralResourceId: 'r1', decision: 'DECISION_PERMIT' }] },
@@ -470,7 +470,7 @@ describe('VirtruPDP.onRoomAttributesChanged', () => {
 
 	it('evicts on empty resourceDecisions (inconclusive)', async () => {
 		const u = user();
-		usersFindActiveByRoomIds.mockReturnValue(asyncIterable([u]));
+		usersFindActiveByRoomIds.mockReturnValue(cursor([u]));
 		const apiCall = jest.fn().mockResolvedValue({ decisionResponses: [{ resourceDecisions: [] }] });
 		const pdp = new VirtruPDP(mkClient({ apiCall }));
 		const result = await pdp.onRoomAttributesChanged(room, newAttrs);
@@ -479,7 +479,7 @@ describe('VirtruPDP.onRoomAttributesChanged', () => {
 
 	it('evicts on DECISION_UNSPECIFIED (inconclusive)', async () => {
 		const u = user();
-		usersFindActiveByRoomIds.mockReturnValue(asyncIterable([u]));
+		usersFindActiveByRoomIds.mockReturnValue(cursor([u]));
 		const apiCall = jest.fn().mockResolvedValue({
 			decisionResponses: [{ resourceDecisions: [{ ephemeralResourceId: 'r1', decision: 'DECISION_UNSPECIFIED' }] }],
 		});
@@ -492,7 +492,7 @@ describe('VirtruPDP.onRoomAttributesChanged', () => {
 		const keyless = user({ _id: 'u0', emails: [] });
 		const denied = user({ _id: 'u2', username: 'alice', emails: [{ address: 'a@x.com', verified: true }] });
 		const unspecified = user({ _id: 'u3', username: 'carol', emails: [{ address: 'c@x.com', verified: true }] });
-		usersFindActiveByRoomIds.mockReturnValue(asyncIterable([keyless, denied, unspecified]));
+		usersFindActiveByRoomIds.mockReturnValue(cursor([keyless, denied, unspecified]));
 		const apiCall = jest.fn().mockResolvedValue({
 			decisionResponses: [
 				{ resourceDecisions: [{ ephemeralResourceId: 'r1', decision: 'DECISION_DENY' }] },
@@ -506,7 +506,7 @@ describe('VirtruPDP.onRoomAttributesChanged', () => {
 
 	it('returns only entity-keyless users when ALL users lack entity keys (no API call)', async () => {
 		const u = user({ emails: [] });
-		usersFindActiveByRoomIds.mockReturnValue(asyncIterable([u]));
+		usersFindActiveByRoomIds.mockReturnValue(cursor([u]));
 		const apiCall = jest.fn();
 		const pdp = new VirtruPDP(mkClient({ apiCall }));
 		const result = await pdp.onRoomAttributesChanged(room, newAttrs);
@@ -827,7 +827,7 @@ describe('VirtruPDP — PDP unreachable (decision call rejects)', () => {
 	});
 
 	it('onRoomAttributesChanged rejects (never silently keeps everyone) when the decision call fails', async () => {
-		usersFindActiveByRoomIds.mockReturnValue(asyncIterable([user()]));
+		usersFindActiveByRoomIds.mockReturnValue(cursor([user()]));
 		const apiCall = pdpDown();
 		const pdp = new VirtruPDP(mkClient({ apiCall }));
 		await expect(pdp.onRoomAttributesChanged(room, attrs)).rejects.toThrow('pdp down');
