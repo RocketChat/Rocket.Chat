@@ -28,6 +28,7 @@ const InviteUsersWithData = ({ rid, onClickBack }: InviteUsersWithDataProps) => 
 		isEditing: false,
 		daysAndMaxUses: { days: '1', maxUses: '0' },
 	});
+	const [linkGenerated, setLinkGenerated] = useState(false);
 
 	const { closeTab } = useRoomToolbox();
 	const format = useFormatDateAndTime();
@@ -81,13 +82,21 @@ const InviteUsersWithData = ({ rid, onClickBack }: InviteUsersWithDataProps) => 
 	});
 
 	useEffect(() => {
+		if (!linkGenerated) {
+			return;
+		}
+
 		if (isSuccess) {
 			dispatchToastMessage({ type: 'success', message: t('Invite_link_generated') });
+			setLinkGenerated(false);
+		} else if (isError) {
+			setLinkGenerated(false);
 		}
-	}, [dispatchToastMessage, isSuccess, t]);
+	}, [dispatchToastMessage, isError, isSuccess, linkGenerated, t]);
 
 	const handleGenerateLink = useStableCallback((daysAndMaxUses: { days: string; maxUses: string }) => {
 		setInviteState((prevState) => ({ ...prevState, daysAndMaxUses, isEditing: false }));
+		setLinkGenerated(true);
 	});
 
 	if (isError) {
