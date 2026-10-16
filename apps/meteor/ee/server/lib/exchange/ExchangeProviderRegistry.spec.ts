@@ -31,6 +31,16 @@ describe('getCalendarSyncWindow', () => {
 		});
 	});
 
+	it.each([
+		['hours ahead of the process', 9, '2026-08-30T15:00:00.000Z'],
+		['hours behind it', -4, '2026-08-31T04:00:00.000Z'],
+		['half an hour off the mark', 5.5, '2026-08-30T18:30:00.000Z'],
+	])('starts at the midnight of a mailbox owner %s, not the one the process is in', (_, utcOffset, expected) => {
+		setDays(2);
+
+		expect(getCalendarSyncWindow(new Date('2026-08-31T09:47:31.250Z'), utcOffset).start).toEqual(new Date(expected));
+	});
+
 	it('gives every moment of one day the identical window, which is what a delta link needs', () => {
 		setDays(2);
 

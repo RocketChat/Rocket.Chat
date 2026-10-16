@@ -50,11 +50,11 @@ export const runCalendarSync = async (): Promise<CalendarSyncRunSummary> => {
 		}
 
 		const provider = getExchangeProvider();
-		const timeWindow = getCalendarSyncWindow();
+		const now = new Date();
 
 		const candidates = iterateMailboxCandidates();
 
-		await forEachWithConcurrency(candidates, MAILBOX_CONCURRENCY, async ({ uid, mailbox }) => {
+		await forEachWithConcurrency(candidates, MAILBOX_CONCURRENCY, async ({ uid, mailbox, utcOffset }) => {
 			if (summary.aborted || !isServerSyncEnabled()) {
 				return;
 			}
@@ -75,7 +75,7 @@ export const runCalendarSync = async (): Promise<CalendarSyncRunSummary> => {
 			summary.mailboxes++;
 
 			try {
-				const outcome = await syncCalendarWindow(provider, uid, mailbox, timeWindow);
+				const outcome = await syncCalendarWindow(provider, uid, mailbox, getCalendarSyncWindow(now, utcOffset));
 
 				summary.upserted += outcome.upserted;
 				summary.modified += outcome.modified;
