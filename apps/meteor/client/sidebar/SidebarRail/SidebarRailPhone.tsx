@@ -5,6 +5,8 @@ import { useMediaCallAction } from '@rocket.chat/ui-voip';
 import type { HTMLAttributes } from 'react';
 import { useTranslation } from 'react-i18next';
 
+import { useSidebarRailStore } from './useSidebarRailStore';
+
 type SidebarRailPhoneProps = Omit<HTMLAttributes<HTMLElement>, 'is'>;
 
 const SidebarRailPhone = (props: SidebarRailPhoneProps) => {
@@ -13,9 +15,12 @@ const SidebarRailPhone = (props: SidebarRailPhoneProps) => {
 	const router = useRouter();
 	const currentRoute = useCurrentRoutePath();
 
-	const isActive = currentRoute?.includes('/call-history') ?? false;
+	const isCurrentPage = currentRoute?.includes('/call-history') ?? false;
+	const isPanelOpen = useSidebarRailStore((state) => state.panel === 'calls');
+	const setPanel = useSidebarRailStore((state) => state.setPanel);
 
 	const handleClick = useStableCallback(() => {
+		setPanel('calls');
 		router.navigate('/call-history');
 	});
 
@@ -28,8 +33,8 @@ const SidebarRailPhone = (props: SidebarRailPhoneProps) => {
 			{...props}
 			title={t('Calls')}
 			icon='phone'
-			pressed={isActive}
-			aria-current={isActive ? 'page' : undefined}
+			pressed={isPanelOpen}
+			aria-current={isCurrentPage ? 'page' : undefined}
 			onClick={handleClick}
 		/>
 	);

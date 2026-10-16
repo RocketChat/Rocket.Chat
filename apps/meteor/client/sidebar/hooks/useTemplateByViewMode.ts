@@ -5,10 +5,14 @@ import Condensed from '../Item/Condensed';
 import Extended from '../Item/Extended';
 import Medium from '../Item/Medium';
 
-export const useTemplateByViewMode = (): typeof Condensed | typeof Extended | typeof Medium => {
-	const sidebarViewMode = useUserPreference('sidebarViewMode');
+export const useTemplateByViewMode = (
+	sidebarViewMode?: 'extended' | 'medium' | 'condensed',
+): typeof Condensed | typeof Extended | typeof Medium => {
+	const sidebarViewModeFromSettings = useUserPreference<'extended' | 'medium' | 'condensed'>('sidebarViewMode');
+
+	const viewMode = sidebarViewMode ?? sidebarViewModeFromSettings;
 	return useMemo(() => {
-		switch (sidebarViewMode) {
+		switch (viewMode) {
 			case 'extended':
 				return Extended;
 			case 'medium':
@@ -17,5 +21,5 @@ export const useTemplateByViewMode = (): typeof Condensed | typeof Extended | ty
 			default:
 				return Condensed;
 		}
-	}, [sidebarViewMode]);
+	}, [viewMode]);
 };

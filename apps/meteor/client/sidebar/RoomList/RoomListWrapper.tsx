@@ -20,7 +20,14 @@ const RoomListWrapper = forwardRef(function RoomListWrapper(
 	const mergedRefs = useMergedRefsV2(ref, sidebarListRef);
 
 	return (
-		<div {...props} data-testid={dataTestId ?? 'virtuoso-item-list'} role='list' aria-label={t('Channels')} ref={mergedRefs} style={style}>
+		<div
+			{...props}
+			data-testid={dataTestId ?? 'virtuoso-item-list'}
+			role='list'
+			aria-label={props['aria-label'] ?? t('Channels')}
+			ref={mergedRefs}
+			style={style}
+		>
 			{children}
 		</div>
 	);

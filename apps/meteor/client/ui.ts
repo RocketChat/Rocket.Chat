@@ -23,6 +23,7 @@ import { usePinnedMessagesRoomAction } from './hooks/roomActions/usePinnedMessag
 import { usePushNotificationsRoomAction } from './hooks/roomActions/usePushNotificationsRoomAction';
 import { useRocketSearchRoomAction } from './hooks/roomActions/useRocketSearchRoomAction';
 import { useStarredMessagesRoomAction } from './hooks/roomActions/useStarredMessagesRoomAction';
+import { useSubscriptionLabelsRoomAction } from './hooks/roomActions/useSubscriptionLabelsRoomAction';
 import { useTeamChannelsRoomAction } from './hooks/roomActions/useTeamChannelsRoomAction';
 import { useTeamInfoRoomAction } from './hooks/roomActions/useTeamInfoRoomAction';
 import { useThreadRoomAction } from './hooks/roomActions/useThreadRoomAction';
@@ -61,6 +62,7 @@ export const roomActionHooks = [
 	useRocketSearchRoomAction,
 	useRoomInfoRoomAction,
 	useStarredMessagesRoomAction,
+	useSubscriptionLabelsRoomAction,
 	useTeamChannelsRoomAction,
 	useUploadedFilesListRoomAction,
 	useAppsRoomStarActions,

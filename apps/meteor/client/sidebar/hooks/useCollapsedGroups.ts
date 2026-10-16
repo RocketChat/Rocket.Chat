@@ -2,8 +2,8 @@ import { useLocalStorage } from '@rocket.chat/fuselage-hooks';
 import type { KeyboardEvent } from 'react';
 import { useCallback } from 'react';
 
-export const useCollapsedGroups = () => {
-	const [collapsedGroups, setCollapsedGroups] = useLocalStorage<string[]>('sidebarGroups', []);
+export const useCollapsedGroups = (storageKey = 'sidebarGroups') => {
+	const [collapsedGroups, setCollapsedGroups] = useLocalStorage<string[]>(storageKey, []);
 
 	const handleClick = useCallback(
 		(group: string) => {

@@ -6,6 +6,7 @@ export * from './IMessage';
 export * from './federation';
 export * from './ISetting';
 export * from './ISubscription';
+export * from './ISidebarFilter';
 export * from './ITeam';
 export type * from './RoomType';
 export type * from './IInvite';

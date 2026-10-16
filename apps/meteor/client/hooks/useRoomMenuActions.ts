@@ -5,6 +5,7 @@ import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { useLeaveRoomAction } from './menuActions/useLeaveRoom';
+import { useSubscriptionLabelsMenuItem } from './menuActions/useSubscriptionLabelsMenuItem';
 import { useToggleFavoriteAction } from './menuActions/useToggleFavoriteAction';
 import { useToggleReadAction } from './menuActions/useToggleReadAction';
 import { useHideRoomAction } from './useHideRoomAction';
@@ -51,6 +52,7 @@ export const useRoomMenuActions = ({
 	const handleToggleFavorite = useToggleFavoriteAction({ rid, isFavorite });
 	const handleToggleRead = useToggleReadAction({ rid, isUnread, subscription });
 	const handleLeave = useLeaveRoomAction({ rid, type, name, roomOpen });
+	const labelsItem = useSubscriptionLabelsMenuItem({ rid, type });
 
 	const isOmnichannelRoom = type === 'l';
 	const prioritiesMenu = useOmnichannelPrioritiesMenu(rid);
@@ -77,6 +79,7 @@ export const useRoomMenuActions = ({
 							content: isFavorite ? t('Unfavorite') : t('Favorite'),
 							onClick: handleToggleFavorite,
 						},
+						labelsItem,
 						canLeave && {
 							id: 'leaveRoom',
 							icon: 'sign-out',
@@ -97,6 +100,7 @@ export const useRoomMenuActions = ({
 			canLeave,
 			handleLeave,
 			isOmnichannelRoom,
+			labelsItem,
 		],
 	);
 

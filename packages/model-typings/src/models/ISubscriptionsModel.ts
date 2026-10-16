@@ -283,6 +283,8 @@ export interface ISubscriptionsModel extends IBaseModel<ISubscription> {
 	setCustomFieldsDirectMessagesByUserId(userId: string, fields: Record<string, any>): Promise<UpdateResult | Document>;
 	setFavoriteByRoomIdAndUserId(roomId: string, userId: string, favorite?: boolean): Promise<UpdateResult>;
 	setCategoryByRoomIdsAndUserId(roomIds: string[], userId: string, category: string | null): Promise<UpdateResult | Document>;
+	setLabelsByRoomIdAndUserId(roomId: string, userId: string, labelIds: string[]): Promise<UpdateResult>;
+	removeLabelFromUserSubscriptions(userId: string, labelId: string): Promise<UpdateResult | Document>;
 	hideByRoomIdAndUserId(roomId: string, userId: string): Promise<UpdateResult>;
 	findByRoomIdWhenUserIdExists<T extends Document = ISubscription, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(
 		rid: string,
