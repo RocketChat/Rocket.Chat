@@ -21,6 +21,7 @@ import { VirtuosoList } from '../../../components/VirtuosoList';
 import RoomMessage from '../../../components/message/variants/RoomMessage';
 import SystemMessage from '../../../components/message/variants/SystemMessage';
 import { useFormatDate } from '../../../hooks/useFormatDate';
+import { useMessageRowListNavigation } from '../../../hooks/useMessageRowListNavigation';
 import type { MessageActionContext } from '../../../lib/MessageAction';
 import MessageListErrorBoundary from '../MessageList/MessageListErrorBoundary';
 import { isMessageNewDay } from '../MessageList/lib/isMessageNewDay';
@@ -40,6 +41,7 @@ export type MessageListTabProps = {
 
 const MessageListTab = ({ iconName, title, emptyResultMessage, context, queryResult }: MessageListTabProps) => {
 	const formatDate = useFormatDate();
+	const messageListRef = useMessageRowListNavigation();
 	const showUserAvatar = !!useUserPreference<boolean>('displayAvatars');
 
 	const { closeTab } = useRoomToolbox();
@@ -69,7 +71,16 @@ const MessageListTab = ({ iconName, title, emptyResultMessage, context, queryRes
 						{queryResult.data.length > 0 && (
 							<MessageListErrorBoundary>
 								<MessageListProvider>
-									<Box is='section' display='flex' flexDirection='column' flexGrow={1} flexShrink={1} flexBasis='auto' height='full'>
+									<Box
+										is='section'
+										ref={messageListRef}
+										display='flex'
+										flexDirection='column'
+										flexGrow={1}
+										flexShrink={1}
+										flexBasis='auto'
+										height='full'
+									>
 										<VirtualizedScrollbars>
 											<Virtuoso
 												totalCount={queryResult.data.length}

@@ -20,6 +20,7 @@ import { useTranslation } from 'react-i18next';
 import DiscussionsListRow from './DiscussionsListRow';
 import { PaginatedVirtualList } from '../../../../components/PaginatedVirtualList';
 import ResultsLiveRegion from '../../../../components/ResultsLiveRegion';
+import { useItemListNavigation } from '../../../../hooks/useItemListNavigation';
 import { useGoToRoom } from '../../hooks/useGoToRoom';
 
 export type DiscussionsListProps = {
@@ -47,6 +48,7 @@ function DiscussionsList({
 }: DiscussionsListProps) {
 	const { t } = useTranslation();
 	const discussionListId = useId();
+	const discussionListRef = useItemListNavigation();
 
 	const showRealNames = useSetting('UI_Use_Real_Name', false);
 	const inputRef = useAutoFocus(true);
@@ -92,7 +94,7 @@ function DiscussionsList({
 					</Callout>
 				)}
 				{isSuccess && (
-					<Box id={discussionListId} width='full' height='full' overflow='hidden' flexShrink={1}>
+					<Box id={discussionListId} ref={discussionListRef} width='full' height='full' overflow='hidden' flexShrink={1}>
 						{discussions.length === 0 && <ContextualbarEmptyContent title={t('No_Discussions_found')} />}
 						{discussions.length > 0 && (
 							<Box height='full' width='full' style={{ minHeight: 0 }}>

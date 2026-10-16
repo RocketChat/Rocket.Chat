@@ -21,6 +21,7 @@ import ThreadListItem from './components/ThreadListItem';
 import { useThreadsList } from './hooks/useThreadsList';
 import ResultsLiveRegion from '../../../../components/ResultsLiveRegion';
 import { virtuosoListComponents } from '../../../../components/VirtuosoList';
+import { useItemListNavigation } from '../../../../hooks/useItemListNavigation';
 import { getErrorMessage } from '../../../../lib/errorHandling';
 import { useRoom, useRoomSubscription } from '../../contexts/RoomContext';
 import { useGoToThread } from '../../hooks/useGoToThread';
@@ -31,6 +32,7 @@ type ThreadType = 'all' | 'following' | 'unread';
 const ThreadList = () => {
 	const t = useTranslation();
 	const threadListId = useId();
+	const threadListRef = useItemListNavigation();
 
 	const { closeTab } = useRoomToolbox();
 
@@ -159,7 +161,7 @@ const ThreadList = () => {
 					</Callout>
 				)}
 				{isSuccess && (
-					<Box id={threadListId} width='full' height='full' overflow='hidden' flexShrink={1}>
+					<Box id={threadListId} ref={threadListRef} width='full' height='full' overflow='hidden' flexShrink={1}>
 						{items.length === 0 && <ContextualbarEmptyContent title={t('No_Threads')} />}
 						{items.length > 0 && (
 							<VirtualizedScrollbars>
