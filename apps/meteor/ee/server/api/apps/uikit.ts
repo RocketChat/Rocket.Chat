@@ -13,6 +13,7 @@ import { authenticationMiddleware } from '../../../../server/api/v1/middlewares/
 import { nodeLoggerMiddleware } from '../../../../server/api/v1/middlewares/logger';
 import { httpApp } from '../../../../server/lib/http/httpServer';
 import { reportInvalidInteractionBlocks } from '../../../../server/lib/uikit/reportInvalidBlocks';
+import { recordInteractionView, withRecordedView } from '../../../../server/lib/uikit/recordedViews';
 import { settings } from '../../../../server/settings';
 import { Apps } from '../../lib/apps/orchestrator';
 
@@ -247,6 +248,7 @@ export class AppUIKitInteractionApi {
 					const result = await orch.triggerEvent(eventInterface, action);
 
 					reportInvalidInteractionBlocks(result, { where: 'ui.interaction', appId, userId: req.user?._id });
+					await recordInteractionView(result, appId, req.user?._id);
 					res.send(result);
 				} catch (e) {
 					const error = e instanceof Error ? e.message : e;
@@ -271,7 +273,7 @@ export class AppUIKitInteractionApi {
 					user,
 					room,
 					payload: {
-						view,
+						view: await withRecordedView(view, appId, req.user?._id),
 						isCleared,
 					},
 				};
@@ -280,6 +282,7 @@ export class AppUIKitInteractionApi {
 					const result = await orch.triggerEvent(AppEvents.IUIKitInteractionHandler, action);
 
 					reportInvalidInteractionBlocks(result, { where: 'ui.interaction', appId, userId: req.user?._id });
+					await recordInteractionView(result, appId, req.user?._id);
 					res.send(result);
 				} catch (e) {
 					const error = e instanceof Error ? e.message : e;
@@ -299,7 +302,7 @@ export class AppUIKitInteractionApi {
 					appId,
 					actionId,
 					triggerId,
-					payload,
+					payload: { ...payload, view: await withRecordedView(payload.view, appId, req.user?._id) },
 					user,
 					room,
 				};
@@ -308,6 +311,7 @@ export class AppUIKitInteractionApi {
 					const result = await orch.triggerEvent(AppEvents.IUIKitInteractionHandler, action);
 
 					reportInvalidInteractionBlocks(result, { where: 'ui.interaction', appId, userId: req.user?._id });
+					await recordInteractionView(result, appId, req.user?._id);
 					res.send(result);
 				} catch (e) {
 					const error = e instanceof Error ? e.message : e;
@@ -350,6 +354,7 @@ export class AppUIKitInteractionApi {
 					const result = await orch.triggerEvent(AppEvents.IUIKitInteractionHandler, action);
 
 					reportInvalidInteractionBlocks(result, { where: 'ui.interaction', appId, userId: req.user?._id });
+					await recordInteractionView(result, appId, req.user?._id);
 					res.send(result);
 				} catch (e) {
 					const error = e instanceof Error ? e.message : e;
