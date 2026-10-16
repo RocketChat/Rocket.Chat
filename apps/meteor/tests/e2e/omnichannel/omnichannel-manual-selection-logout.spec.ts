@@ -70,6 +70,8 @@ test.describe('OC - Manual Selection After Relogin', () => {
 			await expect(poOmnichannel.composer.inputMessage).toBeVisible();
 			await expect(poOmnichannel.content.btnTakeChat).not.toBeVisible();
 			await expect(poOmnichannel.content.btnReturnToQueue).toBeVisible();
+			// the taking agent can transiently see the room twice (new subscription + not-yet-removed queued inquiry)
+			await expect(poOmnichannel.sidebar.getSidebarItemByName(room.fname)).toHaveCount(1);
 			await expect(poOmnichannel.sidebar.getSidebarItemByName(room.fname)).toBeVisible();
 		});
 	});
