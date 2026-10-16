@@ -21,7 +21,7 @@ import { HEALTH_CHECK_TIMEOUT } from '../clients/virtru/VirtruClient';
 import type { VirtruClient } from '../clients/virtru/VirtruClient';
 import { buildEntityIdentifier, buildAttributeFqns, getUserEntityKey } from '../clients/virtru/identity';
 import { OnlyCompliantCanBeAddedToRoomError, PdpHealthCheckError } from '../errors';
-import { classifyDecisions, previewRetainingEveryone, previewRoomMembersInSteps, verdictsOf } from '../helper';
+import { classifyDecisions, previewRoomMembersInSteps, verdictsOf } from '../helper';
 import { logger } from '../logger';
 
 const pdpLogger = logger.section('VirtruPDP');
@@ -372,10 +372,6 @@ export class VirtruPDP implements IPolicyDecisionPoint {
 		attributes: IAbacAttributeDefinition[],
 		page: AbacRoomMembershipPreviewPage,
 	): Promise<RoomMembersPreview> {
-		if (!attributes.length) {
-			return previewRetainingEveryone(room._id, page);
-		}
-
 		return previewRoomMembersInSteps(
 			room._id,
 			page,
