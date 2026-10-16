@@ -4,8 +4,8 @@ import { MessageFooterCallout, MessageFooterCalloutAction, MessageFooterCalloutC
 import { useRoomToolbox } from '@rocket.chat/ui-contexts';
 import { useTranslation } from 'react-i18next';
 
+import { ABAC_ATTRIBUTES_MANAGE_CONTEXT, ABAC_ATTRIBUTES_TAB } from '../../../lib/constants';
 import { useRoom } from '../contexts/RoomContext';
-import { ABAC_ATTRIBUTES_MANAGE_CONTEXT, ABAC_ATTRIBUTES_TAB } from '../contextualBar/AbacAttributes/abacAttributesTab';
 import { useCanManageRoomAbacAttributes } from '../hooks/useCanManageRoomAbacAttributes';
 
 const getLockedMessageKey = (room: IRoom) => {

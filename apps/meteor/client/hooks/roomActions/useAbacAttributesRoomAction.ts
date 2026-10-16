@@ -1,8 +1,8 @@
 import type { RoomToolboxActionConfig } from '@rocket.chat/ui-contexts';
 import { lazy, useMemo } from 'react';
 
+import { ABAC_ATTRIBUTES_TAB } from '../../lib/constants';
 import { useRoom } from '../../views/room/contexts/RoomContext';
-import { ABAC_ATTRIBUTES_TAB } from '../../views/room/contextualBar/AbacAttributes/abacAttributesTab';
 import { useCanManageRoomAbacAttributes } from '../../views/room/hooks/useCanManageRoomAbacAttributes';
 
 const AbacAttributes = lazy(() => import('../../views/room/contextualBar/AbacAttributes'));
