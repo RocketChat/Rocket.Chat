@@ -1,5 +1,6 @@
 import type { ILivechatDepartment, IOmnichannelCannedResponse } from '@rocket.chat/core-typings';
 import {
+	Box,
 	Button,
 	Icon,
 	Item as FuselageItem,
@@ -40,11 +41,11 @@ const Item = ({ data, allowUse, onClickItem, onClickUse }: ItemProps) => {
 				<ItemDescription>{scope}</ItemDescription>
 				<ItemDescription>"{data.text}"</ItemDescription>
 				{data.tags && data.tags.length > 0 && (
-					<ItemRow>
+					<Box is={ItemRow} flexWrap='wrap'>
 						{data.tags.map((tag: string, idx: number) => (
 							<Tag key={idx}>{tag}</Tag>
 						))}
-					</ItemRow>
+					</Box>
 				)}
 			</ItemContent>
 			{allowUse && (
