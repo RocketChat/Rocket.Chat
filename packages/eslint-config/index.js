@@ -48,7 +48,8 @@ export default defineConfig(
 		name: 'rocket.chat/react',
 		settings: {
 			react: {
-				version: 'detect',
+				// shortcut: 'detect' crashes on ESLint 10 in eslint-plugin-react 7.37.5; restore it when upstream ships a fix
+				version: '19.2',
 			},
 		},
 		rules: {
