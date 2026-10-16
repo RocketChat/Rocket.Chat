@@ -303,7 +303,11 @@ describe('previewRoomMembersInSteps with LocalPDP', () => {
 		const retains = await previewRetainingEveryone(room._id, { count: 10 });
 		const loses = await previewRetainingEveryone(room._id, { count: 10, group: 'loses' });
 
-		expect(retains.members.every(({ verdict }) => verdict === 'compliant')).toBe(true);
+		expect(verdicts(retains)).toEqual([
+			['holder', 'compliant'],
+			['none', 'compliant'],
+			['partial', 'compliant'],
+		]);
 		expect(loses).toEqual({ members: [], checked: 3, total: 3 });
 	});
 });
