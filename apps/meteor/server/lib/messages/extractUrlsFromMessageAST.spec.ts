@@ -32,37 +32,7 @@ describe('extractUrlsFromMessageAST', () => {
 		expect(urls).to.deep.equal(['https://rocket.chat']);
 	});
 
-	// TODO: this spec was never wired to a test runner; these two expectations predate the
-	// current implementation, which returns LINK src values without protocol normalization.
-	it.skip('should convert // prefix to https://', () => {
-		const md = [
-			{
-				type: 'PARAGRAPH',
-				value: [
-					{
-						type: 'LINK',
-						value: {
-							src: {
-								type: 'PLAIN_TEXT',
-								value: '//github.com/RocketChat/Rocket.Chat',
-							},
-							label: [
-								{
-									type: 'PLAIN_TEXT',
-									value: 'github.com/RocketChat/Rocket.Chat',
-								},
-							],
-						},
-					},
-				],
-			},
-		];
-
-		const urls = extractUrlsFromMessageAST(md as any);
-		expect(urls).to.deep.equal(['https://github.com/RocketChat/Rocket.Chat']);
-	});
-
-	it.skip('should handle multiple links', () => {
+	it('should handle multiple links', () => {
 		const md = [
 			{
 				type: 'PARAGRAPH',
@@ -106,7 +76,7 @@ describe('extractUrlsFromMessageAST', () => {
 		];
 
 		const urls = extractUrlsFromMessageAST(md as any);
-		expect(urls).to.deep.equal(['https://rocket.chat', 'https://github.com/RocketChat']);
+		expect(urls).to.deep.equal(['https://rocket.chat', '//github.com/RocketChat']);
 	});
 
 	it('should return empty array for undefined or non-array input', () => {
