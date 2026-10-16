@@ -119,6 +119,8 @@ const ContactEdit = ({ contact, onSaved, onClose }: ContactEditProps) => {
 						<FieldLabel required>{t('First_name')}</FieldLabel>
 						<FieldRow>
 							<TextInput
+								aria-required='true'
+								error={errors.givenName?.message}
 								{...register('givenName', {
 									validate: (value) => value.trim().length > 0 || t('Required_field', { field: t('First_name') }),
 								})}
@@ -132,9 +134,7 @@ const ContactEdit = ({ contact, onSaved, onClose }: ContactEditProps) => {
 							<TextInput {...register('surname')} />
 						</FieldRow>
 					</Field>
-
 					<Divider />
-
 					{emailFields.fields.map((field, index) => (
 						<Field key={field.id}>
 							<FieldLabel>{t('Email')}</FieldLabel>
@@ -157,7 +157,6 @@ const ContactEdit = ({ contact, onSaved, onClose }: ContactEditProps) => {
 							</FieldRow>
 						</Field>
 					))}
-
 					<Field>
 						<Box display='flex'>
 							<Button
@@ -171,9 +170,7 @@ const ContactEdit = ({ contact, onSaved, onClose }: ContactEditProps) => {
 							</Button>
 						</Box>
 					</Field>
-
 					<Divider />
-
 					{phoneFields.fields.map((field, index) => (
 						<Field key={field.id}>
 							<FieldLabel>{t('Phone')}</FieldLabel>
@@ -196,7 +193,6 @@ const ContactEdit = ({ contact, onSaved, onClose }: ContactEditProps) => {
 							</FieldRow>
 						</Field>
 					))}
-
 					<Field>
 						<Box display='flex'>
 							<Button
@@ -210,16 +206,13 @@ const ContactEdit = ({ contact, onSaved, onClose }: ContactEditProps) => {
 							</Button>
 						</Box>
 					</Field>
-
 					<Divider />
-
 					<Field>
 						<FieldLabel>{t('Company')}</FieldLabel>
 						<FieldRow>
 							<TextInput {...register('companyName')} />
 						</FieldRow>
 					</Field>
-
 					{!contact && (
 						<Box fontScale='c1' color='hint'>
 							{t('Information_can_be_edited_later')}
@@ -232,7 +225,7 @@ const ContactEdit = ({ contact, onSaved, onClose }: ContactEditProps) => {
 					<Button type='button' onClick={onClose}>
 						{t('Cancel')}
 					</Button>
-					<Button primary type='submit' form={contactFormId} loading={save.isPending}>
+					<Button variant='primary' type='submit' form={contactFormId} loading={save.isPending}>
 						{t('Save')}
 					</Button>
 				</ButtonGroup>
