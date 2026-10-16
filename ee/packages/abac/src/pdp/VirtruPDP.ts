@@ -1,4 +1,4 @@
-import type { AbacActor, AbacRoomMembershipPreviewPage } from '@rocket.chat/core-services';
+import type { AbacActor } from '@rocket.chat/core-services';
 import type { IAbacAttributeDefinition, IRoom, IUser, AtLeast } from '@rocket.chat/core-typings';
 import { Rooms, Users } from '@rocket.chat/models';
 import { serverFetch } from '@rocket.chat/server-fetch';
@@ -15,13 +15,12 @@ import type {
 	IResourceDecision,
 	NonCompliantPair,
 	ReevaluationUser,
-	RoomMembersPreview,
 } from './types';
 import { HEALTH_CHECK_TIMEOUT } from '../clients/virtru/VirtruClient';
 import type { VirtruClient } from '../clients/virtru/VirtruClient';
 import { buildEntityIdentifier, buildAttributeFqns, getUserEntityKey } from '../clients/virtru/identity';
 import { OnlyCompliantCanBeAddedToRoomError, PdpHealthCheckError } from '../errors';
-import { classifyDecisions, previewRoomMembersInSteps, verdictsOf } from '../helper';
+import { classifyDecisions } from '../helper';
 import { logger } from '../logger';
 
 const pdpLogger = logger.section('VirtruPDP');
@@ -48,6 +47,8 @@ export const getDeniedSubjects = <T extends { user: Pick<IUser, '_id'>; room: Pi
 
 export class VirtruPDP implements IPolicyDecisionPoint {
 	private client: VirtruClient;
+
+	readonly previewStep = PREVIEW_EVALUATION_STEP;
 
 	constructor(client: VirtruClient) {
 		this.client = client;
@@ -373,19 +374,6 @@ export class VirtruPDP implements IPolicyDecisionPoint {
 
 	needsEvaluation({ added, removed }: AttributeSetChange): boolean {
 		return added || removed;
-	}
-
-	async previewRoomMembers(
-		room: AtLeast<IRoom, '_id' | 'abacAttributes'>,
-		attributes: IAbacAttributeDefinition[],
-		page: AbacRoomMembershipPreviewPage,
-	): Promise<RoomMembersPreview> {
-		return previewRoomMembersInSteps(
-			room._id,
-			page,
-			async (subjects) => verdictsOf(await this.evaluateSubjectsAgainstAttributes(subjects, attributes, room)),
-			PREVIEW_EVALUATION_STEP,
-		);
 	}
 
 	async evaluateUserRooms(

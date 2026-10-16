@@ -1,4 +1,4 @@
-import type { AbacActor, AbacRoomMembershipPreviewPage } from '@rocket.chat/core-services';
+import type { AbacActor } from '@rocket.chat/core-services';
 import type { IAbacAttributeDefinition, IAbacRoomMembershipPreview, IRoom, IUser, AtLeast } from '@rocket.chat/core-typings';
 
 export type IEntityIdentifier = { emailAddress: string } | { id: string };
@@ -89,11 +89,7 @@ export interface IPolicyDecisionPoint {
 
 	needsEvaluation(change: AttributeSetChange): boolean;
 
-	previewRoomMembers(
-		room: AtLeast<IRoom, '_id' | 'abacAttributes'>,
-		attributes: IAbacAttributeDefinition[],
-		page: AbacRoomMembershipPreviewPage,
-	): Promise<RoomMembersPreview>;
+	readonly previewStep?: number;
 
 	onSubjectAttributesChanged(user: IUser, next: IAbacAttributeDefinition[]): Promise<Pick<IRoom, '_id' | 'name'>[]>;
 

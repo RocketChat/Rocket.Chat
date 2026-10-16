@@ -75,7 +75,7 @@ export function verdictOf({ compliant, nonCompliant }: Evaluation, id: string): 
 	return 'inconclusive';
 }
 
-export function verdictsOf(evaluation: Evaluation): (id: string) => AbacMembershipVerdict {
+function verdictsOf(evaluation: Evaluation): (id: string) => AbacMembershipVerdict {
 	const verdicts = new Map(MEMBERSHIP_VERDICTS.flatMap((verdict) => evaluation[verdict].map((id) => [id, verdict] as const)));
 	return (id) => verdicts.get(id) ?? 'inconclusive';
 }
@@ -106,7 +106,7 @@ export async function withRoomRoles(rid: IRoom['_id'], members: AbacRoomPreviewM
 export async function previewRoomMembersInSteps(
 	rid: IRoom['_id'],
 	{ filter, after, count, group }: AbacRoomMembershipPreviewPage,
-	verdictsFor: (subjects: PreviewSubject[]) => Promise<(id: string) => AbacMembershipVerdict>,
+	evaluate: (subjects: PreviewSubject[]) => Promise<Evaluation>,
 	step?: number,
 ): Promise<RoomMembersPreview> {
 	const size = group ? PREVIEW_SCAN_LIMIT : count;
@@ -123,7 +123,7 @@ export async function previewRoomMembersInSteps(
 
 	while (checked < subjects.length && members.length < count) {
 		const batch = subjects.slice(checked, checked + batchSize);
-		const verdictFor = await verdictsFor(batch);
+		const verdictFor = verdictsOf(await evaluate(batch));
 		members.push(
 			...batch
 				.map(({ _id, username, name }) => ({ _id, username, name, verdict: verdictFor(_id) }))
@@ -148,7 +148,11 @@ export async function previewRetainingEveryone(rid: IRoom['_id'], page: AbacRoom
 		return { members: [], checked: remaining, ...(!page.after && { total: remaining }) };
 	}
 
-	return previewRoomMembersInSteps(rid, { ...page, group: undefined }, async () => () => 'compliant');
+	return previewRoomMembersInSteps(rid, { ...page, group: undefined }, async (subjects) => ({
+		compliant: subjects.map(({ _id }) => _id),
+		nonCompliant: [],
+		inconclusive: [],
+	}));
 }
 
 export function toAttributeMap(attributes: IAbacAttributeDefinition[]): Record<string, string[]> {

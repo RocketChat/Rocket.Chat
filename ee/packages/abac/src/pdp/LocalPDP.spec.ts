@@ -1,8 +1,9 @@
+import type { AbacRoomMembershipPreviewPage } from '@rocket.chat/core-services';
 import type { IAbacAttributeDefinition, IRoom, IUser } from '@rocket.chat/core-typings';
 import type { Collection } from 'mongodb';
 
 import { LocalPDP } from './LocalPDP';
-import { PREVIEW_SCAN_LIMIT, previewRetainingEveryone } from '../helper';
+import { PREVIEW_SCAN_LIMIT, previewRetainingEveryone, previewRoomMembersInSteps } from '../helper';
 import { acquireSharedInMemoryMongo, type SharedMongoConnection } from '../test-helpers/mongoMemoryServer';
 
 jest.mock('@rocket.chat/core-services', () => ({
@@ -212,9 +213,11 @@ describe('LocalPDP.findUnassignableValues', () => {
 	});
 });
 
-describe('LocalPDP.previewRoomMembers', () => {
+describe('previewRoomMembersInSteps with LocalPDP', () => {
 	const room = { _id: 'r1', abacAttributes: [] };
 	const required = [{ key: 'dept', values: ['eng', 'sales'] }];
+	const previewMembers = (page: AbacRoomMembershipPreviewPage) =>
+		previewRoomMembersInSteps(room._id, page, (subjects) => pdp.evaluateSubjectsAgainstAttributes(subjects, required, room));
 	const verdicts = (preview: { members: { _id: string; verdict: string }[] }) => preview.members.map(({ _id, verdict }) => [_id, verdict]);
 
 	beforeEach(async () => {
@@ -228,7 +231,7 @@ describe('LocalPDP.previewRoomMembers', () => {
 	});
 
 	it('returns every active member of the room, each with its verdict, in username order', async () => {
-		const preview = await pdp.previewRoomMembers(room, required, { count: 10 });
+		const preview = await previewMembers({ count: 10 });
 
 		expect(verdicts(preview)).toEqual([
 			['holder', 'compliant'],
@@ -239,8 +242,8 @@ describe('LocalPDP.previewRoomMembers', () => {
 	});
 
 	it('pages by the last member checked', async () => {
-		const first = await pdp.previewRoomMembers(room, required, { count: 2 });
-		const second = await pdp.previewRoomMembers(room, required, { count: 2, after: first.next });
+		const first = await previewMembers({ count: 2 });
+		const second = await previewMembers({ count: 2, after: first.next });
 
 		expect(first.members.map(({ _id }) => _id)).toEqual(['holder', 'none']);
 		expect(first).toMatchObject({ checked: 2, total: 3, next: { _id: 'none', username: 'none' } });
@@ -251,7 +254,7 @@ describe('LocalPDP.previewRoomMembers', () => {
 	});
 
 	it('returns every member of the losing group among the members it checked, even past the count asked for', async () => {
-		const preview = await pdp.previewRoomMembers(room, required, { count: 1, group: 'loses' });
+		const preview = await previewMembers({ count: 1, group: 'loses' });
 
 		expect(verdicts(preview)).toEqual([
 			['none', 'nonCompliant'],
@@ -268,9 +271,9 @@ describe('LocalPDP.previewRoomMembers', () => {
 			.insertMany(extra.map((_id) => ({ _id, username: _id, active: true, __rooms: ['r1'] })));
 		const lastChecked = extra[PREVIEW_SCAN_LIMIT - 4];
 
-		const retains = await pdp.previewRoomMembers(room, required, { count: 1, group: 'retains' });
-		const loses = await pdp.previewRoomMembers(room, required, { count: 1, group: 'loses' });
-		const rest = await pdp.previewRoomMembers(room, required, { count: 1, group: 'loses', after: loses.next });
+		const retains = await previewMembers({ count: 1, group: 'retains' });
+		const loses = await previewMembers({ count: 1, group: 'loses' });
+		const rest = await previewMembers({ count: 1, group: 'loses', after: loses.next });
 
 		expect(verdicts(retains)).toEqual([['holder', 'compliant']]);
 		expect(retains).toMatchObject({ checked: PREVIEW_SCAN_LIMIT, total: PREVIEW_SCAN_LIMIT + 3, next: { _id: lastChecked } });
@@ -282,14 +285,14 @@ describe('LocalPDP.previewRoomMembers', () => {
 	});
 
 	it('returns the retaining group alone', async () => {
-		const preview = await pdp.previewRoomMembers(room, required, { count: 10, group: 'retains' });
+		const preview = await previewMembers({ count: 10, group: 'retains' });
 
 		expect(verdicts(preview)).toEqual([['holder', 'compliant']]);
 	});
 
 	it('searches username and name, literally', async () => {
-		const byName = await pdp.previewRoomMembers(room, required, { count: 10, filter: 'ada' });
-		const pattern = await pdp.previewRoomMembers(room, required, { count: 10, filter: '.*' });
+		const byName = await previewMembers({ count: 10, filter: 'ada' });
+		const pattern = await previewMembers({ count: 10, filter: '.*' });
 
 		expect(byName.members.map(({ _id }) => _id)).toEqual(['holder']);
 		expect(byName.total).toBe(1);
