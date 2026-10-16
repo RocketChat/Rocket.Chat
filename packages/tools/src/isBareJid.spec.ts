@@ -1,4 +1,4 @@
-import { isBareJid } from './isBareJid';
+import { isBareJid, normalizeBareJid } from './isBareJid';
 
 describe('isBareJid', () => {
 	test.each([
@@ -9,6 +9,9 @@ describe('isBareJid', () => {
 		['nick#room@conference.example.com'],
 		['josé@example.com'],
 		['🚀@example.com'],
+		['alice@exämple.com'],
+		['alice@Example.COM'],
+		['alice@127.0.0.1'],
 		[`${'a'.repeat(256)}@example.com`],
 		[`alice@${'a'.repeat(63)}.${'b'.repeat(63)}.${'c'.repeat(63)}.${'d'.repeat(63)}`],
 	])('accepts %s', (value) => {
@@ -36,7 +39,9 @@ describe('isBareJid', () => {
 		['alice@example..com', 'empty label'],
 		['alice@example.com.', 'trailing dot'],
 		['alice@exa_mple.com', 'underscore in domain'],
-		['alice@exämple.com', 'non-ASCII domain'],
+		['alice@example.com:5269', 'port'],
+		['alice@[::1]', 'IP literal'],
+		['alice@ex ample.com', 'space in domain'],
 		[`${'é'.repeat(129)}@example.com`, 'node over 256 bytes'],
 		[`alice@${'a.'.repeat(127)}ab`, 'domain over 255 bytes'],
 	])('rejects %s (%s)', (value) => {
@@ -45,5 +50,20 @@ describe('isBareJid', () => {
 
 	test.each([[undefined], [null], [42], [{}]])('rejects non-string %p', (value) => {
 		expect(isBareJid(value)).toBe(false);
+	});
+});
+
+describe('normalizeBareJid', () => {
+	test.each([
+		['alice@example.com', 'alice@example.com'],
+		['Alice@Example.COM', 'Alice@example.com'],
+		['alice@exämple.com', 'alice@xn--exmple-cua.com'],
+		['alice@xn--exmple-cua.com', 'alice@xn--exmple-cua.com'],
+	])('spells %s as %s, keeping the node as typed', (value, expected) => {
+		expect(normalizeBareJid(value)).toBe(expected);
+	});
+
+	test.each([['example.com'], ['alice@example.com/phone'], ['alice@example.com.'], [42]])('is undefined for %p', (value) => {
+		expect(normalizeBareJid(value)).toBeUndefined();
 	});
 });
