@@ -18,9 +18,7 @@ const IconButtonElement = ({ block, context }: IconButtonElementProps) => {
 	};
 
 	if (url && UiKit.isSafeUrl(url)) {
-		return (
-			<IconButton small is='a' target='_blank' disabled={loading} icon={iconName} href={url} onClick={handleClick} title={label} />
-		);
+		return <IconButton small is='a' target='_blank' disabled={loading} icon={iconName} href={url} onClick={handleClick} title={label} />;
 	}
 
 	return (
