@@ -6,16 +6,17 @@ import { Subscriptions, Uploads, Messages, Rooms, Users } from '@rocket.chat/mod
 import {
 	ajv,
 	ajvQuery,
-	validateUnauthorizedErrorResponse,
-	validateForbiddenErrorResponse,
-	validateBadRequestErrorResponse,
 	isDmBlockUserProps,
+	isDmCreateProps,
 	isDmFileProps,
+	isDmHistoryProps,
 	isDmLeaveProps,
 	isDmMemberProps,
 	isDmMessagesProps,
-	isDmCreateProps,
-	isDmHistoryProps,
+	paginatedResponseProperties,
+	validateBadRequestErrorResponse,
+	validateForbiddenErrorResponse,
+	validateUnauthorizedErrorResponse,
 } from '@rocket.chat/rest-typings';
 import { Match, check } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
@@ -439,9 +440,7 @@ const dmFilesResponseSchema = ajv.compile<{ files: object[]; count: number; offs
 	type: 'object',
 	properties: {
 		files: { type: 'array', items: { type: 'object' } }, // relaxed: IUpload with addUserToFileObj transform
-		count: { type: 'number' },
-		offset: { type: 'number' },
-		total: { type: 'number' },
+		...paginatedResponseProperties,
 		success: { type: 'boolean', enum: [true] },
 	},
 	required: ['files', 'count', 'offset', 'total', 'success'],
@@ -506,9 +505,7 @@ const dmMembersResponseSchema = ajv.compile<{ members: object[]; count: number; 
 	type: 'object',
 	properties: {
 		members: { type: 'array', items: { type: 'object' } }, // relaxed: projected IUser + subscription info
-		count: { type: 'number' },
-		offset: { type: 'number' },
-		total: { type: 'number' },
+		...paginatedResponseProperties,
 		success: { type: 'boolean', enum: [true] },
 	},
 	required: ['members', 'count', 'offset', 'total', 'success'],
@@ -614,9 +611,7 @@ const dmMessagesResponseSchema = ajv.compile<{ messages: IMessage[]; count: numb
 	type: 'object',
 	properties: {
 		messages: { type: 'array', items: { $ref: '#/components/schemas/IMessage' } },
-		count: { type: 'number' },
-		offset: { type: 'number' },
-		total: { type: 'number' },
+		...paginatedResponseProperties,
 		success: { type: 'boolean', enum: [true] },
 	},
 	required: ['messages', 'count', 'offset', 'total', 'success'],
@@ -758,9 +753,7 @@ const paginatedMessagesResponseSchema = ajv.compile<{ messages: IMessage[]; offs
 	type: 'object',
 	properties: {
 		messages: { type: 'array', items: { $ref: '#/components/schemas/IMessage' } },
-		offset: { type: 'number' },
-		count: { type: 'number' },
-		total: { type: 'number' },
+		...paginatedResponseProperties,
 		success: { type: 'boolean', enum: [true] },
 	},
 	required: ['messages', 'offset', 'count', 'total', 'success'],
@@ -771,9 +764,7 @@ const paginatedImsResponseSchema = ajv.compile<{ ims: IRoom[]; offset: number; c
 	type: 'object',
 	properties: {
 		ims: { type: 'array', items: { type: 'object' } }, // relaxed: IRoom with lastMessage compose
-		offset: { type: 'number' },
-		count: { type: 'number' },
-		total: { type: 'number' },
+		...paginatedResponseProperties,
 		success: { type: 'boolean', enum: [true] },
 	},
 	required: ['ims', 'offset', 'count', 'total', 'success'],
