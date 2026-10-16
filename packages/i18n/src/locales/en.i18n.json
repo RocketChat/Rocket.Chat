@@ -2880,7 +2880,7 @@
   "Exchange_Calendar_Sync_Window_Days": "Calendar sync window (days)",
   "Exchange_Calendar_Sync_Window_Days_Description": "How many whole days each calendar run covers, counting from midnight today, and the range a changed recurring meeting is expanded over. Accepts 1 to 7, and a value outside that range is clamped to it. It also bounds what is kept: an event beyond every future window can never be refreshed or removed. 2 days covers today and tomorrow.",
   "Exchange_Contacts_Default_Region": "Default region for phone numbers",
-  "Exchange_Contacts_Default_Region_Description": "The country to assume for a contact number stored without a country code, as an ISO 3166-1 alpha-2 code such as DE. Left empty, those numbers are still shown but will not match an incoming call.",
+  "Exchange_Contacts_Default_Region_Description": "The country to assume for a synced contact number that Exchange holds without a country code, as an ISO 3166-1 alpha-2 code such as DE. It applies from the next sync onwards, and never to local contacts.",
   "Exchange_Contacts_Sync_Avatars": "Sync contact photos",
   "Exchange_Contacts_Sync_Avatars_Description": "Fetching photos makes a run noticeably longer, and the first run after turning this on covers every contact. Most contacts have none, and a photo above 500 kB is skipped.",
   "Exchange_Contacts_Sync_Disabled": "Contact sync is turned off.",

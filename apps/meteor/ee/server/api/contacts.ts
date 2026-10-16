@@ -18,12 +18,9 @@ import {
 
 import { API } from '../../../server/api/api';
 import { getPaginationItems } from '../../../server/api/lib/getPaginationItems';
-import { settings } from '../../../server/settings';
 import { normalizeE164 } from '../lib/exchange/sync/contacts/normalizeE164';
 
 const toLocalContact = ({ givenName, surname, companyName, emails, phones }: LocalContactPayload) => {
-	const defaultRegion = settings.get<string>('Exchange_Contacts_Default_Region') ?? '';
-
 	const name = givenName.trim();
 	const lastName = surname?.trim();
 	const company = companyName?.trim();
@@ -47,7 +44,7 @@ const toLocalContact = ({ givenName, surname, companyName, emails, phones }: Loc
 				return [];
 			}
 
-			const e164 = normalizeE164(value, defaultRegion);
+			const e164 = normalizeE164(value);
 
 			return [{ raw: value, ...(e164 && { e164 }), ...(tag && { label: tag }) }];
 		}),
