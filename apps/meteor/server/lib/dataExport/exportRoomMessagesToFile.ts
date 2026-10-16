@@ -160,7 +160,7 @@ export const getMessageData = (
 			messageObject.msg = i18n.t('abac_removed_user_from_the_room');
 			break;
 		case 'abac-removed-users-from-room':
-			messageObject.msg = i18n.t('abac_removed_users_from_the_room', { count: Number(msg.msg) || 0 });
+			messageObject.msg = i18n.t('abac_removed_users_from_the_room', { count: Number(msg.msg) });
 			break;
 	}
 
