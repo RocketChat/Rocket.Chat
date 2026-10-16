@@ -52,7 +52,9 @@ callbacks.add('federation.beforeCreateDirectMessage', async (roomUsers, extraDat
 		return;
 	}
 
-	const jid = roomUsers.find(isBareJid);
+	const jid = roomUsers
+		.map((user) => (typeof user === 'string' ? user : isUserXMPPFederated(user) && user.username))
+		.find((username): username is string => typeof username === 'string' && isBareJid(username));
 	if (jid) {
 		extraData.xmppFederation = {
 			version: 1,
