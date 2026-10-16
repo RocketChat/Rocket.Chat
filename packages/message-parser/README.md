@@ -168,7 +168,7 @@ Escape a literal pipe inside a cell as `\|`. Cells can contain inline markup.
 
 - a 10-digit Unix timestamp, e.g. `<t:1700000000>`;
 - an ISO 8601 date and time, with optional milliseconds and UTC offset, e.g. `<t:2025-07-22T10:00:00.000+00:00>`;
-- a time of day with a UTC offset, for today's date, e.g. `<t:10:00+00:00>` or `<t:10:00:05-03:00>`.
+- a time of day with a UTC offset, e.g. `<t:10:00+00:00>` or `<t:10:00:05-03:00>`. The date is the current UTC date when the message is parsed, not the local date in that offset: near midnight it can be a day apart, and the same message parsed on another day resolves to that day.
 
 The node stores the time as a Unix timestamp string. `{format}` defaults to `t`:
 
