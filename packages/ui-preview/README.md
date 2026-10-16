@@ -8,7 +8,7 @@ Use it to try a pull request's UI changes without cloning or building Rocket.Cha
 
 Builds come from the UI Preview workflow in the Rocket.Chat repository. It publishes them to `ghcr.io/rocketchat/rocket.chat-web`:
 
-- for pull requests labeled `preview`, on each push. They are removed when the label is removed or the pull request is closed;
+- for pull requests labeled `preview`, on each push. They are removed when the label is removed or the pull request is closed. Only pull requests from branches in the Rocket.Chat repository get one; pull requests from forks and from Dependabot are never built, even when labeled;
 - for `develop`, on each push that changes the client.
 
 ## Installation
