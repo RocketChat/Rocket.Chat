@@ -3,3 +3,4 @@ export { default as ExternalUser } from './ExternalUser';
 export { default as PhoneNumber } from './PhoneNumber';
 export { default as PeerInfo } from './PeerInfo';
 export { type PeerInfoProps } from './PeerInfo';
+export * from './usePeerDisplayName';
