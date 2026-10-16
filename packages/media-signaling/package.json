@@ -12,9 +12,6 @@
 	"bugs": {
 		"url": "https://github.com/RocketChat/Rocket.Chat/issues"
 	},
-	"publishConfig": {
-		"access": "public"
-	},
 	"main": "./dist/index.js",
 	"typings": "./dist/index.d.ts",
 	"files": [
