@@ -5,7 +5,6 @@ import sinon from 'sinon';
 
 const loggerMock = { info: sinon.stub(), warn: sinon.stub(), error: sinon.stub(), debug: sinon.stub() };
 const updateValueByIdMock = sinon.stub();
-const updateOneMock = sinon.stub();
 const findOneByIdMock = sinon.stub();
 const notifyOnSettingChangedByIdMock = sinon.stub();
 const settingsGetMock = sinon.stub();
@@ -16,7 +15,7 @@ const { applyDiscussionEnforcementOverride, restoreDiscussionEnabled, restoreDis
 	.load('../../../../../../ee/server/lib/abac/discussionEnforcementOverride.ts', {
 		'@rocket.chat/license': { License: { hasModule: hasModuleMock } },
 		'@rocket.chat/logger': { Logger: sinon.stub().returns(loggerMock) },
-		'@rocket.chat/models': { Settings: { updateValueById: updateValueByIdMock, updateOne: updateOneMock, findOneById: findOneByIdMock } },
+		'@rocket.chat/models': { Settings: { updateValueById: updateValueByIdMock, findOneById: findOneByIdMock } },
 		'../../../../server/lib/notifyListener': { notifyOnSettingChangedById: notifyOnSettingChangedByIdMock },
 		'../../../../server/settings': { settings: { get: settingsGetMock } },
 	}) as {
@@ -27,7 +26,7 @@ const { applyDiscussionEnforcementOverride, restoreDiscussionEnabled, restoreDis
 
 const valueWrittenTo = (settingId: string): unknown => updateValueByIdMock.getCalls().find((call) => call.args[0] === settingId)?.args[1];
 
-const capturedValue = (): unknown => updateOneMock.getCall(0)?.args[1]?.$set?.value;
+const capturedValue = (): unknown => valueWrittenTo('ABAC_Discussion_Enabled_Restore');
 
 const workspace = ({
 	abacEnabled = false,
@@ -50,7 +49,6 @@ const workspace = ({
 describe('discussionEnforcementOverride (ABAC)', () => {
 	beforeEach(() => {
 		updateValueByIdMock.reset();
-		updateOneMock.reset();
 		findOneByIdMock.reset();
 		notifyOnSettingChangedByIdMock.reset();
 		settingsGetMock.reset();
@@ -60,7 +58,6 @@ describe('discussionEnforcementOverride (ABAC)', () => {
 		loggerMock.error.reset();
 
 		updateValueByIdMock.resolves({ modifiedCount: 1 });
-		updateOneMock.resolves({ modifiedCount: 1 });
 		findOneByIdMock.resolves(null);
 		notifyOnSettingChangedByIdMock.resolves();
 		hasModuleMock.returns(false);
@@ -84,17 +81,9 @@ describe('discussionEnforcementOverride (ABAC)', () => {
 			expect(capturedValue()).to.equal('false');
 		});
 
-		it('should only capture while nothing is captured, so a second instance cannot overwrite the first', async () => {
-			workspace({ abacEnabled: true, enforceAllRooms: true, discussionEnabled: true });
-
-			await applyDiscussionEnforcementOverride();
-
-			expect(updateOneMock.getCall(0).args[0]).to.deep.include({ _id: 'ABAC_Discussion_Enabled_Restore', value: '' });
-		});
-
-		it('should hold the setting down even when another instance took the capture', async () => {
+		it('should hold the setting down even when another instance took the same capture', async () => {
 			workspace({ abacEnabled: true, enforceAllRooms: true, discussionEnabled: false });
-			updateOneMock.resolves({ modifiedCount: 0 });
+			updateValueByIdMock.withArgs('ABAC_Discussion_Enabled_Restore').resolves({ modifiedCount: 0 });
 
 			await applyDiscussionEnforcementOverride();
 
@@ -107,7 +96,7 @@ describe('discussionEnforcementOverride (ABAC)', () => {
 
 			await applyDiscussionEnforcementOverride();
 
-			expect(updateOneMock.called).to.be.false;
+			expect(capturedValue()).to.be.undefined;
 		});
 
 		it('should re-apply the hold on a replay, so a capture taken without its write converges', async () => {
@@ -115,7 +104,7 @@ describe('discussionEnforcementOverride (ABAC)', () => {
 
 			await applyDiscussionEnforcementOverride();
 
-			expect(updateOneMock.called).to.be.false;
+			expect(capturedValue()).to.be.undefined;
 			expect(valueWrittenTo('Discussion_enabled')).to.be.false;
 		});
 
@@ -125,7 +114,6 @@ describe('discussionEnforcementOverride (ABAC)', () => {
 
 			await applyDiscussionEnforcementOverride();
 
-			expect(updateOneMock.called).to.be.false;
 			expect(updateValueByIdMock.called).to.be.false;
 			expect(loggerMock.warn.calledOnce).to.be.true;
 		});
@@ -142,7 +130,6 @@ describe('discussionEnforcementOverride (ABAC)', () => {
 		it('should not notify for a write the model reported as a no-op', async () => {
 			workspace({ abacEnabled: true, enforceAllRooms: true, discussionEnabled: true });
 			updateValueByIdMock.resolves({ modifiedCount: 0 });
-			updateOneMock.resolves({ modifiedCount: 0 });
 
 			await applyDiscussionEnforcementOverride();
 

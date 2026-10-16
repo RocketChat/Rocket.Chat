@@ -18,7 +18,6 @@ const writeSetting = async (_id: string, value: boolean | string): Promise<void>
 };
 
 const captureAndDisable = async (): Promise<void> => {
-	// only the writer that takes the empty capture records it, or a replay would capture our own `false`
 	if (settings.get<string>(RESTORE) === '') {
 		const previous = settings.get<boolean>(DISCUSSION_ENABLED);
 
@@ -27,10 +26,7 @@ const captureAndDisable = async (): Promise<void> => {
 			return;
 		}
 
-		const { modifiedCount } = await Settings.updateOne(
-			{ _id: RESTORE, blocked: { $ne: true }, value: '' },
-			{ $set: { value: previous ? 'true' : 'false' } },
-		);
+		const { modifiedCount } = await Settings.updateValueById(RESTORE, previous ? 'true' : 'false');
 
 		if (modifiedCount) {
 			void notifyOnSettingChangedById(RESTORE);
@@ -53,7 +49,7 @@ const restoreTo = async (captured: unknown): Promise<void> => {
 	logger.info({ msg: 'ABAC enforcement disabled: Discussion_enabled restored', restored: captured === 'true' });
 };
 
-// reads the record, not the cache: the cache lags writes and returns invalidValue without the licence
+// reads the record: without the licence the cache holds invalidValue
 const restoreNow = async (): Promise<void> => restoreTo((await Settings.findOneById(RESTORE))?.value);
 
 const applyNow = async (): Promise<void> => {
