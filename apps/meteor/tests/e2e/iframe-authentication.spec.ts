@@ -90,7 +90,7 @@ test.describe('iframe-authentication', () => {
 	test('should login through iframe', async () => {
 		await poLogin.goto('/home', poLogin.loginIframeForm);
 
-		await poLogin.loginIframeSubmitButton.click();
+		await poLogin.submitLoginIframe();
 
 		await poAuth.waitForDisplay();
 	});
@@ -108,7 +108,7 @@ test.describe('iframe-authentication', () => {
 
 		await poLogin.goto('/home', poLogin.loginIframeForm);
 
-		await poLogin.loginIframeSubmitButton.click();
+		await poLogin.submitLoginIframe();
 
 		await expect(poLogin.loginIframeError).toBeVisible();
 	});
