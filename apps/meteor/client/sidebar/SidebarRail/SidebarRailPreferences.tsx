@@ -5,24 +5,27 @@ import { useTranslation } from 'react-i18next';
 
 import { useSortMenu } from '../../navbar/NavBarPagesGroup/hooks/useSortMenu';
 
-type SidebarRailSortProps = Omit<HTMLAttributes<HTMLElement>, 'is'>;
+type SidebarRailPreferencesProps = Omit<HTMLAttributes<HTMLElement>, 'is'>;
 
-const SidebarRailSort = (props: SidebarRailSortProps) => {
+/**
+ * The sidebar's display, sort and grouping preferences. They live in the rail, next to Manage, because they shape
+ * both the Inbox and the Teams panel.
+ */
+const SidebarRailPreferences = (props: SidebarRailPreferencesProps) => {
 	const { t } = useTranslation();
-
 	const sections = useSortMenu();
 
 	return (
 		<GenericMenu
-			icon='sort'
 			sections={sections}
-			title={t('Display')}
 			selectionMode='multiple'
+			title={t('Sidebar_preferences')}
 			is={NavBarItem}
-			placement='right-start'
+			icon='sidebar'
+			placement='bottom-end'
 			{...props}
 		/>
 	);
 };
 
-export default SidebarRailSort;
+export default SidebarRailPreferences;
