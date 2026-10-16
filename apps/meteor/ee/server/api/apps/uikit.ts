@@ -10,6 +10,7 @@ import rateLimit from 'express-rate-limit';
 
 import { authenticationMiddleware } from '../../../../server/api/v1/middlewares/authentication';
 import { httpApp } from '../../../../server/lib/http/httpServer';
+import { reportInvalidInteractionBlocks } from '../../../../server/lib/uikit/reportInvalidBlocks';
 import { settings } from '../../../../server/settings';
 import { Apps } from '../../lib/apps/orchestrator';
 
@@ -241,6 +242,7 @@ export class AppUIKitInteractionApi {
 
 					const result = await orch.triggerEvent(eventInterface, action);
 
+					reportInvalidInteractionBlocks(result, { where: 'ui.interaction', appId, userId: req.user?._id });
 					res.send(result);
 				} catch (e) {
 					const error = e instanceof Error ? e.message : e;
@@ -273,6 +275,7 @@ export class AppUIKitInteractionApi {
 				try {
 					const result = await orch.triggerEvent(AppEvents.IUIKitInteractionHandler, action);
 
+					reportInvalidInteractionBlocks(result, { where: 'ui.interaction', appId, userId: req.user?._id });
 					res.send(result);
 				} catch (e) {
 					const error = e instanceof Error ? e.message : e;
@@ -300,6 +303,7 @@ export class AppUIKitInteractionApi {
 				try {
 					const result = await orch.triggerEvent(AppEvents.IUIKitInteractionHandler, action);
 
+					reportInvalidInteractionBlocks(result, { where: 'ui.interaction', appId, userId: req.user?._id });
 					res.send(result);
 				} catch (e) {
 					const error = e instanceof Error ? e.message : e;
@@ -341,6 +345,7 @@ export class AppUIKitInteractionApi {
 				try {
 					const result = await orch.triggerEvent(AppEvents.IUIKitInteractionHandler, action);
 
+					reportInvalidInteractionBlocks(result, { where: 'ui.interaction', appId, userId: req.user?._id });
 					res.send(result);
 				} catch (e) {
 					const error = e instanceof Error ? e.message : e;
