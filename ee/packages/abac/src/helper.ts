@@ -111,7 +111,7 @@ export async function previewRoomMembersInSteps(
 		PREVIEW_READ_OPTIONS,
 	).toArray();
 	const subjects = read.slice(0, size);
-	const batchSize = step !== undefined && step >= 1 ? step : subjects.length;
+	const batchSize = step ?? subjects.length;
 	const members: AbacRoomPreviewMember[] = [];
 	let checked = 0;
 
@@ -124,9 +124,12 @@ export async function previewRoomMembersInSteps(
 
 	const last = subjects[checked - 1];
 	const next = last?.username && checked < read.length ? { _id: last._id, username: last.username } : undefined;
-	const total = after ? undefined : await Users.countActiveByRoomIdAfterUsername(rid, { search: filter });
-
-	return { members, checked, ...(total !== undefined && { total }), ...(next && { next }) };
+	return {
+		members,
+		checked,
+		...(!after && { total: await Users.countActiveByRoomIdAfterUsername(rid, { search: filter }) }),
+		...(next && { next }),
+	};
 }
 
 export async function previewRetainingEveryone(rid: IRoom['_id'], page: AbacRoomMembershipPreviewPage): Promise<RoomMembersPreview> {

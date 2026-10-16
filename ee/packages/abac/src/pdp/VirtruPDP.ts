@@ -355,10 +355,7 @@ export class VirtruPDP implements IPolicyDecisionPoint {
 			return [];
 		}
 
-		const users: IUser[] = [];
-		for await (const user of Users.findActiveByRoomIds([room._id])) {
-			users.push(user);
-		}
+		const users = await Users.findActiveByRoomIds([room._id]).toArray();
 
 		const { compliant } = await this.evaluateSubjectsAgainstAttributes(users, newAttributes, room);
 		const kept = new Set(compliant);

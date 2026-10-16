@@ -188,10 +188,10 @@ export class UsersRaw extends BaseRaw<IUser, DefaultFields<IUser>> implements IU
 
 	findActiveByRoomIdAfterUsername<T extends Document = IUser>(
 		roomId: IRoom['_id'],
-		{ search, after, limit }: { search?: string; after?: Required<Pick<IUser, '_id' | 'username'>>; limit: number },
+		{ limit, ...range }: { search?: string; after?: Required<Pick<IUser, '_id' | 'username'>>; limit: number },
 		options?: FindOptions<IUser>,
 	): FindCursor<T> {
-		return this.find<T>(this.activeByRoomIdAfterUsernameQuery(roomId, { search, after }), {
+		return this.find<T>(this.activeByRoomIdAfterUsernameQuery(roomId, range), {
 			...options,
 			sort: { username: 1, _id: 1 },
 			limit,
