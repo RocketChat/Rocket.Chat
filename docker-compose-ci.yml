@@ -31,8 +31,10 @@ services:
       # the proxy always closes pooled conns first and never reuses a dead one
       - HTTP_SOCKET_TIMEOUT_MS=120000
     depends_on:
-      - traefik
-      - mongo
+      traefik:
+        condition: service_started
+      mongo:
+        condition: service_healthy
     labels:
       traefik.enable: true
       traefik.http.services.rocketchat.loadbalancer.server.port: 3000
@@ -75,7 +77,10 @@ services:
     extra_hosts:
       - 'host.docker.internal:host-gateway'
     depends_on:
-      - nats
+      nats:
+        condition: service_started
+      mongo:
+        condition: service_healthy
 
   account-service:
     build:
@@ -96,7 +101,10 @@ services:
     extra_hosts:
       - 'host.docker.internal:host-gateway'
     depends_on:
-      - nats
+      nats:
+        condition: service_started
+      mongo:
+        condition: service_healthy
 
   presence-service:
     build:
@@ -117,7 +125,10 @@ services:
     extra_hosts:
       - 'host.docker.internal:host-gateway'
     depends_on:
-      - nats
+      nats:
+        condition: service_started
+      mongo:
+        condition: service_healthy
 
   ddp-streamer-service:
     build:
@@ -138,8 +149,12 @@ services:
     extra_hosts:
       - 'host.docker.internal:host-gateway'
     depends_on:
-      - nats
-      - traefik
+      nats:
+        condition: service_started
+      traefik:
+        condition: service_started
+      mongo:
+        condition: service_healthy
     labels:
       traefik.enable: true
       traefik.http.services.ddp-streamer-service.loadbalancer.server.port: 3000
@@ -165,7 +180,10 @@ services:
     extra_hosts:
       - 'host.docker.internal:host-gateway'
     depends_on:
-      - nats
+      nats:
+        condition: service_started
+      mongo:
+        condition: service_healthy
 
   omnichannel-transcript-service:
     build:
@@ -187,7 +205,10 @@ services:
     extra_hosts:
       - 'host.docker.internal:host-gateway'
     depends_on:
-      - nats
+      nats:
+        condition: service_started
+      mongo:
+        condition: service_healthy
 
   nats:
     image: nats:2.6-alpine
@@ -195,6 +216,15 @@ services:
   mongo:
     image: mongodb/mongodb-community-server:${MONGODB_VERSION:-8.0}-ubi8
     container_name: mongo
+    # the port accepts connections a few seconds before rs.initiate() runs, and a
+    # driver whose first hello lands in that window latches onto an uninitialized
+    # set and never recovers; dependents wait for an elected primary instead
+    healthcheck:
+      interval: 2s
+      timeout: 5s
+      retries: 30
+      start_period: 5s
+      test: mongosh --quiet --eval 'if (!db.hello().isWritablePrimary) quit(1)'
     restart: on-failure
     ports:
       - 27017:27017
