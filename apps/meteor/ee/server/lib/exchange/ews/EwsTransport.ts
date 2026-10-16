@@ -150,11 +150,10 @@ export class EwsTransport implements IEwsTransport {
 		// NTLM authenticates the connection, not the request, and the agent holds a single socket. Two
 		// handshakes interleaving on it means one of them answers the other's challenge, which Exchange
 		// rejects as bad credentials. `maxSockets: 1` already serialised the requests, not the sequences.
-		const result = this.ntlmTurn.then(
-			() => this.postWithNtlm(soapEnvelope),
-			() => this.postWithNtlm(soapEnvelope),
-		);
 
+		const result = this.ntlmTurn.then(() => this.postWithNtlm(soapEnvelope));
+
+		// Both branches: the failure must not reach the next turn, and the response must not outlive this one.
 		this.ntlmTurn = result.then(
 			() => undefined,
 			() => undefined,
