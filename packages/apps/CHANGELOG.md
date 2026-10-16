@@ -1,5 +1,18 @@
 # @rocket.chat/apps
 
+## 0.7.1
+
+### Patch Changes
+
+- ([#42131](https://github.com/RocketChat/Rocket.Chat/pull/42131) by [@dionisio-bot](https://github.com/dionisio-bot)) Fixes an issue that would cause apps to fail with 'Module not found' errors in some cases
+
+- ([#42226](https://github.com/RocketChat/Rocket.Chat/pull/42226) by [@dionisio-bot](https://github.com/dionisio-bot)) Fixes app startup failing with EACCES errors in docker deployments running with specified UIDs
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@8.5.4
+  </details>
+
 ## 0.7.0
 
 ### Minor Changes

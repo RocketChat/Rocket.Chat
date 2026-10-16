@@ -1,5 +1,24 @@
 # @rocket.chat/meteor
 
+## 8.5.4
+
+### Patch Changes
+
+- ([#42466](https://github.com/RocketChat/Rocket.Chat/pull/42466) by [@dionisio-bot](https://github.com/dionisio-bot)) Fixes the message list scroll drifting position after switching channels and returning
+
+- Bump @rocket.chat/meteor version.
+
+- Bump @rocket.chat/meteor version.
+
+- ([#42458](https://github.com/RocketChat/Rocket.Chat/pull/42458) by [@dionisio-bot](https://github.com/dionisio-bot)) Fixes the issue where the message list kept jumping to the latest messages instead of restoring the previous position when switching channels.
+
+- <details><summary>Updated dependencies [753f1f0006e96d9dac72879061f0b3de3c777349, a67cff90d1ba3a0560c0c077b18f031ab7164d88]:</summary>
+
+  - @rocket.chat/apps@0.7.1
+  - @rocket.chat/core-typings@8.5.4
+  - @rocket.chat/rest-typings@8.5.4
+  </details>
+
 ## 8.5.3
 
 ### Patch Changes
