@@ -240,14 +240,14 @@ import { IS_EE, URL_MONGODB } from '../../e2e/config/constants';
 				await setEnforcement(false);
 			});
 
-			it('still lists the required attribute keys in rooms.info', async () => {
+			it('leaves the required attribute keys out of rooms.info', async () => {
 				await request
 					.get(api('rooms.info'))
 					.set(credentials)
 					.query({ roomId: compliantRoomId })
 					.expect(200)
 					.expect((res) => {
-						expect(res.body).to.have.property('abacRequiredAttributes').that.deep.equals([carriedKey, laterKey]);
+						expect(res.body).to.not.have.property('abacRequiredAttributes');
 					});
 			});
 

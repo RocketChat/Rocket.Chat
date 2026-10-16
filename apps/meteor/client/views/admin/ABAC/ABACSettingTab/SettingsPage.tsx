@@ -18,8 +18,8 @@ const SettingsPage = () => {
 		<Box maxWidth='x600' width='full' alignSelf='center' overflow='auto' marginBlock={24}>
 			<FieldGroup>
 				<AbacEnabledToggle hasABAC={hasABAC} />
-				<RequiredAttributesField />
 				<SettingField settingId='ABAC_Enforce_All_Rooms' />
+				<RequiredAttributesField />
 				<SettingField settingId='ABAC_PDP_Type' />
 				{pdpType !== 'local' && <SettingField settingId='ABAC_Attribute_Store' />}
 				<SettingField settingId='ABAC_ShowAttributesInRooms' />
