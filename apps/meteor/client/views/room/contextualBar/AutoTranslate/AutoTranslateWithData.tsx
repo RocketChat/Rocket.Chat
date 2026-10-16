@@ -66,6 +66,10 @@ const AutoTranslateWithData = () => {
 	});
 
 	useEffect(() => {
+		setCurrentLanguage(subscription?.autoTranslateLanguage ?? '');
+	}, [subscription?.autoTranslateLanguage]);
+
+	useEffect(() => {
 		if (!subscription?.autoTranslate) {
 			return;
 		}
