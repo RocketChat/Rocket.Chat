@@ -49,7 +49,10 @@ network already uses. Entry is by invitation only ([ADR 0008](../adr/0008-only-d
   configuration, so only invitees and the members they add can see it. The room JID is
   taken as a bare JID with its localpart lowercased and its domain normalized
   ([ADR 0011](../adr/0011-domain-normalization-is-idna-and-lowercase.md)); an invitation
-  whose room JID names no room is dropped. The group
+  whose room JID names no room is dropped. The inviter is the `from` of `<invite/>`
+  (mediated) or the message's sender (direct), as a bare JID with its domain normalized; the
+  room stands in for an inviter that names no account or is on our own domain or MUC domain
+  ([addressing R11](addressing.md)). The group
   ([ADR 0008](../adr/0008-only-dedicated-xmpp-rooms-are-exposed.md)):
   - is shown as `<room localpart>:<room domain>` (`fname`, the form Matrix rooms use), with
     the globe icon;

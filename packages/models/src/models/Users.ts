@@ -1730,7 +1730,7 @@ export class UsersRaw extends BaseRaw<IUser, DefaultFields<IUser>> implements IU
 
 	upsertXMPPUser(jid: string, origin: string, name?: string): Promise<IUser | null> {
 		return this.findOneAndUpdate(
-			{ username: jid },
+			{ username: jid, xmppFederation: { $exists: true } },
 			{
 				$set: {
 					username: jid,

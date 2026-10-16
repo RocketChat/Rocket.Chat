@@ -4,7 +4,7 @@ import type Element from 'ltx/lib/Element';
 import type { ResolvedXMPPServerConfig } from '../config';
 import type { XMPPServerEventMap } from '../events';
 import type { MucRoomDescription } from '../iq/disco';
-import { normalizeRoomJid } from '../jid/normalize';
+import { normalizeRoomJid, normalizeUserBareJid } from '../jid/normalize';
 import type { Logger } from '../logger';
 import { MucRoom } from './MucRoom';
 import { parseMucInvite, splitOccupantJid } from './stanzas';
@@ -129,8 +129,20 @@ export class MucService {
 			this.logger.warn({ err, roomJid: invite.roomJid }, 'Dropping MUC invite with an invalid room JID');
 			return true;
 		}
-		this.deps.events.emit('muc.inviteReceived', { ...invite, roomJid });
+		this.deps.events.emit('muc.inviteReceived', { ...invite, roomJid, fromJid: this.inviterOf(invite.fromJid, roomJid) });
 		return true;
+	}
+
+	/** The remote account that sent an invitation; the room stands in when the invitation names none, or names one of ours. */
+	private inviterOf(fromJid: string, roomJid: string): string {
+		let inviter: string;
+		try {
+			inviter = normalizeUserBareJid(fromJid);
+		} catch {
+			return roomJid;
+		}
+		const domain = inviter.slice(inviter.lastIndexOf('@') + 1);
+		return domain === this.deps.config.domain || domain === this.deps.config.mucDomain ? roomJid : inviter;
 	}
 
 	private forwardRoomEvent(roomId: string, event: string, args: unknown[]): void {
