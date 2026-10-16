@@ -1,6 +1,6 @@
 import type { IAbacAttributeDefinition } from '@rocket.chat/core-typings';
 import { useEndpoint } from '@rocket.chat/ui-contexts';
-import { useMutation, useQuery } from '@tanstack/react-query';
+import { useQuery } from '@tanstack/react-query';
 
 import { findMissingRequiredKeys, toAttributeMap } from './AbacAttributesStep';
 import { useAssignableAttributes } from './useAbacRoomCreation';
@@ -27,12 +27,6 @@ export const useAbacCreationFlow = ({ abac, isAbacManaged, members, attributes }
 	const assignable = useAssignableAttributes(isManaged, (data) => data.attributes);
 	const missingRequiredKeys = findMissingRequiredKeys(abac?.requiredAttributes ?? [], assignable.data);
 
-	const checkAssignability = useEndpoint('POST', '/v1/abac/attributes.checkAssignability');
-	const assignability = useMutation({
-		mutationFn: (attributes: Record<string, string[]>) => checkAssignability({ attributes }),
-	});
-	const isCheckedAttributeMap = JSON.stringify(assignability.variables) === JSON.stringify(attributeMap);
-
 	const previewMembership = useEndpoint('POST', '/v1/abac/rooms.evaluateMembership');
 	const preview = useQuery({
 		queryKey: ABACQueryKeys.membershipPreview(members, attributeMap),
@@ -50,14 +44,6 @@ export const useAbacCreationFlow = ({ abac, isAbacManaged, members, attributes }
 			return create();
 		}
 
-		if (step === 'attributes') {
-			try {
-				await assignability.mutateAsync(attributeMap);
-			} catch {
-				return;
-			}
-		}
-
 		steps.next();
 	};
 
@@ -66,7 +52,6 @@ export const useAbacCreationFlow = ({ abac, isAbacManaged, members, attributes }
 		isManaged,
 		attributeMap,
 		assignable,
-		assignabilityError: isCheckedAttributeMap ? assignability.error : null,
 		preview,
 		isStepBlocked,
 		submitStep,

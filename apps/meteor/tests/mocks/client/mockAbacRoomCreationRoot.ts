@@ -50,11 +50,6 @@ export const mockAbacRoomCreationRoot = ({
 					})),
 				)
 				.withEndpoint('GET', '/v1/abac/attributes.listAssignable', jest.fn().mockImplementation(assignableAttributes))
-				.withEndpoint(
-					'POST',
-					'/v1/abac/attributes.checkAssignability',
-					jest.fn().mockImplementation(() => ({})),
-				)
 				.withEndpoint('POST', '/v1/abac/rooms.evaluateMembership', jest.fn().mockImplementation(membershipPreview))
 				.withEndpoint('POST', '/v1/teams.create', jest.fn().mockImplementation(createTeam))
 				.withEndpoint('POST', '/v1/channels.create', jest.fn().mockImplementation(createChannel))

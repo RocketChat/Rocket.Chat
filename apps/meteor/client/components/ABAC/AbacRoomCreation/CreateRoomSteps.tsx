@@ -49,7 +49,6 @@ const CreateRoomSteps = ({ abac, flow, details, security, onCancel, submitDisabl
 						assignable={flow.assignable.data}
 						isPending={flow.assignable.isPending}
 						error={flow.assignable.error}
-						assignabilityError={flow.assignabilityError}
 					/>
 				)}
 				{step === 'security' && security}

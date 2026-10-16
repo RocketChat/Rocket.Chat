@@ -411,65 +411,6 @@ import { IS_EE, URL_MONGODB } from '../../e2e/config/constants';
 		});
 	});
 
-	describe('POST /abac/attributes.checkAssignability', () => {
-		const assignability = (attributes: Record<string, string[]>, as: Credentials = creatorCredentials, excludeSelf?: boolean) =>
-			request.post(`${v1}/abac/attributes.checkAssignability`).set(as).send({ attributes, excludeSelf });
-
-		before(async () => {
-			await updatePermission('create-abac-managed-room', ['admin', 'user']);
-			await setSetting('ABAC_Restrict_To_Owned_Attributes', true);
-		});
-
-		it('requires create-abac-managed-room', async () => {
-			await updatePermission('create-abac-managed-room', ['admin']);
-
-			try {
-				await assignability({ [dept]: ['eng'] }).expect(403);
-			} finally {
-				await updatePermission('create-abac-managed-room', ['admin', 'user']);
-			}
-		});
-
-		it('rejects an attribute with no values', async () => {
-			await assignability({ [dept]: [] }).expect(400);
-		});
-
-		it('admits what the creator holds', async () => {
-			await assignability({ [dept]: ['eng'] }).expect(200);
-		});
-
-		it('refuses what the creator does not hold with the same answer as creation', async () => {
-			const [answer, creation] = await Promise.all([
-				assignability({ [dept]: ['sales'] }).expect(400),
-				createGroup({ abacAttributes: { [dept]: ['sales'] } }, creatorCredentials).expect(400),
-			]);
-
-			expect(answer.body.errorType).to.equal('error-abac-attribute-not-assignable');
-			expect(answer.body.errorType).to.equal(creation.body.errorType);
-			expect(answer.body.details).to.deep.equal(creation.body.details);
-			expect(answer.body.details.attributes).to.deep.equal([{ key: dept, values: ['sales'] }]);
-		});
-
-		it('answers as creation does for a creator who would not be admitted, whether or not they join', async () => {
-			await setSetting('ABAC_Restrict_To_Owned_Attributes', false);
-
-			try {
-				const [joining, creation] = await Promise.all([
-					assignability({ [dept]: ['sales'] }).expect(400),
-					createGroup({ abacAttributes: { [dept]: ['sales'] } }, creatorCredentials).expect(400),
-				]);
-				expect(joining.body.errorType).to.equal('error-abac-creator-not-admitted');
-				expect(joining.body.errorType).to.equal(creation.body.errorType);
-
-				await assignability({ [dept]: ['sales'] }, creatorCredentials, true).expect(200);
-				const leaving = await createGroup({ abacAttributes: { [dept]: ['sales'] }, excludeSelf: true }, creatorCredentials).expect(200);
-				track(leaving.body.group._id);
-			} finally {
-				await setSetting('ABAC_Restrict_To_Owned_Attributes', true);
-			}
-		});
-	});
-
 	describe('GET /abac/attributes.listAssignable', () => {
 		const assignable = (as: Credentials = creatorCredentials) => request.get(`${v1}/abac/attributes.listAssignable`).set(as);
 
@@ -500,11 +441,8 @@ import { IS_EE, URL_MONGODB } from '../../e2e/config/constants';
 			const res = await assignable().expect(200);
 			const [offered] = ownKeys(res.body.attributes);
 
-			await request
-				.post(`${v1}/abac/attributes.checkAssignability`)
-				.set(creatorCredentials)
-				.send({ attributes: { [offered.key]: offered.values } })
-				.expect(200);
+			const created = await createGroup({ abacAttributes: { [offered.key]: offered.values } }, creatorCredentials).expect(200);
+			track(created.body.group._id);
 		});
 
 		it('offers every defined value once restricting to owned attributes is off', async () => {

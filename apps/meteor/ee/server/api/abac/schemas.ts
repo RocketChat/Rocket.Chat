@@ -311,20 +311,6 @@ const PostRoomAbacAttributesBody = {
 
 export const POSTRoomAbacAttributesBodySchema = ajv.compile<{ attributes: Record<string, string[]> }>(PostRoomAbacAttributesBody);
 
-const PostAbacAttributeAssignabilityBody = {
-	type: 'object',
-	properties: {
-		attributes: abacCreationAttributesSchema,
-		excludeSelf: { type: 'boolean' },
-	},
-	required: ['attributes'],
-	additionalProperties: false,
-};
-
-export const POSTAbacAttributeAssignabilityBodySchema = ajv.compile<{ attributes: Record<string, string[]>; excludeSelf?: boolean }>(
-	PostAbacAttributeAssignabilityBody,
-);
-
 const PostAbacMembershipPreviewBody = {
 	type: 'object',
 	properties: {

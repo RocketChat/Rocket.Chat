@@ -26,7 +26,6 @@ import {
 	GETAbacPdpHealthErrorResponseSchema,
 	GETAbacAttributeKeysResponseSchema,
 	GETAbacAssignableAttributesResponseSchema,
-	POSTAbacAttributeAssignabilityBodySchema,
 	POSTAbacMembershipPreviewBodySchema,
 	POSTAbacMembershipPreviewResponseSchema,
 } from './schemas';
@@ -511,36 +510,6 @@ const abacEndpoints = API.v1
 			});
 		},
 	)
-	.post(
-		'abac/attributes.checkAssignability',
-		{
-			authRequired: true,
-			permissionsRequired: ['create-abac-managed-room'],
-			license: ['abac'],
-			body: POSTAbacAttributeAssignabilityBodySchema,
-			response: {
-				200: GenericSuccessSchema,
-				400: validateBadRequestErrorResponse,
-				401: validateUnauthorizedErrorResponse,
-				403: validateUnauthorizedErrorResponse,
-			},
-		},
-		async function action() {
-			if (!settings.get('ABAC_Enabled')) {
-				throw new Error('error-abac-not-enabled');
-			}
-
-			const result = await Abac.validateCreationAttributes(this.bodyParams.attributes, toAbacActor(this.user), {
-				creatorJoins: !this.bodyParams.excludeSelf,
-			});
-			if (!result.allowed) {
-				throw toCreationAttributesDenialError(result);
-			}
-
-			return API.v1.success();
-		},
-	)
-
 	.post(
 		'abac/rooms.evaluateMembership',
 		{
