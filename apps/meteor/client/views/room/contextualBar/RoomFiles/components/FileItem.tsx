@@ -63,7 +63,9 @@ const FileItem = ({ rid, fileData, onClickDelete }: FileItemProps) => {
 										{displayName}
 									</ItemLink>
 								) : (
-									displayName
+									<ItemLink is='button' aria-disabled title={displayName}>
+										{displayName}
+									</ItemLink>
 								)}
 							</ItemTitle>
 							<ItemMeta>{format(uploadedAt)}</ItemMeta>
