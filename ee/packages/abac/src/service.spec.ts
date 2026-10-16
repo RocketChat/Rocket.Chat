@@ -7,6 +7,7 @@ import {
 	PdpUnavailableError,
 } from './errors';
 import { AbacService } from './index';
+import { LocalPDP } from './pdp';
 import { LocalAttributeStore, VirtruAttributeStore } from './store';
 
 const mockSettingsGet = jest.fn();
@@ -48,6 +49,7 @@ const mockRoomsIsAbacAttributeInUse = jest.fn();
 const mockRoomsFindPaginated = jest.fn();
 const mockSetAbacAttributesById = jest.fn();
 const mockAbacFind = jest.fn();
+const mockAbacFindAll = jest.fn();
 const mockUpdateSingleAbacAttributeValuesById = jest.fn();
 const mockUpdateAbacAttributeValuesArrayFilteredById = jest.fn();
 const mockRemoveAbacAttributeByRoomIdAndKey = jest.fn();
@@ -56,6 +58,7 @@ const mockUnsetAbacAttributesById = jest.fn();
 const mockRoomsUnsetAllAbacAttributes = jest.fn();
 const mockSettingsSet = jest.fn();
 const mockUsersFind = jest.fn();
+const mockUsersFindUsersByUsernames = jest.fn();
 const mockUsersFindByIds = jest.fn();
 const mockUsersFindOneById = jest.fn();
 const mockUsersUpdateOne = jest.fn();
@@ -95,9 +98,11 @@ jest.mock('@rocket.chat/models', () => ({
 		deleteOne: (...args: any[]) => mockAbacDeleteOne(...args),
 		removeById: (...args: any[]) => mockAbacDeleteOne(...args),
 		find: (...args: any[]) => mockAbacFind(...args),
+		findAll: (...args: any[]) => mockAbacFindAll(...args),
 	},
 	Users: {
 		find: (...args: any[]) => mockUsersFind(...args),
+		findUsersByUsernames: (...args: any[]) => mockUsersFindUsersByUsernames(...args),
 		findByIds: (...args: any[]) => mockUsersFindByIds(...args),
 		findOneById: (...args: any[]) => mockUsersFindOneById(...args),
 		findActiveByRoomIds: (...args: any[]) => mockUsersFindActiveByRoomIds(...args),
@@ -1130,19 +1135,20 @@ describe('AbacService (unit)', () => {
 		const creatorExcluded = { creatorJoins: false };
 		const creatorJoining = { creatorJoins: true };
 
-		const makeStore = (held: Record<string, string[]> = {}) => ({
+		const makeStore = () => ({
 			validateAssignable: jest.fn().mockResolvedValue(undefined),
-			entitlementsOf: jest.fn().mockResolvedValue(new Map(Object.entries(held).map(([key, values]) => [key, new Set(values)]))),
+			entitlementsOf: jest.fn().mockResolvedValue(new Map()),
 		});
 
-		const restrictToOwned = (enabled: boolean) => {
-			(service as any).restrictToOwnedAttributes = enabled;
-		};
+		const holding = (held: Record<string, string[]>) =>
+			mockUsersFindOneById.mockResolvedValue({ abacAttributes: Object.entries(held).map(([key, values]) => ({ key, values })) });
 
 		beforeEach(() => {
 			mockHasPermission.mockReset().mockResolvedValue(false);
+			mockUsersFindOneById.mockReset();
 			mockAbacFind.mockReturnValue({ toArray: async () => [{ key: 'dept', values: ['eng', 'sales'] }] });
-			restrictToOwned(true);
+			service.setPdpStrategy('local', true);
+			(service as any).attributeStores.local.store = makeStore();
 		});
 
 		describe('under the local PDP', () => {
@@ -1153,7 +1159,7 @@ describe('AbacService (unit)', () => {
 						{ key: 'region', values: ['emea', 'apac'] },
 					],
 				});
-				(service as any).attributeStores.local.store = makeStore({ dept: ['eng'], region: ['emea'] });
+				holding({ dept: ['eng'], region: ['emea'] });
 
 				await expect(
 					service.validateCreationAttributes([...requested, { key: 'region', values: ['emea', 'apac'] }], fakeActor, creatorExcluded),
@@ -1168,8 +1174,19 @@ describe('AbacService (unit)', () => {
 				});
 			});
 
+			it('answers a value that is not defined as it answers a defined value the actor does not hold', async () => {
+				holding({ dept: ['eng'] });
+
+				await expect(service.validateCreationAttributes([{ key: 'unknown', values: ['x'] }], fakeActor, creatorExcluded)).resolves.toEqual({
+					allowed: false,
+					reason: 'not-entitled',
+					code: 'error-invalid-attribute-values',
+					attributes: [{ key: 'unknown', values: ['x'] }],
+				});
+			});
+
 			it('allows values the actor holds, normalized', async () => {
-				(service as any).attributeStores.local.store = makeStore({ dept: ['eng', 'sales'] });
+				holding({ dept: ['eng', 'sales'] });
 
 				const unnormalized = [{ key: ' dept ', values: ['eng', ' sales', 'eng'] }];
 
@@ -1181,30 +1198,26 @@ describe('AbacService (unit)', () => {
 			});
 
 			it('allows values the actor does not hold when restricting to owned attributes is off', async () => {
-				restrictToOwned(false);
-				const store = makeStore();
-				(service as any).attributeStores.local.store = store;
+				service.setPdpStrategy('local', false);
+				(service as any).attributeStores.local.store = makeStore();
 
 				await expect(service.validateCreationAttributes(requested, fakeActor, creatorExcluded)).resolves.toMatchObject({ allowed: true });
-				expect(store.entitlementsOf).not.toHaveBeenCalled();
+				expect(mockUsersFindOneById).not.toHaveBeenCalled();
 			});
 
 			it('skips the owned-attributes rule for a bypass holder, and says so', async () => {
 				mockHasPermission.mockResolvedValue(true);
-				const store = makeStore();
-				(service as any).attributeStores.local.store = store;
 
 				await expect(service.validateCreationAttributes(requested, fakeActor, creatorExcluded)).resolves.toEqual({
 					allowed: true,
 					attributes: requested,
 					bypassed: true,
 				});
-				expect(store.entitlementsOf).not.toHaveBeenCalled();
+				expect(mockUsersFindOneById).not.toHaveBeenCalled();
 			});
 
 			it('still refuses an attribute the workspace does not define to a bypass holder', async () => {
 				mockHasPermission.mockResolvedValue(true);
-				(service as any).attributeStores.local.store = makeStore();
 
 				await expect(
 					service.validateCreationAttributes([{ key: 'unknown', values: ['x'] }], fakeActor, creatorExcluded),
@@ -1216,8 +1229,6 @@ describe('AbacService (unit)', () => {
 			});
 
 			it('refuses the same key given twice', async () => {
-				(service as any).attributeStores.local.store = makeStore({ dept: ['eng', 'sales'] });
-
 				await expect(
 					service.validateCreationAttributes(
 						[
@@ -1231,8 +1242,6 @@ describe('AbacService (unit)', () => {
 			});
 
 			it('refuses nothing to assign rather than approving it', async () => {
-				(service as any).attributeStores.local.store = makeStore();
-
 				await expect(service.validateCreationAttributes([], fakeActor, creatorExcluded)).resolves.toMatchObject({
 					allowed: false,
 					reason: 'invalid',
@@ -1241,15 +1250,13 @@ describe('AbacService (unit)', () => {
 
 			it('refuses as unavailable when the PDP is down, before evaluating anything', async () => {
 				(service as any).pdp = { isAvailable: jest.fn().mockResolvedValue(false) };
-				const store = makeStore({ dept: ['eng', 'sales'] });
-				(service as any).attributeStores.local.store = store;
 
 				await expect(service.validateCreationAttributes(requested, fakeActor, creatorExcluded)).resolves.toEqual({
 					allowed: false,
 					reason: 'unavailable',
 					code: 'error-pdp-unavailable',
 				});
-				expect(store.entitlementsOf).not.toHaveBeenCalled();
+				expect(mockUsersFindOneById).not.toHaveBeenCalled();
 			});
 		});
 
@@ -1341,52 +1348,51 @@ describe('AbacService (unit)', () => {
 			});
 
 			describe('with the local attribute store', () => {
+				let assertCreatorMayAssign: jest.Mock;
 				let checkUsernamesMatchAttributes: jest.Mock;
 
 				beforeEach(() => {
+					assertCreatorMayAssign = jest.fn().mockResolvedValue({ creatorAdmitted: true });
 					checkUsernamesMatchAttributes = jest.fn().mockResolvedValue(undefined);
 					Object.assign(service as any, {
 						attributeStoreSetting: 'local',
-						pdp: { isAvailable: jest.fn().mockResolvedValue(true), checkUsernamesMatchAttributes },
+						pdp: { isAvailable: jest.fn().mockResolvedValue(true), assertCreatorMayAssign, checkUsernamesMatchAttributes },
 					});
-					(service as any).attributeStores.local.store = makeStore();
 				});
 
 				it('refuses the creation when Virtru does not permit the creator the attributes', async () => {
-					checkUsernamesMatchAttributes.mockRejectedValue(new OnlyCompliantCanBeAddedToRoomError());
+					assertCreatorMayAssign.mockRejectedValue(new OnlyCompliantCanBeAddedToRoomError());
 
 					await expect(service.validateCreationAttributes(requested, fakeActor, creatorExcluded)).resolves.toEqual({
 						allowed: false,
 						reason: 'not-entitled',
 						code: 'error-only-compliant-users-can-be-added-to-abac-rooms',
 					});
-					expect(checkUsernamesMatchAttributes).toHaveBeenCalledWith([fakeActor.username], requested, { _id: 'room-creation' });
+					expect(assertCreatorMayAssign).toHaveBeenCalledWith(requested, fakeActor);
 				});
 
-				it('allows what Virtru permits the creator, without the owned-attributes rule', async () => {
-					const store = makeStore();
-					(service as any).attributeStores.local.store = store;
-
+				it('allows what Virtru permits the creator', async () => {
 					await expect(service.validateCreationAttributes(requested, fakeActor, creatorExcluded)).resolves.toEqual({
 						allowed: true,
 						attributes: requested,
 						bypassed: false,
 					});
-					expect(store.entitlementsOf).not.toHaveBeenCalled();
+				});
+
+				it('refuses an attribute the workspace does not define before asking Virtru', async () => {
+					await expect(
+						service.validateCreationAttributes([{ key: 'unknown', values: ['x'] }], fakeActor, creatorExcluded),
+					).resolves.toMatchObject({
+						allowed: false,
+						reason: 'invalid',
+						code: 'error-attribute-definition-not-found',
+					});
+					expect(assertCreatorMayAssign).not.toHaveBeenCalled();
 				});
 
 				it('asks Virtru about a creator who joins the room once', async () => {
 					await expect(service.validateCreationAttributes(requested, fakeActor, creatorJoining)).resolves.toMatchObject({ allowed: true });
-					expect(checkUsernamesMatchAttributes).toHaveBeenCalledTimes(1);
-				});
-
-				it('refuses a creator without a username rather than asking Virtru about nobody', async () => {
-					await expect(
-						service.validateCreationAttributes(requested, { ...fakeActor, username: undefined } as any, creatorExcluded),
-					).resolves.toMatchObject({
-						allowed: false,
-						reason: 'not-entitled',
-					});
+					expect(assertCreatorMayAssign).toHaveBeenCalledTimes(1);
 					expect(checkUsernamesMatchAttributes).not.toHaveBeenCalled();
 				});
 			});
@@ -1397,9 +1403,11 @@ describe('AbacService (unit)', () => {
 
 			beforeEach(() => {
 				checkUsernamesMatchAttributes = jest.fn().mockResolvedValue(undefined);
-				(service as any).pdp = { isAvailable: jest.fn().mockResolvedValue(true), checkUsernamesMatchAttributes };
-				(service as any).attributeStores.local.store = makeStore();
-				restrictToOwned(false);
+				(service as any).pdp = {
+					isAvailable: jest.fn().mockResolvedValue(true),
+					assertCreatorMayAssign: jest.fn().mockResolvedValue({ creatorAdmitted: false }),
+					checkUsernamesMatchAttributes,
+				};
 			});
 
 			it('refuses a creator the PDP would not admit to the room', async () => {
@@ -1456,22 +1464,14 @@ describe('AbacService (unit)', () => {
 			{ _id: 'a1', key: 'dept', values: ['eng', 'sales'] },
 		];
 
-		const holding = (held: Record<string, string[]>) => {
-			const store = {
-				entitlementsOf: jest.fn().mockResolvedValue(new Map(Object.entries(held).map(([key, values]) => [key, new Set(values)]))),
-			};
-			(service as any).attributeStores.local.store = store;
-			return store;
-		};
-
-		const restrictToOwned = (enabled: boolean) => {
-			(service as any).restrictToOwnedAttributes = enabled;
-		};
+		const holding = (held: Record<string, string[]>) =>
+			mockUsersFindOneById.mockResolvedValue({ abacAttributes: Object.entries(held).map(([key, values]) => ({ key, values })) });
 
 		beforeEach(() => {
 			mockHasPermission.mockReset().mockResolvedValue(false);
-			mockAbacFind.mockReturnValue({ toArray: async () => definitions });
-			restrictToOwned(true);
+			mockUsersFindOneById.mockReset();
+			mockAbacFindAll.mockReset().mockReturnValue({ toArray: async () => definitions });
+			service.setPdpStrategy('local', true);
 		});
 
 		describe('under the local PDP', () => {
@@ -1491,26 +1491,24 @@ describe('AbacService (unit)', () => {
 			});
 
 			it('offers every definition when restricting to owned attributes is off', async () => {
-				restrictToOwned(false);
-				const store = holding({});
+				service.setPdpStrategy('local', false);
 
 				await expect(service.listAssignableAttributes(fakeActor)).resolves.toEqual([
 					{ key: 'dept', values: ['eng', 'sales'] },
 					{ key: 'region', values: ['emea', 'apac'] },
 				]);
-				expect(store.entitlementsOf).not.toHaveBeenCalled();
+				expect(mockUsersFindOneById).not.toHaveBeenCalled();
 			});
 
 			it('offers every definition to a bypass holder', async () => {
 				mockHasPermission.mockResolvedValue(true);
-				const store = holding({});
 
 				await expect(service.listAssignableAttributes(fakeActor)).resolves.toEqual([
 					{ key: 'dept', values: ['eng', 'sales'] },
 					{ key: 'region', values: ['emea', 'apac'] },
 				]);
 				expect(mockHasPermission).toHaveBeenCalledWith(fakeActor._id, 'bypass-abac-store-validation');
-				expect(store.entitlementsOf).not.toHaveBeenCalled();
+				expect(mockUsersFindOneById).not.toHaveBeenCalled();
 			});
 		});
 
@@ -1540,7 +1538,7 @@ describe('AbacService (unit)', () => {
 					{ key: 'dept', values: ['sales'] },
 					{ key: 'region', values: ['emea'] },
 				]);
-				expect(mockAbacFind).not.toHaveBeenCalled();
+				expect(mockAbacFindAll).not.toHaveBeenCalled();
 			});
 
 			it('fails rather than offering nothing when the entitlements call fails', async () => {
@@ -1551,12 +1549,18 @@ describe('AbacService (unit)', () => {
 				await expect(service.listAssignableAttributes(fakeActor)).rejects.toThrow(AbacEntityResolutionFailedError);
 			});
 
-			it('offers every definition with the local attribute store, since the PDP decides at creation', async () => {
-				Object.assign(service as any, { attributeStoreSetting: 'local' });
-				const store = holding({});
+			it('offers what the PDP filters from the definitions with the local attribute store', async () => {
+				const filterAssignableAttributes = jest.fn(async (offered: unknown) => offered);
+				Object.assign(service as any, {
+					attributeStoreSetting: 'local',
+					pdp: { isAvailable: jest.fn().mockResolvedValue(true), filterAssignableAttributes },
+				});
 
 				await expect(service.listAssignableAttributes(fakeActor)).resolves.toHaveLength(2);
-				expect(store.entitlementsOf).not.toHaveBeenCalled();
+				expect(filterAssignableAttributes).toHaveBeenCalledWith(
+					definitions.map(({ key, values }) => ({ key, values })),
+					fakeActor,
+				);
 			});
 		});
 	});
@@ -1595,7 +1599,13 @@ describe('AbacService (unit)', () => {
 
 	describe('previewCreationMembers', () => {
 		const attributes = [{ key: 'dept', values: ['eng'] }];
-		const creator = { _id: fakeActor._id, username: fakeActor.username, name: 'Creator', emails: [] };
+		const creator = {
+			_id: fakeActor._id,
+			username: fakeActor.username,
+			name: 'Creator',
+			emails: [],
+			abacAttributes: [{ key: 'dept', values: ['eng'] }],
+		};
 		const alice = { _id: 'alice', username: 'alice', name: 'Alice', emails: [] };
 		const bob = { _id: 'bob', username: 'bob', name: 'Bob', emails: [] };
 
@@ -1606,26 +1616,19 @@ describe('AbacService (unit)', () => {
 			evaluateSubjectsAgainstAttributes: jest.Mock,
 			checkUsernamesMatchAttributes = jest.fn().mockResolvedValue(undefined),
 		) => {
-			(service as any).pdp = {
+			(service as any).pdp = Object.assign(new LocalPDP(true), {
 				isAvailable: jest.fn().mockResolvedValue(true),
 				evaluateSubjectsAgainstAttributes,
 				checkUsernamesMatchAttributes,
-			};
+			});
 			return evaluateSubjectsAgainstAttributes;
-		};
-
-		const holding = (held: string[]) => {
-			const store = { entitlementsOf: jest.fn().mockResolvedValue(new Map([['dept', new Set(held)]])) };
-			(service as any).attributeStores.local.store = store;
-			return store;
 		};
 
 		beforeEach(() => {
 			mockAbacFind.mockReturnValue({ toArray: async () => [{ key: 'dept', values: ['eng', 'sales'] }] });
-			mockUsersFind.mockReset().mockReturnValue({ toArray: async () => [creator, alice, bob] });
+			mockUsersFindOneById.mockReset().mockResolvedValue(creator);
+			mockUsersFindUsersByUsernames.mockReset().mockReturnValue({ toArray: async () => [alice, bob] });
 			mockHasPermission.mockReset().mockResolvedValue(false);
-			(service as any).restrictToOwnedAttributes = true;
-			holding(['eng']);
 		});
 
 		it('evaluates the creator together with the members', async () => {
@@ -1633,7 +1636,8 @@ describe('AbacService (unit)', () => {
 
 			const result = await service.previewCreationMembers(['alice', 'bob'], attributes, fakeActor, joining);
 
-			expect(mockUsersFind.mock.calls[0][0]).toEqual({ $or: [{ _id: 'test-user' }, { username: { $in: ['alice', 'bob'] } }] });
+			expect(mockUsersFindOneById.mock.calls[0][0]).toBe('test-user');
+			expect(mockUsersFindUsersByUsernames.mock.calls[0][0]).toEqual(['alice', 'bob']);
 			expect(evaluate).toHaveBeenCalledWith([creator, alice, bob], attributes, expect.anything());
 			expect(result).toEqual({
 				allowed: true,
@@ -1683,7 +1687,22 @@ describe('AbacService (unit)', () => {
 				reason: 'unavailable',
 				code: 'error-pdp-unavailable',
 			});
-			expect(mockUsersFind).not.toHaveBeenCalled();
+			expect(mockUsersFindUsersByUsernames).not.toHaveBeenCalled();
+		});
+
+		it('refuses when the PDP is gone by the time the members are loaded', async () => {
+			const evaluate = usePdp(jest.fn());
+			mockUsersFindUsersByUsernames.mockImplementation(() => {
+				(service as any).pdp = null;
+				return { toArray: async () => [alice] };
+			});
+
+			await expect(service.previewCreationMembers(['alice'], attributes, fakeActor, joining)).resolves.toEqual({
+				allowed: false,
+				reason: 'unavailable',
+				code: 'error-pdp-unavailable',
+			});
+			expect(evaluate).not.toHaveBeenCalled();
 		});
 
 		it('refuses when the PDP is unavailable', async () => {
@@ -1715,12 +1734,12 @@ describe('AbacService (unit)', () => {
 				attributes: [{ key: 'dept', values: ['sales'] }],
 			});
 			expect(evaluate).not.toHaveBeenCalled();
-			expect(mockUsersFind).not.toHaveBeenCalled();
+			expect(mockUsersFindUsersByUsernames).not.toHaveBeenCalled();
 		});
 
 		it('previews values the creator does not hold for a room they stay out of, when restricting to owned attributes is off', async () => {
-			(service as any).restrictToOwnedAttributes = false;
 			const evaluate = usePdp(jest.fn().mockResolvedValue({ compliant: ['alice'], nonCompliant: ['test-user'], inconclusive: [] }));
+			(service as any).pdp.setRestrictToOwnedAttributes(false);
 
 			const result = await service.previewCreationMembers(['alice'], [{ key: 'dept', values: ['sales'] }], fakeActor, leaving);
 
@@ -1730,6 +1749,7 @@ describe('AbacService (unit)', () => {
 
 		it('refuses attributes that do not exist', async () => {
 			const evaluate = usePdp(jest.fn());
+			(service as any).pdp.setRestrictToOwnedAttributes(false);
 
 			await expect(
 				service.previewCreationMembers(['alice'], [{ key: 'region', values: ['emea'] }], fakeActor, joining),
@@ -2803,13 +2823,13 @@ describe('AbacService (unit)', () => {
 		});
 
 		it('resolves normally when the settings write fails', async () => {
-			const svc = await bootWith(buildSettings({}));
+			const svc = await bootWith(buildSettings({ ABAC_Restrict_To_Owned_Attributes: true }));
 			mockSettingsSet.mockRejectedValueOnce(new Error('db-write-failure'));
 			const pdpStrategySpy = jest.spyOn(svc as any, 'setPdpStrategy');
 
 			await expect(fireSettingChanged(svc, 'ABAC_PDP_Type', 'local')).resolves.toBeUndefined();
 
-			expect(pdpStrategySpy).toHaveBeenCalledWith('local');
+			expect(pdpStrategySpy).toHaveBeenCalledWith('local', true);
 		});
 	});
 
