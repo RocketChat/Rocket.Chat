@@ -364,7 +364,7 @@ const PostAbacRoomMembershipPreviewBody = {
 	additionalProperties: false,
 };
 
-export type POSTAbacMembershipPreviewBody =
+type POSTAbacMembershipPreviewBody =
 	| { members: string[]; attributes: Record<string, string[]>; excludeSelf?: boolean }
 	| {
 			rid: string;
