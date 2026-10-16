@@ -35,6 +35,7 @@ Read the doc that matches the task instead of scanning `docs/` wholesale.
   - [migrating-from-javascript.md](docs/frontend/migrating-from-javascript.md) — gradual JS → TS migration
   - [react.md](docs/frontend/react.md) — component structure, naming, exports, explicit and generic props types
   - [building-components.md](docs/frontend/building-components.md) — application vs Fuselage components, styling rules, Storybook-first
+  - [list-keyboard-navigation.md](docs/frontend/list-keyboard-navigation.md) — the three keyboard models for lists (combobox, menu, composite list), the hook for each, and how to test them
   - [list-semantics.md](docs/frontend/list-semantics.md) — the ARIA rules a list of rows follows (named list owning its rows, one focus target per row, actions beside it) and how to test them
   - [dom-hooks.md](docs/frontend/dom-hooks.md) — hooks that attach listeners or observers return a callback ref instead of taking a `RefObject`
   - [i18n.md](docs/frontend/i18n.md) — client side only: `useTranslation`, `Trans`, runtime keys, escaping (shared rules in [docs/i18n.md](docs/i18n.md))
