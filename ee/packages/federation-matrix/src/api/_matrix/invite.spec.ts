@@ -27,6 +27,23 @@ jest.mock('@rocket.chat/federation-sdk', () => ({
 		M_UNAUTHORIZED: { errcode: 'M_UNAUTHORIZED', error: 'Unauthorized', status: 401 },
 		M_UNKNOWN: { errcode: 'M_UNKNOWN', error: 'Unknown error' },
 	},
+	// fixture: room_version '10' has a real schema for m.room.member (and a
+	// default fallback), so existing tests keep exercising the route past the
+	// PDU validation step. Any other room_version is treated as unsupported,
+	// and events that don't match the schema shape are rejected.
+	eventSchemas: {
+		'10': {
+			'm.room.member': {
+				safeParse: (data: any) =>
+					data?.type === 'm.room.member' && typeof data?.state_key === 'string' && data.state_key.length > 0
+						? { success: true, data }
+						: { success: false },
+			},
+			'default': {
+				safeParse: (data: any) => (data && typeof data === 'object' ? { success: true, data } : { success: false }),
+			},
+		},
+	},
 }));
 
 const mockVerifyRequestSignature = federationSDK.verifyRequestSignature as jest.MockedFunction<typeof federationSDK.verifyRequestSignature>;
@@ -51,7 +68,7 @@ const buildInviteEvent = (stateKey: string) => ({
 	content: { membership: 'invite' },
 });
 
-const sendInvite = async (event: unknown) =>
+const sendInviteRaw = async (roomVersion: string, event: unknown) =>
 	getMatrixInviteRoutes()
 		.getHonoRouter()
 		.request('/v2/invite/!room:attacker.com/$event', {
@@ -61,11 +78,13 @@ const sendInvite = async (event: unknown) =>
 				'Content-Type': 'application/json',
 			},
 			body: JSON.stringify({
-				room_version: '10',
+				room_version: roomVersion,
 				event,
 				invite_room_state: [{ type: 'm.room.create', state_key: '', content: { creator: '@attacker:attacker.com' } }],
 			}),
 		});
+
+const sendInvite = async (event: unknown) => sendInviteRaw('10', event);
 
 describe('PUT /_matrix/federation/v2/invite/:roomId/:eventId', () => {
 	beforeEach(() => {
@@ -140,5 +159,29 @@ describe('PUT /_matrix/federation/v2/invite/:roomId/:eventId', () => {
 		expect(response.status).toBe(200);
 		expect(mockFindOneByUsername).toHaveBeenCalledWith('victim');
 		expect(mockProcessInvite).toHaveBeenCalledTimes(1);
+	});
+
+	it('should reject an invite for a room version with no known PDU schema', async () => {
+		const response = await sendInviteRaw('999', buildInviteEvent(`@victim:${OUR_SERVER_NAME}`));
+
+		expect(response.status).toBe(400);
+		expect(await response.json()).toEqual({
+			errcode: 'M_UNSUPPORTED_ROOM_VERSION',
+			error: 'Unsupported room version: 999',
+		});
+		expect(mockProcessInvite).not.toHaveBeenCalled();
+	});
+
+	it('should reject an event that does not match the PDU schema for its room version', async () => {
+		const malformedEvent = { ...buildInviteEvent(`@victim:${OUR_SERVER_NAME}`), state_key: '' };
+
+		const response = await sendInviteRaw('10', malformedEvent);
+
+		expect(response.status).toBe(400);
+		expect(await response.json()).toEqual({
+			errcode: 'M_BAD_JSON',
+			error: 'The event does not match a valid PDU schema for this room version',
+		});
+		expect(mockProcessInvite).not.toHaveBeenCalled();
 	});
 });
