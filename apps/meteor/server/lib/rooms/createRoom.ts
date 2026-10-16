@@ -148,8 +148,6 @@ async function createUsersSubscriptions({
 	return skippedMembers;
 }
 
-// Runs once over the whole list rather than inside the member loop, whose `catch { continue }` would
-// drop a refused member without a trace.
 async function filterMembersAllowedInRoom(
 	members: string[],
 	room: IRoom,

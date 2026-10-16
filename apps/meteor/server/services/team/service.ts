@@ -88,7 +88,7 @@ export class TeamService extends ServiceClassInternal implements ITeamService {
 			roomId: '', // this will be populated at the end
 		};
 
-		const { abacAttributes: _unvalidated, ...roomExtraData } = room.extraData ?? {};
+		const { abacAttributes: _untrustedAbacAttributes, ...roomExtraData } = room.extraData ?? {};
 
 		try {
 			let roomId = room.id;

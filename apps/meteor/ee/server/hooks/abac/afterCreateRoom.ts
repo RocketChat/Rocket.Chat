@@ -6,18 +6,17 @@ import { toAbacActor } from '../../lib/abac/toAbacActor';
 
 const logger = new Logger('AbacRoomCreation');
 
-// Written here rather than in the creation guard because only now does the room have an id.
 callbacks.add(
 	'afterCreateRoom',
-	async (owner, room) => {
-		if (!room.abacAttributes?.length) {
+	async (owner, { _id, name, abacAttributes }) => {
+		if (!abacAttributes?.length) {
 			return;
 		}
 
 		try {
-			await Abac.auditRoomAttributesAtCreation(room, toAbacActor(owner));
+			await Abac.auditRoomAttributesAtCreation({ _id, name, abacAttributes }, toAbacActor(owner));
 		} catch (err) {
-			logger.error({ msg: 'Failed to audit the ABAC attributes of a created room', rid: room._id, err });
+			logger.error({ msg: 'Failed to audit the ABAC attributes of a created room', rid: _id, err });
 		}
 	},
 	callbacks.priority.LOW,

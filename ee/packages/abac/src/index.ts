@@ -42,7 +42,6 @@ import {
 	validateAndNormalizeAttributes,
 	ensureAttributeDefinitionsExist,
 	sortByKey,
-	toAttributeMap,
 	toCreationDenial,
 	verdictOf,
 	MAX_ABAC_ATTRIBUTE_KEYS,
@@ -139,8 +138,9 @@ export class AbacService extends ServiceClass implements IAbacService {
 		});
 
 		this.onSettingChanged('ABAC_Restrict_To_Owned_Attributes', async ({ setting }): Promise<void> => {
-			if (this.pdp instanceof LocalPDP) {
-				this.pdp.setRestrictToOwnedAttributes(setting.value as boolean);
+			const { value } = setting;
+			if (typeof value === 'boolean' && this.pdp instanceof LocalPDP) {
+				this.pdp.setRestrictToOwnedAttributes(value);
 			}
 		});
 
@@ -567,7 +567,7 @@ export class AbacService extends ServiceClass implements IAbacService {
 	}
 
 	async validateCreationAttributes(
-		attributes: IAbacAttributeDefinition[],
+		attributes: Record<string, string[]>,
 		actor: AbacActor,
 		{ creatorJoins }: { creatorJoins: boolean },
 	): Promise<AbacCreationAttributesResult> {
@@ -576,7 +576,7 @@ export class AbacService extends ServiceClass implements IAbacService {
 		let bypassed: boolean;
 
 		try {
-			normalized = validateAndNormalizeAttributes(toAttributeMap(attributes));
+			normalized = validateAndNormalizeAttributes(attributes);
 			if (!normalized.length) {
 				throw new AbacInvalidAttributeValuesError();
 			}
@@ -625,7 +625,7 @@ export class AbacService extends ServiceClass implements IAbacService {
 			}
 		}
 
-		return { allowed: true, attributes: normalized, bypassed };
+		return { allowed: true, attributes: normalized };
 	}
 
 	private toCheckDenial(err: unknown, reason: 'not-entitled' | 'creator-not-admitted', msg: string): CreationDenial {
@@ -685,19 +685,17 @@ export class AbacService extends ServiceClass implements IAbacService {
 			return sortByKey(definitions);
 		}
 
-		const assignable = await this.pdp?.filterAssignableAttributes(definitions, actor);
-		if (!assignable) {
+		if (!this.pdp) {
 			throw new PdpUnavailableError();
 		}
 
-		return sortByKey(assignable);
+		return sortByKey((await this.pdp.filterAssignableAttributes?.(definitions, actor)) ?? definitions);
 	}
 
-	async auditRoomAttributesAtCreation(room: Pick<IRoom, '_id' | 'name' | 'abacAttributes'>, actor: AbacActor): Promise<void> {
-		if (!room.abacAttributes?.length) {
-			return;
-		}
-
+	async auditRoomAttributesAtCreation(
+		room: Pick<IRoom, '_id' | 'name'> & Required<Pick<IRoom, 'abacAttributes'>>,
+		actor: AbacActor,
+	): Promise<void> {
 		const bypassed = await Authorization.hasPermission(actor._id, 'bypass-abac-store-validation');
 		await Audit.objectAttributeChanged(
 			{ _id: room._id, name: room.name },
@@ -711,7 +709,7 @@ export class AbacService extends ServiceClass implements IAbacService {
 
 	async previewCreationMembers(
 		usernames: string[],
-		attributes: IAbacAttributeDefinition[],
+		attributes: Record<string, string[]>,
 		actor: AbacActor,
 		{ creatorJoins }: { creatorJoins: boolean },
 	): Promise<AbacMembershipPreviewResult> {

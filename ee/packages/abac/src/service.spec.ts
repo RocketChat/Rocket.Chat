@@ -1131,7 +1131,8 @@ describe('AbacService (unit)', () => {
 	});
 
 	describe('validateCreationAttributes', () => {
-		const requested = [{ key: 'dept', values: ['eng', 'sales'] }];
+		const requested = { dept: ['eng', 'sales'] };
+		const normalized = [{ key: 'dept', values: ['eng', 'sales'] }];
 		const creatorExcluded = { creatorJoins: false };
 		const creatorJoining = { creatorJoins: true };
 
@@ -1162,7 +1163,7 @@ describe('AbacService (unit)', () => {
 				holding({ dept: ['eng'], region: ['emea'] });
 
 				await expect(
-					service.validateCreationAttributes([...requested, { key: 'region', values: ['emea', 'apac'] }], fakeActor, creatorExcluded),
+					service.validateCreationAttributes({ ...requested, region: ['emea', 'apac'] }, fakeActor, creatorExcluded),
 				).resolves.toEqual({
 					allowed: false,
 					reason: 'not-entitled',
@@ -1177,7 +1178,7 @@ describe('AbacService (unit)', () => {
 			it('answers a value that is not defined as it answers a defined value the actor does not hold', async () => {
 				holding({ dept: ['eng'] });
 
-				await expect(service.validateCreationAttributes([{ key: 'unknown', values: ['x'] }], fakeActor, creatorExcluded)).resolves.toEqual({
+				await expect(service.validateCreationAttributes({ unknown: ['x'] }, fakeActor, creatorExcluded)).resolves.toEqual({
 					allowed: false,
 					reason: 'not-entitled',
 					code: 'error-invalid-attribute-values',
@@ -1188,12 +1189,11 @@ describe('AbacService (unit)', () => {
 			it('allows values the actor holds, normalized', async () => {
 				holding({ dept: ['eng', 'sales'] });
 
-				const unnormalized = [{ key: ' dept ', values: ['eng', ' sales', 'eng'] }];
+				const unnormalized = { ' dept ': ['eng', ' sales', 'eng'] };
 
 				await expect(service.validateCreationAttributes(unnormalized, fakeActor, creatorExcluded)).resolves.toEqual({
 					allowed: true,
-					attributes: requested,
-					bypassed: false,
+					attributes: normalized,
 				});
 			});
 
@@ -1205,13 +1205,12 @@ describe('AbacService (unit)', () => {
 				expect(mockUsersFindOneById).not.toHaveBeenCalled();
 			});
 
-			it('skips the owned-attributes rule for a bypass holder, and says so', async () => {
+			it('skips the owned-attributes rule for a bypass holder', async () => {
 				mockHasPermission.mockResolvedValue(true);
 
 				await expect(service.validateCreationAttributes(requested, fakeActor, creatorExcluded)).resolves.toEqual({
 					allowed: true,
-					attributes: requested,
-					bypassed: true,
+					attributes: normalized,
 				});
 				expect(mockUsersFindOneById).not.toHaveBeenCalled();
 			});
@@ -1219,30 +1218,15 @@ describe('AbacService (unit)', () => {
 			it('still refuses an attribute the workspace does not define to a bypass holder', async () => {
 				mockHasPermission.mockResolvedValue(true);
 
-				await expect(
-					service.validateCreationAttributes([{ key: 'unknown', values: ['x'] }], fakeActor, creatorExcluded),
-				).resolves.toMatchObject({
+				await expect(service.validateCreationAttributes({ unknown: ['x'] }, fakeActor, creatorExcluded)).resolves.toMatchObject({
 					allowed: false,
 					reason: 'invalid',
 					code: 'error-attribute-definition-not-found',
 				});
 			});
 
-			it('refuses the same key given twice', async () => {
-				await expect(
-					service.validateCreationAttributes(
-						[
-							{ key: 'dept', values: ['eng'] },
-							{ key: 'dept', values: ['sales'] },
-						],
-						fakeActor,
-						creatorExcluded,
-					),
-				).resolves.toMatchObject({ allowed: false, reason: 'invalid', key: 'dept' });
-			});
-
 			it('refuses nothing to assign rather than approving it', async () => {
-				await expect(service.validateCreationAttributes([], fakeActor, creatorExcluded)).resolves.toMatchObject({
+				await expect(service.validateCreationAttributes({}, fakeActor, creatorExcluded)).resolves.toMatchObject({
 					allowed: false,
 					reason: 'invalid',
 				});
@@ -1294,10 +1278,9 @@ describe('AbacService (unit)', () => {
 
 				await expect(service.validateCreationAttributes(requested, fakeActor, creatorExcluded)).resolves.toEqual({
 					allowed: true,
-					attributes: requested,
-					bypassed: false,
+					attributes: normalized,
 				});
-				expect(store.validateAssignable).toHaveBeenCalledWith(requested, fakeActor);
+				expect(store.validateAssignable).toHaveBeenCalledWith(normalized, fakeActor);
 			});
 
 			it('refuses as inconclusive when the actor cannot be resolved to a Virtru entity', async () => {
@@ -1340,10 +1323,7 @@ describe('AbacService (unit)', () => {
 				const store = makeStore();
 				(service as any).attributeStores.virtru.store = store;
 
-				await expect(service.validateCreationAttributes(requested, fakeActor, creatorExcluded)).resolves.toMatchObject({
-					allowed: true,
-					bypassed: true,
-				});
+				await expect(service.validateCreationAttributes(requested, fakeActor, creatorExcluded)).resolves.toMatchObject({ allowed: true });
 				expect(store.validateAssignable).not.toHaveBeenCalled();
 			});
 
@@ -1368,21 +1348,18 @@ describe('AbacService (unit)', () => {
 						reason: 'not-entitled',
 						code: 'error-only-compliant-users-can-be-added-to-abac-rooms',
 					});
-					expect(assertCreatorMayAssign).toHaveBeenCalledWith(requested, fakeActor);
+					expect(assertCreatorMayAssign).toHaveBeenCalledWith(normalized, fakeActor);
 				});
 
 				it('allows what Virtru permits the creator', async () => {
 					await expect(service.validateCreationAttributes(requested, fakeActor, creatorExcluded)).resolves.toEqual({
 						allowed: true,
-						attributes: requested,
-						bypassed: false,
+						attributes: normalized,
 					});
 				});
 
 				it('refuses an attribute the workspace does not define before asking Virtru', async () => {
-					await expect(
-						service.validateCreationAttributes([{ key: 'unknown', values: ['x'] }], fakeActor, creatorExcluded),
-					).resolves.toMatchObject({
+					await expect(service.validateCreationAttributes({ unknown: ['x'] }, fakeActor, creatorExcluded)).resolves.toMatchObject({
 						allowed: false,
 						reason: 'invalid',
 						code: 'error-attribute-definition-not-found',
@@ -1418,7 +1395,7 @@ describe('AbacService (unit)', () => {
 					reason: 'creator-not-admitted',
 					code: 'error-only-compliant-users-can-be-added-to-abac-rooms',
 				});
-				expect(checkUsernamesMatchAttributes).toHaveBeenCalledWith([fakeActor.username], requested, { _id: 'room-creation' });
+				expect(checkUsernamesMatchAttributes).toHaveBeenCalledWith([fakeActor.username], normalized, { _id: 'room-creation' });
 			});
 
 			it('refuses a bypass holder the PDP would not admit to the room', async () => {
@@ -1444,8 +1421,7 @@ describe('AbacService (unit)', () => {
 			it('allows a creator the PDP admits', async () => {
 				await expect(service.validateCreationAttributes(requested, fakeActor, creatorJoining)).resolves.toEqual({
 					allowed: true,
-					attributes: requested,
-					bypassed: false,
+					attributes: normalized,
 				});
 			});
 
@@ -1598,7 +1574,7 @@ describe('AbacService (unit)', () => {
 	});
 
 	describe('previewCreationMembers', () => {
-		const attributes = [{ key: 'dept', values: ['eng'] }];
+		const attributes = { dept: ['eng'] };
 		const creator = {
 			_id: fakeActor._id,
 			username: fakeActor.username,
@@ -1638,7 +1614,7 @@ describe('AbacService (unit)', () => {
 
 			expect(mockUsersFindOneById.mock.calls[0][0]).toBe('test-user');
 			expect(mockUsersFindUsersByUsernames.mock.calls[0][0]).toEqual(['alice', 'bob']);
-			expect(evaluate).toHaveBeenCalledWith([creator, alice, bob], attributes, expect.anything());
+			expect(evaluate).toHaveBeenCalledWith([creator, alice, bob], [{ key: 'dept', values: ['eng'] }], expect.anything());
 			expect(result).toEqual({
 				allowed: true,
 				preview: {
@@ -1727,7 +1703,7 @@ describe('AbacService (unit)', () => {
 		it('refuses values the creator may not assign, before evaluating anyone', async () => {
 			const evaluate = usePdp(jest.fn());
 
-			await expect(service.previewCreationMembers(['alice'], [{ key: 'dept', values: ['sales'] }], fakeActor, joining)).resolves.toEqual({
+			await expect(service.previewCreationMembers(['alice'], { dept: ['sales'] }, fakeActor, joining)).resolves.toEqual({
 				allowed: false,
 				reason: 'not-entitled',
 				code: 'error-invalid-attribute-values',
@@ -1741,7 +1717,7 @@ describe('AbacService (unit)', () => {
 			const evaluate = usePdp(jest.fn().mockResolvedValue({ compliant: ['alice'], nonCompliant: ['test-user'], inconclusive: [] }));
 			(service as any).pdp.setRestrictToOwnedAttributes(false);
 
-			const result = await service.previewCreationMembers(['alice'], [{ key: 'dept', values: ['sales'] }], fakeActor, leaving);
+			const result = await service.previewCreationMembers(['alice'], { dept: ['sales'] }, fakeActor, leaving);
 
 			expect(evaluate).toHaveBeenCalled();
 			expect(result).toMatchObject({ allowed: true, preview: { creator: 'nonCompliant' } });
@@ -1751,9 +1727,7 @@ describe('AbacService (unit)', () => {
 			const evaluate = usePdp(jest.fn());
 			(service as any).pdp.setRestrictToOwnedAttributes(false);
 
-			await expect(
-				service.previewCreationMembers(['alice'], [{ key: 'region', values: ['emea'] }], fakeActor, joining),
-			).resolves.toMatchObject({
+			await expect(service.previewCreationMembers(['alice'], { region: ['emea'] }, fakeActor, joining)).resolves.toMatchObject({
 				allowed: false,
 				reason: 'invalid',
 			});

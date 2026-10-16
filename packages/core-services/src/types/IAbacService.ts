@@ -16,7 +16,7 @@ export type AbacActor = Pick<IUser, '_id' | 'username' | 'name'>;
 export type AbacCreationAttributesDenialReason = 'invalid' | 'not-entitled' | 'creator-not-admitted' | 'unavailable' | 'inconclusive';
 
 export type AbacCreationAttributesResult =
-	| { allowed: true; attributes: IAbacAttributeDefinition[]; bypassed: boolean }
+	| { allowed: true; attributes: IAbacAttributeDefinition[] }
 	| { allowed: false; reason: AbacCreationAttributesDenialReason; code: string; key?: string; attributes?: IAbacAttributeDefinition[] };
 
 export type AbacMembershipPreviewResult =
@@ -49,15 +49,18 @@ export interface IAbacService {
 	getAbacAttributeById(_id: string, actor: AbacActor | undefined): Promise<{ key: string; values: string[] }>;
 	isAbacAttributeInUseByKey(key: string): Promise<boolean>;
 	validateCreationAttributes(
-		attributes: IAbacAttributeDefinition[],
+		attributes: Record<string, string[]>,
 		actor: AbacActor,
 		options: { creatorJoins: boolean },
 	): Promise<AbacCreationAttributesResult>;
 	listAssignableAttributes(actor: AbacActor): Promise<IAbacAttributeDefinition[]>;
-	auditRoomAttributesAtCreation(room: Pick<IRoom, '_id' | 'name' | 'abacAttributes'>, actor: AbacActor): Promise<void>;
+	auditRoomAttributesAtCreation(
+		room: Pick<IRoom, '_id' | 'name'> & Required<Pick<IRoom, 'abacAttributes'>>,
+		actor: AbacActor,
+	): Promise<void>;
 	previewCreationMembers(
 		usernames: string[],
-		attributes: IAbacAttributeDefinition[],
+		attributes: Record<string, string[]>,
 		actor: AbacActor,
 		options: { creatorJoins: boolean },
 	): Promise<AbacMembershipPreviewResult>;

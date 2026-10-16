@@ -143,11 +143,9 @@ const teamsEndpoints = API.v1
 				if (!settings.get('ABAC_Enabled')) {
 					return API.v1.failure('error-abac-not-enabled');
 				}
-				// Converting an existing room creates no room for the attributes to land on.
 				if (room?.id) {
 					return API.v1.failure('error-abac-attributes-room-conversion');
 				}
-				// The creation guard checks the owner's authority, so it has to be the caller's own.
 				if (owner && owner !== this.userId) {
 					return API.v1.failure('error-abac-attributes-owner-must-be-caller');
 				}

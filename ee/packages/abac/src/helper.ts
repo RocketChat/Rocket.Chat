@@ -62,17 +62,6 @@ export function verdictOf({ compliant, nonCompliant }: Evaluation, id: string): 
 	return 'inconclusive';
 }
 
-export function toAttributeMap(attributes: IAbacAttributeDefinition[]): Record<string, string[]> {
-	const map = new Map<string, string[]>();
-	for (const { key, values } of attributes) {
-		if (typeof key !== 'string' || !Array.isArray(values) || map.has(key)) {
-			throw new AbacInvalidAttributeValuesError({ key });
-		}
-		map.set(key, values);
-	}
-	return Object.fromEntries(map);
-}
-
 export function findUnownedValues(attributes: IAbacAttributeDefinition[], owned: Map<string, Set<string>>): IAbacAttributeDefinition[] {
 	const unowned: IAbacAttributeDefinition[] = [];
 	for (const { key, values } of attributes) {
