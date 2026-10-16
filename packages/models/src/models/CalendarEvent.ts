@@ -6,10 +6,13 @@ import type {
 	ICalendarEventModel,
 	ImportedCalendarEvent,
 } from '@rocket.chat/model-typings';
+import { startOfDayAt } from '@rocket.chat/tools';
 import type { DeleteResult, Document, FindCursor, IndexDescription, Collection, Db, UpdateResult } from 'mongodb';
 import { ObjectId } from 'mongodb';
 
 import { BaseRaw } from './BaseRaw';
+
+const DAY_IN_MS = 24 * 60 * 60 * 1000;
 
 export class CalendarEventRaw extends BaseRaw<ICalendarEvent> implements ICalendarEventModel {
 	constructor(db: Db, trash?: Collection<RocketChatRecordDeleted<ICalendarEvent>>) {
@@ -40,12 +43,14 @@ export class CalendarEventRaw extends BaseRaw<ICalendarEvent> implements ICalend
 		});
 	}
 
-	public findByUserIdAndDate(uid: IUser['_id'], date: Date, options?: { excludeOutlook?: boolean }): FindCursor<ICalendarEvent> {
-		const startTime = new Date(date.toISOString());
-		startTime.setHours(0, 0, 0, 0);
+	public findByUserIdAndDate(
+		uid: IUser['_id'],
+		date: Date,
+		options?: { excludeOutlook?: boolean; utcOffset?: number },
+	): FindCursor<ICalendarEvent> {
+		const startTime = startOfDayAt(date, options?.utcOffset);
 
-		const finalTime = new Date(date.valueOf());
-		finalTime.setDate(finalTime.getDate() + 1);
+		const finalTime = new Date(date.getTime() + DAY_IN_MS);
 
 		return this.find(
 			{
