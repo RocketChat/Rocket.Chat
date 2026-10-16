@@ -578,7 +578,8 @@ const abacEndpoints = API.v1
 			}
 
 			const { members, attributes, excludeSelf = false } = this.bodyParams;
-			if (members.length + (excludeSelf ? 0 : 1) > settings.get<number>('API_User_Limit')) {
+			const named = members.filter((username) => username !== this.user.username).length;
+			if (named + (excludeSelf ? 0 : 1) > settings.get<number>('API_User_Limit')) {
 				throw new MeteorError('error-abac-preview-too-many-members', 'Too many members to preview');
 			}
 
