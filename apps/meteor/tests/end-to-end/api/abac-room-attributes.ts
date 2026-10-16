@@ -363,7 +363,7 @@ import { IS_EE, URL_MONGODB } from '../../e2e/config/constants';
 			expect(losing(res.body.members)).to.have.lengthOf(0);
 		});
 
-		it('removes exactly the members it reported, and posts one message that names nobody', async () => {
+		it('removes exactly the members it reported, and posts one message per removed member', async () => {
 			const answer = await preview({ rid: ownedRoomId, attributes: adding, count: 10 }).expect(200);
 			const reported = losing(answer.body.members);
 			expect(reported).to.have.lengthOf(5);
@@ -379,11 +379,9 @@ import { IS_EE, URL_MONGODB } from '../../e2e/config/constants';
 
 			const history = await request.get(api('groups.history')).set(credentials).query({ roomId: ownedRoomId, count: 50 }).expect(200);
 			const messages = history.body.messages as IMessage[];
-			const summaries = messages.filter(({ t }) => t === 'abac-removed-users-from-room');
-			expect(summaries).to.have.lengthOf(1);
-			expect(summaries[0].msg).to.equal('5');
-			expect(summaries[0].u._id).to.equal(owner._id);
-			expect(messages.filter(({ t }) => t === 'abac-removed-user-from-room')).to.have.lengthOf(0);
+			const removals = messages.filter(({ t }) => t === 'abac-removed-user-from-room');
+			expect(removals.map(({ msg }) => msg)).to.have.members(reported.map(({ username }) => username));
+			expect(messages.filter(({ t }) => t === 'abac-removed-users-from-room')).to.have.lengthOf(0);
 		});
 	});
 });
