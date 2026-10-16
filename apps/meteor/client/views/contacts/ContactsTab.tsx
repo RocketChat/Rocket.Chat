@@ -28,6 +28,7 @@ const ContactsTab = ({ tab, onChangeTab }: ContactsTabProps) => {
 	const sortProps = useSort<ContactsColumnKey>('displayName', 'asc');
 	const { setItemsPerPage, setCurrent, ...paginationProps } = usePagination();
 	const columns = useContactsColumns();
+	// Every row ends with a menu cell that no setting hides, so it is not part of the visible count.
 	const loadingCols = columns.visibleCount + 1;
 
 	const router = useRouter();
