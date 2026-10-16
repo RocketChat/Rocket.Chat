@@ -108,7 +108,7 @@ export abstract class Composer {
 	}
 
 	get boxPopup(): Locator {
-		return this.root.locator('[role="menu"][name="ComposerBoxPopup"]');
+		return this.root.getByRole('listbox');
 	}
 
 	get readOnlyFooter(): Locator {
