@@ -17,6 +17,7 @@ import {
 	actionWithLinearScale,
 } from './action';
 import { contextWithPlainText, contextWithMrkdwn, contextWithImage, contextWithAllElements } from './context';
+import { contextActions } from './contextActions';
 import { divider } from './divider';
 import { header } from './header';
 import { imageWithTitle, imageWithoutTitle } from './image';
@@ -366,6 +367,15 @@ const BlocksTree: Item = [
 			{
 				label: 'Embedded video',
 				payload: video,
+			},
+		],
+	},
+	{
+		label: 'context_actions',
+		branches: [
+			{
+				label: 'Icon buttons',
+				payload: contextActions,
 			},
 		],
 	},

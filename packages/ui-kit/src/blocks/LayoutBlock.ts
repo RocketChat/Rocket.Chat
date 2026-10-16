@@ -1,6 +1,7 @@
 import type { ActionsBlock } from './layout/ActionsBlock';
 import type { CalloutBlock } from './layout/CalloutBlock';
 import type { ConditionalBlock } from './layout/ConditionalBlock';
+import type { ContextActionsBlock } from './layout/ContextActionsBlock';
 import type { ContextBlock } from './layout/ContextBlock';
 import type { DividerBlock } from './layout/DividerBlock';
 import type { ExperimentalTabNavigationBlock } from './layout/ExperimentalTabNavigationBlock';
@@ -26,6 +27,7 @@ export type LayoutBlock =
 	| InputBlock
 	| MarkdownBlock
 	| SectionBlock
+	| ContextActionsBlock
 	| VideoBlock
 	| TableBlock
 	| VideoConferenceBlock
