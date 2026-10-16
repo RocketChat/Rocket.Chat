@@ -163,7 +163,7 @@ describe('filterUsersAllowedInRoomOrThrow (ABAC)', () => {
 		abacMock.evaluateUsersAllowedInRoom.resolves({ allowed: true, userIds: ['u2'] });
 
 		expect(idsOf(await runOrThrow([...users, { _id: 'u3' }]))).to.deep.equal(['u2']);
-		expect(abacMock.evaluateUsersAllowedInRoom.calledOnceWith(['u1', 'u2'], room)).to.be.true;
+		expect(abacMock.evaluateUsersAllowedInRoom.calledOnceWith(['u1', 'u2'], room, { audit: false })).to.be.true;
 	});
 
 	it('should refuse with error-abac-decision-unavailable when the PDP gives no decision', async () => {

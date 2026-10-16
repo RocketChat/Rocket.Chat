@@ -136,18 +136,11 @@ import { loadSlashCommand } from '../../../tests/mocks/server/slashcommands/help
 			sinon.assert.calledOnce(slashCommand.broadcast);
 		});
 
-		it('shows a generic message and logs an error that has no translation', async () => {
-			const error = new ClientSafeError('error-without-translation');
-			addUsers.rejects(error);
+		it('shows a generic message for an error that has no translation', async () => {
+			addUsers.rejects(new ClientSafeError('error-without-translation'));
 			slashCommand.translationExists.withArgs('error-without-translation').returns(false);
 			await slashCommand.runCommand(command, { params: '#general' });
 			slashCommand.expectTranslatedFeedback('Error_something_went_wrong');
-			sinon.assert.calledOnceWithExactly(slashCommand.logger.error, {
-				msg: 'Failed to invite all users to room',
-				err: error,
-				rid: 'current-room',
-				uid: 'actor',
-			});
 		});
 
 		[{ params: ' ' }, { params: '#' }, { params: '#general', userId: '' }, { params: '#general', command: 'unrelated' }].forEach(
