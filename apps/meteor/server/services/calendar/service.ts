@@ -318,7 +318,11 @@ export class CalendarService extends ServiceClassInternal implements ICalendarSe
 		await this.setupNextStatusChange();
 
 		for (const uid of uids) {
-			await this.refreshBusyPresence(uid);
+			try {
+				await this.refreshBusyPresence(uid);
+			} catch (err) {
+				logger.error({ msg: 'Could not refresh the calendar busy presence', uid, err });
+			}
 		}
 	}
 

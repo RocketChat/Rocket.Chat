@@ -3,7 +3,8 @@ import { cronJobs } from '@rocket.chat/cron';
 import { ExchangeCalendarSyncState } from '@rocket.chat/models';
 import { isValidCron } from 'cron-validator';
 
-import { runCalendarSync, whenCalendarSyncSettled } from './runCalendarSync';
+import { whenMailboxesIdle } from './mailboxLock';
+import { runCalendarSync } from './runCalendarSync';
 import { settings } from '../../../../../../server/settings';
 import { logger } from '../../logger';
 import { scrubForLog } from '../../scrub';
@@ -23,10 +24,19 @@ const stopCalendarSyncJob = async (): Promise<void> => {
 export const isServerSyncOn = (): boolean =>
 	Boolean(settings.get<boolean>('Outlook_Calendar_Enabled')) && settings.get<string>('Exchange_Mode') === 'server';
 
-const discardServerSyncedCalendarEvents = async (): Promise<void> => {
+/** Every await here is a chance for the switch to be undone, so `stillOff` is asked again before each step that cannot be */
+const discardServerSyncedCalendarEvents = async (stillOff: () => boolean): Promise<void> => {
 	const uids = await ExchangeCalendarSyncState.findAllUserIds();
 
+	if (!stillOff()) {
+		return;
+	}
+
 	await ExchangeCalendarSyncState.removeAll();
+
+	if (!stillOff()) {
+		return;
+	}
 
 	const deleted = await Calendar.discardImportedBySource('outlook', uids);
 
@@ -90,17 +100,16 @@ export const registerCalendarSyncJob = (): (() => void) => {
 		wasOn = on;
 
 		const isCurrent = () => !stopped && generation === started;
+		const stillOff = () => isCurrent() && !isServerSyncOn();
 
 		try {
 			await configureCalendarSyncJob(isCurrent);
 
 			if (turnedOff) {
 				// In case a sync is in process
-				await whenCalendarSyncSettled();
+				await whenMailboxesIdle();
 
-				if (isCurrent() && !isServerSyncOn()) {
-					await discardServerSyncedCalendarEvents();
-				}
+				await discardServerSyncedCalendarEvents(stillOff);
 			}
 		} catch (err) {
 			logger.error({ msg: 'Could not configure the Exchange calendar sync job', err: scrubForLog(err) });
