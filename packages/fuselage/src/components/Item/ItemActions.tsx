@@ -22,12 +22,13 @@ const ItemActions = ({ is: Tag = 'div', reveal = 'always', className, children, 
 	const { role, titleIds } = useItemContext();
 	// An option or a menu item already presents its children as part of itself
 	const isWidgetRow = role === 'option' || !!role?.startsWith('menuitem');
-	const labelledBy = (!isWidgetRow && titleIds.join(' ')) || undefined;
+	const hasOwnLabel = !!(props['aria-label'] || props['aria-labelledby']);
+	const isGroup = !isWidgetRow && (hasOwnLabel || titleIds.length > 0);
 
 	return (
 		<Tag
-			role={labelledBy && 'group'}
-			aria-labelledby={labelledBy}
+			role={isGroup ? 'group' : undefined}
+			aria-labelledby={isGroup && !hasOwnLabel ? titleIds.join(' ') : undefined}
 			{...props}
 			className={cx(cxx('rcx-item__actions')({ 'reveal-hover': reveal === 'hover' }), className)}
 		>

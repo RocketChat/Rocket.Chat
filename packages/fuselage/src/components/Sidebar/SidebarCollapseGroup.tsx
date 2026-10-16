@@ -1,4 +1,5 @@
 import type { HTMLAttributes, ReactNode, RefAttributes } from 'react';
+import { Children } from 'react';
 
 import { cx } from '../../helpers/composeClassNames';
 import { ItemGroup } from '../Item';
@@ -40,7 +41,7 @@ export function SidebarCollapseGroup({
 	const labelledBy = props['aria-label'] ? undefined : titleId;
 
 	// A header whose rows live elsewhere, as in a virtualized list, has no panel to control
-	const hasPanel = children !== undefined && children !== null && children !== false;
+	const hasPanel = Children.toArray(children).length > 0;
 	const titleBarProps = hasPanel ? barProps : { ...barProps, 'aria-controls': undefined };
 
 	return (
