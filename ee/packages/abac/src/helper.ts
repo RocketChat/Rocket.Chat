@@ -111,11 +111,10 @@ export async function previewRoomMembersInSteps(
 ): Promise<RoomMembersPreview> {
 	const size = group ? PREVIEW_SCAN_LIMIT : count;
 
-	const read = await Users.findActiveByRoomIdAfterUsername<PreviewSubject>(
-		rid,
-		{ search: filter, after, limit: size + 1 },
-		PREVIEW_READ_OPTIONS,
-	).toArray();
+	const [read, total] = await Promise.all([
+		Users.findActiveByRoomIdAfterUsername<PreviewSubject>(rid, { search: filter, after, limit: size + 1 }, PREVIEW_READ_OPTIONS).toArray(),
+		after ? undefined : Users.countActiveByRoomIdAfterUsername(rid, { search: filter }),
+	]);
 	const subjects = read.slice(0, size);
 	const batchSize = step ?? subjects.length;
 	const members: AbacRoomPreviewMember[] = [];
@@ -137,7 +136,7 @@ export async function previewRoomMembersInSteps(
 	return {
 		members,
 		checked,
-		...(!after && { total: await Users.countActiveByRoomIdAfterUsername(rid, { search: filter }) }),
+		...(total !== undefined && { total }),
 		...(next && { next }),
 	};
 }

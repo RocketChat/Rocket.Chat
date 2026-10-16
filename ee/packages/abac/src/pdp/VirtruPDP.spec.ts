@@ -574,6 +574,27 @@ describe('previewRoomMembersInSteps with VirtruPDP', () => {
 		});
 	});
 
+	it('counts the total while reading the page', async () => {
+		let markCounting = (): void => undefined;
+		const counting = new Promise<void>((resolve) => {
+			markCounting = resolve;
+		});
+		usersCountActiveByRoomIdAfterUsername.mockImplementation(async () => {
+			markCounting();
+			return 3;
+		});
+		usersFindActiveByRoomIdAfterUsername.mockReturnValueOnce({
+			toArray: async () => {
+				await counting;
+				return [alice];
+			},
+		});
+		const pdp = new VirtruPDP(mkClient());
+		deciding(pdp, []);
+
+		await expect(previewMembers(pdp, { count: 2 })).resolves.toMatchObject({ checked: 1, total: 3 });
+	});
+
 	it('reads up to the scan limit for a group and keeps every member of that group, even past the count asked for', async () => {
 		readsMembers([alice, bob, carol]);
 		const pdp = new VirtruPDP(mkClient());
