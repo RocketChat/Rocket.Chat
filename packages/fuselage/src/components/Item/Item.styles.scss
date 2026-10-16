@@ -43,7 +43,9 @@ $item-group-narrow-width: 320px;
 }
 
 @mixin focus-ring {
-	outline: 0;
+	// Forced colors drop the box-shadow and paint the transparent outline instead.
+	outline: lengths.border-width(medium) solid transparent;
+	outline-offset: calc(-1 * #{lengths.border-width(medium)});
 
 	box-shadow: inset 0 0 0 lengths.border-width(medium) $item-color-stroke-focus;
 }
