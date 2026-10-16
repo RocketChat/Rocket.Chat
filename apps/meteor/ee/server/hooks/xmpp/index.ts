@@ -17,11 +17,10 @@ import { afterLeaveRoomCallback } from '../../../../server/lib/callbacks/afterLe
 import { afterRemoveFromRoomCallback } from '../../../../server/lib/callbacks/afterRemoveFromRoomCallback';
 import { beforeAddUsersToRoom } from '../../../../server/lib/callbacks/beforeAddUserToRoom';
 import { beforeCreateRoomCallback } from '../../../../server/lib/callbacks/beforeCreateRoomCallback';
+import { isXMPPServerEnabled } from '../../../../server/services/federation/utils';
 import { settings } from '../../../../server/settings';
 
 const logger = new Logger('XMPPServerHooks');
-
-const xmppEnabled = (): boolean => settings.get<boolean>('XMPP_Server_Enabled') && settings.get<string>('XMPP_Server_Domain') !== '';
 
 callbacks.add(
 	'afterSaveMessage',
@@ -49,7 +48,7 @@ callbacks.add(
 );
 
 callbacks.add('federation.beforeCreateDirectMessage', async (roomUsers, extraData) => {
-	if (!xmppEnabled()) {
+	if (!isXMPPServerEnabled()) {
 		return;
 	}
 
@@ -67,7 +66,7 @@ callbacks.add('federation.beforeCreateDirectMessage', async (roomUsers, extraDat
 callbacks.add(
 	'beforeCreateDirectRoom',
 	async (members, room) => {
-		if (!xmppEnabled() || !isRoomXMPPFederated(room)) {
+		if (!isXMPPServerEnabled() || !isRoomXMPPFederated(room)) {
 			return;
 		}
 		const jids = members.filter((member): member is string => isBareJid(member));
@@ -88,7 +87,7 @@ beforeCreateRoomCallback.add(
 		}
 		delete data.xmppFederated;
 
-		if (!xmppEnabled()) {
+		if (!isXMPPServerEnabled()) {
 			throw new ClientSafeError('error-xmpp-federation-disabled', 'XMPP federation is not enabled');
 		}
 		if (data.federated || data.encrypted || data.ro) {
@@ -117,7 +116,7 @@ beforeCreateRoomCallback.add(
 callbacks.add(
 	'afterCreateRoom',
 	async (owner, room) => {
-		if (!xmppEnabled() || !isRoomXMPPHostedMuc(room)) {
+		if (!isXMPPServerEnabled() || !isRoomXMPPHostedMuc(room)) {
 			return;
 		}
 		await XMPPServer.registerHostedRoom(room);
@@ -164,7 +163,7 @@ beforeAddUsersToRoom.add(
 		}
 
 		// With the feature off nothing may be materialized; the JID then fails to resolve as a user
-		if (xmppEnabled()) {
+		if (isXMPPServerEnabled()) {
 			await XMPPServer.ensureXMPPUsersExistLocally(jids);
 		}
 	},
@@ -175,7 +174,7 @@ beforeAddUsersToRoom.add(
 callbacks.add(
 	'afterAddedToRoom',
 	async ({ user, inviter }, room) => {
-		if (!xmppEnabled()) {
+		if (!isXMPPServerEnabled()) {
 			return;
 		}
 
@@ -202,7 +201,7 @@ callbacks.add(
 );
 
 const withdrawRoomMember = async ({ user }: { user: IUser }, room: IRoom): Promise<void> => {
-	if (!xmppEnabled()) {
+	if (!isXMPPServerEnabled()) {
 		return;
 	}
 	try {
