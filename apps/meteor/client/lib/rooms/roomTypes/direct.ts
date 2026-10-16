@@ -31,6 +31,7 @@ roomCoordinator.add(
 				case RoomSettingsEnum.DESCRIPTION:
 				case RoomSettingsEnum.READ_ONLY:
 				case RoomSettingsEnum.REACT_WHEN_READ_ONLY:
+				case RoomSettingsEnum.REPLY_WHEN_READ_ONLY:
 				case RoomSettingsEnum.ARCHIVE_OR_UNARCHIVE:
 				case RoomSettingsEnum.JOIN_CODE:
 					return false;

@@ -28,6 +28,7 @@ export interface IRoom extends IRocketChatRecord {
 	topic?: string;
 
 	reactWhenReadOnly?: boolean;
+	replyWhenReadOnly?: boolean;
 
 	// TODO: this boolean might be an accident
 	sysMes?: MessageTypesValues[] | boolean;
@@ -374,6 +375,7 @@ export type RoomAdminFieldsType =
 	| 'favorite'
 	| 'featured'
 	| 'reactWhenReadOnly'
+	| 'replyWhenReadOnly'
 	| 'topic'
 	| 'msgs'
 	| 'archived'

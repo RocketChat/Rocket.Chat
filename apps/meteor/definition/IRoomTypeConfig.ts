@@ -28,6 +28,7 @@ export const RoomSettingsEnum = {
 	DESCRIPTION: 'roomDescription',
 	READ_ONLY: 'readOnly',
 	REACT_WHEN_READ_ONLY: 'reactWhenReadOnly',
+	REPLY_WHEN_READ_ONLY: 'replyWhenReadOnly',
 	ARCHIVE_OR_UNARCHIVE: 'archiveOrUnarchive',
 	JOIN_CODE: 'joinCode',
 	BROADCAST: 'broadcast',

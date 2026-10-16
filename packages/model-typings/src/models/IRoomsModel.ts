@@ -261,6 +261,10 @@ export interface IRoomsModel extends IBaseModel<IRoom> {
 		roomId: string,
 		allowReactingWhenReadOnly: NonNullable<IRoom['reactWhenReadOnly']>,
 	): Promise<UpdateResult>;
+	setAllowReplyingWhenReadOnlyById(
+		roomId: string,
+		allowReplyingWhenReadOnly: NonNullable<IRoom['replyWhenReadOnly']>,
+	): Promise<UpdateResult>;
 	setAvatarData(roomId: string, origin: string, etag: string): Promise<UpdateResult>;
 	unsetAvatarData(roomId: string): Promise<UpdateResult>;
 	setSystemMessagesById(roomId: string, systemMessages: IRoom['sysMes']): Promise<UpdateResult>;

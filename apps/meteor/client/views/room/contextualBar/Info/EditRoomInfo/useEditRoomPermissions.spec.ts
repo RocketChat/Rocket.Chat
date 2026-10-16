@@ -146,6 +146,18 @@ describe('useEditRoomPermissions', () => {
 			expect(withoutPerm.current.canSetReactWhenReadOnly).toBe(false);
 		});
 
+		it('should reflect canSetReplyWhenReadOnly based on set-reply-when-readonly permission', () => {
+			const room = createFakeRoom({ t: 'c', default: false });
+			const wrapperWith = mockAppRoot().withPermission('set-reply-when-readonly').build();
+			const wrapperWithout = mockAppRoot().build();
+
+			const { result: withPerm } = renderHook(() => useEditRoomPermissions(room), { wrapper: wrapperWith });
+			const { result: withoutPerm } = renderHook(() => useEditRoomPermissions(room), { wrapper: wrapperWithout });
+
+			expect(withPerm.current.canSetReplyWhenReadOnly).toBe(true);
+			expect(withoutPerm.current.canSetReplyWhenReadOnly).toBe(false);
+		});
+
 		it('should reflect canEditRoomRetentionPolicy based on edit-room-retention-policy permission', () => {
 			const room = createFakeRoom({ t: 'c', default: false });
 			const wrapperWith = mockAppRoot().withPermission('edit-room-retention-policy').build();

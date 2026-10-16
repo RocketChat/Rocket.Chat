@@ -1037,6 +1037,18 @@ export class RoomsRaw extends BaseRaw<IRoom> implements IRoomsModel {
 		return this.updateOne(query, update);
 	}
 
+	setAllowReplyingWhenReadOnlyById(_id: IRoom['_id'], allowReplying: NonNullable<IRoom['replyWhenReadOnly']>): Promise<UpdateResult> {
+		const query: Filter<IRoom> = {
+			_id,
+		};
+		const update: UpdateFilter<IRoom> = {
+			$set: {
+				replyWhenReadOnly: allowReplying,
+			},
+		};
+		return this.updateOne(query, update);
+	}
+
 	setAvatarData(_id: IRoom['_id'], origin: string, etag: IRoom['avatarETag']): Promise<UpdateResult> {
 		const update: UpdateFilter<IRoom> = {
 			$set: {
