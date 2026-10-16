@@ -125,7 +125,7 @@
   "ABAC_Enabled_callout": "User attributes are synchronized via LDAP. <1>Learn more</1>",
   "ABAC_Enabled_Description": "Controls access to rooms based on user and room attributes.",
   "ABAC_Enforce_All_Rooms": "Enforce ABAC across all workspace rooms",
-  "ABAC_Enforce_All_Rooms_Description": "Existing rooms without the required attributes are locked until the attributes are assigned in ABAC > Rooms.",
+  "ABAC_Enforce_All_Rooms_Description": "Existing rooms without the required attributes are locked until the attributes are assigned.",
   "ABAC_Granted_Object_Access": "Manual add approved",
   "ABAC_Invalid_attribute": "Invalid characters in attribute name or values",
   "ABAC_Key_added": "Key added",
@@ -162,7 +162,7 @@
   "ABAC_Remove_attribute": "Delete attribute value",
   "abac_removed_user_from_the_room": "was removed by ABAC",
   "ABAC_Required_Attributes": "Attributes required in all ABAC rooms",
-  "ABAC_Required_Attributes_Description": "Every ABAC room must carry these attributes. Adding one locks existing rooms that do not have it until the attribute is assigned in ABAC > Rooms.",
+  "ABAC_Required_Attributes_Description": "Applies while ABAC is enforced across all rooms. Every ABAC room must then carry these attributes, and adding one locks existing rooms that do not have it until the attribute is assigned.",
   "ABAC_Required_Attributes_Removal_Confirm": "Remove",
   "ABAC_Required_Attributes_Removal_Content": {
     "one": "You do not hold <bold>{{attributes}}</bold>, so you will not be able to add it back to the requirements.",
