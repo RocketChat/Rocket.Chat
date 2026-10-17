@@ -1,12 +1,12 @@
 import { useDebouncedValue } from '@rocket.chat/fuselage-hooks';
-import { escapeRegExp } from '@rocket.chat/tools';
+import { escapeRegExp, isTruthy } from '@rocket.chat/tools';
 import type { SubscriptionWithRoom } from '@rocket.chat/ui-contexts';
 import { useEndpoint, useUserSubscriptions } from '@rocket.chat/ui-contexts';
 import { useQuery } from '@tanstack/react-query';
 import { useMemo } from 'react';
 
-import { getConfig } from '../../../lib/utils/getConfig';
 import { isExactSearchMatch, orderSearchResults } from './orderSearchResults';
+import { getConfig } from '../../../lib/utils/getConfig';
 
 const LIMIT = parseInt(String(getConfig('Sidebar_Search_Spotlight_LIMIT', 20)));
 
@@ -39,7 +39,7 @@ export const useSearchItems = (filterText = ''): { items: SubscriptionWithRoom[]
 	// Only the server spotlight call is debounced — the local results above stay instant.
 	const debouncedName = useDebouncedValue(name, 500);
 
-	const usernamesFromClient = [...localRooms?.map(({ t, name }) => (t === 'd' ? name : null))].filter(Boolean) as string[];
+	const usernamesFromClient = localRooms.map(({ t, name }) => (t === 'd' ? name : null)).filter(isTruthy);
 
 	const searchForChannels = mention === '#';
 	const searchForDMs = mention === '@';
@@ -68,7 +68,7 @@ export const useSearchItems = (filterText = ''): { items: SubscriptionWithRoom[]
 		queryKey: ['sidebar/search/spotlight', debouncedName, mention, type],
 
 		// Run when local subscriptions don't fill the limit or when an exact match isn't present locally.
-		enabled: shouldFetchServer,
+		enabled: shouldFetchServer && name === debouncedName,
 
 		queryFn: async () => {
 			const spotlight = await getSpotlight({
@@ -146,10 +146,18 @@ export const useSearchItems = (filterText = ''): { items: SubscriptionWithRoom[]
 				return sameRoom || sameGroupDM || sameDirectDM || sameUserDM;
 			});
 
+		const matchesMention = (item: { t?: string }): boolean => {
+			if (mention === '@') {
+				return item.t === 'd';
+			}
+			if (mention === '#') {
+				return item.t !== 'd';
+			}
+			return true;
+		};
+
 		// When local subscriptions fill the limit and no local exact match exists, keep server exact matches.
-		const candidates = shouldFetchServer
-			? (serverResults ?? []).filter((item) => (mention === '@' ? item.t === 'd' : mention === '#' ? item.t !== 'd' : true))
-			: [];
+		const candidates = name === debouncedName && shouldFetchServer ? (serverResults ?? []).filter(matchesMention) : [];
 		const fromServer = candidates.filter(
 			(item) =>
 				(matchesFilter(item) || isExactSearchMatch(item, name)) &&
@@ -157,8 +165,8 @@ export const useSearchItems = (filterText = ''): { items: SubscriptionWithRoom[]
 				(localRooms.length < LIMIT || isExactSearchMatch(item, name)),
 		);
 
-		return orderSearchResults(localRooms, fromServer, name) as SubscriptionWithRoom[];
-	}, [serverResults, localRooms, name, mention, shouldFetchServer]);
+		return orderSearchResults<SubscriptionWithRoom>(localRooms, fromServer, name);
+	}, [debouncedName, localRooms, name, mention, serverResults, shouldFetchServer]);
 
 	// `isFetching` is also true for silent background revalidations (after staleTime) of results we
 	// already show — only surface loading while there's no usable data for the current term yet, i.e.

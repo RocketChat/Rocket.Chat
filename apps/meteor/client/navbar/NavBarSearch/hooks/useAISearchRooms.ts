@@ -5,8 +5,8 @@ import { useEndpoint, useUserSubscriptions } from '@rocket.chat/ui-contexts';
 import { useQuery } from '@tanstack/react-query';
 import { useMemo } from 'react';
 
-import { getConfig } from '../../../lib/utils/getConfig';
 import { isExactSearchMatch, orderSearchResults } from './orderSearchResults';
+import { getConfig } from '../../../lib/utils/getConfig';
 
 const LIMIT = parseInt(String(getConfig('Sidebar_Search_Spotlight_LIMIT', 20)));
 
@@ -106,10 +106,17 @@ export const useAISearchRooms = (filterText = ''): { items: SubscriptionWithRoom
 				return sameRoom || sameGroupDM || sameDirectDM || sameUserDM;
 			});
 
-		const candidates =
-			name === debouncedName && shouldFetchServer
-				? (serverResults ?? []).filter((item) => (mention === '@' ? item.t === 'd' : mention === '#' ? item.t !== 'd' : true))
-				: [];
+		const matchesMention = (item: { t?: string }): boolean => {
+			if (mention === '@') {
+				return item.t === 'd';
+			}
+			if (mention === '#') {
+				return item.t !== 'd';
+			}
+			return true;
+		};
+
+		const candidates = name === debouncedName && shouldFetchServer ? (serverResults ?? []).filter(matchesMention) : [];
 		const fromServer = candidates.filter(
 			(item) =>
 				(matchesFilter(item) || isExactSearchMatch(item, name)) &&
@@ -117,7 +124,7 @@ export const useAISearchRooms = (filterText = ''): { items: SubscriptionWithRoom
 				(localRooms.length < LIMIT || isExactSearchMatch(item, name)),
 		);
 
-		return orderSearchResults(localRooms, fromServer, name) as SubscriptionWithRoom[];
+		return orderSearchResults<SubscriptionWithRoom>(localRooms, fromServer, name);
 	}, [debouncedName, localRooms, name, serverResults, shouldFetchServer, mention]);
 
 	const isLoading = isFetching && serverResults === undefined;

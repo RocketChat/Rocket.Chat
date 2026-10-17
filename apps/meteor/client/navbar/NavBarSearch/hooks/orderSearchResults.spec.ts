@@ -22,11 +22,7 @@ describe('orderSearchResults', () => {
 
 	describe('orderSearchResults', () => {
 		it('should hoist exact match to the top ahead of other rooms', () => {
-			const local = [
-				{ name: 'marketing-team-ideas1' },
-				{ name: 'marketing-team-ideas2' },
-				{ name: 'marketing-team' },
-			];
+			const local = [{ name: 'marketing-team-ideas1' }, { name: 'marketing-team-ideas2' }, { name: 'marketing-team' }];
 			const server = [{ name: 'marketing-team-notes' }];
 
 			const result = orderSearchResults(local, server, 'marketing-team');
