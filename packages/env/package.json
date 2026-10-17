@@ -1,0 +1,31 @@
+{
+	"name": "@rocket.chat/env",
+	"version": "0.0.1",
+	"private": true,
+	"main": "./dist/index.js",
+	"typings": "./dist/index.d.ts",
+	"files": [
+		"/dist"
+	],
+	"scripts": {
+		"build": "rm -rf dist && tsc -p tsconfig.json",
+		"dev": "tsc -p tsconfig.json --watch --preserveWatchOutput",
+		"lint": "eslint .",
+		"lint:fix": "eslint --fix .",
+		"testunit": "jest --passWithNoTests"
+	},
+	"dependencies": {
+		"ajv": "^8.17.1"
+	},
+	"devDependencies": {
+		"@rocket.chat/tsconfig": "workspace:*",
+		"@types/jest": "~30.0.0",
+		"eslint": "~9.39.3",
+		"jest": "~30.2.0",
+		"ts-jest": "~29.4.6",
+		"typescript": "~5.9.3"
+	},
+	"volta": {
+		"extends": "../../package.json"
+	}
+}
