@@ -99,22 +99,6 @@ function Tabs({ children, divider = true, scrollShadow = true, ...props }: TabsP
 		checkOverflow();
 	}, [checkOverflow, scrollBoxSize.inlineSize, contentBoxSize.inlineSize, children, scrollShadow, props.dir, styleDirection]);
 
-	useEffect(() => {
-		if (typeof document === 'undefined' || !('fonts' in document) || !document.fonts) {
-			return;
-		}
-
-		let mounted = true;
-		void document.fonts.ready.then(() => {
-			if (mounted) {
-				checkOverflow();
-			}
-		});
-		return () => {
-			mounted = false;
-		};
-	}, [checkOverflow]);
-
 	return (
 		<Box
 			is='div'

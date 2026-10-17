@@ -1,4 +1,7 @@
-import { act, fireEvent, waitFor } from '@testing-library/react';
+import fs from 'fs';
+import path from 'path';
+
+import { fireEvent, waitFor } from '@testing-library/react';
 import { axe } from 'jest-axe';
 
 import Tabs from './Tabs';
@@ -129,6 +132,15 @@ describe('[Tabs Component]', () => {
 	});
 
 	it('handles RTL via style direction and updates shadow gradients and overflow classes', () => {
+		// In default LTR, rcx-tabs--rtl must not be applied
+		const { container: ltrContainer } = render(
+			<Tabs>
+				<div>Tab 1</div>
+			</Tabs>,
+		);
+		expect(ltrContainer.querySelector('.rcx-tabs')).not.toHaveClass('rcx-tabs--rtl');
+
+		// In RTL via style={{ direction: 'rtl' }}, rcx-tabs--rtl must be applied
 		const { container } = render(
 			<Tabs style={{ direction: 'rtl' }}>
 				<div>Tab 1</div>
@@ -138,6 +150,19 @@ describe('[Tabs Component]', () => {
 		const scrollBox = container.querySelector('.rcx-tabs__scroll-box');
 
 		expect(tabsElement).toHaveClass('rcx-tabs--rtl');
+
+		// In RTL via dir='rtl', rcx-tabs--rtl must also be applied
+		const { container: dirRtlContainer } = render(
+			<Tabs dir='rtl'>
+				<div>Tab 1</div>
+			</Tabs>,
+		);
+		expect(dirRtlContainer.querySelector('.rcx-tabs')).toHaveClass('rcx-tabs--rtl');
+
+		// Verify stylesheet contract: rcx-tabs--rtl inverts shadow gradients to match RTL scroll math
+		const scssContent = fs.readFileSync(path.resolve(__dirname, 'Tabs.styles.scss'), 'utf8');
+		expect(scssContent).toMatch(/&--rtl::before[\s\S]*?linear-gradient\(to left/);
+		expect(scssContent).toMatch(/&--rtl::after[\s\S]*?linear-gradient\(to right/);
 
 		// In RTL, at start (scrollLeft = 0), overflow-end is true, overflow-start is false
 		Object.defineProperty(scrollBox, 'scrollWidth', { configurable: true, value: 500 });
@@ -159,50 +184,5 @@ describe('[Tabs Component]', () => {
 		fireEvent.scroll(scrollBox!);
 		expect(tabsElement).toHaveClass('rcx-tabs--overflow-start');
 		expect(tabsElement).not.toHaveClass('rcx-tabs--overflow-end');
-	});
-
-	it('re-checks overflow when document fonts finish loading', async () => {
-		let fontReadyCallback: () => void = () => undefined;
-		const readyPromise = new Promise<void>((resolve) => {
-			fontReadyCallback = resolve;
-		});
-
-		const originalFonts = (document as any).fonts;
-		Object.defineProperty(document, 'fonts', {
-			configurable: true,
-			value: { ready: readyPromise },
-		});
-
-		try {
-			const { container } = render(
-				<Tabs>
-					<div>Tab 1</div>
-				</Tabs>,
-			);
-			const tabsElement = container.querySelector('.rcx-tabs');
-			const scrollBox = container.querySelector('.rcx-tabs__scroll-box');
-
-			Object.defineProperty(scrollBox, 'scrollWidth', { configurable: true, writable: true, value: 200 });
-			Object.defineProperty(scrollBox, 'clientWidth', { configurable: true, writable: true, value: 200 });
-			Object.defineProperty(scrollBox, 'scrollLeft', { configurable: true, writable: true, value: 0 });
-
-			fireEvent.scroll(scrollBox!);
-			expect(tabsElement).not.toHaveClass('rcx-tabs--overflow-end');
-
-			// Late font load expands scrollWidth
-			Object.defineProperty(scrollBox, 'scrollWidth', { configurable: true, writable: true, value: 500 });
-
-			await act(async () => {
-				fontReadyCallback();
-				await readyPromise;
-			});
-
-			expect(tabsElement).toHaveClass('rcx-tabs--overflow-end');
-		} finally {
-			Object.defineProperty(document, 'fonts', {
-				configurable: true,
-				value: originalFonts,
-			});
-		}
 	});
 });

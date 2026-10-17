@@ -47,9 +47,11 @@ $tabs-border-radius: theme('tabs-border-radius', lengths.border-radius(medium));
 }
 
 .rcx-tabs__wrapper {
-	display: flex;
+	display: inline-flex;
 
 	flex-wrap: nowrap;
+
+	min-width: 100%;
 
 	margin: lengths.margin(none) lengths.margin(12);
 
