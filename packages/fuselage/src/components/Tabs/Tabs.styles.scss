@@ -171,6 +171,7 @@ $tabs-border-radius: theme('tabs-border-radius', lengths.border-radius(medium));
 		background: linear-gradient(to right, colors.shadow(elevation-2y), transparent);
 	}
 
+	&--rtl::before,
 	&:dir(rtl)::before {
 		background: linear-gradient(to left, colors.shadow(elevation-2y), transparent);
 	}
@@ -181,6 +182,7 @@ $tabs-border-radius: theme('tabs-border-radius', lengths.border-radius(medium));
 		background: linear-gradient(to left, colors.shadow(elevation-2y), transparent);
 	}
 
+	&--rtl::after,
 	&:dir(rtl)::after {
 		background: linear-gradient(to right, colors.shadow(elevation-2y), transparent);
 	}
