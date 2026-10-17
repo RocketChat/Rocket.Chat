@@ -6,7 +6,7 @@ import type { MouseEvent } from 'react';
 
 import GameCenterContainer from './GameCenterContainer';
 import GameCenterList from './GameCenterList';
-import { useExternalComponentsQuery } from './hooks/useExternalComponentsQuery';
+import { useExternalComponentsQuery } from '../../hooks/useExternalComponentsQuery';
 import { preventSyntheticEvent } from '../../lib/utils/preventSyntheticEvent';
 
 export type IGame = IExternalComponent;
