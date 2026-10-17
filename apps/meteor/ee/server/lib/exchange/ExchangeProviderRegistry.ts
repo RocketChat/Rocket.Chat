@@ -1,3 +1,5 @@
+import { startOfDayAt } from '@rocket.chat/tools';
+
 import type { IExchangeProvider } from './definition/IExchangeProvider';
 import type { DateRange } from './definition/types';
 import { ExchangeError } from './errors';
@@ -71,31 +73,32 @@ export const getExchangeProvider = (): IExchangeProvider => {
 	return current;
 };
 
+const DAY_IN_MS = 24 * 60 * 60 * 1000;
+
 const DEFAULT_SYNC_WINDOW_DAYS = 2;
 const MIN_SYNC_WINDOW_DAYS = 1;
 const MAX_SYNC_WINDOW_DAYS = 7;
 
 /**
- * Starts at midnight, the same day `calendar-events.list` reports on, so an event that already happened
- * today is still refreshed rather than left behind. Both bounds land on a day boundary, so the window is
- * identical for every run of the same day, which is what makes a Graph delta link reusable.
+ * Starts at the mailbox owner's own midnight, the same day `calendar-events.list` reports on, so an event
+ * that already happened today is still refreshed rather than left behind. Both bounds land on a day
+ * boundary, so the window is identical for every run of the same day, which is what makes a Graph delta
+ * link reusable.
  */
-export const getSyncWindow = (from: Date = new Date()): DateRange => {
+export const getCalendarSyncWindow = (from: Date = new Date(), utcOffset?: number): DateRange => {
 	const configured = Math.trunc(settings.get<number>('Exchange_Calendar_Sync_Window_Days')) || DEFAULT_SYNC_WINDOW_DAYS;
 	const days = Math.min(Math.max(configured, MIN_SYNC_WINDOW_DAYS), MAX_SYNC_WINDOW_DAYS);
 
-	const start = new Date(from);
-	start.setHours(0, 0, 0, 0);
+	const start = startOfDayAt(from, utcOffset);
 
-	const end = new Date(start);
-	end.setDate(end.getDate() + days);
+	const end = new Date(start.getTime() + days * DAY_IN_MS);
 
 	return { start, end };
 };
 
 export const isServerSyncEnabled = (): boolean => current !== undefined;
 
-export const registerExchangeProviderWatchers = (): void => {
+export const registerExchangeProviderWatchers = () =>
 	settings.watchMultiple(WATCHED_SETTINGS, () => {
 		try {
 			current = buildExchangeProvider();
@@ -106,4 +109,7 @@ export const registerExchangeProviderWatchers = (): void => {
 
 		logger.debug({ msg: 'Exchange provider rebuilt', provider: current?.id ?? 'none' });
 	});
+
+export const detachExchangeProvider = (): void => {
+	current = undefined;
 };

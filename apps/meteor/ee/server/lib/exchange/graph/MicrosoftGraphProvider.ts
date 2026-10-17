@@ -3,13 +3,14 @@ import type { ExtendedFetchOptions, Response } from '@rocket.chat/server-fetch';
 import { DEFAULT_GRAPH_HOST, GraphTokenClient } from './GraphTokenClient';
 import type { GraphTokenClientConfig } from './GraphTokenClient';
 import type { IExchangeProvider } from '../definition/IExchangeProvider';
-import type { DateRange, ExchangeEvent, ExchangeProviderCapabilities, Page } from '../definition/types';
+import type { DateRange, EventPage, ExchangeEvent, ExchangeProviderCapabilities } from '../definition/types';
 import { ExchangeError } from '../errors';
 import { fetchWithRetry } from '../http/fetchWithRetry';
 import { logger } from '../logger';
 
 const GRAPH_API_VERSION = 'v1.0';
 const REQUEST_TIMEOUT_MS = 30000;
+const MASTER_FETCH_BATCH_SIZE = 5;
 
 /** Without this, Graph answers in the mailbox's own timezone with the zone in a sibling field. */
 const PREFER_UTC = 'outlook.timezone="UTC"';
@@ -21,6 +22,8 @@ type GraphDateTimeTimeZone = {
 
 type GraphEvent = {
 	'id'?: unknown;
+	'type'?: unknown;
+	'seriesMasterId'?: unknown;
 	'subject'?: unknown;
 	'bodyPreview'?: unknown;
 	'body'?: { content?: unknown };
@@ -77,21 +80,119 @@ export class MicrosoftGraphProvider implements IExchangeProvider {
 		await this.tokenClient.getAccessToken();
 	}
 
-	public async listEvents(mailbox: string, timeWindow: DateRange, cursor?: string): Promise<Page<ExchangeEvent>> {
+	public async listEvents(mailbox: string, timeWindow: DateRange, cursor?: string): Promise<EventPage> {
 		const payload = await this.requestJson<GraphDeltaResponse>(cursor ?? this.calendarViewDeltaUrl(mailbox, timeWindow), {
 			headers: { Prefer: PREFER_UTC },
 		});
 
 		const raw = Array.isArray(payload.value) ? (payload.value as GraphEvent[]) : [];
 		const nextLink = asString(payload['@odata.nextLink']);
+		const { events, complete } = await this.resolveSeries(mailbox, raw);
 
 		return {
-			items: raw.map((event) => this.toExchangeEvent(event)).filter((event): event is ExchangeEvent => event !== undefined),
+			items: events.map((event) => this.toExchangeEvent(event)).filter((event): event is ExchangeEvent => event !== undefined),
 			// A `nextLink` resumes this round, a `deltaLink` opens the next one. Both come back as the cursor.
 			cursor: nextLink ?? asString(payload['@odata.deltaLink']),
 			hasMore: Boolean(nextLink),
-			coverage: 'delta',
+			coverage: complete ? 'delta' : 'partial',
+			resyncedSeries: this.resyncedSeries(raw),
 		};
+	}
+
+	/**
+	 * Turns a delta page into the events of the window. A recurring series arrives as its master plus one
+	 * stub per occurrence: the stub carries the times and nothing else, so it is read on top of its master,
+	 * and the master itself is dropped because the occurrences are what happens in the window.
+	 */
+	private async resolveSeries(mailbox: string, raw: GraphEvent[]): Promise<{ events: GraphEvent[]; complete: boolean }> {
+		const masters = new Map<string, GraphEvent>();
+		for (const event of raw) {
+			const id = asString(event.id);
+			if (id && event.type === 'seriesMaster') {
+				masters.set(id, event);
+			}
+		}
+
+		const missing = new Set<string>();
+		for (const event of raw) {
+			const masterId = asString(event.seriesMasterId);
+			if (masterId && !event['@removed'] && !masters.has(masterId)) {
+				missing.add(masterId);
+			}
+		}
+
+		const ids = [...missing];
+		for (let i = 0; i < ids.length; i += MASTER_FETCH_BATCH_SIZE) {
+			const fetched = await Promise.all(
+				ids.slice(i, i + MASTER_FETCH_BATCH_SIZE).map(async (id) => [id, await this.fetchSeriesMaster(mailbox, id)] as const),
+			);
+
+			for (const [id, master] of fetched) {
+				if (master) {
+					masters.set(id, master);
+				}
+			}
+		}
+
+		const resolved: GraphEvent[] = [];
+		let unresolved = 0;
+
+		for (const event of raw) {
+			if (event.type === 'seriesMaster' && !event['@removed']) {
+				continue;
+			}
+
+			const masterId = asString(event.seriesMasterId);
+
+			if (!masterId || event['@removed']) {
+				resolved.push(event);
+				continue;
+			}
+
+			const master = masters.get(masterId);
+
+			if (!master) {
+				unresolved += 1;
+				continue;
+			}
+
+			// Spread order is intended anything the occurrence states itself wins over the series
+			resolved.push({ ...master, ...event });
+		}
+
+		if (unresolved) {
+			logger.warn({ msg: 'Occurrences left out of this round, so the stored events keep what they have', mailbox, unresolved });
+		}
+
+		return { events: resolved, complete: unresolved === 0 };
+	}
+
+	/**
+	 * The series this page re-expanded. Only a master that came in the page itself counts: one we had to
+	 * fetch means the page held occurrences without it, which says nothing about the ones it left out.
+	 */
+	private resyncedSeries(raw: GraphEvent[]): string[] {
+		const ids = new Set<string>();
+
+		for (const event of raw) {
+			const id = asString(event.id);
+			if (id && event.type === 'seriesMaster' && !event['@removed']) {
+				ids.add(id);
+			}
+		}
+
+		return [...ids];
+	}
+
+	private async fetchSeriesMaster(mailbox: string, id: string): Promise<GraphEvent | undefined> {
+		const url = `${this.graphHost}/${GRAPH_API_VERSION}/users/${encodeURIComponent(mailbox)}/events/${encodeURIComponent(id)}`;
+
+		try {
+			return await this.requestJson<GraphEvent>(url, { headers: { Prefer: PREFER_UTC } });
+		} catch (err) {
+			logger.warn({ msg: 'Could not read the series master of a recurring event', mailbox, masterId: id, err });
+			return undefined;
+		}
 	}
 
 	private calendarViewDeltaUrl(mailbox: string, timeWindow: DateRange): string {
@@ -127,6 +228,7 @@ export class MicrosoftGraphProvider implements IExchangeProvider {
 		return {
 			kind: 'upsert',
 			externalId,
+			...(asString(event.seriesMasterId) && { seriesMasterId: asString(event.seriesMasterId) }),
 			subject: asString(event.subject) ?? '',
 			description,
 			startTime,
