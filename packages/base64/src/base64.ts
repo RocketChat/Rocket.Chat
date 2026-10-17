@@ -5,7 +5,7 @@ const BASE_64_CHARS = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz01234
 const BASE_64_VALS = Object.create(null);
 
 const getChar = (val: number) => BASE_64_CHARS.charAt(val);
-const getVal = (ch: string) => (ch === '=' ? -1 : BASE_64_VALS[ch]);
+const getVal = (ch: string) => (ch === '=' ? -1 : (BASE_64_VALS[ch] ?? -2));
 
 for (let i = 0; i < BASE_64_CHARS.length; i++) {
 	BASE_64_VALS[getChar(i)] = i;
@@ -96,6 +96,9 @@ const decode = (str: string) => {
 	for (let i = 0; i < str.length; i++) {
 		const c = str.charAt(i);
 		const v = getVal(c);
+		if (v === -2) {
+			throw new Error('invalid base64 string');
+		}
 		switch (i % 4) {
 			case 0:
 				if (v < 0) {
