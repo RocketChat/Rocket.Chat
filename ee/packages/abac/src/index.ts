@@ -840,7 +840,7 @@ export class AbacService extends ServiceClass implements IAbacService {
 			}
 			const unassignable = (await this.pdp.findUnassignableValues?.(normalized, actor, room.abacAttributes)) ?? [];
 			if (unassignable.length) {
-				throw new AbacInvalidAttributeValuesError({ attributes: unassignable });
+				throw new AbacContractError(AbacErrorCode.AttributeNotAssignable, { attributes: unassignable });
 			}
 		}
 
