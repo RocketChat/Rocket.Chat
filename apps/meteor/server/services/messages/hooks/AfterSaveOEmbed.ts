@@ -65,7 +65,63 @@ const toUtf8 = function (contentType: string, body: Buffer): string {
 	return iconv.decode(body, getCharset(contentType, body));
 };
 
-const getUrlContent = async (urlObj: URL, redirectCount = 5): Promise<OEmbedUrlContent> => {
+export const isIgnoredHost = (hostname: string | undefined): boolean => {
+	const normalizedHost = hostname
+		?.toLowerCase()
+		.replace(/\.+$/, '')
+		.replace(/^\[|\]$/g, '');
+	if (!normalizedHost) {
+		return false;
+	}
+
+	const ignoredHosts =
+		settings
+			.get<string>('API_EmbedIgnoredHosts')
+			?.replace(/\s/g, '')
+			.split(',')
+			.filter(Boolean)
+			.map((host) =>
+				host
+					.toLowerCase()
+					.replace(/\.+$/, '')
+					.replace(/^\[|\]$/g, ''),
+			) || [];
+
+	if (!ignoredHosts.length) {
+		return false;
+	}
+
+	const exactHosts = ignoredHosts.filter((h) => !h.includes('*'));
+	if (exactHosts.includes(normalizedHost) || ipRangeCheck(normalizedHost, exactHosts)) {
+		return true;
+	}
+
+	return ignoredHosts
+		.filter((h) => h.includes('*'))
+		.some((pattern) => {
+			const validationRegex = /^(?:\*\.)?(?:\*|[a-z0-9-]+)(?:\.(?:\*|[a-z0-9-]+))*$/i;
+			if (!validationRegex.test(pattern) || pattern === '*') {
+				return false;
+			}
+
+			const escaped = pattern.replace(/[-/\\^$+?.()|[\]{}]/g, '\\$&');
+			const source = `^${escaped.replace(/\*/g, '[^.]*')}$`;
+
+			try {
+				const regex = new RegExp(source, 'i');
+				return regex.test(normalizedHost);
+			} catch {
+				// fail safe on invalid patterns
+				return false;
+			}
+		});
+};
+
+export const getUrlContent = async (urlObj: URL, redirectCount = 5): Promise<OEmbedUrlContent> => {
+	if (isIgnoredHost(urlObj.hostname)) {
+		throw new Error('host is ignored');
+	}
+
 	const portsProtocol = new Map<string, string>(
 		Object.entries({
 			80: 'http:',
@@ -74,63 +130,29 @@ const getUrlContent = async (urlObj: URL, redirectCount = 5): Promise<OEmbedUrlC
 		}),
 	);
 
-	const ignoredHosts =
-		settings
-			.get<string>('API_EmbedIgnoredHosts')
-			.replace(/\s/g, '')
-			.split(',')
-			.filter(Boolean)
-			.map((host) => host.toLowerCase()) || [];
+	const safePorts = settings.get<string>('API_EmbedSafePorts')?.replace(/\s/g, '').split(',').filter(Boolean) || [];
 
-	const isIgnoredHost = (hostname: string | undefined): boolean => {
-		hostname = hostname?.toLowerCase();
-		if (!hostname || !ignoredHosts.length) {
-			return false;
+	const validateUrlPortsAndProtocol = (targetUrlObj: URL): void => {
+		// checks if the URL port is in the safe ports list
+		if (safePorts.length > 0 && targetUrlObj.port && !safePorts.includes(targetUrlObj.port)) {
+			throw new Error('invalid/unsafe port');
 		}
 
-		const exactHosts = ignoredHosts.filter((h) => !h.includes('*'));
-		if (exactHosts.includes(hostname) || ipRangeCheck(hostname, exactHosts)) {
-			return true;
+		// if port is not detected, use protocol to verify instead
+		if (safePorts.length > 0 && !targetUrlObj.port && !safePorts.some((port) => portsProtocol.get(port) === targetUrlObj.protocol)) {
+			throw new Error('invalid/unsafe port');
 		}
-
-		return ignoredHosts
-			.filter((h) => h.includes('*'))
-			.some((pattern) => {
-				const validationRegex = /^(?:\*\.)?(?:\*|[a-z0-9-]+)(?:\.(?:\*|[a-z0-9-]+))*$/i;
-				if (!validationRegex.test(pattern) || pattern === '*') {
-					return false;
-				}
-
-				const escaped = pattern.replace(/[-/\\^$+?.()|[\]{}]/g, '\\$&');
-				const source = `^${escaped.replace(/\*/g, '[^.]*')}$`;
-
-				try {
-					const regex = new RegExp(source, 'i');
-					return regex.test(hostname);
-				} catch {
-					// fail safe on invalid patterns
-					return false;
-				}
-			});
 	};
 
-	if (isIgnoredHost(urlObj.hostname)) {
+	validateUrlPortsAndProtocol(urlObj);
+
+	const data = beforeGetUrlContent({ urlObj });
+
+	if (isIgnoredHost(data.urlObj.hostname)) {
 		throw new Error('host is ignored');
 	}
 
-	const safePorts = settings.get<string>('API_EmbedSafePorts').replace(/\s/g, '').split(',') || [];
-
-	// checks if the URL port is in the safe ports list
-	if (safePorts.length > 0 && urlObj.port && !safePorts.includes(urlObj.port)) {
-		throw new Error('invalid/unsafe port');
-	}
-
-	// if port is not detected, use protocol to verify instead
-	if (safePorts.length > 0 && !urlObj.port && !safePorts.some((port) => portsProtocol.get(port) === urlObj.protocol)) {
-		throw new Error('invalid/unsafe port');
-	}
-
-	const data = beforeGetUrlContent({ urlObj });
+	validateUrlPortsAndProtocol(data.urlObj);
 
 	const url = data.urlObj.toString();
 	const sizeLimit = 250000;
@@ -214,12 +236,13 @@ const parseUrl = async function (url: string): Promise<{ urlPreview: MessageUrl;
 	};
 };
 
-const getUrlMeta = async function (
+export const getUrlMeta = async function (
 	url: string,
 	withFragment?: boolean,
+	parsedUrl?: URL,
 ): Promise<OEmbedUrlWithMetadata | OEmbedUrlContentResult | undefined> {
 	log.debug({ msg: 'Obtaining metadata for URL', url });
-	const urlObj = new URL(url);
+	const urlObj = new URL(parsedUrl ? parsedUrl.toString() : url);
 
 	if (withFragment) {
 		urlObj.searchParams.set('_escaped_fragment_', '');
@@ -284,19 +307,44 @@ const getUrlMeta = async function (
 	});
 };
 
-const getUrlMetaWithCache = async function (
+export const getUrlMetaWithCache = async function (
 	url: string,
 	withFragment?: boolean,
 ): Promise<OEmbedUrlWithMetadata | undefined | OEmbedUrlContentResult> {
 	log.debug({ msg: 'Getting OEmbed metadata for URL', url });
+
+	let urlObj: URL;
+	try {
+		urlObj = new URL(url);
+	} catch {
+		return;
+	}
+
+	if (isIgnoredHost(urlObj.hostname)) {
+		log.debug({ msg: 'Host is ignored for OEmbed', url, host: urlObj.hostname });
+		return;
+	}
+
 	const cache = await OEmbedCache.findOneById(url);
 
 	if (cache) {
+		if (cache.data && typeof cache.data === 'object' && 'url' in cache.data && typeof cache.data.url === 'string') {
+			try {
+				const cachedTargetUrl = new URL(cache.data.url);
+				if (isIgnoredHost(cachedTargetUrl.hostname)) {
+					log.debug({ msg: 'Cached target host is ignored for OEmbed', url, targetHost: cachedTargetUrl.hostname });
+					return;
+				}
+			} catch {
+				// Ignore malformed cached target URLs
+			}
+		}
+
 		log.debug({ msg: 'Found OEmbed metadata in cache for URL', url });
-		return cache.data;
+		return cache.data as OEmbedUrlWithMetadata | OEmbedUrlContentResult;
 	}
 
-	const data = await getUrlMeta(url, withFragment);
+	const data = await getUrlMeta(url, withFragment, urlObj);
 
 	if (!data) {
 		return;

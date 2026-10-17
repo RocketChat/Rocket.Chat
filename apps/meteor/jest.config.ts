@@ -46,6 +46,7 @@ export default {
 				'<rootDir>/lib/utils/isJSON.spec.ts',
 				'<rootDir>/server/lib/auditServerEvents/**.spec.ts',
 				'<rootDir>/server/services/import/**/*.spec.ts',
+				'<rootDir>/server/services/messages/**/*.spec.ts',
 				'<rootDir>/server/services/upload/*.spec.ts',
 				'<rootDir>/server/settings/lib/**.spec.ts',
 				'<rootDir>/server/cron/**.spec.ts',
