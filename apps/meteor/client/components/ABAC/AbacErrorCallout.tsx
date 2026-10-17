@@ -1,22 +1,25 @@
+import type { IAbacAttributeDefinition } from '@rocket.chat/core-typings';
 import { Box, Callout } from '@rocket.chat/fuselage';
 import type { TranslationKey } from '@rocket.chat/ui-contexts';
 import { useTranslation } from 'react-i18next';
 
-import { getAbacErrorAttributes, getAbacErrorType } from './getAbacErrorType';
+type AbacError = {
+	errorType?: string;
+	details?: { attributes?: IAbacAttributeDefinition[] };
+};
 
 type AbacErrorCalloutProps = {
 	error: unknown;
 	fallback: TranslationKey;
-	className?: string;
 };
 
-const AbacErrorCallout = ({ error, fallback, className }: AbacErrorCalloutProps) => {
+const AbacErrorCallout = ({ error, fallback }: AbacErrorCalloutProps) => {
 	const { t, i18n } = useTranslation();
-	const errorType = getAbacErrorType(error);
-	const attributes = getAbacErrorAttributes(error);
+	const { errorType, details } = (error ?? {}) as AbacError;
+	const attributes = details?.attributes ?? [];
 
 	return (
-		<Callout type='danger' role='alert' className={className}>
+		<Callout type='danger' role='alert'>
 			{errorType && i18n.exists(errorType) ? t(errorType) : t(fallback)}
 			{attributes.length > 0 && (
 				<Box is='ul' marginBlockStart={4}>

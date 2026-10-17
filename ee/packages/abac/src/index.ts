@@ -42,7 +42,6 @@ import {
 	validateAndNormalizeAttributes,
 	ensureAttributeDefinitionsExist,
 	sortByKey,
-	toAttributeMap,
 	toCreationDenial,
 	verdictOf,
 	MAX_ABAC_ATTRIBUTE_KEYS,
@@ -139,8 +138,9 @@ export class AbacService extends ServiceClass implements IAbacService {
 		});
 
 		this.onSettingChanged('ABAC_Restrict_To_Owned_Attributes', async ({ setting }): Promise<void> => {
-			if (this.pdp instanceof LocalPDP) {
-				this.pdp.setRestrictToOwnedAttributes(setting.value as boolean);
+			const { value } = setting;
+			if (typeof value === 'boolean' && this.pdp instanceof LocalPDP) {
+				this.pdp.setRestrictToOwnedAttributes(value);
 			}
 		});
 
@@ -567,7 +567,7 @@ export class AbacService extends ServiceClass implements IAbacService {
 	}
 
 	async validateCreationAttributes(
-		attributes: IAbacAttributeDefinition[],
+		attributes: Record<string, string[]>,
 		actor: AbacActor,
 		{ creatorJoins }: { creatorJoins: boolean },
 	): Promise<AbacCreationAttributesResult> {
@@ -576,7 +576,7 @@ export class AbacService extends ServiceClass implements IAbacService {
 		let bypassed: boolean;
 
 		try {
-			normalized = validateAndNormalizeAttributes(toAttributeMap(attributes));
+			normalized = validateAndNormalizeAttributes(attributes);
 			if (!normalized.length) {
 				throw new AbacInvalidAttributeValuesError();
 			}
@@ -589,15 +589,11 @@ export class AbacService extends ServiceClass implements IAbacService {
 		}
 
 		const authorityFirst = this.pdpType === 'local';
-		let creatorAdmitted = false;
 
 		// Local PDP: a creator who does not hold a value must not learn whether it is defined.
-		if (!bypassed && authorityFirst) {
-			const authority = await this.checkCreatorAuthority(normalized, actor, store);
-			if (!authority.allowed) {
-				return authority;
-			}
-			creatorAdmitted = authority.creatorAdmitted;
+		let authority = !bypassed && authorityFirst ? await this.checkCreatorAuthority(normalized, actor, store) : undefined;
+		if (authority && !authority.allowed) {
+			return authority;
 		}
 
 		if (store === this.attributeStores.local.store) {
@@ -610,14 +606,13 @@ export class AbacService extends ServiceClass implements IAbacService {
 
 		// Virtru PDP: asked only after the existence check, so undefined attributes never reach Virtru.
 		if (!bypassed && !authorityFirst) {
-			const authority = await this.checkCreatorAuthority(normalized, actor, store);
+			authority = await this.checkCreatorAuthority(normalized, actor, store);
 			if (!authority.allowed) {
 				return authority;
 			}
-			creatorAdmitted = authority.creatorAdmitted;
 		}
 
-		if (creatorJoins && !creatorAdmitted) {
+		if (creatorJoins && !authority?.creatorAdmitted) {
 			try {
 				await this.assertPdpPermitsCreator(normalized, actor);
 			} catch (err) {
@@ -625,7 +620,7 @@ export class AbacService extends ServiceClass implements IAbacService {
 			}
 		}
 
-		return { allowed: true, attributes: normalized, bypassed };
+		return { allowed: true, attributes: normalized };
 	}
 
 	private toCheckDenial(err: unknown, reason: 'not-entitled' | 'creator-not-admitted', msg: string): CreationDenial {
@@ -685,19 +680,17 @@ export class AbacService extends ServiceClass implements IAbacService {
 			return sortByKey(definitions);
 		}
 
-		const assignable = await this.pdp?.filterAssignableAttributes(definitions, actor);
-		if (!assignable) {
+		if (!this.pdp) {
 			throw new PdpUnavailableError();
 		}
 
-		return sortByKey(assignable);
+		return sortByKey((await this.pdp.filterAssignableAttributes?.(definitions, actor)) ?? definitions);
 	}
 
-	async auditRoomAttributesAtCreation(room: Pick<IRoom, '_id' | 'name' | 'abacAttributes'>, actor: AbacActor): Promise<void> {
-		if (!room.abacAttributes?.length) {
-			return;
-		}
-
+	async auditRoomAttributesAtCreation(
+		room: Pick<IRoom, '_id' | 'name'> & Required<Pick<IRoom, 'abacAttributes'>>,
+		actor: AbacActor,
+	): Promise<void> {
 		const bypassed = await Authorization.hasPermission(actor._id, 'bypass-abac-store-validation');
 		await Audit.objectAttributeChanged(
 			{ _id: room._id, name: room.name },
@@ -711,7 +704,7 @@ export class AbacService extends ServiceClass implements IAbacService {
 
 	async previewCreationMembers(
 		usernames: string[],
-		attributes: IAbacAttributeDefinition[],
+		attributes: Record<string, string[]>,
 		actor: AbacActor,
 		{ creatorJoins }: { creatorJoins: boolean },
 	): Promise<AbacMembershipPreviewResult> {
@@ -728,15 +721,14 @@ export class AbacService extends ServiceClass implements IAbacService {
 		const others = named.filter(({ _id }) => _id !== actor._id);
 		const subjects = creator ? [creator, ...others] : others;
 
-		let evaluation: Evaluation | undefined;
+		let evaluation: Evaluation;
 		try {
-			evaluation = await this.pdp?.evaluateSubjectsAgainstAttributes(subjects, validation.attributes, { _id: 'room-creation' });
+			if (!this.pdp) {
+				throw new PdpUnavailableError();
+			}
+			evaluation = await this.pdp.evaluateSubjectsAgainstAttributes(subjects, validation.attributes, { _id: 'room-creation' });
 		} catch (err) {
 			logger.error({ msg: 'ABAC membership preview failed', err });
-			return { allowed: false, reason: 'unavailable', code: AbacErrorCode.PdpUnavailable };
-		}
-
-		if (!evaluation) {
 			return { allowed: false, reason: 'unavailable', code: AbacErrorCode.PdpUnavailable };
 		}
 

@@ -87,6 +87,7 @@ describe('CreateTeamModal', () => {
 
 			expect(await screen.findByText('ABAC_Room_Creation_Not_Allowed')).toBeInTheDocument();
 			expect(screen.getByRole('button', { name: 'Next' })).toBeDisabled();
+			expect(screen.getByText('Step 1 of 2')).toBeInTheDocument();
 		});
 	});
 

@@ -9,7 +9,7 @@ import AbacErrorCallout from '../AbacErrorCallout';
 
 const MAX_ATTRIBUTES = 10;
 
-export type AbacAttributesFormData = {
+type AbacAttributesFormData = {
 	attributes: IAbacAttributeDefinition[];
 };
 
@@ -24,10 +24,9 @@ type AbacAttributesStepProps = {
 	assignable?: IAbacAttributeDefinition[];
 	isPending: boolean;
 	error: unknown;
-	assignabilityError: unknown;
 };
 
-const AbacAttributesStep = ({ requiredKeys, assignable, isPending, error, assignabilityError }: AbacAttributesStepProps) => {
+const AbacAttributesStep = ({ requiredKeys, assignable, isPending, error }: AbacAttributesStepProps) => {
 	const { t } = useTranslation();
 	const { control } = useFormContext<AbacAttributesFormData>();
 	const { fields, append, remove } = useFieldArray({ control, name: 'attributes' });
@@ -80,7 +79,6 @@ const AbacAttributesStep = ({ requiredKeys, assignable, isPending, error, assign
 			<Button onClick={() => append({ key: '', values: [] })} disabled={fields.length >= MAX_ATTRIBUTES}>
 				{t('ABAC_Add_Attribute')}
 			</Button>
-			{assignabilityError ? <AbacErrorCallout error={assignabilityError} fallback='ABAC_Assignable_Attributes_Unavailable' /> : null}
 		</FieldGroup>
 	);
 };

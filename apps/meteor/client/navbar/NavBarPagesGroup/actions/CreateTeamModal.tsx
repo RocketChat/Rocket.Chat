@@ -1,16 +1,5 @@
 import type { IAbacAttributeDefinition } from '@rocket.chat/core-typings';
-import {
-	Box,
-	Icon,
-	Modal,
-	Accordion,
-	AccordionItem,
-	Callout,
-	ModalHeader,
-	ModalTitle,
-	ModalClose,
-	ModalContent,
-} from '@rocket.chat/fuselage';
+import { Box, Icon, Modal, Callout, ModalHeader, ModalTitle, ModalClose } from '@rocket.chat/fuselage';
 import { TextInput, ToggleSwitch, Field, FieldGroup, FieldLabel, FieldRow, FieldError, FieldHint } from '@rocket.chat/fuselage-forms';
 import {
 	useEndpoint,
@@ -25,15 +14,13 @@ import { useId, memo, useEffect, useMemo } from 'react';
 import { Controller, FormProvider, useForm } from 'react-hook-form';
 
 import { useEncryptedRoomDescription } from './useEncryptedRoomDescription';
-import AbacMembershipPreview from '../../../components/ABAC/AbacMembershipPreview/AbacMembershipPreview';
 import type { AbacRoomCreation } from '../../../components/ABAC/AbacRoomCreation';
 import {
-	AbacAttributesStep,
 	AbacManagedField,
-	CreateRoomStepsFooter,
+	CreateRoomSteps,
+	getInitialAbacAttributes,
 	isAbacCreationBlocked,
 	useAbacCreationFlow,
-	useCreateRoomSteps,
 } from '../../../components/ABAC/AbacRoomCreation';
 import UserAutoCompleteMultiple from '../../../components/UserAutoCompleteMultiple';
 import { useCreateChannelTypePermission } from '../../../hooks/useCreateChannelTypePermission';
@@ -60,9 +47,6 @@ const getNameIcon = (isAbacManaged: boolean, isPrivate: boolean): ComponentProps
 
 	return isPrivate ? 'team-lock' : 'team';
 };
-
-const initialAttributes = (abac?: AbacRoomCreation): IAbacAttributeDefinition[] =>
-	abac?.requiredAttributes.length ? abac.requiredAttributes.map((key) => ({ key, values: [] })) : [{ key: '', values: [] }];
 
 const CreateTeamModal = ({ onClose, onSuccess, abac }: CreateTeamModalProps) => {
 	const t = useTranslation();
@@ -116,7 +100,7 @@ const CreateTeamModal = ({ onClose, onSuccess, abac }: CreateTeamModalProps) => 
 			broadcast: false,
 			members: [],
 			isAbacManaged: Boolean(abac?.enforced),
-			attributes: initialAttributes(abac),
+			attributes: getInitialAbacAttributes(abac),
 		},
 	});
 
@@ -130,14 +114,15 @@ const CreateTeamModal = ({ onClose, onSuccess, abac }: CreateTeamModalProps) => 
 
 	const { isPrivate, broadcast, readOnly, encrypted, isAbacManaged, members = [], attributes } = watch();
 
-	const { step, index, total, isLast, next, back } = useCreateRoomSteps(Boolean(abac), isAbacManaged);
-	const abacFlow = useAbacCreationFlow({ abac, isAbacManaged, step, members, attributes });
+	const abacFlow = useAbacCreationFlow({ abac, isAbacManaged, members, attributes });
 
 	useEffect(() => {
 		if (isAbacManaged) {
 			setValue('isPrivate', true);
+		} else if (canOnlyCreateOneType) {
+			setValue('isPrivate', canOnlyCreateOneType === 'p');
 		}
-	}, [isAbacManaged, setValue]);
+	}, [isAbacManaged, canOnlyCreateOneType, setValue]);
 
 	useEffect(() => {
 		if (!isPrivate) {
@@ -193,17 +178,7 @@ const CreateTeamModal = ({ onClose, onSuccess, abac }: CreateTeamModalProps) => 
 		}
 	};
 
-	const handleStepSubmit = handleSubmit(async (data) => {
-		if (isLast) {
-			return handleCreateTeam(data);
-		}
-
-		if (step === 'attributes' && !(await abacFlow.confirmAttributes())) {
-			return;
-		}
-
-		next();
-	});
+	const handleStepSubmit = handleSubmit((data) => abacFlow.submitStep(() => handleCreateTeam(data)));
 
 	const createTeamFormId = useId();
 
@@ -264,8 +239,14 @@ const CreateTeamModal = ({ onClose, onSuccess, abac }: CreateTeamModalProps) => 
 					<ModalTitle id={`${createTeamFormId}-title`}>{t('Teams_New_Title')}</ModalTitle>
 					<ModalClose title={t('Close')} onClick={onClose} tabIndex={-1} />
 				</ModalHeader>
-				<ModalContent marginBlockEnd={2}>
-					{step === 'details' && (
+				<CreateRoomSteps
+					abac={abac}
+					flow={abacFlow}
+					security={securityFields}
+					onCancel={onClose}
+					submitDisabled={!canCreateTeam || creationBlocked}
+					isSubmitting={isSubmitting}
+					details={
 						<>
 							<Box fontScale='p2' marginBlockEnd={16}>
 								{t('Teams_new_description')}
@@ -338,39 +319,8 @@ const CreateTeamModal = ({ onClose, onSuccess, abac }: CreateTeamModalProps) => 
 									<FieldHint>{isPrivate ? t('People_can_only_join_by_being_invited') : t('Anyone_can_access')}</FieldHint>
 								</Field>
 							</FieldGroup>
-							{total === 1 && (
-								<Accordion>
-									<AccordionItem title={t('Advanced_settings')}>{securityFields}</AccordionItem>
-								</Accordion>
-							)}
 						</>
-					)}
-					{step === 'attributes' && (
-						<AbacAttributesStep
-							requiredKeys={abac?.requiredAttributes ?? []}
-							assignable={abacFlow.assignable.data}
-							isPending={abacFlow.assignable.isPending}
-							error={abacFlow.assignable.error}
-							assignabilityError={abacFlow.assignabilityError}
-						/>
-					)}
-					{step === 'security' && securityFields}
-					{step === 'preview' && (
-						<AbacMembershipPreview
-							data={abacFlow.preview.data}
-							isPending={abacFlow.preview.isPending}
-							isError={abacFlow.preview.isError}
-							error={abacFlow.preview.error}
-						/>
-					)}
-				</ModalContent>
-				<CreateRoomStepsFooter
-					index={index}
-					total={total}
-					onCancel={onClose}
-					onBack={back}
-					submitDisabled={!canCreateTeam || creationBlocked || abacFlow.isStepBlocked}
-					isSubmitting={isSubmitting}
+					}
 				/>
 			</Modal>
 		</FormProvider>

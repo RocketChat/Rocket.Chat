@@ -52,7 +52,10 @@ describe('beforeCreateRoom (ABAC)', () => {
 		licenseMock.hasModule.withArgs('abac').returns(true);
 		getRoomAbacLockContextMock.returns({ enforcementOn: false, requiredAttributeKeys: [] });
 		hasPermissionAsyncMock.resolves(true);
-		validateCreationAttributesMock.callsFake(async (attributes) => ({ allowed: true, attributes, bypassed: false }));
+		validateCreationAttributesMock.callsFake(async (attributes: Record<string, string[]>) => ({
+			allowed: true,
+			attributes: Object.entries(attributes).map(([key, values]) => ({ key, values })),
+		}));
 	});
 
 	describe('a room created with attributes', () => {
@@ -110,20 +113,14 @@ describe('beforeCreateRoom (ABAC)', () => {
 			await expect(run(privateRoom({ abacAttributes }))).to.be.rejectedWith('error-abac-decision-unavailable');
 		});
 
-		it('should insert the attributes as the PDP normalized them', async () => {
-			validateCreationAttributesMock.resolves({ allowed: true, attributes: [{ key: 'dept', values: ['eng'] }], bypassed: false });
-			const room = privateRoom({ abacAttributes: [{ key: ' dept ', values: ['eng', 'eng'] }] });
-
-			await run(room);
-
-			expect(room.abacAttributes).to.deep.equal([{ key: 'dept', values: ['eng'] }]);
-			expect(validateCreationAttributesMock.calledWith(sinon.match.any, { _id: 'owner', username: 'owner', name: 'Owner' })).to.be.true;
-		});
-
 		it('should have the PDP admit a creator who joins the room', async () => {
 			await run(privateRoom({ abacAttributes }), ['owner', 'member']);
 
-			expect(validateCreationAttributesMock.firstCall.args[2]).to.deep.equal({ creatorJoins: true });
+			expect(validateCreationAttributesMock.firstCall.args).to.deep.equal([
+				{ dept: ['eng'] },
+				{ _id: 'owner', username: 'owner', name: 'Owner' },
+				{ creatorJoins: true },
+			]);
 		});
 
 		it('should not have the PDP admit a creator who excluded themselves', async () => {

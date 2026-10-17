@@ -58,7 +58,7 @@ export interface IPolicyDecisionPoint {
 
 	assertCreatorMayAssign(attributes: IAbacAttributeDefinition[], actor: AbacActor): Promise<{ creatorAdmitted: boolean }>;
 
-	filterAssignableAttributes(definitions: IAbacAttributeDefinition[], actor: AbacActor): Promise<IAbacAttributeDefinition[]>;
+	filterAssignableAttributes?(definitions: IAbacAttributeDefinition[], actor: AbacActor): Promise<IAbacAttributeDefinition[]>;
 
 	evaluateSubjectsAgainstAttributes(
 		subjects: EvaluableSubject[],

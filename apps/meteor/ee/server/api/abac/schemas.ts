@@ -8,7 +8,7 @@ import type {
 	IServerEvents,
 } from '@rocket.chat/core-typings';
 import type { PaginatedResult, PaginatedRequest } from '@rocket.chat/rest-typings';
-import { ajv, ajvQuery } from '@rocket.chat/rest-typings';
+import { abacCreationAttributesSchema, ajv, ajvQuery } from '@rocket.chat/rest-typings';
 
 const ATTRIBUTE_KEY_PATTERN = '^[A-Za-z0-9_-]+$';
 const MAX_ROOM_ATTRIBUTE_VALUES = 10;
@@ -311,26 +311,6 @@ const PostRoomAbacAttributesBody = {
 
 export const POSTRoomAbacAttributesBodySchema = ajv.compile<{ attributes: Record<string, string[]> }>(PostRoomAbacAttributesBody);
 
-const PostAbacAttributeAssignabilityBody = {
-	type: 'object',
-	properties: {
-		attributes: {
-			...PostRoomAbacAttributesBody.properties.attributes,
-			additionalProperties: {
-				...PostRoomAbacAttributesBody.properties.attributes.additionalProperties,
-				minItems: 1,
-			},
-		},
-		excludeSelf: { type: 'boolean' },
-	},
-	required: ['attributes'],
-	additionalProperties: false,
-};
-
-export const POSTAbacAttributeAssignabilityBodySchema = ajv.compile<{ attributes: Record<string, string[]>; excludeSelf?: boolean }>(
-	PostAbacAttributeAssignabilityBody,
-);
-
 const PostAbacMembershipPreviewBody = {
 	type: 'object',
 	properties: {
@@ -339,10 +319,7 @@ const PostAbacMembershipPreviewBody = {
 			items: { type: 'string', minLength: 1 },
 			uniqueItems: true,
 		},
-		attributes: {
-			...PostAbacAttributeAssignabilityBody.properties.attributes,
-			minProperties: 1,
-		},
+		attributes: abacCreationAttributesSchema,
 		excludeSelf: { type: 'boolean' },
 	},
 	required: ['members', 'attributes'],

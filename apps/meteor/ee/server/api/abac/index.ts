@@ -1,7 +1,6 @@
 import { AbacAttributeStoreExternalError, getPdpHealthErrorCode } from '@rocket.chat/abac';
 import { Abac, MeteorError } from '@rocket.chat/core-services';
-import type { AbacActor } from '@rocket.chat/core-services';
-import type { IServerEvents, IUser } from '@rocket.chat/core-typings';
+import type { IServerEvents } from '@rocket.chat/core-typings';
 import { ServerEvents } from '@rocket.chat/models';
 import { validateBadRequestErrorResponse, validateUnauthorizedErrorResponse } from '@rocket.chat/rest-typings/src/v1/Ajv';
 import { convertSubObjectsIntoPaths } from '@rocket.chat/tools';
@@ -27,7 +26,6 @@ import {
 	GETAbacPdpHealthErrorResponseSchema,
 	GETAbacAttributeKeysResponseSchema,
 	GETAbacAssignableAttributesResponseSchema,
-	POSTAbacAttributeAssignabilityBodySchema,
 	POSTAbacMembershipPreviewBodySchema,
 	POSTAbacMembershipPreviewResponseSchema,
 } from './schemas';
@@ -35,19 +33,9 @@ import { API } from '../../../../server/api';
 import type { ExtractRoutesFromAPI } from '../../../../server/api/ApiClass';
 import { getPaginationItems } from '../../../../server/api/lib/getPaginationItems';
 import { getRoomAbacLockContext } from '../../../../server/lib/authorization/getRoomAbacLockContext';
-import { toAbacAttributeDefinitions } from '../../../../server/lib/rooms/toAbacAttributeDefinitions';
 import { settings } from '../../../../server/settings';
 import { toCreationAttributesDenialError } from '../../lib/abac/creationAttributesDenial';
 import { toAbacActor } from '../../lib/abac/toAbacActor';
-
-const getActorFromUser = (user?: IUser | null): AbacActor | undefined =>
-	user?._id
-		? {
-				_id: user._id,
-				username: user.username,
-				name: user.name,
-			}
-		: undefined;
 
 const assertLocalAttributeStore = async (): Promise<void> => {
 	if (await Abac.isExternalAttributeStore()) {
@@ -80,7 +68,7 @@ const abacEndpoints = API.v1
 
 			// This is a replace-all operation
 			// IF you need fine grained, use the other endpoints for removing, editing & adding single attributes
-			await Abac.setRoomAbacAttributes(rid, attributes, getActorFromUser(this.user));
+			await Abac.setRoomAbacAttributes(rid, attributes, toAbacActor(this.user));
 			return API.v1.success();
 		},
 	)
@@ -102,7 +90,7 @@ const abacEndpoints = API.v1
 			// We don't need to check if ABAC is enabled to clear attributes
 			// Since we're always allowing this operation
 			// license check is also not required
-			await Abac.setRoomAbacAttributes(rid, {}, getActorFromUser(this.user));
+			await Abac.setRoomAbacAttributes(rid, {}, toAbacActor(this.user));
 			return API.v1.success();
 		},
 	)
@@ -129,7 +117,7 @@ const abacEndpoints = API.v1
 				throw new Error('error-abac-not-enabled');
 			}
 
-			await Abac.addRoomAbacAttributeByKey(rid, key, values, getActorFromUser(this.user));
+			await Abac.addRoomAbacAttributeByKey(rid, key, values, toAbacActor(this.user));
 			return API.v1.success();
 		},
 	)
@@ -156,7 +144,7 @@ const abacEndpoints = API.v1
 				throw new Error('error-abac-not-enabled');
 			}
 
-			await Abac.replaceRoomAbacAttributeByKey(rid, key, values, getActorFromUser(this.user));
+			await Abac.replaceRoomAbacAttributeByKey(rid, key, values, toAbacActor(this.user));
 			return API.v1.success();
 		},
 	)
@@ -176,7 +164,7 @@ const abacEndpoints = API.v1
 		async function action() {
 			const { rid, key } = this.urlParams;
 
-			await Abac.removeRoomAbacAttribute(rid, key, getActorFromUser(this.user));
+			await Abac.removeRoomAbacAttribute(rid, key, toAbacActor(this.user));
 			return API.v1.success();
 		},
 	)
@@ -207,7 +195,7 @@ const abacEndpoints = API.v1
 						offset,
 						count,
 					},
-					getActorFromUser(this.user),
+					toAbacActor(this.user),
 				),
 			);
 		},
@@ -260,7 +248,7 @@ const abacEndpoints = API.v1
 
 			await assertLocalAttributeStore();
 
-			await Abac.addAbacAttribute(this.bodyParams, getActorFromUser(this.user));
+			await Abac.addAbacAttribute(this.bodyParams, toAbacActor(this.user));
 			return API.v1.success();
 		},
 	)
@@ -287,7 +275,7 @@ const abacEndpoints = API.v1
 
 			await assertLocalAttributeStore();
 
-			await Abac.updateAbacAttributeById(_id, this.bodyParams, getActorFromUser(this.user));
+			await Abac.updateAbacAttributeById(_id, this.bodyParams, toAbacActor(this.user));
 			return API.v1.success();
 		},
 	)
@@ -309,7 +297,7 @@ const abacEndpoints = API.v1
 
 			await assertLocalAttributeStore();
 
-			const result = await Abac.getAbacAttributeById(_id, getActorFromUser(this.user));
+			const result = await Abac.getAbacAttributeById(_id, toAbacActor(this.user));
 			return API.v1.success(result);
 		},
 	)
@@ -331,7 +319,7 @@ const abacEndpoints = API.v1
 
 			await assertLocalAttributeStore();
 
-			await Abac.deleteAbacAttributeById(_id, getActorFromUser(this.user));
+			await Abac.deleteAbacAttributeById(_id, toAbacActor(this.user));
 			return API.v1.success();
 		},
 	)
@@ -381,7 +369,7 @@ const abacEndpoints = API.v1
 					filter,
 					filterType,
 				},
-				getActorFromUser(this.user),
+				toAbacActor(this.user),
 			);
 
 			return API.v1.success(result);
@@ -491,7 +479,7 @@ const abacEndpoints = API.v1
 			},
 		},
 		async function action() {
-			const keys = (await Abac.listAbacAttributeKeys(getActorFromUser(this.user))).sort((a, b) => a.localeCompare(b));
+			const keys = (await Abac.listAbacAttributeKeys(toAbacActor(this.user))).sort((a, b) => a.localeCompare(b));
 
 			return API.v1.success({ data: keys.map((key) => ({ key, label: key })) });
 		},
@@ -523,38 +511,6 @@ const abacEndpoints = API.v1
 		},
 	)
 	.post(
-		'abac/attributes.checkAssignability',
-		{
-			authRequired: true,
-			permissionsRequired: ['create-abac-managed-room'],
-			license: ['abac'],
-			body: POSTAbacAttributeAssignabilityBodySchema,
-			response: {
-				200: GenericSuccessSchema,
-				400: validateBadRequestErrorResponse,
-				401: validateUnauthorizedErrorResponse,
-				403: validateUnauthorizedErrorResponse,
-			},
-		},
-		async function action() {
-			if (!settings.get('ABAC_Enabled')) {
-				throw new Error('error-abac-not-enabled');
-			}
-
-			const result = await Abac.validateCreationAttributes(
-				toAbacAttributeDefinitions(this.bodyParams.attributes) ?? [],
-				toAbacActor(this.user),
-				{ creatorJoins: !this.bodyParams.excludeSelf },
-			);
-			if (!result.allowed) {
-				throw toCreationAttributesDenialError(result);
-			}
-
-			return API.v1.success();
-		},
-	)
-
-	.post(
 		'abac/rooms.evaluateMembership',
 		{
 			authRequired: true,
@@ -583,9 +539,7 @@ const abacEndpoints = API.v1
 				throw new MeteorError('error-abac-preview-too-many-members', 'Too many members to preview');
 			}
 
-			const result = await Abac.previewCreationMembers(members, toAbacAttributeDefinitions(attributes) ?? [], toAbacActor(this.user), {
-				creatorJoins: !excludeSelf,
-			});
+			const result = await Abac.previewCreationMembers(members, attributes, toAbacActor(this.user), { creatorJoins: !excludeSelf });
 			if (!result.allowed) {
 				throw toCreationAttributesDenialError(result);
 			}

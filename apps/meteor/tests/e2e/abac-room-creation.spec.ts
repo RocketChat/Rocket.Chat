@@ -1,10 +1,10 @@
 import type { IRoom, ISubscription, IUser } from '@rocket.chat/core-typings';
 import { MongoClient } from 'mongodb';
 
-import { IS_EE, URL_MONGODB } from './config/constants';
+import { DEFAULT_USER_CREDENTIALS, IS_EE, URL_MONGODB } from './config/constants';
 import { Users } from './fixtures/userStates';
 import { HomeChannel } from './page-objects';
-import { getSettingValueById, setSettingValueById } from './utils';
+import { deletePrivateRoomsByName, getSettingValueById, setSettingValueById } from './utils';
 import { expect, test } from './utils/test';
 
 test.use({ storageState: Users.user1.state });
@@ -55,10 +55,7 @@ test.describe.serial('abac-room-creation', () => {
 	});
 
 	test.afterAll(async ({ api }) => {
-		const room = await connection.db().collection<IRoom>('rocketchat_room').findOne({ name: roomName });
-		if (room) {
-			await api.post('/rooms.delete', { roomId: room._id });
-		}
+		await deletePrivateRoomsByName({ username: Users.user1.data.username, password: DEFAULT_USER_CREDENTIALS.password }, [roomName]);
 		await api.delete(`/abac/attributes/${attributeId}`);
 		await connection
 			.db()

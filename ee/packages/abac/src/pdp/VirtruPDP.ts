@@ -243,10 +243,6 @@ export class VirtruPDP implements IPolicyDecisionPoint {
 		return { creatorAdmitted: true };
 	}
 
-	async filterAssignableAttributes(definitions: IAbacAttributeDefinition[], _actor: AbacActor): Promise<IAbacAttributeDefinition[]> {
-		return definitions;
-	}
-
 	async evaluateSubjectsAgainstAttributes(
 		subjects: EvaluableSubject[],
 		attributes: IAbacAttributeDefinition[],

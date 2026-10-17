@@ -36,7 +36,8 @@ const assignCreationAttributes = async (owner: IUser, room: RoomToCreate, member
 		throw new Error('error-abac-attributes-not-allowed');
 	}
 
-	const result = await Abac.validateCreationAttributes(room.abacAttributes, toAbacActor(owner), {
+	const attributes = Object.fromEntries(room.abacAttributes.map(({ key, values }) => [key, values]));
+	const result = await Abac.validateCreationAttributes(attributes, toAbacActor(owner), {
 		creatorJoins: !!owner.username && members.includes(owner.username),
 	});
 	if (!result.allowed) {
@@ -53,7 +54,6 @@ const refuseRoomsEnforcementWouldLock = (room: RoomToCreate): void => {
 		return;
 	}
 
-	// `Discussion_enabled` is also held at false; this covers the callers that bypass it.
 	if (isDiscussion(room)) {
 		throw new Error('error-abac-discussion-creation-blocked');
 	}

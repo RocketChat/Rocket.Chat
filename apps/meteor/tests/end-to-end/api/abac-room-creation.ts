@@ -1,9 +1,10 @@
 import type { Credentials } from '@rocket.chat/api-client';
-import type { IPermission, IRoom, ISetting, ISubscription, IUser } from '@rocket.chat/core-typings';
+import type { IPermission, IRoom, ISetting, IUser } from '@rocket.chat/core-typings';
 import { expect } from 'chai';
-import { after, before, beforeEach, describe, it } from 'mocha';
+import { after, before, describe, it } from 'mocha';
 import { MongoClient } from 'mongodb';
 
+import { retry } from './helpers/retry';
 import { addAbacAttributesToUserDirectly } from '../../data/abac.helper';
 import { api, credentials, getCredentials, request } from '../../data/api-data';
 import { sleep } from '../../data/livechat/utils';
@@ -36,6 +37,7 @@ import { IS_EE, URL_MONGODB } from '../../e2e/config/constants';
 
 	const createdRoomIds: IRoom['_id'][] = [];
 	const createdTeamNames: string[] = [];
+	const createdAttributeIds: string[] = [];
 
 	let adminId: IUser['_id'];
 	let creator: IUser;
@@ -61,25 +63,23 @@ import { IS_EE, URL_MONGODB } from '../../e2e/config/constants';
 
 	const track = (roomId?: IRoom['_id']) => roomId && createdRoomIds.push(roomId);
 
-	const memberUsernames = (roomId: IRoom['_id']) =>
-		connection
-			.db()
-			.collection<ISubscription>('rocketchat_subscription')
-			.find({ rid: roomId })
-			.map(({ u }) => u.username)
-			.toArray();
+	const creatorSubscription = async (roomId: IRoom['_id']) =>
+		(await request.get(api('subscriptions.getOne')).set(creatorCredentials).query({ roomId }).expect(200)).body.subscription;
 
 	type AuditEvent = { t: string; actor?: { username?: string }; data: Array<{ key: string; value: any }> };
 
 	const waitForAuditEntry = async (matches: (event: AuditEvent) => boolean): Promise<AuditEvent | undefined> => {
-		for (let attempt = 0; attempt < 10; attempt++) {
-			await sleep(200);
-			const audit = await request.get(`${v1}/abac/audit`).set(credentials).query({ count: 100 }).expect(200);
-			const entry = (audit.body.events as AuditEvent[]).find(matches);
-			if (entry) {
-				return entry;
-			}
-		}
+		let entry: AuditEvent | undefined;
+		await retry(
+			'the audit entry is written',
+			async () => {
+				const audit = await request.get(`${v1}/abac/audit`).set(credentials).query({ count: 100 }).expect(200);
+				entry = (audit.body.events as AuditEvent[]).find(matches);
+				expect(entry, 'audit entry').to.exist;
+			},
+			{ retries: 10, delayMs: 200 },
+		);
+		return entry;
 	};
 
 	before((done) => getCredentials(done));
@@ -98,16 +98,14 @@ import { IS_EE, URL_MONGODB } from '../../e2e/config/constants';
 
 		await setSetting('ABAC_Enabled', true);
 
-		await request
-			.post(`${v1}/abac/attributes`)
-			.set(credentials)
-			.send({ key: dept, values: ['eng', 'sales', 'ops'] })
-			.expect(200);
-		await request
-			.post(`${v1}/abac/attributes`)
-			.set(credentials)
-			.send({ key: clearance, values: ['secret'] })
-			.expect(200);
+		for (const [key, values] of [
+			[dept, ['eng', 'sales', 'ops']],
+			[clearance, ['secret']],
+		] as const) {
+			await request.post(`${v1}/abac/attributes`).set(credentials).send({ key, values }).expect(200);
+			const res = await request.get(`${v1}/abac/attributes`).query({ key }).set(credentials).expect(200);
+			createdAttributeIds.push(res.body.attributes.find((attribute: { key: string }) => attribute.key === key)._id);
+		}
 
 		adminId = credentials['X-User-Id'];
 		await addAbacAttributesToUserDirectly(connection, adminId, [
@@ -138,12 +136,8 @@ import { IS_EE, URL_MONGODB } from '../../e2e/config/constants';
 		await deleteUser(creator);
 		await deleteUser(unattributedUser);
 
-		for (const key of [dept, clearance]) {
-			const res = await request.get(`${v1}/abac/attributes`).query({ key }).set(credentials).expect(200);
-			const attribute = (res.body.attributes as { _id: string; key: string }[]).find((a) => a.key === key);
-			if (attribute) {
-				await request.delete(`${v1}/abac/attributes/${attribute._id}`).set(credentials).expect(200);
-			}
+		for (const attributeId of createdAttributeIds) {
+			await request.delete(`${v1}/abac/attributes/${attributeId}`).set(credentials).expect(200);
 		}
 
 		for (const [id, roles] of savedPermissions) {
@@ -157,7 +151,7 @@ import { IS_EE, URL_MONGODB } from '../../e2e/config/constants';
 	});
 
 	describe('a room created with attributes', () => {
-		beforeEach(async () => {
+		before(async () => {
 			await updatePermission('create-abac-managed-room', ['admin', 'user']);
 			await setSetting('ABAC_Restrict_To_Owned_Attributes', true);
 		});
@@ -173,11 +167,15 @@ import { IS_EE, URL_MONGODB } from '../../e2e/config/constants';
 		it('is refused to a creator without the permission', async () => {
 			await updatePermission('create-abac-managed-room', ['admin']);
 
-			await createGroup({ abacAttributes: { [dept]: ['eng'] } }, creatorCredentials)
-				.expect(400)
-				.expect((res) => {
-					expect(res.body.error).to.include('error-abac-attributes-not-allowed');
-				});
+			try {
+				await createGroup({ abacAttributes: { [dept]: ['eng'] } }, creatorCredentials)
+					.expect(400)
+					.expect((res) => {
+						expect(res.body.error).to.include('error-abac-attributes-not-allowed');
+					});
+			} finally {
+				await updatePermission('create-abac-managed-room', ['admin', 'user']);
+			}
 		});
 
 		it('names the attribute a creator does not hold', async () => {
@@ -189,24 +187,30 @@ import { IS_EE, URL_MONGODB } from '../../e2e/config/constants';
 				});
 		});
 
-		it('admits values the creator does not hold once restricting to owned attributes is off, for a room the creator leaves', async () => {
-			await setSetting('ABAC_Restrict_To_Owned_Attributes', false);
+		describe('once restricting to owned attributes is off', () => {
+			before(async () => {
+				await setSetting('ABAC_Restrict_To_Owned_Attributes', false);
+			});
 
-			const res = await createGroup({ abacAttributes: { [dept]: ['sales'] }, excludeSelf: true }, creatorCredentials).expect(200);
-			track(res.body.group._id);
+			after(async () => {
+				await setSetting('ABAC_Restrict_To_Owned_Attributes', true);
+			});
 
-			expect(res.body.group.abacAttributes).to.deep.equal([{ key: dept, values: ['sales'] }]);
-			expect(await memberUsernames(res.body.group._id)).to.not.include(creator.username);
-		});
+			it('admits values the creator does not hold, for a room the creator leaves', async () => {
+				const res = await createGroup({ abacAttributes: { [dept]: ['sales'] }, excludeSelf: true }, creatorCredentials).expect(200);
+				track(res.body.group._id);
 
-		it('is refused to a creator who would not be admitted to the room', async () => {
-			await setSetting('ABAC_Restrict_To_Owned_Attributes', false);
+				expect(res.body.group.abacAttributes).to.deep.equal([{ key: dept, values: ['sales'] }]);
+				expect(await creatorSubscription(res.body.group._id)).to.be.null;
+			});
 
-			await createGroup({ abacAttributes: { [dept]: ['sales'] } }, creatorCredentials)
-				.expect(400)
-				.expect((res) => {
-					expect(res.body).to.have.property('errorType', 'error-abac-creator-not-admitted');
-				});
+			it('is refused to a creator who would not be admitted to the room', async () => {
+				await createGroup({ abacAttributes: { [dept]: ['sales'] } }, creatorCredentials)
+					.expect(400)
+					.expect((res) => {
+						expect(res.body).to.have.property('errorType', 'error-abac-creator-not-admitted');
+					});
+			});
 		});
 
 		it('leaves administrator writes through ABAC > Rooms unaffected by restricting to owned attributes', async () => {
@@ -266,7 +270,8 @@ import { IS_EE, URL_MONGODB } from '../../e2e/config/constants';
 
 			expect(res.body.skippedMembers).to.deep.equal([unattributedUser.username]);
 
-			const usernames = await memberUsernames(roomId);
+			const members = await request.get(api('groups.members')).set(credentials).query({ roomId }).expect(200);
+			const usernames = (members.body.members as IUser[]).map(({ username }) => username);
 			expect(usernames).to.include(creator.username);
 			expect(usernames).to.not.include(unattributedUser.username);
 		});
@@ -283,7 +288,6 @@ import { IS_EE, URL_MONGODB } from '../../e2e/config/constants';
 					e.data.some(({ key, value }) => key === 'change' && value === 'created'),
 			);
 
-			expect(entry, 'creation audit entry').to.exist;
 			expect(entry?.data.find(({ key }) => key === 'current')?.value).to.deep.equal([{ key: dept, values: ['eng'] }]);
 		});
 
@@ -301,7 +305,7 @@ import { IS_EE, URL_MONGODB } from '../../e2e/config/constants';
 				track(res.body.group._id);
 
 				expect(res.body.group.abacAttributes).to.deep.equal([{ key: dept, values: ['ops'] }]);
-				expect(await memberUsernames(res.body.group._id)).to.not.include(creator.username);
+				expect(await creatorSubscription(res.body.group._id)).to.be.null;
 			});
 
 			it('is still refused when the creator would not be admitted to the room', async () => {
@@ -407,65 +411,6 @@ import { IS_EE, URL_MONGODB } from '../../e2e/config/constants';
 		});
 	});
 
-	describe('POST /abac/attributes.checkAssignability', () => {
-		const assignability = (attributes: Record<string, string[]>, as: Credentials = creatorCredentials, excludeSelf?: boolean) =>
-			request.post(`${v1}/abac/attributes.checkAssignability`).set(as).send({ attributes, excludeSelf });
-
-		before(async () => {
-			await updatePermission('create-abac-managed-room', ['admin', 'user']);
-			await setSetting('ABAC_Restrict_To_Owned_Attributes', true);
-		});
-
-		it('requires create-abac-managed-room', async () => {
-			await updatePermission('create-abac-managed-room', ['admin']);
-
-			try {
-				await assignability({ [dept]: ['eng'] }).expect(403);
-			} finally {
-				await updatePermission('create-abac-managed-room', ['admin', 'user']);
-			}
-		});
-
-		it('rejects an attribute with no values', async () => {
-			await assignability({ [dept]: [] }).expect(400);
-		});
-
-		it('admits what the creator holds', async () => {
-			await assignability({ [dept]: ['eng'] }).expect(200);
-		});
-
-		it('refuses what the creator does not hold with the same answer as creation', async () => {
-			const [answer, creation] = await Promise.all([
-				assignability({ [dept]: ['sales'] }).expect(400),
-				createGroup({ abacAttributes: { [dept]: ['sales'] } }, creatorCredentials).expect(400),
-			]);
-
-			expect(answer.body.errorType).to.equal('error-abac-attribute-not-assignable');
-			expect(answer.body.errorType).to.equal(creation.body.errorType);
-			expect(answer.body.details).to.deep.equal(creation.body.details);
-			expect(answer.body.details.attributes).to.deep.equal([{ key: dept, values: ['sales'] }]);
-		});
-
-		it('answers as creation does for a creator who would not be admitted, whether or not they join', async () => {
-			await setSetting('ABAC_Restrict_To_Owned_Attributes', false);
-
-			try {
-				const [joining, creation] = await Promise.all([
-					assignability({ [dept]: ['sales'] }).expect(400),
-					createGroup({ abacAttributes: { [dept]: ['sales'] } }, creatorCredentials).expect(400),
-				]);
-				expect(joining.body.errorType).to.equal('error-abac-creator-not-admitted');
-				expect(joining.body.errorType).to.equal(creation.body.errorType);
-
-				await assignability({ [dept]: ['sales'] }, creatorCredentials, true).expect(200);
-				const leaving = await createGroup({ abacAttributes: { [dept]: ['sales'] }, excludeSelf: true }, creatorCredentials).expect(200);
-				track(leaving.body.group._id);
-			} finally {
-				await setSetting('ABAC_Restrict_To_Owned_Attributes', true);
-			}
-		});
-	});
-
 	describe('GET /abac/attributes.listAssignable', () => {
 		const assignable = (as: Credentials = creatorCredentials) => request.get(`${v1}/abac/attributes.listAssignable`).set(as);
 
@@ -496,11 +441,8 @@ import { IS_EE, URL_MONGODB } from '../../e2e/config/constants';
 			const res = await assignable().expect(200);
 			const [offered] = ownKeys(res.body.attributes);
 
-			await request
-				.post(`${v1}/abac/attributes.checkAssignability`)
-				.set(creatorCredentials)
-				.send({ attributes: { [offered.key]: offered.values } })
-				.expect(200);
+			const created = await createGroup({ abacAttributes: { [offered.key]: offered.values } }, creatorCredentials).expect(200);
+			track(created.body.group._id);
 		});
 
 		it('offers every defined value once restricting to owned attributes is off', async () => {

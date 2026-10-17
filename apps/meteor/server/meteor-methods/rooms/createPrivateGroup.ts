@@ -52,7 +52,7 @@ export const createPrivateGroupMethod = async (
 		throw new Meteor.Error('error-not-allowed', 'Not allowed', { method: 'createPrivateGroup' });
 	}
 
-	const { abacAttributes: _unvalidated, ...roomExtraData } = extraData;
+	const { abacAttributes: _untrustedAbacAttributes, ...roomExtraData } = extraData;
 
 	return createRoom('p', name, user, members, excludeSelf, readOnly, {
 		...(customFields && Object.keys(customFields).length && { customFields }),

@@ -275,12 +275,18 @@ import { IS_EE, URL_MONGODB } from '../../e2e/config/constants';
 	});
 
 	describe('blocked creation paths', () => {
+		let discussionParentId: IRoom['_id'];
+
 		before(async () => {
+			// A private parent without attributes cannot itself be created under enforcement.
+			const parent = await createRoom({ type: 'p', name: `abac-parent-${Date.now()}` });
+			discussionParentId = parent.body.group._id;
 			await setEnforcement(true);
 		});
 
 		after(async () => {
 			await setEnforcement(false);
+			await deleteRoom({ type: 'p', roomId: discussionParentId });
 		});
 
 		it('blocks public channel creation', async () => {
@@ -296,30 +302,14 @@ import { IS_EE, URL_MONGODB } from '../../e2e/config/constants';
 		});
 
 		it('blocks discussion creation', async () => {
-			// A private parent without attributes cannot itself be created under enforcement.
-			await setEnforcement(false);
-			let parentId: string | undefined;
-
-			try {
-				const parent = await createRoom({ type: 'p', name: `abac-parent-${Date.now()}` });
-				parentId = parent.body.group._id;
-				await setEnforcement(true);
-
-				await request
-					.post(api('rooms.createDiscussion'))
-					.set(credentials)
-					.send({ prid: parentId, t_name: `abac-discussion-${Date.now()}` })
-					.expect(400)
-					.expect((res) => {
-						expect(res.body).to.have.property('success', false);
-					});
-			} finally {
-				await setEnforcement(false);
-				if (parentId) {
-					await deleteRoom({ type: 'p', roomId: parentId });
-				}
-				await setEnforcement(true);
-			}
+			await request
+				.post(api('rooms.createDiscussion'))
+				.set(credentials)
+				.send({ prid: discussionParentId, t_name: `abac-discussion-${Date.now()}` })
+				.expect(400)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', false);
+				});
 		});
 
 		it('blocks a private channel that would be born locked', async () => {

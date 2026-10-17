@@ -18,15 +18,6 @@ import type { Evaluation, IResourceDecision } from './pdp/types';
 export const MAX_ABAC_ATTRIBUTE_KEYS = 10;
 export const MAX_ABAC_ATTRIBUTE_VALUES = 10;
 
-const isAttributeDefinition = (value: unknown): value is IAbacAttributeDefinition =>
-	typeof value === 'object' &&
-	value !== null &&
-	'key' in value &&
-	typeof value.key === 'string' &&
-	'values' in value &&
-	Array.isArray(value.values) &&
-	value.values.every((v): v is string => typeof v === 'string');
-
 export function toCreationDenial(
 	err: unknown,
 	reasonForAttributeError: 'invalid' | 'not-entitled' | 'creator-not-admitted',
@@ -38,15 +29,13 @@ export function toCreationDenial(
 		return { allowed: false, reason: 'inconclusive', code: err.code };
 	}
 	if (err instanceof AbacError) {
-		const details = typeof err.details === 'object' && err.details !== null ? err.details : {};
-		const key = 'key' in details ? details.key : undefined;
-		const attributes = 'attributes' in details ? details.attributes : undefined;
+		const { key, attributes } = (err.details ?? {}) as { key?: string; attributes?: IAbacAttributeDefinition[] };
 		return {
 			allowed: false,
 			reason: reasonForAttributeError,
 			code: err.code,
-			...(typeof key === 'string' && { key }),
-			...(Array.isArray(attributes) && attributes.every(isAttributeDefinition) && { attributes }),
+			...(key && { key }),
+			...(attributes && { attributes }),
 		};
 	}
 	throw err;
@@ -62,42 +51,21 @@ export function verdictOf({ compliant, nonCompliant }: Evaluation, id: string): 
 	return 'inconclusive';
 }
 
-export function toAttributeMap(attributes: IAbacAttributeDefinition[]): Record<string, string[]> {
-	const map = new Map<string, string[]>();
-	for (const { key, values } of attributes) {
-		if (typeof key !== 'string' || !Array.isArray(values) || map.has(key)) {
-			throw new AbacInvalidAttributeValuesError({ key });
-		}
-		map.set(key, values);
-	}
-	return Object.fromEntries(map);
-}
+const filterValuesByOwnership = (
+	attributes: IAbacAttributeDefinition[],
+	owned: Map<string, Set<string>>,
+	keepOwned: boolean,
+): IAbacAttributeDefinition[] =>
+	attributes.flatMap(({ key, values }) => {
+		const kept = values.filter((value) => (owned.get(key)?.has(value) ?? false) === keepOwned);
+		return kept.length ? [{ key, values: kept }] : [];
+	});
 
-export function findUnownedValues(attributes: IAbacAttributeDefinition[], owned: Map<string, Set<string>>): IAbacAttributeDefinition[] {
-	const unowned: IAbacAttributeDefinition[] = [];
-	for (const { key, values } of attributes) {
-		const allowed = owned.get(key);
-		const refused = allowed ? values.filter((value) => !allowed.has(value)) : values;
-		if (refused.length) {
-			unowned.push({ key, values: refused });
-		}
-	}
+export const findUnownedValues = (attributes: IAbacAttributeDefinition[], owned: Map<string, Set<string>>) =>
+	filterValuesByOwnership(attributes, owned, false);
 
-	return unowned;
-}
-
-export function findOwnedValues(attributes: IAbacAttributeDefinition[], owned: Map<string, Set<string>>): IAbacAttributeDefinition[] {
-	const kept: IAbacAttributeDefinition[] = [];
-	for (const { key, values } of attributes) {
-		const allowed = owned.get(key);
-		const held = allowed ? values.filter((value) => allowed.has(value)) : [];
-		if (held.length) {
-			kept.push({ key, values: held });
-		}
-	}
-
-	return kept;
-}
+export const findOwnedValues = (attributes: IAbacAttributeDefinition[], owned: Map<string, Set<string>>) =>
+	filterValuesByOwnership(attributes, owned, true);
 
 export const sortByKey = (attributes: IAbacAttributeDefinition[]): IAbacAttributeDefinition[] =>
 	[...attributes].sort((a, b) => a.key.localeCompare(b.key));
