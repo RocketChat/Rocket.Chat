@@ -71,6 +71,16 @@ describe('AppRoomBridge.create', () => {
 		{ shape: 'a string', abacAttributes: 'clearance' },
 		{ shape: 'an object', abacAttributes: {} },
 		{ shape: 'a list holding null', abacAttributes: [null] },
+		{ shape: 'an attribute without values', abacAttributes: [{ key: 'clearance' }] },
+		{ shape: 'an attribute whose values are a string', abacAttributes: [{ key: 'clearance', values: 'secret' }] },
+		{ shape: 'an attribute whose key is a list', abacAttributes: [{ key: ['clearance'], values: ['secret'] }] },
+		{
+			shape: 'a list repeating a key',
+			abacAttributes: [
+				{ key: 'clearance', values: ['secret'] },
+				{ key: 'clearance', values: ['topsecret'] },
+			],
+		},
 	].forEach(({ shape, abacAttributes: malformed }) => {
 		it(`refuses ABAC attributes given as ${shape}`, async () => {
 			await expect(bridge.create({ ...buildRoom(RoomType.PRIVATE_GROUP), abacAttributes: malformed }, [], 'app-id')).to.be.rejectedWith(
