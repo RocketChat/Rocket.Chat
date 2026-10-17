@@ -1436,8 +1436,8 @@ describe('AbacService (unit)', () => {
 
 	describe('listAssignableAttributes', () => {
 		const definitions = [
-			{ key: 'region', values: ['emea', 'apac'] },
-			{ key: 'dept', values: ['eng', 'sales'] },
+			{ _id: 'a2', key: 'region', values: ['emea', 'apac'] },
+			{ _id: 'a1', key: 'dept', values: ['eng', 'sales'] },
 		];
 
 		const holding = (held: Record<string, string[]>) =>
@@ -1473,7 +1473,6 @@ describe('AbacService (unit)', () => {
 					{ key: 'dept', values: ['eng', 'sales'] },
 					{ key: 'region', values: ['emea', 'apac'] },
 				]);
-				expect(mockAbacFindAll).toHaveBeenCalledWith({ projection: { _id: 0, key: 1, values: 1 } });
 				expect(mockUsersFindOneById).not.toHaveBeenCalled();
 			});
 

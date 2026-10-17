@@ -672,7 +672,10 @@ export class AbacService extends ServiceClass implements IAbacService {
 			return sortByKey(Array.from(await store.entitlementsOf(actor), ([key, values]) => ({ key, values: [...values] })));
 		}
 
-		const definitions = await AbacAttributes.findAll({ projection: { _id: 0, key: 1, values: 1 } }).toArray();
+		const definitions = (await AbacAttributes.findAll({ projection: { key: 1, values: 1 } }).toArray()).map(({ key, values }) => ({
+			key,
+			values,
+		}));
 		if (await Authorization.hasPermission(actor._id, 'bypass-abac-store-validation')) {
 			return sortByKey(definitions);
 		}
