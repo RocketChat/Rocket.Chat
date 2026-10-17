@@ -4273,7 +4273,7 @@ import { IS_EE, URL_MONGODB } from '../../e2e/config/constants';
 					await seedGetEntitlements({ [fqn('clearance', 'secret')]: {} });
 
 					const res = await preview({ clearance: ['topsecret'] }).expect(400);
-					expect(res.body).to.have.property('errorType', 'error-abac-attribute-not-assignable');
+					expect(res.body).to.include({ error: 'error-abac-attribute-not-assignable', errorType: 'error-abac-attribute-not-assignable' });
 					expect(res.body.details.attributes).to.deep.equal([{ key: 'clearance', values: ['topsecret'] }]);
 				});
 
@@ -4284,7 +4284,7 @@ import { IS_EE, URL_MONGODB } from '../../e2e/config/constants';
 					await seedGetDecisionBulk([{ resourceDecisions: [{ decision: 'DECISION_UNSPECIFIED', ephemeralResourceId: 'room-creation' }] }]);
 
 					const res = await preview().expect(400);
-					expect(res.body).to.have.property('errorType', 'error-abac-creator-not-admitted');
+					expect(res.body).to.include({ error: 'error-abac-creator-not-admitted', errorType: 'error-abac-creator-not-admitted' });
 				});
 
 				it('reports an unanswered decision as inconclusive, not compliant', async () => {
