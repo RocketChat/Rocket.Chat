@@ -14,6 +14,7 @@ import type {
 	IMessage as ICoreMessage,
 } from '@rocket.chat/core-typings';
 import { Subscriptions, Users, Rooms, Messages } from '@rocket.chat/models';
+import { ajv } from '@rocket.chat/rest-typings';
 import type { FindOptions, Sort } from 'mongodb';
 
 import { addUserToRoom } from '../../../lib/rooms/addUserToRoom';
@@ -25,8 +26,20 @@ import { createChannelMethod } from '../../../meteor-methods/rooms/createChannel
 import { createPrivateGroupMethod } from '../../../meteor-methods/rooms/createPrivateGroup';
 import { settings } from '../../../settings';
 
-const isAttributeDefinitionList = (value: unknown): value is IAbacAttributeDefinition[] =>
-	Array.isArray(value) && value.every((attribute) => typeof attribute === 'object' && attribute !== null);
+const isAttributeDefinitionList = ajv.compile<IAbacAttributeDefinition[]>({
+	type: 'array',
+	items: {
+		type: 'object',
+		properties: {
+			key: { type: 'string' },
+			values: { type: 'array', items: { type: 'string' } },
+		},
+		required: ['key', 'values'],
+	},
+});
+
+const hasUniqueKeys = (attributes: IAbacAttributeDefinition[]): boolean =>
+	new Set(attributes.map(({ key }) => key)).size === attributes.length;
 
 const rawRoomProjection: FindOptions<ICoreRoom>['projection'] = {
 	_id: 1,
@@ -76,7 +89,7 @@ export class AppRoomBridge extends RoomBridge {
 		const rcRoom = await this.orch.getConverters()?.get('rooms').convertAppRoom(room);
 		const abacAttributes = suppliesAbacAttributes(room) ? room.abacAttributes : undefined;
 
-		if (abacAttributes && !isAttributeDefinitionList(abacAttributes)) {
+		if (abacAttributes && (!isAttributeDefinitionList(abacAttributes) || !hasUniqueKeys(abacAttributes))) {
 			throw new AbacContractError(AbacErrorCode.InvalidAttributes, { cause: AbacErrorCode.InvalidAttributeValues });
 		}
 
