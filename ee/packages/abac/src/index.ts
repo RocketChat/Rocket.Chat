@@ -1,9 +1,17 @@
-import { api, Authorization, License, Room, ServiceClass, Settings } from '@rocket.chat/core-services';
-import type { AbacActor, AbacCreationAttributesResult, AbacMembershipPreviewResult, IAbacService } from '@rocket.chat/core-services';
+import { api, Authorization, License, Message, Room, ServiceClass, Settings } from '@rocket.chat/core-services';
+import type {
+	AbacActor,
+	AbacCreationAttributesResult,
+	AbacMembershipPreviewResult,
+	AbacRoomAttributesGrant,
+	AbacRoomMembershipPreviewPage,
+	IAbacService,
+} from '@rocket.chat/core-services';
 import { AbacAccessOperation, AbacObjectType, isAbacPdpType, isAbacAttributeStoreType } from '@rocket.chat/core-typings';
 import type {
 	IAbacAttribute,
 	IAbacAttributeDefinition,
+	IAbacRoomMembershipPreview,
 	IRoom,
 	IRoomAbacRedaction,
 	AtLeast,
@@ -33,6 +41,8 @@ import {
 	OnlyCompliantCanBeAddedToRoomError,
 	PdpUnavailableError,
 	PdpHealthCheckError,
+	AbacRequiredAttributesRemovedError,
+	AbacRoomAttributesClearedError,
 } from './errors';
 import {
 	getAbacRoom,
@@ -43,7 +53,14 @@ import {
 	ensureAttributeDefinitionsExist,
 	sortByKey,
 	toCreationDenial,
+	toAttributeDefinitions,
+	listAttributeDefinitions,
 	verdictOf,
+	previewRetainingEveryone,
+	previewRoomMembersInSteps,
+	withRoomRoles,
+	PREVIEW_READ_OPTIONS,
+	type PreviewSubject,
 	MAX_ABAC_ATTRIBUTE_KEYS,
 	stripTrailingSlashes,
 } from './helper';
@@ -55,6 +72,8 @@ import type { AttributeStoreDescriptor, AttributeStoreSelectionContext, IAttribu
 
 // Limit concurrent user removals to avoid overloading the server with too many operations at once
 const limit = pLimit(20);
+
+const MASS_REMOVAL_SUMMARY_THRESHOLD = 50;
 
 type CreationDenial = Extract<AbacCreationAttributesResult, { allowed: false }>;
 
@@ -79,6 +98,10 @@ export class AbacService extends ServiceClass implements IAbacService {
 	private pdpTypeSetting?: AbacPdpType;
 
 	private attributeStoreSetting?: AbacAttributeStoreType;
+
+	private enforceAllRooms = false;
+
+	private requiredAttributeKeys = new Set<string>();
 
 	private readonly attributeStores: Record<AbacAttributeStoreType, AttributeStoreDescriptor> = {
 		local: { store: new LocalAttributeStore(), isEligible: () => true },
@@ -142,6 +165,14 @@ export class AbacService extends ServiceClass implements IAbacService {
 			if (typeof value === 'boolean' && this.pdp instanceof LocalPDP) {
 				this.pdp.setRestrictToOwnedAttributes(value);
 			}
+		});
+
+		this.onSettingChanged('ABAC_Enforce_All_Rooms', async ({ setting }): Promise<void> => {
+			this.enforceAllRooms = setting.value as boolean;
+		});
+
+		this.onSettingChanged('ABAC_Required_Attributes', async ({ setting }): Promise<void> => {
+			this.requiredAttributeKeys = new Set(setting.value as string[]);
 		});
 
 		this.onSettingChanged('Abac_Cache_Decision_Time_Seconds', async ({ setting }): Promise<void> => {
@@ -287,16 +318,20 @@ export class AbacService extends ServiceClass implements IAbacService {
 	override async started(): Promise<void> {
 		this.decisionCacheTimeout = await Settings.get<number>('Abac_Cache_Decision_Time_Seconds');
 
-		const [abacEnabled, pdpType, attributeStore, restrictToOwnedAttributes] = await Promise.all([
+		const [abacEnabled, pdpType, attributeStore, restrictToOwnedAttributes, enforceAllRooms, requiredAttributes] = await Promise.all([
 			Settings.get<boolean>('ABAC_Enabled'),
 			Settings.get<string>('ABAC_PDP_Type'),
 			Settings.get<string>('ABAC_Attribute_Store'),
 			Settings.get<boolean>('ABAC_Restrict_To_Owned_Attributes'),
+			Settings.get<boolean>('ABAC_Enforce_All_Rooms'),
+			Settings.get<string[]>('ABAC_Required_Attributes'),
 		]);
 
 		this.abacEnabled = abacEnabled;
 		this.pdpTypeSetting = isAbacPdpType(pdpType) ? pdpType : undefined;
 		this.attributeStoreSetting = isAbacAttributeStoreType(attributeStore) ? attributeStore : undefined;
+		this.enforceAllRooms = enforceAllRooms;
+		this.requiredAttributeKeys = new Set(requiredAttributes);
 
 		if (pdpType !== 'virtru') {
 			this.setPdpStrategy('local', restrictToOwnedAttributes);
@@ -669,13 +704,10 @@ export class AbacService extends ServiceClass implements IAbacService {
 	async listAssignableAttributes(actor: AbacActor): Promise<IAbacAttributeDefinition[]> {
 		const store = await this.resolveAttributeStore();
 		if (store !== this.attributeStores.local.store) {
-			return sortByKey(Array.from(await store.entitlementsOf(actor), ([key, values]) => ({ key, values: [...values] })));
+			return sortByKey(toAttributeDefinitions(await store.entitlementsOf(actor)));
 		}
 
-		const definitions = (await AbacAttributes.findAll({ projection: { key: 1, values: 1 } }).toArray()).map(({ key, values }) => ({
-			key,
-			values,
-		}));
+		const definitions = await listAttributeDefinitions();
 		if (await Authorization.hasPermission(actor._id, 'bypass-abac-store-validation')) {
 			return sortByKey(definitions);
 		}
@@ -754,23 +786,162 @@ export class AbacService extends ServiceClass implements IAbacService {
 		};
 	}
 
-	async setRoomAbacAttributes(rid: string, attributes: Record<string, string[]>, actor: AbacActor): Promise<void> {
+	private async limitsToAssignableValues(grant: AbacRoomAttributesGrant, actor: AbacActor): Promise<boolean> {
+		return grant === 'edit-room-abac-attributes' && !(await Authorization.hasPermission(actor._id, 'bypass-abac-store-validation'));
+	}
+
+	async listRoomAssignableAttributes(rid: string, actor: AbacActor, grant: AbacRoomAttributesGrant): Promise<IAbacAttributeDefinition[]> {
+		const store = await this.resolveAttributeStore();
+		if (store !== this.attributeStores.local.store) {
+			return sortByKey(toAttributeDefinitions(await store.entitlementsOf(actor)));
+		}
+
+		const definitions = await listAttributeDefinitions();
+		if (!(await this.limitsToAssignableValues(grant, actor))) {
+			return sortByKey(definitions);
+		}
+
+		if (!this.pdp) {
+			throw new PdpUnavailableError();
+		}
+
+		const room = await getAbacRoom(rid);
+		return sortByKey((await this.pdp.filterAssignableAttributes?.(definitions, actor, room.abacAttributes)) ?? definitions);
+	}
+
+	private async assertRoomAttributesAssignable(
+		store: IAttributeStore,
+		room: IRoom,
+		attributes: Record<string, string[]>,
+		actor: AbacActor,
+		grant: AbacRoomAttributesGrant,
+	): Promise<IAbacAttributeDefinition[]> {
+		await this.enforceCanModifyRoom(store, room, actor);
+
+		const normalized = validateAndNormalizeAttributes(attributes);
+
+		if (grant === 'edit-room-abac-attributes') {
+			await this.assertKeepsRequiredAttributes(room, normalized);
+		}
+
+		await this.enforceStoreValidation(store, normalized, actor);
+
+		if (await this.limitsToAssignableValues(grant, actor)) {
+			if (!this.pdp) {
+				throw new PdpUnavailableError();
+			}
+			const unassignable = (await this.pdp.findUnassignableValues?.(normalized, actor, room.abacAttributes)) ?? [];
+			if (unassignable.length) {
+				throw new AbacInvalidAttributeValuesError({ attributes: unassignable });
+			}
+		}
+
+		return normalized;
+	}
+
+	private async assertKeepsRequiredAttributes(room: IRoom, next: IAbacAttributeDefinition[]): Promise<void> {
+		if (!this.enforceAllRooms) {
+			return;
+		}
+
+		if (!next.length) {
+			if (room.abacAttributes?.length) {
+				throw new AbacRoomAttributesClearedError();
+			}
+			return;
+		}
+
+		const kept = new Set(next.map(({ key }) => key));
+
+		const removed = (room.abacAttributes ?? [])
+			.filter(({ key, values }) => this.requiredAttributeKeys.has(key) && values.length && !kept.has(key))
+			.map(({ key }) => key);
+
+		if (removed.length) {
+			throw new AbacRequiredAttributesRemovedError({ keys: removed });
+		}
+	}
+
+	private changeNeedsEvaluation(previous: IAbacAttributeDefinition[], next: IAbacAttributeDefinition[]): boolean {
+		return this.pdp?.needsEvaluation(diffAttributeSets(previous, next)) ?? false;
+	}
+
+	async previewRoomMembers(
+		rid: string,
+		attributes: Record<string, string[]>,
+		actor: AbacActor,
+		page: AbacRoomMembershipPreviewPage,
+		grant: AbacRoomAttributesGrant,
+	): Promise<IAbacRoomMembershipPreview> {
+		await this.ensurePdpAvailable();
+		const room = await getAbacRoom(rid);
+		const store = await this.resolveAttributeStore();
+		const normalized = await this.assertRoomAttributesAssignable(store, room, attributes, actor, grant);
+
+		const evaluatedAgainst = this.changeNeedsEvaluation(room.abacAttributes || [], normalized) ? normalized : [];
+		const firstPage = !page.after && !page.filter;
+
+		let preview: IAbacRoomMembershipPreview;
+		try {
+			const { pdp } = this;
+			const evaluated = evaluatedAgainst.length
+				? pdp &&
+					(await previewRoomMembersInSteps(
+						rid,
+						page,
+						(subjects) => pdp.evaluateSubjectsAgainstAttributes(subjects, evaluatedAgainst, room),
+						pdp.previewStep,
+					))
+				: await previewRetainingEveryone(rid, page);
+			if (!evaluated) {
+				throw new PdpUnavailableError();
+			}
+
+			const editor = firstPage && (await Users.findOneByIdAndRoomId<PreviewSubject>(actor._id, rid, PREVIEW_READ_OPTIONS));
+			const editorEvaluation = editor && (await this.pdp?.evaluateSubjectsAgainstAttributes([editor], evaluatedAgainst, room));
+			if (editor && !editorEvaluation) {
+				throw new PdpUnavailableError();
+			}
+
+			preview = {
+				...evaluated,
+				count: evaluated.members.length,
+				...(editor && editorEvaluation && { editor: verdictOf(editorEvaluation, editor._id) }),
+			};
+		} catch (err) {
+			logger.error({ msg: 'ABAC room membership preview failed', rid, err });
+			throw new PdpUnavailableError();
+		}
+
+		return { ...preview, members: await withRoomRoles(rid, preview.members) };
+	}
+
+	async setRoomAbacAttributes(
+		rid: string,
+		attributes: Record<string, string[]>,
+		actor: AbacActor,
+		grant: AbacRoomAttributesGrant = 'manage-abac-admin-rooms',
+	): Promise<void> {
 		await this.ensurePdpAvailable();
 		const room = await getAbacRoom(rid);
 		const store = await this.resolveAttributeStore();
 
-		if (!Object.keys(attributes).length && room.abacAttributes?.length) {
+		if (!Object.keys(attributes).length) {
+			if (!room.abacAttributes?.length) {
+				return;
+			}
+
+			if (grant === 'edit-room-abac-attributes') {
+				await this.assertRoomAttributesAssignable(store, room, attributes, actor, grant);
+			}
+
 			await Rooms.unsetAbacAttributesById(rid);
 			void Audit.objectAttributesRemoved({ _id: room._id, name: room.name }, room.abacAttributes, actor);
 			this.broadcastRoomUpdate({ ...room, abacAttributes: undefined });
 			return;
 		}
 
-		await this.enforceCanModifyRoom(store, room, actor);
-
-		const normalized = validateAndNormalizeAttributes(attributes);
-
-		await this.enforceStoreValidation(store, normalized, actor);
+		const normalized = await this.assertRoomAttributesAssignable(store, room, attributes, actor, grant);
 
 		const updated = await Rooms.setAbacAttributesById(rid, normalized);
 		void Audit.objectAttributeChanged({ _id: room._id, name: room.name }, room.abacAttributes || [], normalized, 'updated', actor);
@@ -780,8 +951,8 @@ export class AbacService extends ServiceClass implements IAbacService {
 		}
 
 		const previous: IAbacAttributeDefinition[] = room.abacAttributes || [];
-		if (diffAttributeSets(previous, normalized).added) {
-			await this.onRoomAttributesChanged(room, updated?.abacAttributes ?? normalized);
+		if (this.changeNeedsEvaluation(previous, normalized)) {
+			await this.onRoomAttributesChanged(room, updated?.abacAttributes ?? normalized, actor);
 		}
 	}
 
@@ -815,7 +986,7 @@ export class AbacService extends ServiceClass implements IAbacService {
 
 			this.broadcastRoomUpdate({ ...room, abacAttributes: next });
 
-			await this.onRoomAttributesChanged(room, next);
+			await this.onRoomAttributesChanged(room, next, actor);
 			return;
 		}
 
@@ -838,9 +1009,9 @@ export class AbacService extends ServiceClass implements IAbacService {
 			this.broadcastRoomUpdate(updated);
 		}
 
-		if (diffAttributeSets([previous[existingIndex]], [{ key, values }]).added) {
+		if (this.changeNeedsEvaluation([previous[existingIndex]], [{ key, values }])) {
 			const next = previous.map((a, i) => (i === existingIndex ? { key, values } : a));
-			await this.onRoomAttributesChanged(room, next);
+			await this.onRoomAttributesChanged(room, next, actor);
 		}
 	}
 
@@ -873,6 +1044,10 @@ export class AbacService extends ServiceClass implements IAbacService {
 		void Audit.objectAttributeRemoved({ _id: room._id, name: room.name }, previous, next, 'key-removed', actor);
 
 		this.broadcastRoomUpdate({ ...room, abacAttributes: next });
+
+		if (this.changeNeedsEvaluation(previous, next)) {
+			await this.onRoomAttributesChanged(room, next, actor);
+		}
 	}
 
 	async addRoomAbacAttributeByKey(rid: string, key: string, values: string[], actor: AbacActor): Promise<void> {
@@ -901,7 +1076,7 @@ export class AbacService extends ServiceClass implements IAbacService {
 
 		this.broadcastRoomUpdate({ ...room, abacAttributes: next });
 
-		await this.onRoomAttributesChanged(room, next);
+		await this.onRoomAttributesChanged(room, next, actor);
 	}
 
 	async replaceRoomAbacAttributeByKey(rid: string, key: string, values: string[], actor: AbacActor): Promise<void> {
@@ -931,8 +1106,8 @@ export class AbacService extends ServiceClass implements IAbacService {
 				this.broadcastRoomUpdate(updated);
 			}
 
-			if (diffAttributeSets([exists], [{ key, values }]).added) {
-				await this.onRoomAttributesChanged(room, updated?.abacAttributes || []);
+			if (this.changeNeedsEvaluation([exists], [{ key, values }])) {
+				await this.onRoomAttributesChanged(room, updated?.abacAttributes || [], actor);
 			}
 
 			return;
@@ -948,7 +1123,7 @@ export class AbacService extends ServiceClass implements IAbacService {
 
 		this.broadcastRoomUpdate({ ...room, abacAttributes: nextAttributes });
 
-		await this.onRoomAttributesChanged(room, updated?.abacAttributes || []);
+		await this.onRoomAttributesChanged(room, updated?.abacAttributes || [], actor);
 	}
 
 	private shouldUseCache(userSub: { abacLastTimeChecked?: Date }): boolean {
@@ -1121,21 +1296,27 @@ export class AbacService extends ServiceClass implements IAbacService {
 		}
 	}
 
-	private async removeUserFromRoom(room: AtLeast<IRoom, '_id'>, user: IUser, reason: AbacAuditReason): Promise<void> {
+	private async removeUserFromRoom(
+		room: AtLeast<IRoom, '_id'>,
+		user: IUser,
+		reason: AbacAuditReason,
+		skipSystemMessage = false,
+	): Promise<boolean> {
 		return Room.removeUserFromRoom(room._id, user, {
 			skipAppPreEvents: true,
 			customSystemMessage: 'abac-removed-user-from-room' as const,
+			skipSystemMessage,
 		})
-			.then(
-				() =>
-					void Audit.actionPerformed(
-						{ _id: user._id, username: user.username },
-						{ _id: room._id, name: room.name },
-						reason,
-						'revoked-object-access',
-						this.pdpType,
-					),
-			)
+			.then(() => {
+				void Audit.actionPerformed(
+					{ _id: user._id, username: user.username },
+					{ _id: room._id, name: room.name },
+					reason,
+					'revoked-object-access',
+					this.pdpType,
+				);
+				return true;
+			})
 			.catch((err) => {
 				logger.error({
 					msg: 'Failed to remove user from ABAC room',
@@ -1144,12 +1325,14 @@ export class AbacService extends ServiceClass implements IAbacService {
 					err,
 					reason,
 				});
+				return false;
 			});
 	}
 
 	protected async onRoomAttributesChanged(
 		room: AtLeast<IRoom, '_id' | 't' | 'teamMain' | 'abacAttributes'>,
 		newAttributes: IAbacAttributeDefinition[],
+		actor?: AbacActor,
 	): Promise<void> {
 		const rid = room._id;
 		if (!newAttributes?.length) {
@@ -1173,7 +1356,20 @@ export class AbacService extends ServiceClass implements IAbacService {
 				return;
 			}
 
-			await Promise.all(nonCompliantUsers.map((user) => limit(() => this.removeUserFromRoom(room, user, 'room-attributes-change'))));
+			const summarizedBy = actor && nonCompliantUsers.length >= MASS_REMOVAL_SUMMARY_THRESHOLD ? actor : undefined;
+
+			const removed = await Promise.all(
+				nonCompliantUsers.map((user) => limit(() => this.removeUserFromRoom(room, user, 'room-attributes-change', !!summarizedBy))),
+			);
+
+			const removedCount = removed.filter(Boolean).length;
+			if (summarizedBy && removedCount) {
+				try {
+					await Message.saveSystemMessage('abac-removed-users-from-room', rid, String(removedCount), summarizedBy);
+				} catch (err) {
+					logger.error({ msg: 'Failed to save ABAC mass-removal summary message', rid, removedCount, err });
+				}
+			}
 		} catch (err) {
 			logger.error({
 				msg: 'Failed to re-evaluate room subscriptions after ABAC attributes changed',

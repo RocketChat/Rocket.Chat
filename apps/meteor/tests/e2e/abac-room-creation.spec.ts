@@ -1,10 +1,18 @@
-import type { IRoom, ISubscription, IUser } from '@rocket.chat/core-typings';
-import { MongoClient } from 'mongodb';
+import type { APIRequestContext } from '@playwright/test';
 
-import { DEFAULT_USER_CREDENTIALS, IS_EE, URL_MONGODB } from './config/constants';
+import { DEFAULT_USER_CREDENTIALS, IS_EE } from './config/constants';
 import { Users } from './fixtures/userStates';
 import { HomeChannel } from './page-objects';
-import { deletePrivateRoomsByName, getSettingValueById, setSettingValueById } from './utils';
+import { deletePrivateRoomsByName, setSettingValueById } from './utils';
+import {
+	addUserAbacAttributes,
+	createAbacAttribute,
+	deleteAbacAttribute,
+	getGroupInfo,
+	getGroupMemberUsernames,
+	removeUserAbacAttributes,
+} from './utils/abac';
+import { preserveSettings } from './utils/preserveSettings';
 import { expect, test } from './utils/test';
 
 test.use({ storageState: Users.user1.state });
@@ -22,19 +30,16 @@ const settingIds = [
 
 test.describe.serial('abac-room-creation', () => {
 	let poHomeChannel: HomeChannel;
-	let connection: MongoClient;
+	let asUser1: APIRequestContext;
 	let attributeId: string;
 	const roomName = `abac-created-${Date.now()}`;
-	const savedSettings = new Map<string, unknown>();
 
 	test.skip(!IS_EE, 'Enterprise Only');
 
-	test.beforeAll(async ({ api }) => {
-		connection = await MongoClient.connect(URL_MONGODB);
+	preserveSettings(settingIds);
 
-		for (const id of settingIds) {
-			savedSettings.set(id, await getSettingValueById(api, id));
-		}
+	test.beforeAll(async ({ api }) => {
+		asUser1 = await api.login({ username: Users.user1.data.username, password: DEFAULT_USER_CREDENTIALS.password });
 
 		await Promise.all([
 			setSettingValueById(api, 'ABAC_Enabled', true),
@@ -44,28 +49,15 @@ test.describe.serial('abac-room-creation', () => {
 			setSettingValueById(api, 'ABAC_Restrict_To_Owned_Attributes', true),
 		]);
 
-		expect((await api.post('/abac/attributes', { key: attrKey, values: ['eng', 'sales'] })).status()).toBe(200);
-		const { attributes } = await (await api.get('/abac/attributes', { key: attrKey })).json();
-		attributeId = attributes.find((attribute: { key: string }) => attribute.key === attrKey)._id;
-
-		await connection
-			.db()
-			.collection<IUser>('users')
-			.updateOne({ username: Users.user1.data.username }, { $push: { abacAttributes: { key: attrKey, values: ['eng'] } } });
+		attributeId = await createAbacAttribute(api, attrKey, ['eng', 'sales']);
+		await addUserAbacAttributes(Users.user1.data.username, [{ key: attrKey, values: ['eng'] }]);
 	});
 
 	test.afterAll(async ({ api }) => {
 		await deletePrivateRoomsByName({ username: Users.user1.data.username, password: DEFAULT_USER_CREDENTIALS.password }, [roomName]);
-		await api.delete(`/abac/attributes/${attributeId}`);
-		await connection
-			.db()
-			.collection<IUser>('users')
-			.updateOne({ username: Users.user1.data.username }, { $pull: { abacAttributes: { key: attrKey } } });
-		await connection.close();
-
-		for (const [id, value] of savedSettings) {
-			await setSettingValueById(api, id, value);
-		}
+		await deleteAbacAttribute(api, attributeId);
+		await removeUserAbacAttributes([Users.user1.data.username], [attrKey]);
+		await asUser1.dispose();
 	});
 
 	test.beforeEach(async ({ page }) => {
@@ -100,16 +92,9 @@ test.describe.serial('abac-room-creation', () => {
 		await modal.create();
 		await expect(page).toHaveURL(`/group/${roomName}`);
 
-		const room = await connection.db().collection<IRoom>('rocketchat_room').findOne({ name: roomName });
-		expect(room?.abacAttributes).toEqual([{ key: attrKey, values: ['eng'] }]);
-
-		const members = await connection
-			.db()
-			.collection<ISubscription>('rocketchat_subscription')
-			.find({ rid: room?._id })
-			.map(({ u }) => u.username)
-			.toArray();
-		expect(members).toEqual([Users.user1.data.username]);
+		const room = await getGroupInfo(asUser1, roomName);
+		expect(room.abacAttributes).toEqual([{ key: attrKey, values: ['eng'] }]);
+		expect(await getGroupMemberUsernames(asUser1, room._id)).toEqual([Users.user1.data.username]);
 	});
 
 	test('under enforcement, turning Federated on releases ABAC managed and shortens the flow', async ({ api }) => {

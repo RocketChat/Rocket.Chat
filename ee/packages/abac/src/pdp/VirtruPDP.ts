@@ -6,6 +6,7 @@ import { isTruthy } from '@rocket.chat/tools';
 import pLimit from 'p-limit';
 
 import type {
+	AttributeSetChange,
 	EvaluableSubject,
 	Evaluation,
 	IPolicyDecisionPoint,
@@ -23,6 +24,10 @@ import { classifyDecisions } from '../helper';
 import { logger } from '../logger';
 
 const pdpLogger = logger.section('VirtruPDP');
+
+const DECISION_BATCH_SIZE = 200;
+const DECISION_CONCURRENCY = 4;
+const PREVIEW_EVALUATION_STEP = DECISION_BATCH_SIZE * DECISION_CONCURRENCY;
 
 export const getDeniedSubjects = <T extends { user: Pick<IUser, '_id'>; room: Pick<IRoom, '_id'> }>(
 	responses: Array<{ resourceDecisions?: IResourceDecision[] } | undefined>,
@@ -42,6 +47,8 @@ export const getDeniedSubjects = <T extends { user: Pick<IUser, '_id'>; room: Pi
 
 export class VirtruPDP implements IPolicyDecisionPoint {
 	private client: VirtruClient;
+
+	readonly previewStep = PREVIEW_EVALUATION_STEP;
 
 	constructor(client: VirtruClient) {
 		this.client = client;
@@ -121,12 +128,11 @@ export class VirtruPDP implements IPolicyDecisionPoint {
 	private async getDecisionBulk(
 		requests: Array<IGetDecisionBulkRequest | null>,
 	): Promise<Array<{ resourceDecisions?: IResourceDecision[] } | undefined>> {
-		const BATCH_SIZE = 200;
-		const limit = pLimit(4);
+		const limit = pLimit(DECISION_CONCURRENCY);
 
 		const batches: Array<(IGetDecisionBulkRequest | null)[]> = [];
-		for (let i = 0; i < requests.length; i += BATCH_SIZE) {
-			batches.push(requests.slice(i, i + BATCH_SIZE));
+		for (let i = 0; i < requests.length; i += DECISION_BATCH_SIZE) {
+			batches.push(requests.slice(i, i + DECISION_BATCH_SIZE));
 		}
 
 		const batchResults = await Promise.all(
@@ -350,48 +356,16 @@ export class VirtruPDP implements IPolicyDecisionPoint {
 			return [];
 		}
 
-		const users = Users.findActiveByRoomIds([room._id]);
+		const users = await Users.findActiveByRoomIds([room._id]).toArray();
 
-		const config = this.client.getConfig();
-		const nonCompliantUsers: IUser[] = [];
-		const decisionRequests: IGetDecisionBulkRequest[] = [];
-		const requestIndex: Array<{ user: IUser; room: typeof room }> = [];
-		const fqns = buildAttributeFqns(config.attributeNamespace, newAttributes);
+		const { compliant } = await this.evaluateSubjectsAgainstAttributes(users, newAttributes, room);
+		const kept = new Set(compliant);
 
-		for await (const user of users) {
-			const entityKey = getUserEntityKey(config.defaultEntityKey, user);
-			if (!entityKey) {
-				pdpLogger.warn({ msg: 'User has no entity key for Virtru PDP evaluation, treating as non-compliant', userId: user._id });
-				nonCompliantUsers.push(user);
-				continue;
-			}
+		return users.filter(({ _id }) => !kept.has(_id));
+	}
 
-			requestIndex.push({ user, room });
-			decisionRequests.push({
-				entityIdentifier: {
-					entityChain: {
-						entities: [buildEntityIdentifier(config.defaultEntityKey, entityKey)],
-					},
-				},
-				action: { name: 'read' },
-				resources: [
-					{
-						ephemeralId: room._id,
-						attributeValues: { fqns },
-					},
-				],
-			});
-		}
-
-		if (!decisionRequests.length) {
-			return nonCompliantUsers;
-		}
-
-		const responses = await this.getDecisionBulk(decisionRequests);
-
-		nonCompliantUsers.push(...getDeniedSubjects(responses, requestIndex).map(({ user }) => user));
-
-		return nonCompliantUsers;
+	needsEvaluation({ added, removed }: AttributeSetChange): boolean {
+		return added || removed;
 	}
 
 	async evaluateUserRooms(
