@@ -299,6 +299,49 @@ describe('ItemActions', () => {
 		await userEvent.tab();
 		expect(screen.getByRole('button', { name: 'Options' })).toHaveFocus();
 	});
+
+	it('is a group named after the row title', () => {
+		render(
+			<Item>
+				<ItemTitle>
+					<ItemLink href='#general'>general</ItemLink>
+				</ItemTitle>
+				<ItemActions>
+					<button type='button'>Options</button>
+				</ItemActions>
+			</Item>,
+		);
+
+		expect(screen.getByRole('group', { name: 'general' })).toContainElement(screen.getByRole('button', { name: 'Options' }));
+	});
+
+	it('keeps a name the caller gives it', () => {
+		render(
+			<Item>
+				<ItemTitle>
+					<ItemLink href='#general'>general</ItemLink>
+				</ItemTitle>
+				<ItemActions aria-label='Room actions'>
+					<button type='button'>Options</button>
+				</ItemActions>
+			</Item>,
+		);
+
+		expect(screen.getByRole('group', { name: 'Room actions' })).toBeInTheDocument();
+	});
+
+	it('is no group inside an option, which presents its children as part of itself', () => {
+		render(
+			<Item role='option' aria-selected={false}>
+				<ItemTitle>general</ItemTitle>
+				<ItemActions>
+					<button type='button'>Options</button>
+				</ItemActions>
+			</Item>,
+		);
+
+		expect(screen.queryByRole('group')).not.toBeInTheDocument();
+	});
 });
 
 describe('ItemDescription', () => {

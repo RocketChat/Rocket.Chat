@@ -1,5 +1,6 @@
 import type { AllHTMLAttributes, ElementType, RefAttributes } from 'react';
 
+import { useItemContext } from './ItemContext';
 import { cx, cxx } from '../../helpers/composeClassNames';
 
 export type ItemActionsProps = {
@@ -15,11 +16,25 @@ export type ItemActionsProps = {
 /**
  * The trailing buttons, icon buttons or menu trigger of an `Item` or `ItemGroupHeader`.
  * Placed as a direct child it spans every row; placed inside an `ItemRow` it only takes space from that row.
+ * In an `Item` with a title, it is a group named after the title, so actions such as "Options" tell which row they act on.
  */
-const ItemActions = ({ is: Tag = 'div', reveal = 'always', className, children, ...props }: ItemActionsProps) => (
-	<Tag {...props} className={cx(cxx('rcx-item__actions')({ 'reveal-hover': reveal === 'hover' }), className)}>
-		{reveal === 'hover' ? <div className='rcx-item__actions-inner'>{children}</div> : children}
-	</Tag>
-);
+const ItemActions = ({ is: Tag = 'div', reveal = 'always', className, children, ...props }: ItemActionsProps) => {
+	const { role, titleIds } = useItemContext();
+	// An option or a menu item already presents its children as part of itself
+	const isWidgetRow = role === 'option' || !!role?.startsWith('menuitem');
+	const hasOwnLabel = !!(props['aria-label'] || props['aria-labelledby']);
+	const isGroup = !isWidgetRow && (hasOwnLabel || titleIds.length > 0);
+
+	return (
+		<Tag
+			role={isGroup ? 'group' : undefined}
+			aria-labelledby={isGroup && !hasOwnLabel ? titleIds.join(' ') : undefined}
+			{...props}
+			className={cx(cxx('rcx-item__actions')({ 'reveal-hover': reveal === 'hover' }), className)}
+		>
+			{reveal === 'hover' ? <div className='rcx-item__actions-inner'>{children}</div> : children}
+		</Tag>
+	);
+};
 
 export default ItemActions;

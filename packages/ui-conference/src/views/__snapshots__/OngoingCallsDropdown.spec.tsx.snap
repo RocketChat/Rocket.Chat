@@ -191,7 +191,9 @@ exports[`OngoingCallsDropdown renders Ringing without crashing 1`] = `
                           </div>
                         </div>
                         <div
+                          aria-labelledby="_r_4_"
                           class="rcx-item__actions"
+                          role="group"
                         >
                           <button
                             aria-label="Silence"

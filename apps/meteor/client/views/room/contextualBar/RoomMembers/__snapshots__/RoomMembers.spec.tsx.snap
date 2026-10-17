@@ -151,6 +151,7 @@ exports[`renders Default without crashing 1`] = `
                   tabindex="-1"
                 >
                   <div
+                    aria-hidden="true"
                     style="position: -webkit-sticky; top: 0px; width: 100%; z-index: 1; margin-top: 0px;"
                   >
                     <div
@@ -749,6 +750,7 @@ exports[`renders WithABACRoom without crashing 1`] = `
                   tabindex="-1"
                 >
                   <div
+                    aria-hidden="true"
                     style="position: -webkit-sticky; top: 0px; width: 100%; z-index: 1; margin-top: 0px;"
                   >
                     <div
@@ -969,6 +971,7 @@ exports[`renders WithInvitedMember without crashing 1`] = `
                   tabindex="-1"
                 >
                   <div
+                    aria-hidden="true"
                     style="position: -webkit-sticky; top: 0px; width: 100%; z-index: 1; margin-top: 0px;"
                   >
                     <div

@@ -12,7 +12,7 @@ export class Sidepanel {
 	}
 
 	get sidepanelList(): Locator {
-		return this.sidepanel.getByRole('list', { name: 'Channels' });
+		return this.sidepanel.getByRole('list');
 	}
 
 	get firstChannelFromList(): Locator {

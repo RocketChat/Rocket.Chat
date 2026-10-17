@@ -69,6 +69,9 @@ const SystemMessage = ({ message, showUserAvatar, ...props }: SystemMessageProps
 		<MessageSystem
 			role='listitem'
 			aria-roledescription={t('system_message')}
+			aria-labelledby={[`${message._id}-displayName`, messageType && `${message._id}-content`, `${message._id}-time`]
+				.filter(Boolean)
+				.join(' ')}
 			tabIndex={0}
 			onClick={isSelecting ? toggleSelected : undefined}
 			onKeyDown={handleKeyDown}
@@ -100,14 +103,16 @@ const SystemMessage = ({ message, showUserAvatar, ...props }: SystemMessageProps
 							onMouseEnter: openUserCardOnHover,
 						})}
 					>
-						<MessageSystemName>{displayName}</MessageSystemName>
+						<MessageSystemName id={`${message._id}-displayName`}>{displayName}</MessageSystemName>
 					</MessageNameContainer>
 					{messageType && (
-						<MessageSystemBody role='document' aria-roledescription={t('system_message_body')}>
+						<MessageSystemBody id={`${message._id}-content`} role='document' aria-roledescription={t('system_message_body')}>
 							{messageType.text(t, message)}
 						</MessageSystemBody>
 					)}
-					<MessageSystemTimestamp title={formatDateAndTime(message.ts)}>{formatTime(message.ts)}</MessageSystemTimestamp>
+					<MessageSystemTimestamp title={formatDateAndTime(message.ts)}>
+						<span id={`${message._id}-time`}>{formatTime(message.ts)}</span>
+					</MessageSystemTimestamp>
 				</MessageSystemBlock>
 				{message.attachments && (
 					<MessageSystemBlock>

@@ -94,15 +94,15 @@ export class RoomSidebar extends Sidebar {
 	}
 
 	get teamsCollapser(): Locator {
-		return this.root.getByRole('group', { name: 'Collapse Teams' }).first();
+		return this.root.getByRole('group', { name: 'Teams', exact: true }).first();
 	}
 
 	get channelsCollapser(): Locator {
-		return this.channelsList.getByRole('group', { name: 'Collapse Channels' });
+		return this.channelsList.getByRole('group', { name: 'Channels', exact: true });
 	}
 
 	get directMessagesCollapser(): Locator {
-		return this.channelsList.getByRole('group', { name: 'Collapse Direct messages' });
+		return this.channelsList.getByRole('group', { name: 'Direct messages', exact: true });
 	}
 
 	get firstChannelFromList(): Locator {
@@ -117,8 +117,7 @@ export class RoomSidebar extends Sidebar {
 	}
 
 	getCollapseGroupByName(name: string): Locator {
-		const escapedName = name.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-		return this.root.getByRole('listitem', { name: new RegExp(`^(Collapse|Expand) ${escapedName}$`) });
+		return this.root.getByRole('listitem', { name, exact: true });
 	}
 
 	getItemUnreadBadge(item: Locator): Locator {
@@ -142,7 +141,7 @@ export class RoomSidebar extends Sidebar {
 	}
 
 	getCategoryCollapser(name: string): Locator {
-		return this.root.getByRole('listitem', { name: `Collapse ${name}`, exact: true }).first();
+		return this.root.getByRole('listitem', { name, exact: true }).first();
 	}
 
 	getCategoryKebab(name: string): Locator {
