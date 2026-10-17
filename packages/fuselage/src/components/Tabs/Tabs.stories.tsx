@@ -84,7 +84,7 @@ export const NoUnderline: Story = {
 
 export const Overflowing: Story = {
 	render: (args) => (
-		<Tabs {...args}>
+		<Tabs {...args} style={{ maxWidth: 600 }}>
 			{Array.from({ length: 15 }, (_, i) => (
 				<TabsItem key={i} selected={i === 0}>
 					Tab {i + 1}
