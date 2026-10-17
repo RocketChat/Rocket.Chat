@@ -3,6 +3,7 @@ import { screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 
 import * as stories from './Dropdown.stories';
+import { DropdownDesktop } from './DropdownDesktop';
 import { render } from '../../testing';
 
 const { Default } = composeStories(stories);
@@ -27,5 +28,15 @@ describe('[Dropdown Component]', () => {
 		await userEvent.click(anchor);
 		await userEvent.click(anchor);
 		expect(dropdownOption).toBeNull();
+	});
+
+	it('keeps children mounted while the dropdown is hidden for positioning', () => {
+		render(
+			<DropdownDesktop style={{ position: 'fixed', visibility: 'hidden' }}>
+				<div>Dropdown measurement content</div>
+			</DropdownDesktop>,
+		);
+
+		expect(screen.getByText('Dropdown measurement content')).toBeInTheDocument();
 	});
 });
