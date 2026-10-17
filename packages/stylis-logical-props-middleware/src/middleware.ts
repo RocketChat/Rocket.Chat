@@ -6,6 +6,17 @@ import type { RuleSet } from './elements';
 import { attachDeclaration, isDeclaration, isRuleSet } from './elements';
 import { compileOperations } from './operations';
 
+const isRootSelector = (selector: string): boolean => {
+	const trimmed = selector.trim();
+	return trimmed === 'html' || trimmed === ':root';
+};
+
+const toLtrSelector = (selector: string): string =>
+	isRootSelector(selector) ? `${selector.trim()}:not([dir=rtl])` : `html:not([dir=rtl]) ${selector}`;
+
+const toRtlSelector = (selector: string): string =>
+	isRootSelector(selector) ? `${selector.trim()}[dir=rtl]` : `[dir=rtl] ${selector}`;
+
 export const createLogicalPropertiesMiddleware = ({
 	isPropertySupported = (property: string): boolean => cssSupports(`${property}:inherit`),
 	isPropertyValueSupported = (property: string, value: string): boolean => cssSupports(`${property}:${value}`),
@@ -23,22 +34,24 @@ export const createLogicalPropertiesMiddleware = ({
 			return undefined;
 		}
 
+		const ltrProps = ruleSet.props.map(toLtrSelector);
 		const ltrRuleSet = node(
-			ruleSet.props.map((selector) => `html:not([dir=rtl]) ${selector}`).join(','),
+			ltrProps.join(','),
 			undefined as unknown as Element,
 			undefined as unknown as Element,
 			RULESET,
-			ruleSet.props.map((selector) => `html:not([dir=rtl]) ${selector}`),
+			ltrProps,
 			[],
 			0,
 		) as RuleSet;
 
+		const rtlProps = ruleSet.props.map(toRtlSelector);
 		const rtlRuleSet = node(
-			ruleSet.props.map((selector) => `[dir=rtl] ${selector}`).join(','),
+			rtlProps.join(','),
 			undefined as unknown as Element,
 			undefined as unknown as Element,
 			RULESET,
-			ruleSet.props.map((selector) => `[dir=rtl] ${selector}`),
+			rtlProps,
 			[],
 			0,
 		) as RuleSet;
