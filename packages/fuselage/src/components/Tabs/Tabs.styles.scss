@@ -39,7 +39,7 @@ $tabs-border-radius: theme('tabs-border-radius', lengths.border-radius(medium));
 	margin-block: lengths.margin(-4);
 
 	-ms-overflow-style: none;
-	scrollbar-width: none;
+	scrollbar-width: thin;
 
 	&::-webkit-scrollbar {
 		display: none;
