@@ -13,6 +13,7 @@ export function message() {
 			await FederationMatrix.saveFederationMessage(event);
 		} catch (err) {
 			logger.error({ msg: 'Error processing Matrix message', err });
+			throw err;
 		}
 	});
 
