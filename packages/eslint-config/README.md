@@ -14,7 +14,7 @@ It bundles all the plugins it needs, so you do not install them yourself. It inc
 - React, React Hooks and `jsx-a11y` rules;
 - Jest and Testing Library rules for `*.spec.*` and `*.test.*` files;
 - Storybook rules for stories;
-- Prettier, run as an ESLint rule (`prettier/prettier`);
+- `eslint-config-prettier`, which turns off rules that conflict with Prettier;
 - a check against Trojan Source bidirectional characters.
 
 It ignores `dist`, `coverage` and `storybook-static` folders.
@@ -75,7 +75,7 @@ Type-aware rules use `typescript-eslint`'s project service (`parserOptions.proje
 
 ### Formatting
 
-Formatting problems are reported by the `prettier/prettier` rule and fixed by `eslint --fix`. Prettier reads your usual Prettier configuration file.
+The config does not run Prettier. Check formatting with Prettier itself (`prettier --check`), which reads your usual Prettier configuration file.
 
 ### Globals
 

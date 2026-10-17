@@ -23,7 +23,8 @@ test('slug follows GitHub rules', () => {
 
 test('accepts valid links in every supported form', () => {
 	const root = fixture({
-		'Target.md': '# Ação rápida\n## Closed ##\n<a id="custom"></a>\n<a class="x" name="later"></a>\n## Dup\n## Dup\n## [Start](./index.md)\n',
+		'Target.md':
+			'# Ação rápida\n## Closed ##\n<a id="custom"></a>\n<a class="x" name="later"></a>\n## Dup\n## Dup\n## [Start](./index.md)\n',
 		'my file.md': '# Spaced\n',
 		'index.md': [
 			'[a](./Target.md#ação-rápida) [b](Target.md#closed) [c](Target.md#custom) [d](Target.md#dup-1)',

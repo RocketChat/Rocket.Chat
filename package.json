@@ -29,6 +29,7 @@
 		"ms": "turbo run ms --env-mode=loose",
 		"fossify": "TS_NODE_COMPILER_OPTIONS='{\"module\": \"commonjs\"}' ts-node scripts/fossify.ts",
 		"lint": "turbo run lint",
+		"format:check": "prettier --check --log-level warn \"**/*.{js,jsx,mjs,cjs,ts,tsx,mts,cts}\"",
 		"storybook": "yarn workspace @rocket.chat/meteor run storybook",
 		"test-storybook": "turbo run test-storybook",
 		"testunit": "turbo run testunit"
@@ -223,6 +224,7 @@
 		"@types/node": "~24.13.6",
 		"eslint": "~10.12.0",
 		"eslint-plugin-you-dont-need-lodash-underscore": "~6.14.0",
+		"prettier": "~3.9.9",
 		"ts-node": "^10.9.2",
 		"turbo": "2.11.7",
 		"typescript": "~5.9.3"
