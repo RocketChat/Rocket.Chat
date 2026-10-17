@@ -17,10 +17,7 @@ const deepImports = {
 // which Node would reject; and requests whose name looks like a file extension (`lodash.get`, `*.json`), which @meteorjs/rspack
 // mistakes for paths when listing externals for Meteor, so production builds cannot resolve them.
 const isServerExternal = (request) =>
-	/^[^./]/.test(request) &&
-	!/^@rocket\.chat\/[^/]+\/src\//.test(request) &&
-	!(request in deepImports) &&
-	!path.extname(request);
+	/^[^./]/.test(request) && !/^@rocket\.chat\/[^/]+\/src\//.test(request) && !(request in deepImports) && !path.extname(request);
 
 module.exports = defineConfig((Meteor) => ({
 	...(Meteor.isServer && {
