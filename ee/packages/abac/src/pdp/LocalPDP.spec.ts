@@ -143,3 +143,52 @@ describe('LocalPDP.evaluateSubjectAgainstRooms', () => {
 		expect(result).toEqual({ compliant: ['eng'], nonCompliant: ['gone'], inconclusive: [] });
 	});
 });
+
+describe('LocalPDP.assertCreatorMayAssign', () => {
+	const requested = [
+		{ key: 'dept', values: ['eng', 'sales'] },
+		{ key: 'region', values: ['emea'] },
+	];
+
+	it('refuses the values the creator does not hold, naming only those', async () => {
+		await expect(new LocalPDP(true).assertCreatorMayAssign(requested, { _id: 'partial' })).rejects.toMatchObject({
+			code: 'error-invalid-attribute-values',
+			details: {
+				attributes: [
+					{ key: 'dept', values: ['sales'] },
+					{ key: 'region', values: ['emea'] },
+				],
+			},
+		});
+	});
+
+	it('allows values the creator holds, without admitting them to the room', async () => {
+		await expect(new LocalPDP(true).assertCreatorMayAssign(requested, { _id: 'holder' })).resolves.toEqual({ creatorAdmitted: false });
+	});
+
+	it('allows values the creator does not hold while restricting to owned attributes is off', async () => {
+		await expect(new LocalPDP(false).assertCreatorMayAssign(requested, { _id: 'none' })).resolves.toEqual({ creatorAdmitted: false });
+	});
+
+	it('applies a changed restriction setting', async () => {
+		const restricting = new LocalPDP(false);
+		restricting.setRestrictToOwnedAttributes(true);
+
+		await expect(restricting.assertCreatorMayAssign(requested, { _id: 'none' })).rejects.toMatchObject({
+			code: 'error-invalid-attribute-values',
+		});
+	});
+});
+
+describe('LocalPDP.filterAssignableAttributes', () => {
+	it('offers only the defined values the creator holds, leaving out keys they hold nothing of', async () => {
+		const definitions = [
+			{ key: 'dept', values: ['eng', 'sales', 'hr'] },
+			{ key: 'region', values: ['emea', 'apac'] },
+		];
+
+		await expect(new LocalPDP(true).filterAssignableAttributes(definitions, { _id: 'partial' })).resolves.toEqual([
+			{ key: 'dept', values: ['eng'] },
+		]);
+	});
+});
