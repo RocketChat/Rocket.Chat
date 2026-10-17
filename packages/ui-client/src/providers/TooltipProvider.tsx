@@ -45,6 +45,7 @@ const TooltipProvider = ({ children, ownerDocument = window.document }: TooltipP
 				setTooltip(null);
 				setTooltip.flush();
 				lastAnchor.current = undefined;
+				dismissedAnchor.current = undefined;
 			},
 			dismiss: (): void => {
 				const anchor = lastAnchor.current;
@@ -68,6 +69,27 @@ const TooltipProvider = ({ children, ownerDocument = window.document }: TooltipP
 		}),
 		[setTooltip],
 	);
+
+	useEffect(() => {
+		const handleWindowBlur = () => {
+			contextValue.close();
+		};
+
+		const handleVisibilityChange = () => {
+			if (ownerDocument.visibilityState === 'hidden') {
+				contextValue.close();
+			}
+		};
+
+		const windowObject = ownerDocument.defaultView;
+		windowObject?.addEventListener('blur', handleWindowBlur);
+		ownerDocument.addEventListener('visibilitychange', handleVisibilityChange);
+
+		return () => {
+			windowObject?.removeEventListener('blur', handleWindowBlur);
+			ownerDocument.removeEventListener('visibilitychange', handleVisibilityChange);
+		};
+	}, [contextValue, ownerDocument]);
 
 	useEffect(() => {
 		if (!hasHover) {
