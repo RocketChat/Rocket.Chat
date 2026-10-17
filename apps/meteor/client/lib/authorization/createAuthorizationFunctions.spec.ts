@@ -28,7 +28,7 @@ const setup = ({
 		getPermission: (permissionId) =>
 			permissionId in permissions ? ({ _id: permissionId, roles: permissions[permissionId] } as IPermission) : undefined,
 		getRoleScope: (roleId) => roleScopes[roleId],
-		hasSubscriptionRole: jest.fn((rid: string, roleId: string) => subscriptionRoles[rid]?.includes(roleId) ?? false),
+		getSubscriptionRoles: jest.fn((rid: string) => subscriptionRoles[rid] ?? []),
 		isReady: () => ready,
 	};
 	return { ...createAuthorizationFunctions(deps), deps };
@@ -124,7 +124,7 @@ describe('createAuthorizationFunctions', () => {
 			});
 
 			expect(hasRole('user-1', 'owner')).toBe(false);
-			expect(deps.hasSubscriptionRole).not.toHaveBeenCalled();
+			expect(deps.getSubscriptionRoles).not.toHaveBeenCalled();
 		});
 
 		it("treats a role with unknown scope as Users-scoped and checks the user's role list", () => {
@@ -135,7 +135,7 @@ describe('createAuthorizationFunctions', () => {
 
 			expect(hasRole('user-1', 'custom-role', 'room-1')).toBe(true);
 			expect(hasRole('user-1', 'other-custom-role', 'room-1')).toBe(false);
-			expect(deps.hasSubscriptionRole).not.toHaveBeenCalled();
+			expect(deps.getSubscriptionRoles).not.toHaveBeenCalled();
 		});
 
 		it('denies a role whose scope is neither Users nor Subscriptions', () => {
@@ -258,6 +258,62 @@ describe('createAuthorizationFunctions', () => {
 
 			expect(cases.map((args) => hasAllPermission(...args))).toEqual(expected);
 			expect(cases.map((args) => hasPermission(...args))).toEqual(expected);
+		});
+	});
+
+	describe('roles assigned on the user or on a room', () => {
+		const world: World = {
+			permissions: { 'delete-message': ['admin', 'moderator'], 'create-invite-links': ['admin', 'moderator'] },
+			roleScopes: { moderator: 'Subscriptions' },
+		};
+
+		it('grants the permissions of a scoped role held on the user in every room and in room-less checks', () => {
+			const { hasPermission } = setup({ ...world, userRoles: { 'current-user': ['user', 'moderator'] } });
+
+			expect(hasPermission('delete-message', 'room-1')).toBe(true);
+			expect(hasPermission('delete-message', 'room-2')).toBe(true);
+			expect(hasPermission('create-invite-links')).toBe(true);
+		});
+
+		it('grants the permissions of a scoped role held on a subscription only in that room', () => {
+			const { hasPermission } = setup({
+				...world,
+				userRoles: { 'current-user': ['user'] },
+				subscriptionRoles: { 'room-1': ['moderator'] },
+			});
+
+			expect(hasPermission('delete-message', 'room-1')).toBe(true);
+			expect(hasPermission('delete-message', 'room-2')).toBe(false);
+			expect(hasPermission('create-invite-links')).toBe(false);
+		});
+
+		it('applies the restrictions of a role held on a subscription in that room', () => {
+			const restrictedRole = createRestrictedRole(['create-d']);
+			const { hasPermission } = setup({
+				...world,
+				userRoles: { 'current-user': ['moderator'] },
+				subscriptionRoles: { 'room-1': [restrictedRole] },
+			});
+
+			expect(hasPermission('delete-message', 'room-2')).toBe(true);
+			expect(hasPermission('delete-message', 'room-1')).toBe(false);
+		});
+
+		it('does not use the room roles of the current user to check another user', () => {
+			const { userHasAllPermission } = setup({
+				...world,
+				userRoles: { 'current-user': ['user'], 'other-user': ['user'] },
+				subscriptionRoles: { 'room-1': ['moderator'] },
+			});
+
+			expect(userHasAllPermission('delete-message', 'room-1', 'current-user')).toBe(true);
+			expect(userHasAllPermission('delete-message', 'room-1', 'other-user')).toBe(false);
+		});
+
+		it('does not count a scoped role held on the user as a role in the room', () => {
+			const { hasRole } = setup({ ...world, userRoles: { 'current-user': ['moderator'] } });
+
+			expect(hasRole('current-user', 'moderator', 'room-1')).toBe(false);
 		});
 	});
 });
