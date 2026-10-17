@@ -4,6 +4,7 @@ import BoldSpan from './BoldSpan';
 import ItalicSpan from './ItalicSpan';
 import LinkSpan from './LinkSpan';
 import PlainSpan from './PlainSpan';
+import Timestamp from './Timestamp';
 import CodeElement from '../code/CodeElement';
 import EmojiElement from '../emoji/EmojiElement';
 import ChannelMentionElement from '../mentions/ChannelMentionElement';
@@ -30,7 +31,8 @@ const StrikeSpan = ({ children }: StrikeSpanProps) => (
 				block.type === 'PLAIN_TEXT' ||
 				block.type === 'ITALIC' ||
 				block.type === 'BOLD' ||
-				block.type === 'INLINE_CODE'
+				block.type === 'INLINE_CODE' ||
+				block.type === 'TIMESTAMP'
 			) {
 				return <del key={index}>{renderBlockComponent(block, index)}</del>;
 			}
@@ -64,6 +66,9 @@ const renderBlockComponent = (block: MessageBlock, index: number) => {
 
 		case 'INLINE_CODE':
 			return <CodeElement key={index} code={block.value.value} />;
+
+		case 'TIMESTAMP':
+			return <Timestamp key={index}>{block}</Timestamp>;
 
 		default:
 			return null;
