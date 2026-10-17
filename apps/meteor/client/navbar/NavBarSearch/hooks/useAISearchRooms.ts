@@ -5,6 +5,7 @@ import { useEndpoint, useUserSubscriptions } from '@rocket.chat/ui-contexts';
 import { useQuery } from '@tanstack/react-query';
 import { useMemo } from 'react';
 
+import { isExactSearchMatch, orderSearchResults } from './orderSearchResults';
 import { getConfig } from '../../../lib/utils/getConfig';
 
 const LIMIT = parseInt(String(getConfig('Sidebar_Search_Spotlight_LIMIT', 20)));
@@ -33,7 +34,7 @@ export const useAISearchRooms = (filterText = ''): { items: SubscriptionWithRoom
 	const [, mention, name] = useMemo(() => filterText.match(/(@|#)?(.*)/i) || [], [filterText]);
 
 	const query = useMemo(() => {
-		const filterRegex = new RegExp(escapeRegExp(name), 'i');
+		const filterRegex = new RegExp(escapeRegExp(name.trim()), 'i');
 
 		return {
 			...(mention && {
@@ -60,10 +61,13 @@ export const useAISearchRooms = (filterText = ''): { items: SubscriptionWithRoom
 		return { users: true, rooms: true, includeFederatedRooms: true };
 	}, [searchForChannels, searchForDMs]);
 
+	const hasLocalExactMatch = Boolean(name.trim()) && localRooms.some((room) => isExactSearchMatch(room, name));
+	const shouldFetchServer = localRooms.length < LIMIT || (Boolean(name.trim()) && !hasLocalExactMatch);
+
 	const getSpotlight = useEndpoint('GET', '/v1/spotlight');
 	const { data: serverResults, isFetching } = useQuery({
 		queryKey: ['sidebar/ai-search/spotlight', debouncedName, mention, type],
-		enabled: localRooms.length < LIMIT,
+		enabled: shouldFetchServer && name === debouncedName,
 		queryFn: async () => {
 			const spotlight = await getSpotlight({
 				query: debouncedName,
@@ -90,7 +94,7 @@ export const useAISearchRooms = (filterText = ''): { items: SubscriptionWithRoom
 	});
 
 	const items = useMemo(() => {
-		const filterRegex = new RegExp(escapeRegExp(name), 'i');
+		const filterRegex = new RegExp(escapeRegExp(name.trim()), 'i');
 		const matchesFilter = ({ name, fname }: { name?: string; fname?: string }) =>
 			(name && filterRegex.test(name)) || (fname && filterRegex.test(fname));
 		const isLocalDuplicate = (item: { _id: string; t?: string; uids?: string[]; name: string }): boolean =>
@@ -102,12 +106,26 @@ export const useAISearchRooms = (filterText = ''): { items: SubscriptionWithRoom
 				return sameRoom || sameGroupDM || sameDirectDM || sameUserDM;
 			});
 
-		const candidates = name === debouncedName && localRooms.length < LIMIT ? (serverResults ?? []) : [];
-		const fromServer = candidates.filter((item) => matchesFilter(item) && !isLocalDuplicate(item));
-		const exact = fromServer.filter((item) => [item.name, item.fname].includes(name));
+		const matchesMention = (item: { t?: string }): boolean => {
+			if (mention === '@') {
+				return item.t === 'd';
+			}
+			if (mention === '#') {
+				return item.t !== 'd';
+			}
+			return true;
+		};
 
-		return [...exact, ...localRooms, ...fromServer.filter((item) => !exact.includes(item))] as SubscriptionWithRoom[];
-	}, [debouncedName, localRooms, name, serverResults]);
+		const candidates = name === debouncedName && shouldFetchServer ? (serverResults ?? []).filter(matchesMention) : [];
+		const fromServer = candidates.filter(
+			(item) =>
+				(matchesFilter(item) || isExactSearchMatch(item, name)) &&
+				!isLocalDuplicate(item) &&
+				(localRooms.length < LIMIT || isExactSearchMatch(item, name)),
+		);
+
+		return orderSearchResults<SubscriptionWithRoom>(localRooms, fromServer, name);
+	}, [debouncedName, localRooms, name, serverResults, shouldFetchServer, mention]);
 
 	const isLoading = isFetching && serverResults === undefined;
 
