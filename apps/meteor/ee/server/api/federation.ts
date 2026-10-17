@@ -45,7 +45,10 @@ export async function registerFederationRoutes(): Promise<void> {
 	try {
 		const routes = getFederationRoutes(getTrimmedServerVersion());
 
-		(WebApp.rawConnectHandlers as unknown as ReturnType<typeof express>).use(routes.matrix.router).use(routes.wellKnown.router);
+		(WebApp.rawConnectHandlers as unknown as ReturnType<typeof express>)
+			.use(routes.matrix.router)
+			.use(routes.wellKnown.router)
+			.use(routes.matrixRTC.router);
 	} catch (error) {
 		logger.error({ msg: '[Federation] Failed to register routes:', err: error });
 		throw error;

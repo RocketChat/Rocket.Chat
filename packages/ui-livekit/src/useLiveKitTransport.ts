@@ -17,7 +17,10 @@ const useJoinCount = (connect: boolean) => {
 	return state.joins;
 };
 
-/** Credentials to reach the media server for this call; refused credentials surface as an error, never as `null`. */
+/**
+ * Credentials to reach this server's media server for the call, and for a call in a federated room what this
+ * member publishes as. Refused credentials surface as an error, never as `null`.
+ */
 export const useLiveKitTransport = (callId: string, enabled: boolean) => {
 	const getCallConfig = useEndpoint('GET', '/v1/video-conference.callConfig');
 	const join = useJoinCount(enabled);
@@ -26,12 +29,12 @@ export const useLiveKitTransport = (callId: string, enabled: boolean) => {
 		// Keyed by the join: each token is minted for one, and a later join must not be handed an earlier one's.
 		queryKey: liveKitCredentialsQueryKey(callId, join),
 		queryFn: async () => {
-			const { livekit } = await getCallConfig({ callId });
+			const { livekit, federation } = await getCallConfig({ callId });
 			// The server answers a LiveKit call with its configuration or an error, never with neither.
 			if (!livekit) {
 				throw new Error('error-videoconf-unexpected');
 			}
-			return livekit;
+			return { ...livekit, federation };
 		},
 		enabled,
 		staleTime: Infinity,

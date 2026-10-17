@@ -1,0 +1,11 @@
+# Certificates signed by the local mkcert CA, mounted from CERTS_DIR (see docker-compose.yml).
+tls:
+  certificates:
+    - certFile: /etc/traefik/certs/rc1.pem
+      keyFile: /etc/traefik/certs/rc1-key.pem
+    - certFile: /etc/traefik/certs/rc2.pem
+      keyFile: /etc/traefik/certs/rc2-key.pem
+    - certFile: /etc/traefik/certs/hs1.pem
+      keyFile: /etc/traefik/certs/hs1-key.pem
+    - certFile: /etc/traefik/certs/element.pem
+      keyFile: /etc/traefik/certs/element-key.pem

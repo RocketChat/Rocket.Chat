@@ -61,6 +61,11 @@ callbacks.add(
 			return;
 		}
 
+		// Other servers learn of a call from its memberships, and their clients show a call banner of their own.
+		if (message.t === 'videoconf') {
+			return;
+		}
+
 		try {
 			// TODO: Check if message already exists in the database, if it does, don't send it to the federation to avoid loops
 			// If message is federated, it will save external_message_id like into the message object

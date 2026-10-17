@@ -444,7 +444,10 @@ export interface StreamerEvents {
 		},
 	];
 
-	'video-conference': [{ key: `${string}/updated`; args: [] }];
+	'video-conference': [
+		{ key: `${string}/updated`; args: [] },
+		{ key: `${string}/reaction`; args: [{ uid: string; emoji: string; reactionId: string }] },
+	];
 
 	'local': [
 		{

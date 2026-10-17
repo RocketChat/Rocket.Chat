@@ -1,4 +1,4 @@
-import { generateEd25519RandomSecretKey } from '@rocket.chat/federation-matrix';
+import { MATRIXRTC_PROFILES, generateEd25519RandomSecretKey } from '@rocket.chat/federation-matrix';
 
 import { settingsRegistry } from '.';
 
@@ -115,6 +115,27 @@ export const createFederationServiceSettings = async (): Promise<void> => {
 			enterprise: true,
 			modules: ['federation'],
 			invalidValue: false,
+		});
+
+		await this.section('Federation_Service_MatrixRTC', async function () {
+			await this.add('Federation_Service_MatrixRTC_Enabled', false, {
+				type: 'boolean',
+				public: true,
+				enterprise: true,
+				modules: ['federation'],
+				invalidValue: false,
+				enableQuery: { _id: 'Federation_Service_Enabled', value: true },
+			});
+
+			await this.add('Federation_Service_MatrixRTC_Mode', 'compatibility', {
+				type: 'select',
+				public: false,
+				values: MATRIXRTC_PROFILES.map((profile) => ({ key: profile, i18nLabel: `Federation_Service_MatrixRTC_Mode_${profile}` })),
+				enterprise: true,
+				modules: ['federation'],
+				invalidValue: 'compatibility',
+				enableQuery: { _id: 'Federation_Service_MatrixRTC_Enabled', value: true },
+			});
 		});
 
 		await this.section('XMPP', async function () {

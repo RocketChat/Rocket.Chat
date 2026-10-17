@@ -65,7 +65,33 @@ export type VideoConferenceEndpoints = {
 		GET: (params: { callId: string }) => {
 			providerName: string;
 			livekit?: { serverUrl: string; token: string; roomName: string };
+			/**
+			 * Present for a conference in a federated room. `livekit` is then this server's SFU, where the member
+			 * publishes; members of other servers are reached through `video-conference.federatedToken`.
+			 */
+			federation?: { serverName: string; transport: string; livekitIdentity: string };
 		};
+	};
+
+	/**
+	 * A token to watch the members another homeserver hosts in a federated conference, on that homeserver's SFU.
+	 * `serverName` and `transport` are those of the members, from their `federation` entry in the conference.
+	 */
+	'/v1/video-conference.federatedToken': {
+		GET: (params: { callId: string; serverName: string; transport: string }) => { serverUrl: string; token: string };
+	};
+
+	/**
+	 * Raises or lowers the caller's hand in a federated conference, for the members of other servers: those of this
+	 * server learn it over the call itself.
+	 */
+	'/v1/video-conference.hand': {
+		POST: (params: { callId: string; raised: boolean }) => void;
+	};
+
+	/** Shows the members of other servers in a federated conference a reaction of the caller's. */
+	'/v1/video-conference.reaction': {
+		POST: (params: { callId: string; emoji: string }) => void;
 	};
 
 	'/v1/video-conference.cancel': {

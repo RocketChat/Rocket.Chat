@@ -9,7 +9,9 @@ import type {
 	VideoConferenceChatAccess,
 	VideoConferenceChatAccessMode,
 	VideoConferenceCreateData,
+	VideoConferenceFederation,
 	VideoConferenceInstructions,
+	VideoConferenceMemberFederation,
 } from '@rocket.chat/core-typings';
 import type { InsertionModel } from '@rocket.chat/model-typings';
 import type { PaginatedResult } from '@rocket.chat/rest-typings';
@@ -62,5 +64,19 @@ export interface IVideoConfService {
 	shareChatWithMembers(uid: IUser['_id'], callId: VideoConference['_id'], mode: VideoConferenceChatAccessMode): Promise<IRoom['_id']>;
 
 	renameCall(uid: IUser['_id'], callId: VideoConference['_id'], title: string): Promise<void>;
+	/** Records where a member of a federated conference publishes, and tells the conference's clients when it changed. */
+	setMemberFederation(callId: VideoConference['_id'], uid: IUser['_id'], federation: VideoConferenceMemberFederation): Promise<void>;
+	/**
+	 * Mirrors a federated room's MatrixRTC session in its conference: starts one for members of other servers when none
+	 * is running, and joins them to and leaves them from the roster as their memberships come and go. Returns the
+	 * conference, if there is one.
+	 */
+	syncFederatedSession(rid: IRoom['_id'], session: VideoConferenceFederation): Promise<VideoConference['_id'] | undefined>;
+	/** Forgets the MatrixRTC memberships that ran out, and lets the conferences they were in follow. */
+	expireFederatedMemberships(now?: Date): Promise<void>;
+	/** Rings this server's users, as any ring does, for a member of another server calling them in a federated conference. */
+	ringFromFederation(callId: VideoConference['_id'], callerId: IUser['_id'], uids: IUser['_id'][]): Promise<void>;
+	/** Shows this server's members of a federated conference a reaction from a member of another server. */
+	broadcastFederatedReaction(callId: VideoConference['_id'], uid: IUser['_id'], emoji: string, reactionId: string): Promise<void>;
 	createVoIP(data: InsertionModel<IVoIPVideoConference>): Promise<IVoIPVideoConference['_id'] | undefined>;
 }

@@ -14,6 +14,7 @@ export type * from './models/IEmailMessageHistoryModel';
 export type * from './models/IEmojiCustomModel';
 export type * from './models/IExportOperationsModel';
 export type * from './models/IFederationKeysModel';
+export type * from './models/IMatrixRTCMembershipsModel';
 export type * from './models/IInstanceStatusModel';
 export type * from './models/IIntegrationHistoryModel';
 export type * from './models/IIntegrationsModel';

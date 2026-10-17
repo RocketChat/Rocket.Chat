@@ -225,6 +225,7 @@ describe('where the chat lives', () => {
 		windowEnabled = true,
 		mode,
 		providerSupport,
+		federated = false,
 	}: {
 		enabled: boolean;
 		/** The window is what a thread off the call message belongs to, so nothing threads without it. */
@@ -232,6 +233,7 @@ describe('where the chat lives', () => {
 		mode: 'thread' | 'main_room';
 		/** Kept to prove it no longer decides: the chat panel is ours whoever runs the media. */
 		providerSupport: boolean;
+		federated?: boolean;
 	}) =>
 		renderHook(() => useConferenceEmbedded(callId), {
 			wrapper: mockAppRoot()
@@ -242,7 +244,12 @@ describe('where the chat lives', () => {
 				.withEndpoint(
 					'GET',
 					'/v1/video-conference.info',
-					() => ({ ...buildInfo([]), capabilities: { persistentChat: providerSupport } }) as any,
+					() =>
+						({
+							...buildInfo([]),
+							capabilities: { persistentChat: providerSupport },
+							...(federated && { federation: { mrid: '!room:remote', slotId: 'm.call#ROOM' } }),
+						}) as any,
 				)
 				.withEndpoint('POST', '/v1/video-conference.join', () => ({ url: 'https://call.example', providerName: 'test' }) as any)
 				.build(),
@@ -283,6 +290,14 @@ describe('where the chat lives', () => {
 
 	it('is the room in main_room mode', async () => {
 		const { result } = renderWithChatSettings({ enabled: true, mode: 'main_room', providerSupport: true });
+
+		await waitFor(() => expect(result.current.room.rid).toBe('room-id'));
+		expect(result.current.room.tmid).toBeUndefined();
+	});
+
+	// The call message of a federated call never reaches the other servers, so neither could a thread off it.
+	it('is the room for a federated call, whatever the mode says', async () => {
+		const { result } = renderWithChatSettings({ enabled: true, mode: 'thread', providerSupport: true, federated: true });
 
 		await waitFor(() => expect(result.current.room.rid).toBe('room-id'));
 		expect(result.current.room.tmid).toBeUndefined();

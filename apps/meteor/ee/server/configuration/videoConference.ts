@@ -1,6 +1,7 @@
 import { VideoConf } from '@rocket.chat/core-services';
 import type { IRoom, IUser, VideoConference } from '@rocket.chat/core-typings';
 import { VideoConferenceStatus } from '@rocket.chat/core-typings';
+import { setMatrixRTCLiveKitIssuer } from '@rocket.chat/federation-matrix';
 import { License } from '@rocket.chat/license';
 import { Rooms } from '@rocket.chat/models';
 import { Meteor } from 'meteor/meteor';
@@ -11,15 +12,20 @@ import { videoConfTypes } from '../../../server/lib/videoConfTypes';
 import { settings } from '../../../server/settings';
 import { LIVEKIT_CAPABILITIES } from '../lib/livekit/capabilities';
 import { isLiveKitFullyConfigured, isLiveKitLicensed } from '../lib/livekit/config';
+import { matrixRTCLiveKitIssuer } from '../lib/livekit/matrixRTCIssuer';
 import { addSettings } from '../settings/video-conference';
 
 /**
  * Offers LiveKit as a provider only while the license includes it, it is fully configured and the conference window,
  * where its call renders, is on: a registered provider is one the camera button offers, and one that cannot connect
- * would fail the call.
+ * would fail the call. Federated calls reach the SFU whenever it is licensed and configured, since members of other
+ * homeservers watch it too.
  */
 const refreshLiveKitProviderRegistration = (): void => {
-	if (isLiveKitLicensed() && isLiveKitFullyConfigured() && settings.get<boolean>('VideoConf_Conference_Window_Enabled')) {
+	const usable = isLiveKitLicensed() && isLiveKitFullyConfigured();
+	setMatrixRTCLiveKitIssuer(usable ? matrixRTCLiveKitIssuer : undefined);
+
+	if (usable && settings.get<boolean>('VideoConf_Conference_Window_Enabled')) {
 		videoConfProviders.registerProvider('livekit', LIVEKIT_CAPABILITIES, CORE_PROVIDER_APP_ID);
 	} else {
 		videoConfProviders.unRegisterProvider('livekit');

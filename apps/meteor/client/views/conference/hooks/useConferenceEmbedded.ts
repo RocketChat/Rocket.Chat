@@ -174,7 +174,8 @@ export const useConferenceEmbedded = (callId: string) => {
 		return { ...info.chatAccess, members: members.filter(({ _id }) => missing.has(_id)) };
 	}, [info, members]);
 
-	const isThreadedChat = chatLivesInAThread(isPersistentChatEnabled, isCallWindowEnabled, chatMode);
+	// A federated call's message stays on this server, so a thread off it would never reach the other servers.
+	const isThreadedChat = !info?.federation && chatLivesInAThread(isPersistentChatEnabled, isCallWindowEnabled, chatMode);
 
 	// Joining is the user's decision, made on the preflight screen, because it is what turns their mic and camera
 	// choices into the provider's URL — and what marks them as present. So nothing here asks for it.

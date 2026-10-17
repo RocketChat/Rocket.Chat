@@ -240,7 +240,13 @@ const ConferenceProvider = ({ callId, children }: { callId: string; children: Re
 
 	return (
 		<Suspense fallback={<PageLoading />}>
-			<EmbeddedCallProvider callId={callId} connect={conference.joined && embedded} preferences={callPreferences} onEnded={leaveNow}>
+			<EmbeddedCallProvider
+				callId={callId}
+				members={call.members}
+				connect={conference.joined && embedded}
+				preferences={callPreferences}
+				onEnded={leaveNow}
+			>
 				{conferenceWindow}
 			</EmbeddedCallProvider>
 		</Suspense>

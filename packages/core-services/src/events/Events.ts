@@ -178,6 +178,8 @@ export type EventSignatures = {
 	 * One event for all of it, because there is one answer to all of it: read the conference again.
 	 */
 	'video-conference.updated'(data: { callId: VideoConference['_id'] }): void;
+	/** A member of another server reacted in a federated conference: a passing moment, not a change to the conference. */
+	'video-conference.reaction'(data: { callId: VideoConference['_id']; uid: string; emoji: string; reactionId: string }): void;
 	'watch.messages'(data: { message: IMessage }): void;
 	'watch.roles'(
 		data:

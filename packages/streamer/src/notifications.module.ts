@@ -590,6 +590,10 @@ export class NotificationsModule {
 	notifyVideoConferenceUpdatedInThisInstance(callId: string): void {
 		this.streamVideoConference.emitWithoutBroadcast(`${callId}/updated`);
 	}
+
+	notifyVideoConferenceReactionInThisInstance(callId: string, reaction: { uid: string; emoji: string; reactionId: string }): void {
+		this.streamVideoConference.emitWithoutBroadcast(`${callId}/reaction`, reaction);
+	}
 }
 
 type ExtractNotifyUserEventName<

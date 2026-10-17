@@ -1,7 +1,14 @@
 import { ConnectionState, ParticipantKind, Track } from 'livekit-client';
 
 import type { ParticipantTrack } from './callParticipants';
-import { connectionStateFor, isAgentParticipant, otherPeople, toRemoteParticipantInfo } from './callParticipants';
+import {
+	connectionStateFor,
+	isAgentParticipant,
+	otherPeople,
+	subscribedTracksOf,
+	toPersonInfo,
+	toRemoteParticipantInfo,
+} from './callParticipants';
 
 const camera = { id: 'camera' } as MediaStream;
 const screen = { id: 'screen' } as MediaStream;
@@ -87,5 +94,43 @@ describe('toRemoteParticipantInfo', () => {
 			screenStream: undefined,
 			audioStream: undefined,
 		});
+	});
+});
+
+describe('toPersonInfo', () => {
+	// In a federated call the identity is a hash; the person is who the roster says it is.
+	it('draws the participant as the person, with their own tracks', () => {
+		const info = toPersonInfo(
+			remote('h-ada', 'what the SFU calls her', false),
+			{ camera: [trackFor('h-ada', camera)], screen: [], microphone: [trackFor('h-ada', microphone)] },
+			{ id: 'ada', displayName: 'Ada', avatarUrl: '/avatar/ada' },
+		);
+
+		expect(info).toMatchObject({ id: 'ada', displayName: 'Ada', avatarUrl: '/avatar/ada', muted: false, cameraStream: camera });
+	});
+});
+
+describe('subscribedTracksOf', () => {
+	const publishing = (subscribed: boolean) => ({
+		identity: 'h-ada',
+		getTrackPublication: (source: Track.Source) =>
+			source === Track.Source.Camera ? { isSubscribed: subscribed, isMuted: false, track: { mediaStream: camera } } : undefined,
+	});
+
+	it('lists the tracks we receive from a participant', () => {
+		expect(subscribedTracksOf(publishing(true))).toEqual({
+			camera: [
+				{
+					participant: expect.objectContaining({ identity: 'h-ada' }),
+					publication: expect.objectContaining({ track: { mediaStream: camera } }),
+				},
+			],
+			screen: [],
+			microphone: [],
+		});
+	});
+
+	it('leaves out what is published but not reaching us', () => {
+		expect(subscribedTracksOf(publishing(false)).camera).toEqual([]);
 	});
 });
