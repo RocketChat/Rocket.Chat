@@ -465,6 +465,7 @@ export default [
 			'**/*.d.ts',
 			'**/__tests__/**',
 			'**/*.@(spec|test).@(ts|tsx)',
+			'**/*.stories.@(ts|tsx)',
 			'**/tests/**',
 			'**/.storybook/**',
 			'**/jest.config.@(ts|js)',
