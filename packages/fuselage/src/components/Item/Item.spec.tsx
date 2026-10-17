@@ -3,6 +3,7 @@ import { screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { axe } from 'jest-axe';
 import { createRef } from 'react';
+import { renderToString } from 'react-dom/server';
 
 import {
 	Item,
@@ -239,6 +240,50 @@ describe('ItemGroup', () => {
 		render(<ItemGroup is='ul' data-testid='group' />);
 
 		expect(screen.getByTestId('group')).not.toHaveAttribute('aria-labelledby');
+	});
+
+	it('includes aria-labelledby in server-rendered markup matching ItemGroupTitle id', () => {
+		const html = renderToString(
+			<ItemGroup is='ul'>
+				<ItemGroupHeader is='li' aria-hidden>
+					<ItemGroupTitle>Moderators</ItemGroupTitle>
+				</ItemGroupHeader>
+				<Item is='li'>Gabriel</Item>
+			</ItemGroup>,
+		);
+
+		const match = html.match(/<ul[^>]*aria-labelledby="([^"]+)"[^>]*>/);
+		expect(match).not.toBeNull();
+		const labelledBy = match?.[1];
+
+		expect(html).toContain(`id="${labelledBy}"`);
+		expect(html).toContain('Moderators');
+	});
+
+	it('respects an explicit titleId prop on ItemGroup during SSR', () => {
+		const html = renderToString(
+			<ItemGroup is='ul' titleId='custom-title-id'>
+				<ItemGroupHeader is='li' aria-hidden>
+					<ItemGroupTitle>Moderators</ItemGroupTitle>
+				</ItemGroupHeader>
+			</ItemGroup>,
+		);
+
+		expect(html).toContain('aria-labelledby="custom-title-id"');
+		expect(html).toContain('id="custom-title-id"');
+	});
+
+	it('matches a custom id passed directly to ItemGroupTitle during SSR', () => {
+		const html = renderToString(
+			<ItemGroup is='ul'>
+				<ItemGroupHeader is='li' aria-hidden>
+					<ItemGroupTitle id='custom-title-id'>Moderators</ItemGroupTitle>
+				</ItemGroupHeader>
+			</ItemGroup>,
+		);
+
+		expect(html).toContain('aria-labelledby="custom-title-id"');
+		expect(html).toContain('id="custom-title-id"');
 	});
 });
 
