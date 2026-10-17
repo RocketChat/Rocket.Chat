@@ -734,6 +734,14 @@ export class AbacService extends ServiceClass implements IAbacService {
 		);
 	}
 
+	async auditRoomAttributesRemoved(room: Pick<IRoom, '_id' | 'name' | 'abacAttributes'>, actor: AbacActor): Promise<void> {
+		if (!room.abacAttributes?.length) {
+			return;
+		}
+
+		await Audit.objectAttributesRemoved({ _id: room._id, name: room.name }, room.abacAttributes, actor);
+	}
+
 	async previewCreationMembers(
 		usernames: string[],
 		attributes: Record<string, string[]>,

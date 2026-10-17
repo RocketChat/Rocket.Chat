@@ -73,6 +73,7 @@ export interface IAbacService {
 		room: Pick<IRoom, '_id' | 'name'> & Required<Pick<IRoom, 'abacAttributes'>>,
 		actor: AbacActor,
 	): Promise<void>;
+	auditRoomAttributesRemoved(room: Pick<IRoom, '_id' | 'name' | 'abacAttributes'>, actor: AbacActor): Promise<void>;
 	previewCreationMembers(
 		usernames: string[],
 		attributes: Record<string, string[]>,

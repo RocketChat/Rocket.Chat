@@ -1,5 +1,7 @@
 import './afterCreateRoom';
+import './afterRemoveRoomAbacAttributes';
 import './beforeAddUserToRoom';
+import './beforeRemoveRoomAbacAttributes';
 import './beforeCreateRoom';
 import './beforeSendMessageToRoom';
 import './filterDefaultChannelsForUser';
