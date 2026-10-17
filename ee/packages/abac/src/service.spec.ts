@@ -1,6 +1,13 @@
 import { Audit } from './audit';
 import { VirtruClient } from './clients/virtru/VirtruClient';
+import {
+	AbacEntityResolutionFailedError,
+	AbacInvalidAttributeValuesError,
+	OnlyCompliantCanBeAddedToRoomError,
+	PdpUnavailableError,
+} from './errors';
 import { AbacService } from './index';
+import { LocalPDP } from './pdp';
 import { LocalAttributeStore, VirtruAttributeStore } from './store';
 
 const mockSettingsGet = jest.fn();
@@ -42,6 +49,7 @@ const mockRoomsIsAbacAttributeInUse = jest.fn();
 const mockRoomsFindPaginated = jest.fn();
 const mockSetAbacAttributesById = jest.fn();
 const mockAbacFind = jest.fn();
+const mockAbacFindAll = jest.fn();
 const mockUpdateSingleAbacAttributeValuesById = jest.fn();
 const mockUpdateAbacAttributeValuesArrayFilteredById = jest.fn();
 const mockRemoveAbacAttributeByRoomIdAndKey = jest.fn();
@@ -50,6 +58,7 @@ const mockUnsetAbacAttributesById = jest.fn();
 const mockRoomsUnsetAllAbacAttributes = jest.fn();
 const mockSettingsSet = jest.fn();
 const mockUsersFind = jest.fn();
+const mockUsersFindUsersByUsernames = jest.fn();
 const mockUsersFindByIds = jest.fn();
 const mockUsersFindOneById = jest.fn();
 const mockUsersUpdateOne = jest.fn();
@@ -89,9 +98,11 @@ jest.mock('@rocket.chat/models', () => ({
 		deleteOne: (...args: any[]) => mockAbacDeleteOne(...args),
 		removeById: (...args: any[]) => mockAbacDeleteOne(...args),
 		find: (...args: any[]) => mockAbacFind(...args),
+		findAll: (...args: any[]) => mockAbacFindAll(...args),
 	},
 	Users: {
 		find: (...args: any[]) => mockUsersFind(...args),
+		findUsersByUsernames: (...args: any[]) => mockUsersFindUsersByUsernames(...args),
 		findByIds: (...args: any[]) => mockUsersFindByIds(...args),
 		findOneById: (...args: any[]) => mockUsersFindOneById(...args),
 		findActiveByRoomIds: (...args: any[]) => mockUsersFindActiveByRoomIds(...args),
@@ -1116,6 +1127,611 @@ describe('AbacService (unit)', () => {
 			expect(store.assertCanModifyRoom).not.toHaveBeenCalled();
 			expect(store.validateAssignable).not.toHaveBeenCalled();
 			expect(mockUnsetAbacAttributesById).toHaveBeenCalledWith('r1');
+		});
+	});
+
+	describe('validateCreationAttributes', () => {
+		const requested = { dept: ['eng', 'sales'] };
+		const normalized = [{ key: 'dept', values: ['eng', 'sales'] }];
+		const creatorExcluded = { creatorJoins: false };
+		const creatorJoining = { creatorJoins: true };
+
+		const makeStore = () => ({
+			validateAssignable: jest.fn().mockResolvedValue(undefined),
+			entitlementsOf: jest.fn().mockResolvedValue(new Map()),
+		});
+
+		const holding = (held: Record<string, string[]>) =>
+			mockUsersFindOneById.mockResolvedValue({ abacAttributes: Object.entries(held).map(([key, values]) => ({ key, values })) });
+
+		beforeEach(() => {
+			mockHasPermission.mockReset().mockResolvedValue(false);
+			mockUsersFindOneById.mockReset();
+			mockAbacFind.mockReturnValue({ toArray: async () => [{ key: 'dept', values: ['eng', 'sales'] }] });
+			service.setPdpStrategy('local', true);
+			(service as any).attributeStores.local.store = makeStore();
+		});
+
+		describe('under the local PDP', () => {
+			it('names every attribute and only the values the actor does not hold', async () => {
+				mockAbacFind.mockReturnValue({
+					toArray: async () => [
+						{ key: 'dept', values: ['eng', 'sales'] },
+						{ key: 'region', values: ['emea', 'apac'] },
+					],
+				});
+				holding({ dept: ['eng'], region: ['emea'] });
+
+				await expect(
+					service.validateCreationAttributes({ ...requested, region: ['emea', 'apac'] }, fakeActor, creatorExcluded),
+				).resolves.toEqual({
+					allowed: false,
+					reason: 'not-entitled',
+					code: 'error-invalid-attribute-values',
+					attributes: [
+						{ key: 'dept', values: ['sales'] },
+						{ key: 'region', values: ['apac'] },
+					],
+				});
+			});
+
+			it('answers a value that is not defined as it answers a defined value the actor does not hold', async () => {
+				holding({ dept: ['eng'] });
+
+				await expect(service.validateCreationAttributes({ unknown: ['x'] }, fakeActor, creatorExcluded)).resolves.toEqual({
+					allowed: false,
+					reason: 'not-entitled',
+					code: 'error-invalid-attribute-values',
+					attributes: [{ key: 'unknown', values: ['x'] }],
+				});
+			});
+
+			it('allows values the actor holds, normalized', async () => {
+				holding({ dept: ['eng', 'sales'] });
+
+				const unnormalized = { ' dept ': ['eng', ' sales', 'eng'] };
+
+				await expect(service.validateCreationAttributes(unnormalized, fakeActor, creatorExcluded)).resolves.toEqual({
+					allowed: true,
+					attributes: normalized,
+				});
+			});
+
+			it('allows values the actor does not hold when restricting to owned attributes is off', async () => {
+				service.setPdpStrategy('local', false);
+				(service as any).attributeStores.local.store = makeStore();
+
+				await expect(service.validateCreationAttributes(requested, fakeActor, creatorExcluded)).resolves.toMatchObject({ allowed: true });
+				expect(mockUsersFindOneById).not.toHaveBeenCalled();
+			});
+
+			it('skips the owned-attributes rule for a bypass holder', async () => {
+				mockHasPermission.mockResolvedValue(true);
+
+				await expect(service.validateCreationAttributes(requested, fakeActor, creatorExcluded)).resolves.toEqual({
+					allowed: true,
+					attributes: normalized,
+				});
+				expect(mockUsersFindOneById).not.toHaveBeenCalled();
+			});
+
+			it('still refuses an attribute the workspace does not define to a bypass holder', async () => {
+				mockHasPermission.mockResolvedValue(true);
+
+				await expect(service.validateCreationAttributes({ unknown: ['x'] }, fakeActor, creatorExcluded)).resolves.toMatchObject({
+					allowed: false,
+					reason: 'invalid',
+					code: 'error-attribute-definition-not-found',
+				});
+			});
+
+			it('refuses nothing to assign rather than approving it', async () => {
+				await expect(service.validateCreationAttributes({}, fakeActor, creatorExcluded)).resolves.toMatchObject({
+					allowed: false,
+					reason: 'invalid',
+				});
+			});
+
+			it('refuses as unavailable when the PDP is down, before evaluating anything', async () => {
+				(service as any).pdp = { isAvailable: jest.fn().mockResolvedValue(false) };
+
+				await expect(service.validateCreationAttributes(requested, fakeActor, creatorExcluded)).resolves.toEqual({
+					allowed: false,
+					reason: 'unavailable',
+					code: 'error-pdp-unavailable',
+				});
+				expect(mockUsersFindOneById).not.toHaveBeenCalled();
+			});
+		});
+
+		describe('under the Virtru PDP', () => {
+			beforeEach(() => {
+				mockHasModule.mockReturnValue(true);
+				Object.assign(service as any, {
+					abacEnabled: true,
+					pdpTypeSetting: 'virtru',
+					attributeStoreSetting: 'virtru',
+					pdpType: 'virtru',
+					pdp: { isAvailable: jest.fn().mockResolvedValue(true) },
+				});
+			});
+
+			it('names the attribute Virtru does not entitle the actor to, and ignores the owned-attributes rule', async () => {
+				const store = makeStore();
+				store.validateAssignable.mockRejectedValue(
+					new AbacInvalidAttributeValuesError({ attributes: [{ key: 'dept', values: ['sales'] }] }),
+				);
+				(service as any).attributeStores.virtru.store = store;
+
+				await expect(service.validateCreationAttributes(requested, fakeActor, creatorExcluded)).resolves.toEqual({
+					allowed: false,
+					reason: 'not-entitled',
+					code: 'error-invalid-attribute-values',
+					attributes: [{ key: 'dept', values: ['sales'] }],
+				});
+				expect(store.entitlementsOf).not.toHaveBeenCalled();
+			});
+
+			it('allows exactly what Virtru entitles the actor to', async () => {
+				const store = makeStore();
+				(service as any).attributeStores.virtru.store = store;
+
+				await expect(service.validateCreationAttributes(requested, fakeActor, creatorExcluded)).resolves.toEqual({
+					allowed: true,
+					attributes: normalized,
+				});
+				expect(store.validateAssignable).toHaveBeenCalledWith(normalized, fakeActor);
+			});
+
+			it('refuses as inconclusive when the actor cannot be resolved to a Virtru entity', async () => {
+				const store = makeStore();
+				store.validateAssignable.mockRejectedValue(new AbacEntityResolutionFailedError());
+				(service as any).attributeStores.virtru.store = store;
+
+				await expect(service.validateCreationAttributes(requested, fakeActor, creatorExcluded)).resolves.toEqual({
+					allowed: false,
+					reason: 'inconclusive',
+					code: 'error-virtru-entity-resolution-failed',
+				});
+			});
+
+			it('refuses as unavailable, rather than failing, when the entitlements call errors or times out', async () => {
+				const store = makeStore();
+				store.validateAssignable.mockRejectedValue(new Error('request timed out'));
+				(service as any).attributeStores.virtru.store = store;
+
+				await expect(service.validateCreationAttributes(requested, fakeActor, creatorExcluded)).resolves.toEqual({
+					allowed: false,
+					reason: 'unavailable',
+					code: 'error-pdp-unavailable',
+				});
+			});
+
+			it('refuses as unavailable when Virtru cannot be reached', async () => {
+				const store = makeStore();
+				store.validateAssignable.mockRejectedValue(new PdpUnavailableError());
+				(service as any).attributeStores.virtru.store = store;
+
+				await expect(service.validateCreationAttributes(requested, fakeActor, creatorExcluded)).resolves.toMatchObject({
+					allowed: false,
+					reason: 'unavailable',
+				});
+			});
+
+			it('skips the entitlement check for a bypass holder', async () => {
+				mockHasPermission.mockResolvedValue(true);
+				const store = makeStore();
+				(service as any).attributeStores.virtru.store = store;
+
+				await expect(service.validateCreationAttributes(requested, fakeActor, creatorExcluded)).resolves.toMatchObject({ allowed: true });
+				expect(store.validateAssignable).not.toHaveBeenCalled();
+			});
+
+			describe('with the local attribute store', () => {
+				let assertCreatorMayAssign: jest.Mock;
+				let checkUsernamesMatchAttributes: jest.Mock;
+
+				beforeEach(() => {
+					assertCreatorMayAssign = jest.fn().mockResolvedValue({ creatorAdmitted: true });
+					checkUsernamesMatchAttributes = jest.fn().mockResolvedValue(undefined);
+					Object.assign(service as any, {
+						attributeStoreSetting: 'local',
+						pdp: { isAvailable: jest.fn().mockResolvedValue(true), assertCreatorMayAssign, checkUsernamesMatchAttributes },
+					});
+				});
+
+				it('refuses the creation when Virtru does not permit the creator the attributes', async () => {
+					assertCreatorMayAssign.mockRejectedValue(new OnlyCompliantCanBeAddedToRoomError());
+
+					await expect(service.validateCreationAttributes(requested, fakeActor, creatorExcluded)).resolves.toEqual({
+						allowed: false,
+						reason: 'not-entitled',
+						code: 'error-only-compliant-users-can-be-added-to-abac-rooms',
+					});
+					expect(assertCreatorMayAssign).toHaveBeenCalledWith(normalized, fakeActor);
+				});
+
+				it('allows what Virtru permits the creator', async () => {
+					await expect(service.validateCreationAttributes(requested, fakeActor, creatorExcluded)).resolves.toEqual({
+						allowed: true,
+						attributes: normalized,
+					});
+				});
+
+				it('refuses an attribute the workspace does not define before asking Virtru', async () => {
+					await expect(service.validateCreationAttributes({ unknown: ['x'] }, fakeActor, creatorExcluded)).resolves.toMatchObject({
+						allowed: false,
+						reason: 'invalid',
+						code: 'error-attribute-definition-not-found',
+					});
+					expect(assertCreatorMayAssign).not.toHaveBeenCalled();
+				});
+
+				it('asks Virtru about a creator who joins the room once', async () => {
+					await expect(service.validateCreationAttributes(requested, fakeActor, creatorJoining)).resolves.toMatchObject({ allowed: true });
+					expect(assertCreatorMayAssign).toHaveBeenCalledTimes(1);
+					expect(checkUsernamesMatchAttributes).not.toHaveBeenCalled();
+				});
+			});
+		});
+
+		describe('when the creator joins the room', () => {
+			let checkUsernamesMatchAttributes: jest.Mock;
+
+			beforeEach(() => {
+				checkUsernamesMatchAttributes = jest.fn().mockResolvedValue(undefined);
+				(service as any).pdp = {
+					isAvailable: jest.fn().mockResolvedValue(true),
+					assertCreatorMayAssign: jest.fn().mockResolvedValue({ creatorAdmitted: false }),
+					checkUsernamesMatchAttributes,
+				};
+			});
+
+			it('refuses a creator the PDP would not admit to the room', async () => {
+				checkUsernamesMatchAttributes.mockRejectedValue(new OnlyCompliantCanBeAddedToRoomError());
+
+				await expect(service.validateCreationAttributes(requested, fakeActor, creatorJoining)).resolves.toEqual({
+					allowed: false,
+					reason: 'creator-not-admitted',
+					code: 'error-only-compliant-users-can-be-added-to-abac-rooms',
+				});
+				expect(checkUsernamesMatchAttributes).toHaveBeenCalledWith([fakeActor.username], normalized, { _id: 'room-creation' });
+			});
+
+			it('refuses a bypass holder the PDP would not admit to the room', async () => {
+				mockHasPermission.mockResolvedValue(true);
+				checkUsernamesMatchAttributes.mockRejectedValue(new OnlyCompliantCanBeAddedToRoomError());
+
+				await expect(service.validateCreationAttributes(requested, fakeActor, creatorJoining)).resolves.toMatchObject({
+					allowed: false,
+					reason: 'creator-not-admitted',
+				});
+			});
+
+			it('refuses as unavailable when the admission check fails unexpectedly', async () => {
+				checkUsernamesMatchAttributes.mockRejectedValue(new Error('request timed out'));
+
+				await expect(service.validateCreationAttributes(requested, fakeActor, creatorJoining)).resolves.toEqual({
+					allowed: false,
+					reason: 'unavailable',
+					code: 'error-pdp-unavailable',
+				});
+			});
+
+			it('allows a creator the PDP admits', async () => {
+				await expect(service.validateCreationAttributes(requested, fakeActor, creatorJoining)).resolves.toEqual({
+					allowed: true,
+					attributes: normalized,
+				});
+			});
+
+			it('does not ask about a creator who does not join', async () => {
+				checkUsernamesMatchAttributes.mockRejectedValue(new OnlyCompliantCanBeAddedToRoomError());
+
+				await expect(service.validateCreationAttributes(requested, fakeActor, creatorExcluded)).resolves.toMatchObject({ allowed: true });
+				expect(checkUsernamesMatchAttributes).not.toHaveBeenCalled();
+			});
+		});
+	});
+
+	describe('listAssignableAttributes', () => {
+		const definitions = [
+			{ _id: 'a2', key: 'region', values: ['emea', 'apac'] },
+			{ _id: 'a1', key: 'dept', values: ['eng', 'sales'] },
+		];
+
+		const holding = (held: Record<string, string[]>) =>
+			mockUsersFindOneById.mockResolvedValue({ abacAttributes: Object.entries(held).map(([key, values]) => ({ key, values })) });
+
+		beforeEach(() => {
+			mockHasPermission.mockReset().mockResolvedValue(false);
+			mockUsersFindOneById.mockReset();
+			mockAbacFindAll.mockReset().mockReturnValue({ toArray: async () => definitions });
+			service.setPdpStrategy('local', true);
+		});
+
+		describe('under the local PDP', () => {
+			it('offers only the defined values the actor holds, sorted by key', async () => {
+				holding({ region: ['emea', 'unknown'], dept: ['eng'], clearance: ['secret'] });
+
+				await expect(service.listAssignableAttributes(fakeActor)).resolves.toEqual([
+					{ key: 'dept', values: ['eng'] },
+					{ key: 'region', values: ['emea'] },
+				]);
+			});
+
+			it('leaves out a key the actor holds no value of, so a required one can be named as missing', async () => {
+				holding({ dept: ['eng'] });
+
+				await expect(service.listAssignableAttributes(fakeActor)).resolves.toEqual([{ key: 'dept', values: ['eng'] }]);
+			});
+
+			it('offers every definition when restricting to owned attributes is off', async () => {
+				service.setPdpStrategy('local', false);
+
+				await expect(service.listAssignableAttributes(fakeActor)).resolves.toEqual([
+					{ key: 'dept', values: ['eng', 'sales'] },
+					{ key: 'region', values: ['emea', 'apac'] },
+				]);
+				expect(mockUsersFindOneById).not.toHaveBeenCalled();
+			});
+
+			it('offers every definition to a bypass holder', async () => {
+				mockHasPermission.mockResolvedValue(true);
+
+				await expect(service.listAssignableAttributes(fakeActor)).resolves.toEqual([
+					{ key: 'dept', values: ['eng', 'sales'] },
+					{ key: 'region', values: ['emea', 'apac'] },
+				]);
+				expect(mockHasPermission).toHaveBeenCalledWith(fakeActor._id, 'bypass-abac-store-validation');
+				expect(mockUsersFindOneById).not.toHaveBeenCalled();
+			});
+		});
+
+		describe('under the Virtru PDP', () => {
+			beforeEach(() => {
+				mockHasModule.mockReturnValue(true);
+				Object.assign(service as any, {
+					abacEnabled: true,
+					pdpTypeSetting: 'virtru',
+					attributeStoreSetting: 'virtru',
+					pdpType: 'virtru',
+					pdp: { isAvailable: jest.fn().mockResolvedValue(true) },
+				});
+			});
+
+			it('offers exactly what Virtru entitles the actor to, without reading local definitions', async () => {
+				(service as any).attributeStores.virtru.store = {
+					entitlementsOf: jest.fn().mockResolvedValue(
+						new Map([
+							['region', new Set(['emea'])],
+							['dept', new Set(['sales'])],
+						]),
+					),
+				};
+
+				await expect(service.listAssignableAttributes(fakeActor)).resolves.toEqual([
+					{ key: 'dept', values: ['sales'] },
+					{ key: 'region', values: ['emea'] },
+				]);
+				expect(mockAbacFindAll).not.toHaveBeenCalled();
+			});
+
+			it('fails rather than offering nothing when the entitlements call fails', async () => {
+				(service as any).attributeStores.virtru.store = {
+					entitlementsOf: jest.fn().mockRejectedValue(new AbacEntityResolutionFailedError()),
+				};
+
+				await expect(service.listAssignableAttributes(fakeActor)).rejects.toThrow(AbacEntityResolutionFailedError);
+			});
+
+			it('offers what the PDP filters from the definitions with the local attribute store', async () => {
+				const filterAssignableAttributes = jest.fn(async (offered: unknown) => offered);
+				Object.assign(service as any, {
+					attributeStoreSetting: 'local',
+					pdp: { isAvailable: jest.fn().mockResolvedValue(true), filterAssignableAttributes },
+				});
+
+				await expect(service.listAssignableAttributes(fakeActor)).resolves.toHaveLength(2);
+				expect(filterAssignableAttributes).toHaveBeenCalledWith(
+					definitions.map(({ key, values }) => ({ key, values })),
+					fakeActor,
+				);
+			});
+		});
+	});
+
+	describe('auditRoomAttributesAtCreation', () => {
+		const room = { _id: 'r1', name: 'room', abacAttributes: [{ key: 'dept', values: ['eng'] }] };
+
+		beforeEach(() => {
+			mockCreateAuditServerEvent.mockReset();
+		});
+
+		it('records the attributes a room was created with', async () => {
+			mockHasPermission.mockReset().mockResolvedValue(false);
+
+			await service.auditRoomAttributesAtCreation(room, fakeActor);
+
+			expect(mockCreateAuditServerEvent).toHaveBeenCalledWith(
+				'abac.object.attribute.changed',
+				expect.objectContaining({ change: 'created', reason: 'api', previous: [], current: room.abacAttributes }),
+				expect.objectContaining({ _id: fakeActor._id }),
+			);
+		});
+
+		it('records that the creator bypassed store validation', async () => {
+			mockHasPermission.mockReset().mockResolvedValue(true);
+
+			await service.auditRoomAttributesAtCreation(room, fakeActor);
+
+			expect(mockCreateAuditServerEvent).toHaveBeenCalledWith(
+				'abac.object.attribute.changed',
+				expect.objectContaining({ reason: 'store-validation-bypassed' }),
+				expect.anything(),
+			);
+		});
+	});
+
+	describe('previewCreationMembers', () => {
+		const attributes = { dept: ['eng'] };
+		const creator = {
+			_id: fakeActor._id,
+			username: fakeActor.username,
+			name: 'Creator',
+			emails: [],
+			abacAttributes: [{ key: 'dept', values: ['eng'] }],
+		};
+		const alice = { _id: 'alice', username: 'alice', name: 'Alice', emails: [] };
+		const bob = { _id: 'bob', username: 'bob', name: 'Bob', emails: [] };
+
+		const joining = { creatorJoins: true };
+		const leaving = { creatorJoins: false };
+
+		const usePdp = (
+			evaluateSubjectsAgainstAttributes: jest.Mock,
+			checkUsernamesMatchAttributes = jest.fn().mockResolvedValue(undefined),
+		) => {
+			(service as any).pdp = Object.assign(new LocalPDP(true), {
+				isAvailable: jest.fn().mockResolvedValue(true),
+				evaluateSubjectsAgainstAttributes,
+				checkUsernamesMatchAttributes,
+			});
+			return evaluateSubjectsAgainstAttributes;
+		};
+
+		beforeEach(() => {
+			mockAbacFind.mockReturnValue({ toArray: async () => [{ key: 'dept', values: ['eng', 'sales'] }] });
+			mockUsersFindOneById.mockReset().mockResolvedValue(creator);
+			mockUsersFindUsersByUsernames.mockReset().mockReturnValue({ toArray: async () => [alice, bob] });
+			mockHasPermission.mockReset().mockResolvedValue(false);
+		});
+
+		it('evaluates the creator together with the members', async () => {
+			const evaluate = usePdp(jest.fn().mockResolvedValue({ compliant: ['test-user', 'alice'], nonCompliant: ['bob'], inconclusive: [] }));
+
+			const result = await service.previewCreationMembers(['alice', 'bob'], attributes, fakeActor, joining);
+
+			expect(mockUsersFindOneById.mock.calls[0][0]).toBe('test-user');
+			expect(mockUsersFindUsersByUsernames.mock.calls[0][0]).toEqual(['alice', 'bob']);
+			expect(evaluate).toHaveBeenCalledWith([creator, alice, bob], [{ key: 'dept', values: ['eng'] }], expect.anything());
+			expect(result).toEqual({
+				allowed: true,
+				preview: {
+					compliant: [
+						{ _id: 'test-user', username: 'testuser', name: 'Creator' },
+						{ _id: 'alice', username: 'alice', name: 'Alice' },
+					],
+					nonCompliant: [{ _id: 'bob', username: 'bob', name: 'Bob' }],
+					inconclusive: [],
+					creator: 'compliant',
+				},
+			});
+		});
+
+		it('reports how a creator who stays out of the room would be evaluated', async () => {
+			usePdp(jest.fn().mockResolvedValue({ compliant: ['alice'], nonCompliant: [], inconclusive: ['test-user', 'bob'] }));
+
+			const result = await service.previewCreationMembers(['alice', 'bob'], attributes, fakeActor, leaving);
+
+			expect(result).toEqual({
+				allowed: true,
+				preview: {
+					compliant: [{ _id: 'alice', username: 'alice', name: 'Alice' }],
+					nonCompliant: [],
+					inconclusive: [{ _id: 'bob', username: 'bob', name: 'Bob' }],
+					creator: 'inconclusive',
+				},
+			});
+		});
+
+		it('refuses a joining creator the PDP would not admit, as creation does', async () => {
+			const evaluate = usePdp(jest.fn(), jest.fn().mockRejectedValue(new OnlyCompliantCanBeAddedToRoomError()));
+
+			await expect(service.previewCreationMembers(['alice'], attributes, fakeActor, joining)).resolves.toMatchObject({
+				allowed: false,
+				reason: 'creator-not-admitted',
+			});
+			expect(evaluate).not.toHaveBeenCalled();
+		});
+
+		it('refuses when no PDP is configured, rather than reporting everyone as compliant', async () => {
+			(service as any).pdp = null;
+
+			await expect(service.previewCreationMembers(['alice'], attributes, fakeActor, joining)).resolves.toEqual({
+				allowed: false,
+				reason: 'unavailable',
+				code: 'error-pdp-unavailable',
+			});
+			expect(mockUsersFindUsersByUsernames).not.toHaveBeenCalled();
+		});
+
+		it('refuses when the PDP is gone by the time the members are loaded', async () => {
+			const evaluate = usePdp(jest.fn());
+			mockUsersFindUsersByUsernames.mockImplementation(() => {
+				(service as any).pdp = null;
+				return { toArray: async () => [alice] };
+			});
+
+			await expect(service.previewCreationMembers(['alice'], attributes, fakeActor, joining)).resolves.toEqual({
+				allowed: false,
+				reason: 'unavailable',
+				code: 'error-pdp-unavailable',
+			});
+			expect(evaluate).not.toHaveBeenCalled();
+		});
+
+		it('refuses when the PDP is unavailable', async () => {
+			(service as any).pdp = { isAvailable: jest.fn().mockResolvedValue(false), evaluateSubjectsAgainstAttributes: jest.fn() };
+
+			await expect(service.previewCreationMembers(['alice'], attributes, fakeActor, joining)).resolves.toMatchObject({
+				allowed: false,
+				reason: 'unavailable',
+			});
+		});
+
+		it('reports decisions as unavailable when the evaluation fails', async () => {
+			usePdp(jest.fn().mockRejectedValue(new Error('virtru down')));
+
+			await expect(service.previewCreationMembers(['alice'], attributes, fakeActor, joining)).resolves.toEqual({
+				allowed: false,
+				reason: 'unavailable',
+				code: 'error-pdp-unavailable',
+			});
+		});
+
+		it('refuses values the creator may not assign, before evaluating anyone', async () => {
+			const evaluate = usePdp(jest.fn());
+
+			await expect(service.previewCreationMembers(['alice'], { dept: ['sales'] }, fakeActor, joining)).resolves.toEqual({
+				allowed: false,
+				reason: 'not-entitled',
+				code: 'error-invalid-attribute-values',
+				attributes: [{ key: 'dept', values: ['sales'] }],
+			});
+			expect(evaluate).not.toHaveBeenCalled();
+			expect(mockUsersFindUsersByUsernames).not.toHaveBeenCalled();
+		});
+
+		it('previews values the creator does not hold for a room they stay out of, when restricting to owned attributes is off', async () => {
+			const evaluate = usePdp(jest.fn().mockResolvedValue({ compliant: ['alice'], nonCompliant: ['test-user'], inconclusive: [] }));
+			(service as any).pdp.setRestrictToOwnedAttributes(false);
+
+			const result = await service.previewCreationMembers(['alice'], { dept: ['sales'] }, fakeActor, leaving);
+
+			expect(evaluate).toHaveBeenCalled();
+			expect(result).toMatchObject({ allowed: true, preview: { creator: 'nonCompliant' } });
+		});
+
+		it('refuses attributes that do not exist', async () => {
+			const evaluate = usePdp(jest.fn());
+			(service as any).pdp.setRestrictToOwnedAttributes(false);
+
+			await expect(service.previewCreationMembers(['alice'], { region: ['emea'] }, fakeActor, joining)).resolves.toMatchObject({
+				allowed: false,
+				reason: 'invalid',
+			});
+			expect(evaluate).not.toHaveBeenCalled();
 		});
 	});
 
@@ -2181,13 +2797,13 @@ describe('AbacService (unit)', () => {
 		});
 
 		it('resolves normally when the settings write fails', async () => {
-			const svc = await bootWith(buildSettings({}));
+			const svc = await bootWith(buildSettings({ ABAC_Restrict_To_Owned_Attributes: true }));
 			mockSettingsSet.mockRejectedValueOnce(new Error('db-write-failure'));
 			const pdpStrategySpy = jest.spyOn(svc as any, 'setPdpStrategy');
 
 			await expect(fireSettingChanged(svc, 'ABAC_PDP_Type', 'local')).resolves.toBeUndefined();
 
-			expect(pdpStrategySpy).toHaveBeenCalledWith('local');
+			expect(pdpStrategySpy).toHaveBeenCalledWith('local', true);
 		});
 	});
 

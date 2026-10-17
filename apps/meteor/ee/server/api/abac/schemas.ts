@@ -1,13 +1,20 @@
 import type {
 	IAbacAttribute,
 	IAbacAttributeDefinition,
+	IAbacMembershipPreview,
 	IAuditServerActor,
 	IRoom,
 	IRoomAbacRedaction,
 	IServerEvents,
 } from '@rocket.chat/core-typings';
 import type { PaginatedResult, PaginatedRequest } from '@rocket.chat/rest-typings';
-import { ajv, ajvQuery, paginatedResponseProperties, paginationQueryProperties } from '@rocket.chat/rest-typings';
+import {
+	abacCreationAttributesSchema,
+	ajv,
+	ajvQuery,
+	paginatedResponseProperties,
+	paginationQueryProperties,
+} from '@rocket.chat/rest-typings';
 
 const ATTRIBUTE_KEY_PATTERN = '^[A-Za-z0-9_-]+$';
 const MAX_ROOM_ATTRIBUTE_VALUES = 10;
@@ -134,6 +141,33 @@ const GetAbacAttributeKeysResponse = {
 
 export const GETAbacAttributeKeysResponseSchema = ajv.compile<{ data: { key: string; label: string }[] }>(GetAbacAttributeKeysResponse);
 
+const GetAbacAssignableAttributesResponse = {
+	type: 'object',
+	properties: {
+		success: { type: 'boolean', enum: [true] },
+		attributes: {
+			type: 'array',
+			items: {
+				type: 'object',
+				properties: {
+					key: { type: 'string', minLength: 1 },
+					values: { type: 'array', items: { type: 'string', minLength: 1 }, minItems: 1 },
+				},
+				required: ['key', 'values'],
+				additionalProperties: false,
+			},
+		},
+		requiredKeys: { type: 'array', items: { type: 'string' } },
+	},
+	required: ['attributes', 'requiredKeys'],
+	additionalProperties: false,
+};
+
+export const GETAbacAssignableAttributesResponseSchema = ajv.compile<{
+	attributes: { key: string; values: string[] }[];
+	requiredKeys: string[];
+}>(GetAbacAssignableAttributesResponse);
+
 const GetAbacAttributeByIdResponse = {
 	type: 'object',
 	properties: {
@@ -239,6 +273,7 @@ export const GETAbacAuditEventsResponseSchema = ajv.compile<{
 		| IServerEvents['abac.object.attribute.changed']
 		| IServerEvents['abac.object.attributes.removed']
 		| IServerEvents['abac.attribute.store.switched']
+		| IServerEvents['abac.membership.evaluated']
 	)[];
 	count: number;
 	offset: number;
@@ -266,6 +301,53 @@ const PostRoomAbacAttributesBody = {
 };
 
 export const POSTRoomAbacAttributesBodySchema = ajv.compile<{ attributes: Record<string, string[]> }>(PostRoomAbacAttributesBody);
+
+const PostAbacMembershipPreviewBody = {
+	type: 'object',
+	properties: {
+		members: {
+			type: 'array',
+			items: { type: 'string', minLength: 1 },
+			uniqueItems: true,
+		},
+		attributes: abacCreationAttributesSchema,
+		excludeSelf: { type: 'boolean' },
+	},
+	required: ['members', 'attributes'],
+	additionalProperties: false,
+};
+
+export const POSTAbacMembershipPreviewBodySchema = ajv.compile<{
+	members: string[];
+	attributes: Record<string, string[]>;
+	excludeSelf?: boolean;
+}>(PostAbacMembershipPreviewBody);
+
+const PreviewMember = {
+	type: 'object',
+	properties: {
+		_id: { type: 'string' },
+		username: { type: 'string' },
+		name: { type: 'string' },
+	},
+	required: ['_id'],
+	additionalProperties: false,
+};
+
+const PostAbacMembershipPreviewResponse = {
+	type: 'object',
+	properties: {
+		success: { type: 'boolean', enum: [true] },
+		compliant: { type: 'array', items: PreviewMember },
+		nonCompliant: { type: 'array', items: PreviewMember },
+		inconclusive: { type: 'array', items: PreviewMember },
+		creator: { type: 'string', enum: ['compliant', 'nonCompliant', 'inconclusive'] },
+	},
+	required: ['success', 'compliant', 'nonCompliant', 'inconclusive', 'creator'],
+	additionalProperties: false,
+};
+
+export const POSTAbacMembershipPreviewResponseSchema = ajv.compile<IAbacMembershipPreview>(PostAbacMembershipPreviewResponse);
 
 const PostSingleRoomAbacAttributeBody = {
 	type: 'object',

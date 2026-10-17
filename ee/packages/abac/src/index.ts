@@ -1,5 +1,5 @@
 import { api, Authorization, License, Room, ServiceClass, Settings } from '@rocket.chat/core-services';
-import type { AbacActor, IAbacService } from '@rocket.chat/core-services';
+import type { AbacActor, AbacCreationAttributesResult, AbacMembershipPreviewResult, IAbacService } from '@rocket.chat/core-services';
 import { AbacAccessOperation, AbacObjectType, isAbacPdpType, isAbacAttributeStoreType } from '@rocket.chat/core-typings';
 import type {
 	IAbacAttribute,
@@ -22,12 +22,15 @@ import pLimit from 'p-limit';
 import { Audit } from './audit';
 import { VirtruClient } from './clients/virtru/VirtruClient';
 import {
+	AbacError,
+	AbacErrorCode,
 	AbacAttributeInUseError,
 	AbacAttributeNotFoundError,
 	AbacDuplicateAttributeKeyError,
 	AbacInvalidAttributeValuesError,
 	AbacUnsupportedObjectTypeError,
 	AbacUnsupportedOperationError,
+	OnlyCompliantCanBeAddedToRoomError,
 	PdpUnavailableError,
 	PdpHealthCheckError,
 } from './errors';
@@ -37,17 +40,23 @@ import {
 	extractAttribute,
 	diffAttributeSets,
 	validateAndNormalizeAttributes,
+	ensureAttributeDefinitionsExist,
+	sortByKey,
+	toCreationDenial,
+	verdictOf,
 	MAX_ABAC_ATTRIBUTE_KEYS,
 	stripTrailingSlashes,
 } from './helper';
 import { logger } from './logger';
-import type { IPolicyDecisionPoint, VirtruPDPConfig } from './pdp';
+import type { Evaluation, IPolicyDecisionPoint, VirtruPDPConfig } from './pdp';
 import { LocalPDP, VirtruPDP } from './pdp';
 import { LocalAttributeStore, VirtruAttributeStore } from './store';
 import type { AttributeStoreDescriptor, AttributeStoreSelectionContext, IAttributeStore } from './store';
 
 // Limit concurrent user removals to avoid overloading the server with too many operations at once
 const limit = pLimit(20);
+
+type CreationDenial = Extract<AbacCreationAttributesResult, { allowed: false }>;
 
 export class AbacService extends ServiceClass implements IAbacService {
 	protected name = 'abac';
@@ -96,9 +105,10 @@ export class AbacService extends ServiceClass implements IAbacService {
 				await this.loadVirtruPdpConfig();
 			}
 
+			const restrictToOwnedAttributes = await Settings.get<boolean>('ABAC_Restrict_To_Owned_Attributes');
 			const prevEffective = await this.computeEffectiveStoreType();
 			this.pdpTypeSetting = value;
-			this.setPdpStrategy(value);
+			this.setPdpStrategy(value, restrictToOwnedAttributes);
 			await this.fireEffectiveStoreTransitionIfChanged(prevEffective);
 			if (value === 'local' && this.attributeStoreSetting === 'virtru') {
 				try {
@@ -124,6 +134,13 @@ export class AbacService extends ServiceClass implements IAbacService {
 			this.attributeStoreSetting = value;
 			if (prevSetting !== undefined) {
 				await this.fireEffectiveStoreTransitionIfChanged(prevEffective);
+			}
+		});
+
+		this.onSettingChanged('ABAC_Restrict_To_Owned_Attributes', async ({ setting }): Promise<void> => {
+			const { value } = setting;
+			if (typeof value === 'boolean' && this.pdp instanceof LocalPDP) {
+				this.pdp.setRestrictToOwnedAttributes(value);
 			}
 		});
 
@@ -243,7 +260,7 @@ export class AbacService extends ServiceClass implements IAbacService {
 		}
 	}
 
-	setPdpStrategy(strategy: AbacPdpType): void {
+	setPdpStrategy(strategy: AbacPdpType, restrictToOwnedAttributes = false): void {
 		const previousPdp = this.pdp ? this.pdp.constructor.name : 'none';
 
 		switch (strategy) {
@@ -254,7 +271,7 @@ export class AbacService extends ServiceClass implements IAbacService {
 				break;
 			case 'local':
 			default:
-				this.pdp = new LocalPDP();
+				this.pdp = new LocalPDP(restrictToOwnedAttributes);
 				this.pdpType = 'local';
 				break;
 		}
@@ -270,10 +287,11 @@ export class AbacService extends ServiceClass implements IAbacService {
 	override async started(): Promise<void> {
 		this.decisionCacheTimeout = await Settings.get<number>('Abac_Cache_Decision_Time_Seconds');
 
-		const [abacEnabled, pdpType, attributeStore] = await Promise.all([
+		const [abacEnabled, pdpType, attributeStore, restrictToOwnedAttributes] = await Promise.all([
 			Settings.get<boolean>('ABAC_Enabled'),
 			Settings.get<string>('ABAC_PDP_Type'),
 			Settings.get<string>('ABAC_Attribute_Store'),
+			Settings.get<boolean>('ABAC_Restrict_To_Owned_Attributes'),
 		]);
 
 		this.abacEnabled = abacEnabled;
@@ -281,7 +299,7 @@ export class AbacService extends ServiceClass implements IAbacService {
 		this.attributeStoreSetting = isAbacAttributeStoreType(attributeStore) ? attributeStore : undefined;
 
 		if (pdpType !== 'virtru') {
-			this.setPdpStrategy('local');
+			this.setPdpStrategy('local', restrictToOwnedAttributes);
 			return;
 		}
 
@@ -546,6 +564,194 @@ export class AbacService extends ServiceClass implements IAbacService {
 			return;
 		}
 		await store.validateAssignable(attrs, actor);
+	}
+
+	async validateCreationAttributes(
+		attributes: Record<string, string[]>,
+		actor: AbacActor,
+		{ creatorJoins }: { creatorJoins: boolean },
+	): Promise<AbacCreationAttributesResult> {
+		let normalized: IAbacAttributeDefinition[];
+		let store: IAttributeStore;
+		let bypassed: boolean;
+
+		try {
+			normalized = validateAndNormalizeAttributes(attributes);
+			if (!normalized.length) {
+				throw new AbacInvalidAttributeValuesError();
+			}
+
+			await this.ensurePdpAvailable();
+			store = await this.resolveAttributeStore();
+			bypassed = await Authorization.hasPermission(actor._id, 'bypass-abac-store-validation');
+		} catch (err) {
+			return toCreationDenial(err, 'invalid');
+		}
+
+		const authorityFirst = this.pdpType === 'local';
+
+		// Local PDP: a creator who does not hold a value must not learn whether it is defined.
+		let authority = !bypassed && authorityFirst ? await this.checkCreatorAuthority(normalized, actor, store) : undefined;
+		if (authority && !authority.allowed) {
+			return authority;
+		}
+
+		if (store === this.attributeStores.local.store) {
+			try {
+				await ensureAttributeDefinitionsExist(normalized);
+			} catch (err) {
+				return toCreationDenial(err, 'invalid');
+			}
+		}
+
+		// Virtru PDP: asked only after the existence check, so undefined attributes never reach Virtru.
+		if (!bypassed && !authorityFirst) {
+			authority = await this.checkCreatorAuthority(normalized, actor, store);
+			if (!authority.allowed) {
+				return authority;
+			}
+		}
+
+		if (creatorJoins && !authority?.creatorAdmitted) {
+			try {
+				await this.assertPdpPermitsCreator(normalized, actor);
+			} catch (err) {
+				return this.toCheckDenial(err, 'creator-not-admitted', 'ABAC creator admission check failed');
+			}
+		}
+
+		return { allowed: true, attributes: normalized };
+	}
+
+	private toCheckDenial(err: unknown, reason: 'not-entitled' | 'creator-not-admitted', msg: string): CreationDenial {
+		if (!(err instanceof AbacError)) {
+			logger.error({ msg, err });
+			return { allowed: false, reason: 'unavailable', code: AbacErrorCode.PdpUnavailable };
+		}
+
+		return toCreationDenial(err, reason);
+	}
+
+	private async checkCreatorAuthority(
+		attributes: IAbacAttributeDefinition[],
+		actor: AbacActor,
+		store: IAttributeStore,
+	): Promise<{ allowed: true; creatorAdmitted: boolean } | CreationDenial> {
+		try {
+			if (store !== this.attributeStores.local.store) {
+				await store.validateAssignable(attributes, actor);
+				return { allowed: true, creatorAdmitted: false };
+			}
+
+			const authority = await this.pdp?.assertCreatorMayAssign(attributes, actor);
+			if (!authority) {
+				throw new PdpUnavailableError();
+			}
+
+			return { allowed: true, ...authority };
+		} catch (err) {
+			return this.toCheckDenial(err, 'not-entitled', 'ABAC creator authority check failed');
+		}
+	}
+
+	private async assertPdpPermitsCreator(attributes: IAbacAttributeDefinition[], actor: AbacActor): Promise<void> {
+		if (!actor.username) {
+			throw new OnlyCompliantCanBeAddedToRoomError();
+		}
+
+		if (!this.pdp) {
+			throw new PdpUnavailableError();
+		}
+
+		await this.pdp.checkUsernamesMatchAttributes([actor.username], attributes, { _id: 'room-creation' });
+	}
+
+	async listAssignableAttributes(actor: AbacActor): Promise<IAbacAttributeDefinition[]> {
+		const store = await this.resolveAttributeStore();
+		if (store !== this.attributeStores.local.store) {
+			return sortByKey(Array.from(await store.entitlementsOf(actor), ([key, values]) => ({ key, values: [...values] })));
+		}
+
+		const definitions = (await AbacAttributes.findAll({ projection: { key: 1, values: 1 } }).toArray()).map(({ key, values }) => ({
+			key,
+			values,
+		}));
+		if (await Authorization.hasPermission(actor._id, 'bypass-abac-store-validation')) {
+			return sortByKey(definitions);
+		}
+
+		if (!this.pdp) {
+			throw new PdpUnavailableError();
+		}
+
+		return sortByKey((await this.pdp.filterAssignableAttributes?.(definitions, actor)) ?? definitions);
+	}
+
+	async auditRoomAttributesAtCreation(
+		room: Pick<IRoom, '_id' | 'name'> & Required<Pick<IRoom, 'abacAttributes'>>,
+		actor: AbacActor,
+	): Promise<void> {
+		const bypassed = await Authorization.hasPermission(actor._id, 'bypass-abac-store-validation');
+		await Audit.objectAttributeChanged(
+			{ _id: room._id, name: room.name },
+			[],
+			room.abacAttributes,
+			'created',
+			actor,
+			bypassed ? 'store-validation-bypassed' : 'api',
+		);
+	}
+
+	async previewCreationMembers(
+		usernames: string[],
+		attributes: Record<string, string[]>,
+		actor: AbacActor,
+		{ creatorJoins }: { creatorJoins: boolean },
+	): Promise<AbacMembershipPreviewResult> {
+		const validation = await this.validateCreationAttributes(attributes, actor, { creatorJoins });
+		if (!validation.allowed) {
+			return validation;
+		}
+
+		const projection = { _id: 1, username: 1, name: 1, emails: 1 };
+		const [creator, named] = await Promise.all([
+			Users.findOneById(actor._id, { projection }),
+			Users.findUsersByUsernames(usernames, { projection }).toArray(),
+		]);
+		const others = named.filter(({ _id }) => _id !== actor._id);
+		const subjects = creator ? [creator, ...others] : others;
+
+		let evaluation: Evaluation;
+		try {
+			if (!this.pdp) {
+				throw new PdpUnavailableError();
+			}
+			evaluation = await this.pdp.evaluateSubjectsAgainstAttributes(subjects, validation.attributes, { _id: 'room-creation' });
+		} catch (err) {
+			logger.error({ msg: 'ABAC membership preview failed', err });
+			return { allowed: false, reason: 'unavailable', code: AbacErrorCode.PdpUnavailable };
+		}
+
+		void Audit.membershipEvaluated(
+			validation.attributes,
+			others.map(({ _id, username }) => ({ _id, username })),
+			actor,
+		);
+
+		const members = new Map(
+			subjects.filter(({ _id }) => creatorJoins || _id !== actor._id).map(({ _id, username, name }) => [_id, { _id, username, name }]),
+		);
+		const toMembers = (ids: string[]) => ids.flatMap((id) => members.get(id) ?? []);
+
+		return {
+			allowed: true,
+			preview: {
+				compliant: toMembers(evaluation.compliant),
+				nonCompliant: toMembers(evaluation.nonCompliant),
+				inconclusive: toMembers(evaluation.inconclusive),
+				creator: verdictOf(evaluation, actor._id),
+			},
+		};
 	}
 
 	async setRoomAbacAttributes(rid: string, attributes: Record<string, string[]>, actor: AbacActor): Promise<void> {
