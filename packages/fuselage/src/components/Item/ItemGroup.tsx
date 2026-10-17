@@ -1,5 +1,5 @@
 import type { AllHTMLAttributes, ElementType, ReactNode, RefAttributes } from 'react';
-import { Children, isValidElement, useId, useMemo } from 'react';
+import { Children, isValidElement, useCallback, useId, useMemo, useRef } from 'react';
 
 import { ItemGroupContext } from './ItemGroupContext';
 import ItemGroupTitle from './ItemGroupTitle';
@@ -18,11 +18,18 @@ export type ItemGroupProps = {
 } & Omit<AllHTMLAttributes<HTMLElement>, 'is'> &
 	RefAttributes<HTMLElement>;
 
+const isItemGroup = (child: unknown): boolean =>
+	isValidElement(child) && (child.type === ItemGroup || (child.type as { displayName?: string })?.displayName === 'ItemGroup');
+
 const findTitleId = (children: ReactNode): string | boolean | undefined => {
 	let result: string | boolean | undefined;
 
 	Children.forEach(children, (child) => {
 		if (result !== undefined || !isValidElement(child)) {
+			return;
+		}
+
+		if (isItemGroup(child)) {
 			return;
 		}
 
@@ -58,7 +65,7 @@ const getInitialTitleId = (propTitleId?: string, detectedTitle?: string | boolea
 /**
  * A list of `Item` rows. An `ItemGroupTitle` inside it labels the group, and its width drives the narrow layout.
  */
-const ItemGroup = ({ is: Tag = 'div', className, children, titleId: propTitleId, ...props }: ItemGroupProps) => {
+function ItemGroup({ is: Tag = 'div', className, children, titleId: propTitleId, ...props }: ItemGroupProps) {
 	const generatedTitleId = useId();
 	const detectedTitle = useMemo(() => findTitleId(children), [children]);
 	const [titleIds, registerTitle] = useIdRegistry();
@@ -66,16 +73,35 @@ const ItemGroup = ({ is: Tag = 'div', className, children, titleId: propTitleId,
 	const resolvedTitleId = propTitleId ?? (typeof detectedTitle === 'string' ? detectedTitle : generatedTitleId);
 	const initialTitleId = getInitialTitleId(propTitleId, detectedTitle, generatedTitleId);
 
+	const linkedCallerIdRef = useRef<string | null>(null);
+
+	const claimTitleId = useCallback(
+		(callerId: string) => {
+			if (!initialTitleId) {
+				return undefined;
+			}
+
+			if (linkedCallerIdRef.current === null || linkedCallerIdRef.current === callerId) {
+				linkedCallerIdRef.current = callerId;
+				return resolvedTitleId;
+			}
+
+			return undefined;
+		},
+		[initialTitleId, resolvedTitleId],
+	);
+
 	const contextValue = useMemo(
 		() => ({
 			titleId: resolvedTitleId,
+			claimTitleId,
 			registerTitle,
 		}),
-		[resolvedTitleId, registerTitle],
+		[resolvedTitleId, claimTitleId, registerTitle],
 	);
 
 	const hasOwnLabel = !!props['aria-label'] || !!props['aria-labelledby'];
-	const activeTitleId = titleIds.length > 0 ? titleIds.join(' ') : initialTitleId;
+	const activeTitleId = titleIds[0] ?? initialTitleId;
 	const ariaLabelledBy = !hasOwnLabel ? activeTitleId : undefined;
 
 	return (
@@ -85,7 +111,7 @@ const ItemGroup = ({ is: Tag = 'div', className, children, titleId: propTitleId,
 			</Tag>
 		</ItemGroupContext.Provider>
 	);
-};
+}
 
 ItemGroup.displayName = 'ItemGroup';
 

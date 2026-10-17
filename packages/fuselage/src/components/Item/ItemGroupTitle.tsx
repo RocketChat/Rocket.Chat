@@ -17,7 +17,8 @@ export type ItemGroupTitleProps = {
  */
 const ItemGroupTitle = ({ is: Tag = 'div', id: propId, className, type, ...props }: ItemGroupTitleProps) => {
 	const generatedId = useId();
-	const { titleId: contextTitleId, registerTitle } = useItemGroupContext();
+	const { claimTitleId, registerTitle } = useItemGroupContext();
+	const contextTitleId = claimTitleId(generatedId);
 	const id = propId ?? contextTitleId ?? generatedId;
 
 	useEffect(() => registerTitle(id), [id, registerTitle]);
