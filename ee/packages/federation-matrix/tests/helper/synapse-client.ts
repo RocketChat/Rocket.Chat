@@ -120,6 +120,34 @@ export class SynapseClient {
 	}
 
 	/**
+	 * Registers a new account through the Synapse admin API, which only a server admin may call.
+	 * Throws if the account already existed, so a reused account is never taken for a fresh one.
+	 *
+	 * @param userId - Matrix user ID of the new account (e.g., @user:domain.com)
+	 * @param password - Password for the new account
+	 */
+	async registerUser(userId: string, password: string): Promise<void> {
+		const accessToken = this.matrixClient.getAccessToken();
+		if (!accessToken) {
+			throw new Error('Matrix client access token not available');
+		}
+
+		const response = await fetch(`${this.url}/_synapse/admin/v2/users/${encodeURIComponent(userId)}`, {
+			method: 'PUT',
+			headers: {
+				'Authorization': `Bearer ${accessToken}`,
+				'Content-Type': 'application/json',
+			},
+			body: JSON.stringify({ password }),
+		});
+
+		// the endpoint upserts, so a 200 means an existing account was modified
+		if (response.status !== 201) {
+			throw new Error(`Failed to register ${userId}: ${response.status} ${await response.text()}`);
+		}
+	}
+
+	/**
 	 * Retrieves a room by its display name.
 	 *
 	 * Searches through all known rooms to find one matching the specified
