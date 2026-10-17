@@ -1,12 +1,13 @@
 import { useStableCallback, useDebouncedState } from '@rocket.chat/fuselage-hooks';
 import type { ComponentType, ElementType, MouseEvent, ReactNode, RefAttributes } from 'react';
-import { memo } from 'react';
+import { forwardRef, memo } from 'react';
 import { Virtuoso } from 'react-virtuoso';
 
 import { prevent } from '../../helpers/prevent';
 import { AnimatedVisibility } from '../AnimatedVisibility';
 import { Box, type BoxProps } from '../Box';
 import { CheckOption, Option } from '../Option';
+import { Scrollable } from '../Scrollable';
 import { Tile } from '../Tile';
 
 export type OptionsPaginatedProps = Omit<BoxProps, 'ref' | 'onSelect'> &
@@ -33,6 +34,14 @@ export type OptionsPaginatedProps = Omit<BoxProps, 'ref' | 'onSelect'> &
 export const Empty = memo(() => <Option label='Empty' />);
 
 export { CheckOption };
+
+const ScrollableContentWrapper = forwardRef<HTMLElement, BoxProps>(function ScrollableContentWrapper(props, ref) {
+	return (
+		<Scrollable vertical smooth>
+			<Box ref={ref} {...props} />
+		</Scrollable>
+	);
+});
 
 /**
  * An input for selection of options.
@@ -81,8 +90,7 @@ export function OptionsPaginated({
 						style={{ height: '144px' }}
 						totalCount={options.length}
 						data={options}
-						// TODO Add a scroller element
-						// components={{ Scroller: ScrollableContentWrapper }}
+						components={{ Scroller: ScrollableContentWrapper as ComponentType<any> }}
 						itemContent={(index, data) => <OptionsComponentWithData index={index} data={data} />}
 					/>
 				)}
