@@ -10,6 +10,7 @@ import './settings';
 import './requestSeatsRoute';
 import './configuration/index';
 import './local-services/ldap/service';
+import './meteor-methods/calendarSyncTestConnection';
 import './meteor-methods/getReadReceipts';
 import './patches';
 import './hooks/federation';

@@ -8,5 +8,6 @@ import './apps/uikit';
 import './engagementDashboard';
 import './audit';
 import './abac';
+import './calendarSync';
 import './mcp';
 import './videoConferenceCallConfig';
