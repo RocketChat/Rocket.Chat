@@ -285,7 +285,7 @@ export interface IRoomsModel extends IBaseModel<IRoom> {
 	): Promise<DocumentWithProjection<T, O> | null>;
 	findOneByNameAndType<T extends Document = IRoom, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(
 		name: string,
-		type: IRoom['t'],
+		type: IRoom['t'] | Array<IRoom['t']>,
 		options?: O,
 		includeFederatedRooms?: boolean,
 	): Promise<DocumentWithProjection<T, O> | null>;

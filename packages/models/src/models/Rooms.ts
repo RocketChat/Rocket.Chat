@@ -1127,12 +1127,12 @@ export class RoomsRaw extends BaseRaw<IRoom> implements IRoomsModel {
 
 	findOneByNameAndType<T extends Document = IRoom, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(
 		name: NonNullable<IRoom['name']>,
-		type: IRoom['t'],
+		type: IRoom['t'] | Array<IRoom['t']>,
 		options?: O,
 		includeFederatedRooms = false,
 	): Promise<DocumentWithProjection<T, O> | null> {
 		const query: Filter<IRoom> = {
-			t: type,
+			t: Array.isArray(type) ? { $in: type } : type,
 			teamId: {
 				$exists: false,
 			},
