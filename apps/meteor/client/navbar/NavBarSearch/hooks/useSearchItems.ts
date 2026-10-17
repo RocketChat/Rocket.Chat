@@ -146,8 +146,18 @@ export const useSearchItems = (filterText = ''): { items: SubscriptionWithRoom[]
 		// keeps the last results around — ignore them so a full local list isn't padded with stale rows.
 		const candidates = localRooms.length < LIMIT ? (serverResults ?? []) : [];
 		const fromServer = candidates.filter((item) => matchesFilter(item) && !isLocalDuplicate(item));
-		const exact = fromServer.filter((item) => [item.name, item.fname].includes(name));
-		return Array.from(new Set([...exact, ...localRooms, ...fromServer])) as SubscriptionWithRoom[];
+
+		const cleanName = name.trim().toLowerCase();
+		const isExactMatch = (item: { name?: string; fname?: string }) =>
+			Boolean(cleanName && (item.name?.trim().toLowerCase() === cleanName || item.fname?.trim().toLowerCase() === cleanName));
+
+		const exactLocal = localRooms.filter(isExactMatch);
+		const otherLocal = localRooms.filter((item) => !isExactMatch(item));
+
+		const exactServer = fromServer.filter(isExactMatch);
+		const otherServer = fromServer.filter((item) => !isExactMatch(item));
+
+		return Array.from(new Set([...exactLocal, ...exactServer, ...otherLocal, ...otherServer])) as SubscriptionWithRoom[];
 	}, [serverResults, localRooms, name]);
 
 	// `isFetching` is also true for silent background revalidations (after staleTime) of results we
