@@ -25,6 +25,8 @@ export type AbacCreationAttributesResult =
 export type AbacMembershipPreviewResult =
 	{ allowed: true; preview: IAbacMembershipPreview } | Extract<AbacCreationAttributesResult, { allowed: false }>;
 
+export type AbacUsersAllowedInRoomResult = { allowed: true; userIds: string[] } | { allowed: false; reason: 'unavailable'; code: string };
+
 export type AbacRoomAttributesGrant = 'manage-abac-admin-rooms' | 'edit-room-abac-attributes';
 
 export type AbacRoomMembershipPreviewPage = {
@@ -71,6 +73,7 @@ export interface IAbacService {
 		room: Pick<IRoom, '_id' | 'name'> & Required<Pick<IRoom, 'abacAttributes'>>,
 		actor: AbacActor,
 	): Promise<void>;
+	auditRoomAttributesRemoved(room: Pick<IRoom, '_id' | 'name' | 'abacAttributes'>, actor: AbacActor): Promise<void>;
 	previewCreationMembers(
 		usernames: string[],
 		attributes: Record<string, string[]>,
@@ -99,6 +102,11 @@ export interface IAbacService {
 		room: Pick<IRoom, '_id' | 'name' | 'abacAttributes'>,
 		options?: { audit?: boolean },
 	): Promise<string[]>;
+	evaluateUsersAllowedInRoom(
+		userIds: string[],
+		room: Pick<IRoom, '_id' | 'name' | 'abacAttributes'>,
+		options?: { audit?: boolean },
+	): Promise<AbacUsersAllowedInRoomResult>;
 	filterRoomsAllowedForUser(
 		userId: string,
 		rooms: Pick<IRoom, '_id' | 'name' | 'abacAttributes'>[],
