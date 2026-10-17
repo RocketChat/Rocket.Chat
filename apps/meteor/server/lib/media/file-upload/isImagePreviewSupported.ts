@@ -9,6 +9,10 @@ export function isImagePreviewSupported(mimeType: string): boolean {
 		mimeType === 'image/png' ||
 		mimeType === 'image/gif' ||
 		mimeType === 'image/webp' ||
-		mimeType === 'image/svg+xml'
+		mimeType === 'image/svg+xml' ||
+		mimeType === 'image/heic' ||
+		mimeType === 'image/heic-sequence' ||
+		mimeType === 'image/heif' ||
+		mimeType === 'image/heif-sequence'
 	);
 }
