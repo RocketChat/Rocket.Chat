@@ -1,4 +1,4 @@
-import { releaseStartupHooks } from './startup/holdStartupHooks';
+import './startup/holdStartupHooks';
 import './tracing';
 import './models';
 
@@ -41,4 +41,4 @@ setImmediate(() => {
 await startupApp();
 await startRestAPI();
 
-releaseStartupHooks();
+(await import('./startup/holdStartupHooks')).releaseStartupHooks();

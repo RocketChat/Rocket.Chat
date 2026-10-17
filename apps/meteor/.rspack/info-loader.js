@@ -32,10 +32,8 @@ async function buildInfo(source, appDir, isDevelopment) {
 		freeMemory: os.freemem(),
 		cpus: os.cpus().length,
 	};
-	output.marketplaceApiVersion = require(require.resolve('@rocket.chat/apps-engine/package.json', { paths: [appDir] })).version.replace(
-		/^[^0-9]/g,
-		'',
-	);
+	const appsEnginePackageJson = require.resolve('@rocket.chat/apps-engine/package.json', { paths: [appDir] });
+	output.marketplaceApiVersion = JSON.parse(fs.readFileSync(appsEnginePackageJson, { encoding: 'utf8' })).version.replace(/^[^0-9]/g, '');
 	const minimumClientVersions = readAppPackageJson(appDir)?.rocketchat?.minimumClientVersions || {};
 
 	const log = await git("git log --pretty=format:'%H%n%ad%n%an%n%s' -n 1", isDevelopment);
@@ -70,7 +68,12 @@ exports.minimumClientVersions = ${JSON.stringify(minimumClientVersions, null, 4)
 function fetchSupportedVersions(appDir, isDevelopment) {
 	return new Promise((resolve, reject) => {
 		const currentVersion = readAppPackageJson(appDir)?.version || '';
-		const type = currentVersion.includes('-rc.') ? 'candidate' : currentVersion.includes('-develop') ? 'develop' : 'stable';
+		let type = 'stable';
+		if (currentVersion.includes('-rc.')) {
+			type = 'candidate';
+		} else if (currentVersion.includes('-develop')) {
+			type = 'develop';
+		}
 		const url = `https://releases.rocket.chat/v2/server/supportedVersions?includeDraftType=${type}&includeDraftTag=${currentVersion}`;
 
 		const handleError = (err) => {
