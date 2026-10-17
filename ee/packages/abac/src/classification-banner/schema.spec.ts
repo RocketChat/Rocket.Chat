@@ -1,12 +1,11 @@
-/**
- * @jest-environment node
- */
-import type { ClassificationBannersConfig } from '@rocket.chat/abac';
+import { readFileSync } from 'fs';
+import path from 'path';
+
 import { ajv } from '@rocket.chat/rest-typings';
 
-import schema from '../../../../../../../ee/packages/abac/docs/classification-banners.schema.json';
+import type { ClassificationBannersConfig } from './types';
 
-const validate = ajv.compile(schema);
+const validate = ajv.compile(JSON.parse(readFileSync(path.join(__dirname, '../../docs/classification-banners.schema.json'), 'utf8')));
 
 const validConfig: ClassificationBannersConfig & { $schema: string } = {
 	$schema: 'https://rocket.chat/schemas/classification-banners/v1.json',
