@@ -1,6 +1,12 @@
 import { createPredicateFromFilter } from './filter';
 
 describe('createPredicateFromFilter', () => {
+	it.each([null, 0, 'text', false])('$elemMatch checks documents after a non-document element (%p)', (prefix) => {
+		const matches = createPredicateFromFilter({ items: { $elemMatch: { enabled: true } } });
+		expect(matches({ items: [prefix, { enabled: true }] })).toBe(true);
+		expect(matches({ items: [prefix, { enabled: false }] })).toBe(false);
+		expect(matches({ items: [prefix] })).toBe(false);
+	});
 	it('matches simple equality', () => {
 		const fn = createPredicateFromFilter({ foo: 'bar' });
 		expect(fn({ foo: 'bar' })).toBe(true);
