@@ -31,9 +31,15 @@ $tabs-border-radius: theme('tabs-border-radius', lengths.border-radius(medium));
 	position: relative;
 
 	overflow: auto;
+	flex-grow: 1;
+	flex-shrink: 1;
+
+	min-width: 0;
 
 	margin-block: lengths.margin(-4);
+
 	-ms-overflow-style: none;
+	scrollbar-width: none;
 
 	&::-webkit-scrollbar {
 		display: none;
@@ -137,14 +143,63 @@ $tabs-border-radius: theme('tabs-border-radius', lengths.border-radius(medium));
 	}
 }
 
-// TODO: Indication that there are more tab__items left to scroll (some sort of shadow maybe)
 .rcx-tabs {
 	position: relative;
 
 	display: flex;
 
+	&::before,
+	&::after {
+		position: absolute;
+		z-index: 1;
+		top: 0;
+		bottom: 0;
+
+		width: lengths.size(24);
+
+		content: '';
+
+		transition: opacity 0.15s ease-in-out;
+		pointer-events: none;
+
+		opacity: 0;
+	}
+
+	&::before {
+		inset-inline-start: 0;
+
+		background: linear-gradient(to right, colors.shadow(elevation-2y), transparent);
+	}
+
+	&:dir(rtl)::before {
+		background: linear-gradient(to left, colors.shadow(elevation-2y), transparent);
+	}
+
+	&::after {
+		inset-inline-end: 0;
+
+		background: linear-gradient(to left, colors.shadow(elevation-2y), transparent);
+	}
+
+	&:dir(rtl)::after {
+		background: linear-gradient(to right, colors.shadow(elevation-2y), transparent);
+	}
+
+	&--overflow-start::before {
+		opacity: 1;
+	}
+
+	&--overflow-end::after {
+		opacity: 1;
+	}
+
 	&--with-divider {
 		border-block-end: lengths.border-width(default) solid colors.stroke(light);
+
+		&::before,
+		&::after {
+			bottom: lengths.border-width(default);
+		}
 
 		.rcx-tabs__item {
 			margin-block-end: lengths.margin(-1);
