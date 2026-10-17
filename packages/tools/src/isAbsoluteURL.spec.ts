@@ -16,6 +16,9 @@ describe('isAbsoluteURL', () => {
 
 	test.each([
 		['https://rocket.chat', true],
+		['HTTPS://rocket.chat', true],
+		['hTtP://example.com/path', true],
+		['DATA:text/plain,hello', true],
 		['http://rocket.chat', true],
 		['https://example.com/path?query=1#hash', true],
 		['http://localhost:3000', true],
