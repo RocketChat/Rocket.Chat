@@ -17,12 +17,15 @@ export type ItemGroupTitleProps = {
  */
 const ItemGroupTitle = ({ is: Tag = 'div', id: propId, className, type, ...props }: ItemGroupTitleProps) => {
 	const generatedId = useId();
-	const id = propId ?? generatedId;
-	const { registerTitle } = useItemGroupContext();
+	const { claimTitleId, registerTitle } = useItemGroupContext();
+	const contextTitleId = claimTitleId(generatedId);
+	const id = propId ?? contextTitleId ?? generatedId;
 
 	useEffect(() => registerTitle(id), [id, registerTitle]);
 
 	return <Tag {...props} type={Tag === 'button' ? (type ?? 'button') : type} id={id} className={cx('rcx-item-group-title', className)} />;
 };
+
+ItemGroupTitle.displayName = 'ItemGroupTitle';
 
 export default ItemGroupTitle;
