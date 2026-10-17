@@ -86,6 +86,7 @@ class VersionCompiler {
 			const minimumClientVersions =
 				JSON.parse(fs.readFileSync(path.resolve(process.cwd(), './package.json'), { encoding: 'utf8' }))?.rocketchat
 					?.minimumClientVersions || {};
+			const rootPackageJson = JSON.parse(fs.readFileSync(path.resolve(process.cwd(), '../../package.json'), { encoding: 'utf8' }));
 			try {
 				const result = await execAsync("git log --pretty=format:'%H%n%ad%n%an%n%s' -n 1");
 				const data = result.stdout.split('\n');
@@ -126,7 +127,8 @@ class VersionCompiler {
 
 			file.addJavaScript({
 				data: `exports.Info = ${JSON.stringify(output, null, 4)};
-				exports.minimumClientVersions = ${JSON.stringify(minimumClientVersions, null, 4)};`,
+				exports.minimumClientVersions = ${JSON.stringify(minimumClientVersions, null, 4)};
+				exports.supportedNodeVersions = ${JSON.stringify(rootPackageJson.engines.node)};`,
 				path: `${file.getPathInPackage()}.js`,
 			});
 		};

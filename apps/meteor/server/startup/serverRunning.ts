@@ -1,13 +1,11 @@
 import crypto from 'node:crypto';
-import fs from 'node:fs';
-import path from 'node:path';
 
 import { License } from '@rocket.chat/license';
 // import { Users } from '@rocket.chat/models';
 import { Meteor } from 'meteor/meteor';
 import semver from 'semver';
 
-import { Info } from '../../rocketchat.info';
+import { Info, supportedNodeVersions } from '../../rocketchat.info';
 import { showErrorBox, showSuccessBox, showWarningBox } from '../lib/logger/showBox';
 import { getMongoInfo } from '../lib/utils/functions/getMongoInfo';
 // import { i18n } from '../lib/i18n';
@@ -33,15 +31,6 @@ const skipMongoDbDeprecationCheck =
 Meteor.startup(async () => {
 	const { mongoVersion, mongoStorageEngine } = await getMongoInfo();
 
-	const desiredNodeVersion = semver.clean(fs.readFileSync(path.join(process.cwd(), '../../.node_version.txt')).toString());
-	const parsedSemVer = semver.parse(desiredNodeVersion);
-	if (!parsedSemVer) {
-		console.error('Failed to parse desired Node.js version from .node_version.txt');
-		process.exit(1);
-	}
-
-	const desiredNodeVersionMajor = String(parsedSemVer.major);
-
 	return setTimeout(async () => {
 		let msg: string | string[] = [
 			`Rocket.Chat Version: ${Info.version}`,
@@ -66,12 +55,12 @@ Meteor.startup(async () => {
 
 		msg = msg.join('\n');
 
-		if (!semver.satisfies(process.versions.node, desiredNodeVersionMajor)) {
+		if (!semver.satisfies(process.versions.node, supportedNodeVersions)) {
 			msg += [
 				'',
 				'',
 				'YOUR CURRENT NODEJS VERSION IS NOT SUPPORTED,',
-				`PLEASE UPGRADE / DOWNGRADE TO VERSION ${desiredNodeVersionMajor}.X.X`,
+				`PLEASE UPGRADE / DOWNGRADE TO A VERSION MATCHING ${supportedNodeVersions}`,
 			].join('\n');
 			showErrorBox('SERVER ERROR', msg);
 
