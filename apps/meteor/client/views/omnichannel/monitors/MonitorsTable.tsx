@@ -23,12 +23,12 @@ import {
 	GenericTableHeaderCell,
 	GenericTableLoadingTable,
 	GenericTableRow,
-	usePagination,
+	usePaginatedQuery,
 	useSort,
 	GenericNoResults,
 } from '@rocket.chat/ui-client';
 import { useTranslation, useToastMessageDispatch, useEndpoint, useSetModal } from '@rocket.chat/ui-contexts';
-import { useMutation, useQuery, hashKey, useQueryClient } from '@tanstack/react-query';
+import { useMutation, hashKey, useQueryClient } from '@tanstack/react-query';
 import { useId, useMemo, useState } from 'react';
 
 import FilterByText from '../../../components/FilterByText';
@@ -44,7 +44,6 @@ const MonitorsTable = () => {
 
 	const dispatchToastMessage = useToastMessageDispatch();
 
-	const pagination = usePagination();
 	const sort = useSort<'name' | 'username' | 'email'>('name');
 
 	const getMonitors = useEndpoint('GET', '/v1/livechat/monitors');
@@ -52,7 +51,6 @@ const MonitorsTable = () => {
 	const deleteMonitor = useEndpoint('POST', '/v1/livechat/monitors.delete');
 	const addMonitor = useEndpoint('POST', '/v1/livechat/monitors.create');
 
-	const { current, itemsPerPage, setItemsPerPage: onSetItemsPerPage, setCurrent: onSetCurrent, ...paginationProps } = pagination;
 	const { sortBy, sortDirection, setSort } = sort;
 
 	const query = useDebouncedValue(
@@ -60,21 +58,21 @@ const MonitorsTable = () => {
 			() => ({
 				text,
 				sort: `{ "${sortBy}": ${sortDirection === 'asc' ? 1 : -1} }`,
-				...(itemsPerPage && { count: itemsPerPage }),
-				...(current && { offset: current }),
 			}),
-			[text, itemsPerPage, current, sortBy, sortDirection],
+			[text, sortBy, sortDirection],
 		),
 		500,
 	);
 
-	const { data, refetch, isLoading, isSuccess, isError } = useQuery({
+	const { data, refetch, isLoading, isSuccess, isError, paginatedQuery, paginationProps } = usePaginatedQuery({
+		query,
 		queryKey: ['omnichannel', 'monitors', query],
-		queryFn: () => getMonitors(query),
+		queryFn: getMonitors,
+		itemsKey: 'monitors',
 	});
 
-	const [defaultQuery] = useState(hashKey([query]));
-	const queryHasChanged = defaultQuery !== hashKey([query]);
+	const [defaultQuery] = useState(hashKey([paginatedQuery]));
+	const queryHasChanged = defaultQuery !== hashKey([paginatedQuery]);
 
 	const queryClient = useQueryClient();
 
@@ -179,15 +177,7 @@ const MonitorsTable = () => {
 							))}
 						</GenericTableBody>
 					</GenericTable>
-					<Pagination
-						divider
-						current={current}
-						itemsPerPage={itemsPerPage}
-						count={data?.total || 0}
-						onSetItemsPerPage={onSetItemsPerPage}
-						onSetCurrent={onSetCurrent}
-						{...paginationProps}
-					/>
+					<Pagination divider {...paginationProps} />
 				</>
 			)}
 			{isError && (

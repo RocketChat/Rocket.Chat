@@ -9,11 +9,10 @@ import {
 	GenericTableHeaderCell,
 	GenericTableLoadingRow,
 	GenericTableRow,
-	usePagination,
+	usePaginatedQuery,
 	GenericNoResults,
 } from '@rocket.chat/ui-client';
 import { useEndpoint, useSetModal } from '@rocket.chat/ui-contexts';
-import { useQuery } from '@tanstack/react-query';
 import { format } from 'date-fns/format';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -41,8 +40,6 @@ const SecurityLogsTable = () => {
 		settingId: '',
 	});
 
-	const { current, itemsPerPage, setItemsPerPage: onSetItemsPerPage, setCurrent: onSetCurrent, ...paginationProps } = usePagination();
-
 	const handleClearFilters = () => {
 		setSetting('');
 		setDateRange({ start: undefined, end: undefined });
@@ -51,7 +48,6 @@ const SecurityLogsTable = () => {
 			end: new Date().toISOString(),
 			settingId: '',
 		});
-		onSetCurrent(0);
 	};
 
 	const handleApplyFilters = () => {
@@ -61,7 +57,6 @@ const SecurityLogsTable = () => {
 			end: end?.toISOString() ?? new Date().toISOString(),
 			settingId: setting,
 		});
-		onSetCurrent(0);
 	};
 
 	const handleItemClick = ({
@@ -91,12 +86,11 @@ const SecurityLogsTable = () => {
 
 	const getAudits = useEndpoint('GET', '/v1/audit.settings');
 
-	const { data, isLoading, isSuccess } = useQuery({
-		queryKey: ['audit.settings', query, itemsPerPage, current],
-
-		queryFn: async () => {
-			return getAudits({ ...query, ...(itemsPerPage && { count: itemsPerPage }), ...(current && { offset: current }) });
-		},
+	const { data, isLoading, isSuccess, paginationProps } = usePaginatedQuery({
+		query,
+		queryKey: ['audit.settings', query],
+		queryFn: getAudits,
+		itemsKey: 'events',
 	});
 
 	return (
@@ -203,15 +197,7 @@ const SecurityLogsTable = () => {
 					</GenericTableBody>
 				</GenericTable>
 			)}
-			<Pagination
-				divider
-				current={current}
-				itemsPerPage={itemsPerPage}
-				count={data?.total || 0}
-				onSetItemsPerPage={onSetItemsPerPage}
-				onSetCurrent={onSetCurrent}
-				{...paginationProps}
-			/>
+			<Pagination divider {...paginationProps} />
 		</>
 	);
 };

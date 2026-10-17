@@ -1,11 +1,10 @@
 import type { CallHistoryItem, Serialized } from '@rocket.chat/core-typings';
 import { Pagination } from '@rocket.chat/fuselage';
 import { useDebouncedValue } from '@rocket.chat/fuselage-hooks';
-import { useSort, usePagination, GenericTableLoadingRow, GenericNoResults } from '@rocket.chat/ui-client';
+import { useSort, usePaginatedQuery, GenericTableLoadingRow, GenericNoResults } from '@rocket.chat/ui-client';
 import { useEndpoint, useRouteParameter, useRouter } from '@rocket.chat/ui-contexts';
 import { MediaCallHistoryTable, isCallHistoryUnknownContact, isCallHistoryInternalContact } from '@rocket.chat/ui-voip';
 import type { CallHistoryContact } from '@rocket.chat/ui-voip';
-import { useQuery } from '@tanstack/react-query';
 import { useCallback, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -75,7 +74,6 @@ const CallHistoryPage = () => {
 	const sortProps = useSort<'contact' | 'type' | 'status' | 'timestamp'>('timestamp', 'desc');
 
 	const getCallHistory = useEndpoint('GET', '/v1/call-history.list');
-	const { setItemsPerPage, setCurrent, ...paginationProps } = usePagination();
 
 	const router = useRouter();
 	const historyId = useRouteParameter('historyId');
@@ -85,6 +83,14 @@ const CallHistoryPage = () => {
 	const { searchText, type, states } = filterProps;
 
 	const debouncedSearchText = useDebouncedValue(searchText, 400);
+
+	const stateFilter = getStateFilter(states);
+	const query = {
+		sort: JSON.stringify(getSort(sortProps.sortBy, sortProps.sortDirection)),
+		...(type !== 'all' && { direction: type }),
+		...(stateFilter && { state: stateFilter }),
+		...(debouncedSearchText && { filter: debouncedSearchText }),
+	};
 
 	const onClickRow = useCallback(
 		(rid: string, _id: string) => {
@@ -114,31 +120,11 @@ const CallHistoryPage = () => {
 		setTab(null);
 	}, [setTab, historyId, onClickRow, tab?.rid]);
 
-	const { data, isPending, error, refetch } = useQuery({
-		queryKey: [
-			'call-history',
-			'list',
-			sortProps.sortBy,
-			sortProps.sortDirection,
-			paginationProps.current,
-			paginationProps.itemsPerPage,
-			type,
-			states,
-			debouncedSearchText,
-		],
-		queryFn: () => {
-			const sort = getSort(sortProps.sortBy, sortProps.sortDirection);
-			const stateFilter = getStateFilter(states);
-
-			return getCallHistory({
-				count: paginationProps.itemsPerPage,
-				offset: paginationProps.current,
-				sort: JSON.stringify(sort),
-				...(type !== 'all' && { direction: type }),
-				...(stateFilter && { state: stateFilter }),
-				...(debouncedSearchText && { filter: debouncedSearchText }),
-			});
-		},
+	const { data, isPending, error, refetch, paginationProps } = usePaginatedQuery({
+		query,
+		queryKey: ['call-history', 'list', query],
+		queryFn: getCallHistory,
+		itemsKey: 'items',
 	});
 
 	const tableData = useMemo(() => {
@@ -166,9 +152,7 @@ const CallHistoryPage = () => {
 		return null;
 	})();
 
-	const pagination = (
-		<Pagination divider count={data?.total || 0} onSetItemsPerPage={setItemsPerPage} onSetCurrent={setCurrent} {...paginationProps} />
-	);
+	const pagination = <Pagination divider {...paginationProps} />;
 
 	if (isPending) {
 		return (

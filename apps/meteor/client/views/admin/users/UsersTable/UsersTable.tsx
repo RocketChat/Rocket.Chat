@@ -2,7 +2,7 @@ import type { IRole, IUser, Serialized } from '@rocket.chat/core-typings';
 import { Pagination } from '@rocket.chat/fuselage';
 import { useStableCallback, useBreakpoints } from '@rocket.chat/fuselage-hooks';
 import type { DefaultUserInfo } from '@rocket.chat/rest-typings';
-import type { usePagination, useSort } from '@rocket.chat/ui-client';
+import type { useSort } from '@rocket.chat/ui-client';
 import {
 	GenericTable,
 	GenericTableHeader,
@@ -12,7 +12,7 @@ import {
 	GenericNoResults,
 } from '@rocket.chat/ui-client';
 import { useRouter } from '@rocket.chat/ui-contexts';
-import type { Dispatch, SetStateAction, MouseEvent, KeyboardEvent } from 'react';
+import type { ComponentProps, Dispatch, SetStateAction, MouseEvent, KeyboardEvent } from 'react';
 import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -25,21 +25,19 @@ export type UsersTableProps = {
 	tab: AdminUsersTab;
 	roleData: { roles: Serialized<Omit<IRole, '_updatedAt'>>[] } | undefined;
 	users: Serialized<DefaultUserInfo>[];
-	total: number;
 	isLoading: boolean;
 	isError: boolean;
 	isSuccess: boolean;
 	onReload: () => void;
 	setUserFilters: Dispatch<SetStateAction<UsersFilters>>;
 	canFilterByUserStatus?: boolean;
-	paginationData: ReturnType<typeof usePagination>;
+	paginationData: ComponentProps<typeof Pagination>;
 	sortData: ReturnType<typeof useSort<UsersTableSortingOption>>;
 	isSeatsCapExceeded: boolean;
 };
 
 const UsersTable = ({
 	users,
-	total,
 	isLoading,
 	isError,
 	isSuccess,
@@ -60,12 +58,6 @@ const UsersTable = ({
 	const isLaptop = !breakpoints.includes('xxl');
 
 	const showVoipExtension = useShowVoipExtension();
-	const { current, itemsPerPage, setCurrent, setItemsPerPage, ...paginationProps } = paginationData;
-
-	const handleUsersFiltersChange = useStableCallback((filters: SetStateAction<UsersFilters>) => {
-		setCurrent(0);
-		setUserFilters(filters);
-	});
 
 	const isKeyboardEvent = (event: MouseEvent<HTMLElement> | KeyboardEvent<HTMLElement>): event is KeyboardEvent<HTMLElement> => {
 		return (event as KeyboardEvent<HTMLElement>).key !== undefined;
@@ -164,11 +156,7 @@ const UsersTable = ({
 
 	return (
 		<>
-			<UsersTableFilters
-				roleData={roleData}
-				setUsersFilters={handleUsersFiltersChange}
-				showStatusManagementFilter={canFilterByUserStatus}
-			/>
+			<UsersTableFilters roleData={roleData} setUsersFilters={setUserFilters} showStatusManagementFilter={canFilterByUserStatus} />
 			{isLoading && (
 				<GenericTable>
 					<GenericTableHeader>{headers}</GenericTableHeader>
@@ -209,15 +197,7 @@ const UsersTable = ({
 							))}
 						</GenericTableBody>
 					</GenericTable>
-					<Pagination
-						divider
-						current={current}
-						itemsPerPage={itemsPerPage}
-						count={total}
-						onSetItemsPerPage={setItemsPerPage}
-						onSetCurrent={setCurrent}
-						{...paginationProps}
-					/>
+					<Pagination divider {...paginationData} />
 				</>
 			)}
 		</>

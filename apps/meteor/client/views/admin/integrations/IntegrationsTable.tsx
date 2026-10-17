@@ -7,12 +7,11 @@ import {
 	GenericTableHeader,
 	GenericTableHeaderCell,
 	GenericTableLoadingTable,
-	usePagination,
+	usePaginatedQuery,
 	useSort,
 	GenericNoResults,
 } from '@rocket.chat/ui-client';
 import { useEndpoint, useRoute, useTranslation, useLayout } from '@rocket.chat/ui-contexts';
-import { useQuery } from '@tanstack/react-query';
 import { useMemo, useCallback, useState } from 'react';
 
 import IntegrationRow from './IntegrationRow';
@@ -27,7 +26,6 @@ const IntegrationsTable = ({ type }: IntegrationsTableProps) => {
 	const [text, setText] = useState('');
 	const router = useRoute('admin-integrations');
 	const { sortBy, sortDirection, setSort } = useSort<'name' | 'channel' | '_createdBy' | '_createdAt' | 'username'>('name');
-	const { current, itemsPerPage, setItemsPerPage: onSetItemsPerPage, setCurrent: onSetCurrent, ...paginationProps } = usePagination();
 
 	const query = useDebouncedValue(
 		useMemo(
@@ -35,18 +33,18 @@ const IntegrationsTable = ({ type }: IntegrationsTableProps) => {
 				name: escapeRegExp(text),
 				type,
 				sort: `{ "${sortBy}": ${sortDirection === 'asc' ? 1 : -1} }`,
-				count: itemsPerPage,
-				offset: current,
 			}),
-			[text, itemsPerPage, current, sortBy, sortDirection, type],
+			[text, sortBy, sortDirection, type],
 		),
 		500,
 	);
 
 	const getIntegrations = useEndpoint('GET', '/v1/integrations.list');
-	const { data, isLoading, isSuccess, isError, refetch } = useQuery({
+	const { data, isLoading, isSuccess, isError, refetch, paginationProps } = usePaginatedQuery({
+		query,
 		queryKey: ['integrations', query],
-		queryFn: async () => getIntegrations(query),
+		queryFn: getIntegrations,
+		itemsKey: 'integrations',
 	});
 
 	const onClick = useCallback(
@@ -122,15 +120,7 @@ const IntegrationsTable = ({ type }: IntegrationsTableProps) => {
 								))}
 						</GenericTableBody>
 					</GenericTable>
-					<Pagination
-						divider
-						current={current}
-						itemsPerPage={itemsPerPage}
-						count={data?.total || 0}
-						onSetItemsPerPage={onSetItemsPerPage}
-						onSetCurrent={onSetCurrent}
-						{...paginationProps}
-					/>
+					<Pagination divider {...paginationProps} />
 				</>
 			)}
 			{isSuccess && data && data.integrations.length === 0 && <GenericNoResults />}

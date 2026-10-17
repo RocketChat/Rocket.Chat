@@ -9,12 +9,12 @@ import {
 	GenericTableHeaderCell,
 	GenericTableLoadingTable,
 	GenericTableRow,
-	usePagination,
+	usePaginatedQuery,
 	useSort,
 	GenericNoResults,
 } from '@rocket.chat/ui-client';
 import { useTranslation, useEndpoint, useRouter } from '@rocket.chat/ui-contexts';
-import { useQuery, hashKey, keepPreviousData } from '@tanstack/react-query';
+import { hashKey, keepPreviousData } from '@tanstack/react-query';
 import { useState, useMemo } from 'react';
 
 import DepartmentItemMenu from './DepartmentItemMenu';
@@ -33,7 +33,6 @@ const DepartmentsTable = ({ archived }: DepartmentsTableProps) => {
 	const router = useRouter();
 	const [text, setText] = useState('');
 
-	const { current, itemsPerPage, setItemsPerPage: onSetItemsPerPage, setCurrent: onSetCurrent, ...paginationProps } = usePagination();
 	const { sortBy, sortDirection, setSort } = useSort<'name' | 'description' | 'numAgents' | 'enabled' | 'showOnRegistration'>('name');
 
 	const getDepartments = useEndpoint('GET', archived ? DEPARTMENTS_ENDPOINTS.archived : DEPARTMENTS_ENDPOINTS.department);
@@ -46,22 +45,22 @@ const DepartmentsTable = ({ archived }: DepartmentsTableProps) => {
 				onlyMyDepartments: 'true' as const,
 				text,
 				sort: JSON.stringify({ [sortBy]: sortDirection === 'asc' ? 1 : -1 }),
-				...(current && { offset: current }),
-				...(itemsPerPage && { count: itemsPerPage }),
 			}),
-			[current, itemsPerPage, sortBy, sortDirection, text],
+			[sortBy, sortDirection, text],
 		),
 		500,
 	);
 
-	const { data, isSuccess, isLoading } = useQuery({
+	const { data, isSuccess, isLoading, paginatedQuery, paginationProps } = usePaginatedQuery({
+		query,
 		queryKey: ['livechat-departments', query, archived],
-		queryFn: async () => getDepartments(query),
+		queryFn: getDepartments,
+		itemsKey: 'departments',
 		placeholderData: keepPreviousData,
 	});
 
-	const [defaultQuery] = useState(hashKey([query]));
-	const queryHasChanged = defaultQuery !== hashKey([query]);
+	const [defaultQuery] = useState(hashKey([paginatedQuery]));
+	const queryHasChanged = defaultQuery !== hashKey([paginatedQuery]);
 
 	const headers = (
 		<>
@@ -140,15 +139,7 @@ const DepartmentsTable = ({ archived }: DepartmentsTableProps) => {
 							))}
 						</GenericTableBody>
 					</GenericTable>
-					<Pagination
-						divider
-						current={current}
-						itemsPerPage={itemsPerPage}
-						count={data?.total || 0}
-						onSetItemsPerPage={onSetItemsPerPage}
-						onSetCurrent={onSetCurrent}
-						{...paginationProps}
-					/>
+					<Pagination divider {...paginationProps} />
 				</>
 			)}
 		</>

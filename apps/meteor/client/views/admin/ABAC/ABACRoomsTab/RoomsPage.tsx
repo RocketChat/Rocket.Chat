@@ -7,12 +7,11 @@ import {
 	GenericTableHeader,
 	GenericTableHeaderCell,
 	GenericTableRow,
-	usePagination,
+	usePaginatedQuery,
 	GenericNoResults,
 } from '@rocket.chat/ui-client';
 import { useEndpoint, useRouter, useSearchParameter } from '@rocket.chat/ui-contexts';
-import { useQuery } from '@tanstack/react-query';
-import { useMemo, useState, useEffect } from 'react';
+import { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import RoomMenu from './RoomMenu';
@@ -31,7 +30,6 @@ const RoomsPage = () => {
 	const [text, setText] = useState(searchTerm ?? '');
 	const [filterType, setFilterType] = useState<'all' | 'roomName' | 'attribute' | 'value'>(searchType ?? 'all');
 	const debouncedText = useDebouncedValue(text, 200);
-	const { current, itemsPerPage, setItemsPerPage, setCurrent, ...paginationProps } = usePagination();
 	const getRooms = useEndpoint('GET', '/v1/abac/rooms');
 	const isABACAvailable = useIsABACAvailable();
 	const isExternalStore = useIsExternalAttributeStore();
@@ -50,20 +48,15 @@ const RoomsPage = () => {
 		() => ({
 			...(debouncedText ? { filter: debouncedText } : {}),
 			...(filterType !== 'all' ? { filterType } : {}),
-			offset: current,
-			count: itemsPerPage,
 		}),
-		[debouncedText, current, itemsPerPage, filterType],
+		[debouncedText, filterType],
 	);
 
-	// Whenever the user changes the filter or the text, reset the pagination to the first page
-	useEffect(() => {
-		setCurrent(0);
-	}, [debouncedText, filterType, setCurrent]);
-
-	const { data, isLoading } = useQuery({
+	const { data, isLoading, paginationProps } = usePaginatedQuery({
+		query,
 		queryKey: ABACQueryKeys.rooms.list(query),
-		queryFn: () => getRooms(query),
+		queryFn: getRooms,
+		itemsKey: 'rooms',
 		...(isExternalStore && { staleTime: 0, gcTime: 0 }),
 	});
 
@@ -135,15 +128,7 @@ const RoomsPage = () => {
 							))}
 						</GenericTableBody>
 					</GenericTable>
-					<Pagination
-						divider
-						current={current}
-						itemsPerPage={itemsPerPage}
-						count={data?.total || 0}
-						onSetItemsPerPage={setItemsPerPage}
-						onSetCurrent={setCurrent}
-						{...paginationProps}
-					/>
+					<Pagination divider {...paginationProps} />
 				</>
 			)}
 		</>

@@ -10,19 +10,17 @@ import {
 	GenericTableRow,
 	GenericTableCell,
 	GenericTableLoadingRow,
-	usePagination,
+	usePaginatedQuery,
 	useSort,
 	GenericNoResults,
 } from '@rocket.chat/ui-client';
 import { useTranslation, useEndpoint } from '@rocket.chat/ui-contexts';
-import { useQuery } from '@tanstack/react-query';
 import { useMemo, useState } from 'react';
 
 import { QueueListFilter } from './QueueListFilter';
 
 const QueueListTable = () => {
 	const t = useTranslation();
-	const { current, itemsPerPage, setItemsPerPage: onSetItemsPerPage, setCurrent: onSetCurrent, ...paginationProps } = usePagination();
 	const { sortBy, sortDirection, setSort } = useSort<'servedBy' | 'department' | 'total' | 'status'>('servedBy');
 
 	const [filters, setFilters] = useState<{
@@ -68,11 +66,8 @@ const QueueListTable = () => {
 			includeOfflineAgents?: 'true' | 'false';
 			departmentId?: string;
 			sort: string;
-			count: number;
 		} = {
 			sort: `{ "${sortBy}": ${sortDirection === 'asc' ? 1 : -1} }`,
-			...(itemsPerPage && { count: itemsPerPage }),
-			...(current && { offset: current }),
 		};
 
 		if (filters.status !== 'online') {
@@ -86,7 +81,7 @@ const QueueListTable = () => {
 		}
 
 		return query;
-	}, [sortBy, sortDirection, itemsPerPage, current, filters.status, filters.departmentId, filters.servedBy]);
+	}, [sortBy, sortDirection, filters.status, filters.departmentId, filters.servedBy]);
 
 	const getUserStatus = (status?: string) => {
 		if (!status) {
@@ -108,9 +103,11 @@ const QueueListTable = () => {
 	};
 
 	const getLivechatQueue = useEndpoint('GET', '/v1/livechat/queue');
-	const { data, isSuccess, isLoading } = useQuery({
+	const { data, isSuccess, isLoading, paginationProps } = usePaginatedQuery({
+		query,
 		queryKey: ['livechat-queue', query],
-		queryFn: async () => getLivechatQueue(query),
+		queryFn: getLivechatQueue,
+		itemsKey: 'queue',
 	});
 
 	return (
@@ -147,15 +144,7 @@ const QueueListTable = () => {
 							))}
 						</GenericTableBody>
 					</GenericTable>
-					<Pagination
-						divider
-						current={current}
-						itemsPerPage={itemsPerPage}
-						count={data?.total || 0}
-						onSetItemsPerPage={onSetItemsPerPage}
-						onSetCurrent={onSetCurrent}
-						{...paginationProps}
-					/>
+					<Pagination divider {...paginationProps} />
 				</>
 			)}
 		</>

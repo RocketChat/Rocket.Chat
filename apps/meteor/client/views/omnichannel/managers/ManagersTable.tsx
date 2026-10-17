@@ -9,12 +9,12 @@ import {
 	GenericTableHeaderCell,
 	GenericTableLoadingTable,
 	GenericTableRow,
-	usePagination,
+	usePaginatedQuery,
 	useSort,
 	GenericNoResults,
 } from '@rocket.chat/ui-client';
 import { useTranslation, useEndpoint } from '@rocket.chat/ui-contexts';
-import { hashKey, useQuery } from '@tanstack/react-query';
+import { hashKey } from '@tanstack/react-query';
 import { useMemo, useState } from 'react';
 
 import AddManager from './AddManager';
@@ -31,29 +31,27 @@ const ManagersTable = () => {
 
 	const { sortBy, sortDirection, setSort } = useSort<'name' | 'username' | 'emails.address'>('name');
 
-	const { current, itemsPerPage, setItemsPerPage: onSetItemsPerPage, setCurrent: onSetCurrent, ...paginationProps } = usePagination();
-
 	const query = useDebouncedValue(
 		useMemo(
 			() => ({
 				text,
 				sort: `{ "${sortBy}": ${sortDirection === 'asc' ? 1 : -1} }`,
-				count: itemsPerPage,
-				offset: current,
 			}),
-			[text, sortBy, sortDirection, itemsPerPage, current],
+			[text, sortBy, sortDirection],
 		),
 		500,
 	);
 
 	const getManagers = useEndpoint('GET', '/v1/livechat/users/manager');
-	const { data, isLoading, isSuccess, isError, refetch } = useQuery({
+	const { data, isLoading, isSuccess, isError, refetch, paginatedQuery, paginationProps } = usePaginatedQuery({
+		query,
 		queryKey: omnichannelQueryKeys.managers(query),
-		queryFn: async () => getManagers(query),
+		queryFn: getManagers,
+		itemsKey: 'users',
 	});
 
-	const [defaultQuery] = useState(hashKey([query]));
-	const queryHasChanged = defaultQuery !== hashKey([query]);
+	const [defaultQuery] = useState(hashKey([paginatedQuery]));
+	const queryHasChanged = defaultQuery !== hashKey([paginatedQuery]);
 
 	const headers = (
 		<>
@@ -132,15 +130,7 @@ const ManagersTable = () => {
 							))}
 						</GenericTableBody>
 					</GenericTable>
-					<Pagination
-						divider
-						current={current}
-						itemsPerPage={itemsPerPage}
-						count={data.total || 0}
-						onSetItemsPerPage={onSetItemsPerPage}
-						onSetCurrent={onSetCurrent}
-						{...paginationProps}
-					/>
+					<Pagination divider {...paginationProps} />
 				</>
 			)}
 			{isError && <GenericError buttonAction={refetch} />}

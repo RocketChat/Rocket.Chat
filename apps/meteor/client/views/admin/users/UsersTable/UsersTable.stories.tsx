@@ -2,7 +2,6 @@ import { UserStatus } from '@rocket.chat/core-typings';
 import type { Meta } from '@storybook/react';
 
 import UsersTable from './UsersTable';
-import { createMockedPagination } from '../../../../../tests/mocks/data';
 
 export default {
 	component: UsersTable,
@@ -61,12 +60,19 @@ const mockedUsers = [
 	},
 ];
 
-const paginationData = createMockedPagination(mockedUsers.length, 5);
+const paginationData = {
+	count: 5,
+	current: 0,
+	itemsPerPage: 25 as const,
+	itemsPerPageLabel: () => 'Items per page:',
+	showingResultsLabel: () => `Showing results 1 - ${mockedUsers.length} of 5`,
+	onSetCurrent: () => undefined,
+	onSetItemsPerPage: () => undefined,
+};
 
 export const Default = {
 	args: {
 		users: mockedUsers,
-		total: 5,
 		isLoading: false,
 		isSuccess: true,
 		tab: 'all',
@@ -84,7 +90,6 @@ export const Loading = {
 export const NoResults = {
 	args: {
 		users: [],
-		total: 0,
 		isLoading: false,
 		isError: false,
 		isSuccess: true,

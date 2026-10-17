@@ -8,13 +8,12 @@ import {
 	GenericTableHeader,
 	GenericTableHeaderCell,
 	GenericTableRow,
-	usePagination,
+	usePaginatedQuery,
 	GenericNoResults,
 	useFormatDateAndTime,
 } from '@rocket.chat/ui-client';
 import { useEndpoint } from '@rocket.chat/ui-contexts';
-import { useQuery } from '@tanstack/react-query';
-import { useMemo, useEffect, useState } from 'react';
+import { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { ABACQueryKeys } from '../../../../lib/queryKeys';
@@ -28,22 +27,25 @@ const LogsPage = () => {
 
 	const formatDate = useFormatDateAndTime();
 
-	const { current, itemsPerPage, setItemsPerPage, setCurrent, ...paginationProps } = usePagination();
 	const getLogs = useEndpoint('GET', '/v1/abac/audit');
 	const query = useMemo(
 		() => ({
 			...(startDate && { start: new Date(`${startDate}T00:00:00.000`).toISOString() }),
 			...(endDate && { end: new Date(`${endDate}T23:59:59.999`).toISOString() }),
-			offset: current,
-			count: itemsPerPage,
 		}),
-		[current, itemsPerPage, startDate, endDate],
+		[startDate, endDate],
 	);
 
-	// Whenever the user changes the filter or the text, reset the pagination to the first page
-	useEffect(() => {
-		setCurrent(0);
-	}, [startDate, endDate, setCurrent]);
+	const {
+		data: logs,
+		isLoading,
+		paginationProps,
+	} = usePaginatedQuery({
+		query,
+		queryKey: ABACQueryKeys.logs.list(query),
+		queryFn: getLogs,
+		itemsKey: 'events',
+	});
 
 	const getActionLabel = (action?: AbacAttributeDefinitionChangeType | AbacActionPerformed | null) => {
 		switch (action) {
@@ -74,63 +76,59 @@ const LogsPage = () => {
 		}
 	};
 
-	const { data, isLoading } = useQuery({
-		queryKey: ABACQueryKeys.logs.list(query),
-		queryFn: () => getLogs(query),
-		select: (data) => ({
-			events: data.events.map((event) => {
-				const eventInfo = {
-					id: event._id,
-					user: event.actor?.type === 'user' ? event.actor.username : t('System'),
-					...(event.actor?.type === 'user' && { userAvatar: <UserAvatar size='x28' userId={event.actor._id} /> }),
-					timestamp: new Date(event.ts),
-					element: t('ABAC_Room'),
-					action: getActionLabel(event.data?.find((item) => item.key === 'change')?.value),
-					room: undefined,
-				};
-				switch (event.t) {
-					case 'abac.attribute.changed':
-						return {
-							...eventInfo,
-							element: t('ABAC_Room_Attribute'),
-							name: event.data?.find((item) => item.key === 'attributeKey')?.value ?? '',
-						};
-					case 'abac.action.performed':
-						return {
-							...eventInfo,
-							name: event.data?.find((item) => item.key === 'subject')?.value?.username ?? '',
-							action: getActionLabel(event.data?.find((item) => item.key === 'action')?.value),
-							room: event.data?.find((item) => item.key === 'object')?.value?.name ?? '',
-							element: t('ABAC_room_membership'),
-						};
-					case 'abac.object.attribute.changed':
-					case 'abac.object.attributes.removed':
-						return {
-							...eventInfo,
-							name:
-								event.data
-									?.find((item) => item.key === 'current')
-									?.value?.map((item) => item.key)
-									.join(', ') ?? t('Empty'),
-							room: event.data?.find((item) => item.key === 'room')?.value?.name ?? '',
-						};
-					case 'abac.attribute.store.switched':
-						return {
-							...eventInfo,
-							element: t('ABAC_Attribute_Store'),
-							action: t('ABAC_Attribute_Store_Switched'),
-							name: `${event.data?.find((item) => item.key === 'from')?.value} -> ${event.data?.find((item) => item.key === 'to')?.value}`,
-							room: t('ABAC_Rooms_Affected', { count: Number(event.data?.find((item) => item.key === 'roomsAffected')?.value ?? 0) }),
-						};
-					default:
-						return null;
-				}
-			}),
-			count: data.count,
-			offset: data.offset,
-			total: data.total,
+	const data = logs && {
+		events: logs.events.map((event) => {
+			const eventInfo = {
+				id: event._id,
+				user: event.actor?.type === 'user' ? event.actor.username : t('System'),
+				...(event.actor?.type === 'user' && { userAvatar: <UserAvatar size='x28' userId={event.actor._id} /> }),
+				timestamp: new Date(event.ts),
+				element: t('ABAC_Room'),
+				action: getActionLabel(event.data?.find((item) => item.key === 'change')?.value),
+				room: undefined,
+			};
+			switch (event.t) {
+				case 'abac.attribute.changed':
+					return {
+						...eventInfo,
+						element: t('ABAC_Room_Attribute'),
+						name: event.data?.find((item) => item.key === 'attributeKey')?.value ?? '',
+					};
+				case 'abac.action.performed':
+					return {
+						...eventInfo,
+						name: event.data?.find((item) => item.key === 'subject')?.value?.username ?? '',
+						action: getActionLabel(event.data?.find((item) => item.key === 'action')?.value),
+						room: event.data?.find((item) => item.key === 'object')?.value?.name ?? '',
+						element: t('ABAC_room_membership'),
+					};
+				case 'abac.object.attribute.changed':
+				case 'abac.object.attributes.removed':
+					return {
+						...eventInfo,
+						name:
+							event.data
+								?.find((item) => item.key === 'current')
+								?.value?.map((item) => item.key)
+								.join(', ') ?? t('Empty'),
+						room: event.data?.find((item) => item.key === 'room')?.value?.name ?? '',
+					};
+				case 'abac.attribute.store.switched':
+					return {
+						...eventInfo,
+						element: t('ABAC_Attribute_Store'),
+						action: t('ABAC_Attribute_Store_Switched'),
+						name: `${event.data?.find((item) => item.key === 'from')?.value} -> ${event.data?.find((item) => item.key === 'to')?.value}`,
+						room: t('ABAC_Rooms_Affected', { count: Number(event.data?.find((item) => item.key === 'roomsAffected')?.value ?? 0) }),
+					};
+				default:
+					return null;
+			}
 		}),
-	});
+		count: logs.count,
+		offset: logs.offset,
+		total: logs.total,
+	};
 
 	return (
 		<>
@@ -203,15 +201,7 @@ const LogsPage = () => {
 							})}
 						</GenericTableBody>
 					</GenericTable>
-					<Pagination
-						divider
-						current={current}
-						itemsPerPage={itemsPerPage}
-						count={data?.total || 0}
-						onSetItemsPerPage={setItemsPerPage}
-						onSetCurrent={setCurrent}
-						{...paginationProps}
-					/>
+					<Pagination divider {...paginationProps} />
 				</>
 			)}
 		</>

@@ -6,12 +6,12 @@ import {
 	GenericTableHeaderCell,
 	GenericTableBody,
 	GenericTableLoadingRow,
-	usePagination,
+	usePaginatedQuery,
 	useSort,
 	GenericNoResults,
 } from '@rocket.chat/ui-client';
 import { useEndpoint, useRouter } from '@rocket.chat/ui-contexts';
-import { useQuery, hashKey } from '@tanstack/react-query';
+import { hashKey } from '@tanstack/react-query';
 import { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -24,7 +24,6 @@ const UnitsTable = () => {
 	const [filter, setFilter] = useState('');
 	const router = useRouter();
 
-	const { current, itemsPerPage, setItemsPerPage: onSetItemsPerPage, setCurrent: onSetCurrent, ...paginationProps } = usePagination();
 	const { sortBy, sortDirection, setSort } = useSort<'name' | 'visibility'>('name');
 
 	const query = useDebouncedValue(
@@ -32,22 +31,22 @@ const UnitsTable = () => {
 			() => ({
 				text: filter,
 				sort: JSON.stringify({ [sortBy]: sortDirection === 'asc' ? 1 : -1 }),
-				...(itemsPerPage && { count: itemsPerPage }),
-				...(current && { offset: current }),
 			}),
-			[filter, itemsPerPage, current, sortBy, sortDirection],
+			[filter, sortBy, sortDirection],
 		),
 		500,
 	);
 
 	const getUnits = useEndpoint('GET', '/v1/livechat/units');
-	const { isSuccess, isLoading, data } = useQuery({
+	const { isSuccess, isLoading, data, paginatedQuery, paginationProps } = usePaginatedQuery({
+		query,
 		queryKey: ['livechat-units', query],
-		queryFn: async () => getUnits(query),
+		queryFn: getUnits,
+		itemsKey: 'units',
 	});
 
-	const [defaultQuery] = useState(hashKey([query]));
-	const queryHasChanged = defaultQuery !== hashKey([query]);
+	const [defaultQuery] = useState(hashKey([paginatedQuery]));
+	const queryHasChanged = defaultQuery !== hashKey([paginatedQuery]);
 
 	const handleAddNew = useStableCallback(() => router.navigate('/omnichannel/units/new'));
 
@@ -104,15 +103,7 @@ const UnitsTable = () => {
 							))}
 						</GenericTableBody>
 					</GenericTable>
-					<Pagination
-						divider
-						current={current}
-						itemsPerPage={itemsPerPage}
-						count={data?.total || 0}
-						onSetItemsPerPage={onSetItemsPerPage}
-						onSetCurrent={onSetCurrent}
-						{...paginationProps}
-					/>
+					<Pagination divider {...paginationProps} />
 				</>
 			)}
 		</>

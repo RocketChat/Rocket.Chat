@@ -7,12 +7,11 @@ import {
 	GenericTableHeaderCell,
 	GenericTableLoadingTable,
 	GenericTableRow,
-	usePagination,
+	usePaginatedQuery,
 	useSort,
 	GenericNoResults,
 } from '@rocket.chat/ui-client';
 import { useRoute, useTranslation, useEndpoint } from '@rocket.chat/ui-contexts';
-import { useQuery } from '@tanstack/react-query';
 import { useMemo, useCallback } from 'react';
 
 import SendTestButton from './SendTestButton';
@@ -20,7 +19,6 @@ import SendTestButton from './SendTestButton';
 const EmailInboxTable = () => {
 	const t = useTranslation();
 	const router = useRoute('admin-email-inboxes');
-	const { current, itemsPerPage, setItemsPerPage: onSetItemsPerPage, setCurrent: onSetCurrent, ...paginationProps } = usePagination();
 	const { sortBy, sortDirection, setSort } = useSort<'name' | 'email' | 'active'>('name');
 
 	const onClick = useCallback(
@@ -37,13 +35,13 @@ const EmailInboxTable = () => {
 
 	const query = {
 		sort: JSON.stringify({ [sortBy]: sortDirection === 'asc' ? 1 : -1 }),
-		...(itemsPerPage && { count: itemsPerPage }),
-		...(current && { offset: current }),
 	};
 
-	const result = useQuery({
+	const { paginationProps, ...result } = usePaginatedQuery({
+		query,
 		queryKey: ['email-list', query],
-		queryFn: () => endpoint(query),
+		queryFn: endpoint,
+		itemsKey: 'emailInboxes',
 	});
 
 	const headers = useMemo(
@@ -95,15 +93,7 @@ const EmailInboxTable = () => {
 							))}
 						</GenericTableBody>
 					</GenericTable>
-					<Pagination
-						divider
-						current={current}
-						itemsPerPage={itemsPerPage}
-						count={result.data.count}
-						onSetItemsPerPage={onSetItemsPerPage}
-						onSetCurrent={onSetCurrent}
-						{...paginationProps}
-					/>
+					<Pagination divider {...paginationProps} />
 				</>
 			)}
 			{result.isSuccess && result.data.emailInboxes.length === 0 && <GenericNoResults />}

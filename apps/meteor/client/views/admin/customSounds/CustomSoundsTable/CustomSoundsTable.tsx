@@ -6,12 +6,11 @@ import {
 	GenericTableHeader,
 	GenericTableHeaderCell,
 	GenericTableLoadingTable,
-	usePagination,
+	usePaginatedQuery,
 	useSort,
 	GenericNoResults,
 } from '@rocket.chat/ui-client';
 import { useTranslation, useEndpoint } from '@rocket.chat/ui-contexts';
-import { useQuery } from '@tanstack/react-query';
 import type { MutableRefObject } from 'react';
 import { useState, useMemo, useEffect } from 'react';
 
@@ -26,7 +25,6 @@ export type CustomSoundsTableProps = {
 const CustomSoundsTable = ({ reload, onClick }: CustomSoundsTableProps) => {
 	const t = useTranslation();
 	const { sortBy, sortDirection, setSort } = useSort<'name'>('name');
-	const { current, itemsPerPage, setItemsPerPage: onSetItemsPerPage, setCurrent: onSetCurrent, ...paginationProps } = usePagination();
 
 	const [text, setText] = useState('');
 
@@ -35,18 +33,18 @@ const CustomSoundsTable = ({ reload, onClick }: CustomSoundsTableProps) => {
 			() => ({
 				name: text,
 				sort: `{ "${sortBy}": ${sortDirection === 'asc' ? 1 : -1} }`,
-				...(itemsPerPage && { count: itemsPerPage }),
-				...(current && { offset: current }),
 			}),
-			[text, itemsPerPage, current, sortBy, sortDirection],
+			[text, sortBy, sortDirection],
 		),
 		500,
 	);
 
 	const getSounds = useEndpoint('GET', '/v1/custom-sounds.list');
-	const { data, refetch, isLoading, isError, isSuccess } = useQuery({
+	const { data, refetch, isLoading, isError, isSuccess, paginationProps } = usePaginatedQuery({
+		query,
 		queryKey: ['custom-sounds', query],
-		queryFn: async () => getSounds(query),
+		queryFn: getSounds,
+		itemsKey: 'sounds',
 		refetchOnMount: false,
 	});
 
@@ -84,15 +82,7 @@ const CustomSoundsTable = ({ reload, onClick }: CustomSoundsTableProps) => {
 							))}
 						</GenericTableBody>
 					</GenericTable>
-					<Pagination
-						divider
-						current={current}
-						itemsPerPage={itemsPerPage}
-						count={data?.total || 0}
-						onSetItemsPerPage={onSetItemsPerPage}
-						onSetCurrent={onSetCurrent}
-						{...paginationProps}
-					/>
+					<Pagination divider {...paginationProps} />
 				</>
 			)}
 			{isSuccess && data?.sounds.length === 0 && <GenericNoResults />}

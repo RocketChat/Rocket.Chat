@@ -9,13 +9,13 @@ import {
 	GenericTableLoadingRow,
 	GenericTableRow,
 	GenericTableCell,
-	usePagination,
+	usePaginatedQuery,
 	useSort,
 	GenericNoResults,
 	useFormatDateAndTime,
 } from '@rocket.chat/ui-client';
 import { useTranslation, usePermission, useToastMessageDispatch, useEndpoint, useRouter } from '@rocket.chat/ui-contexts';
-import { hashKey, useQuery } from '@tanstack/react-query';
+import { hashKey } from '@tanstack/react-query';
 import { useMemo, useState } from 'react';
 
 import CannedResponseFilter from './CannedResponseFilter';
@@ -38,7 +38,6 @@ const CannedResponsesTable = () => {
 	const [text, setText] = useState('');
 	const debouncedText = useDebouncedValue(text, 500);
 
-	const { current, itemsPerPage, setItemsPerPage: onSetItemsPerPage, setCurrent: onSetCurrent, ...paginationProps } = usePagination();
 	const { sortBy, setSort, sortDirection } = useSort<'shortcut' | 'scope' | 'tags' | '_createdAt' | 'createdBy'>('shortcut');
 
 	const query = useMemo(
@@ -47,21 +46,21 @@ const CannedResponsesTable = () => {
 			sort: JSON.stringify({ [sortBy]: sortDirection === 'asc' ? 1 : -1 }),
 			...(sharing && { scope: sharing }),
 			...(createdBy && createdBy !== 'all' && { createdBy }),
-			...(itemsPerPage && { count: itemsPerPage }),
-			...(current && { offset: current }),
 		}),
-		[createdBy, current, debouncedText, itemsPerPage, sharing, sortBy, sortDirection],
+		[createdBy, debouncedText, sharing, sortBy, sortDirection],
 	);
 
-	const [defaultQuery] = useState(hashKey([query]));
-	const queryHasChanged = defaultQuery !== hashKey([query]);
-
 	const getCannedResponses = useEndpoint('GET', '/v1/canned-responses');
-	const { data, isLoading, isSuccess } = useQuery({
+	const { data, isLoading, isSuccess, paginatedQuery, paginationProps } = usePaginatedQuery({
+		query,
 		queryKey: ['getCannedResponses', query],
-		queryFn: () => getCannedResponses(query),
+		queryFn: getCannedResponses,
+		itemsKey: 'cannedResponses',
 		refetchOnWindowFocus: false,
 	});
+
+	const [defaultQuery] = useState(hashKey([paginatedQuery]));
+	const queryHasChanged = defaultQuery !== hashKey([paginatedQuery]);
 
 	const handleAddNew = useStableCallback(() => router.navigate('/omnichannel/canned-responses/new'));
 
@@ -174,15 +173,7 @@ const CannedResponsesTable = () => {
 							))}
 						</GenericTableBody>
 					</GenericTable>
-					<Pagination
-						divider
-						current={current}
-						itemsPerPage={itemsPerPage}
-						count={data?.total || 0}
-						onSetItemsPerPage={onSetItemsPerPage}
-						onSetCurrent={onSetCurrent}
-						{...paginationProps}
-					/>
+					<Pagination divider {...paginationProps} />
 				</>
 			)}
 		</>

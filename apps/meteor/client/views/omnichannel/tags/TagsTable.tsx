@@ -8,12 +8,12 @@ import {
 	GenericTableHeaderCell,
 	GenericTableBody,
 	GenericTableLoadingRow,
-	usePagination,
+	usePaginatedQuery,
 	useSort,
 	GenericNoResults,
 } from '@rocket.chat/ui-client';
 import { useTranslation, useEndpoint, useRouter } from '@rocket.chat/ui-contexts';
-import { useQuery, hashKey } from '@tanstack/react-query';
+import { hashKey } from '@tanstack/react-query';
 import { useMemo, useState } from 'react';
 
 import { useRemoveTag } from './useRemoveTag';
@@ -25,7 +25,6 @@ const TagsTable = () => {
 	const [filter, setFilter] = useState('');
 	const router = useRouter();
 
-	const { current, itemsPerPage, setItemsPerPage: onSetItemsPerPage, setCurrent: onSetCurrent, ...paginationProps } = usePagination();
 	const { sortBy, sortDirection, setSort } = useSort<'name' | 'description'>('name');
 
 	const onRowClick = useStableCallback((id: string) => router.navigate(`/omnichannel/tags/edit/${id}`));
@@ -38,23 +37,23 @@ const TagsTable = () => {
 				viewAll: 'true' as const,
 				text: filter,
 				sort: JSON.stringify({ [sortBy]: sortDirection === 'asc' ? 1 : -1 }),
-				...(itemsPerPage && { count: itemsPerPage }),
-				...(current && { offset: current }),
 			}),
-			[filter, itemsPerPage, current, sortBy, sortDirection],
+			[filter, sortBy, sortDirection],
 		),
 		500,
 	);
 
 	const getTags = useEndpoint('GET', '/v1/livechat/tags');
-	const { data, isSuccess, isLoading } = useQuery({
+	const { data, isSuccess, isLoading, paginatedQuery, paginationProps } = usePaginatedQuery({
+		query,
 		queryKey: ['livechat-tags', query],
-		queryFn: async () => getTags(query),
+		queryFn: getTags,
+		itemsKey: 'tags',
 		refetchOnWindowFocus: false,
 	});
 
-	const [defaultQuery] = useState(hashKey([query]));
-	const queryHasChanged = defaultQuery !== hashKey([query]);
+	const [defaultQuery] = useState(hashKey([paginatedQuery]));
+	const queryHasChanged = defaultQuery !== hashKey([paginatedQuery]);
 
 	const headers = (
 		<>
@@ -123,15 +122,7 @@ const TagsTable = () => {
 							))}
 						</GenericTableBody>
 					</GenericTable>
-					<Pagination
-						divider
-						current={current}
-						itemsPerPage={itemsPerPage}
-						count={data?.total || 0}
-						onSetItemsPerPage={onSetItemsPerPage}
-						onSetCurrent={onSetCurrent}
-						{...paginationProps}
-					/>
+					<Pagination divider {...paginationProps} />
 				</>
 			)}
 		</>

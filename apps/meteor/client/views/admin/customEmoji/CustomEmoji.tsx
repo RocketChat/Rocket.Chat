@@ -8,12 +8,11 @@ import {
 	GenericTableHeaderCell,
 	GenericTableLoadingTable,
 	GenericTableRow,
-	usePagination,
+	usePaginatedQuery,
 	useSort,
 	GenericNoResults,
 } from '@rocket.chat/ui-client';
 import { useTranslation, useEndpoint } from '@rocket.chat/ui-contexts';
-import { useQuery } from '@tanstack/react-query';
 import type { MutableRefObject } from 'react';
 import { useEffect, useMemo, useState } from 'react';
 
@@ -29,17 +28,14 @@ const CustomEmoji = ({ onClick, reload }: CustomEmojiProps) => {
 
 	const [text, setText] = useState('');
 	const { sortBy, sortDirection, setSort } = useSort<'name'>('name');
-	const { current, itemsPerPage, setItemsPerPage: onSetItemsPerPage, setCurrent: onSetCurrent, ...paginationProps } = usePagination();
 
 	const query = useDebouncedValue(
 		useMemo(
 			() => ({
 				name: text,
 				sort: `{ "${sortBy}": ${sortDirection === 'asc' ? 1 : -1} }`,
-				count: itemsPerPage,
-				offset: current,
 			}),
-			[text, itemsPerPage, current, sortBy, sortDirection],
+			[text, sortBy, sortDirection],
 		),
 		500,
 	);
@@ -57,9 +53,11 @@ const CustomEmoji = ({ onClick, reload }: CustomEmojiProps) => {
 	);
 
 	const getEmojiList = useEndpoint('GET', '/v1/emoji-custom.all');
-	const { data, refetch, isSuccess, isLoading, isError } = useQuery({
+	const { data, refetch, isSuccess, isLoading, isError, paginationProps } = usePaginatedQuery({
+		query,
 		queryKey: ['getEmojiList', query],
-		queryFn: () => getEmojiList(query),
+		queryFn: getEmojiList,
+		itemsKey: 'emojis',
 	});
 
 	useEffect(() => {
@@ -103,15 +101,7 @@ const CustomEmoji = ({ onClick, reload }: CustomEmojiProps) => {
 								))}
 						</GenericTableBody>
 					</GenericTable>
-					<Pagination
-						divider
-						current={current}
-						itemsPerPage={itemsPerPage}
-						count={data?.total || 0}
-						onSetItemsPerPage={onSetItemsPerPage}
-						onSetCurrent={onSetCurrent}
-						{...paginationProps}
-					/>
+					<Pagination divider {...paginationProps} />
 				</>
 			)}
 			{isSuccess && data && data.emojis.length === 0 && <GenericNoResults />}

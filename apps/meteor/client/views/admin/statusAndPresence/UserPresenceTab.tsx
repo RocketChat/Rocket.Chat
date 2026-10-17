@@ -6,10 +6,9 @@ import {
 	GenericTableHeaderCell,
 	GenericTableBody,
 	GenericTableLoadingTable,
-	usePagination,
 	GenericNoResults,
 } from '@rocket.chat/ui-client';
-import { useEffect, useMemo, useState } from 'react';
+import { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import UserPresenceTabRow from './UserPresenceTabRow';
@@ -25,18 +24,13 @@ export type UserPresenceTabProps = {
 const UserPresenceTab = ({ onEdit }: UserPresenceTabProps) => {
 	const { t } = useTranslation();
 	const [text, setText] = useState('');
-	const { current, itemsPerPage, setItemsPerPage: onSetItemsPerPage, setCurrent: onSetCurrent, ...paginationProps } = usePagination();
 
 	const query = useDebouncedValue(
-		useMemo(() => ({ searchTerm: text, count: itemsPerPage, offset: current }), [text, itemsPerPage, current]),
+		useMemo(() => ({ searchTerm: text }), [text]),
 		500,
 	);
 
-	useEffect(() => {
-		onSetCurrent(0);
-	}, [text, onSetCurrent]);
-
-	const { data, isLoading, isSuccess, isError, refetch } = useManagedPresenceUsers(query);
+	const { data, isLoading, isSuccess, isError, refetch, paginationProps } = useManagedPresenceUsers(query);
 
 	const headers = (
 		<>
@@ -65,17 +59,7 @@ const UserPresenceTab = ({ onEdit }: UserPresenceTabProps) => {
 							{isSuccess && data.users.map((user) => <UserPresenceTabRow key={user._id} user={user} onClick={onEdit} />)}
 						</GenericTableBody>
 					</GenericTable>
-					{isSuccess && (
-						<Pagination
-							divider
-							current={current}
-							itemsPerPage={itemsPerPage}
-							count={data.total}
-							onSetItemsPerPage={onSetItemsPerPage}
-							onSetCurrent={onSetCurrent}
-							{...paginationProps}
-						/>
-					)}
+					{isSuccess && <Pagination divider {...paginationProps} />}
 				</>
 			)}
 		</>

@@ -7,12 +7,11 @@ import {
 	GenericTableHeaderCell,
 	GenericTableBody,
 	GenericTableLoadingTable,
-	usePagination,
+	usePaginatedQuery,
 	useSort,
 	GenericNoResults,
 } from '@rocket.chat/ui-client';
 import { usePermission, useRoute, useTranslation, useEndpoint } from '@rocket.chat/ui-contexts';
-import { useQuery } from '@tanstack/react-query';
 import type { KeyboardEvent, MouseEvent } from 'react';
 import { useCallback, useMemo, useState } from 'react';
 
@@ -33,7 +32,6 @@ const UsersTable = ({ workspace = 'local' }: UsersTableProps) => {
 	const [text, setText] = useState('');
 	const canViewFullOtherUserInfo = usePermission('view-full-other-user-info');
 
-	const { current, itemsPerPage, setItemsPerPage: onSetItemsPerPage, setCurrent: onSetCurrent, ...paginationProps } = usePagination();
 	const { sortBy, sortDirection, setSort } = useSort<'name' | 'email' | 'origin' | 'createdAt'>('name');
 
 	const headers = useMemo(
@@ -82,12 +80,14 @@ const UsersTable = ({ workspace = 'local' }: UsersTableProps) => {
 		[setSort, sortBy, sortDirection, t, mediaQuery, canViewFullOtherUserInfo, federation],
 	);
 
-	const query = useDirectoryQuery({ text, current, itemsPerPage }, [sortBy, sortDirection], 'users', workspace);
+	const query = useDirectoryQuery({ text }, [sortBy, sortDirection], 'users', workspace);
 	const getDirectoryData = useEndpoint('GET', '/v1/directory');
 
-	const { data, isFetched, isLoading, isError, refetch } = useQuery({
+	const { data, isFetched, isLoading, isError, refetch, paginationProps } = usePaginatedQuery({
+		query,
 		queryKey: ['getDirectoryData', query],
-		queryFn: () => getDirectoryData(query),
+		queryFn: getDirectoryData,
+		itemsKey: 'result',
 	});
 
 	const handleClick = useCallback(
@@ -128,15 +128,7 @@ const UsersTable = ({ workspace = 'local' }: UsersTableProps) => {
 							))}
 						</GenericTableBody>
 					</GenericTable>
-					<Pagination
-						divider
-						current={current}
-						itemsPerPage={itemsPerPage}
-						count={data?.total || 0}
-						onSetItemsPerPage={onSetItemsPerPage}
-						onSetCurrent={onSetCurrent}
-						{...paginationProps}
-					/>
+					<Pagination divider {...paginationProps} />
 				</>
 			)}
 			{isFetched && data?.result.length === 0 && <GenericNoResults />}
