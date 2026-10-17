@@ -502,6 +502,9 @@
 			"client": "client/main.ts",
 			"server": "server/main.ts"
 		},
+		"modules": [
+			"client/styles/main.css"
+		],
 		"modern": true
 	},
 	"rocketchat": {
