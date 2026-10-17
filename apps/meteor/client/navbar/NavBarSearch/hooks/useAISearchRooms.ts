@@ -67,7 +67,7 @@ export const useAISearchRooms = (filterText = ''): { items: SubscriptionWithRoom
 	const getSpotlight = useEndpoint('GET', '/v1/spotlight');
 	const { data: serverResults, isFetching } = useQuery({
 		queryKey: ['sidebar/ai-search/spotlight', debouncedName, mention, type],
-		enabled: shouldFetchServer,
+		enabled: shouldFetchServer && name === debouncedName,
 		queryFn: async () => {
 			const spotlight = await getSpotlight({
 				query: debouncedName,
@@ -106,13 +106,19 @@ export const useAISearchRooms = (filterText = ''): { items: SubscriptionWithRoom
 				return sameRoom || sameGroupDM || sameDirectDM || sameUserDM;
 			});
 
-		const candidates = name === debouncedName && shouldFetchServer ? (serverResults ?? []) : [];
+		const candidates =
+			name === debouncedName && shouldFetchServer
+				? (serverResults ?? []).filter((item) => (mention === '@' ? item.t === 'd' : mention === '#' ? item.t !== 'd' : true))
+				: [];
 		const fromServer = candidates.filter(
-			(item) => matchesFilter(item) && !isLocalDuplicate(item) && (localRooms.length < LIMIT || isExactSearchMatch(item, name)),
+			(item) =>
+				(matchesFilter(item) || isExactSearchMatch(item, name)) &&
+				!isLocalDuplicate(item) &&
+				(localRooms.length < LIMIT || isExactSearchMatch(item, name)),
 		);
 
 		return orderSearchResults(localRooms, fromServer, name) as SubscriptionWithRoom[];
-	}, [debouncedName, localRooms, name, serverResults, shouldFetchServer]);
+	}, [debouncedName, localRooms, name, serverResults, shouldFetchServer, mention]);
 
 	const isLoading = isFetching && serverResults === undefined;
 

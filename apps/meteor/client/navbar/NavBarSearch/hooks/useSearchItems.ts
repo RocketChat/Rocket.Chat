@@ -147,13 +147,18 @@ export const useSearchItems = (filterText = ''): { items: SubscriptionWithRoom[]
 			});
 
 		// When local subscriptions fill the limit and no local exact match exists, keep server exact matches.
-		const candidates = shouldFetchServer ? (serverResults ?? []) : [];
+		const candidates = shouldFetchServer
+			? (serverResults ?? []).filter((item) => (mention === '@' ? item.t === 'd' : mention === '#' ? item.t !== 'd' : true))
+			: [];
 		const fromServer = candidates.filter(
-			(item) => matchesFilter(item) && !isLocalDuplicate(item) && (localRooms.length < LIMIT || isExactSearchMatch(item, name)),
+			(item) =>
+				(matchesFilter(item) || isExactSearchMatch(item, name)) &&
+				!isLocalDuplicate(item) &&
+				(localRooms.length < LIMIT || isExactSearchMatch(item, name)),
 		);
 
 		return orderSearchResults(localRooms, fromServer, name) as SubscriptionWithRoom[];
-	}, [serverResults, localRooms, name]);
+	}, [serverResults, localRooms, name, mention, shouldFetchServer]);
 
 	// `isFetching` is also true for silent background revalidations (after staleTime) of results we
 	// already show — only surface loading while there's no usable data for the current term yet, i.e.

@@ -61,7 +61,7 @@ export class Spotlight {
 				projection: { rid: 1 },
 				readPreference: roomOptions.readPreference,
 			}).toArray(),
-			Rooms.findOneByNameAndType(text.trim(), searchableRoomTypeIds, roomOptions, includeFederatedRooms),
+			Rooms.findOneByNameAndType(text.trim(), searchableRoomTypeIds, roomOptions, includeFederatedRooms, true),
 		]);
 
 		const roomIds = subscriptions.map((s) => s.rid);
