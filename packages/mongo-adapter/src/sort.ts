@@ -1,48 +1,50 @@
-import type { Sort } from 'mongodb';
+import type { Sort, SortDirection } from 'mongodb';
 
 import { compareBSONValues } from './bson';
 import { isEmptyArray } from './common';
 import { createLookupFunction } from './lookups';
 import type { LookupBranch } from './types';
 
-const createSortSpecParts = <T>(
-	spec: Sort,
-): {
-	lookup: (doc: T) => LookupBranch[];
-	ascending: boolean;
-}[] => {
+const isSortDirection = (value: unknown): value is SortDirection =>
+	value === 1 ||
+	value === -1 ||
+	value === 'asc' ||
+	value === 'ascending' ||
+	value === 'desc' ||
+	value === 'descending' ||
+	(typeof value === 'object' && value !== null && '$meta' in value);
+
+const createSortSpecParts = <T>(spec: Sort): { lookup: (doc: T) => LookupBranch[]; ascending: boolean }[] => {
+	const part = (key: string, direction: SortDirection = 1) => {
+		if (typeof direction === 'object') {
+			throw new Error('MongoDB $meta sort is not supported in the adapter');
+		}
+		return {
+			lookup: createLookupFunction(key, { forSort: true }),
+			ascending: direction === 1 || direction === 'asc' || direction === 'ascending',
+		};
+	};
+	if (typeof spec === 'string') return [part(spec)];
+	if (typeof spec === 'number') throw new Error('MongoDB numeric sort is not supported in the adapter');
+	if (spec instanceof Map) return Array.from(spec, ([key, direction]) => part(key, direction));
 	if (Array.isArray(spec)) {
+		if (spec.length === 2 && typeof spec[0] === 'string' && isSortDirection(spec[1])) {
+			return [part(spec[0], spec[1])];
+		}
 		return spec.map((value) => {
-			if (typeof value === 'string') {
-				return {
-					lookup: createLookupFunction(value, { forSort: true }),
-					ascending: true,
-				};
-			}
-
-			if (Array.isArray(value)) {
-				return {
-					lookup: createLookupFunction(value[0], { forSort: true }),
-					ascending: value[1] !== 'desc',
-				};
-			}
-
+			if (typeof value === 'string') return part(value);
+			if (Array.isArray(value)) return part(value[0], value[1]);
 			if (typeof value === 'object' && value !== null && '$meta' in value) {
 				throw new Error('MongoDB $meta sort is not supported in the adapter');
 			}
-
 			throw new Error('MongoDB numeric sort is not supported in the adapter');
 		});
 	}
-
-	return Object.entries(spec).map(([key, value]) => ({
-		lookup: createLookupFunction(key, { forSort: true }),
-		ascending: value >= 0,
-	}));
+	return Object.entries(spec).map(([key, direction]) => part(key, direction));
 };
 
 const reduceValue = (branchValues: LookupBranch[], ascending: boolean): unknown =>
-	branchValues
+	(branchValues.length ? branchValues : [{ value: undefined }])
 		.flatMap(({ value }) => {
 			if (!Array.isArray(value)) {
 				return [value];
