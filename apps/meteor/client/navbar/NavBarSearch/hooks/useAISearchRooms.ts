@@ -6,6 +6,7 @@ import { useQuery } from '@tanstack/react-query';
 import { useMemo } from 'react';
 
 import { getConfig } from '../../../lib/utils/getConfig';
+import { orderSearchResults } from './orderSearchResults';
 
 const LIMIT = parseInt(String(getConfig('Sidebar_Search_Spotlight_LIMIT', 20)));
 
@@ -105,17 +106,7 @@ export const useAISearchRooms = (filterText = ''): { items: SubscriptionWithRoom
 		const candidates = name === debouncedName && localRooms.length < LIMIT ? (serverResults ?? []) : [];
 		const fromServer = candidates.filter((item) => matchesFilter(item) && !isLocalDuplicate(item));
 
-		const cleanName = name.trim().toLowerCase();
-		const isExactMatch = (item: { name?: string; fname?: string }) =>
-			Boolean(cleanName && (item.name?.trim().toLowerCase() === cleanName || item.fname?.trim().toLowerCase() === cleanName));
-
-		const exactLocal = localRooms.filter(isExactMatch);
-		const otherLocal = localRooms.filter((item) => !isExactMatch(item));
-
-		const exactServer = fromServer.filter(isExactMatch);
-		const otherServer = fromServer.filter((item) => !isExactMatch(item));
-
-		return Array.from(new Set([...exactLocal, ...exactServer, ...otherLocal, ...otherServer])) as SubscriptionWithRoom[];
+		return orderSearchResults(localRooms, fromServer, name) as SubscriptionWithRoom[];
 	}, [debouncedName, localRooms, name, serverResults]);
 
 	const isLoading = isFetching && serverResults === undefined;

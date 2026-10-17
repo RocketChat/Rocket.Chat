@@ -6,6 +6,7 @@ import { useQuery } from '@tanstack/react-query';
 import { useMemo } from 'react';
 
 import { getConfig } from '../../../lib/utils/getConfig';
+import { orderSearchResults } from './orderSearchResults';
 
 const LIMIT = parseInt(String(getConfig('Sidebar_Search_Spotlight_LIMIT', 20)));
 
@@ -147,17 +148,7 @@ export const useSearchItems = (filterText = ''): { items: SubscriptionWithRoom[]
 		const candidates = localRooms.length < LIMIT ? (serverResults ?? []) : [];
 		const fromServer = candidates.filter((item) => matchesFilter(item) && !isLocalDuplicate(item));
 
-		const cleanName = name.trim().toLowerCase();
-		const isExactMatch = (item: { name?: string; fname?: string }) =>
-			Boolean(cleanName && (item.name?.trim().toLowerCase() === cleanName || item.fname?.trim().toLowerCase() === cleanName));
-
-		const exactLocal = localRooms.filter(isExactMatch);
-		const otherLocal = localRooms.filter((item) => !isExactMatch(item));
-
-		const exactServer = fromServer.filter(isExactMatch);
-		const otherServer = fromServer.filter((item) => !isExactMatch(item));
-
-		return Array.from(new Set([...exactLocal, ...exactServer, ...otherLocal, ...otherServer])) as SubscriptionWithRoom[];
+		return orderSearchResults(localRooms, fromServer, name) as SubscriptionWithRoom[];
 	}, [serverResults, localRooms, name]);
 
 	// `isFetching` is also true for silent background revalidations (after staleTime) of results we
