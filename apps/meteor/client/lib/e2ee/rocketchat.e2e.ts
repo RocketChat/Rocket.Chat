@@ -879,6 +879,16 @@ class E2E extends Emitter {
 
 export const e2e = new E2E();
 
+declare global {
+	// eslint-disable-next-line @typescript-eslint/naming-convention
+	interface Window {
+		__rocketChatE2E?: E2E;
+	}
+}
+
+// Lets end-to-end tests drive the E2EE client; the bundled app exposes no global module require to reach it
+window.__rocketChatE2E = e2e;
+
 getDdpSdk().account.onLogout(() => {
 	void e2e.stopClient();
 });
