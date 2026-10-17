@@ -12,12 +12,14 @@ import {
 	ModalHeader,
 	ModalTitle,
 } from '@rocket.chat/fuselage';
+import { GenericModal } from '@rocket.chat/ui-client';
 import { useToastMessageDispatch, useEndpoint } from '@rocket.chat/ui-contexts';
-import { memo, useCallback } from 'react';
+import { memo, useCallback, useState } from 'react';
 import { useForm, Controller } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 
 import RoomsAvailableForTeamsAutoComplete from './RoomsAvailableForTeamsAutoComplete';
+import AbacAttributesRemovalWarning from '../../../../../components/ABAC/AbacAttributesRemovalWarning';
 
 type AddExistingModalFormData = {
 	rooms: IRoom['_id'][];
@@ -35,6 +37,8 @@ const AddExistingModal = ({ teamId, onClose, reload }: AddExistingModalProps) =>
 	const dispatchToastMessage = useToastMessageDispatch();
 
 	const addRoomEndpoint = useEndpoint('POST', '/v1/teams.addRooms');
+	const [abacRoomNames, setAbacRoomNames] = useState<string[]>([]);
+	const [roomsToConfirm, setRoomsToConfirm] = useState<IRoom['_id'][]>();
 
 	const {
 		control,
@@ -61,10 +65,37 @@ const AddExistingModal = ({ teamId, onClose, reload }: AddExistingModalProps) =>
 		[addRoomEndpoint, teamId, onClose, dispatchToastMessage, reload, t],
 	);
 
+	const handleSubmitRooms = useCallback(
+		async ({ rooms }: AddExistingModalFormData) => {
+			if (abacRoomNames.length) {
+				setRoomsToConfirm(rooms);
+				return;
+			}
+
+			await handleAddChannels({ rooms });
+		},
+		[abacRoomNames, handleAddChannels],
+	);
+
+	if (roomsToConfirm) {
+		return (
+			<GenericModal
+				variant='warning'
+				title={t('Confirmation')}
+				confirmText={t('Add')}
+				onConfirm={() => handleAddChannels({ rooms: roomsToConfirm })}
+				onCancel={onClose}
+				onClose={onClose}
+			>
+				<AbacAttributesRemovalWarning roomNames={abacRoomNames} />
+			</GenericModal>
+		);
+	}
+
 	return (
 		<Modal
 			aria-label={t('Team_Add_existing_channels')}
-			wrapperFunction={(props) => <Box is='form' onSubmit={handleSubmit(handleAddChannels)} {...props} />}
+			wrapperFunction={(props) => <Box is='form' onSubmit={handleSubmit(handleSubmitRooms)} {...props} />}
 		>
 			<ModalHeader>
 				<ModalTitle>{t('Team_Add_existing_channels')}</ModalTitle>
@@ -76,7 +107,9 @@ const AddExistingModal = ({ teamId, onClose, reload }: AddExistingModalProps) =>
 					<Controller
 						control={control}
 						name='rooms'
-						render={({ field: { value, onChange } }) => <RoomsAvailableForTeamsAutoComplete value={value} onChange={onChange} />}
+						render={({ field: { value, onChange } }) => (
+							<RoomsAvailableForTeamsAutoComplete value={value} onChange={onChange} onAbacRoomsChange={setAbacRoomNames} />
+						)}
 					/>
 				</Field>
 			</ModalContent>
