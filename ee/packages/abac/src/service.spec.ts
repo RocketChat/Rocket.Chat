@@ -1869,6 +1869,30 @@ describe('AbacService (unit)', () => {
 		});
 	});
 
+	describe('auditRoomAttributesRemoved', () => {
+		beforeEach(() => {
+			mockCreateAuditServerEvent.mockReset();
+		});
+
+		it('records the attributes a room lost', async () => {
+			const room = { _id: 'r1', name: 'room', abacAttributes: [{ key: 'dept', values: ['eng'] }] };
+
+			await service.auditRoomAttributesRemoved(room, fakeActor);
+
+			expect(mockCreateAuditServerEvent).toHaveBeenCalledWith(
+				'abac.object.attributes.removed',
+				expect.objectContaining({ change: 'all-deleted', reason: 'api', previous: room.abacAttributes, current: null }),
+				expect.objectContaining({ _id: fakeActor._id }),
+			);
+		});
+
+		it('records nothing for a room without attributes', async () => {
+			await service.auditRoomAttributesRemoved({ _id: 'r1', name: 'room' }, fakeActor);
+
+			expect(mockCreateAuditServerEvent).not.toHaveBeenCalled();
+		});
+	});
+
 	describe('previewCreationMembers', () => {
 		const attributes = { dept: ['eng'] };
 		const creator = {
