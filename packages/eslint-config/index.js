@@ -1,11 +1,11 @@
 import eslint from '@eslint/js';
 import { defineConfig } from 'eslint/config';
+import prettierConfig from 'eslint-config-prettier/flat';
 import { createTypeScriptImportResolver } from 'eslint-import-resolver-typescript';
 import antiTrojanSourcePlugin from 'eslint-plugin-anti-trojan-source';
 import importXPlugin, { createNodeResolver } from 'eslint-plugin-import-x';
 import jestPlugin from 'eslint-plugin-jest';
 import jsxA11yPlugin from 'eslint-plugin-jsx-a11y';
-import prettierPluginRecommended from 'eslint-plugin-prettier/recommended';
 import reactPlugin from 'eslint-plugin-react';
 import reactHooksPlugin from 'eslint-plugin-react-hooks';
 import storybookPlugin from 'eslint-plugin-storybook';
@@ -129,7 +129,7 @@ export default defineConfig(
 			'anti-trojan-source/no-bidi': 'error',
 		},
 	},
-	prettierPluginRecommended,
+	prettierConfig,
 	{
 		name: 'rocket.chat/ecmascript',
 		languageOptions: {
