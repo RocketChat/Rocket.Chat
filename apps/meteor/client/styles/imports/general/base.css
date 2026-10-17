@@ -131,3 +131,13 @@ button {
 		}
 	}
 }
+
+/*
+ * Let omnichannel transfer comments wrap onto multiple lines instead of being
+ * cut off with an ellipsis (fixes #26723).
+ * `.rcx-message-system__body` is single-line truncated by default, which hides
+ * long transfer comments.
+ */
+.rcx-message-system[data-system-message-type='livechat_transfer_history'] .rcx-message-system__body {
+	white-space: pre-wrap;
+}
