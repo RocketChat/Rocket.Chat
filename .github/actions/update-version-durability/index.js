@@ -19,22 +19,21 @@ const octokit = new Octokit({
 	auth: core.getInput('GH_TOKEN'),
 });
 
-
 async function requestDocument360(method = 'get', api, data = {}) {
 	return axios.request({
 		method,
 		maxBodyLength: Infinity,
 		url: `https://apihub.us.document360.io/v1/${api}`,
 		headers: {
-			'accept': 'application/json',
-			'api_token': D360_TOKEN,
+			accept: 'application/json',
+			api_token: D360_TOKEN,
 		},
 		data,
 	});
 }
 
 function md5(text) {
-	return crypto.createHash('md5').update(text).digest("hex");
+	return crypto.createHash('md5').update(text).digest('hex');
 }
 
 async function generateTable({ owner, repo } = {}) {
@@ -93,7 +92,7 @@ async function generateTable({ owner, repo } = {}) {
 
 	const releaseData = [];
 
-	for (const { tag_name, html_url, lts, last, nextRelease, minorRelease, minor_tag} of releases) {
+	for (const { tag_name, html_url, lts, last, nextRelease, minorRelease, minor_tag } of releases) {
 		let supportDate;
 		let supportDateStart;
 
@@ -119,56 +118,56 @@ async function generateTable({ owner, repo } = {}) {
 			latestPatch: {
 				version: tag_name,
 				url: html_url,
-			}
-		})
+			},
+		});
 	}
 
-	function header({data, salt = ''}) {
+	function header({ data, salt = '' }) {
 		return [
 			'<th colspan="1" data-vertical-align="middle" data-horizontal-align="left" rowspan="1" style="vertical-align:middle;text-align:left;">',
-			`<p data-block-id="${md5(salt+data)}">${data}</p>`,
+			`<p data-block-id="${md5(salt + data)}">${data}</p>`,
 			'</th>',
 		].join('');
 	}
 
-	function line({data, salt = ''}) {
+	function line({ data, salt = '' }) {
 		return [
 			'<td colspan="1" rowspan="1" data-vertical-align="middle" data-horizontal-align="left" style="vertical-align:middle;text-align:left;">',
-			`<p data-block-id="${md5(salt+data)}">${data}</p>`,
+			`<p data-block-id="${md5(salt + data)}">${data}</p>`,
 			'</td>',
 		].join('');
 	}
 
-	const text = [
-		'<tr>',
-		header({data: 'Rocket.Chat Release'}),
-		header({data: 'Released At'}),
-		header({data: 'End of Life'}),
-		'</tr>',
-	];
+	const text = ['<tr>', header({ data: 'Rocket.Chat Release' }), header({ data: 'Released At' }), header({ data: 'End of Life' }), '</tr>'];
 
-	releaseData.forEach(({release, latestPatch}) => {
-		const releasedAt = release.releasedAt.toLocaleString('en', { month: 'short', year: "numeric" });
+	releaseData.forEach(({ release, latestPatch }) => {
+		const releasedAt = release.releasedAt.toLocaleString('en', { month: 'short', year: 'numeric' });
 		const endOfLife = !release.extendedSupport
 			? 'TBD'
-			: release.extendedSupport.end.toLocaleString('en', { month: 'short', year: "numeric" });
-		const link = `${release.version}${release.lts ? " LTS" : ""} (<a href="${latestPatch.url}" target="_blank" translate="no">${latestPatch.version}</a>)`;
+			: release.extendedSupport.end.toLocaleString('en', { month: 'short', year: 'numeric' });
+		const link = `${release.version}${release.lts ? ' LTS' : ''} (<a href="${latestPatch.url}" target="_blank" translate="no">${latestPatch.version}</a>)`;
 
 		text.push(
 			'<tr>',
-			line({data: link}),
-			line({data: releasedAt, salt: release.version}),
-			line({data: endOfLife, salt: release.version}),
+			line({ data: link }),
+			line({ data: releasedAt, salt: release.version }),
+			line({ data: endOfLife, salt: release.version }),
 			'</tr>',
 		);
 	});
 
-	const content = response.data.data.html_content.replace(/<tbody>.+(\n.+)*<\/tbody>/m, `<tbody>${text.join('').replace(/\t|\n/g, '')}</tbody>`)
+	const content = response.data.data.html_content.replace(
+		/<tbody>.+(\n.+)*<\/tbody>/m,
+		`<tbody>${text.join('').replace(/\t|\n/g, '')}</tbody>`,
+	);
 
 	// console.log(content);
 
 	const parser = new BeautyHtml({ parser: DOMParser });
-	const diff = Diff.diffLines(parser.beautify(response.data.data.html_content), parser.beautify(content), { ignoreWhitespace: true, newlineIsToken: false });
+	const diff = Diff.diffLines(parser.beautify(response.data.data.html_content), parser.beautify(content), {
+		ignoreWhitespace: true,
+		newlineIsToken: false,
+	});
 	diff.forEach((item) => {
 		let color = 'green';
 
@@ -178,9 +177,11 @@ async function generateTable({ owner, repo } = {}) {
 
 		if (item.removed || item.added) {
 			item.value.split('\n').forEach((line) => {
-				if (line === '') { return };
+				if (line === '') {
+					return;
+				}
 				console.log(`${item.removed ? '-' : '+'} ${line}`[color]);
-			})
+			});
 		}
 	});
 
@@ -193,7 +194,7 @@ async function generateTable({ owner, repo } = {}) {
 		console.log('forking article', response.data.data.version_number);
 
 		const forkResponse = await requestDocument360('put', `Articles/${D360_ARTICLE_ID}/fork`, {
-			lang_code: "en",
+			lang_code: 'en',
 			user_id: D360_USER_ID,
 			version_number: response.data.data.version_number,
 		});

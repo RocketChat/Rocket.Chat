@@ -15,7 +15,7 @@ for (const e of data) {
 	if (e.emoji) {
 		set.add(e.emoji);
 	}
-	
+
 	for (const s of e.skins ?? []) {
 		if (s.emoji) {
 			set.add(s.emoji);

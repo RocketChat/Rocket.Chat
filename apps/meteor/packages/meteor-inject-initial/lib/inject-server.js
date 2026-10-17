@@ -90,7 +90,7 @@ Inject = {
 		let injectHtml = '';
 		for (id in metas) {
 			const meta = this._evalToText(metas[id], res, html);
-			(injectHtml += `  <meta id='${id.replace("'", '&apos;')}' content='${meta.replace("'", '&apos;')}'>\n`), res;
+			((injectHtml += `  <meta id='${id.replace("'", '&apos;')}' content='${meta.replace("'", '&apos;')}'>\n`), res);
 		}
 
 		return html.replace('<head>', `<head>\n${escapeReplaceString(injectHtml)}`);

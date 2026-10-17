@@ -29,8 +29,8 @@ async function githubRequest<T>(endpoint: string, token: string, method = 'GET',
 	await waitForRateLimit();
 
 	const headers: Record<string, string> = {
-		Authorization: `Bearer ${token}`,
-		Accept: 'application/vnd.github.v3+json',
+		'Authorization': `Bearer ${token}`,
+		'Accept': 'application/vnd.github.v3+json',
 		'User-Agent': 'todo-issue-script',
 	};
 	if (body) {
@@ -59,7 +59,7 @@ async function graphqlRequest<T>(query: string, variables: Record<string, unknow
 	const response = await fetch('https://api.github.com/graphql', {
 		method: 'POST',
 		headers: {
-			Authorization: `Bearer ${token}`,
+			'Authorization': `Bearer ${token}`,
 			'Content-Type': 'application/json',
 			'User-Agent': 'todo-issue-script',
 		},
@@ -86,8 +86,8 @@ export async function getDiffFromApi(endpoint: string, token: string): Promise<s
 
 	const response = await fetch(`https://api.github.com${endpoint}`, {
 		headers: {
-			Authorization: `Bearer ${token}`,
-			Accept: 'application/vnd.github.diff',
+			'Authorization': `Bearer ${token}`,
+			'Accept': 'application/vnd.github.diff',
 			'User-Agent': 'todo-issue-script',
 		},
 	});
@@ -283,12 +283,6 @@ export async function addReferenceToIssue(todo: TodoItem, config: Config, sha: s
 	console.log(`[REFERENCE] #${todo.similarIssueId} ← ${todo.filename}#L${todo.line}`);
 
 	await githubRequest(`/repos/${config.owner}/${config.repo}/issues/${todo.similarIssueId}/comments`, config.token, 'POST', {
-		body: [
-			`Also referenced in [\`${todo.filename}#L${todo.line}\`](${blobUrl})`,
-			'',
-			`> ${todo.title}`,
-			'',
-			`Commit: ${sha}`,
-		].join('\n'),
+		body: [`Also referenced in [\`${todo.filename}#L${todo.line}\`](${blobUrl})`, '', `> ${todo.title}`, '', `Commit: ${sha}`].join('\n'),
 	});
 }
