@@ -38,21 +38,21 @@ Returned by `groups.create`, `teams.create` and every other path that creates a 
 | `error-abac-federated-room-attributes` | Attributes were sent for a federated room | |
 | `error-abac-attributes-room-conversion` | `teams.create` was converting an existing room and was sent attributes | |
 | `error-abac-attributes-owner-must-be-caller` | `teams.create` was sent attributes with an `owner` other than the caller | |
-| `error-abac-invalid-attributes` | An attribute or value is not defined in the workspace, or an app sent attributes that are not a list of attributes | `cause`; `key` when one attribute is at fault |
+| `error-abac-invalid-attributes` | The attributes are malformed or empty, an app sent attributes that are not a list of attributes, or an attribute or value is not defined in the workspace. With the Local PDP, a creator without `bypass-abac-store-validation` gets `error-abac-attribute-not-assignable` for an undefined attribute instead, so they cannot learn which attributes exist | `cause`; `key` when one attribute is at fault |
 | `error-abac-attribute-not-assignable` | The creator is not entitled to assign an attribute value | `cause`; `attributes`, the values that were refused |
 | `error-abac-creator-not-admitted` | The creator would not be admitted to a room with these attributes | `cause` |
 | `error-abac-decision-unavailable` | The policy decision point or attribute store cannot be reached | `cause` |
 | `error-abac-decision-inconclusive` | The policy decision point could not decide | `cause` |
 
-`abac/attributes.checkAssignability` and `abac/rooms.evaluateMembership` evaluate attributes before
-a room is created, and return the last five keys. `abac/rooms.evaluateMembership` does not check the
-creator, so it never returns `error-abac-creator-not-admitted`.
+`abac/rooms.evaluateMembership` evaluates attributes before a room is created, and returns the last
+five keys. It returns `error-abac-creator-not-admitted` only when the creator joins, that is without
+`excludeSelf`.
 
 ### Previewing room members
 
 | Key | Returned when |
 |---|---|
-| `error-abac-preview-too-many-members` | `abac/rooms.evaluateMembership` was sent more members than `API_User_Limit` allows, the creator included |
+| `error-abac-preview-too-many-members` | `abac/rooms.evaluateMembership` was sent more members than `API_User_Limit` allows. The creator counts once, whether named or not, and not at all with `excludeSelf` |
 
 ### Editing a room's attributes
 
@@ -62,15 +62,26 @@ administration permissions is never refused with these keys.
 
 | Key | Returned when | `details` |
 |---|---|---|
-| `error-abac-required-attributes-removed` | The edit removes an attribute every ABAC room requires | `keys`, the required attributes removed |
+| `error-abac-attribute-not-assignable` | The edit adds a value the editor does not hold, while restricting to owned attributes is on | `attributes`, the values that were refused |
+| `error-abac-required-attributes-removed` | The edit removes an attribute every ABAC room requires, while enforcement is on | `keys`, the required attributes removed |
 | `error-abac-room-attributes-cleared` | The edit removes every attribute while enforcement is on | |
 
-`abac/attributes.listAssignable`, `abac/attributes.checkAssignability` and
-`abac/rooms.evaluateMembership` return `error-abac-not-enabled` in this shape too. The ABAC administration endpoints return it as `error`
-only, and are not part of this contract.
+`abac/attributes.listAssignable` and `abac/rooms.evaluateMembership` return `error-abac-not-enabled`
+in this shape too. The ABAC administration endpoints, `abac/rooms/:rid/attributes` included, return
+it as `error` only, and are not part of this contract.
 
 `cause` is the underlying code, for example `error-invalid-attribute-values` or
 `error-pdp-unavailable`. It is there for diagnosis; branch on the key, not on `cause`.
+
+### Removing a room's attributes with the room
+
+Converting a room to a team, converting a team to a channel, adding a room to a team and making a
+room public remove the room's attributes. A user who holds neither the ABAC administration
+permissions nor `edit-room-abac-attributes` on that room is refused before anything changes.
+
+| Key | Returned when |
+|---|---|
+| `error-abac-not-authorized-to-modify-room` | The room has attributes and the user may not remove them |
 
 ### Creating a room while enforcement is on
 
@@ -87,3 +98,6 @@ Direct messages, federated rooms and Omnichannel rooms are not refused.
 | Key | Returned when |
 |---|---|
 | `error-abac-room-locked` | A message is sent to, or a member added to, a room that enforcement has locked: any public channel or discussion, or a private room with no attributes or without every required attribute. Federated rooms are never locked |
+
+`/invite-all-to` and `/invite-all-from` do not return an error. They tell the caller in a message,
+translated from `error-abac-room-locked` or `error-abac-decision-unavailable`, and add nobody.
