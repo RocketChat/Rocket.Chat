@@ -4656,6 +4656,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@isaacs/cliui@npm:^9.0.0":
+  version: 9.0.0
+  resolution: "@isaacs/cliui@npm:9.0.0"
+  checksum: 10/8ea3d1009fd29071419209bb91ede20cf27e6e2a1630c5e0702d8b3f47f9e1a3f1c5a587fa2cb96d22d18219790327df49db1bcced573346bbaf4577cf46b643
+  languageName: node
+  linkType: hard
+
 "@isaacs/fs-minipass@npm:^4.0.0":
   version: 4.0.1
   resolution: "@isaacs/fs-minipass@npm:4.0.1"
@@ -9543,7 +9550,7 @@ __metadata:
     mongodb: "npm:6.16.0"
     mongodb-memory-server: "npm:^10.2.3"
     p-limit: "npm:3.1.0"
-    typescript: "npm:~5.9.3"
+    typescript: "npm:~7.0.2"
   languageName: unknown
   linkType: soft
 
@@ -9579,7 +9586,7 @@ __metadata:
     prom-client: "npm:^14.2.0"
     prometheus-gc-stats: "npm:^1.1.0"
     ts-node: "npm:^10.9.2"
-    typescript: "npm:~5.9.3"
+    typescript: "npm:~7.0.2"
   languageName: unknown
   linkType: soft
 
@@ -9588,7 +9595,7 @@ __metadata:
   resolution: "@rocket.chat/account-utils@workspace:packages/account-utils"
   dependencies:
     eslint: "npm:~10.12.0"
-    typescript: "npm:~5.9.3"
+    typescript: "npm:~7.0.2"
   languageName: unknown
   linkType: soft
 
@@ -9604,7 +9611,7 @@ __metadata:
     human-interval: "npm:^2.0.1"
     moment-timezone: "npm:~0.5.48"
     mongodb: "npm:6.16.0"
-    typescript: "npm:~5.9.3"
+    typescript: "npm:~7.0.2"
   languageName: unknown
   linkType: soft
 
@@ -9616,7 +9623,7 @@ __metadata:
     "@rocket.chat/tsconfig": "workspace:*"
     eslint: "npm:~10.12.0"
     jest: "npm:~30.5.2"
-    typescript: "npm:~5.9.3"
+    typescript: "npm:~7.0.2"
   languageName: unknown
   linkType: soft
 
@@ -9636,7 +9643,7 @@ __metadata:
     query-string: "npm:^7.1.3"
     split-on-first: "npm:^3.0.0"
     strict-uri-encode: "npm:^2.0.0"
-    typescript: "npm:~5.9.3"
+    typescript: "npm:~7.0.2"
   languageName: unknown
   linkType: soft
 
@@ -9649,7 +9656,7 @@ __metadata:
     eslint: "npm:~10.12.0"
     npm-run-all: "npm:^4.1.5"
     typedoc: "npm:~0.28.20"
-    typescript: "npm:~5.9.3"
+    typescript: "npm:~7.0.2"
     uuid: "npm:~11.1.1"
   languageName: unknown
   linkType: soft
@@ -9719,7 +9726,7 @@ __metadata:
     prom-client: "npm:^14.2.0"
     prometheus-gc-stats: "npm:^1.1.0"
     ts-node: "npm:^10.9.2"
-    typescript: "npm:~5.9.3"
+    typescript: "npm:~7.0.2"
   languageName: unknown
   linkType: soft
 
@@ -9737,7 +9744,7 @@ __metadata:
     jest: "npm:~30.5.2"
     mem: "npm:^8.1.1"
     mongodb: "npm:6.16.0"
-    typescript: "npm:~5.9.3"
+    typescript: "npm:~7.0.2"
   languageName: unknown
   linkType: soft
 
@@ -9749,7 +9756,7 @@ __metadata:
     "@rocket.chat/tsconfig": "workspace:*"
     eslint: "npm:~10.12.0"
     jest: "npm:~30.5.2"
-    typescript: "npm:~5.9.3"
+    typescript: "npm:~7.0.2"
   languageName: unknown
   linkType: soft
 
@@ -9760,7 +9767,7 @@ __metadata:
     cheerio: "npm:1.0.0"
     eslint: "npm:~10.12.0"
     jest: "npm:~30.5.2"
-    typescript: "npm:~5.9.3"
+    typescript: "npm:~7.0.2"
   languageName: unknown
   linkType: soft
 
@@ -9784,7 +9791,7 @@ __metadata:
     eslint: "npm:~10.12.0"
     jest: "npm:~30.5.2"
     mongodb: "npm:6.16.0"
-    typescript: "npm:~5.9.3"
+    typescript: "npm:~7.0.2"
   languageName: unknown
   linkType: soft
 
@@ -9798,11 +9805,14 @@ __metadata:
     "@rocket.chat/message-parser": "workspace:^"
     "@rocket.chat/ui-kit": "workspace:~"
     "@types/express": "npm:^4.17.25"
+    "@typescript/native-preview": "npm:7.0.0-dev.20260707.2"
     eslint: "npm:~10.12.0"
     mongodb: "npm:6.16.0"
-    ts-patch: "npm:^3.3.0"
+    npm-run-all: "npm:~4.1.5"
+    rimraf: "npm:^6.0.1"
+    ttsc: "npm:0.18.4"
     typescript: "npm:~5.9.3"
-    typia: "patch:typia@npm%3A9.7.2#~/.yarn/patches/typia-npm-9.7.2-5c5d9c80b4.patch"
+    typia: "npm:13.0.2"
     zod: "npm:~4.3.6"
   languageName: unknown
   linkType: soft
@@ -9819,7 +9829,7 @@ __metadata:
     "@rocket.chat/tsconfig": "workspace:*"
     eslint: "npm:~10.12.0"
     mongodb: "npm:6.16.0"
-    typescript: "npm:~5.9.3"
+    typescript: "npm:~7.0.2"
   languageName: unknown
   linkType: soft
 
@@ -9873,7 +9883,7 @@ __metadata:
     eslint: "npm:~10.12.0"
     jest: "npm:~30.5.2"
     jest-websocket-mock: "npm:~2.5.0"
-    typescript: "npm:~5.9.3"
+    typescript: "npm:~7.0.2"
     ws: "npm:~8.21.3"
   peerDependencies:
     "@rocket.chat/emitter": "workspace:~"
@@ -9921,7 +9931,7 @@ __metadata:
     prometheus-gc-stats: "npm:^1.1.0"
     sharp: "npm:^0.35.5"
     ts-node: "npm:^10.9.2"
-    typescript: "npm:~5.9.3"
+    typescript: "npm:~7.0.2"
     underscore: "npm:^1.13.8"
     uuid: "npm:^11.1.1"
     ws: "npm:~8.21.3"
@@ -9933,7 +9943,7 @@ __metadata:
   resolution: "@rocket.chat/desktop-api@workspace:packages/desktop-api"
   dependencies:
     eslint: "npm:~10.12.0"
-    typescript: "npm:~5.9.3"
+    typescript: "npm:~7.0.2"
   languageName: unknown
   linkType: soft
 
@@ -9982,7 +9992,7 @@ __metadata:
   resolution: "@rocket.chat/favicon@workspace:packages/favicon"
   dependencies:
     eslint: "npm:~10.12.0"
-    typescript: "npm:~5.9.3"
+    typescript: "npm:~7.0.2"
   languageName: unknown
   linkType: soft
 
@@ -10019,7 +10029,7 @@ __metadata:
     sanitize-html: "npm:~2.17.7"
     tsyringe: "npm:^4.10.0"
     tweetnacl: "npm:^1.0.3"
-    typescript: "npm:~5.9.3"
+    typescript: "npm:~7.0.2"
   languageName: unknown
   linkType: soft
 
@@ -10185,7 +10195,7 @@ __metadata:
     react-i18next: "npm:~17.0.16"
     react-virtuoso: "npm:~4.18.16"
     storybook: "npm:^9.1.20"
-    typescript: "npm:~5.9.3"
+    typescript: "npm:~7.0.2"
     webpack: "npm:~5.104.1"
   peerDependencies:
     "@rocket.chat/apps-engine": "workspace:^"
@@ -10333,7 +10343,7 @@ __metadata:
     react-i18next: "npm:~17.0.16"
     react-virtuoso: "npm:~4.18.16"
     storybook: "npm:^9.1.20"
-    typescript: "npm:~5.9.3"
+    typescript: "npm:~7.0.2"
     webpack: "npm:~5.104.1"
   peerDependencies:
     "@rocket.chat/core-typings": "workspace:^"
@@ -10367,7 +10377,7 @@ __metadata:
     jest: "npm:~30.5.2"
     qs: "npm:^6.15.3"
     supertest: "npm:~7.1.4"
-    typescript: "npm:~5.9.3"
+    typescript: "npm:~7.0.2"
   languageName: unknown
   linkType: soft
 
@@ -10381,7 +10391,7 @@ __metadata:
     eslint: "npm:~10.12.0"
     i18next: "npm:~26.4.2"
     jest: "npm:~30.5.2"
-    typescript: "npm:~5.9.3"
+    typescript: "npm:~7.0.2"
   peerDependencies:
     "@rocket.chat/tools": "workspace:~"
     i18next: "*"
@@ -10412,7 +10422,7 @@ __metadata:
     "@rocket.chat/tsconfig": "workspace:*"
     eslint: "npm:~10.12.0"
     mongodb: "npm:6.16.0"
-    typescript: "npm:~5.9.3"
+    typescript: "npm:~7.0.2"
   languageName: unknown
   linkType: soft
 
@@ -10434,7 +10444,7 @@ __metadata:
     jest-axe: "npm:~11.0.0"
     jest-environment-jsdom: "npm:~30.5.2"
     jest-environment-node: "npm:~30.5.2"
-    typescript: "npm:~5.9.3"
+    typescript: "npm:~7.0.2"
     uuid: "npm:~11.1.1"
   languageName: unknown
   linkType: soft
@@ -10448,7 +10458,7 @@ __metadata:
     eslint: "npm:~10.12.0"
     jest: "npm:~30.5.2"
     jose: "npm:^4.15.9"
-    typescript: "npm:~5.9.3"
+    typescript: "npm:~7.0.2"
   languageName: unknown
   linkType: soft
 
@@ -10500,7 +10510,7 @@ __metadata:
     eslint: "npm:~10.12.0"
     jest: "npm:~30.5.2"
     jest-websocket-mock: "npm:~2.5.0"
-    typescript: "npm:~5.9.3"
+    typescript: "npm:~7.0.2"
   languageName: unknown
   linkType: soft
 
@@ -10600,7 +10610,7 @@ __metadata:
     "@rocket.chat/emitter": "workspace:~"
     eslint: "npm:~10.12.0"
     pino: "npm:10.3.1"
-    typescript: "npm:~5.9.3"
+    typescript: "npm:~7.0.2"
   languageName: unknown
   linkType: soft
 
@@ -10643,7 +10653,7 @@ __metadata:
     drachtio-srf: "patch:drachtio-srf@npm%3A5.0.12#~/.yarn/patches/drachtio-srf-npm-5.0.12-b0b1afaad6.patch"
     eslint: "npm:~10.12.0"
     jest: "npm:~30.5.2"
-    typescript: "npm:~5.9.3"
+    typescript: "npm:~7.0.2"
   languageName: unknown
   linkType: soft
 
@@ -10657,7 +10667,7 @@ __metadata:
     ajv: "npm:^8.20.0"
     eslint: "npm:~10.12.0"
     jest: "npm:~30.5.2"
-    typescript: "npm:~5.9.3"
+    typescript: "npm:~7.0.2"
   languageName: unknown
   linkType: soft
 
@@ -10669,7 +10679,7 @@ __metadata:
     "@rocket.chat/tsconfig": "workspace:~"
     eslint: "npm:~10.12.0"
     jest: "npm:~30.5.2"
-    typescript: "npm:~5.9.3"
+    typescript: "npm:~7.0.2"
   languageName: unknown
   linkType: soft
 
@@ -10704,7 +10714,7 @@ __metadata:
     i18next: "npm:~26.4.2"
     jest: "npm:~30.5.2"
     moment: "npm:^2.31.0"
-    typescript: "npm:~5.9.3"
+    typescript: "npm:~7.0.2"
   peerDependencies:
     date-fns: ~4.1.0
     moment: ^2.31.0
@@ -11112,7 +11122,7 @@ __metadata:
     tweetnacl: "npm:^1.0.3"
     twilio: "npm:~5.4.5"
     twitter-api-v2: "npm:^1.29.1"
-    typescript: "npm:~5.9.3"
+    typescript: "npm:~7.0.2"
     typia: "patch:typia@npm%3A9.7.2#~/.yarn/patches/typia-npm-9.7.2-5c5d9c80b4.patch"
     ua-parser-js: "npm:~1.0.41"
     underscore: "npm:^1.13.8"
@@ -11157,7 +11167,7 @@ __metadata:
     react-dom: "npm:~19.2.8"
     react-i18next: "npm:~17.0.16"
     storybook: "npm:^9.1.20"
-    typescript: "npm:~5.9.3"
+    typescript: "npm:~7.0.2"
   peerDependencies:
     "@storybook/react": "*"
     "@tanstack/react-query": "*"
@@ -11173,7 +11183,7 @@ __metadata:
     "@types/node-rsa": "npm:^1.1.4"
     eslint: "npm:~10.12.0"
     mongodb: "npm:6.16.0"
-    typescript: "npm:~5.9.3"
+    typescript: "npm:~7.0.2"
   languageName: unknown
   linkType: soft
 
@@ -11195,7 +11205,7 @@ __metadata:
     eslint: "npm:~10.12.0"
     jest: "npm:~30.5.2"
     node-rsa: "npm:^1.1.1"
-    typescript: "npm:~5.9.3"
+    typescript: "npm:~7.0.2"
   languageName: unknown
   linkType: soft
 
@@ -11207,7 +11217,7 @@ __metadata:
     eslint: "npm:~10.12.0"
     jest: "npm:~30.5.2"
     mongodb: "npm:6.16.0"
-    typescript: "npm:~5.9.3"
+    typescript: "npm:~7.0.2"
   peerDependencies:
     mongodb: 6.16.0
   languageName: unknown
@@ -11246,7 +11256,7 @@ __metadata:
     moleculer: "npm:^0.14.36"
     pino: "npm:10.3.1"
     sinon: "npm:^19.0.5"
-    typescript: "npm:~5.9.3"
+    typescript: "npm:~7.0.2"
   languageName: unknown
   linkType: soft
 
@@ -11264,7 +11274,7 @@ __metadata:
     jest: "npm:~30.5.2"
     mem: "npm:^8.1.1"
     mongodb: "npm:6.16.0"
-    typescript: "npm:~5.9.3"
+    typescript: "npm:~7.0.2"
   languageName: unknown
   linkType: soft
 
@@ -11280,7 +11290,7 @@ __metadata:
     eslint: "npm:~10.12.0"
     jest: "npm:~30.5.2"
     mongodb: "npm:6.16.0"
-    typescript: "npm:~5.9.3"
+    typescript: "npm:~7.0.2"
   languageName: unknown
   linkType: soft
 
@@ -11313,7 +11323,7 @@ __metadata:
     mongo-message-queue: "npm:^1.1.0"
     mongodb: "npm:6.16.0"
     pino: "npm:10.3.1"
-    typescript: "npm:~5.9.3"
+    typescript: "npm:~7.0.2"
   languageName: unknown
   linkType: soft
 
@@ -11357,7 +11367,7 @@ __metadata:
     prometheus-gc-stats: "npm:^1.1.0"
     react: "npm:~19.2.8"
     ts-node: "npm:^10.9.2"
-    typescript: "npm:~5.9.3"
+    typescript: "npm:~7.0.2"
   languageName: unknown
   linkType: soft
 
@@ -11412,7 +11422,7 @@ __metadata:
     eslint: "npm:~10.12.0"
     jest: "npm:~30.5.2"
     passport-oauth1: "npm:~1.3.0"
-    typescript: "npm:~5.9.3"
+    typescript: "npm:~7.0.2"
   languageName: unknown
   linkType: soft
 
@@ -11424,7 +11434,7 @@ __metadata:
     "@rocket.chat/tsconfig": "workspace:*"
     eslint: "npm:~10.12.0"
     jest: "npm:~30.5.2"
-    typescript: "npm:~5.9.3"
+    typescript: "npm:~7.0.2"
   languageName: unknown
   linkType: soft
 
@@ -11436,7 +11446,7 @@ __metadata:
     "@rocket.chat/tsconfig": "workspace:*"
     eslint: "npm:~10.12.0"
     jest: "npm:~30.5.2"
-    typescript: "npm:~5.9.3"
+    typescript: "npm:~7.0.2"
   languageName: unknown
   linkType: soft
 
@@ -11470,7 +11480,7 @@ __metadata:
     react-dom: "npm:~19.2.8"
     react-i18next: "npm:~17.0.16"
     storybook: "npm:^9.1.20"
-    typescript: "npm:~5.9.3"
+    typescript: "npm:~7.0.2"
   languageName: unknown
   linkType: soft
 
@@ -11481,7 +11491,7 @@ __metadata:
     "@types/node": "npm:~24.13.6"
     eslint: "npm:~10.12.0"
     peggy: "npm:4.1.1"
-    typescript: "npm:~5.9.3"
+    typescript: "npm:~7.0.2"
     webpack: "npm:~5.104.1"
   peerDependencies:
     peggy: "*"
@@ -11493,7 +11503,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@rocket.chat/poplib@workspace:packages/node-poplib"
   dependencies:
-    typescript: "npm:~5.9.3"
+    typescript: "npm:~7.0.2"
   languageName: unknown
   linkType: soft
 
@@ -11527,7 +11537,7 @@ __metadata:
     prom-client: "npm:^14.2.0"
     prometheus-gc-stats: "npm:^1.1.0"
     ts-node: "npm:^10.9.2"
-    typescript: "npm:~5.9.3"
+    typescript: "npm:~7.0.2"
   languageName: unknown
   linkType: soft
 
@@ -11546,7 +11556,7 @@ __metadata:
     eslint: "npm:~10.12.0"
     jest: "npm:~30.5.2"
     mongodb: "npm:6.16.0"
-    typescript: "npm:~5.9.3"
+    typescript: "npm:~7.0.2"
   languageName: unknown
   linkType: soft
 
@@ -11581,7 +11591,7 @@ __metadata:
     prom-client: "npm:^14.2.0"
     prometheus-gc-stats: "npm:^1.1.0"
     ts-node: "npm:^10.9.2"
-    typescript: "npm:~5.9.3"
+    typescript: "npm:~7.0.2"
   languageName: unknown
   linkType: soft
 
@@ -11593,7 +11603,7 @@ __metadata:
     "@rocket.chat/tsconfig": "workspace:*"
     eslint: "npm:~10.12.0"
     jest: "npm:~30.5.2"
-    typescript: "npm:~5.9.3"
+    typescript: "npm:~7.0.2"
   languageName: unknown
   linkType: soft
 
@@ -11613,7 +11623,7 @@ __metadata:
     remark-parse: "npm:9.0.0"
     remark-stringify: "npm:9.0.1"
     semver: "npm:^7.6.3"
-    typescript: "npm:~5.9.3"
+    typescript: "npm:~7.0.2"
     unified: "npm:9.2.2"
   languageName: unknown
   linkType: soft
@@ -11627,7 +11637,7 @@ __metadata:
     dataloader: "npm:^2.2.3"
     eslint: "npm:~10.12.0"
     node-fetch: "npm:^2.7.0"
-    typescript: "npm:~5.9.3"
+    typescript: "npm:~7.0.2"
   languageName: unknown
   linkType: soft
 
@@ -11643,7 +11653,7 @@ __metadata:
     ajv-formats: "npm:^3.0.1"
     eslint: "npm:~10.12.0"
     mongodb: "npm:6.16.0"
-    typescript: "npm:~5.9.3"
+    typescript: "npm:~7.0.2"
   languageName: unknown
   linkType: soft
 
@@ -11653,7 +11663,7 @@ __metadata:
   dependencies:
     "@rocket.chat/license": "workspace:^"
     eslint: "npm:~10.12.0"
-    typescript: "npm:~5.9.3"
+    typescript: "npm:~7.0.2"
   languageName: unknown
   linkType: soft
 
@@ -11674,7 +11684,7 @@ __metadata:
     jest: "npm:~30.5.2"
     node-fetch: "npm:2.7.0"
     proxy-from-env: "npm:^1.1.0"
-    typescript: "npm:~5.9.3"
+    typescript: "npm:~7.0.2"
   languageName: unknown
   linkType: soft
 
@@ -11686,7 +11696,7 @@ __metadata:
     "@rocket.chat/tsconfig": "workspace:*"
     eslint: "npm:~10.12.0"
     jest: "npm:~30.5.2"
-    typescript: "npm:~5.9.3"
+    typescript: "npm:~7.0.2"
   languageName: unknown
   linkType: soft
 
@@ -11712,7 +11722,7 @@ __metadata:
     react-dom: "npm:~19.2.8"
     react-virtuoso: "npm:~4.18.16"
     storybook: "npm:^9.1.20"
-    typescript: "npm:~5.9.3"
+    typescript: "npm:~7.0.2"
     webpack: "npm:~5.104.1"
   peerDependencies:
     "@rocket.chat/fuselage": "*"
@@ -11763,7 +11773,7 @@ __metadata:
     eventemitter3: "npm:^5.0.4"
     jest: "npm:~30.5.2"
     mongodb: "npm:6.16.0"
-    typescript: "npm:~5.9.3"
+    typescript: "npm:~7.0.2"
   languageName: unknown
   linkType: soft
 
@@ -11819,7 +11829,7 @@ __metadata:
     "@rocket.chat/tsconfig": "workspace:*"
     eslint: "npm:~10.12.0"
     jest: "npm:~30.5.2"
-    typescript: "npm:~5.9.3"
+    typescript: "npm:~7.0.2"
   languageName: unknown
   linkType: soft
 
@@ -11832,7 +11842,7 @@ __metadata:
     "@opentelemetry/sdk-node": "npm:^0.220.0"
     "@opentelemetry/sdk-trace-base": "npm:2.9.0"
     eslint: "npm:~10.12.0"
-    typescript: "npm:~5.9.3"
+    typescript: "npm:~7.0.2"
   languageName: unknown
   linkType: soft
 
@@ -11910,7 +11920,7 @@ __metadata:
     react: "npm:~19.2.8"
     react-dom: "npm:~19.2.8"
     react-virtuoso: "npm:~4.18.16"
-    typescript: "npm:~5.9.3"
+    typescript: "npm:~7.0.2"
   peerDependencies:
     "@rocket.chat/fuselage": "*"
     "@rocket.chat/ui-contexts": "workspace:^"
@@ -11962,7 +11972,7 @@ __metadata:
     react-i18next: "npm:~17.0.16"
     react-virtuoso: "npm:~4.18.16"
     storybook: "npm:^9.1.20"
-    typescript: "npm:~5.9.3"
+    typescript: "npm:~7.0.2"
   peerDependencies:
     "@react-aria/toolbar": "*"
     "@rocket.chat/css-in-js": "workspace:^"
@@ -12007,7 +12017,7 @@ __metadata:
     react-dom: "npm:~19.2.8"
     react-virtuoso: "npm:~4.18.16"
     storybook: "npm:^9.1.20"
-    typescript: "npm:~5.9.3"
+    typescript: "npm:~7.0.2"
     webpack: "npm:~5.104.1"
   peerDependencies:
     "@react-aria/toolbar": "*"
@@ -12107,7 +12117,7 @@ __metadata:
     react: "npm:~19.2.8"
     react-dom: "npm:~19.2.8"
     react-virtuoso: "npm:~4.18.16"
-    typescript: "npm:~5.9.3"
+    typescript: "npm:~7.0.2"
   peerDependencies:
     "@rocket.chat/core-typings": "workspace:^"
     "@rocket.chat/ddp-client": "workspace:^"
@@ -12126,11 +12136,14 @@ __metadata:
     "@rocket.chat/icons": "workspace:~"
     "@rocket.chat/jest-presets": "workspace:~"
     "@rocket.chat/tsconfig": "workspace:*"
+    "@typescript/native-preview": "npm:7.0.0-dev.20260707.2"
     eslint: "npm:~10.12.0"
     jest: "npm:~30.5.2"
-    ts-patch: "npm:^3.3.0"
+    npm-run-all: "npm:~4.1.5"
+    rimraf: "npm:~6.0.1"
+    ttsc: "npm:0.18.4"
     typescript: "npm:~5.9.3"
-    typia: "patch:typia@npm%3A9.7.2#~/.yarn/patches/typia-npm-9.7.2-5c5d9c80b4.patch"
+    typia: "npm:13.0.2"
   peerDependencies:
     "@rocket.chat/icons": "*"
   languageName: unknown
@@ -12261,7 +12274,7 @@ __metadata:
     react-dom: "npm:~19.2.8"
     react-virtuoso: "npm:~4.18.16"
     storybook: "npm:^9.1.20"
-    typescript: "npm:~5.9.3"
+    typescript: "npm:~7.0.2"
     webpack: "npm:~5.104.1"
   peerDependencies:
     "@rocket.chat/css-in-js": "workspace:^"
@@ -12323,7 +12336,7 @@ __metadata:
     react-i18next: "npm:~17.0.16"
     react-virtuoso: "npm:~4.18.16"
     storybook: "npm:^9.1.20"
-    typescript: "npm:~5.9.3"
+    typescript: "npm:~7.0.2"
   peerDependencies:
     "@rocket.chat/css-in-js": "workspace:^"
     "@rocket.chat/fuselage": "*"
@@ -12380,7 +12393,7 @@ __metadata:
     react-split-pane: "npm:^3.2.0"
     react-virtuoso: "npm:~4.18.16"
     reactflow: "npm:^11.11.4"
-    typescript: "npm:~5.9.3"
+    typescript: "npm:~7.0.2"
     vite: "npm:^8.0.16"
   languageName: unknown
   linkType: soft
@@ -12434,7 +12447,7 @@ __metadata:
     react-i18next: "npm:~17.0.16"
     react-virtuoso: "npm:~4.18.16"
     storybook: "npm:^9.1.20"
-    typescript: "npm:~5.9.3"
+    typescript: "npm:~7.0.2"
   peerDependencies:
     "@rocket.chat/layout": "*"
     "@rocket.chat/tools": "workspace:^"
@@ -14876,6 +14889,55 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@ttsc/darwin-arm64@npm:0.18.4":
+  version: 0.18.4
+  resolution: "@ttsc/darwin-arm64@npm:0.18.4"
+  conditions: os=darwin & cpu=arm64
+  languageName: node
+  linkType: hard
+
+"@ttsc/darwin-x64@npm:0.18.4":
+  version: 0.18.4
+  resolution: "@ttsc/darwin-x64@npm:0.18.4"
+  conditions: os=darwin & cpu=x64
+  languageName: node
+  linkType: hard
+
+"@ttsc/linux-arm64@npm:0.18.4":
+  version: 0.18.4
+  resolution: "@ttsc/linux-arm64@npm:0.18.4"
+  conditions: os=linux & cpu=arm64
+  languageName: node
+  linkType: hard
+
+"@ttsc/linux-arm@npm:0.18.4":
+  version: 0.18.4
+  resolution: "@ttsc/linux-arm@npm:0.18.4"
+  conditions: os=linux & cpu=arm
+  languageName: node
+  linkType: hard
+
+"@ttsc/linux-x64@npm:0.18.4":
+  version: 0.18.4
+  resolution: "@ttsc/linux-x64@npm:0.18.4"
+  conditions: os=linux & cpu=x64
+  languageName: node
+  linkType: hard
+
+"@ttsc/win32-arm64@npm:0.18.4":
+  version: 0.18.4
+  resolution: "@ttsc/win32-arm64@npm:0.18.4"
+  conditions: os=win32 & cpu=arm64
+  languageName: node
+  linkType: hard
+
+"@ttsc/win32-x64@npm:0.18.4":
+  version: 0.18.4
+  resolution: "@ttsc/win32-x64@npm:0.18.4"
+  conditions: os=win32 & cpu=x64
+  languageName: node
+  linkType: hard
+
 "@turbo/darwin-64@npm:2.11.7":
   version: 2.11.7
   resolution: "@turbo/darwin-64@npm:2.11.7"
@@ -16970,6 +17032,243 @@ __metadata:
     "@typescript-eslint/types": "npm:8.71.1"
     eslint-visitor-keys: "npm:^5.0.0"
   checksum: 10/9abc7b1a266eb65b16ac16d99e334d06e0539241e5ae9b6721a11a6a1d2736a9f564dc5e5dc37e7d0bfce5e260da6495bab9d594a1317d01624d239286bd12c2
+  languageName: node
+  linkType: hard
+
+"@typescript/native-preview-darwin-arm64@npm:7.0.0-dev.20260707.2":
+  version: 7.0.0-dev.20260707.2
+  resolution: "@typescript/native-preview-darwin-arm64@npm:7.0.0-dev.20260707.2"
+  conditions: os=darwin & cpu=arm64
+  languageName: node
+  linkType: hard
+
+"@typescript/native-preview-darwin-x64@npm:7.0.0-dev.20260707.2":
+  version: 7.0.0-dev.20260707.2
+  resolution: "@typescript/native-preview-darwin-x64@npm:7.0.0-dev.20260707.2"
+  conditions: os=darwin & cpu=x64
+  languageName: node
+  linkType: hard
+
+"@typescript/native-preview-linux-arm64@npm:7.0.0-dev.20260707.2":
+  version: 7.0.0-dev.20260707.2
+  resolution: "@typescript/native-preview-linux-arm64@npm:7.0.0-dev.20260707.2"
+  conditions: os=linux & cpu=arm64
+  languageName: node
+  linkType: hard
+
+"@typescript/native-preview-linux-arm@npm:7.0.0-dev.20260707.2":
+  version: 7.0.0-dev.20260707.2
+  resolution: "@typescript/native-preview-linux-arm@npm:7.0.0-dev.20260707.2"
+  conditions: os=linux & cpu=arm
+  languageName: node
+  linkType: hard
+
+"@typescript/native-preview-linux-x64@npm:7.0.0-dev.20260707.2":
+  version: 7.0.0-dev.20260707.2
+  resolution: "@typescript/native-preview-linux-x64@npm:7.0.0-dev.20260707.2"
+  conditions: os=linux & cpu=x64
+  languageName: node
+  linkType: hard
+
+"@typescript/native-preview-win32-arm64@npm:7.0.0-dev.20260707.2":
+  version: 7.0.0-dev.20260707.2
+  resolution: "@typescript/native-preview-win32-arm64@npm:7.0.0-dev.20260707.2"
+  conditions: os=win32 & cpu=arm64
+  languageName: node
+  linkType: hard
+
+"@typescript/native-preview-win32-x64@npm:7.0.0-dev.20260707.2":
+  version: 7.0.0-dev.20260707.2
+  resolution: "@typescript/native-preview-win32-x64@npm:7.0.0-dev.20260707.2"
+  conditions: os=win32 & cpu=x64
+  languageName: node
+  linkType: hard
+
+"@typescript/native-preview@npm:7.0.0-dev.20260707.2":
+  version: 7.0.0-dev.20260707.2
+  resolution: "@typescript/native-preview@npm:7.0.0-dev.20260707.2"
+  dependencies:
+    "@typescript/native-preview-darwin-arm64": "npm:7.0.0-dev.20260707.2"
+    "@typescript/native-preview-darwin-x64": "npm:7.0.0-dev.20260707.2"
+    "@typescript/native-preview-linux-arm": "npm:7.0.0-dev.20260707.2"
+    "@typescript/native-preview-linux-arm64": "npm:7.0.0-dev.20260707.2"
+    "@typescript/native-preview-linux-x64": "npm:7.0.0-dev.20260707.2"
+    "@typescript/native-preview-win32-arm64": "npm:7.0.0-dev.20260707.2"
+    "@typescript/native-preview-win32-x64": "npm:7.0.0-dev.20260707.2"
+  dependenciesMeta:
+    "@typescript/native-preview-darwin-arm64":
+      optional: true
+    "@typescript/native-preview-darwin-x64":
+      optional: true
+    "@typescript/native-preview-linux-arm":
+      optional: true
+    "@typescript/native-preview-linux-arm64":
+      optional: true
+    "@typescript/native-preview-linux-x64":
+      optional: true
+    "@typescript/native-preview-win32-arm64":
+      optional: true
+    "@typescript/native-preview-win32-x64":
+      optional: true
+  bin:
+    tsgo: bin/tsgo
+  checksum: 10/c0fa2e0326b205e5542bd063e85e34622d11db6c364f43d898e4f7473cc73dc40244b7616252f28d5e9ace71126bd09cc7c9eb3e26788fe20daa30091f77afcb
+  languageName: node
+  linkType: hard
+
+"@typescript/typescript-aix-ppc64@npm:7.0.2":
+  version: 7.0.2
+  resolution: "@typescript/typescript-aix-ppc64@npm:7.0.2"
+  conditions: os=aix & cpu=ppc64
+  languageName: node
+  linkType: hard
+
+"@typescript/typescript-darwin-arm64@npm:7.0.2":
+  version: 7.0.2
+  resolution: "@typescript/typescript-darwin-arm64@npm:7.0.2"
+  conditions: os=darwin & cpu=arm64
+  languageName: node
+  linkType: hard
+
+"@typescript/typescript-darwin-x64@npm:7.0.2":
+  version: 7.0.2
+  resolution: "@typescript/typescript-darwin-x64@npm:7.0.2"
+  conditions: os=darwin & cpu=x64
+  languageName: node
+  linkType: hard
+
+"@typescript/typescript-freebsd-arm64@npm:7.0.2":
+  version: 7.0.2
+  resolution: "@typescript/typescript-freebsd-arm64@npm:7.0.2"
+  conditions: os=freebsd & cpu=arm64
+  languageName: node
+  linkType: hard
+
+"@typescript/typescript-freebsd-x64@npm:7.0.2":
+  version: 7.0.2
+  resolution: "@typescript/typescript-freebsd-x64@npm:7.0.2"
+  conditions: os=freebsd & cpu=x64
+  languageName: node
+  linkType: hard
+
+"@typescript/typescript-linux-arm64@npm:7.0.2":
+  version: 7.0.2
+  resolution: "@typescript/typescript-linux-arm64@npm:7.0.2"
+  conditions: os=linux & cpu=arm64
+  languageName: node
+  linkType: hard
+
+"@typescript/typescript-linux-arm@npm:7.0.2":
+  version: 7.0.2
+  resolution: "@typescript/typescript-linux-arm@npm:7.0.2"
+  conditions: os=linux & cpu=arm
+  languageName: node
+  linkType: hard
+
+"@typescript/typescript-linux-loong64@npm:7.0.2":
+  version: 7.0.2
+  resolution: "@typescript/typescript-linux-loong64@npm:7.0.2"
+  conditions: os=linux & cpu=loong64
+  languageName: node
+  linkType: hard
+
+"@typescript/typescript-linux-mips64el@npm:7.0.2":
+  version: 7.0.2
+  resolution: "@typescript/typescript-linux-mips64el@npm:7.0.2"
+  conditions: os=linux & cpu=mips64el
+  languageName: node
+  linkType: hard
+
+"@typescript/typescript-linux-ppc64@npm:7.0.2":
+  version: 7.0.2
+  resolution: "@typescript/typescript-linux-ppc64@npm:7.0.2"
+  conditions: os=linux & cpu=ppc64
+  languageName: node
+  linkType: hard
+
+"@typescript/typescript-linux-riscv64@npm:7.0.2":
+  version: 7.0.2
+  resolution: "@typescript/typescript-linux-riscv64@npm:7.0.2"
+  conditions: os=linux & cpu=riscv64
+  languageName: node
+  linkType: hard
+
+"@typescript/typescript-linux-s390x@npm:7.0.2":
+  version: 7.0.2
+  resolution: "@typescript/typescript-linux-s390x@npm:7.0.2"
+  conditions: os=linux & cpu=s390x
+  languageName: node
+  linkType: hard
+
+"@typescript/typescript-linux-x64@npm:7.0.2":
+  version: 7.0.2
+  resolution: "@typescript/typescript-linux-x64@npm:7.0.2"
+  conditions: os=linux & cpu=x64
+  languageName: node
+  linkType: hard
+
+"@typescript/typescript-netbsd-arm64@npm:7.0.2":
+  version: 7.0.2
+  resolution: "@typescript/typescript-netbsd-arm64@npm:7.0.2"
+  conditions: os=netbsd & cpu=arm64
+  languageName: node
+  linkType: hard
+
+"@typescript/typescript-netbsd-x64@npm:7.0.2":
+  version: 7.0.2
+  resolution: "@typescript/typescript-netbsd-x64@npm:7.0.2"
+  conditions: os=netbsd & cpu=x64
+  languageName: node
+  linkType: hard
+
+"@typescript/typescript-openbsd-arm64@npm:7.0.2":
+  version: 7.0.2
+  resolution: "@typescript/typescript-openbsd-arm64@npm:7.0.2"
+  conditions: os=openbsd & cpu=arm64
+  languageName: node
+  linkType: hard
+
+"@typescript/typescript-openbsd-x64@npm:7.0.2":
+  version: 7.0.2
+  resolution: "@typescript/typescript-openbsd-x64@npm:7.0.2"
+  conditions: os=openbsd & cpu=x64
+  languageName: node
+  linkType: hard
+
+"@typescript/typescript-sunos-x64@npm:7.0.2":
+  version: 7.0.2
+  resolution: "@typescript/typescript-sunos-x64@npm:7.0.2"
+  conditions: os=sunos & cpu=x64
+  languageName: node
+  linkType: hard
+
+"@typescript/typescript-win32-arm64@npm:7.0.2":
+  version: 7.0.2
+  resolution: "@typescript/typescript-win32-arm64@npm:7.0.2"
+  conditions: os=win32 & cpu=arm64
+  languageName: node
+  linkType: hard
+
+"@typescript/typescript-win32-x64@npm:7.0.2":
+  version: 7.0.2
+  resolution: "@typescript/typescript-win32-x64@npm:7.0.2"
+  conditions: os=win32 & cpu=x64
+  languageName: node
+  linkType: hard
+
+"@typia/interface@npm:^13.0.2, @typia/interface@npm:^13.3.0":
+  version: 13.3.0
+  resolution: "@typia/interface@npm:13.3.0"
+  checksum: 10/7ae87438fdb3ddff42a286826b8b9ee5d71d56027a6cf47139d384e6a085b843cf7e5d3ede86c567a3d0579a78645ded13617a1b4dd182fe0619aa2f0af7ef21
+  languageName: node
+  linkType: hard
+
+"@typia/utils@npm:^13.0.2":
+  version: 13.3.0
+  resolution: "@typia/utils@npm:13.3.0"
+  dependencies:
+    "@typia/interface": "npm:^13.3.0"
+  checksum: 10/2bb04929ff9ba9a1a28dfec253e65c5097d320e2cafed67c3eb33e6203d0a2ef014bea102b78131a45302c16b2e4d39ab52c9696f312166acad006fd72ad14b3
   languageName: node
   linkType: hard
 
@@ -24608,6 +24907,16 @@ __metadata:
   languageName: node
   linkType: hard
 
+"foreground-child@npm:^3.3.1":
+  version: 3.3.1
+  resolution: "foreground-child@npm:3.3.1"
+  dependencies:
+    cross-spawn: "npm:^7.0.6"
+    signal-exit: "npm:^4.0.1"
+  checksum: 10/427b33f997a98073c0424e5c07169264a62cda806d8d2ded159b5b903fdfc8f0a1457e06b5fc35506497acb3f1e353f025edee796300209ac6231e80edece835
+  languageName: node
+  linkType: hard
+
 "fork-ts-checker-webpack-plugin@npm:^8.0.0":
   version: 8.0.0
   resolution: "fork-ts-checker-webpack-plugin@npm:8.0.0"
@@ -25027,7 +25336,23 @@ __metadata:
   languageName: node
   linkType: hard
 
-"glob@npm:^13.0.6":
+"glob@npm:11.1.0":
+  version: 11.1.0
+  resolution: "glob@npm:11.1.0"
+  dependencies:
+    foreground-child: "npm:^3.3.1"
+    jackspeak: "npm:^4.1.1"
+    minimatch: "npm:^10.1.1"
+    minipass: "npm:^7.1.2"
+    package-json-from-dist: "npm:^1.0.0"
+    path-scurry: "npm:^2.0.0"
+  bin:
+    glob: dist/esm/bin.mjs
+  checksum: 10/da4501819633daff8822c007bb3f93d5c4d2cbc7b15a8e886660f4497dd251a1fb4f53a85fba1e760b31704eff7164aeb2c7a82db10f9f2c362d12c02fe52cf3
+  languageName: node
+  linkType: hard
+
+"glob@npm:^13.0.3, glob@npm:^13.0.6":
   version: 13.0.6
   resolution: "glob@npm:13.0.6"
   dependencies:
@@ -25131,17 +25456,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"global-prefix@npm:^4.0.0":
-  version: 4.0.0
-  resolution: "global-prefix@npm:4.0.0"
-  dependencies:
-    ini: "npm:^4.1.3"
-    kind-of: "npm:^6.0.3"
-    which: "npm:^4.0.0"
-  checksum: 10/535489396c0e5828682f081f5227556a3b7a30ebecde9f5eb35aee4aea121fe5c5fb1b04e0fba85d1e34e6004687e51b306bdd446d391eca8449adbb4666dbe2
-  languageName: node
-  linkType: hard
-
 "globals@npm:^11.1.0":
   version: 11.12.0
   resolution: "globals@npm:11.12.0"
@@ -25153,6 +25467,13 @@ __metadata:
   version: 17.13.0
   resolution: "globals@npm:17.13.0"
   checksum: 10/f723714cfb07bcf3163d44661d63b2a6076d93fd2f3724622b22084c62bcbbdb3ea3c601ec39635f1430d5cdf60bbf6fd7e458f12b5381ed422ed355c699537b
+  languageName: node
+  linkType: hard
+
+"globals@npm:~17.7.0":
+  version: 17.7.0
+  resolution: "globals@npm:17.7.0"
+  checksum: 10/79304ccc4d2ca167ea15bdb25da346aa34ce3847b18fbd6c3cad182e152505305db3c9722fd5e292c62f6db97a8fa06e0c110a1e7703d7325498e5351d08cab4
   languageName: node
   linkType: hard
 
@@ -26281,13 +26602,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"ini@npm:^4.1.3":
-  version: 4.1.3
-  resolution: "ini@npm:4.1.3"
-  checksum: 10/f536b414d1442e5b233429e2b56efcdb354109b2d65ddd489e5939d8f0f5ad23c88aa2b19c92987249d0dd63ba8192e9aeb1a02b0459549c5a9ff31acd729a5d
-  languageName: node
-  linkType: hard
-
 "inquirer@npm:^8.2.5":
   version: 8.2.6
   resolution: "inquirer@npm:8.2.6"
@@ -27180,6 +27494,15 @@ __metadata:
     "@pkgjs/parseargs":
       optional: true
   checksum: 10/96f8786eaab98e4bf5b2a5d6d9588ea46c4d06bbc4f2eb861fdd7b6b182b16f71d8a70e79820f335d52653b16d4843b29dd9cdcf38ae80406756db9199497cf3
+  languageName: node
+  linkType: hard
+
+"jackspeak@npm:^4.1.1":
+  version: 4.2.3
+  resolution: "jackspeak@npm:4.2.3"
+  dependencies:
+    "@isaacs/cliui": "npm:^9.0.0"
+  checksum: 10/b88e3fe5fa04d34f0f939a15b7cef4a8589999b7a366ef89a3e0f2c45d2a7666066b67cbf46d57c3a4796a76d27b9d869b23d96a803dd834200d222c2a70de7e
   languageName: node
   linkType: hard
 
@@ -30399,7 +30722,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"minimatch@npm:^10.2.2":
+"minimatch@npm:^10.1.1, minimatch@npm:^10.2.2":
   version: 10.2.6
   resolution: "minimatch@npm:10.2.6"
   dependencies:
@@ -31236,7 +31559,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"npm-run-all@npm:^4.1.5":
+"npm-run-all@npm:^4.1.5, npm-run-all@npm:~4.1.5":
   version: 4.1.5
   resolution: "npm-run-all@npm:4.1.5"
   dependencies:
@@ -31881,6 +32204,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"package-json-from-dist@npm:^1.0.1":
+  version: 1.0.1
+  resolution: "package-json-from-dist@npm:1.0.1"
+  checksum: 10/58ee9538f2f762988433da00e26acc788036914d57c71c246bf0be1b60cdbd77dd60b6a3e1a30465f0b248aeb80079e0b34cb6050b1dfa18c06953bb1cbc7602
+  languageName: node
+  linkType: hard
+
 "package-manager-detector@npm:^0.2.0":
   version: 0.2.2
   resolution: "package-manager-detector@npm:0.2.2"
@@ -32225,7 +32555,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"path-scurry@npm:^2.0.2":
+"path-scurry@npm:^2.0.0, path-scurry@npm:^2.0.2":
   version: 2.0.2
   resolution: "path-scurry@npm:2.0.2"
   dependencies:
@@ -35363,7 +35693,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"resolve@npm:^1.1.7, resolve@npm:^1.10.0, resolve@npm:^1.11.1, resolve@npm:^1.20.0, resolve@npm:^1.22.1, resolve@npm:^1.22.2, resolve@npm:^1.22.8":
+"resolve@npm:^1.1.7, resolve@npm:^1.10.0, resolve@npm:^1.11.1, resolve@npm:^1.20.0, resolve@npm:^1.22.1, resolve@npm:^1.22.8":
   version: 1.22.8
   resolution: "resolve@npm:1.22.8"
   dependencies:
@@ -35419,7 +35749,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"resolve@patch:resolve@npm%3A^1.1.7#optional!builtin<compat/resolve>, resolve@patch:resolve@npm%3A^1.10.0#optional!builtin<compat/resolve>, resolve@patch:resolve@npm%3A^1.11.1#optional!builtin<compat/resolve>, resolve@patch:resolve@npm%3A^1.20.0#optional!builtin<compat/resolve>, resolve@patch:resolve@npm%3A^1.22.1#optional!builtin<compat/resolve>, resolve@patch:resolve@npm%3A^1.22.2#optional!builtin<compat/resolve>, resolve@patch:resolve@npm%3A^1.22.8#optional!builtin<compat/resolve>":
+"resolve@patch:resolve@npm%3A^1.1.7#optional!builtin<compat/resolve>, resolve@patch:resolve@npm%3A^1.10.0#optional!builtin<compat/resolve>, resolve@patch:resolve@npm%3A^1.11.1#optional!builtin<compat/resolve>, resolve@patch:resolve@npm%3A^1.20.0#optional!builtin<compat/resolve>, resolve@patch:resolve@npm%3A^1.22.1#optional!builtin<compat/resolve>, resolve@patch:resolve@npm%3A^1.22.8#optional!builtin<compat/resolve>":
   version: 1.22.8
   resolution: "resolve@patch:resolve@npm%3A1.22.8#optional!builtin<compat/resolve>::version=1.22.8&hash=9bd1a5"
   dependencies:
@@ -35553,6 +35883,30 @@ __metadata:
   languageName: node
   linkType: hard
 
+"rimraf@npm:^6.0.1":
+  version: 6.1.3
+  resolution: "rimraf@npm:6.1.3"
+  dependencies:
+    glob: "npm:^13.0.3"
+    package-json-from-dist: "npm:^1.0.1"
+  bin:
+    rimraf: dist/esm/bin.mjs
+  checksum: 10/dd98ec2ad7cd2cccae1c7110754d472eac8edb2bab8a8b057dce04edfe1433dab246a889b3fd85a66c78ca81caa1429caa0e736c7647f6832b04fd5d4dfb8ab8
+  languageName: node
+  linkType: hard
+
+"rimraf@npm:~6.0.1":
+  version: 6.0.1
+  resolution: "rimraf@npm:6.0.1"
+  dependencies:
+    glob: "npm:^11.0.0"
+    package-json-from-dist: "npm:^1.0.0"
+  bin:
+    rimraf: dist/esm/bin.mjs
+  checksum: 10/0eb7edf08aa39017496c99ba675552dda11a20811ba78f8232da2ba945308c91e9cd673f95998b1a8202bc7436d33390831d23ea38ae52751038d56373ad99e2
+  languageName: node
+  linkType: hard
+
 "ripemd160@npm:=2.0.1":
   version: 2.0.1
   resolution: "ripemd160@npm:2.0.1"
@@ -35592,10 +35946,11 @@ __metadata:
     "@types/stream-buffers": "npm:^3.0.8"
     eslint: "npm:~10.12.0"
     eslint-plugin-you-dont-need-lodash-underscore: "npm:~6.14.0"
+    globals: "npm:~17.7.0"
     node-gyp: "npm:^11.0.0"
     ts-node: "npm:^10.9.2"
     turbo: "npm:2.11.7"
-    typescript: "npm:~5.9.3"
+    typescript: "npm:~7.0.2"
   languageName: unknown
   linkType: soft
 
@@ -38624,23 +38979,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"ts-patch@npm:^3.3.0":
-  version: 3.3.0
-  resolution: "ts-patch@npm:3.3.0"
-  dependencies:
-    chalk: "npm:^4.1.2"
-    global-prefix: "npm:^4.0.0"
-    minimist: "npm:^1.2.8"
-    resolve: "npm:^1.22.2"
-    semver: "npm:^7.6.3"
-    strip-ansi: "npm:^6.0.1"
-  bin:
-    ts-patch: bin/ts-patch.js
-    tspc: bin/tspc.js
-  checksum: 10/5b0a42cacdfef2136b18b785b4ca6579d470001560d42139057fccf6ed85a622a73e5efba1b20426b047bf9aaf2090a23a9afca4e72ab330b166344dd45b3386
-  languageName: node
-  linkType: hard
-
 "tsconfig-paths@npm:^4.2.0":
   version: 4.2.0
   resolution: "tsconfig-paths@npm:4.2.0"
@@ -38754,6 +39092,40 @@ __metadata:
   version: 1.3.1
   resolution: "ttl@npm:1.3.1"
   checksum: 10/97a00686f678e503d9416f44c4effae32f813a1090e433a29095bb1ddf861c1c15f848b0f13f772c2063b0a831e4656510bde0174657e566f644205aff2baf37
+  languageName: node
+  linkType: hard
+
+"ttsc@npm:0.18.4":
+  version: 0.18.4
+  resolution: "ttsc@npm:0.18.4"
+  dependencies:
+    "@ttsc/darwin-arm64": "npm:0.18.4"
+    "@ttsc/darwin-x64": "npm:0.18.4"
+    "@ttsc/linux-arm": "npm:0.18.4"
+    "@ttsc/linux-arm64": "npm:0.18.4"
+    "@ttsc/linux-x64": "npm:0.18.4"
+    "@ttsc/win32-arm64": "npm:0.18.4"
+    "@ttsc/win32-x64": "npm:0.18.4"
+  dependenciesMeta:
+    "@ttsc/darwin-arm64":
+      optional: true
+    "@ttsc/darwin-x64":
+      optional: true
+    "@ttsc/linux-arm":
+      optional: true
+    "@ttsc/linux-arm64":
+      optional: true
+    "@ttsc/linux-x64":
+      optional: true
+    "@ttsc/win32-arm64":
+      optional: true
+    "@ttsc/win32-x64":
+      optional: true
+  bin:
+    ttsc: lib/launcher/ttsc.js
+    ttscserver: lib/launcher/ttscserver.js
+    ttsx: lib/launcher/ttsx.js
+  checksum: 10/c33232ddb7f76d51cf4262517269592484bee38b4dbb4f4b995907c15f7f7be92112372a615b76a33b9d346622381eb1c7e274e5328fea5df77df57cbd0c5bc8
   languageName: node
   linkType: hard
 
@@ -39017,6 +39389,77 @@ __metadata:
   languageName: node
   linkType: hard
 
+"typescript@npm:~7.0.2":
+  version: 7.0.2
+  resolution: "typescript@npm:7.0.2"
+  dependencies:
+    "@typescript/typescript-aix-ppc64": "npm:7.0.2"
+    "@typescript/typescript-darwin-arm64": "npm:7.0.2"
+    "@typescript/typescript-darwin-x64": "npm:7.0.2"
+    "@typescript/typescript-freebsd-arm64": "npm:7.0.2"
+    "@typescript/typescript-freebsd-x64": "npm:7.0.2"
+    "@typescript/typescript-linux-arm": "npm:7.0.2"
+    "@typescript/typescript-linux-arm64": "npm:7.0.2"
+    "@typescript/typescript-linux-loong64": "npm:7.0.2"
+    "@typescript/typescript-linux-mips64el": "npm:7.0.2"
+    "@typescript/typescript-linux-ppc64": "npm:7.0.2"
+    "@typescript/typescript-linux-riscv64": "npm:7.0.2"
+    "@typescript/typescript-linux-s390x": "npm:7.0.2"
+    "@typescript/typescript-linux-x64": "npm:7.0.2"
+    "@typescript/typescript-netbsd-arm64": "npm:7.0.2"
+    "@typescript/typescript-netbsd-x64": "npm:7.0.2"
+    "@typescript/typescript-openbsd-arm64": "npm:7.0.2"
+    "@typescript/typescript-openbsd-x64": "npm:7.0.2"
+    "@typescript/typescript-sunos-x64": "npm:7.0.2"
+    "@typescript/typescript-win32-arm64": "npm:7.0.2"
+    "@typescript/typescript-win32-x64": "npm:7.0.2"
+  dependenciesMeta:
+    "@typescript/typescript-aix-ppc64":
+      optional: true
+    "@typescript/typescript-darwin-arm64":
+      optional: true
+    "@typescript/typescript-darwin-x64":
+      optional: true
+    "@typescript/typescript-freebsd-arm64":
+      optional: true
+    "@typescript/typescript-freebsd-x64":
+      optional: true
+    "@typescript/typescript-linux-arm":
+      optional: true
+    "@typescript/typescript-linux-arm64":
+      optional: true
+    "@typescript/typescript-linux-loong64":
+      optional: true
+    "@typescript/typescript-linux-mips64el":
+      optional: true
+    "@typescript/typescript-linux-ppc64":
+      optional: true
+    "@typescript/typescript-linux-riscv64":
+      optional: true
+    "@typescript/typescript-linux-s390x":
+      optional: true
+    "@typescript/typescript-linux-x64":
+      optional: true
+    "@typescript/typescript-netbsd-arm64":
+      optional: true
+    "@typescript/typescript-netbsd-x64":
+      optional: true
+    "@typescript/typescript-openbsd-arm64":
+      optional: true
+    "@typescript/typescript-openbsd-x64":
+      optional: true
+    "@typescript/typescript-sunos-x64":
+      optional: true
+    "@typescript/typescript-win32-arm64":
+      optional: true
+    "@typescript/typescript-win32-x64":
+      optional: true
+  bin:
+    tsc: bin/tsc
+  checksum: 10/b0179005349b43dc1febb35c4e79162cdf89b84eae60f6deac142429109041e07582e69a6aacf5a897e085869686d4512ea444a10acf5b5aa2b60910f82a19ca
+  languageName: node
+  linkType: hard
+
 "typescript@patch:typescript@npm%3A~5.9.3#optional!builtin<compat/typescript>":
   version: 5.9.3
   resolution: "typescript@patch:typescript@npm%3A5.9.3#optional!builtin<compat/typescript>::version=5.9.3&hash=5786d5"
@@ -39024,6 +39467,94 @@ __metadata:
     tsc: bin/tsc
     tsserver: bin/tsserver
   checksum: 10/696e1b017bc2635f4e0c94eb4435357701008e2f272f553d06e35b494b8ddc60aa221145e286c28ace0c89ee32827a28c2040e3a69bdc108b1a5dc8fb40b72e3
+  languageName: node
+  linkType: hard
+
+"typescript@patch:typescript@npm%3A~7.0.2#optional!builtin<compat/typescript>":
+  version: 7.0.2
+  resolution: "typescript@patch:typescript@npm%3A7.0.2#optional!builtin<compat/typescript>::version=7.0.2&hash=3bafbf"
+  dependencies:
+    "@typescript/typescript-aix-ppc64": "npm:7.0.2"
+    "@typescript/typescript-darwin-arm64": "npm:7.0.2"
+    "@typescript/typescript-darwin-x64": "npm:7.0.2"
+    "@typescript/typescript-freebsd-arm64": "npm:7.0.2"
+    "@typescript/typescript-freebsd-x64": "npm:7.0.2"
+    "@typescript/typescript-linux-arm": "npm:7.0.2"
+    "@typescript/typescript-linux-arm64": "npm:7.0.2"
+    "@typescript/typescript-linux-loong64": "npm:7.0.2"
+    "@typescript/typescript-linux-mips64el": "npm:7.0.2"
+    "@typescript/typescript-linux-ppc64": "npm:7.0.2"
+    "@typescript/typescript-linux-riscv64": "npm:7.0.2"
+    "@typescript/typescript-linux-s390x": "npm:7.0.2"
+    "@typescript/typescript-linux-x64": "npm:7.0.2"
+    "@typescript/typescript-netbsd-arm64": "npm:7.0.2"
+    "@typescript/typescript-netbsd-x64": "npm:7.0.2"
+    "@typescript/typescript-openbsd-arm64": "npm:7.0.2"
+    "@typescript/typescript-openbsd-x64": "npm:7.0.2"
+    "@typescript/typescript-sunos-x64": "npm:7.0.2"
+    "@typescript/typescript-win32-arm64": "npm:7.0.2"
+    "@typescript/typescript-win32-x64": "npm:7.0.2"
+  dependenciesMeta:
+    "@typescript/typescript-aix-ppc64":
+      optional: true
+    "@typescript/typescript-darwin-arm64":
+      optional: true
+    "@typescript/typescript-darwin-x64":
+      optional: true
+    "@typescript/typescript-freebsd-arm64":
+      optional: true
+    "@typescript/typescript-freebsd-x64":
+      optional: true
+    "@typescript/typescript-linux-arm":
+      optional: true
+    "@typescript/typescript-linux-arm64":
+      optional: true
+    "@typescript/typescript-linux-loong64":
+      optional: true
+    "@typescript/typescript-linux-mips64el":
+      optional: true
+    "@typescript/typescript-linux-ppc64":
+      optional: true
+    "@typescript/typescript-linux-riscv64":
+      optional: true
+    "@typescript/typescript-linux-s390x":
+      optional: true
+    "@typescript/typescript-linux-x64":
+      optional: true
+    "@typescript/typescript-netbsd-arm64":
+      optional: true
+    "@typescript/typescript-netbsd-x64":
+      optional: true
+    "@typescript/typescript-openbsd-arm64":
+      optional: true
+    "@typescript/typescript-openbsd-x64":
+      optional: true
+    "@typescript/typescript-sunos-x64":
+      optional: true
+    "@typescript/typescript-win32-arm64":
+      optional: true
+    "@typescript/typescript-win32-x64":
+      optional: true
+  bin:
+    tsc: bin/tsc
+  checksum: 10/6d7f3d34ca7fbd3eb4999f06db29340d3dcedd7d40ed71654ea53ecd0f28a330edf0f55a0acf541bf294a2f024f11242075c1a83aed4bd99776fe99af45b994b
+  languageName: node
+  linkType: hard
+
+"typia@npm:13.0.2":
+  version: 13.0.2
+  resolution: "typia@npm:13.0.2"
+  dependencies:
+    "@standard-schema/spec": "npm:^1.0.0"
+    "@typia/interface": "npm:^13.0.2"
+    "@typia/utils": "npm:^13.0.2"
+    commander: "npm:^10.0.0"
+    inquirer: "npm:^8.2.5"
+    randexp: "npm:^0.5.3"
+    tinyglobby: "npm:^0.2.12"
+  bin:
+    typia: lib/executable/typia.js
+  checksum: 10/a6aeb24b8e3a50e4cb20f514cdd82b296980c9928f51a4a56acc5337eef007b23074a08b62c07d3ba49b10399cc107bdcd04765aee89647040922b1a3e9a6842
   languageName: node
   linkType: hard
 
@@ -40446,17 +40977,6 @@ __metadata:
   bin:
     node-which: ./bin/node-which
   checksum: 10/4782f8a1d6b8fc12c65e968fea49f59752bf6302dc43036c3bf87da718a80710f61a062516e9764c70008b487929a73546125570acea95c5b5dcc8ac3052c70f
-  languageName: node
-  linkType: hard
-
-"which@npm:^4.0.0":
-  version: 4.0.0
-  resolution: "which@npm:4.0.0"
-  dependencies:
-    isexe: "npm:^3.1.1"
-  bin:
-    node-which: bin/which.js
-  checksum: 10/f17e84c042592c21e23c8195108cff18c64050b9efb8459589116999ea9da6dd1509e6a1bac3aeebefd137be00fabbb61b5c2bc0aa0f8526f32b58ee2f545651
   languageName: node
   linkType: hard
 
