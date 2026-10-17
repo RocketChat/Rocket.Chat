@@ -749,7 +749,7 @@ describe('AbacService (unit)', () => {
 				const write = service.setRoomAbacAttributes('r1', { dept: ['eng', 'sales'] }, fakeActor, 'edit-room-abac-attributes');
 
 				await expect(write).rejects.toMatchObject({
-					code: 'error-invalid-attribute-values',
+					error: 'error-abac-attribute-not-assignable',
 					details: { attributes: [{ key: 'dept', values: ['sales'] }] },
 				});
 				expect(mockSetAbacAttributesById).not.toHaveBeenCalled();
@@ -2180,7 +2180,7 @@ describe('AbacService (unit)', () => {
 			findUnassignableValues.mockResolvedValue([{ key: 'dept', values: ['sales'] }]);
 
 			await expect(previewAs(adding, {}, 'edit-room-abac-attributes')).rejects.toMatchObject({
-				code: 'error-invalid-attribute-values',
+				error: 'error-abac-attribute-not-assignable',
 				details: { attributes: [{ key: 'dept', values: ['sales'] }] },
 			});
 			expect(findUnassignableValues).toHaveBeenCalledWith(required, fakeActor, room.abacAttributes);

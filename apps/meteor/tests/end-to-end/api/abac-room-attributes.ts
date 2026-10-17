@@ -175,7 +175,8 @@ import { IS_EE, URL_MONGODB } from '../../e2e/config/constants';
 			await writeAttributes(ownedRoomId, { [dept]: ['eng', 'ops'] }, ownerCredentials)
 				.expect(400)
 				.expect((res) => {
-					expect(res.body).to.have.property('error', 'error-invalid-attribute-values');
+					expect(res.body).to.include({ error: 'error-abac-attribute-not-assignable', errorType: 'error-abac-attribute-not-assignable' });
+					expect(res.body.details.attributes).to.deep.equal([{ key: dept, values: ['ops'] }]);
 				});
 		});
 
@@ -316,7 +317,8 @@ import { IS_EE, URL_MONGODB } from '../../e2e/config/constants';
 			await preview({ rid: ownedRoomId, attributes: { [dept]: ['eng', 'ops'] } })
 				.expect(400)
 				.expect((res) => {
-					expect(res.body).to.have.property('error', 'error-invalid-attribute-values');
+					expect(res.body).to.include({ error: 'error-abac-attribute-not-assignable', errorType: 'error-abac-attribute-not-assignable' });
+					expect(res.body.details.attributes).to.deep.equal([{ key: dept, values: ['ops'] }]);
 				});
 		});
 
