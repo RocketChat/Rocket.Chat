@@ -24,7 +24,7 @@ export async function handleMediaMessage(
 	const mimeType = fileInfo?.mimetype;
 	const fileName = messageBody;
 
-	const fileRefId = await MatrixMediaService.downloadAndStoreRemoteFile(url, matrixRoomId, {
+	const fileRefId = await MatrixMediaService.registerRemoteFile(url, matrixRoomId, {
 		name: messageBody,
 		size: fileInfo?.size || 0,
 		type: mimeType || 'application/octet-stream',

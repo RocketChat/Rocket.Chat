@@ -16,6 +16,15 @@ export const internalError = (msg: string, err?: unknown, context?: Record<strin
 	};
 };
 
+// Same status and message Synapse answers when it cannot fetch remote media for a client
+export const remoteMediaFetchFailed = (err: unknown) => {
+	logger.warn({ msg: 'Failed to fetch remote media', err });
+	return {
+		statusCode: 502 as const,
+		body: { errcode: 'M_UNKNOWN', error: 'Failed to fetch remote media' },
+	};
+};
+
 // The federation SDK throws an Error with name 'UnknownRoomError' (message `Room <id> does not exist`)
 // when a room isn't known to this homeserver. The class isn't exported for `instanceof`, so we match on
 // `.name` — the same check the SDK uses internally.
