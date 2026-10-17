@@ -25,9 +25,18 @@ module.exports = defineConfig((Meteor) => ({
 			// package.json declares "type": "commonjs", which makes rspack reject ESM syntax in .js files
 			{ test: /\.[cm]?jsx?$/i, exclude: /node_modules/, type: 'javascript/auto' },
 			{ test: /\.info$/, type: 'javascript/auto', loader: path.join(__dirname, '.rspack/info-loader.js') },
+			// With symlinks unresolved, workspace TypeScript sources sit under node_modules, which the app's swc rule excludes
+			{
+				test: /\.tsx?$/i,
+				include: /node_modules[\\/]@rocket\.chat[\\/][^\\/]+[\\/]src[\\/]/,
+				loader: 'builtin:swc-loader',
+				options: Meteor.swcConfigOptions,
+			},
 		],
 	},
 	resolve: {
+		// Resolve workspace packages through apps/meteor/node_modules, as Meteor does, so their dependencies share the app's single copy
+		symlinks: false,
 		alias: {
 			...Object.fromEntries(Object.entries(deepImports).map(([request, file]) => [`${request}$`, file])),
 			'@rocket.chat/i18n/dist/resources': nodeModule('@rocket.chat/i18n/dist/resources'),
