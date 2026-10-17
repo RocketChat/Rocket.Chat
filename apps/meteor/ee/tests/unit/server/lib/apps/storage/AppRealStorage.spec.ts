@@ -2,6 +2,7 @@ import { AppInstallationSource, type IAppStorageItem } from '@rocket.chat/apps/d
 import { AppStatus } from '@rocket.chat/apps-engine/definition/AppStatus';
 import { AppInterface } from '@rocket.chat/apps-engine/definition/metadata';
 import { SettingType } from '@rocket.chat/apps-engine/definition/settings';
+import { fakeCursor } from '@rocket.chat/models/testing';
 import { expect } from 'chai';
 import sinon from 'sinon';
 
@@ -101,9 +102,7 @@ describe('AppRealStorage', () => {
 				{ id: 'app2', _id: 'id2' },
 			];
 
-			mockDb.find.returns({
-				toArray: sinon.stub().resolves(mockApps),
-			});
+			mockDb.find.returns(fakeCursor(mockApps));
 
 			const result = await storage.retrieveAll();
 
@@ -120,9 +119,7 @@ describe('AppRealStorage', () => {
 				{ id: 'private-app2', _id: 'id2', installationSource: 'private' },
 			];
 
-			mockDb.find.returns({
-				toArray: sinon.stub().resolves(mockApps),
-			});
+			mockDb.find.returns(fakeCursor(mockApps));
 
 			const result = await storage.retrieveAllPrivate();
 
