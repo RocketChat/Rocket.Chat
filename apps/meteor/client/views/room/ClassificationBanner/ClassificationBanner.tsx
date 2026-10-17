@@ -16,7 +16,7 @@ const ClassificationBanner = () => {
 		select: (data) => data.classificationBanner,
 	});
 
-	if (!bannersEnabled || !banner) {
+	if (!bannersEnabled || !isABACAvailable || !banner) {
 		return null;
 	}
 

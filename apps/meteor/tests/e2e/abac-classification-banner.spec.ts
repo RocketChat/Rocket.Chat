@@ -56,6 +56,7 @@ test.describe.serial('abac-classification-banner', () => {
 	let poHomeChannel: HomeChannel;
 	let connection: MongoClient;
 	let room: IRoom;
+	let plainRoom: IRoom;
 	let attributeId: string;
 
 	test.skip(!IS_EE, 'Enterprise Only');
@@ -84,10 +85,11 @@ test.describe.serial('abac-classification-banner', () => {
 
 		({ group: room } = await createTargetGroupAndReturnFullRoom(api));
 		expect((await api.put(`/abac/rooms/${room._id}/attributes/${attrKey}`, { values: ['TS'] })).status()).toBe(200);
+		({ group: plainRoom } = await createTargetGroupAndReturnFullRoom(api));
 	});
 
 	test.afterAll(async ({ api }) => {
-		await deleteRoom(api, room._id);
+		await Promise.all([deleteRoom(api, room._id), deleteRoom(api, plainRoom._id)]);
 		await api.delete(`/abac/attributes/${attributeId}`);
 		await connection
 			.db()
@@ -116,18 +118,13 @@ test.describe.serial('abac-classification-banner', () => {
 		await expect(banner).toHaveCSS('background-color', convertHexToRGB('#ff8c00'));
 	});
 
-	test('should show no banner in a room without attributes when nonAbacBanner is not configured', async ({ page, api }) => {
-		const { group: plainRoom } = await createTargetGroupAndReturnFullRoom(api);
-
+	test('should show no banner in a room without attributes when nonAbacBanner is not configured', async ({ page }) => {
 		await poHomeChannel.navbar.openChat(plainRoom.name as string);
 		await expect(poHomeChannel.composer.inputMessage).toBeVisible();
 		await expect(page.getByRole('region', { name: 'Classification banner' })).toHaveCount(0);
-
-		await deleteRoom(api, plainRoom._id);
 	});
 
 	test.describe('with a nonAbacBanner configured', () => {
-		let plainRoom: IRoom;
 		let discussion: Record<string, string>;
 		let dmRoomId: string;
 
@@ -137,18 +134,12 @@ test.describe.serial('abac-classification-banner', () => {
 				'ABAC_Classification_Banners_Config',
 				JSON.stringify({ ...bannersConfig, nonAbacBanner: { enabled: true, text: 'UNCLASSIFIED', color: '#007a33' } }),
 			);
-			({ group: plainRoom } = await createTargetGroupAndReturnFullRoom(api));
 			discussion = await createTargetDiscussion(api);
 			dmRoomId = await createDirectMessageRoom(api, Users.user1.data.username);
 		});
 
 		test.afterAll(async ({ api }) => {
-			await Promise.all([
-				deleteRoom(api, plainRoom._id),
-				deleteRoom(api, discussion._id),
-				deleteRoom(api, discussion.prid),
-				deleteRoom(api, dmRoomId),
-			]);
+			await Promise.all([deleteRoom(api, discussion._id), deleteRoom(api, discussion.prid), deleteRoom(api, dmRoomId)]);
 			await setSettingValueById(api, 'ABAC_Classification_Banners_Config', JSON.stringify(bannersConfig));
 		});
 
