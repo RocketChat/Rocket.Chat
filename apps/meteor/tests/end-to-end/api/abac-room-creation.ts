@@ -588,7 +588,7 @@ import { IS_EE, URL_MONGODB } from '../../e2e/config/constants';
 			await preview({ members: [unattributedUser.username], attributes: { [dept]: ['sales'] } })
 				.expect(400)
 				.expect((res) => {
-					expect(res.body).to.have.property('errorType', 'error-abac-attribute-not-assignable');
+					expect(res.body).to.include({ error: 'error-abac-attribute-not-assignable', errorType: 'error-abac-attribute-not-assignable' });
 					expect(res.body.details.attributes).to.deep.equal([{ key: dept, values: ['sales'] }]);
 				});
 		});
@@ -600,7 +600,7 @@ import { IS_EE, URL_MONGODB } from '../../e2e/config/constants';
 				await preview({ members: [], attributes: { [dept]: ['sales'] } })
 					.expect(400)
 					.expect((res) => {
-						expect(res.body).to.have.property('errorType', 'error-abac-creator-not-admitted');
+						expect(res.body).to.include({ error: 'error-abac-creator-not-admitted', errorType: 'error-abac-creator-not-admitted' });
 					});
 
 				const res = await preview({ members: [], attributes: { [dept]: ['sales'] }, excludeSelf: true }).expect(200);
@@ -652,7 +652,7 @@ import { IS_EE, URL_MONGODB } from '../../e2e/config/constants';
 				await preview({ members: [], attributes: { [dept]: ['eng'] } })
 					.expect(400)
 					.expect((res) => {
-						expect(res.body.error).to.include('error-abac-not-enabled');
+						expect(res.body).to.include({ error: 'error-abac-not-enabled', errorType: 'error-abac-not-enabled' });
 					});
 			} finally {
 				await setSetting('ABAC_Enabled', true);
