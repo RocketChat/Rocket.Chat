@@ -1,5 +1,5 @@
 import { Message } from '@rocket.chat/core-services';
-import type { IMessage, IThreadMainMessage } from '@rocket.chat/core-typings';
+import type { IMessage, IThreadMainMessage, MessageUrl } from '@rocket.chat/core-typings';
 import { MessageTypes } from '@rocket.chat/message-types';
 import { Messages, Users, Rooms, Subscriptions } from '@rocket.chat/models';
 import {
@@ -1443,10 +1443,10 @@ const chatEndpoints = API.v1
 			authRequired: true,
 			query: isChatGetURLPreviewProps,
 			response: {
-				200: ajv.compile<{ urlPreview: object }>({
+				200: ajv.compile<{ urlPreview: MessageUrl }>({
 					type: 'object',
 					properties: {
-						urlPreview: { type: 'object' }, // relaxed: opaque preview shape,
+						urlPreview: { type: 'object' }, // schema stays permissive; the handler always returns a MessageUrl,
 						success: { type: 'boolean', enum: [true] },
 					},
 					required: ['urlPreview', 'success'],

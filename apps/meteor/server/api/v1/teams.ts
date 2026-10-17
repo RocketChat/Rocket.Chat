@@ -1,6 +1,6 @@
 import { Team } from '@rocket.chat/core-services';
-import type { ITeamAutocompleteResult } from '@rocket.chat/core-services';
-import type { ITeam, UserStatus } from '@rocket.chat/core-typings';
+import type { ITeamAutocompleteResult, ITeamMemberInfo } from '@rocket.chat/core-services';
+import type { IRoom, ITeam, UserStatus } from '@rocket.chat/core-typings';
 import { Users, Rooms } from '@rocket.chat/models';
 import {
 	ajv,
@@ -203,7 +203,7 @@ API.v1.post(
 	},
 );
 
-const roomResponseSchema = ajv.compile<{ room: object }>({
+const roomResponseSchema = ajv.compile<{ room: IRoom }>({
 	type: 'object',
 	properties: {
 		room: { type: 'object' },
@@ -213,7 +213,7 @@ const roomResponseSchema = ajv.compile<{ room: object }>({
 	additionalProperties: false,
 });
 
-const roomsResponseSchema = ajv.compile<{ rooms: object[] }>({
+const roomsResponseSchema = ajv.compile<{ rooms: IRoom[] }>({
 	type: 'object',
 	properties: {
 		rooms: { type: 'array', items: { type: 'object' } },
@@ -323,7 +323,7 @@ API.v1.post(
 	},
 );
 
-const paginatedRoomsResponseSchema = ajv.compile<{ rooms: object[]; total: number; count: number; offset: number }>({
+const paginatedRoomsResponseSchema = ajv.compile<{ rooms: IRoom[]; total: number; count: number; offset: number }>({
 	type: 'object',
 	properties: {
 		rooms: { type: 'array', items: { type: 'object' } },
@@ -445,7 +445,7 @@ API.v1.get(
 		authRequired: true,
 		query: isTeamsListChildrenProps,
 		response: {
-			200: ajv.compile<{ data: object[]; total: number; offset: number; count: number }>({
+			200: ajv.compile<{ data: IRoom[]; total: number; offset: number; count: number }>({
 				type: 'object',
 				properties: {
 					data: { type: 'array', items: { type: 'object' } },
@@ -482,7 +482,7 @@ API.v1.get(
 		authRequired: true,
 		query: isTeamsMembersProps,
 		response: {
-			200: ajv.compile<{ members: object[]; total: number; count: number; offset: number }>({
+			200: ajv.compile<{ members: ITeamMemberInfo[]; total: number; count: number; offset: number }>({
 				type: 'object',
 				properties: {
 					members: { type: 'array', items: { type: 'object' } },

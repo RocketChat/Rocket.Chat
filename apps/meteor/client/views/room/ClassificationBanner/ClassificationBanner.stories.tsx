@@ -32,7 +32,7 @@ const withBanner = (classificationBanner: ClassificationBannerPayload) =>
 		.withEndpoint('GET', '/v1/licenses.info', () => ({
 			license: createFakeLicenseInfo({ activeModules: ['abac'] }),
 		}))
-		.withEndpoint('GET', '/v1/rooms.info', () => ({ room: undefined, classificationBanner }))
+		.withEndpoint('GET', '/v1/rooms.info', () => ({ room: null, classificationBanner }))
 		.wrap((children) => <FakeRoomProvider roomOverrides={roomArgs}>{children}</FakeRoomProvider>)
 		.buildStoryDecorator();
 
