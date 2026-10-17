@@ -122,6 +122,17 @@ const LogsPage = () => {
 							name: `${event.data?.find((item) => item.key === 'from')?.value} -> ${event.data?.find((item) => item.key === 'to')?.value}`,
 							room: t('ABAC_Rooms_Affected', { count: Number(event.data?.find((item) => item.key === 'roomsAffected')?.value ?? 0) }),
 						};
+					case 'abac.membership.evaluated':
+						return {
+							...eventInfo,
+							element: t('ABAC_room_membership'),
+							action: t('ABAC_Membership_Evaluated'),
+							name:
+								event.data
+									?.find((item) => item.key === 'subjects')
+									?.value?.map((item) => item.username)
+									.join(', ') ?? '',
+						};
 					default:
 						return null;
 				}
