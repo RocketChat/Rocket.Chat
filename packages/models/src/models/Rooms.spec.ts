@@ -46,5 +46,23 @@ describe('RoomsRaw', () => {
 			expect(executedQuery.t).toEqual({ $in: ['c', 'p'] });
 			expect(executedQuery.teamId).toEqual({ $exists: false });
 		});
+
+		it('should pass case-insensitive collation options to findOne', async () => {
+			let executedOptions: any;
+			const db = {
+				collection: () => ({
+					createIndexes: jest.fn().mockResolvedValue(undefined),
+					findOne: jest.fn().mockImplementation((_query, options) => {
+						executedOptions = options;
+						return Promise.resolve(null);
+					}),
+				}),
+			} as unknown as Db;
+
+			const model = new RoomsRaw(db);
+			await model.findOneByNameAndType('General', 'c');
+
+			expect(executedOptions?.collation).toEqual({ locale: 'en', strength: 2 });
+		});
 	});
 });

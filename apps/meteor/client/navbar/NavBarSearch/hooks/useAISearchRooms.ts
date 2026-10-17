@@ -6,7 +6,7 @@ import { useQuery } from '@tanstack/react-query';
 import { useMemo } from 'react';
 
 import { getConfig } from '../../../lib/utils/getConfig';
-import { orderSearchResults } from './orderSearchResults';
+import { isExactSearchMatch, orderSearchResults } from './orderSearchResults';
 
 const LIMIT = parseInt(String(getConfig('Sidebar_Search_Spotlight_LIMIT', 20)));
 
@@ -61,10 +61,13 @@ export const useAISearchRooms = (filterText = ''): { items: SubscriptionWithRoom
 		return { users: true, rooms: true, includeFederatedRooms: true };
 	}, [searchForChannels, searchForDMs]);
 
+	const hasLocalExactMatch = Boolean(name.trim()) && localRooms.some((room) => isExactSearchMatch(room, name));
+	const shouldFetchServer = localRooms.length < LIMIT || (Boolean(name.trim()) && !hasLocalExactMatch);
+
 	const getSpotlight = useEndpoint('GET', '/v1/spotlight');
 	const { data: serverResults, isFetching } = useQuery({
 		queryKey: ['sidebar/ai-search/spotlight', debouncedName, mention, type],
-		enabled: localRooms.length < LIMIT,
+		enabled: shouldFetchServer,
 		queryFn: async () => {
 			const spotlight = await getSpotlight({
 				query: debouncedName,
@@ -103,11 +106,13 @@ export const useAISearchRooms = (filterText = ''): { items: SubscriptionWithRoom
 				return sameRoom || sameGroupDM || sameDirectDM || sameUserDM;
 			});
 
-		const candidates = name === debouncedName && localRooms.length < LIMIT ? (serverResults ?? []) : [];
-		const fromServer = candidates.filter((item) => matchesFilter(item) && !isLocalDuplicate(item));
+		const candidates = name === debouncedName && shouldFetchServer ? (serverResults ?? []) : [];
+		const fromServer = candidates.filter(
+			(item) => matchesFilter(item) && !isLocalDuplicate(item) && (localRooms.length < LIMIT || isExactSearchMatch(item, name)),
+		);
 
 		return orderSearchResults(localRooms, fromServer, name) as SubscriptionWithRoom[];
-	}, [debouncedName, localRooms, name, serverResults]);
+	}, [debouncedName, localRooms, name, serverResults, shouldFetchServer]);
 
 	const isLoading = isFetching && serverResults === undefined;
 

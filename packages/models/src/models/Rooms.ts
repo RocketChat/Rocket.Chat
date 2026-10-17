@@ -1141,7 +1141,10 @@ export class RoomsRaw extends BaseRaw<IRoom> implements IRoomsModel {
 				: { $or: [{ federated: { $exists: false } }, { federated: false }], name }),
 		};
 
-		return this.findOne<T, O>(query, options);
+		return this.findOne<T, O>(query, {
+			...options,
+			collation: { locale: 'en', strength: 2 },
+		} as unknown as O);
 	}
 
 	findById<T extends Document = IRoom, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(

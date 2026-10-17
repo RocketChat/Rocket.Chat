@@ -6,7 +6,7 @@ import { useQuery } from '@tanstack/react-query';
 import { useMemo } from 'react';
 
 import { getConfig } from '../../../lib/utils/getConfig';
-import { orderSearchResults } from './orderSearchResults';
+import { isExactSearchMatch, orderSearchResults } from './orderSearchResults';
 
 const LIMIT = parseInt(String(getConfig('Sidebar_Search_Spotlight_LIMIT', 20)));
 
@@ -54,6 +54,9 @@ export const useSearchItems = (filterText = ''): { items: SubscriptionWithRoom[]
 		return { users: true, rooms: true, includeFederatedRooms: true };
 	}, [searchForChannels, searchForDMs]);
 
+	const hasLocalExactMatch = Boolean(name.trim()) && localRooms.some((room) => isExactSearchMatch(room, name));
+	const shouldFetchServer = localRooms.length < LIMIT || (Boolean(name.trim()) && !hasLocalExactMatch);
+
 	const getSpotlight = useEndpoint('GET', '/v1/spotlight');
 
 	const {
@@ -64,8 +67,8 @@ export const useSearchItems = (filterText = ''): { items: SubscriptionWithRoom[]
 		// Keyed on the debounced term only, so typing doesn't refetch on every keystroke.
 		queryKey: ['sidebar/search/spotlight', debouncedName, mention, type],
 
-		// When local subscriptions already fill the limit there's nothing more to fetch.
-		enabled: localRooms.length < LIMIT,
+		// Run when local subscriptions don't fill the limit or when an exact match isn't present locally.
+		enabled: shouldFetchServer,
 
 		queryFn: async () => {
 			const spotlight = await getSpotlight({
@@ -143,10 +146,11 @@ export const useSearchItems = (filterText = ''): { items: SubscriptionWithRoom[]
 				return sameRoom || sameGroupDM || sameDirectDM || sameUserDM;
 			});
 
-		// When local subscriptions already fill the limit the server query is disabled, but React Query
-		// keeps the last results around — ignore them so a full local list isn't padded with stale rows.
-		const candidates = localRooms.length < LIMIT ? (serverResults ?? []) : [];
-		const fromServer = candidates.filter((item) => matchesFilter(item) && !isLocalDuplicate(item));
+		// When local subscriptions fill the limit and no local exact match exists, keep server exact matches.
+		const candidates = shouldFetchServer ? (serverResults ?? []) : [];
+		const fromServer = candidates.filter(
+			(item) => matchesFilter(item) && !isLocalDuplicate(item) && (localRooms.length < LIMIT || isExactSearchMatch(item, name)),
+		);
 
 		return orderSearchResults(localRooms, fromServer, name) as SubscriptionWithRoom[];
 	}, [serverResults, localRooms, name]);

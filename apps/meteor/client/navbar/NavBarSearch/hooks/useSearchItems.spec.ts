@@ -141,4 +141,28 @@ describe('useSearchItems', () => {
 			expect(result.current.items[0].name).toBe('marketing-team');
 		});
 	});
+
+	it('should fetch and hoist exact match from server even when local subscriptions reach LIMIT', async () => {
+		const localSubscriptions = Array.from({ length: 20 }, (_, i) => ({
+			_id: `local_room_${i}`,
+			t: 'c',
+			name: `marketing-team-ideas${i}`,
+		})) as unknown as SubscriptionWithRoom[];
+
+		const wrapper = mockAppRoot()
+			.withSubscriptions(localSubscriptions)
+			.withEndpoint('GET', '/v1/spotlight', () => ({
+				users: [],
+				rooms: [{ _id: 'room_server_exact', t: 'c', name: 'marketing-team' }],
+			}))
+			.build();
+
+		const { result } = renderHook(() => useSearchItems('marketing-team'), { wrapper });
+
+		await waitFor(() => {
+			expect(result.current.isLoading).toBe(false);
+			expect(result.current.items[0]._id).toBe('room_server_exact');
+			expect(result.current.items[0].name).toBe('marketing-team');
+		});
+	});
 });
