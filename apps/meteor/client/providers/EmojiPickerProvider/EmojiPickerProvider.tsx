@@ -4,13 +4,15 @@ import { useState, useCallback, useMemo, useSyncExternalStore } from 'react';
 
 import { useUpdateCustomEmoji } from './useUpdateCustomEmoji';
 import { EmojiPickerContext } from '../../contexts/EmojiPickerContext';
-import { emoji, getFrequentEmoji, createEmojiListByCategorySubscription } from '../../lib/emoji';
+import { emoji, getQuickReactions, createEmojiListByCategorySubscription } from '../../lib/emoji';
 import EmojiPicker from '../../views/composer/EmojiPicker';
 
 const DEFAULT_ITEMS_LIMIT = 90;
 
 // limit recent emojis to 27 (3 rows of 9)
 const RECENT_EMOJIS_LIMIT = 27;
+
+const getEmojiNames = (frequentEmojis: [emoji: string, score: number][]) => frequentEmojis.map(([emoji]) => emoji);
 
 export type EmojiPickerProviderProps = { children: ReactNode };
 
@@ -26,10 +28,10 @@ const EmojiPickerProvider = ({ children }: EmojiPickerProviderProps) => {
 	const [customItemsLimit, setCustomItemsLimit] = useState(DEFAULT_ITEMS_LIMIT);
 
 	const [quickReactions, _setQuickReactions] = useState<{ emoji: string; image: string }[]>(() =>
-		getFrequentEmoji(frequentEmojis.map(([emoji]) => emoji)),
+		getQuickReactions(getEmojiNames(frequentEmojis), actualTone),
 	);
 
-	const setQuickReactions = useStableCallback(() => _setQuickReactions(getFrequentEmoji(frequentEmojis.map(([emoji]) => emoji))));
+	const setQuickReactions = useStableCallback(() => _setQuickReactions(getQuickReactions(getEmojiNames(frequentEmojis), actualTone)));
 	const [sub, getSnapshot] = useMemo(() => {
 		return createEmojiListByCategorySubscription(customItemsLimit, actualTone, recentEmojis, setRecentEmojis, setQuickReactions);
 	}, [customItemsLimit, actualTone, recentEmojis, setRecentEmojis, setQuickReactions]);
@@ -51,9 +53,9 @@ const EmojiPickerProvider = ({ children }: EmojiPickerProviderProps) => {
 				.sort(([, frequentA], [, frequentB]) => frequentB - frequentA);
 
 			setFrequentEmojis(sortedFrequent);
-			_setQuickReactions(getFrequentEmoji(sortedFrequent.map(([emoji]) => emoji)));
+			_setQuickReactions(getQuickReactions(getEmojiNames(sortedFrequent), actualTone));
 		},
-		[frequentEmojis, setFrequentEmojis],
+		[frequentEmojis, setFrequentEmojis, actualTone],
 	);
 
 	const addRecentEmoji = useCallback(

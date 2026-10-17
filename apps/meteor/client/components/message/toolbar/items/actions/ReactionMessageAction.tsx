@@ -12,9 +12,9 @@ import { useTranslation } from 'react-i18next';
 
 import { useEmojiPickerData } from '../../../../../contexts/EmojiPickerContext';
 import { roomCoordinator } from '../../../../../lib/rooms/roomCoordinator';
-import EmojiElement from '../../../../../views/composer/EmojiPicker/EmojiElement';
 import { useChat } from '../../../../../views/room/contexts/ChatContext';
 import MessageToolbarItem from '../../MessageToolbarItem';
+import MessageToolbarQuickReactions from '../../MessageToolbarQuickReactions';
 
 export type ReactionMessageActionProps = {
 	message: IMessage;
@@ -68,9 +68,7 @@ const ReactionMessageAction = ({ message, room, subscription }: ReactionMessageA
 
 	return (
 		<>
-			{quickReactions.slice(0, 3).map(({ emoji, image }) => {
-				return <EmojiElement key={emoji} small title={emoji} emoji={emoji} image={image} onClick={() => toggleReaction(emoji)} />;
-			})}
+			<MessageToolbarQuickReactions reactions={quickReactions} onReact={toggleReaction} />
 			<MessageToolbarItem
 				id='reaction-message'
 				icon='add-reaction'
