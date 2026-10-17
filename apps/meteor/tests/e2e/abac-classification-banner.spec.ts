@@ -89,7 +89,7 @@ test.describe.serial('abac-classification-banner', () => {
 	});
 
 	test.afterAll(async ({ api }) => {
-		await Promise.all([deleteRoom(api, room._id), deleteRoom(api, plainRoom._id)]);
+		await Promise.all([room, plainRoom].filter(Boolean).map(({ _id }) => deleteRoom(api, _id)));
 		await api.delete(`/abac/attributes/${attributeId}`);
 		await connection
 			.db()
