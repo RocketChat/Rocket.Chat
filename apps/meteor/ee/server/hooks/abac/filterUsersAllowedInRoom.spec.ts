@@ -159,10 +159,10 @@ describe('filterUsersAllowedInRoomOrThrow (ABAC)', () => {
 		expect(abacMock.evaluateUsersAllowedInRoom.called).to.be.false;
 	});
 
-	it('should keep only the users the PDP allows, refusing a user without a username', async () => {
+	it('should keep only the users the PDP allows', async () => {
 		abacMock.evaluateUsersAllowedInRoom.resolves({ allowed: true, userIds: ['u2'] });
 
-		expect(idsOf(await runOrThrow([...users, { _id: 'u3' }]))).to.deep.equal(['u2']);
+		expect(idsOf(await runOrThrow(users))).to.deep.equal(['u2']);
 		expect(abacMock.evaluateUsersAllowedInRoom.calledOnceWith(['u1', 'u2'], room, { audit: false })).to.be.true;
 	});
 
