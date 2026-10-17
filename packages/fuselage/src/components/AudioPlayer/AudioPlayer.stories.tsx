@@ -58,7 +58,7 @@ export default {
 		},
 		changePlaybackSpeedLabel: {
 			control: 'text',
-			description: 'Accessible label for the change playback speed control.',
+			description: 'Accessible label for the change playback speed control. The current playback speed is appended to it.',
 			table: { category: 'Accessibility' },
 		},
 		downloadAudioFileLabel: {
