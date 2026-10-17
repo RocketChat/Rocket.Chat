@@ -114,12 +114,15 @@ export class PasswordPolicy {
 		return false;
 	}
 
-	sendValidationMessage(password: string): PasswordPolicyValidation[] {
+		sendValidationMessage(rawPassword: string | null | undefined): PasswordPolicyValidation[] {
 		const validationReturn: PasswordPolicyValidation[] = [];
 
 		if (!this.enabled) {
 			return [];
 		}
+
+		// Non-string input (null/undefined) is treated as an empty password instead of crashing
+		const password = typeof rawPassword === 'string' ? rawPassword : '';
 
 		if (this.minLength >= 1) {
 			validationReturn.push({
