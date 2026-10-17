@@ -1,12 +1,25 @@
 import { LDAPEnterprise } from '@rocket.chat/core-services';
+import type { AbacActor } from '@rocket.chat/core-services';
 import type { IAbacAttributeDefinition, IRoom, AtLeast, IUser } from '@rocket.chat/core-typings';
 import { Rooms, Users } from '@rocket.chat/models';
 
-import { OnlyCompliantCanBeAddedToRoomError } from '../errors';
-import { buildCompliantConditions, buildNonCompliantConditions, buildRoomNonCompliantConditionsFromSubject } from '../helper';
+import { AbacInvalidAttributeValuesError, OnlyCompliantCanBeAddedToRoomError } from '../errors';
+import {
+	buildCompliantConditions,
+	buildNonCompliantConditions,
+	buildRoomNonCompliantConditionsFromSubject,
+	findOwnedValues,
+	findUnownedValues,
+} from '../helper';
 import type { EvaluableSubject, Evaluation, IPolicyDecisionPoint, ReevaluationUser } from './types';
 
 export class LocalPDP implements IPolicyDecisionPoint {
+	constructor(private restrictToOwnedAttributes = false) {}
+
+	setRestrictToOwnedAttributes(value: boolean): void {
+		this.restrictToOwnedAttributes = value;
+	}
+
 	async isAvailable(): Promise<boolean> {
 		return true;
 	}
@@ -90,7 +103,11 @@ export class LocalPDP implements IPolicyDecisionPoint {
 		await LDAPEnterprise.syncUsersAbacAttributesByIds(userIds);
 	}
 
-	async checkUsernamesMatchAttributes(usernames: string[], attributes: IAbacAttributeDefinition[], _object: IRoom): Promise<void> {
+	async checkUsernamesMatchAttributes(
+		usernames: string[],
+		attributes: IAbacAttributeDefinition[],
+		_object: Pick<IRoom, '_id'>,
+	): Promise<void> {
 		const nonCompliantUsersFromList = await Users.find(
 			{
 				username: { $in: usernames },
@@ -106,6 +123,32 @@ export class LocalPDP implements IPolicyDecisionPoint {
 		if (nonCompliantSet.size) {
 			throw new OnlyCompliantCanBeAddedToRoomError();
 		}
+	}
+
+	async assertCreatorMayAssign(attributes: IAbacAttributeDefinition[], actor: AbacActor): Promise<{ creatorAdmitted: boolean }> {
+		if (!this.restrictToOwnedAttributes) {
+			return { creatorAdmitted: false };
+		}
+
+		const unowned = findUnownedValues(attributes, await this.heldAttributesOf(actor));
+		if (unowned.length) {
+			throw new AbacInvalidAttributeValuesError({ attributes: unowned });
+		}
+
+		return { creatorAdmitted: false };
+	}
+
+	async filterAssignableAttributes(definitions: IAbacAttributeDefinition[], actor: AbacActor): Promise<IAbacAttributeDefinition[]> {
+		if (!this.restrictToOwnedAttributes) {
+			return definitions;
+		}
+
+		return findOwnedValues(definitions, await this.heldAttributesOf(actor));
+	}
+
+	private async heldAttributesOf(actor: AbacActor): Promise<Map<string, Set<string>>> {
+		const user = await Users.findOneById<Pick<IUser, 'abacAttributes'>>(actor._id, { projection: { abacAttributes: 1 } });
+		return new Map((user?.abacAttributes ?? []).map(({ key, values }) => [key, new Set(values)]));
 	}
 
 	async evaluateSubjectsAgainstAttributes(

@@ -275,12 +275,18 @@ import { IS_EE, URL_MONGODB } from '../../e2e/config/constants';
 	});
 
 	describe('blocked creation paths', () => {
+		let discussionParentId: IRoom['_id'];
+
 		before(async () => {
+			// A private parent without attributes cannot itself be created under enforcement.
+			const parent = await createRoom({ type: 'p', name: `abac-parent-${Date.now()}` });
+			discussionParentId = parent.body.group._id;
 			await setEnforcement(true);
 		});
 
 		after(async () => {
 			await setEnforcement(false);
+			await deleteRoom({ type: 'p', roomId: discussionParentId });
 		});
 
 		it('blocks public channel creation', async () => {
@@ -296,35 +302,26 @@ import { IS_EE, URL_MONGODB } from '../../e2e/config/constants';
 		});
 
 		it('blocks discussion creation', async () => {
-			const parent = await createRoom({ type: 'p', name: `abac-parent-${Date.now()}` });
-			const parentId = parent.body.group._id;
-
 			await request
 				.post(api('rooms.createDiscussion'))
 				.set(credentials)
-				.send({ prid: parentId, t_name: `abac-discussion-${Date.now()}` })
+				.send({ prid: discussionParentId, t_name: `abac-discussion-${Date.now()}` })
 				.expect(400)
 				.expect((res) => {
 					expect(res.body).to.have.property('success', false);
 				});
-
-			await setEnforcement(false);
-			await deleteRoom({ type: 'p', roomId: parentId });
-			await setEnforcement(true);
 		});
 
-		it('still allows private channel creation', async () => {
-			const res = await request
+		it('blocks a private channel that would be born locked', async () => {
+			await request
 				.post(api('groups.create'))
 				.set(credentials)
 				.send({ name: `abac-private-${Date.now()}` })
-				.expect(200);
-
-			const roomId = res.body.group._id;
-
-			await setEnforcement(false);
-			await deleteRoom({ type: 'p', roomId });
-			await setEnforcement(true);
+				.expect(400)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', false);
+					expect(res.body.error).to.include('error-abac-attributes-required');
+				});
 		});
 	});
 

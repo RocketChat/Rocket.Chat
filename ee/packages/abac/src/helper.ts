@@ -1,17 +1,74 @@
-import type { ILDAPEntry, IAbacAttributeDefinition, IRoom } from '@rocket.chat/core-typings';
+import type { AbacCreationAttributesResult } from '@rocket.chat/core-services';
+import type { AbacMembershipVerdict, ILDAPEntry, IAbacAttributeDefinition, IRoom } from '@rocket.chat/core-typings';
 import { AbacAttributes, Rooms } from '@rocket.chat/models';
 import mem from 'mem';
 
 import {
 	AbacAttributeDefinitionNotFoundError,
+	AbacAttributeStoreExternalError,
+	AbacEntityResolutionFailedError,
+	AbacError,
 	AbacInvalidAttributeKeyError,
 	AbacInvalidAttributeValuesError,
 	AbacRoomNotFoundError,
+	PdpUnavailableError,
 } from './errors';
 import type { Evaluation, IResourceDecision } from './pdp/types';
 
 export const MAX_ABAC_ATTRIBUTE_KEYS = 10;
 export const MAX_ABAC_ATTRIBUTE_VALUES = 10;
+
+export function toCreationDenial(
+	err: unknown,
+	reasonForAttributeError: 'invalid' | 'not-entitled' | 'creator-not-admitted',
+): Extract<AbacCreationAttributesResult, { allowed: false }> {
+	if (err instanceof PdpUnavailableError || err instanceof AbacAttributeStoreExternalError) {
+		return { allowed: false, reason: 'unavailable', code: err.code };
+	}
+	if (err instanceof AbacEntityResolutionFailedError) {
+		return { allowed: false, reason: 'inconclusive', code: err.code };
+	}
+	if (err instanceof AbacError) {
+		const { key, attributes } = (err.details ?? {}) as { key?: string; attributes?: IAbacAttributeDefinition[] };
+		return {
+			allowed: false,
+			reason: reasonForAttributeError,
+			code: err.code,
+			...(key && { key }),
+			...(attributes && { attributes }),
+		};
+	}
+	throw err;
+}
+
+export function verdictOf({ compliant, nonCompliant }: Evaluation, id: string): AbacMembershipVerdict {
+	if (compliant.includes(id)) {
+		return 'compliant';
+	}
+	if (nonCompliant.includes(id)) {
+		return 'nonCompliant';
+	}
+	return 'inconclusive';
+}
+
+const filterValuesByOwnership = (
+	attributes: IAbacAttributeDefinition[],
+	owned: Map<string, Set<string>>,
+	keepOwned: boolean,
+): IAbacAttributeDefinition[] =>
+	attributes.flatMap(({ key, values }) => {
+		const kept = values.filter((value) => (owned.get(key)?.has(value) ?? false) === keepOwned);
+		return kept.length ? [{ key, values: kept }] : [];
+	});
+
+export const findUnownedValues = (attributes: IAbacAttributeDefinition[], owned: Map<string, Set<string>>) =>
+	filterValuesByOwnership(attributes, owned, false);
+
+export const findOwnedValues = (attributes: IAbacAttributeDefinition[], owned: Map<string, Set<string>>) =>
+	filterValuesByOwnership(attributes, owned, true);
+
+export const sortByKey = (attributes: IAbacAttributeDefinition[]): IAbacAttributeDefinition[] =>
+	[...attributes].sort((a, b) => a.key.localeCompare(b.key));
 
 export const extractAttribute = (ldapUser: ILDAPEntry, ldapKey: string, abacKey: string): IAbacAttributeDefinition | undefined => {
 	if (!ldapKey || !abacKey) {
