@@ -893,39 +893,39 @@ const ChatGetURLPreviewSchema = {
 
 export const isChatGetURLPreviewProps = ajv.compile<ChatGetURLPreview>(ChatGetURLPreviewSchema);
 
+// Public mirror of the implementation-derived routes (apps/meteor/server/api/v1/chat.ts,
+// `ExtractRoutesFromAPI<typeof chatEndpoints>`). Kept identical so the two declarations merge
+// without TS2320, and so SDK/external consumers that don't compile apps/meteor keep these routes.
 export type ChatEndpoints = {
-	'/v1/chat.sendMessage': {
-		POST: (params: ChatSendMessage) => {
-			message: IMessage;
-		};
+	'/v1/chat.pinMessage': {
+		POST: (params: { messageId: IMessage['_id'] }) => { message: IMessage };
 	};
-	'/v1/chat.getMessage': {
-		GET: (params: ChatGetMessage) => {
-			message: IMessage;
-		};
+	'/v1/chat.unPinMessage': {
+		POST: (params: { messageId: IMessage['_id'] }) => void;
+	};
+	'/v1/chat.readThread': {
+		POST: (params: { tmid: IMessage['_id'] }) => void;
+	};
+	'/v1/chat.update': {
+		POST: (params: ChatUpdate) => { message: IMessage };
+	};
+	'/v1/chat.starMessage': {
+		POST: (params: { messageId: IMessage['_id'] }) => void;
+	};
+	'/v1/chat.unStarMessage': {
+		POST: (params: { messageId: IMessage['_id'] }) => void;
+	};
+	'/v1/chat.followMessage': {
+		POST: (params: { mid: string }) => void;
+	};
+	'/v1/chat.unfollowMessage': {
+		POST: (params: { mid: string }) => void;
+	};
+	'/v1/chat.react': {
+		POST: (params: ChatReact) => void;
 	};
 	'/v1/chat.reportMessage': {
 		POST: (params: ChatReportMessage) => void;
-	};
-	'/v1/chat.getDiscussions': {
-		GET: (params: ChatGetDiscussions) => {
-			messages: IMessage[];
-			total: number;
-		};
-	};
-	'/v1/chat.getThreadsList': {
-		GET: (params: ChatGetThreadsList) => {
-			threads: IThreadMainMessage[];
-			total: number;
-		};
-	};
-	'/v1/chat.syncThreadsList': {
-		GET: (params: ChatSyncThreadsList) => {
-			threads: {
-				update: IMessage[];
-				remove: IMessage[];
-			};
-		};
 	};
 	'/v1/chat.delete': {
 		POST: (params: ChatDelete) => {
@@ -934,28 +934,37 @@ export type ChatEndpoints = {
 			message?: Pick<IMessage, '_id' | 'rid' | 'u'>;
 		};
 	};
-	'/v1/chat.react': {
-		POST: (params: ChatReact) => void;
+	'/v1/chat.syncMessages': {
+		GET: (params: ChatSyncMessages) => {
+			result: {
+				updated: IMessage[];
+				deleted: { _id: string; _deletedAt: string }[];
+				cursor?: { next: string | null; previous: string | null };
+			};
+		};
+	};
+	'/v1/chat.getMessage': {
+		GET: (params: ChatGetMessage) => { message: IMessage };
+	};
+	'/v1/chat.postMessage': {
+		POST: (params: ChatPostMessage) => {
+			ts: number;
+			channel: string;
+			message: IMessage;
+		};
+	};
+	'/v1/chat.search': {
+		GET: (params: ChatSearch) => { messages: IMessage[] };
+	};
+	'/v1/chat.sendMessage': {
+		POST: (params: ChatSendMessage) => { message: IMessage };
 	};
 	'/v1/chat.ignoreUser': {
 		GET: (params: ChatIgnoreUser) => void;
 	};
-	'/v1/chat.search': {
-		GET: (params: ChatSearch) => {
-			messages: IMessage[];
-		};
-	};
-	'/v1/chat.update': {
-		POST: (params: ChatUpdate) => {
-			message: IMessage;
-		};
-	};
-	'/v1/chat.getMessageReadReceipts': {
-		GET: (params: ChatGetMessageReadReceipts) => { receipts: IReadReceiptWithUser[] };
-	};
-	'/v1/chat.getStarredMessages': {
-		GET: (params: GetStarredMessages) => {
-			messages: IMessage[];
+	'/v1/chat.getDeletedMessages': {
+		GET: (params: ChatGetDeletedMessages) => {
+			messages: Pick<IMessage, '_id'>[];
 			count: number;
 			offset: number;
 			total: number;
@@ -969,39 +978,17 @@ export type ChatEndpoints = {
 			total: number;
 		};
 	};
-	'/v1/chat.getMentionedMessages': {
-		GET: (params: GetMentionedMessages) => {
-			messages: IMessage[];
+	'/v1/chat.getThreadsList': {
+		GET: (params: ChatGetThreadsList) => {
+			threads: IThreadMainMessage[];
 			count: number;
 			offset: number;
 			total: number;
 		};
 	};
-	'/v1/chat.syncMessages': {
-		GET: (params: ChatSyncMessages) => {
-			result: {
-				updated: IMessage[];
-				deleted: { _id: IMessage['_id']; _deletedAt: string }[];
-				cursor: {
-					next: string | null;
-					previous: string | null;
-				};
-			};
-		};
-	};
-	'/v1/chat.postMessage': {
-		POST: (params: ChatPostMessage) => {
-			ts: number;
-			channel: IRoom;
-			message: IMessage;
-		};
-	};
-	'/v1/chat.syncThreadMessages': {
-		GET: (params: ChatSyncThreadMessages) => {
-			messages: {
-				update: IMessage[];
-				remove: IMessage[];
-			};
+	'/v1/chat.syncThreadsList': {
+		GET: (params: ChatSyncThreadsList) => {
+			threads: { update: IMessage[]; remove: IMessage[] };
 		};
 	};
 	'/v1/chat.getThreadMessages': {
@@ -1012,15 +999,41 @@ export type ChatEndpoints = {
 			total: number;
 		};
 	};
-	'/v1/chat.getDeletedMessages': {
-		GET: (params: ChatGetDeletedMessages) => {
+	'/v1/chat.syncThreadMessages': {
+		GET: (params: ChatSyncThreadMessages) => {
+			messages: { update: IMessage[]; remove: IMessage[] };
+		};
+	};
+	'/v1/chat.getMentionedMessages': {
+		GET: (params: GetMentionedMessages) => {
 			messages: IMessage[];
 			count: number;
 			offset: number;
 			total: number;
 		};
 	};
+	'/v1/chat.getStarredMessages': {
+		GET: (params: GetStarredMessages) => {
+			messages: IMessage[];
+			count: number;
+			offset: number;
+			total: number;
+		};
+	};
+	'/v1/chat.getDiscussions': {
+		GET: (params: ChatGetDiscussions) => {
+			messages: IMessage[];
+			total: number;
+		};
+	};
 	'/v1/chat.getURLPreview': {
 		GET: (params: ChatGetURLPreview) => { urlPreview: MessageUrl };
+	};
+	'/v1/chat.getMessages': {
+		POST: (params: ChatGetMessages) => { messages: IMessage[] };
+	};
+	// Not migrated to the validated API builder; declared only here, so no impl augmentation collides.
+	'/v1/chat.getMessageReadReceipts': {
+		GET: (params: ChatGetMessageReadReceipts) => { receipts: IReadReceiptWithUser[] };
 	};
 };

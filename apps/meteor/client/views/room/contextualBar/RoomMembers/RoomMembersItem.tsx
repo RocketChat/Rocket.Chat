@@ -69,7 +69,7 @@ const RoomMembersItem = ({
 					</ItemLink>
 				</ItemTitle>
 			</ItemContent>
-			{isInvited && <InvitationBadge size='x20' invitationDate={subscription.ts} />}
+			{invitationDate && <InvitationBadge size='x20' invitationDate={invitationDate} />}
 			<ItemActions reveal='hover'>
 				{menuVisibility ? (
 					<UserActions

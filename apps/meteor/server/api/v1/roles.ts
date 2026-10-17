@@ -1,5 +1,5 @@
 import { api, Authorization } from '@rocket.chat/core-services';
-import type { IRole, IUserInRole } from '@rocket.chat/core-typings';
+import type { IRole, IUserInRole, RocketChatRecordDeleted } from '@rocket.chat/core-typings';
 import { Roles, Users } from '@rocket.chat/models';
 import {
 	ajv,
@@ -76,7 +76,7 @@ const rolesRoutes = API.v1
 			authRequired: true,
 			query: rolesSyncQuerySchema,
 			response: {
-				200: ajv.compile<{ roles: { update: IRole[]; remove: IRole[] } }>({
+				200: ajv.compile<{ roles: { update: IRole[]; remove: RocketChatRecordDeleted<IRole>[] } }>({
 					type: 'object',
 					properties: {
 						roles: {
