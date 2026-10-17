@@ -8,7 +8,7 @@ import type { AbacEvaluableUser } from '../../../../server/lib/rooms/filterUsers
 
 const settingsMock = { get: sinon.stub() };
 const licenseMock = { hasModule: sinon.stub() };
-const abacMock = { filterUsersAllowedInRoom: sinon.stub() };
+const abacMock = { filterUsersAllowedInRoom: sinon.stub(), evaluateUsersAllowedInRoom: sinon.stub() };
 const getRoomAbacLockContextMock = sinon.stub();
 
 type Options = { audit?: boolean };
@@ -21,6 +21,7 @@ type Patched = (
 ) => Promise<AbacEvaluableUser[]>;
 
 let filterUsers: Patched;
+let filterUsersOrThrow: Patched;
 
 p.noCallThru().load('./filterUsersAllowedInRoom.ts', {
 	'@rocket.chat/core-services': { Abac: abacMock },
@@ -30,6 +31,11 @@ p.noCallThru().load('./filterUsersAllowedInRoom.ts', {
 		filterUsersAllowedInRoom: {
 			patch: (fn: Patched) => {
 				filterUsers = fn;
+			},
+		},
+		filterUsersAllowedInRoomOrThrow: {
+			patch: (fn: Patched) => {
+				filterUsersOrThrow = fn;
 			},
 		},
 	},
@@ -115,5 +121,56 @@ describe('filterUsersAllowedInRoom (ABAC)', () => {
 	it('should not evaluate an empty list', async () => {
 		expect(await run([])).to.deep.equal([]);
 		expect(getRoomAbacLockContextMock.called).to.be.false;
+	});
+});
+
+describe('filterUsersAllowedInRoomOrThrow (ABAC)', () => {
+	const runOrThrow = (subjects: AbacEvaluableUser[] = users, target: IRoom = room): Promise<AbacEvaluableUser[]> =>
+		filterUsersOrThrow(next, subjects, target);
+
+	beforeEach(() => {
+		settingsMock.get.reset();
+		licenseMock.hasModule.reset();
+		abacMock.evaluateUsersAllowedInRoom.reset();
+		getRoomAbacLockContextMock.reset();
+
+		settingsMock.get.withArgs('ABAC_Enabled').returns(true);
+		licenseMock.hasModule.withArgs('abac').returns(true);
+		getRoomAbacLockContextMock.returns(lockContext);
+		abacMock.evaluateUsersAllowedInRoom.callsFake(async (ids: string[]) => ({ allowed: true, userIds: ids }));
+	});
+
+	it('should leave the users untouched when ABAC is disabled', async () => {
+		settingsMock.get.withArgs('ABAC_Enabled').returns(false);
+
+		expect(idsOf(await runOrThrow())).to.deep.equal(['u1', 'u2']);
+		expect(abacMock.evaluateUsersAllowedInRoom.called).to.be.false;
+	});
+
+	it('should refuse a locked room with error-abac-room-locked without asking the PDP', async () => {
+		await expect(runOrThrow(users, { _id: 'p3', t: 'p' } as IRoom)).to.be.rejectedWith('error-abac-room-locked');
+		expect(abacMock.evaluateUsersAllowedInRoom.called).to.be.false;
+	});
+
+	it('should admit every user to a room without attributes when enforcement is off, without asking the PDP', async () => {
+		getRoomAbacLockContextMock.returns(unenforced);
+
+		expect(idsOf(await runOrThrow(users, { _id: 'p2', t: 'p' } as IRoom))).to.deep.equal(['u1', 'u2']);
+		expect(abacMock.evaluateUsersAllowedInRoom.called).to.be.false;
+	});
+
+	it('should keep only the users the PDP allows, refusing a user without a username', async () => {
+		abacMock.evaluateUsersAllowedInRoom.resolves({ allowed: true, userIds: ['u2'] });
+
+		expect(idsOf(await runOrThrow([...users, { _id: 'u3' }]))).to.deep.equal(['u2']);
+		expect(abacMock.evaluateUsersAllowedInRoom.calledOnceWith(['u1', 'u2'], room, { audit: false })).to.be.true;
+	});
+
+	it('should refuse with error-abac-decision-unavailable when the PDP gives no decision', async () => {
+		abacMock.evaluateUsersAllowedInRoom.resolves({ allowed: false, reason: 'unavailable', code: 'error-pdp-unavailable' });
+
+		const error = await runOrThrow().catch((err) => err);
+		expect(error).to.include({ error: 'error-abac-decision-unavailable' });
+		expect(error.details).to.deep.equal({ cause: 'error-pdp-unavailable' });
 	});
 });

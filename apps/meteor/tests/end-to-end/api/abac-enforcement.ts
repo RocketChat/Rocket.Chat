@@ -1,6 +1,7 @@
 import type { Credentials } from '@rocket.chat/api-client';
 import type { IRoom, IUser } from '@rocket.chat/core-typings';
 import { TeamType } from '@rocket.chat/core-typings';
+import { Random } from '@rocket.chat/random';
 import { expect } from 'chai';
 import { before, after, describe, it } from 'mocha';
 import { MongoClient } from 'mongodb';
@@ -12,6 +13,7 @@ import { getSettingValueById, updateSetting } from '../../data/permissions.helpe
 import { createRoom, deleteRoom } from '../../data/rooms.helper';
 import { createTeam, deleteTeam } from '../../data/teams.helper';
 import { password } from '../../data/user';
+import type { TestUser } from '../../data/users.helper';
 import { createUser, deleteUser, login } from '../../data/users.helper';
 import { IS_EE, URL_MONGODB } from '../../e2e/config/constants';
 
@@ -518,6 +520,111 @@ import { IS_EE, URL_MONGODB } from '../../e2e/config/constants';
 				});
 
 			expect(await memberUsernames(laterTeamRoomId)).to.not.include(teamMember.username);
+		});
+	});
+
+	describe('invite-all commands', () => {
+		const inviteKey = `abac_enf_inviteall_${Date.now()}`;
+		const sourceName = `abac-enf-inviteall-source-${Date.now()}`;
+		const missingName = `abac-enf-inviteall-missing-${Date.now()}`;
+		let sourceRoomId: IRoom['_id'];
+		let abacRoomId: IRoom['_id'];
+		let plainRoomId: IRoom['_id'];
+		let compliantUser: TestUser<IUser>;
+		let nonCompliantUser: TestUser<IUser>;
+
+		const memberUsernames = async (roomId: IRoom['_id']): Promise<string[]> => {
+			const res = await request.get(api('groups.members')).query({ roomId }).set(credentials).expect(200);
+			return (res.body.members as { username: string }[]).map(({ username }) => username);
+		};
+
+		const runCommand = (roomId: IRoom['_id'], command: string, params: string) =>
+			request
+				.post(api('commands.run'))
+				.set(credentials)
+				.send({ roomId, command, params, triggerId: Random.id() })
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+				});
+
+		before(async () => {
+			await request
+				.post(api('abac/attributes'))
+				.set(credentials)
+				.send({ key: inviteKey, values: ['value'] })
+				.expect(200);
+			await addAbacAttributesToUserDirectly(connection, credentials['X-User-Id'], [{ key: inviteKey, values: ['value'] }]);
+
+			compliantUser = await createUser({ joinDefaultChannels: false });
+			nonCompliantUser = await createUser({ joinDefaultChannels: false });
+			await addAbacAttributesToUserDirectly(connection, compliantUser._id, [{ key: inviteKey, values: ['value'] }]);
+
+			const source = await createRoom({ type: 'p', name: sourceName, members: [compliantUser.username, nonCompliantUser.username] });
+			sourceRoomId = source.body.group._id;
+
+			const abacRoom = await createRoom({ type: 'p', name: `abac-enf-inviteall-target-${Date.now()}` });
+			abacRoomId = abacRoom.body.group._id;
+			await request
+				.post(api(`abac/rooms/${abacRoomId}/attributes/${inviteKey}`))
+				.set(credentials)
+				.send({ values: ['value'] })
+				.expect(200);
+
+			const plainRoom = await createRoom({ type: 'p', name: `abac-enf-inviteall-plain-${Date.now()}` });
+			plainRoomId = plainRoom.body.group._id;
+
+			await setEnforcement(true);
+		});
+
+		after(async () => {
+			await setEnforcement(false);
+			await updateSetting('ABAC_Enabled', true);
+			await Promise.all([sourceRoomId, abacRoomId, plainRoomId].map((roomId) => deleteRoom({ type: 'p', roomId })));
+			await addAbacAttributesToUserDirectly(connection, credentials['X-User-Id'], []);
+			await Promise.all([compliantUser, nonCompliantUser].filter(Boolean).map((user) => deleteUser(user)));
+
+			const res = await request.get(api('abac/attributes')).query({ key: inviteKey }).set(credentials).expect(200);
+			const attribute = (res.body.attributes as { _id: string; key: string }[]).find((a) => a.key === inviteKey);
+			if (attribute) {
+				await request
+					.delete(api(`abac/attributes/${attribute._id}`))
+					.set(credentials)
+					.expect(200);
+			}
+		});
+
+		it('adds only the compliant members to an ABAC-managed room', async () => {
+			await runCommand(abacRoomId, 'invite-all-from', `#${sourceName}`);
+
+			const members = await memberUsernames(abacRoomId);
+			expect(members).to.include(compliantUser.username);
+			expect(members).to.not.include(nonCompliantUser.username);
+		});
+
+		it('adds nobody to a locked room', async () => {
+			await runCommand(plainRoomId, 'invite-all-from', `#${sourceName}`);
+
+			const members = await memberUsernames(plainRoomId);
+			expect(members).to.not.include(compliantUser.username);
+			expect(members).to.not.include(nonCompliantUser.username);
+		});
+
+		it('creates no room when the private room it would create needs attributes', async () => {
+			await runCommand(abacRoomId, 'invite-all-to', `#${missingName}`);
+
+			await request.get(api('rooms.info')).query({ roomName: missingName }).set(credentials).expect(400);
+		});
+
+		it('adds every member once ABAC is off', async () => {
+			await setEnforcement(false);
+			await updateSetting('ABAC_Enabled', false);
+
+			await runCommand(plainRoomId, 'invite-all-from', `#${sourceName}`);
+
+			const members = await memberUsernames(plainRoomId);
+			expect(members).to.include(compliantUser.username);
+			expect(members).to.include(nonCompliantUser.username);
 		});
 	});
 });

@@ -1869,6 +1869,30 @@ describe('AbacService (unit)', () => {
 		});
 	});
 
+	describe('auditRoomAttributesRemoved', () => {
+		beforeEach(() => {
+			mockCreateAuditServerEvent.mockReset();
+		});
+
+		it('records the attributes a room lost', async () => {
+			const room = { _id: 'r1', name: 'room', abacAttributes: [{ key: 'dept', values: ['eng'] }] };
+
+			await service.auditRoomAttributesRemoved(room, fakeActor);
+
+			expect(mockCreateAuditServerEvent).toHaveBeenCalledWith(
+				'abac.object.attributes.removed',
+				expect.objectContaining({ change: 'all-deleted', reason: 'api', previous: room.abacAttributes, current: null }),
+				expect.objectContaining({ _id: fakeActor._id }),
+			);
+		});
+
+		it('records nothing for a room without attributes', async () => {
+			await service.auditRoomAttributesRemoved({ _id: 'r1', name: 'room' }, fakeActor);
+
+			expect(mockCreateAuditServerEvent).not.toHaveBeenCalled();
+		});
+	});
+
 	describe('previewCreationMembers', () => {
 		const attributes = { dept: ['eng'] };
 		const creator = {
@@ -2521,6 +2545,73 @@ describe('AbacService (unit)', () => {
 
 				await expect(service.filterUsersAllowedInRoom(['u1', 'u2'], room)).resolves.toEqual([]);
 				expect(mockCreateAuditServerEvents).not.toHaveBeenCalled();
+			});
+		});
+
+		describe('evaluateUsersAllowedInRoom', () => {
+			const unavailable = { allowed: false, reason: 'unavailable', code: 'error-pdp-unavailable' };
+
+			beforeEach(() => {
+				mockUsersFindByIds.mockReturnValue({
+					toArray: async () => [
+						{ _id: 'u1', username: 'alice' },
+						{ _id: 'u2', username: 'bob' },
+					],
+				});
+			});
+
+			it('returns the compliant users as a decision', async () => {
+				usePdp({
+					evaluateSubjectsAgainstAttributes: jest.fn().mockResolvedValue({ compliant: ['u2'], nonCompliant: ['u1'], inconclusive: [] }),
+				});
+
+				await expect(service.evaluateUsersAllowedInRoom(['u1', 'u2'], room)).resolves.toEqual({ allowed: true, userIds: ['u2'] });
+			});
+
+			it('writes one audit entry per admitted user', async () => {
+				usePdp({
+					evaluateSubjectsAgainstAttributes: jest.fn().mockResolvedValue({ compliant: ['u2'], nonCompliant: ['u1'], inconclusive: [] }),
+				});
+
+				await service.evaluateUsersAllowedInRoom(['u1', 'u2'], room);
+
+				expect(auditedPairs()).toEqual(['bob@r1']);
+			});
+
+			it('writes no audit when asked not to', async () => {
+				usePdp({
+					evaluateSubjectsAgainstAttributes: jest.fn().mockResolvedValue({ compliant: ['u1', 'u2'], nonCompliant: [], inconclusive: [] }),
+				});
+
+				await service.evaluateUsersAllowedInRoom(['u1', 'u2'], room, { audit: false });
+
+				expect(mockCreateAuditServerEvents).not.toHaveBeenCalled();
+			});
+
+			it('returns a decision admitting nobody when no user complies', async () => {
+				usePdp({
+					evaluateSubjectsAgainstAttributes: jest.fn().mockResolvedValue({ compliant: [], nonCompliant: ['u1', 'u2'], inconclusive: [] }),
+				});
+
+				await expect(service.evaluateUsersAllowedInRoom(['u1', 'u2'], room)).resolves.toEqual({ allowed: true, userIds: [] });
+			});
+
+			it('reports the decision as unavailable when there is no PDP', async () => {
+				(service as any).pdp = null;
+
+				await expect(service.evaluateUsersAllowedInRoom(['u1'], room)).resolves.toEqual(unavailable);
+			});
+
+			it('reports the decision as unavailable when the PDP is unavailable', async () => {
+				usePdp({ isAvailable: jest.fn().mockResolvedValue(false) });
+
+				await expect(service.evaluateUsersAllowedInRoom(['u1'], room)).resolves.toEqual(unavailable);
+			});
+
+			it('reports the decision as unavailable when the decision call fails', async () => {
+				usePdp({ evaluateSubjectsAgainstAttributes: jest.fn().mockRejectedValue(new Error('virtru down')) });
+
+				await expect(service.evaluateUsersAllowedInRoom(['u1', 'u2'], room)).resolves.toEqual(unavailable);
 			});
 		});
 

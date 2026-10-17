@@ -5,6 +5,7 @@ import type {
 	AbacMembershipPreviewResult,
 	AbacRoomAttributesGrant,
 	AbacRoomMembershipPreviewPage,
+	AbacUsersAllowedInRoomResult,
 	IAbacService,
 } from '@rocket.chat/core-services';
 import { AbacAccessOperation, AbacObjectType, isAbacPdpType, isAbacAttributeStoreType } from '@rocket.chat/core-typings';
@@ -733,6 +734,14 @@ export class AbacService extends ServiceClass implements IAbacService {
 		);
 	}
 
+	async auditRoomAttributesRemoved(room: Pick<IRoom, '_id' | 'name' | 'abacAttributes'>, actor: AbacActor): Promise<void> {
+		if (!room.abacAttributes?.length) {
+			return;
+		}
+
+		await Audit.objectAttributesRemoved({ _id: room._id, name: room.name }, room.abacAttributes, actor);
+	}
+
 	async previewCreationMembers(
 		usernames: string[],
 		attributes: Record<string, string[]>,
@@ -1207,14 +1216,24 @@ export class AbacService extends ServiceClass implements IAbacService {
 		room: Pick<IRoom, '_id' | 'name' | 'abacAttributes'>,
 		options?: { audit?: boolean },
 	): Promise<string[]> {
+		const result = await this.evaluateUsersAllowedInRoom(userIds, room, options);
+
+		return result.allowed ? result.userIds : [];
+	}
+
+	async evaluateUsersAllowedInRoom(
+		userIds: string[],
+		room: Pick<IRoom, '_id' | 'name' | 'abacAttributes'>,
+		options?: { audit?: boolean },
+	): Promise<AbacUsersAllowedInRoomResult> {
 		const attributes = room.abacAttributes ?? [];
 		if (!userIds.length || !attributes.length) {
-			return userIds;
+			return { allowed: true, userIds };
 		}
 
 		if (!(await this.pdp?.isAvailable())) {
 			logger.warn({ msg: 'PDP unavailable, no user admitted to the ABAC room', rid: room._id });
-			return [];
+			return { allowed: false, reason: 'unavailable', code: AbacErrorCode.PdpUnavailable };
 		}
 
 		try {
@@ -1230,10 +1249,10 @@ export class AbacService extends ServiceClass implements IAbacService {
 				);
 			}
 
-			return userIds.filter((id) => allowed.has(id));
+			return { allowed: true, userIds: userIds.filter((id) => allowed.has(id)) };
 		} catch (err) {
 			logger.error({ msg: 'Failed to evaluate users against the ABAC room', rid: room._id, err });
-			return [];
+			return { allowed: false, reason: 'unavailable', code: AbacErrorCode.PdpUnavailable };
 		}
 	}
 
