@@ -29,6 +29,9 @@ export type PaginatedSelectProps = Omit<SelectProps, 'options'> & {
 };
 
 export const PaginatedSelect = ({
+	id,
+	'aria-label': ariaLabel,
+	'aria-labelledby': ariaLabelledBy,
 	value,
 	withTitle,
 	filter,
@@ -95,6 +98,9 @@ export const PaginatedSelect = ({
 					</Box>
 				)}
 				<Anchor
+					id={id}
+					aria-label={ariaLabel}
+					aria-labelledby={ariaLabelledBy}
 					disabled={disabled}
 					rcx-input-box--undecorated
 					filter={filter}
