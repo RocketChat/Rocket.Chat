@@ -34,7 +34,7 @@ export const useAISearchRooms = (filterText = ''): { items: SubscriptionWithRoom
 	const [, mention, name] = useMemo(() => filterText.match(/(@|#)?(.*)/i) || [], [filterText]);
 
 	const query = useMemo(() => {
-		const filterRegex = new RegExp(escapeRegExp(name), 'i');
+		const filterRegex = new RegExp(escapeRegExp(name.trim()), 'i');
 
 		return {
 			...(mention && {
@@ -94,7 +94,7 @@ export const useAISearchRooms = (filterText = ''): { items: SubscriptionWithRoom
 	});
 
 	const items = useMemo(() => {
-		const filterRegex = new RegExp(escapeRegExp(name), 'i');
+		const filterRegex = new RegExp(escapeRegExp(name.trim()), 'i');
 		const matchesFilter = ({ name, fname }: { name?: string; fname?: string }) =>
 			(name && filterRegex.test(name)) || (fname && filterRegex.test(fname));
 		const isLocalDuplicate = (item: { _id: string; t?: string; uids?: string[]; name: string }): boolean =>

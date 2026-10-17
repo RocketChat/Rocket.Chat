@@ -22,7 +22,7 @@ export const useSearchItems = (filterText = ''): { items: SubscriptionWithRoom[]
 	const [, mention, name] = useMemo(() => filterText.match(/(@|#)?(.*)/i) || [], [filterText]);
 
 	const query = useMemo(() => {
-		const filterRegex = new RegExp(escapeRegExp(name), 'i');
+		const filterRegex = new RegExp(escapeRegExp(name.trim()), 'i');
 
 		return {
 			$or: [{ name: filterRegex }, { fname: filterRegex }],
@@ -129,7 +129,7 @@ export const useSearchItems = (filterText = ''): { items: SubscriptionWithRoom[]
 		// Server results are keyed on the *debounced* term, so while the user is still typing
 		// (or via placeholderData) they may belong to a previous search. Drop the ones that no
 		// longer match the current text so stale, non-matching results aren't rendered.
-		const filterRegex = new RegExp(escapeRegExp(name), 'i');
+		const filterRegex = new RegExp(escapeRegExp(name.trim()), 'i');
 		const matchesFilter = ({ name, fname }: { name?: string; fname?: string }) =>
 			(name && filterRegex.test(name)) || (fname && filterRegex.test(fname));
 
