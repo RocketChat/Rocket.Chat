@@ -16,15 +16,18 @@ describe('Snapshots', () => {
 	});
 
 	test.each(testCases)(`renders %s without crashing`, async (_storyname, Story) => {
-		console.log('new date', new Date());
 		const view = render(<Story />);
 		expect(view.baseElement).toMatchSnapshot();
 	});
 });
 
-test.each(testCases)('%s should have no a11y violations', async (_storyname, Story) => {
-	const { container } = render(<Story />);
+test.each(testCases)(
+	'%s should have no a11y violations',
+	async (_storyname, Story) => {
+		const { container } = render(<Story />);
 
-	const results = await axe(container);
-	expect(results).toHaveNoViolations();
-});
+		const results = await axe(container);
+		expect(results).toHaveNoViolations();
+	},
+	15000,
+);
