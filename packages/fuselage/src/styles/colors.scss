@@ -30,7 +30,7 @@ $-theme: light;
 // unquotes rgba(...) tokens, which are exported as quoted strings and would
 // otherwise keep their literal quotes if passed as-is into var(--x, $value).
 @function -unquote($value) {
-	@if meta.type-of($value)=='string' {
+	@if meta.type-of($value) == 'string' {
 		@return string.unquote($value);
 	}
 
@@ -69,7 +69,7 @@ $-theme: light;
 		@error 'invalid primitive color reference: #{$grade}';
 	}
 
-	@if ($alpha !=null) {
+	@if ($alpha != null) {
 		@return color.change($base-color, $alpha: $alpha);
 	}
 
@@ -307,4 +307,4 @@ $-button-fonts: (
 	}
 
 	@error "Unknown button type #{$type}.";
-}
+} 
