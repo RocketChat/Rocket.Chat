@@ -109,7 +109,7 @@ const abacEndpoints = API.v1
 			// We don't need to check if ABAC is enabled to clear attributes
 			// Since we're always allowing this operation
 			// license check is also not required
-			await Abac.setRoomAbacAttributes(rid, {}, toAbacActor(this.user));
+			await Abac.setRoomAbacAttributes(rid, {}, toAbacActor(this.user), 'manage-abac-admin-rooms');
 			return API.v1.success();
 		},
 	)

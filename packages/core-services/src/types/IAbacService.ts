@@ -88,7 +88,7 @@ export interface IAbacService {
 		rid: string,
 		attributes: Record<string, string[]>,
 		actor: AbacActor | undefined,
-		grant?: AbacRoomAttributesGrant,
+		grant: AbacRoomAttributesGrant,
 	): Promise<void>;
 	removeRoomAbacAttribute(rid: string, key: string, actor: AbacActor | undefined): Promise<void>;
 	addRoomAbacAttributeByKey(rid: string, key: string, values: string[], actor: AbacActor | undefined): Promise<void>;
