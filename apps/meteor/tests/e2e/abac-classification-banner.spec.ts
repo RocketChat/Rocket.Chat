@@ -119,7 +119,9 @@ test.describe.serial('abac-classification-banner', () => {
 	});
 
 	test('should show no banner in a room without attributes when nonAbacBanner is not configured', async ({ page }) => {
+		const roomInfoResponse = page.waitForResponse((response) => response.url().includes(`/api/v1/rooms.info?roomId=${plainRoom._id}`));
 		await poHomeChannel.navbar.openChat(plainRoom.name as string);
+		await roomInfoResponse;
 		await expect(poHomeChannel.composer.inputMessage).toBeVisible();
 		await expect(page.getByRole('region', { name: 'Classification banner' })).toHaveCount(0);
 	});
