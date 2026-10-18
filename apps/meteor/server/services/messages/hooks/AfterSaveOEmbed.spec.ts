@@ -2,7 +2,7 @@ import { OEmbedCache } from '@rocket.chat/models';
 import { serverFetch } from '@rocket.chat/server-fetch';
 
 import { isIgnoredHost, getUrlMetaWithCache, getUrlContent, getUrlMeta, OEmbed } from './AfterSaveOEmbed';
-import { beforeGetUrlContent } from '../lib/oembed/providers';
+import { beforeGetUrlContent, afterParseUrlContent } from '../lib/oembed/providers';
 
 const mockSettings = new Map<string, any>();
 
@@ -207,6 +207,28 @@ describe('AfterSaveOEmbed', () => {
 			const result = await getUrlMetaWithCache(cachedUrl);
 			expect(result).toBeUndefined();
 		});
+
+		it('should return undefined without querying cache if requested URL is on an unsafe port', async () => {
+			const unsafePortUrl = 'http://example.com:22/admin';
+			const result = await getUrlMetaWithCache(unsafePortUrl);
+
+			expect(result).toBeUndefined();
+			expect(OEmbedCache.findOneById).not.toHaveBeenCalled();
+		});
+
+		it('should return undefined if cached target URL is malformed', async () => {
+			const cachedUrl = 'https://short.link/malformed';
+			(OEmbedCache.findOneById as jest.Mock).mockResolvedValueOnce({
+				_id: cachedUrl,
+				data: {
+					url: 'not-a-valid-url',
+					meta: { pageTitle: 'Bad' },
+				},
+			});
+
+			const result = await getUrlMetaWithCache(cachedUrl);
+			expect(result).toBeUndefined();
+		});
 	});
 
 	describe('OEmbed.parseUrl', () => {
@@ -359,6 +381,25 @@ describe('AfterSaveOEmbed', () => {
 			const urlObj = new URL('https://rocket.chat/page');
 			await getUrlMeta('https://rocket.chat/page', true, urlObj);
 			expect(urlObj.searchParams.has('_escaped_fragment_')).toBe(false);
+		});
+
+		it('should pass original url to afterParseUrlContent for provider detection and update returned url with effectiveUrl', async () => {
+			(serverFetch as jest.Mock).mockResolvedValueOnce({
+				headers: new Map([['content-type', 'application/json']]),
+				status: 200,
+				body: [Buffer.from('{"title":"Song Title"}')],
+				url: 'https://open.spotify.com/oembed?url=https://open.spotify.com/track/12345',
+			});
+
+			const originalUrl = 'https://open.spotify.com/track/12345';
+			const result = (await getUrlMeta(originalUrl)) as any;
+			expect(result).toBeDefined();
+			expect(afterParseUrlContent).toHaveBeenCalledWith(
+				expect.objectContaining({
+					url: originalUrl,
+				}),
+			);
+			expect(result.url).toBe('https://open.spotify.com/oembed?url=https://open.spotify.com/track/12345');
 		});
 	});
 });

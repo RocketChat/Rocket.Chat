@@ -323,12 +323,21 @@ export const getUrlMeta = async function (
 		return;
 	}
 	const effectiveUrl = content.urlObj.toString();
-	return afterParseUrlContent({
-		url: effectiveUrl,
+	const parsedData = afterParseUrlContent({
+		url,
 		meta: metas,
 		headers,
 		content,
 	});
+
+	if (parsedData) {
+		return {
+			...parsedData,
+			url: effectiveUrl,
+		};
+	}
+
+	return parsedData;
 };
 
 export const getUrlMetaWithCache = async function (
@@ -344,8 +353,8 @@ export const getUrlMetaWithCache = async function (
 		return;
 	}
 
-	if (isIgnoredHost(urlObj.hostname)) {
-		log.debug({ msg: 'Host is ignored for OEmbed', url, host: urlObj.hostname });
+	if (isIgnoredHost(urlObj.hostname) || !isSafePortAndProtocol(urlObj)) {
+		log.debug({ msg: 'Host or port is ignored/unsafe for OEmbed', url, host: urlObj.hostname });
 		return;
 	}
 
@@ -360,7 +369,8 @@ export const getUrlMetaWithCache = async function (
 					return;
 				}
 			} catch {
-				// Ignore malformed cached target URLs
+				// Reject malformed cached target URLs
+				return;
 			}
 		}
 

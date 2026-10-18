@@ -95,4 +95,25 @@ describe('serverFetch', () => {
 		await expect(serverFetch(url, { ignoreSsrfValidation: true, follow: 0 })).rejects.toThrow('error-too-many-redirects');
 		await expect(connectionClosed).resolves.toBeUndefined();
 	});
+
+	it('preserves options.params in response.url', async () => {
+		const target = await listen((req, res) => res.end(`query: ${req.url}`));
+		const response = await serverFetch(target, { ignoreSsrfValidation: true, params: { foo: 'bar', baz: 'qux' } });
+
+		expect(response.url).toBe(`${target}/?foo=bar&baz=qux`);
+		await expect(response.text()).resolves.toBe('query: /?foo=bar&baz=qux');
+	});
+
+	it('clamps follow to MAX_REDIRECTS when large or infinite value is provided', async () => {
+		let redirectLoopUrl = '';
+		const { url } = await listenEndless(302, {
+			get location() {
+				return redirectLoopUrl;
+			},
+		});
+		redirectLoopUrl = url;
+
+		await expect(serverFetch(url, { ignoreSsrfValidation: true, follow: 100 })).rejects.toThrow('error-too-many-redirects');
+		await expect(serverFetch(url, { ignoreSsrfValidation: true, follow: Infinity })).rejects.toThrow('error-too-many-redirects');
+	});
 });

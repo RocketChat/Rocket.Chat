@@ -111,7 +111,8 @@ export async function serverFetch(input: string, options?: ExtendedFetchOptions,
 	let currentUrl = input;
 	let controller = new AbortController();
 	const timeoutId = setTimeout(() => controller.abort(), options?.timeout ?? 20000);
-	const maxRedirects = Math.max(0, options?.follow ?? MAX_REDIRECTS);
+	const requestedRedirects = typeof options?.follow === 'number' && Number.isFinite(options.follow) ? options.follow : MAX_REDIRECTS;
+	const maxRedirects = Math.min(MAX_REDIRECTS, Math.max(0, Math.floor(requestedRedirects)));
 
 	try {
 		for (let redirectCount = 0; redirectCount <= maxRedirects; redirectCount += 1) {
@@ -174,7 +175,17 @@ export async function serverFetch(input: string, options?: ExtendedFetchOptions,
 			if (!redirectStatus.has(response.status)) {
 				// node-fetch v2 only closes the socket through the abort signal, so destroying the body alone leaves it open
 				(response.body as Readable).once('close', controller.abort.bind(controller));
-				Object.defineProperty(response, 'url', { value: currentUrl, configurable: true, writable: true });
+				let reportedUrl = currentUrl;
+				if (redirectCount === 0 && params.toString()) {
+					try {
+						const reportedUrlObj = new URL(currentUrl);
+						reportedUrlObj.search = url.search;
+						reportedUrl = reportedUrlObj.toString();
+					} catch {
+						// Keep currentUrl
+					}
+				}
+				Object.defineProperty(response, 'url', { value: reportedUrl, configurable: true, writable: true });
 				return response;
 			}
 
