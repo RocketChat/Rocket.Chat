@@ -24,12 +24,6 @@ const createBanner = (text: string, backgroundColor: string, color: string): Cla
 	monospace: false,
 });
 
-const directMessageArgs: Partial<IRoom> = {
-	_id: 'directMessage',
-	t: 'd',
-	name: 'john.doe',
-};
-
 const withBanner = (classificationBanner: ClassificationBannerPayload, roomOverrides: Partial<IRoom> = roomArgs) =>
 	mockAppRoot()
 		.withJohnDoe()
@@ -69,5 +63,5 @@ export const Fallback: StoryObj<typeof ClassificationBanner> = {
 };
 
 export const NonAbacRoom: StoryObj<typeof ClassificationBanner> = {
-	decorators: [withBanner(createBanner('UNCLASSIFIED', '#007a33', '#FFFFFF'), directMessageArgs)],
+	decorators: [withBanner(createBanner('UNCLASSIFIED', '#007a33', '#FFFFFF'), { _id: 'directMessage', t: 'd', name: 'john.doe' })],
 };
