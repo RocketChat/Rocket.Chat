@@ -9774,6 +9774,7 @@ __metadata:
     "@rocket.chat/http-router": "workspace:^"
     "@rocket.chat/icons": "workspace:~"
     "@rocket.chat/jest-presets": "workspace:~"
+    "@rocket.chat/logger": "workspace:^"
     "@rocket.chat/media-signaling": "workspace:^"
     "@rocket.chat/message-parser": "workspace:^"
     "@rocket.chat/models": "workspace:^"
@@ -11273,6 +11274,7 @@ __metadata:
   resolution: "@rocket.chat/omni-core@workspace:packages/omni-core"
   dependencies:
     "@rocket.chat/jest-presets": "workspace:~"
+    "@rocket.chat/logger": "workspace:^"
     "@rocket.chat/models": "workspace:^"
     "@rocket.chat/patch-injection": "workspace:^"
     "@rocket.chat/tools": "workspace:*"
