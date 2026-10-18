@@ -153,7 +153,7 @@ export class Model implements AuthorizationCodeModel, RefreshTokenModel {
 					expires: code.expiresAt,
 					redirectUri: code.redirectUri,
 					codeChallenge: code.codeChallenge,
-    				codeChallengeMethod: code.codeChallengeMethod,
+					codeChallengeMethod: code.codeChallengeMethod,
 				},
 			},
 			{ upsert: true },
