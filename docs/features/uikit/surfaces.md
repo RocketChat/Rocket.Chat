@@ -13,8 +13,8 @@ A surface is a place in the client where a list of blocks is drawn. Each one has
 ## Notes per surface
 
 - **Message**: blocks are static content plus `blockAction`. There is no view state, so elements in `input` blocks have nothing to submit to. Interactions carry `mid`, `rid` and, in threads, `tmid`. `video_conf` and `info_card` exist for core features (video conference, media calls) rather than for apps.
-- **Modal**: the only surface that displays `errors` from the app. `close` and `submit` are `ButtonElement`s; `showIcon` shows the app's icon in the header. There is no view stack: `modal.open` goes through `imperativeModal.open`, which replaces any open modal. The modal store already has a `push`, but UiKit does not use it.
-- **Contextual bar**: like a modal docked to the room, with `rid` added to interactions. It closes its tab before sending `viewSubmit` or `viewClosed`. It is the only surface that renders `tab_navigation`.
+- **Modal**: displays `errors` from the app. `close` and `submit` are `ButtonElement`s; `showIcon` shows the app's icon in the header. There is no view stack: `modal.open` goes through `imperativeModal.open`, which replaces any open modal. The modal store already has a `push`, but UiKit does not use it.
+- **Contextual bar**: like a modal docked to the room, with `rid` added to interactions. Like a modal, it stays open after `viewSubmit` when the app answers with `errors` or an update, and closes its room tab otherwise. It closes the tab right away on `viewClosed`. It is the only surface that renders `tab_navigation`.
 - **Banner**: drawn in `BannerRegion` with Fuselage's `Banner`. `variant`, `icon`, `title` and `inline` are passed to it as props. Every `blockAction` from a banner closes it afterwards.
 
 ## Internal surfaces

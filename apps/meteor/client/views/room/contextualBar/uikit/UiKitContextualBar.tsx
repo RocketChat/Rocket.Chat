@@ -34,15 +34,14 @@ export type UiKitContextualBarProps = {
 
 const UiKitContextualBar = ({ initialView }: UiKitContextualBarProps) => {
 	const actionManager = useUiKitActionManager();
-	const { view, values, updateValues, state } = useUiKitView(initialView);
+	const { view, errors, values, updateValues, state } = useUiKitView(initialView);
 	const room = useRoom();
-	const contextValue = useContextualBarContextValue({ view, values, updateValues, rid: room._id });
+	const contextValue = useContextualBarContextValue({ view, errors, values, updateValues, rid: room._id });
 
 	const { closeTab } = useRoomToolbox();
 
 	const handleSubmit = useStableCallback((e: FormEvent) => {
 		preventSyntheticEvent(e);
-		closeTab();
 		void actionManager.emitInteraction(view.appId, {
 			type: 'viewSubmit',
 			payload: {
