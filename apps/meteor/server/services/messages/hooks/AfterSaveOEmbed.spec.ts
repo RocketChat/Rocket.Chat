@@ -193,6 +193,20 @@ describe('AfterSaveOEmbed', () => {
 			expect(result).toBeUndefined();
 			expect(OEmbedCache.findOneById).not.toHaveBeenCalled();
 		});
+
+		it('should return undefined if cached entry points to an unsafe port', async () => {
+			const cachedUrl = 'https://short.link/unsafe-port';
+			(OEmbedCache.findOneById as jest.Mock).mockResolvedValueOnce({
+				_id: cachedUrl,
+				data: {
+					url: 'https://allowed-host.com:22/ssh',
+					meta: { pageTitle: 'SSH Admin' },
+				},
+			});
+
+			const result = await getUrlMetaWithCache(cachedUrl);
+			expect(result).toBeUndefined();
+		});
 	});
 
 	describe('OEmbed.parseUrl', () => {
@@ -276,12 +290,69 @@ describe('AfterSaveOEmbed', () => {
 			const publicUrlObj = new URL('http://allowed-host.com:9000/api');
 			await expect(getUrlContent(publicUrlObj)).resolves.toBeDefined();
 		});
+		it('should reject redirect if onRedirect target is on an ignored host', async () => {
+			(serverFetch as jest.Mock).mockImplementationOnce(async (_url, options) => {
+				if (options?.onRedirect) {
+					options.onRedirect(new URL('http://127.0.0.1/internal'));
+				}
+				return {
+					headers: new Map([['content-type', 'text/html']]),
+					status: 200,
+					body: [Buffer.from('<title>Redirect</title>')],
+				};
+			});
+
+			const publicUrlObj = new URL('http://allowed-host.com/shortlink');
+			await expect(getUrlContent(publicUrlObj)).rejects.toThrow('host is ignored');
+		});
+
+		it('should reject redirect if onRedirect target is on an unsafe port', async () => {
+			(serverFetch as jest.Mock).mockImplementationOnce(async (_url, options) => {
+				if (options?.onRedirect) {
+					options.onRedirect(new URL('http://allowed-host.com:22/ssh'));
+				}
+				return {
+					headers: new Map([['content-type', 'text/html']]),
+					status: 200,
+					body: [Buffer.from('<title>Redirect</title>')],
+				};
+			});
+
+			const publicUrlObj = new URL('http://allowed-host.com/shortlink');
+			await expect(getUrlContent(publicUrlObj)).rejects.toThrow('invalid/unsafe port');
+		});
+
+		it('should return effective response.url in content.urlObj on redirect', async () => {
+			(serverFetch as jest.Mock).mockResolvedValueOnce({
+				headers: new Map([['content-type', 'text/html']]),
+				status: 200,
+				body: [Buffer.from('<title>Redirected Target</title>')],
+				url: 'https://final-destination.com/article',
+			});
+
+			const publicUrlObj = new URL('https://short.link/123');
+			const content = await getUrlContent(publicUrlObj);
+			expect(content.urlObj.toString()).toBe('https://final-destination.com/article');
+		});
 	});
 
 	describe('getUrlMeta', () => {
 		it('should return undefined when getUrlContent throws host is ignored', async () => {
 			const result = await getUrlMeta('http://localhost/secret');
 			expect(result).toBeUndefined();
+		});
+
+		it('should persist effective target url from response.url in metadata', async () => {
+			(serverFetch as jest.Mock).mockResolvedValueOnce({
+				headers: new Map([['content-type', 'text/html']]),
+				status: 200,
+				body: [Buffer.from('<title>Final Article</title>')],
+				url: 'https://final-destination.com/article',
+			});
+
+			const result = (await getUrlMeta('https://short.link/123')) as any;
+			expect(result).toBeDefined();
+			expect(result.url).toBe('https://final-destination.com/article');
 		});
 
 		it('should not mutate passed parsedUrl when withFragment is true', async () => {

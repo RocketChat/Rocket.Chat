@@ -117,32 +117,40 @@ export const isIgnoredHost = (hostname: string | undefined): boolean => {
 		});
 };
 
+const portsProtocol = new Map<string, string>(
+	Object.entries({
+		80: 'http:',
+		8080: 'http:',
+		443: 'https:',
+	}),
+);
+
+export const isSafePortAndProtocol = (targetUrlObj: URL): boolean => {
+	const safePorts = settings.get<string>('API_EmbedSafePorts')?.replace(/\s/g, '').split(',').filter(Boolean) || [];
+
+	// checks if the URL port is in the safe ports list
+	if (safePorts.length > 0 && targetUrlObj.port && !safePorts.includes(targetUrlObj.port)) {
+		return false;
+	}
+
+	// if port is not detected, use protocol to verify instead
+	if (safePorts.length > 0 && !targetUrlObj.port && !safePorts.some((port) => portsProtocol.get(port) === targetUrlObj.protocol)) {
+		return false;
+	}
+
+	return true;
+};
+
+export const validateUrlPortsAndProtocol = (targetUrlObj: URL): void => {
+	if (!isSafePortAndProtocol(targetUrlObj)) {
+		throw new Error('invalid/unsafe port');
+	}
+};
+
 export const getUrlContent = async (urlObj: URL, redirectCount = 5): Promise<OEmbedUrlContent> => {
 	if (isIgnoredHost(urlObj.hostname)) {
 		throw new Error('host is ignored');
 	}
-
-	const portsProtocol = new Map<string, string>(
-		Object.entries({
-			80: 'http:',
-			8080: 'http:',
-			443: 'https:',
-		}),
-	);
-
-	const safePorts = settings.get<string>('API_EmbedSafePorts')?.replace(/\s/g, '').split(',').filter(Boolean) || [];
-
-	const validateUrlPortsAndProtocol = (targetUrlObj: URL): void => {
-		// checks if the URL port is in the safe ports list
-		if (safePorts.length > 0 && targetUrlObj.port && !safePorts.includes(targetUrlObj.port)) {
-			throw new Error('invalid/unsafe port');
-		}
-
-		// if port is not detected, use protocol to verify instead
-		if (safePorts.length > 0 && !targetUrlObj.port && !safePorts.some((port) => portsProtocol.get(port) === targetUrlObj.protocol)) {
-			throw new Error('invalid/unsafe port');
-		}
-	};
 
 	validateUrlPortsAndProtocol(urlObj);
 
@@ -173,6 +181,12 @@ export const getUrlContent = async (urlObj: URL, redirectCount = 5): Promise<OEm
 			size: sizeLimit, // max size of the response body, this was not working as expected so I'm also manually verifying that on the iterator
 			ignoreSsrfValidation: false,
 			allowList: settings.get<string>('SSRF_Allowlist'),
+			onRedirect: (nextUrlObj: URL) => {
+				if (isIgnoredHost(nextUrlObj.hostname)) {
+					throw new Error('host is ignored');
+				}
+				validateUrlPortsAndProtocol(nextUrlObj);
+			},
 		},
 		settings.get('Allow_Invalid_SelfSigned_Certs'),
 	);
@@ -193,11 +207,20 @@ export const getUrlContent = async (urlObj: URL, redirectCount = 5): Promise<OEm
 	log.debug({ msg: 'Obtained response from server', length: totalSize, timeSpent: `${end - start}ms` });
 	const buffer = Buffer.concat(chunks);
 
+	let effectiveUrlObj = data.urlObj;
+	if (response.url) {
+		try {
+			effectiveUrlObj = new URL(response.url);
+		} catch {
+			// fallback to data.urlObj
+		}
+	}
+
 	return {
 		headers: Object.fromEntries(response.headers),
 		body: toUtf8(response.headers.get('content-type') || 'text/plain', buffer),
 		statusCode: response.status,
-		urlObj,
+		urlObj: effectiveUrlObj,
 	};
 };
 
@@ -299,8 +322,9 @@ export const getUrlMeta = async function (
 	if (content && content.statusCode !== 200) {
 		return;
 	}
+	const effectiveUrl = content.urlObj.toString();
 	return afterParseUrlContent({
-		url,
+		url: effectiveUrl,
 		meta: metas,
 		headers,
 		content,
@@ -331,8 +355,8 @@ export const getUrlMetaWithCache = async function (
 		if (cache.data && typeof cache.data === 'object' && 'url' in cache.data && typeof cache.data.url === 'string') {
 			try {
 				const cachedTargetUrl = new URL(cache.data.url);
-				if (isIgnoredHost(cachedTargetUrl.hostname)) {
-					log.debug({ msg: 'Cached target host is ignored for OEmbed', url, targetHost: cachedTargetUrl.hostname });
+				if (isIgnoredHost(cachedTargetUrl.hostname) || !isSafePortAndProtocol(cachedTargetUrl)) {
+					log.debug({ msg: 'Cached target host or port is ignored/unsafe for OEmbed', url, targetHost: cachedTargetUrl.hostname });
 					return;
 				}
 			} catch {

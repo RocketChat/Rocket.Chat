@@ -90,7 +90,7 @@ async function getFetchAgentWithValidation<U extends string>(
 	return { agent: getFetchAgent(pinnedUrl, allowSelfSignedCerts, originalHostname), pinnedUrl, originalHostname, resolvedIp };
 }
 
-function followRedirect(response: fetch.Response, redirectCount = 0) {
+function followRedirect(response: fetch.Response, redirectCount = 0, maxRedirects = MAX_REDIRECTS) {
 	const location = response.headers.get('location');
 
 	if (!location) {
@@ -98,8 +98,8 @@ function followRedirect(response: fetch.Response, redirectCount = 0) {
 		throw new Error('redirect-response-location-header-missing');
 	}
 
-	if (redirectCount === MAX_REDIRECTS) {
-		logger.error({ msg: 'Redirect count reached the maximum amount of redirects allowed', MAX_REDIRECTS, status: response.status });
+	if (redirectCount >= maxRedirects) {
+		logger.error({ msg: 'Redirect count reached the maximum amount of redirects allowed', maxRedirects, status: response.status });
 		throw new Error('error-too-many-redirects');
 	}
 
@@ -111,9 +111,10 @@ export async function serverFetch(input: string, options?: ExtendedFetchOptions,
 	let currentUrl = input;
 	let controller = new AbortController();
 	const timeoutId = setTimeout(() => controller.abort(), options?.timeout ?? 20000);
+	const maxRedirects = Math.max(0, options?.follow ?? MAX_REDIRECTS);
 
 	try {
-		for (let redirectCount = 0; redirectCount <= MAX_REDIRECTS; redirectCount += 1) {
+		for (let redirectCount = 0; redirectCount <= maxRedirects; redirectCount += 1) {
 			const { agent, pinnedUrl, originalHostname, resolvedIp } = await getFetchAgentWithValidation(
 				currentUrl,
 				allowSelfSignedCerts,
@@ -173,13 +174,21 @@ export async function serverFetch(input: string, options?: ExtendedFetchOptions,
 			if (!redirectStatus.has(response.status)) {
 				// node-fetch v2 only closes the socket through the abort signal, so destroying the body alone leaves it open
 				(response.body as Readable).once('close', controller.abort.bind(controller));
+				Object.defineProperty(response, 'url', { value: currentUrl, configurable: true, writable: true });
 				return response;
 			}
 
 			controller.abort();
 			controller = new AbortController();
 
-			currentUrl = new URL(followRedirect(response, redirectCount), currentUrl).toString();
+			const nextLocation = followRedirect(response, redirectCount, maxRedirects);
+			const nextUrl = new URL(nextLocation, currentUrl);
+
+			if (options?.onRedirect) {
+				await options.onRedirect(nextUrl);
+			}
+
+			currentUrl = nextUrl.toString();
 		}
 	} finally {
 		clearTimeout(timeoutId);
