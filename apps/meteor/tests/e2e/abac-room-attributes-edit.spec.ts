@@ -1,7 +1,8 @@
 import type { APIRequestContext } from '@playwright/test';
+import { request } from '@playwright/test';
 import type { IRoom } from '@rocket.chat/core-typings';
 
-import { DEFAULT_USER_CREDENTIALS, IS_EE } from './config/constants';
+import { BASE_URL, IS_EE } from './config/constants';
 import { Users } from './fixtures/userStates';
 import { AdminABACRooms } from './page-objects';
 import { setSettingValueById } from './utils';
@@ -58,7 +59,10 @@ test.describe.serial('abac-room-attributes-edit', () => {
 	};
 
 	test.beforeAll(async ({ api }) => {
-		asUser1 = await api.login({ username: Users.user1.data.username, password: DEFAULT_USER_CREDENTIALS.password });
+		asUser1 = await request.newContext({
+			baseURL: BASE_URL,
+			extraHTTPHeaders: { 'X-Auth-Token': Users.user1.data.loginToken, 'X-User-Id': Users.user1.data._id },
+		});
 
 		await Promise.all([
 			setSettingValueById(api, 'ABAC_Enabled', true),
