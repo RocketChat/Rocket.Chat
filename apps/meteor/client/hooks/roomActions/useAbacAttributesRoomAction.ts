@@ -22,7 +22,7 @@ export const useAbacAttributesRoomAction = () => {
 			title: 'ABAC_Attribute_based_access_control',
 			icon: 'shield',
 			tabComponent: AbacAttributes,
-			order: 7.5,
+			order: 8,
 		};
 	}, [canManage]);
 };
