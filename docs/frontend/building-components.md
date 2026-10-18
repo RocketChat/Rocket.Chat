@@ -62,38 +62,38 @@ Display all possible variations with descriptive explanations for non-obvious op
 
 ### Unit test all behaviors
 
-Comprehensive unit tests ensure reliability across all intended scenarios:
+Comprehensive unit tests ensure reliability across all intended scenarios. Query by role and name, and `await` every `userEvent` call (see [testing.md](testing.md)):
 
 ```jsx
 describe('[Menu Component]', () => {
 	it('should renders without crashing', () => {
-		render(<Simple {...Simple.args} />);
+		render(<Simple />);
 	});
 
 	it('should open options when click', async () => {
-		const { getByTestId } = render(<Simple {...Simple.args} />);
-		const button = getByTestId('menu');
-		userEvent.click(button);
-		expect(await screen.findByText('Make Admin')).toBeInTheDocument();
+		render(<Simple />);
+		await userEvent.click(screen.getByRole('button', { name: 'More options' }));
+		expect(await screen.findByRole('menuitem', { name: 'Make Admin' })).toBeInTheDocument();
 	});
 
 	it('should have no options when click twice', async () => {
-		const { getByTestId } = render(<Simple {...Simple.args} />);
-		const button = getByTestId('menu');
+		render(<Simple />);
+		const button = screen.getByRole('button', { name: 'More options' });
 		await userEvent.click(button);
 		await userEvent.click(button);
-		expect(screen.queryByText('Make Admin')).toBeNull();
+		expect(screen.queryByRole('menuitem', { name: 'Make Admin' })).not.toBeInTheDocument();
 	});
 
 	it('should have no options when click on menu and then elsewhere', async () => {
-		const { getByTestId } = render(<Simple {...Simple.args} />);
-		const button = getByTestId('menu');
-		await userEvent.click(button);
+		render(<Simple />);
+		await userEvent.click(screen.getByRole('button', { name: 'More options' }));
 		await userEvent.click(document.body);
-		expect(screen.queryByText('Make Admin')).toBeNull();
+		expect(screen.queryByRole('menuitem', { name: 'Make Admin' })).not.toBeInTheDocument();
 	});
 });
 ```
+
+`Simple` here is the story composed with `composeStories`, so it already carries its args.
 
 ### Avoid "Boxed" components
 
@@ -215,12 +215,18 @@ export const VideoConfMessage = () => (
 ✅ Correct:
 
 ```tsx
-export type VideoConfMessageProps = Omit<AllHTMLAttributes<HTMLDivElement>, 'is'>;
+export type VideoConfMessageProps = {
+	children: ReactNode;
+};
 
-const VideoConfMessage = (props: VideoConfMessageProps) => (
-	<Box mbs='x4' maxWidth='345px' borderWidth={2} borderColor='neutral-200' borderRadius='x4' {...props} />
+const VideoConfMessage = ({ children }: VideoConfMessageProps) => (
+	<Box mbs='x4' maxWidth='345px' borderWidth={2} borderColor='neutral-200' borderRadius='x4'>
+		{children}
+	</Box>
 );
 ```
+
+The component names the props it accepts rather than spreading `AllHTMLAttributes` onto the `Box` — see [react.md](react.md#destructure-props-explicitly-dont-spread-them).
 
 ### Provide hooks as helpers
 
@@ -332,18 +338,19 @@ Provide users with the ability to customize a component's appearance or behavior
 ```
 
 ```tsx
-const VideoConfController = ({ icon, active, secondary, disabled, small = true, ...props }: VideoConfControllerProps): ReactElement => {
-	const id = useUniqueId();
+const VideoConfController = ({ icon, title, active, secondary, disabled, small = true, onClick }: VideoConfControllerProps): ReactElement => {
+	const id = useId();
 
 	return (
 		<IconButton
 			small={small}
 			icon={icon}
+			title={title}
 			id={id}
 			info={active}
 			disabled={disabled}
 			secondary={secondary || active || disabled}
-			{...props}
+			onClick={onClick}
 		/>
 	);
 };
@@ -472,6 +479,51 @@ const OutgoingPopup = ({ room, onClose, id }: OutgoingPopupProps): ReactElement 
 	);
 };
 ```
+
+## Design tokens
+
+The rules above ([Avoid hardcoded values](#avoid-hardcoded-values-or-magic-numbers),
+[Avoid direct styles](#avoid-direct-styles)) apply to colors, type and spacing too:
+
+- **Colors come from `Palette`** (exported by `@rocket.chat/fuselage`) or from Box color props — never hex or `rgba()`
+  literals, which ignore the dark and high-contrast themes. See `packages/ui-voip/src/components/Cards/Card.tsx`.
+- **Type comes from `fontScale`** (`<Box fontScale='p2' />`), not `fontSize` / `fontWeight` / `lineHeight`.
+- **Sizes and spacing are multiples of 4**, expressed with Fuselage's size tokens (`'x4'`, `'x8'`, `'x16'`).
+- **Use Fuselage props, not `style`.** `style={{ … }}` bypasses the tokens and the theme.
+- **Use current Fuselage APIs.** Check the component's types before using a prop — deprecated ones are marked
+  `@deprecated` there, and the editor strikes them through.
+
+```tsx
+// ❌
+<Box style={{ color: '#6C727A', fontSize: 13, marginTop: 6 }}>{t('Waiting_for_answer')}</Box>
+
+// ✅
+<Box color='hint' fontScale='c1' mbs='x4'>
+	{t('Waiting_for_answer')}
+</Box>
+```
+
+## Every user-visible string is translated
+
+Labels, titles, `aria-label`s, toasts and empty states all go through i18n — see [docs/i18n.md](../i18n.md) and
+[the client-side guide](i18n.md).
+
+## Packages and bundles
+
+- **Feature code that doesn't need Meteor lives in its own package** (`packages/ui-*`), with its own stories and
+  tests. `apps/meteor/client` wires it to the app.
+- **Heavy SDKs load on demand.** Meteor's bundler does not tree-shake (see
+  [bundle-optimization-react-aria.md](../bundle-optimization-react-aria.md)), so a static import puts the whole
+  library in every bundle that reaches it. Load it behind `lazy()` or a dynamic `import()`, as
+  `apps/meteor/client/views/omnichannel/chartHandler.ts` does with `await import('chart.js/auto')`.
+- **Never import a heavy SDK statically from a shared path.** A preflight screen shared by every call provider
+  imported `livekit-client` statically, which put that SDK in every provider's window, used or not. Keep the import
+  inside the code path that needs it.
+- **Don't commit binaries** (models, WASM, media). Serve them from the installed npm package; when they come from
+  outside npm, download them at build time and pin them by checksum.
+- **Build asset URLs against the root path prefix.** A literal `/assets/…` breaks deployments served under a
+  sub-path. Use `useAbsoluteUrl()` from `@rocket.chat/ui-contexts` (or `getURL` in
+  `apps/meteor/app/utils/lib/getURL.ts` outside React).
 
 ## Visual components
 
