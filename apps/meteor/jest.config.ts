@@ -59,6 +59,7 @@ export default {
 				'<rootDir>/server/lib/statusVisibility/*.spec.ts',
 				'<rootDir>/server/lib/2fa/code/EmailCheck.spec.ts',
 				'<rootDir>/server/services/statusVisibility/*.spec.ts',
+				'<rootDir>/server/startup/*.spec.ts',
 			],
 			coveragePathIgnorePatterns: ['/node_modules/'],
 		},
