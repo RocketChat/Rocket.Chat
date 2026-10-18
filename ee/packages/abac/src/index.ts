@@ -920,7 +920,7 @@ export class AbacService extends ServiceClass implements IAbacService {
 		rid: string,
 		attributes: Record<string, string[]>,
 		actor: AbacActor,
-		grant: AbacRoomAttributesGrant = 'manage-abac-admin-rooms',
+		grant: AbacRoomAttributesGrant,
 	): Promise<void> {
 		await this.ensurePdpAvailable();
 		const room = await getAbacRoom(rid);
