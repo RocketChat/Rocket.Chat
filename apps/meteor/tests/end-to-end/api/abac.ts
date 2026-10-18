@@ -2416,10 +2416,12 @@ import { IS_EE, URL_MONGODB } from '../../e2e/config/constants';
 					JSON.stringify({ ...bannersConfig, nonAbacBanner: { ...nonAbacBanner, enabled: false } }),
 				);
 
-				expect(await getRoomInfo(dmRoomId)).to.not.have.property('classificationBanner');
-				expect((await getRoomInfo(bannerRoom._id)).classificationBanner).to.have.property('text', 'TOP SECRET');
-
-				await updateSetting('ABAC_Classification_Banners_Config', JSON.stringify({ ...bannersConfig, nonAbacBanner }));
+				try {
+					expect(await getRoomInfo(dmRoomId)).to.not.have.property('classificationBanner');
+					expect((await getRoomInfo(bannerRoom._id)).classificationBanner).to.have.property('text', 'TOP SECRET');
+				} finally {
+					await updateSetting('ABAC_Classification_Banners_Config', JSON.stringify({ ...bannersConfig, nonAbacBanner }));
+				}
 			});
 
 			it('should not return a banner in any room while ABAC is disabled', async () => {
