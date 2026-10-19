@@ -23,3 +23,23 @@ it('should fill the page with several requests when the server returns fewer ite
 	expect(result.current.data?.sounds).toEqual(Array.from({ length: 25 }, (_, index) => index));
 	expect(result.current.data?.total).toBe(total);
 });
+
+it('should merge the responses with the provided combineData reducer', async () => {
+	const { result } = renderHook(
+		() =>
+			usePaginatedQuery({
+				query: {},
+				queryKey: ['sounds', 'last-chunk'],
+				queryFn: getSounds,
+				itemsKey: 'sounds',
+				combineData: (_acc, current) => current,
+				offset: 0,
+				count: 25,
+			}),
+		{ wrapper: mockAppRoot().build() },
+	);
+
+	await waitFor(() => expect(result.current.isSuccess).toBe(true));
+
+	expect(result.current.data?.sounds).toEqual([20, 21, 22, 23, 24]);
+});
