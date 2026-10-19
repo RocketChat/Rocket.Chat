@@ -29,14 +29,16 @@ const toManagedPresenceUser = ({
 export const hasAdminStatusRules = (user?: { presenceDisabledByAdmin?: boolean; statusVisibilityDeniedByAdmin?: string[] }): boolean =>
 	Boolean(user?.presenceDisabledByAdmin || user?.statusVisibilityDeniedByAdmin?.length);
 
-export const useManagedPresenceUsers = (query: { searchTerm: string }) => {
+export const useManagedPresenceUsers = ({ searchTerm, count, offset }: { searchTerm: string; count: number; offset: number }) => {
 	const listStatusVisibility = useEndpoint('GET', '/v1/users.listStatusVisibility');
 
 	return usePaginatedQuery({
-		query,
-		queryKey: managedPresenceQueryKeys.list(query),
+		query: { searchTerm },
+		queryKey: managedPresenceQueryKeys.list({ searchTerm }),
 		queryFn: listStatusVisibility,
 		itemsKey: 'users',
+		offset,
+		count,
 		meta: {
 			apiErrorToastMessage: true,
 		},

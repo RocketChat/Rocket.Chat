@@ -1,6 +1,6 @@
 import type { UsersListStatusParamsGET } from '@rocket.chat/rest-typings';
 import type { useSort } from '@rocket.chat/ui-client';
-import { usePaginatedQuery } from '@rocket.chat/ui-client';
+import { usePaginatedQuery, usePagination } from '@rocket.chat/ui-client';
 import { useEndpoint } from '@rocket.chat/ui-contexts';
 import { useMemo } from 'react';
 
@@ -17,7 +17,7 @@ type UseFilteredUsersOptions = {
 const useFilteredUsers = ({ searchTerm, sortData, tab, selectedRoles, statusManagement }: UseFilteredUsersOptions) => {
 	const { sortBy, sortDirection } = sortData;
 
-	const query = useMemo(() => {
+	const payload = useMemo(() => {
 		const listUsersPayload: Partial<Record<AdminUsersTab, UsersListStatusParamsGET>> = {
 			all: {},
 			pending: {
@@ -42,17 +42,20 @@ const useFilteredUsers = ({ searchTerm, sortData, tab, selectedRoles, statusMana
 			sort: `{ "${sortBy}": ${sortDirection === 'asc' ? 1 : -1} }`,
 		};
 	}, [searchTerm, selectedRoles, sortBy, sortDirection, statusManagement, tab]);
-
+	const queryKey = ['users.list', payload, tab];
+	const paginationData = usePagination({ resetKey: queryKey });
 	const getUsers = useEndpoint('GET', '/v1/users.listByStatus');
 	const usersListQueryResult = usePaginatedQuery({
-		query,
-		queryKey: ['users.list', query, tab],
+		query: payload,
+		queryKey,
 		queryFn: getUsers,
 		itemsKey: 'users',
+		offset: paginationData.current,
+		count: paginationData.itemsPerPage,
 		meta: {
 			apiErrorToastMessage: true,
 		},
 	});
-	return { usersListQueryResult, paginationData: usersListQueryResult.paginationProps };
+	return { usersListQueryResult, paginationData };
 };
 export default useFilteredUsers;

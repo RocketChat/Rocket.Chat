@@ -6,6 +6,7 @@ import {
 	GenericTableBody,
 	GenericTableHeaderCell,
 	GenericTableLoadingTable,
+	usePagination,
 	useSort,
 	GenericNoResults,
 } from '@rocket.chat/ui-client';
@@ -45,10 +46,11 @@ function ContactTable() {
 		}),
 	);
 
-	const { data, isLoading, isError, isSuccess, refetch, paginatedQuery, paginationProps } = useCurrentContacts(query);
+	const { current, itemsPerPage, setItemsPerPage, setCurrent, ...paginationProps } = usePagination({ resetKey: [query] });
+	const { data, isLoading, isError, isSuccess, refetch } = useCurrentContacts(query, { offset: current, count: itemsPerPage });
 
-	const [defaultQuery] = useState(hashKey([paginatedQuery]));
-	const queryHasChanged = defaultQuery !== hashKey([paginatedQuery]);
+	const [defaultQuery] = useState(hashKey([query, current, itemsPerPage]));
+	const queryHasChanged = defaultQuery !== hashKey([query, current, itemsPerPage]);
 
 	const headers = (
 		<>
@@ -125,7 +127,15 @@ function ContactTable() {
 							))}
 						</GenericTableBody>
 					</GenericTable>
-					<Pagination divider {...paginationProps} />
+					<Pagination
+						divider
+						current={current}
+						itemsPerPage={itemsPerPage}
+						count={data?.total}
+						onSetItemsPerPage={setItemsPerPage}
+						onSetCurrent={setCurrent}
+						{...paginationProps}
+					/>
 				</>
 			)}
 			{isError && (

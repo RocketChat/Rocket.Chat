@@ -1,14 +1,21 @@
-import { useEffect, useMemo } from 'react';
+import { useStableCallback } from '@rocket.chat/fuselage-hooks';
+import { hashKey } from '@tanstack/react-query';
+import type { SetStateAction } from 'react';
+import { useMemo, useState } from 'react';
 
-import { useCurrent } from './useCurrent';
+import type { useCurrent } from './useCurrent';
 import { useItemsPerPage } from './useItemsPerPage';
 import { useItemsPerPageLabel } from './useItemsPerPageLabel';
 import { useShowingResultsLabel } from './useShowingResultsLabel';
 
+type UsePaginationOptions = {
+	resetKey?: readonly unknown[];
+};
+
 /**
  * TODO: Move `usePagination` outside from `GenericTable` folder
  */
-export const usePagination = (): {
+export const usePagination = ({ resetKey = [] }: UsePaginationOptions = {}): {
 	current: ReturnType<typeof useCurrent>[0];
 	setCurrent: ReturnType<typeof useCurrent>[1];
 	itemsPerPage: ReturnType<typeof useItemsPerPage>[0];
@@ -17,14 +24,16 @@ export const usePagination = (): {
 	showingResultsLabel: ReturnType<typeof useShowingResultsLabel>;
 } => {
 	const [itemsPerPage, setItemsPerPage] = useItemsPerPage();
-	const [current, setCurrent] = useCurrent();
 	const itemsPerPageLabel = useItemsPerPageLabel();
 	const showingResultsLabel = useShowingResultsLabel();
 
-	// Reset to first page when itemsPerPage changes
-	useEffect(() => {
-		setCurrent(0);
-	}, [itemsPerPage, setCurrent]);
+	const resetHash = hashKey([resetKey, itemsPerPage]);
+	const [state, setState] = useState({ current: 0, resetHash });
+	const current = state.resetHash === resetHash ? state.current : 0;
+
+	const setCurrent = useStableCallback((action: SetStateAction<number>) => {
+		setState({ current: typeof action === 'function' ? action(current) : action, resetHash });
+	});
 
 	return useMemo(
 		() => ({

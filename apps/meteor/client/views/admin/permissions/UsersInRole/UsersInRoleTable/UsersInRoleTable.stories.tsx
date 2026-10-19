@@ -3,6 +3,7 @@ import { PageContent } from '@rocket.chat/ui-client';
 import type { Meta } from '@storybook/react';
 
 import UsersInRoleTable from './UsersInRoleTable';
+import { createMockedPagination } from '../../../../../../tests/mocks/data';
 
 export default {
 	component: UsersInRoleTable,
@@ -30,60 +31,56 @@ const generateMockedUsers = (count: number) =>
 
 const mockedUsers = generateMockedUsers(5);
 
-const paginationProps = {
-	count: 30,
-	current: 0,
-	itemsPerPage: 25 as const,
-	itemsPerPageLabel: () => 'Items per page:',
-	showingResultsLabel: () => `Showing results 1 - ${mockedUsers.length} of 30`,
-	onSetCurrent: () => undefined,
-	onSetItemsPerPage: () => undefined,
-};
+const paginationData = createMockedPagination(mockedUsers.length, 30);
 
 export const Default = {
 	args: {
+		total: 30,
 		isLoading: false,
 		isError: false,
 		isSuccess: true,
 		users: mockedUsers,
 		onRemove: () => undefined,
 		refetch: () => undefined,
-		paginationProps,
+		paginationData,
 	},
 };
 
 export const withLoading = {
 	args: {
+		total: 0,
 		isLoading: true,
 		isError: false,
 		isSuccess: false,
 		users: [],
 		onRemove: () => undefined,
 		refetch: () => undefined,
-		paginationProps,
+		paginationData,
 	},
 };
 
 export const withNoResults = {
 	args: {
+		total: 0,
 		isLoading: false,
 		isError: false,
 		isSuccess: true,
 		users: [],
 		onRemove: () => undefined,
 		refetch: () => undefined,
-		paginationProps,
+		paginationData,
 	},
 };
 
 export const withError = {
 	args: {
+		total: 0,
 		isLoading: false,
 		isError: true,
 		isSuccess: false,
 		users: [],
 		onRemove: () => undefined,
 		refetch: () => undefined,
-		paginationProps,
+		paginationData,
 	},
 };

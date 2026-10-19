@@ -157,6 +157,7 @@ const AdminUsersPage = () => {
 						isLoading={filteredUsersQueryResult.isLoading}
 						isError={filteredUsersQueryResult.isError}
 						isSuccess={filteredUsersQueryResult.isSuccess}
+						total={filteredUsersQueryResult.data?.total || 0}
 						setUserFilters={setUserFilters}
 						canFilterByUserStatus={canFilterByUserStatus}
 						paginationData={paginationData}

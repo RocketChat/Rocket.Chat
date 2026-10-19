@@ -1,7 +1,7 @@
 import type { IRole, IRoom } from '@rocket.chat/core-typings';
 import { Box, Field, FieldLabel, FieldRow, Margins, ButtonGroup, Button, Callout, FieldError } from '@rocket.chat/fuselage';
 import { useStableCallback } from '@rocket.chat/fuselage-hooks';
-import { usePaginatedQuery, Page, PageHeader, PageContent } from '@rocket.chat/ui-client';
+import { usePaginatedQuery, usePagination, Page, PageHeader, PageContent } from '@rocket.chat/ui-client';
 import { useToastMessageDispatch, useEndpoint, useRouter } from '@rocket.chat/ui-contexts';
 import { useQueryClient } from '@tanstack/react-query';
 import { useId, useMemo } from 'react';
@@ -68,11 +68,17 @@ const UsersInRolePage = ({ role }: UsersInRolePageProps) => {
 		[rid, _id],
 	);
 
-	const { data, isLoading, isSuccess, refetch, isError, paginationProps } = usePaginatedQuery({
+	const queryKey = ['getUsersInRole', _id, query];
+	const paginationData = usePagination({ resetKey: queryKey });
+	const { itemsPerPage, current } = paginationData;
+
+	const { data, isLoading, isSuccess, refetch, isError } = usePaginatedQuery({
 		query,
-		queryKey: ['getUsersInRole', _id, query],
+		queryKey,
 		queryFn: getUsersInRoleEndpoint,
 		itemsKey: 'users',
+		offset: current,
+		count: itemsPerPage,
 	});
 
 	const handleRemove = useRemoveUserFromRole({ rid, roleId: _id, roleName: name, roleDescription: description });
@@ -155,10 +161,11 @@ const UsersInRolePage = ({ role }: UsersInRolePageProps) => {
 							isLoading={isLoading}
 							isError={isError}
 							isSuccess={isSuccess}
+							total={data?.total || 0}
 							users={data?.users || []}
 							onRemove={handleRemove}
 							refetch={refetch}
-							paginationProps={paginationProps}
+							paginationData={paginationData}
 						/>
 					)}
 					{role.scope !== 'Users' && !rid && <Callout type='info'>{t('Select_a_room')}</Callout>}

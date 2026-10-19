@@ -1,16 +1,21 @@
 import type { DeviceManagementSession, DeviceManagementPopulatedSession, Serialized } from '@rocket.chat/core-typings';
 import { Box, Pagination, States, StatesAction, StatesActions, StatesIcon, StatesSubtitle, StatesTitle } from '@rocket.chat/fuselage';
 import type { PaginatedResult } from '@rocket.chat/rest-typings';
-import type { UsePaginatedQueryResult } from '@rocket.chat/ui-client';
+import type { PaginatedQueryResult } from '@rocket.chat/ui-client';
 import { GenericTable, GenericTableHeader, GenericTableBody, GenericTableLoadingTable, GenericNoResults } from '@rocket.chat/ui-client';
-import type { ReactNode } from 'react';
+import type { ComponentProps, ReactNode } from 'react';
 import { useTranslation } from 'react-i18next';
 
 // FIXME: this tight coupling with the query result is not ideal; it indicates visual components should not be tightly
 // coupled with data fetching logic.
-type DeviceManagementTableProps<T> = UsePaginatedQueryResult<PaginatedResult<{ sessions: Serialized<T>[] }>> & {
+type DeviceManagementTableProps<T> = PaginatedQueryResult<PaginatedResult<{ sessions: Serialized<T>[] }>> & {
 	headers: ReactNode[];
 	renderRow: (data: Serialized<T>) => ReactNode;
+	current?: ComponentProps<typeof Pagination>['current'];
+	itemsPerPage?: ComponentProps<typeof Pagination>['itemsPerPage'];
+	setCurrent?: ComponentProps<typeof Pagination>['onSetCurrent'];
+	setItemsPerPage?: ComponentProps<typeof Pagination>['onSetItemsPerPage'];
+	paginationProps?: Partial<ComponentProps<typeof Pagination>>;
 };
 
 // TODO: Missing error state
@@ -23,6 +28,10 @@ const DeviceManagementTable = <T extends DeviceManagementSession | DeviceManagem
 	refetch,
 	headers,
 	renderRow,
+	current,
+	itemsPerPage,
+	setCurrent,
+	setItemsPerPage,
 	paginationProps,
 }: DeviceManagementTableProps<T>) => {
 	const { t } = useTranslation();
@@ -53,7 +62,17 @@ const DeviceManagementTable = <T extends DeviceManagementSession | DeviceManagem
 					{isSuccess && data?.sessions && data.sessions.map(renderRow)}
 				</GenericTableBody>
 			</GenericTable>
-			{isSuccess && <Pagination divider {...paginationProps} />}
+			{isSuccess && (
+				<Pagination
+					divider
+					current={current}
+					itemsPerPage={itemsPerPage}
+					count={data?.total || 0}
+					onSetCurrent={setCurrent}
+					onSetItemsPerPage={setItemsPerPage}
+					{...paginationProps}
+				/>
+			)}
 		</>
 	);
 };
