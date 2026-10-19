@@ -1,15 +1,16 @@
 import type { cssFn } from '@rocket.chat/css-in-js';
-import { createElement, type ElementType } from 'react';
+import type { ElementType } from 'react';
 
+import { useArrayLikeClassNameProp } from './useArrayLikeClassNameProp';
+import { applyBoxOnlyProps } from './useBoxOnlyProps';
 import { useStylingProps } from '../components/Box/useStylingProps';
 import { prependClassName } from '../helpers/prependClassName';
-import { prependRcxClassNames } from '../helpers/prependRcxClassNames';
+import { renderAs } from '../helpers/renderAs';
 import type { Falsy } from '../types/Falsy';
-import { useArrayLikeClassNameProp } from './useArrayLikeClassNameProp';
 
 /**
  * Turns `Box`-style props into props for a Tamagui frame: styling props become a css-in-js class name, which
- * stays unlayered and so keeps overriding the frame, `rcx-*` props become class names, and `is` becomes `render`.
+ * stays unlayered and so keeps overriding the frame, `rcx-*` and the other `Box`-only props become class names, and `is` becomes `render`.
  */
 export const useTamaguiBoxProps = <
 	TProps extends {
@@ -20,7 +21,7 @@ export const useTamaguiBoxProps = <
 	props: TProps,
 	className?: string,
 ) => {
-	const { is, ...rest } = useStylingProps(prependRcxClassNames(useArrayLikeClassNameProp(props)));
+	const { is, ...rest } = useStylingProps(applyBoxOnlyProps(useArrayLikeClassNameProp(props)));
 
 	if (className) {
 		rest.className = prependClassName(rest.className, className);
@@ -32,6 +33,6 @@ export const useTamaguiBoxProps = <
 
 	return {
 		...rest,
-		render: typeof is === 'string' ? is : (renderProps: Record<string, unknown>) => createElement(is, renderProps),
+		render: typeof is === 'string' ? is : renderAs(is),
 	};
 };
