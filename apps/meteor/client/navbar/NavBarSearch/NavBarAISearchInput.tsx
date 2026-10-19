@@ -61,7 +61,6 @@ const NavBarAISearchInput = () => {
 		handleSearchKeyDown(event);
 	});
 
-	// Arrow keys pressed on the dropdown's controls go back to the input and keep moving through the results.
 	const handleRegionKeyDown = useStableCallback((event: KeyboardEvent<HTMLElement>) => {
 		if (event.target === triggerRef.current || filtersOpen || (event.key !== 'ArrowDown' && event.key !== 'ArrowUp')) {
 			return;
