@@ -13,6 +13,7 @@ import { useThemeMode } from '@rocket.chat/ui-client';
 
 import { Info } from '../../../rocketchat.info';
 import { useCopyErrorReport } from '../../components/ErrorReport/useCopyErrorReport';
+import { router } from '../../providers/RouterProvider';
 
 export type AppErrorPageProps = {
 	error: unknown;
@@ -25,6 +26,7 @@ const AppErrorPage = ({ error, info }: AppErrorPageProps) => {
 	const { copy, hasCopied } = useCopyErrorReport({
 		error,
 		componentStack: info?.componentStack,
+		routeName: router.getRouteName(),
 		version: Info.version,
 		commitHash: Info.commit?.hash,
 	});
