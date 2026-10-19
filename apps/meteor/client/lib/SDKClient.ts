@@ -26,7 +26,7 @@ const sdkTransportEnabled = isSdkTransportEnabled();
 const isChangedCollectionPayload = (
 	msg: any,
 ): msg is { msg: 'changed'; collection: string; fields: { eventName: string; args: unknown[] } } => {
-	if (typeof msg !== 'object' && (msg !== null || msg !== undefined)) {
+	if (!msg || typeof msg !== 'object') {
 		return false;
 	}
 	if (msg.msg !== 'changed') {
@@ -35,7 +35,7 @@ const isChangedCollectionPayload = (
 	if (typeof msg.collection !== 'string') {
 		return false;
 	}
-	if (typeof msg.fields !== 'object' && (msg.fields !== null || msg.fields !== undefined)) {
+	if (!msg.fields || typeof msg.fields !== 'object') {
 		return false;
 	}
 	if (typeof msg.fields.eventName !== 'string') {
