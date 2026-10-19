@@ -1,9 +1,14 @@
 import type { Keys as IconName } from '@rocket.chat/icons';
+import type { GetProps } from '@tamagui/web';
 import type { ReactElement, ReactNode } from 'react';
 import { isValidElement, useMemo } from 'react';
 
-import { Box, type BoxProps } from '../Box';
+import { useTamaguiBoxProps } from '../../hooks/useTamaguiBoxProps';
+import type { BoxProps } from '../Box';
+import { BoxTransforms, useBoxTransform } from '../Box/BoxTransforms';
+import { withFuselageProvider } from '../FuselageProvider/FuselageProvider';
 import { Icon } from '../Icon';
+import { ButtonBadge, ButtonFrame, renderButtonElement } from './ButtonFrame';
 
 export type IconButtonSize = {
 	large?: boolean;
@@ -62,6 +67,8 @@ function IconButton({
 	medium,
 	pressed,
 	children,
+	is = 'button',
+	disabled,
 	...props
 }: IconButtonProps) {
 	const variant = useMemo(
@@ -100,28 +107,42 @@ function IconButton({
 
 	const getIconSize = () => (large && 'x28') || (medium && 'x24') || (small && 'x20') || (tiny && 'x16') || (mini && 'x12') || 'x28';
 
-	return (
-		<Box
-			is='button'
-			type='button'
-			rcx-button
-			rcx-button--icon
-			rcx-button--square
-			{...kindAndVariantProps}
-			{...getSizeClass()}
-			rcx-button--icon-pressed={pressed}
-			rcx-button--with-badge={Boolean(badge)}
-			{...props}
+	const transform = useBoxTransform();
+
+	const frameProps = useTamaguiBoxProps(
+		(transform ?? ((props) => props))({
+			'type': 'button',
+			'rcx-button': true,
+			'rcx-button--icon': true,
+			'rcx-button--square': true,
+			...kindAndVariantProps,
+			...getSizeClass(),
+			'rcx-button--icon-pressed': pressed,
+			'rcx-button--with-badge': Boolean(badge),
+			...props,
+		}),
+	);
+
+	const button = (
+		<ButtonFrame
+			square
+			icon
+			squareSize={size}
+			withBadge={Boolean(badge)}
+			render={renderButtonElement(is, disabled)}
+			{...(frameProps as GetProps<typeof ButtonFrame>)}
 		>
 			{isValidElement<any>(icon) ? icon : <Icon name={icon} size={getIconSize()} />}
 			{Boolean(badge) && (
-				<span className='rcx-button__badge' aria-hidden='true'>
+				<ButtonBadge className='rcx-button__badge' aria-hidden>
 					{badge}
-				</span>
+				</ButtonBadge>
 			)}
 			{children}
-		</Box>
+		</ButtonFrame>
 	);
+
+	return transform ? <BoxTransforms.Provider value={null}>{button}</BoxTransforms.Provider> : button;
 }
 
-export default IconButton;
+export default withFuselageProvider(IconButton);
