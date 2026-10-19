@@ -4,17 +4,17 @@ exports[`[CheckBox Rendering] renders Checked without crashing 1`] = `
 <body>
   <div>
     <label
-      class="rcx-box rcx-box--full rcx-check-box"
+      class="is_Text _b-1639159466 _os-249893454 _ff-409630021 _fvn-1977619713 _ws-311910413 _ww-408434756 rcx-check-box"
     >
       <input
         aria-label="Decorator Label"
         checked=""
-        class="rcx-box rcx-box--full rcx-check-box__input"
+        class="is_View _b-1639159466 _os-249893454 _ff-409630021 _fvn-1977619713 _p-1261267467 _o-1119039191 _c-588872556 _cp-2129451690 _w-226739898 _h-1922295961 _m-1890937723 _p-1943363302 _ws-973912173 _f-1246374076 rcx-check-box__input"
         type="checkbox"
       />
       <i
         aria-hidden="true"
-        class="rcx-box rcx-box--full rcx-check-box__fake"
+        class="is_View _b-1639160427 _os-249893454 _ff-409630021 _fvn-1977619713 _p-1021290656 _h-858548760 _f-1069814357 _mw-354604370 _mh-1241200853 _d-341075704 _jc-1099843255 _ai-121763387 _br-761515502 _w-120696903 rcx-check-box__fake"
       />
     </label>
   </div>
@@ -25,16 +25,16 @@ exports[`[CheckBox Rendering] renders Default without crashing 1`] = `
 <body>
   <div>
     <label
-      class="rcx-box rcx-box--full rcx-check-box"
+      class="is_Text _b-1639159466 _os-249893454 _ff-409630021 _fvn-1977619713 _ws-311910413 _ww-408434756 rcx-check-box"
     >
       <input
         aria-label="Decorator Label"
-        class="rcx-box rcx-box--full rcx-check-box__input"
+        class="is_View _b-1639159466 _os-249893454 _ff-409630021 _fvn-1977619713 _p-1261267467 _o-1119039191 _c-588872556 _cp-2129451690 _w-226739898 _h-1922295961 _m-1890937723 _p-1943363302 _ws-973912173 _f-1246374076 rcx-check-box__input"
         type="checkbox"
       />
       <i
         aria-hidden="true"
-        class="rcx-box rcx-box--full rcx-check-box__fake"
+        class="is_View _b-1639160427 _os-249893454 _ff-409630021 _fvn-1977619713 _p-1021290656 _h-858548760 _f-1069814357 _mw-354604370 _mh-1241200853 _d-341075704 _jc-1099843255 _ai-121763387 _br-761515502 _w-120696903 rcx-check-box__fake"
       />
     </label>
   </div>
@@ -45,17 +45,17 @@ exports[`[CheckBox Rendering] renders DefaultChecked without crashing 1`] = `
 <body>
   <div>
     <label
-      class="rcx-box rcx-box--full rcx-check-box"
+      class="is_Text _b-1639159466 _os-249893454 _ff-409630021 _fvn-1977619713 _ws-311910413 _ww-408434756 rcx-check-box"
     >
       <input
         aria-label="Decorator Label"
         checked=""
-        class="rcx-box rcx-box--full rcx-check-box__input"
+        class="is_View _b-1639159466 _os-249893454 _ff-409630021 _fvn-1977619713 _p-1261267467 _o-1119039191 _c-588872556 _cp-2129451690 _w-226739898 _h-1922295961 _m-1890937723 _p-1943363302 _ws-973912173 _f-1246374076 rcx-check-box__input"
         type="checkbox"
       />
       <i
         aria-hidden="true"
-        class="rcx-box rcx-box--full rcx-check-box__fake"
+        class="is_View _b-1639160427 _os-249893454 _ff-409630021 _fvn-1977619713 _p-1021290656 _h-858548760 _f-1069814357 _mw-354604370 _mh-1241200853 _d-341075704 _jc-1099843255 _ai-121763387 _br-761515502 _w-120696903 rcx-check-box__fake"
       />
     </label>
   </div>
@@ -66,17 +66,17 @@ exports[`[CheckBox Rendering] renders Disabled without crashing 1`] = `
 <body>
   <div>
     <label
-      class="rcx-box rcx-box--full rcx-check-box"
+      class="is_Text _b-1639159466 _os-249893454 _ff-409630021 _fvn-1977619713 _ws-311910413 _ww-408434756 rcx-check-box"
     >
       <input
         aria-label="Decorator Label"
-        class="rcx-box rcx-box--full rcx-check-box__input"
+        class="is_View _b-1639159466 _os-249893454 _ff-409630021 _fvn-1977619713 _p-1261267467 _o-1119039191 _c-588872556 _cp-2129451690 _w-226739898 _h-1922295961 _m-1890937723 _p-1943363302 _ws-973912173 _f-1246374076 rcx-check-box__input"
         disabled=""
         type="checkbox"
       />
       <i
         aria-hidden="true"
-        class="rcx-box rcx-box--full rcx-check-box__fake"
+        class="is_View _b-1639160427 _os-249893454 _ff-409630021 _fvn-1977619713 _p-1021290656 _h-858548760 _f-1069814357 _mw-354604370 _mh-1241200853 _d-341075704 _jc-1099843255 _ai-121763387 _br-761515502 _w-120696903 rcx-check-box__fake"
       />
     </label>
   </div>
@@ -87,16 +87,16 @@ exports[`[CheckBox Rendering] renders Indeterminate without crashing 1`] = `
 <body>
   <div>
     <label
-      class="rcx-box rcx-box--full rcx-check-box"
+      class="is_Text _b-1639159466 _os-249893454 _ff-409630021 _fvn-1977619713 _ws-311910413 _ww-408434756 rcx-check-box"
     >
       <input
         aria-label="Decorator Label"
-        class="rcx-box rcx-box--full rcx-check-box__input"
+        class="is_View _b-1639159466 _os-249893454 _ff-409630021 _fvn-1977619713 _p-1261267467 _o-1119039191 _c-588872556 _cp-2129451690 _w-226739898 _h-1922295961 _m-1890937723 _p-1943363302 _ws-973912173 _f-1246374076 rcx-check-box__input"
         type="checkbox"
       />
       <i
         aria-hidden="true"
-        class="rcx-box rcx-box--full rcx-check-box__fake"
+        class="is_View _b-1639160427 _os-249893454 _ff-409630021 _fvn-1977619713 _p-1021290656 _h-858548760 _f-1069814357 _mw-354604370 _mh-1241200853 _d-341075704 _jc-1099843255 _ai-121763387 _br-761515502 _w-120696903 rcx-check-box__fake"
       />
     </label>
   </div>
@@ -150,17 +150,17 @@ exports[`[CheckBox Rendering] renders States without crashing 1`] = `
               class="rcx-box rcx-box--full rcx-css-7rd89h"
             >
               <label
-                class="rcx-box rcx-box--full rcx-check-box"
+                class="is_Text _b-1639159466 _os-249893454 _ff-409630021 _fvn-1977619713 _ws-311910413 _ww-408434756 rcx-check-box"
               >
                 <input
                   aria-label="Decorator Label"
                   checked=""
-                  class="rcx-box rcx-box--full rcx-check-box__input"
+                  class="is_View _b-1639159466 _os-249893454 _ff-409630021 _fvn-1977619713 _p-1261267467 _o-1119039191 _c-588872556 _cp-2129451690 _w-226739898 _h-1922295961 _m-1890937723 _p-1943363302 _ws-973912173 _f-1246374076 rcx-check-box__input"
                   type="checkbox"
                 />
                 <i
                   aria-hidden="true"
-                  class="rcx-box rcx-box--full rcx-check-box__fake"
+                  class="is_View _b-1639160427 _os-249893454 _ff-409630021 _fvn-1977619713 _p-1021290656 _h-858548760 _f-1069814357 _mw-354604370 _mh-1241200853 _d-341075704 _jc-1099843255 _ai-121763387 _br-761515502 _w-120696903 rcx-check-box__fake"
                 />
               </label>
             </div>
@@ -172,16 +172,16 @@ exports[`[CheckBox Rendering] renders States without crashing 1`] = `
               class="rcx-box rcx-box--full rcx-css-7rd89h"
             >
               <label
-                class="rcx-box rcx-box--full rcx-check-box"
+                class="is_Text _b-1639159466 _os-249893454 _ff-409630021 _fvn-1977619713 _ws-311910413 _ww-408434756 rcx-check-box"
               >
                 <input
                   aria-label="Decorator Label"
-                  class="rcx-box rcx-box--full rcx-check-box__input"
+                  class="is_View _b-1639159466 _os-249893454 _ff-409630021 _fvn-1977619713 _p-1261267467 _o-1119039191 _c-588872556 _cp-2129451690 _w-226739898 _h-1922295961 _m-1890937723 _p-1943363302 _ws-973912173 _f-1246374076 rcx-check-box__input"
                   type="checkbox"
                 />
                 <i
                   aria-hidden="true"
-                  class="rcx-box rcx-box--full rcx-check-box__fake"
+                  class="is_View _b-1639160427 _os-249893454 _ff-409630021 _fvn-1977619713 _p-1021290656 _h-858548760 _f-1069814357 _mw-354604370 _mh-1241200853 _d-341075704 _jc-1099843255 _ai-121763387 _br-761515502 _w-120696903 rcx-check-box__fake"
                 />
               </label>
             </div>
@@ -202,17 +202,17 @@ exports[`[CheckBox Rendering] renders States without crashing 1`] = `
               class="rcx-box rcx-box--full rcx-css-7rd89h"
             >
               <label
-                class="rcx-box rcx-box--full rcx-check-box is-hovered"
+                class="is_Text _b-1639159466 _os-249893454 _ff-409630021 _fvn-1977619713 _ws-311910413 _ww-408434756 rcx-check-box is-hovered"
               >
                 <input
                   aria-label="Decorator Label"
                   checked=""
-                  class="rcx-box rcx-box--full rcx-check-box__input"
+                  class="is_View _b-1639159466 _os-249893454 _ff-409630021 _fvn-1977619713 _p-1261267467 _o-1119039191 _c-588872556 _cp-2129451690 _w-226739898 _h-1922295961 _m-1890937723 _p-1943363302 _ws-973912173 _f-1246374076 rcx-check-box__input"
                   type="checkbox"
                 />
                 <i
                   aria-hidden="true"
-                  class="rcx-box rcx-box--full rcx-check-box__fake"
+                  class="is_View _b-1639160427 _os-249893454 _ff-409630021 _fvn-1977619713 _p-1021290656 _h-858548760 _f-1069814357 _mw-354604370 _mh-1241200853 _d-341075704 _jc-1099843255 _ai-121763387 _br-761515502 _w-120696903 rcx-check-box__fake"
                 />
               </label>
             </div>
@@ -224,16 +224,16 @@ exports[`[CheckBox Rendering] renders States without crashing 1`] = `
               class="rcx-box rcx-box--full rcx-css-7rd89h"
             >
               <label
-                class="rcx-box rcx-box--full rcx-check-box is-hovered"
+                class="is_Text _b-1639159466 _os-249893454 _ff-409630021 _fvn-1977619713 _ws-311910413 _ww-408434756 rcx-check-box is-hovered"
               >
                 <input
                   aria-label="Decorator Label"
-                  class="rcx-box rcx-box--full rcx-check-box__input"
+                  class="is_View _b-1639159466 _os-249893454 _ff-409630021 _fvn-1977619713 _p-1261267467 _o-1119039191 _c-588872556 _cp-2129451690 _w-226739898 _h-1922295961 _m-1890937723 _p-1943363302 _ws-973912173 _f-1246374076 rcx-check-box__input"
                   type="checkbox"
                 />
                 <i
                   aria-hidden="true"
-                  class="rcx-box rcx-box--full rcx-check-box__fake"
+                  class="is_View _b-1639160427 _os-249893454 _ff-409630021 _fvn-1977619713 _p-1021290656 _h-858548760 _f-1069814357 _mw-354604370 _mh-1241200853 _d-341075704 _jc-1099843255 _ai-121763387 _br-761515502 _w-120696903 rcx-check-box__fake"
                 />
               </label>
             </div>
@@ -254,17 +254,17 @@ exports[`[CheckBox Rendering] renders States without crashing 1`] = `
               class="rcx-box rcx-box--full rcx-css-7rd89h"
             >
               <label
-                class="rcx-box rcx-box--full rcx-check-box is-active"
+                class="is_Text _b-1639159466 _os-249893454 _ff-409630021 _fvn-1977619713 _ws-311910413 _ww-408434756 rcx-check-box is-active"
               >
                 <input
                   aria-label="Decorator Label"
                   checked=""
-                  class="rcx-box rcx-box--full rcx-check-box__input"
+                  class="is_View _b-1639159466 _os-249893454 _ff-409630021 _fvn-1977619713 _p-1261267467 _o-1119039191 _c-588872556 _cp-2129451690 _w-226739898 _h-1922295961 _m-1890937723 _p-1943363302 _ws-973912173 _f-1246374076 rcx-check-box__input"
                   type="checkbox"
                 />
                 <i
                   aria-hidden="true"
-                  class="rcx-box rcx-box--full rcx-check-box__fake"
+                  class="is_View _b-1639160427 _os-249893454 _ff-409630021 _fvn-1977619713 _p-1021290656 _h-858548760 _f-1069814357 _mw-354604370 _mh-1241200853 _d-341075704 _jc-1099843255 _ai-121763387 _br-761515502 _w-120696903 rcx-check-box__fake"
                 />
               </label>
             </div>
@@ -276,16 +276,16 @@ exports[`[CheckBox Rendering] renders States without crashing 1`] = `
               class="rcx-box rcx-box--full rcx-css-7rd89h"
             >
               <label
-                class="rcx-box rcx-box--full rcx-check-box is-active"
+                class="is_Text _b-1639159466 _os-249893454 _ff-409630021 _fvn-1977619713 _ws-311910413 _ww-408434756 rcx-check-box is-active"
               >
                 <input
                   aria-label="Decorator Label"
-                  class="rcx-box rcx-box--full rcx-check-box__input"
+                  class="is_View _b-1639159466 _os-249893454 _ff-409630021 _fvn-1977619713 _p-1261267467 _o-1119039191 _c-588872556 _cp-2129451690 _w-226739898 _h-1922295961 _m-1890937723 _p-1943363302 _ws-973912173 _f-1246374076 rcx-check-box__input"
                   type="checkbox"
                 />
                 <i
                   aria-hidden="true"
-                  class="rcx-box rcx-box--full rcx-check-box__fake"
+                  class="is_View _b-1639160427 _os-249893454 _ff-409630021 _fvn-1977619713 _p-1021290656 _h-858548760 _f-1069814357 _mw-354604370 _mh-1241200853 _d-341075704 _jc-1099843255 _ai-121763387 _br-761515502 _w-120696903 rcx-check-box__fake"
                 />
               </label>
             </div>
@@ -306,17 +306,17 @@ exports[`[CheckBox Rendering] renders States without crashing 1`] = `
               class="rcx-box rcx-box--full rcx-css-7rd89h"
             >
               <label
-                class="rcx-box rcx-box--full rcx-check-box is-focused"
+                class="is_Text _b-1639159466 _os-249893454 _ff-409630021 _fvn-1977619713 _ws-311910413 _ww-408434756 rcx-check-box is-focused"
               >
                 <input
                   aria-label="Decorator Label"
                   checked=""
-                  class="rcx-box rcx-box--full rcx-check-box__input"
+                  class="is_View _b-1639159466 _os-249893454 _ff-409630021 _fvn-1977619713 _p-1261267467 _o-1119039191 _c-588872556 _cp-2129451690 _w-226739898 _h-1922295961 _m-1890937723 _p-1943363302 _ws-973912173 _f-1246374076 rcx-check-box__input"
                   type="checkbox"
                 />
                 <i
                   aria-hidden="true"
-                  class="rcx-box rcx-box--full rcx-check-box__fake"
+                  class="is_View _b-1639160427 _os-249893454 _ff-409630021 _fvn-1977619713 _p-1021290656 _h-858548760 _f-1069814357 _mw-354604370 _mh-1241200853 _d-341075704 _jc-1099843255 _ai-121763387 _br-761515502 _w-120696903 rcx-check-box__fake"
                 />
               </label>
             </div>
@@ -328,16 +328,16 @@ exports[`[CheckBox Rendering] renders States without crashing 1`] = `
               class="rcx-box rcx-box--full rcx-css-7rd89h"
             >
               <label
-                class="rcx-box rcx-box--full rcx-check-box is-focused"
+                class="is_Text _b-1639159466 _os-249893454 _ff-409630021 _fvn-1977619713 _ws-311910413 _ww-408434756 rcx-check-box is-focused"
               >
                 <input
                   aria-label="Decorator Label"
-                  class="rcx-box rcx-box--full rcx-check-box__input"
+                  class="is_View _b-1639159466 _os-249893454 _ff-409630021 _fvn-1977619713 _p-1261267467 _o-1119039191 _c-588872556 _cp-2129451690 _w-226739898 _h-1922295961 _m-1890937723 _p-1943363302 _ws-973912173 _f-1246374076 rcx-check-box__input"
                   type="checkbox"
                 />
                 <i
                   aria-hidden="true"
-                  class="rcx-box rcx-box--full rcx-check-box__fake"
+                  class="is_View _b-1639160427 _os-249893454 _ff-409630021 _fvn-1977619713 _p-1021290656 _h-858548760 _f-1069814357 _mw-354604370 _mh-1241200853 _d-341075704 _jc-1099843255 _ai-121763387 _br-761515502 _w-120696903 rcx-check-box__fake"
                 />
               </label>
             </div>
@@ -358,18 +358,18 @@ exports[`[CheckBox Rendering] renders States without crashing 1`] = `
               class="rcx-box rcx-box--full rcx-css-7rd89h"
             >
               <label
-                class="rcx-box rcx-box--full rcx-check-box"
+                class="is_Text _b-1639159466 _os-249893454 _ff-409630021 _fvn-1977619713 _ws-311910413 _ww-408434756 rcx-check-box"
               >
                 <input
                   aria-label="Decorator Label"
                   checked=""
-                  class="rcx-box rcx-box--full rcx-check-box__input"
+                  class="is_View _b-1639159466 _os-249893454 _ff-409630021 _fvn-1977619713 _p-1261267467 _o-1119039191 _c-588872556 _cp-2129451690 _w-226739898 _h-1922295961 _m-1890937723 _p-1943363302 _ws-973912173 _f-1246374076 rcx-check-box__input"
                   disabled=""
                   type="checkbox"
                 />
                 <i
                   aria-hidden="true"
-                  class="rcx-box rcx-box--full rcx-check-box__fake"
+                  class="is_View _b-1639160427 _os-249893454 _ff-409630021 _fvn-1977619713 _p-1021290656 _h-858548760 _f-1069814357 _mw-354604370 _mh-1241200853 _d-341075704 _jc-1099843255 _ai-121763387 _br-761515502 _w-120696903 rcx-check-box__fake"
                 />
               </label>
             </div>
@@ -381,17 +381,17 @@ exports[`[CheckBox Rendering] renders States without crashing 1`] = `
               class="rcx-box rcx-box--full rcx-css-7rd89h"
             >
               <label
-                class="rcx-box rcx-box--full rcx-check-box"
+                class="is_Text _b-1639159466 _os-249893454 _ff-409630021 _fvn-1977619713 _ws-311910413 _ww-408434756 rcx-check-box"
               >
                 <input
                   aria-label="Decorator Label"
-                  class="rcx-box rcx-box--full rcx-check-box__input"
+                  class="is_View _b-1639159466 _os-249893454 _ff-409630021 _fvn-1977619713 _p-1261267467 _o-1119039191 _c-588872556 _cp-2129451690 _w-226739898 _h-1922295961 _m-1890937723 _p-1943363302 _ws-973912173 _f-1246374076 rcx-check-box__input"
                   disabled=""
                   type="checkbox"
                 />
                 <i
                   aria-hidden="true"
-                  class="rcx-box rcx-box--full rcx-check-box__fake"
+                  class="is_View _b-1639160427 _os-249893454 _ff-409630021 _fvn-1977619713 _p-1021290656 _h-858548760 _f-1069814357 _mw-354604370 _mh-1241200853 _d-341075704 _jc-1099843255 _ai-121763387 _br-761515502 _w-120696903 rcx-check-box__fake"
                 />
               </label>
             </div>
