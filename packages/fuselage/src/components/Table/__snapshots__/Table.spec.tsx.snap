@@ -4,103 +4,103 @@ exports[`[Table Rendering] renders Default without crashing 1`] = `
 <body>
   <div>
     <div
-      class="rcx-box rcx-box--full rcx-table__wrapper"
+      class="is_View _f-1246374076 _mw-354604370 _mh-1241200853 _os-249893454 _ff-409630021 _fvn-1977619713 _m-2017216831 _p-1943363302 _b-650654186 _d-1987097250 _p-1021290656 rcx-table__wrapper"
     >
       <table
-        class="rcx-box rcx-box--full rcx-table"
+        class="is_View _f-1246374076 _mw-354604370 _mh-1241200853 _os-249893454 _ff-409630021 _fvn-1977619713 _m-2017216831 _p-1943363302 _b-570203997 _d-1970813793 _w-1560934055 rcx-table"
       >
         <thead
-          class="rcx-box rcx-box--full rcx-table__head"
+          class="is_View _f-1246374076 _mw-354604370 _mh-1241200853 _os-249893454 _ff-409630021 _fvn-1977619713 _m-2017216831 _p-1943363302 _b-650654186 _d-1123821997 rcx-table__head"
         >
           <tr
-            class="rcx-box rcx-box--full rcx-table__row"
+            class="is_View _f-1246374076 _mw-354604370 _mh-1241200853 _os-249893454 _ff-409630021 _fvn-1977619713 _m-2017216831 _p-1943363302 _b-650654186 _d-1042510932 rcx-table__row"
           >
             <th
-              class="rcx-box rcx-box--full rcx-table__cell--header rcx-table__cell"
+              class="is_Text _f-1246374076 _mw-354604370 _mh-1241200853 _os-249893454 _ff-409630021 _fvn-1977619713 _m-2017216831 _p-1360184609 _b-650654186 _d-2041442768 _ws-311910413 _ww-408434756 _us-601042561 _ta-509596644 _va-1124586065 _c-1756781803 _p-1217804161 _fs-281033604 _fw-290091622 _lh-1335373134 _ls-1811444947 rcx-table__cell--header rcx-table__cell"
             >
               Dessert (100g serving)
             </th>
             <th
-              class="rcx-box rcx-box--full rcx-table__cell--header rcx-table__cell--align-end rcx-table__cell"
+              class="is_Text _f-1246374076 _mw-354604370 _mh-1241200853 _os-249893454 _ff-409630021 _fvn-1977619713 _m-2017216831 _p-1360184609 _b-650654186 _d-2041442768 _ws-311910413 _ww-408434756 _us-601042561 _va-1124586065 _c-1756781803 _p-1217804161 _fs-281033604 _fw-290091622 _lh-1335373134 _ls-1811444947 _ta-1051716567 rcx-table__cell--header rcx-table__cell--align-end rcx-table__cell"
             >
               Calories
             </th>
             <th
-              class="rcx-box rcx-box--full rcx-table__cell--header rcx-table__cell--align-end rcx-table__cell"
+              class="is_Text _f-1246374076 _mw-354604370 _mh-1241200853 _os-249893454 _ff-409630021 _fvn-1977619713 _m-2017216831 _p-1360184609 _b-650654186 _d-2041442768 _ws-311910413 _ww-408434756 _us-601042561 _va-1124586065 _c-1756781803 _p-1217804161 _fs-281033604 _fw-290091622 _lh-1335373134 _ls-1811444947 _ta-1051716567 rcx-table__cell--header rcx-table__cell--align-end rcx-table__cell"
             >
               Fat (g)
             </th>
             <th
-              class="rcx-box rcx-box--full rcx-table__cell--header rcx-table__cell--align-end rcx-table__cell"
+              class="is_Text _f-1246374076 _mw-354604370 _mh-1241200853 _os-249893454 _ff-409630021 _fvn-1977619713 _m-2017216831 _p-1360184609 _b-650654186 _d-2041442768 _ws-311910413 _ww-408434756 _us-601042561 _va-1124586065 _c-1756781803 _p-1217804161 _fs-281033604 _fw-290091622 _lh-1335373134 _ls-1811444947 _ta-1051716567 rcx-table__cell--header rcx-table__cell--align-end rcx-table__cell"
             >
               Carbs (g)
             </th>
             <th
-              class="rcx-box rcx-box--full rcx-table__cell--header rcx-table__cell--align-end rcx-table__cell"
+              class="is_Text _f-1246374076 _mw-354604370 _mh-1241200853 _os-249893454 _ff-409630021 _fvn-1977619713 _m-2017216831 _p-1360184609 _b-650654186 _d-2041442768 _ws-311910413 _ww-408434756 _us-601042561 _va-1124586065 _c-1756781803 _p-1217804161 _fs-281033604 _fw-290091622 _lh-1335373134 _ls-1811444947 _ta-1051716567 rcx-table__cell--header rcx-table__cell--align-end rcx-table__cell"
             >
               Protein (g)
             </th>
           </tr>
         </thead>
         <tbody
-          class="rcx-box rcx-box--full rcx-table__body"
+          class="is_View _f-1246374076 _mw-354604370 _mh-1241200853 _os-249893454 _ff-409630021 _fvn-1977619713 _m-2017216831 _p-1943363302 _b-650654186 _d-865917666 rcx-table__body"
         >
           <tr
-            class="rcx-box rcx-box--full rcx-table__row--action rcx-table__row"
+            class="is_View _f-1246374076 _mw-354604370 _mh-1241200853 _os-249893454 _ff-409630021 _fvn-1977619713 _m-2017216831 _p-1943363302 _b-650654186 _d-1042510932 rcx-table__row--action rcx-table__row"
           >
             <th
-              class="rcx-box rcx-box--full rcx-table__cell"
+              class="is_Text _f-1246374076 _mw-354604370 _mh-1241200853 _os-249893454 _ff-409630021 _fvn-1977619713 _m-2017216831 _p-1360184609 _b-650654186 _d-2041442768 _ws-311910413 _ww-408434756 _us-601042561 _ta-509596644 _va-1124586065 _c-1756781803 _fs-347291933 _fw-289165218 _lh-1925956564 _ls-1782815796 rcx-table__cell"
               scope="row"
             >
               Frozen yoghurt
             </th>
             <td
-              class="rcx-box rcx-box--full rcx-table__cell--align-end rcx-table__cell"
+              class="is_Text _f-1246374076 _mw-354604370 _mh-1241200853 _os-249893454 _ff-409630021 _fvn-1977619713 _m-2017216831 _p-1360184609 _b-650654186 _d-2041442768 _ws-311910413 _ww-408434756 _us-601042561 _va-1124586065 _c-1756781803 _fs-347291933 _fw-289165218 _lh-1925956564 _ls-1782815796 _ta-1051716567 rcx-table__cell--align-end rcx-table__cell"
             >
               159
             </td>
             <td
-              class="rcx-box rcx-box--full rcx-table__cell--align-end rcx-table__cell"
+              class="is_Text _f-1246374076 _mw-354604370 _mh-1241200853 _os-249893454 _ff-409630021 _fvn-1977619713 _m-2017216831 _p-1360184609 _b-650654186 _d-2041442768 _ws-311910413 _ww-408434756 _us-601042561 _va-1124586065 _c-1756781803 _fs-347291933 _fw-289165218 _lh-1925956564 _ls-1782815796 _ta-1051716567 rcx-table__cell--align-end rcx-table__cell"
             >
               6
             </td>
             <td
-              class="rcx-box rcx-box--full rcx-table__cell--align-end rcx-table__cell"
+              class="is_Text _f-1246374076 _mw-354604370 _mh-1241200853 _os-249893454 _ff-409630021 _fvn-1977619713 _m-2017216831 _p-1360184609 _b-650654186 _d-2041442768 _ws-311910413 _ww-408434756 _us-601042561 _va-1124586065 _c-1756781803 _fs-347291933 _fw-289165218 _lh-1925956564 _ls-1782815796 _ta-1051716567 rcx-table__cell--align-end rcx-table__cell"
             >
               24
             </td>
             <td
-              class="rcx-box rcx-box--full rcx-table__cell--align-end rcx-table__cell"
+              class="is_Text _f-1246374076 _mw-354604370 _mh-1241200853 _os-249893454 _ff-409630021 _fvn-1977619713 _m-2017216831 _p-1360184609 _b-650654186 _d-2041442768 _ws-311910413 _ww-408434756 _us-601042561 _va-1124586065 _c-1756781803 _fs-347291933 _fw-289165218 _lh-1925956564 _ls-1782815796 _ta-1051716567 rcx-table__cell--align-end rcx-table__cell"
             >
               4
             </td>
           </tr>
           <tr
-            class="rcx-box rcx-box--full rcx-table__row"
+            class="is_View _f-1246374076 _mw-354604370 _mh-1241200853 _os-249893454 _ff-409630021 _fvn-1977619713 _m-2017216831 _p-1943363302 _b-650654186 _d-1042510932 rcx-table__row"
           >
             <th
-              class="rcx-box rcx-box--full rcx-table__cell"
+              class="is_Text _f-1246374076 _mw-354604370 _mh-1241200853 _os-249893454 _ff-409630021 _fvn-1977619713 _m-2017216831 _p-1360184609 _b-650654186 _d-2041442768 _ws-311910413 _ww-408434756 _us-601042561 _ta-509596644 _va-1124586065 _c-1756781803 _fs-347291933 _fw-289165218 _lh-1925956564 _ls-1782815796 rcx-table__cell"
               scope="row"
             >
               Ice cream sandwich
             </th>
             <td
-              class="rcx-box rcx-box--full rcx-table__cell--align-end rcx-table__cell"
+              class="is_Text _f-1246374076 _mw-354604370 _mh-1241200853 _os-249893454 _ff-409630021 _fvn-1977619713 _m-2017216831 _p-1360184609 _b-650654186 _d-2041442768 _ws-311910413 _ww-408434756 _us-601042561 _va-1124586065 _c-1756781803 _fs-347291933 _fw-289165218 _lh-1925956564 _ls-1782815796 _ta-1051716567 rcx-table__cell--align-end rcx-table__cell"
             >
               237
             </td>
             <td
-              class="rcx-box rcx-box--full rcx-table__cell--align-end rcx-table__cell"
+              class="is_Text _f-1246374076 _mw-354604370 _mh-1241200853 _os-249893454 _ff-409630021 _fvn-1977619713 _m-2017216831 _p-1360184609 _b-650654186 _d-2041442768 _ws-311910413 _ww-408434756 _us-601042561 _va-1124586065 _c-1756781803 _fs-347291933 _fw-289165218 _lh-1925956564 _ls-1782815796 _ta-1051716567 rcx-table__cell--align-end rcx-table__cell"
             >
               9
             </td>
             <td
-              class="rcx-box rcx-box--full rcx-table__cell--align-end rcx-table__cell"
+              class="is_Text _f-1246374076 _mw-354604370 _mh-1241200853 _os-249893454 _ff-409630021 _fvn-1977619713 _m-2017216831 _p-1360184609 _b-650654186 _d-2041442768 _ws-311910413 _ww-408434756 _us-601042561 _va-1124586065 _c-1756781803 _fs-347291933 _fw-289165218 _lh-1925956564 _ls-1782815796 _ta-1051716567 rcx-table__cell--align-end rcx-table__cell"
             >
               37
             </td>
             <td
-              class="rcx-box rcx-box--full rcx-table__cell--align-end rcx-table__cell"
+              class="is_Text _f-1246374076 _mw-354604370 _mh-1241200853 _os-249893454 _ff-409630021 _fvn-1977619713 _m-2017216831 _p-1360184609 _b-650654186 _d-2041442768 _ws-311910413 _ww-408434756 _us-601042561 _va-1124586065 _c-1756781803 _fs-347291933 _fw-289165218 _lh-1925956564 _ls-1782815796 _ta-1051716567 rcx-table__cell--align-end rcx-table__cell"
             >
               4.3
             </td>
@@ -116,103 +116,103 @@ exports[`[Table Rendering] renders Fixed without crashing 1`] = `
 <body>
   <div>
     <div
-      class="rcx-box rcx-box--full rcx-table__wrapper"
+      class="is_View _f-1246374076 _mw-354604370 _mh-1241200853 _os-249893454 _ff-409630021 _fvn-1977619713 _m-2017216831 _p-1943363302 _b-650654186 _d-1987097250 _p-1021290656 rcx-table__wrapper"
     >
       <table
-        class="rcx-box rcx-box--full rcx-table--fixed rcx-table"
+        class="is_View _f-1246374076 _mw-354604370 _mh-1241200853 _os-249893454 _ff-409630021 _fvn-1977619713 _m-2017216831 _p-1943363302 _b-570203997 _d-1970813793 _w-1560934055 _tl-750486288 rcx-table--fixed rcx-table"
       >
         <thead
-          class="rcx-box rcx-box--full rcx-table__head"
+          class="is_View _f-1246374076 _mw-354604370 _mh-1241200853 _os-249893454 _ff-409630021 _fvn-1977619713 _m-2017216831 _p-1943363302 _b-650654186 _d-1123821997 rcx-table__head"
         >
           <tr
-            class="rcx-box rcx-box--full rcx-table__row"
+            class="is_View _f-1246374076 _mw-354604370 _mh-1241200853 _os-249893454 _ff-409630021 _fvn-1977619713 _m-2017216831 _p-1943363302 _b-650654186 _d-1042510932 rcx-table__row"
           >
             <th
-              class="rcx-box rcx-box--full rcx-table__cell--header rcx-table__cell"
+              class="is_Text _f-1246374076 _mw-354604370 _mh-1241200853 _os-249893454 _ff-409630021 _fvn-1977619713 _m-2017216831 _p-1360184609 _b-650654186 _d-2041442768 _ws-311910413 _ww-408434756 _us-601042561 _ta-509596644 _va-1124586065 _c-1756781803 _p-1217804161 _fs-281033604 _fw-290091622 _lh-1335373134 _ls-1811444947 rcx-table__cell--header rcx-table__cell"
             >
               Dessert (100g serving)
             </th>
             <th
-              class="rcx-box rcx-box--full rcx-table__cell--header rcx-table__cell--align-end rcx-table__cell"
+              class="is_Text _f-1246374076 _mw-354604370 _mh-1241200853 _os-249893454 _ff-409630021 _fvn-1977619713 _m-2017216831 _p-1360184609 _b-650654186 _d-2041442768 _ws-311910413 _ww-408434756 _us-601042561 _va-1124586065 _c-1756781803 _p-1217804161 _fs-281033604 _fw-290091622 _lh-1335373134 _ls-1811444947 _ta-1051716567 rcx-table__cell--header rcx-table__cell--align-end rcx-table__cell"
             >
               Calories
             </th>
             <th
-              class="rcx-box rcx-box--full rcx-table__cell--header rcx-table__cell--align-end rcx-table__cell"
+              class="is_Text _f-1246374076 _mw-354604370 _mh-1241200853 _os-249893454 _ff-409630021 _fvn-1977619713 _m-2017216831 _p-1360184609 _b-650654186 _d-2041442768 _ws-311910413 _ww-408434756 _us-601042561 _va-1124586065 _c-1756781803 _p-1217804161 _fs-281033604 _fw-290091622 _lh-1335373134 _ls-1811444947 _ta-1051716567 rcx-table__cell--header rcx-table__cell--align-end rcx-table__cell"
             >
               Fat (g)
             </th>
             <th
-              class="rcx-box rcx-box--full rcx-table__cell--header rcx-table__cell--align-end rcx-table__cell"
+              class="is_Text _f-1246374076 _mw-354604370 _mh-1241200853 _os-249893454 _ff-409630021 _fvn-1977619713 _m-2017216831 _p-1360184609 _b-650654186 _d-2041442768 _ws-311910413 _ww-408434756 _us-601042561 _va-1124586065 _c-1756781803 _p-1217804161 _fs-281033604 _fw-290091622 _lh-1335373134 _ls-1811444947 _ta-1051716567 rcx-table__cell--header rcx-table__cell--align-end rcx-table__cell"
             >
               Carbs (g)
             </th>
             <th
-              class="rcx-box rcx-box--full rcx-table__cell--header rcx-table__cell--align-end rcx-table__cell"
+              class="is_Text _f-1246374076 _mw-354604370 _mh-1241200853 _os-249893454 _ff-409630021 _fvn-1977619713 _m-2017216831 _p-1360184609 _b-650654186 _d-2041442768 _ws-311910413 _ww-408434756 _us-601042561 _va-1124586065 _c-1756781803 _p-1217804161 _fs-281033604 _fw-290091622 _lh-1335373134 _ls-1811444947 _ta-1051716567 rcx-table__cell--header rcx-table__cell--align-end rcx-table__cell"
             >
               Protein (g)
             </th>
           </tr>
         </thead>
         <tbody
-          class="rcx-box rcx-box--full rcx-table__body"
+          class="is_View _f-1246374076 _mw-354604370 _mh-1241200853 _os-249893454 _ff-409630021 _fvn-1977619713 _m-2017216831 _p-1943363302 _b-650654186 _d-865917666 rcx-table__body"
         >
           <tr
-            class="rcx-box rcx-box--full rcx-table__row"
+            class="is_View _f-1246374076 _mw-354604370 _mh-1241200853 _os-249893454 _ff-409630021 _fvn-1977619713 _m-2017216831 _p-1943363302 _b-650654186 _d-1042510932 rcx-table__row"
           >
             <th
-              class="rcx-box rcx-box--full rcx-table__cell"
+              class="is_Text _f-1246374076 _mw-354604370 _mh-1241200853 _os-249893454 _ff-409630021 _fvn-1977619713 _m-2017216831 _p-1360184609 _b-650654186 _d-2041442768 _ws-311910413 _ww-408434756 _us-601042561 _ta-509596644 _va-1124586065 _c-1756781803 _fs-347291933 _fw-289165218 _lh-1925956564 _ls-1782815796 rcx-table__cell"
               scope="row"
             >
               Frozen yoghurt
             </th>
             <td
-              class="rcx-box rcx-box--full rcx-table__cell--align-end rcx-table__cell"
+              class="is_Text _f-1246374076 _mw-354604370 _mh-1241200853 _os-249893454 _ff-409630021 _fvn-1977619713 _m-2017216831 _p-1360184609 _b-650654186 _d-2041442768 _ws-311910413 _ww-408434756 _us-601042561 _va-1124586065 _c-1756781803 _fs-347291933 _fw-289165218 _lh-1925956564 _ls-1782815796 _ta-1051716567 rcx-table__cell--align-end rcx-table__cell"
             >
               159
             </td>
             <td
-              class="rcx-box rcx-box--full rcx-table__cell--align-end rcx-table__cell"
+              class="is_Text _f-1246374076 _mw-354604370 _mh-1241200853 _os-249893454 _ff-409630021 _fvn-1977619713 _m-2017216831 _p-1360184609 _b-650654186 _d-2041442768 _ws-311910413 _ww-408434756 _us-601042561 _va-1124586065 _c-1756781803 _fs-347291933 _fw-289165218 _lh-1925956564 _ls-1782815796 _ta-1051716567 rcx-table__cell--align-end rcx-table__cell"
             >
               6
             </td>
             <td
-              class="rcx-box rcx-box--full rcx-table__cell--align-end rcx-table__cell"
+              class="is_Text _f-1246374076 _mw-354604370 _mh-1241200853 _os-249893454 _ff-409630021 _fvn-1977619713 _m-2017216831 _p-1360184609 _b-650654186 _d-2041442768 _ws-311910413 _ww-408434756 _us-601042561 _va-1124586065 _c-1756781803 _fs-347291933 _fw-289165218 _lh-1925956564 _ls-1782815796 _ta-1051716567 rcx-table__cell--align-end rcx-table__cell"
             >
               24
             </td>
             <td
-              class="rcx-box rcx-box--full rcx-table__cell--align-end rcx-table__cell"
+              class="is_Text _f-1246374076 _mw-354604370 _mh-1241200853 _os-249893454 _ff-409630021 _fvn-1977619713 _m-2017216831 _p-1360184609 _b-650654186 _d-2041442768 _ws-311910413 _ww-408434756 _us-601042561 _va-1124586065 _c-1756781803 _fs-347291933 _fw-289165218 _lh-1925956564 _ls-1782815796 _ta-1051716567 rcx-table__cell--align-end rcx-table__cell"
             >
               4
             </td>
           </tr>
           <tr
-            class="rcx-box rcx-box--full rcx-table__row"
+            class="is_View _f-1246374076 _mw-354604370 _mh-1241200853 _os-249893454 _ff-409630021 _fvn-1977619713 _m-2017216831 _p-1943363302 _b-650654186 _d-1042510932 rcx-table__row"
           >
             <th
-              class="rcx-box rcx-box--full rcx-table__cell"
+              class="is_Text _f-1246374076 _mw-354604370 _mh-1241200853 _os-249893454 _ff-409630021 _fvn-1977619713 _m-2017216831 _p-1360184609 _b-650654186 _d-2041442768 _ws-311910413 _ww-408434756 _us-601042561 _ta-509596644 _va-1124586065 _c-1756781803 _fs-347291933 _fw-289165218 _lh-1925956564 _ls-1782815796 rcx-table__cell"
               scope="row"
             >
               Ice cream sandwich
             </th>
             <td
-              class="rcx-box rcx-box--full rcx-table__cell--align-end rcx-table__cell"
+              class="is_Text _f-1246374076 _mw-354604370 _mh-1241200853 _os-249893454 _ff-409630021 _fvn-1977619713 _m-2017216831 _p-1360184609 _b-650654186 _d-2041442768 _ws-311910413 _ww-408434756 _us-601042561 _va-1124586065 _c-1756781803 _fs-347291933 _fw-289165218 _lh-1925956564 _ls-1782815796 _ta-1051716567 rcx-table__cell--align-end rcx-table__cell"
             >
               237
             </td>
             <td
-              class="rcx-box rcx-box--full rcx-table__cell--align-end rcx-table__cell"
+              class="is_Text _f-1246374076 _mw-354604370 _mh-1241200853 _os-249893454 _ff-409630021 _fvn-1977619713 _m-2017216831 _p-1360184609 _b-650654186 _d-2041442768 _ws-311910413 _ww-408434756 _us-601042561 _va-1124586065 _c-1756781803 _fs-347291933 _fw-289165218 _lh-1925956564 _ls-1782815796 _ta-1051716567 rcx-table__cell--align-end rcx-table__cell"
             >
               9
             </td>
             <td
-              class="rcx-box rcx-box--full rcx-table__cell--align-end rcx-table__cell"
+              class="is_Text _f-1246374076 _mw-354604370 _mh-1241200853 _os-249893454 _ff-409630021 _fvn-1977619713 _m-2017216831 _p-1360184609 _b-650654186 _d-2041442768 _ws-311910413 _ww-408434756 _us-601042561 _va-1124586065 _c-1756781803 _fs-347291933 _fw-289165218 _lh-1925956564 _ls-1782815796 _ta-1051716567 rcx-table__cell--align-end rcx-table__cell"
             >
               37
             </td>
             <td
-              class="rcx-box rcx-box--full rcx-table__cell--align-end rcx-table__cell"
+              class="is_Text _f-1246374076 _mw-354604370 _mh-1241200853 _os-249893454 _ff-409630021 _fvn-1977619713 _m-2017216831 _p-1360184609 _b-650654186 _d-2041442768 _ws-311910413 _ww-408434756 _us-601042561 _va-1124586065 _c-1756781803 _fs-347291933 _fw-289165218 _lh-1925956564 _ls-1782815796 _ta-1051716567 rcx-table__cell--align-end rcx-table__cell"
             >
               4.3
             </td>
@@ -228,193 +228,193 @@ exports[`[Table Rendering] renders Striped without crashing 1`] = `
 <body>
   <div>
     <div
-      class="rcx-box rcx-box--full rcx-table__wrapper"
+      class="is_View _f-1246374076 _mw-354604370 _mh-1241200853 _os-249893454 _ff-409630021 _fvn-1977619713 _m-2017216831 _p-1943363302 _b-650654186 _d-1987097250 _p-1021290656 rcx-table__wrapper"
     >
       <table
-        class="rcx-box rcx-box--full rcx-table--striped rcx-table--sticky rcx-table--fixed rcx-table"
+        class="is_View _f-1246374076 _mw-354604370 _mh-1241200853 _os-249893454 _ff-409630021 _fvn-1977619713 _m-2017216831 _p-1943363302 _b-570203997 _d-1970813793 _w-1560934055 _tl-750486288 rcx-table--striped rcx-table--sticky rcx-table--fixed rcx-table"
       >
         <thead
-          class="rcx-box rcx-box--full rcx-table__head"
+          class="is_View _f-1246374076 _mw-354604370 _mh-1241200853 _os-249893454 _ff-409630021 _fvn-1977619713 _m-2017216831 _p-1943363302 _b-650654186 _d-1123821997 rcx-table__head"
         >
           <tr
-            class="rcx-box rcx-box--full rcx-table__row"
+            class="is_View _f-1246374076 _mw-354604370 _mh-1241200853 _os-249893454 _ff-409630021 _fvn-1977619713 _m-2017216831 _p-1943363302 _b-650654186 _d-1042510932 rcx-table__row"
           >
             <th
-              class="rcx-box rcx-box--full rcx-table__cell--header rcx-table__cell"
+              class="is_Text _f-1246374076 _mw-354604370 _mh-1241200853 _os-249893454 _ff-409630021 _fvn-1977619713 _m-2017216831 _p-1360184609 _b-650654186 _d-2041442768 _ws-311910413 _ww-408434756 _us-601042561 _ta-509596644 _va-1124586065 _c-1756781803 _p-1217804161 _fs-281033604 _fw-290091622 _lh-1335373134 _ls-1811444947 rcx-table__cell--header rcx-table__cell"
             >
               Dessert (100g serving)
             </th>
             <th
-              class="rcx-box rcx-box--full rcx-table__cell--header rcx-table__cell--align-end rcx-table__cell"
+              class="is_Text _f-1246374076 _mw-354604370 _mh-1241200853 _os-249893454 _ff-409630021 _fvn-1977619713 _m-2017216831 _p-1360184609 _b-650654186 _d-2041442768 _ws-311910413 _ww-408434756 _us-601042561 _va-1124586065 _c-1756781803 _p-1217804161 _fs-281033604 _fw-290091622 _lh-1335373134 _ls-1811444947 _ta-1051716567 rcx-table__cell--header rcx-table__cell--align-end rcx-table__cell"
             >
               Calories
             </th>
             <th
-              class="rcx-box rcx-box--full rcx-table__cell--header rcx-table__cell--align-end rcx-table__cell"
+              class="is_Text _f-1246374076 _mw-354604370 _mh-1241200853 _os-249893454 _ff-409630021 _fvn-1977619713 _m-2017216831 _p-1360184609 _b-650654186 _d-2041442768 _ws-311910413 _ww-408434756 _us-601042561 _va-1124586065 _c-1756781803 _p-1217804161 _fs-281033604 _fw-290091622 _lh-1335373134 _ls-1811444947 _ta-1051716567 rcx-table__cell--header rcx-table__cell--align-end rcx-table__cell"
             >
               Fat (g)
             </th>
             <th
-              class="rcx-box rcx-box--full rcx-table__cell--header rcx-table__cell--align-end rcx-table__cell"
+              class="is_Text _f-1246374076 _mw-354604370 _mh-1241200853 _os-249893454 _ff-409630021 _fvn-1977619713 _m-2017216831 _p-1360184609 _b-650654186 _d-2041442768 _ws-311910413 _ww-408434756 _us-601042561 _va-1124586065 _c-1756781803 _p-1217804161 _fs-281033604 _fw-290091622 _lh-1335373134 _ls-1811444947 _ta-1051716567 rcx-table__cell--header rcx-table__cell--align-end rcx-table__cell"
             >
               Carbs (g)
             </th>
             <th
-              class="rcx-box rcx-box--full rcx-table__cell--header rcx-table__cell--align-end rcx-table__cell"
+              class="is_Text _f-1246374076 _mw-354604370 _mh-1241200853 _os-249893454 _ff-409630021 _fvn-1977619713 _m-2017216831 _p-1360184609 _b-650654186 _d-2041442768 _ws-311910413 _ww-408434756 _us-601042561 _va-1124586065 _c-1756781803 _p-1217804161 _fs-281033604 _fw-290091622 _lh-1335373134 _ls-1811444947 _ta-1051716567 rcx-table__cell--header rcx-table__cell--align-end rcx-table__cell"
             >
               Protein (g)
             </th>
           </tr>
         </thead>
         <tbody
-          class="rcx-box rcx-box--full rcx-table__body"
+          class="is_View _f-1246374076 _mw-354604370 _mh-1241200853 _os-249893454 _ff-409630021 _fvn-1977619713 _m-2017216831 _p-1943363302 _b-650654186 _d-865917666 rcx-table__body"
         >
           <tr
-            class="rcx-box rcx-box--full rcx-table__row"
+            class="is_View _f-1246374076 _mw-354604370 _mh-1241200853 _os-249893454 _ff-409630021 _fvn-1977619713 _m-2017216831 _p-1943363302 _b-650654186 _d-1042510932 rcx-table__row"
           >
             <th
-              class="rcx-box rcx-box--full rcx-table__cell"
+              class="is_Text _f-1246374076 _mw-354604370 _mh-1241200853 _os-249893454 _ff-409630021 _fvn-1977619713 _m-2017216831 _p-1360184609 _b-650654186 _d-2041442768 _ws-311910413 _ww-408434756 _us-601042561 _ta-509596644 _va-1124586065 _c-1756781803 _fs-347291933 _fw-289165218 _lh-1925956564 _ls-1782815796 rcx-table__cell"
               scope="row"
             >
               Frozen yoghurt
             </th>
             <td
-              class="rcx-box rcx-box--full rcx-table__cell--align-end rcx-table__cell"
+              class="is_Text _f-1246374076 _mw-354604370 _mh-1241200853 _os-249893454 _ff-409630021 _fvn-1977619713 _m-2017216831 _p-1360184609 _b-650654186 _d-2041442768 _ws-311910413 _ww-408434756 _us-601042561 _va-1124586065 _c-1756781803 _fs-347291933 _fw-289165218 _lh-1925956564 _ls-1782815796 _ta-1051716567 rcx-table__cell--align-end rcx-table__cell"
             >
               159
             </td>
             <td
-              class="rcx-box rcx-box--full rcx-table__cell--align-end rcx-table__cell"
+              class="is_Text _f-1246374076 _mw-354604370 _mh-1241200853 _os-249893454 _ff-409630021 _fvn-1977619713 _m-2017216831 _p-1360184609 _b-650654186 _d-2041442768 _ws-311910413 _ww-408434756 _us-601042561 _va-1124586065 _c-1756781803 _fs-347291933 _fw-289165218 _lh-1925956564 _ls-1782815796 _ta-1051716567 rcx-table__cell--align-end rcx-table__cell"
             >
               6
             </td>
             <td
-              class="rcx-box rcx-box--full rcx-table__cell--align-end rcx-table__cell"
+              class="is_Text _f-1246374076 _mw-354604370 _mh-1241200853 _os-249893454 _ff-409630021 _fvn-1977619713 _m-2017216831 _p-1360184609 _b-650654186 _d-2041442768 _ws-311910413 _ww-408434756 _us-601042561 _va-1124586065 _c-1756781803 _fs-347291933 _fw-289165218 _lh-1925956564 _ls-1782815796 _ta-1051716567 rcx-table__cell--align-end rcx-table__cell"
             >
               24
             </td>
             <td
-              class="rcx-box rcx-box--full rcx-table__cell--align-end rcx-table__cell"
+              class="is_Text _f-1246374076 _mw-354604370 _mh-1241200853 _os-249893454 _ff-409630021 _fvn-1977619713 _m-2017216831 _p-1360184609 _b-650654186 _d-2041442768 _ws-311910413 _ww-408434756 _us-601042561 _va-1124586065 _c-1756781803 _fs-347291933 _fw-289165218 _lh-1925956564 _ls-1782815796 _ta-1051716567 rcx-table__cell--align-end rcx-table__cell"
             >
               4
             </td>
           </tr>
           <tr
-            class="rcx-box rcx-box--full rcx-table__row"
+            class="is_View _f-1246374076 _mw-354604370 _mh-1241200853 _os-249893454 _ff-409630021 _fvn-1977619713 _m-2017216831 _p-1943363302 _b-650654186 _d-1042510932 rcx-table__row"
           >
             <th
-              class="rcx-box rcx-box--full rcx-table__cell"
+              class="is_Text _f-1246374076 _mw-354604370 _mh-1241200853 _os-249893454 _ff-409630021 _fvn-1977619713 _m-2017216831 _p-1360184609 _b-650654186 _d-2041442768 _ws-311910413 _ww-408434756 _us-601042561 _ta-509596644 _va-1124586065 _c-1756781803 _fs-347291933 _fw-289165218 _lh-1925956564 _ls-1782815796 rcx-table__cell"
               scope="row"
             >
               Frozen yoghurt
             </th>
             <td
-              class="rcx-box rcx-box--full rcx-table__cell--align-end rcx-table__cell"
+              class="is_Text _f-1246374076 _mw-354604370 _mh-1241200853 _os-249893454 _ff-409630021 _fvn-1977619713 _m-2017216831 _p-1360184609 _b-650654186 _d-2041442768 _ws-311910413 _ww-408434756 _us-601042561 _va-1124586065 _c-1756781803 _fs-347291933 _fw-289165218 _lh-1925956564 _ls-1782815796 _ta-1051716567 rcx-table__cell--align-end rcx-table__cell"
             >
               159
             </td>
             <td
-              class="rcx-box rcx-box--full rcx-table__cell--align-end rcx-table__cell"
+              class="is_Text _f-1246374076 _mw-354604370 _mh-1241200853 _os-249893454 _ff-409630021 _fvn-1977619713 _m-2017216831 _p-1360184609 _b-650654186 _d-2041442768 _ws-311910413 _ww-408434756 _us-601042561 _va-1124586065 _c-1756781803 _fs-347291933 _fw-289165218 _lh-1925956564 _ls-1782815796 _ta-1051716567 rcx-table__cell--align-end rcx-table__cell"
             >
               6
             </td>
             <td
-              class="rcx-box rcx-box--full rcx-table__cell--align-end rcx-table__cell"
+              class="is_Text _f-1246374076 _mw-354604370 _mh-1241200853 _os-249893454 _ff-409630021 _fvn-1977619713 _m-2017216831 _p-1360184609 _b-650654186 _d-2041442768 _ws-311910413 _ww-408434756 _us-601042561 _va-1124586065 _c-1756781803 _fs-347291933 _fw-289165218 _lh-1925956564 _ls-1782815796 _ta-1051716567 rcx-table__cell--align-end rcx-table__cell"
             >
               24
             </td>
             <td
-              class="rcx-box rcx-box--full rcx-table__cell--align-end rcx-table__cell"
+              class="is_Text _f-1246374076 _mw-354604370 _mh-1241200853 _os-249893454 _ff-409630021 _fvn-1977619713 _m-2017216831 _p-1360184609 _b-650654186 _d-2041442768 _ws-311910413 _ww-408434756 _us-601042561 _va-1124586065 _c-1756781803 _fs-347291933 _fw-289165218 _lh-1925956564 _ls-1782815796 _ta-1051716567 rcx-table__cell--align-end rcx-table__cell"
             >
               4
             </td>
           </tr>
           <tr
-            class="rcx-box rcx-box--full rcx-table__row"
+            class="is_View _f-1246374076 _mw-354604370 _mh-1241200853 _os-249893454 _ff-409630021 _fvn-1977619713 _m-2017216831 _p-1943363302 _b-650654186 _d-1042510932 rcx-table__row"
           >
             <th
-              class="rcx-box rcx-box--full rcx-table__cell"
+              class="is_Text _f-1246374076 _mw-354604370 _mh-1241200853 _os-249893454 _ff-409630021 _fvn-1977619713 _m-2017216831 _p-1360184609 _b-650654186 _d-2041442768 _ws-311910413 _ww-408434756 _us-601042561 _ta-509596644 _va-1124586065 _c-1756781803 _fs-347291933 _fw-289165218 _lh-1925956564 _ls-1782815796 rcx-table__cell"
               scope="row"
             >
               Frozen yoghurt
             </th>
             <td
-              class="rcx-box rcx-box--full rcx-table__cell--align-end rcx-table__cell"
+              class="is_Text _f-1246374076 _mw-354604370 _mh-1241200853 _os-249893454 _ff-409630021 _fvn-1977619713 _m-2017216831 _p-1360184609 _b-650654186 _d-2041442768 _ws-311910413 _ww-408434756 _us-601042561 _va-1124586065 _c-1756781803 _fs-347291933 _fw-289165218 _lh-1925956564 _ls-1782815796 _ta-1051716567 rcx-table__cell--align-end rcx-table__cell"
             >
               159
             </td>
             <td
-              class="rcx-box rcx-box--full rcx-table__cell--align-end rcx-table__cell"
+              class="is_Text _f-1246374076 _mw-354604370 _mh-1241200853 _os-249893454 _ff-409630021 _fvn-1977619713 _m-2017216831 _p-1360184609 _b-650654186 _d-2041442768 _ws-311910413 _ww-408434756 _us-601042561 _va-1124586065 _c-1756781803 _fs-347291933 _fw-289165218 _lh-1925956564 _ls-1782815796 _ta-1051716567 rcx-table__cell--align-end rcx-table__cell"
             >
               6
             </td>
             <td
-              class="rcx-box rcx-box--full rcx-table__cell--align-end rcx-table__cell"
+              class="is_Text _f-1246374076 _mw-354604370 _mh-1241200853 _os-249893454 _ff-409630021 _fvn-1977619713 _m-2017216831 _p-1360184609 _b-650654186 _d-2041442768 _ws-311910413 _ww-408434756 _us-601042561 _va-1124586065 _c-1756781803 _fs-347291933 _fw-289165218 _lh-1925956564 _ls-1782815796 _ta-1051716567 rcx-table__cell--align-end rcx-table__cell"
             >
               24
             </td>
             <td
-              class="rcx-box rcx-box--full rcx-table__cell--align-end rcx-table__cell"
+              class="is_Text _f-1246374076 _mw-354604370 _mh-1241200853 _os-249893454 _ff-409630021 _fvn-1977619713 _m-2017216831 _p-1360184609 _b-650654186 _d-2041442768 _ws-311910413 _ww-408434756 _us-601042561 _va-1124586065 _c-1756781803 _fs-347291933 _fw-289165218 _lh-1925956564 _ls-1782815796 _ta-1051716567 rcx-table__cell--align-end rcx-table__cell"
             >
               4
             </td>
           </tr>
           <tr
-            class="rcx-box rcx-box--full rcx-table__row"
+            class="is_View _f-1246374076 _mw-354604370 _mh-1241200853 _os-249893454 _ff-409630021 _fvn-1977619713 _m-2017216831 _p-1943363302 _b-650654186 _d-1042510932 rcx-table__row"
           >
             <th
-              class="rcx-box rcx-box--full rcx-table__cell"
+              class="is_Text _f-1246374076 _mw-354604370 _mh-1241200853 _os-249893454 _ff-409630021 _fvn-1977619713 _m-2017216831 _p-1360184609 _b-650654186 _d-2041442768 _ws-311910413 _ww-408434756 _us-601042561 _ta-509596644 _va-1124586065 _c-1756781803 _fs-347291933 _fw-289165218 _lh-1925956564 _ls-1782815796 rcx-table__cell"
               scope="row"
             >
               Frozen yoghurt
             </th>
             <td
-              class="rcx-box rcx-box--full rcx-table__cell--align-end rcx-table__cell"
+              class="is_Text _f-1246374076 _mw-354604370 _mh-1241200853 _os-249893454 _ff-409630021 _fvn-1977619713 _m-2017216831 _p-1360184609 _b-650654186 _d-2041442768 _ws-311910413 _ww-408434756 _us-601042561 _va-1124586065 _c-1756781803 _fs-347291933 _fw-289165218 _lh-1925956564 _ls-1782815796 _ta-1051716567 rcx-table__cell--align-end rcx-table__cell"
             >
               159
             </td>
             <td
-              class="rcx-box rcx-box--full rcx-table__cell--align-end rcx-table__cell"
+              class="is_Text _f-1246374076 _mw-354604370 _mh-1241200853 _os-249893454 _ff-409630021 _fvn-1977619713 _m-2017216831 _p-1360184609 _b-650654186 _d-2041442768 _ws-311910413 _ww-408434756 _us-601042561 _va-1124586065 _c-1756781803 _fs-347291933 _fw-289165218 _lh-1925956564 _ls-1782815796 _ta-1051716567 rcx-table__cell--align-end rcx-table__cell"
             >
               6
             </td>
             <td
-              class="rcx-box rcx-box--full rcx-table__cell--align-end rcx-table__cell"
+              class="is_Text _f-1246374076 _mw-354604370 _mh-1241200853 _os-249893454 _ff-409630021 _fvn-1977619713 _m-2017216831 _p-1360184609 _b-650654186 _d-2041442768 _ws-311910413 _ww-408434756 _us-601042561 _va-1124586065 _c-1756781803 _fs-347291933 _fw-289165218 _lh-1925956564 _ls-1782815796 _ta-1051716567 rcx-table__cell--align-end rcx-table__cell"
             >
               24
             </td>
             <td
-              class="rcx-box rcx-box--full rcx-table__cell--align-end rcx-table__cell"
+              class="is_Text _f-1246374076 _mw-354604370 _mh-1241200853 _os-249893454 _ff-409630021 _fvn-1977619713 _m-2017216831 _p-1360184609 _b-650654186 _d-2041442768 _ws-311910413 _ww-408434756 _us-601042561 _va-1124586065 _c-1756781803 _fs-347291933 _fw-289165218 _lh-1925956564 _ls-1782815796 _ta-1051716567 rcx-table__cell--align-end rcx-table__cell"
             >
               4
             </td>
           </tr>
           <tr
-            class="rcx-box rcx-box--full rcx-table__row"
+            class="is_View _f-1246374076 _mw-354604370 _mh-1241200853 _os-249893454 _ff-409630021 _fvn-1977619713 _m-2017216831 _p-1943363302 _b-650654186 _d-1042510932 rcx-table__row"
           >
             <th
-              class="rcx-box rcx-box--full rcx-table__cell"
+              class="is_Text _f-1246374076 _mw-354604370 _mh-1241200853 _os-249893454 _ff-409630021 _fvn-1977619713 _m-2017216831 _p-1360184609 _b-650654186 _d-2041442768 _ws-311910413 _ww-408434756 _us-601042561 _ta-509596644 _va-1124586065 _c-1756781803 _fs-347291933 _fw-289165218 _lh-1925956564 _ls-1782815796 rcx-table__cell"
               scope="row"
             >
               Ice cream sandwich
             </th>
             <td
-              class="rcx-box rcx-box--full rcx-table__cell--align-end rcx-table__cell"
+              class="is_Text _f-1246374076 _mw-354604370 _mh-1241200853 _os-249893454 _ff-409630021 _fvn-1977619713 _m-2017216831 _p-1360184609 _b-650654186 _d-2041442768 _ws-311910413 _ww-408434756 _us-601042561 _va-1124586065 _c-1756781803 _fs-347291933 _fw-289165218 _lh-1925956564 _ls-1782815796 _ta-1051716567 rcx-table__cell--align-end rcx-table__cell"
             >
               237
             </td>
             <td
-              class="rcx-box rcx-box--full rcx-table__cell--align-end rcx-table__cell"
+              class="is_Text _f-1246374076 _mw-354604370 _mh-1241200853 _os-249893454 _ff-409630021 _fvn-1977619713 _m-2017216831 _p-1360184609 _b-650654186 _d-2041442768 _ws-311910413 _ww-408434756 _us-601042561 _va-1124586065 _c-1756781803 _fs-347291933 _fw-289165218 _lh-1925956564 _ls-1782815796 _ta-1051716567 rcx-table__cell--align-end rcx-table__cell"
             >
               9
             </td>
             <td
-              class="rcx-box rcx-box--full rcx-table__cell--align-end rcx-table__cell"
+              class="is_Text _f-1246374076 _mw-354604370 _mh-1241200853 _os-249893454 _ff-409630021 _fvn-1977619713 _m-2017216831 _p-1360184609 _b-650654186 _d-2041442768 _ws-311910413 _ww-408434756 _us-601042561 _va-1124586065 _c-1756781803 _fs-347291933 _fw-289165218 _lh-1925956564 _ls-1782815796 _ta-1051716567 rcx-table__cell--align-end rcx-table__cell"
             >
               37
             </td>
             <td
-              class="rcx-box rcx-box--full rcx-table__cell--align-end rcx-table__cell"
+              class="is_Text _f-1246374076 _mw-354604370 _mh-1241200853 _os-249893454 _ff-409630021 _fvn-1977619713 _m-2017216831 _p-1360184609 _b-650654186 _d-2041442768 _ws-311910413 _ww-408434756 _us-601042561 _va-1124586065 _c-1756781803 _fs-347291933 _fw-289165218 _lh-1925956564 _ls-1782815796 _ta-1051716567 rcx-table__cell--align-end rcx-table__cell"
             >
               4.3
             </td>
@@ -430,299 +430,299 @@ exports[`[Table Rendering] renders WithSelection without crashing 1`] = `
 <body>
   <div>
     <div
-      class="rcx-box rcx-box--full rcx-table__wrapper"
+      class="is_View _f-1246374076 _mw-354604370 _mh-1241200853 _os-249893454 _ff-409630021 _fvn-1977619713 _m-2017216831 _p-1943363302 _b-650654186 _d-1987097250 _p-1021290656 rcx-table__wrapper"
     >
       <table
-        class="rcx-box rcx-box--full rcx-table"
+        class="is_View _f-1246374076 _mw-354604370 _mh-1241200853 _os-249893454 _ff-409630021 _fvn-1977619713 _m-2017216831 _p-1943363302 _b-570203997 _d-1970813793 _w-1560934055 rcx-table"
       >
         <thead
-          class="rcx-box rcx-box--full rcx-table__head"
+          class="is_View _f-1246374076 _mw-354604370 _mh-1241200853 _os-249893454 _ff-409630021 _fvn-1977619713 _m-2017216831 _p-1943363302 _b-650654186 _d-1123821997 rcx-table__head"
         >
           <tr
-            class="rcx-box rcx-box--full rcx-table__row"
+            class="is_View _f-1246374076 _mw-354604370 _mh-1241200853 _os-249893454 _ff-409630021 _fvn-1977619713 _m-2017216831 _p-1943363302 _b-650654186 _d-1042510932 rcx-table__row"
           >
             <th
-              class="rcx-box rcx-box--full rcx-table__cell--header rcx-table__cell"
+              class="is_Text _f-1246374076 _mw-354604370 _mh-1241200853 _os-249893454 _ff-409630021 _fvn-1977619713 _m-2017216831 _p-1360184609 _b-650654186 _d-2041442768 _ws-311910413 _ww-408434756 _us-601042561 _ta-509596644 _va-1124586065 _c-1756781803 _p-1217804161 _fs-281033604 _fw-290091622 _lh-1335373134 _ls-1811444947 rcx-table__cell--header rcx-table__cell"
             >
               <label
-                class="rcx-box rcx-box--full rcx-check-box"
+                class="is_Text _b-1639159466 _os-249893454 _ff-409630021 _fvn-1977619713 _ws-311910413 _ww-408434756 rcx-check-box"
               >
                 <input
                   aria-label="select all"
-                  class="rcx-box rcx-box--full rcx-check-box__input"
+                  class="is_View _b-1639159466 _os-249893454 _ff-409630021 _fvn-1977619713 _p-1261267467 _o-1119039191 _c-588872556 _cp-2129451690 _w-226739898 _h-1922295961 _m-1890937723 _p-1943363302 _ws-973912173 _f-1246374076 rcx-check-box__input"
                   type="checkbox"
                 />
                 <i
                   aria-hidden="true"
-                  class="rcx-box rcx-box--full rcx-check-box__fake"
+                  class="is_View _b-1639160427 _os-249893454 _ff-409630021 _fvn-1977619713 _p-1021290656 _h-858548760 _f-1069814357 _mw-354604370 _mh-1241200853 _d-341075704 _jc-1099843255 _ai-121763387 _br-761515502 _w-120696903 rcx-check-box__fake"
                 />
               </label>
             </th>
             <th
-              class="rcx-box rcx-box--full rcx-table__cell--header rcx-table__cell"
+              class="is_Text _f-1246374076 _mw-354604370 _mh-1241200853 _os-249893454 _ff-409630021 _fvn-1977619713 _m-2017216831 _p-1360184609 _b-650654186 _d-2041442768 _ws-311910413 _ww-408434756 _us-601042561 _ta-509596644 _va-1124586065 _c-1756781803 _p-1217804161 _fs-281033604 _fw-290091622 _lh-1335373134 _ls-1811444947 rcx-table__cell--header rcx-table__cell"
             >
               Dessert (100g serving)
             </th>
             <th
-              class="rcx-box rcx-box--full rcx-table__cell--header rcx-table__cell--align-end rcx-table__cell"
+              class="is_Text _f-1246374076 _mw-354604370 _mh-1241200853 _os-249893454 _ff-409630021 _fvn-1977619713 _m-2017216831 _p-1360184609 _b-650654186 _d-2041442768 _ws-311910413 _ww-408434756 _us-601042561 _va-1124586065 _c-1756781803 _p-1217804161 _fs-281033604 _fw-290091622 _lh-1335373134 _ls-1811444947 _ta-1051716567 rcx-table__cell--header rcx-table__cell--align-end rcx-table__cell"
             >
               Calories
             </th>
             <th
-              class="rcx-box rcx-box--full rcx-table__cell--header rcx-table__cell--align-end rcx-table__cell"
+              class="is_Text _f-1246374076 _mw-354604370 _mh-1241200853 _os-249893454 _ff-409630021 _fvn-1977619713 _m-2017216831 _p-1360184609 _b-650654186 _d-2041442768 _ws-311910413 _ww-408434756 _us-601042561 _va-1124586065 _c-1756781803 _p-1217804161 _fs-281033604 _fw-290091622 _lh-1335373134 _ls-1811444947 _ta-1051716567 rcx-table__cell--header rcx-table__cell--align-end rcx-table__cell"
             >
               Fat (g)
             </th>
             <th
-              class="rcx-box rcx-box--full rcx-table__cell--header rcx-table__cell--align-end rcx-table__cell"
+              class="is_Text _f-1246374076 _mw-354604370 _mh-1241200853 _os-249893454 _ff-409630021 _fvn-1977619713 _m-2017216831 _p-1360184609 _b-650654186 _d-2041442768 _ws-311910413 _ww-408434756 _us-601042561 _va-1124586065 _c-1756781803 _p-1217804161 _fs-281033604 _fw-290091622 _lh-1335373134 _ls-1811444947 _ta-1051716567 rcx-table__cell--header rcx-table__cell--align-end rcx-table__cell"
             >
               Carbs (g)
             </th>
             <th
-              class="rcx-box rcx-box--full rcx-table__cell--header rcx-table__cell--align-end rcx-table__cell"
+              class="is_Text _f-1246374076 _mw-354604370 _mh-1241200853 _os-249893454 _ff-409630021 _fvn-1977619713 _m-2017216831 _p-1360184609 _b-650654186 _d-2041442768 _ws-311910413 _ww-408434756 _us-601042561 _va-1124586065 _c-1756781803 _p-1217804161 _fs-281033604 _fw-290091622 _lh-1335373134 _ls-1811444947 _ta-1051716567 rcx-table__cell--header rcx-table__cell--align-end rcx-table__cell"
             >
               Protein (g)
             </th>
           </tr>
         </thead>
         <tbody
-          class="rcx-box rcx-box--full rcx-table__body"
+          class="is_View _f-1246374076 _mw-354604370 _mh-1241200853 _os-249893454 _ff-409630021 _fvn-1977619713 _m-2017216831 _p-1943363302 _b-650654186 _d-865917666 rcx-table__body"
         >
           <tr
-            class="rcx-box rcx-box--full rcx-table__row--selected rcx-table__row"
+            class="is_View _f-1246374076 _mw-354604370 _mh-1241200853 _os-249893454 _ff-409630021 _fvn-1977619713 _m-2017216831 _p-1943363302 _b-650654186 _d-1042510932 _b-1057188503 rcx-table__row--selected rcx-table__row"
           >
             <td
-              class="rcx-box rcx-box--full rcx-table__cell"
+              class="is_Text _f-1246374076 _mw-354604370 _mh-1241200853 _os-249893454 _ff-409630021 _fvn-1977619713 _m-2017216831 _p-1360184609 _b-650654186 _d-2041442768 _ws-311910413 _ww-408434756 _us-601042561 _ta-509596644 _va-1124586065 _c-1756781803 _fs-347291933 _fw-289165218 _lh-1925956564 _ls-1782815796 rcx-table__cell"
             >
               <label
-                class="rcx-box rcx-box--full rcx-check-box"
+                class="is_Text _b-1639159466 _os-249893454 _ff-409630021 _fvn-1977619713 _ws-311910413 _ww-408434756 rcx-check-box"
               >
                 <input
                   aria-label="select frozen yoghurt"
                   checked=""
-                  class="rcx-box rcx-box--full rcx-check-box__input"
+                  class="is_View _b-1639159466 _os-249893454 _ff-409630021 _fvn-1977619713 _p-1261267467 _o-1119039191 _c-588872556 _cp-2129451690 _w-226739898 _h-1922295961 _m-1890937723 _p-1943363302 _ws-973912173 _f-1246374076 rcx-check-box__input"
                   type="checkbox"
                 />
                 <i
                   aria-hidden="true"
-                  class="rcx-box rcx-box--full rcx-check-box__fake"
+                  class="is_View _b-1639160427 _os-249893454 _ff-409630021 _fvn-1977619713 _p-1021290656 _h-858548760 _f-1069814357 _mw-354604370 _mh-1241200853 _d-341075704 _jc-1099843255 _ai-121763387 _br-761515502 _w-120696903 rcx-check-box__fake"
                 />
               </label>
             </td>
             <th
-              class="rcx-box rcx-box--full rcx-table__cell"
+              class="is_Text _f-1246374076 _mw-354604370 _mh-1241200853 _os-249893454 _ff-409630021 _fvn-1977619713 _m-2017216831 _p-1360184609 _b-650654186 _d-2041442768 _ws-311910413 _ww-408434756 _us-601042561 _ta-509596644 _va-1124586065 _c-1756781803 _fs-347291933 _fw-289165218 _lh-1925956564 _ls-1782815796 rcx-table__cell"
               scope="row"
             >
               Frozen yoghurt
             </th>
             <td
-              class="rcx-box rcx-box--full rcx-table__cell--align-end rcx-table__cell"
+              class="is_Text _f-1246374076 _mw-354604370 _mh-1241200853 _os-249893454 _ff-409630021 _fvn-1977619713 _m-2017216831 _p-1360184609 _b-650654186 _d-2041442768 _ws-311910413 _ww-408434756 _us-601042561 _va-1124586065 _c-1756781803 _fs-347291933 _fw-289165218 _lh-1925956564 _ls-1782815796 _ta-1051716567 rcx-table__cell--align-end rcx-table__cell"
             >
               159
             </td>
             <td
-              class="rcx-box rcx-box--full rcx-table__cell--align-end rcx-table__cell"
+              class="is_Text _f-1246374076 _mw-354604370 _mh-1241200853 _os-249893454 _ff-409630021 _fvn-1977619713 _m-2017216831 _p-1360184609 _b-650654186 _d-2041442768 _ws-311910413 _ww-408434756 _us-601042561 _va-1124586065 _c-1756781803 _fs-347291933 _fw-289165218 _lh-1925956564 _ls-1782815796 _ta-1051716567 rcx-table__cell--align-end rcx-table__cell"
             >
               6
             </td>
             <td
-              class="rcx-box rcx-box--full rcx-table__cell--align-end rcx-table__cell"
+              class="is_Text _f-1246374076 _mw-354604370 _mh-1241200853 _os-249893454 _ff-409630021 _fvn-1977619713 _m-2017216831 _p-1360184609 _b-650654186 _d-2041442768 _ws-311910413 _ww-408434756 _us-601042561 _va-1124586065 _c-1756781803 _fs-347291933 _fw-289165218 _lh-1925956564 _ls-1782815796 _ta-1051716567 rcx-table__cell--align-end rcx-table__cell"
             >
               24
             </td>
             <td
-              class="rcx-box rcx-box--full rcx-table__cell--align-end rcx-table__cell"
+              class="is_Text _f-1246374076 _mw-354604370 _mh-1241200853 _os-249893454 _ff-409630021 _fvn-1977619713 _m-2017216831 _p-1360184609 _b-650654186 _d-2041442768 _ws-311910413 _ww-408434756 _us-601042561 _va-1124586065 _c-1756781803 _fs-347291933 _fw-289165218 _lh-1925956564 _ls-1782815796 _ta-1051716567 rcx-table__cell--align-end rcx-table__cell"
             >
               4
             </td>
           </tr>
           <tr
-            class="rcx-box rcx-box--full rcx-table__row--selected rcx-table__row"
+            class="is_View _f-1246374076 _mw-354604370 _mh-1241200853 _os-249893454 _ff-409630021 _fvn-1977619713 _m-2017216831 _p-1943363302 _b-650654186 _d-1042510932 _b-1057188503 rcx-table__row--selected rcx-table__row"
           >
             <td
-              class="rcx-box rcx-box--full rcx-table__cell"
+              class="is_Text _f-1246374076 _mw-354604370 _mh-1241200853 _os-249893454 _ff-409630021 _fvn-1977619713 _m-2017216831 _p-1360184609 _b-650654186 _d-2041442768 _ws-311910413 _ww-408434756 _us-601042561 _ta-509596644 _va-1124586065 _c-1756781803 _fs-347291933 _fw-289165218 _lh-1925956564 _ls-1782815796 rcx-table__cell"
             >
               <label
-                class="rcx-box rcx-box--full rcx-check-box"
+                class="is_Text _b-1639159466 _os-249893454 _ff-409630021 _fvn-1977619713 _ws-311910413 _ww-408434756 rcx-check-box"
               >
                 <input
                   aria-label="select frozen yoghurt"
                   checked=""
-                  class="rcx-box rcx-box--full rcx-check-box__input"
+                  class="is_View _b-1639159466 _os-249893454 _ff-409630021 _fvn-1977619713 _p-1261267467 _o-1119039191 _c-588872556 _cp-2129451690 _w-226739898 _h-1922295961 _m-1890937723 _p-1943363302 _ws-973912173 _f-1246374076 rcx-check-box__input"
                   type="checkbox"
                 />
                 <i
                   aria-hidden="true"
-                  class="rcx-box rcx-box--full rcx-check-box__fake"
+                  class="is_View _b-1639160427 _os-249893454 _ff-409630021 _fvn-1977619713 _p-1021290656 _h-858548760 _f-1069814357 _mw-354604370 _mh-1241200853 _d-341075704 _jc-1099843255 _ai-121763387 _br-761515502 _w-120696903 rcx-check-box__fake"
                 />
               </label>
             </td>
             <th
-              class="rcx-box rcx-box--full rcx-table__cell"
+              class="is_Text _f-1246374076 _mw-354604370 _mh-1241200853 _os-249893454 _ff-409630021 _fvn-1977619713 _m-2017216831 _p-1360184609 _b-650654186 _d-2041442768 _ws-311910413 _ww-408434756 _us-601042561 _ta-509596644 _va-1124586065 _c-1756781803 _fs-347291933 _fw-289165218 _lh-1925956564 _ls-1782815796 rcx-table__cell"
               scope="row"
             >
               Frozen yoghurt
             </th>
             <td
-              class="rcx-box rcx-box--full rcx-table__cell--align-end rcx-table__cell"
+              class="is_Text _f-1246374076 _mw-354604370 _mh-1241200853 _os-249893454 _ff-409630021 _fvn-1977619713 _m-2017216831 _p-1360184609 _b-650654186 _d-2041442768 _ws-311910413 _ww-408434756 _us-601042561 _va-1124586065 _c-1756781803 _fs-347291933 _fw-289165218 _lh-1925956564 _ls-1782815796 _ta-1051716567 rcx-table__cell--align-end rcx-table__cell"
             >
               159
             </td>
             <td
-              class="rcx-box rcx-box--full rcx-table__cell--align-end rcx-table__cell"
+              class="is_Text _f-1246374076 _mw-354604370 _mh-1241200853 _os-249893454 _ff-409630021 _fvn-1977619713 _m-2017216831 _p-1360184609 _b-650654186 _d-2041442768 _ws-311910413 _ww-408434756 _us-601042561 _va-1124586065 _c-1756781803 _fs-347291933 _fw-289165218 _lh-1925956564 _ls-1782815796 _ta-1051716567 rcx-table__cell--align-end rcx-table__cell"
             >
               6
             </td>
             <td
-              class="rcx-box rcx-box--full rcx-table__cell--align-end rcx-table__cell"
+              class="is_Text _f-1246374076 _mw-354604370 _mh-1241200853 _os-249893454 _ff-409630021 _fvn-1977619713 _m-2017216831 _p-1360184609 _b-650654186 _d-2041442768 _ws-311910413 _ww-408434756 _us-601042561 _va-1124586065 _c-1756781803 _fs-347291933 _fw-289165218 _lh-1925956564 _ls-1782815796 _ta-1051716567 rcx-table__cell--align-end rcx-table__cell"
             >
               24
             </td>
             <td
-              class="rcx-box rcx-box--full rcx-table__cell--align-end rcx-table__cell"
+              class="is_Text _f-1246374076 _mw-354604370 _mh-1241200853 _os-249893454 _ff-409630021 _fvn-1977619713 _m-2017216831 _p-1360184609 _b-650654186 _d-2041442768 _ws-311910413 _ww-408434756 _us-601042561 _va-1124586065 _c-1756781803 _fs-347291933 _fw-289165218 _lh-1925956564 _ls-1782815796 _ta-1051716567 rcx-table__cell--align-end rcx-table__cell"
             >
               4
             </td>
           </tr>
           <tr
-            class="rcx-box rcx-box--full rcx-table__row"
+            class="is_View _f-1246374076 _mw-354604370 _mh-1241200853 _os-249893454 _ff-409630021 _fvn-1977619713 _m-2017216831 _p-1943363302 _b-650654186 _d-1042510932 rcx-table__row"
           >
             <td
-              class="rcx-box rcx-box--full rcx-table__cell"
+              class="is_Text _f-1246374076 _mw-354604370 _mh-1241200853 _os-249893454 _ff-409630021 _fvn-1977619713 _m-2017216831 _p-1360184609 _b-650654186 _d-2041442768 _ws-311910413 _ww-408434756 _us-601042561 _ta-509596644 _va-1124586065 _c-1756781803 _fs-347291933 _fw-289165218 _lh-1925956564 _ls-1782815796 rcx-table__cell"
             >
               <label
-                class="rcx-box rcx-box--full rcx-check-box"
+                class="is_Text _b-1639159466 _os-249893454 _ff-409630021 _fvn-1977619713 _ws-311910413 _ww-408434756 rcx-check-box"
               >
                 <input
                   aria-label="select frozen yoghurt"
-                  class="rcx-box rcx-box--full rcx-check-box__input"
+                  class="is_View _b-1639159466 _os-249893454 _ff-409630021 _fvn-1977619713 _p-1261267467 _o-1119039191 _c-588872556 _cp-2129451690 _w-226739898 _h-1922295961 _m-1890937723 _p-1943363302 _ws-973912173 _f-1246374076 rcx-check-box__input"
                   type="checkbox"
                 />
                 <i
                   aria-hidden="true"
-                  class="rcx-box rcx-box--full rcx-check-box__fake"
+                  class="is_View _b-1639160427 _os-249893454 _ff-409630021 _fvn-1977619713 _p-1021290656 _h-858548760 _f-1069814357 _mw-354604370 _mh-1241200853 _d-341075704 _jc-1099843255 _ai-121763387 _br-761515502 _w-120696903 rcx-check-box__fake"
                 />
               </label>
             </td>
             <th
-              class="rcx-box rcx-box--full rcx-table__cell"
+              class="is_Text _f-1246374076 _mw-354604370 _mh-1241200853 _os-249893454 _ff-409630021 _fvn-1977619713 _m-2017216831 _p-1360184609 _b-650654186 _d-2041442768 _ws-311910413 _ww-408434756 _us-601042561 _ta-509596644 _va-1124586065 _c-1756781803 _fs-347291933 _fw-289165218 _lh-1925956564 _ls-1782815796 rcx-table__cell"
               scope="row"
             >
               Frozen yoghurt
             </th>
             <td
-              class="rcx-box rcx-box--full rcx-table__cell--align-end rcx-table__cell"
+              class="is_Text _f-1246374076 _mw-354604370 _mh-1241200853 _os-249893454 _ff-409630021 _fvn-1977619713 _m-2017216831 _p-1360184609 _b-650654186 _d-2041442768 _ws-311910413 _ww-408434756 _us-601042561 _va-1124586065 _c-1756781803 _fs-347291933 _fw-289165218 _lh-1925956564 _ls-1782815796 _ta-1051716567 rcx-table__cell--align-end rcx-table__cell"
             >
               159
             </td>
             <td
-              class="rcx-box rcx-box--full rcx-table__cell--align-end rcx-table__cell"
+              class="is_Text _f-1246374076 _mw-354604370 _mh-1241200853 _os-249893454 _ff-409630021 _fvn-1977619713 _m-2017216831 _p-1360184609 _b-650654186 _d-2041442768 _ws-311910413 _ww-408434756 _us-601042561 _va-1124586065 _c-1756781803 _fs-347291933 _fw-289165218 _lh-1925956564 _ls-1782815796 _ta-1051716567 rcx-table__cell--align-end rcx-table__cell"
             >
               6
             </td>
             <td
-              class="rcx-box rcx-box--full rcx-table__cell--align-end rcx-table__cell"
+              class="is_Text _f-1246374076 _mw-354604370 _mh-1241200853 _os-249893454 _ff-409630021 _fvn-1977619713 _m-2017216831 _p-1360184609 _b-650654186 _d-2041442768 _ws-311910413 _ww-408434756 _us-601042561 _va-1124586065 _c-1756781803 _fs-347291933 _fw-289165218 _lh-1925956564 _ls-1782815796 _ta-1051716567 rcx-table__cell--align-end rcx-table__cell"
             >
               24
             </td>
             <td
-              class="rcx-box rcx-box--full rcx-table__cell--align-end rcx-table__cell"
+              class="is_Text _f-1246374076 _mw-354604370 _mh-1241200853 _os-249893454 _ff-409630021 _fvn-1977619713 _m-2017216831 _p-1360184609 _b-650654186 _d-2041442768 _ws-311910413 _ww-408434756 _us-601042561 _va-1124586065 _c-1756781803 _fs-347291933 _fw-289165218 _lh-1925956564 _ls-1782815796 _ta-1051716567 rcx-table__cell--align-end rcx-table__cell"
             >
               4
             </td>
           </tr>
           <tr
-            class="rcx-box rcx-box--full rcx-table__row--selected rcx-table__row"
+            class="is_View _f-1246374076 _mw-354604370 _mh-1241200853 _os-249893454 _ff-409630021 _fvn-1977619713 _m-2017216831 _p-1943363302 _b-650654186 _d-1042510932 _b-1057188503 rcx-table__row--selected rcx-table__row"
           >
             <td
-              class="rcx-box rcx-box--full rcx-table__cell"
+              class="is_Text _f-1246374076 _mw-354604370 _mh-1241200853 _os-249893454 _ff-409630021 _fvn-1977619713 _m-2017216831 _p-1360184609 _b-650654186 _d-2041442768 _ws-311910413 _ww-408434756 _us-601042561 _ta-509596644 _va-1124586065 _c-1756781803 _fs-347291933 _fw-289165218 _lh-1925956564 _ls-1782815796 rcx-table__cell"
             >
               <label
-                class="rcx-box rcx-box--full rcx-check-box"
+                class="is_Text _b-1639159466 _os-249893454 _ff-409630021 _fvn-1977619713 _ws-311910413 _ww-408434756 rcx-check-box"
               >
                 <input
                   aria-label="select frozen yoghurt"
                   checked=""
-                  class="rcx-box rcx-box--full rcx-check-box__input"
+                  class="is_View _b-1639159466 _os-249893454 _ff-409630021 _fvn-1977619713 _p-1261267467 _o-1119039191 _c-588872556 _cp-2129451690 _w-226739898 _h-1922295961 _m-1890937723 _p-1943363302 _ws-973912173 _f-1246374076 rcx-check-box__input"
                   type="checkbox"
                 />
                 <i
                   aria-hidden="true"
-                  class="rcx-box rcx-box--full rcx-check-box__fake"
+                  class="is_View _b-1639160427 _os-249893454 _ff-409630021 _fvn-1977619713 _p-1021290656 _h-858548760 _f-1069814357 _mw-354604370 _mh-1241200853 _d-341075704 _jc-1099843255 _ai-121763387 _br-761515502 _w-120696903 rcx-check-box__fake"
                 />
               </label>
             </td>
             <th
-              class="rcx-box rcx-box--full rcx-table__cell"
+              class="is_Text _f-1246374076 _mw-354604370 _mh-1241200853 _os-249893454 _ff-409630021 _fvn-1977619713 _m-2017216831 _p-1360184609 _b-650654186 _d-2041442768 _ws-311910413 _ww-408434756 _us-601042561 _ta-509596644 _va-1124586065 _c-1756781803 _fs-347291933 _fw-289165218 _lh-1925956564 _ls-1782815796 rcx-table__cell"
               scope="row"
             >
               Frozen yoghurt
             </th>
             <td
-              class="rcx-box rcx-box--full rcx-table__cell--align-end rcx-table__cell"
+              class="is_Text _f-1246374076 _mw-354604370 _mh-1241200853 _os-249893454 _ff-409630021 _fvn-1977619713 _m-2017216831 _p-1360184609 _b-650654186 _d-2041442768 _ws-311910413 _ww-408434756 _us-601042561 _va-1124586065 _c-1756781803 _fs-347291933 _fw-289165218 _lh-1925956564 _ls-1782815796 _ta-1051716567 rcx-table__cell--align-end rcx-table__cell"
             >
               159
             </td>
             <td
-              class="rcx-box rcx-box--full rcx-table__cell--align-end rcx-table__cell"
+              class="is_Text _f-1246374076 _mw-354604370 _mh-1241200853 _os-249893454 _ff-409630021 _fvn-1977619713 _m-2017216831 _p-1360184609 _b-650654186 _d-2041442768 _ws-311910413 _ww-408434756 _us-601042561 _va-1124586065 _c-1756781803 _fs-347291933 _fw-289165218 _lh-1925956564 _ls-1782815796 _ta-1051716567 rcx-table__cell--align-end rcx-table__cell"
             >
               6
             </td>
             <td
-              class="rcx-box rcx-box--full rcx-table__cell--align-end rcx-table__cell"
+              class="is_Text _f-1246374076 _mw-354604370 _mh-1241200853 _os-249893454 _ff-409630021 _fvn-1977619713 _m-2017216831 _p-1360184609 _b-650654186 _d-2041442768 _ws-311910413 _ww-408434756 _us-601042561 _va-1124586065 _c-1756781803 _fs-347291933 _fw-289165218 _lh-1925956564 _ls-1782815796 _ta-1051716567 rcx-table__cell--align-end rcx-table__cell"
             >
               24
             </td>
             <td
-              class="rcx-box rcx-box--full rcx-table__cell--align-end rcx-table__cell"
+              class="is_Text _f-1246374076 _mw-354604370 _mh-1241200853 _os-249893454 _ff-409630021 _fvn-1977619713 _m-2017216831 _p-1360184609 _b-650654186 _d-2041442768 _ws-311910413 _ww-408434756 _us-601042561 _va-1124586065 _c-1756781803 _fs-347291933 _fw-289165218 _lh-1925956564 _ls-1782815796 _ta-1051716567 rcx-table__cell--align-end rcx-table__cell"
             >
               4
             </td>
           </tr>
           <tr
-            class="rcx-box rcx-box--full rcx-table__row--selected rcx-table__row"
+            class="is_View _f-1246374076 _mw-354604370 _mh-1241200853 _os-249893454 _ff-409630021 _fvn-1977619713 _m-2017216831 _p-1943363302 _b-650654186 _d-1042510932 _b-1057188503 rcx-table__row--selected rcx-table__row"
           >
             <td
-              class="rcx-box rcx-box--full rcx-table__cell"
+              class="is_Text _f-1246374076 _mw-354604370 _mh-1241200853 _os-249893454 _ff-409630021 _fvn-1977619713 _m-2017216831 _p-1360184609 _b-650654186 _d-2041442768 _ws-311910413 _ww-408434756 _us-601042561 _ta-509596644 _va-1124586065 _c-1756781803 _fs-347291933 _fw-289165218 _lh-1925956564 _ls-1782815796 rcx-table__cell"
             >
               <label
-                class="rcx-box rcx-box--full rcx-check-box"
+                class="is_Text _b-1639159466 _os-249893454 _ff-409630021 _fvn-1977619713 _ws-311910413 _ww-408434756 rcx-check-box"
               >
                 <input
                   aria-label="select frozen yoghurt"
                   checked=""
-                  class="rcx-box rcx-box--full rcx-check-box__input"
+                  class="is_View _b-1639159466 _os-249893454 _ff-409630021 _fvn-1977619713 _p-1261267467 _o-1119039191 _c-588872556 _cp-2129451690 _w-226739898 _h-1922295961 _m-1890937723 _p-1943363302 _ws-973912173 _f-1246374076 rcx-check-box__input"
                   type="checkbox"
                 />
                 <i
                   aria-hidden="true"
-                  class="rcx-box rcx-box--full rcx-check-box__fake"
+                  class="is_View _b-1639160427 _os-249893454 _ff-409630021 _fvn-1977619713 _p-1021290656 _h-858548760 _f-1069814357 _mw-354604370 _mh-1241200853 _d-341075704 _jc-1099843255 _ai-121763387 _br-761515502 _w-120696903 rcx-check-box__fake"
                 />
               </label>
             </td>
             <th
-              class="rcx-box rcx-box--full rcx-table__cell"
+              class="is_Text _f-1246374076 _mw-354604370 _mh-1241200853 _os-249893454 _ff-409630021 _fvn-1977619713 _m-2017216831 _p-1360184609 _b-650654186 _d-2041442768 _ws-311910413 _ww-408434756 _us-601042561 _ta-509596644 _va-1124586065 _c-1756781803 _fs-347291933 _fw-289165218 _lh-1925956564 _ls-1782815796 rcx-table__cell"
               scope="row"
             >
               Frozen yoghurt
             </th>
             <td
-              class="rcx-box rcx-box--full rcx-table__cell--align-end rcx-table__cell"
+              class="is_Text _f-1246374076 _mw-354604370 _mh-1241200853 _os-249893454 _ff-409630021 _fvn-1977619713 _m-2017216831 _p-1360184609 _b-650654186 _d-2041442768 _ws-311910413 _ww-408434756 _us-601042561 _va-1124586065 _c-1756781803 _fs-347291933 _fw-289165218 _lh-1925956564 _ls-1782815796 _ta-1051716567 rcx-table__cell--align-end rcx-table__cell"
             >
               159
             </td>
             <td
-              class="rcx-box rcx-box--full rcx-table__cell--align-end rcx-table__cell"
+              class="is_Text _f-1246374076 _mw-354604370 _mh-1241200853 _os-249893454 _ff-409630021 _fvn-1977619713 _m-2017216831 _p-1360184609 _b-650654186 _d-2041442768 _ws-311910413 _ww-408434756 _us-601042561 _va-1124586065 _c-1756781803 _fs-347291933 _fw-289165218 _lh-1925956564 _ls-1782815796 _ta-1051716567 rcx-table__cell--align-end rcx-table__cell"
             >
               6
             </td>
             <td
-              class="rcx-box rcx-box--full rcx-table__cell--align-end rcx-table__cell"
+              class="is_Text _f-1246374076 _mw-354604370 _mh-1241200853 _os-249893454 _ff-409630021 _fvn-1977619713 _m-2017216831 _p-1360184609 _b-650654186 _d-2041442768 _ws-311910413 _ww-408434756 _us-601042561 _va-1124586065 _c-1756781803 _fs-347291933 _fw-289165218 _lh-1925956564 _ls-1782815796 _ta-1051716567 rcx-table__cell--align-end rcx-table__cell"
             >
               24
             </td>
             <td
-              class="rcx-box rcx-box--full rcx-table__cell--align-end rcx-table__cell"
+              class="is_Text _f-1246374076 _mw-354604370 _mh-1241200853 _os-249893454 _ff-409630021 _fvn-1977619713 _m-2017216831 _p-1360184609 _b-650654186 _d-2041442768 _ws-311910413 _ww-408434756 _us-601042561 _va-1124586065 _c-1756781803 _fs-347291933 _fw-289165218 _lh-1925956564 _ls-1782815796 _ta-1051716567 rcx-table__cell--align-end rcx-table__cell"
             >
               4
             </td>
@@ -731,7 +731,7 @@ exports[`[Table Rendering] renders WithSelection without crashing 1`] = `
       </table>
     </div>
     <div
-      class="rcx-box rcx-box--full rcx-table__selection rcx-css-o5js64"
+      class="is_View _f-85860445 _mw-354604370 _mh-1241200853 _os-249893454 _ff-409630021 _fvn-1977619713 _m-2017216831 _p-1943363302 _b-650654186 _c-1866435217 _br-768799339 _b-188836335 rcx-table__selection rcx-css-o5js64"
     >
       <div
         class="rcx-box rcx-box--full rcx-css-zm3lo7"
@@ -742,25 +742,25 @@ exports[`[Table Rendering] renders WithSelection without crashing 1`] = `
         class="rcx-box rcx-box--full rcx-css-17apvsc"
       >
         <div
-          class="rcx-button-group rcx-button-group--align-start"
+          class="is_View _d-341075704 _f-1923654442 _mw-354604370 _mh-1241200853 _ai-121763387 _g-1051447770 _jc-281162209 rcx-button-group rcx-button-group--align-start"
           role="group"
         >
           <button
-            class="rcx-box rcx-box--full rcx-button--small rcx-button rcx-css-ue04py"
+            class="is_View _d-1409515928 _f-1069814357 _mh-1241200853 _ta-1906144518 _ws-973912173 _td-211436768 _c-22887652 _os-249893454 _o-1119039191 _to-1727917045 _ff-409630021 _fvn-1977619713 _p-1560025842 _fs-281033604 _fw-290091622 _lh-1335373134 _ls-1811444947 _mw-1071928195 _h-1633581678 rcx-button--small rcx-button rcx-css-ue04py"
             type="button"
           >
             <span
-              class="rcx-button--content"
+              class="is_Text _d-1409515928 _w-1560934055 _va-615128551 _o-1119039191 _to-1727917045 _ws-973912173 _ww-408434756 rcx-button--content"
             >
               Delete
             </span>
           </button>
           <button
-            class="rcx-box rcx-box--full rcx-button--small rcx-button rcx-css-ue04py"
+            class="is_View _d-1409515928 _f-1069814357 _mh-1241200853 _ta-1906144518 _ws-973912173 _td-211436768 _c-22887652 _os-249893454 _o-1119039191 _to-1727917045 _ff-409630021 _fvn-1977619713 _p-1560025842 _fs-281033604 _fw-290091622 _lh-1335373134 _ls-1811444947 _mw-1071928195 _h-1633581678 rcx-button--small rcx-button rcx-css-ue04py"
             type="button"
           >
             <span
-              class="rcx-button--content"
+              class="is_Text _d-1409515928 _w-1560934055 _va-615128551 _o-1119039191 _to-1727917045 _ws-973912173 _ww-408434756 rcx-button--content"
             >
               Cancel
             </span>
