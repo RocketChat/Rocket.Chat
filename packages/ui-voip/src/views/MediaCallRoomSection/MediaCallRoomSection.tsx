@@ -7,6 +7,8 @@ import { Timer, DevicePicker, useShouldWrapCards, CARD_LIST_SECTION_MAX_HEIGHT, 
 import { useMediaCallInstance } from '../../context/MediaCallInstanceContext';
 import { useMediaCallView } from '../../context/MediaCallViewContext';
 import useRegisterView from '../../context/useRegisterView';
+import AppActions from '../../experimental/AppActionButtons/components/AppActions';
+import { useVisibleAppActions } from '../../experimental/AppActionButtons/hooks/useVisibleAppActions';
 import { isInternalPeer } from '../../utils/isInternalPeer';
 import MediaCallCardList from '../MediaCallCardList';
 import PopoutDockPrompt from '../PopoutDockPrompt';
@@ -66,6 +68,9 @@ const MediaCallRoomSection = ({ showChat, onToggleChat, user, containerHeight }:
 	const screenShareAvailable = allowedFeatures.includes('screen-share');
 	const holdAvailable = allowedFeatures.includes('hold');
 	const transferAvailable = allowedFeatures.includes('transfer');
+	const appActions = useVisibleAppActions();
+
+	const showHeaderActions = appActions.length > 0;
 
 	if (!peerInfo || !isInternalPeer(peerInfo)) {
 		return null;
@@ -83,6 +88,7 @@ const MediaCallRoomSection = ({ showChat, onToggleChat, user, containerHeight }:
 			aria-label={t('Voice_call')}
 			{...getSplitStyles(showChat)}
 		>
+			{showHeaderActions && <ActionStrip leftSlot={<AppActions actions={appActions} />} />}
 			{isPopout ? <PopoutDockPrompt onClosePopout={onClosePopout} /> : <MediaCallCardList user={user} shouldWrapCards={shouldWrapCards} />}
 			<ActionStrip
 				leftSlot={
