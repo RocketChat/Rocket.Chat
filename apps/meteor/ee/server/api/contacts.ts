@@ -207,7 +207,7 @@ API.v1.post(
 		const contact = await Contacts.updateLocal(this.userId, contactId, toLocalContact(payload));
 
 		if (!contact) {
-			return API.v1.notFound();
+			return API.v1.notFound('error-contact-not-found');
 		}
 
 		return API.v1.success({ contact });
@@ -238,7 +238,7 @@ API.v1.post(
 		const { deletedCount } = await Contacts.deleteLocal(this.userId, this.bodyParams.contactId);
 
 		if (!deletedCount) {
-			return API.v1.notFound();
+			return API.v1.notFound('error-contact-not-found');
 		}
 
 		return API.v1.success({});
