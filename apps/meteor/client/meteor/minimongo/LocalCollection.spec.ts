@@ -33,12 +33,12 @@ describe('insert', () => {
 		expect(() => collection.insert({ foo: 1 } as any)).toThrow('Document must have an _id field');
 	});
 
-	it('calls callback if provided', (done) => {
-		collection.insert({ ...docB }, (err, id) => {
-			expect(err).toBeNull();
-			expect(id).toBe('b');
-			done();
+	it('calls callback if provided', async () => {
+		const [err, id] = await new Promise<[unknown, unknown]>((resolve) => {
+			collection.insert({ ...docB }, (error, result) => resolve([error, result]));
 		});
+		expect(err).toBeNull();
+		expect(id).toBe('b');
 	});
 });
 
@@ -114,12 +114,12 @@ describe('remove/removeAsync', () => {
 		expect(store.getState().records.size).toBe(0);
 	});
 
-	it('calls callback if provided', (done) => {
-		collection.remove({ _id: 'b' }, (err, count) => {
-			expect(err).toBeNull();
-			expect(count).toBe(1);
-			done();
+	it('calls callback if provided', async () => {
+		const [err, count] = await new Promise<[unknown, unknown]>((resolve) => {
+			collection.remove({ _id: 'b' }, (error, result) => resolve([error, result]));
 		});
+		expect(err).toBeNull();
+		expect(count).toBe(1);
 	});
 
 	it('removeAsync removes documents asynchronously', async () => {
@@ -152,12 +152,12 @@ describe('update/updateAsync', () => {
 		expect(store.getState().records.has('c')).toBe(true);
 	});
 
-	it('calls callback if provided', (done) => {
-		collection.update({ _id: 'a' }, { $set: { foo: 5 } }, (err, res) => {
-			expect(err).toBeNull();
-			expect(res).toBe(1);
-			done();
+	it('calls callback if provided', async () => {
+		const [err, res] = await new Promise<[unknown, unknown]>((resolve) => {
+			collection.update({ _id: 'a' }, { $set: { foo: 5 } }, (error, result) => resolve([error, result]));
 		});
+		expect(err).toBeNull();
+		expect(res).toBe(1);
 	});
 
 	it('updateAsync updates a document asynchronously', async () => {
