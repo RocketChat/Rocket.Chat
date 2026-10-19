@@ -88,15 +88,15 @@ exports[`renders Default without crashing 1`] = `
                 role="separator"
               >
                 <div
-                  class="rcx-divider__bar"
+                  class="is_View _f-7259782 _b-330512592 rcx-divider__bar"
                 />
                 <div
-                  class="rcx-divider__wrapper"
+                  class="is_View _m-1859224945 _p-445762330 rcx-divider__wrapper"
                 >
                   or
                 </div>
                 <div
-                  class="rcx-divider__bar"
+                  class="is_View _f-7259782 _b-330512592 rcx-divider__bar"
                 />
               </div>
               <div
