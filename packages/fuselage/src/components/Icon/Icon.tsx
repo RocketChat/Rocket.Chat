@@ -1,8 +1,29 @@
 import type { Keys as IconName } from '@rocket.chat/icons';
 import nameToCharacterMapping from '@rocket.chat/icons';
+import { styled, Text, type GetProps } from '@tamagui/web';
 import type { RefAttributes } from 'react';
 
-import { Box, type BoxProps } from '../Box';
+import { useTamaguiBoxProps } from '../../hooks/useTamaguiBoxProps';
+import type { BoxProps } from '../Box';
+import { useBoxTransform } from '../Box/BoxTransforms';
+import { withFuselageProvider } from '../FuselageProvider/FuselageProvider';
+
+export const IconFrame = styled(Text, {
+	render: 'i',
+	display: 'inline-block',
+	whiteSpace: 'inherit',
+	wordWrap: 'inherit',
+	userSelect: 'none',
+	verticalAlign: 'text-bottom',
+	letterSpacing: 0,
+	fontFamily: 'RocketChat',
+	fontSize: 'inherit',
+	fontWeight: '400',
+	fontStyle: 'normal',
+	fontVariant: 'normal',
+	lineHeight: '1',
+	textRendering: 'auto',
+});
 
 export type IconProps = Omit<BoxProps, 'ref' | 'name' | 'size'> &
 	RefAttributes<HTMLElement> & {
@@ -11,11 +32,15 @@ export type IconProps = Omit<BoxProps, 'ref' | 'name' | 'size'> &
 	};
 
 function Icon({ name, size, ...props }: IconProps) {
+	const transformFn = useBoxTransform();
+	const boxProps = { 'rcx-icon': true, 'rcx-icon--name': name, 'fontSize': size, ...props };
+	const frameProps = useTamaguiBoxProps(transformFn ? transformFn(boxProps) : boxProps);
+
 	return (
-		<Box is='i' rcx-icon rcx-icon--name={name} aria-hidden='true' fontSize={size} {...props}>
+		<IconFrame aria-hidden {...(frameProps as GetProps<typeof IconFrame>)}>
 			{nameToCharacterMapping[name]}
-		</Box>
+		</IconFrame>
 	);
 }
 
-export default Icon;
+export default withFuselageProvider(Icon);
