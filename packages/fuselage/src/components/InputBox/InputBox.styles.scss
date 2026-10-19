@@ -7,8 +7,6 @@
 @use '../../styles/primitives/traits.scss';
 @use './mixins.scss' as *;
 
-$input-border-radius: theme('input-border-radius', lengths.border-radius(medium));
-
 .rcx-input-box__wrapper,
 %rcx-input-box {
 	position: relative;
@@ -45,6 +43,11 @@ $input-border-radius: theme('input-border-radius', lengths.border-radius(medium)
 		cursor: not-allowed;
 		pointer-events: none;
 	}
+}
+
+// The wrapper renders as `Label`, whose `display: flex` used to win over `inline-flex` by cascade order
+.rcx-input-box__wrapper {
+	display: flex;
 }
 
 .rcx-input-box__addon {
@@ -253,27 +256,4 @@ $input-border-radius: theme('input-border-radius', lengths.border-radius(medium)
 
 	@include use-font-scale(p2m);
 	color: $input-colors-color;
-}
-
-.rcx-skeleton__input {
-	display: inline-flex;
-
-	flex: 1 0 lengths.size(none);
-
-	min-width: lengths.size(128);
-	min-height: lengths.size(40);
-
-	padding: calc(lengths.padding(12) - lengths.border-width(default)) calc(lengths.padding(16) - lengths.border-width(default));
-
-	vertical-align: baseline;
-
-	color: $input-colors-color;
-
-	border-width: lengths.border-width(default);
-	border-color: $input-colors-border-color;
-	border-radius: $input-border-radius;
-	background-color: $input-colors-background-color;
-
-	@include use-font-scale(p2m);
-	@include use-text-ellipsis;
 }
