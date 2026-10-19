@@ -1252,7 +1252,7 @@ API.v1.get(
 	async function action() {
 		const user = await Users.findOneById(this.userId);
 		if (user?.settings) {
-			const { preferences = {} } = user?.settings;
+			const { preferences = {} } = user.settings;
 			preferences.language = user?.language;
 
 			return API.v1.success({

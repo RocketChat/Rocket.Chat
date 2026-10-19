@@ -44,7 +44,7 @@ const AgentInfo = ({ uid }: AgentInfoProps) => {
 		return <Box marginBlockStart={16}>{t('User_not_found')}</Box>;
 	}
 
-	const { username, statusLivechat, status: userStatus } = data?.user;
+	const { username, statusLivechat, status: userStatus } = data.user;
 
 	return (
 		<>

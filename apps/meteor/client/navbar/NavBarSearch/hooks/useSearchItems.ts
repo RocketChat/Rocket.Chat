@@ -38,7 +38,7 @@ export const useSearchItems = (filterText = ''): { items: SubscriptionWithRoom[]
 	// Only the server spotlight call is debounced — the local results above stay instant.
 	const debouncedName = useDebouncedValue(name, 500);
 
-	const usernamesFromClient = [...localRooms?.map(({ t, name }) => (t === 'd' ? name : null))].filter(Boolean) as string[];
+	const usernamesFromClient = [...localRooms.map(({ t, name }) => (t === 'd' ? name : null))].filter(Boolean) as string[];
 
 	const searchForChannels = mention === '#';
 	const searchForDMs = mention === '@';
