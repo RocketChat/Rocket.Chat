@@ -1,5 +1,7 @@
 import './api';
 import './ldap';
+import './ldapCore';
+import './saml';
 import './licenses';
 import './sessions';
 import './chat';

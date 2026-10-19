@@ -1,5 +1,6 @@
-import type { IncomingMessage, ServerResponse } from 'node:http';
+import type { ServerResponse } from 'node:http';
 
+import { License } from '@rocket.chat/license';
 import bodyParser from 'body-parser';
 import express from 'express';
 import { Meteor } from 'meteor/meteor';
@@ -9,7 +10,7 @@ import { WebApp } from 'meteor/webapp';
 import type { ISAMLAction } from './definition/ISAMLAction';
 import { SAML } from './lib/SAML';
 import { SAMLUtils } from './lib/Utils';
-import { SystemLogger } from '../logger/system';
+import { SystemLogger } from '../../../../server/lib/logger/system';
 
 RoutePolicy.declare('/_saml/', 'network');
 
@@ -76,15 +77,21 @@ const middleware = async function (req: express.Request, res: ServerResponse, ne
 	}
 };
 
-// Listen to incoming SAML http requests
-// In Meteor 3 connectHandlers is an express app (multi-middleware use), but
-// @types/meteor still types it as connect.Server (1-2 args).
-(WebApp.connectHandlers as unknown as express.Application).use(
-	/^\/_saml/,
+// eslint-disable-next-line new-cap
+const samlRouter = express.Router().use(
 	bodyParser.json(),
 	express.urlencoded({
 		extended: true,
 		limit: '50mb',
 	}),
-	async (req: IncomingMessage, res: ServerResponse, next: (err?: any) => void) => middleware(req as express.Request, res, next),
+	middleware,
+);
+
+// Listen to incoming SAML http requests
+// In Meteor 3 connectHandlers is an express app (multi-middleware use), but
+// @types/meteor still types it as connect.Server (1-2 args).
+(WebApp.connectHandlers as unknown as express.Application).use(
+	/^\/_saml/,
+	(req: express.Request, res: express.Response, next: express.NextFunction) =>
+		License.hasModule('saml-enterprise') ? samlRouter(req, res, next) : next(),
 );

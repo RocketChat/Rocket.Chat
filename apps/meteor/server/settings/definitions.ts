@@ -14,7 +14,6 @@ import { createFileUploadSettings } from './file-upload';
 import { createGeneralSettings } from './general';
 import { createIRCSettings } from './irc';
 import { createLayoutSettings } from './layout';
-import { createLdapSettings } from './ldap';
 import { createLogSettings } from './logs';
 import { createMessageSettings } from './message';
 import { createMetaSettings } from './meta';
@@ -49,7 +48,6 @@ await Promise.all([
 	createFileUploadSettings(),
 	createGeneralSettings(),
 	createIRCSettings(),
-	createLdapSettings(),
 	createLogSettings(),
 	createLayoutSettings(),
 	createMessageSettings(),
