@@ -83,7 +83,7 @@ export class MediaService extends ServiceClassInternal implements IMediaService 
 	async isImage(buff: Buffer): Promise<boolean> {
 		const data = await ft.fromBuffer(buff);
 		if (!data?.ext) {
-			return false || this.isSvgImage(buff);
+			return this.isSvgImage(buff);
 		}
 		return this.imageExts.has(data.ext) || this.isSvgImage(buff);
 	}

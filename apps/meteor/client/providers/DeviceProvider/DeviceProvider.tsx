@@ -31,7 +31,7 @@ const defaultDevices = {
 const permissionStatusQueryKey = ['media-devices-list', 'permission-status'];
 
 export const DeviceProvider = ({ children }: DeviceProviderProps) => {
-	const [enabled] = useState(typeof isSecureContext && isSecureContext);
+	const [enabled] = useState(typeof isSecureContext !== 'undefined' && isSecureContext);
 	const [selectedAudioOutputDevice, setSelectedAudioOutputDevice] = useState<Device | undefined>(undefined);
 	const [selectedAudioInputDevice, setSelectedAudioInputDevice] = useState<Device | undefined>(undefined);
 
