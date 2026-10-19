@@ -420,6 +420,9 @@ describe('Meteor.methods', () => {
 									expect(receiptsUserIds).to.have.members([credentials['X-User-Id'], user._id]);
 								});
 						},
+						{
+							delayMs: 100,
+						},
 					);
 				});
 
