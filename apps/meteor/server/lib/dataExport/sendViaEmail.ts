@@ -56,6 +56,7 @@ export async function sendViaEmail(
 	if (lang !== 'en') {
 		const localeFn = await getMomentLocale(lang);
 		if (localeFn) {
+			// eslint-disable-next-line @typescript-eslint/no-implied-eval -- evaluates the moment locale script fetched for this language
 			Function(localeFn).call({ moment });
 			localMoment.locale(lang);
 		}

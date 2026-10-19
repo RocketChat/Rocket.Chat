@@ -480,6 +480,7 @@ const $nor = <T>(subSelector: Filter<T>[]) => {
 
 const $where = <T>(selectorValue: string | ((this: T, doc: T) => boolean)) => {
 	if (!(selectorValue instanceof Function)) {
+		// eslint-disable-next-line @typescript-eslint/no-implied-eval -- string $where selectors are JavaScript source by Mongo semantics
 		selectorValue = Function('obj', `return ${selectorValue}`) as (this: T, doc: T) => boolean;
 	}
 
