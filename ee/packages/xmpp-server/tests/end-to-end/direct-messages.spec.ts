@@ -26,25 +26,25 @@ describe('XMPP federation: direct messages', () => {
 	let alice: XmppUser;
 	let local: LocalUser;
 	let dm: IRoom;
+	const firstContact = `first contact ${uniqueSuffix()}`;
 
+	// Every test needs the DM, so a single one can run on its own with --test-name-pattern
 	before(async () => {
 		rc = await setupSuite();
 		alice = await registerXmppUser(rc, 'alice');
 		await assertFederationReachable(rc, alice);
 		local = await createLocalUser(rc, 'dm');
+		await alice.sendChat(local.jid, firstContact);
+		dm = await waitForDirectMessageWith(rc, local, alice.bareJid);
 	});
 
 	after(() => teardown(rc));
 
 	it('materializes the remote user and a federated DM on the first inbound message (R1, addressing R3)', async () => {
-		const text = `first contact ${uniqueSuffix()}`;
-		await alice.sendChat(local.jid, text);
-
-		dm = await waitForDirectMessageWith(rc, local, alice.bareJid);
 		assert.ok(dm.xmppFederation?.role === 'dm', `expected a dm room, got ${dm.xmppFederation?.role}`);
 		assert.equal(dm.xmppFederation.with, alice.bareJid);
 
-		const message = await expectStoredOnce(local, dm, text);
+		const message = await expectStoredOnce(local, dm, firstContact);
 		assert.equal(message.u.username, alice.bareJid);
 
 		const remoteUser = await findUser(rc, alice.bareJid);
