@@ -70,6 +70,8 @@ spoof check, domain lists) and the authentication (STARTTLS, SASL EXTERNAL, dial
   `invalid-from` when the `from` domain is not authenticated on the connection (§8.1.2.2),
   and `host-unknown` when the `to` domain is neither the server domain nor the MUC domain
   (§8.1.1.2).
+- **R17** An inbound connection on which no domain authenticates within a minute is closed
+  with the `connection-timeout` stream error.
 - **R7** XML is restricted per RFC 6120 §11.1: a DOCTYPE, entity declaration, comment, CDATA
   section or processing instruction closes the stream. A top-level element larger than the
   stanza cap (default 256 KiB) or nested deeper than the depth cap closes the stream. The

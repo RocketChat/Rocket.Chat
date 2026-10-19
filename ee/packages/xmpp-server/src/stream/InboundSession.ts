@@ -52,12 +52,19 @@ export class InboundSession {
 
 	private closed = false;
 
+	private readonly authTimer: NodeJS.Timeout;
+
 	constructor(
 		socket: net.Socket,
 		private readonly deps: InboundSessionDeps,
 	) {
 		this.logger = deps.logger.child({ direction: 'inbound', remote: socket.remoteAddress });
 		this.stream = new XmppStream(socket, { maxStanzaSize: deps.config.maxStanzaSize, logger: this.logger });
+
+		this.authTimer = setTimeout(() => {
+			this.logger.warn({ remote: this.remoteAddress }, 'No domain authenticated in time');
+			void this.stream.close({ condition: 'connection-timeout' });
+		}, deps.config.inboundAuthTimeoutMs);
 
 		this.stream.on('streamStart', (header) => this.onStreamStart(header));
 		this.stream.on('stanza', (stanza) => {
@@ -66,6 +73,7 @@ export class InboundSession {
 			});
 		});
 		this.stream.on('closed', ({ error }) => {
+			clearTimeout(this.authTimer);
 			if (!this.closed) {
 				this.closed = true;
 				this.deps.onClosed(this, error);
@@ -336,6 +344,7 @@ export class InboundSession {
 			return;
 		}
 		this.authenticatedFromDomains.add(domain);
+		clearTimeout(this.authTimer);
 		this.deps.onDomainAuthenticated(this, domain, authMethod);
 	}
 

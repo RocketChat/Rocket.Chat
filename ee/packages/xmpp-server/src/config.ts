@@ -31,6 +31,7 @@ export const XMPP_SERVER_DEFAULTS = {
 	maxStanzaSize: DEFAULT_MAX_STANZA_SIZE,
 	connectTimeoutMs: 15_000,
 	idleTimeoutMs: 10 * 60_000,
+	inboundAuthTimeoutMs: 60_000,
 	outboundQueueLimit: 256,
 } as const;
 
@@ -58,6 +59,8 @@ export type XMPPServerConfig = TlsRequirement & {
 	connectTimeoutMs?: number;
 	/** Outbound sessions idle longer than this are closed. */
 	idleTimeoutMs?: number;
+	/** Inbound connections that authenticate no domain within this time are closed. */
+	inboundAuthTimeoutMs?: number;
 	/** Max stanzas queued per remote domain while connecting. */
 	outboundQueueLimit?: number;
 	delegates?: MucDelegates;
@@ -100,6 +103,7 @@ export function resolveConfig(config: XMPPServerConfig): ResolvedXMPPServerConfi
 		maxStanzaSize: config.maxStanzaSize ?? XMPP_SERVER_DEFAULTS.maxStanzaSize,
 		connectTimeoutMs: config.connectTimeoutMs ?? XMPP_SERVER_DEFAULTS.connectTimeoutMs,
 		idleTimeoutMs: config.idleTimeoutMs ?? XMPP_SERVER_DEFAULTS.idleTimeoutMs,
+		inboundAuthTimeoutMs: config.inboundAuthTimeoutMs ?? XMPP_SERVER_DEFAULTS.inboundAuthTimeoutMs,
 		outboundQueueLimit: config.outboundQueueLimit ?? XMPP_SERVER_DEFAULTS.outboundQueueLimit,
 		delegates: config.delegates ?? {},
 		logger: config.logger ?? pino({ name: 'xmpp-server' }),

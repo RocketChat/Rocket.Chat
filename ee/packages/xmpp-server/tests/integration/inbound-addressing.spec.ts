@@ -13,6 +13,7 @@ import type { XmppDnsResolver } from '../../src/s2s/dnsResolver';
 jest.setTimeout(30000);
 
 const STREAM_ERROR_WAIT_MS = 2000;
+const AUTH_TIMEOUT_MS = 1000;
 
 const silentLogger: Logger = {
 	debug: () => undefined,
@@ -107,6 +108,7 @@ describe('Inbound stanza addressing (s2s-connectivity R6)', () => {
 				bindAddress: '127.0.0.1',
 				requireTls: false,
 				dialbackSecret: secretOf(domain),
+				inboundAuthTimeoutMs: AUTH_TIMEOUT_MS,
 				logger: silentLogger,
 			}),
 			logger: silentLogger,
@@ -178,5 +180,20 @@ describe('Inbound stanza addressing (s2s-connectivity R6)', () => {
 		peer.write(`<message from='alice@A.Localhost./phone' to='Bob@B.LOCALHOST'><body>x</body></message>`);
 		await waitUntil(() => dispatched.length > 0);
 		expect(dispatched[0].attrs).toMatchObject({ from: 'alice@a.localhost/phone', to: 'Bob@b.localhost' });
+	});
+
+	it('closes a connection that authenticates no domain in time with connection-timeout (R17)', async () => {
+		const { peer } = await RawPeer.open(ports.get('b.localhost') as number, 'a.localhost', 'b.localhost');
+		peers.push(peer);
+		const [, condition] = await peer.waitFor(/<stream:error>\s*<([a-z-]+)/, AUTH_TIMEOUT_MS * 3);
+		expect(condition).toBe('connection-timeout');
+	});
+
+	it('keeps an authenticated connection open past the deadline (R17)', async () => {
+		const peer = await authenticatedPeer();
+		await new Promise((resolve) => setTimeout(resolve, AUTH_TIMEOUT_MS * 1.5));
+		peer.write(`<message from='alice@a.localhost' to='bob@b.localhost'><body>x</body></message>`);
+		await waitUntil(() => dispatched.length > 0);
+		expect(dispatched[0].attrs.from).toBe('alice@a.localhost');
 	});
 });
