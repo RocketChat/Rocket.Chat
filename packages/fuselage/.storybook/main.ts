@@ -1,6 +1,7 @@
 import { dirname, join } from 'path';
 
 import type { StorybookConfig } from '@storybook/react-webpack5';
+import { DefinePlugin } from 'webpack';
 
 const config: StorybookConfig = {
 	webpackFinal: async (config) => {
@@ -8,6 +9,9 @@ const config: StorybookConfig = {
 			test: /\.woff2$/,
 			type: 'asset/resource',
 		});
+
+		// Matches the cascade layer the published bundle pins in `vite.config.mts`
+		config.plugins?.push(new DefinePlugin({ 'process.env.TAMAGUI_CSS_LAYER': JSON.stringify('fuselage') }));
 
 		return config;
 	},
