@@ -50,6 +50,7 @@ describe('normalizeDomain', () => {
 	it('throws on empty and invalid values', () => {
 		expect(() => normalizeDomain('')).toThrow(InvalidJidError);
 		expect(() => normalizeDomain('   ')).toThrow(InvalidJidError);
+		expect(() => normalizeDomain('example .com')).toThrow(InvalidJidError);
 	});
 });
 
