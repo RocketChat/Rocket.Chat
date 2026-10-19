@@ -16,12 +16,12 @@ exports[`renders AppLogsItem without crashing 1`] = `
           role="button"
         >
           <span
-            class="rcx-box rcx-box--full rcx-chevron--down rcx-chevron"
+            class="is_View _d-1985012034 _f-1069814357 _mw-354604370 _mh-1241200853 _t-939563940 rcx-chevron--down rcx-chevron"
             style="align-self: flex-start;"
           >
             <i
               aria-hidden="true"
-              class="rcx-box rcx-box--full rcx-icon--name-chevron-down rcx-icon rcx-css-p4voah"
+              class="is_Text _d-1409515928 _ws-311910413 _ww-408434756 _us-601212022 _va-1101652081 _ls-1720078126 _ff-1916555734 _fs-1279428672 _fw-289165218 _fs-477064150 _fv-1578983722 _lh-2067209205 _tr-1510281189 rcx-icon--name-chevron-down rcx-icon rcx-css-p4voah"
             >
               
             </i>

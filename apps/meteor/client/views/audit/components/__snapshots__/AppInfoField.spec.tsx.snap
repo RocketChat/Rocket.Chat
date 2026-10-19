@@ -26,7 +26,7 @@ exports[`renders Default without crashing 1`] = `
         App_id
       </div>
       <span
-        class="rcx-skeleton rcx-skeleton--text"
+        class="is_View _d-1987097250 _f-571455214 _o-1106425799 _fvn-1977619713 _a-119288947 _o-1083158629 _br-1682169757 _b-326940086 _h-568431264 _m-93279763 _to-611310301 _t-1660003422 rcx-skeleton rcx-skeleton--text"
       />
       <div
         class="rcx-box rcx-box--full rcx-css-6hwe8l rcx-css-cdnsod"
@@ -64,7 +64,7 @@ exports[`renders NoAppInfo without crashing 1`] = `
         App Id
       </div>
       <span
-        class="rcx-skeleton rcx-skeleton--text"
+        class="is_View _d-1987097250 _f-571455214 _o-1106425799 _fvn-1977619713 _a-119288947 _o-1083158629 _br-1682169757 _b-326940086 _h-568431264 _m-93279763 _to-611310301 _t-1660003422 rcx-skeleton rcx-skeleton--text"
       />
       <div
         class="rcx-box rcx-box--full rcx-css-6hwe8l rcx-css-cdnsod"
