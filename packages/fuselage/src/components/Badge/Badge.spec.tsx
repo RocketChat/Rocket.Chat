@@ -28,7 +28,7 @@ describe('[Badge Component]', () => {
 
 	it('should display children', () => {
 		render(<Badge>Children</Badge>);
-		screen.getByText('Children');
+		expect(screen.getByText('Children')).toBeInTheDocument();
 	});
 
 	it('should have class according to variant', () => {

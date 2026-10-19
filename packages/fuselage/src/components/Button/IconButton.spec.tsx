@@ -23,7 +23,7 @@ describe('[IconButton Component]', () => {
 
 	it('should display the badge', () => {
 		render(<IconButton icon='balloon' aria-label='balloon' badge={<Badge>2</Badge>} />);
-		screen.getByText('2');
+		expect(screen.getByText('2')).toBeInTheDocument();
 	});
 
 	it('should not render a badge when there is none', () => {

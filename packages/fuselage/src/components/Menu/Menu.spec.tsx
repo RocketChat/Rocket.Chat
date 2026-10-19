@@ -217,7 +217,7 @@ describe('[Menu Component]', () => {
 			render(<WithRichSubmenuTrigger {...WithRichSubmenuTrigger.args} />);
 
 			await user.click(screen.getByRole('button'));
-			await screen.findAllByRole('menuitem');
+			expect(await screen.findAllByRole('menuitem')).not.toHaveLength(0);
 
 			// open the first level submenu ("Move to") then the nested one ("Teams")
 			await user.keyboard('{ArrowDown}{ArrowDown}{ArrowRight}');
@@ -242,7 +242,7 @@ describe('[Menu Component]', () => {
 			render(<WithRichSubmenuTrigger {...WithRichSubmenuTrigger.args} />);
 
 			await user.click(screen.getByRole('button'));
-			await screen.findAllByRole('menuitem');
+			expect(await screen.findAllByRole('menuitem')).not.toHaveLength(0);
 
 			// open the first level submenu ("Move to") then the nested one ("Teams")
 			await user.keyboard('{ArrowDown}{ArrowDown}{ArrowRight}');
@@ -271,7 +271,7 @@ describe('[Menu Component]', () => {
 			render(<WithRichSubmenuTrigger {...WithRichSubmenuTrigger.args} />);
 
 			await user.click(screen.getByRole('button'));
-			await screen.findAllByRole('menuitem');
+			expect(await screen.findAllByRole('menuitem')).not.toHaveLength(0);
 
 			// open the submenu by hovering its trigger — focus stays on the trigger
 			const trigger = (await screen.findAllByRole('menuitem')).find((item) => item.getAttribute('aria-haspopup') === 'menu');
@@ -299,7 +299,7 @@ describe('[Menu Component]', () => {
 			);
 
 			await user.click(screen.getByRole('button'));
-			await screen.findAllByRole('menuitem');
+			expect(await screen.findAllByRole('menuitem')).not.toHaveLength(0);
 
 			// open a submenu so it becomes the topmost overlay
 			await user.keyboard('{ArrowDown}{ArrowDown}{ArrowRight}');
