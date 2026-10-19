@@ -1,4 +1,5 @@
-export * from './DDPSDK';
+export { DDPSDK } from './DDPSDK';
+export type { DDPSDKOptions } from './DDPSDK';
 export { ConnectionLostError } from './ClientStream';
 export * from './legacy/RocketchatSDKLegacy';
 export * from './livechat/LivechatClientImpl';

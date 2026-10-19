@@ -1,16 +1,10 @@
 /* eslint-disable @typescript-eslint/no-this-alias */
 
-import { RestClient } from '@rocket.chat/api-client';
 import type { IMessage, Serialized } from '@rocket.chat/core-typings';
 import { Emitter } from '@rocket.chat/emitter';
 import type { OperationParams, OperationResult } from '@rocket.chat/rest-typings';
 
-import { ClientStreamImpl } from '../ClientStream';
-import { ConnectionImpl } from '../Connection';
-import { DDPDispatcher } from '../DDPDispatcher';
-import { DDPSDK, rejectInFlightOnConnectionLoss, toRestUrl } from '../DDPSDK';
-import { TimeoutControl } from '../TimeoutControl';
-import { AccountImpl } from '../types/Account';
+import { DDPSDK } from '../DDPSDK';
 import type { ClientStream } from '../types/ClientStream';
 import type { DDPDispatchOptions } from '../types/DDPClient';
 import type { ServerMethodReturn, ServerMethods } from '../types/methods';
@@ -249,41 +243,5 @@ export class RocketchatSdkLegacyImpl extends DDPSDK implements RocketchatSDKLega
 
 	unsubscribeAll(): Promise<unknown> {
 		return Promise.all([...this.client.subscriptions.keys()].map((id) => this.client.unsubscribe(id)));
-	}
-
-	static override create(url: string, retryOptions = { retryCount: 1, retryTime: 100 }): RocketchatSdkLegacyImpl {
-		const ddp = new DDPDispatcher();
-
-		const connection = ConnectionImpl.create(url, WebSocket, ddp, retryOptions);
-
-		const stream = new ClientStreamImpl(ddp, ddp);
-
-		const account = new AccountImpl(stream);
-
-		const timeoutControl = TimeoutControl.create(ddp, connection);
-
-		const rest = new (class RestApiClient extends RestClient {
-			override getCredentials() {
-				if (!account.uid || !account.user?.token) {
-					return;
-				}
-				return {
-					'X-User-Id': account.uid,
-					'X-Auth-Token': account.user?.token,
-				};
-			}
-		})({ baseUrl: toRestUrl(url) });
-
-		const sdk = new RocketchatSdkLegacyImpl(connection, stream, account, timeoutControl, rest);
-
-		rejectInFlightOnConnectionLoss(connection, stream);
-
-		connection.on('connected', () => {
-			stream.subscriptions.forEach((sub) => {
-				ddp.subscribeWithId(sub.id, sub.name, sub.params);
-			});
-		});
-
-		return sdk;
 	}
 }

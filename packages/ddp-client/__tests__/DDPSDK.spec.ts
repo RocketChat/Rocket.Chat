@@ -5,7 +5,9 @@ import { WebSocket } from 'ws';
 
 import { fireStreamChange, fireStreamAdded, fireStreamRemove, handleConnection, handleSubscription, handleMethod } from './helpers';
 import { ConnectionLostError } from '../src/ClientStream';
+import type { ConnectionImpl } from '../src/Connection';
 import { DDPSDK, toRestUrl } from '../src/DDPSDK';
+import { LivechatClientImpl } from '../src/livechat/LivechatClientImpl';
 
 (global as any).WebSocket = (global as any).WebSocket || WebSocket;
 
@@ -244,6 +246,25 @@ it('should connect to the same socket whether or not the URL ends with /websocke
 
 	expect(sdk.connection.status).toBe('connected');
 	sdk.connection.close();
+});
+
+it('should encode and decode frames with the given codec', async () => {
+	const encode = jest.fn((payload: unknown) => JSON.stringify(payload));
+	const decode = jest.fn((raw: string) => JSON.parse(raw));
+	const sdk = DDPSDK.create('ws://localhost:1234', { encode, decode });
+
+	await handleConnection(server, sdk.connection.connect());
+
+	expect(encode).toHaveBeenCalledWith({ msg: 'connect', version: '1', support: ['1', 'pre2', 'pre1'] });
+	expect(decode).toHaveBeenCalledWith('{"msg":"connected","session":"session"}');
+	sdk.connection.close();
+});
+
+it('should build instances of the subclass it is called on, with the subclass defaults', () => {
+	const livechat = LivechatClientImpl.create('ws://localhost:1234');
+
+	expect(livechat).toBeInstanceOf(LivechatClientImpl);
+	expect((livechat.connection as ConnectionImpl).retryOptions).toMatchObject({ retryCount: 3, retryTime: 10000 });
 });
 
 it('should stop the heartbeat when the connection is closed', async () => {

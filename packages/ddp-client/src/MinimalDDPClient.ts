@@ -67,8 +67,8 @@ interface MinimalDDPClientEvents {
 export class MinimalDDPClient extends Emitter<MinimalDDPClientEvents> implements DDPClient {
 	constructor(
 		send?: (params: string) => void,
-		readonly encode = JSON.stringify,
-		readonly decode = JSON.parse,
+		readonly encode: (payload: OutgoingPayload) => string = JSON.stringify,
+		readonly decode: (raw: string) => unknown = JSON.parse,
 	) {
 		super();
 		if (send) {

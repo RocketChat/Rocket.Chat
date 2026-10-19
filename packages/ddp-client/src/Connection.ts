@@ -51,7 +51,7 @@ export interface Connection extends Emitter<{
 	close(): void;
 }
 
-interface WebSocketConstructor {
+export interface WebSocketConstructor {
 	new (url: string | URL, protocols?: string | string[]): WebSocket;
 }
 

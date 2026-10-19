@@ -1,14 +1,8 @@
-import { RestClient } from '@rocket.chat/api-client';
 import type { IOmnichannelRoom, Serialized } from '@rocket.chat/core-typings';
 import { Emitter } from '@rocket.chat/emitter';
 import type { OperationParams, OperationResult } from '@rocket.chat/rest-typings';
 
-import { ClientStreamImpl } from '../ClientStream';
-import { ConnectionImpl } from '../Connection';
-import { DDPDispatcher } from '../DDPDispatcher';
-import { DDPSDK, rejectInFlightOnConnectionLoss, toRestUrl } from '../DDPSDK';
-import { TimeoutControl } from '../TimeoutControl';
-import { AccountImpl } from '../types/Account';
+import { DDPSDK } from '../DDPSDK';
 import type { ClientStream } from '../types/ClientStream';
 import type { DDPDispatchOptions } from '../types/DDPClient';
 import type { ServerMethodReturn, ServerMethods } from '../types/methods';
@@ -363,30 +357,5 @@ export class LivechatClientImpl extends DDPSDK implements LivechatStream, Livech
 		return Promise.all(subscriptions.map((subscription) => this.client.unsubscribe(subscription)));
 	}
 
-	static override create(url: string, retryOptions = { retryCount: 3, retryTime: 10000 }): LivechatClientImpl {
-		// TODO: Decide what to do with the EJSON objects
-		const ddp = new DDPDispatcher();
-
-		const connection = ConnectionImpl.create(url, WebSocket, ddp, retryOptions);
-
-		const stream = new ClientStreamImpl(ddp, ddp);
-
-		const account = new AccountImpl(stream);
-
-		const timeoutControl = TimeoutControl.create(ddp, connection);
-
-		const rest = new RestClient({ baseUrl: toRestUrl(url) });
-
-		const sdk = new LivechatClientImpl(connection, stream, account, timeoutControl, rest);
-
-		rejectInFlightOnConnectionLoss(connection, stream);
-
-		connection.on('connected', () => {
-			for (const [, sub] of stream.subscriptions.entries()) {
-				ddp.subscribeWithId(sub.id, sub.name, sub.params);
-			}
-		});
-
-		return sdk;
-	}
+	protected static override defaultOptions = { retryCount: 3, retryTime: 10000 };
 }

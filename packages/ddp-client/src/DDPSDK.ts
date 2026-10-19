@@ -1,13 +1,14 @@
 import { RestClient } from '@rocket.chat/api-client';
 
 import { ClientStreamImpl, ConnectionLostError } from './ClientStream';
-import type { Connection } from './Connection';
+import type { Connection, WebSocketConstructor } from './Connection';
 import { ConnectionImpl } from './Connection';
 import { DDPDispatcher } from './DDPDispatcher';
 import { TimeoutControl } from './TimeoutControl';
 import type { Account } from './types/Account';
 import { AccountImpl } from './types/Account';
 import type { ClientStream } from './types/ClientStream';
+import type { OutgoingPayload } from './types/OutgoingPayload';
 import type { SDK } from './types/SDK';
 
 interface PublicationPayloads {
@@ -25,6 +26,19 @@ const isValidPayload = (data: unknown): data is PublicationPayloads => {
 		return false;
 	}
 	return true;
+};
+
+export type DDPSDKOptions = {
+	/** How many times to reconnect after the connection drops. */
+	retryCount?: number;
+	/** Base delay before a reconnection, in milliseconds. */
+	retryTime?: number;
+	/** Serialises outgoing DDP frames; pass `EJSON.stringify` to send EJSON types. Defaults to `JSON.stringify`. */
+	encode?: (payload: OutgoingPayload) => string;
+	/** Parses incoming DDP frames; pass `EJSON.parse` to receive EJSON types. Defaults to `JSON.parse`. */
+	decode?: (raw: string) => unknown;
+	/** Defaults to the global `WebSocket`. */
+	WebSocket?: WebSocketConstructor;
 };
 
 /** The REST base URL for a server URL given with an http(s) or ws(s) scheme. */
@@ -93,14 +107,14 @@ export class DDPSDK implements SDK {
 		});
 	}
 
+	protected static defaultOptions: Required<Pick<DDPSDKOptions, 'retryCount' | 'retryTime'>> = { retryCount: 1, retryTime: 100 };
+
 	/**
 	 * Compounds the Objects responsible for the SDK and returns it through
 	 * SDK interface
 	 *
 	 * @param url - The URL of the server to connect to
-	 * @param retryOptions - The options for the retry strategy of the connection
-	 * @param retryOptions.retryCount - The number of times to retry the connection
-	 * @param retryOptions.retryTime - The time to wait between retries
+	 * @param options - Retry strategy, wire codec and WebSocket implementation; see `DDPSDKOptions`
 	 * @returns The SDK interface
 	 *
 	 * @example
@@ -109,10 +123,18 @@ export class DDPSDK implements SDK {
 	 * sdk.connection.connect();
 	 * ```
 	 */
-	static create(url: string, retryOptions = { retryCount: 1, retryTime: 100 }): DDPSDK {
-		const ddp = new DDPDispatcher();
+	static create<T extends typeof DDPSDK>(this: T, url: string, options: DDPSDKOptions = {}): InstanceType<T> {
+		const {
+			retryCount,
+			retryTime,
+			encode,
+			decode,
+			WebSocket: WebSocketImpl = globalThis.WebSocket,
+		} = { ...this.defaultOptions, ...options };
 
-		const connection = ConnectionImpl.create(url, WebSocket, ddp, retryOptions);
+		const ddp = new DDPDispatcher(undefined, encode, decode);
+
+		const connection = ConnectionImpl.create(url, WebSocketImpl, ddp, { retryCount, retryTime });
 
 		const stream = new ClientStreamImpl(ddp, ddp);
 
@@ -132,7 +154,7 @@ export class DDPSDK implements SDK {
 			}
 		})({ baseUrl: toRestUrl(url) });
 
-		const sdk = new DDPSDK(connection, stream, account, timeoutControl, rest);
+		const sdk = new this(connection, stream, account, timeoutControl, rest) as InstanceType<T>;
 
 		rejectInFlightOnConnectionLoss(connection, stream);
 
@@ -160,18 +182,15 @@ export class DDPSDK implements SDK {
 	/**
 	 * Same as `DDPSDK.create`, but also connects to the server and waits for the connection to be established
 	 * @param url - The URL of the server to connect to
-	 * @param retryOptions - The options for the retry strategy of the connection
-	 * @param retryOptions.retryCount - The number of times to retry the connection
-	 * @param retryOptions.retryTime - The time to wait between retries
+	 * @param options - Same as `DDPSDK.create`
 	 * @returns A promise that resolves to the SDK interface
 	 * @example
 	 * ```ts
 	 * const sdk = await DDPSDK.createAndConnect('https://open.rocket.chat');
 	 * ```
 	 */
-
-	static async createAndConnect(url: string, retryOptions = { retryCount: 1, retryTime: 100 }): Promise<DDPSDK> {
-		const sdk = DDPSDK.create(url, retryOptions);
+	static async createAndConnect<T extends typeof DDPSDK>(this: T, url: string, options: DDPSDKOptions = {}): Promise<InstanceType<T>> {
+		const sdk = this.create(url, options);
 
 		await sdk.connection.connect();
 
