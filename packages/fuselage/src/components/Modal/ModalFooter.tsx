@@ -1,15 +1,26 @@
-import type { ElementProps } from '../../types/ElementProps';
-import { Box } from '../Box';
+import { styled, View, type GetProps } from '@tamagui/web';
 
-export type ModalFooterProps = ElementProps<HTMLDivElement> & {
-	/** Spreads the actions apart instead of packing them at the end, for a footer with content on its start side. */
-	justify?: 'end' | 'space-between';
+import { modalBoxFont, modalContainerMargin } from './Modal';
+import { useTamaguiBoxProps } from '../../hooks/useTamaguiBoxProps';
+import type { BoxProps } from '../Box';
+import { withFuselageProvider } from '../FuselageProvider/FuselageProvider';
+
+export type ModalFooterProps = BoxProps;
+
+const ModalFooterFrame = styled(View, {
+	flexDirection: 'row',
+	alignItems: 'center',
+	flexShrink: 1,
+	minWidth: 'auto',
+	minHeight: 'auto',
+	margin: modalContainerMargin,
+	...modalBoxFont,
+});
+
+const ModalFooter = ({ children, justifyContent = 'end' }: ModalFooterProps) => {
+	const frameProps = useTamaguiBoxProps({ justifyContent } as BoxProps, 'rcx-modal__footer');
+
+	return <ModalFooterFrame {...(frameProps as GetProps<typeof ModalFooterFrame>)}>{children}</ModalFooterFrame>;
 };
 
-const ModalFooter = ({ children, justify = 'end' }: ModalFooterProps) => (
-	<Box justifyContent={justify} rcx-modal__footer>
-		{children}
-	</Box>
-);
-
-export default ModalFooter;
+export default withFuselageProvider(ModalFooter);

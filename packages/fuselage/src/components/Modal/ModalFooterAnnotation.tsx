@@ -1,8 +1,25 @@
-import type { ElementProps } from '../../types/ElementProps';
-import { Box } from '../Box';
+import { styled, Text } from '@tamagui/web';
 
-export type ModalFooterAnnotationProps = ElementProps<HTMLDivElement>;
+import { modalBoxFont } from './Modal';
+import { textIconColors } from '../../Theme';
+import { fontScale } from '../../styleTokens';
+import type { BoxProps } from '../Box';
+import { withFuselageProvider } from '../FuselageProvider/FuselageProvider';
 
-const ModalFooterAnnotation = ({ children }: ModalFooterAnnotationProps) => <Box rcx-modal__footer-annotation>{children}</Box>;
+export type ModalFooterAnnotationProps = BoxProps;
 
-export default ModalFooterAnnotation;
+const ModalFooterAnnotationFrame = styled(Text, {
+	render: 'div',
+	display: 'block',
+	whiteSpace: 'inherit',
+	wordWrap: 'inherit',
+	color: String(textIconColors['font-secondary-info']),
+	...modalBoxFont,
+	...(fontScale('c1') as object),
+});
+
+const ModalFooterAnnotation = ({ children }: ModalFooterAnnotationProps) => (
+	<ModalFooterAnnotationFrame className='rcx-modal__footer-annotation'>{children}</ModalFooterAnnotationFrame>
+);
+
+export default withFuselageProvider(ModalFooterAnnotation);

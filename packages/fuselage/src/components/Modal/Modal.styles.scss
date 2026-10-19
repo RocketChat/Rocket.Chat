@@ -4,25 +4,23 @@
 @use '../../styles/mixins/breakpoints.scss' as *;
 @use '../../styles/functions.scss' as *;
 
-$modal-container-margin: theme('modal-container-margin', lengths.size(24));
-$modal-margin: theme('modal-margin', auto);
 $modal-border-radius: theme('modal-border-radius', lengths.border-radius(large));
 
+// Tamagui drops vendor-prefixed properties
+.rcx-modal,
+.rcx-modal__backdrop,
+.rcx-modal__header,
+.rcx-modal__header-text,
+.rcx-modal__title,
+.rcx-modal__tagline,
+.rcx-modal__footer,
+.rcx-modal__footer-annotation {
+	-webkit-font-smoothing: antialiased;
+	-moz-osx-font-smoothing: grayscale;
+}
+
 .rcx-modal {
-	position: static;
-
-	display: flex;
-
-	width: 100%;
-	max-height: 100%;
-	margin: $modal-margin;
-
-	background: none;
-
-	&[hidden] {
-		display: none;
-	}
-
+	// Lands on whatever element the `wrapper` prop renders
 	&__inner {
 		display: flex;
 		flex-direction: column;
@@ -37,80 +35,6 @@ $modal-border-radius: theme('modal-border-radius', lengths.border-radius(large))
 		border-radius: $modal-border-radius;
 		background-color: colors.surface(light);
 		@include use-font-scale(p2);
-	}
-
-	&__header {
-		margin: $modal-container-margin;
-
-		&-text {
-			display: flex;
-			flex-direction: column;
-			flex-grow: 1;
-			flex-shrink: 1;
-			@include use-text-ellipsis;
-		}
-	}
-
-	&__header-inner {
-		display: flex;
-		flex-wrap: nowrap;
-
-		margin: -4px;
-	}
-
-	&__title {
-		@include use-text-ellipsis;
-		flex-grow: 1;
-		flex-shrink: 1;
-
-		white-space: nowrap;
-
-		color: colors.font(default);
-		@include use-font-scale(h2);
-	}
-
-	&__tagline {
-		color: colors.font(default);
-
-		@include use-font-scale(c2);
-	}
-
-	&__hero-image {
-		display: block;
-
-		width: 100%;
-		height: auto;
-		object-fit: contain;
-
-		&-wrapper {
-			margin: 0;
-			margin-bottom: lengths.size(24);
-			margin-inline: -(lengths.size(24));
-		}
-	}
-
-	&__backdrop {
-		position: fixed;
-
-		z-index: 100;
-		inset: 0;
-
-		display: flex;
-		flex-direction: column;
-
-		background-color: colors.surface(overlay);
-	}
-
-	&__footer {
-		display: flex;
-		align-items: center;
-
-		margin: $modal-container-margin;
-
-		&-annotation {
-			color: colors.font(secondary-info);
-			@include use-font-scale(c1);
-		}
 	}
 
 	@include on-breakpoint(sm) {
