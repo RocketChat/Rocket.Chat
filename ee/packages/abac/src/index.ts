@@ -57,9 +57,9 @@ import {
 	listAttributeDefinitions,
 	verdictOf,
 	previewRetainingEveryone,
-	previewRoomMembersInSteps,
 	withRoomRoles,
 	PREVIEW_READ_OPTIONS,
+	PREVIEW_SCAN_LIMIT,
 	type PreviewSubject,
 	MAX_ABAC_ATTRIBUTE_KEYS,
 	stripTrailingSlashes,
@@ -883,16 +883,9 @@ export class AbacService extends ServiceClass implements IAbacService {
 
 		let preview: IAbacRoomMembershipPreview;
 		try {
-			const { pdp } = this;
 			const evaluated = evaluatedAgainst.length
-				? pdp &&
-					(await previewRoomMembersInSteps(
-						rid,
-						page,
-						(subjects) => pdp.evaluateSubjectsAgainstAttributes(subjects, evaluatedAgainst, room),
-						pdp.previewStep,
-					))
-				: await previewRetainingEveryone(rid, page);
+				? await this.pdp?.previewRoomMembers(room, evaluatedAgainst, page)
+				: await previewRetainingEveryone(rid, { ...page, count: PREVIEW_SCAN_LIMIT });
 			if (!evaluated) {
 				throw new PdpUnavailableError();
 			}

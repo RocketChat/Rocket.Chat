@@ -169,7 +169,17 @@ export class UsersRaw extends BaseRaw<IUser, DefaultFields<IUser>> implements IU
 
 	private activeByRoomIdAfterUsernameQuery(
 		roomId: IRoom['_id'],
-		{ search, after }: { search?: string; after?: Required<Pick<IUser, '_id' | 'username'>> },
+		{
+			search,
+			after,
+			until,
+			match,
+		}: {
+			search?: string;
+			after?: Required<Pick<IUser, '_id' | 'username'>>;
+			until?: Required<Pick<IUser, '_id' | 'username'>>;
+			match?: Filter<IUser>;
+		},
 	): Filter<IUser> {
 		const conditions: Filter<IUser>[] = [];
 
@@ -183,12 +193,21 @@ export class UsersRaw extends BaseRaw<IUser, DefaultFields<IUser>> implements IU
 			conditions.push({ $or: [{ username: { $gt: username } }, { username, _id: { $gt: _id } }] });
 		}
 
+		if (until) {
+			const { _id, username } = until;
+			conditions.push({ $or: [{ username: { $lt: username } }, { username, _id: { $lte: _id } }] });
+		}
+
+		if (match) {
+			conditions.push(match);
+		}
+
 		return { active: true, __rooms: roomId, ...(conditions.length > 0 && { $and: conditions }) };
 	}
 
 	findActiveByRoomIdAfterUsername<T extends Document = IUser>(
 		roomId: IRoom['_id'],
-		{ limit, ...range }: { search?: string; after?: Required<Pick<IUser, '_id' | 'username'>>; limit: number },
+		{ limit, ...range }: { search?: string; after?: Required<Pick<IUser, '_id' | 'username'>>; match?: Filter<IUser>; limit: number },
 		options?: FindOptions<IUser>,
 	): FindCursor<T> {
 		return this.find<T>(this.activeByRoomIdAfterUsernameQuery(roomId, range), {
@@ -200,7 +219,11 @@ export class UsersRaw extends BaseRaw<IUser, DefaultFields<IUser>> implements IU
 
 	countActiveByRoomIdAfterUsername(
 		roomId: IRoom['_id'],
-		range: { search?: string; after?: Required<Pick<IUser, '_id' | 'username'>> } = {},
+		range: {
+			search?: string;
+			after?: Required<Pick<IUser, '_id' | 'username'>>;
+			until?: Required<Pick<IUser, '_id' | 'username'>>;
+		} = {},
 	): Promise<number> {
 		return this.countDocuments(this.activeByRoomIdAfterUsernameQuery(roomId, range));
 	}

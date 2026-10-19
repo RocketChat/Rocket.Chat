@@ -348,7 +348,6 @@ const PostAbacRoomMembershipPreviewBody = {
 		attributes: PostRoomAbacAttributesBody.properties.attributes,
 		filter: { type: 'string' },
 		after: PreviewCursor,
-		count: { type: 'integer', minimum: 1 },
 		group: { type: 'string', enum: ['loses', 'retains'] },
 	},
 	required: ['rid', 'attributes'],
@@ -362,7 +361,6 @@ type POSTAbacMembershipPreviewBody =
 			attributes: Record<string, string[]>;
 			filter?: string;
 			after?: AbacPreviewCursor;
-			count?: number;
 			group?: AbacMembershipGroup;
 	  };
 

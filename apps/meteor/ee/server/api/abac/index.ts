@@ -553,8 +553,9 @@ const abacEndpoints = API.v1
 			authRequired: true,
 			license: ['abac'],
 			rateLimiterOptions: {
-				numRequestsAllowed: 10,
-				intervalTimeInMS: 60000,
+				numRequestsAllowed: 20,
+				intervalTimeInMS: 10000,
+				bypassPermissions: ['abac-management', 'manage-abac-admin-rooms'],
 			},
 			body: POSTAbacMembershipPreviewBodySchema,
 			response: {
@@ -576,11 +577,7 @@ const abacEndpoints = API.v1
 					return API.v1.forbidden('User does not have the permissions required for this action [error-unauthorized]');
 				}
 
-				const { count } = await getPaginationItems(this.bodyParams);
-
-				return API.v1.success(
-					await Abac.previewRoomMembers(rid, attributes, toAbacActor(this.user), { filter, after, count, group }, grant),
-				);
+				return API.v1.success(await Abac.previewRoomMembers(rid, attributes, toAbacActor(this.user), { filter, after, group }, grant));
 			}
 
 			if (!(await hasPermissionAsync(this.userId, 'create-abac-managed-room'))) {
