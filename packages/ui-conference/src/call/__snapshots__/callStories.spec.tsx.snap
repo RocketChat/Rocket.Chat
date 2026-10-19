@@ -1524,7 +1524,7 @@ exports[`call stories renders CallDiagnosticsPanel Connected without crashing 1`
             </div>
           </div>
           <hr
-            class="rcx-box rcx-box--full rcx-divider"
+            class="is_View _m-1833294645 _b-721425160 rcx-divider"
           />
           <div
             class="rcx-box rcx-box--full rcx-css-1huv9ou"
@@ -1592,7 +1592,7 @@ exports[`call stories renders CallDiagnosticsPanel Connected without crashing 1`
             </div>
           </div>
           <hr
-            class="rcx-box rcx-box--full rcx-divider"
+            class="is_View _m-1833294645 _b-721425160 rcx-divider"
           />
           <div
             class="rcx-box rcx-box--full rcx-css-1huv9ou"
@@ -1660,7 +1660,7 @@ exports[`call stories renders CallDiagnosticsPanel Connected without crashing 1`
             </div>
           </div>
           <hr
-            class="rcx-box rcx-box--full rcx-divider"
+            class="is_View _m-1833294645 _b-721425160 rcx-divider"
           />
           <div
             class="rcx-box rcx-box--full rcx-css-1huv9ou"
@@ -2026,7 +2026,7 @@ exports[`call stories renders CallRaisedHands OneHand without crashing 1`] = `
           aria-haspopup="true"
           aria-label="Alan Turing raised their hand"
           class="rcx-box rcx-box--full rcx-css-1gu65r7 rcx-css-klqn1p"
-          id="react-aria-_r_1e_"
+          id="react-aria-_r_1k_"
           title="Alan Turing raised their hand"
           type="button"
         >
@@ -2062,7 +2062,7 @@ exports[`call stories renders CallRaisedHands OwnHandNext without crashing 1`] =
           aria-haspopup="true"
           aria-label="You raised your hand"
           class="rcx-box rcx-box--full rcx-css-1gu65r7 rcx-css-klqn1p"
-          id="react-aria-_r_1g_"
+          id="react-aria-_r_1m_"
           title="You raised your hand"
           type="button"
         >
@@ -2104,7 +2104,7 @@ exports[`call stories renders CallRaisedHands Queue without crashing 1`] = `
           aria-haspopup="true"
           aria-label="Alan Turing raised their hand"
           class="rcx-box rcx-box--full rcx-css-1gu65r7 rcx-css-klqn1p"
-          id="react-aria-_r_1i_"
+          id="react-aria-_r_1o_"
           title="Alan Turing raised their hand"
           type="button"
         >
@@ -2144,12 +2144,12 @@ exports[`call stories renders CallRaisedHands QueueOpen without crashing 1`] = `
         style="background-color: rgb(31, 35, 41); border-radius: 4px; display: flex; flex-direction: column; height: auto; overflow: hidden;"
       >
         <button
-          aria-controls="react-aria-_r_1l_"
+          aria-controls="react-aria-_r_1r_"
           aria-expanded="true"
           aria-haspopup="true"
           aria-label="Alan Turing raised their hand"
           class="rcx-box rcx-box--full rcx-css-1gu65r7 rcx-css-klqn1p"
-          id="react-aria-_r_1k_"
+          id="react-aria-_r_1q_"
           title="Alan Turing raised their hand"
           type="button"
         >
@@ -2190,7 +2190,7 @@ exports[`call stories renders CallRaisedHands QueueOpen without crashing 1`] = `
     >
       <button
         aria-label="Dismiss"
-        id="react-aria-_r_1m_"
+        id="react-aria-_r_1s_"
         style="width: 1px; height: 1px;"
         tabindex="-1"
       />
@@ -2204,8 +2204,8 @@ exports[`call stories renders CallRaisedHands QueueOpen without crashing 1`] = `
         class="rcx-box rcx-box--full rcx-css-xvdgy9"
       >
         <div
-          aria-labelledby="react-aria-_r_1k_"
-          id="react-aria-_r_1l_"
+          aria-labelledby="react-aria-_r_1q_"
+          id="react-aria-_r_1r_"
           role="menu"
           tabindex="0"
         >
@@ -2217,21 +2217,21 @@ exports[`call stories renders CallRaisedHands QueueOpen without crashing 1`] = `
             >
               <div
                 class="rcx-item-group-title"
-                id="react-aria-_r_1n_"
+                id="react-aria-_r_1t_"
                 role="presentation"
               >
                 Raised hands
               </div>
             </div>
             <div
-              aria-labelledby="react-aria-_r_1n_"
+              aria-labelledby="react-aria-_r_1t_"
               role="group"
             >
               <label
-                aria-labelledby="_r_1t_"
+                aria-labelledby="_r_23_"
                 class="rcx-item rcx-item--inset-md rcx-item--clickable rcx-item--focus-managed"
                 data-key="alan"
-                id="react-aria-_r_1s_"
+                id="react-aria-_r_22_"
                 role="menuitem"
                 tabindex="-1"
               >
@@ -2240,7 +2240,7 @@ exports[`call stories renders CallRaisedHands QueueOpen without crashing 1`] = `
                 >
                   <div
                     class="rcx-item__title"
-                    id="_r_1t_"
+                    id="_r_23_"
                   >
                     <div
                       class="rcx-box rcx-box--full rcx-css-14a3adr"
@@ -2262,10 +2262,10 @@ exports[`call stories renders CallRaisedHands QueueOpen without crashing 1`] = `
                 </div>
               </label>
               <label
-                aria-labelledby="_r_22_"
+                aria-labelledby="_r_28_"
                 class="rcx-item rcx-item--inset-md rcx-item--clickable rcx-item--focus-managed"
                 data-key="ada"
-                id="react-aria-_r_21_"
+                id="react-aria-_r_27_"
                 role="menuitem"
                 tabindex="-1"
               >
@@ -2274,7 +2274,7 @@ exports[`call stories renders CallRaisedHands QueueOpen without crashing 1`] = `
                 >
                   <div
                     class="rcx-item__title"
-                    id="_r_22_"
+                    id="_r_28_"
                   >
                     <div
                       class="rcx-box rcx-box--full rcx-css-14a3adr"
@@ -2296,10 +2296,10 @@ exports[`call stories renders CallRaisedHands QueueOpen without crashing 1`] = `
                 </div>
               </label>
               <label
-                aria-labelledby="_r_27_"
+                aria-labelledby="_r_2d_"
                 class="rcx-item rcx-item--inset-md rcx-item--clickable rcx-item--focus-managed"
                 data-key="grace"
-                id="react-aria-_r_26_"
+                id="react-aria-_r_2c_"
                 role="menuitem"
                 tabindex="-1"
               >
@@ -2308,7 +2308,7 @@ exports[`call stories renders CallRaisedHands QueueOpen without crashing 1`] = `
                 >
                   <div
                     class="rcx-item__title"
-                    id="_r_27_"
+                    id="_r_2d_"
                   >
                     <div
                       class="rcx-box rcx-box--full rcx-css-14a3adr"
@@ -2342,7 +2342,7 @@ exports[`call stories renders CallRaisedHands QueueOpen without crashing 1`] = `
     >
       <button
         aria-label="Dismiss"
-        id="react-aria-_r_28_"
+        id="react-aria-_r_2e_"
         style="width: 1px; height: 1px;"
         tabindex="-1"
       />
@@ -3808,7 +3808,7 @@ exports[`call stories renders CameraPicker CameraOff without crashing 1`] = `
           aria-haspopup="true"
           aria-label="Camera options"
           class="rcx-box rcx-box--full rcx-split-button__trigger rcx-button--large-square rcx-button--icon-secondary-danger rcx-button--square rcx-button--icon rcx-button rcx-css-1wk08i8"
-          id="react-aria-_r_29_"
+          id="react-aria-_r_2f_"
           label="Camera options"
           title="Camera"
           type="button"
@@ -3840,7 +3840,7 @@ exports[`call stories renders CameraPicker CameraOn without crashing 1`] = `
           aria-haspopup="true"
           aria-label="Camera options"
           class="rcx-box rcx-box--full rcx-split-button__trigger rcx-button--large-square rcx-button--icon-secondary rcx-button--square rcx-button--icon rcx-button rcx-css-1wk08i8"
-          id="react-aria-_r_2b_"
+          id="react-aria-_r_2h_"
           label="Camera options"
           title="Camera"
           type="button"
@@ -3900,12 +3900,12 @@ exports[`call stories renders CameraPicker Open without crashing 1`] = `
         style="background-color: rgb(31, 35, 41); border-radius: 4px; display: flex; flex-direction: column; height: auto; overflow: hidden;"
       >
         <button
-          aria-controls="react-aria-_r_2e_"
+          aria-controls="react-aria-_r_2k_"
           aria-expanded="true"
           aria-haspopup="true"
           aria-label="Camera options"
           class="rcx-box rcx-box--full rcx-split-button__trigger rcx-button--icon-pressed rcx-button--large-square rcx-button--icon-secondary-pressed rcx-button--icon-secondary rcx-button--square rcx-button--icon rcx-button rcx-css-1wk08i8"
-          id="react-aria-_r_2d_"
+          id="react-aria-_r_2j_"
           label="Camera options"
           title="Camera"
           type="button"
@@ -3936,7 +3936,7 @@ exports[`call stories renders CameraPicker Open without crashing 1`] = `
     >
       <button
         aria-label="Dismiss"
-        id="react-aria-_r_2f_"
+        id="react-aria-_r_2l_"
         style="width: 1px; height: 1px;"
         tabindex="-1"
       />
@@ -3950,8 +3950,8 @@ exports[`call stories renders CameraPicker Open without crashing 1`] = `
         class="rcx-box rcx-box--full rcx-css-xvdgy9"
       >
         <div
-          aria-labelledby="react-aria-_r_2d_"
-          id="react-aria-_r_2e_"
+          aria-labelledby="react-aria-_r_2j_"
+          id="react-aria-_r_2k_"
           role="menu"
           tabindex="0"
         >
@@ -3963,22 +3963,22 @@ exports[`call stories renders CameraPicker Open without crashing 1`] = `
             >
               <div
                 class="rcx-item-group-title"
-                id="react-aria-_r_2g_"
+                id="react-aria-_r_2m_"
                 role="presentation"
               >
                 Camera
               </div>
             </div>
             <div
-              aria-labelledby="react-aria-_r_2g_"
+              aria-labelledby="react-aria-_r_2m_"
               role="group"
             >
               <label
                 aria-checked="false"
-                aria-labelledby="_r_2m_"
+                aria-labelledby="_r_2s_"
                 class="rcx-item rcx-item--inset-md rcx-item--clickable rcx-item--focus-managed"
                 data-key="facetime-videoinput"
-                id="react-aria-_r_2l_"
+                id="react-aria-_r_2r_"
                 role="menuitemradio"
                 tabindex="-1"
               >
@@ -3987,7 +3987,7 @@ exports[`call stories renders CameraPicker Open without crashing 1`] = `
                 >
                   <div
                     class="rcx-item__title"
-                    id="_r_2m_"
+                    id="_r_2s_"
                   >
                     <div
                       class="rcx-box rcx-box--full rcx-css-f39bd5"
@@ -4021,10 +4021,10 @@ exports[`call stories renders CameraPicker Open without crashing 1`] = `
               </label>
               <label
                 aria-checked="false"
-                aria-labelledby="_r_2r_"
+                aria-labelledby="_r_31_"
                 class="rcx-item rcx-item--inset-md rcx-item--clickable rcx-item--focus-managed"
                 data-key="brio-videoinput"
-                id="react-aria-_r_2q_"
+                id="react-aria-_r_30_"
                 role="menuitemradio"
                 tabindex="-1"
               >
@@ -4033,7 +4033,7 @@ exports[`call stories renders CameraPicker Open without crashing 1`] = `
                 >
                   <div
                     class="rcx-item__title"
-                    id="_r_2r_"
+                    id="_r_31_"
                   >
                     <div
                       class="rcx-box rcx-box--full rcx-css-f39bd5"
@@ -4078,22 +4078,22 @@ exports[`call stories renders CameraPicker Open without crashing 1`] = `
             >
               <div
                 class="rcx-item-group-title"
-                id="react-aria-_r_2s_"
+                id="react-aria-_r_32_"
                 role="presentation"
               >
                 Send resolution (maximum)
               </div>
             </div>
             <div
-              aria-labelledby="react-aria-_r_2s_"
+              aria-labelledby="react-aria-_r_32_"
               role="group"
             >
               <label
                 aria-checked="false"
-                aria-labelledby="_r_32_"
+                aria-labelledby="_r_38_"
                 class="rcx-item rcx-item--inset-md rcx-item--clickable rcx-item--focus-managed"
                 data-key="choice:0:auto"
-                id="react-aria-_r_31_"
+                id="react-aria-_r_37_"
                 role="menuitemradio"
                 tabindex="-1"
               >
@@ -4102,7 +4102,7 @@ exports[`call stories renders CameraPicker Open without crashing 1`] = `
                 >
                   <div
                     class="rcx-item__title"
-                    id="_r_32_"
+                    id="_r_38_"
                   >
                     <div
                       class="rcx-box rcx-box--full rcx-css-f39bd5"
@@ -4141,10 +4141,10 @@ exports[`call stories renders CameraPicker Open without crashing 1`] = `
               </label>
               <label
                 aria-checked="false"
-                aria-labelledby="_r_37_"
+                aria-labelledby="_r_3d_"
                 class="rcx-item rcx-item--inset-md rcx-item--clickable rcx-item--focus-managed"
                 data-key="choice:0:h1080"
-                id="react-aria-_r_36_"
+                id="react-aria-_r_3c_"
                 role="menuitemradio"
                 tabindex="-1"
               >
@@ -4153,7 +4153,7 @@ exports[`call stories renders CameraPicker Open without crashing 1`] = `
                 >
                   <div
                     class="rcx-item__title"
-                    id="_r_37_"
+                    id="_r_3d_"
                   >
                     <div
                       class="rcx-box rcx-box--full rcx-css-f39bd5"
@@ -4186,10 +4186,10 @@ exports[`call stories renders CameraPicker Open without crashing 1`] = `
               </label>
               <label
                 aria-checked="false"
-                aria-labelledby="_r_3c_"
+                aria-labelledby="_r_3i_"
                 class="rcx-item rcx-item--inset-md rcx-item--clickable rcx-item--focus-managed"
                 data-key="choice:0:h720"
-                id="react-aria-_r_3b_"
+                id="react-aria-_r_3h_"
                 role="menuitemradio"
                 tabindex="-1"
               >
@@ -4198,7 +4198,7 @@ exports[`call stories renders CameraPicker Open without crashing 1`] = `
                 >
                   <div
                     class="rcx-item__title"
-                    id="_r_3c_"
+                    id="_r_3i_"
                   >
                     <div
                       class="rcx-box rcx-box--full rcx-css-f39bd5"
@@ -4231,10 +4231,10 @@ exports[`call stories renders CameraPicker Open without crashing 1`] = `
               </label>
               <label
                 aria-checked="false"
-                aria-labelledby="_r_3h_"
+                aria-labelledby="_r_3n_"
                 class="rcx-item rcx-item--inset-md rcx-item--clickable rcx-item--focus-managed"
                 data-key="choice:0:h360"
-                id="react-aria-_r_3g_"
+                id="react-aria-_r_3m_"
                 role="menuitemradio"
                 tabindex="-1"
               >
@@ -4243,7 +4243,7 @@ exports[`call stories renders CameraPicker Open without crashing 1`] = `
                 >
                   <div
                     class="rcx-item__title"
-                    id="_r_3h_"
+                    id="_r_3n_"
                   >
                     <div
                       class="rcx-box rcx-box--full rcx-css-f39bd5"
@@ -4276,10 +4276,10 @@ exports[`call stories renders CameraPicker Open without crashing 1`] = `
               </label>
               <label
                 aria-checked="false"
-                aria-labelledby="_r_3m_"
+                aria-labelledby="_r_3s_"
                 class="rcx-item rcx-item--inset-md rcx-item--clickable rcx-item--focus-managed"
                 data-key="choice:0:h180"
-                id="react-aria-_r_3l_"
+                id="react-aria-_r_3r_"
                 role="menuitemradio"
                 tabindex="-1"
               >
@@ -4288,7 +4288,7 @@ exports[`call stories renders CameraPicker Open without crashing 1`] = `
                 >
                   <div
                     class="rcx-item__title"
-                    id="_r_3m_"
+                    id="_r_3s_"
                   >
                     <div
                       class="rcx-box rcx-box--full rcx-css-f39bd5"
@@ -4332,7 +4332,7 @@ exports[`call stories renders CameraPicker Open without crashing 1`] = `
     >
       <button
         aria-label="Dismiss"
-        id="react-aria-_r_3n_"
+        id="react-aria-_r_3t_"
         style="width: 1px; height: 1px;"
         tabindex="-1"
       />

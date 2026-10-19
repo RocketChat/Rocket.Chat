@@ -34,7 +34,7 @@ exports[`renders Default without crashing 1`] = `
             </button>
           </div>
           <hr
-            class="rcx-box rcx-box--full rcx-sidepanel--divider rcx-divider rcx-css-emj6cu"
+            class="is_View _m-1833294645 _b-721425160 rcx-divider rcx-sidepanel--divider rcx-css-emj6cu"
           />
         </div>
         <div
@@ -98,7 +98,7 @@ exports[`renders Default without crashing 1`] = `
                     <div
                       aria-hidden="true"
                       class="rcx-item__icon rcx-sidebar-item__icon rcx-sidebar-item__icon--highlighted"
-                      id="_r_0_"
+                      id="_r_2_"
                     >
                       <i
                         aria-hidden="true"
@@ -109,7 +109,7 @@ exports[`renders Default without crashing 1`] = `
                     </div>
                     <div
                       class="rcx-item__title rcx-sidebar-item__title rcx-sidebar-item__title--highlighted"
-                      id="_r_1_"
+                      id="_r_3_"
                     >
                       Marvin Black
                     </div>
@@ -163,7 +163,7 @@ exports[`renders Default without crashing 1`] = `
                             aria-haspopup="true"
                             aria-label="Options"
                             class="rcx-box rcx-box--full rcx-button--mini-square rcx-button--square rcx-button--icon rcx-button"
-                            id="react-aria-_r_2_"
+                            id="react-aria-_r_4_"
                             title="Options"
                             type="button"
                           >
@@ -211,7 +211,7 @@ exports[`renders Default without crashing 1`] = `
                     <div
                       aria-hidden="true"
                       class="rcx-item__icon rcx-sidebar-item__icon"
-                      id="_r_4_"
+                      id="_r_6_"
                     >
                       <i
                         aria-hidden="true"
@@ -222,7 +222,7 @@ exports[`renders Default without crashing 1`] = `
                     </div>
                     <div
                       class="rcx-item__title rcx-sidebar-item__title"
-                      id="_r_5_"
+                      id="_r_7_"
                     >
                       Esther Miles
                     </div>
@@ -276,7 +276,7 @@ exports[`renders Default without crashing 1`] = `
                             aria-haspopup="true"
                             aria-label="Options"
                             class="rcx-box rcx-box--full rcx-button--mini-square rcx-button--square rcx-button--icon rcx-button"
-                            id="react-aria-_r_6_"
+                            id="react-aria-_r_8_"
                             title="Options"
                             type="button"
                           >
@@ -324,7 +324,7 @@ exports[`renders Default without crashing 1`] = `
                     <div
                       aria-hidden="true"
                       class="rcx-item__icon rcx-sidebar-item__icon"
-                      id="_r_8_"
+                      id="_r_a_"
                     >
                       <i
                         aria-hidden="true"
@@ -335,7 +335,7 @@ exports[`renders Default without crashing 1`] = `
                     </div>
                     <div
                       class="rcx-item__title rcx-sidebar-item__title"
-                      id="_r_9_"
+                      id="_r_b_"
                     >
                       Leroy Jenkins
                     </div>
@@ -389,7 +389,7 @@ exports[`renders Default without crashing 1`] = `
                             aria-haspopup="true"
                             aria-label="Options"
                             class="rcx-box rcx-box--full rcx-button--mini-square rcx-button--square rcx-button--icon rcx-button"
-                            id="react-aria-_r_a_"
+                            id="react-aria-_r_c_"
                             title="Options"
                             type="button"
                           >
@@ -437,7 +437,7 @@ exports[`renders Default without crashing 1`] = `
                     <div
                       aria-hidden="true"
                       class="rcx-item__icon rcx-sidebar-item__icon"
-                      id="_r_c_"
+                      id="_r_e_"
                     >
                       <i
                         aria-hidden="true"
@@ -448,7 +448,7 @@ exports[`renders Default without crashing 1`] = `
                     </div>
                     <div
                       class="rcx-item__title rcx-sidebar-item__title"
-                      id="_r_d_"
+                      id="_r_f_"
                     >
                       Morgan Freeman looooooooooong looooooooooong looooooooooong name
                     </div>
@@ -502,7 +502,7 @@ exports[`renders Default without crashing 1`] = `
                             aria-haspopup="true"
                             aria-label="Options"
                             class="rcx-box rcx-box--full rcx-button--mini-square rcx-button--square rcx-button--icon rcx-button"
-                            id="react-aria-_r_e_"
+                            id="react-aria-_r_g_"
                             title="Options"
                             type="button"
                           >
@@ -550,7 +550,7 @@ exports[`renders Default without crashing 1`] = `
                     <div
                       aria-hidden="true"
                       class="rcx-item__icon rcx-sidebar-item__icon"
-                      id="_r_g_"
+                      id="_r_i_"
                     >
                       <i
                         aria-hidden="true"
@@ -561,7 +561,7 @@ exports[`renders Default without crashing 1`] = `
                     </div>
                     <div
                       class="rcx-item__title rcx-sidebar-item__title"
-                      id="_r_h_"
+                      id="_r_j_"
                     >
                       John Doe
                     </div>
@@ -615,7 +615,7 @@ exports[`renders Default without crashing 1`] = `
                             aria-haspopup="true"
                             aria-label="Options"
                             class="rcx-box rcx-box--full rcx-button--mini-square rcx-button--square rcx-button--icon rcx-button"
-                            id="react-aria-_r_i_"
+                            id="react-aria-_r_k_"
                             title="Options"
                             type="button"
                           >
@@ -663,7 +663,7 @@ exports[`renders Default without crashing 1`] = `
                     <div
                       aria-hidden="true"
                       class="rcx-item__icon rcx-sidebar-item__icon"
-                      id="_r_k_"
+                      id="_r_m_"
                     >
                       <i
                         aria-hidden="true"
@@ -674,7 +674,7 @@ exports[`renders Default without crashing 1`] = `
                     </div>
                     <div
                       class="rcx-item__title rcx-sidebar-item__title"
-                      id="_r_l_"
+                      id="_r_n_"
                     >
                       Jane Doe
                     </div>
@@ -728,7 +728,7 @@ exports[`renders Default without crashing 1`] = `
                             aria-haspopup="true"
                             aria-label="Options"
                             class="rcx-box rcx-box--full rcx-button--mini-square rcx-button--square rcx-button--icon rcx-button"
-                            id="react-aria-_r_m_"
+                            id="react-aria-_r_o_"
                             title="Options"
                             type="button"
                           >
@@ -776,7 +776,7 @@ exports[`renders Default without crashing 1`] = `
                     <div
                       aria-hidden="true"
                       class="rcx-item__icon rcx-sidebar-item__icon"
-                      id="_r_o_"
+                      id="_r_q_"
                     >
                       <i
                         aria-hidden="true"
@@ -787,7 +787,7 @@ exports[`renders Default without crashing 1`] = `
                     </div>
                     <div
                       class="rcx-item__title rcx-sidebar-item__title"
-                      id="_r_p_"
+                      id="_r_r_"
                     >
                       Baz Qux
                     </div>
@@ -841,7 +841,7 @@ exports[`renders Default without crashing 1`] = `
                             aria-haspopup="true"
                             aria-label="Options"
                             class="rcx-box rcx-box--full rcx-button--mini-square rcx-button--square rcx-button--icon rcx-button"
-                            id="react-aria-_r_q_"
+                            id="react-aria-_r_s_"
                             title="Options"
                             type="button"
                           >
@@ -889,7 +889,7 @@ exports[`renders Default without crashing 1`] = `
                     <div
                       aria-hidden="true"
                       class="rcx-item__icon rcx-sidebar-item__icon"
-                      id="_r_s_"
+                      id="_r_u_"
                     >
                       <i
                         aria-hidden="true"
@@ -900,7 +900,7 @@ exports[`renders Default without crashing 1`] = `
                     </div>
                     <div
                       class="rcx-item__title rcx-sidebar-item__title"
-                      id="_r_t_"
+                      id="_r_v_"
                     >
                       Alice Bob
                     </div>
@@ -954,7 +954,7 @@ exports[`renders Default without crashing 1`] = `
                             aria-haspopup="true"
                             aria-label="Options"
                             class="rcx-box rcx-box--full rcx-button--mini-square rcx-button--square rcx-button--icon rcx-button"
-                            id="react-aria-_r_u_"
+                            id="react-aria-_r_10_"
                             title="Options"
                             type="button"
                           >
@@ -1002,7 +1002,7 @@ exports[`renders Default without crashing 1`] = `
                     <div
                       aria-hidden="true"
                       class="rcx-item__icon rcx-sidebar-item__icon"
-                      id="_r_10_"
+                      id="_r_12_"
                     >
                       <i
                         aria-hidden="true"
@@ -1013,7 +1013,7 @@ exports[`renders Default without crashing 1`] = `
                     </div>
                     <div
                       class="rcx-item__title rcx-sidebar-item__title"
-                      id="_r_11_"
+                      id="_r_13_"
                     >
                       Charlie Delta
                     </div>
@@ -1067,7 +1067,7 @@ exports[`renders Default without crashing 1`] = `
                             aria-haspopup="true"
                             aria-label="Options"
                             class="rcx-box rcx-box--full rcx-button--mini-square rcx-button--square rcx-button--icon rcx-button"
-                            id="react-aria-_r_12_"
+                            id="react-aria-_r_14_"
                             title="Options"
                             type="button"
                           >
@@ -1115,7 +1115,7 @@ exports[`renders Default without crashing 1`] = `
                     <div
                       aria-hidden="true"
                       class="rcx-item__icon rcx-sidebar-item__icon"
-                      id="_r_14_"
+                      id="_r_16_"
                     >
                       <i
                         aria-hidden="true"
@@ -1126,7 +1126,7 @@ exports[`renders Default without crashing 1`] = `
                     </div>
                     <div
                       class="rcx-item__title rcx-sidebar-item__title"
-                      id="_r_15_"
+                      id="_r_17_"
                     >
                       Eve Mallory
                     </div>
@@ -1180,7 +1180,7 @@ exports[`renders Default without crashing 1`] = `
                             aria-haspopup="true"
                             aria-label="Options"
                             class="rcx-box rcx-box--full rcx-button--mini-square rcx-button--square rcx-button--icon rcx-button"
-                            id="react-aria-_r_16_"
+                            id="react-aria-_r_18_"
                             title="Options"
                             type="button"
                           >
@@ -1228,7 +1228,7 @@ exports[`renders Default without crashing 1`] = `
                     <div
                       aria-hidden="true"
                       class="rcx-item__icon rcx-sidebar-item__icon"
-                      id="_r_18_"
+                      id="_r_1a_"
                     >
                       <i
                         aria-hidden="true"
@@ -1239,7 +1239,7 @@ exports[`renders Default without crashing 1`] = `
                     </div>
                     <div
                       class="rcx-item__title rcx-sidebar-item__title"
-                      id="_r_19_"
+                      id="_r_1b_"
                     >
                       Marvin Black
                     </div>
@@ -1293,7 +1293,7 @@ exports[`renders Default without crashing 1`] = `
                             aria-haspopup="true"
                             aria-label="Options"
                             class="rcx-box rcx-box--full rcx-button--mini-square rcx-button--square rcx-button--icon rcx-button"
-                            id="react-aria-_r_1a_"
+                            id="react-aria-_r_1c_"
                             title="Options"
                             type="button"
                           >
@@ -1341,7 +1341,7 @@ exports[`renders Default without crashing 1`] = `
                     <div
                       aria-hidden="true"
                       class="rcx-item__icon rcx-sidebar-item__icon"
-                      id="_r_1c_"
+                      id="_r_1e_"
                     >
                       <i
                         aria-hidden="true"
@@ -1352,7 +1352,7 @@ exports[`renders Default without crashing 1`] = `
                     </div>
                     <div
                       class="rcx-item__title rcx-sidebar-item__title"
-                      id="_r_1d_"
+                      id="_r_1f_"
                     >
                       Esther Miles
                     </div>
@@ -1406,7 +1406,7 @@ exports[`renders Default without crashing 1`] = `
                             aria-haspopup="true"
                             aria-label="Options"
                             class="rcx-box rcx-box--full rcx-button--mini-square rcx-button--square rcx-button--icon rcx-button"
-                            id="react-aria-_r_1e_"
+                            id="react-aria-_r_1g_"
                             title="Options"
                             type="button"
                           >
@@ -1454,7 +1454,7 @@ exports[`renders Default without crashing 1`] = `
                     <div
                       aria-hidden="true"
                       class="rcx-item__icon rcx-sidebar-item__icon"
-                      id="_r_1g_"
+                      id="_r_1i_"
                     >
                       <i
                         aria-hidden="true"
@@ -1465,7 +1465,7 @@ exports[`renders Default without crashing 1`] = `
                     </div>
                     <div
                       class="rcx-item__title rcx-sidebar-item__title"
-                      id="_r_1h_"
+                      id="_r_1j_"
                     >
                       Leroy Jenkins
                     </div>
@@ -1519,7 +1519,7 @@ exports[`renders Default without crashing 1`] = `
                             aria-haspopup="true"
                             aria-label="Options"
                             class="rcx-box rcx-box--full rcx-button--mini-square rcx-button--square rcx-button--icon rcx-button"
-                            id="react-aria-_r_1i_"
+                            id="react-aria-_r_1k_"
                             title="Options"
                             type="button"
                           >
@@ -1567,7 +1567,7 @@ exports[`renders Default without crashing 1`] = `
                     <div
                       aria-hidden="true"
                       class="rcx-item__icon rcx-sidebar-item__icon"
-                      id="_r_1k_"
+                      id="_r_1m_"
                     >
                       <i
                         aria-hidden="true"
@@ -1578,7 +1578,7 @@ exports[`renders Default without crashing 1`] = `
                     </div>
                     <div
                       class="rcx-item__title rcx-sidebar-item__title"
-                      id="_r_1l_"
+                      id="_r_1n_"
                     >
                       Morgan Freeman looooooooooong looooooooooong looooooooooong name
                     </div>
@@ -1632,7 +1632,7 @@ exports[`renders Default without crashing 1`] = `
                             aria-haspopup="true"
                             aria-label="Options"
                             class="rcx-box rcx-box--full rcx-button--mini-square rcx-button--square rcx-button--icon rcx-button"
-                            id="react-aria-_r_1m_"
+                            id="react-aria-_r_1o_"
                             title="Options"
                             type="button"
                           >
@@ -1680,7 +1680,7 @@ exports[`renders Default without crashing 1`] = `
                     <div
                       aria-hidden="true"
                       class="rcx-item__icon rcx-sidebar-item__icon"
-                      id="_r_1o_"
+                      id="_r_1q_"
                     >
                       <i
                         aria-hidden="true"
@@ -1691,7 +1691,7 @@ exports[`renders Default without crashing 1`] = `
                     </div>
                     <div
                       class="rcx-item__title rcx-sidebar-item__title"
-                      id="_r_1p_"
+                      id="_r_1r_"
                     >
                       John Doe
                     </div>
@@ -1745,7 +1745,7 @@ exports[`renders Default without crashing 1`] = `
                             aria-haspopup="true"
                             aria-label="Options"
                             class="rcx-box rcx-box--full rcx-button--mini-square rcx-button--square rcx-button--icon rcx-button"
-                            id="react-aria-_r_1q_"
+                            id="react-aria-_r_1s_"
                             title="Options"
                             type="button"
                           >
@@ -1793,7 +1793,7 @@ exports[`renders Default without crashing 1`] = `
                     <div
                       aria-hidden="true"
                       class="rcx-item__icon rcx-sidebar-item__icon"
-                      id="_r_1s_"
+                      id="_r_1u_"
                     >
                       <i
                         aria-hidden="true"
@@ -1804,7 +1804,7 @@ exports[`renders Default without crashing 1`] = `
                     </div>
                     <div
                       class="rcx-item__title rcx-sidebar-item__title"
-                      id="_r_1t_"
+                      id="_r_1v_"
                     >
                       Jane Doe
                     </div>
@@ -1858,7 +1858,7 @@ exports[`renders Default without crashing 1`] = `
                             aria-haspopup="true"
                             aria-label="Options"
                             class="rcx-box rcx-box--full rcx-button--mini-square rcx-button--square rcx-button--icon rcx-button"
-                            id="react-aria-_r_1u_"
+                            id="react-aria-_r_20_"
                             title="Options"
                             type="button"
                           >
@@ -1906,7 +1906,7 @@ exports[`renders Default without crashing 1`] = `
                     <div
                       aria-hidden="true"
                       class="rcx-item__icon rcx-sidebar-item__icon"
-                      id="_r_20_"
+                      id="_r_22_"
                     >
                       <i
                         aria-hidden="true"
@@ -1917,7 +1917,7 @@ exports[`renders Default without crashing 1`] = `
                     </div>
                     <div
                       class="rcx-item__title rcx-sidebar-item__title"
-                      id="_r_21_"
+                      id="_r_23_"
                     >
                       Baz Qux
                     </div>
@@ -1971,7 +1971,7 @@ exports[`renders Default without crashing 1`] = `
                             aria-haspopup="true"
                             aria-label="Options"
                             class="rcx-box rcx-box--full rcx-button--mini-square rcx-button--square rcx-button--icon rcx-button"
-                            id="react-aria-_r_22_"
+                            id="react-aria-_r_24_"
                             title="Options"
                             type="button"
                           >
@@ -2019,7 +2019,7 @@ exports[`renders Default without crashing 1`] = `
                     <div
                       aria-hidden="true"
                       class="rcx-item__icon rcx-sidebar-item__icon"
-                      id="_r_24_"
+                      id="_r_26_"
                     >
                       <i
                         aria-hidden="true"
@@ -2030,7 +2030,7 @@ exports[`renders Default without crashing 1`] = `
                     </div>
                     <div
                       class="rcx-item__title rcx-sidebar-item__title"
-                      id="_r_25_"
+                      id="_r_27_"
                     >
                       Alice Bob
                     </div>
@@ -2084,7 +2084,7 @@ exports[`renders Default without crashing 1`] = `
                             aria-haspopup="true"
                             aria-label="Options"
                             class="rcx-box rcx-box--full rcx-button--mini-square rcx-button--square rcx-button--icon rcx-button"
-                            id="react-aria-_r_26_"
+                            id="react-aria-_r_28_"
                             title="Options"
                             type="button"
                           >
@@ -2132,7 +2132,7 @@ exports[`renders Default without crashing 1`] = `
                     <div
                       aria-hidden="true"
                       class="rcx-item__icon rcx-sidebar-item__icon"
-                      id="_r_28_"
+                      id="_r_2a_"
                     >
                       <i
                         aria-hidden="true"
@@ -2143,7 +2143,7 @@ exports[`renders Default without crashing 1`] = `
                     </div>
                     <div
                       class="rcx-item__title rcx-sidebar-item__title"
-                      id="_r_29_"
+                      id="_r_2b_"
                     >
                       Charlie Delta
                     </div>
@@ -2197,7 +2197,7 @@ exports[`renders Default without crashing 1`] = `
                             aria-haspopup="true"
                             aria-label="Options"
                             class="rcx-box rcx-box--full rcx-button--mini-square rcx-button--square rcx-button--icon rcx-button"
-                            id="react-aria-_r_2a_"
+                            id="react-aria-_r_2c_"
                             title="Options"
                             type="button"
                           >
@@ -2245,7 +2245,7 @@ exports[`renders Default without crashing 1`] = `
                     <div
                       aria-hidden="true"
                       class="rcx-item__icon rcx-sidebar-item__icon"
-                      id="_r_2c_"
+                      id="_r_2e_"
                     >
                       <i
                         aria-hidden="true"
@@ -2256,7 +2256,7 @@ exports[`renders Default without crashing 1`] = `
                     </div>
                     <div
                       class="rcx-item__title rcx-sidebar-item__title"
-                      id="_r_2d_"
+                      id="_r_2f_"
                     >
                       Eve Mallory
                     </div>
@@ -2310,7 +2310,7 @@ exports[`renders Default without crashing 1`] = `
                             aria-haspopup="true"
                             aria-label="Options"
                             class="rcx-box rcx-box--full rcx-button--mini-square rcx-button--square rcx-button--icon rcx-button"
-                            id="react-aria-_r_2e_"
+                            id="react-aria-_r_2g_"
                             title="Options"
                             type="button"
                           >

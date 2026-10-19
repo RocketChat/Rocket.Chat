@@ -56,7 +56,7 @@ exports[`RoomInviteHeader renders Default without crashing 1`] = `
         </div>
       </div>
       <hr
-        class="rcx-box rcx-box--full rcx-divider rcx-css-emj6cu"
+        class="is_View _m-1833294645 _b-721425160 rcx-divider rcx-css-emj6cu"
       />
     </header>
   </div>

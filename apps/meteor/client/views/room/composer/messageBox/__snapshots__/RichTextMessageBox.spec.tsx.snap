@@ -48,7 +48,7 @@ exports[`renders Empty without crashing 1`] = `
             </i>
           </button>
           <hr
-            class="rcx-box rcx-box--full rcx-divider--vertical rcx-divider rcx-css-ei8wuo"
+            class="is_View _m-1230101273 _b-810495792 _w-225817338 _h-1628964073 rcx-divider rcx-divider--vertical rcx-css-ei8wuo"
           />
           <button
             aria-label="Bold"
@@ -579,7 +579,7 @@ const fenced = 'code block';
             </i>
           </button>
           <hr
-            class="rcx-box rcx-box--full rcx-divider--vertical rcx-divider rcx-css-ei8wuo"
+            class="is_View _m-1230101273 _b-810495792 _w-225817338 _h-1628964073 rcx-divider rcx-divider--vertical rcx-css-ei8wuo"
           />
           <button
             aria-label="Bold"
