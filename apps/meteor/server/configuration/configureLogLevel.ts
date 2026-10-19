@@ -9,7 +9,7 @@ export async function configureLogLevel(settings: ICachedSettings) {
 		logLevel.emit('changed', LogLevel as LogLevelSetting);
 	}
 
-	settings.watch('Log_Level', (value) => {
+	settings.watch<string>('Log_Level', (value) => {
 		if (value != null) {
 			logLevel.emit('changed', String(value) as LogLevelSetting);
 		}

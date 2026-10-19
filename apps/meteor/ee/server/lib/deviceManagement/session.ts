@@ -56,7 +56,7 @@ export const listenSessionLogin = () => {
 			return;
 		}
 
-		const dateFormat = settings.get('Message_TimeAndDateFormat');
+		const dateFormat = settings.get<string>('Message_TimeAndDateFormat');
 
 		const {
 			name,

@@ -61,6 +61,7 @@ const evaluateValue = (value: unknown, args: readonly unknown[]): string => {
 		return value.map((innerValue) => evaluateValue(innerValue, args)).join('');
 	}
 
+	// eslint-disable-next-line @typescript-eslint/no-base-to-string -- stringifies arbitrary input
 	return String(value);
 };
 

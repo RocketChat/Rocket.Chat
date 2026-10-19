@@ -25,6 +25,7 @@ const maskIfNeeded = (settingId: ISetting['_id'], value: SettingValue): SettingV
 		return value;
 	}
 
+	// eslint-disable-next-line @typescript-eslint/no-base-to-string -- masking only needs the value length
 	const valueString = String(value);
 	const valueLength = valueString.length;
 

@@ -204,6 +204,7 @@ const fontSizeProp: PropDefinition = {
 };
 
 const fontWeightProp: PropDefinition = {
+	// eslint-disable-next-line @typescript-eslint/no-base-to-string -- unknown tokens fall back to the raw value
 	toCSSValue: (value) => (value ? String(fontScale(value)?.fontWeight || value) : undefined),
 };
 
@@ -212,6 +213,7 @@ const lineHeightProp: PropDefinition = {
 };
 
 const letterSpacingProp: PropDefinition = {
+	// eslint-disable-next-line @typescript-eslint/no-base-to-string -- unknown tokens fall back to the raw value
 	toCSSValue: (value) => (value ? String(fontScale(value)?.letterSpacing || value) : undefined),
 };
 

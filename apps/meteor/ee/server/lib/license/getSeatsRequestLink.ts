@@ -4,7 +4,7 @@ import { Settings, Users } from '@rocket.chat/models';
 type WizardSettings = Array<ISetting>;
 
 export const getSeatsRequestLink = async (url: string, params?: Record<string, string>): Promise<string> => {
-	const workspaceId = await Settings.findOneById('Cloud_Workspace_Id');
+	const workspaceId = await Settings.findOneById<{ value: string }>('Cloud_Workspace_Id');
 	const activeUsers = await Users.getActiveLocalUserCount();
 	const wizardSettings: WizardSettings = await Settings.findSetupWizardSettings().toArray();
 
@@ -21,6 +21,7 @@ export const getSeatsRequestLink = async (url: string, params?: Record<string, s
 	wizardSettings
 		.filter(({ _id, value }) => ['Industry', 'Country', 'Size'].includes(_id) && value)
 		.forEach((setting) => {
+			// eslint-disable-next-line @typescript-eslint/no-base-to-string -- setup wizard select values are strings
 			newUrl.searchParams.append(setting._id.toLowerCase(), String(setting.value));
 		});
 

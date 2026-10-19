@@ -14,6 +14,7 @@ export function parse(json: string | Record<string, unknown>): Profile {
 	const data: Record<string, unknown> = typeof json === 'string' ? JSON.parse(json) : json;
 
 	const profile: Profile = {
+		// eslint-disable-next-line @typescript-eslint/no-base-to-string -- provider ids are strings or numbers
 		id: data.id_str ? String(data.id_str) : String(data.id),
 		username: data.screen_name as string,
 		displayName: data.name as string,

@@ -55,7 +55,7 @@ WebApp.rawConnectHandlers.use(async (_req: http.IncomingMessage, res: http.Serve
 			.join(' ');
 		const external = [
 			settings.get<boolean>('Accounts_OAuth_Apple') && 'https://appleid.cdn-apple.com',
-			settings.get<boolean>('PiwikAnalytics_enabled') && settings.get('PiwikAnalytics_url'),
+			settings.get<boolean>('PiwikAnalytics_enabled') && settings.get<string>('PiwikAnalytics_url'),
 			settings.get<boolean>('GoogleAnalytics_enabled') && 'https://www.google-analytics.com',
 			'https://zapier.com',
 			...settings

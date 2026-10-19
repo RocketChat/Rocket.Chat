@@ -108,6 +108,7 @@ export class RoomRead implements IRoomRead {
 			}
 
 			if (value !== 'asc' && value !== 'desc') {
+				// eslint-disable-next-line @typescript-eslint/no-base-to-string -- reports the received value as-is
 				throw new Error(`Invalid sort direction for field "${key}". Expected "asc" or "desc", got ${String(value)}`);
 			}
 		});

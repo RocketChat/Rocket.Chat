@@ -7,6 +7,7 @@ export function truncate(str: string, length: number): string {
 
 function makeString(object: unknown): string {
 	if (!object) return '';
+	// eslint-disable-next-line @typescript-eslint/no-base-to-string -- stringifies arbitrary input
 	return String(object);
 }
 

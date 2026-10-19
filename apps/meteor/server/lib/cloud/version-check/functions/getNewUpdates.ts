@@ -18,6 +18,7 @@ export const getNewUpdates = async () => {
 		}
 
 		const params = {
+			// eslint-disable-next-line @typescript-eslint/no-base-to-string -- uniqueID holds a string
 			uniqueId: String(uniqueID.value),
 			installedAt: uniqueID.createdAt.toJSON(),
 			version: Info.version,

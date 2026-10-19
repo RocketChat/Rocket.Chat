@@ -16,6 +16,7 @@ export function decode(data: WebSocket.Data, isBinary: boolean): IPacket {
 	if (isBinary) {
 		throw new MeteorError(500, 'Binary data not supported');
 	}
+	// eslint-disable-next-line @typescript-eslint/no-base-to-string -- text frames arrive as a Buffer
 	const packet = data.toString();
 
 	const payload = packet.startsWith('[') ? JSON.parse(packet)[0] : packet;

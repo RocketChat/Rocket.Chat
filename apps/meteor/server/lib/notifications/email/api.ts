@@ -41,7 +41,9 @@ export const replace = (str: string, data: { [key: string]: unknown } = {}): str
 		Site_URL_Slash: settings.get<string>('Site_Url')?.replace(/\/?$/, '/'),
 		...(data.name
 			? {
+					// eslint-disable-next-line @typescript-eslint/no-base-to-string -- template data values are interpolated as strings
 					fname: strLeft(String(data.name), ' '),
+					// eslint-disable-next-line @typescript-eslint/no-base-to-string -- template data values are interpolated as strings
 					lname: strRightBack(String(data.name), ' '),
 				}
 			: {}),
@@ -62,6 +64,7 @@ export const replaceEscaped = (str: string, data: { [key: string]: unknown } = {
 		Site_Url: siteUrl ? escapeHTML(siteUrl) : undefined,
 		...Object.entries(data).reduce<{ [key: string]: string }>((ret, [key, value]) => {
 			if (value !== undefined && value !== null) {
+				// eslint-disable-next-line @typescript-eslint/no-base-to-string -- template data values are interpolated as strings
 				ret[key] = nonEscapeKeys.includes(key) ? String(value) : escapeHTML(String(value));
 			}
 			return ret;

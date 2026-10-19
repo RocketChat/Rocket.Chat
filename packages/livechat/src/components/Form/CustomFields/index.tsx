@@ -42,6 +42,7 @@ export const CustomFields = ({ customFields, loading, control, errors }: RenderC
 					};
 
 		return (
+			// eslint-disable-next-line @typescript-eslint/no-base-to-string -- validation messages are strings
 			<FormField label={label} required={required} key={_id} error={errors?.[_id]?.message?.toString()}>
 				<Controller
 					name={_id}

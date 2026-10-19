@@ -30,12 +30,15 @@ export const Default: StoryFn<ComponentProps<typeof Form>> = (args) => {
 
 	return (
 		<Form onSubmit={handleSubmit(args.onSubmit as any) as unknown as JSXInternal.GenericEventHandler<HTMLFormElement>}>
+			{/* eslint-disable-next-line @typescript-eslint/no-base-to-string -- validation messages are strings */}
 			<FormField label='Text' description='Input field for plain text' error={errors?.text?.message?.toString()}>
 				<Controller name='text' control={control} rules={{ required: true }} render={({ field }) => <TextInput {...field} />} />
 			</FormField>
+			{/* eslint-disable-next-line @typescript-eslint/no-base-to-string -- validation messages are strings */}
 			<FormField label='Password' description='Input field for secret text' error={errors?.password?.message?.toString()}>
 				<Controller name='password' control={control} rules={{ minLength: 3 }} render={({ field }) => <PasswordInput {...field} />} />
 			</FormField>
+			{/* eslint-disable-next-line @typescript-eslint/no-base-to-string -- validation messages are strings */}
 			<FormField label='Select' description='Input field for secret text' error={errors?.options?.message?.toString()}>
 				<Controller
 					name='options'

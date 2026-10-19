@@ -405,24 +405,27 @@ Accounts.registerLoginHandler('crowd', async function (this: typeof Accounts, lo
 const jobName = 'CROWD_Sync';
 
 Meteor.startup(() => {
-	settings.watchMultiple(['CROWD_Sync_User_Data', 'CROWD_Sync_Interval'], async function addCronJobDebounced([data, interval]) {
-		if (data !== true) {
-			logger.info('Disabling CROWD Background Sync');
-			if (await cronJobs.has(jobName)) {
-				await cronJobs.remove(jobName);
+	settings.watchMultiple<string | boolean>(
+		['CROWD_Sync_User_Data', 'CROWD_Sync_Interval'],
+		async function addCronJobDebounced([data, interval]) {
+			if (data !== true) {
+				logger.info('Disabling CROWD Background Sync');
+				if (await cronJobs.has(jobName)) {
+					await cronJobs.remove(jobName);
+				}
+				return;
 			}
-			return;
-		}
-		const crowd = new CROWD();
-		if (interval) {
-			if (await cronJobs.has(jobName)) {
-				await cronJobs.remove(jobName);
+			const crowd = new CROWD();
+			if (interval) {
+				if (await cronJobs.has(jobName)) {
+					await cronJobs.remove(jobName);
+				}
+
+				logger.info('Enabling CROWD Background Sync');
+				const cronInterval = crowdIntervalValuesToCronMap[String(interval)];
+
+				await cronJobs.add(jobName, cronInterval, () => crowd.sync());
 			}
-
-			logger.info('Enabling CROWD Background Sync');
-			const cronInterval = crowdIntervalValuesToCronMap[String(interval)];
-
-			await cronJobs.add(jobName, cronInterval, () => crowd.sync());
-		}
-	});
+		},
+	);
 });
