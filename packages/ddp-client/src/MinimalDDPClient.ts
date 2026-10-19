@@ -194,7 +194,7 @@ export class MinimalDDPClient extends Emitter<MinimalDDPClientEvents> implements
 	}
 
 	onPublish(name: string, callback: (payload: ServerPublicationPayloads) => void): RemoveListener {
-		return this.once(`publication/${name}`, callback);
+		return this.on(`publication/${name}`, callback);
 	}
 
 	onResult(id: string, callback: (payload: ResultPayload) => void): RemoveListener {

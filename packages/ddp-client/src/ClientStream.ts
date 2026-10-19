@@ -154,22 +154,25 @@ export class ClientStreamImpl extends Emitter implements ClientStream {
 		// eslint-disable-next-line @typescript-eslint/no-this-alias
 		const self = this;
 
-		const s = self.ddp.onPublish(id, (payload) => {
-			if ('error' in payload) {
-				result.error = payload.error;
-				this.subscriptions.delete(id);
+		// Kept for the whole subscription: a resubscription after a reconnect answers again.
+		const stopListening = self.ddp.onPublish(id, (payload) => {
+			if (payload.msg === 'ready') {
+				result.isReady = true;
 				return;
 			}
-			result.isReady = true;
-			this.subscriptions.set(id, {
-				...result,
-				isReady: true,
-			});
+			if (payload.msg !== 'nosub') {
+				return;
+			}
+			stopListening();
+			result.isReady = false;
+			result.error = payload.error ?? new Error(`Subscription ${name} was stopped by the server`);
+			this.subscriptions.delete(id);
 		});
 
 		const stop = () => {
-			s();
-			void self.unsubscribe(id);
+			stopListening();
+			self.subscriptions.delete(id);
+			self.ddp.unsubscribe(id);
 		};
 
 		const result: Subscription = {
@@ -177,22 +180,25 @@ export class ClientStreamImpl extends Emitter implements ClientStream {
 			name,
 			params,
 			async ready() {
-				const subscription = self.subscriptions.get(id);
-				if (!subscription) {
-					return Promise.reject(result.error);
+				if (result.isReady) {
+					return;
 				}
 
-				if (subscription.isReady) {
-					return Promise.resolve();
+				if (!self.subscriptions.has(id)) {
+					throw result.error ?? new Error(`Subscription ${name} was stopped`);
 				}
 
 				return new Promise((resolve, reject) => {
-					this.onChange((payload) => {
-						if ('error' in payload) {
-							reject(payload.error);
+					const stopWaiting = self.ddp.onPublish(id, (payload) => {
+						if (payload.msg !== 'ready' && payload.msg !== 'nosub') {
 							return;
 						}
-						resolve();
+						stopWaiting();
+						if (payload.msg === 'ready') {
+							resolve();
+							return;
+						}
+						reject(result.error);
 					});
 				});
 			},

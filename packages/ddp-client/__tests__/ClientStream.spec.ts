@@ -187,6 +187,69 @@ describe('subscribe procedures', () => {
 		});
 	});
 
+	it('should reject ready() when the server stops the subscription without an error', async () => {
+		const ws = new MinimalDDPClient(() => undefined);
+		const client = new ClientStreamImpl(ws);
+		const subscription = client.subscribe('test');
+		const ready = subscription.ready();
+
+		ws.handleMessage(JSON.stringify({ msg: 'nosub', id: subscription.id }));
+
+		await expect(ready).rejects.toThrow('Subscription test was stopped by the server');
+		expect(subscription.isReady).toBe(false);
+		expect(client.subscriptions.has(subscription.id)).toBe(false);
+	});
+
+	it('should forget a ready subscription the server stops later', async () => {
+		const ws = new MinimalDDPClient(() => undefined);
+		const client = new ClientStreamImpl(ws);
+		const subscription = client.subscribe('test');
+		ws.handleMessage(JSON.stringify({ msg: 'ready', subs: [subscription.id] }));
+		await subscription.ready();
+
+		ws.handleMessage(JSON.stringify({ msg: 'nosub', id: subscription.id, error: { error: 'not-allowed' } }));
+
+		expect(subscription.isReady).toBe(false);
+		expect(subscription.error).toEqual({ error: 'not-allowed' });
+		expect(client.subscriptions.has(subscription.id)).toBe(false);
+		await expect(subscription.ready()).rejects.toEqual({ error: 'not-allowed' });
+	});
+
+	it('should notify onChange on every ready, including after a resubscription', async () => {
+		const ws = new MinimalDDPClient(() => undefined);
+		const client = new ClientStreamImpl(ws);
+		const subscription = client.subscribe('test');
+		const onChange = jest.fn();
+		subscription.onChange(onChange);
+
+		ws.handleMessage(JSON.stringify({ msg: 'ready', subs: [subscription.id] }));
+		ws.handleMessage(JSON.stringify({ msg: 'ready', subs: [subscription.id] }));
+
+		expect(onChange).toHaveBeenCalledTimes(2);
+	});
+
+	it('should reject ready() with an error once the subscription was stopped locally', async () => {
+		const ws = new MinimalDDPClient(() => undefined);
+		const client = new ClientStreamImpl(ws);
+		const subscription = client.subscribe('test');
+
+		subscription.stop();
+
+		await expect(subscription.ready()).rejects.toThrow('Subscription test was stopped');
+	});
+
+	it('should unsubscribe on stop() without waiting for the server', () => {
+		const send = jest.fn();
+		const ws = new MinimalDDPClient(send);
+		const client = new ClientStreamImpl(ws);
+		const subscription = client.subscribe('test');
+
+		subscription.stop();
+
+		expect(client.subscriptions.has(subscription.id)).toBe(false);
+		expect(send).toHaveBeenLastCalledWith(JSON.stringify({ msg: 'unsub', id: subscription.id }));
+	});
+
 	it('should be able to unsubscribe from a collection', async () => {
 		const ws = new MinimalDDPClient(() => undefined);
 		const client = new ClientStreamImpl(ws);
