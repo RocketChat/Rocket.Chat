@@ -86,7 +86,7 @@ describe('Federation - Infrastructure - Matrix - RocketTextParser', () => {
 			).toBe('hey @all');
 		});
 
-		it('should parse the @user mention without to include the server name when the user is original from the local ', async () => {
+		it('should parse the @user mention without to include the server name when the user is original from the local', async () => {
 			expect(
 				await toInternalMessageFormat({
 					rawMessage: 'hey User Real Name',
