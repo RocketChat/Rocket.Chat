@@ -1,8 +1,16 @@
-import type { ElementProps } from '../../types/ElementProps';
-import { Box } from '../Box';
+import type { GetProps } from '@tamagui/web';
 
-export type TableBodyProps = ElementProps<HTMLTableSectionElement>;
+import type { TableProps } from './Table';
+import { TableBodyFrame } from './TableFrames';
+import { useTamaguiBoxProps } from '../../hooks/useTamaguiBoxProps';
+import { withFuselageProvider } from '../FuselageProvider/FuselageProvider';
 
-const TableBody = (props: TableBodyProps) => <Box is='tbody' rcx-table__body {...props} />;
+export type TableBodyProps = TableProps;
 
-export default TableBody;
+const TableBody = (props: TableBodyProps) => {
+	const bodyProps = useTamaguiBoxProps({ 'rcx-table__body': true, ...props });
+
+	return <TableBodyFrame {...(bodyProps as GetProps<typeof TableBodyFrame>)} />;
+};
+
+export default withFuselageProvider(TableBody);

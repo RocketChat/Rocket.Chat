@@ -1,32 +1,30 @@
-import type { TableHTMLAttributes } from 'react';
+import type { GetProps } from '@tamagui/web';
 
-import type { ElementProps } from '../../types/ElementProps';
-import { Box } from '../Box';
+import { useTamaguiBoxProps } from '../../hooks/useTamaguiBoxProps';
+import type { BoxProps } from '../Box';
+import { TableFrame, TableWrapper } from './TableFrames';
+import { withFuselageProvider } from '../FuselageProvider/FuselageProvider';
 
-/** A column width: a Fuselage size (`x40`), a length in pixels or a share of the table's width. */
-export type TableColumnWidth = `x${number}` | `${number}px` | `${number}%` | number | 'auto';
-
-export type TableProps = ElementProps<HTMLTableElement, TableHTMLAttributes<HTMLTableElement>> & {
+export type TableProps = BoxProps & {
 	striped?: boolean;
 	sticky?: boolean;
 	fixed?: boolean;
-	/** The width of each column, in order. In a `fixed` table they take precedence over the cells' widths. */
-	columns?: TableColumnWidth[];
 };
 
-const Table = ({ striped, sticky, fixed = false, columns, children, ...props }: TableProps) => (
-	<Box rcx-table__wrapper>
-		<Box is='table' rcx-table rcx-table--fixed={fixed} rcx-table--sticky={sticky} rcx-table--striped={striped} {...props}>
-			{columns && (
-				<colgroup>
-					{columns.map((width, index) => (
-						<Box is='col' key={index} width={width} />
-					))}
-				</colgroup>
-			)}
-			{children}
-		</Box>
-	</Box>
-);
+const Table = ({ striped, sticky, fixed = false, ...props }: TableProps) => {
+	const tableProps = useTamaguiBoxProps({
+		'rcx-table': true,
+		'rcx-table--fixed': fixed,
+		'rcx-table--sticky': sticky,
+		'rcx-table--striped': striped,
+		...props,
+	});
 
-export default Table;
+	return (
+		<TableWrapper className='rcx-table__wrapper'>
+			<TableFrame fixed={fixed} {...(tableProps as GetProps<typeof TableFrame>)} />
+		</TableWrapper>
+	);
+};
+
+export default withFuselageProvider(Table);

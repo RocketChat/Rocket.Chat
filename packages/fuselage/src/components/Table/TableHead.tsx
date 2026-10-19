@@ -1,16 +1,23 @@
+import type { GetProps } from '@tamagui/web';
 import { createContext } from 'react';
 
-import type { ElementProps } from '../../types/ElementProps';
-import { Box } from '../Box';
+import type { TableProps } from './Table';
+import { TableHeadFrame } from './TableFrames';
+import { useTamaguiBoxProps } from '../../hooks/useTamaguiBoxProps';
+import { withFuselageProvider } from '../FuselageProvider/FuselageProvider';
 
 export const TableHeadContext = createContext(false);
 
-export type TableHeadProps = ElementProps<HTMLTableSectionElement>;
+export type TableHeadProps = TableProps;
 
-const TableHead = (props: TableHeadProps) => (
-	<TableHeadContext.Provider value={true}>
-		<Box is='thead' rcx-table__head {...props} />
-	</TableHeadContext.Provider>
-);
+const TableHead = (props: TableHeadProps) => {
+	const headProps = useTamaguiBoxProps({ 'rcx-table__head': true, ...props });
 
-export default TableHead;
+	return (
+		<TableHeadContext.Provider value={true}>
+			<TableHeadFrame {...(headProps as GetProps<typeof TableHeadFrame>)} />
+		</TableHeadContext.Provider>
+	);
+};
+
+export default withFuselageProvider(TableHead);
