@@ -84,18 +84,11 @@ export const Warning: Story = {
 export const WithValue: Story = {
 	render: () => (
 		<Box display='inline-flex' alignItems='flex-start' gap='x16'>
-			{(
-				[
-					['secondary', <Badge variant='secondary'>99</Badge>],
-					['primary', <Badge variant='primary'>99</Badge>],
-					['danger', <Badge variant='danger'>99</Badge>],
-					['warning', <Badge variant='warning'>99</Badge>],
-				] as const
-			).map(([label, badge]) => (
-				<Box key={label} display='flex' flexDirection='column' alignItems='center' gap='x4'>
-					{badge}
+			{(['secondary', 'primary', 'danger', 'warning'] as const).map((variant) => (
+				<Box key={variant} display='flex' flexDirection='column' alignItems='center' gap='x4'>
+					<Badge variant={variant}>99</Badge>
 					<Box fontScale='c1' color='hint'>
-						{label}
+						{variant}
 					</Box>
 				</Box>
 			))}
