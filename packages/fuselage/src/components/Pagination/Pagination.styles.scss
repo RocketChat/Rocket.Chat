@@ -2,19 +2,11 @@
 @use '../../styles/lengths.scss';
 @use '../../styles/typography.scss' as *;
 @use '../../styles/mixins/breakpoints.scss' as *;
-@use '../../styles/mixins/interactivity.scss' as *;
 @use '../../styles/functions.scss' as *;
 
 $pagination-border-radius: theme('pagination-border-radius', lengths.border-radius(small));
 
 .rcx-pagination {
-	display: flex;
-	flex-flow: column-reverse nowrap;
-
-	align-items: center;
-
-	padding: lengths.padding(12) lengths.padding(24);
-
 	@include on-breakpoint(sm) {
 		flex-direction: column;
 	}
@@ -23,38 +15,22 @@ $pagination-border-radius: theme('pagination-border-radius', lengths.border-radi
 		flex-direction: row;
 	}
 
-	&--divider {
-		position: relative;
+	&--divider::before {
+		position: absolute;
+		top: 0;
+		left: 0;
+		right: 0;
 
-		&::before {
-			position: absolute;
-			top: 0;
-			left: 0;
-			right: 0;
+		height: 1px;
 
-			height: 1px;
+		content: '';
 
-			content: '';
-
-			border-radius: $pagination-border-radius;
-			background-color: colors.stroke(extra-light);
-		}
+		border-radius: $pagination-border-radius;
+		background-color: colors.stroke(extra-light);
 	}
 }
 
-.rcx-pagination__left,
-.rcx-pagination__right {
-	display: flex;
-	flex-flow: row nowrap;
-	align-items: center;
-	flex: 0 1 auto;
-}
-
 .rcx-pagination__left {
-	justify-content: center;
-
-	margin-inline-start: lengths.margin(none);
-
 	@include on-breakpoint(sm) {
 		margin-inline-start: auto;
 	}
@@ -65,12 +41,6 @@ $pagination-border-radius: theme('pagination-border-radius', lengths.border-radi
 }
 
 .rcx-pagination__right {
-	flex-flow: column nowrap;
-
-	align-items: center;
-
-	margin-inline-start: lengths.margin(none);
-
 	@include on-breakpoint(sm) {
 		flex-flow: row nowrap;
 		align-items: center;
@@ -79,43 +49,13 @@ $pagination-border-radius: theme('pagination-border-radius', lengths.border-radi
 	}
 }
 
-.rcx-pagination__label {
-	@include use-font-scale(c1);
-
-	color: colors.font(annotation);
-}
-
-.rcx-pagination__list {
-	display: flex;
-	flex-flow: row nowrap;
-	align-items: center;
-
-	margin-inline: lengths.margin(4);
-}
-
-.rcx-pagination__list-item {
-	@include use-font-scale(c1);
-	display: flex;
-
-	margin-inline: lengths.margin(2);
-	padding: lengths.padding(4);
-
-	color: colors.font(secondary-info);
-}
-
 .rcx-pagination__link {
-	@include use-font-scale(c1);
-	@include clickable;
-	display: inline-flex;
-
-	color: colors.font(info);
-	background: transparent;
-
-	&:hover:not(:disabled),
-	&:focus:not(:disabled) {
+	&:hover:not(.disabled):not(:disabled),
+	&:focus:not(.disabled):not(:disabled) {
 		text-decoration: underline;
 	}
 
+	&.disabled,
 	&:disabled {
 		@include use-font-scale(c2);
 		cursor: default;
@@ -126,14 +66,20 @@ $pagination-border-radius: theme('pagination-border-radius', lengths.border-radi
 
 .rcx-pagination__back,
 .rcx-pagination__forward {
-	@include use-font-scale(c1);
-	@include clickable;
-	display: inline-flex;
-
-	color: colors.font(secondary-info);
-	background: transparent;
-
+	&.disabled,
 	&:disabled {
+		cursor: not-allowed;
+
 		color: colors.font(secondary-info);
 	}
+}
+
+// Tamagui has no style key for font smoothing
+.rcx-pagination,
+.rcx-pagination__list,
+.rcx-pagination__link,
+.rcx-pagination__back,
+.rcx-pagination__forward {
+	-webkit-font-smoothing: antialiased;
+	-moz-osx-font-smoothing: grayscale;
 }
