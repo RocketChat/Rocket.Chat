@@ -14,14 +14,15 @@
 	}
 }
 
+// Tamagui has no style key for font smoothing
+.rcx-grid__wrapper,
+.rcx-grid,
+.rcx-grid__item {
+	-webkit-font-smoothing: antialiased;
+	-moz-osx-font-smoothing: grayscale;
+}
+
 .rcx-grid {
-	display: flex;
-	flex-flow: row wrap;
-
-	&__wrapper {
-		overflow: hidden;
-	}
-
 	@each $breakpoint-name in $breakpoint-names {
 		@include when-item-is-on-breakpoint($breakpoint-name) {
 			margin-block: calc(#{map.get(breakpoints.$breakpoints, #{$breakpoint-name}-gutter-width)} / -2);
@@ -31,8 +32,6 @@
 }
 
 .rcx-grid__item {
-	flex: 1 1 0;
-
 	@each $breakpoint-name in $breakpoint-names {
 		@include when-item-is-on-breakpoint($breakpoint-name) {
 			padding-block: calc(#{map.get(breakpoints.$breakpoints, #{$breakpoint-name}-gutter-width)} / 2);
