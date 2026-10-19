@@ -61,6 +61,16 @@ const NavBarAISearchInput = () => {
 		handleSearchKeyDown(event);
 	});
 
+	// Arrow keys pressed on the dropdown's controls go back to the input and keep moving through the results.
+	const handleRegionKeyDown = useStableCallback((event: KeyboardEvent<HTMLElement>) => {
+		if (event.target === triggerRef.current || filtersOpen || (event.key !== 'ArrowDown' && event.key !== 'ArrowUp')) {
+			return;
+		}
+
+		setFocus('filterText');
+		handleSearchKeyDown(event);
+	});
+
 	const handleBlur = useStableCallback((event: FocusEvent<HTMLElement>) => {
 		if (event.relatedTarget instanceof Node && !event.currentTarget.contains(event.relatedTarget)) {
 			state.close();
@@ -114,7 +124,16 @@ const NavBarAISearchInput = () => {
 	}, [focusManager, handleEscSearch, setFocus]);
 
 	return (
-		<Box width='100%' maxWidth='x622' role='search' aria-label={searchLabel} marginInline={8} position='relative' onBlur={handleBlur}>
+		<Box
+			width='100%'
+			maxWidth='x622'
+			role='search'
+			aria-label={searchLabel}
+			marginInline={8}
+			position='relative'
+			onBlur={handleBlur}
+			onKeyDown={handleRegionKeyDown}
+		>
 			<TextInput
 				{...rest}
 				{...triggerProps}
