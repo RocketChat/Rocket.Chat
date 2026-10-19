@@ -5,7 +5,13 @@ import { useInfiniteQuery } from '@tanstack/react-query';
 
 import { ABACQueryKeys } from '../../../lib/queryKeys';
 
-export const usePreviewPages = (rid: string, attributes: Record<string, string[]>, filter: string, group: AbacMembershipGroup) => {
+export const usePreviewPages = (
+	rid: string,
+	attributes: Record<string, string[]>,
+	filter: string,
+	group: AbacMembershipGroup,
+	{ enabled = true }: { enabled?: boolean } = {},
+) => {
 	const previewMembership = useEndpoint('POST', '/v1/abac/rooms.evaluateMembership');
 
 	return useInfiniteQuery<
@@ -29,6 +35,7 @@ export const usePreviewPages = (rid: string, attributes: Record<string, string[]
 			}
 			return response;
 		},
+		enabled,
 		initialPageParam: undefined,
 		getNextPageParam: (lastPage) => lastPage.next,
 		staleTime: Infinity,
