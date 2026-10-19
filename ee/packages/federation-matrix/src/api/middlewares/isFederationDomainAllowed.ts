@@ -1,4 +1,5 @@
 import { Settings } from '@rocket.chat/core-services';
+import type { MiddlewareHandler } from 'hono';
 import { createMiddleware } from 'hono/factory';
 import mem from 'mem';
 
@@ -33,7 +34,7 @@ function parseMatrixAuthorizationHeader(header: string): Record<string, string> 
 	return result;
 }
 
-export const isFederationDomainAllowedMiddleware = createMiddleware(async (c, next) => {
+export const isFederationDomainAllowedMiddleware: MiddlewareHandler = createMiddleware(async (c, next) => {
 	const allowList = await getAllowList();
 	if (!allowList || allowList.length === 0) {
 		// No restriction, allow all

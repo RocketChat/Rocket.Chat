@@ -3,7 +3,7 @@ import proxyquire from 'proxyquire';
 
 import { ltrim, rtrim } from '../../../../../lib/utils/stringUtils';
 
-const { _getURL } = proxyquire.noCallThru().load('../../../../../app/utils/lib/getURL', {
+const { _getURL } = proxyquire.noCallThru().load('../../../../../lib/getURL', {
 	'meteor/meteor': {
 		'Meteor': {
 			absoluteUrl() {

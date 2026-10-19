@@ -21,3 +21,10 @@ it('does not take focus when it mounts', () => {
 	expect(composer).toHaveFocus();
 	expect(screen.getAllByRole('dialog')).toHaveLength(2);
 });
+
+it('leaves out the details list when there is nothing to list', () => {
+	render(<UserCard user={{ name: 'bruno.admin', username: 'bruno.admin' }} />, { wrapper: mockAppRoot().build() });
+
+	const dialog = screen.getByRole('dialog');
+	expect(dialog.querySelector('dl')).toBeNull();
+});

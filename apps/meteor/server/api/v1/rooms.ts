@@ -17,33 +17,35 @@ import {
 	ajv,
 	ajvQuery,
 	isGETRoomsNameExists,
-	isRoomsImagesProps,
-	isRoomsMuteUnmuteUserProps,
-	isRoomsBanUserProps,
-	isRoomsUnbanUserProps,
-	isRoomsBannedUsersProps,
-	isRoomsExportProps,
-	isRoomsIsMemberProps,
-	isRoomsCleanHistoryProps,
-	isRoomsOpenProps,
-	isRoomsJoinProps,
-	isRoomsMembersOrderedByRoleProps,
-	isRoomsChangeArchivationStateProps,
-	isRoomsHideProps,
-	isRoomsInviteProps,
-	isRoomsCreateDiscussionProps,
+	isRoomsAdminRoomsGetRoomProps,
 	isRoomsAdminRoomsProps,
 	isRoomsAutocompleteAdminRoomsPayload,
-	isRoomsAdminRoomsGetRoomProps,
+	isRoomsAutocompleteAvailableForTeamsProps,
 	isRoomsAutoCompleteChannelAndPrivateProps,
 	isRoomsAutocompleteChannelAndPrivateWithPaginationProps,
-	isRoomsAutocompleteAvailableForTeamsProps,
-	isRoomsSaveRoomSettingsProps,
+	isRoomsBannedUsersProps,
+	isRoomsBanUserProps,
+	isRoomsChangeArchivationStateProps,
+	isRoomsCleanHistoryProps,
+	isRoomsCreateDiscussionProps,
+	isRoomsExportProps,
+	isRoomsHideProps,
 	isRoomsHistoryProps,
+	isRoomsImagesProps,
+	isRoomsInviteProps,
+	isRoomsIsMemberProps,
+	isRoomsJoinProps,
+	isRoomsMembersOrderedByRoleProps,
+	isRoomsMuteUnmuteUserProps,
+	isRoomsOpenProps,
+	isRoomsSaveRoomSettingsProps,
+	isRoomsUnbanUserProps,
+	paginatedResponseProperties,
+	paginationQueryProperties,
 	validateBadRequestErrorResponse,
-	validateUnauthorizedErrorResponse,
 	validateForbiddenErrorResponse,
 	validateNotFoundErrorResponse,
+	validateUnauthorizedErrorResponse,
 } from '@rocket.chat/rest-typings';
 import { isTruthy } from '@rocket.chat/tools';
 import { Meteor } from 'meteor/meteor';
@@ -87,6 +89,7 @@ import { API } from '../api';
 import { MultipartUploadHandler } from '../lib/MultipartUploadHandler';
 import { composeRoomWithLastMessage } from '../lib/composeRoomWithLastMessage';
 import { getPaginationItems } from '../lib/getPaginationItems';
+import { getRoomClassificationBanner } from '../lib/getRoomClassificationBanner';
 import { getUserFromParams } from '../lib/getUserFromParams';
 import {
 	findAdminRoom,
@@ -391,7 +394,7 @@ const saveNotificationBodySchema = ajv.compile<{
 	additionalProperties: false,
 });
 
-const saveNotificationResponseSchema = ajv.compile({
+const saveNotificationResponseSchema = ajv.compile<{ success: boolean }>({
 	type: 'object',
 	properties: {
 		success: { type: 'boolean', enum: [true] },
@@ -531,6 +534,7 @@ API.v1.get(
 					room: { type: ['object', 'null'] },
 					team: { type: 'object' },
 					parent: { type: 'object' },
+					classificationBanner: { type: 'object' },
 					success: { type: 'boolean', enum: [true] },
 				},
 				required: ['room', 'success'],
@@ -561,11 +565,13 @@ API.v1.get(
 			}));
 		const { team, parentRoom } = await Team.getRoomInfo(room);
 		const parent = discussionParent || parentRoom;
+		const classificationBanner = await getRoomClassificationBanner(room);
 
 		return API.v1.success({
 			room: await Rooms.findOneByIdOrName(room._id, { projection: fields }),
 			...(team && { team }),
 			...(parent && { parent }),
+			...(classificationBanner && { classificationBanner }),
 		});
 	},
 );
@@ -617,9 +623,7 @@ API.v1.get(
 				type: 'object',
 				properties: {
 					discussions: { type: 'array', items: { type: 'object' } }, // relaxed: discussions have extra room fields
-					count: { type: 'number' },
-					offset: { type: 'number' },
-					total: { type: 'number' },
+					...paginatedResponseProperties,
 					success: { type: 'boolean', enum: [true] },
 				},
 				required: ['discussions', 'count', 'offset', 'total', 'success'],
@@ -668,9 +672,7 @@ API.v1.get(
 				type: 'object',
 				properties: {
 					files: { type: 'array', items: { type: 'object' } }, // relaxed: IUpload with user transform
-					count: { type: 'number' },
-					offset: { type: 'number' },
-					total: { type: 'number' },
+					...paginatedResponseProperties,
 					success: { type: 'boolean', enum: [true] },
 				},
 				required: ['files', 'count', 'offset', 'total', 'success'],
@@ -736,9 +738,7 @@ API.v1.get(
 				type: 'object',
 				properties: {
 					rooms: { type: 'array', items: { type: 'object' } }, // relaxed: IRoom with admin fields + optional ABAC redaction
-					count: { type: 'number' },
-					offset: { type: 'number' },
-					total: { type: 'number' },
+					...paginatedResponseProperties,
 					success: { type: 'boolean', enum: [true] },
 				},
 				required: ['rooms', 'count', 'offset', 'total', 'success'],
@@ -1136,9 +1136,7 @@ API.v1.get(
 				type: 'object',
 				properties: {
 					members: { type: 'array', items: { type: 'object' } }, // relaxed: projected IUser with role priority
-					count: { type: 'number' },
-					offset: { type: 'number' },
-					total: { type: 'number' },
+					...paginatedResponseProperties,
 					success: { type: 'boolean', enum: [true] },
 				},
 				required: ['members', 'count', 'offset', 'total', 'success'],
@@ -1426,9 +1424,7 @@ const roomsBannedUsersResponseSchema = ajv.compile<{
 				additionalProperties: false,
 			},
 		},
-		count: { type: 'number' },
-		offset: { type: 'number' },
-		total: { type: 'number' },
+		...paginatedResponseProperties,
 	},
 	required: ['success', 'bannedUsers', 'count', 'offset', 'total'],
 	additionalProperties: false,
@@ -1516,8 +1512,7 @@ export const roomEndpoints = API.v1
 				type: 'object',
 				properties: {
 					filter: { type: 'string' },
-					offset: { type: 'number' },
-					count: { type: 'number' },
+					...paginationQueryProperties,
 					sort: { type: 'string' },
 				},
 				additionalProperties: true,
@@ -1538,9 +1533,7 @@ export const roomEndpoints = API.v1
 							type: 'array',
 							items: { type: 'object' }, // relaxed: IRoom subset
 						},
-						count: { type: 'number' },
-						offset: { type: 'number' },
-						total: { type: 'number' },
+						...paginatedResponseProperties,
 						success: { type: 'boolean', enum: [true] },
 					},
 					required: ['rooms', 'count', 'offset', 'total', 'success'],

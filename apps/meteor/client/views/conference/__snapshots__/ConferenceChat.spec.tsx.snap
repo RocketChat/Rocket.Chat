@@ -13,7 +13,7 @@ exports[`ConferenceChat renders what it shows when everyone in the call can read
           class="rcx-box rcx-box--full rcx-css-1bdyjik rcx-css-1l4fxfb"
         >
           <h5
-            class="rcx-box rcx-box--full rcx-css-1spko5i"
+            class="rcx-box rcx-box--full rcx-css-1t0ey6j"
             id="contextualbarTitle"
           >
             Chat
@@ -56,7 +56,7 @@ exports[`ConferenceChat renders what it shows when the chat was never shared wit
           class="rcx-box rcx-box--full rcx-css-1bdyjik rcx-css-1l4fxfb"
         >
           <h5
-            class="rcx-box rcx-box--full rcx-css-1spko5i"
+            class="rcx-box rcx-box--full rcx-css-1t0ey6j"
             id="contextualbarTitle"
           >
             Chat
@@ -123,7 +123,7 @@ exports[`ConferenceChat renders what it shows when this member can read the chat
           class="rcx-box rcx-box--full rcx-css-1bdyjik rcx-css-1l4fxfb"
         >
           <h5
-            class="rcx-box rcx-box--full rcx-css-1spko5i"
+            class="rcx-box rcx-box--full rcx-css-1t0ey6j"
             id="contextualbarTitle"
           >
             Chat

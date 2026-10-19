@@ -10,7 +10,7 @@ exports[`ABACUpsellModal should render the modal with correct content 1`] = `
       open=""
     >
       <div
-        class="rcx-box rcx-box--full rcx-modal__inner rcx-css-qtwduz"
+        class="rcx-box rcx-box--full rcx-modal__inner rcx-css-hb8b2e"
       >
         <header
           class="rcx-box rcx-box--full rcx-modal__header"
@@ -19,7 +19,7 @@ exports[`ABACUpsellModal should render the modal with correct content 1`] = `
             class="rcx-box rcx-box--full rcx-modal__header-inner"
           >
             <div
-              class="rcx-box rcx-box--full rcx-modal__header-text rcx-css-trljwa rcx-css-lma364"
+              class="rcx-box rcx-box--full rcx-modal__header-text rcx-css-i9v8z4 rcx-css-lma364"
             >
               <div
                 class="rcx-box rcx-box--full rcx-modal__tagline rcx-css-1ozohik"
@@ -35,7 +35,7 @@ exports[`ABACUpsellModal should render the modal with correct content 1`] = `
             </div>
             <button
               aria-label="Close"
-              class="rcx-box rcx-box--full rcx-button--small-square rcx-button--square rcx-button--icon rcx-button rcx-css-trljwa rcx-css-lma364"
+              class="rcx-box rcx-box--full rcx-button--small-square rcx-button--square rcx-button--icon rcx-button rcx-css-i9v8z4 rcx-css-lma364"
               tabindex="-1"
               type="button"
             >
@@ -49,10 +49,10 @@ exports[`ABACUpsellModal should render the modal with correct content 1`] = `
           </div>
         </header>
         <div
-          class="rcx-box rcx-box--full rcx-modal__content rcx-css-1vw7itl"
+          class="rcx-box rcx-box--full rcx-modal__content rcx-css-cnr5de"
         >
           <div
-            class="rcx-box rcx-box--full rcx-modal__content-wrapper rcx-css-r1bpeb"
+            class="rcx-box rcx-box--full rcx-modal__content-wrapper rcx-css-lg273t"
           >
             <figure
               class="rcx-modal__hero-image-wrapper"
@@ -64,12 +64,12 @@ exports[`ABACUpsellModal should render the modal with correct content 1`] = `
               />
             </figure>
             <h3
-              class="rcx-box rcx-box--full rcx-css-1sfto34"
+              class="rcx-box rcx-box--full rcx-css-66ptyf"
             >
               Automate complex access management across your entire organization
             </h3>
             <div
-              class="rcx-box rcx-box--full rcx-css-1s3t8yc"
+              class="rcx-box rcx-box--full rcx-css-133i0df"
               style="white-space: break-spaces;"
             >
               ABAC automates room access, granting or revoking access based on dynamic user attributes rather than fixed roles.

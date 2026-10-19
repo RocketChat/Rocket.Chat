@@ -6,6 +6,7 @@
 		"url": "git+https://github.com/RocketChat/Rocket.Chat.git",
 		"directory": "packages/ddp-client"
 	},
+	"license": "MIT",
 	"main": "./dist/index.js",
 	"typings": "./dist/index.d.ts",
 	"files": [

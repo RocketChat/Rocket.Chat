@@ -12,7 +12,7 @@ export class FederationHomeContent {
 	}
 
 	get messagePopUpItems(): Locator {
-		return this.page.locator('role=menu[name="People"]');
+		return this.page.getByRole('listbox', { name: 'People' });
 	}
 
 	get messageListItems(): Locator {

@@ -1,0 +1,66 @@
+// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
+
+exports[`[FramedIcon rendering] renders Danger without crashing 1`] = `
+<body>
+  <div>
+    <i
+      aria-hidden="true"
+      class="rcx-box rcx-box--full rcx-framed-icon--danger rcx-framed-icon rcx-icon--name-rocket rcx-icon rcx-css-1bepdyv"
+    >
+      
+    </i>
+  </div>
+</body>
+`;
+
+exports[`[FramedIcon rendering] renders Default without crashing 1`] = `
+<body>
+  <div>
+    <i
+      aria-hidden="true"
+      class="rcx-box rcx-box--full rcx-framed-icon--neutral rcx-framed-icon rcx-icon--name-rocket rcx-icon rcx-css-1bepdyv"
+    >
+      
+    </i>
+  </div>
+</body>
+`;
+
+exports[`[FramedIcon rendering] renders Info without crashing 1`] = `
+<body>
+  <div>
+    <i
+      aria-hidden="true"
+      class="rcx-box rcx-box--full rcx-framed-icon--info rcx-framed-icon rcx-icon--name-rocket rcx-icon rcx-css-1bepdyv"
+    >
+      
+    </i>
+  </div>
+</body>
+`;
+
+exports[`[FramedIcon rendering] renders Success without crashing 1`] = `
+<body>
+  <div>
+    <i
+      aria-hidden="true"
+      class="rcx-box rcx-box--full rcx-framed-icon--success rcx-framed-icon rcx-icon--name-rocket rcx-icon rcx-css-1bepdyv"
+    >
+      
+    </i>
+  </div>
+</body>
+`;
+
+exports[`[FramedIcon rendering] renders Warning without crashing 1`] = `
+<body>
+  <div>
+    <i
+      aria-hidden="true"
+      class="rcx-box rcx-box--full rcx-framed-icon--warning rcx-framed-icon rcx-icon--name-rocket rcx-icon rcx-css-1bepdyv"
+    >
+      
+    </i>
+  </div>
+</body>
+`;

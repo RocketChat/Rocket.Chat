@@ -42,7 +42,7 @@ const { executeDownloadPublicImportFile } = proxyquire
 		'../../lib/import/startup/store': { RocketChatImportFileInstance: { createWriteStream: stubs.createWriteStream } },
 		'../../lib/logger/system': { SystemLogger: { error: stubs.systemLoggerError } },
 		'../../settings': { settings: { get: sinon.stub().returns('') } },
-		'../../../app/importer/lib/ImporterProgressStep': { ProgressStep: progressStep },
+		'../../../lib/importer/ImporterProgressStep': { ProgressStep: progressStep },
 	});
 
 describe('executeDownloadPublicImportFile', () => {
@@ -60,16 +60,15 @@ describe('executeDownloadPublicImportFile', () => {
 		stubs.updateRecord.resolves();
 	});
 
-	it('rejects an unsuccessful HTTP response and drains its body', async () => {
+	it('rejects an unsuccessful HTTP response and destroys its body', async () => {
 		const responseBody = new PassThrough();
-		const resume = sinon.spy(responseBody, 'resume');
 		stubs.serverFetch.resolves({ ok: false, status: 404, body: responseBody });
 
 		await expect(executeDownloadPublicImportFile('user-id', 'https://example.com/import.zip', 'csv')).to.be.rejectedWith(
 			'Unexpected response status 404',
 		);
 
-		expect(resume.calledOnce).to.be.true;
+		expect(responseBody.destroyed).to.be.true;
 		expect(writeStream.destroyed).to.be.true;
 		expect(stubs.updateProgress.calledWith(progressStep.ERROR)).to.be.true;
 	});

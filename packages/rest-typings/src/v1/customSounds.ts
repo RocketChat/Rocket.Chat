@@ -1,6 +1,7 @@
 import type { ICustomSound } from '@rocket.chat/core-typings';
 
 import { ajvQuery, ajv } from './Ajv';
+import { paginationQueryProperties } from './pagination';
 import { type PaginatedRequest } from '../helpers/PaginatedRequest';
 
 type CustomSoundsGetOne = { _id: ICustomSound['_id'] };
@@ -24,14 +25,7 @@ type CustomSoundsList = PaginatedRequest<{ name?: string }>;
 const CustomSoundsListSchema = {
 	type: 'object',
 	properties: {
-		count: {
-			type: 'number',
-			nullable: true,
-		},
-		offset: {
-			type: 'number',
-			nullable: true,
-		},
+		...paginationQueryProperties,
 		sort: {
 			type: 'string',
 			nullable: true,

@@ -1,7 +1,15 @@
 import { Media } from '@rocket.chat/core-services';
 import type { IEmojiCustom, RocketChatRecordDeleted } from '@rocket.chat/core-typings';
 import { EmojiCustom } from '@rocket.chat/models';
-import { ajv, isEmojiCustomList, validateUnauthorizedErrorResponse, validateBadRequestErrorResponse } from '@rocket.chat/rest-typings';
+import type { PaginatedRequest } from '@rocket.chat/rest-typings';
+import {
+	ajv,
+	ajvQuery,
+	isEmojiCustomList,
+	paginatedResponseProperties,
+	validateBadRequestErrorResponse,
+	validateUnauthorizedErrorResponse,
+} from '@rocket.chat/rest-typings';
 import { escapeRegExp } from '@rocket.chat/tools';
 import { Meteor } from 'meteor/meteor';
 import type { WithId } from 'mongodb';
@@ -17,7 +25,7 @@ import { findEmojisCustom } from '../lib/emoji-custom';
 import { getPaginationItems } from '../lib/getPaginationItems';
 import { getUploadFormData } from '../lib/getUploadFormData';
 
-const emojiDeleteBodySchema = ajv.compile({
+const emojiDeleteBodySchema = ajv.compile<{ emojiId: string }>({
 	type: 'object',
 	properties: { emojiId: { type: 'string', minLength: 1 } },
 	required: ['emojiId'],
@@ -31,9 +39,7 @@ const emojiCustomAllResponseSchema = ajv.compile<{ emojis: IEmojiCustom[]; count
 			type: 'array',
 			items: { $ref: '#/components/schemas/IEmojiCustom' },
 		},
-		count: { type: 'number' },
-		offset: { type: 'number' },
-		total: { type: 'number' },
+		...paginatedResponseProperties,
 		success: { type: 'boolean', enum: [true] },
 	},
 	required: ['emojis', 'count', 'offset', 'total', 'success'],
@@ -135,6 +141,17 @@ const emojiCustomCreateEndpoints = API.v1
 		'emoji-custom.all',
 		{
 			authRequired: true,
+			// open schema (no additionalProperties: false): pagination/query helpers travel alongside `name`
+			query: ajvQuery.compile<PaginatedRequest<{ name?: string }, 'name'>>({
+				type: 'object',
+				properties: {
+					name: { type: 'string' },
+					count: { type: 'number' },
+					offset: { type: 'number' },
+					sort: { type: 'string' },
+					query: { type: 'string' },
+				},
+			}),
 			response: {
 				200: emojiCustomAllResponseSchema,
 				401: validateUnauthorizedErrorResponse,
@@ -223,7 +240,7 @@ const emojiCustomCreateEndpoints = API.v1
 		{
 			authRequired: true,
 			response: {
-				200: ajv.compile({
+				200: ajv.compile<void>({
 					type: 'object',
 					properties: { success: { type: 'boolean', enum: [true] } },
 					required: ['success'],

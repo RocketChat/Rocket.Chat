@@ -11,10 +11,15 @@ module.exports = {
 	exit: true,
 	// getUserInfo.spec.ts lives under server/api/lib but is a Jest test (run via jest.config.ts),
 	// so it must be excluded from the mocha `server/api/lib/**` glob below. Same for the
-	// business-hour spec under server/lib/omnichannel.
-	ignore: ['server/api/lib/getUserInfo.spec.ts', 'server/lib/omnichannel/business-hour/**/*.spec.ts'],
+	// business-hour spec under server/lib/omnichannel and the EmailCheck spec under server/lib/2fa.
+	ignore: [
+		'server/api/lib/getUserInfo.spec.ts',
+		'server/lib/omnichannel/business-hour/**/*.spec.ts',
+		'server/lib/2fa/code/EmailCheck.spec.ts',
+	],
 	spec: [
 		'server/lib/callbacks.spec.ts',
+		'server/lib/getNestedProp.spec.ts',
 		'server/lib/cas/*.spec.ts',
 		'server/lib/messages/**/*.spec.ts',
 		'server/lib/ldap/*.spec.ts',
@@ -42,6 +47,7 @@ module.exports = {
 		'server/lib/omnichannel/**/*.spec.ts',
 		'server/lib/notifications/push/**/*.spec.ts',
 		'server/lib/utils/**/*.spec.ts',
+		'lib/mapLivechatContactConflicts.spec.ts',
 		'lib/videoConference/*.spec.ts',
 		'server/services/video-conference/**/*.spec.ts',
 	],

@@ -1,21 +1,23 @@
 /**
  * Docs: https://github.com/RocketChat/developer-docs/blob/master/reference/api/rest-api/endpoints/team-collaboration-endpoints/im-endpoints
  */
-import type { IMessage, IRoom, ISubscription, IUser, UserStatus } from '@rocket.chat/core-typings';
+import type { IMessage, IRoom, ISubscription, IUploadWithUser, IUser, UserStatus } from '@rocket.chat/core-typings';
 import { Subscriptions, Uploads, Messages, Rooms, Users } from '@rocket.chat/models';
+import type { PaginatedResult } from '@rocket.chat/rest-typings';
 import {
 	ajv,
 	ajvQuery,
-	validateUnauthorizedErrorResponse,
-	validateForbiddenErrorResponse,
-	validateBadRequestErrorResponse,
 	isDmBlockUserProps,
+	isDmCreateProps,
 	isDmFileProps,
+	isDmHistoryProps,
 	isDmLeaveProps,
 	isDmMemberProps,
 	isDmMessagesProps,
-	isDmCreateProps,
-	isDmHistoryProps,
+	paginatedResponseProperties,
+	validateBadRequestErrorResponse,
+	validateForbiddenErrorResponse,
+	validateUnauthorizedErrorResponse,
 } from '@rocket.chat/rest-typings';
 import { Match, check } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
@@ -435,13 +437,11 @@ const dmCountersAction = <Path extends string>(_path: Path): TypedAction<typeof 
 		});
 	};
 
-const dmFilesResponseSchema = ajv.compile<{ files: object[]; count: number; offset: number; total: number }>({
+const dmFilesResponseSchema = ajv.compile<PaginatedResult<{ files: IUploadWithUser[] }>>({
 	type: 'object',
 	properties: {
 		files: { type: 'array', items: { type: 'object' } }, // relaxed: IUpload with addUserToFileObj transform
-		count: { type: 'number' },
-		offset: { type: 'number' },
-		total: { type: 'number' },
+		...paginatedResponseProperties,
 		success: { type: 'boolean', enum: [true] },
 	},
 	required: ['files', 'count', 'offset', 'total', 'success'],
@@ -502,13 +502,17 @@ const dmFilesAction = <Path extends string>(_path: Path): TypedAction<typeof dmF
 		});
 	};
 
-const dmMembersResponseSchema = ajv.compile<{ members: object[]; count: number; offset: number; total: number }>({
+const dmMembersResponseSchema = ajv.compile<
+	PaginatedResult<{
+		members: (Pick<IUser, '_id' | 'status' | 'statusText' | 'name' | 'username' | 'utcOffset' | 'federated' | 'freeSwitchExtension'> & {
+			subscription: Partial<Pick<ISubscription, '_id' | 'status' | 'ts' | 'roles'>>;
+		})[];
+	}>
+>({
 	type: 'object',
 	properties: {
 		members: { type: 'array', items: { type: 'object' } }, // relaxed: projected IUser + subscription info
-		count: { type: 'number' },
-		offset: { type: 'number' },
-		total: { type: 'number' },
+		...paginatedResponseProperties,
 		success: { type: 'boolean', enum: [true] },
 	},
 	required: ['members', 'count', 'offset', 'total', 'success'],
@@ -614,9 +618,7 @@ const dmMessagesResponseSchema = ajv.compile<{ messages: IMessage[]; count: numb
 	type: 'object',
 	properties: {
 		messages: { type: 'array', items: { $ref: '#/components/schemas/IMessage' } },
-		count: { type: 'number' },
-		offset: { type: 'number' },
-		total: { type: 'number' },
+		...paginatedResponseProperties,
 		success: { type: 'boolean', enum: [true] },
 	},
 	required: ['messages', 'count', 'offset', 'total', 'success'],
@@ -688,7 +690,7 @@ const dmMessagesAction = <Path extends string>(_path: Path): TypedAction<typeof 
 		});
 	};
 
-const dmHistoryResponseSchema = ajv.compile<Record<string, unknown>>({
+const dmHistoryResponseSchema = ajv.compile<{ messages: IMessage[]; firstUnread?: IMessage; unreadNotLoaded?: number }>({
 	type: 'object',
 	properties: {
 		messages: { type: 'array', items: { $ref: '#/components/schemas/IMessage' } },
@@ -741,7 +743,7 @@ const dmHistoryAction = <Path extends string>(_path: Path): TypedAction<typeof d
 			return API.v1.forbidden();
 		}
 
-		return API.v1.success(result as Record<string, unknown>);
+		return API.v1.success(result as { messages: IMessage[]; firstUnread?: IMessage; unreadNotLoaded?: number });
 	};
 
 const dmCreateResponseSchema = ajv.compile<{ room: IRoom & { rid: string } }>({
@@ -758,9 +760,7 @@ const paginatedMessagesResponseSchema = ajv.compile<{ messages: IMessage[]; offs
 	type: 'object',
 	properties: {
 		messages: { type: 'array', items: { $ref: '#/components/schemas/IMessage' } },
-		offset: { type: 'number' },
-		count: { type: 'number' },
-		total: { type: 'number' },
+		...paginatedResponseProperties,
 		success: { type: 'boolean', enum: [true] },
 	},
 	required: ['messages', 'offset', 'count', 'total', 'success'],
@@ -771,9 +771,7 @@ const paginatedImsResponseSchema = ajv.compile<{ ims: IRoom[]; offset: number; c
 	type: 'object',
 	properties: {
 		ims: { type: 'array', items: { type: 'object' } }, // relaxed: IRoom with lastMessage compose
-		offset: { type: 'number' },
-		count: { type: 'number' },
-		total: { type: 'number' },
+		...paginatedResponseProperties,
 		success: { type: 'boolean', enum: [true] },
 	},
 	required: ['ims', 'offset', 'count', 'total', 'success'],

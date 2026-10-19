@@ -8,7 +8,7 @@ exports[`renders Default without crashing 1`] = `
       role="group"
     >
       <textarea
-        class="rcx-box rcx-box--full rcx-css-177dqxo rc-message-box__textarea js-input-message rcx-css-1pqwk2s"
+        class="rcx-box rcx-box--full rcx-css-177dqxo rc-message-box__textarea js-input-message rcx-css-15h52bk"
         placeholder="Text"
         rows="1"
       />
@@ -213,7 +213,7 @@ exports[`renders Expandable without crashing 1`] = `
         </button>
       </div>
       <textarea
-        class="rcx-box rcx-box--full rcx-css-177dqxo rc-message-box__textarea js-input-message rcx-css-1pqwk2s"
+        class="rcx-box rcx-box--full rcx-css-177dqxo rc-message-box__textarea js-input-message rcx-css-15h52bk"
         placeholder="Type a message..."
         rows="1"
       />
@@ -599,7 +599,7 @@ exports[`renders WithFiles without crashing 1`] = `
       role="group"
     >
       <textarea
-        class="rcx-box rcx-box--full rcx-css-177dqxo rc-message-box__textarea js-input-message rcx-css-1pqwk2s"
+        class="rcx-box rcx-box--full rcx-css-177dqxo rc-message-box__textarea js-input-message rcx-css-15h52bk"
         placeholder="Text"
         rows="1"
       />
@@ -623,23 +623,23 @@ exports[`renders WithFiles without crashing 1`] = `
               
             </i>
             <div
-              class="rcx-box rcx-box--full rcx-css-vvzg4g"
+              class="rcx-box rcx-box--full rcx-css-1gglz22"
             >
               zip
             </div>
           </div>
           <div
-            class="rcx-box rcx-box--full rcx-css-po95ue"
+            class="rcx-box rcx-box--full rcx-css-fez824"
           >
             <div
-              class="rcx-box rcx-box--full rcx-css-vnzm2c"
+              class="rcx-box rcx-box--full rcx-css-uj88og"
               role="button"
               tabindex="0"
             >
               antique-pocket-clock-500x500.zip
             </div>
             <div
-              class="rcx-box rcx-box--full rcx-css-igh12u"
+              class="rcx-box rcx-box--full rcx-css-1e55igi"
             >
               58.33 KB - application/zip
             </div>
@@ -676,23 +676,23 @@ exports[`renders WithFiles without crashing 1`] = `
               
             </i>
             <div
-              class="rcx-box rcx-box--full rcx-css-vvzg4g"
+              class="rcx-box rcx-box--full rcx-css-1gglz22"
             >
               png
             </div>
           </div>
           <div
-            class="rcx-box rcx-box--full rcx-css-po95ue"
+            class="rcx-box rcx-box--full rcx-css-fez824"
           >
             <div
-              class="rcx-box rcx-box--full rcx-css-a32rw7"
+              class="rcx-box rcx-box--full rcx-css-6ymm1p"
               role="button"
               tabindex="0"
             >
               file.png
             </div>
             <div
-              class="rcx-box rcx-box--full rcx-css-11quacw"
+              class="rcx-box rcx-box--full rcx-css-1vp4jo1"
             >
               2 MB
             </div>
@@ -715,23 +715,23 @@ exports[`renders WithFiles without crashing 1`] = `
               
             </i>
             <div
-              class="rcx-box rcx-box--full rcx-css-vvzg4g"
+              class="rcx-box rcx-box--full rcx-css-1gglz22"
             >
               png
             </div>
           </div>
           <div
-            class="rcx-box rcx-box--full rcx-css-po95ue"
+            class="rcx-box rcx-box--full rcx-css-fez824"
           >
             <div
-              class="rcx-box rcx-box--full rcx-css-vnzm2c"
+              class="rcx-box rcx-box--full rcx-css-uj88og"
               role="button"
               tabindex="0"
             >
               file.png
             </div>
             <div
-              class="rcx-box rcx-box--full rcx-css-1yma3on"
+              class="rcx-box rcx-box--full rcx-css-7312z9"
             >
               Upload_failed
             </div>
@@ -978,7 +978,7 @@ exports[`renders WithHints without crashing 1`] = `
         </span>
       </span>
       <div
-        class="rcx-box rcx-box--full rcx-css-1dp5kdc"
+        class="rcx-box rcx-box--full rcx-css-1go0mzc"
       >
         <strong>
           esc
@@ -995,7 +995,7 @@ exports[`renders WithHints without crashing 1`] = `
       role="group"
     >
       <textarea
-        class="rcx-box rcx-box--full rcx-css-177dqxo rc-message-box__textarea js-input-message rcx-css-1pqwk2s"
+        class="rcx-box rcx-box--full rcx-css-177dqxo rc-message-box__textarea js-input-message rcx-css-15h52bk"
         placeholder="Text"
         rows="1"
       />
@@ -1201,7 +1201,7 @@ exports[`renders WithSubmit without crashing 1`] = `
       role="group"
     >
       <textarea
-        class="rcx-box rcx-box--full rcx-css-177dqxo rc-message-box__textarea js-input-message rcx-css-1pqwk2s"
+        class="rcx-box rcx-box--full rcx-css-177dqxo rc-message-box__textarea js-input-message rcx-css-15h52bk"
         placeholder="Text"
         rows="1"
       />

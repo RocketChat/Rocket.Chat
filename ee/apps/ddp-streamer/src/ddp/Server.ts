@@ -87,6 +87,7 @@ export class Server {
 		if (session.ws.readyState !== WebSocket.OPEN) {
 			return;
 		}
+		let publication: Publication | undefined;
 		try {
 			if (!this._subscriptions.has(packet.name)) {
 				throw new MeteorError(404, `Subscription '${packet.name}' not found`);
@@ -98,13 +99,15 @@ export class Server {
 
 			const end = this.metrics?.timer('rocketchat_subscription', { subscription: packet.name });
 
-			const publication = new Publication(session, packet);
+			publication = new Publication(session, packet);
 			const [eventName, options] = packet.params;
 			await fn.call(publication, eventName, options);
 
 			end?.();
 		} catch (err: unknown) {
-			return session.send(encodeNosub(packet.id, handleInternalException(err, 'Subscription error')));
+			session.send(encodeNosub(packet.id, handleInternalException(err, 'Subscription error')));
+			// A failed subscription must not outlive its handler.
+			publication?.emit('stop', session, packet);
 		}
 	}
 

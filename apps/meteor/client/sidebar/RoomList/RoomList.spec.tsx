@@ -7,7 +7,6 @@ import type { SidebarRoomListGroup } from '../hooks/useRoomList';
 
 const mockCollapsedGroups: string[] = [];
 const mockHandleClick = jest.fn();
-const mockHandleKeyDown = jest.fn();
 const mockMoveCategory = jest.fn();
 const mockUsePreventDefault = jest.fn();
 const mockUseShortcutOpenMenu = jest.fn();
@@ -98,10 +97,6 @@ jest.mock('../categories/hooks/useMoveCategoryPosition', () => ({
 	useMoveCategoryPosition: () => mockMoveCategory,
 }));
 
-jest.mock('../hooks/useAvatarTemplate', () => ({
-	useAvatarTemplate: () => 'AvatarTemplate',
-}));
-
 jest.mock('../hooks/useCategoryList', () => ({
 	SIDEBAR_DYNAMIC_GROUP_KEYS: ['Unread', 'Favorites'],
 }));
@@ -110,7 +105,6 @@ jest.mock('../hooks/useCollapsedGroups', () => ({
 	useCollapsedGroups: () => ({
 		collapsedGroups: mockCollapsedGroups,
 		handleClick: mockHandleClick,
-		handleKeyDown: mockHandleKeyDown,
 	}),
 }));
 
@@ -129,10 +123,6 @@ jest.mock('../hooks/useRoomList', () => ({
 
 jest.mock('../hooks/useShortcutOpenMenu', () => ({
 	useShortcutOpenMenu: (ref: unknown) => mockUseShortcutOpenMenu(ref),
-}));
-
-jest.mock('../hooks/useTemplateByViewMode', () => ({
-	useTemplateByViewMode: () => 'SidebarItemTemplate',
 }));
 
 jest.mock('./RoomListCollapser', () => ({

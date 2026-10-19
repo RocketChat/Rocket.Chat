@@ -2,32 +2,33 @@ import { MeteorError, Presence, Team } from '@rocket.chat/core-services';
 import type { IExportOperation, ILoginToken, IPersonalAccessToken, IUser, UserStatus } from '@rocket.chat/core-typings';
 import { Users, Subscriptions, Sessions, OAuthAccessTokens, OAuthRefreshTokens, OAuthAuthCodes } from '@rocket.chat/models';
 import {
+	ajv,
 	isUserCreateParamsPOST,
-	isUserSetActiveStatusParamsPOST,
 	isUserDeactivateIdleParamsPOST,
-	isUsersInfoParamsGetProps,
-	isUsersListStatusProps,
-	isUsersListStatusVisibilityParamsGET,
-	isUsersSendWelcomeEmailProps,
-	isUserRegisterParamsPOST,
 	isUserLogoutParamsPOST,
-	isUsersListTeamsProps,
+	isUserRegisterParamsPOST,
 	isUsersAutocompleteProps,
-	isUsersSetAvatarProps,
-	isUsersUpdateParamsPOST,
-	isUsersUpdateOwnBasicInfoParamsPOST,
-	isUsersSetPreferencesParamsPOST,
 	isUsersCheckUsernameAvailabilityParamsGET,
-	isUsersSendConfirmationEmailParamsPOST,
-	isUsersListParamsGET,
-	isUsersPresenceParamsGET,
-	isUsersRequestDataDownloadParamsGET,
+	isUserSetActiveStatusParamsPOST,
 	isUsersGetPresenceParamsGET,
 	isUsersGetStatusParamsGET,
-	ajv,
+	isUsersInfoParamsGetProps,
+	isUsersListParamsGET,
+	isUsersListStatusProps,
+	isUsersListStatusVisibilityParamsGET,
+	isUsersListTeamsProps,
+	isUsersPresenceParamsGET,
+	isUsersRequestDataDownloadParamsGET,
+	isUsersSendConfirmationEmailParamsPOST,
+	isUsersSendWelcomeEmailProps,
+	isUsersSetAvatarProps,
+	isUsersSetPreferencesParamsPOST,
+	isUsersUpdateOwnBasicInfoParamsPOST,
+	isUsersUpdateParamsPOST,
+	paginatedResponseProperties,
 	validateBadRequestErrorResponse,
-	validateUnauthorizedErrorResponse,
 	validateForbiddenErrorResponse,
+	validateUnauthorizedErrorResponse,
 } from '@rocket.chat/rest-typings';
 import { isHiddenFor } from '@rocket.chat/streamer';
 import { escapeRegExp, getLoginExpirationInMs } from '@rocket.chat/tools';
@@ -825,10 +826,8 @@ API.v1.get(
 				type: 'object',
 				properties: {
 					// user shape varies by projection and permissions
-					users: { type: 'array' },
-					count: { type: 'number' },
-					offset: { type: 'number' },
-					total: { type: 'number' },
+					users: { type: 'array', items: {} },
+					...paginatedResponseProperties,
 					success: { type: 'boolean', enum: [true] },
 				},
 				required: ['users', 'count', 'offset', 'total', 'success'],
@@ -1645,7 +1644,7 @@ API.v1.get(
 				type: 'object',
 				properties: {
 					// user shape varies by projection and permissions
-					users: { type: 'array' },
+					users: { type: 'array', items: {} },
 					full: { type: 'boolean' },
 					success: { type: 'boolean', enum: [true] },
 				},
@@ -1815,7 +1814,7 @@ API.v1.get(
 				type: 'object',
 				properties: {
 					// autocomplete items shape varies by permissions
-					items: { type: 'array' },
+					items: { type: 'array', items: {} },
 					success: { type: 'boolean', enum: [true] },
 				},
 				required: ['items', 'success'],
@@ -1967,7 +1966,7 @@ API.v1
 				200: ajv.compile<{ teams: unknown[] }>({
 					type: 'object',
 					properties: {
-						teams: { type: 'array' },
+						teams: { type: 'array', items: {} },
 						success: { type: 'boolean', enum: [true] },
 					},
 					required: ['teams', 'success'],

@@ -7,7 +7,7 @@ import type {
 	IServerEvents,
 } from '@rocket.chat/core-typings';
 import type { PaginatedResult, PaginatedRequest } from '@rocket.chat/rest-typings';
-import { ajv, ajvQuery } from '@rocket.chat/rest-typings';
+import { ajv, ajvQuery, paginatedResponseProperties, paginationQueryProperties } from '@rocket.chat/rest-typings';
 
 const ATTRIBUTE_KEY_PATTERN = '^[A-Za-z0-9_-]+$';
 const MAX_ROOM_ATTRIBUTE_VALUES = 10;
@@ -65,8 +65,7 @@ const GetAbacAttributesQuery = {
 	properties: {
 		key: { type: 'string', minLength: 1, pattern: ATTRIBUTE_KEY_PATTERN },
 		values: { type: 'string', minLength: 1, pattern: ATTRIBUTE_KEY_PATTERN },
-		offset: { type: 'number' },
-		count: { type: 'number' },
+		...paginationQueryProperties,
 	},
 	additionalProperties: false,
 };
@@ -99,9 +98,7 @@ const GetAbacAttributesResponse = {
 			type: 'array',
 			items: AbacAttributeRecord,
 		},
-		offset: { type: 'number' },
-		count: { type: 'number' },
-		total: { type: 'number' },
+		...paginatedResponseProperties,
 	},
 	required: ['attributes', 'offset', 'count', 'total'],
 	additionalProperties: false,
@@ -153,8 +150,7 @@ const GetAbacAuditEventsQuerySchemaObject = {
 	properties: {
 		start: { type: 'string', format: 'date-time', nullable: true },
 		end: { type: 'string', format: 'date-time', nullable: true },
-		offset: { type: 'number', nullable: true },
-		count: { type: 'number', nullable: true },
+		...paginationQueryProperties,
 		actor: {
 			type: 'object',
 			nullable: true,
@@ -207,18 +203,7 @@ const GetAbacAuditEventsResponseSchemaObject = {
 				type: 'object',
 			},
 		},
-		count: {
-			type: 'number',
-			description: 'The number of events returned in this response.',
-		},
-		offset: {
-			type: 'number',
-			description: 'The number of events that were skipped in this response.',
-		},
-		total: {
-			type: 'number',
-			description: 'The total number of events that match the query.',
-		},
+		...paginatedResponseProperties,
 	},
 	required: ['events', 'count', 'offset', 'total'],
 	additionalProperties: false,
@@ -380,8 +365,7 @@ const GETAbacRoomsListQuerySchema = {
 	properties: {
 		filter: { type: 'string', minLength: 1 },
 		filterType: { type: 'string', enum: ['all', 'roomName', 'attribute', 'value'] },
-		offset: { type: 'number' },
-		count: { type: 'number' },
+		...paginationQueryProperties,
 	},
 	additionalProperties: false,
 };
@@ -401,15 +385,7 @@ export const GETAbacRoomsResponseSchema = {
 			type: 'array',
 			items: { type: 'object' },
 		},
-		offset: {
-			type: 'number',
-		},
-		count: {
-			type: 'number',
-		},
-		total: {
-			type: 'number',
-		},
+		...paginatedResponseProperties,
 	},
 	required: ['rooms', 'offset', 'count', 'total'],
 	additionalProperties: false,

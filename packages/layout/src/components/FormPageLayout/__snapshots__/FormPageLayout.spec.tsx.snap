@@ -13,17 +13,17 @@ exports[`renders Default without crashing 1`] = `
           class="rcx-box rcx-box--full rcx-css-heem01"
         >
           <div
-            class="rcx-box rcx-box--full rcx-css-d369k0"
+            class="rcx-box rcx-box--full rcx-css-tnmbyv"
           >
             component.form.steps
           </div>
           <div
-            class="rcx-box rcx-box--full rcx-css-18gg2kh"
+            class="rcx-box rcx-box--full rcx-css-tthqrz"
           >
             Title
           </div>
           <div
-            class="rcx-box rcx-box--full rcx-css-gk1yjz"
+            class="rcx-box rcx-box--full rcx-css-bh8xrr"
           >
             Subtitle
           </div>

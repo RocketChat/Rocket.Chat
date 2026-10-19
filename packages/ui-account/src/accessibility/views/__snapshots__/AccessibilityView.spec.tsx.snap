@@ -13,7 +13,7 @@ exports[`renders DarkThemeCustomized without crashing 1`] = `
           class="rcx-box rcx-box--full rcx-css-y0zm3a"
         >
           <h1
-            class="rcx-box rcx-box--full rcx-css-19z81xy"
+            class="rcx-box rcx-box--full rcx-css-1qxix5i"
           >
             Accessibility & appearance
           </h1>
@@ -47,7 +47,7 @@ exports[`renders DarkThemeCustomized without crashing 1`] = `
                 id="_r_0_"
               >
                 <div
-                  class="rcx-box rcx-box--full rcx-css-128ljxt"
+                  class="rcx-box rcx-box--full rcx-css-1191gx0"
                 >
                   <p
                     class="rcx-box rcx-box--full rcx-css-s108b"
@@ -351,7 +351,7 @@ exports[`renders DarkThemeCustomized without crashing 1`] = `
                             class="rcx-box rcx-box--full rcx-field__row"
                           >
                             <div
-                              class="rcx-box rcx-box--full rcx-css-1mbgoc8"
+                              class="rcx-box rcx-box--full rcx-css-1ds37nf"
                             >
                               <div
                                 aria-hidden="true"
@@ -400,7 +400,7 @@ exports[`renders DarkThemeCustomized without crashing 1`] = `
                               aria-expanded="false"
                               aria-haspopup="listbox"
                               aria-labelledby="react-aria-_r_i_ react-aria-_r_a_-label"
-                              class="rcx-box rcx-box--full rcx-box--animated rcx-select rcx-css-1vw6rc6"
+                              class="rcx-box rcx-box--full rcx-box--animated rcx-select rcx-css-3ejkxj"
                               type="button"
                             >
                               <span
@@ -481,7 +481,7 @@ The screen reader functionality is optimized when the "@" symbol is employed in 
                             class="rcx-box rcx-box--full rcx-field__row"
                           >
                             <div
-                              class="rcx-box rcx-box--full rcx-css-1mbgoc8"
+                              class="rcx-box rcx-box--full rcx-css-1ds37nf"
                             >
                               <div
                                 aria-hidden="true"
@@ -520,7 +520,7 @@ The screen reader functionality is optimized when the "@" symbol is employed in 
                               aria-expanded="false"
                               aria-haspopup="listbox"
                               aria-labelledby="react-aria-_r_s_ react-aria-_r_k_-label"
-                              class="rcx-box rcx-box--full rcx-box--animated rcx-select rcx-css-1vw6rc6"
+                              class="rcx-box rcx-box--full rcx-box--animated rcx-select rcx-css-3ejkxj"
                               type="button"
                             >
                               <span
@@ -671,7 +671,7 @@ exports[`renders Default without crashing 1`] = `
           class="rcx-box rcx-box--full rcx-css-y0zm3a"
         >
           <h1
-            class="rcx-box rcx-box--full rcx-css-19z81xy"
+            class="rcx-box rcx-box--full rcx-css-1qxix5i"
           >
             Accessibility & appearance
           </h1>
@@ -705,7 +705,7 @@ exports[`renders Default without crashing 1`] = `
                 id="_r_v_"
               >
                 <div
-                  class="rcx-box rcx-box--full rcx-css-128ljxt"
+                  class="rcx-box rcx-box--full rcx-css-1191gx0"
                 >
                   <p
                     class="rcx-box rcx-box--full rcx-css-s108b"
@@ -1009,7 +1009,7 @@ exports[`renders Default without crashing 1`] = `
                             class="rcx-box rcx-box--full rcx-field__row"
                           >
                             <div
-                              class="rcx-box rcx-box--full rcx-css-1mbgoc8"
+                              class="rcx-box rcx-box--full rcx-css-1ds37nf"
                             >
                               <div
                                 aria-hidden="true"
@@ -1058,7 +1058,7 @@ exports[`renders Default without crashing 1`] = `
                               aria-expanded="false"
                               aria-haspopup="listbox"
                               aria-labelledby="react-aria-_r_1h_ react-aria-_r_19_-label"
-                              class="rcx-box rcx-box--full rcx-box--animated rcx-select rcx-css-1vw6rc6"
+                              class="rcx-box rcx-box--full rcx-box--animated rcx-select rcx-css-3ejkxj"
                               type="button"
                             >
                               <span
@@ -1138,7 +1138,7 @@ The screen reader functionality is optimized when the "@" symbol is employed in 
                             class="rcx-box rcx-box--full rcx-field__row"
                           >
                             <div
-                              class="rcx-box rcx-box--full rcx-css-1mbgoc8"
+                              class="rcx-box rcx-box--full rcx-css-1ds37nf"
                             >
                               <div
                                 aria-hidden="true"
@@ -1177,7 +1177,7 @@ The screen reader functionality is optimized when the "@" symbol is employed in 
                               aria-expanded="false"
                               aria-haspopup="listbox"
                               aria-labelledby="react-aria-_r_1r_ react-aria-_r_1j_-label"
-                              class="rcx-box rcx-box--full rcx-box--animated rcx-select rcx-css-1vw6rc6"
+                              class="rcx-box rcx-box--full rcx-box--animated rcx-select rcx-css-3ejkxj"
                               type="button"
                             >
                               <span
@@ -1330,7 +1330,7 @@ exports[`renders RolesDisabled without crashing 1`] = `
           class="rcx-box rcx-box--full rcx-css-y0zm3a"
         >
           <h1
-            class="rcx-box rcx-box--full rcx-css-19z81xy"
+            class="rcx-box rcx-box--full rcx-css-1qxix5i"
           >
             Accessibility & appearance
           </h1>
@@ -1364,7 +1364,7 @@ exports[`renders RolesDisabled without crashing 1`] = `
                 id="_r_1u_"
               >
                 <div
-                  class="rcx-box rcx-box--full rcx-css-128ljxt"
+                  class="rcx-box rcx-box--full rcx-css-1191gx0"
                 >
                   <p
                     class="rcx-box rcx-box--full rcx-css-s108b"
@@ -1668,7 +1668,7 @@ exports[`renders RolesDisabled without crashing 1`] = `
                             class="rcx-box rcx-box--full rcx-field__row"
                           >
                             <div
-                              class="rcx-box rcx-box--full rcx-css-1mbgoc8"
+                              class="rcx-box rcx-box--full rcx-css-1ds37nf"
                             >
                               <div
                                 aria-hidden="true"
@@ -1717,7 +1717,7 @@ exports[`renders RolesDisabled without crashing 1`] = `
                               aria-expanded="false"
                               aria-haspopup="listbox"
                               aria-labelledby="react-aria-_r_2g_ react-aria-_r_28_-label"
-                              class="rcx-box rcx-box--full rcx-box--animated rcx-select rcx-css-1vw6rc6"
+                              class="rcx-box rcx-box--full rcx-box--animated rcx-select rcx-css-3ejkxj"
                               type="button"
                             >
                               <span
@@ -1797,7 +1797,7 @@ The screen reader functionality is optimized when the "@" symbol is employed in 
                             class="rcx-box rcx-box--full rcx-field__row"
                           >
                             <div
-                              class="rcx-box rcx-box--full rcx-css-1mbgoc8"
+                              class="rcx-box rcx-box--full rcx-css-1ds37nf"
                             >
                               <div
                                 aria-hidden="true"
@@ -1836,7 +1836,7 @@ The screen reader functionality is optimized when the "@" symbol is employed in 
                               aria-expanded="false"
                               aria-haspopup="listbox"
                               aria-labelledby="react-aria-_r_2q_ react-aria-_r_2i_-label"
-                              class="rcx-box rcx-box--full rcx-box--animated rcx-select rcx-css-1vw6rc6"
+                              class="rcx-box rcx-box--full rcx-box--animated rcx-select rcx-css-3ejkxj"
                               type="button"
                             >
                               <span
