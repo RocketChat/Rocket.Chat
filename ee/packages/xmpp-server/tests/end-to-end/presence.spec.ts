@@ -25,7 +25,7 @@ const SETTING_PROPAGATION_MS = 2000;
 const DELIVERY_WINDOW_MS = 4000;
 
 const isSubscriptionReply =
-	(from: string, type: 'subscribed' | 'unsubscribed'): Predicate =>
+	(from: string, type: 'subscribe' | 'subscribed' | 'unsubscribed'): Predicate =>
 	(stanza) =>
 		isPresenceFrom(from)(stanza) && stanza.attrs.type === type;
 
@@ -53,9 +53,11 @@ describe('XMPP federation: presence', () => {
 
 	after(() => teardown(rc));
 
-	it('auto-accepts a subscription request from a DM partner (R3)', async () => {
+	it('auto-accepts a subscription request from a DM partner and subscribes back (R3)', async () => {
+		const after = alice.cursor();
 		await alice.sendPresence({ to: local.jid, type: 'subscribe' });
-		await alice.waitFor(isSubscriptionReply(local.jid, 'subscribed'), 'the subscription approval');
+		await alice.waitFor(isSubscriptionReply(local.jid, 'subscribed'), 'the subscription approval', { after });
+		await alice.waitFor(isSubscriptionReply(local.jid, 'subscribe'), 'the reciprocal subscription request', { after });
 	});
 
 	it('refuses a subscription request from a user without a DM (R3)', async () => {
