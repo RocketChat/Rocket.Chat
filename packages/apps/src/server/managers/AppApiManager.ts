@@ -49,6 +49,7 @@ export class AppApiManager {
 		if (this.providedApis.get(appId)) {
 			api.endpoints.forEach((endpoint) => {
 				if (this.providedApis.get(appId).has(endpoint.path)) {
+					// eslint-disable-next-line @typescript-eslint/only-throw-error -- apps-engine error classes implement Error without extending it
 					throw new PathAlreadyExistsError(endpoint.path);
 				}
 			});

@@ -92,6 +92,7 @@ export default async function handleApp(request: RequestContext): Promise<Define
 		}
 
 		if (typeof result === 'undefined') {
+			// eslint-disable-next-line @typescript-eslint/only-throw-error -- JSON-RPC error objects are serialized back to the engine
 			throw new JsonRpcError(`Unknown method "${appMethod}"`, METHOD_NOT_FOUND);
 		}
 

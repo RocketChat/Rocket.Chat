@@ -108,11 +108,13 @@ export class AppSlashCommandManager {
 
 		// Ensure the app can touch this command
 		if (!this.canCommandBeTouchedBy(appId, command.command)) {
+			// eslint-disable-next-line @typescript-eslint/only-throw-error -- apps-engine error classes implement Error without extending it
 			throw new CommandHasAlreadyBeenTouchedError(command.command);
 		}
 
 		// Verify the command doesn't exist already
 		if ((await this.bridge.doDoesCommandExist(command.command, appId)) || this.isAlreadyDefined(command.command)) {
+			// eslint-disable-next-line @typescript-eslint/only-throw-error -- apps-engine error classes implement Error without extending it
 			throw new CommandAlreadyExistsError(command.command);
 		}
 
@@ -146,6 +148,7 @@ export class AppSlashCommandManager {
 
 		// Ensure the app can touch this command
 		if (!this.canCommandBeTouchedBy(appId, command.command)) {
+			// eslint-disable-next-line @typescript-eslint/only-throw-error -- apps-engine error classes implement Error without extending it
 			throw new CommandHasAlreadyBeenTouchedError(command.command);
 		}
 
@@ -188,6 +191,7 @@ export class AppSlashCommandManager {
 
 		// Ensure the app can touch this command
 		if (!this.canCommandBeTouchedBy(appId, cmd)) {
+			// eslint-disable-next-line @typescript-eslint/only-throw-error -- apps-engine error classes implement Error without extending it
 			throw new CommandHasAlreadyBeenTouchedError(cmd);
 		}
 
@@ -228,6 +232,7 @@ export class AppSlashCommandManager {
 
 		// Ensure the app can touch this command
 		if (!this.canCommandBeTouchedBy(appId, cmd)) {
+			// eslint-disable-next-line @typescript-eslint/only-throw-error -- apps-engine error classes implement Error without extending it
 			throw new CommandHasAlreadyBeenTouchedError(cmd);
 		}
 

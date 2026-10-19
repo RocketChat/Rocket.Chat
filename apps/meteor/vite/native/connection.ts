@@ -45,6 +45,7 @@ const isSocketMethod = (method: string, args: unknown[]): boolean =>
 const unwrapMethodResult = (message: string): unknown => {
 	const response = parseDDP(message) as { error?: unknown; result?: unknown };
 	if (response.error) {
+		// eslint-disable-next-line @typescript-eslint/only-throw-error -- callers read the DDP error fields, as with Meteor method errors
 		throw response.error;
 	}
 	return response.result;
@@ -66,6 +67,7 @@ const callOverREST = async (method: string, params: unknown[]): Promise<any> => 
 	}
 
 	if (typeof body.message !== 'string') {
+		// eslint-disable-next-line @typescript-eslint/only-throw-error -- callers read the DDP error fields, as with Meteor method errors
 		throw body;
 	}
 	return unwrapMethodResult(body.message);

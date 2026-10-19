@@ -28,6 +28,7 @@ const SettingsProvider = ({ children }: SettingsProviderProps) => {
 	const isLoading = !cachedCollection.useReady();
 
 	if (isLoading) {
+		// eslint-disable-next-line @typescript-eslint/only-throw-error -- throwing a promise suspends rendering until the store is ready
 		throw (async () => {
 			if (cachedCollection instanceof PrivateCachedStore) {
 				cachedCollection.listen();

@@ -161,7 +161,7 @@ export class SAMLServiceProvider {
 			}
 			return target;
 		} catch (error) {
-			throw error instanceof Error ? error : String(error);
+			throw error instanceof Error ? error : new Error(String(error));
 		}
 	}
 

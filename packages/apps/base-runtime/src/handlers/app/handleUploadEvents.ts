@@ -18,12 +18,14 @@ export const uploadEvents = ['executePreFileUpload'] as const;
 function assertIsUpload(v: unknown): asserts v is IUploadDetails {
 	if (isPlainObject(v) && !!v.rid && (!!v.userId || !!v.visitorToken)) return;
 
+	// eslint-disable-next-line @typescript-eslint/only-throw-error -- JSON-RPC error objects are serialized back to the engine
 	throw JsonRpcError.invalidParams({ err: `Invalid 'file' parameter. Expected IUploadDetails, got`, value: v });
 }
 
 function assertString(v: unknown): asserts v is string {
 	if (v && typeof v === 'string') return;
 
+	// eslint-disable-next-line @typescript-eslint/only-throw-error -- JSON-RPC error objects are serialized back to the engine
 	throw JsonRpcError.invalidParams({ err: `Invalid 'path' parameter. Expected string, got`, value: v });
 }
 

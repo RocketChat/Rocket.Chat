@@ -49,6 +49,7 @@ export class AppPackageParser {
 		info.classFile = info.classFile.replace('.ts', '.js');
 
 		if (!semver.satisfies(this.appsEngineVersion, info.requiredApiVersion)) {
+			// eslint-disable-next-line @typescript-eslint/only-throw-error -- apps-engine error classes implement Error without extending it
 			throw new RequiredApiVersionError(info, this.appsEngineVersion);
 		}
 

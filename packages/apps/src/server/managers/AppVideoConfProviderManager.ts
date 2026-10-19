@@ -62,6 +62,7 @@ export class AppVideoConfProviderManager {
 
 		const providerName = provider.name.toLowerCase().trim();
 		if (!this.canProviderBeTouchedBy(appId, providerName)) {
+			// eslint-disable-next-line @typescript-eslint/only-throw-error -- apps-engine error classes implement Error without extending it
 			throw new VideoConfProviderAlreadyExistsError(provider.name);
 		}
 
@@ -104,6 +105,7 @@ export class AppVideoConfProviderManager {
 	public async isFullyConfigured(providerName: string): Promise<boolean> {
 		const providerInfo = this.retrieveProviderInfo(providerName);
 		if (!providerInfo) {
+			// eslint-disable-next-line @typescript-eslint/only-throw-error -- apps-engine error classes implement Error without extending it
 			throw new VideoConfProviderNotRegisteredError(providerName);
 		}
 
@@ -113,6 +115,7 @@ export class AppVideoConfProviderManager {
 	public async onNewVideoConference(providerName: string, call: VideoConference): Promise<void> {
 		const providerInfo = this.retrieveProviderInfo(providerName);
 		if (!providerInfo) {
+			// eslint-disable-next-line @typescript-eslint/only-throw-error -- apps-engine error classes implement Error without extending it
 			throw new VideoConfProviderNotRegisteredError(providerName);
 		}
 
@@ -122,6 +125,7 @@ export class AppVideoConfProviderManager {
 	public async onVideoConferenceChanged(providerName: string, call: VideoConference): Promise<void> {
 		const providerInfo = this.retrieveProviderInfo(providerName);
 		if (!providerInfo) {
+			// eslint-disable-next-line @typescript-eslint/only-throw-error -- apps-engine error classes implement Error without extending it
 			throw new VideoConfProviderNotRegisteredError(providerName);
 		}
 
@@ -131,6 +135,7 @@ export class AppVideoConfProviderManager {
 	public async onUserJoin(providerName: string, call: VideoConference, user?: IVideoConferenceUser): Promise<void> {
 		const providerInfo = this.retrieveProviderInfo(providerName);
 		if (!providerInfo) {
+			// eslint-disable-next-line @typescript-eslint/only-throw-error -- apps-engine error classes implement Error without extending it
 			throw new VideoConfProviderNotRegisteredError(providerName);
 		}
 
@@ -144,6 +149,7 @@ export class AppVideoConfProviderManager {
 	): Promise<Array<IBlock> | undefined> {
 		const providerInfo = this.retrieveProviderInfo(providerName);
 		if (!providerInfo) {
+			// eslint-disable-next-line @typescript-eslint/only-throw-error -- apps-engine error classes implement Error without extending it
 			throw new VideoConfProviderNotRegisteredError(providerName);
 		}
 
@@ -153,6 +159,7 @@ export class AppVideoConfProviderManager {
 	public async generateUrl(providerName: string, call: VideoConfData): Promise<string> {
 		const providerInfo = this.retrieveProviderInfo(providerName);
 		if (!providerInfo) {
+			// eslint-disable-next-line @typescript-eslint/only-throw-error -- apps-engine error classes implement Error without extending it
 			throw new VideoConfProviderNotRegisteredError(providerName);
 		}
 
@@ -167,6 +174,7 @@ export class AppVideoConfProviderManager {
 	): Promise<string> {
 		const providerInfo = this.retrieveProviderInfo(providerName);
 		if (!providerInfo) {
+			// eslint-disable-next-line @typescript-eslint/only-throw-error -- apps-engine error classes implement Error without extending it
 			throw new VideoConfProviderNotRegisteredError(providerName);
 		}
 

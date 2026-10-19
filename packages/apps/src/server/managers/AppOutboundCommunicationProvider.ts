@@ -45,6 +45,7 @@ export class OutboundMessageProvider {
 			if (e?.message === 'error-invalid-provider') {
 				throw new Error('error-provider-not-registered', { cause: e });
 			}
+			// eslint-disable-next-line @typescript-eslint/only-throw-error -- apps-engine error classes implement Error without extending it
 			throw new AppOutboundProcessError(e.message, method);
 		}
 	}

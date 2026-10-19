@@ -59,6 +59,7 @@ export function parseMessage(message: unknown): jsonrpc.JsonRpc {
 		return message;
 	}
 
+	// eslint-disable-next-line @typescript-eslint/only-throw-error -- JSON-RPC error objects are serialized back to the engine
 	throw jsonrpc.error(null, jsonrpc.JsonRpcError.invalidRequest(message));
 }
 

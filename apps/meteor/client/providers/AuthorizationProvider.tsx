@@ -30,6 +30,7 @@ const AuthorizationProvider = ({ children }: AuthorizationProviderProps) => {
 	const isReady = PermissionsCachedStore.useReady();
 
 	if (!isReady) {
+		// eslint-disable-next-line @typescript-eslint/only-throw-error -- throwing a promise suspends rendering until the store is ready
 		throw (async () => {
 			PermissionsCachedStore.listen();
 			await PermissionsCachedStore.init();

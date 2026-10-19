@@ -58,6 +58,7 @@ export function parseArgs(deps: { AppAccessorsInstance: AppAccessors }, evtMetho
 	const [param1, param2] = params as [unknown, unknown];
 
 	if (!param1) {
+		// eslint-disable-next-line @typescript-eslint/only-throw-error -- JSON-RPC error objects are serialized back to the engine
 		throw JsonRpcError.invalidParams(null);
 	}
 
@@ -117,6 +118,7 @@ export function parseArgs(deps: { AppAccessorsInstance: AppAccessors }, evtMetho
 	// This guy gets an extra one
 	if (evtMethod === 'executePostMessageDeleted') {
 		if (!param2) {
+			// eslint-disable-next-line @typescript-eslint/only-throw-error -- JSON-RPC error objects are serialized back to the engine
 			throw JsonRpcError.invalidParams(null);
 		}
 
