@@ -3,6 +3,7 @@ import type { VideoConference, VideoConferenceCapabilities, VideoConferenceInstr
 import {
 	ajv,
 	isVideoConfAddParticipantsProps,
+	isVideoConfJoinScheduledProps,
 	isVideoConfCallIdProps,
 	isVideoConfInfoProps,
 	isVideoConfJoinProps,
@@ -117,6 +118,11 @@ const ringResponseSchema = oneValueResponseSchema<{ rang: boolean }>('rang', {
 const shareChatResponseSchema = oneValueResponseSchema<{ rid: string }>('rid', {
 	type: 'string',
 	description: 'The room the conference chat now lives in.',
+});
+
+const joinScheduledResponseSchema = oneValueResponseSchema<{ callId: string }>('callId', {
+	type: 'string',
+	description: 'The conference the alias stands for.',
 });
 
 const infoResponseSchema = ajv.compile<VideoConference & { capabilities: VideoConferenceCapabilities }>({
@@ -255,9 +261,9 @@ API.v1.post(
 		// Non-embedded calls are joinable anonymously, as long as the room is accessible (Accounts_AllowAnonymousRead)
 		// Embedded calls only work for logged in users, so `canAccessRoomIdAsync` is a fallback for older providers
 		// and respects the `Accounts_AllowAnonymousRead` setting internally.
-		const canAccessConference = (await VideoConf.listProviderCapabilities(call.providerName)).embedded
+		const canAccessConference = userId
 			? await Authorization.canAccessConference(call, userId)
-			: await canAccessRoomIdAsync(call.rid, userId);
+			: !(await VideoConf.listProviderCapabilities(call.providerName)).embedded && (await canAccessRoomIdAsync(call.rid, userId));
 
 		if (!canAccessConference) {
 			return API.v1.failure('invalid-params');
@@ -513,6 +519,33 @@ API.v1.post(
 	},
 );
 
+/**
+ * The alias may not stand for a conference yet: it can be handed out ahead of the call, and whoever dials first
+ * brings it into being. So this is reached without a callId, and answers with the one it found or made.
+ */
+API.v1.post(
+	'video-conference.join-scheduled',
+	{
+		authRequired: true,
+		body: isVideoConfJoinScheduledProps,
+		rateLimiterOptions: { numRequestsAllowed: 15, intervalTimeInMS: 3000 },
+		response: {
+			200: joinScheduledResponseSchema,
+			400: validateBadRequestErrorResponse,
+			401: validateUnauthorizedErrorResponse,
+		},
+	},
+	async function action() {
+		const { sipAlias } = this.bodyParams;
+
+		try {
+			return API.v1.success({ callId: await VideoConf.initializeOrJoinScheduledConference(sipAlias, this.userId) });
+		} catch {
+			return API.v1.failure('invalid-params');
+		}
+	},
+);
+
 API.v1.post(
 	'video-conference.share-chat',
 	{
@@ -527,14 +560,14 @@ API.v1.post(
 		},
 	},
 	async function action() {
-		const { callId, mode } = this.bodyParams;
+		const { callId, mode, users } = this.bodyParams;
 
 		const call = await loadAccessibleConference(callId, this.userId);
 		if (!call) {
 			return API.v1.notFound();
 		}
 
-		return API.v1.success({ rid: await VideoConf.shareChatWithMembers(this.userId, callId, mode) });
+		return API.v1.success({ rid: await VideoConf.shareChatWithMembers(this.userId, callId, mode, users) });
 	},
 );
 
