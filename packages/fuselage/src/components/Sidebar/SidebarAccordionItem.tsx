@@ -1,7 +1,85 @@
+import { styled, Text, View, type GetProps } from '@tamagui/web';
 import type { HTMLAttributes, ReactNode } from 'react';
 
+import { textIconColors } from '../../Theme';
+import { toCSSValue } from '../../helpers/toCSSValue';
+import { borderRadius, borderWidth, size, spacing } from '../../styleTokens';
 import { Chevron } from '../Chevron';
+import { withFuselageProvider } from '../FuselageProvider/FuselageProvider';
 import { useCollapse } from './hooks/useCollapse';
+import { boxFull, plainElement, sidebarAccordionBorderColor, sidebarColorSurfaceDefault, textEllipsis, typography } from './sidebarStyles';
+
+const SidebarAccordionItemFrame = styled(View, {
+	render: 'section',
+	...boxFull,
+	flexWrap: 'nowrap',
+	flexBasis: 0,
+	borderWidth: borderWidth('medium'),
+	borderColor: 'transparent',
+	borderBottomWidth: borderWidth('default'),
+	borderBottomColor: sidebarAccordionBorderColor,
+});
+
+// The `[tabindex]` states stay in SCSS
+const SidebarAccordionItemBar = styled(View, {
+	...boxFull,
+	position: 'sticky',
+	zIndex: 1,
+	top: 0,
+	flexDirection: 'row',
+	flexWrap: 'nowrap',
+	alignItems: 'center',
+	minHeight: size('x24'),
+	paddingBlock: `calc(${spacing('x8')} - ${borderWidth('default')})`,
+	paddingInline: `calc(${spacing('x16')} - ${borderWidth('default')})`,
+	textAlign: 'start',
+	color: textIconColors['font-default'].toString(),
+	borderRadius: toCSSValue('--rcx-border-radius-small', borderRadius('small')!),
+	backgroundColor: sidebarColorSurfaceDefault,
+	columnGap: spacing('x4'),
+
+	variants: {
+		isDisabled: {
+			true: {
+				cursor: 'not-allowed',
+				color: textIconColors['font-disabled'].toString(),
+			},
+		},
+	} as const,
+});
+
+const SidebarAccordionItemTitle = styled(Text, {
+	render: 'h5',
+	...plainElement,
+	display: 'block',
+	margin: 0,
+	whiteSpace: 'nowrap',
+	...textEllipsis,
+	...typography('h5'),
+});
+
+const SidebarAccordionItemPanel = styled(View, {
+	...plainElement,
+	display: 'block',
+	visibility: 'hidden',
+	overflow: 'hidden',
+	height: size('none'),
+	margin: 0,
+	padding: 0,
+	listStyle: 'none',
+
+	variants: {
+		expanded: {
+			true: {
+				visibility: 'visible',
+				flexGrow: 1,
+				height: '100%',
+				paddingTop: spacing('x4'),
+				paddingBottom: spacing('x8'),
+			},
+		},
+	} as const,
+});
 
 export type SidebarAccordionItemProps = {
 	children?: ReactNode;
@@ -23,6 +101,7 @@ const SidebarAccordionItem = ({
 	expanded: propExpanded,
 	defaultExpanded,
 	tabIndex,
+	className,
 	...props
 }: SidebarAccordionItemProps) => {
 	const { barProps, expanded, panelExpanded, panelId, titleId } = useCollapse({
@@ -34,26 +113,28 @@ const SidebarAccordionItem = ({
 	});
 
 	return (
-		<section className='rcx-box rcx-box--full rcx-sidebar-accordion-item' {...props}>
-			<div
+		<SidebarAccordionItemFrame
+			className={['rcx-sidebar-accordion-item', className].filter(Boolean).join(' ')}
+			{...(props as GetProps<typeof SidebarAccordionItemFrame>)}
+		>
+			<SidebarAccordionItemBar
 				role='button'
-				className={[
-					'rcx-box rcx-box--full rcx-sidebar-accordion-item__bar rcx-box--animated',
-					disabled && 'rcx-sidebar-accordion-item__bar--disabled',
-				]
+				isDisabled={!!disabled}
+				className={['rcx-sidebar-accordion-item__bar rcx-box--animated', disabled && 'rcx-sidebar-accordion-item__bar--disabled']
 					.filter(Boolean)
 					.join(' ')}
-				{...barProps}
+				{...(barProps as unknown as GetProps<typeof SidebarAccordionItemBar>)}
 			>
 				{!noncollapsible && <Chevron className='rcx-sidebar-accordion-item__chevron' size='x16' right={!expanded} />}
 				{title && (
-					<h5 className='rcx-sidebar-accordion-item__title' id={titleId}>
+					<SidebarAccordionItemTitle className='rcx-sidebar-accordion-item__title' id={titleId}>
 						{title}
-					</h5>
+					</SidebarAccordionItemTitle>
 				)}
 				{!expanded && badge && badge}
-			</div>
-			<div
+			</SidebarAccordionItemBar>
+			<SidebarAccordionItemPanel
+				expanded={!!panelExpanded}
 				className={[
 					'rcx-sidebar-accordion-item__panel',
 					'rcx-box--animated',
@@ -64,9 +145,9 @@ const SidebarAccordionItem = ({
 				id={panelId}
 			>
 				{children}
-			</div>
-		</section>
+			</SidebarAccordionItemPanel>
+		</SidebarAccordionItemFrame>
 	);
 };
 
-export default SidebarAccordionItem;
+export default withFuselageProvider(SidebarAccordionItem);
