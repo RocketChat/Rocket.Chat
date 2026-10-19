@@ -78,7 +78,7 @@ exports[`[NavBar Component] renders Default without crashing 1`] = `
             </button>
           </div>
           <hr
-            class="rcx-box rcx-box--full rcx-navbar-divider rcx-divider--vertical rcx-divider"
+            class="is_View _m-1230101273 _b-810495792 _w-225817338 _h-1628964073 rcx-divider rcx-divider--vertical rcx-navbar-divider"
           />
           <div
             class="rcx-button-group rcx-button-group--align-start rcx-navbar-group"
@@ -89,7 +89,7 @@ exports[`[NavBar Component] renders Default without crashing 1`] = `
               aria-haspopup="true"
               aria-label="sort"
               class="rcx-box rcx-box--full rcx-button--small-square rcx-button--square rcx-button--icon rcx-button rcx-navbar-item"
-              id="react-aria-_r_0_"
+              id="react-aria-_r_2_"
               title="sort"
               type="button"
             >
@@ -117,7 +117,7 @@ exports[`[NavBar Component] renders Default without crashing 1`] = `
               aria-haspopup="true"
               aria-label="create new"
               class="rcx-box rcx-box--full rcx-button--small-square rcx-button--square rcx-button--icon rcx-button"
-              id="react-aria-_r_2_"
+              id="react-aria-_r_4_"
               title="create new"
               type="button"
             >
@@ -130,7 +130,7 @@ exports[`[NavBar Component] renders Default without crashing 1`] = `
             </button>
           </div>
           <hr
-            class="rcx-box rcx-box--full rcx-navbar-divider rcx-divider--vertical rcx-divider"
+            class="is_View _m-1230101273 _b-810495792 _w-225817338 _h-1628964073 rcx-divider rcx-divider--vertical rcx-navbar-divider"
           />
           <div
             class="rcx-button-group rcx-button-group--align-start rcx-navbar-group"
@@ -210,7 +210,7 @@ exports[`[NavBar Component] renders Default without crashing 1`] = `
               aria-haspopup="true"
               aria-label="profile"
               class="rcx-box rcx-box--full rcx-button--small-square rcx-button--square rcx-button--icon rcx-button rcx-navbar-item"
-              id="react-aria-_r_4_"
+              id="react-aria-_r_8_"
               title="profile"
               type="button"
             >

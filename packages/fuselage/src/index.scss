@@ -1,3 +1,6 @@
 @use './fonts/inter.scss';
 @use './components/index.scss';
 @use './styles/normalize.scss';
+
+// Tamagui styles live in `fuselage`; element resets go in `reset` so they stay below them
+@layer reset, fuselage;
