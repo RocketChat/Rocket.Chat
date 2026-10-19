@@ -1,184 +1,54 @@
 @use '../../styles/colors.scss';
 @use '../../styles/lengths.scss';
-@use '../../styles/typography.scss' as *;
-@use '../../styles/mixins/templates.scss';
-@use '../../styles/mixins/interactivity.scss' as *;
 @use '../../styles/functions.scss' as *;
 @use '../../styles/mixins/link.scss' as *;
 @use '../../styles/primitives/link.scss';
 
+// Link colors stay unlayered: they have to keep beating the global `a` link rule in `styles/normalize.scss`, as they did before
 $tag-colors-default-color: theme('tag-colors-default-color', colors.button(on-secondary));
-$tag-colors-default-hover-color: theme('tag-colors-default-hover-color', colors.button(on-secondary));
-$tag-colors-default-background-color: theme('tag-colors-default-background-color', colors.button(secondary-default));
-$tag-colors-default-hover-background-color: theme('tag-colors-default-hover-background-color', colors.button(secondary-hover));
-
 $tag-colors-primary-color: theme('tag-colors-primary-color', colors.button(on-primary));
-$tag-colors-primary-background-color: theme('tag-colors-primary-background-color', colors.button(primary-default));
-$tag-colors-primary-hover-background-color: theme('tag-colors-primary-hover-background-color', colors.button(primary-hover));
-
 $tag-colors-secondary-color: theme('tag-colors-secondary-color', colors.button(on-secondary));
-$tag-colors-secondary-background-color: theme('tag-colors-secondary-background-color', colors.button(secondary-default));
-$tag-colors-secondary-hover-background-color: theme('tag-colors-secondary-hover-background-color', colors.button(secondary-hover));
-
 $tag-colors-danger-color: theme('tag-colors-danger-color', colors.button(on-danger));
-$tag-colors-danger-background-color: theme('tag-colors-danger-background-color', colors.button(danger-default));
-$tag-colors-danger-hover-background-color: theme('tag-colors-danger-hover-background-color', colors.button(danger-hover));
-
 $tag-colors-secondary-danger-color: theme('tag-colors-secondary-danger-color', colors.button(on-secondary-danger));
-$tag-colors-secondary-danger-background-color: theme(
-	'tag-colors-secondary-danger-background-color',
-	colors.button(secondary-danger-default)
-);
-$tag-colors-secondary-danger-hover-background-color: theme(
-	'tag-colors-secondary-danger-hover-background-color',
-	colors.button(secondary-danger-hover)
-);
-
 $tag-colors-secondary-warning-color: theme('tag-colors-secondary-warning-color', colors.status-font(on-warning));
-$tag-colors-secondary-warning-background-color: theme('tag-colors-secondary-warning-background-color', colors.button(secondary-default));
-$tag-colors-secondary-warning-hover-background-color: theme(
-	'tag-colors-secondary-warning-hover-background-color',
-	colors.button(secondary-hover)
-);
-
 $tag-colors-secondary-info-color: theme('tag-colors-secondary-info-color', colors.status-font(on-info));
-$tag-colors-secondary-info-background-color: theme('tag-colors-secondary-info-background-color', colors.button(secondary-default));
-$tag-colors-secondary-info-hover-background-color: theme(
-	'tag-colors-secondary-info-hover-background-color',
-	colors.button(secondary-hover)
+$tag-colors-warning-color: theme('tag-colors-warning-color', colors.button(on-warning));
+$tag-colors-featured-color: theme('tag-colors-featured-color', colors.button(on-primary));
+
+$-variant-colors: (
+	primary: $tag-colors-primary-color,
+	secondary: $tag-colors-secondary-color,
+	danger: $tag-colors-danger-color,
+	warning: $tag-colors-warning-color,
+	featured: $tag-colors-featured-color,
+	secondary-danger: $tag-colors-secondary-danger-color,
+	secondary-warning: $tag-colors-secondary-warning-color,
+	secondary-info: $tag-colors-secondary-info-color,
 );
 
-$tag-colors-warning-color: theme('tag-colors-warning-color', colors.button(on-warning));
-$tag-colors-warning-background-color: theme('tag-colors-warning-background-color', colors.button(warning-default));
-$tag-colors-warning-hover-background-color: theme('tag-colors-warning-hover-background-color', colors.button(warning-hover));
+.rcx-tag--clickable {
+	&.disabled {
+		cursor: not-allowed;
+	}
 
-$tag-colors-featured-color: theme('tag-colors-featured-color', colors.button(on-primary));
-$tag-colors-featured-background-color: theme('tag-colors-featured-background-color', colors.surface(featured));
-$tag-colors-featured-hover-background-color: theme('tag-colors-featured-hover-background-color', colors.surface(featured-hover));
-
-$tag-colors-disabled-color: theme('tag-colors-disabled-color', colors.font(secondary-info));
-$tag-colors-disabled-background-color: theme('tag-colors-disabled-background-color', colors.surface(neutral));
-$tag-border-radius: theme('tag-border-radius', lengths.border-radius(small));
-
-@mixin use-clickable-colors($color, $background-color) {
 	&.rcx-tag--clickable {
-		@include use-link-colors($color);
-
-		&:hover {
-			background-color: $background-color;
-		}
+		@include use-link-colors($tag-colors-default-color);
 	}
 }
 
+@each $variant, $color in $-variant-colors {
+	.rcx-tag--#{$variant}.rcx-tag--clickable {
+		@include use-link-colors($color);
+	}
+}
+
+// Sets the radius hook the Tamagui frame reads
+.rcx-tag--pill {
+	--rcx-tag-border-radius: #{lengths.border-radius(full)};
+}
+
+// Tamagui has no style prop for font smoothing, which `rcx-box--full` used to set
 .rcx-tag {
-	display: flex;
-	overflow: hidden;
-	justify-content: center;
-	align-items: center;
-
-	padding: lengths.padding(2) lengths.padding(4);
-
-	white-space: nowrap;
-
-	text-decoration: none;
-	text-overflow: ellipsis;
-
-	word-break: keep-all;
-
-	color: $tag-colors-default-color;
-	border-radius: $tag-border-radius;
-	background-color: $tag-colors-default-background-color;
-	gap: lengths.margin(4);
-
-	@include use-font-scale(micro);
-	@include templates.focus-state;
-
-	&--clickable {
-		@include clickable;
-		@include use-clickable-colors($tag-colors-default-color, $tag-colors-default-hover-background-color);
-	}
-
-	&__inner {
-		overflow: hidden;
-
-		min-width: 0;
-
-		white-space: nowrap;
-		text-overflow: ellipsis;
-	}
-
-	&--primary {
-		color: $tag-colors-primary-color;
-		background-color: $tag-colors-primary-background-color;
-
-		@include use-clickable-colors($tag-colors-primary-color, $tag-colors-primary-hover-background-color);
-	}
-
-	&--secondary {
-		color: $tag-colors-secondary-color;
-		background-color: $tag-colors-secondary-background-color;
-
-		@include use-clickable-colors($tag-colors-secondary-color, $tag-colors-secondary-hover-background-color);
-	}
-
-	&--danger {
-		color: $tag-colors-danger-color;
-		background-color: $tag-colors-danger-background-color;
-
-		@include use-clickable-colors($tag-colors-danger-color, $tag-colors-danger-hover-background-color);
-	}
-
-	&--warning {
-		color: $tag-colors-warning-color;
-		background-color: $tag-colors-warning-background-color;
-
-		@include use-clickable-colors($tag-colors-warning-color, $tag-colors-warning-hover-background-color);
-	}
-
-	&--featured {
-		color: $tag-colors-featured-color;
-		background-color: $tag-colors-featured-background-color;
-
-		@include use-clickable-colors($tag-colors-featured-color, $tag-colors-featured-hover-background-color);
-	}
-
-	&--secondary-danger {
-		color: $tag-colors-secondary-danger-color;
-		background-color: $tag-colors-secondary-danger-background-color;
-
-		@include use-clickable-colors($tag-colors-secondary-danger-color, $tag-colors-secondary-danger-hover-background-color);
-	}
-
-	&--secondary-warning {
-		color: $tag-colors-secondary-warning-color;
-		background-color: $tag-colors-secondary-warning-background-color;
-
-		@include use-clickable-colors($tag-colors-secondary-warning-color, $tag-colors-secondary-warning-hover-background-color);
-	}
-
-	&--secondary-info {
-		color: $tag-colors-secondary-info-color;
-		background-color: $tag-colors-secondary-info-background-color;
-
-		@include use-clickable-colors($tag-colors-secondary-info-color, $tag-colors-secondary-info-hover-background-color);
-	}
-
-	&--disabled {
-		cursor: not-allowed;
-
-		color: $tag-colors-disabled-color;
-		background-color: $tag-colors-disabled-background-color;
-	}
-
-	&--medium {
-		@include use-font-scale(c2);
-	}
-
-	&--large {
-		@include use-font-scale(p2b);
-	}
-
-	&--pill {
-		--rcx-tag-border-radius: #{lengths.border-radius(full)};
-	}
+	-webkit-font-smoothing: antialiased;
+	-moz-osx-font-smoothing: grayscale;
 }
