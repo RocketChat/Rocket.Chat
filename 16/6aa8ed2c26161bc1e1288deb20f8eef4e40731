@@ -1,0 +1,14 @@
+ee/apps/xmpp-server-service/package.json
+  h_4c386397e672f4 17
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "166aa8ed2c26161bc1e1288deb20f8eef4e40731",
+  "prompts": {},
+  "humans": {
+    "h_4c386397e672f4": {
+      "author": "Diego Sampaio <chinello@gmail.com>"
+    }
+  }
+}
