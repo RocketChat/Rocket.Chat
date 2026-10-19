@@ -30,11 +30,11 @@ describe('utils', () => {
 		const message = Array(11).fill({});
 		expect(splitByTens(message)).toEqual([Array(10).fill({}), Array(1).fill({})]);
 	});
-	it('should split an array by groups of 10', () => {
+	it('should split an array of 21 items into three groups', () => {
 		const message = Array(21).fill({});
 		expect(splitByTens(message)).toEqual([Array(10).fill({}), Array(10).fill({}), Array(1).fill({})]);
 	});
-	it('should split an array by groups of 10', () => {
+	it('should keep an array of fewer than 10 items as a single group', () => {
 		const message = Array(8).fill({});
 		expect(splitByTens(message)).toEqual([Array(8).fill({})]);
 	});

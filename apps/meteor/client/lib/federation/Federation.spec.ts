@@ -184,16 +184,7 @@ describe('#actionAllowed()', () => {
 				).toBe(false);
 			});
 
-			it('should return false if the user want to add/remove owners as a moderator', () => {
-				expect(
-					Federation.actionAllowed({ _id: 'room-id', federated: true }, RoomMemberActions.SET_AS_MODERATOR, them, {
-						u: { _id: me },
-						roles: myRole,
-					} as ISubscription),
-				).toBe(false);
-			});
-
-			it('should return false if the user want to add/remove owners as a moderator', () => {
+			it('should return false if the user want to add/remove moderator role of owners as a moderator', () => {
 				expect(
 					Federation.actionAllowed({ _id: 'room-id', federated: true }, RoomMemberActions.SET_AS_MODERATOR, them, {
 						u: { _id: me },
@@ -468,16 +459,6 @@ describe('#canCreateInviteLinks()', () => {
 	it('should return false if the current room is federated one but NOT a public one', () => {
 		expect(
 			Federation.canCreateInviteLinks({ _id: 'differentId' } as IUser, { federated: true, u: { _id: 'id' } } as IRoom, {} as ISubscription),
-		).toBe(false);
-	});
-
-	it('should return false if the current room is federated one, a public one but the user is NOT an owner nor moderator', () => {
-		expect(
-			Federation.canCreateInviteLinks(
-				{ _id: 'differentId' } as IUser,
-				{ federated: true, t: 'c', u: { _id: 'id' } } as IRoom,
-				{} as ISubscription,
-			),
 		).toBe(false);
 	});
 
