@@ -1,0 +1,25 @@
+apps/meteor/client/components/TwoFactorModal/TwoFactorEmailModal.spec.tsx
+  s_1261ca19020689::t_88039b68291ebc 26-40
+packages/i18n/src/locales/en.i18n.json
+  s_1261ca19020689::t_88039b68291ebc 6927
+apps/meteor/server/lib/2fa/code/EmailCheck.spec.ts
+  ai_agent 239
+apps/meteor/client/components/TwoFactorModal/TwoFactorEmailModal.tsx
+  s_1261ca19020689::t_88039b68291ebc 65
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.2",
+  "base_commit_sha": "ecf35c1c25cebabf4b07fa09f2faa67f432b11dd",
+  "prompts": {},
+  "sessions": {
+    "s_1261ca19020689": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "c5cc96b7-9447-4775-bdbd-221763ff01e5",
+        "model": "claude-opus-5-5"
+      },
+      "human_author": "Ricardo Garim <rswarovsky@gmail.com>"
+    }
+  }
+}
