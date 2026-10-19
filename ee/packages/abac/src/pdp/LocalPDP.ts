@@ -1,17 +1,23 @@
 import { LDAPEnterprise } from '@rocket.chat/core-services';
-import type { AbacActor } from '@rocket.chat/core-services';
-import type { IAbacAttributeDefinition, IRoom, AtLeast, IUser } from '@rocket.chat/core-typings';
+import type { AbacActor, AbacRoomMembershipPreviewPage } from '@rocket.chat/core-services';
+import type { AbacMembershipVerdict, AbacPreviewCursor, IAbacAttributeDefinition, IRoom, AtLeast, IUser } from '@rocket.chat/core-typings';
 import { Rooms, Users } from '@rocket.chat/models';
 
 import { AbacInvalidAttributeValuesError, OnlyCompliantCanBeAddedToRoomError } from '../errors';
 import {
+	PREVIEW_READ_OPTIONS,
 	buildCompliantConditions,
 	buildNonCompliantConditions,
 	buildRoomNonCompliantConditionsFromSubject,
 	findOwnedValues,
 	findUnownedValues,
+	previewRoomMembersInSteps,
+	withAttributeValues,
 } from '../helper';
-import type { EvaluableSubject, Evaluation, IPolicyDecisionPoint, ReevaluationUser } from './types';
+import type { PreviewSubject } from '../helper';
+import type { AttributeSetChange, EvaluableSubject, Evaluation, IPolicyDecisionPoint, ReevaluationUser, RoomMembersPreview } from './types';
+
+export const LOCAL_PREVIEW_PAGE_SIZE = 1000;
 
 export class LocalPDP implements IPolicyDecisionPoint {
 	constructor(private restrictToOwnedAttributes = false) {}
@@ -62,6 +68,49 @@ export class LocalPDP implements IPolicyDecisionPoint {
 		};
 
 		return Users.find(query, { projection: { __rooms: 0 } }).toArray();
+	}
+
+	needsEvaluation({ added }: AttributeSetChange): boolean {
+		return added;
+	}
+
+	async previewRoomMembers(
+		room: AtLeast<IRoom, '_id' | 'abacAttributes'>,
+		attributes: IAbacAttributeDefinition[],
+		{ filter, after, group }: AbacRoomMembershipPreviewPage,
+	): Promise<RoomMembersPreview> {
+		const count = LOCAL_PREVIEW_PAGE_SIZE;
+		if (!group) {
+			return previewRoomMembersInSteps(room._id, { filter, after, group, count }, (subjects) =>
+				this.evaluateSubjectsAgainstAttributes(subjects, attributes, room),
+			);
+		}
+
+		const loses = group === 'loses';
+		const read = await Users.findActiveByRoomIdAfterUsername<PreviewSubject>(
+			room._id,
+			{
+				search: filter,
+				after,
+				match: loses ? { $or: buildNonCompliantConditions(attributes) } : { $and: buildCompliantConditions(attributes) },
+				limit: count + 1,
+			},
+			PREVIEW_READ_OPTIONS,
+		).toArray();
+		const verdict: AbacMembershipVerdict = loses ? 'nonCompliant' : 'compliant';
+		const members = read.slice(0, count).map(({ _id, username, name }) => ({ _id, username, name, verdict }));
+
+		const last = members.at(-1);
+		const next = read.length > count && last?.username ? { _id: last._id, username: last.username } : undefined;
+		const countUntil = (until?: AbacPreviewCursor) => Users.countActiveByRoomIdAfterUsername(room._id, { search: filter, after, until });
+
+		if (!next) {
+			const remaining = await countUntil();
+			return { members, checked: remaining, ...(!after && { total: remaining }) };
+		}
+
+		const [checked, total] = await Promise.all([countUntil(next), after ? undefined : countUntil()]);
+		return { members, checked, ...(total !== undefined && { total }), next };
 	}
 
 	async onSubjectAttributesChanged(user: IUser, _next: IAbacAttributeDefinition[]): Promise<Pick<IRoom, '_id' | 'name'>[]> {
@@ -126,11 +175,7 @@ export class LocalPDP implements IPolicyDecisionPoint {
 	}
 
 	async assertCreatorMayAssign(attributes: IAbacAttributeDefinition[], actor: AbacActor): Promise<{ creatorAdmitted: boolean }> {
-		if (!this.restrictToOwnedAttributes) {
-			return { creatorAdmitted: false };
-		}
-
-		const unowned = findUnownedValues(attributes, await this.heldAttributesOf(actor));
+		const unowned = await this.findUnassignableValues(attributes, actor);
 		if (unowned.length) {
 			throw new AbacInvalidAttributeValuesError({ attributes: unowned });
 		}
@@ -138,12 +183,28 @@ export class LocalPDP implements IPolicyDecisionPoint {
 		return { creatorAdmitted: false };
 	}
 
-	async filterAssignableAttributes(definitions: IAbacAttributeDefinition[], actor: AbacActor): Promise<IAbacAttributeDefinition[]> {
+	async findUnassignableValues(
+		attributes: IAbacAttributeDefinition[],
+		actor: AbacActor,
+		alreadyAssigned: IAbacAttributeDefinition[] = [],
+	): Promise<IAbacAttributeDefinition[]> {
+		if (!this.restrictToOwnedAttributes) {
+			return [];
+		}
+
+		return findUnownedValues(attributes, withAttributeValues(await this.heldAttributesOf(actor), alreadyAssigned));
+	}
+
+	async filterAssignableAttributes(
+		definitions: IAbacAttributeDefinition[],
+		actor: AbacActor,
+		alreadyAssigned: IAbacAttributeDefinition[] = [],
+	): Promise<IAbacAttributeDefinition[]> {
 		if (!this.restrictToOwnedAttributes) {
 			return definitions;
 		}
 
-		return findOwnedValues(definitions, await this.heldAttributesOf(actor));
+		return findOwnedValues(definitions, withAttributeValues(await this.heldAttributesOf(actor), alreadyAssigned));
 	}
 
 	private async heldAttributesOf(actor: AbacActor): Promise<Map<string, Set<string>>> {

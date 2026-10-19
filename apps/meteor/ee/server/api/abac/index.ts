@@ -1,6 +1,7 @@
 import { AbacAttributeStoreExternalError, getPdpHealthErrorCode } from '@rocket.chat/abac';
 import { Abac, MeteorError } from '@rocket.chat/core-services';
-import type { IServerEvents } from '@rocket.chat/core-typings';
+import type { AbacRoomAttributesGrant } from '@rocket.chat/core-services';
+import type { IServerEvents, IUser } from '@rocket.chat/core-typings';
 import { ServerEvents } from '@rocket.chat/models';
 import { validateBadRequestErrorResponse, validateUnauthorizedErrorResponse } from '@rocket.chat/rest-typings/src/v1/Ajv';
 import { convertSubObjectsIntoPaths } from '@rocket.chat/tools';
@@ -25,6 +26,7 @@ import {
 	GETAbacPdpHealthResponseSchema,
 	GETAbacPdpHealthErrorResponseSchema,
 	GETAbacAttributeKeysResponseSchema,
+	GETAbacAssignableAttributesQuerySchema,
 	GETAbacAssignableAttributesResponseSchema,
 	POSTAbacMembershipPreviewBodySchema,
 	POSTAbacMembershipPreviewResponseSchema,
@@ -33,6 +35,7 @@ import { API } from '../../../../server/api';
 import type { ExtractRoutesFromAPI } from '../../../../server/api/ApiClass';
 import { getPaginationItems } from '../../../../server/api/lib/getPaginationItems';
 import { getRoomAbacLockContext } from '../../../../server/lib/authorization/getRoomAbacLockContext';
+import { hasAllPermissionAsync, hasPermissionAsync } from '../../../../server/lib/authorization/hasPermission';
 import { settings } from '../../../../server/settings';
 import { toCreationAttributesDenialError } from '../../lib/abac/creationAttributesDenial';
 import { toAbacActor } from '../../lib/abac/toAbacActor';
@@ -43,12 +46,23 @@ const assertLocalAttributeStore = async (): Promise<void> => {
 	}
 };
 
+const getRoomAttributesGrant = async (uid: IUser['_id'], rid: string): Promise<AbacRoomAttributesGrant | undefined> => {
+	if (await hasAllPermissionAsync(uid, ['abac-management', 'manage-abac-admin-rooms'])) {
+		return 'manage-abac-admin-rooms';
+	}
+
+	if (await hasPermissionAsync(uid, 'edit-room-abac-attributes', rid)) {
+		return 'edit-room-abac-attributes';
+	}
+
+	return undefined;
+};
+
 const abacEndpoints = API.v1
 	.post(
 		'abac/rooms/:rid/attributes',
 		{
 			authRequired: true,
-			permissionsRequired: ['abac-management', 'manage-abac-admin-rooms'],
 			body: POSTRoomAbacAttributesBodySchema,
 			response: {
 				200: GenericSuccessSchema,
@@ -62,13 +76,18 @@ const abacEndpoints = API.v1
 			const { rid } = this.urlParams;
 			const { attributes } = this.bodyParams;
 
+			const grant = await getRoomAttributesGrant(this.userId, rid);
+			if (!grant) {
+				return API.v1.forbidden('User does not have the permissions required for this action [error-unauthorized]');
+			}
+
 			if (!settings.get('ABAC_Enabled')) {
 				throw new Error('error-abac-not-enabled');
 			}
 
 			// This is a replace-all operation
 			// IF you need fine grained, use the other endpoints for removing, editing & adding single attributes
-			await Abac.setRoomAbacAttributes(rid, attributes, toAbacActor(this.user));
+			await Abac.setRoomAbacAttributes(rid, attributes, toAbacActor(this.user), grant);
 			return API.v1.success();
 		},
 	)
@@ -90,7 +109,7 @@ const abacEndpoints = API.v1
 			// We don't need to check if ABAC is enabled to clear attributes
 			// Since we're always allowing this operation
 			// license check is also not required
-			await Abac.setRoomAbacAttributes(rid, {}, toAbacActor(this.user));
+			await Abac.setRoomAbacAttributes(rid, {}, toAbacActor(this.user), 'manage-abac-admin-rooms');
 			return API.v1.success();
 		},
 	)
@@ -488,8 +507,8 @@ const abacEndpoints = API.v1
 		'abac/attributes.listAssignable',
 		{
 			authRequired: true,
-			permissionsRequired: ['create-abac-managed-room'],
 			license: ['abac'],
+			query: GETAbacAssignableAttributesQuerySchema,
 			response: {
 				200: GETAbacAssignableAttributesResponseSchema,
 				400: validateBadRequestErrorResponse,
@@ -502,11 +521,29 @@ const abacEndpoints = API.v1
 				throw new Error('error-abac-not-enabled');
 			}
 
+			const { rid } = this.queryParams;
 			const { enforcementOn, requiredAttributeKeys } = getRoomAbacLockContext();
+			const requiredKeys = enforcementOn ? requiredAttributeKeys : [];
+
+			if (rid) {
+				const grant = await getRoomAttributesGrant(this.userId, rid);
+				if (!grant) {
+					return API.v1.forbidden('User does not have the permissions required for this action [error-unauthorized]');
+				}
+
+				return API.v1.success({
+					attributes: await Abac.listRoomAssignableAttributes(rid, toAbacActor(this.user), grant),
+					requiredKeys,
+				});
+			}
+
+			if (!(await hasPermissionAsync(this.userId, 'create-abac-managed-room'))) {
+				return API.v1.forbidden('User does not have the permissions required for this action [error-unauthorized]');
+			}
 
 			return API.v1.success({
 				attributes: await Abac.listAssignableAttributes(toAbacActor(this.user)),
-				requiredKeys: enforcementOn ? requiredAttributeKeys : [],
+				requiredKeys,
 			});
 		},
 	)
@@ -514,11 +551,11 @@ const abacEndpoints = API.v1
 		'abac/rooms.evaluateMembership',
 		{
 			authRequired: true,
-			permissionsRequired: ['create-abac-managed-room'],
 			license: ['abac'],
 			rateLimiterOptions: {
-				numRequestsAllowed: 10,
-				intervalTimeInMS: 60000,
+				numRequestsAllowed: 20,
+				intervalTimeInMS: 10000,
+				bypassPermissions: ['abac-management', 'manage-abac-admin-rooms'],
 			},
 			body: POSTAbacMembershipPreviewBodySchema,
 			response: {
@@ -531,6 +568,20 @@ const abacEndpoints = API.v1
 		async function action() {
 			if (!settings.get('ABAC_Enabled')) {
 				throw new Error('error-abac-not-enabled');
+			}
+
+			if ('rid' in this.bodyParams) {
+				const { rid, attributes, filter, after, group } = this.bodyParams;
+				const grant = await getRoomAttributesGrant(this.userId, rid);
+				if (!grant) {
+					return API.v1.forbidden('User does not have the permissions required for this action [error-unauthorized]');
+				}
+
+				return API.v1.success(await Abac.previewRoomMembers(rid, attributes, toAbacActor(this.user), { filter, after, group }, grant));
+			}
+
+			if (!(await hasPermissionAsync(this.userId, 'create-abac-managed-room'))) {
+				return API.v1.forbidden('User does not have the permissions required for this action [error-unauthorized]');
 			}
 
 			const { members, attributes, excludeSelf = false } = this.bodyParams;
