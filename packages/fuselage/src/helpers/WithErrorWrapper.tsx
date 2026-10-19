@@ -8,10 +8,10 @@ type WithErrorWrapperProps<T> = {
 	parentComponent: 'Field';
 };
 
-function WithErrorWrapper<T>({ context, componentName, children, parentComponent }: WithErrorWrapperProps<T>) {
+function WithErrorWrapper<T>({ context, componentName, children, parentComponent: parentName }: WithErrorWrapperProps<T>) {
 	const isInsideParent = useContext(context);
 	if (!isInsideParent) {
-		throw new Error(`${componentName} should be used as children of ${parentComponent} Component`);
+		throw new Error(`${componentName} should be used as children of ${parentName} Component`);
 	}
 
 	return children;

@@ -16,7 +16,7 @@ export type ItemGroupProps = {
 /**
  * A list of `Item` rows. An `ItemGroupTitle` inside it labels the group, and its width drives the narrow layout.
  */
-const ItemGroup = ({ is: Tag = 'div', className, children, ...props }: ItemGroupProps) => {
+const ItemGroup = ({ is: Component = 'div', className, children, ...props }: ItemGroupProps) => {
 	const [titleIds, registerTitle] = useIdRegistry();
 
 	const contextValue = useMemo(() => ({ registerTitle }), [registerTitle]);
@@ -26,9 +26,9 @@ const ItemGroup = ({ is: Tag = 'div', className, children, ...props }: ItemGroup
 
 	return (
 		<ItemGroupContext.Provider value={contextValue}>
-			<Tag aria-labelledby={ariaLabelledBy} {...props} className={cx('rcx-item-group', className)}>
+			<Component aria-labelledby={ariaLabelledBy} {...props} className={cx('rcx-item-group', className)}>
 				{children}
-			</Tag>
+			</Component>
 		</ItemGroupContext.Provider>
 	);
 };

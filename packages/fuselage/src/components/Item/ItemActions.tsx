@@ -16,10 +16,10 @@ export type ItemActionsProps = {
  * The trailing buttons, icon buttons or menu trigger of an `Item` or `ItemGroupHeader`.
  * Placed as a direct child it spans every row; placed inside an `ItemRow` it only takes space from that row.
  */
-const ItemActions = ({ is: Tag = 'div', reveal = 'always', className, children, ...props }: ItemActionsProps) => (
-	<Tag {...props} className={cx(cxx('rcx-item__actions')({ 'reveal-hover': reveal === 'hover' }), className)}>
+const ItemActions = ({ is: Component = 'div', reveal = 'always', className, children, ...props }: ItemActionsProps) => (
+	<Component {...props} className={cx(cxx('rcx-item__actions')({ 'reveal-hover': reveal === 'hover' }), className)}>
 		{reveal === 'hover' ? <div className='rcx-item__actions-inner'>{children}</div> : children}
-	</Tag>
+	</Component>
 );
 
 export default ItemActions;

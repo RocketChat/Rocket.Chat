@@ -14,8 +14,8 @@ export type ItemMediaProps = {
 /**
  * The leading avatar, icon or thumbnail of an `Item`. Its box fits its child, so the child's size sets the row height.
  */
-const ItemMedia = ({ is: Tag = 'div', variant = 'default', className, ...props }: ItemMediaProps) => (
-	<Tag {...props} className={cx(cxx('rcx-item__media')({ icon: variant === 'icon' }), className)} />
+const ItemMedia = ({ is: Component = 'div', variant = 'default', className, ...props }: ItemMediaProps) => (
+	<Component {...props} className={cx(cxx('rcx-item__media')({ icon: variant === 'icon' }), className)} />
 );
 
 export default ItemMedia;

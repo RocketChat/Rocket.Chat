@@ -19,8 +19,8 @@ export type ItemDividerProps = {
 /**
  * The divider between groups, menu sections, or a header and its rows.
  */
-const ItemDivider = ({ is: Tag = 'div', inset = 'none', className, ...props }: ItemDividerProps) => (
-	<Tag
+const ItemDivider = ({ is: Component = 'div', inset = 'none', className, ...props }: ItemDividerProps) => (
+	<Component
 		{...props}
 		className={cx(
 			cxx('rcx-item-divider')({

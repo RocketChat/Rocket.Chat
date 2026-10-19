@@ -17,7 +17,7 @@ export type ItemIconProps = {
 /**
  * A 20px slot for the room type icon or a user status, placed before the title.
  */
-const ItemIcon = ({ is: Tag = 'div', label, id: propId, className, ...props }: ItemIconProps) => {
+const ItemIcon = ({ is: Component = 'div', label, id: propId, className, ...props }: ItemIconProps) => {
 	const generatedId = useId();
 	const id = propId ?? generatedId;
 	const { registerDescription } = useItemContext();
@@ -32,7 +32,7 @@ const ItemIcon = ({ is: Tag = 'div', label, id: propId, className, ...props }: I
 
 	const a11yProps = label ? { 'role': 'img', 'aria-label': label } : { 'aria-hidden': true };
 
-	return <Tag {...a11yProps} {...props} id={id} className={cx('rcx-item__icon', className)} />;
+	return <Component {...a11yProps} {...props} id={id} className={cx('rcx-item__icon', className)} />;
 };
 
 export default ItemIcon;

@@ -40,7 +40,7 @@ const Menu = <T extends object>({
 	icon = 'kebab',
 	placement = 'bottom-start',
 	title,
-	is: MenuButton = IconButton,
+	is: ButtonComponent = IconButton,
 	className,
 	pressed,
 	maxWidth = 'x250',
@@ -86,7 +86,7 @@ const Menu = <T extends object>({
 					pressed: pressed || state.isOpen,
 				})
 			) : (
-				<MenuButton
+				<ButtonComponent
 					{...buttonProps}
 					ref={ref}
 					icon={icon}

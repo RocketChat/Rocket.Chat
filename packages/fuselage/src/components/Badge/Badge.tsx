@@ -14,13 +14,13 @@ export type BadgeProps = {
 /**
  * Communicates notification’s amount and types.
  */
-function Badge({ is: Tag = 'span', variant = 'secondary', small, className, ...props }: BadgeProps) {
+function Badge({ is: Component = 'span', variant = 'secondary', small, className, ...props }: BadgeProps) {
 	const modifiers = [variant, small && 'small']
 		.filter(Boolean)
 		.map((modifier) => `rcx-badge--${modifier}`)
 		.join(' ');
 
-	return <Tag className={prependClassName(className, `rcx-box rcx-box--full rcx-badge ${modifiers}`)} {...props} />;
+	return <Component className={prependClassName(className, `rcx-box rcx-box--full rcx-badge ${modifiers}`)} {...props} />;
 }
 
 export default Badge;

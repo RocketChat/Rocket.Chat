@@ -14,8 +14,8 @@ export type ItemMetaProps = {
 /**
  * Short trailing text, such as a timestamp, count or file size. It never truncates unless `truncate` is set.
  */
-const ItemMeta = ({ is: Tag = 'div', truncate, className, ...props }: ItemMetaProps) => (
-	<Tag {...props} className={cx(cxx('rcx-item__meta')({ truncate: !!truncate }), className)} />
+const ItemMeta = ({ is: Component = 'div', truncate, className, ...props }: ItemMetaProps) => (
+	<Component {...props} className={cx(cxx('rcx-item__meta')({ truncate: !!truncate }), className)} />
 );
 
 export default ItemMeta;

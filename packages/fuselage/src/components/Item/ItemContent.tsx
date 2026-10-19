@@ -10,8 +10,8 @@ export type ItemContentProps = {
 /**
  * The flexible, truncating column that holds the title and description, or one `ItemRow` per line.
  */
-const ItemContent = ({ is: Tag = 'div', className, ...props }: ItemContentProps) => (
-	<Tag {...props} className={cx('rcx-item__content', className)} />
+const ItemContent = ({ is: Component = 'div', className, ...props }: ItemContentProps) => (
+	<Component {...props} className={cx('rcx-item__content', className)} />
 );
 
 export default ItemContent;
