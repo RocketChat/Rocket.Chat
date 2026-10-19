@@ -6,7 +6,7 @@ import type { OperationParams, OperationResult } from '@rocket.chat/rest-typings
 import { ClientStreamImpl } from '../ClientStream';
 import { ConnectionImpl } from '../Connection';
 import { DDPDispatcher } from '../DDPDispatcher';
-import { DDPSDK, rejectInFlightOnConnectionLoss } from '../DDPSDK';
+import { DDPSDK, rejectInFlightOnConnectionLoss, toRestUrl } from '../DDPSDK';
 import { TimeoutControl } from '../TimeoutControl';
 import { AccountImpl } from '../types/Account';
 import type { ClientStream } from '../types/ClientStream';
@@ -365,7 +365,7 @@ export class LivechatClientImpl extends DDPSDK implements LivechatStream, Livech
 
 		const timeoutControl = TimeoutControl.create(ddp, connection);
 
-		const rest = new RestClient({ baseUrl: url.replace(/^ws/, 'http') });
+		const rest = new RestClient({ baseUrl: toRestUrl(url) });
 
 		const sdk = new LivechatClientImpl(connection, stream, account, timeoutControl, rest);
 

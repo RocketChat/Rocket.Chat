@@ -5,7 +5,7 @@ import { WebSocket } from 'ws';
 
 import { fireStreamChange, fireStreamAdded, fireStreamRemove, handleConnection, handleSubscription, handleMethod } from './helpers';
 import { ConnectionLostError } from '../src/ClientStream';
-import { DDPSDK } from '../src/DDPSDK';
+import { DDPSDK, toRestUrl } from '../src/DDPSDK';
 
 (global as any).WebSocket = (global as any).WebSocket || WebSocket;
 
@@ -225,6 +225,24 @@ it('should reconnect after a heartbeat timeout', async () => {
 	expect(sdk.connection.status).toBe('connected');
 
 	jest.useRealTimers();
+	sdk.connection.close();
+});
+
+it.each([
+	['https://open.rocket.chat', 'https://open.rocket.chat'],
+	['wss://open.rocket.chat', 'https://open.rocket.chat'],
+	['ws://localhost:3000/', 'http://localhost:3000'],
+	['wss://open.rocket.chat/websocket', 'https://open.rocket.chat'],
+])('should derive the REST URL %s -> %s', (url, expected) => {
+	expect(toRestUrl(url)).toBe(expected);
+});
+
+it('should connect to the same socket whether or not the URL ends with /websocket', async () => {
+	const sdk = DDPSDK.create('ws://localhost:1234/websocket/');
+
+	await handleConnection(server, sdk.connection.connect());
+
+	expect(sdk.connection.status).toBe('connected');
 	sdk.connection.close();
 });
 

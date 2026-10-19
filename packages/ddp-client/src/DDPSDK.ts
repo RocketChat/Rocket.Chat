@@ -27,6 +27,13 @@ const isValidPayload = (data: unknown): data is PublicationPayloads => {
 	return true;
 };
 
+/** The REST base URL for a server URL given with an http(s) or ws(s) scheme. */
+export const toRestUrl = (url: string): string =>
+	url
+		.replace(/^ws/, 'http')
+		.replace(/\/websocket\/?$/, '')
+		.replace(/\/$/, '');
+
 /** Fails the method calls that went out on a connection once it drops or is closed. */
 export const rejectInFlightOnConnectionLoss = (connection: Connection, stream: ClientStreamImpl): void => {
 	let connected = false;
@@ -98,7 +105,7 @@ export class DDPSDK implements SDK {
 	 *
 	 * @example
 	 * ```ts
-	 * const sdk = DDPSDK.create('wss://open.rocket.chat/websocket');
+	 * const sdk = DDPSDK.create('https://open.rocket.chat');
 	 * sdk.connection.connect();
 	 * ```
 	 */
@@ -123,7 +130,7 @@ export class DDPSDK implements SDK {
 					'X-Auth-Token': account.user.token,
 				};
 			}
-		})({ baseUrl: url });
+		})({ baseUrl: toRestUrl(url) });
 
 		const sdk = new DDPSDK(connection, stream, account, timeoutControl, rest);
 
@@ -159,7 +166,7 @@ export class DDPSDK implements SDK {
 	 * @returns A promise that resolves to the SDK interface
 	 * @example
 	 * ```ts
-	 * const sdk = await DDPSDK.createAndConnect('wss://open.rocket.chat/websocket');
+	 * const sdk = await DDPSDK.createAndConnect('https://open.rocket.chat');
 	 * ```
 	 */
 

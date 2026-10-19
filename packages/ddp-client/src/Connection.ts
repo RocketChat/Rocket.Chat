@@ -90,7 +90,11 @@ export class ConnectionImpl
 	) {
 		super();
 		this.ssl = url.startsWith('https') || url.startsWith('wss');
-		this.url = url.replace(/^https?:\/\//, '').replace(/^wss?:\/\//, '');
+		this.url = url
+			.replace(/^https?:\/\//, '')
+			.replace(/^wss?:\/\//, '')
+			.replace(/\/websocket\/?$/, '')
+			.replace(/\/$/, '');
 
 		this.client.onDispatchMessage((message: string) => {
 			if (this.ws?.readyState === this.ws?.OPEN && (this.status === 'connected' || this.handshaking)) {

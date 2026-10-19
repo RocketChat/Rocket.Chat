@@ -8,7 +8,7 @@ import type { OperationParams, OperationResult } from '@rocket.chat/rest-typings
 import { ClientStreamImpl } from '../ClientStream';
 import { ConnectionImpl } from '../Connection';
 import { DDPDispatcher } from '../DDPDispatcher';
-import { DDPSDK, rejectInFlightOnConnectionLoss } from '../DDPSDK';
+import { DDPSDK, rejectInFlightOnConnectionLoss, toRestUrl } from '../DDPSDK';
 import { TimeoutControl } from '../TimeoutControl';
 import { AccountImpl } from '../types/Account';
 import type { ClientStream } from '../types/ClientStream';
@@ -272,7 +272,7 @@ export class RocketchatSdkLegacyImpl extends DDPSDK implements RocketchatSDKLega
 					'X-Auth-Token': account.user?.token,
 				};
 			}
-		})({ baseUrl: url });
+		})({ baseUrl: toRestUrl(url) });
 
 		const sdk = new RocketchatSdkLegacyImpl(connection, stream, account, timeoutControl, rest);
 
