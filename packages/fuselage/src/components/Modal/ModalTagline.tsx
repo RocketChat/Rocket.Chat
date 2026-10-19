@@ -1,11 +1,28 @@
-import { Box, type BoxProps } from '../Box';
+import { styled, Text, type GetProps } from '@tamagui/web';
+
+import { modalBoxFont } from './Modal';
+import { textIconColors } from '../../Theme';
+import { useTamaguiBoxProps } from '../../hooks/useTamaguiBoxProps';
+import { fontScale } from '../../styleTokens';
+import type { BoxProps } from '../Box';
+import { withFuselageProvider } from '../FuselageProvider/FuselageProvider';
 
 export type ModalTaglineProps = BoxProps;
 
-const ModalTagline = ({ children, ...props }: ModalTaglineProps) => (
-	<Box rcx-modal__tagline {...props}>
-		{children}
-	</Box>
-);
+const ModalTaglineFrame = styled(Text, {
+	render: 'div',
+	display: 'block',
+	whiteSpace: 'inherit',
+	wordWrap: 'inherit',
+	color: String(textIconColors['font-default']),
+	...modalBoxFont,
+	...(fontScale('c2') as object),
+});
 
-export default ModalTagline;
+const ModalTagline = ({ children, ...props }: ModalTaglineProps) => {
+	const frameProps = useTamaguiBoxProps(props, 'rcx-modal__tagline');
+
+	return <ModalTaglineFrame {...(frameProps as GetProps<typeof ModalTaglineFrame>)}>{children}</ModalTaglineFrame>;
+};
+
+export default withFuselageProvider(ModalTagline);
