@@ -120,7 +120,7 @@ export class CustomOAuth {
 			throw new Accounts.ConfigError();
 		}
 
-		let response = undefined;
+		let response;
 
 		const headers = {
 			'Content-Type': 'application/x-www-form-urlencoded',

@@ -986,7 +986,7 @@ export class PsyModel {
 
 		for (chn = 0; chn < numchn; chn++) {
 			let ppe;
-			let ppePos = 0;
+			let ppePos;
 			let type;
 			let mr;
 
@@ -1425,7 +1425,7 @@ export class PsyModel {
 
 			let kk = gfc.s3ind[b][0];
 			const last = gfc.s3ind[b][1];
-			let dd = 0;
+			let dd;
 			let dd_n = 0;
 			dd = mask_idx_l[kk];
 			dd_n += 1;
@@ -1781,10 +1781,7 @@ export class PsyModel {
 	}
 
 	private norm_s3_func_x(hf_slope: number) {
-		let lim_a = 0;
-		let lim_b = 0;
-
-		let x = 0;
+		let x;
 		let l;
 		let h;
 		for (x = 0; this.s3_func_x(x, hf_slope) > 1e-20; x -= 1);
@@ -1798,7 +1795,7 @@ export class PsyModel {
 				l = x;
 			}
 		}
-		lim_a = l;
+		const lim_a = l;
 
 		for (x = 0; this.s3_func_x(x, hf_slope) > 1e-20; x += 1);
 		l = 0;
@@ -1811,7 +1808,7 @@ export class PsyModel {
 				h = x;
 			}
 		}
-		lim_b = h;
+		const lim_b = h;
 
 		let sum = 0;
 		const m = 1000;

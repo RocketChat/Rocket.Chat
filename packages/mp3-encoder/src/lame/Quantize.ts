@@ -795,7 +795,7 @@ export class Quantize {
 				cod_info.global_gain -
 				((scalefac[scalefacPos++] + (cod_info.preflag !== 0 ? this.qupvt.pretab[sfb] : 0)) << (cod_info.scalefac_scale + 1)) -
 				cod_info.subblock_gain[cod_info.window[sfb]] * 8;
-			let noise = 0.0;
+			let noise;
 
 			if (prev_noise !== null && prev_noise.step[sfb] === s) {
 				noise = prev_noise.noise[sfb];

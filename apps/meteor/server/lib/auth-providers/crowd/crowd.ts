@@ -53,11 +53,11 @@ export class CROWD {
 	};
 
 	constructor() {
-		let url = settings.get<string>('CROWD_URL');
+		const url = settings.get<string>('CROWD_URL');
 
 		this.options = {
 			crowd: {
-				base: !/\/$/.test(url) ? (url += '/') : url,
+				base: !/\/$/.test(url) ? `${url}/` : url,
 			},
 			application: {
 				name: settings.get('CROWD_APP_USERNAME'),
@@ -247,7 +247,7 @@ export class CROWD {
 				continue;
 			}
 
-			let crowdUser = null;
+			let crowdUser;
 
 			try {
 				crowdUser = await this.fetchCrowdUser(crowdUsername);

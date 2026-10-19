@@ -113,13 +113,13 @@ export class Takehiro {
 		}
 		if (remaining !== 0) {
 			let x0 = xr[xrPos++] * istep;
-			let x1 = xr[xrPos++] * istep;
+			let x1 = xr[xrPos] * istep;
 			const rx0 = Math.trunc(x0);
 			const rx1 = Math.trunc(x1);
 			x0 += this.qupvt.adj43(rx0);
 			x1 += this.qupvt.adj43(rx1);
 			ix[ixPos++] = Math.trunc(x0);
-			ix[ixPos++] = Math.trunc(x1);
+			ix[ixPos] = Math.trunc(x1);
 		}
 	}
 

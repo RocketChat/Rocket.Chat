@@ -1020,7 +1020,7 @@ export default class SlackAdapter {
 	 */
 	async processNewMessage(slackMessage, isImporting) {
 		const rocketChannel = await this.rocket.getChannel(slackMessage);
-		let rocketUser = null;
+		let rocketUser;
 		if (slackMessage.subtype === 'bot_message') {
 			rocketUser = await Users.findOneById('rocket.cat', { projection: { username: 1 } });
 		} else {

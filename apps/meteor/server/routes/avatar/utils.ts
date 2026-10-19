@@ -131,8 +131,8 @@ const getFirstLetter = (name: string) => {
 const getInitials = (name: string) => name.split(' ').slice(0, MAX_SVG_AVATAR_INITIALS).map(getFirstLetter).join('');
 
 export const renderSVGLetters = (name: string, viewSize = 200, useAllInitials = false) => {
-	let color = '';
-	let initials = '';
+	let color: string;
+	let initials: string;
 
 	if (name === '?') {
 		color = '#000';

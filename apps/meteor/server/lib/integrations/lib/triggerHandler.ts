@@ -70,7 +70,7 @@ class RocketChatIntegrationHandler {
 
 	addIntegration(record: IOutgoingIntegration): void {
 		outgoingLogger.debug({ msg: 'Adding integration', integrationName: record.name, event: record.event });
-		let channels = [];
+		let channels;
 		if (record.event && !outgoingEvents[record.event].use.channel) {
 			outgoingLogger.debug('The integration doesnt rely on channels.');
 			// We don't use any channels, so it's special ;)

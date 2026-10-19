@@ -83,7 +83,7 @@ const snapshots = new Map<string, { raw: string | null; value: StoredCallPrefere
  * last to write puts its whole copy back and undoes what the others changed.
  */
 const read = (key: string): StoredCallPreferences => {
-	let raw: string | null = null;
+	let raw: string | null;
 
 	try {
 		raw = localStorage.getItem(key);
@@ -96,7 +96,7 @@ const read = (key: string): StoredCallPreferences => {
 		return cached.value;
 	}
 
-	let value = DEFAULTS;
+	let value: StoredCallPreferences;
 
 	try {
 		value = raw ? sanitise(JSON.parse(raw)) : DEFAULTS;

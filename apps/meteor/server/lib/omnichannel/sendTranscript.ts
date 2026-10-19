@@ -163,7 +163,7 @@ export async function sendTranscript({
 	html = `${html}</div>`;
 
 	const fromEmail = settings.get<string>('From_Email').match(/\b[A-Z0-9._%+-]+@(?:[A-Z0-9-]+\.)+[A-Z]{2,4}\b/i);
-	let emailFromRegexp = '';
+	let emailFromRegexp: string;
 	if (fromEmail) {
 		emailFromRegexp = fromEmail[0];
 	} else {

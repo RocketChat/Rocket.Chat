@@ -33,8 +33,8 @@ export class WavHeader {
 		}
 		const fmtLen = dataView.getUint32(16, true);
 		let pos = 16 + 4;
-		let channels = 0;
-		let sampleRate = 0;
+		let channels;
+		let sampleRate;
 		switch (fmtLen) {
 			case 16:
 			case 18:

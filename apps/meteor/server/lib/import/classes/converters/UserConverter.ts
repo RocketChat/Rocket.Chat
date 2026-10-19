@@ -109,7 +109,7 @@ export class UserConverter extends RecordConverter<IImportUserRecord, UserConver
 	}
 
 	private async insertUserBatch(users: IUser[], { afterBatchFn }: IConversionCallbacks): Promise<string[]> {
-		let newIds: string[] | null = null;
+		let newIds: string[] | null;
 
 		try {
 			newIds = Object.values((await Users.insertMany(users, { ordered: false })).insertedIds);

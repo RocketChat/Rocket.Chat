@@ -74,7 +74,7 @@ class RoomCoordinatorClient extends RoomCoordinator {
 			return;
 		}
 
-		let _routeData = {};
+		let _routeData;
 		if (config.route.link) {
 			_routeData = config.route.link(subData);
 		} else if (subData?.name) {

@@ -71,7 +71,7 @@ export const registerGuest = makeFunction(
 
 		visitorDataToUpdate.token = livechatVisitor?.token || token;
 
-		let existingUser = null;
+		let existingUser;
 
 		if (livechatVisitor) {
 			logger.debug('Found matching user by token');

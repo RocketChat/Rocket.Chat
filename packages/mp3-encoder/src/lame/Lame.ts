@@ -754,7 +754,6 @@ export class Lame {
 		if (imp3 < 0) {
 			return imp3;
 		}
-		mp3bufferPos += imp3;
 		mp3count += imp3;
 
 		return mp3count;
