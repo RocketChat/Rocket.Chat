@@ -3,12 +3,12 @@ import { CredentialTokens } from '@rocket.chat/models';
 import { Accounts } from 'meteor/accounts-base';
 import { Meteor } from 'meteor/meteor';
 
+import { SAML } from './lib/SAML';
+import { SAMLUtils } from './lib/Utils';
 import { getUserForCheck } from '../../../../server/lib/2fa/code';
 import { i18n } from '../../../../server/lib/i18n';
 import { SystemLogger } from '../../../../server/lib/logger/system';
 import { doesUserRequire2FA } from '../../../../server/lib/oauth/twoFactorAuth';
-import { SAML } from './lib/SAML';
-import { SAMLUtils } from './lib/Utils';
 
 const makeError = (message: string): Record<string, any> => ({
 	type: 'saml',

@@ -15,12 +15,12 @@ import {
 	defaultMetadataTemplate,
 	defaultMetadataCertificateTemplate,
 } from './constants';
-import { settings, settingsRegistry } from '../../../../../server/settings';
 import { SystemLogger } from '../../../../../server/lib/logger/system';
 import {
 	notifyOnLoginServiceConfigurationChanged,
 	notifyOnLoginServiceConfigurationChangedByService,
 } from '../../../../../server/lib/notifyListener';
+import { settings, settingsRegistry } from '../../../../../server/settings';
 import type { IServiceProviderOptions } from '../definition/IServiceProviderOptions';
 
 const getSamlConfigs = function (service: string): SAMLConfiguration {

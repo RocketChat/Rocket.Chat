@@ -2,9 +2,9 @@ import { License } from '@rocket.chat/license';
 import { Roles, Users } from '@rocket.chat/models';
 
 import { ensureArray } from '../../../lib/utils/arrayUtils';
+import { settings } from '../../../server/settings';
 import type { ISAMLUser } from '../lib/saml/definition/ISAMLUser';
 import { SAMLUtils } from '../lib/saml/lib/Utils';
-import { settings } from '../../../server/settings';
 import { addSettings } from '../settings/saml';
 
 await License.onLicense('saml-enterprise', () => {

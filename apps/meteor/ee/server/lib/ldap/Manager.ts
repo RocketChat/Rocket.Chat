@@ -17,10 +17,10 @@ import { getLdapDynamicValue } from './getLdapDynamicValue';
 import { getLdapString } from './getLdapString';
 import { ldapKeyExists } from './ldapKeyExists';
 import { omit } from '../../../../lib/utils/omit';
-import { settings } from '../../../../server/settings';
 import { callbacks } from '../../../../server/lib/callbacks';
 import type { UserConverterOptions } from '../../../../server/lib/import/classes/converters/UserConverter';
 import { setUserAvatar } from '../../../../server/lib/users/setUserAvatar';
+import { settings } from '../../../../server/settings';
 
 export class LDAPManager {
 	public static async login(username: string, password: string): Promise<LDAPLoginResult> {
