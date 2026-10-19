@@ -82,8 +82,10 @@ class RawPeer {
 		}
 	}
 
+	/** The condition of the stream error the server sent, once it has also closed the stream. */
 	async streamError(): Promise<string> {
 		const [, condition] = await this.waitFor(/<stream:error>\s*<([a-z-]+)/, STREAM_ERROR_WAIT_MS);
+		await this.waitFor(/<\/stream:error>\s*<\/stream:stream>/, STREAM_ERROR_WAIT_MS);
 		return condition;
 	}
 
