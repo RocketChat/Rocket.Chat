@@ -64,7 +64,7 @@ describe('buildDiscoReply', () => {
 		expect(buildDiscoReply(info(to), config, rooms, describeRoom)).toBeUndefined();
 	});
 
-	it('lists only public rooms on the service', () => {
+	it('lists on the service the rooms its provider returns', () => {
 		const items = parse(
 			"<iq type='get' from='alice@remote.tld/pc' to='conference.rc.tld' id='q2'><query xmlns='http://jabber.org/protocol/disco#items'/></iq>",
 		) as unknown as Element;

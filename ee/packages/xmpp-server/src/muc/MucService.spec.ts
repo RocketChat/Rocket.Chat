@@ -82,6 +82,24 @@ describe('MucService.handlePossibleInvite', () => {
 	});
 });
 
+describe('MucService.listPublicRooms (service-discovery R4)', () => {
+	it('lists public rooms and leaves private ones out', () => {
+		const { muc } = setup();
+		muc.createRoom({ roomId: 'team', public: true });
+		muc.createRoom({ roomId: 'secret', public: false });
+
+		expect(muc.listPublicRooms()).toEqual([{ jid: 'team@conference.rc.tld' }]);
+	});
+
+	it('stops listing a room that turns private', () => {
+		const { muc } = setup();
+		muc.createRoom({ roomId: 'team', public: true });
+		muc.createRoom({ roomId: 'team', public: false });
+
+		expect(muc.listPublicRooms()).toEqual([]);
+	});
+});
+
 describe('MucService.handleStanza (hosted-muc R16)', () => {
 	it('answers a message to a room that does not exist with item-not-found, consuming it', () => {
 		const { muc, sent } = setup();
