@@ -1,4 +1,4 @@
-import type { IAbacAttributeDefinition } from '@rocket.chat/core-typings';
+import type { AbacMembershipVerdict, IAbacAttributeDefinition } from '@rocket.chat/core-typings';
 import { mockAppRoot } from '@rocket.chat/mock-providers';
 import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
@@ -8,13 +8,26 @@ import { createFakeRoom } from '../../../../../tests/mocks/data';
 
 jest.mock('../../../../components/ABAC/AbacRoomMembershipPreview/AbacRoomMembershipPreview', () => ({
 	__esModule: true,
-	default: ({ attributes, onSave }: { attributes: Record<string, string[]>; onSave: (editorLosesAccess: boolean) => Promise<unknown> }) => (
-		<div role='region' aria-label='preview'>
-			<span>{Object.keys(attributes).join(',')}</span>
-			<button onClick={() => onSave(false).catch(() => undefined)}>save keeping access</button>
-			<button onClick={() => onSave(true).catch(() => undefined)}>save losing access</button>
-		</div>
-	),
+	default: function PreviewDouble({ rid, attributes, onSave }: { rid: string; attributes: Record<string, string[]>; onSave: () => void }) {
+		const { useQueryClient } = jest.requireActual('@tanstack/react-query');
+		const { ABACQueryKeys } = jest.requireActual('../../../../lib/queryKeys');
+		const queryClient = useQueryClient();
+		const saveWithEditor = (editor: AbacMembershipVerdict) => {
+			queryClient.setQueryData(ABACQueryKeys.roomMembershipPreview.group(rid, attributes, '', 'loses'), {
+				pages: [{ members: [], count: 0, checked: 0, editor }],
+				pageParams: [undefined],
+			});
+			onSave();
+		};
+
+		return (
+			<div role='region' aria-label='preview'>
+				<span>{Object.keys(attributes).join(',')}</span>
+				<button onClick={() => saveWithEditor('compliant')}>save keeping access</button>
+				<button onClick={() => saveWithEditor('nonCompliant')}>save losing access</button>
+			</div>
+		);
+	},
 }));
 
 const assignable = [

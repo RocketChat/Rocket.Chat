@@ -1,4 +1,4 @@
-import type { IAbacAttributeDefinition, IRoom } from '@rocket.chat/core-typings';
+import type { IAbacAttributeDefinition, IAbacRoomMembershipPreview, IRoom } from '@rocket.chat/core-typings';
 import { Box, Button, ButtonGroup } from '@rocket.chat/fuselage';
 import {
 	ContextualbarBack,
@@ -9,6 +9,7 @@ import {
 	ContextualbarTitle,
 } from '@rocket.chat/ui-client';
 import { useEndpoint, useRouter, useToastMessageDispatch } from '@rocket.chat/ui-contexts';
+import type { InfiniteData } from '@tanstack/react-query';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { useId, useState } from 'react';
 import { FormProvider, useForm, useWatch } from 'react-hook-form';
@@ -26,11 +27,6 @@ export const getInitialAttributeRows = (attributes: IAbacAttributeDefinition[], 
 	const rows = [...required, ...optional];
 
 	return rows.length > 0 ? rows : [{ key: '', values: [] }];
-};
-
-type SaveVariables = {
-	attributes: Record<string, string[]>;
-	editorLosesAccess: boolean;
 };
 
 type AbacAttributesManageProps = {
@@ -70,15 +66,16 @@ const AbacAttributesManage = ({ room, requiredKeys, onBack, onClose, onSaved }: 
 	const saveRoomAttributes = useEndpoint('POST', '/v1/abac/rooms/:rid/attributes', { rid: room._id });
 
 	const saveMutation = useMutation({
-		mutationFn: async ({ attributes, editorLosesAccess }: SaveVariables) => {
-			await saveRoomAttributes({ attributes });
-			return editorLosesAccess;
-		},
-		onSuccess: (editorLosesAccess) => {
+		mutationFn: (attributes: Record<string, string[]>) => saveRoomAttributes({ attributes }),
+		onSuccess: (_data, attributes) => {
 			dispatchToastMessage({ type: 'success', message: t('ABAC_Room_attributes_updated') });
 			void queryClient.invalidateQueries({ queryKey: ABACQueryKeys.assignableAttributes(room._id) });
 
-			if (editorLosesAccess) {
+			const preview = queryClient.getQueryData<InfiniteData<IAbacRoomMembershipPreview>>(
+				ABACQueryKeys.roomMembershipPreview.group(room._id, attributes, '', 'loses'),
+			);
+			const editorVerdict = preview?.pages[0]?.editor;
+			if (editorVerdict && editorVerdict !== 'compliant') {
 				router.navigate('/home');
 				return;
 			}
@@ -102,8 +99,9 @@ const AbacAttributesManage = ({ room, requiredKeys, onBack, onClose, onSaved }: 
 					rid={room._id}
 					roomName={room.fname || room.name || room._id}
 					attributes={previewAttributes}
+					isSaving={saveMutation.isPending}
 					onBack={() => setPreviewAttributes(undefined)}
-					onSave={(editorLosesAccess) => saveMutation.mutateAsync({ attributes: previewAttributes, editorLosesAccess })}
+					onSave={() => saveMutation.mutate(previewAttributes)}
 				/>
 			</>
 		);
