@@ -121,7 +121,7 @@ $sidebar-color-font-active: theme('sidebar-color-font-active', colors.font(title
 		@include highlighted;
 	}
 
-	&__subtitle.rcx-item__description {
+	.rcx-item__row > &__subtitle.rcx-item__description {
 		flex-basis: 0;
 	}
 
