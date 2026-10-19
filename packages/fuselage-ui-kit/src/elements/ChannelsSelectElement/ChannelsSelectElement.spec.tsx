@@ -48,6 +48,13 @@ const mockedOptions: ReturnType<typeof useChannelsData> = [
 const mockUseChannelsData = jest.mocked(useChannelsData);
 mockUseChannelsData.mockReturnValue(mockedOptions);
 
+const renderChannelsSelect = () =>
+	render(
+		<MockedServerContext>
+			<ChannelsSelectElement index={0} block={channelsBlock} context={BlockContext.FORM} surfaceRenderer={contextualBarParser} />
+		</MockedServerContext>,
+	);
+
 describe('UiKit ChannelsSelect Element', () => {
 	beforeAll(() => {
 		jest.useFakeTimers();
@@ -57,19 +64,15 @@ describe('UiKit ChannelsSelect Element', () => {
 		jest.useRealTimers();
 	});
 
-	beforeEach(() => {
-		render(
-			<MockedServerContext>
-				<ChannelsSelectElement index={0} block={channelsBlock} context={BlockContext.FORM} surfaceRenderer={contextualBarParser} />
-			</MockedServerContext>,
-		);
-	});
-
 	it('should render a UiKit channel selector', async () => {
+		renderChannelsSelect();
+
 		expect(await screen.findByRole('textbox')).toBeInTheDocument();
 	});
 
 	it('should open the channel selector', async () => {
+		renderChannelsSelect();
+
 		const input = await screen.findByRole('textbox');
 		input.focus();
 
@@ -77,6 +80,8 @@ describe('UiKit ChannelsSelect Element', () => {
 	});
 
 	it('should select a channel', async () => {
+		renderChannelsSelect();
+
 		const input = await screen.findByRole('textbox');
 
 		input.focus();

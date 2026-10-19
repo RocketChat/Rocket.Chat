@@ -35,6 +35,13 @@ const mockedOptions = [
 const mockUseUsersData = jest.mocked(useUsersData);
 mockUseUsersData.mockReturnValue(mockedOptions);
 
+const renderMultiUsersSelect = () =>
+	render(
+		<MockedServerContext>
+			<MultiUsersSelectElement index={0} block={usersBlock} context={BlockContext.FORM} surfaceRenderer={contextualBarParser} />
+		</MockedServerContext>,
+	);
+
 describe('UiKit MultiUsersSelect Element', () => {
 	beforeAll(() => {
 		jest.useFakeTimers();
@@ -44,19 +51,15 @@ describe('UiKit MultiUsersSelect Element', () => {
 		jest.useRealTimers();
 	});
 
-	beforeEach(() => {
-		render(
-			<MockedServerContext>
-				<MultiUsersSelectElement index={0} block={usersBlock} context={BlockContext.FORM} surfaceRenderer={contextualBarParser} />
-			</MockedServerContext>,
-		);
-	});
-
 	it('should render a UiKit multiple users selector', async () => {
+		renderMultiUsersSelect();
+
 		expect(await screen.findByRole('textbox')).toBeInTheDocument();
 	});
 
 	it('should open the users selector', async () => {
+		renderMultiUsersSelect();
+
 		const input = await screen.findByRole('textbox');
 		input.focus();
 
@@ -64,6 +67,8 @@ describe('UiKit MultiUsersSelect Element', () => {
 	});
 
 	it('should select users', async () => {
+		renderMultiUsersSelect();
+
 		const input = await screen.findByRole('textbox');
 
 		input.focus();
@@ -80,6 +85,8 @@ describe('UiKit MultiUsersSelect Element', () => {
 	});
 
 	it('should remove a user', async () => {
+		renderMultiUsersSelect();
+
 		const input = await screen.findByRole('textbox');
 
 		input.focus();

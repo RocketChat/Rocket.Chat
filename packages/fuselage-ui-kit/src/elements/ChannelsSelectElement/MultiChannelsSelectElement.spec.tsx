@@ -47,6 +47,13 @@ const mockedOptions: ReturnType<typeof useChannelsData> = [
 const mockUseChannelsData = jest.mocked(useChannelsData);
 mockUseChannelsData.mockReturnValue(mockedOptions);
 
+const renderMultiChannelsSelect = () =>
+	render(
+		<MockedServerContext>
+			<MultiChannelsSelectElement index={0} block={channelsBlock} context={BlockContext.FORM} surfaceRenderer={contextualBarParser} />
+		</MockedServerContext>,
+	);
+
 describe('UiKit MultiChannelsSelect Element', () => {
 	beforeAll(() => {
 		jest.useFakeTimers();
@@ -56,19 +63,15 @@ describe('UiKit MultiChannelsSelect Element', () => {
 		jest.useRealTimers();
 	});
 
-	beforeEach(() => {
-		render(
-			<MockedServerContext>
-				<MultiChannelsSelectElement index={0} block={channelsBlock} context={BlockContext.FORM} surfaceRenderer={contextualBarParser} />
-			</MockedServerContext>,
-		);
-	});
-
 	it('should render a UiKit multiple channels selector', async () => {
+		renderMultiChannelsSelect();
+
 		expect(await screen.findByRole('textbox')).toBeInTheDocument();
 	});
 
 	it('should open the channels selector', async () => {
+		renderMultiChannelsSelect();
+
 		const input = await screen.findByRole('textbox');
 		input.focus();
 
@@ -76,6 +79,8 @@ describe('UiKit MultiChannelsSelect Element', () => {
 	});
 
 	it('should select channels', async () => {
+		renderMultiChannelsSelect();
+
 		const input = await screen.findByRole('textbox');
 
 		input.focus();
@@ -92,6 +97,8 @@ describe('UiKit MultiChannelsSelect Element', () => {
 	});
 
 	it('should remove a selected channel', async () => {
+		renderMultiChannelsSelect();
+
 		const input = await screen.findByRole('textbox');
 
 		input.focus();

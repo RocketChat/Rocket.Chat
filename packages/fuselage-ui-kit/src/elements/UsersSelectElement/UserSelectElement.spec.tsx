@@ -35,6 +35,13 @@ const mockedOptions = [
 const mockUseUsersData = jest.mocked(useUsersData);
 mockUseUsersData.mockReturnValue(mockedOptions);
 
+const renderUserSelect = () =>
+	render(
+		<MockedServerContext>
+			<UsersSelectElement index={0} block={userBlock} context={BlockContext.FORM} surfaceRenderer={contextualBarParser} />
+		</MockedServerContext>,
+	);
+
 describe('UiKit UserSelect Element', () => {
 	beforeAll(() => {
 		jest.useFakeTimers();
@@ -44,19 +51,15 @@ describe('UiKit UserSelect Element', () => {
 		jest.useRealTimers();
 	});
 
-	beforeEach(() => {
-		render(
-			<MockedServerContext>
-				<UsersSelectElement index={0} block={userBlock} context={BlockContext.FORM} surfaceRenderer={contextualBarParser} />
-			</MockedServerContext>,
-		);
-	});
-
 	it('should render a UiKit user selector', async () => {
+		renderUserSelect();
+
 		expect(await screen.findByRole('textbox')).toBeInTheDocument();
 	});
 
 	it('should open the user selector', async () => {
+		renderUserSelect();
+
 		const input = await screen.findByRole('textbox');
 		input.focus();
 
@@ -64,6 +67,8 @@ describe('UiKit UserSelect Element', () => {
 	});
 
 	it('should select a user', async () => {
+		renderUserSelect();
+
 		const input = await screen.findByRole('textbox');
 
 		input.focus();
