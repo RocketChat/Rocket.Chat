@@ -81,7 +81,6 @@ const withPreview = (respond: (page: PreviewPage) => IAbacRoomMembershipPreview 
 			ABAC_Preview_Role_Owner: 'Owner',
 			ABAC_Preview_Search_members: 'Search members',
 			ABAC_Preview_Self_lockout_warning: 'You will lose access to {{roomName}} and will not be able to open it again.',
-			ABAC_Preview_Stop: 'Stop',
 			ABAC_Preview_Unavailable: 'Could not check who will have access. Try again later.',
 			Are_you_sure: 'Are you sure?',
 			Back: 'Back',
@@ -174,8 +173,9 @@ const meta = {
 		rid: 'room-id',
 		roomName: 'intel-assessments',
 		attributes: { clearance: ['secret'], project: ['alpha-missions'] },
+		isSaving: false,
 		onBack: action('onBack'),
-		onSave: async () => action('onSave')(),
+		onSave: action('onSave'),
 	},
 	decorators: [
 		(Story) => (
@@ -197,11 +197,11 @@ export default meta;
 
 type Story = StoryObj<typeof meta>;
 
-export const LargeRoomLoadsOnScroll: Story = {
+export const LargeRoomManyLoseAccess: Story = {
 	decorators: [withPreview(pagedRoom(largeRoom(manyLose)))],
 };
 
-export const LargeRoomStopsAtFetchCap: Story = {
+export const LargeRoomFewLoseAccess: Story = {
 	decorators: [withPreview(pagedRoom(largeRoom(fewLose)))],
 };
 

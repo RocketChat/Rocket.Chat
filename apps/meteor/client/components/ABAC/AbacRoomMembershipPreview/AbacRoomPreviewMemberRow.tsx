@@ -1,7 +1,8 @@
-import type { AbacRoomPreviewMember } from '@rocket.chat/core-typings';
+import type { AbacMembershipVerdict, AbacRoomPreviewMember } from '@rocket.chat/core-typings';
 import { Box, Icon, Tag } from '@rocket.chat/fuselage';
 import { UserAvatar } from '@rocket.chat/ui-avatar';
 import type { TranslationKey } from '@rocket.chat/ui-contexts';
+import type { ComponentProps } from 'react';
 import { memo } from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -11,6 +12,12 @@ const roleLabels: [string, TranslationKey][] = [
 	['moderator', 'ABAC_Preview_Role_Moderator'],
 ];
 
+const verdictIcons: Record<AbacMembershipVerdict, Pick<ComponentProps<typeof Icon>, 'name' | 'color'> & { label: TranslationKey }> = {
+	compliant: { name: 'success-circle', color: 'status-font-on-success', label: 'ABAC_Preview_Retains_access' },
+	nonCompliant: { name: 'error-circle', color: 'status-font-on-danger', label: 'ABAC_Preview_Loses_access' },
+	inconclusive: { name: 'warning', color: 'status-font-on-warning', label: 'ABAC_Preview_Inconclusive_Removed' },
+};
+
 type AbacRoomPreviewMemberRowProps = {
 	member: AbacRoomPreviewMember;
 };
@@ -19,6 +26,7 @@ const AbacRoomPreviewMemberRow = ({ member: { username, name, verdict, roles = [
 	const { t } = useTranslation();
 	const roleLabel = roleLabels.find(([role]) => roles.includes(role))?.[1];
 	const fullName = [name, username && `@${username}`].filter(Boolean).join(' ');
+	const { label, ...icon } = verdictIcons[verdict];
 
 	return (
 		<Box role='listitem' display='flex' alignItems='center' paddingInline={24} paddingBlock={8}>
@@ -44,45 +52,16 @@ const AbacRoomPreviewMemberRow = ({ member: { username, name, verdict, roles = [
 					</Box>
 				)}
 			</Box>
-			{verdict === 'compliant' && (
-				<Icon
-					name='success-circle'
-					size='x20'
-					color='status-font-on-success'
-					flexShrink={0}
-					marginInlineStart={8}
-					role='img'
-					aria-hidden={false}
-					aria-label={t('ABAC_Preview_Retains_access')}
-					title={t('ABAC_Preview_Retains_access')}
-				/>
-			)}
-			{verdict === 'nonCompliant' && (
-				<Icon
-					name='error-circle'
-					size='x20'
-					color='status-font-on-danger'
-					flexShrink={0}
-					marginInlineStart={8}
-					role='img'
-					aria-hidden={false}
-					aria-label={t('ABAC_Preview_Loses_access')}
-					title={t('ABAC_Preview_Loses_access')}
-				/>
-			)}
-			{verdict === 'inconclusive' && (
-				<Icon
-					name='warning'
-					size='x20'
-					color='status-font-on-warning'
-					flexShrink={0}
-					marginInlineStart={8}
-					role='img'
-					aria-hidden={false}
-					aria-label={t('ABAC_Preview_Inconclusive_Removed')}
-					title={t('ABAC_Preview_Inconclusive_Removed')}
-				/>
-			)}
+			<Icon
+				{...icon}
+				size='x20'
+				flexShrink={0}
+				marginInlineStart={8}
+				role='img'
+				aria-hidden={false}
+				aria-label={t(label)}
+				title={t(label)}
+			/>
 		</Box>
 	);
 };
