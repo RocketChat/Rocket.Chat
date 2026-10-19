@@ -2,8 +2,8 @@ import type { AbacRoomMembershipPreviewPage } from '@rocket.chat/core-services';
 import type { IAbacAttributeDefinition, IRoom, IUser } from '@rocket.chat/core-typings';
 import type { Collection } from 'mongodb';
 
-import { LocalPDP } from './LocalPDP';
-import { PREVIEW_SCAN_LIMIT, previewRetainingEveryone, previewRoomMembersInSteps } from '../helper';
+import { LOCAL_PREVIEW_PAGE_SIZE, LocalPDP } from './LocalPDP';
+import { previewRetainingEveryone } from '../helper';
 import { acquireSharedInMemoryMongo, type SharedMongoConnection } from '../test-helpers/mongoMemoryServer';
 
 jest.mock('@rocket.chat/core-services', () => ({
@@ -213,11 +213,11 @@ describe('LocalPDP.findUnassignableValues', () => {
 	});
 });
 
-describe('previewRoomMembersInSteps with LocalPDP', () => {
+describe('LocalPDP.previewRoomMembers', () => {
 	const room = { _id: 'r1', abacAttributes: [] };
 	const required = [{ key: 'dept', values: ['eng', 'sales'] }];
-	const previewMembers = (page: AbacRoomMembershipPreviewPage) =>
-		previewRoomMembersInSteps(room._id, page, (subjects) => pdp.evaluateSubjectsAgainstAttributes(subjects, required, room));
+	const previewMembers = (page: AbacRoomMembershipPreviewPage) => pdp.previewRoomMembers(room, required, page);
+	const ids = (preview: { members: { _id: string }[] }) => preview.members.map(({ _id }) => _id);
 	const verdicts = (preview: { members: { _id: string; verdict: string }[] }) => preview.members.map(({ _id, verdict }) => [_id, verdict]);
 
 	beforeEach(async () => {
@@ -231,71 +231,89 @@ describe('previewRoomMembersInSteps with LocalPDP', () => {
 	});
 
 	it('returns every active member of the room, each with its verdict, in username order', async () => {
-		const preview = await previewMembers({ count: 10 });
+		const preview = await previewMembers({});
 
 		expect(verdicts(preview)).toEqual([
 			['holder', 'compliant'],
 			['none', 'nonCompliant'],
 			['partial', 'nonCompliant'],
 		]);
+		expect(preview).toMatchObject({ checked: 3, total: 3 });
 		expect(preview).not.toHaveProperty('next');
 	});
 
-	it('pages by the last member checked', async () => {
-		const first = await previewMembers({ count: 2 });
-		const second = await previewMembers({ count: 2, after: first.next });
+	it('lists the members after an exclusive cursor', async () => {
+		const first = await previewMembers({});
+		const second = await previewMembers({ after: { _id: 'holder', username: 'holder' } });
 
-		expect(first.members.map(({ _id }) => _id)).toEqual(['holder', 'none']);
-		expect(first).toMatchObject({ checked: 2, total: 3, next: { _id: 'none', username: 'none' } });
-		expect(second.members.map(({ _id }) => _id)).toEqual(['partial']);
-		expect(second.checked).toBe(1);
+		expect(ids(first)).toEqual(['holder', 'none', 'partial']);
+		expect(ids(second)).toEqual(['none', 'partial']);
+		expect(second.checked).toBe(2);
 		expect(second).not.toHaveProperty('total');
-		expect(second).not.toHaveProperty('next');
 	});
 
-	it('returns every member of the losing group among the members it checked, even past the count asked for', async () => {
-		const preview = await previewMembers({ count: 1, group: 'loses' });
+	it('returns each group alone, with every member of the room counted as checked', async () => {
+		const loses = await previewMembers({ group: 'loses' });
+		const retains = await previewMembers({ group: 'retains' });
 
-		expect(verdicts(preview)).toEqual([
+		expect(verdicts(loses)).toEqual([
 			['none', 'nonCompliant'],
 			['partial', 'nonCompliant'],
 		]);
-		expect(preview).toEqual(expect.objectContaining({ checked: 3, total: 3 }));
-		expect(preview).not.toHaveProperty('next');
-	});
-
-	it('checks no more than the scan limit in one request, and points next at the last member checked', async () => {
-		const extra = Array.from({ length: PREVIEW_SCAN_LIMIT }, (_, index) => `z${String(index).padStart(4, '0')}`);
-		await sharedMongo.db
-			.collection<Pick<IUser, '_id' | 'username' | 'active' | '__rooms'>>('users')
-			.insertMany(extra.map((_id) => ({ _id, username: _id, active: true, __rooms: ['r1'] })));
-		const lastChecked = extra[PREVIEW_SCAN_LIMIT - 4];
-
-		const retains = await previewMembers({ count: 1, group: 'retains' });
-		const loses = await previewMembers({ count: 1, group: 'loses' });
-		const rest = await previewMembers({ count: 1, group: 'loses', after: loses.next });
-
 		expect(verdicts(retains)).toEqual([['holder', 'compliant']]);
-		expect(retains).toMatchObject({ checked: PREVIEW_SCAN_LIMIT, total: PREVIEW_SCAN_LIMIT + 3, next: { _id: lastChecked } });
-		expect(loses.members).toHaveLength(PREVIEW_SCAN_LIMIT - 1);
-		expect(loses).toMatchObject({ checked: PREVIEW_SCAN_LIMIT, next: { _id: lastChecked } });
-		expect(rest.members.map(({ _id }) => _id)).toEqual(extra.slice(-3));
-		expect(rest.checked).toBe(3);
-		expect(rest).not.toHaveProperty('next');
+		expect(loses).toEqual(expect.objectContaining({ checked: 3, total: 3 }));
+		expect(retains).toEqual(expect.objectContaining({ checked: 3, total: 3 }));
+		expect(loses).not.toHaveProperty('next');
 	});
 
-	it('returns the retaining group alone', async () => {
-		const preview = await previewMembers({ count: 10, group: 'retains' });
+	describe('beyond one page', () => {
+		const extra = Array.from({ length: LOCAL_PREVIEW_PAGE_SIZE }, (_, index) => `z${String(index).padStart(4, '0')}`);
 
-		expect(verdicts(preview)).toEqual([['holder', 'compliant']]);
+		beforeEach(async () => {
+			await sharedMongo.db
+				.collection<Pick<IUser, '_id' | 'username' | 'active' | '__rooms'>>('users')
+				.insertMany(extra.map((_id) => ({ _id, username: _id, active: true, __rooms: ['r1'] })));
+		});
+
+		it('fills a page with the group, points next at its last member, and counts checked up to it', async () => {
+			const first = await previewMembers({ group: 'loses' });
+			const rest = await previewMembers({ group: 'loses', after: first.next });
+			const lastReturned = extra[LOCAL_PREVIEW_PAGE_SIZE - 3];
+
+			expect(first.members).toHaveLength(LOCAL_PREVIEW_PAGE_SIZE);
+			expect(first).toMatchObject({ checked: LOCAL_PREVIEW_PAGE_SIZE + 1, total: LOCAL_PREVIEW_PAGE_SIZE + 3 });
+			expect(first.next).toEqual({ _id: lastReturned, username: lastReturned });
+			expect(ids(rest)).toEqual(extra.slice(-2));
+			expect(rest.checked).toBe(2);
+			expect(rest).not.toHaveProperty('total');
+			expect(rest).not.toHaveProperty('next');
+		});
+
+		it('returns a sparse group from the whole room in one page', async () => {
+			const retains = await previewMembers({ group: 'retains' });
+
+			expect(verdicts(retains)).toEqual([['holder', 'compliant']]);
+			expect(retains).toMatchObject({ checked: LOCAL_PREVIEW_PAGE_SIZE + 3, total: LOCAL_PREVIEW_PAGE_SIZE + 3 });
+			expect(retains).not.toHaveProperty('next');
+		});
+
+		it('pages ungrouped members a full page at a time, pointing next at the last member read', async () => {
+			const first = await previewMembers({});
+			const lastRead = extra[LOCAL_PREVIEW_PAGE_SIZE - 4];
+
+			expect(first.members).toHaveLength(LOCAL_PREVIEW_PAGE_SIZE);
+			expect(first).toMatchObject({ checked: LOCAL_PREVIEW_PAGE_SIZE, next: { _id: lastRead } });
+		});
 	});
 
-	it('searches username and name, literally', async () => {
-		const byName = await previewMembers({ count: 10, filter: 'ada' });
-		const pattern = await previewMembers({ count: 10, filter: '.*' });
+	it('searches username and name, literally, in either group', async () => {
+		const byName = await previewMembers({ filter: 'ada', group: 'retains' });
+		const losingByName = await previewMembers({ filter: 'ada', group: 'loses' });
+		const pattern = await previewMembers({ filter: '.*', group: 'loses' });
 
-		expect(byName.members.map(({ _id }) => _id)).toEqual(['holder']);
-		expect(byName.total).toBe(1);
+		expect(ids(byName)).toEqual(['holder']);
+		expect(byName).toMatchObject({ checked: 1, total: 1 });
+		expect(losingByName).toEqual({ members: [], checked: 1, total: 1 });
 		expect(pattern.members).toEqual([]);
 	});
 

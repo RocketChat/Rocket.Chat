@@ -71,6 +71,8 @@ function verdictsOf(evaluation: Evaluation): (id: string) => AbacMembershipVerdi
 
 export type PreviewSubject = Pick<IUser, '_id' | 'username' | 'name' | 'emails'>;
 
+export type PreviewWindow = AbacRoomMembershipPreviewPage & { count: number };
+
 const isInGroup = (group: AbacMembershipGroup, verdict: AbacMembershipVerdict): boolean =>
 	(group === 'loses') === (verdict !== 'compliant');
 
@@ -94,7 +96,7 @@ export async function withRoomRoles(rid: IRoom['_id'], members: AbacRoomPreviewM
 
 export async function previewRoomMembersInSteps(
 	rid: IRoom['_id'],
-	{ filter, after, count, group }: AbacRoomMembershipPreviewPage,
+	{ filter, after, count, group }: PreviewWindow,
 	evaluate: (subjects: PreviewSubject[]) => Promise<Evaluation>,
 	step?: number,
 ): Promise<RoomMembersPreview> {
@@ -131,7 +133,7 @@ export async function previewRoomMembersInSteps(
 	};
 }
 
-export async function previewRetainingEveryone(rid: IRoom['_id'], page: AbacRoomMembershipPreviewPage): Promise<RoomMembersPreview> {
+export async function previewRetainingEveryone(rid: IRoom['_id'], page: PreviewWindow): Promise<RoomMembersPreview> {
 	if (page.group === 'loses') {
 		const remaining = await Users.countActiveByRoomIdAfterUsername(rid, { search: page.filter, after: page.after });
 		return { members: [], checked: remaining, ...(!page.after && { total: remaining }) };
