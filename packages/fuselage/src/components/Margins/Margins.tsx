@@ -65,43 +65,43 @@ const Margins = (props: MarginsProps) => {
 		css`
 			&:not(.rcx-box--full) {
 				${
-					props.all &&
+					props.all !== undefined &&
 					css`
 						margin: ${spacing(props.all)};
 					`
 				}
 				${
-					props.inline &&
+					props.inline !== undefined &&
 					css`
 						margin-inline: ${spacing(props.inline)};
 					`
 				}
       ${
-					props.inlineStart &&
+					props.inlineStart !== undefined &&
 					css`
 						margin-inline-start: ${spacing(props.inlineStart)};
 					`
 				}
       ${
-					props.inlineEnd &&
+					props.inlineEnd !== undefined &&
 					css`
 						margin-inline-end: ${spacing(props.inlineEnd)};
 					`
 				}
       ${
-					props.block &&
+					props.block !== undefined &&
 					css`
 						margin-block: ${spacing(props.block)};
 					`
 				}
       ${
-					props.blockStart &&
+					props.blockStart !== undefined &&
 					css`
 						margin-block-start: ${spacing(props.blockStart)};
 					`
 				}
       ${
-					props.blockEnd &&
+					props.blockEnd !== undefined &&
 					css`
 						margin-block-end: ${spacing(props.blockEnd)};
 					`
