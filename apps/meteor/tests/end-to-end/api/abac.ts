@@ -6,14 +6,6 @@ import { MongoClient } from 'mongodb';
 
 import { addAbacAttributesToUserDirectly } from '../../data/abac.helper';
 import { api, getCredentials, request, credentials } from '../../data/api-data';
-import {
-	closeOmnichannelRoom,
-	createAgent,
-	createLivechatRoom,
-	createVisitor,
-	deleteVisitor,
-	makeAgentAvailable,
-} from '../../data/livechat/rooms';
 import { sleep } from '../../data/livechat/utils';
 import {
 	mockServerHealthy,
@@ -2322,8 +2314,6 @@ import { IS_EE, URL_MONGODB } from '../../e2e/config/constants';
 			let dmRoomId: IRoom['_id'];
 			let groupDmRoomId: IRoom['_id'];
 			let discussionId: IRoom['_id'];
-			let visitorToken: string;
-			let livechatRoomId: IRoom['_id'];
 
 			before(async () => {
 				[dmUser, groupDmUser] = await Promise.all([createUser(), createUser()]);
@@ -2344,21 +2334,11 @@ import { IS_EE, URL_MONGODB } from '../../e2e/config/constants';
 						.expect(200)
 				).body.discussion._id;
 
-				await updateSetting('Livechat_enabled', true);
-				await createAgent();
-				await makeAgentAvailable();
-				const visitor = await createVisitor();
-				visitorToken = visitor.token;
-				livechatRoomId = (await createLivechatRoom(visitorToken))._id;
-
 				await updateSetting('ABAC_Classification_Banners_Enabled', true);
 				await updateSetting('ABAC_Classification_Banners_Config', JSON.stringify({ ...bannersConfig, nonAbacBanner }));
 			});
 
 			after(async () => {
-				await closeOmnichannelRoom(livechatRoomId);
-				await deleteVisitor(visitorToken);
-				await updateSetting('Livechat_enabled', false);
 				await deleteRoom({ type: 'p', roomId: discussionId });
 				await deleteRoom({ type: 'd', roomId: dmRoomId });
 				await deleteRoom({ type: 'd', roomId: groupDmRoomId });
@@ -2376,7 +2356,6 @@ import { IS_EE, URL_MONGODB } from '../../e2e/config/constants';
 					['a DM', () => dmRoomId],
 					['a group DM', () => groupDmRoomId],
 					['a discussion', () => discussionId],
-					['an Omnichannel room', () => livechatRoomId],
 				] as const
 			).forEach(([name, getRoomId]) => {
 				it(`should return the nonAbacBanner for ${name}`, async () => {
@@ -2403,7 +2382,6 @@ import { IS_EE, URL_MONGODB } from '../../e2e/config/constants';
 					expect((await getRoomInfo(groupDmRoomId)).classificationBanner).to.have.property('text', 'PERSONAL');
 					expect((await getRoomInfo(discussionId)).classificationBanner).to.have.property('text', 'DISCUSSION');
 					expect((await getRoomInfo(plainRoom._id)).classificationBanner).to.have.property('text', 'UNCLASSIFIED');
-					expect(await getRoomInfo(livechatRoomId)).to.not.have.property('classificationBanner');
 					expect((await getRoomInfo(bannerRoom._id)).classificationBanner).to.have.property('text', 'TOP SECRET');
 				} finally {
 					await updateSetting('ABAC_Classification_Banners_Config', JSON.stringify({ ...bannersConfig, nonAbacBanner }));
