@@ -54,22 +54,22 @@ exports[`renders Default without crashing 1`] = `
                     Welcome to the features preview page! Here, you can enable the latest cutting-edge features that are currently under development and not yet officially released.
                   </div>
                   <section
-                    class="rcx-box rcx-box--full rcx-callout rcx-css-13pwzu2 rcx-css-6jv9ad"
+                    class="is_View _f-1069814357 _mw-354604370 _mh-1241200853 _p-783907936 _c-1921852598 _b-1071518678 _br-1465795989 _b-1831105240 _ff-409630021 _fvn-1977619713 rcx-callout rcx-css-13pwzu2"
                   >
                     <i
                       aria-hidden="true"
-                      class="rcx-box rcx-box--full rcx-icon--name-info-circled rcx-icon rcx-callout__icon rcx-css-4pvxx3"
+                      class="is_Text _d-1409515928 _ws-311910413 _ww-408434756 _us-601212022 _va-1101652081 _ls-1720078126 _ff-1916555734 _fs-1279428672 _fw-289165218 _fs-477064150 _fv-1578983722 _lh-2067209205 _tr-1510281189 rcx-icon--name-info-circled rcx-icon rcx-callout__icon rcx-css-bqnef6"
                     >
                       
                     </i>
                     <div
-                      class="rcx-box rcx-box--full rcx-callout__wrapper"
+                      class="is_View _d-1987097250 _o-1119039191 _jc-281817805 _f-1641582120 _mw-354604370 _mh-1241200853 _m-1343990794 rcx-callout__wrapper"
                     >
                       <div
-                        class="rcx-box rcx-box--full rcx-callout__wrapper-content"
+                        class="is_View _o-1119039191 _f-1246374076 rcx-callout__wrapper-content"
                       >
                         <div
-                          class="rcx-box rcx-box--full rcx-callout__content"
+                          class="is_Text _d-1987097250 _ws-974065937 _ww-1531368954 _fs-347291933 _fw-289165218 _lh-1925956564 _ls-1782815796 rcx-callout__content"
                         >
                           Feature previews are being tested and may not work as expected.
                         </div>
@@ -78,94 +78,94 @@ exports[`renders Default without crashing 1`] = `
                   </section>
                 </div>
                 <div
-                  class="rcx-box rcx-box--full rcx-box--animated rcx-accordion"
+                  class="is_View _f-1246374076 _mw-354604370 _mh-1241200853 _os-249893454 _ff-409630021 _fvn-1977619713 _b-1423764602 rcx-box--animated rcx-accordion"
                 >
                   <section
-                    class="rcx-box rcx-box--full rcx-accordion-item"
+                    class="is_View _f-1246374076 _mw-354604370 _mh-1241200853 _os-249893454 _ff-409630021 _fvn-1977619713 rcx-accordion-item"
                   >
                     <div
-                      aria-controls="_r_1_"
+                      aria-controls="_r_9_"
                       aria-expanded="true"
-                      class="rcx-box rcx-box--full rcx-box--animated rcx-accordion-item__bar"
+                      class="is_View _f-85860445 _mw-354604370 _mh-1760955396 _os-249893454 _ff-409630021 _fvn-1977619713 _p-615618451 _ta-507911453 _c-1866435217 _b-1683371345 rcx-box--animated rcx-accordion-item__bar"
                       role="button"
                       tabindex="0"
                     >
                       <h2
-                        class="rcx-box rcx-box--full rcx-accordion-item__title"
-                        id="_r_0_"
+                        class="is_Text _f-1417019688 _mw-354604370 _mh-1241200853 _os-249893454 _ff-409630021 _fvn-1977619713 _d-1987097250 _o-1119039191 _to-1727917045 _ws-973912173 _ww-408434756 _fs-467998244 _fw-289168101 _lh-1586295880 _ls-1782815796 rcx-accordion-item__title"
+                        id="_r_8_"
                       >
                         Navigation
                       </h2>
                       <span
-                        class="rcx-box rcx-box--full rcx-chevron--up rcx-chevron"
+                        class="is_View _d-1985012034 _f-1069814357 _mw-354604370 _mh-1241200853 _as-24266285 _t-536227178 rcx-chevron--up rcx-chevron"
                       >
                         <i
                           aria-hidden="true"
-                          class="rcx-box rcx-box--full rcx-icon--name-chevron-down rcx-icon rcx-css-f8dsuo"
+                          class="is_Text _d-1409515928 _ws-311910413 _ww-408434756 _us-601212022 _va-1101652081 _ls-1720078126 _ff-1916555734 _fs-1279428672 _fw-289165218 _fs-477064150 _fv-1578983722 _lh-2067209205 _tr-1510281189 rcx-icon--name-chevron-down rcx-icon rcx-css-f8dsuo"
                         >
                           
                         </i>
                       </span>
                     </div>
                     <div
-                      class="rcx-box rcx-box--full rcx-box--animated rcx-accordion-item__panel rcx-accordion-item__panel--expanded"
-                      id="_r_1_"
+                      class="is_View _f-1246374076 _mw-354604370 _mh-1241200853 _os-249893454 _ff-409630021 _fvn-1977619713 _d-1987097250 _o-1119039191 _p-1254838996 _v-595517078 _h-568431264 rcx-box--animated rcx-accordion-item__panel rcx-accordion-item__panel--expanded"
+                      id="_r_9_"
                     >
                       <fieldset
-                        class="rcx-box rcx-box--full rcx-field-group"
+                        class="is_Text _b-650654186 _os-249893454 _ff-409630021 _fvn-1977619713 _ws-311910413 _ww-408434756 _d-341075704 _f-1180446992 _jc-1099843255 _ai-1227553247 _mw-842770087 _m-2017216831 _p-1943363302 rcx-field-group"
                         role="group"
                       >
                         <div
-                          class="rcx-box rcx-box--full rcx-field rcx-field-group__item"
+                          class="is_Text _b-650654186 _os-249893454 _ff-409630021 _fvn-1977619713 _ws-311910413 _ww-408434756 _d-341075704 _f-1378740307 _ai-1227553247 _w-1560934055 rcx-field rcx-field-group__item"
                         >
                           <span
-                            class="rcx-box rcx-box--full rcx-field__row"
+                            class="is_Text _b-650654186 _os-249893454 _ff-409630021 _fvn-1977619713 _ws-311910413 _ww-408434756 _d-341075704 _f-541922926 _jc-281817805 _ai-121763387 _m-2017978848 _c-1756781803 rcx-field__row"
                           >
                             <label
-                              class="rcx-box rcx-box--full rcx-field__label rcx-label"
+                              class="is_Text _b-650654186 _os-249893454 _ff-409630021 _fvn-1977619713 _ws-311910413 _ww-408434756 _fs-347291933 _fw-289166179 _lh-1925956564 _ls-1782815796 _d-341075704 _c-1922521888 _c-1063453128 rcx-label rcx-field__label"
                               for="secondarySidebar"
                             >
                               Filters and secondary sidebar
                             </label>
                             <label
-                              class="rcx-box rcx-box--full rcx-toggle-switch"
+                              class="is_Text _b-1639159466 _os-249893454 _ff-409630021 _fvn-1977619713 _ws-311910413 _ww-408434756 rcx-toggle-switch"
                             >
                               <input
                                 checked=""
-                                class="rcx-box rcx-box--full rcx-toggle-switch__input"
+                                class="is_View _b-1639159466 _os-249893454 _ff-409630021 _fvn-1977619713 _p-1261267467 _o-1119039191 _c-588872556 _cp-2129451690 _w-226739898 _h-1922295961 _m-1890937723 _p-1943363302 _ws-973912173 _f-1246374076 rcx-toggle-switch__input"
                                 id="secondarySidebar"
                                 name="secondarySidebar"
                                 type="checkbox"
                               />
                               <i
                                 aria-hidden="true"
-                                class="rcx-box rcx-box--full rcx-toggle-switch__fake"
+                                class="is_View _b-1639160427 _os-249893454 _ff-409630021 _fvn-1977619713 _p-1021290656 _f-1069814357 _mw-354604370 _mh-1241200853 _w-1008200584 _h-749995598 _br-153849585 rcx-toggle-switch__fake"
                               />
                             </label>
                           </span>
                           <span
-                            class="rcx-box rcx-box--full rcx-field__hint rcx-css-9o2t94"
+                            class="is_Text _b-650654186 _os-249893454 _ff-409630021 _fvn-1977619713 _ws-311910413 _ww-408434756 _fs-2088488067 _fw-289165218 _lh-1306743983 _ls-1782815796 _m-183820880 _c-1756781803 rcx-field__hint rcx-css-9o2t94"
                           >
                             Stay on top of important conversations.
                           </span>
                         </div>
                         <div
-                          class="rcx-box rcx-box--full rcx-field rcx-field-group__item"
+                          class="is_Text _b-650654186 _os-249893454 _ff-409630021 _fvn-1977619713 _ws-311910413 _ww-408434756 _d-341075704 _f-1378740307 _ai-1227553247 _w-1560934055 rcx-field rcx-field-group__item"
                         >
                           <span
-                            class="rcx-box rcx-box--full rcx-field__row"
+                            class="is_Text _b-650654186 _os-249893454 _ff-409630021 _fvn-1977619713 _ws-311910413 _ww-408434756 _d-341075704 _f-541922926 _jc-281817805 _ai-121763387 _m-2017978848 _c-1756781803 rcx-field__row"
                           >
                             <label
-                              class="rcx-box rcx-box--full rcx-field__label rcx-label"
+                              class="is_Text _b-650654186 _os-249893454 _ff-409630021 _fvn-1977619713 _ws-311910413 _ww-408434756 _fs-347291933 _fw-289166179 _lh-1925956564 _ls-1782815796 _d-341075704 _c-1922521888 _c-1063453128 rcx-label rcx-field__label"
                               for="sidebarRail"
                             >
                               Sidebar rail
                             </label>
                             <label
-                              class="rcx-box rcx-box--full rcx-toggle-switch"
+                              class="is_Text _b-1639159466 _os-249893454 _ff-409630021 _fvn-1977619713 _ws-311910413 _ww-408434756 rcx-toggle-switch"
                             >
                               <input
-                                class="rcx-box rcx-box--full rcx-toggle-switch__input"
+                                class="is_View _b-1639159466 _os-249893454 _ff-409630021 _fvn-1977619713 _p-1261267467 _o-1119039191 _c-588872556 _cp-2129451690 _w-226739898 _h-1922295961 _m-1890937723 _p-1943363302 _ws-973912173 _f-1246374076 rcx-toggle-switch__input"
                                 disabled=""
                                 id="sidebarRail"
                                 name="sidebarRail"
@@ -173,12 +173,12 @@ exports[`renders Default without crashing 1`] = `
                               />
                               <i
                                 aria-hidden="true"
-                                class="rcx-box rcx-box--full rcx-toggle-switch__fake"
+                                class="is_View _b-1639160427 _os-249893454 _ff-409630021 _fvn-1977619713 _p-1021290656 _f-1069814357 _mw-354604370 _mh-1241200853 _w-1008200584 _h-749995598 _br-153849585 rcx-toggle-switch__fake"
                               />
                             </label>
                           </span>
                           <span
-                            class="rcx-box rcx-box--full rcx-field__hint rcx-css-9o2t94"
+                            class="is_Text _b-650654186 _os-249893454 _ff-409630021 _fvn-1977619713 _ws-311910413 _ww-408434756 _fs-2088488067 _fw-289165218 _lh-1306743983 _ls-1782815796 _m-183820880 _c-1756781803 rcx-field__hint rcx-css-9o2t94"
                           >
                             A compact sidebar.
                           </span>
@@ -187,69 +187,69 @@ exports[`renders Default without crashing 1`] = `
                     </div>
                   </section>
                   <section
-                    class="rcx-box rcx-box--full rcx-accordion-item"
+                    class="is_View _f-1246374076 _mw-354604370 _mh-1241200853 _os-249893454 _ff-409630021 _fvn-1977619713 rcx-accordion-item"
                   >
                     <div
-                      aria-controls="_r_3_"
+                      aria-controls="_r_10_"
                       aria-expanded="false"
-                      class="rcx-box rcx-box--full rcx-box--animated rcx-accordion-item__bar"
+                      class="is_View _f-85860445 _mw-354604370 _mh-1760955396 _os-249893454 _ff-409630021 _fvn-1977619713 _p-615618451 _ta-507911453 _c-1866435217 _b-1683371345 rcx-box--animated rcx-accordion-item__bar"
                       role="button"
                       tabindex="0"
                     >
                       <h2
-                        class="rcx-box rcx-box--full rcx-accordion-item__title"
-                        id="_r_2_"
+                        class="is_Text _f-1417019688 _mw-354604370 _mh-1241200853 _os-249893454 _ff-409630021 _fvn-1977619713 _d-1987097250 _o-1119039191 _to-1727917045 _ws-973912173 _ww-408434756 _fs-467998244 _fw-289168101 _lh-1586295880 _ls-1782815796 rcx-accordion-item__title"
+                        id="_r_v_"
                       >
                         Room
                       </h2>
                       <span
-                        class="rcx-box rcx-box--full rcx-chevron"
+                        class="is_View _d-1985012034 _f-1069814357 _mw-354604370 _mh-1241200853 _as-24266285 rcx-chevron"
                       >
                         <i
                           aria-hidden="true"
-                          class="rcx-box rcx-box--full rcx-icon--name-chevron-down rcx-icon rcx-css-f8dsuo"
+                          class="is_Text _d-1409515928 _ws-311910413 _ww-408434756 _us-601212022 _va-1101652081 _ls-1720078126 _ff-1916555734 _fs-1279428672 _fw-289165218 _fs-477064150 _fv-1578983722 _lh-2067209205 _tr-1510281189 rcx-icon--name-chevron-down rcx-icon rcx-css-f8dsuo"
                         >
                           
                         </i>
                       </span>
                     </div>
                     <div
-                      class="rcx-box rcx-box--full rcx-box--animated rcx-accordion-item__panel"
-                      id="_r_3_"
+                      class="is_View _f-1246374076 _mw-354604370 _mh-1241200853 _os-249893454 _ff-409630021 _fvn-1977619713 _d-1987097250 _v-46649817 _o-1119039191 _h-1922296922 _p-2082124683 rcx-box--animated rcx-accordion-item__panel"
+                      id="_r_10_"
                     >
                       <fieldset
-                        class="rcx-box rcx-box--full rcx-field-group"
+                        class="is_Text _b-650654186 _os-249893454 _ff-409630021 _fvn-1977619713 _ws-311910413 _ww-408434756 _d-341075704 _f-1180446992 _jc-1099843255 _ai-1227553247 _mw-842770087 _m-2017216831 _p-1943363302 rcx-field-group"
                         role="group"
                       >
                         <div
-                          class="rcx-box rcx-box--full rcx-field rcx-field-group__item"
+                          class="is_Text _b-650654186 _os-249893454 _ff-409630021 _fvn-1977619713 _ws-311910413 _ww-408434756 _d-341075704 _f-1378740307 _ai-1227553247 _w-1560934055 rcx-field rcx-field-group__item"
                         >
                           <span
-                            class="rcx-box rcx-box--full rcx-field__row"
+                            class="is_Text _b-650654186 _os-249893454 _ff-409630021 _fvn-1977619713 _ws-311910413 _ww-408434756 _d-341075704 _f-541922926 _jc-281817805 _ai-121763387 _m-2017978848 _c-1756781803 rcx-field__row"
                           >
                             <label
-                              class="rcx-box rcx-box--full rcx-field__label rcx-label"
+                              class="is_Text _b-650654186 _os-249893454 _ff-409630021 _fvn-1977619713 _ws-311910413 _ww-408434756 _fs-347291933 _fw-289166179 _lh-1925956564 _ls-1782815796 _d-341075704 _c-1922521888 _c-1063453128 rcx-label rcx-field__label"
                               for="roomToolboxLayout"
                             >
                               Room toolbox layout
                             </label>
                             <label
-                              class="rcx-box rcx-box--full rcx-toggle-switch"
+                              class="is_Text _b-1639159466 _os-249893454 _ff-409630021 _fvn-1977619713 _ws-311910413 _ww-408434756 rcx-toggle-switch"
                             >
                               <input
-                                class="rcx-box rcx-box--full rcx-toggle-switch__input"
+                                class="is_View _b-1639159466 _os-249893454 _ff-409630021 _fvn-1977619713 _p-1261267467 _o-1119039191 _c-588872556 _cp-2129451690 _w-226739898 _h-1922295961 _m-1890937723 _p-1943363302 _ws-973912173 _f-1246374076 rcx-toggle-switch__input"
                                 id="roomToolboxLayout"
                                 name="roomToolboxLayout"
                                 type="checkbox"
                               />
                               <i
                                 aria-hidden="true"
-                                class="rcx-box rcx-box--full rcx-toggle-switch__fake"
+                                class="is_View _b-1639160427 _os-249893454 _ff-409630021 _fvn-1977619713 _p-1021290656 _f-1069814357 _mw-354604370 _mh-1241200853 _w-1008200584 _h-749995598 _br-153849585 rcx-toggle-switch__fake"
                               />
                             </label>
                           </span>
                           <span
-                            class="rcx-box rcx-box--full rcx-field__hint rcx-css-9o2t94"
+                            class="is_Text _b-650654186 _os-249893454 _ff-409630021 _fvn-1977619713 _ws-311910413 _ww-408434756 _fs-2088488067 _fw-289165218 _lh-1306743983 _ls-1782815796 _m-183820880 _c-1756781803 rcx-field__hint rcx-css-9o2t94"
                           >
                             A new layout for the room toolbox.
                           </span>
@@ -338,16 +338,16 @@ exports[`renders NoFeatures without crashing 1`] = `
                 class="rcx-box rcx-box--full rcx-css-a05vrv"
               >
                 <div
-                  class="rcx-states"
+                  class="is_View _jc-1099843255 _ai-121763387 _f-1246374076 _mw-354604370 _mh-1241200853 _bs-652081535 _p-114688985 _c-1756781803 rcx-states"
                 >
                   <i
                     aria-hidden="true"
-                    class="rcx-box rcx-box--full rcx-states__icon rcx-icon--name-magnifier rcx-icon rcx-css-d884y5"
+                    class="is_Text _d-1409515928 _ws-311910413 _ww-408434756 _us-601212022 _va-1101652081 _ls-1720078126 _ff-1916555734 _fs-1279428672 _fw-289165218 _fs-477064150 _fv-1578983722 _lh-2067209205 _tr-1510281189 rcx-states__icon rcx-icon--name-magnifier rcx-icon rcx-css-d884y5"
                   >
                     
                   </i>
                   <h3
-                    class="rcx-states__title"
+                    class="is_Text _d-1987097250 _ws-974065937 _ww-1531368954 _bs-652081535 _m-2143641824 _ta-1906144518 _c-1063453128 _fs-1323593153 _fw-289168101 _lh-1930574169 _ls-1782815796 rcx-states__title"
                   >
                     No feature to preview
                   </h3>

@@ -47,12 +47,12 @@ exports[`renders Default without crashing 1`] = `
                     class="rcx-box rcx-box--full rcx-css-mqgb0r"
                   >
                     <figure
-                      class="rcx-box rcx-box--full rcx-avatar rcx-avatar--x48"
+                      class="is_View _d-1985012034 _f-606928779 _va-1124586065 _m-2017216831 _p-1943363302 _b-650654186 _o-1106425799 _ff-409630021 _fvn-1977619713 _w-1589687929 _h-567057528 rcx-box rcx-box--full rcx-avatar rcx-avatar--x48"
                     >
                       <img
                         alt="Avatar"
                         aria-hidden="true"
-                        class="rcx-avatar__element rcx-avatar__element--x48"
+                        class="is_View _f-1246374076 _bs-652081535 _mw-354604370 _mh-1241200853 _p-1021290656 _w-1560934055 _h-538303654 _br-2047627512 rcx-avatar__element rcx-avatar__element--x48"
                         data-username="guilherme.gazzo"
                         src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVQYV2Oora39DwAFaQJ3y3rKeAAAAABJRU5ErkJggg=="
                         title="guilherme.gazzo"
@@ -67,7 +67,7 @@ exports[`renders Default without crashing 1`] = `
                       >
                         <svg
                           aria-hidden="true"
-                          class="rcx-status-bullet rcx-status-bullet--offline undefined "
+                          class="is_View _d-1409515928 _f-1711210172 _br-2015354435 _b-1674632166 _w-762189173 _h-1741434836 _s-475476743 rcx-status-bullet rcx-status-bullet--offline undefined"
                           fill="none"
                           height="12"
                           viewBox="0 0 12 12"
@@ -118,13 +118,13 @@ exports[`renders Default without crashing 1`] = `
                         </div>
                         <button
                           aria-label="Copy_field"
-                          class="rcx-box rcx-box--full rcx-button--tiny-square rcx-button--square rcx-button--icon rcx-button rcx-user-info-copy rcx-css-b7g1a9"
+                          class="is_View _f-1069813397 _mh-1241200853 _ta-1906144518 _ws-973912173 _td-211436768 _c-22887652 _os-249893454 _o-1119039191 _to-1727917045 _ff-409630021 _fvn-1977619713 _fs-347291933 _fw-289166179 _ls-1782815796 _p-230374000 _w-1439737260 _mw-1171212800 _h-640041837 _d-312446553 _jc-642967080 _ai-1864573722 _lh-2067208245 rcx-button--tiny-square rcx-button--square rcx-button--icon rcx-button rcx-user-info-copy rcx-css-b7g1a9"
                           title="Copy_field"
                           type="button"
                         >
                           <i
                             aria-hidden="true"
-                            class="rcx-box rcx-box--full rcx-icon--name-copy rcx-icon rcx-css-1g87xs3"
+                            class="is_Text _d-1409515928 _ws-311910413 _ww-408434756 _us-601212022 _va-1101652081 _ls-1720078126 _ff-1916555734 _fs-1279428672 _fw-289165218 _fs-477064150 _fv-1578983722 _lh-2067209205 _tr-1510281189 rcx-icon--name-copy rcx-icon rcx-css-1g87xs3"
                           >
                             
                           </i>
@@ -149,13 +149,13 @@ exports[`renders Default without crashing 1`] = `
                         </div>
                         <button
                           aria-label="Copy_field"
-                          class="rcx-box rcx-box--full rcx-button--tiny-square rcx-button--square rcx-button--icon rcx-button rcx-user-info-copy rcx-css-b7g1a9"
+                          class="is_View _f-1069813397 _mh-1241200853 _ta-1906144518 _ws-973912173 _td-211436768 _c-22887652 _os-249893454 _o-1119039191 _to-1727917045 _ff-409630021 _fvn-1977619713 _fs-347291933 _fw-289166179 _ls-1782815796 _p-230374000 _w-1439737260 _mw-1171212800 _h-640041837 _d-312446553 _jc-642967080 _ai-1864573722 _lh-2067208245 rcx-button--tiny-square rcx-button--square rcx-button--icon rcx-button rcx-user-info-copy rcx-css-b7g1a9"
                           title="Copy_field"
                           type="button"
                         >
                           <i
                             aria-hidden="true"
-                            class="rcx-box rcx-box--full rcx-icon--name-copy rcx-icon rcx-css-1g87xs3"
+                            class="is_Text _d-1409515928 _ws-311910413 _ww-408434756 _us-601212022 _va-1101652081 _ls-1720078126 _ff-1916555734 _fs-1279428672 _fw-289165218 _fs-477064150 _fv-1578983722 _lh-2067209205 _tr-1510281189 rcx-icon--name-copy rcx-icon rcx-css-1g87xs3"
                           >
                             
                           </i>
@@ -177,10 +177,10 @@ exports[`renders Default without crashing 1`] = `
                           class="rcx-box rcx-box--full rcx-css-zy9xaq"
                         >
                           <span
-                            class="rcx-box rcx-box--full rcx-tag rcx-tag--medium"
+                            class="is_Text _d-341075704 _f-606928779 _mw-354604370 _mh-1241200853 _o-1119039191 _jc-1099843255 _ai-121763387 _m-2017216831 _p-1139150377 _ws-973912173 _ww-408434756 _td-1861836084 _to-1727917045 _wb-499914885 _ff-409630021 _fvn-1977619713 _b-1182826059 _br-511985764 _os-249893454 _bs-1333539716 _c-244381275 _b-504152703 _fs-281033604 _fw-290091622 _lh-1335373134 _ls-1811444947 rcx-tag rcx-tag--medium"
                           >
                             <span
-                              class="rcx-tag__inner"
+                              class="is_Text _o-1119039191 _mw-842770087 _ws-973912173 _ww-408434756 _to-1727917045 rcx-tag__inner"
                             >
                               admin
                             </span>
@@ -190,10 +190,10 @@ exports[`renders Default without crashing 1`] = `
                           class="rcx-box rcx-box--full rcx-css-zy9xaq"
                         >
                           <span
-                            class="rcx-box rcx-box--full rcx-tag rcx-tag--medium"
+                            class="is_Text _d-341075704 _f-606928779 _mw-354604370 _mh-1241200853 _o-1119039191 _jc-1099843255 _ai-121763387 _m-2017216831 _p-1139150377 _ws-973912173 _ww-408434756 _td-1861836084 _to-1727917045 _wb-499914885 _ff-409630021 _fvn-1977619713 _b-1182826059 _br-511985764 _os-249893454 _bs-1333539716 _c-244381275 _b-504152703 _fs-281033604 _fw-290091622 _lh-1335373134 _ls-1811444947 rcx-tag rcx-tag--medium"
                           >
                             <span
-                              class="rcx-tag__inner"
+                              class="is_Text _o-1119039191 _mw-842770087 _ws-973912173 _ww-408434756 _to-1727917045 rcx-tag__inner"
                             >
                               user
                             </span>
@@ -223,13 +223,13 @@ exports[`renders Default without crashing 1`] = `
                         </div>
                         <button
                           aria-label="Copy_field"
-                          class="rcx-box rcx-box--full rcx-button--tiny-square rcx-button--square rcx-button--icon rcx-button rcx-user-info-copy rcx-css-b7g1a9"
+                          class="is_View _f-1069813397 _mh-1241200853 _ta-1906144518 _ws-973912173 _td-211436768 _c-22887652 _os-249893454 _o-1119039191 _to-1727917045 _ff-409630021 _fvn-1977619713 _fs-347291933 _fw-289166179 _ls-1782815796 _p-230374000 _w-1439737260 _mw-1171212800 _h-640041837 _d-312446553 _jc-642967080 _ai-1864573722 _lh-2067208245 rcx-button--tiny-square rcx-button--square rcx-button--icon rcx-button rcx-user-info-copy rcx-css-b7g1a9"
                           title="Copy_field"
                           type="button"
                         >
                           <i
                             aria-hidden="true"
-                            class="rcx-box rcx-box--full rcx-icon--name-copy rcx-icon rcx-css-1g87xs3"
+                            class="is_Text _d-1409515928 _ws-311910413 _ww-408434756 _us-601212022 _va-1101652081 _ls-1720078126 _ff-1916555734 _fs-1279428672 _fw-289165218 _fs-477064150 _fv-1578983722 _lh-2067209205 _tr-1510281189 rcx-icon--name-copy rcx-icon rcx-css-1g87xs3"
                           >
                             
                           </i>
@@ -257,10 +257,10 @@ exports[`renders Default without crashing 1`] = `
                             rocketchat@rocket.chat
                           </a>
                           <span
-                            class="rcx-box rcx-box--full rcx-tag  rcx-css-4ye06d rcx-css-1eogw2f"
+                            class="is_Text _d-341075704 _f-606928779 _mw-354604370 _mh-1241200853 _o-1119039191 _jc-1099843255 _ai-121763387 _m-2017216831 _p-1139150377 _ws-973912173 _ww-408434756 _td-1861836084 _to-1727917045 _wb-499914885 _ff-409630021 _fvn-1977619713 _b-1182826059 _br-511985764 _os-249893454 _bs-1333539716 _fs-285416026 _fw-289168101 _lh-1043070488 _ls-1782815796 _c-244381275 _b-504152703 rcx-tag rcx-css-4ye06d"
                           >
                             <span
-                              class="rcx-tag__inner"
+                              class="is_Text _o-1119039191 _mw-842770087 _ws-973912173 _ww-408434756 _to-1727917045 rcx-tag__inner"
                             >
                               Not_verified
                             </span>
@@ -268,13 +268,13 @@ exports[`renders Default without crashing 1`] = `
                         </div>
                         <button
                           aria-label="Copy_field"
-                          class="rcx-box rcx-box--full rcx-button--tiny-square rcx-button--square rcx-button--icon rcx-button rcx-user-info-copy rcx-css-b7g1a9"
+                          class="is_View _f-1069813397 _mh-1241200853 _ta-1906144518 _ws-973912173 _td-211436768 _c-22887652 _os-249893454 _o-1119039191 _to-1727917045 _ff-409630021 _fvn-1977619713 _fs-347291933 _fw-289166179 _ls-1782815796 _p-230374000 _w-1439737260 _mw-1171212800 _h-640041837 _d-312446553 _jc-642967080 _ai-1864573722 _lh-2067208245 rcx-button--tiny-square rcx-button--square rcx-button--icon rcx-button rcx-user-info-copy rcx-css-b7g1a9"
                           title="Copy_field"
                           type="button"
                         >
                           <i
                             aria-hidden="true"
-                            class="rcx-box rcx-box--full rcx-icon--name-copy rcx-icon rcx-css-1g87xs3"
+                            class="is_Text _d-1409515928 _ws-311910413 _ww-408434756 _us-601212022 _va-1101652081 _ls-1720078126 _ff-1916555734 _fs-1279428672 _fw-289165218 _fs-477064150 _fv-1578983722 _lh-2067209205 _tr-1510281189 rcx-icon--name-copy rcx-icon rcx-css-1g87xs3"
                           >
                             
                           </i>
@@ -398,12 +398,12 @@ exports[`renders InvitedUser without crashing 1`] = `
                     class="rcx-box rcx-box--full rcx-css-mqgb0r"
                   >
                     <figure
-                      class="rcx-box rcx-box--full rcx-avatar rcx-avatar--x48"
+                      class="is_View _d-1985012034 _f-606928779 _va-1124586065 _m-2017216831 _p-1943363302 _b-650654186 _o-1106425799 _ff-409630021 _fvn-1977619713 _w-1589687929 _h-567057528 rcx-box rcx-box--full rcx-avatar rcx-avatar--x48"
                     >
                       <img
                         alt="Avatar"
                         aria-hidden="true"
-                        class="rcx-avatar__element rcx-avatar__element--x48"
+                        class="is_View _f-1246374076 _bs-652081535 _mw-354604370 _mh-1241200853 _p-1021290656 _w-1560934055 _h-538303654 _br-2047627512 rcx-avatar__element rcx-avatar__element--x48"
                         data-username="guilherme.gazzo"
                         src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVQYV2Oora39DwAFaQJ3y3rKeAAAAABJRU5ErkJggg=="
                         title="guilherme.gazzo"
@@ -418,7 +418,7 @@ exports[`renders InvitedUser without crashing 1`] = `
                       >
                         <svg
                           aria-hidden="true"
-                          class="rcx-status-bullet rcx-status-bullet--offline undefined "
+                          class="is_View _d-1409515928 _f-1711210172 _br-2015354435 _b-1674632166 _w-762189173 _h-1741434836 _s-475476743 rcx-status-bullet rcx-status-bullet--offline undefined"
                           fill="none"
                           height="12"
                           viewBox="0 0 12 12"
@@ -454,12 +454,12 @@ exports[`renders InvitedUser without crashing 1`] = `
                     >
                       <dt
                         class="rcx-box rcx-box--full rcx-css-clshan"
-                        id="_r_3_"
+                        id="_r_t_"
                       >
                         Username
                       </dt>
                       <dd
-                        aria-labelledby="_r_3_"
+                        aria-labelledby="_r_t_"
                         class="rcx-box rcx-box--full rcx-css-16e3mll rcx-css-1uarkle"
                       >
                         <div
@@ -469,13 +469,13 @@ exports[`renders InvitedUser without crashing 1`] = `
                         </div>
                         <button
                           aria-label="Copy_field"
-                          class="rcx-box rcx-box--full rcx-button--tiny-square rcx-button--square rcx-button--icon rcx-button rcx-user-info-copy rcx-css-b7g1a9"
+                          class="is_View _f-1069813397 _mh-1241200853 _ta-1906144518 _ws-973912173 _td-211436768 _c-22887652 _os-249893454 _o-1119039191 _to-1727917045 _ff-409630021 _fvn-1977619713 _fs-347291933 _fw-289166179 _ls-1782815796 _p-230374000 _w-1439737260 _mw-1171212800 _h-640041837 _d-312446553 _jc-642967080 _ai-1864573722 _lh-2067208245 rcx-button--tiny-square rcx-button--square rcx-button--icon rcx-button rcx-user-info-copy rcx-css-b7g1a9"
                           title="Copy_field"
                           type="button"
                         >
                           <i
                             aria-hidden="true"
-                            class="rcx-box rcx-box--full rcx-icon--name-copy rcx-icon rcx-css-1g87xs3"
+                            class="is_Text _d-1409515928 _ws-311910413 _ww-408434756 _us-601212022 _va-1101652081 _ls-1720078126 _ff-1916555734 _fs-1279428672 _fw-289165218 _fs-477064150 _fv-1578983722 _lh-2067209205 _tr-1510281189 rcx-icon--name-copy rcx-icon rcx-css-1g87xs3"
                           >
                             
                           </i>
@@ -500,13 +500,13 @@ exports[`renders InvitedUser without crashing 1`] = `
                         </div>
                         <button
                           aria-label="Copy_field"
-                          class="rcx-box rcx-box--full rcx-button--tiny-square rcx-button--square rcx-button--icon rcx-button rcx-user-info-copy rcx-css-b7g1a9"
+                          class="is_View _f-1069813397 _mh-1241200853 _ta-1906144518 _ws-973912173 _td-211436768 _c-22887652 _os-249893454 _o-1119039191 _to-1727917045 _ff-409630021 _fvn-1977619713 _fs-347291933 _fw-289166179 _ls-1782815796 _p-230374000 _w-1439737260 _mw-1171212800 _h-640041837 _d-312446553 _jc-642967080 _ai-1864573722 _lh-2067208245 rcx-button--tiny-square rcx-button--square rcx-button--icon rcx-button rcx-user-info-copy rcx-css-b7g1a9"
                           title="Copy_field"
                           type="button"
                         >
                           <i
                             aria-hidden="true"
-                            class="rcx-box rcx-box--full rcx-icon--name-copy rcx-icon rcx-css-1g87xs3"
+                            class="is_Text _d-1409515928 _ws-311910413 _ww-408434756 _us-601212022 _va-1101652081 _ls-1720078126 _ff-1916555734 _fs-1279428672 _fw-289165218 _fs-477064150 _fv-1578983722 _lh-2067209205 _tr-1510281189 rcx-icon--name-copy rcx-icon rcx-css-1g87xs3"
                           >
                             
                           </i>
@@ -528,10 +528,10 @@ exports[`renders InvitedUser without crashing 1`] = `
                           class="rcx-box rcx-box--full rcx-css-zy9xaq"
                         >
                           <span
-                            class="rcx-box rcx-box--full rcx-tag rcx-tag--medium"
+                            class="is_Text _d-341075704 _f-606928779 _mw-354604370 _mh-1241200853 _o-1119039191 _jc-1099843255 _ai-121763387 _m-2017216831 _p-1139150377 _ws-973912173 _ww-408434756 _td-1861836084 _to-1727917045 _wb-499914885 _ff-409630021 _fvn-1977619713 _b-1182826059 _br-511985764 _os-249893454 _bs-1333539716 _c-244381275 _b-504152703 _fs-281033604 _fw-290091622 _lh-1335373134 _ls-1811444947 rcx-tag rcx-tag--medium"
                           >
                             <span
-                              class="rcx-tag__inner"
+                              class="is_Text _o-1119039191 _mw-842770087 _ws-973912173 _ww-408434756 _to-1727917045 rcx-tag__inner"
                             >
                               admin
                             </span>
@@ -541,10 +541,10 @@ exports[`renders InvitedUser without crashing 1`] = `
                           class="rcx-box rcx-box--full rcx-css-zy9xaq"
                         >
                           <span
-                            class="rcx-box rcx-box--full rcx-tag rcx-tag--medium"
+                            class="is_Text _d-341075704 _f-606928779 _mw-354604370 _mh-1241200853 _o-1119039191 _jc-1099843255 _ai-121763387 _m-2017216831 _p-1139150377 _ws-973912173 _ww-408434756 _td-1861836084 _to-1727917045 _wb-499914885 _ff-409630021 _fvn-1977619713 _b-1182826059 _br-511985764 _os-249893454 _bs-1333539716 _c-244381275 _b-504152703 _fs-281033604 _fw-290091622 _lh-1335373134 _ls-1811444947 rcx-tag rcx-tag--medium"
                           >
                             <span
-                              class="rcx-tag__inner"
+                              class="is_Text _o-1119039191 _mw-842770087 _ws-973912173 _ww-408434756 _to-1727917045 rcx-tag__inner"
                             >
                               user
                             </span>
@@ -574,13 +574,13 @@ exports[`renders InvitedUser without crashing 1`] = `
                         </div>
                         <button
                           aria-label="Copy_field"
-                          class="rcx-box rcx-box--full rcx-button--tiny-square rcx-button--square rcx-button--icon rcx-button rcx-user-info-copy rcx-css-b7g1a9"
+                          class="is_View _f-1069813397 _mh-1241200853 _ta-1906144518 _ws-973912173 _td-211436768 _c-22887652 _os-249893454 _o-1119039191 _to-1727917045 _ff-409630021 _fvn-1977619713 _fs-347291933 _fw-289166179 _ls-1782815796 _p-230374000 _w-1439737260 _mw-1171212800 _h-640041837 _d-312446553 _jc-642967080 _ai-1864573722 _lh-2067208245 rcx-button--tiny-square rcx-button--square rcx-button--icon rcx-button rcx-user-info-copy rcx-css-b7g1a9"
                           title="Copy_field"
                           type="button"
                         >
                           <i
                             aria-hidden="true"
-                            class="rcx-box rcx-box--full rcx-icon--name-copy rcx-icon rcx-css-1g87xs3"
+                            class="is_Text _d-1409515928 _ws-311910413 _ww-408434756 _us-601212022 _va-1101652081 _ls-1720078126 _ff-1916555734 _fs-1279428672 _fw-289165218 _fs-477064150 _fv-1578983722 _lh-2067209205 _tr-1510281189 rcx-icon--name-copy rcx-icon rcx-css-1g87xs3"
                           >
                             
                           </i>
@@ -608,10 +608,10 @@ exports[`renders InvitedUser without crashing 1`] = `
                             rocketchat@rocket.chat
                           </a>
                           <span
-                            class="rcx-box rcx-box--full rcx-tag  rcx-css-4ye06d rcx-css-1eogw2f"
+                            class="is_Text _d-341075704 _f-606928779 _mw-354604370 _mh-1241200853 _o-1119039191 _jc-1099843255 _ai-121763387 _m-2017216831 _p-1139150377 _ws-973912173 _ww-408434756 _td-1861836084 _to-1727917045 _wb-499914885 _ff-409630021 _fvn-1977619713 _b-1182826059 _br-511985764 _os-249893454 _bs-1333539716 _fs-285416026 _fw-289168101 _lh-1043070488 _ls-1782815796 _c-244381275 _b-504152703 rcx-tag rcx-css-4ye06d"
                           >
                             <span
-                              class="rcx-tag__inner"
+                              class="is_Text _o-1119039191 _mw-842770087 _ws-973912173 _ww-408434756 _to-1727917045 rcx-tag__inner"
                             >
                               Not_verified
                             </span>
@@ -619,13 +619,13 @@ exports[`renders InvitedUser without crashing 1`] = `
                         </div>
                         <button
                           aria-label="Copy_field"
-                          class="rcx-box rcx-box--full rcx-button--tiny-square rcx-button--square rcx-button--icon rcx-button rcx-user-info-copy rcx-css-b7g1a9"
+                          class="is_View _f-1069813397 _mh-1241200853 _ta-1906144518 _ws-973912173 _td-211436768 _c-22887652 _os-249893454 _o-1119039191 _to-1727917045 _ff-409630021 _fvn-1977619713 _fs-347291933 _fw-289166179 _ls-1782815796 _p-230374000 _w-1439737260 _mw-1171212800 _h-640041837 _d-312446553 _jc-642967080 _ai-1864573722 _lh-2067208245 rcx-button--tiny-square rcx-button--square rcx-button--icon rcx-button rcx-user-info-copy rcx-css-b7g1a9"
                           title="Copy_field"
                           type="button"
                         >
                           <i
                             aria-hidden="true"
-                            class="rcx-box rcx-box--full rcx-icon--name-copy rcx-icon rcx-css-1g87xs3"
+                            class="is_Text _d-1409515928 _ws-311910413 _ww-408434756 _us-601212022 _va-1101652081 _ls-1720078126 _ff-1916555734 _fs-1279428672 _fw-289165218 _fs-477064150 _fv-1578983722 _lh-2067209205 _tr-1510281189 rcx-icon--name-copy rcx-icon rcx-css-1g87xs3"
                           >
                             
                           </i>
@@ -763,12 +763,12 @@ exports[`renders WithABACAttributes without crashing 1`] = `
                     class="rcx-box rcx-box--full rcx-css-mqgb0r"
                   >
                     <figure
-                      class="rcx-box rcx-box--full rcx-avatar rcx-avatar--x48"
+                      class="is_View _d-1985012034 _f-606928779 _va-1124586065 _m-2017216831 _p-1943363302 _b-650654186 _o-1106425799 _ff-409630021 _fvn-1977619713 _w-1589687929 _h-567057528 rcx-box rcx-box--full rcx-avatar rcx-avatar--x48"
                     >
                       <img
                         alt="Avatar"
                         aria-hidden="true"
-                        class="rcx-avatar__element rcx-avatar__element--x48"
+                        class="is_View _f-1246374076 _bs-652081535 _mw-354604370 _mh-1241200853 _p-1021290656 _w-1560934055 _h-538303654 _br-2047627512 rcx-avatar__element rcx-avatar__element--x48"
                         data-username="guilherme.gazzo"
                         src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVQYV2Oora39DwAFaQJ3y3rKeAAAAABJRU5ErkJggg=="
                         title="guilherme.gazzo"
@@ -783,7 +783,7 @@ exports[`renders WithABACAttributes without crashing 1`] = `
                       >
                         <svg
                           aria-hidden="true"
-                          class="rcx-status-bullet rcx-status-bullet--offline undefined "
+                          class="is_View _d-1409515928 _f-1711210172 _br-2015354435 _b-1674632166 _w-762189173 _h-1741434836 _s-475476743 rcx-status-bullet rcx-status-bullet--offline undefined"
                           fill="none"
                           height="12"
                           viewBox="0 0 12 12"
@@ -819,12 +819,12 @@ exports[`renders WithABACAttributes without crashing 1`] = `
                     >
                       <dt
                         class="rcx-box rcx-box--full rcx-css-clshan"
-                        id="_r_5_"
+                        id="_r_1p_"
                       >
                         Username
                       </dt>
                       <dd
-                        aria-labelledby="_r_5_"
+                        aria-labelledby="_r_1p_"
                         class="rcx-box rcx-box--full rcx-css-16e3mll rcx-css-1uarkle"
                       >
                         <div
@@ -834,13 +834,13 @@ exports[`renders WithABACAttributes without crashing 1`] = `
                         </div>
                         <button
                           aria-label="Copy_field"
-                          class="rcx-box rcx-box--full rcx-button--tiny-square rcx-button--square rcx-button--icon rcx-button rcx-user-info-copy rcx-css-b7g1a9"
+                          class="is_View _f-1069813397 _mh-1241200853 _ta-1906144518 _ws-973912173 _td-211436768 _c-22887652 _os-249893454 _o-1119039191 _to-1727917045 _ff-409630021 _fvn-1977619713 _fs-347291933 _fw-289166179 _ls-1782815796 _p-230374000 _w-1439737260 _mw-1171212800 _h-640041837 _d-312446553 _jc-642967080 _ai-1864573722 _lh-2067208245 rcx-button--tiny-square rcx-button--square rcx-button--icon rcx-button rcx-user-info-copy rcx-css-b7g1a9"
                           title="Copy_field"
                           type="button"
                         >
                           <i
                             aria-hidden="true"
-                            class="rcx-box rcx-box--full rcx-icon--name-copy rcx-icon rcx-css-1g87xs3"
+                            class="is_Text _d-1409515928 _ws-311910413 _ww-408434756 _us-601212022 _va-1101652081 _ls-1720078126 _ff-1916555734 _fs-1279428672 _fw-289165218 _fs-477064150 _fv-1578983722 _lh-2067209205 _tr-1510281189 rcx-icon--name-copy rcx-icon rcx-css-1g87xs3"
                           >
                             
                           </i>
@@ -865,13 +865,13 @@ exports[`renders WithABACAttributes without crashing 1`] = `
                         </div>
                         <button
                           aria-label="Copy_field"
-                          class="rcx-box rcx-box--full rcx-button--tiny-square rcx-button--square rcx-button--icon rcx-button rcx-user-info-copy rcx-css-b7g1a9"
+                          class="is_View _f-1069813397 _mh-1241200853 _ta-1906144518 _ws-973912173 _td-211436768 _c-22887652 _os-249893454 _o-1119039191 _to-1727917045 _ff-409630021 _fvn-1977619713 _fs-347291933 _fw-289166179 _ls-1782815796 _p-230374000 _w-1439737260 _mw-1171212800 _h-640041837 _d-312446553 _jc-642967080 _ai-1864573722 _lh-2067208245 rcx-button--tiny-square rcx-button--square rcx-button--icon rcx-button rcx-user-info-copy rcx-css-b7g1a9"
                           title="Copy_field"
                           type="button"
                         >
                           <i
                             aria-hidden="true"
-                            class="rcx-box rcx-box--full rcx-icon--name-copy rcx-icon rcx-css-1g87xs3"
+                            class="is_Text _d-1409515928 _ws-311910413 _ww-408434756 _us-601212022 _va-1101652081 _ls-1720078126 _ff-1916555734 _fs-1279428672 _fw-289165218 _fs-477064150 _fv-1578983722 _lh-2067209205 _tr-1510281189 rcx-icon--name-copy rcx-icon rcx-css-1g87xs3"
                           >
                             
                           </i>
@@ -893,10 +893,10 @@ exports[`renders WithABACAttributes without crashing 1`] = `
                           class="rcx-box rcx-box--full rcx-css-zy9xaq"
                         >
                           <span
-                            class="rcx-box rcx-box--full rcx-tag rcx-tag--medium"
+                            class="is_Text _d-341075704 _f-606928779 _mw-354604370 _mh-1241200853 _o-1119039191 _jc-1099843255 _ai-121763387 _m-2017216831 _p-1139150377 _ws-973912173 _ww-408434756 _td-1861836084 _to-1727917045 _wb-499914885 _ff-409630021 _fvn-1977619713 _b-1182826059 _br-511985764 _os-249893454 _bs-1333539716 _c-244381275 _b-504152703 _fs-281033604 _fw-290091622 _lh-1335373134 _ls-1811444947 rcx-tag rcx-tag--medium"
                           >
                             <span
-                              class="rcx-tag__inner"
+                              class="is_Text _o-1119039191 _mw-842770087 _ws-973912173 _ww-408434756 _to-1727917045 rcx-tag__inner"
                             >
                               admin
                             </span>
@@ -906,10 +906,10 @@ exports[`renders WithABACAttributes without crashing 1`] = `
                           class="rcx-box rcx-box--full rcx-css-zy9xaq"
                         >
                           <span
-                            class="rcx-box rcx-box--full rcx-tag rcx-tag--medium"
+                            class="is_Text _d-341075704 _f-606928779 _mw-354604370 _mh-1241200853 _o-1119039191 _jc-1099843255 _ai-121763387 _m-2017216831 _p-1139150377 _ws-973912173 _ww-408434756 _td-1861836084 _to-1727917045 _wb-499914885 _ff-409630021 _fvn-1977619713 _b-1182826059 _br-511985764 _os-249893454 _bs-1333539716 _c-244381275 _b-504152703 _fs-281033604 _fw-290091622 _lh-1335373134 _ls-1811444947 rcx-tag rcx-tag--medium"
                           >
                             <span
-                              class="rcx-tag__inner"
+                              class="is_Text _o-1119039191 _mw-842770087 _ws-973912173 _ww-408434756 _to-1727917045 rcx-tag__inner"
                             >
                               user
                             </span>
@@ -939,13 +939,13 @@ exports[`renders WithABACAttributes without crashing 1`] = `
                         </div>
                         <button
                           aria-label="Copy_field"
-                          class="rcx-box rcx-box--full rcx-button--tiny-square rcx-button--square rcx-button--icon rcx-button rcx-user-info-copy rcx-css-b7g1a9"
+                          class="is_View _f-1069813397 _mh-1241200853 _ta-1906144518 _ws-973912173 _td-211436768 _c-22887652 _os-249893454 _o-1119039191 _to-1727917045 _ff-409630021 _fvn-1977619713 _fs-347291933 _fw-289166179 _ls-1782815796 _p-230374000 _w-1439737260 _mw-1171212800 _h-640041837 _d-312446553 _jc-642967080 _ai-1864573722 _lh-2067208245 rcx-button--tiny-square rcx-button--square rcx-button--icon rcx-button rcx-user-info-copy rcx-css-b7g1a9"
                           title="Copy_field"
                           type="button"
                         >
                           <i
                             aria-hidden="true"
-                            class="rcx-box rcx-box--full rcx-icon--name-copy rcx-icon rcx-css-1g87xs3"
+                            class="is_Text _d-1409515928 _ws-311910413 _ww-408434756 _us-601212022 _va-1101652081 _ls-1720078126 _ff-1916555734 _fs-1279428672 _fw-289165218 _fs-477064150 _fv-1578983722 _lh-2067209205 _tr-1510281189 rcx-icon--name-copy rcx-icon rcx-css-1g87xs3"
                           >
                             
                           </i>
@@ -973,10 +973,10 @@ exports[`renders WithABACAttributes without crashing 1`] = `
                             rocketchat@rocket.chat
                           </a>
                           <span
-                            class="rcx-box rcx-box--full rcx-tag  rcx-css-4ye06d rcx-css-1eogw2f"
+                            class="is_Text _d-341075704 _f-606928779 _mw-354604370 _mh-1241200853 _o-1119039191 _jc-1099843255 _ai-121763387 _m-2017216831 _p-1139150377 _ws-973912173 _ww-408434756 _td-1861836084 _to-1727917045 _wb-499914885 _ff-409630021 _fvn-1977619713 _b-1182826059 _br-511985764 _os-249893454 _bs-1333539716 _fs-285416026 _fw-289168101 _lh-1043070488 _ls-1782815796 _c-244381275 _b-504152703 rcx-tag rcx-css-4ye06d"
                           >
                             <span
-                              class="rcx-tag__inner"
+                              class="is_Text _o-1119039191 _mw-842770087 _ws-973912173 _ww-408434756 _to-1727917045 rcx-tag__inner"
                             >
                               Not_verified
                             </span>
@@ -984,13 +984,13 @@ exports[`renders WithABACAttributes without crashing 1`] = `
                         </div>
                         <button
                           aria-label="Copy_field"
-                          class="rcx-box rcx-box--full rcx-button--tiny-square rcx-button--square rcx-button--icon rcx-button rcx-user-info-copy rcx-css-b7g1a9"
+                          class="is_View _f-1069813397 _mh-1241200853 _ta-1906144518 _ws-973912173 _td-211436768 _c-22887652 _os-249893454 _o-1119039191 _to-1727917045 _ff-409630021 _fvn-1977619713 _fs-347291933 _fw-289166179 _ls-1782815796 _p-230374000 _w-1439737260 _mw-1171212800 _h-640041837 _d-312446553 _jc-642967080 _ai-1864573722 _lh-2067208245 rcx-button--tiny-square rcx-button--square rcx-button--icon rcx-button rcx-user-info-copy rcx-css-b7g1a9"
                           title="Copy_field"
                           type="button"
                         >
                           <i
                             aria-hidden="true"
-                            class="rcx-box rcx-box--full rcx-icon--name-copy rcx-icon rcx-css-1g87xs3"
+                            class="is_Text _d-1409515928 _ws-311910413 _ww-408434756 _us-601212022 _va-1101652081 _ls-1720078126 _ff-1916555734 _fs-1279428672 _fw-289165218 _fs-477064150 _fv-1578983722 _lh-2067209205 _tr-1510281189 rcx-icon--name-copy rcx-icon rcx-css-1g87xs3"
                           >
                             
                           </i>
@@ -1006,7 +1006,7 @@ exports[`renders WithABACAttributes without crashing 1`] = `
                         ABAC_Attributes
                         <i
                           aria-hidden="true"
-                          class="rcx-box rcx-box--full rcx-icon--name-info rcx-icon rcx-css-wdtxj5"
+                          class="is_Text _d-1409515928 _ws-311910413 _ww-408434756 _us-601212022 _va-1101652081 _ls-1720078126 _ff-1916555734 _fs-1279428672 _fw-289165218 _fs-477064150 _fv-1578983722 _lh-2067209205 _tr-1510281189 rcx-icon--name-info rcx-icon rcx-css-wdtxj5"
                           title="ABAC_Attributes_description"
                         >
                           
@@ -1019,37 +1019,37 @@ exports[`renders WithABACAttributes without crashing 1`] = `
                           class="rcx-box rcx-box--full rcx-css-iitt21"
                         >
                           <span
-                            class="rcx-box rcx-box--full rcx-tag rcx-tag--secondary-warning rcx-css-1drnhgd"
+                            class="is_Text _d-341075704 _f-606928779 _mw-354604370 _mh-1241200853 _o-1119039191 _jc-1099843255 _ai-121763387 _m-2017216831 _p-1139150377 _ws-973912173 _ww-408434756 _td-1861836084 _to-1727917045 _wb-499914885 _ff-409630021 _fvn-1977619713 _b-1182826059 _br-511985764 _os-249893454 _bs-1333539716 _fs-285416026 _fw-289168101 _lh-1043070488 _ls-1782815796 _c-2087369690 _b-498984387 rcx-tag rcx-tag--secondary-warning"
                           >
                             <span
-                              class="rcx-tag__inner"
+                              class="is_Text _o-1119039191 _mw-842770087 _ws-973912173 _ww-408434756 _to-1727917045 rcx-tag__inner"
                             >
                               Top Secret
                             </span>
                           </span>
                           <span
-                            class="rcx-box rcx-box--full rcx-tag rcx-tag--secondary-warning rcx-css-1drnhgd"
+                            class="is_Text _d-341075704 _f-606928779 _mw-354604370 _mh-1241200853 _o-1119039191 _jc-1099843255 _ai-121763387 _m-2017216831 _p-1139150377 _ws-973912173 _ww-408434756 _td-1861836084 _to-1727917045 _wb-499914885 _ff-409630021 _fvn-1977619713 _b-1182826059 _br-511985764 _os-249893454 _bs-1333539716 _fs-285416026 _fw-289168101 _lh-1043070488 _ls-1782815796 _c-2087369690 _b-498984387 rcx-tag rcx-tag--secondary-warning"
                           >
                             <span
-                              class="rcx-tag__inner"
+                              class="is_Text _o-1119039191 _mw-842770087 _ws-973912173 _ww-408434756 _to-1727917045 rcx-tag__inner"
                             >
                               Confidential
                             </span>
                           </span>
                           <span
-                            class="rcx-box rcx-box--full rcx-tag rcx-tag--secondary-warning rcx-css-1drnhgd"
+                            class="is_Text _d-341075704 _f-606928779 _mw-354604370 _mh-1241200853 _o-1119039191 _jc-1099843255 _ai-121763387 _m-2017216831 _p-1139150377 _ws-973912173 _ww-408434756 _td-1861836084 _to-1727917045 _wb-499914885 _ff-409630021 _fvn-1977619713 _b-1182826059 _br-511985764 _os-249893454 _bs-1333539716 _fs-285416026 _fw-289168101 _lh-1043070488 _ls-1782815796 _c-2087369690 _b-498984387 rcx-tag rcx-tag--secondary-warning"
                           >
                             <span
-                              class="rcx-tag__inner"
+                              class="is_Text _o-1119039191 _mw-842770087 _ws-973912173 _ww-408434756 _to-1727917045 rcx-tag__inner"
                             >
                               Top Secret
                             </span>
                           </span>
                           <span
-                            class="rcx-box rcx-box--full rcx-tag rcx-tag--secondary-warning rcx-css-1drnhgd"
+                            class="is_Text _d-341075704 _f-606928779 _mw-354604370 _mh-1241200853 _o-1119039191 _jc-1099843255 _ai-121763387 _m-2017216831 _p-1139150377 _ws-973912173 _ww-408434756 _td-1861836084 _to-1727917045 _wb-499914885 _ff-409630021 _fvn-1977619713 _b-1182826059 _br-511985764 _os-249893454 _bs-1333539716 _fs-285416026 _fw-289168101 _lh-1043070488 _ls-1782815796 _c-2087369690 _b-498984387 rcx-tag rcx-tag--secondary-warning"
                           >
                             <span
-                              class="rcx-tag__inner"
+                              class="is_Text _o-1119039191 _mw-842770087 _ws-973912173 _ww-408434756 _to-1727917045 rcx-tag__inner"
                             >
                               Confidential
                             </span>
@@ -1174,12 +1174,12 @@ exports[`renders WithVoiceCallExtension without crashing 1`] = `
                     class="rcx-box rcx-box--full rcx-css-mqgb0r"
                   >
                     <figure
-                      class="rcx-box rcx-box--full rcx-avatar rcx-avatar--x48"
+                      class="is_View _d-1985012034 _f-606928779 _va-1124586065 _m-2017216831 _p-1943363302 _b-650654186 _o-1106425799 _ff-409630021 _fvn-1977619713 _w-1589687929 _h-567057528 rcx-box rcx-box--full rcx-avatar rcx-avatar--x48"
                     >
                       <img
                         alt="Avatar"
                         aria-hidden="true"
-                        class="rcx-avatar__element rcx-avatar__element--x48"
+                        class="is_View _f-1246374076 _bs-652081535 _mw-354604370 _mh-1241200853 _p-1021290656 _w-1560934055 _h-538303654 _br-2047627512 rcx-avatar__element rcx-avatar__element--x48"
                         data-username="guilherme.gazzo"
                         src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVQYV2Oora39DwAFaQJ3y3rKeAAAAABJRU5ErkJggg=="
                         title="guilherme.gazzo"
@@ -1194,7 +1194,7 @@ exports[`renders WithVoiceCallExtension without crashing 1`] = `
                       >
                         <svg
                           aria-hidden="true"
-                          class="rcx-status-bullet rcx-status-bullet--offline undefined "
+                          class="is_View _d-1409515928 _f-1711210172 _br-2015354435 _b-1674632166 _w-762189173 _h-1741434836 _s-475476743 rcx-status-bullet rcx-status-bullet--offline undefined"
                           fill="none"
                           height="12"
                           viewBox="0 0 12 12"
@@ -1230,12 +1230,12 @@ exports[`renders WithVoiceCallExtension without crashing 1`] = `
                     >
                       <dt
                         class="rcx-box rcx-box--full rcx-css-clshan"
-                        id="_r_7_"
+                        id="_r_33_"
                       >
                         Username
                       </dt>
                       <dd
-                        aria-labelledby="_r_7_"
+                        aria-labelledby="_r_33_"
                         class="rcx-box rcx-box--full rcx-css-16e3mll rcx-css-1uarkle"
                       >
                         <div
@@ -1245,13 +1245,13 @@ exports[`renders WithVoiceCallExtension without crashing 1`] = `
                         </div>
                         <button
                           aria-label="Copy_field"
-                          class="rcx-box rcx-box--full rcx-button--tiny-square rcx-button--square rcx-button--icon rcx-button rcx-user-info-copy rcx-css-b7g1a9"
+                          class="is_View _f-1069813397 _mh-1241200853 _ta-1906144518 _ws-973912173 _td-211436768 _c-22887652 _os-249893454 _o-1119039191 _to-1727917045 _ff-409630021 _fvn-1977619713 _fs-347291933 _fw-289166179 _ls-1782815796 _p-230374000 _w-1439737260 _mw-1171212800 _h-640041837 _d-312446553 _jc-642967080 _ai-1864573722 _lh-2067208245 rcx-button--tiny-square rcx-button--square rcx-button--icon rcx-button rcx-user-info-copy rcx-css-b7g1a9"
                           title="Copy_field"
                           type="button"
                         >
                           <i
                             aria-hidden="true"
-                            class="rcx-box rcx-box--full rcx-icon--name-copy rcx-icon rcx-css-1g87xs3"
+                            class="is_Text _d-1409515928 _ws-311910413 _ww-408434756 _us-601212022 _va-1101652081 _ls-1720078126 _ff-1916555734 _fs-1279428672 _fw-289165218 _fs-477064150 _fv-1578983722 _lh-2067209205 _tr-1510281189 rcx-icon--name-copy rcx-icon rcx-css-1g87xs3"
                           >
                             
                           </i>
@@ -1276,13 +1276,13 @@ exports[`renders WithVoiceCallExtension without crashing 1`] = `
                         </div>
                         <button
                           aria-label="Copy_field"
-                          class="rcx-box rcx-box--full rcx-button--tiny-square rcx-button--square rcx-button--icon rcx-button rcx-user-info-copy rcx-css-b7g1a9"
+                          class="is_View _f-1069813397 _mh-1241200853 _ta-1906144518 _ws-973912173 _td-211436768 _c-22887652 _os-249893454 _o-1119039191 _to-1727917045 _ff-409630021 _fvn-1977619713 _fs-347291933 _fw-289166179 _ls-1782815796 _p-230374000 _w-1439737260 _mw-1171212800 _h-640041837 _d-312446553 _jc-642967080 _ai-1864573722 _lh-2067208245 rcx-button--tiny-square rcx-button--square rcx-button--icon rcx-button rcx-user-info-copy rcx-css-b7g1a9"
                           title="Copy_field"
                           type="button"
                         >
                           <i
                             aria-hidden="true"
-                            class="rcx-box rcx-box--full rcx-icon--name-copy rcx-icon rcx-css-1g87xs3"
+                            class="is_Text _d-1409515928 _ws-311910413 _ww-408434756 _us-601212022 _va-1101652081 _ls-1720078126 _ff-1916555734 _fs-1279428672 _fw-289165218 _fs-477064150 _fv-1578983722 _lh-2067209205 _tr-1510281189 rcx-icon--name-copy rcx-icon rcx-css-1g87xs3"
                           >
                             
                           </i>
@@ -1304,10 +1304,10 @@ exports[`renders WithVoiceCallExtension without crashing 1`] = `
                           class="rcx-box rcx-box--full rcx-css-zy9xaq"
                         >
                           <span
-                            class="rcx-box rcx-box--full rcx-tag rcx-tag--medium"
+                            class="is_Text _d-341075704 _f-606928779 _mw-354604370 _mh-1241200853 _o-1119039191 _jc-1099843255 _ai-121763387 _m-2017216831 _p-1139150377 _ws-973912173 _ww-408434756 _td-1861836084 _to-1727917045 _wb-499914885 _ff-409630021 _fvn-1977619713 _b-1182826059 _br-511985764 _os-249893454 _bs-1333539716 _c-244381275 _b-504152703 _fs-281033604 _fw-290091622 _lh-1335373134 _ls-1811444947 rcx-tag rcx-tag--medium"
                           >
                             <span
-                              class="rcx-tag__inner"
+                              class="is_Text _o-1119039191 _mw-842770087 _ws-973912173 _ww-408434756 _to-1727917045 rcx-tag__inner"
                             >
                               admin
                             </span>
@@ -1317,10 +1317,10 @@ exports[`renders WithVoiceCallExtension without crashing 1`] = `
                           class="rcx-box rcx-box--full rcx-css-zy9xaq"
                         >
                           <span
-                            class="rcx-box rcx-box--full rcx-tag rcx-tag--medium"
+                            class="is_Text _d-341075704 _f-606928779 _mw-354604370 _mh-1241200853 _o-1119039191 _jc-1099843255 _ai-121763387 _m-2017216831 _p-1139150377 _ws-973912173 _ww-408434756 _td-1861836084 _to-1727917045 _wb-499914885 _ff-409630021 _fvn-1977619713 _b-1182826059 _br-511985764 _os-249893454 _bs-1333539716 _c-244381275 _b-504152703 _fs-281033604 _fw-290091622 _lh-1335373134 _ls-1811444947 rcx-tag rcx-tag--medium"
                           >
                             <span
-                              class="rcx-tag__inner"
+                              class="is_Text _o-1119039191 _mw-842770087 _ws-973912173 _ww-408434756 _to-1727917045 rcx-tag__inner"
                             >
                               user
                             </span>
@@ -1350,13 +1350,13 @@ exports[`renders WithVoiceCallExtension without crashing 1`] = `
                         </div>
                         <button
                           aria-label="Copy_field"
-                          class="rcx-box rcx-box--full rcx-button--tiny-square rcx-button--square rcx-button--icon rcx-button rcx-user-info-copy rcx-css-b7g1a9"
+                          class="is_View _f-1069813397 _mh-1241200853 _ta-1906144518 _ws-973912173 _td-211436768 _c-22887652 _os-249893454 _o-1119039191 _to-1727917045 _ff-409630021 _fvn-1977619713 _fs-347291933 _fw-289166179 _ls-1782815796 _p-230374000 _w-1439737260 _mw-1171212800 _h-640041837 _d-312446553 _jc-642967080 _ai-1864573722 _lh-2067208245 rcx-button--tiny-square rcx-button--square rcx-button--icon rcx-button rcx-user-info-copy rcx-css-b7g1a9"
                           title="Copy_field"
                           type="button"
                         >
                           <i
                             aria-hidden="true"
-                            class="rcx-box rcx-box--full rcx-icon--name-copy rcx-icon rcx-css-1g87xs3"
+                            class="is_Text _d-1409515928 _ws-311910413 _ww-408434756 _us-601212022 _va-1101652081 _ls-1720078126 _ff-1916555734 _fs-1279428672 _fw-289165218 _fs-477064150 _fv-1578983722 _lh-2067209205 _tr-1510281189 rcx-icon--name-copy rcx-icon rcx-css-1g87xs3"
                           >
                             
                           </i>
@@ -1384,10 +1384,10 @@ exports[`renders WithVoiceCallExtension without crashing 1`] = `
                             rocketchat@rocket.chat
                           </a>
                           <span
-                            class="rcx-box rcx-box--full rcx-tag  rcx-css-4ye06d rcx-css-1eogw2f"
+                            class="is_Text _d-341075704 _f-606928779 _mw-354604370 _mh-1241200853 _o-1119039191 _jc-1099843255 _ai-121763387 _m-2017216831 _p-1139150377 _ws-973912173 _ww-408434756 _td-1861836084 _to-1727917045 _wb-499914885 _ff-409630021 _fvn-1977619713 _b-1182826059 _br-511985764 _os-249893454 _bs-1333539716 _fs-285416026 _fw-289168101 _lh-1043070488 _ls-1782815796 _c-244381275 _b-504152703 rcx-tag rcx-css-4ye06d"
                           >
                             <span
-                              class="rcx-tag__inner"
+                              class="is_Text _o-1119039191 _mw-842770087 _ws-973912173 _ww-408434756 _to-1727917045 rcx-tag__inner"
                             >
                               Not_verified
                             </span>
@@ -1395,13 +1395,13 @@ exports[`renders WithVoiceCallExtension without crashing 1`] = `
                         </div>
                         <button
                           aria-label="Copy_field"
-                          class="rcx-box rcx-box--full rcx-button--tiny-square rcx-button--square rcx-button--icon rcx-button rcx-user-info-copy rcx-css-b7g1a9"
+                          class="is_View _f-1069813397 _mh-1241200853 _ta-1906144518 _ws-973912173 _td-211436768 _c-22887652 _os-249893454 _o-1119039191 _to-1727917045 _ff-409630021 _fvn-1977619713 _fs-347291933 _fw-289166179 _ls-1782815796 _p-230374000 _w-1439737260 _mw-1171212800 _h-640041837 _d-312446553 _jc-642967080 _ai-1864573722 _lh-2067208245 rcx-button--tiny-square rcx-button--square rcx-button--icon rcx-button rcx-user-info-copy rcx-css-b7g1a9"
                           title="Copy_field"
                           type="button"
                         >
                           <i
                             aria-hidden="true"
-                            class="rcx-box rcx-box--full rcx-icon--name-copy rcx-icon rcx-css-1g87xs3"
+                            class="is_Text _d-1409515928 _ws-311910413 _ww-408434756 _us-601212022 _va-1101652081 _ls-1720078126 _ff-1916555734 _fs-1279428672 _fw-289165218 _fs-477064150 _fv-1578983722 _lh-2067209205 _tr-1510281189 rcx-icon--name-copy rcx-icon rcx-css-1g87xs3"
                           >
                             
                           </i>
@@ -1426,13 +1426,13 @@ exports[`renders WithVoiceCallExtension without crashing 1`] = `
                         </div>
                         <button
                           aria-label="Copy_field"
-                          class="rcx-box rcx-box--full rcx-button--tiny-square rcx-button--square rcx-button--icon rcx-button rcx-user-info-copy rcx-css-b7g1a9"
+                          class="is_View _f-1069813397 _mh-1241200853 _ta-1906144518 _ws-973912173 _td-211436768 _c-22887652 _os-249893454 _o-1119039191 _to-1727917045 _ff-409630021 _fvn-1977619713 _fs-347291933 _fw-289166179 _ls-1782815796 _p-230374000 _w-1439737260 _mw-1171212800 _h-640041837 _d-312446553 _jc-642967080 _ai-1864573722 _lh-2067208245 rcx-button--tiny-square rcx-button--square rcx-button--icon rcx-button rcx-user-info-copy rcx-css-b7g1a9"
                           title="Copy_field"
                           type="button"
                         >
                           <i
                             aria-hidden="true"
-                            class="rcx-box rcx-box--full rcx-icon--name-copy rcx-icon rcx-css-1g87xs3"
+                            class="is_Text _d-1409515928 _ws-311910413 _ww-408434756 _us-601212022 _va-1101652081 _ls-1720078126 _ff-1916555734 _fs-1279428672 _fw-289165218 _fs-477064150 _fv-1578983722 _lh-2067209205 _tr-1510281189 rcx-icon--name-copy rcx-icon rcx-css-1g87xs3"
                           >
                             
                           </i>

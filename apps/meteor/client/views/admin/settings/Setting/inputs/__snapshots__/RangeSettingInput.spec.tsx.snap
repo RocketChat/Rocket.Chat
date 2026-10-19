@@ -4,16 +4,16 @@ exports[`renders Default without crashing 1`] = `
 <body>
   <div>
     <div
-      class="rcx-box rcx-box--full rcx-field"
+      class="is_Text _b-650654186 _os-249893454 _ff-409630021 _fvn-1977619713 _ws-311910413 _ww-408434756 _d-341075704 _f-1378740307 _ai-1227553247 _w-1560934055 rcx-field"
     >
       <div
-        class="rcx-box rcx-box--full rcx-field"
+        class="is_Text _b-650654186 _os-249893454 _ff-409630021 _fvn-1977619713 _ws-311910413 _ww-408434756 _d-341075704 _f-1378740307 _ai-1227553247 _w-1560934055 rcx-field"
       >
         <span
-          class="rcx-box rcx-box--full rcx-field__row"
+          class="is_Text _b-650654186 _os-249893454 _ff-409630021 _fvn-1977619713 _ws-311910413 _ww-408434756 _d-341075704 _f-541922926 _jc-281817805 _ai-121763387 _m-2017978848 _c-1756781803 rcx-field__row"
         >
           <label
-            class="rcx-box rcx-box--full rcx-field__label rcx-label"
+            class="is_Text _b-650654186 _os-249893454 _ff-409630021 _fvn-1977619713 _ws-311910413 _ww-408434756 _fs-347291933 _fw-289166179 _lh-1925956564 _ls-1782815796 _d-341075704 _c-1922521888 _c-1063453128 rcx-label rcx-field__label"
             for="setting_id"
             title="setting_id"
           >
@@ -21,23 +21,23 @@ exports[`renders Default without crashing 1`] = `
           </label>
         </span>
         <span
-          class="rcx-box rcx-box--full rcx-field__row"
+          class="is_Text _b-650654186 _os-249893454 _ff-409630021 _fvn-1977619713 _ws-311910413 _ww-408434756 _d-341075704 _f-541922926 _jc-281817805 _ai-121763387 _m-2017978848 _c-1756781803 rcx-field__row"
         >
           <div
             class="rcx-css-1w00u9"
-            id="react-aria-_r_0_"
+            id="react-aria-_r_6_"
             role="group"
           >
             <label
               aria-live="off"
-              class="rcx-box rcx-box--full rcx-label"
-              for="react-aria-_r_0_-0"
+              class="is_Text _b-650654186 _os-249893454 _ff-409630021 _fvn-1977619713 _ws-311910413 _ww-408434756 _fs-347291933 _fw-289166179 _lh-1925956564 _ls-1782815796 _d-341075704 _c-1922521888 _c-1063453128 rcx-label"
+              for="react-aria-_r_6_-0"
             >
               <span
                 aria-live="off"
-                class="rcx-box rcx-box--full rcx-label"
+                class="is_Text _b-650654186 _os-249893454 _ff-409630021 _fvn-1977619713 _ws-311910413 _ww-408434756 _fs-347291933 _fw-289166179 _lh-1925956564 _ls-1782815796 _d-341075704 _c-1922521888 _c-1063453128 rcx-label"
                 data-testid="slider-output"
-                for="react-aria-_r_0_-0"
+                for="react-aria-_r_6_-0"
               >
                 0
               </span>
@@ -56,10 +56,10 @@ exports[`renders Default without crashing 1`] = `
                   <input
                     aria-describedby=""
                     aria-details=""
-                    aria-labelledby="react-aria-_r_0_"
+                    aria-labelledby="react-aria-_r_6_"
                     aria-orientation="horizontal"
                     aria-valuetext="0"
-                    id="react-aria-_r_0_-0"
+                    id="react-aria-_r_6_-0"
                     max="100"
                     min="0"
                     step="1"
@@ -82,16 +82,16 @@ exports[`renders Disabled without crashing 1`] = `
 <body>
   <div>
     <div
-      class="rcx-box rcx-box--full rcx-field"
+      class="is_Text _b-650654186 _os-249893454 _ff-409630021 _fvn-1977619713 _ws-311910413 _ww-408434756 _d-341075704 _f-1378740307 _ai-1227553247 _w-1560934055 rcx-field"
     >
       <div
-        class="rcx-box rcx-box--full rcx-field"
+        class="is_Text _b-650654186 _os-249893454 _ff-409630021 _fvn-1977619713 _ws-311910413 _ww-408434756 _d-341075704 _f-1378740307 _ai-1227553247 _w-1560934055 rcx-field"
       >
         <span
-          class="rcx-box rcx-box--full rcx-field__row"
+          class="is_Text _b-650654186 _os-249893454 _ff-409630021 _fvn-1977619713 _ws-311910413 _ww-408434756 _d-341075704 _f-541922926 _jc-281817805 _ai-121763387 _m-2017978848 _c-1756781803 rcx-field__row"
         >
           <label
-            class="rcx-box rcx-box--full rcx-field__label rcx-label"
+            class="is_Text _b-650654186 _os-249893454 _ff-409630021 _fvn-1977619713 _ws-311910413 _ww-408434756 _fs-347291933 _fw-289166179 _lh-1925956564 _ls-1782815796 _d-341075704 _c-1922521888 _c-1063453128 rcx-label rcx-field__label"
             for="setting_id"
             title="setting_id"
           >
@@ -99,23 +99,23 @@ exports[`renders Disabled without crashing 1`] = `
           </label>
         </span>
         <span
-          class="rcx-box rcx-box--full rcx-field__row"
+          class="is_Text _b-650654186 _os-249893454 _ff-409630021 _fvn-1977619713 _ws-311910413 _ww-408434756 _d-341075704 _f-541922926 _jc-281817805 _ai-121763387 _m-2017978848 _c-1756781803 rcx-field__row"
         >
           <div
             class="rcx-css-1w00u9"
-            id="react-aria-_r_6_"
+            id="react-aria-_r_k_"
             role="group"
           >
             <label
               aria-live="off"
-              class="rcx-box rcx-box--full rcx-label"
-              for="react-aria-_r_6_-0"
+              class="is_Text _b-650654186 _os-249893454 _ff-409630021 _fvn-1977619713 _ws-311910413 _ww-408434756 _fs-347291933 _fw-289166179 _lh-1925956564 _ls-1782815796 _d-341075704 _c-1922521888 _c-1063453128 rcx-label"
+              for="react-aria-_r_k_-0"
             >
               <span
                 aria-live="off"
-                class="rcx-box rcx-box--full rcx-label"
+                class="is_Text _b-650654186 _os-249893454 _ff-409630021 _fvn-1977619713 _ws-311910413 _ww-408434756 _fs-347291933 _fw-289166179 _lh-1925956564 _ls-1782815796 _d-341075704 _c-1922521888 _c-1063453128 rcx-label"
                 data-testid="slider-output"
-                for="react-aria-_r_6_-0"
+                for="react-aria-_r_k_-0"
               >
                 0
               </span>
@@ -134,11 +134,11 @@ exports[`renders Disabled without crashing 1`] = `
                   <input
                     aria-describedby=""
                     aria-details=""
-                    aria-labelledby="react-aria-_r_6_"
+                    aria-labelledby="react-aria-_r_k_"
                     aria-orientation="horizontal"
                     aria-valuetext="0"
                     disabled=""
-                    id="react-aria-_r_6_-0"
+                    id="react-aria-_r_k_-0"
                     max="100"
                     min="0"
                     step="1"
@@ -160,16 +160,16 @@ exports[`renders WithHint without crashing 1`] = `
 <body>
   <div>
     <div
-      class="rcx-box rcx-box--full rcx-field"
+      class="is_Text _b-650654186 _os-249893454 _ff-409630021 _fvn-1977619713 _ws-311910413 _ww-408434756 _d-341075704 _f-1378740307 _ai-1227553247 _w-1560934055 rcx-field"
     >
       <div
-        class="rcx-box rcx-box--full rcx-field"
+        class="is_Text _b-650654186 _os-249893454 _ff-409630021 _fvn-1977619713 _ws-311910413 _ww-408434756 _d-341075704 _f-1378740307 _ai-1227553247 _w-1560934055 rcx-field"
       >
         <span
-          class="rcx-box rcx-box--full rcx-field__row"
+          class="is_Text _b-650654186 _os-249893454 _ff-409630021 _fvn-1977619713 _ws-311910413 _ww-408434756 _d-341075704 _f-541922926 _jc-281817805 _ai-121763387 _m-2017978848 _c-1756781803 rcx-field__row"
         >
           <label
-            class="rcx-box rcx-box--full rcx-field__label rcx-label"
+            class="is_Text _b-650654186 _os-249893454 _ff-409630021 _fvn-1977619713 _ws-311910413 _ww-408434756 _fs-347291933 _fw-289166179 _lh-1925956564 _ls-1782815796 _d-341075704 _c-1922521888 _c-1063453128 rcx-label rcx-field__label"
             for="setting_id"
             title="setting_id"
           >
@@ -177,32 +177,32 @@ exports[`renders WithHint without crashing 1`] = `
           </label>
         </span>
         <span
-          class="rcx-box rcx-box--full rcx-field__row"
+          class="is_Text _b-650654186 _os-249893454 _ff-409630021 _fvn-1977619713 _ws-311910413 _ww-408434756 _d-341075704 _f-541922926 _jc-281817805 _ai-121763387 _m-2017978848 _c-1756781803 rcx-field__row"
         >
           <span
-            class="rcx-box rcx-box--full rcx-field__hint rcx-css-18q594f"
+            class="is_Text _b-650654186 _os-249893454 _ff-409630021 _fvn-1977619713 _ws-311910413 _ww-408434756 _fs-2088488067 _fw-289165218 _lh-1306743983 _ls-1782815796 _m-183820880 _c-1756781803 rcx-field__hint rcx-css-18q594f"
           >
             This is a hint for the slider
           </span>
         </span>
         <span
-          class="rcx-box rcx-box--full rcx-field__row"
+          class="is_Text _b-650654186 _os-249893454 _ff-409630021 _fvn-1977619713 _ws-311910413 _ww-408434756 _d-341075704 _f-541922926 _jc-281817805 _ai-121763387 _m-2017978848 _c-1756781803 rcx-field__row"
         >
           <div
             class="rcx-css-1w00u9"
-            id="react-aria-_r_c_"
+            id="react-aria-_r_14_"
             role="group"
           >
             <label
               aria-live="off"
-              class="rcx-box rcx-box--full rcx-label"
-              for="react-aria-_r_c_-0"
+              class="is_Text _b-650654186 _os-249893454 _ff-409630021 _fvn-1977619713 _ws-311910413 _ww-408434756 _fs-347291933 _fw-289166179 _lh-1925956564 _ls-1782815796 _d-341075704 _c-1922521888 _c-1063453128 rcx-label"
+              for="react-aria-_r_14_-0"
             >
               <span
                 aria-live="off"
-                class="rcx-box rcx-box--full rcx-label"
+                class="is_Text _b-650654186 _os-249893454 _ff-409630021 _fvn-1977619713 _ws-311910413 _ww-408434756 _fs-347291933 _fw-289166179 _lh-1925956564 _ls-1782815796 _d-341075704 _c-1922521888 _c-1063453128 rcx-label"
                 data-testid="slider-output"
-                for="react-aria-_r_c_-0"
+                for="react-aria-_r_14_-0"
               >
                 50
               </span>
@@ -221,10 +221,10 @@ exports[`renders WithHint without crashing 1`] = `
                   <input
                     aria-describedby=""
                     aria-details=""
-                    aria-labelledby="react-aria-_r_c_"
+                    aria-labelledby="react-aria-_r_14_"
                     aria-orientation="horizontal"
                     aria-valuetext="50"
-                    id="react-aria-_r_c_-0"
+                    id="react-aria-_r_14_-0"
                     max="100"
                     min="0"
                     step="1"
@@ -247,52 +247,52 @@ exports[`renders WithResetButton without crashing 1`] = `
 <body>
   <div>
     <div
-      class="rcx-box rcx-box--full rcx-field"
+      class="is_Text _b-650654186 _os-249893454 _ff-409630021 _fvn-1977619713 _ws-311910413 _ww-408434756 _d-341075704 _f-1378740307 _ai-1227553247 _w-1560934055 rcx-field"
     >
       <div
-        class="rcx-box rcx-box--full rcx-field"
+        class="is_Text _b-650654186 _os-249893454 _ff-409630021 _fvn-1977619713 _ws-311910413 _ww-408434756 _d-341075704 _f-1378740307 _ai-1227553247 _w-1560934055 rcx-field"
       >
         <span
-          class="rcx-box rcx-box--full rcx-field__row"
+          class="is_Text _b-650654186 _os-249893454 _ff-409630021 _fvn-1977619713 _ws-311910413 _ww-408434756 _d-341075704 _f-541922926 _jc-281817805 _ai-121763387 _m-2017978848 _c-1756781803 rcx-field__row"
         >
           <label
-            class="rcx-box rcx-box--full rcx-field__label rcx-label"
+            class="is_Text _b-650654186 _os-249893454 _ff-409630021 _fvn-1977619713 _ws-311910413 _ww-408434756 _fs-347291933 _fw-289166179 _lh-1925956564 _ls-1782815796 _d-341075704 _c-1922521888 _c-1063453128 rcx-label rcx-field__label"
             for="setting_id"
             title="setting_id"
           >
             Label
           </label>
           <button
-            class="rcx-box rcx-box--full rcx-button--small-square rcx-button--icon-danger rcx-button--square rcx-button--icon rcx-button"
+            class="is_View _f-1069813397 _mh-1241200853 _ta-1906144518 _ws-973912173 _td-211436768 _c-22887652 _os-249893454 _o-1119039191 _to-1727917045 _ff-409630021 _fvn-1977619713 _fs-347291933 _fw-289166179 _ls-1782815796 _p-230374000 _w-1682139955 _mw-1947816287 _h-1633581678 _d-312446553 _jc-642967080 _ai-1864573722 _lh-2067208245 rcx-button--small-square rcx-button--icon-danger rcx-button--square rcx-button--icon rcx-button"
             title="Reset"
             type="button"
           >
             <i
               aria-hidden="true"
-              class="rcx-box rcx-box--full rcx-icon--name-undo rcx-icon rcx-css-4pvxx3"
+              class="is_Text _d-1409515928 _ws-311910413 _ww-408434756 _us-601212022 _va-1101652081 _ls-1720078126 _ff-1916555734 _fs-1279428672 _fw-289165218 _fs-477064150 _fv-1578983722 _lh-2067209205 _tr-1510281189 rcx-icon--name-undo rcx-icon rcx-css-4pvxx3"
             >
               ❰
             </i>
           </button>
         </span>
         <span
-          class="rcx-box rcx-box--full rcx-field__row"
+          class="is_Text _b-650654186 _os-249893454 _ff-409630021 _fvn-1977619713 _ws-311910413 _ww-408434756 _d-341075704 _f-541922926 _jc-281817805 _ai-121763387 _m-2017978848 _c-1756781803 rcx-field__row"
         >
           <div
             class="rcx-css-1w00u9"
-            id="react-aria-_r_i_"
+            id="react-aria-_r_1k_"
             role="group"
           >
             <label
               aria-live="off"
-              class="rcx-box rcx-box--full rcx-label"
-              for="react-aria-_r_i_-0"
+              class="is_Text _b-650654186 _os-249893454 _ff-409630021 _fvn-1977619713 _ws-311910413 _ww-408434756 _fs-347291933 _fw-289166179 _lh-1925956564 _ls-1782815796 _d-341075704 _c-1922521888 _c-1063453128 rcx-label"
+              for="react-aria-_r_1k_-0"
             >
               <span
                 aria-live="off"
-                class="rcx-box rcx-box--full rcx-label"
+                class="is_Text _b-650654186 _os-249893454 _ff-409630021 _fvn-1977619713 _ws-311910413 _ww-408434756 _fs-347291933 _fw-289166179 _lh-1925956564 _ls-1782815796 _d-341075704 _c-1922521888 _c-1063453128 rcx-label"
                 data-testid="slider-output"
-                for="react-aria-_r_i_-0"
+                for="react-aria-_r_1k_-0"
               >
                 50
               </span>
@@ -311,10 +311,10 @@ exports[`renders WithResetButton without crashing 1`] = `
                   <input
                     aria-describedby=""
                     aria-details=""
-                    aria-labelledby="react-aria-_r_i_"
+                    aria-labelledby="react-aria-_r_1k_"
                     aria-orientation="horizontal"
                     aria-valuetext="50"
-                    id="react-aria-_r_i_-0"
+                    id="react-aria-_r_1k_-0"
                     max="100"
                     min="0"
                     step="1"
@@ -337,16 +337,16 @@ exports[`renders WithValue without crashing 1`] = `
 <body>
   <div>
     <div
-      class="rcx-box rcx-box--full rcx-field"
+      class="is_Text _b-650654186 _os-249893454 _ff-409630021 _fvn-1977619713 _ws-311910413 _ww-408434756 _d-341075704 _f-1378740307 _ai-1227553247 _w-1560934055 rcx-field"
     >
       <div
-        class="rcx-box rcx-box--full rcx-field"
+        class="is_Text _b-650654186 _os-249893454 _ff-409630021 _fvn-1977619713 _ws-311910413 _ww-408434756 _d-341075704 _f-1378740307 _ai-1227553247 _w-1560934055 rcx-field"
       >
         <span
-          class="rcx-box rcx-box--full rcx-field__row"
+          class="is_Text _b-650654186 _os-249893454 _ff-409630021 _fvn-1977619713 _ws-311910413 _ww-408434756 _d-341075704 _f-541922926 _jc-281817805 _ai-121763387 _m-2017978848 _c-1756781803 rcx-field__row"
         >
           <label
-            class="rcx-box rcx-box--full rcx-field__label rcx-label"
+            class="is_Text _b-650654186 _os-249893454 _ff-409630021 _fvn-1977619713 _ws-311910413 _ww-408434756 _fs-347291933 _fw-289166179 _lh-1925956564 _ls-1782815796 _d-341075704 _c-1922521888 _c-1063453128 rcx-label rcx-field__label"
             for="setting_id"
             title="setting_id"
           >
@@ -354,23 +354,23 @@ exports[`renders WithValue without crashing 1`] = `
           </label>
         </span>
         <span
-          class="rcx-box rcx-box--full rcx-field__row"
+          class="is_Text _b-650654186 _os-249893454 _ff-409630021 _fvn-1977619713 _ws-311910413 _ww-408434756 _d-341075704 _f-541922926 _jc-281817805 _ai-121763387 _m-2017978848 _c-1756781803 rcx-field__row"
         >
           <div
             class="rcx-css-1w00u9"
-            id="react-aria-_r_o_"
+            id="react-aria-_r_22_"
             role="group"
           >
             <label
               aria-live="off"
-              class="rcx-box rcx-box--full rcx-label"
-              for="react-aria-_r_o_-0"
+              class="is_Text _b-650654186 _os-249893454 _ff-409630021 _fvn-1977619713 _ws-311910413 _ww-408434756 _fs-347291933 _fw-289166179 _lh-1925956564 _ls-1782815796 _d-341075704 _c-1922521888 _c-1063453128 rcx-label"
+              for="react-aria-_r_22_-0"
             >
               <span
                 aria-live="off"
-                class="rcx-box rcx-box--full rcx-label"
+                class="is_Text _b-650654186 _os-249893454 _ff-409630021 _fvn-1977619713 _ws-311910413 _ww-408434756 _fs-347291933 _fw-289166179 _lh-1925956564 _ls-1782815796 _d-341075704 _c-1922521888 _c-1063453128 rcx-label"
                 data-testid="slider-output"
-                for="react-aria-_r_o_-0"
+                for="react-aria-_r_22_-0"
               >
                 50
               </span>
@@ -389,10 +389,10 @@ exports[`renders WithValue without crashing 1`] = `
                   <input
                     aria-describedby=""
                     aria-details=""
-                    aria-labelledby="react-aria-_r_o_"
+                    aria-labelledby="react-aria-_r_22_"
                     aria-orientation="horizontal"
                     aria-valuetext="50"
-                    id="react-aria-_r_o_-0"
+                    id="react-aria-_r_22_-0"
                     max="100"
                     min="0"
                     step="1"

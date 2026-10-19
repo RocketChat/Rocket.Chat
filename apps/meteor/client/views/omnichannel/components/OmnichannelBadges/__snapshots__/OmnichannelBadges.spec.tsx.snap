@@ -5,7 +5,7 @@ exports[`renders OverMacLimit without crashing 1`] = `
   <div>
     <i
       aria-hidden="true"
-      class="rcx-box rcx-box--full rcx-icon--name-warning rcx-icon rcx-css-ayadvf"
+      class="is_Text _d-1409515928 _ws-311910413 _ww-408434756 _us-601212022 _va-1101652081 _ls-1720078126 _ff-1916555734 _fs-1279428672 _fw-289165218 _fs-477064150 _fv-1578983722 _lh-2067209205 _tr-1510281189 rcx-icon--name-warning rcx-icon rcx-css-ayadvf"
       title="Workspace_exceeded_MAC_limit_disclaimer"
     >
       
@@ -19,7 +19,7 @@ exports[`renders WithPriority without crashing 1`] = `
   <div>
     <i
       aria-hidden="true"
-      class="rcx-box rcx-box--full rcx-icon--name-chevron-double-up rcx-icon rcx-css-aob2og"
+      class="is_Text _d-1409515928 _ws-311910413 _ww-408434756 _us-601212022 _va-1101652081 _ls-1720078126 _ff-1916555734 _fs-1279428672 _fw-289165218 _fs-477064150 _fv-1578983722 _lh-2067209205 _tr-1510281189 rcx-icon--name-chevron-double-up rcx-icon rcx-css-aob2og"
       title=""
     >
       

@@ -11,11 +11,11 @@ exports[`renders KeypadStory without crashing 1`] = `
       class="rcx-box rcx-box--full rcx-css-wwb6hw"
     >
       <button
-        class="rcx-box rcx-box--full rcx-button rcx-css-z0me2y rcx-css-lecaje"
+        class="is_View _d-1409515928 _f-1069814357 _mh-1241200853 _ta-1906144518 _ws-973912173 _td-211436768 _c-22887652 _os-249893454 _o-1119039191 _to-1727917045 _ff-409630021 _fvn-1977619713 _fs-347291933 _fw-289166179 _lh-1925956564 _ls-1782815796 _mw-1629853272 _h-1940744275 _p-1801169607 rcx-button rcx-css-z0me2y rcx-css-lecaje"
         type="button"
       >
         <span
-          class="rcx-button--content"
+          class="is_Text _d-1409515928 _w-1560934055 _va-615128551 _o-1119039191 _to-1727917045 _ws-973912173 _ww-408434756 rcx-button--content"
         >
           <span
             class="rcx-box rcx-box--full rcx-css-giedro"
@@ -29,11 +29,11 @@ exports[`renders KeypadStory without crashing 1`] = `
         </span>
       </button>
       <button
-        class="rcx-box rcx-box--full rcx-button rcx-css-z0me2y rcx-css-lecaje"
+        class="is_View _d-1409515928 _f-1069814357 _mh-1241200853 _ta-1906144518 _ws-973912173 _td-211436768 _c-22887652 _os-249893454 _o-1119039191 _to-1727917045 _ff-409630021 _fvn-1977619713 _fs-347291933 _fw-289166179 _lh-1925956564 _ls-1782815796 _mw-1629853272 _h-1940744275 _p-1801169607 rcx-button rcx-css-z0me2y rcx-css-lecaje"
         type="button"
       >
         <span
-          class="rcx-button--content"
+          class="is_Text _d-1409515928 _w-1560934055 _va-615128551 _o-1119039191 _to-1727917045 _ws-973912173 _ww-408434756 rcx-button--content"
         >
           <span
             class="rcx-box rcx-box--full rcx-css-giedro"
@@ -49,11 +49,11 @@ exports[`renders KeypadStory without crashing 1`] = `
         </span>
       </button>
       <button
-        class="rcx-box rcx-box--full rcx-button rcx-css-z0me2y rcx-css-lecaje"
+        class="is_View _d-1409515928 _f-1069814357 _mh-1241200853 _ta-1906144518 _ws-973912173 _td-211436768 _c-22887652 _os-249893454 _o-1119039191 _to-1727917045 _ff-409630021 _fvn-1977619713 _fs-347291933 _fw-289166179 _lh-1925956564 _ls-1782815796 _mw-1629853272 _h-1940744275 _p-1801169607 rcx-button rcx-css-z0me2y rcx-css-lecaje"
         type="button"
       >
         <span
-          class="rcx-button--content"
+          class="is_Text _d-1409515928 _w-1560934055 _va-615128551 _o-1119039191 _to-1727917045 _ws-973912173 _ww-408434756 rcx-button--content"
         >
           <span
             class="rcx-box rcx-box--full rcx-css-giedro"
@@ -69,11 +69,11 @@ exports[`renders KeypadStory without crashing 1`] = `
         </span>
       </button>
       <button
-        class="rcx-box rcx-box--full rcx-button rcx-css-z0me2y rcx-css-lecaje"
+        class="is_View _d-1409515928 _f-1069814357 _mh-1241200853 _ta-1906144518 _ws-973912173 _td-211436768 _c-22887652 _os-249893454 _o-1119039191 _to-1727917045 _ff-409630021 _fvn-1977619713 _fs-347291933 _fw-289166179 _lh-1925956564 _ls-1782815796 _mw-1629853272 _h-1940744275 _p-1801169607 rcx-button rcx-css-z0me2y rcx-css-lecaje"
         type="button"
       >
         <span
-          class="rcx-button--content"
+          class="is_Text _d-1409515928 _w-1560934055 _va-615128551 _o-1119039191 _to-1727917045 _ws-973912173 _ww-408434756 rcx-button--content"
         >
           <span
             class="rcx-box rcx-box--full rcx-css-giedro"
@@ -89,11 +89,11 @@ exports[`renders KeypadStory without crashing 1`] = `
         </span>
       </button>
       <button
-        class="rcx-box rcx-box--full rcx-button rcx-css-z0me2y rcx-css-lecaje"
+        class="is_View _d-1409515928 _f-1069814357 _mh-1241200853 _ta-1906144518 _ws-973912173 _td-211436768 _c-22887652 _os-249893454 _o-1119039191 _to-1727917045 _ff-409630021 _fvn-1977619713 _fs-347291933 _fw-289166179 _lh-1925956564 _ls-1782815796 _mw-1629853272 _h-1940744275 _p-1801169607 rcx-button rcx-css-z0me2y rcx-css-lecaje"
         type="button"
       >
         <span
-          class="rcx-button--content"
+          class="is_Text _d-1409515928 _w-1560934055 _va-615128551 _o-1119039191 _to-1727917045 _ws-973912173 _ww-408434756 rcx-button--content"
         >
           <span
             class="rcx-box rcx-box--full rcx-css-giedro"
@@ -109,11 +109,11 @@ exports[`renders KeypadStory without crashing 1`] = `
         </span>
       </button>
       <button
-        class="rcx-box rcx-box--full rcx-button rcx-css-z0me2y rcx-css-lecaje"
+        class="is_View _d-1409515928 _f-1069814357 _mh-1241200853 _ta-1906144518 _ws-973912173 _td-211436768 _c-22887652 _os-249893454 _o-1119039191 _to-1727917045 _ff-409630021 _fvn-1977619713 _fs-347291933 _fw-289166179 _lh-1925956564 _ls-1782815796 _mw-1629853272 _h-1940744275 _p-1801169607 rcx-button rcx-css-z0me2y rcx-css-lecaje"
         type="button"
       >
         <span
-          class="rcx-button--content"
+          class="is_Text _d-1409515928 _w-1560934055 _va-615128551 _o-1119039191 _to-1727917045 _ws-973912173 _ww-408434756 rcx-button--content"
         >
           <span
             class="rcx-box rcx-box--full rcx-css-giedro"
@@ -129,11 +129,11 @@ exports[`renders KeypadStory without crashing 1`] = `
         </span>
       </button>
       <button
-        class="rcx-box rcx-box--full rcx-button rcx-css-z0me2y rcx-css-lecaje"
+        class="is_View _d-1409515928 _f-1069814357 _mh-1241200853 _ta-1906144518 _ws-973912173 _td-211436768 _c-22887652 _os-249893454 _o-1119039191 _to-1727917045 _ff-409630021 _fvn-1977619713 _fs-347291933 _fw-289166179 _lh-1925956564 _ls-1782815796 _mw-1629853272 _h-1940744275 _p-1801169607 rcx-button rcx-css-z0me2y rcx-css-lecaje"
         type="button"
       >
         <span
-          class="rcx-button--content"
+          class="is_Text _d-1409515928 _w-1560934055 _va-615128551 _o-1119039191 _to-1727917045 _ws-973912173 _ww-408434756 rcx-button--content"
         >
           <span
             class="rcx-box rcx-box--full rcx-css-giedro"
@@ -149,11 +149,11 @@ exports[`renders KeypadStory without crashing 1`] = `
         </span>
       </button>
       <button
-        class="rcx-box rcx-box--full rcx-button rcx-css-z0me2y rcx-css-lecaje"
+        class="is_View _d-1409515928 _f-1069814357 _mh-1241200853 _ta-1906144518 _ws-973912173 _td-211436768 _c-22887652 _os-249893454 _o-1119039191 _to-1727917045 _ff-409630021 _fvn-1977619713 _fs-347291933 _fw-289166179 _lh-1925956564 _ls-1782815796 _mw-1629853272 _h-1940744275 _p-1801169607 rcx-button rcx-css-z0me2y rcx-css-lecaje"
         type="button"
       >
         <span
-          class="rcx-button--content"
+          class="is_Text _d-1409515928 _w-1560934055 _va-615128551 _o-1119039191 _to-1727917045 _ws-973912173 _ww-408434756 rcx-button--content"
         >
           <span
             class="rcx-box rcx-box--full rcx-css-giedro"
@@ -169,11 +169,11 @@ exports[`renders KeypadStory without crashing 1`] = `
         </span>
       </button>
       <button
-        class="rcx-box rcx-box--full rcx-button rcx-css-z0me2y rcx-css-lecaje"
+        class="is_View _d-1409515928 _f-1069814357 _mh-1241200853 _ta-1906144518 _ws-973912173 _td-211436768 _c-22887652 _os-249893454 _o-1119039191 _to-1727917045 _ff-409630021 _fvn-1977619713 _fs-347291933 _fw-289166179 _lh-1925956564 _ls-1782815796 _mw-1629853272 _h-1940744275 _p-1801169607 rcx-button rcx-css-z0me2y rcx-css-lecaje"
         type="button"
       >
         <span
-          class="rcx-button--content"
+          class="is_Text _d-1409515928 _w-1560934055 _va-615128551 _o-1119039191 _to-1727917045 _ws-973912173 _ww-408434756 rcx-button--content"
         >
           <span
             class="rcx-box rcx-box--full rcx-css-giedro"
@@ -189,11 +189,11 @@ exports[`renders KeypadStory without crashing 1`] = `
         </span>
       </button>
       <button
-        class="rcx-box rcx-box--full rcx-button rcx-css-z0me2y rcx-css-lecaje"
+        class="is_View _d-1409515928 _f-1069814357 _mh-1241200853 _ta-1906144518 _ws-973912173 _td-211436768 _c-22887652 _os-249893454 _o-1119039191 _to-1727917045 _ff-409630021 _fvn-1977619713 _fs-347291933 _fw-289166179 _lh-1925956564 _ls-1782815796 _mw-1629853272 _h-1940744275 _p-1801169607 rcx-button rcx-css-z0me2y rcx-css-lecaje"
         type="button"
       >
         <span
-          class="rcx-button--content"
+          class="is_Text _d-1409515928 _w-1560934055 _va-615128551 _o-1119039191 _to-1727917045 _ws-973912173 _ww-408434756 rcx-button--content"
         >
           <span
             class="rcx-box rcx-box--full rcx-css-116rluq"
@@ -208,11 +208,11 @@ exports[`renders KeypadStory without crashing 1`] = `
       </button>
       <button
         aria-describedby="react-aria-description-0"
-        class="rcx-box rcx-box--full rcx-button rcx-css-z0me2y rcx-css-lecaje"
+        class="is_View _d-1409515928 _f-1069814357 _mh-1241200853 _ta-1906144518 _ws-973912173 _td-211436768 _c-22887652 _os-249893454 _o-1119039191 _to-1727917045 _ff-409630021 _fvn-1977619713 _fs-347291933 _fw-289166179 _lh-1925956564 _ls-1782815796 _mw-1629853272 _h-1940744275 _p-1801169607 rcx-button rcx-css-z0me2y rcx-css-lecaje"
         type="button"
       >
         <span
-          class="rcx-button--content"
+          class="is_Text _d-1409515928 _w-1560934055 _va-615128551 _o-1119039191 _to-1727917045 _ws-973912173 _ww-408434756 rcx-button--content"
         >
           <span
             class="rcx-box rcx-box--full rcx-css-giedro"
@@ -228,11 +228,11 @@ exports[`renders KeypadStory without crashing 1`] = `
         </span>
       </button>
       <button
-        class="rcx-box rcx-box--full rcx-button rcx-css-z0me2y rcx-css-lecaje"
+        class="is_View _d-1409515928 _f-1069814357 _mh-1241200853 _ta-1906144518 _ws-973912173 _td-211436768 _c-22887652 _os-249893454 _o-1119039191 _to-1727917045 _ff-409630021 _fvn-1977619713 _fs-347291933 _fw-289166179 _lh-1925956564 _ls-1782815796 _mw-1629853272 _h-1940744275 _p-1801169607 rcx-button rcx-css-z0me2y rcx-css-lecaje"
         type="button"
       >
         <span
-          class="rcx-button--content"
+          class="is_Text _d-1409515928 _w-1560934055 _va-615128551 _o-1119039191 _to-1727917045 _ws-973912173 _ww-408434756 rcx-button--content"
         >
           <span
             class="rcx-box rcx-box--full rcx-css-giedro"

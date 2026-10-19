@@ -19,18 +19,18 @@ exports[`ConferenceChat renders what it shows when everyone in the call can read
             Chat
           </h5>
           <div
-            class="rcx-button-group rcx-button-group--align-start"
+            class="is_View _d-341075704 _f-1923654442 _mw-354604370 _mh-1241200853 _ai-121763387 _g-1051447770 _jc-281162209 rcx-button-group rcx-button-group--align-start"
             role="group"
           >
             <button
               aria-label="Close"
-              class="rcx-box rcx-box--full rcx-button--small-square rcx-button--square rcx-button--icon rcx-button rcx-css-ue04py"
+              class="is_View _f-1069813397 _mh-1241200853 _ta-1906144518 _ws-973912173 _td-211436768 _c-22887652 _os-249893454 _o-1119039191 _to-1727917045 _ff-409630021 _fvn-1977619713 _fs-347291933 _fw-289166179 _ls-1782815796 _p-230374000 _w-1682139955 _mw-1947816287 _h-1633581678 _d-312446553 _jc-642967080 _ai-1864573722 _lh-2067208245 rcx-button--small-square rcx-button--square rcx-button--icon rcx-button rcx-css-ue04py"
               data-qa="ContextualbarActionClose"
               type="button"
             >
               <i
                 aria-hidden="true"
-                class="rcx-box rcx-box--full rcx-icon--name-cross rcx-icon rcx-css-4pvxx3"
+                class="is_Text _d-1409515928 _ws-311910413 _ww-408434756 _us-601212022 _va-1101652081 _ls-1720078126 _ff-1916555734 _fs-1279428672 _fw-289165218 _fs-477064150 _fv-1578983722 _lh-2067209205 _tr-1510281189 rcx-icon--name-cross rcx-icon rcx-css-4pvxx3"
               >
                 
               </i>
@@ -62,18 +62,18 @@ exports[`ConferenceChat renders what it shows when the chat was never shared wit
             Chat
           </h5>
           <div
-            class="rcx-button-group rcx-button-group--align-start"
+            class="is_View _d-341075704 _f-1923654442 _mw-354604370 _mh-1241200853 _ai-121763387 _g-1051447770 _jc-281162209 rcx-button-group rcx-button-group--align-start"
             role="group"
           >
             <button
               aria-label="Close"
-              class="rcx-box rcx-box--full rcx-button--small-square rcx-button--square rcx-button--icon rcx-button rcx-css-ue04py"
+              class="is_View _f-1069813397 _mh-1241200853 _ta-1906144518 _ws-973912173 _td-211436768 _c-22887652 _os-249893454 _o-1119039191 _to-1727917045 _ff-409630021 _fvn-1977619713 _fs-347291933 _fw-289166179 _ls-1782815796 _p-230374000 _w-1682139955 _mw-1947816287 _h-1633581678 _d-312446553 _jc-642967080 _ai-1864573722 _lh-2067208245 rcx-button--small-square rcx-button--square rcx-button--icon rcx-button rcx-css-ue04py"
               data-qa="ContextualbarActionClose"
               type="button"
             >
               <i
                 aria-hidden="true"
-                class="rcx-box rcx-box--full rcx-icon--name-cross rcx-icon rcx-css-4pvxx3"
+                class="is_Text _d-1409515928 _ws-311910413 _ww-408434756 _us-601212022 _va-1101652081 _ls-1720078126 _ff-1916555734 _fs-1279428672 _fw-289165218 _fs-477064150 _fv-1578983722 _lh-2067209205 _tr-1510281189 rcx-icon--name-cross rcx-icon rcx-css-4pvxx3"
               >
                 
               </i>
@@ -85,21 +85,21 @@ exports[`ConferenceChat renders what it shows when the chat was never shared wit
         class="rcx-box rcx-box--full rcx-css-1pebrle"
       >
         <div
-          class="rcx-states"
+          class="is_View _jc-1099843255 _ai-121763387 _f-1246374076 _mw-354604370 _mh-1241200853 _bs-652081535 _p-114688985 _c-1756781803 rcx-states"
         >
           <i
             aria-hidden="true"
-            class="rcx-box rcx-box--full rcx-states__icon rcx-icon--name-balloon-off rcx-icon rcx-css-d884y5"
+            class="is_Text _d-1409515928 _ws-311910413 _ww-408434756 _us-601212022 _va-1101652081 _ls-1720078126 _ff-1916555734 _fs-1279428672 _fw-289165218 _fs-477064150 _fv-1578983722 _lh-2067209205 _tr-1510281189 rcx-states__icon rcx-icon--name-balloon-off rcx-icon rcx-css-d884y5"
           >
             
           </i>
           <h3
-            class="rcx-states__title"
+            class="is_Text _d-1987097250 _ws-974065937 _ww-1531368954 _bs-652081535 _m-2143641824 _ta-1906144518 _c-1063453128 _fs-1323593153 _fw-289168101 _lh-1930574169 _ls-1782815796 rcx-states__title"
           >
             Chat_not_shared_with_you
           </h3>
           <div
-            class="rcx-states__subtitle"
+            class="is_Text _d-341075704 _f-2057920087 _jc-1099843255 _ai-121763387 _ws-974065937 _ww-1531368954 _bs-652081535 _w-1560934055 _mw-466377109 _m-1616068059 _p-1943363302 _ta-1906144518 _fs-467998244 _fw-289165218 _lh-1586295880 _ls-1782815796 rcx-states__subtitle"
           >
             Chat_not_shared_with_you_description
           </div>
@@ -129,31 +129,31 @@ exports[`ConferenceChat renders what it shows when this member can read the chat
             Chat
           </h5>
           <div
-            class="rcx-button-group rcx-button-group--align-start"
+            class="is_View _d-341075704 _f-1923654442 _mw-354604370 _mh-1241200853 _ai-121763387 _g-1051447770 _jc-281162209 rcx-button-group rcx-button-group--align-start"
             role="group"
           >
             <button
               aria-label="__count__participants_cannot_see_the_chat"
-              class="rcx-box rcx-box--full rcx-button--small-square rcx-button--icon-danger rcx-button--square rcx-button--icon rcx-button"
+              class="is_View _f-1069813397 _mh-1241200853 _ta-1906144518 _ws-973912173 _td-211436768 _c-22887652 _os-249893454 _o-1119039191 _to-1727917045 _ff-409630021 _fvn-1977619713 _fs-347291933 _fw-289166179 _ls-1782815796 _p-230374000 _w-1682139955 _mw-1947816287 _h-1633581678 _d-312446553 _jc-642967080 _ai-1864573722 _lh-2067208245 rcx-button--small-square rcx-button--icon-danger rcx-button--square rcx-button--icon rcx-button"
               title="__count__participants_cannot_see_the_chat"
               type="button"
             >
               <i
                 aria-hidden="true"
-                class="rcx-box rcx-box--full rcx-icon--name-balloon-exclamation rcx-icon rcx-css-4pvxx3"
+                class="is_Text _d-1409515928 _ws-311910413 _ww-408434756 _us-601212022 _va-1101652081 _ls-1720078126 _ff-1916555734 _fs-1279428672 _fw-289165218 _fs-477064150 _fv-1578983722 _lh-2067209205 _tr-1510281189 rcx-icon--name-balloon-exclamation rcx-icon rcx-css-4pvxx3"
               >
                 
               </i>
             </button>
             <button
               aria-label="Close"
-              class="rcx-box rcx-box--full rcx-button--small-square rcx-button--square rcx-button--icon rcx-button rcx-css-ue04py"
+              class="is_View _f-1069813397 _mh-1241200853 _ta-1906144518 _ws-973912173 _td-211436768 _c-22887652 _os-249893454 _o-1119039191 _to-1727917045 _ff-409630021 _fvn-1977619713 _fs-347291933 _fw-289166179 _ls-1782815796 _p-230374000 _w-1682139955 _mw-1947816287 _h-1633581678 _d-312446553 _jc-642967080 _ai-1864573722 _lh-2067208245 rcx-button--small-square rcx-button--square rcx-button--icon rcx-button rcx-css-ue04py"
               data-qa="ContextualbarActionClose"
               type="button"
             >
               <i
                 aria-hidden="true"
-                class="rcx-box rcx-box--full rcx-icon--name-cross rcx-icon rcx-css-4pvxx3"
+                class="is_Text _d-1409515928 _ws-311910413 _ww-408434756 _us-601212022 _va-1101652081 _ls-1720078126 _ff-1916555734 _fs-1279428672 _fw-289165218 _fs-477064150 _fv-1578983722 _lh-2067209205 _tr-1510281189 rcx-icon--name-cross rcx-icon rcx-css-4pvxx3"
               >
                 
               </i>

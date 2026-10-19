@@ -6,28 +6,28 @@ exports[`GenericUpsellModal renders Default without crashing 1`] = `
     <dialog
       aria-labelledby="_r_0_-title"
       aria-modal="true"
-      class="rcx-box rcx-box--full rcx-modal"
+      class="is_View _p-1708146690 _f-1069814357 _mw-354604370 _mh-1241200853 _w-1560934055 _mh-1075342580 _m-827969624 _p-1943363302 _b-650654186 _os-249893454 _b-1654379586 _ff-409630021 _fvn-1977619713 rcx-modal"
       open=""
     >
       <div
         class="rcx-box rcx-box--full rcx-modal__inner rcx-css-hb8b2e"
       >
         <header
-          class="rcx-box rcx-box--full rcx-modal__header"
+          class="is_View _d-1987097250 _f-1246374076 _mw-354604370 _mh-1241200853 _m-258138183 _ff-409630021 _fvn-1977619713 rcx-modal__header"
         >
           <div
-            class="rcx-box rcx-box--full rcx-modal__header-inner"
+            class="is_View _f-1923654442 _mw-354604370 _mh-1241200853 _m-1890934840 rcx-modal__header-inner"
           >
             <div
-              class="rcx-box rcx-box--full rcx-modal__header-text rcx-css-i9v8z4 rcx-css-lma364"
+              class="is_Text _d-341075704 _f-182718297 _ws-311910413 _ww-408434756 _o-1119039191 _to-1727917045 _ff-409630021 _fvn-1977619713 rcx-modal__header-text rcx-css-i9v8z4 rcx-css-lma364"
             >
               <div
-                class="rcx-box rcx-box--full rcx-modal__tagline rcx-css-1ozohik"
+                class="is_Text _d-1987097250 _ws-311910413 _ww-408434756 _c-1063453128 _ff-409630021 _fvn-1977619713 _fs-2088488067 _fw-289168101 _lh-1306743983 _ls-1782815796 rcx-modal__tagline rcx-css-1ozohik"
               >
                 Premium capability
               </div>
               <h2
-                class="rcx-box rcx-box--full rcx-modal__title"
+                class="is_Text _d-1987097250 _f-1230447426 _ws-973912173 _ww-408434756 _o-1119039191 _to-1727917045 _c-1063453128 _ff-409630021 _fvn-1977619713 _fs-1289474947 _fw-289168101 _lh-1306773774 _ls-1782815796 rcx-modal__title"
                 id="_r_0_-title"
               >
                 This is the title
@@ -35,13 +35,13 @@ exports[`GenericUpsellModal renders Default without crashing 1`] = `
             </div>
             <button
               aria-label="Close"
-              class="rcx-box rcx-box--full rcx-button--small-square rcx-button--square rcx-button--icon rcx-button rcx-css-i9v8z4 rcx-css-lma364"
+              class="is_View _f-1069813397 _mh-1241200853 _ta-1906144518 _ws-973912173 _td-211436768 _c-22887652 _os-249893454 _o-1119039191 _to-1727917045 _ff-409630021 _fvn-1977619713 _fs-347291933 _fw-289166179 _ls-1782815796 _p-230374000 _w-1682139955 _mw-1947816287 _h-1633581678 _d-312446553 _jc-642967080 _ai-1864573722 _lh-2067208245 rcx-button--small-square rcx-button--square rcx-button--icon rcx-button rcx-css-i9v8z4 rcx-css-lma364"
               tabindex="-1"
               type="button"
             >
               <i
                 aria-hidden="true"
-                class="rcx-box rcx-box--full rcx-icon--name-cross rcx-icon rcx-css-4pvxx3"
+                class="is_Text _d-1409515928 _ws-311910413 _ww-408434756 _us-601212022 _va-1101652081 _ls-1720078126 _ff-1916555734 _fs-1279428672 _fw-289165218 _fs-477064150 _fv-1578983722 _lh-2067209205 _tr-1510281189 rcx-icon--name-cross rcx-icon rcx-css-4pvxx3"
               >
                 
               </i>
@@ -55,11 +55,11 @@ exports[`GenericUpsellModal renders Default without crashing 1`] = `
             class="rcx-box rcx-box--full rcx-modal__content-wrapper rcx-css-lg273t"
           >
             <figure
-              class="rcx-modal__hero-image-wrapper"
+              class="is_View _d-1987097250 _bs-652081535 _m-1961358561 rcx-modal__hero-image-wrapper"
             >
               <img
                 alt="Placeholder image"
-                class="rcx-box rcx-box--full rcx-modal__hero-image"
+                class="is_View _d-1987097250 _w-1560934055 _h-539802113 _of-738153451 _b-650654186 _os-249893454 rcx-modal__hero-image"
                 src="data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAgGBgcGBQgHBwcJCQgKDBQNDAsLDBkSEw8UHRofHh0aHBwgJC4nICIsIxwcKDcpLDAxNDQ0Hyc5PTgyPC4zNDL/2wBDAQkJCQwLDBgNDRgyIRwhMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjL/wAARCAAoACgDASIAAhEBAxEB/8QAGwAAAgIDAQAAAAAAAAAAAAAAAAcEBgIDBQj/xAAuEAACAQQAAwcEAQUAAAAAAAABAgMABAUREiExBhMUIkFRYQcWcYGhFTJSgpH/xAAYAQADAQEAAAAAAAAAAAAAAAACAwQBAP/EAB4RAAIBBQEBAQAAAAAAAAAAAAABAgMREiExE0HR/9oADAMBAAIRAxEAPwBuXuIkhBuMe5ib/AHQP49q4L3mLitryTLTSpOiHQI5k/HzXa/qbFOEudVTu1dumWvcTaNCZYZ7vU6g6LxqjOU/24dfs1Ouh9FnkMpd3Reeyx83hAxZZEhkdV9/MBrX71WGPvJcqrJBGveKATtuXXqNU0pu02bTHXD/AGvJAluyxxRd6F4x00o+NdKoVrjbzJdvVe1t5cVLc2ck8qjnohgpPtz2v7G6JtPQ2VJwjlcw+37mchpnK6GtIuv5NFWeTsLNPvxWTvpfjvOEfwKKzEVkSct2vscS/BIzSN0YRkeX81UpPqO8masJETu7OOccY4dswYFQeftv096XV5knuJGdm2T1+agvMXj8jEaHX905QihabvcbuS7X566mLWLwSY8PuRnk/u4eZ0deTl71Ef6hY+0yM88TzeNZY4luYwpVYyduOfrvhPTnr0pXSX9y5mCsyJMdyxxvwq599em+taItqCSNc90ChvZRUruUcT0JiO18Elpk7t8v41LWzacxkBSuvjQ/FFJayjDWrCTepAQ2vUH0oo/Jk3ovpwJJeVCP5CN+lFFaaMqy+nAyuChvrTI2kN9JAsi2ZOy4IBHMnkSCP+iqBexSWdxLazoUljJVlPUH2oorkV10pRc7b1zXb/hZOzuJvM86QWEXeELxOzHSIPcmiiiunVlF2RNTpRkrs//Z"
               />
             </figure>
@@ -77,28 +77,28 @@ exports[`GenericUpsellModal renders Default without crashing 1`] = `
           </div>
         </div>
         <div
-          class="rcx-box rcx-box--full rcx-modal__footer rcx-css-17mu816"
+          class="is_View _f-1069814357 _ai-121763387 _mw-354604370 _mh-1241200853 _m-258138183 _ff-409630021 _fvn-1977619713 rcx-modal__footer rcx-css-17mu816"
         >
           <div
-            class="rcx-button-group rcx-button-group--align-end"
+            class="is_View _d-341075704 _f-1923654442 _mw-354604370 _mh-1241200853 _ai-121763387 _g-1051447770 _jc-2011449882 rcx-button-group rcx-button-group--align-end"
             role="group"
           >
             <button
-              class="rcx-box rcx-box--full rcx-button--secondary rcx-button"
+              class="is_View _d-1409515928 _f-1069814357 _mh-1241200853 _ta-1906144518 _ws-973912173 _td-211436768 _c-22887652 _os-249893454 _o-1119039191 _to-1727917045 _ff-409630021 _fvn-1977619713 _fs-347291933 _fw-289166179 _lh-1925956564 _ls-1782815796 _mw-1629853272 _h-1940744275 _p-1801169607 rcx-button--secondary rcx-button"
               type="button"
             >
               <span
-                class="rcx-button--content"
+                class="is_Text _d-1409515928 _w-1560934055 _va-615128551 _o-1119039191 _to-1727917045 _ws-973912173 _ww-408434756 rcx-button--content"
               >
                 Cancel
               </span>
             </button>
             <button
-              class="rcx-box rcx-box--full rcx-button--primary rcx-button"
+              class="is_View _d-1409515928 _f-1069814357 _mh-1241200853 _ta-1906144518 _ws-973912173 _td-211436768 _c-22887652 _os-249893454 _o-1119039191 _to-1727917045 _ff-409630021 _fvn-1977619713 _fs-347291933 _fw-289166179 _lh-1925956564 _ls-1782815796 _mw-1629853272 _h-1940744275 _p-1801169607 rcx-button--primary rcx-button"
               type="button"
             >
               <span
-                class="rcx-button--content"
+                class="is_Text _d-1409515928 _w-1560934055 _va-615128551 _o-1119039191 _to-1727917045 _ws-973912173 _ww-408434756 rcx-button--content"
               >
                 Upgrade
               </span>
@@ -115,44 +115,44 @@ exports[`GenericUpsellModal renders WithAnnotation without crashing 1`] = `
 <body>
   <div>
     <dialog
-      aria-labelledby="_r_1_-title"
+      aria-labelledby="_r_i_-title"
       aria-modal="true"
-      class="rcx-box rcx-box--full rcx-modal"
+      class="is_View _p-1708146690 _f-1069814357 _mw-354604370 _mh-1241200853 _w-1560934055 _mh-1075342580 _m-827969624 _p-1943363302 _b-650654186 _os-249893454 _b-1654379586 _ff-409630021 _fvn-1977619713 rcx-modal"
       open=""
     >
       <div
         class="rcx-box rcx-box--full rcx-modal__inner rcx-css-hb8b2e"
       >
         <header
-          class="rcx-box rcx-box--full rcx-modal__header"
+          class="is_View _d-1987097250 _f-1246374076 _mw-354604370 _mh-1241200853 _m-258138183 _ff-409630021 _fvn-1977619713 rcx-modal__header"
         >
           <div
-            class="rcx-box rcx-box--full rcx-modal__header-inner"
+            class="is_View _f-1923654442 _mw-354604370 _mh-1241200853 _m-1890934840 rcx-modal__header-inner"
           >
             <div
-              class="rcx-box rcx-box--full rcx-modal__header-text rcx-css-i9v8z4 rcx-css-lma364"
+              class="is_Text _d-341075704 _f-182718297 _ws-311910413 _ww-408434756 _o-1119039191 _to-1727917045 _ff-409630021 _fvn-1977619713 rcx-modal__header-text rcx-css-i9v8z4 rcx-css-lma364"
             >
               <div
-                class="rcx-box rcx-box--full rcx-modal__tagline rcx-css-1ozohik"
+                class="is_Text _d-1987097250 _ws-311910413 _ww-408434756 _c-1063453128 _ff-409630021 _fvn-1977619713 _fs-2088488067 _fw-289168101 _lh-1306743983 _ls-1782815796 rcx-modal__tagline rcx-css-1ozohik"
               >
                 Premium capability
               </div>
               <h2
-                class="rcx-box rcx-box--full rcx-modal__title"
-                id="_r_1_-title"
+                class="is_Text _d-1987097250 _f-1230447426 _ws-973912173 _ww-408434756 _o-1119039191 _to-1727917045 _c-1063453128 _ff-409630021 _fvn-1977619713 _fs-1289474947 _fw-289168101 _lh-1306773774 _ls-1782815796 rcx-modal__title"
+                id="_r_i_-title"
               >
                 This is the title
               </h2>
             </div>
             <button
               aria-label="Close"
-              class="rcx-box rcx-box--full rcx-button--small-square rcx-button--square rcx-button--icon rcx-button rcx-css-i9v8z4 rcx-css-lma364"
+              class="is_View _f-1069813397 _mh-1241200853 _ta-1906144518 _ws-973912173 _td-211436768 _c-22887652 _os-249893454 _o-1119039191 _to-1727917045 _ff-409630021 _fvn-1977619713 _fs-347291933 _fw-289166179 _ls-1782815796 _p-230374000 _w-1682139955 _mw-1947816287 _h-1633581678 _d-312446553 _jc-642967080 _ai-1864573722 _lh-2067208245 rcx-button--small-square rcx-button--square rcx-button--icon rcx-button rcx-css-i9v8z4 rcx-css-lma364"
               tabindex="-1"
               type="button"
             >
               <i
                 aria-hidden="true"
-                class="rcx-box rcx-box--full rcx-icon--name-cross rcx-icon rcx-css-4pvxx3"
+                class="is_Text _d-1409515928 _ws-311910413 _ww-408434756 _us-601212022 _va-1101652081 _ls-1720078126 _ff-1916555734 _fs-1279428672 _fw-289165218 _fs-477064150 _fv-1578983722 _lh-2067209205 _tr-1510281189 rcx-icon--name-cross rcx-icon rcx-css-4pvxx3"
               >
                 
               </i>
@@ -166,11 +166,11 @@ exports[`GenericUpsellModal renders WithAnnotation without crashing 1`] = `
             class="rcx-box rcx-box--full rcx-modal__content-wrapper rcx-css-lg273t"
           >
             <figure
-              class="rcx-modal__hero-image-wrapper"
+              class="is_View _d-1987097250 _bs-652081535 _m-1961358561 rcx-modal__hero-image-wrapper"
             >
               <img
                 alt="Placeholder image"
-                class="rcx-box rcx-box--full rcx-modal__hero-image"
+                class="is_View _d-1987097250 _w-1560934055 _h-539802113 _of-738153451 _b-650654186 _os-249893454 rcx-modal__hero-image"
                 src="data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAgGBgcGBQgHBwcJCQgKDBQNDAsLDBkSEw8UHRofHh0aHBwgJC4nICIsIxwcKDcpLDAxNDQ0Hyc5PTgyPC4zNDL/2wBDAQkJCQwLDBgNDRgyIRwhMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjL/wAARCAAoACgDASIAAhEBAxEB/8QAGwAAAgIDAQAAAAAAAAAAAAAAAAcEBgIDBQj/xAAuEAACAQQAAwcEAQUAAAAAAAABAgMABAUREiExBhMUIkFRYQcWcYGhFTJSgpH/xAAYAQADAQEAAAAAAAAAAAAAAAACAwQBAP/EAB4RAAIBBQEBAQAAAAAAAAAAAAABAgMREiExE0HR/9oADAMBAAIRAxEAPwBuXuIkhBuMe5ib/AHQP49q4L3mLitryTLTSpOiHQI5k/HzXa/qbFOEudVTu1dumWvcTaNCZYZ7vU6g6LxqjOU/24dfs1Ouh9FnkMpd3Reeyx83hAxZZEhkdV9/MBrX71WGPvJcqrJBGveKATtuXXqNU0pu02bTHXD/AGvJAluyxxRd6F4x00o+NdKoVrjbzJdvVe1t5cVLc2ck8qjnohgpPtz2v7G6JtPQ2VJwjlcw+37mchpnK6GtIuv5NFWeTsLNPvxWTvpfjvOEfwKKzEVkSct2vscS/BIzSN0YRkeX81UpPqO8masJETu7OOccY4dswYFQeftv096XV5knuJGdm2T1+agvMXj8jEaHX905QihabvcbuS7X566mLWLwSY8PuRnk/u4eZ0deTl71Ef6hY+0yM88TzeNZY4luYwpVYyduOfrvhPTnr0pXSX9y5mCsyJMdyxxvwq599em+taItqCSNc90ChvZRUruUcT0JiO18Elpk7t8v41LWzacxkBSuvjQ/FFJayjDWrCTepAQ2vUH0oo/Jk3ovpwJJeVCP5CN+lFFaaMqy+nAyuChvrTI2kN9JAsi2ZOy4IBHMnkSCP+iqBexSWdxLazoUljJVlPUH2oorkV10pRc7b1zXb/hZOzuJvM86QWEXeELxOzHSIPcmiiiunVlF2RNTpRkrs//Z"
               />
             </figure>
@@ -188,33 +188,33 @@ exports[`GenericUpsellModal renders WithAnnotation without crashing 1`] = `
           </div>
         </div>
         <div
-          class="rcx-box rcx-box--full rcx-modal__footer rcx-css-rzpqmp"
+          class="is_View _f-1069814357 _ai-121763387 _mw-354604370 _mh-1241200853 _m-258138183 _ff-409630021 _fvn-1977619713 rcx-modal__footer rcx-css-rzpqmp"
         >
           <div
-            class="rcx-box rcx-box--full rcx-modal__footer-annotation"
+            class="is_Text _d-1987097250 _ws-311910413 _ww-408434756 _c-1756781803 _ff-409630021 _fvn-1977619713 _fs-2088488067 _fw-289165218 _lh-1306743983 _ls-1782815796 rcx-modal__footer-annotation"
           >
             This is an annotation.
           </div>
           <div
-            class="rcx-button-group rcx-button-group--align-end"
+            class="is_View _d-341075704 _f-1923654442 _mw-354604370 _mh-1241200853 _ai-121763387 _g-1051447770 _jc-2011449882 rcx-button-group rcx-button-group--align-end"
             role="group"
           >
             <button
-              class="rcx-box rcx-box--full rcx-button--secondary rcx-button"
+              class="is_View _d-1409515928 _f-1069814357 _mh-1241200853 _ta-1906144518 _ws-973912173 _td-211436768 _c-22887652 _os-249893454 _o-1119039191 _to-1727917045 _ff-409630021 _fvn-1977619713 _fs-347291933 _fw-289166179 _lh-1925956564 _ls-1782815796 _mw-1629853272 _h-1940744275 _p-1801169607 rcx-button--secondary rcx-button"
               type="button"
             >
               <span
-                class="rcx-button--content"
+                class="is_Text _d-1409515928 _w-1560934055 _va-615128551 _o-1119039191 _to-1727917045 _ws-973912173 _ww-408434756 rcx-button--content"
               >
                 Cancel
               </span>
             </button>
             <button
-              class="rcx-box rcx-box--full rcx-button--primary rcx-button"
+              class="is_View _d-1409515928 _f-1069814357 _mh-1241200853 _ta-1906144518 _ws-973912173 _td-211436768 _c-22887652 _os-249893454 _o-1119039191 _to-1727917045 _ff-409630021 _fvn-1977619713 _fs-347291933 _fw-289166179 _lh-1925956564 _ls-1782815796 _mw-1629853272 _h-1940744275 _p-1801169607 rcx-button--primary rcx-button"
               type="button"
             >
               <span
-                class="rcx-button--content"
+                class="is_Text _d-1409515928 _w-1560934055 _va-615128551 _o-1119039191 _to-1727917045 _ws-973912173 _ww-408434756 rcx-button--content"
               >
                 Upgrade
               </span>
@@ -231,44 +231,44 @@ exports[`GenericUpsellModal renders WithCustomButtons without crashing 1`] = `
 <body>
   <div>
     <dialog
-      aria-labelledby="_r_2_-title"
+      aria-labelledby="_r_15_-title"
       aria-modal="true"
-      class="rcx-box rcx-box--full rcx-modal"
+      class="is_View _p-1708146690 _f-1069814357 _mw-354604370 _mh-1241200853 _w-1560934055 _mh-1075342580 _m-827969624 _p-1943363302 _b-650654186 _os-249893454 _b-1654379586 _ff-409630021 _fvn-1977619713 rcx-modal"
       open=""
     >
       <div
         class="rcx-box rcx-box--full rcx-modal__inner rcx-css-hb8b2e"
       >
         <header
-          class="rcx-box rcx-box--full rcx-modal__header"
+          class="is_View _d-1987097250 _f-1246374076 _mw-354604370 _mh-1241200853 _m-258138183 _ff-409630021 _fvn-1977619713 rcx-modal__header"
         >
           <div
-            class="rcx-box rcx-box--full rcx-modal__header-inner"
+            class="is_View _f-1923654442 _mw-354604370 _mh-1241200853 _m-1890934840 rcx-modal__header-inner"
           >
             <div
-              class="rcx-box rcx-box--full rcx-modal__header-text rcx-css-i9v8z4 rcx-css-lma364"
+              class="is_Text _d-341075704 _f-182718297 _ws-311910413 _ww-408434756 _o-1119039191 _to-1727917045 _ff-409630021 _fvn-1977619713 rcx-modal__header-text rcx-css-i9v8z4 rcx-css-lma364"
             >
               <div
-                class="rcx-box rcx-box--full rcx-modal__tagline rcx-css-1ozohik"
+                class="is_Text _d-1987097250 _ws-311910413 _ww-408434756 _c-1063453128 _ff-409630021 _fvn-1977619713 _fs-2088488067 _fw-289168101 _lh-1306743983 _ls-1782815796 rcx-modal__tagline rcx-css-1ozohik"
               >
                 Premium capability
               </div>
               <h2
-                class="rcx-box rcx-box--full rcx-modal__title"
-                id="_r_2_-title"
+                class="is_Text _d-1987097250 _f-1230447426 _ws-973912173 _ww-408434756 _o-1119039191 _to-1727917045 _c-1063453128 _ff-409630021 _fvn-1977619713 _fs-1289474947 _fw-289168101 _lh-1306773774 _ls-1782815796 rcx-modal__title"
+                id="_r_15_-title"
               >
                 This is the title
               </h2>
             </div>
             <button
               aria-label="Close"
-              class="rcx-box rcx-box--full rcx-button--small-square rcx-button--square rcx-button--icon rcx-button rcx-css-i9v8z4 rcx-css-lma364"
+              class="is_View _f-1069813397 _mh-1241200853 _ta-1906144518 _ws-973912173 _td-211436768 _c-22887652 _os-249893454 _o-1119039191 _to-1727917045 _ff-409630021 _fvn-1977619713 _fs-347291933 _fw-289166179 _ls-1782815796 _p-230374000 _w-1682139955 _mw-1947816287 _h-1633581678 _d-312446553 _jc-642967080 _ai-1864573722 _lh-2067208245 rcx-button--small-square rcx-button--square rcx-button--icon rcx-button rcx-css-i9v8z4 rcx-css-lma364"
               tabindex="-1"
               type="button"
             >
               <i
                 aria-hidden="true"
-                class="rcx-box rcx-box--full rcx-icon--name-cross rcx-icon rcx-css-4pvxx3"
+                class="is_Text _d-1409515928 _ws-311910413 _ww-408434756 _us-601212022 _va-1101652081 _ls-1720078126 _ff-1916555734 _fs-1279428672 _fw-289165218 _fs-477064150 _fv-1578983722 _lh-2067209205 _tr-1510281189 rcx-icon--name-cross rcx-icon rcx-css-4pvxx3"
               >
                 
               </i>
@@ -282,11 +282,11 @@ exports[`GenericUpsellModal renders WithCustomButtons without crashing 1`] = `
             class="rcx-box rcx-box--full rcx-modal__content-wrapper rcx-css-lg273t"
           >
             <figure
-              class="rcx-modal__hero-image-wrapper"
+              class="is_View _d-1987097250 _bs-652081535 _m-1961358561 rcx-modal__hero-image-wrapper"
             >
               <img
                 alt="Placeholder image"
-                class="rcx-box rcx-box--full rcx-modal__hero-image"
+                class="is_View _d-1987097250 _w-1560934055 _h-539802113 _of-738153451 _b-650654186 _os-249893454 rcx-modal__hero-image"
                 src="data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAgGBgcGBQgHBwcJCQgKDBQNDAsLDBkSEw8UHRofHh0aHBwgJC4nICIsIxwcKDcpLDAxNDQ0Hyc5PTgyPC4zNDL/2wBDAQkJCQwLDBgNDRgyIRwhMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjL/wAARCAAoACgDASIAAhEBAxEB/8QAGwAAAgIDAQAAAAAAAAAAAAAAAAcEBgIDBQj/xAAuEAACAQQAAwcEAQUAAAAAAAABAgMABAUREiExBhMUIkFRYQcWcYGhFTJSgpH/xAAYAQADAQEAAAAAAAAAAAAAAAACAwQBAP/EAB4RAAIBBQEBAQAAAAAAAAAAAAABAgMREiExE0HR/9oADAMBAAIRAxEAPwBuXuIkhBuMe5ib/AHQP49q4L3mLitryTLTSpOiHQI5k/HzXa/qbFOEudVTu1dumWvcTaNCZYZ7vU6g6LxqjOU/24dfs1Ouh9FnkMpd3Reeyx83hAxZZEhkdV9/MBrX71WGPvJcqrJBGveKATtuXXqNU0pu02bTHXD/AGvJAluyxxRd6F4x00o+NdKoVrjbzJdvVe1t5cVLc2ck8qjnohgpPtz2v7G6JtPQ2VJwjlcw+37mchpnK6GtIuv5NFWeTsLNPvxWTvpfjvOEfwKKzEVkSct2vscS/BIzSN0YRkeX81UpPqO8masJETu7OOccY4dswYFQeftv096XV5knuJGdm2T1+agvMXj8jEaHX905QihabvcbuS7X566mLWLwSY8PuRnk/u4eZ0deTl71Ef6hY+0yM88TzeNZY4luYwpVYyduOfrvhPTnr0pXSX9y5mCsyJMdyxxvwq599em+taItqCSNc90ChvZRUruUcT0JiO18Elpk7t8v41LWzacxkBSuvjQ/FFJayjDWrCTepAQ2vUH0oo/Jk3ovpwJJeVCP5CN+lFFaaMqy+nAyuChvrTI2kN9JAsi2ZOy4IBHMnkSCP+iqBexSWdxLazoUljJVlPUH2oorkV10pRc7b1zXb/hZOzuJvM86QWEXeELxOzHSIPcmiiiunVlF2RNTpRkrs//Z"
               />
             </figure>
@@ -304,28 +304,28 @@ exports[`GenericUpsellModal renders WithCustomButtons without crashing 1`] = `
           </div>
         </div>
         <div
-          class="rcx-box rcx-box--full rcx-modal__footer rcx-css-17mu816"
+          class="is_View _f-1069814357 _ai-121763387 _mw-354604370 _mh-1241200853 _m-258138183 _ff-409630021 _fvn-1977619713 rcx-modal__footer rcx-css-17mu816"
         >
           <div
-            class="rcx-button-group rcx-button-group--align-end"
+            class="is_View _d-341075704 _f-1923654442 _mw-354604370 _mh-1241200853 _ai-121763387 _g-1051447770 _jc-2011449882 rcx-button-group rcx-button-group--align-end"
             role="group"
           >
             <button
-              class="rcx-box rcx-box--full rcx-button--secondary rcx-button"
+              class="is_View _d-1409515928 _f-1069814357 _mh-1241200853 _ta-1906144518 _ws-973912173 _td-211436768 _c-22887652 _os-249893454 _o-1119039191 _to-1727917045 _ff-409630021 _fvn-1977619713 _fs-347291933 _fw-289166179 _lh-1925956564 _ls-1782815796 _mw-1629853272 _h-1940744275 _p-1801169607 rcx-button--secondary rcx-button"
               type="button"
             >
               <span
-                class="rcx-button--content"
+                class="is_Text _d-1409515928 _w-1560934055 _va-615128551 _o-1119039191 _to-1727917045 _ws-973912173 _ww-408434756 rcx-button--content"
               >
                 Learn More
               </span>
             </button>
             <button
-              class="rcx-box rcx-box--full rcx-button--primary rcx-button"
+              class="is_View _d-1409515928 _f-1069814357 _mh-1241200853 _ta-1906144518 _ws-973912173 _td-211436768 _c-22887652 _os-249893454 _o-1119039191 _to-1727917045 _ff-409630021 _fvn-1977619713 _fs-347291933 _fw-289166179 _lh-1925956564 _ls-1782815796 _mw-1629853272 _h-1940744275 _p-1801169607 rcx-button--primary rcx-button"
               type="button"
             >
               <span
-                class="rcx-button--content"
+                class="is_Text _d-1409515928 _w-1560934055 _va-615128551 _o-1119039191 _to-1727917045 _ws-973912173 _ww-408434756 rcx-button--content"
               >
                 Contact Sales
               </span>
@@ -342,44 +342,44 @@ exports[`GenericUpsellModal renders WithCustomTagLine without crashing 1`] = `
 <body>
   <div>
     <dialog
-      aria-labelledby="_r_3_-title"
+      aria-labelledby="_r_1n_-title"
       aria-modal="true"
-      class="rcx-box rcx-box--full rcx-modal"
+      class="is_View _p-1708146690 _f-1069814357 _mw-354604370 _mh-1241200853 _w-1560934055 _mh-1075342580 _m-827969624 _p-1943363302 _b-650654186 _os-249893454 _b-1654379586 _ff-409630021 _fvn-1977619713 rcx-modal"
       open=""
     >
       <div
         class="rcx-box rcx-box--full rcx-modal__inner rcx-css-hb8b2e"
       >
         <header
-          class="rcx-box rcx-box--full rcx-modal__header"
+          class="is_View _d-1987097250 _f-1246374076 _mw-354604370 _mh-1241200853 _m-258138183 _ff-409630021 _fvn-1977619713 rcx-modal__header"
         >
           <div
-            class="rcx-box rcx-box--full rcx-modal__header-inner"
+            class="is_View _f-1923654442 _mw-354604370 _mh-1241200853 _m-1890934840 rcx-modal__header-inner"
           >
             <div
-              class="rcx-box rcx-box--full rcx-modal__header-text rcx-css-i9v8z4 rcx-css-lma364"
+              class="is_Text _d-341075704 _f-182718297 _ws-311910413 _ww-408434756 _o-1119039191 _to-1727917045 _ff-409630021 _fvn-1977619713 rcx-modal__header-text rcx-css-i9v8z4 rcx-css-lma364"
             >
               <div
-                class="rcx-box rcx-box--full rcx-modal__tagline rcx-css-1ozohik"
+                class="is_Text _d-1987097250 _ws-311910413 _ww-408434756 _c-1063453128 _ff-409630021 _fvn-1977619713 _fs-2088488067 _fw-289168101 _lh-1306743983 _ls-1782815796 rcx-modal__tagline rcx-css-1ozohik"
               >
                 Exclusive
               </div>
               <h2
-                class="rcx-box rcx-box--full rcx-modal__title"
-                id="_r_3_-title"
+                class="is_Text _d-1987097250 _f-1230447426 _ws-973912173 _ww-408434756 _o-1119039191 _to-1727917045 _c-1063453128 _ff-409630021 _fvn-1977619713 _fs-1289474947 _fw-289168101 _lh-1306773774 _ls-1782815796 rcx-modal__title"
+                id="_r_1n_-title"
               >
                 This is the title
               </h2>
             </div>
             <button
               aria-label="Close"
-              class="rcx-box rcx-box--full rcx-button--small-square rcx-button--square rcx-button--icon rcx-button rcx-css-i9v8z4 rcx-css-lma364"
+              class="is_View _f-1069813397 _mh-1241200853 _ta-1906144518 _ws-973912173 _td-211436768 _c-22887652 _os-249893454 _o-1119039191 _to-1727917045 _ff-409630021 _fvn-1977619713 _fs-347291933 _fw-289166179 _ls-1782815796 _p-230374000 _w-1682139955 _mw-1947816287 _h-1633581678 _d-312446553 _jc-642967080 _ai-1864573722 _lh-2067208245 rcx-button--small-square rcx-button--square rcx-button--icon rcx-button rcx-css-i9v8z4 rcx-css-lma364"
               tabindex="-1"
               type="button"
             >
               <i
                 aria-hidden="true"
-                class="rcx-box rcx-box--full rcx-icon--name-cross rcx-icon rcx-css-4pvxx3"
+                class="is_Text _d-1409515928 _ws-311910413 _ww-408434756 _us-601212022 _va-1101652081 _ls-1720078126 _ff-1916555734 _fs-1279428672 _fw-289165218 _fs-477064150 _fv-1578983722 _lh-2067209205 _tr-1510281189 rcx-icon--name-cross rcx-icon rcx-css-4pvxx3"
               >
                 
               </i>
@@ -393,11 +393,11 @@ exports[`GenericUpsellModal renders WithCustomTagLine without crashing 1`] = `
             class="rcx-box rcx-box--full rcx-modal__content-wrapper rcx-css-lg273t"
           >
             <figure
-              class="rcx-modal__hero-image-wrapper"
+              class="is_View _d-1987097250 _bs-652081535 _m-1961358561 rcx-modal__hero-image-wrapper"
             >
               <img
                 alt="Placeholder image"
-                class="rcx-box rcx-box--full rcx-modal__hero-image"
+                class="is_View _d-1987097250 _w-1560934055 _h-539802113 _of-738153451 _b-650654186 _os-249893454 rcx-modal__hero-image"
                 src="data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAgGBgcGBQgHBwcJCQgKDBQNDAsLDBkSEw8UHRofHh0aHBwgJC4nICIsIxwcKDcpLDAxNDQ0Hyc5PTgyPC4zNDL/2wBDAQkJCQwLDBgNDRgyIRwhMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjL/wAARCAAoACgDASIAAhEBAxEB/8QAGwAAAgIDAQAAAAAAAAAAAAAAAAcEBgIDBQj/xAAuEAACAQQAAwcEAQUAAAAAAAABAgMABAUREiExBhMUIkFRYQcWcYGhFTJSgpH/xAAYAQADAQEAAAAAAAAAAAAAAAACAwQBAP/EAB4RAAIBBQEBAQAAAAAAAAAAAAABAgMREiExE0HR/9oADAMBAAIRAxEAPwBuXuIkhBuMe5ib/AHQP49q4L3mLitryTLTSpOiHQI5k/HzXa/qbFOEudVTu1dumWvcTaNCZYZ7vU6g6LxqjOU/24dfs1Ouh9FnkMpd3Reeyx83hAxZZEhkdV9/MBrX71WGPvJcqrJBGveKATtuXXqNU0pu02bTHXD/AGvJAluyxxRd6F4x00o+NdKoVrjbzJdvVe1t5cVLc2ck8qjnohgpPtz2v7G6JtPQ2VJwjlcw+37mchpnK6GtIuv5NFWeTsLNPvxWTvpfjvOEfwKKzEVkSct2vscS/BIzSN0YRkeX81UpPqO8masJETu7OOccY4dswYFQeftv096XV5knuJGdm2T1+agvMXj8jEaHX905QihabvcbuS7X566mLWLwSY8PuRnk/u4eZ0deTl71Ef6hY+0yM88TzeNZY4luYwpVYyduOfrvhPTnr0pXSX9y5mCsyJMdyxxvwq599em+taItqCSNc90ChvZRUruUcT0JiO18Elpk7t8v41LWzacxkBSuvjQ/FFJayjDWrCTepAQ2vUH0oo/Jk3ovpwJJeVCP5CN+lFFaaMqy+nAyuChvrTI2kN9JAsi2ZOy4IBHMnkSCP+iqBexSWdxLazoUljJVlPUH2oorkV10pRc7b1zXb/hZOzuJvM86QWEXeELxOzHSIPcmiiiunVlF2RNTpRkrs//Z"
               />
             </figure>
@@ -415,28 +415,28 @@ exports[`GenericUpsellModal renders WithCustomTagLine without crashing 1`] = `
           </div>
         </div>
         <div
-          class="rcx-box rcx-box--full rcx-modal__footer rcx-css-17mu816"
+          class="is_View _f-1069814357 _ai-121763387 _mw-354604370 _mh-1241200853 _m-258138183 _ff-409630021 _fvn-1977619713 rcx-modal__footer rcx-css-17mu816"
         >
           <div
-            class="rcx-button-group rcx-button-group--align-end"
+            class="is_View _d-341075704 _f-1923654442 _mw-354604370 _mh-1241200853 _ai-121763387 _g-1051447770 _jc-2011449882 rcx-button-group rcx-button-group--align-end"
             role="group"
           >
             <button
-              class="rcx-box rcx-box--full rcx-button--secondary rcx-button"
+              class="is_View _d-1409515928 _f-1069814357 _mh-1241200853 _ta-1906144518 _ws-973912173 _td-211436768 _c-22887652 _os-249893454 _o-1119039191 _to-1727917045 _ff-409630021 _fvn-1977619713 _fs-347291933 _fw-289166179 _lh-1925956564 _ls-1782815796 _mw-1629853272 _h-1940744275 _p-1801169607 rcx-button--secondary rcx-button"
               type="button"
             >
               <span
-                class="rcx-button--content"
+                class="is_Text _d-1409515928 _w-1560934055 _va-615128551 _o-1119039191 _to-1727917045 _ws-973912173 _ww-408434756 rcx-button--content"
               >
                 Cancel
               </span>
             </button>
             <button
-              class="rcx-box rcx-box--full rcx-button--primary rcx-button"
+              class="is_View _d-1409515928 _f-1069814357 _mh-1241200853 _ta-1906144518 _ws-973912173 _td-211436768 _c-22887652 _os-249893454 _o-1119039191 _to-1727917045 _ff-409630021 _fvn-1977619713 _fs-347291933 _fw-289166179 _lh-1925956564 _ls-1782815796 _mw-1629853272 _h-1940744275 _p-1801169607 rcx-button--primary rcx-button"
               type="button"
             >
               <span
-                class="rcx-button--content"
+                class="is_Text _d-1409515928 _w-1560934055 _va-615128551 _o-1119039191 _to-1727917045 _ws-973912173 _ww-408434756 rcx-button--content"
               >
                 Upgrade
               </span>
@@ -453,44 +453,44 @@ exports[`GenericUpsellModal renders WithFixedWidthAndHeight without crashing 1`]
 <body>
   <div>
     <dialog
-      aria-labelledby="_r_4_-title"
+      aria-labelledby="_r_29_-title"
       aria-modal="true"
-      class="rcx-box rcx-box--full rcx-modal"
+      class="is_View _p-1708146690 _f-1069814357 _mw-354604370 _mh-1241200853 _w-1560934055 _mh-1075342580 _m-827969624 _p-1943363302 _b-650654186 _os-249893454 _b-1654379586 _ff-409630021 _fvn-1977619713 rcx-modal"
       open=""
     >
       <div
         class="rcx-box rcx-box--full rcx-modal__inner rcx-css-hb8b2e"
       >
         <header
-          class="rcx-box rcx-box--full rcx-modal__header"
+          class="is_View _d-1987097250 _f-1246374076 _mw-354604370 _mh-1241200853 _m-258138183 _ff-409630021 _fvn-1977619713 rcx-modal__header"
         >
           <div
-            class="rcx-box rcx-box--full rcx-modal__header-inner"
+            class="is_View _f-1923654442 _mw-354604370 _mh-1241200853 _m-1890934840 rcx-modal__header-inner"
           >
             <div
-              class="rcx-box rcx-box--full rcx-modal__header-text rcx-css-i9v8z4 rcx-css-lma364"
+              class="is_Text _d-341075704 _f-182718297 _ws-311910413 _ww-408434756 _o-1119039191 _to-1727917045 _ff-409630021 _fvn-1977619713 rcx-modal__header-text rcx-css-i9v8z4 rcx-css-lma364"
             >
               <div
-                class="rcx-box rcx-box--full rcx-modal__tagline rcx-css-1ozohik"
+                class="is_Text _d-1987097250 _ws-311910413 _ww-408434756 _c-1063453128 _ff-409630021 _fvn-1977619713 _fs-2088488067 _fw-289168101 _lh-1306743983 _ls-1782815796 rcx-modal__tagline rcx-css-1ozohik"
               >
                 Premium capability
               </div>
               <h2
-                class="rcx-box rcx-box--full rcx-modal__title"
-                id="_r_4_-title"
+                class="is_Text _d-1987097250 _f-1230447426 _ws-973912173 _ww-408434756 _o-1119039191 _to-1727917045 _c-1063453128 _ff-409630021 _fvn-1977619713 _fs-1289474947 _fw-289168101 _lh-1306773774 _ls-1782815796 rcx-modal__title"
+                id="_r_29_-title"
               >
                 This is the title
               </h2>
             </div>
             <button
               aria-label="Close"
-              class="rcx-box rcx-box--full rcx-button--small-square rcx-button--square rcx-button--icon rcx-button rcx-css-i9v8z4 rcx-css-lma364"
+              class="is_View _f-1069813397 _mh-1241200853 _ta-1906144518 _ws-973912173 _td-211436768 _c-22887652 _os-249893454 _o-1119039191 _to-1727917045 _ff-409630021 _fvn-1977619713 _fs-347291933 _fw-289166179 _ls-1782815796 _p-230374000 _w-1682139955 _mw-1947816287 _h-1633581678 _d-312446553 _jc-642967080 _ai-1864573722 _lh-2067208245 rcx-button--small-square rcx-button--square rcx-button--icon rcx-button rcx-css-i9v8z4 rcx-css-lma364"
               tabindex="-1"
               type="button"
             >
               <i
                 aria-hidden="true"
-                class="rcx-box rcx-box--full rcx-icon--name-cross rcx-icon rcx-css-4pvxx3"
+                class="is_Text _d-1409515928 _ws-311910413 _ww-408434756 _us-601212022 _va-1101652081 _ls-1720078126 _ff-1916555734 _fs-1279428672 _fw-289165218 _fs-477064150 _fv-1578983722 _lh-2067209205 _tr-1510281189 rcx-icon--name-cross rcx-icon rcx-css-4pvxx3"
               >
                 
               </i>
@@ -504,11 +504,11 @@ exports[`GenericUpsellModal renders WithFixedWidthAndHeight without crashing 1`]
             class="rcx-box rcx-box--full rcx-modal__content-wrapper rcx-css-lg273t"
           >
             <figure
-              class="rcx-modal__hero-image-wrapper"
+              class="is_View _d-1987097250 _bs-652081535 _m-1961358561 rcx-modal__hero-image-wrapper"
             >
               <img
                 alt="Placeholder image"
-                class="rcx-box rcx-box--full rcx-modal__hero-image rcx-css-1k43lja"
+                class="is_View _d-1987097250 _w-1560934055 _h-539802113 _of-738153451 _b-650654186 _os-249893454 rcx-modal__hero-image rcx-css-1k43lja"
                 src="data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAgGBgcGBQgHBwcJCQgKDBQNDAsLDBkSEw8UHRofHh0aHBwgJC4nICIsIxwcKDcpLDAxNDQ0Hyc5PTgyPC4zNDL/2wBDAQkJCQwLDBgNDRgyIRwhMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjL/wAARCAAoACgDASIAAhEBAxEB/8QAGwAAAgIDAQAAAAAAAAAAAAAAAAcEBgIDBQj/xAAuEAACAQQAAwcEAQUAAAAAAAABAgMABAUREiExBhMUIkFRYQcWcYGhFTJSgpH/xAAYAQADAQEAAAAAAAAAAAAAAAACAwQBAP/EAB4RAAIBBQEBAQAAAAAAAAAAAAABAgMREiExE0HR/9oADAMBAAIRAxEAPwBuXuIkhBuMe5ib/AHQP49q4L3mLitryTLTSpOiHQI5k/HzXa/qbFOEudVTu1dumWvcTaNCZYZ7vU6g6LxqjOU/24dfs1Ouh9FnkMpd3Reeyx83hAxZZEhkdV9/MBrX71WGPvJcqrJBGveKATtuXXqNU0pu02bTHXD/AGvJAluyxxRd6F4x00o+NdKoVrjbzJdvVe1t5cVLc2ck8qjnohgpPtz2v7G6JtPQ2VJwjlcw+37mchpnK6GtIuv5NFWeTsLNPvxWTvpfjvOEfwKKzEVkSct2vscS/BIzSN0YRkeX81UpPqO8masJETu7OOccY4dswYFQeftv096XV5knuJGdm2T1+agvMXj8jEaHX905QihabvcbuS7X566mLWLwSY8PuRnk/u4eZ0deTl71Ef6hY+0yM88TzeNZY4luYwpVYyduOfrvhPTnr0pXSX9y5mCsyJMdyxxvwq599em+taItqCSNc90ChvZRUruUcT0JiO18Elpk7t8v41LWzacxkBSuvjQ/FFJayjDWrCTepAQ2vUH0oo/Jk3ovpwJJeVCP5CN+lFFaaMqy+nAyuChvrTI2kN9JAsi2ZOy4IBHMnkSCP+iqBexSWdxLazoUljJVlPUH2oorkV10pRc7b1zXb/hZOzuJvM86QWEXeELxOzHSIPcmiiiunVlF2RNTpRkrs//Z"
               />
             </figure>
@@ -526,28 +526,28 @@ exports[`GenericUpsellModal renders WithFixedWidthAndHeight without crashing 1`]
           </div>
         </div>
         <div
-          class="rcx-box rcx-box--full rcx-modal__footer rcx-css-17mu816"
+          class="is_View _f-1069814357 _ai-121763387 _mw-354604370 _mh-1241200853 _m-258138183 _ff-409630021 _fvn-1977619713 rcx-modal__footer rcx-css-17mu816"
         >
           <div
-            class="rcx-button-group rcx-button-group--align-end"
+            class="is_View _d-341075704 _f-1923654442 _mw-354604370 _mh-1241200853 _ai-121763387 _g-1051447770 _jc-2011449882 rcx-button-group rcx-button-group--align-end"
             role="group"
           >
             <button
-              class="rcx-box rcx-box--full rcx-button--secondary rcx-button"
+              class="is_View _d-1409515928 _f-1069814357 _mh-1241200853 _ta-1906144518 _ws-973912173 _td-211436768 _c-22887652 _os-249893454 _o-1119039191 _to-1727917045 _ff-409630021 _fvn-1977619713 _fs-347291933 _fw-289166179 _lh-1925956564 _ls-1782815796 _mw-1629853272 _h-1940744275 _p-1801169607 rcx-button--secondary rcx-button"
               type="button"
             >
               <span
-                class="rcx-button--content"
+                class="is_Text _d-1409515928 _w-1560934055 _va-615128551 _o-1119039191 _to-1727917045 _ws-973912173 _ww-408434756 rcx-button--content"
               >
                 Cancel
               </span>
             </button>
             <button
-              class="rcx-box rcx-box--full rcx-button--primary rcx-button"
+              class="is_View _d-1409515928 _f-1069814357 _mh-1241200853 _ta-1906144518 _ws-973912173 _td-211436768 _c-22887652 _os-249893454 _o-1119039191 _to-1727917045 _ff-409630021 _fvn-1977619713 _fs-347291933 _fw-289166179 _lh-1925956564 _ls-1782815796 _mw-1629853272 _h-1940744275 _p-1801169607 rcx-button--primary rcx-button"
               type="button"
             >
               <span
-                class="rcx-button--content"
+                class="is_Text _d-1409515928 _w-1560934055 _va-615128551 _o-1119039191 _to-1727917045 _ws-973912173 _ww-408434756 rcx-button--content"
               >
                 Upgrade
               </span>

@@ -7,21 +7,21 @@ exports[`RoomInvite renders Default without crashing 1`] = `
       class="rcx-box rcx-box--full rcx-css-b4escz"
     >
       <div
-        class="rcx-states"
+        class="is_View _jc-1099843255 _ai-121763387 _f-1246374076 _mw-354604370 _mh-1241200853 _bs-652081535 _p-114688985 _c-1756781803 rcx-states"
       >
         <i
           aria-hidden="true"
-          class="rcx-box rcx-box--full rcx-states__icon rcx-icon--name-mail rcx-icon rcx-css-d884y5"
+          class="is_Text _d-1409515928 _ws-311910413 _ww-408434756 _us-601212022 _va-1101652081 _ls-1720078126 _ff-1916555734 _fs-1279428672 _fw-289165218 _fs-477064150 _fv-1578983722 _lh-2067209205 _tr-1510281189 rcx-states__icon rcx-icon--name-mail rcx-icon rcx-css-d884y5"
         >
           
         </i>
         <h3
-          class="rcx-states__title"
+          class="is_Text _d-1987097250 _ws-974065937 _ww-1531368954 _bs-652081535 _m-2143641824 _ta-1906144518 _c-1063453128 _fs-1323593153 _fw-289168101 _lh-1930574169 _ls-1782815796 rcx-states__title"
         >
           Message_request
         </h3>
         <div
-          class="rcx-states__subtitle"
+          class="is_Text _d-341075704 _f-2057920087 _jc-1099843255 _ai-121763387 _ws-974065937 _ww-1531368954 _bs-652081535 _w-1560934055 _mw-466377109 _m-1616068059 _p-1943363302 _ta-1906144518 _fs-467998244 _fw-289165218 _lh-1586295880 _ls-1782815796 rcx-states__subtitle"
         >
           <div
             class="rcx-box rcx-box--full rcx-css-ctk2ij"
@@ -29,20 +29,20 @@ exports[`RoomInvite renders Default without crashing 1`] = `
             You_have_been_invited_to_have_a_conversation_with
           </div>
           <button
-            class="rcx-box rcx-chip"
+            class="is_View _d-341075704 _f-1841970073 _o-1119039191 _ai-121763387 _mw-354604370 _mh-499962855 _m-2017216831 _p-1943363302 _b-422832721 _br-1397394445 _o-1106425799 _a-1578443335 _ff-409630021 _fs-347291933 _fw-289165218 _lh-1925956564 _ls-1782815796 _bs-1465656659 _c-2102202510 _c-836305799 _b-1394403741 rcx-box rcx-chip"
             disabled=""
             type="button"
           >
             <span
-              class="rcx-box rcx-chip__text rcx-css-i9v8z4"
+              class="is_Text _o-1119039191 _to-1727917045 _ws-973912173 rcx-box rcx-chip__text rcx-css-i9v8z4"
             >
               <figure
-                class="rcx-box rcx-box--full rcx-avatar rcx-avatar--x16"
+                class="is_View _d-1985012034 _f-606928779 _va-1124586065 _m-2017216831 _p-1943363302 _b-650654186 _o-1106425799 _ff-409630021 _fvn-1977619713 _w-1589628347 _h-566997946 rcx-box rcx-box--full rcx-avatar rcx-avatar--x16"
               >
                 <img
                   alt="Avatar"
                   aria-hidden="true"
-                  class="rcx-avatar__element rcx-avatar__element--x16"
+                  class="is_View _f-1246374076 _bs-652081535 _mw-354604370 _mh-1241200853 _p-1021290656 _w-1560934055 _h-538303654 _br-1356490330 rcx-avatar__element rcx-avatar__element--x16"
                   data-username="rocket.cat"
                   src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVQYV2Oora39DwAFaQJ3y3rKeAAAAABJRU5ErkJggg=="
                   title="rocket.cat"
@@ -54,25 +54,25 @@ exports[`RoomInvite renders Default without crashing 1`] = `
           </button>
         </div>
         <div
-          class="rcx-button-group rcx-button-group--align-start"
+          class="is_View _d-341075704 _f-1923654442 _mw-354604370 _mh-1241200853 _ai-121763387 _g-1051447770 _jc-281162209 rcx-button-group rcx-button-group--align-start"
           role="group"
         >
           <button
-            class="rcx-box rcx-box--full rcx-button--secondary-danger rcx-button"
+            class="is_View _d-1409515928 _f-1069814357 _mh-1241200853 _ta-1906144518 _ws-973912173 _td-211436768 _c-22887652 _os-249893454 _o-1119039191 _to-1727917045 _ff-409630021 _fvn-1977619713 _fs-347291933 _fw-289166179 _lh-1925956564 _ls-1782815796 _mw-1629853272 _h-1940744275 _p-1801169607 rcx-button--secondary-danger rcx-button"
             type="button"
           >
             <span
-              class="rcx-button--content"
+              class="is_Text _d-1409515928 _w-1560934055 _va-615128551 _o-1119039191 _to-1727917045 _ws-973912173 _ww-408434756 rcx-button--content"
             >
               Reject
             </span>
           </button>
           <button
-            class="rcx-box rcx-box--full rcx-button"
+            class="is_View _d-1409515928 _f-1069814357 _mh-1241200853 _ta-1906144518 _ws-973912173 _td-211436768 _c-22887652 _os-249893454 _o-1119039191 _to-1727917045 _ff-409630021 _fvn-1977619713 _fs-347291933 _fw-289166179 _lh-1925956564 _ls-1782815796 _mw-1629853272 _h-1940744275 _p-1801169607 rcx-button"
             type="button"
           >
             <span
-              class="rcx-button--content"
+              class="is_Text _d-1409515928 _w-1560934055 _va-615128551 _o-1119039191 _to-1727917045 _ws-973912173 _ww-408434756 rcx-button--content"
             >
               Accept
             </span>
@@ -91,21 +91,21 @@ exports[`RoomInvite renders Loading without crashing 1`] = `
       class="rcx-box rcx-box--full rcx-css-b4escz"
     >
       <div
-        class="rcx-states"
+        class="is_View _jc-1099843255 _ai-121763387 _f-1246374076 _mw-354604370 _mh-1241200853 _bs-652081535 _p-114688985 _c-1756781803 rcx-states"
       >
         <i
           aria-hidden="true"
-          class="rcx-box rcx-box--full rcx-states__icon rcx-icon--name-mail rcx-icon rcx-css-d884y5"
+          class="is_Text _d-1409515928 _ws-311910413 _ww-408434756 _us-601212022 _va-1101652081 _ls-1720078126 _ff-1916555734 _fs-1279428672 _fw-289165218 _fs-477064150 _fv-1578983722 _lh-2067209205 _tr-1510281189 rcx-states__icon rcx-icon--name-mail rcx-icon rcx-css-d884y5"
         >
           
         </i>
         <h3
-          class="rcx-states__title"
+          class="is_Text _d-1987097250 _ws-974065937 _ww-1531368954 _bs-652081535 _m-2143641824 _ta-1906144518 _c-1063453128 _fs-1323593153 _fw-289168101 _lh-1930574169 _ls-1782815796 rcx-states__title"
         >
           Message_request
         </h3>
         <div
-          class="rcx-states__subtitle"
+          class="is_Text _d-341075704 _f-2057920087 _jc-1099843255 _ai-121763387 _ws-974065937 _ww-1531368954 _bs-652081535 _w-1560934055 _mw-466377109 _m-1616068059 _p-1943363302 _ta-1906144518 _fs-467998244 _fw-289165218 _lh-1586295880 _ls-1782815796 rcx-states__subtitle"
         >
           <div
             class="rcx-box rcx-box--full rcx-css-ctk2ij"
@@ -113,20 +113,20 @@ exports[`RoomInvite renders Loading without crashing 1`] = `
             You_have_been_invited_to_have_a_conversation_with
           </div>
           <button
-            class="rcx-box rcx-chip"
+            class="is_View _d-341075704 _f-1841970073 _o-1119039191 _ai-121763387 _mw-354604370 _mh-499962855 _m-2017216831 _p-1943363302 _b-422832721 _br-1397394445 _o-1106425799 _a-1578443335 _ff-409630021 _fs-347291933 _fw-289165218 _lh-1925956564 _ls-1782815796 _bs-1465656659 _c-2102202510 _c-836305799 _b-1394403741 rcx-box rcx-chip"
             disabled=""
             type="button"
           >
             <span
-              class="rcx-box rcx-chip__text rcx-css-i9v8z4"
+              class="is_Text _o-1119039191 _to-1727917045 _ws-973912173 rcx-box rcx-chip__text rcx-css-i9v8z4"
             >
               <figure
-                class="rcx-box rcx-box--full rcx-avatar rcx-avatar--x16"
+                class="is_View _d-1985012034 _f-606928779 _va-1124586065 _m-2017216831 _p-1943363302 _b-650654186 _o-1106425799 _ff-409630021 _fvn-1977619713 _w-1589628347 _h-566997946 rcx-box rcx-box--full rcx-avatar rcx-avatar--x16"
               >
                 <img
                   alt="Avatar"
                   aria-hidden="true"
-                  class="rcx-avatar__element rcx-avatar__element--x16"
+                  class="is_View _f-1246374076 _bs-652081535 _mw-354604370 _mh-1241200853 _p-1021290656 _w-1560934055 _h-538303654 _br-1356490330 rcx-avatar__element rcx-avatar__element--x16"
                   data-username="rocket.cat"
                   src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVQYV2Oora39DwAFaQJ3y3rKeAAAAABJRU5ErkJggg=="
                   title="rocket.cat"
@@ -138,20 +138,20 @@ exports[`RoomInvite renders Loading without crashing 1`] = `
           </button>
         </div>
         <div
-          class="rcx-button-group rcx-button-group--align-start"
+          class="is_View _d-341075704 _f-1923654442 _mw-354604370 _mh-1241200853 _ai-121763387 _g-1051447770 _jc-281162209 rcx-button-group rcx-button-group--align-start"
           role="group"
         >
           <button
-            class="rcx-box rcx-box--full rcx-button--loading rcx-button--secondary-danger rcx-button"
+            class="is_View _d-1409515928 _f-1069814357 _mh-1241200853 _ta-1906144518 _ws-973912173 _td-211436768 _c-22887652 _os-249893454 _o-1119039191 _to-1727917045 _ff-409630021 _fvn-1977619713 _fs-347291933 _fw-289166179 _lh-1925956564 _ls-1782815796 _mw-1629853272 _h-1940744275 _p-1801169607 rcx-button--loading rcx-button--secondary-danger rcx-button"
             disabled=""
             type="button"
           >
             <span
-              class="rcx-button--content"
+              class="is_Text _d-1409515928 _w-1560934055 _va-615128551 _o-1119039191 _to-1727917045 _ws-973912173 _ww-408434756 rcx-button--content"
             >
               <i
                 aria-hidden="true"
-                class="rcx-box rcx-box--full rcx-icon--name-loading rcx-icon rcx-css-1hdf9ok"
+                class="is_Text _d-1409515928 _ws-311910413 _ww-408434756 _us-601212022 _va-1101652081 _ls-1720078126 _ff-1916555734 _fs-1279428672 _fw-289165218 _fs-477064150 _fv-1578983722 _lh-2067209205 _tr-1510281189 rcx-icon--name-loading rcx-icon rcx-css-1hdf9ok"
               >
                 
               </i>
@@ -159,16 +159,16 @@ exports[`RoomInvite renders Loading without crashing 1`] = `
             </span>
           </button>
           <button
-            class="rcx-box rcx-box--full rcx-button--loading rcx-button"
+            class="is_View _d-1409515928 _f-1069814357 _mh-1241200853 _ta-1906144518 _ws-973912173 _td-211436768 _c-22887652 _os-249893454 _o-1119039191 _to-1727917045 _ff-409630021 _fvn-1977619713 _fs-347291933 _fw-289166179 _lh-1925956564 _ls-1782815796 _mw-1629853272 _h-1940744275 _p-1801169607 rcx-button--loading rcx-button"
             disabled=""
             type="button"
           >
             <span
-              class="rcx-button--content"
+              class="is_Text _d-1409515928 _w-1560934055 _va-615128551 _o-1119039191 _to-1727917045 _ws-973912173 _ww-408434756 rcx-button--content"
             >
               <i
                 aria-hidden="true"
-                class="rcx-box rcx-box--full rcx-icon--name-loading rcx-icon rcx-css-1hdf9ok"
+                class="is_Text _d-1409515928 _ws-311910413 _ww-408434756 _us-601212022 _va-1101652081 _ls-1720078126 _ff-1916555734 _fs-1279428672 _fw-289165218 _fs-477064150 _fv-1578983722 _lh-2067209205 _tr-1510281189 rcx-icon--name-loading rcx-icon rcx-css-1hdf9ok"
               >
                 
               </i>
@@ -189,21 +189,21 @@ exports[`RoomInvite renders WithInfoLink without crashing 1`] = `
       class="rcx-box rcx-box--full rcx-css-b4escz"
     >
       <div
-        class="rcx-states"
+        class="is_View _jc-1099843255 _ai-121763387 _f-1246374076 _mw-354604370 _mh-1241200853 _bs-652081535 _p-114688985 _c-1756781803 rcx-states"
       >
         <i
           aria-hidden="true"
-          class="rcx-box rcx-box--full rcx-states__icon rcx-icon--name-mail rcx-icon rcx-css-d884y5"
+          class="is_Text _d-1409515928 _ws-311910413 _ww-408434756 _us-601212022 _va-1101652081 _ls-1720078126 _ff-1916555734 _fs-1279428672 _fw-289165218 _fs-477064150 _fv-1578983722 _lh-2067209205 _tr-1510281189 rcx-states__icon rcx-icon--name-mail rcx-icon rcx-css-d884y5"
         >
           
         </i>
         <h3
-          class="rcx-states__title"
+          class="is_Text _d-1987097250 _ws-974065937 _ww-1531368954 _bs-652081535 _m-2143641824 _ta-1906144518 _c-1063453128 _fs-1323593153 _fw-289168101 _lh-1930574169 _ls-1782815796 rcx-states__title"
         >
           Message_request
         </h3>
         <div
-          class="rcx-states__subtitle"
+          class="is_Text _d-341075704 _f-2057920087 _jc-1099843255 _ai-121763387 _ws-974065937 _ww-1531368954 _bs-652081535 _w-1560934055 _mw-466377109 _m-1616068059 _p-1943363302 _ta-1906144518 _fs-467998244 _fw-289165218 _lh-1586295880 _ls-1782815796 rcx-states__subtitle"
         >
           <div
             class="rcx-box rcx-box--full rcx-css-ctk2ij"
@@ -211,20 +211,20 @@ exports[`RoomInvite renders WithInfoLink without crashing 1`] = `
             You_have_been_invited_to_have_a_conversation_with
           </div>
           <button
-            class="rcx-box rcx-chip"
+            class="is_View _d-341075704 _f-1841970073 _o-1119039191 _ai-121763387 _mw-354604370 _mh-499962855 _m-2017216831 _p-1943363302 _b-422832721 _br-1397394445 _o-1106425799 _a-1578443335 _ff-409630021 _fs-347291933 _fw-289165218 _lh-1925956564 _ls-1782815796 _bs-1465656659 _c-2102202510 _c-836305799 _b-1394403741 rcx-box rcx-chip"
             disabled=""
             type="button"
           >
             <span
-              class="rcx-box rcx-chip__text rcx-css-i9v8z4"
+              class="is_Text _o-1119039191 _to-1727917045 _ws-973912173 rcx-box rcx-chip__text rcx-css-i9v8z4"
             >
               <figure
-                class="rcx-box rcx-box--full rcx-avatar rcx-avatar--x16"
+                class="is_View _d-1985012034 _f-606928779 _va-1124586065 _m-2017216831 _p-1943363302 _b-650654186 _o-1106425799 _ff-409630021 _fvn-1977619713 _w-1589628347 _h-566997946 rcx-box rcx-box--full rcx-avatar rcx-avatar--x16"
               >
                 <img
                   alt="Avatar"
                   aria-hidden="true"
-                  class="rcx-avatar__element rcx-avatar__element--x16"
+                  class="is_View _f-1246374076 _bs-652081535 _mw-354604370 _mh-1241200853 _p-1021290656 _w-1560934055 _h-538303654 _br-1356490330 rcx-avatar__element rcx-avatar__element--x16"
                   data-username="rocket.cat"
                   src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVQYV2Oora39DwAFaQJ3y3rKeAAAAABJRU5ErkJggg=="
                   title="rocket.cat"
@@ -236,32 +236,32 @@ exports[`RoomInvite renders WithInfoLink without crashing 1`] = `
           </button>
         </div>
         <div
-          class="rcx-button-group rcx-button-group--align-start"
+          class="is_View _d-341075704 _f-1923654442 _mw-354604370 _mh-1241200853 _ai-121763387 _g-1051447770 _jc-281162209 rcx-button-group rcx-button-group--align-start"
           role="group"
         >
           <button
-            class="rcx-box rcx-box--full rcx-button--secondary-danger rcx-button"
+            class="is_View _d-1409515928 _f-1069814357 _mh-1241200853 _ta-1906144518 _ws-973912173 _td-211436768 _c-22887652 _os-249893454 _o-1119039191 _to-1727917045 _ff-409630021 _fvn-1977619713 _fs-347291933 _fw-289166179 _lh-1925956564 _ls-1782815796 _mw-1629853272 _h-1940744275 _p-1801169607 rcx-button--secondary-danger rcx-button"
             type="button"
           >
             <span
-              class="rcx-button--content"
+              class="is_Text _d-1409515928 _w-1560934055 _va-615128551 _o-1119039191 _to-1727917045 _ws-973912173 _ww-408434756 rcx-button--content"
             >
               Reject
             </span>
           </button>
           <button
-            class="rcx-box rcx-box--full rcx-button"
+            class="is_View _d-1409515928 _f-1069814357 _mh-1241200853 _ta-1906144518 _ws-973912173 _td-211436768 _c-22887652 _os-249893454 _o-1119039191 _to-1727917045 _ff-409630021 _fvn-1977619713 _fs-347291933 _fw-289166179 _lh-1925956564 _ls-1782815796 _mw-1629853272 _h-1940744275 _p-1801169607 rcx-button"
             type="button"
           >
             <span
-              class="rcx-button--content"
+              class="is_Text _d-1409515928 _w-1560934055 _va-615128551 _o-1119039191 _to-1727917045 _ws-973912173 _ww-408434756 rcx-button--content"
             >
               Accept
             </span>
           </button>
         </div>
         <a
-          class="rcx-box rcx-box--full rcx-states__link"
+          class="is_Text _ws-974065937 _ww-1531368954 _m-1374696725 _os-249893454 _c-1876588386 _ff-409630021 _fvn-1977619713 _fs-347291933 _fw-289165218 _lh-1925956564 _ls-1782815796 rcx-states__link"
           href="https://rocket.chat"
         >
           Learn more

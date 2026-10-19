@@ -13,7 +13,7 @@ exports[`renders AppLogsItem without crashing 1`] = `
           class="rcx-box rcx-box--full rcx-css-1rfw4fq"
         >
           <label
-            class="rcx-box rcx-box--full rcx-label"
+            class="is_Text _b-650654186 _os-249893454 _ff-409630021 _fvn-1977619713 _ws-311910413 _ww-408434756 _fs-347291933 _fw-289166179 _lh-1925956564 _ls-1782815796 _d-341075704 _c-1922521888 _c-1063453128 rcx-label"
             for="eventFilter"
             id="eventFilterLabel"
           >
@@ -22,10 +22,10 @@ exports[`renders AppLogsItem without crashing 1`] = `
           <div
             aria-busy="true"
             aria-labelledby="eventFilterLabel"
-            class="rcx-box rcx-box--full rcx-skeleton__input"
+            class="is_View _d-1985012034 _f-1293449022 _mw-355829151 _mh-1675067943 _p-1212535695 _va-1675321343 _o-1119039191 _to-1727917045 _o-1106425799 _c-277036852 _b-1668497011 _br-1531773755 _b-730625357 _ff-409630021 _fs-347291933 _fw-289166179 _lh-1925956564 _ls-1782815796 rcx-skeleton__input"
           >
             <span
-              class="rcx-skeleton rcx-skeleton--text rcx-css-1qcz93u"
+              class="is_View _d-1987097250 _f-571455214 _o-1106425799 _fvn-1977619713 _a-119288947 _o-1083158629 _br-1682169757 _b-326940086 _h-568431264 _m-93279763 _to-611310301 _t-1660003422 rcx-skeleton rcx-skeleton--text rcx-css-1qcz93u"
             />
           </div>
         </div>
@@ -33,7 +33,7 @@ exports[`renders AppLogsItem without crashing 1`] = `
           class="rcx-box rcx-box--full rcx-css-1rfw4fq"
         >
           <label
-            class="rcx-box rcx-box--full rcx-label"
+            class="is_Text _b-650654186 _os-249893454 _ff-409630021 _fvn-1977619713 _ws-311910413 _ww-408434756 _fs-347291933 _fw-289166179 _lh-1925956564 _ls-1782815796 _d-341075704 _c-1922521888 _c-1063453128 rcx-label"
             for="timeFilter"
             id="timeFilterLabel"
           >
@@ -102,20 +102,20 @@ exports[`renders AppLogsItem without crashing 1`] = `
           <button
             aria-expanded="false"
             aria-haspopup="listbox"
-            aria-labelledby="react-aria-_r_7_ timeFilterLabel"
+            aria-labelledby="react-aria-_r_e_ timeFilterLabel"
             class="rcx-box rcx-box--full rcx-box--animated rcx-select rcx-css-3ejkxj"
             id="timeFilter"
             type="button"
           >
             <span
               class="rcx-box rcx-box--full rcx-css-1ah8hdc"
-              id="react-aria-_r_7_"
+              id="react-aria-_r_e_"
             >
               All_time
             </span>
             <i
               aria-hidden="true"
-              class="rcx-box rcx-box--full rcx-icon--name-chevron-down rcx-icon rcx-css-l5txo2"
+              class="is_Text _d-1409515928 _ws-311910413 _ww-408434756 _us-601212022 _va-1101652081 _ls-1720078126 _ff-1916555734 _fs-1279428672 _fw-289165218 _fs-477064150 _fv-1578983722 _lh-2067209205 _tr-1510281189 rcx-icon--name-chevron-down rcx-icon rcx-css-l5txo2"
             >
               
             </i>
@@ -125,7 +125,7 @@ exports[`renders AppLogsItem without crashing 1`] = `
           class="rcx-box rcx-box--full rcx-css-1rfw4fq"
         >
           <label
-            class="rcx-box rcx-box--full rcx-label"
+            class="is_Text _b-650654186 _os-249893454 _ff-409630021 _fvn-1977619713 _ws-311910413 _ww-408434756 _fs-347291933 _fw-289166179 _lh-1925956564 _ls-1782815796 _d-341075704 _c-1922521888 _c-1063453128 rcx-label"
             for="instanceFilter"
             id="instanceFilterLabel"
           >
@@ -134,10 +134,10 @@ exports[`renders AppLogsItem without crashing 1`] = `
           <div
             aria-busy="true"
             aria-labelledby="instanceFilterLabel"
-            class="rcx-box rcx-box--full rcx-skeleton__input"
+            class="is_View _d-1985012034 _f-1293449022 _mw-355829151 _mh-1675067943 _p-1212535695 _va-1675321343 _o-1119039191 _to-1727917045 _o-1106425799 _c-277036852 _b-1668497011 _br-1531773755 _b-730625357 _ff-409630021 _fs-347291933 _fw-289166179 _lh-1925956564 _ls-1782815796 rcx-skeleton__input"
           >
             <span
-              class="rcx-skeleton rcx-skeleton--text rcx-css-1qcz93u"
+              class="is_View _d-1987097250 _f-571455214 _o-1106425799 _fvn-1977619713 _a-119288947 _o-1083158629 _br-1682169757 _b-326940086 _h-568431264 _m-93279763 _to-611310301 _t-1660003422 rcx-skeleton rcx-skeleton--text rcx-css-1qcz93u"
             />
           </div>
         </div>
@@ -145,7 +145,7 @@ exports[`renders AppLogsItem without crashing 1`] = `
           class="rcx-box rcx-box--full rcx-css-1rfw4fq"
         >
           <label
-            class="rcx-box rcx-box--full rcx-label"
+            class="is_Text _b-650654186 _os-249893454 _ff-409630021 _fvn-1977619713 _ws-311910413 _ww-408434756 _fs-347291933 _fw-289166179 _lh-1925956564 _ls-1782815796 _d-341075704 _c-1922521888 _c-1063453128 rcx-label"
           >
             Severity
           </label>
@@ -193,33 +193,33 @@ exports[`renders AppLogsItem without crashing 1`] = `
             aria-expanded="false"
             aria-haspopup="listbox"
             aria-label="Severity"
-            aria-labelledby="react-aria-_r_f_ react-aria-_r_a_"
+            aria-labelledby="react-aria-_r_v_ react-aria-_r_q_"
             class="rcx-box rcx-box--full rcx-box--animated rcx-select rcx-css-3ejkxj"
             id="severityFilter"
             type="button"
           >
             <span
               class="rcx-box rcx-box--full rcx-css-1ah8hdc"
-              id="react-aria-_r_f_"
+              id="react-aria-_r_v_"
             >
               All
             </span>
             <i
               aria-hidden="true"
-              class="rcx-box rcx-box--full rcx-icon--name-chevron-down rcx-icon rcx-css-l5txo2"
+              class="is_Text _d-1409515928 _ws-311910413 _ww-408434756 _us-601212022 _va-1101652081 _ls-1720078126 _ff-1916555734 _fs-1279428672 _fw-289165218 _fs-477064150 _fv-1578983722 _lh-2067209205 _tr-1510281189 rcx-icon--name-chevron-down rcx-icon rcx-css-l5txo2"
             >
               
             </i>
           </button>
         </div>
         <button
-          class="rcx-box rcx-box--full rcx-button--large-square rcx-button--icon-secondary rcx-button--square rcx-button--icon rcx-button rcx-css-1itpmo6"
+          class="is_View _f-1069813397 _mh-1241200853 _ta-1906144518 _ws-973912173 _td-211436768 _c-22887652 _os-249893454 _o-1119039191 _to-1727917045 _ff-409630021 _fvn-1977619713 _fs-347291933 _fw-289166179 _ls-1782815796 _p-230374000 _w-1411108109 _mw-1142583649 _h-611412686 _d-312446553 _jc-642967080 _ai-1864573722 _lh-2067208245 rcx-button--large-square rcx-button--icon-secondary rcx-button--square rcx-button--icon rcx-button rcx-css-1itpmo6"
           title="Refresh_logs"
           type="button"
         >
           <i
             aria-hidden="true"
-            class="rcx-box rcx-box--full rcx-icon--name-refresh rcx-icon rcx-css-1x2l7ts"
+            class="is_Text _d-1409515928 _ws-311910413 _ww-408434756 _us-601212022 _va-1101652081 _ls-1720078126 _ff-1916555734 _fs-1279428672 _fw-289165218 _fs-477064150 _fv-1578983722 _lh-2067209205 _tr-1510281189 rcx-icon--name-refresh rcx-icon rcx-css-1x2l7ts"
           >
             
           </i>
@@ -227,13 +227,13 @@ exports[`renders AppLogsItem without crashing 1`] = `
         <button
           aria-disabled="false"
           aria-label="Export"
-          class="rcx-box rcx-box--full rcx-button--large-square rcx-button--icon-secondary rcx-button--square rcx-button--icon rcx-button rcx-css-1itpmo6"
+          class="is_View _f-1069813397 _mh-1241200853 _ta-1906144518 _ws-973912173 _td-211436768 _c-22887652 _os-249893454 _o-1119039191 _to-1727917045 _ff-409630021 _fvn-1977619713 _fs-347291933 _fw-289166179 _ls-1782815796 _p-230374000 _w-1411108109 _mw-1142583649 _h-611412686 _d-312446553 _jc-642967080 _ai-1864573722 _lh-2067208245 rcx-button--large-square rcx-button--icon-secondary rcx-button--square rcx-button--icon rcx-button rcx-css-1itpmo6"
           title="Export"
           type="button"
         >
           <i
             aria-hidden="true"
-            class="rcx-box rcx-box--full rcx-icon--name-circle-arrow-down rcx-icon rcx-css-1x2l7ts"
+            class="is_Text _d-1409515928 _ws-311910413 _ww-408434756 _us-601212022 _va-1101652081 _ls-1720078126 _ff-1916555734 _fs-1279428672 _fw-289165218 _fs-477064150 _fv-1578983722 _lh-2067209205 _tr-1510281189 rcx-icon--name-circle-arrow-down rcx-icon rcx-css-1x2l7ts"
           >
             
           </i>
@@ -242,14 +242,14 @@ exports[`renders AppLogsItem without crashing 1`] = `
           aria-expanded="false"
           aria-haspopup="true"
           aria-label="Options"
-          class="rcx-box rcx-box--full rcx-button--large-square rcx-button--square rcx-button--icon rcx-button"
-          id="react-aria-_r_g_"
+          class="is_View _f-1069813397 _mh-1241200853 _ta-1906144518 _ws-973912173 _td-211436768 _c-22887652 _os-249893454 _o-1119039191 _to-1727917045 _ff-409630021 _fvn-1977619713 _fs-347291933 _fw-289166179 _ls-1782815796 _p-230374000 _w-1411108109 _mw-1142583649 _h-611412686 _d-312446553 _jc-642967080 _ai-1864573722 _lh-2067208245 rcx-button--large-square rcx-button--square rcx-button--icon rcx-button"
+          id="react-aria-_r_18_"
           title="Options"
           type="button"
         >
           <i
             aria-hidden="true"
-            class="rcx-box rcx-box--full rcx-icon--name-menu rcx-icon rcx-css-1x2l7ts"
+            class="is_Text _d-1409515928 _ws-311910413 _ww-408434756 _us-601212022 _va-1101652081 _ls-1720078126 _ff-1916555734 _fs-1279428672 _fw-289165218 _fs-477064150 _fv-1578983722 _lh-2067209205 _tr-1510281189 rcx-icon--name-menu rcx-icon rcx-css-1x2l7ts"
           >
             
           </i>

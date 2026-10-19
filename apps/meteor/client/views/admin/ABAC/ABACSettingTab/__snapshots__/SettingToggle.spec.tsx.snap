@@ -4,19 +4,19 @@ exports[`AbacEnabledToggle should be disabled when abac license is not installed
 <body>
   <div>
     <div
-      class="rcx-box rcx-box--full rcx-field rcx-css-1gfu76s"
+      class="is_Text _b-650654186 _os-249893454 _ff-409630021 _fvn-1977619713 _ws-311910413 _ww-408434756 _d-341075704 _f-1378740307 _ai-1227553247 _w-1560934055 rcx-field rcx-css-1gfu76s"
     >
       <div
         class="rcx-box rcx-box--full rcx-css-1u2ihfm"
       >
         <div
-          class="rcx-box rcx-box--full rcx-field"
+          class="is_Text _b-650654186 _os-249893454 _ff-409630021 _fvn-1977619713 _ws-311910413 _ww-408434756 _d-341075704 _f-1378740307 _ai-1227553247 _w-1560934055 rcx-field"
         >
           <span
-            class="rcx-box rcx-box--full rcx-field__row rcx-css-ctk2ij"
+            class="is_Text _b-650654186 _os-249893454 _ff-409630021 _fvn-1977619713 _ws-311910413 _ww-408434756 _d-341075704 _f-541922926 _jc-281817805 _ai-121763387 _m-2017978848 _c-1756781803 rcx-field__row rcx-css-ctk2ij"
           >
             <label
-              class="rcx-box rcx-box--full rcx-field__label rcx-label"
+              class="is_Text _b-650654186 _os-249893454 _ff-409630021 _fvn-1977619713 _ws-311910413 _ww-408434756 _fs-347291933 _fw-289166179 _lh-1925956564 _ls-1782815796 _d-341075704 _c-1922521888 _c-1063453128 rcx-label rcx-field__label"
               for="ABAC_Enabled"
               title="ABAC_Enabled"
             >
@@ -26,24 +26,24 @@ exports[`AbacEnabledToggle should be disabled when abac license is not installed
               class="rcx-box rcx-box--full rcx-css-127j9mz"
             >
               <label
-                class="rcx-box rcx-box--full rcx-toggle-switch"
+                class="is_Text _b-1639159466 _os-249893454 _ff-409630021 _fvn-1977619713 _ws-311910413 _ww-408434756 rcx-toggle-switch"
               >
                 <input
                   checked=""
-                  class="rcx-box rcx-box--full rcx-toggle-switch__input"
+                  class="is_View _b-1639159466 _os-249893454 _ff-409630021 _fvn-1977619713 _p-1261267467 _o-1119039191 _c-588872556 _cp-2129451690 _w-226739898 _h-1922295961 _m-1890937723 _p-1943363302 _ws-973912173 _f-1246374076 rcx-toggle-switch__input"
                   disabled=""
                   id="ABAC_Enabled"
                   type="checkbox"
                 />
                 <i
                   aria-hidden="true"
-                  class="rcx-box rcx-box--full rcx-toggle-switch__fake"
+                  class="is_View _b-1639160427 _os-249893454 _ff-409630021 _fvn-1977619713 _p-1021290656 _f-1069814357 _mw-354604370 _mh-1241200853 _w-1008200584 _h-749995598 _br-153849585 rcx-toggle-switch__fake"
                 />
               </label>
             </div>
           </span>
           <span
-            class="rcx-box rcx-box--full rcx-field__hint"
+            class="is_Text _b-650654186 _os-249893454 _ff-409630021 _fvn-1977619713 _ws-311910413 _ww-408434756 _fs-2088488067 _fw-289165218 _lh-1306743983 _ls-1782815796 _m-183820880 _c-1756781803 rcx-field__hint"
           >
             Enable Attribute-Based Access Control
           </span>
@@ -58,19 +58,19 @@ exports[`AbacEnabledToggle should render the setting toggle when setting exists 
 <body>
   <div>
     <div
-      class="rcx-box rcx-box--full rcx-field rcx-css-1gfu76s"
+      class="is_Text _b-650654186 _os-249893454 _ff-409630021 _fvn-1977619713 _ws-311910413 _ww-408434756 _d-341075704 _f-1378740307 _ai-1227553247 _w-1560934055 rcx-field rcx-css-1gfu76s"
     >
       <div
         class="rcx-box rcx-box--full rcx-css-1u2ihfm"
       >
         <div
-          class="rcx-box rcx-box--full rcx-field"
+          class="is_Text _b-650654186 _os-249893454 _ff-409630021 _fvn-1977619713 _ws-311910413 _ww-408434756 _d-341075704 _f-1378740307 _ai-1227553247 _w-1560934055 rcx-field"
         >
           <span
-            class="rcx-box rcx-box--full rcx-field__row rcx-css-ctk2ij"
+            class="is_Text _b-650654186 _os-249893454 _ff-409630021 _fvn-1977619713 _ws-311910413 _ww-408434756 _d-341075704 _f-541922926 _jc-281817805 _ai-121763387 _m-2017978848 _c-1756781803 rcx-field__row rcx-css-ctk2ij"
           >
             <label
-              class="rcx-box rcx-box--full rcx-field__label rcx-label"
+              class="is_Text _b-650654186 _os-249893454 _ff-409630021 _fvn-1977619713 _ws-311910413 _ww-408434756 _fs-347291933 _fw-289166179 _lh-1925956564 _ls-1782815796 _d-341075704 _c-1922521888 _c-1063453128 rcx-label rcx-field__label"
               for="ABAC_Enabled"
               title="ABAC_Enabled"
             >
@@ -80,35 +80,35 @@ exports[`AbacEnabledToggle should render the setting toggle when setting exists 
               class="rcx-box rcx-box--full rcx-css-127j9mz"
             >
               <button
-                class="rcx-box rcx-box--full rcx-button--small-square rcx-button--icon-danger rcx-button--square rcx-button--icon rcx-button rcx-css-1rtu0k9"
+                class="is_View _f-1069813397 _mh-1241200853 _ta-1906144518 _ws-973912173 _td-211436768 _c-22887652 _os-249893454 _o-1119039191 _to-1727917045 _ff-409630021 _fvn-1977619713 _fs-347291933 _fw-289166179 _ls-1782815796 _p-230374000 _w-1682139955 _mw-1947816287 _h-1633581678 _d-312446553 _jc-642967080 _ai-1864573722 _lh-2067208245 rcx-button--small-square rcx-button--icon-danger rcx-button--square rcx-button--icon rcx-button rcx-css-1rtu0k9"
                 title="Reset"
                 type="button"
               >
                 <i
                   aria-hidden="true"
-                  class="rcx-box rcx-box--full rcx-icon--name-undo rcx-icon rcx-css-4pvxx3"
+                  class="is_Text _d-1409515928 _ws-311910413 _ww-408434756 _us-601212022 _va-1101652081 _ls-1720078126 _ff-1916555734 _fs-1279428672 _fw-289165218 _fs-477064150 _fv-1578983722 _lh-2067209205 _tr-1510281189 rcx-icon--name-undo rcx-icon rcx-css-4pvxx3"
                 >
                   ❰
                 </i>
               </button>
               <label
-                class="rcx-box rcx-box--full rcx-toggle-switch"
+                class="is_Text _b-1639159466 _os-249893454 _ff-409630021 _fvn-1977619713 _ws-311910413 _ww-408434756 rcx-toggle-switch"
               >
                 <input
                   checked=""
-                  class="rcx-box rcx-box--full rcx-toggle-switch__input"
+                  class="is_View _b-1639159466 _os-249893454 _ff-409630021 _fvn-1977619713 _p-1261267467 _o-1119039191 _c-588872556 _cp-2129451690 _w-226739898 _h-1922295961 _m-1890937723 _p-1943363302 _ws-973912173 _f-1246374076 rcx-toggle-switch__input"
                   id="ABAC_Enabled"
                   type="checkbox"
                 />
                 <i
                   aria-hidden="true"
-                  class="rcx-box rcx-box--full rcx-toggle-switch__fake"
+                  class="is_View _b-1639160427 _os-249893454 _ff-409630021 _fvn-1977619713 _p-1021290656 _f-1069814357 _mw-354604370 _mh-1241200853 _w-1008200584 _h-749995598 _br-153849585 rcx-toggle-switch__fake"
                 />
               </label>
             </div>
           </span>
           <span
-            class="rcx-box rcx-box--full rcx-field__hint"
+            class="is_Text _b-650654186 _os-249893454 _ff-409630021 _fvn-1977619713 _ws-311910413 _ww-408434756 _fs-2088488067 _fw-289165218 _lh-1306743983 _ls-1782815796 _m-183820880 _c-1756781803 rcx-field__hint"
           >
             Enable Attribute-Based Access Control
           </span>
@@ -123,23 +123,23 @@ exports[`AbacEnabledToggle should show skeleton when loading 1`] = `
 <body>
   <div>
     <div
-      class="rcx-box rcx-box--full rcx-field"
+      class="is_Text _b-650654186 _os-249893454 _ff-409630021 _fvn-1977619713 _ws-311910413 _ww-408434756 _d-341075704 _f-1378740307 _ai-1227553247 _w-1560934055 rcx-field"
     >
       <label
-        class="rcx-box rcx-box--full rcx-field__label rcx-label rcx-css-1exa5vl"
+        class="is_Text _b-650654186 _os-249893454 _ff-409630021 _fvn-1977619713 _ws-311910413 _ww-408434756 _fs-347291933 _fw-289166179 _lh-1925956564 _ls-1782815796 _d-341075704 _c-1922521888 _c-1063453128 rcx-label rcx-field__label"
       >
         <span
-          class="rcx-skeleton rcx-skeleton--text rcx-css-1v1eapn"
+          class="is_View _d-1987097250 _f-571455214 _o-1106425799 _fvn-1977619713 _a-119288947 _o-1083158629 _br-1682169757 _b-326940086 _h-568431264 _m-93279763 _to-611310301 _t-1660003422 rcx-skeleton rcx-skeleton--text rcx-css-1v1eapn"
         />
       </label>
       <span
-        class="rcx-box rcx-box--full rcx-field__row"
+        class="is_Text _b-650654186 _os-249893454 _ff-409630021 _fvn-1977619713 _ws-311910413 _ww-408434756 _d-341075704 _f-541922926 _jc-281817805 _ai-121763387 _m-2017978848 _c-1756781803 rcx-field__row"
       >
         <div
-          class="rcx-box rcx-box--full rcx-skeleton__input"
+          class="is_View _d-1985012034 _f-1293449022 _mw-355829151 _mh-1675067943 _p-1212535695 _va-1675321343 _o-1119039191 _to-1727917045 _o-1106425799 _c-277036852 _b-1668497011 _br-1531773755 _b-730625357 _ff-409630021 _fs-347291933 _fw-289166179 _lh-1925956564 _ls-1782815796 rcx-skeleton__input"
         >
           <span
-            class="rcx-skeleton rcx-skeleton--text rcx-css-1qcz93u"
+            class="is_View _d-1987097250 _f-571455214 _o-1106425799 _fvn-1977619713 _a-119288947 _o-1083158629 _br-1682169757 _b-326940086 _h-568431264 _m-93279763 _to-611310301 _t-1660003422 rcx-skeleton rcx-skeleton--text rcx-css-1qcz93u"
           />
         </div>
       </span>

@@ -4,13 +4,13 @@ exports[`RoomFormAttributeField renders Default without crashing 1`] = `
 <body>
   <div>
     <div
-      class="rcx-box rcx-box--full rcx-field"
+      class="is_Text _b-650654186 _os-249893454 _ff-409630021 _fvn-1977619713 _ws-311910413 _ww-408434756 _d-341075704 _f-1378740307 _ai-1227553247 _w-1560934055 rcx-field"
     >
       <div
         class="rcx-box rcx-box--full rcx-css-1g16yxh"
       >
         <span
-          class="rcx-box rcx-box--full rcx-field__row"
+          class="is_Text _b-650654186 _os-249893454 _ff-409630021 _fvn-1977619713 _ws-311910413 _ww-408434756 _d-341075704 _f-541922926 _jc-281817805 _ai-121763387 _m-2017978848 _c-1756781803 rcx-field__row"
         >
           <div
             aria-invalid="false"
@@ -36,7 +36,7 @@ exports[`RoomFormAttributeField renders Default without crashing 1`] = `
               >
                 <i
                   aria-hidden="true"
-                  class="rcx-box rcx-box--full rcx-icon--name-chevron-down rcx-icon rcx-css-4pvxx3"
+                  class="is_Text _d-1409515928 _ws-311910413 _ww-408434756 _us-601212022 _va-1101652081 _ls-1720078126 _ff-1916555734 _fs-1279428672 _fw-289165218 _fs-477064150 _fv-1578983722 _lh-2067209205 _tr-1510281189 rcx-icon--name-chevron-down rcx-icon rcx-css-4pvxx3"
                 >
                   
                 </i>
@@ -45,7 +45,7 @@ exports[`RoomFormAttributeField renders Default without crashing 1`] = `
           </div>
         </span>
         <span
-          class="rcx-box rcx-box--full rcx-field__row"
+          class="is_Text _b-650654186 _os-249893454 _ff-409630021 _fvn-1977619713 _ws-311910413 _ww-408434756 _d-341075704 _f-541922926 _jc-281817805 _ai-121763387 _m-2017978848 _c-1756781803 rcx-field__row"
         >
           <div
             class="rcx-box rcx-box--full rcx-box--animated rcx-select rcx-css-1oii38d"
@@ -75,7 +75,7 @@ exports[`RoomFormAttributeField renders Default without crashing 1`] = `
             >
               <i
                 aria-hidden="true"
-                class="rcx-box rcx-box--full rcx-icon--name-chevron-down rcx-icon rcx-css-4pvxx3"
+                class="is_Text _d-1409515928 _ws-311910413 _ww-408434756 _us-601212022 _va-1101652081 _ls-1720078126 _ff-1916555734 _fs-1279428672 _fw-289165218 _fs-477064150 _fv-1578983722 _lh-2067209205 _tr-1510281189 rcx-icon--name-chevron-down rcx-icon rcx-css-4pvxx3"
               >
                 
               </i>

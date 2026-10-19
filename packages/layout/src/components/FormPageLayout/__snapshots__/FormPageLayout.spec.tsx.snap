@@ -7,7 +7,7 @@ exports[`renders Default without crashing 1`] = `
       style="width: 600px;"
     >
       <form
-        class="rcx-box rcx-box--full rcx-tile--elevation-1 rcx-tile rcx-css-h7ntyn"
+        class="is_Text _d-1987097250 _ws-311910413 _ww-408434756 _f-571455214 _o-1106425799 _ff-409630021 _fvn-1977619713 _b-740265684 _c-1063453128 _br-1937162231 _b-1090939261 _fs-347291933 _fw-289165218 _lh-1925956564 _ls-1782815796 _bs-1895732505 rcx-tile rcx-tile--elevation-1 rcx-css-h7ntyn"
       >
         <header
           class="rcx-box rcx-box--full rcx-css-heem01"

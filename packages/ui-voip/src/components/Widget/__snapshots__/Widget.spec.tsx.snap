@@ -32,13 +32,13 @@ exports[`renders FullWidget without crashing 1`] = `
         >
           <button
             aria-label="Close"
-            class="rcx-box rcx-box--full rcx-button--mini-square rcx-button--square rcx-button--icon rcx-button"
+            class="is_View _f-1069813397 _mh-1241200853 _ta-1906144518 _ws-973912173 _td-211436768 _c-22887652 _os-249893454 _o-1119039191 _to-1727917045 _ff-409630021 _fvn-1977619713 _fs-347291933 _fw-289166179 _ls-1782815796 _p-230374000 _w-1686757560 _mw-1952433892 _h-1628964073 _d-312446553 _jc-642967080 _ai-1864573722 _lh-2067208245 rcx-button--mini-square rcx-button--square rcx-button--icon rcx-button"
             name="close"
             type="button"
           >
             <i
               aria-hidden="true"
-              class="rcx-box rcx-box--full rcx-icon--name-cross rcx-icon rcx-css-1tg7yd0"
+              class="is_Text _d-1409515928 _ws-311910413 _ww-408434756 _us-601212022 _va-1101652081 _ls-1720078126 _ff-1916555734 _fs-1279428672 _fw-289165218 _fs-477064150 _fv-1578983722 _lh-2067209205 _tr-1510281189 rcx-icon--name-cross rcx-icon rcx-css-1tg7yd0"
             >
               
             </i>
@@ -70,20 +70,20 @@ exports[`renders FullWidget without crashing 1`] = `
         class="rcx-box rcx-box--full rcx-css-1koqfyi"
       >
         <div
-          class="rcx-button-group rcx-button-group--stretch rcx-button-group--align-start"
+          class="is_View _d-341075704 _f-532517999 _mw-354604370 _mh-1241200853 _g-1051447770 _ai-579901216 _jc-281162209 rcx-button-group rcx-button-group--stretch rcx-button-group--align-start"
           role="group"
         >
           <button
-            class="rcx-box rcx-box--full rcx-button--medium rcx-button--danger rcx-button"
+            class="is_View _d-1409515928 _f-1069814357 _mh-1241200853 _ta-1906144518 _ws-973912173 _td-211436768 _c-22887652 _os-249893454 _o-1119039191 _to-1727917045 _ff-409630021 _fvn-1977619713 _p-977728176 _fs-281033604 _fw-290091622 _lh-1335373134 _ls-1811444947 _mw-1006044400 _h-567027737 rcx-button--medium rcx-button--danger rcx-button"
             name="phone-off"
             type="button"
           >
             <span
-              class="rcx-button--content"
+              class="is_Text _d-1409515928 _w-1560934055 _va-615128551 _o-1119039191 _to-1727917045 _ws-973912173 _ww-408434756 rcx-button--content"
             >
               <i
                 aria-hidden="true"
-                class="rcx-box rcx-box--full rcx-icon--name-phone-off rcx-icon rcx-css-1hdf9ok"
+                class="is_Text _d-1409515928 _ws-311910413 _ww-408434756 _us-601212022 _va-1101652081 _ls-1720078126 _ff-1916555734 _fs-1279428672 _fw-289165218 _fs-477064150 _fv-1578983722 _lh-2067209205 _tr-1510281189 rcx-icon--name-phone-off rcx-icon rcx-css-1hdf9ok"
               >
                 
               </i>
@@ -91,16 +91,16 @@ exports[`renders FullWidget without crashing 1`] = `
             </span>
           </button>
           <button
-            class="rcx-box rcx-box--full rcx-button--medium rcx-button--success rcx-button"
+            class="is_View _d-1409515928 _f-1069814357 _mh-1241200853 _ta-1906144518 _ws-973912173 _td-211436768 _c-22887652 _os-249893454 _o-1119039191 _to-1727917045 _ff-409630021 _fvn-1977619713 _p-977728176 _fs-281033604 _fw-290091622 _lh-1335373134 _ls-1811444947 _mw-1006044400 _h-567027737 rcx-button--medium rcx-button--success rcx-button"
             name="phone"
             type="button"
           >
             <span
-              class="rcx-button--content"
+              class="is_Text _d-1409515928 _w-1560934055 _va-615128551 _o-1119039191 _to-1727917045 _ws-973912173 _ww-408434756 rcx-button--content"
             >
               <i
                 aria-hidden="true"
-                class="rcx-box rcx-box--full rcx-icon--name-phone rcx-icon rcx-css-1hdf9ok"
+                class="is_Text _d-1409515928 _ws-311910413 _ww-408434756 _us-601212022 _va-1101652081 _ls-1720078126 _ff-1916555734 _fs-1279428672 _fw-289165218 _fs-477064150 _fv-1578983722 _lh-2067209205 _tr-1510281189 rcx-icon--name-phone rcx-icon rcx-css-1hdf9ok"
               >
                 
               </i>
