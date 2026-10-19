@@ -112,6 +112,34 @@ it('should reject connect() when the server is unreachable', async () => {
 	expect(connection.status).toBe('disconnected');
 });
 
+it('should resolve whenConnected() once connected, and right away while connected', async () => {
+	const client = new MinimalDDPClient();
+	connection = new ConnectionImpl('ws://localhost:1234', WebSocket as any, client, { retryCount: 0, retryTime: 0 });
+
+	const whenConnected = connection.whenConnected();
+	const settled = jest.fn();
+	void whenConnected.then(settled);
+	const connecting = connection.connect();
+	await server.connected;
+	await Promise.resolve();
+	expect(settled).not.toHaveBeenCalled();
+
+	await handleConnection(server, connecting);
+
+	await expect(whenConnected).resolves.toBeUndefined();
+	await expect(connection.whenConnected()).resolves.toBeUndefined();
+});
+
+it('should reject whenConnected() when the connection is closed first', async () => {
+	const client = new MinimalDDPClient();
+	connection = new ConnectionImpl('ws://localhost:1234', WebSocket as any, client, { retryCount: 0, retryTime: 0 });
+
+	const whenConnected = connection.whenConnected();
+	connection.close();
+
+	await expect(whenConnected).rejects.toThrow('Connection closed before it was established');
+});
+
 it('should trigger a disconnect callback', async () => {
 	const client = new MinimalDDPClient();
 	connection = ConnectionImpl.create('ws://localhost:1234', globalThis.WebSocket, client, { retryCount: 0, retryTime: 0 });

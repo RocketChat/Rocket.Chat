@@ -52,6 +52,12 @@ export interface Connection extends Emitter<{
 
 	reconnect(): Promise<boolean>;
 
+	/**
+	 * Resolves once the connection is established, right away if it already is; rejects if `close()` is called first.
+	 * Doesn't start connecting.
+	 */
+	whenConnected(): Promise<void>;
+
 	close(): void;
 }
 
@@ -306,6 +312,22 @@ export class ConnectionImpl
 		this.emitStatus();
 
 		return connectPromise;
+	}
+
+	whenConnected(): Promise<void> {
+		if (this.status === 'connected') {
+			return Promise.resolve();
+		}
+		return new Promise((resolve, reject) => {
+			const stopWaitingForClose = this.once('close', () => {
+				stopWaitingForConnected();
+				reject(new Error('Connection closed before it was established'));
+			});
+			const stopWaitingForConnected = this.once('connected', () => {
+				stopWaitingForClose();
+				resolve();
+			});
+		});
 	}
 
 	close() {
