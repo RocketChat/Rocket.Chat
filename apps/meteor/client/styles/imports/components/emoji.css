@@ -50,18 +50,27 @@ Only exists on Windows, so other platforms skip it in the fallback list. */
 	&__emoji {
 		font-family: 'Apple Color Emoji', rc-emoji-segoe, 'Noto Color Emoji', 'Twemoji Mozilla', 'Android Emoji', sans-serif;
 
-		/* Fuselage fixes this box at 1.5rem inline-block, sized for image emojis. Native
-		glyphs on Segoe UI Emoji/Noto Color Emoji paint taller and wider than that box, and
-		the overhang gets clipped by the message body's overflow: hidden — so let the box
-		grow to the glyph. inline-block also aligns by geometric box while the announcement
-		banner's .emoji span (plain inline) aligns by font metrics; Segoe UI Emoji's
-		asymmetric metrics make those disagree by ~2px, leaving message glyphs off-center.
-		Use the same inline model everywhere. */
-		&:not(&--custom) {
+		/* Fuselage sizes this box as an inline-block matching the message line (22px),
+		sized for image emojis. Native glyphs on Segoe UI Emoji/Noto Color Emoji paint a bit
+		taller and wider than that box; the message body keeps 2px of block padding inside
+		its overflow: hidden so that overhang is not clipped on the first and last lines.
+		inline-block also aligns by geometric box while the announcement banner's .emoji span
+		(plain inline) aligns by font metrics; Segoe UI Emoji's asymmetric metrics make those
+		disagree by ~2px, leaving message glyphs off-center. Use the same inline model
+		everywhere. */
+		&:not(&--custom, &--big) {
 			display: inline;
 			width: auto;
 			height: auto;
-			line-height: 1.2;
+
+			/* Fuselage sizes the message body line and its inline emojis from the same
+			`--rcx-message-body-line-height` token (22px by default). The native glyph keeps
+			the inline model from the comment above but inherits that line height from the
+			body instead of growing to 1.2em, and `top` snaps its inline box to the line box,
+			so a line holding an emoji is exactly as tall as one without. Big emojis
+			(emoji-only messages) keep Fuselage's 44px box. */
+			line-height: inherit;
+			vertical-align: top;
 		}
 	}
 }
@@ -74,8 +83,11 @@ Only exists on Windows, so other platforms skip it in the fallback list. */
 		&:not(.emoji--custom) {
 			width: auto;
 			height: auto;
+
+			/* 1rem glyph on Fuselage's 1rem line, so a native reaction is the same 16px tall as
+			an image one and every reaction pill has the same height. A 1.2 line-height here
+			made native reactions ~19px and their pills 3px taller than the rest. */
 			font-size: 1rem;
-			line-height: 1.2;
 		}
 	}
 }
