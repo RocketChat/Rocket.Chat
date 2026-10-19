@@ -83,5 +83,5 @@ it('should not show an empty thread preview', async () => {
 	expect(container).toMatchSnapshot();
 	const text = screen.getByText('http://localhost:3000/group/ds?msg=ZoX9pDowqNb4BiWxf');
 
-	expect(text).toBeInTheDocument;
+	expect(text).toBeInTheDocument();
 });
