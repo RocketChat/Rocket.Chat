@@ -30,7 +30,9 @@ export type OptionsPaginatedProps = Omit<BoxProps, 'ref' | 'onSelect'> &
 		endReached?: (start?: number, end?: number) => void;
 	};
 
-export const Empty = memo(() => <Option label='Empty' />);
+export const Empty = memo(function Empty() {
+	return <Option label='Empty' />;
+});
 
 export { CheckOption };
 

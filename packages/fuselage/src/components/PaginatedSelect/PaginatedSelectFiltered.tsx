@@ -13,6 +13,7 @@ export type PaginatedSelectFilteredProps = Omit<PaginatedSelectProps, 'setFilter
 const PaginatedSelectFiltered = ({ filter, setFilter, options, placeholder, ...props }: PaginatedSelectFilteredProps) => {
 	const anchor = useMemo(
 		() =>
+			// eslint-disable-next-line react/display-name, react/no-multi-comp -- anchor closes over placeholder and setFilter
 			({ filter, onChange: _onChange, ...props }: PaginatedSelectFilteredProps) => (
 				<Input
 					marginInline={4}
