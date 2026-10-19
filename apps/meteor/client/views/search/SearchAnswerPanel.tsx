@@ -1,10 +1,10 @@
-import { Box, Button, Card, CardBody, CardControls, CardHeader, CardTitle, FramedIcon, Skeleton } from '@rocket.chat/fuselage';
+import { Box, Button, Card, CardBody, CardHeader, CardTitle, FramedIcon, Skeleton, CardControls } from '@rocket.chat/fuselage';
 import type { TranslationKey } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
 import { useId } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import MarkdownText from '../../components/MarkdownText';
+import SearchAnswerContent from './SearchAnswerContent';
 import { useCanManageAISettings } from '../../hooks/useCanManageAISettings';
 
 const LLM_PROVIDER_SETTINGS = ['AI_LLM_OpenAI_Base_URL', 'AI_LLM_OpenAI_API_Key', 'AI_LLM_OpenAI_Model'];
@@ -32,7 +32,7 @@ export type SearchAnswerPanelProps = {
 	error?: unknown;
 	disabled: boolean;
 	emptyReason: string;
-	onGenerate: () => void;
+	onRetry: () => void;
 };
 
 const SearchAnswerPanel = ({
@@ -42,10 +42,11 @@ const SearchAnswerPanel = ({
 	error,
 	disabled,
 	emptyReason,
-	onGenerate,
+	onRetry,
 }: SearchAnswerPanelProps): ReactElement => {
 	const { t } = useTranslation();
 	const titleId = useId();
+	const info = provider ? t('Search_AI_answer_provider', { provider: provider.name, model: provider.model }) : t('Search_AI_overview_info');
 	const canManageAISettings = useCanManageAISettings(LLM_PROVIDER_SETTINGS);
 
 	let content: ReactElement;
@@ -59,8 +60,21 @@ const SearchAnswerPanel = ({
 				<Skeleton width='72%' />
 			</Box>
 		);
+	} else if (error && !isLoading && !disabled) {
+		content = (
+			<Box display='flex' flexDirection='column' alignItems='flex-start' gap={12}>
+				<Box color='danger' fontScale='p2'>
+					{t(getAnswerErrorMessage(error, canManageAISettings))}
+				</Box>
+				<CardControls>
+					<Button small onClick={onRetry}>
+						{t('Try_again')}
+					</Button>
+				</CardControls>
+			</Box>
+		);
 	} else if (answer) {
-		content = <MarkdownText content={answer} parseEmoji fontScale='p2' />;
+		content = <SearchAnswerContent key={answer} answer={answer} />;
 	} else {
 		content = (
 			<Box color='hint' fontScale='p2'>
@@ -70,31 +84,15 @@ const SearchAnswerPanel = ({
 	}
 
 	return (
-		<Box marginBlockEnd={24}>
+		<Box marginBlockEnd={40}>
 			<Card role='region' aria-labelledby={titleId}>
 				<CardHeader>
-					<FramedIcon icon='stars' />
-					<CardTitle id={titleId}>{t('Search_AI_answer')}</CardTitle>
+					<FramedIcon icon='stars' size={20} />
+					<CardTitle id={titleId} info={info}>
+						{t('Search_AI_answer')}
+					</CardTitle>
 				</CardHeader>
-				<CardBody flexDirection='column'>
-					{provider && (
-						<Box color='hint' fontScale='c1' marginBlockEnd={8}>
-							{t('Search_AI_answer_provider', { provider: provider.name, model: provider.model })}
-						</Box>
-					)}
-					{error && !isLoading ? (
-						<Box color='danger' fontScale='p2'>
-							{t(getAnswerErrorMessage(error, canManageAISettings))}
-						</Box>
-					) : (
-						content
-					)}
-				</CardBody>
-				<CardControls>
-					<Button medium disabled={disabled || isLoading} onClick={onGenerate}>
-						{isLoading ? t('Loading') : t(answer ? 'Regenerate' : 'Generate')}
-					</Button>
-				</CardControls>
+				<CardBody flexDirection='column'>{content}</CardBody>
 			</Card>
 		</Box>
 	);

@@ -40,7 +40,7 @@ const NavBarAISearchInput = () => {
 	const handleClick = useSearchClick(state);
 
 	const { aiSearchActive, canSearchWithAIFromTopBar, handleToggleAISearch: toggleAISearch } = useNavBarAISearch({ setFocus, state, t });
-	const { filters, removeFilter, removeLastFilter, clearFilters, clearQuery, handleTextChange } = useSearchFilters({ aiSearchActive });
+	const { filters, removeFilter, clearFilters, clearQuery, handleTextChange } = useSearchFilters({ aiSearchActive });
 	const [filtersRequested, setFiltersRequested] = useState(false);
 	const filtersOpen = filtersRequested && filters.length > 0;
 
@@ -54,17 +54,19 @@ const NavBarAISearchInput = () => {
 	});
 
 	const handleKeyDown = useStableCallback((event: KeyboardEvent<HTMLInputElement>) => {
-		if (event.key === 'Backspace' && !event.currentTarget.value && filters.length) {
-			event.preventDefault();
-			removeLastFilter();
-			return;
-		}
-
-		// Tab moves into the dropdown so its AI toggle and filter buttons stay reachable from the keyboard.
 		if (event.code === 'Tab' && !event.shiftKey && state.isOpen) {
 			return;
 		}
 
+		handleSearchKeyDown(event);
+	});
+
+	const handleRegionKeyDown = useStableCallback((event: KeyboardEvent<HTMLElement>) => {
+		if (event.target === triggerRef.current || filtersOpen || (event.key !== 'ArrowDown' && event.key !== 'ArrowUp')) {
+			return;
+		}
+
+		setFocus('filterText');
 		handleSearchKeyDown(event);
 	});
 
@@ -95,6 +97,7 @@ const NavBarAISearchInput = () => {
 
 	const handleClearText = useStableCallback(() => {
 		handleTextChange('');
+		clearFilters();
 		setFocus('filterText');
 	});
 
@@ -120,7 +123,16 @@ const NavBarAISearchInput = () => {
 	}, [focusManager, handleEscSearch, setFocus]);
 
 	return (
-		<Box width='100%' maxWidth='x622' role='search' aria-label={searchLabel} marginInline={8} position='relative' onBlur={handleBlur}>
+		<Box
+			width='100%'
+			maxWidth='x622'
+			role='search'
+			aria-label={searchLabel}
+			marginInline={8}
+			position='relative'
+			onBlur={handleBlur}
+			onKeyDown={handleRegionKeyDown}
+		>
 			<TextInput
 				{...rest}
 				{...triggerProps}

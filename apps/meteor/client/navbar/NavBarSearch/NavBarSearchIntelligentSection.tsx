@@ -1,13 +1,12 @@
 import type { NavBarSearchFormValues } from '@rocket.chat/ai-search';
 import { serializeSearchQuery } from '@rocket.chat/ai-search';
-import { Box, Divider, Icon, IconButton, ItemActions, ItemGroupHeader, ItemGroupTitle, SidebarItemIcon } from '@rocket.chat/fuselage';
+import { Box, Button, IconButton, ItemActions, ItemGroupHeader, ItemGroupTitle } from '@rocket.chat/fuselage';
 import type { AISearchResult } from '@rocket.chat/rest-typings';
 import { useRouter } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
 import { useFormContext, useWatch } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 
-import NavBarSearchItem from './NavBarSearchItem';
 import NavBarSearchMessageRow from './NavBarSearchMessageRow';
 
 export type NavBarSearchIntelligentSectionProps = {
@@ -34,10 +33,9 @@ const NavBarSearchIntelligentSection = ({ items, onSelect, onClose }: NavBarSear
 	});
 
 	return (
-		<Box display='flex' flexDirection='column' paddingBlockEnd={12}>
-			<Divider marginBlockStart={12} marginBlockEnd={8} />
+		<Box display='flex' flexDirection='column'>
 			<ItemGroupHeader inset='md'>
-				<ItemGroupTitle aria-hidden>{t('Intelligent_Search')}</ItemGroupTitle>
+				<ItemGroupTitle aria-hidden>{t('AI_results')}</ItemGroupTitle>
 				<ItemActions>
 					<IconButton
 						is='a'
@@ -50,20 +48,12 @@ const NavBarSearchIntelligentSection = ({ items, onSelect, onClose }: NavBarSear
 					/>
 				</ItemActions>
 			</ItemGroupHeader>
-			<Box color='hint' fontScale='c1' paddingInline={12} marginBlockEnd={4}>
-				{t('AI_Search_related_messages', { count: items.length })}
-			</Box>
 			{items.map((item) => (
 				<NavBarSearchMessageRow key={`intelligent-${item._id}`} item={item} onClick={onSelect} />
 			))}
-			<NavBarSearchItem
-				id='search-view-all-results'
-				title={t('View_all_results')}
-				avatar={null}
-				icon={<SidebarItemIcon icon={<Icon name='arrow-forward' size='x16' />} />}
-				href={searchHref}
-				onClick={onClose}
-			/>
+			<Button is='a' href={searchHref} marginInline={12} marginBlockStart={12} onClick={onClose}>
+				{t('View_all_results')}
+			</Button>
 		</Box>
 	);
 };

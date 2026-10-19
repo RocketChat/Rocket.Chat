@@ -98,41 +98,56 @@ const NavBarAISearchListBox = ({
 								<ToggleSwitch aria-labelledby={aiSearchLabelId} checked={aiSearchActive} onChange={handleToggleAISearch} />
 							</Box>
 							{aiSearchActive && <NavBarSearchFilterTypeRow draft={aiItems.draft} />}
-							{hasAISearchProblem && (
-								<AISearchErrorCallout
-									role='alert'
-									error={aiItems.error}
-									notConfigured={aiItems.notConfigured}
-									onRetry={refetchAISearch}
-									marginInline={12}
-									marginBlockStart={8}
-								/>
-							)}
 						</>
 					)}
-					<CustomScrollbars>
-						<div
-							{...overlayProps}
-							role='listbox'
-							aria-label={listboxLabel}
-							aria-busy={isSearchLoading}
-							tabIndex={-1}
-							onMouseDown={(event) => event.preventDefault()}
-						>
-							<NavBarSearchIntelligentSection items={aiItems.intelligent} onSelect={handleSelect} onClose={state.close} />
-							<NavBarSearchFilterSuggestions suggestions={aiItems.filterSuggestions} />
-							{aiSearchAvailable && <Divider marginBlockStart={12} />}
-							<NavBarSearchRoomSection
-								filterText={filterText}
-								itemCount={itemCount}
-								isLoading={isLoading}
-								isFetching={isFetching}
-								rooms={rooms}
-								suggestAISearch={aiSearchAvailable && !aiSearchActive}
-								onSelect={handleSelect}
-							/>
-						</div>
-					</CustomScrollbars>
+					<div {...overlayProps} style={{ display: 'contents' }}>
+						{aiSearchAvailable && (
+							<>
+								{aiItems.filterSuggestions.length > 0 && (
+									<div
+										role='listbox'
+										aria-label={t('Search_filter_suggestions')}
+										tabIndex={-1}
+										onMouseDown={(event) => event.preventDefault()}
+									>
+										<NavBarSearchFilterSuggestions suggestions={aiItems.filterSuggestions} />
+									</div>
+								)}
+								<Divider marginBlockStart={12} />
+								{hasAISearchProblem && (
+									<AISearchErrorCallout
+										role='alert'
+										error={aiItems.error}
+										notConfigured={aiItems.notConfigured}
+										onRetry={refetchAISearch}
+										marginInline={12}
+										marginBlockStart={8}
+									/>
+								)}
+							</>
+						)}
+						<CustomScrollbars>
+							<div
+								role='listbox'
+								aria-label={listboxLabel}
+								aria-busy={isSearchLoading}
+								tabIndex={-1}
+								onMouseDown={(event) => event.preventDefault()}
+							>
+								<NavBarSearchIntelligentSection items={aiItems.intelligent} onSelect={handleSelect} onClose={state.close} />
+								{aiItems.intelligent.length > 0 && rooms.length > 0 && <Box marginBlockStart={12} />}
+								<NavBarSearchRoomSection
+									filterText={filterText}
+									itemCount={itemCount}
+									isLoading={isLoading}
+									isFetching={isFetching}
+									rooms={rooms}
+									suggestAISearch={aiSearchAvailable && !aiSearchActive}
+									onSelect={handleSelect}
+								/>
+							</div>
+						</CustomScrollbars>
+					</div>
 				</>
 			)}
 		</Tile>

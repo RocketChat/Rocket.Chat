@@ -54,7 +54,7 @@ describe('NavBarSearchIntelligentSection', () => {
 		expect(buildRoutePath).not.toHaveBeenCalled();
 	});
 
-	it('renders a native link to the AI Search page in the section header when related results are available', async () => {
+	it('links to the AI Search page from the section header and the footer when related results are available', async () => {
 		const user = userEvent.setup();
 		const buildRoutePath = jest.fn(() => '/search?q=in%3Ageneral%20deployment%20errors' as const);
 		const onClose = jest.fn();
@@ -70,16 +70,20 @@ describe('NavBarSearchIntelligentSection', () => {
 			onClose,
 		);
 
-		const action = screen.getByRole('link', { name: 'View all results' });
-		expect(action.tagName).toBe('A');
-		expect(action).toHaveAttribute('href', '/search?q=in%3Ageneral%20deployment%20errors');
+		const actions = screen.getAllByRole('link', { name: 'View all results' });
+		expect(actions).toHaveLength(2);
 		expect(buildRoutePath).toHaveBeenCalledWith({
 			name: 'search',
 			search: { q: 'in:general deployment errors' },
 		});
 
-		action.addEventListener('click', (event) => event.preventDefault(), { once: true });
-		await user.click(action);
-		expect(onClose).toHaveBeenCalledTimes(1);
+		for (const action of actions) {
+			expect(action.tagName).toBe('A');
+			expect(action).toHaveAttribute('href', '/search?q=in%3Ageneral%20deployment%20errors');
+
+			action.addEventListener('click', (event) => event.preventDefault(), { once: true });
+			await user.click(action);
+		}
+		expect(onClose).toHaveBeenCalledTimes(2);
 	});
 });
