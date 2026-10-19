@@ -1,11 +1,17 @@
+import type { GetProps } from '@tamagui/web';
+
 import WithErrorWrapper from '../../helpers/WithErrorWrapper';
-import { Box, type BoxProps } from '../Box';
+import { useTamaguiBoxProps } from '../../hooks/useTamaguiBoxProps';
+import type { BoxProps } from '../Box';
 import { FieldContext } from './Field';
+import { FieldRowFrame } from './FieldFrames';
+import { withFuselageProvider } from '../FuselageProvider/FuselageProvider';
 
 export type FieldRowProps = BoxProps;
 
 const FieldRow = (props: FieldRowProps) => {
-	const component = <Box is='span' rcx-field__row {...props} />;
+	const frameProps = useTamaguiBoxProps({ ...props }, 'rcx-field__row');
+	const component = <FieldRowFrame {...(frameProps as GetProps<typeof FieldRowFrame>)} />;
 
 	if (process.env.NODE_ENV === 'development') {
 		return (
@@ -18,4 +24,4 @@ const FieldRow = (props: FieldRowProps) => {
 	return component;
 };
 
-export default FieldRow;
+export default withFuselageProvider(FieldRow);

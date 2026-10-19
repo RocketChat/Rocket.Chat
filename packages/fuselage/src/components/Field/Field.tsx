@@ -1,6 +1,10 @@
+import type { GetProps } from '@tamagui/web';
 import { createContext } from 'react';
 
-import { Box, type BoxProps } from '../Box';
+import { useTamaguiBoxProps } from '../../hooks/useTamaguiBoxProps';
+import type { BoxProps } from '../Box';
+import { FieldFrame } from './FieldFrames';
+import { withFuselageProvider } from '../FuselageProvider/FuselageProvider';
 
 export const FieldContext = createContext(false);
 
@@ -10,11 +14,13 @@ export type FieldProps = BoxProps;
  * A `Field` is a wrapper representing an entry in a form.
  */
 function Field(props: FieldProps) {
+	const frameProps = useTamaguiBoxProps({ ...props }, 'rcx-field');
+
 	return (
 		<FieldContext.Provider value={true}>
-			<Box rcx-field {...props} />
+			<FieldFrame {...(frameProps as GetProps<typeof FieldFrame>)} />
 		</FieldContext.Provider>
 	);
 }
 
-export default Field;
+export default withFuselageProvider(Field);
