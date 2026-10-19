@@ -5,9 +5,10 @@ import { setTimeout as sleep } from 'node:timers/promises';
 
 import type { IRoom } from '@rocket.chat/core-typings';
 
-import { DUPLICATE_SETTLE_MS, federationPolling, uniqueSuffix } from './helper/config';
+import { config, DUPLICATE_SETTLE_MS, federationPolling, uniqueSuffix } from './helper/config';
 import { isGroupchat, isOccupantPresence, replacedId } from './helper/predicates';
 import {
+	assertDomainAllowed,
 	anonymousOccupantUsername,
 	createLocalUser,
 	deleteRoomOnCleanup,
@@ -35,6 +36,8 @@ describe('XMPP federation: rooms hosted by the XMPP server', () => {
 
 	before(async () => {
 		rc = await setupSuite();
+		// Rooms live on their own domain, which the allow list must name separately
+		await assertDomainAllowed(rc, config.xmpp.mucDomain);
 		alice = await registerXmppUser(rc, 'alice');
 		await assertFederationReachable(rc, alice);
 	});

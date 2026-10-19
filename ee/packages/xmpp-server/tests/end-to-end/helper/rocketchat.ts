@@ -84,16 +84,25 @@ export async function connectRocketChat(cleanup: Cleanup): Promise<RocketChat> {
 	assert.ok(enabled, 'XMPP_Server_Enabled is off in Rocket.Chat');
 	assert.ok(domain, 'XMPP_Server_Domain is empty in Rocket.Chat');
 
+	assertAllowed(allowList, config.xmpp.domain);
+
+	return { admin, domain, mucDomain: `${mucSubdomain || 'conference'}.${domain}`, cleanup, roomsToDelete: new Set() };
+}
+
+function assertAllowed(allowList: string, domain: string): void {
 	const allowed = allowList
 		.split(',')
 		.map((entry) => entry.trim().toLowerCase())
 		.filter(Boolean);
 	assert.ok(
-		!allowed.length || allowed.includes(config.xmpp.domain.toLowerCase()),
-		`XMPP_Server_Domain_Allow_List (${allowList}) does not include ${config.xmpp.domain}`,
+		!allowed.length || allowed.includes(domain.toLowerCase()),
+		`XMPP_Server_Domain_Allow_List (${allowList}) does not include ${domain}`,
 	);
+}
 
-	return { admin, domain, mucDomain: `${mucSubdomain || 'conference'}.${domain}`, cleanup, roomsToDelete: new Set() };
+/** Fails fast when Rocket.Chat's allow list would refuse `domain`, instead of letting a later step time out. */
+export async function assertDomainAllowed(rc: Pick<RocketChat, 'admin'>, domain: string): Promise<void> {
+	assertAllowed(await getSetting<string>(rc, 'XMPP_Server_Domain_Allow_List'), domain);
 }
 
 /** Deletes the suite's rooms, then runs every other cleanup task. */
