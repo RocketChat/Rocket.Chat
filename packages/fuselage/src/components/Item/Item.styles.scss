@@ -3,7 +3,6 @@
 @use '../../styles/typography.scss' as *;
 @use '../../styles/functions.scss' as *;
 
-$item-color-font-default: theme('item-color-font-default', colors.font(default));
 $item-color-font-highlighted: theme('item-color-font-highlighted', colors.font(titles-labels));
 $item-color-font-secondary: theme('item-color-font-secondary', colors.font(secondary-info));
 $item-color-font-disabled: theme('item-color-font-disabled', colors.font(disabled));
@@ -12,7 +11,6 @@ $item-color-surface-hover: theme('item-color-surface-hover', colors.surface(hove
 $item-color-surface-selected: theme('item-color-surface-selected', colors.surface(selected));
 $item-color-stroke-focus: theme('item-color-stroke-focus', colors.stroke(highlight));
 $item-color-stroke-divider: theme('item-color-stroke-divider', colors.stroke(extra-light));
-$item-group-header-color-surface: theme('item-group-header-color-surface', colors.surface(light));
 
 $item-padding: lengths.padding(4);
 $item-reveal-duration: 0.18s;
@@ -78,29 +76,6 @@ $item-group-narrow-width: 320px;
 .rcx-item {
 	--rcx-item-gap: #{lengths.margin(4)};
 	--rcx-item-inset-inline: 0;
-
-	position: relative;
-
-	display: flex;
-	align-items: center;
-
-	box-sizing: border-box;
-	min-width: 0;
-	margin: 0;
-	padding-block: $item-padding;
-	padding-inline: $item-padding;
-
-	list-style: none;
-
-	text-align: start;
-	text-decoration: none;
-
-	color: $item-color-font-default;
-	border-radius: lengths.border-radius(small);
-
-	font-family: font-family('sans');
-	gap: var(--rcx-item-gap);
-	@include use-font-scale(p2);
 	@include inset-slots;
 	@include inset-scale;
 
@@ -165,92 +140,8 @@ $item-group-narrow-width: 320px;
 		overflow: visible;
 	}
 
-	&__media {
-		display: flex;
-		justify-content: center;
-		align-items: center;
-		flex: none;
-
-		&--icon {
-			width: lengths.size(20);
-			height: lengths.size(20);
-		}
-	}
-
-	&__icon {
-		display: flex;
-		justify-content: center;
-		align-items: center;
-		flex: none;
-
-		width: lengths.size(20);
-		height: lengths.size(20);
-	}
-
-	&__content {
-		display: flex;
-		flex-direction: column;
-		flex: 1 1 auto;
-
-		min-width: 0;
-	}
-
 	&__row {
 		--rcx-item-gap: #{lengths.margin(4)};
-
-		display: flex;
-		align-items: center;
-
-		min-width: 0;
-
-		gap: var(--rcx-item-gap);
-	}
-
-	&__title {
-		overflow: hidden;
-		flex: 1 1 auto;
-
-		min-width: 0;
-
-		white-space: nowrap;
-		text-overflow: ellipsis;
-	}
-
-	&__description {
-		overflow: hidden;
-		flex: 1 1 auto;
-
-		min-width: 0;
-
-		white-space: nowrap;
-		text-overflow: ellipsis;
-
-		color: $item-color-font-secondary;
-		@include use-font-scale(c1);
-
-		&--inline {
-			display: inline;
-
-			margin-inline-start: lengths.margin(4);
-		}
-	}
-
-	&__meta {
-		flex: none;
-
-		white-space: nowrap;
-
-		color: $item-color-font-secondary;
-		@include use-font-scale(c1);
-
-		&--truncate {
-			overflow: hidden;
-			flex: 0 1 auto;
-
-			min-width: 0;
-
-			text-overflow: ellipsis;
-		}
 	}
 
 	&__link {
@@ -285,83 +176,28 @@ $item-group-narrow-width: 320px;
 		}
 	}
 
-	// Content that carries its own tooltip, such as an unread badge, still shows it on hover in a linked row.
-	&:has(.rcx-item__link) [title]:not(.rcx-item__link) {
-		position: relative;
-		z-index: 1;
-	}
+	&__actions--reveal-hover {
+		display: grid;
 
-	&__actions {
-		position: relative;
-		z-index: 1;
+		transition:
+			grid-template-columns $item-reveal-duration ease,
+			margin-inline-start $item-reveal-duration ease,
+			opacity $item-reveal-duration ease;
 
-		display: flex;
-		align-items: center;
-		flex: none;
+		opacity: 0;
+		grid-template-columns: 0fr;
 
-		gap: lengths.margin(2);
-
-		&--reveal-hover {
-			display: grid;
-
-			transition:
-				grid-template-columns $item-reveal-duration ease,
-				margin-inline-start $item-reveal-duration ease,
-				opacity $item-reveal-duration ease;
-
-			opacity: 0;
-			grid-template-columns: 0fr;
-
-			@media (prefers-reduced-motion: reduce) {
-				transition: none;
-			}
+		@media (prefers-reduced-motion: reduce) {
+			transition: none;
 		}
-	}
-
-	&__actions-inner {
-		display: flex;
-		overflow: hidden;
-		align-items: center;
-
-		min-width: 0;
-
-		gap: lengths.margin(2);
 	}
 }
 
 .rcx-item-group-header {
 	--rcx-item-gap: #{lengths.margin(4)};
 	--rcx-item-inset-inline: 0;
-
-	position: relative;
-
-	display: flex;
-	align-items: center;
-
-	box-sizing: border-box;
-	min-width: 0;
-	min-height: lengths.size(28);
-	margin: 0;
-	padding: $item-padding;
-
-	list-style: none;
-
-	color: $item-color-font-secondary;
-	border-radius: lengths.border-radius(small);
-
-	font-family: font-family('sans');
-	gap: var(--rcx-item-gap);
-	@include use-font-scale(c2);
 	@include inset-slots;
 	@include inset-scale;
-
-	&--sticky {
-		position: sticky;
-		z-index: 2;
-		top: 0;
-
-		background-color: $item-group-header-color-surface;
-	}
 
 	&:has(.rcx-item-group-title:is(button)):hover {
 		background-color: $item-color-surface-hover;
@@ -425,16 +261,6 @@ $item-group-narrow-width: 320px;
 
 .rcx-item-divider {
 	--rcx-item-inset-inline: 0;
-
-	display: block;
-
-	margin: 0;
-	padding-block: lengths.padding(4);
-	padding-inline: 0;
-
-	list-style: none;
-
-	border: 0;
 	@include inset-scale;
 
 	&::before {
@@ -443,12 +269,6 @@ $item-group-narrow-width: 320px;
 		content: '';
 
 		border-top: lengths.border-width(default) solid $item-color-stroke-divider;
-	}
-
-	&--inset-sm,
-	&--inset-md,
-	&--inset-lg {
-		margin-inline: calc(#{$item-padding} + var(--rcx-item-inset-inline));
 	}
 }
 

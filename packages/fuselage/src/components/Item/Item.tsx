@@ -1,10 +1,24 @@
+import { styled, Text, type GetProps } from '@tamagui/web';
 import type { AllHTMLAttributes, ElementType, MouseEvent, RefAttributes } from 'react';
 import { useMemo } from 'react';
 
 import { ItemContext } from './ItemContext';
+import { itemRowStyle, toRender, textStyle } from './itemStyles';
 import type { ItemInset } from './types';
 import { useIdRegistry } from './useIdRegistry';
+import { textIconColors } from '../../Theme';
 import { cx, cxx } from '../../helpers/composeClassNames';
+import { toCSSValue } from '../../helpers/toCSSValue';
+import { withFuselageProvider } from '../FuselageProvider/FuselageProvider';
+
+// Hover, focus and the state modifiers stay in SCSS: hover depends on attribute and `:has` selectors, and the states must keep winning over it.
+const ItemFrame = styled(Text, {
+	...itemRowStyle,
+	textAlign: 'start',
+	textDecorationLine: 'none',
+	color: toCSSValue('--rcx-item-color-font-default', textIconColors['font-default']),
+	...textStyle('p2'),
+});
 
 export type ItemProps = {
 	/**
@@ -95,8 +109,9 @@ const Item = ({
 
 	return (
 		<ItemContext.Provider value={contextValue}>
-			<Tag
-				{...props}
+			<ItemFrame
+				{...(props as GetProps<typeof ItemFrame>)}
+				render={toRender(Tag)}
 				aria-labelledby={ariaLabelledBy}
 				aria-describedby={ariaDescribedBy}
 				className={cx(
@@ -118,9 +133,9 @@ const Item = ({
 				onClick={handleClick}
 			>
 				{children}
-			</Tag>
+			</ItemFrame>
 		</ItemContext.Provider>
 	);
 };
 
-export default Item;
+export default withFuselageProvider(Item);

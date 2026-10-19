@@ -1,8 +1,18 @@
+import { styled, Text, type GetProps } from '@tamagui/web';
 import type { AllHTMLAttributes, ElementType, RefAttributes } from 'react';
 import { useEffect, useId } from 'react';
 
 import { useItemContext } from './ItemContext';
+import { centeredSlotStyle, toRender } from './itemStyles';
 import { cx } from '../../helpers/composeClassNames';
+import { size } from '../../styleTokens';
+import { withFuselageProvider } from '../FuselageProvider/FuselageProvider';
+
+const ItemIconFrame = styled(Text, {
+	...centeredSlotStyle,
+	width: size('x20'),
+	height: size('x20'),
+});
 
 export type ItemIconProps = {
 	is?: ElementType;
@@ -32,7 +42,15 @@ const ItemIcon = ({ is: Tag = 'div', label, id: propId, className, ...props }: I
 
 	const a11yProps = label ? { 'role': 'img', 'aria-label': label } : { 'aria-hidden': true };
 
-	return <Tag {...a11yProps} {...props} id={id} className={cx('rcx-item__icon', className)} />;
+	return (
+		<ItemIconFrame
+			{...(a11yProps as GetProps<typeof ItemIconFrame>)}
+			{...(props as GetProps<typeof ItemIconFrame>)}
+			render={toRender(Tag)}
+			id={id}
+			className={cx('rcx-item__icon', className)}
+		/>
+	);
 };
 
-export default ItemIcon;
+export default withFuselageProvider(ItemIcon);
