@@ -182,21 +182,18 @@ describe('AbacRoomMembershipPreview', () => {
 		},
 	);
 
-	it('should check the next page only when Load more is pressed', async () => {
+	it('should check a few sparse pages on its own, then wait for Load more', async () => {
 		const { endpoint } = renderPreview(({ after }) =>
-			after
-				? page({ total: undefined })
-				: page({ members: [bob], editor: 'compliant', total: 1000, next: { _id: 'bob', username: 'bob' } }),
+			page({ editor: 'compliant', next: { _id: 'cursor', username: 'cursor' }, ...(after ? { total: undefined } : { total: 5000 }) }),
 		);
 
 		expect(await screen.findByText('ABAC_Preview_Partial_warning')).toBeInTheDocument();
-		expect(endpoint).toHaveBeenCalledTimes(1);
+		expect(endpoint).toHaveBeenCalledTimes(3);
 
 		await userEvent.click(screen.getByRole('button', { name: 'Load_more' }));
 
-		await waitFor(() => expect(screen.queryByText('ABAC_Preview_Partial_warning')).not.toBeInTheDocument());
-		expect(endpoint).toHaveBeenCalledTimes(2);
-		expect(endpoint).toHaveBeenNthCalledWith(2, expect.objectContaining({ after: { _id: 'bob', username: 'bob' } }));
+		await waitFor(() => expect(endpoint).toHaveBeenCalledTimes(4));
+		expect(endpoint).toHaveBeenNthCalledWith(4, expect.objectContaining({ after: { _id: 'cursor', username: 'cursor' } }));
 	});
 
 	it('should not save when the editor cancels the confirmation', async () => {
@@ -324,7 +321,6 @@ describe('AbacRoomMembershipPreview', () => {
 			return new Promise<never>(() => undefined);
 		});
 
-		await userEvent.click(await screen.findByRole('button', { name: 'Load_more' }));
 		expect(await screen.findByText('ABAC_Preview_Unavailable')).toBeInTheDocument();
 		const retryButton = screen.getByRole('button', { name: 'Retry' });
 
@@ -348,7 +344,6 @@ describe('AbacRoomMembershipPreview', () => {
 			return page({ members: [bob], editor: 'compliant', total: 1000, next: { _id: 'bob', username: 'bob' } });
 		});
 
-		await userEvent.click(await screen.findByRole('button', { name: 'Load_more' }));
 		expect(await screen.findByText('ABAC_Preview_Unavailable')).toBeInTheDocument();
 
 		await userEvent.click(screen.getByRole('button', { name: 'ABAC_Preview_Loses_access' }));

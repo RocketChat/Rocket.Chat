@@ -210,6 +210,7 @@ const AbacRoomMembershipPreview = ({ rid, roomName, attributes, isSaving, onBack
 									<Virtuoso<(typeof members)[number], AbacRoomPreviewListContext>
 										style={{ height: '100%', width: '100%' }}
 										data={members}
+										endReached={() => !isSaving && preview.onEndReached()}
 										components={{ List: AbacRoomPreviewList, Footer: AbacRoomPreviewListFooter }}
 										context={{ ...footerContext, label: t(groupLabels[group]), loading: isChecking }}
 										itemContent={(_index, member) => <AbacRoomPreviewMemberRow member={member} />}
