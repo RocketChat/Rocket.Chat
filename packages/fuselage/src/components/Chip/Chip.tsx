@@ -30,14 +30,21 @@ const Chip = ({
 	renderDismissSymbol = defaultRenderDismissSymbol,
 	...rest
 }: ChipProps) => {
-	const onDismiss = onClick || onMouseDown;
+	const dismissable = Boolean(onClick || onMouseDown);
 
 	return (
-		<button type='button' className={prependClassName(className, 'rcx-box rcx-chip')} disabled={!onDismiss} onClick={onDismiss} {...rest}>
+		<button
+			type='button'
+			className={prependClassName(className, 'rcx-box rcx-chip')}
+			disabled={!dismissable}
+			onClick={onClick}
+			onMouseDown={onMouseDown}
+			{...rest}
+		>
 			<Margins all='x4'>
 				{thumbUrl && renderThumb?.({ url: thumbUrl })}
 				{children && <span className='rcx-box rcx-chip__text'>{children}</span>}
-				{onDismiss && renderDismissSymbol?.()}
+				{dismissable && renderDismissSymbol?.()}
 			</Margins>
 		</button>
 	);
