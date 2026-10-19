@@ -12,6 +12,7 @@ type BubbleButtonProps = {
 
 export const BubbleButton = ({ secondary, label, onClick, icon, ...props }: BubbleButtonProps) => (
 	<button
+		type='button'
 		className={`rcx-box rcx-box--full rcx-bubble__button ${secondary ? 'rcx-bubble__button--secondary' : 'rcx-bubble__button--primary'}`}
 		onClick={onClick}
 		{...props}
