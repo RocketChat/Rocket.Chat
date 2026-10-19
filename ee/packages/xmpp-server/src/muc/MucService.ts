@@ -8,6 +8,7 @@ import { normalizeRoomJid, normalizeUserBareJid } from '../jid/normalize';
 import type { Logger } from '../logger';
 import { MucRoom } from './MucRoom';
 import { parseMucInvite, splitOccupantJid } from './stanzas';
+import { buildStanzaError } from '../xml/errors';
 
 export type MucServiceDeps = {
 	config: ResolvedXMPPServerConfig;
@@ -80,36 +81,42 @@ export class MucService {
 		return [...this.rooms.entries()].filter(([roomId]) => this.publicRooms.has(roomId)).map(([, room]) => ({ jid: room.roomJid }));
 	}
 
-	/** Handles a stanza addressed to the MUC service domain. Returns true if consumed. */
+	/**
+	 * Handles a message or presence addressed to the MUC service domain; IQs are left to the
+	 * router. Every message and presence is consumed, so none is taken for a DM or a contact's presence.
+	 */
 	handleStanza(stanza: Element): boolean {
-		const { to } = stanza.attrs;
-		if (!to) {
+		if (stanza.name !== 'message' && stanza.name !== 'presence') {
 			return false;
 		}
-
-		const [roomJid] = splitOccupantJid(to);
-		const roomId = roomJid.split('@')[0];
-		const room = this.rooms.get(roomId);
-		if (!room) {
-			return false;
+		// RFC 6120 §8.3.1: an error is never answered
+		if (stanza.attrs.type === 'error') {
+			return true;
 		}
 
-		switch (stanza.name) {
-			case 'presence':
-				if (stanza.attrs.type === 'unavailable') {
-					room.handleLeave(stanza);
-				} else {
-					void room.handleJoin(stanza).catch((err) => this.logger.error({ err }, 'MUC join failed'));
-				}
-				return true;
-			case 'message':
-				if (stanza.attrs.type === 'groupchat') {
-					room.handleGroupchatMessage(stanza);
-					return true;
-				}
-				return false;
-			default:
-				return false;
+		const [roomJid] = splitOccupantJid(stanza.attrs.to ?? '');
+		const at = roomJid.indexOf('@');
+		const room = at > 0 ? this.rooms.get(roomJid.slice(0, at)) : undefined;
+
+		if (stanza.name === 'presence') {
+			this.handlePresence(stanza, room, at > 0);
+		} else if (stanza.attrs.type === 'groupchat' && room) {
+			room.handleGroupchatMessage(stanza);
+		} else {
+			this.deps.send(buildStanzaError(stanza, room ? 'feature-not-implemented' : 'item-not-found', 'cancel'));
+		}
+		return true;
+	}
+
+	/** Joins and leaves only: rooms take part in no presence subscription and answer no probe. */
+	private handlePresence(stanza: Element, room: MucRoom | undefined, namesRoom: boolean): void {
+		const { type } = stanza.attrs;
+		if (type === 'unavailable') {
+			room?.handleLeave(stanza);
+		} else if (type === undefined && room) {
+			void room.handleJoin(stanza).catch((err) => this.logger.error({ err }, 'MUC join failed'));
+		} else if (type === undefined && namesRoom) {
+			this.deps.send(buildStanzaError(stanza, 'forbidden', 'auth'));
 		}
 	}
 

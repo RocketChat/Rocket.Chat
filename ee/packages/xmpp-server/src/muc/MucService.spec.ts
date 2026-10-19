@@ -20,15 +20,19 @@ const p = (xmlString: string): Element => parse(xmlString) as unknown as Element
 function setup() {
 	const events = new Emitter<XMPPServerEventMap>();
 	const invites: XMPPServerEventMap['muc.inviteReceived'][] = [];
+	const sent: Element[] = [];
 	events.on('muc.inviteReceived', (invite) => invites.push(invite));
 	const muc = new MucService({
 		config: resolveConfig({ domain: 'rc.tld', requireTls: false, logger: silentLogger }),
 		events,
 		logger: silentLogger,
-		send: () => undefined,
+		send: (stanza) => sent.push(stanza),
 	});
-	return { muc, invites };
+	return { muc, invites, sent };
 }
+
+const errorConditionOf = (stanza: Element): string | undefined =>
+	stanza.getChild('error')?.children.find((child) => typeof child !== 'string')?.name;
 
 describe('MucService.handlePossibleInvite', () => {
 	it('emits the room JID in its normalized spelling (remote-muc R1)', () => {
@@ -75,5 +79,60 @@ describe('MucService.handlePossibleInvite', () => {
 		muc.handlePossibleInvite(mediated, 'bob@rc.tld');
 
 		expect(invites).toEqual([expect.objectContaining({ fromJid: 'team@conference.remote.tld' })]);
+	});
+});
+
+describe('MucService.handleStanza (hosted-muc R16)', () => {
+	it('answers a message to a room that does not exist with item-not-found, consuming it', () => {
+		const { muc, sent } = setup();
+
+		expect(
+			muc.handleStanza(
+				p(`<message from='alice@remote.tld/pc' to='team@conference.rc.tld/bob' type='chat' id='m1'><body>hi</body></message>`),
+			),
+		).toBe(true);
+		expect(sent.map(errorConditionOf)).toEqual(['item-not-found']);
+		expect(sent[0].attrs).toMatchObject({ to: 'alice@remote.tld/pc', type: 'error', id: 'm1' });
+	});
+
+	it('answers a private message in an existing room with feature-not-implemented, consuming it', () => {
+		const { muc, sent } = setup();
+		muc.createRoom({ roomId: 'team' });
+
+		expect(
+			muc.handleStanza(p(`<message from='alice@remote.tld/pc' to='team@conference.rc.tld/bob' type='chat'><body>hi</body></message>`)),
+		).toBe(true);
+		expect(sent.map(errorConditionOf)).toEqual(['feature-not-implemented']);
+	});
+
+	it('refuses a join to a room that does not exist with forbidden (R4)', () => {
+		const { muc, sent } = setup();
+
+		expect(muc.handleStanza(p(`<presence from='alice@remote.tld/pc' to='ghost@conference.rc.tld/alice'/>`))).toBe(true);
+		expect(sent.map(errorConditionOf)).toEqual(['forbidden']);
+	});
+
+	it.each([['subscribe'], ['probe'], ['subscribed'], ['unsubscribe']])(
+		'treats a %s presence to a room as no join, answering nothing',
+		(type) => {
+			const { muc, sent } = setup();
+			muc.createRoom({ roomId: 'team' });
+
+			expect(muc.handleStanza(p(`<presence from='alice@remote.tld/pc' to='team@conference.rc.tld/alice' type='${type}'/>`))).toBe(true);
+			expect(sent).toEqual([]);
+		},
+	);
+
+	it('never answers an error stanza', () => {
+		const { muc, sent } = setup();
+
+		expect(muc.handleStanza(p(`<message from='alice@remote.tld/pc' to='ghost@conference.rc.tld' type='error'/>`))).toBe(true);
+		expect(sent).toEqual([]);
+	});
+
+	it('leaves IQs to the router', () => {
+		const { muc } = setup();
+
+		expect(muc.handleStanza(p(`<iq from='alice@remote.tld/pc' to='team@conference.rc.tld' type='get' id='q1'/>`))).toBe(false);
 	});
 });
