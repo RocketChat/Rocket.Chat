@@ -118,6 +118,7 @@ export interface IRocketChatDesktop {
 	 * nothing of the main window's but no-op setters.
 	 */
 	videoCall?: IVideoCallWindow;
+	onTelephonyCallRequested?: (callback: (payload: { phoneNumber: string; rawUri: string }) => void) => void;
 }
 
 /** What the desktop app's video call window offers the page loaded in it. */
