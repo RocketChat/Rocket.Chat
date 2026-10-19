@@ -169,6 +169,8 @@ export class ConnectionImpl
 		// caller (an event listener that calls `connect()`/`reconnect()`)
 		// hits the `'connecting'` guard and gets this same promise.
 		const connectPromise = new Promise<boolean>((resolve, reject) => {
+			let stopHandshake: (() => void) | undefined;
+
 			ws.onopen = () => {
 				ws.onmessage = (event) => {
 					this.client.handleMessage(String(event.data));
@@ -196,7 +198,7 @@ export class ConnectionImpl
 				// If the server is willing to speak the version of the protocol specified in the connect message, it sends back a connected message.
 				// Otherwise the server sends back a failed message with a version of DDP it would rather speak, informed by the connect message's support field, and closes the underlying transport.
 
-				this.client.onConnection((payload) => {
+				stopHandshake = this.client.onConnection((payload) => {
 					if (payload.msg === 'connected') {
 						this.status = 'connected';
 						// Reset the retry budget on successful connection so a future
@@ -224,7 +226,16 @@ export class ConnectionImpl
 				});
 			};
 
+			// The close event that always follows carries the handling; a listener must exist so
+			// EventEmitter-based implementations (the `ws` package) don't throw on errors.
+			ws.onerror = () => undefined;
+
 			ws.onclose = () => {
+				// The handshake listener belongs to this socket; a later attempt registers its own.
+				stopHandshake?.();
+				// A no-op once the handshake settled the promise.
+				reject(new Error('Connection closed before the DDP handshake completed'));
+
 				// If a newer ws has already taken over (this socket was closed
 				// after `connect()` opened a replacement), ignore the late
 				// onclose. Otherwise its handler would clobber `this.status` and
@@ -261,7 +272,8 @@ export class ConnectionImpl
 					if (this.status === 'connecting' || this.status === 'connected' || this.status === 'closed') {
 						return;
 					}
-					void this.reconnect();
+					// A failed attempt schedules its own retry from its onclose.
+					this.reconnect().catch(() => undefined);
 				}, retryDelay);
 			};
 		});
