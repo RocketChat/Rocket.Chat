@@ -120,11 +120,9 @@ describe('CallMembersPanel', () => {
 			}),
 		);
 
-		const inCall = group('In call');
-
-		expect(inCall.getByText('Someone Else')).toBeInTheDocument();
-		expect(inCall.getByText('External participant')).toBeInTheDocument();
-		expect(inCall.getByRole('button', { name: 'Call actions for Someone Else' })).toBeInTheDocument();
+		expect(group('In call').getByText('Someone Else')).toBeInTheDocument();
+		expect(group('In call').getByText('External participant')).toBeInTheDocument();
+		expect(group('In call').getByRole('button', { name: 'Call actions for Someone Else' })).toBeInTheDocument();
 	});
 
 	// Ahead of both other groups, because everyone in it is waiting on somebody looking at this panel. The
@@ -138,14 +136,12 @@ describe('CallMembersPanel', () => {
 			}),
 		);
 
-		const lobby = group('Waiting to join');
-
 		expect(screen.queryByRole('list', { name: 'In call' })).not.toBeInTheDocument();
 
-		await userEvent.click(lobby.getByRole('button', { name: 'Admit' }));
+		await userEvent.click(group('Waiting to join').getByRole('button', { name: 'Admit' }));
 		expect(actions.admit).toHaveBeenCalledWith('p-ada');
 
-		await userEvent.click(lobby.getByRole('button', { name: 'Reject' }));
+		await userEvent.click(group('Waiting to join').getByRole('button', { name: 'Reject' }));
 		expect(actions.disconnect).toHaveBeenCalledWith('p-ada');
 	});
 });
