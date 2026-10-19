@@ -15,6 +15,8 @@ export enum AbacErrorCode {
 	AttributeStoreExternal = 'error-abac-attribute-store-external',
 	EntityResolutionFailed = 'error-virtru-entity-resolution-failed',
 	NotAuthorizedToModifyRoom = 'error-abac-not-authorized-to-modify-room',
+	RequiredAttributesRemoved = 'error-abac-required-attributes-removed',
+	RoomAttributesCleared = 'error-abac-room-attributes-cleared',
 }
 
 export class AbacError extends Error {
@@ -112,6 +114,18 @@ export class AbacEntityResolutionFailedError extends AbacError {
 export class AbacNotAuthorizedToModifyRoomError extends AbacError {
 	constructor(details?: unknown) {
 		super(AbacErrorCode.NotAuthorizedToModifyRoom, details);
+	}
+}
+
+export class AbacRequiredAttributesRemovedError extends AbacError {
+	constructor(details?: unknown) {
+		super(AbacErrorCode.RequiredAttributesRemoved, details);
+	}
+}
+
+export class AbacRoomAttributesClearedError extends AbacError {
+	constructor(details?: unknown) {
+		super(AbacErrorCode.RoomAttributesCleared, details);
 	}
 }
 
