@@ -8,7 +8,7 @@ exports[`renders Default without crashing 1`] = `
     >
       <svg
         aria-hidden="true"
-        class="rcx-status-bullet rcx-status-bullet--online undefined "
+        class="is_View _d-1409515928 _f-1711210172 _br-2015354435 _b-1674632166 _w-762189173 _h-1741434836 _f-1658460128 rcx-status-bullet rcx-status-bullet--online undefined"
         height="24"
         viewBox="0 0 24 24"
         width="24"
@@ -20,7 +20,7 @@ exports[`renders Default without crashing 1`] = `
       </svg>
       <svg
         aria-hidden="true"
-        class="rcx-status-bullet rcx-status-bullet--away undefined "
+        class="is_View _d-1409515928 _f-1711210172 _br-2015354435 _b-1674632166 _w-762189173 _h-1741434836 _f-2006837375 rcx-status-bullet rcx-status-bullet--away undefined"
         height="10"
         viewBox="0 0 10 10"
         width="10"
@@ -34,7 +34,7 @@ exports[`renders Default without crashing 1`] = `
       </svg>
       <svg
         aria-hidden="true"
-        class="rcx-status-bullet rcx-status-bullet--busy undefined "
+        class="is_View _d-1409515928 _f-1711210172 _br-2015354435 _b-1674632166 _w-762189173 _h-1741434836 _f-1427408922 rcx-status-bullet rcx-status-bullet--busy undefined"
         height="10"
         viewBox="0 0 10 10"
         width="10"
@@ -48,7 +48,7 @@ exports[`renders Default without crashing 1`] = `
       </svg>
       <svg
         aria-hidden="true"
-        class="rcx-status-bullet rcx-status-bullet--disabled undefined "
+        class="is_View _d-1409515928 _f-1711210172 _br-2015354435 _b-1674632166 _w-762189173 _h-1741434836 _f-924950554 rcx-status-bullet rcx-status-bullet--disabled undefined"
         height="24"
         viewBox="0 0 24 24"
         width="24"
@@ -62,7 +62,7 @@ exports[`renders Default without crashing 1`] = `
       </svg>
       <svg
         aria-hidden="true"
-        class="rcx-status-bullet rcx-status-bullet--offline undefined "
+        class="is_View _d-1409515928 _f-1711210172 _br-2015354435 _b-1674632166 _w-762189173 _h-1741434836 _s-475476743 rcx-status-bullet rcx-status-bullet--offline undefined"
         fill="none"
         height="12"
         viewBox="0 0 12 12"
@@ -79,7 +79,7 @@ exports[`renders Default without crashing 1`] = `
       </svg>
       <svg
         aria-hidden="true"
-        class="rcx-status-bullet rcx-status-bullet--loading undefined "
+        class="is_View _d-1409515928 _f-1711210172 _br-2015354435 _b-1674632166 _w-762189173 _h-1741434836 _s-1913416480 rcx-status-bullet rcx-status-bullet--loading undefined"
         fill="none"
         height="12"
         viewBox="0 0 12 12"
@@ -108,7 +108,7 @@ exports[`renders Small without crashing 1`] = `
     >
       <svg
         aria-hidden="true"
-        class="rcx-status-bullet rcx-status-bullet--online undefined rcx-status-bullet--small"
+        class="is_View _d-1409515928 _f-1711210172 _br-2015354435 _b-1674632166 _f-1658460128 _w-1912221297 _h-1620376816 rcx-status-bullet rcx-status-bullet--online undefined rcx-status-bullet--small"
         height="24"
         viewBox="0 0 24 24"
         width="24"
@@ -120,7 +120,7 @@ exports[`renders Small without crashing 1`] = `
       </svg>
       <svg
         aria-hidden="true"
-        class="rcx-status-bullet rcx-status-bullet--away undefined rcx-status-bullet--small"
+        class="is_View _d-1409515928 _f-1711210172 _br-2015354435 _b-1674632166 _f-2006837375 _w-1912221297 _h-1620376816 rcx-status-bullet rcx-status-bullet--away undefined rcx-status-bullet--small"
         height="10"
         viewBox="0 0 10 10"
         width="10"
@@ -134,7 +134,7 @@ exports[`renders Small without crashing 1`] = `
       </svg>
       <svg
         aria-hidden="true"
-        class="rcx-status-bullet rcx-status-bullet--busy undefined rcx-status-bullet--small"
+        class="is_View _d-1409515928 _f-1711210172 _br-2015354435 _b-1674632166 _f-1427408922 _w-1912221297 _h-1620376816 rcx-status-bullet rcx-status-bullet--busy undefined rcx-status-bullet--small"
         height="10"
         viewBox="0 0 10 10"
         width="10"
@@ -148,7 +148,7 @@ exports[`renders Small without crashing 1`] = `
       </svg>
       <svg
         aria-hidden="true"
-        class="rcx-status-bullet rcx-status-bullet--disabled undefined rcx-status-bullet--small"
+        class="is_View _d-1409515928 _f-1711210172 _br-2015354435 _b-1674632166 _f-924950554 _w-1912221297 _h-1620376816 rcx-status-bullet rcx-status-bullet--disabled undefined rcx-status-bullet--small"
         height="24"
         viewBox="0 0 24 24"
         width="24"
@@ -162,7 +162,7 @@ exports[`renders Small without crashing 1`] = `
       </svg>
       <svg
         aria-hidden="true"
-        class="rcx-status-bullet rcx-status-bullet--offline undefined rcx-status-bullet--small"
+        class="is_View _d-1409515928 _f-1711210172 _br-2015354435 _b-1674632166 _s-475476743 _w-1912221297 _h-1620376816 rcx-status-bullet rcx-status-bullet--offline undefined rcx-status-bullet--small"
         fill="none"
         height="12"
         viewBox="0 0 12 12"
@@ -179,7 +179,7 @@ exports[`renders Small without crashing 1`] = `
       </svg>
       <svg
         aria-hidden="true"
-        class="rcx-status-bullet rcx-status-bullet--loading undefined rcx-status-bullet--small"
+        class="is_View _d-1409515928 _f-1711210172 _br-2015354435 _b-1674632166 _s-1913416480 _w-1912221297 _h-1620376816 rcx-status-bullet rcx-status-bullet--loading undefined rcx-status-bullet--small"
         fill="none"
         height="12"
         viewBox="0 0 12 12"
