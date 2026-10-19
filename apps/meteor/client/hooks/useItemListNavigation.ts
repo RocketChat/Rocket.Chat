@@ -76,9 +76,11 @@ export const useItemListNavigation = ({
 				// With nothing past the list, wrap to the other end of the page; with nothing outside it at all, stay, rather than
 				// letting the browser stop on another row
 				if (e.shiftKey) {
-					documentFocusManager.focusPrevious({ ...outsideList, from: node }) ?? documentFocusManager.focusLast(outsideList);
-				} else {
-					documentFocusManager.focusNext({ ...outsideList, from: node }) ?? documentFocusManager.focusFirst(outsideList);
+					if (!documentFocusManager.focusPrevious({ ...outsideList, from: node })) {
+						documentFocusManager.focusLast(outsideList);
+					}
+				} else if (!documentFocusManager.focusNext({ ...outsideList, from: node })) {
+					documentFocusManager.focusFirst(outsideList);
 				}
 				e.preventDefault();
 				e.stopPropagation();

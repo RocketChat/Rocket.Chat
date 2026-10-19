@@ -35,7 +35,9 @@ class RoomStore extends Emitter<{
 	constructor(readonly rid: string) {
 		super();
 
-		debug && this.on('changed', () => console.log(`RoomStore ${this.rid} changed`, this));
+		if (debug) {
+			this.on('changed', () => console.log(`RoomStore ${this.rid} changed`, this));
+		}
 	}
 
 	update({
@@ -102,20 +104,23 @@ export const RoomManager = new (class RoomManager extends Emitter<{
 
 	constructor() {
 		super();
-		debugRoomManager &&
+		if (debugRoomManager) {
 			this.on('opened', (rid) => {
 				console.log('room opened ->', rid);
 			});
+		}
 
-		debugRoomManager &&
+		if (debugRoomManager) {
 			this.on('back', (rid) => {
 				console.log('room moved to back ->', rid);
 			});
+		}
 
-		debugRoomManager &&
+		if (debugRoomManager) {
 			this.on('closed', (rid) => {
 				console.log('room close ->', rid);
 			});
+		}
 	}
 
 	get lastOpened(): IRoom['_id'] | undefined {

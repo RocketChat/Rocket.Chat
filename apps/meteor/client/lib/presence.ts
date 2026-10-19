@@ -68,7 +68,9 @@ const getPresence = ((): ((uid: UserPresence['_id']) => void) => {
 	const deletedUids = new Set<UserPresence['_id']>();
 
 	const fetch = (delay = 500): void => {
-		timer && clearTimeout(timer);
+		if (timer) {
+			clearTimeout(timer);
+		}
 		timer = setTimeout(async () => {
 			const currentUids = new Set(uids);
 			uids.clear();

@@ -226,7 +226,9 @@ export abstract class AutoTranslate {
 			if (token.indexOf('notranslate') === -1) {
 				const newToken = `<i class=notranslate>{${count++}}</i>`;
 				message.msg = message.msg.replace(token, newToken);
-				message.tokens ? (message.tokens[tokenIndex].token = newToken) : undefined;
+				if (message.tokens) {
+					message.tokens[tokenIndex].token = newToken;
+				}
 			}
 		}
 

@@ -231,7 +231,9 @@ export const removeFromRecent = (emoji: string, recentEmojis: string[], setRecen
 export const updateRecent = (recentList: string[]) => {
 	const recentPkgList: string[] = emoji.packages.base.emojisByCategory.recent;
 	recentList?.forEach((_emoji) => {
-		!recentPkgList.includes(_emoji) && recentPkgList.push(_emoji);
+		if (!recentPkgList.includes(_emoji)) {
+			recentPkgList.push(_emoji);
+		}
 	});
 };
 

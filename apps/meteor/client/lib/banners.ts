@@ -70,7 +70,9 @@ export const closeById = (id: string): void => {
 
 	queue.splice(index, 1);
 	emitter.emit('update');
-	index === 0 && emitter.emit('update-first');
+	if (index === 0) {
+		emitter.emit('update-first');
+	}
 };
 
 export const close = (): void => {

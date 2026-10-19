@@ -18,7 +18,9 @@ export const createComposerAPI = (
 	};
 
 	const setText: SetText = (text, { selection, skipFocus } = {}) => {
-		!skipFocus && focus();
+		if (!skipFocus) {
+			focus();
+		}
 
 		const { selectionStart, selectionEnd } = input;
 		const textAreaTxt = input.value;
@@ -30,7 +32,9 @@ export const createComposerAPI = (
 		if (selection) {
 			if (!document.execCommand?.('insertText', false, text)) {
 				input.value = textAreaTxt.substring(0, selectionStart) + text + textAreaTxt.substring(selectionStart);
-				!skipFocus && focus();
+				if (!skipFocus) {
+					focus();
+				}
 			}
 			input.setSelectionRange(selection.start ?? 0, selection.end ?? text.length);
 		}
@@ -42,7 +46,9 @@ export const createComposerAPI = (
 		triggerEvent(input, 'input');
 		triggerEvent(input, 'change');
 
-		!skipFocus && focus();
+		if (!skipFocus) {
+			focus();
+		}
 	};
 
 	const core = createComposerAPICore({

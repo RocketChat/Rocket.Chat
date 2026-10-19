@@ -13,11 +13,12 @@ export const useUpdateAvatar = () => {
 		return notify('updateAvatar', (data) => {
 			if ('username' in data) {
 				const { username, etag } = data;
-				username &&
+				if (username) {
 					Users.state.update(
 						(record) => record.username === username,
 						(record) => ({ ...record, avatarETag: etag }),
 					);
+				}
 			}
 		});
 	}, [notify, uid]);

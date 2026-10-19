@@ -19,7 +19,9 @@ export async function startRegisterWorkspace(resend = false) {
 
 		return true;
 	}
-	(await Settings.updateValueById('Register_Server', true)).modifiedCount && void notifyOnSettingChangedById('Register_Server');
+	if ((await Settings.updateValueById('Register_Server', true)).modifiedCount) {
+		void notifyOnSettingChangedById('Register_Server');
+	}
 
 	const regInfo = await buildWorkspaceRegistrationData(undefined);
 

@@ -185,7 +185,9 @@ export const sendFCM = function ({ userTokens, notification, _removeToken, optio
 
 		const removeToken = () => {
 			const { token } = fcmRequest.message;
-			token && _removeToken(token);
+			if (token) {
+				_removeToken(token);
+			}
 		};
 
 		const response = fetchWithRetry(url, removeToken, {

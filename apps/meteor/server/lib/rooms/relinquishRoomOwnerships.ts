@@ -70,7 +70,9 @@ export const relinquishRoomOwnerships = async function (
 	const changeOwner = subscribedRooms.filter(({ shouldChangeOwner }) => shouldChangeOwner);
 
 	for (const { newOwner, rid } of changeOwner) {
-		newOwner && (await addUserRolesAsync(newOwner, ['owner'], rid));
+		if (newOwner) {
+			await addUserRolesAsync(newOwner, ['owner'], rid);
+		}
 	}
 
 	const roomIdsToRemove: string[] = subscribedRooms.filter(({ shouldBeRemoved }) => shouldBeRemoved).map(({ rid }) => rid);

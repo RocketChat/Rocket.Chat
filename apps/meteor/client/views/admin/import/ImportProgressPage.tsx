@@ -56,17 +56,20 @@ const ImportProgressPage = function ImportProgressPage() {
 
 			switch (step) {
 				case 'importer_done':
-					i18n.exists(message) &&
+					if (i18n.exists(message)) {
 						dispatchToastMessage({
 							type: 'success',
 							message: t(message),
 						});
+					}
 					router.navigate('/admin/import');
 					return;
 
 				case 'importer_import_failed':
 				case 'importer_import_cancelled':
-					i18n.exists(message) && handleError(message);
+					if (i18n.exists(message)) {
+						handleError(message);
+					}
 					router.navigate('/admin/import');
 					return;
 

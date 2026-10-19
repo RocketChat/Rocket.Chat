@@ -70,7 +70,9 @@ const useRoomsGroups = (): [RoomsNavigationGroup, UnreadGroupDataMap] => {
 	return useDebouncedValue(
 		useMemo(() => {
 			const groups: RoomsNavigationGroup = new Map();
-			showOmnichannel && groups.set('queue', new Set(queue));
+			if (showOmnichannel) {
+				groups.set('queue', new Set(queue));
+			}
 
 			const unreadGroupData: UnreadGroupDataMap = new Map();
 

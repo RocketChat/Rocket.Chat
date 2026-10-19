@@ -240,7 +240,9 @@ export async function onEmailReceived(email: ParsedMail, inbox: string, departme
 					},
 				},
 			);
-			room && (await LivechatRooms.updateEmailThreadByRoomId(room._id, thread));
+			if (room) {
+				await LivechatRooms.updateEmailThreadByRoomId(room._id, thread);
+			}
 			void notifyOnMessageChange({
 				id: msgId,
 			});

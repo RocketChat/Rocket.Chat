@@ -98,7 +98,9 @@ export class NotificationsModule {
 					case 'removed': {
 						streamer.removeListener(userId, userEvent);
 						const sub = [...streamer.subscriptions].find((sub) => sub.eventName === rid && sub.subscription.userId === userId);
-						sub && streamer.removeSubscription(sub, eventName);
+						if (sub) {
+							streamer.removeSubscription(sub, eventName);
+						}
 						break;
 					}
 				}

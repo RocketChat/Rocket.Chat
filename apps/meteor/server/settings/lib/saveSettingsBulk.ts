@@ -15,7 +15,9 @@ import { checkSettingValueBounds } from '../checkSettingValueBonds';
 
 const validJSON = Match.Where((value: string) => {
 	try {
-		value === '' || JSON.parse(value);
+		if (value !== '') {
+			JSON.parse(value);
+		}
 		return true;
 	} catch (_) {
 		throw new Meteor.Error('Invalid JSON provided');

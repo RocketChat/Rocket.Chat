@@ -47,11 +47,7 @@ export const useEditRoomPermissions = (room: IRoom | IRoomWithRetentionPolicy) =
 		canViewJoinCode,
 		canViewReactWhenReadOnly,
 	] = useMemo(() => {
-		const isAllowed =
-			roomCoordinator.getRoomDirectives(room.t)?.allowRoomSettingChange ||
-			(() => {
-				undefined;
-			});
+		const isAllowed = roomCoordinator.getRoomDirectives(room.t)?.allowRoomSettingChange || (() => undefined);
 		return [
 			isAllowed(room, RoomSettingsEnum.NAME),
 			isAllowed(room, RoomSettingsEnum.TOPIC),

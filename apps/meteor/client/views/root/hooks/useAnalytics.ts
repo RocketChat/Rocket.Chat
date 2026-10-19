@@ -62,6 +62,7 @@ export const useAnalytics = (): void => {
 			// Google Analytics 3
 			(function (i, s, o: 'script', g, r: 'ga', a?: HTMLScriptElement, m?: HTMLScriptElement) {
 				i.GoogleAnalyticsObject = r;
+				// eslint-disable-next-line @typescript-eslint/no-unused-expressions -- vendor Google Analytics snippet
 				((i[r] =
 					i[r] ||
 					function (...args) {
@@ -69,6 +70,7 @@ export const useAnalytics = (): void => {
 					}),
 					((i[r] as any).l = new Date().getTime()));
 
+				// eslint-disable-next-line @typescript-eslint/no-unused-expressions -- vendor Google Analytics snippet
 				((a = s.createElement(o)), (m = s.getElementsByTagName(o)[0]));
 				a.async = true;
 				a.src = g;

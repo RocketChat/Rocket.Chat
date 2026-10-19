@@ -86,8 +86,12 @@ const UserAutoCompleteMultiple = forwardRef<HTMLInputElement, UserAutoCompleteMu
 				const newAddedUsername = usernames.filter((username) => !value?.includes(username))[0];
 				const removedUsername = value?.filter((username) => !usernames.includes(username))[0];
 				setFilter('');
-				newAddedUsername && onAddUser(newAddedUsername);
-				removedUsername && onRemoveUser(removedUsername);
+				if (newAddedUsername) {
+					onAddUser(newAddedUsername);
+				}
+				if (removedUsername) {
+					onRemoveUser(removedUsername);
+				}
 			},
 			[onChange, setFilter, onAddUser, onRemoveUser, value],
 		);

@@ -158,7 +158,9 @@ export class SettingsRegistry {
 		try {
 			validateSetting(settingFromCode._id, settingFromCode.type, settingFromCode.value);
 		} catch (e) {
-			IS_DEVELOPMENT && SystemLogger.error({ msg: 'Invalid setting code', _id, err: e as Error });
+			if (IS_DEVELOPMENT) {
+				SystemLogger.error({ msg: 'Invalid setting code', _id, err: e as Error });
+			}
 		}
 
 		const isOverwritten = settingFromCode !== settingFromCodeOverwritten || (settingStored && settingStored !== settingStoredOverwritten);
@@ -202,7 +204,9 @@ export class SettingsRegistry {
 			try {
 				validateSetting(settingFromCode._id, settingFromCode.type, settingStored?.value);
 			} catch (e) {
-				IS_DEVELOPMENT && SystemLogger.error({ msg: 'Invalid setting stored', _id, err: e as Error });
+				if (IS_DEVELOPMENT) {
+					SystemLogger.error({ msg: 'Invalid setting stored', _id, err: e as Error });
+				}
 			}
 			return;
 		}

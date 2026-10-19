@@ -138,17 +138,23 @@ const RecipientForm = (props: RecipientFormProps) => {
 	}, [clearErrors, trigger, hasProviderOptions, isSuccessProvider]);
 
 	useEffect(() => {
-		isErrorContact && validateContactField();
+		if (isErrorContact) {
+			validateContactField();
+		}
 		return () => clearErrors('contactId');
 	}, [clearErrors, isErrorContact, validateContactField]);
 
 	useEffect(() => {
-		isErrorProvider && validateProviderField();
+		if (isErrorProvider) {
+			validateProviderField();
+		}
 		return () => clearErrors('providerId');
 	}, [clearErrors, isErrorProvider, validateProviderField]);
 
 	useEffect(() => {
-		isDirty && onDirty && onDirty();
+		if (isDirty && onDirty) {
+			onDirty();
+		}
 	}, [isDirty, onDirty]);
 
 	const submit = useStableCallback(async (values: RecipientFormData) => {

@@ -19,21 +19,29 @@ export const useReconnectCountdown = (
 			}
 
 			reconnectionTimerRef.current = setInterval(() => {
-				retryTime && setReconnectCountdown(getReconnectCountdown(retryTime));
+				if (retryTime) {
+					setReconnectCountdown(getReconnectCountdown(retryTime));
+				}
 			}, 500);
 			return () => {
-				reconnectionTimerRef.current && clearInterval(reconnectionTimerRef.current);
+				if (reconnectionTimerRef.current) {
+					clearInterval(reconnectionTimerRef.current);
+				}
 				reconnectionTimerRef.current = undefined;
 			};
 		}
 
-		reconnectionTimerRef.current && clearInterval(reconnectionTimerRef.current);
+		if (reconnectionTimerRef.current) {
+			clearInterval(reconnectionTimerRef.current);
+		}
 		reconnectionTimerRef.current = undefined;
 	}, [retryTime, status]);
 
 	useEffect(
 		() => (): void => {
-			reconnectionTimerRef.current && clearInterval(reconnectionTimerRef.current);
+			if (reconnectionTimerRef.current) {
+				clearInterval(reconnectionTimerRef.current);
+			}
 		},
 		[],
 	);

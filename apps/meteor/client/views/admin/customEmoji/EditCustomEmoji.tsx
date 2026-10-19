@@ -91,7 +91,9 @@ const EditCustomEmoji = ({ close, onChange, data, ...props }: EditCustomEmojiPro
 		}
 
 		const formData = new FormData();
-		emojiFile && formData.append('emoji', emojiFile);
+		if (emojiFile) {
+			formData.append('emoji', emojiFile);
+		}
 		formData.append('_id', _id);
 		formData.append('name', name);
 		formData.append('aliases', aliases);

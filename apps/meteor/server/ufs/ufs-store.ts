@@ -228,7 +228,9 @@ export class Store {
 
 		// Delete the temp file
 		await fs.promises.unlink(tmpFile).catch((err) => {
-			err?.code !== 'ENOENT' && console.error(`ufs: cannot delete temp file at ${tmpFile} (${err.message})`);
+			if (err?.code !== 'ENOENT') {
+				console.error(`ufs: cannot delete temp file at ${tmpFile} (${err.message})`);
+			}
 		});
 
 		await this.getCollection().removeById(fileId, { session: options?.session });

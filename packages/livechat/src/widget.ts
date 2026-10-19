@@ -531,7 +531,9 @@ const api: InternalWidgetAPI = {
 	},
 
 	setFullScreenDocumentMobile() {
-		smallScreen && document.body.classList.add('rc-livechat-mobile-full-screen');
+		if (smallScreen) {
+			document.body.classList.add('rc-livechat-mobile-full-screen');
+		}
 	},
 
 	setWidgetPosition,

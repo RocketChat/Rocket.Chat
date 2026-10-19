@@ -534,7 +534,9 @@ export default class RocketAdapter {
 
 			slackMsgTxt.replace(regex, async (match, userId) => {
 				if (!this.userTags[userId]) {
-					(await this.findUser(userId)) || (await this.addUser(userId)); // This adds userTags for the userId
+					if (!(await this.findUser(userId))) {
+						await this.addUser(userId); // This adds userTags for the userId
+					}
 				}
 				const userTags = this.userTags[userId];
 				if (userTags) {

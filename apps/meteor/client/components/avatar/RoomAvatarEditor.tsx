@@ -43,7 +43,9 @@ const RoomAvatarEditor = ({ disabled = false, room, roomAvatar, onChangeAvatar }
 	});
 
 	useEffect(() => {
-		!roomAvatar && reset();
+		if (!roomAvatar) {
+			reset();
+		}
 	}, [roomAvatar, reset]);
 
 	const defaultUrl = room.prid ? getAvatarURL({ roomId: room.prid }) : getAvatarURL({ username: `@${room.name}` }); // Discussions inherit avatars from the parent room

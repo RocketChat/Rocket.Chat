@@ -26,7 +26,9 @@ export const createRichTextComposerAPI = (
 	const getText = (): string => input.innerText.replace(/\n$/, '');
 
 	const setText: SetText = (text, { selection, skipFocus } = {}) => {
-		!skipFocus && focus();
+		if (!skipFocus) {
+			focus();
+		}
 
 		const { selectionStart, selectionEnd } = getSelectionRange(input);
 
@@ -48,7 +50,9 @@ export const createRichTextComposerAPI = (
 			document.execCommand?.('insertText', false, text);
 			if (input.innerText !== expected) {
 				input.innerText = expected;
-				!skipFocus && focus();
+				if (!skipFocus) {
+					focus();
+				}
 			}
 			setSelectionRange(input, selection.start ?? 0, selection.end ?? text.length);
 		}
@@ -68,7 +72,9 @@ export const createRichTextComposerAPI = (
 		triggerEvent(input, 'input');
 		triggerEvent(input, 'change');
 
-		!skipFocus && focus();
+		if (!skipFocus) {
+			focus();
+		}
 	};
 
 	const renderer = createComposerRenderer(input, parseOptions);

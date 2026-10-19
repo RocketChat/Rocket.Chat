@@ -385,7 +385,9 @@ export async function addAssetToSetting(asset: string, value: IRocketChatAsset, 
 	if (currentValue && typeof currentValue === 'object' && currentValue.defaultUrl !== getAssetByKey(asset).defaultUrl) {
 		currentValue.defaultUrl = getAssetByKey(asset).defaultUrl;
 
-		(await Settings.updateValueById(key, currentValue)).modifiedCount && void notifyOnSettingChangedById(key);
+		if ((await Settings.updateValueById(key, currentValue)).modifiedCount) {
+			void notifyOnSettingChangedById(key);
+		}
 	}
 }
 

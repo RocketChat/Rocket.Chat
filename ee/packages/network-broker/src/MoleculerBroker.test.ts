@@ -39,7 +39,7 @@ describe('MoleculerBroker', () => {
 		broker.createService(instance);
 		await broker.destroyService(instance);
 
-		expect(stoppedStub.called).to.be.true;
+		expect(stoppedStub.called).to.equal(true);
 	});
 
 	it('should emit a balanced event, so one instance of each listening service receives it', async () => {
@@ -48,6 +48,6 @@ describe('MoleculerBroker', () => {
 
 		await balanced.emitToOne('room.user-activity', { rid: 'r1', uid: 'u1', activities: ['user-typing'] });
 
-		expect(emit.calledOnceWith('room.user-activity', [{ rid: 'r1', uid: 'u1', activities: ['user-typing'] }])).to.be.true;
+		expect(emit.calledOnceWith('room.user-activity', [{ rid: 'r1', uid: 'u1', activities: ['user-typing'] }])).to.equal(true);
 	});
 });

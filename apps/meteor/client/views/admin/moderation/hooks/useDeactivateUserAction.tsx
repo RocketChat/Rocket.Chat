@@ -50,7 +50,9 @@ const useDeactivateUserAction = (userId: string, isUserReport?: boolean): Generi
 
 	const onDeactivateUser = async () => {
 		setModal();
-		!isUserReport && (await handleDeleteMessages.mutateAsync({ userId }));
+		if (!isUserReport) {
+			await handleDeleteMessages.mutateAsync({ userId });
+		}
 		await handleDeactivateUser.mutateAsync({ userId, activeStatus: false, confirmRelinquish: true });
 		await handleDismissUserReports.mutateAsync({ userId });
 		queryClient.invalidateQueries({ queryKey: ['moderation'] });

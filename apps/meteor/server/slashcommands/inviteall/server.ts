@@ -81,7 +81,11 @@ function inviteAll<T extends string>(type: T): SlashCommand<T>['callback'] {
 			const users = (await cursor.toArray()).map((s: ISubscription) => s.u.username).filter(isTruthy);
 
 			if (!targetChannel && ['c', 'p'].indexOf(baseChannel.t) > -1) {
-				baseChannel.t === 'c' ? await createChannelMethod(userId, channel, users) : await createPrivateGroupMethod(user, channel, users);
+				if (baseChannel.t === 'c') {
+					await createChannelMethod(userId, channel, users);
+				} else {
+					await createPrivateGroupMethod(user, channel, users);
+				}
 				void api.broadcast('notify.ephemeralMessage', userId, message.rid, {
 					msg: i18n.t('Channel_created', {
 						interpolation: { escapeValue: false },

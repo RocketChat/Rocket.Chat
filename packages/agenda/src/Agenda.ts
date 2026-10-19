@@ -484,7 +484,9 @@ export class Agenda extends EventEmitter {
 		debug('job already has _id, calling findOneAndUpdate() using _id as query');
 		try {
 			const result = await this.getCollection().findOneAndUpdate({ _id: id } as any, update, { returnDocument: 'after' });
-			result && (await this._processDbResult(job, result));
+			if (result) {
+				await this._processDbResult(job, result);
+			}
 		} catch (error) {
 			this.emit('error:database', error);
 			throw error;

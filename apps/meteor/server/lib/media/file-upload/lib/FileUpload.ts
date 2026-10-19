@@ -740,7 +740,9 @@ export const FileUpload = {
 			];
 
 			headersToProxy.forEach((header) => {
-				fileRes.headers[header] && res.setHeader(header, String(fileRes.headers[header]));
+				if (fileRes.headers[header]) {
+					res.setHeader(header, String(fileRes.headers[header]));
+				}
 			});
 
 			res.statusCode = statusCode;

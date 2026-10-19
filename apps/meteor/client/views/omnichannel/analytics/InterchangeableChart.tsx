@@ -84,9 +84,8 @@ const InterchangeableChart = ({
 				if (!result?.dataLabels || !result?.dataPoints) {
 					throw new Error('Error! fetching chart data.');
 				}
-				(context.current || typeof context.current === 'undefined') &&
-					canvas.current &&
-					(context.current = await drawLineChart(
+				if ((context.current || typeof context.current === 'undefined') && canvas.current) {
+					context.current = await drawLineChart(
 						canvas.current,
 						context.current,
 						[result.chartLabel],
@@ -95,7 +94,8 @@ const InterchangeableChart = ({
 						{
 							tooltipCallbacks,
 						},
-					));
+					);
+				}
 			} catch (error) {
 				dispatchToastMessage({ type: 'error', message: error });
 			}

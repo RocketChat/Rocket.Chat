@@ -86,9 +86,9 @@ Meteor.methods<ServerMethods>({
 			useragent: this.connection?.httpHeaders['user-agent'] || '',
 		});
 
-		(await auditSettingOperation(Settings.updateValueAndEditorById, _id, value, editor)).modifiedCount &&
-			setting &&
+		if ((await auditSettingOperation(Settings.updateValueAndEditorById, _id, value, editor)).modifiedCount && setting) {
 			void notifyOnSettingChanged({ ...setting, editor, value });
+		}
 
 		return true;
 	}),

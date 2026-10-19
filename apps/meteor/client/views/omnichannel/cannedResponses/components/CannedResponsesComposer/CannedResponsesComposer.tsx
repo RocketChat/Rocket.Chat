@@ -91,7 +91,9 @@ const CannedResponsesComposer = ({ onChange, ...props }: CannedResponsesComposer
 	};
 
 	const openPlaceholderSelect = (): void => {
-		textAreaRef?.current && textAreaRef.current.focus();
+		if (textAreaRef?.current) {
+			textAreaRef.current.focus();
+		}
 		setVisible(!visible);
 	};
 
@@ -118,7 +120,9 @@ const CannedResponsesComposer = ({ onChange, ...props }: CannedResponsesComposer
 					<Backdrop
 						display={visible ? 'block' : 'none'}
 						onClick={(): void => {
-							textAreaRef?.current && textAreaRef.current.focus();
+							if (textAreaRef?.current) {
+								textAreaRef.current.focus();
+							}
 							setVisible(false);
 						}}
 					/>

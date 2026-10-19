@@ -66,7 +66,11 @@ const TeamsTable = () => {
 	const onClick = useMemo(
 		() => (name: IRoom['name'], type: IRoom['t']) => (e: KeyboardEvent | MouseEvent) => {
 			if (name && (e.type === 'click' || (e as KeyboardEvent).key === 'Enter')) {
-				type === 'c' ? channelsRoute.push({ name }) : groupsRoute.push({ name });
+				if (type === 'c') {
+					channelsRoute.push({ name });
+				} else {
+					groupsRoute.push({ name });
+				}
 			}
 		},
 		[channelsRoute, groupsRoute],

@@ -277,7 +277,9 @@ export class Navbar {
 		await this.modals.Discussion.inputParentRoom.pressSequentially(parentRoom);
 		await this.modals.Discussion.getParentRoomListItem(parentRoom).click();
 		await this.modals.Discussion.inputName.fill(name);
-		message && (await this.modals.Discussion.inputMessage.fill(message));
+		if (message) {
+			await this.modals.Discussion.inputMessage.fill(message);
+		}
 		await this.modals.Discussion.btnCreate.click();
 	}
 

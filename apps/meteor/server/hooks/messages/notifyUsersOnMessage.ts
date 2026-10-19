@@ -158,8 +158,9 @@ export async function updateThreadUsersSubscriptions(message: IMessage, replies:
 		Subscriptions.setLastReplyForRoomIdAndUserIds(message.rid, repliesPlusSender, new Date()),
 	]);
 
-	responses.some((response) => response?.modifiedCount) &&
+	if (responses.some((response) => response?.modifiedCount)) {
 		void notifyOnSubscriptionChangedByRoomIdAndUserIds(message.rid, repliesPlusSender);
+	}
 }
 
 export async function notifyUsersOnMessage(message: IMessage, room: IRoom, roomUpdater: Updater<IRoom>): Promise<IMessage> {

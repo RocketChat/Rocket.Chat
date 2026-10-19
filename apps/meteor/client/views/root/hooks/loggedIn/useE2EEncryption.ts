@@ -84,7 +84,11 @@ export const useE2EEncryption = () => {
 				});
 			});
 
-			subscription.encrypted ? e2eRoom.resume() : e2eRoom.pause();
+			if (subscription.encrypted) {
+				e2eRoom.resume();
+			} else {
+				e2eRoom.pause();
+			}
 
 			const shouldConvertSentMessages = await e2eRoom.shouldConvertSentMessages(message);
 

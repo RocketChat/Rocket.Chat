@@ -8,11 +8,15 @@ import { updateAuditedBySystem } from '../../../server/settings/lib/auditedSetti
 const handleHadTrial = (): void => {
 	if (License.getLicense()?.information.trial) {
 		void (async () => {
-			(
-				await updateAuditedBySystem({
-					reason: 'handleHadTrial',
-				})(Settings.updateValueById, 'Cloud_Workspace_Had_Trial', true)
-			).modifiedCount && void notifyOnSettingChangedById('Cloud_Workspace_Had_Trial');
+			if (
+				(
+					await updateAuditedBySystem({
+						reason: 'handleHadTrial',
+					})(Settings.updateValueById, 'Cloud_Workspace_Had_Trial', true)
+				).modifiedCount
+			) {
+				void notifyOnSettingChangedById('Cloud_Workspace_Had_Trial');
+			}
 		})();
 	}
 };

@@ -35,7 +35,9 @@ export const useIdleActiveEvents = (
 	useEffect(() => {
 		document.addEventListener(`${id}_idle`, stableIdleCallback);
 
-		onActiveCallback && document.addEventListener(`${id}_active`, stableActiveCallback);
+		if (onActiveCallback) {
+			document.addEventListener(`${id}_active`, stableActiveCallback);
+		}
 
 		return () => {
 			document.removeEventListener(`${id}_idle`, stableIdleCallback);

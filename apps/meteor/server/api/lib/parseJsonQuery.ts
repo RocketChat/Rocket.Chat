@@ -94,7 +94,9 @@ export async function parseJsonQuery(api: GenericRouteExecutionContext): Promise
 
 		Object.keys(fields).forEach((k) => {
 			if (nonSelectableFields.includes(k) || nonSelectableFields.includes(k.split(API.v1.fieldSeparator)[0])) {
-				fields && delete fields[k as keyof typeof fields];
+				if (fields) {
+					delete fields[k as keyof typeof fields];
+				}
 			}
 		});
 	}
@@ -146,7 +148,9 @@ export async function parseJsonQuery(api: GenericRouteExecutionContext): Promise
 
 		Object.keys(query).forEach((k) => {
 			if (nonQueryableFields.includes(k) || nonQueryableFields.includes(k.split(API.v1.fieldSeparator)[0])) {
-				query && delete query[k];
+				if (query) {
+					delete query[k];
+				}
 			}
 		});
 	}

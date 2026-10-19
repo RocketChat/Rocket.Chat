@@ -125,7 +125,9 @@ export const onAgentChange = async (agent: any) => {
 
 export const onAgentStatusChange = (status: any) => {
 	const { agent } = store.state;
-	agent && store.setState({ agent: { ...agent, status } });
+	if (agent) {
+		store.setState({ agent: { ...agent, status } });
+	}
 	parentCall('callback', ['agent-status-change', normalizeAgent(agent)]);
 };
 

@@ -156,9 +156,11 @@ test.describe.serial('imports', () => {
 			await poAdmin.inputSearchRooms.fill(room.name);
 			await poAdmin.getRoomRow(room.name).click();
 
-			room.visibility === 'private'
-				? await expect(poAdmin.editRoom.privateInput).toBeChecked()
-				: await expect(poAdmin.editRoom.privateInput).not.toBeChecked();
+			if (room.visibility === 'private') {
+				await expect(poAdmin.editRoom.privateInput).toBeChecked();
+			} else {
+				await expect(poAdmin.editRoom.privateInput).not.toBeChecked();
+			}
 			await expect(poAdmin.editRoom.roomOwnerInput).toHaveValue(room.ownerUsername);
 		}
 	});

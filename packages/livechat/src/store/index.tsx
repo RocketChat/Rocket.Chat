@@ -206,8 +206,14 @@ window.addEventListener('visibilitychange', () => {
 		return;
 	}
 
-	!store.state.minimized && !store.state.triggered && parentCall('openWidget');
-	store.state.iframe.visible ? parentCall('showWidget') : parentCall('hideWidget');
+	if (!store.state.minimized && !store.state.triggered) {
+		parentCall('openWidget');
+	}
+	if (store.state.iframe.visible) {
+		parentCall('showWidget');
+	} else {
+		parentCall('hideWidget');
+	}
 });
 
 window.addEventListener('beforeunload', () => {
