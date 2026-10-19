@@ -9,14 +9,20 @@ export type PreviewEditor = {
 };
 
 export const useRoomMembershipPreviewEditor = (rid: string, attributes: Record<string, string[]>) => {
-	const { data, error, refetch } = usePreviewPages(rid, attributes, '', 'loses');
+	const { data, error, isFetching, refetch } = usePreviewPages(rid, attributes, '', 'loses');
 	const verdict = data?.pages[0]?.editor;
 	const hasFirstPage = !!data?.pages.length;
+	const editorError = hasFirstPage ? null : error;
 
 	const editor = useMemo<PreviewEditor | undefined>(
 		() => (hasFirstPage ? { verdict, losesAccess: verdict !== undefined && verdict !== 'compliant' } : undefined),
 		[hasFirstPage, verdict],
 	);
 
-	return { editor, error: hasFirstPage ? null : error, retry: () => void refetch({ cancelRefetch: false }) };
+	return {
+		editor,
+		error: editorError,
+		isRetrying: !!editorError && isFetching,
+		retry: () => void refetch({ cancelRefetch: false }),
+	};
 };
