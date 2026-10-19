@@ -1,3 +1,5 @@
+import type { AbacRoomAttributesGrant, AbacRoomMembershipPreviewPage } from '@rocket.chat/core-services';
+
 import { Audit } from './audit';
 import { VirtruClient } from './clients/virtru/VirtruClient';
 import {
@@ -6,6 +8,7 @@ import {
 	OnlyCompliantCanBeAddedToRoomError,
 	PdpUnavailableError,
 } from './errors';
+import { PREVIEW_SCAN_LIMIT } from './helper';
 import { AbacService } from './index';
 import { LocalPDP } from './pdp';
 import { LocalAttributeStore, VirtruAttributeStore } from './store';
@@ -61,6 +64,9 @@ const mockUsersFind = jest.fn();
 const mockUsersFindUsersByUsernames = jest.fn();
 const mockUsersFindByIds = jest.fn();
 const mockUsersFindOneById = jest.fn();
+const mockUsersFindOneByIdAndRoomId = jest.fn();
+const mockUsersFindActiveByRoomIdAfterUsername = jest.fn();
+const mockUsersCountActiveByRoomIdAfterUsername = jest.fn();
 const mockUsersUpdateOne = jest.fn();
 const mockUsersSetAbacAttributesById = jest.fn();
 const mockUsersUnsetAbacAttributesById = jest.fn();
@@ -70,8 +76,10 @@ const mockCreateAuditServerEvents = jest.fn();
 const mockRoomsFindAllPrivateAbac = jest.fn();
 const mockUsersFindActiveByRoomIds = jest.fn();
 const mockRoomRemoveUserFromRoom = jest.fn();
+const mockSaveSystemMessage = jest.fn();
 const mockUsersFindUsersByIdentifiers = jest.fn();
 const mockLdapSyncByIds = jest.fn();
+const mockSubscriptionsFindByRoomIdAndUserIds = jest.fn();
 
 jest.mock('@rocket.chat/models', () => ({
 	Rooms: {
@@ -97,14 +105,23 @@ jest.mock('@rocket.chat/models', () => ({
 		findOneAndUpdate: (...args: any[]) => mockAbacFindOneAndUpdate(...args),
 		deleteOne: (...args: any[]) => mockAbacDeleteOne(...args),
 		removeById: (...args: any[]) => mockAbacDeleteOne(...args),
-		find: (...args: any[]) => mockAbacFind(...args),
-		findAll: (...args: any[]) => mockAbacFindAll(...args),
+		find: (...args: any[]) => {
+			const cursor = mockAbacFind(...args);
+			return { ...cursor, map: (fn: (doc: any) => unknown) => ({ toArray: async () => (await cursor.toArray()).map(fn) }) };
+		},
+		findAll: (...args: any[]) => {
+			const cursor = mockAbacFindAll(...args);
+			return { ...cursor, map: (fn: (doc: any) => unknown) => ({ toArray: async () => (await cursor.toArray()).map(fn) }) };
+		},
 	},
 	Users: {
 		find: (...args: any[]) => mockUsersFind(...args),
 		findUsersByUsernames: (...args: any[]) => mockUsersFindUsersByUsernames(...args),
 		findByIds: (...args: any[]) => mockUsersFindByIds(...args),
 		findOneById: (...args: any[]) => mockUsersFindOneById(...args),
+		findOneByIdAndRoomId: (...args: any[]) => mockUsersFindOneByIdAndRoomId(...args),
+		findActiveByRoomIdAfterUsername: (...args: any[]) => mockUsersFindActiveByRoomIdAfterUsername(...args),
+		countActiveByRoomIdAfterUsername: (...args: any[]) => mockUsersCountActiveByRoomIdAfterUsername(...args),
 		findActiveByRoomIds: (...args: any[]) => mockUsersFindActiveByRoomIds(...args),
 		findUsersByIdentifiers: (...args: any[]) => mockUsersFindUsersByIdentifiers(...args),
 		setAbacAttributesById: (...args: any[]) => mockUsersSetAbacAttributesById(...args),
@@ -118,6 +135,9 @@ jest.mock('@rocket.chat/models', () => ({
 	},
 	Settings: {
 		updateValueById: (...args: any[]) => mockSettingsSet(...args),
+	},
+	Subscriptions: {
+		findByRoomIdAndUserIds: (...args: any[]) => mockSubscriptionsFindByRoomIdAndUserIds(...args),
 	},
 }));
 
@@ -133,6 +153,9 @@ jest.mock('@rocket.chat/core-services', () => {
 		},
 		Room: {
 			removeUserFromRoom: (...args: any[]) => mockRoomRemoveUserFromRoom(...args),
+		},
+		Message: {
+			saveSystemMessage: (...args: any[]) => mockSaveSystemMessage(...args),
 		},
 		LDAPEnterprise: {
 			syncUsersAbacAttributesByIds: (...args: any[]) => mockLdapSyncByIds(...args),
@@ -167,6 +190,9 @@ describe('AbacService (unit)', () => {
 		service.setPdpStrategy('local');
 		jest.clearAllMocks();
 	});
+
+	const evaluateRemovalsToo = () =>
+		jest.spyOn((service as any).pdp, 'needsEvaluation').mockImplementation(({ added, removed }: any) => added || removed);
 
 	describe('addSubjectAttributes (merging behavior)', () => {
 		const getUpdatedAttributesFromCall = () => {
@@ -588,7 +614,9 @@ describe('AbacService (unit)', () => {
 
 		it('throws error-room-not-found when room does not exist', async () => {
 			mockFindOneByIdAndType.mockResolvedValueOnce(null);
-			await expect(service.setRoomAbacAttributes('missing', { dept: ['eng'] }, fakeActor)).rejects.toThrow('error-room-not-found');
+			await expect(service.setRoomAbacAttributes('missing', { dept: ['eng'] }, fakeActor, 'manage-abac-admin-rooms')).rejects.toThrow(
+				'error-room-not-found',
+			);
 			expect(mockSetAbacAttributesById).not.toHaveBeenCalled();
 		});
 
@@ -596,23 +624,180 @@ describe('AbacService (unit)', () => {
 			mockFindOneByIdAndType.mockResolvedValueOnce({ _id: 'r1', abacAttributes: [], default: true });
 			mockAbacFind.mockReturnValueOnce({ toArray: async () => [{ key: 'dept', values: ['eng'] }] });
 
-			await service.setRoomAbacAttributes('r1', { dept: ['eng'] }, fakeActor);
+			await service.setRoomAbacAttributes('r1', { dept: ['eng'] }, fakeActor, 'manage-abac-admin-rooms');
 
 			expect(mockSetAbacAttributesById).toHaveBeenCalled();
+		});
+
+		describe('room-scoped edits and required attributes', () => {
+			const room = {
+				_id: 'r1',
+				abacAttributes: [
+					{ key: 'dept', values: ['eng'] },
+					{ key: 'region', values: ['emea'] },
+				],
+			};
+
+			const enforce = () => {
+				(service as any).enforceAllRooms = true;
+			};
+
+			beforeEach(() => {
+				mockHasPermission.mockReset().mockResolvedValue(false);
+				(service as any).requiredAttributeKeys = new Set(['dept', 'clearance']);
+				const definitions = [
+					{ key: 'dept', values: ['eng', 'sales'] },
+					{ key: 'region', values: ['emea', 'apac'] },
+					{ key: 'clearance', values: ['secret'] },
+				];
+				mockAbacFind.mockImplementation(({ key }: { key: { $in: string[] } }) => ({
+					toArray: async () => definitions.filter((definition) => key.$in.includes(definition.key)),
+				}));
+				mockFindOneByIdAndType.mockResolvedValue(room);
+			});
+
+			afterEach(() => {
+				mockHasPermission.mockReset();
+			});
+
+			const writeAs = (attributes: Record<string, string[]>, grant: AbacRoomAttributesGrant = 'edit-room-abac-attributes') =>
+				service.setRoomAbacAttributes('r1', attributes, fakeActor, grant);
+
+			it('refuses a room-scoped editor removing every attribute while enforcement is on', async () => {
+				enforce();
+
+				await expect(writeAs({})).rejects.toMatchObject({ code: 'error-abac-room-attributes-cleared' });
+				expect(mockUnsetAbacAttributesById).not.toHaveBeenCalled();
+			});
+
+			it('lets a room-scoped editor remove every attribute, required ones included, while enforcement is off', async () => {
+				await writeAs({});
+
+				expect(mockUnsetAbacAttributesById).toHaveBeenCalledWith('r1');
+			});
+
+			it('refuses a room-scoped editor removing a required attribute the room carries while enforcement is on', async () => {
+				enforce();
+
+				await expect(writeAs({ region: ['emea'] })).rejects.toMatchObject({
+					code: 'error-abac-required-attributes-removed',
+					details: { keys: ['dept'] },
+				});
+				expect(mockSetAbacAttributesById).not.toHaveBeenCalled();
+			});
+
+			it('lets a room-scoped editor remove a required attribute while enforcement is off', async () => {
+				await writeAs({ region: ['emea'] });
+
+				expect(mockSetAbacAttributesById).toHaveBeenCalledWith('r1', [{ key: 'region', values: ['emea'] }]);
+			});
+
+			it('lets a room-scoped editor change the values of a required attribute and remove one that is not required', async () => {
+				await writeAs({ dept: ['sales'] });
+
+				expect(mockSetAbacAttributesById).toHaveBeenCalledWith('r1', [{ key: 'dept', values: ['sales'] }]);
+			});
+
+			it('lets a room-scoped editor add a required attribute the room lacks, one at a time', async () => {
+				await writeAs({ dept: ['eng'], region: ['emea'], clearance: ['secret'] });
+
+				expect(mockSetAbacAttributesById).toHaveBeenCalled();
+			});
+
+			it('leaves an editor holding the ABAC admin permissions unrestricted', async () => {
+				enforce();
+
+				await writeAs({ region: ['emea'] }, 'manage-abac-admin-rooms');
+				await writeAs({}, 'manage-abac-admin-rooms');
+
+				expect(mockSetAbacAttributesById).toHaveBeenCalledWith('r1', [{ key: 'region', values: ['emea'] }]);
+				expect(mockUnsetAbacAttributesById).toHaveBeenCalledWith('r1');
+			});
+
+			it('refuses the same in the preview', async () => {
+				enforce();
+				(service as any).pdp = {
+					isAvailable: jest.fn().mockResolvedValue(true),
+					needsEvaluation: jest.fn(),
+					previewRoomMembers: jest.fn(),
+				};
+
+				await expect(
+					service.previewRoomMembers('r1', { region: ['emea'] }, fakeActor, {}, 'edit-room-abac-attributes'),
+				).rejects.toMatchObject({ code: 'error-abac-required-attributes-removed' });
+				await expect(service.previewRoomMembers('r1', {}, fakeActor, {}, 'edit-room-abac-attributes')).rejects.toMatchObject({
+					code: 'error-abac-room-attributes-cleared',
+				});
+			});
+		});
+
+		describe('while restricting to owned attributes is on', () => {
+			beforeEach(() => {
+				mockHasPermission.mockReset().mockResolvedValue(false);
+				service.setPdpStrategy('local', true);
+				(service as any).onRoomAttributesChanged = jest.fn().mockResolvedValue(undefined);
+				mockAbacFind.mockReturnValue({ toArray: async () => [{ key: 'dept', values: ['eng', 'sales', 'ops'] }] });
+				mockFindOneByIdAndType.mockResolvedValue({ _id: 'r1', abacAttributes: [{ key: 'dept', values: ['ops'] }] });
+				mockUsersFindOneById.mockResolvedValue({ abacAttributes: [{ key: 'dept', values: ['eng'] }] });
+			});
+
+			afterEach(() => {
+				mockUsersFindOneById.mockReset();
+				mockHasPermission.mockReset();
+			});
+
+			it('refuses a room-scoped editor a value they do not hold', async () => {
+				const write = service.setRoomAbacAttributes('r1', { dept: ['eng', 'sales'] }, fakeActor, 'edit-room-abac-attributes');
+
+				await expect(write).rejects.toMatchObject({
+					code: 'error-invalid-attribute-values',
+					details: { attributes: [{ key: 'dept', values: ['sales'] }] },
+				});
+				expect(mockSetAbacAttributesById).not.toHaveBeenCalled();
+			});
+
+			it('lets a room-scoped editor keep a value the room already carries', async () => {
+				await service.setRoomAbacAttributes('r1', { dept: ['eng', 'ops'] }, fakeActor, 'edit-room-abac-attributes');
+
+				expect(mockSetAbacAttributesById).toHaveBeenCalledWith('r1', [{ key: 'dept', values: ['eng', 'ops'] }]);
+			});
+
+			it('does not restrict an editor holding the ABAC admin permissions', async () => {
+				await service.setRoomAbacAttributes('r1', { dept: ['sales'] }, fakeActor, 'manage-abac-admin-rooms');
+
+				expect(mockSetAbacAttributesById).toHaveBeenCalledWith('r1', [{ key: 'dept', values: ['sales'] }]);
+			});
+
+			it('does not restrict a room-scoped editor holding bypass-abac-store-validation', async () => {
+				mockHasPermission.mockResolvedValue(true);
+
+				await service.setRoomAbacAttributes('r1', { dept: ['sales'] }, fakeActor, 'edit-room-abac-attributes');
+
+				expect(mockSetAbacAttributesById).toHaveBeenCalled();
+			});
+
+			it('does not restrict a room-scoped editor under the Virtru PDP', async () => {
+				service.setPdpStrategy('virtru');
+				jest.spyOn((service as any).pdp, 'isAvailable').mockResolvedValue(true);
+
+				await service.setRoomAbacAttributes('r1', { dept: ['sales'] }, fakeActor, 'edit-room-abac-attributes');
+
+				expect(mockSetAbacAttributesById).toHaveBeenCalled();
+			});
 		});
 
 		it('accepts a team default room', async () => {
 			mockFindOneByIdAndType.mockResolvedValueOnce({ _id: 'r1', abacAttributes: [], teamDefault: true });
 			mockAbacFind.mockReturnValueOnce({ toArray: async () => [{ key: 'dept', values: ['eng'] }] });
 
-			await service.setRoomAbacAttributes('r1', { dept: ['eng'] }, fakeActor);
+			await service.setRoomAbacAttributes('r1', { dept: ['eng'] }, fakeActor, 'manage-abac-admin-rooms');
 
 			expect(mockSetAbacAttributesById).toHaveBeenCalled();
 		});
 
 		it('throws error-invalid-attribute-key for invalid key format', async () => {
 			mockFindOneByIdAndType.mockResolvedValueOnce({ _id: 'r1', abacAttributes: [] });
-			await expect(service.setRoomAbacAttributes('r1', { 'bad key': ['v'] } as any, fakeActor)).rejects.toThrow(
+			await expect(service.setRoomAbacAttributes('r1', { 'bad key': ['v'] } as any, fakeActor, 'manage-abac-admin-rooms')).rejects.toThrow(
 				'error-invalid-attribute-key',
 			);
 			expect(mockSetAbacAttributesById).not.toHaveBeenCalled();
@@ -620,7 +805,9 @@ describe('AbacService (unit)', () => {
 
 		it('throws error-invalid-attribute-values for empty value array', async () => {
 			mockFindOneByIdAndType.mockResolvedValueOnce({ _id: 'r1', abacAttributes: [] });
-			await expect(service.setRoomAbacAttributes('r1', { dept: [] as any }, fakeActor)).rejects.toThrow('error-invalid-attribute-values');
+			await expect(service.setRoomAbacAttributes('r1', { dept: [] as any }, fakeActor, 'manage-abac-admin-rooms')).rejects.toThrow(
+				'error-invalid-attribute-values',
+			);
 			expect(mockSetAbacAttributesById).not.toHaveBeenCalled();
 		});
 
@@ -628,7 +815,7 @@ describe('AbacService (unit)', () => {
 			mockFindOneByIdAndType.mockResolvedValueOnce({ _id: 'r1', abacAttributes: [] });
 			// Return empty list so size mismatch triggers not-found
 			mockAbacFind.mockReturnValueOnce({ toArray: async () => [] });
-			await expect(service.setRoomAbacAttributes('r1', { dept: ['eng'] }, fakeActor)).rejects.toThrow(
+			await expect(service.setRoomAbacAttributes('r1', { dept: ['eng'] }, fakeActor, 'manage-abac-admin-rooms')).rejects.toThrow(
 				'error-attribute-definition-not-found',
 			);
 			expect(mockSetAbacAttributesById).not.toHaveBeenCalled();
@@ -639,7 +826,7 @@ describe('AbacService (unit)', () => {
 			mockAbacFind.mockReturnValueOnce({
 				toArray: async () => [{ key: 'dept', values: ['eng'] }], // 'sales' not allowed
 			});
-			await expect(service.setRoomAbacAttributes('r1', { dept: ['eng', 'sales'] }, fakeActor)).rejects.toThrow(
+			await expect(service.setRoomAbacAttributes('r1', { dept: ['eng', 'sales'] }, fakeActor, 'manage-abac-admin-rooms')).rejects.toThrow(
 				'error-invalid-attribute-values',
 			);
 			expect(mockSetAbacAttributesById).not.toHaveBeenCalled();
@@ -651,7 +838,7 @@ describe('AbacService (unit)', () => {
 				toArray: async () => [{ key: 'dept', values: ['eng', 'sales'] }],
 			});
 
-			await service.setRoomAbacAttributes('r1', { dept: ['eng', 'eng', 'sales'] }, fakeActor);
+			await service.setRoomAbacAttributes('r1', { dept: ['eng', 'eng', 'sales'] }, fakeActor, 'manage-abac-admin-rooms');
 
 			expect((service as any).onRoomAttributesChanged).not.toHaveBeenCalled();
 		});
@@ -663,10 +850,26 @@ describe('AbacService (unit)', () => {
 				toArray: async () => [{ key: 'dept', values: ['eng', 'sales'] }],
 			});
 
-			await service.setRoomAbacAttributes('r1', { dept: ['eng'] }, fakeActor); // removing 'sales'
+			await service.setRoomAbacAttributes('r1', { dept: ['eng'] }, fakeActor, 'manage-abac-admin-rooms'); // removing 'sales'
 
 			expect((service as any).onRoomAttributesChanged).not.toHaveBeenCalled();
 			expect(mockSetAbacAttributesById).toHaveBeenCalledWith('r1', [{ key: 'dept', values: ['eng'] }]);
+		});
+
+		it('calls onRoomAttributesChanged when a value is removed and the PDP evaluates removals', async () => {
+			evaluateRemovalsToo();
+			mockFindOneByIdAndType.mockResolvedValueOnce({ _id: 'r1', abacAttributes: [{ key: 'dept', values: ['eng', 'sales'] }] });
+			mockAbacFind.mockReturnValueOnce({
+				toArray: async () => [{ key: 'dept', values: ['eng', 'sales'] }],
+			});
+
+			await service.setRoomAbacAttributes('r1', { dept: ['eng'] }, fakeActor, 'manage-abac-admin-rooms');
+
+			expect((service as any).onRoomAttributesChanged).toHaveBeenCalledWith(
+				expect.objectContaining({ _id: 'r1' }),
+				[{ key: 'dept', values: ['eng'] }],
+				fakeActor,
+			);
 		});
 
 		it('calls onRoomAttributesChanged when adding values to an existing attribute', async () => {
@@ -676,18 +879,20 @@ describe('AbacService (unit)', () => {
 				toArray: async () => [{ key: 'dept', values: ['eng', 'sales'] }],
 			});
 
-			await service.setRoomAbacAttributes('r1', { dept: ['eng', 'sales'] }, fakeActor); // adding sales
+			await service.setRoomAbacAttributes('r1', { dept: ['eng', 'sales'] }, fakeActor, 'manage-abac-admin-rooms'); // adding sales
 
-			expect((service as any).onRoomAttributesChanged).toHaveBeenCalledWith(expect.objectContaining({ _id: 'r1' }), [
-				{ key: 'dept', values: ['eng', 'sales'] },
-			]);
+			expect((service as any).onRoomAttributesChanged).toHaveBeenCalledWith(
+				expect.objectContaining({ _id: 'r1' }),
+				[{ key: 'dept', values: ['eng', 'sales'] }],
+				fakeActor,
+			);
 			expect(mockSetAbacAttributesById).toHaveBeenCalledWith('r1', [{ key: 'dept', values: ['eng', 'sales'] }]);
 		});
 
 		it('clears all attributes via unset (not setAbacAttributesById) when given an empty map for a room that had attributes', async () => {
 			mockFindOneByIdAndType.mockResolvedValueOnce({ _id: 'r1', abacAttributes: [{ key: 'dept', values: ['eng'] }] });
 
-			await service.setRoomAbacAttributes('r1', {}, fakeActor);
+			await service.setRoomAbacAttributes('r1', {}, fakeActor, 'manage-abac-admin-rooms');
 
 			expect(mockUnsetAbacAttributesById).toHaveBeenCalledWith('r1');
 			expect(mockSetAbacAttributesById).not.toHaveBeenCalled();
@@ -774,9 +979,11 @@ describe('AbacService (unit)', () => {
 			mockFindOneByIdAndType.mockResolvedValueOnce({ _id: 'r1', abacAttributes: [{ key: 'dept', values: ['eng'] }] });
 			await service.updateRoomAbacAttributeValues('r1', 'dept', ['eng', 'sales'], fakeActor);
 			expect(mockUpdateAbacAttributeValuesArrayFilteredById).toHaveBeenCalledWith('r1', 'dept', ['eng', 'sales']);
-			expect((service as any).onRoomAttributesChanged).toHaveBeenCalledWith(expect.objectContaining({ _id: 'r1' }), [
-				{ key: 'dept', values: ['eng', 'sales'] },
-			]);
+			expect((service as any).onRoomAttributesChanged).toHaveBeenCalledWith(
+				expect.objectContaining({ _id: 'r1' }),
+				[{ key: 'dept', values: ['eng', 'sales'] }],
+				fakeActor,
+			);
 		});
 
 		it('updates existing key and does NOT trigger hook when a value is removed', async () => {
@@ -785,6 +992,19 @@ describe('AbacService (unit)', () => {
 			await service.updateRoomAbacAttributeValues('r1', 'dept', ['eng'], fakeActor);
 			expect(mockUpdateAbacAttributeValuesArrayFilteredById).toHaveBeenCalledWith('r1', 'dept', ['eng']);
 			expect((service as any).onRoomAttributesChanged).not.toHaveBeenCalled();
+		});
+
+		it('triggers the hook when a value is removed and the PDP evaluates removals', async () => {
+			evaluateRemovalsToo();
+			mockFindOneByIdAndType.mockResolvedValueOnce({ _id: 'r1', abacAttributes: [{ key: 'dept', values: ['eng', 'sales'] }] });
+
+			await service.updateRoomAbacAttributeValues('r1', 'dept', ['eng'], fakeActor);
+
+			expect((service as any).onRoomAttributesChanged).toHaveBeenCalledWith(
+				expect.objectContaining({ _id: 'r1' }),
+				[{ key: 'dept', values: ['eng'] }],
+				fakeActor,
+			);
 		});
 
 		it('validates against global definitions (invalid value)', async () => {
@@ -826,6 +1046,25 @@ describe('AbacService (unit)', () => {
 			await (service as any).removeRoomAbacAttribute('r1', 'dept', fakeActor);
 			expect(mockRemoveAbacAttributeByRoomIdAndKey).toHaveBeenCalledWith('r1', 'dept');
 			expect((service as any).onRoomAttributesChanged).not.toHaveBeenCalled();
+		});
+
+		it('calls the hook with the remaining attributes when the PDP evaluates removals', async () => {
+			evaluateRemovalsToo();
+			mockFindOneByIdAndType.mockResolvedValueOnce({
+				_id: 'r1',
+				abacAttributes: [
+					{ key: 'dept', values: ['eng', 'sales'] },
+					{ key: 'other', values: ['x'] },
+				],
+			});
+
+			await (service as any).removeRoomAbacAttribute('r1', 'dept', fakeActor);
+
+			expect((service as any).onRoomAttributesChanged).toHaveBeenCalledWith(
+				expect.objectContaining({ _id: 'r1' }),
+				[{ key: 'other', values: ['x'] }],
+				fakeActor,
+			);
 		});
 
 		it('unsets every attribute (not single-key removal) when removing the last remaining attribute', async () => {
@@ -892,6 +1131,7 @@ describe('AbacService (unit)', () => {
 			expect((service as any).onRoomAttributesChanged).toHaveBeenCalledWith(
 				expect.objectContaining({ _id: 'r1' }),
 				updatedDoc.abacAttributes,
+				fakeActor,
 			);
 		});
 
@@ -908,6 +1148,31 @@ describe('AbacService (unit)', () => {
 			expect((service as any).onRoomAttributesChanged).toHaveBeenCalledWith(
 				expect.objectContaining({ _id: 'r1' }),
 				updatedDoc.abacAttributes,
+				fakeActor,
+			);
+		});
+
+		it('does not call the hook when a value is removed under the local PDP', async () => {
+			mockFindOneByIdAndType.mockResolvedValueOnce({ _id: 'r1', abacAttributes: [{ key: 'dept', values: ['eng', 'sales'] }] });
+			mockUpdateAbacAttributeValuesArrayFilteredById.mockResolvedValueOnce({ abacAttributes: [{ key: 'dept', values: ['eng'] }] });
+
+			await (service as any).replaceRoomAbacAttributeByKey('r1', 'dept', ['eng'], fakeActor);
+
+			expect((service as any).onRoomAttributesChanged).not.toHaveBeenCalled();
+		});
+
+		it('calls the hook when a value is removed and the PDP evaluates removals', async () => {
+			evaluateRemovalsToo();
+			const updatedDoc = { abacAttributes: [{ key: 'dept', values: ['eng'] }] };
+			mockFindOneByIdAndType.mockResolvedValueOnce({ _id: 'r1', abacAttributes: [{ key: 'dept', values: ['eng', 'sales'] }] });
+			mockUpdateAbacAttributeValuesArrayFilteredById.mockResolvedValueOnce(updatedDoc);
+
+			await (service as any).replaceRoomAbacAttributeByKey('r1', 'dept', ['eng'], fakeActor);
+
+			expect((service as any).onRoomAttributesChanged).toHaveBeenCalledWith(
+				expect.objectContaining({ _id: 'r1' }),
+				updatedDoc.abacAttributes,
+				fakeActor,
 			);
 		});
 
@@ -981,6 +1246,7 @@ describe('AbacService (unit)', () => {
 			expect((service as any).onRoomAttributesChanged).toHaveBeenCalledWith(
 				expect.objectContaining({ _id: 'r1' }),
 				updatedDoc.abacAttributes,
+				fakeActor,
 			);
 		});
 
@@ -993,10 +1259,11 @@ describe('AbacService (unit)', () => {
 			await service.addRoomAbacAttributeByKey('r1', 'dept', ['eng'], fakeActor);
 
 			expect(mockInsertAbacAttributeIfNotExistsById).toHaveBeenCalledWith('r1', 'dept', ['eng']);
-			expect((service as any).onRoomAttributesChanged).toHaveBeenCalledWith(expect.objectContaining({ _id: 'r1' }), [
-				...existing,
-				{ key: 'dept', values: ['eng'] },
-			]);
+			expect((service as any).onRoomAttributesChanged).toHaveBeenCalledWith(
+				expect.objectContaining({ _id: 'r1' }),
+				[...existing, { key: 'dept', values: ['eng'] }],
+				fakeActor,
+			);
 		});
 
 		it('rejects when provided value not allowed by definition', async () => {
@@ -1049,7 +1316,7 @@ describe('AbacService (unit)', () => {
 		const invoke = (method: string): Promise<unknown> => {
 			switch (method) {
 				case 'setRoomAbacAttributes':
-					return service.setRoomAbacAttributes('r1', { dept: ['eng', 'sales'] }, fakeActor);
+					return service.setRoomAbacAttributes('r1', { dept: ['eng', 'sales'] }, fakeActor, 'manage-abac-admin-rooms');
 				case 'updateRoomAbacAttributeValues':
 					return service.updateRoomAbacAttributeValues('r1', 'dept', ['eng', 'sales'], fakeActor);
 				case 'addRoomAbacAttributeByKey':
@@ -1122,7 +1389,7 @@ describe('AbacService (unit)', () => {
 			store.assertCanModifyRoom.mockRejectedValueOnce(new Error('error-pdp-unavailable'));
 			(service as any).attributeStores.local.store = store;
 
-			await expect(service.setRoomAbacAttributes('r1', {}, fakeActor)).resolves.toBeUndefined();
+			await expect(service.setRoomAbacAttributes('r1', {}, fakeActor, 'manage-abac-admin-rooms')).resolves.toBeUndefined();
 
 			expect(store.assertCanModifyRoom).not.toHaveBeenCalled();
 			expect(store.validateAssignable).not.toHaveBeenCalled();
@@ -1486,6 +1753,36 @@ describe('AbacService (unit)', () => {
 				expect(mockHasPermission).toHaveBeenCalledWith(fakeActor._id, 'bypass-abac-store-validation');
 				expect(mockUsersFindOneById).not.toHaveBeenCalled();
 			});
+
+			describe('for an existing room', () => {
+				beforeEach(() => {
+					mockFindOneByIdAndType.mockResolvedValue({ _id: 'r1', t: 'p', abacAttributes: [{ key: 'region', values: ['apac'] }] });
+				});
+
+				it('offers a room-scoped editor the values they hold and the values the room already carries', async () => {
+					holding({ dept: ['eng'] });
+
+					await expect(service.listRoomAssignableAttributes('r1', fakeActor, 'edit-room-abac-attributes')).resolves.toEqual([
+						{ key: 'dept', values: ['eng'] },
+						{ key: 'region', values: ['apac'] },
+					]);
+				});
+
+				it('offers a room-scoped editor every definition when restricting to owned attributes is off', async () => {
+					service.setPdpStrategy('local', false);
+
+					await expect(service.listRoomAssignableAttributes('r1', fakeActor, 'edit-room-abac-attributes')).resolves.toHaveLength(2);
+					expect(mockUsersFindOneById).not.toHaveBeenCalled();
+				});
+
+				it('offers an editor holding the ABAC admin permissions every definition', async () => {
+					await expect(service.listRoomAssignableAttributes('r1', fakeActor, 'manage-abac-admin-rooms')).resolves.toEqual([
+						{ key: 'dept', values: ['eng', 'sales'] },
+						{ key: 'region', values: ['emea', 'apac'] },
+					]);
+					expect(mockUsersFindOneById).not.toHaveBeenCalled();
+				});
+			});
 		});
 
 		describe('under the Virtru PDP', () => {
@@ -1735,6 +2032,204 @@ describe('AbacService (unit)', () => {
 		});
 	});
 
+	describe('previewRoomMembers', () => {
+		const room = { _id: 'r1', t: 'p', name: 'room', abacAttributes: [{ key: 'dept', values: ['eng'] }] };
+		const adding = { dept: ['eng', 'sales'] };
+		const required = [{ key: 'dept', values: ['eng', 'sales'] }];
+		const alice = { _id: 'alice', username: 'alice', name: 'ALICE' };
+		const listedAlice = { ...alice, verdict: 'nonCompliant' };
+
+		const previewAs = (
+			attributes: Record<string, string[]>,
+			page: AbacRoomMembershipPreviewPage = {},
+			grant: AbacRoomAttributesGrant = 'manage-abac-admin-rooms',
+		) => service.previewRoomMembers('r1', attributes, fakeActor, page, grant);
+
+		const usePdp = (pdp: { previewRoomMembers?: jest.Mock } = {}) => {
+			const mocks = {
+				needsEvaluation: jest.fn(({ added }) => added),
+				findUnassignableValues: jest.fn().mockResolvedValue([]),
+				previewRoomMembers: pdp.previewRoomMembers ?? jest.fn().mockResolvedValue({ members: [listedAlice], checked: 1, total: 9 }),
+				evaluateSubjectsAgainstAttributes: jest.fn(async (subjects: { _id: string }[]) => ({
+					compliant: [],
+					nonCompliant: subjects.map(({ _id }) => _id),
+					inconclusive: [],
+				})),
+			};
+			(service as any).pdp = { isAvailable: jest.fn().mockResolvedValue(true), ...mocks };
+			return mocks;
+		};
+
+		beforeEach(() => {
+			mockFindOneByIdAndType.mockResolvedValue(room);
+			mockAbacFind.mockReturnValue({ toArray: async () => [{ key: 'dept', values: ['eng', 'sales', 'ops'] }] });
+			mockHasPermission.mockReset().mockResolvedValue(false);
+			mockUsersFindOneByIdAndRoomId.mockReset().mockResolvedValue(null);
+			mockSubscriptionsFindByRoomIdAndUserIds.mockReset().mockReturnValue({ toArray: async () => [] });
+			mockUsersFindActiveByRoomIdAfterUsername.mockReset().mockReturnValue({ toArray: async () => [alice] });
+			mockUsersCountActiveByRoomIdAfterUsername.mockReset().mockResolvedValue(9);
+		});
+
+		it('asks the PDP for one page of members against the attributes the change sets', async () => {
+			const { previewRoomMembers } = usePdp();
+			const page: AbacRoomMembershipPreviewPage = { group: 'loses', filter: 'a', after: { _id: 'zed', username: 'zed' } };
+
+			const preview = await previewAs(adding, page);
+
+			expect(previewRoomMembers).toHaveBeenCalledWith(room, required, page);
+			expect(preview).toEqual({ members: [listedAlice], count: 1, checked: 1, total: 9 });
+		});
+
+		it("attaches each listed member's room roles, from one lookup for the page", async () => {
+			mockSubscriptionsFindByRoomIdAndUserIds.mockReturnValue({ toArray: async () => [{ u: { _id: 'alice' }, roles: ['owner'] }] });
+			usePdp();
+
+			const preview = await previewAs(adding);
+
+			expect(mockSubscriptionsFindByRoomIdAndUserIds).toHaveBeenCalledTimes(1);
+			expect(mockSubscriptionsFindByRoomIdAndUserIds).toHaveBeenCalledWith('r1', ['alice'], expect.anything());
+			expect(preview.members).toEqual([{ ...listedAlice, roles: ['owner'] }]);
+		});
+
+		it('leaves roles out for members who hold none, and skips the lookup for an empty page', async () => {
+			mockSubscriptionsFindByRoomIdAndUserIds.mockReturnValue({ toArray: async () => [{ u: { _id: 'alice' }, roles: [] }] });
+			const { previewRoomMembers } = usePdp();
+
+			expect((await previewAs(adding)).members[0]).not.toHaveProperty('roles');
+
+			mockSubscriptionsFindByRoomIdAndUserIds.mockClear();
+			previewRoomMembers.mockResolvedValue({ members: [], checked: 1, total: 9 });
+
+			await previewAs(adding);
+
+			expect(mockSubscriptionsFindByRoomIdAndUserIds).not.toHaveBeenCalled();
+		});
+
+		it('does not look up the editor on later pages and searches', async () => {
+			usePdp();
+
+			await previewAs(adding, { after: { _id: 'alice', username: 'alice' } });
+			await previewAs(adding, { filter: 'a' });
+
+			expect(mockUsersFindOneByIdAndRoomId).not.toHaveBeenCalled();
+		});
+
+		it('retains everyone without asking the PDP when the change adds nothing, as the write evicts nobody', async () => {
+			mockFindOneByIdAndType.mockResolvedValue({ ...room, abacAttributes: required });
+			const { evaluateSubjectsAgainstAttributes, previewRoomMembers } = usePdp();
+
+			const preview = await previewAs({ dept: ['eng'] });
+
+			expect(previewRoomMembers).not.toHaveBeenCalled();
+			expect(evaluateSubjectsAgainstAttributes).not.toHaveBeenCalled();
+			expect(mockUsersFindActiveByRoomIdAfterUsername).toHaveBeenCalledWith(
+				'r1',
+				expect.objectContaining({ limit: PREVIEW_SCAN_LIMIT + 1 }),
+				expect.anything(),
+			);
+			expect(preview).toEqual({ members: [{ ...alice, verdict: 'compliant' }], count: 1, checked: 1, total: 9 });
+		});
+
+		it("reports the editor's own verdict when they are a member", async () => {
+			const editor = { _id: fakeActor._id, username: 'testuser', name: 'Test', emails: [] };
+			mockUsersFindOneByIdAndRoomId.mockResolvedValue(editor);
+			const { evaluateSubjectsAgainstAttributes } = usePdp();
+
+			const preview = await previewAs(adding);
+
+			expect(mockUsersFindOneByIdAndRoomId).toHaveBeenCalledWith(fakeActor._id, 'r1', expect.anything());
+			expect(evaluateSubjectsAgainstAttributes).toHaveBeenCalledWith([editor], required, room);
+			expect(preview.editor).toBe('nonCompliant');
+		});
+
+		it('leaves out the editor when they are not a member', async () => {
+			usePdp();
+
+			const preview = await previewAs(adding);
+
+			expect(preview).not.toHaveProperty('editor');
+		});
+
+		it('refuses attributes the write would refuse, before asking the PDP', async () => {
+			const { previewRoomMembers } = usePdp();
+
+			await expect(previewAs({ region: ['emea'] })).rejects.toThrow();
+			expect(previewRoomMembers).not.toHaveBeenCalled();
+		});
+
+		it("refuses a room-scoped editor a value they do not hold, as the room's write does", async () => {
+			const { previewRoomMembers, findUnassignableValues } = usePdp();
+			findUnassignableValues.mockResolvedValue([{ key: 'dept', values: ['sales'] }]);
+
+			await expect(previewAs(adding, {}, 'edit-room-abac-attributes')).rejects.toMatchObject({
+				code: 'error-invalid-attribute-values',
+				details: { attributes: [{ key: 'dept', values: ['sales'] }] },
+			});
+			expect(findUnassignableValues).toHaveBeenCalledWith(required, fakeActor, room.abacAttributes);
+			expect(previewRoomMembers).not.toHaveBeenCalled();
+		});
+
+		it('reports decisions as unavailable when the PDP fails', async () => {
+			usePdp({ previewRoomMembers: jest.fn().mockRejectedValue(new Error('virtru down')) });
+
+			await expect(previewAs(adding)).rejects.toMatchObject({
+				code: 'error-pdp-unavailable',
+			});
+		});
+	});
+
+	describe('onRoomAttributesChanged', () => {
+		const room = { _id: 'r1', name: 'room', t: 'p', teamMain: false, abacAttributes: [{ key: 'dept', values: ['eng'] }] };
+		const attributes = [{ key: 'dept', values: ['eng', 'sales'] }];
+		const evicting = (count: number) => {
+			const users = Array.from({ length: count }, (_, i) => ({ _id: `u${i}`, username: `user${i}` }));
+			(service as any).pdp = { onRoomAttributesChanged: jest.fn().mockResolvedValue(users) };
+			return users;
+		};
+
+		beforeEach(() => {
+			mockRoomRemoveUserFromRoom.mockReset().mockResolvedValue(undefined);
+		});
+
+		it('keeps one message per removed member below the threshold', async () => {
+			evicting(49);
+
+			await (service as any).onRoomAttributesChanged(room, attributes, fakeActor);
+
+			expect(mockRoomRemoveUserFromRoom).toHaveBeenCalledTimes(49);
+			expect(mockRoomRemoveUserFromRoom.mock.calls.every(([, , options]) => !options.skipSystemMessage)).toBe(true);
+			expect(mockSaveSystemMessage).not.toHaveBeenCalled();
+		});
+
+		it('replaces the per-member messages with one that names nobody from the threshold on', async () => {
+			evicting(50);
+
+			await (service as any).onRoomAttributesChanged(room, attributes, fakeActor);
+
+			expect(mockRoomRemoveUserFromRoom.mock.calls.every(([, , options]) => options.skipSystemMessage === true)).toBe(true);
+			expect(mockSaveSystemMessage).toHaveBeenCalledTimes(1);
+			expect(mockSaveSystemMessage).toHaveBeenCalledWith('abac-removed-users-from-room', 'r1', '50', fakeActor);
+		});
+
+		it('counts only the members actually removed', async () => {
+			evicting(51);
+			mockRoomRemoveUserFromRoom.mockRejectedValueOnce(new Error('app prevented'));
+
+			await (service as any).onRoomAttributesChanged(room, attributes, fakeActor);
+
+			expect(mockSaveSystemMessage).toHaveBeenCalledWith('abac-removed-users-from-room', 'r1', '50', fakeActor);
+		});
+
+		it('keeps one message per removed member when no one made the change', async () => {
+			evicting(51);
+
+			await (service as any).onRoomAttributesChanged(room, attributes);
+
+			expect(mockRoomRemoveUserFromRoom.mock.calls.every(([, , options]) => !options.skipSystemMessage)).toBe(true);
+			expect(mockSaveSystemMessage).not.toHaveBeenCalled();
+		});
+	});
+
 	describe('checkUsernamesMatchAttributes', () => {
 		beforeEach(() => {
 			mockUsersFind.mockReset();
@@ -1847,6 +2342,7 @@ describe('AbacService (unit)', () => {
 				isAvailable: jest.fn().mockResolvedValue(true),
 				checkUsernamesMatchAttributes: jest.fn().mockResolvedValue(undefined),
 				onRoomAttributesChanged: jest.fn().mockResolvedValue([]),
+				needsEvaluation: jest.fn(({ added }) => added),
 				onSubjectAttributesChanged: jest.fn().mockResolvedValue([]),
 				evaluateUserRooms: jest.fn().mockResolvedValue([]),
 				...over,

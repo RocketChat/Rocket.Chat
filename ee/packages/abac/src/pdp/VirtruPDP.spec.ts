@@ -1,5 +1,8 @@
+import type { AbacRoomMembershipPreviewPage } from '@rocket.chat/core-services';
+
 import { OnlyCompliantCanBeAddedToRoomError, PdpHealthCheckError } from '../errors';
-import { getDeniedSubjects, VirtruPDP } from './VirtruPDP';
+import { PREVIEW_SCAN_LIMIT } from '../helper';
+import { getDeniedSubjects, VIRTRU_PREVIEW_MIN_MATCHES, VirtruPDP } from './VirtruPDP';
 import type { Decision } from './types';
 
 const serverFetchMock = jest.fn();
@@ -8,6 +11,8 @@ jest.mock('@rocket.chat/server-fetch', () => ({ serverFetch: (...a: unknown[]) =
 const usersFindOneById = jest.fn();
 const usersFindByUsernames = jest.fn();
 const usersFindActiveByRoomIds = jest.fn();
+const usersFindActiveByRoomIdAfterUsername = jest.fn();
+const usersCountActiveByRoomIdAfterUsername = jest.fn();
 const roomsFindPrivateRoomsByIdsWithAbacAttributes = jest.fn();
 
 jest.mock('@rocket.chat/models', () => ({
@@ -15,6 +20,8 @@ jest.mock('@rocket.chat/models', () => ({
 		findOneById: (...a: unknown[]) => usersFindOneById(...a),
 		findByUsernames: (...a: unknown[]) => usersFindByUsernames(...a),
 		findActiveByRoomIds: (...a: unknown[]) => usersFindActiveByRoomIds(...a),
+		findActiveByRoomIdAfterUsername: (...a: unknown[]) => usersFindActiveByRoomIdAfterUsername(...a),
+		countActiveByRoomIdAfterUsername: (...a: unknown[]) => usersCountActiveByRoomIdAfterUsername(...a),
 	},
 	Rooms: {
 		findPrivateRoomsByIdsWithAbacAttributes: (...a: unknown[]) => roomsFindPrivateRoomsByIdsWithAbacAttributes(...a),
@@ -64,6 +71,8 @@ beforeEach(() => {
 	usersFindOneById.mockReset();
 	usersFindByUsernames.mockReset();
 	usersFindActiveByRoomIds.mockReset();
+	usersFindActiveByRoomIdAfterUsername.mockReset();
+	usersCountActiveByRoomIdAfterUsername.mockReset();
 	roomsFindPrivateRoomsByIdsWithAbacAttributes.mockReset();
 });
 
@@ -430,7 +439,7 @@ describe('VirtruPDP.onRoomAttributesChanged', () => {
 
 	it('returns user as non-compliant when entity key missing (no API request for that user)', async () => {
 		const u = user({ emails: [] });
-		usersFindActiveByRoomIds.mockReturnValue(asyncIterable([u]));
+		usersFindActiveByRoomIds.mockReturnValue(cursor([u]));
 		const apiCall = jest.fn();
 		const pdp = new VirtruPDP(mkClient({ apiCall }));
 		const result = await pdp.onRoomAttributesChanged(room, newAttrs);
@@ -439,7 +448,7 @@ describe('VirtruPDP.onRoomAttributesChanged', () => {
 	});
 
 	it('returns [] when all users are DECISION_PERMIT', async () => {
-		usersFindActiveByRoomIds.mockReturnValue(asyncIterable([user()]));
+		usersFindActiveByRoomIds.mockReturnValue(cursor([user()]));
 		const apiCall = jest.fn().mockResolvedValue(permitFor(['r1']));
 		const pdp = new VirtruPDP(mkClient({ apiCall }));
 		const result = await pdp.onRoomAttributesChanged(room, newAttrs);
@@ -449,7 +458,7 @@ describe('VirtruPDP.onRoomAttributesChanged', () => {
 	it('returns users that are DENIED', async () => {
 		const u1 = user();
 		const u2 = user({ _id: 'u2', username: 'alice', emails: [{ address: 'a@x.com', verified: true }] });
-		usersFindActiveByRoomIds.mockReturnValue(asyncIterable([u1, u2]));
+		usersFindActiveByRoomIds.mockReturnValue(cursor([u1, u2]));
 		const apiCall = jest.fn().mockResolvedValue({
 			decisionResponses: [
 				{ resourceDecisions: [{ ephemeralResourceId: 'r1', decision: 'DECISION_PERMIT' }] },
@@ -461,30 +470,31 @@ describe('VirtruPDP.onRoomAttributesChanged', () => {
 		expect(result).toEqual([u2]);
 	});
 
-	it('does not evict on empty resourceDecisions (inconclusive)', async () => {
+	it('evicts on empty resourceDecisions (inconclusive)', async () => {
 		const u = user();
-		usersFindActiveByRoomIds.mockReturnValue(asyncIterable([u]));
+		usersFindActiveByRoomIds.mockReturnValue(cursor([u]));
 		const apiCall = jest.fn().mockResolvedValue({ decisionResponses: [{ resourceDecisions: [] }] });
 		const pdp = new VirtruPDP(mkClient({ apiCall }));
 		const result = await pdp.onRoomAttributesChanged(room, newAttrs);
-		expect(result).toEqual([]);
+		expect(result).toEqual([u]);
 	});
 
-	it('does not evict on DECISION_UNSPECIFIED (inconclusive)', async () => {
-		usersFindActiveByRoomIds.mockReturnValue(asyncIterable([user()]));
+	it('evicts on DECISION_UNSPECIFIED (inconclusive)', async () => {
+		const u = user();
+		usersFindActiveByRoomIds.mockReturnValue(cursor([u]));
 		const apiCall = jest.fn().mockResolvedValue({
 			decisionResponses: [{ resourceDecisions: [{ ephemeralResourceId: 'r1', decision: 'DECISION_UNSPECIFIED' }] }],
 		});
 		const pdp = new VirtruPDP(mkClient({ apiCall }));
 		const result = await pdp.onRoomAttributesChanged(room, newAttrs);
-		expect(result).toEqual([]);
+		expect(result).toEqual([u]);
 	});
 
-	it('still evicts entity-keyless users alongside DENY-only filtering of decided users', async () => {
+	it('evicts entity-keyless, denied and inconclusive users alike', async () => {
 		const keyless = user({ _id: 'u0', emails: [] });
 		const denied = user({ _id: 'u2', username: 'alice', emails: [{ address: 'a@x.com', verified: true }] });
 		const unspecified = user({ _id: 'u3', username: 'carol', emails: [{ address: 'c@x.com', verified: true }] });
-		usersFindActiveByRoomIds.mockReturnValue(asyncIterable([keyless, denied, unspecified]));
+		usersFindActiveByRoomIds.mockReturnValue(cursor([keyless, denied, unspecified]));
 		const apiCall = jest.fn().mockResolvedValue({
 			decisionResponses: [
 				{ resourceDecisions: [{ ephemeralResourceId: 'r1', decision: 'DECISION_DENY' }] },
@@ -493,17 +503,126 @@ describe('VirtruPDP.onRoomAttributesChanged', () => {
 		});
 		const pdp = new VirtruPDP(mkClient({ apiCall }));
 		const result = await pdp.onRoomAttributesChanged(room, newAttrs);
-		expect(result).toEqual([keyless, denied]);
+		expect(result).toEqual([keyless, denied, unspecified]);
 	});
 
 	it('returns only entity-keyless users when ALL users lack entity keys (no API call)', async () => {
 		const u = user({ emails: [] });
-		usersFindActiveByRoomIds.mockReturnValue(asyncIterable([u]));
+		usersFindActiveByRoomIds.mockReturnValue(cursor([u]));
 		const apiCall = jest.fn();
 		const pdp = new VirtruPDP(mkClient({ apiCall }));
 		const result = await pdp.onRoomAttributesChanged(room, newAttrs);
 		expect(result).toEqual([u]);
 		expect(apiCall).not.toHaveBeenCalled();
+	});
+});
+
+describe('VirtruPDP.needsEvaluation', () => {
+	const pdp = new VirtruPDP(mkClient());
+
+	it('evaluates any change, since a removal can narrow access under the platform rules', () => {
+		expect(pdp.needsEvaluation({ added: true, removed: false })).toBe(true);
+		expect(pdp.needsEvaluation({ added: false, removed: true })).toBe(true);
+	});
+
+	it('skips an unchanged set', () => {
+		expect(pdp.needsEvaluation({ added: false, removed: false })).toBe(false);
+	});
+});
+
+describe('VirtruPDP.previewRoomMembers', () => {
+	const room = { _id: 'r1', abacAttributes: [] };
+	const attrs = [{ key: 'clearance', values: ['secret'] }];
+	const previewMembers = (pdp: VirtruPDP, page: AbacRoomMembershipPreviewPage) => pdp.previewRoomMembers(room, attrs, page);
+	const member = (username: string) => ({ ...user({ _id: username, username }), name: username.toUpperCase() });
+	const [alice, bob, carol] = ['alice', 'bob', 'carol'].map(member);
+
+	const readsMembers = (checked: ReturnType<typeof member>[]) => usersFindActiveByRoomIdAfterUsername.mockReturnValueOnce(cursor(checked));
+
+	beforeEach(() => {
+		usersCountActiveByRoomIdAfterUsername.mockResolvedValue(3);
+	});
+
+	const deciding = (pdp: VirtruPDP, removed: string[]) =>
+		jest.spyOn(pdp, 'evaluateSubjectsAgainstAttributes').mockImplementation(async (subjects) => {
+			const ids = subjects.map(({ _id }) => _id);
+			return {
+				compliant: ids.filter((id) => !removed.includes(id)),
+				nonCompliant: ids.filter((id) => removed.includes(id)),
+				inconclusive: [],
+			};
+		});
+
+	it('reads one page of active members and returns each with its verdict', async () => {
+		readsMembers([alice, bob, carol]);
+		const pdp = new VirtruPDP(mkClient());
+		deciding(pdp, ['alice']);
+
+		const preview = await previewMembers(pdp, {});
+
+		expect(usersFindActiveByRoomIdAfterUsername).toHaveBeenCalledWith('r1', { limit: VIRTRU_PREVIEW_MIN_MATCHES + 1 }, expect.anything());
+		expect(usersCountActiveByRoomIdAfterUsername).toHaveBeenCalledWith('r1', {});
+		expect(preview).toEqual({
+			members: [
+				{ _id: 'alice', username: 'alice', name: 'ALICE', verdict: 'nonCompliant' },
+				{ _id: 'bob', username: 'bob', name: 'BOB', verdict: 'compliant' },
+				{ _id: 'carol', username: 'carol', name: 'CAROL', verdict: 'compliant' },
+			],
+			checked: 3,
+			total: 3,
+		});
+	});
+
+	it('reads up to the scan limit for a group and keeps every member of that group it checked', async () => {
+		readsMembers([alice, bob, carol]);
+		const pdp = new VirtruPDP(mkClient());
+		deciding(pdp, ['alice']);
+
+		const preview = await previewMembers(pdp, { group: 'retains' });
+
+		expect(usersFindActiveByRoomIdAfterUsername.mock.calls[0][1]).toMatchObject({ limit: PREVIEW_SCAN_LIMIT + 1 });
+		expect(preview.members.map(({ _id }) => _id)).toEqual(['bob', 'carol']);
+		expect(preview).toMatchObject({ checked: 3, total: 3 });
+		expect(preview).not.toHaveProperty('next');
+	});
+
+	describe('beyond one evaluation step', () => {
+		const crowd = Array.from({ length: PREVIEW_SCAN_LIMIT + 1 }, (_, index) => member(`m${String(index).padStart(4, '0')}`));
+		const asked = (evaluate: jest.SpyInstance) => evaluate.mock.calls.map(([subjects]) => subjects.length);
+
+		it('stops after the step that finds enough matches, keeping every match in it', async () => {
+			readsMembers(crowd);
+			const pdp = new VirtruPDP(mkClient());
+			const evaluate = deciding(pdp, []);
+
+			const preview = await previewMembers(pdp, { group: 'retains' });
+
+			expect(asked(evaluate)).toEqual([800]);
+			expect(preview.members).toHaveLength(800);
+			expect(preview).toMatchObject({ checked: 800, next: { _id: crowd[799]._id } });
+		});
+
+		it('keeps checking until the scan limit when too few match, then points next at the last member checked', async () => {
+			readsMembers(crowd);
+			const pdp = new VirtruPDP(mkClient());
+			const evaluate = deciding(pdp, [crowd[5]._id]);
+
+			const preview = await previewMembers(pdp, { group: 'loses' });
+
+			expect(asked(evaluate)).toEqual([800, PREVIEW_SCAN_LIMIT - 800]);
+			expect(preview.members.map(({ _id }) => _id)).toEqual([crowd[5]._id]);
+			expect(preview).toMatchObject({ checked: PREVIEW_SCAN_LIMIT, next: { _id: crowd[PREVIEW_SCAN_LIMIT - 1]._id } });
+		});
+	});
+
+	it('lists an undecided member as losing access, as the write removes them', async () => {
+		readsMembers([alice]);
+		const pdp = new VirtruPDP(mkClient());
+		jest.spyOn(pdp, 'evaluateSubjectsAgainstAttributes').mockResolvedValue({ compliant: [], nonCompliant: [], inconclusive: ['alice'] });
+
+		const preview = await previewMembers(pdp, { group: 'loses' });
+
+		expect(preview).toMatchObject({ members: [{ _id: 'alice', verdict: 'inconclusive' }] });
 	});
 });
 
@@ -698,7 +817,7 @@ describe('VirtruPDP — PDP unreachable (decision call rejects)', () => {
 	});
 
 	it('onRoomAttributesChanged rejects (never silently keeps everyone) when the decision call fails', async () => {
-		usersFindActiveByRoomIds.mockReturnValue(asyncIterable([user()]));
+		usersFindActiveByRoomIds.mockReturnValue(cursor([user()]));
 		const apiCall = pdpDown();
 		const pdp = new VirtruPDP(mkClient({ apiCall }));
 		await expect(pdp.onRoomAttributesChanged(room, attrs)).rejects.toThrow('pdp down');
