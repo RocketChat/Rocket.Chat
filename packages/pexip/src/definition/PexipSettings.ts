@@ -23,4 +23,10 @@ export type PexipSettings = {
 		discussionsEnabled: boolean;
 		persistentChatEnabled: boolean;
 	};
+	/** Where to send a caller being transferred into a conference over SIP, and whether to hand out aliases. */
+	sip: {
+		addAlias: boolean;
+		host: string;
+		port: number;
+	};
 };
