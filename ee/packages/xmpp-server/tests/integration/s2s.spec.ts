@@ -40,7 +40,8 @@ describe('S2S integration: two servers over localhost', () => {
 		return [{ host: '127.0.0.1', port }];
 	};
 
-	const startServer = async (domain: string): Promise<TestServer> => {
+	/** Starts a server for `domain`; `routable: false` leaves the domain's address pointing at the earlier server. */
+	const startServer = async (domain: string, { routable = true } = {}): Promise<TestServer> => {
 		const events = new Emitter<XMPPServerEventMap>();
 		const received: Element[] = [];
 
@@ -63,7 +64,9 @@ describe('S2S integration: two servers over localhost', () => {
 		});
 
 		await manager.startListener();
-		ports.set(domain, manager.listeningPort as number);
+		if (routable) {
+			ports.set(domain, manager.listeningPort as number);
+		}
 		return { manager, events, received };
 	};
 
@@ -121,14 +124,20 @@ describe('S2S integration: two servers over localhost', () => {
 	});
 
 	it('queues stanzas while the connection is being established and flushes in order (s2s-connectivity R10)', async () => {
+		// A second a.localhost server has no route to b.localhost yet, so the first send has to connect
+		const fresh = await startServer('a.localhost', { routable: false });
 		const ids = ['q1', 'q2', 'q3'];
-		await Promise.all(
-			ids.map((id) =>
-				serverA.manager.sendStanza(xml('message', { from: 'alice@a.localhost', to: `bob@b.localhost`, id }, xml('body', {}, id))),
-			),
-		);
+		try {
+			const sends = ids.map((id) =>
+				fresh.manager.sendStanza(xml('message', { from: 'alice@a.localhost', to: `bob@b.localhost`, id }, xml('body', {}, id))),
+			);
+			expect(fresh.manager.getConnectionStatus('b.localhost')).toBe('connecting');
+			await Promise.all(sends);
+			await waitFor(() => (ids.every((id) => serverB.received.some((el) => el.attrs.id === id)) ? true : undefined));
+		} finally {
+			await fresh.manager.stopAll();
+		}
 
-		await waitFor(() => (ids.every((id) => serverB.received.some((el) => el.attrs.id === id)) ? true : undefined));
 		const receivedIds = serverB.received.filter((el) => ids.includes(el.attrs.id)).map((el) => el.attrs.id);
 		expect(receivedIds).toEqual(ids);
 	});
