@@ -18,7 +18,7 @@ export interface IMediaService {
 		keepType: boolean,
 		blur: boolean,
 		enlarge: boolean,
-		fit?: ResizeFit | undefined,
+		fit?: ResizeFit,
 	): Promise<ResizeResult>;
 	resizeFromStream(
 		input: Readable,
@@ -27,7 +27,7 @@ export interface IMediaService {
 		keepType: boolean,
 		blur: boolean,
 		enlarge: boolean,
-		fit?: ResizeFit | undefined,
+		fit?: ResizeFit,
 	): Promise<ResizeResult>;
 	isImage(buff: Buffer): Promise<boolean>;
 	stripExifFromImageStream(stream: Stream): Readable;

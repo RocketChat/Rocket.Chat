@@ -41,7 +41,7 @@ export class MediaService extends ServiceClassInternal implements IMediaService 
 		keepType: boolean,
 		blur: boolean,
 		enlarge: boolean,
-		fit?: keyof FitEnum | undefined,
+		fit?: keyof FitEnum,
 	): Promise<ResizeResult> {
 		const stream = this.bufferToStream(input);
 		return this.resizeFromStream(stream, width, height, keepType, blur, enlarge, fit);
@@ -54,7 +54,7 @@ export class MediaService extends ServiceClassInternal implements IMediaService 
 		keepType: boolean,
 		blur: boolean,
 		enlarge: boolean,
-		fit?: keyof FitEnum | undefined,
+		fit?: keyof FitEnum,
 	): Promise<ResizeResult> {
 		const transformer = sharp({ limitInputChannels: 8 }).resize({ width, height, fit, withoutEnlargement: !enlarge });
 
