@@ -17,7 +17,7 @@ inputs:
     description: 'NPM token'
   source-hash:
     required: true
-    description: 'RC cache id (e.g. packages-build-cache-key + meteor apps/meteor archive hash from CI)'
+    description: 'RC cache id (e.g. packages-build-cache-key + apps/meteor and workspace packages archive hash from CI)'
 
 runs:
   using: composite
