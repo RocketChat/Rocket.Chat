@@ -1,8 +1,6 @@
 import { Random } from '@rocket.chat/random';
 import { Meteor } from 'meteor/meteor';
-// eslint-disable-next-line import-x/no-duplicates
 import { MeteorDeveloperAccounts } from 'meteor/meteor-developer-oauth';
-// eslint-disable-next-line import-x/no-duplicates
 import { OAuth } from 'meteor/oauth';
 
 import { createOAuthTotpLoginMethod } from './oauth';

@@ -1,9 +1,7 @@
 import { Random } from '@rocket.chat/random';
 import { Accounts } from 'meteor/accounts-base';
-// eslint-disable-next-line import-x/no-duplicates
 import { Google } from 'meteor/google-oauth';
 import { Meteor } from 'meteor/meteor';
-// eslint-disable-next-line import-x/no-duplicates
 import { OAuth } from 'meteor/oauth';
 
 import { createOAuthTotpLoginMethod } from './oauth';
