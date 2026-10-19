@@ -19,8 +19,8 @@ const get: FileUploadClass['get'] = async function (this: FileUploadClass, file,
 };
 
 const copy: FileUploadClass['copy'] = async function (this: FileUploadClass, file, out) {
-	return new Promise(async (resolve) => {
-		(await this.store.getReadStream(file._id, file)).pipe(out).on('finish', () => resolve());
+	return new Promise((resolve) => {
+		void this.store.getReadStream(file._id, file).then((readStream) => readStream.pipe(out).on('finish', () => resolve()));
 	});
 };
 

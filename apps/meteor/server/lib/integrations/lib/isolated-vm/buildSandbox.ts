@@ -20,14 +20,7 @@ const proxyObject = (obj: Record<string, any>, forbiddenKeys: string[] = []): Re
 					const result = (obj[key] as (...args: any[]) => unknown)(...args);
 
 					if (result && result instanceof Promise) {
-						return new Promise(async (resolve, reject) => {
-							try {
-								const awaitedResult = await result;
-								resolve(makeTransferable(awaitedResult));
-							} catch (e) {
-								reject(e);
-							}
-						});
+						return makeTransferable(await result);
 					}
 
 					return makeTransferable(result);

@@ -188,74 +188,76 @@ export class Job {
 	public run(): Promise<Job> {
 		const definition = this.agenda.getDefinition(this.attrs.name);
 
-		return new Promise(async (resolve, reject) => {
-			this.attrs.lastRunAt = new Date();
-			debug('[%s:%s] setting lastRunAt to: %s', this.attrs.name, this.attrs._id, this.attrs.lastRunAt.toISOString());
-			this.computeNextRunAt();
-			await this.save();
+		return new Promise((resolve, reject) => {
+			void (async () => {
+				this.attrs.lastRunAt = new Date();
+				debug('[%s:%s] setting lastRunAt to: %s', this.attrs.name, this.attrs._id, this.attrs.lastRunAt.toISOString());
+				this.computeNextRunAt();
+				await this.save();
 
-			let finished = false;
-			const jobCallback = async (err?: Error): Promise<void> => {
-				// We don't want to complete the job multiple times
-				if (finished) {
-					return;
+				let finished = false;
+				const jobCallback = async (err?: Error): Promise<void> => {
+					// We don't want to complete the job multiple times
+					if (finished) {
+						return;
+					}
+
+					finished = true;
+
+					if (err) {
+						this.fail(err);
+					} else {
+						this.attrs.lastFinishedAt = new Date();
+					}
+
+					this.attrs.lockedAt = null;
+
+					await this.save().catch((error) => {
+						debug('[%s:%s] failed to be saved to MongoDB', this.attrs.name, this.attrs._id);
+						reject(error);
+					});
+					debug('[%s:%s] was saved successfully to MongoDB', this.attrs.name, this.attrs._id);
+
+					if (err) {
+						this.agenda.emit('fail', err, this);
+						this.agenda.emit(`fail:${this.attrs.name}`, err, this);
+						debug('[%s:%s] has failed [%s]', this.attrs.name, this.attrs._id, err.message);
+					} else {
+						this.agenda.emit('success', this);
+						this.agenda.emit(`success:${this.attrs.name}`, this);
+						debug('[%s:%s] has succeeded', this.attrs.name, this.attrs._id);
+					}
+
+					this.agenda.emit('complete', this);
+					this.agenda.emit(`complete:${this.attrs.name}`, this);
+					debug('[%s:%s] job finished at [%s] and was unlocked', this.attrs.name, this.attrs._id, this.attrs.lastFinishedAt);
+					// Curiously, we still resolve successfully if the job processor failed.
+					// Agenda is not equipped to handle errors originating in user code, so, we leave them to inspect the side-effects of job.fail()
+					resolve(this);
+				};
+
+				try {
+					this.agenda.emit('start', this);
+					this.agenda.emit(`start:${this.attrs.name}`, this);
+					debug('[%s:%s] starting job', this.attrs.name, this.attrs._id);
+					if (!definition) {
+						debug('[%s:%s] has no definition, can not run', this.attrs.name, this.attrs._id);
+						throw new Error('Undefined job');
+					}
+
+					if (definition.fn.length === 2) {
+						debug('[%s:%s] process function being called', this.attrs.name, this.attrs._id);
+						await definition.fn(this, jobCallback);
+					} else {
+						debug('[%s:%s] process function being called', this.attrs.name, this.attrs._id);
+						await definition.fn(this);
+						await jobCallback();
+					}
+				} catch (error: any) {
+					debug('[%s:%s] unknown error occurred', this.attrs.name, this.attrs._id);
+					await jobCallback(error);
 				}
-
-				finished = true;
-
-				if (err) {
-					this.fail(err);
-				} else {
-					this.attrs.lastFinishedAt = new Date();
-				}
-
-				this.attrs.lockedAt = null;
-
-				await this.save().catch((error) => {
-					debug('[%s:%s] failed to be saved to MongoDB', this.attrs.name, this.attrs._id);
-					reject(error);
-				});
-				debug('[%s:%s] was saved successfully to MongoDB', this.attrs.name, this.attrs._id);
-
-				if (err) {
-					this.agenda.emit('fail', err, this);
-					this.agenda.emit(`fail:${this.attrs.name}`, err, this);
-					debug('[%s:%s] has failed [%s]', this.attrs.name, this.attrs._id, err.message);
-				} else {
-					this.agenda.emit('success', this);
-					this.agenda.emit(`success:${this.attrs.name}`, this);
-					debug('[%s:%s] has succeeded', this.attrs.name, this.attrs._id);
-				}
-
-				this.agenda.emit('complete', this);
-				this.agenda.emit(`complete:${this.attrs.name}`, this);
-				debug('[%s:%s] job finished at [%s] and was unlocked', this.attrs.name, this.attrs._id, this.attrs.lastFinishedAt);
-				// Curiously, we still resolve successfully if the job processor failed.
-				// Agenda is not equipped to handle errors originating in user code, so, we leave them to inspect the side-effects of job.fail()
-				resolve(this);
-			};
-
-			try {
-				this.agenda.emit('start', this);
-				this.agenda.emit(`start:${this.attrs.name}`, this);
-				debug('[%s:%s] starting job', this.attrs.name, this.attrs._id);
-				if (!definition) {
-					debug('[%s:%s] has no definition, can not run', this.attrs.name, this.attrs._id);
-					throw new Error('Undefined job');
-				}
-
-				if (definition.fn.length === 2) {
-					debug('[%s:%s] process function being called', this.attrs.name, this.attrs._id);
-					await definition.fn(this, jobCallback);
-				} else {
-					debug('[%s:%s] process function being called', this.attrs.name, this.attrs._id);
-					await definition.fn(this);
-					await jobCallback();
-				}
-			} catch (error: any) {
-				debug('[%s:%s] unknown error occurred', this.attrs.name, this.attrs._id);
-				await jobCallback(error);
-			}
+			})();
 		});
 	}
 

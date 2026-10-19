@@ -3,7 +3,7 @@ import { createWriteStream } from 'node:fs';
 import archiver from 'archiver';
 
 export const makeZipFile = (folderToZip: string, targetFile: string): Promise<void> => {
-	return new Promise(async (resolve, reject) => {
+	return new Promise((resolve, reject) => {
 		const output = createWriteStream(targetFile);
 
 		const archive = archiver('zip');
@@ -14,6 +14,6 @@ export const makeZipFile = (folderToZip: string, targetFile: string): Promise<vo
 
 		archive.pipe(output);
 		archive.directory(folderToZip, false);
-		await archive.finalize();
+		void archive.finalize();
 	});
 };

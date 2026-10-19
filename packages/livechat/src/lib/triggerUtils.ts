@@ -47,24 +47,23 @@ export const getAgent = async (triggerAction: ILivechatTriggerAction): Promise<A
 		return agentPromise;
 	}
 
-	agentPromise = new Promise(async (resolve, reject) => {
+	agentPromise = (async (): Promise<AgentPromise> => {
 		const { sender, name = '' } = triggerAction.params || {};
 
 		if (sender === 'custom') {
-			resolve({ username: name });
+			return { username: name };
 		}
 
 		if (sender === 'queue') {
 			try {
-				const agent = await getNextAgentFromQueue();
-				resolve(agent);
+				return await getNextAgentFromQueue();
 			} catch (_) {
-				resolve({ username: 'rocket.cat' });
+				return { username: 'rocket.cat' };
 			}
 		}
 
-		return reject('Unknown sender type.');
-	});
+		return Promise.reject('Unknown sender type.');
+	})();
 
 	// expire the promise cache as well
 	setTimeout(() => {
