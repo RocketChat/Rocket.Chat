@@ -12,9 +12,9 @@ import {
 } from '@rocket.chat/ui-client';
 import type { TranslationKey } from '@rocket.chat/ui-contexts';
 import { useSetModal } from '@rocket.chat/ui-contexts';
-import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { useMutation } from '@tanstack/react-query';
 import type { ChangeEvent } from 'react';
-import { useEffect, useMemo, useState } from 'react';
+import { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Virtuoso } from 'react-virtuoso';
 
@@ -27,7 +27,6 @@ import AbacRoomPreviewProgress from './AbacRoomPreviewProgress';
 import { useEditorFirst } from './useEditorFirst';
 import { useRoomMembershipPreview } from './useRoomMembershipPreview';
 import { useRoomMembershipPreviewEditor } from './useRoomMembershipPreviewEditor';
-import { ABACQueryKeys } from '../../../lib/queryKeys';
 import WarningModal from '../../WarningModal';
 import AbacErrorCallout from '../AbacErrorCallout';
 
@@ -56,15 +55,12 @@ type AbacRoomMembershipPreviewProps = {
 const AbacRoomMembershipPreview = ({ rid, roomName, attributes, onBack, onSave }: AbacRoomMembershipPreviewProps) => {
 	const { t } = useTranslation();
 	const setModal = useSetModal();
-	const queryClient = useQueryClient();
 
 	const [text, setText] = useState('');
 	const [group, setGroup] = useState<AbacMembershipGroup>('loses');
 	const filter = useDebouncedValue(text.trim(), 400);
 
-	const { editor, error: editorError } = useRoomMembershipPreviewEditor(rid, attributes);
-
-	useEffect(() => () => queryClient.removeQueries({ queryKey: ABACQueryKeys.roomMembershipPreview.all(rid) }), [queryClient, rid]);
+	const { editor, error: editorError, retry: retryEditor } = useRoomMembershipPreviewEditor(rid, attributes);
 
 	const saveMutation = useMutation({ mutationFn: () => onSave(editor?.losesAccess ?? false) });
 	const isSaving = saveMutation.isPending || saveMutation.isSuccess;
@@ -143,6 +139,14 @@ const AbacRoomMembershipPreview = ({ rid, roomName, attributes, onBack, onSave }
 	};
 	const error = preview.error ?? editorError;
 	const isError = preview.isError || !!editorError;
+	const retry = () => {
+		if (preview.isError) {
+			preview.retry();
+		}
+		if (editorError) {
+			retryEditor();
+		}
+	};
 	const members = useEditorFirst(rid, preview.members, editor, group, filter);
 	const footerContext = { isPartial, canLoadMore: !isSaving, onLoadMore: preview.loadMore };
 
@@ -174,7 +178,7 @@ const AbacRoomMembershipPreview = ({ rid, roomName, attributes, onBack, onSave }
 			<ContextualbarContent paddingInline={0}>
 				{isError && (
 					<Box paddingInline={24} paddingBlock={12}>
-						<AbacErrorCallout error={error} fallback='ABAC_Preview_Unavailable' />
+						<AbacErrorCallout error={error} fallback='ABAC_Preview_Unavailable' onRetry={retry} retrying={preview.isRetrying} />
 					</Box>
 				)}
 				{!isError && (

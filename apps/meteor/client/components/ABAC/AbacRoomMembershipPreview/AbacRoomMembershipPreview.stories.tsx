@@ -7,7 +7,7 @@ import { action } from 'storybook/actions';
 
 import AbacRoomMembershipPreview from './AbacRoomMembershipPreview';
 
-type PreviewPage = { group?: AbacMembershipGroup; filter?: string; after?: AbacPreviewCursor; count?: number };
+type PreviewPage = { group?: AbacMembershipGroup; filter?: string; after?: AbacPreviewCursor };
 
 const member = (username: string, name: string, verdict: AbacRoomPreviewMember['verdict'], roles?: string[]): AbacRoomPreviewMember => ({
 	_id: username,
@@ -88,6 +88,7 @@ const withPreview = (respond: (page: PreviewPage) => IAbacRoomMembershipPreview 
 			Cancel: 'Cancel',
 			Load_more: 'Load more',
 			No_members_found: 'No members found',
+			Retry: 'Retry',
 			Save: 'Save',
 		})
 		.withEndpoint('POST', '/v1/abac/rooms.evaluateMembership', (body) => respond('rid' in body ? body : {}))
@@ -137,10 +138,11 @@ const delay = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
 
 const SCAN_LIMIT = 50;
 const EVALUATION_STEP = 25;
+const MIN_MATCHES = 25;
 
 const pagedRoom =
 	(room: AbacRoomPreviewMember[]) =>
-	async ({ group, filter, after, count = 25 }: PreviewPage): Promise<IAbacRoomMembershipPreview> => {
+	async ({ group, filter, after }: PreviewPage): Promise<IAbacRoomMembershipPreview> => {
 		await delay(600);
 
 		const population = bySearch(room, filter);
@@ -149,7 +151,7 @@ const pagedRoom =
 		const members: AbacRoomPreviewMember[] = [];
 		let checked = 0;
 
-		while (checked < window.length && members.length < count) {
+		while (checked < window.length && members.length < MIN_MATCHES) {
 			const batch = window.slice(checked, checked + EVALUATION_STEP);
 			members.push(...batch.filter(({ verdict }) => (verdict !== 'compliant') === (group !== 'retains')));
 			checked += batch.length;

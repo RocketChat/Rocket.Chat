@@ -5,6 +5,7 @@ import { usePreviewPages } from './usePreviewPages';
 
 export const PREVIEW_MIN_SHOWN = 25;
 export const PREVIEW_AUTO_FETCH_PAGES = 2;
+export const PREVIEW_LOAD_MORE_PAGES = 5;
 
 type LoopState = {
 	scope: string;
@@ -27,12 +28,8 @@ export const useRoomMembershipPreview = (
 	group: AbacMembershipGroup,
 	paused = false,
 ) => {
-	const { data, isPending, isError, error, isFetching, isFetchingNextPage, hasNextPage, fetchNextPage } = usePreviewPages(
-		rid,
-		attributes,
-		filter,
-		group,
-	);
+	const { data, isPending, isError, error, isFetching, isFetchingNextPage, isFetchNextPageError, hasNextPage, fetchNextPage, refetch } =
+		usePreviewPages(rid, attributes, filter, group);
 
 	const scope = `${group}:${filter}`;
 	const [storedLoop, setLoop] = useState<LoopState>(() => freshLoop(scope));
@@ -77,6 +74,7 @@ export const useRoomMembershipPreview = (
 		isPending,
 		isError,
 		error,
+		isRetrying: isError && isFetching,
 		isChecking,
 		isPartial: isStopped || isCapped,
 		isExhausted: !isPending && !isError && !hasNextPage,
@@ -85,7 +83,8 @@ export const useRoomMembershipPreview = (
 				resume(PREVIEW_AUTO_FETCH_PAGES);
 			}
 		},
-		loadMore: () => resume(Infinity),
+		loadMore: () => resume(PREVIEW_LOAD_MORE_PAGES),
 		stop: () => setLoop({ ...loop, stopped: true }),
+		retry: () => void (isFetchNextPageError ? fetchNextPage({ cancelRefetch: false }) : refetch({ cancelRefetch: false })),
 	};
 };

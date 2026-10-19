@@ -9,7 +9,7 @@ export type PreviewEditor = {
 };
 
 export const useRoomMembershipPreviewEditor = (rid: string, attributes: Record<string, string[]>) => {
-	const { data, error } = usePreviewPages(rid, attributes, '', 'loses');
+	const { data, error, refetch } = usePreviewPages(rid, attributes, '', 'loses');
 	const verdict = data?.pages[0]?.editor;
 	const hasFirstPage = !!data?.pages.length;
 
@@ -18,5 +18,5 @@ export const useRoomMembershipPreviewEditor = (rid: string, attributes: Record<s
 		[hasFirstPage, verdict],
 	);
 
-	return { editor, error };
+	return { editor, error: hasFirstPage ? null : error, retry: () => void refetch({ cancelRefetch: false }) };
 };
