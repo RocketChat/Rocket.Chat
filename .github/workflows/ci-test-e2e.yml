@@ -95,14 +95,6 @@ jobs:
     name: MongoDB ${{ matrix.mongodb-version }}${{ inputs.coverage == matrix.mongodb-version && ' coverage' || '' }} (${{ matrix.shard }}/${{ inputs.total-shard }})
 
     steps:
-      - name: Collect Workflow Telemetry
-        if: inputs.type == 'perf'
-        uses: catchpoint/workflow-telemetry-action@94c3c3d9567a0205de6da68a76c428ce4e769af1 # v2.0.0
-        with:
-          theme: dark
-          job_summary: true
-          comment_on_pr: false
-
       - name: Setup kernel limits
         run: |
           echo "500 65535" > sudo tee -a /proc/sys/net/ipv4/ip_local_port_range
