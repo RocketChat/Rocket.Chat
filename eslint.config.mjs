@@ -198,6 +198,12 @@ export default [
 		},
 	},
 	{
+		files: ['**/*.@(spec|test).@(ts|tsx|js|jsx|mjs|cjs)'],
+		rules: {
+			'jest/expect-expect': ['warn', { assertFunctionNames: ['expect*', 'sinon.assert.*'] }],
+		},
+	},
+	{
 		files: ['apps/meteor/**/*.tests.js'],
 		languageOptions: {
 			globals: {
