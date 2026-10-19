@@ -1,0 +1,19 @@
+ee/packages/xmpp-server/src/jid/escaping.spec.ts
+  s_bf193bee63afbe::t_530706e8d27ee0 2,15-20
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "321f62d6420aceded1f062121cd61b53b24f08be",
+  "prompts": {},
+  "sessions": {
+    "s_bf193bee63afbe": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "0f126c7e-b9e6-435d-856c-ef1cd07242d5",
+        "model": "unknown"
+      },
+      "human_author": "Diego Sampaio <chinello@gmail.com>"
+    }
+  }
+}
