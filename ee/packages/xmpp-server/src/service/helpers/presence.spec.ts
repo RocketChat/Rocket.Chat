@@ -8,6 +8,7 @@ describe('mapStatusToPresence', () => {
 		expect(mapStatusToPresence(UserStatus.AWAY)).toEqual({ availability: 'available', show: 'away' });
 		expect(mapStatusToPresence(UserStatus.BUSY)).toEqual({ availability: 'available', show: 'dnd' });
 		expect(mapStatusToPresence(UserStatus.OFFLINE)).toEqual({ availability: 'unavailable' });
+		expect(mapStatusToPresence(UserStatus.DISABLED)).toEqual({ availability: 'unavailable' });
 		expect(mapStatusToPresence(undefined)).toEqual({ availability: 'unavailable' });
 	});
 });
