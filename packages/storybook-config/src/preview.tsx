@@ -4,7 +4,6 @@ import { useDarkMode } from '@rocket.chat/storybook-dark-mode';
 import type { Parameters, Decorator } from '@storybook/react';
 import { themes } from 'storybook/theming';
 
-import manifest from '../package.json';
 import DocsContainer from './DocsContainer';
 import logo from './logo.svg';
 
@@ -35,13 +34,13 @@ export const parameters: Parameters = {
 			appContentBg: surface.dark.light,
 			appPreviewBg: 'transparent',
 			barBg: surface.dark.light,
-			brandTitle: manifest.name,
+			brandTitle: process.env.STORYBOOK_PACKAGE_NAME,
 			brandImage: logo,
 		},
 		light: {
 			...themes.normal,
 			appPreviewBg: 'transparent',
-			brandTitle: manifest.name,
+			brandTitle: process.env.STORYBOOK_PACKAGE_NAME,
 			brandImage: logo,
 		},
 	},
