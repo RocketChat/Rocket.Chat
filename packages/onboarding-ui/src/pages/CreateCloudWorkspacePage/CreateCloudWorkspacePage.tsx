@@ -1,14 +1,13 @@
 import { Box } from '@rocket.chat/fuselage';
 import { BackgroundLayer } from '@rocket.chat/layout';
-import type { ComponentProps } from 'react';
 import { useTranslation, Trans } from 'react-i18next';
 
 import Description from './Description';
 import TitleCreateCloudPage from './TitleCreateCloudPage';
 import FormPageLayout from '../../common/FormPageLayout';
-import CreateCloudWorkspaceForm from '../../forms/CreateCloudWorkspaceForm';
+import CreateCloudWorkspaceForm, { type CreateCloudWorkspaceFormProps } from '../../forms/CreateCloudWorkspaceForm';
 
-export type CreateCloudWorkspacePageProps = ComponentProps<typeof CreateCloudWorkspaceForm>;
+export type CreateCloudWorkspacePageProps = CreateCloudWorkspaceFormProps;
 
 const CreateCloudWorkspacePage = (props: CreateCloudWorkspacePageProps) => {
 	const { t } = useTranslation();
