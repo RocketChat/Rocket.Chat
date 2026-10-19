@@ -138,17 +138,6 @@ $option-color-variant-primary: theme('option-color-variant-primary', colors.stat
 		color: colors.font(secondary-info);
 	}
 
-	&__description-block {
-		@include use-font-scale(p2);
-
-		padding: lengths.margin(4);
-
-		white-space: normal;
-		word-break: break-word;
-
-		color: colors.font(secondary-info);
-	}
-
 	&:hover &__menu-wrapper:not(.rcx-item__actions),
 	&:focus-within &__menu-wrapper:not(.rcx-item__actions) {
 		display: flex;
