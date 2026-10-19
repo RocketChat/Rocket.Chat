@@ -15,8 +15,9 @@ export function parseDnsOverrides(spec: string | undefined, fallback: XmppDnsRes
 	for (const entry of spec.split(',')) {
 		const [domain, address] = entry.trim().split('=');
 		const separator = address?.lastIndexOf(':') ?? -1;
-		const port = Number(address?.slice(separator + 1));
-		if (!domain || separator <= 0 || !Number.isInteger(port)) {
+		const portText = address?.slice(separator + 1) ?? '';
+		const port = Number(portText);
+		if (!domain || separator <= 0 || !/^\d+$/.test(portText) || port < 1 || port > 65535) {
 			throw new Error(`Invalid XMPP_DNS_OVERRIDES entry: "${entry}" (expected domain=host:port)`);
 		}
 		overrides.set(normalize(domain), { host: address.slice(0, separator), port });
