@@ -34,7 +34,7 @@ export const addMatrixBridgeFederationSettings = async (): Promise<void> => {
 		section: 'Matrix Bridge',
 	});
 
-	const uniqueId = settings.get('uniqueID') || crypto.randomUUID().slice(0, 15).replaceAll('-', '_');
+	const uniqueId = settings.get<string>('uniqueID') || crypto.randomUUID().slice(0, 15).replaceAll('-', '_');
 	const homeserverToken = crypto.createHash('sha256').update(`hs_${uniqueId}`).digest('hex');
 	const applicationServiceToken = crypto.createHash('sha256').update(`as_${uniqueId}`).digest('hex');
 

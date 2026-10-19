@@ -29,7 +29,7 @@ export const getAndCreateNpsSurvey = async function getNpsSurvey(npsId: string) 
 		return false;
 	}
 
-	const npsUrl = settings.get('Nps_Url');
+	const npsUrl = settings.get<string>('Nps_Url');
 
 	try {
 		const result = await fetch(`${npsUrl}/v1/surveys/${npsId}`, {

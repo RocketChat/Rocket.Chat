@@ -82,7 +82,7 @@ export const validateUserData = makeFunction(async (userId: IUser['_id'], userDa
 	let nameValidation;
 
 	try {
-		nameValidation = new RegExp(`^${settings.get('UTF8_User_Names_Validation')}$`);
+		nameValidation = new RegExp(`^${settings.get<string>('UTF8_User_Names_Validation')}$`);
 	} catch (e) {
 		nameValidation = new RegExp('^[0-9a-zA-Z-_.]+$');
 	}

@@ -156,7 +156,7 @@ function getJoinRuleType(strippedState: InviteStrippedState[] | undefined): 'p' 
 		case 'private':
 			throw new Error(`Private join rule is not supported`);
 		default:
-			throw new Error(`Unknown join rule type: ${joinRule}`);
+			throw new Error(`Unknown join rule type: ${String(joinRule)}`);
 	}
 }
 

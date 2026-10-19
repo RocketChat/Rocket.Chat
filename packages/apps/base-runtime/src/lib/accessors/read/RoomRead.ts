@@ -108,7 +108,7 @@ export class RoomRead implements IRoomRead {
 			}
 
 			if (value !== 'asc' && value !== 'desc') {
-				throw new Error(`Invalid sort direction for field "${key}". Expected "asc" or "desc", got ${value}`);
+				throw new Error(`Invalid sort direction for field "${key}". Expected "asc" or "desc", got ${String(value)}`);
 			}
 		});
 	}

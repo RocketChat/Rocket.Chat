@@ -73,7 +73,7 @@ function installStubMeteorStream(): void {
 
 		on(name, callback) {
 			if (name !== 'message' && name !== 'reset' && name !== 'disconnect') {
-				throw new Error(`unknown event type: ${name}`);
+				throw new Error(`unknown event type: ${String(name)}`);
 			}
 			(eventCallbacks[name] ||= []).push(callback);
 		},

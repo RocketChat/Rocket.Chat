@@ -59,7 +59,7 @@ const NewUsersSection = ({ timezone }: NewUsersSectionProps) => {
 			<EngagementDashboardCardFilter>
 				<PeriodSelector {...periodSelectorProps} />
 				<DownloadDataButton
-					attachmentName={`NewUsersSection_start_${data?.start}_end_${data?.end}`}
+					attachmentName={`NewUsersSection_start_${String(data?.start)}_end_${String(data?.end)}`}
 					headers={['Date', 'New Users']}
 					dataAvailable={!!data}
 					dataExtractor={(): unknown[][] | undefined => values?.map(({ date, newUsers }) => [date, newUsers])}

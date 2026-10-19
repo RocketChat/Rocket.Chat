@@ -803,7 +803,7 @@ const dmMessagesOthersAction = <Path extends string>(_name: Path): TypedAction<t
 
 		const room = await Rooms.findOneById<Pick<IRoom, '_id' | 't'>>(roomId, { projection: { _id: 1, t: 1 } });
 		if (!room || room?.t !== 'd') {
-			throw new Meteor.Error('error-room-not-found', `No direct message room found by the id of: ${roomId}`);
+			throw new Meteor.Error('error-room-not-found', `No direct message room found by the id of: ${String(roomId)}`);
 		}
 
 		const { offset, count } = await getPaginationItems(this.queryParams);

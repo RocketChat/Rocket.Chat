@@ -18,19 +18,19 @@ ${process.env.DISABLE_ANIMATION ? 'window.DISABLE_ANIMATION = true;\n' : ''}
 
 // Custom_Script_Logged_Out
 window.addEventListener('Custom_Script_Logged_Out', function() {
-	${settings.get('Custom_Script_Logged_Out')}
+	${settings.get<string>('Custom_Script_Logged_Out')}
 })
 
 
 // Custom_Script_Logged_In
 window.addEventListener('Custom_Script_Logged_In', function() {
-	${settings.get('Custom_Script_Logged_In')}
+	${settings.get<string>('Custom_Script_Logged_In')}
 })
 
 
 // Custom_Script_On_Logout
 window.addEventListener('Custom_Script_On_Logout', function() {
-	${settings.get('Custom_Script_On_Logout')}
+	${settings.get<string>('Custom_Script_On_Logout')}
 })
 
 ${settings.get('Accounts_ForgetUserSessionOnWindowClose') ? `window.Accounts_ForgetUserSessionOnWindowClose = true;` : ''}`;

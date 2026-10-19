@@ -48,7 +48,7 @@ const CreateTeamModal = ({ onClose, onSuccess }: CreateTeamModalProps) => {
 	const e2eEnabled = useSetting('E2E_Enable');
 	const e2eEnabledForPrivateByDefault = useSetting('E2E_Enabled_Default_PrivateRooms') && e2eEnabled;
 	const e2eEnforcedForPrivate = Boolean(useSetting('E2E_Force_Encryption_For_Private_Rooms')) && Boolean(e2eEnabled);
-	const namesValidation = useSetting('UTF8_Channel_Names_Validation');
+	const namesValidation = useSetting('UTF8_Channel_Names_Validation', '[0-9a-zA-Z-_.]+');
 	const allowSpecialNames = useSetting('UI_Allow_room_names_with_special_chars');
 	const canSetReadOnly = usePermissionWithScopedRoles('set-readonly', ['owner']);
 

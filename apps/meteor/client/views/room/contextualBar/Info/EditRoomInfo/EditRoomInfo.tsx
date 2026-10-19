@@ -82,7 +82,7 @@ const EditRoomInfo = ({ room, onClickClose, onClickBack }: EditRoomInfoProps) =>
 	const retentionPolicy = useRetentionPolicy(room);
 	const retentionMaxAgeDefault = msToTimeUnit(TIMEUNIT.days, useSetting(getRetentionSetting(room.t), 2592000000)) ?? 30;
 	const defaultValues = useEditRoomInitialValues(room);
-	const namesValidation = useSetting('UTF8_Channel_Names_Validation');
+	const namesValidation = useSetting('UTF8_Channel_Names_Validation', '[0-9a-zA-Z-_.]+');
 	const allowSpecialNames = useSetting('UI_Allow_room_names_with_special_chars');
 	const checkTeamNameExists = useEndpoint('GET', '/v1/rooms.nameExists');
 

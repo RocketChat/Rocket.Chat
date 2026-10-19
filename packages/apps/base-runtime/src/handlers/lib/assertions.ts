@@ -50,5 +50,5 @@ export function assertHandlerFunction(v: unknown): asserts v is Function {
 	if (v instanceof Function) return;
 
 	// eslint-disable-next-line @typescript-eslint/only-throw-error -- JSON-RPC error objects are serialized back to the engine
-	throw JsonRpcError.internalError({ err: `Expected handler function, got ${v}`, code: Errors.DRT_EVENT_HANDLER_FUNCTION_MISSING });
+	throw JsonRpcError.internalError({ err: `Expected handler function, got ${String(v)}`, code: Errors.DRT_EVENT_HANDLER_FUNCTION_MISSING });
 }

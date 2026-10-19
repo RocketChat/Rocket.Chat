@@ -10,7 +10,7 @@ import NowPlayingSection from './sections/NowPlayingSection';
 
 const Sidebar = () => {
 	const { t } = useTranslation();
-	const sidebarViewMode = useUserPreference('sidebarViewMode');
+	const sidebarViewMode = useUserPreference<string>('sidebarViewMode');
 	const sidebarHideAvatar = !useUserPreference('sidebarDisplayAvatar');
 
 	return (

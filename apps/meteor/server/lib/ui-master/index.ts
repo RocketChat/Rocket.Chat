@@ -139,8 +139,10 @@ const renderDynamicCssList = withDebouncing({ wait: 500 })(async () => {
 		.filter((color): color is ISettingColor => !!color?.value)
 		.map(({ _id, value, editor }) => {
 			if (editor === 'expression') {
+				// eslint-disable-next-line @typescript-eslint/restrict-template-expressions, @typescript-eslint/no-base-to-string -- color setting values are CSS strings
 				return `--${_id.replace('theme-color-', '')}: var(--${value});`;
 			}
+			// eslint-disable-next-line @typescript-eslint/restrict-template-expressions, @typescript-eslint/no-base-to-string -- color setting values are CSS strings
 			return `--${_id.replace('theme-color-', '')}: ${value};`;
 		})
 		.join('\n');

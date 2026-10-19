@@ -37,7 +37,7 @@ const ContactInfoChannelsItem = ({
 		const username = externalId?.metadata?.username;
 
 		if (typeof username === 'string' && phone) {
-			return `${username} - ${phone}`;
+			return `${String(username)} - ${phone}`;
 		}
 		return typeof username === 'string' ? username : phone;
 	}, [visitorData?.externalIds, details, getSourceLabel]);

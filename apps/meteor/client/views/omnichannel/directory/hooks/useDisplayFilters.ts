@@ -21,7 +21,7 @@ export const useDisplayFilters = (filtersQuery: ChatsFiltersQuery) => {
 
 	const displayCustomFields = Object.entries(customFields).reduce(
 		(acc, [key, value]) => {
-			acc[key] = value ? `${key}: ${value}` : undefined;
+			acc[key] = value ? `${key}: ${String(value)}` : undefined;
 			return acc;
 		},
 		{} as { [key: string]: string | undefined },

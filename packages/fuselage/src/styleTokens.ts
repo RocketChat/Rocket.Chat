@@ -87,7 +87,7 @@ const isPaletteColorAlpha = (alpha: unknown): alpha is number | undefined =>
 const paletteColorRegex = /^(neutral|blue|green|yellow|red|orange|purple)-(\d+)(-(\d+))?$/;
 
 export const strokeColor = memoize((value) => {
-	const colorName = `stroke-${value}`;
+	const colorName = `stroke-${String(value)}`;
 	if (isStrokeColor(colorName)) {
 		return strokeColors[colorName].toString();
 	}
@@ -95,7 +95,7 @@ export const strokeColor = memoize((value) => {
 });
 
 export const backgroundColor = memoize((value) => {
-	const colorName = `surface-${value}`;
+	const colorName = `surface-${String(value)}`;
 
 	if (isSurfaceColor(value)) {
 		return surfaceColors[value].toString();
@@ -124,7 +124,7 @@ export const backgroundColor = memoize((value) => {
 });
 
 export const fontColor = memoize((value) => {
-	const colorName = `font-${value}`;
+	const colorName = `font-${String(value)}`;
 	if (isTextIconColor(colorName)) {
 		return textIconColors[colorName].toString();
 	}

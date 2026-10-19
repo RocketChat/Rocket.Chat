@@ -73,7 +73,7 @@ export class AppCommandsBridge extends CommandBridge {
 
 	// command: { command, paramsExample, i18nDescription, executor: function }
 	protected async modifyCommand(command: ISlashCommand, appId: string): Promise<void> {
-		this.orch.debugLog(`The App ${appId} is attempting to modify the command: "${command}"`);
+		this.orch.debugLog(`The App ${appId} is attempting to modify the command: "${command.command}"`);
 
 		this._verifyCommand(command);
 

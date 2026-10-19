@@ -97,7 +97,7 @@ const UsersByTimeOfTheDaySection = ({ timezone }: UsersByTimeOfTheDaySectionProp
 			<EngagementDashboardCardFilter>
 				<PeriodSelector {...periodSelectorProps} />
 				<DownloadDataButton
-					attachmentName={`UsersByTimeOfTheDaySection_start_${data?.start}_end_${data?.end}`}
+					attachmentName={`UsersByTimeOfTheDaySection_start_${String(data?.start)}_end_${String(data?.end)}`}
 					headers={['Date', 'Users']}
 					dataAvailable={!!data}
 					dataExtractor={(): unknown[][] | undefined =>

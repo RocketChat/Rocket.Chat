@@ -58,7 +58,7 @@ const MessagesSentSection = ({ timezone }: MessagesSentSectionProps) => {
 			<EngagementDashboardCardFilter>
 				<PeriodSelector {...periodSelectorProps} />
 				<DownloadDataButton
-					attachmentName={`MessagesSentSection_start_${data?.start}_end_${data?.end}`}
+					attachmentName={`MessagesSentSection_start_${String(data?.start)}_end_${String(data?.end)}`}
 					headers={['Date', 'Messages']}
 					dataAvailable={!!data}
 					dataExtractor={(): unknown[][] | undefined => values?.map(({ date, newMessages }) => [date, newMessages])}

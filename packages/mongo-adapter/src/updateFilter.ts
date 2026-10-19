@@ -413,7 +413,7 @@ const findModTarget = (
 				return undefined;
 			}
 
-			throw new Error(`Cannot use the part '${keypart}' to traverse ${doc}`);
+			throw new Error(`Cannot use the part '${keypart}' to traverse ${String(doc)}`);
 		}
 
 		if (Array.isArray(doc)) {

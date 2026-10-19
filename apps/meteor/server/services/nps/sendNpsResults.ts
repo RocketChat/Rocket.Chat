@@ -16,7 +16,7 @@ export const sendNpsResults = async function sendNpsResults(npsId: string, data:
 		return false;
 	}
 
-	const npsUrl = settings.get('Nps_Url');
+	const npsUrl = settings.get<string>('Nps_Url');
 
 	try {
 		// eslint-disable-next-line @typescript-eslint/no-unsafe-return -- value comes from an untyped source

@@ -57,7 +57,7 @@ const appsNotifyAppRequests = async function _appsNotifyAppRequests() {
 
 			const errors = (usersNotified as (string | Error)[]).filter((batch) => batch instanceof Error);
 			if (errors.length > 0) {
-				Apps.debugLog(`Some batches of users could not be notified for app ${appId}. Errors: ${errors}`);
+				Apps.debugLog(`Some batches of users could not be notified for app ${appId}. Errors: ${errors.join(',')}`);
 			}
 		}
 	} catch (err) {

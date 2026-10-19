@@ -19,8 +19,8 @@ export async function getOAuthAuthorizationUrl() {
 
 	void notifyOnSettingChangedById('Cloud_Workspace_Registration_State');
 
-	const cloudUrl = settings.get('Cloud_Url');
-	const clientId = settings.get('Cloud_Workspace_Client_Id');
+	const cloudUrl = settings.get<string>('Cloud_Url');
+	const clientId = settings.get<string>('Cloud_Workspace_Client_Id');
 	const redirectUri = getRedirectUri();
 
 	const scope = userScopes.join(' ');

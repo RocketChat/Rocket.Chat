@@ -85,7 +85,7 @@ providers.registerProvider({
 	urls: [new RegExp('https?://(twitter|x)\\.com/[^/]+/status/\\S+')],
 	getHeaderOverrides: () => {
 		return {
-			'User-Agent': `${settings.get('API_Embed_UserAgent')} Rocket.Chat/${Info.version} Googlebot/2.1`,
+			'User-Agent': `${settings.get<string>('API_Embed_UserAgent')} Rocket.Chat/${Info.version} Googlebot/2.1`,
 		};
 	},
 });

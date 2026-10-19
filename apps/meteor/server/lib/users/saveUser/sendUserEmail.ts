@@ -39,7 +39,7 @@ export async function sendUserEmail(subject: string, html: string, userData: Sav
 	} catch (error) {
 		const errorMessage = typeof error === 'object' && error && 'message' in error ? error.message : '';
 
-		throw new MeteorError('error-email-send-failed', `Error trying to send email: ${errorMessage}`, {
+		throw new MeteorError('error-email-send-failed', `Error trying to send email: ${String(errorMessage)}`, {
 			function: 'RocketChat.saveUser',
 			message: errorMessage,
 		});

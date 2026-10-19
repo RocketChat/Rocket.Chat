@@ -81,7 +81,7 @@ const appsUpdateMarketplaceInfo = async function _appsUpdateMarketplaceInfo() {
 	}
 
 	const token = await getWorkspaceAccessToken();
-	const workspaceIdSetting = await Settings.getValueById('Cloud_Workspace_Id');
+	const workspaceIdSetting = await Settings.getValueById<string>('Cloud_Workspace_Id');
 
 	const currentSeats = await Users.getActiveLocalUserCount();
 

@@ -110,7 +110,7 @@ const OmnichannelProvider = ({ children }: OmnichannelProviderProps) => {
 				const { config } = await getRoutingConfig();
 				setRouteConfig(config);
 			} catch (error) {
-				loggerRef.current.error(`update() error in routeConfig ${error}`);
+				loggerRef.current.error(`update() error in routeConfig ${String(error)}`);
 			}
 		};
 

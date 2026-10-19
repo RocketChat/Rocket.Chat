@@ -73,7 +73,8 @@ const GenericMenu = ({ title, icon = 'menu', disabled, onAction, callbackAction,
 						<MenuSection
 							title={typeof title === 'string' && i18n.exists(title) ? t(title) : title}
 							items={handleItems(items)}
-							key={`${title}-${key}`}
+							// eslint-disable-next-line @typescript-eslint/no-base-to-string -- only used as a React key
+							key={`${String(title)}-${key}`}
 						>
 							{(item) => (
 								<MenuItem key={item.id} {...(item.textValue && { textValue: item.textValue })}>

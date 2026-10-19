@@ -83,10 +83,10 @@ function IconButton({
 	const kindAndVariantProps = useMemo(() => {
 		const variantProp: Record<string, boolean> = {};
 		if (variant) {
-			variantProp[`${getVariantClass(variant)}`] = true;
+			variantProp[getVariantClass(variant).join(',')] = true;
 		}
 		if (pressed) {
-			variantProp[`${getPressedClass(variant)}`] = true;
+			variantProp[getPressedClass(variant).join(',')] = true;
 		}
 		return variantProp;
 	}, [variant, pressed]);

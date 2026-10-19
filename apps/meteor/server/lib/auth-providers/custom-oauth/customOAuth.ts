@@ -246,7 +246,7 @@ export class CustomOAuthStrategy extends Strategy {
 				normalizedIdentity.serverURL = this.serverURL;
 				return done(null, normalizedIdentity);
 			} catch (e) {
-				return done(new Error(`Failed to parse identity from ${this.name} at ${this.identityPath}. ${e}`));
+				return done(new Error(`Failed to parse identity from ${this.name} at ${this.identityPath}. ${String(e)}`));
 			}
 		});
 	}

@@ -1,4 +1,3 @@
-import type { ISetting } from '@rocket.chat/core-typings';
 import { Settings } from '@rocket.chat/models';
 
 import { SystemLogger } from '../../lib/logger/system';
@@ -15,10 +14,10 @@ addMigration({
 		const newLdapDefault = 'every_24_hours';
 		const newCrowdDefault = 'every_1_hours';
 
-		const ldapSyncInterval = await Settings.findOneById<Pick<ISetting, 'value'>>('LDAP_Background_Sync_Interval', {
+		const ldapSyncInterval = await Settings.findOneById<{ value: string }>('LDAP_Background_Sync_Interval', {
 			projection: { value: 1 },
 		});
-		const crowdSyncInterval = await Settings.findOneById<Pick<ISetting, 'value'>>('CROWD_Sync_Interval', { projection: { value: 1 } });
+		const crowdSyncInterval = await Settings.findOneById<{ value: string }>('CROWD_Sync_Interval', { projection: { value: 1 } });
 
 		// update setting values
 		await updateAuditedBySystem({

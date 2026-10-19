@@ -200,7 +200,7 @@ export class Router<
 							const pathDesc = error.instancePath ? `at path '${error.instancePath}'` : "at path '(root)'";
 							const paramsStr = Object.keys(error.params || {}).length
 								? ` (${Object.entries(error.params)
-										.map(([key, value]) => `${key}: ${value}`)
+										.map(([key, value]) => `${key}: ${String(value)}`)
 										.join(', ')})`
 								: '';
 							return `${pathDesc}: ${error.message}${paramsStr}`;

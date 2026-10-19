@@ -41,6 +41,7 @@ export class LogoutResponseParser {
 		} catch (err) {
 			SAMLUtils.log({ err });
 			const msg = doc.getElementsByTagNameNS('urn:oasis:names:tc:SAML:2.0:protocol', 'StatusMessage');
+			// eslint-disable-next-line @typescript-eslint/restrict-template-expressions, @typescript-eslint/no-base-to-string -- xmldom node lists serialize their nodes in toString
 			SAMLUtils.log(`Unexpected msg from IDP. Does your session still exist at IDP? Idp returned: \n ${msg}`);
 		}
 

@@ -179,6 +179,7 @@ export class LivechatVisitorsRaw extends BaseRaw<ILivechatVisitor> implements IL
 			throw new Error("Can't find Livechat_guest_count setting");
 		}
 
+		// eslint-disable-next-line @typescript-eslint/restrict-template-expressions, @typescript-eslint/no-base-to-string -- the guest counter setting holds a number
 		return `guest-${livechatCount.value}`;
 	}
 

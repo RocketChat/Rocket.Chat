@@ -34,7 +34,7 @@ const notifyFailedLogin = async (ipOrUsername: string, blockedUntil: Date, faile
 				fields: [
 					{
 						title: 'Failed login attempt threshold exceeded',
-						value: `User or IP: ${ipOrUsername}\nBlocked until: ${blockedUntil}\nFailed Attempts: ${failedAttempts}`,
+						value: `User or IP: ${ipOrUsername}\nBlocked until: ${String(blockedUntil)}\nFailed Attempts: ${failedAttempts}`,
 						short: true,
 					},
 				],

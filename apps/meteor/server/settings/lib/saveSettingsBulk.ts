@@ -26,7 +26,7 @@ const validJSON = Match.Where((value: string) => {
 
 const checkInteger = (value: ISetting['value']) => {
 	if (!Number.isInteger(value)) {
-		throw new Meteor.Error('error-invalid-setting-value', `Invalid setting value ${value}`, {
+		throw new Meteor.Error('error-invalid-setting-value', `Invalid setting value ${String(value)}`, {
 			method: 'saveSettings',
 		});
 	}

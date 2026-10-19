@@ -22,7 +22,7 @@ export const createClassName = (
 		styles[elementName],
 		...flatMap(Object.entries(modifiers), ([modifierKey, modifierValue]) => [
 			modifierValue && styles[`${elementName}--${modifierKey}`],
-			typeof modifierValue !== 'boolean' && styles[`${elementName}--${modifierKey}-${modifierValue}`],
+			typeof modifierValue !== 'boolean' && styles[`${elementName}--${modifierKey}-${String(modifierValue)}`],
 		]).filter((className) => !!className),
 		...classes.filter((className) => !!className),
 	].join(' ');

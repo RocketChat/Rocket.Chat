@@ -762,10 +762,10 @@ export class LDAPConnection {
 		}
 
 		if (this.options.encryption === 'ssl') {
-			clientOptions.url = `ldaps://${clientOptions.url}`;
+			clientOptions.url = `ldaps://${String(clientOptions.url)}`;
 			clientOptions.tlsOptions = tlsOptions;
 		} else {
-			clientOptions.url = `ldap://${clientOptions.url}`;
+			clientOptions.url = `ldap://${String(clientOptions.url)}`;
 		}
 
 		return {

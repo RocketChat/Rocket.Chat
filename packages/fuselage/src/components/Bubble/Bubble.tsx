@@ -30,7 +30,7 @@ const Bubble = ({ secondary, children, onClick, icon, onDismiss, small, contentP
 				onClick={onDismiss}
 				secondary={secondary}
 				icon='cross-small'
-				{...{ 'aria-label': `Dismiss ${children}`, ...dismissProps }}
+				{...{ 'aria-label': `Dismiss ${String(children)}`, ...dismissProps }}
 			/>
 		)}
 	</div>

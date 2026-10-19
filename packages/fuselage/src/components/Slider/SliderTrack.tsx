@@ -14,8 +14,8 @@ type SliderTrackProps = {
 	multiThumb?: boolean;
 };
 
-const highlight = Palette.stroke['stroke-highlight'];
-const light = Palette.stroke['stroke-light'];
+const highlight = Palette.stroke['stroke-highlight'].toString();
+const light = Palette.stroke['stroke-light'].toString();
 
 export const SliderTrack = ({ trackProps, trackRef, state, multiThumb, children }: SliderTrackProps) => {
 	const isHorizontal = useMemo(() => state.orientation === 'horizontal', [state.orientation]);
