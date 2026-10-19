@@ -11,23 +11,19 @@ import type { ClientStream } from './types/ClientStream';
 import type { OutgoingPayload } from './types/OutgoingPayload';
 import type { SDK } from './types/SDK';
 import type { Subscription } from './types/Subscription';
+import type { ChangedPayload, PublicationPayloads } from './types/publicationPayloads';
 import type { StreamKeys, StreamNames, StreamerCallbackArgs } from './types/streams';
 
-interface PublicationPayloads {
-	collection: string;
-	id: string;
-	msg: 'added' | 'changed' | 'removed';
-	fields: {
-		eventName: string;
-		args: [unknown];
-	};
-}
+type StreamEvent = ChangedPayload & { fields: { eventName: string; args: unknown[] } };
 
-const isValidPayload = (data: unknown): data is PublicationPayloads => {
-	if (typeof data !== 'object' && (data !== null || data !== undefined)) {
-		return false;
-	}
-	return true;
+const isStreamEvent = (data: PublicationPayloads): data is StreamEvent =>
+	data.msg === 'changed' && typeof data.fields?.eventName === 'string' && Array.isArray(data.fields.args);
+
+type SharedStream = {
+	name: string;
+	key: unknown;
+	subscription: Subscription;
+	callbacks: Set<(...args: any[]) => void>;
 };
 
 export type DDPSDKOptions = {
@@ -84,36 +80,70 @@ export class DDPSDK implements SDK {
 		callback: (...args: StreamerCallbackArgs<N, K>) => void,
 	): Subscription;
 
-	stream(name: string, data: unknown, cb: (...data: PublicationPayloads['fields']['args']) => void): Subscription;
+	stream(name: string, data: unknown, cb: (...args: any[]) => void): Subscription;
 
-	stream(name: string, data: unknown, cb: (...data: PublicationPayloads['fields']['args']) => void): Subscription {
+	// One server subscription per stream key, shared by every caller: the server sends each event once per subscription.
+	stream(name: string, data: unknown, cb: (...args: any[]) => void): Subscription {
 		const [key, args] = Array.isArray(data) ? data : [data];
-		const subscription = this.client.subscribe(`stream-${name}`, key, { useCollection: false, args: [args] });
+		// The args authorise the subscription (Livechat sends the visitor token), so only identical ones share it.
+		const id = JSON.stringify([name, key, args]);
 
-		const stop = subscription.stop.bind(subscription);
-		const cancel = [
-			() => stop(),
-			this.client.onCollection(`stream-${name}`, (data) => {
-				if (!isValidPayload(data)) {
-					return;
-				}
+		let shared = this.streams.get(id);
+		// A subscription the server stopped can't be shared any more.
+		if (!shared || !this.client.subscriptions.has(shared.subscription.id)) {
+			shared = {
+				name,
+				key,
+				subscription: this.client.subscribe(`stream-${name}`, key, { useCollection: false, args: [args] }),
+				callbacks: new Set(),
+			};
+			this.streams.set(id, shared);
+			this.listenToStream(name);
+		}
 
-				if (data.collection !== `stream-${name}`) {
-					return;
-				}
-				if (data.msg !== 'changed') {
-					return;
-				}
-				if (data.fields.eventName === key) {
-					cb(...data.fields.args);
-				}
-			}),
-		];
+		const { subscription, callbacks } = shared;
+		const callback = (...eventArgs: unknown[]) => cb(...eventArgs);
+		callbacks.add(callback);
 
-		return Object.assign(subscription, {
-			stop: () => {
-				cancel.forEach((fn) => fn());
+		let stopped = false;
+		return {
+			id: subscription.id,
+			name: subscription.name,
+			params: subscription.params,
+			get isReady() {
+				return subscription.isReady;
 			},
+			get error() {
+				return subscription.error;
+			},
+			ready: () => subscription.ready(),
+			onChange: (fn) => subscription.onChange(fn),
+			stop: () => {
+				if (stopped) return;
+				stopped = true;
+				callbacks.delete(callback);
+				if (callbacks.size > 0 || this.streams.get(id)?.subscription !== subscription) return;
+				this.streams.delete(id);
+				subscription.stop();
+			},
+		};
+	}
+
+	private streams = new Map<string, SharedStream>();
+
+	// Kept for the SDK's lifetime: stream names are a small fixed set.
+	private streamListeners = new Set<string>();
+
+	private listenToStream(name: string) {
+		if (this.streamListeners.has(name)) return;
+		this.streamListeners.add(name);
+		this.client.onCollection(`stream-${name}`, (data) => {
+			if (!isStreamEvent(data)) return;
+			// Frames don't say which subscription they answer: listeners of one key under different args get each other's frames.
+			this.streams.forEach((shared) => {
+				if (shared.name !== name || shared.key !== data.fields.eventName) return;
+				shared.callbacks.forEach((callback) => callback(...data.fields.args));
+			});
 		});
 	}
 

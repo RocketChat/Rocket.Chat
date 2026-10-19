@@ -87,6 +87,67 @@ it('should ignore messages other from changed', async () => {
 	sdk.connection.close();
 });
 
+it('should not share a stream subscription between listeners with different args', async () => {
+	const sdk = DDPSDK.create('ws://localhost:1234');
+	await handleConnection(server, sdk.connection.connect());
+
+	const anonymous = sdk.stream('stream', ['key', { token: undefined }], () => undefined);
+	const visitor = sdk.stream('stream', ['key', { token: 'visitor' }], () => undefined);
+
+	expect(visitor.id).not.toBe(anonymous.id);
+	expect(sdk.client.subscriptions.get(visitor.id)?.params).toEqual(['key', { useCollection: false, args: [{ token: 'visitor' }] }]);
+	sdk.connection.close();
+});
+
+it('should share one server subscription between listeners of the same stream key', async () => {
+	const first = jest.fn();
+	const second = jest.fn();
+	const sdk = DDPSDK.create('ws://localhost:1234');
+	await handleConnection(server, sdk.connection.connect());
+
+	const a = sdk.stream('stream', 'key', first);
+	const b = sdk.stream('stream', 'key', second);
+
+	expect(a.id).toBe(b.id);
+	expect(sdk.client.subscriptions.size).toBe(1);
+	await handleSubscription(server, a.id, 'stream', 'key');
+	await b.ready();
+	expect(a.isReady).toBe(true);
+
+	fireStreamChange(server, 'stream', 'key');
+	expect(first).toHaveBeenCalledTimes(1);
+	expect(second).toHaveBeenCalledTimes(1);
+
+	a.stop();
+	a.stop();
+	fireStreamChange(server, 'stream', 'key');
+	expect(first).toHaveBeenCalledTimes(1);
+	expect(second).toHaveBeenCalledTimes(2);
+	expect(sdk.client.subscriptions.size).toBe(1);
+
+	b.stop();
+	await expect(server.nextMessage).resolves.toBe(JSON.stringify({ msg: 'unsub', id: a.id }));
+	expect(sdk.client.subscriptions.size).toBe(0);
+	sdk.connection.close();
+});
+
+it('should open a new server subscription once the shared one was stopped by the server', async () => {
+	const sdk = DDPSDK.create('ws://localhost:1234');
+	await handleConnection(server, sdk.connection.connect());
+
+	const stale = sdk.stream('stream', 'key', () => undefined);
+	await server.nextMessage;
+	server.send(JSON.stringify({ msg: 'nosub', id: stale.id, error: { error: 'not-allowed' } }));
+
+	const fresh = sdk.stream('stream', 'key', () => undefined);
+
+	expect(fresh.id).not.toBe(stale.id);
+	await handleSubscription(server, fresh.id, 'stream', 'key');
+	stale.stop();
+	expect(sdk.client.subscriptions.has(fresh.id)).toBe(true);
+	sdk.connection.close();
+});
+
 it('should handle streams after reconnect', async () => {
 	const cb = jest.fn();
 
