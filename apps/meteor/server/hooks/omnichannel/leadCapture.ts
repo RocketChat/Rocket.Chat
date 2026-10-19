@@ -13,7 +13,7 @@ function validateMessage(message: IMessage, room: IOmnichannelRoom) {
 	}
 
 	// message valid only if it is a livechat room
-	if (!(typeof room.t !== 'undefined' && room.t === 'l' && room.v && room.v.token)) {
+	if (!(typeof room.t !== 'undefined' && room.t === 'l' && room.v?.token)) {
 		return false;
 	}
 

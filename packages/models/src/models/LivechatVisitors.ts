@@ -315,7 +315,7 @@ export class LivechatVisitorsRaw extends BaseRaw<ILivechatVisitor> implements IL
 
 		if (!overwrite) {
 			const user = await this.getVisitorByToken(token, { projection: { livechatData: 1 } });
-			if (user?.livechatData && typeof user.livechatData[key] !== 'undefined') {
+			if (typeof user?.livechatData?.[key] !== 'undefined') {
 				return true;
 			}
 		}

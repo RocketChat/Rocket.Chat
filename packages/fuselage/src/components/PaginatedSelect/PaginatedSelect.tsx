@@ -72,7 +72,7 @@ export const PaginatedSelect = ({
 		if (visible === AnimatedVisibility.VISIBLE) {
 			return hide();
 		}
-		if (ref && ref.current) {
+		if (ref?.current) {
 			ref.current.focus();
 			return show();
 		}

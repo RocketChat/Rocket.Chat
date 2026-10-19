@@ -53,7 +53,7 @@ export function configureBoilerplate(settings: ICachedSettings): void {
 			// hostname = host.replace(/^https?:\/\//, '');
 			process.env.MOBILE_ROOT_URL = host;
 			process.env.MOBILE_DDP_URL = host;
-			if (typeof WebAppInternals !== 'undefined' && WebAppInternals.generateBoilerplate) {
+			if (WebAppInternals?.generateBoilerplate) {
 				await WebAppInternals.generateBoilerplate();
 			}
 		}),

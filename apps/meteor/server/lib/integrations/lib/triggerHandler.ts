@@ -529,7 +529,7 @@ class RocketChatIntegrationHandler {
 			}
 		}
 
-		if (message && message.editedAt && !trigger.runOnEdits) {
+		if (message?.editedAt && !trigger.runOnEdits) {
 			outgoingLogger.debug({ msg: 'Trigger run on edits disabled and message was edited', triggerName: trigger.name });
 			return;
 		}

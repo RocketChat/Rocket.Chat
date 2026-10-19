@@ -6,14 +6,14 @@ import { AleaRandomGenerator } from './AleaRandomGenerator';
 // client sources
 const height =
 	(typeof window !== 'undefined' && window.innerHeight) ||
-	(typeof document !== 'undefined' && document.documentElement && document.documentElement.clientHeight) ||
-	(typeof document !== 'undefined' && document.body && document.body.clientHeight) ||
+	(typeof document !== 'undefined' && document.documentElement?.clientHeight) ||
+	(typeof document !== 'undefined' && document.body?.clientHeight) ||
 	1;
 
 const width =
 	(typeof window !== 'undefined' && window.innerWidth) ||
-	(typeof document !== 'undefined' && document.documentElement && document.documentElement.clientWidth) ||
-	(typeof document !== 'undefined' && document.body && document.body.clientWidth) ||
+	(typeof document !== 'undefined' && document.documentElement?.clientWidth) ||
+	(typeof document !== 'undefined' && document.body?.clientWidth) ||
 	1;
 
 const agent = (typeof navigator !== 'undefined' && navigator.userAgent) || '';

@@ -152,7 +152,7 @@ export class Agenda extends EventEmitter {
 
 	public mongo(mdb: MongoDB, collection: string | undefined) {
 		this._mdb = mdb;
-		if (mdb.s && mdb.topology && mdb.topology.s) {
+		if (mdb.s && mdb.topology?.s) {
 			this._mongoUseUnifiedTopology = Boolean(mdb?.topology?.s?.options?.useUnifiedTopology);
 		}
 		return this.dbInit(collection);

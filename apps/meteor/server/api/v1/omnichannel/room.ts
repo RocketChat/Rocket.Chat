@@ -448,10 +448,7 @@ API.v1.addRoute(
 				throw new Error('error-invalid-room');
 			}
 
-			if (
-				(!room.servedBy || room.servedBy._id !== this.userId) &&
-				!(await hasPermissionAsync(this.user, 'save-others-livechat-room-info'))
-			) {
+			if (room.servedBy?._id !== this.userId && !(await hasPermissionAsync(this.user, 'save-others-livechat-room-info'))) {
 				return API.v1.forbidden();
 			}
 

@@ -61,7 +61,7 @@ export function reaction() {
 			}
 
 			const reactionEvent = await FederationMatrix.getEventById(redactedEventId);
-			if (!reactionEvent || reactionEvent.event.type !== 'm.reaction') {
+			if (reactionEvent?.event.type !== 'm.reaction') {
 				logger.debug({ msg: 'Event is not a reaction event', eventId: redactedEventId });
 				return;
 			}

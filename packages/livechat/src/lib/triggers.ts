@@ -86,7 +86,7 @@ class Triggers {
 
 		const record = this._findRecordById(id);
 
-		if (record && record.status === 'scheduled') {
+		if (record?.status === 'scheduled') {
 			throw new IgnoredScheduledTriggerError('Trigger already scheduled. ignoring...');
 		}
 

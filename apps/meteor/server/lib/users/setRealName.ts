@@ -27,6 +27,7 @@ export const setRealName = async function (
 	}
 
 	// User already has desired name, return
+	// eslint-disable-next-line @typescript-eslint/prefer-optional-chain -- an empty current name must not match an empty new name
 	if (user.name && user.name.trim() === name) {
 		return user;
 	}

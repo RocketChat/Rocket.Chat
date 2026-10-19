@@ -11,7 +11,7 @@ import { i18n } from '../i18n';
 
 const hideUserName = (username: string, userData: Pick<IUser, 'username'> | undefined, usersMap: Record<string, string>) => {
 	if (!usersMap[username]) {
-		if (userData && username === userData.username) {
+		if (username === userData?.username) {
 			usersMap[username] = username;
 		} else {
 			usersMap[username] = `User_${Object.keys(usersMap).length + 1}`;

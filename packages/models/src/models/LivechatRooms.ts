@@ -1852,7 +1852,7 @@ export class LivechatRoomsRaw extends BaseRaw<IOmnichannelRoom> implements ILive
 			if (!room) {
 				return false;
 			}
-			if (room.livechatData && typeof room.livechatData[key] !== 'undefined') {
+			if (typeof room.livechatData?.[key] !== 'undefined') {
 				return true;
 			}
 		}

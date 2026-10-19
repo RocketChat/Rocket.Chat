@@ -111,7 +111,7 @@ const processMessage = async (message: any) => {
 const doPlaySound = async (message: any) => {
 	const { sound, user } = store.state;
 
-	if (!sound.enabled || (user && message.u && message.u._id === user._id)) {
+	if (!sound.enabled || (user && message.u?._id === user._id)) {
 		return;
 	}
 

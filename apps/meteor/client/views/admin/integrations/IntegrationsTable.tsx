@@ -133,7 +133,7 @@ const IntegrationsTable = ({ type }: IntegrationsTableProps) => {
 					/>
 				</>
 			)}
-			{isSuccess && data && data.integrations.length === 0 && <GenericNoResults />}
+			{isSuccess && data?.integrations.length === 0 && <GenericNoResults />}
 			{isError && (
 				<States>
 					<StatesIcon name='warning' variation='danger' />

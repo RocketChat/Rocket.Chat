@@ -15,14 +15,14 @@ function CheckBox({ ref, indeterminate, onChange, className, labelChildren, ...p
 	const mergedRef = useMergedRefs(ref, innerRef);
 
 	useLayoutEffect(() => {
-		if (innerRef && innerRef.current && indeterminate !== undefined) {
+		if (innerRef?.current && indeterminate !== undefined) {
 			innerRef.current.indeterminate = indeterminate;
 		}
 	}, [innerRef, indeterminate]);
 
 	const handleChange = useCallback(
 		(event: ChangeEvent<HTMLInputElement>) => {
-			if (innerRef && innerRef.current && indeterminate !== undefined) {
+			if (innerRef?.current && indeterminate !== undefined) {
 				innerRef.current.indeterminate = indeterminate;
 			}
 			onChange?.call(innerRef.current, event);

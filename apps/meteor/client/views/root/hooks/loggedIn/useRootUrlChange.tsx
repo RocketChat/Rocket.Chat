@@ -44,7 +44,7 @@ export const useRootUrlChange = () => {
 			return;
 		}
 		const rootUrl = getRootUrl();
-		if (rootUrl && rootUrl.replace(/\/$/, '') === currentUrl) {
+		if (rootUrl?.replace(/\/$/, '') === currentUrl) {
 			return;
 		}
 		const onConfirm = () => {

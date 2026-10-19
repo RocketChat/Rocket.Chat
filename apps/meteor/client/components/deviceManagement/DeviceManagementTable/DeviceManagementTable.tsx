@@ -59,7 +59,7 @@ const DeviceManagementTable = <T extends DeviceManagementSession | DeviceManagem
 				{data?.sessions && data.sessions.length > 0 && headers && <GenericTableHeader>{headers}</GenericTableHeader>}
 				<GenericTableBody>
 					{isPending && <GenericTableLoadingTable headerCells={headers.filter(Boolean).length} />}
-					{isSuccess && data?.sessions && data.sessions.map(renderRow)}
+					{isSuccess && data?.sessions?.map(renderRow)}
 				</GenericTableBody>
 			</GenericTable>
 			{isSuccess && (

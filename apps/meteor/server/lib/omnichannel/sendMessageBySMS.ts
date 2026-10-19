@@ -20,7 +20,7 @@ callbacks.add(
 		}
 
 		// only send the sms by SMS if it is a livechat room with SMS set to true
-		if (!(room.sms && room.v && room.v.token)) {
+		if (!(room.sms && room.v?.token)) {
 			return message;
 		}
 

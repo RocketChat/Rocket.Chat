@@ -66,7 +66,7 @@ export const setEmail = async function (
 	}
 
 	// User already has desired username, return
-	if (user?.emails?.[0] && user.emails[0].address === email) {
+	if (user?.emails?.[0]?.address === email) {
 		return user;
 	}
 

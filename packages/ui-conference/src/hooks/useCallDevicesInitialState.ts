@@ -92,7 +92,7 @@ const read = (key: string): StoredCallPreferences => {
 	}
 
 	const cached = snapshots.get(key);
-	if (cached && cached.raw === raw) {
+	if (cached?.raw === raw) {
 		return cached.value;
 	}
 

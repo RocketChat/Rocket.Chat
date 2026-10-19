@@ -56,7 +56,7 @@ export const AutoTranslate = {
 		}
 		for (const attachment of attachments) {
 			if (attachment.author_name !== username) {
-				if (attachment.text && attachment.translations && attachment.translations[language]) {
+				if (attachment.text && attachment.translations?.[language]) {
 					attachment.translations.original = attachment.text;
 
 					if (autoTranslateShowInverse) {
@@ -66,7 +66,7 @@ export const AutoTranslate = {
 					}
 				}
 
-				if (attachment.description && attachment.translations && attachment.translations[language]) {
+				if (attachment.description && attachment.translations?.[language]) {
 					attachment.translations.original = attachment.description;
 
 					if (autoTranslateShowInverse) {
@@ -138,8 +138,7 @@ export const createAutoTranslateMessageStreamHandler = (): ((message: ITranslate
 			const subscription = AutoTranslate.findSubscriptionByRid(message.rid);
 			const language = AutoTranslate.getLanguage(message.rid);
 			if (
-				subscription &&
-				subscription.autoTranslate === true &&
+				subscription?.autoTranslate === true &&
 				message.msg &&
 				(!message.translations ||
 					(!hasTranslationLanguageInMessage(message, language) && !hasTranslationLanguageInAttachments(message.attachments, language)))

@@ -51,7 +51,7 @@ export async function executeUpdateMessage(
 
 	const _hasPermission = await hasPermissionAsync(uid, 'edit-message', message.rid);
 	const editAllowed = settings.get('Message_AllowEditing');
-	const editOwn = originalMessage.u && originalMessage.u._id === uid;
+	const editOwn = originalMessage.u?._id === uid;
 
 	if (!_hasPermission && (!editAllowed || !editOwn)) {
 		throw new Meteor.Error('error-action-not-allowed', 'Message editing not allowed', {

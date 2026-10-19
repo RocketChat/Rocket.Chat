@@ -23,7 +23,7 @@ export class Sound extends Component<SoundProps> {
 		const { play, dismissNotification } = this.props;
 
 		if (play) {
-			if (dismissNotification && dismissNotification()) {
+			if (dismissNotification?.()) {
 				return;
 			}
 			void this.audio?.play();

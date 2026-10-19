@@ -106,7 +106,7 @@ export async function updateMessage({ guest, message }: { guest: ILivechatVisito
 
 	// TODO: shouldn't this happen inside updateMessageFunc?
 	const editAllowed = settings.get('Message_AllowEditing');
-	const editOwn = originalMessage.u && originalMessage.u._id === guest._id;
+	const editOwn = originalMessage.u?._id === guest._id;
 
 	if (!editAllowed || !editOwn) {
 		throw new Error('error-action-not-allowed');
@@ -121,7 +121,7 @@ export async function updateMessage({ guest, message }: { guest: ILivechatVisito
 
 export async function deleteMessage({ guest, message }: { guest: ILivechatVisitor; message: IMessage }) {
 	const deleteAllowed = settings.get<boolean>('Message_AllowDeleting');
-	const editOwn = message.u && message.u._id === guest._id;
+	const editOwn = message.u?._id === guest._id;
 
 	if (!deleteAllowed || !editOwn) {
 		throw new Error('error-action-not-allowed');

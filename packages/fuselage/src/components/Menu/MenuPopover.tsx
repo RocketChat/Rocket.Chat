@@ -41,7 +41,7 @@ function MenuPopover({ children, state, offset = 4, maxWidth, ...props }: MenuPo
 		isDisabled: isSubmenu,
 		onInteractOutside: (event) => {
 			const trigger = props.triggerRef?.current;
-			if (trigger && trigger.contains(event.target as Node)) {
+			if (trigger?.contains(event.target as Node)) {
 				return;
 			}
 			state.close();

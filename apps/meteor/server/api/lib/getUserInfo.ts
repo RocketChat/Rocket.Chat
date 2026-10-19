@@ -65,7 +65,7 @@ const getUserCalendar = (email: false | IUserEmail | undefined): IUserCalendar =
 	const domain = email ? email.address.split('@').pop() : undefined;
 	const outlookCalendarUrlMapping = settings.get<string>('Outlook_Calendar_Url_Mapping');
 
-	if (domain && outlookCalendarUrlMapping && outlookCalendarUrlMapping.includes(domain)) {
+	if (domain && outlookCalendarUrlMapping?.includes(domain)) {
 		try {
 			const mappingObject = JSON.parse(outlookCalendarUrlMapping);
 			const mappedSettings = mappingObject[domain];

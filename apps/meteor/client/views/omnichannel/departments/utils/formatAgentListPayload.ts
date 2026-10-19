@@ -7,6 +7,7 @@ export const formatAgentListPayload = (oldAgentList: IDepartmentAgent[], newAgen
 	for (const agent of newAgentList) {
 		const initialAgent = agent._id ? oldAgentList.find((initialAgent) => initialAgent._id === agent._id) : undefined;
 
+		// eslint-disable-next-line @typescript-eslint/prefer-optional-chain -- a missing initialAgent must upsert even when count is undefined
 		if (!initialAgent || agent.count !== initialAgent.count || agent.order !== initialAgent.order) {
 			upsert.push({ agentId: agent.agentId, username: agent.username, count: agent.count, order: agent.order });
 		}
