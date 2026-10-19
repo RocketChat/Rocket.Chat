@@ -40,9 +40,9 @@ way. Without a dedup rule a three-member mirrored room stores every message thre
 - **R2** The event id is `xmpp:<origin domain>:<rid>:<key>`. `<key>` is the XEP-0359
   `<stanza-id/>` the room assigned when the stanza carries one. Otherwise it is a digest of
   the author and the stanza `id`, since a sender's ids are unique only among its own
-  messages: two senders, or one sender in two rooms, may reuse an id. Without either, the
-  event id is random. The author is the bare JID in a DM and a hosted room, and the nick
-  plus XEP-0421 occupant id in a remote room
+  messages: two senders, or one sender in two rooms, may reuse an id. Without either,
+  `<key>` is random. The author is the bare JID in a DM and a hosted room, and in a remote
+  room the nick, joined with the XEP-0421 occupant id when the room sends one
   ([ADR 0014](../adr/0014-inbound-message-id-is-derived-from-room-author-and-sender-id.md)).
   The origin domain is the sender's domain for a DM and a hosted room, and the room's
   domain for a remote room.

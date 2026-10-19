@@ -721,7 +721,7 @@ export class XMPPServerService extends ServiceClass implements IXMPPServerServic
 
 	/** Stores an inbound message, or applies it to the one it corrects, once however many copies arrive and however close together. */
 	private async receiveMessage(message: InboundMessage): Promise<void> {
-		const eventId = deriveInboundEventId(message) ?? `xmpp:${message.originDomain}:${Random.id()}`;
+		const eventId = deriveInboundEventId(message) ?? `xmpp:${message.originDomain}:${message.rid}:${Random.id()}`;
 		if (this.eventIdsBeingSaved.has(eventId)) {
 			return;
 		}
