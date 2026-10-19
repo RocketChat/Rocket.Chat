@@ -37,7 +37,8 @@ describe('isBareJid', () => {
 		['alice@-example.com', 'label starts with a hyphen'],
 		['alice@example-.com', 'label ends with a hyphen'],
 		['alice@example..com', 'empty label'],
-		['alice@example.com.', 'trailing dot'],
+		['alice@example.com..', 'two trailing dots'],
+		['alice@.', 'only a dot'],
 		['alice@exa_mple.com', 'underscore in domain'],
 		['alice@example.com:5269', 'port'],
 		['alice@[::1]', 'IP literal'],
@@ -61,11 +62,12 @@ describe('normalizeBareJid', () => {
 		['Alice@Example.COM', 'Alice@example.com'],
 		['alice@exämple.com', 'alice@xn--exmple-cua.com'],
 		['alice@xn--exmple-cua.com', 'alice@xn--exmple-cua.com'],
+		['alice@example.com.', 'alice@example.com'],
 	])('spells %s as %s, keeping the node as typed', (value, expected) => {
 		expect(normalizeBareJid(value)).toBe(expected);
 	});
 
-	test.each([['example.com'], ['alice@example.com/phone'], ['alice@example.com.'], [42]])('is undefined for %p', (value) => {
+	test.each([['example.com'], ['alice@example.com/phone'], ['alice@example.com..'], [42]])('is undefined for %p', (value) => {
 		expect(normalizeBareJid(value)).toBeUndefined();
 	});
 });

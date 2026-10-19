@@ -10,7 +10,9 @@ const MAX_DOMAIN_BYTES = 255;
 const utf8Length = (value: string): number => new TextEncoder().encode(value).length;
 
 /** The domain in the IDNA ASCII, lowercase spelling XMPP compares domains in. */
-const toAsciiDomain = (domain: string): string | undefined => {
+const toAsciiDomain = (typed: string): string | undefined => {
+	// A fully qualified `example.com.` names the same domain
+	const domain = typed.replace(/\.$/, '');
 	if (!domain || domain.endsWith('.') || NOT_IN_HOST.test(domain)) {
 		return undefined;
 	}
