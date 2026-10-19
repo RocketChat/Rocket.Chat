@@ -139,7 +139,8 @@ export const teamsQueryKeys = {
 
 export const appsQueryKeys = {
 	all: ['apps'] as const,
-	slashCommands: () => [...appsQueryKeys.all, 'slashCommands'] as const,
+	slashCommands: (count?: number) =>
+		count !== undefined ? ([...appsQueryKeys.all, 'slashCommands', count] as const) : ([...appsQueryKeys.all, 'slashCommands'] as const),
 };
 
 export const ABACQueryKeys = {
