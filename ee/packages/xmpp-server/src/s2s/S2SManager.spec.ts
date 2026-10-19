@@ -54,3 +54,35 @@ describe('S2SManager', () => {
 		await Promise.all(queued);
 	});
 });
+
+describe('S2SManager reconnection', () => {
+	afterEach(() => {
+		jest.restoreAllMocks();
+	});
+
+	it('gives up after three failed connection attempts, rejecting the queue (R16)', async () => {
+		jest.spyOn(Math, 'random').mockReturnValue(0);
+		let attempts = 0;
+		const events = new Emitter<XMPPServerEventMap>();
+		const failed: XMPPServerEventMap['connection.failed'][] = [];
+		events.on('connection.failed', (event) => failed.push(event));
+		const manager = new S2SManager({
+			config: resolveConfig({ domain: 'a.localhost', port: 0, bindAddress: '127.0.0.1', requireTls: false, logger: silentLogger }),
+			logger: silentLogger,
+			resolver: async () => {
+				attempts += 1;
+				throw new Error('unreachable');
+			},
+			events,
+			onStanza: () => undefined,
+		});
+
+		await manager.startListener();
+
+		await expect(manager.sendStanza(message(1))).rejects.toThrow();
+		await manager.stopAll();
+
+		expect(attempts).toBe(3);
+		expect(failed.map((event) => event.attempts)).toEqual([3]);
+	});
+});

@@ -28,6 +28,8 @@ type DomainRoute = {
 	connecting: boolean;
 	queue: QueuedStanza[];
 	backoff: Backoff;
+	/** Connection attempts that failed since the last one that succeeded. */
+	failures: number;
 	reconnectTimer?: NodeJS.Timeout;
 	lastActivity: number;
 	status: ConnectionStatus;
@@ -196,6 +198,7 @@ export class S2SManager {
 				connecting: false,
 				queue: [],
 				backoff: new Backoff(),
+				failures: 0,
 				lastActivity: Date.now(),
 				status: 'disconnected',
 			};
@@ -242,6 +245,7 @@ export class S2SManager {
 				route.session = session;
 				route.status = 'connected';
 				route.backoff.reset();
+				route.failures = 0;
 				this.deps.events.emit('connection.established', {
 					domain,
 					direction: 'outbound',
@@ -252,6 +256,7 @@ export class S2SManager {
 			})
 			.catch((error: Error) => {
 				route.connecting = false;
+				route.failures += 1;
 				session.destroy();
 				this.logger.warn({ err: error, domain }, 'Outbound connection failed');
 				this.scheduleReconnect(route, error);
@@ -264,15 +269,16 @@ export class S2SManager {
 		}
 
 		const domain = route.targetDomain;
-		if (route.backoff.attemptCount >= MAX_CONSECUTIVE_FAILURES) {
+		if (route.failures >= MAX_CONSECUTIVE_FAILURES) {
 			route.status = 'failed';
 			const failure = error ?? new ConnectionFailedError(domain);
-			this.deps.events.emit('connection.failed', { domain, attempts: route.backoff.attemptCount, error: failure });
+			this.deps.events.emit('connection.failed', { domain, attempts: route.failures, error: failure });
 			for (const queued of route.queue) {
 				queued.reject(failure);
 			}
 			route.queue = [];
 			route.backoff.reset();
+			route.failures = 0;
 			return;
 		}
 
