@@ -35,6 +35,12 @@ module.exports = defineConfig((Meteor) => ({
 				loader: 'builtin:swc-loader',
 				options: Meteor.swcConfigOptions,
 			},
+			// Fuselage's CJS build requires react-aria while the app imports it, and the "require"/"import" export conditions point
+			// at different files, so each package would load twice and its module-level state (focus scopes, open overlays) split
+			{
+				test: /node_modules[\\/](@rocket\.chat[\\/]fuselage|react-aria|react-stately|@react-aria|@react-stately)[\\/]/,
+				resolve: { conditionNames: ['import', 'module', 'browser', 'default'] },
+			},
 		],
 	},
 	resolve: {
