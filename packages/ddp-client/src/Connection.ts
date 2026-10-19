@@ -18,7 +18,7 @@ import type { DDPClient } from './types/DDPClient';
 
 type RetryOptions = {
 	retryCount: number;
-	retryTimer?: NodeJS.Timeout;
+	retryTimer?: ReturnType<typeof setTimeout>;
 	retryTime: number;
 };
 
