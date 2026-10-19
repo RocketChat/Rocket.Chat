@@ -60,6 +60,10 @@ describe('buildDiscoReply', () => {
 		expect(reply?.getChild('error')?.getChild('item-not-found')).toBeDefined();
 	});
 
+	it.each([['alice@rc.tld'], ['alice@rc.tld/phone']])('leaves a query to the user %s unanswered, for the router to refuse (R8)', (to) => {
+		expect(buildDiscoReply(info(to), config, rooms, describeRoom)).toBeUndefined();
+	});
+
 	it('lists only public rooms on the service', () => {
 		const items = parse(
 			"<iq type='get' from='alice@remote.tld/pc' to='conference.rc.tld' id='q2'><query xmlns='http://jabber.org/protocol/disco#items'/></iq>",

@@ -32,6 +32,10 @@ export function buildDiscoReply(
 	const isMucDomain = bareTo === config.mucDomain;
 	// A room JID (`room@conference.domain`) must describe the room, not the service
 	const roomId = !isMucDomain && bareTo.endsWith(`@${config.mucDomain}`) ? bareTo.split('@')[0] : undefined;
+	// Users at our domain have no disco identity of their own (service-discovery R8)
+	if (roomId === undefined && !isMucDomain && bareTo !== config.domain) {
+		return undefined;
+	}
 
 	if (roomId !== undefined) {
 		const room = describeRoom?.(roomId);

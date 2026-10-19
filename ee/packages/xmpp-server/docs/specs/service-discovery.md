@@ -3,7 +3,7 @@ status: implemented
 standards: [XEP-0030]
 adrs: [0008]
 code: [src/iq/disco.ts, src/muc/MucService.ts, src/router/StanzaRouter.ts]
-tests: [src/iq/disco.spec.ts, tests/end-to-end/connectivity.spec.ts]
+tests: [src/iq/disco.spec.ts, src/router/StanzaRouter.spec.ts, tests/end-to-end/connectivity.spec.ts]
 ---
 
 # Spec: Service discovery

@@ -99,6 +99,16 @@ describe('StanzaRouter', () => {
 		expect(replies[0].getChild('error')?.getChild('service-unavailable')).toBeDefined();
 	});
 
+	it('answers disco on a user JID with service-unavailable (service-discovery R8)', () => {
+		const { router, replies } = setup();
+		router.dispatch(
+			parseStanza(
+				"<iq from='a@peer.tld/pc' to='alice@rc.tld' type='get' id='d1'><query xmlns='http://jabber.org/protocol/disco#info'/></iq>",
+			),
+		);
+		expect(replies[0].getChild('error')?.getChild('service-unavailable')).toBeDefined();
+	});
+
 	it('routes MUC-addressed stanzas to the MUC handler', () => {
 		const events = new Emitter<XMPPServerEventMap>();
 		const handled: Element[] = [];
