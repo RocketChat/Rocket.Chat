@@ -23,7 +23,7 @@ export class Session extends EventEmitter {
 
 	public readonly session = uuidv1();
 
-	public subscriptions = new Map();
+	public subscriptions = new Map<string, { stop(): void }>();
 
 	public connection: ISocketConnection;
 

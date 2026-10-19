@@ -46,10 +46,10 @@ import { setUpdatedAt } from './setUpdatedAt';
 
 const warnFields =
 	process.env.NODE_ENV !== 'production' || process.env.SHOW_WARNINGS === 'true'
-		? (...rest: any): void => {
+		? (...rest: unknown[]): void => {
 				console.warn(...rest, new Error().stack);
 			}
-		: new Function();
+		: (): void => undefined;
 
 type ModelOptions = {
 	preventSetUpdatedAt?: boolean;

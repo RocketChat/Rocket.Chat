@@ -155,11 +155,11 @@ export class MessageList extends MemoizedComponent<MessageListProps, unknown> {
 		window.removeEventListener('resize', this.handleResize);
 	}
 
-	isVideoConfMessage(message: any) {
+	isVideoConfMessage(message: { blocks?: { appId?: string; type?: string; elements?: { actionId?: string }[] }[] }) {
 		return Boolean(
 			message.blocks
-				?.find(({ appId, type }: any) => appId === 'videoconf-core' && type === 'actions')
-				?.elements?.find(({ actionId }: any) => actionId === 'joinLivechat'),
+				?.find(({ appId, type }) => appId === 'videoconf-core' && type === 'actions')
+				?.elements?.find(({ actionId }) => actionId === 'joinLivechat'),
 		);
 	}
 

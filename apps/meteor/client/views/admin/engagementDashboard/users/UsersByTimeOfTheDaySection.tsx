@@ -43,12 +43,12 @@ const UsersByTimeOfTheDaySection = ({ timezone }: UsersByTimeOfTheDaySectionProp
 		const length = utc ? differenceInDays(endDate, startDate) + 1 : differenceInDays(endDate, startDate) - 1;
 		const start = utc ? endOfDayUTC(startDate) : addDays(endOfDay(startDate), 1);
 
-		const datesArray = new Array(length);
+		const datesArray = new Array<string>(length);
 		for (let i = 0; i < length; i++) {
 			datesArray[i] = addDays(start, i).toISOString();
 		}
 
-		const valuesArray = new Array(24);
+		const valuesArray = new Array<{ id: string; data: { x: string; y: number }[] }>(24);
 		for (let hour = 0; hour < 24; hour++) {
 			valuesArray[hour] = {
 				id: hour.toString(),
@@ -69,7 +69,7 @@ const UsersByTimeOfTheDaySection = ({ timezone }: UsersByTimeOfTheDaySectionProp
 				const dateEnd = endOfDay(d);
 				const dateKey = dateEnd.toISOString();
 				const hourIdx = d.getHours();
-				const dataPoint = valuesArray[hourIdx].data.find((point: { x: string }) => point.x === dateKey);
+				const dataPoint = valuesArray[hourIdx].data.find((point) => point.x === dateKey);
 				if (dataPoint) {
 					dataPoint.y += users;
 				}

@@ -22,7 +22,7 @@ const isHtmlEntityCode = (htmlEntityCode: string): htmlEntityCode is keyof typeo
 const fromCodePoint = (codePoint: number, entity: string): string => (codePoint <= 0x10ffff ? String.fromCodePoint(codePoint) : entity);
 
 export const unescapeHTML = (str: string): string =>
-	toString(str).replace(/\&([^;]{1,10});/g, (entity, htmlEntityCode) => {
+	toString(str).replace(/\&([^;]{1,10});/g, (entity: string, htmlEntityCode: string) => {
 		let match;
 
 		if (isHtmlEntityCode(htmlEntityCode)) {

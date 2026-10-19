@@ -51,28 +51,28 @@ export const useAnalytics = (): void => {
 			f.parentNode?.insertBefore(j, f);
 
 			// injecting the dataLayer into the windows global object
-			const w: Window & { dataLayer?: any } = window;
+			const w: Window & { dataLayer?: unknown[] } = window;
 			const dataLayer = w.dataLayer || [];
-			const gtag = (key: string, value: any) => {
+			const gtag = (key: string, value: unknown) => {
 				dataLayer.push(key, value);
 			};
 			gtag('js', new Date());
 			gtag('config', googleId);
 		} else {
 			// Google Analytics 3
-			(function (i, s, o, g, r: 'ga', a?: any, m?: any) {
+			(function (i, s, o: 'script', g, r: 'ga', a?: HTMLScriptElement, m?: HTMLScriptElement) {
 				i.GoogleAnalyticsObject = r;
 				((i[r] =
 					i[r] ||
 					function (...args) {
-						((i[r] as any).q = (i[r] as any).q || []).push(args);
+						((i[r] as qa).q = (i[r] as qa).q || []).push(args);
 					}),
 					((i[r] as any).l = new Date().getTime()));
 
 				((a = s.createElement(o)), (m = s.getElementsByTagName(o)[0]));
-				a.async = 1;
+				a.async = true;
 				a.src = g;
-				m.parentNode.insertBefore(a, m);
+				m.parentNode?.insertBefore(a, m);
 			})(window, document, 'script', 'https://www.google-analytics.com/analytics.js', 'ga');
 
 			window.ga?.('create', googleId, 'auto');

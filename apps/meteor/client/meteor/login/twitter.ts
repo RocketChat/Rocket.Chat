@@ -30,7 +30,7 @@ Twitter.requestCredential = wrapRequestCredentialFn<TwitterOAuthConfiguration>(
 		// Support additional, permitted parameters
 		if (options) {
 			const hasOwn = Object.prototype.hasOwnProperty;
-			Twitter.validParamsAuthenticate.forEach((param: string) => {
+			(Twitter.validParamsAuthenticate as string[]).forEach((param) => {
 				if (hasOwn.call(options, param)) {
 					loginPath += `&${param}=${encodeURIComponent(options[param])}`;
 				}

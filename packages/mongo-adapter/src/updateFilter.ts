@@ -588,7 +588,7 @@ export const createUpsertDocument = <T extends { _id: string }>(selector: Filter
 	return replacement as T;
 };
 
-const insertIntoDocument = (document: Document, key: any, value: any) => {
+const insertIntoDocument = (document: Document, key: string, value: unknown) => {
 	Object.keys(document).forEach((existingKey) => {
 		if (
 			(existingKey.length > key.length && existingKey.indexOf(`${key}.`) === 0) ||

@@ -720,7 +720,7 @@ if (typeof window.RocketChat.url !== 'undefined') {
 	init(window.RocketChat.url);
 }
 
-const queue = window.RocketChat._;
+const queue: (() => void)[] = window.RocketChat._;
 
 window.RocketChat._.push = function (c: () => void) {
 	c.call(window.RocketChat.livechat);
@@ -732,6 +732,6 @@ window.RocketChat = window.RocketChat._.push;
 window.RocketChat.livechat = livechatWidgetAPI;
 
 // proccess queue
-queue.forEach((c: () => void) => {
+queue.forEach((c) => {
 	c.call(window.RocketChat.livechat);
 });

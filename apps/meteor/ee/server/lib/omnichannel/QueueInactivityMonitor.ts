@@ -36,7 +36,7 @@ export class OmnichannelQueueInactivityMonitorClass {
 		this._name = 'Omnichannel-Queue-Inactivity-Monitor';
 		this.logger = schedulerLogger.section(this._name);
 		this.scheduler = new Agenda({
-			mongo: (MongoInternals.defaultRemoteCollectionDriver().mongo as any).client.db(),
+			mongo: MongoInternals.defaultRemoteCollectionDriver().mongo.client.db(),
 			db: { collection: SCHEDULER_NAME },
 			defaultConcurrency: 1,
 			processEvery: process.env.TEST_MODE === 'true' || process.env.TEST_MODE === 'api' ? '3 seconds' : '1 minute',

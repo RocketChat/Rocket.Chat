@@ -41,7 +41,7 @@ const rocketchatInfo = (): Plugin => {
 
 			const info = {
 				...JSON.parse(readFileSync(join(appRoot, 'rocketchat.info'), 'utf8')),
-				marketplaceApiVersion: require('@rocket.chat/apps-engine/package.json').version.replace(/^[^0-9]/g, ''),
+				marketplaceApiVersion: (require('@rocket.chat/apps-engine/package.json') as { version: string }).version.replace(/^[^0-9]/g, ''),
 				build: { date: new Date().toISOString() },
 				commit: { hash: git('rev-parse HEAD'), branch: git('rev-parse --abbrev-ref HEAD') },
 			};

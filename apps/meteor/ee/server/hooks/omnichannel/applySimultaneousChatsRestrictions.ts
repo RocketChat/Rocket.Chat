@@ -6,7 +6,7 @@ import { callbacks } from '../../../../server/lib/callbacks';
 import { settings } from '../../../../server/settings';
 
 export async function getChatLimitsQuery(departmentId?: string): Promise<Filter<AvailableAgentsAggregation>> {
-	const limitFilter: Filter<AvailableAgentsAggregation> = [];
+	const limitFilter: Filter<AvailableAgentsAggregation>[] = [];
 
 	if (departmentId) {
 		const departmentLimit =

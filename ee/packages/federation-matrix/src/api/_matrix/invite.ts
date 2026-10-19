@@ -1,5 +1,5 @@
 import { FederationMatrix } from '@rocket.chat/core-services';
-import { NotAllowedError, federationSDK } from '@rocket.chat/federation-sdk';
+import { NotAllowedError, federationSDK, type PduForType, type RoomVersion } from '@rocket.chat/federation-sdk';
 import { Router } from '@rocket.chat/http-router';
 import { Users } from '@rocket.chat/models';
 import { ajv } from '@rocket.chat/rest-typings/dist/v1/Ajv';
@@ -161,7 +161,23 @@ export const getMatrixInviteRoutes = () => {
 		isAuthenticatedMiddleware(),
 		async (c) => {
 			const { roomId, eventId } = c.req.param();
-			const { event, room_version: roomVersion, invite_room_state: strippedStateEvents } = await c.req.json();
+			const {
+				event,
+				room_version: roomVersion,
+				invite_room_state: strippedStateEvents,
+			} = await c.req.json<{
+				event: PduForType<'m.room.member'>;
+				room_version: RoomVersion;
+				invite_room_state?: PduForType<
+					| 'm.room.create'
+					| 'm.room.name'
+					| 'm.room.avatar'
+					| 'm.room.topic'
+					| 'm.room.join_rules'
+					| 'm.room.canonical_alias'
+					| 'm.room.encryption'
+				>[];
+			}>();
 
 			const userToCheck = event.state_key;
 
@@ -178,7 +194,7 @@ export const getMatrixInviteRoutes = () => {
 			}
 
 			// spec: servers SHOULD return M_INVALID_PARAM if m.room.create is missing from invite_room_state
-			if (!strippedStateEvents?.some((e: any) => e.type === 'm.room.create')) {
+			if (!strippedStateEvents?.some((e) => e.type === 'm.room.create')) {
 				return {
 					body: {
 						errcode: 'M_INVALID_PARAM',

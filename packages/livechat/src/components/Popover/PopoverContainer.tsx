@@ -50,7 +50,7 @@ class PopoverContainer extends Component<PopoverContainerProps, PopoverContainer
 
 	mounted = false;
 
-	overlayRef: any = null;
+	overlayRef: { base: Element } | null = null;
 
 	open = (
 		renderer: (options: {
@@ -95,7 +95,7 @@ class PopoverContainer extends Component<PopoverContainerProps, PopoverContainer
 		this.dismiss();
 	};
 
-	handleOverlayRef = (ref: any) => {
+	handleOverlayRef = (ref: { base: Element } | null) => {
 		this.overlayRef = ref;
 	};
 

@@ -31,6 +31,14 @@ class EJSONSerializer extends Base {
 
 type ClusterBroker = Pick<LocalBroker, 'setClusterTransport' | 'broadcastLocal'>;
 
+type TcpTransporter = Transporters.TCP & {
+	addOfflineNode(id: string, host: string, port: number): void;
+	nodes: {
+		disconnected(nodeId: string, isUnexpected: boolean): void;
+		nodes: Map<string, unknown>;
+	};
+};
+
 export class InstanceService extends ServiceClassInternal implements IInstanceService {
 	protected name = 'instance';
 
@@ -145,12 +153,12 @@ export class InstanceService extends ServiceClassInternal implements IInstanceSe
 
 		const { host, tcpPort } = record.extraInformation;
 
-		(this.broker?.transit?.tx as any).addOfflineNode(record._id, host, tcpPort);
+		(this.broker?.transit?.tx as TcpTransporter).addOfflineNode(record._id, host, tcpPort);
 	}
 
 	private disconnectNode(nodeId: string) {
-		(this.broker.transit?.tx as any).nodes.disconnected(nodeId, false);
-		(this.broker.transit?.tx as any).nodes.nodes.delete(nodeId);
+		(this.broker.transit?.tx as TcpTransporter).nodes.disconnected(nodeId, false);
+		(this.broker.transit?.tx as TcpTransporter).nodes.nodes.delete(nodeId);
 	}
 
 	override async started() {

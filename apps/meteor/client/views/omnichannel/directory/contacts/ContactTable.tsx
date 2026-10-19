@@ -11,6 +11,7 @@ import {
 	GenericNoResults,
 } from '@rocket.chat/ui-client';
 import { hashKey } from '@tanstack/react-query';
+import type { ReactNode } from 'react';
 import { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -103,7 +104,7 @@ function ContactTable() {
 				<GenericTable>
 					<GenericTableHeader>{headers}</GenericTableHeader>
 					<GenericTableBody>
-						<GenericTableLoadingTable headerCells={headers.props.children.filter(Boolean).length} />
+						<GenericTableLoadingTable headerCells={(headers.props as { children: ReactNode[] }).children.filter(Boolean).length} />
 					</GenericTableBody>
 				</GenericTable>
 			)}

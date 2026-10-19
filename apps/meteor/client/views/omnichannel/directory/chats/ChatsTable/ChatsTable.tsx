@@ -11,6 +11,7 @@ import {
 } from '@rocket.chat/ui-client';
 import { usePermission } from '@rocket.chat/ui-contexts';
 import { hashKey } from '@tanstack/react-query';
+import type { ReactNode } from 'react';
 import { useState, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -74,7 +75,7 @@ const ChatsTable = () => {
 				<GenericTable>
 					<GenericTableHeader>{headers}</GenericTableHeader>
 					<GenericTableBody>
-						<GenericTableLoadingTable headerCells={headers.props.children.filter(Boolean).length} />
+						<GenericTableLoadingTable headerCells={(headers.props as { children: ReactNode[] }).children.filter(Boolean).length} />
 					</GenericTableBody>
 				</GenericTable>
 			)}

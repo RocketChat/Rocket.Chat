@@ -60,8 +60,8 @@ export class AppGridFSSourceStorage extends AppSourceStorage {
 	public async remove(item: IAppStorageItem): Promise<void> {
 		try {
 			await this.bucket.delete(this.itemToObjectId(item));
-		} catch (error: any) {
-			if (error.message.includes('File not found for id')) {
+		} catch (error) {
+			if ((error as Error).message.includes('File not found for id')) {
 				console.warn(
 					`This instance could not remove the ${item.info.name} app package. If you are running Rocket.Chat in a cluster with multiple instances, possibly other instance removed the package. If this is not the case, it is possible that the file in the database got renamed or removed manually.`,
 				);

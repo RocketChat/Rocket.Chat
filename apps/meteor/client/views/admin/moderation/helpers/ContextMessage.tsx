@@ -60,9 +60,11 @@ const ContextMessage = ({
 
 	const displayName = useUserDisplayName({ name, username });
 
-	const quotes = message?.attachments?.filter(isQuoteAttachment) || [];
+	const messageAttachments = message?.attachments as MessageAttachment[] | undefined;
 
-	const attachments = message?.attachments?.filter((attachment: MessageAttachment) => !isQuoteAttachment(attachment)) || [];
+	const quotes = messageAttachments?.filter(isQuoteAttachment) || [];
+
+	const attachments = messageAttachments?.filter((attachment) => !isQuoteAttachment(attachment)) || [];
 
 	return (
 		<>

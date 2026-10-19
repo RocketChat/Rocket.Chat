@@ -166,7 +166,7 @@ export class ListenersModule {
 
 		service.onEvent('room.video-conference', ({ rid, callId }) => {
 			/* deprecated */
-			(notifications.notifyRoomInThisInstance as any)(rid, callId);
+			(notifications.notifyRoomInThisInstance as (rid: string, callId: string) => void)(rid, callId);
 
 			notifications.notifyRoomInThisInstance(rid, 'videoconf', callId);
 		});

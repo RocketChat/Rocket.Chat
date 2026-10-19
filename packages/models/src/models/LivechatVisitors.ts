@@ -364,7 +364,7 @@ export class LivechatVisitorsRaw extends BaseRaw<ILivechatVisitor> implements IL
 
 	saveGuestById(
 		_id: string,
-		data: { name?: string; username?: string; email?: string; phone?: string; livechatData: { [k: string]: any } },
+		data: { name?: string; username?: string; email?: string; phone?: string; livechatData: { [k: string]: string | null | undefined } },
 	): Promise<UpdateResult | Document | boolean> {
 		const setData: DeepWriteable<UpdateFilter<ILivechatVisitor>['$set']> = {};
 		const unsetData: DeepWriteable<UpdateFilter<ILivechatVisitor>['$unset']> = {};
@@ -528,4 +528,4 @@ export class LivechatVisitorsRaw extends BaseRaw<ILivechatVisitor> implements IL
 	}
 }
 
-type DeepWriteable<T> = { -readonly [P in keyof T]: DeepWriteable<T[P]> };
+type DeepWriteable<T> = T extends object ? { -readonly [P in keyof T]: DeepWriteable<T[P]> } : T;

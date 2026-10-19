@@ -19,5 +19,7 @@ export function useExperimentalEndpoint<
 	TPath extends keyof ExperimentalEndpoints,
 	TMethod extends keyof ExperimentalEndpoints[TPath] & string,
 >(method: TMethod, path: TPath): (params: ExperimentalParams<TPath, TMethod>) => Promise<ExperimentalResult<TPath, TMethod>> {
-	return (useEndpoint as any)(method, path) as (params: ExperimentalParams<TPath, TMethod>) => Promise<ExperimentalResult<TPath, TMethod>>;
+	return (useEndpoint as unknown as (method: string, path: string) => unknown)(method, path) as (
+		params: ExperimentalParams<TPath, TMethod>,
+	) => Promise<ExperimentalResult<TPath, TMethod>>;
 }

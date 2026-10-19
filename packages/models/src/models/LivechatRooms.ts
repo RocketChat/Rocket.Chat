@@ -1876,7 +1876,7 @@ export class LivechatRoomsRaw extends BaseRaw<IOmnichannelRoom> implements ILive
 		_id: string;
 		topic?: string;
 		tags?: string[];
-		livechatData?: Record<string, any>;
+		livechatData?: Record<string, string>;
 	} & Record<string, any>) {
 		const setData: DeepWritable<UpdateFilter<IOmnichannelRoom>['$set']> = { ...extra };
 		const unsetData: DeepWritable<UpdateFilter<IOmnichannelRoom>['$unset']> = {};
