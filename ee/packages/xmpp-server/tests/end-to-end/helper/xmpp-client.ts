@@ -132,7 +132,7 @@ export class XmppUser {
 		return this.xmpp.send(stanza);
 	}
 
-	/** Sends an IQ and resolves with the result; an `error` response rejects with the stanza error condition. */
+	/** Sends an IQ and resolves with the result; an `error` response rejects with the library's error, which carries its `condition`. */
 	iq(type: 'get' | 'set', to: string, child: Stanza, timeoutMs = DEFAULT_TIMEOUT_MS): Promise<Stanza> {
 		return this.xmpp.iqCaller.request(xml('iq', { type, to }, child), timeoutMs);
 	}

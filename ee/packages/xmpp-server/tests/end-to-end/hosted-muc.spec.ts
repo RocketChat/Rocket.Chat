@@ -402,12 +402,7 @@ describe('XMPP federation: rooms hosted by Rocket.Chat', () => {
 			await waitForMember(owner, room, alice.bareJid);
 
 			await deleteRoom(rc, room);
-			await retry(
-				`${muc} to be gone`,
-				() =>
-					assert.rejects(alice.discoInfo(muc), (error: unknown) => error instanceof StanzaError && error.condition === 'item-not-found'),
-				federationPolling,
-			);
+			await retry(`${muc} to be gone`, () => assert.rejects(alice.discoInfo(muc), { condition: 'item-not-found' }), federationPolling);
 		});
 	});
 });
