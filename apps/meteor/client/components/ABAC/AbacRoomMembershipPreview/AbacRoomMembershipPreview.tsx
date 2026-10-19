@@ -149,7 +149,7 @@ const AbacRoomMembershipPreview = ({ rid, roomName, attributes, isSaving, onBack
 	return (
 		<>
 			<ContextualbarSection>
-				<Box flexGrow={1} flexBasis={0} minWidth={0}>
+				<Box flexGrow={1} flexBasis='0' minWidth={0}>
 					<TextInput
 						placeholder={t('ABAC_Preview_Search_members')}
 						aria-label={t('ABAC_Preview_Search_members')}
@@ -158,7 +158,7 @@ const AbacRoomMembershipPreview = ({ rid, roomName, attributes, isSaving, onBack
 						endAddon={<Icon name='magnifier' size='x20' />}
 					/>
 				</Box>
-				<Box display='flex' flexGrow={1} flexBasis={0} minWidth={0} marginInlineStart={8}>
+				<Box display='flex' flexGrow={1} flexBasis='0' minWidth={0} marginInlineStart={8}>
 					<Select
 						aria-label={t('ABAC_Preview_Access_filter')}
 						options={options}
