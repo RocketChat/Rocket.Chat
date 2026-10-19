@@ -95,8 +95,8 @@ const roomTypes: Record<ClassificationRoomType, IRoom['t']> = {
 	private: 'p',
 };
 
-const matchesRoom = (room: ClassifiedRoom, { type, federated, discussion, team }: ClassificationRoomMatch = {}): boolean =>
-	(!type?.length || type.some((name) => roomTypes[name] === room.t)) &&
+const matchesRoom = (room: ClassifiedRoom, { type, federated, discussion, team }: ClassificationRoomMatch): boolean =>
+	(!type || type.some((name) => roomTypes[name] === room.t)) &&
 	(federated === undefined || federated === isRoomFederated(room)) &&
 	(discussion === undefined || discussion === isDiscussion(room)) &&
 	(team === undefined || team === !!room.teamId);
@@ -114,6 +114,8 @@ export const buildRoomClassificationBanner = (
 	}
 
 	const { banner, nonAbacBanner } = config;
-	const entry = [nonAbacBanner ?? []].flat().find(({ enabled, match }) => enabled && matchesRoom(room, match));
+	const entry =
+		nonAbacBanner?.find(({ enabled, match }) => enabled && match && matchesRoom(room, match)) ??
+		nonAbacBanner?.find(({ enabled, match }) => enabled && !match);
 	return entry && buildPlainBanner(banner, entry.text, entry.color);
 };

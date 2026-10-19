@@ -89,7 +89,7 @@ test.describe.serial('abac-classification-banner', () => {
 	});
 
 	test.afterAll(async ({ api }) => {
-		await Promise.all([room, plainRoom].filter(Boolean).map(({ _id }) => deleteRoom(api, _id)));
+		await Promise.all([deleteRoom(api, room._id), deleteRoom(api, plainRoom._id)]);
 		await api.delete(`/abac/attributes/${attributeId}`);
 		await connection
 			.db()
@@ -134,7 +134,7 @@ test.describe.serial('abac-classification-banner', () => {
 			await setSettingValueById(
 				api,
 				'ABAC_Classification_Banners_Config',
-				JSON.stringify({ ...bannersConfig, nonAbacBanner: { enabled: true, text: 'UNCLASSIFIED', color: '#007a33' } }),
+				JSON.stringify({ ...bannersConfig, nonAbacBanner: [{ enabled: true, text: 'UNCLASSIFIED', color: '#007a33' }] }),
 			);
 			discussion = await createTargetDiscussion(api);
 			dmRoomId = await createDirectMessageRoom(api, Users.user1.data.username);

@@ -2299,7 +2299,7 @@ import { IS_EE, URL_MONGODB } from '../../e2e/config/constants';
 		});
 
 		describe('with a nonAbacBanner configured', () => {
-			const nonAbacBanner = { enabled: true, text: 'UNCLASSIFIED', color: '#007a33' };
+			const nonAbacBanner = [{ enabled: true, text: 'UNCLASSIFIED', color: '#007a33' }];
 			const expectedNonAbacBanner = {
 				style: 'classic',
 				uppercase: true,
@@ -2373,6 +2373,7 @@ import { IS_EE, URL_MONGODB } from '../../e2e/config/constants';
 							{ enabled: true, text: 'PERSONAL', color: '#502b85', match: { type: ['direct'] } },
 							{ enabled: true, text: 'DISCUSSION', color: '#0033a0', match: { discussion: true } },
 							{ enabled: true, text: 'UNCLASSIFIED', color: '#007a33', match: { type: ['public', 'private'] } },
+							{ enabled: true, text: 'DEFAULT', color: '#6C727A' },
 						],
 					}),
 				);
@@ -2382,20 +2383,6 @@ import { IS_EE, URL_MONGODB } from '../../e2e/config/constants';
 					expect((await getRoomInfo(groupDmRoomId)).classificationBanner).to.have.property('text', 'PERSONAL');
 					expect((await getRoomInfo(discussionId)).classificationBanner).to.have.property('text', 'DISCUSSION');
 					expect((await getRoomInfo(plainRoom._id)).classificationBanner).to.have.property('text', 'UNCLASSIFIED');
-					expect((await getRoomInfo(bannerRoom._id)).classificationBanner).to.have.property('text', 'TOP SECRET');
-				} finally {
-					await updateSetting('ABAC_Classification_Banners_Config', JSON.stringify({ ...bannersConfig, nonAbacBanner }));
-				}
-			});
-
-			it('should not return a banner for a room without attributes when nonAbacBanner is disabled', async () => {
-				await updateSetting(
-					'ABAC_Classification_Banners_Config',
-					JSON.stringify({ ...bannersConfig, nonAbacBanner: { ...nonAbacBanner, enabled: false } }),
-				);
-
-				try {
-					expect(await getRoomInfo(dmRoomId)).to.not.have.property('classificationBanner');
 					expect((await getRoomInfo(bannerRoom._id)).classificationBanner).to.have.property('text', 'TOP SECRET');
 				} finally {
 					await updateSetting('ABAC_Classification_Banners_Config', JSON.stringify({ ...bannersConfig, nonAbacBanner }));

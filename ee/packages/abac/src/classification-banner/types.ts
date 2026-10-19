@@ -50,6 +50,6 @@ export type ClassificationBannersConfig = {
 		fallbackText: string;
 		fallbackColor: string;
 	};
-	nonAbacBanner?: ClassificationNonAbacBanner | ClassificationNonAbacBanner[];
+	nonAbacBanner?: ClassificationNonAbacBanner[];
 	attributes: ClassificationBannerAttribute[];
 };

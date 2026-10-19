@@ -109,7 +109,7 @@
   "ABAC_Classification_Banner": "Classification banner",
   "ABAC_Classification_Banners": "Classification banners",
   "ABAC_Classification_Banners_Config": "Classification banners configuration (JSON)",
-  "ABAC_Classification_Banners_Config_Description": "JSON document describing which room attributes appear in the banner, their labels and colors, and the banner for rooms that are not ABAC managed. See the classification banners documentation for the schema and examples.",
+  "ABAC_Classification_Banners_Config_Description": "JSON document describing which room attributes appear in the banner, their labels and colors, and the banners for rooms that are not ABAC managed. Omnichannel rooms are not affected and never show a banner. See the classification banners documentation for the schema and examples.",
   "ABAC_Classification_Banners_Config_Invalid": "Classification banners configuration must be valid JSON matching the documented schema.",
   "ABAC_Classification_Banners_Enabled": "Enable classification banners",
   "ABAC_Classification_Banners_Enabled_Description": "Show classification banners in rooms managed by ABAC and, when configured, in rooms that are not ABAC managed.",

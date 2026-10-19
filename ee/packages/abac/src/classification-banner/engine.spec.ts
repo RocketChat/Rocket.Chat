@@ -199,7 +199,7 @@ describe('buildClassificationBanner', () => {
 
 describe('buildRoomClassificationBanner', () => {
 	const nonAbacBanner = { enabled: true, text: 'UNCLASSIFIED', color: '#007a33' };
-	const configWithNonAbacBanner: ClassificationBannersConfig = { ...config, nonAbacBanner };
+	const configWithNonAbacBanner: ClassificationBannersConfig = { ...config, nonAbacBanner: [nonAbacBanner] };
 
 	it('renders the attribute banner for an ABAC managed room', () => {
 		expect(
@@ -230,18 +230,12 @@ describe('buildRoomClassificationBanner', () => {
 		});
 	});
 
-	it.each([
-		['a single entry', nonAbacBanner],
-		['a list', [nonAbacBanner, { ...nonAbacBanner, text: 'PERSONAL', match: {} }]],
-	])('renders nothing for an Omnichannel room when nonAbacBanner is %s that matches every room', (_name, option) => {
-		expect(buildRoomClassificationBanner({ ...config, nonAbacBanner: option }, { t: 'l' })).toBeUndefined();
+	it('renders nothing for an Omnichannel room even with a default entry that matches every room', () => {
+		expect(buildRoomClassificationBanner(configWithNonAbacBanner, { t: 'l' })).toBeUndefined();
 	});
 
-	it.each([
-		['absent', undefined],
-		['disabled', { ...nonAbacBanner, enabled: false }],
-	])('renders nothing for a room that is not ABAC managed when nonAbacBanner is %s', (_name, option) => {
-		expect(buildRoomClassificationBanner({ ...config, nonAbacBanner: option }, { t: 'd' })).toBeUndefined();
+	it('renders nothing for a room that is not ABAC managed when nonAbacBanner is absent', () => {
+		expect(buildRoomClassificationBanner(config, { t: 'd' })).toBeUndefined();
 	});
 
 	describe('with a list of entries', () => {
@@ -278,13 +272,36 @@ describe('buildRoomClassificationBanner', () => {
 			expect(banner).toMatchObject({ text: 'UNCLASSIFIED', backgroundColor: '#007a33' });
 		});
 
-		it('renders nothing when no enabled entry matches the room', () => {
-			expect(
-				buildRoomClassificationBanner(
-					{ ...config, nonAbacBanner: [{ enabled: true, text: 'PUBLIC', color: '#0033a0', match: { type: ['public'] } }] },
-					dm,
-				),
-			).toBeUndefined();
+		it('prefers a matching entry over a default listed before it', () => {
+			const banner = buildRoomClassificationBanner(
+				{
+					...config,
+					nonAbacBanner: [
+						{ enabled: true, text: 'UNCLASSIFIED', color: '#007a33' },
+						{ enabled: true, text: 'PERSONAL', color: '#502b85', match: { type: ['direct'] } },
+					],
+				},
+				dm,
+			);
+
+			expect(banner).toMatchObject({ text: 'PERSONAL', backgroundColor: '#502b85' });
+		});
+
+		it('renders the first enabled default when no entry matches the room', () => {
+			const banner = buildRoomClassificationBanner(
+				{
+					...config,
+					nonAbacBanner: [
+						{ enabled: false, text: 'OFF', color: '#6C727A' },
+						{ enabled: true, text: 'UNCLASSIFIED', color: '#007a33' },
+						{ enabled: true, text: 'PUBLIC', color: '#0033a0', match: { type: ['public'] } },
+						{ enabled: true, text: 'LATER', color: '#502b85' },
+					],
+				},
+				dm,
+			);
+
+			expect(banner).toMatchObject({ text: 'UNCLASSIFIED', backgroundColor: '#007a33' });
 		});
 	});
 
@@ -306,7 +323,6 @@ describe('buildRoomClassificationBanner', () => {
 			['type direct matches a group DM', { type: ['direct'] }, groupDm, true],
 			['a type list matches any of its types', { type: ['public', 'private'] }, privateRoom, true],
 			['a type list does not match other types', { type: ['public', 'private'] }, dm, false],
-			['an empty type list matches any type', { type: [] }, publicRoom, true],
 			['private and federated matches a federated private room', { type: ['private'], federated: true }, federatedPrivateRoom, true],
 			['private and federated does not match a federated public room', { type: ['private'], federated: true }, federatedPublicRoom, false],
 			['private and federated does not match a private room', { type: ['private'], federated: true }, privateRoom, false],
@@ -319,9 +335,8 @@ describe('buildRoomClassificationBanner', () => {
 			['team does not match a room outside a team', { team: true }, publicRoom, false],
 			["team false does not match the team's own room", { team: false }, teamRoom, false],
 			['team false does not match a room in a team', { team: false }, roomInTeam, false],
-			['an empty match matches any room', {}, groupDm, true],
 		])('%s', (_name, match, room, matches) => {
-			const banner = buildRoomClassificationBanner({ ...config, nonAbacBanner: { ...nonAbacBanner, match } }, room);
+			const banner = buildRoomClassificationBanner({ ...config, nonAbacBanner: [{ ...nonAbacBanner, match }] }, room);
 
 			expect(banner !== undefined).toBe(matches);
 		});

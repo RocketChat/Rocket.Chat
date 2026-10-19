@@ -45,6 +45,7 @@ const validConfig: ClassificationBannersConfig & { $schema: string } = {
 const { banner } = validConfig;
 const [attribute] = validConfig.attributes;
 const [value] = attribute.values;
+const defaultEntry = { enabled: true, text: 'UNCLASSIFIED', color: '#007a33' };
 
 describe('classification banners JSON schema (v1 enforcement contract)', () => {
 	it('accepts a complete document typed as ClassificationBannersConfig', () => {
@@ -52,21 +53,17 @@ describe('classification banners JSON schema (v1 enforcement contract)', () => {
 	});
 
 	it.each([
-		['a single nonAbacBanner', { enabled: true, text: 'UNCLASSIFIED', color: '#007a33' }],
+		['a single default entry', [defaultEntry]],
 		[
-			'a single nonAbacBanner with a match',
-			{ enabled: true, text: 'UNCLASSIFIED', color: '#007a33', match: { type: ['private'], federated: true } },
-		],
-		[
-			'a list of nonAbacBanner entries',
+			'a list of nonAbacBanner entries ending with the default',
 			[
 				{ enabled: true, text: 'PERSONAL', color: '#502b85', match: { type: ['direct'] } },
 				{ enabled: false, text: 'EXTERNAL', color: '#6C727A', match: { federated: true } },
 				{ enabled: true, text: 'TEAM', color: '#0033a0', match: { team: true, discussion: false } },
-				{ enabled: true, text: 'UNCLASSIFIED', color: '#007a33' },
+				defaultEntry,
 			],
 		],
-		['a match with an empty type list', { enabled: true, text: 'UNCLASSIFIED', color: '#007a33', match: { type: [] } }],
+		['a disabled entry without a match next to an enabled default', [{ ...defaultEntry, enabled: false }, defaultEntry]],
 	])('accepts a document with %s', (_name, nonAbacBanner) => {
 		expect(validate({ ...validConfig, nonAbacBanner })).toBe(true);
 	});
@@ -92,28 +89,23 @@ describe('classification banners JSON schema (v1 enforcement contract)', () => {
 		['identical duplicate values', { ...validConfig, attributes: [{ ...attribute, values: [value, value] }] }],
 		['value with 3-digit color', { ...validConfig, attributes: [{ ...attribute, values: [{ ...value, color: '#fff' }] }] }],
 		['value missing label', { ...validConfig, attributes: [{ ...attribute, values: [{ ...value, label: undefined }] }] }],
-		['nonAbacBanner missing enabled', { ...validConfig, nonAbacBanner: { text: 'X', color: '#000000' } }],
-		['nonAbacBanner missing text', { ...validConfig, nonAbacBanner: { enabled: true, color: '#000000' } }],
-		['nonAbacBanner with empty text', { ...validConfig, nonAbacBanner: { enabled: true, text: '', color: '#000000' } }],
-		['nonAbacBanner missing color', { ...validConfig, nonAbacBanner: { enabled: true, text: 'X' } }],
-		['nonAbacBanner with 3-digit color', { ...validConfig, nonAbacBanner: { enabled: true, text: 'X', color: '#fff' } }],
-		['unknown nonAbacBanner option', { ...validConfig, nonAbacBanner: { enabled: true, text: 'X', color: '#000000', position: 'top' } }],
+		['a single nonAbacBanner object instead of a list', { ...validConfig, nonAbacBanner: defaultEntry }],
 		['empty nonAbacBanner list', { ...validConfig, nonAbacBanner: [] }],
-		['invalid entry in a nonAbacBanner list', { ...validConfig, nonAbacBanner: [{ enabled: true, text: 'X' }] }],
-		['unknown match type', { ...validConfig, nonAbacBanner: { enabled: true, text: 'X', color: '#000000', match: { type: ['channel'] } } }],
-		[
-			'omnichannel match type',
-			{ ...validConfig, nonAbacBanner: { enabled: true, text: 'X', color: '#000000', match: { type: ['omnichannel'] } } },
-		],
-		[
-			'duplicate match type',
-			{ ...validConfig, nonAbacBanner: { enabled: true, text: 'X', color: '#000000', match: { type: ['direct', 'direct'] } } },
-		],
-		['unknown match key', { ...validConfig, nonAbacBanner: { enabled: true, text: 'X', color: '#000000', match: { encrypted: true } } }],
-		[
-			'non-boolean match flag',
-			{ ...validConfig, nonAbacBanner: { enabled: true, text: 'X', color: '#000000', match: { federated: 'yes' } } },
-		],
+		['nonAbacBanner list without a default entry', { ...validConfig, nonAbacBanner: [{ ...defaultEntry, match: { type: ['direct'] } }] }],
+		['nonAbacBanner whose only default is disabled', { ...validConfig, nonAbacBanner: [{ ...defaultEntry, enabled: false }] }],
+		['nonAbacBanner entry with an empty match', { ...validConfig, nonAbacBanner: [{ ...defaultEntry, match: {} }, defaultEntry] }],
+		['match with an empty type list', { ...validConfig, nonAbacBanner: [{ ...defaultEntry, match: { type: [] } }, defaultEntry] }],
+		['nonAbacBanner entry missing enabled', { ...validConfig, nonAbacBanner: [{ text: 'X', color: '#000000' }] }],
+		['nonAbacBanner entry missing text', { ...validConfig, nonAbacBanner: [{ enabled: true, color: '#000000' }] }],
+		['nonAbacBanner entry with empty text', { ...validConfig, nonAbacBanner: [{ ...defaultEntry, text: '' }] }],
+		['nonAbacBanner entry missing color', { ...validConfig, nonAbacBanner: [{ enabled: true, text: 'X' }] }],
+		['nonAbacBanner entry with 3-digit color', { ...validConfig, nonAbacBanner: [{ ...defaultEntry, color: '#fff' }] }],
+		['unknown nonAbacBanner option', { ...validConfig, nonAbacBanner: [{ ...defaultEntry, position: 'top' }] }],
+		['unknown match type', { ...validConfig, nonAbacBanner: [{ ...defaultEntry, match: { type: ['channel'] } }, defaultEntry] }],
+		['omnichannel match type', { ...validConfig, nonAbacBanner: [{ ...defaultEntry, match: { type: ['omnichannel'] } }, defaultEntry] }],
+		['duplicate match type', { ...validConfig, nonAbacBanner: [{ ...defaultEntry, match: { type: ['direct', 'direct'] } }, defaultEntry] }],
+		['unknown match key', { ...validConfig, nonAbacBanner: [{ ...defaultEntry, match: { encrypted: true } }, defaultEntry] }],
+		['non-boolean match flag', { ...validConfig, nonAbacBanner: [{ ...defaultEntry, match: { federated: 'yes' } }, defaultEntry] }],
 	])('rejects %s', (_name, config) => {
 		expect(validate(config)).toBe(false);
 	});
