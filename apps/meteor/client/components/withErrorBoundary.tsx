@@ -8,7 +8,7 @@ function withErrorBoundary<T extends object>(Component: ComponentType<T>, fallba
 		return (
 			<ReportableErrorBoundary
 				fallbackRender={(fallbackProps) => {
-					if (fallback) {
+					if (fallback !== null) {
 						return fallback;
 					}
 
