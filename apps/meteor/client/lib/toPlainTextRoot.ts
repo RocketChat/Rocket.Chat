@@ -23,5 +23,5 @@ export const toPlainTextRoot = (text: string): Root => {
 
 	return lines.map((line) =>
 		line ? { type: 'PARAGRAPH', value: [{ type: 'PLAIN_TEXT', value: line }] } : { type: 'LINE_BREAK', value: undefined },
-	) as Root;
+	);
 };

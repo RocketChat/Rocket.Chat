@@ -224,7 +224,7 @@ export const adoptAccountFromMeteorLoginResult = (result: unknown): void => {
 		tokenExpires = new Date(typeof d === 'string' ? parseInt(d, 10) : d);
 	}
 	const sdk = getDdpSdk();
-	sdk.account.user = { ...sdk.account.user, token: r.token, tokenExpires, id: r.id } as typeof sdk.account.user;
+	sdk.account.user = { ...sdk.account.user, token: r.token, tokenExpires, id: r.id };
 	sdk.account.uid = r.id;
 };
 

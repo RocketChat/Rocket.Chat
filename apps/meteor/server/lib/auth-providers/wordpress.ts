@@ -65,7 +65,7 @@ const fillSettings = _.debounce(async (): Promise<void> => {
 			break;
 		case 'wordpress-com':
 			config.identityPath = '/rest/v1/me';
-			config.identityTokenSentVia = 'header' as OAuthConfiguration['identityTokenSentVia'];
+			config.identityTokenSentVia = 'header';
 			config.authorizePath = '/oauth2/authorize';
 			config.tokenPath = '/oauth2/token';
 			config.scope = 'auth';

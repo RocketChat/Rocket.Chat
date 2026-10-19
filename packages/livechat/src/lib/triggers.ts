@@ -97,7 +97,7 @@ class Triggers {
 		});
 
 		try {
-			const runCondition = conditions[condition.name] as (condition: ILivechatTriggerCondition) => Promise<void>;
+			const runCondition = conditions[condition.name];
 			return await runCondition(condition);
 		} catch (error) {
 			this._updateRecord(id, { status: 'error', error });

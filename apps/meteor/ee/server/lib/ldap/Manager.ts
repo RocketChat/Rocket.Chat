@@ -7,10 +7,6 @@ import type { FindCursor } from 'mongodb';
 
 import { copyCustomFieldsLDAP } from './copyCustomFieldsLDAP';
 import { ensureArray } from '../../../../lib/utils/arrayUtils';
-import type {
-	ImporterAfterImportCallback,
-	ImporterBeforeImportCallback,
-} from '../../../../server/lib/import/definitions/IConversionCallbacks';
 import { LDAPConnection } from '../../../../server/lib/ldap/Connection';
 import { logger, searchLogger, mapLogger } from '../../../../server/lib/ldap/Logger';
 import { LDAPManager } from '../../../../server/lib/ldap/Manager';
@@ -56,7 +52,7 @@ export class LDAPEEManager extends LDAPManager {
 			const membersOfGroupFilter = await ldap.searchMembersOfGroupFilter();
 
 			await converter.convertData({
-				beforeImportFn: (async ({ options }: IImportRecord): Promise<boolean> => {
+				beforeImportFn: async ({ options }: IImportRecord): Promise<boolean> => {
 					if (!ldap.options.groupFilterEnabled || !ldap.options.groupFilterGroupMemberFormat) {
 						return true;
 					}
@@ -66,13 +62,13 @@ export class LDAPEEManager extends LDAPManager {
 						.replace(/#{userdn}/g, options?.dn || '#{userdn}');
 
 					return membersOfGroupFilter.includes(memberFormat);
-				}) as ImporterBeforeImportCallback,
-				afterImportFn: (async ({ data }, isNewRecord: boolean): Promise<void> => {
+				},
+				afterImportFn: async ({ data }, isNewRecord: boolean): Promise<void> => {
 					if (data._id) {
 						touchedUsers.add(data._id);
 					}
 					await this.advancedSync(ldap, data as IImportUser, converter, isNewRecord);
-				}) as ImporterAfterImportCallback,
+				},
 			});
 
 			if (disableMissingUsers) {

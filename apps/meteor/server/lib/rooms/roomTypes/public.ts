@@ -1,8 +1,6 @@
 import { Team } from '@rocket.chat/core-services';
-import type { AtLeast, IRoom } from '@rocket.chat/core-typings';
 import { isRoomFederated, isRoomNativeFederated, TeamType } from '@rocket.chat/core-typings';
 
-import type { IRoomTypeServerDirectives } from '../../../../definition/IRoomTypeConfig';
 import { RoomSettingsEnum, RoomMemberActions } from '../../../../definition/IRoomTypeConfig';
 import { getPublicRoomType } from '../../../../lib/rooms/roomTypes/public';
 import { isFederationEnabled } from '../../../services/federation/utils';
@@ -35,7 +33,7 @@ roomCoordinator.add(PublicRoomType, {
 	},
 
 	async allowMemberAction(_room, action, _userId) {
-		if (isRoomFederated(_room as IRoom)) {
+		if (isRoomFederated(_room)) {
 			if (isRoomNativeFederated(_room) && isFederationEnabled()) {
 				return true;
 			}
@@ -80,4 +78,4 @@ roomCoordinator.add(PublicRoomType, {
 	includeInRoomSearch() {
 		return true;
 	},
-} as AtLeast<IRoomTypeServerDirectives, 'isGroupChat' | 'roomName'>);
+});

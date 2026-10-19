@@ -185,7 +185,7 @@ export class MessageConverter extends RecordConverter<IImportMessageRecord> {
 
 			result.push({
 				_id: data._id,
-				username: data.username as 'string',
+				username: data.username,
 				name,
 			});
 		}

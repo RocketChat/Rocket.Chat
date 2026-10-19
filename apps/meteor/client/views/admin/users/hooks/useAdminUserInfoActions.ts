@@ -123,7 +123,7 @@ export const useAdminUserInfoActions = ({
 					icon: 'balloon',
 					content: t('Direct_Message'),
 					onClick: directMessageClick,
-				} as AdminUserAction,
+				} satisfies AdminUserAction,
 			}),
 			...(canEditOtherUserInfo && {
 				editUsereditUser: {
@@ -132,7 +132,7 @@ export const useAdminUserInfoActions = ({
 					title: isFederatedUser ? t('Edit_Federated_User_Not_Allowed') : t('Edit'),
 					onClick: editUserClick,
 					disabled: isFederatedUser,
-				} as AdminUserAction,
+				} satisfies AdminUserAction,
 			}),
 			...(isNotPendingDeactivatedNorFederated && changeAdminStatusAction && { changeAdminStatusAction }),
 			...(isNotPendingDeactivatedNorFederated && resetE2EKeyAction && { resetE2EKeyAction }),

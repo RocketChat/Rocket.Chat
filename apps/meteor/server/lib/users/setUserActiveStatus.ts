@@ -87,7 +87,7 @@ export async function setUserActiveStatus(
 		const livechatSubscribedRooms = subscribedRooms.filter(({ t }) => t === 'l');
 
 		if (shouldRemoveOrChangeOwner(chatSubscribedRooms) && !confirmRelinquish) {
-			const rooms = await getUserSingleOwnedRooms(chatSubscribedRooms as []);
+			const rooms = await getUserSingleOwnedRooms(chatSubscribedRooms);
 			throw new Meteor.Error('user-last-owner', '', rooms);
 		}
 
@@ -157,7 +157,7 @@ export async function setUserActiveStatus(
 	const email = {
 		to: String(destinations),
 		from: String(settings.get('From_Email')),
-		subject: subject({ active } as any),
+		subject: subject({ active }),
 		html: html({
 			active,
 			name: user.name,

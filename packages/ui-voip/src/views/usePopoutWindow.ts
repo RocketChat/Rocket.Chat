@@ -64,6 +64,7 @@ const openExternalWindow = async (callId: string, theme: string) => {
 			} catch (error) {
 				// arround ~ 5 seconds total timeout
 				if (attempt > 9) {
+					// eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion -- keeps prefer-promise-reject-errors satisfied for the untyped catch value
 					reject(error as Error);
 					externalWindow.close();
 					return;

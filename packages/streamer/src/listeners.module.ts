@@ -3,16 +3,7 @@ import type { ISetting as AppsSetting } from '@rocket.chat/apps-engine/definitio
 import type { IServiceClass } from '@rocket.chat/core-services';
 import { EnterpriseSettings, StatusVisibility } from '@rocket.chat/core-services';
 import { isSettingColor, isSettingEnterprise, UserStatus } from '@rocket.chat/core-typings';
-import type {
-	IUser,
-	IRoom,
-	IRole,
-	VideoConference,
-	ISetting,
-	IOmnichannelRoom,
-	PresenceStatusCode,
-	SettingValue,
-} from '@rocket.chat/core-typings';
+import type { IUser, IRoom, IRole, VideoConference, ISetting, PresenceStatusCode, SettingValue } from '@rocket.chat/core-typings';
 import { Logger } from '@rocket.chat/logger';
 import type { ServerMediaSignal } from '@rocket.chat/media-signaling';
 import { parse } from '@rocket.chat/message-parser';
@@ -284,6 +275,7 @@ export class ListenersModule {
 
 			notifications.streamUser.__emit(subscription.u._id, clientAction, subscription);
 
+			// eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion -- tsc rejects the wider clientAction/subscription pair without it
 			notifications.notifyUserInThisInstance(subscription.u._id, 'subscriptions-changed', clientAction, subscription as any);
 		});
 
@@ -381,7 +373,7 @@ export class ListenersModule {
 			// this emit will cause the user to receive a 'rooms-changed' event
 			notifications.streamUser.__emit(room._id, clientAction, room);
 
-			notifications.streamRoomData.emitWithoutBroadcast(room._id, room as IOmnichannelRoom);
+			notifications.streamRoomData.emitWithoutBroadcast(room._id, room);
 		});
 
 		service.onEvent('watch.users', (event): void => {

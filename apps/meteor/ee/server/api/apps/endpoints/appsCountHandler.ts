@@ -1,4 +1,3 @@
-import type { AppManager } from '@rocket.chat/apps/dist/server/AppManager';
 import { License } from '@rocket.chat/license';
 
 import { getInstallationSourceFromAppStorageItem } from '../../../../../lib/apps/getInstallationSourceFromAppStorageItem';
@@ -11,7 +10,7 @@ export const registerAppsCountHandler = ({ api, _manager }: AppsRestApi) =>
 		{ authRequired: false },
 		{
 			async get() {
-				const manager = _manager as AppManager;
+				const manager = _manager;
 
 				const apps = await manager.get({ enabled: true });
 				const { maxMarketplaceApps, maxPrivateApps } = License.getAppsConfig();

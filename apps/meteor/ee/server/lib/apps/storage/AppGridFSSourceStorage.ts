@@ -15,7 +15,7 @@ export class AppGridFSSourceStorage extends AppSourceStorage {
 
 		const { db } = MongoInternals.defaultRemoteCollectionDriver().mongo;
 
-		this.bucket = new NpmModuleMongodb.GridFSBucket(db as any, {
+		this.bucket = new NpmModuleMongodb.GridFSBucket(db, {
 			bucketName: 'rocketchat_apps_packages',
 			chunkSizeBytes: 1024 * 255,
 		});

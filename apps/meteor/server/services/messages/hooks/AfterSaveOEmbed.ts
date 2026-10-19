@@ -160,6 +160,7 @@ const getUrlContent = async (urlObj: URL, redirectCount = 5): Promise<OEmbedUrlC
 	const chunks = [];
 	for await (const chunk of response.body) {
 		totalSize += chunk.length;
+		// eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion -- tsc types the chunk as string | Buffer
 		chunks.push(chunk as Buffer);
 
 		if (totalSize > sizeLimit) {

@@ -39,7 +39,7 @@ const CannedResponsesFilter = ({ createdBy, setCreatedBy, sharing, setSharing, t
 			</Box>
 			<Box display='flex' marginInlineEnd={8} flexGrow={1} flexDirection='column'>
 				<Box marginBlock={4}>{t('Sharing')}</Box>
-				<Select value={sharing} onChange={(value) => setSharing(value as SharingValues)} options={sharingList} />
+				<Select value={sharing} onChange={(value) => setSharing(value)} options={sharingList} />
 			</Box>
 			<Box display='flex' marginInlineEnd={8} flexGrow={1} flexDirection='column'>
 				<Box marginBlock={4}>{t('Created_by')}</Box>

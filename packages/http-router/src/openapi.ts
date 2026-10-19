@@ -246,7 +246,7 @@ const referenceSchema = (schema: AnySchema): AnySchema => {
 
 	const { $id, ...definition } = schema;
 
-	sharedSchemas.set($id, definition as AnySchema);
+	sharedSchemas.set($id, definition);
 
 	return { $ref: `#/components/schemas/${$id}` };
 };
@@ -326,7 +326,7 @@ const buildQueryParameters = (options: OpenAPIDocsOptions): OpenAPIParameter[] =
 		name,
 		in: 'query',
 		required: collected.required.has(name),
-		schema: propertySchema as AnySchema,
+		schema: propertySchema,
 		...(typeof propertySchema.description === 'string' && { description: propertySchema.description }),
 		...(typeof propertySchema.deprecated === 'boolean' && { deprecated: propertySchema.deprecated }),
 		...(options.examples?.query?.[name] !== undefined

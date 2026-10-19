@@ -18,5 +18,5 @@ export const useParameters = (): Exclude<UseQueryResult<SetupWizardParameters, E
 			settings: [],
 			serverAlreadyRegistered: false,
 		},
-	}) as Exclude<UseQueryResult<SetupWizardParameters, Error>, { data: undefined }>;
+	});
 };

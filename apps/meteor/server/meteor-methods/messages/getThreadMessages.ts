@@ -1,4 +1,4 @@
-import type { IMessage, IUser } from '@rocket.chat/core-typings';
+import type { IMessage } from '@rocket.chat/core-typings';
 import type { ServerMethods } from '@rocket.chat/ddp-client';
 import { Messages, Rooms } from '@rocket.chat/models';
 import { Meteor } from 'meteor/meteor';
@@ -55,7 +55,7 @@ Meteor.methods<ServerMethods>({
 		}
 
 		await callbacks.run('beforeReadMessages', thread.rid, user._id);
-		await readThread({ user: user as IUser, room, tmid: thread._id });
+		await readThread({ user, room, tmid: thread._id });
 
 		const result = await Messages.findVisibleThreadByThreadId(thread._id, {
 			...(skip && { skip }),

@@ -97,7 +97,7 @@ export class Strategy {
 			sessionKey: options.sessionKey || 'oauth:twitter',
 		};
 
-		OAuthStrategy.call(this as unknown as OAuthStrategy, opts, verify);
+		OAuthStrategy.call(this, opts, verify);
 		this.name = 'twitter';
 		this._userProfileURL = options.userProfileURL || 'https://api.twitter.com/1.1/account/verify_credentials.json';
 		this._skipExtendedUserProfile = options.skipExtendedUserProfile !== undefined ? options.skipExtendedUserProfile : false;
@@ -115,7 +115,7 @@ export class Strategy {
 			return;
 		}
 
-		OAuthStrategy.prototype.authenticate.call(this as unknown as OAuthStrategy, req, options);
+		OAuthStrategy.prototype.authenticate.call(this, req, options);
 	}
 
 	/**

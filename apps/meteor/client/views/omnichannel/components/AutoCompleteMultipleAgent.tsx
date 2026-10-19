@@ -51,7 +51,7 @@ const AutoCompleteMultipleAgent = ({
 			flexShrink={0}
 			flexGrow={0}
 			filter={agentsFilter}
-			setFilter={setAgentsFilter as (value: string | number | undefined) => void}
+			setFilter={setAgentsFilter}
 			options={agentsItems}
 			endReached={() => fetchNextPage()}
 		/>

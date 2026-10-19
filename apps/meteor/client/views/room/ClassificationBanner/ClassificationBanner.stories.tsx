@@ -1,4 +1,4 @@
-import type { ClassificationBannerPayload, IRoom, RoomType } from '@rocket.chat/core-typings';
+import type { ClassificationBannerPayload, IRoom } from '@rocket.chat/core-typings';
 import { mockAppRoot } from '@rocket.chat/mock-providers';
 import type { Meta, StoryObj } from '@storybook/react';
 
@@ -8,7 +8,7 @@ import { createFakeLicenseInfo } from '../../../../tests/mocks/data';
 
 const roomArgs: Partial<IRoom> = {
 	_id: 'classifiedRoom',
-	t: 'p' as RoomType,
+	t: 'p',
 	name: 'operation-nightingale',
 	fname: 'operation-nightingale',
 	abacAttributes: [{ key: 'clearance.level', values: ['TS'] }],

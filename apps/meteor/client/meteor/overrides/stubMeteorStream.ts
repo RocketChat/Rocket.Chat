@@ -2,7 +2,7 @@ import { Accounts } from 'meteor/accounts-base';
 import { Meteor } from 'meteor/meteor';
 import { Tracker } from 'meteor/tracker';
 
-import { type DDPMessage, parseDDP, stringifyDDP } from '../../lib/sdk/ddpProtocol';
+import { parseDDP, stringifyDDP } from '../../lib/sdk/ddpProtocol';
 import { adoptAccountFromMeteorLoginResult, getDdpSdk } from '../../lib/sdk/ddpSdk';
 import { isSdkTransportEnabled } from '../../lib/sdk/sdkTransportEnabled';
 
@@ -114,7 +114,7 @@ function installStubMeteorStream(): void {
 	};
 
 	const bridgePongFor = (id?: string): void => {
-		conn._streamHandlers.onMessage(stringifyDDP({ msg: 'pong', ...(id != null && { id }) } as unknown as DDPMessage));
+		conn._streamHandlers.onMessage(stringifyDDP({ msg: 'pong', ...(id != null && { id }) }));
 	};
 
 	type SdkDdp = {
@@ -179,7 +179,7 @@ function installStubMeteorStream(): void {
 				stringifyDDP({
 					msg: 'connected',
 					session: 'sdk-bridged',
-				} as unknown as DDPMessage),
+				}),
 			);
 			fire('reset');
 		} catch (err) {

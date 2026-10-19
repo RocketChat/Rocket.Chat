@@ -1,4 +1,3 @@
-import type { IUser } from '@rocket.chat/core-typings';
 import type { ServerMethods } from '@rocket.chat/ddp-client';
 import { Match, check } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
@@ -22,6 +21,6 @@ Meteor.methods<ServerMethods>({
 				method: 'joinDefaultChannels',
 			});
 		}
-		return addUserToDefaultChannels(user as IUser, Boolean(silenced));
+		return addUserToDefaultChannels(user, Boolean(silenced));
 	},
 });

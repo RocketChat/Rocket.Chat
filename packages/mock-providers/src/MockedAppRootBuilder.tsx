@@ -347,6 +347,7 @@ export class MockedAppRootBuilder {
 		const innerFn = this.server.getStream;
 
 		const outerFn: ServerContextValue['getStream'] = (innerStreamName) => {
+			// eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion -- without widening, the comparison narrows innerStreamName to never
 			if (innerStreamName === (streamName as StreamNames)) {
 				ref.controller = {
 					emit: <K extends StreamKeys<N>>(eventName: K, args: StreamerCallbackArgs<N, K>) => {

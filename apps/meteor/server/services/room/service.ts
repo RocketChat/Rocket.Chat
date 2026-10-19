@@ -88,7 +88,7 @@ export class RoomService extends ServiceClassInternal implements IRoomService {
 		}
 
 		// TODO convert `createRoom` function to "raw" and move to here
-		return createRoom(type, name, user, members, false, readOnly, extraData, options) as unknown as IRoom;
+		return createRoom(type, name, user, members, false, readOnly, extraData, options);
 	}
 
 	async createDirectMessage({ to, from }: { to: string; from: string }): Promise<{ rid: string }> {
@@ -175,7 +175,7 @@ export class RoomService extends ServiceClassInternal implements IRoomService {
 	}
 
 	async getRouteLink(room: AtLeast<IRoom, '_id' | 't' | 'name'>): Promise<string | boolean> {
-		return roomCoordinator.getRouteLink(room.t as string, { rid: room._id, name: room.name });
+		return roomCoordinator.getRouteLink(room.t, { rid: room._id, name: room.name });
 	}
 
 	/**

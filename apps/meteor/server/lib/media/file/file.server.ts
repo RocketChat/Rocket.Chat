@@ -52,7 +52,7 @@ class GridFS implements IRocketChatFileStore {
 	constructor({ name = 'file' } = {}) {
 		this.name = name;
 
-		this.bucket = new NpmModuleMongodb.GridFSBucket(db as any, { bucketName: this.name });
+		this.bucket = new NpmModuleMongodb.GridFSBucket(db, { bucketName: this.name });
 	}
 
 	private async findOne(filename: string) {

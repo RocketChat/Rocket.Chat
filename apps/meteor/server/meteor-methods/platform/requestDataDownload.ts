@@ -118,6 +118,6 @@ Meteor.methods<ServerMethods>({
 			throw new Meteor.Error('error-invalid-user', 'Invalid user');
 		}
 
-		return requestDataDownload({ userData: currentUserData as IUser, fullExport });
+		return requestDataDownload({ userData: currentUserData, fullExport });
 	},
 });

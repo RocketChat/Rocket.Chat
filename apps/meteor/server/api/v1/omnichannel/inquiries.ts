@@ -144,7 +144,7 @@ const livechatInquiriesEndpoints = API.v1.post(
 			return API.v1.success({ result });
 		} catch (error) {
 			if (error instanceof Meteor.Error && typeof error.error === 'string') {
-				return API.v1.failure(error.error as string);
+				return API.v1.failure(error.error);
 			}
 
 			return API.v1.failure('error-returning-inquiry');

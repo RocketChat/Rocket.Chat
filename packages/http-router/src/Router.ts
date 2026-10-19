@@ -7,7 +7,7 @@ import type { StatusCode } from 'hono/utils/http-status';
 
 import type { ResponseSchema, TypedOptions } from './definition';
 import { honoAdapterForExpress } from './middlewares/honoAdapterForExpress';
-import type { OpenAPIDocsOptions, Route } from './openapi';
+import type { Route } from './openapi';
 import { buildOperation, toOpenAPIPath } from './openapi';
 import { parseQueryParams } from './parseQueryParams';
 
@@ -79,7 +79,7 @@ export class Router<
 		const documentedPath = toOpenAPIPath(path);
 		this.typedRoutes = this.typedRoutes || {};
 		this.typedRoutes[documentedPath] = this.typedRoutes[documentedPath] || {};
-		this.typedRoutes[documentedPath][method.toLowerCase()] = buildOperation(method, path, options as OpenAPIDocsOptions);
+		this.typedRoutes[documentedPath][method.toLowerCase()] = buildOperation(method, path, options);
 	}
 
 	protected async parseBodyParams({ request }: { request: HonoRequest }): Promise<NonNullable<unknown>> {

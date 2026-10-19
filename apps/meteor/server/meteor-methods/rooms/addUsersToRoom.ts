@@ -132,6 +132,6 @@ Meteor.methods<ServerMethods>({
 			});
 		}
 
-		return addUsersToRoomMethod(uid, data, ((await Meteor.userAsync()) as IUser | null) ?? undefined);
+		return addUsersToRoomMethod(uid, data, (await Meteor.userAsync()) ?? undefined);
 	},
 });

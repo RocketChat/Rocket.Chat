@@ -153,7 +153,7 @@ export const createRoom = async <T extends RoomType>(
 		rid: string;
 	}
 > => {
-	const { teamId, ...extraData } = roomExtraData || ({} as IRoom);
+	const { teamId, ...extraData } = roomExtraData || {};
 
 	// TODO: use a shared helper to check whether a user is federated
 	const hasFederatedMembers = members.some((member) => {
@@ -189,7 +189,7 @@ export const createRoom = async <T extends RoomType>(
 	}
 
 	if (type === 'd') {
-		return createDirectRoom(members as IUser[], extraData, { ...options, creator: options?.creator || owner?._id });
+		return createDirectRoom(members, extraData, { ...options, creator: options?.creator || owner?._id });
 	}
 
 	const memberList = [...members];

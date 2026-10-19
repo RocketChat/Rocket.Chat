@@ -36,7 +36,7 @@ const extractCallbacks = (args: unknown[]): { params: unknown[]; callbacks: Subs
 			typeof (last as any).onError === 'function' ||
 			typeof (last as any).onStop === 'function')
 	) {
-		return { params: args.slice(0, -1), callbacks: last as SubscribeCallbacks };
+		return { params: args.slice(0, -1), callbacks: last };
 	}
 
 	return { params: args, callbacks: {} };
@@ -60,6 +60,6 @@ if (isSdkTransportEnabled()) {
 				callbacks.onStop?.();
 			},
 			ready: () => subscription.isReady,
-		} as MeteorSubscriptionHandle;
+		};
 	};
 }

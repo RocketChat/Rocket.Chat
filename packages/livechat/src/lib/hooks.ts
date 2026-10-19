@@ -70,7 +70,7 @@ export const createOrUpdateGuest = async (guest: StoreState['guest']) => {
 		return;
 	}
 
-	store.setState({ user: newUser } as Omit<StoreState['user'], 'ts'>);
+	store.setState({ user: newUser });
 	Triggers.callbacks?.emit('chat-visitor-registered');
 };
 

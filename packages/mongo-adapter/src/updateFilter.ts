@@ -524,7 +524,7 @@ export const createTransformFromUpdateFilter = <T extends { _id: string }>(modif
 				throw new Error(`Invalid modifier specified ${operator}`);
 			}
 
-			for (const [keypath, arg] of Object.entries(operand as any)) {
+			for (const [keypath, arg] of Object.entries(operand)) {
 				if (keypath === '') {
 					throw new Error('An empty update path is not valid.');
 				}
@@ -538,7 +538,7 @@ export const createTransformFromUpdateFilter = <T extends { _id: string }>(modif
 				const target = findModTarget(newDoc, keyparts, {
 					arrayIndices,
 					forbidArray: operator === '$rename',
-					noCreate: ['$pop', '$pull', '$pullAll', '$rename', '$unset'].includes(operator as keyof typeof modifiers),
+					noCreate: ['$pop', '$pull', '$pullAll', '$rename', '$unset'].includes(operator),
 				});
 
 				const key = keyparts.pop();
@@ -573,7 +573,7 @@ export const createUpsertDocument = <T extends { _id: string }>(selector: Filter
 		delete selectorDocument._id;
 	}
 
-	newDoc = createTransformFromUpdateFilter({ $set: selectorDocument })(newDoc as T) as T;
+	newDoc = createTransformFromUpdateFilter({ $set: selectorDocument })(newDoc as T);
 	newDoc = createTransformFromUpdateFilter(modifier)(newDoc as T, { isInsert: true });
 
 	if (isUpdateModifiers(modifier)) {

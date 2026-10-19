@@ -80,7 +80,7 @@ export const importPrivateKey = async (keyData: IPrivateJwk): Promise<PrivateKey
 		true,
 		['decrypt'],
 	);
-	return key as PrivateKey;
+	return key;
 };
 
 export const importPublicKey = async (keyData: IPublicJwk): Promise<PublicKey> => {
@@ -95,7 +95,7 @@ export const importPublicKey = async (keyData: IPublicJwk): Promise<PublicKey> =
 		true,
 		['encrypt'],
 	);
-	return key as PublicKey;
+	return key;
 };
 
 export const encrypt = async (key: PublicKey, data: BufferSource): Promise<Uint8Array<ArrayBuffer>> => {

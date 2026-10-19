@@ -1,4 +1,3 @@
-import type { Emoji } from 'emojibase';
 import data from 'emojibase-data/en/data.json';
 import shortcodes from 'emojibase-data/en/shortcodes/emojibase.json';
 
@@ -15,7 +14,7 @@ function buildMaps() {
 	_unicodeToShort = new Map();
 	_shortToUnicode = new Map();
 
-	for (const emoji of data as Emoji[]) {
+	for (const emoji of data) {
 		const codes = getShortcodes(emoji.hexcode);
 		if (codes.length === 0) continue;
 

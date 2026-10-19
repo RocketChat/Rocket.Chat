@@ -71,7 +71,7 @@ import { getUserFromParams, getUserListFromParams, getUsernameListFromParams } f
 async function getRoomFromParams(params: { roomId?: string } | { roomName?: string }): Promise<IRoom> {
 	if (
 		(!('roomId' in params) && !('roomName' in params)) ||
-		('roomId' in params && !(params as { roomId?: string }).roomId && 'roomName' in params && !(params as { roomName?: string }).roomName)
+		('roomId' in params && !params.roomId && 'roomName' in params && !(params as { roomName?: string }).roomName)
 	) {
 		throw new Meteor.Error('error-room-param-not-provided', 'The parameter "roomId" or "roomName" is required');
 	}
@@ -1009,7 +1009,7 @@ API.v1.get(
 	async function action() {
 		const { offset, count } = await getPaginationItems(this.queryParams);
 		const { sort, fields, query } = await this.parseJsonQuery();
-		const ourQuery = Object.assign({}, query, { t: 'p' as RoomType });
+		const ourQuery = Object.assign({}, query, { t: 'p' as const });
 
 		const { cursor, totalCount } = Rooms.findPaginated(ourQuery, {
 			sort: sort || { name: 1 },

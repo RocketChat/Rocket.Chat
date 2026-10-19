@@ -42,7 +42,7 @@ const RoomRow = ({ room }: RoomRowProps) => {
 		if (isDiscussion(room as IRoom)) {
 			return 'Discussion';
 		}
-		return roomTypeI18nMap[(room as IRoom).t as keyof typeof roomTypeI18nMap];
+		return roomTypeI18nMap[(room as IRoom).t];
 	};
 
 	const onClick = useCallback(

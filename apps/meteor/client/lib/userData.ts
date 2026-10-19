@@ -103,7 +103,7 @@ export const synchronizeUserData = async (uid: IUser['_id']): Promise<RawUserDat
 				const { changedAt: apiChangedAt, ...email2faRest } = email2fa;
 				let changedAt: Date | undefined;
 				if (apiChangedAt != null) {
-					const parsed = new Date(apiChangedAt as string | number | Date);
+					const parsed = new Date(apiChangedAt);
 					if (!Number.isNaN(parsed.getTime())) {
 						changedAt = parsed;
 					}

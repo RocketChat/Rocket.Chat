@@ -99,5 +99,5 @@ async function getEEStatistics(): Promise<EEOnlyStats | undefined> {
 
 	await Promise.all(statsPms).catch(log);
 
-	return statistics as EEOnlyStats;
+	return statistics;
 }

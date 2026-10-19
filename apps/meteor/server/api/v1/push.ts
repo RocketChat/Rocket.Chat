@@ -179,7 +179,7 @@ const pushTokenEndpoints = API.v1
 
 			const result = await Push.registerPushToken({
 				...(id && { _id: id }),
-				token: { [type]: value } as IPushToken['token'],
+				token: { [type]: value },
 				authToken,
 				appName,
 				userId: this.userId,

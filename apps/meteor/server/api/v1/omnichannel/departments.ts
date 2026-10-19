@@ -1,4 +1,3 @@
-import type { ILivechatDepartment } from '@rocket.chat/core-typings';
 import { LivechatDepartment, LivechatDepartmentAgents } from '@rocket.chat/models';
 import { isDepartmentCreationAvailable } from '@rocket.chat/omni-core';
 import { isGETLivechatDepartmentProps, isPOSTLivechatDepartmentProps } from '@rocket.chat/rest-typings';
@@ -58,7 +57,7 @@ API.v1.addRoute(
 					count,
 					// IMO, sort type shouldn't be record, but a generic of the model we're trying to sort
 					// or the form { [k: keyof T]: number | string }
-					sort: sort as any,
+					sort,
 				},
 			});
 
@@ -73,13 +72,7 @@ API.v1.addRoute(
 
 			const agents = this.bodyParams.agents ? { upsert: this.bodyParams.agents } : {};
 			const { departmentUnit } = this.bodyParams;
-			const department = await saveDepartment(
-				this.userId,
-				null,
-				this.bodyParams.department as ILivechatDepartment,
-				agents,
-				departmentUnit || {},
-			);
+			const department = await saveDepartment(this.userId, null, this.bodyParams.department, agents, departmentUnit || {});
 
 			if (department) {
 				return API.v1.success({
@@ -207,7 +200,7 @@ API.v1.addRoute(
 				pagination: {
 					offset,
 					count,
-					sort: sort as any,
+					sort,
 				},
 			});
 

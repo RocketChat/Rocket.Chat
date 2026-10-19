@@ -5,13 +5,17 @@ import { convertValue } from './convertValue';
 const compareSettingsValue = (a: ISetting['value'], b: ISetting['value'], type?: ISetting['type']): boolean => {
 	if (Array.isArray(a) && Array.isArray(b)) {
 		if (type === 'multiSelect' || type === 'multiLookup') {
+			// eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion -- tsc needs the assignment to narrow the array element type
 			a = a as SettingValueMultiSelect;
+			// eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion -- tsc needs the assignment to narrow the array element type
 			b = b as SettingValueMultiSelect;
 			return a.length === b.length && a.every((value, index) => compareSettingsValue(value, (b as SettingValueMultiSelect)[index]));
 		}
 
 		if (type === 'roomPick') {
+			// eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion -- tsc needs the assignment to narrow the array element type
 			a = a as SettingValueRoomPick;
+			// eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion -- tsc needs the assignment to narrow the array element type
 			b = b as SettingValueRoomPick;
 			return (
 				a.length === b.length &&

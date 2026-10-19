@@ -87,7 +87,7 @@ export class ConverterCache {
 
 	async findImportedRoomName(importId: string): Promise<string | undefined> {
 		if (this._roomNameCache.has(importId)) {
-			return this._roomNameCache.get(importId) as string;
+			return this._roomNameCache.get(importId);
 		}
 
 		const options = {

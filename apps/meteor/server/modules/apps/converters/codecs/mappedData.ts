@@ -150,9 +150,7 @@ export async function mappedDecodeAsync<Result = Loose>(
 					result[to] = [clone[fromName]];
 				}
 			} else if (clone[fromName] !== undefined && clone[fromName] !== null) {
-				result[to] = from.map
-					? await mappedDecodeAsync(clone[fromName], from.map as AsyncFieldMap, options)
-					: structuredClone(clone[fromName]);
+				result[to] = from.map ? await mappedDecodeAsync(clone[fromName], from.map, options) : structuredClone(clone[fromName]);
 			}
 
 			delete clone[fromName];

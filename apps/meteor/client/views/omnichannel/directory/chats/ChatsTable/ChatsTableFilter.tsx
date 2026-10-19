@@ -3,7 +3,6 @@ import { useStableCallback } from '@rocket.chat/fuselage-hooks';
 import { GenericMenu, GenericModal } from '@rocket.chat/ui-client';
 import { useEndpoint, usePermission, useSetModal, useToastMessageDispatch } from '@rocket.chat/ui-contexts';
 import { useQueryClient } from '@tanstack/react-query';
-import type { RefObject } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import FilterByText from '../../../../../components/FilterByText';
@@ -56,7 +55,7 @@ const ChatsTableFilter = () => {
 	return (
 		<>
 			<FilterByText
-				ref={textInputRef as RefObject<HTMLInputElement>}
+				ref={textInputRef}
 				value={filtersQuery.guest}
 				onChange={(event) => setFiltersQuery((prevState) => ({ ...prevState, guest: event.target.value }))}
 			>

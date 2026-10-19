@@ -41,7 +41,7 @@ export class GridFSStore extends UploadFS.Store {
 
 		// const mongo = MongoInternals.NpmModule;
 		const { db } = MongoInternals.defaultRemoteCollectionDriver().mongo;
-		const mongoStore = new NpmModuleMongodb.GridFSBucket(db as any, {
+		const mongoStore = new NpmModuleMongodb.GridFSBucket(db, {
 			bucketName: options.collectionName,
 			chunkSizeBytes: this.chunkSize,
 		});

@@ -992,7 +992,7 @@ export class APIClass<TBasePath extends string = '', TOperations extends Record<
 			{ authRequired: false, userWithoutUsername: true },
 			{
 				async post() {
-					const request = this.request as unknown as Request;
+					const { request } = this;
 					const args = loginCompatibility(this.bodyParams, request);
 
 					const invocation = new DDPCommon.MethodInvocation({

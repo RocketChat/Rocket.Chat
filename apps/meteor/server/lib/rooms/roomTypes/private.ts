@@ -1,4 +1,3 @@
-import type { IRoom } from '@rocket.chat/core-typings';
 import { isRoomFederated, isRoomNativeFederated } from '@rocket.chat/core-typings';
 
 import { RoomSettingsEnum, RoomMemberActions } from '../../../../definition/IRoomTypeConfig';
@@ -35,7 +34,7 @@ roomCoordinator.add(PrivateRoomType, {
 	},
 
 	async allowMemberAction(_room, action, _userId) {
-		if (isRoomFederated(_room as IRoom)) {
+		if (isRoomFederated(_room)) {
 			if (isRoomNativeFederated(_room) && isFederationEnabled()) {
 				return true;
 			}

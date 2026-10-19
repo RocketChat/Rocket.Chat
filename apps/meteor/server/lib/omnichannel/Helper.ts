@@ -318,7 +318,7 @@ export const createLivechatSubscription = async (
 		},
 		ts: new Date(),
 		...(department && { department }),
-	} as InsertionModel<ISubscription>;
+	};
 
 	const response = await Subscriptions.insertOne(subscriptionData);
 

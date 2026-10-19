@@ -214,7 +214,7 @@ export const addRoomsLifecycleRoutes = (router: ClientRouter) => {
 
 					for (const invitee of body.invite ?? []) {
 						try {
-							await federationSDK.inviteUserToRoom(invitee as UserID, result.room_id, senderUsername, body.is_direct);
+							await federationSDK.inviteUserToRoom(invitee, result.room_id, senderUsername, body.is_direct);
 						} catch (err) {
 							// The room already exists at this point; failing the whole request would make
 							// the caller believe creation failed and retry, duplicating the room.

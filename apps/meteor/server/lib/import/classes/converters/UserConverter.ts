@@ -311,7 +311,7 @@ export class UserConverter extends RecordConverter<IImportUserRecord, UserConver
 
 		const localUsername = userData.federated ? undefined : userData.username;
 		if (userData.name || localUsername) {
-			await saveUserIdentity({ _id, name: userData.name, username: localUsername } as Parameters<typeof saveUserIdentity>[0]);
+			await saveUserIdentity({ _id, name: userData.name, username: localUsername });
 		}
 
 		if (userData.importIds.length) {

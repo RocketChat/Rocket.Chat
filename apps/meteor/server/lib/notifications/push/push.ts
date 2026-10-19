@@ -224,7 +224,7 @@ class PushClass {
 				userTokens: app.token.gcm,
 				notification,
 				_removeToken: this.removeToken,
-				options: sendGCMOptions as RequiredField<PushOptions, 'gcm'>,
+				options: sendGCMOptions,
 			});
 		} else {
 			throw new Error('send got a faulty query');

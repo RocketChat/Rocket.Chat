@@ -1135,7 +1135,7 @@ export class FederationMatrix extends ServiceClass implements IFederationMatrixS
 			}
 
 			if (quoteMessageEventId) {
-				const messageToReplyToUrl = await MeteorService.getMessageURLToReplyTo(room.t as string, room._id, originalMessage._id);
+				const messageToReplyToUrl = await MeteorService.getMessageURLToReplyTo(room.t, room._id, originalMessage._id);
 				const formatted = await toInternalQuoteMessageFormat({
 					messageToReplyToUrl,
 					formattedMessage: event.content.formatted_body || '',
@@ -1197,7 +1197,7 @@ export class FederationMatrix extends ServiceClass implements IFederationMatrixS
 				this.logger.error({ quoteMessageEventId, msg: 'Original message not found for quote' });
 				return;
 			}
-			const messageToReplyToUrl = await MeteorService.getMessageURLToReplyTo(room.t as string, room._id, originalMessage._id);
+			const messageToReplyToUrl = await MeteorService.getMessageURLToReplyTo(room.t, room._id, originalMessage._id);
 			const formatted = await toInternalQuoteMessageFormat({
 				messageToReplyToUrl,
 				formattedMessage: event.content.formatted_body || '',

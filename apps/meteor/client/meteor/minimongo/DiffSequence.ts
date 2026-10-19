@@ -71,7 +71,7 @@ export class DiffSequence {
 					const projectedOld = projectionFn(oldDoc);
 					const changedFields = DiffSequence.makeChangedFields(projectedNew, projectedOld);
 					if (!isObjEmpty(changedFields)) {
-						observer.changed(id, changedFields as Partial<T>);
+						observer.changed(id, changedFields);
 					}
 				}
 			} else if (observer.added) {

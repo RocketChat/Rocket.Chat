@@ -311,6 +311,7 @@ export const createMeteorBackedStorage = () => {
 				return;
 			}
 
+			// eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion -- tsc treats Meteor._localStorage as read-only
 			(Meteor._localStorage as unknown as Storage) = backend === 'session' ? window.sessionStorage : window.localStorage;
 
 			try {
