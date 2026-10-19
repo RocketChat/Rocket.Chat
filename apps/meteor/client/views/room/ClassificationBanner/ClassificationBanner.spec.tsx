@@ -1,14 +1,9 @@
 import type { IRoom } from '@rocket.chat/core-typings';
 import { mockAppRoot } from '@rocket.chat/mock-providers';
-import { QueryClient } from '@tanstack/react-query';
-import { render, screen, waitFor } from '@testing-library/react';
+import { render, screen } from '@testing-library/react';
 
 import ClassificationBanner from './ClassificationBanner';
 import FakeRoomProvider from '../../../../tests/mocks/client/FakeRoomProvider';
-
-jest.mock('../../../hooks/useHasLicenseModule', () => ({
-	useHasLicenseModule: () => ({ data: true }),
-}));
 
 const booleanSetting = { packageValue: false, blocked: false, public: true, type: 'boolean' as const };
 
@@ -24,70 +19,33 @@ const classificationBanner = {
 	color: '#FFFFFF',
 };
 
-const renderBanners = (rooms: Partial<IRoom>[]) => {
-	const queryClient = new QueryClient({ defaultOptions: { queries: { retry: false } } });
-
-	rooms.forEach((room) =>
-		render(<ClassificationBanner />, {
-			wrapper: mockAppRoot()
-				.withSetting('ABAC_Enabled', true, booleanSetting)
-				.withSetting('ABAC_Classification_Banners_Enabled', true, booleanSetting)
-				.withEndpoint('GET', '/v1/rooms.info', () => {
-					getRoomInfo();
-					return { room: null, classificationBanner };
-				})
-				.withQueryClient(queryClient)
-				.wrap((children) => <FakeRoomProvider roomOverrides={room}>{children}</FakeRoomProvider>)
-				.build(),
-		}),
-	);
-};
+const renderBanner = (room: Partial<IRoom>, bannersEnabled: boolean) =>
+	render(<ClassificationBanner />, {
+		wrapper: mockAppRoot()
+			.withSetting('ABAC_Classification_Banners_Enabled', bannersEnabled, booleanSetting)
+			.withEndpoint('GET', '/v1/rooms.info', () => {
+				getRoomInfo();
+				return { room: null, classificationBanner };
+			})
+			.wrap((children) => <FakeRoomProvider roomOverrides={room}>{children}</FakeRoomProvider>)
+			.build(),
+	});
 
 describe('ClassificationBanner', () => {
 	beforeEach(() => {
 		getRoomInfo.mockClear();
 	});
 
-	it('should share one rooms.info call between rooms that are not ABAC managed and have the same shape', async () => {
-		renderBanners([
-			{ _id: 'dm', t: 'd' },
-			{ _id: 'group-dm', t: 'd', uids: ['alice', 'bob', 'carol'] },
-		]);
+	it('should render the banner rooms.info returns for a room that is not ABAC managed', async () => {
+		renderBanner({ _id: 'dm', t: 'd' }, true);
 
-		await waitFor(() => expect(screen.getAllByRole('region', { name: 'ABAC_Classification_Banner' })).toHaveLength(2));
-		expect(getRoomInfo).toHaveBeenCalledTimes(1);
+		expect(await screen.findByRole('region', { name: 'ABAC_Classification_Banner' })).toHaveTextContent('UNCLASSIFIED');
 	});
 
-	it('should call rooms.info once per room shape', async () => {
-		renderBanners([
-			{ _id: 'dm', t: 'd' },
-			{ _id: 'private', t: 'p' },
-			{ _id: 'discussion', t: 'p', prid: 'parent' },
-			{ _id: 'team-room', t: 'p', teamId: 'team' },
-			{ _id: 'federated', t: 'p', federated: true },
-		]);
+	it('should not call rooms.info or render a banner while classification banners are disabled', () => {
+		renderBanner({ _id: 'dm', t: 'd' }, false);
 
-		await waitFor(() => expect(screen.getAllByRole('region', { name: 'ABAC_Classification_Banner' })).toHaveLength(5));
-		expect(getRoomInfo).toHaveBeenCalledTimes(5);
-	});
-
-	it('should call rooms.info per room for ABAC managed rooms', async () => {
-		renderBanners([
-			{ _id: 'abac-1', t: 'p', abacAttributes: [{ key: 'clearance', values: ['TS'] }] },
-			{ _id: 'abac-2', t: 'p', abacAttributes: [{ key: 'clearance', values: ['TS'] }] },
-		]);
-
-		await waitFor(() => expect(screen.getAllByRole('region', { name: 'ABAC_Classification_Banner' })).toHaveLength(2));
-		expect(getRoomInfo).toHaveBeenCalledTimes(2);
-	});
-
-	it('should not call rooms.info or render a banner for an Omnichannel room', async () => {
-		renderBanners([
-			{ _id: 'dm', t: 'd' },
-			{ _id: 'livechat', t: 'l' },
-		]);
-
-		await waitFor(() => expect(screen.getAllByRole('region', { name: 'ABAC_Classification_Banner' })).toHaveLength(1));
-		expect(getRoomInfo).toHaveBeenCalledTimes(1);
+		expect(screen.queryByRole('region', { name: 'ABAC_Classification_Banner' })).not.toBeInTheDocument();
+		expect(getRoomInfo).not.toHaveBeenCalled();
 	});
 });

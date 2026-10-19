@@ -1,14 +1,13 @@
-import type { ClassificationBannerPayload, IRoom, RoomType } from '@rocket.chat/core-typings';
+import type { ClassificationBannerPayload, IRoom } from '@rocket.chat/core-typings';
 import { mockAppRoot } from '@rocket.chat/mock-providers';
 import type { Meta, StoryObj } from '@storybook/react';
 
 import ClassificationBanner from './ClassificationBanner';
 import FakeRoomProvider from '../../../../tests/mocks/client/FakeRoomProvider';
-import { createFakeLicenseInfo } from '../../../../tests/mocks/data';
 
 const roomArgs: Partial<IRoom> = {
 	_id: 'classifiedRoom',
-	t: 'p' as RoomType,
+	t: 'p',
 	name: 'operation-nightingale',
 	fname: 'operation-nightingale',
 	abacAttributes: [{ key: 'clearance.level', values: ['TS'] }],
@@ -24,16 +23,12 @@ const createBanner = (text: string, backgroundColor: string, color: string): Cla
 	monospace: false,
 });
 
-const withBanner = (classificationBanner: ClassificationBannerPayload, roomOverrides: Partial<IRoom> = roomArgs) =>
+const withBanner = (classificationBanner: ClassificationBannerPayload) =>
 	mockAppRoot()
 		.withJohnDoe()
-		.withSetting('ABAC_Enabled', true)
 		.withSetting('ABAC_Classification_Banners_Enabled', true)
-		.withEndpoint('GET', '/v1/licenses.info', () => ({
-			license: createFakeLicenseInfo({ activeModules: ['abac'] }),
-		}))
 		.withEndpoint('GET', '/v1/rooms.info', () => ({ room: null, classificationBanner }))
-		.wrap((children) => <FakeRoomProvider roomOverrides={roomOverrides}>{children}</FakeRoomProvider>)
+		.wrap((children) => <FakeRoomProvider roomOverrides={roomArgs}>{children}</FakeRoomProvider>)
 		.buildStoryDecorator();
 
 export default {
@@ -60,8 +55,4 @@ export const GroupedPrograms: StoryObj<typeof ClassificationBanner> = {
 
 export const Fallback: StoryObj<typeof ClassificationBanner> = {
 	decorators: [withBanner(createBanner('NO CLASSIFICATION DATA', '#6C727A', '#FFFFFF'))],
-};
-
-export const NonAbacRoom: StoryObj<typeof ClassificationBanner> = {
-	decorators: [withBanner(createBanner('UNCLASSIFIED', '#007a33', '#FFFFFF'), { _id: 'directMessage', t: 'd', name: 'john.doe' })],
 };
