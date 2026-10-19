@@ -215,6 +215,7 @@ API.v1.post(
 	{
 		authRequired: true,
 		twoFactorRequired: true,
+		license: ['oauth-enterprise'],
 		permissionsRequired: {
 			POST: { permissions: ['add-oauth-service'], operation: 'hasAll' },
 		},

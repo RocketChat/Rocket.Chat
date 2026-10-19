@@ -1,11 +1,19 @@
+import { License } from '@rocket.chat/license';
 import { Meteor } from 'meteor/meteor';
 
+import { addOAuthService } from '../../../ee/server/lib/oauth/addOAuthService';
 import { hasPermissionAsync } from '../../lib/authorization/hasPermission';
-import { addOAuthService } from '../../lib/oauth/addOAuthService';
 
 export const addOAuthServiceMethod = async (userId: string, name: string): Promise<void> => {
 	if ((await hasPermissionAsync(userId, 'add-oauth-service')) !== true) {
 		throw new Meteor.Error('error-action-not-allowed', 'Adding OAuth Services is not allowed', {
+			method: 'addOAuthService',
+			action: 'Adding_OAuth_Services',
+		});
+	}
+
+	if (!License.hasModule('oauth-enterprise')) {
+		throw new Meteor.Error('error-action-not-allowed', 'This is an enterprise feature', {
 			method: 'addOAuthService',
 			action: 'Adding_OAuth_Services',
 		});
