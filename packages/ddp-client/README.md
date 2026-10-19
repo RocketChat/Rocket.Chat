@@ -49,7 +49,16 @@ Pass the server URL with an `http(s)` or `ws(s)` scheme and no path. The SDK con
 const sdk = await DDPSDK.createAndConnect('https://open.rocket.chat');
 ```
 
-Both take optional retry settings: `{ retryCount, retryTime }`. By default the SDK keeps trying to reconnect: the first attempt waits about `retryTime` (1000 ms), and each failed attempt doubles the wait, up to 30 seconds, with random jitter.
+Both take optional retry settings: `{ retryCount, retryTime }`. By default `DDPSDK` keeps trying to reconnect: the first attempt waits about `retryTime` (1000 ms), and each failed attempt doubles the wait, up to 30 seconds, with random jitter. `LivechatClientImpl` defaults to 3 retries, starting at 10 seconds.
+
+Other options:
+
+- `encode` / `decode`: the wire codec, `JSON.stringify` / `JSON.parse` by default. Pass `EJSON.stringify` / `EJSON.parse` to exchange dates and other EJSON types.
+- `WebSocket`: a WebSocket implementation, the global one by default.
+- `inFlightMethods`: what happens to method calls still waiting for their result when the connection drops. `'reject'` (default) rejects them with `ConnectionLostError`; `'resend'` sends them again after the reconnection, as Meteor does, so a call the server already ran runs twice.
+- `logoutOnRefusedResume`: `true` (default) logs the account out when the server refuses the token after a reconnection; pass `false` if another layer of your client owns the session.
+
+`sdk.connection.whenConnected()` resolves once the connection is up, whoever started it.
 
 To follow the connection status:
 
@@ -82,7 +91,9 @@ const sha256 = async (text: string) => {
 };
 ```
 
-After a reconnection, the SDK logs in again with the stored token and restores active subscriptions.
+After a reconnection, the SDK logs in again with the stored token, then restores active subscriptions. If the server refuses the token (a 401/403 answer), the account is logged out, unless you created the SDK with `logoutOnRefusedResume: false`.
+
+If you log in some other way, hand the login result to the SDK with `sdk.account.setCredentials({ id, token, tokenExpires })`; `sdk.account.clearCredentials()` forgets the user locally without calling the server.
 
 `onLogin` and `onLogout` register listeners and return a function that removes them:
 
@@ -105,7 +116,19 @@ await subscription.ready();
 subscription.stop();
 ```
 
-Stop subscriptions you no longer need; this saves bandwidth and server resources.
+Listeners with the same stream, key and subscription arguments share one server subscription, which ends when the last of them stops; different arguments (such as another visitor token) open their own. Stop subscriptions you no longer need; this saves bandwidth and server resources.
+
+`subscription.onStop(listener)` tells you when the server ends the subscription, for example when the stream needs a logged-in user:
+
+```ts
+subscription.onStop((error) => console.warn('stream stopped by the server', error));
+```
+
+Some streams also accept events from clients. `sdk.publish(name, key, ...args)` emits one:
+
+```ts
+await sdk.publish('notify-room', `${roomId}/user-activity`, username, ['user-typing']);
+```
 
 For the streams listed in the `StreamerEvents` type, `sdk.stream` types the callback arguments from the stream name and key:
 
@@ -123,7 +146,7 @@ Use `StreamerCallbackArgs<Name, Key>` to name those types in your own code.
 const subscriptions = await sdk.call('subscriptions/get');
 ```
 
-`sdk.call(method, ...params)` is a shortcut for `sdk.client.callAsync`. The promise rejects with the server error.
+`sdk.call(method, ...params)` is a shortcut for `sdk.client.callAsync`; both are typed for the methods declared in `ServerMethods` (the callback-style `client.call` and `client.callWithOptions` are not). The promise rejects with the server error, or with a `ConnectionLostError` when its frame was sent and the connection drops before the result arrives, unless `inFlightMethods` is `'resend'`. In that case the server may or may not have run the method. Calls made while disconnected, or queued behind a `wait` call, wait for the next connection. `connection.close()` rejects every pending call, whatever `inFlightMethods` says.
 
 ### Calling the REST API
 
@@ -162,17 +185,18 @@ await livechat.connection.connect();
 
 ### `DDPSDK`
 
-| Member                                        | Description                                                                                                       |
-| --------------------------------------------- | ----------------------------------------------------------------------------------------------------------------- |
-| `DDPSDK.create(url, retryOptions?)`           | Builds an SDK without connecting.                                                                                 |
-| `DDPSDK.createAndConnect(url, retryOptions?)` | Builds an SDK and resolves once connected.                                                                        |
-| `connection`                                  | `Connection`: `connect()`, `reconnect()`, `close()`, `status`, and status events.                                 |
-| `account`                                     | `Account`: `loginWithPassword`, `loginWithToken`, `logout`, `onLogin`, `onLogout`.                                |
-| `client`                                      | `ClientStream`: `callAsync`, `callAsyncWithOptions`, `subscribe`, `unsubscribe`, `onCollection`, `subscriptions`. |
-| `timeoutControl`                              | `TimeoutControl`: heartbeat and timeout timers.                                                                   |
-| `rest`                                        | `RestClient` from `@rocket.chat/api-client`, authenticated with the DDP session.                                  |
-| `call(method, ...params)`                     | Calls a server method and resolves with its result.                                                               |
-| `stream(name, key, callback)`                 | Subscribes to `stream-<name>` for `key`. Returns a subscription with `ready()` and `stop()`.                      |
+| Member                                   | Description                                                                                                                                        |
+| ---------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `DDPSDK.create(url, options?)`           | Builds an SDK without connecting. Options: `retryCount`, `retryTime`, `encode`, `decode`, `WebSocket`, `inFlightMethods`, `logoutOnRefusedResume`. |
+| `DDPSDK.createAndConnect(url, options?)` | Builds an SDK and resolves once connected.                                                                                                         |
+| `connection`                             | `Connection`: `connect()`, `reconnect()`, `whenConnected()`, `close()`, `status`, and status events.                                               |
+| `account`                                | `Account`: `loginWithPassword`, `loginWithToken`, `logout`, `setCredentials`, `clearCredentials`, `onLogin`, `onLogout`.                           |
+| `client`                                 | `ClientStream`: `callAsync`, `callAsyncWithOptions`, `subscribe`, `unsubscribe`, `onCollection`, `subscriptions`.                                  |
+| `timeoutControl`                         | `TimeoutControl`: heartbeat and timeout timers.                                                                                                    |
+| `rest`                                   | `RestClient` from `@rocket.chat/api-client`, authenticated with the DDP session.                                                                   |
+| `call(method, ...params)`                | Calls a server method and resolves with its result.                                                                                                |
+| `stream(name, key, callback)`            | Subscribes to `stream-<name>` for `key`. Returns a subscription with `ready()`, `onStop()` and `stop()`.                                           |
+| `publish(name, key, ...args)`            | Emits an event on `stream-<name>` for `key`.                                                                                                       |
 
 `ConnectionStatus` is one of `'idle'`, `'connecting'`, `'connected'`, `'failed'`, `'closed'`, `'disconnected'` or `'reconnecting'`.
 
@@ -180,7 +204,8 @@ await livechat.connection.connect();
 
 - `LivechatClientImpl`: the Livechat visitor client. Its interfaces `LivechatStream`, `LivechatEndpoints` and the `LivechatRoomEvents` type are exported too.
 - `RocketchatSdkLegacyImpl`: a compatibility layer that mirrors the method names of the older Rocket.Chat JS SDK (`login`, `joinRoom`, `sendMessage`, `subscribeRoom`, `onMessage`, ...).
-- Types: `SDK`, `ClientStream`, `ConnectionStatus`, `StreamerEvents`, `StreamNames`, `StreamKeys`, `StreamerConfigs`, `StreamerConfig`, `StreamerCallbackArgs`, `StreamerCallback`, `ServerMethods`, `ServerMethodName`, `ServerMethodParameters`, `ServerMethodReturn`.
+- `ConnectionLostError`: the rejection of a method call whose connection dropped before the result arrived.
+- Types: `SDK`, `DDPSDKOptions`, `ClientStream`, `ConnectionStatus`, `StreamerEvents`, `StreamNames`, `StreamKeys`, `StreamerConfigs`, `StreamerConfig`, `StreamerCallbackArgs`, `StreamerCallback`, `ServerMethods`, `ServerMethodName`, `ServerMethodParameters`, `ServerMethodReturn`.
 
 ## Development
 
