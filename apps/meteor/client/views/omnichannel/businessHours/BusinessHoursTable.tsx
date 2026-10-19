@@ -7,6 +7,7 @@ import {
 	GenericTableHeader,
 	GenericTableLoadingRow,
 	usePaginatedQuery,
+	usePagination,
 	GenericNoResults,
 } from '@rocket.chat/ui-client';
 import { useTranslation, useEndpoint } from '@rocket.chat/ui-contexts';
@@ -29,12 +30,23 @@ const BusinessHoursTable = () => {
 		500,
 	);
 
+	const queryKey = ['livechat-getBusinessHours', query];
+	const {
+		current,
+		itemsPerPage,
+		setItemsPerPage: onSetItemsPerPage,
+		setCurrent: onSetCurrent,
+		...paginationProps
+	} = usePagination({ resetKey: queryKey });
+
 	const getBusinessHours = useEndpoint('GET', '/v1/livechat/business-hours');
-	const { data, isLoading, isSuccess, isError, refetch, paginationProps } = usePaginatedQuery({
+	const { data, isLoading, isSuccess, isError, refetch } = usePaginatedQuery({
 		query,
-		queryKey: ['livechat-getBusinessHours', query],
+		queryKey,
 		queryFn: getBusinessHours,
 		itemsKey: 'businessHours',
+		offset: current,
+		count: itemsPerPage,
 	});
 
 	const columns: TableColumnWidth[] = ['auto', 'auto', 'auto', 'x100', 'x100'];
@@ -71,7 +83,15 @@ const BusinessHoursTable = () => {
 							))}
 						</GenericTableBody>
 					</GenericTable>
-					<Pagination divider {...paginationProps} />
+					<Pagination
+						divider
+						current={current}
+						itemsPerPage={itemsPerPage}
+						count={data.total || 0}
+						onSetItemsPerPage={onSetItemsPerPage}
+						onSetCurrent={onSetCurrent}
+						{...paginationProps}
+					/>
 				</>
 			)}
 			{isError && (

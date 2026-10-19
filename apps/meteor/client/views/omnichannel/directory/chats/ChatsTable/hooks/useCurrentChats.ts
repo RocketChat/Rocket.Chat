@@ -4,7 +4,7 @@ import { useEndpoint } from '@rocket.chat/ui-contexts';
 
 type CurrentChatsResult = OperationResult<'GET', '/v1/livechat/rooms'>;
 
-export const useCurrentChats = (query: GETLivechatRoomsParams) => {
+export const useCurrentChats = (query: GETLivechatRoomsParams, { offset, count }: { offset: number; count: number }) => {
 	const currentChats = useEndpoint('GET', '/v1/livechat/rooms');
 
 	return usePaginatedQuery<GETLivechatRoomsParams, CurrentChatsResult>({
@@ -12,6 +12,8 @@ export const useCurrentChats = (query: GETLivechatRoomsParams) => {
 		queryKey: ['current-chats', query],
 		queryFn: (query) => currentChats(query) as unknown as Promise<CurrentChatsResult>,
 		itemsKey: 'rooms',
+		offset,
+		count,
 
 		// TODO: Update this to use an stream of room changes instead of polling
 		refetchOnWindowFocus: false,
