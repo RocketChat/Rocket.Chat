@@ -60,13 +60,13 @@ export abstract class RoomCoordinator {
 		const pathDef = config.route.path;
 		const fields = routeData;
 
-		const regExp = /(:[\w\(\)\\\+\*\.\?]+)+/g;
+		const regExp = /(:[\w()\\+*.?]+)+/g;
 		let path = pathDef.replace(regExp, (key) => {
 			const firstRegexpChar = key.indexOf('(');
 			// get the content behind : and (\\d+/)
 			key = key.substring(1, firstRegexpChar > 0 ? firstRegexpChar : undefined);
 			// remove +?*
-			key = key.replace(/[\+\*\?]+/g, '');
+			key = key.replace(/[+*?]+/g, '');
 
 			return fields[key] || '';
 		});

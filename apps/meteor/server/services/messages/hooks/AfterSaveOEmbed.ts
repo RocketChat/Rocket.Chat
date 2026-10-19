@@ -40,11 +40,11 @@ const getCharset = function (contentType: string, body: Buffer): string {
 	if (detected.confidence > 0.8) {
 		detectedCharset = detected.encoding.toLowerCase();
 	}
-	const m1 = contentType.match(/charset=([\w\-]+)/i);
+	const m1 = contentType.match(/charset=([\w-]+)/i);
 	if (m1) {
 		httpHeaderCharset = m1[1].toLowerCase();
 	}
-	const m2 = binary.match(/<meta\b[^>]*charset=["']?([\w\-]+)/i);
+	const m2 = binary.match(/<meta\b[^>]*charset=["']?([\w-]+)/i);
 	if (m2) {
 		htmlMetaCharset = m2[1].toLowerCase();
 	}

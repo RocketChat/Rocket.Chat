@@ -15,7 +15,7 @@ function getCloudUrl(
 	const siteUrl = rtrim(_site_url, '/');
 
 	// Remove the protocol
-	const host = siteUrl.replace(/https?\:\/\//i, '');
+	const host = siteUrl.replace(/https?:\/\//i, '');
 	path = ltrim(path, '/');
 
 	Object.assign(cloudParams, {

@@ -60,7 +60,7 @@ WebApp.rawConnectHandlers.use(async (_req: http.IncomingMessage, res: http.Serve
 			'https://zapier.com',
 			...settings
 				.get<string>('Extra_CSP_Domains')
-				.split(/[ \n\,]/gim)
+				.split(/[ \n,]/gim)
 				.filter((e) => Boolean(e.trim())),
 		]
 			.filter(Boolean)

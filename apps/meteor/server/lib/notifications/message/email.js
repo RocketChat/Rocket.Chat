@@ -69,7 +69,7 @@ export async function getEmailContent({ message, user, room }) {
 		message = await callbacks.run('renderMessage', message);
 		if (message.tokens && message.tokens.length > 0) {
 			message.tokens.forEach((token) => {
-				token.text = token.text.replace(/([^\$])(\$[^\$])/gm, '$1$$$2');
+				token.text = token.text.replace(/([^$])(\$[^$])/gm, '$1$$$2');
 				messageContent = messageContent.replace(token.token, token.text);
 			});
 		}

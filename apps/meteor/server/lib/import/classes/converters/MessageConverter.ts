@@ -140,7 +140,7 @@ export class MessageConverter extends RecordConverter<IImportMessageRecord> {
 				continue;
 			}
 
-			message.msg = message.msg.replace(new RegExp(`\#${importId}`, 'gi'), `#${name}`);
+			message.msg = message.msg.replace(new RegExp(`#${importId}`, 'gi'), `#${name}`);
 
 			result.push({
 				_id,
@@ -181,7 +181,7 @@ export class MessageConverter extends RecordConverter<IImportMessageRecord> {
 				throw new Error('importer-message-mentioned-username-not-found');
 			}
 
-			message.msg = message.msg.replace(new RegExp(`\@${importId}`, 'gi'), `@${data.username}`);
+			message.msg = message.msg.replace(new RegExp(`@${importId}`, 'gi'), `@${data.username}`);
 
 			result.push({
 				_id: data._id,

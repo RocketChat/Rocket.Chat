@@ -18,9 +18,9 @@ import { getRootUrlPathPrefix } from '../lib/meteorRuntimeConfig';
 import { roomCoordinator } from '../lib/rooms/roomCoordinator';
 
 export class Router implements RouterContextValue {
-	private readonly pathRegExp = /(:[\w\(\)\\\+\*\.\?\[\]\-]+)+/g;
+	private readonly pathRegExp = /(:[\w()\\+*.?[\]-]+)+/g;
 
-	private readonly queryRegExp = /\?([^\/\r\n].*)/;
+	private readonly queryRegExp = /\?([^/\r\n].*)/;
 
 	private current:
 		| Readonly<{
@@ -109,7 +109,7 @@ export class Router implements RouterContextValue {
 		path += idOrPathDef.replace(this.pathRegExp, (_key) => {
 			const firstRegexpChar = _key.indexOf('(');
 			let key = _key.substring(1, firstRegexpChar > 0 ? firstRegexpChar : undefined);
-			key = key.replace(/[\+\*\?]+/g, '');
+			key = key.replace(/[+*?]+/g, '');
 
 			if (params[key]) {
 				return this.encodeParam(`${params[key]}`);

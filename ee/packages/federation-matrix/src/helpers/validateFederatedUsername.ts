@@ -14,7 +14,7 @@ export function validateFederatedUsername(mxid: string): mxid is UserID {
 	const localpart = withoutAt.substring(0, firstColonIndex);
 	const domainAndPort = withoutAt.substring(firstColonIndex + 1);
 
-	const localpartRegex = /^(?:[a-zA-Z0-9._\-]|=[0-9a-fA-F]{2}){1,255}$/;
+	const localpartRegex = /^(?:[a-zA-Z0-9._-]|=[0-9a-fA-F]{2}){1,255}$/;
 	if (!localpartRegex.test(localpart)) return false;
 
 	// Handle IPv6 addresses specially - they're wrapped in brackets and contain colons
@@ -50,7 +50,7 @@ export function validateFederatedUsername(mxid: string): mxid is UserID {
 	}
 
 	// Validate domain: hostname, IPv4, or IPv6
-	const hostnameRegex = /^(?=.{1,253}$)([a-z0-9](?:[a-z0-9\-]{0,61}[a-z0-9])?)(?:\.[a-z0-9](?:[a-z0-9\-]{0,61}[a-z0-9])?)*$/i;
+	const hostnameRegex = /^(?=.{1,253}$)([a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?)(?:\.[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?)*$/i;
 
 	// Check if it's a valid IPv6 address (in brackets)
 	if (domain.startsWith('[') && domain.endsWith(']')) {

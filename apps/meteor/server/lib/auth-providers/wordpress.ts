@@ -110,6 +110,6 @@ const fillSettings = _.debounce(async (): Promise<void> => {
 }, 1000);
 
 Meteor.startup(() => {
-	settings.watchByRegex(/(API\_Wordpress\_URL)?(Accounts\_OAuth\_Wordpress\_)?/, () => fillSettings());
+	settings.watchByRegex(/(API_Wordpress_URL)?(Accounts_OAuth_Wordpress_)?/, () => fillSettings());
 	settings.watch('Accounts_OAuth_Use_Modern_Flow', () => fillSettings());
 });

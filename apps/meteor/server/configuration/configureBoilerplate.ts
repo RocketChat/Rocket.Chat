@@ -39,7 +39,7 @@ export function configureBoilerplate(settings: ICachedSettings): void {
 			}
 			let host = value.replace(/\/$/, '');
 			// let prefix = '';
-			const match = value.match(/([^\/]+\/{2}[^\/]+)(\/.+)/);
+			const match = value.match(/([^/]+\/{2}[^/]+)(\/.+)/);
 			if (match != null) {
 				host = match[1];
 				// prefix = match[2].replace(/\/$/, '');

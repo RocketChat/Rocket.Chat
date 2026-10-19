@@ -20,7 +20,7 @@ const hasReplyWithRedirectUrlParam = (req: IncomingMessage) => {
 };
 
 WebApp.connectHandlers.use(FileUpload.getPath(), async (req, res, next) => {
-	const match = /^\/([^\/]+)\/(.*)/.exec(req.url || '');
+	const match = /^\/([^/]+)\/(.*)/.exec(req.url || '');
 
 	if (match?.[1]) {
 		const file = await Uploads.findOneById(match[1]);

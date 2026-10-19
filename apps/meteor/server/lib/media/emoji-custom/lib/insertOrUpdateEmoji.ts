@@ -35,8 +35,8 @@ export async function insertOrUpdateEmoji(userId: string | null, emojiData: Emoj
 
 	// allow all characters except colon, whitespace, comma, >, <, &, ", ', /, \, (, )
 	// more practical than allowing specific sets of characters; also allows foreign languages
-	const nameValidation = /[\s,:><&"'\/\\\(\)]/;
-	const aliasValidation = /[:><&\|"'\/\\\(\)]/;
+	const nameValidation = /[\s,:><&"'/\\()]/;
+	const aliasValidation = /[:><&|"'/\\()]/;
 
 	// silently strip colon; this allows for uploading :emojiname: as emojiname
 	emojiData.name = emojiData.name.replace(/:/g, '');

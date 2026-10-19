@@ -667,7 +667,7 @@ describe('Federation - Infrastructure - Matrix - RocketTextParser', () => {
 					
 					> Quote test: **Bold** _Italic_ Lorem ipsum dolor sit amet 
 					`;
-			const formattedMessage = `${quotedMessage}<p><a href="https://matrix.to/#/@user:externalDomain.com">@user:externalDomain.com</a>, hello <a href="https://matrix.to/#/@remoteuser:matrix.org">Remote User Real Name</a>, here\'s <a href="https://matrix.to/#/@user:externalDomain.com">@user:externalDomain.com</a>, how are you? Hope <strong>you</strong> <strong>are</strong> doing well, please see the list: # List 1: <strong>Ordered List</strong> </p> <pre><code> 1. List Item 2. List Item 3. List Item 4. List Item &gt; Quote test: **Bold** _Italic_ Lorem ipsum dolor sit amet </code></pre>`;
+			const formattedMessage = `${quotedMessage}<p><a href="https://matrix.to/#/@user:externalDomain.com">@user:externalDomain.com</a>, hello <a href="https://matrix.to/#/@remoteuser:matrix.org">Remote User Real Name</a>, here's <a href="https://matrix.to/#/@user:externalDomain.com">@user:externalDomain.com</a>, how are you? Hope <strong>you</strong> <strong>are</strong> doing well, please see the list: # List 1: <strong>Ordered List</strong> </p> <pre><code> 1. List Item 2. List Item 3. List Item 4. List Item &gt; Quote test: **Bold** _Italic_ Lorem ipsum dolor sit amet </code></pre>`;
 			expect(
 				await toInternalQuoteMessageFormat({
 					homeServerDomain,

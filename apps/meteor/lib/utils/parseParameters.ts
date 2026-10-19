@@ -59,6 +59,6 @@ export function parseParameters(parameters: string, ignoreExtraUnquotedSpaces = 
 			// Remove SSA and ESA characters
 			.replace(/[\u0086\u0087]/g, '')
 			// Unescape quotes
-			.replace(/\\\"/g, '"'),
+			.replace(/\\"/g, '"'),
 	);
 }
