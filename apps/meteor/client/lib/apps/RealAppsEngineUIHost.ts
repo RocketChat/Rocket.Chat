@@ -2,12 +2,12 @@ import { AppsEngineUIHost } from '@rocket.chat/apps/dist/client/AppsEngineUIHost
 import type { IExternalComponentRoomInfo } from '@rocket.chat/apps/dist/client/definition/IExternalComponentRoomInfo';
 import type { IExternalComponentUserInfo } from '@rocket.chat/apps/dist/client/definition/IExternalComponentUserInfo';
 
-import { RoomManager } from '../lib/RoomManager';
-import { sdk } from '../lib/SDKClient';
-import { baseURI } from '../lib/baseURI';
-import { getUserAvatarURL } from '../lib/getUserAvatarURL';
-import { getUser } from '../lib/user';
-import { Rooms } from '../stores';
+import { Rooms } from '../../stores';
+import { RoomManager } from '../RoomManager';
+import { sdk } from '../SDKClient';
+import { baseURI } from '../baseURI';
+import { getUserAvatarURL } from '../getUserAvatarURL';
+import { getUser } from '../user';
 
 // FIXME: replace non-null assertions with proper error handling
 

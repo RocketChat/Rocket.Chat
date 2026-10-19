@@ -4,43 +4,40 @@ import type * as UiKit from '@rocket.chat/ui-kit';
 import { useMemo } from 'react';
 import type { Dispatch, ContextType } from 'react';
 
-import { useUiKitActionManager } from './useUiKitActionManager';
+import { useUiKitActionManager } from '../../../../hooks/uikit/useUiKitActionManager';
 
-type UseModalContextValueParams = {
-	view: UiKit.ModalView;
+type UseContextualBarContextValueParams = {
+	view: UiKit.ContextualBarView;
 	values: {
 		[actionId: string]: {
 			value: unknown;
 			blockId?: string | undefined;
 		};
 	};
-	errors?: { [field: string]: string }[] | { [field: string]: string };
 	updateValues: Dispatch<{
 		actionId: string;
 		payload: {
 			value: unknown;
-			blockId?: string;
+			blockId?: string | undefined;
 		};
 	}>;
-	rid?: string;
+	rid: string;
 };
+type UseContextualBarContextValueReturn = ContextType<typeof UiKitContext>;
 
-type UseModalContextValueReturn = ContextType<typeof UiKitContext>;
-
-export const useModalContextValue = ({
+export const useContextualBarContextValue = ({
 	view,
-	errors,
 	values,
 	updateValues,
 	rid,
-}: UseModalContextValueParams): UseModalContextValueReturn => {
+}: UseContextualBarContextValueParams): UseContextualBarContextValueReturn => {
 	const actionManager = useUiKitActionManager();
 
 	const emitInteraction = useMemo(() => actionManager.emitInteraction.bind(actionManager), [actionManager]);
 	const debouncedEmitInteraction = useDebouncedCallback(emitInteraction, 700);
 
 	return {
-		action: async ({ actionId, viewId, appId, dispatchActionConfig, blockId, value }) => {
+		action: async ({ appId, viewId, actionId, dispatchActionConfig, blockId, value }): Promise<void> => {
 			if (!appId || !viewId) {
 				return;
 			}
@@ -58,9 +55,10 @@ export const useModalContextValue = ({
 					blockId,
 					value,
 				},
+				rid,
 			});
 		},
-		updateState: ({ actionId, value, /* ,appId, */ blockId = 'default' }) => {
+		updateState: ({ actionId, value, blockId = 'default' }) => {
 			updateValues({
 				actionId,
 				payload: {
@@ -70,7 +68,6 @@ export const useModalContextValue = ({
 			});
 		},
 		...view,
-		errors,
 		values,
 		viewId: view.id,
 		rid,

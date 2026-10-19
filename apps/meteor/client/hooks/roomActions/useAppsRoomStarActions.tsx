@@ -7,8 +7,8 @@ import { useTranslation } from 'react-i18next';
 
 import { Utilities } from '../../../ee/lib/misc/Utilities';
 import { UiKitTriggerTimeoutError } from '../../lib/errors/UiKitTriggerTimeoutError';
-import { useUiKitActionManager } from '../../uikit/hooks/useUiKitActionManager';
 import { useRoom } from '../../views/room/contexts/RoomContext';
+import { useUiKitActionManager } from '../uikit/useUiKitActionManager';
 import { useAppActionButtons } from '../useAppActionButtons';
 import { useApplyButtonFilters } from '../useApplyButtonFilters';
 

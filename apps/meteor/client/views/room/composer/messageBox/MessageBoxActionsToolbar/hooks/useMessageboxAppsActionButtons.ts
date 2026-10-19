@@ -3,11 +3,11 @@ import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { Utilities } from '../../../../../../../ee/lib/misc/Utilities';
+import { useUiKitActionManager } from '../../../../../../hooks/uikit/useUiKitActionManager';
 import { useAppActionButtons, getIdForActionButton } from '../../../../../../hooks/useAppActionButtons';
 import { useApplyButtonFilters } from '../../../../../../hooks/useApplyButtonFilters';
 import { UiKitTriggerTimeoutError } from '../../../../../../lib/errors/UiKitTriggerTimeoutError';
 import type { MessageBoxAction } from '../../../../../../lib/messageBox';
-import { useUiKitActionManager } from '../../../../../../uikit/hooks/useUiKitActionManager';
 
 export const useMessageboxAppsActionButtons = () => {
 	const result = useAppActionButtons('messageBoxAction');
