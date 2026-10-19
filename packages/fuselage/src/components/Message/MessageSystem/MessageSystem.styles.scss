@@ -1,70 +1,9 @@
 @use '../../../styles/colors.scss';
 @use '../../../styles/functions.scss' as *;
-@use '../../../styles/lengths.scss';
-@use '../../../styles/mixins/templates.scss';
-@use '../../../styles/typography.scss' as *;
-@use '../mixins.scss';
 
 $message-system-background-color-selected: theme('message-system-background-color-selected', colors.surface(selected));
 
-.rcx-message-system {
-	@include use-font-scale(c1);
-	@include use-with-truncated-text();
-	display: flex;
-	flex-direction: row;
-	align-items: flex-start;
-
-	margin-inline: lengths.margin(2);
-
-	padding-block: lengths.padding(8);
-	padding-inline: lengths.padding(20);
-
-	color: colors.font(default);
-
-	&--selected {
-		background: $message-system-background-color-selected !important;
-	}
-
-	&__container {
-		@include use-with-truncated-text();
-		display: flex;
-		flex-direction: column;
-		flex-shrink: 1;
-		align-self: center;
-
-		width: 100%;
-		margin-block: lengths.margin(-4);
-	}
-
-	&__body {
-		@include use-font-scale(p2);
-		@include use-with-truncated-text();
-		margin-inline: lengths.margin(2);
-	}
-
-	&__name {
-		@include use-font-scale(p2b);
-		@include use-with-truncated-text();
-		flex-shrink: 0;
-
-		color: colors.font(titles-labels);
-	}
-
-	&__time {
-		@include use-with-truncated-text();
-		@include use-font-scale(c1);
-		flex-shrink: 0;
-
-		margin-inline: lengths.margin(2);
-
-		color: colors.font(secondary-info);
-	}
-
-	&__block {
-		display: flex;
-		flex-direction: row;
-		align-items: center;
-	}
-
-	@include templates.focus-state;
+// `!important` has no Tamagui equivalent.
+.rcx-message-system--selected {
+	background: $message-system-background-color-selected !important;
 }

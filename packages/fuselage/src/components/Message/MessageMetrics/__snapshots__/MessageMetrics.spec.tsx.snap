@@ -11,152 +11,152 @@ exports[`[MessageMetrics Rendering] renders Default without crashing 1`] = `
         role="separator"
       >
         <div
-          class="rcx-message-divider__bar"
+          class="is_Text _d-341075704 _ws-311910413 _ww-408434756 _bs-652081535 _jc-2087003909 _ai-121763387 _f-7259782 rcx-message-divider__bar"
         />
         <div
-          class="rcx-message-divider__wrapper"
+          class="is_Text _d-1987097250 _ws-311910413 _ww-408434756 _bs-652081535 _m-1859224945 _p-445762330 _b-558166684 rcx-message-divider__wrapper"
         >
           May, 24, 2020
         </div>
          
         <div
-          class="rcx-message-divider__bar"
+          class="is_Text _d-341075704 _ws-311910413 _ww-408434756 _bs-652081535 _jc-2087003909 _ai-121763387 _f-7259782 rcx-message-divider__bar"
         />
       </div>
       <div
-        class="rcx-message rcx-message--clickable customclass"
+        class="is_View _p-1021290656 _f-1841970073 _ai-994770828 _m-211896778 _p-1260242245 _b-1182826059 _br-1105657738 _ow-1993548942 _bs-1333539716 _b-1741968088 _c-1830342115 rcx-message rcx-message--clickable customclass"
         tabindex="0"
       >
         <div
-          class="rcx-box rcx-box--full rcx-message-container rcx-message-container--left"
+          class="is_View _ff-409630021 _fv-607544992 _f-866739262 _mw-842769126 _m-1515180012 _ai-845606260 _w-799253879 rcx-message-container rcx-message-container--left"
         >
           <figure
-            class="rcx-box rcx-box--full rcx-avatar rcx-avatar--x36"
+            class="is_View _d-1985012034 _f-606928779 _va-1124586065 _m-2017216831 _p-1943363302 _b-650654186 _o-1106425799 _ff-409630021 _fvn-1977619713 _w-799253879 _h-1778499542 rcx-box rcx-box--full rcx-avatar rcx-avatar--x36"
           >
             <img
               alt=""
-              class="rcx-avatar__element rcx-avatar__element--x36"
+              class="is_View _f-1246374076 _bs-652081535 _mw-354604370 _mh-1241200853 _p-1021290656 _w-1560934055 _h-538303654 _br-1502788537 rcx-avatar__element rcx-avatar__element--x36"
               src="data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAgGBgcGBQgHBwcJCQgKDBQNDAsLDBkSEw8UHRofHh0aHBwgJC4nICIsIxwcKDcpLDAxNDQ0Hyc5PTgyPC4zNDL/2wBDAQkJCQwLDBgNDRgyIRwhMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjL/wAARCAAoACgDASIAAhEBAxEB/8QAGwAAAgIDAQAAAAAAAAAAAAAAAAcEBgIDBQj/xAAuEAACAQQAAwcEAQUAAAAAAAABAgMABAUREiExBhMUIkFRYQcWcYGhFTJSgpH/xAAYAQADAQEAAAAAAAAAAAAAAAACAwQBAP/EAB4RAAIBBQEBAQAAAAAAAAAAAAABAgMREiExE0HR/9oADAMBAAIRAxEAPwBuXuIkhBuMe5ib/AHQP49q4L3mLitryTLTSpOiHQI5k/HzXa/qbFOEudVTu1dumWvcTaNCZYZ7vU6g6LxqjOU/24dfs1Ouh9FnkMpd3Reeyx83hAxZZEhkdV9/MBrX71WGPvJcqrJBGveKATtuXXqNU0pu02bTHXD/AGvJAluyxxRd6F4x00o+NdKoVrjbzJdvVe1t5cVLc2ck8qjnohgpPtz2v7G6JtPQ2VJwjlcw+37mchpnK6GtIuv5NFWeTsLNPvxWTvpfjvOEfwKKzEVkSct2vscS/BIzSN0YRkeX81UpPqO8masJETu7OOccY4dswYFQeftv096XV5knuJGdm2T1+agvMXj8jEaHX905QihabvcbuS7X566mLWLwSY8PuRnk/u4eZ0deTl71Ef6hY+0yM88TzeNZY4luYwpVYyduOfrvhPTnr0pXSX9y5mCsyJMdyxxvwq599em+taItqCSNc90ChvZRUruUcT0JiO18Elpk7t8v41LWzacxkBSuvjQ/FFJayjDWrCTepAQ2vUH0oo/Jk3ovpwJJeVCP5CN+lFFaaMqy+nAyuChvrTI2kN9JAsi2ZOy4IBHMnkSCP+iqBexSWdxLazoUljJVlPUH2oorkV10pRc7b1zXb/hZOzuJvM86QWEXeELxOzHSIPcmiiiunVlF2RNTpRkrs//Z"
             />
           </figure>
         </div>
         <div
-          class="rcx-box rcx-box--full rcx-message-container"
+          class="is_View _ff-409630021 _fv-607544992 _f-1230447426 _mw-842769126 _m-1515180012 rcx-message-container"
         >
           <div
-            class="rcx-box rcx-box--full rcx-message-header"
+            class="is_View _ff-409630021 _fv-607544992 _f-1871817500 _mw-842769126 _m-183820880 rcx-message-header"
           >
             <div
-              class="rcx-box rcx-box--full rcx-message-header__wrapper"
+              class="is_View _ff-409630021 _fv-607544992 _f-518507803 _ai-121763387 _mw-842769126 _m-1704226889 rcx-message-header__wrapper"
             >
               <span
-                class="rcx-box rcx-box--full rcx-message-header__name-container"
+                class="is_Text _ff-409630021 _fv-607544992 _o-1119039191 _to-1727917045 _ws-973912173 _b-1182826059 _br-1105657738 _ow-1993548942 _bs-1333539716 _f-1246374077 _m-211896778 _c-1866435217 rcx-message-header__name-container"
               >
                 <span
-                  class="rcx-box rcx-box--full rcx-message-header__name"
+                  class="is_Text _ff-409630021 _fv-607544992 _fs-347291933 _lh-1925956564 _ls-1782815796 _fw-289168101 _o-1119039191 _to-1727917045 _ws-973912173 _f-1246374076 _c-1866435217 rcx-message-header__name"
                 >
                   Haylie George
                 </span>
                  
                 <span
-                  class="rcx-box rcx-box--full rcx-message-header__username"
+                  class="is_Text _ff-409630021 _fv-607544992 _fs-347291933 _lh-1925956564 _ls-1782815796 _fw-289165218 _o-1119039191 _to-1727917045 _ws-973912173 _f-1246374076 _c-1063453128 rcx-message-header__username"
                 >
                   @haylie.george
                 </span>
               </span>
               <div
-                class="rcx-box rcx-box--full rcx-message-header__roles"
+                class="is_View _ff-409630021 _fv-607544992 _o-1119039191 _to-1727917045 _ws-973912173 _f-1069814357 rcx-message-header__roles"
               >
                 <span
-                  class="rcx-box rcx-box--full rcx-tag  rcx-box rcx-box--full rcx-message-header__role"
+                  class="is_Text _d-341075704 _f-606928779 _mw-354604370 _mh-1241200853 _o-1119039191 _jc-1099843255 _ai-121763387 _m-2017216831 _p-1139150377 _ws-973912173 _ww-408434756 _td-1861836084 _to-1727917045 _wb-499914885 _ff-409630021 _fvn-1977619713 _b-1182826059 _br-511985764 _os-249893454 _bs-1333539716 _fs-285416026 _fw-289168101 _lh-1043070488 _ls-1782815796 _c-244381275 _b-504152703 rcx-tag rcx-message-header__role"
                 >
                   <span
-                    class="rcx-tag__inner"
+                    class="is_Text _o-1119039191 _mw-842770087 _ws-973912173 _ww-408434756 _to-1727917045 rcx-tag__inner"
                   >
                     Admin
                   </span>
                 </span>
                 <span
-                  class="rcx-box rcx-box--full rcx-tag  rcx-box rcx-box--full rcx-message-header__role"
+                  class="is_Text _d-341075704 _f-606928779 _mw-354604370 _mh-1241200853 _o-1119039191 _jc-1099843255 _ai-121763387 _m-2017216831 _p-1139150377 _ws-973912173 _ww-408434756 _td-1861836084 _to-1727917045 _wb-499914885 _ff-409630021 _fvn-1977619713 _b-1182826059 _br-511985764 _os-249893454 _bs-1333539716 _fs-285416026 _fw-289168101 _lh-1043070488 _ls-1782815796 _c-244381275 _b-504152703 rcx-tag rcx-message-header__role"
                 >
                   <span
-                    class="rcx-tag__inner"
+                    class="is_Text _o-1119039191 _mw-842770087 _ws-973912173 _ww-408434756 _to-1727917045 rcx-tag__inner"
                   >
                     User
                   </span>
                 </span>
                 <span
-                  class="rcx-box rcx-box--full rcx-tag  rcx-box rcx-box--full rcx-message-header__role"
+                  class="is_Text _d-341075704 _f-606928779 _mw-354604370 _mh-1241200853 _o-1119039191 _jc-1099843255 _ai-121763387 _m-2017216831 _p-1139150377 _ws-973912173 _ww-408434756 _td-1861836084 _to-1727917045 _wb-499914885 _ff-409630021 _fvn-1977619713 _b-1182826059 _br-511985764 _os-249893454 _bs-1333539716 _fs-285416026 _fw-289168101 _lh-1043070488 _ls-1782815796 _c-244381275 _b-504152703 rcx-tag rcx-message-header__role"
                 >
                   <span
-                    class="rcx-tag__inner"
+                    class="is_Text _o-1119039191 _mw-842770087 _ws-973912173 _ww-408434756 _to-1727917045 rcx-tag__inner"
                   >
                     Owner
                   </span>
                 </span>
               </div>
               <span
-                class="rcx-box rcx-box--full rcx-message-header__time"
+                class="is_Text _ff-409630021 _fv-607544992 _fs-2088488067 _lh-1306743983 _ls-1782815796 _fw-289165218 _o-1119039191 _to-1727917045 _ws-973912173 _f-1246374077 _m-211896778 _c-1756781803 rcx-message-header__time"
               >
                 12:00 PM
               </span>
             </div>
           </div>
           <div
-            class="rcx-message-body"
+            class="is_Text _d-1987097250 _ws-311910413 _fs-347291933 _lh-1925956564 _ls-1782815796 _fw-289165218 _o-1119039191 _f-1246374076 _m-183820880 _o-1507270695 _c-1063453128 rcx-message-body"
           >
             Ut enim ad minim veniam
           </div>
           <div
-            class="rcx-box rcx-box--full rcx-message-block"
+            class="is_View _ff-409630021 _fv-607544992 _f-1246374076 _m-183820880 rcx-message-block"
           >
             <div
-              class="rcx-message-metrics__content-item"
+              class="is_Text _d-341075704 _ws-311910413 _ww-408434756 _bs-652081535 _m-1805973907 rcx-message-metrics__content-item"
             >
               <div
-                class="rcx-message-metrics__content-wrapper"
+                class="is_Text _d-341075704 _ws-311910413 _ww-408434756 _bs-652081535 _m-543759422 rcx-message-metrics__content-wrapper"
               >
                 <div
-                  class="rcx-message-metrics__item"
+                  class="is_Text _d-341075704 _ws-311910413 _ww-408434756 _bs-652081535 _fs-285416026 _lh-1043070488 _ls-1782815796 _fw-289168101 _jc-1099843255 _ai-121763387 _m-1668332249 _c-1063453128 rcx-message-metrics__item"
                 >
                   <button
-                    class="rcx-box rcx-box--full rcx-button--small rcx-button--primary rcx-button"
+                    class="is_View _d-1409515928 _f-1069814357 _mh-1241200853 _ta-1906144518 _ws-973912173 _td-211436768 _c-22887652 _os-249893454 _o-1119039191 _to-1727917045 _ff-409630021 _fvn-1977619713 _p-1560025842 _fs-281033604 _fw-290091622 _lh-1335373134 _ls-1811444947 _mw-1071928195 _h-1633581678 rcx-button--small rcx-button--primary rcx-button"
                     type="button"
                   >
                     <span
-                      class="rcx-button--content"
+                      class="is_Text _d-1409515928 _w-1560934055 _va-615128551 _o-1119039191 _to-1727917045 _ws-973912173 _ww-408434756 rcx-button--content"
                     >
                       Reply
                     </span>
                   </button>
                 </div>
                 <div
-                  class="rcx-message-metrics__item"
+                  class="is_Text _d-341075704 _ws-311910413 _ww-408434756 _bs-652081535 _fs-285416026 _lh-1043070488 _ls-1782815796 _fw-289168101 _jc-1099843255 _ai-121763387 _m-1668332249 _c-1063453128 rcx-message-metrics__item"
                   title="Replies"
                 >
                   <i
                     aria-hidden="true"
-                    class="rcx-box rcx-box--full rcx-icon--name-thread rcx-icon rcx-css-4pvxx3"
+                    class="is_Text _d-1409515928 _ws-311910413 _ww-408434756 _us-601212022 _va-1101652081 _ls-1720078126 _ff-1916555734 _fs-1279428672 _fw-289165218 _fs-477064150 _fv-1578983722 _lh-2067209205 _tr-1510281189 rcx-icon--name-thread rcx-icon rcx-css-4pvxx3"
                   >
                     
                   </i>
                   <div
-                    class="rcx-message-metrics__item-label"
+                    class="is_Text _d-1987097250 _ws-311910413 _ww-408434756 _bs-652081535 _m-1348608399 rcx-message-metrics__item-label"
                   >
                     10
                   </div>
                 </div>
                 <div
-                  class="rcx-message-metrics__item"
+                  class="is_Text _d-341075704 _ws-311910413 _ww-408434756 _bs-652081535 _fs-285416026 _lh-1043070488 _ls-1782815796 _fw-289168101 _jc-1099843255 _ai-121763387 _m-1668332249 _c-1063453128 rcx-message-metrics__item"
                 >
                   <button
-                    class="rcx-box rcx-box--full rcx-button--small-square rcx-button--square rcx-button--icon rcx-button rcx-css-ll6zd0"
+                    class="is_View _f-1069813397 _mh-1241200853 _ta-1906144518 _ws-973912173 _td-211436768 _c-22887652 _os-249893454 _o-1119039191 _to-1727917045 _ff-409630021 _fvn-1977619713 _fs-347291933 _fw-289166179 _ls-1782815796 _p-230374000 _w-1682139955 _mw-1947816287 _h-1633581678 _d-312446553 _jc-642967080 _ai-1864573722 _lh-2067208245 rcx-button--small-square rcx-button--square rcx-button--icon rcx-button rcx-css-ll6zd0"
                     title="Following"
                     type="button"
                   >
                     <i
                       aria-hidden="true"
-                      class="rcx-box rcx-box--full rcx-icon--name-bell rcx-icon rcx-css-4pvxx3"
+                      class="is_Text _d-1409515928 _ws-311910413 _ww-408434756 _us-601212022 _va-1101652081 _ls-1720078126 _ff-1916555734 _fs-1279428672 _fw-289165218 _fs-477064150 _fv-1578983722 _lh-2067209205 _tr-1510281189 rcx-icon--name-bell rcx-icon rcx-css-4pvxx3"
                     >
                       
                     </i>
@@ -183,200 +183,200 @@ exports[`[MessageMetrics Rendering] renders ThreadMetrics without crashing 1`] =
         role="separator"
       >
         <div
-          class="rcx-message-divider__bar"
+          class="is_Text _d-341075704 _ws-311910413 _ww-408434756 _bs-652081535 _jc-2087003909 _ai-121763387 _f-7259782 rcx-message-divider__bar"
         />
         <div
-          class="rcx-message-divider__wrapper"
+          class="is_Text _d-1987097250 _ws-311910413 _ww-408434756 _bs-652081535 _m-1859224945 _p-445762330 _b-558166684 rcx-message-divider__wrapper"
         >
           May, 24, 2020
         </div>
          
         <div
-          class="rcx-message-divider__bar"
+          class="is_Text _d-341075704 _ws-311910413 _ww-408434756 _bs-652081535 _jc-2087003909 _ai-121763387 _f-7259782 rcx-message-divider__bar"
         />
       </div>
       <div
-        class="rcx-message rcx-message--clickable customclass"
+        class="is_View _p-1021290656 _f-1841970073 _ai-994770828 _m-211896778 _p-1260242245 _b-1182826059 _br-1105657738 _ow-1993548942 _bs-1333539716 _b-1741968088 _c-1830342115 rcx-message rcx-message--clickable customclass"
         tabindex="0"
       >
         <div
-          class="rcx-box rcx-box--full rcx-message-container rcx-message-container--left"
+          class="is_View _ff-409630021 _fv-607544992 _f-866739262 _mw-842769126 _m-1515180012 _ai-845606260 _w-799253879 rcx-message-container rcx-message-container--left"
         >
           <figure
-            class="rcx-box rcx-box--full rcx-avatar rcx-avatar--x36"
+            class="is_View _d-1985012034 _f-606928779 _va-1124586065 _m-2017216831 _p-1943363302 _b-650654186 _o-1106425799 _ff-409630021 _fvn-1977619713 _w-799253879 _h-1778499542 rcx-box rcx-box--full rcx-avatar rcx-avatar--x36"
           >
             <img
               alt=""
-              class="rcx-avatar__element rcx-avatar__element--x36"
+              class="is_View _f-1246374076 _bs-652081535 _mw-354604370 _mh-1241200853 _p-1021290656 _w-1560934055 _h-538303654 _br-1502788537 rcx-avatar__element rcx-avatar__element--x36"
               src="data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAgGBgcGBQgHBwcJCQgKDBQNDAsLDBkSEw8UHRofHh0aHBwgJC4nICIsIxwcKDcpLDAxNDQ0Hyc5PTgyPC4zNDL/2wBDAQkJCQwLDBgNDRgyIRwhMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjL/wAARCAAoACgDASIAAhEBAxEB/8QAGwAAAgIDAQAAAAAAAAAAAAAAAAcEBgIDBQj/xAAuEAACAQQAAwcEAQUAAAAAAAABAgMABAUREiExBhMUIkFRYQcWcYGhFTJSgpH/xAAYAQADAQEAAAAAAAAAAAAAAAACAwQBAP/EAB4RAAIBBQEBAQAAAAAAAAAAAAABAgMREiExE0HR/9oADAMBAAIRAxEAPwBuXuIkhBuMe5ib/AHQP49q4L3mLitryTLTSpOiHQI5k/HzXa/qbFOEudVTu1dumWvcTaNCZYZ7vU6g6LxqjOU/24dfs1Ouh9FnkMpd3Reeyx83hAxZZEhkdV9/MBrX71WGPvJcqrJBGveKATtuXXqNU0pu02bTHXD/AGvJAluyxxRd6F4x00o+NdKoVrjbzJdvVe1t5cVLc2ck8qjnohgpPtz2v7G6JtPQ2VJwjlcw+37mchpnK6GtIuv5NFWeTsLNPvxWTvpfjvOEfwKKzEVkSct2vscS/BIzSN0YRkeX81UpPqO8masJETu7OOccY4dswYFQeftv096XV5knuJGdm2T1+agvMXj8jEaHX905QihabvcbuS7X566mLWLwSY8PuRnk/u4eZ0deTl71Ef6hY+0yM88TzeNZY4luYwpVYyduOfrvhPTnr0pXSX9y5mCsyJMdyxxvwq599em+taItqCSNc90ChvZRUruUcT0JiO18Elpk7t8v41LWzacxkBSuvjQ/FFJayjDWrCTepAQ2vUH0oo/Jk3ovpwJJeVCP5CN+lFFaaMqy+nAyuChvrTI2kN9JAsi2ZOy4IBHMnkSCP+iqBexSWdxLazoUljJVlPUH2oorkV10pRc7b1zXb/hZOzuJvM86QWEXeELxOzHSIPcmiiiunVlF2RNTpRkrs//Z"
             />
           </figure>
         </div>
         <div
-          class="rcx-box rcx-box--full rcx-message-container"
+          class="is_View _ff-409630021 _fv-607544992 _f-1230447426 _mw-842769126 _m-1515180012 rcx-message-container"
         >
           <div
-            class="rcx-box rcx-box--full rcx-message-header"
+            class="is_View _ff-409630021 _fv-607544992 _f-1871817500 _mw-842769126 _m-183820880 rcx-message-header"
           >
             <div
-              class="rcx-box rcx-box--full rcx-message-header__wrapper"
+              class="is_View _ff-409630021 _fv-607544992 _f-518507803 _ai-121763387 _mw-842769126 _m-1704226889 rcx-message-header__wrapper"
             >
               <span
-                class="rcx-box rcx-box--full rcx-message-header__name-container"
+                class="is_Text _ff-409630021 _fv-607544992 _o-1119039191 _to-1727917045 _ws-973912173 _b-1182826059 _br-1105657738 _ow-1993548942 _bs-1333539716 _f-1246374077 _m-211896778 _c-1866435217 rcx-message-header__name-container"
               >
                 <span
-                  class="rcx-box rcx-box--full rcx-message-header__name"
+                  class="is_Text _ff-409630021 _fv-607544992 _fs-347291933 _lh-1925956564 _ls-1782815796 _fw-289168101 _o-1119039191 _to-1727917045 _ws-973912173 _f-1246374076 _c-1866435217 rcx-message-header__name"
                 >
                   Haylie George
                 </span>
                  
                 <span
-                  class="rcx-box rcx-box--full rcx-message-header__username"
+                  class="is_Text _ff-409630021 _fv-607544992 _fs-347291933 _lh-1925956564 _ls-1782815796 _fw-289165218 _o-1119039191 _to-1727917045 _ws-973912173 _f-1246374076 _c-1063453128 rcx-message-header__username"
                 >
                   @haylie.george
                 </span>
               </span>
               <div
-                class="rcx-box rcx-box--full rcx-message-header__roles"
+                class="is_View _ff-409630021 _fv-607544992 _o-1119039191 _to-1727917045 _ws-973912173 _f-1069814357 rcx-message-header__roles"
               >
                 <span
-                  class="rcx-box rcx-box--full rcx-tag  rcx-box rcx-box--full rcx-message-header__role"
+                  class="is_Text _d-341075704 _f-606928779 _mw-354604370 _mh-1241200853 _o-1119039191 _jc-1099843255 _ai-121763387 _m-2017216831 _p-1139150377 _ws-973912173 _ww-408434756 _td-1861836084 _to-1727917045 _wb-499914885 _ff-409630021 _fvn-1977619713 _b-1182826059 _br-511985764 _os-249893454 _bs-1333539716 _fs-285416026 _fw-289168101 _lh-1043070488 _ls-1782815796 _c-244381275 _b-504152703 rcx-tag rcx-message-header__role"
                 >
                   <span
-                    class="rcx-tag__inner"
+                    class="is_Text _o-1119039191 _mw-842770087 _ws-973912173 _ww-408434756 _to-1727917045 rcx-tag__inner"
                   >
                     Admin
                   </span>
                 </span>
                 <span
-                  class="rcx-box rcx-box--full rcx-tag  rcx-box rcx-box--full rcx-message-header__role"
+                  class="is_Text _d-341075704 _f-606928779 _mw-354604370 _mh-1241200853 _o-1119039191 _jc-1099843255 _ai-121763387 _m-2017216831 _p-1139150377 _ws-973912173 _ww-408434756 _td-1861836084 _to-1727917045 _wb-499914885 _ff-409630021 _fvn-1977619713 _b-1182826059 _br-511985764 _os-249893454 _bs-1333539716 _fs-285416026 _fw-289168101 _lh-1043070488 _ls-1782815796 _c-244381275 _b-504152703 rcx-tag rcx-message-header__role"
                 >
                   <span
-                    class="rcx-tag__inner"
+                    class="is_Text _o-1119039191 _mw-842770087 _ws-973912173 _ww-408434756 _to-1727917045 rcx-tag__inner"
                   >
                     User
                   </span>
                 </span>
                 <span
-                  class="rcx-box rcx-box--full rcx-tag  rcx-box rcx-box--full rcx-message-header__role"
+                  class="is_Text _d-341075704 _f-606928779 _mw-354604370 _mh-1241200853 _o-1119039191 _jc-1099843255 _ai-121763387 _m-2017216831 _p-1139150377 _ws-973912173 _ww-408434756 _td-1861836084 _to-1727917045 _wb-499914885 _ff-409630021 _fvn-1977619713 _b-1182826059 _br-511985764 _os-249893454 _bs-1333539716 _fs-285416026 _fw-289168101 _lh-1043070488 _ls-1782815796 _c-244381275 _b-504152703 rcx-tag rcx-message-header__role"
                 >
                   <span
-                    class="rcx-tag__inner"
+                    class="is_Text _o-1119039191 _mw-842770087 _ws-973912173 _ww-408434756 _to-1727917045 rcx-tag__inner"
                   >
                     Owner
                   </span>
                 </span>
               </div>
               <span
-                class="rcx-box rcx-box--full rcx-message-header__time"
+                class="is_Text _ff-409630021 _fv-607544992 _fs-2088488067 _lh-1306743983 _ls-1782815796 _fw-289165218 _o-1119039191 _to-1727917045 _ws-973912173 _f-1246374077 _m-211896778 _c-1756781803 rcx-message-header__time"
               >
                 12:00 PM
               </span>
             </div>
           </div>
           <div
-            class="rcx-message-body"
+            class="is_Text _d-1987097250 _ws-311910413 _fs-347291933 _lh-1925956564 _ls-1782815796 _fw-289165218 _o-1119039191 _f-1246374076 _m-183820880 _o-1507270695 _c-1063453128 rcx-message-body"
           >
             Ut enim ad minim veniam
           </div>
           <div
-            class="rcx-box rcx-box--full rcx-message-block"
+            class="is_View _ff-409630021 _fv-607544992 _f-1246374076 _m-183820880 rcx-message-block"
           >
             <div
-              class="rcx-message-metrics__content-item"
+              class="is_Text _d-341075704 _ws-311910413 _ww-408434756 _bs-652081535 _m-1805973907 rcx-message-metrics__content-item"
             >
               <div
-                class="rcx-message-metrics__content-wrapper"
+                class="is_Text _d-341075704 _ws-311910413 _ww-408434756 _bs-652081535 _m-543759422 rcx-message-metrics__content-wrapper"
               >
                 <div
-                  class="rcx-message-metrics__item"
+                  class="is_Text _d-341075704 _ws-311910413 _ww-408434756 _bs-652081535 _fs-285416026 _lh-1043070488 _ls-1782815796 _fw-289168101 _jc-1099843255 _ai-121763387 _m-1668332249 _c-1063453128 rcx-message-metrics__item"
                 >
                   <button
-                    class="rcx-box rcx-box--full rcx-button--small rcx-button--primary rcx-button rcx-css-yendf2"
+                    class="is_View _d-1409515928 _f-1069814357 _mh-1241200853 _ta-1906144518 _ws-973912173 _td-211436768 _c-22887652 _os-249893454 _o-1119039191 _to-1727917045 _ff-409630021 _fvn-1977619713 _p-1560025842 _fs-281033604 _fw-290091622 _lh-1335373134 _ls-1811444947 _mw-1071928195 _h-1633581678 rcx-button--small rcx-button--primary rcx-button rcx-css-yendf2"
                     type="button"
                   >
                     <span
-                      class="rcx-button--content"
+                      class="is_Text _d-1409515928 _w-1560934055 _va-615128551 _o-1119039191 _to-1727917045 _ws-973912173 _ww-408434756 rcx-button--content"
                     >
                       View thread
                     </span>
                   </button>
                 </div>
                 <div
-                  class="rcx-message-metrics__item"
+                  class="is_Text _d-341075704 _ws-311910413 _ww-408434756 _bs-652081535 _fs-285416026 _lh-1043070488 _ls-1782815796 _fw-289168101 _jc-1099843255 _ai-121763387 _m-1668332249 _c-1063453128 rcx-message-metrics__item"
                 >
                   <button
-                    class="rcx-box rcx-box--full rcx-button--small-square rcx-button--square rcx-button--icon rcx-button rcx-css-ll6zd0"
+                    class="is_View _f-1069813397 _mh-1241200853 _ta-1906144518 _ws-973912173 _td-211436768 _c-22887652 _os-249893454 _o-1119039191 _to-1727917045 _ff-409630021 _fvn-1977619713 _fs-347291933 _fw-289166179 _ls-1782815796 _p-230374000 _w-1682139955 _mw-1947816287 _h-1633581678 _d-312446553 _jc-642967080 _ai-1864573722 _lh-2067208245 rcx-button--small-square rcx-button--square rcx-button--icon rcx-button rcx-css-ll6zd0"
                     title="Following"
                     type="button"
                   >
                     <i
                       aria-hidden="true"
-                      class="rcx-box rcx-box--full rcx-icon--name-bell rcx-icon rcx-css-4pvxx3"
+                      class="is_Text _d-1409515928 _ws-311910413 _ww-408434756 _us-601212022 _va-1101652081 _ls-1720078126 _ff-1916555734 _fs-1279428672 _fw-289165218 _fs-477064150 _fv-1578983722 _lh-2067209205 _tr-1510281189 rcx-icon--name-bell rcx-icon rcx-css-4pvxx3"
                     >
                       
                     </i>
                     <div
-                      class="rcx-message-metrics__item__follow-badge"
+                      class="is_Text _t-1805907200 _d-1987097250 _ws-311910413 _ww-408434756 _bs-652081535 _p-1261267467 _i-1321119399 rcx-message-metrics__item__follow-badge"
                     >
                       <span
-                        class="rcx-box rcx-box--full rcx-badge rcx-badge--danger rcx-badge--small"
+                        class="is_Text _d-341075704 _f-571455214 _o-1119039191 _jc-1099843255 _w-847587062 _p-1139150377 _b-650654186 _o-1106425799 _ta-1906144518 _ws-973912173 _ww-408434756 _td-1861836084 _to-1727917045 _wb-499914885 _ff-409630021 _fvn-1977619713 _br-1736686245 _fs-285416026 _fw-289168101 _lh-1043070488 _ls-1782815796 _c-2088158424 _b-718617166 _mw-1199841951 _mh-934347320 rcx-badge rcx-badge--danger rcx-badge--small"
                       />
                     </div>
                   </button>
                 </div>
                 <div
-                  class="rcx-message-metrics__item"
+                  class="is_Text _d-341075704 _ws-311910413 _ww-408434756 _bs-652081535 _fs-285416026 _lh-1043070488 _ls-1782815796 _fw-289168101 _jc-1099843255 _ai-121763387 _m-1668332249 _c-1063453128 rcx-message-metrics__item"
                   title="Participants"
                 >
                   <div
-                    class="rcx-message-metrics__avatar-row"
+                    class="is_Text _d-341075704 _ws-311910413 _ww-408434756 _bs-652081535 _f-1841970073 _m-356531713 rcx-message-metrics__avatar-row"
                   >
                     <div
-                      class="rcx-message-metrics__avatar-row__content"
+                      class="is_Text _d-1987097250 _ws-311910413 _ww-408434756 _bs-652081535 _m-211896778 rcx-message-metrics__avatar-row__content"
                     >
                       <figure
-                        class="rcx-box rcx-box--full rcx-avatar rcx-avatar--x16"
+                        class="is_View _d-1985012034 _f-606928779 _va-1124586065 _m-2017216831 _p-1943363302 _b-650654186 _o-1106425799 _ff-409630021 _fvn-1977619713 _w-1589628347 _h-566997946 rcx-box rcx-box--full rcx-avatar rcx-avatar--x16"
                       >
                         <img
                           alt="gazzolia"
-                          class="rcx-avatar__element rcx-avatar__element--x16"
+                          class="is_View _f-1246374076 _bs-652081535 _mw-354604370 _mh-1241200853 _p-1021290656 _w-1560934055 _h-538303654 _br-1356490330 rcx-avatar__element rcx-avatar__element--x16"
                           src="data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAgGBgcGBQgHBwcJCQgKDBQNDAsLDBkSEw8UHRofHh0aHBwgJC4nICIsIxwcKDcpLDAxNDQ0Hyc5PTgyPC4zNDL/2wBDAQkJCQwLDBgNDRgyIRwhMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjL/wAARCAAoACgDASIAAhEBAxEB/8QAGwAAAgIDAQAAAAAAAAAAAAAAAAcEBgIDBQj/xAAuEAACAQQAAwcEAQUAAAAAAAABAgMABAUREiExBhMUIkFRYQcWcYGhFTJSgpH/xAAYAQADAQEAAAAAAAAAAAAAAAACAwQBAP/EAB4RAAIBBQEBAQAAAAAAAAAAAAABAgMREiExE0HR/9oADAMBAAIRAxEAPwBuXuIkhBuMe5ib/AHQP49q4L3mLitryTLTSpOiHQI5k/HzXa/qbFOEudVTu1dumWvcTaNCZYZ7vU6g6LxqjOU/24dfs1Ouh9FnkMpd3Reeyx83hAxZZEhkdV9/MBrX71WGPvJcqrJBGveKATtuXXqNU0pu02bTHXD/AGvJAluyxxRd6F4x00o+NdKoVrjbzJdvVe1t5cVLc2ck8qjnohgpPtz2v7G6JtPQ2VJwjlcw+37mchpnK6GtIuv5NFWeTsLNPvxWTvpfjvOEfwKKzEVkSct2vscS/BIzSN0YRkeX81UpPqO8masJETu7OOccY4dswYFQeftv096XV5knuJGdm2T1+agvMXj8jEaHX905QihabvcbuS7X566mLWLwSY8PuRnk/u4eZ0deTl71Ef6hY+0yM88TzeNZY4luYwpVYyduOfrvhPTnr0pXSX9y5mCsyJMdyxxvwq599em+taItqCSNc90ChvZRUruUcT0JiO18Elpk7t8v41LWzacxkBSuvjQ/FFJayjDWrCTepAQ2vUH0oo/Jk3ovpwJJeVCP5CN+lFFaaMqy+nAyuChvrTI2kN9JAsi2ZOy4IBHMnkSCP+iqBexSWdxLazoUljJVlPUH2oorkV10pRc7b1zXb/hZOzuJvM86QWEXeELxOzHSIPcmiiiunVlF2RNTpRkrs//Z"
                         />
                       </figure>
                     </div>
                     <div
-                      class="rcx-message-metrics__avatar-row__content"
+                      class="is_Text _d-1987097250 _ws-311910413 _ww-408434756 _bs-652081535 _m-211896778 rcx-message-metrics__avatar-row__content"
                     >
                       <figure
-                        class="rcx-box rcx-box--full rcx-avatar rcx-avatar--x16"
+                        class="is_View _d-1985012034 _f-606928779 _va-1124586065 _m-2017216831 _p-1943363302 _b-650654186 _o-1106425799 _ff-409630021 _fvn-1977619713 _w-1589628347 _h-566997946 rcx-box rcx-box--full rcx-avatar rcx-avatar--x16"
                       >
                         <img
                           alt="gazzolia"
-                          class="rcx-avatar__element rcx-avatar__element--x16"
+                          class="is_View _f-1246374076 _bs-652081535 _mw-354604370 _mh-1241200853 _p-1021290656 _w-1560934055 _h-538303654 _br-1356490330 rcx-avatar__element rcx-avatar__element--x16"
                           src="data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAgGBgcGBQgHBwcJCQgKDBQNDAsLDBkSEw8UHRofHh0aHBwgJC4nICIsIxwcKDcpLDAxNDQ0Hyc5PTgyPC4zNDL/2wBDAQkJCQwLDBgNDRgyIRwhMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjL/wAARCAAoACgDASIAAhEBAxEB/8QAGwAAAgIDAQAAAAAAAAAAAAAAAAcEBgIDBQj/xAAuEAACAQQAAwcEAQUAAAAAAAABAgMABAUREiExBhMUIkFRYQcWcYGhFTJSgpH/xAAYAQADAQEAAAAAAAAAAAAAAAACAwQBAP/EAB4RAAIBBQEBAQAAAAAAAAAAAAABAgMREiExE0HR/9oADAMBAAIRAxEAPwBuXuIkhBuMe5ib/AHQP49q4L3mLitryTLTSpOiHQI5k/HzXa/qbFOEudVTu1dumWvcTaNCZYZ7vU6g6LxqjOU/24dfs1Ouh9FnkMpd3Reeyx83hAxZZEhkdV9/MBrX71WGPvJcqrJBGveKATtuXXqNU0pu02bTHXD/AGvJAluyxxRd6F4x00o+NdKoVrjbzJdvVe1t5cVLc2ck8qjnohgpPtz2v7G6JtPQ2VJwjlcw+37mchpnK6GtIuv5NFWeTsLNPvxWTvpfjvOEfwKKzEVkSct2vscS/BIzSN0YRkeX81UpPqO8masJETu7OOccY4dswYFQeftv096XV5knuJGdm2T1+agvMXj8jEaHX905QihabvcbuS7X566mLWLwSY8PuRnk/u4eZ0deTl71Ef6hY+0yM88TzeNZY4luYwpVYyduOfrvhPTnr0pXSX9y5mCsyJMdyxxvwq599em+taItqCSNc90ChvZRUruUcT0JiO18Elpk7t8v41LWzacxkBSuvjQ/FFJayjDWrCTepAQ2vUH0oo/Jk3ovpwJJeVCP5CN+lFFaaMqy+nAyuChvrTI2kN9JAsi2ZOy4IBHMnkSCP+iqBexSWdxLazoUljJVlPUH2oorkV10pRc7b1zXb/hZOzuJvM86QWEXeELxOzHSIPcmiiiunVlF2RNTpRkrs//Z"
                         />
                       </figure>
                     </div>
                   </div>
                   <div
-                    class="rcx-message-metrics__item-label"
+                    class="is_Text _d-1987097250 _ws-311910413 _ww-408434756 _bs-652081535 _m-1348608399 rcx-message-metrics__item-label"
                   >
                     + 3 followers
                   </div>
                 </div>
                 <div
-                  class="rcx-message-metrics__item"
+                  class="is_Text _d-341075704 _ws-311910413 _ww-408434756 _bs-652081535 _fs-285416026 _lh-1043070488 _ls-1782815796 _fw-289168101 _jc-1099843255 _ai-121763387 _m-1668332249 _c-1063453128 rcx-message-metrics__item"
                   title="Last message: 12th July, 2024"
                 >
                   <i
                     aria-hidden="true"
-                    class="rcx-box rcx-box--full rcx-icon--name-thread rcx-icon rcx-css-4pvxx3"
+                    class="is_Text _d-1409515928 _ws-311910413 _ww-408434756 _us-601212022 _va-1101652081 _ls-1720078126 _ff-1916555734 _fs-1279428672 _fw-289165218 _fs-477064150 _fv-1578983722 _lh-2067209205 _tr-1510281189 rcx-icon--name-thread rcx-icon rcx-css-4pvxx3"
                   >
                     
                   </i>
                   <div
-                    class="rcx-message-metrics__item-label"
+                    class="is_Text _d-1987097250 _ws-311910413 _ww-408434756 _bs-652081535 _m-1348608399 rcx-message-metrics__item-label"
                   >
                     5 messages, 12th July, 2024
                   </div>
