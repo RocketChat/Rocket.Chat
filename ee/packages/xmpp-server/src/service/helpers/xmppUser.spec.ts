@@ -39,6 +39,12 @@ describe('createOrUpdateXMPPUser (addressing R9, R10)', () => {
 		expect(upsertXMPPUser).toHaveBeenCalledWith('alice@remote.tld', 'remote.tld', 'ally');
 	});
 
+	it('keys the record by the domain in its normalized spelling (addressing R4)', async () => {
+		await createOrUpdateXMPPUser({ jid: 'alice@Remote.TLD' });
+
+		expect(upsertXMPPUser).toHaveBeenCalledWith('alice@remote.tld', 'remote.tld', undefined);
+	});
+
 	it('hands no name over when no nick is known', async () => {
 		await createOrUpdateXMPPUser({ jid: 'alice@remote.tld' });
 
@@ -46,7 +52,7 @@ describe('createOrUpdateXMPPUser (addressing R9, R10)', () => {
 	});
 
 	it('refuses an address that is not `local@domain`, which could be a local username (addressing R11)', async () => {
-		for (const jid of ['admin', 'admin/x#room@conference.remote.tld', '@remote.tld', 'admin@']) {
+		for (const jid of ['admin', 'admin/x#room@conference.remote.tld', '@remote.tld', 'admin@', 'a@b@remote.tld']) {
 			await expect(createOrUpdateXMPPUser({ jid })).rejects.toThrow(InvalidJidError);
 		}
 		expect(upsertXMPPUser).not.toHaveBeenCalled();
