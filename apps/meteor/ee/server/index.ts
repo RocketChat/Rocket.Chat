@@ -9,7 +9,11 @@ import './settings';
 import './requestSeatsRoute';
 import './configuration/index';
 import './local-services/ldap/service';
+import './lib/saml/startup';
+import './lib/saml/loginHandler';
+import './lib/saml/listener';
 import './meteor-methods/getReadReceipts';
+import './meteor-methods/samlLogout';
 import './patches';
 import './hooks/federation';
 
