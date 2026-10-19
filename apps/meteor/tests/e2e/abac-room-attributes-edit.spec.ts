@@ -1,11 +1,10 @@
 import type { APIRequestContext } from '@playwright/test';
 import { request } from '@playwright/test';
-import type { IRoom } from '@rocket.chat/core-typings';
 
 import { BASE_URL, IS_EE } from './config/constants';
 import { Users } from './fixtures/userStates';
 import { AdminABACRooms } from './page-objects';
-import { setSettingValueById } from './utils';
+import { createTargetGroupAndReturnFullRoom, setSettingValueById } from './utils';
 import {
 	addUserAbacAttributes,
 	createAbacAttribute,
@@ -46,16 +45,14 @@ test.describe.serial('abac-room-attributes-edit', () => {
 
 	preserveSettings(['ABAC_Enabled', 'ABAC_PDP_Type', 'ABAC_Attribute_Store', 'ABAC_Enforce_All_Rooms']);
 
-	const createRoom = async (api: BaseTest['api'], name: string) => {
-		const response = await api.post('/groups.create', { name, members: [Users.user1.data.username, Users.user2.data.username] });
-		expect(response.status()).toBe(200);
-		const { group }: { group: IRoom } = await response.json();
+	const createRoom = async (api: BaseTest['api']) => {
+		const { group } = await createTargetGroupAndReturnFullRoom(api, { members: [Users.user1.data.username, Users.user2.data.username] });
 		roomIds.push(group._id);
 
 		await setRoomAbacAttributes(api, group._id, { [deptKey]: ['eng'] });
 		expect(await getGroupMemberUsernames(asUser1, group._id)).toHaveLength(3);
 
-		return group._id;
+		return group;
 	};
 
 	test.beforeAll(async ({ api }) => {
@@ -94,7 +91,7 @@ test.describe.serial('abac-room-attributes-edit', () => {
 	});
 
 	test('an administrator sees who loses access, confirms the update, and only they are removed', async ({ api }) => {
-		const rid = await createRoom(api, `abac-edit-${suffix}`);
+		const { _id: rid, name } = await createRoom(api);
 		const { preview } = poAdminABACRooms;
 
 		await poAdminABACRooms.gotoEditRoom(rid);
@@ -107,7 +104,7 @@ test.describe.serial('abac-room-attributes-edit', () => {
 		await expect(preview.losesAccess).not.toContainText(Users.admin.data.username);
 
 		await preview.save();
-		await expect(preview.updateRoomModal.dialog).toContainText(`will be removed from abac-edit-${suffix}`);
+		await expect(preview.updateRoomModal.dialog).toContainText(`will be removed from ${name}`);
 		await expect(preview.selfLockoutModal.dialog).toHaveCount(0);
 
 		await preview.updateRoomModal.save();
@@ -120,7 +117,7 @@ test.describe.serial('abac-room-attributes-edit', () => {
 	});
 
 	test('an administrator who would lose access has to confirm, and is removed with the others', async ({ api }) => {
-		const rid = await createRoom(api, `abac-edit-self-${suffix}`);
+		const { _id: rid, name } = await createRoom(api);
 		const { preview } = poAdminABACRooms;
 
 		await poAdminABACRooms.gotoEditRoom(rid);
@@ -132,7 +129,7 @@ test.describe.serial('abac-room-attributes-edit', () => {
 		await expect(preview.losesAccess).toContainText(Users.admin.data.username);
 
 		await preview.save();
-		await expect(preview.selfLockoutModal.dialog).toContainText(`You will lose access to abac-edit-self-${suffix}`);
+		await expect(preview.selfLockoutModal.dialog).toContainText(`You will lose access to ${name}`);
 
 		await preview.selfLockoutModal.save();
 		await poAdminABACRooms.toastMessage.waitForDisplay({ type: 'success', message: 'Room attributes updated' });
