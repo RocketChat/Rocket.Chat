@@ -2,17 +2,15 @@
 @use '../../styles/lengths.scss';
 @use '../../styles/typography.scss' as *;
 @use '../../styles/variables/buttons.scss';
-@use '../../styles/variables/button-colors.scss';
 @use '../../styles/mixins/button.scss' as *;
 @use '../../styles/mixins/interactivity.scss' as *;
 
 .rcx-bubble {
-	display: flex;
+	// Tamagui drops vendor-prefixed properties
+	-webkit-font-smoothing: antialiased;
+	-moz-osx-font-smoothing: grayscale;
 
-	overflow: hidden;
-
-	align-items: center;
-
+	// The button stays here until the unlayered `button` element rules move into the `reset` layer
 	&__button {
 		&--primary {
 			@include kind-variant(buttons.$primary);
@@ -24,26 +22,6 @@
 
 		@include clickable;
 		@include click-animation;
-	}
-
-	&__item {
-		> .rcx-icon {
-			margin-inline-end: lengths.margin(8);
-		}
-
-		&--primary {
-			color: button-colors.$button-primary-color;
-			background-color: button-colors.$button-primary-background-color;
-		}
-
-		&--secondary {
-			color: button-colors.$button-secondary-color;
-			background-color: button-colors.$button-secondary-background-color;
-		}
-	}
-
-	&__button,
-	&__item {
 		@include use-font-scale(c2);
 		display: flex;
 		justify-content: center;
@@ -57,7 +35,10 @@
 		column-gap: lengths.padding(4);
 
 		@include use-with-truncated-text;
+	}
 
+	&__button,
+	&__item {
 		> span {
 			@include use-with-truncated-text;
 		}
@@ -68,8 +49,7 @@
 		padding-inline-end: lengths.padding(12);
 	}
 
-	&--small &__button,
-	&--small &__item {
+	&--small &__button {
 		@include use-font-scale(micro);
 		height: lengths.size(20);
 	}
