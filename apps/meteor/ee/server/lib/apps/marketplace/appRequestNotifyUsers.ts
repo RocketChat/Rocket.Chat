@@ -29,11 +29,7 @@ const notifyBatchOfUsers = async (appName: string, learnMoreUrl: string, appRequ
 		return msg;
 	};
 
-	try {
-		return await sendDirectMessageToUsers(ROCKET_CAT_USERID, batchRequesters, msgFn);
-	} catch (e) {
-		throw e;
-	}
+	return sendDirectMessageToUsers(ROCKET_CAT_USERID, batchRequesters, msgFn);
 };
 
 export const appRequestNotififyForUsers = async (
@@ -42,68 +38,64 @@ export const appRequestNotififyForUsers = async (
 	appId: string,
 	appName: string,
 ): Promise<(string | Error)[]> => {
-	try {
-		const token = await getWorkspaceAccessToken();
-		const headers = {
-			Authorization: `Bearer ${token}`,
-		};
+	const token = await getWorkspaceAccessToken();
+	const headers = {
+		Authorization: `Bearer ${token}`,
+	};
 
-		// First request
-		const pagination = { limit: DEFAULT_LIMIT, offset: 0 };
+	// First request
+	const pagination = { limit: DEFAULT_LIMIT, offset: 0 };
 
-		// First request to get the total and the first batch
-		const response = await fetch(`${marketplaceBaseUrl}/v1/app-request`, {
-			// SECURITY: the URL is a default hardcoded value or an envvar/setting set by an admin. It's safe to disable this check.
-			ignoreSsrfValidation: true,
-			headers,
-			params: {
-				appId,
-				q: 'notification-not-sent',
-				limit: pagination.limit,
-				offset: pagination.offset,
-			},
-		});
+	// First request to get the total and the first batch
+	const response = await fetch(`${marketplaceBaseUrl}/v1/app-request`, {
+		// SECURITY: the URL is a default hardcoded value or an envvar/setting set by an admin. It's safe to disable this check.
+		ignoreSsrfValidation: true,
+		headers,
+		params: {
+			appId,
+			q: 'notification-not-sent',
+			limit: pagination.limit,
+			offset: pagination.offset,
+		},
+	});
 
-		const data = (await response.json()) as { meta: { total: number }; data: any };
+	const data = (await response.json()) as { meta: { total: number }; data: any };
 
-		const { total } = data.meta;
+	const { total } = data.meta;
 
-		if (total === undefined || total === 0) {
-			return [];
-		}
-
-		// Calculate the number of loops - 1 because the first request was already made
-		const loops = Math.ceil(total / pagination.limit) - 1;
-		const requestsCollection = [];
-		const learnMore = `${workspaceUrl}marketplace/explore/info/${appId}`;
-
-		// Notify first batch
-		requestsCollection.push(notifyBatchOfUsers(appName, learnMore, data.data).catch(notifyBatchOfUsersError));
-
-		// Batch requests
-		// eslint-disable-next-line @typescript-eslint/no-unused-vars
-		for (const _i of Array.from({ length: loops })) {
-			pagination.offset += pagination.limit;
-
-			// SECURITY: the URL is a default hardcoded value or an envvar/setting set by an admin. It's safe to disable this check.
-			const request = await fetch(
-				`${marketplaceBaseUrl}/v1/app-request?appId=${appId}&q=notification-not-sent&limit=${pagination.limit}&offset=${pagination.offset}`,
-				{
-					ignoreSsrfValidation: true,
-					headers,
-				},
-			);
-
-			const { data } = await request.json();
-
-			requestsCollection.push(notifyBatchOfUsers(appName, learnMore, data));
-		}
-
-		const finalResult = await Promise.all(requestsCollection);
-
-		// Return the list of users that were notified
-		return finalResult.flat();
-	} catch (e) {
-		throw e;
+	if (total === undefined || total === 0) {
+		return [];
 	}
+
+	// Calculate the number of loops - 1 because the first request was already made
+	const loops = Math.ceil(total / pagination.limit) - 1;
+	const requestsCollection = [];
+	const learnMore = `${workspaceUrl}marketplace/explore/info/${appId}`;
+
+	// Notify first batch
+	requestsCollection.push(notifyBatchOfUsers(appName, learnMore, data.data).catch(notifyBatchOfUsersError));
+
+	// Batch requests
+	// eslint-disable-next-line @typescript-eslint/no-unused-vars
+	for (const _i of Array.from({ length: loops })) {
+		pagination.offset += pagination.limit;
+
+		// SECURITY: the URL is a default hardcoded value or an envvar/setting set by an admin. It's safe to disable this check.
+		const request = await fetch(
+			`${marketplaceBaseUrl}/v1/app-request?appId=${appId}&q=notification-not-sent&limit=${pagination.limit}&offset=${pagination.offset}`,
+			{
+				ignoreSsrfValidation: true,
+				headers,
+			},
+		);
+
+		const { data } = await request.json();
+
+		requestsCollection.push(notifyBatchOfUsers(appName, learnMore, data));
+	}
+
+	const finalResult = await Promise.all(requestsCollection);
+
+	// Return the list of users that were notified
+	return finalResult.flat();
 };

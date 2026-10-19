@@ -920,12 +920,8 @@ export class FileUploadClass {
 			content = Buffer.from(content.buffer, content.byteOffset, content.byteLength);
 		}
 
-		try {
-			await filter.check(fileData, content);
-			return content;
-		} catch (e) {
-			throw e;
-		}
+		await filter.check(fileData, content);
+		return content;
 	}
 
 	async _doInsert(
@@ -936,21 +932,17 @@ export class FileUploadClass {
 		const fileId = await this.store.create(fileData, { session: options?.session });
 		const tmpFile = UploadFS.getTempFilePath(fileId);
 
-		try {
-			if (typeof content === 'string') {
-				await fs.promises.rename(content, tmpFile);
-			} else if (isArrayBufferView(content)) {
-				await fs.promises.writeFile(tmpFile, content);
-			} else if (content instanceof stream.Readable) {
-				await finished(content.pipe(fs.createWriteStream(tmpFile)), { cleanup: true });
-			} else {
-				throw new Error('Invalid file type');
-			}
-
-			return ufsComplete(fileId, this.name, { session: options?.session });
-		} catch (e) {
-			throw e;
+		if (typeof content === 'string') {
+			await fs.promises.rename(content, tmpFile);
+		} else if (isArrayBufferView(content)) {
+			await fs.promises.writeFile(tmpFile, content);
+		} else if (content instanceof stream.Readable) {
+			await finished(content.pipe(fs.createWriteStream(tmpFile)), { cleanup: true });
+		} else {
+			throw new Error('Invalid file type');
 		}
+
+		return ufsComplete(fileId, this.name, { session: options?.session });
 	}
 
 	async insert(
