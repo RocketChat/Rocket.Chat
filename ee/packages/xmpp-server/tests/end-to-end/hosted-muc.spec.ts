@@ -71,8 +71,10 @@ describe('XMPP federation: rooms hosted by Rocket.Chat', () => {
 
 		conflicting.forEach(([option, params]) => {
 			it(`refuses a room that is also ${option} (R1)`, async () => {
-				const res = await createRoom({ type: 'p', name: `xe2e-${option}-${uniqueSuffix()}`, config: owner.config, ...params });
-				assert.equal((res.body as { errorType?: string }).errorType, 'error-xmpp-room-options-not-allowed');
+				await assert.rejects(
+					createRoom({ type: 'p', name: `xe2e-${option}-${uniqueSuffix()}`, config: owner.config, ...params }),
+					/error-xmpp-room-options-not-allowed/,
+				);
 			});
 		});
 
@@ -262,12 +264,13 @@ describe('XMPP federation: rooms hosted by Rocket.Chat', () => {
 
 		// Known defect: ../../docs/specs/hosted-muc.md#d6-an-xmpp-user-listed-when-a-room-is-created-joins-any-room
 		it.skip('refuses JIDs listed when creating a group that is not XMPP-federated (R12, D6)', async () => {
-			const res = await createRoom({ type: 'p', name: `xe2e-plain-${uniqueSuffix()}`, members: [alice.bareJid], config: owner.config });
-			const groupId = (res.body as { group?: IRoom }).group?._id;
-			if (groupId) {
-				deleteRoomOnCleanup(rc, groupId);
-			}
-			assert.equal((res.body as { errorType?: string }).errorType, 'error-xmpp-users-in-non-xmpp-rooms');
+			const attempt = createRoom({ type: 'p', name: `xe2e-plain-${uniqueSuffix()}`, members: [alice.bareJid], config: owner.config });
+			// While D6 stands the group is created, and must not outlive the suite
+			attempt.then(
+				(res) => deleteRoomOnCleanup(rc, (res.body as { group: IRoom }).group._id),
+				() => undefined,
+			);
+			await assert.rejects(attempt, /error-xmpp-users-in-non-xmpp-rooms/);
 		});
 
 		it('refuses JIDs in a group that is not XMPP-federated (R12)', async () => {
