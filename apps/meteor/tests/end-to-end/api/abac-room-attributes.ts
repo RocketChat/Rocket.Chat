@@ -320,31 +320,29 @@ import { IS_EE, URL_MONGODB } from '../../e2e/config/constants';
 				});
 		});
 
-		it('rejects a page size below one and a malformed cursor', async () => {
-			await preview({ rid: ownedRoomId, attributes: adding, count: 0 }).expect(400);
+		it('rejects a page size, which the server sets, and a malformed cursor', async () => {
+			await preview({ rid: ownedRoomId, attributes: adding, count: 3 }).expect(400);
 			await preview({ rid: ownedRoomId, attributes: adding, after: { username: 'someone' } }).expect(400);
 		});
 
-		it('pages through every member by the last one checked, each with its verdict', async () => {
-			const page = (after?: unknown) => preview({ rid: ownedRoomId, attributes: adding, count: 3, after }).expect(200);
-
-			const first = await page();
-			const second = await page(first.body.next);
-			const third = await page(second.body.next);
-			const members = [first, second, third].flatMap((res) => res.body.members as PreviewMember[]);
+		it('lists every member with its verdict, and continues after a cursor', async () => {
+			const first = await preview({ rid: ownedRoomId, attributes: adding }).expect(200);
+			const { members }: { members: PreviewMember[] } = first.body;
+			const [head] = members;
+			const rest = await preview({ rid: ownedRoomId, attributes: adding, after: { _id: head._id, username: head.username } }).expect(200);
+			const restMembers: PreviewMember[] = rest.body.members;
 
 			expect(first.body.editor).to.equal('compliant');
-			expect([first, second, third].map((res) => res.body.count)).to.deep.equal([3, 3, 2]);
-			expect([first, second, third].map((res) => res.body.checked)).to.deep.equal([3, 3, 2]);
-			expect(first.body.total).to.equal(8);
-			expect(second.body).to.not.have.property('total');
-			expect(third.body).to.not.have.property('next');
-			expect(members).to.have.lengthOf(8);
+			expect(first.body).to.include({ count: 8, checked: 8, total: 8 });
+			expect(first.body).to.not.have.property('next');
 			expect(losing(members).map(({ _id }) => _id)).to.have.members(removable.map(({ _id }) => _id));
+			expect(rest.body).to.include({ count: 7, checked: 7 });
+			expect(rest.body).to.not.have.property('total');
+			expect(restMembers.map(({ _id }) => _id)).to.deep.equal(members.slice(1).map(({ _id }) => _id));
 		});
 
-		it('returns every member of one group among the members it checked, even past the count asked for', async () => {
-			const loses = await preview({ rid: ownedRoomId, attributes: adding, count: 2, group: 'loses' }).expect(200);
+		it('returns every member of one group in one page', async () => {
+			const loses = await preview({ rid: ownedRoomId, attributes: adding, group: 'loses' }).expect(200);
 
 			expect(loses.body.count).to.equal(removable.length);
 			expect(loses.body.checked).to.equal(loses.body.total);
@@ -378,7 +376,7 @@ import { IS_EE, URL_MONGODB } from '../../e2e/config/constants';
 		});
 
 		it('removes exactly the members it reported, and posts one message per removed member', async () => {
-			const answer = await preview({ rid: ownedRoomId, attributes: adding, count: 10 }).expect(200);
+			const answer = await preview({ rid: ownedRoomId, attributes: adding }).expect(200);
 			const reported = losing(answer.body.members);
 			expect(reported).to.have.lengthOf(5);
 
