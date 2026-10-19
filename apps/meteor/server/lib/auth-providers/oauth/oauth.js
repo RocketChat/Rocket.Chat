@@ -2,7 +2,6 @@ import { Accounts } from 'meteor/accounts-base';
 import { Match, check } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
 import { ServiceConfiguration } from 'meteor/service-configuration';
-import _ from 'underscore';
 
 const AccessTokenServices = {};
 
@@ -39,7 +38,7 @@ Accounts.registerLoginHandler(async (options) => {
 		throw new Accounts.ConfigError();
 	}
 
-	if (!_.contains(Accounts.oauth.serviceNames(), service.serviceName)) {
+	if (!Accounts.oauth.serviceNames().includes(service.serviceName)) {
 		// serviceName was not found in the registered services list.
 		// This could happen because the service never registered itself or
 		// unregisterService was called on it.

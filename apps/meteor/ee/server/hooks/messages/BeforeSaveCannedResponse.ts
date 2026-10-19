@@ -1,29 +1,32 @@
 import { isILivechatVisitor, isOmnichannelRoom } from '@rocket.chat/core-typings';
-import type { IMessage, IRoom, IUser } from '@rocket.chat/core-typings';
+import type { ILivechatVisitor, IMessage, IRoom, IUser } from '@rocket.chat/core-typings';
 import { LivechatVisitors, Users } from '@rocket.chat/models';
-import get from 'lodash.get';
 import mem from 'mem';
 
-const placeholderFields = {
+type PlaceholderField =
+	| { from: 'visitor'; getValue: (visitor: ILivechatVisitor | null) => string | undefined }
+	| { from: 'agent'; getValue: (agent: Pick<IUser, 'name' | 'emails'> | null) => string | undefined };
+
+const placeholderFields: Record<string, PlaceholderField> = {
 	'contact.name': {
 		from: 'visitor',
-		dataKey: 'name',
+		getValue: (visitor) => visitor?.name,
 	},
 	'contact.email': {
 		from: 'visitor',
-		dataKey: 'visitorEmails[0].address',
+		getValue: (visitor) => visitor?.visitorEmails?.[0]?.address,
 	},
 	'contact.phone': {
 		from: 'visitor',
-		dataKey: 'phone[0].phoneNumber',
+		getValue: (visitor) => visitor?.phone?.[0]?.phoneNumber,
 	},
 	'agent.name': {
 		from: 'agent',
-		dataKey: 'name',
+		getValue: (agent) => agent?.name,
 	},
 	'agent.email': {
 		from: 'agent',
-		dataKey: 'emails[0].address',
+		getValue: (agent) => agent?.emails?.[0]?.address,
 	},
 };
 
@@ -79,11 +82,12 @@ export class BeforeSaveCannedResponse {
 		};
 
 		message.msg = await Object.keys(placeholderFields).reduce(async (messageText, field) => {
-			const placeholderConfig = placeholderFields[field as keyof typeof placeholderFields];
+			const placeholderConfig = placeholderFields[field];
 
-			const from = placeholderConfig.from === 'agent' ? await getAgent(agentId) : await this.getVisitor(room.v._id);
-
-			const data = get(from, placeholderConfig.dataKey, '');
+			const data =
+				(placeholderConfig.from === 'agent'
+					? placeholderConfig.getValue(await getAgent(agentId))
+					: placeholderConfig.getValue(await this.getVisitor(room.v._id))) ?? '';
 
 			return (await messageText).replace(new RegExp(`{{${field}}}`, 'g'), data);
 		}, Promise.resolve(message.msg));
