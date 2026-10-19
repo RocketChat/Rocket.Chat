@@ -1,23 +1,13 @@
 @use '../../styles/lengths.scss';
 @use '../../styles/mixins/selection-button.scss' as *;
+// Holds the placeholders the mixin extends
 @use '../../styles/primitives/selection-button.scss';
 
 .rcx-radio-button {
 	@include is-selection-button($checked: 'primary', $unchecked: 'empty');
 
-	&__input {
-		@extend %selection-button__input;
-	}
-
-	&__fake {
-		@extend %selection-button__fake;
-		display: flex;
-		justify-content: center;
-		align-items: center;
-
-		border-radius: lengths.border-radius(full);
-		inline-size: lengths.size(20);
-	}
+	-webkit-font-smoothing: antialiased;
+	-moz-osx-font-smoothing: grayscale;
 
 	&__input:checked + &__fake::before {
 		display: block;
