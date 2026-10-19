@@ -66,6 +66,10 @@ does not delay or corrupt another's traffic.
   drain, and a peer that never drains is closed. `resource-constraint` (type `wait`) answers only IQ get and set when the global
   queue is full, never groupchat or presence: an error sent to a remote room gets our member
   expelled.
+- Inbound connections are capped, overall and per peer address, and an authenticated
+  inbound stream left idle is closed, as outbound routes already are. Today only the
+  authentication deadline of [s2s-connectivity](../specs/s2s-connectivity.md) R17 bounds
+  them.
 
 ## Open questions
 

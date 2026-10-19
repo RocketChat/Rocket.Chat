@@ -142,6 +142,9 @@ The dialback secret is generated at start and never persisted
 - XmppAddr and SRVName certificate names, and refusing the subject CN, wanted by
   [accreditation-readiness](../intents/accreditation-readiness.md) ([ADR 0005](../adr/0005-peer-certificates-name-a-domain-by-dnsname-srvname-or-xmppaddr.md)).
 - A deny list exists in the core config but has no setting ([configuration-and-lifecycle](configuration-and-lifecycle.md)).
+- A cap on inbound connections, overall or per peer address, and closing authenticated
+  inbound streams that sit idle: only the authentication deadline (R17) bounds them today.
+  Part of [scale-and-availability](../intents/scale-and-availability.md).
 
 ## Known defects
 
