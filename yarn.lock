@@ -9533,6 +9533,7 @@ __metadata:
     "@rocket.chat/jest-presets": "workspace:~"
     "@rocket.chat/logger": "workspace:^"
     "@rocket.chat/models": "workspace:^"
+    "@rocket.chat/rest-typings": "workspace:^"
     "@rocket.chat/server-fetch": "workspace:^"
     "@rocket.chat/tools": "workspace:^"
     "@rocket.chat/tsconfig": "workspace:*"

@@ -2,21 +2,19 @@ import { Box } from '@rocket.chat/fuselage';
 import { useSetting } from '@rocket.chat/ui-contexts';
 import { useTranslation } from 'react-i18next';
 
-import { useIsABACManagedRoom } from '../../admin/ABAC/hooks/useIsABACManagedRoom';
 import { useRoom } from '../contexts/RoomContext';
 import { useRoomAbacInfo } from '../hooks/useRoomAbacInfo';
 
 const ClassificationBanner = () => {
 	const { t } = useTranslation();
 	const room = useRoom();
-	const isABACRoom = useIsABACManagedRoom(room);
 	const bannersEnabled = useSetting('ABAC_Classification_Banners_Enabled', false);
 	const { data: banner } = useRoomAbacInfo(room._id, room.abacAttributes, {
-		enabled: bannersEnabled && isABACRoom,
+		enabled: bannersEnabled,
 		select: (data) => data.classificationBanner,
 	});
 
-	if (!bannersEnabled || !isABACRoom || !banner) {
+	if (!bannersEnabled || !banner) {
 		return null;
 	}
 
@@ -24,7 +22,7 @@ const ClassificationBanner = () => {
 		<Box
 			role='region'
 			aria-live='polite'
-			aria-label={t('ABAC_Room_Attributes')}
+			aria-label={t('ABAC_Classification_Banner')}
 			{...(banner.monospace && { fontFamily: 'mono' })}
 			backgroundColor={banner.backgroundColor}
 			color={banner.color}
