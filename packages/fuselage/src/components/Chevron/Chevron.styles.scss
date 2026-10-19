@@ -1,28 +1,12 @@
+// TODO: move to `components/index.scss`; it was dropped from there with the rest of the Icon rules
+@use '../Icon/Icon.styles.scss';
+
 .rcx-chevron {
-	display: inline-flex;
-	align-self: center;
-
-	&--up {
-		transform: rotate(-180deg);
-	}
-
-	&--down {
-		transform: rotate(0deg);
-	}
-
-	&--right {
-		transform: rotate(-90deg);
-
-		&:dir(rtl) {
-			transform: rotate(-270deg);
-		}
-	}
-
-	&--left {
+	&--right:dir(rtl) {
 		transform: rotate(-270deg);
+	}
 
-		&:dir(rtl) {
-			transform: rotate(-90deg);
-		}
+	&--left:dir(rtl) {
+		transform: rotate(-90deg);
 	}
 }
