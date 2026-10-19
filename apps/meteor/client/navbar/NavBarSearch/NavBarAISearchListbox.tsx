@@ -1,7 +1,7 @@
 import type { OverlayTriggerAria } from '@react-aria/overlays';
 import type { OverlayTriggerState } from '@react-stately/overlays';
 import type { NavBarSearchFormValues } from '@rocket.chat/ai-search';
-import { Tile, Box, ToggleSwitch, Divider, Icon, Margin } from '@rocket.chat/fuselage';
+import { Tile, Box, ToggleSwitch, Divider, Icon } from '@rocket.chat/fuselage';
 import { useOutsideClick, useStableCallback } from '@rocket.chat/fuselage-hooks';
 import { CustomScrollbars } from '@rocket.chat/ui-client';
 import { useId, useRef } from 'react';
