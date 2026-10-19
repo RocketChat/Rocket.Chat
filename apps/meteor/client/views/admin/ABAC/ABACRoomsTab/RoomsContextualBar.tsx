@@ -1,7 +1,7 @@
 import { ContextualbarBack, ContextualbarClose, ContextualbarHeader, ContextualbarTitle } from '@rocket.chat/ui-client';
 import { useEndpoint, useRouteParameter, useToastMessageDispatch } from '@rocket.chat/ui-contexts';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { FormProvider, useForm, useWatch } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 
@@ -67,6 +67,14 @@ const RoomsContextualBar = ({ roomInfo, attributesData, redacted = false, onClos
 			queryClient.invalidateQueries({ queryKey: ABACQueryKeys.rooms.list() });
 		},
 	});
+
+	const previewRid = roomInfo?.rid;
+	useEffect(() => {
+		if (!previewRid) {
+			return;
+		}
+		return () => queryClient.removeQueries({ queryKey: ABACQueryKeys.roomMembershipPreview.all(previewRid) });
+	}, [queryClient, previewRid]);
 
 	const isPreviewing = !!roomInfo && !!previewAttributes;
 

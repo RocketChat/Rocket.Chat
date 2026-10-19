@@ -5,8 +5,6 @@ import { useInfiniteQuery } from '@tanstack/react-query';
 
 import { ABACQueryKeys } from '../../../lib/queryKeys';
 
-export const PREVIEW_MIN_MATCHES = 25;
-
 export const usePreviewPages = (rid: string, attributes: Record<string, string[]>, filter: string, group: AbacMembershipGroup) => {
 	const previewMembership = useEndpoint('POST', '/v1/abac/rooms.evaluateMembership');
 
@@ -23,7 +21,6 @@ export const usePreviewPages = (rid: string, attributes: Record<string, string[]
 				rid,
 				attributes,
 				group,
-				count: PREVIEW_MIN_MATCHES,
 				...(filter && { filter }),
 				...(pageParam && { after: pageParam }),
 			});
