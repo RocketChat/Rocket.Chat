@@ -26,6 +26,29 @@ export type CustomNotificationOptions = {
 	};
 };
 
+export type DesktopUserStatus = 'online' | 'away' | 'busy' | 'offline';
+
+export type DesktopUserPresence = {
+	loggedIn: boolean;
+	connection: 'connected' | 'connecting' | 'disconnected';
+	status?: DesktopUserStatus;
+	statusText?: string;
+	statusExpiresAt?: string;
+	availableStatuses: DesktopUserStatus[];
+	customStatuses: DesktopCustomUserStatus[];
+};
+
+export type DesktopCustomUserStatus = {
+	id: string;
+	name: string;
+	status: DesktopUserStatus;
+};
+
+export type DesktopUserStatusChangeRequest = {
+	status: DesktopUserStatus;
+	customStatusId?: string;
+};
+
 export interface IRocketChatDesktop {
 	dispatchCustomNotification: (options: CustomNotificationOptions) => void;
 	closeCustomNotification: (id: string) => void;
@@ -44,6 +67,8 @@ export interface IRocketChatDesktop {
 		idleThreshold: number | null;
 		setUserOnline: (online: boolean) => void;
 	}) => void;
+	setUserPresenceState?: (presence: DesktopUserPresence) => void;
+	setUserStatusChangeHandler?: (handler: (request: DesktopUserStatusChangeRequest) => Promise<void>) => void;
 	setUserThemeAppearance: (themeAppearance: ThemeAppearance) => void;
 	createNotification: (
 		options: NotificationOptions & {

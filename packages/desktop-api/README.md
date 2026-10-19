@@ -55,6 +55,48 @@ callWindow?.openInMainWindow('/home');
 callWindow?.close();
 ```
 
+### User presence
+
+Rocket.Chat 8.10.0 and later use two members for the presence of the user:
+
+- `setUserPresenceState` receives the presence of the user.
+- `setUserStatusChangeHandler` receives the function that changes the status of the user.
+
+The web client calls `setUserPresenceState` when it starts and again after each change. It also calls it when no user session exists. The first call tells the desktop app that the workspace supports this contract.
+
+Desktop 4.18 already has a `setUserPresence` member with a different payload. Do not use that name for these members. If you do, a new server sends the wrong payload to a released desktop app.
+
+```ts
+window.RocketChatDesktop.setUserPresenceState({
+	loggedIn: true,
+	connection: 'connected',
+	status: 'busy',
+	statusText: 'In a meeting',
+	statusExpiresAt: '2026-10-19T18:00:00.000Z',
+	availableStatuses: ['online', 'away', 'busy'],
+	customStatuses: [{ id: 'abc123', name: 'In a meeting', status: 'busy' }],
+});
+```
+
+| Field               | Description                                                                                                                                                            |
+| ------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `loggedIn`          | `true` when a user session exists.                                                                                                                                     |
+| `connection`        | The state of the connection: `'connected'`, `'connecting'` or `'disconnected'`.                                                                                        |
+| `status`            | The status of the user: `'online'`, `'away'`, `'busy'` or `'offline'`. The field is absent when no user session exists.                                                |
+| `statusText`        | The custom status text. The field is absent when the user has no text.                                                                                                 |
+| `statusExpiresAt`   | The date and time when the current status ends, in ISO 8601 format. The field is absent when the status has no end.                                                    |
+| `availableStatuses` | The statuses that the user can select now. The list is empty when the workspace or an administrator disabled presence.                                                 |
+| `customStatuses`    | The custom statuses that the workspace administrator created. Each item has an `id`, a `name` and a base `status`. The list is empty when the user cannot select them. |
+
+The handler receives a `DesktopUserStatusChangeRequest` (`{ status, customStatusId? }`). To select one of the `customStatuses`, send its `id` in `customStatusId`.
+
+The handler uses the same flow as the user menu of the web client. Thus the rate limit, permissions and settings of the server apply.
+
+- A status from `availableStatuses` removes the custom status text and its expiration.
+- A custom status sets its base status and uses its name as the text.
+
+The returned promise rejects when the server refuses the change.
+
 ## API
 
 ### `IRocketChatDesktop`
@@ -70,6 +112,8 @@ callWindow?.close();
 | `setUserLoggedIn(loggedIn)`, `setUserRoles(roles)`                                                                     | Report the login state and the user's roles.                                                |
 | `setUserToken(token, userId)`                                                                                          | Passes the user's credentials to the app.                                                   |
 | `setUserPresenceDetection(options)`                                                                                    | Configures auto-away: `isAutoAwayEnabled`, `idleThreshold`, and a `setUserOnline` callback. |
+| `setUserPresenceState?(presence)`                                                                                      | Receives the presence of the user. See [User presence](#user-presence).                     |
+| `setUserStatusChangeHandler?(handler)`                                                                                 | Receives the status-change function. See [User presence](#user-presence).                   |
 | `setUserThemeAppearance(appearance)`                                                                                   | Reports the theme: `'dark'`, `'light'`, `'auto'`, `'high-contrast'` or `undefined`.         |
 | `createNotification(options)`, `destroyNotification(id)`                                                               | Show and remove a native notification. `options` extends `NotificationOptions`.             |
 | `dispatchCustomNotification(options)`, `closeCustomNotification(id)`                                                   | Show and close a custom `'voice'` or `'text'` notification.                                 |
@@ -96,7 +140,7 @@ callWindow?.close();
 
 ### Other types
 
-`ServerInfo`, `Badge`, `ThemeAppearance`, `VideoChatWindowOptions`, `OutlookEventsResponse`, `CustomNotificationOptions`.
+`ServerInfo`, `Badge`, `ThemeAppearance`, `VideoChatWindowOptions`, `OutlookEventsResponse`, `CustomNotificationOptions`, `DesktopUserStatus`, `DesktopUserPresence`, `DesktopCustomUserStatus`, `DesktopUserStatusChangeRequest`.
 
 ## Development
 

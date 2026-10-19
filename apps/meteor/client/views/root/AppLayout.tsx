@@ -18,6 +18,7 @@ import { useCodeHighlight } from './hooks/useCodeHighlight';
 import { useCorsSSLConfig } from './hooks/useCorsSSLConfig';
 import { useDesktopFavicon } from './hooks/useDesktopFavicon';
 import { useDesktopTitle } from './hooks/useDesktopTitle';
+import { useDesktopUserPresence } from './hooks/useDesktopUserPresence';
 import { useDesktopUserRoles } from './hooks/useDesktopUserRoles';
 import { useEscapeKeyStroke } from './hooks/useEscapeKeyStroke';
 import { useGoogleTagManager } from './hooks/useGoogleTagManager';
@@ -83,6 +84,7 @@ const AppLayout = () => {
 	useDesktopFavicon();
 	useDesktopTitle();
 	useDesktopUserRoles();
+	useDesktopUserPresence();
 	useStartupEvent();
 	useIframeCommands();
 
