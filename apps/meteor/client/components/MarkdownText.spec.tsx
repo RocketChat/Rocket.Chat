@@ -328,17 +328,10 @@ describe('links handling', () => {
 		expect(anchorElement.tagName).toBe('A');
 		expect(anchorElement).toHaveTextContent('Test Link');
 
-		if (expectedHref !== undefined) expect(anchorElement).toHaveAttribute('href', expectedHref);
-		else expect(anchorElement).not.toHaveAttribute('href');
-
-		if (expectedRel !== undefined) expect(anchorElement).toHaveAttribute('rel', expectedRel);
-		else expect(anchorElement).not.toHaveAttribute('rel');
-
-		if (expectedTarget !== undefined) expect(anchorElement).toHaveAttribute('target', expectedTarget);
-		else expect(anchorElement).not.toHaveAttribute('target');
-
-		if (expectedTitleAttribute !== undefined) expect(anchorElement).toHaveAttribute('title', expectedTitleAttribute);
-		else expect(anchorElement).not.toHaveAttribute('title');
+		expect(anchorElement.getAttribute('href')).toBe(expectedHref ?? null);
+		expect(anchorElement.getAttribute('rel')).toBe(expectedRel ?? null);
+		expect(anchorElement.getAttribute('target')).toBe(expectedTarget ?? null);
+		expect(anchorElement.getAttribute('title')).toBe(expectedTitleAttribute ?? null);
 	});
 
 	describe('multiple links', () => {
@@ -360,22 +353,19 @@ describe('links handling', () => {
 				expect(anchorElement).toHaveTextContent(text);
 				expect(anchorElement).toHaveAttribute('href', link);
 
-				if (scheme === 'mailto') {
-					expect(anchorElement).toHaveAttribute('rel', 'nofollow noopener noreferrer');
-					expect(anchorElement).toHaveAttribute('target', '_blank');
-					expect(anchorElement).toHaveAttribute('href', link);
-					expect(anchorElement).toHaveAttribute('title', link);
-					return;
-				}
+				const expectedAttributes = ((): Record<string, string> => {
+					if (scheme === 'mailto') {
+						return { rel: 'nofollow noopener noreferrer', target: '_blank', title: link };
+					}
+					if (isExternal(link)) {
+						return { rel: 'nofollow noopener noreferrer', target: '_blank', title: '' };
+					}
+					return { title };
+				})();
 
-				if (isExternal(link)) {
-					expect(anchorElement).toHaveAttribute('rel', 'nofollow noopener noreferrer');
-					expect(anchorElement).toHaveAttribute('target', '_blank');
-					expect(anchorElement).toHaveAttribute('title', '');
-					return;
+				for (const [attribute, value] of Object.entries(expectedAttributes)) {
+					expect(anchorElement).toHaveAttribute(attribute, value);
 				}
-
-				expect(anchorElement).toHaveAttribute('title', title);
 			});
 		});
 

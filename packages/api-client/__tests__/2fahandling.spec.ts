@@ -60,24 +60,24 @@ test('if the 2fa handler is not provided, it should throw an error', async () =>
 		baseUrl: 'https://example.com',
 	});
 
-	try {
-		await client.post('/v1/login', { user: 'foo', username: 'foo', email: 'foo', password: 'foo', code: 'foo' });
-	} catch (error) {
-		if (!isResponse(error)) {
-			throw error;
-		}
+	const error = await client
+		.post('/v1/login', { user: 'foo', username: 'foo', email: 'foo', password: 'foo', code: 'foo' })
+		.catch((e: unknown) => e);
 
-		expect(error.status).toBe(400);
-
-		const body = await error.json();
-
-		expect(body).toMatchObject({
-			errorType: 'totp-required',
-			details: {
-				method: 'totp',
-			},
-		});
+	if (!isResponse(error)) {
+		throw error;
 	}
+
+	expect(error.status).toBe(400);
+
+	const body = await error.json();
+
+	expect(body).toMatchObject({
+		errorType: 'totp-required',
+		details: {
+			method: 'totp',
+		},
+	});
 });
 
 test('if the 2fa handler is provided, and fails if should throw the error thrown by the handler', async () => {

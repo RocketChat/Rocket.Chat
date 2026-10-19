@@ -138,17 +138,15 @@ describe('Timestamp Conversion Logic', () => {
 	});
 
 	it('should handle extreme timezone values', () => {
-		const extremeTimezones = ['UTC-12', 'UTC+12'];
+		const extremeTimezones = [
+			['UTC-12', '-12:00'],
+			['UTC+12', '+12:00'],
+		];
 
-		extremeTimezones.forEach((timezone) => {
+		extremeTimezones.forEach(([timezone, offset]) => {
 			const result = dateToISOString(testDate, timezone as any);
 			expect(result).toMatch(/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3}[+-]\d{2}:\d{2}$/);
-
-			if (timezone === 'UTC+12') {
-				expect(result).toContain('+12:00');
-			} else {
-				expect(result).toContain('-12:00');
-			}
+			expect(result).toContain(offset);
 		});
 	});
 });
