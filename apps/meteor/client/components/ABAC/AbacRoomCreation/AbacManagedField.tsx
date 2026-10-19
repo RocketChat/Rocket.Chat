@@ -1,5 +1,6 @@
 import { Field, FieldHint, FieldLabel, FieldRow, ToggleSwitch } from '@rocket.chat/fuselage-forms';
 import type { TranslationKey } from '@rocket.chat/ui-contexts';
+import type { ComponentProps } from 'react';
 import { Controller, useFormContext } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 
@@ -9,7 +10,7 @@ type AbacManagedFieldProps = {
 	abac: AbacRoomCreation;
 	canCreatePrivate: boolean;
 	federated?: boolean;
-};
+} & Omit<ComponentProps<typeof Field>, 'children'>;
 
 const getHintKey = ({ enforced, canCreateManaged }: AbacRoomCreation, canCreatePrivate: boolean, federated: boolean): TranslationKey => {
 	if (federated) {
@@ -31,12 +32,12 @@ const getHintKey = ({ enforced, canCreateManaged }: AbacRoomCreation, canCreateP
 	return 'ABAC_Managed_Hint';
 };
 
-const AbacManagedField = ({ abac, canCreatePrivate, federated = false }: AbacManagedFieldProps) => {
+const AbacManagedField = ({ abac, canCreatePrivate, federated = false, ...props }: AbacManagedFieldProps) => {
 	const { t } = useTranslation();
 	const { control } = useFormContext<{ isAbacManaged: boolean }>();
 
 	return (
-		<Field>
+		<Field {...props}>
 			<FieldRow>
 				<FieldLabel>{t('ABAC_Managed')}</FieldLabel>
 				<Controller
