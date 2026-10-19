@@ -1,4 +1,5 @@
-import { configureCalendarSyncJob, DEFAULT_INTERVAL_HOURS, CALENDAR_SYNC_JOB, registerCalendarSyncJob } from './registerCalendarSyncJob';
+import { configureCalendarSyncJob, CALENDAR_SYNC_JOB, registerCalendarSyncJob } from './registerCalendarSyncJob';
+import { DEFAULT_INTERVAL_HOURS } from '../../../../../lib/exchange/calendarSyncSchedule';
 
 const get = jest.fn();
 const has = jest.fn();

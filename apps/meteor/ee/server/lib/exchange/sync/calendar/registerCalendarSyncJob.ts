@@ -6,14 +6,13 @@ import { isValidCron } from 'cron-validator';
 import { whenMailboxesIdle } from './mailboxLock';
 import { runCalendarSync } from './runCalendarSync';
 import { settings } from '../../../../../../server/settings';
+import { getCalendarSyncIntervalHours } from '../../../../../lib/exchange/calendarSyncSchedule';
 import { logger } from '../../logger';
 import { scrubForLog } from '../../scrub';
 
 export const CALENDAR_SYNC_JOB = 'Exchange_Calendar_Sync';
 
 const WATCHED_SETTINGS = ['Outlook_Calendar_Enabled', 'Exchange_Mode', 'Exchange_Calendar_Sync_Interval'];
-
-export const DEFAULT_INTERVAL_HOURS = 1;
 
 const stopCalendarSyncJob = async (): Promise<void> => {
 	if (await cronJobs.has(CALENDAR_SYNC_JOB)) {
@@ -43,18 +42,8 @@ const discardServerSyncedCalendarEvents = async (stillOff: () => boolean): Promi
 	logger.info({ msg: 'Discarded what the server-to-server Exchange calendar sync had imported', deleted });
 };
 
-const fitHours = (hours: number): number => {
-	for (let step = Math.min(hours, 24); step > 1; step--) {
-		if (24 % step === 0) {
-			return step;
-		}
-	}
-
-	return 1;
-};
-
 const intervalToCron = (hours: number): string => {
-	const step = fitHours(Math.trunc(hours) > 0 ? Math.trunc(hours) : DEFAULT_INTERVAL_HOURS);
+	const step = getCalendarSyncIntervalHours(hours);
 
 	return step === 24 ? '0 0 * * *' : `0 */${step} * * *`;
 };

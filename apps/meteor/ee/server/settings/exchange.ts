@@ -100,12 +100,14 @@ export function addSettings(): Promise<void> {
 
 					await this.add('Exchange_Calendar_Sync_Interval', 1, {
 						type: 'int',
+						public: true,
 						enableQuery: serverOnly,
 						invalidValue: 1,
 					});
 
 					await this.add('Exchange_Calendar_Sync_Window_Days', 2, {
 						type: 'int',
+						public: true,
 						enableQuery: serverOnly,
 						invalidValue: 2,
 					});
