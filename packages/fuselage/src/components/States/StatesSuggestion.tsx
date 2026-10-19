@@ -1,13 +1,17 @@
+import type { GetProps } from '@tamagui/web';
 import type { ReactNode, AllHTMLAttributes } from 'react';
+
+import { StatesBlockFrame } from './StatesSubtitle';
+import { withFuselageProvider } from '../FuselageProvider/FuselageProvider';
 
 export type StatesSuggestionProps = {
 	children?: ReactNode;
 } & AllHTMLAttributes<HTMLDivElement>;
 
 const StatesSuggestion = ({ children, ...props }: StatesSuggestionProps) => (
-	<div {...props} className='rcx-states__suggestion'>
+	<StatesBlockFrame {...(props as GetProps<typeof StatesBlockFrame>)} className='rcx-states__suggestion'>
 		{children}
-	</div>
+	</StatesBlockFrame>
 );
 
-export default StatesSuggestion;
+export default withFuselageProvider(StatesSuggestion);
