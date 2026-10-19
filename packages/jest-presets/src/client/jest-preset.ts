@@ -30,7 +30,7 @@ export default {
 	transformIgnorePatterns: [
 		'<rootDir>/node_modules/@babel',
 		'<rootDir>/node_modules/@jest',
-		'/node_modules/(?!@testing-library/|@faker-js/)',
+		'/node_modules/(?!@testing-library/|@faker-js/|@tamagui/)',
 	],
 	moduleFileExtensions: ['ts', 'tsx', 'js', 'jsx', 'json', 'node', 'mjs'],
 
