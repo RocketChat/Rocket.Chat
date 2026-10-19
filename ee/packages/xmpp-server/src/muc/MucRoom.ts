@@ -105,8 +105,11 @@ export class MucRoom {
 			return;
 		}
 
-		const existing = this.occupants.get(parsed.nick);
-		if (existing && existing.realJid !== realJid) {
+		const nickHeldByAnother = () => {
+			const holder = this.occupants.get(parsed.nick);
+			return holder !== undefined && holder.realJid !== realJid;
+		};
+		if (nickHeldByAnother()) {
 			this.deps.send(buildStanzaError(presence, 'conflict', 'cancel'));
 			return;
 		}
@@ -116,6 +119,11 @@ export class MucRoom {
 			const decision = await this.deps.authorizeJoin({ roomId: this.roomId, occupantJid: realJid, nick: parsed.nick });
 			if (!decision.allow) {
 				this.deps.send(buildStanzaError(presence, decision.reason === 'banned' ? 'forbidden' : 'registration-required', 'auth'));
+				return;
+			}
+			// Another join may have taken the nick while this one was being authorized
+			if (nickHeldByAnother()) {
+				this.deps.send(buildStanzaError(presence, 'conflict', 'cancel'));
 				return;
 			}
 			role = decision.role ?? role;

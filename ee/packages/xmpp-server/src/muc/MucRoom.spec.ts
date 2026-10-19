@@ -97,6 +97,16 @@ describe('MucRoom', () => {
 		expect(room.listOccupants()).toHaveLength(1);
 	});
 
+	it('refuses the second of two simultaneous joins under one nick with a conflict (R5)', async () => {
+		const { room, sent } = setup(async () => ({ allow: true }));
+
+		await Promise.all([room.handleJoin(join('alice@remote.tld/pc', 'nick')), room.handleJoin(join('mallory@remote.tld/pc', 'nick'))]);
+
+		const conflicts = sent.filter((stanza) => stanza.getChild('error')?.getChild('conflict'));
+		expect(conflicts.map((stanza) => stanza.attrs.to)).toEqual(['mallory@remote.tld/pc']);
+		expect(room.listOccupants().map((occupant) => occupant.realJid)).toEqual(['alice@remote.tld/pc']);
+	});
+
 	it('broadcasts groupchat messages to remote occupants and emits an event', async () => {
 		const { room, sent, events } = setup();
 		await room.handleJoin(join('alice@remote.tld/pc', 'alice'));
