@@ -25,6 +25,7 @@ import AbacRoomPreviewMemberRow from './AbacRoomPreviewMemberRow';
 import AbacRoomPreviewProgress from './AbacRoomPreviewProgress';
 import { useRoomMembershipPreview } from './useRoomMembershipPreview';
 import { useRoomMembershipPreviewEditor } from './useRoomMembershipPreviewEditor';
+import { useRoomMembershipPreviewRemoved } from './useRoomMembershipPreviewRemoved';
 import WarningModal from '../../WarningModal';
 import AbacErrorCallout from '../AbacErrorCallout';
 
@@ -39,8 +40,6 @@ const emptyLabels: Record<AbacMembershipGroup, TranslationKey> = {
 };
 
 const isMembershipGroup = (value: unknown): value is AbacMembershipGroup => value === 'loses' || value === 'retains';
-
-const countRemoved = (group: AbacMembershipGroup, found: number, total: number) => (group === 'loses' ? found : total - found);
 
 type AbacRoomMembershipPreviewProps = {
 	rid: string;
@@ -63,6 +62,8 @@ const AbacRoomMembershipPreview = ({ rid, roomName, attributes, isSaving, onBack
 
 	const preview = useRoomMembershipPreview(rid, attributes, filter, group);
 
+	const { removed, total: roomTotal, removesEveryone } = useRoomMembershipPreviewRemoved(rid, attributes);
+
 	const options = useMemo<SelectOption[]>(
 		() => [
 			['loses', t(groupLabels.loses)],
@@ -72,8 +73,6 @@ const AbacRoomMembershipPreview = ({ rid, roomName, attributes, isSaving, onBack
 	);
 
 	const { members, checked, total, isPending, isChecking, isPartial, isExhausted } = preview;
-	const removed = isExhausted && filter === '' && total !== undefined ? countRemoved(group, members.length, total) : undefined;
-	const removesEveryone = removed !== undefined && removed > 0 && removed === total;
 
 	const closeModal = () => setModal(null);
 	const confirmSave = () => {
@@ -88,7 +87,7 @@ const AbacRoomMembershipPreview = ({ rid, roomName, attributes, isSaving, onBack
 		if (removed === 0) {
 			return t('ABAC_Preview_Update_room_none', { roomName });
 		}
-		return t('ABAC_Preview_Progress_Removed', { count: removed, total, roomName });
+		return t('ABAC_Preview_Progress_Removed', { count: removed, total: roomTotal, roomName });
 	};
 
 	const handleSave = () => {
