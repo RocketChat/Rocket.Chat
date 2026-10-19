@@ -103,3 +103,34 @@ The Tamagui runtime costs about **+41 kB gzip** before any component beyond `Div
 - **Still to decide:**
   - Bundle size: the compiler (`@tamagui/static`) and `TAMAGUI_RUNTIME=island` could remove most of the runtime.
   - `Box` itself is still css-in-js, and how to migrate it is undecided.
+
+## Migrating a component
+
+Follow `Divider` (`components/Divider/Divider.tsx`).
+
+1. **Frames:** build each styled element with `styled(View, …)`, or `styled(Text, …)` when it can hold text nodes. Tamagui warns when a text node sits directly in a `View`. Use `render: '<tag>'` to keep the original element, such as `button`, `label`, `hr` or `li`.
+2. **Base display:** Tamagui's base CSS makes every `View` a column flexbox with `flex-shrink: 0`, `min-width: 0`, `min-height: 0` and `box-sizing: border-box`. Every `Text` gets `display: inline` and `white-space: pre-wrap`. Restate `display`, `flexDirection`, `flexShrink` and `whiteSpace` whenever the SCSS element did not already behave that way. A plain `div` was `display: block`.
+3. **Values:** take them from `Theme.ts` (`strokeColors`, `surfaceColors`, `fontColors`, …) and from `styleTokens.ts` (`spacing`, `size`, `borderWidth`, `borderRadius`, …). They then resolve to `var(--rcx-…)` with the token as fallback.
+   - Keep each SCSS `theme('<name>', …)` hook as `toCSSValue('--rcx-<name>', …)`.
+   - Never hard-code a color.
+4. **Class names:** keep every `rcx-*` class name the SCSS version rendered, on the same elements, along with the same DOM structure and attributes. E2E tests, app CSS and admin custom CSS select on them.
+5. **`Box` props:** components typed with `BoxProps` pass their remaining props through `useTamaguiBoxProps(props, '<rcx class names>')`, then spread the result onto the frame as `GetProps<typeof Frame>`.
+   - Never render a Tamagui frame through `<Box is={…}>`, because `rcx-box--full` would reset its margin, padding and border.
+   - Keep `ref` forwarding and the `is` behavior.
+6. **Variants and states:**
+   - Modifier classes (`rcx-x--small`) become variants.
+   - `:hover`, `:active`, `:focus-visible` and `:disabled` become `hoverStyle`, `pressStyle`, `focusVisibleStyle` and a `disabled` variant.
+   - Keep the modifier class names anyway.
+7. **What stays in SCSS:** some rules keep living in the component's SCSS file, which is unlayered and so wins over the frame exactly as before:
+   - `::before` and `::after`;
+   - keyframes;
+   - `@media` and `@container`;
+   - attribute and descendant selectors;
+   - any selector that reaches into another component.
+
+   Delete each SCSS rule you move, and the whole file once it is empty.
+8. **Export:** export the public component through `withFuselageProvider`.
+9. **Verify:**
+   - `yarn tsc --noEmit -p tsconfig.json` and the component's Jest specs.
+   - Snapshot diffs may show only Tamagui class names (`is_View`, `_m-…`), removed `rcx-box rcx-box--full`, and shifted `_r_N_` ids.
+   - The A/B screenshot comparison with `develop` must stay pixel-identical.
