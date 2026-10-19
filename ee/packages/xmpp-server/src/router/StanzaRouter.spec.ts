@@ -54,7 +54,7 @@ describe('StanzaRouter', () => {
 	it('emits presence.received for availability presence', () => {
 		const { router, captured } = setup();
 		router.dispatch(parseStanza("<presence from='a@x.tld' to='b@rc.tld'><show>away</show></presence>"));
-		expect(captured['presence.received']).toMatchObject({ availability: 'available', show: 'away' });
+		expect(captured['presence.received']).toMatchObject({ from: 'a@x.tld', to: 'b@rc.tld', availability: 'available', show: 'away' });
 	});
 
 	it('emits presence.subscriptionRequest for subscribe', () => {
