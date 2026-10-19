@@ -47,7 +47,7 @@ MenuSubmenuTrigger.getCollectionNode = function* getCollectionNode<T>(
 		throw new Error('A <MenuSubmenuTrigger> must have at least two children: the trigger item followed by one or more submenu items.');
 	}
 
-	const rendered = trigger.props.children;
+	const rendered = trigger.props.title || trigger.props.children;
 	const textValue =
 		props.textValue ||
 		trigger.props.textValue ||
