@@ -21,8 +21,9 @@ const describeError = (error: unknown, depth = 0): string[] => {
 };
 
 /**
- * Plain-text report of a UI crash, safe to paste into a support ticket: it carries the error and
- * the environment it happened in, but nothing that identifies the user, their rooms or their messages.
+ * Plain-text report of a UI crash to paste into a support ticket: the error as thrown, plus the
+ * environment it happened in. The environment section identifies no user, room or message; the error's
+ * message, stack and causes are copied verbatim, so they can contain whatever the thrower put in them.
  */
 export const buildErrorReport = ({ error, componentStack, routeName, version, commitHash }: ErrorReportSource): string => {
 	const environment = [
