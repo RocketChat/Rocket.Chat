@@ -9,7 +9,7 @@ type User = {
 	tokenExpires?: Date;
 } & Record<string, unknown>;
 
-type LoginResult = {
+export type LoginResult = {
 	id: string;
 	token: string;
 	// A Date when the client decodes EJSON, the raw `{ $date }` otherwise.
@@ -38,9 +38,13 @@ export interface Account extends Emitter<AccountEvents> {
 	loginWithToken(token: string): Promise<{
 		id: string;
 		token: string;
-		tokenExpires: Date;
+		tokenExpires?: Date;
 	}>;
 	logout(): Promise<void>;
+	/** Adopts credentials from a login made outside the SDK, as if the SDK had logged in. */
+	setCredentials(credentials: LoginResult): void;
+	/** Forgets the logged-in user locally without telling the server. */
+	clearCredentials(): void;
 	onLogin(fn: () => void): () => void;
 	onLogout(fn: () => void): () => void;
 	onEmailVerificationLink(fn: (token: string) => void): () => void;
@@ -105,7 +109,7 @@ export class AccountImpl extends Emitter<AccountEvents> implements Account {
 		};
 		this.uid = id;
 		this.emit('user', this.user);
-		return { id, token, tokenExpires: expires as Date };
+		return { id, token, tokenExpires: expires };
 	}
 
 	async loginWithPassword(username: string, password: string): Promise<void> {
@@ -141,6 +145,14 @@ export class AccountImpl extends Emitter<AccountEvents> implements Account {
 		await this.client.callAsyncWithOptions('logout', {
 			wait: true,
 		});
+		this.clearCredentials();
+	}
+
+	setCredentials(credentials: LoginResult): void {
+		this.saveCredentials(credentials);
+	}
+
+	clearCredentials(): void {
 		this.user = undefined;
 		this.uid = undefined;
 	}

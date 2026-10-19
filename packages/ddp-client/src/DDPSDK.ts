@@ -233,8 +233,7 @@ export class DDPSDK implements SDK {
 				} catch (error) {
 					// The next connection retries with the same token.
 					if (error instanceof ConnectionLostError) return;
-					account.user = undefined;
-					account.uid = undefined;
+					account.clearCredentials();
 				}
 			}
 			// Restored only after the re-login so subscriptions that need a user aren't refused.

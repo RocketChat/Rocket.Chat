@@ -55,6 +55,27 @@ describe('login', () => {
 		expect(account.user?.tokenExpires).toEqual(new Date(1700000000000));
 	});
 
+	it('should adopt and forget credentials obtained outside the SDK', () => {
+		const ddp = new DDPDispatcher();
+		const account = new AccountImpl(new ClientStreamImpl(ddp, ddp));
+		const onLogin = jest.fn();
+		const onLogout = jest.fn();
+		account.onLogin(onLogin);
+		account.onLogout(onLogout);
+
+		account.setCredentials({ id: 'uid', token: 'token', tokenExpires: { $date: 1700000000000 } });
+
+		expect(account.uid).toBe('uid');
+		expect(account.user).toEqual({ id: 'uid', token: 'token', tokenExpires: new Date(1700000000000) });
+		expect(onLogin).toHaveBeenCalledTimes(1);
+
+		account.clearCredentials();
+
+		expect(account.uid).toBeUndefined();
+		expect(account.user).toBeUndefined();
+		expect(onLogout).toHaveBeenCalledTimes(1);
+	});
+
 	it('should only take the logged-in user document from the users collection', () => {
 		const ddp = new DDPDispatcher();
 		const account = new AccountImpl(new ClientStreamImpl(ddp, ddp));
