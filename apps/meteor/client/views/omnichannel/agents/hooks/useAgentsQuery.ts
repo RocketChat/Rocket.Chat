@@ -1,5 +1,5 @@
 import type { PaginatedRequest } from '@rocket.chat/rest-typings';
-import { usePaginatedQuery } from '@rocket.chat/ui-client';
+import { getCombineFn, usePaginatedQuery } from '@rocket.chat/ui-client';
 import { useEndpoint } from '@rocket.chat/ui-contexts';
 
 import { omnichannelQueryKeys } from '../../../../lib/queryKeys';
@@ -11,7 +11,7 @@ export const useAgentsQuery = (query: PaginatedRequest, { offset, count }: { off
 		query,
 		queryKey: omnichannelQueryKeys.agents(query),
 		queryFn: getAgents,
-		itemsKey: 'users',
+		combineData: getCombineFn('users'),
 		offset,
 		count,
 	});

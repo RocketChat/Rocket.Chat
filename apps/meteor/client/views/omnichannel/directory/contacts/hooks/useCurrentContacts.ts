@@ -1,5 +1,5 @@
 import type { OperationResult, PaginatedRequest } from '@rocket.chat/rest-typings';
-import { usePaginatedQuery } from '@rocket.chat/ui-client';
+import { getCombineFn, usePaginatedQuery } from '@rocket.chat/ui-client';
 import { useEndpoint } from '@rocket.chat/ui-contexts';
 
 type CurrentContactsQuery = PaginatedRequest<{
@@ -15,7 +15,7 @@ export const useCurrentContacts = (query: CurrentContactsQuery, { offset, count 
 		query,
 		queryKey: ['current-contacts', query],
 		queryFn: (query) => currentContacts(query) as unknown as Promise<CurrentContactsResult>,
-		itemsKey: 'contacts',
+		combineData: getCombineFn('contacts'),
 		offset,
 		count,
 	});

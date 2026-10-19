@@ -9,6 +9,7 @@ import {
 	GenericTableHeaderCell,
 	GenericTableLoadingTable,
 	GenericTableRow,
+	getCombineFn,
 	usePaginatedQuery,
 	usePagination,
 	useSort,
@@ -57,7 +58,7 @@ const ManagersTable = () => {
 		query,
 		queryKey,
 		queryFn: getManagers,
-		itemsKey: 'users',
+		combineData: getCombineFn('users'),
 		offset: current,
 		count: itemsPerPage,
 	});

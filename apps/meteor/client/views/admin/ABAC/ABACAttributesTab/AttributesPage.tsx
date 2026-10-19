@@ -7,6 +7,7 @@ import {
 	GenericTableHeader,
 	GenericTableHeaderCell,
 	GenericTableRow,
+	getCombineFn,
 	usePaginatedQuery,
 	usePagination,
 	GenericNoResults,
@@ -54,7 +55,7 @@ const AttributesPage = () => {
 		query,
 		queryKey,
 		queryFn: getAttributes,
-		itemsKey: 'attributes',
+		combineData: getCombineFn('attributes'),
 		offset: current,
 		count: itemsPerPage,
 	});
