@@ -4,13 +4,18 @@
 @use '../../styles/primitives/rich-text.scss';
 
 .rcx-field {
-	display: flex;
-	flex-flow: column nowrap;
-	align-items: stretch;
-	flex-shrink: 0;
+	// Tamagui has no font smoothing style props
+	&,
+	&__row,
+	&__description,
+	&__hint,
+	&__error,
+	&__link {
+		-webkit-font-smoothing: antialiased;
+		-moz-osx-font-smoothing: grayscale;
+	}
 
-	width: 100%;
-
+	// Styles another component, `Label`
 	&__label {
 		@include use-font-scale(p2m);
 		align-self: flex-start;
@@ -21,50 +26,10 @@
 		color: colors.font(default);
 	}
 
-	&__description {
-		@include use-font-scale(p2);
-		margin-block: lengths.margin(2);
-
-		color: colors.font(secondary-info);
-		@extend %with-inline-elements;
-	}
-
-	&__row {
-		display: flex;
-		flex-flow: row nowrap;
-		justify-content: space-between;
-		align-items: center;
-
-		margin-block: lengths.margin(4) lengths.margin(2);
-
-		color: colors.font(secondary-info);
-
-		&--justify-end {
-			justify-content: flex-end;
-		}
-	}
-
-	&__hint {
-		@include use-font-scale(c1);
-		margin-block: lengths.margin(2);
-
-		color: colors.font(secondary-info);
-		@extend %with-inline-elements;
-	}
-
-	&__error {
-		@include use-font-scale(c1);
-		margin-block: lengths.margin(2);
-
-		color: colors.font(danger);
-		@extend %with-inline-elements;
-	}
-
+	&__description,
+	&__hint,
+	&__error,
 	&__link {
-		@include use-font-scale(c1);
-		margin-block: lengths.margin(2);
-
-		color: colors.font(info);
 		@extend %with-inline-elements;
 	}
 }

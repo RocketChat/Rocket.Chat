@@ -1,12 +1,17 @@
-import WithErrorWrapper from '../../helpers/WithErrorWrapper';
-import type { ElementProps } from '../../types/ElementProps';
-import { Box } from '../Box';
-import { FieldContext } from './Field';
+import type { GetProps } from '@tamagui/web';
 
-export type FieldDescriptionProps = ElementProps<HTMLSpanElement>;
+import WithErrorWrapper from '../../helpers/WithErrorWrapper';
+import { useTamaguiBoxProps } from '../../hooks/useTamaguiBoxProps';
+import type { BoxProps } from '../Box';
+import { FieldContext } from './Field';
+import { FieldDescriptionFrame } from './FieldFrames';
+import { withFuselageProvider } from '../FuselageProvider/FuselageProvider';
+
+export type FieldDescriptionProps = BoxProps;
 
 const FieldDescription = (props: FieldDescriptionProps) => {
-	const component = <Box is='span' rcx-field__description {...props} />;
+	const frameProps = useTamaguiBoxProps({ ...props }, 'rcx-field__description');
+	const component = <FieldDescriptionFrame {...(frameProps as GetProps<typeof FieldDescriptionFrame>)} />;
 
 	if (process.env.NODE_ENV === 'development') {
 		return (
@@ -19,4 +24,4 @@ const FieldDescription = (props: FieldDescriptionProps) => {
 	return component;
 };
 
-export default FieldDescription;
+export default withFuselageProvider(FieldDescription);

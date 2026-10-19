@@ -1,14 +1,17 @@
-import type { AnchorHTMLAttributes } from 'react';
+import type { GetProps } from '@tamagui/web';
 
 import WithErrorWrapper from '../../helpers/WithErrorWrapper';
-import type { ElementProps } from '../../types/ElementProps';
-import { Box } from '../Box';
+import { useTamaguiBoxProps } from '../../hooks/useTamaguiBoxProps';
+import type { BoxProps } from '../Box';
 import { FieldContext } from './Field';
+import { FieldLinkFrame } from './FieldFrames';
+import { withFuselageProvider } from '../FuselageProvider/FuselageProvider';
 
-export type FieldLinkProps = ElementProps<HTMLAnchorElement, AnchorHTMLAttributes<HTMLAnchorElement>>;
+export type FieldLinkProps = BoxProps;
 
 const FieldLink = (props: FieldLinkProps) => {
-	const component = <Box is='a' rcx-field__link {...props} />;
+	const frameProps = useTamaguiBoxProps({ ...props }, 'rcx-field__link');
+	const component = <FieldLinkFrame {...(frameProps as GetProps<typeof FieldLinkFrame>)} />;
 
 	if (process.env.NODE_ENV === 'development') {
 		return (
@@ -21,4 +24,4 @@ const FieldLink = (props: FieldLinkProps) => {
 	return component;
 };
 
-export default FieldLink;
+export default withFuselageProvider(FieldLink);
