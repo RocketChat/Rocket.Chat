@@ -29,7 +29,7 @@ exports[`renders CustomEmpty without crashing 1`] = `
       >
         <i
           aria-hidden="true"
-          class="rcx-box rcx-box--full rcx-icon--name-chevron-down rcx-icon rcx-css-4pvxx3"
+          class="is_Text _d-1409515928 _ws-311910413 _ww-408434756 _us-601212022 _va-1101652081 _ls-1720078126 _ff-1916555734 _fs-1279428672 _fw-289165218 _fs-477064150 _fv-1578983722 _lh-2067209205 _tr-1510281189 rcx-icon--name-chevron-down rcx-icon rcx-css-4pvxx3"
         >
           
         </i>
@@ -68,7 +68,7 @@ exports[`renders Default without crashing 1`] = `
       >
         <i
           aria-hidden="true"
-          class="rcx-box rcx-box--full rcx-icon--name-chevron-down rcx-icon rcx-css-4pvxx3"
+          class="is_Text _d-1409515928 _ws-311910413 _ww-408434756 _us-601212022 _va-1101652081 _ls-1720078126 _ff-1916555734 _fs-1279428672 _fw-289165218 _fs-477064150 _fv-1578983722 _lh-2067209205 _tr-1510281189 rcx-icon--name-chevron-down rcx-icon rcx-css-4pvxx3"
         >
           
         </i>
@@ -109,7 +109,7 @@ exports[`renders Disabled without crashing 1`] = `
       >
         <i
           aria-hidden="true"
-          class="rcx-box rcx-box--full rcx-icon--name-chevron-down rcx-icon rcx-css-4pvxx3"
+          class="is_Text _d-1409515928 _ws-311910413 _ww-408434756 _us-601212022 _va-1101652081 _ls-1720078126 _ff-1916555734 _fs-1279428672 _fw-289165218 _fs-477064150 _fv-1578983722 _lh-2067209205 _tr-1510281189 rcx-icon--name-chevron-down rcx-icon rcx-css-4pvxx3"
         >
           
         </i>
@@ -148,7 +148,7 @@ exports[`renders Error without crashing 1`] = `
       >
         <i
           aria-hidden="true"
-          class="rcx-box rcx-box--full rcx-icon--name-chevron-down rcx-icon rcx-css-4pvxx3"
+          class="is_Text _d-1409515928 _ws-311910413 _ww-408434756 _us-601212022 _va-1101652081 _ls-1720078126 _ff-1916555734 _fs-1279428672 _fw-289165218 _fs-477064150 _fv-1578983722 _lh-2067209205 _tr-1510281189 rcx-icon--name-chevron-down rcx-icon rcx-css-4pvxx3"
         >
           
         </i>
@@ -186,7 +186,7 @@ exports[`renders WithFilter without crashing 1`] = `
       >
         <i
           aria-hidden="true"
-          class="rcx-box rcx-box--full rcx-icon--name-chevron-down rcx-icon rcx-css-4pvxx3"
+          class="is_Text _d-1409515928 _ws-311910413 _ww-408434756 _us-601212022 _va-1101652081 _ls-1720078126 _ff-1916555734 _fs-1279428672 _fw-289165218 _fs-477064150 _fv-1578983722 _lh-2067209205 _tr-1510281189 rcx-icon--name-chevron-down rcx-icon rcx-css-4pvxx3"
         >
           
         </i>
@@ -217,35 +217,35 @@ exports[`renders WithValue without crashing 1`] = `
             type="button"
           />
           <button
-            class="rcx-box rcx-chip rcx-css-i9v8z4"
+            class="is_View _d-341075704 _f-1841970073 _o-1119039191 _ai-121763387 _mw-354604370 _mh-499962855 _m-2017216831 _p-1943363302 _b-863864549 _br-1397394445 _o-1106425799 _c-22887652 _a-1578443335 _ff-409630021 _fs-347291933 _fw-289165218 _lh-1925956564 _ls-1782815796 _c-282297947 _b-1394375569 _bs-1465656659 rcx-box rcx-chip rcx-css-i9v8z4"
             tabindex="-1"
             type="button"
           >
             <span
-              class="rcx-box rcx-chip__text rcx-css-i9v8z4"
+              class="is_Text _o-1119039191 _to-1727917045 _ws-973912173 rcx-box rcx-chip__text rcx-css-i9v8z4"
             >
               a teste 1
             </span>
             <i
               aria-hidden="true"
-              class="rcx-box rcx-box--full rcx-icon--name-cross rcx-icon rcx-css-i9v8z4 rcx-css-1wv1vf9"
+              class="is_Text _d-1409515928 _ws-311910413 _ww-408434756 _us-601212022 _va-1101652081 _ls-1720078126 _ff-1916555734 _fs-1279428672 _fw-289165218 _fs-477064150 _fv-1578983722 _lh-2067209205 _tr-1510281189 rcx-icon--name-cross rcx-icon rcx-css-i9v8z4 rcx-css-1wv1vf9"
             >
               
             </i>
           </button>
           <button
-            class="rcx-box rcx-chip rcx-css-i9v8z4"
+            class="is_View _d-341075704 _f-1841970073 _o-1119039191 _ai-121763387 _mw-354604370 _mh-499962855 _m-2017216831 _p-1943363302 _b-863864549 _br-1397394445 _o-1106425799 _c-22887652 _a-1578443335 _ff-409630021 _fs-347291933 _fw-289165218 _lh-1925956564 _ls-1782815796 _c-282297947 _b-1394375569 _bs-1465656659 rcx-box rcx-chip rcx-css-i9v8z4"
             tabindex="-1"
             type="button"
           >
             <span
-              class="rcx-box rcx-chip__text rcx-css-i9v8z4"
+              class="is_Text _o-1119039191 _to-1727917045 _ws-973912173 rcx-box rcx-chip__text rcx-css-i9v8z4"
             >
               b teste 2
             </span>
             <i
               aria-hidden="true"
-              class="rcx-box rcx-box--full rcx-icon--name-cross rcx-icon rcx-css-i9v8z4 rcx-css-1wv1vf9"
+              class="is_Text _d-1409515928 _ws-311910413 _ww-408434756 _us-601212022 _va-1101652081 _ls-1720078126 _ff-1916555734 _fs-1279428672 _fw-289165218 _fs-477064150 _fv-1578983722 _lh-2067209205 _tr-1510281189 rcx-icon--name-cross rcx-icon rcx-css-i9v8z4 rcx-css-1wv1vf9"
             >
               
             </i>
@@ -257,7 +257,7 @@ exports[`renders WithValue without crashing 1`] = `
       >
         <i
           aria-hidden="true"
-          class="rcx-box rcx-box--full rcx-icon--name-chevron-down rcx-icon rcx-css-4pvxx3"
+          class="is_Text _d-1409515928 _ws-311910413 _ww-408434756 _us-601212022 _va-1101652081 _ls-1720078126 _ff-1916555734 _fs-1279428672 _fw-289165218 _fs-477064150 _fv-1578983722 _lh-2067209205 _tr-1510281189 rcx-icon--name-chevron-down rcx-icon rcx-css-4pvxx3"
         >
           
         </i>
