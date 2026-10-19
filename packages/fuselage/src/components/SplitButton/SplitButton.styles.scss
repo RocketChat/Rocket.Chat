@@ -27,13 +27,6 @@
 }
 
 .rcx-split-button {
-	display: inline-flex;
-
-	flex-flow: row nowrap;
-	align-items: stretch;
-
-	border-radius: button.$button-border-radius;
-
 	// Covered by the opaque action; shows through the ghost segment. Translucency
 	// lives in the color — `opacity` here would fade the children.
 	background-color: button-colors.$split-button-background-color;
