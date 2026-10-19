@@ -23,3 +23,18 @@ it.each(['error-challenge-expired', 'error-challenge-not-found'])(
 		await waitFor(() => expect(dispatch).toHaveBeenCalledWith({ type: 'error', message: 'Login expired' }));
 	},
 );
+
+it('tells the user a new code is sent at most once a minute when resending succeeds', async () => {
+	const dispatch = jest.fn();
+	const wrapper = mockAppRoot()
+		.withTranslations('en', 'core', { 'Two-factor_email_code_requested': 'One code each minute', 'Cloud_resend_email': 'Resend email' })
+		.withEndpoint('POST', '/v1/twoFactorChallenges.sendEmailCode', () => null)
+		.withToastMessageDispatch(dispatch)
+		.build();
+
+	render(<TwoFactorEmailModal challengeId='challenge-1' onConfirm={jest.fn()} onClose={jest.fn()} />, { wrapper });
+
+	await userEvent.click(screen.getByRole('button', { name: 'Resend email' }));
+
+	await waitFor(() => expect(dispatch).toHaveBeenCalledWith({ type: 'success', message: 'One code each minute' }));
+});

@@ -236,7 +236,7 @@ describe('EmailCheck', () => {
 			expect(Mailer.send).toHaveBeenCalledTimes(1);
 		});
 
-		it('reports that no code was generated while the cooldown holds', async () => {
+		it('reports that no code was generated when one was sent in the last minute', async () => {
 			attempts = 5;
 			users.addEmailCodeByUserId.mockResolvedValue({ modifiedCount: 0 });
 			const user = await withStoredCode('123456', new Date(NOW.getTime() + FIVE_MINUTES), attempts);

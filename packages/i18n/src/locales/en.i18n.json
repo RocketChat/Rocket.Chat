@@ -6924,6 +6924,7 @@
   "Two-factor_authentication_native_mobile_app_warning": "WARNING: Once you enable this, you will not be able to login on the native mobile apps (Rocket.Chat+) using your password until they implement the 2FA.",
   "Two-factor_authentication_required": "Two-factor authentication required",
   "Two-factor_authentication_via_TOTP": "Two-factor authentication via TOTP",
+  "Two-factor_email_code_requested": "A new code is sent at most once a minute. If you requested one in the last minute, use that code.",
   "Type": "Type",
   "Type_your_email": "Type your email",
   "Type_your_job_title": "Type your job title",
