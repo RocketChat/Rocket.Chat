@@ -47,6 +47,7 @@ if (!Accounts.saml) {
 
 const { logout } = Meteor;
 
+// eslint-disable-next-line @typescript-eslint/no-misused-promises -- callers may await the SAML logout
 Meteor.logout = async function (...args) {
 	const standardLogout = () => logout.apply(Meteor, args);
 
@@ -128,4 +129,5 @@ const loginWithSamlTokenAndTOTP = (credentialToken: string, code: string) =>
 		],
 	});
 
+// eslint-disable-next-line @typescript-eslint/no-misused-promises -- callers may await the login promise
 Meteor.loginWithSamlToken = handleLogin(loginWithSamlToken, loginWithSamlTokenAndTOTP);

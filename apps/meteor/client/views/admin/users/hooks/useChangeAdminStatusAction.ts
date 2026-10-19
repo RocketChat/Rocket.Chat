@@ -37,7 +37,7 @@ export const useChangeAdminStatusAction = (
 		? {
 				icon: 'key',
 				content: isAdmin ? t('Remove_Admin') : t('Make_Admin'),
-				onClick: changeAdminStatus,
+				onClick: () => void changeAdminStatus(),
 			}
 		: undefined;
 };

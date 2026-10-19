@@ -134,5 +134,5 @@ export const useInstallApp = (file: File): { install: () => void; isInstalling: 
 		return uploadFile(appFile, manifest);
 	};
 
-	return { install, isInstalling };
+	return { install: () => void install(), isInstalling };
 };

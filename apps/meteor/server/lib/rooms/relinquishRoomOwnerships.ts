@@ -38,7 +38,7 @@ const bulkRoomCleanUp = async (rids: string[]) => {
 
 	const [, , , , deletedRoomIds] = await Promise.all([
 		Subscriptions.removeByRoomIds(rids, {
-			async onTrash(doc) {
+			onTrash(doc) {
 				void notifyOnSubscriptionChanged(doc, 'removed');
 			},
 		}),

@@ -98,6 +98,7 @@ const VideoConfContextProvider = ({ children }: VideoConfContextProviderProps) =
 			dismissOutgoing: () => setOutgoing(undefined),
 			startCall,
 			acceptCall: (callId) => VideoConfManager.acceptIncomingCall(callId),
+			// eslint-disable-next-line @typescript-eslint/no-misused-promises -- the UiKit action handler returns the join promise to its caller
 			joinCall: (callId) => VideoConfManager.joinCall(callId),
 			dismissCall: (callId) => VideoConfManager.dismissIncomingCall(callId),
 			rejectIncomingCall: (callId) => VideoConfManager.rejectIncomingCall(callId),

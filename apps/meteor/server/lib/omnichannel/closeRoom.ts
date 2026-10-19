@@ -195,7 +195,7 @@ async function doCloseRoom(
 	const subs = await Subscriptions.countByRoomId(rid, { session });
 	if (subs) {
 		const removedSubs = await Subscriptions.removeByRoomId(rid, {
-			async onTrash(doc) {
+			onTrash(doc) {
 				void notifyOnSubscriptionChanged(doc, 'removed');
 			},
 			session,

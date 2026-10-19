@@ -61,7 +61,7 @@ const CustomUserStatus = ({ reload, onClick, children }: CustomUserStatusProps) 
 	});
 
 	useEffect(() => {
-		reload.current = refetch;
+		reload.current = () => void refetch();
 	}, [reload, refetch]);
 
 	if (!data) {

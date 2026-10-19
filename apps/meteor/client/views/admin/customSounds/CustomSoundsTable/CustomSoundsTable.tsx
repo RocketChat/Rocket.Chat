@@ -51,7 +51,7 @@ const CustomSoundsTable = ({ reload, onClick }: CustomSoundsTableProps) => {
 	});
 
 	useEffect(() => {
-		reload.current = refetch;
+		reload.current = () => void refetch();
 	}, [reload, refetch]);
 
 	const headers = (

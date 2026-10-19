@@ -82,7 +82,7 @@ export const ConfirmationStep: StoryObj<typeof DeleteTeamConfirmation> = {
 				_updatedAt: '2022-02-02 09:00',
 			},
 		},
-		onConfirm: async (_roomsToDelete) => action('onConfirm'),
+		onConfirm: action('onConfirm'),
 		onCancel: action('onCancel'),
 		onReturn: action('onReturn'),
 	},

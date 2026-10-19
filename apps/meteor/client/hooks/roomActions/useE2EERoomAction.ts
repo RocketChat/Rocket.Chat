@@ -52,7 +52,7 @@ export const useE2EERoomAction = () => {
 				component: BaseDisableE2EEModal,
 				props: {
 					onClose: imperativeModal.close,
-					onConfirm: handleToogleE2E,
+					onConfirm: () => void handleToogleE2E(),
 					roomType,
 					roomId,
 					canResetRoomKey,
@@ -63,7 +63,7 @@ export const useE2EERoomAction = () => {
 				component: EnableE2EEModal,
 				props: {
 					onClose: imperativeModal.close,
-					onConfirm: handleToogleE2E,
+					onConfirm: () => void handleToogleE2E(),
 					roomType,
 				},
 			});
@@ -101,7 +101,7 @@ export const useE2EERoomAction = () => {
 			title: enabledOnRoom ? 'Disable_E2E_encryption' : 'Enable_E2E_encryption',
 			icon: 'key',
 			order: 13,
-			action,
+			action: () => void action(),
 			type: 'organization',
 			...(federated && {
 				tooltip: t('core.E2E_unavailable_for_federation'),

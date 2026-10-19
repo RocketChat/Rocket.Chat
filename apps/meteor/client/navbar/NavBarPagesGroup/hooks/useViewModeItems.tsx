@@ -50,7 +50,7 @@ export const useViewModeItems = (): GenericMenuItemProps[] => {
 			id: 'avatars',
 			content: t('Avatars'),
 			icon: 'user-rounded',
-			onClick: handleChangeSidebarDisplayAvatar,
+			onClick: () => void handleChangeSidebarDisplayAvatar(),
 			addon: <ToggleSwitch checked={sidebarDisplayAvatar} onChange={() => undefined} />,
 		},
 	];

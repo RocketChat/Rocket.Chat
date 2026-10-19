@@ -65,7 +65,7 @@ const RoomsTable = ({ reload }: { reload: MutableRefObject<() => void> }) => {
 	});
 
 	useEffect(() => {
-		reload.current = refetch;
+		reload.current = () => void refetch();
 	}, [reload, refetch]);
 
 	useEffect(() => {

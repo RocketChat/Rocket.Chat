@@ -12,7 +12,7 @@ export const deleteRoom = async function (rid: string): Promise<void> {
 	await callbacks.run('beforeDeleteRoom', rid);
 
 	await Subscriptions.removeByRoomId(rid, {
-		async onTrash(doc) {
+		onTrash(doc) {
 			void notifyOnSubscriptionChanged(doc, 'removed');
 		},
 	});

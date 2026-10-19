@@ -110,7 +110,7 @@ async function cleanGuestHistory(_id: string) {
 	for await (const room of cursor) {
 		await Promise.all([
 			Subscriptions.removeByRoomId(room._id, {
-				async onTrash(doc) {
+				onTrash(doc) {
 					void notifyOnSubscriptionChanged(doc, 'removed');
 				},
 			}),

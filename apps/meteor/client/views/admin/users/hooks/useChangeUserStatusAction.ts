@@ -43,7 +43,7 @@ export const useChangeUserStatusAction = (userId: IUser['_id'], isActive: boolea
 		? {
 				icon: 'user',
 				content: isActive ? t('Deactivate') : t('Activate'),
-				onClick: changeActiveStatus,
+				onClick: () => void changeActiveStatus(),
 			}
 		: undefined;
 };

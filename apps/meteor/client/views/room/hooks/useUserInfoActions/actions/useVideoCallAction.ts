@@ -80,7 +80,7 @@ export const useVideoCallAction = (user: Pick<IUser, '_id' | 'username' | 'feder
 					type: 'communication',
 					title: t('Video_call'),
 					icon: 'video',
-					onClick: action,
+					onClick: () => void action(),
 				}
 			: undefined;
 	}, [

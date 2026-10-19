@@ -289,7 +289,7 @@ export async function removeOmnichannelRoom(rid: string) {
 		Messages.removeByRoomId(rid),
 		ReadReceipts.removeByRoomId(rid),
 		Subscriptions.removeByRoomId(rid, {
-			async onTrash(doc) {
+			onTrash(doc) {
 				void notifyOnSubscriptionChanged(doc, 'removed');
 			},
 		}),
