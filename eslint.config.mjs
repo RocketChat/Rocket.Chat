@@ -534,4 +534,39 @@ export default [
 			'new-cap': 'off',
 		},
 	},
+	{
+		rules: {
+			complexity: 'off',
+		},
+	},
+	{
+		files: ['**/*.@(ts|tsx|cts|mts)'],
+		rules: {
+			'react/prop-types': 'off',
+		},
+	},
+	{
+		files: ['**/*.@(spec|test|tests).@(ts|tsx|js|jsx)', '**/tests/**', '**/__tests__/**'],
+		rules: {
+			'@typescript-eslint/no-non-null-assertion': 'off',
+			'testing-library/no-container': 'off',
+			'testing-library/no-node-access': 'off',
+			'testing-library/prefer-user-event': 'off',
+			'testing-library/render-result-naming-convention': 'off',
+		},
+	},
+	// Chai assertions such as `expect(x).to.be.true` are expressions by design
+	{
+		files: ['apps/meteor/@(app|lib|server|ee/app|ee/server|ee/tests)/**/*.@(spec|tests).ts'],
+		rules: {
+			'@typescript-eslint/no-unused-expressions': 'off',
+		},
+	},
+	// The bundles exist only after a build
+	{
+		files: ['packages/fuselage/index.js'],
+		rules: {
+			'import-x/no-unresolved': 'off',
+		},
+	},
 ];
