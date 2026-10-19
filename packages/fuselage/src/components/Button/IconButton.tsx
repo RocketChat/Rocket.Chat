@@ -1,10 +1,22 @@
 import type { Keys as IconName } from '@rocket.chat/icons';
-import type { AllHTMLAttributes, ReactElement, ReactNode, RefAttributes } from 'react';
+import type { GetProps } from '@tamagui/web';
+import type { ReactElement, ReactNode } from 'react';
 import { isValidElement, useMemo } from 'react';
 
-import type { ElementProps } from '../../types/ElementProps';
-import { Box } from '../Box';
+import { useTamaguiBoxProps } from '../../hooks/useTamaguiBoxProps';
+import type { BoxProps } from '../Box';
+import { BoxTransforms, useBoxTransform } from '../Box/BoxTransforms';
+import { withFuselageProvider } from '../FuselageProvider/FuselageProvider';
 import { Icon } from '../Icon';
+import { ButtonBadge, ButtonFrame, renderButtonElement } from './ButtonFrame';
+
+export type IconButtonSize = {
+	large?: boolean;
+	medium?: boolean;
+	small?: boolean;
+	tiny?: boolean;
+	mini?: boolean;
+};
 
 export type IconButtonProps = {
 	icon: IconName | ReactElement<any>;
@@ -16,28 +28,15 @@ export type IconButtonProps = {
 	 * instead, which is the caller's to write.
 	 */
 	badge?: ReactNode;
-	/** The corner the badge is pinned to. */
-	badgePosition?: 'top-end' | 'bottom-end';
-	variant?:
-		'primary' | 'secondary' | 'info' | 'danger' | 'warning' | 'success' | 'secondary-danger' | 'secondary-warning' | 'secondary-success';
-	size?: 'mini' | 'tiny' | 'small' | 'medium' | 'large';
+	primary?: boolean;
+	secondary?: boolean;
+	info?: boolean;
+	danger?: boolean;
+	warning?: boolean;
+	success?: boolean;
 	pressed?: boolean;
-	/** Renders a link instead of a button, for actions that navigate or download. */
-	is?: 'button' | 'a';
-	/** Opens the link in a new tab, without giving it access to this page. */
-	external?: boolean;
-	/** Paints the glyph with a font token, for icon-only actions on light surfaces. */
-	color?: 'default' | 'danger';
-} & Omit<ElementProps<HTMLButtonElement | HTMLAnchorElement, AllHTMLAttributes<HTMLButtonElement | HTMLAnchorElement>>, 'ref'> &
-	RefAttributes<Element>;
-
-const iconSizes = {
-	mini: 'x12',
-	tiny: 'x16',
-	small: 'x20',
-	medium: 'x24',
-	large: 'x28',
-} as const;
+} & IconButtonSize &
+	BoxProps;
 
 const getVariantClass = (variant: string) => {
 	if (variant) {
@@ -55,18 +54,38 @@ const getPressedClass = (variant: string) => {
 function IconButton({
 	icon,
 	badge,
-	badgePosition = 'top-end',
-	variant: variantProp,
-	size = 'large',
+	primary,
+	info,
+	secondary,
+	danger,
+	warning,
+	success,
+	mini,
+	large,
+	tiny,
+	small,
+	medium,
 	pressed,
-	is = 'button',
-	external,
-	color,
 	children,
+	is = 'button',
+	disabled,
 	...props
 }: IconButtonProps) {
-	// `secondary-info` is the class that paints the primary palette.
-	const variant = variantProp === 'primary' ? 'secondary-info' : (variantProp ?? '');
+	const variant = useMemo(
+		() =>
+			(secondary && danger && 'secondary-danger') ||
+			(secondary && warning && 'secondary-warning') ||
+			(secondary && success && 'secondary-success') ||
+			(secondary && info && 'secondary-info') ||
+			(info && 'info') ||
+			(success && 'success') ||
+			(warning && 'warning') ||
+			(danger && 'danger') ||
+			(primary && 'secondary-info') ||
+			(secondary && 'secondary') ||
+			'',
+		[danger, info, primary, secondary, success, warning],
+	);
 
 	const kindAndVariantProps = useMemo(() => {
 		const variantProp = {} as any;
@@ -79,33 +98,51 @@ function IconButton({
 		return variantProp;
 	}, [variant, pressed]);
 
+	const size = useMemo(
+		() => (mini && 'mini') || (tiny && 'tiny') || (small && 'small') || (medium && 'medium') || (large && 'large') || 'large',
+		[medium, mini, small, tiny, large],
+	);
+
 	const getSizeClass = () => ({ [`rcx-button--${size}-square`]: true });
 
-	return (
-		<Box
-			is={is}
-			{...(is === 'a'
-				? { rel: external ? 'noopener noreferrer' : undefined, target: external ? '_blank' : undefined }
-				: { type: 'button' })}
-			rcx-button
-			rcx-button--icon
-			rcx-button--square
-			{...kindAndVariantProps}
-			{...getSizeClass()}
-			rcx-button--icon-pressed={pressed}
-			rcx-button--with-badge={Boolean(badge)}
-			color={color}
-			{...props}
+	const getIconSize = () => (large && 'x28') || (medium && 'x24') || (small && 'x20') || (tiny && 'x16') || (mini && 'x12') || 'x28';
+
+	const transform = useBoxTransform();
+
+	const frameProps = useTamaguiBoxProps(
+		(transform ?? ((props) => props))({
+			'type': 'button',
+			'rcx-button': true,
+			'rcx-button--icon': true,
+			'rcx-button--square': true,
+			...kindAndVariantProps,
+			...getSizeClass(),
+			'rcx-button--icon-pressed': pressed,
+			'rcx-button--with-badge': Boolean(badge),
+			...props,
+		}),
+	);
+
+	const button = (
+		<ButtonFrame
+			square
+			icon
+			squareSize={size}
+			withBadge={Boolean(badge)}
+			render={renderButtonElement(is, disabled)}
+			{...(frameProps as GetProps<typeof ButtonFrame>)}
 		>
-			{isValidElement<any>(icon) ? icon : <Icon name={icon} size={iconSizes[size]} />}
+			{isValidElement<any>(icon) ? icon : <Icon name={icon} size={getIconSize()} />}
 			{Boolean(badge) && (
-				<span className={`rcx-button__badge rcx-button__badge--${badgePosition}`} aria-hidden='true'>
+				<ButtonBadge className='rcx-button__badge' aria-hidden>
 					{badge}
-				</span>
+				</ButtonBadge>
 			)}
 			{children}
-		</Box>
+		</ButtonFrame>
 	);
+
+	return transform ? <BoxTransforms.Provider value={null}>{button}</BoxTransforms.Provider> : button;
 }
 
-export default IconButton;
+export default withFuselageProvider(IconButton);
