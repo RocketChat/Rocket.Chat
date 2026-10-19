@@ -30,7 +30,6 @@ export type AbacRoomAttributesGrant = 'manage-abac-admin-rooms' | 'edit-room-aba
 export type AbacRoomMembershipPreviewPage = {
 	filter?: string;
 	after?: AbacPreviewCursor;
-	count: number;
 	group?: AbacMembershipGroup;
 };
 

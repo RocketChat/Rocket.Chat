@@ -8,6 +8,7 @@ import {
 	OnlyCompliantCanBeAddedToRoomError,
 	PdpUnavailableError,
 } from './errors';
+import { PREVIEW_SCAN_LIMIT } from './helper';
 import { AbacService } from './index';
 import { LocalPDP } from './pdp';
 import { LocalAttributeStore, VirtruAttributeStore } from './store';
@@ -722,9 +723,9 @@ describe('AbacService (unit)', () => {
 				};
 
 				await expect(
-					service.previewRoomMembers('r1', { region: ['emea'] }, fakeActor, { count: 10 }, 'edit-room-abac-attributes'),
+					service.previewRoomMembers('r1', { region: ['emea'] }, fakeActor, {}, 'edit-room-abac-attributes'),
 				).rejects.toMatchObject({ code: 'error-abac-required-attributes-removed' });
-				await expect(service.previewRoomMembers('r1', {}, fakeActor, { count: 10 }, 'edit-room-abac-attributes')).rejects.toMatchObject({
+				await expect(service.previewRoomMembers('r1', {}, fakeActor, {}, 'edit-room-abac-attributes')).rejects.toMatchObject({
 					code: 'error-abac-room-attributes-cleared',
 				});
 			});
@@ -2035,27 +2036,25 @@ describe('AbacService (unit)', () => {
 		const room = { _id: 'r1', t: 'p', name: 'room', abacAttributes: [{ key: 'dept', values: ['eng'] }] };
 		const adding = { dept: ['eng', 'sales'] };
 		const required = [{ key: 'dept', values: ['eng', 'sales'] }];
-		const page: AbacRoomMembershipPreviewPage = { count: 10 };
 		const alice = { _id: 'alice', username: 'alice', name: 'ALICE' };
 		const listedAlice = { ...alice, verdict: 'nonCompliant' };
 
 		const previewAs = (
 			attributes: Record<string, string[]>,
-			over: Partial<AbacRoomMembershipPreviewPage> = {},
+			page: AbacRoomMembershipPreviewPage = {},
 			grant: AbacRoomAttributesGrant = 'manage-abac-admin-rooms',
-		) => service.previewRoomMembers('r1', attributes, fakeActor, { ...page, ...over }, grant);
+		) => service.previewRoomMembers('r1', attributes, fakeActor, page, grant);
 
-		const usePdp = (pdp: { evaluateSubjectsAgainstAttributes?: jest.Mock } = {}) => {
+		const usePdp = (pdp: { previewRoomMembers?: jest.Mock } = {}) => {
 			const mocks = {
 				needsEvaluation: jest.fn(({ added }) => added),
 				findUnassignableValues: jest.fn().mockResolvedValue([]),
-				evaluateSubjectsAgainstAttributes:
-					pdp.evaluateSubjectsAgainstAttributes ??
-					jest.fn(async (subjects: { _id: string }[]) => ({
-						compliant: [],
-						nonCompliant: subjects.map(({ _id }) => _id),
-						inconclusive: [],
-					})),
+				previewRoomMembers: pdp.previewRoomMembers ?? jest.fn().mockResolvedValue({ members: [listedAlice], checked: 1, total: 9 }),
+				evaluateSubjectsAgainstAttributes: jest.fn(async (subjects: { _id: string }[]) => ({
+					compliant: [],
+					nonCompliant: subjects.map(({ _id }) => _id),
+					inconclusive: [],
+				})),
 			};
 			(service as any).pdp = { isAvailable: jest.fn().mockResolvedValue(true), ...mocks };
 			return mocks;
@@ -2071,12 +2070,13 @@ describe('AbacService (unit)', () => {
 			mockUsersCountActiveByRoomIdAfterUsername.mockReset().mockResolvedValue(9);
 		});
 
-		it('evaluates one page of members against the attributes the change sets', async () => {
-			const { evaluateSubjectsAgainstAttributes } = usePdp();
+		it('asks the PDP for one page of members against the attributes the change sets', async () => {
+			const { previewRoomMembers } = usePdp();
+			const page: AbacRoomMembershipPreviewPage = { group: 'loses', filter: 'a', after: { _id: 'zed', username: 'zed' } };
 
-			const preview = await previewAs(adding, { count: 2, group: 'loses' });
+			const preview = await previewAs(adding, page);
 
-			expect(evaluateSubjectsAgainstAttributes).toHaveBeenCalledWith([alice], required, room);
+			expect(previewRoomMembers).toHaveBeenCalledWith(room, required, page);
 			expect(preview).toEqual({ members: [listedAlice], count: 1, checked: 1, total: 9 });
 		});
 
@@ -2093,12 +2093,12 @@ describe('AbacService (unit)', () => {
 
 		it('leaves roles out for members who hold none, and skips the lookup for an empty page', async () => {
 			mockSubscriptionsFindByRoomIdAndUserIds.mockReturnValue({ toArray: async () => [{ u: { _id: 'alice' }, roles: [] }] });
-			usePdp();
+			const { previewRoomMembers } = usePdp();
 
 			expect((await previewAs(adding)).members[0]).not.toHaveProperty('roles');
 
 			mockSubscriptionsFindByRoomIdAndUserIds.mockClear();
-			mockUsersFindActiveByRoomIdAfterUsername.mockReturnValue({ toArray: async () => [] });
+			previewRoomMembers.mockResolvedValue({ members: [], checked: 1, total: 9 });
 
 			await previewAs(adding);
 
@@ -2116,11 +2116,17 @@ describe('AbacService (unit)', () => {
 
 		it('retains everyone without asking the PDP when the change adds nothing, as the write evicts nobody', async () => {
 			mockFindOneByIdAndType.mockResolvedValue({ ...room, abacAttributes: required });
-			const { evaluateSubjectsAgainstAttributes } = usePdp();
+			const { evaluateSubjectsAgainstAttributes, previewRoomMembers } = usePdp();
 
 			const preview = await previewAs({ dept: ['eng'] });
 
+			expect(previewRoomMembers).not.toHaveBeenCalled();
 			expect(evaluateSubjectsAgainstAttributes).not.toHaveBeenCalled();
+			expect(mockUsersFindActiveByRoomIdAfterUsername).toHaveBeenCalledWith(
+				'r1',
+				expect.objectContaining({ limit: PREVIEW_SCAN_LIMIT + 1 }),
+				expect.anything(),
+			);
 			expect(preview).toEqual({ members: [{ ...alice, verdict: 'compliant' }], count: 1, checked: 1, total: 9 });
 		});
 
@@ -2145,14 +2151,14 @@ describe('AbacService (unit)', () => {
 		});
 
 		it('refuses attributes the write would refuse, before asking the PDP', async () => {
-			const { evaluateSubjectsAgainstAttributes } = usePdp();
+			const { previewRoomMembers } = usePdp();
 
 			await expect(previewAs({ region: ['emea'] })).rejects.toThrow();
-			expect(evaluateSubjectsAgainstAttributes).not.toHaveBeenCalled();
+			expect(previewRoomMembers).not.toHaveBeenCalled();
 		});
 
 		it("refuses a room-scoped editor a value they do not hold, as the room's write does", async () => {
-			const { evaluateSubjectsAgainstAttributes, findUnassignableValues } = usePdp();
+			const { previewRoomMembers, findUnassignableValues } = usePdp();
 			findUnassignableValues.mockResolvedValue([{ key: 'dept', values: ['sales'] }]);
 
 			await expect(previewAs(adding, {}, 'edit-room-abac-attributes')).rejects.toMatchObject({
@@ -2160,11 +2166,11 @@ describe('AbacService (unit)', () => {
 				details: { attributes: [{ key: 'dept', values: ['sales'] }] },
 			});
 			expect(findUnassignableValues).toHaveBeenCalledWith(required, fakeActor, room.abacAttributes);
-			expect(evaluateSubjectsAgainstAttributes).not.toHaveBeenCalled();
+			expect(previewRoomMembers).not.toHaveBeenCalled();
 		});
 
 		it('reports decisions as unavailable when the PDP fails', async () => {
-			usePdp({ evaluateSubjectsAgainstAttributes: jest.fn().mockRejectedValue(new Error('virtru down')) });
+			usePdp({ previewRoomMembers: jest.fn().mockRejectedValue(new Error('virtru down')) });
 
 			await expect(previewAs(adding)).rejects.toMatchObject({
 				code: 'error-pdp-unavailable',
