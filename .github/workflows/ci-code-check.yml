@@ -45,24 +45,6 @@ jobs:
 
       - uses: ./.github/actions/restore-packages
 
-      - name: Restore TypeScript incremental cache
-        id: restore-typecheck
-        if: matrix.check == 'ts'
-        uses: actions/cache/restore@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
-        with:
-          path: ./apps/meteor/tsconfig.typecheck.tsbuildinfo
-          key: typecheck-cache-${{ runner.os }}-${{ hashFiles('yarn.lock') }}
-          restore-keys: |
-            typecheck-cache-${{ runner.os }}-
-
-      - name: Cache observability (typecheck)
-        if: matrix.check == 'ts'
-        run: |
-          {
-            echo "### TypeScript incremental cache"
-            echo "- **exact hit**: \`${{ steps.restore-typecheck.outputs.cache-hit }}\`"
-          } >> "$GITHUB_STEP_SUMMARY"
-
       - name: Install Meteor
         shell: bash
         run: |
@@ -86,13 +68,6 @@ jobs:
       - name: TS TypeCheck
         if: matrix.check == 'ts'
         run: yarn turbo run typecheck --concurrency=5
-
-      - name: Save TypeScript incremental cache
-        if: matrix.check == 'ts' && github.ref == 'refs/heads/develop' && github.event_name == 'push'
-        uses: actions/cache/save@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
-        with:
-          path: ./apps/meteor/tsconfig.typecheck.tsbuildinfo
-          key: typecheck-cache-${{ runner.os }}-${{ hashFiles('yarn.lock') }}
 
       - name: Lint
         if: matrix.check == 'lint'
