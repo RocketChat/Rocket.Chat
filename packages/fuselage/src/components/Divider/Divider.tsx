@@ -1,14 +1,11 @@
-import { styled, View, type GetProps } from '@tamagui/web';
-import { createElement, type ReactNode } from 'react';
+import { styled, Text, View, type GetProps } from '@tamagui/web';
+import type { ReactNode } from 'react';
 
 import { strokeColors } from '../../Theme';
-import { prependClassName } from '../../helpers/prependClassName';
-import { prependRcxClassNames } from '../../helpers/prependRcxClassNames';
 import { toCSSValue } from '../../helpers/toCSSValue';
-import { useArrayLikeClassNameProp } from '../../hooks/useArrayLikeClassNameProp';
+import { useTamaguiBoxProps } from '../../hooks/useTamaguiBoxProps';
 import { borderWidth, size, spacing } from '../../styleTokens';
 import { Box, type BoxProps } from '../Box';
-import { useStylingProps } from '../Box/useStylingProps';
 import { withFuselageProvider } from '../FuselageProvider/FuselageProvider';
 
 const dividerSize = toCSSValue('--rcx-divider-size', borderWidth('default')!);
@@ -49,7 +46,10 @@ const DividerBar = styled(View, {
 	borderColor: dividerColor,
 });
 
-const DividerWrapper = styled(View, {
+const DividerWrapper = styled(Text, {
+	render: 'div',
+	display: 'block',
+	whiteSpace: 'inherit',
 	marginBlock: spacing('x8'),
 	paddingInline: spacing('x8'),
 });
@@ -61,20 +61,12 @@ export type DividerProps = BoxProps & {
 };
 
 const PlainDivider = ({ variation, vertical, ...props }: Omit<DividerProps, 'children'>) => {
-	const { is = 'hr', ...lineProps } = useStylingProps(prependRcxClassNames(useArrayLikeClassNameProp(props)));
-	lineProps.className = prependClassName(
-		lineProps.className,
+	const lineProps = useTamaguiBoxProps(
+		props,
 		['rcx-divider', vertical && 'rcx-divider--vertical', variation === 'danger' && 'rcx-divider--danger'].filter(Boolean).join(' '),
 	);
 
-	return (
-		<DividerLine
-			render={typeof is === 'string' ? is : (renderProps: Record<string, unknown>) => createElement(is, renderProps)}
-			vertical={vertical}
-			danger={variation === 'danger'}
-			{...(lineProps as GetProps<typeof DividerLine>)}
-		/>
-	);
+	return <DividerLine vertical={vertical} danger={variation === 'danger'} {...(lineProps as GetProps<typeof DividerLine>)} />;
 };
 
 const Divider = ({ variation, children, vertical, ...props }: DividerProps) => {
