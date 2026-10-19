@@ -1,7 +1,7 @@
 import type { ChatAPI } from '../../../../lib/chats/ChatAPI';
 import { getSelectionRange, setSelectionRange } from '../../../../lib/selectionRange';
 
-const wrapSelectionPatterns: Record<string, string> = {
+const wrapSelectionPatterns: Record<string, string | undefined> = Object.assign(Object.create(null), {
 	'`': '`{{text}}`',
 	'"': '"{{text}}"',
 	"'": "'{{text}}'",
@@ -13,14 +13,14 @@ const wrapSelectionPatterns: Record<string, string> = {
 	'_': '_{{text}}_',
 	'~': '~{{text}}~',
 	'˜': '~{{text}}~',
-};
+});
 
-const deadKeyEquivalents: Record<string, string[]> = {
-	"'": ['´', '’', '‘'],
-	'"': ['¨', '”', '“'],
+const deadKeyEquivalents: Record<string, string[] | undefined> = Object.assign(Object.create(null), {
+	"'": ['´'],
+	'"': ['¨'],
 	'`': ['ˋ'],
 	'~': ['˜'],
-};
+});
 
 const once = (target: EventTarget, eventName: string, callback: (event: Event) => void) => {
 	const handleEvent = (e: Event) => {

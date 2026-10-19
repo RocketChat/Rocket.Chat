@@ -156,6 +156,19 @@ describe('handleSelectionWrapping', () => {
 			expect(result).toBe(true);
 			expect(composer.wrapSelection).toHaveBeenCalledWith('`{{text}}`');
 		});
+
+		it('should wrap when text contains a typographic quote and matching quote is typed', () => {
+			const textarea = createTextarea('’', 0, 1);
+			const composer = createMockComposer('’');
+			const chat = { composer } as unknown as ChatAPI;
+
+			const event = createInputEvent(textarea, "'");
+
+			const result = handleSelectionWrapping(event, chat);
+
+			expect(result).toBe(true);
+			expect(composer.wrapSelection).toHaveBeenCalledWith("'{{text}}'");
+		});
 	});
 
 	describe('no-op scenarios', () => {
