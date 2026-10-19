@@ -1,7 +1,10 @@
 import WS from 'jest-websocket-mock';
 
 import { handleConnection, handleMethod } from './helpers';
+import { ClientStreamImpl } from '../src/ClientStream';
+import { DDPDispatcher } from '../src/DDPDispatcher';
 import { DDPSDK } from '../src/DDPSDK';
+import { AccountImpl } from '../src/types/Account';
 
 let server: WS;
 
@@ -32,6 +35,24 @@ describe('login', () => {
 		expect(user?.token).toBe(messageResult.token);
 		expect((user?.tokenExpires as Date)?.toISOString()).toBe(new Date(messageResult.tokenExpires.$date).toISOString());
 		expect(user?.id).toBe(messageResult.id);
+	});
+
+	it.each([
+		['an EJSON-decoded Date', new Date(1700000000000)],
+		['a raw $date number', { $date: 1700000000000 }],
+		['a raw $date string', { $date: '1700000000000' }],
+	])('should read the token expiry from %s', async (_, tokenExpires) => {
+		const ddp = new DDPDispatcher();
+		const account = new AccountImpl(new ClientStreamImpl(ddp, ddp));
+		const sent: { id: string }[] = [];
+		ddp.onDispatchMessage((message) => sent.push(JSON.parse(message)));
+
+		const login = account.loginWithToken('token');
+		// Bypasses decoding so the result carries the value as given.
+		ddp.emit(`result/${sent[0].id}`, { msg: 'result', id: sent[0].id, result: { id: 'uid', token: 'token2', tokenExpires } });
+
+		await expect(login).resolves.toEqual({ id: 'uid', token: 'token2', tokenExpires: new Date(1700000000000) });
+		expect(account.user?.tokenExpires).toEqual(new Date(1700000000000));
 	});
 
 	it('should save credentials to user object - loginWithPassword', async () => {

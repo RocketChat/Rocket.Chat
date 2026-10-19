@@ -9,6 +9,21 @@ type User = {
 	tokenExpires?: Date;
 } & Record<string, unknown>;
 
+type LoginResult = {
+	id: string;
+	token: string;
+	// A Date when the client decodes EJSON, the raw `{ $date }` otherwise.
+	tokenExpires?: Date | { $date: number | string };
+};
+
+const toDate = (value: LoginResult['tokenExpires']): Date | undefined => {
+	if (value === undefined || value instanceof Date) {
+		return value;
+	}
+	const { $date } = value;
+	return new Date(typeof $date === 'string' && /^\d+$/.test($date) ? Number($date) : $date);
+};
+
 type AccountEvents = {
 	uid: string | undefined;
 	user: User;
@@ -72,23 +87,21 @@ export class AccountImpl extends Emitter<AccountEvents> implements Account {
 		});
 	}
 
-	private saveCredentials(id: string, token: string, tokenExpires: string) {
+	private saveCredentials({ id, token, tokenExpires }: LoginResult) {
+		const expires = toDate(tokenExpires);
 		this.user = {
 			...this.user,
 			token,
-			tokenExpires: new Date(tokenExpires),
+			tokenExpires: expires,
 			id,
 		};
 		this.uid = id;
 		this.emit('user', this.user);
+		return { id, token, tokenExpires: expires as Date };
 	}
 
 	async loginWithPassword(username: string, password: string): Promise<void> {
-		const {
-			id,
-			token: resultToken,
-			tokenExpires: { $date },
-		} = await this.client.callAsyncWithOptions(
+		const result: LoginResult = await this.client.callAsyncWithOptions(
 			'login',
 			{
 				wait: true,
@@ -99,11 +112,11 @@ export class AccountImpl extends Emitter<AccountEvents> implements Account {
 			},
 		);
 
-		this.saveCredentials(id, resultToken, $date);
+		this.saveCredentials(result);
 	}
 
 	async loginWithToken(token: string) {
-		const result = await this.client.callAsyncWithOptions(
+		const result: LoginResult = await this.client.callAsyncWithOptions(
 			'login',
 			{
 				wait: true,
@@ -113,14 +126,7 @@ export class AccountImpl extends Emitter<AccountEvents> implements Account {
 			},
 		);
 
-		const {
-			id,
-			token: resultToken,
-			tokenExpires: { $date },
-		} = result;
-		this.saveCredentials(id, resultToken, $date);
-
-		return result;
+		return this.saveCredentials(result);
 	}
 
 	async logout(): Promise<void> {
