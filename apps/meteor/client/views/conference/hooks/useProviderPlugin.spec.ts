@@ -20,6 +20,7 @@ const pluginWindow = { postMessage: jest.fn() };
 const onToggleChat = jest.fn();
 const onToggleParticipants = jest.fn();
 const onLeave = jest.fn();
+const onDropped = jest.fn();
 
 const render = (
 	props: { chatVisible?: boolean; participantsVisible?: boolean; hasUnread?: boolean; conferenceUrl?: string | undefined } = {},
@@ -34,6 +35,7 @@ const render = (
 				onToggleChat,
 				onToggleParticipants,
 				onLeave,
+				onDropped,
 			}),
 		{
 			initialProps: {
@@ -65,6 +67,7 @@ beforeEach(() => {
 	pluginWindow.postMessage.mockClear();
 	onToggleChat.mockClear();
 	onLeave.mockClear();
+	onDropped.mockClear();
 });
 
 describe('useProviderPlugin', () => {
@@ -206,6 +209,26 @@ describe('useProviderPlugin', () => {
 			expect(onLeave).not.toHaveBeenCalled();
 		});
 
+		it('forgets who was in the call once the connection is gone', () => {
+			const { result } = render();
+
+			fromPlugin(message('connected'));
+			fromPlugin(message('roster', { participants: [{ uuid: 'p1', displayName: 'Ann' }] }));
+			fromPlugin(message('disconnected', { userInitiated: false }));
+
+			expect(result.current.participants).toEqual([]);
+			expect(result.current.self).toBeUndefined();
+		});
+
+		it('hands a dropped connection to whoever can ask the user what they meant', () => {
+			render();
+
+			fromPlugin(message('connected'));
+			fromPlugin(message('disconnected', { userInitiated: false }));
+
+			expect(onDropped).toHaveBeenCalledTimes(1);
+		});
+
 		// A provider's prejoin screen reports a user-initiated disconnect too, and nobody has joined anything
 		// from there: reporting a leave would schedule the empty-call sweep on a call still filling up.
 		it('says nothing for someone who never got past the preflight', () => {
@@ -241,12 +264,12 @@ describe('useProviderPlugin', () => {
 			expect(result.current.self).toBeUndefined();
 		});
 
-		it('holds exactly the features `ready` named', () => {
+		it('holds the features `ready` named, and dial-out whether or not it did', () => {
 			const { result } = render();
 
 			fromPlugin(message('ready', { features: ['mute', 'disconnect'] }));
 
-			expect([...result.current.features]).toEqual(['mute', 'disconnect']);
+			expect([...result.current.features]).toEqual(['mute', 'disconnect', 'dial-out']);
 		});
 
 		// Either half may learn a message the other has never heard of, so an unknown name is not a reason to
@@ -256,7 +279,7 @@ describe('useProviderPlugin', () => {
 
 			fromPlugin(message('ready', { features: ['mute', 'teleport'] }));
 
-			expect([...result.current.features]).toEqual(['mute']);
+			expect([...result.current.features]).toEqual(['mute', 'dial-out']);
 		});
 	});
 
@@ -381,6 +404,7 @@ describe('useProviderPlugin', () => {
 			actions.disconnect('p1');
 			actions.spotlight('p1', true);
 			actions.setRole('p1', 'host');
+			actions.dialOut('alice@example.com');
 
 			expect(posted()).toEqual([
 				{ action: 'rocketchat:videoconf/mute', participantUuid: 'p1', muted: true },
@@ -389,6 +413,8 @@ describe('useProviderPlugin', () => {
 				{ action: 'rocketchat:videoconf/disconnect', participantUuid: 'p1' },
 				{ action: 'rocketchat:videoconf/spotlight', participantUuid: 'p1', active: true },
 				{ action: 'rocketchat:videoconf/set-role', participantUuid: 'p1', role: 'host' },
+				// The plugin forwards these to a request that requires all three, so none can be left to it.
+				{ action: 'rocketchat:videoconf/dial-out', role: 'GUEST', protocol: 'auto', call_type: 'audio', destination: 'alice@example.com' },
 			]);
 		});
 

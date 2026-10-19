@@ -1,10 +1,16 @@
 import type { IRoom } from '@rocket.chat/core-typings';
 import { useStream } from '@rocket.chat/ui-contexts';
-import { useVideoConferenceInfo, videoConferenceInfoQueryKey } from '@rocket.chat/ui-video-conf';
-import { useQueryClient } from '@tanstack/react-query';
+import { useVideoConferenceInfo, type VideoConferenceInfo, videoConferenceInfoQueryKey } from '@rocket.chat/ui-video-conf';
+import { useQueryClient, type UseQueryResult } from '@tanstack/react-query';
 import { useEffect } from 'react';
 
-export const useVideoConfDataStream = ({ rid, callId }: { rid: IRoom['_id']; callId: string }) => {
+export const useVideoConfDataStream = ({
+	rid,
+	callId,
+}: {
+	rid: IRoom['_id'];
+	callId: string;
+}): UseQueryResult<VideoConferenceInfo, Error> => {
 	const queryClient = useQueryClient();
 
 	const subscribeNotifyRoom = useStream('notify-room');

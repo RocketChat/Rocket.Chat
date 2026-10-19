@@ -1,4 +1,4 @@
-import { usePermission } from '@rocket.chat/ui-contexts';
+import { useCurrentRoutePath, usePermission } from '@rocket.chat/ui-contexts';
 import { MediaCallProvider as MediaCallProviderBase } from '@rocket.chat/ui-voip';
 import { MediaCallAppActionsProvider } from '@rocket.chat/ui-voip/dist/experimental/AppActionButtons';
 import type { ReactNode } from 'react';
@@ -15,7 +15,11 @@ const MediaCallProvider = ({ children }: MediaCallProviderProps) => {
 
 	const { data: hasModule = false } = useHasLicenseModule('teams-voip');
 
-	const enabled = hasModule && (canMakeInternalCall || canMakeExternalCall);
+	// The call window runs its own copy of the app, and a voice stack in it would ring beside a call already in
+	// progress — and place one the reader cannot see.
+	const isConferenceRoute = useCurrentRoutePath()?.includes('/conference');
+
+	const enabled = hasModule && (canMakeInternalCall || canMakeExternalCall) && !isConferenceRoute;
 
 	return (
 		<MediaCallAppActionsProvider actions={actions} handleInteraction={handleInteraction}>
