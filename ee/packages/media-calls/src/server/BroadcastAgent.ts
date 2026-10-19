@@ -39,6 +39,10 @@ export class BroadcastActorAgent extends BaseMediaCallAgent {
 		this.reportCallUpdated({ callId });
 	}
 
+	public async onCallUpdated(_callId: string): Promise<void> {
+		//
+	}
+
 	public async onDTMF(callId: string, dtmf: string, duration: number): Promise<void> {
 		this.reportCallUpdated({ callId, dtmf: { dtmf, duration } });
 	}
