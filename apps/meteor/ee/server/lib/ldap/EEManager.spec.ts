@@ -18,7 +18,7 @@ class LDAPManagerStub {
 	static getLdapUsername = sinon.stub();
 }
 
-const { LDAPEEManager } = proxyquire.noCallThru().load('./Manager', {
+const { LDAPEEManager } = proxyquire.noCallThru().load('./EEManager', {
 	'@rocket.chat/core-services': { Abac: {}, Team: {} },
 	'@rocket.chat/license': { License: { hasModule: () => false } },
 	'@rocket.chat/models': { Users: usersStub, Roles: {}, Subscriptions: subscriptionsStub, Rooms: roomsStub },
@@ -26,10 +26,10 @@ const { LDAPEEManager } = proxyquire.noCallThru().load('./Manager', {
 	'../../../../server/settings': { settings: settingsStub },
 	'../../../../server/lib/utils/lib/getValidRoomName': { getValidRoomName: (name: string) => Promise.resolve(name) },
 	'../../../../lib/utils/arrayUtils': { ensureArray: (value: unknown) => (Array.isArray(value) ? value : [value]) },
-	'../../../../server/lib/ldap/Connection': { LDAPConnection: class {} },
-	'../../../../server/lib/ldap/Logger': { logger: loggerStub, searchLogger: loggerStub, mapLogger: loggerStub },
-	'../../../../server/lib/ldap/Manager': { LDAPManager: LDAPManagerStub },
-	'../../../../server/lib/ldap/UserConverter': { LDAPUserConverter: class {} },
+	'./Connection': { LDAPConnection: class {} },
+	'./Logger': { logger: loggerStub, searchLogger: loggerStub, mapLogger: loggerStub },
+	'./Manager': { LDAPManager: LDAPManagerStub },
+	'./UserConverter': { LDAPUserConverter: class {} },
 	'../../../../server/lib/rooms/addUserToRoom': { addUserToRoom: addUserToRoomStub },
 	'../../../../server/lib/rooms/createRoom': { createRoom: sinon.stub() },
 	'../../../../server/lib/rooms/removeUserFromRoom': { removeUserFromRoom: removeUserFromRoomStub },

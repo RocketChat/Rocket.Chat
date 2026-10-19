@@ -1,4 +1,5 @@
 import type { SAMLConfiguration } from '@rocket.chat/core-typings';
+import { License } from '@rocket.chat/license';
 import { LoginServiceConfiguration } from '@rocket.chat/models';
 import { Meteor } from 'meteor/meteor';
 
@@ -14,9 +15,12 @@ import {
 	defaultMetadataTemplate,
 	defaultMetadataCertificateTemplate,
 } from './constants';
-import { settings, settingsRegistry } from '../../../settings';
-import { SystemLogger } from '../../logger/system';
-import { notifyOnLoginServiceConfigurationChanged, notifyOnLoginServiceConfigurationChangedByService } from '../../notifyListener';
+import { SystemLogger } from '../../../../../server/lib/logger/system';
+import {
+	notifyOnLoginServiceConfigurationChanged,
+	notifyOnLoginServiceConfigurationChangedByService,
+} from '../../../../../server/lib/notifyListener';
+import { settings, settingsRegistry } from '../../../../../server/settings';
 import type { IServiceProviderOptions } from '../definition/IServiceProviderOptions';
 
 const getSamlConfigs = function (service: string): SAMLConfiguration {
@@ -129,7 +133,7 @@ export const loadSamlServiceProviders = async function (): Promise<void> {
 	const serviceName = 'saml';
 	const services = settings.getByRegexp(/^(SAML_Custom_)[a-z]+$/i);
 
-	if (!services) {
+	if (!services || !License.hasModule('saml-enterprise')) {
 		return SAMLUtils.setServiceProvidersList([]);
 	}
 
@@ -182,7 +186,9 @@ export const addSettings = async function (name: string): Promise<void> {
 					type: 'boolean',
 					i18nLabel: 'Accounts_OAuth_Custom_Enable',
 					public: true,
-					alert: 'Premium_required_from_9_0_0_alert',
+					enterprise: true,
+					modules: ['saml-enterprise'],
+					invalidValue: false,
 				});
 				await this.add(`SAML_Custom_${name}_provider`, 'provider-name', {
 					type: 'string',

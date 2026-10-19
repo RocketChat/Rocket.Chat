@@ -24,8 +24,13 @@ const samlUtilsMock = {
 	events: { emit: sinon.stub() },
 };
 
+const hasModule = sinon.stub().returns(true);
+
 const handler = sinon.stub();
-proxyquire.noCallThru().load('../../../../../server/lib/saml/loginHandler', {
+proxyquire.noCallThru().load('./loginHandler', {
+	'@rocket.chat/license': {
+		License: { hasModule },
+	},
 	'@rocket.chat/models': {
 		CredentialTokens: { removeById },
 	},
@@ -46,10 +51,10 @@ proxyquire.noCallThru().load('../../../../../server/lib/saml/loginHandler', {
 	'./lib/Utils': {
 		SAMLUtils: samlUtilsMock,
 	},
-	'../2fa/code': { getUserForCheck },
-	'../oauth/twoFactorAuth': { doesUserRequire2FA },
-	'../i18n': { i18n: { t: sinon.stub().returns('') } },
-	'../logger/system': { SystemLogger: { error: sinon.stub() } },
+	'../../../../server/lib/2fa/code': { getUserForCheck },
+	'../../../../server/lib/oauth/twoFactorAuth': { doesUserRequire2FA },
+	'../../../../server/lib/i18n': { i18n: { t: sinon.stub().returns('') } },
+	'../../../../server/lib/logger/system': { SystemLogger: { error: sinon.stub() } },
 });
 
 describe('SAML loginHandler', () => {
@@ -65,6 +70,15 @@ describe('SAML loginHandler', () => {
 		doesUserRequire2FA.reset();
 		doesUserRequire2FA.returns(false);
 		samlUtilsMock.serviceProviders = [{ provider: 'test-saml' }];
+		hasModule.reset();
+		hasModule.returns(true);
+	});
+
+	it('should return undefined without the saml-enterprise module', async () => {
+		hasModule.withArgs('saml-enterprise').returns(false);
+
+		expect(await handler({ saml: true, credentialToken: 'token' })).to.be.undefined;
+		expect(retrieveCredential.called).to.be.false;
 	});
 
 	it('should reject non-string credentialToken and never query the database (NoSQL injection prevention)', async () => {
