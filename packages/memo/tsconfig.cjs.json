@@ -3,10 +3,11 @@
 	"compilerOptions": {
 		"rootDir": "./src",
 		"module": "commonjs",
-		"moduleResolution": "node",
+		"moduleResolution": "bundler",
 		"declaration": true,
 		"declarationMap": true,
 		"sourceMap": true,
+		"rootDir": "./src",
 		"outDir": "./dist/cjs"
 	},
 	"exclude": ["**/*.spec.*", "jest.config.*"]

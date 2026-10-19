@@ -1,7 +1,7 @@
 import client from '@rocket.chat/jest-presets/client';
 import server from '@rocket.chat/jest-presets/server';
-import type { Config } from 'jest';
 
+/** @type {import('jest').Config} */
 export default {
 	projects: [
 		{
@@ -66,4 +66,4 @@ export default {
 	],
 	coverageProvider: 'v8',
 	collectCoverage: true,
-} satisfies Config;
+};
