@@ -5,14 +5,14 @@ exports[`renders PressedInfo without crashing 1`] = `
   <div>
     <button
       aria-label="Raise hand"
-      class="rcx-box rcx-box--full rcx-button--medium-square rcx-button--icon-secondary rcx-button--square rcx-button--icon rcx-button"
+      class="is_View _f-1069813397 _mh-1241200853 _ta-1906144518 _ws-973912173 _td-211436768 _c-22887652 _os-249893454 _o-1119039191 _to-1727917045 _ff-409630021 _fvn-1977619713 _fs-347291933 _fw-289166179 _ls-1782815796 _p-230374000 _w-1589658138 _mw-327378746 _h-567027737 _d-312446553 _jc-642967080 _ai-1864573722 _lh-2067208245 rcx-button--medium-square rcx-button--icon-secondary rcx-button--square rcx-button--icon rcx-button"
       label="Raise hand"
       title="Lower hand"
       type="button"
     >
       <i
         aria-hidden="true"
-        class="rcx-box rcx-box--full rcx-icon--name-hand rcx-icon rcx-css-1dxovkr"
+        class="is_Text _d-1409515928 _ws-311910413 _ww-408434756 _us-601212022 _va-1101652081 _ls-1720078126 _ff-1916555734 _fs-1279428672 _fw-289165218 _fs-477064150 _fv-1578983722 _lh-2067209205 _tr-1510281189 rcx-icon--name-hand rcx-icon rcx-css-1dxovkr"
       >
         
       </i>
@@ -26,14 +26,14 @@ exports[`renders ToggleButtonStory without crashing 1`] = `
   <div>
     <button
       aria-label="Mute"
-      class="rcx-box rcx-box--full rcx-button--medium-square rcx-button--icon-secondary rcx-button--square rcx-button--icon rcx-button"
+      class="is_View _f-1069813397 _mh-1241200853 _ta-1906144518 _ws-973912173 _td-211436768 _c-22887652 _os-249893454 _o-1119039191 _to-1727917045 _ff-409630021 _fvn-1977619713 _fs-347291933 _fw-289166179 _ls-1782815796 _p-230374000 _w-1589658138 _mw-327378746 _h-567027737 _d-312446553 _jc-642967080 _ai-1864573722 _lh-2067208245 rcx-button--medium-square rcx-button--icon-secondary rcx-button--square rcx-button--icon rcx-button"
       label="Mute"
       title="Mute"
       type="button"
     >
       <i
         aria-hidden="true"
-        class="rcx-box rcx-box--full rcx-icon--name-mic rcx-icon rcx-css-xb06ut"
+        class="is_Text _d-1409515928 _ws-311910413 _ww-408434756 _us-601212022 _va-1101652081 _ls-1720078126 _ff-1916555734 _fs-1279428672 _fw-289165218 _fs-477064150 _fv-1578983722 _lh-2067209205 _tr-1510281189 rcx-icon--name-mic rcx-icon rcx-css-xb06ut"
       >
         
       </i>

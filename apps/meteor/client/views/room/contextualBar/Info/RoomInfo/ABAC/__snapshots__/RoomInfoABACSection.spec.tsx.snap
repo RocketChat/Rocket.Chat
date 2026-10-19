@@ -13,17 +13,17 @@ exports[`RoomInfoABACSection Snapshot should match the snapshot 1`] = `
         class="rcx-box rcx-box--full rcx-css-ukxwz6"
       >
         <span
-          class="rcx-box rcx-box--full rcx-tag rcx-tag--medium"
+          class="is_Text _d-341075704 _f-606928779 _mw-354604370 _mh-1241200853 _o-1119039191 _jc-1099843255 _ai-121763387 _m-2017216831 _p-1139150377 _ws-973912173 _ww-408434756 _td-1861836084 _to-1727917045 _wb-499914885 _ff-409630021 _fvn-1977619713 _b-1182826059 _br-511985764 _os-249893454 _bs-1333539716 _c-244381275 _b-504152703 _fs-281033604 _fw-290091622 _lh-1335373134 _ls-1811444947 rcx-tag rcx-tag--medium"
         >
           <span
-            class="rcx-tag__inner"
+            class="is_Text _o-1119039191 _mw-842770087 _ws-973912173 _ww-408434756 _to-1727917045 rcx-tag__inner"
           >
             <div
               class="rcx-box rcx-box--full rcx-css-127j9mz"
             >
               <i
                 aria-hidden="true"
-                class="rcx-box rcx-box--full rcx-icon--name-hash-shield rcx-icon rcx-css-1g87xs3"
+                class="is_Text _d-1409515928 _ws-311910413 _ww-408434756 _us-601212022 _va-1101652081 _ls-1720078126 _ff-1916555734 _fs-1279428672 _fw-289165218 _fs-477064150 _fv-1578983722 _lh-2067209205 _tr-1510281189 rcx-icon--name-hash-shield rcx-icon rcx-css-1g87xs3"
               >
                 
               </i>
@@ -64,10 +64,10 @@ exports[`RoomInfoABACSection Snapshot should match the snapshot 1`] = `
               class="rcx-box rcx-box--full rcx-css-sdt442"
             >
               <span
-                class="rcx-box rcx-box--full rcx-tag rcx-tag--medium"
+                class="is_Text _d-341075704 _f-606928779 _mw-354604370 _mh-1241200853 _o-1119039191 _jc-1099843255 _ai-121763387 _m-2017216831 _p-1139150377 _ws-973912173 _ww-408434756 _td-1861836084 _to-1727917045 _wb-499914885 _ff-409630021 _fvn-1977619713 _b-1182826059 _br-511985764 _os-249893454 _bs-1333539716 _c-244381275 _b-504152703 _fs-281033604 _fw-290091622 _lh-1335373134 _ls-1811444947 rcx-tag rcx-tag--medium"
               >
                 <span
-                  class="rcx-tag__inner"
+                  class="is_Text _o-1119039191 _mw-842770087 _ws-973912173 _ww-408434756 _to-1727917045 rcx-tag__inner"
                 >
                   Classified
                 </span>
@@ -77,10 +77,10 @@ exports[`RoomInfoABACSection Snapshot should match the snapshot 1`] = `
               class="rcx-box rcx-box--full rcx-css-sdt442"
             >
               <span
-                class="rcx-box rcx-box--full rcx-tag rcx-tag--medium"
+                class="is_Text _d-341075704 _f-606928779 _mw-354604370 _mh-1241200853 _o-1119039191 _jc-1099843255 _ai-121763387 _m-2017216831 _p-1139150377 _ws-973912173 _ww-408434756 _td-1861836084 _to-1727917045 _wb-499914885 _ff-409630021 _fvn-1977619713 _b-1182826059 _br-511985764 _os-249893454 _bs-1333539716 _c-244381275 _b-504152703 _fs-281033604 _fw-290091622 _lh-1335373134 _ls-1811444947 rcx-tag rcx-tag--medium"
               >
                 <span
-                  class="rcx-tag__inner"
+                  class="is_Text _o-1119039191 _mw-842770087 _ws-973912173 _ww-408434756 _to-1727917045 rcx-tag__inner"
                 >
                   Top-Secret
                 </span>
@@ -105,10 +105,10 @@ exports[`RoomInfoABACSection Snapshot should match the snapshot 1`] = `
               class="rcx-box rcx-box--full rcx-css-sdt442"
             >
               <span
-                class="rcx-box rcx-box--full rcx-tag rcx-tag--medium"
+                class="is_Text _d-341075704 _f-606928779 _mw-354604370 _mh-1241200853 _o-1119039191 _jc-1099843255 _ai-121763387 _m-2017216831 _p-1139150377 _ws-973912173 _ww-408434756 _td-1861836084 _to-1727917045 _wb-499914885 _ff-409630021 _fvn-1977619713 _b-1182826059 _br-511985764 _os-249893454 _bs-1333539716 _c-244381275 _b-504152703 _fs-281033604 _fw-290091622 _lh-1335373134 _ls-1811444947 rcx-tag rcx-tag--medium"
               >
                 <span
-                  class="rcx-tag__inner"
+                  class="is_Text _o-1119039191 _mw-842770087 _ws-973912173 _ww-408434756 _to-1727917045 rcx-tag__inner"
                 >
                   US-only
                 </span>

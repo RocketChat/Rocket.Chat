@@ -6,23 +6,23 @@ exports[`renders Default without crashing 1`] = `
     <section
       aria-live="polite"
       arial-label="Retention_policy_warning_callout"
-      class="rcx-box rcx-box--full rcx-callout rcx-callout--warning"
+      class="is_View _f-1069814357 _mw-354604370 _mh-1241200853 _p-783907936 _c-1921852598 _b-763081575 _br-1465795989 _b-1831105240 _ff-409630021 _fvn-1977619713 rcx-callout rcx-callout--warning"
       role="alert"
     >
       <i
         aria-hidden="true"
-        class="rcx-box rcx-box--full rcx-icon--name-warning rcx-icon rcx-callout__icon rcx-css-4pvxx3"
+        class="is_Text _d-1409515928 _ws-311910413 _ww-408434756 _us-601212022 _va-1101652081 _ls-1720078126 _ff-1916555734 _fs-1279428672 _fw-289165218 _fs-477064150 _fv-1578983722 _lh-2067209205 _tr-1510281189 rcx-icon--name-warning rcx-icon rcx-callout__icon rcx-css-4pvxx3"
       >
         
       </i>
       <div
-        class="rcx-box rcx-box--full rcx-callout__wrapper"
+        class="is_View _d-1987097250 _o-1119039191 _jc-281817805 _f-1641582120 _mw-354604370 _mh-1241200853 _m-1343990794 rcx-callout__wrapper"
       >
         <div
-          class="rcx-box rcx-box--full rcx-callout__wrapper-content"
+          class="is_View _o-1119039191 _f-1246374076 rcx-callout__wrapper-content"
         >
           <div
-            class="rcx-box rcx-box--full rcx-callout__content"
+            class="is_Text _d-1987097250 _ws-974065937 _ww-1531368954 _fs-347291933 _fw-289165218 _lh-1925956564 _ls-1782815796 rcx-callout__content"
           >
             <div>
               <p>
@@ -43,23 +43,23 @@ exports[`renders InvalidSettings without crashing 1`] = `
     <section
       aria-live="polite"
       arial-label="Retention_policy_warning_callout"
-      class="rcx-box rcx-box--full rcx-callout rcx-callout--warning"
+      class="is_View _f-1069814357 _mw-354604370 _mh-1241200853 _p-783907936 _c-1921852598 _b-763081575 _br-1465795989 _b-1831105240 _ff-409630021 _fvn-1977619713 rcx-callout rcx-callout--warning"
       role="alert"
     >
       <i
         aria-hidden="true"
-        class="rcx-box rcx-box--full rcx-icon--name-warning rcx-icon rcx-callout__icon rcx-css-4pvxx3"
+        class="is_Text _d-1409515928 _ws-311910413 _ww-408434756 _us-601212022 _va-1101652081 _ls-1720078126 _ff-1916555734 _fs-1279428672 _fw-289165218 _fs-477064150 _fv-1578983722 _lh-2067209205 _tr-1510281189 rcx-icon--name-warning rcx-icon rcx-callout__icon rcx-css-4pvxx3"
       >
         
       </i>
       <div
-        class="rcx-box rcx-box--full rcx-callout__wrapper"
+        class="is_View _d-1987097250 _o-1119039191 _jc-281817805 _f-1641582120 _mw-354604370 _mh-1241200853 _m-1343990794 rcx-callout__wrapper"
       >
         <div
-          class="rcx-box rcx-box--full rcx-callout__wrapper-content"
+          class="is_View _o-1119039191 _f-1246374076 rcx-callout__wrapper-content"
         >
           <div
-            class="rcx-box rcx-box--full rcx-callout__content"
+            class="is_Text _d-1987097250 _ws-974065937 _ww-1531368954 _fs-347291933 _fw-289165218 _lh-1925956564 _ls-1782815796 rcx-callout__content"
           >
             <div>
               <p>

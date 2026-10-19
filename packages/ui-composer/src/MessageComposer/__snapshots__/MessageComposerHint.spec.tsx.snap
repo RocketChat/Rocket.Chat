@@ -7,16 +7,16 @@ exports[`renders HintWithIcon without crashing 1`] = `
       class="rcx-box rcx-box--full rcx-css-r3aouy"
     >
       <span
-        class="rcx-box rcx-box--full rcx-tag "
+        class="is_Text _d-341075704 _f-606928779 _mw-354604370 _mh-1241200853 _o-1119039191 _jc-1099843255 _ai-121763387 _m-2017216831 _p-1139150377 _ws-973912173 _ww-408434756 _td-1861836084 _to-1727917045 _wb-499914885 _ff-409630021 _fvn-1977619713 _b-1182826059 _br-511985764 _os-249893454 _bs-1333539716 _fs-285416026 _fw-289168101 _lh-1043070488 _ls-1782815796 _c-244381275 _b-504152703 rcx-tag"
       >
         <i
           aria-hidden="true"
-          class="rcx-box rcx-box--full rcx-icon--name-eye rcx-icon rcx-css-nbjs1j"
+          class="is_Text _d-1409515928 _ws-311910413 _ww-408434756 _us-601212022 _va-1101652081 _ls-1720078126 _ff-1916555734 _fs-1279428672 _fw-289165218 _fs-477064150 _fv-1578983722 _lh-2067209205 _tr-1510281189 rcx-icon--name-eye rcx-icon rcx-css-nbjs1j"
         >
           
         </i>
         <span
-          class="rcx-tag__inner"
+          class="is_Text _o-1119039191 _mw-842770087 _ws-973912173 _ww-408434756 _to-1727917045 rcx-tag__inner"
         >
           This room is read only
         </span>
@@ -33,16 +33,16 @@ exports[`renders HintWithIconAndHelperText without crashing 1`] = `
       class="rcx-box rcx-box--full rcx-css-r3aouy"
     >
       <span
-        class="rcx-box rcx-box--full rcx-tag "
+        class="is_Text _d-341075704 _f-606928779 _mw-354604370 _mh-1241200853 _o-1119039191 _jc-1099843255 _ai-121763387 _m-2017216831 _p-1139150377 _ws-973912173 _ww-408434756 _td-1861836084 _to-1727917045 _wb-499914885 _ff-409630021 _fvn-1977619713 _b-1182826059 _br-511985764 _os-249893454 _bs-1333539716 _fs-285416026 _fw-289168101 _lh-1043070488 _ls-1782815796 _c-244381275 _b-504152703 rcx-tag"
       >
         <i
           aria-hidden="true"
-          class="rcx-box rcx-box--full rcx-icon--name-pencil rcx-icon rcx-css-nbjs1j"
+          class="is_Text _d-1409515928 _ws-311910413 _ww-408434756 _us-601212022 _va-1101652081 _ls-1720078126 _ff-1916555734 _fs-1279428672 _fw-289165218 _fs-477064150 _fv-1578983722 _lh-2067209205 _tr-1510281189 rcx-icon--name-pencil rcx-icon rcx-css-nbjs1j"
         >
           ⦏
         </i>
         <span
-          class="rcx-tag__inner"
+          class="is_Text _o-1119039191 _mw-842770087 _ws-973912173 _ww-408434756 _to-1727917045 rcx-tag__inner"
         >
           Editing message
         </span>
@@ -71,10 +71,10 @@ exports[`renders HintWithText without crashing 1`] = `
       class="rcx-box rcx-box--full rcx-css-r3aouy"
     >
       <span
-        class="rcx-box rcx-box--full rcx-tag "
+        class="is_Text _d-341075704 _f-606928779 _mw-354604370 _mh-1241200853 _o-1119039191 _jc-1099843255 _ai-121763387 _m-2017216831 _p-1139150377 _ws-973912173 _ww-408434756 _td-1861836084 _to-1727917045 _wb-499914885 _ff-409630021 _fvn-1977619713 _b-1182826059 _br-511985764 _os-249893454 _bs-1333539716 _fs-285416026 _fw-289168101 _lh-1043070488 _ls-1782815796 _c-244381275 _b-504152703 rcx-tag"
       >
         <span
-          class="rcx-tag__inner"
+          class="is_Text _o-1119039191 _mw-842770087 _ws-973912173 _ww-408434756 _to-1727917045 rcx-tag__inner"
         >
           You're sending an unencrypted message
         </span>

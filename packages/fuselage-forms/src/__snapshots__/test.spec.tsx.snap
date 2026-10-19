@@ -4,15 +4,15 @@ exports[`renders WithAutoComplete without crashing 1`] = `
 <body>
   <div>
     <div
-      class="rcx-box rcx-box--full rcx-field"
+      class="is_Text _b-650654186 _os-249893454 _ff-409630021 _fvn-1977619713 _ws-311910413 _ww-408434756 _d-341075704 _f-1378740307 _ai-1227553247 _w-1560934055 rcx-field"
     >
       <span
-        class="rcx-box rcx-box--full rcx-field__label rcx-label"
+        class="is_Text _b-650654186 _os-249893454 _ff-409630021 _fvn-1977619713 _ws-311910413 _ww-408434756 _fs-347291933 _fw-289166179 _lh-1925956564 _ls-1782815796 _d-341075704 _c-1922521888 _c-1063453128 rcx-label rcx-field__label"
         id="react-aria-_r_0_-label"
       >
         Example AutoComplete
         <span
-          class="rcx-box rcx-box--full rcx-label__info rcx-css-wcp0mp"
+          class="is_View _b-650654186 _os-249893454 _ff-409630021 _fvn-1977619713 _ws-311910413 _ww-408434756 _d-341075704 _f-1069814357 _ai-121763387 _o-823737910 _mw-354604370 _mh-1241200853 rcx-label__info rcx-css-wcp0mp"
         >
           <span
             hidden=""
@@ -21,7 +21,7 @@ exports[`renders WithAutoComplete without crashing 1`] = `
           </span>
           <i
             aria-hidden="true"
-            class="rcx-box rcx-box--full rcx-icon--name-info-circled rcx-icon"
+            class="is_Text _d-1409515928 _ws-311910413 _ww-408434756 _us-601212022 _va-1101652081 _ls-1720078126 _ff-1916555734 _fs-1279428672 _fw-289165218 _fs-477064150 _fv-1578983722 _lh-2067209205 _tr-1510281189 rcx-icon--name-info-circled rcx-icon"
             title="with extra info in a tooltip"
           >
             
@@ -29,19 +29,19 @@ exports[`renders WithAutoComplete without crashing 1`] = `
         </span>
         <span
           aria-hidden="true"
-          class="rcx-box rcx-box--full rcx-label__required rcx-css-b7g1a9"
+          class="is_Text _b-650654186 _os-249893454 _ff-409630021 _fvn-1977619713 _ws-311910413 _ww-408434756 _c-1184219789 rcx-label__required rcx-css-b7g1a9"
         >
           *
         </span>
       </span>
       <span
-        class="rcx-box rcx-box--full rcx-field__description"
+        class="is_Text _b-650654186 _os-249893454 _ff-409630021 _fvn-1977619713 _ws-311910413 _ww-408434756 _fs-347291933 _fw-289165218 _lh-1925956564 _ls-1782815796 _m-183820880 _c-1756781803 rcx-field__description"
         id="react-aria-_r_0_-description"
       >
         You can search and select a single option from a list
       </span>
       <span
-        class="rcx-box rcx-box--full rcx-field__row"
+        class="is_Text _b-650654186 _os-249893454 _ff-409630021 _fvn-1977619713 _ws-311910413 _ww-408434756 _d-341075704 _f-541922926 _jc-281817805 _ai-121763387 _m-2017978848 _c-1756781803 rcx-field__row"
       >
         <div
           class="rcx-box rcx-box--full rcx-box--animated rcx-autocomplete rcx-css-t3n91h"
@@ -65,7 +65,7 @@ exports[`renders WithAutoComplete without crashing 1`] = `
           >
             <i
               aria-hidden="true"
-              class="rcx-box rcx-box--full rcx-icon--name-magnifier rcx-icon rcx-css-l5txo2"
+              class="is_Text _d-1409515928 _ws-311910413 _ww-408434756 _us-601212022 _va-1101652081 _ls-1720078126 _ff-1916555734 _fs-1279428672 _fw-289165218 _fs-477064150 _fv-1578983722 _lh-2067209205 _tr-1510281189 rcx-icon--name-magnifier rcx-icon rcx-css-l5txo2"
             >
               
             </i>
@@ -73,23 +73,23 @@ exports[`renders WithAutoComplete without crashing 1`] = `
         </div>
       </span>
       <span
-        class="rcx-box rcx-box--full rcx-field__error"
+        class="is_Text _b-650654186 _os-249893454 _ff-409630021 _fvn-1977619713 _ws-311910413 _ww-408434756 _fs-2088488067 _fw-289165218 _lh-1306743983 _ls-1782815796 _m-183820880 _c-1184219789 rcx-field__error"
         id="react-aria-_r_0_-error"
         role="alert"
       >
         You failed to enter a valid value
       </span>
       <span
-        class="rcx-box rcx-box--full rcx-field__row"
+        class="is_Text _b-650654186 _os-249893454 _ff-409630021 _fvn-1977619713 _ws-311910413 _ww-408434756 _d-341075704 _f-541922926 _jc-281817805 _ai-121763387 _m-2017978848 _c-1756781803 rcx-field__row"
       >
         <span
-          class="rcx-box rcx-box--full rcx-field__hint"
+          class="is_Text _b-650654186 _os-249893454 _ff-409630021 _fvn-1977619713 _ws-311910413 _ww-408434756 _fs-2088488067 _fw-289165218 _lh-1306743983 _ls-1782815796 _m-183820880 _c-1756781803 rcx-field__hint"
           id="react-aria-_r_0_-hint"
         >
           This should help the user enter a valid value
         </span>
         <a
-          class="rcx-box rcx-box--full rcx-field__link"
+          class="is_Text _b-650654186 _os-249893454 _ff-409630021 _fvn-1977619713 _ws-311910413 _ww-408434756 _fs-2088488067 _fw-289165218 _lh-1306743983 _ls-1782815796 _m-183820880 _c-1876588386 rcx-field__link"
           href="#"
         >
           Link to more information
@@ -104,15 +104,15 @@ exports[`renders WithAutoCompleteMultiple without crashing 1`] = `
 <body>
   <div>
     <div
-      class="rcx-box rcx-box--full rcx-field"
+      class="is_Text _b-650654186 _os-249893454 _ff-409630021 _fvn-1977619713 _ws-311910413 _ww-408434756 _d-341075704 _f-1378740307 _ai-1227553247 _w-1560934055 rcx-field"
     >
       <span
-        class="rcx-box rcx-box--full rcx-field__label rcx-label"
-        id="react-aria-_r_1_-label"
+        class="is_Text _b-650654186 _os-249893454 _ff-409630021 _fvn-1977619713 _ws-311910413 _ww-408434756 _fs-347291933 _fw-289166179 _lh-1925956564 _ls-1782815796 _d-341075704 _c-1922521888 _c-1063453128 rcx-label rcx-field__label"
+        id="react-aria-_r_i_-label"
       >
         Example AutoComplete (Multiple)
         <span
-          class="rcx-box rcx-box--full rcx-label__info rcx-css-wcp0mp"
+          class="is_View _b-650654186 _os-249893454 _ff-409630021 _fvn-1977619713 _ws-311910413 _ww-408434756 _d-341075704 _f-1069814357 _ai-121763387 _o-823737910 _mw-354604370 _mh-1241200853 rcx-label__info rcx-css-wcp0mp"
         >
           <span
             hidden=""
@@ -121,7 +121,7 @@ exports[`renders WithAutoCompleteMultiple without crashing 1`] = `
           </span>
           <i
             aria-hidden="true"
-            class="rcx-box rcx-box--full rcx-icon--name-info-circled rcx-icon"
+            class="is_Text _d-1409515928 _ws-311910413 _ww-408434756 _us-601212022 _va-1101652081 _ls-1720078126 _ff-1916555734 _fs-1279428672 _fw-289165218 _fs-477064150 _fv-1578983722 _lh-2067209205 _tr-1510281189 rcx-icon--name-info-circled rcx-icon"
             title="with extra info in a tooltip"
           >
             
@@ -129,19 +129,19 @@ exports[`renders WithAutoCompleteMultiple without crashing 1`] = `
         </span>
         <span
           aria-hidden="true"
-          class="rcx-box rcx-box--full rcx-label__required rcx-css-b7g1a9"
+          class="is_Text _b-650654186 _os-249893454 _ff-409630021 _fvn-1977619713 _ws-311910413 _ww-408434756 _c-1184219789 rcx-label__required rcx-css-b7g1a9"
         >
           *
         </span>
       </span>
       <span
-        class="rcx-box rcx-box--full rcx-field__description"
-        id="react-aria-_r_1_-description"
+        class="is_Text _b-650654186 _os-249893454 _ff-409630021 _fvn-1977619713 _ws-311910413 _ww-408434756 _fs-347291933 _fw-289165218 _lh-1925956564 _ls-1782815796 _m-183820880 _c-1756781803 rcx-field__description"
+        id="react-aria-_r_i_-description"
       >
         You can search and select multiple options from a list
       </span>
       <span
-        class="rcx-box rcx-box--full rcx-field__row"
+        class="is_Text _b-650654186 _os-249893454 _ff-409630021 _fvn-1977619713 _ws-311910413 _ww-408434756 _d-341075704 _f-541922926 _jc-281817805 _ai-121763387 _m-2017978848 _c-1756781803 rcx-field__row"
       >
         <div
           class="rcx-box rcx-box--full rcx-box--animated rcx-autocomplete rcx-css-t3n91h"
@@ -151,44 +151,44 @@ exports[`renders WithAutoCompleteMultiple without crashing 1`] = `
             role="group"
           >
             <input
-              aria-describedby="react-aria-_r_1_-description react-aria-_r_1_-error react-aria-_r_1_-hint"
+              aria-describedby="react-aria-_r_i_-description react-aria-_r_i_-error react-aria-_r_i_-hint"
               aria-invalid="true"
-              aria-labelledby="react-aria-_r_1_-label"
+              aria-labelledby="react-aria-_r_i_-label"
               class="rcx-box rcx-box--full rcx-box--animated rcx-input-box--undecorated rcx-input-box rcx-css-i9v8z4 rcx-css-rcil7k"
-              id="react-aria-_r_1_"
+              id="react-aria-_r_i_"
               placeholder="Search..."
               value=""
             />
             <button
-              class="rcx-box rcx-chip rcx-css-i9v8z4"
+              class="is_View _d-341075704 _f-1841970073 _o-1119039191 _ai-121763387 _mw-354604370 _mh-499962855 _m-2017216831 _p-1943363302 _b-863864549 _br-1397394445 _o-1106425799 _c-22887652 _a-1578443335 _ff-409630021 _fs-347291933 _fw-289165218 _lh-1925956564 _ls-1782815796 _c-282297947 _b-1394375569 _bs-1465656659 rcx-box rcx-chip rcx-css-i9v8z4"
               type="button"
               value="1"
             >
               <span
-                class="rcx-box rcx-chip__text rcx-css-i9v8z4"
+                class="is_Text _o-1119039191 _to-1727917045 _ws-973912173 rcx-box rcx-chip__text rcx-css-i9v8z4"
               >
                 Option 1
               </span>
               <i
                 aria-hidden="true"
-                class="rcx-box rcx-box--full rcx-icon--name-cross rcx-icon rcx-css-i9v8z4 rcx-css-1wv1vf9"
+                class="is_Text _d-1409515928 _ws-311910413 _ww-408434756 _us-601212022 _va-1101652081 _ls-1720078126 _ff-1916555734 _fs-1279428672 _fw-289165218 _fs-477064150 _fv-1578983722 _lh-2067209205 _tr-1510281189 rcx-icon--name-cross rcx-icon rcx-css-i9v8z4 rcx-css-1wv1vf9"
               >
                 
               </i>
             </button>
             <button
-              class="rcx-box rcx-chip rcx-css-i9v8z4"
+              class="is_View _d-341075704 _f-1841970073 _o-1119039191 _ai-121763387 _mw-354604370 _mh-499962855 _m-2017216831 _p-1943363302 _b-863864549 _br-1397394445 _o-1106425799 _c-22887652 _a-1578443335 _ff-409630021 _fs-347291933 _fw-289165218 _lh-1925956564 _ls-1782815796 _c-282297947 _b-1394375569 _bs-1465656659 rcx-box rcx-chip rcx-css-i9v8z4"
               type="button"
               value="3"
             >
               <span
-                class="rcx-box rcx-chip__text rcx-css-i9v8z4"
+                class="is_Text _o-1119039191 _to-1727917045 _ws-973912173 rcx-box rcx-chip__text rcx-css-i9v8z4"
               >
                 Option 3
               </span>
               <i
                 aria-hidden="true"
-                class="rcx-box rcx-box--full rcx-icon--name-cross rcx-icon rcx-css-i9v8z4 rcx-css-1wv1vf9"
+                class="is_Text _d-1409515928 _ws-311910413 _ww-408434756 _us-601212022 _va-1101652081 _ls-1720078126 _ff-1916555734 _fs-1279428672 _fw-289165218 _fs-477064150 _fv-1578983722 _lh-2067209205 _tr-1510281189 rcx-icon--name-cross rcx-icon rcx-css-i9v8z4 rcx-css-1wv1vf9"
               >
                 
               </i>
@@ -199,7 +199,7 @@ exports[`renders WithAutoCompleteMultiple without crashing 1`] = `
           >
             <i
               aria-hidden="true"
-              class="rcx-box rcx-box--full rcx-icon--name-magnifier rcx-icon rcx-css-l5txo2"
+              class="is_Text _d-1409515928 _ws-311910413 _ww-408434756 _us-601212022 _va-1101652081 _ls-1720078126 _ff-1916555734 _fs-1279428672 _fw-289165218 _fs-477064150 _fv-1578983722 _lh-2067209205 _tr-1510281189 rcx-icon--name-magnifier rcx-icon rcx-css-l5txo2"
             >
               
             </i>
@@ -207,23 +207,23 @@ exports[`renders WithAutoCompleteMultiple without crashing 1`] = `
         </div>
       </span>
       <span
-        class="rcx-box rcx-box--full rcx-field__error"
-        id="react-aria-_r_1_-error"
+        class="is_Text _b-650654186 _os-249893454 _ff-409630021 _fvn-1977619713 _ws-311910413 _ww-408434756 _fs-2088488067 _fw-289165218 _lh-1306743983 _ls-1782815796 _m-183820880 _c-1184219789 rcx-field__error"
+        id="react-aria-_r_i_-error"
         role="alert"
       >
         You failed to enter a valid value
       </span>
       <span
-        class="rcx-box rcx-box--full rcx-field__row"
+        class="is_Text _b-650654186 _os-249893454 _ff-409630021 _fvn-1977619713 _ws-311910413 _ww-408434756 _d-341075704 _f-541922926 _jc-281817805 _ai-121763387 _m-2017978848 _c-1756781803 rcx-field__row"
       >
         <span
-          class="rcx-box rcx-box--full rcx-field__hint"
-          id="react-aria-_r_1_-hint"
+          class="is_Text _b-650654186 _os-249893454 _ff-409630021 _fvn-1977619713 _ws-311910413 _ww-408434756 _fs-2088488067 _fw-289165218 _lh-1306743983 _ls-1782815796 _m-183820880 _c-1756781803 rcx-field__hint"
+          id="react-aria-_r_i_-hint"
         >
           This should help the user enter a valid value
         </span>
         <a
-          class="rcx-box rcx-box--full rcx-field__link"
+          class="is_Text _b-650654186 _os-249893454 _ff-409630021 _fvn-1977619713 _ws-311910413 _ww-408434756 _fs-2088488067 _fw-289165218 _lh-1306743983 _ls-1782815796 _m-183820880 _c-1876588386 rcx-field__link"
           href="#"
         >
           Link to more information
@@ -238,17 +238,17 @@ exports[`renders WithCheckbox without crashing 1`] = `
 <body>
   <div>
     <div
-      class="rcx-box rcx-box--full rcx-field"
+      class="is_Text _b-650654186 _os-249893454 _ff-409630021 _fvn-1977619713 _ws-311910413 _ww-408434756 _d-341075704 _f-1378740307 _ai-1227553247 _w-1560934055 rcx-field"
     >
       <span
-        class="rcx-box rcx-box--full rcx-field__row"
+        class="is_Text _b-650654186 _os-249893454 _ff-409630021 _fvn-1977619713 _ws-311910413 _ww-408434756 _d-341075704 _f-541922926 _jc-281817805 _ai-121763387 _m-2017978848 _c-1756781803 rcx-field__row"
       >
         <span
-          class="rcx-box rcx-box--full rcx-field__label rcx-label"
+          class="is_Text _b-650654186 _os-249893454 _ff-409630021 _fvn-1977619713 _ws-311910413 _ww-408434756 _fs-347291933 _fw-289166179 _lh-1925956564 _ls-1782815796 _d-341075704 _c-1922521888 _c-1063453128 rcx-label rcx-field__label"
         >
           Example Checkbox
           <span
-            class="rcx-box rcx-box--full rcx-label__info rcx-css-wcp0mp"
+            class="is_View _b-650654186 _os-249893454 _ff-409630021 _fvn-1977619713 _ws-311910413 _ww-408434756 _d-341075704 _f-1069814357 _ai-121763387 _o-823737910 _mw-354604370 _mh-1241200853 rcx-label__info rcx-css-wcp0mp"
           >
             <span
               hidden=""
@@ -257,7 +257,7 @@ exports[`renders WithCheckbox without crashing 1`] = `
             </span>
             <i
               aria-hidden="true"
-              class="rcx-box rcx-box--full rcx-icon--name-info-circled rcx-icon"
+              class="is_Text _d-1409515928 _ws-311910413 _ww-408434756 _us-601212022 _va-1101652081 _ls-1720078126 _ff-1916555734 _fs-1279428672 _fw-289165218 _fs-477064150 _fv-1578983722 _lh-2067209205 _tr-1510281189 rcx-icon--name-info-circled rcx-icon"
               title="with extra info in a tooltip"
             >
               
@@ -265,13 +265,13 @@ exports[`renders WithCheckbox without crashing 1`] = `
           </span>
           <span
             aria-hidden="true"
-            class="rcx-box rcx-box--full rcx-label__required rcx-css-b7g1a9"
+            class="is_Text _b-650654186 _os-249893454 _ff-409630021 _fvn-1977619713 _ws-311910413 _ww-408434756 _c-1184219789 rcx-label__required rcx-css-b7g1a9"
           >
             *
           </span>
         </span>
         <label
-          class="rcx-box rcx-box--full rcx-check-box"
+          class="is_Text _b-1639159466 _os-249893454 _ff-409630021 _fvn-1977619713 _ws-311910413 _ww-408434756 rcx-check-box"
         >
           <div
             style="border: 0px; clip-path: inset(50%); height: 1px; margin: -1px; overflow: hidden; padding: 0px; position: absolute; width: 1px; white-space: nowrap;"
@@ -279,42 +279,42 @@ exports[`renders WithCheckbox without crashing 1`] = `
             Example Checkbox with extra info in a tooltip  *
           </div>
           <input
-            aria-describedby="react-aria-_r_2_-description react-aria-_r_2_-error react-aria-_r_2_-hint"
+            aria-describedby="react-aria-_r_1a_-description react-aria-_r_1a_-error react-aria-_r_1a_-hint"
             aria-invalid="true"
-            class="rcx-box rcx-box--full rcx-check-box__input"
-            id="react-aria-_r_2_-label"
+            class="is_View _b-1639159466 _os-249893454 _ff-409630021 _fvn-1977619713 _p-1261267467 _o-1119039191 _c-588872556 _cp-2129451690 _w-226739898 _h-1922295961 _m-1890937723 _p-1943363302 _ws-973912173 _f-1246374076 rcx-check-box__input"
+            id="react-aria-_r_1a_-label"
             type="checkbox"
           />
           <i
             aria-hidden="true"
-            class="rcx-box rcx-box--full rcx-check-box__fake"
+            class="is_View _b-1639160427 _os-249893454 _ff-409630021 _fvn-1977619713 _p-1021290656 _h-858548760 _f-1069814357 _mw-354604370 _mh-1241200853 _d-341075704 _jc-1099843255 _ai-121763387 _br-761515502 _w-120696903 rcx-check-box__fake"
           />
         </label>
       </span>
       <span
-        class="rcx-box rcx-box--full rcx-field__description"
-        id="react-aria-_r_2_-description"
+        class="is_Text _b-650654186 _os-249893454 _ff-409630021 _fvn-1977619713 _ws-311910413 _ww-408434756 _fs-347291933 _fw-289165218 _lh-1925956564 _ls-1782815796 _m-183820880 _c-1756781803 rcx-field__description"
+        id="react-aria-_r_1a_-description"
       >
         You can select multiple options
       </span>
       <span
-        class="rcx-box rcx-box--full rcx-field__error"
-        id="react-aria-_r_2_-error"
+        class="is_Text _b-650654186 _os-249893454 _ff-409630021 _fvn-1977619713 _ws-311910413 _ww-408434756 _fs-2088488067 _fw-289165218 _lh-1306743983 _ls-1782815796 _m-183820880 _c-1184219789 rcx-field__error"
+        id="react-aria-_r_1a_-error"
         role="alert"
       >
         You failed to enter a valid value
       </span>
       <span
-        class="rcx-box rcx-box--full rcx-field__row"
+        class="is_Text _b-650654186 _os-249893454 _ff-409630021 _fvn-1977619713 _ws-311910413 _ww-408434756 _d-341075704 _f-541922926 _jc-281817805 _ai-121763387 _m-2017978848 _c-1756781803 rcx-field__row"
       >
         <span
-          class="rcx-box rcx-box--full rcx-field__hint"
-          id="react-aria-_r_2_-hint"
+          class="is_Text _b-650654186 _os-249893454 _ff-409630021 _fvn-1977619713 _ws-311910413 _ww-408434756 _fs-2088488067 _fw-289165218 _lh-1306743983 _ls-1782815796 _m-183820880 _c-1756781803 rcx-field__hint"
+          id="react-aria-_r_1a_-hint"
         >
           This should help the user enter a valid value
         </span>
         <a
-          class="rcx-box rcx-box--full rcx-field__link"
+          class="is_Text _b-650654186 _os-249893454 _ff-409630021 _fvn-1977619713 _ws-311910413 _ww-408434756 _fs-2088488067 _fw-289165218 _lh-1306743983 _ls-1782815796 _m-183820880 _c-1876588386 rcx-field__link"
           href="#"
         >
           Link to more information
@@ -329,15 +329,15 @@ exports[`renders WithEmailInput without crashing 1`] = `
 <body>
   <div>
     <div
-      class="rcx-box rcx-box--full rcx-field"
+      class="is_Text _b-650654186 _os-249893454 _ff-409630021 _fvn-1977619713 _ws-311910413 _ww-408434756 _d-341075704 _f-1378740307 _ai-1227553247 _w-1560934055 rcx-field"
     >
       <label
-        class="rcx-box rcx-box--full rcx-field__label rcx-label"
-        for="react-aria-_r_3_-label"
+        class="is_Text _b-650654186 _os-249893454 _ff-409630021 _fvn-1977619713 _ws-311910413 _ww-408434756 _fs-347291933 _fw-289166179 _lh-1925956564 _ls-1782815796 _d-341075704 _c-1922521888 _c-1063453128 rcx-label rcx-field__label"
+        for="react-aria-_r_1u_-label"
       >
         Example Email Input
         <span
-          class="rcx-box rcx-box--full rcx-label__info rcx-css-wcp0mp"
+          class="is_View _b-650654186 _os-249893454 _ff-409630021 _fvn-1977619713 _ws-311910413 _ww-408434756 _d-341075704 _f-1069814357 _ai-121763387 _o-823737910 _mw-354604370 _mh-1241200853 rcx-label__info rcx-css-wcp0mp"
         >
           <span
             hidden=""
@@ -346,7 +346,7 @@ exports[`renders WithEmailInput without crashing 1`] = `
           </span>
           <i
             aria-hidden="true"
-            class="rcx-box rcx-box--full rcx-icon--name-info-circled rcx-icon"
+            class="is_Text _d-1409515928 _ws-311910413 _ww-408434756 _us-601212022 _va-1101652081 _ls-1720078126 _ff-1916555734 _fs-1279428672 _fw-289165218 _fs-477064150 _fv-1578983722 _lh-2067209205 _tr-1510281189 rcx-icon--name-info-circled rcx-icon"
             title="with extra info in a tooltip"
           >
             
@@ -354,47 +354,47 @@ exports[`renders WithEmailInput without crashing 1`] = `
         </span>
         <span
           aria-hidden="true"
-          class="rcx-box rcx-box--full rcx-label__required rcx-css-b7g1a9"
+          class="is_Text _b-650654186 _os-249893454 _ff-409630021 _fvn-1977619713 _ws-311910413 _ww-408434756 _c-1184219789 rcx-label__required rcx-css-b7g1a9"
         >
           *
         </span>
       </label>
       <span
-        class="rcx-box rcx-box--full rcx-field__description"
-        id="react-aria-_r_3_-description"
+        class="is_Text _b-650654186 _os-249893454 _ff-409630021 _fvn-1977619713 _ws-311910413 _ww-408434756 _fs-347291933 _fw-289165218 _lh-1925956564 _ls-1782815796 _m-183820880 _c-1756781803 rcx-field__description"
+        id="react-aria-_r_1u_-description"
       >
         This field requires a valid email address
       </span>
       <span
-        class="rcx-box rcx-box--full rcx-field__row"
+        class="is_Text _b-650654186 _os-249893454 _ff-409630021 _fvn-1977619713 _ws-311910413 _ww-408434756 _d-341075704 _f-541922926 _jc-281817805 _ai-121763387 _m-2017978848 _c-1756781803 rcx-field__row"
       >
         <input
-          aria-describedby="react-aria-_r_3_-description react-aria-_r_3_-error react-aria-_r_3_-hint"
+          aria-describedby="react-aria-_r_1u_-description react-aria-_r_1u_-error react-aria-_r_1u_-hint"
           aria-invalid="true"
           class="rcx-box rcx-box--full rcx-box--animated rcx-input-box--type-email rcx-input-box"
-          id="react-aria-_r_3_-label"
+          id="react-aria-_r_1u_-label"
           size="1"
           type="email"
         />
       </span>
       <span
-        class="rcx-box rcx-box--full rcx-field__error"
-        id="react-aria-_r_3_-error"
+        class="is_Text _b-650654186 _os-249893454 _ff-409630021 _fvn-1977619713 _ws-311910413 _ww-408434756 _fs-2088488067 _fw-289165218 _lh-1306743983 _ls-1782815796 _m-183820880 _c-1184219789 rcx-field__error"
+        id="react-aria-_r_1u_-error"
         role="alert"
       >
         You failed to enter a valid value
       </span>
       <span
-        class="rcx-box rcx-box--full rcx-field__row"
+        class="is_Text _b-650654186 _os-249893454 _ff-409630021 _fvn-1977619713 _ws-311910413 _ww-408434756 _d-341075704 _f-541922926 _jc-281817805 _ai-121763387 _m-2017978848 _c-1756781803 rcx-field__row"
       >
         <span
-          class="rcx-box rcx-box--full rcx-field__hint"
-          id="react-aria-_r_3_-hint"
+          class="is_Text _b-650654186 _os-249893454 _ff-409630021 _fvn-1977619713 _ws-311910413 _ww-408434756 _fs-2088488067 _fw-289165218 _lh-1306743983 _ls-1782815796 _m-183820880 _c-1756781803 rcx-field__hint"
+          id="react-aria-_r_1u_-hint"
         >
           This should help the user enter a valid value
         </span>
         <a
-          class="rcx-box rcx-box--full rcx-field__link"
+          class="is_Text _b-650654186 _os-249893454 _ff-409630021 _fvn-1977619713 _ws-311910413 _ww-408434756 _fs-2088488067 _fw-289165218 _lh-1306743983 _ls-1782815796 _m-183820880 _c-1876588386 rcx-field__link"
           href="#"
         >
           Link to more information
@@ -409,15 +409,15 @@ exports[`renders WithMultiSelect without crashing 1`] = `
 <body>
   <div>
     <div
-      class="rcx-box rcx-box--full rcx-field"
+      class="is_Text _b-650654186 _os-249893454 _ff-409630021 _fvn-1977619713 _ws-311910413 _ww-408434756 _d-341075704 _f-1378740307 _ai-1227553247 _w-1560934055 rcx-field"
     >
       <span
-        class="rcx-box rcx-box--full rcx-field__label rcx-label"
-        id="react-aria-_r_4_-label"
+        class="is_Text _b-650654186 _os-249893454 _ff-409630021 _fvn-1977619713 _ws-311910413 _ww-408434756 _fs-347291933 _fw-289166179 _lh-1925956564 _ls-1782815796 _d-341075704 _c-1922521888 _c-1063453128 rcx-label rcx-field__label"
+        id="react-aria-_r_2b_-label"
       >
         Example MultiSelect
         <span
-          class="rcx-box rcx-box--full rcx-label__info rcx-css-wcp0mp"
+          class="is_View _b-650654186 _os-249893454 _ff-409630021 _fvn-1977619713 _ws-311910413 _ww-408434756 _d-341075704 _f-1069814357 _ai-121763387 _o-823737910 _mw-354604370 _mh-1241200853 rcx-label__info rcx-css-wcp0mp"
         >
           <span
             hidden=""
@@ -426,7 +426,7 @@ exports[`renders WithMultiSelect without crashing 1`] = `
           </span>
           <i
             aria-hidden="true"
-            class="rcx-box rcx-box--full rcx-icon--name-info-circled rcx-icon"
+            class="is_Text _d-1409515928 _ws-311910413 _ww-408434756 _us-601212022 _va-1101652081 _ls-1720078126 _ff-1916555734 _fs-1279428672 _fw-289165218 _fs-477064150 _fv-1578983722 _lh-2067209205 _tr-1510281189 rcx-icon--name-info-circled rcx-icon"
             title="with extra info in a tooltip"
           >
             
@@ -434,19 +434,19 @@ exports[`renders WithMultiSelect without crashing 1`] = `
         </span>
         <span
           aria-hidden="true"
-          class="rcx-box rcx-box--full rcx-label__required rcx-css-b7g1a9"
+          class="is_Text _b-650654186 _os-249893454 _ff-409630021 _fvn-1977619713 _ws-311910413 _ww-408434756 _c-1184219789 rcx-label__required rcx-css-b7g1a9"
         >
           *
         </span>
       </span>
       <span
-        class="rcx-box rcx-box--full rcx-field__description"
-        id="react-aria-_r_4_-description"
+        class="is_Text _b-650654186 _os-249893454 _ff-409630021 _fvn-1977619713 _ws-311910413 _ww-408434756 _fs-347291933 _fw-289165218 _lh-1925956564 _ls-1782815796 _m-183820880 _c-1756781803 rcx-field__description"
+        id="react-aria-_r_2b_-description"
       >
         You can select multiple options from a list of options
       </span>
       <span
-        class="rcx-box rcx-box--full rcx-field__row"
+        class="is_Text _b-650654186 _os-249893454 _ff-409630021 _fvn-1977619713 _ws-311910413 _ww-408434756 _d-341075704 _f-541922926 _jc-281817805 _ai-121763387 _m-2017978848 _c-1756781803 rcx-field__row"
       >
         <div
           class="rcx-box rcx-box--full rcx-box--animated rcx-select"
@@ -458,47 +458,47 @@ exports[`renders WithMultiSelect without crashing 1`] = `
               class="rcx-box rcx-box--full rcx-css-w398ts"
             >
               <button
-                aria-controls="react-aria-_r_4_-listbox"
-                aria-describedby="react-aria-_r_4_-description react-aria-_r_4_-error react-aria-_r_4_-hint"
+                aria-controls="react-aria-_r_2b_-listbox"
+                aria-describedby="react-aria-_r_2b_-description react-aria-_r_2b_-error react-aria-_r_2b_-hint"
                 aria-expanded="false"
                 aria-haspopup="listbox"
                 aria-invalid="true"
-                aria-labelledby="react-aria-_r_4_-label"
+                aria-labelledby="react-aria-_r_2b_-label"
                 class="rcx-box rcx-box--full rcx-input-box--undecorated rcx-select__focus rcx-css-i9v8z4 rcx-css-jzl7vl"
-                id="react-aria-_r_4_"
+                id="react-aria-_r_2b_"
                 role="combobox"
                 type="button"
               />
               <button
-                class="rcx-box rcx-chip rcx-css-i9v8z4"
+                class="is_View _d-341075704 _f-1841970073 _o-1119039191 _ai-121763387 _mw-354604370 _mh-499962855 _m-2017216831 _p-1943363302 _b-863864549 _br-1397394445 _o-1106425799 _c-22887652 _a-1578443335 _ff-409630021 _fs-347291933 _fw-289165218 _lh-1925956564 _ls-1782815796 _c-282297947 _b-1394375569 _bs-1465656659 rcx-box rcx-chip rcx-css-i9v8z4"
                 tabindex="-1"
                 type="button"
               >
                 <span
-                  class="rcx-box rcx-chip__text rcx-css-i9v8z4"
+                  class="is_Text _o-1119039191 _to-1727917045 _ws-973912173 rcx-box rcx-chip__text rcx-css-i9v8z4"
                 >
                   item 1
                 </span>
                 <i
                   aria-hidden="true"
-                  class="rcx-box rcx-box--full rcx-icon--name-cross rcx-icon rcx-css-i9v8z4 rcx-css-1wv1vf9"
+                  class="is_Text _d-1409515928 _ws-311910413 _ww-408434756 _us-601212022 _va-1101652081 _ls-1720078126 _ff-1916555734 _fs-1279428672 _fw-289165218 _fs-477064150 _fv-1578983722 _lh-2067209205 _tr-1510281189 rcx-icon--name-cross rcx-icon rcx-css-i9v8z4 rcx-css-1wv1vf9"
                 >
                   
                 </i>
               </button>
               <button
-                class="rcx-box rcx-chip rcx-css-i9v8z4"
+                class="is_View _d-341075704 _f-1841970073 _o-1119039191 _ai-121763387 _mw-354604370 _mh-499962855 _m-2017216831 _p-1943363302 _b-863864549 _br-1397394445 _o-1106425799 _c-22887652 _a-1578443335 _ff-409630021 _fs-347291933 _fw-289165218 _lh-1925956564 _ls-1782815796 _c-282297947 _b-1394375569 _bs-1465656659 rcx-box rcx-chip rcx-css-i9v8z4"
                 tabindex="-1"
                 type="button"
               >
                 <span
-                  class="rcx-box rcx-chip__text rcx-css-i9v8z4"
+                  class="is_Text _o-1119039191 _to-1727917045 _ws-973912173 rcx-box rcx-chip__text rcx-css-i9v8z4"
                 >
                   item 3
                 </span>
                 <i
                   aria-hidden="true"
-                  class="rcx-box rcx-box--full rcx-icon--name-cross rcx-icon rcx-css-i9v8z4 rcx-css-1wv1vf9"
+                  class="is_Text _d-1409515928 _ws-311910413 _ww-408434756 _us-601212022 _va-1101652081 _ls-1720078126 _ff-1916555734 _fs-1279428672 _fw-289165218 _fs-477064150 _fv-1578983722 _lh-2067209205 _tr-1510281189 rcx-icon--name-cross rcx-icon rcx-css-i9v8z4 rcx-css-1wv1vf9"
                 >
                   
                 </i>
@@ -510,7 +510,7 @@ exports[`renders WithMultiSelect without crashing 1`] = `
           >
             <i
               aria-hidden="true"
-              class="rcx-box rcx-box--full rcx-icon--name-chevron-down rcx-icon rcx-css-4pvxx3"
+              class="is_Text _d-1409515928 _ws-311910413 _ww-408434756 _us-601212022 _va-1101652081 _ls-1720078126 _ff-1916555734 _fs-1279428672 _fw-289165218 _fs-477064150 _fv-1578983722 _lh-2067209205 _tr-1510281189 rcx-icon--name-chevron-down rcx-icon rcx-css-4pvxx3"
             >
               
             </i>
@@ -518,23 +518,23 @@ exports[`renders WithMultiSelect without crashing 1`] = `
         </div>
       </span>
       <span
-        class="rcx-box rcx-box--full rcx-field__error"
-        id="react-aria-_r_4_-error"
+        class="is_Text _b-650654186 _os-249893454 _ff-409630021 _fvn-1977619713 _ws-311910413 _ww-408434756 _fs-2088488067 _fw-289165218 _lh-1306743983 _ls-1782815796 _m-183820880 _c-1184219789 rcx-field__error"
+        id="react-aria-_r_2b_-error"
         role="alert"
       >
         You failed to enter a valid value
       </span>
       <span
-        class="rcx-box rcx-box--full rcx-field__row"
+        class="is_Text _b-650654186 _os-249893454 _ff-409630021 _fvn-1977619713 _ws-311910413 _ww-408434756 _d-341075704 _f-541922926 _jc-281817805 _ai-121763387 _m-2017978848 _c-1756781803 rcx-field__row"
       >
         <span
-          class="rcx-box rcx-box--full rcx-field__hint"
-          id="react-aria-_r_4_-hint"
+          class="is_Text _b-650654186 _os-249893454 _ff-409630021 _fvn-1977619713 _ws-311910413 _ww-408434756 _fs-2088488067 _fw-289165218 _lh-1306743983 _ls-1782815796 _m-183820880 _c-1756781803 rcx-field__hint"
+          id="react-aria-_r_2b_-hint"
         >
           This should help the user enter a valid value
         </span>
         <a
-          class="rcx-box rcx-box--full rcx-field__link"
+          class="is_Text _b-650654186 _os-249893454 _ff-409630021 _fvn-1977619713 _ws-311910413 _ww-408434756 _fs-2088488067 _fw-289165218 _lh-1306743983 _ls-1782815796 _m-183820880 _c-1876588386 rcx-field__link"
           href="#"
         >
           Link to more information
@@ -549,15 +549,15 @@ exports[`renders WithNumberInput without crashing 1`] = `
 <body>
   <div>
     <div
-      class="rcx-box rcx-box--full rcx-field"
+      class="is_Text _b-650654186 _os-249893454 _ff-409630021 _fvn-1977619713 _ws-311910413 _ww-408434756 _d-341075704 _f-1378740307 _ai-1227553247 _w-1560934055 rcx-field"
     >
       <label
-        class="rcx-box rcx-box--full rcx-field__label rcx-label"
-        for="react-aria-_r_5_-label"
+        class="is_Text _b-650654186 _os-249893454 _ff-409630021 _fvn-1977619713 _ws-311910413 _ww-408434756 _fs-347291933 _fw-289166179 _lh-1925956564 _ls-1782815796 _d-341075704 _c-1922521888 _c-1063453128 rcx-label rcx-field__label"
+        for="react-aria-_r_33_-label"
       >
         Example Number Input
         <span
-          class="rcx-box rcx-box--full rcx-label__info rcx-css-wcp0mp"
+          class="is_View _b-650654186 _os-249893454 _ff-409630021 _fvn-1977619713 _ws-311910413 _ww-408434756 _d-341075704 _f-1069814357 _ai-121763387 _o-823737910 _mw-354604370 _mh-1241200853 rcx-label__info rcx-css-wcp0mp"
         >
           <span
             hidden=""
@@ -566,7 +566,7 @@ exports[`renders WithNumberInput without crashing 1`] = `
           </span>
           <i
             aria-hidden="true"
-            class="rcx-box rcx-box--full rcx-icon--name-info-circled rcx-icon"
+            class="is_Text _d-1409515928 _ws-311910413 _ww-408434756 _us-601212022 _va-1101652081 _ls-1720078126 _ff-1916555734 _fs-1279428672 _fw-289165218 _fs-477064150 _fv-1578983722 _lh-2067209205 _tr-1510281189 rcx-icon--name-info-circled rcx-icon"
             title="with extra info in a tooltip"
           >
             
@@ -574,47 +574,47 @@ exports[`renders WithNumberInput without crashing 1`] = `
         </span>
         <span
           aria-hidden="true"
-          class="rcx-box rcx-box--full rcx-label__required rcx-css-b7g1a9"
+          class="is_Text _b-650654186 _os-249893454 _ff-409630021 _fvn-1977619713 _ws-311910413 _ww-408434756 _c-1184219789 rcx-label__required rcx-css-b7g1a9"
         >
           *
         </span>
       </label>
       <span
-        class="rcx-box rcx-box--full rcx-field__description"
-        id="react-aria-_r_5_-description"
+        class="is_Text _b-650654186 _os-249893454 _ff-409630021 _fvn-1977619713 _ws-311910413 _ww-408434756 _fs-347291933 _fw-289165218 _lh-1925956564 _ls-1782815796 _m-183820880 _c-1756781803 rcx-field__description"
+        id="react-aria-_r_33_-description"
       >
         This field requires a valid number
       </span>
       <span
-        class="rcx-box rcx-box--full rcx-field__row"
+        class="is_Text _b-650654186 _os-249893454 _ff-409630021 _fvn-1977619713 _ws-311910413 _ww-408434756 _d-341075704 _f-541922926 _jc-281817805 _ai-121763387 _m-2017978848 _c-1756781803 rcx-field__row"
       >
         <input
-          aria-describedby="react-aria-_r_5_-description react-aria-_r_5_-error react-aria-_r_5_-hint"
+          aria-describedby="react-aria-_r_33_-description react-aria-_r_33_-error react-aria-_r_33_-hint"
           aria-invalid="true"
           class="rcx-box rcx-box--full rcx-box--animated rcx-input-box--type-number rcx-input-box"
-          id="react-aria-_r_5_-label"
+          id="react-aria-_r_33_-label"
           size="1"
           type="number"
         />
       </span>
       <span
-        class="rcx-box rcx-box--full rcx-field__error"
-        id="react-aria-_r_5_-error"
+        class="is_Text _b-650654186 _os-249893454 _ff-409630021 _fvn-1977619713 _ws-311910413 _ww-408434756 _fs-2088488067 _fw-289165218 _lh-1306743983 _ls-1782815796 _m-183820880 _c-1184219789 rcx-field__error"
+        id="react-aria-_r_33_-error"
         role="alert"
       >
         You failed to enter a valid value
       </span>
       <span
-        class="rcx-box rcx-box--full rcx-field__row"
+        class="is_Text _b-650654186 _os-249893454 _ff-409630021 _fvn-1977619713 _ws-311910413 _ww-408434756 _d-341075704 _f-541922926 _jc-281817805 _ai-121763387 _m-2017978848 _c-1756781803 rcx-field__row"
       >
         <span
-          class="rcx-box rcx-box--full rcx-field__hint"
-          id="react-aria-_r_5_-hint"
+          class="is_Text _b-650654186 _os-249893454 _ff-409630021 _fvn-1977619713 _ws-311910413 _ww-408434756 _fs-2088488067 _fw-289165218 _lh-1306743983 _ls-1782815796 _m-183820880 _c-1756781803 rcx-field__hint"
+          id="react-aria-_r_33_-hint"
         >
           This should help the user enter a valid value
         </span>
         <a
-          class="rcx-box rcx-box--full rcx-field__link"
+          class="is_Text _b-650654186 _os-249893454 _ff-409630021 _fvn-1977619713 _ws-311910413 _ww-408434756 _fs-2088488067 _fw-289165218 _lh-1306743983 _ls-1782815796 _m-183820880 _c-1876588386 rcx-field__link"
           href="#"
         >
           Link to more information
@@ -629,15 +629,15 @@ exports[`renders WithPasswordInput without crashing 1`] = `
 <body>
   <div>
     <div
-      class="rcx-box rcx-box--full rcx-field"
+      class="is_Text _b-650654186 _os-249893454 _ff-409630021 _fvn-1977619713 _ws-311910413 _ww-408434756 _d-341075704 _f-1378740307 _ai-1227553247 _w-1560934055 rcx-field"
     >
       <label
-        class="rcx-box rcx-box--full rcx-field__label rcx-label"
-        for="react-aria-_r_6_-label"
+        class="is_Text _b-650654186 _os-249893454 _ff-409630021 _fvn-1977619713 _ws-311910413 _ww-408434756 _fs-347291933 _fw-289166179 _lh-1925956564 _ls-1782815796 _d-341075704 _c-1922521888 _c-1063453128 rcx-label rcx-field__label"
+        for="react-aria-_r_3g_-label"
       >
         Example Password Input
         <span
-          class="rcx-box rcx-box--full rcx-label__info rcx-css-wcp0mp"
+          class="is_View _b-650654186 _os-249893454 _ff-409630021 _fvn-1977619713 _ws-311910413 _ww-408434756 _d-341075704 _f-1069814357 _ai-121763387 _o-823737910 _mw-354604370 _mh-1241200853 rcx-label__info rcx-css-wcp0mp"
         >
           <span
             hidden=""
@@ -646,7 +646,7 @@ exports[`renders WithPasswordInput without crashing 1`] = `
           </span>
           <i
             aria-hidden="true"
-            class="rcx-box rcx-box--full rcx-icon--name-info-circled rcx-icon"
+            class="is_Text _d-1409515928 _ws-311910413 _ww-408434756 _us-601212022 _va-1101652081 _ls-1720078126 _ff-1916555734 _fs-1279428672 _fw-289165218 _fs-477064150 _fv-1578983722 _lh-2067209205 _tr-1510281189 rcx-icon--name-info-circled rcx-icon"
             title="with extra info in a tooltip"
           >
             
@@ -654,28 +654,28 @@ exports[`renders WithPasswordInput without crashing 1`] = `
         </span>
         <span
           aria-hidden="true"
-          class="rcx-box rcx-box--full rcx-label__required rcx-css-b7g1a9"
+          class="is_Text _b-650654186 _os-249893454 _ff-409630021 _fvn-1977619713 _ws-311910413 _ww-408434756 _c-1184219789 rcx-label__required rcx-css-b7g1a9"
         >
           *
         </span>
       </label>
       <span
-        class="rcx-box rcx-box--full rcx-field__description"
-        id="react-aria-_r_6_-description"
+        class="is_Text _b-650654186 _os-249893454 _ff-409630021 _fvn-1977619713 _ws-311910413 _ww-408434756 _fs-347291933 _fw-289165218 _lh-1925956564 _ls-1782815796 _m-183820880 _c-1756781803 rcx-field__description"
+        id="react-aria-_r_3g_-description"
       >
         This field requires a valid password
       </span>
       <span
-        class="rcx-box rcx-box--full rcx-field__row"
+        class="is_Text _b-650654186 _os-249893454 _ff-409630021 _fvn-1977619713 _ws-311910413 _ww-408434756 _d-341075704 _f-541922926 _jc-281817805 _ai-121763387 _m-2017978848 _c-1756781803 rcx-field__row"
       >
         <label
-          class="rcx-box rcx-box--full rcx-label rcx-box rcx-box--full rcx-box--animated rcx-input-box__wrapper"
+          class="is_Text _b-650654186 _os-249893454 _ff-409630021 _fvn-1977619713 _ws-311910413 _ww-408434756 _fs-347291933 _fw-289166179 _lh-1925956564 _ls-1782815796 _d-341075704 _c-1922521888 _c-1063453128 rcx-label rcx-box rcx-box--full rcx-box--animated rcx-input-box__wrapper"
         >
           <input
-            aria-describedby="react-aria-_r_6_-description react-aria-_r_6_-error react-aria-_r_6_-hint"
+            aria-describedby="react-aria-_r_3g_-description react-aria-_r_3g_-error react-aria-_r_3g_-hint"
             aria-invalid="true"
             class="rcx-box rcx-box--full rcx-box--animated rcx-input-box--undecorated rcx-input-box--type-password rcx-input-box"
-            id="react-aria-_r_6_-label"
+            id="react-aria-_r_3g_-label"
             size="1"
             type="password"
           />
@@ -684,7 +684,7 @@ exports[`renders WithPasswordInput without crashing 1`] = `
           >
             <i
               aria-hidden="true"
-              class="rcx-box rcx-box--full rcx-icon--name-eye-off rcx-icon rcx-css-1bepdyv"
+              class="is_Text _d-1409515928 _ws-311910413 _ww-408434756 _us-601212022 _va-1101652081 _ls-1720078126 _ff-1916555734 _fs-1279428672 _fw-289165218 _fs-477064150 _fv-1578983722 _lh-2067209205 _tr-1510281189 rcx-icon--name-eye-off rcx-icon rcx-css-1bepdyv"
             >
               
             </i>
@@ -692,23 +692,23 @@ exports[`renders WithPasswordInput without crashing 1`] = `
         </label>
       </span>
       <span
-        class="rcx-box rcx-box--full rcx-field__error"
-        id="react-aria-_r_6_-error"
+        class="is_Text _b-650654186 _os-249893454 _ff-409630021 _fvn-1977619713 _ws-311910413 _ww-408434756 _fs-2088488067 _fw-289165218 _lh-1306743983 _ls-1782815796 _m-183820880 _c-1184219789 rcx-field__error"
+        id="react-aria-_r_3g_-error"
         role="alert"
       >
         You failed to enter a valid value
       </span>
       <span
-        class="rcx-box rcx-box--full rcx-field__row"
+        class="is_Text _b-650654186 _os-249893454 _ff-409630021 _fvn-1977619713 _ws-311910413 _ww-408434756 _d-341075704 _f-541922926 _jc-281817805 _ai-121763387 _m-2017978848 _c-1756781803 rcx-field__row"
       >
         <span
-          class="rcx-box rcx-box--full rcx-field__hint"
-          id="react-aria-_r_6_-hint"
+          class="is_Text _b-650654186 _os-249893454 _ff-409630021 _fvn-1977619713 _ws-311910413 _ww-408434756 _fs-2088488067 _fw-289165218 _lh-1306743983 _ls-1782815796 _m-183820880 _c-1756781803 rcx-field__hint"
+          id="react-aria-_r_3g_-hint"
         >
           This should help the user enter a valid value
         </span>
         <a
-          class="rcx-box rcx-box--full rcx-field__link"
+          class="is_Text _b-650654186 _os-249893454 _ff-409630021 _fvn-1977619713 _ws-311910413 _ww-408434756 _fs-2088488067 _fw-289165218 _lh-1306743983 _ls-1782815796 _m-183820880 _c-1876588386 rcx-field__link"
           href="#"
         >
           Link to more information
@@ -723,17 +723,17 @@ exports[`renders WithRadioButton without crashing 1`] = `
 <body>
   <div>
     <div
-      class="rcx-box rcx-box--full rcx-field"
+      class="is_Text _b-650654186 _os-249893454 _ff-409630021 _fvn-1977619713 _ws-311910413 _ww-408434756 _d-341075704 _f-1378740307 _ai-1227553247 _w-1560934055 rcx-field"
     >
       <span
-        class="rcx-box rcx-box--full rcx-field__row"
+        class="is_Text _b-650654186 _os-249893454 _ff-409630021 _fvn-1977619713 _ws-311910413 _ww-408434756 _d-341075704 _f-541922926 _jc-281817805 _ai-121763387 _m-2017978848 _c-1756781803 rcx-field__row"
       >
         <span
-          class="rcx-box rcx-box--full rcx-field__label rcx-label"
+          class="is_Text _b-650654186 _os-249893454 _ff-409630021 _fvn-1977619713 _ws-311910413 _ww-408434756 _fs-347291933 _fw-289166179 _lh-1925956564 _ls-1782815796 _d-341075704 _c-1922521888 _c-1063453128 rcx-label rcx-field__label"
         >
           Example Radio Button
           <span
-            class="rcx-box rcx-box--full rcx-label__info rcx-css-wcp0mp"
+            class="is_View _b-650654186 _os-249893454 _ff-409630021 _fvn-1977619713 _ws-311910413 _ww-408434756 _d-341075704 _f-1069814357 _ai-121763387 _o-823737910 _mw-354604370 _mh-1241200853 rcx-label__info rcx-css-wcp0mp"
           >
             <span
               hidden=""
@@ -742,7 +742,7 @@ exports[`renders WithRadioButton without crashing 1`] = `
             </span>
             <i
               aria-hidden="true"
-              class="rcx-box rcx-box--full rcx-icon--name-info-circled rcx-icon"
+              class="is_Text _d-1409515928 _ws-311910413 _ww-408434756 _us-601212022 _va-1101652081 _ls-1720078126 _ff-1916555734 _fs-1279428672 _fw-289165218 _fs-477064150 _fv-1578983722 _lh-2067209205 _tr-1510281189 rcx-icon--name-info-circled rcx-icon"
               title="with extra info in a tooltip"
             >
               
@@ -750,13 +750,13 @@ exports[`renders WithRadioButton without crashing 1`] = `
           </span>
           <span
             aria-hidden="true"
-            class="rcx-box rcx-box--full rcx-label__required rcx-css-b7g1a9"
+            class="is_Text _b-650654186 _os-249893454 _ff-409630021 _fvn-1977619713 _ws-311910413 _ww-408434756 _c-1184219789 rcx-label__required rcx-css-b7g1a9"
           >
             *
           </span>
         </span>
         <label
-          class="rcx-box rcx-box--full rcx-radio-button"
+          class="is_Text _b-1639159466 _os-249893454 _ff-409630021 _fvn-1977619713 _ws-311910413 _ww-408434756 rcx-radio-button"
         >
           <div
             style="border: 0px; clip-path: inset(50%); height: 1px; margin: -1px; overflow: hidden; padding: 0px; position: absolute; width: 1px; white-space: nowrap;"
@@ -764,42 +764,42 @@ exports[`renders WithRadioButton without crashing 1`] = `
             Example Radio Button with extra info in a tooltip  *
           </div>
           <input
-            aria-describedby="react-aria-_r_7_-description react-aria-_r_7_-error react-aria-_r_7_-hint"
+            aria-describedby="react-aria-_r_3v_-description react-aria-_r_3v_-error react-aria-_r_3v_-hint"
             aria-invalid="true"
-            class="rcx-box rcx-box--full rcx-radio-button__input"
-            id="react-aria-_r_7_-label"
+            class="is_View _b-1639159466 _os-249893454 _ff-409630021 _fvn-1977619713 _p-1261267467 _o-1119039191 _c-588872556 _cp-2129451690 _w-226739898 _h-1922295961 _m-1890937723 _p-1943363302 _ws-973912173 _f-1246374076 rcx-radio-button__input"
+            id="react-aria-_r_3v_-label"
             type="radio"
           />
           <i
             aria-hidden="true"
-            class="rcx-box rcx-box--full rcx-radio-button__fake"
+            class="is_View _b-1639160427 _os-249893454 _ff-409630021 _fvn-1977619713 _p-1021290656 _h-858548760 _f-1069814357 _mw-354604370 _mh-1241200853 _d-341075704 _jc-1099843255 _ai-121763387 _br-662213014 _w-120696903 rcx-radio-button__fake"
           />
         </label>
       </span>
       <span
-        class="rcx-box rcx-box--full rcx-field__description"
-        id="react-aria-_r_7_-description"
+        class="is_Text _b-650654186 _os-249893454 _ff-409630021 _fvn-1977619713 _ws-311910413 _ww-408434756 _fs-347291933 _fw-289165218 _lh-1925956564 _ls-1782815796 _m-183820880 _c-1756781803 rcx-field__description"
+        id="react-aria-_r_3v_-description"
       >
         You can only select a single option
       </span>
       <span
-        class="rcx-box rcx-box--full rcx-field__error"
-        id="react-aria-_r_7_-error"
+        class="is_Text _b-650654186 _os-249893454 _ff-409630021 _fvn-1977619713 _ws-311910413 _ww-408434756 _fs-2088488067 _fw-289165218 _lh-1306743983 _ls-1782815796 _m-183820880 _c-1184219789 rcx-field__error"
+        id="react-aria-_r_3v_-error"
         role="alert"
       >
         You failed to enter a valid value
       </span>
       <span
-        class="rcx-box rcx-box--full rcx-field__row"
+        class="is_Text _b-650654186 _os-249893454 _ff-409630021 _fvn-1977619713 _ws-311910413 _ww-408434756 _d-341075704 _f-541922926 _jc-281817805 _ai-121763387 _m-2017978848 _c-1756781803 rcx-field__row"
       >
         <span
-          class="rcx-box rcx-box--full rcx-field__hint"
-          id="react-aria-_r_7_-hint"
+          class="is_Text _b-650654186 _os-249893454 _ff-409630021 _fvn-1977619713 _ws-311910413 _ww-408434756 _fs-2088488067 _fw-289165218 _lh-1306743983 _ls-1782815796 _m-183820880 _c-1756781803 rcx-field__hint"
+          id="react-aria-_r_3v_-hint"
         >
           This should help the user enter a valid value
         </span>
         <a
-          class="rcx-box rcx-box--full rcx-field__link"
+          class="is_Text _b-650654186 _os-249893454 _ff-409630021 _fvn-1977619713 _ws-311910413 _ww-408434756 _fs-2088488067 _fw-289165218 _lh-1306743983 _ls-1782815796 _m-183820880 _c-1876588386 rcx-field__link"
           href="#"
         >
           Link to more information
@@ -814,15 +814,15 @@ exports[`renders WithSearchInput without crashing 1`] = `
 <body>
   <div>
     <div
-      class="rcx-box rcx-box--full rcx-field"
+      class="is_Text _b-650654186 _os-249893454 _ff-409630021 _fvn-1977619713 _ws-311910413 _ww-408434756 _d-341075704 _f-1378740307 _ai-1227553247 _w-1560934055 rcx-field"
     >
       <label
-        class="rcx-box rcx-box--full rcx-field__label rcx-label"
-        for="react-aria-_r_8_-label"
+        class="is_Text _b-650654186 _os-249893454 _ff-409630021 _fvn-1977619713 _ws-311910413 _ww-408434756 _fs-347291933 _fw-289166179 _lh-1925956564 _ls-1782815796 _d-341075704 _c-1922521888 _c-1063453128 rcx-label rcx-field__label"
+        for="react-aria-_r_4j_-label"
       >
         Example Search Input
         <span
-          class="rcx-box rcx-box--full rcx-label__info rcx-css-wcp0mp"
+          class="is_View _b-650654186 _os-249893454 _ff-409630021 _fvn-1977619713 _ws-311910413 _ww-408434756 _d-341075704 _f-1069814357 _ai-121763387 _o-823737910 _mw-354604370 _mh-1241200853 rcx-label__info rcx-css-wcp0mp"
         >
           <span
             hidden=""
@@ -831,7 +831,7 @@ exports[`renders WithSearchInput without crashing 1`] = `
           </span>
           <i
             aria-hidden="true"
-            class="rcx-box rcx-box--full rcx-icon--name-info-circled rcx-icon"
+            class="is_Text _d-1409515928 _ws-311910413 _ww-408434756 _us-601212022 _va-1101652081 _ls-1720078126 _ff-1916555734 _fs-1279428672 _fw-289165218 _fs-477064150 _fv-1578983722 _lh-2067209205 _tr-1510281189 rcx-icon--name-info-circled rcx-icon"
             title="with extra info in a tooltip"
           >
             
@@ -839,47 +839,47 @@ exports[`renders WithSearchInput without crashing 1`] = `
         </span>
         <span
           aria-hidden="true"
-          class="rcx-box rcx-box--full rcx-label__required rcx-css-b7g1a9"
+          class="is_Text _b-650654186 _os-249893454 _ff-409630021 _fvn-1977619713 _ws-311910413 _ww-408434756 _c-1184219789 rcx-label__required rcx-css-b7g1a9"
         >
           *
         </span>
       </label>
       <span
-        class="rcx-box rcx-box--full rcx-field__description"
-        id="react-aria-_r_8_-description"
+        class="is_Text _b-650654186 _os-249893454 _ff-409630021 _fvn-1977619713 _ws-311910413 _ww-408434756 _fs-347291933 _fw-289165218 _lh-1925956564 _ls-1782815796 _m-183820880 _c-1756781803 rcx-field__description"
+        id="react-aria-_r_4j_-description"
       >
         You can use this field to search for things
       </span>
       <span
-        class="rcx-box rcx-box--full rcx-field__row"
+        class="is_Text _b-650654186 _os-249893454 _ff-409630021 _fvn-1977619713 _ws-311910413 _ww-408434756 _d-341075704 _f-541922926 _jc-281817805 _ai-121763387 _m-2017978848 _c-1756781803 rcx-field__row"
       >
         <input
-          aria-describedby="react-aria-_r_8_-description react-aria-_r_8_-error react-aria-_r_8_-hint"
+          aria-describedby="react-aria-_r_4j_-description react-aria-_r_4j_-error react-aria-_r_4j_-hint"
           aria-invalid="true"
           class="rcx-box rcx-box--full rcx-box--animated rcx-input-box--type-search rcx-input-box"
-          id="react-aria-_r_8_-label"
+          id="react-aria-_r_4j_-label"
           size="1"
           type="search"
         />
       </span>
       <span
-        class="rcx-box rcx-box--full rcx-field__error"
-        id="react-aria-_r_8_-error"
+        class="is_Text _b-650654186 _os-249893454 _ff-409630021 _fvn-1977619713 _ws-311910413 _ww-408434756 _fs-2088488067 _fw-289165218 _lh-1306743983 _ls-1782815796 _m-183820880 _c-1184219789 rcx-field__error"
+        id="react-aria-_r_4j_-error"
         role="alert"
       >
         You failed to enter a valid value
       </span>
       <span
-        class="rcx-box rcx-box--full rcx-field__row"
+        class="is_Text _b-650654186 _os-249893454 _ff-409630021 _fvn-1977619713 _ws-311910413 _ww-408434756 _d-341075704 _f-541922926 _jc-281817805 _ai-121763387 _m-2017978848 _c-1756781803 rcx-field__row"
       >
         <span
-          class="rcx-box rcx-box--full rcx-field__hint"
-          id="react-aria-_r_8_-hint"
+          class="is_Text _b-650654186 _os-249893454 _ff-409630021 _fvn-1977619713 _ws-311910413 _ww-408434756 _fs-2088488067 _fw-289165218 _lh-1306743983 _ls-1782815796 _m-183820880 _c-1756781803 rcx-field__hint"
+          id="react-aria-_r_4j_-hint"
         >
           This should help the user enter a valid value
         </span>
         <a
-          class="rcx-box rcx-box--full rcx-field__link"
+          class="is_Text _b-650654186 _os-249893454 _ff-409630021 _fvn-1977619713 _ws-311910413 _ww-408434756 _fs-2088488067 _fw-289165218 _lh-1306743983 _ls-1782815796 _m-183820880 _c-1876588386 rcx-field__link"
           href="#"
         >
           Link to more information
@@ -894,15 +894,15 @@ exports[`renders WithSelect without crashing 1`] = `
 <body>
   <div>
     <div
-      class="rcx-box rcx-box--full rcx-field"
+      class="is_Text _b-650654186 _os-249893454 _ff-409630021 _fvn-1977619713 _ws-311910413 _ww-408434756 _d-341075704 _f-1378740307 _ai-1227553247 _w-1560934055 rcx-field"
     >
       <span
-        class="rcx-box rcx-box--full rcx-field__label rcx-label"
-        id="react-aria-_r_9_-label"
+        class="is_Text _b-650654186 _os-249893454 _ff-409630021 _fvn-1977619713 _ws-311910413 _ww-408434756 _fs-347291933 _fw-289166179 _lh-1925956564 _ls-1782815796 _d-341075704 _c-1922521888 _c-1063453128 rcx-label rcx-field__label"
+        id="react-aria-_r_50_-label"
       >
         Example Select
         <span
-          class="rcx-box rcx-box--full rcx-label__info rcx-css-wcp0mp"
+          class="is_View _b-650654186 _os-249893454 _ff-409630021 _fvn-1977619713 _ws-311910413 _ww-408434756 _d-341075704 _f-1069814357 _ai-121763387 _o-823737910 _mw-354604370 _mh-1241200853 rcx-label__info rcx-css-wcp0mp"
         >
           <span
             hidden=""
@@ -911,7 +911,7 @@ exports[`renders WithSelect without crashing 1`] = `
           </span>
           <i
             aria-hidden="true"
-            class="rcx-box rcx-box--full rcx-icon--name-info-circled rcx-icon"
+            class="is_Text _d-1409515928 _ws-311910413 _ww-408434756 _us-601212022 _va-1101652081 _ls-1720078126 _ff-1916555734 _fs-1279428672 _fw-289165218 _fs-477064150 _fv-1578983722 _lh-2067209205 _tr-1510281189 rcx-icon--name-info-circled rcx-icon"
             title="with extra info in a tooltip"
           >
             
@@ -919,19 +919,19 @@ exports[`renders WithSelect without crashing 1`] = `
         </span>
         <span
           aria-hidden="true"
-          class="rcx-box rcx-box--full rcx-label__required rcx-css-b7g1a9"
+          class="is_Text _b-650654186 _os-249893454 _ff-409630021 _fvn-1977619713 _ws-311910413 _ww-408434756 _c-1184219789 rcx-label__required rcx-css-b7g1a9"
         >
           *
         </span>
       </span>
       <span
-        class="rcx-box rcx-box--full rcx-field__description"
-        id="react-aria-_r_9_-description"
+        class="is_Text _b-650654186 _os-249893454 _ff-409630021 _fvn-1977619713 _ws-311910413 _ww-408434756 _fs-347291933 _fw-289165218 _lh-1925956564 _ls-1782815796 _m-183820880 _c-1756781803 rcx-field__description"
+        id="react-aria-_r_50_-description"
       >
         You can select a single option from a list of options
       </span>
       <span
-        class="rcx-box rcx-box--full rcx-field__row"
+        class="is_Text _b-650654186 _os-249893454 _ff-409630021 _fvn-1977619713 _ws-311910413 _ww-408434756 _d-341075704 _f-541922926 _jc-281817805 _ai-121763387 _m-2017978848 _c-1756781803 rcx-field__row"
       >
         <div
           class="rcx-box rcx-box--full rcx-css-1ds37nf"
@@ -1003,43 +1003,43 @@ exports[`renders WithSelect without crashing 1`] = `
           </div>
         </div>
         <button
-          aria-describedby="react-aria-_r_9_-description react-aria-_r_9_-error react-aria-_r_9_-hint"
+          aria-describedby="react-aria-_r_50_-description react-aria-_r_50_-error react-aria-_r_50_-hint"
           aria-expanded="false"
           aria-haspopup="listbox"
-          aria-labelledby="react-aria-_r_h_ react-aria-_r_9_-label"
+          aria-labelledby="react-aria-_r_5g_ react-aria-_r_50_-label"
           class="rcx-box rcx-box--full rcx-box--animated rcx-select rcx-css-3ejkxj"
           type="button"
         >
           <span
             class="rcx-box rcx-box--full rcx-css-az37y0"
-            id="react-aria-_r_h_"
+            id="react-aria-_r_5g_"
           />
           <i
             aria-hidden="true"
-            class="rcx-box rcx-box--full rcx-icon--name-chevron-down rcx-icon rcx-css-l5txo2"
+            class="is_Text _d-1409515928 _ws-311910413 _ww-408434756 _us-601212022 _va-1101652081 _ls-1720078126 _ff-1916555734 _fs-1279428672 _fw-289165218 _fs-477064150 _fv-1578983722 _lh-2067209205 _tr-1510281189 rcx-icon--name-chevron-down rcx-icon rcx-css-l5txo2"
           >
             
           </i>
         </button>
       </span>
       <span
-        class="rcx-box rcx-box--full rcx-field__error"
-        id="react-aria-_r_9_-error"
+        class="is_Text _b-650654186 _os-249893454 _ff-409630021 _fvn-1977619713 _ws-311910413 _ww-408434756 _fs-2088488067 _fw-289165218 _lh-1306743983 _ls-1782815796 _m-183820880 _c-1184219789 rcx-field__error"
+        id="react-aria-_r_50_-error"
         role="alert"
       >
         You failed to enter a valid value
       </span>
       <span
-        class="rcx-box rcx-box--full rcx-field__row"
+        class="is_Text _b-650654186 _os-249893454 _ff-409630021 _fvn-1977619713 _ws-311910413 _ww-408434756 _d-341075704 _f-541922926 _jc-281817805 _ai-121763387 _m-2017978848 _c-1756781803 rcx-field__row"
       >
         <span
-          class="rcx-box rcx-box--full rcx-field__hint"
-          id="react-aria-_r_9_-hint"
+          class="is_Text _b-650654186 _os-249893454 _ff-409630021 _fvn-1977619713 _ws-311910413 _ww-408434756 _fs-2088488067 _fw-289165218 _lh-1306743983 _ls-1782815796 _m-183820880 _c-1756781803 rcx-field__hint"
+          id="react-aria-_r_50_-hint"
         >
           This should help the user enter a valid value
         </span>
         <a
-          class="rcx-box rcx-box--full rcx-field__link"
+          class="is_Text _b-650654186 _os-249893454 _ff-409630021 _fvn-1977619713 _ws-311910413 _ww-408434756 _fs-2088488067 _fw-289165218 _lh-1306743983 _ls-1782815796 _m-183820880 _c-1876588386 rcx-field__link"
           href="#"
         >
           Link to more information
@@ -1054,15 +1054,15 @@ exports[`renders WithSlider without crashing 1`] = `
 <body>
   <div>
     <div
-      class="rcx-box rcx-box--full rcx-field"
+      class="is_Text _b-650654186 _os-249893454 _ff-409630021 _fvn-1977619713 _ws-311910413 _ww-408434756 _d-341075704 _f-1378740307 _ai-1227553247 _w-1560934055 rcx-field"
     >
       <span
-        class="rcx-box rcx-box--full rcx-field__label rcx-label"
-        id="react-aria-_r_i_-label"
+        class="is_Text _b-650654186 _os-249893454 _ff-409630021 _fvn-1977619713 _ws-311910413 _ww-408434756 _fs-347291933 _fw-289166179 _lh-1925956564 _ls-1782815796 _d-341075704 _c-1922521888 _c-1063453128 rcx-label rcx-field__label"
+        id="react-aria-_r_5q_-label"
       >
         Example Slider
         <span
-          class="rcx-box rcx-box--full rcx-label__info rcx-css-wcp0mp"
+          class="is_View _b-650654186 _os-249893454 _ff-409630021 _fvn-1977619713 _ws-311910413 _ww-408434756 _d-341075704 _f-1069814357 _ai-121763387 _o-823737910 _mw-354604370 _mh-1241200853 rcx-label__info rcx-css-wcp0mp"
         >
           <span
             hidden=""
@@ -1071,7 +1071,7 @@ exports[`renders WithSlider without crashing 1`] = `
           </span>
           <i
             aria-hidden="true"
-            class="rcx-box rcx-box--full rcx-icon--name-info-circled rcx-icon"
+            class="is_Text _d-1409515928 _ws-311910413 _ww-408434756 _us-601212022 _va-1101652081 _ls-1720078126 _ff-1916555734 _fs-1279428672 _fw-289165218 _fs-477064150 _fv-1578983722 _lh-2067209205 _tr-1510281189 rcx-icon--name-info-circled rcx-icon"
             title="with extra info in a tooltip"
           >
             
@@ -1079,36 +1079,36 @@ exports[`renders WithSlider without crashing 1`] = `
         </span>
         <span
           aria-hidden="true"
-          class="rcx-box rcx-box--full rcx-label__required rcx-css-b7g1a9"
+          class="is_Text _b-650654186 _os-249893454 _ff-409630021 _fvn-1977619713 _ws-311910413 _ww-408434756 _c-1184219789 rcx-label__required rcx-css-b7g1a9"
         >
           *
         </span>
       </span>
       <span
-        class="rcx-box rcx-box--full rcx-field__description"
-        id="react-aria-_r_i_-description"
+        class="is_Text _b-650654186 _os-249893454 _ff-409630021 _fvn-1977619713 _ws-311910413 _ww-408434756 _fs-347291933 _fw-289165218 _lh-1925956564 _ls-1782815796 _m-183820880 _c-1756781803 rcx-field__description"
+        id="react-aria-_r_5q_-description"
       >
         You can use the slider to select a value from a range of values
       </span>
       <span
-        class="rcx-box rcx-box--full rcx-field__row"
+        class="is_Text _b-650654186 _os-249893454 _ff-409630021 _fvn-1977619713 _ws-311910413 _ww-408434756 _d-341075704 _f-541922926 _jc-281817805 _ai-121763387 _m-2017978848 _c-1756781803 rcx-field__row"
       >
         <div
-          aria-labelledby="react-aria-_r_i_-label"
+          aria-labelledby="react-aria-_r_5q_-label"
           class="rcx-css-1w00u9"
-          id="react-aria-_r_j_"
+          id="react-aria-_r_63_"
           role="group"
         >
           <label
             aria-live="off"
-            class="rcx-box rcx-box--full rcx-label"
-            for="react-aria-_r_j_-0"
+            class="is_Text _b-650654186 _os-249893454 _ff-409630021 _fvn-1977619713 _ws-311910413 _ww-408434756 _fs-347291933 _fw-289166179 _lh-1925956564 _ls-1782815796 _d-341075704 _c-1922521888 _c-1063453128 rcx-label"
+            for="react-aria-_r_63_-0"
           >
             <span
               aria-live="off"
-              class="rcx-box rcx-box--full rcx-label"
+              class="is_Text _b-650654186 _os-249893454 _ff-409630021 _fvn-1977619713 _ws-311910413 _ww-408434756 _fs-347291933 _fw-289166179 _lh-1925956564 _ls-1782815796 _d-341075704 _c-1922521888 _c-1063453128 rcx-label"
               data-testid="slider-output"
-              for="react-aria-_r_j_-0"
+              for="react-aria-_r_63_-0"
             >
               20
             </span>
@@ -1125,12 +1125,12 @@ exports[`renders WithSlider without crashing 1`] = `
                 style="border: 0px; clip-path: inset(50%); height: 1px; margin: -1px; overflow: hidden; padding: 0px; position: absolute; width: 1px; white-space: nowrap;"
               >
                 <input
-                  aria-describedby="react-aria-_r_i_-description react-aria-_r_i_-error react-aria-_r_i_-hint"
+                  aria-describedby="react-aria-_r_5q_-description react-aria-_r_5q_-error react-aria-_r_5q_-hint"
                   aria-details=""
-                  aria-labelledby="react-aria-_r_j_"
+                  aria-labelledby="react-aria-_r_63_"
                   aria-orientation="horizontal"
                   aria-valuetext="20"
-                  id="react-aria-_r_j_-0"
+                  id="react-aria-_r_63_-0"
                   max="100"
                   min="0"
                   step="1"
@@ -1144,23 +1144,23 @@ exports[`renders WithSlider without crashing 1`] = `
         </div>
       </span>
       <span
-        class="rcx-box rcx-box--full rcx-field__error"
-        id="react-aria-_r_i_-error"
+        class="is_Text _b-650654186 _os-249893454 _ff-409630021 _fvn-1977619713 _ws-311910413 _ww-408434756 _fs-2088488067 _fw-289165218 _lh-1306743983 _ls-1782815796 _m-183820880 _c-1184219789 rcx-field__error"
+        id="react-aria-_r_5q_-error"
         role="alert"
       >
         You failed to enter a valid value
       </span>
       <span
-        class="rcx-box rcx-box--full rcx-field__row"
+        class="is_Text _b-650654186 _os-249893454 _ff-409630021 _fvn-1977619713 _ws-311910413 _ww-408434756 _d-341075704 _f-541922926 _jc-281817805 _ai-121763387 _m-2017978848 _c-1756781803 rcx-field__row"
       >
         <span
-          class="rcx-box rcx-box--full rcx-field__hint"
-          id="react-aria-_r_i_-hint"
+          class="is_Text _b-650654186 _os-249893454 _ff-409630021 _fvn-1977619713 _ws-311910413 _ww-408434756 _fs-2088488067 _fw-289165218 _lh-1306743983 _ls-1782815796 _m-183820880 _c-1756781803 rcx-field__hint"
+          id="react-aria-_r_5q_-hint"
         >
           This should help the user enter a valid value
         </span>
         <a
-          class="rcx-box rcx-box--full rcx-field__link"
+          class="is_Text _b-650654186 _os-249893454 _ff-409630021 _fvn-1977619713 _ws-311910413 _ww-408434756 _fs-2088488067 _fw-289165218 _lh-1306743983 _ls-1782815796 _m-183820880 _c-1876588386 rcx-field__link"
           href="#"
         >
           Link to more information
@@ -1175,15 +1175,15 @@ exports[`renders WithTextArea without crashing 1`] = `
 <body>
   <div>
     <div
-      class="rcx-box rcx-box--full rcx-field"
+      class="is_Text _b-650654186 _os-249893454 _ff-409630021 _fvn-1977619713 _ws-311910413 _ww-408434756 _d-341075704 _f-1378740307 _ai-1227553247 _w-1560934055 rcx-field"
     >
       <label
-        class="rcx-box rcx-box--full rcx-field__label rcx-label"
-        for="react-aria-_r_p_-label"
+        class="is_Text _b-650654186 _os-249893454 _ff-409630021 _fvn-1977619713 _ws-311910413 _ww-408434756 _fs-347291933 _fw-289166179 _lh-1925956564 _ls-1782815796 _d-341075704 _c-1922521888 _c-1063453128 rcx-label rcx-field__label"
+        for="react-aria-_r_6j_-label"
       >
         Example Text Area
         <span
-          class="rcx-box rcx-box--full rcx-label__info rcx-css-wcp0mp"
+          class="is_View _b-650654186 _os-249893454 _ff-409630021 _fvn-1977619713 _ws-311910413 _ww-408434756 _d-341075704 _f-1069814357 _ai-121763387 _o-823737910 _mw-354604370 _mh-1241200853 rcx-label__info rcx-css-wcp0mp"
         >
           <span
             hidden=""
@@ -1192,7 +1192,7 @@ exports[`renders WithTextArea without crashing 1`] = `
           </span>
           <i
             aria-hidden="true"
-            class="rcx-box rcx-box--full rcx-icon--name-info-circled rcx-icon"
+            class="is_Text _d-1409515928 _ws-311910413 _ww-408434756 _us-601212022 _va-1101652081 _ls-1720078126 _ff-1916555734 _fs-1279428672 _fw-289165218 _fs-477064150 _fv-1578983722 _lh-2067209205 _tr-1510281189 rcx-icon--name-info-circled rcx-icon"
             title="with extra info in a tooltip"
           >
             
@@ -1200,47 +1200,47 @@ exports[`renders WithTextArea without crashing 1`] = `
         </span>
         <span
           aria-hidden="true"
-          class="rcx-box rcx-box--full rcx-label__required rcx-css-b7g1a9"
+          class="is_Text _b-650654186 _os-249893454 _ff-409630021 _fvn-1977619713 _ws-311910413 _ww-408434756 _c-1184219789 rcx-label__required rcx-css-b7g1a9"
         >
           *
         </span>
       </label>
       <span
-        class="rcx-box rcx-box--full rcx-field__description"
-        id="react-aria-_r_p_-description"
+        class="is_Text _b-650654186 _os-249893454 _ff-409630021 _fvn-1977619713 _ws-311910413 _ww-408434756 _fs-347291933 _fw-289165218 _lh-1925956564 _ls-1782815796 _m-183820880 _c-1756781803 rcx-field__description"
+        id="react-aria-_r_6j_-description"
       >
         You can use this field to enter multi-line text
       </span>
       <span
-        class="rcx-box rcx-box--full rcx-field__row"
+        class="is_Text _b-650654186 _os-249893454 _ff-409630021 _fvn-1977619713 _ws-311910413 _ww-408434756 _d-341075704 _f-541922926 _jc-281817805 _ai-121763387 _m-2017978848 _c-1756781803 rcx-field__row"
       >
         <textarea
-          aria-describedby="react-aria-_r_p_-description react-aria-_r_p_-error react-aria-_r_p_-hint"
+          aria-describedby="react-aria-_r_6j_-description react-aria-_r_6j_-error react-aria-_r_6j_-hint"
           aria-invalid="true"
           class="rcx-box rcx-box--full rcx-box--animated rcx-input-box--type-textarea rcx-input-box"
           cols="1"
-          id="react-aria-_r_p_-label"
+          id="react-aria-_r_6j_-label"
           size="1"
         />
       </span>
       <span
-        class="rcx-box rcx-box--full rcx-field__error"
-        id="react-aria-_r_p_-error"
+        class="is_Text _b-650654186 _os-249893454 _ff-409630021 _fvn-1977619713 _ws-311910413 _ww-408434756 _fs-2088488067 _fw-289165218 _lh-1306743983 _ls-1782815796 _m-183820880 _c-1184219789 rcx-field__error"
+        id="react-aria-_r_6j_-error"
         role="alert"
       >
         You failed to enter a valid value
       </span>
       <span
-        class="rcx-box rcx-box--full rcx-field__row"
+        class="is_Text _b-650654186 _os-249893454 _ff-409630021 _fvn-1977619713 _ws-311910413 _ww-408434756 _d-341075704 _f-541922926 _jc-281817805 _ai-121763387 _m-2017978848 _c-1756781803 rcx-field__row"
       >
         <span
-          class="rcx-box rcx-box--full rcx-field__hint"
-          id="react-aria-_r_p_-hint"
+          class="is_Text _b-650654186 _os-249893454 _ff-409630021 _fvn-1977619713 _ws-311910413 _ww-408434756 _fs-2088488067 _fw-289165218 _lh-1306743983 _ls-1782815796 _m-183820880 _c-1756781803 rcx-field__hint"
+          id="react-aria-_r_6j_-hint"
         >
           This should help the user enter a valid value
         </span>
         <a
-          class="rcx-box rcx-box--full rcx-field__link"
+          class="is_Text _b-650654186 _os-249893454 _ff-409630021 _fvn-1977619713 _ws-311910413 _ww-408434756 _fs-2088488067 _fw-289165218 _lh-1306743983 _ls-1782815796 _m-183820880 _c-1876588386 rcx-field__link"
           href="#"
         >
           Link to more information
@@ -1255,15 +1255,15 @@ exports[`renders WithTextInput without crashing 1`] = `
 <body>
   <div>
     <div
-      class="rcx-box rcx-box--full rcx-field"
+      class="is_Text _b-650654186 _os-249893454 _ff-409630021 _fvn-1977619713 _ws-311910413 _ww-408434756 _d-341075704 _f-1378740307 _ai-1227553247 _w-1560934055 rcx-field"
     >
       <label
-        class="rcx-box rcx-box--full rcx-field__label rcx-label"
-        for="react-aria-_r_q_-label"
+        class="is_Text _b-650654186 _os-249893454 _ff-409630021 _fvn-1977619713 _ws-311910413 _ww-408434756 _fs-347291933 _fw-289166179 _lh-1925956564 _ls-1782815796 _d-341075704 _c-1922521888 _c-1063453128 rcx-label rcx-field__label"
+        for="react-aria-_r_70_-label"
       >
         Example Text Input
         <span
-          class="rcx-box rcx-box--full rcx-label__info rcx-css-wcp0mp"
+          class="is_View _b-650654186 _os-249893454 _ff-409630021 _fvn-1977619713 _ws-311910413 _ww-408434756 _d-341075704 _f-1069814357 _ai-121763387 _o-823737910 _mw-354604370 _mh-1241200853 rcx-label__info rcx-css-wcp0mp"
         >
           <span
             hidden=""
@@ -1272,7 +1272,7 @@ exports[`renders WithTextInput without crashing 1`] = `
           </span>
           <i
             aria-hidden="true"
-            class="rcx-box rcx-box--full rcx-icon--name-info-circled rcx-icon"
+            class="is_Text _d-1409515928 _ws-311910413 _ww-408434756 _us-601212022 _va-1101652081 _ls-1720078126 _ff-1916555734 _fs-1279428672 _fw-289165218 _fs-477064150 _fv-1578983722 _lh-2067209205 _tr-1510281189 rcx-icon--name-info-circled rcx-icon"
             title="with extra info in a tooltip"
           >
             
@@ -1280,47 +1280,47 @@ exports[`renders WithTextInput without crashing 1`] = `
         </span>
         <span
           aria-hidden="true"
-          class="rcx-box rcx-box--full rcx-label__required rcx-css-b7g1a9"
+          class="is_Text _b-650654186 _os-249893454 _ff-409630021 _fvn-1977619713 _ws-311910413 _ww-408434756 _c-1184219789 rcx-label__required rcx-css-b7g1a9"
         >
           *
         </span>
       </label>
       <span
-        class="rcx-box rcx-box--full rcx-field__description"
-        id="react-aria-_r_q_-description"
+        class="is_Text _b-650654186 _os-249893454 _ff-409630021 _fvn-1977619713 _ws-311910413 _ww-408434756 _fs-347291933 _fw-289165218 _lh-1925956564 _ls-1782815796 _m-183820880 _c-1756781803 rcx-field__description"
+        id="react-aria-_r_70_-description"
       >
         Text inputs are used to enter a single line of text.
       </span>
       <span
-        class="rcx-box rcx-box--full rcx-field__row"
+        class="is_Text _b-650654186 _os-249893454 _ff-409630021 _fvn-1977619713 _ws-311910413 _ww-408434756 _d-341075704 _f-541922926 _jc-281817805 _ai-121763387 _m-2017978848 _c-1756781803 rcx-field__row"
       >
         <input
-          aria-describedby="react-aria-_r_q_-description react-aria-_r_q_-error react-aria-_r_q_-hint"
+          aria-describedby="react-aria-_r_70_-description react-aria-_r_70_-error react-aria-_r_70_-hint"
           aria-invalid="true"
           class="rcx-box rcx-box--full rcx-box--animated rcx-input-box--type-text rcx-input-box"
-          id="react-aria-_r_q_-label"
+          id="react-aria-_r_70_-label"
           size="1"
           type="text"
         />
       </span>
       <span
-        class="rcx-box rcx-box--full rcx-field__error"
-        id="react-aria-_r_q_-error"
+        class="is_Text _b-650654186 _os-249893454 _ff-409630021 _fvn-1977619713 _ws-311910413 _ww-408434756 _fs-2088488067 _fw-289165218 _lh-1306743983 _ls-1782815796 _m-183820880 _c-1184219789 rcx-field__error"
+        id="react-aria-_r_70_-error"
         role="alert"
       >
         You failed to enter a valid value
       </span>
       <span
-        class="rcx-box rcx-box--full rcx-field__row"
+        class="is_Text _b-650654186 _os-249893454 _ff-409630021 _fvn-1977619713 _ws-311910413 _ww-408434756 _d-341075704 _f-541922926 _jc-281817805 _ai-121763387 _m-2017978848 _c-1756781803 rcx-field__row"
       >
         <span
-          class="rcx-box rcx-box--full rcx-field__hint"
-          id="react-aria-_r_q_-hint"
+          class="is_Text _b-650654186 _os-249893454 _ff-409630021 _fvn-1977619713 _ws-311910413 _ww-408434756 _fs-2088488067 _fw-289165218 _lh-1306743983 _ls-1782815796 _m-183820880 _c-1756781803 rcx-field__hint"
+          id="react-aria-_r_70_-hint"
         >
           This should help the user enter a valid value
         </span>
         <a
-          class="rcx-box rcx-box--full rcx-field__link"
+          class="is_Text _b-650654186 _os-249893454 _ff-409630021 _fvn-1977619713 _ws-311910413 _ww-408434756 _fs-2088488067 _fw-289165218 _lh-1306743983 _ls-1782815796 _m-183820880 _c-1876588386 rcx-field__link"
           href="#"
         >
           Link to more information
@@ -1335,17 +1335,17 @@ exports[`renders WithToggleSwitch without crashing 1`] = `
 <body>
   <div>
     <div
-      class="rcx-box rcx-box--full rcx-field"
+      class="is_Text _b-650654186 _os-249893454 _ff-409630021 _fvn-1977619713 _ws-311910413 _ww-408434756 _d-341075704 _f-1378740307 _ai-1227553247 _w-1560934055 rcx-field"
     >
       <span
-        class="rcx-box rcx-box--full rcx-field__row"
+        class="is_Text _b-650654186 _os-249893454 _ff-409630021 _fvn-1977619713 _ws-311910413 _ww-408434756 _d-341075704 _f-541922926 _jc-281817805 _ai-121763387 _m-2017978848 _c-1756781803 rcx-field__row"
       >
         <span
-          class="rcx-box rcx-box--full rcx-field__label rcx-label"
+          class="is_Text _b-650654186 _os-249893454 _ff-409630021 _fvn-1977619713 _ws-311910413 _ww-408434756 _fs-347291933 _fw-289166179 _lh-1925956564 _ls-1782815796 _d-341075704 _c-1922521888 _c-1063453128 rcx-label rcx-field__label"
         >
           Example Toggle Switch
           <span
-            class="rcx-box rcx-box--full rcx-label__info rcx-css-wcp0mp"
+            class="is_View _b-650654186 _os-249893454 _ff-409630021 _fvn-1977619713 _ws-311910413 _ww-408434756 _d-341075704 _f-1069814357 _ai-121763387 _o-823737910 _mw-354604370 _mh-1241200853 rcx-label__info rcx-css-wcp0mp"
           >
             <span
               hidden=""
@@ -1354,7 +1354,7 @@ exports[`renders WithToggleSwitch without crashing 1`] = `
             </span>
             <i
               aria-hidden="true"
-              class="rcx-box rcx-box--full rcx-icon--name-info-circled rcx-icon"
+              class="is_Text _d-1409515928 _ws-311910413 _ww-408434756 _us-601212022 _va-1101652081 _ls-1720078126 _ff-1916555734 _fs-1279428672 _fw-289165218 _fs-477064150 _fv-1578983722 _lh-2067209205 _tr-1510281189 rcx-icon--name-info-circled rcx-icon"
               title="with extra info in a tooltip"
             >
               
@@ -1362,13 +1362,13 @@ exports[`renders WithToggleSwitch without crashing 1`] = `
           </span>
           <span
             aria-hidden="true"
-            class="rcx-box rcx-box--full rcx-label__required rcx-css-b7g1a9"
+            class="is_Text _b-650654186 _os-249893454 _ff-409630021 _fvn-1977619713 _ws-311910413 _ww-408434756 _c-1184219789 rcx-label__required rcx-css-b7g1a9"
           >
             *
           </span>
         </span>
         <label
-          class="rcx-box rcx-box--full rcx-toggle-switch"
+          class="is_Text _b-1639159466 _os-249893454 _ff-409630021 _fvn-1977619713 _ws-311910413 _ww-408434756 rcx-toggle-switch"
         >
           <div
             style="border: 0px; clip-path: inset(50%); height: 1px; margin: -1px; overflow: hidden; padding: 0px; position: absolute; width: 1px; white-space: nowrap;"
@@ -1376,42 +1376,42 @@ exports[`renders WithToggleSwitch without crashing 1`] = `
             Example Toggle Switch with extra info in a tooltip  *
           </div>
           <input
-            aria-describedby="react-aria-_r_r_-description react-aria-_r_r_-error react-aria-_r_r_-hint"
+            aria-describedby="react-aria-_r_7d_-description react-aria-_r_7d_-error react-aria-_r_7d_-hint"
             aria-invalid="true"
-            class="rcx-box rcx-box--full rcx-toggle-switch__input"
-            id="react-aria-_r_r_-label"
+            class="is_View _b-1639159466 _os-249893454 _ff-409630021 _fvn-1977619713 _p-1261267467 _o-1119039191 _c-588872556 _cp-2129451690 _w-226739898 _h-1922295961 _m-1890937723 _p-1943363302 _ws-973912173 _f-1246374076 rcx-toggle-switch__input"
+            id="react-aria-_r_7d_-label"
             type="checkbox"
           />
           <i
             aria-hidden="true"
-            class="rcx-box rcx-box--full rcx-toggle-switch__fake"
+            class="is_View _b-1639160427 _os-249893454 _ff-409630021 _fvn-1977619713 _p-1021290656 _f-1069814357 _mw-354604370 _mh-1241200853 _w-1008200584 _h-749995598 _br-153849585 rcx-toggle-switch__fake"
           />
         </label>
       </span>
       <span
-        class="rcx-box rcx-box--full rcx-field__description"
-        id="react-aria-_r_r_-description"
+        class="is_Text _b-650654186 _os-249893454 _ff-409630021 _fvn-1977619713 _ws-311910413 _ww-408434756 _fs-347291933 _fw-289165218 _lh-1925956564 _ls-1782815796 _m-183820880 _c-1756781803 rcx-field__description"
+        id="react-aria-_r_7d_-description"
       >
         This field represents a boolean value
       </span>
       <span
-        class="rcx-box rcx-box--full rcx-field__error"
-        id="react-aria-_r_r_-error"
+        class="is_Text _b-650654186 _os-249893454 _ff-409630021 _fvn-1977619713 _ws-311910413 _ww-408434756 _fs-2088488067 _fw-289165218 _lh-1306743983 _ls-1782815796 _m-183820880 _c-1184219789 rcx-field__error"
+        id="react-aria-_r_7d_-error"
         role="alert"
       >
         You failed to enter a valid value
       </span>
       <span
-        class="rcx-box rcx-box--full rcx-field__row"
+        class="is_Text _b-650654186 _os-249893454 _ff-409630021 _fvn-1977619713 _ws-311910413 _ww-408434756 _d-341075704 _f-541922926 _jc-281817805 _ai-121763387 _m-2017978848 _c-1756781803 rcx-field__row"
       >
         <span
-          class="rcx-box rcx-box--full rcx-field__hint"
-          id="react-aria-_r_r_-hint"
+          class="is_Text _b-650654186 _os-249893454 _ff-409630021 _fvn-1977619713 _ws-311910413 _ww-408434756 _fs-2088488067 _fw-289165218 _lh-1306743983 _ls-1782815796 _m-183820880 _c-1756781803 rcx-field__hint"
+          id="react-aria-_r_7d_-hint"
         >
           This should help the user enter a valid value
         </span>
         <a
-          class="rcx-box rcx-box--full rcx-field__link"
+          class="is_Text _b-650654186 _os-249893454 _ff-409630021 _fvn-1977619713 _ws-311910413 _ww-408434756 _fs-2088488067 _fw-289165218 _lh-1306743983 _ls-1782815796 _m-183820880 _c-1876588386 rcx-field__link"
           href="#"
         >
           Link to more information
@@ -1426,15 +1426,15 @@ exports[`renders WithUrlInput without crashing 1`] = `
 <body>
   <div>
     <div
-      class="rcx-box rcx-box--full rcx-field"
+      class="is_Text _b-650654186 _os-249893454 _ff-409630021 _fvn-1977619713 _ws-311910413 _ww-408434756 _d-341075704 _f-1378740307 _ai-1227553247 _w-1560934055 rcx-field"
     >
       <label
-        class="rcx-box rcx-box--full rcx-field__label rcx-label"
-        for="react-aria-_r_s_-label"
+        class="is_Text _b-650654186 _os-249893454 _ff-409630021 _fvn-1977619713 _ws-311910413 _ww-408434756 _fs-347291933 _fw-289166179 _lh-1925956564 _ls-1782815796 _d-341075704 _c-1922521888 _c-1063453128 rcx-label rcx-field__label"
+        for="react-aria-_r_81_-label"
       >
         Example URL Input
         <span
-          class="rcx-box rcx-box--full rcx-label__info rcx-css-wcp0mp"
+          class="is_View _b-650654186 _os-249893454 _ff-409630021 _fvn-1977619713 _ws-311910413 _ww-408434756 _d-341075704 _f-1069814357 _ai-121763387 _o-823737910 _mw-354604370 _mh-1241200853 rcx-label__info rcx-css-wcp0mp"
         >
           <span
             hidden=""
@@ -1443,7 +1443,7 @@ exports[`renders WithUrlInput without crashing 1`] = `
           </span>
           <i
             aria-hidden="true"
-            class="rcx-box rcx-box--full rcx-icon--name-info-circled rcx-icon"
+            class="is_Text _d-1409515928 _ws-311910413 _ww-408434756 _us-601212022 _va-1101652081 _ls-1720078126 _ff-1916555734 _fs-1279428672 _fw-289165218 _fs-477064150 _fv-1578983722 _lh-2067209205 _tr-1510281189 rcx-icon--name-info-circled rcx-icon"
             title="with extra info in a tooltip"
           >
             
@@ -1451,47 +1451,47 @@ exports[`renders WithUrlInput without crashing 1`] = `
         </span>
         <span
           aria-hidden="true"
-          class="rcx-box rcx-box--full rcx-label__required rcx-css-b7g1a9"
+          class="is_Text _b-650654186 _os-249893454 _ff-409630021 _fvn-1977619713 _ws-311910413 _ww-408434756 _c-1184219789 rcx-label__required rcx-css-b7g1a9"
         >
           *
         </span>
       </label>
       <span
-        class="rcx-box rcx-box--full rcx-field__description"
-        id="react-aria-_r_s_-description"
+        class="is_Text _b-650654186 _os-249893454 _ff-409630021 _fvn-1977619713 _ws-311910413 _ww-408434756 _fs-347291933 _fw-289165218 _lh-1925956564 _ls-1782815796 _m-183820880 _c-1756781803 rcx-field__description"
+        id="react-aria-_r_81_-description"
       >
         This field requires a valid URL
       </span>
       <span
-        class="rcx-box rcx-box--full rcx-field__row"
+        class="is_Text _b-650654186 _os-249893454 _ff-409630021 _fvn-1977619713 _ws-311910413 _ww-408434756 _d-341075704 _f-541922926 _jc-281817805 _ai-121763387 _m-2017978848 _c-1756781803 rcx-field__row"
       >
         <input
-          aria-describedby="react-aria-_r_s_-description react-aria-_r_s_-error react-aria-_r_s_-hint"
+          aria-describedby="react-aria-_r_81_-description react-aria-_r_81_-error react-aria-_r_81_-hint"
           aria-invalid="true"
           class="rcx-box rcx-box--full rcx-box--animated rcx-input-box--type-url rcx-input-box"
-          id="react-aria-_r_s_-label"
+          id="react-aria-_r_81_-label"
           size="1"
           type="url"
         />
       </span>
       <span
-        class="rcx-box rcx-box--full rcx-field__error"
-        id="react-aria-_r_s_-error"
+        class="is_Text _b-650654186 _os-249893454 _ff-409630021 _fvn-1977619713 _ws-311910413 _ww-408434756 _fs-2088488067 _fw-289165218 _lh-1306743983 _ls-1782815796 _m-183820880 _c-1184219789 rcx-field__error"
+        id="react-aria-_r_81_-error"
         role="alert"
       >
         You failed to enter a valid value
       </span>
       <span
-        class="rcx-box rcx-box--full rcx-field__row"
+        class="is_Text _b-650654186 _os-249893454 _ff-409630021 _fvn-1977619713 _ws-311910413 _ww-408434756 _d-341075704 _f-541922926 _jc-281817805 _ai-121763387 _m-2017978848 _c-1756781803 rcx-field__row"
       >
         <span
-          class="rcx-box rcx-box--full rcx-field__hint"
-          id="react-aria-_r_s_-hint"
+          class="is_Text _b-650654186 _os-249893454 _ff-409630021 _fvn-1977619713 _ws-311910413 _ww-408434756 _fs-2088488067 _fw-289165218 _lh-1306743983 _ls-1782815796 _m-183820880 _c-1756781803 rcx-field__hint"
+          id="react-aria-_r_81_-hint"
         >
           This should help the user enter a valid value
         </span>
         <a
-          class="rcx-box rcx-box--full rcx-field__link"
+          class="is_Text _b-650654186 _os-249893454 _ff-409630021 _fvn-1977619713 _ws-311910413 _ww-408434756 _fs-2088488067 _fw-289165218 _lh-1306743983 _ls-1782815796 _m-183820880 _c-1876588386 rcx-field__link"
           href="#"
         >
           Link to more information

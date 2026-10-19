@@ -26,13 +26,13 @@ exports[`renders Default without crashing 1`] = `
               class="rcx-box rcx-box--full rcx-css-1bdyjik rcx-css-1l4fxfb"
             >
               <button
-                class="rcx-box rcx-box--full rcx-button--small-square rcx-button--square rcx-button--icon rcx-button rcx-css-ue04py"
+                class="is_View _f-1069813397 _mh-1241200853 _ta-1906144518 _ws-973912173 _td-211436768 _c-22887652 _os-249893454 _o-1119039191 _to-1727917045 _ff-409630021 _fvn-1977619713 _fs-347291933 _fw-289166179 _ls-1782815796 _p-230374000 _w-1682139955 _mw-1947816287 _h-1633581678 _d-312446553 _jc-642967080 _ai-1864573722 _lh-2067208245 rcx-button--small-square rcx-button--square rcx-button--icon rcx-button rcx-css-ue04py"
                 title="Back"
                 type="button"
               >
                 <i
                   aria-hidden="true"
-                  class="rcx-box rcx-box--full rcx-icon--name-arrow-back rcx-icon rcx-css-4pvxx3"
+                  class="is_Text _d-1409515928 _ws-311910413 _ww-408434756 _us-601212022 _va-1101652081 _ls-1720078126 _ff-1916555734 _fs-1279428672 _fw-289165218 _fs-477064150 _fv-1578983722 _lh-2067209205 _tr-1510281189 rcx-icon--name-arrow-back rcx-icon rcx-css-4pvxx3"
                 >
                   ⦉
                 </i>
@@ -45,13 +45,13 @@ exports[`renders Default without crashing 1`] = `
               </h5>
               <button
                 aria-label="Close"
-                class="rcx-box rcx-box--full rcx-button--small-square rcx-button--square rcx-button--icon rcx-button rcx-css-ue04py"
+                class="is_View _f-1069813397 _mh-1241200853 _ta-1906144518 _ws-973912173 _td-211436768 _c-22887652 _os-249893454 _o-1119039191 _to-1727917045 _ff-409630021 _fvn-1977619713 _fs-347291933 _fw-289166179 _ls-1782815796 _p-230374000 _w-1682139955 _mw-1947816287 _h-1633581678 _d-312446553 _jc-642967080 _ai-1864573722 _lh-2067208245 rcx-button--small-square rcx-button--square rcx-button--icon rcx-button rcx-css-ue04py"
                 data-qa="ContextualbarActionClose"
                 type="button"
               >
                 <i
                   aria-hidden="true"
-                  class="rcx-box rcx-box--full rcx-icon--name-cross rcx-icon rcx-css-4pvxx3"
+                  class="is_Text _d-1409515928 _ws-311910413 _ww-408434756 _us-601212022 _va-1101652081 _ls-1720078126 _ff-1916555734 _fs-1279428672 _fw-289165218 _fs-477064150 _fv-1578983722 _lh-2067209205 _tr-1510281189 rcx-icon--name-cross rcx-icon rcx-css-4pvxx3"
                 >
                   
                 </i>
@@ -82,23 +82,23 @@ exports[`renders Default without crashing 1`] = `
                   class="rcx-box rcx-box--full rcx-css-zg7o7h"
                 >
                   <div
-                    class="rcx-box rcx-box--full rcx-field rcx-css-1fuhgt0"
+                    class="is_Text _b-650654186 _os-249893454 _ff-409630021 _fvn-1977619713 _ws-311910413 _ww-408434756 _d-341075704 _f-1378740307 _ai-1227553247 _w-1560934055 rcx-field"
                   >
                     <label
-                      class="rcx-box rcx-box--full rcx-field__label rcx-label rcx-css-irxdij"
-                      for="_r_1_"
+                      class="is_Text _b-650654186 _os-249893454 _ff-409630021 _fvn-1977619713 _ws-311910413 _ww-408434756 _fs-347291933 _fw-289166179 _lh-1925956564 _ls-1782815796 _d-341075704 _c-1922521888 _c-1063453128 rcx-label rcx-field__label rcx-css-irxdij"
+                      for="_r_7_"
                     >
                       Invite link
                     </label>
                     <span
-                      class="rcx-box rcx-box--full rcx-field__row"
+                      class="is_Text _b-650654186 _os-249893454 _ff-409630021 _fvn-1977619713 _ws-311910413 _ww-408434756 _d-341075704 _f-541922926 _jc-281817805 _ai-121763387 _m-2017978848 _c-1756781803 rcx-field__row"
                     >
                       <label
-                        class="rcx-box rcx-box--full rcx-label rcx-box rcx-box--full rcx-box--animated rcx-input-box__wrapper"
+                        class="is_Text _b-650654186 _os-249893454 _ff-409630021 _fvn-1977619713 _ws-311910413 _ww-408434756 _fs-347291933 _fw-289166179 _lh-1925956564 _ls-1782815796 _d-341075704 _c-1922521888 _c-1063453128 rcx-label rcx-box rcx-box--full rcx-box--animated rcx-input-box__wrapper rcx-css-1fuhgt0"
                       >
                         <input
                           class="rcx-box rcx-box--full rcx-box--animated rcx-input-box--undecorated rcx-input-box--type-url rcx-input-box"
-                          id="_r_1_"
+                          id="_r_7_"
                           size="1"
                           type="url"
                           value="https://go.rocket.chat/invite?host=open.rocket.chat&path=invite%2F5sBs3a"
@@ -108,7 +108,7 @@ exports[`renders Default without crashing 1`] = `
                         >
                           <i
                             aria-hidden="true"
-                            class="rcx-box rcx-box--full rcx-icon--name-copy rcx-icon rcx-css-1g87xs3"
+                            class="is_Text _d-1409515928 _ws-311910413 _ww-408434756 _us-601212022 _va-1101652081 _ls-1720078126 _ff-1916555734 _fs-1279428672 _fw-289165218 _fs-477064150 _fv-1578983722 _lh-2067209205 _tr-1510281189 rcx-icon--name-copy rcx-icon rcx-css-1g87xs3"
                           >
                             
                           </i>
@@ -116,7 +116,7 @@ exports[`renders Default without crashing 1`] = `
                       </label>
                     </span>
                     <div
-                      class="rcx-box rcx-box--full rcx-css-14tolnz"
+                      class="rcx-box rcx-box--full rcx-css-mek7ly"
                     >
                       Expire on February 4, 2020 4:45 PM.
                     </div>
@@ -216,13 +216,13 @@ exports[`renders InviteEdit without crashing 1`] = `
               class="rcx-box rcx-box--full rcx-css-1bdyjik rcx-css-1l4fxfb"
             >
               <button
-                class="rcx-box rcx-box--full rcx-button--small-square rcx-button--square rcx-button--icon rcx-button rcx-css-ue04py"
+                class="is_View _f-1069813397 _mh-1241200853 _ta-1906144518 _ws-973912173 _td-211436768 _c-22887652 _os-249893454 _o-1119039191 _to-1727917045 _ff-409630021 _fvn-1977619713 _fs-347291933 _fw-289166179 _ls-1782815796 _p-230374000 _w-1682139955 _mw-1947816287 _h-1633581678 _d-312446553 _jc-642967080 _ai-1864573722 _lh-2067208245 rcx-button--small-square rcx-button--square rcx-button--icon rcx-button rcx-css-ue04py"
                 title="Back"
                 type="button"
               >
                 <i
                   aria-hidden="true"
-                  class="rcx-box rcx-box--full rcx-icon--name-arrow-back rcx-icon rcx-css-4pvxx3"
+                  class="is_Text _d-1409515928 _ws-311910413 _ww-408434756 _us-601212022 _va-1101652081 _ls-1720078126 _ff-1916555734 _fs-1279428672 _fw-289165218 _fs-477064150 _fv-1578983722 _lh-2067209205 _tr-1510281189 rcx-icon--name-arrow-back rcx-icon rcx-css-4pvxx3"
                 >
                   ⦉
                 </i>
@@ -235,13 +235,13 @@ exports[`renders InviteEdit without crashing 1`] = `
               </h5>
               <button
                 aria-label="Close"
-                class="rcx-box rcx-box--full rcx-button--small-square rcx-button--square rcx-button--icon rcx-button rcx-css-ue04py"
+                class="is_View _f-1069813397 _mh-1241200853 _ta-1906144518 _ws-973912173 _td-211436768 _c-22887652 _os-249893454 _o-1119039191 _to-1727917045 _ff-409630021 _fvn-1977619713 _fs-347291933 _fw-289166179 _ls-1782815796 _p-230374000 _w-1682139955 _mw-1947816287 _h-1633581678 _d-312446553 _jc-642967080 _ai-1864573722 _lh-2067208245 rcx-button--small-square rcx-button--square rcx-button--icon rcx-button rcx-css-ue04py"
                 data-qa="ContextualbarActionClose"
                 type="button"
               >
                 <i
                   aria-hidden="true"
-                  class="rcx-box rcx-box--full rcx-icon--name-cross rcx-icon rcx-css-4pvxx3"
+                  class="is_Text _d-1409515928 _ws-311910413 _ww-408434756 _us-601212022 _va-1101652081 _ls-1720078126 _ff-1916555734 _fs-1279428672 _fw-289165218 _fs-477064150 _fv-1578983722 _lh-2067209205 _tr-1510281189 rcx-icon--name-cross rcx-icon rcx-css-4pvxx3"
                 >
                   
                 </i>
@@ -272,19 +272,19 @@ exports[`renders InviteEdit without crashing 1`] = `
                   class="rcx-box rcx-box--full rcx-css-zg7o7h"
                 >
                   <div
-                    class="rcx-box rcx-box--full rcx-field rcx-css-1fuhgt0"
+                    class="is_Text _b-650654186 _os-249893454 _ff-409630021 _fvn-1977619713 _ws-311910413 _ww-408434756 _d-341075704 _f-1378740307 _ai-1227553247 _w-1560934055 rcx-field"
                   >
                     <label
-                      class="rcx-box rcx-box--full rcx-field__label rcx-label rcx-css-irxdij"
-                      for="_r_3_"
+                      class="is_Text _b-650654186 _os-249893454 _ff-409630021 _fvn-1977619713 _ws-311910413 _ww-408434756 _fs-347291933 _fw-289166179 _lh-1925956564 _ls-1782815796 _d-341075704 _c-1922521888 _c-1063453128 rcx-label rcx-field__label rcx-css-irxdij"
+                      for="_r_l_"
                     >
                       Expiration (Days)
                     </label>
                     <span
-                      class="rcx-box rcx-box--full rcx-field__row"
+                      class="is_Text _b-650654186 _os-249893454 _ff-409630021 _fvn-1977619713 _ws-311910413 _ww-408434756 _d-341075704 _f-541922926 _jc-281817805 _ai-121763387 _m-2017978848 _c-1756781803 rcx-field__row"
                     >
                       <div
-                        class="rcx-box rcx-box--full rcx-css-1ds37nf"
+                        class="rcx-box rcx-box--full rcx-css-zuqjis"
                       >
                         <div
                           aria-hidden="true"
@@ -331,20 +331,20 @@ exports[`renders InviteEdit without crashing 1`] = `
                       <button
                         aria-expanded="false"
                         aria-haspopup="listbox"
-                        aria-labelledby="react-aria-_r_c_"
-                        class="rcx-box rcx-box--full rcx-box--animated rcx-select rcx-css-3ejkxj"
-                        id="_r_3_"
+                        aria-labelledby="react-aria-_r_12_"
+                        class="rcx-box rcx-box--full rcx-box--animated rcx-select rcx-css-1iotajk"
+                        id="_r_l_"
                         type="button"
                       >
                         <span
                           class="rcx-box rcx-box--full rcx-css-1ah8hdc"
-                          id="react-aria-_r_c_"
+                          id="react-aria-_r_12_"
                         >
                           1
                         </span>
                         <i
                           aria-hidden="true"
-                          class="rcx-box rcx-box--full rcx-icon--name-chevron-down rcx-icon rcx-css-l5txo2"
+                          class="is_Text _d-1409515928 _ws-311910413 _ww-408434756 _us-601212022 _va-1101652081 _ls-1720078126 _ff-1916555734 _fs-1279428672 _fw-289165218 _fs-477064150 _fv-1578983722 _lh-2067209205 _tr-1510281189 rcx-icon--name-chevron-down rcx-icon rcx-css-l5txo2"
                         >
                           
                         </i>
@@ -352,19 +352,19 @@ exports[`renders InviteEdit without crashing 1`] = `
                     </span>
                   </div>
                   <div
-                    class="rcx-box rcx-box--full rcx-field rcx-css-1fuhgt0"
+                    class="is_Text _b-650654186 _os-249893454 _ff-409630021 _fvn-1977619713 _ws-311910413 _ww-408434756 _d-341075704 _f-1378740307 _ai-1227553247 _w-1560934055 rcx-field"
                   >
                     <label
-                      class="rcx-box rcx-box--full rcx-field__label rcx-label rcx-css-irxdij"
-                      for="_r_4_"
+                      class="is_Text _b-650654186 _os-249893454 _ff-409630021 _fvn-1977619713 _ws-311910413 _ww-408434756 _fs-347291933 _fw-289166179 _lh-1925956564 _ls-1782815796 _d-341075704 _c-1922521888 _c-1063453128 rcx-label rcx-field__label rcx-css-irxdij"
+                      for="_r_m_"
                     >
                       Max number of uses
                     </label>
                     <span
-                      class="rcx-box rcx-box--full rcx-field__row"
+                      class="is_Text _b-650654186 _os-249893454 _ff-409630021 _fvn-1977619713 _ws-311910413 _ww-408434756 _d-341075704 _f-541922926 _jc-281817805 _ai-121763387 _m-2017978848 _c-1756781803 rcx-field__row"
                     >
                       <div
-                        class="rcx-box rcx-box--full rcx-css-1ds37nf"
+                        class="rcx-box rcx-box--full rcx-css-zuqjis"
                       >
                         <div
                           aria-hidden="true"
@@ -416,20 +416,20 @@ exports[`renders InviteEdit without crashing 1`] = `
                       <button
                         aria-expanded="false"
                         aria-haspopup="listbox"
-                        aria-labelledby="react-aria-_r_k_"
-                        class="rcx-box rcx-box--full rcx-box--animated rcx-select rcx-css-3ejkxj"
-                        id="_r_4_"
+                        aria-labelledby="react-aria-_r_1f_"
+                        class="rcx-box rcx-box--full rcx-box--animated rcx-select rcx-css-1iotajk"
+                        id="_r_m_"
                         type="button"
                       >
                         <span
                           class="rcx-box rcx-box--full rcx-css-1ah8hdc"
-                          id="react-aria-_r_k_"
+                          id="react-aria-_r_1f_"
                         >
                           5
                         </span>
                         <i
                           aria-hidden="true"
-                          class="rcx-box rcx-box--full rcx-icon--name-chevron-down rcx-icon rcx-css-l5txo2"
+                          class="is_Text _d-1409515928 _ws-311910413 _ww-408434756 _us-601212022 _va-1101652081 _ls-1720078126 _ff-1916555734 _fs-1279428672 _fw-289165218 _fs-477064150 _fv-1578983722 _lh-2067209205 _tr-1510281189 rcx-icon--name-chevron-down rcx-icon rcx-css-l5txo2"
                         >
                           
                         </i>
@@ -440,12 +440,12 @@ exports[`renders InviteEdit without crashing 1`] = `
                     class="rcx-box rcx-box--full rcx-css-31obua"
                   >
                     <button
-                      class="rcx-box rcx-box--full rcx-button--primary rcx-button"
+                      class="is_View _d-1409515928 _f-1069814357 _mh-1241200853 _ta-1906144518 _ws-973912173 _td-211436768 _c-22887652 _os-249893454 _o-1119039191 _to-1727917045 _ff-409630021 _fvn-1977619713 _fs-347291933 _fw-289166179 _lh-1925956564 _ls-1782815796 _mw-1629853272 _h-1940744275 _p-1801169607 rcx-button--primary rcx-button"
                       disabled=""
                       type="button"
                     >
                       <span
-                        class="rcx-button--content"
+                        class="is_Text _d-1409515928 _w-1560934055 _va-615128551 _o-1119039191 _to-1727917045 _ws-973912173 _ww-408434756 rcx-button--content"
                       >
                         Generate_New_Link
                       </span>
@@ -546,13 +546,13 @@ exports[`renders InviteError without crashing 1`] = `
               class="rcx-box rcx-box--full rcx-css-1bdyjik rcx-css-1l4fxfb"
             >
               <button
-                class="rcx-box rcx-box--full rcx-button--small-square rcx-button--square rcx-button--icon rcx-button rcx-css-ue04py"
+                class="is_View _f-1069813397 _mh-1241200853 _ta-1906144518 _ws-973912173 _td-211436768 _c-22887652 _os-249893454 _o-1119039191 _to-1727917045 _ff-409630021 _fvn-1977619713 _fs-347291933 _fw-289166179 _ls-1782815796 _p-230374000 _w-1682139955 _mw-1947816287 _h-1633581678 _d-312446553 _jc-642967080 _ai-1864573722 _lh-2067208245 rcx-button--small-square rcx-button--square rcx-button--icon rcx-button rcx-css-ue04py"
                 title="Back"
                 type="button"
               >
                 <i
                   aria-hidden="true"
-                  class="rcx-box rcx-box--full rcx-icon--name-arrow-back rcx-icon rcx-css-4pvxx3"
+                  class="is_Text _d-1409515928 _ws-311910413 _ww-408434756 _us-601212022 _va-1101652081 _ls-1720078126 _ff-1916555734 _fs-1279428672 _fw-289165218 _fs-477064150 _fv-1578983722 _lh-2067209205 _tr-1510281189 rcx-icon--name-arrow-back rcx-icon rcx-css-4pvxx3"
                 >
                   ⦉
                 </i>
@@ -565,13 +565,13 @@ exports[`renders InviteError without crashing 1`] = `
               </h5>
               <button
                 aria-label="Close"
-                class="rcx-box rcx-box--full rcx-button--small-square rcx-button--square rcx-button--icon rcx-button rcx-css-ue04py"
+                class="is_View _f-1069813397 _mh-1241200853 _ta-1906144518 _ws-973912173 _td-211436768 _c-22887652 _os-249893454 _o-1119039191 _to-1727917045 _ff-409630021 _fvn-1977619713 _fs-347291933 _fw-289166179 _ls-1782815796 _p-230374000 _w-1682139955 _mw-1947816287 _h-1633581678 _d-312446553 _jc-642967080 _ai-1864573722 _lh-2067208245 rcx-button--small-square rcx-button--square rcx-button--icon rcx-button rcx-css-ue04py"
                 data-qa="ContextualbarActionClose"
                 type="button"
               >
                 <i
                   aria-hidden="true"
-                  class="rcx-box rcx-box--full rcx-icon--name-cross rcx-icon rcx-css-4pvxx3"
+                  class="is_Text _d-1409515928 _ws-311910413 _ww-408434756 _us-601212022 _va-1101652081 _ls-1720078126 _ff-1916555734 _fs-1279428672 _fw-289165218 _fs-477064150 _fv-1578983722 _lh-2067209205 _tr-1510281189 rcx-icon--name-cross rcx-icon rcx-css-4pvxx3"
                 >
                   
                 </i>
@@ -602,22 +602,22 @@ exports[`renders InviteError without crashing 1`] = `
                   class="rcx-box rcx-box--full rcx-css-zg7o7h"
                 >
                   <section
-                    class="rcx-box rcx-box--full rcx-callout rcx-callout--danger rcx-css-j4xsg rcx-css-1fuhgt0"
+                    class="is_View _f-1069814357 _mw-354604370 _mh-1241200853 _p-783907936 _c-1921852598 _b-1671784581 _br-1465795989 _b-1831105240 _ff-409630021 _fvn-1977619713 rcx-callout rcx-callout--danger rcx-css-j4xsg"
                   >
                     <i
                       aria-hidden="true"
-                      class="rcx-box rcx-box--full rcx-icon--name-ban rcx-icon rcx-callout__icon rcx-css-4pvxx3"
+                      class="is_Text _d-1409515928 _ws-311910413 _ww-408434756 _us-601212022 _va-1101652081 _ls-1720078126 _ff-1916555734 _fs-1279428672 _fw-289165218 _fs-477064150 _fv-1578983722 _lh-2067209205 _tr-1510281189 rcx-icon--name-ban rcx-icon rcx-callout__icon rcx-css-h3tmpq"
                     >
                       
                     </i>
                     <div
-                      class="rcx-box rcx-box--full rcx-callout__wrapper"
+                      class="is_View _d-1987097250 _o-1119039191 _jc-281817805 _f-1641582120 _mw-354604370 _mh-1241200853 _m-1343990794 rcx-callout__wrapper"
                     >
                       <div
-                        class="rcx-box rcx-box--full rcx-callout__wrapper-content"
+                        class="is_View _o-1119039191 _f-1246374076 rcx-callout__wrapper-content"
                       >
                         <div
-                          class="rcx-box rcx-box--full rcx-callout__content"
+                          class="is_Text _d-1987097250 _ws-974065937 _ww-1531368954 _fs-347291933 _fw-289165218 _lh-1925956564 _ls-1782815796 rcx-callout__content"
                         >
                           Error: Error message
                         </div>
@@ -719,13 +719,13 @@ exports[`renders InviteLoading without crashing 1`] = `
               class="rcx-box rcx-box--full rcx-css-1bdyjik rcx-css-1l4fxfb"
             >
               <button
-                class="rcx-box rcx-box--full rcx-button--small-square rcx-button--square rcx-button--icon rcx-button rcx-css-ue04py"
+                class="is_View _f-1069813397 _mh-1241200853 _ta-1906144518 _ws-973912173 _td-211436768 _c-22887652 _os-249893454 _o-1119039191 _to-1727917045 _ff-409630021 _fvn-1977619713 _fs-347291933 _fw-289166179 _ls-1782815796 _p-230374000 _w-1682139955 _mw-1947816287 _h-1633581678 _d-312446553 _jc-642967080 _ai-1864573722 _lh-2067208245 rcx-button--small-square rcx-button--square rcx-button--icon rcx-button rcx-css-ue04py"
                 title="Back"
                 type="button"
               >
                 <i
                   aria-hidden="true"
-                  class="rcx-box rcx-box--full rcx-icon--name-arrow-back rcx-icon rcx-css-4pvxx3"
+                  class="is_Text _d-1409515928 _ws-311910413 _ww-408434756 _us-601212022 _va-1101652081 _ls-1720078126 _ff-1916555734 _fs-1279428672 _fw-289165218 _fs-477064150 _fv-1578983722 _lh-2067209205 _tr-1510281189 rcx-icon--name-arrow-back rcx-icon rcx-css-4pvxx3"
                 >
                   ⦉
                 </i>
@@ -738,13 +738,13 @@ exports[`renders InviteLoading without crashing 1`] = `
               </h5>
               <button
                 aria-label="Close"
-                class="rcx-box rcx-box--full rcx-button--small-square rcx-button--square rcx-button--icon rcx-button rcx-css-ue04py"
+                class="is_View _f-1069813397 _mh-1241200853 _ta-1906144518 _ws-973912173 _td-211436768 _c-22887652 _os-249893454 _o-1119039191 _to-1727917045 _ff-409630021 _fvn-1977619713 _fs-347291933 _fw-289166179 _ls-1782815796 _p-230374000 _w-1682139955 _mw-1947816287 _h-1633581678 _d-312446553 _jc-642967080 _ai-1864573722 _lh-2067208245 rcx-button--small-square rcx-button--square rcx-button--icon rcx-button rcx-css-ue04py"
                 data-qa="ContextualbarActionClose"
                 type="button"
               >
                 <i
                   aria-hidden="true"
-                  class="rcx-box rcx-box--full rcx-icon--name-cross rcx-icon rcx-css-4pvxx3"
+                  class="is_Text _d-1409515928 _ws-311910413 _ww-408434756 _us-601212022 _va-1101652081 _ls-1720078126 _ff-1916555734 _fs-1279428672 _fw-289165218 _fs-477064150 _fv-1578983722 _lh-2067209205 _tr-1510281189 rcx-icon--name-cross rcx-icon rcx-css-4pvxx3"
                 >
                   
                 </i>
@@ -775,7 +775,7 @@ exports[`renders InviteLoading without crashing 1`] = `
                   class="rcx-box rcx-box--full rcx-css-zg7o7h"
                 >
                   <span
-                    class="rcx-skeleton rcx-skeleton--text rcx-css-j4xsg rcx-css-1qcz93u"
+                    class="is_View _d-1987097250 _f-571455214 _o-1106425799 _fvn-1977619713 _a-119288947 _o-1083158629 _br-1682169757 _b-326940086 _h-568431264 _m-93279763 _to-611310301 _t-1660003422 rcx-skeleton rcx-skeleton--text rcx-css-j4xsg rcx-css-1qcz93u"
                   />
                 </div>
               </div>

@@ -10,32 +10,32 @@ exports[`renders BasicWizard without crashing 1`] = `
         class="rcx-box rcx-box--full"
       >
         <div
-          class="rcx-box rcx-box--full rcx-tabs--with-divider rcx-tabs rcx-css-1tbw8nv"
+          class="is_View _f-85860445 _mw-354604370 _mh-1241200853 _os-249893454 _ff-409630021 _fvn-1977619713 _p-1021290656 _b-146007568 rcx-tabs--with-divider rcx-tabs rcx-css-1tbw8nv"
         >
           <div
-            class="rcx-box rcx-box--full rcx-tabs__scroll-box"
+            class="is_View _f-1246374076 _mw-354604370 _mh-1241200853 _os-249893454 _ff-409630021 _fvn-1977619713 _d-1987097250 _p-1021290656 _o-271657444 _m-571835320 rcx-tabs__scroll-box"
           >
             <div
-              class="rcx-box rcx-box--full rcx-tabs__wrapper"
+              class="is_View _f-619631402 _mw-354604370 _mh-1241200853 _os-249893454 _ff-409630021 _fvn-1977619713 _m-1635961112 _p-1671535631 rcx-tabs__wrapper"
               role="tablist"
             >
               <button
                 aria-selected="true"
-                class="rcx-box rcx-box--full rcx-tabs__item--selected rcx-tabs__item rcx-css-5dmxf6"
+                class="is_Text _f-550527108 _mw-354604370 _mh-1675067943 _os-249893454 _ff-409630021 _fvn-1977619713 _d-1409515928 _ws-311910413 _ww-408434756 _p-1021290656 _ai-121763387 _m-1635961112 _p-1713682327 _c-334234259 _b-799085337 _b-530853904 _c-22887652 _fs-467998244 _fw-289168101 _lh-1586295880 _ls-1782815796 rcx-tabs__item--selected rcx-tabs__item rcx-css-5dmxf6"
                 role="tab"
               >
                 First step
               </button>
               <button
                 aria-selected="false"
-                class="rcx-box rcx-box--full rcx-tabs__item--disabled rcx-tabs__item rcx-css-5dmxf6"
+                class="is_Text _f-550527108 _mw-354604370 _mh-1675067943 _os-249893454 _ff-409630021 _fvn-1977619713 _d-1409515928 _ws-311910413 _ww-408434756 _p-1021290656 _ai-121763387 _m-1635961112 _p-1713682327 _b-799085337 _b-530853904 _fs-467998244 _fw-289168101 _lh-1586295880 _ls-1782815796 _c-2102202510 _c-45593101 rcx-tabs__item--disabled rcx-tabs__item rcx-css-5dmxf6"
                 role="tab"
               >
                 Second step
               </button>
               <button
                 aria-selected="false"
-                class="rcx-box rcx-box--full rcx-tabs__item--disabled rcx-tabs__item rcx-css-5dmxf6"
+                class="is_Text _f-550527108 _mw-354604370 _mh-1675067943 _os-249893454 _ff-409630021 _fvn-1977619713 _d-1409515928 _ws-311910413 _ww-408434756 _p-1021290656 _ai-121763387 _m-1635961112 _p-1713682327 _b-799085337 _b-530853904 _fs-467998244 _fw-289168101 _lh-1586295880 _ls-1782815796 _c-2102202510 _c-45593101 rcx-tabs__item--disabled rcx-tabs__item rcx-css-5dmxf6"
                 role="tab"
               >
                 Third step
@@ -47,16 +47,16 @@ exports[`renders BasicWizard without crashing 1`] = `
           class="rcx-box rcx-box--full rcx-css-4q8ri8"
         >
           <div
-            class="rcx-states"
+            class="is_View _jc-1099843255 _ai-121763387 _f-1246374076 _mw-354604370 _mh-1241200853 _bs-652081535 _p-114688985 _c-1756781803 rcx-states"
           >
             <i
               aria-hidden="true"
-              class="rcx-box rcx-box--full rcx-states__icon rcx-icon--name-magnifier rcx-icon rcx-css-d884y5"
+              class="is_Text _d-1409515928 _ws-311910413 _ww-408434756 _us-601212022 _va-1101652081 _ls-1720078126 _ff-1916555734 _fs-1279428672 _fw-289165218 _fs-477064150 _fv-1578983722 _lh-2067209205 _tr-1510281189 rcx-states__icon rcx-icon--name-magnifier rcx-icon rcx-css-d884y5"
             >
               
             </i>
             <h3
-              class="rcx-states__title"
+              class="is_Text _d-1987097250 _ws-974065937 _ww-1531368954 _bs-652081535 _m-2143641824 _ta-1906144518 _c-1063453128 _fs-1323593153 _fw-289168101 _lh-1930574169 _ls-1782815796 rcx-states__title"
             >
               First step
             </h3>
@@ -66,15 +66,15 @@ exports[`renders BasicWizard without crashing 1`] = `
           class="rcx-box rcx-box--full steps-wizard-footer rcx-css-7vikfg"
         >
           <div
-            class="rcx-button-group rcx-button-group--align-start"
+            class="is_View _d-341075704 _f-1923654442 _mw-354604370 _mh-1241200853 _ai-121763387 _g-1051447770 _jc-281162209 rcx-button-group rcx-button-group--align-start"
             role="group"
           >
             <button
-              class="rcx-box rcx-box--full rcx-button--primary rcx-button"
+              class="is_View _d-1409515928 _f-1069814357 _mh-1241200853 _ta-1906144518 _ws-973912173 _td-211436768 _c-22887652 _os-249893454 _o-1119039191 _to-1727917045 _ff-409630021 _fvn-1977619713 _fs-347291933 _fw-289166179 _lh-1925956564 _ls-1782815796 _mw-1629853272 _h-1940744275 _p-1801169607 rcx-button--primary rcx-button"
               type="button"
             >
               <span
-                class="rcx-button--content"
+                class="is_Text _d-1409515928 _w-1560934055 _va-615128551 _o-1119039191 _to-1727917045 _ws-973912173 _ww-408434756 rcx-button--content"
               >
                 Next
               </span>
@@ -97,32 +97,32 @@ exports[`renders OrderedTabsWizard without crashing 1`] = `
         class="rcx-box rcx-box--full"
       >
         <div
-          class="rcx-box rcx-box--full rcx-tabs--with-divider rcx-tabs rcx-css-1tbw8nv"
+          class="is_View _f-85860445 _mw-354604370 _mh-1241200853 _os-249893454 _ff-409630021 _fvn-1977619713 _p-1021290656 _b-146007568 rcx-tabs--with-divider rcx-tabs rcx-css-1tbw8nv"
         >
           <div
-            class="rcx-box rcx-box--full rcx-tabs__scroll-box"
+            class="is_View _f-1246374076 _mw-354604370 _mh-1241200853 _os-249893454 _ff-409630021 _fvn-1977619713 _d-1987097250 _p-1021290656 _o-271657444 _m-571835320 rcx-tabs__scroll-box"
           >
             <div
-              class="rcx-box rcx-box--full rcx-tabs__wrapper"
+              class="is_View _f-619631402 _mw-354604370 _mh-1241200853 _os-249893454 _ff-409630021 _fvn-1977619713 _m-1635961112 _p-1671535631 rcx-tabs__wrapper"
               role="tablist"
             >
               <button
                 aria-selected="true"
-                class="rcx-box rcx-box--full rcx-tabs__item--selected rcx-tabs__item rcx-css-5dmxf6"
+                class="is_Text _f-550527108 _mw-354604370 _mh-1675067943 _os-249893454 _ff-409630021 _fvn-1977619713 _d-1409515928 _ws-311910413 _ww-408434756 _p-1021290656 _ai-121763387 _m-1635961112 _p-1713682327 _c-334234259 _b-799085337 _b-530853904 _c-22887652 _fs-467998244 _fw-289168101 _lh-1586295880 _ls-1782815796 rcx-tabs__item--selected rcx-tabs__item rcx-css-5dmxf6"
                 role="tab"
               >
                 1. First step
               </button>
               <button
                 aria-selected="false"
-                class="rcx-box rcx-box--full rcx-tabs__item--disabled rcx-tabs__item rcx-css-5dmxf6"
+                class="is_Text _f-550527108 _mw-354604370 _mh-1675067943 _os-249893454 _ff-409630021 _fvn-1977619713 _d-1409515928 _ws-311910413 _ww-408434756 _p-1021290656 _ai-121763387 _m-1635961112 _p-1713682327 _b-799085337 _b-530853904 _fs-467998244 _fw-289168101 _lh-1586295880 _ls-1782815796 _c-2102202510 _c-45593101 rcx-tabs__item--disabled rcx-tabs__item rcx-css-5dmxf6"
                 role="tab"
               >
                 2. Second step
               </button>
               <button
                 aria-selected="false"
-                class="rcx-box rcx-box--full rcx-tabs__item--disabled rcx-tabs__item rcx-css-5dmxf6"
+                class="is_Text _f-550527108 _mw-354604370 _mh-1675067943 _os-249893454 _ff-409630021 _fvn-1977619713 _d-1409515928 _ws-311910413 _ww-408434756 _p-1021290656 _ai-121763387 _m-1635961112 _p-1713682327 _b-799085337 _b-530853904 _fs-467998244 _fw-289168101 _lh-1586295880 _ls-1782815796 _c-2102202510 _c-45593101 rcx-tabs__item--disabled rcx-tabs__item rcx-css-5dmxf6"
                 role="tab"
               >
                 3. Third step
@@ -134,16 +134,16 @@ exports[`renders OrderedTabsWizard without crashing 1`] = `
           class="rcx-box rcx-box--full rcx-css-4q8ri8"
         >
           <div
-            class="rcx-states"
+            class="is_View _jc-1099843255 _ai-121763387 _f-1246374076 _mw-354604370 _mh-1241200853 _bs-652081535 _p-114688985 _c-1756781803 rcx-states"
           >
             <i
               aria-hidden="true"
-              class="rcx-box rcx-box--full rcx-states__icon rcx-icon--name-magnifier rcx-icon rcx-css-d884y5"
+              class="is_Text _d-1409515928 _ws-311910413 _ww-408434756 _us-601212022 _va-1101652081 _ls-1720078126 _ff-1916555734 _fs-1279428672 _fw-289165218 _fs-477064150 _fv-1578983722 _lh-2067209205 _tr-1510281189 rcx-states__icon rcx-icon--name-magnifier rcx-icon rcx-css-d884y5"
             >
               
             </i>
             <h3
-              class="rcx-states__title"
+              class="is_Text _d-1987097250 _ws-974065937 _ww-1531368954 _bs-652081535 _m-2143641824 _ta-1906144518 _c-1063453128 _fs-1323593153 _fw-289168101 _lh-1930574169 _ls-1782815796 rcx-states__title"
             >
               First step
             </h3>
@@ -153,15 +153,15 @@ exports[`renders OrderedTabsWizard without crashing 1`] = `
           class="rcx-box rcx-box--full steps-wizard-footer rcx-css-7vikfg"
         >
           <div
-            class="rcx-button-group rcx-button-group--align-start"
+            class="is_View _d-341075704 _f-1923654442 _mw-354604370 _mh-1241200853 _ai-121763387 _g-1051447770 _jc-281162209 rcx-button-group rcx-button-group--align-start"
             role="group"
           >
             <button
-              class="rcx-box rcx-box--full rcx-button--primary rcx-button"
+              class="is_View _d-1409515928 _f-1069814357 _mh-1241200853 _ta-1906144518 _ws-973912173 _td-211436768 _c-22887652 _os-249893454 _o-1119039191 _to-1727917045 _ff-409630021 _fvn-1977619713 _fs-347291933 _fw-289166179 _lh-1925956564 _ls-1782815796 _mw-1629853272 _h-1940744275 _p-1801169607 rcx-button--primary rcx-button"
               type="button"
             >
               <span
-                class="rcx-button--content"
+                class="is_Text _d-1409515928 _w-1560934055 _va-615128551 _o-1119039191 _to-1727917045 _ws-973912173 _ww-408434756 rcx-button--content"
               >
                 Next
               </span>

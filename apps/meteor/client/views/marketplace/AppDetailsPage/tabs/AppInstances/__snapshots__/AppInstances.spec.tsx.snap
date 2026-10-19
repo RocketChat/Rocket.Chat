@@ -7,13 +7,13 @@ exports[`renders AppInstances without crashing 1`] = `
       class="rcx-box rcx-box--full rcx-css-wuaqgn"
     >
       <span
-        class="rcx-skeleton rcx-skeleton--rect rcx-css-jti8fm"
+        class="is_View _d-1987097250 _f-571455214 _o-1106425799 _fvn-1977619713 _h-492511477 _a-119288947 _o-1083158629 _br-1682169757 _b-326940086 rcx-skeleton rcx-skeleton--rect rcx-css-jti8fm"
       />
       <span
-        class="rcx-skeleton rcx-skeleton--rect rcx-css-jti8fm"
+        class="is_View _d-1987097250 _f-571455214 _o-1106425799 _fvn-1977619713 _h-492511477 _a-119288947 _o-1083158629 _br-1682169757 _b-326940086 rcx-skeleton rcx-skeleton--rect rcx-css-jti8fm"
       />
       <span
-        class="rcx-skeleton rcx-skeleton--rect rcx-css-jti8fm"
+        class="is_View _d-1987097250 _f-571455214 _o-1106425799 _fvn-1977619713 _h-492511477 _a-119288947 _o-1083158629 _br-1682169757 _b-326940086 rcx-skeleton rcx-skeleton--rect rcx-css-jti8fm"
       />
     </div>
   </div>
@@ -27,13 +27,13 @@ exports[`renders AppInstances without crashing 2`] = `
       class="rcx-box rcx-box--full rcx-css-wuaqgn"
     >
       <span
-        class="rcx-skeleton rcx-skeleton--rect rcx-css-jti8fm"
+        class="is_View _d-1987097250 _f-571455214 _o-1106425799 _fvn-1977619713 _h-492511477 _a-119288947 _o-1083158629 _br-1682169757 _b-326940086 rcx-skeleton rcx-skeleton--rect rcx-css-jti8fm"
       />
       <span
-        class="rcx-skeleton rcx-skeleton--rect rcx-css-jti8fm"
+        class="is_View _d-1987097250 _f-571455214 _o-1106425799 _fvn-1977619713 _h-492511477 _a-119288947 _o-1083158629 _br-1682169757 _b-326940086 rcx-skeleton rcx-skeleton--rect rcx-css-jti8fm"
       />
       <span
-        class="rcx-skeleton rcx-skeleton--rect rcx-css-jti8fm"
+        class="is_View _d-1987097250 _f-571455214 _o-1106425799 _fvn-1977619713 _h-492511477 _a-119288947 _o-1083158629 _br-1682169757 _b-326940086 rcx-skeleton rcx-skeleton--rect rcx-css-jti8fm"
       />
     </div>
   </div>

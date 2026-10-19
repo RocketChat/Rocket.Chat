@@ -18,7 +18,7 @@ exports[`renders IncomingCall without crashing 1`] = `
       >
         <i
           aria-hidden="true"
-          class="rcx-box rcx-box--full rcx-icon--name-stacked-meatballs rcx-icon rcx-css-4pvxx3"
+          class="is_Text _d-1409515928 _ws-311910413 _ww-408434756 _us-601212022 _va-1101652081 _ls-1720078126 _ff-1916555734 _fs-1279428672 _fw-289165218 _fs-477064150 _fv-1578983722 _lh-2067209205 _tr-1510281189 rcx-icon--name-stacked-meatballs rcx-icon rcx-css-4pvxx3"
         >
           
         </i>
@@ -43,7 +43,7 @@ exports[`renders IncomingCall without crashing 1`] = `
         >
           <button
             aria-label="Device_settings_lowercase"
-            class="rcx-box rcx-box--full rcx-button--tiny-square rcx-button--square rcx-button--icon rcx-button rcx-css-1wk08i8"
+            class="is_View _f-1069813397 _mh-1241200853 _ta-1906144518 _ws-973912173 _td-211436768 _c-22887652 _os-249893454 _o-1119039191 _to-1727917045 _ff-409630021 _fvn-1977619713 _fs-347291933 _fw-289166179 _ls-1782815796 _p-230374000 _w-1439737260 _mw-1171212800 _h-640041837 _d-312446553 _jc-642967080 _ai-1864573722 _lh-2067208245 rcx-button--tiny-square rcx-button--square rcx-button--icon rcx-button rcx-css-1wk08i8"
             disabled=""
             label="Device_settings_lowercase"
             title="Device_settings_not_supported_by_browser"
@@ -51,7 +51,7 @@ exports[`renders IncomingCall without crashing 1`] = `
           >
             <i
               aria-hidden="true"
-              class="rcx-box rcx-box--full rcx-icon--name-customize rcx-icon rcx-css-xb06ut"
+              class="is_Text _d-1409515928 _ws-311910413 _ww-408434756 _us-601212022 _va-1101652081 _ls-1720078126 _ff-1916555734 _fs-1279428672 _fw-289165218 _fs-477064150 _fv-1578983722 _lh-2067209205 _tr-1510281189 rcx-icon--name-customize rcx-icon rcx-css-xb06ut"
             >
               
             </i>
@@ -69,11 +69,11 @@ exports[`renders IncomingCall without crashing 1`] = `
             class="rcx-box rcx-box--full rcx-css-1rtu0k9"
           >
             <figure
-              class="rcx-box rcx-box--full rcx-avatar rcx-avatar--x20"
+              class="is_View _d-1985012034 _f-606928779 _va-1124586065 _m-2017216831 _p-1943363302 _b-650654186 _o-1106425799 _ff-409630021 _fvn-1977619713 _w-1686757560 _h-1628964073 rcx-box rcx-box--full rcx-avatar rcx-avatar--x20"
             >
               <img
                 alt=""
-                class="rcx-avatar__element rcx-avatar__element--x20"
+                class="is_View _f-1246374076 _bs-652081535 _mw-354604370 _mh-1241200853 _p-1021290656 _w-1560934055 _h-538303654 _br-761757950 rcx-avatar__element rcx-avatar__element--x20"
                 src="data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAgGBgcGBQgHBwcJCQgKDBQNDAsLDBkSEw8UHRofHh0aHBwgJC4nICIsIxwcKDcpLDAxNDQ0Hyc5PTgyPC4zNDL/2wBDAQkJCQwLDBgNDRgyIRwhMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjL/wAARCAAoACgDASIAAhEBAxEB/8QAGwAAAgIDAQAAAAAAAAAAAAAAAAcEBgIDBQj/xAAuEAACAQQAAwcEAQUAAAAAAAABAgMABAUREiExBhMUIkFRYQcWcYGhFTJSgpH/xAAYAQADAQEAAAAAAAAAAAAAAAACAwQBAP/EAB4RAAIBBQEBAQAAAAAAAAAAAAABAgMREiExE0HR/9oADAMBAAIRAxEAPwBuXuIkhBuMe5ib/AHQP49q4L3mLitryTLTSpOiHQI5k/HzXa/qbFOEudVTu1dumWvcTaNCZYZ7vU6g6LxqjOU/24dfs1Ouh9FnkMpd3Reeyx83hAxZZEhkdV9/MBrX71WGPvJcqrJBGveKATtuXXqNU0pu02bTHXD/AGvJAluyxxRd6F4x00o+NdKoVrjbzJdvVe1t5cVLc2ck8qjnohgpPtz2v7G6JtPQ2VJwjlcw+37mchpnK6GtIuv5NFWeTsLNPvxWTvpfjvOEfwKKzEVkSct2vscS/BIzSN0YRkeX81UpPqO8masJETu7OOccY4dswYFQeftv096XV5knuJGdm2T1+agvMXj8jEaHX905QihabvcbuS7X566mLWLwSY8PuRnk/u4eZ0deTl71Ef6hY+0yM88TzeNZY4luYwpVYyduOfrvhPTnr0pXSX9y5mCsyJMdyxxvwq599em+taItqCSNc90ChvZRUruUcT0JiO18Elpk7t8v41LWzacxkBSuvjQ/FFJayjDWrCTepAQ2vUH0oo/Jk3ovpwJJeVCP5CN+lFFaaMqy+nAyuChvrTI2kN9JAsi2ZOy4IBHMnkSCP+iqBexSWdxLazoUljJVlPUH2oorkV10pRc7b1zXb/hZOzuJvM86QWEXeELxOzHSIPcmiiiunVlF2RNTpRkrs//Z"
               />
             </figure>
@@ -89,7 +89,7 @@ exports[`renders IncomingCall without crashing 1`] = `
               >
                 <svg
                   aria-hidden="true"
-                  class="rcx-status-bullet rcx-status-bullet--online undefined rcx-status-bullet--small"
+                  class="is_View _d-1409515928 _f-1711210172 _br-2015354435 _b-1674632166 _f-1658460128 _w-1912221297 _h-1620376816 rcx-status-bullet rcx-status-bullet--online undefined rcx-status-bullet--small"
                   height="24"
                   viewBox="0 0 24 24"
                   width="24"
@@ -118,20 +118,20 @@ exports[`renders IncomingCall without crashing 1`] = `
         class="rcx-box rcx-box--full rcx-css-1koqfyi"
       >
         <div
-          class="rcx-button-group rcx-button-group--stretch rcx-button-group--align-start"
+          class="is_View _d-341075704 _f-532517999 _mw-354604370 _mh-1241200853 _g-1051447770 _ai-579901216 _jc-281162209 rcx-button-group rcx-button-group--stretch rcx-button-group--align-start"
           role="group"
         >
           <button
-            class="rcx-box rcx-box--full rcx-button--medium rcx-button--danger rcx-button rcx-css-t3n91h"
+            class="is_View _d-1409515928 _f-1069814357 _mh-1241200853 _ta-1906144518 _ws-973912173 _td-211436768 _c-22887652 _os-249893454 _o-1119039191 _to-1727917045 _ff-409630021 _fvn-1977619713 _p-977728176 _fs-281033604 _fw-290091622 _lh-1335373134 _ls-1811444947 _mw-1006044400 _h-567027737 rcx-button--medium rcx-button--danger rcx-button rcx-css-t3n91h"
             name="phone"
             type="button"
           >
             <span
-              class="rcx-button--content"
+              class="is_Text _d-1409515928 _w-1560934055 _va-615128551 _o-1119039191 _to-1727917045 _ws-973912173 _ww-408434756 rcx-button--content"
             >
               <i
                 aria-hidden="true"
-                class="rcx-box rcx-box--full rcx-icon--name-phone-off rcx-icon rcx-css-1hdf9ok"
+                class="is_Text _d-1409515928 _ws-311910413 _ww-408434756 _us-601212022 _va-1101652081 _ls-1720078126 _ff-1916555734 _fs-1279428672 _fw-289165218 _fs-477064150 _fv-1578983722 _lh-2067209205 _tr-1510281189 rcx-icon--name-phone-off rcx-icon rcx-css-1hdf9ok"
               >
                 
               </i>
@@ -139,16 +139,16 @@ exports[`renders IncomingCall without crashing 1`] = `
             </span>
           </button>
           <button
-            class="rcx-box rcx-box--full rcx-button--medium rcx-button--success rcx-button rcx-css-t3n91h"
+            class="is_View _d-1409515928 _f-1069814357 _mh-1241200853 _ta-1906144518 _ws-973912173 _td-211436768 _c-22887652 _os-249893454 _o-1119039191 _to-1727917045 _ff-409630021 _fvn-1977619713 _p-977728176 _fs-281033604 _fw-290091622 _lh-1335373134 _ls-1811444947 _mw-1006044400 _h-567027737 rcx-button--medium rcx-button--success rcx-button rcx-css-t3n91h"
             name="phone"
             type="button"
           >
             <span
-              class="rcx-button--content"
+              class="is_Text _d-1409515928 _w-1560934055 _va-615128551 _o-1119039191 _to-1727917045 _ws-973912173 _ww-408434756 rcx-button--content"
             >
               <i
                 aria-hidden="true"
-                class="rcx-box rcx-box--full rcx-icon--name-phone rcx-icon rcx-css-1hdf9ok"
+                class="is_Text _d-1409515928 _ws-311910413 _ww-408434756 _us-601212022 _va-1101652081 _ls-1720078126 _ff-1916555734 _fs-1279428672 _fw-289165218 _fs-477064150 _fv-1578983722 _lh-2067209205 _tr-1510281189 rcx-icon--name-phone rcx-icon rcx-css-1hdf9ok"
               >
                 
               </i>
@@ -184,7 +184,7 @@ exports[`renders IncomingCallConnecting without crashing 1`] = `
       >
         <i
           aria-hidden="true"
-          class="rcx-box rcx-box--full rcx-icon--name-stacked-meatballs rcx-icon rcx-css-4pvxx3"
+          class="is_Text _d-1409515928 _ws-311910413 _ww-408434756 _us-601212022 _va-1101652081 _ls-1720078126 _ff-1916555734 _fs-1279428672 _fw-289165218 _fs-477064150 _fv-1578983722 _lh-2067209205 _tr-1510281189 rcx-icon--name-stacked-meatballs rcx-icon rcx-css-4pvxx3"
         >
           
         </i>
@@ -209,7 +209,7 @@ exports[`renders IncomingCallConnecting without crashing 1`] = `
         >
           <button
             aria-label="Device_settings_lowercase"
-            class="rcx-box rcx-box--full rcx-button--tiny-square rcx-button--square rcx-button--icon rcx-button rcx-css-1wk08i8"
+            class="is_View _f-1069813397 _mh-1241200853 _ta-1906144518 _ws-973912173 _td-211436768 _c-22887652 _os-249893454 _o-1119039191 _to-1727917045 _ff-409630021 _fvn-1977619713 _fs-347291933 _fw-289166179 _ls-1782815796 _p-230374000 _w-1439737260 _mw-1171212800 _h-640041837 _d-312446553 _jc-642967080 _ai-1864573722 _lh-2067208245 rcx-button--tiny-square rcx-button--square rcx-button--icon rcx-button rcx-css-1wk08i8"
             disabled=""
             label="Device_settings_lowercase"
             title="Device_settings_not_supported_by_browser"
@@ -217,7 +217,7 @@ exports[`renders IncomingCallConnecting without crashing 1`] = `
           >
             <i
               aria-hidden="true"
-              class="rcx-box rcx-box--full rcx-icon--name-customize rcx-icon rcx-css-xb06ut"
+              class="is_Text _d-1409515928 _ws-311910413 _ww-408434756 _us-601212022 _va-1101652081 _ls-1720078126 _ff-1916555734 _fs-1279428672 _fw-289165218 _fs-477064150 _fv-1578983722 _lh-2067209205 _tr-1510281189 rcx-icon--name-customize rcx-icon rcx-css-xb06ut"
             >
               
             </i>
@@ -235,11 +235,11 @@ exports[`renders IncomingCallConnecting without crashing 1`] = `
             class="rcx-box rcx-box--full rcx-css-1rtu0k9"
           >
             <figure
-              class="rcx-box rcx-box--full rcx-avatar rcx-avatar--x20"
+              class="is_View _d-1985012034 _f-606928779 _va-1124586065 _m-2017216831 _p-1943363302 _b-650654186 _o-1106425799 _ff-409630021 _fvn-1977619713 _w-1686757560 _h-1628964073 rcx-box rcx-box--full rcx-avatar rcx-avatar--x20"
             >
               <img
                 alt=""
-                class="rcx-avatar__element rcx-avatar__element--x20"
+                class="is_View _f-1246374076 _bs-652081535 _mw-354604370 _mh-1241200853 _p-1021290656 _w-1560934055 _h-538303654 _br-761757950 rcx-avatar__element rcx-avatar__element--x20"
                 src="data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAgGBgcGBQgHBwcJCQgKDBQNDAsLDBkSEw8UHRofHh0aHBwgJC4nICIsIxwcKDcpLDAxNDQ0Hyc5PTgyPC4zNDL/2wBDAQkJCQwLDBgNDRgyIRwhMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjL/wAARCAAoACgDASIAAhEBAxEB/8QAGwAAAgIDAQAAAAAAAAAAAAAAAAcEBgIDBQj/xAAuEAACAQQAAwcEAQUAAAAAAAABAgMABAUREiExBhMUIkFRYQcWcYGhFTJSgpH/xAAYAQADAQEAAAAAAAAAAAAAAAACAwQBAP/EAB4RAAIBBQEBAQAAAAAAAAAAAAABAgMREiExE0HR/9oADAMBAAIRAxEAPwBuXuIkhBuMe5ib/AHQP49q4L3mLitryTLTSpOiHQI5k/HzXa/qbFOEudVTu1dumWvcTaNCZYZ7vU6g6LxqjOU/24dfs1Ouh9FnkMpd3Reeyx83hAxZZEhkdV9/MBrX71WGPvJcqrJBGveKATtuXXqNU0pu02bTHXD/AGvJAluyxxRd6F4x00o+NdKoVrjbzJdvVe1t5cVLc2ck8qjnohgpPtz2v7G6JtPQ2VJwjlcw+37mchpnK6GtIuv5NFWeTsLNPvxWTvpfjvOEfwKKzEVkSct2vscS/BIzSN0YRkeX81UpPqO8masJETu7OOccY4dswYFQeftv096XV5knuJGdm2T1+agvMXj8jEaHX905QihabvcbuS7X566mLWLwSY8PuRnk/u4eZ0deTl71Ef6hY+0yM88TzeNZY4luYwpVYyduOfrvhPTnr0pXSX9y5mCsyJMdyxxvwq599em+taItqCSNc90ChvZRUruUcT0JiO18Elpk7t8v41LWzacxkBSuvjQ/FFJayjDWrCTepAQ2vUH0oo/Jk3ovpwJJeVCP5CN+lFFaaMqy+nAyuChvrTI2kN9JAsi2ZOy4IBHMnkSCP+iqBexSWdxLazoUljJVlPUH2oorkV10pRc7b1zXb/hZOzuJvM86QWEXeELxOzHSIPcmiiiunVlF2RNTpRkrs//Z"
               />
             </figure>
@@ -255,7 +255,7 @@ exports[`renders IncomingCallConnecting without crashing 1`] = `
               >
                 <svg
                   aria-hidden="true"
-                  class="rcx-status-bullet rcx-status-bullet--online undefined rcx-status-bullet--small"
+                  class="is_View _d-1409515928 _f-1711210172 _br-2015354435 _b-1674632166 _f-1658460128 _w-1912221297 _h-1620376816 rcx-status-bullet rcx-status-bullet--online undefined rcx-status-bullet--small"
                   height="24"
                   viewBox="0 0 24 24"
                   width="24"
@@ -284,20 +284,20 @@ exports[`renders IncomingCallConnecting without crashing 1`] = `
         class="rcx-box rcx-box--full rcx-css-1koqfyi"
       >
         <div
-          class="rcx-button-group rcx-button-group--stretch rcx-button-group--align-start"
+          class="is_View _d-341075704 _f-532517999 _mw-354604370 _mh-1241200853 _g-1051447770 _ai-579901216 _jc-281162209 rcx-button-group rcx-button-group--stretch rcx-button-group--align-start"
           role="group"
         >
           <button
-            class="rcx-box rcx-box--full rcx-button--medium rcx-button--danger rcx-button rcx-css-t3n91h"
+            class="is_View _d-1409515928 _f-1069814357 _mh-1241200853 _ta-1906144518 _ws-973912173 _td-211436768 _c-22887652 _os-249893454 _o-1119039191 _to-1727917045 _ff-409630021 _fvn-1977619713 _p-977728176 _fs-281033604 _fw-290091622 _lh-1335373134 _ls-1811444947 _mw-1006044400 _h-567027737 rcx-button--medium rcx-button--danger rcx-button rcx-css-t3n91h"
             name="phone"
             type="button"
           >
             <span
-              class="rcx-button--content"
+              class="is_Text _d-1409515928 _w-1560934055 _va-615128551 _o-1119039191 _to-1727917045 _ws-973912173 _ww-408434756 rcx-button--content"
             >
               <i
                 aria-hidden="true"
-                class="rcx-box rcx-box--full rcx-icon--name-phone-off rcx-icon rcx-css-1hdf9ok"
+                class="is_Text _d-1409515928 _ws-311910413 _ww-408434756 _us-601212022 _va-1101652081 _ls-1720078126 _ff-1916555734 _fs-1279428672 _fw-289165218 _fs-477064150 _fv-1578983722 _lh-2067209205 _tr-1510281189 rcx-icon--name-phone-off rcx-icon rcx-css-1hdf9ok"
               >
                 
               </i>
@@ -333,7 +333,7 @@ exports[`renders IncomingCallTransfer without crashing 1`] = `
       >
         <i
           aria-hidden="true"
-          class="rcx-box rcx-box--full rcx-icon--name-stacked-meatballs rcx-icon rcx-css-4pvxx3"
+          class="is_Text _d-1409515928 _ws-311910413 _ww-408434756 _us-601212022 _va-1101652081 _ls-1720078126 _ff-1916555734 _fs-1279428672 _fw-289165218 _fs-477064150 _fv-1578983722 _lh-2067209205 _tr-1510281189 rcx-icon--name-stacked-meatballs rcx-icon rcx-css-4pvxx3"
         >
           
         </i>
@@ -358,7 +358,7 @@ exports[`renders IncomingCallTransfer without crashing 1`] = `
         >
           <button
             aria-label="Device_settings_lowercase"
-            class="rcx-box rcx-box--full rcx-button--tiny-square rcx-button--square rcx-button--icon rcx-button rcx-css-1wk08i8"
+            class="is_View _f-1069813397 _mh-1241200853 _ta-1906144518 _ws-973912173 _td-211436768 _c-22887652 _os-249893454 _o-1119039191 _to-1727917045 _ff-409630021 _fvn-1977619713 _fs-347291933 _fw-289166179 _ls-1782815796 _p-230374000 _w-1439737260 _mw-1171212800 _h-640041837 _d-312446553 _jc-642967080 _ai-1864573722 _lh-2067208245 rcx-button--tiny-square rcx-button--square rcx-button--icon rcx-button rcx-css-1wk08i8"
             disabled=""
             label="Device_settings_lowercase"
             title="Device_settings_not_supported_by_browser"
@@ -366,7 +366,7 @@ exports[`renders IncomingCallTransfer without crashing 1`] = `
           >
             <i
               aria-hidden="true"
-              class="rcx-box rcx-box--full rcx-icon--name-customize rcx-icon rcx-css-xb06ut"
+              class="is_Text _d-1409515928 _ws-311910413 _ww-408434756 _us-601212022 _va-1101652081 _ls-1720078126 _ff-1916555734 _fs-1279428672 _fw-289165218 _fs-477064150 _fv-1578983722 _lh-2067209205 _tr-1510281189 rcx-icon--name-customize rcx-icon rcx-css-xb06ut"
             >
               
             </i>
@@ -394,11 +394,11 @@ exports[`renders IncomingCallTransfer without crashing 1`] = `
             class="rcx-box rcx-box--full rcx-css-1rtu0k9"
           >
             <figure
-              class="rcx-box rcx-box--full rcx-avatar rcx-avatar--x20"
+              class="is_View _d-1985012034 _f-606928779 _va-1124586065 _m-2017216831 _p-1943363302 _b-650654186 _o-1106425799 _ff-409630021 _fvn-1977619713 _w-1686757560 _h-1628964073 rcx-box rcx-box--full rcx-avatar rcx-avatar--x20"
             >
               <img
                 alt=""
-                class="rcx-avatar__element rcx-avatar__element--x20"
+                class="is_View _f-1246374076 _bs-652081535 _mw-354604370 _mh-1241200853 _p-1021290656 _w-1560934055 _h-538303654 _br-761757950 rcx-avatar__element rcx-avatar__element--x20"
                 src="data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAgGBgcGBQgHBwcJCQgKDBQNDAsLDBkSEw8UHRofHh0aHBwgJC4nICIsIxwcKDcpLDAxNDQ0Hyc5PTgyPC4zNDL/2wBDAQkJCQwLDBgNDRgyIRwhMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjL/wAARCAAoACgDASIAAhEBAxEB/8QAGwAAAgIDAQAAAAAAAAAAAAAAAAcEBgIDBQj/xAAuEAACAQQAAwcEAQUAAAAAAAABAgMABAUREiExBhMUIkFRYQcWcYGhFTJSgpH/xAAYAQADAQEAAAAAAAAAAAAAAAACAwQBAP/EAB4RAAIBBQEBAQAAAAAAAAAAAAABAgMREiExE0HR/9oADAMBAAIRAxEAPwBuXuIkhBuMe5ib/AHQP49q4L3mLitryTLTSpOiHQI5k/HzXa/qbFOEudVTu1dumWvcTaNCZYZ7vU6g6LxqjOU/24dfs1Ouh9FnkMpd3Reeyx83hAxZZEhkdV9/MBrX71WGPvJcqrJBGveKATtuXXqNU0pu02bTHXD/AGvJAluyxxRd6F4x00o+NdKoVrjbzJdvVe1t5cVLc2ck8qjnohgpPtz2v7G6JtPQ2VJwjlcw+37mchpnK6GtIuv5NFWeTsLNPvxWTvpfjvOEfwKKzEVkSct2vscS/BIzSN0YRkeX81UpPqO8masJETu7OOccY4dswYFQeftv096XV5knuJGdm2T1+agvMXj8jEaHX905QihabvcbuS7X566mLWLwSY8PuRnk/u4eZ0deTl71Ef6hY+0yM88TzeNZY4luYwpVYyduOfrvhPTnr0pXSX9y5mCsyJMdyxxvwq599em+taItqCSNc90ChvZRUruUcT0JiO18Elpk7t8v41LWzacxkBSuvjQ/FFJayjDWrCTepAQ2vUH0oo/Jk3ovpwJJeVCP5CN+lFFaaMqy+nAyuChvrTI2kN9JAsi2ZOy4IBHMnkSCP+iqBexSWdxLazoUljJVlPUH2oorkV10pRc7b1zXb/hZOzuJvM86QWEXeELxOzHSIPcmiiiunVlF2RNTpRkrs//Z"
               />
             </figure>
@@ -414,7 +414,7 @@ exports[`renders IncomingCallTransfer without crashing 1`] = `
               >
                 <svg
                   aria-hidden="true"
-                  class="rcx-status-bullet rcx-status-bullet--online undefined rcx-status-bullet--small"
+                  class="is_View _d-1409515928 _f-1711210172 _br-2015354435 _b-1674632166 _f-1658460128 _w-1912221297 _h-1620376816 rcx-status-bullet rcx-status-bullet--online undefined rcx-status-bullet--small"
                   height="24"
                   viewBox="0 0 24 24"
                   width="24"
@@ -443,20 +443,20 @@ exports[`renders IncomingCallTransfer without crashing 1`] = `
         class="rcx-box rcx-box--full rcx-css-1koqfyi"
       >
         <div
-          class="rcx-button-group rcx-button-group--stretch rcx-button-group--align-start"
+          class="is_View _d-341075704 _f-532517999 _mw-354604370 _mh-1241200853 _g-1051447770 _ai-579901216 _jc-281162209 rcx-button-group rcx-button-group--stretch rcx-button-group--align-start"
           role="group"
         >
           <button
-            class="rcx-box rcx-box--full rcx-button--medium rcx-button--danger rcx-button rcx-css-t3n91h"
+            class="is_View _d-1409515928 _f-1069814357 _mh-1241200853 _ta-1906144518 _ws-973912173 _td-211436768 _c-22887652 _os-249893454 _o-1119039191 _to-1727917045 _ff-409630021 _fvn-1977619713 _p-977728176 _fs-281033604 _fw-290091622 _lh-1335373134 _ls-1811444947 _mw-1006044400 _h-567027737 rcx-button--medium rcx-button--danger rcx-button rcx-css-t3n91h"
             name="phone"
             type="button"
           >
             <span
-              class="rcx-button--content"
+              class="is_Text _d-1409515928 _w-1560934055 _va-615128551 _o-1119039191 _to-1727917045 _ws-973912173 _ww-408434756 rcx-button--content"
             >
               <i
                 aria-hidden="true"
-                class="rcx-box rcx-box--full rcx-icon--name-phone-off rcx-icon rcx-css-1hdf9ok"
+                class="is_Text _d-1409515928 _ws-311910413 _ww-408434756 _us-601212022 _va-1101652081 _ls-1720078126 _ff-1916555734 _fs-1279428672 _fw-289165218 _fs-477064150 _fv-1578983722 _lh-2067209205 _tr-1510281189 rcx-icon--name-phone-off rcx-icon rcx-css-1hdf9ok"
               >
                 
               </i>
@@ -464,16 +464,16 @@ exports[`renders IncomingCallTransfer without crashing 1`] = `
             </span>
           </button>
           <button
-            class="rcx-box rcx-box--full rcx-button--medium rcx-button--success rcx-button rcx-css-t3n91h"
+            class="is_View _d-1409515928 _f-1069814357 _mh-1241200853 _ta-1906144518 _ws-973912173 _td-211436768 _c-22887652 _os-249893454 _o-1119039191 _to-1727917045 _ff-409630021 _fvn-1977619713 _p-977728176 _fs-281033604 _fw-290091622 _lh-1335373134 _ls-1811444947 _mw-1006044400 _h-567027737 rcx-button--medium rcx-button--success rcx-button rcx-css-t3n91h"
             name="phone"
             type="button"
           >
             <span
-              class="rcx-button--content"
+              class="is_Text _d-1409515928 _w-1560934055 _va-615128551 _o-1119039191 _to-1727917045 _ws-973912173 _ww-408434756 rcx-button--content"
             >
               <i
                 aria-hidden="true"
-                class="rcx-box rcx-box--full rcx-icon--name-phone rcx-icon rcx-css-1hdf9ok"
+                class="is_Text _d-1409515928 _ws-311910413 _ww-408434756 _us-601212022 _va-1101652081 _ls-1720078126 _ff-1916555734 _fs-1279428672 _fw-289165218 _fs-477064150 _fv-1578983722 _lh-2067209205 _tr-1510281189 rcx-icon--name-phone rcx-icon rcx-css-1hdf9ok"
               >
                 
               </i>
@@ -509,7 +509,7 @@ exports[`renders IncomingCallTransferConnecting without crashing 1`] = `
       >
         <i
           aria-hidden="true"
-          class="rcx-box rcx-box--full rcx-icon--name-stacked-meatballs rcx-icon rcx-css-4pvxx3"
+          class="is_Text _d-1409515928 _ws-311910413 _ww-408434756 _us-601212022 _va-1101652081 _ls-1720078126 _ff-1916555734 _fs-1279428672 _fw-289165218 _fs-477064150 _fv-1578983722 _lh-2067209205 _tr-1510281189 rcx-icon--name-stacked-meatballs rcx-icon rcx-css-4pvxx3"
         >
           
         </i>
@@ -534,7 +534,7 @@ exports[`renders IncomingCallTransferConnecting without crashing 1`] = `
         >
           <button
             aria-label="Device_settings_lowercase"
-            class="rcx-box rcx-box--full rcx-button--tiny-square rcx-button--square rcx-button--icon rcx-button rcx-css-1wk08i8"
+            class="is_View _f-1069813397 _mh-1241200853 _ta-1906144518 _ws-973912173 _td-211436768 _c-22887652 _os-249893454 _o-1119039191 _to-1727917045 _ff-409630021 _fvn-1977619713 _fs-347291933 _fw-289166179 _ls-1782815796 _p-230374000 _w-1439737260 _mw-1171212800 _h-640041837 _d-312446553 _jc-642967080 _ai-1864573722 _lh-2067208245 rcx-button--tiny-square rcx-button--square rcx-button--icon rcx-button rcx-css-1wk08i8"
             disabled=""
             label="Device_settings_lowercase"
             title="Device_settings_not_supported_by_browser"
@@ -542,7 +542,7 @@ exports[`renders IncomingCallTransferConnecting without crashing 1`] = `
           >
             <i
               aria-hidden="true"
-              class="rcx-box rcx-box--full rcx-icon--name-customize rcx-icon rcx-css-xb06ut"
+              class="is_Text _d-1409515928 _ws-311910413 _ww-408434756 _us-601212022 _va-1101652081 _ls-1720078126 _ff-1916555734 _fs-1279428672 _fw-289165218 _fs-477064150 _fv-1578983722 _lh-2067209205 _tr-1510281189 rcx-icon--name-customize rcx-icon rcx-css-xb06ut"
             >
               
             </i>
@@ -570,11 +570,11 @@ exports[`renders IncomingCallTransferConnecting without crashing 1`] = `
             class="rcx-box rcx-box--full rcx-css-1rtu0k9"
           >
             <figure
-              class="rcx-box rcx-box--full rcx-avatar rcx-avatar--x20"
+              class="is_View _d-1985012034 _f-606928779 _va-1124586065 _m-2017216831 _p-1943363302 _b-650654186 _o-1106425799 _ff-409630021 _fvn-1977619713 _w-1686757560 _h-1628964073 rcx-box rcx-box--full rcx-avatar rcx-avatar--x20"
             >
               <img
                 alt=""
-                class="rcx-avatar__element rcx-avatar__element--x20"
+                class="is_View _f-1246374076 _bs-652081535 _mw-354604370 _mh-1241200853 _p-1021290656 _w-1560934055 _h-538303654 _br-761757950 rcx-avatar__element rcx-avatar__element--x20"
                 src="data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAgGBgcGBQgHBwcJCQgKDBQNDAsLDBkSEw8UHRofHh0aHBwgJC4nICIsIxwcKDcpLDAxNDQ0Hyc5PTgyPC4zNDL/2wBDAQkJCQwLDBgNDRgyIRwhMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjL/wAARCAAoACgDASIAAhEBAxEB/8QAGwAAAgIDAQAAAAAAAAAAAAAAAAcEBgIDBQj/xAAuEAACAQQAAwcEAQUAAAAAAAABAgMABAUREiExBhMUIkFRYQcWcYGhFTJSgpH/xAAYAQADAQEAAAAAAAAAAAAAAAACAwQBAP/EAB4RAAIBBQEBAQAAAAAAAAAAAAABAgMREiExE0HR/9oADAMBAAIRAxEAPwBuXuIkhBuMe5ib/AHQP49q4L3mLitryTLTSpOiHQI5k/HzXa/qbFOEudVTu1dumWvcTaNCZYZ7vU6g6LxqjOU/24dfs1Ouh9FnkMpd3Reeyx83hAxZZEhkdV9/MBrX71WGPvJcqrJBGveKATtuXXqNU0pu02bTHXD/AGvJAluyxxRd6F4x00o+NdKoVrjbzJdvVe1t5cVLc2ck8qjnohgpPtz2v7G6JtPQ2VJwjlcw+37mchpnK6GtIuv5NFWeTsLNPvxWTvpfjvOEfwKKzEVkSct2vscS/BIzSN0YRkeX81UpPqO8masJETu7OOccY4dswYFQeftv096XV5knuJGdm2T1+agvMXj8jEaHX905QihabvcbuS7X566mLWLwSY8PuRnk/u4eZ0deTl71Ef6hY+0yM88TzeNZY4luYwpVYyduOfrvhPTnr0pXSX9y5mCsyJMdyxxvwq599em+taItqCSNc90ChvZRUruUcT0JiO18Elpk7t8v41LWzacxkBSuvjQ/FFJayjDWrCTepAQ2vUH0oo/Jk3ovpwJJeVCP5CN+lFFaaMqy+nAyuChvrTI2kN9JAsi2ZOy4IBHMnkSCP+iqBexSWdxLazoUljJVlPUH2oorkV10pRc7b1zXb/hZOzuJvM86QWEXeELxOzHSIPcmiiiunVlF2RNTpRkrs//Z"
               />
             </figure>
@@ -590,7 +590,7 @@ exports[`renders IncomingCallTransferConnecting without crashing 1`] = `
               >
                 <svg
                   aria-hidden="true"
-                  class="rcx-status-bullet rcx-status-bullet--online undefined rcx-status-bullet--small"
+                  class="is_View _d-1409515928 _f-1711210172 _br-2015354435 _b-1674632166 _f-1658460128 _w-1912221297 _h-1620376816 rcx-status-bullet rcx-status-bullet--online undefined rcx-status-bullet--small"
                   height="24"
                   viewBox="0 0 24 24"
                   width="24"
@@ -619,20 +619,20 @@ exports[`renders IncomingCallTransferConnecting without crashing 1`] = `
         class="rcx-box rcx-box--full rcx-css-1koqfyi"
       >
         <div
-          class="rcx-button-group rcx-button-group--stretch rcx-button-group--align-start"
+          class="is_View _d-341075704 _f-532517999 _mw-354604370 _mh-1241200853 _g-1051447770 _ai-579901216 _jc-281162209 rcx-button-group rcx-button-group--stretch rcx-button-group--align-start"
           role="group"
         >
           <button
-            class="rcx-box rcx-box--full rcx-button--medium rcx-button--danger rcx-button rcx-css-t3n91h"
+            class="is_View _d-1409515928 _f-1069814357 _mh-1241200853 _ta-1906144518 _ws-973912173 _td-211436768 _c-22887652 _os-249893454 _o-1119039191 _to-1727917045 _ff-409630021 _fvn-1977619713 _p-977728176 _fs-281033604 _fw-290091622 _lh-1335373134 _ls-1811444947 _mw-1006044400 _h-567027737 rcx-button--medium rcx-button--danger rcx-button rcx-css-t3n91h"
             name="phone"
             type="button"
           >
             <span
-              class="rcx-button--content"
+              class="is_Text _d-1409515928 _w-1560934055 _va-615128551 _o-1119039191 _to-1727917045 _ws-973912173 _ww-408434756 rcx-button--content"
             >
               <i
                 aria-hidden="true"
-                class="rcx-box rcx-box--full rcx-icon--name-phone-off rcx-icon rcx-css-1hdf9ok"
+                class="is_Text _d-1409515928 _ws-311910413 _ww-408434756 _us-601212022 _va-1101652081 _ls-1720078126 _ff-1916555734 _fs-1279428672 _fw-289165218 _fs-477064150 _fv-1578983722 _lh-2067209205 _tr-1510281189 rcx-icon--name-phone-off rcx-icon rcx-css-1hdf9ok"
               >
                 
               </i>
@@ -654,21 +654,21 @@ exports[`renders MediaCallWidgetManualTesting without crashing 1`] = `
 <body>
   <div>
     <button
-      class="rcx-box rcx-box--full rcx-button rcx-css-1rtu0k9"
+      class="is_View _d-1409515928 _f-1069814357 _mh-1241200853 _ta-1906144518 _ws-973912173 _td-211436768 _c-22887652 _os-249893454 _o-1119039191 _to-1727917045 _ff-409630021 _fvn-1977619713 _fs-347291933 _fw-289166179 _lh-1925956564 _ls-1782815796 _mw-1629853272 _h-1940744275 _p-1801169607 rcx-button rcx-css-1rtu0k9"
       type="button"
     >
       <span
-        class="rcx-button--content"
+        class="is_Text _d-1409515928 _w-1560934055 _va-615128551 _o-1119039191 _to-1727917045 _ws-973912173 _ww-408434756 rcx-button--content"
       >
         Toggle widget
       </span>
     </button>
     <button
-      class="rcx-box rcx-box--full rcx-button"
+      class="is_View _d-1409515928 _f-1069814357 _mh-1241200853 _ta-1906144518 _ws-973912173 _td-211436768 _c-22887652 _os-249893454 _o-1119039191 _to-1727917045 _ff-409630021 _fvn-1977619713 _fs-347291933 _fw-289166179 _lh-1925956564 _ls-1782815796 _mw-1629853272 _h-1940744275 _p-1801169607 rcx-button"
       type="button"
     >
       <span
-        class="rcx-button--content"
+        class="is_Text _d-1409515928 _w-1560934055 _va-615128551 _o-1119039191 _to-1727917045 _ws-973912173 _ww-408434756 rcx-button--content"
       >
         Receive call
       </span>
@@ -695,7 +695,7 @@ exports[`renders NewCall without crashing 1`] = `
       >
         <i
           aria-hidden="true"
-          class="rcx-box rcx-box--full rcx-icon--name-stacked-meatballs rcx-icon rcx-css-4pvxx3"
+          class="is_Text _d-1409515928 _ws-311910413 _ww-408434756 _us-601212022 _va-1101652081 _ls-1720078126 _ff-1916555734 _fs-1279428672 _fw-289165218 _fs-477064150 _fv-1578983722 _lh-2067209205 _tr-1510281189 rcx-icon--name-stacked-meatballs rcx-icon rcx-css-4pvxx3"
         >
           
         </i>
@@ -720,14 +720,14 @@ exports[`renders NewCall without crashing 1`] = `
         >
           <button
             aria-label="Close"
-            class="rcx-box rcx-box--full rcx-button--tiny-square rcx-button--square rcx-button--icon rcx-button"
+            class="is_View _f-1069813397 _mh-1241200853 _ta-1906144518 _ws-973912173 _td-211436768 _c-22887652 _os-249893454 _o-1119039191 _to-1727917045 _ff-409630021 _fvn-1977619713 _fs-347291933 _fw-289166179 _ls-1782815796 _p-230374000 _w-1439737260 _mw-1171212800 _h-640041837 _d-312446553 _jc-642967080 _ai-1864573722 _lh-2067208245 rcx-button--tiny-square rcx-button--square rcx-button--icon rcx-button"
             label="Close"
             title="Close"
             type="button"
           >
             <i
               aria-hidden="true"
-              class="rcx-box rcx-box--full rcx-icon--name-cross rcx-icon rcx-css-xb06ut"
+              class="is_Text _d-1409515928 _ws-311910413 _ww-408434756 _us-601212022 _va-1101652081 _ls-1720078126 _ff-1916555734 _fs-1279428672 _fw-289165218 _fs-477064150 _fv-1578983722 _lh-2067209205 _tr-1510281189 rcx-icon--name-cross rcx-icon rcx-css-xb06ut"
             >
               
             </i>
@@ -738,10 +738,10 @@ exports[`renders NewCall without crashing 1`] = `
         class="rcx-box rcx-box--full rcx-css-8j42zp"
       >
         <div
-          class="rcx-box rcx-box--full rcx-field rcx-css-toq36"
+          class="is_Text _b-650654186 _os-249893454 _ff-409630021 _fvn-1977619713 _ws-311910413 _ww-408434756 _d-341075704 _f-1378740307 _ai-1227553247 _w-1560934055 rcx-field rcx-css-toq36"
         >
           <span
-            class="rcx-box rcx-box--full rcx-field__row"
+            class="is_Text _b-650654186 _os-249893454 _ff-409630021 _fvn-1977619713 _ws-311910413 _ww-408434756 _d-341075704 _f-541922926 _jc-281817805 _ai-121763387 _m-2017978848 _c-1756781803 rcx-field__row"
           >
             <div
               class="rcx-box rcx-box--full rcx-box--animated rcx-autocomplete rcx-css-t3n91h"
@@ -752,7 +752,7 @@ exports[`renders NewCall without crashing 1`] = `
               >
                 <input
                   aria-invalid="false"
-                  aria-labelledby="_r_0_"
+                  aria-labelledby="_r_2d_"
                   class="rcx-box rcx-box--full rcx-box--animated rcx-input-box--undecorated rcx-input-box rcx-css-i9v8z4 rcx-css-rcil7k"
                   value=""
                 />
@@ -762,7 +762,7 @@ exports[`renders NewCall without crashing 1`] = `
               >
                 <i
                   aria-hidden="true"
-                  class="rcx-box rcx-box--full rcx-icon--name-magnifier rcx-icon rcx-css-l5txo2"
+                  class="is_Text _d-1409515928 _ws-311910413 _ww-408434756 _us-601212022 _va-1101652081 _ls-1720078126 _ff-1916555734 _fs-1279428672 _fw-289165218 _fs-477064150 _fv-1578983722 _lh-2067209205 _tr-1510281189 rcx-icon--name-magnifier rcx-icon rcx-css-l5txo2"
                 >
                   
                 </i>
@@ -770,8 +770,8 @@ exports[`renders NewCall without crashing 1`] = `
             </div>
           </span>
           <span
-            class="rcx-box rcx-box--full rcx-field__description"
-            id="_r_0_"
+            class="is_Text _b-650654186 _os-249893454 _ff-409630021 _fvn-1977619713 _ws-311910413 _ww-408434756 _fs-347291933 _fw-289165218 _lh-1925956564 _ls-1782815796 _m-183820880 _c-1756781803 rcx-field__description"
+            id="_r_2d_"
           >
             Enter username or number
           </span>
@@ -787,11 +787,11 @@ exports[`renders NewCall without crashing 1`] = `
               class="rcx-box rcx-box--full rcx-css-1rtu0k9"
             >
               <figure
-                class="rcx-box rcx-box--full rcx-avatar rcx-avatar--x20"
+                class="is_View _d-1985012034 _f-606928779 _va-1124586065 _m-2017216831 _p-1943363302 _b-650654186 _o-1106425799 _ff-409630021 _fvn-1977619713 _w-1686757560 _h-1628964073 rcx-box rcx-box--full rcx-avatar rcx-avatar--x20"
               >
                 <img
                   alt=""
-                  class="rcx-avatar__element rcx-avatar__element--x20"
+                  class="is_View _f-1246374076 _bs-652081535 _mw-354604370 _mh-1241200853 _p-1021290656 _w-1560934055 _h-538303654 _br-761757950 rcx-avatar__element rcx-avatar__element--x20"
                   src="data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAgGBgcGBQgHBwcJCQgKDBQNDAsLDBkSEw8UHRofHh0aHBwgJC4nICIsIxwcKDcpLDAxNDQ0Hyc5PTgyPC4zNDL/2wBDAQkJCQwLDBgNDRgyIRwhMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjL/wAARCAAoACgDASIAAhEBAxEB/8QAGwAAAgIDAQAAAAAAAAAAAAAAAAcEBgIDBQj/xAAuEAACAQQAAwcEAQUAAAAAAAABAgMABAUREiExBhMUIkFRYQcWcYGhFTJSgpH/xAAYAQADAQEAAAAAAAAAAAAAAAACAwQBAP/EAB4RAAIBBQEBAQAAAAAAAAAAAAABAgMREiExE0HR/9oADAMBAAIRAxEAPwBuXuIkhBuMe5ib/AHQP49q4L3mLitryTLTSpOiHQI5k/HzXa/qbFOEudVTu1dumWvcTaNCZYZ7vU6g6LxqjOU/24dfs1Ouh9FnkMpd3Reeyx83hAxZZEhkdV9/MBrX71WGPvJcqrJBGveKATtuXXqNU0pu02bTHXD/AGvJAluyxxRd6F4x00o+NdKoVrjbzJdvVe1t5cVLc2ck8qjnohgpPtz2v7G6JtPQ2VJwjlcw+37mchpnK6GtIuv5NFWeTsLNPvxWTvpfjvOEfwKKzEVkSct2vscS/BIzSN0YRkeX81UpPqO8masJETu7OOccY4dswYFQeftv096XV5knuJGdm2T1+agvMXj8jEaHX905QihabvcbuS7X566mLWLwSY8PuRnk/u4eZ0deTl71Ef6hY+0yM88TzeNZY4luYwpVYyduOfrvhPTnr0pXSX9y5mCsyJMdyxxvwq599em+taItqCSNc90ChvZRUruUcT0JiO18Elpk7t8v41LWzacxkBSuvjQ/FFJayjDWrCTepAQ2vUH0oo/Jk3ovpwJJeVCP5CN+lFFaaMqy+nAyuChvrTI2kN9JAsi2ZOy4IBHMnkSCP+iqBexSWdxLazoUljJVlPUH2oorkV10pRc7b1zXb/hZOzuJvM86QWEXeELxOzHSIPcmiiiunVlF2RNTpRkrs//Z"
                 />
               </figure>
@@ -807,7 +807,7 @@ exports[`renders NewCall without crashing 1`] = `
                 >
                   <svg
                     aria-hidden="true"
-                    class="rcx-status-bullet rcx-status-bullet--online undefined rcx-status-bullet--small"
+                    class="is_View _d-1409515928 _f-1711210172 _br-2015354435 _b-1674632166 _f-1658460128 _w-1912221297 _h-1620376816 rcx-status-bullet rcx-status-bullet--online undefined rcx-status-bullet--small"
                     height="24"
                     viewBox="0 0 24 24"
                     width="24"
@@ -837,12 +837,12 @@ exports[`renders NewCall without crashing 1`] = `
         class="rcx-box rcx-box--full rcx-css-1koqfyi"
       >
         <div
-          class="rcx-button-group rcx-button-group--stretch rcx-button-group--align-start"
+          class="is_View _d-341075704 _f-532517999 _mw-354604370 _mh-1241200853 _g-1051447770 _ai-579901216 _jc-281162209 rcx-button-group rcx-button-group--stretch rcx-button-group--align-start"
           role="group"
         >
           <button
             aria-label="Device_settings_lowercase"
-            class="rcx-box rcx-box--full rcx-button--medium-square rcx-button--icon-secondary rcx-button--square rcx-button--icon rcx-button rcx-css-1wk08i8"
+            class="is_View _f-1069813397 _mh-1241200853 _ta-1906144518 _ws-973912173 _td-211436768 _c-22887652 _os-249893454 _o-1119039191 _to-1727917045 _ff-409630021 _fvn-1977619713 _fs-347291933 _fw-289166179 _ls-1782815796 _p-230374000 _w-1589658138 _mw-327378746 _h-567027737 _d-312446553 _jc-642967080 _ai-1864573722 _lh-2067208245 rcx-button--medium-square rcx-button--icon-secondary rcx-button--square rcx-button--icon rcx-button rcx-css-1wk08i8"
             disabled=""
             label="Device_settings_lowercase"
             title="Device_settings_not_supported_by_browser"
@@ -850,21 +850,21 @@ exports[`renders NewCall without crashing 1`] = `
           >
             <i
               aria-hidden="true"
-              class="rcx-box rcx-box--full rcx-icon--name-customize rcx-icon rcx-css-xb06ut"
+              class="is_Text _d-1409515928 _ws-311910413 _ww-408434756 _us-601212022 _va-1101652081 _ls-1720078126 _ff-1916555734 _fs-1279428672 _fw-289165218 _fs-477064150 _fv-1578983722 _lh-2067209205 _tr-1510281189 rcx-icon--name-customize rcx-icon rcx-css-xb06ut"
             >
               
             </i>
           </button>
           <button
-            class="rcx-box rcx-box--full rcx-button--medium rcx-button--success rcx-button rcx-css-t3n91h"
+            class="is_View _d-1409515928 _f-1069814357 _mh-1241200853 _ta-1906144518 _ws-973912173 _td-211436768 _c-22887652 _os-249893454 _o-1119039191 _to-1727917045 _ff-409630021 _fvn-1977619713 _p-977728176 _fs-281033604 _fw-290091622 _lh-1335373134 _ls-1811444947 _mw-1006044400 _h-567027737 rcx-button--medium rcx-button--success rcx-button rcx-css-t3n91h"
             type="button"
           >
             <span
-              class="rcx-button--content"
+              class="is_Text _d-1409515928 _w-1560934055 _va-615128551 _o-1119039191 _to-1727917045 _ws-973912173 _ww-408434756 rcx-button--content"
             >
               <i
                 aria-hidden="true"
-                class="rcx-box rcx-box--full rcx-icon--name-phone rcx-icon rcx-css-1hdf9ok"
+                class="is_Text _d-1409515928 _ws-311910413 _ww-408434756 _us-601212022 _va-1101652081 _ls-1720078126 _ff-1916555734 _fs-1279428672 _fw-289165218 _fs-477064150 _fv-1578983722 _lh-2067209205 _tr-1510281189 rcx-icon--name-phone rcx-icon rcx-css-1hdf9ok"
               >
                 
               </i>
@@ -900,7 +900,7 @@ exports[`renders OngoingCall without crashing 1`] = `
       >
         <i
           aria-hidden="true"
-          class="rcx-box rcx-box--full rcx-icon--name-stacked-meatballs rcx-icon rcx-css-4pvxx3"
+          class="is_Text _d-1409515928 _ws-311910413 _ww-408434756 _us-601212022 _va-1101652081 _ls-1720078126 _ff-1916555734 _fs-1279428672 _fw-289165218 _fs-477064150 _fv-1578983722 _lh-2067209205 _tr-1510281189 rcx-icon--name-stacked-meatballs rcx-icon rcx-css-4pvxx3"
         >
           
         </i>
@@ -934,21 +934,21 @@ exports[`renders OngoingCall without crashing 1`] = `
         >
           <button
             aria-label="Open_in_new_window"
-            class="rcx-box rcx-box--full rcx-button--tiny-square rcx-button--square rcx-button--icon rcx-button"
+            class="is_View _f-1069813397 _mh-1241200853 _ta-1906144518 _ws-973912173 _td-211436768 _c-22887652 _os-249893454 _o-1119039191 _to-1727917045 _ff-409630021 _fvn-1977619713 _fs-347291933 _fw-289166179 _ls-1782815796 _p-230374000 _w-1439737260 _mw-1171212800 _h-640041837 _d-312446553 _jc-642967080 _ai-1864573722 _lh-2067208245 rcx-button--tiny-square rcx-button--square rcx-button--icon rcx-button"
             label="Open_in_new_window"
             title="Open_in_new_window"
             type="button"
           >
             <i
               aria-hidden="true"
-              class="rcx-box rcx-box--full rcx-icon--name-arrow-to-square-box rcx-icon rcx-css-xb06ut"
+              class="is_Text _d-1409515928 _ws-311910413 _ww-408434756 _us-601212022 _va-1101652081 _ls-1720078126 _ff-1916555734 _fs-1279428672 _fw-289165218 _fs-477064150 _fv-1578983722 _lh-2067209205 _tr-1510281189 rcx-icon--name-arrow-to-square-box rcx-icon rcx-css-xb06ut"
             >
               
             </i>
           </button>
           <button
             aria-label="Device_settings_lowercase"
-            class="rcx-box rcx-box--full rcx-button--tiny-square rcx-button--square rcx-button--icon rcx-button rcx-css-1wk08i8"
+            class="is_View _f-1069813397 _mh-1241200853 _ta-1906144518 _ws-973912173 _td-211436768 _c-22887652 _os-249893454 _o-1119039191 _to-1727917045 _ff-409630021 _fvn-1977619713 _fs-347291933 _fw-289166179 _ls-1782815796 _p-230374000 _w-1439737260 _mw-1171212800 _h-640041837 _d-312446553 _jc-642967080 _ai-1864573722 _lh-2067208245 rcx-button--tiny-square rcx-button--square rcx-button--icon rcx-button rcx-css-1wk08i8"
             disabled=""
             label="Device_settings_lowercase"
             title="Device_settings_not_supported_by_browser"
@@ -956,7 +956,7 @@ exports[`renders OngoingCall without crashing 1`] = `
           >
             <i
               aria-hidden="true"
-              class="rcx-box rcx-box--full rcx-icon--name-customize rcx-icon rcx-css-xb06ut"
+              class="is_Text _d-1409515928 _ws-311910413 _ww-408434756 _us-601212022 _va-1101652081 _ls-1720078126 _ff-1916555734 _fs-1279428672 _fw-289165218 _fs-477064150 _fv-1578983722 _lh-2067209205 _tr-1510281189 rcx-icon--name-customize rcx-icon rcx-css-xb06ut"
             >
               
             </i>
@@ -977,11 +977,11 @@ exports[`renders OngoingCall without crashing 1`] = `
               class="rcx-box rcx-box--full rcx-css-1rtu0k9"
             >
               <figure
-                class="rcx-box rcx-box--full rcx-avatar rcx-avatar--x20"
+                class="is_View _d-1985012034 _f-606928779 _va-1124586065 _m-2017216831 _p-1943363302 _b-650654186 _o-1106425799 _ff-409630021 _fvn-1977619713 _w-1686757560 _h-1628964073 rcx-box rcx-box--full rcx-avatar rcx-avatar--x20"
               >
                 <img
                   alt=""
-                  class="rcx-avatar__element rcx-avatar__element--x20"
+                  class="is_View _f-1246374076 _bs-652081535 _mw-354604370 _mh-1241200853 _p-1021290656 _w-1560934055 _h-538303654 _br-761757950 rcx-avatar__element rcx-avatar__element--x20"
                   src="data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAgGBgcGBQgHBwcJCQgKDBQNDAsLDBkSEw8UHRofHh0aHBwgJC4nICIsIxwcKDcpLDAxNDQ0Hyc5PTgyPC4zNDL/2wBDAQkJCQwLDBgNDRgyIRwhMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjL/wAARCAAoACgDASIAAhEBAxEB/8QAGwAAAgIDAQAAAAAAAAAAAAAAAAcEBgIDBQj/xAAuEAACAQQAAwcEAQUAAAAAAAABAgMABAUREiExBhMUIkFRYQcWcYGhFTJSgpH/xAAYAQADAQEAAAAAAAAAAAAAAAACAwQBAP/EAB4RAAIBBQEBAQAAAAAAAAAAAAABAgMREiExE0HR/9oADAMBAAIRAxEAPwBuXuIkhBuMe5ib/AHQP49q4L3mLitryTLTSpOiHQI5k/HzXa/qbFOEudVTu1dumWvcTaNCZYZ7vU6g6LxqjOU/24dfs1Ouh9FnkMpd3Reeyx83hAxZZEhkdV9/MBrX71WGPvJcqrJBGveKATtuXXqNU0pu02bTHXD/AGvJAluyxxRd6F4x00o+NdKoVrjbzJdvVe1t5cVLc2ck8qjnohgpPtz2v7G6JtPQ2VJwjlcw+37mchpnK6GtIuv5NFWeTsLNPvxWTvpfjvOEfwKKzEVkSct2vscS/BIzSN0YRkeX81UpPqO8masJETu7OOccY4dswYFQeftv096XV5knuJGdm2T1+agvMXj8jEaHX905QihabvcbuS7X566mLWLwSY8PuRnk/u4eZ0deTl71Ef6hY+0yM88TzeNZY4luYwpVYyduOfrvhPTnr0pXSX9y5mCsyJMdyxxvwq599em+taItqCSNc90ChvZRUruUcT0JiO18Elpk7t8v41LWzacxkBSuvjQ/FFJayjDWrCTepAQ2vUH0oo/Jk3ovpwJJeVCP5CN+lFFaaMqy+nAyuChvrTI2kN9JAsi2ZOy4IBHMnkSCP+iqBexSWdxLazoUljJVlPUH2oorkV10pRc7b1zXb/hZOzuJvM86QWEXeELxOzHSIPcmiiiunVlF2RNTpRkrs//Z"
                 />
               </figure>
@@ -997,7 +997,7 @@ exports[`renders OngoingCall without crashing 1`] = `
                 >
                   <svg
                     aria-hidden="true"
-                    class="rcx-status-bullet rcx-status-bullet--online undefined rcx-status-bullet--small"
+                    class="is_View _d-1409515928 _f-1711210172 _br-2015354435 _b-1674632166 _f-1658460128 _w-1912221297 _h-1620376816 rcx-status-bullet rcx-status-bullet--online undefined rcx-status-bullet--small"
                     height="24"
                     viewBox="0 0 24 24"
                     width="24"
@@ -1027,75 +1027,75 @@ exports[`renders OngoingCall without crashing 1`] = `
         class="rcx-box rcx-box--full rcx-css-1koqfyi"
       >
         <div
-          class="rcx-button-group rcx-button-group--align-center rcx-button-group--large"
+          class="is_View _d-341075704 _f-1923654442 _mw-354604370 _mh-1241200853 _ai-121763387 _g-738245387 _jc-642967080 rcx-button-group rcx-button-group--align-center rcx-button-group--large"
           role="group"
         >
           <button
             aria-label="Mute"
-            class="rcx-box rcx-box--full rcx-button--medium-square rcx-button--icon-secondary rcx-button--square rcx-button--icon rcx-button"
+            class="is_View _f-1069813397 _mh-1241200853 _ta-1906144518 _ws-973912173 _td-211436768 _c-22887652 _os-249893454 _o-1119039191 _to-1727917045 _ff-409630021 _fvn-1977619713 _fs-347291933 _fw-289166179 _ls-1782815796 _p-230374000 _w-1589658138 _mw-327378746 _h-567027737 _d-312446553 _jc-642967080 _ai-1864573722 _lh-2067208245 rcx-button--medium-square rcx-button--icon-secondary rcx-button--square rcx-button--icon rcx-button"
             label="Mute"
             title="Mute"
             type="button"
           >
             <i
               aria-hidden="true"
-              class="rcx-box rcx-box--full rcx-icon--name-mic rcx-icon rcx-css-xb06ut"
+              class="is_Text _d-1409515928 _ws-311910413 _ww-408434756 _us-601212022 _va-1101652081 _ls-1720078126 _ff-1916555734 _fs-1279428672 _fw-289165218 _fs-477064150 _fv-1578983722 _lh-2067209205 _tr-1510281189 rcx-icon--name-mic rcx-icon rcx-css-xb06ut"
             >
               
             </i>
           </button>
           <button
             aria-label="Hold"
-            class="rcx-box rcx-box--full rcx-button--medium-square rcx-button--icon-secondary rcx-button--square rcx-button--icon rcx-button"
+            class="is_View _f-1069813397 _mh-1241200853 _ta-1906144518 _ws-973912173 _td-211436768 _c-22887652 _os-249893454 _o-1119039191 _to-1727917045 _ff-409630021 _fvn-1977619713 _fs-347291933 _fw-289166179 _ls-1782815796 _p-230374000 _w-1589658138 _mw-327378746 _h-567027737 _d-312446553 _jc-642967080 _ai-1864573722 _lh-2067208245 rcx-button--medium-square rcx-button--icon-secondary rcx-button--square rcx-button--icon rcx-button"
             label="Hold"
             title="Hold"
             type="button"
           >
             <i
               aria-hidden="true"
-              class="rcx-box rcx-box--full rcx-icon--name-pause-shape-unfilled rcx-icon rcx-css-xb06ut"
+              class="is_Text _d-1409515928 _ws-311910413 _ww-408434756 _us-601212022 _va-1101652081 _ls-1720078126 _ff-1916555734 _fs-1279428672 _fw-289165218 _fs-477064150 _fv-1578983722 _lh-2067209205 _tr-1510281189 rcx-icon--name-pause-shape-unfilled rcx-icon rcx-css-xb06ut"
             >
               
             </i>
           </button>
           <button
             aria-label="Share_screen"
-            class="rcx-box rcx-box--full rcx-button--medium-square rcx-button--icon-secondary rcx-button--square rcx-button--icon rcx-button"
+            class="is_View _f-1069813397 _mh-1241200853 _ta-1906144518 _ws-973912173 _td-211436768 _c-22887652 _os-249893454 _o-1119039191 _to-1727917045 _ff-409630021 _fvn-1977619713 _fs-347291933 _fw-289166179 _ls-1782815796 _p-230374000 _w-1589658138 _mw-327378746 _h-567027737 _d-312446553 _jc-642967080 _ai-1864573722 _lh-2067208245 rcx-button--medium-square rcx-button--icon-secondary rcx-button--square rcx-button--icon rcx-button"
             label="Share_screen"
             title="Share_screen"
             type="button"
           >
             <i
               aria-hidden="true"
-              class="rcx-box rcx-box--full rcx-icon--name-desktop-arrow-up rcx-icon rcx-css-xb06ut"
+              class="is_Text _d-1409515928 _ws-311910413 _ww-408434756 _us-601212022 _va-1101652081 _ls-1720078126 _ff-1916555734 _fs-1279428672 _fw-289165218 _fs-477064150 _fv-1578983722 _lh-2067209205 _tr-1510281189 rcx-icon--name-desktop-arrow-up rcx-icon rcx-css-xb06ut"
             >
               
             </i>
           </button>
           <button
             aria-label="Forward"
-            class="rcx-box rcx-box--full rcx-button--medium-square rcx-button--icon-secondary rcx-button--square rcx-button--icon rcx-button"
+            class="is_View _f-1069813397 _mh-1241200853 _ta-1906144518 _ws-973912173 _td-211436768 _c-22887652 _os-249893454 _o-1119039191 _to-1727917045 _ff-409630021 _fvn-1977619713 _fs-347291933 _fw-289166179 _ls-1782815796 _p-230374000 _w-1589658138 _mw-327378746 _h-567027737 _d-312446553 _jc-642967080 _ai-1864573722 _lh-2067208245 rcx-button--medium-square rcx-button--icon-secondary rcx-button--square rcx-button--icon rcx-button"
             label="Forward"
             title="Forward"
             type="button"
           >
             <i
               aria-hidden="true"
-              class="rcx-box rcx-box--full rcx-icon--name-arrow-forward rcx-icon rcx-css-xb06ut"
+              class="is_Text _d-1409515928 _ws-311910413 _ww-408434756 _us-601212022 _va-1101652081 _ls-1720078126 _ff-1916555734 _fs-1279428672 _fw-289165218 _fs-477064150 _fv-1578983722 _lh-2067209205 _tr-1510281189 rcx-icon--name-arrow-forward rcx-icon rcx-css-xb06ut"
             >
               
             </i>
           </button>
           <button
             aria-label="Voice_call__user__hangup"
-            class="rcx-box rcx-box--full rcx-button--medium-square rcx-button--icon-secondary-danger rcx-button--square rcx-button--icon rcx-button"
+            class="is_View _f-1069813397 _mh-1241200853 _ta-1906144518 _ws-973912173 _td-211436768 _c-22887652 _os-249893454 _o-1119039191 _to-1727917045 _ff-409630021 _fvn-1977619713 _fs-347291933 _fw-289166179 _ls-1782815796 _p-230374000 _w-1589658138 _mw-327378746 _h-567027737 _d-312446553 _jc-642967080 _ai-1864573722 _lh-2067208245 rcx-button--medium-square rcx-button--icon-secondary-danger rcx-button--square rcx-button--icon rcx-button"
             label="Voice_call__user__hangup"
             title="Voice_call__user__hangup"
             type="button"
           >
             <i
               aria-hidden="true"
-              class="rcx-box rcx-box--full rcx-icon--name-phone-off rcx-icon rcx-css-xb06ut"
+              class="is_Text _d-1409515928 _ws-311910413 _ww-408434756 _us-601212022 _va-1101652081 _ls-1720078126 _ff-1916555734 _fs-1279428672 _fw-289165218 _fs-477064150 _fv-1578983722 _lh-2067209205 _tr-1510281189 rcx-icon--name-phone-off rcx-icon rcx-css-xb06ut"
             >
               
             </i>
@@ -1129,7 +1129,7 @@ exports[`renders OngoingCallConnecting without crashing 1`] = `
       >
         <i
           aria-hidden="true"
-          class="rcx-box rcx-box--full rcx-icon--name-stacked-meatballs rcx-icon rcx-css-4pvxx3"
+          class="is_Text _d-1409515928 _ws-311910413 _ww-408434756 _us-601212022 _va-1101652081 _ls-1720078126 _ff-1916555734 _fs-1279428672 _fw-289165218 _fs-477064150 _fv-1578983722 _lh-2067209205 _tr-1510281189 rcx-icon--name-stacked-meatballs rcx-icon rcx-css-4pvxx3"
         >
           
         </i>
@@ -1154,21 +1154,21 @@ exports[`renders OngoingCallConnecting without crashing 1`] = `
         >
           <button
             aria-label="Open_in_new_window"
-            class="rcx-box rcx-box--full rcx-button--tiny-square rcx-button--square rcx-button--icon rcx-button"
+            class="is_View _f-1069813397 _mh-1241200853 _ta-1906144518 _ws-973912173 _td-211436768 _c-22887652 _os-249893454 _o-1119039191 _to-1727917045 _ff-409630021 _fvn-1977619713 _fs-347291933 _fw-289166179 _ls-1782815796 _p-230374000 _w-1439737260 _mw-1171212800 _h-640041837 _d-312446553 _jc-642967080 _ai-1864573722 _lh-2067208245 rcx-button--tiny-square rcx-button--square rcx-button--icon rcx-button"
             label="Open_in_new_window"
             title="Open_in_new_window"
             type="button"
           >
             <i
               aria-hidden="true"
-              class="rcx-box rcx-box--full rcx-icon--name-arrow-to-square-box rcx-icon rcx-css-xb06ut"
+              class="is_Text _d-1409515928 _ws-311910413 _ww-408434756 _us-601212022 _va-1101652081 _ls-1720078126 _ff-1916555734 _fs-1279428672 _fw-289165218 _fs-477064150 _fv-1578983722 _lh-2067209205 _tr-1510281189 rcx-icon--name-arrow-to-square-box rcx-icon rcx-css-xb06ut"
             >
               
             </i>
           </button>
           <button
             aria-label="Device_settings_lowercase"
-            class="rcx-box rcx-box--full rcx-button--tiny-square rcx-button--square rcx-button--icon rcx-button rcx-css-1wk08i8"
+            class="is_View _f-1069813397 _mh-1241200853 _ta-1906144518 _ws-973912173 _td-211436768 _c-22887652 _os-249893454 _o-1119039191 _to-1727917045 _ff-409630021 _fvn-1977619713 _fs-347291933 _fw-289166179 _ls-1782815796 _p-230374000 _w-1439737260 _mw-1171212800 _h-640041837 _d-312446553 _jc-642967080 _ai-1864573722 _lh-2067208245 rcx-button--tiny-square rcx-button--square rcx-button--icon rcx-button rcx-css-1wk08i8"
             disabled=""
             label="Device_settings_lowercase"
             title="Device_settings_not_supported_by_browser"
@@ -1176,7 +1176,7 @@ exports[`renders OngoingCallConnecting without crashing 1`] = `
           >
             <i
               aria-hidden="true"
-              class="rcx-box rcx-box--full rcx-icon--name-customize rcx-icon rcx-css-xb06ut"
+              class="is_Text _d-1409515928 _ws-311910413 _ww-408434756 _us-601212022 _va-1101652081 _ls-1720078126 _ff-1916555734 _fs-1279428672 _fw-289165218 _fs-477064150 _fv-1578983722 _lh-2067209205 _tr-1510281189 rcx-icon--name-customize rcx-icon rcx-css-xb06ut"
             >
               
             </i>
@@ -1197,11 +1197,11 @@ exports[`renders OngoingCallConnecting without crashing 1`] = `
               class="rcx-box rcx-box--full rcx-css-1rtu0k9"
             >
               <figure
-                class="rcx-box rcx-box--full rcx-avatar rcx-avatar--x20"
+                class="is_View _d-1985012034 _f-606928779 _va-1124586065 _m-2017216831 _p-1943363302 _b-650654186 _o-1106425799 _ff-409630021 _fvn-1977619713 _w-1686757560 _h-1628964073 rcx-box rcx-box--full rcx-avatar rcx-avatar--x20"
               >
                 <img
                   alt=""
-                  class="rcx-avatar__element rcx-avatar__element--x20"
+                  class="is_View _f-1246374076 _bs-652081535 _mw-354604370 _mh-1241200853 _p-1021290656 _w-1560934055 _h-538303654 _br-761757950 rcx-avatar__element rcx-avatar__element--x20"
                   src="data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAgGBgcGBQgHBwcJCQgKDBQNDAsLDBkSEw8UHRofHh0aHBwgJC4nICIsIxwcKDcpLDAxNDQ0Hyc5PTgyPC4zNDL/2wBDAQkJCQwLDBgNDRgyIRwhMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjL/wAARCAAoACgDASIAAhEBAxEB/8QAGwAAAgIDAQAAAAAAAAAAAAAAAAcEBgIDBQj/xAAuEAACAQQAAwcEAQUAAAAAAAABAgMABAUREiExBhMUIkFRYQcWcYGhFTJSgpH/xAAYAQADAQEAAAAAAAAAAAAAAAACAwQBAP/EAB4RAAIBBQEBAQAAAAAAAAAAAAABAgMREiExE0HR/9oADAMBAAIRAxEAPwBuXuIkhBuMe5ib/AHQP49q4L3mLitryTLTSpOiHQI5k/HzXa/qbFOEudVTu1dumWvcTaNCZYZ7vU6g6LxqjOU/24dfs1Ouh9FnkMpd3Reeyx83hAxZZEhkdV9/MBrX71WGPvJcqrJBGveKATtuXXqNU0pu02bTHXD/AGvJAluyxxRd6F4x00o+NdKoVrjbzJdvVe1t5cVLc2ck8qjnohgpPtz2v7G6JtPQ2VJwjlcw+37mchpnK6GtIuv5NFWeTsLNPvxWTvpfjvOEfwKKzEVkSct2vscS/BIzSN0YRkeX81UpPqO8masJETu7OOccY4dswYFQeftv096XV5knuJGdm2T1+agvMXj8jEaHX905QihabvcbuS7X566mLWLwSY8PuRnk/u4eZ0deTl71Ef6hY+0yM88TzeNZY4luYwpVYyduOfrvhPTnr0pXSX9y5mCsyJMdyxxvwq599em+taItqCSNc90ChvZRUruUcT0JiO18Elpk7t8v41LWzacxkBSuvjQ/FFJayjDWrCTepAQ2vUH0oo/Jk3ovpwJJeVCP5CN+lFFaaMqy+nAyuChvrTI2kN9JAsi2ZOy4IBHMnkSCP+iqBexSWdxLazoUljJVlPUH2oorkV10pRc7b1zXb/hZOzuJvM86QWEXeELxOzHSIPcmiiiunVlF2RNTpRkrs//Z"
                 />
               </figure>
@@ -1217,7 +1217,7 @@ exports[`renders OngoingCallConnecting without crashing 1`] = `
                 >
                   <svg
                     aria-hidden="true"
-                    class="rcx-status-bullet rcx-status-bullet--online undefined rcx-status-bullet--small"
+                    class="is_View _d-1409515928 _f-1711210172 _br-2015354435 _b-1674632166 _f-1658460128 _w-1912221297 _h-1620376816 rcx-status-bullet rcx-status-bullet--online undefined rcx-status-bullet--small"
                     height="24"
                     viewBox="0 0 24 24"
                     width="24"
@@ -1247,54 +1247,54 @@ exports[`renders OngoingCallConnecting without crashing 1`] = `
         class="rcx-box rcx-box--full rcx-css-1koqfyi"
       >
         <div
-          class="rcx-button-group rcx-button-group--align-center rcx-button-group--large"
+          class="is_View _d-341075704 _f-1923654442 _mw-354604370 _mh-1241200853 _ai-121763387 _g-738245387 _jc-642967080 rcx-button-group rcx-button-group--align-center rcx-button-group--large"
           role="group"
         >
           <button
             aria-label="Mute"
-            class="rcx-box rcx-box--full rcx-button--medium-square rcx-button--icon-secondary rcx-button--square rcx-button--icon rcx-button"
+            class="is_View _f-1069813397 _mh-1241200853 _ta-1906144518 _ws-973912173 _td-211436768 _c-22887652 _os-249893454 _o-1119039191 _to-1727917045 _ff-409630021 _fvn-1977619713 _fs-347291933 _fw-289166179 _ls-1782815796 _p-230374000 _w-1589658138 _mw-327378746 _h-567027737 _d-312446553 _jc-642967080 _ai-1864573722 _lh-2067208245 rcx-button--medium-square rcx-button--icon-secondary rcx-button--square rcx-button--icon rcx-button"
             label="Mute"
             title="Mute"
             type="button"
           >
             <i
               aria-hidden="true"
-              class="rcx-box rcx-box--full rcx-icon--name-mic rcx-icon rcx-css-xb06ut"
+              class="is_Text _d-1409515928 _ws-311910413 _ww-408434756 _us-601212022 _va-1101652081 _ls-1720078126 _ff-1916555734 _fs-1279428672 _fw-289165218 _fs-477064150 _fv-1578983722 _lh-2067209205 _tr-1510281189 rcx-icon--name-mic rcx-icon rcx-css-xb06ut"
             >
               
             </i>
           </button>
           <button
             aria-label="Hold"
-            class="rcx-box rcx-box--full rcx-button--medium-square rcx-button--icon-secondary rcx-button--square rcx-button--icon rcx-button"
+            class="is_View _f-1069813397 _mh-1241200853 _ta-1906144518 _ws-973912173 _td-211436768 _c-22887652 _os-249893454 _o-1119039191 _to-1727917045 _ff-409630021 _fvn-1977619713 _fs-347291933 _fw-289166179 _ls-1782815796 _p-230374000 _w-1589658138 _mw-327378746 _h-567027737 _d-312446553 _jc-642967080 _ai-1864573722 _lh-2067208245 rcx-button--medium-square rcx-button--icon-secondary rcx-button--square rcx-button--icon rcx-button"
             label="Hold"
             title="Hold"
             type="button"
           >
             <i
               aria-hidden="true"
-              class="rcx-box rcx-box--full rcx-icon--name-pause-shape-unfilled rcx-icon rcx-css-xb06ut"
+              class="is_Text _d-1409515928 _ws-311910413 _ww-408434756 _us-601212022 _va-1101652081 _ls-1720078126 _ff-1916555734 _fs-1279428672 _fw-289165218 _fs-477064150 _fv-1578983722 _lh-2067209205 _tr-1510281189 rcx-icon--name-pause-shape-unfilled rcx-icon rcx-css-xb06ut"
             >
               
             </i>
           </button>
           <button
             aria-label="Share_screen"
-            class="rcx-box rcx-box--full rcx-button--medium-square rcx-button--icon-secondary rcx-button--square rcx-button--icon rcx-button"
+            class="is_View _f-1069813397 _mh-1241200853 _ta-1906144518 _ws-973912173 _td-211436768 _c-22887652 _os-249893454 _o-1119039191 _to-1727917045 _ff-409630021 _fvn-1977619713 _fs-347291933 _fw-289166179 _ls-1782815796 _p-230374000 _w-1589658138 _mw-327378746 _h-567027737 _d-312446553 _jc-642967080 _ai-1864573722 _lh-2067208245 rcx-button--medium-square rcx-button--icon-secondary rcx-button--square rcx-button--icon rcx-button"
             label="Share_screen"
             title="Share_screen"
             type="button"
           >
             <i
               aria-hidden="true"
-              class="rcx-box rcx-box--full rcx-icon--name-desktop-arrow-up rcx-icon rcx-css-xb06ut"
+              class="is_Text _d-1409515928 _ws-311910413 _ww-408434756 _us-601212022 _va-1101652081 _ls-1720078126 _ff-1916555734 _fs-1279428672 _fw-289165218 _fs-477064150 _fv-1578983722 _lh-2067209205 _tr-1510281189 rcx-icon--name-desktop-arrow-up rcx-icon rcx-css-xb06ut"
             >
               
             </i>
           </button>
           <button
             aria-label="Forward"
-            class="rcx-box rcx-box--full rcx-button--medium-square rcx-button--icon-secondary rcx-button--square rcx-button--icon rcx-button"
+            class="is_View _f-1069813397 _mh-1241200853 _ta-1906144518 _ws-973912173 _td-211436768 _c-22887652 _os-249893454 _o-1119039191 _to-1727917045 _ff-409630021 _fvn-1977619713 _fs-347291933 _fw-289166179 _ls-1782815796 _p-230374000 _w-1589658138 _mw-327378746 _h-567027737 _d-312446553 _jc-642967080 _ai-1864573722 _lh-2067208245 rcx-button--medium-square rcx-button--icon-secondary rcx-button--square rcx-button--icon rcx-button"
             disabled=""
             label="Forward"
             title="Forward"
@@ -1302,21 +1302,21 @@ exports[`renders OngoingCallConnecting without crashing 1`] = `
           >
             <i
               aria-hidden="true"
-              class="rcx-box rcx-box--full rcx-icon--name-arrow-forward rcx-icon rcx-css-xb06ut"
+              class="is_Text _d-1409515928 _ws-311910413 _ww-408434756 _us-601212022 _va-1101652081 _ls-1720078126 _ff-1916555734 _fs-1279428672 _fw-289165218 _fs-477064150 _fv-1578983722 _lh-2067209205 _tr-1510281189 rcx-icon--name-arrow-forward rcx-icon rcx-css-xb06ut"
             >
               
             </i>
           </button>
           <button
             aria-label="Voice_call__user__hangup"
-            class="rcx-box rcx-box--full rcx-button--medium-square rcx-button--icon-secondary-danger rcx-button--square rcx-button--icon rcx-button"
+            class="is_View _f-1069813397 _mh-1241200853 _ta-1906144518 _ws-973912173 _td-211436768 _c-22887652 _os-249893454 _o-1119039191 _to-1727917045 _ff-409630021 _fvn-1977619713 _fs-347291933 _fw-289166179 _ls-1782815796 _p-230374000 _w-1589658138 _mw-327378746 _h-567027737 _d-312446553 _jc-642967080 _ai-1864573722 _lh-2067208245 rcx-button--medium-square rcx-button--icon-secondary-danger rcx-button--square rcx-button--icon rcx-button"
             label="Voice_call__user__hangup"
             title="Voice_call__user__hangup"
             type="button"
           >
             <i
               aria-hidden="true"
-              class="rcx-box rcx-box--full rcx-icon--name-phone-off rcx-icon rcx-css-xb06ut"
+              class="is_Text _d-1409515928 _ws-311910413 _ww-408434756 _us-601212022 _va-1101652081 _ls-1720078126 _ff-1916555734 _fs-1279428672 _fw-289165218 _fs-477064150 _fv-1578983722 _lh-2067209205 _tr-1510281189 rcx-icon--name-phone-off rcx-icon rcx-css-xb06ut"
             >
               
             </i>
@@ -1350,7 +1350,7 @@ exports[`renders OngoingCallDisabledAllButScreenshare without crashing 1`] = `
       >
         <i
           aria-hidden="true"
-          class="rcx-box rcx-box--full rcx-icon--name-stacked-meatballs rcx-icon rcx-css-4pvxx3"
+          class="is_Text _d-1409515928 _ws-311910413 _ww-408434756 _us-601212022 _va-1101652081 _ls-1720078126 _ff-1916555734 _fs-1279428672 _fw-289165218 _fs-477064150 _fv-1578983722 _lh-2067209205 _tr-1510281189 rcx-icon--name-stacked-meatballs rcx-icon rcx-css-4pvxx3"
         >
           
         </i>
@@ -1384,21 +1384,21 @@ exports[`renders OngoingCallDisabledAllButScreenshare without crashing 1`] = `
         >
           <button
             aria-label="Open_in_new_window"
-            class="rcx-box rcx-box--full rcx-button--tiny-square rcx-button--square rcx-button--icon rcx-button"
+            class="is_View _f-1069813397 _mh-1241200853 _ta-1906144518 _ws-973912173 _td-211436768 _c-22887652 _os-249893454 _o-1119039191 _to-1727917045 _ff-409630021 _fvn-1977619713 _fs-347291933 _fw-289166179 _ls-1782815796 _p-230374000 _w-1439737260 _mw-1171212800 _h-640041837 _d-312446553 _jc-642967080 _ai-1864573722 _lh-2067208245 rcx-button--tiny-square rcx-button--square rcx-button--icon rcx-button"
             label="Open_in_new_window"
             title="Open_in_new_window"
             type="button"
           >
             <i
               aria-hidden="true"
-              class="rcx-box rcx-box--full rcx-icon--name-arrow-to-square-box rcx-icon rcx-css-xb06ut"
+              class="is_Text _d-1409515928 _ws-311910413 _ww-408434756 _us-601212022 _va-1101652081 _ls-1720078126 _ff-1916555734 _fs-1279428672 _fw-289165218 _fs-477064150 _fv-1578983722 _lh-2067209205 _tr-1510281189 rcx-icon--name-arrow-to-square-box rcx-icon rcx-css-xb06ut"
             >
               
             </i>
           </button>
           <button
             aria-label="Device_settings_lowercase"
-            class="rcx-box rcx-box--full rcx-button--tiny-square rcx-button--square rcx-button--icon rcx-button rcx-css-1wk08i8"
+            class="is_View _f-1069813397 _mh-1241200853 _ta-1906144518 _ws-973912173 _td-211436768 _c-22887652 _os-249893454 _o-1119039191 _to-1727917045 _ff-409630021 _fvn-1977619713 _fs-347291933 _fw-289166179 _ls-1782815796 _p-230374000 _w-1439737260 _mw-1171212800 _h-640041837 _d-312446553 _jc-642967080 _ai-1864573722 _lh-2067208245 rcx-button--tiny-square rcx-button--square rcx-button--icon rcx-button rcx-css-1wk08i8"
             disabled=""
             label="Device_settings_lowercase"
             title="Device_settings_not_supported_by_browser"
@@ -1406,7 +1406,7 @@ exports[`renders OngoingCallDisabledAllButScreenshare without crashing 1`] = `
           >
             <i
               aria-hidden="true"
-              class="rcx-box rcx-box--full rcx-icon--name-customize rcx-icon rcx-css-xb06ut"
+              class="is_Text _d-1409515928 _ws-311910413 _ww-408434756 _us-601212022 _va-1101652081 _ls-1720078126 _ff-1916555734 _fs-1279428672 _fw-289165218 _fs-477064150 _fv-1578983722 _lh-2067209205 _tr-1510281189 rcx-icon--name-customize rcx-icon rcx-css-xb06ut"
             >
               
             </i>
@@ -1427,11 +1427,11 @@ exports[`renders OngoingCallDisabledAllButScreenshare without crashing 1`] = `
               class="rcx-box rcx-box--full rcx-css-1rtu0k9"
             >
               <figure
-                class="rcx-box rcx-box--full rcx-avatar rcx-avatar--x20"
+                class="is_View _d-1985012034 _f-606928779 _va-1124586065 _m-2017216831 _p-1943363302 _b-650654186 _o-1106425799 _ff-409630021 _fvn-1977619713 _w-1686757560 _h-1628964073 rcx-box rcx-box--full rcx-avatar rcx-avatar--x20"
               >
                 <img
                   alt=""
-                  class="rcx-avatar__element rcx-avatar__element--x20"
+                  class="is_View _f-1246374076 _bs-652081535 _mw-354604370 _mh-1241200853 _p-1021290656 _w-1560934055 _h-538303654 _br-761757950 rcx-avatar__element rcx-avatar__element--x20"
                   src="data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAgGBgcGBQgHBwcJCQgKDBQNDAsLDBkSEw8UHRofHh0aHBwgJC4nICIsIxwcKDcpLDAxNDQ0Hyc5PTgyPC4zNDL/2wBDAQkJCQwLDBgNDRgyIRwhMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjL/wAARCAAoACgDASIAAhEBAxEB/8QAGwAAAgIDAQAAAAAAAAAAAAAAAAcEBgIDBQj/xAAuEAACAQQAAwcEAQUAAAAAAAABAgMABAUREiExBhMUIkFRYQcWcYGhFTJSgpH/xAAYAQADAQEAAAAAAAAAAAAAAAACAwQBAP/EAB4RAAIBBQEBAQAAAAAAAAAAAAABAgMREiExE0HR/9oADAMBAAIRAxEAPwBuXuIkhBuMe5ib/AHQP49q4L3mLitryTLTSpOiHQI5k/HzXa/qbFOEudVTu1dumWvcTaNCZYZ7vU6g6LxqjOU/24dfs1Ouh9FnkMpd3Reeyx83hAxZZEhkdV9/MBrX71WGPvJcqrJBGveKATtuXXqNU0pu02bTHXD/AGvJAluyxxRd6F4x00o+NdKoVrjbzJdvVe1t5cVLc2ck8qjnohgpPtz2v7G6JtPQ2VJwjlcw+37mchpnK6GtIuv5NFWeTsLNPvxWTvpfjvOEfwKKzEVkSct2vscS/BIzSN0YRkeX81UpPqO8masJETu7OOccY4dswYFQeftv096XV5knuJGdm2T1+agvMXj8jEaHX905QihabvcbuS7X566mLWLwSY8PuRnk/u4eZ0deTl71Ef6hY+0yM88TzeNZY4luYwpVYyduOfrvhPTnr0pXSX9y5mCsyJMdyxxvwq599em+taItqCSNc90ChvZRUruUcT0JiO18Elpk7t8v41LWzacxkBSuvjQ/FFJayjDWrCTepAQ2vUH0oo/Jk3ovpwJJeVCP5CN+lFFaaMqy+nAyuChvrTI2kN9JAsi2ZOy4IBHMnkSCP+iqBexSWdxLazoUljJVlPUH2oorkV10pRc7b1zXb/hZOzuJvM86QWEXeELxOzHSIPcmiiiunVlF2RNTpRkrs//Z"
                 />
               </figure>
@@ -1447,7 +1447,7 @@ exports[`renders OngoingCallDisabledAllButScreenshare without crashing 1`] = `
                 >
                   <svg
                     aria-hidden="true"
-                    class="rcx-status-bullet rcx-status-bullet--online undefined rcx-status-bullet--small"
+                    class="is_View _d-1409515928 _f-1711210172 _br-2015354435 _b-1674632166 _f-1658460128 _w-1912221297 _h-1620376816 rcx-status-bullet rcx-status-bullet--online undefined rcx-status-bullet--small"
                     height="24"
                     viewBox="0 0 24 24"
                     width="24"
@@ -1477,47 +1477,47 @@ exports[`renders OngoingCallDisabledAllButScreenshare without crashing 1`] = `
         class="rcx-box rcx-box--full rcx-css-1koqfyi"
       >
         <div
-          class="rcx-button-group rcx-button-group--align-center rcx-button-group--large"
+          class="is_View _d-341075704 _f-1923654442 _mw-354604370 _mh-1241200853 _ai-121763387 _g-738245387 _jc-642967080 rcx-button-group rcx-button-group--align-center rcx-button-group--large"
           role="group"
         >
           <button
             aria-label="Mute"
-            class="rcx-box rcx-box--full rcx-button--medium-square rcx-button--icon-secondary rcx-button--square rcx-button--icon rcx-button"
+            class="is_View _f-1069813397 _mh-1241200853 _ta-1906144518 _ws-973912173 _td-211436768 _c-22887652 _os-249893454 _o-1119039191 _to-1727917045 _ff-409630021 _fvn-1977619713 _fs-347291933 _fw-289166179 _ls-1782815796 _p-230374000 _w-1589658138 _mw-327378746 _h-567027737 _d-312446553 _jc-642967080 _ai-1864573722 _lh-2067208245 rcx-button--medium-square rcx-button--icon-secondary rcx-button--square rcx-button--icon rcx-button"
             label="Mute"
             title="Mute"
             type="button"
           >
             <i
               aria-hidden="true"
-              class="rcx-box rcx-box--full rcx-icon--name-mic rcx-icon rcx-css-xb06ut"
+              class="is_Text _d-1409515928 _ws-311910413 _ww-408434756 _us-601212022 _va-1101652081 _ls-1720078126 _ff-1916555734 _fs-1279428672 _fw-289165218 _fs-477064150 _fv-1578983722 _lh-2067209205 _tr-1510281189 rcx-icon--name-mic rcx-icon rcx-css-xb06ut"
             >
               
             </i>
           </button>
           <button
             aria-label="Share_screen"
-            class="rcx-box rcx-box--full rcx-button--medium-square rcx-button--icon-secondary rcx-button--square rcx-button--icon rcx-button"
+            class="is_View _f-1069813397 _mh-1241200853 _ta-1906144518 _ws-973912173 _td-211436768 _c-22887652 _os-249893454 _o-1119039191 _to-1727917045 _ff-409630021 _fvn-1977619713 _fs-347291933 _fw-289166179 _ls-1782815796 _p-230374000 _w-1589658138 _mw-327378746 _h-567027737 _d-312446553 _jc-642967080 _ai-1864573722 _lh-2067208245 rcx-button--medium-square rcx-button--icon-secondary rcx-button--square rcx-button--icon rcx-button"
             label="Share_screen"
             title="Share_screen"
             type="button"
           >
             <i
               aria-hidden="true"
-              class="rcx-box rcx-box--full rcx-icon--name-desktop-arrow-up rcx-icon rcx-css-xb06ut"
+              class="is_Text _d-1409515928 _ws-311910413 _ww-408434756 _us-601212022 _va-1101652081 _ls-1720078126 _ff-1916555734 _fs-1279428672 _fw-289165218 _fs-477064150 _fv-1578983722 _lh-2067209205 _tr-1510281189 rcx-icon--name-desktop-arrow-up rcx-icon rcx-css-xb06ut"
             >
               
             </i>
           </button>
           <button
             aria-label="Voice_call__user__hangup"
-            class="rcx-box rcx-box--full rcx-button--medium-square rcx-button--icon-secondary-danger rcx-button--square rcx-button--icon rcx-button"
+            class="is_View _f-1069813397 _mh-1241200853 _ta-1906144518 _ws-973912173 _td-211436768 _c-22887652 _os-249893454 _o-1119039191 _to-1727917045 _ff-409630021 _fvn-1977619713 _fs-347291933 _fw-289166179 _ls-1782815796 _p-230374000 _w-1589658138 _mw-327378746 _h-567027737 _d-312446553 _jc-642967080 _ai-1864573722 _lh-2067208245 rcx-button--medium-square rcx-button--icon-secondary-danger rcx-button--square rcx-button--icon rcx-button"
             label="Voice_call__user__hangup"
             title="Voice_call__user__hangup"
             type="button"
           >
             <i
               aria-hidden="true"
-              class="rcx-box rcx-box--full rcx-icon--name-phone-off rcx-icon rcx-css-xb06ut"
+              class="is_Text _d-1409515928 _ws-311910413 _ww-408434756 _us-601212022 _va-1101652081 _ls-1720078126 _ff-1916555734 _fs-1279428672 _fw-289165218 _fs-477064150 _fv-1578983722 _lh-2067209205 _tr-1510281189 rcx-icon--name-phone-off rcx-icon rcx-css-xb06ut"
             >
               
             </i>
@@ -1551,7 +1551,7 @@ exports[`renders OngoingCallDisabledAllFeatures without crashing 1`] = `
       >
         <i
           aria-hidden="true"
-          class="rcx-box rcx-box--full rcx-icon--name-stacked-meatballs rcx-icon rcx-css-4pvxx3"
+          class="is_Text _d-1409515928 _ws-311910413 _ww-408434756 _us-601212022 _va-1101652081 _ls-1720078126 _ff-1916555734 _fs-1279428672 _fw-289165218 _fs-477064150 _fv-1578983722 _lh-2067209205 _tr-1510281189 rcx-icon--name-stacked-meatballs rcx-icon rcx-css-4pvxx3"
         >
           
         </i>
@@ -1585,7 +1585,7 @@ exports[`renders OngoingCallDisabledAllFeatures without crashing 1`] = `
         >
           <button
             aria-label="Device_settings_lowercase"
-            class="rcx-box rcx-box--full rcx-button--tiny-square rcx-button--square rcx-button--icon rcx-button rcx-css-1wk08i8"
+            class="is_View _f-1069813397 _mh-1241200853 _ta-1906144518 _ws-973912173 _td-211436768 _c-22887652 _os-249893454 _o-1119039191 _to-1727917045 _ff-409630021 _fvn-1977619713 _fs-347291933 _fw-289166179 _ls-1782815796 _p-230374000 _w-1439737260 _mw-1171212800 _h-640041837 _d-312446553 _jc-642967080 _ai-1864573722 _lh-2067208245 rcx-button--tiny-square rcx-button--square rcx-button--icon rcx-button rcx-css-1wk08i8"
             disabled=""
             label="Device_settings_lowercase"
             title="Device_settings_not_supported_by_browser"
@@ -1593,7 +1593,7 @@ exports[`renders OngoingCallDisabledAllFeatures without crashing 1`] = `
           >
             <i
               aria-hidden="true"
-              class="rcx-box rcx-box--full rcx-icon--name-customize rcx-icon rcx-css-xb06ut"
+              class="is_Text _d-1409515928 _ws-311910413 _ww-408434756 _us-601212022 _va-1101652081 _ls-1720078126 _ff-1916555734 _fs-1279428672 _fw-289165218 _fs-477064150 _fv-1578983722 _lh-2067209205 _tr-1510281189 rcx-icon--name-customize rcx-icon rcx-css-xb06ut"
             >
               
             </i>
@@ -1611,11 +1611,11 @@ exports[`renders OngoingCallDisabledAllFeatures without crashing 1`] = `
             class="rcx-box rcx-box--full rcx-css-1rtu0k9"
           >
             <figure
-              class="rcx-box rcx-box--full rcx-avatar rcx-avatar--x20"
+              class="is_View _d-1985012034 _f-606928779 _va-1124586065 _m-2017216831 _p-1943363302 _b-650654186 _o-1106425799 _ff-409630021 _fvn-1977619713 _w-1686757560 _h-1628964073 rcx-box rcx-box--full rcx-avatar rcx-avatar--x20"
             >
               <img
                 alt=""
-                class="rcx-avatar__element rcx-avatar__element--x20"
+                class="is_View _f-1246374076 _bs-652081535 _mw-354604370 _mh-1241200853 _p-1021290656 _w-1560934055 _h-538303654 _br-761757950 rcx-avatar__element rcx-avatar__element--x20"
                 src="data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAgGBgcGBQgHBwcJCQgKDBQNDAsLDBkSEw8UHRofHh0aHBwgJC4nICIsIxwcKDcpLDAxNDQ0Hyc5PTgyPC4zNDL/2wBDAQkJCQwLDBgNDRgyIRwhMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjL/wAARCAAoACgDASIAAhEBAxEB/8QAGwAAAgIDAQAAAAAAAAAAAAAAAAcEBgIDBQj/xAAuEAACAQQAAwcEAQUAAAAAAAABAgMABAUREiExBhMUIkFRYQcWcYGhFTJSgpH/xAAYAQADAQEAAAAAAAAAAAAAAAACAwQBAP/EAB4RAAIBBQEBAQAAAAAAAAAAAAABAgMREiExE0HR/9oADAMBAAIRAxEAPwBuXuIkhBuMe5ib/AHQP49q4L3mLitryTLTSpOiHQI5k/HzXa/qbFOEudVTu1dumWvcTaNCZYZ7vU6g6LxqjOU/24dfs1Ouh9FnkMpd3Reeyx83hAxZZEhkdV9/MBrX71WGPvJcqrJBGveKATtuXXqNU0pu02bTHXD/AGvJAluyxxRd6F4x00o+NdKoVrjbzJdvVe1t5cVLc2ck8qjnohgpPtz2v7G6JtPQ2VJwjlcw+37mchpnK6GtIuv5NFWeTsLNPvxWTvpfjvOEfwKKzEVkSct2vscS/BIzSN0YRkeX81UpPqO8masJETu7OOccY4dswYFQeftv096XV5knuJGdm2T1+agvMXj8jEaHX905QihabvcbuS7X566mLWLwSY8PuRnk/u4eZ0deTl71Ef6hY+0yM88TzeNZY4luYwpVYyduOfrvhPTnr0pXSX9y5mCsyJMdyxxvwq599em+taItqCSNc90ChvZRUruUcT0JiO18Elpk7t8v41LWzacxkBSuvjQ/FFJayjDWrCTepAQ2vUH0oo/Jk3ovpwJJeVCP5CN+lFFaaMqy+nAyuChvrTI2kN9JAsi2ZOy4IBHMnkSCP+iqBexSWdxLazoUljJVlPUH2oorkV10pRc7b1zXb/hZOzuJvM86QWEXeELxOzHSIPcmiiiunVlF2RNTpRkrs//Z"
               />
             </figure>
@@ -1631,7 +1631,7 @@ exports[`renders OngoingCallDisabledAllFeatures without crashing 1`] = `
               >
                 <svg
                   aria-hidden="true"
-                  class="rcx-status-bullet rcx-status-bullet--online undefined rcx-status-bullet--small"
+                  class="is_View _d-1409515928 _f-1711210172 _br-2015354435 _b-1674632166 _f-1658460128 _w-1912221297 _h-1620376816 rcx-status-bullet rcx-status-bullet--online undefined rcx-status-bullet--small"
                   height="24"
                   viewBox="0 0 24 24"
                   width="24"
@@ -1660,47 +1660,47 @@ exports[`renders OngoingCallDisabledAllFeatures without crashing 1`] = `
         class="rcx-box rcx-box--full rcx-css-1koqfyi"
       >
         <div
-          class="rcx-button-group rcx-button-group--align-start rcx-button-group--large"
+          class="is_View _d-341075704 _f-1923654442 _mw-354604370 _mh-1241200853 _ai-121763387 _g-738245387 _jc-281162209 rcx-button-group rcx-button-group--align-start rcx-button-group--large"
           role="group"
         >
           <button
             aria-label="Dialpad"
-            class="rcx-box rcx-box--full rcx-button--medium-square rcx-button--icon-secondary rcx-button--square rcx-button--icon rcx-button"
+            class="is_View _f-1069813397 _mh-1241200853 _ta-1906144518 _ws-973912173 _td-211436768 _c-22887652 _os-249893454 _o-1119039191 _to-1727917045 _ff-409630021 _fvn-1977619713 _fs-347291933 _fw-289166179 _ls-1782815796 _p-230374000 _w-1589658138 _mw-327378746 _h-567027737 _d-312446553 _jc-642967080 _ai-1864573722 _lh-2067208245 rcx-button--medium-square rcx-button--icon-secondary rcx-button--square rcx-button--icon rcx-button"
             label="Dialpad"
             title="Open_dialpad"
             type="button"
           >
             <i
               aria-hidden="true"
-              class="rcx-box rcx-box--full rcx-icon--name-dialpad rcx-icon rcx-css-xb06ut"
+              class="is_Text _d-1409515928 _ws-311910413 _ww-408434756 _us-601212022 _va-1101652081 _ls-1720078126 _ff-1916555734 _fs-1279428672 _fw-289165218 _fs-477064150 _fv-1578983722 _lh-2067209205 _tr-1510281189 rcx-icon--name-dialpad rcx-icon rcx-css-xb06ut"
             >
               
             </i>
           </button>
           <button
             aria-label="Mute"
-            class="rcx-box rcx-box--full rcx-button--medium-square rcx-button--icon-secondary rcx-button--square rcx-button--icon rcx-button"
+            class="is_View _f-1069813397 _mh-1241200853 _ta-1906144518 _ws-973912173 _td-211436768 _c-22887652 _os-249893454 _o-1119039191 _to-1727917045 _ff-409630021 _fvn-1977619713 _fs-347291933 _fw-289166179 _ls-1782815796 _p-230374000 _w-1589658138 _mw-327378746 _h-567027737 _d-312446553 _jc-642967080 _ai-1864573722 _lh-2067208245 rcx-button--medium-square rcx-button--icon-secondary rcx-button--square rcx-button--icon rcx-button"
             label="Mute"
             title="Mute"
             type="button"
           >
             <i
               aria-hidden="true"
-              class="rcx-box rcx-box--full rcx-icon--name-mic rcx-icon rcx-css-xb06ut"
+              class="is_Text _d-1409515928 _ws-311910413 _ww-408434756 _us-601212022 _va-1101652081 _ls-1720078126 _ff-1916555734 _fs-1279428672 _fw-289165218 _fs-477064150 _fv-1578983722 _lh-2067209205 _tr-1510281189 rcx-icon--name-mic rcx-icon rcx-css-xb06ut"
             >
               
             </i>
           </button>
           <button
             aria-label="Voice_call__user__hangup"
-            class="rcx-box rcx-box--full rcx-button--medium-square rcx-button--icon-secondary-danger rcx-button--square rcx-button--icon rcx-button"
+            class="is_View _f-1069813397 _mh-1241200853 _ta-1906144518 _ws-973912173 _td-211436768 _c-22887652 _os-249893454 _o-1119039191 _to-1727917045 _ff-409630021 _fvn-1977619713 _fs-347291933 _fw-289166179 _ls-1782815796 _p-230374000 _w-1589658138 _mw-327378746 _h-567027737 _d-312446553 _jc-642967080 _ai-1864573722 _lh-2067208245 rcx-button--medium-square rcx-button--icon-secondary-danger rcx-button--square rcx-button--icon rcx-button"
             label="Voice_call__user__hangup"
             title="Voice_call__user__hangup"
             type="button"
           >
             <i
               aria-hidden="true"
-              class="rcx-box rcx-box--full rcx-icon--name-phone-off rcx-icon rcx-css-xb06ut"
+              class="is_Text _d-1409515928 _ws-311910413 _ww-408434756 _us-601212022 _va-1101652081 _ls-1720078126 _ff-1916555734 _fs-1279428672 _fw-289165218 _fs-477064150 _fv-1578983722 _lh-2067209205 _tr-1510281189 rcx-icon--name-phone-off rcx-icon rcx-css-xb06ut"
             >
               
             </i>
@@ -1734,7 +1734,7 @@ exports[`renders OngoingCallNoScreenSharingPermission without crashing 1`] = `
       >
         <i
           aria-hidden="true"
-          class="rcx-box rcx-box--full rcx-icon--name-stacked-meatballs rcx-icon rcx-css-4pvxx3"
+          class="is_Text _d-1409515928 _ws-311910413 _ww-408434756 _us-601212022 _va-1101652081 _ls-1720078126 _ff-1916555734 _fs-1279428672 _fw-289165218 _fs-477064150 _fv-1578983722 _lh-2067209205 _tr-1510281189 rcx-icon--name-stacked-meatballs rcx-icon rcx-css-4pvxx3"
         >
           
         </i>
@@ -1768,21 +1768,21 @@ exports[`renders OngoingCallNoScreenSharingPermission without crashing 1`] = `
         >
           <button
             aria-label="Open_in_new_window"
-            class="rcx-box rcx-box--full rcx-button--tiny-square rcx-button--square rcx-button--icon rcx-button"
+            class="is_View _f-1069813397 _mh-1241200853 _ta-1906144518 _ws-973912173 _td-211436768 _c-22887652 _os-249893454 _o-1119039191 _to-1727917045 _ff-409630021 _fvn-1977619713 _fs-347291933 _fw-289166179 _ls-1782815796 _p-230374000 _w-1439737260 _mw-1171212800 _h-640041837 _d-312446553 _jc-642967080 _ai-1864573722 _lh-2067208245 rcx-button--tiny-square rcx-button--square rcx-button--icon rcx-button"
             label="Open_in_new_window"
             title="Open_in_new_window"
             type="button"
           >
             <i
               aria-hidden="true"
-              class="rcx-box rcx-box--full rcx-icon--name-arrow-to-square-box rcx-icon rcx-css-xb06ut"
+              class="is_Text _d-1409515928 _ws-311910413 _ww-408434756 _us-601212022 _va-1101652081 _ls-1720078126 _ff-1916555734 _fs-1279428672 _fw-289165218 _fs-477064150 _fv-1578983722 _lh-2067209205 _tr-1510281189 rcx-icon--name-arrow-to-square-box rcx-icon rcx-css-xb06ut"
             >
               
             </i>
           </button>
           <button
             aria-label="Device_settings_lowercase"
-            class="rcx-box rcx-box--full rcx-button--tiny-square rcx-button--square rcx-button--icon rcx-button rcx-css-1wk08i8"
+            class="is_View _f-1069813397 _mh-1241200853 _ta-1906144518 _ws-973912173 _td-211436768 _c-22887652 _os-249893454 _o-1119039191 _to-1727917045 _ff-409630021 _fvn-1977619713 _fs-347291933 _fw-289166179 _ls-1782815796 _p-230374000 _w-1439737260 _mw-1171212800 _h-640041837 _d-312446553 _jc-642967080 _ai-1864573722 _lh-2067208245 rcx-button--tiny-square rcx-button--square rcx-button--icon rcx-button rcx-css-1wk08i8"
             disabled=""
             label="Device_settings_lowercase"
             title="Device_settings_not_supported_by_browser"
@@ -1790,7 +1790,7 @@ exports[`renders OngoingCallNoScreenSharingPermission without crashing 1`] = `
           >
             <i
               aria-hidden="true"
-              class="rcx-box rcx-box--full rcx-icon--name-customize rcx-icon rcx-css-xb06ut"
+              class="is_Text _d-1409515928 _ws-311910413 _ww-408434756 _us-601212022 _va-1101652081 _ls-1720078126 _ff-1916555734 _fs-1279428672 _fw-289165218 _fs-477064150 _fv-1578983722 _lh-2067209205 _tr-1510281189 rcx-icon--name-customize rcx-icon rcx-css-xb06ut"
             >
               
             </i>
@@ -1811,11 +1811,11 @@ exports[`renders OngoingCallNoScreenSharingPermission without crashing 1`] = `
               class="rcx-box rcx-box--full rcx-css-1rtu0k9"
             >
               <figure
-                class="rcx-box rcx-box--full rcx-avatar rcx-avatar--x20"
+                class="is_View _d-1985012034 _f-606928779 _va-1124586065 _m-2017216831 _p-1943363302 _b-650654186 _o-1106425799 _ff-409630021 _fvn-1977619713 _w-1686757560 _h-1628964073 rcx-box rcx-box--full rcx-avatar rcx-avatar--x20"
               >
                 <img
                   alt=""
-                  class="rcx-avatar__element rcx-avatar__element--x20"
+                  class="is_View _f-1246374076 _bs-652081535 _mw-354604370 _mh-1241200853 _p-1021290656 _w-1560934055 _h-538303654 _br-761757950 rcx-avatar__element rcx-avatar__element--x20"
                   src="data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAgGBgcGBQgHBwcJCQgKDBQNDAsLDBkSEw8UHRofHh0aHBwgJC4nICIsIxwcKDcpLDAxNDQ0Hyc5PTgyPC4zNDL/2wBDAQkJCQwLDBgNDRgyIRwhMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjL/wAARCAAoACgDASIAAhEBAxEB/8QAGwAAAgIDAQAAAAAAAAAAAAAAAAcEBgIDBQj/xAAuEAACAQQAAwcEAQUAAAAAAAABAgMABAUREiExBhMUIkFRYQcWcYGhFTJSgpH/xAAYAQADAQEAAAAAAAAAAAAAAAACAwQBAP/EAB4RAAIBBQEBAQAAAAAAAAAAAAABAgMREiExE0HR/9oADAMBAAIRAxEAPwBuXuIkhBuMe5ib/AHQP49q4L3mLitryTLTSpOiHQI5k/HzXa/qbFOEudVTu1dumWvcTaNCZYZ7vU6g6LxqjOU/24dfs1Ouh9FnkMpd3Reeyx83hAxZZEhkdV9/MBrX71WGPvJcqrJBGveKATtuXXqNU0pu02bTHXD/AGvJAluyxxRd6F4x00o+NdKoVrjbzJdvVe1t5cVLc2ck8qjnohgpPtz2v7G6JtPQ2VJwjlcw+37mchpnK6GtIuv5NFWeTsLNPvxWTvpfjvOEfwKKzEVkSct2vscS/BIzSN0YRkeX81UpPqO8masJETu7OOccY4dswYFQeftv096XV5knuJGdm2T1+agvMXj8jEaHX905QihabvcbuS7X566mLWLwSY8PuRnk/u4eZ0deTl71Ef6hY+0yM88TzeNZY4luYwpVYyduOfrvhPTnr0pXSX9y5mCsyJMdyxxvwq599em+taItqCSNc90ChvZRUruUcT0JiO18Elpk7t8v41LWzacxkBSuvjQ/FFJayjDWrCTepAQ2vUH0oo/Jk3ovpwJJeVCP5CN+lFFaaMqy+nAyuChvrTI2kN9JAsi2ZOy4IBHMnkSCP+iqBexSWdxLazoUljJVlPUH2oorkV10pRc7b1zXb/hZOzuJvM86QWEXeELxOzHSIPcmiiiunVlF2RNTpRkrs//Z"
                 />
               </figure>
@@ -1831,7 +1831,7 @@ exports[`renders OngoingCallNoScreenSharingPermission without crashing 1`] = `
                 >
                   <svg
                     aria-hidden="true"
-                    class="rcx-status-bullet rcx-status-bullet--online undefined rcx-status-bullet--small"
+                    class="is_View _d-1409515928 _f-1711210172 _br-2015354435 _b-1674632166 _f-1658460128 _w-1912221297 _h-1620376816 rcx-status-bullet rcx-status-bullet--online undefined rcx-status-bullet--small"
                     height="24"
                     viewBox="0 0 24 24"
                     width="24"
@@ -1861,61 +1861,61 @@ exports[`renders OngoingCallNoScreenSharingPermission without crashing 1`] = `
         class="rcx-box rcx-box--full rcx-css-1koqfyi"
       >
         <div
-          class="rcx-button-group rcx-button-group--align-center rcx-button-group--large"
+          class="is_View _d-341075704 _f-1923654442 _mw-354604370 _mh-1241200853 _ai-121763387 _g-738245387 _jc-642967080 rcx-button-group rcx-button-group--align-center rcx-button-group--large"
           role="group"
         >
           <button
             aria-label="Mute"
-            class="rcx-box rcx-box--full rcx-button--medium-square rcx-button--icon-secondary rcx-button--square rcx-button--icon rcx-button"
+            class="is_View _f-1069813397 _mh-1241200853 _ta-1906144518 _ws-973912173 _td-211436768 _c-22887652 _os-249893454 _o-1119039191 _to-1727917045 _ff-409630021 _fvn-1977619713 _fs-347291933 _fw-289166179 _ls-1782815796 _p-230374000 _w-1589658138 _mw-327378746 _h-567027737 _d-312446553 _jc-642967080 _ai-1864573722 _lh-2067208245 rcx-button--medium-square rcx-button--icon-secondary rcx-button--square rcx-button--icon rcx-button"
             label="Mute"
             title="Mute"
             type="button"
           >
             <i
               aria-hidden="true"
-              class="rcx-box rcx-box--full rcx-icon--name-mic rcx-icon rcx-css-xb06ut"
+              class="is_Text _d-1409515928 _ws-311910413 _ww-408434756 _us-601212022 _va-1101652081 _ls-1720078126 _ff-1916555734 _fs-1279428672 _fw-289165218 _fs-477064150 _fv-1578983722 _lh-2067209205 _tr-1510281189 rcx-icon--name-mic rcx-icon rcx-css-xb06ut"
             >
               
             </i>
           </button>
           <button
             aria-label="Hold"
-            class="rcx-box rcx-box--full rcx-button--medium-square rcx-button--icon-secondary rcx-button--square rcx-button--icon rcx-button"
+            class="is_View _f-1069813397 _mh-1241200853 _ta-1906144518 _ws-973912173 _td-211436768 _c-22887652 _os-249893454 _o-1119039191 _to-1727917045 _ff-409630021 _fvn-1977619713 _fs-347291933 _fw-289166179 _ls-1782815796 _p-230374000 _w-1589658138 _mw-327378746 _h-567027737 _d-312446553 _jc-642967080 _ai-1864573722 _lh-2067208245 rcx-button--medium-square rcx-button--icon-secondary rcx-button--square rcx-button--icon rcx-button"
             label="Hold"
             title="Hold"
             type="button"
           >
             <i
               aria-hidden="true"
-              class="rcx-box rcx-box--full rcx-icon--name-pause-shape-unfilled rcx-icon rcx-css-xb06ut"
+              class="is_Text _d-1409515928 _ws-311910413 _ww-408434756 _us-601212022 _va-1101652081 _ls-1720078126 _ff-1916555734 _fs-1279428672 _fw-289165218 _fs-477064150 _fv-1578983722 _lh-2067209205 _tr-1510281189 rcx-icon--name-pause-shape-unfilled rcx-icon rcx-css-xb06ut"
             >
               
             </i>
           </button>
           <button
             aria-label="Forward"
-            class="rcx-box rcx-box--full rcx-button--medium-square rcx-button--icon-secondary rcx-button--square rcx-button--icon rcx-button"
+            class="is_View _f-1069813397 _mh-1241200853 _ta-1906144518 _ws-973912173 _td-211436768 _c-22887652 _os-249893454 _o-1119039191 _to-1727917045 _ff-409630021 _fvn-1977619713 _fs-347291933 _fw-289166179 _ls-1782815796 _p-230374000 _w-1589658138 _mw-327378746 _h-567027737 _d-312446553 _jc-642967080 _ai-1864573722 _lh-2067208245 rcx-button--medium-square rcx-button--icon-secondary rcx-button--square rcx-button--icon rcx-button"
             label="Forward"
             title="Forward"
             type="button"
           >
             <i
               aria-hidden="true"
-              class="rcx-box rcx-box--full rcx-icon--name-arrow-forward rcx-icon rcx-css-xb06ut"
+              class="is_Text _d-1409515928 _ws-311910413 _ww-408434756 _us-601212022 _va-1101652081 _ls-1720078126 _ff-1916555734 _fs-1279428672 _fw-289165218 _fs-477064150 _fv-1578983722 _lh-2067209205 _tr-1510281189 rcx-icon--name-arrow-forward rcx-icon rcx-css-xb06ut"
             >
               
             </i>
           </button>
           <button
             aria-label="Voice_call__user__hangup"
-            class="rcx-box rcx-box--full rcx-button--medium-square rcx-button--icon-secondary-danger rcx-button--square rcx-button--icon rcx-button"
+            class="is_View _f-1069813397 _mh-1241200853 _ta-1906144518 _ws-973912173 _td-211436768 _c-22887652 _os-249893454 _o-1119039191 _to-1727917045 _ff-409630021 _fvn-1977619713 _fs-347291933 _fw-289166179 _ls-1782815796 _p-230374000 _w-1589658138 _mw-327378746 _h-567027737 _d-312446553 _jc-642967080 _ai-1864573722 _lh-2067208245 rcx-button--medium-square rcx-button--icon-secondary-danger rcx-button--square rcx-button--icon rcx-button"
             label="Voice_call__user__hangup"
             title="Voice_call__user__hangup"
             type="button"
           >
             <i
               aria-hidden="true"
-              class="rcx-box rcx-box--full rcx-icon--name-phone-off rcx-icon rcx-css-xb06ut"
+              class="is_Text _d-1409515928 _ws-311910413 _ww-408434756 _us-601212022 _va-1101652081 _ls-1720078126 _ff-1916555734 _fs-1279428672 _fw-289165218 _fs-477064150 _fv-1578983722 _lh-2067209205 _tr-1510281189 rcx-icon--name-phone-off rcx-icon rcx-css-xb06ut"
             >
               
             </i>
@@ -1949,7 +1949,7 @@ exports[`renders OutgoingCall without crashing 1`] = `
       >
         <i
           aria-hidden="true"
-          class="rcx-box rcx-box--full rcx-icon--name-stacked-meatballs rcx-icon rcx-css-4pvxx3"
+          class="is_Text _d-1409515928 _ws-311910413 _ww-408434756 _us-601212022 _va-1101652081 _ls-1720078126 _ff-1916555734 _fs-1279428672 _fw-289165218 _fs-477064150 _fv-1578983722 _lh-2067209205 _tr-1510281189 rcx-icon--name-stacked-meatballs rcx-icon rcx-css-4pvxx3"
         >
           
         </i>
@@ -1974,7 +1974,7 @@ exports[`renders OutgoingCall without crashing 1`] = `
         >
           <button
             aria-label="Device_settings_lowercase"
-            class="rcx-box rcx-box--full rcx-button--tiny-square rcx-button--square rcx-button--icon rcx-button rcx-css-1wk08i8"
+            class="is_View _f-1069813397 _mh-1241200853 _ta-1906144518 _ws-973912173 _td-211436768 _c-22887652 _os-249893454 _o-1119039191 _to-1727917045 _ff-409630021 _fvn-1977619713 _fs-347291933 _fw-289166179 _ls-1782815796 _p-230374000 _w-1439737260 _mw-1171212800 _h-640041837 _d-312446553 _jc-642967080 _ai-1864573722 _lh-2067208245 rcx-button--tiny-square rcx-button--square rcx-button--icon rcx-button rcx-css-1wk08i8"
             disabled=""
             label="Device_settings_lowercase"
             title="Device_settings_not_supported_by_browser"
@@ -1982,7 +1982,7 @@ exports[`renders OutgoingCall without crashing 1`] = `
           >
             <i
               aria-hidden="true"
-              class="rcx-box rcx-box--full rcx-icon--name-customize rcx-icon rcx-css-xb06ut"
+              class="is_Text _d-1409515928 _ws-311910413 _ww-408434756 _us-601212022 _va-1101652081 _ls-1720078126 _ff-1916555734 _fs-1279428672 _fw-289165218 _fs-477064150 _fv-1578983722 _lh-2067209205 _tr-1510281189 rcx-icon--name-customize rcx-icon rcx-css-xb06ut"
             >
               
             </i>
@@ -2000,11 +2000,11 @@ exports[`renders OutgoingCall without crashing 1`] = `
             class="rcx-box rcx-box--full rcx-css-1rtu0k9"
           >
             <figure
-              class="rcx-box rcx-box--full rcx-avatar rcx-avatar--x20"
+              class="is_View _d-1985012034 _f-606928779 _va-1124586065 _m-2017216831 _p-1943363302 _b-650654186 _o-1106425799 _ff-409630021 _fvn-1977619713 _w-1686757560 _h-1628964073 rcx-box rcx-box--full rcx-avatar rcx-avatar--x20"
             >
               <img
                 alt=""
-                class="rcx-avatar__element rcx-avatar__element--x20"
+                class="is_View _f-1246374076 _bs-652081535 _mw-354604370 _mh-1241200853 _p-1021290656 _w-1560934055 _h-538303654 _br-761757950 rcx-avatar__element rcx-avatar__element--x20"
                 src="data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAgGBgcGBQgHBwcJCQgKDBQNDAsLDBkSEw8UHRofHh0aHBwgJC4nICIsIxwcKDcpLDAxNDQ0Hyc5PTgyPC4zNDL/2wBDAQkJCQwLDBgNDRgyIRwhMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjL/wAARCAAoACgDASIAAhEBAxEB/8QAGwAAAgIDAQAAAAAAAAAAAAAAAAcEBgIDBQj/xAAuEAACAQQAAwcEAQUAAAAAAAABAgMABAUREiExBhMUIkFRYQcWcYGhFTJSgpH/xAAYAQADAQEAAAAAAAAAAAAAAAACAwQBAP/EAB4RAAIBBQEBAQAAAAAAAAAAAAABAgMREiExE0HR/9oADAMBAAIRAxEAPwBuXuIkhBuMe5ib/AHQP49q4L3mLitryTLTSpOiHQI5k/HzXa/qbFOEudVTu1dumWvcTaNCZYZ7vU6g6LxqjOU/24dfs1Ouh9FnkMpd3Reeyx83hAxZZEhkdV9/MBrX71WGPvJcqrJBGveKATtuXXqNU0pu02bTHXD/AGvJAluyxxRd6F4x00o+NdKoVrjbzJdvVe1t5cVLc2ck8qjnohgpPtz2v7G6JtPQ2VJwjlcw+37mchpnK6GtIuv5NFWeTsLNPvxWTvpfjvOEfwKKzEVkSct2vscS/BIzSN0YRkeX81UpPqO8masJETu7OOccY4dswYFQeftv096XV5knuJGdm2T1+agvMXj8jEaHX905QihabvcbuS7X566mLWLwSY8PuRnk/u4eZ0deTl71Ef6hY+0yM88TzeNZY4luYwpVYyduOfrvhPTnr0pXSX9y5mCsyJMdyxxvwq599em+taItqCSNc90ChvZRUruUcT0JiO18Elpk7t8v41LWzacxkBSuvjQ/FFJayjDWrCTepAQ2vUH0oo/Jk3ovpwJJeVCP5CN+lFFaaMqy+nAyuChvrTI2kN9JAsi2ZOy4IBHMnkSCP+iqBexSWdxLazoUljJVlPUH2oorkV10pRc7b1zXb/hZOzuJvM86QWEXeELxOzHSIPcmiiiunVlF2RNTpRkrs//Z"
               />
             </figure>
@@ -2020,7 +2020,7 @@ exports[`renders OutgoingCall without crashing 1`] = `
               >
                 <svg
                   aria-hidden="true"
-                  class="rcx-status-bullet rcx-status-bullet--online undefined rcx-status-bullet--small"
+                  class="is_View _d-1409515928 _f-1711210172 _br-2015354435 _b-1674632166 _f-1658460128 _w-1912221297 _h-1620376816 rcx-status-bullet rcx-status-bullet--online undefined rcx-status-bullet--small"
                   height="24"
                   viewBox="0 0 24 24"
                   width="24"
@@ -2049,20 +2049,20 @@ exports[`renders OutgoingCall without crashing 1`] = `
         class="rcx-box rcx-box--full rcx-css-1koqfyi"
       >
         <div
-          class="rcx-button-group rcx-button-group--stretch rcx-button-group--align-start"
+          class="is_View _d-341075704 _f-532517999 _mw-354604370 _mh-1241200853 _g-1051447770 _ai-579901216 _jc-281162209 rcx-button-group rcx-button-group--stretch rcx-button-group--align-start"
           role="group"
         >
           <button
-            class="rcx-box rcx-box--full rcx-button--medium rcx-button--danger rcx-button rcx-css-t3n91h"
+            class="is_View _d-1409515928 _f-1069814357 _mh-1241200853 _ta-1906144518 _ws-973912173 _td-211436768 _c-22887652 _os-249893454 _o-1119039191 _to-1727917045 _ff-409630021 _fvn-1977619713 _p-977728176 _fs-281033604 _fw-290091622 _lh-1335373134 _ls-1811444947 _mw-1006044400 _h-567027737 rcx-button--medium rcx-button--danger rcx-button rcx-css-t3n91h"
             name="phone"
             type="button"
           >
             <span
-              class="rcx-button--content"
+              class="is_Text _d-1409515928 _w-1560934055 _va-615128551 _o-1119039191 _to-1727917045 _ws-973912173 _ww-408434756 rcx-button--content"
             >
               <i
                 aria-hidden="true"
-                class="rcx-box rcx-box--full rcx-icon--name-phone-off rcx-icon rcx-css-1hdf9ok"
+                class="is_Text _d-1409515928 _ws-311910413 _ww-408434756 _us-601212022 _va-1101652081 _ls-1720078126 _ff-1916555734 _fs-1279428672 _fw-289165218 _fs-477064150 _fv-1578983722 _lh-2067209205 _tr-1510281189 rcx-icon--name-phone-off rcx-icon rcx-css-1hdf9ok"
               >
                 
               </i>
@@ -2098,7 +2098,7 @@ exports[`renders OutgoingCallConnecting without crashing 1`] = `
       >
         <i
           aria-hidden="true"
-          class="rcx-box rcx-box--full rcx-icon--name-stacked-meatballs rcx-icon rcx-css-4pvxx3"
+          class="is_Text _d-1409515928 _ws-311910413 _ww-408434756 _us-601212022 _va-1101652081 _ls-1720078126 _ff-1916555734 _fs-1279428672 _fw-289165218 _fs-477064150 _fv-1578983722 _lh-2067209205 _tr-1510281189 rcx-icon--name-stacked-meatballs rcx-icon rcx-css-4pvxx3"
         >
           
         </i>
@@ -2123,7 +2123,7 @@ exports[`renders OutgoingCallConnecting without crashing 1`] = `
         >
           <button
             aria-label="Device_settings_lowercase"
-            class="rcx-box rcx-box--full rcx-button--tiny-square rcx-button--square rcx-button--icon rcx-button rcx-css-1wk08i8"
+            class="is_View _f-1069813397 _mh-1241200853 _ta-1906144518 _ws-973912173 _td-211436768 _c-22887652 _os-249893454 _o-1119039191 _to-1727917045 _ff-409630021 _fvn-1977619713 _fs-347291933 _fw-289166179 _ls-1782815796 _p-230374000 _w-1439737260 _mw-1171212800 _h-640041837 _d-312446553 _jc-642967080 _ai-1864573722 _lh-2067208245 rcx-button--tiny-square rcx-button--square rcx-button--icon rcx-button rcx-css-1wk08i8"
             disabled=""
             label="Device_settings_lowercase"
             title="Device_settings_not_supported_by_browser"
@@ -2131,7 +2131,7 @@ exports[`renders OutgoingCallConnecting without crashing 1`] = `
           >
             <i
               aria-hidden="true"
-              class="rcx-box rcx-box--full rcx-icon--name-customize rcx-icon rcx-css-xb06ut"
+              class="is_Text _d-1409515928 _ws-311910413 _ww-408434756 _us-601212022 _va-1101652081 _ls-1720078126 _ff-1916555734 _fs-1279428672 _fw-289165218 _fs-477064150 _fv-1578983722 _lh-2067209205 _tr-1510281189 rcx-icon--name-customize rcx-icon rcx-css-xb06ut"
             >
               
             </i>
@@ -2149,11 +2149,11 @@ exports[`renders OutgoingCallConnecting without crashing 1`] = `
             class="rcx-box rcx-box--full rcx-css-1rtu0k9"
           >
             <figure
-              class="rcx-box rcx-box--full rcx-avatar rcx-avatar--x20"
+              class="is_View _d-1985012034 _f-606928779 _va-1124586065 _m-2017216831 _p-1943363302 _b-650654186 _o-1106425799 _ff-409630021 _fvn-1977619713 _w-1686757560 _h-1628964073 rcx-box rcx-box--full rcx-avatar rcx-avatar--x20"
             >
               <img
                 alt=""
-                class="rcx-avatar__element rcx-avatar__element--x20"
+                class="is_View _f-1246374076 _bs-652081535 _mw-354604370 _mh-1241200853 _p-1021290656 _w-1560934055 _h-538303654 _br-761757950 rcx-avatar__element rcx-avatar__element--x20"
                 src="data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAgGBgcGBQgHBwcJCQgKDBQNDAsLDBkSEw8UHRofHh0aHBwgJC4nICIsIxwcKDcpLDAxNDQ0Hyc5PTgyPC4zNDL/2wBDAQkJCQwLDBgNDRgyIRwhMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjL/wAARCAAoACgDASIAAhEBAxEB/8QAGwAAAgIDAQAAAAAAAAAAAAAAAAcEBgIDBQj/xAAuEAACAQQAAwcEAQUAAAAAAAABAgMABAUREiExBhMUIkFRYQcWcYGhFTJSgpH/xAAYAQADAQEAAAAAAAAAAAAAAAACAwQBAP/EAB4RAAIBBQEBAQAAAAAAAAAAAAABAgMREiExE0HR/9oADAMBAAIRAxEAPwBuXuIkhBuMe5ib/AHQP49q4L3mLitryTLTSpOiHQI5k/HzXa/qbFOEudVTu1dumWvcTaNCZYZ7vU6g6LxqjOU/24dfs1Ouh9FnkMpd3Reeyx83hAxZZEhkdV9/MBrX71WGPvJcqrJBGveKATtuXXqNU0pu02bTHXD/AGvJAluyxxRd6F4x00o+NdKoVrjbzJdvVe1t5cVLc2ck8qjnohgpPtz2v7G6JtPQ2VJwjlcw+37mchpnK6GtIuv5NFWeTsLNPvxWTvpfjvOEfwKKzEVkSct2vscS/BIzSN0YRkeX81UpPqO8masJETu7OOccY4dswYFQeftv096XV5knuJGdm2T1+agvMXj8jEaHX905QihabvcbuS7X566mLWLwSY8PuRnk/u4eZ0deTl71Ef6hY+0yM88TzeNZY4luYwpVYyduOfrvhPTnr0pXSX9y5mCsyJMdyxxvwq599em+taItqCSNc90ChvZRUruUcT0JiO18Elpk7t8v41LWzacxkBSuvjQ/FFJayjDWrCTepAQ2vUH0oo/Jk3ovpwJJeVCP5CN+lFFaaMqy+nAyuChvrTI2kN9JAsi2ZOy4IBHMnkSCP+iqBexSWdxLazoUljJVlPUH2oorkV10pRc7b1zXb/hZOzuJvM86QWEXeELxOzHSIPcmiiiunVlF2RNTpRkrs//Z"
               />
             </figure>
@@ -2169,7 +2169,7 @@ exports[`renders OutgoingCallConnecting without crashing 1`] = `
               >
                 <svg
                   aria-hidden="true"
-                  class="rcx-status-bullet rcx-status-bullet--online undefined rcx-status-bullet--small"
+                  class="is_View _d-1409515928 _f-1711210172 _br-2015354435 _b-1674632166 _f-1658460128 _w-1912221297 _h-1620376816 rcx-status-bullet rcx-status-bullet--online undefined rcx-status-bullet--small"
                   height="24"
                   viewBox="0 0 24 24"
                   width="24"
@@ -2198,20 +2198,20 @@ exports[`renders OutgoingCallConnecting without crashing 1`] = `
         class="rcx-box rcx-box--full rcx-css-1koqfyi"
       >
         <div
-          class="rcx-button-group rcx-button-group--stretch rcx-button-group--align-start"
+          class="is_View _d-341075704 _f-532517999 _mw-354604370 _mh-1241200853 _g-1051447770 _ai-579901216 _jc-281162209 rcx-button-group rcx-button-group--stretch rcx-button-group--align-start"
           role="group"
         >
           <button
-            class="rcx-box rcx-box--full rcx-button--medium rcx-button--danger rcx-button rcx-css-t3n91h"
+            class="is_View _d-1409515928 _f-1069814357 _mh-1241200853 _ta-1906144518 _ws-973912173 _td-211436768 _c-22887652 _os-249893454 _o-1119039191 _to-1727917045 _ff-409630021 _fvn-1977619713 _p-977728176 _fs-281033604 _fw-290091622 _lh-1335373134 _ls-1811444947 _mw-1006044400 _h-567027737 rcx-button--medium rcx-button--danger rcx-button rcx-css-t3n91h"
             name="phone"
             type="button"
           >
             <span
-              class="rcx-button--content"
+              class="is_Text _d-1409515928 _w-1560934055 _va-615128551 _o-1119039191 _to-1727917045 _ws-973912173 _ww-408434756 rcx-button--content"
             >
               <i
                 aria-hidden="true"
-                class="rcx-box rcx-box--full rcx-icon--name-phone-off rcx-icon rcx-css-1hdf9ok"
+                class="is_Text _d-1409515928 _ws-311910413 _ww-408434756 _us-601212022 _va-1101652081 _ls-1720078126 _ff-1916555734 _fs-1279428672 _fw-289165218 _fs-477064150 _fv-1578983722 _lh-2067209205 _tr-1510281189 rcx-icon--name-phone-off rcx-icon rcx-css-1hdf9ok"
               >
                 
               </i>
@@ -2247,7 +2247,7 @@ exports[`renders OutgoingCallTransfer without crashing 1`] = `
       >
         <i
           aria-hidden="true"
-          class="rcx-box rcx-box--full rcx-icon--name-stacked-meatballs rcx-icon rcx-css-4pvxx3"
+          class="is_Text _d-1409515928 _ws-311910413 _ww-408434756 _us-601212022 _va-1101652081 _ls-1720078126 _ff-1916555734 _fs-1279428672 _fw-289165218 _fs-477064150 _fv-1578983722 _lh-2067209205 _tr-1510281189 rcx-icon--name-stacked-meatballs rcx-icon rcx-css-4pvxx3"
         >
           
         </i>
@@ -2272,7 +2272,7 @@ exports[`renders OutgoingCallTransfer without crashing 1`] = `
         >
           <button
             aria-label="Device_settings_lowercase"
-            class="rcx-box rcx-box--full rcx-button--tiny-square rcx-button--square rcx-button--icon rcx-button rcx-css-1wk08i8"
+            class="is_View _f-1069813397 _mh-1241200853 _ta-1906144518 _ws-973912173 _td-211436768 _c-22887652 _os-249893454 _o-1119039191 _to-1727917045 _ff-409630021 _fvn-1977619713 _fs-347291933 _fw-289166179 _ls-1782815796 _p-230374000 _w-1439737260 _mw-1171212800 _h-640041837 _d-312446553 _jc-642967080 _ai-1864573722 _lh-2067208245 rcx-button--tiny-square rcx-button--square rcx-button--icon rcx-button rcx-css-1wk08i8"
             disabled=""
             label="Device_settings_lowercase"
             title="Device_settings_not_supported_by_browser"
@@ -2280,7 +2280,7 @@ exports[`renders OutgoingCallTransfer without crashing 1`] = `
           >
             <i
               aria-hidden="true"
-              class="rcx-box rcx-box--full rcx-icon--name-customize rcx-icon rcx-css-xb06ut"
+              class="is_Text _d-1409515928 _ws-311910413 _ww-408434756 _us-601212022 _va-1101652081 _ls-1720078126 _ff-1916555734 _fs-1279428672 _fw-289165218 _fs-477064150 _fv-1578983722 _lh-2067209205 _tr-1510281189 rcx-icon--name-customize rcx-icon rcx-css-xb06ut"
             >
               
             </i>
@@ -2308,11 +2308,11 @@ exports[`renders OutgoingCallTransfer without crashing 1`] = `
             class="rcx-box rcx-box--full rcx-css-1rtu0k9"
           >
             <figure
-              class="rcx-box rcx-box--full rcx-avatar rcx-avatar--x20"
+              class="is_View _d-1985012034 _f-606928779 _va-1124586065 _m-2017216831 _p-1943363302 _b-650654186 _o-1106425799 _ff-409630021 _fvn-1977619713 _w-1686757560 _h-1628964073 rcx-box rcx-box--full rcx-avatar rcx-avatar--x20"
             >
               <img
                 alt=""
-                class="rcx-avatar__element rcx-avatar__element--x20"
+                class="is_View _f-1246374076 _bs-652081535 _mw-354604370 _mh-1241200853 _p-1021290656 _w-1560934055 _h-538303654 _br-761757950 rcx-avatar__element rcx-avatar__element--x20"
                 src="data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAgGBgcGBQgHBwcJCQgKDBQNDAsLDBkSEw8UHRofHh0aHBwgJC4nICIsIxwcKDcpLDAxNDQ0Hyc5PTgyPC4zNDL/2wBDAQkJCQwLDBgNDRgyIRwhMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjL/wAARCAAoACgDASIAAhEBAxEB/8QAGwAAAgIDAQAAAAAAAAAAAAAAAAcEBgIDBQj/xAAuEAACAQQAAwcEAQUAAAAAAAABAgMABAUREiExBhMUIkFRYQcWcYGhFTJSgpH/xAAYAQADAQEAAAAAAAAAAAAAAAACAwQBAP/EAB4RAAIBBQEBAQAAAAAAAAAAAAABAgMREiExE0HR/9oADAMBAAIRAxEAPwBuXuIkhBuMe5ib/AHQP49q4L3mLitryTLTSpOiHQI5k/HzXa/qbFOEudVTu1dumWvcTaNCZYZ7vU6g6LxqjOU/24dfs1Ouh9FnkMpd3Reeyx83hAxZZEhkdV9/MBrX71WGPvJcqrJBGveKATtuXXqNU0pu02bTHXD/AGvJAluyxxRd6F4x00o+NdKoVrjbzJdvVe1t5cVLc2ck8qjnohgpPtz2v7G6JtPQ2VJwjlcw+37mchpnK6GtIuv5NFWeTsLNPvxWTvpfjvOEfwKKzEVkSct2vscS/BIzSN0YRkeX81UpPqO8masJETu7OOccY4dswYFQeftv096XV5knuJGdm2T1+agvMXj8jEaHX905QihabvcbuS7X566mLWLwSY8PuRnk/u4eZ0deTl71Ef6hY+0yM88TzeNZY4luYwpVYyduOfrvhPTnr0pXSX9y5mCsyJMdyxxvwq599em+taItqCSNc90ChvZRUruUcT0JiO18Elpk7t8v41LWzacxkBSuvjQ/FFJayjDWrCTepAQ2vUH0oo/Jk3ovpwJJeVCP5CN+lFFaaMqy+nAyuChvrTI2kN9JAsi2ZOy4IBHMnkSCP+iqBexSWdxLazoUljJVlPUH2oorkV10pRc7b1zXb/hZOzuJvM86QWEXeELxOzHSIPcmiiiunVlF2RNTpRkrs//Z"
               />
             </figure>
@@ -2328,7 +2328,7 @@ exports[`renders OutgoingCallTransfer without crashing 1`] = `
               >
                 <svg
                   aria-hidden="true"
-                  class="rcx-status-bullet rcx-status-bullet--online undefined rcx-status-bullet--small"
+                  class="is_View _d-1409515928 _f-1711210172 _br-2015354435 _b-1674632166 _f-1658460128 _w-1912221297 _h-1620376816 rcx-status-bullet rcx-status-bullet--online undefined rcx-status-bullet--small"
                   height="24"
                   viewBox="0 0 24 24"
                   width="24"
@@ -2357,20 +2357,20 @@ exports[`renders OutgoingCallTransfer without crashing 1`] = `
         class="rcx-box rcx-box--full rcx-css-1koqfyi"
       >
         <div
-          class="rcx-button-group rcx-button-group--stretch rcx-button-group--align-start"
+          class="is_View _d-341075704 _f-532517999 _mw-354604370 _mh-1241200853 _g-1051447770 _ai-579901216 _jc-281162209 rcx-button-group rcx-button-group--stretch rcx-button-group--align-start"
           role="group"
         >
           <button
-            class="rcx-box rcx-box--full rcx-button--medium rcx-button--danger rcx-button rcx-css-t3n91h"
+            class="is_View _d-1409515928 _f-1069814357 _mh-1241200853 _ta-1906144518 _ws-973912173 _td-211436768 _c-22887652 _os-249893454 _o-1119039191 _to-1727917045 _ff-409630021 _fvn-1977619713 _p-977728176 _fs-281033604 _fw-290091622 _lh-1335373134 _ls-1811444947 _mw-1006044400 _h-567027737 rcx-button--medium rcx-button--danger rcx-button rcx-css-t3n91h"
             name="phone"
             type="button"
           >
             <span
-              class="rcx-button--content"
+              class="is_Text _d-1409515928 _w-1560934055 _va-615128551 _o-1119039191 _to-1727917045 _ws-973912173 _ww-408434756 rcx-button--content"
             >
               <i
                 aria-hidden="true"
-                class="rcx-box rcx-box--full rcx-icon--name-phone-off rcx-icon rcx-css-1hdf9ok"
+                class="is_Text _d-1409515928 _ws-311910413 _ww-408434756 _us-601212022 _va-1101652081 _ls-1720078126 _ff-1916555734 _fs-1279428672 _fw-289165218 _fs-477064150 _fv-1578983722 _lh-2067209205 _tr-1510281189 rcx-icon--name-phone-off rcx-icon rcx-css-1hdf9ok"
               >
                 
               </i>
@@ -2406,7 +2406,7 @@ exports[`renders OutgoingCallTransferConnecting without crashing 1`] = `
       >
         <i
           aria-hidden="true"
-          class="rcx-box rcx-box--full rcx-icon--name-stacked-meatballs rcx-icon rcx-css-4pvxx3"
+          class="is_Text _d-1409515928 _ws-311910413 _ww-408434756 _us-601212022 _va-1101652081 _ls-1720078126 _ff-1916555734 _fs-1279428672 _fw-289165218 _fs-477064150 _fv-1578983722 _lh-2067209205 _tr-1510281189 rcx-icon--name-stacked-meatballs rcx-icon rcx-css-4pvxx3"
         >
           
         </i>
@@ -2431,7 +2431,7 @@ exports[`renders OutgoingCallTransferConnecting without crashing 1`] = `
         >
           <button
             aria-label="Device_settings_lowercase"
-            class="rcx-box rcx-box--full rcx-button--tiny-square rcx-button--square rcx-button--icon rcx-button rcx-css-1wk08i8"
+            class="is_View _f-1069813397 _mh-1241200853 _ta-1906144518 _ws-973912173 _td-211436768 _c-22887652 _os-249893454 _o-1119039191 _to-1727917045 _ff-409630021 _fvn-1977619713 _fs-347291933 _fw-289166179 _ls-1782815796 _p-230374000 _w-1439737260 _mw-1171212800 _h-640041837 _d-312446553 _jc-642967080 _ai-1864573722 _lh-2067208245 rcx-button--tiny-square rcx-button--square rcx-button--icon rcx-button rcx-css-1wk08i8"
             disabled=""
             label="Device_settings_lowercase"
             title="Device_settings_not_supported_by_browser"
@@ -2439,7 +2439,7 @@ exports[`renders OutgoingCallTransferConnecting without crashing 1`] = `
           >
             <i
               aria-hidden="true"
-              class="rcx-box rcx-box--full rcx-icon--name-customize rcx-icon rcx-css-xb06ut"
+              class="is_Text _d-1409515928 _ws-311910413 _ww-408434756 _us-601212022 _va-1101652081 _ls-1720078126 _ff-1916555734 _fs-1279428672 _fw-289165218 _fs-477064150 _fv-1578983722 _lh-2067209205 _tr-1510281189 rcx-icon--name-customize rcx-icon rcx-css-xb06ut"
             >
               
             </i>
@@ -2467,11 +2467,11 @@ exports[`renders OutgoingCallTransferConnecting without crashing 1`] = `
             class="rcx-box rcx-box--full rcx-css-1rtu0k9"
           >
             <figure
-              class="rcx-box rcx-box--full rcx-avatar rcx-avatar--x20"
+              class="is_View _d-1985012034 _f-606928779 _va-1124586065 _m-2017216831 _p-1943363302 _b-650654186 _o-1106425799 _ff-409630021 _fvn-1977619713 _w-1686757560 _h-1628964073 rcx-box rcx-box--full rcx-avatar rcx-avatar--x20"
             >
               <img
                 alt=""
-                class="rcx-avatar__element rcx-avatar__element--x20"
+                class="is_View _f-1246374076 _bs-652081535 _mw-354604370 _mh-1241200853 _p-1021290656 _w-1560934055 _h-538303654 _br-761757950 rcx-avatar__element rcx-avatar__element--x20"
                 src="data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAgGBgcGBQgHBwcJCQgKDBQNDAsLDBkSEw8UHRofHh0aHBwgJC4nICIsIxwcKDcpLDAxNDQ0Hyc5PTgyPC4zNDL/2wBDAQkJCQwLDBgNDRgyIRwhMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjL/wAARCAAoACgDASIAAhEBAxEB/8QAGwAAAgIDAQAAAAAAAAAAAAAAAAcEBgIDBQj/xAAuEAACAQQAAwcEAQUAAAAAAAABAgMABAUREiExBhMUIkFRYQcWcYGhFTJSgpH/xAAYAQADAQEAAAAAAAAAAAAAAAACAwQBAP/EAB4RAAIBBQEBAQAAAAAAAAAAAAABAgMREiExE0HR/9oADAMBAAIRAxEAPwBuXuIkhBuMe5ib/AHQP49q4L3mLitryTLTSpOiHQI5k/HzXa/qbFOEudVTu1dumWvcTaNCZYZ7vU6g6LxqjOU/24dfs1Ouh9FnkMpd3Reeyx83hAxZZEhkdV9/MBrX71WGPvJcqrJBGveKATtuXXqNU0pu02bTHXD/AGvJAluyxxRd6F4x00o+NdKoVrjbzJdvVe1t5cVLc2ck8qjnohgpPtz2v7G6JtPQ2VJwjlcw+37mchpnK6GtIuv5NFWeTsLNPvxWTvpfjvOEfwKKzEVkSct2vscS/BIzSN0YRkeX81UpPqO8masJETu7OOccY4dswYFQeftv096XV5knuJGdm2T1+agvMXj8jEaHX905QihabvcbuS7X566mLWLwSY8PuRnk/u4eZ0deTl71Ef6hY+0yM88TzeNZY4luYwpVYyduOfrvhPTnr0pXSX9y5mCsyJMdyxxvwq599em+taItqCSNc90ChvZRUruUcT0JiO18Elpk7t8v41LWzacxkBSuvjQ/FFJayjDWrCTepAQ2vUH0oo/Jk3ovpwJJeVCP5CN+lFFaaMqy+nAyuChvrTI2kN9JAsi2ZOy4IBHMnkSCP+iqBexSWdxLazoUljJVlPUH2oorkV10pRc7b1zXb/hZOzuJvM86QWEXeELxOzHSIPcmiiiunVlF2RNTpRkrs//Z"
               />
             </figure>
@@ -2487,7 +2487,7 @@ exports[`renders OutgoingCallTransferConnecting without crashing 1`] = `
               >
                 <svg
                   aria-hidden="true"
-                  class="rcx-status-bullet rcx-status-bullet--online undefined rcx-status-bullet--small"
+                  class="is_View _d-1409515928 _f-1711210172 _br-2015354435 _b-1674632166 _f-1658460128 _w-1912221297 _h-1620376816 rcx-status-bullet rcx-status-bullet--online undefined rcx-status-bullet--small"
                   height="24"
                   viewBox="0 0 24 24"
                   width="24"
@@ -2516,20 +2516,20 @@ exports[`renders OutgoingCallTransferConnecting without crashing 1`] = `
         class="rcx-box rcx-box--full rcx-css-1koqfyi"
       >
         <div
-          class="rcx-button-group rcx-button-group--stretch rcx-button-group--align-start"
+          class="is_View _d-341075704 _f-532517999 _mw-354604370 _mh-1241200853 _g-1051447770 _ai-579901216 _jc-281162209 rcx-button-group rcx-button-group--stretch rcx-button-group--align-start"
           role="group"
         >
           <button
-            class="rcx-box rcx-box--full rcx-button--medium rcx-button--danger rcx-button rcx-css-t3n91h"
+            class="is_View _d-1409515928 _f-1069814357 _mh-1241200853 _ta-1906144518 _ws-973912173 _td-211436768 _c-22887652 _os-249893454 _o-1119039191 _to-1727917045 _ff-409630021 _fvn-1977619713 _p-977728176 _fs-281033604 _fw-290091622 _lh-1335373134 _ls-1811444947 _mw-1006044400 _h-567027737 rcx-button--medium rcx-button--danger rcx-button rcx-css-t3n91h"
             name="phone"
             type="button"
           >
             <span
-              class="rcx-button--content"
+              class="is_Text _d-1409515928 _w-1560934055 _va-615128551 _o-1119039191 _to-1727917045 _ws-973912173 _ww-408434756 rcx-button--content"
             >
               <i
                 aria-hidden="true"
-                class="rcx-box rcx-box--full rcx-icon--name-phone-off rcx-icon rcx-css-1hdf9ok"
+                class="is_Text _d-1409515928 _ws-311910413 _ww-408434756 _us-601212022 _va-1101652081 _ls-1720078126 _ff-1916555734 _fs-1279428672 _fw-289165218 _fs-477064150 _fv-1578983722 _lh-2067209205 _tr-1510281189 rcx-icon--name-phone-off rcx-icon rcx-css-1hdf9ok"
               >
                 
               </i>
