@@ -106,6 +106,15 @@ describe('XMPP federation: presence', () => {
 	});
 
 	it("keeps a contact's presence when they send a message (R2)", async () => {
+		await alice.sendPresence({ to: local.jid, show: 'dnd' });
+		await retry(
+			"alice's status to become busy",
+			async () => {
+				assert.equal((await findUser(rc, alice.bareJid))?.status, 'busy');
+			},
+			federationPolling,
+		);
+
 		const text = `still busy ${uniqueSuffix()}`;
 		await alice.sendChat(local.jid, text);
 		const dm = await waitForDirectMessageWith(rc, local, alice.bareJid);
