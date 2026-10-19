@@ -742,7 +742,7 @@ class RocketChatIntegrationHandler {
 									// 2 second, 4 seconds, 6 seconds, etc
 									waitTime = (tries + 1) * 2 * 1000;
 									break;
-								default:
+								default: {
 									const er = new Error("The integration's retryDelay setting is invalid.");
 									await updateHistory({
 										historyId,
@@ -751,6 +751,7 @@ class RocketChatIntegrationHandler {
 										errorStack: er.stack,
 									});
 									return;
+								}
 							}
 
 							outgoingLogger.info({ msg: 'Retrying integration', integrationName: trigger.name, url, waitTime });

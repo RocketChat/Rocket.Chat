@@ -262,7 +262,7 @@ API.v1.get(
 
 				text = `#${channel}`;
 				break;
-			case 'user':
+			case 'user': {
 				if (settings.get('API_Shield_user_require_auth') && !this.user) {
 					return API.v1.failure('You must be logged in to do this.');
 				}
@@ -289,6 +289,7 @@ API.v1.get(
 						backgroundColor = '#a5a1a1';
 				}
 				break;
+			}
 			default:
 				text = i18n.t('Join_Chat').toUpperCase();
 		}

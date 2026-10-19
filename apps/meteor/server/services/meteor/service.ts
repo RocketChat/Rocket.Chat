@@ -94,7 +94,7 @@ export class MeteorService extends ServiceClassInternal implements IMeteor {
 
 			switch (data.clientAction) {
 				case 'updated':
-				case 'inserted':
+				case 'inserted': {
 					const agent = await Users.findOneAgentById<Pick<ILivechatAgent, 'status' | 'statusLivechat'>>(data.id, {
 						projection: {
 							status: 1,
@@ -110,6 +110,7 @@ export class MeteorService extends ServiceClassInternal implements IMeteor {
 					onlineAgents.remove(data.id);
 
 					break;
+				}
 				case 'removed':
 					onlineAgents.remove(data.id);
 					break;

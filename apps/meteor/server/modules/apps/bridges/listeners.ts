@@ -299,7 +299,7 @@ export class AppListenerBridge {
 
 		const result = await (() => {
 			switch (args.event) {
-				case AppInterface.IPostMessageDeleted:
+				case AppInterface.IPostMessageDeleted: {
 					const [, userDeleted] = args.payload;
 					return this.orch
 						.getManager()
@@ -308,7 +308,8 @@ export class AppListenerBridge {
 							message: msg,
 							user: this.orch.getConverters().get('users').convertToApp(userDeleted),
 						});
-				case AppInterface.IPostMessageReacted:
+				}
+				case AppInterface.IPostMessageReacted: {
 					const [, userReacted, reaction, isReacted] = args.payload;
 					return this.orch
 						.getManager()
@@ -319,7 +320,8 @@ export class AppListenerBridge {
 							reaction,
 							isReacted,
 						});
-				case AppInterface.IPostMessageFollowed:
+				}
+				case AppInterface.IPostMessageFollowed: {
 					const [, userFollowed, isFollowed] = args.payload;
 					return this.orch
 						.getManager()
@@ -329,7 +331,8 @@ export class AppListenerBridge {
 							user: this.orch.getConverters().get('users').convertToApp(userFollowed),
 							isFollowed,
 						});
-				case AppInterface.IPostMessagePinned:
+				}
+				case AppInterface.IPostMessagePinned: {
 					const [, userPinned, isPinned] = args.payload;
 					return this.orch
 						.getManager()
@@ -339,7 +342,8 @@ export class AppListenerBridge {
 							user: this.orch.getConverters().get('users').convertToApp(userPinned),
 							isPinned,
 						});
-				case AppInterface.IPostMessageStarred:
+				}
+				case AppInterface.IPostMessageStarred: {
 					const [, userStarred, isStarred] = args.payload;
 					return this.orch
 						.getManager()
@@ -349,7 +353,8 @@ export class AppListenerBridge {
 							user: this.orch.getConverters().get('users').convertToApp(userStarred),
 							isStarred,
 						});
-				case AppInterface.IPostMessageReported:
+				}
+				case AppInterface.IPostMessageReported: {
 					const [, userReported, reason] = args.payload;
 					return this.orch
 						.getManager()
@@ -359,6 +364,7 @@ export class AppListenerBridge {
 							user: this.orch.getConverters().get('users').convertToApp(userReported),
 							reason,
 						});
+				}
 				default:
 					return this.orch.getManager().getListenerManager().executeListener(args.event, msg);
 			}
@@ -383,7 +389,7 @@ export class AppListenerBridge {
 		const result = await (() => {
 			switch (args.event) {
 				case AppInterface.IPreRoomUserJoined:
-				case AppInterface.IPostRoomUserJoined:
+				case AppInterface.IPostRoomUserJoined: {
 					const [, joiningUser, invitingUser] = args.payload;
 					return this.orch
 						.getManager()
@@ -393,8 +399,9 @@ export class AppListenerBridge {
 							joiningUser: this.orch.getConverters().get('users').convertToApp(joiningUser)!,
 							inviter: this.orch.getConverters().get('users').convertToApp(invitingUser),
 						});
+				}
 				case AppInterface.IPreRoomUserLeave:
-				case AppInterface.IPostRoomUserLeave:
+				case AppInterface.IPostRoomUserLeave: {
 					const [, leavingUser, removedBy] = args.payload;
 					return this.orch
 						.getManager()
@@ -404,6 +411,7 @@ export class AppListenerBridge {
 							leavingUser: this.orch.getConverters().get('users').convertToApp(leavingUser)!,
 							removedBy: this.orch.getConverters().get('users').convertToApp(removedBy),
 						});
+				}
 				default:
 					return this.orch.getManager().getListenerManager().executeListener(args.event, rm);
 			}
@@ -419,7 +427,7 @@ export class AppListenerBridge {
 	async livechatEvent(args: HandleLivechatEvent): Promise<unknown> {
 		switch (args.event) {
 			case AppInterface.IPostLivechatAgentAssigned:
-			case AppInterface.IPostLivechatAgentUnassigned:
+			case AppInterface.IPostLivechatAgentUnassigned: {
 				const [agentData] = args.payload;
 				return this.orch
 					.getManager()
@@ -428,6 +436,7 @@ export class AppListenerBridge {
 						room: (await this.orch.getConverters().get('rooms').convertRoom(agentData.room)) as IAppsLivechatRoom,
 						agent: this.orch.getConverters().get('users').convertToApp(agentData.user),
 					});
+			}
 
 			case AppInterface.IPostLivechatRoomTransferred: {
 				const [transferData] = args.payload;
@@ -503,7 +512,7 @@ export class AppListenerBridge {
 				return this.orch.getManager().getListenerManager().executeListener(args.event, { department });
 			}
 
-			default:
+			default: {
 				const [roomData] = args.payload;
 				const room = await this.orch.getConverters().get('rooms').convertRoom(roomData);
 
@@ -516,6 +525,7 @@ export class AppListenerBridge {
 				}
 
 				return this.orch.getManager().getListenerManager().executeListener(args.event, room);
+			}
 		}
 	}
 

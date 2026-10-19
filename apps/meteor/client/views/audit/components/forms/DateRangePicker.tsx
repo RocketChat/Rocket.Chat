@@ -104,7 +104,7 @@ const dateRangeReducer = (state: DateRange, action: DateRangeAction): DateRange 
 			};
 		}
 
-		default:
+		default: {
 			if (typeof action === 'object' && 'newStart' in action) {
 				if (action.newStart === formatToDateInput(state.start)) {
 					return state;
@@ -123,6 +123,7 @@ const dateRangeReducer = (state: DateRange, action: DateRangeAction): DateRange 
 
 			const newState = typeof action === 'function' ? action(state) : action;
 			return newState;
+		}
 	}
 };
 

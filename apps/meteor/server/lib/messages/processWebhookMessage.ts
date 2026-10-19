@@ -64,7 +64,7 @@ const getRoomWithOptionToJoin = async (channelType: string, channelValue: string
 				nameOrId: channelValue,
 				type: 'd',
 			});
-		default:
+		default: {
 			const _channelValue = channelType + channelValue;
 
 			// Try to find the room by id or name if they didn't include the prefix.
@@ -91,6 +91,7 @@ const getRoomWithOptionToJoin = async (channelType: string, channelValue: string
 
 			// No room, so throw an error
 			throw new Meteor.Error('invalid-channel');
+		}
 	}
 };
 

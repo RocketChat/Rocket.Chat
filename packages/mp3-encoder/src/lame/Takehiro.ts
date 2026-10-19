@@ -396,7 +396,7 @@ export class Takehiro {
 			case 15:
 				return this.count_bit_noESC_from3(ix, ixPos, endPos, this.huf_tbl_noESC[max - 1], s);
 
-			default:
+			default: {
 				if (max > QuantizePVT.IXMAX_VAL) {
 					s.bits = Takehiro.LARGE_BITS;
 					return -1;
@@ -415,6 +415,7 @@ export class Takehiro {
 					}
 				}
 				return this.count_bit_ESC(ix, ixPos, endPos, choice, choice2, s);
+			}
 		}
 	}
 

@@ -69,7 +69,7 @@ export async function deleteUser(userId: string, confirmRelinquish = false, dele
 
 		const messageErasureType = settings.get<'Delete' | 'Unlink' | 'Keep'>('Message_ErasureType');
 		switch (messageErasureType) {
-			case 'Delete':
+			case 'Delete': {
 				const store = FileUpload.getStore('Uploads');
 				const cursor = Messages.findFilesByUserId(userId);
 
@@ -98,6 +98,7 @@ export async function deleteUser(userId: string, confirmRelinquish = false, dele
 				);
 
 				break;
+			}
 			case 'Unlink':
 				userToReplaceWhenUnlinking = await Users.findOneById('rocket.cat');
 				if (!userToReplaceWhenUnlinking?._id || !userToReplaceWhenUnlinking?.username) {

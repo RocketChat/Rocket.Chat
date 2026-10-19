@@ -38,12 +38,13 @@ export async function getUsersInRolePaginated(
 	}
 
 	switch (role.scope) {
-		case 'Subscriptions':
+		case 'Subscriptions': {
 			const subscriptions = await Subscriptions.findByRolesAndRoomId({ roles: role._id, rid: scope }, { projection: { 'u._id': 1 } })
 				.map((subscription) => subscription.u?._id)
 				.toArray();
 
 			return Users.findPaginated({ _id: { $in: compact(subscriptions) } }, options || {});
+		}
 		case 'Users':
 		default:
 			return Users.findPaginatedUsersInRoles([role._id], options);

@@ -38,7 +38,7 @@ export const saveAutoTranslateSettings = async (
 	let shouldNotifySubscriptionChanged = false;
 
 	switch (field) {
-		case 'autoTranslate':
+		case 'autoTranslate': {
 			const room = await Rooms.findE2ERoomById(rid, { projection: { _id: 1 } });
 			if (room && value === '1') {
 				throw new Meteor.Error('error-e2e-enabled', 'Enabling auto-translation in E2E encrypted rooms is not allowed', {
@@ -62,12 +62,14 @@ export const saveAutoTranslateSettings = async (
 			}
 
 			break;
-		case 'autoTranslateLanguage':
+		}
+		case 'autoTranslateLanguage': {
 			const updateAutoTranslateLanguage = await Subscriptions.updateAutoTranslateLanguageById(subscription._id, value);
 			if (updateAutoTranslateLanguage.modifiedCount) {
 				shouldNotifySubscriptionChanged = true;
 			}
 			break;
+		}
 	}
 
 	if (shouldNotifySubscriptionChanged) {

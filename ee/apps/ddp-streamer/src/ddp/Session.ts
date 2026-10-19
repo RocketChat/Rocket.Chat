@@ -128,7 +128,7 @@ export class Session extends EventEmitter {
 				}
 				void this.callSubscribe(packet);
 				break;
-			case DDP_EVENTS.UNSUBSCRIBE:
+			case DDP_EVENTS.UNSUBSCRIBE: {
 				if (!packet.id) {
 					return this.ws.close(WS_ERRORS.CLOSE_PROTOCOL_ERROR);
 				}
@@ -138,6 +138,7 @@ export class Session extends EventEmitter {
 				}
 				subscription.stop();
 				break;
+			}
 		}
 	}
 
