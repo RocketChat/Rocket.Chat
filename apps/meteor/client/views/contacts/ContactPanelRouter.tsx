@@ -37,7 +37,7 @@ const ContactPanelRouter = ({ contactId, context, onOpenInfo, onOpenEdit, onClos
 		return null;
 	}
 
-	if (context === 'edit') {
+	if (context === 'edit' && data.contact.source === 'local') {
 		return <ContactEdit key={data.contact._id} contact={data.contact} onSaved={({ _id }) => onOpenInfo(_id)} onClose={onClose} />;
 	}
 
