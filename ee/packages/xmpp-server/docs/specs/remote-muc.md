@@ -72,7 +72,8 @@ network already uses. Entry is by invitation only ([ADR 0008](../adr/0008-only-d
   ([ADR 0009](../adr/0009-one-remote-muc-session-per-local-member.md)).
 - **R3** Every local member added to the mirrored channel later is joined the same way; a
   member who leaves or is removed leaves the remote room.
-- **R4** On service start every member of every mirrored channel is rejoined.
+- **R4** Stopping the server ends every session; on service start every member of every
+  mirrored channel is rejoined.
 - **R5** A join the room refuses (an error presence while joining) drops the session and
   emits `muc.remoteJoinFailed` with the error condition. Nothing is retried. A join that
   cannot be sent at all (the server is stopped, the domain unreachable or not allowed)

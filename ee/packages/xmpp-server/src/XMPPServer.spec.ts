@@ -69,6 +69,22 @@ describe('XMPPServer lifecycle', () => {
 describe('XMPPServer remote rooms', () => {
 	const join = { localJid: 'alice@a.localhost', roomJid: 'team@conference.remote.tld', nick: 'alice' };
 
+	it('ends every remote room session when it stops, so a later start joins again', async () => {
+		const server = makeServer();
+		jest.spyOn(server as unknown as { send: () => Promise<void> }, 'send').mockResolvedValue();
+		await server.start();
+		await server.mucJoinRemoteRoom(join);
+		expect(server.hasRemoteMucSession(join)).toBe(true);
+
+		await server.stop();
+		expect(server.hasRemoteMucSession(join)).toBe(false);
+
+		await server.start();
+		await server.mucJoinRemoteRoom(join);
+		expect(server.hasRemoteMucSession(join)).toBe(true);
+		await server.stop();
+	});
+
 	it('keeps no session when the join cannot be sent, so the next join tries again (remote-muc R5)', async () => {
 		const server = makeServer();
 

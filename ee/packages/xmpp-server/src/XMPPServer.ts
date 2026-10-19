@@ -110,6 +110,10 @@ export class XMPPServer {
 		const { s2s } = this;
 		this.s2s = undefined;
 		await s2s.stopAll();
+		for (const session of this.remoteMucSessions.values()) {
+			session.markStale();
+		}
+		this.remoteMucSessions.clear();
 		this.emitter.emit('server.stopped', undefined);
 	}
 
