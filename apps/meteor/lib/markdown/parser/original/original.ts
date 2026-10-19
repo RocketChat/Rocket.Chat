@@ -4,14 +4,15 @@
  */
 import { code } from './code';
 import { markdown } from './markdown';
+import type { MarkdownMessage } from './token';
 
-export const original = (
-	message: any,
+export const original = <T extends MarkdownMessage & { html: string }>(
+	message: T,
 	options: { supportSchemesForLink?: string; headers?: boolean; rootUrl?: string } = {
 		supportSchemesForLink: 'http,https',
 		headers: true,
 	},
-) => {
+): T => {
 	// Parse markdown code
 	message = code(message);
 

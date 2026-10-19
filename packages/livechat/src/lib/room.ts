@@ -43,10 +43,14 @@ export const closeChat = async ({ transcriptRequested }: { transcriptRequested?:
 	route('/chat-finished');
 };
 
-const getVideoConfMessageData = (message: any) =>
+type VideoConfMessage = {
+	blocks?: { appId?: string; type?: string; elements?: { actionId?: string; blockId?: string; url?: string }[] }[];
+};
+
+const getVideoConfMessageData = (message: VideoConfMessage) =>
 	message.blocks
-		?.find(({ appId, type }: any) => appId === 'videoconf-core' && type === 'actions')
-		?.elements?.find(({ actionId }: any) => actionId === 'joinLivechat');
+		?.find(({ appId, type }) => appId === 'videoconf-core' && type === 'actions')
+		?.elements?.find(({ actionId }) => actionId === 'joinLivechat');
 
 const isVideoCallMessage = (message: any) => {
 	if (getVideoConfMessageData(message)) {
@@ -162,7 +166,7 @@ const isAgentHidden = () => {
 	return !!agentHiddenInfo;
 };
 
-const transformAgentInformationOnMessage = (message: any) => {
+const transformAgentInformationOnMessage = <T extends { u?: { _id: string } } | null | undefined>(message: T) => {
 	const { user } = store.state;
 	if (message && user && message.u && message.u._id !== user._id && isAgentHidden()) {
 		return { ...message, u: { _id: message.u._id } };
@@ -196,10 +200,11 @@ export const onUserActivity = (username: string, activities: string[]) => {
 export const onMessage = async (originalMessage: any) => {
 	let message = JSON.parse(JSON.stringify(originalMessage));
 
-	if (message.ts instanceof Date) {
-		message.ts = message.ts.toISOString();
+	const { ts } = message;
+	if (ts instanceof Date) {
+		message.ts = ts.toISOString();
 	} else {
-		message.ts = message.ts.$date ? new Date(message.ts.$date).toISOString() : new Date(message.ts).toISOString();
+		message.ts = ts.$date ? new Date(ts.$date).toISOString() : new Date(ts).toISOString();
 	}
 
 	message = await normalizeMessage(message);
@@ -214,7 +219,7 @@ export const onMessage = async (originalMessage: any) => {
 			store.state.messages,
 			message,
 			({ _id }) => _id === message._id,
-			({ ts }) => ts,
+			({ ts }) => ts as string,
 		),
 	});
 
@@ -233,7 +238,8 @@ export const onMessage = async (originalMessage: any) => {
 };
 
 export const getGreetingMessages = (messages?: any[]) => messages?.filter((msg) => msg.trigger);
-export const getLatestCallMessage = (messages?: any[]) => messages?.filter((msg) => isVideoCallMessage(msg)).pop();
+export const getLatestCallMessage = <T extends VideoConfMessage>(messages?: T[]) =>
+	messages?.filter((msg) => isVideoCallMessage(msg)).pop();
 
 export const loadMessages = async () => {
 	const { messages: storedMessages, room, renderedTriggers } = store.state;

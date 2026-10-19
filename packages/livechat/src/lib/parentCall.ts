@@ -1,8 +1,9 @@
 import { VALID_CALLBACKS } from '../widget';
 
 const getParentWindowTarget = () => {
-	if (window.opener && !window.opener.closed) {
-		return window.opener;
+	const { opener }: { opener: Window | null } = window;
+	if (opener && !opener.closed) {
+		return opener;
 	}
 
 	return window.parent;

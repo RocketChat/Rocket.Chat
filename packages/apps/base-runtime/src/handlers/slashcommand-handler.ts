@@ -1,5 +1,6 @@
 import type { IRoom } from '@rocket.chat/apps-engine/definition/rooms/IRoom';
 import type { ISlashCommand } from '@rocket.chat/apps-engine/definition/slashcommands/ISlashCommand';
+import type { ISlashCommandPreview } from '@rocket.chat/apps-engine/definition/slashcommands/ISlashCommandPreview';
 import { SlashCommandContext } from '@rocket.chat/apps-engine/definition/slashcommands/SlashCommandContext';
 
 import { AppObjectRegistry } from '../AppObjectRegistry';
@@ -42,7 +43,7 @@ export default async function slashCommandHandler(request: RequestContext): Prom
 		return new JsonRpcError(error.message, SERVER_ERROR);
 	}
 
-	return result;
+	return result as Defined;
 }
 
 type Deps = {
@@ -83,7 +84,7 @@ export function handleExecutor(deps: Deps, command: ISlashCommand, method: 'exec
 		deps.AppAccessorsInstance.getModifier(),
 		deps.AppAccessorsInstance.getHttp(),
 		deps.AppAccessorsInstance.getPersistence(),
-	]);
+	]) as Promise<void | ISlashCommandPreview>;
 }
 
 /**
@@ -118,5 +119,5 @@ export function handlePreviewItem(deps: Deps, command: ISlashCommand, params: un
 		deps.AppAccessorsInstance.getModifier(),
 		deps.AppAccessorsInstance.getHttp(),
 		deps.AppAccessorsInstance.getPersistence(),
-	);
+	) as Promise<void>;
 }

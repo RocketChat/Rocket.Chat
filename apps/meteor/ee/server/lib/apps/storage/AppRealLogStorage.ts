@@ -49,11 +49,11 @@ export class AppRealLogStorage extends AppLogStorage {
 
 		const id = (await this.db.insertOne(logEntry)).insertedId;
 
-		return this.db.findOneById(id);
+		return this.db.findOneById<ILoggerStorageEntry>(id) as Promise<ILoggerStorageEntry>;
 	}
 
 	async getEntriesFor(appId: string): Promise<ILoggerStorageEntry[]> {
-		return this.db.find({ appId }).toArray();
+		return this.db.find<ILoggerStorageEntry>({ appId }).toArray();
 	}
 
 	async removeEntriesFor(appId: string): Promise<void> {

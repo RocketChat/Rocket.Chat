@@ -14,7 +14,7 @@ const addParentMessage = async (parentMessage: any) => {
 				parentMessages,
 				parentMessage,
 				({ _id }) => _id === parentMessage._id,
-				({ ts }) => ts,
+				({ ts }) => ts as string,
 			),
 		});
 	}

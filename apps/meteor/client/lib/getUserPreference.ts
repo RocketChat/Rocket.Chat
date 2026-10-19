@@ -41,7 +41,11 @@ export function getUserPreference<TValue>(
 	userIdOrUser: IUser['_id'] | Pick<IUser, '_id' | 'settings'> | null | undefined,
 	key: string,
 	defaultValue?: TValue,
-): TValue {
+): TValue | undefined {
 	const user = typeof userIdOrUser === 'string' ? Users.state.get(userIdOrUser) : userIdOrUser;
-	return user?.settings?.preferences?.[key] ?? defaultValue ?? settings.peek(`Accounts_Default_User_Preferences_${key}`);
+	return (
+		(user?.settings?.preferences?.[key] as TValue | undefined) ??
+		defaultValue ??
+		settings.peek<TValue>(`Accounts_Default_User_Preferences_${key}`)
+	);
 }

@@ -11,6 +11,14 @@ import type { TriggerMessage } from '../definitions/triggerMessage';
 import { parentCall } from '../lib/parentCall';
 import { createToken } from '../lib/random';
 
+export type TriggerRecord = {
+	id: string;
+	status: string;
+	condition?: string;
+	action?: string;
+	error?: unknown;
+};
+
 export type LivechatHiddenSytemMessageType =
 	| 'uj' // User joined
 	| 'ul' // User left
@@ -102,7 +110,7 @@ export type StoreState = {
 	minimized: boolean;
 	unread: any;
 	incomingCallAlert: any;
-	businessUnit: any;
+	businessUnit: string | null;
 	openSessionIds?: string[];
 	triggered?: boolean;
 	undocked?: boolean;
@@ -112,7 +120,7 @@ export type StoreState = {
 	room?: { _id: string; servedBy?: unknown } | null;
 	noMoreMessages?: boolean;
 	loading?: boolean;
-	lastReadMessageId?: any;
+	lastReadMessageId?: string;
 	triggerAgent?: any;
 	queueInfo?: {
 		spot?: number;
@@ -126,7 +134,7 @@ export type StoreState = {
 	renderedTriggers: TriggerMessage[];
 	customFieldsQueue: Record<string, { value: string; overwrite: boolean }>;
 	parentMessages?: any[];
-	triggersRecords?: Record<string, any>;
+	triggersRecords?: Record<string, TriggerRecord>;
 };
 
 export const initialState = (): StoreState => ({

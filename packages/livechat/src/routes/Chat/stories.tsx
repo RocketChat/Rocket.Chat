@@ -9,7 +9,7 @@ type StoryArgs = ChatProps & Partial<StoreState>;
 
 const now = new Date(Date.parse('2021-01-01T00:00:00.000Z'));
 
-const normalizeMessages = (messages: any[] = []) =>
+const normalizeMessages = <T extends object>(messages: T[] = []) =>
 	messages.map((message, i) => ({
 		...message,
 		ts: new Date(now.getTime() - (15 - i) * 60000 - (i < 5 ? 24 * 60 * 60 * 1000 : 0)).toISOString(),

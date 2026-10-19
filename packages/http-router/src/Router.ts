@@ -141,7 +141,7 @@ export class Router<
 						msg: 'Query parameters validation failed - route spec does not match request payload',
 						method: req.method,
 						path: req.url,
-						error: validatorFn.errors?.map((error: any) => error.message).join('\n '),
+						error: validatorFn.errors?.map((error) => error.message).join('\n '),
 						bodyParams: undefined,
 						queryParams,
 					});
@@ -149,7 +149,7 @@ export class Router<
 						{
 							success: false,
 							errorType: 'error-invalid-params',
-							error: validatorFn.errors?.map((error: any) => error.message).join('\n '),
+							error: validatorFn.errors?.map((error) => error.message).join('\n '),
 						},
 						400,
 					);
@@ -166,7 +166,7 @@ export class Router<
 						msg: 'Request body validation failed - route spec does not match request payload',
 						method: req.method,
 						path: req.url,
-						error: validatorFn.errors?.map((error: any) => error.message).join('\n '),
+						error: validatorFn.errors?.map((error) => error.message).join('\n '),
 						bodyParams,
 						queryParams: undefined,
 					});
@@ -174,7 +174,7 @@ export class Router<
 						{
 							success: false,
 							errorType: 'invalid-params',
-							error: validatorFn.errors?.map((error: any) => error.message).join('\n '),
+							error: validatorFn.errors?.map((error) => error.message).join('\n '),
 						},
 						400,
 					);
@@ -334,7 +334,7 @@ export class Router<
 		? Router<TBasePath, ConcatPathOptions<TBasePath, IOperations, TOperations>, TActionCallback>
 		: never;
 
-	use(innerRouter: unknown): any {
+	use(innerRouter: unknown): unknown {
 		if (innerRouter instanceof Router) {
 			for (const [path, routes] of Object.entries(innerRouter.typedRoutes)) {
 				const documentedPath = toOpenAPIPath(`${this.base}${path}`);
@@ -349,7 +349,7 @@ export class Router<
 		if (typeof innerRouter === 'function') {
 			this.innerRouter.use(innerRouter as any);
 		}
-		return this as any;
+		return this;
 	}
 
 	get router(): express.Router {

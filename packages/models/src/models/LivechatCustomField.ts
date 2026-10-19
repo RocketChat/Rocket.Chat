@@ -73,6 +73,6 @@ export class LivechatCustomFieldRaw extends BaseRaw<ILivechatCustomField> implem
 			await this.insertOne(record);
 		}
 
-		return record;
+		return record as ILivechatCustomField;
 	}
 }

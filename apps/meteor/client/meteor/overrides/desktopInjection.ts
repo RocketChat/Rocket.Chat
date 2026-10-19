@@ -18,7 +18,7 @@ if (window.RocketChatDesktop) {
 	};
 
 	window.require = ((fn) =>
-		Object.assign((id: string) => {
+		Object.assign((id: string): unknown => {
 			if (id === 'meteor/rocketchat:user-presence') {
 				return fakeUserPresenceModule;
 			}

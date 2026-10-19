@@ -211,7 +211,7 @@ export class ModerationReportsRaw extends BaseRaw<IModerationReport> implements 
 		const field = isMessageReports ? 'message.u._id' : 'reportedUser._id';
 		const pipeline = [{ $match: query }, { $group: { _id: `$${field}` } }, { $group: { _id: null, count: { $sum: 1 } } }];
 
-		const result = await this.col.aggregate(pipeline).toArray();
+		const result = await this.col.aggregate<{ count: number }>(pipeline).toArray();
 		return result[0]?.count || 0;
 	}
 

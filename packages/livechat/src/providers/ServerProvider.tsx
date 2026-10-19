@@ -69,20 +69,16 @@ const ServerProvider = ({ children, serverURL: host }: ServerProviderProps) => {
 
 			switch (method) {
 				case 'GET':
-					// eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion
-					return sdk.rest.get(compiledPath, params) as any;
+					return sdk.rest.get(compiledPath, params) as Promise<Serialized<OperationResult<TMethod, TPathPattern>>>;
 
 				case 'POST':
-					// eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion
-					return sdk.rest.post(compiledPath, params) as any;
+					return sdk.rest.post(compiledPath, params) as Promise<Serialized<OperationResult<TMethod, TPathPattern>>>;
 
 				case 'PUT':
-					// eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion
-					return sdk.rest.put(compiledPath, params as never) as any;
+					return sdk.rest.put(compiledPath, params as never) as Promise<Serialized<OperationResult<TMethod, TPathPattern>>>;
 
 				case 'DELETE':
-					// eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion
-					return sdk.rest.delete(compiledPath, params) as any;
+					return sdk.rest.delete(compiledPath, params) as Promise<Serialized<OperationResult<TMethod, TPathPattern>>>;
 
 				default:
 					throw new Error('Invalid HTTP method');

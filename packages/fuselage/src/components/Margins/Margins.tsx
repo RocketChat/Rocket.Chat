@@ -8,6 +8,7 @@ import { useStyle } from '../../hooks/useStyle';
 import { spacing } from '../../styleTokens';
 import type { BoxProps } from '../Box';
 import { BoxTransforms, useComposedBoxTransform } from '../Box/BoxTransforms';
+import type { BoxTransformProps } from '../Box/BoxTransforms';
 
 export type MarginsProps = PropsWithChildren<{
 	all?: BoxProps['margin'];
@@ -27,7 +28,7 @@ const Margins = (props: MarginsProps) => {
 	const { children, className, all, block, blockStart, blockEnd, inline, inlineStart, inlineEnd } = props;
 
 	const transformFn = useCallback(
-		(props: any) => {
+		(props: BoxTransformProps) => {
 			if (all !== undefined && props.margin === undefined) {
 				props.margin = all;
 			}

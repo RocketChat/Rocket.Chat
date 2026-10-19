@@ -55,14 +55,14 @@ export default async function handleUploadEvents(request: RequestContext): Promi
 			}
 		}
 
-		return await handlerFunction.call(
+		return (await handlerFunction.call(
 			wrapAppForRequest(app, request),
 			context,
 			AppAccessorsInstance.getReader(),
 			AppAccessorsInstance.getHttp(),
 			AppAccessorsInstance.getPersistence(),
 			AppAccessorsInstance.getModifier(),
-		);
+		)) as Defined;
 	} catch (e) {
 		if (e?.name === AppsEngineException.name) {
 			return new JsonRpcError(e.message, AppsEngineException.JSONRPC_ERROR_CODE, { name: e.name });

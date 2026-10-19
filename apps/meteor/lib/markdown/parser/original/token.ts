@@ -2,17 +2,19 @@
  * Markdown is a named function that will parse markdown syntax
  * @param {String} msg - The message html
  */
-import type { TokenType, TokenExtra } from '@rocket.chat/core-typings';
+import type { Token, TokenType, TokenExtra } from '@rocket.chat/core-typings';
 import { Random } from '@rocket.chat/random';
 
 type MessageTokens = {
-	tokens?: {
-		token: string;
-		type: TokenType;
-		text: string;
-		extra?: TokenExtra;
-	}[];
+	tokens?: Token[];
 };
+
+export type MarkdownMessage = MessageTokens & {
+	html?: string;
+	msg?: string;
+};
+
+export const hasHtml = <T extends MarkdownMessage | undefined>(message: T): message is T & { html: string } => !!message?.html?.trim();
 
 export const addAsToken = (message: MessageTokens, html: string, type: TokenType, extra?: TokenExtra): string => {
 	if (!message.tokens) {

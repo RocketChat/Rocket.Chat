@@ -52,7 +52,7 @@ export class LocalBroker implements IBroker {
 						requestID: 'ctx.requestID',
 						broker: this,
 					},
-					(): any => this.registry.resolve(method)?.(data),
+					(): unknown => this.registry.resolve(method)?.(data),
 				);
 			},
 			injectCurrentContext(),

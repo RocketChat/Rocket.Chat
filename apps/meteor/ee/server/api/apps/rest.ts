@@ -2,6 +2,7 @@ import type { AppManager } from '@rocket.chat/apps/dist/server/AppManager';
 import type { IMarketplaceInfo } from '@rocket.chat/apps/dist/server/marketplace/IMarketplaceInfo';
 import { AppStatus, AppStatusUtils } from '@rocket.chat/apps-engine/definition/AppStatus';
 import type { IAppInfo } from '@rocket.chat/apps-engine/definition/metadata';
+import type { IPermission } from '@rocket.chat/apps-engine/definition/permissions/IPermission';
 import type { AppStatusReport } from '@rocket.chat/core-services';
 import type { IMessage, IUser } from '@rocket.chat/core-typings';
 import { License } from '@rocket.chat/license';
@@ -110,7 +111,7 @@ export class AppsRestApi {
 
 			// when there is no `response` field in the error, it means the request
 			// couldn't even make it to the server
-			if (!err.hasOwnProperty('response')) {
+			if (!Object.hasOwn(err, 'response')) {
 				orchestrator.getRocketChatLogger().warn({ msg: message, err });
 				return API.v1.internalError('Could not reach the Marketplace');
 			}
@@ -367,7 +368,7 @@ export class AppsRestApi {
 						buff = app.fileBuffer;
 						permissionsGranted = (() => {
 							try {
-								const permissions = JSON.parse(formData?.permissions || '');
+								const permissions = JSON.parse(formData?.permissions || '') as IPermission[];
 								return permissions.length ? permissions : undefined;
 							} catch {
 								return undefined;
@@ -538,6 +539,7 @@ export class AppsRestApi {
 
 					try {
 						const { event, externalComponent } = this.bodyParams;
+						// eslint-disable-next-line @typescript-eslint/no-unsafe-call -- the listener bridge has no externalComponentEvent method
 						const result = (Apps.getBridges()?.getListenerBridge() as Record<string, any>).externalComponentEvent(event, externalComponent);
 
 						return API.v1.success({ result });
@@ -1214,14 +1216,15 @@ export class AppsRestApi {
 						const setting = manager.getSettingsManager().getAppSetting(this.urlParams.id, this.urlParams.settingId);
 
 						return API.v1.success({ setting });
-					} catch (e: any) {
-						if (e.message.includes('No setting found')) {
+					} catch (e) {
+						const { message } = e as Error;
+						if (message.includes('No setting found')) {
 							return API.v1.notFound(`No Setting found on the App by the id of: "${this.urlParams.settingId}"`);
 						}
-						if (e.message.includes('No App found')) {
+						if (message.includes('No App found')) {
 							return API.v1.notFound(`No App found by the id of: ${this.urlParams.id}`);
 						}
-						return API.v1.failure(e.message);
+						return API.v1.failure(message);
 					}
 				},
 				async post() {
@@ -1233,14 +1236,15 @@ export class AppsRestApi {
 						await manager.getSettingsManager().updateAppSetting(this.urlParams.id, this.bodyParams.setting);
 
 						return API.v1.success();
-					} catch (e: any) {
-						if (e.message.includes('No setting found')) {
+					} catch (e) {
+						const { message } = e as Error;
+						if (message.includes('No setting found')) {
 							return API.v1.notFound(`No Setting found on the App by the id of: "${this.urlParams.settingId}"`);
 						}
-						if (e.message.includes('No App found')) {
+						if (message.includes('No App found')) {
 							return API.v1.notFound(`No App found by the id of: ${this.urlParams.id}`);
 						}
-						return API.v1.failure(e.message);
+						return API.v1.failure(message);
 					}
 				},
 			},
@@ -1255,7 +1259,7 @@ export class AppsRestApi {
 
 					if (prl) {
 						return API.v1.success({
-							apis: (manager as Record<string, any>).apiManager.listApis(this.urlParams.id), // TODO: this is accessing a private property from the manager, we should expose a method to get the list of APIs
+							apis: manager.getApiManager().listApis(this.urlParams.id),
 						});
 					}
 					return API.v1.notFound(`No App found by the id of: ${this.urlParams.id}`);

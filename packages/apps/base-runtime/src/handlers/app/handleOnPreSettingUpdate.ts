@@ -27,5 +27,5 @@ export default function handleOnPreSettingUpdate(request: RequestContext): Promi
 		AppAccessorsInstance.getConfigurationModify(),
 		AppAccessorsInstance.getReader(),
 		AppAccessorsInstance.getHttp(),
-	);
+	) as Promise<object>;
 }

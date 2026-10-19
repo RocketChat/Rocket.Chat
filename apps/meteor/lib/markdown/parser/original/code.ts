@@ -4,10 +4,11 @@
  */
 import { unescapeHTML } from '@rocket.chat/tools';
 
-import { addAsToken } from './token';
+import { addAsToken, hasHtml } from './token';
+import type { MarkdownMessage } from './token';
 import hljs, { register } from '../../hljs';
 
-const inlinecode = (message: any) => {
+const inlinecode = (message: MarkdownMessage & { html: string }) => {
 	// Support `text`
 	message.html = message.html.replace(/\`([^`\r\n]+)\`([<_*~]|\B|\b|$)/gm, (match: string, p1: string, p2: string) =>
 		addAsToken(
@@ -19,7 +20,7 @@ const inlinecode = (message: any) => {
 	);
 };
 
-const codeblocks = (message: any) => {
+const codeblocks = (message: MarkdownMessage & { html: string }) => {
 	// Count occurencies of ```
 	const count = (message.html.match(/```/gm) || []).length;
 
@@ -77,8 +78,8 @@ const codeblocks = (message: any) => {
 	}
 };
 
-export const code = (message: any) => {
-	if (message.html?.trim()) {
+export const code = <T extends MarkdownMessage>(message: T): T & MarkdownMessage => {
+	if (hasHtml(message)) {
 		codeblocks(message);
 		inlinecode(message);
 	}

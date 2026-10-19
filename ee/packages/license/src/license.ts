@@ -482,7 +482,7 @@ export abstract class LicenseManager extends Emitter<LicenseEvents> {
 				const cached = this.shouldPreventActionResults.get(limit);
 
 				if (cached !== undefined) {
-					return [limit, cached];
+					return [limit, cached] as const;
 				}
 
 				const fresh = license
@@ -499,11 +499,11 @@ export abstract class LicenseManager extends Emitter<LicenseEvents> {
 
 				this.shouldPreventActionResults.set(limit, fresh);
 
-				return [limit, fresh];
+				return [limit, fresh] as const;
 			}),
 		);
 
-		return Object.fromEntries(items);
+		return Object.fromEntries(items) as Record<LicenseLimitKind, boolean>;
 	}
 
 	public async shouldPreventAction<T extends LicenseLimitKind>(

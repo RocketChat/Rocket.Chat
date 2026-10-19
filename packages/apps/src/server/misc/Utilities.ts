@@ -19,7 +19,7 @@ export class Utilities {
 			}
 		});
 
-		return item;
+		return item as T;
 	}
 
 	public static deepCloneAndFreeze<T>(item: T): T {

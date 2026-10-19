@@ -1,6 +1,6 @@
 import { tracerActiveSpan } from '.';
 
-const getArguments = (args: any[]): any[] => {
+const getArguments = (args: unknown[]): any[] => {
 	return args.map((arg) => {
 		if (typeof arg === 'object' && arg != null && 'session' in arg) {
 			return '[mongo options with session]';

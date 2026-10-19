@@ -34,9 +34,9 @@ export const copyCustomFieldsLDAP = (
 		return;
 	}
 
-	const map: Record<string, string> = (() => {
+	const map: Record<string, string> | undefined = (() => {
 		try {
-			return JSON.parse(customFieldsMap);
+			return JSON.parse(customFieldsMap) as Record<string, string>;
 		} catch (err) {
 			logger.error({ msg: 'Error parsing LDAP custom fields map.', err });
 		}

@@ -72,7 +72,7 @@ export const handleLogin = <TLoginFunction extends (...args: any[]) => Promise<a
 				}
 
 				const { process2faAsyncReturn } = await import('./process2faReturn');
-				return process2faAsyncReturn({
+				return process2faAsyncReturn<unknown>({
 					emailOrUsername: typeof loginArgs[0] === 'string' ? loginArgs[0] : undefined,
 					error,
 					onCode: (code: string) => loginWithTOTP(...loginArgs, code),

@@ -4,7 +4,7 @@ import fetch from 'node-fetch';
 const validRepoNameRegex = /^[\w.-]+\/[\w.-]+$/;
 
 type RequestData = { kind: 'commit'; repo: string; commit: string } | { kind: 'pull'; repo: string; pull: number };
-type RequestDataResponse = { message: any; author: any; url: string; authorAssociation: any };
+type RequestDataResponse = { message: string; author: { login: string; url: string }; url: string; authorAssociation: string };
 
 type ReposWithCommitsAndPRsToFetch = Record<string, ({ kind: 'commit'; commit: string } | { kind: 'pull'; pull: number })[]>;
 
@@ -95,25 +95,26 @@ const GHDataLoader = new DataLoader<RequestData, RequestDataResponse>(
 				Authorization: `Token ${process.env.GITHUB_TOKEN}`,
 			},
 			body: JSON.stringify({ query: makeQuery(repos) }),
-		}).then((x: any) => x.json());
+		}).then((x) => x.json() as Promise<{ errors?: unknown; data?: Record<string, Record<string, RequestDataResponse>> }>);
 
 		if (data.errors) {
 			throw new Error(`An error occurred when fetching data from GitHub\n${JSON.stringify(data.errors, null, 2)}`);
 		}
 
 		// this is mainly for the case where there's an authentication problem
-		if (!data.data) {
+		const results = data.data;
+		if (!results) {
 			throw new Error(`An error occurred when fetching data from GitHub\n${JSON.stringify(data)}`);
 		}
 
-		const cleanedData: Record<string, { commit: Record<string, any>; pull: Record<string, any> }> = {};
+		const cleanedData: Record<string, { commit: Record<string, RequestDataResponse>; pull: Record<string, RequestDataResponse> }> = {};
 		Object.keys(repos).forEach((repo, index) => {
-			const output: { commit: Record<string, any>; pull: Record<string, any> } = {
+			const output: { commit: Record<string, RequestDataResponse>; pull: Record<string, RequestDataResponse> } = {
 				commit: {},
 				pull: {},
 			};
 			cleanedData[repo] = output;
-			Object.entries(data.data[`a${index}`]).forEach(([field, value]) => {
+			Object.entries(results[`a${index}`]).forEach(([field, value]) => {
 				// this is "a" because that's how it was when it was first written, "a" means it's a commit not a pr
 				// we could change it to commit__ but then we have to get new GraphQL results from the GH API to put in the tests
 				if (field[0] === 'a') {
@@ -165,7 +166,7 @@ export async function getCommitInfo(request: { commit: string; repo: string; pr?
 		};
 	}
 
-	const pr = request.pr || Number(prMatch[1]);
+	const pr = request.pr || Number(prMatch?.[1]);
 
 	const pullRequest = await GHDataLoader.load({ kind: 'pull', pull: pr, repo: request.repo });
 

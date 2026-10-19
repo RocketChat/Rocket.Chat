@@ -884,8 +884,8 @@ export class Agenda extends EventEmitter {
 
 			void job
 				.run()
-				.then((jobRan) => [null, jobRan])
-				.catch((error) => [error, job])
+				.then((jobRan): [Error | null, Job] => [null, jobRan])
+				.catch((error: Error): [Error | null, Job] => [error, job])
 				.then(([error, jobRan]) => this._processJobResult(error, jobRan));
 		} else {
 			// Run the job immediately by putting it on the top of the queue

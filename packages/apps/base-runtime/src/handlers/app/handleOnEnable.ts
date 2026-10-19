@@ -18,5 +18,5 @@ export default function handleOnEnable(request: RequestContext): Promise<boolean
 		wrapAppForRequest(app, request),
 		AppAccessorsInstance.getEnvironmentRead(),
 		AppAccessorsInstance.getConfigurationModify(),
-	);
+	) as Promise<boolean>;
 }

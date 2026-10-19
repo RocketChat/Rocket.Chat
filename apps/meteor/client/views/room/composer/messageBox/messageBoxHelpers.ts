@@ -7,7 +7,7 @@ import type { FormattingButton } from '../../../../lib/messageBoxFormatting';
 
 export const emptySubscribe = () => () => undefined;
 export const getEmptyFalse = () => false;
-const a: any[] = [];
+const a: never[] = [];
 export const getEmptyArray = () => a;
 
 export const isCmdOrCtrlPressed = (event: { metaKey: boolean; ctrlKey: boolean }) => {

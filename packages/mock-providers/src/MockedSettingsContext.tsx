@@ -10,7 +10,7 @@ const settingContextValue: ContextType<typeof SettingsContext> = {
 };
 
 const createSettingContextValue = ({ settings }: { settings?: Record<string, ISetting['value']> }): ContextType<typeof SettingsContext> => {
-	const cache = new Map<string, ISetting['value']>();
+	const cache = new Map<string, ISetting>();
 
 	return {
 		...settingContextValue,
@@ -19,10 +19,10 @@ const createSettingContextValue = ({ settings }: { settings?: Record<string, ISe
 				() => () => undefined,
 				() => {
 					if (cache.has(_id)) {
-						return cache.get(_id) as any;
+						return cache.get(_id);
 					}
-					cache.set(_id, { value: settings[_id] } as any);
-					return cache.get(_id) as any;
+					cache.set(_id, { value: settings[_id] } as ISetting);
+					return cache.get(_id);
 				},
 			],
 		}),

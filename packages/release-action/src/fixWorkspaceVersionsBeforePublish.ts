@@ -15,18 +15,18 @@ import { getExecOutput } from '@actions/exec';
 
 import { readPackageJson } from './utils';
 
-const DEPENDENCY_TYPES = ['dependencies', 'devDependencies', 'peerDependencies'];
+const DEPENDENCY_TYPES = ['dependencies', 'devDependencies', 'peerDependencies'] as const;
 
 export async function fixWorkspaceVersionsBeforePublish() {
 	const rawWorkspaces = await getExecOutput('yarn workspaces list --json');
 	const workspaces = rawWorkspaces.stdout
 		.trim()
 		.split('\n')
-		.map((line) => JSON.parse(line))
+		.map((line) => JSON.parse(line) as { name: string; location: string })
 		.filter((workspace) => workspace.location !== '.');
 
 	// Get the version of each workspace package.
-	const workspaceVersions = new Map();
+	const workspaceVersions = new Map<string, string>();
 	for (const workspace of workspaces) {
 		const packageJson = await readPackageJson(workspace.location);
 		workspaceVersions.set(workspace.name, packageJson.version);
@@ -37,9 +37,9 @@ export async function fixWorkspaceVersionsBeforePublish() {
 		const packageJson = await readPackageJson(workspace.location);
 
 		for (const dependencyType of DEPENDENCY_TYPES) {
-			const dependencies = Object.keys(packageJson[dependencyType] ?? {});
-			for (const dependency of dependencies) {
-				const dependencyVersion = packageJson[dependencyType][dependency];
+			const dependencies = packageJson[dependencyType] ?? {};
+			for (const dependency of Object.keys(dependencies)) {
+				const dependencyVersion = dependencies[dependency];
 				if (dependencyVersion.startsWith('workspace:')) {
 					const realVersion = workspaceVersions.get(dependency);
 					if (!realVersion) {
@@ -49,13 +49,13 @@ export async function fixWorkspaceVersionsBeforePublish() {
 					const semver = dependencyVersion.slice('workspace:'.length);
 
 					if (semver === '*') {
-						packageJson[dependencyType][dependency] = `=${realVersion}`;
+						dependencies[dependency] = `=${realVersion}`;
 					} else if (semver === '^') {
-						packageJson[dependencyType][dependency] = `^${realVersion}`;
+						dependencies[dependency] = `^${realVersion}`;
 					} else if (semver === '~') {
-						packageJson[dependencyType][dependency] = `~${realVersion}`;
+						dependencies[dependency] = `~${realVersion}`;
 					} else {
-						packageJson[dependencyType][dependency] = semver;
+						dependencies[dependency] = semver;
 					}
 				}
 			}

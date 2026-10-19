@@ -36,7 +36,7 @@ const useCustomTranslations = (i18n: typeof i18next) => {
 		}
 
 		try {
-			return JSON.parse(customTranslations);
+			return JSON.parse(customTranslations) as Record<string, Record<string, string>>;
 		} catch (e) {
 			console.error(e);
 			return undefined;
@@ -119,9 +119,9 @@ const useI18next = (lng: string): typeof i18next => {
 		// In some cases, the language will require a word to be in a different position than the default
 		// This enables the capitalization of words that are moved to the start of the sentence directly in the translation file
 		// Registered right after init(), not on 'initialized': with English bundled, init completes synchronously and that event has already fired.
-		i18n.services.formatter?.add('capitalize', (value) => {
+		i18n.services.formatter?.add('capitalize', (value: unknown) => {
 			if (typeof value !== 'string') {
-				return value;
+				return value as string;
 			}
 			return capitalize(value);
 		});

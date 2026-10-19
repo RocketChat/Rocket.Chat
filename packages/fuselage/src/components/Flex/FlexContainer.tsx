@@ -2,6 +2,7 @@ import type { ReactNode } from 'react';
 import { useCallback } from 'react';
 
 import { BoxTransforms, useComposedBoxTransform } from '../Box/BoxTransforms';
+import type { BoxTransformProps } from '../Box/BoxTransforms';
 
 export type FlexContainerProps = {
 	children?: ReactNode;
@@ -15,7 +16,7 @@ export type FlexContainerProps = {
 
 function FlexContainer({ inline = false, children, direction, wrap, alignItems, alignContent, justifyContent }: FlexContainerProps) {
 	const transformFn = useCallback(
-		(props: any) => {
+		(props: BoxTransformProps) => {
 			if (inline !== undefined && props.display === undefined) {
 				props.display = inline ? 'inline-flex' : 'flex';
 			}

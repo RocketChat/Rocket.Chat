@@ -2,8 +2,8 @@ import { countries } from 'countries-list';
 import { action } from 'storybook/actions';
 
 export const logSubmit =
-	<T extends (...args: any[]) => any>(onSubmit: T) =>
-	(...args: Parameters<T>): ReturnType<T> => {
+	<TArgs extends unknown[], TResult>(onSubmit: (...args: TArgs) => TResult) =>
+	(...args: TArgs): TResult => {
 		action('submit')(...args);
 		return onSubmit(...args);
 	};
@@ -13,8 +13,8 @@ const delay = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
 const simulateNetworkDelay = () => delay(3000 * Math.random());
 
 const fetchMock =
-	<T extends (...args: any[]) => any>(endpoint: string, handler: T) =>
-	async (...args: Parameters<T>): Promise<ReturnType<T>> => {
+	<TArgs extends unknown[], TResult>(endpoint: string, handler: (...args: TArgs) => TResult) =>
+	async (...args: TArgs): Promise<TResult> => {
 		action(`fetch(${endpoint})`)(...args);
 		await simulateNetworkDelay();
 		return handler(...args);

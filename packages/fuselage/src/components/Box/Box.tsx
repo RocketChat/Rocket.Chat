@@ -3,6 +3,7 @@ import type { AllHTMLAttributes, ElementType, RefAttributes, SVGAttributes } fro
 import { createElement, memo } from 'react';
 
 import { useBoxTransform, BoxTransforms } from './BoxTransforms';
+import type { BoxTransformProps } from './BoxTransforms';
 import type { StylingProps } from './stylingProps';
 import { useStylingProps } from './useStylingProps';
 import { useArrayLikeClassNameProp } from '../../hooks/useArrayLikeClassNameProp';
@@ -25,7 +26,7 @@ export type BoxProps = Partial<StylingProps> &
 	};
 
 function Box({ is = 'div', ...props }: BoxProps) {
-	let propsWithStringClassName = useArrayLikeClassNameProp(props);
+	let propsWithStringClassName: BoxTransformProps = useArrayLikeClassNameProp(props);
 
 	const transformFn = useBoxTransform();
 	if (transformFn) {

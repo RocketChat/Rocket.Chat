@@ -70,7 +70,7 @@ export class AppSignatureManager {
 		const allKeys: Array<string> = [];
 		const seen: Record<string, unknown> = {};
 
-		JSON.stringify(obj, (key, value) => {
+		JSON.stringify(obj, (key, value: unknown) => {
 			if (!(key in seen)) {
 				allKeys.push(key);
 				seen[key] = null;

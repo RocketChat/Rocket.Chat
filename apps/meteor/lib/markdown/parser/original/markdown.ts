@@ -1,9 +1,10 @@
 import { getMarkdownLinkRegexes } from './linkRegexes';
 import { addAsToken, isToken, validateAllowedTokens } from './token';
+import type { MarkdownMessage } from './token';
 
-const validateUrl = (url: string, message: any) => {
+const validateUrl = (url: string, message: MarkdownMessage) => {
 	// Don't render markdown inside links
-	if (message?.tokens?.some((token: any) => url.includes(token.token))) {
+	if (message?.tokens?.some((token) => url.includes(token.token))) {
 		return false;
 	}
 
@@ -31,13 +32,17 @@ const getTextWrapper = (marker: string, tagName: string) => (textPrepend: string
 	`${textPrepend}<span class="copyonly">${marker}</span><${tagName}>${wrappedText}</${tagName}><span class="copyonly">${marker}</span>${textAppend}`;
 
 const getRegexReplacer =
-	(replaceFunction: (...args: any[]) => string, getRegex: (marker: string) => RegExp) => (marker: string, tagName: string) => {
+	(
+		replaceFunction: (wrapper: ReturnType<typeof getTextWrapper>, match: string, ...groups: string[]) => string,
+		getRegex: (marker: string) => RegExp,
+	) =>
+	(marker: string, tagName: string) => {
 		const wrapper = getTextWrapper(marker, tagName);
 		// The regex only depends on the marker, so build it once when the parser is
 		// created instead of on every message. Safe with /g because
 		// String.prototype.replace resets lastIndex on each call.
 		const regex = getRegex(marker);
-		return (msg: string) => msg.replace(regex, (...args) => replaceFunction(wrapper, ...args));
+		return (msg: string) => msg.replace(regex, (match: string, ...groups: string[]) => replaceFunction(wrapper, match, ...groups));
 	};
 
 const getParserWithCustomMarker = getRegexReplacer(
@@ -68,7 +73,7 @@ const parseItalic = getRegexReplacer(
 )('_', 'em');
 
 const parseNotEscaped = (
-	message: any,
+	message: MarkdownMessage & { html: string },
 	{ supportSchemesForLink, headers, rootUrl }: { supportSchemesForLink: string; headers: boolean; rootUrl: string },
 ) => {
 	let msg = message.html;
@@ -183,7 +188,7 @@ const parseNotEscaped = (
 	return msg;
 };
 
-export const markdown = (message: any, options: any) => {
+export const markdown = <T extends MarkdownMessage & { html: string }>(message: T, options: any): T => {
 	message.html = parseNotEscaped(message, options);
 	return message;
 };

@@ -1,8 +1,8 @@
 import proxyquire from 'proxyquire';
 
-export type MarkdownToken = { token: string; type?: string; text: string; noHtml?: string };
+import type { MarkdownMessage } from '../../../../lib/markdown/parser/original/token';
 
-export type ParsedMessage = { html?: string; msg?: string; tokens?: MarkdownToken[] };
+export type ParsedMessage = MarkdownMessage;
 
 export type MarkdownOptions = { supportSchemesForLink?: string; headers?: boolean; rootUrl?: string };
 
@@ -24,9 +24,9 @@ export const { filterMarkdown } = proxyquire
 	.noCallThru()
 	.load('../../../../lib/markdown/parser/filtered/filtered', mocks) as typeof import('../../../../lib/markdown/parser/filtered/filtered');
 
-export const { original } = proxyquire.noCallThru().load('../../../../lib/markdown/parser/original/original', mocks) as {
-	original: (message: ParsedMessage, options?: MarkdownOptions) => ParsedMessage;
-};
+export const { original } = proxyquire
+	.noCallThru()
+	.load('../../../../lib/markdown/parser/original/original', mocks) as typeof import('../../../../lib/markdown/parser/original/original');
 
 export const { code } = proxyquire
 	.noCallThru()

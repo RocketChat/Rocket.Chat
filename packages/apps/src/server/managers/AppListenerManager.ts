@@ -259,7 +259,7 @@ export interface IListenerExecutor {
 export class AppListenerManager {
 	private listeners: Map<string, Array<string>>;
 
-	private defaultHandlers = new Map<string, any>();
+	private defaultHandlers = new Map<string, IUIKitResponse>();
 
 	/**
 	 * Locked events are those who are listed in an app's
@@ -987,7 +987,7 @@ export class AppListenerManager {
 						message: data.message,
 						container: data.container,
 					})
-					.catch(handleError(method));
+					.catch(handleError(method)) as Promise<IUIKitResponse>;
 			}
 			case UIKitIncomingInteractionType.VIEW_SUBMIT: {
 				const method = 'executeViewSubmitHandler';
@@ -1002,7 +1002,7 @@ export class AppListenerManager {
 						triggerId,
 						user,
 					})
-					.catch(handleError(method));
+					.catch(handleError(method)) as Promise<IUIKitResponse>;
 			}
 			case UIKitIncomingInteractionType.VIEW_CLOSED: {
 				const method = 'executeViewClosedHandler';
@@ -1017,7 +1017,7 @@ export class AppListenerManager {
 						isCleared,
 						user,
 					})
-					.catch(handleError(method));
+					.catch(handleError(method)) as Promise<IUIKitResponse>;
 			}
 			case 'actionButton': {
 				const method = 'executeActionButtonHandler';
@@ -1034,7 +1034,7 @@ export class AppListenerManager {
 							threadId: data.tmid,
 							...('message' in data.payload && { text: data.payload.message }),
 						})
-						.catch(handleError(method));
+						.catch(handleError(method)) as Promise<IUIKitResponse>;
 				}
 
 				return app
@@ -1047,7 +1047,7 @@ export class AppListenerManager {
 						user,
 						...('message' in data && { message: data.message }),
 					})
-					.catch(handleError(method));
+					.catch(handleError(method)) as Promise<IUIKitResponse>;
 			}
 		}
 	}
@@ -1089,7 +1089,7 @@ export class AppListenerManager {
 			}
 		})(type, data);
 
-		return app.call(method, interactionData);
+		return app.call(method, interactionData) as Promise<IUIKitResponse>;
 	}
 
 	// Livechat

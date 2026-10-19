@@ -120,7 +120,7 @@ export class AccountImpl extends Emitter<AccountEvents> implements Account {
 		} = result;
 		this.saveCredentials(id, resultToken, $date);
 
-		return result;
+		return result as Awaited<ReturnType<Account['loginWithToken']>>;
 	}
 
 	async logout(): Promise<void> {

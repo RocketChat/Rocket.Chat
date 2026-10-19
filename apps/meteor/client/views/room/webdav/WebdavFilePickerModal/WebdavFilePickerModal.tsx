@@ -55,13 +55,13 @@ const WebdavFilePickerModal = ({ onUpload, onClose, account }: WebdavFilePickerM
 						const imgURL = URL.createObjectURL(blob);
 						nodes[index].preview = imgURL;
 					})
-					.catch((e) => e);
+					.catch((e: unknown) => e);
 			})
 			.filter(Boolean);
 
 		return Promise.all(promises)
 			.then(() => nodes)
-			.catch((e) => e);
+			.catch((e: unknown) => e);
 	});
 
 	const handleFilterNodes = useCallback(

@@ -290,10 +290,10 @@ export const createDataAPI = ({ rid, tmid }: { rid: IRoom['_id']; tmid: IMessage
 		return discussion;
 	};
 
-	const createStrictGetter = <TFind extends (...args: any[]) => Promise<any>>(
-		find: TFind,
+	const createStrictGetter = <TArgs extends unknown[], TResult>(
+		find: (...args: TArgs) => Promise<TResult | undefined>,
 		errorMessage: string,
-	): ((...args: Parameters<TFind>) => Promise<Exclude<Awaited<ReturnType<TFind>>, undefined>>) => {
+	): ((...args: TArgs) => Promise<TResult>) => {
 		return async (...args) => {
 			const result = await find(...args);
 

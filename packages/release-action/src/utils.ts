@@ -54,7 +54,7 @@ export function getChangelogEntry(changelog: string, version: string) {
 		}
 	}
 	if (headingStartInfo) {
-		(ast as any).children = ((ast as any).children as any).slice(headingStartInfo.index + 1, endIndex);
+		(ast as any).children = nodes.slice(headingStartInfo.index + 1, endIndex);
 	}
 	return {
 		content: unified().use(remarkStringify).stringify(ast),
@@ -62,9 +62,16 @@ export function getChangelogEntry(changelog: string, version: string) {
 	};
 }
 
-export async function readPackageJson(cwd: string) {
+type PackageJson = {
+	name: string;
+	version: string;
+	engines: { node: string; yarn: string; npm: string };
+	houston?: { updateFiles?: string[] };
+} & Partial<Record<'dependencies' | 'devDependencies' | 'peerDependencies', Record<string, string>>>;
+
+export async function readPackageJson(cwd: string): Promise<PackageJson> {
 	const filePath = path.resolve(cwd, 'package.json');
-	return JSON.parse(await readFile(filePath, 'utf-8'));
+	return JSON.parse(await readFile(filePath, 'utf-8')) as PackageJson;
 }
 
 async function getUpdateFilesList(cwd: string): Promise<string[]> {

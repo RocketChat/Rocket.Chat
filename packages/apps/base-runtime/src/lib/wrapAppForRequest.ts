@@ -10,7 +10,7 @@ export function wrapAppForRequest(app: App, req: RequestContext): App {
 				return req.context.logger;
 			}
 
-			return Reflect.get(target, property, receiver);
+			return Reflect.get(target, property, receiver) as unknown;
 		},
 	});
 }

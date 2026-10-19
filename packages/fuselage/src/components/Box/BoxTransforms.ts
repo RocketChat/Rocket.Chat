@@ -1,10 +1,16 @@
 import { createContext, useContext, useMemo } from 'react';
 
-export const BoxTransforms = createContext<null | ((props: any) => any)>(null);
+import type { BoxProps } from './Box';
+
+export type BoxTransformProps = Omit<BoxProps, 'is' | 'className'> & { className?: string };
+
+type BoxTransform = (props: BoxTransformProps) => BoxTransformProps;
+
+export const BoxTransforms = createContext<null | BoxTransform>(null);
 
 export const useBoxTransform = () => useContext(BoxTransforms);
 
-export const useComposedBoxTransform = (fn: (props: any) => any) => {
+export const useComposedBoxTransform = (fn: BoxTransform) => {
 	const parentFn = useContext(BoxTransforms);
 
 	return useMemo(() => {
@@ -16,6 +22,6 @@ export const useComposedBoxTransform = (fn: (props: any) => any) => {
 			return parentFn;
 		}
 
-		return (props: any) => fn(parentFn(props));
+		return (props: BoxTransformProps) => fn(parentFn(props));
 	}, [fn, parentFn]);
 };

@@ -8,7 +8,7 @@ import styles from './styles.scss';
 
 export type FileAttachmentProps = {
 	url: string;
-	title: string;
+	title?: string;
 	className?: string;
 	quoted?: boolean;
 };

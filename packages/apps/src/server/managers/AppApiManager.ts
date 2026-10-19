@@ -134,7 +134,7 @@ export class AppApiManager {
 			return [];
 		}
 
-		const result = [];
+		const result: Array<IApiEndpointMetadata> = [];
 
 		for (const api of apis.values()) {
 			const metadata: IApiEndpointMetadata = {

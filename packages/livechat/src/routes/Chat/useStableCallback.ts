@@ -5,5 +5,5 @@ export const useStableCallback = <TFunction extends (...args: any[]) => any>(cal
 
 	callbackRef.current = callback;
 
-	return useCallback(((...args) => callbackRef.current(...args)) as TFunction, []);
+	return useCallback(((...args: unknown[]): unknown => callbackRef.current(...args)) as TFunction, []);
 };

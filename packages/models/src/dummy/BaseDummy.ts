@@ -94,7 +94,7 @@ export class BaseDummy<
 		_query?: Filter<T>,
 		_options?: O,
 	): FindCursor<DocumentWithProjection<P, O>> {
-		return undefined as any;
+		return undefined as unknown as FindCursor<DocumentWithProjection<P, O>>;
 	}
 
 	findPaginated<P extends Document = T, O extends FindOptionsWithProjection<P> = FindOptionsWithProjection<P>>(
@@ -195,7 +195,7 @@ export class BaseDummy<
 		_query?: Filter<TDeleted>,
 		_options?: FindOptions<P extends TDeleted ? TDeleted : P>,
 	): FindCursor<WithId<TDeleted>> {
-		return undefined as any;
+		return undefined as unknown as FindCursor<WithId<TDeleted>>;
 	}
 
 	trashFindPaginatedDeletedAfter<P extends Document = TDeleted>(
@@ -210,7 +210,7 @@ export class BaseDummy<
 	}
 
 	watch(_pipeline?: object[]): ChangeStream<T> {
-		return undefined as any;
+		return undefined as unknown as ChangeStream<T>;
 	}
 
 	async countDocuments(): Promise<number> {

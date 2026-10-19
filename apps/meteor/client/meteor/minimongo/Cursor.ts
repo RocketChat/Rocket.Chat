@@ -103,7 +103,7 @@ export class Cursor<T extends { _id: string }, TOptions extends Options<T>> {
 
 		const transform = (doc: any, ruleTree: Record<string, unknown>): any => {
 			if (Array.isArray(doc)) {
-				return doc.map((subdoc) => transform(subdoc, ruleTree));
+				return doc.map((subdoc): unknown => transform(subdoc, ruleTree));
 			}
 
 			const result = details.including ? {} : clone(doc);
@@ -128,7 +128,7 @@ export class Cursor<T extends { _id: string }, TOptions extends Options<T>> {
 		};
 
 		return (doc: T | Omit<T, '_id'>) => {
-			const result = transform(doc, details.tree);
+			const result: Partial<T> = transform(doc, details.tree);
 
 			if (_idProjection && '_id' in doc) {
 				result._id = doc._id;
@@ -253,7 +253,7 @@ export class Cursor<T extends { _id: string }, TOptions extends Options<T>> {
 
 			const id = doc._id;
 
-			const transformed = Tracker.nonreactive(() => transform(doc));
+			const transformed = Tracker.nonreactive((): unknown => transform(doc));
 
 			if (!isPlainObject(transformed)) {
 				throw new MinimongoError('transform must return object');

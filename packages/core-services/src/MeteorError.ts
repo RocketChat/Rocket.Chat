@@ -11,14 +11,14 @@ export class MeteorError extends Error {
 		super(`${reason ? `${reason} ` : ''}[${String(error)}]`);
 	}
 
-	public toJSON(): any {
+	public toJSON(): Record<string, unknown> {
 		return {
 			isClientSafe: this.isClientSafe,
 			errorType: this.errorType,
 			error: this.error,
 			reason: this.reason,
 			message: this.message,
-			...(this.details && { details: this.details }),
+			...(this.details ? { details: this.details } : {}),
 		};
 	}
 }

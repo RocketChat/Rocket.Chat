@@ -24,13 +24,13 @@ export default async function outboundMessageHandler(request: RequestContext): P
 		logger.debug(`Executing ${methodName} on outbound communication provider...`);
 
 		// eslint-disable-next-line @typescript-eslint/no-unsafe-function-type
-		return await (method as Function).apply(wrapComposedApp(provider, request), [
+		return (await (method as Function).apply(wrapComposedApp(provider, request), [
 			...args,
 			AppAccessorsInstance.getReader(),
 			AppAccessorsInstance.getModifier(),
 			AppAccessorsInstance.getHttp(),
 			AppAccessorsInstance.getPersistence(),
-		]);
+		])) as Defined;
 	} catch (e) {
 		return new JsonRpcError(e.message, SERVER_ERROR);
 	}

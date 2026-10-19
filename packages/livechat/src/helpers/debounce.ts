@@ -9,7 +9,9 @@ export const debounce = <TFunction extends (...args: any[]) => any>(
 
 	function f(this: ThisParameterType<TFunction>, ...args: Parameters<TFunction>) {
 		clearTimeout(inDebounce);
-		inDebounce = setTimeout(() => func.apply(this, args), delay);
+		inDebounce = setTimeout(() => {
+			func.apply(this, args);
+		}, delay);
 		return this;
 	}
 

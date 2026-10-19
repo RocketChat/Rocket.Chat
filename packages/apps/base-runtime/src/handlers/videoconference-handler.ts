@@ -44,7 +44,7 @@ export default async function videoConferenceHandler(request: RequestContext): P
 
 		logger.debug(`Video Conference Provider's ${methodName} was successfully executed.`);
 
-		return result;
+		return result as Defined;
 	} catch (e) {
 		logger.debug(`Video Conference Provider's ${methodName} was unsuccessful.`);
 		return new JsonRpcError(e.message, SERVER_ERROR);

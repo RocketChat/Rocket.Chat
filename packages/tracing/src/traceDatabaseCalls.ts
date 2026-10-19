@@ -1,9 +1,9 @@
-import type { Tracer } from '@opentelemetry/api';
+import type { Span, Tracer } from '@opentelemetry/api';
 import { trace, context, SpanStatusCode } from '@opentelemetry/api';
-import type { MongoClient } from 'mongodb';
+import type { CommandStartedEvent, MongoClient } from 'mongodb';
 
 export const initDatabaseTracing = (tracer: Tracer, client: MongoClient) => {
-	const DurationStart = new Map();
+	const DurationStart = new Map<number, { event: CommandStartedEvent; span: Span }>();
 
 	client.on('commandStarted', (event) => {
 		const collection = event.command[event.commandName];
@@ -18,7 +18,7 @@ export const initDatabaseTracing = (tracer: Tracer, client: MongoClient) => {
 					'db.operation': event.commandName,
 					'db.statement': JSON.stringify(
 						event.command,
-						(_key, value) => {
+						(_key, value: unknown) => {
 							// Support for tracing MongoDB commands with RegExp
 							if (value instanceof RegExp) {
 								return value.toString();
@@ -38,22 +38,24 @@ export const initDatabaseTracing = (tracer: Tracer, client: MongoClient) => {
 	});
 
 	client.on('commandSucceeded', (event) => {
-		if (!DurationStart.has(event.requestId)) {
+		const entry = DurationStart.get(event.requestId);
+		if (!entry) {
 			return;
 		}
 
-		const { span } = DurationStart.get(event.requestId);
+		const { span } = entry;
 		DurationStart.delete(event.requestId);
 
 		span.end();
 	});
 
 	client.on('commandFailed', (event) => {
-		if (!DurationStart.has(event.requestId)) {
+		const entry = DurationStart.get(event.requestId);
+		if (!entry) {
 			return;
 		}
 
-		const { span } = DurationStart.get(event.requestId);
+		const { span } = entry;
 
 		DurationStart.delete(event.requestId);
 

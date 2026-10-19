@@ -890,7 +890,7 @@ export class FederationMatrix extends ServiceClass implements IFederationMatrixS
 	async verifyMatrixIds(matrixIds: string[]): Promise<{ [key: string]: string }> {
 		const results = Object.fromEntries(
 			await Promise.all(
-				matrixIds.map(async (matrixId) => {
+				matrixIds.map(async (matrixId): Promise<[string, string]> => {
 					// Split only on the first ':' (after the leading '@') so we keep any port in the homeserver
 					const separatorIndex = matrixId.indexOf(':', 1);
 					if (separatorIndex === -1) {

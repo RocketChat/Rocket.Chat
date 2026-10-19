@@ -3,7 +3,7 @@ import { BSONType } from './types';
 
 export function assertHasValidFieldNames(doc: unknown) {
 	if (doc && typeof doc === 'object') {
-		JSON.stringify(doc, (key, value) => {
+		JSON.stringify(doc, (key, value: unknown) => {
 			assertIsValidFieldName(key);
 			return value;
 		});
@@ -34,7 +34,7 @@ export const isBinary = (x: unknown): x is Uint8Array => typeof x === 'object' &
 
 const isArguments = (x: unknown): x is IArguments => Object.prototype.toString.call(x) === '[object Arguments]';
 
-export const clone: <T>(v: T) => T = (v: unknown) => {
+export const clone = ((v: unknown): unknown => {
 	if (typeof v !== 'object') {
 		return v;
 	}
@@ -60,19 +60,19 @@ export const clone: <T>(v: T) => T = (v: unknown) => {
 	}
 
 	if (Array.isArray(v)) {
-		return v.map(clone);
+		return (v as unknown[]).map(clone);
 	}
 
 	if (isArguments(v)) {
-		return Array.from(v, clone);
+		return Array.from<unknown, unknown>(v, clone);
 	}
 
 	if ('clone' in v && typeof v.clone === 'function') {
-		return v.clone();
+		return (v as { clone: () => unknown }).clone();
 	}
 
 	return Object.fromEntries(Object.entries(v).map(([key, value]) => [key, clone(value)]));
-};
+}) as <T>(v: T) => T;
 
 export const isNumericKey = (s: string) => /^\d+$/.test(s);
 

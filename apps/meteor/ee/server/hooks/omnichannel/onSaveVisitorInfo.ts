@@ -31,7 +31,7 @@ const updatePriority = async (room: IOmnichannelRoom, user: Required<Pick<IUser,
 
 callbacks.add(
 	'livechat.saveInfo',
-	async (room, { user, oldRoom }: any) => {
+	async (room: IOmnichannelRoom, { user, oldRoom }: any) => {
 		const { slaId: oldSlaId, priorityId: oldPriorityId } = oldRoom;
 		const { slaId: newSlaId, priorityId: newPriorityId } = room;
 
@@ -46,7 +46,7 @@ callbacks.add(
 			await Promise.all([updateSLA(room, user, newSlaId), updatePriority(room, user, newPriorityId)]);
 		}
 
-		return room as any;
+		return room;
 	},
 	callbacks.priority.HIGH,
 	'livechat-on-save-room-info',

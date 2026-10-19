@@ -36,7 +36,7 @@ export const useMessageboxAppsActionButtons = () => {
 									actionId: action.actionId,
 									payload: { context: action.context, message: params.chat.composer?.text ?? '' },
 								})
-								.catch(async (reason) => {
+								.catch(async (reason: unknown) => {
 									if (reason instanceof UiKitTriggerTimeoutError) {
 										dispatchToastMessage({
 											type: 'error',

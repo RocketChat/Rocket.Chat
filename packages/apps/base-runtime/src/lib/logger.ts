@@ -92,7 +92,7 @@ export class Logger implements ILogger {
 				return JSON.stringify(args, Object.getOwnPropertyNames(args));
 			}
 			const str = JSON.stringify(args, null, 2);
-			return str ? JSON.parse(str) : str; // force call toJSON to prevent circular references
+			return str ? (JSON.parse(str) as unknown) : str; // force call toJSON to prevent circular references
 		});
 
 		this.entries.push({

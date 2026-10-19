@@ -110,7 +110,7 @@ const ServerContextMock = ({ children, baseURL, callEndpoint = {}, callMethod = 
 
 			if (!handler) {
 				logAction('callEndpoint (undefined)', method, pathPattern, params);
-				return undefined as any;
+				return undefined as unknown as Serialized<OperationResult<TMethod, TPathPattern>>;
 			}
 
 			if (handler === 'infinite') {
@@ -134,12 +134,12 @@ const ServerContextMock = ({ children, baseURL, callEndpoint = {}, callMethod = 
 			const handler = callMethod[methodName];
 			if (!handler) {
 				logAction('callMethod (undefined)', methodName, ...args);
-				return undefined as any;
+				return undefined as unknown as ServerMethodReturn<MethodName>;
 			}
 
 			if (handler === 'infinite') {
 				logAction('callMethod (infinite)', methodName, ...args);
-				return new Promise<any>(() => undefined);
+				return new Promise<ServerMethodReturn<MethodName>>(() => undefined);
 			}
 
 			if (handler === 'errored') {

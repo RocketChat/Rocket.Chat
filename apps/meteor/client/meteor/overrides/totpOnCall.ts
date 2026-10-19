@@ -5,10 +5,10 @@ import type { LoginCallback } from '../../lib/2fa/overrideLoginMethod';
 import { process2faReturn, process2faAsyncReturn } from '../../lib/2fa/process2faReturn';
 import { isTotpInvalidError } from '../../lib/2fa/utils';
 
-const withSyncTOTP = (call: (name: string, ...args: any[]) => any) => {
+const withSyncTOTP = (call: (name: string, ...args: unknown[]) => unknown) => {
 	const callWithTotp =
 		(methodName: string, args: unknown[], callback: LoginCallback) =>
-		(twoFactorCode: string, twoFactorMethod: string): void =>
+		(twoFactorCode: string, twoFactorMethod: string): void => {
 			call(
 				methodName,
 				...args,
@@ -22,6 +22,7 @@ const withSyncTOTP = (call: (name: string, ...args: any[]) => any) => {
 					callback(error, result);
 				},
 			);
+		};
 
 	const callWithoutTotp = (methodName: string, args: unknown[], callback: LoginCallback) => (): unknown =>
 		call(
@@ -45,8 +46,8 @@ const withSyncTOTP = (call: (name: string, ...args: any[]) => any) => {
 	};
 };
 
-const withAsyncTOTP = <T extends (name: string, ...args: any[]) => Promise<any>>(callAsync: T): T => {
-	return async function callAsyncWithTOTP(methodName: string, ...args: unknown[]): Promise<ReturnType<T>> {
+const withAsyncTOTP = <T extends (name: string, ...args: unknown[]) => Promise<unknown>>(callAsync: T): T => {
+	return async function callAsyncWithTOTP(methodName: string, ...args: unknown[]): Promise<unknown> {
 		try {
 			return await callAsync(methodName, ...args);
 		} catch (error: unknown) {

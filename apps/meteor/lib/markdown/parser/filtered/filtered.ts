@@ -8,7 +8,7 @@ const inlineCodeRegex = /`([^`\r\n]+)`/gm;
  * @param {string} message
  */
 export const filtered = (
-	message: any,
+	message: string,
 	options = {
 		supportSchemesForLink: 'http,https',
 	},
@@ -53,4 +53,4 @@ export const filtered = (
 };
 
 /** @param {string} message */
-export const filterMarkdown = (message: any) => filtered(message);
+export const filterMarkdown = (message: string) => filtered(message);

@@ -19,7 +19,7 @@ export function decode(data: WebSocket.Data, isBinary: boolean): IPacket {
 	const packet = data.toString();
 
 	const payload = packet.startsWith('[') ? JSON.parse(packet)[0] : packet;
-	return ejson.parse(payload);
+	return ejson.parse(payload) as IPacket;
 }
 
 const serializeError = (error: Error | MeteorError): object => (isMeteorError(error) ? error.toJSON() : error);

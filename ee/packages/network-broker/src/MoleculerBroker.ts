@@ -44,8 +44,9 @@ export class MoleculerBroker implements IBroker {
 		const stream = data?.[0]?.streamParam;
 		const isStreamingCall = !!stream;
 
-		if (context?.ctx?.call) {
-			return context.ctx.call(method, isStreamingCall ? stream : data, {
+		const ctx = context?.ctx as Context | undefined;
+		if (ctx?.call) {
+			return ctx.call(method, isStreamingCall ? stream : data, {
 				...options,
 				...(isStreamingCall && { meta: { ...((options as any)?.meta || {}), details: data[0].details } }),
 			});
@@ -80,7 +81,7 @@ export class MoleculerBroker implements IBroker {
 	createService(instance: IServiceClass, serviceDependencies: string[] = []): void {
 		const methods = getInstanceMethods(instance);
 
-		const serviceInstance = instance as any;
+		const serviceInstance = instance as unknown as Record<string, (...args: unknown[]) => void>;
 
 		const name = instance.getName();
 		if (!name) {

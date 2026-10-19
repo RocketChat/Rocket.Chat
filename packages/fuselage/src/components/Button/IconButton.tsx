@@ -81,7 +81,7 @@ function IconButton({
 	);
 
 	const kindAndVariantProps = useMemo(() => {
-		const variantProp = {} as any;
+		const variantProp: Record<string, boolean> = {};
 		if (variant) {
 			variantProp[`${getVariantClass(variant)}`] = true;
 		}

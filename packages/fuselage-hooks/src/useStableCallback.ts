@@ -18,7 +18,7 @@ export const useStableCallback = <TFunction extends (...args: any[]) => any>(fn:
 	type P = TFunction extends (...args: infer P) => any ? P : never;
 	type T = TFunction extends (...args: any) => infer T ? T : never;
 
-	const stableFnRef = useRef((...args: P): T => fnRef.current.call(undefined, ...args));
+	const stableFnRef = useRef((...args: P): T => fnRef.current.call(undefined, ...args) as T);
 
 	useIsomorphicLayoutEffect(() => {
 		fnRef.current = fn;

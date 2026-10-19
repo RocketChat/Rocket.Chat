@@ -11,7 +11,7 @@ import { notifyOnRoomChangedById } from '../../../../server/lib/notifyListener';
 import { closeRoom } from '../../../../server/lib/omnichannel/closeRoom';
 import { settings } from '../../../../server/settings';
 
-const isPromiseRejectedResult = (result: any): result is PromiseRejectedResult => result && result.status === 'rejected';
+const isPromiseRejectedResult = (result: PromiseSettledResult<unknown>): result is PromiseRejectedResult => result?.status === 'rejected';
 
 export class VisitorInactivityMonitor {
 	_started: boolean;
@@ -108,7 +108,7 @@ export class VisitorInactivityMonitor {
 			OmnichannelEEService.placeRoomOnHold(room, comment, this.user),
 			LivechatRooms.unsetPredictedVisitorAbandonmentByRoomId(room._id),
 		]);
-		const rejected = result.filter(isPromiseRejectedResult).map((r) => r.reason);
+		const rejected = result.filter(isPromiseRejectedResult).map((r): unknown => r.reason);
 		if (rejected.length) {
 			this.logger.error({ msg: 'Error placing room on hold', error: rejected });
 			throw new Error('Error placing room on hold. Please check logs for more details.');
@@ -142,7 +142,7 @@ export class VisitorInactivityMonitor {
 
 		const result = await Promise.allSettled(promises);
 
-		const errors = result.filter(isPromiseRejectedResult).map((r) => r.reason);
+		const errors = result.filter(isPromiseRejectedResult).map((r): unknown => r.reason);
 
 		if (errors.length) {
 			this.logger.error({ msg: 'Error while removing priority from rooms', count: errors.length, reason: errors[0] });

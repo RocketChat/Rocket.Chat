@@ -36,7 +36,7 @@ const appsNotifyAppRequests = async function _appsNotifyAppRequests() {
 
 		const pendingSentUrl = `v1/app-request/sent/pending`;
 		const result = await Apps.getMarketplaceClient().fetch(pendingSentUrl, options);
-		const { data } = await result.json();
+		const { data } = (await result.json()) as { data: string[] };
 		const filtered = installedApps.filter((app) => data.indexOf(app.getID()) !== -1);
 
 		for await (const app of filtered) {
@@ -50,7 +50,7 @@ const appsNotifyAppRequests = async function _appsNotifyAppRequests() {
 					await Apps.getMarketplaceClient().fetch(`v1/app-request/markAsSent/${appId}`, { ...options, method: 'POST' });
 					return response;
 				})
-				.catch((err) => {
+				.catch((err): unknown => {
 					Apps.debugLog(`could not send app request notifications for app ${appId}. Error: ${err}`);
 					return err;
 				});

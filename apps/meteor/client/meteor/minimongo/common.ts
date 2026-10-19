@@ -8,7 +8,7 @@ const isBinary = (x: unknown): x is Uint8Array => typeof x === 'object' && x !==
 
 const isArguments = (x: unknown): x is IArguments => Object.prototype.toString.call(x) === '[object Arguments]';
 
-export const clone: <T>(v: T) => T = (v: unknown) => {
+const cloneValue = (v: unknown): unknown => {
 	if (typeof v !== 'object') {
 		return v;
 	}
@@ -34,19 +34,21 @@ export const clone: <T>(v: T) => T = (v: unknown) => {
 	}
 
 	if (Array.isArray(v)) {
-		return v.map(clone);
+		return v.map((item: unknown) => cloneValue(item));
 	}
 
 	if (isArguments(v)) {
-		return Array.from(v).map(clone);
+		return Array.from(v, (item: unknown) => cloneValue(item));
 	}
 
 	if ('clone' in v && typeof v.clone === 'function') {
-		return v.clone();
+		return (v as { clone: () => unknown }).clone();
 	}
 
-	return Object.fromEntries(entriesOf(v).map(([key, value]) => [key, clone(value)]));
+	return Object.fromEntries(entriesOf(v).map(([key, value]) => [key, cloneValue(value)]));
 };
+
+export const clone = <T>(v: T): T => cloneValue(v) as T;
 
 export const equals = <T>(a: T, b: T): boolean => {
 	if (a === b) {
@@ -111,7 +113,7 @@ export const equals = <T>(a: T, b: T): boolean => {
 	return true;
 };
 
-export const isPlainObject = (x: any): x is Record<string, any> => x && getBSONType(x) === 3;
+export const isPlainObject = (x: any): x is Record<string, any> => Boolean(x) && getBSONType(x) === 3;
 
 const invalidCharMsg = {
 	'$': "start with '$'",
@@ -121,7 +123,7 @@ const invalidCharMsg = {
 
 export function assertHasValidFieldNames(doc: unknown) {
 	if (doc && typeof doc === 'object') {
-		JSON.stringify(doc, (key, value) => {
+		JSON.stringify(doc, (key, value: unknown) => {
 			assertIsValidFieldName(key);
 			return value;
 		});

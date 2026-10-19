@@ -2,7 +2,7 @@ import type { ILivechatTrigger, ILivechatTriggerAction, ILivechatTriggerConditio
 import { Emitter } from '@rocket.chat/emitter';
 
 import { Livechat } from '../api';
-import store from '../store';
+import store, { type TriggerRecord } from '../store';
 import { actions } from './triggerActions';
 import { conditions } from './triggerConditions';
 import { hasTriggerCondition, isInIframe } from './triggerUtils';
@@ -175,7 +175,7 @@ class Triggers {
 		return !trigger.runOnce || record?.status !== 'fired';
 	}
 
-	_updateRecord(id: string, data: Record<string, any>) {
+	_updateRecord(id: string, data: Omit<TriggerRecord, 'id'>) {
 		const { triggersRecords = {} } = store.state;
 		const oldRecord = this._findRecordById(id);
 		const newRecord = { ...oldRecord, id, ...data };
@@ -185,7 +185,7 @@ class Triggers {
 
 	_findRecordsByStatus(status: string[]) {
 		const { triggersRecords = {} } = store.state;
-		const records: any[] = Object.values(triggersRecords);
+		const records = Object.values(triggersRecords);
 
 		return records.filter((e) => status.includes(e.status));
 	}

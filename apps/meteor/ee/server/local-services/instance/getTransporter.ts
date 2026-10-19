@@ -12,6 +12,6 @@ export function getTransporter({ transporter, port, extra }: { transporter?: str
 		port: port ? port.trim() : 0,
 		udpDiscovery: false,
 		useHostname: false,
-		...(extra ? JSON.parse(extra) : {}),
+		...(extra ? (JSON.parse(extra) as Record<string, unknown>) : {}),
 	};
 }

@@ -1,4 +1,4 @@
-import type { IMessage, ITranslatedMessage, MessageAttachment } from '@rocket.chat/core-typings';
+import type { IEditedMessage, IMessage, ITranslatedMessage, MessageAttachment } from '@rocket.chat/core-typings';
 import {
 	isFileAttachment,
 	isE2EEMessage,
@@ -115,18 +115,19 @@ export const removePossibleNullMessageValues = <TMessage extends IMessage = IMes
 	attachments,
 	reactions,
 	...message
-}: any): TMessage => ({
-	...message,
-	...(isNotNullOrUndefined(editedBy) && { editedBy }),
-	...(isNotNullOrUndefined(editedAt) && { editedAt }),
-	...(isNotNullOrUndefined(emoji) && { emoji }),
-	...(isNotNullOrUndefined(avatar) && { avatar }),
-	...(isNotNullOrUndefined(alias) && { alias }),
-	...(isNotNullOrUndefined(customFields) && { customFields }),
-	...(isNotNullOrUndefined(groupable) && { groupable }),
-	...(isNotNullOrUndefined(attachments) && { attachments }),
-	...(isNotNullOrUndefined(reactions) && { reactions }),
-});
+}: TMessage & Partial<Pick<IEditedMessage, 'editedAt' | 'editedBy'>>): TMessage =>
+	({
+		...message,
+		...(isNotNullOrUndefined(editedBy) && { editedBy }),
+		...(isNotNullOrUndefined(editedAt) && { editedAt }),
+		...(isNotNullOrUndefined(emoji) && { emoji }),
+		...(isNotNullOrUndefined(avatar) && { avatar }),
+		...(isNotNullOrUndefined(alias) && { alias }),
+		...(isNotNullOrUndefined(customFields) && { customFields }),
+		...(isNotNullOrUndefined(groupable) && { groupable }),
+		...(isNotNullOrUndefined(attachments) && { attachments }),
+		...(isNotNullOrUndefined(reactions) && { reactions }),
+	}) as TMessage;
 
 const textToMessageToken = (textOrRoot: string | Root, parseOptions: Options): Root => {
 	if (!textOrRoot) {

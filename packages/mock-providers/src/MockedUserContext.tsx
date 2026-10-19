@@ -28,7 +28,7 @@ const userContextValue: ContextType<typeof UserContext> = {
 const createUserContextValue = ({ userPreferences }: { userPreferences?: Record<string, unknown> }): ContextType<typeof UserContext> => {
 	return {
 		...userContextValue,
-		...(userPreferences && { queryPreference: (id) => [() => () => undefined, () => userPreferences[id as unknown as string] as any] }),
+		...(userPreferences && { queryPreference: <T,>(id: unknown) => [() => () => undefined, () => userPreferences[id as string] as T] }),
 	};
 };
 

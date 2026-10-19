@@ -43,7 +43,7 @@ const createSortSpecParts = <T>(
 
 const reduceValue = (branchValues: LookupBranch[], ascending: boolean): unknown =>
 	branchValues
-		.flatMap(({ value }) => {
+		.flatMap(({ value }): unknown[] => {
 			if (!Array.isArray(value)) {
 				return [value];
 			}

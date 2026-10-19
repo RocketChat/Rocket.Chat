@@ -42,7 +42,7 @@ export default async function apiHandler(request: RequestContext): Promise<JsonR
 
 		logger.debug(`${path}'s ${call} was successfully executed.`);
 
-		return result;
+		return result as Defined;
 	} catch (e) {
 		logger.debug(`${path}'s ${call} was unsuccessful.`);
 		return new JsonRpcError(e.message || 'Internal server error', SERVER_ERROR);

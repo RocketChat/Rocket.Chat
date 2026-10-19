@@ -35,7 +35,7 @@ export default async function handleListener(request: RequestContext): Promise<D
 
 	try {
 		const args = parseArgs({ AppAccessorsInstance }, evtInterface, params);
-		return await (eventExecutor as (...args: unknown[]) => Promise<Defined>).apply(wrapAppForRequest(app, request), args);
+		return (await (eventExecutor as (...args: unknown[]) => Promise<Defined>).apply(wrapAppForRequest(app, request), args)) as Defined;
 	} catch (e) {
 		if (e instanceof JsonRpcError) {
 			return e;

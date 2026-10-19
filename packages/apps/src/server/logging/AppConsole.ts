@@ -83,7 +83,7 @@ export class AppConsole implements ILogger {
 				return JSON.stringify(v, Object.getOwnPropertyNames(v));
 			}
 			const str = JSON.stringify(v, null, 2);
-			return str ? JSON.parse(str) : str; // force call toJSON to prevent circular references
+			return str ? (JSON.parse(str) as unknown) : str; // force call toJSON to prevent circular references
 		});
 
 		this.entries.push({

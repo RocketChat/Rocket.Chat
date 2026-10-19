@@ -5,6 +5,7 @@ import { OAuth } from 'meteor/oauth';
 import { LoginCancelledError } from './LoginCancelledError';
 import type { IOAuthProvider } from '../../definitions/IOAuthProvider';
 import type { LoginCallback } from '../../lib/2fa/overrideLoginMethod';
+import type { MeteorErrorLike } from '../../lib/2fa/types';
 import { getDdpSdk } from '../../lib/sdk/ddpSdk';
 
 const isLoginCancelledError = (error: unknown): error is Meteor.Error =>
@@ -101,7 +102,16 @@ export const createOAuthTotpLoginMethod =
 
 Accounts.oauth.credentialRequestCompleteHandler = credentialRequestCompleteHandler;
 
-getDdpSdk().account.onPageLoadLogin(async (loginAttempt: any) => {
+type OAuthCredentials = { credentialToken: string; credentialSecret?: string | null };
+
+type PageLoadLoginAttempt = {
+	error?: MeteorErrorLike;
+	methodArguments?: { oauth?: OAuthCredentials }[];
+	userCallback?: LoginCallback;
+};
+
+getDdpSdk().account.onPageLoadLogin(async (attempt: unknown) => {
+	const loginAttempt = attempt as PageLoadLoginAttempt | undefined;
 	if (loginAttempt?.error?.error !== 'totp-required') {
 		return;
 	}
@@ -111,8 +121,7 @@ getDdpSdk().account.onPageLoadLogin(async (loginAttempt: any) => {
 		return;
 	}
 
-	const oAuthArgs = methodArguments.find((arg: any) => arg.oauth);
-	const { credentialToken, credentialSecret } = oAuthArgs.oauth;
+	const { credentialToken, credentialSecret } = methodArguments.find((arg) => arg.oauth)?.oauth as OAuthCredentials;
 	const cb = loginAttempt.userCallback;
 
 	const { process2faReturn } = await import('../../lib/2fa/process2faReturn');

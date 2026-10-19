@@ -29,7 +29,7 @@ roomCoordinator.add(
 		},
 
 		roomName(room) {
-			return room.name || room.fname || (room as any).label;
+			return room.name || room.fname || (room as { label?: string }).label;
 		},
 
 		getUiText(context) {

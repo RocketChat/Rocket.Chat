@@ -2,6 +2,7 @@ import type { ReactNode } from 'react';
 import { useCallback } from 'react';
 
 import { BoxTransforms, useComposedBoxTransform } from '../Box/BoxTransforms';
+import type { BoxTransformProps } from '../Box/BoxTransforms';
 
 export type FlexItemProps = {
 	children?: ReactNode;
@@ -14,7 +15,7 @@ export type FlexItemProps = {
 
 function FlexItem({ children, order, grow, shrink, basis, align }: FlexItemProps) {
 	const transformFn = useCallback(
-		(props: any) => {
+		(props: BoxTransformProps) => {
 			if (order !== undefined && props.order === undefined) {
 				props.order = order;
 			}

@@ -16,8 +16,8 @@ import { hasRequiredTwoFactorMethod, isTotpInvalidError, isTotpRequiredError } f
 export type { RestClientInterface, Credentials };
 
 const pipe =
-	<T extends (...args: any[]) => any>(fn: T) =>
-	(...args: Parameters<T>): ReturnType<T> =>
+	<TArgs extends unknown[], TResult>(fn: (...args: TArgs) => TResult) =>
+	(...args: TArgs): TResult =>
 		fn(...args);
 
 function buildFormData(data?: Record<string, any> | void, formData = new FormData(), parentKey?: string): FormData {
@@ -100,7 +100,7 @@ export class RestClient implements RestClientInterface {
 		}
 		const queryParams = this.getParams(params);
 		const response = await this.send(`${endpoint}${queryParams ? `?${queryParams}` : ''}`, 'GET', options ?? {});
-		return response.json();
+		return response.json() as Promise<Serialized<OperationResult<'GET', TPathPattern>>>;
 	}
 
 	post<TPathPattern extends MatchPathPattern<TPath>, TPath extends PathWithParamsFor<'POST'> = PathWithParamsFor<'POST'>>(
@@ -136,10 +136,10 @@ export class RestClient implements RestClientInterface {
 
 		// If the server sent no data, return an empty record as we're only expecting objects.
 		if (response.status === 204) {
-			return {} as any;
+			return {} as Serialized<OperationResult<'POST', TPathPattern>>;
 		}
 
-		return response.json();
+		return response.json() as Promise<Serialized<OperationResult<'POST', TPathPattern>>>;
 	}
 
 	put<TPathPattern extends MatchPathPattern<TPath>, TPath extends PathWithParamsFor<'PUT'> = PathWithParamsFor<'PUT'>>(
@@ -171,7 +171,7 @@ export class RestClient implements RestClientInterface {
 
 			...options,
 		});
-		return response.json();
+		return response.json() as Promise<Serialized<OperationResult<'PUT', TPathPattern>>>;
 	}
 
 	delete<TPathPattern extends MatchPathPattern<TPath>, TPath extends PathWithParamsFor<'DELETE'> = PathWithParamsFor<'DELETE'>>(
@@ -192,7 +192,7 @@ export class RestClient implements RestClientInterface {
 		options: Omit<RequestInit, 'method'> = {},
 	): Promise<Serialized<OperationResult<'DELETE', TPathPattern>>> {
 		const response = await this.send(endpoint, 'DELETE', options ?? {});
-		return response.json();
+		return response.json() as Promise<Serialized<OperationResult<'DELETE', TPathPattern>>>;
 	}
 
 	protected getCredentialsAsHeaders(): Record<string, string> {

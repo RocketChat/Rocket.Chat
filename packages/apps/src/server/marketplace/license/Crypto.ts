@@ -21,6 +21,6 @@ export class Crypto {
 			throw new Error('Invalid license provided');
 		}
 
-		return license;
+		return license as object;
 	}
 }

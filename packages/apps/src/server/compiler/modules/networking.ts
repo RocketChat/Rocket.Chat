@@ -30,7 +30,7 @@ export const moduleHandlerFactory = (module: string) => {
 				});
 			}
 
-			return Reflect.get(target, prop, receiver);
+			return Reflect.get(target, prop, receiver) as unknown;
 		},
 	});
 };

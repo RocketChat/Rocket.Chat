@@ -86,14 +86,14 @@ export default async function handleUIKitInteraction(request: RequestContext): P
 	}
 
 	try {
-		return await interactionHandler.call(
+		return (await interactionHandler.call(
 			wrapAppForRequest(app, request),
 			context,
 			AppAccessorsInstance.getReader(),
 			AppAccessorsInstance.getHttp(),
 			AppAccessorsInstance.getPersistence(),
 			AppAccessorsInstance.getModifier(),
-		);
+		)) as Defined;
 	} catch (e) {
 		return JsonRpcError.internalError({ message: e.message });
 	}

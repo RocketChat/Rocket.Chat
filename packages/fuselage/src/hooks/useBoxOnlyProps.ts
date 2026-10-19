@@ -4,7 +4,7 @@ import { prependClassName } from '../helpers/prependClassName';
 
 export const useBoxOnlyProps = <
 	T extends {
-		className: string;
+		className?: string;
 	},
 >(
 	props: T & {
