@@ -60,7 +60,7 @@ const AbacRoomMembershipPreview = ({ rid, roomName, attributes, onBack, onSave }
 	const [group, setGroup] = useState<AbacMembershipGroup>('loses');
 	const filter = useDebouncedValue(text.trim(), 400);
 
-	const { editor, error: editorError, retry: retryEditor } = useRoomMembershipPreviewEditor(rid, attributes);
+	const { editor, error: editorError, isRetrying: isRetryingEditor, retry: retryEditor } = useRoomMembershipPreviewEditor(rid, attributes);
 
 	const saveMutation = useMutation({ mutationFn: () => onSave(editor?.losesAccess ?? false) });
 	const isSaving = saveMutation.isPending || saveMutation.isSuccess;
@@ -178,7 +178,12 @@ const AbacRoomMembershipPreview = ({ rid, roomName, attributes, onBack, onSave }
 			<ContextualbarContent paddingInline={0}>
 				{isError && (
 					<Box paddingInline={24} paddingBlock={12}>
-						<AbacErrorCallout error={error} fallback='ABAC_Preview_Unavailable' onRetry={retry} retrying={preview.isRetrying} />
+						<AbacErrorCallout
+							error={error}
+							fallback='ABAC_Preview_Unavailable'
+							onRetry={retry}
+							retrying={preview.isRetrying || isRetryingEditor}
+						/>
 					</Box>
 				)}
 				{!isError && (
