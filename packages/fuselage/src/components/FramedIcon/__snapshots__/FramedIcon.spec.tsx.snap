@@ -5,7 +5,7 @@ exports[`[FramedIcon rendering] renders Danger without crashing 1`] = `
   <div>
     <i
       aria-hidden="true"
-      class="rcx-box rcx-box--full rcx-framed-icon--danger rcx-framed-icon rcx-icon--name-rocket rcx-icon rcx-css-1bepdyv"
+      class="is_Text _d-1409515928 _ws-311910413 _ww-408434756 _us-601212022 _va-1101652081 _ls-1720078126 _ff-1916555734 _fs-1279428672 _fw-289165218 _fs-477064150 _fv-1578983722 _lh-2067209205 _tr-1510281189 _p-788525541 _br-1682169757 _b-1776198794 _c-1131256230 rcx-framed-icon--danger rcx-framed-icon rcx-icon--name-rocket rcx-icon rcx-css-1bepdyv"
     >
       
     </i>
@@ -18,7 +18,7 @@ exports[`[FramedIcon rendering] renders Default without crashing 1`] = `
   <div>
     <i
       aria-hidden="true"
-      class="rcx-box rcx-box--full rcx-framed-icon--neutral rcx-framed-icon rcx-icon--name-rocket rcx-icon rcx-css-1bepdyv"
+      class="is_Text _d-1409515928 _ws-311910413 _ww-408434756 _us-601212022 _va-1101652081 _ls-1720078126 _ff-1916555734 _fs-1279428672 _fw-289165218 _fs-477064150 _fv-1578983722 _lh-2067209205 _tr-1510281189 _p-788525541 _c-1756781803 _br-1682169757 _b-1776198794 rcx-framed-icon--neutral rcx-framed-icon rcx-icon--name-rocket rcx-icon rcx-css-1bepdyv"
     >
       
     </i>
@@ -31,7 +31,7 @@ exports[`[FramedIcon rendering] renders Info without crashing 1`] = `
   <div>
     <i
       aria-hidden="true"
-      class="rcx-box rcx-box--full rcx-framed-icon--info rcx-framed-icon rcx-icon--name-rocket rcx-icon rcx-css-1bepdyv"
+      class="is_Text _d-1409515928 _ws-311910413 _ww-408434756 _us-601212022 _va-1101652081 _ls-1720078126 _ff-1916555734 _fs-1279428672 _fw-289165218 _fs-477064150 _fv-1578983722 _lh-2067209205 _tr-1510281189 _p-788525541 _br-1682169757 _b-1776198794 _c-221132176 rcx-framed-icon--info rcx-framed-icon rcx-icon--name-rocket rcx-icon rcx-css-1bepdyv"
     >
       
     </i>
@@ -44,7 +44,7 @@ exports[`[FramedIcon rendering] renders Success without crashing 1`] = `
   <div>
     <i
       aria-hidden="true"
-      class="rcx-box rcx-box--full rcx-framed-icon--success rcx-framed-icon rcx-icon--name-rocket rcx-icon rcx-css-1bepdyv"
+      class="is_Text _d-1409515928 _ws-311910413 _ww-408434756 _us-601212022 _va-1101652081 _ls-1720078126 _ff-1916555734 _fs-1279428672 _fw-289165218 _fs-477064150 _fv-1578983722 _lh-2067209205 _tr-1510281189 _p-788525541 _br-1682169757 _b-1776198794 _c-856825481 rcx-framed-icon--success rcx-framed-icon rcx-icon--name-rocket rcx-icon rcx-css-1bepdyv"
     >
       
     </i>
@@ -57,7 +57,7 @@ exports[`[FramedIcon rendering] renders Warning without crashing 1`] = `
   <div>
     <i
       aria-hidden="true"
-      class="rcx-box rcx-box--full rcx-framed-icon--warning rcx-framed-icon rcx-icon--name-rocket rcx-icon rcx-css-1bepdyv"
+      class="is_Text _d-1409515928 _ws-311910413 _ww-408434756 _us-601212022 _va-1101652081 _ls-1720078126 _ff-1916555734 _fs-1279428672 _fw-289165218 _fs-477064150 _fv-1578983722 _lh-2067209205 _tr-1510281189 _p-788525541 _br-1682169757 _b-1776198794 _c-2083370105 rcx-framed-icon--warning rcx-framed-icon rcx-icon--name-rocket rcx-icon rcx-css-1bepdyv"
     >
       
     </i>
