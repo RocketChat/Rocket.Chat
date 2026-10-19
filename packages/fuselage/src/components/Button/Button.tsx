@@ -76,7 +76,9 @@ function Button({
 		is === 'a' && (disabled || loading)
 			? {
 					'href': undefined,
+					'role': 'link',
 					'onClick': undefined,
+					'onClickCapture': undefined,
 					'tabIndex': -1,
 					'aria-disabled': true,
 				}

@@ -25,21 +25,23 @@ describe('[Button as a link]', () => {
 	it.each([
 		['disabled', { disabled: true }],
 		['loading', { loading: true }],
-	])('does not navigate or call onClick while %s', (_state, stateProps) => {
+	])('does not navigate or call click handlers while %s', (_state, stateProps) => {
 		const onClick = jest.fn();
+		const onClickCapture = jest.fn();
 		render(
-			<Button is='a' href='https://rocket.chat' onClick={onClick} {...stateProps}>
+			<Button is='a' href='https://rocket.chat' onClick={onClick} onClickCapture={onClickCapture} {...stateProps}>
 				Link
 			</Button>,
 		);
 
-		const link = screen.getByText('Link').closest('a') as HTMLAnchorElement;
+		const link = screen.getByRole('link', { name: 'Link' });
 		expect(link).not.toHaveAttribute('href');
 		expect(link).toHaveAttribute('aria-disabled', 'true');
 		expect(link).toHaveAttribute('tabindex', '-1');
 
 		fireEvent.click(link);
 		expect(onClick).not.toHaveBeenCalled();
+		expect(onClickCapture).not.toHaveBeenCalled();
 	});
 
 	it('navigates and calls onClick when enabled', () => {
