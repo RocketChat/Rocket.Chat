@@ -1,11 +1,27 @@
 import type { Node } from '@react-types/shared';
+import { styled, Text } from '@tamagui/web';
 import type { ReactNode } from 'react';
 import { useRef } from 'react';
 import { mergeProps, useFocusVisible, useMenuItem } from 'react-aria';
 import type { TreeState } from 'react-stately';
 
+import { textIconColors } from '../../Theme';
+import { fontScale } from '../../styleTokens';
+import { withFuselageProvider } from '../FuselageProvider/FuselageProvider';
 import { Item, ItemContent, ItemTitle } from '../Item';
 import type { MenuOptionProps } from './MenuOption';
+
+const MenuItemDescription = styled(Text, {
+	render: 'div',
+	display: 'block',
+	flexBasis: '100%',
+	whiteSpace: 'normal',
+	wordWrap: 'inherit',
+	wordBreak: 'break-word',
+	color: String(textIconColors['font-secondary-info']),
+	// the token's numeric `fontWeight` is wider than Tamagui's weight union
+	...(fontScale('p2') as object),
+});
 
 type MenuItemProps = {
 	item: Node<{
@@ -51,9 +67,9 @@ function MenuItem({ item, state }: MenuItemProps) {
 			) : (
 				item.rendered
 			)}
-			{description && <div className='rcx-menu-item__description'>{description}</div>}
+			{description && <MenuItemDescription className='rcx-menu-item__description'>{description}</MenuItemDescription>}
 		</Item>
 	);
 }
 
-export default MenuItem;
+export default withFuselageProvider(MenuItem);
