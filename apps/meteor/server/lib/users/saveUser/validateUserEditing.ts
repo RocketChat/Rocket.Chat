@@ -1,4 +1,3 @@
-/* eslint-disable complexity */
 import { MeteorError } from '@rocket.chat/core-services';
 import type { IUser } from '@rocket.chat/core-typings';
 import { Users } from '@rocket.chat/models';

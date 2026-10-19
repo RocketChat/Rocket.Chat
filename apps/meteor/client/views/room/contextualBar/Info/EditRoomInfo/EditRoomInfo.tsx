@@ -1,4 +1,3 @@
-/* eslint-disable complexity */
 import type { IRoomWithRetentionPolicy } from '@rocket.chat/core-typings';
 import { isRoomFederated } from '@rocket.chat/core-typings';
 import type { SelectOption } from '@rocket.chat/fuselage';

@@ -40,7 +40,6 @@ export class Lame {
 		return gfp;
 	}
 
-	// eslint-disable-next-line complexity
 	private lame_init_params(gfp: LameGlobalFlags): void {
 		const gfc = gfp.internal_flags;
 

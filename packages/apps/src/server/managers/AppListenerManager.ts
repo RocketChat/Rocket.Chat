@@ -350,7 +350,6 @@ export class AppListenerManager {
 		return !!lockedEventList?.size;
 	}
 
-	/* eslint-disable-next-line complexity */
 	public async executeListener<I extends keyof IListenerExecutor>(
 		int: I,
 		data: IListenerExecutor[I]['args'][0],

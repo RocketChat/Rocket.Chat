@@ -732,7 +732,6 @@ export class PsyModel {
 		-0.313819 * 2,
 	] as const;
 
-	// eslint-disable-next-line complexity
 	L3psycho_anal_ns(
 		gfp: LameGlobalFlags,
 		buffer: Float32Array[],
@@ -1100,7 +1099,6 @@ export class PsyModel {
 		-0.313819 * 2,
 	] as const;
 
-	// eslint-disable-next-line complexity
 	private vbrpsy_attack_detection(
 		gfp: LameGlobalFlags,
 		buffer: Float32Array[],
@@ -1595,7 +1593,6 @@ export class PsyModel {
 		}
 	}
 
-	// eslint-disable-next-line complexity
 	L3psycho_anal_vbr(
 		gfp: LameGlobalFlags,
 		buffer: Float32Array[],
@@ -2011,7 +2008,6 @@ export class PsyModel {
 		return Math.pow(10.0, 1.25 * (1 - Math.cos(Math.PI * arg)) - 2.5);
 	}
 
-	// eslint-disable-next-line complexity
 	psymodel_init(gfp: LameGlobalFlags) {
 		const gfc = gfp.internal_flags;
 		let i;
