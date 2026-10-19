@@ -227,6 +227,21 @@ it('should reconnect after a heartbeat timeout', async () => {
 	sdk.connection.close();
 });
 
+it('should stop the heartbeat when the connection is closed', async () => {
+	const sdk = DDPSDK.create('ws://localhost:1234');
+
+	await handleConnection(server, sdk.connection.connect());
+
+	const stop = jest.spyOn(sdk.timeoutControl, 'stop');
+	const close = jest.fn();
+	sdk.connection.on('close', close);
+
+	sdk.connection.close();
+
+	expect(close).toHaveBeenCalledTimes(1);
+	expect(stop).toHaveBeenCalled();
+});
+
 it.skip('should try to loginWithToken after reconnection', async () => {
 	const sdk = DDPSDK.create('ws://localhost:1234');
 

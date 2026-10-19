@@ -287,9 +287,11 @@ export class ConnectionImpl
 	}
 
 	close() {
+		clearTimeout(this.retryOptions.retryTimer);
 		this.status = 'closed';
 		this.ws?.close();
 		this.emitStatus();
+		this.emit('close');
 	}
 
 	static create(
