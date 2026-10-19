@@ -3,18 +3,21 @@ import type { AllHTMLAttributes } from 'react';
 import { prependClassName } from '../helpers/prependClassName';
 import { prependRcxClassNames } from '../helpers/prependRcxClassNames';
 
-export const useBoxOnlyProps = <
+type BoxOnlyProps = {
+	animated?: boolean;
+	withRichContent?: boolean | 'inlineWithoutBreaks';
+	htmlSize?: AllHTMLAttributes<HTMLElement>['size'];
+	size?: AllHTMLAttributes<HTMLElement>['size'];
+	focusable?: boolean;
+};
+
+/** Turns the props only `Box` understands into class names and attributes, without the `rcx-box` base classes. */
+export const applyBoxOnlyProps = <
 	T extends {
 		className: string;
 	},
 >(
-	props: T & {
-		animated?: boolean;
-		withRichContent?: boolean | 'inlineWithoutBreaks';
-		htmlSize?: AllHTMLAttributes<HTMLElement>['size'];
-		size?: AllHTMLAttributes<HTMLElement>['size'];
-		focusable?: boolean;
-	},
+	props: T & BoxOnlyProps,
 ): T => {
 	prependRcxClassNames(props);
 
@@ -44,6 +47,18 @@ export const useBoxOnlyProps = <
 	}
 
 	delete props.withRichContent;
+
+	return props;
+};
+
+export const useBoxOnlyProps = <
+	T extends {
+		className: string;
+	},
+>(
+	props: T & BoxOnlyProps,
+): T => {
+	applyBoxOnlyProps(props);
 
 	props.className = prependClassName(props.className, 'rcx-box rcx-box--full');
 
