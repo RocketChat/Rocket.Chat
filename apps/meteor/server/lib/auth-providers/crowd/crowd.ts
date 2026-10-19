@@ -240,7 +240,7 @@ export class CROWD {
 		logger.info('Sync started...');
 
 		for (const user of users) {
-			let crowdUsername = user.hasOwnProperty('crowd_username') ? user.crowd_username : user.username;
+			let crowdUsername = Object.hasOwn(user, 'crowd_username') ? user.crowd_username : user.username;
 			logger.info({ msg: 'Syncing user', crowdUsername });
 			if (!crowdUsername) {
 				logger.warn({ msg: 'User has no crowd_username', username: user.username });

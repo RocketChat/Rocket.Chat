@@ -129,7 +129,7 @@ class BotHelpers {
 
 	get allUsernames() {
 		return (async () => {
-			if (!this.userFields.hasOwnProperty('username')) {
+			if (!Object.hasOwn(this.userFields, 'username')) {
 				this.requestError();
 				return false;
 			}
@@ -139,7 +139,7 @@ class BotHelpers {
 
 	get onlineUsernames() {
 		return (async () => {
-			if (!this.userFields.hasOwnProperty('username')) {
+			if (!Object.hasOwn(this.userFields, 'username')) {
 				this.requestError();
 				return false;
 			}
@@ -149,7 +149,7 @@ class BotHelpers {
 
 	get allNames() {
 		return (async () => {
-			if (!this.userFields.hasOwnProperty('name')) {
+			if (!Object.hasOwn(this.userFields, 'name')) {
 				this.requestError();
 				return false;
 			}
@@ -159,7 +159,7 @@ class BotHelpers {
 
 	get onlineNames() {
 		return (async () => {
-			if (!this.userFields.hasOwnProperty('name')) {
+			if (!Object.hasOwn(this.userFields, 'name')) {
 				this.requestError();
 				return false;
 			}
@@ -169,7 +169,7 @@ class BotHelpers {
 
 	get allIDs() {
 		return (async () => {
-			if (!this.userFields.hasOwnProperty('_id') || !this.userFields.hasOwnProperty('username')) {
+			if (!Object.hasOwn(this.userFields, '_id') || !Object.hasOwn(this.userFields, 'username')) {
 				this.requestError();
 				return false;
 			}
@@ -179,7 +179,7 @@ class BotHelpers {
 
 	get onlineIDs() {
 		return (async () => {
-			if (!this.userFields.hasOwnProperty('_id') || !this.userFields.hasOwnProperty('username')) {
+			if (!Object.hasOwn(this.userFields, '_id') || !Object.hasOwn(this.userFields, 'username')) {
 				this.requestError();
 				return false;
 			}

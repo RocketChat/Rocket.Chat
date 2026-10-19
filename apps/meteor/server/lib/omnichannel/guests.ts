@@ -47,7 +47,7 @@ export async function saveGuest(
 	if ((!userId || (await hasPermissionAsync(userId, 'edit-livechat-room-customfields'))) && Object.keys(livechatData).length) {
 		livechatLogger.debug({ msg: 'Saving custom fields for visitor', visitorId: _id, livechatData });
 		for await (const field of LivechatCustomField.findByScope('visitor')) {
-			if (!livechatData.hasOwnProperty(field._id)) {
+			if (!Object.hasOwn(livechatData, field._id)) {
 				continue;
 			}
 			const value = trim(livechatData[field._id]);

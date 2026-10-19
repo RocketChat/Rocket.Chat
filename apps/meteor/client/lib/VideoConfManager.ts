@@ -386,7 +386,7 @@ export const VideoConfManager = new (class VideoConfManager extends Emitter<Vide
 
 	public setPreferences(prefs: Partial<CallPreferences>): void {
 		for (const key in prefs) {
-			if (prefs.hasOwnProperty(key)) {
+			if (Object.hasOwn(prefs, key)) {
 				const prefKey = key as keyof CallPreferences;
 				this.changePreference(prefKey, prefs[prefKey] as boolean);
 			}

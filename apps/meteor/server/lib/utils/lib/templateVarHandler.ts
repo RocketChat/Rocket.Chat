@@ -8,7 +8,7 @@ export const templateVarHandler = function (variable: string, object: Record<str
 	let tmpVariable = variable;
 
 	if (match == null) {
-		if (!object.hasOwnProperty(variable)) {
+		if (!Object.hasOwn(object, variable)) {
 			logger?.debug({ msg: 'User does not have attribute', attribute: variable });
 			return;
 		}
@@ -20,7 +20,7 @@ export const templateVarHandler = function (variable: string, object: Record<str
 		const tmplVar = match[0];
 		const tmplAttrName = match[1];
 
-		if (!object.hasOwnProperty(tmplAttrName)) {
+		if (!Object.hasOwn(object, tmplAttrName)) {
 			logger?.debug({ msg: 'User does not have attribute', attribute: tmplAttrName });
 			return;
 		}

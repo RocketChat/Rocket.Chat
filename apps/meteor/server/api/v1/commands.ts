@@ -211,7 +211,7 @@ const processQueryOptionsOnResult = <T extends { _id?: string } & Record<string,
 			result = result.sort((a, b) => {
 				let r = 0;
 				for (const field in options.sort) {
-					if (options.sort.hasOwnProperty(field)) {
+					if (Object.hasOwn(options.sort, field)) {
 						const direction = options.sort[field];
 						let valueA;
 						let valueB;
@@ -250,7 +250,7 @@ const processQueryOptionsOnResult = <T extends { _id?: string } & Record<string,
 
 	if (options.fields) {
 		for (const field in Object.keys(options.fields)) {
-			if (options.fields.hasOwnProperty(field as F)) {
+			if (Object.hasOwn(options.fields, field as F)) {
 				if (options.fields[field as F] === 0) {
 					fieldsToRemove.push(field as F);
 				} else if (options.fields[field as F] === 1) {

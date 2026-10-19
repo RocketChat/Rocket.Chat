@@ -89,8 +89,8 @@ export class AppHttpBridge extends HttpBridge {
 		const response = await fetch(
 			url.href,
 			fetchOptions,
-			(request.hasOwnProperty('strictSSL') && !request.strictSSL) ||
-				(request.hasOwnProperty('rejectUnauthorized') && request.rejectUnauthorized),
+			(Object.hasOwn(request, 'strictSSL') && !request.strictSSL) ||
+				(Object.hasOwn(request, 'rejectUnauthorized') && request.rejectUnauthorized),
 		);
 
 		const result: IHttpResponse = {

@@ -167,7 +167,7 @@ export async function saveRoomInfo(
 	if ((!userId || (await hasPermissionAsync(userId, 'edit-livechat-room-customfields'))) && Object.keys(livechatData).length) {
 		const fields = LivechatCustomField.findByScope('room');
 		for await (const field of fields) {
-			if (!livechatData.hasOwnProperty(field._id)) {
+			if (!Object.hasOwn(livechatData, field._id)) {
 				continue;
 			}
 			const value = trim(livechatData[field._id]);

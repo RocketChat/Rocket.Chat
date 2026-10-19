@@ -202,7 +202,7 @@ export class UserConverter extends RecordConverter<IImportUserRecord, UserConver
 
 		const subset = (source: Record<string, any>, currentPath: string): void => {
 			for (const key in source) {
-				if (!source.hasOwnProperty(key) || source[key] === undefined) {
+				if (!Object.hasOwn(source, key) || source[key] === undefined) {
 					continue;
 				}
 

@@ -28,7 +28,7 @@ class SettingsClass {
 	private checkQueryMatch(key: string, data: Dictionary, queryValue: any): boolean {
 		if (typeof queryValue === 'object') {
 			if (queryValue.$exists !== undefined) {
-				return (data.hasOwnProperty(key) && data[key] !== undefined) === queryValue.$exists;
+				return (Object.hasOwn(data, key) && data[key] !== undefined) === queryValue.$exists;
 			}
 		}
 

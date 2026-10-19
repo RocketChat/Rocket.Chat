@@ -303,7 +303,7 @@ export class ListenersModule {
 				}
 
 				const queueMetadataKeys = ['lockedAt', 'locked', '_updatedAt'];
-				return Object.keys(diff).length === queueMetadataKeys.length && queueMetadataKeys.every((key) => diff.hasOwnProperty(key));
+				return Object.keys(diff).length === queueMetadataKeys.length && queueMetadataKeys.every((key) => Object.hasOwn(diff, key));
 			};
 
 			// Always notify the specific inquiry channel

@@ -82,7 +82,7 @@ export const createEmojiList = (
 		for (let i = 0; i < total; i++) {
 			const current = emojiPackage.emojisByCategory[category][i];
 
-			const tone = actualTone && actualTone > 0 && emojiPackage.toneList.hasOwnProperty(current) ? `_tone${actualTone}` : '';
+			const tone = actualTone && actualTone > 0 && Object.hasOwn(emojiPackage.toneList, current) ? `_tone${actualTone}` : '';
 
 			const emojiToRender = `:${current}${tone}:`;
 
@@ -161,7 +161,7 @@ export const getEmojisBySearchTerm = (
 	const searchRegExp = new RegExp(escapeRegExp(searchTerm.replace(/:/g, '')), 'i');
 
 	for (let current in emoji.list) {
-		if (!emoji.list.hasOwnProperty(current) || !searchRegExp.test(current)) {
+		if (!Object.hasOwn(emoji.list, current) || !searchRegExp.test(current)) {
 			continue;
 		}
 
@@ -176,7 +176,7 @@ export const getEmojisBySearchTerm = (
 		let tone = '';
 		current = current.replace(/:/g, '');
 
-		if (actualTone > 0 && emoji.packages[emojiPackage].toneList.hasOwnProperty(name ?? current)) {
+		if (actualTone > 0 && Object.hasOwn(emoji.packages[emojiPackage].toneList, name ?? current)) {
 			tone = `_tone${actualTone}`;
 		}
 

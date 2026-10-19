@@ -288,7 +288,7 @@ export class SAMLUtils {
 		let identifier = immutableProperty.toLowerCase();
 
 		for (const spFieldName in map) {
-			if (!map.hasOwnProperty(spFieldName)) {
+			if (!Object.hasOwn(map, spFieldName)) {
 				continue;
 			}
 

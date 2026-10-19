@@ -77,7 +77,7 @@ export async function saveDepartment(
 
 	// The Livechat Form department support addition/custom fields, so those fields need to be added before validating
 	Object.keys(departmentData).forEach((field) => {
-		if (!defaultValidations.hasOwnProperty(field)) {
+		if (!Object.hasOwn(defaultValidations, field)) {
 			defaultValidations[field] = Match.OneOf(String, Match.Integer, Boolean);
 		}
 	});

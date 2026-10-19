@@ -74,7 +74,7 @@ const MultiSelectCustomList = ({
 			)}
 			{filteredOptions.map((option) => (
 				<Fragment key={option.id}>
-					{option.isGroupTitle || !option.hasOwnProperty('checked') ? (
+					{option.isGroupTitle || !Object.hasOwn(option, 'checked') ? (
 						<ItemGroupHeader inset='md'>
 							<ItemGroupTitle>{t(option.text as TranslationKey)}</ItemGroupTitle>
 						</ItemGroupHeader>

@@ -120,7 +120,7 @@ const _saveUser = (session?: ClientSession) =>
 
 		let sendPassword = false;
 
-		if (userData.hasOwnProperty('setRandomPassword')) {
+		if (Object.hasOwn(userData, 'setRandomPassword')) {
 			if (userData.setRandomPassword) {
 				userData.password = generatePassword();
 				userData.requirePasswordChange = true;
@@ -148,7 +148,7 @@ const _saveUser = (session?: ClientSession) =>
 		// update user
 		const updater = Users.getUpdater();
 
-		if (userData.hasOwnProperty('username') || userData.hasOwnProperty('name')) {
+		if (Object.hasOwn(userData, 'username') || Object.hasOwn(userData, 'name')) {
 			if (
 				!(await saveUserIdentity({
 					_id: userData._id,

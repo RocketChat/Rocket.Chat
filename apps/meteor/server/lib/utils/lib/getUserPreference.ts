@@ -23,7 +23,7 @@ export const getUserPreference = async (user: IUser | string, key: string, defau
 		return defaultValue;
 	}
 
-	if (user?.settings?.preferences?.hasOwnProperty(key)) {
+	if (user?.settings?.preferences && Object.hasOwn(user.settings.preferences, key)) {
 		preference = user.settings.preferences[key];
 	} else if (defaultValue === undefined) {
 		preference = settings.get(`Accounts_Default_User_Preferences_${key}`);

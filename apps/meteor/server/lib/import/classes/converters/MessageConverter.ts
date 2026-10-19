@@ -198,7 +198,7 @@ export class MessageConverter extends RecordConverter<IImportMessageRecord> {
 		const reactions: IMessageReactions = {};
 
 		for (const name of Object.keys(importedReactions)) {
-			if (!importedReactions.hasOwnProperty(name)) {
+			if (!Object.hasOwn(importedReactions, name)) {
 				continue;
 			}
 			const { users } = importedReactions[name];

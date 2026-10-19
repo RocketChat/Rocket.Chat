@@ -5,7 +5,7 @@ const denyList = ['constructor', '__proto__', 'prototype'];
 export const removeDangerousProps = (v: Query): Query => {
 	const query: Query = Object.create(null);
 	for (const key in v) {
-		if (v.hasOwnProperty(key) && !denyList.includes(key)) {
+		if (Object.hasOwn(v, key) && !denyList.includes(key)) {
 			query[key] = v[key];
 		}
 	}
