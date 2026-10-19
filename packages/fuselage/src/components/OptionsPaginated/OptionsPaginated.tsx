@@ -40,7 +40,7 @@ export { CheckOption };
 export function OptionsPaginated({
 	ref,
 	withTitle,
-	multiple,
+	multiple: _multiple,
 	renderEmpty: EmptyComponent = Empty,
 	options,
 	cursor,

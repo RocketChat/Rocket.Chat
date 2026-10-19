@@ -86,7 +86,7 @@ function AutoComplete<TLabel = ReactNode>({
 	setFilter,
 	options = [],
 	renderItem,
-	renderSelected: RenderSelected,
+	renderSelected: RenderSelectedComponent,
 	onChange,
 	renderEmpty,
 	placeholder,
@@ -178,8 +178,8 @@ function AutoComplete<TLabel = ReactNode>({
 						{...props}
 					/>
 					{selected.map((itemSelected) =>
-						RenderSelected ? (
-							<RenderSelected key={itemSelected.value} selected={itemSelected} onRemove={handleRemove} />
+						RenderSelectedComponent ? (
+							<RenderSelectedComponent key={itemSelected.value} selected={itemSelected} onRemove={handleRemove} />
 						) : (
 							<Chip key={itemSelected.value} value={itemSelected.value} onClick={handleRemove}>
 								{itemSelected.label as ReactNode}

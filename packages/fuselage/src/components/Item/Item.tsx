@@ -41,7 +41,7 @@ export type ItemProps = {
  * A list row composed from slots: media, icon, content and actions.
  */
 const Item = ({
-	is: Tag = 'div',
+	is: TagComponent = 'div',
 	inset = 'none',
 	selected,
 	highlighted,
@@ -82,7 +82,7 @@ const Item = ({
 
 	return (
 		<ItemContext.Provider value={contextValue}>
-			<Tag
+			<TagComponent
 				{...props}
 				aria-labelledby={ariaLabelledBy}
 				aria-describedby={ariaDescribedBy}
@@ -103,7 +103,7 @@ const Item = ({
 				onClick={handleClick}
 			>
 				{children}
-			</Tag>
+			</TagComponent>
 		</ItemContext.Provider>
 	);
 };

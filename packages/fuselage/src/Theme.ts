@@ -28,6 +28,7 @@ export class Var {
 }
 
 export let throwErrorOnInvalidToken = false;
+// eslint-disable-next-line @typescript-eslint/naming-convention -- published API name
 export const __setThrowErrorOnInvalidToken__ = (value: boolean) => {
 	throwErrorOnInvalidToken = value;
 };

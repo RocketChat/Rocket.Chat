@@ -20,7 +20,7 @@ export type MenuOptionProps = RefAttributes<Element> & {
 } & Omit<AllHTMLAttributes<HTMLElement>, 'label'>;
 
 function MenuOption({
-	is: Tag = 'li',
+	is: TagComponent = 'li',
 	id,
 	children,
 	focus,
@@ -33,7 +33,7 @@ function MenuOption({
 	...props
 }: MenuOptionProps) {
 	return (
-		<Tag
+		<TagComponent
 			{...props}
 			key={id}
 			id={id}
@@ -59,7 +59,7 @@ function MenuOption({
 				.join(' ')}
 		>
 			{children}
-		</Tag>
+		</TagComponent>
 	);
 }
 
