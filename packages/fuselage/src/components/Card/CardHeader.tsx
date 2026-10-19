@@ -1,15 +1,17 @@
+import type { GetProps } from '@tamagui/web';
 import type { AllHTMLAttributes, ReactNode } from 'react';
 
-import { cx } from '../../helpers/composeClassNames';
+import { CardBlock } from './CardFrames';
+import { withFuselageProvider } from '../FuselageProvider/FuselageProvider';
 
 export type CardHeaderProps = {
 	children: ReactNode;
 } & AllHTMLAttributes<HTMLElement>;
 
-const CardHeader = ({ children, className, ...props }: CardHeaderProps) => (
-	<div {...props} className={cx('rcx-card__header', className)}>
+const CardHeader = ({ children, ...props }: CardHeaderProps) => (
+	<CardBlock row className='rcx-card__header' {...(props as GetProps<typeof CardBlock>)}>
 		{children}
-	</div>
+	</CardBlock>
 );
 
-export default CardHeader;
+export default withFuselageProvider(CardHeader);

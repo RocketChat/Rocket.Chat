@@ -1,15 +1,17 @@
+import type { GetProps } from '@tamagui/web';
 import type { AllHTMLAttributes, ReactNode } from 'react';
 
-import { cx } from '../../helpers/composeClassNames';
+import { CardBlock } from './CardFrames';
+import { withFuselageProvider } from '../FuselageProvider/FuselageProvider';
 
 export type CardColProps = {
 	children: ReactNode;
 } & AllHTMLAttributes<HTMLElement>;
 
-const CardCol = ({ children, className, ...props }: CardColProps) => (
-	<div {...props} className={cx('rcx-card__col', className)}>
+const CardCol = ({ children, ...props }: CardColProps) => (
+	<CardBlock className='rcx-card__col' {...(props as GetProps<typeof CardBlock>)}>
 		{children}
-	</div>
+	</CardBlock>
 );
 
-export default CardCol;
+export default withFuselageProvider(CardCol);

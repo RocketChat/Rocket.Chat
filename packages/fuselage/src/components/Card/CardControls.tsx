@@ -1,9 +1,13 @@
+import type { GetProps } from '@tamagui/web';
 import type { HTMLAttributes } from 'react';
 
-import { cx } from '../../helpers/composeClassNames';
+import { CardBlock } from './CardFrames';
+import { withFuselageProvider } from '../FuselageProvider/FuselageProvider';
 
 export type CardControlsProps = HTMLAttributes<HTMLDivElement>;
 
-const CardControls = ({ className, ...props }: CardControlsProps) => <div {...props} className={cx('rcx-card__controls', className)} />;
+const CardControls = ({ ...props }: CardControlsProps) => (
+	<CardBlock row className='rcx-card__controls' {...(props as GetProps<typeof CardBlock>)} />
+);
 
-export default CardControls;
+export default withFuselageProvider(CardControls);
