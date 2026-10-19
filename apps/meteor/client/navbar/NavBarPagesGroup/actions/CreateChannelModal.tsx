@@ -36,7 +36,7 @@ import { useGoToRoom } from '../../../views/room/hooks/useGoToRoom';
 
 export type CreateChannelModalProps = {
 	teamId?: string;
-	mainRoom?: Pick<IRoom, '_id'>;
+	mainRoom?: IRoom;
 	onClose: () => void;
 	reload?: () => void;
 	onSuccess?: (rid: string) => void | Promise<void>;
