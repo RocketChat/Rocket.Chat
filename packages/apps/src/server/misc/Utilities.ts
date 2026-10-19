@@ -1,4 +1,4 @@
-import cloneDeep = require('lodash.clonedeep');
+import cloneDeep from 'lodash.clonedeep';
 
 export class Utilities {
 	public static deepClone<T>(item: T): T {

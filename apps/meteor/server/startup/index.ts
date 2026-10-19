@@ -24,6 +24,7 @@ export const startup = async () => {
 	setImmediate(() => ensureMessagesTextIndex());
 	// only starts network broker if running in micro services mode
 	if (!isRunningMs()) {
+		// eslint-disable-next-line @typescript-eslint/no-require-imports -- loaded only when the condition holds
 		require('./localServices');
 	}
 };

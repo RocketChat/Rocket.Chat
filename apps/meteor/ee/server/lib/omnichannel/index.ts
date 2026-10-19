@@ -25,6 +25,7 @@ import { createDefaultPriorities } from './priorities';
 patchOmniCore();
 
 await License.onLicense('livechat-enterprise', async () => {
+	// eslint-disable-next-line @typescript-eslint/no-require-imports -- loaded only when the condition holds
 	require('../../hooks/omnichannel');
 	await import('./startup');
 	const { createPermissions } = await import('./permissions');

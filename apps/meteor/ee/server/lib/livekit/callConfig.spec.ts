@@ -2,6 +2,7 @@ import { expect } from 'chai';
 import { beforeEach, describe, it } from 'mocha';
 import sinon from 'sinon';
 
+// eslint-disable-next-line @typescript-eslint/no-require-imports -- proxyquire is used untyped to stub modules
 const proxyquire = require('proxyquire');
 
 const findOneById = sinon.stub();

@@ -16,7 +16,7 @@ void i18n.init({
 			language,
 			extractTranslationNamespaces(
 				// TODO: commonjs is terrible but we don't have esm build yet
-				// eslint-disable-next-line import-x/no-dynamic-require
+				// eslint-disable-next-line import-x/no-dynamic-require, @typescript-eslint/no-require-imports -- resource path is computed at runtime
 				require(`@rocket.chat/i18n/dist/resources/${language}.i18n.json`) as unknown as Record<string, string>,
 			),
 		]),

@@ -9,6 +9,7 @@ import { LIVEKIT_CAPABILITIES } from './capabilities';
  *
  * The registry reads `server/settings`, whose top-level await this runner cannot load, hence the stub.
  */
+// eslint-disable-next-line @typescript-eslint/no-require-imports -- proxyquire is used untyped to stub modules
 const proxyquire = require('proxyquire');
 
 const { videoConfProviders, CORE_PROVIDER_APP_ID } = proxyquire

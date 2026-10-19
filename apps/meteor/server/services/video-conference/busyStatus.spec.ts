@@ -10,6 +10,7 @@ import { PRESENCE_LEASE_MS } from '../../../lib/videoConference/presence';
  * The claim this suite is about is made through `Presence`, which the shared harness has no stub for — so this one
  * assembles `@rocket.chat/core-services` itself rather than teaching every other spec about presence.
  */
+// eslint-disable-next-line @typescript-eslint/no-require-imports -- proxyquire is used untyped to stub modules
 const proxyquire = require('proxyquire');
 
 let fixture: VideoConference;

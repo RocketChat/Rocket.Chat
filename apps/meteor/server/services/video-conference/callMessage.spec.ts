@@ -11,6 +11,7 @@ import { buildDirectCall, buildGroupCall, buildMember, commonServiceStubs, provi
  * of it. Where the call's chat is *not* a thread there is nothing to name, and the message stays as it was, so
  * these cases are as much about when the text is absent as when it is there.
  */
+// eslint-disable-next-line @typescript-eslint/no-require-imports -- proxyquire is used untyped to stub modules
 const proxyquire = require('proxyquire');
 
 /** Flipped per case, since the answer turns on the two persistent-chat settings. */

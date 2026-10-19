@@ -25,6 +25,7 @@ import {
  * call's message and is read in our own call window's chat panel, so it follows the window rather than the
  * provider — an iframed Jitsi call in our window threads exactly like a call we run ourselves.
  */
+// eslint-disable-next-line @typescript-eslint/no-require-imports -- proxyquire is used untyped to stub modules
 const proxyquire = require('proxyquire');
 
 let fixture: VideoConference;

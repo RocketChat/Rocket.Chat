@@ -17,6 +17,7 @@ const TranslationContextMock = ({ children }: TranslationContextMockProps) => {
 			defaultNS: 'project',
 			resources: {
 				en: {
+					// eslint-disable-next-line @typescript-eslint/no-require-imports -- loaded lazily when the mock renders
 					project: require('../../../packages/rocketchat-i18n/i18n/en.i18n.json'),
 				},
 			},

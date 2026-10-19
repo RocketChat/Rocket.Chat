@@ -19,6 +19,7 @@ export const registerEEBroker = async (): Promise<void> => {
 		api.setBroker(startBroker());
 		await api.start();
 	} else {
+		// eslint-disable-next-line @typescript-eslint/no-require-imports -- loaded only when the condition holds
 		require('./presence');
 	}
 };

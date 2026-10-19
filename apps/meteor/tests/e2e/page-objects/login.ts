@@ -55,6 +55,7 @@ export class LoginPage {
 				});
 
 				// The storage poller skips a token it already saw, and every login of this user reuses the same token.
+				// eslint-disable-next-line @typescript-eslint/no-require-imports -- runs in the browser against the client module registry
 				require('meteor/accounts-base').Accounts.loginWithToken(loginToken);
 			},
 			{ items: localStorageItems, loginToken: userState.data.loginToken },
