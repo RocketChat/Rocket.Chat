@@ -112,20 +112,25 @@
 	overflow: hidden !important;
 }
 
-code {
-	padding: 0.5em;
-	text-align: left;
-	vertical-align: middle;
-	white-space: pre-wrap;
-	word-wrap: break-word;
-	border-width: 1px;
-	border-radius: var(--border-radius);
-	font-family: Menlo, Monaco, Consolas, 'Liberation Mono', 'Courier New', monospace;
-	font-size: 13px;
-	font-weight: 600;
-	direction: ltr;
-	unicode-bidi: embed;
+/* Element rules sit in the `reset` layer, so layered Fuselage component styles win over them as their classes used to */
+@layer reset {
+	code {
+		padding: 0.5em;
+		text-align: left;
+		vertical-align: middle;
+		white-space: pre-wrap;
+		word-wrap: break-word;
+		border-width: 1px;
+		border-radius: var(--border-radius);
+		font-family: Menlo, Monaco, Consolas, 'Liberation Mono', 'Courier New', monospace;
+		font-size: 13px;
+		font-weight: 600;
+		direction: ltr;
+		unicode-bidi: embed;
+	}
+}
 
+code {
 	&.inline {
 		display: inline;
 		padding: 0.05rem 0.2rem;
@@ -137,40 +142,43 @@ code {
 	}
 }
 
-pre {
-	display: inline-block;
-	width: 100%;
-}
+/* Element rules sit in the `reset` layer, so layered Fuselage component styles win over them as their classes used to */
+@layer reset {
+	pre {
+		display: inline-block;
+		width: 100%;
+	}
 
-blockquote {
-	position: relative;
-	display: block;
-	clear: both;
-	min-height: 20px;
-	padding-left: 10px;
-
-	&::after {
-		display: table;
+	blockquote {
+		position: relative;
+		display: block;
 		clear: both;
-		content: '';
-	}
+		min-height: 20px;
+		padding-left: 10px;
 
-	&::before {
-		position: absolute;
-		top: 0;
-		bottom: 0;
-		left: 0;
-		width: 2px;
-		content: ' ';
-	}
+		&::after {
+			display: table;
+			clear: both;
+			content: '';
+		}
 
-	&:first-child::before {
-		border-radius: 2px 2px 0 0;
-	}
+		&::before {
+			position: absolute;
+			top: 0;
+			bottom: 0;
+			left: 0;
+			width: 2px;
+			content: ' ';
+		}
 
-	&:last-child::before {
-		border-radius: 0 0 2px 2px;
-	}	
+		&:first-child::before {
+			border-radius: 2px 2px 0 0;
+		}
+
+		&:last-child::before {
+			border-radius: 0 0 2px 2px;
+		}	
+	}
 }
 
 .new-room-highlight a {
