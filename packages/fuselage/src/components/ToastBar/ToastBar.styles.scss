@@ -1,9 +1,6 @@
 @use '../../styles/colors.scss';
 @use '../../styles/lengths.scss';
-@use '../../styles/typography.scss' as *;
 @use '../../styles/functions.scss' as *;
-
-$toastbar-color: theme('toastbar-color', colors.font(default));
 
 $toastbar-border-radius: theme('toastbar-border-radius', lengths.border-radius(medium));
 
@@ -11,23 +8,12 @@ $toastbar-success-color: theme('toastbar-success-color', colors.status-font(on-s
 
 $toastbar-error-color: theme('toastbar-error-color', colors.status-font(on-danger));
 
-$toastbar-background-color: theme('toastbar-background-color', colors.surface(tint));
-
 $toastbar-progressbar-background-color: theme('toastbar-progressbar-background-color', colors.surface(neutral));
 
 .rcx-toastbar {
-	position: relative;
-
-	min-width: lengths.size(232);
-	max-width: lengths.size(416);
-
-	color: $toastbar-color;
-
-	border-radius: $toastbar-border-radius;
-
-	background-color: $toastbar-background-color;
-
-	@include use-font-scale(p2);
+	// Tamagui drops vendor-prefixed properties
+	-webkit-font-smoothing: antialiased;
+	-moz-osx-font-smoothing: grayscale;
 
 	&::before {
 		position: absolute;
@@ -56,17 +42,7 @@ $toastbar-progressbar-background-color: theme('toastbar-progressbar-background-c
 		}
 	}
 
-	&_inner {
-		display: flex;
-
-		padding: lengths.padding(16);
-	}
-
-	&_content {
-		width: lengths.size(full);
-		margin: lengths.margin(0) lengths.margin(16);
-	}
-
+	// Styles the `Icon` component, which renders its own element
 	&_icon {
 		&--success {
 			color: $toastbar-success-color;
@@ -77,25 +53,13 @@ $toastbar-progressbar-background-color: theme('toastbar-progressbar-background-c
 		}
 	}
 
-	&_progressbar {
-		position: absolute;
-		bottom: 0;
+	&_progressbar::after {
+		display: block;
 
-		overflow: hidden;
+		height: 100%;
 
-		width: 100%;
-		height: lengths.size(4);
+		content: '';
 
-		border-radius: 0 0 $toastbar-border-radius $toastbar-border-radius;
-
-		&::after {
-			display: block;
-
-			height: 100%;
-
-			content: '';
-
-			background-color: $toastbar-progressbar-background-color;
-		}
+		background-color: $toastbar-progressbar-background-color;
 	}
 }
