@@ -6,6 +6,7 @@ import {
 	GenericTableHeaderCell,
 	GenericTableBody,
 	GenericTableLoadingRow,
+	getCombineFn,
 	usePaginatedQuery,
 	usePagination,
 	useSort,
@@ -52,7 +53,7 @@ const UnitsTable = () => {
 		query,
 		queryKey,
 		queryFn: getUnits,
-		itemsKey: 'units',
+		combineData: getCombineFn('units'),
 		offset: current,
 		count: itemsPerPage,
 	});
