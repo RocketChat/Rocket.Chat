@@ -10,6 +10,8 @@ import { AccountImpl } from './types/Account';
 import type { ClientStream } from './types/ClientStream';
 import type { OutgoingPayload } from './types/OutgoingPayload';
 import type { SDK } from './types/SDK';
+import type { Subscription } from './types/Subscription';
+import type { StreamKeys, StreamNames, StreamerCallbackArgs } from './types/streams';
 
 interface PublicationPayloads {
 	collection: string;
@@ -76,7 +78,15 @@ export class DDPSDK implements SDK {
 		return this.client.callAsync(method, ...params);
 	}
 
-	stream(name: string, data: unknown, cb: (...data: PublicationPayloads['fields']['args']) => void) {
+	stream<N extends StreamNames, K extends StreamKeys<N>>(
+		streamName: N,
+		data: K | [K, unknown],
+		callback: (...args: StreamerCallbackArgs<N, K>) => void,
+	): Subscription;
+
+	stream(name: string, data: unknown, cb: (...data: PublicationPayloads['fields']['args']) => void): Subscription;
+
+	stream(name: string, data: unknown, cb: (...data: PublicationPayloads['fields']['args']) => void): Subscription {
 		const [key, args] = Array.isArray(data) ? data : [data];
 		const subscription = this.client.subscribe(`stream-${name}`, key, { useCollection: false, args: [args] });
 

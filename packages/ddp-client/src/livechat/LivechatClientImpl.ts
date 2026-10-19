@@ -3,35 +3,8 @@ import { Emitter } from '@rocket.chat/emitter';
 import type { OperationParams, OperationResult } from '@rocket.chat/rest-typings';
 
 import { DDPSDK } from '../DDPSDK';
-import type { ClientStream } from '../types/ClientStream';
-import type { DDPDispatchOptions } from '../types/DDPClient';
-import type { ServerMethodReturn, ServerMethods } from '../types/methods';
-import type { StreamKeys, StreamNames, StreamerCallbackArgs } from '../types/streams';
+import type { StreamerCallbackArgs } from '../types/streams';
 import type { LivechatEndpoints, LivechatRoomEvents, LivechatStream } from './types/LivechatSDK';
-
-declare module '../ClientStream' {
-	interface ClientStream {
-		callAsync<MethodName extends keyof ServerMethods>(
-			methodName: MethodName,
-			...params: Parameters<ServerMethods[MethodName]>
-		): Promise<ServerMethodReturn<MethodName>>;
-		callAsyncWithOptions<MethodName extends keyof ServerMethods>(
-			methodName: MethodName,
-			options: DDPDispatchOptions,
-			...params: Parameters<ServerMethods[MethodName]>
-		): Promise<ServerMethodReturn<MethodName>>;
-	}
-}
-
-declare module '../DDPSDK' {
-	interface DDPSDK {
-		stream<N extends StreamNames, K extends StreamKeys<N>>(
-			streamName: N,
-			data: K | [K, unknown],
-			callback: (...args: StreamerCallbackArgs<N, K>) => void,
-		): ReturnType<ClientStream['subscribe']>;
-	}
-}
 
 export class LivechatClientImpl extends DDPSDK implements LivechatStream, LivechatEndpoints {
 	public token?: string;

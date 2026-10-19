@@ -107,18 +107,15 @@ subscription.stop();
 
 Stop subscriptions you no longer need; this saves bandwidth and server resources.
 
-`DDPSDK.stream` types the callback arguments as `unknown`. The `StreamerEvents` type lists every stream, its keys and its callback arguments; use `StreamerCallbackArgs<Name, Key>` to type them:
+For the streams listed in the `StreamerEvents` type, `sdk.stream` types the callback arguments from the stream name and key:
 
 ```ts
-import type { StreamerCallbackArgs } from '@rocket.chat/ddp-client';
-
-type UserActivityArgs = StreamerCallbackArgs<'notify-room', `${string}/user-activity`>;
-
-sdk.stream('notify-room', `${roomId}/user-activity`, (...args) => {
-	const [username, activities] = args as unknown as UserActivityArgs;
-	console.log(username, activities);
+sdk.stream('notify-room', `${roomId}/user-activity`, (username, activities) => {
+	console.log(username, activities); // string, string[]
 });
 ```
+
+Use `StreamerCallbackArgs<Name, Key>` to name those types in your own code.
 
 ### Calling server methods
 

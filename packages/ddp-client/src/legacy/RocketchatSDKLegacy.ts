@@ -5,10 +5,6 @@ import { Emitter } from '@rocket.chat/emitter';
 import type { OperationParams, OperationResult } from '@rocket.chat/rest-typings';
 
 import { DDPSDK } from '../DDPSDK';
-import type { ClientStream } from '../types/ClientStream';
-import type { DDPDispatchOptions } from '../types/DDPClient';
-import type { ServerMethodReturn, ServerMethods } from '../types/methods';
-import type { StreamNames, StreamKeys, StreamerCallbackArgs } from '../types/streams';
 import type {
 	APILegacy,
 	DPPLegacy,
@@ -16,30 +12,6 @@ import type {
 	RocketchatSdkLegacyEventsKeys,
 	RocketchatSdkLegacyEventsValues,
 } from './types/SDKLegacy';
-
-declare module '../ClientStream' {
-	interface ClientStream {
-		callAsync<MethodName extends keyof ServerMethods>(
-			methodName: MethodName,
-			...params: Parameters<ServerMethods[MethodName]>
-		): Promise<ServerMethodReturn<MethodName>>;
-		callAsyncWithOptions<MethodName extends keyof ServerMethods>(
-			methodName: MethodName,
-			options: DDPDispatchOptions,
-			...params: Parameters<ServerMethods[MethodName]>
-		): Promise<ServerMethodReturn<MethodName>>;
-	}
-}
-
-declare module '../types/SDK' {
-	interface SDK {
-		stream<N extends StreamNames, K extends StreamKeys<N>>(
-			streamName: N,
-			key: K,
-			callback: (...args: StreamerCallbackArgs<N, K>) => void,
-		): ReturnType<ClientStream['subscribe']>;
-	}
-}
 
 interface RocketchatSDKLegacy extends APILegacy, DPPLegacy {}
 
