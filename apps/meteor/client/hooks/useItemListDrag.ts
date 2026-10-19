@@ -43,6 +43,8 @@ type ItemListDragOptions = {
 const DRAG_THRESHOLD = 4;
 const EDGE_SIZE = 32;
 const MAX_SCROLL_SPEED = 12;
+const PREVIEW_OFFSET = 12;
+const PREVIEW_MAX_WIDTH = 240;
 
 const findScroller = (element: Element) => {
 	for (let ancestor = element.parentElement; ancestor; ancestor = ancestor.parentElement) {
@@ -118,8 +120,6 @@ export const useItemListDrag = ({ disabled = false, dragHandle = 'none', canDrag
 				let indicator: HTMLElement | undefined;
 				let target: ItemListDropTarget | undefined;
 				let frame = 0;
-				let offsetX = 0;
-				let offsetY = 0;
 
 				const placeIndicator = () => {
 					if (!indicator) {
@@ -186,15 +186,11 @@ export const useItemListDrag = ({ disabled = false, dragHandle = 'none', canDrag
 				};
 
 				const lift = () => {
-					const rect = sourceElement.getBoundingClientRect();
-					offsetX = startX - rect.left;
-					offsetY = startY - rect.top;
-
 					preview = sourceElement.cloneNode(true) as HTMLElement;
 					preview.removeAttribute('id');
 					preview.setAttribute('aria-hidden', 'true');
 					preview.classList.add('rcx-item-drag-preview');
-					preview.style.width = `${rect.width}px`;
+					preview.style.width = `${Math.min(sourceElement.getBoundingClientRect().width, PREVIEW_MAX_WIDTH)}px`;
 					document.body.append(preview);
 
 					indicator = document.createElement('div');
@@ -217,8 +213,9 @@ export const useItemListDrag = ({ disabled = false, dragHandle = 'none', canDrag
 						lift();
 					}
 
+					// The copy trails the pointer instead of sitting under it, so the row or group being aimed at stays visible.
 					if (preview) {
-						preview.style.transform = `translate(${pointerX - offsetX}px, ${pointerY - offsetY}px)`;
+						preview.style.transform = `translate(${pointerX + PREVIEW_OFFSET}px, ${pointerY + PREVIEW_OFFSET}px)`;
 					}
 					updateTarget();
 				};
@@ -229,7 +226,12 @@ export const useItemListDrag = ({ disabled = false, dragHandle = 'none', canDrag
 					event.stopPropagation();
 				};
 
-				const finish = (drop: boolean) => {
+				const armClickSwallow = () => {
+					window.addEventListener('click', swallowClick, { capture: true, once: true });
+					setTimeout(() => window.removeEventListener('click', swallowClick, { capture: true }));
+				};
+
+				const finish = (drop: boolean, buttonReleased = true) => {
 					window.removeEventListener('pointermove', handlePointerMove);
 					window.removeEventListener('pointerup', handlePointerUp);
 					window.removeEventListener('pointercancel', handlePointerCancel);
@@ -245,8 +247,12 @@ export const useItemListDrag = ({ disabled = false, dragHandle = 'none', canDrag
 					document.body.style.cursor = '';
 					setSource(undefined);
 
-					window.addEventListener('click', swallowClick, { capture: true, once: true });
-					setTimeout(() => window.removeEventListener('click', swallowClick, { capture: true }));
+					// After Escape the button is still down; its release would otherwise click the row or toggle the group.
+					if (buttonReleased) {
+						armClickSwallow();
+					} else {
+						window.addEventListener('pointerup', armClickSwallow, { capture: true, once: true });
+					}
 
 					if (drop && target) {
 						stableOnDrop(dragSource, target);
@@ -259,7 +265,7 @@ export const useItemListDrag = ({ disabled = false, dragHandle = 'none', canDrag
 					if (event.key === 'Escape' && preview) {
 						event.preventDefault();
 						event.stopPropagation();
-						finish(false);
+						finish(false, false);
 					}
 				};
 
