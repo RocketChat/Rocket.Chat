@@ -272,8 +272,8 @@ Where each id shows up:
 ## What must move together
 
 - Behaviour changes and the spec that describes it ship in the same PR.
-- A standard added to or removed from a spec's `standards` list updates `compliance.md` in
-  the same commit. The matrix is never edited on its own.
+- A standard added to or removed from a spec's `standards` list, or named by a new intent,
+  updates `compliance.md` in the same commit. The matrix is never edited on its own.
 - A decision that a later reader could reasonably want to reverse gets an ADR. A decision
   that is just the obvious way to do it does not.
 - A plan is committed before the code it describes, and marked `done` in the PR that ships it.

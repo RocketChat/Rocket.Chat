@@ -26,7 +26,7 @@ and local username validation already forbids `@`, so no local user can squat a 
 
 Matrix federation keys its behaviour on `federated` and `federation`, and
 `FederationActions.shouldPerformFederationAction` throws for a `federated` room that is not
-Matrix-native. Keeping those fields untouched is what lets both federations coexist without a
+Matrix-native. Keeping `user.federation`, `room.federation` and `room.federated` unset is what lets both federations coexist without a
 single runtime check in either code path. The Matrix remote-user heuristics (`@` plus `:`)
 never match a bare JID, so the separation holds in both directions.
 
@@ -39,6 +39,10 @@ never match a bare JID, so the separation holds in both directions.
 - **Username as localpart only.** Collides with local users and loses the domain.
 
 ## Consequences
+
+- `federated: true` on the user keeps remote users out of license seats and apart from local
+  users in user search. It also brings the restrictions Matrix remote users have: an admin
+  cannot edit, deactivate or delete them, nor reset their 2FA or E2E keys.
 
 - Searching users by JID is a username lookup.
 - A remote user record starts `offline`; later upserts keep whatever status presence set.

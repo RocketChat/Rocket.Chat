@@ -4,14 +4,14 @@ Author: Diego Sampaio. Status: accepted.
 
 ## Problem
 
-The only peer the server is tested against is ejabberd. The end-to-end suite runs against
-servers someone has already set up by hand, with DNS, certificates and registration
-configured to match ([operations.md](../operations.md#running-the-end-to-end-suite)), so
-running it against another peer means building that environment from scratch. Prosody and
-Openfire, the open servers most of the target estate federates through, have never been
-federated with. Meanwhile the Matrix-bridge XMPP integration (Bifrost, `Federation_XMPP_*`)
-is still the documented alternative ([compliance.md](../compliance.md), XEP-0114) although
-the project decided it is not the production path and will be decommissioned.
+The end-to-end suite runs against ejabberd set up by hand, and against Openfire 5.1 in its
+default configuration through the compose stack (`yarn test:e2e:stack`,
+[operations.md](../operations.md#running-the-end-to-end-suite)). Prosody, ejabberd in
+compose, a hardened S2S profile and per-peer results are not covered, so running the suite
+against any other peer still means building that environment from scratch. Meanwhile the
+Matrix-bridge XMPP integration (Bifrost, `Federation_XMPP_*`) is still the documented
+alternative ([compliance.md](../compliance.md), XEP-0114) although the project decided it
+is not the production path and will be decommissioned.
 
 ## Proposed outcome
 

@@ -28,7 +28,8 @@ yarn workspace @rocket.chat/xmpp-server-service ms   # the only process that hos
   prompts and the model to use for each stage are in `docs/examples.md`.
 - Decisions that constrain later work go to `docs/adr/`. Check the existing ones before
   proposing a change to the data model, the auth flow or the room model.
-- `docs/compliance.md` is derived from spec frontmatter. Never edit it without the spec.
+- `docs/compliance.md` mirrors spec frontmatter and records standards named by intents.
+  Update it with the corresponding spec or intent; never edit it on its own.
 - Comments follow the repo's `docs/code-comments.md`: intent, not mechanism; reasoning goes
   to the spec or an ADR.
 - Tests name the requirement they prove (`R3`) or the defect they pin (`D1`).

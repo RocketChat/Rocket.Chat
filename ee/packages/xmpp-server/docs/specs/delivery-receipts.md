@@ -23,7 +23,7 @@ sends and answers nothing ([direct-messages](direct-messages.md) lists it as out
 
 ## Behaviour
 
-- **R1** Every `chat` message sent to a remote user carries
+- **R1** Every `chat` message with a body sent to a remote user, unless R4 excludes it, carries
   `<request xmlns='urn:xmpp:receipts'/>`.
 - **R2** When a `chat` message carrying `<request/>` has been stored, the server sends to the
   sender's full JID a `<message/>` with a fresh id containing

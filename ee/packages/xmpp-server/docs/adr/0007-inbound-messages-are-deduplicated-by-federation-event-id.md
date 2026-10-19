@@ -12,9 +12,9 @@
   `id` otherwise, and a random id when it carries neither. A message whose event id is
   already stored is dropped.
 - The outgoing hook never relays a message that carries `federation.eventId`.
-- In a remote room, a reflected message whose `<replace/>` id or stanza id is the `_id` of a
-  stored Rocket.Chat message is dropped before any of the above: it is our own relay coming
-  back.
+- In a remote room, a reflected message whose `<replace/>` id, or the id its sender gave it
+  (`<origin-id/>`, otherwise the stanza `id`), is the `_id` of a stored Rocket.Chat message
+  is dropped before any of the above: it is our own relay coming back.
 
 ## Why
 
@@ -34,11 +34,11 @@ the author; the room's id is unique in the room and stays findable by anyone who
 
 ## Consequences
 
-- The check-then-insert is not atomic and the event id index is not unique, so copies that
-  arrive within the same tick are all stored
-  ([message-deduplication D1](../specs/message-deduplication.md#d1-concurrent-copies-of-one-message-are-all-stored)).
-- A room that rewrites ids (MAM-enabled ejabberd and Prosody) defeats the own-relay check
-  ([D2](../specs/message-deduplication.md#d2-a-members-own-message-comes-back-from-a-room-that-assigns-its-own-ids)).
+- The lookup and the insert are not atomic in the database and the event id index is not
+  unique; the service holds the event ids being saved in memory, which is enough only while
+  one process serves a domain ([ADR 0002](0002-integration-service-runs-only-as-a-microservice.md)).
+- The own-relay check uses the sender's id, which a room that assigns its own stanza ids
+  (MAM-enabled ejabberd and Prosody) still keeps on the reflection.
 - Copies without any id cannot be deduplicated at all
   ([D3](../specs/message-deduplication.md#d3-copies-without-any-id-are-never-deduplicated)).
 - Rocket.Chat does not stamp its own outbound stanzas with XEP-0359 ids; a capability that

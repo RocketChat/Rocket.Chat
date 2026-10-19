@@ -70,8 +70,9 @@ before they are fixed.
 - **R6** ~~A transfer that fails or is cancelled leaves no partial message; the sender is
   told.~~ Removed with Jingle; a failed fetch is covered by R2.
 - **R7** The feature is advertised in `disco#info`.
-- **R8** When the domain allow list is not empty, R2 fetches only from hosts in an
-  authorized federation domain; a URL on any other host is stored as text.
+- **R8** R2 fetches only from a host in the domain the sending server authenticated as on
+  its S2S stream, or a subdomain of it, whatever the domain allow list says, and never from
+  a loopback or link-local address. A URL on any other host is stored as text.
 
 ## Design
 
@@ -100,7 +101,7 @@ None; not implemented.
   for how long?~~ A signed link on a dedicated endpoint: R1, Motivation.
 - **Q2** ~~R2: fetch and store, or render as a link and let the client fetch? Fetching
   means Rocket.Chat makes outbound HTTPS requests to arbitrary hosts named by remote
-  users.~~ Fetch and store, from authorized domains only: R2, R8, Motivation.
+  users.~~ Fetch and store, from the sender's own domain only: R2, R8, Motivation.
 - **Q3** ~~XEP-0234 sessions run between full JIDs and need a transport: in-band
   bytestreams (XEP-0261) work over S2S alone but are slow; SOCKS5 bytestreams (XEP-0260)
   need a proxy (XEP-0065) reachable by both ends. Which does the end product accept, and

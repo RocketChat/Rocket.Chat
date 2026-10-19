@@ -94,8 +94,8 @@ history in Rocket.Chat and lets remote users join with nothing but a room addres
 **Messages**
 
 - **R13** A `groupchat` message with a body from a current occupant (identified by their
-  real JID) is reflected to every other remote occupant under the occupant's nick with the
-  original id, and stored in the Rocket.Chat room with the occupant's user as author,
+  real JID) is reflected to every remote occupant, the sender included (XEP-0045 §7.4),
+  under the occupant's nick with the original id, and stored in the Rocket.Chat room with the occupant's user as author,
   renamed to their nick.
 - **R14** A message saved by a local member is sent to every remote occupant as a `groupchat`
   from `<room>/<username>` with the message `_id` as id. Edits are sent as corrections
@@ -169,7 +169,9 @@ occupants still in it keep exchanging messages through our server, a public one 
 listed by `disco#items` ([service-discovery R4](service-discovery.md)) and `disco#info`
 still describes it instead of answering `item-not-found` ([service-discovery R6](service-discovery.md)).
 New joins are refused, since no Rocket.Chat room hosts the JID. Where: nothing calls
-`mucDestroyRoom` when a room is deleted. Test: `hosted-muc.spec.ts`, "closes the room when it
+`mucDestroyRoom` when a room is deleted, and `MucService.destroyRoom` only drops the room
+from the registry: the fix must also send each occupant the unavailable presence carrying
+`<destroy/>` (XEP-0045 §10.9), or their clients keep a dead room. Test: `hosted-muc.spec.ts`, "closes the room when it
 is deleted in Rocket.Chat".
 
 ## Open questions

@@ -17,8 +17,10 @@ consumes the core through the `XMPPServer` facade: a typed event map for everyth
 imperative methods for everything outbound, and one request/response delegate
 (`authorizeMucJoin`) because join authorization cannot be fire-and-forget.
 
-Every event payload is JSON-serializable and every public method returns a promise, so the
-boundary could become a process boundary without changing the API.
+Network operations return promises, while room state changes and queries are synchronous
+because that state lives in the core. Event payloads are plain data apart from the `raw`
+stanza. A process boundary would make the synchronous methods asynchronous and the `raw`
+fields serialized XML; nothing else would change.
 
 ## Why
 

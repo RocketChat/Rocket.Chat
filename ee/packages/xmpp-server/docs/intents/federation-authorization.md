@@ -54,7 +54,10 @@ able to say which people may talk across the boundary, not only which servers.
   [remote-muc](../specs/remote-muc.md) and [presence](../specs/presence.md) gain a gate on
   every inbound and outbound path; [addressing](../specs/addressing.md) R10 for display
   names.
-- Rocket.Chat permissions (`access-federation` today only gates creating XMPP rooms), the
+- Rocket.Chat permissions (`access-federation`, granted to `user` by default, gates Matrix
+  room creation, invites and joins on the server, but only hides the XMPP toggle in the
+  client; it is shared with Matrix, so an XMPP-only gate needs its own permission or a
+  decision to couple the two), the
   admin settings in [operations.md](../operations.md#admin-settings), user renames, and a
   new system message type for suspension and restoration.
 - [connection-recovery](connection-recovery.md), which rejoins the sessions a revocation

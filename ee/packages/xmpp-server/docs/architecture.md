@@ -31,8 +31,9 @@ separated layers. The package runs only in the `ee/apps/xmpp-server-service` mic
 ```
 
 The protocol core is Rocket.Chat-agnostic ([ADR 0001](adr/0001-protocol-core-has-no-rocketchat-dependency.md)):
-every public method returns a promise and every event payload is JSON-serializable (the
-`raw: Element` fields serialize via `toString()`).
+network operations return promises, room state changes and queries are synchronous, and
+event payloads are plain data apart from the `raw: Element` fields, which serialize via
+`toString()`.
 
 ## Protocol core (`src/`)
 

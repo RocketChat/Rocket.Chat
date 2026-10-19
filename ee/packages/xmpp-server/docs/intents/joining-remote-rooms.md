@@ -33,9 +33,10 @@ way to find one.
 
 ## Constraints
 
-- [ADR 0008](../adr/0008-only-dedicated-xmpp-rooms-are-exposed.md) and
-  [ADR 0009](../adr/0009-one-remote-muc-session-per-local-member.md) hold: one session per
-  local member, entry is an explicit act.
+- [ADR 0009](../adr/0009-one-remote-muc-session-per-local-member.md) holds: one session per
+  local member. [ADR 0008](../adr/0008-only-dedicated-xmpp-rooms-are-exposed.md) holds for
+  hosted rooms; its invitation-only entry into remote rooms is what this intent reverses, and
+  the spec that ships it supersedes that part. Entry stays an explicit act.
 - A room is joined by its typed address only. Browsing a remote MUC service's room list
   (`disco#items`) comes in a later release, so
   [service-discovery](../specs/service-discovery.md) does not change.

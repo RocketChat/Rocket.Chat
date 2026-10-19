@@ -60,8 +60,9 @@ does not delay or corrupt another's traffic.
   Adding HA is too complex for the value it brings.
 - Back-pressure acts per inbound stream: handlers run through a bounded, ordered queue per
   stream, and the socket stops reading at a high watermark and resumes at a low one, the
-  way ejabberd and Prosody throttle peers. A global limit on Rocket.Chat-side handlers feeds
-  the same pause. Outbound writes wait for the socket to drain, and a peer that never drains
+  way ejabberd and Prosody throttle peers. When the global limit on Rocket.Chat-side
+  handlers is reached, only streams holding more than their share of in-flight handlers
+  pause; a peer within its share keeps being read. Outbound writes wait for the socket to drain, and a peer that never drains
   is closed. `resource-constraint` (type `wait`) answers only IQ get and set when the global
   queue is full, never groupchat or presence: an error sent to a remote room gets our member
   expelled.

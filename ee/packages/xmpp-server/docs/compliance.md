@@ -2,7 +2,8 @@
 
 Every standard the package implements, implements in part, plans to implement or has decided
 against, and the spec that owns it. The rows are derived from the `standards` and `status`
-frontmatter of the specs in [specs/](specs/); edit the spec, then this table.
+frontmatter of the specs in [specs/](specs/), and from intents that name a standard before
+a spec exists; edit the spec or intent, then this table.
 
 Status: `implemented`, `partial` (the spec's Out of scope says what is missing), `planned`
 (a spec is agreed, no plan yet), `draft` (a spec exists, not yet agreed), `intent` (wanted,
