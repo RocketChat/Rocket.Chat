@@ -1,7 +1,7 @@
 ---
 status: partial
 standards: [XEP-0359]
-adrs: [0007, 0009]
+adrs: [0007, 0009, 0014]
 code:
   [
     src/muc/RemoteMucSession.ts,

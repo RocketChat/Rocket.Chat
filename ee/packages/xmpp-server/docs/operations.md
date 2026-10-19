@@ -224,7 +224,8 @@ up:
   No prior contact or subscription is required.
 - **Presence**: send a subscription request to a Rocket.Chat user you already share a DM
   with; it is accepted automatically, and a request back is sent. Requests from anyone else
-  are declined. See [Presence](#presence) for what is exchanged after that.
+  are declined. With **Exchange Presence** off, requests get no answer at all. See
+  [Presence](#presence) for what is exchanged after that.
 - **Join a Rocket.Chat-hosted room**: join `<room>@conference.chat.example.com` as a regular
   MUC. Public channels admit anyone; private groups require an invitation (a join without one
   is refused with `registration-required`). `disco#items` on `chat.example.com` lists the
@@ -274,8 +275,8 @@ What the servers need:
   on; `s2s_use_starttls: optional` when Rocket.Chat has no TLS certificate.
 - **Rocket.Chat**: the repo's test admin exists (as under `TEST_MODE`,
   `apps/meteor/tests/data/user.ts`); the XMPP server is enabled; the allow list is empty or
-  includes both the XMPP server's domain and its MUC domain. The suite checks only the
-  domain, so a missing MUC domain shows up as `remote-muc` failures.
+  includes both the XMPP server's domain and its MUC domain. The suite checks the domain
+  before every suite and the MUC domain before the remote-room one.
 - **xmpp-server-service**: runs without `XMPP_DECODE_ONLY`.
 - **Name resolution**: each server resolves the other's domain and MUC subdomain, through
   DNS, `/etc/hosts` or `XMPP_DNS_OVERRIDES` on the service.

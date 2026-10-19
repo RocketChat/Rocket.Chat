@@ -92,8 +92,9 @@ network already uses. Entry is by invitation only ([ADR 0008](../adr/0008-only-d
     localpart, a record keyed `<nick>#<room JID>`, which belongs to that room alone. A
     semi-anonymous room, which shows real JIDs only to moderators, so yields one record per
     room for the same person.
-- **R7** The id used for storage and deduplication is the room's XEP-0359 `<stanza-id/>`
-  when present, otherwise the stanza id ([message-deduplication](message-deduplication.md)).
+- **R7** Deduplication follows [message-deduplication](message-deduplication.md) R2, and the
+  stored message `_id` follows
+  [ADR 0014](../adr/0014-inbound-message-id-is-derived-from-room-author-and-sender-id.md).
 - **R8** A message saved by a local member is sent to the room as a `groupchat` from their
   occupant JID with the message `_id` as id, after joining when the member has no session.
   Edits are sent as corrections ([message-corrections](message-corrections.md)).
@@ -147,7 +148,7 @@ the winner created (R12).
   discussion history). A live message can carry the same element from its sender, so it is
   not trusted; history from an occupant who has left gets the per-room record.
 - Reconnecting a session the room dropped: `muc.remoteSessionLost` is declared but never
-  emitted, and `RemoteMucSession.markStale` is never called.
+  emitted.
 - Direct invitations sent by Rocket.Chat; the hosted-room side sends mediated invites only.
 - A channel-name validation setting stricter than R1's character set: the channel cannot
   be created and the invitation is dropped.

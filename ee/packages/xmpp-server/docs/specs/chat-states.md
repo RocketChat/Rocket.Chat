@@ -41,8 +41,9 @@ remote activity through the same stream clients listen to. The mapping costs lit
 
 **Rooms**
 
-- **R7** Rooms: see open questions. Until decided, chat states addressed to a hosted room or
-  received from a remote room are ignored.
+- **R7** Rooms: see open questions. Until decided, chat states sent to a hosted room as
+  `groupchat` or received from a remote room are ignored; a private message to an occupant,
+  chat state or not, is refused as [hosted-muc](hosted-muc.md) R17 says.
 
 ## Design
 

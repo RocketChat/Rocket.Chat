@@ -19,8 +19,9 @@ imperative methods for everything outbound, and one request/response delegate
 
 Network operations return promises, while room state changes and queries are synchronous
 because that state lives in the core. Event payloads are plain data apart from the `raw`
-stanza. A process boundary would make the synchronous methods asynchronous and the `raw`
-fields serialized XML; nothing else would change.
+stanza and the `Error` carried by `error`, `connection.lost` and `connection.failed`. A
+process boundary would make the synchronous methods asynchronous, send `raw` as serialized
+XML and each `Error` as its name and message; nothing else would change.
 
 ## Why
 
