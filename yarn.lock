@@ -11026,6 +11026,7 @@ __metadata:
     moment-timezone: "npm:^0.5.48"
     mongo-message-queue: "npm:^1.1.0"
     mongodb: "npm:6.16.0"
+    mongodb-memory-server: "npm:^10.2.3"
     nats: "npm:^2.28.2"
     node-dogstatsd: "npm:^0.0.7"
     node-fetch: "npm:2.7.0"
