@@ -28,7 +28,7 @@ const NoInstalledAppMatchesEmptyState = ({ shouldShowSearchText, text, onButtonC
 				{shouldShowSearchText && (
 					<StatesSubtitle>
 						<span>
-							{t('No_app_matches_for')} <strong>"{text}"</strong>
+							{t('No_app_matches_for')} <strong>&quot;{text}&quot;</strong>
 						</span>
 					</StatesSubtitle>
 				)}

@@ -84,7 +84,7 @@ const RegisterWorkspaceTokenModal = ({ onClose, onStatusChange, ...props }: Regi
 						</Box>{' '}
 						and click{' '}
 						<Box is='span' fontWeight={600}>
-							"Register self-managed"
+							&quot;Register self-managed&quot;
 						</Box>
 						.
 					</Trans>
