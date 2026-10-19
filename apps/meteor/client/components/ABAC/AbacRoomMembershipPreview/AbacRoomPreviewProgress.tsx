@@ -1,5 +1,5 @@
 import type { AbacMembershipGroup } from '@rocket.chat/core-typings';
-import { Box, Button, Callout, Skeleton } from '@rocket.chat/fuselage';
+import { Box, Callout, Skeleton } from '@rocket.chat/fuselage';
 import type { TranslationKey } from '@rocket.chat/ui-contexts';
 import { useTranslation } from 'react-i18next';
 
@@ -23,10 +23,8 @@ type AbacRoomPreviewProgressProps = {
 	found: number;
 	checked: number;
 	total?: number;
-	isChecking: boolean;
 	isPartial: boolean;
 	isExhausted: boolean;
-	onStop: () => void;
 };
 
 const AbacRoomPreviewProgress = ({
@@ -36,10 +34,8 @@ const AbacRoomPreviewProgress = ({
 	found,
 	checked,
 	total,
-	isChecking,
 	isPartial,
 	isExhausted,
-	onStop,
 }: AbacRoomPreviewProgressProps) => {
 	const { t } = useTranslation();
 	const labels = progressLabels[group][isSearching ? 'matching' : 'all'];
@@ -48,18 +44,13 @@ const AbacRoomPreviewProgress = ({
 	return (
 		<>
 			<Box paddingInline={24} paddingBlock={12}>
-				<Box display='flex' alignItems='center' justifyContent='space-between' minHeight='x28'>
+				<Box display='flex' alignItems='center' minHeight='x28'>
 					{total === undefined ? (
 						<Skeleton width='x160' />
 					) : (
 						<Box is='span' role='status' fontScale='p2' color='hint'>
 							{t(label, { checked, total, count: found, roomName })}
 						</Box>
-					)}
-					{isChecking && (
-						<Button small secondary flexShrink={0} marginInlineStart={8} onClick={onStop}>
-							{t('ABAC_Preview_Stop')}
-						</Button>
 					)}
 				</Box>
 			</Box>

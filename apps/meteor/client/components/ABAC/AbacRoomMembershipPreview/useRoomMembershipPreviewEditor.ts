@@ -1,5 +1,4 @@
 import type { AbacMembershipVerdict } from '@rocket.chat/core-typings';
-import { useMemo } from 'react';
 
 import { usePreviewPages } from './usePreviewPages';
 
@@ -14,10 +13,9 @@ export const useRoomMembershipPreviewEditor = (rid: string, attributes: Record<s
 	const hasFirstPage = !!data?.pages.length;
 	const editorError = hasFirstPage ? null : error;
 
-	const editor = useMemo<PreviewEditor | undefined>(
-		() => (hasFirstPage ? { verdict, losesAccess: verdict !== undefined && verdict !== 'compliant' } : undefined),
-		[hasFirstPage, verdict],
-	);
+	const editor: PreviewEditor | undefined = hasFirstPage
+		? { verdict, losesAccess: verdict !== undefined && verdict !== 'compliant' }
+		: undefined;
 
 	return {
 		editor,
