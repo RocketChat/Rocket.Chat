@@ -1,0 +1,60 @@
+apps/meteor/client/views/root/AppLayout.tsx
+  s_6c3ed16cc29ab0::t_00692a0fe714fe 21,87
+packages/desktop-api/README.md
+  s_6c3ed16cc29ab0::t_051c2c3cfc2fbf 64
+  s_6c3ed16cc29ab0::t_669fe711a13553 77,143
+  s_6c3ed16cc29ab0::t_02649ecb4f9c1c 91
+  s_6c3ed16cc29ab0::t_97a971b1c8591d 115-116
+  s_6c3ed16cc29ab0::t_2e98878ecf56f2 70
+  s_6c3ed16cc29ab0::t_fd76a49e626486 81-87,89
+  s_6c3ed16cc29ab0::t_8daff81b9628ec 58-59,61,69,71-75,78-79,97,99
+  s_6c3ed16cc29ab0::t_b15841a3daf4ac 76,88,95
+  s_6c3ed16cc29ab0::t_518034f1ed8029 60,62-63,65-68,80,90,92-94,96,98
+apps/meteor/client/views/root/hooks/useDesktopUserPresence.ts
+  s_6c3ed16cc29ab0::t_c09ba2cfcfad7b 1,56
+  s_6c3ed16cc29ab0::t_e253d2e380ef8a 66
+  s_6c3ed16cc29ab0::t_a0eb83270ca30b 2,7,33,37,50-55,57-61,81
+  s_6c3ed16cc29ab0::t_86127f2fadb9fa 3-6,8-32,34-36,38-44,46-49,62,65,67-73,75-76,82,84
+  s_6c3ed16cc29ab0::t_b15841a3daf4ac 45,80,83
+  s_6c3ed16cc29ab0::t_2e98878ecf56f2 74
+  s_6c3ed16cc29ab0::t_02649ecb4f9c1c 63-64
+  s_6c3ed16cc29ab0::t_481721b45ed969 77-79
+.changeset/desktop-user-presence-contract.md
+  s_6c3ed16cc29ab0::t_ab0cd2ab764219 6
+  s_6c3ed16cc29ab0::t_384974bb0f7e37 1-5
+apps/meteor/client/views/root/hooks/useDesktopUserPresence.spec.ts
+  s_6c3ed16cc29ab0::t_02649ecb4f9c1c 152
+  s_6c3ed16cc29ab0::t_fe92b042235226 6-7,47-55,94-96,98-101
+  s_6c3ed16cc29ab0::t_c7c59d90178228 37-38,41-46,57,59-61,63,66-72,74-76,138-144,146-151,153-154
+  s_6c3ed16cc29ab0::t_2e98878ecf56f2 19,26,28,35
+  s_6c3ed16cc29ab0::t_0c438dfe9cf271 5,22-23,25,86-89,93,104-112,137
+  s_6c3ed16cc29ab0::t_505b65ba2fc205 39-40,62,145
+  s_6c3ed16cc29ab0::t_b15841a3daf4ac 73,82,97,103
+  s_6c3ed16cc29ab0::t_47c08f6d240b85 90-92
+  s_6c3ed16cc29ab0::t_54e06dea6db1e3 3
+  s_6c3ed16cc29ab0::t_72533cb2e62073 161
+  s_6c3ed16cc29ab0::t_b869250518d4d6 1-2,4,8-18,20-21,24,27,29-34,36,56,58,64-65,77-81,83-85,102,113-136,155-160,162-171
+packages/desktop-api/src/index.ts
+  s_6c3ed16cc29ab0::t_b15841a3daf4ac 37
+  s_6c3ed16cc29ab0::t_669fe711a13553 38,41-46
+  s_6c3ed16cc29ab0::t_f804f058aec57a 29-36,39-40,47-48,50-51
+  s_6c3ed16cc29ab0::t_02649ecb4f9c1c 49
+  s_6c3ed16cc29ab0::t_903a390bad8827 71
+  s_6c3ed16cc29ab0::t_2e98878ecf56f2 70
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.2",
+  "base_commit_sha": "ac91f310ef2eb6fac657ac3771a95453439895ec",
+  "prompts": {},
+  "sessions": {
+    "s_6c3ed16cc29ab0": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "22e04f78-f6a3-4049-ab45-40472cecafa9",
+        "model": "claude-opus-5-5"
+      },
+      "human_author": "Ricardo Garim <rswarovsky@gmail.com>"
+    }
+  }
+}
