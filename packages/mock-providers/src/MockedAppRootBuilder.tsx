@@ -273,8 +273,8 @@ export class MockedAppRootBuilder {
 		loginWithToken: () => Promise.resolve(),
 		loginWithService: () => () => Promise.resolve(true),
 		loginWithCustomOauth: () => undefined,
-		loginWithIframe: async () => Promise.reject('loginWithIframe not implemented'),
-		loginWithTokenRoute: async () => Promise.reject('loginWithTokenRoute not implemented'),
+		loginWithIframe: async () => Promise.reject(new Error('loginWithIframe not implemented')),
+		loginWithTokenRoute: async () => Promise.reject(new Error('loginWithTokenRoute not implemented')),
 		queryLoginServices: {
 			getCurrentValue: () => this.authServices,
 			subscribe: () => () => undefined,

@@ -134,7 +134,7 @@ export abstract class BaseRaw<
 		const updateFilter = updater.getUpdateFilter();
 		return this.updateOne(query, updateFilter, options).catch((e) => {
 			console.warn(e, updateFilter);
-			return Promise.reject(e);
+			throw e;
 		});
 	}
 

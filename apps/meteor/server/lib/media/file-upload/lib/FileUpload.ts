@@ -639,6 +639,7 @@ export const FileUpload = {
 			buffer.on('finish', () => {
 				const contents = buffer.getContents();
 				if (contents === false) {
+					// eslint-disable-next-line @typescript-eslint/prefer-promise-reject-errors -- an empty buffer rejects without a reason
 					return reject();
 				}
 				resolve(contents);

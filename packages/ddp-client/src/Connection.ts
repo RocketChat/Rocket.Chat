@@ -217,6 +217,7 @@ export class ConnectionImpl
 						this.status = 'failed';
 						this.emitStatus();
 						this.emit('disconnected');
+						// eslint-disable-next-line @typescript-eslint/prefer-promise-reject-errors -- DDP error payloads are forwarded as received
 						return reject(payload.version);
 					}
 					/* istanbul ignore next */

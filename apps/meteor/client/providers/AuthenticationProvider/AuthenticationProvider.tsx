@@ -52,6 +52,7 @@ const AuthenticationProvider = ({ children }: AuthenticationProviderProps) => {
 					}
 					method(user, password, (error?: unknown) => {
 						if (error) {
+							// eslint-disable-next-line @typescript-eslint/prefer-promise-reject-errors -- forwards the original error unchanged
 							reject(error);
 							return;
 						}
@@ -82,6 +83,7 @@ const AuthenticationProvider = ({ children }: AuthenticationProviderProps) => {
 								resolve(true);
 								return;
 							}
+							// eslint-disable-next-line @typescript-eslint/prefer-promise-reject-errors -- forwards the original error unchanged
 							reject(error);
 						});
 					});

@@ -167,7 +167,7 @@ export const VideoConfManager = new (class VideoConfManager extends Emitter<Vide
 			this.emit('calling/changed');
 			this.emitError(e?.xhr?.responseJSON?.error || 'error-videoconf-unexpected');
 
-			return Promise.reject(e);
+			throw e;
 		});
 
 		this.startingNewCall = false;
@@ -284,7 +284,7 @@ export const VideoConfManager = new (class VideoConfManager extends Emitter<Vide
 			console.error(`[VideoConf] Failed to load video conference capabilities`, e);
 			this.emitError();
 
-			return Promise.reject(e);
+			throw e;
 		});
 
 		this._capabilities = capabilities || {};
@@ -444,7 +444,7 @@ export const VideoConfManager = new (class VideoConfManager extends Emitter<Vide
 			console.error(`[VideoConf] Failed to join call ${callId}`, e);
 			this.emitError(e?.xhr?.responseJSON?.error || 'error-videoconf-join-failed');
 
-			return Promise.reject(e);
+			throw e;
 		});
 
 		if (!url) {

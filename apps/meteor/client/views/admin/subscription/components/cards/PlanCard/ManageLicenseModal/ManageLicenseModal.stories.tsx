@@ -9,6 +9,7 @@ import ManageLicenseModal from './ManageLicenseModal';
 const SAMPLE_LICENSE = 'RCLICENSE-'.padEnd(120, 'x');
 
 const validationSuccess = () => null;
+// eslint-disable-next-line @typescript-eslint/prefer-promise-reject-errors -- the modal reads the validation reasons from the rejection
 const validationFailure = (reasons: BehaviorWithContext[]) => () => Promise.reject({ reasons });
 
 const enterLicense = async (text: string) => {

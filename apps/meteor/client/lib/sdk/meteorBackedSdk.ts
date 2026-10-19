@@ -237,7 +237,7 @@ const createMeteorBackedAccount = () => {
 		},
 		loginWithPassword: (username: string, password: string) =>
 			new Promise<void>((resolve, reject) =>
-				(Meteor as unknown as { loginWithPassword: (u: string, p: string, cb: (err?: unknown) => void) => void }).loginWithPassword(
+				(Meteor as unknown as { loginWithPassword: (u: string, p: string, cb: (err?: Error) => void) => void }).loginWithPassword(
 					username,
 					password,
 					(err) => (err ? reject(err) : resolve()),
@@ -245,14 +245,14 @@ const createMeteorBackedAccount = () => {
 			),
 		loginWithToken: (token: string) =>
 			new Promise<{ id: string; token: string; tokenExpires: Date }>((resolve, reject) =>
-				(Meteor as unknown as { loginWithToken: (t: string, cb: (err?: unknown, res?: unknown) => void) => void }).loginWithToken(
+				(Meteor as unknown as { loginWithToken: (t: string, cb: (err?: Error, res?: unknown) => void) => void }).loginWithToken(
 					token,
 					(err, res) => (err ? reject(err) : resolve(res as { id: string; token: string; tokenExpires: Date })),
 				),
 			),
 		logout: () =>
 			new Promise<void>((resolve, reject) =>
-				(Meteor as unknown as { logout: (cb: (err?: unknown) => void) => void }).logout((err) => (err ? reject(err) : resolve())),
+				(Meteor as unknown as { logout: (cb: (err?: Error) => void) => void }).logout((err) => (err ? reject(err) : resolve())),
 			),
 		// Lifecycle handlers delegate to Meteor's accounts-base. The unsubscribe
 		// shape (returning a () => void) matches the SDK contract; Meteor's

@@ -87,6 +87,7 @@ export class ClientStreamImpl extends Emitter implements ClientStream {
 					options,
 					callback: (error, result) => {
 						if (error) {
+							// eslint-disable-next-line @typescript-eslint/prefer-promise-reject-errors -- DDP error payloads are forwarded as received
 							reject(error);
 						} else {
 							resolve(result);
@@ -131,6 +132,7 @@ export class ClientStreamImpl extends Emitter implements ClientStream {
 			async ready() {
 				const subscription = self.subscriptions.get(id);
 				if (!subscription) {
+					// eslint-disable-next-line @typescript-eslint/prefer-promise-reject-errors -- DDP error payloads are forwarded as received
 					return Promise.reject(result.error);
 				}
 
@@ -141,6 +143,7 @@ export class ClientStreamImpl extends Emitter implements ClientStream {
 				return new Promise((resolve, reject) => {
 					this.onChange((payload) => {
 						if ('error' in payload) {
+							// eslint-disable-next-line @typescript-eslint/prefer-promise-reject-errors -- DDP error payloads are forwarded as received
 							reject(payload.error);
 							return;
 						}
@@ -167,6 +170,7 @@ export class ClientStreamImpl extends Emitter implements ClientStream {
 			this.ddp.unsubscribe(id);
 			this.ddp.onNoSub(id, (payload) => {
 				if ('error' in payload) {
+					// eslint-disable-next-line @typescript-eslint/prefer-promise-reject-errors -- DDP error payloads are forwarded as received
 					reject(payload.error);
 				} else {
 					resolve(payload);
@@ -179,6 +183,7 @@ export class ClientStreamImpl extends Emitter implements ClientStream {
 		this.ddp.connect();
 		return new Promise((resolve, reject) => {
 			this.ddp.onConnection((data) => {
+				// eslint-disable-next-line @typescript-eslint/prefer-promise-reject-errors -- DDP error payloads are forwarded as received
 				if (data.msg === 'failed') reject(data);
 				else resolve(data);
 			});

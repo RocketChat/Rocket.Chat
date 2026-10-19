@@ -344,6 +344,7 @@ export abstract class BaseRuntimeSubprocessController extends EventEmitter imple
 					clearTimeout(timeoutId);
 
 					if (error) {
+						// eslint-disable-next-line @typescript-eslint/prefer-promise-reject-errors -- JSON-RPC errors are forwarded as received
 						reject(error);
 					}
 

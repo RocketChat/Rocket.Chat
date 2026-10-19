@@ -344,12 +344,14 @@ export class LDAPConnection {
 			this.clientSearch(baseDN, searchOptions, (err, res: ldapjs.SearchCallbackResponse) => {
 				if (err) {
 					searchLogger.error({ err });
+					// eslint-disable-next-line @typescript-eslint/prefer-promise-reject-errors -- forwards the original error unchanged
 					reject(err);
 					return;
 				}
 
 				res.on('error', (err) => {
 					searchLogger.error({ err });
+					// eslint-disable-next-line @typescript-eslint/prefer-promise-reject-errors -- forwards the original error unchanged
 					reject(err);
 				});
 
@@ -505,12 +507,14 @@ export class LDAPConnection {
 			try {
 				this.client.bind(dn, password, (error) => {
 					if (error) {
+						// eslint-disable-next-line @typescript-eslint/prefer-promise-reject-errors -- forwards the original error unchanged
 						return reject(error);
 					}
 
 					resolve();
 				});
 			} catch (error) {
+				// eslint-disable-next-line @typescript-eslint/prefer-promise-reject-errors -- forwards the original error unchanged
 				reject(error);
 			}
 		});

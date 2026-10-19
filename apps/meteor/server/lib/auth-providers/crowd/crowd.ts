@@ -73,6 +73,7 @@ export class CROWD {
 		return new Promise((resolve, reject) =>
 			this.crowdClient.ping((err: any) => {
 				if (err) {
+					// eslint-disable-next-line @typescript-eslint/prefer-promise-reject-errors -- forwards the original error unchanged
 					reject(err);
 				}
 				resolve();
@@ -84,6 +85,7 @@ export class CROWD {
 		return new Promise((resolve, reject) =>
 			this.crowdClient.user.find(crowdUsername, (err: any, userResponse: Record<string, any>) => {
 				if (err) {
+					// eslint-disable-next-line @typescript-eslint/prefer-promise-reject-errors -- forwards the original error unchanged
 					reject(err);
 				}
 				resolve({
@@ -162,6 +164,7 @@ export class CROWD {
 		return new Promise((resolve, reject) =>
 			this.crowdClient.user.authenticate(crowdUsername, password, async (err: any, res: Record<string, any>) => {
 				if (err) {
+					// eslint-disable-next-line @typescript-eslint/prefer-promise-reject-errors -- forwards the original error unchanged
 					reject(err);
 				}
 				const user = res;
@@ -178,6 +181,7 @@ export class CROWD {
 
 					resolve(crowdUser);
 				} catch (err) {
+					// eslint-disable-next-line @typescript-eslint/prefer-promise-reject-errors -- forwards the original error unchanged
 					reject(err);
 				}
 			}),

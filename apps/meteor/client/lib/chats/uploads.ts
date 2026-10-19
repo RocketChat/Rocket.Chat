@@ -174,6 +174,7 @@ class UploadsStore extends Emitter<{ update: void; [x: `cancelling-${Upload['id'
 						},
 						error: (event) => {
 							this.updateUpload(id, { percentage: 0, error: new Error(xhr.responseText) });
+							// eslint-disable-next-line @typescript-eslint/prefer-promise-reject-errors -- callers receive the XHR progress event
 							reject(event);
 						},
 					},

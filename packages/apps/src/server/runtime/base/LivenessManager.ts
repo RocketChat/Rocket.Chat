@@ -159,11 +159,13 @@ export class LivenessManager {
 				this.debug('Ping failed in %d ms (consecutive failure #%d)', Date.now() - start, this.pingTimeoutConsecutiveCount);
 				this.controller.off('pong', onceCallback);
 				this.pingTimeoutConsecutiveCount++;
+				// eslint-disable-next-line @typescript-eslint/prefer-promise-reject-errors -- the ping handler compares the reason string
 				reject('timeout');
 			};
 
 			this.pingAbortController.once('abort', () => {
 				this.debug('Ping aborted');
+				// eslint-disable-next-line @typescript-eslint/prefer-promise-reject-errors -- the ping handler compares the reason string
 				reject('abort');
 			});
 

@@ -7,6 +7,7 @@ export const pageUrlCondition = (condition: ILivechatTriggerCondition) => {
 	const { parentUrl } = Triggers;
 
 	if (!parentUrl || !condition.value) {
+		// eslint-disable-next-line @typescript-eslint/prefer-promise-reject-errors -- the reason is stored as the trigger record error
 		return Promise.reject(`condition ${condition.name} not met`);
 	}
 
@@ -16,6 +17,7 @@ export const pageUrlCondition = (condition: ILivechatTriggerCondition) => {
 		return Promise.resolve();
 	}
 
+	// eslint-disable-next-line @typescript-eslint/prefer-promise-reject-errors -- the reason is stored as the trigger record error
 	return Promise.reject();
 };
 
@@ -25,6 +27,7 @@ export const timeOnSiteCondition = (condition: ILivechatTriggerCondition) => {
 		setTimeout(() => {
 			const { user } = store.state;
 			if (user?.token) {
+				// eslint-disable-next-line @typescript-eslint/prefer-promise-reject-errors -- the reason is stored as the trigger record error
 				reject(`Condition "${condition.name}" is no longer valid`);
 				return;
 			}

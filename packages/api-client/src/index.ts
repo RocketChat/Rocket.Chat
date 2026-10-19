@@ -216,6 +216,7 @@ export class RestClient implements RestClientInterface {
 			}
 
 			if (response.status !== 400) {
+				// eslint-disable-next-line @typescript-eslint/prefer-promise-reject-errors -- callers inspect the rejected Response
 				return Promise.reject(response);
 			}
 
@@ -244,6 +245,7 @@ export class RestClient implements RestClientInterface {
 				});
 			}
 
+			// eslint-disable-next-line @typescript-eslint/prefer-promise-reject-errors -- callers inspect the rejected Response
 			return Promise.reject(response);
 		});
 	}

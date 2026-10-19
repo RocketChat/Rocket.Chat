@@ -27,6 +27,7 @@ const waitForConnection = async (): Promise<void> => {
 		if (connection.status !== 'connecting' && connection.status !== 'reconnecting') {
 			connection.connect().catch((error) => {
 				stop();
+				// eslint-disable-next-line @typescript-eslint/prefer-promise-reject-errors -- forwards the original error unchanged
 				reject(error);
 			});
 		}

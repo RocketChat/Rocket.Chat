@@ -68,6 +68,7 @@ export const handleLogin = <TLoginFunction extends (...args: any[]) => Promise<a
 		return login(...loginArgs)
 			.catch(async (error: MeteorErrorLike | undefined) => {
 				if (!isTotpRequiredError(error)) {
+					// eslint-disable-next-line @typescript-eslint/prefer-promise-reject-errors -- forwards the original error unchanged
 					return Promise.reject(error);
 				}
 

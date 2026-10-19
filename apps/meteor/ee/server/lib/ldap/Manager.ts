@@ -717,6 +717,7 @@ export class LDAPEEManager extends LDAPManager {
 					endCallback: (err: any): void => {
 						if (err) {
 							logger.error({ err });
+							// eslint-disable-next-line @typescript-eslint/prefer-promise-reject-errors -- forwards the original error unchanged
 							reject(err);
 							return;
 						}

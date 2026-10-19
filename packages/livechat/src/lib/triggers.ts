@@ -107,6 +107,7 @@ class Triggers {
 
 	async fire(id: string, action: ILivechatTriggerAction, params: ILivechatTriggerCondition) {
 		if (!this._enabled) {
+			// eslint-disable-next-line @typescript-eslint/prefer-promise-reject-errors -- the reason is stored as the trigger record error
 			return Promise.reject('Triggers disabled');
 		}
 

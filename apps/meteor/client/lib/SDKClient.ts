@@ -121,6 +121,7 @@ const createNewMeteorStream = (streamName: StreamNames, key: StreamKeys<StreamNa
 		return new Promise<void>((resolve, reject) => {
 			ee.once('ready', ([err]) => {
 				if (err) {
+					// eslint-disable-next-line @typescript-eslint/prefer-promise-reject-errors -- forwards the original error unchanged
 					reject(err);
 					return;
 				}
@@ -233,6 +234,7 @@ const createNewDdpSdkStream = (
 			return new Promise<void>((resolve, reject) => {
 				ee.once('ready', ([err]) => {
 					if (err) {
+						// eslint-disable-next-line @typescript-eslint/prefer-promise-reject-errors -- forwards the original error unchanged
 						reject(err);
 						return;
 					}

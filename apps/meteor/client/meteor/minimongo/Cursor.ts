@@ -676,42 +676,26 @@ export class Cursor<T extends { _id: string }, TOptions extends Options<T>> {
 		return (results as T[]).slice(this.skip, this.limit ? this.limit + this.skip : (results as T[]).length);
 	}
 
-	countAsync(): Promise<number> {
-		try {
-			return Promise.resolve(this.count());
-		} catch (error) {
-			return Promise.reject(error);
-		}
+	async countAsync(): Promise<number> {
+		return this.count();
 	}
 
-	fetchAsync(): Promise<DispatchTransform<TOptions['transform'], T>[]> {
-		try {
-			return Promise.resolve(this.fetch());
-		} catch (error) {
-			return Promise.reject(error);
-		}
+	async fetchAsync(): Promise<DispatchTransform<TOptions['transform'], T>[]> {
+		return this.fetch();
 	}
 
-	forEachAsync<TIterationCallback extends (doc: DispatchTransform<TOptions['transform'], T>, index: number, cursor: this) => void>(
+	async forEachAsync<TIterationCallback extends (doc: DispatchTransform<TOptions['transform'], T>, index: number, cursor: this) => void>(
 		callback: TIterationCallback,
 		thisArg: ThisParameterType<TIterationCallback>,
 	): Promise<void> {
-		try {
-			return Promise.resolve(this.forEach(callback, thisArg));
-		} catch (error) {
-			return Promise.reject(error);
-		}
+		return this.forEach(callback, thisArg);
 	}
 
-	mapAsync<TIterationCallback extends (doc: DispatchTransform<TOptions['transform'], T>, index: number, cursor: this) => any>(
+	async mapAsync<TIterationCallback extends (doc: DispatchTransform<TOptions['transform'], T>, index: number, cursor: this) => any>(
 		callback: TIterationCallback,
 		thisArg: ThisParameterType<TIterationCallback>,
 	): Promise<ReturnType<TIterationCallback>[]> {
-		try {
-			return Promise.resolve(this.map(callback, thisArg));
-		} catch (error) {
-			return Promise.reject(error);
-		}
+		return this.map(callback, thisArg);
 	}
 
 	private _observeCallbacksAreOrdered(callbacks: ObserveOptions<T>) {

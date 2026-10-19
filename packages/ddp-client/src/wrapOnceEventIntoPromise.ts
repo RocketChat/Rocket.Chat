@@ -15,6 +15,7 @@ export function wrapOnceEventIntoPromise<T extends { error?: string }>(emitter: 
 		emitter.once(event, (data: T) => {
 			// If the event object has an error property, reject
 			if (data.error) {
+				// eslint-disable-next-line @typescript-eslint/prefer-promise-reject-errors -- DDP error payloads are forwarded as received
 				return reject(data.error);
 			}
 

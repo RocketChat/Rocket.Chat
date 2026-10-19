@@ -181,6 +181,7 @@ export const useExportMessagesAsPDFMutation = () => {
 					instance.on('change', callback);
 					instance.updateContainer(jsx);
 				} catch (error) {
+					// eslint-disable-next-line @typescript-eslint/prefer-promise-reject-errors -- forwards the original error unchanged
 					reject(error);
 				} finally {
 					instance.removeListener('change', callback);

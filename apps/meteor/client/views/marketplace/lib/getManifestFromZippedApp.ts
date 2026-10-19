@@ -8,6 +8,7 @@ async function fileToUint8Array(file: File): Promise<Uint8Array> {
 	return new Promise((resolve, reject) => {
 		const fileReader = new FileReader();
 		fileReader.onload = (e): void => resolve(new Uint8Array((e.target as any).result as Uint8Array));
+		// eslint-disable-next-line @typescript-eslint/prefer-promise-reject-errors -- callers receive the FileReader error event
 		fileReader.onerror = (e): void => reject(e);
 		fileReader.readAsArrayBuffer(file);
 	});
