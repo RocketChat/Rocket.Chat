@@ -442,6 +442,212 @@ it('should drop the credentials when the server refuses the token after a reconn
 	sdk.connection.close();
 });
 
+it('should keep the credentials when the server refuses the token and logoutOnRefusedResume is false', async () => {
+	const sdk = DDPSDK.create('ws://localhost:1234', { logoutOnRefusedResume: false });
+	const subscription = await loginAndReconnect(sdk);
+
+	const login = JSON.parse((await server.nextMessage) as string);
+	server.send(JSON.stringify({ msg: 'result', id: login.id, error: { error: 403, reason: 'You are not allowed to use this token' } }));
+
+	await expect(server.nextMessage.then((message) => JSON.parse(message as string))).resolves.toMatchObject({
+		msg: 'sub',
+		id: subscription.id,
+	});
+	expect(sdk.account.uid).toBe('uid');
+	sdk.connection.close();
+});
+
+it('should keep the credentials when the re-login fails for a reason other than a refused token', async () => {
+	const sdk = DDPSDK.create('ws://localhost:1234');
+	const subscription = await loginAndReconnect(sdk);
+
+	const login = JSON.parse((await server.nextMessage) as string);
+	server.send(JSON.stringify({ msg: 'result', id: login.id, error: { error: 'too-many-requests', reason: 'Error, too many requests' } }));
+
+	await expect(server.nextMessage.then((message) => JSON.parse(message as string))).resolves.toMatchObject({
+		msg: 'sub',
+		id: subscription.id,
+	});
+	expect(sdk.account.uid).toBe('uid');
+	sdk.connection.close();
+});
+
+it('should reject every pending call on close, including calls made after the connection dropped', async () => {
+	const sdk = DDPSDK.create('ws://localhost:1234', { inFlightMethods: 'resend' });
+	await handleConnection(server, sdk.connection.connect());
+
+	const wait = sdk.client.callAsyncWithOptions('wait', { wait: true });
+	await server.nextMessage;
+	const behindWait = sdk.client.callAsync('behind-wait');
+
+	const disconnected = new Promise((resolve) => sdk.connection.once('disconnected', () => resolve(undefined)));
+	server.close();
+	await disconnected;
+	const whileDisconnected = sdk.client.callAsync('while-disconnected');
+	sdk.connection.close();
+
+	await expect(wait).rejects.toBeInstanceOf(ConnectionLostError);
+	await expect(behindWait).rejects.toBeInstanceOf(ConnectionLostError);
+	await expect(whileDisconnected).rejects.toBeInstanceOf(ConnectionLostError);
+});
+
+describe('resending calls lost with the connection', () => {
+	const dropAndReconnect = async (sdk: DDPSDK) => {
+		// Fake timers are used to avoid waiting for the reconnect timeout
+		jest.useFakeTimers();
+		server.close();
+		WS.clean();
+		server = new WS('ws://localhost:1234/websocket');
+		const connected = new Promise((resolve) => sdk.connection.once('connected', () => resolve(undefined)));
+		await handleConnection(server, jest.advanceTimersByTimeAsync(2000), connected);
+		jest.useRealTimers();
+	};
+
+	it('should send an unanswered call again after the reconnection and resolve with its result', async () => {
+		const sdk = DDPSDK.create('ws://localhost:1234', { inFlightMethods: 'resend' });
+		await handleConnection(server, sdk.connection.connect());
+
+		const call = sdk.client.callAsync('method', 'args');
+		const sent = JSON.parse((await server.nextMessage) as string);
+
+		await dropAndReconnect(sdk);
+
+		const resent = JSON.parse((await server.nextMessage) as string);
+		expect(resent).toEqual(sent);
+		server.send(JSON.stringify({ msg: 'result', id: resent.id, result: 1 }));
+		await expect(call).resolves.toBe(1);
+		sdk.connection.close();
+	});
+
+	it('should resend a lost wait method before the calls queued behind it', async () => {
+		const sdk = DDPSDK.create('ws://localhost:1234', { inFlightMethods: 'resend' });
+		await handleConnection(server, sdk.connection.connect());
+
+		const wait = sdk.client.callAsyncWithOptions('wait', { wait: true });
+		await server.nextMessage;
+		const queued = sdk.client.callAsync('queued');
+
+		await dropAndReconnect(sdk);
+
+		const first = JSON.parse((await server.nextMessage) as string);
+		expect(first.method).toBe('wait');
+		server.send(JSON.stringify({ msg: 'result', id: first.id, result: 'w' }));
+		await expect(wait).resolves.toBe('w');
+
+		const second = JSON.parse((await server.nextMessage) as string);
+		expect(second.method).toBe('queued');
+		server.send(JSON.stringify({ msg: 'result', id: second.id, result: 'q' }));
+		await expect(queued).resolves.toBe('q');
+		sdk.connection.close();
+	});
+
+	it('should log in again before resending a lost wait method', async () => {
+		const sdk = DDPSDK.create('ws://localhost:1234', { inFlightMethods: 'resend' });
+		await handleConnection(server, sdk.connection.connect());
+		await handleMethod(
+			server,
+			'login',
+			[{ resume: 'token' }],
+			JSON.stringify({ id: 'uid', token: 'token', tokenExpires: { $date: 99999999 } }),
+			sdk.account.loginWithToken('token'),
+		);
+
+		const wait = sdk.client.callAsyncWithOptions('wait', { wait: true });
+		await server.nextMessage;
+
+		await dropAndReconnect(sdk);
+
+		const relogin = JSON.parse((await server.nextMessage) as string);
+		expect(relogin).toMatchObject({ method: 'login', params: [{ resume: 'token' }] });
+		server.send(
+			JSON.stringify({ msg: 'result', id: relogin.id, result: { id: 'uid', token: 'token', tokenExpires: { $date: 99999999 } } }),
+		);
+
+		const resent = JSON.parse((await server.nextMessage) as string);
+		expect(resent.method).toBe('wait');
+		server.send(JSON.stringify({ msg: 'result', id: resent.id, result: 'w' }));
+		await expect(wait).resolves.toBe('w');
+		sdk.connection.close();
+	});
+
+	const login = async (sdk: DDPSDK) =>
+		handleMethod(
+			server,
+			'login',
+			[{ resume: 'token' }],
+			JSON.stringify({ id: 'uid', token: 'token', tokenExpires: { $date: 99999999 } }),
+			sdk.account.loginWithToken('token'),
+		);
+
+	const answer = (frame: { id: string }, result: unknown) => server.send(JSON.stringify({ msg: 'result', id: frame.id, result }));
+
+	it('should hold calls made during the outage until the new login, behind the lost ones', async () => {
+		const sdk = DDPSDK.create('ws://localhost:1234', { inFlightMethods: 'resend' });
+		await handleConnection(server, sdk.connection.connect());
+		await login(sdk);
+
+		const lost = sdk.client.callAsync('lost');
+		await server.nextMessage;
+
+		// Fake timers are used to avoid waiting for the reconnect timeout
+		jest.useFakeTimers();
+		const disconnected = new Promise((resolve) => sdk.connection.once('disconnected', () => resolve(undefined)));
+		server.close();
+		await disconnected;
+		const duringOutage = sdk.client.callAsync('during-outage');
+		WS.clean();
+		server = new WS('ws://localhost:1234/websocket');
+		const connected = new Promise((resolve) => sdk.connection.once('connected', () => resolve(undefined)));
+		await handleConnection(server, jest.advanceTimersByTimeAsync(2000), connected);
+		jest.useRealTimers();
+
+		const relogin = JSON.parse((await server.nextMessage) as string);
+		expect(relogin.method).toBe('login');
+		answer(relogin, { id: 'uid', token: 'token', tokenExpires: { $date: 99999999 } });
+
+		const first = JSON.parse((await server.nextMessage) as string);
+		const second = JSON.parse((await server.nextMessage) as string);
+		expect([first.method, second.method]).toEqual(['lost', 'during-outage']);
+		answer(first, 1);
+		answer(second, 2);
+		await expect(lost).resolves.toBe(1);
+		await expect(duringOutage).resolves.toBe(2);
+		sdk.connection.close();
+	});
+
+	it('should not resend the SDK login lost with the connection', async () => {
+		const sdk = DDPSDK.create('ws://localhost:1234', { inFlightMethods: 'resend' });
+		await handleConnection(server, sdk.connection.connect());
+		await login(sdk);
+
+		await dropAndReconnect(sdk);
+		const lostRelogin = JSON.parse((await server.nextMessage) as string);
+		expect(lostRelogin.method).toBe('login');
+
+		await dropAndReconnect(sdk);
+		const relogin = JSON.parse((await server.nextMessage) as string);
+		expect(relogin.method).toBe('login');
+		expect(relogin.id).not.toBe(lostRelogin.id);
+		answer(relogin, { id: 'uid', token: 'token', tokenExpires: { $date: 99999999 } });
+
+		const next = await Promise.race([server.nextMessage, new Promise((resolve) => setTimeout(() => resolve(undefined), 50))]);
+		expect(next).toBeUndefined();
+		expect(sdk.account.uid).toBe('uid');
+		sdk.connection.close();
+	});
+
+	it('should still reject pending calls when the connection is closed', async () => {
+		const sdk = DDPSDK.create('ws://localhost:1234', { inFlightMethods: 'resend' });
+		await handleConnection(server, sdk.connection.connect());
+
+		const call = sdk.client.callAsync('method');
+		await server.nextMessage;
+		sdk.connection.close();
+
+		await expect(call).rejects.toBeInstanceOf(ConnectionLostError);
+	});
+});
+
 describe('Method call and Disconnection cases', () => {
 	it('should handle properly if the message was sent after disconnection', async () => {
 		const sdk = DDPSDK.create('ws://localhost:1234');

@@ -118,6 +118,9 @@ export class ConnectionImpl
 
 	private handshaking = false;
 
+	// The handshake listener of the current socket, dropped as soon as the socket is replaced or closed.
+	private stopHandshake?: () => void;
+
 	private flushQueue() {
 		this.queue.forEach((message) => {
 			this.ws?.send(message);
@@ -174,6 +177,7 @@ export class ConnectionImpl
 			return this.connectPromise as Promise<boolean>;
 		}
 
+		this.stopHandshake?.();
 		this.status = 'connecting';
 
 		const ws = new this.WS(`${this.ssl ? 'wss://' : 'ws://'}${this.url}/websocket`);
@@ -248,6 +252,7 @@ export class ConnectionImpl
 					/* istanbul ignore next */
 					reject(new Error('Unknown message type'));
 				});
+				this.stopHandshake = stopHandshake;
 			};
 
 			// The close event that always follows carries the handling; a listener must exist so
@@ -333,6 +338,9 @@ export class ConnectionImpl
 	close() {
 		clearTimeout(this.retryOptions.retryTimer);
 		this.status = 'closed';
+		this.stopHandshake?.();
+		// Their calls are rejected on close, so they must not go out on a later connect().
+		this.queue.clear();
 		this.ws?.close();
 		this.emitStatus();
 		this.emit('close');

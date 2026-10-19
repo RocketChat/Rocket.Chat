@@ -38,6 +38,19 @@ export type DDPSDKOptions = {
 	decode?: (raw: string) => unknown;
 	/** Defaults to the global `WebSocket`. */
 	WebSocket?: WebSocketConstructor;
+	/**
+	 * What happens to method calls still waiting for their result when the connection drops:
+	 * - `'reject'` (default): they reject with `ConnectionLostError`; the caller decides whether to retry.
+	 * - `'resend'`: they are sent again after the reconnection, as Meteor does; a call the server already ran runs twice.
+	 *
+	 * Calls pending when `connection.close()` is called always reject.
+	 */
+	inFlightMethods?: 'reject' | 'resend';
+	/**
+	 * Whether the account logs out when the server refuses the stored token on the login the SDK makes after a reconnection.
+	 * Defaults to `true`. Pass `false` when another layer owns the session and recovers it.
+	 */
+	logoutOnRefusedResume?: boolean;
 };
 
 /** The REST base URL for a server URL given with an http(s) or ws(s) scheme. */
@@ -47,20 +60,31 @@ export const toRestUrl = (url: string): string =>
 		.replace(/\/websocket\/?$/, '')
 		.replace(/\/$/, '');
 
-/** Fails the method calls that went out on a connection once it drops or is closed. */
-export const rejectInFlightOnConnectionLoss = (connection: Connection, stream: ClientStreamImpl): void => {
+/** Settles the method calls that went out on a connection once it drops or is closed. */
+export const handleConnectionLoss = (connection: Connection, stream: ClientStreamImpl, inFlightMethods: 'reject' | 'resend'): void => {
 	let connected = false;
 	connection.on('connected', () => {
 		connected = true;
 	});
-	const onLoss = () => {
+	connection.on('disconnected', () => {
 		if (!connected) return;
 		connected = false;
+		if (inFlightMethods === 'resend') {
+			stream.holdInFlight();
+			return;
+		}
 		stream.rejectInFlight();
-	};
-	connection.on('disconnected', onLoss);
-	connection.on('close', onLoss);
+	});
+	// No reconnection follows a close, so nothing pending may wait for one.
+	connection.on('close', () => {
+		connected = false;
+		stream.rejectAll();
+	});
 };
+
+// Meteor answers a resume login with an unknown or expired token with a 401/403 error; anything else is transient.
+const isRefusedToken = (error: unknown): boolean =>
+	typeof error === 'object' && error !== null && [401, 403].includes((error as { error?: unknown }).error as number);
 
 export class DDPSDK implements SDK {
 	constructor(
@@ -197,6 +221,8 @@ export class DDPSDK implements SDK {
 			encode,
 			decode,
 			WebSocket: WebSocketImpl = globalThis.WebSocket,
+			inFlightMethods = 'reject',
+			logoutOnRefusedResume = true,
 		} = { ...this.defaultOptions, ...options };
 
 		const ddp = new DDPDispatcher(undefined, encode, decode);
@@ -223,19 +249,22 @@ export class DDPSDK implements SDK {
 
 		const sdk = new this(connection, stream, account, timeoutControl, rest) as InstanceType<T>;
 
-		rejectInFlightOnConnectionLoss(connection, stream);
+		handleConnectionLoss(connection, stream, inFlightMethods);
 
 		connection.on('connected', async () => {
 			const token = account.user?.token;
 			if (token) {
 				try {
-					await account.loginWithToken(token);
+					await stream.sendSessionCalls(() => account.loginWithToken(token));
 				} catch (error) {
 					// The next connection retries with the same token.
 					if (error instanceof ConnectionLostError) return;
-					account.clearCredentials();
+					if (logoutOnRefusedResume && isRefusedToken(error)) {
+						account.clearCredentials();
+					}
 				}
 			}
+			stream.releaseHeld();
 			// Restored only after the re-login so subscriptions that need a user aren't refused.
 			[...stream.subscriptions.entries()].forEach(([, sub]) => {
 				ddp.subscribeWithId(sub.id, sub.name, sub.params);

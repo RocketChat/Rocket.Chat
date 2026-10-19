@@ -21,7 +21,11 @@ export class ConnectionLostError extends Error {
 
 type PendingMethod = {
 	payload: MethodPayload;
+	options?: DDPDispatchOptions;
 	sent: boolean;
+	held: boolean;
+	// A call of the new session itself (its login): goes out while holding and is never resent.
+	session: boolean;
 	fail: (error: unknown) => void;
 };
 
@@ -29,6 +33,10 @@ export class ClientStreamImpl extends Emitter implements ClientStream {
 	subscriptions = new Map<string, Subscription>();
 
 	private pending = new Map<string, PendingMethod>();
+
+	private holding = false;
+
+	private sessionCalls = false;
 
 	constructor(
 		private ddp: DDPClient,
@@ -74,16 +82,22 @@ export class ClientStreamImpl extends Emitter implements ClientStream {
 			}
 		});
 
+		const held = this.holding && !this.sessionCalls;
 		this.pending.set(ddpCallPayload.id, {
 			payload: ddpCallPayload,
+			options,
 			sent: false,
+			held,
+			session: this.sessionCalls,
 			fail: (error) => {
 				settle();
 				callback?.(error);
 			},
 		});
 
-		this.dispatcher.dispatch(ddpCallPayload, options);
+		if (!held) {
+			this.dispatcher.dispatch(ddpCallPayload, options);
+		}
 
 		return ddpCallPayload.id;
 	}
@@ -94,6 +108,54 @@ export class ClientStreamImpl extends Emitter implements ClientStream {
 	 */
 	rejectInFlight(error: unknown = new ConnectionLostError()): void {
 		[...this.pending.values()].filter(({ sent }) => sent).forEach(({ fail }) => fail(error));
+	}
+
+	/** Fails every pending method call, sent or not; none of them goes out afterwards. */
+	rejectAll(error: unknown = new ConnectionLostError()): void {
+		this.holding = false;
+		this.dispatcher.queue = [];
+		[...this.pending.values()].forEach(({ fail }) => fail(error));
+	}
+
+	/**
+	 * Keeps every unanswered method call, and every call made until `releaseHeld()`, aside so the calls of the
+	 * next session (its login, see `sendSessionCalls()`) go first. A lost session call is rejected instead.
+	 */
+	holdInFlight(): void {
+		this.holding = true;
+		this.dispatcher.queue = [];
+		[...this.pending.values()].forEach((method) => {
+			if (method.session) {
+				method.fail(new ConnectionLostError());
+				return;
+			}
+			method.sent = false;
+			method.held = true;
+		});
+	}
+
+	/** Runs `fn`, sending the calls it makes right away even while calls are held. */
+	sendSessionCalls<T>(fn: () => T): T {
+		this.sessionCalls = true;
+		try {
+			return fn();
+		} finally {
+			this.sessionCalls = false;
+		}
+	}
+
+	/**
+	 * Hands the calls kept by `holdInFlight()` to the transport again, in call order, as Meteor does after a
+	 * reconnection. A call whose frame did reach the server runs twice.
+	 */
+	releaseHeld(): void {
+		this.holding = false;
+		[...this.pending.values()]
+			.filter(({ held }) => held)
+			.forEach((method) => {
+				method.held = false;
+				this.dispatcher.dispatch(method.payload, method.options);
+			});
 	}
 
 	call(method: string, ...params: any[]): string {
