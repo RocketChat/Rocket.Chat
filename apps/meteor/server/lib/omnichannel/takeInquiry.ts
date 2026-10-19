@@ -1,4 +1,5 @@
 import { Omnichannel } from '@rocket.chat/core-services';
+import { LivechatInquiryStatus } from '@rocket.chat/core-typings';
 import { LivechatInquiry, LivechatRooms, Users } from '@rocket.chat/models';
 import { Meteor } from 'meteor/meteor';
 
@@ -20,7 +21,7 @@ export const takeInquiry = async (
 		});
 	}
 
-	if (inquiry.status === 'taken') {
+	if (inquiry.status === LivechatInquiryStatus.TAKEN) {
 		throw new Meteor.Error('error-inquiry-taken', 'Inquiry already taken', {
 			method: 'livechat:takeInquiry',
 		});

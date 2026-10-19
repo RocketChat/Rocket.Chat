@@ -1,4 +1,5 @@
 import type { AtLeast, INotificationDesktop, ISubscription, IUser } from '@rocket.chat/core-typings';
+import { UserStatus } from '@rocket.chat/core-typings';
 import { useStableCallback } from '@rocket.chat/fuselage-hooks';
 import { useEmbeddedLayout } from '@rocket.chat/ui-client';
 import { useCustomSound, useRouter, useStream, useUserPreference } from '@rocket.chat/ui-contexts';
@@ -19,7 +20,7 @@ export const useNotifyUser = (user: IUser) => {
 	const showDesktopNotification = useDesktopNotification();
 
 	const notifyNewRoom = useStableCallback(async (sub: AtLeast<ISubscription, 'rid'>): Promise<void> => {
-		if (user.status === 'busy') {
+		if (user.status === UserStatus.BUSY) {
 			return;
 		}
 

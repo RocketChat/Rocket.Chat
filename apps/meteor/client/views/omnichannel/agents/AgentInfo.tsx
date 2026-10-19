@@ -1,3 +1,4 @@
+import { ILivechatAgentStatus } from '@rocket.chat/core-typings';
 import { Box, Margins, ButtonGroup } from '@rocket.chat/fuselage';
 import {
 	ContextualbarClose,
@@ -75,7 +76,7 @@ const AgentInfo = ({ uid }: AgentInfoProps) => {
 					{statusLivechat && (
 						<>
 							<InfoPanelLabel>{t('Livechat_status')}</InfoPanelLabel>
-							<InfoPanelText>{statusLivechat === 'available' ? t('Available') : t('Not_Available')}</InfoPanelText>
+							<InfoPanelText>{statusLivechat === ILivechatAgentStatus.AVAILABLE ? t('Available') : t('Not_Available')}</InfoPanelText>
 						</>
 					)}
 					{MaxChatsPerAgentDisplay && <MaxChatsPerAgentDisplay maxNumberSimultaneousChat={data.user.livechat?.maxNumberSimultaneousChat} />}

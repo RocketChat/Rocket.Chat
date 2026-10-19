@@ -112,7 +112,7 @@ export class QueueManager {
 			throw new Error('inquiry-not-found');
 		}
 
-		if (dbInquiry.status === 'ready') {
+		if (dbInquiry.status === LivechatInquiryStatus.READY) {
 			logger.debug({
 				msg: 'Inquiry is ready. Delegating to agent',
 				inquiryId: inquiry._id,

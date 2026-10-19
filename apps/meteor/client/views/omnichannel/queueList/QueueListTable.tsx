@@ -1,4 +1,3 @@
-import { UserStatus } from '@rocket.chat/core-typings';
 import { Box, Pagination } from '@rocket.chat/fuselage';
 import { useMediaQuery } from '@rocket.chat/fuselage-hooks';
 import { UserAvatar } from '@rocket.chat/ui-avatar';
@@ -94,13 +93,13 @@ const QueueListTable = () => {
 		}
 
 		switch (status) {
-			case UserStatus.ONLINE:
+			case 'online':
 				return t('Online');
-			case UserStatus.AWAY:
+			case 'away':
 				return t('Away');
-			case UserStatus.BUSY:
+			case 'busy':
 				return t('Busy');
-			case UserStatus.OFFLINE:
+			case 'offline':
 				return t('Offline');
 			default:
 				return status;

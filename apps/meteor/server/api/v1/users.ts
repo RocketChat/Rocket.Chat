@@ -1,5 +1,6 @@
 import { MeteorError, Presence, Team } from '@rocket.chat/core-services';
-import type { IExportOperation, ILoginToken, IPersonalAccessToken, IUser, UserStatus } from '@rocket.chat/core-typings';
+import type { IExportOperation, ILoginToken, IPersonalAccessToken, IUser } from '@rocket.chat/core-typings';
+import { UserStatus } from '@rocket.chat/core-typings';
 import { Users, Subscriptions, Sessions, OAuthAccessTokens, OAuthRefreshTokens, OAuthAuthCodes } from '@rocket.chat/models';
 import {
 	ajv,
@@ -2173,7 +2174,7 @@ API.v1
 			// not the computed status — otherwise a transient auto-away/offline gets pinned as a manual claim.
 			const effectiveStatus = status || user.statusDefault || ('online' as UserStatus);
 
-			if (effectiveStatus === 'offline' && !settings.get('Accounts_AllowInvisibleStatusOption')) {
+			if (effectiveStatus === UserStatus.OFFLINE && !settings.get('Accounts_AllowInvisibleStatusOption')) {
 				throw new Meteor.Error('error-status-not-allowed', 'Invisible status is disabled', {
 					method: 'users.setStatus',
 				});

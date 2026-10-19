@@ -1,4 +1,5 @@
-import type { ILivechatBusinessHour, LivechatBusinessHourTypes, Serialized } from '@rocket.chat/core-typings';
+import type { ILivechatBusinessHour, Serialized } from '@rocket.chat/core-typings';
+import { LivechatBusinessHourTypes } from '@rocket.chat/core-typings';
 import { Box, Button, ButtonGroup } from '@rocket.chat/fuselage';
 import { useStableCallback } from '@rocket.chat/fuselage-hooks';
 import { canonicalizeTimezone } from '@rocket.chat/tools';
@@ -85,7 +86,7 @@ const EditBusinessHours = ({ businessHourData, type }: EditBusinessHoursProps) =
 			<PageHeader title={t('Business_Hours')}>
 				<ButtonGroup>
 					{!isSingleBH && <Button onClick={() => router.navigate('/omnichannel/businessHours')}>{t('Back')}</Button>}
-					{type === 'custom' && businessHourData?._id && (
+					{type === LivechatBusinessHourTypes.CUSTOM && businessHourData?._id && (
 						<Button danger onClick={() => handleRemove(businessHourData?._id, type)}>
 							{t('Delete')}
 						</Button>

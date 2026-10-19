@@ -1,6 +1,7 @@
 import crypto from 'node:crypto';
 
 import type { IDirectoryChannelResult, IDirectoryUserResult, IRoom, IUser } from '@rocket.chat/core-typings';
+import { UserStatus } from '@rocket.chat/core-typings';
 import { Settings, Users, WorkspaceCredentials } from '@rocket.chat/models';
 import {
 	ajv,
@@ -276,16 +277,16 @@ API.v1.get(
 				}
 
 				switch (user.status) {
-					case 'online':
+					case UserStatus.ONLINE:
 						backgroundColor = '#1fb31f';
 						break;
-					case 'away':
+					case UserStatus.AWAY:
 						backgroundColor = '#dc9b01';
 						break;
-					case 'busy':
+					case UserStatus.BUSY:
 						backgroundColor = '#bc2031';
 						break;
-					case 'offline':
+					case UserStatus.OFFLINE:
 						backgroundColor = '#a5a1a1';
 				}
 				break;

@@ -1,4 +1,5 @@
 import type { IUser, IOmnichannelRoom } from '@rocket.chat/core-typings';
+import { LivechatInquiryStatus } from '@rocket.chat/core-typings';
 import { LivechatDepartmentAgents, LivechatInquiry, LivechatRooms, LivechatDepartment } from '@rocket.chat/models';
 
 import { RoutingManager } from './RoutingManager';
@@ -71,7 +72,7 @@ export const validators: OmnichannelRoomAccessValidator[] = [
 
 		// TODO: findone filtering if the inquiry is queued instead of checking here
 		const inquiry = await LivechatInquiry.findOne(filter, { projection: { status: 1 } });
-		return inquiry?.status === 'queued';
+		return inquiry?.status === LivechatInquiryStatus.QUEUED;
 	},
 	async function (room, user) {
 		if (!room.departmentId || room.open || !user?._id) {

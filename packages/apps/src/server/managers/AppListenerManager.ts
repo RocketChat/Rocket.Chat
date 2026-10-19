@@ -971,7 +971,7 @@ export class AppListenerManager {
 		const { actionId, user, triggerId } = data;
 
 		switch (data.type) {
-			case UIKitIncomingInteractionType.BLOCK: {
+			case 'blockAction': {
 				const method = 'executeBlockActionHandler';
 				const { value, blockId } = data.payload as { value: string; blockId: string };
 
@@ -989,7 +989,7 @@ export class AppListenerManager {
 					})
 					.catch(handleError(method)) as Promise<IUIKitResponse>;
 			}
-			case UIKitIncomingInteractionType.VIEW_SUBMIT: {
+			case 'viewSubmit': {
 				const method = 'executeViewSubmitHandler';
 				const { view } = data.payload as { view: IUIKitSurface };
 
@@ -1004,7 +1004,7 @@ export class AppListenerManager {
 					})
 					.catch(handleError(method)) as Promise<IUIKitResponse>;
 			}
-			case UIKitIncomingInteractionType.VIEW_CLOSED: {
+			case 'viewClosed': {
 				const method = 'executeViewClosedHandler';
 				const { view, isCleared } = data.payload as { view: IUIKitSurface; isCleared: boolean };
 
@@ -1055,7 +1055,7 @@ export class AppListenerManager {
 	private async executeUIKitLivechatInteraction(data: IUIKitLivechatIncomingInteraction): Promise<IUIKitResponse> {
 		const { appId, type } = data;
 
-		const method = ((interactionType: string) => {
+		const method = ((interactionType: UIKitIncomingInteractionType) => {
 			switch (interactionType) {
 				case UIKitIncomingInteractionType.BLOCK:
 					return AppMethod.UIKIT_LIVECHAT_BLOCK_ACTION;

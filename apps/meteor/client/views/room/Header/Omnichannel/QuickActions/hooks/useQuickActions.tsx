@@ -32,7 +32,7 @@ import { QuickActionsEnum } from '../../../../lib/quickActions';
 
 export const useQuickActions = (): {
 	quickActions: QuickActionsActionConfig[];
-	actionDefault: (actionId: string) => void;
+	actionDefault: (actionId: QuickActionsEnum) => void;
 } => {
 	const room = useOmnichannelRoom();
 	const setModal = useSetModal();
@@ -194,7 +194,7 @@ export const useQuickActions = (): {
 		},
 	});
 
-	const handleAction = useStableCallback(async (id: string) => {
+	const handleAction = useStableCallback(async (id: QuickActionsEnum) => {
 		switch (id) {
 			case QuickActionsEnum.MoveQueue:
 				setModal(
@@ -281,7 +281,7 @@ export const useQuickActions = (): {
 	const canPlaceChatOnHold = Boolean(manualOnHoldAllowed && canRoomBePlacedOnHold && (!restrictedOnHold || canAgentPlaceOnHold));
 	const isRoomOverMacLimit = useIsRoomOverMacLimit(room);
 
-	const hasPermissionButtons = (id: string): boolean => {
+	const hasPermissionButtons = (id: QuickActionsEnum): boolean => {
 		switch (id) {
 			case QuickActionsEnum.MoveQueue:
 				return !isRoomOverMacLimit && !!roomOpen && canMoveQueue;
@@ -316,7 +316,7 @@ export const useQuickActions = (): {
 		})
 		.sort((a, b) => (a.order ?? 0) - (b.order ?? 0));
 
-	const actionDefault = useStableCallback((actionId: string) => {
+	const actionDefault = useStableCallback((actionId: QuickActionsEnum) => {
 		handleAction(actionId);
 	});
 

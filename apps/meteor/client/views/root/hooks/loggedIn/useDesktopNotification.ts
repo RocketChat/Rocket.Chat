@@ -1,4 +1,5 @@
 import type { INotificationDesktop } from '@rocket.chat/core-typings';
+import { UserStatus } from '@rocket.chat/core-typings';
 import { useStableCallback } from '@rocket.chat/fuselage-hooks';
 import { useUser } from '@rocket.chat/ui-contexts';
 
@@ -18,7 +19,7 @@ export const useDesktopNotification = () => {
 		) {
 			return;
 		}
-		if (user?.status === 'busy') {
+		if (user?.status === UserStatus.BUSY) {
 			return;
 		}
 

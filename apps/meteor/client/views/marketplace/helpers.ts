@@ -1,5 +1,6 @@
 import { AppStatus } from '@rocket.chat/apps-engine/definition/AppStatus';
 import type { App } from '@rocket.chat/core-typings';
+import { AppSubscriptionStatus } from '@rocket.chat/core-typings';
 import semver from 'semver';
 
 import { appErroredStatuses } from './helpers/appErroredStatuses';
@@ -224,7 +225,7 @@ export const appStatusSpanProps = (
 		};
 	}
 
-	const isOnTrialPeriod = subscriptionInfo?.status === 'trialing';
+	const isOnTrialPeriod = subscriptionInfo?.status === AppSubscriptionStatus.Trialing;
 	if (isOnTrialPeriod) {
 		return {
 			icon: 'checkmark-circled',

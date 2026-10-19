@@ -31,17 +31,17 @@ export type TwoFactorModalProps = {
 );
 
 const TwoFactorModal = ({ onConfirm, onClose, invalidAttempt, ...props }: TwoFactorModalProps) => {
-	if (props.method === Method.TOTP) {
+	if (props.method === 'totp') {
 		return <TwoFactorTotp onConfirm={onConfirm} onClose={onClose} invalidAttempt={invalidAttempt} />;
 	}
 
-	if (props.method === Method.EMAIL) {
+	if (props.method === 'email') {
 		// const { emailOrUsername, challengeId } = props;
 
 		return <TwoFactorEmail onConfirm={onConfirm} onClose={onClose} invalidAttempt={invalidAttempt} {...props} />;
 	}
 
-	if (props.method === Method.PASSWORD) {
+	if (props.method === 'password') {
 		return <TwoFactorPassword onConfirm={onConfirm} onClose={onClose} invalidAttempt={invalidAttempt} />;
 	}
 

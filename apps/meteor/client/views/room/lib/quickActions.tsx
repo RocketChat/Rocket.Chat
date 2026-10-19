@@ -3,14 +3,14 @@ import type { Keys as IconName } from '@rocket.chat/icons';
 import type { TranslationKey } from '@rocket.chat/ui-contexts';
 
 export type QuickActionsActionOptions = Array<{
-	id: string;
+	id: QuickActionsEnum;
 	label: TranslationKey;
 	enabled?: boolean;
 	validate?: (room: IRoom) => { value: boolean; tooltip: TranslationKey };
 }>;
 
 export type QuickActionsActionConfig = {
-	id: string;
+	id: QuickActionsEnum;
 	icon: IconName;
 	title: TranslationKey;
 	order?: number;

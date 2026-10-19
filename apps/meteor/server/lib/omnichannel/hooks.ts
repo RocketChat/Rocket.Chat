@@ -1,4 +1,4 @@
-import { ILivechatAgentStatus } from '@rocket.chat/core-typings';
+import { ILivechatAgentStatus, UserStatus } from '@rocket.chat/core-typings';
 import type {
 	AtLeast,
 	ILivechatDepartment,
@@ -28,7 +28,10 @@ export async function afterAgentUserActivated(user: IUser) {
 }
 
 export async function afterAgentAdded<T extends AtLeast<IUser, '_id'>>(user: T): Promise<T> {
-	await setUserStatusLivechat(user._id, user.status !== 'offline' ? ILivechatAgentStatus.AVAILABLE : ILivechatAgentStatus.NOT_AVAILABLE);
+	await setUserStatusLivechat(
+		user._id,
+		user.status !== UserStatus.OFFLINE ? ILivechatAgentStatus.AVAILABLE : ILivechatAgentStatus.NOT_AVAILABLE,
+	);
 	callbacks.runAsync('livechat.onNewAgentCreated', user._id);
 
 	return user;

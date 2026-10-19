@@ -1,4 +1,5 @@
 import type { ILivechatAgent, ISocketConnection } from '@rocket.chat/core-typings';
+import { UserStatus, ILivechatAgentStatus } from '@rocket.chat/core-typings';
 import { cronJobs } from '@rocket.chat/cron';
 import { LivechatAgentActivity, Sessions, Users } from '@rocket.chat/models';
 import { Meteor } from 'meteor/meteor';
@@ -93,7 +94,7 @@ export class LivechatAgentActivityMonitor {
 		const user = await Users.findOneById<Pick<ILivechatAgent, '_id' | 'statusLivechat' | 'status'>>(session.userId, {
 			projection: { _id: 1, status: 1, statusLivechat: 1 },
 		});
-		if (user && user.status !== 'offline' && user.statusLivechat === 'available') {
+		if (user && user.status !== UserStatus.OFFLINE && user.statusLivechat === ILivechatAgentStatus.AVAILABLE) {
 			await this._createOrUpdateSession(user._id);
 		}
 		connection.onClose(() => {
@@ -109,7 +110,7 @@ export class LivechatAgentActivityMonitor {
 		}
 
 		const user = await Users.findOneById<Pick<ILivechatAgent, '_id' | 'statusLivechat'>>(userId, { projection: { statusLivechat: 1 } });
-		if (user?.statusLivechat !== 'available') {
+		if (user?.statusLivechat !== ILivechatAgentStatus.AVAILABLE) {
 			return;
 		}
 
@@ -126,7 +127,7 @@ export class LivechatAgentActivityMonitor {
 		}
 
 		const user = await Users.findOneById<Pick<ILivechatAgent, '_id' | 'status'>>(userId, { projection: { status: 1 } });
-		if (user?.status === 'offline') {
+		if (user?.status === UserStatus.OFFLINE) {
 			return;
 		}
 

@@ -5,6 +5,7 @@ import type {
 	IOmnichannelServiceLevelAgreements,
 	InquiryWithAgentInfo,
 } from '@rocket.chat/core-typings';
+import { LivechatInquiryStatus } from '@rocket.chat/core-typings';
 import type { Updater } from '@rocket.chat/models';
 import {
 	Rooms as RoomRaw,
@@ -358,7 +359,7 @@ export const getLivechatQueueInfo = async (room?: IOmnichannelRoom) => {
 	}
 
 	const { _id, status } = inquiry;
-	if (status !== 'queued') {
+	if (status !== LivechatInquiryStatus.QUEUED) {
 		return null;
 	}
 
