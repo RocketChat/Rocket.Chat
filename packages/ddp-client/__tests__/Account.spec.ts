@@ -55,6 +55,31 @@ describe('login', () => {
 		expect(account.user?.tokenExpires).toEqual(new Date(1700000000000));
 	});
 
+	it('should only take the logged-in user document from the users collection', () => {
+		const ddp = new DDPDispatcher();
+		const account = new AccountImpl(new ClientStreamImpl(ddp, ddp));
+		account.uid = 'me';
+		account.user = { id: 'me', username: 'me' };
+
+		ddp.handleMessage(JSON.stringify({ msg: 'added', collection: 'users', id: 'other', fields: { username: 'other' } }));
+		expect(account.user).toEqual({ id: 'me', username: 'me' });
+
+		ddp.handleMessage(JSON.stringify({ msg: 'changed', collection: 'users', id: 'me', fields: { username: 'renamed' } }));
+		expect(account.user).toEqual({ id: 'me', username: 'renamed' });
+	});
+
+	it('should match a user id Meteor sends with the ObjectID-escaping dash', () => {
+		const ddp = new DDPDispatcher();
+		const account = new AccountImpl(new ClientStreamImpl(ddp, ddp));
+		account.uid = '6ad69395009997a9b9c71d04';
+
+		ddp.handleMessage(
+			JSON.stringify({ msg: 'added', collection: 'users', id: '-6ad69395009997a9b9c71d04', fields: { username: 'admin' } }),
+		);
+
+		expect(account.user).toEqual({ id: '6ad69395009997a9b9c71d04', username: 'admin' });
+	});
+
 	it('should save credentials to user object - loginWithPassword', async () => {
 		const sdk = DDPSDK.create('ws://localhost:1234');
 

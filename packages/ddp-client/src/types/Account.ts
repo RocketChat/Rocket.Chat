@@ -78,9 +78,17 @@ export class AccountImpl extends Emitter<AccountEvents> implements Account {
 				return;
 			}
 
+			// Meteor prefixes string ids that could pass for an ObjectID with '-' on the wire.
+			const id = data.id.startsWith('-') ? data.id.slice(1) : data.id;
+
+			// The logged-in user's document may arrive before the login result sets uid.
+			if (this.uid !== undefined && id !== this.uid) {
+				return;
+			}
+
 			this.user = {
 				...this.user,
-				id: data.id,
+				id,
 				username: data.fields.username,
 			};
 			this.emit('user', this.user);
