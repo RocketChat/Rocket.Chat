@@ -1,9 +1,17 @@
+import { styled, View, type GetProps } from '@tamagui/web';
 import type { HTMLAttributes, ReactNode, RefAttributes } from 'react';
 
 import { cx } from '../../helpers/composeClassNames';
+import { withFuselageProvider } from '../FuselageProvider/FuselageProvider';
 import { ItemGroup } from '../Item';
 import { SidebarGroupTitle } from './SidebarGroupTitle';
 import { useCollapse } from './hooks/useCollapse';
+import { boxFull } from './sidebarStyles';
+
+const SidebarCollapseGroupFrame = styled(View, {
+	...boxFull,
+	flexWrap: 'nowrap',
+});
 
 type SidebarCollapseGroupProps = HTMLAttributes<HTMLDivElement> &
 	RefAttributes<HTMLDivElement> & {
@@ -14,9 +22,10 @@ type SidebarCollapseGroupProps = HTMLAttributes<HTMLDivElement> &
 		empty?: boolean;
 		badge?: ReactNode;
 		menu?: ReactNode;
+		actions?: ReactNode;
 	};
 
-export function SidebarCollapseGroup({
+function SidebarCollapseGroupBase({
 	ref,
 	expanded: propExpanded,
 	defaultExpanded,
@@ -24,10 +33,10 @@ export function SidebarCollapseGroup({
 	children,
 	badge,
 	menu,
+	actions: _actions,
 	title,
 	empty,
 	role = 'group',
-	className,
 	...props
 }: SidebarCollapseGroupProps) {
 	const { barProps, expanded, panelExpanded, panelId, titleId } = useCollapse({
@@ -39,7 +48,12 @@ export function SidebarCollapseGroup({
 	const labelledBy = props['aria-label'] ? undefined : titleId;
 
 	return (
-		<div role={role} aria-labelledby={labelledBy} {...props} className={cx('rcx-box rcx-box--full rcx-sidebar-collapse-group', className)}>
+		<SidebarCollapseGroupFrame
+			className='rcx-sidebar-collapse-group'
+			role={role as GetProps<typeof SidebarCollapseGroupFrame>['role']}
+			aria-labelledby={labelledBy}
+			{...(props as GetProps<typeof SidebarCollapseGroupFrame>)}
+		>
 			<SidebarGroupTitle
 				expanded={expanded}
 				empty={empty}
@@ -62,6 +76,8 @@ export function SidebarCollapseGroup({
 			>
 				{children}
 			</ItemGroup>
-		</div>
+		</SidebarCollapseGroupFrame>
 	);
 }
+
+export const SidebarCollapseGroup = withFuselageProvider(SidebarCollapseGroupBase);
