@@ -103,7 +103,19 @@ const LogsPage = () => {
 							room: event.data?.find((item) => item.key === 'object')?.value?.name ?? '',
 							element: t('ABAC_room_membership'),
 						};
-					case 'abac.object.attribute.changed':
+					case 'abac.object.attribute.changed': {
+						const app = event.data?.find((item) => item.key === 'app')?.value;
+						return {
+							...eventInfo,
+							...(app && { user: t('ABAC_User_via_App', { username: eventInfo.user, appName: app.name ?? app._id }) }),
+							name:
+								event.data
+									?.find((item) => item.key === 'current')
+									?.value?.map((item) => item.key)
+									.join(', ') ?? t('Empty'),
+							room: event.data?.find((item) => item.key === 'room')?.value?.name ?? '',
+						};
+					}
 					case 'abac.object.attributes.removed':
 						return {
 							...eventInfo,
@@ -194,7 +206,7 @@ const LogsPage = () => {
 								}
 								return (
 									<GenericTableRow key={eventInfo.id}>
-										<GenericTableCell withTruncatedText>
+										<GenericTableCell withTruncatedText title={eventInfo.user}>
 											{eventInfo.userAvatar && (
 												<Box is='span' marginInlineEnd={4}>
 													{eventInfo.userAvatar}

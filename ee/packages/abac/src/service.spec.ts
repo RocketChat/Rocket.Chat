@@ -1891,6 +1891,19 @@ describe('AbacService (unit)', () => {
 			);
 		});
 
+		it('records the app that created the room', async () => {
+			mockHasPermission.mockReset().mockResolvedValue(false);
+			const app = { _id: 'app-id', name: 'Classifier' };
+
+			await service.auditRoomAttributesAtCreation(room, fakeActor, app);
+
+			expect(mockCreateAuditServerEvent).toHaveBeenCalledWith(
+				'abac.object.attribute.changed',
+				expect.objectContaining({ change: 'created', app }),
+				expect.objectContaining({ type: 'user', _id: fakeActor._id }),
+			);
+		});
+
 		it('records that the creator bypassed store validation', async () => {
 			mockHasPermission.mockReset().mockResolvedValue(true);
 

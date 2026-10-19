@@ -31,6 +31,7 @@ const orchestrator = {
 	getConverters: () => ({
 		get: () => ({ convertAppRoom: async (room: IRoom) => ({ name: room.slugifiedName }) }),
 	}),
+	getManager: () => ({ getOneById: (appId: string) => (appId === 'app-id' ? { getName: () => 'Classifier' } : undefined) }),
 };
 
 const abacAttributes = [{ key: 'clearance', values: ['secret'] }];
@@ -59,6 +60,21 @@ describe('AppRoomBridge.create', () => {
 	it('passes the ABAC attributes of a private room to the creation guard', async () => {
 		expect(await bridge.create(buildRoom(RoomType.PRIVATE_GROUP, abacAttributes), [], 'app-id')).to.equal('room-id');
 		expect(createPrivateGroupMethod.firstCall.args[7]).to.deep.equal(abacAttributes);
+	});
+
+	it('names the app creating a private room', async () => {
+		await bridge.create(buildRoom(RoomType.PRIVATE_GROUP, abacAttributes), [], 'app-id');
+
+		expect(createPrivateGroupMethod.firstCall.args[8]).to.deep.equal({ creator: 'creator-id', app: { _id: 'app-id', name: 'Classifier' } });
+	});
+
+	it('names the app by id when its name is unknown', async () => {
+		await bridge.create(buildRoom(RoomType.PRIVATE_GROUP, abacAttributes), [], 'unknown-app-id');
+
+		expect(createPrivateGroupMethod.firstCall.args[8]).to.deep.equal({
+			creator: 'creator-id',
+			app: { _id: 'unknown-app-id', name: undefined },
+		});
 	});
 
 	it('passes no ABAC attributes when the app supplies an empty list', async () => {

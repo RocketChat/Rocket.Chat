@@ -276,6 +276,7 @@
   "ABAC_Select_Attribute_Values": "Select attribute values",
   "ABAC_ShowAttributesInRooms": "Show ABAC attributes in rooms",
   "ABAC_ShowAttributesInRooms_Description": "Display the ABAC attributes assigned to the room in the contextual bar",
+  "ABAC_User_via_App": "{{username}} via {{appName}}",
   "ABAC_Value_removed": "Value removed",
   "ABAC_Virtru_Attribute_Namespace": "Attribute namespace",
   "ABAC_Virtru_Attribute_Namespace_Description": "The namespace used to build attribute FQNs (e.g. opentdf.io produces https://opentdf.io/attr/{key}/value/{value}).",

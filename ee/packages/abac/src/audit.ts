@@ -9,6 +9,7 @@ import type {
 	AbacAuditReason,
 	AbacAttributeStoreType,
 	AbacPdpType,
+	MinimalApp,
 	MinimalRoom,
 	MinimalUser,
 	AbacActionPerformed,
@@ -79,6 +80,7 @@ export const Audit = {
 		change: AbacAttributeDefinitionChangeType,
 		actor: AbacActor,
 		reason: AbacAuditReason = 'api',
+		app?: MinimalApp,
 	) => {
 		return audit(
 			'abac.object.attribute.changed',
@@ -88,6 +90,7 @@ export const Audit = {
 				change,
 				previous,
 				current,
+				app: app ?? null,
 			},
 			{ type: 'user', _id: actor._id, username: actor.username!, ip: '0.0.0.0', useragent: '' },
 		);
@@ -107,6 +110,7 @@ export const Audit = {
 				change,
 				previous,
 				current,
+				app: null,
 			},
 			{ type: 'user', _id: actor._id, username: actor.username!, ip: '0.0.0.0', useragent: '' },
 		);

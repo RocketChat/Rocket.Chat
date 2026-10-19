@@ -1,4 +1,4 @@
-import type { AtLeast, IRoom, ISubscription, IUser, MessageTypesValues } from '@rocket.chat/core-typings';
+import type { AtLeast, IRoom, ISubscription, IUser, MessageTypesValues, MinimalApp } from '@rocket.chat/core-typings';
 
 export interface ISubscriptionExtraData {
 	open: boolean;
@@ -7,10 +7,11 @@ export interface ISubscriptionExtraData {
 	roles?: string[];
 }
 
-export interface ICreateRoomOptions extends Partial<Record<string, boolean | string | ISubscriptionExtraData>> {
+export interface ICreateRoomOptions extends Partial<Record<string, boolean | string | ISubscriptionExtraData | MinimalApp>> {
 	forceNew?: boolean;
 	creator: string;
 	subscriptionExtra?: ISubscriptionExtraData;
+	app?: MinimalApp;
 }
 
 export interface ICreateRoomParams<T extends IRoom = IRoom> {
