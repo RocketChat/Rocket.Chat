@@ -1,31 +1,12 @@
 @use '../../styles/colors.scss';
-@use '../../styles/lengths.scss';
-@use '../../styles/typography.scss' as *;
 @use '../../styles/functions.scss' as *;
 
-$tooltip-border-radius: theme('tooltip-border-radius', lengths.border-radius(medium));
 $tooltip-dark-background-color: theme('tooltip-dark-background-color', colors.surface(dark));
-$tooltip-dark-text-color: theme('tooltip-dark-text-color', colors.font(white));
-$tooltip-light-background-color: theme('tooltip-light-background-color', colors.surface(neutral));
-$tooltip-light-text-color: theme('tooltip-light-text-color', colors.font(default));
 
+// Tamagui has no style prop for font smoothing; `rcx-box` used to set it
 .rcx-tooltip {
-	position: relative;
-
-	display: inline-block;
-
-	max-width: 240px;
-	padding: 8px 12px;
-
-	user-select: none;
-	word-break: break-word;
-	pointer-events: none;
-
-	color: $tooltip-dark-text-color;
-	border-radius: $tooltip-border-radius;
-	background-color: $tooltip-dark-background-color;
-
-	@include use-font-scale(p2m);
+	-webkit-font-smoothing: antialiased;
+	-moz-osx-font-smoothing: grayscale;
 
 	// Physical until `usePosition` resolves placements against the writing direction;
 	// its coordinates are physical today, so logical offsets would flip away from the anchor in RTL.
@@ -41,6 +22,7 @@ $tooltip-light-text-color: theme('tooltip-light-text-color', colors.font(default
 			content: ' ';
 
 			border-width: 4px;
+			border-style: solid;
 			border-color: transparent transparent $tooltip-dark-background-color $tooltip-dark-background-color;
 			border-radius: 0 0 0 (2px);
 			block-size: 0;
@@ -84,16 +66,6 @@ $tooltip-light-text-color: theme('tooltip-light-text-color', colors.font(default
 
 			transform: rotate(45deg);
 		}
-	}
-
-	&--dark {
-		color: $tooltip-dark-text-color;
-		background-color: $tooltip-dark-background-color;
-	}
-
-	&--light {
-		color: $tooltip-light-text-color;
-		background-color: $tooltip-light-background-color;
 	}
 
 	&--pos {
