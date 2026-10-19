@@ -1,5 +1,6 @@
 import type { PaginatedRequest } from '../../helpers/PaginatedRequest';
 import { ajvQuery } from '../Ajv';
+import { paginationQueryProperties } from '../pagination';
 
 export type ChannelsGetAllUserMentionsByChannelProps = PaginatedRequest<{ roomId: string }>;
 
@@ -9,14 +10,7 @@ const channelsGetAllUserMentionsByChannelPropsSchema = {
 		roomId: {
 			type: 'string',
 		},
-		offset: {
-			type: 'number',
-			nullable: true,
-		},
-		count: {
-			type: 'number',
-			nullable: true,
-		},
+		...paginationQueryProperties,
 		sort: {
 			type: 'string',
 			nullable: true,

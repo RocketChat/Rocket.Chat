@@ -55,7 +55,7 @@ exports[`CallParticipants renders AllShown without crashing 1`] = `
           </figure>
         </div>
         <div
-          class="rcx-box rcx-box--full rcx-css-1axvo6j"
+          class="rcx-box rcx-box--full rcx-css-bbghj9"
         >
           joined
         </div>
@@ -72,7 +72,7 @@ exports[`CallParticipants renders AvatarsDisabled without crashing 1`] = `
       class="rcx-box rcx-box--full rcx-css-1mhouud"
     >
       <div
-        class="rcx-box rcx-box--full rcx-css-1p4sjp4"
+        class="rcx-box rcx-box--full rcx-css-15iirka"
       >
         7 joined
       </div>
@@ -136,7 +136,7 @@ exports[`CallParticipants renders LargerAvatars without crashing 1`] = `
           </figure>
         </div>
         <div
-          class="rcx-box rcx-box--full rcx-css-1axvo6j"
+          class="rcx-box rcx-box--full rcx-css-bbghj9"
         >
           + 4 joined
         </div>
@@ -153,7 +153,7 @@ exports[`CallParticipants renders NoUsernames without crashing 1`] = `
       class="rcx-box rcx-box--full rcx-css-1mhouud"
     >
       <div
-        class="rcx-box rcx-box--full rcx-css-1p4sjp4"
+        class="rcx-box rcx-box--full rcx-css-15iirka"
       >
         4 joined
       </div>
@@ -193,7 +193,7 @@ exports[`CallParticipants renders SinglePerson without crashing 1`] = `
           </figure>
         </div>
         <div
-          class="rcx-box rcx-box--full rcx-css-1axvo6j"
+          class="rcx-box rcx-box--full rcx-css-bbghj9"
         >
           joined
         </div>
@@ -258,7 +258,7 @@ exports[`CallParticipants renders WithOverflow without crashing 1`] = `
           </figure>
         </div>
         <div
-          class="rcx-box rcx-box--full rcx-css-1axvo6j"
+          class="rcx-box rcx-box--full rcx-css-bbghj9"
         >
           + 9 joined
         </div>

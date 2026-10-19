@@ -9,7 +9,7 @@ import { after, before, beforeEach, describe, it } from 'mocha';
 import proxyquire from 'proxyquire';
 import sinon from 'sinon';
 
-import { ProgressStep } from '../../../../../app/importer/lib/ImporterProgressStep';
+import { ProgressStep } from '../../../../../lib/importer/ImporterProgressStep';
 
 const converter = {
 	clearImportData: sinon.stub(),
@@ -304,6 +304,18 @@ describe('CsvImporter', () => {
 				ts: new Date(1700000001000),
 				msg: 'hi',
 			});
+		});
+
+		it('should hand over a timestamp that is not a plain number as an invalid date', async () => {
+			await runImport([
+				{ name: 'general/messages.csv', content: 'alice,1700000000000abc,trailing junk\nbob,2026-09-23T10:00:00Z,iso date' },
+				{ name: 'directmessages/messages.csv', content: 'alice,bob,1700000002000abc,dm junk' },
+			]);
+
+			expect(converter.addMessage.callCount).to.equal(3);
+			for (const call of converter.addMessage.getCalls()) {
+				expect(call.args[0].ts.getTime()).to.be.NaN;
+			}
 		});
 
 		it('should convert direct messages into a single room per participant pair, whatever the username order', async () => {

@@ -1,6 +1,7 @@
 import type { IDirectoryChannelResult, IDirectoryUserResult } from '@rocket.chat/core-typings';
 
 import { ajv } from './Ajv';
+import { paginationQueryProperties } from './pagination';
 import type { PaginatedRequest } from '../helpers/PaginatedRequest';
 import type { PaginatedResult } from '../helpers/PaginatedResult';
 
@@ -9,14 +10,7 @@ type DirectoryProps = PaginatedRequest<{ text?: string; type?: string; workspace
 const DirectorySchema = {
 	type: 'object',
 	properties: {
-		count: {
-			type: 'number',
-			nullable: true,
-		},
-		offset: {
-			type: 'number',
-			nullable: true,
-		},
+		...paginationQueryProperties,
 		sort: {
 			type: 'string',
 			nullable: true,

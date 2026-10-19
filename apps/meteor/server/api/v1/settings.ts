@@ -10,15 +10,16 @@ import { isActionSettingWithEndpoint, isSettingAction, isSettingColor } from '@r
 import { LoginServiceConfiguration as LoginServiceConfigurationModel, Settings } from '@rocket.chat/models';
 import {
 	ajv,
+	isSettingsBulkProps,
+	isSettingsGetParams,
+	isSettingsPublicWithPaginationProps,
 	isSettingsUpdatePropDefault,
 	isSettingsUpdatePropsActions,
 	isSettingsUpdatePropsColor,
-	isSettingsPublicWithPaginationProps,
-	isSettingsGetParams,
-	isSettingsBulkProps,
+	paginatedResponseProperties,
+	validateBadRequestErrorResponse,
 	validateForbiddenErrorResponse,
 	validateUnauthorizedErrorResponse,
-	validateBadRequestErrorResponse,
 } from '@rocket.chat/rest-typings';
 import { Meteor } from 'meteor/meteor';
 import type { FindOptions } from 'mongodb';
@@ -64,9 +65,7 @@ const settingsPublicResponseSchema = ajv.compile<{ settings: FetchedSetting[]; c
 	type: 'object',
 	properties: {
 		settings: { type: 'array', items: { type: 'object' } },
-		count: { type: 'number' },
-		offset: { type: 'number' },
-		total: { type: 'number' },
+		...paginatedResponseProperties,
 		success: { type: 'boolean', enum: [true] },
 	},
 	required: ['settings', 'count', 'offset', 'total', 'success'],
@@ -94,9 +93,7 @@ const settingsListResponseSchema = ajv.compile<{ settings: FetchedSetting[]; cou
 	type: 'object',
 	properties: {
 		settings: { type: 'array', items: { type: 'object' } },
-		count: { type: 'number' },
-		offset: { type: 'number' },
-		total: { type: 'number' },
+		...paginatedResponseProperties,
 		success: { type: 'boolean', enum: [true] },
 	},
 	required: ['settings', 'count', 'offset', 'total', 'success'],

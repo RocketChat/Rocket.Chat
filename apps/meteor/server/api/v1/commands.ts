@@ -5,9 +5,11 @@ import { Random } from '@rocket.chat/random';
 import {
 	ajv,
 	ajvQuery,
-	validateUnauthorizedErrorResponse,
+	paginatedResponseProperties,
+	paginationQueryProperties,
 	validateBadRequestErrorResponse,
 	validateForbiddenErrorResponse,
+	validateUnauthorizedErrorResponse,
 } from '@rocket.chat/rest-typings';
 import objectPath from 'object-path';
 
@@ -46,9 +48,7 @@ const commandsListResponseSchema = ajv.compile<{
 			items: { $ref: '#/components/schemas/SlashCommand' },
 		},
 		appsLoaded: { type: 'boolean' },
-		offset: { type: 'number' },
-		count: { type: 'number' },
-		total: { type: 'number' },
+		...paginatedResponseProperties,
 		success: { type: 'boolean', enum: [true] },
 	},
 	required: ['commands', 'appsLoaded', 'offset', 'count', 'total', 'success'],
@@ -66,8 +66,7 @@ type CommandsListParams = {
 const isCommandsListParams = ajvQuery.compile<CommandsListParams>({
 	type: 'object',
 	properties: {
-		offset: { type: 'number', nullable: true },
-		count: { type: 'number', nullable: true },
+		...paginationQueryProperties,
 		sort: { type: 'string', nullable: true },
 		query: { type: 'string', nullable: true },
 		fields: { type: 'string', nullable: true },
@@ -169,18 +168,22 @@ const commandsEndpoints = API.v1
 				commands = commands.filter((command) => command.command === query.command);
 			}
 
-			const totalCount = commands.length;
+			// Read before paging: `processQueryOptionsOnResult` splices in place, so afterwards
+			// `commands` is the page rather than the collection.
+			const total = commands.length;
+
+			const page = processQueryOptionsOnResult(commands, {
+				sort: sort || { name: 1 },
+				skip: offset,
+				limit: count,
+			});
 
 			return API.v1.success({
-				commands: processQueryOptionsOnResult(commands, {
-					sort: sort || { name: 1 },
-					skip: offset,
-					limit: count,
-				}),
+				commands: page,
 				appsLoaded: true as const,
 				offset,
-				count: commands.length,
-				total: totalCount,
+				count: page.length,
+				total,
 			});
 		},
 	);

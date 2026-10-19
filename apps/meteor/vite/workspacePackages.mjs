@@ -4,6 +4,8 @@ export const distOnlyWorkspacePackages = [
 	'@rocket.chat/apps',
 	'@rocket.chat/apps-engine',
 	'@rocket.chat/core-typings',
+	'@rocket.chat/fuselage',
+	'@rocket.chat/fuselage-tokens',
 	'@rocket.chat/i18n',
 	'@rocket.chat/message-parser',
 	'@rocket.chat/ui-kit',

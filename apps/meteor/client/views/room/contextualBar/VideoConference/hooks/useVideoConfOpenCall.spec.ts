@@ -238,13 +238,17 @@ describe('with the call window, for an in-product conference URL', () => {
 	const windowShowing = (url: string, closed = false) =>
 		({ closed, location: { pathname: new URL(url).pathname, search: new URL(url).search } }) as unknown as Window;
 
+	/** What opening a window's name with no URL hands back when no window has that name yet. */
+	const blankWindow = () => ({ closed: false, location: { pathname: 'blank', search: '' } }) as unknown as Window;
+
 	afterAll(() => {
 		window.open = previousWindowOpen;
 	});
 
 	it('should open the conference as a popout in the shared conference window', async () => {
 		const url = conferenceUrl();
-		window.open = jest.fn(() => windowShowing(url));
+		// The page's first open looks the window up by name, and with none there is handed a blank one.
+		window.open = jest.fn((target?: string | URL) => (target ? windowShowing(url) : blankWindow()));
 
 		mountOpenCall(true)(url);
 
@@ -319,5 +323,76 @@ describe('with the call window, for an in-product conference URL', () => {
 
 		expect(window.open).toHaveBeenNthCalledWith(1, url, 'rocketchat-conference', expect.stringContaining('popup=yes'));
 		expect(window.open).toHaveBeenNthCalledWith(2, url, 'rocketchat-conference');
+	});
+});
+
+// A reload of the page that opened the conference window loses its handle on that window, not the window — and
+// opening the conference again by URL reloads it, which leaves the call and joins it again.
+describe('with the call window, from a page that never held a handle on it', () => {
+	const previousWindowOpen = window.open;
+	const url = `${window.location.origin}/conference/call-in-progress`;
+
+	// Mounted from a module registry of its own, whose testing library does not clean up after itself.
+	let unmount: (() => void) | undefined;
+
+	afterEach(() => {
+		unmount?.();
+		unmount = undefined;
+	});
+
+	afterAll(() => {
+		window.open = previousWindowOpen;
+	});
+
+	/** The hook as a page that has just loaded has it: with no handle on any window it opened before. */
+	const mountOnFreshPage = () => {
+		let openCall!: (target: string) => void;
+
+		jest.isolateModules(() => {
+			/* eslint-disable @typescript-eslint/no-require-imports */
+			const testingLibrary = require('@testing-library/react/pure') as typeof import('@testing-library/react/pure');
+			const providers = require('@rocket.chat/mock-providers') as typeof import('@rocket.chat/mock-providers');
+			const hook = require('./useVideoConfOpenCall') as typeof import('./useVideoConfOpenCall');
+			/* eslint-enable @typescript-eslint/no-require-imports */
+
+			const view = testingLibrary.renderHook(() => hook.useVideoConfOpenCall(), {
+				wrapper: providers.mockAppRoot().withSetting('VideoConf_Conference_Window_Enabled', true).build(),
+			});
+			const { result } = view;
+			unmount = view.unmount;
+
+			openCall = (target) => testingLibrary.act(() => void result.current(target));
+		});
+
+		return openCall;
+	};
+
+	const windowShowing = (shown: string) =>
+		({ closed: false, location: { pathname: new URL(shown).pathname, search: new URL(shown).search } }) as unknown as Window;
+
+	it('should focus the conference window it finds by name, without reloading it, when it already shows the conference', async () => {
+		window.open = jest.fn(() => windowShowing(url));
+
+		mountOnFreshPage()(url);
+
+		expect(window.open).toHaveBeenNthCalledWith(1, '', 'rocketchat-conference', expect.stringContaining('popup=yes'));
+		expect(window.open).toHaveBeenLastCalledWith('', 'rocketchat-conference');
+		expect((window.open as jest.Mock).mock.calls.some(([target]) => target === url)).toBe(false);
+	});
+
+	it('should send the window it finds by name to the conference when it shows another one', async () => {
+		window.open = jest.fn(() => windowShowing(`${window.location.origin}/conference/another-call`));
+
+		mountOnFreshPage()(url);
+
+		expect(window.open).toHaveBeenLastCalledWith(url, 'rocketchat-conference', expect.stringContaining('popup=yes'));
+	});
+
+	it('should send the blank window the lookup opened to the conference when there was none', async () => {
+		window.open = jest.fn(() => ({ closed: false, location: { pathname: 'blank', search: '' } }) as unknown as Window);
+
+		mountOnFreshPage()(url);
+
+		expect(window.open).toHaveBeenLastCalledWith(url, 'rocketchat-conference', expect.stringContaining('popup=yes'));
 	});
 });

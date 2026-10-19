@@ -1,0 +1,14 @@
+// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
+
+exports[`[SearchInput Component] renders without crashing 1`] = `
+<body>
+  <div>
+    <input
+      aria-label="search"
+      class="rcx-box rcx-box--full rcx-box--animated rcx-input-box--type-search rcx-input-box"
+      size="1"
+      type="search"
+    />
+  </div>
+</body>
+`;

@@ -11,7 +11,7 @@ exports[`renders Empty without crashing 1`] = `
         class="rcx-box rcx-box--full rcx-css-1qcz93u"
       >
         <div
-          class="rcx-box rcx-box--full rc-message-box__placeholder rcx-css-1d7yiwx"
+          class="rcx-box rcx-box--full rc-message-box__placeholder rcx-css-161214v"
           style="position: absolute; pointer-events: none; opacity: 1;"
         >
           Message
@@ -19,7 +19,7 @@ exports[`renders Empty without crashing 1`] = `
         <span
           aria-label="Message"
           aria-multiline="true"
-          class="rcx-box rcx-box--full rcx-css-10n1ku3 rc-message-box__divcontenteditable js-input-message rcx-css-smwjf2"
+          class="rcx-box rcx-box--full rcx-css-10n1ku3 rc-message-box__divcontenteditable js-input-message rcx-css-ap8bdh"
           contenteditable="true"
           name="msg"
           role="textbox"
@@ -194,7 +194,7 @@ exports[`renders WithText without crashing 1`] = `
         class="rcx-box rcx-box--full rcx-css-1qcz93u"
       >
         <div
-          class="rcx-box rcx-box--full rc-message-box__placeholder rcx-css-1d7yiwx"
+          class="rcx-box rcx-box--full rc-message-box__placeholder rcx-css-161214v"
           style="position: absolute; pointer-events: none; opacity: 0;"
         >
           Message
@@ -202,7 +202,7 @@ exports[`renders WithText without crashing 1`] = `
         <span
           aria-label="Message"
           aria-multiline="true"
-          class="rcx-box rcx-box--full rcx-css-10n1ku3 rc-message-box__divcontenteditable js-input-message rcx-css-smwjf2"
+          class="rcx-box rcx-box--full rcx-css-10n1ku3 rc-message-box__divcontenteditable js-input-message rcx-css-ap8bdh"
           contenteditable="true"
           name="msg"
           role="textbox"

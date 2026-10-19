@@ -1,0 +1,25 @@
+{
+  "badge": {
+    "light": {
+      "level-0": { "value": "{colors.n400}" },
+      "level-1": { "value": "{colors.n700}" },
+      "level-2": { "value": "{colors.b500}" },
+      "level-3": { "value": "{colors.o500}" },
+      "level-4": { "value": "{colors.r500}" }
+    },
+    "high-contrast": {
+      "level-0": { "value": "{colors.n400}" },
+      "level-1": { "value": "{colors.n800}" },
+      "level-2": { "value": "{colors.b700}" },
+      "level-3": { "value": "{colors.o900}" },
+      "level-4": { "value": "{colors.r800}" }
+    },
+    "dark": {
+      "level-0": { "value": "#404754", "type": "color" },
+      "level-1": { "value": "#6C737A", "type": "color" },
+      "level-2": { "value": "#2C65BA", "type": "color" },
+      "level-3": { "value": "#955828", "type": "color" },
+      "level-4": { "value": "#B43C4C", "type": "color" }
+    }
+  }
+}

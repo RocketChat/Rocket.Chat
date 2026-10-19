@@ -5,7 +5,7 @@ import { LivechatInquiry, LivechatRooms } from '@rocket.chat/models';
 import { tracerSpan } from '@rocket.chat/tracing';
 
 import { queueLogger } from './logger';
-import { getOmniChatSortQuery } from '../../../app/livechat/lib/inquiries';
+import { getOmniChatSortQuery } from '../../../lib/livechat/inquiries';
 import { metrics } from '../../lib/metrics';
 import { notifyOnLivechatInquiryChangedByRoom } from '../../lib/notifyListener';
 import { dispatchAgentDelegated } from '../../lib/omnichannel/Helper';

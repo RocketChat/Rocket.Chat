@@ -116,6 +116,11 @@ export class HomeChannel extends RoutedPage {
 		await this.navigateTo(`/group/${name}`, () => this.content.waitForChannel());
 	}
 
+	/** Opens a DM by username in the embedded layout, which hides the room header. */
+	async gotoDirectEmbedded(username: string): Promise<void> {
+		await this.navigateTo(`/direct/${username}?layout=embedded`, this.content.mainMessageList);
+	}
+
 	/** Opens a channel scrolled to a message. Pass `isThread` when the message lives in a thread. */
 	async gotoChannelMessage(name: string, messageId: string, isThread = false): Promise<void> {
 		await this.navigateTo(`/channel/${name}?msg=${messageId}`, async () => {

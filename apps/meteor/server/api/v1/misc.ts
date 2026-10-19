@@ -4,17 +4,18 @@ import type { IDirectoryChannelResult, IDirectoryUserResult, IRoom, IUser } from
 import { Settings, Users, WorkspaceCredentials } from '@rocket.chat/models';
 import {
 	ajv,
-	isShieldSvgProps,
-	isSpotlightProps,
-	parseSpotlightUsernames,
-	parseSpotlightType,
 	isDirectoryProps,
 	isFingerprintProps,
 	isMeteorCall,
+	isShieldSvgProps,
+	isSpotlightProps,
 	meSuccessResponseSchema,
-	validateUnauthorizedErrorResponse,
-	validateForbiddenErrorResponse,
+	paginatedResponseProperties,
+	parseSpotlightType,
+	parseSpotlightUsernames,
 	validateBadRequestErrorResponse,
+	validateForbiddenErrorResponse,
+	validateUnauthorizedErrorResponse,
 } from '@rocket.chat/rest-typings';
 import type { MeApiSuccessResponse } from '@rocket.chat/rest-typings';
 import { escapeHTML } from '@rocket.chat/tools';
@@ -430,9 +431,7 @@ const directoryResponseSchema = ajv.compile<{
 				oneOf: [{ $ref: '#/components/schemas/IDirectoryUserResult' }, { $ref: '#/components/schemas/IDirectoryChannelResult' }],
 			},
 		},
-		count: { type: 'number' },
-		offset: { type: 'number' },
-		total: { type: 'number' },
+		...paginatedResponseProperties,
 		success: { type: 'boolean', enum: [true] },
 	},
 	required: ['result', 'count', 'offset', 'total', 'success'],
@@ -497,7 +496,7 @@ const pwGetPolicyResponseSchema = ajv.compile<{ enabled: boolean; policy: [strin
 	type: 'object',
 	properties: {
 		enabled: { type: 'boolean' },
-		policy: { type: 'array', items: { type: 'array' } },
+		policy: { type: 'array', items: { type: 'array', items: {} } },
 	},
 	additionalProperties: true,
 });

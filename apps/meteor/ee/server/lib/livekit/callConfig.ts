@@ -3,7 +3,7 @@ import type { IUser } from '@rocket.chat/core-typings';
 import { Logger } from '@rocket.chat/logger';
 import { VideoConference as VideoConferenceModel } from '@rocket.chat/models';
 
-import { getLiveKitConfig, isLiveKitFullyConfigured } from './config';
+import { getLiveKitConfig, isLiveKitFullyConfigured, isLiveKitLicensed } from './config';
 import { createLiveKitAccessToken } from './token';
 import { settings } from '../../../../server/settings';
 
@@ -16,7 +16,11 @@ export type CallConfig = {
 };
 
 export type CallConfigError =
-	'error-videoconf-invalid-call' | 'forbidden' | 'error-videoconf-livekit-not-configured' | 'error-videoconf-livekit-token-failed';
+	| 'error-videoconf-invalid-call'
+	| 'forbidden'
+	| 'error-videoconf-livekit-not-licensed'
+	| 'error-videoconf-livekit-not-configured'
+	| 'error-videoconf-livekit-token-failed';
 
 export type CallConfigResult = { config: CallConfig } | { error: CallConfigError };
 
@@ -40,6 +44,11 @@ export async function getCallConfig(callId: string, user: Pick<IUser, '_id' | 'n
 
 	if (call.providerName !== 'livekit') {
 		return { config: { providerName: call.providerName } };
+	}
+
+	// Checked here as well as when the provider is offered: a call started while it was licensed outlives the license.
+	if (!isLiveKitLicensed()) {
+		return { error: 'error-videoconf-livekit-not-licensed' };
 	}
 
 	if (!isLiveKitFullyConfigured()) {

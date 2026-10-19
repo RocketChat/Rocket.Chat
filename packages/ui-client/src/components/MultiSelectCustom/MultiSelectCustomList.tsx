@@ -1,4 +1,17 @@
-import { Box, CheckBox, Icon, Option, OptionIcon, SearchInput, Tile } from '@rocket.chat/fuselage';
+import {
+	Box,
+	CheckBox,
+	Icon,
+	Item,
+	ItemActions,
+	ItemContent,
+	ItemGroupHeader,
+	ItemGroupTitle,
+	ItemMedia,
+	ItemTitle,
+	SearchInput,
+	Tile,
+} from '@rocket.chat/fuselage';
 import type { TranslationKey } from '@rocket.chat/ui-contexts';
 import type { ChangeEvent } from 'react';
 import { Fragment, useCallback, useState } from 'react';
@@ -62,24 +75,25 @@ const MultiSelectCustomList = ({
 			{filteredOptions.map((option) => (
 				<Fragment key={option.id}>
 					{option.isGroupTitle || !option.hasOwnProperty('checked') ? (
-						<Box marginInline='x10' marginBlock={4} fontScale='p2b' color='default'>
-							{t(option.text as TranslationKey)}
-						</Box>
+						<ItemGroupHeader inset='md'>
+							<ItemGroupTitle>{t(option.text as TranslationKey)}</ItemGroupTitle>
+						</ItemGroupHeader>
 					) : (
-						<Option key={option.id}>
-							{option.icon && <OptionIcon name={option.icon.name} color={getIconColor(option.icon.color)} marginInlineEnd={4} />}
-							<Box width='full' display='flex' justifyContent='space-between' is='label'>
-								{t(option.text as TranslationKey)}
-
-								<CheckBox
-									checked={option.checked}
-									paddingInline={0}
-									name={option.text}
-									id={option.id}
-									onChange={() => onSelected(option)}
-								/>
-							</Box>
-						</Option>
+						<Item inset='md'>
+							{option.icon && (
+								<ItemMedia variant='icon'>
+									<Icon name={option.icon.name} size='x20' color={getIconColor(option.icon.color)} />
+								</ItemMedia>
+							)}
+							<ItemContent>
+								<ItemTitle is='label' htmlFor={option.id}>
+									{t(option.text as TranslationKey)}
+								</ItemTitle>
+							</ItemContent>
+							<ItemActions>
+								<CheckBox checked={option.checked} name={option.text} id={option.id} onChange={() => onSelected(option)} />
+							</ItemActions>
+						</Item>
 					)}
 				</Fragment>
 			))}

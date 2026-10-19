@@ -4,7 +4,7 @@ exports[`renders Default without crashing 1`] = `
 <body>
   <div>
     <a
-      class="rcx-box rcx-box--full rcx-css-fyntbe"
+      class="rcx-box rcx-box--full rcx-css-11l16nv"
       href="#"
     >
       Default
@@ -17,7 +17,7 @@ exports[`renders WithFontScale without crashing 1`] = `
 <body>
   <div>
     <a
-      class="rcx-box rcx-box--full rcx-css-15096h2"
+      class="rcx-box rcx-box--full rcx-css-166gmd7"
       href="#"
     >
       With font scale

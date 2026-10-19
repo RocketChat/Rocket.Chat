@@ -4,7 +4,7 @@ import type { NavBarSearchFormValues } from '@rocket.chat/ai-search';
 import { Tile, Box, ToggleSwitch, Divider, Icon } from '@rocket.chat/fuselage';
 import { useOutsideClick, useStableCallback } from '@rocket.chat/fuselage-hooks';
 import { CustomScrollbars } from '@rocket.chat/ui-client';
-import { useId, useRef } from 'react';
+import { useId, useMemo, useRef } from 'react';
 import { useFormContext, useWatch } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 
@@ -15,8 +15,8 @@ import NavBarSearchIntelligentSection from './NavBarSearchIntelligentSection';
 import NavBarSearchRoomSection from './NavBarSearchRoomSection';
 import { useAISearchItems } from './hooks/useAISearchItems';
 import { useAISearchRooms } from './hooks/useAISearchRooms';
+import { useSyncSearchOptions } from './hooks/useSearchActiveOption';
 import { useSearchFilters } from './hooks/useSearchFilters';
-import { useListboxNavigation } from './hooks/useSearchNavigation';
 import AISearchErrorCallout from '../../components/AISearchErrorCallout';
 import ResultsLiveRegion from '../../components/ResultsLiveRegion';
 
@@ -43,7 +43,6 @@ const NavBarAISearchListBox = ({
 	const containerRef = useRef<HTMLElement>(null);
 	const aiSearchLabelId = useId();
 
-	const handleKeyDown = useListboxNavigation(state);
 	useOutsideClick([containerRef], state.close);
 
 	const { control } = useFormContext<NavBarSearchFormValues>();
@@ -58,6 +57,7 @@ const NavBarAISearchListBox = ({
 
 	const { data: aiItems, isFetching, refetch: refetchAISearch } = useAISearchItems(filterText, filters, aiSearchActive);
 	const { items: rooms, isLoading } = useAISearchRooms(aiSearchActive ? aiItems.searchText : filterText);
+	useSyncSearchOptions(useMemo(() => [rooms, aiItems], [rooms, aiItems]));
 	const itemCount = rooms.length + aiItems.intelligent.length + aiItems.filterSuggestions.length;
 	const isSearchLoading = isLoading || isFetching;
 	const hasAISearchProblem = aiSearchActive && Boolean(aiItems.error || aiItems.notConfigured);
@@ -98,42 +98,56 @@ const NavBarAISearchListBox = ({
 								<ToggleSwitch aria-labelledby={aiSearchLabelId} checked={aiSearchActive} onChange={handleToggleAISearch} />
 							</Box>
 							{aiSearchActive && <NavBarSearchFilterTypeRow draft={aiItems.draft} />}
-							<NavBarSearchFilterSuggestions suggestions={aiItems.filterSuggestions} />
-							{aiSearchAvailable && <Divider marginBlockStart={12} />}
-							{hasAISearchProblem && (
-								<AISearchErrorCallout
-									role='alert'
-									error={aiItems.error}
-									notConfigured={aiItems.notConfigured}
-									onRetry={refetchAISearch}
-									marginInline={12}
-									marginBlockStart={8}
-								/>
-							)}
 						</>
 					)}
-					<CustomScrollbars>
-						<div
-							{...overlayProps}
-							role='listbox'
-							aria-label={listboxLabel}
-							aria-busy={isSearchLoading}
-							tabIndex={-1}
-							onKeyDown={handleKeyDown}
-						>
-							<NavBarSearchIntelligentSection items={aiItems.intelligent} onSelect={handleSelect} onClose={state.close} />
-							{aiItems.intelligent.length > 0 && rooms.length > 0 && <Box marginBlockStart={12} />}
-							<NavBarSearchRoomSection
-								filterText={filterText}
-								itemCount={itemCount}
-								isLoading={isLoading}
-								isFetching={isFetching}
-								rooms={rooms}
-								suggestAISearch={aiSearchAvailable && !aiSearchActive}
-								onSelect={handleSelect}
-							/>
-						</div>
-					</CustomScrollbars>
+					<div {...overlayProps} style={{ display: 'contents' }}>
+						{aiSearchAvailable && (
+							<>
+								{aiItems.filterSuggestions.length > 0 && (
+									<div
+										role='listbox'
+										aria-label={t('Search_filter_suggestions')}
+										tabIndex={-1}
+										onMouseDown={(event) => event.preventDefault()}
+									>
+										<NavBarSearchFilterSuggestions suggestions={aiItems.filterSuggestions} />
+									</div>
+								)}
+								<Divider marginBlockStart={12} />
+								{hasAISearchProblem && (
+									<AISearchErrorCallout
+										role='alert'
+										error={aiItems.error}
+										notConfigured={aiItems.notConfigured}
+										onRetry={refetchAISearch}
+										marginInline={12}
+										marginBlockStart={8}
+									/>
+								)}
+							</>
+						)}
+						<CustomScrollbars>
+							<div
+								role='listbox'
+								aria-label={listboxLabel}
+								aria-busy={isSearchLoading}
+								tabIndex={-1}
+								onMouseDown={(event) => event.preventDefault()}
+							>
+								<NavBarSearchIntelligentSection items={aiItems.intelligent} onSelect={handleSelect} onClose={state.close} />
+								{aiItems.intelligent.length > 0 && rooms.length > 0 && <Box marginBlockStart={12} />}
+								<NavBarSearchRoomSection
+									filterText={filterText}
+									itemCount={itemCount}
+									isLoading={isLoading}
+									isFetching={isFetching}
+									rooms={rooms}
+									suggestAISearch={aiSearchAvailable && !aiSearchActive}
+									onSelect={handleSelect}
+								/>
+							</div>
+						</CustomScrollbars>
+					</div>
 				</>
 			)}
 		</Tile>

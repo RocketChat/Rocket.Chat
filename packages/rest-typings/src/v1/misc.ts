@@ -1,6 +1,7 @@
 import type { IRoom, IUser } from '@rocket.chat/core-typings';
 
 import { ajv, ajvQuery } from './Ajv';
+import { paginationQueryProperties } from './pagination';
 import type { PaginatedRequest } from '../helpers/PaginatedRequest';
 
 type ShieldSvg = {
@@ -113,14 +114,7 @@ const DirectorySchema = {
 			type: 'string',
 			nullable: true,
 		},
-		count: {
-			type: 'number',
-			nullable: true,
-		},
-		offset: {
-			type: 'number',
-			nullable: true,
-		},
+		...paginationQueryProperties,
 		sort: {
 			type: 'string',
 			nullable: true,

@@ -1,0 +1,128 @@
+// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
+
+exports[`[CodeSnippet Rendering] renders CopyButton without crashing 1`] = `
+<body>
+  <div>
+    <pre
+      class="rcx-box rcx-box--full rcx-code-snippet"
+    >
+      <div
+        class="rcx-box rcx-box--full rcx-code-snippet__codebox"
+        role="code"
+      >
+        curl -L https://go.rocket.chat/i/docker-compose.yml -O
+      </div>
+      <div
+        class="rcx-box rcx-box--full"
+      >
+        <button
+          class="rcx-box rcx-box--full rcx-button--small rcx-button--primary rcx-button"
+          type="button"
+        >
+          <span
+            class="rcx-button--content"
+          >
+            Copy
+          </span>
+        </button>
+      </div>
+    </pre>
+  </div>
+</body>
+`;
+
+exports[`[CodeSnippet Rendering] renders CustomButtonName without crashing 1`] = `
+<body>
+  <div>
+    <pre
+      class="rcx-box rcx-box--full rcx-code-snippet"
+    >
+      <div
+        class="rcx-box rcx-box--full rcx-code-snippet__codebox"
+        role="code"
+      >
+        curl -L https://go.rocket.chat/i/docker-compose.yml -O
+      </div>
+      <div
+        class="rcx-box rcx-box--full"
+      >
+        <button
+          class="rcx-box rcx-box--full rcx-button--small rcx-button--primary rcx-button"
+          type="button"
+        >
+          <span
+            class="rcx-button--content"
+          >
+            Custom name
+          </span>
+        </button>
+      </div>
+    </pre>
+  </div>
+</body>
+`;
+
+exports[`[CodeSnippet Rendering] renders Default without crashing 1`] = `
+<body>
+  <div>
+    <pre
+      class="rcx-box rcx-box--full rcx-code-snippet"
+    >
+      <div
+        class="rcx-box rcx-box--full rcx-code-snippet__codebox"
+        role="code"
+      >
+        curl -L https://go.rocket.chat/i/docker-compose.yml -O
+      </div>
+    </pre>
+  </div>
+</body>
+`;
+
+exports[`[CodeSnippet Rendering] renders DisabledButton without crashing 1`] = `
+<body>
+  <div>
+    <pre
+      class="rcx-box rcx-box--full rcx-code-snippet"
+    >
+      <div
+        class="rcx-box rcx-box--full rcx-code-snippet__codebox"
+        role="code"
+      >
+        curl -L https://go.rocket.chat/i/docker-compose.yml -O
+      </div>
+      <div
+        class="rcx-box rcx-box--full"
+      >
+        <button
+          class="rcx-box rcx-box--full rcx-button--small rcx-button--primary rcx-button"
+          disabled=""
+          type="button"
+        >
+          <span
+            class="rcx-button--content"
+          >
+            Disabled Button
+          </span>
+        </button>
+      </div>
+    </pre>
+  </div>
+</body>
+`;
+
+exports[`[CodeSnippet Rendering] renders LoadingCode without crashing 1`] = `
+<body>
+  <div>
+    <pre
+      class="rcx-box rcx-box--full rcx-code-snippet"
+    >
+      <span
+        aria-busy="true"
+        aria-hidden="true"
+        class="rcx-skeleton rcx-skeleton--text rcx-css-1qcz93u"
+      />
+    </pre>
+  </div>
+</body>
+`;

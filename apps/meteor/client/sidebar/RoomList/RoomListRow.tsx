@@ -9,17 +9,14 @@ import type { TFunction } from 'i18next';
 import { memo, useMemo } from 'react';
 
 import SidebarItemTemplateWithData from './SidebarItemTemplateWithData';
-import type { useAvatarTemplate } from '../hooks/useAvatarTemplate';
-import type { useTemplateByViewMode } from '../hooks/useTemplateByViewMode';
+import type { RoomListItemViewMode } from '../../views/navigation/sidebar/RoomList/RoomListItem';
 
 export type RoomListRowProps = {
 	data: {
-		extended: boolean;
 		t: TFunction;
-		SidebarItemTemplate: ReturnType<typeof useTemplateByViewMode>;
-		AvatarTemplate: ReturnType<typeof useAvatarTemplate>;
+		viewMode: RoomListItemViewMode;
+		showAvatar: boolean;
 		openedRoom: string;
-		sidebarViewMode: 'extended' | 'condensed' | 'medium';
 		isAnonymous: boolean;
 		userId?: string;
 	};
@@ -27,7 +24,7 @@ export type RoomListRowProps = {
 };
 
 const RoomListRow = ({ data, item }: RoomListRowProps) => {
-	const { extended, t, SidebarItemTemplate, AvatarTemplate, openedRoom, sidebarViewMode, userId } = data;
+	const { t, viewMode, showAvatar, openedRoom, userId } = data;
 
 	const acceptCall = useVideoConfAcceptCall();
 	const rejectCall = useVideoConfRejectIncomingCall();
@@ -50,13 +47,11 @@ const RoomListRow = ({ data, item }: RoomListRowProps) => {
 
 	return (
 		<SidebarItemTemplateWithData
-			sidebarViewMode={sidebarViewMode}
+			viewMode={viewMode}
+			showAvatar={showAvatar}
 			selected={item.rid === openedRoom}
 			t={t}
 			room={item}
-			extended={extended}
-			SidebarItemTemplate={SidebarItemTemplate}
-			AvatarTemplate={AvatarTemplate}
 			videoConfActions={videoConfActions}
 			userId={userId}
 		/>

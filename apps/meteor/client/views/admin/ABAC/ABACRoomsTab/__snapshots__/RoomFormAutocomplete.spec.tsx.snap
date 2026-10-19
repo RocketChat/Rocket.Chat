@@ -11,7 +11,7 @@ exports[`RoomFormAutocomplete renders Default without crashing 1`] = `
         role="group"
       >
         <input
-          class="rcx-box rcx-box--full rcx-box--animated rcx-input-box--undecorated rcx-input-box rcx-css-trljwa rcx-css-rcil7k"
+          class="rcx-box rcx-box--full rcx-box--animated rcx-input-box--undecorated rcx-input-box rcx-css-i9v8z4 rcx-css-rcil7k"
           value=""
         />
       </div>

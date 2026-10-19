@@ -10,7 +10,7 @@ exports[`renders Default without crashing 1`] = `
       open=""
     >
       <div
-        class="rcx-box rcx-box--full rcx-modal__inner rcx-css-qtwduz"
+        class="rcx-box rcx-box--full rcx-modal__inner rcx-css-hb8b2e"
       >
         <header
           class="rcx-box rcx-box--full rcx-modal__header"
@@ -19,7 +19,7 @@ exports[`renders Default without crashing 1`] = `
             class="rcx-box rcx-box--full rcx-modal__header-inner"
           >
             <div
-              class="rcx-box rcx-box--full rcx-modal__header-text rcx-css-trljwa rcx-css-lma364"
+              class="rcx-box rcx-box--full rcx-modal__header-text rcx-css-i9v8z4 rcx-css-lma364"
             >
               <h2
                 class="rcx-box rcx-box--full rcx-modal__title"
@@ -31,10 +31,10 @@ exports[`renders Default without crashing 1`] = `
           </div>
         </header>
         <div
-          class="rcx-box rcx-box--full rcx-modal__content rcx-css-1vw7itl"
+          class="rcx-box rcx-box--full rcx-modal__content rcx-css-cnr5de"
         >
           <div
-            class="rcx-box rcx-box--full rcx-modal__content-wrapper rcx-css-r1bpeb"
+            class="rcx-box rcx-box--full rcx-modal__content-wrapper rcx-css-lg273t"
           >
             <fieldset
               class="rcx-box rcx-box--full rcx-field-group"
@@ -70,7 +70,7 @@ exports[`renders Default without crashing 1`] = `
                         value=""
                       />
                       <div
-                        class="rcx-box rcx-box--full rcx-select__addon rcx-css-x7bl3q rcx-css-6bg1ps"
+                        class="rcx-box rcx-box--full rcx-select__addon rcx-css-1jtklz9 rcx-css-6bg1ps"
                       >
                         <i
                           aria-hidden="true"
@@ -127,7 +127,7 @@ exports[`renders Default without crashing 1`] = `
                         value=""
                       />
                       <div
-                        class="rcx-box rcx-box--full rcx-select__addon rcx-css-x7bl3q rcx-css-6bg1ps"
+                        class="rcx-box rcx-box--full rcx-select__addon rcx-css-1jtklz9 rcx-css-6bg1ps"
                       >
                         <i
                           aria-hidden="true"

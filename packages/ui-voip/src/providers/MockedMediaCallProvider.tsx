@@ -22,6 +22,7 @@ export type MockedMediaCallProviderProps = {
 	instanceProps?: Partial<MockedInstanceProviderProps>;
 	supportedFeatures?: readonly CallFeature[];
 	confirmed?: boolean;
+	allowedFeatures?: readonly CallFeature[];
 };
 
 const MockedMediaCallProvider = ({
@@ -37,6 +38,7 @@ const MockedMediaCallProvider = ({
 	instanceProps,
 	supportedFeatures = callFeatureList,
 	confirmed = true,
+	allowedFeatures = supportedFeatures,
 }: MockedMediaCallProviderProps) => {
 	const [peerInfo, setPeerInfo] = useState<PeerInfo | undefined>({
 		displayName: 'John Doe',
@@ -134,6 +136,7 @@ const MockedMediaCallProvider = ({
 
 	const contextValue = {
 		sessionState,
+		allowedFeatures,
 		targetPeer: peerInfo,
 		onClickDirectMessage,
 		onMute,

@@ -33,7 +33,7 @@ exports[`renders AppLogsItem without crashing 1`] = `
                 
               </i>
               <h5
-                class="rcx-box rcx-box--full rcx-css-1spko5i"
+                class="rcx-box rcx-box--full rcx-css-1t0ey6j"
                 id="contextualbarTitle"
               >
                 Filters
@@ -77,7 +77,7 @@ exports[`renders AppLogsItem without crashing 1`] = `
                   class="rcx-box rcx-box--full rcx-css-zg7o7h"
                 >
                   <div
-                    class="rcx-box rcx-box--full rcx-css-1jggbrp rcx-css-1hr7rzd"
+                    class="rcx-box rcx-box--full rcx-css-j4xsg rcx-css-1hr7rzd"
                   >
                     <label
                       class="rcx-box rcx-box--full rcx-label"
@@ -87,7 +87,7 @@ exports[`renders AppLogsItem without crashing 1`] = `
                       Time
                     </label>
                     <div
-                      class="rcx-box rcx-box--full rcx-css-1mbgoc8"
+                      class="rcx-box rcx-box--full rcx-css-1ds37nf"
                     >
                       <div
                         aria-hidden="true"
@@ -145,7 +145,7 @@ exports[`renders AppLogsItem without crashing 1`] = `
                       aria-expanded="false"
                       aria-haspopup="listbox"
                       aria-labelledby="react-aria-_r_8_ timeFilterLabel"
-                      class="rcx-box rcx-box--full rcx-box--animated rcx-select rcx-css-1vw6rc6"
+                      class="rcx-box rcx-box--full rcx-box--animated rcx-select rcx-css-3ejkxj"
                       id="timeFilter"
                       type="button"
                     >
@@ -162,7 +162,7 @@ exports[`renders AppLogsItem without crashing 1`] = `
                     </button>
                   </div>
                   <div
-                    class="rcx-box rcx-box--full rcx-css-1jggbrp rcx-css-1hr7rzd"
+                    class="rcx-box rcx-box--full rcx-css-j4xsg rcx-css-1hr7rzd"
                   >
                     <label
                       class="rcx-box rcx-box--full rcx-label"
@@ -220,7 +220,7 @@ exports[`renders AppLogsItem without crashing 1`] = `
                     </div>
                   </div>
                   <div
-                    class="rcx-box rcx-box--full rcx-css-1jggbrp rcx-css-1hr7rzd"
+                    class="rcx-box rcx-box--full rcx-css-j4xsg rcx-css-1hr7rzd"
                   >
                     <label
                       class="rcx-box rcx-box--full rcx-label"
@@ -278,7 +278,7 @@ exports[`renders AppLogsItem without crashing 1`] = `
                     </div>
                   </div>
                   <div
-                    class="rcx-box rcx-box--full rcx-css-1jggbrp rcx-css-1hr7rzd"
+                    class="rcx-box rcx-box--full rcx-css-j4xsg rcx-css-1hr7rzd"
                   >
                     <label
                       class="rcx-box rcx-box--full rcx-label"
@@ -298,7 +298,7 @@ exports[`renders AppLogsItem without crashing 1`] = `
                     </div>
                   </div>
                   <div
-                    class="rcx-box rcx-box--full rcx-css-1jggbrp rcx-css-1hr7rzd"
+                    class="rcx-box rcx-box--full rcx-css-j4xsg rcx-css-1hr7rzd"
                   >
                     <label
                       class="rcx-box rcx-box--full rcx-label"
@@ -308,7 +308,7 @@ exports[`renders AppLogsItem without crashing 1`] = `
                       Severity
                     </label>
                     <div
-                      class="rcx-box rcx-box--full rcx-css-1mbgoc8"
+                      class="rcx-box rcx-box--full rcx-css-1ds37nf"
                     >
                       <div
                         aria-hidden="true"
@@ -352,7 +352,7 @@ exports[`renders AppLogsItem without crashing 1`] = `
                       aria-haspopup="listbox"
                       aria-label="Severity"
                       aria-labelledby="react-aria-_r_g_ react-aria-_r_b_ severityFilterLabel"
-                      class="rcx-box rcx-box--full rcx-box--animated rcx-select rcx-css-1vw6rc6"
+                      class="rcx-box rcx-box--full rcx-box--animated rcx-select rcx-css-3ejkxj"
                       id="severityFilter"
                       type="button"
                     >

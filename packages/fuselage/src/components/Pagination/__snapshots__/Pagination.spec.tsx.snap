@@ -1,0 +1,182 @@
+// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
+
+exports[`renders without crashing 1`] = `
+<body>
+  <div>
+    <nav
+      aria-label="Pagination Navigation"
+      class="rcx-box rcx-box--full rcx-pagination"
+    >
+      <div
+        class="rcx-pagination__left"
+      >
+        <span
+          class="rcx-pagination__label"
+          id="test-id"
+        >
+          Items per page:
+        </span>
+        <ol
+          aria-labelledby="test-id"
+          class="rcx-box rcx-box--full rcx-pagination__list"
+        >
+          <li
+            class="rcx-pagination__list-item"
+          >
+            <button
+              aria-label="Show 25 items per page"
+              class="rcx-box rcx-box--full rcx-pagination__link"
+              disabled=""
+              tabindex="-1"
+            >
+              25
+            </button>
+          </li>
+          <li
+            class="rcx-pagination__list-item"
+          >
+            <button
+              aria-label="Show 50 items per page"
+              class="rcx-box rcx-box--full rcx-pagination__link"
+              tabindex="0"
+            >
+              50
+            </button>
+          </li>
+          <li
+            class="rcx-pagination__list-item"
+          >
+            <button
+              aria-label="Show 100 items per page"
+              class="rcx-box rcx-box--full rcx-pagination__link"
+              tabindex="0"
+            >
+              100
+            </button>
+          </li>
+        </ol>
+      </div>
+      <div
+        class="rcx-pagination__right"
+      >
+        <span
+          class="rcx-pagination__label"
+          id="test-id"
+        >
+          Showing results 1 - 25 of 500
+        </span>
+        <ol
+          aria-labelledby="test-id"
+          class="rcx-box rcx-box--full rcx-pagination__list"
+        >
+          <li
+            class="rcx-pagination__list-item"
+          >
+            <button
+              aria-label="Previous page"
+              class="rcx-box rcx-box--full rcx-pagination__back"
+              disabled=""
+            >
+              <span
+                class="rcx-box rcx-box--full rcx-chevron--left rcx-chevron"
+              >
+                <i
+                  aria-hidden="true"
+                  class="rcx-box rcx-box--full rcx-icon--name-chevron-down rcx-icon rcx-css-1g87xs3"
+                >
+                  
+                </i>
+              </span>
+            </button>
+          </li>
+          <li
+            class="rcx-pagination__list-item"
+          >
+            <button
+              aria-label="Page 1"
+              class="rcx-box rcx-box--full rcx-pagination__link"
+              disabled=""
+            >
+              1
+            </button>
+          </li>
+          <li
+            class="rcx-pagination__list-item"
+          >
+            <button
+              aria-label="Page 2"
+              class="rcx-box rcx-box--full rcx-pagination__link"
+            >
+              2
+            </button>
+          </li>
+          <li
+            class="rcx-pagination__list-item"
+          >
+            <button
+              aria-label="Page 3"
+              class="rcx-box rcx-box--full rcx-pagination__link"
+            >
+              3
+            </button>
+          </li>
+          <li
+            class="rcx-pagination__list-item"
+          >
+            <button
+              aria-label="Page 4"
+              class="rcx-box rcx-box--full rcx-pagination__link"
+            >
+              4
+            </button>
+          </li>
+          <li
+            class="rcx-pagination__list-item"
+          >
+            <button
+              aria-label="Page 5"
+              class="rcx-box rcx-box--full rcx-pagination__link"
+            >
+              5
+            </button>
+          </li>
+          <li
+            class="rcx-pagination__list-item"
+          >
+            ⋯
+          </li>
+          <li
+            class="rcx-pagination__list-item"
+          >
+            <button
+              aria-label="Page 20"
+              class="rcx-box rcx-box--full rcx-pagination__link"
+            >
+              20
+            </button>
+          </li>
+          <li
+            class="rcx-pagination__list-item"
+          >
+            <button
+              aria-label="Next page"
+              class="rcx-box rcx-box--full rcx-pagination__forward"
+            >
+              <span
+                class="rcx-box rcx-box--full rcx-chevron--right rcx-chevron"
+              >
+                <i
+                  aria-hidden="true"
+                  class="rcx-box rcx-box--full rcx-icon--name-chevron-down rcx-icon rcx-css-1g87xs3"
+                >
+                  
+                </i>
+              </span>
+            </button>
+          </li>
+        </ol>
+      </div>
+    </nav>
+  </div>
+</body>
+`;

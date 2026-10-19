@@ -9,7 +9,7 @@ import { Random } from '@rocket.chat/random';
 import busboy, { type BusboyConfig } from 'busboy';
 import ExifTransformer from 'exif-be-gone';
 
-import { getMimeType } from '../../../app/utils/lib/mimeTypes';
+import { getMimeType } from '../../../lib/mimeTypes';
 import { UploadFS } from '../../ufs';
 
 export type ParsedUpload = {

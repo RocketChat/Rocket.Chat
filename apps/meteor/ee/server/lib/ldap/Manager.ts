@@ -80,9 +80,10 @@ export class LDAPEEManager extends LDAPManager {
 			}
 		} catch (err) {
 			logger.error({ err });
+			throw err;
+		} finally {
+			ldap.disconnect();
 		}
-
-		ldap.disconnect();
 	}
 
 	public static async syncAvatars(): Promise<void> {
@@ -237,6 +238,7 @@ export class LDAPEEManager extends LDAPManager {
 			}
 		} catch (err) {
 			logger.error({ err });
+			throw err;
 		}
 	}
 
@@ -733,8 +735,20 @@ export class LDAPEEManager extends LDAPManager {
 			const ldapUser = await this.findLDAPUser(ldap, user);
 
 			if (ldapUser) {
-				const userData = this.mapUserData(ldapUser, user.username);
-				converter.addObjectToMemory(userData, { dn: ldapUser.dn, username: this.getLdapUsername(ldapUser) });
+				try {
+					const userData = this.mapUserData(ldapUser, user.username);
+					converter.addObjectToMemory(userData, { dn: ldapUser.dn, username: this.getLdapUsername(ldapUser) });
+				} catch (err) {
+					logger.error({ msg: 'Skipping LDAP user that could not be mapped', dn: ldapUser.dn, err });
+
+					const activeState = { username: user.username } as IImportUser;
+					this.copyActiveState(ldapUser, activeState);
+					if (activeState.deleted && user.active) {
+						await setUserActiveStatus(user._id, false, true).catch((err) =>
+							logger.error({ msg: 'Failed to deactivate LDAP user that could not be mapped', dn: ldapUser.dn, err }),
+						);
+					}
+				}
 			} else if (disableMissingUsers && user.active) {
 				await setUserActiveStatus(user._id, false, true);
 			}

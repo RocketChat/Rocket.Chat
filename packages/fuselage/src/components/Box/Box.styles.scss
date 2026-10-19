@@ -1,0 +1,74 @@
+@use '../../styles/lengths.scss';
+@use '../../styles/typography.scss' as *;
+@use '../../styles/mixins/templates.scss' as *;
+@use '../../styles/primitives/rich-text.scss';
+
+%box {
+	flex: 0 1 auto;
+
+	box-sizing: border-box;
+
+	outline: none;
+
+	font-variant-numeric: tabular-nums;
+	-webkit-font-smoothing: antialiased;
+	-moz-osx-font-smoothing: grayscale;
+}
+
+%box--animated {
+	transition: all 0.18s;
+
+	@media (prefers-reduced-motion) {
+		transition: none;
+	}
+}
+
+%box--full {
+	margin: lengths.margin(none);
+	padding: lengths.padding(none);
+
+	border-width: lengths.border-width(none);
+	border-style: solid;
+	border-color: currentColor;
+
+	outline: none;
+
+	font-family: font-family('sans');
+	-webkit-font-smoothing: antialiased;
+	-moz-osx-font-smoothing: grayscale;
+}
+
+.rcx-box {
+	@extend %box;
+
+	&--animated {
+		@extend %box--animated;
+
+		&::before,
+		&::after {
+			@extend %box--animated;
+		}
+	}
+
+	&--full {
+		@extend %box--full;
+
+		&::before,
+		&::after {
+			@extend %box;
+			@extend %box--full;
+		}
+	}
+
+	&--with-inline-elements {
+		@extend %with-inline-elements;
+	}
+
+	&--with-block-elements {
+		@extend %with-block-elements;
+	}
+
+	&--focusable {
+		@include focus-state;
+	}
+}
