@@ -29,9 +29,12 @@
 	color: var(--secondary-font-color);
 }
 
-input,
-select,
-textarea {
-	border-style: solid;
-	background-color: transparent;
+/* Element rules sit in the `reset` layer, so layered Fuselage component styles win over them as their classes used to */
+@layer reset {
+	input,
+	select,
+	textarea {
+		border-style: solid;
+		background-color: transparent;
+	}
 }
