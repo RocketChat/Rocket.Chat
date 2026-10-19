@@ -42,7 +42,7 @@ const UserAutoCompleteMultiple = forwardRef<HTMLInputElement, UserAutoCompleteMu
 		const getUsers = useEndpoint('GET', '/v1/users.autocomplete');
 
 		const { data } = useQuery({
-			queryKey: usersQueryKeys.userAutoComplete(debouncedFilter, (federated ?? false) || (xmpp ?? false), exceptions),
+			queryKey: usersQueryKeys.userAutoComplete(debouncedFilter, { federated: federated ?? false, xmpp: xmpp ?? false }, exceptions),
 
 			queryFn: async () => {
 				const users = await getUsers({ selector: JSON.stringify({ term: debouncedFilter, ...(exceptions?.length && { exceptions }) }) });
