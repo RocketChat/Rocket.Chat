@@ -1,11 +1,25 @@
+import { styled, Text, type GetProps } from '@tamagui/web';
 import type { HTMLAttributes } from 'react';
 
 import { prependClassName } from '../../../../helpers/prependClassName';
+import { spacing } from '../../../../styleTokens';
+import { withFuselageProvider } from '../../../FuselageProvider/FuselageProvider';
+import { plainDiv } from '../../messageStyles';
+
+const MessageMetricsItemAvatarRowFrame = styled(Text, {
+	...plainDiv,
+	display: 'flex',
+	flexDirection: 'row',
+	marginInline: spacing('neg-x2'),
+});
 
 export type MessageMetricsItemProps = HTMLAttributes<HTMLDivElement>;
 
 const MessageMetricsItemAvatarRow = ({ className, ...props }: MessageMetricsItemProps) => (
-	<div className={prependClassName(className, 'rcx-message-metrics__avatar-row')} {...props} />
+	<MessageMetricsItemAvatarRowFrame
+		className={prependClassName(className, 'rcx-message-metrics__avatar-row')}
+		{...(props as GetProps<typeof MessageMetricsItemAvatarRowFrame>)}
+	/>
 );
 
-export default MessageMetricsItemAvatarRow;
+export default withFuselageProvider(MessageMetricsItemAvatarRow);

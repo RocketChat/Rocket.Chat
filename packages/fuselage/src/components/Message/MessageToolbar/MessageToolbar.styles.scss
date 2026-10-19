@@ -1,45 +1,32 @@
-@use '../../../styles/colors.scss';
-@use '../../../styles/functions.scss' as *;
 @use '../../../styles/lengths.scss';
-@use '../mixins.scss';
 
-$message-toolbar-border-radius: theme('message-toolbar-border-radius', lengths.border-radius(medium));
-
+// Every rule here depends on the surrounding `Message` state.
 .rcx-message-toolbar {
-	margin-inline: lengths.margin(20);
-	padding: lengths.padding(2);
-
-	border: lengths.border-width(default) solid colors.stroke(extra-light);
-	border-radius: $message-toolbar-border-radius;
-	background: colors.surface(room);
-
 	&__wrapper {
-		display: none;
-
-		user-select: none;
-
 		.rcx-message:hover &,
 		.rcx-message:focus-within & {
 			display: inline-block;
 		}
 
-		&--visible {
-			display: inline-block;
-
-			.rcx-message-toolbar {
-				opacity: 1;
-			}
+		&--visible .rcx-message-toolbar {
+			opacity: 1;
 		}
 	}
 
-	@include mixins.message-focus-visible {
-		display: inline-block;
+	.rcx-message:hover &,
+	.rcx-message:focus-visible & {
+		opacity: 1;
+	}
+
+	// Keyboard-only focus-within; kept apart so browsers without `:has` still parse the rule above.
+	.rcx-message:has(:focus-visible) & {
+		opacity: 1;
 	}
 
 	@at-root .rcx-message & {
 		position: absolute;
 		z-index: 10;
-		top: lengths.inset(-24);
+		top: lengths.margin(-24);
 		inset-inline-end: 0;
 	}
 }

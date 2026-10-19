@@ -1,4 +1,23 @@
+import { styled, View, type GetProps } from '@tamagui/web';
 import type { HTMLAttributes, RefAttributes } from 'react';
+
+import { withFuselageProvider } from '../../FuselageProvider/FuselageProvider';
+import { boxText } from '../messageStyles';
+
+const MessageToolbarWrapperFrame = styled(View, {
+	render: 'div',
+	...boxText,
+	display: 'none',
+	flexShrink: 1,
+
+	variants: {
+		visible: {
+			true: {
+				display: 'inline-block',
+			},
+		},
+	} as const,
+});
 
 export type MessageToolbarWrapperProps = HTMLAttributes<HTMLDivElement> &
 	RefAttributes<HTMLDivElement> & {
@@ -7,13 +26,12 @@ export type MessageToolbarWrapperProps = HTMLAttributes<HTMLDivElement> &
 
 function MessageToolbarWrapper({ className, visible, ...props }: MessageToolbarWrapperProps) {
 	return (
-		<div
-			className={['rcx-box rcx-box--full rcx-message-toolbar__wrapper', visible && 'rcx-message-toolbar__wrapper--visible', className]
-				.filter(Boolean)
-				.join(' ')}
-			{...props}
+		<MessageToolbarWrapperFrame
+			visible={visible}
+			className={['rcx-message-toolbar__wrapper', visible && 'rcx-message-toolbar__wrapper--visible', className].filter(Boolean).join(' ')}
+			{...(props as GetProps<typeof MessageToolbarWrapperFrame>)}
 		/>
 	);
 }
 
-export default MessageToolbarWrapper;
+export default withFuselageProvider(MessageToolbarWrapper);
