@@ -1,3 +1,4 @@
+import { isClientSafeError } from '@rocket.chat/core-services';
 import type { IUser } from '@rocket.chat/core-typings';
 import { Users } from '@rocket.chat/models';
 import { Accounts } from 'meteor/accounts-base';
@@ -70,7 +71,7 @@ export const registerUser = async (formData: {
 	try {
 		userId = await Accounts.createUserAsync(userData);
 	} catch (e) {
-		if (e instanceof Meteor.Error) {
+		if (isClientSafeError(e)) {
 			throw e;
 		}
 
