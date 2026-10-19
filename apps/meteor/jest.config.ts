@@ -55,6 +55,7 @@ export default {
 				'<rootDir>/server/lib/cloud/version-check/**/*.spec.ts',
 				'<rootDir>/server/modules/apps/**/*.spec.ts',
 				'<rootDir>/server/lib/auth-providers/apple/**.spec.ts',
+				'<rootDir>/server/lib/auth-providers/custom-oauth/**/*.spec.ts',
 				'<rootDir>/server/lib/integrations/**/*.spec.ts',
 				'<rootDir>/server/lib/statusVisibility/*.spec.ts',
 				'<rootDir>/server/lib/2fa/code/EmailCheck.spec.ts',
