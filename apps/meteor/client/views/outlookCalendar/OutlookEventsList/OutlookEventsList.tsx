@@ -14,7 +14,12 @@ import { useSetting, useTranslation, useUser } from '@rocket.chat/ui-contexts';
 import { Virtuoso } from 'react-virtuoso';
 
 import OutlookEventItem from './OutlookEventItem';
-import { getCalendarSyncIntervalHours, getCalendarSyncWindowDays } from '../../../../ee/lib/exchange/calendarSyncSchedule';
+import {
+	getCalendarSyncIntervalHours,
+	getCalendarSyncWindowDays,
+	DEFAULT_INTERVAL_HOURS,
+	DEFAULT_WINDOW_DAYS,
+} from '../../../../ee/lib/exchange/calendarSyncSchedule';
 import { useItemListNavigation } from '../../../hooks/useItemListNavigation';
 import { getErrorMessage } from '../../../lib/errorHandling';
 import { useOutlookAuthentication } from '../hooks/useOutlookAuthentication';
@@ -32,8 +37,8 @@ const OutlookEventsList = ({ onClose, changeRoute }: OutlookEventsListProps) => 
 	const { authEnabled, isError, error } = useOutlookAuthentication();
 
 	const isServerManaged = useSetting('Exchange_Mode', 'legacy') === 'server';
-	const syncIntervalHours = getCalendarSyncIntervalHours(useSetting('Exchange_Calendar_Sync_Interval', 0));
-	const syncWindowDays = getCalendarSyncWindowDays(useSetting('Exchange_Calendar_Sync_Window_Days', 0));
+	const syncIntervalHours = getCalendarSyncIntervalHours(useSetting('Exchange_Calendar_Sync_Interval', DEFAULT_INTERVAL_HOURS));
+	const syncWindowDays = getCalendarSyncWindowDays(useSetting('Exchange_Calendar_Sync_Window_Days', DEFAULT_WINDOW_DAYS));
 
 	const hasOutlookMethods = isServerManaged || !(isError && error instanceof NotOnDesktopError);
 
