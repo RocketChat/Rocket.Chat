@@ -1,6 +1,6 @@
 import type { UseQueryOptions, UseQueryResult } from '@tanstack/react-query';
 import { useQueries, useQueryClient } from '@tanstack/react-query';
-import { useCallback, useMemo } from 'react';
+import { useCallback } from 'react';
 
 type QueryPagination = { offset: number; count: number };
 
@@ -16,23 +16,33 @@ export type PaginatedQueryResult<TData> = PaginatedQueryStatus<TData> & {
 	refetch: () => Promise<void>;
 };
 
-type UsePaginatedQueryOptions<TQuery, TData extends { total: number }> = Omit<UseQueryOptions<TData>, 'queryKey' | 'queryFn' | 'select'> &
+type UsePaginatedQueryOptions<TQuery, TData extends { count: number; total: number }> = Omit<
+	UseQueryOptions<TData>,
+	'queryKey' | 'queryFn' | 'select'
+> &
 	QueryPagination & {
 		query: TQuery;
 		queryKey: readonly unknown[];
 		queryFn: (query: TQuery & QueryPagination) => Promise<TData>;
-		itemsKey: keyof TData;
-		combineData?: (acc: TData, current: TData) => TData;
+		combineData: (acc: TData, current: TData) => TData;
 	};
 
-const getItems = <TData>(data: TData, itemsKey: keyof TData) => data[itemsKey] as unknown[];
+const combineFns = new Map<PropertyKey, unknown>();
 
-export const getCombineFn =
-	<TData>(itemsKey: keyof TData) =>
-	(acc: TData, current: TData): TData => {
-		const items = [...getItems(acc, itemsKey), ...getItems(current, itemsKey)];
+const createCombineFn =
+	<TKey extends PropertyKey>(itemsKey: TKey) =>
+	<TData extends { [key in TKey]: unknown[] }>(acc: TData, current: TData): TData => {
+		const items = [...acc[itemsKey], ...current[itemsKey]];
 		return Object.assign({}, acc, { [itemsKey]: items, count: items.length });
 	};
+
+export const getCombineFn = <TKey extends PropertyKey>(itemsKey: TKey): ReturnType<typeof createCombineFn<TKey>> => {
+	if (!combineFns.has(itemsKey)) {
+		combineFns.set(itemsKey, createCombineFn(itemsKey));
+	}
+
+	return combineFns.get(itemsKey) as ReturnType<typeof createCombineFn<TKey>>;
+};
 
 const getOffsets = (start: number, itemsPerPage: number, returned: number | undefined, total: number) => {
 	const offsets = [start];
@@ -48,11 +58,10 @@ const getOffsets = (start: number, itemsPerPage: number, returned: number | unde
 	return offsets;
 };
 
-export const usePaginatedQuery = <TQuery, TData extends { total: number }>({
+export const usePaginatedQuery = <TQuery, TData extends { count: number; total: number }>({
 	query,
 	queryKey,
 	queryFn,
-	itemsKey,
 	combineData,
 	offset: start,
 	count: itemsPerPage,
@@ -61,14 +70,12 @@ export const usePaginatedQuery = <TQuery, TData extends { total: number }>({
 	const queryClient = useQueryClient();
 
 	const firstData = queryClient.getQueryData<TData>([...queryKey, { offset: start, count: itemsPerPage }]);
-	const offsets = getOffsets(start, itemsPerPage, firstData && getItems(firstData, itemsKey).length, firstData?.total ?? 0);
-
-	const reducer = useMemo(() => combineData ?? getCombineFn(itemsKey), [combineData, itemsKey]);
+	const offsets = getOffsets(start, itemsPerPage, firstData?.count, firstData?.total ?? 0);
 
 	const combine = useCallback(
 		(results: UseQueryResult<TData>[]): PaginatedQueryResult<TData> => {
 			const pages = results.flatMap((result) => (result.data ? [result.data] : []));
-			const data = pages.length === results.length ? pages.reduce(reducer) : undefined;
+			const data = pages.length === results.length ? pages.reduce(combineData) : undefined;
 			const error = results.find((result) => result.error)?.error;
 
 			const state = {
@@ -90,7 +97,7 @@ export const usePaginatedQuery = <TQuery, TData extends { total: number }>({
 
 			return { ...state, status: 'pending', data, error: null, isPending: true, isSuccess: false, isError: false };
 		},
-		[reducer],
+		[combineData],
 	);
 
 	return useQueries({

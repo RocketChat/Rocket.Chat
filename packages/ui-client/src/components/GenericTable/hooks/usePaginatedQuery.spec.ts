@@ -1,7 +1,7 @@
 import { mockAppRoot } from '@rocket.chat/mock-providers';
 import { renderHook, waitFor } from '@testing-library/react';
 
-import { usePaginatedQuery } from './usePaginatedQuery';
+import { getCombineFn, usePaginatedQuery } from './usePaginatedQuery';
 
 const total = 50;
 const limit = 10;
@@ -13,7 +13,8 @@ const getSounds = jest.fn(async ({ offset, count }: { offset: number; count: num
 
 it('should fill the page with several requests when the server returns fewer items than requested', async () => {
 	const { result } = renderHook(
-		() => usePaginatedQuery({ query: {}, queryKey: ['sounds'], queryFn: getSounds, itemsKey: 'sounds', offset: 0, count: 25 }),
+		() =>
+			usePaginatedQuery({ query: {}, queryKey: ['sounds'], queryFn: getSounds, combineData: getCombineFn('sounds'), offset: 0, count: 25 }),
 		{ wrapper: mockAppRoot().build() },
 	);
 
@@ -31,7 +32,6 @@ it('should merge the responses with the provided combineData reducer', async () 
 				query: {},
 				queryKey: ['sounds', 'last-chunk'],
 				queryFn: getSounds,
-				itemsKey: 'sounds',
 				combineData: (_acc, current) => current,
 				offset: 0,
 				count: 25,
