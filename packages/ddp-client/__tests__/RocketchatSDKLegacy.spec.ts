@@ -30,7 +30,7 @@ it('should restore subscriptions after a reconnection', async () => {
 	WS.clean();
 	server = new WS('ws://localhost:1234/websocket');
 	const connected = new Promise((resolve) => sdk.connection.once('connected', () => resolve(undefined)));
-	await handleConnection(server, jest.advanceTimersByTimeAsync(1000), connected);
+	await handleConnection(server, jest.advanceTimersByTimeAsync(2000), connected);
 	jest.useRealTimers();
 
 	await expect(nextFrame()).resolves.toMatchObject({ msg: 'sub', id: subscription.id, name: 'publication' });

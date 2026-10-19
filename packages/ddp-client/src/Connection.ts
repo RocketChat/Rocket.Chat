@@ -22,8 +22,12 @@ type RetryOptions = {
 	retryTime: number;
 };
 
-// Caps the linear backoff so an unlimited retryCount keeps polling a server that is down for a long time.
+// Caps the backoff so an unlimited retryCount keeps polling a server that is down for a long time.
 const MAX_RETRY_DELAY = 30_000;
+
+// Exponential, with jitter so the clients a server restart dropped don't all come back on the same tick.
+export const getRetryDelay = (retryTime: number, attempt: number): number =>
+	Math.min(retryTime * 2 ** (attempt - 1), MAX_RETRY_DELAY) * (0.5 + Math.random() / 2);
 
 export type ConnectionStatus = 'idle' | 'connecting' | 'connected' | 'failed' | 'closed' | 'disconnected' | 'reconnecting';
 
@@ -277,7 +281,7 @@ export class ConnectionImpl
 
 				this.retryCount += 1;
 
-				const retryDelay = Math.min(this.retryOptions.retryTime * this.retryCount, MAX_RETRY_DELAY);
+				const retryDelay = getRetryDelay(this.retryOptions.retryTime, this.retryCount);
 
 				this.retryOptions.retryTimer = setTimeout(() => {
 					// Re-check the status when the timer actually fires. If the

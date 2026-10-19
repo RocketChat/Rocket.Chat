@@ -6,7 +6,7 @@
 
 Rocket.Chat sends realtime data over [DDP](https://github.com/meteor/meteor/blob/devel/packages/ddp/DDP.md), Meteor's WebSocket protocol. This package speaks DDP without Meteor. `DDPSDK` bundles everything a client needs:
 
-- **Connection**: opens the WebSocket, reports its status and reconnects with a linear backoff.
+- **Connection**: opens the WebSocket, reports its status and reconnects with an exponential backoff.
 - **Account**: logs in with a password or a resume token, logs out, and tracks the current user.
 - **ClientStream**: calls server methods and manages subscriptions.
 - **Streams**: listens to Rocket.Chat's realtime streams (`room-messages`, `notify-room`, `notify-user`, ...).
@@ -49,7 +49,7 @@ Pass the server URL with an `http(s)` or `ws(s)` scheme and no path. The SDK con
 const sdk = await DDPSDK.createAndConnect('https://open.rocket.chat');
 ```
 
-Both take optional retry settings: `{ retryCount, retryTime }`, where `retryTime` is in milliseconds. The default is one retry after 100 ms.
+Both take optional retry settings: `{ retryCount, retryTime }`. By default the SDK keeps trying to reconnect: the first attempt waits about `retryTime` (1000 ms), and each failed attempt doubles the wait, up to 30 seconds, with random jitter.
 
 To follow the connection status:
 

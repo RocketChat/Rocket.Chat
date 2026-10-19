@@ -29,9 +29,9 @@ const isValidPayload = (data: unknown): data is PublicationPayloads => {
 };
 
 export type DDPSDKOptions = {
-	/** How many times to reconnect after the connection drops. */
+	/** How many times in a row to try reconnecting after the connection drops. Defaults to `Infinity`. */
 	retryCount?: number;
-	/** Base delay before a reconnection, in milliseconds. */
+	/** Delay before the first reconnection attempt, in milliseconds; it doubles on each failed attempt up to 30 seconds, with jitter. Defaults to 1000. */
 	retryTime?: number;
 	/** Serialises outgoing DDP frames; pass `EJSON.stringify` to send EJSON types. Defaults to `JSON.stringify`. */
 	encode?: (payload: OutgoingPayload) => string;
@@ -107,7 +107,7 @@ export class DDPSDK implements SDK {
 		});
 	}
 
-	protected static defaultOptions: Required<Pick<DDPSDKOptions, 'retryCount' | 'retryTime'>> = { retryCount: 1, retryTime: 100 };
+	protected static defaultOptions: Required<Pick<DDPSDKOptions, 'retryCount' | 'retryTime'>> = { retryCount: Infinity, retryTime: 1000 };
 
 	/**
 	 * Compounds the Objects responsible for the SDK and returns it through

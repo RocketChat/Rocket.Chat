@@ -123,13 +123,13 @@ it('should handle streams after reconnect', async () => {
 	const reconnect = new Promise((resolve) => sdk.connection.once('reconnecting', () => resolve(undefined)));
 	const connecting = new Promise((resolve) => sdk.connection.once('connecting', () => resolve(undefined)));
 	const connected = new Promise((resolve) => sdk.connection.once('connected', () => resolve(undefined)));
-	await handleConnection(server, jest.advanceTimersByTimeAsync(1000), reconnect, connecting, connected);
+	await handleConnection(server, jest.advanceTimersByTimeAsync(2000), reconnect, connecting, connected);
 
 	// the client should reconnect and resubscribe
-	await Promise.all([handleSubscription(server, result.id, streamName, streamParams), jest.advanceTimersByTimeAsync(1000)]);
+	await Promise.all([handleSubscription(server, result.id, streamName, streamParams), jest.advanceTimersByTimeAsync(2000)]);
 
 	fire(server, streamName, streamParams);
-	await jest.advanceTimersByTimeAsync(1000);
+	await jest.advanceTimersByTimeAsync(2000);
 
 	expect(cb).toHaveBeenCalledTimes(6);
 
@@ -175,7 +175,7 @@ it('should handle an unsubscribe stream after reconnect', async () => {
 	const reconnect = new Promise((resolve) => sdk.connection.once('reconnecting', () => resolve(undefined)));
 	const connecting = new Promise((resolve) => sdk.connection.once('connecting', () => resolve(undefined)));
 	const connected = new Promise((resolve) => sdk.connection.once('connected', () => resolve(undefined)));
-	await handleConnection(server, jest.advanceTimersByTimeAsync(1000), reconnect, connecting, connected);
+	await handleConnection(server, jest.advanceTimersByTimeAsync(2000), reconnect, connecting, connected);
 
 	await handleSubscription(server, subscription.id, streamName, streamParams);
 
@@ -189,7 +189,7 @@ it('should handle an unsubscribe stream after reconnect', async () => {
 
 	fireStreamChange(server, streamName, streamParams);
 	fireStreamChange(server, streamName, streamParams);
-	jest.advanceTimersByTimeAsync(1000);
+	jest.advanceTimersByTimeAsync(2000);
 
 	expect(cb).toHaveBeenCalledTimes(4);
 
@@ -222,7 +222,7 @@ it('should reconnect after a heartbeat timeout', async () => {
 	expect(sdk.connection.status).toBe('disconnected');
 
 	const connected = new Promise((resolve) => sdk.connection.once('connected', () => resolve(undefined)));
-	await handleConnection(server, jest.advanceTimersByTimeAsync(1000), connected);
+	await handleConnection(server, jest.advanceTimersByTimeAsync(2000), connected);
 
 	expect(sdk.connection.status).toBe('connected');
 
@@ -301,7 +301,7 @@ const loginAndReconnect = async (sdk: DDPSDK) => {
 	WS.clean();
 	server = new WS('ws://localhost:1234/websocket');
 	const connected = new Promise((resolve) => sdk.connection.once('connected', () => resolve(undefined)));
-	await handleConnection(server, jest.advanceTimersByTimeAsync(1000), connected);
+	await handleConnection(server, jest.advanceTimersByTimeAsync(2000), connected);
 	jest.useRealTimers();
 
 	return subscription;
@@ -368,7 +368,7 @@ describe('Method call and Disconnection cases', () => {
 
 		expect(util.inspect(callResult).includes('pending')).toBe(true);
 
-		await handleConnection(server, jest.advanceTimersByTimeAsync(1000), reconnect, connecting, connected);
+		await handleConnection(server, jest.advanceTimersByTimeAsync(2000), reconnect, connecting, connected);
 
 		const [result2] = await handleMethod(server, 'method', ['args2'], '1', callResult);
 
@@ -423,7 +423,7 @@ describe('Method call and Disconnection cases', () => {
 		await expect(login).rejects.toBeInstanceOf(ConnectionLostError);
 
 		const connected = new Promise((resolve) => sdk.connection.once('connected', () => resolve(undefined)));
-		await handleConnection(server, jest.advanceTimersByTimeAsync(1000), connected);
+		await handleConnection(server, jest.advanceTimersByTimeAsync(2000), connected);
 		jest.useRealTimers();
 
 		const [result] = await handleMethod(server, 'queued', [], '1', queued);

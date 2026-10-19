@@ -1,7 +1,7 @@
 import WS from 'jest-websocket-mock';
 
 import { handleConnection, handleConnectionAndRejects, handleMethod } from './helpers';
-import { ConnectionImpl } from '../src/Connection';
+import { ConnectionImpl, getRetryDelay } from '../src/Connection';
 import { MinimalDDPClient } from '../src/MinimalDDPClient';
 
 // The Node build of the ws package, not the mock-socket stand-in from __mocks__ nor its browser build.
@@ -20,6 +20,23 @@ afterEach(() => {
 	server.close();
 	WS.clean();
 	jest.useRealTimers();
+});
+
+it.each([
+	[1, 50, 100],
+	[2, 100, 200],
+	[4, 400, 800],
+	[20, 15_000, 30_000],
+])('should wait between half and all of the backoff before attempt %i', (attempt, min, max) => {
+	const random = jest.spyOn(Math, 'random');
+	try {
+		random.mockReturnValue(0);
+		expect(getRetryDelay(100, attempt)).toBe(min);
+		random.mockReturnValue(0.999999);
+		expect(getRetryDelay(100, attempt)).toBeCloseTo(max, 0);
+	} finally {
+		random.mockRestore();
+	}
 });
 
 it('should connect', async () => {
@@ -201,7 +218,7 @@ it('should keep reconnecting while the server stays down', async () => {
 
 	await handleConnection(
 		server,
-		jest.advanceTimersByTimeAsync(30_000),
+		jest.advanceTimersByTimeAsync(60_000),
 		new Promise((resolve) => {
 			const handler = (status: string) => {
 				if (status === 'connected') {
