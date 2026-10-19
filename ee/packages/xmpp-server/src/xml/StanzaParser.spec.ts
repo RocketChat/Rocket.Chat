@@ -31,6 +31,19 @@ describe('StanzaParser', () => {
 		expect(stanza.getChildText('body')).toBe('hi');
 	});
 
+	it('keeps a character whose bytes are split across reads intact', () => {
+		const parser = new StanzaParser();
+		const events = collect(parser);
+		const bytes = Buffer.from('<message><body>olá 😀 日本</body></message>');
+		const emoji = bytes.indexOf(Buffer.from('😀'));
+
+		parser.write(STREAM_HEADER);
+		parser.write(bytes.subarray(0, emoji + 2));
+		parser.write(bytes.subarray(emoji + 2));
+
+		expect((events[1].payload as Element).getChildText('body')).toBe('olá 😀 日本');
+	});
+
 	it('handles stanzas split across chunks', () => {
 		const parser = new StanzaParser();
 		const events = collect(parser);

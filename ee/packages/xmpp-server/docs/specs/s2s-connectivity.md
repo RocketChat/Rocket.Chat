@@ -72,7 +72,9 @@ spoof check, domain lists) and the authentication (STARTTLS, SASL EXTERNAL, dial
   (§8.1.1.2).
 - **R7** XML is restricted per RFC 6120 §11.1: a DOCTYPE, entity declaration, comment, CDATA
   section or processing instruction closes the stream. A top-level element larger than the
-  stanza cap (default 256 KiB) or nested deeper than the depth cap closes the stream.
+  stanza cap (default 256 KiB) or nested deeper than the depth cap closes the stream. The
+  stream is decoded as UTF-8 across reads, so a character split between two reads arrives
+  whole (RFC 6120 §11.6).
 
 **Outbound streams**
 

@@ -1,3 +1,5 @@
+import { StringDecoder } from 'node:string_decoder';
+
 import { Emitter } from '@rocket.chat/emitter';
 import Element from 'ltx/lib/Element';
 import SaxLtx from 'ltx/lib/parsers/ltx';
@@ -20,6 +22,9 @@ const MAX_ATTRIBUTES = 64;
 /** Frames an XMPP stream into its header and depth-1 elements, rejecting what RFC 6120 §11.1 restricts. */
 export class StanzaParser extends Emitter<StanzaParserEvents> {
 	private parser: SaxLtx;
+
+	// Holds back the bytes of a character a read split, until the read that completes it
+	private decoder = new StringDecoder('utf8');
 
 	private root: Element | undefined;
 
@@ -120,7 +125,10 @@ export class StanzaParser extends Emitter<StanzaParserEvents> {
 			return;
 		}
 
-		const text = typeof data === 'string' ? data : data.toString('utf8');
+		const text = typeof data === 'string' ? data : this.decoder.write(data);
+		if (!text) {
+			return;
+		}
 
 		// RFC 6120 restricted-xml: any literal `<!` is a comment, DOCTYPE or CDATA section —
 		// all prohibited. `<?` is only tolerated as the very first bytes (XML declaration).
@@ -157,6 +165,7 @@ export class StanzaParser extends Emitter<StanzaParserEvents> {
 	reset(): void {
 		this.parser.removeAllListeners();
 		this.parser = this.createParser();
+		this.decoder = new StringDecoder('utf8');
 		this.root = undefined;
 		this.current = undefined;
 		this.depth = 0;
