@@ -185,6 +185,17 @@ XMPP joins. Where: `MucRoom.addLocalOccupant`. How to settle the clash is Q3. Te
 `hosted-muc.spec.ts`, "never leaves an XMPP occupant unaware that a Rocket.Chat member took
 their nick".
 
+### D6 An XMPP user listed when a room is created joins any room
+
+R12 holds for members added to an existing room, not for the member list a room is created
+with: an XMPP user Rocket.Chat already knows becomes a member of a room that is not XMPP
+federated, where nothing reaches them. A JID Rocket.Chat has not seen names no user and is
+silently left out. Where: room creation subscribes its members through
+`createUsersSubscriptions` in `apps/meteor/server/lib/rooms/createRoom.ts`, whose hooks do
+not include the XMPP check, which runs only in `beforeAddUsersToRoom`. Test:
+`hosted-muc.spec.ts`, "refuses JIDs listed when creating a group that is not
+XMPP-federated".
+
 ## Open questions
 
 - **Q1** Should a kick carry the reason given in Rocket.Chat? `MucRoom.kick` accepts one and

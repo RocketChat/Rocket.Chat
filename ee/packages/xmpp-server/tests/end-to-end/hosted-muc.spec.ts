@@ -260,6 +260,16 @@ describe('XMPP federation: rooms hosted by Rocket.Chat', () => {
 			assert.ok(statusCodes(notice).includes('307'));
 		});
 
+		// Known defect: ../../docs/specs/hosted-muc.md#d6-an-xmpp-user-listed-when-a-room-is-created-joins-any-room
+		it.skip('refuses JIDs listed when creating a group that is not XMPP-federated (R12, D6)', async () => {
+			const res = await createRoom({ type: 'p', name: `xe2e-plain-${uniqueSuffix()}`, members: [alice.bareJid], config: owner.config });
+			const groupId = (res.body as { group?: IRoom }).group?._id;
+			if (groupId) {
+				deleteRoomOnCleanup(rc, groupId);
+			}
+			assert.equal((res.body as { errorType?: string }).errorType, 'error-xmpp-users-in-non-xmpp-rooms');
+		});
+
 		it('refuses JIDs in a group that is not XMPP-federated (R12)', async () => {
 			const res = await createRoom({ type: 'p', name: `xe2e-plain-${uniqueSuffix()}`, config: owner.config });
 			const groupId = (res.body as { group: IRoom }).group._id;
