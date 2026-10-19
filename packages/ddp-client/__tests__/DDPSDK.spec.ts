@@ -4,6 +4,7 @@ import WS from 'jest-websocket-mock';
 import { WebSocket } from 'ws';
 
 import { fireStreamChange, fireStreamAdded, fireStreamRemove, handleConnection, handleSubscription, handleMethod } from './helpers';
+import { ConnectionLostError } from '../src/ClientStream';
 import { DDPSDK } from '../src/DDPSDK';
 
 (global as any).WebSocket = (global as any).WebSocket || WebSocket;
@@ -315,35 +316,60 @@ describe('Method call and Disconnection cases', () => {
 		jest.useRealTimers();
 	});
 
-	it.skip('should handle properly if the message was sent before disconnection but got disconnected before receiving the response', async () => {
+	it('should reject a method sent before the connection dropped without a result', async () => {
 		const sdk = DDPSDK.create('ws://localhost:1234');
 
 		await handleConnection(server, sdk.connection.connect());
 
 		const callResult = sdk.client.callAsync('method', 'args');
+		await server.nextMessage;
 
-		expect(util.inspect(callResult).includes('pending')).toBe(true);
+		server.close();
+
+		await expect(callResult).rejects.toBeInstanceOf(ConnectionLostError);
+		sdk.connection.close();
+	});
+
+	it('should reject a method still waiting for its result when the connection is closed', async () => {
+		const sdk = DDPSDK.create('ws://localhost:1234');
+
+		await handleConnection(server, sdk.connection.connect());
+
+		const callResult = sdk.client.callAsync('method', 'args');
+		await server.nextMessage;
+
+		sdk.connection.close();
+
+		await expect(callResult).rejects.toBeInstanceOf(ConnectionLostError);
+	});
+
+	it('should keep sending methods after the connection dropped during a wait method', async () => {
+		const sdk = DDPSDK.create('ws://localhost:1234');
+
+		await handleConnection(server, sdk.connection.connect());
+
+		const login = sdk.account.loginWithToken('token');
+		await server.nextMessage;
+		const queued = sdk.client.callAsync('queued');
 
 		// Fake timers are used to avoid waiting for the reconnect timeout
 		jest.useFakeTimers();
-
 		server.close();
 		WS.clean();
 		server = new WS('ws://localhost:1234/websocket');
 
-		const reconnect = new Promise((resolve) => sdk.connection.once('reconnecting', () => resolve(undefined)));
-		const connecting = new Promise((resolve) => sdk.connection.once('connecting', () => resolve(undefined)));
+		await expect(login).rejects.toBeInstanceOf(ConnectionLostError);
+
 		const connected = new Promise((resolve) => sdk.connection.once('connected', () => resolve(undefined)));
+		await handleConnection(server, jest.advanceTimersByTimeAsync(1000), connected);
+		jest.useRealTimers();
 
-		await handleConnection(server, jest.advanceTimersByTimeAsync(1000), reconnect, connecting, connected);
-
-		expect(util.inspect(callResult).includes('pending')).toBe(true);
-
-		const [result] = await handleMethod(server, 'method', ['args2'], '1', callResult);
-
+		const [result] = await handleMethod(server, 'queued', [], '1', queued);
 		expect(result).toBe(1);
 
-		jest.useRealTimers();
+		const [result2] = await handleMethod(server, 'after', [], '2', sdk.client.callAsync('after'));
+		expect(result2).toBe(2);
+
 		sdk.connection.close();
 	});
 });

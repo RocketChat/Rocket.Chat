@@ -8,8 +8,27 @@ import type { Subscription } from './types/Subscription';
 import type { MethodPayload } from './types/methodsPayloads';
 import type { PublicationPayloads } from './types/publicationPayloads';
 
+/**
+ * Rejection of a method call whose frame went out on a connection that dropped before the result arrived.
+ * The server may or may not have run the method.
+ */
+export class ConnectionLostError extends Error {
+	constructor() {
+		super('Connection lost before the method result arrived');
+		this.name = 'ConnectionLostError';
+	}
+}
+
+type PendingMethod = {
+	payload: MethodPayload;
+	sent: boolean;
+	fail: (error: unknown) => void;
+};
+
 export class ClientStreamImpl extends Emitter implements ClientStream {
 	subscriptions = new Map<string, Subscription>();
+
+	private pending = new Map<string, PendingMethod>();
 
 	constructor(
 		private ddp: DDPClient,
@@ -21,6 +40,12 @@ export class ClientStreamImpl extends Emitter implements ClientStream {
 			}
 		});
 		super();
+
+		dispatcher.on('send', (payload) => {
+			if (payload.msg !== 'method') return;
+			const method = this.pending.get(payload.id);
+			if (method) method.sent = true;
+		});
 	}
 
 	private apply({
@@ -32,10 +57,14 @@ export class ClientStreamImpl extends Emitter implements ClientStream {
 		callback?: (...args: any[]) => void;
 		options?: DDPDispatchOptions;
 	}): string {
-		this.dispatcher.dispatch(ddpCallPayload, options);
-
-		this.ddp.onResult(ddpCallPayload.id, (payload) => {
+		const settle = () => {
+			stopListening();
+			this.pending.delete(ddpCallPayload.id);
 			this.dispatcher.removeItem(ddpCallPayload);
+		};
+
+		const stopListening = this.ddp.onResult(ddpCallPayload.id, (payload) => {
+			settle();
 			if (typeof callback === 'function') {
 				if ('error' in payload) {
 					callback(payload.error);
@@ -45,7 +74,26 @@ export class ClientStreamImpl extends Emitter implements ClientStream {
 			}
 		});
 
+		this.pending.set(ddpCallPayload.id, {
+			payload: ddpCallPayload,
+			sent: false,
+			fail: (error) => {
+				settle();
+				callback?.(error);
+			},
+		});
+
+		this.dispatcher.dispatch(ddpCallPayload, options);
+
 		return ddpCallPayload.id;
+	}
+
+	/**
+	 * Fails every method call already handed to the transport; calls still held behind a wait
+	 * method are released to the transport instead.
+	 */
+	rejectInFlight(error: unknown = new ConnectionLostError()): void {
+		[...this.pending.values()].filter(({ sent }) => sent).forEach(({ fail }) => fail(error));
 	}
 
 	call(method: string, ...params: any[]): string {

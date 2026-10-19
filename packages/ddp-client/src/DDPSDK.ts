@@ -27,6 +27,21 @@ const isValidPayload = (data: unknown): data is PublicationPayloads => {
 	return true;
 };
 
+/** Fails the method calls that went out on a connection once it drops or is closed. */
+export const rejectInFlightOnConnectionLoss = (connection: Connection, stream: ClientStreamImpl): void => {
+	let connected = false;
+	connection.on('connected', () => {
+		connected = true;
+	});
+	const onLoss = () => {
+		if (!connected) return;
+		connected = false;
+		stream.rejectInFlight();
+	};
+	connection.on('disconnected', onLoss);
+	connection.on('close', onLoss);
+};
+
 export class DDPSDK implements SDK {
 	constructor(
 		readonly connection: Connection,
@@ -111,6 +126,8 @@ export class DDPSDK implements SDK {
 		})({ baseUrl: url });
 
 		const sdk = new DDPSDK(connection, stream, account, timeoutControl, rest);
+
+		rejectInFlightOnConnectionLoss(connection, stream);
 
 		connection.on('connected', () => {
 			if (account.user?.token) {

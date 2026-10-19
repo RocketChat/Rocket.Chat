@@ -93,21 +93,23 @@ export class ConnectionImpl
 		this.url = url.replace(/^https?:\/\//, '').replace(/^wss?:\/\//, '');
 
 		this.client.onDispatchMessage((message: string) => {
-			if (this.ws && this.ws.readyState === this.ws.OPEN) {
-				this.ws.send(message);
+			if (this.ws?.readyState === this.ws?.OPEN && (this.status === 'connected' || this.handshaking)) {
+				this.ws?.send(message);
 				return;
 			}
 
 			this.queue.add(message);
 		});
+	}
 
-		this.on('connected', () => {
-			this.queue.forEach((message) => {
-				this.ws?.send(message);
-			});
+	private handshaking = false;
 
-			this.queue.clear();
+	private flushQueue() {
+		this.queue.forEach((message) => {
+			this.ws?.send(message);
 		});
+
+		this.queue.clear();
 	}
 
 	private emitStatus() {
@@ -193,7 +195,13 @@ export class ConnectionImpl
 
 				// The client sends a connect message.
 
-				this.client.connect();
+				// Every other frame waits for `connected`, so frames sent before a failed handshake are never lost.
+				this.handshaking = true;
+				try {
+					this.client.connect();
+				} finally {
+					this.handshaking = false;
+				}
 
 				// If the server is willing to speak the version of the protocol specified in the connect message, it sends back a connected message.
 				// Otherwise the server sends back a failed message with a version of DDP it would rather speak, informed by the connect message's support field, and closes the underlying transport.
@@ -211,8 +219,10 @@ export class ConnectionImpl
 						// dispatcher queue forever because the socket never came back.
 						this.retryCount = 0;
 						this.emitStatus();
-						this.emit('connected', payload.session);
 						this.session = payload.session;
+						// Listeners run first so frames they send (a re-login) precede the queued ones.
+						this.emit('connected', payload.session);
+						this.flushQueue();
 						return resolve(true);
 					}
 					if (payload.msg === 'failed') {
@@ -248,6 +258,10 @@ export class ConnectionImpl
 				clearTimeout(this.retryOptions.retryTimer);
 				if (this.status === 'closed') {
 					return;
+				}
+				// Frames queued while a live socket was dying belong to calls that are reported as lost.
+				if (this.status === 'connected') {
+					this.queue.clear();
 				}
 				this.status = 'disconnected';
 				this.emitStatus();

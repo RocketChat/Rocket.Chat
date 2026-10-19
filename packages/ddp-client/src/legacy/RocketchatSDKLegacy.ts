@@ -8,7 +8,7 @@ import type { OperationParams, OperationResult } from '@rocket.chat/rest-typings
 import { ClientStreamImpl } from '../ClientStream';
 import { ConnectionImpl } from '../Connection';
 import { DDPDispatcher } from '../DDPDispatcher';
-import { DDPSDK } from '../DDPSDK';
+import { DDPSDK, rejectInFlightOnConnectionLoss } from '../DDPSDK';
 import { TimeoutControl } from '../TimeoutControl';
 import { AccountImpl } from '../types/Account';
 import type { ClientStream } from '../types/ClientStream';
@@ -275,6 +275,8 @@ export class RocketchatSdkLegacyImpl extends DDPSDK implements RocketchatSDKLega
 		})({ baseUrl: url });
 
 		const sdk = new RocketchatSdkLegacyImpl(connection, stream, account, timeoutControl, rest);
+
+		rejectInFlightOnConnectionLoss(connection, stream);
 
 		connection.on('connected', () => {
 			Object.entries(stream.subscriptions).forEach(([, sub]) => {

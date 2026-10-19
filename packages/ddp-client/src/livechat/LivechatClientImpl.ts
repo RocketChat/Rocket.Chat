@@ -6,7 +6,7 @@ import type { OperationParams, OperationResult } from '@rocket.chat/rest-typings
 import { ClientStreamImpl } from '../ClientStream';
 import { ConnectionImpl } from '../Connection';
 import { DDPDispatcher } from '../DDPDispatcher';
-import { DDPSDK } from '../DDPSDK';
+import { DDPSDK, rejectInFlightOnConnectionLoss } from '../DDPSDK';
 import { TimeoutControl } from '../TimeoutControl';
 import { AccountImpl } from '../types/Account';
 import type { ClientStream } from '../types/ClientStream';
@@ -368,6 +368,8 @@ export class LivechatClientImpl extends DDPSDK implements LivechatStream, Livech
 		const rest = new RestClient({ baseUrl: url.replace(/^ws/, 'http') });
 
 		const sdk = new LivechatClientImpl(connection, stream, account, timeoutControl, rest);
+
+		rejectInFlightOnConnectionLoss(connection, stream);
 
 		connection.on('connected', () => {
 			for (const [, sub] of stream.subscriptions.entries()) {
