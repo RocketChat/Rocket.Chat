@@ -1,6 +1,9 @@
+import type { GetProps } from '@tamagui/web';
 import type { AllHTMLAttributes, ReactNode } from 'react';
 
-import { Box } from '../Box';
+import { CardText } from './CardFrames';
+import { useTamaguiBoxProps } from '../../hooks/useTamaguiBoxProps';
+import { withFuselageProvider } from '../FuselageProvider/FuselageProvider';
 import { LabelInfo } from '../Label/LabelInfo';
 
 export type CardTitleProps = {
@@ -9,11 +12,15 @@ export type CardTitleProps = {
 	variant?: 'h3' | 'h4' | 'h5';
 } & Omit<AllHTMLAttributes<HTMLElement>, 'is'>;
 
-const CardTitle = ({ children, info, variant = 'h4', ...props }: CardTitleProps) => (
-	<Box fontScale={variant} is={variant} rcx-card__title {...props}>
-		{children}
-		{info && <LabelInfo title={info} />}
-	</Box>
-);
+const CardTitle = ({ children, info, variant = 'h4', ...props }: CardTitleProps) => {
+	const titleProps = useTamaguiBoxProps({ 'fontScale': variant, 'is': variant, 'rcx-card__title': true, ...props });
 
-export default CardTitle;
+	return (
+		<CardText alignItems='center' {...(titleProps as GetProps<typeof CardText>)}>
+			{children}
+			{info && <LabelInfo title={info} />}
+		</CardText>
+	);
+};
+
+export default withFuselageProvider(CardTitle);
