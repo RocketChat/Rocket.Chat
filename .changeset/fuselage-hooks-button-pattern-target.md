@@ -3,4 +3,4 @@
 '@rocket.chat/fuselage': patch
 ---
 
-fix(fuselage-hooks): prevent useButtonPattern from swallowing Enter and Space from nested interactive controls
+fix(fuselage-hooks): prevent useButtonPattern and Banner from swallowing key and click events on nested interactive controls
