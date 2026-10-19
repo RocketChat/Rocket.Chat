@@ -1,27 +1,10 @@
-@use '../../styles/lengths.scss';
-@use '../../styles/typography.scss' as *;
 @use '../../styles/variables/buttons.scss' as colors;
 @use '../../styles/mixins/button.scss';
-@use '../../styles/mixins/size.scss';
 @use '../../styles/mixins/interactivity.scss' as *;
 @use '../../styles/mixins/states.scss' as *;
 
 .rcx-button {
-	@mixin with-rectangular-size($height, $padding-x, $line-height) {
-		min-width: calc(lengths.size($height) * 2);
-		height: lengths.size($height);
-		padding: calc((lengths.size($height) - $line-height) / 2 - 2px) calc(lengths.padding($padding-x) - 2px);
-		padding-block: calc((lengths.size($height) - $line-height) / 2 - 2px);
-
-		padding-inline: calc(lengths.padding($padding-x) - 2px);
-	}
-
-	@mixin with-squared-size($size) {
-		width: lengths.size($size);
-		min-width: lengths.size($size);
-		height: lengths.size($size);
-		padding: 0;
-
+	@mixin with-squared-size {
 		&::before,
 		&::after {
 			display: inline-block;
@@ -32,33 +15,16 @@
 		}
 	}
 
-	display: inline-block;
-
-	text-align: center;
-	white-space: nowrap;
-	text-decoration: none;
+	// Tamagui has no style prop for font smoothing; `rcx-box` used to set it
+	-webkit-font-smoothing: antialiased;
+	-moz-osx-font-smoothing: grayscale;
 
 	@include click-animation($excludeRole: 'status');
 
-	.rcx-button--content {
-		display: inline-block;
-
-		width: 100%;
-
-		vertical-align: top;
-
-		@include use-with-truncated-text();
+	&.disabled,
+	&:disabled {
+		cursor: not-allowed;
 	}
-
-	.rcx-button__icon {
-		margin-inline-end: lengths.margin(4);
-	}
-
-	@include clickable;
-	@include use-font-scale(p2m);
-	@include use-text-ellipsis;
-
-	@include with-rectangular-size($height: 40, $padding-x: 16, $line-height: line-height(p2));
 
 	@include button.kind-variant(colors.$secondary);
 
@@ -68,73 +34,17 @@
 		}
 	}
 
-	&--small {
-		@include use-font-scale(c2);
-
-		@include with-rectangular-size($height: 28, $padding-x: 8, $line-height: line-height(c1));
-	}
-
-	&--medium {
-		@include use-font-scale(c2);
-
-		@include with-rectangular-size($height: 32, $padding-x: 12, $line-height: line-height(c1));
-	}
-
-	&--large {
-		@include use-font-scale(p2);
-
-		@include with-rectangular-size($height: 48, $padding-x: 24, $line-height: line-height(p2));
-	}
-
-	&--compact {
-		min-width: 4ch;
-	}
-
 	&--square {
-		@include with-squared-size($size: 40);
-		display: flex;
-		justify-content: center;
-		align-items: center;
-		flex-shrink: 0;
+		@include with-squared-size;
 	}
 
-	&--with-badge {
-		position: relative;
-
-		overflow: visible;
-	}
-
-	&__badge {
-		position: absolute;
-		inset-block-start: 0;
-		inset-inline-end: 0;
-
-		display: flex;
-
-		translate: 30% -30%;
-
-		&:dir(rtl) {
-			translate: -30% -30%;
-		}
-
-		&--bottom-end {
-			inset-block: auto 0;
-
-			translate: 30% 30%;
-
-			&:dir(rtl) {
-				translate: -30% 30%;
-			}
-		}
+	&__badge:dir(rtl) {
+		transform: translate(-30%, -30%);
 	}
 
 	&--icon {
 		@include button.kind-variant(colors.$icon);
 		@include click-animation('status');
-
-		padding: 0;
-
-		line-height: 0;
 
 		&-secondary {
 			@include button.kind-variant(colors.$secondary);
@@ -174,23 +84,23 @@
 	}
 
 	&--mini-square {
-		@include with-squared-size($size: 20);
+		@include with-squared-size;
 	}
 
 	&--tiny-square {
-		@include with-squared-size($size: 24);
+		@include with-squared-size;
 	}
 
 	&--small-square {
-		@include with-squared-size($size: 28);
+		@include with-squared-size;
 	}
 
 	&--medium-square {
-		@include with-squared-size($size: 32);
+		@include with-squared-size;
 	}
 
 	&--large-square {
-		@include with-squared-size($size: 40);
+		@include with-squared-size;
 	}
 
 	&--primary {
