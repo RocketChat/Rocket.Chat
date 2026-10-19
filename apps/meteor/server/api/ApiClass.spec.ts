@@ -37,7 +37,7 @@ it('Should return the expected type', () => {
 			}
 		>
 	>;
-	true as test;
+	expect(true as test).toBe(true);
 });
 
 describe('ExtractRoutesFromAPI', () => {
@@ -56,6 +56,6 @@ describe('ExtractRoutesFromAPI', () => {
 		type ExpectedFunctionSignature = Expect<
 			ShallowEqual<ExtractRoutesFromAPI<APIWithNeverQuery>['/v1/endpoint.test']['GET'], () => unknown>
 		>;
-		true as ExpectedFunctionSignature;
+		expect(true as ExpectedFunctionSignature).toBe(true);
 	});
 });

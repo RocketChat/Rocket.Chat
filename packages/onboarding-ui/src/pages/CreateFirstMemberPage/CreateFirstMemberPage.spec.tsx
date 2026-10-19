@@ -18,5 +18,7 @@ const props = {
 };
 
 it('renders without crashing', () => {
-	render(<CreateFirstMemberPage {...props} />);
+	const { container } = render(<CreateFirstMemberPage {...props} />);
+
+	expect(container.firstChild).not.toBeNull();
 });

@@ -3,7 +3,7 @@ import { render } from '@testing-library/react';
 import OrganizationInfoForm from './OrganizationInfoForm';
 
 it('renders without crashing', () => {
-	render(
+	const { container } = render(
 		<OrganizationInfoForm
 			currentStep={1}
 			stepCount={1}
@@ -14,4 +14,6 @@ it('renders without crashing', () => {
 			onBackButtonClick={() => undefined}
 		/>,
 	);
+
+	expect(container.firstChild).not.toBeNull();
 });

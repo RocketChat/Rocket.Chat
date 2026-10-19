@@ -73,6 +73,9 @@ test('updater typings', () => {
 	omnichannel.addToSet('v.activity.asd', {
 		asdas: 1,
 	});
+
+	expect(updater.hasChanges()).toBe(true);
+	expect(omnichannel.hasChanges()).toBe(true);
 });
 
 test('updater supports nested paths up to 3 levels deep', () => {
@@ -91,6 +94,8 @@ test('updater supports nested paths up to 3 levels deep', () => {
 	updater.set('level1.level2', { level3: 'test' });
 	// 3-level deep path
 	updater.set('level1.level2.level3', 'test');
+
+	expect(updater.hasChanges()).toBe(true);
 });
 
 test('updater validates keys on real schemas with nested paths', () => {
@@ -112,6 +117,8 @@ test('updater validates keys on real schemas with nested paths', () => {
 	updater.set('responseBy.nonExistent', new Date());
 	// @ts-expect-error: 'fname' is a string, not a number — inc should reject it
 	updater.inc('fname', 1);
+
+	expect(updater.hasChanges()).toBe(true);
 });
 
 test('updater $set operations', async () => {

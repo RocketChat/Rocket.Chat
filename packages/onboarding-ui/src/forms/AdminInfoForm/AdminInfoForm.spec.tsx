@@ -3,7 +3,7 @@ import { render } from '@testing-library/react';
 import AdminInfoForm from './AdminInfoForm';
 
 it('renders without crashing', () => {
-	render(
+	const { container } = render(
 		<AdminInfoForm
 			currentStep={1}
 			stepCount={1}
@@ -14,4 +14,6 @@ it('renders without crashing', () => {
 			onSubmit={() => undefined}
 		/>,
 	);
+
+	expect(container.firstChild).not.toBeNull();
 });

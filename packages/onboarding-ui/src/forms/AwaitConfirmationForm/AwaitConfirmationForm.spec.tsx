@@ -3,7 +3,7 @@ import { render } from '@testing-library/react';
 import AwaitConfirmationForm from './AwaitConfirmationForm';
 
 it('renders without crashing', () => {
-	render(
+	const { container } = render(
 		<AwaitConfirmationForm
 			currentStep={4}
 			stepCount={4}
@@ -13,4 +13,6 @@ it('renders without crashing', () => {
 			onChangeEmailRequest={() => true}
 		/>,
 	);
+
+	expect(container.firstChild).not.toBeNull();
 });

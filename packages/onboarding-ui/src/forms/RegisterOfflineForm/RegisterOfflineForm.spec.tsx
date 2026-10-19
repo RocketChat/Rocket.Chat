@@ -3,7 +3,7 @@ import { render } from '@testing-library/react';
 import RegisterOfflineForm from './RegisterOfflineForm';
 
 it('renders without crashing', () => {
-	render(
+	const { container } = render(
 		<RegisterOfflineForm
 			termsHref=''
 			policyHref=''
@@ -13,4 +13,6 @@ it('renders without crashing', () => {
 			onSubmit={() => undefined}
 		/>,
 	);
+
+	expect(container.firstChild).not.toBeNull();
 });

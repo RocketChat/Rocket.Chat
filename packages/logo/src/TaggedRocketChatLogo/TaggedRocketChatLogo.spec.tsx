@@ -3,5 +3,7 @@ import { render } from '@testing-library/react';
 import TaggedRocketChatLogo from './TaggedRocketChatLogo';
 
 it('renders without crashing', () => {
-	render(<TaggedRocketChatLogo />);
+	const { container } = render(<TaggedRocketChatLogo />);
+
+	expect(container.firstChild).not.toBeNull();
 });

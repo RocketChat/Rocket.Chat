@@ -27,5 +27,8 @@ it('should look good', async () => {
 			.build(),
 	});
 
-	await userEvent.click(screen.getByRole('button', { name: 'Request' }));
+	const requestButton = screen.getByRole('button', { name: 'Request' });
+	expect(requestButton).toBeEnabled();
+
+	await userEvent.click(requestButton);
 });

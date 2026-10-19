@@ -5,5 +5,7 @@ import RedirectPage from './RedirectPage';
 const onRedirect = jest.fn();
 
 it('renders without crashing', () => {
-	render(<RedirectPage title='Ready' countDownSeconds={5} onRedirect={onRedirect} />);
+	const { container } = render(<RedirectPage title='Ready' countDownSeconds={5} onRedirect={onRedirect} />);
+
+	expect(container.firstChild).not.toBeNull();
 });

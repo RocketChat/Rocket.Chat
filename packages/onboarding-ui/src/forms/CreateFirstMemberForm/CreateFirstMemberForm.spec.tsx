@@ -18,5 +18,7 @@ const props = {
 };
 
 it('renders without crashing', () => {
-	render(<CreateFirstMemberForm {...props} />);
+	const { container } = render(<CreateFirstMemberForm {...props} />);
+
+	expect(container.firstChild).not.toBeNull();
 });

@@ -3,7 +3,7 @@ import { render } from '@testing-library/react';
 import CreateNewAccountPage from './CreateNewAccountPage';
 
 it('renders without crashing', () => {
-	render(
+	const { container } = render(
 		<CreateNewAccountPage
 			validateEmail={() => undefined}
 			validatePassword={() => undefined}
@@ -12,4 +12,6 @@ it('renders without crashing', () => {
 			onLogin={() => undefined}
 		/>,
 	);
+
+	expect(container.firstChild).not.toBeNull();
 });

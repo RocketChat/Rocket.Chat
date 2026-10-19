@@ -3,7 +3,7 @@ import { render } from '@testing-library/react';
 import OauthAuthorizationPage from './OauthAuthorizationPage';
 
 it('renders without crashing', () => {
-	render(
+	const { container } = render(
 		<OauthAuthorizationPage
 			clientName={undefined}
 			onClickAuthorizeOAuth={() => undefined}
@@ -13,4 +13,6 @@ it('renders without crashing', () => {
 			}}
 		/>,
 	);
+
+	expect(container.firstChild).not.toBeNull();
 });

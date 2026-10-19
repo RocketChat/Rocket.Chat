@@ -12,5 +12,7 @@ const subtitles = [
 ];
 
 it('renders without crashing', () => {
-	render(<LoaderPage title='Kapai' subtitles={subtitles} isReady={false} />);
+	const { container } = render(<LoaderPage title='Kapai' subtitles={subtitles} isReady={false} />);
+
+	expect(container.firstChild).not.toBeNull();
 });

@@ -3,5 +3,7 @@ import { render } from '@testing-library/react';
 import InvalidLinkPage from './InvalidLinkPage';
 
 it('renders without crashing', () => {
-	render(<InvalidLinkPage onRequestNewLink={() => undefined} />);
+	const { container } = render(<InvalidLinkPage onRequestNewLink={() => undefined} />);
+
+	expect(container.firstChild).not.toBeNull();
 });

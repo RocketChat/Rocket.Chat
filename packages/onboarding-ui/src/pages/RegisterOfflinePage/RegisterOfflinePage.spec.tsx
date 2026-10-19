@@ -3,7 +3,7 @@ import { render } from '@testing-library/react';
 import RegisterOfflinePage from '.';
 
 it('renders without crashing', () => {
-	render(
+	const { container } = render(
 		<RegisterOfflinePage
 			termsHref=''
 			policyHref=''
@@ -13,4 +13,6 @@ it('renders without crashing', () => {
 			onBackButtonClick={() => undefined}
 		/>,
 	);
+
+	expect(container.firstChild).not.toBeNull();
 });

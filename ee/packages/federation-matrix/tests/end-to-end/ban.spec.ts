@@ -273,7 +273,7 @@ import { SynapseClient } from '../helper/synapse-client';
 		}, 30000);
 
 		it('should ban the RC user from Synapse', async () => {
-			await hs1AdminApp.banUser(synapseRoomId, rc1User1MatrixId, 'federation ban test');
+			await expect(hs1AdminApp.banUser(synapseRoomId, rc1User1MatrixId, 'federation ban test')).resolves.not.toThrow();
 		});
 
 		it('should reflect ban on RC side', async () => {
@@ -301,7 +301,7 @@ import { SynapseClient } from '../helper/synapse-client';
 		});
 
 		it('should unban the RC user from Synapse', async () => {
-			await hs1AdminApp.unbanUser(synapseRoomId, rc1User1MatrixId);
+			await expect(hs1AdminApp.unbanUser(synapseRoomId, rc1User1MatrixId)).resolves.not.toThrow();
 		});
 
 		it('should reflect unban on RC side', async () => {
