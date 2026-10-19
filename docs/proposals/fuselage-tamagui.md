@@ -2,7 +2,13 @@
 
 ## Status
 
-Pilot. Only `Divider` renders with Tamagui (`@tamagui/web` 3.x). Everything else is still SCSS plus `@rocket.chat/css-in-js`.
+Pilot. 40 Fuselage components render with Tamagui (`@tamagui/web` 3.x), each through its own `feat(fuselage): render … with Tamagui` commit:
+
+- Fully on Tamagui, with no SCSS left: `Badge`, `Chip`, `CodeSnippet`, `Divider`, `FramedIcon`, `StatusBullet` and `Tile`.
+- Partially migrated: every other component keeps a residual SCSS file for what Tamagui cannot express (see recipe step 7).
+- Untouched: `Box` itself, `Dropdown`, `Select`, `AutoComplete` and the components that were already plain compositions, such as `Flex`, `Margins` and the inputs. They are not migrated.
+
+Component SCSS went from 5,923 lines to 3,367.
 
 ## Problem
 
@@ -79,17 +85,23 @@ The component must not get `rcx-box--full`. It is an unlayered reset of margin, 
 
 | | `develop` | Pilot |
 |---|---|---|
-| `fuselage.production.js` | 130.6 kB (34.4 kB gzip) | 240.5 kB (75.3 kB gzip) |
-| `fuselage.css` | 255.0 kB | 254.3 kB |
+| `fuselage.production.js` | 130.6 kB (34.4 kB gzip) | 295.5 kB (87.4 kB gzip) |
+| `fuselage.css` | 255.0 kB (26.7 kB gzip) | 199.1 kB (19.9 kB gzip) |
 
-The Tamagui runtime costs about **+41 kB gzip** before any component beyond `Divider` moves. That already includes pinning `NODE_ENV=production` in the production bundle, which removed Tamagui's development branches (about 12.5 kB gzip).
+JavaScript and CSS together grow by about **+46 kB gzip**:
+
+- The Tamagui runtime alone accounted for +41 kB gzip, measured when only `Divider` had moved. That figure already includes pinning `NODE_ENV=production` in the production bundle, which removed Tamagui's development branches (about 12.5 kB gzip).
+- The component definitions move from CSS into JavaScript.
 
 **Visual check:** the Storybook of every Fuselage story (531) was screenshotted against `develop` in the same Chromium. All 531 are pixel-identical.
 
+The Rocket.Chat login page (`yarn dev:next` against open.rocket.chat) is also pixel-identical to a `develop`-based build. It renders 30 Tamagui elements: `Tile`, `FieldGroup`, `Field`, `Label`, `Icon`, `ButtonGroup` and `Button`.
+
 **Jest:**
 
-- The Fuselage suite changes only in the two snapshots that render a plain `Divider`.
-- Rocket.Chat client and package snapshots that render a `Divider` change their class names. Generated `_r_N_` ids shift, because Tamagui's theme state calls `useId`.
+- 213 Fuselage snapshots, 102 Rocket.Chat client snapshots and the snapshots of 10 packages changed.
+- After normalizing, every one of those diffs shows only expected changes: Tamagui atomic classes, the removed `rcx-box rcx-box--full`, moved `rcx-css-*` classes, `rcx-*` class order, and shifted `_r_N_` ids (Tamagui's theme state calls `useId`).
+- No tag, attribute, text or `rcx-*` class was added or lost.
 
 ## Known costs and open questions
 
@@ -98,7 +110,10 @@ The Tamagui runtime costs about **+41 kB gzip** before any component beyond `Div
   - `packages/ui-voip/src/generate-landing-view.tsx` sets up a partial DOM. Tamagui registers global listeners at import whenever `window` exists, so the shim now also exposes `addEventListener`.
   - Once components rendered there move to Tamagui, the generator must also append `tamaguiConfig.getCSS()`, since those rules are not in `fuselage.css`.
 - **jsdom cannot parse `@scope`**, which Tamagui's base stylesheet uses, so `FuselageProvider` skips the base stylesheet under `NODE_ENV=test`.
-- **Other element rules:** `button` in `base.css` and `input, select, textarea` in `theme_old.css` are unlayered element rules. They must move into the `reset` layer before buttons and inputs move to Tamagui.
+- **Element rules in the app:** Rocket.Chat's `button`, `input`, `code`, `pre`, `blockquote` and `:focus` rules now sit in the `reset` layer. The Storybook A/B cannot see these rules, because it does not load the app's CSS.
+  - The universal `box-sizing: border-box` rule stays unlayered on purpose. It keeps app elements `border-box` as before, even where a frame restates the `content-box` a plain element had in Storybook.
+- **`render` functions:** Tamagui adds the frame's `className` to the element a `render` function returns. Use `renderAs`, which drops it, or the class names render twice.
+- **Vendor-prefixed properties** (`-webkit-font-smoothing`, `-moz-osx-font-smoothing`) have no Tamagui prop. They stay in SCSS where they matter.
 - **Collapsed `ItemGroup`s** rely on normalize's `[hidden] { display: none }` beating `.rcx-item-group { display: flex }`. The Rocket.Chat app loads no normalize, which suggests collapsed groups show there today. This is independent of Tamagui.
 - **Still to decide:**
   - Bundle size: the compiler (`@tamagui/static`) and `TAMAGUI_RUNTIME=island` could remove most of the runtime.
@@ -115,11 +130,14 @@ Follow `Divider` (`components/Divider/Divider.tsx`).
    - Never hard-code a color.
 4. **Class names:** keep every `rcx-*` class name the SCSS version rendered, on the same elements, along with the same DOM structure and attributes. E2E tests, app CSS and admin custom CSS select on them.
 5. **`Box` props:** components typed with `BoxProps` pass their remaining props through `useTamaguiBoxProps(props, '<rcx class names>')`, then spread the result onto the frame as `GetProps<typeof Frame>`.
+   - This covers `withRichContent`, `animated`, `focusable` and `htmlSize` too.
+   - A frame that replaces a `Box` restates what `rcx-box--full` gave it: `border-box`, `flex-shrink: 1`, `auto` minimum sizes, zero margin, padding and border, no outline, the sans font family and tabular numbers.
    - Never render a Tamagui frame through `<Box is={…}>`, because `rcx-box--full` would reset its margin, padding and border.
    - Keep `ref` forwarding and the `is` behavior.
 6. **Variants and states:**
    - Modifier classes (`rcx-x--small`) become variants.
-   - `:hover`, `:active`, `:focus-visible` and `:disabled` become `hoverStyle`, `pressStyle`, `focusVisibleStyle` and a `disabled` variant.
+   - States are per-property objects in Tamagui 3, for example `backgroundColor: { default: …, hover: …, focus: … }`. Version 3 does not type `hoverStyle`, `pressStyle` and `focusVisibleStyle`.
+   - Use a `disabled` variant for `:disabled`.
    - Keep the modifier class names anyway.
 7. **What stays in SCSS:** some rules keep living in the component's SCSS file, which is unlayered and so wins over the frame exactly as before:
    - `::before` and `::after`;
