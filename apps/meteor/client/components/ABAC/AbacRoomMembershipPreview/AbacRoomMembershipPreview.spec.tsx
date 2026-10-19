@@ -153,6 +153,40 @@ describe('AbacRoomMembershipPreview', () => {
 		expect(within(dialog).getByText('ABAC_Preview_Empty_room')).toBeInTheDocument();
 	});
 
+	it('should keep the destructive confirmation while a search narrows the list', async () => {
+		renderPreview(({ filter }) =>
+			filter ? page({ members: [bob], checked: 1, total: 1 }) : page({ members: [bob, carol], checked: 2, total: 2 }),
+		);
+
+		expect(await screen.findByText('Carol')).toBeInTheDocument();
+		await userEvent.type(screen.getByRole('textbox', { name: 'ABAC_Preview_Search_members' }), 'b');
+		await waitFor(() => expect(screen.queryByText('Carol')).not.toBeInTheDocument());
+
+		expect(screen.getByText('ABAC_Preview_Empty_room_warning')).toBeInTheDocument();
+		const dialog = await pressSave();
+		expect(within(dialog).getByText('ABAC_Preview_Empty_room')).toBeInTheDocument();
+	});
+
+	it('should keep the destructive confirmation after switching back to a group that is still loading', async () => {
+		renderPreview(({ group, after }) => {
+			if (group === 'retains') {
+				return page({ checked: 1000, total: 1000 });
+			}
+			return after ? new Promise<never>(() => undefined) : page({ members: [bob], total: 1000, next: { _id: 'bob', username: 'bob' } });
+		});
+
+		await userEvent.click(await screen.findByRole('button', { name: 'ABAC_Preview_Loses_access' }));
+		await userEvent.click(screen.getByRole('option', { name: 'ABAC_Preview_Retains_access' }));
+		expect(await screen.findByText('ABAC_Preview_No_members_retain_access')).toBeInTheDocument();
+
+		await userEvent.click(screen.getByRole('button', { name: 'ABAC_Preview_Retains_access' }));
+		await userEvent.click(screen.getByRole('option', { name: 'ABAC_Preview_Loses_access' }));
+		expect(await screen.findByText('Bob')).toBeInTheDocument();
+
+		const dialog = await pressSave();
+		expect(within(dialog).getByText('ABAC_Preview_Empty_room')).toBeInTheDocument();
+	});
+
 	it('should not save when the editor cancels the update confirmation', async () => {
 		const { onSave } = renderPreview(() => page({ members: [bob], editor: 'compliant' }));
 
