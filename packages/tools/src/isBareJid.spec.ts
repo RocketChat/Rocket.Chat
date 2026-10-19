@@ -42,6 +42,8 @@ describe('isBareJid', () => {
 		['alice@example.com:5269', 'port'],
 		['alice@[::1]', 'IP literal'],
 		['alice@ex ample.com', 'space in domain'],
+		['alice@example.com\u0001', 'control character at the end of the domain'],
+		['alice@example.com\u001f', 'unit separator at the end of the domain'],
 		[`${'é'.repeat(129)}@example.com`, 'node over 256 bytes'],
 		[`alice@${'a.'.repeat(127)}ab`, 'domain over 255 bytes'],
 	])('rejects %s (%s)', (value) => {

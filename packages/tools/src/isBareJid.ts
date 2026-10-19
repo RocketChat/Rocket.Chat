@@ -2,8 +2,8 @@
 // eslint-disable-next-line no-control-regex
 const NODE = /^[^\x00-\x20"&'/:<>@\x7F\uD800-\uDFFF￾￿]+$/u;
 const ASCII_LABEL = /^[a-z0-9](?:[a-z0-9-]*[a-z0-9])?$/;
-// The URL parser would read these as a port, path, query, userinfo or IP literal instead of part of the host
-const NOT_IN_HOST = /[\s/\\?#@:%[\]]/;
+// The URL parser would read these as a port, path, query, userinfo or IP literal instead of part of the host, and drops trailing controls
+const NOT_IN_HOST = /[\s\p{Cc}/\\?#@:%[\]]/u;
 const MAX_NODE_BYTES = 256;
 const MAX_DOMAIN_BYTES = 255;
 
