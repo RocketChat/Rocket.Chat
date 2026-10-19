@@ -19,7 +19,7 @@ export class OutboundCommunicationBridge extends OutboundMessageBridge {
 			getOutboundService().outboundMessageProvider.registerPhoneProvider(provider);
 		} catch (err) {
 			this.orch.getRocketChatLogger().error({ appId, err, msg: 'Failed to register phone provider' });
-			throw new Error('error-registering-provider');
+			throw new Error('error-registering-provider', { cause: err });
 		}
 	}
 
@@ -29,7 +29,7 @@ export class OutboundCommunicationBridge extends OutboundMessageBridge {
 			getOutboundService().outboundMessageProvider.registerEmailProvider(provider);
 		} catch (err) {
 			this.orch.getRocketChatLogger().error({ appId, err, msg: 'Failed to register email provider' });
-			throw new Error('error-registering-provider');
+			throw new Error('error-registering-provider', { cause: err });
 		}
 	}
 
@@ -39,7 +39,7 @@ export class OutboundCommunicationBridge extends OutboundMessageBridge {
 			getOutboundService().outboundMessageProvider.unregisterProvider(appId, provider.type);
 		} catch (err) {
 			this.orch.getRocketChatLogger().error({ appId, err, msg: 'Failed to unregister provider' });
-			throw new Error('error-unregistering-provider');
+			throw new Error('error-unregistering-provider', { cause: err });
 		}
 	}
 }

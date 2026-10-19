@@ -124,7 +124,7 @@ async function getOrCreateFederatedRoom({
 		});
 	} catch (err) {
 		logger.error({ msg: 'Error getting or creating federated room', err, roomName });
-		throw new Error(`Error getting or creating federated room ${roomName}`);
+		throw new Error(`Error getting or creating federated room ${roomName}`, { cause: err });
 	}
 }
 

@@ -25,7 +25,7 @@ export const useGetMessageByID = (shouldStoreMessage: boolean = true) => {
 				return message;
 			} catch (error) {
 				if (typeof error === 'object' && error !== null && 'success' in error) {
-					throw new Error(MESSAGE_NOT_FOUND);
+					throw new Error(MESSAGE_NOT_FOUND, { cause: error });
 				}
 
 				throw error;

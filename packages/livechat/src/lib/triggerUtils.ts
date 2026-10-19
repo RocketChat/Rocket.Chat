@@ -121,9 +121,9 @@ export const requestTriggerMessages = async ({
 
 		const { response } = await Livechat.rest.post(`/v1/livechat/triggers/${triggerId}/external-service/call`, { extraData, token });
 		return response.contents;
-	} catch (_) {
+	} catch (error) {
 		if (!fallbackMessage) {
-			throw Error('Unable to fetch message from external service.');
+			throw Error('Unable to fetch message from external service.', { cause: error });
 		}
 
 		return [{ msg: fallbackMessage, order: 0 }];

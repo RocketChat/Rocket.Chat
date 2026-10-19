@@ -122,7 +122,7 @@ export async function executeSendMessage(
 		});
 
 		if (typeof err === 'string') {
-			throw new Error(err);
+			throw new Error(err, { cause: err });
 		}
 
 		throw err;

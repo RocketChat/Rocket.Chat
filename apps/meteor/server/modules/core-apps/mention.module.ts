@@ -18,7 +18,7 @@ const retrieveMentionsFromPayload = (stringifiedMentions: string): Exclude<IMess
 		// eslint-disable-next-line @typescript-eslint/no-unsafe-return -- Apps-Engine payloads are untyped at this boundary
 		return mentions;
 	} catch (error) {
-		throw new Error('Invalid payload');
+		throw new Error('Invalid payload', { cause: error });
 	}
 };
 

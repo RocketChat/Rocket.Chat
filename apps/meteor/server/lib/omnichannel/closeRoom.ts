@@ -52,7 +52,7 @@ export async function closeRoom(params: CloseRoomParams, attempts = 2): Promise<
 				return closeRoom(params, attempts - 1);
 			}
 
-			throw new Error('error-room-cannot-be-closed-try-again');
+			throw new Error('error-room-cannot-be-closed-try-again', { cause: e });
 		}
 		throw e;
 	} finally {

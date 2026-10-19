@@ -135,7 +135,7 @@ export class TeamService extends ServiceClassInternal implements ITeamService {
 				...teamData,
 			};
 		} catch (e) {
-			throw new Error('error-team-creation');
+			throw new Error('error-team-creation', { cause: e });
 		}
 	}
 

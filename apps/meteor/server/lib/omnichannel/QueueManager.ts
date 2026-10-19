@@ -279,7 +279,7 @@ export class QueueManager {
 					logger.debug({ msg: 'Retrying transaction because of transient error', attemptsLeft: attempts });
 					return this.startConversation(rid, insertionRoom, guest, roomInfo, defaultAgent, message, extraData, attempts - 1);
 				}
-				throw new Error('error-failed-to-start-conversation');
+				throw new Error('error-failed-to-start-conversation', { cause: e });
 			}
 			throw e;
 		} finally {

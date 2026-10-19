@@ -146,7 +146,7 @@ export async function createArchivedChannel(api: BaseTest['api']): Promise<strin
 	try {
 		await api.post('/channels.archive', { roomId: channel._id });
 	} catch (error) {
-		throw new Error(`Error archiving the channel: ${error}`);
+		throw new Error(`Error archiving the channel: ${error}`, { cause: error });
 	}
 
 	if (!channel.name) {

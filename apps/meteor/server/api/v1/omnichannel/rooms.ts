@@ -55,7 +55,7 @@ API.v1.addRoute(
 					// Model's already checking for the keys, so we don't need to do it here.
 					parsedCf = parsedCustomFields;
 				} catch (e) {
-					throw new Error('The "customFields" query parameter must be a valid JSON.');
+					throw new Error('The "customFields" query parameter must be a valid JSON.', { cause: e });
 				}
 			}
 
