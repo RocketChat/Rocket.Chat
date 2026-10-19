@@ -94,31 +94,7 @@ jobs:
           path: ./apps/meteor/tsconfig.typecheck.tsbuildinfo
           key: typecheck-cache-${{ runner.os }}-${{ hashFiles('yarn.lock') }}
 
-      - name: Restore ESLint cache
-        id: restore-eslint
-        if: matrix.check == 'lint'
-        uses: actions/cache/restore@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
-        with:
-          path: ./apps/meteor/.eslintcache
-          key: eslintcache-${{ runner.os }}-${{ hashFiles('yarn.lock') }}
-          restore-keys: |
-            eslintcache-${{ runner.os }}-
-
-      - name: Cache observability (eslint)
-        if: matrix.check == 'lint'
-        run: |
-          {
-            echo "### ESLint cache"
-            echo "- **exact hit**: \`${{ steps.restore-eslint.outputs.cache-hit }}\`"
-          } >> "$GITHUB_STEP_SUMMARY"
-
       - name: Lint
         if: matrix.check == 'lint'
         run: yarn lint
 
-      - name: Save ESLint cache
-        if: matrix.check == 'lint' && github.ref == 'refs/heads/develop' && github.event_name == 'push'
-        uses: actions/cache/save@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
-        with:
-          path: ./apps/meteor/.eslintcache
-          key: eslintcache-${{ runner.os }}-${{ hashFiles('yarn.lock') }}
