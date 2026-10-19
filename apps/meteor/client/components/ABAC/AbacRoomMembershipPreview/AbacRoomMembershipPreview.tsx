@@ -12,7 +12,6 @@ import {
 } from '@rocket.chat/ui-client';
 import type { TranslationKey } from '@rocket.chat/ui-contexts';
 import { useSetModal } from '@rocket.chat/ui-contexts';
-import { useMutation } from '@tanstack/react-query';
 import type { ChangeEvent } from 'react';
 import { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -24,7 +23,6 @@ import AbacRoomPreviewList from './AbacRoomPreviewList';
 import AbacRoomPreviewListFooter from './AbacRoomPreviewListFooter';
 import AbacRoomPreviewMemberRow from './AbacRoomPreviewMemberRow';
 import AbacRoomPreviewProgress from './AbacRoomPreviewProgress';
-import { useEditorFirst } from './useEditorFirst';
 import { useRoomMembershipPreview } from './useRoomMembershipPreview';
 import { useRoomMembershipPreviewEditor } from './useRoomMembershipPreviewEditor';
 import WarningModal from '../../WarningModal';
@@ -48,11 +46,12 @@ type AbacRoomMembershipPreviewProps = {
 	rid: string;
 	roomName: string;
 	attributes: Record<string, string[]>;
+	isSaving: boolean;
 	onBack: () => void;
-	onSave: (editorLosesAccess: boolean) => Promise<unknown>;
+	onSave: () => void;
 };
 
-const AbacRoomMembershipPreview = ({ rid, roomName, attributes, onBack, onSave }: AbacRoomMembershipPreviewProps) => {
+const AbacRoomMembershipPreview = ({ rid, roomName, attributes, isSaving, onBack, onSave }: AbacRoomMembershipPreviewProps) => {
 	const { t } = useTranslation();
 	const setModal = useSetModal();
 
@@ -62,9 +61,7 @@ const AbacRoomMembershipPreview = ({ rid, roomName, attributes, onBack, onSave }
 
 	const { editor, error: editorError, isRetrying: isRetryingEditor, retry: retryEditor } = useRoomMembershipPreviewEditor(rid, attributes);
 
-	const saveMutation = useMutation({ mutationFn: () => onSave(editor?.losesAccess ?? false) });
-	const isSaving = saveMutation.isPending || saveMutation.isSuccess;
-	const preview = useRoomMembershipPreview(rid, attributes, filter, group, isSaving);
+	const preview = useRoomMembershipPreview(rid, attributes, filter, group);
 
 	const options = useMemo<SelectOption[]>(
 		() => [
@@ -74,14 +71,14 @@ const AbacRoomMembershipPreview = ({ rid, roomName, attributes, onBack, onSave }
 		[t],
 	);
 
-	const { checked, total, isPending, isChecking, isPartial, isExhausted } = preview;
-	const removed = isExhausted && filter === '' && total !== undefined ? countRemoved(group, preview.members.length, total) : undefined;
+	const { members, checked, total, isPending, isChecking, isPartial, isExhausted } = preview;
+	const removed = isExhausted && filter === '' && total !== undefined ? countRemoved(group, members.length, total) : undefined;
 	const removesEveryone = removed !== undefined && removed > 0 && removed === total;
 
 	const closeModal = () => setModal(null);
 	const confirmSave = () => {
 		setModal(null);
-		saveMutation.mutate();
+		onSave();
 	};
 
 	const getUpdateText = () => {
@@ -147,7 +144,6 @@ const AbacRoomMembershipPreview = ({ rid, roomName, attributes, onBack, onSave }
 			retryEditor();
 		}
 	};
-	const members = useEditorFirst(rid, preview.members, editor, group, filter);
 	const footerContext = { isPartial, canLoadMore: !isSaving, onLoadMore: preview.loadMore };
 
 	return (
@@ -195,10 +191,8 @@ const AbacRoomMembershipPreview = ({ rid, roomName, attributes, onBack, onSave }
 							found={members.length}
 							checked={checked}
 							total={total}
-							isChecking={isChecking}
 							isPartial={isPartial}
 							isExhausted={isExhausted}
-							onStop={preview.stop}
 						/>
 						{removesEveryone && (
 							<Box paddingInline={24} paddingBlockEnd={12}>
@@ -216,7 +210,6 @@ const AbacRoomMembershipPreview = ({ rid, roomName, attributes, onBack, onSave }
 									<Virtuoso<(typeof members)[number], AbacRoomPreviewListContext>
 										style={{ height: '100%', width: '100%' }}
 										data={members}
-										endReached={preview.onEndReached}
 										components={{ List: AbacRoomPreviewList, Footer: AbacRoomPreviewListFooter }}
 										context={{ ...footerContext, label: t(groupLabels[group]), loading: isChecking }}
 										itemContent={(_index, member) => <AbacRoomPreviewMemberRow member={member} />}
@@ -229,10 +222,10 @@ const AbacRoomMembershipPreview = ({ rid, roomName, attributes, onBack, onSave }
 			</ContextualbarContent>
 			<ContextualbarFooter>
 				<ButtonGroup stretch>
-					<Button onClick={onBack} disabled={saveMutation.isPending}>
+					<Button onClick={onBack} disabled={isSaving}>
 						{t('Back')}
 					</Button>
-					<Button primary onClick={handleSave} disabled={!editor} loading={saveMutation.isPending}>
+					<Button primary onClick={handleSave} disabled={!editor} loading={isSaving}>
 						{t('Save')}
 					</Button>
 				</ButtonGroup>

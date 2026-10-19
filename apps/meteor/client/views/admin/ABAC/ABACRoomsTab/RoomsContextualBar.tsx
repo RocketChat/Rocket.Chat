@@ -98,8 +98,9 @@ const RoomsContextualBar = ({ roomInfo, attributesData, redacted = false, onClos
 						rid={roomInfo.rid}
 						roomName={roomInfo.name}
 						attributes={previewAttributes}
+						isSaving={saveMutation.isPending}
 						onBack={() => setPreviewAttributes(undefined)}
-						onSave={() => saveMutation.mutateAsync(previewAttributes)}
+						onSave={() => saveMutation.mutate(previewAttributes)}
 					/>
 				) : (
 					<RoomForm

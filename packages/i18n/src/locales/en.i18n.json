@@ -212,7 +212,6 @@
   "ABAC_Preview_Role_Owner": "Owner",
   "ABAC_Preview_Search_members": "Search members",
   "ABAC_Preview_Self_lockout_warning": "You will lose access to {{roomName}} and will not be able to open it again.",
-  "ABAC_Preview_Stop": "Stop",
   "ABAC_Preview_Unavailable": "Could not check who will have access. Try again later.",
   "ABAC_Preview_Update_room": "Update ABAC room",
   "ABAC_Preview_Update_room_none": "No members will be removed from {{roomName}}.",
