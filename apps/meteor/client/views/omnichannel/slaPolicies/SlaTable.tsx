@@ -9,6 +9,7 @@ import {
 	GenericTableRow,
 	GenericTableCell,
 	usePaginatedQuery,
+	usePagination,
 	useSort,
 	GenericNoResults,
 } from '@rocket.chat/ui-client';
@@ -40,16 +41,27 @@ const SlaTable = ({ reload }: { reload: MutableRefObject<() => void> }) => {
 		500,
 	);
 
+	const queryKey = ['/v1/livechat/sla', query];
+	const {
+		current,
+		itemsPerPage,
+		setItemsPerPage: onSetItemsPerPage,
+		setCurrent: onSetCurrent,
+		...paginationProps
+	} = usePagination({ resetKey: queryKey });
+
 	const getSlaData = useEndpoint('GET', '/v1/livechat/sla');
-	const { data, isSuccess, isLoading, refetch, paginatedQuery, paginationProps } = usePaginatedQuery({
+	const { data, isSuccess, isLoading, refetch } = usePaginatedQuery({
 		query,
-		queryKey: ['/v1/livechat/sla', query],
+		queryKey,
 		queryFn: getSlaData,
 		itemsKey: 'sla',
+		offset: current,
+		count: itemsPerPage,
 	});
 
-	const [defaultQuery] = useState(hashKey([paginatedQuery]));
-	const queryHasChanged = defaultQuery !== hashKey([paginatedQuery]);
+	const [defaultQuery] = useState(hashKey([query, current, itemsPerPage]));
+	const queryHasChanged = defaultQuery !== hashKey([query, current, itemsPerPage]);
 
 	useEffect(() => {
 		reload.current = refetch;
@@ -129,7 +141,15 @@ const SlaTable = ({ reload }: { reload: MutableRefObject<() => void> }) => {
 							))}
 						</GenericTableBody>
 					</GenericTable>
-					<Pagination divider {...paginationProps} />
+					<Pagination
+						divider
+						current={current}
+						itemsPerPage={itemsPerPage}
+						count={data?.total || 0}
+						onSetItemsPerPage={onSetItemsPerPage}
+						onSetCurrent={onSetCurrent}
+						{...paginationProps}
+					/>
 				</>
 			)}
 		</>

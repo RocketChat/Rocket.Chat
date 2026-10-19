@@ -7,6 +7,7 @@ import {
 	GenericTableHeaderCell,
 	GenericTableLoadingTable,
 	usePaginatedQuery,
+	usePagination,
 	useSort,
 	GenericNoResults,
 } from '@rocket.chat/ui-client';
@@ -25,7 +26,6 @@ export type CustomSoundsTableProps = {
 const CustomSoundsTable = ({ reload, onClick }: CustomSoundsTableProps) => {
 	const t = useTranslation();
 	const { sortBy, sortDirection, setSort } = useSort<'name'>('name');
-
 	const [text, setText] = useState('');
 
 	const query = useDebouncedValue(
@@ -39,12 +39,25 @@ const CustomSoundsTable = ({ reload, onClick }: CustomSoundsTableProps) => {
 		500,
 	);
 
+	const queryKey = ['custom-sounds', query];
+	const {
+		current,
+		itemsPerPage,
+		setItemsPerPage: onSetItemsPerPage,
+		setCurrent: onSetCurrent,
+		...paginationProps
+	} = usePagination({
+		resetKey: queryKey,
+	});
+
 	const getSounds = useEndpoint('GET', '/v1/custom-sounds.list');
-	const { data, refetch, isLoading, isError, isSuccess, paginationProps } = usePaginatedQuery({
+	const { data, refetch, isLoading, isError, isSuccess } = usePaginatedQuery({
 		query,
-		queryKey: ['custom-sounds', query],
+		queryKey,
 		queryFn: getSounds,
 		itemsKey: 'sounds',
+		offset: current,
+		count: itemsPerPage,
 		refetchOnMount: false,
 	});
 
@@ -84,7 +97,15 @@ const CustomSoundsTable = ({ reload, onClick }: CustomSoundsTableProps) => {
 							))}
 						</GenericTableBody>
 					</GenericTable>
-					<Pagination divider {...paginationProps} />
+					<Pagination
+						divider
+						current={current}
+						itemsPerPage={itemsPerPage}
+						count={data?.total || 0}
+						onSetItemsPerPage={onSetItemsPerPage}
+						onSetCurrent={onSetCurrent}
+						{...paginationProps}
+					/>
 				</>
 			)}
 			{isSuccess && data?.sounds.length === 0 && <GenericNoResults />}

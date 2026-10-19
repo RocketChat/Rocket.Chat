@@ -26,6 +26,7 @@ import {
 	GenericTableLoadingTable,
 	GenericTableRow,
 	usePaginatedQuery,
+	usePagination,
 	useSort,
 	GenericNoResults,
 } from '@rocket.chat/ui-client';
@@ -66,15 +67,26 @@ const MonitorsTable = () => {
 		500,
 	);
 
-	const { data, refetch, isLoading, isSuccess, isError, paginatedQuery, paginationProps } = usePaginatedQuery({
+	const queryKey = ['omnichannel', 'monitors', query];
+	const {
+		current,
+		itemsPerPage,
+		setItemsPerPage: onSetItemsPerPage,
+		setCurrent: onSetCurrent,
+		...paginationProps
+	} = usePagination({ resetKey: queryKey });
+
+	const { data, refetch, isLoading, isSuccess, isError } = usePaginatedQuery({
 		query,
-		queryKey: ['omnichannel', 'monitors', query],
+		queryKey,
 		queryFn: getMonitors,
 		itemsKey: 'monitors',
+		offset: current,
+		count: itemsPerPage,
 	});
 
-	const [defaultQuery] = useState(hashKey([paginatedQuery]));
-	const queryHasChanged = defaultQuery !== hashKey([paginatedQuery]);
+	const [defaultQuery] = useState(hashKey([query, current, itemsPerPage]));
+	const queryHasChanged = defaultQuery !== hashKey([query, current, itemsPerPage]);
 
 	const queryClient = useQueryClient();
 
@@ -183,7 +195,15 @@ const MonitorsTable = () => {
 							))}
 						</GenericTableBody>
 					</GenericTable>
-					<Pagination divider {...paginationProps} />
+					<Pagination
+						divider
+						current={current}
+						itemsPerPage={itemsPerPage}
+						count={data?.total || 0}
+						onSetItemsPerPage={onSetItemsPerPage}
+						onSetCurrent={onSetCurrent}
+						{...paginationProps}
+					/>
 				</>
 			)}
 			{isError && (

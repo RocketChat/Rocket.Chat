@@ -10,6 +10,7 @@ import {
 	GenericTableRow,
 	GenericTableCell,
 	usePaginatedQuery,
+	usePagination,
 	useSort,
 	GenericNoResults,
 	useFormatDateAndTime,
@@ -50,17 +51,28 @@ const CannedResponsesTable = () => {
 		[createdBy, debouncedText, sharing, sortBy, sortDirection],
 	);
 
+	const queryKey = ['getCannedResponses', query];
+	const {
+		current,
+		itemsPerPage,
+		setItemsPerPage: onSetItemsPerPage,
+		setCurrent: onSetCurrent,
+		...paginationProps
+	} = usePagination({ resetKey: queryKey });
+
+	const [defaultQuery] = useState(hashKey([query, current, itemsPerPage]));
+	const queryHasChanged = defaultQuery !== hashKey([query, current, itemsPerPage]);
+
 	const getCannedResponses = useEndpoint('GET', '/v1/canned-responses');
-	const { data, isLoading, isSuccess, paginatedQuery, paginationProps } = usePaginatedQuery({
+	const { data, isLoading, isSuccess } = usePaginatedQuery({
 		query,
-		queryKey: ['getCannedResponses', query],
+		queryKey,
 		queryFn: getCannedResponses,
 		itemsKey: 'cannedResponses',
+		offset: current,
+		count: itemsPerPage,
 		refetchOnWindowFocus: false,
 	});
-
-	const [defaultQuery] = useState(hashKey([paginatedQuery]));
-	const queryHasChanged = defaultQuery !== hashKey([paginatedQuery]);
 
 	const handleAddNew = useStableCallback(() => router.navigate('/omnichannel/canned-responses/new'));
 
@@ -173,7 +185,15 @@ const CannedResponsesTable = () => {
 							))}
 						</GenericTableBody>
 					</GenericTable>
-					<Pagination divider {...paginationProps} />
+					<Pagination
+						divider
+						current={current}
+						itemsPerPage={itemsPerPage}
+						count={data?.total || 0}
+						onSetItemsPerPage={onSetItemsPerPage}
+						onSetCurrent={onSetCurrent}
+						{...paginationProps}
+					/>
 				</>
 			)}
 		</>

@@ -7,6 +7,7 @@ import {
 	GenericTableBody,
 	GenericTableLoadingRow,
 	usePaginatedQuery,
+	usePagination,
 	useSort,
 	GenericNoResults,
 } from '@rocket.chat/ui-client';
@@ -37,16 +38,27 @@ const UnitsTable = () => {
 		500,
 	);
 
+	const queryKey = ['livechat-units', query];
+	const {
+		current,
+		itemsPerPage,
+		setItemsPerPage: onSetItemsPerPage,
+		setCurrent: onSetCurrent,
+		...paginationProps
+	} = usePagination({ resetKey: queryKey });
+
 	const getUnits = useEndpoint('GET', '/v1/livechat/units');
-	const { isSuccess, isLoading, data, paginatedQuery, paginationProps } = usePaginatedQuery({
+	const { isSuccess, isLoading, data } = usePaginatedQuery({
 		query,
-		queryKey: ['livechat-units', query],
+		queryKey,
 		queryFn: getUnits,
 		itemsKey: 'units',
+		offset: current,
+		count: itemsPerPage,
 	});
 
-	const [defaultQuery] = useState(hashKey([paginatedQuery]));
-	const queryHasChanged = defaultQuery !== hashKey([paginatedQuery]);
+	const [defaultQuery] = useState(hashKey([query, current, itemsPerPage]));
+	const queryHasChanged = defaultQuery !== hashKey([query, current, itemsPerPage]);
 
 	const handleAddNew = useStableCallback(() => router.navigate('/omnichannel/units/new'));
 
@@ -105,7 +117,15 @@ const UnitsTable = () => {
 							))}
 						</GenericTableBody>
 					</GenericTable>
-					<Pagination divider {...paginationProps} />
+					<Pagination
+						divider
+						current={current}
+						itemsPerPage={itemsPerPage}
+						count={data?.total || 0}
+						onSetItemsPerPage={onSetItemsPerPage}
+						onSetCurrent={onSetCurrent}
+						{...paginationProps}
+					/>
 				</>
 			)}
 		</>

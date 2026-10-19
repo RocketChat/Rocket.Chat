@@ -8,6 +8,7 @@ import {
 	GenericTableLoadingTable,
 	GenericTableRow,
 	usePaginatedQuery,
+	usePagination,
 	useSort,
 	GenericNoResults,
 } from '@rocket.chat/ui-client';
@@ -37,11 +38,22 @@ const EmailInboxTable = () => {
 		sort: JSON.stringify({ [sortBy]: sortDirection === 'asc' ? 1 : -1 }),
 	};
 
-	const { paginationProps, ...result } = usePaginatedQuery({
+	const queryKey = ['email-list', query];
+	const {
+		current,
+		itemsPerPage,
+		setItemsPerPage: onSetItemsPerPage,
+		setCurrent: onSetCurrent,
+		...paginationProps
+	} = usePagination({ resetKey: queryKey });
+
+	const result = usePaginatedQuery({
 		query,
-		queryKey: ['email-list', query],
+		queryKey,
 		queryFn: endpoint,
 		itemsKey: 'emailInboxes',
+		offset: current,
+		count: itemsPerPage,
 	});
 
 	const headers = useMemo(
@@ -92,7 +104,15 @@ const EmailInboxTable = () => {
 							))}
 						</GenericTableBody>
 					</GenericTable>
-					<Pagination divider {...paginationProps} />
+					<Pagination
+						divider
+						current={current}
+						itemsPerPage={itemsPerPage}
+						count={result.data.total}
+						onSetItemsPerPage={onSetItemsPerPage}
+						onSetCurrent={onSetCurrent}
+						{...paginationProps}
+					/>
 				</>
 			)}
 			{result.isSuccess && result.data.emailInboxes.length === 0 && <GenericNoResults />}

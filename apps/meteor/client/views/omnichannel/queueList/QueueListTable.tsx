@@ -11,6 +11,7 @@ import {
 	GenericTableCell,
 	GenericTableLoadingRow,
 	usePaginatedQuery,
+	usePagination,
 	useSort,
 	GenericNoResults,
 } from '@rocket.chat/ui-client';
@@ -83,6 +84,15 @@ const QueueListTable = () => {
 		return query;
 	}, [sortBy, sortDirection, filters.status, filters.departmentId, filters.servedBy]);
 
+	const queryKey = ['livechat-queue', query];
+	const {
+		current,
+		itemsPerPage,
+		setItemsPerPage: onSetItemsPerPage,
+		setCurrent: onSetCurrent,
+		...paginationProps
+	} = usePagination({ resetKey: queryKey });
+
 	const getUserStatus = (status?: string) => {
 		if (!status) {
 			return t('Offline');
@@ -103,11 +113,13 @@ const QueueListTable = () => {
 	};
 
 	const getLivechatQueue = useEndpoint('GET', '/v1/livechat/queue');
-	const { data, isSuccess, isLoading, paginationProps } = usePaginatedQuery({
+	const { data, isSuccess, isLoading } = usePaginatedQuery({
 		query,
-		queryKey: ['livechat-queue', query],
+		queryKey,
 		queryFn: getLivechatQueue,
 		itemsKey: 'queue',
+		offset: current,
+		count: itemsPerPage,
 	});
 
 	return (
@@ -144,7 +156,15 @@ const QueueListTable = () => {
 							))}
 						</GenericTableBody>
 					</GenericTable>
-					<Pagination divider {...paginationProps} />
+					<Pagination
+						divider
+						current={current}
+						itemsPerPage={itemsPerPage}
+						count={data?.total || 0}
+						onSetItemsPerPage={onSetItemsPerPage}
+						onSetCurrent={onSetCurrent}
+						{...paginationProps}
+					/>
 				</>
 			)}
 		</>

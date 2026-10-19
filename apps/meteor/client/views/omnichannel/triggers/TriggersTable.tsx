@@ -7,11 +7,12 @@ import {
 	GenericTableHeaderCell,
 	GenericTableLoadingRow,
 	usePaginatedQuery,
+	usePagination,
 	GenericNoResults,
 } from '@rocket.chat/ui-client';
 import { useTranslation, useEndpoint, useRouter } from '@rocket.chat/ui-contexts';
 import { hashKey } from '@tanstack/react-query';
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 
 import TriggersRow from './TriggersRow';
 import GenericError from '../../../components/GenericError';
@@ -25,16 +26,23 @@ const TriggersTable = () => {
 		router.navigate('/omnichannel/triggers/new');
 	});
 
+	const query = useMemo(() => ({}), []);
+
+	const queryKey = ['livechat-triggers', query];
+	const { current, itemsPerPage, setItemsPerPage, setCurrent, ...paginationProps } = usePagination({ resetKey: queryKey });
+
 	const getTriggers = useEndpoint('GET', '/v1/livechat/triggers');
-	const { data, refetch, isSuccess, isLoading, isError, paginatedQuery, paginationProps } = usePaginatedQuery({
-		query: {},
-		queryKey: ['livechat-triggers'],
+	const { data, refetch, isSuccess, isLoading, isError } = usePaginatedQuery({
+		query,
+		queryKey,
 		queryFn: getTriggers,
 		itemsKey: 'triggers',
+		offset: current,
+		count: itemsPerPage,
 	});
 
-	const [defaultQuery] = useState(hashKey([paginatedQuery]));
-	const queryHasChanged = defaultQuery !== hashKey([paginatedQuery]);
+	const [defaultQuery] = useState(hashKey([query, current, itemsPerPage]));
+	const queryHasChanged = defaultQuery !== hashKey([query, current, itemsPerPage]);
 
 	const columns: TableColumnWidth[] = ['auto', 'auto', 'auto', 'x60'];
 
@@ -79,7 +87,15 @@ const TriggersTable = () => {
 							))}
 						</GenericTableBody>
 					</GenericTable>
-					<Pagination divider {...paginationProps} />
+					<Pagination
+						divider
+						current={current}
+						itemsPerPage={itemsPerPage}
+						count={data?.total || 0}
+						onSetItemsPerPage={setItemsPerPage}
+						onSetCurrent={setCurrent}
+						{...paginationProps}
+					/>
 				</>
 			)}
 			{isError && <GenericError buttonAction={refetch} />}

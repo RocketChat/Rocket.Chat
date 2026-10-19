@@ -10,6 +10,7 @@ import {
 	GenericTableLoadingTable,
 	GenericTableRow,
 	usePaginatedQuery,
+	usePagination,
 	useSort,
 	GenericNoResults,
 } from '@rocket.chat/ui-client';
@@ -51,16 +52,27 @@ const DepartmentsTable = ({ archived }: DepartmentsTableProps) => {
 		500,
 	);
 
-	const { data, isSuccess, isLoading, paginatedQuery, paginationProps } = usePaginatedQuery({
+	const queryKey = ['livechat-departments', query, archived];
+	const {
+		current,
+		itemsPerPage,
+		setItemsPerPage: onSetItemsPerPage,
+		setCurrent: onSetCurrent,
+		...paginationProps
+	} = usePagination({ resetKey: queryKey });
+
+	const { data, isSuccess, isLoading } = usePaginatedQuery({
 		query,
-		queryKey: ['livechat-departments', query, archived],
+		queryKey,
 		queryFn: getDepartments,
 		itemsKey: 'departments',
+		offset: current,
+		count: itemsPerPage,
 		placeholderData: keepPreviousData,
 	});
 
-	const [defaultQuery] = useState(hashKey([paginatedQuery]));
-	const queryHasChanged = defaultQuery !== hashKey([paginatedQuery]);
+	const [defaultQuery] = useState(hashKey([query, current, itemsPerPage]));
+	const queryHasChanged = defaultQuery !== hashKey([query, current, itemsPerPage]);
 
 	const columns: TableColumnWidth[] = ['auto', 'auto', 'auto', 'auto', 'auto', 40];
 
@@ -141,7 +153,15 @@ const DepartmentsTable = ({ archived }: DepartmentsTableProps) => {
 							))}
 						</GenericTableBody>
 					</GenericTable>
-					<Pagination divider {...paginationProps} />
+					<Pagination
+						divider
+						current={current}
+						itemsPerPage={itemsPerPage}
+						count={data?.total || 0}
+						onSetItemsPerPage={onSetItemsPerPage}
+						onSetCurrent={onSetCurrent}
+						{...paginationProps}
+					/>
 				</>
 			)}
 		</>

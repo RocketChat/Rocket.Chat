@@ -10,6 +10,7 @@ import {
 	GenericTableLoadingTable,
 	GenericTableRow,
 	usePaginatedQuery,
+	usePagination,
 	useSort,
 	GenericNoResults,
 } from '@rocket.chat/ui-client';
@@ -42,16 +43,27 @@ const ManagersTable = () => {
 		500,
 	);
 
+	const queryKey = omnichannelQueryKeys.managers(query);
+	const {
+		current,
+		itemsPerPage,
+		setItemsPerPage: onSetItemsPerPage,
+		setCurrent: onSetCurrent,
+		...paginationProps
+	} = usePagination({ resetKey: queryKey });
+
 	const getManagers = useEndpoint('GET', '/v1/livechat/users/manager');
-	const { data, isLoading, isSuccess, isError, refetch, paginatedQuery, paginationProps } = usePaginatedQuery({
+	const { data, isLoading, isSuccess, isError, refetch } = usePaginatedQuery({
 		query,
-		queryKey: omnichannelQueryKeys.managers(query),
+		queryKey,
 		queryFn: getManagers,
 		itemsKey: 'users',
+		offset: current,
+		count: itemsPerPage,
 	});
 
-	const [defaultQuery] = useState(hashKey([paginatedQuery]));
-	const queryHasChanged = defaultQuery !== hashKey([paginatedQuery]);
+	const [defaultQuery] = useState(hashKey([query, current, itemsPerPage]));
+	const queryHasChanged = defaultQuery !== hashKey([query, current, itemsPerPage]);
 
 	const columns: TableColumnWidth[] = ['auto', 'auto', 'auto', 'x60'];
 
@@ -130,7 +142,15 @@ const ManagersTable = () => {
 							))}
 						</GenericTableBody>
 					</GenericTable>
-					<Pagination divider {...paginationProps} />
+					<Pagination
+						divider
+						current={current}
+						itemsPerPage={itemsPerPage}
+						count={data.total || 0}
+						onSetItemsPerPage={onSetItemsPerPage}
+						onSetCurrent={onSetCurrent}
+						{...paginationProps}
+					/>
 				</>
 			)}
 			{isError && <GenericError buttonAction={refetch} />}

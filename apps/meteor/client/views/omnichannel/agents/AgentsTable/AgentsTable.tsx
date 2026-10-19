@@ -6,6 +6,7 @@ import {
 	GenericTableHeader,
 	GenericTableHeaderCell,
 	GenericTableLoadingTable,
+	usePagination,
 	useSort,
 	GenericNoResults,
 } from '@rocket.chat/ui-client';
@@ -32,10 +33,11 @@ const AgentsTable = () => {
 	) as ['name' | 'username' | 'emails.address' | 'statusLivechat', 'asc' | 'desc'];
 
 	const query = useQuery({ text }, debouncedSort);
-	const { data, isSuccess, isLoading, isError, refetch, paginatedQuery, paginationProps } = useAgentsQuery(query);
+	const { current, itemsPerPage, setItemsPerPage, setCurrent, ...paginationProps } = usePagination({ resetKey: [query] });
+	const { data, isSuccess, isLoading, isError, refetch } = useAgentsQuery(query, { offset: current, count: itemsPerPage });
 
-	const [defaultQuery] = useState(hashKey([paginatedQuery]));
-	const queryHasChanged = defaultQuery !== hashKey([paginatedQuery]);
+	const [defaultQuery] = useState(hashKey([query, current, itemsPerPage]));
+	const queryHasChanged = defaultQuery !== hashKey([query, current, itemsPerPage]);
 
 	const onHeaderClick = useStableCallback((id: 'name' | 'username' | 'emails.address' | 'statusLivechat') => {
 		if (sortBy === id) {
@@ -103,7 +105,15 @@ const AgentsTable = () => {
 							))}
 						</GenericTableBody>
 					</GenericTable>
-					<Pagination divider {...paginationProps} />
+					<Pagination
+						divider
+						current={current}
+						itemsPerPage={itemsPerPage}
+						count={data?.total || 0}
+						onSetItemsPerPage={setItemsPerPage}
+						onSetCurrent={setCurrent}
+						{...paginationProps}
+					/>
 				</>
 			)}
 			{isError && <GenericError buttonAction={refetch} />}

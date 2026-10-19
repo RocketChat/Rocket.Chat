@@ -1,48 +1,28 @@
-import type { Pagination } from '@rocket.chat/fuselage';
-import { useStableCallback } from '@rocket.chat/fuselage-hooks';
 import type { UseQueryOptions, UseQueryResult } from '@tanstack/react-query';
-import { hashKey, useQueries, useQueryClient } from '@tanstack/react-query';
-import type { ComponentProps, SetStateAction } from 'react';
-import { useCallback, useState } from 'react';
-
-import { useItemsPerPage } from './useItemsPerPage';
-import { useItemsPerPageLabel } from './useItemsPerPageLabel';
-import { useShowingResultsLabel } from './useShowingResultsLabel';
+import { useQueries, useQueryClient } from '@tanstack/react-query';
+import { useCallback } from 'react';
 
 type QueryPagination = { offset: number; count: number };
-
-export type PaginationProps = Required<
-	Pick<
-		ComponentProps<typeof Pagination>,
-		'count' | 'current' | 'itemsPerPage' | 'itemsPerPageLabel' | 'showingResultsLabel' | 'onSetCurrent' | 'onSetItemsPerPage'
-	>
->;
 
 type PaginatedQueryStatus<TData> =
 	| { status: 'pending'; data: TData | undefined; error: null; isPending: true; isSuccess: false; isError: false }
 	| { status: 'error'; data: TData | undefined; error: Error; isPending: false; isSuccess: false; isError: true }
 	| { status: 'success'; data: TData; error: null; isPending: false; isSuccess: true; isError: false };
 
-type PaginatedQueryState<TData> = PaginatedQueryStatus<TData> & {
+export type PaginatedQueryResult<TData> = PaginatedQueryStatus<TData> & {
 	isLoading: boolean;
 	isFetching: boolean;
 	isFetched: boolean;
 	refetch: () => Promise<void>;
 };
 
-export type UsePaginatedQueryResult<TData, TQuery = unknown> = PaginatedQueryState<TData> & {
-	page: number;
-	setPage: (page: number) => void;
-	paginatedQuery: TQuery & QueryPagination;
-	paginationProps: PaginationProps;
-};
-
-type UsePaginatedQueryOptions<TQuery, TData extends { total: number }> = Omit<UseQueryOptions<TData>, 'queryKey' | 'queryFn' | 'select'> & {
-	query: TQuery;
-	queryKey: readonly unknown[];
-	queryFn: (query: TQuery & QueryPagination) => Promise<TData>;
-	itemsKey: keyof TData;
-};
+type UsePaginatedQueryOptions<TQuery, TData extends { total: number }> = Omit<UseQueryOptions<TData>, 'queryKey' | 'queryFn' | 'select'> &
+	QueryPagination & {
+		query: TQuery;
+		queryKey: readonly unknown[];
+		queryFn: (query: TQuery & QueryPagination) => Promise<TData>;
+		itemsKey: keyof TData;
+	};
 
 const getItems = <TData>(data: TData, itemsKey: keyof TData) => data[itemsKey] as unknown[];
 
@@ -65,31 +45,17 @@ export const usePaginatedQuery = <TQuery, TData extends { total: number }>({
 	queryKey,
 	queryFn,
 	itemsKey,
+	offset: start,
+	count: itemsPerPage,
 	...queryOptions
-}: UsePaginatedQueryOptions<TQuery, TData>): UsePaginatedQueryResult<TData, TQuery> => {
-	const [itemsPerPage, setItemsPerPage] = useItemsPerPage();
-	const itemsPerPageLabel = useItemsPerPageLabel();
-	const showingResultsLabel = useShowingResultsLabel();
+}: UsePaginatedQueryOptions<TQuery, TData>): PaginatedQueryResult<TData> => {
 	const queryClient = useQueryClient();
 
-	const resetKey = hashKey([queryKey, itemsPerPage]);
-	const [pageState, setPageState] = useState({ page: 1, resetKey });
-	const page = pageState.resetKey === resetKey ? pageState.page : 1;
-
-	const setPage = useStableCallback((nextPage: number) => setPageState({ page: nextPage, resetKey }));
-
-	const onSetCurrent = useStableCallback((action: SetStateAction<number>) => {
-		const current = typeof action === 'function' ? action((page - 1) * itemsPerPage) : action;
-		setPage(Math.floor(current / itemsPerPage) + 1);
-	});
-
-	const start = (page - 1) * itemsPerPage;
-	const paginatedQuery = { ...query, offset: start, count: itemsPerPage };
 	const firstData = queryClient.getQueryData<TData>([...queryKey, { offset: start, count: itemsPerPage }]);
 	const offsets = getOffsets(start, itemsPerPage, firstData && getItems(firstData, itemsKey).length, firstData?.total ?? 0);
 
 	const combine = useCallback(
-		(results: UseQueryResult<TData>[]): PaginatedQueryState<TData> => {
+		(results: UseQueryResult<TData>[]): PaginatedQueryResult<TData> => {
 			const pages = results.flatMap((result) => (result.data ? [result.data] : []));
 			const items = pages.flatMap((data) => getItems(data, itemsKey));
 			const data = pages.length === results.length ? Object.assign({}, pages[0], { [itemsKey]: items, count: items.length }) : undefined;
@@ -117,7 +83,7 @@ export const usePaginatedQuery = <TQuery, TData extends { total: number }>({
 		[itemsKey],
 	);
 
-	const result = useQueries({
+	return useQueries({
 		queries: offsets.map((offset) => {
 			const pagination = { offset, count: start + itemsPerPage - offset };
 
@@ -129,21 +95,4 @@ export const usePaginatedQuery = <TQuery, TData extends { total: number }>({
 		}),
 		combine,
 	});
-
-	return {
-		...result,
-		page,
-		setPage,
-		paginatedQuery,
-		paginationProps: {
-			// TODO: Rename count to total in Fuselage Pagination component
-			count: result.data?.total ?? firstData?.total ?? 0,
-			current: start,
-			itemsPerPage,
-			itemsPerPageLabel,
-			showingResultsLabel,
-			onSetCurrent,
-			onSetItemsPerPage: setItemsPerPage,
-		},
-	};
 };

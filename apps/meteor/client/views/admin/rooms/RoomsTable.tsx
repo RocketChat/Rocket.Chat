@@ -8,6 +8,7 @@ import {
 	GenericTableHeaderCell,
 	GenericTableLoadingTable,
 	usePaginatedQuery,
+	usePagination,
 	useSort,
 	GenericNoResults,
 } from '@rocket.chat/ui-client';
@@ -49,13 +50,18 @@ const RoomsTable = ({ reload }: { reload: MutableRefObject<() => void> }) => {
 		500,
 	);
 
+	const queryKey = ['rooms', query, 'admin'];
+	const { current, itemsPerPage, setItemsPerPage, setCurrent, ...paginationProps } = usePagination({ resetKey: queryKey });
+
 	const getAdminRooms = useEndpoint('GET', '/v1/rooms.adminRooms');
 
-	const { data, refetch, isSuccess, isLoading, isError, paginationProps } = usePaginatedQuery({
+	const { data, refetch, isSuccess, isLoading, isError } = usePaginatedQuery({
 		query,
-		queryKey: ['rooms', query, 'admin'],
+		queryKey,
 		queryFn: getAdminRooms,
 		itemsKey: 'rooms',
+		offset: current,
+		count: itemsPerPage,
 	});
 
 	useEffect(() => {
@@ -116,7 +122,15 @@ const RoomsTable = ({ reload }: { reload: MutableRefObject<() => void> }) => {
 							))}
 						</GenericTableBody>
 					</GenericTable>
-					<Pagination divider {...paginationProps} />
+					<Pagination
+						divider
+						current={current}
+						itemsPerPage={itemsPerPage}
+						count={data?.total || 0}
+						onSetItemsPerPage={setItemsPerPage}
+						onSetCurrent={setCurrent}
+						{...paginationProps}
+					/>
 				</>
 			)}
 			{isError && (

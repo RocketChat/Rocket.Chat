@@ -8,6 +8,7 @@ import {
 	GenericTableBody,
 	GenericTableHeader,
 	usePaginatedQuery,
+	usePagination,
 	useSort,
 	GenericNoResults,
 } from '@rocket.chat/ui-client';
@@ -51,11 +52,22 @@ const ModerationConsoleTable = () => {
 
 	const getReports = useEndpoint('GET', '/v1/moderation.reportsByUsers');
 
-	const { data, isLoading, isSuccess, paginationProps } = usePaginatedQuery({
+	const queryKey = ['moderation', 'msgReports', 'fetchAll', query];
+	const {
+		current,
+		itemsPerPage,
+		setItemsPerPage: onSetItemsPerPage,
+		setCurrent: onSetCurrent,
+		...paginationProps
+	} = usePagination({ resetKey: queryKey });
+
+	const { data, isLoading, isSuccess } = usePaginatedQuery({
 		query,
-		queryKey: ['moderation', 'msgReports', 'fetchAll', query],
+		queryKey,
 		queryFn: getReports,
 		itemsKey: 'reports',
+		offset: current,
+		count: itemsPerPage,
 		meta: {
 			apiErrorToastMessage: true,
 		},
@@ -124,7 +136,15 @@ const ModerationConsoleTable = () => {
 							))}
 						</GenericTableBody>
 					</GenericTable>
-					<Pagination divider {...paginationProps} />
+					<Pagination
+						current={current}
+						divider
+						itemsPerPage={itemsPerPage}
+						count={data?.total || 0}
+						onSetItemsPerPage={onSetItemsPerPage}
+						onSetCurrent={onSetCurrent}
+						{...paginationProps}
+					/>
 				</>
 			)}
 			{isSuccess && data.reports.length === 0 && <GenericNoResults />}

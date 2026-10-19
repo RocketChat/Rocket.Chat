@@ -8,6 +8,7 @@ import {
 	GenericTableHeaderCell,
 	GenericTableRow,
 	usePaginatedQuery,
+	usePagination,
 	GenericNoResults,
 } from '@rocket.chat/ui-client';
 import { useEndpoint, useRouter, useSearchParameter } from '@rocket.chat/ui-contexts';
@@ -52,11 +53,16 @@ const RoomsPage = () => {
 		[debouncedText, filterType],
 	);
 
-	const { data, isLoading, paginationProps } = usePaginatedQuery({
+	const queryKey = ABACQueryKeys.rooms.list(query);
+	const { current, itemsPerPage, setItemsPerPage, setCurrent, ...paginationProps } = usePagination({ resetKey: queryKey });
+
+	const { data, isLoading } = usePaginatedQuery({
 		query,
-		queryKey: ABACQueryKeys.rooms.list(query),
+		queryKey,
 		queryFn: getRooms,
 		itemsKey: 'rooms',
+		offset: current,
+		count: itemsPerPage,
 		...(isExternalStore && { staleTime: 0, gcTime: 0 }),
 	});
 
@@ -131,7 +137,15 @@ const RoomsPage = () => {
 							))}
 						</GenericTableBody>
 					</GenericTable>
-					<Pagination divider {...paginationProps} />
+					<Pagination
+						divider
+						current={current}
+						itemsPerPage={itemsPerPage}
+						count={data?.total || 0}
+						onSetItemsPerPage={setItemsPerPage}
+						onSetCurrent={setCurrent}
+						{...paginationProps}
+					/>
 				</>
 			)}
 		</>

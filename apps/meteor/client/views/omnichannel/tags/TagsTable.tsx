@@ -9,6 +9,7 @@ import {
 	GenericTableBody,
 	GenericTableLoadingRow,
 	usePaginatedQuery,
+	usePagination,
 	useSort,
 	GenericNoResults,
 } from '@rocket.chat/ui-client';
@@ -43,17 +44,28 @@ const TagsTable = () => {
 		500,
 	);
 
+	const queryKey = ['livechat-tags', query];
+	const {
+		current,
+		itemsPerPage,
+		setItemsPerPage: onSetItemsPerPage,
+		setCurrent: onSetCurrent,
+		...paginationProps
+	} = usePagination({ resetKey: queryKey });
+
 	const getTags = useEndpoint('GET', '/v1/livechat/tags');
-	const { data, isSuccess, isLoading, paginatedQuery, paginationProps } = usePaginatedQuery({
+	const { data, isSuccess, isLoading } = usePaginatedQuery({
 		query,
-		queryKey: ['livechat-tags', query],
+		queryKey,
 		queryFn: getTags,
 		itemsKey: 'tags',
+		offset: current,
+		count: itemsPerPage,
 		refetchOnWindowFocus: false,
 	});
 
-	const [defaultQuery] = useState(hashKey([paginatedQuery]));
-	const queryHasChanged = defaultQuery !== hashKey([paginatedQuery]);
+	const [defaultQuery] = useState(hashKey([query, current, itemsPerPage]));
+	const queryHasChanged = defaultQuery !== hashKey([query, current, itemsPerPage]);
 
 	const columns: TableColumnWidth[] = ['auto', 'auto', 'x60'];
 
@@ -124,7 +136,15 @@ const TagsTable = () => {
 							))}
 						</GenericTableBody>
 					</GenericTable>
-					<Pagination divider {...paginationProps} />
+					<Pagination
+						divider
+						current={current}
+						itemsPerPage={itemsPerPage}
+						count={data?.total || 0}
+						onSetItemsPerPage={onSetItemsPerPage}
+						onSetCurrent={onSetCurrent}
+						{...paginationProps}
+					/>
 				</>
 			)}
 		</>

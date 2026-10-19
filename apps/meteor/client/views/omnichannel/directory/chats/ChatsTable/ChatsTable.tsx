@@ -6,6 +6,7 @@ import {
 	GenericTableHeader,
 	GenericTableHeaderCell,
 	GenericTableLoadingTable,
+	usePagination,
 	useSort,
 	GenericNoResults,
 } from '@rocket.chat/ui-client';
@@ -38,10 +39,19 @@ const ChatsTable = () => {
 		500,
 	);
 
-	const { data, isLoading, isSuccess, isError, refetch, paginatedQuery, paginationProps } = useCurrentChats(query);
+	const {
+		current,
+		itemsPerPage,
+		setItemsPerPage: onSetItemsPerPage,
+		setCurrent: onSetCurrent,
+		...paginationProps
+	} = usePagination({
+		resetKey: [query],
+	});
+	const { data, isLoading, isSuccess, isError, refetch } = useCurrentChats(query, { offset: current, count: itemsPerPage });
 
-	const [defaultQuery] = useState(hashKey([paginatedQuery]));
-	const queryHasChanged = defaultQuery !== hashKey([paginatedQuery]);
+	const [defaultQuery] = useState(hashKey([query, current, itemsPerPage]));
+	const queryHasChanged = defaultQuery !== hashKey([query, current, itemsPerPage]);
 
 	const columns: TableColumnWidth[] = [
 		'auto',
@@ -106,7 +116,15 @@ const ChatsTable = () => {
 							))}
 						</GenericTableBody>
 					</GenericTable>
-					<Pagination divider {...paginationProps} />
+					<Pagination
+						divider
+						current={current}
+						itemsPerPage={itemsPerPage}
+						count={data?.total || 0}
+						onSetItemsPerPage={onSetItemsPerPage}
+						onSetCurrent={onSetCurrent}
+						{...paginationProps}
+					/>
 				</>
 			)}
 			{isError && (

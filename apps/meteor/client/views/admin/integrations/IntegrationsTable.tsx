@@ -8,6 +8,7 @@ import {
 	GenericTableHeaderCell,
 	GenericTableLoadingTable,
 	usePaginatedQuery,
+	usePagination,
 	useSort,
 	GenericNoResults,
 } from '@rocket.chat/ui-client';
@@ -39,12 +40,23 @@ const IntegrationsTable = ({ type }: IntegrationsTableProps) => {
 		500,
 	);
 
+	const queryKey = ['integrations', query];
+	const {
+		current,
+		itemsPerPage,
+		setItemsPerPage: onSetItemsPerPage,
+		setCurrent: onSetCurrent,
+		...paginationProps
+	} = usePagination({ resetKey: queryKey });
+
 	const getIntegrations = useEndpoint('GET', '/v1/integrations.list');
-	const { data, isLoading, isSuccess, isError, refetch, paginationProps } = usePaginatedQuery({
+	const { data, isLoading, isSuccess, isError, refetch } = usePaginatedQuery({
 		query,
-		queryKey: ['integrations', query],
+		queryKey,
 		queryFn: getIntegrations,
 		itemsKey: 'integrations',
+		offset: current,
+		count: itemsPerPage,
 	});
 
 	const onClick = useCallback(
@@ -120,7 +132,15 @@ const IntegrationsTable = ({ type }: IntegrationsTableProps) => {
 								))}
 						</GenericTableBody>
 					</GenericTable>
-					<Pagination divider {...paginationProps} />
+					<Pagination
+						divider
+						current={current}
+						itemsPerPage={itemsPerPage}
+						count={data?.total || 0}
+						onSetItemsPerPage={onSetItemsPerPage}
+						onSetCurrent={onSetCurrent}
+						{...paginationProps}
+					/>
 				</>
 			)}
 			{isSuccess && data && data.integrations.length === 0 && <GenericNoResults />}

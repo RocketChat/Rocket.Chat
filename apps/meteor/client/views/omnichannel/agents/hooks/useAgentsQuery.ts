@@ -4,7 +4,7 @@ import { useEndpoint } from '@rocket.chat/ui-contexts';
 
 import { omnichannelQueryKeys } from '../../../../lib/queryKeys';
 
-export const useAgentsQuery = (query: PaginatedRequest = {}) => {
+export const useAgentsQuery = (query: PaginatedRequest, { offset, count }: { offset: number; count: number }) => {
 	const getAgents = useEndpoint('GET', '/v1/livechat/users/agent');
 
 	return usePaginatedQuery({
@@ -12,5 +12,7 @@ export const useAgentsQuery = (query: PaginatedRequest = {}) => {
 		queryKey: omnichannelQueryKeys.agents(query),
 		queryFn: getAgents,
 		itemsKey: 'users',
+		offset,
+		count,
 	});
 };
