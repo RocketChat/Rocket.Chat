@@ -9,6 +9,7 @@ import {
 	GenericTableHeaderCell,
 	GenericTableRow,
 	usePaginatedQuery,
+	usePagination,
 	GenericNoResults,
 	useFormatDateAndTime,
 } from '@rocket.chat/ui-client';
@@ -37,16 +38,8 @@ const LogsPage = () => {
 		[startDate, endDate],
 	);
 
-	const {
-		data: logs,
-		isLoading,
-		paginationProps,
-	} = usePaginatedQuery({
-		query,
-		queryKey: ABACQueryKeys.logs.list(query),
-		queryFn: getLogs,
-		itemsKey: 'events',
-	});
+	const queryKey = ABACQueryKeys.logs.list(query);
+	const { current, itemsPerPage, setItemsPerPage, setCurrent, ...paginationProps } = usePagination({ resetKey: queryKey });
 
 	const getActionLabel = (action?: AbacAttributeDefinitionChangeType | AbacActionPerformed | null) => {
 		switch (action) {
@@ -76,6 +69,15 @@ const LogsPage = () => {
 				return '';
 		}
 	};
+
+	const { data: logs, isLoading } = usePaginatedQuery({
+		query,
+		queryKey,
+		queryFn: getLogs,
+		itemsKey: 'events',
+		offset: current,
+		count: itemsPerPage,
+	});
 
 	const data = logs && {
 		events: logs.events.map((event) => {
@@ -229,7 +231,15 @@ const LogsPage = () => {
 							})}
 						</GenericTableBody>
 					</GenericTable>
-					<Pagination divider {...paginationProps} />
+					<Pagination
+						divider
+						current={current}
+						itemsPerPage={itemsPerPage}
+						count={data?.total || 0}
+						onSetItemsPerPage={setItemsPerPage}
+						onSetCurrent={setCurrent}
+						{...paginationProps}
+					/>
 				</>
 			)}
 		</>

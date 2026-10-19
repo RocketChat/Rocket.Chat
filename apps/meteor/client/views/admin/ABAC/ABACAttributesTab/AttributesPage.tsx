@@ -8,6 +8,7 @@ import {
 	GenericTableHeaderCell,
 	GenericTableRow,
 	usePaginatedQuery,
+	usePagination,
 	GenericNoResults,
 } from '@rocket.chat/ui-client';
 import { useEndpoint, useRouter, useSearchParameter } from '@rocket.chat/ui-contexts';
@@ -39,13 +40,23 @@ const AttributesPage = () => {
 		});
 	});
 
-	const query = useMemo(() => ({ ...(debouncedText ? { key: debouncedText, values: debouncedText } : {}) }), [debouncedText]);
+	const query = useMemo(
+		() => ({
+			...(debouncedText ? { key: debouncedText, values: debouncedText } : {}),
+		}),
+		[debouncedText],
+	);
 
-	const { data, isLoading, paginationProps } = usePaginatedQuery({
+	const queryKey = ABACQueryKeys.roomAttributes.list(query);
+	const { current, itemsPerPage, setItemsPerPage, setCurrent, ...paginationProps } = usePagination({ resetKey: queryKey });
+
+	const { data, isLoading } = usePaginatedQuery({
 		query,
-		queryKey: ABACQueryKeys.roomAttributes.list(query),
+		queryKey,
 		queryFn: getAttributes,
 		itemsKey: 'attributes',
+		offset: current,
+		count: itemsPerPage,
 	});
 
 	const columns: TableColumnWidth[] = ['auto', 'auto', 40];
@@ -89,7 +100,15 @@ const AttributesPage = () => {
 							))}
 						</GenericTableBody>
 					</GenericTable>
-					<Pagination divider {...paginationProps} />
+					<Pagination
+						divider
+						current={current}
+						itemsPerPage={itemsPerPage}
+						count={data?.total || 0}
+						onSetItemsPerPage={setItemsPerPage}
+						onSetCurrent={setCurrent}
+						{...paginationProps}
+					/>
 				</>
 			)}
 		</>

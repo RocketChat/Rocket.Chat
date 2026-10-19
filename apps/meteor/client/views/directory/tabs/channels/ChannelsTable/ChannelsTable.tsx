@@ -8,6 +8,7 @@ import {
 	GenericTableBody,
 	GenericTableLoadingTable,
 	usePaginatedQuery,
+	usePagination,
 	useSort,
 	GenericNoResults,
 } from '@rocket.chat/ui-client';
@@ -75,11 +76,23 @@ const ChannelsTable = () => {
 
 	const getDirectoryData = useEndpoint('GET', '/v1/directory');
 	const query = useDirectoryQuery({ text }, [sortBy, sortDirection], 'channels');
-	const { data, isFetched, isLoading, isError, refetch, paginationProps } = usePaginatedQuery({
+	const queryKey = ['getDirectoryData', query];
+	const {
+		current,
+		itemsPerPage,
+		setItemsPerPage: onSetItemsPerPage,
+		setCurrent: onSetCurrent,
+		...paginationProps
+	} = usePagination({
+		resetKey: queryKey,
+	});
+	const { data, isFetched, isLoading, isError, refetch } = usePaginatedQuery({
 		query,
-		queryKey: ['getDirectoryData', query],
+		queryKey,
 		queryFn: getDirectoryData,
 		itemsKey: 'result',
+		offset: current,
+		count: itemsPerPage,
 	});
 
 	const onClick = useMemo(
@@ -112,7 +125,15 @@ const ChannelsTable = () => {
 							))}
 						</GenericTableBody>
 					</GenericTable>
-					<Pagination divider {...paginationProps} />
+					<Pagination
+						divider
+						current={current}
+						itemsPerPage={itemsPerPage}
+						count={data?.total || 0}
+						onSetItemsPerPage={onSetItemsPerPage}
+						onSetCurrent={onSetCurrent}
+						{...paginationProps}
+					/>
 				</>
 			)}
 			{isFetched && data?.result.length === 0 && <GenericNoResults />}

@@ -18,6 +18,7 @@ import {
 	GenericTableLoadingTable,
 	GenericTableRow,
 	usePaginatedQuery,
+	usePagination,
 	useSort,
 	GenericNoResults,
 } from '@rocket.chat/ui-client';
@@ -51,6 +52,15 @@ const CustomEmoji = ({ onClick, reload }: CustomEmojiProps) => {
 
 	const columns: TableColumnWidth[] = ['x200', 'x200'];
 
+	const queryKey = ['getEmojiList', query];
+	const {
+		current,
+		itemsPerPage,
+		setItemsPerPage: onSetItemsPerPage,
+		setCurrent: onSetCurrent,
+		...paginationProps
+	} = usePagination({ resetKey: queryKey });
+
 	const headers = useMemo(
 		() => [
 			<GenericTableHeaderCell key='name' direction={sortDirection} active={sortBy === 'name'} onClick={setSort} sort='name'>
@@ -62,11 +72,13 @@ const CustomEmoji = ({ onClick, reload }: CustomEmojiProps) => {
 	);
 
 	const getEmojiList = useEndpoint('GET', '/v1/emoji-custom.all');
-	const { data, refetch, isSuccess, isLoading, isError, paginationProps } = usePaginatedQuery({
+	const { data, refetch, isSuccess, isLoading, isError } = usePaginatedQuery({
 		query,
-		queryKey: ['getEmojiList', query],
+		queryKey,
 		queryFn: getEmojiList,
 		itemsKey: 'emojis',
+		offset: current,
+		count: itemsPerPage,
 	});
 
 	useEffect(() => {
@@ -110,7 +122,15 @@ const CustomEmoji = ({ onClick, reload }: CustomEmojiProps) => {
 								))}
 						</GenericTableBody>
 					</GenericTable>
-					<Pagination divider {...paginationProps} />
+					<Pagination
+						divider
+						current={current}
+						itemsPerPage={itemsPerPage}
+						count={data?.total || 0}
+						onSetItemsPerPage={onSetItemsPerPage}
+						onSetCurrent={onSetCurrent}
+						{...paginationProps}
+					/>
 				</>
 			)}
 			{isSuccess && data && data.emojis.length === 0 && <GenericNoResults />}

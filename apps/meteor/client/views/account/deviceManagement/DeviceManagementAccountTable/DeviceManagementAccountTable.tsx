@@ -1,5 +1,5 @@
 import { useMediaQuery } from '@rocket.chat/fuselage-hooks';
-import { GenericTableHeaderCell, usePaginatedQuery, useSort } from '@rocket.chat/ui-client';
+import { GenericTableHeaderCell, usePaginatedQuery, usePagination, useSort } from '@rocket.chat/ui-client';
 import { useEndpoint } from '@rocket.chat/ui-contexts';
 import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -25,12 +25,17 @@ const DeviceManagementAccountTable = () => {
 		[sortBy, sortDirection],
 	);
 
+	const queryKey = deviceManagementQueryKeys.userSessions(query);
+	const { current, itemsPerPage, setCurrent, setItemsPerPage, ...paginationProps } = usePagination({ resetKey: queryKey });
+
 	const listSessions = useEndpoint('GET', '/v1/sessions/list');
 	const queryResult = usePaginatedQuery({
 		query,
-		queryKey: deviceManagementQueryKeys.userSessions(query),
+		queryKey,
 		queryFn: listSessions,
 		itemsKey: 'sessions',
+		offset: current,
+		count: itemsPerPage,
 	});
 
 	const mediaQuery = useMediaQuery('(min-width: 1024px)');
@@ -67,6 +72,11 @@ const DeviceManagementAccountTable = () => {
 					current={session.current}
 				/>
 			)}
+			current={current}
+			itemsPerPage={itemsPerPage}
+			setCurrent={setCurrent}
+			setItemsPerPage={setItemsPerPage}
+			paginationProps={paginationProps}
 		/>
 	);
 };
