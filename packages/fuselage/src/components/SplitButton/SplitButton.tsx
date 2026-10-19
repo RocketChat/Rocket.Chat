@@ -1,4 +1,22 @@
+import { styled, View, type GetProps } from '@tamagui/web';
 import type { HTMLAttributes, RefAttributes } from 'react';
+
+import { toCSSValue } from '../../helpers/toCSSValue';
+import { borderRadius } from '../../styleTokens';
+import { withFuselageProvider } from '../FuselageProvider/FuselageProvider';
+
+/** Layout of `rcx-split-button`; the segment colors stay in `SplitButton.styles.scss`, next to the button colors they derive from. */
+const SplitButtonFrame = styled(View, {
+	render: 'div',
+	display: 'inline-flex',
+	flexDirection: 'row',
+	flexWrap: 'nowrap',
+	flexShrink: 1,
+	minWidth: 'auto',
+	minHeight: 'auto',
+	alignItems: 'stretch',
+	borderRadius: toCSSValue('--rcx-button-border-radius', toCSSValue('--rcx-border-radius-medium', borderRadius('medium')!)),
+});
 
 export type SplitButtonProps = RefAttributes<HTMLDivElement> &
 	HTMLAttributes<HTMLDivElement> & {
@@ -15,7 +33,7 @@ export type SplitButtonProps = RefAttributes<HTMLDivElement> &
  */
 function SplitButton({ className, danger, warning, success, primary, ...props }: SplitButtonProps) {
 	return (
-		<div
+		<SplitButtonFrame
 			role='group'
 			className={[
 				'rcx-split-button',
@@ -27,9 +45,9 @@ function SplitButton({ className, danger, warning, success, primary, ...props }:
 			]
 				.filter(Boolean)
 				.join(' ')}
-			{...props}
+			{...(props as GetProps<typeof SplitButtonFrame>)}
 		/>
 	);
 }
 
-export default SplitButton;
+export default withFuselageProvider(SplitButton);
