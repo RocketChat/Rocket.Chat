@@ -38,7 +38,9 @@ way. Without a dedup rule a three-member mirrored room stores every message thre
 - **R1** An inbound message is stored with a `federation.eventId` that every copy of it
   shares and no other message has. A message whose event id is already stored is dropped.
 - **R2** The event id is `xmpp:<origin domain>:<rid>:<key>`. `<key>` is the XEP-0359
-  `<stanza-id/>` the room assigned when the stanza carries one. Otherwise it is a digest of
+  `<stanza-id/>` the room assigned, one whose `by` is the room's JID, when the stanza carries
+  one; a stanza-id naming anyone else is ignored, since an occupant can add it (XEP-0359 §6).
+  Otherwise it is a digest of
   the author and the stanza `id`, since a sender's ids are unique only among its own
   messages: two senders, or one sender in two rooms, may reuse an id. Without either,
   `<key>` is random. The author is the bare JID in a DM and a hosted room, and in a remote

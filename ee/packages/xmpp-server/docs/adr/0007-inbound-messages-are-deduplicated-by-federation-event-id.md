@@ -8,8 +8,8 @@
 
 - Every message received from the wire is stored through `Message.saveMessageFromFederation`
   with `federation.eventId = 'xmpp:<origin-domain>:<rid>:<key>'`, where `<key>` is the
-  XEP-0359 `<stanza-id/>` when the stanza carries one, a digest of the author and the stanza
-  `id` otherwise, and a random id when it carries neither. A message whose event id is
+  XEP-0359 `<stanza-id/>` stamped by the room (its `by` is the room's JID) when the stanza
+  carries one, a digest of the author and the stanza `id` otherwise, and a random id when it carries neither. A message whose event id is
   already stored is dropped.
 - The outgoing hook never relays a message that carries `federation.eventId`.
 - In a remote room, a reflected message whose `<replace/>` id, or the id its sender gave it

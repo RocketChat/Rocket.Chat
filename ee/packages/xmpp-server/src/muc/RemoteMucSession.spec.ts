@@ -130,6 +130,24 @@ describe('RemoteMucSession', () => {
 		});
 	});
 
+	it('takes as the room id only a stanza-id the room stamped, whatever an occupant added (message-deduplication R2)', () => {
+		const onMessage = jest.fn();
+		const { session } = createSession({ onMessage });
+
+		session.handleMessage(
+			p(
+				"<message from='team@conference.remote.tld/bob' type='groupchat' id='m1'><body>hi</body><stanza-id xmlns='urn:xmpp:sid:0' id='forged' by='bob@remote.tld'/><stanza-id xmlns='urn:xmpp:sid:0' id='room-id' by='Team@Conference.Remote.TLD'/></message>",
+			),
+		);
+		session.handleMessage(
+			p(
+				"<message from='team@conference.remote.tld/bob' type='groupchat' id='m2'><body>hi</body><stanza-id xmlns='urn:xmpp:sid:0' id='forged' by='bob@remote.tld'/></message>",
+			),
+		);
+
+		expect(onMessage.mock.calls.map(([message]) => message.id)).toEqual(['room-id', undefined]);
+	});
+
 	it('prefers the XEP-0359 origin id over the stanza id as the sender id', () => {
 		const onMessage = jest.fn();
 		const { session } = createSession({ onMessage });

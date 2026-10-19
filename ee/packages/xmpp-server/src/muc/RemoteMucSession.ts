@@ -2,6 +2,7 @@ import type Element from 'ltx/lib/Element';
 
 import type { MucRemoteOccupant } from '../events';
 import { MUC_STATUS, splitOccupantJid } from './stanzas';
+import { normalizeRoomJid } from '../jid/normalize';
 import { xml } from '../xml/build';
 import { buildReplace, parseReplaceId } from '../xml/correction';
 import { NS_MUC, NS_MUC_USER, NS_OCCUPANT_ID, NS_SID } from '../xml/namespaces';
@@ -135,13 +136,25 @@ export class RemoteMucSession {
 		this.deps.onMessage({
 			fromNick: nick,
 			body,
-			id: message.getChild('stanza-id', NS_SID)?.attrs.id,
+			id: this.roomStanzaId(message),
 			originId,
 			senderId: message.attrs.id,
 			occupantId: message.getChild('occupant-id', NS_OCCUPANT_ID)?.attrs.id,
 			replaceId: parseReplaceId(message),
 			raw: message,
 		});
+	}
+
+	/** The XEP-0359 id the room itself stamped; one naming anyone else may come from an occupant (XEP-0359 §6). */
+	private roomStanzaId(message: Element): string | undefined {
+		const isRoom = (by: string | undefined): boolean => {
+			try {
+				return !!by && normalizeRoomJid(by) === normalizeRoomJid(this.deps.roomJid);
+			} catch {
+				return false;
+			}
+		};
+		return message.getChildren('stanza-id', NS_SID).find((stanzaId) => isRoom(stanzaId.attrs.by))?.attrs.id;
 	}
 
 	markStale(): void {
