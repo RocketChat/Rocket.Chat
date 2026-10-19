@@ -102,6 +102,9 @@ spoof check, domain lists) and the authentication (STARTTLS, SASL EXTERNAL, dial
 - **R16** After three consecutive failed connection attempts to a remote domain, every stanza
   queued for it MUST be rejected with the connection failure, alongside R10's
   `connection.failed`. The limit is a Rocket.Chat choice, not a protocol rule.
+- **R18** Stopping the server ends each outbound stream with the closing
+  `</stream:stream>` (RFC 6120 §4.4), after everything already written to it, so a stanza
+  whose send resolved is not lost to the stop.
 
 **Routing of authenticated stanzas**
 
@@ -151,6 +154,15 @@ stream header in one write, so only a slow or hand-typed connection hits it. Whe
 `StanzaParser.write`. Test: `tests/integration/inbound-addressing.spec.ts`, "opens a stream
 whose XML declaration arrives split across reads"; no XMPP server can be made to split its
 declaration, so this one is an integration test.
+
+### D2 Stopping the server drops stanzas not yet written out
+
+A send resolves once the stanza is handed to the socket. Stopping the server destroys
+outbound sockets instead of closing their streams, so stanzas still buffered are lost
+although their send resolved (R18). Where: `S2SManager.stopAll` calls `destroy()` on outbound
+sessions. Test: `tests/integration/s2s.spec.ts`, "delivers every stanza already sent when
+the server stops"; the end-to-end harness cannot stop the service between a send and its
+delivery, so this one is an integration test.
 
 ## Open questions
 
