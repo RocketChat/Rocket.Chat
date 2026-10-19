@@ -1,5 +1,5 @@
 import type { ClassificationBannerPayload, ClassificationBannerSegment, IAbacAttributeDefinition, IRoom } from '@rocket.chat/core-typings';
-import { isABACManagedRoom, isDiscussion, isRoomFederated } from '@rocket.chat/core-typings';
+import { isABACManagedRoom, isDiscussion, isOmnichannelRoom, isRoomFederated } from '@rocket.chat/core-typings';
 import { isTruthy } from '@rocket.chat/tools';
 
 import { readableTextColor } from './colors';
@@ -89,15 +89,14 @@ export const buildClassificationBanner = (
 
 type ClassifiedRoom = Pick<IRoom, 't' | 'abacAttributes' | 'federated' | 'prid' | 'teamId'>;
 
-const roomTypes: Record<IRoom['t'], ClassificationRoomType> = {
-	d: 'direct',
-	c: 'public',
-	p: 'private',
-	l: 'omnichannel',
+const roomTypes: Record<ClassificationRoomType, IRoom['t']> = {
+	direct: 'd',
+	public: 'c',
+	private: 'p',
 };
 
 const matchesRoom = (room: ClassifiedRoom, { type, federated, discussion, team }: ClassificationRoomMatch = {}): boolean =>
-	(!type?.length || type.includes(roomTypes[room.t])) &&
+	(!type?.length || type.some((name) => roomTypes[name] === room.t)) &&
 	(federated === undefined || federated === isRoomFederated(room)) &&
 	(discussion === undefined || discussion === isDiscussion(room)) &&
 	(team === undefined || team === !!room.teamId);
@@ -106,6 +105,10 @@ export const buildRoomClassificationBanner = (
 	config: ClassificationBannersConfig,
 	room: ClassifiedRoom,
 ): ClassificationBannerPayload | undefined => {
+	if (isOmnichannelRoom(room)) {
+		return undefined;
+	}
+
 	if (isABACManagedRoom(room)) {
 		return buildClassificationBanner(config, room.abacAttributes);
 	}

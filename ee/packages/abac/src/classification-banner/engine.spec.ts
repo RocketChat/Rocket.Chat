@@ -215,7 +215,6 @@ describe('buildRoomClassificationBanner', () => {
 
 	it.each<[string, Pick<IRoom, 't' | 'abacAttributes'>]>([
 		['a DM', { t: 'd' }],
-		['an Omnichannel room', { t: 'l' }],
 		['a public channel', { t: 'c' }],
 		['a private room without attributes', { t: 'p' }],
 		['a private room with an empty attribute list', { t: 'p', abacAttributes: [] }],
@@ -229,6 +228,13 @@ describe('buildRoomClassificationBanner', () => {
 			backgroundColor: '#007a33',
 			color: readableTextColor('#007a33'),
 		});
+	});
+
+	it.each([
+		['a single entry', nonAbacBanner],
+		['a list', [nonAbacBanner, { ...nonAbacBanner, text: 'PERSONAL', match: {} }]],
+	])('renders nothing for an Omnichannel room when nonAbacBanner is %s that matches every room', (_name, option) => {
+		expect(buildRoomClassificationBanner({ ...config, nonAbacBanner: option }, { t: 'l' })).toBeUndefined();
 	});
 
 	it.each([
@@ -289,7 +295,6 @@ describe('buildRoomClassificationBanner', () => {
 		const groupDm: Room = { t: 'd', uids: ['alice', 'bob', 'carol'] };
 		const publicRoom: Room = { t: 'c' };
 		const privateRoom: Room = { t: 'p' };
-		const omnichannelRoom: Room = { t: 'l' };
 		const federatedPublicRoom: Room = { t: 'c', federated: true };
 		const federatedPrivateRoom: Room = { t: 'p', federated: true };
 		const discussion: Room = { t: 'p', prid: 'parent' };
@@ -299,9 +304,9 @@ describe('buildRoomClassificationBanner', () => {
 		it.each<[string, ClassificationRoomMatch, Room, boolean]>([
 			['type direct matches a DM', { type: ['direct'] }, dm, true],
 			['type direct matches a group DM', { type: ['direct'] }, groupDm, true],
-			['a type list matches any of its types', { type: ['public', 'omnichannel'] }, omnichannelRoom, true],
-			['a type list does not match other types', { type: ['public', 'omnichannel'] }, privateRoom, false],
-			['an empty type list matches any type', { type: [] }, omnichannelRoom, true],
+			['a type list matches any of its types', { type: ['public', 'private'] }, privateRoom, true],
+			['a type list does not match other types', { type: ['public', 'private'] }, dm, false],
+			['an empty type list matches any type', { type: [] }, publicRoom, true],
 			['private and federated matches a federated private room', { type: ['private'], federated: true }, federatedPrivateRoom, true],
 			['private and federated does not match a federated public room', { type: ['private'], federated: true }, federatedPublicRoom, false],
 			['private and federated does not match a private room', { type: ['private'], federated: true }, privateRoom, false],

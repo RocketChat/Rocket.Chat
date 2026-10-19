@@ -61,7 +61,7 @@ describe('classification banners JSON schema (v1 enforcement contract)', () => {
 			'a list of nonAbacBanner entries',
 			[
 				{ enabled: true, text: 'PERSONAL', color: '#502b85', match: { type: ['direct'] } },
-				{ enabled: false, text: 'EXTERNAL', color: '#6C727A', match: { type: ['omnichannel'] } },
+				{ enabled: false, text: 'EXTERNAL', color: '#6C727A', match: { federated: true } },
 				{ enabled: true, text: 'TEAM', color: '#0033a0', match: { team: true, discussion: false } },
 				{ enabled: true, text: 'UNCLASSIFIED', color: '#007a33' },
 			],
@@ -101,6 +101,10 @@ describe('classification banners JSON schema (v1 enforcement contract)', () => {
 		['empty nonAbacBanner list', { ...validConfig, nonAbacBanner: [] }],
 		['invalid entry in a nonAbacBanner list', { ...validConfig, nonAbacBanner: [{ enabled: true, text: 'X' }] }],
 		['unknown match type', { ...validConfig, nonAbacBanner: { enabled: true, text: 'X', color: '#000000', match: { type: ['channel'] } } }],
+		[
+			'omnichannel match type',
+			{ ...validConfig, nonAbacBanner: { enabled: true, text: 'X', color: '#000000', match: { type: ['omnichannel'] } } },
+		],
 		[
 			'duplicate match type',
 			{ ...validConfig, nonAbacBanner: { enabled: true, text: 'X', color: '#000000', match: { type: ['direct', 'direct'] } } },

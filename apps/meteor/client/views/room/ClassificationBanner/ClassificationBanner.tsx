@@ -1,4 +1,4 @@
-import { isABACManagedRoom, isDiscussion, isRoomFederated } from '@rocket.chat/core-typings';
+import { isABACManagedRoom, isDiscussion, isOmnichannelRoom, isRoomFederated } from '@rocket.chat/core-typings';
 import { Box } from '@rocket.chat/fuselage';
 import { useSetting } from '@rocket.chat/ui-contexts';
 import { useTranslation } from 'react-i18next';
@@ -13,8 +13,9 @@ const ClassificationBanner = () => {
 	const room = useRoom();
 	const isABACAvailable = useIsABACAvailable();
 	const bannersEnabled = useSetting('ABAC_Classification_Banners_Enabled', false);
+	const showBanner = bannersEnabled && isABACAvailable && !isOmnichannelRoom(room);
 	const { data: banner } = useRoomAbacInfo(room._id, room.abacAttributes, {
-		enabled: bannersEnabled && isABACAvailable,
+		enabled: showBanner,
 		select: (data) => data.classificationBanner,
 		...(!isABACManagedRoom(room) && {
 			queryKey: roomsQueryKeys.classificationBanner({
@@ -27,7 +28,7 @@ const ClassificationBanner = () => {
 		}),
 	});
 
-	if (!bannersEnabled || !isABACAvailable || !banner) {
+	if (!showBanner || !banner) {
 		return null;
 	}
 

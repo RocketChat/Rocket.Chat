@@ -22,7 +22,7 @@ export type ClassificationBannerAttribute = {
 	values: ClassificationBannerValue[];
 };
 
-export type ClassificationRoomType = 'direct' | 'public' | 'private' | 'omnichannel';
+export type ClassificationRoomType = 'direct' | 'public' | 'private';
 
 export type ClassificationRoomMatch = {
 	type?: ClassificationRoomType[];

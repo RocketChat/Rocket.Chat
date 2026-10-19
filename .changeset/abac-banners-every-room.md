@@ -4,4 +4,4 @@
 '@rocket.chat/meteor': minor
 ---
 
-Adds an optional `nonAbacBanner` to the ABAC classification banners configuration, so rooms that are not ABAC managed, such as DMs, discussions, federated and Omnichannel rooms, can show a configured banner.
+Adds an optional `nonAbacBanner` to the ABAC classification banners configuration, so rooms that are not ABAC managed, such as DMs, discussions and federated rooms, can show a configured banner.

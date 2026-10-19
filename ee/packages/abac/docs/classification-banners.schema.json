@@ -24,7 +24,7 @@
       }
     },
     "nonAbacBanner": {
-      "description": "Banner for rooms that are not ABAC managed, such as DMs, group DMs, discussions, federated and Omnichannel rooms. One entry, or a list where the first enabled entry whose match fits the room is shown. When absent, or when no enabled entry matches, the room shows no banner",
+      "description": "Banner for rooms that are not ABAC managed, such as DMs, group DMs, discussions and federated rooms. One entry, or a list where the first enabled entry whose match fits the room is shown. When absent, or when no enabled entry matches, the room shows no banner. Omnichannel rooms never show a banner",
       "oneOf": [
         { "$ref": "#/$defs/nonAbacBanner" },
         { "type": "array", "minItems": 1, "items": { "$ref": "#/$defs/nonAbacBanner" } }
@@ -62,7 +62,7 @@
         "type": {
           "type": "array",
           "uniqueItems": true,
-          "items": { "enum": ["direct", "public", "private", "omnichannel"] }
+          "items": { "enum": ["direct", "public", "private"] }
         },
         "federated": { "type": "boolean" },
         "discussion": { "type": "boolean" },

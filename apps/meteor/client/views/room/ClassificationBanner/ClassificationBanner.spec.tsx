@@ -80,4 +80,14 @@ describe('ClassificationBanner', () => {
 		await waitFor(() => expect(screen.getAllByRole('region', { name: 'ABAC_Classification_Banner' })).toHaveLength(2));
 		expect(getRoomInfo).toHaveBeenCalledTimes(2);
 	});
+
+	it('should not call rooms.info or render a banner for an Omnichannel room', async () => {
+		renderBanners([
+			{ _id: 'dm', t: 'd' },
+			{ _id: 'livechat', t: 'l' },
+		]);
+
+		await waitFor(() => expect(screen.getAllByRole('region', { name: 'ABAC_Classification_Banner' })).toHaveLength(1));
+		expect(getRoomInfo).toHaveBeenCalledTimes(1);
+	});
 });
