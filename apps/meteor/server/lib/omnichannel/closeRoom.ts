@@ -184,6 +184,7 @@ async function doCloseRoom(
 		throw new Error('Error removing inquiry');
 	}
 	if (removedInquiry.deletedCount) {
+		// eslint-disable-next-line @typescript-eslint/no-non-null-assertion -- a removed inquiry was found by the lookup above
 		void notifyOnLivechatInquiryChanged(inquiry!, 'removed');
 	}
 

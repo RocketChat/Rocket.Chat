@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-non-null-assertion -- getters mirror the apps-engine builder interfaces, which type optional fields as always present */
 import type { IVideoConferenceBuilder } from '@rocket.chat/apps-engine/definition/accessors/IVideoConferenceBuilder';
 import { RocketChatAssociationModel } from '@rocket.chat/apps-engine/definition/metadata/RocketChatAssociations';
 import type { IGroupVideoConference } from '@rocket.chat/apps-engine/definition/videoConferences/IVideoConference';

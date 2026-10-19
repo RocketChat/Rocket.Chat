@@ -119,6 +119,7 @@ export class DiffSequence {
 		const ptrs = new Array(N);
 
 		const oldIdxSeq = function (iNew: number): number {
+			// eslint-disable-next-line @typescript-eslint/no-non-null-assertion -- only called for ids present in oldIndexOfId
 			return oldIndexOfId.get(newResults[iNew]._id)!;
 		};
 		for (let i = 0; i < N; i++) {
@@ -164,6 +165,7 @@ export class DiffSequence {
 					if ('addedBefore' in observer) observer.addedBefore?.(newDoc._id, fields as Partial<T>, groupId);
 					observer.added?.(newDoc._id, fields as Partial<T>);
 				} else {
+					// eslint-disable-next-line @typescript-eslint/no-non-null-assertion -- newDoc is known to be in oldResults here
 					oldDoc = oldResults[oldIndexOfId.get(newDoc._id)!];
 					projectedNew = projectionFn(newDoc);
 					projectedOld = projectionFn(oldDoc);
@@ -176,6 +178,7 @@ export class DiffSequence {
 			}
 			if (groupId) {
 				newDoc = newResults[endOfGroup];
+				// eslint-disable-next-line @typescript-eslint/no-non-null-assertion -- group ends are unmoved docs, so they are in oldResults
 				oldDoc = oldResults[oldIndexOfId.get(newDoc._id)!];
 				projectedNew = projectionFn(newDoc);
 				projectedOld = projectionFn(oldDoc);

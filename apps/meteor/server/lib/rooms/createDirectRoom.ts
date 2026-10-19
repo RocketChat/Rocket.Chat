@@ -169,6 +169,7 @@ export async function createDirectRoom(
 							status: 'INVITED',
 							inviter: {
 								_id: creatorUser._id,
+								// eslint-disable-next-line @typescript-eslint/no-non-null-assertion -- room members always have a username
 								username: creatorUser.username!,
 								name: creatorUser.name,
 							},

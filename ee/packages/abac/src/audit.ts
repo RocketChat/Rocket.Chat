@@ -33,6 +33,15 @@ async function audit<K extends AbacAuditServerEventKey>(event: K, payload: Event
 	);
 }
 
+const toUserActor = (actor: AbacActor): IAuditServerActor => ({
+	type: 'user',
+	_id: actor._id,
+	// eslint-disable-next-line @typescript-eslint/no-non-null-assertion -- ABAC changes are made by users with a username
+	username: actor.username!,
+	ip: '0.0.0.0',
+	useragent: '',
+});
+
 export const Audit = {
 	attributeCreated: async (attribute: IAbacAttributeDefinition, actor: AbacActor) => {
 		return audit(
@@ -43,7 +52,7 @@ export const Audit = {
 				change: 'created',
 				current: attribute,
 			} as EventPayload<'abac.attribute.changed'>,
-			{ type: 'user', _id: actor._id, username: actor.username!, ip: '0.0.0.0', useragent: '' },
+			toUserActor(actor),
 		);
 	},
 	attributeUpdated: async (current: IAbacAttributeDefinition, diff: IAbacAttributeDefinition, actor: AbacActor) => {
@@ -56,7 +65,7 @@ export const Audit = {
 				current,
 				diff,
 			},
-			{ type: 'user', _id: actor._id, username: actor.username!, ip: '0.0.0.0', useragent: '' },
+			toUserActor(actor),
 		);
 	},
 	attributeDeleted: async (attribute: IAbacAttributeDefinition, actor: AbacActor) => {
@@ -69,7 +78,7 @@ export const Audit = {
 				current: null,
 				diff: attribute,
 			},
-			{ type: 'user', _id: actor._id, username: actor.username!, ip: '0.0.0.0', useragent: '' },
+			toUserActor(actor),
 		);
 	},
 	objectAttributeChanged: async (
@@ -88,7 +97,7 @@ export const Audit = {
 				previous,
 				current,
 			},
-			{ type: 'user', _id: actor._id, username: actor.username!, ip: '0.0.0.0', useragent: '' },
+			toUserActor(actor),
 		);
 	},
 	objectAttributeRemoved: async (
@@ -107,7 +116,7 @@ export const Audit = {
 				previous,
 				current,
 			},
-			{ type: 'user', _id: actor._id, username: actor.username!, ip: '0.0.0.0', useragent: '' },
+			toUserActor(actor),
 		);
 	},
 	objectAttributesRemoved: async (minimalRoom: MinimalRoom, previous: IAbacAttributeDefinition[], actor: AbacActor) => {
@@ -120,7 +129,7 @@ export const Audit = {
 				previous,
 				current: null,
 			},
-			{ type: 'user', _id: actor._id, username: actor.username!, ip: '0.0.0.0', useragent: '' },
+			toUserActor(actor),
 		);
 	},
 	actionPerformed: async (

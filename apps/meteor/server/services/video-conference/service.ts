@@ -1965,11 +1965,12 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 			return;
 		}
 
-		if (!call.messages.started || !call.users.length) {
+		const { started } = call.messages;
+		if (!started || !call.users.length) {
 			return;
 		}
 
-		await Promise.all(call.users.map(({ _id }) => follow({ tmid: call.messages.started!, uid: _id })));
+		await Promise.all(call.users.map(({ _id }) => follow({ tmid: started, uid: _id })));
 	}
 
 	private async maybeCreateDiscussion(callId: VideoConference['_id'], createdBy?: IUser): Promise<void> {

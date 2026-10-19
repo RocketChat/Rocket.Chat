@@ -18,6 +18,7 @@ type NameMap = { [userId: string]: { fname: string; name: string } };
 export function getNameForDMs(members: AtLeast<IUser, '_id' | 'name' | 'username'>[]): NameMap {
 	const nameMap: NameMap = {};
 
+	// eslint-disable-next-line @typescript-eslint/no-non-null-assertion -- room members always have a username
 	const sortedMembers = members.sort((u1, u2) => (u1.name! || u1.username!).localeCompare(u2.name! || u2.username!));
 
 	for (const member of sortedMembers) {

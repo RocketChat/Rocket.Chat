@@ -169,6 +169,7 @@ export class AppAccessors {
 
 			const apiExtend: IApiExtend = {
 				async provideApi(api: IApi) {
+					// eslint-disable-next-line @typescript-eslint/no-non-null-assertion -- the registry is seeded with apiEndpoints before any app code runs
 					const apiEndpoints = AppObjectRegistry.get<IApiEndpointMetadata[]>('apiEndpoints')!;
 
 					api.endpoints.forEach((endpoint) => {

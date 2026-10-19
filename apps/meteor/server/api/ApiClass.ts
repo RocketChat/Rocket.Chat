@@ -781,6 +781,7 @@ export class APIClass<TBasePath extends string = '', TOperations extends Record<
 						this.logger = logger;
 
 						const authToken = this.request.headers.get('x-auth-token');
+						// eslint-disable-next-line @typescript-eslint/no-non-null-assertion -- hashing a string always yields a string
 						this.token = Accounts._hashLoginToken(String(authToken))!;
 
 						const objectForRateLimitMatch = {

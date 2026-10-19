@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-non-null-assertion -- getters mirror the apps-engine builder interfaces, which type optional fields as always present */
 import type { ILivechatMessageBuilder } from '@rocket.chat/apps-engine/definition/accessors/ILivechatMessageBuilder';
 import type { IMessageBuilder } from '@rocket.chat/apps-engine/definition/accessors/IMessageBuilder';
 import type { ILivechatMessage as EngineLivechatMessage } from '@rocket.chat/apps-engine/definition/livechat/ILivechatMessage';

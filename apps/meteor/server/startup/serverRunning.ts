@@ -90,7 +90,8 @@ Meteor.startup(async () => {
 		showSuccessBox('SERVER RUNNING', msg);
 
 		// Deprecation
-		if (!skipMongoDbDeprecationCheck && semver.satisfies(semver.coerce(mongoVersion)!, '<8.0.0')) {
+		const coercedMongoVersion = semver.coerce(mongoVersion);
+		if (!skipMongoDbDeprecationCheck && coercedMongoVersion && semver.satisfies(coercedMongoVersion, '<8.0.0')) {
 			msg = [
 				`DEPRECATED: MONGODB VERSION ${mongoVersion}.`,
 				'SUPPORT FOR MONGODB <8.0 WILL BE REMOVED IN ROCKET.CHAT 9.0.0',

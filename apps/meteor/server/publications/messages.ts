@@ -158,6 +158,18 @@ export async function handleWithoutPagination(rid: IRoom['_id'], lastUpdate: Dat
 	};
 }
 
+async function findDeletedMessages(
+	rid: IRoom['_id'],
+	query: { $gt: Date } | { $lt: Date },
+	options: FindOptions<IMessage>,
+): Promise<IMessage[]> {
+	const cursor = Messages.trashFind({ rid, _deletedAt: query }, { projection: { _id: 1, _deletedAt: 1 }, ...options });
+	if (!cursor) {
+		throw new Error('Messages trash collection is not available');
+	}
+	return cursor.toArray();
+}
+
 export async function handleCursorPagination(
 	type: CursorPaginationType,
 	rid: IRoom['_id'],
@@ -177,10 +189,7 @@ export async function handleCursorPagination(
 	const response =
 		type === 'UPDATED'
 			? await Messages.findForUpdates(rid, { updatedAt: query }, options).toArray()
-			: ((await Messages.trashFind(
-					{ rid, _deletedAt: query },
-					{ projection: { _id: 1, _deletedAt: 1 }, ...options },
-				)!.toArray()) as IMessage[]);
+			: await findDeletedMessages(rid, query, options);
 
 	const cursor = {
 		next: mountNextCursor(response, count, type, next, previous),

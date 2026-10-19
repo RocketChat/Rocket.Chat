@@ -181,14 +181,15 @@ const createNewDdpSdkStream = (
 		.then(() => {
 			if (stopped) return;
 			const sdk = getDdpSdk();
-			subscription = sdk.client.subscribe(`stream-${streamName}`, key, { useCollection: false, args });
+			const currentSubscription = sdk.client.subscribe(`stream-${streamName}`, key, { useCollection: false, args });
+			subscription = currentSubscription;
 
-			subscription
+			currentSubscription
 				.ready()
 				.then(() => {
 					if (stopped) return;
 					meta.ready = true;
-					ee.emit('ready', [undefined, { msg: 'ready', subs: [subscription!.id] }]);
+					ee.emit('ready', [undefined, { msg: 'ready', subs: [currentSubscription.id] }]);
 				})
 				.catch((err) => {
 					if (stopped) return;

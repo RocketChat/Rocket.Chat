@@ -323,6 +323,7 @@ export class RoomService extends ServiceClassInternal implements IRoomService {
 			groupMentions: 0,
 			...(roles && { roles }),
 			...(status && { status }),
+			// eslint-disable-next-line @typescript-eslint/no-non-null-assertion -- inviters always have a username
 			...(inviter && { inviter: { _id: inviter._id, username: inviter.username!, ...(inviter.name && { name: inviter.name }) } }),
 			...autoTranslateConfig,
 			...getDefaultSubscriptionPref(userToBeAdded),

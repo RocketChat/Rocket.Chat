@@ -79,9 +79,15 @@ Meteor.methods<ServerMethods>({
 			throw error;
 		}
 
+		const currentUser = await Meteor.userAsync();
+		if (!currentUser) {
+			throw new Meteor.Error('error-invalid-user', 'Invalid user', { method: 'saveSetting' });
+		}
+
 		const auditSettingOperation = updateAuditedByUser({
 			_id: uid,
-			username: (await Meteor.userAsync())!.username!,
+			// eslint-disable-next-line @typescript-eslint/no-non-null-assertion -- logged-in users always have a username
+			username: currentUser.username!,
 			ip: this.connection?.clientAddress || '',
 			useragent: this.connection?.httpHeaders['user-agent'] || '',
 		});

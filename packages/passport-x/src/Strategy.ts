@@ -158,9 +158,13 @@ export class Strategy {
 					return done(new InternalOAuthError('Failed to fetch user profile', err));
 				}
 
+				if (body === undefined) {
+					return done(new Error('Failed to parse user profile'));
+				}
+
 				let json: Record<string, unknown>;
 				try {
-					json = JSON.parse(body!);
+					json = JSON.parse(body);
 				} catch {
 					return done(new Error('Failed to parse user profile'));
 				}
@@ -168,7 +172,7 @@ export class Strategy {
 				const profile: Profile = {
 					...parseProfile(json),
 					provider: 'twitter',
-					_raw: body!,
+					_raw: body,
 					_json: json,
 					_accessLevel: res?.headers['x-access-level'],
 				};

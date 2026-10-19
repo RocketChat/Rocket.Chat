@@ -22,6 +22,7 @@ export const useBreakpoints = (unit: 'px' | 'em' = 'em'): string[] => {
 			() =>
 				breakpoints
 					.slice(1)
+					// eslint-disable-next-line @typescript-eslint/no-non-null-assertion -- every breakpoint after the first has a minViewportWidth
 					.map(({ minViewportWidth }) => `(min-width: ${unit === 'px' ? `${minViewportWidth}px` : `${minViewportWidth! / 16}em`})`),
 			[unit],
 		),

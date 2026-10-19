@@ -26,7 +26,11 @@ export const callMethodWithoutResult = (method: string, ...args: unknown[]): voi
 export const hasPendingMethods = (): boolean => Meteor.connection._outstandingMethodBlocks.length !== 0;
 
 export const onRawMessage = (listener: (rawMessage: string) => void): void => {
-	Meteor.connection._stream!.on('message', listener);
+	const stream = Meteor.connection._stream;
+	if (!stream) {
+		throw new Error('Meteor connection has no stream');
+	}
+	stream.on('message', listener);
 };
 
 export const subscribeRaw = (...args: Parameters<typeof Meteor.connection.subscribe>) => Meteor.connection.subscribe(...args);

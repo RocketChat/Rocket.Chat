@@ -98,6 +98,7 @@ export class Room {
 	public async getUsernames(): Promise<Array<string>> {
 		// Get usernames
 		if (typeof this._USERNAMES === 'undefined') {
+			// eslint-disable-next-line @typescript-eslint/no-non-null-assertion -- rooms read from the server always have an id
 			this._USERNAMES = this[PrivateManager]?.getBridges().getInternalBridge().doGetUsernamesOfRoomById(this.id!);
 		}
 

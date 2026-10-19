@@ -4,6 +4,7 @@ import { Messages } from '../../stores';
 import { getUserId } from '../user';
 
 export const toggleStarredMessage = (message: IMessage, starred: boolean) => {
+	// eslint-disable-next-line @typescript-eslint/no-non-null-assertion -- starring is only offered to logged-in users
 	const uid = getUserId()!;
 
 	if (starred) {

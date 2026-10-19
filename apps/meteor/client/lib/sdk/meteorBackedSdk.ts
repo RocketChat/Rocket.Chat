@@ -124,7 +124,10 @@ const createMeteorBackedClient = () => {
 			if ((msg as { collection?: unknown }).collection !== id) return;
 			callback(msg);
 		};
-		const stream = Meteor.connection._stream!;
+		const stream = Meteor.connection._stream;
+		if (!stream) {
+			throw new Error('Meteor connection has no stream');
+		}
 		stream.on('message', handler);
 		// Meteor's stream `on` doesn't expose an off; the listener is harmless
 		// and lives for the page lifetime. Caller's stop is a no-op.

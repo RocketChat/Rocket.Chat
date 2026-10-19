@@ -33,7 +33,10 @@ if (isSdkTransportEnabled()) {
 function installStubMeteorStream(): void {
 	const conn = Meteor.connection;
 
-	const realStream = conn._stream!;
+	const realStream = conn._stream;
+	if (!realStream) {
+		throw new Error('Meteor connection has no stream');
+	}
 
 	// Carry Meteor's already-registered handlers (registered in the Connection
 	// constructor BEFORE we got a chance to swap `_stream`) over to the stub —

@@ -97,7 +97,8 @@ API.v1.addRoute(
 				const roomInfo = {
 					source: {
 						...(isWidget(this.request.headers)
-							? { type: OmnichannelSourceType.WIDGET, destination: this.request.headers.get('host')! }
+							? // eslint-disable-next-line @typescript-eslint/no-non-null-assertion -- a missing Host header is stored as before
+								{ type: OmnichannelSourceType.WIDGET, destination: this.request.headers.get('host')! }
 							: { type: OmnichannelSourceType.API }),
 					},
 				};

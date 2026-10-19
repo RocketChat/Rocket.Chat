@@ -381,10 +381,12 @@ export const notifyOnUserChange = async ({ clientAction, id, data, diff, unset }
 	}
 
 	if (clientAction === 'inserted') {
+		// eslint-disable-next-line @typescript-eslint/no-non-null-assertion -- inserted events always carry the user document
 		void api.broadcast('watch.users', { clientAction, id, data: data! });
 		return;
 	}
 
+	// eslint-disable-next-line @typescript-eslint/no-non-null-assertion -- updated events always carry a diff
 	void api.broadcast('watch.users', { clientAction, diff: diff!, unset: unset || {}, id });
 };
 

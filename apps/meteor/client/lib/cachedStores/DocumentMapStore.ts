@@ -236,6 +236,7 @@ export const createDocumentMapStore = <T extends { _id: string }>({ onInvalidate
 			const affected: T[] = [];
 			set((state) => {
 				const records = new Map(state.records);
+				// eslint-disable-next-line @typescript-eslint/no-non-null-assertion -- a missing record is still reported to onInvalidate as before
 				if (onInvalidate) affected.push(state.records.get(_id)!);
 				records.delete(_id);
 				return { records };

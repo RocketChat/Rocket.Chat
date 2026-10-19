@@ -17,6 +17,7 @@ const getName = (t: TFunction, permission: IPermission): string => {
 		if (permission.section) {
 			path = `${path}${t(permission.section)} > `;
 		}
+		// eslint-disable-next-line @typescript-eslint/no-non-null-assertion -- settings-level permissions always carry a settingId
 		return `${path}${t(permission.settingId!)}`;
 	}
 

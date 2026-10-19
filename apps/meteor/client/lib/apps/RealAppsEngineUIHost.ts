@@ -9,8 +9,6 @@ import { baseURI } from '../baseURI';
 import { getUserAvatarURL } from '../getUserAvatarURL';
 import { getUser } from '../user';
 
-// FIXME: replace non-null assertions with proper error handling
-
 export class RealAppsEngineUIHost extends AppsEngineUIHost {
 	private _baseURL: string;
 
@@ -21,7 +19,10 @@ export class RealAppsEngineUIHost extends AppsEngineUIHost {
 	}
 
 	private getUserAvatarUrl(username: string) {
-		const avatarUrl = getUserAvatarURL(username)!;
+		const avatarUrl = getUserAvatarURL(username);
+		if (!avatarUrl) {
+			throw new Error('Avatar URL not available');
+		}
 
 		if (!avatarUrl.startsWith('http') && !avatarUrl.startsWith('data')) {
 			return `${this._baseURL}${avatarUrl}`;
@@ -41,29 +42,39 @@ export class RealAppsEngineUIHost extends AppsEngineUIHost {
 		try {
 			const { members } = await sdk.rest.get('/v1/groups.members', { roomId: id });
 
-			cachedMembers = members.map(({ _id, username }): IExternalComponentUserInfo => ({
-				id: _id,
-				username: username!,
-				avatarUrl: this.getUserAvatarUrl(username!),
-			}));
+			cachedMembers = members.map(({ _id, username }): IExternalComponentUserInfo => {
+				if (!username) {
+					throw new Error('Member without username');
+				}
+				return {
+					id: _id,
+					username,
+					avatarUrl: this.getUserAvatarUrl(username),
+				};
+			});
 		} catch (error) {
 			console.warn(error);
 		}
 
 		return {
 			id,
+			// eslint-disable-next-line @typescript-eslint/no-non-null-assertion -- rooms without a name are passed through as before
 			slugifiedName: slugifiedName!,
 			members: cachedMembers,
 		};
 	}
 
 	async getClientUserInfo(): Promise<IExternalComponentUserInfo> {
-		const { username, _id } = getUser()!;
+		const user = getUser();
+		if (!user?.username) {
+			throw new Error('User not logged in');
+		}
+		const { username, _id } = user;
 
 		return {
 			id: _id,
-			username: username!,
-			avatarUrl: this.getUserAvatarUrl(username!) || '',
+			username,
+			avatarUrl: this.getUserAvatarUrl(username) || '',
 		};
 	}
 }

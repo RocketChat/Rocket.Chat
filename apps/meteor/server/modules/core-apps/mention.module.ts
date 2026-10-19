@@ -31,7 +31,11 @@ export class MentionModule implements IUiKitCoreApp {
 			payload: { value: stringifiedMentions, blockId: referenceMessageId },
 		} = payload;
 
-		const user = payload.user!;
+		const { user } = payload;
+		if (!user) {
+			throw new Error('Mention bot - Failed to retrieve user information');
+		}
+		// eslint-disable-next-line @typescript-eslint/no-non-null-assertion -- block actions on messages always carry the room
 		const room = payload.room!;
 
 		const mentions = retrieveMentionsFromPayload(stringifiedMentions as string);

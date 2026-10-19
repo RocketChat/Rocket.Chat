@@ -124,6 +124,7 @@ export const LivechatEnterprise = {
 
 		const monitors = validUserMonitors.map(({ _id: monitorId, username }) => ({
 			monitorId,
+			// eslint-disable-next-line @typescript-eslint/no-non-null-assertion -- monitors are registered users, so they have a username
 			username: username!,
 		}));
 

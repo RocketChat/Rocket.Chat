@@ -10,50 +10,53 @@ function getShortcodes(hexcode: string): string[] {
 	return Array.isArray(entry) ? entry : [entry];
 }
 
-function buildMaps() {
-	_unicodeToShort = new Map();
-	_shortToUnicode = new Map();
+function buildMaps(): [Map<string, string>, Map<string, string>] {
+	const unicodeToShort = new Map<string, string>();
+	const shortToUnicode = new Map<string, string>();
 
 	for (const emoji of data) {
 		const codes = getShortcodes(emoji.hexcode);
 		if (codes.length === 0) continue;
 
 		const shortname = `:${codes[0]}:`;
-		_unicodeToShort.set(emoji.emoji, shortname);
-		_shortToUnicode.set(shortname, emoji.emoji);
+		unicodeToShort.set(emoji.emoji, shortname);
+		shortToUnicode.set(shortname, emoji.emoji);
 
 		for (const alt of codes.slice(1)) {
-			_shortToUnicode.set(`:${alt}:`, emoji.emoji);
+			shortToUnicode.set(`:${alt}:`, emoji.emoji);
 		}
 
 		if (emoji.skins) {
 			for (const skin of emoji.skins) {
 				const skinCodes = getShortcodes(skin.hexcode);
 				if (skinCodes.length > 0) {
-					_unicodeToShort.set(skin.emoji, `:${skinCodes[0]}:`);
+					unicodeToShort.set(skin.emoji, `:${skinCodes[0]}:`);
 					for (const code of skinCodes) {
-						_shortToUnicode.set(`:${code}:`, skin.emoji);
+						shortToUnicode.set(`:${code}:`, skin.emoji);
 					}
 				}
 			}
 		}
 	}
+
+	return [unicodeToShort, shortToUnicode];
 }
 
-function ensureMaps() {
+function ensureMaps(): { unicodeToShort: Map<string, string>; shortToUnicode: Map<string, string> } {
 	if (!_unicodeToShort || !_shortToUnicode) {
-		buildMaps();
+		[_unicodeToShort, _shortToUnicode] = buildMaps();
 	}
+	return { unicodeToShort: _unicodeToShort, shortToUnicode: _shortToUnicode };
 }
 
 export function unicodeToShortname(text: string): string {
-	ensureMaps();
-	return _unicodeToShort!.get(text) ?? text;
+	const { unicodeToShort } = ensureMaps();
+	return unicodeToShort.get(text) ?? text;
 }
 
 export function shortnameToUnicode(text: string): string {
-	ensureMaps();
+	const { shortToUnicode } = ensureMaps();
 	return text.replace(/:([a-zA-Z0-9_+-]+):/g, (match) => {
-		return _shortToUnicode!.get(match) ?? match;
+		return shortToUnicode.get(match) ?? match;
 	});
 }

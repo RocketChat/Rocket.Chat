@@ -28,6 +28,7 @@ export class UIKitInteractionResponder {
 
 		return {
 			success: true,
+			// eslint-disable-next-line @typescript-eslint/no-non-null-assertion -- interactions that open or update views always carry a triggerId
 			...formatModalInteraction(viewData, { appId, triggerId: triggerId!, type: UIKitInteractionType.MODAL_OPEN }),
 		};
 	}
@@ -37,6 +38,7 @@ export class UIKitInteractionResponder {
 
 		return {
 			success: true,
+			// eslint-disable-next-line @typescript-eslint/no-non-null-assertion -- interactions that open or update views always carry a triggerId
 			...formatModalInteraction(viewData, { appId, triggerId: triggerId!, type: UIKitInteractionType.MODAL_UPDATE }),
 		};
 	}
@@ -46,6 +48,7 @@ export class UIKitInteractionResponder {
 
 		return {
 			success: true,
+			// eslint-disable-next-line @typescript-eslint/no-non-null-assertion -- interactions that open or update views always carry a triggerId
 			...formatContextualBarInteraction(viewData, { appId, triggerId: triggerId!, type: UIKitInteractionType.CONTEXTUAL_BAR_OPEN }),
 		};
 	}
@@ -55,6 +58,7 @@ export class UIKitInteractionResponder {
 
 		return {
 			success: true,
+			// eslint-disable-next-line @typescript-eslint/no-non-null-assertion -- interactions that open or update views always carry a triggerId
 			...formatContextualBarInteraction(viewData, { appId, triggerId: triggerId!, type: UIKitInteractionType.CONTEXTUAL_BAR_UPDATE }),
 		};
 	}
@@ -64,6 +68,7 @@ export class UIKitInteractionResponder {
 
 		return {
 			appId,
+			// eslint-disable-next-line @typescript-eslint/no-non-null-assertion -- interactions that open or update views always carry a triggerId
 			triggerId: triggerId!,
 			success: false,
 			type: UIKitInteractionType.ERRORS,

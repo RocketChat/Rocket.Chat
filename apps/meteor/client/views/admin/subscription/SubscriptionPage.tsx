@@ -93,6 +93,7 @@ const SubscriptionPage = () => {
 		if (subscriptionSuccess) {
 			router.navigate(
 				{
+					// eslint-disable-next-line @typescript-eslint/no-non-null-assertion -- this page is only rendered from a named route
 					name: router.getRouteName()!,
 					params: Object.fromEntries(Object.entries(router.getSearchParameters()).filter(([key]) => key !== 'subscriptionSuccess')),
 				},

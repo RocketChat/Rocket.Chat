@@ -312,6 +312,7 @@ export class AbacService extends ServiceClass implements IAbacService {
 		if (!finalAttributes.length) {
 			if (Array.isArray(user.abacAttributes) && user.abacAttributes.length) {
 				const finalUser = await Users.unsetAbacAttributesById(user._id);
+				// eslint-disable-next-line @typescript-eslint/no-non-null-assertion -- the user was just read by id, so the update returns it
 				await this.onSubjectAttributesChanged(finalUser!, []);
 				void Audit.subjectAttributeChanged([], { _id: user._id, username: user.username });
 			}
@@ -321,6 +322,7 @@ export class AbacService extends ServiceClass implements IAbacService {
 		const finalUser = await Users.setAbacAttributesById(user._id, finalAttributes);
 
 		if (diffAttributeSets(user?.abacAttributes || [], finalAttributes).removed) {
+			// eslint-disable-next-line @typescript-eslint/no-non-null-assertion -- the user was just read by id, so the update returns it
 			await this.onSubjectAttributesChanged(finalUser!, finalAttributes);
 		}
 

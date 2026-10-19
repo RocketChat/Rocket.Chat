@@ -52,6 +52,7 @@ export const useOmnichannelPrioritiesConfig = (level: LivechatPriorityWeight, sh
 			return '';
 		}
 
+		// eslint-disable-next-line @typescript-eslint/no-non-null-assertion -- stored priorities always carry an i18n key
 		return dirty ? name : t(i18n!);
 	}, [level, priorities, t]);
 

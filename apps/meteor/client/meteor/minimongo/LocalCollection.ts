@@ -299,6 +299,7 @@ export class LocalCollection<T extends { _id: string }> {
 				query.dirty = false;
 				this._recomputeResults(query, query.resultsSnapshot);
 			} else {
+				// eslint-disable-next-line @typescript-eslint/no-non-null-assertion -- pausing snapshots the results of every clean query
 				DiffSequence.diffQueryChanges(query.ordered, query.resultsSnapshot!, query.results, query, {
 					projectionFn: query.projectionFn,
 				});
@@ -756,14 +757,12 @@ export class LocalCollection<T extends { _id: string }> {
 			return;
 		}
 
-		if (!this.paused && !oldResults) {
-			oldResults = query.results;
-		}
+		oldResults ||= query.results;
 
 		query.results = query.cursor._getRawObjects({ ordered: query.ordered });
 
 		if (!this.paused) {
-			DiffSequence.diffQueryChanges(query.ordered, oldResults!, query.results, query, { projectionFn: query.projectionFn });
+			DiffSequence.diffQueryChanges(query.ordered, oldResults, query.results, query, { projectionFn: query.projectionFn });
 		}
 	}
 
@@ -829,13 +828,9 @@ export class LocalCollection<T extends { _id: string }> {
 				return [selector._id];
 			}
 
-			if (
-				selector._id &&
-				Array.isArray((selector._id as FilterOperators<T['_id']>).$in) &&
-				(selector._id as FilterOperators<T['_id']>).$in?.length &&
-				(selector._id as FilterOperators<T['_id']>).$in?.every((id) => typeof id === 'string')
-			) {
-				return (selector._id as FilterOperators<T['_id']>).$in!;
+			const ids = selector._id ? (selector._id as FilterOperators<T['_id']>).$in : undefined;
+			if (Array.isArray(ids) && ids.length && ids.every((id) => typeof id === 'string')) {
+				return ids;
 			}
 
 			return null;

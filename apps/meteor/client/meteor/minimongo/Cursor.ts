@@ -444,6 +444,7 @@ export class Cursor<T extends { _id: string }, TOptions extends Options<T>> {
 						--to;
 					}
 
+					// eslint-disable-next-line @typescript-eslint/no-non-null-assertion -- the observer only reports ids it holds
 					observeCallbacks.movedTo(transform(clone(this.docs.get(id)!)), from, to, before || null);
 				},
 				removed(id) {
@@ -451,6 +452,7 @@ export class Cursor<T extends { _id: string }, TOptions extends Options<T>> {
 						return;
 					}
 
+					// eslint-disable-next-line @typescript-eslint/no-non-null-assertion -- the observer only reports ids it holds
 					const doc = transform(this.docs.get(id)!);
 
 					if (observeCallbacks.removedAt) {
@@ -469,6 +471,7 @@ export class Cursor<T extends { _id: string }, TOptions extends Options<T>> {
 				},
 				changed(id, fields) {
 					if (observeCallbacks.changed) {
+						// eslint-disable-next-line @typescript-eslint/no-non-null-assertion -- the observer only reports ids it holds
 						const oldDoc = this.docs.get(id)!;
 						const doc = clone(oldDoc);
 
@@ -479,6 +482,7 @@ export class Cursor<T extends { _id: string }, TOptions extends Options<T>> {
 				},
 				removed(id) {
 					if (observeCallbacks.removed) {
+						// eslint-disable-next-line @typescript-eslint/no-non-null-assertion -- the observer only reports ids it holds
 						observeCallbacks.removed(transform(this.docs.get(id)!));
 					}
 				},

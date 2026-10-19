@@ -111,6 +111,7 @@ export const customRender = (html: string) => {
 		emoji.dispatchUpdate();
 	}
 
+	// eslint-disable-next-line @typescript-eslint/no-non-null-assertion -- before any custom emoji is loaded the regexp is unset and replace() receives undefined as before
 	html = html.replace(emoji.packages.emojiCustom._regexp!, (shortname) => {
 		if (typeof shortname === 'undefined' || shortname === '' || (emoji.packages.emojiCustom.list?.indexOf(shortname) ?? -1) === -1) {
 			return shortname;
@@ -126,6 +127,7 @@ export const customRender = (html: string) => {
 
 		return `<span class="emoji emoji--custom" style="background-image:url(${getEmojiUrlFromName(
 			emojiAlias,
+			// eslint-disable-next-line @typescript-eslint/no-non-null-assertion -- a missing extension keeps producing the same URL as before
 			dataCheck.extension!,
 			dataCheck.etag,
 		)});" data-emoji="${emojiAlias}" title="${shortname}">${shortname}</span>`;

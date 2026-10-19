@@ -152,6 +152,7 @@ export class Logger implements ILogger {
 
 	public getLogs(): ILoggerStorageEntry {
 		return {
+			// eslint-disable-next-line @typescript-eslint/no-non-null-assertion -- the registry is seeded with the app id before any app code runs
 			appId: AppObjectRegistry.get('id')!,
 			method: this.method,
 			entries: this.entries,

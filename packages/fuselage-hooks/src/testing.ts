@@ -23,6 +23,7 @@ export function renderHook<
 		renderToString(Wrapper ? createElement(Wrapper, null, createElement(TestComponent)) : createElement(TestComponent));
 
 		return {
+			// eslint-disable-next-line @typescript-eslint/no-non-null-assertion -- renderToString runs the hook synchronously, so current is set
 			result: { current: current! },
 			rerender: () => undefined,
 			unmount: () => undefined,

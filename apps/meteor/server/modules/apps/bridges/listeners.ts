@@ -396,6 +396,7 @@ export class AppListenerBridge {
 						.getListenerManager()
 						.executeListener(args.event, {
 							room: rm,
+							// eslint-disable-next-line @typescript-eslint/no-non-null-assertion -- the event always carries the joining user
 							joiningUser: this.orch.getConverters().get('users').convertToApp(joiningUser)!,
 							inviter: this.orch.getConverters().get('users').convertToApp(invitingUser),
 						});
@@ -408,6 +409,7 @@ export class AppListenerBridge {
 						.getListenerManager()
 						.executeListener(args.event, {
 							room: rm,
+							// eslint-disable-next-line @typescript-eslint/no-non-null-assertion -- the event always carries the leaving user
 							leavingUser: this.orch.getConverters().get('users').convertToApp(leavingUser)!,
 							removedBy: this.orch.getConverters().get('users').convertToApp(removedBy),
 						});

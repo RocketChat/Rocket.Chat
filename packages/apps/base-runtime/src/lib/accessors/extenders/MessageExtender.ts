@@ -33,17 +33,13 @@ export class MessageExtender implements IMessageExtender {
 	}
 
 	public addAttachment(attachment: IMessageAttachment): IMessageExtender {
-		this.ensureAttachment();
-
-		this.msg.attachments!.push(attachment);
+		this.ensureAttachment().push(attachment);
 
 		return this;
 	}
 
 	public addAttachments(attachments: Array<IMessageAttachment>): IMessageExtender {
-		this.ensureAttachment();
-
-		this.msg.attachments = this.msg.attachments!.concat(attachments);
+		this.msg.attachments = this.ensureAttachment().concat(attachments);
 
 		return this;
 	}
@@ -52,9 +48,10 @@ export class MessageExtender implements IMessageExtender {
 		return structuredClone(this.msg);
 	}
 
-	private ensureAttachment(): void {
+	private ensureAttachment(): Array<IMessageAttachment> {
 		if (!Array.isArray(this.msg.attachments)) {
 			this.msg.attachments = [];
 		}
+		return this.msg.attachments;
 	}
 }

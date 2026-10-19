@@ -53,6 +53,7 @@ export const addAllUserToRoomFn = async (userId: string, rid: IRoom['_id'], acti
 	}
 
 	await beforeAddUserToRoom(
+		// eslint-disable-next-line @typescript-eslint/no-non-null-assertion -- users without a username are passed through as before
 		users.map((u) => u.username!),
 		room,
 	);

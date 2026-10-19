@@ -20,6 +20,7 @@ export const saveRoomTopic = async (
 
 	const room = await Rooms.findOneById(rid);
 
+	// eslint-disable-next-line @typescript-eslint/no-non-null-assertion -- a missing room is passed to the topic hook as before
 	await Room.beforeTopicChange(room!);
 
 	const update = await Rooms.setTopicById(rid, roomTopic);

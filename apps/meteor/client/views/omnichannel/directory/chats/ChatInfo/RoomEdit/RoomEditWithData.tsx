@@ -19,6 +19,7 @@ function RoomEditWithData({ id: roomId, reload, reloadInfo, onClose }: RoomEditW
 	const { data: room, isLoading: isRoomLoading, isError: isRoomError } = useOmnichannelRoomInfo(roomId);
 	const { _id: visitorId } = room?.v ?? {};
 
+	// eslint-disable-next-line @typescript-eslint/no-non-null-assertion -- the query stays disabled until visitorId is known
 	const { data: visitor, isLoading: isVisitorLoading, isError: isVisitorError } = useVisitorInfo(visitorId!, { enabled: !!visitorId });
 
 	if (isRoomLoading || isVisitorLoading) {
