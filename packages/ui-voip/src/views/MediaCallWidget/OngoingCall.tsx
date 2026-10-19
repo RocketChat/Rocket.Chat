@@ -1,4 +1,4 @@
-import { ButtonGroup } from '@rocket.chat/fuselage';
+import { ButtonGroup, Divider } from '@rocket.chat/fuselage';
 import { ActionButton, ToggleButton } from '@rocket.chat/ui-media';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -19,6 +19,8 @@ import {
 	getPeerDisplayName,
 } from '../../components';
 import { useMediaCallView } from '../../context/MediaCallViewContext';
+import AppActions from '../../experimental/AppActionButtons/components/AppActions';
+import { useVisibleAppActions } from '../../experimental/AppActionButtons/hooks/useVisibleAppActions';
 import { isUnknownPeer } from '../../utils/isUnknownPeer';
 
 const OngoingCall = () => {
@@ -42,6 +44,8 @@ const OngoingCall = () => {
 	const holdAvailable = allowedFeatures.includes('hold');
 	const transferAvailable = allowedFeatures.includes('transfer');
 
+	const appActions = useVisibleAppActions();
+
 	const isSip = peerInfo?.type === 'sip';
 
 	return (
@@ -60,6 +64,8 @@ const OngoingCall = () => {
 			<WidgetInfo slots={slots} />
 			<WidgetFooter>
 				{!isInline && dialpadOpen && <Dialpad />}
+				<AppActions actions={appActions} vertical />
+				{appActions.length > 0 && <Divider />}
 				<ButtonGroup large>
 					{!isInline && (
 						<ActionButton

@@ -8,8 +8,19 @@ import type { IUIKitErrorInteractionParam } from '../accessors/IUIController';
 export type IUIKitModalViewParam = Omit<IUIKitSurface, 'appId' | 'id' | 'type'> & Partial<Pick<IUIKitSurface, 'id'>>;
 export type IUIKitContextualBarViewParam = Omit<IUIKitSurface, 'appId' | 'id' | 'type'> & Partial<Pick<IUIKitSurface, 'id'>>;
 
-export class UIKitInteractionResponder {
-	constructor(private readonly baseContext: IUIKitBaseIncomingInteraction) {}
+// eslint-disable-next-line @typescript-eslint/naming-convention -- We need to keep the old class name so we can hide the new method behind an experimental interface
+export interface UIKitInteractionResponder {
+	successResponse(): IUIKitResponse;
+	errorResponse(): IUIKitResponse;
+	openModalViewResponse(viewData: IUIKitModalViewParam): IUIKitModalResponse;
+	updateModalViewResponse(viewData: IUIKitModalViewParam): IUIKitModalResponse;
+	openContextualBarViewResponse(viewData: IUIKitContextualBarViewParam): IUIKitContextualBarResponse;
+	updateContextualBarViewResponse(viewData: IUIKitContextualBarViewParam): IUIKitContextualBarResponse;
+	viewErrorResponse(errorInteraction: IUIKitErrorInteractionParam): IUIKitErrorResponse;
+}
+
+export class UIKitInteractionResponderImpl implements UIKitInteractionResponder {
+	constructor(protected readonly baseContext: IUIKitBaseIncomingInteraction) {}
 
 	public successResponse(): IUIKitResponse {
 		return {
@@ -69,6 +80,41 @@ export class UIKitInteractionResponder {
 			type: UIKitInteractionType.ERRORS,
 			viewId: errorInteraction.viewId,
 			errors: errorInteraction.errors,
+		};
+	}
+
+	/**
+	 * =========================================
+	 * EXPERIMENTAL
+	 * =========================================
+	 */
+
+	// This method isn't part of the base public interface, an augmentation interface is used to expose it as experimental
+	public updateActionButtonResponse(update: {
+		actionId?: string;
+		labelI18n?: string;
+		variant?: 'default' | 'danger';
+		disabled?: boolean;
+	}): {
+		appId: string;
+		actionId: string;
+		triggerId: string;
+		type: 'action_button.update';
+		update: {
+			actionId?: string;
+			labelI18n?: string;
+			variant?: 'default' | 'danger';
+			disabled?: boolean;
+		};
+	} {
+		const { appId, actionId, triggerId } = this.baseContext;
+
+		return {
+			type: 'action_button.update',
+			appId,
+			actionId: actionId as string,
+			triggerId: triggerId as string,
+			update,
 		};
 	}
 }
