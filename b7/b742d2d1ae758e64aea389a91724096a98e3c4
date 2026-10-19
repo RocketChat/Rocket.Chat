@@ -1,0 +1,21 @@
+ee/packages/xmpp-server/docs/intents/scale-and-availability.md
+  s_bf193bee63afbe::t_a577ffc35820be 69-72
+ee/packages/xmpp-server/docs/specs/s2s-connectivity.md
+  s_bf193bee63afbe::t_d7d339875cdc1b 145-147
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "b7b742d2d1ae758e64aea389a91724096a98e3c4",
+  "prompts": {},
+  "sessions": {
+    "s_bf193bee63afbe": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "0f126c7e-b9e6-435d-856c-ef1cd07242d5",
+        "model": "unknown"
+      },
+      "human_author": "Diego Sampaio <chinello@gmail.com>"
+    }
+  }
+}
