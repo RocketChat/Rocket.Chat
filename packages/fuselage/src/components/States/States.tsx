@@ -1,15 +1,29 @@
+import { styled, View, type GetProps } from '@tamagui/web';
 import type { AllHTMLAttributes, ReactNode } from 'react';
 
-import { cx } from '../../helpers/composeClassNames';
+import { textIconColors } from '../../Theme';
+import { spacing } from '../../styleTokens';
+import { withFuselageProvider } from '../FuselageProvider/FuselageProvider';
 
 export type StatesProps = {
 	children?: ReactNode;
 } & AllHTMLAttributes<HTMLDivElement>;
 
-const States = ({ children, className, ...props }: StatesProps) => (
-	<div {...props} className={cx('rcx-states', className)}>
+const StatesFrame = styled(View, {
+	justifyContent: 'center',
+	alignItems: 'center',
+	flexShrink: 1,
+	minWidth: 'auto',
+	minHeight: 'auto',
+	boxSizing: 'content-box',
+	padding: spacing('x16'),
+	color: String(textIconColors['font-secondary-info']),
+});
+
+const States = ({ children, ...props }: StatesProps) => (
+	<StatesFrame {...(props as GetProps<typeof StatesFrame>)} className='rcx-states'>
 		{children}
-	</div>
+	</StatesFrame>
 );
 
-export default States;
+export default withFuselageProvider(States);

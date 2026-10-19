@@ -1,15 +1,23 @@
+import { styled, type GetProps } from '@tamagui/web';
 import type { AllHTMLAttributes, ReactNode } from 'react';
 
-import { cx } from '../../helpers/composeClassNames';
+import { StatesBlockFrame } from './StatesSubtitle';
+import { withFuselageProvider } from '../FuselageProvider/FuselageProvider';
 
 export type StatesSuggestionListProps = {
 	children?: ReactNode;
 } & AllHTMLAttributes<HTMLUListElement>;
 
-const StatesSuggestionList = ({ children, className, ...props }: StatesSuggestionListProps) => (
-	<ul {...props} className={cx('rcx-states__list', className)}>
+const StatesSuggestionListFrame = styled(StatesBlockFrame, {
+	render: 'ul',
+	marginBlockEnd: 0,
+	listStyle: 'initial',
+});
+
+const StatesSuggestionList = ({ children, ...props }: StatesSuggestionListProps) => (
+	<StatesSuggestionListFrame {...(props as GetProps<typeof StatesSuggestionListFrame>)} className='rcx-states__list'>
 		{children}
-	</ul>
+	</StatesSuggestionListFrame>
 );
 
-export default StatesSuggestionList;
+export default withFuselageProvider(StatesSuggestionList);

@@ -1,15 +1,25 @@
+import { styled, Text } from '@tamagui/web';
 import type { AllHTMLAttributes, ReactNode } from 'react';
 
-import { cx } from '../../helpers/composeClassNames';
+import { spacing } from '../../styleTokens';
+import { withFuselageProvider } from '../FuselageProvider/FuselageProvider';
 
 export type StatesSuggestionListItemProps = {
 	children?: ReactNode;
 } & AllHTMLAttributes<HTMLLIElement>;
 
-const StatesSuggestionListItem = ({ children, className, ...props }: StatesSuggestionListItemProps) => (
-	<li {...props} className={cx('rcx-states__list-item', className)}>
-		<span className='rcx-states__list-item-wrapper'>{children}</span>
+const StatesSuggestionListItemWrapper = styled(Text, {
+	render: 'span',
+	whiteSpace: 'normal',
+	wordWrap: 'normal',
+	boxSizing: 'content-box',
+	marginInlineStart: spacing('neg-x4'),
+});
+
+const StatesSuggestionListItem = ({ children, ...props }: StatesSuggestionListItemProps) => (
+	<li {...props} className='rcx-states__list-item'>
+		<StatesSuggestionListItemWrapper className='rcx-states__list-item-wrapper'>{children}</StatesSuggestionListItemWrapper>
 	</li>
 );
 
-export default StatesSuggestionListItem;
+export default withFuselageProvider(StatesSuggestionListItem);
