@@ -4,7 +4,7 @@ exports[`renders CircleVariant without crashing 1`] = `
 <body>
   <div>
     <span
-      class="rcx-skeleton rcx-skeleton--circle rcx-css-19saq22"
+      class="is_View _d-1987097250 _f-571455214 _o-1106425799 _fvn-1977619713 _h-492511477 _a-119288947 _o-1083158629 _b-326940086 _br-1686906935 rcx-skeleton rcx-skeleton--circle rcx-css-19saq22"
     />
   </div>
 </body>
@@ -14,7 +14,7 @@ exports[`renders Default without crashing 1`] = `
 <body>
   <div>
     <span
-      class="rcx-skeleton rcx-skeleton--text"
+      class="is_View _d-1987097250 _f-571455214 _o-1106425799 _fvn-1977619713 _a-119288947 _o-1083158629 _br-1682169757 _b-326940086 _h-568431264 _m-93279763 _to-611310301 _t-1660003422 rcx-skeleton rcx-skeleton--text"
     />
   </div>
 </body>
@@ -24,7 +24,7 @@ exports[`renders RectVariant without crashing 1`] = `
 <body>
   <div>
     <span
-      class="rcx-skeleton rcx-skeleton--rect rcx-css-1q2xu1s"
+      class="is_View _d-1987097250 _f-571455214 _o-1106425799 _fvn-1977619713 _h-492511477 _a-119288947 _o-1083158629 _br-1682169757 _b-326940086 rcx-skeleton rcx-skeleton--rect rcx-css-1q2xu1s"
     />
   </div>
 </body>
@@ -34,7 +34,7 @@ exports[`renders TextVariant without crashing 1`] = `
 <body>
   <div>
     <span
-      class="rcx-skeleton rcx-skeleton--text"
+      class="is_View _d-1987097250 _f-571455214 _o-1106425799 _fvn-1977619713 _a-119288947 _o-1083158629 _br-1682169757 _b-326940086 _h-568431264 _m-93279763 _to-611310301 _t-1660003422 rcx-skeleton rcx-skeleton--text"
     />
   </div>
 </body>
