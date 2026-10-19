@@ -6,9 +6,9 @@ import { FormProvider, useForm, useWatch } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 
 import RoomForm from './RoomForm';
-import { toAttributeMap } from '../../../../components/ABAC/AbacRoomCreation';
+import { hasAttributeChanges } from './hasAttributeChanges';
+import { toAttributeMap } from '../../../../components/ABAC/AbacRoomCreation/AbacAttributesStep';
 import AbacRoomMembershipPreview from '../../../../components/ABAC/AbacRoomMembershipPreview/AbacRoomMembershipPreview';
-import { hasAttributeChanges } from '../../../../components/ABAC/hasAttributeChanges';
 import { ABACQueryKeys } from '../../../../lib/queryKeys';
 
 export type RoomsContextualBarProps = {
@@ -98,8 +98,9 @@ const RoomsContextualBar = ({ roomInfo, attributesData, redacted = false, onClos
 						rid={roomInfo.rid}
 						roomName={roomInfo.name}
 						attributes={previewAttributes}
+						isSaving={saveMutation.isPending}
 						onBack={() => setPreviewAttributes(undefined)}
-						onSave={() => saveMutation.mutateAsync(previewAttributes)}
+						onSave={() => saveMutation.mutate(previewAttributes)}
 					/>
 				) : (
 					<RoomForm

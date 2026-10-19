@@ -1,90 +1,51 @@
 import type { AbacMembershipGroup } from '@rocket.chat/core-typings';
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { useUserId } from '@rocket.chat/ui-contexts';
+import { useEffect, useMemo } from 'react';
 
 import { usePreviewPages } from './usePreviewPages';
 
-export const PREVIEW_MIN_SHOWN = 25;
-export const PREVIEW_AUTO_FETCH_PAGES = 2;
-export const PREVIEW_LOAD_MORE_PAGES = 5;
+const FILL_MEMBERS = 25;
+const FILL_PAGES = 3;
 
-type LoopState = {
-	scope: string;
-	budget: number;
-	target: number;
-	stopped: boolean;
-};
-
-const freshLoop = (scope: string, shown = 0, budget = PREVIEW_AUTO_FETCH_PAGES): LoopState => ({
-	scope,
-	budget,
-	target: shown + PREVIEW_MIN_SHOWN,
-	stopped: false,
-});
-
-export const useRoomMembershipPreview = (
-	rid: string,
-	attributes: Record<string, string[]>,
-	filter: string,
-	group: AbacMembershipGroup,
-	paused = false,
-) => {
+export const useRoomMembershipPreview = (rid: string, attributes: Record<string, string[]>, filter: string, group: AbacMembershipGroup) => {
 	const { data, isPending, isError, error, isFetching, isFetchingNextPage, isFetchNextPageError, hasNextPage, fetchNextPage, refetch } =
 		usePreviewPages(rid, attributes, filter, group);
 
-	const scope = `${group}:${filter}`;
-	const [storedLoop, setLoop] = useState<LoopState>(() => freshLoop(scope));
-	const loop = storedLoop.scope === scope ? storedLoop : freshLoop(scope);
-
+	const userId = useUserId();
 	const pages = data?.pages;
-	const members = useMemo(() => pages?.flatMap((page) => page.members) ?? [], [pages]);
+	const members = useMemo(() => {
+		const loaded = pages?.flatMap((page) => page.members) ?? [];
+		const editorRow = loaded.find(({ _id }) => _id === userId);
+		return editorRow ? [editorRow, ...loaded.filter((member) => member !== editorRow)] : loaded;
+	}, [pages, userId]);
 	const checked = useMemo(() => pages?.reduce((sum, page) => sum + page.checked, 0) ?? 0, [pages]);
-	const total = pages?.[0]?.total;
 
-	const needsMore = !isError && !!hasNextPage && !loop.stopped && members.length < loop.target;
-	const wantsMore = needsMore && !paused;
-	const canAutoFetch = wantsMore && loop.budget > 0;
-	const inFlight = useRef(false);
+	const pageCount = pages?.length ?? 0;
+	const canFetchMore = !!hasNextPage && !isFetching && !isError;
+	const isFilling = !!hasNextPage && !isError && members.length < FILL_MEMBERS && pageCount < FILL_PAGES;
 
 	useEffect(() => {
-		if (!canAutoFetch || isFetching || inFlight.current) {
-			return;
+		if (canFetchMore && isFilling) {
+			void fetchNextPage();
 		}
-		inFlight.current = true;
-		setLoop({ ...loop, budget: loop.budget - 1 });
-		void fetchNextPage({ cancelRefetch: false }).finally(() => {
-			inFlight.current = false;
-		});
-	}, [canAutoFetch, isFetching, loop, fetchNextPage]);
+	}, [canFetchMore, isFilling, pageCount, fetchNextPage]);
 
-	const isChecking = !isError && !loop.stopped && !paused && (isFetchingNextPage || canAutoFetch);
-	const isCapped = needsMore && loop.budget <= 0 && !isFetching;
-	const isStopped = loop.stopped && !!hasNextPage;
-
-	const resume = (budget: number) => {
-		if (isError || !hasNextPage || paused) {
-			return;
-		}
-		setLoop(freshLoop(scope, members.length, budget));
-	};
+	const loadMore = () => void (canFetchMore && fetchNextPage());
 
 	return {
 		members,
 		checked,
-		total,
+		total: pages?.[0]?.total,
 		isPending,
 		isError,
 		error,
 		isRetrying: isError && isFetching,
-		isChecking,
-		isPartial: isStopped || isCapped,
+		isChecking: isFetchingNextPage || isFilling,
+		isPartial: !isPending && !isError && !!hasNextPage && !isFilling,
 		isExhausted: !isPending && !isError && !hasNextPage,
-		onEndReached: () => {
-			if (!needsMore && !loop.stopped && !isFetching) {
-				resume(PREVIEW_AUTO_FETCH_PAGES);
-			}
-		},
-		loadMore: () => resume(PREVIEW_LOAD_MORE_PAGES),
-		stop: () => setLoop({ ...loop, stopped: true }),
+		// Virtuoso keeps firing endReached while every row fits on screen, so only a list long enough to scroll loads on its own.
+		onEndReached: () => members.length >= FILL_MEMBERS && loadMore(),
+		loadMore,
 		retry: () => void (isFetchNextPageError ? fetchNextPage({ cancelRefetch: false }) : refetch({ cancelRefetch: false })),
 	};
 };

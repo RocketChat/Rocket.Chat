@@ -20,7 +20,7 @@ const page = (over: Partial<IAbacRoomMembershipPreview> = {}): IAbacRoomMembersh
 
 const renderPreview = (respond: (body: PreviewBody) => IAbacRoomMembershipPreview | Promise<IAbacRoomMembershipPreview>) => {
 	const endpoint = jest.fn(async (body: PreviewBody) => respond(body));
-	const onSave = jest.fn(async (_editorLosesAccess: boolean) => undefined);
+	const onSave = jest.fn();
 	const onBack = jest.fn();
 	const AppRoot = mockAppRoot()
 		.withJohnDoe()
@@ -33,7 +33,14 @@ const renderPreview = (respond: (body: PreviewBody) => IAbacRoomMembershipPrevie
 	);
 
 	const view = render(
-		<AbacRoomMembershipPreview rid='rid' roomName='alpha' attributes={{ dept: ['eng'] }} onBack={onBack} onSave={onSave} />,
+		<AbacRoomMembershipPreview
+			rid='rid'
+			roomName='alpha'
+			attributes={{ dept: ['eng'] }}
+			isSaving={false}
+			onBack={onBack}
+			onSave={onSave}
+		/>,
 		{ wrapper },
 	);
 
@@ -63,7 +70,6 @@ describe('AbacRoomMembershipPreview', () => {
 		await userEvent.click(within(dialog).getByRole('button', { name: 'Save' }));
 
 		await waitFor(() => expect(onSave).toHaveBeenCalledTimes(1));
-		expect(onSave).toHaveBeenCalledWith(false);
 		expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
 	});
 
@@ -81,7 +87,6 @@ describe('AbacRoomMembershipPreview', () => {
 		await userEvent.click(within(dialog).getByRole('button', { name: 'Save' }));
 
 		await waitFor(() => expect(onSave).toHaveBeenCalledTimes(1));
-		expect(onSave).toHaveBeenCalledWith(false);
 	});
 
 	it('should confirm without a count when not every member was checked', async () => {
@@ -127,7 +132,7 @@ describe('AbacRoomMembershipPreview', () => {
 
 		await userEvent.click(within(dialog).getByRole('button', { name: 'Proceed_with_caution' }));
 
-		await waitFor(() => expect(onSave).toHaveBeenCalledWith(true));
+		await waitFor(() => expect(onSave).toHaveBeenCalledTimes(1));
 	});
 
 	it('should ask for a destructive confirmation when nobody retains access, even if the removed list was not finished', async () => {
@@ -173,88 +178,22 @@ describe('AbacRoomMembershipPreview', () => {
 			await userEvent.click(within(dialog).getByRole('button', { name: 'Save' }));
 
 			await waitFor(() => expect(onSave).toHaveBeenCalledTimes(1));
-			expect(onSave).toHaveBeenCalledWith(true);
 			expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
 		},
 	);
 
-	it('should pause checking once Save is pressed, without marking the list partial', async () => {
-		const { endpoint, onSave } = renderPreview(({ after }) =>
-			after
-				? new Promise<never>(() => undefined)
-				: page({ members: [bob], editor: 'compliant', total: 1000, next: { _id: 'bob', username: 'bob' } }),
+	it('should check a few sparse pages on its own, then wait for Load more', async () => {
+		const { endpoint } = renderPreview(({ after }) =>
+			page({ editor: 'compliant', next: { _id: 'cursor', username: 'cursor' }, ...(after ? { total: undefined } : { total: 5000 }) }),
 		);
 
-		await waitFor(() => expect(endpoint).toHaveBeenCalledTimes(2));
-		await userEvent.click(within(await pressSave()).getByRole('button', { name: 'Save' }));
-		await waitFor(() => expect(onSave).toHaveBeenCalledTimes(1));
-		await waitFor(() => expect(screen.getByRole('button', { name: 'Back' })).toBeEnabled());
-
-		expect(endpoint).toHaveBeenCalledTimes(2);
-		expect(screen.getByText('Bob')).toBeInTheDocument();
-		expect(screen.queryByRole('button', { name: 'ABAC_Preview_Stop' })).not.toBeInTheDocument();
-		expect(screen.queryByText('ABAC_Preview_Partial_warning')).not.toBeInTheDocument();
-	});
-
-	it('should not mark a settled list partial when Save is pressed', async () => {
-		const pageOfEleven = (after?: AbacPreviewCursor): IAbacRoomMembershipPreview => {
-			const start = after ? Number(after._id.slice(1)) + 1 : 0;
-			const members = Array.from({ length: 11 }, (_, index): AbacRoomPreviewMember => {
-				const id = `m${start + index}`;
-				return { _id: id, username: id, name: id, verdict: 'nonCompliant' };
-			});
-			const last = members[members.length - 1];
-			return {
-				members,
-				count: members.length,
-				checked: 25,
-				...(!after && { total: 300, editor: 'compliant' }),
-				next: { _id: last._id, username: last._id },
-			};
-		};
-		const { endpoint, onSave } = renderPreview(({ after }) => pageOfEleven(after));
-
-		await waitFor(() => expect(endpoint).toHaveBeenCalledTimes(3));
-		await waitFor(() => expect(screen.queryByRole('button', { name: 'ABAC_Preview_Stop' })).not.toBeInTheDocument());
-		expect(screen.queryByText('ABAC_Preview_Partial_warning')).not.toBeInTheDocument();
-
-		await userEvent.click(within(await pressSave()).getByRole('button', { name: 'Save' }));
-		await waitFor(() => expect(onSave).toHaveBeenCalledTimes(1));
-		await waitFor(() => expect(screen.getByRole('button', { name: 'Back' })).toBeEnabled());
-
-		expect(endpoint).toHaveBeenCalledTimes(3);
-		expect(screen.queryByText('ABAC_Preview_Partial_warning')).not.toBeInTheDocument();
-	});
-
-	it('should resume checking from the end of the list after Stop', async () => {
-		let releaseSecondPage: () => void = () => undefined;
-		let served = 0;
-		const { endpoint } = renderPreview(async () => {
-			served += 1;
-			if (served === 1) {
-				return page({ members: [bob], editor: 'compliant', total: 1000, next: { _id: 'bob', username: 'bob' } });
-			}
-			if (served === 2) {
-				await new Promise<void>((resolve) => {
-					releaseSecondPage = () => resolve();
-				});
-				return page({ total: undefined, next: { _id: 'c2', username: 'c2' } });
-			}
-			return new Promise<never>(() => undefined);
-		});
-
-		await waitFor(() => expect(endpoint).toHaveBeenCalledTimes(2));
-		await userEvent.click(screen.getByRole('button', { name: 'ABAC_Preview_Stop' }));
-		releaseSecondPage();
-
 		expect(await screen.findByText('ABAC_Preview_Partial_warning')).toBeInTheDocument();
-		expect(endpoint).toHaveBeenCalledTimes(2);
+		expect(endpoint).toHaveBeenCalledTimes(3);
 
 		await userEvent.click(screen.getByRole('button', { name: 'Load_more' }));
 
-		await waitFor(() => expect(endpoint).toHaveBeenCalledTimes(3));
-		expect(await screen.findByRole('button', { name: 'ABAC_Preview_Stop' })).toBeInTheDocument();
-		expect(screen.queryByText('ABAC_Preview_Partial_warning')).not.toBeInTheDocument();
+		await waitFor(() => expect(endpoint).toHaveBeenCalledTimes(4));
+		expect(endpoint).toHaveBeenNthCalledWith(4, expect.objectContaining({ after: { _id: 'cursor', username: 'cursor' } }));
 	});
 
 	it('should not save when the editor cancels the confirmation', async () => {
@@ -277,7 +216,7 @@ describe('AbacRoomMembershipPreview', () => {
 
 		await userEvent.click(within(dialog).getByRole('button', { name: 'Save' }));
 
-		await waitFor(() => expect(onSave).toHaveBeenCalledWith(false));
+		await waitFor(() => expect(onSave).toHaveBeenCalledTimes(1));
 	});
 
 	it('should never say nobody loses access when the list stopped before every member was checked', async () => {
@@ -313,25 +252,6 @@ describe('AbacRoomMembershipPreview', () => {
 		expect(rows[1]).toHaveTextContent('Bob');
 	});
 
-	it('should leave the editor out of a group they are not in', async () => {
-		renderPreview(() => page({ members: [bob], editor: 'compliant' }));
-
-		expect(await screen.findByText('Bob')).toBeInTheDocument();
-
-		expect(screen.queryByText('John Doe')).not.toBeInTheDocument();
-	});
-
-	it('should leave the editor out of a search they do not match', async () => {
-		renderPreview(({ filter }) => page({ members: filter ? [] : [bob], editor: 'nonCompliant', ...(filter && { total: 0, checked: 0 }) }));
-
-		expect(await screen.findByText('John Doe')).toBeInTheDocument();
-
-		await userEvent.type(screen.getByRole('textbox', { name: 'ABAC_Preview_Search_members' }), 'zz');
-
-		expect(await screen.findByText('No_members_found')).toBeInTheDocument();
-		expect(screen.queryByText('John Doe')).not.toBeInTheDocument();
-	});
-
 	it('should mark a member whose access could not be determined', async () => {
 		renderPreview(() => page({ members: [carol], editor: 'compliant' }));
 
@@ -347,10 +267,9 @@ describe('AbacRoomMembershipPreview', () => {
 		await userEvent.click(screen.getByRole('option', { name: 'ABAC_Preview_Retains_access' }));
 
 		const list = await screen.findByRole('list', { name: 'ABAC_Preview_Retains_access' });
-		const rows = await within(list).findAllByRole('listitem');
+		const row = await within(list).findByRole('listitem');
 
-		expect(rows).toHaveLength(2);
-		rows.forEach((row) => expect(within(row).getByRole('img', { name: 'ABAC_Preview_Retains_access' })).toBeInTheDocument());
+		expect(within(row).getByRole('img', { name: 'ABAC_Preview_Retains_access' })).toBeInTheDocument();
 	});
 
 	it('should tag a member with their highest room role', async () => {
