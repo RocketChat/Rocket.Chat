@@ -92,8 +92,7 @@ describe('XMPP federation: presence', () => {
 		});
 	});
 
-	// Known defect: ../../docs/specs/presence.md#d1-presence-from-xmpp-users-is-ignored
-	it.skip("applies a contact's presence to their Rocket.Chat user (D1)", async () => {
+	it("applies a contact's presence to their Rocket.Chat user (R2)", async () => {
 		await alice.sendPresence({ to: local.jid, show: 'dnd' });
 		await retry(
 			"alice's status to become busy",
@@ -102,5 +101,13 @@ describe('XMPP federation: presence', () => {
 			},
 			federationPolling,
 		);
+	});
+
+	it("keeps a contact's presence when they send a message (R2)", async () => {
+		const text = `still busy ${uniqueSuffix()}`;
+		await alice.sendChat(local.jid, text);
+		const dm = await waitForDirectMessageWith(rc, local, alice.bareJid);
+		await waitForMessage(local, dm, text);
+		assert.equal((await findUser(rc, alice.bareJid))?.status, 'busy');
 	});
 });

@@ -842,7 +842,9 @@ export class XMPPServerService extends ServiceClass implements IXMPPServerServic
 			return;
 		}
 		const remoteJid = toBareJid(event.from);
-		const user = await Users.findOneByUsername(remoteJid, { projection: { _id: 1, username: 1, statusText: 1, roles: 1, name: 1 } });
+		const user = await Users.findOneByUsername(remoteJid, {
+			projection: { _id: 1, username: 1, statusText: 1, roles: 1, name: 1, xmppFederation: 1 },
+		});
 		if (!user || !isUserXMPPFederated(user)) {
 			return;
 		}

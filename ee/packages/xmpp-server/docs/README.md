@@ -265,7 +265,7 @@ Where each id shows up:
 | --- | --- | --- |
 | Test name, same spec as the test file | `(R<n>)` at the end | `'mirrors the room in Rocket.Chat when a local user is invited (R1)'` |
 | Test name, another spec | `(<slug> R<n>)` | `'applies a correction from the XMPP user to the stored message (message-corrections R4)'` |
-| Skipped test | comment above it | `// Known defect: ../../docs/specs/presence.md#d1-presence-from-xmpp-users-is-ignored` |
+| Skipped test | comment above it | `// Known defect: ../../docs/specs/presence.md#d2-rocketchat-status-changes-do-not-reach-xmpp-contacts` |
 | Plan, Proof section | one table row per `R` | `R3` → the test file and test name that prove it |
 | Commit body | `<slug> R<n>` / `<slug> D<n>` | `hosted-muc D3: a topic changed in Rocket.Chat reaches only whoever joins next` |
 

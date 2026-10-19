@@ -41,8 +41,7 @@ never match a bare JID, so the separation holds in both directions.
 ## Consequences
 
 - Searching users by JID is a username lookup.
-- Every remote user upsert sets `status: OFFLINE`, which is the suspected cause of
-  [presence D3](../specs/presence.md#d3-every-inbound-message-may-reset-the-senders-status-to-offline).
+- A remote user record starts `offline`; later upserts keep whatever status presence set.
 - The synthetic `nick#room` users are never deleted and have no real address; a room that
   later discloses JIDs produces a second record per occupant.
 - `isUserXMPPFederated` and `isRoomXMPP*` in `core-typings` are the only guards the hooks need.

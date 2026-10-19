@@ -65,13 +65,6 @@ rooms.
 
 ## Known defects
 
-### D1 Presence from XMPP users is ignored
-
-Every inbound availability presence is discarded. The remote user is loaded without the
-field that marks it as an XMPP user, so it never passes the federated-user check and its
-status never changes. Where: `onIncomingPresence` projection in `XMPPServerService.ts`.
-Test: `presence.spec.ts`, "applies a contact's presence to their Rocket.Chat user".
-
 ### D2 Rocket.Chat status changes do not reach XMPP contacts
 
 After a Rocket.Chat user changes status, the XMPP server never receives a presence from
@@ -79,12 +72,6 @@ them. The user holds a live session, their status really changes, and the DM wit
 contact is marked as XMPP-federated. The cause is not known; the service's debug log
 (`LOG_LEVEL=debug`) is the place to start. Test: `presence.spec.ts`, "relays a Rocket.Chat
 status change to subscribed contacts".
-
-### D3 Every inbound message may reset the sender's status to offline
-
-Suspected, not pinned by a test. The remote user upsert that runs on every inbound message
-sets `status: OFFLINE` unconditionally, which would undo any presence applied by R2 once D1
-is fixed. Where: `Users.upsertXMPPUser` in `packages/models`, called by `src/service/helpers/xmppUser.ts`.
 
 ## Open questions
 

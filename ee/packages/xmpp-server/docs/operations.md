@@ -243,9 +243,8 @@ defect or as out of scope; the spec has the details.
 
 ### Presence
 
-Presence does not work in either direction yet. Presence from XMPP contacts is discarded
-([presence D1](specs/presence.md#d1-presence-from-xmpp-users-is-ignored)), and Rocket.Chat
-status changes do not reach XMPP contacts
+Presence works one way only. A contact's XMPP presence sets their Rocket.Chat status, but
+Rocket.Chat status changes do not reach XMPP contacts
 ([presence D2](specs/presence.md#d2-rocketchat-status-changes-do-not-reach-xmpp-contacts)).
 Subscription requests are still answered as described above, even with **Exchange Presence**
 off.
