@@ -34,6 +34,18 @@ export type ItemProps = {
 	 */
 	disabled?: boolean;
 	variant?: 'danger';
+	/**
+	 * Dims the row while a copy of it is being dragged.
+	 */
+	dragging?: boolean;
+	/**
+	 * Draws the line where a dragged row would land, on this row's top (`before`) or bottom (`after`) edge.
+	 */
+	dropIndicator?: 'before' | 'after';
+	/**
+	 * Marks the row as hovered by a drag that cannot land on it.
+	 */
+	dropDisabled?: boolean;
 } & Omit<AllHTMLAttributes<HTMLElement>, 'is' | 'selected' | 'disabled'> &
 	RefAttributes<HTMLElement>;
 
@@ -49,6 +61,9 @@ const Item = ({
 	focusVisible,
 	disabled,
 	variant,
+	dragging,
+	dropIndicator,
+	dropDisabled,
 	className,
 	onClick,
 	children,
@@ -97,6 +112,9 @@ const Item = ({
 						'focus-visible': !!focusVisible,
 						'disabled': !!disabled,
 						'danger': variant === 'danger',
+						'dragging': !!dragging,
+						'drop': dropIndicator ?? false,
+						'drop-disabled': !!dropDisabled,
 					}),
 					className,
 				)}

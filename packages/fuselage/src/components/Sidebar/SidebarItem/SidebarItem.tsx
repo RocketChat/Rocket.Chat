@@ -1,7 +1,7 @@
 import type { AllHTMLAttributes, ElementType } from 'react';
 
 import { cx } from '../../../helpers/composeClassNames';
-import { Item } from '../../Item';
+import { Item, type ItemProps } from '../../Item';
 
 export type SidebarItemProps = {
 	selected?: boolean;
@@ -23,7 +23,8 @@ export type SidebarItemProps = {
 	 * For a row with menus or buttons, pass `div` and put a `SidebarItemLink` inside `SidebarItemTitle`.
 	 */
 	is?: ElementType;
-} & AllHTMLAttributes<HTMLAnchorElement>;
+} & Pick<ItemProps, 'dragging' | 'dropIndicator' | 'dropDisabled'> &
+	AllHTMLAttributes<HTMLAnchorElement>;
 
 /**
  * A sidebar row. It renders an `Item`, so its content can also be composed from `Item` parts.

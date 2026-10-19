@@ -11,11 +11,12 @@ import { Icon, type IconProps } from '../Icon';
 import { Menu, MenuItem } from '../Menu';
 import { leterAvatarUrls } from '../Sidebar/helpers';
 import { StatusBullet, type StatusBulletProps } from '../StatusBullet';
-import Item from './Item';
+import Item, { type ItemProps } from './Item';
 import ItemActions from './ItemActions';
 import ItemContent from './ItemContent';
 import ItemDescription from './ItemDescription';
 import ItemDivider from './ItemDivider';
+import ItemDragHandle from './ItemDragHandle';
 import ItemGroup from './ItemGroup';
 import ItemGroupHeader from './ItemGroupHeader';
 import ItemGroupTitle from './ItemGroupTitle';
@@ -424,6 +425,51 @@ export const States: Story = {
 						<ItemTitle>Leave room (danger)</ItemTitle>
 					</ItemContent>
 				</Item>
+			</ItemGroup>
+		</Box>
+	),
+};
+
+const DragRow = ({ title, handle, ...props }: { title: string; handle?: boolean } & ItemProps) => (
+	<Item is='li' inset='md' {...props}>
+		<ItemMedia variant='icon'>
+			<Icon name='hash' size='x20' />
+		</ItemMedia>
+		<ItemContent>
+			<ItemTitle>
+				<ItemLink href={`#${title}`}>{title}</ItemLink>
+			</ItemTitle>
+		</ItemContent>
+		{handle && <ItemDragHandle />}
+	</Item>
+);
+
+export const DragStates: Story = {
+	render: () => (
+		<Box display='flex' flexDirection='column' width='x280'>
+			<Caption>Rows</Caption>
+			<ItemGroup is='ul' aria-label='Row drag states'>
+				<DragRow title='general' />
+				<DragRow title='design (dragging)' dragging />
+				<DragRow title='engineering (drop after)' dropIndicator='after' />
+				<DragRow title='support' />
+				<DragRow title='random (drop disabled)' dropDisabled />
+			</ItemGroup>
+			<Caption>dragHandle=&quot;trailing&quot;</Caption>
+			<ItemGroup is='ul' aria-label='Rows with a drag handle'>
+				<DragRow title='ana.lima' handle />
+				<DragRow title='bruno.dias' handle />
+			</ItemGroup>
+			<Caption>Groups</Caption>
+			<ItemGroup is='ul' aria-label='Projects' dropTarget>
+				<DragRow title='roadmap' />
+				<DragRow title='web' />
+			</ItemGroup>
+			<ItemGroup is='ul' aria-label='Clients' dropIndicator='before'>
+				<DragRow title='acme-support' />
+			</ItemGroup>
+			<ItemGroup is='ul' aria-label='Archive' dragging>
+				<DragRow title='old-project' />
 			</ItemGroup>
 		</Box>
 	),
