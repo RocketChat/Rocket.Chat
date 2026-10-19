@@ -220,7 +220,7 @@ describe('requestDataDownload', () => {
 	});
 });
 
-describe('export user data', async () => {
+describe('export user data', () => {
 	beforeEach(() => {
 		exportOperation = null;
 	});
