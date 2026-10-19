@@ -76,7 +76,7 @@ export class AppGridFSSourceStorage extends AppSourceStorage {
 	}
 
 	private idToPath(id: NpmModuleMongodb.GridFSBucketWriteStream['id']): string {
-		return this.pathPrefix + id;
+		return this.pathPrefix + id.toString();
 	}
 
 	private itemToObjectId(item: IAppStorageItem): ObjectId {
