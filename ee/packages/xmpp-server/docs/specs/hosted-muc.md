@@ -102,7 +102,7 @@ history in Rocket.Chat and lets remote users join with nothing but a room addres
   ([message-corrections](message-corrections.md)).
 - **R15** Local members receive remote messages through Rocket.Chat only; no stanza is ever
   sent to a virtual occupant.
-- **R16** Every message and presence addressed to the MUC domain stays with the rooms; none
+- **R17** Every message and presence addressed to the MUC domain stays with the rooms; none
   is taken for a direct message or a contact's presence. A message other than `groupchat` to
   an existing room is answered `feature-not-implemented`, any message to a room that does
   not exist `item-not-found`. A presence other than a join or a leave is ignored, and an

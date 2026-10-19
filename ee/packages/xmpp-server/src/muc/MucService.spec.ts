@@ -100,7 +100,7 @@ describe('MucService.listPublicRooms (service-discovery R4)', () => {
 	});
 });
 
-describe('MucService.handleStanza (hosted-muc R16)', () => {
+describe('MucService.handleStanza (hosted-muc R17)', () => {
 	it('answers a message to a room that does not exist with item-not-found, consuming it', () => {
 		const { muc, sent } = setup();
 
