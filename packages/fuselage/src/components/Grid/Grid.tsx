@@ -1,5 +1,22 @@
-import { Box, type BoxProps } from '../Box';
-import GridItem from './GridItem';
+import { styled, View, type GetProps } from '@tamagui/web';
+
+import { useTamaguiBoxProps } from '../../hooks/useTamaguiBoxProps';
+import type { BoxProps } from '../Box';
+import GridItem, { gridBoxStyle } from './GridItem';
+import { withFuselageProvider } from '../FuselageProvider/FuselageProvider';
+
+const GridWrapper = styled(View, {
+	...gridBoxStyle,
+	display: 'block',
+	overflow: 'hidden',
+});
+
+const GridFrame = styled(View, {
+	...gridBoxStyle,
+	flexDirection: 'row',
+	flexWrap: 'wrap',
+	flexShrink: 1,
+});
 
 export type GridProps = BoxProps & {
 	xs?: boolean;
@@ -9,12 +26,22 @@ export type GridProps = BoxProps & {
 	xl?: boolean;
 };
 
-const Grid = ({ xs, sm, md, lg, xl, ...props }: GridProps) => (
-	<Box rcx-grid__wrapper>
-		<Box rcx-grid rcx-grid--xs={xs} rcx-grid--sm={sm} rcx-grid--md={md} rcx-grid--lg={lg} rcx-grid--xl={xl} {...props} />
-	</Box>
-);
+const Grid = ({ xs, sm, md, lg, xl, ...props }: GridProps) => {
+	const gridProps = useTamaguiBoxProps({
+		'rcx-grid': true,
+		'rcx-grid--xs': xs,
+		'rcx-grid--sm': sm,
+		'rcx-grid--md': md,
+		'rcx-grid--lg': lg,
+		'rcx-grid--xl': xl,
+		...props,
+	});
 
-Grid.Item = GridItem;
+	return (
+		<GridWrapper className='rcx-grid__wrapper'>
+			<GridFrame {...(gridProps as GetProps<typeof GridFrame>)} />
+		</GridWrapper>
+	);
+};
 
-export default Grid;
+export default Object.assign(withFuselageProvider(Grid), { Item: GridItem });
