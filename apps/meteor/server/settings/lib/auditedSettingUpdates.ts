@@ -56,6 +56,7 @@ export const resetAuditedSettingByUser =
 				...actor,
 			},
 		);
+		// eslint-disable-next-line @typescript-eslint/no-unsafe-return -- setting values are untyped at this layer
 		return fn(key);
 	};
 
@@ -82,6 +83,7 @@ export const updateAuditedByUser =
 				...actor,
 			},
 		);
+		// eslint-disable-next-line @typescript-eslint/no-unsafe-return -- setting values are untyped at this layer
 		return fn(key, value, ...rest);
 	};
 
@@ -108,6 +110,7 @@ export const updateAuditedBySystem =
 				...actor,
 			},
 		);
+		// eslint-disable-next-line @typescript-eslint/no-unsafe-return -- setting values are untyped at this layer
 		return fn(key, value, ...rest);
 	};
 
@@ -132,5 +135,6 @@ export const updateAuditedByApp =
 				...actor,
 			},
 		);
+		// eslint-disable-next-line @typescript-eslint/no-unsafe-return -- setting values are untyped at this layer
 		return fn(key, value, ...rest);
 	};

@@ -31,6 +31,7 @@ async function sendStats(logger: Logger, cronStatistics: IStats): Promise<string
 
 		if (statsToken != null) {
 			await Statistics.updateOne({ _id: cronStatistics._id }, { $set: { statsToken } });
+			// eslint-disable-next-line @typescript-eslint/no-unsafe-return -- statistics documents are untyped at this layer
 			return statsToken;
 		}
 	} catch (err) {

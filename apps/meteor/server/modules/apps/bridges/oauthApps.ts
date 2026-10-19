@@ -44,6 +44,7 @@ export class AppOAuthAppsBridge extends OAuthAppsBridge {
 		const data = await OAuthApps.findOne({ _id: id, appId });
 		if (data) {
 			const { _id, _createdAt, _createdBy, _updatedAt, ...rest } = data as any;
+			// eslint-disable-next-line @typescript-eslint/no-unsafe-return -- Apps-Engine payloads are untyped at this boundary
 			return {
 				...rest,
 				id: _id,

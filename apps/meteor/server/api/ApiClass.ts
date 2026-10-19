@@ -532,7 +532,7 @@ export class APIClass<TBasePath extends string = '', TOperations extends Record<
 					options: rateLimiterOptions,
 				};
 				const rateLimitRule = {
-					IPAddr: (input: any) => input,
+					IPAddr: (input: unknown) => input,
 					route,
 				};
 				rateLimiterDictionary[route].rateLimiter.addRule(
@@ -806,7 +806,7 @@ export class APIClass<TBasePath extends string = '', TOperations extends Record<
 									typeof _options.validateParams === 'function' ? _options.validateParams : _options.validateParams[requestMethod];
 
 								if (validatorFunc && !validatorFunc(requestMethod === 'GET' ? this.queryParams : this.bodyParams)) {
-									throw new Meteor.Error('invalid-params', validatorFunc.errors?.map((error: any) => error.message).join('\n '));
+									throw new Meteor.Error('invalid-params', validatorFunc.errors?.map((error) => error.message).join('\n '));
 								}
 							}
 							if (
@@ -856,6 +856,7 @@ export class APIClass<TBasePath extends string = '', TOperations extends Record<
 							delete Accounts._accountData[connection.id];
 						}
 
+						// eslint-disable-next-line @typescript-eslint/no-unsafe-return -- route actions and DDP invocations are untyped at this layer
 						return result;
 					} as InnerAction<any, any, any>;
 				// Allow the endpoints to make usage of the logger which respects the user's settings
@@ -999,6 +1000,7 @@ export class APIClass<TBasePath extends string = '', TOperations extends Record<
 					});
 
 					try {
+						// eslint-disable-next-line @typescript-eslint/no-unsafe-return -- route actions and DDP invocations are untyped at this layer
 						const auth = await DDP._CurrentInvocation.withValue(invocation as any, async () => Meteor.callAsync('login', args));
 						const user = await Users.findOne(
 							{
@@ -1105,9 +1107,11 @@ export class APIClass<TBasePath extends string = '', TOperations extends Record<
 				async get() {
 					console.warn('Warning: Default logout via GET will be removed in Restivus v1.0. Use POST instead.');
 					console.warn('    See https://github.com/kahmali/meteor-restivus/issues/100');
+					// eslint-disable-next-line @typescript-eslint/no-unsafe-return -- route actions and DDP invocations are untyped at this layer
 					return logout.call(this as any) as any;
 				},
 				async post() {
+					// eslint-disable-next-line @typescript-eslint/no-unsafe-return -- route actions and DDP invocations are untyped at this layer
 					return logout.call(this as any) as any;
 				},
 			},
@@ -1140,6 +1144,7 @@ export class APIClass<TBasePath extends string = '', TOperations extends Record<
 		return {
 			invocation,
 			applyInvocation: <F extends () => Promise<any>>(action: F): ReturnType<F> => {
+				// eslint-disable-next-line @typescript-eslint/no-unsafe-return -- route actions and DDP invocations are untyped at this layer
 				return DDP._CurrentInvocation.withValue(invocation as any, async () => action()) as ReturnType<F>;
 			},
 			[Symbol.asyncDispose]() {

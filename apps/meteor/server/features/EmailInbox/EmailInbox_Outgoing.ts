@@ -54,6 +54,7 @@ const sendErrorReplyMessage = async (error: string, options: any) => {
 		return;
 	}
 
+	// eslint-disable-next-line @typescript-eslint/no-unsafe-return -- sendMessage returns an untyped message; typing it exposes its false/undefined results to every caller
 	return sendMessage(user, message, { _id: options.rid });
 };
 
@@ -74,6 +75,7 @@ const sendSuccessReplyMessage = async (options: { room: IOmnichannelRoom; msgId:
 		return;
 	}
 
+	// eslint-disable-next-line @typescript-eslint/no-unsafe-return -- sendMessage returns an untyped message; typing it exposes its false/undefined results to every caller
 	return sendMessage(user, message, options.room);
 };
 
@@ -129,6 +131,7 @@ slashCommands.add({
 		const inbox = inboxes.get(room.email.inbox);
 
 		if (!inbox) {
+			// eslint-disable-next-line @typescript-eslint/no-unsafe-return -- sendMessage returns an untyped message; typing it exposes its false/undefined results to every caller
 			return sendErrorReplyMessage(`Email inbox ${room.email.inbox} not found or disabled.`, {
 				msgId: message._id,
 				sender: message.u.username,
@@ -191,6 +194,7 @@ slashCommands.add({
 			id: message._id,
 		});
 
+		// eslint-disable-next-line @typescript-eslint/no-unsafe-return -- sendMessage returns an untyped message; typing it exposes its false/undefined results to every caller
 		return sendSuccessReplyMessage({
 			msgId: message._id,
 			sender: message.u.username,

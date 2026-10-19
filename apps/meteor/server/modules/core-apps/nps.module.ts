@@ -22,6 +22,7 @@ export class Nps implements IUiKitCoreApp {
 
 		const bannerId = viewId.replace(`${npsId}-`, '');
 
+		// eslint-disable-next-line @typescript-eslint/no-unsafe-return -- Apps-Engine payloads are untyped at this boundary
 		return createModal({
 			type: actionId === 'nps-score' ? 'modal.update' : 'modal.open',
 			id: `${npsId}-${bannerId}`,

@@ -141,6 +141,7 @@ export const getSettingsStatistics = async (): Promise<ISettingStatisticsObject>
 
 		return staticticObject;
 	} catch (error: any) {
+		// eslint-disable-next-line @typescript-eslint/no-unsafe-return -- statistics documents are untyped at this layer
 		return error;
 	}
 };

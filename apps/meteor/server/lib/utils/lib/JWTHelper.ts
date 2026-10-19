@@ -49,6 +49,7 @@ export const validateAndDecodeJWT = (jwt: string, secret: string, options?: { au
 			return null;
 		}
 
+		// eslint-disable-next-line @typescript-eslint/no-unsafe-return -- value comes from an untyped source
 		return payload.context || null;
 	} catch (error) {
 		return null;

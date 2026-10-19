@@ -38,7 +38,7 @@ const fetchRegistrationDataPayload = async ({
 		}
 	}
 
-	const payload = await response.json();
+	const payload: Parameters<typeof saveRegistrationData>[0] | undefined = await response.json();
 
 	if (!payload) {
 		return undefined;

@@ -207,6 +207,7 @@ Meteor.methods<ServerMethods>({
 	async botRequest(...args) {
 		const userID = Meteor.userId();
 		if (userID && (await hasRoleAsync(userID, 'bot'))) {
+			// eslint-disable-next-line @typescript-eslint/no-unsafe-return -- value comes from an untyped source
 			return botHelpers.request(...args, userID);
 		}
 		throw new Meteor.Error('error-invalid-user', 'Invalid user', { method: 'botRequest' });

@@ -193,4 +193,5 @@ export const getExtraConfigInfo = makeFunction(
 	}> => options,
 );
 
+// eslint-disable-next-line @typescript-eslint/no-unsafe-return -- value comes from an untyped source
 export const onCheckRoomParams = makeFunction((params: any) => params);

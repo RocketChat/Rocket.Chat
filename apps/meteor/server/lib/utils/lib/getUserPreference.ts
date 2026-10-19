@@ -19,6 +19,7 @@ export const getUserPreference = async (user: IUser | string, key: string, defau
 		}
 	}
 	if (typeof user === 'string') {
+		// eslint-disable-next-line @typescript-eslint/no-unsafe-return -- setting values are untyped at this layer
 		return defaultValue;
 	}
 
@@ -28,5 +29,6 @@ export const getUserPreference = async (user: IUser | string, key: string, defau
 		preference = settings.get(`Accounts_Default_User_Preferences_${key}`);
 	}
 
+	// eslint-disable-next-line @typescript-eslint/no-unsafe-return -- setting values are untyped at this layer
 	return preference !== undefined ? preference : defaultValue;
 };

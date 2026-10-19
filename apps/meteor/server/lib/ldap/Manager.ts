@@ -558,15 +558,15 @@ export class LDAPManager {
 	private static getAvatarFromUser(ldapUser: ILDAPEntry): Buffer | undefined {
 		const avatarField = String(settings.get('LDAP_Avatar_Field') || '').trim();
 		if (avatarField && ldapUser._raw[avatarField]) {
-			return ldapUser._raw[avatarField];
+			return ldapUser._raw[avatarField] as Buffer;
 		}
 
 		if (ldapUser._raw.thumbnailPhoto) {
-			return ldapUser._raw.thumbnailPhoto;
+			return ldapUser._raw.thumbnailPhoto as Buffer;
 		}
 
 		if (ldapUser._raw.jpegPhoto) {
-			return ldapUser._raw.jpegPhoto;
+			return ldapUser._raw.jpegPhoto as Buffer;
 		}
 	}
 }

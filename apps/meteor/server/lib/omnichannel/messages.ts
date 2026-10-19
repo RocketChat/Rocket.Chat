@@ -145,6 +145,7 @@ export async function sendMessage({
 	agent?: SelectedAgent;
 }) {
 	const { room, newRoom } = await getRoom(guest, message, roomInfo, agent);
+	// eslint-disable-next-line @typescript-eslint/no-unsafe-return -- sendMessage returns an untyped message; typing it exposes its false/undefined results to every caller
 	return {
 		...(await sendMessageFunc(guest, { ...message, token: guest.token, ...(guest.name && { alias: guest.name }) }, room)),
 		newRoom,

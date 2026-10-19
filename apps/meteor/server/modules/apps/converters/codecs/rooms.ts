@@ -11,7 +11,9 @@ import { mappedDecodeAsync } from './mappedData';
 // `IRoom` union, so the transform inputs are treated as loose records (as the legacy converter did).
 type RoomData = Record<string, any>;
 
-const mapUserLookup = (user: any) =>
+type UserLookup = { _id?: string; id?: string; username?: string; name?: string };
+
+const mapUserLookup = (user: UserLookup | undefined) =>
 	user && {
 		_id: user._id ?? user.id,
 		...(user.username && { username: user.username }),
@@ -59,19 +61,19 @@ export async function decodeRoomRaw(room: IRoom): Promise<IAppsRoomRaw> {
 
 			delete data.v;
 
-			const { _id: id, ...rest } = v;
+			const { _id: id, ...rest }: Record<string, unknown> = v;
 
 			return {
 				id,
 				...rest,
 			};
 		},
-		displaySystemMessages: (data: RoomData) => {
+		displaySystemMessages: (data: RoomData): unknown => {
 			const { sysMes } = data;
 			delete data.sysMes;
 			return typeof sysMes === 'undefined' ? true : sysMes;
 		},
-		type: (data: RoomData) => {
+		type: (data: RoomData): unknown => {
 			const result = z.decode(RoomTypeCodec, data.t);
 			delete data.t;
 			return result;
@@ -130,7 +132,13 @@ async function getCreator(user: string | undefined) {
 	};
 }
 
-async function getVisitor({ visitor: roomVisitor, visitorChannelInfo }: any) {
+async function getVisitor({
+	visitor: roomVisitor,
+	visitorChannelInfo,
+}: {
+	visitor?: { id: string };
+	visitorChannelInfo?: { lastMessageTs?: Date; phone?: string };
+}) {
 	if (!roomVisitor) {
 		return;
 	}
@@ -315,7 +323,7 @@ export function createRoomCodec(orch: IAppServerOrchestrator) {
 					delete room.ro;
 					return result;
 				},
-				displaySystemMessages: (room: RoomData) => {
+				displaySystemMessages: (room: RoomData): unknown => {
 					const { sysMes } = room;
 
 					if (typeof sysMes === 'undefined') {
@@ -325,7 +333,7 @@ export function createRoomCodec(orch: IAppServerOrchestrator) {
 					delete room.sysMes;
 					return sysMes;
 				},
-				type: (room: RoomData) => {
+				type: (room: RoomData): unknown => {
 					const result = z.decode(RoomTypeCodec, room.t);
 					delete room.t;
 					return result;
@@ -372,7 +380,7 @@ export function createRoomCodec(orch: IAppServerOrchestrator) {
 						return undefined;
 					}
 
-					const { lastMessageTs, phone } = v;
+					const { lastMessageTs, phone }: { lastMessageTs?: Date; phone?: string } = v;
 
 					return {
 						...(phone && { phone }),

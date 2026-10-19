@@ -32,6 +32,6 @@ declare module '@rocket.chat/ddp-client' {
 
 Meteor.methods<ServerMethods>({
 	'OAuth.retrieveCredential'(credentialToken, credentialSecret) {
-		return OAuth.retrieveCredential(credentialToken, credentialSecret);
+		return OAuth.retrieveCredential(credentialToken, credentialSecret) as unknown;
 	},
 });

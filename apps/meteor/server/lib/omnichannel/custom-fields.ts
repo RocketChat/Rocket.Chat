@@ -96,6 +96,7 @@ export async function setCustomFields({
 		return 0;
 	}
 
+	// eslint-disable-next-line @typescript-eslint/no-unsafe-return -- value comes from an untyped source
 	return result.modifiedCount;
 }
 

@@ -54,6 +54,7 @@ export const sendMessageLivechat = async ({
 		throw new Meteor.Error('message-length-exceeds-character-limit');
 	}
 
+	// eslint-disable-next-line @typescript-eslint/no-unsafe-return -- sendMessage returns an untyped message; typing it exposes its false/undefined results to every caller
 	return sendMessage({
 		guest,
 		message: {

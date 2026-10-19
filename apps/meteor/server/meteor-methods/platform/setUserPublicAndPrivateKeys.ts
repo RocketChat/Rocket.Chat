@@ -13,7 +13,7 @@ declare module '@rocket.chat/ddp-client' {
 }
 
 const isKeysResult = (result: any): result is { public_key: string; private_key: string } => {
-	return result.private_key && result.public_key;
+	return Boolean(result.private_key && result.public_key);
 };
 
 export const setUserPublicAndPrivateKeysMethod = async (

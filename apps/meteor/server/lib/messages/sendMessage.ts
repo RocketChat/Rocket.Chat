@@ -294,5 +294,6 @@ export const sendMessage = async function (user: any, message: any, room: any, o
 
 	void notifyOnRoomChangedById(message.rid);
 
+	// eslint-disable-next-line @typescript-eslint/no-unsafe-return -- sendMessage returns an untyped message; typing it exposes its false/undefined results to every caller
 	return message;
 };

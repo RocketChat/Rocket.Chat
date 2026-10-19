@@ -237,6 +237,7 @@ export const sendFileMessage = async (
 
 	callbacks.runAsync('afterFileUpload', { user, room, message: msg });
 
+	// eslint-disable-next-line @typescript-eslint/no-unsafe-return -- sendMessage returns an untyped message; typing it exposes its false/undefined results to every caller
 	return msg;
 };
 

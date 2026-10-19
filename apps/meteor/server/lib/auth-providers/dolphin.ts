@@ -25,7 +25,7 @@ const config: Partial<OAuthConfiguration> = {
 
 const Dolphin = new CustomOAuth('dolphin', config);
 
-function DolphinOnCreateUser(options: any, user?: IUser) {
+function DolphinOnCreateUser(options: Record<string, any>, user?: IUser) {
 	// TODO: callbacks Fix this
 	if (user?.services?.dolphin?.NickName) {
 		user.username = user.services.dolphin.NickName;

@@ -198,6 +198,7 @@ export abstract class IntegrationScriptEngine<IsIncoming extends boolean> {
 			return request;
 		}
 
+		// eslint-disable-next-line @typescript-eslint/no-unsafe-return -- integration scripts exchange untyped payloads
 		return this.executeOutgoingScript(integration, 'prepare_outgoing_request', { request }, historyId);
 	}
 
@@ -223,7 +224,12 @@ export abstract class IntegrationScriptEngine<IsIncoming extends boolean> {
 			},
 		};
 
-		const scriptResult = await this.executeOutgoingScript(integration, 'process_outgoing_response', sandbox, historyId);
+		const scriptResult: { content?: string } | false | undefined = await this.executeOutgoingScript(
+			integration,
+			'process_outgoing_response',
+			sandbox,
+			historyId,
+		);
 
 		if (scriptResult === false) {
 			return scriptResult;

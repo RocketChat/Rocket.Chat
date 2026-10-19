@@ -1,9 +1,9 @@
-import type { IAppsPersistenceModel } from '@rocket.chat/model-typings';
+import type { AppsPersistenceRecord, IAppsPersistenceModel } from '@rocket.chat/model-typings';
 import type { Db, DeleteResult, Filter, IndexDescription } from 'mongodb';
 
 import { BaseRaw } from './BaseRaw';
 
-export class AppsPersistenceModel extends BaseRaw<any> implements IAppsPersistenceModel {
+export class AppsPersistenceModel extends BaseRaw<AppsPersistenceRecord> implements IAppsPersistenceModel {
 	constructor(db: Db) {
 		super(db, 'apps_persistence');
 	}
@@ -20,7 +20,7 @@ export class AppsPersistenceModel extends BaseRaw<any> implements IAppsPersisten
 	}
 
 	// Bypass trash collection
-	remove(query: Filter<any>): Promise<DeleteResult> {
+	remove(query: Filter<AppsPersistenceRecord>): Promise<DeleteResult> {
 		return this.col.deleteMany(query);
 	}
 }

@@ -293,6 +293,7 @@ const getUrlMetaWithCache = async function (
 
 	if (cache) {
 		log.debug({ msg: 'Found OEmbed metadata in cache for URL', url });
+		// eslint-disable-next-line @typescript-eslint/no-unsafe-return -- value comes from an untyped source
 		return cache.data;
 	}
 

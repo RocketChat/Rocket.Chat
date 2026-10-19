@@ -71,7 +71,7 @@ export class UserChangedAuditStore {
 		}
 
 		// extract keys from updateFilter (keys are nested in $set, $unset, $inc, etc)
-		const updateFilterKeys: string[] = Object.values(updateFilter).reduce((acc, current) => {
+		const updateFilterKeys = Object.values(updateFilter).reduce<string[]>((acc, current) => {
 			const keys = Object.keys(current);
 			if (keys.length === 0) {
 				return acc;

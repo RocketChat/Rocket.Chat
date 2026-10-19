@@ -41,6 +41,7 @@ const proxyObject = (obj: Record<string, any>, forbiddenKeys: string[] = []): Re
 
 const copyObject = (obj: Record<string, any> | any[]): Record<string, any> | any[] => {
 	if (Array.isArray(obj)) {
+		// eslint-disable-next-line @typescript-eslint/no-unsafe-return -- integration scripts exchange untyped payloads
 		return obj.map((data) => copyData(data));
 	}
 

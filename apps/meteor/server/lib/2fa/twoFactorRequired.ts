@@ -47,5 +47,5 @@ export const twoFactorRequired = <TFunction extends (this: any, ...args: any) =>
 			await checkCodeForUser({ user: this.userId, connection: this.connection || undefined, options });
 		}
 
-		return fn.apply(this, args);
+		return fn.apply(this, args) as ReturnType<TFunction>;
 	} as (this: ThisParameterType<TFunction>, ...args: Parameters<TFunction>) => ReturnType<TFunction>;

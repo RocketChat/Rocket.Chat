@@ -371,9 +371,11 @@ export class AppMessagesConverter implements IAppMessagesConverter {
 			fileId: (attachment: MessageData) => {
 				// If the attachment is missing the fileId, but there's only one file in the message, use that file's ID
 				if (!attachment.fileId && attachment.type === 'file' && mainFile?._id && attachments.length === 1) {
+					// eslint-disable-next-line @typescript-eslint/no-unsafe-return -- Apps-Engine payloads are untyped at this boundary
 					return mainFile._id;
 				}
 
+				// eslint-disable-next-line @typescript-eslint/no-unsafe-return -- Apps-Engine payloads are untyped at this boundary
 				return attachment.fileId;
 			},
 		} as const;

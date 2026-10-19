@@ -44,6 +44,7 @@ export async function generateUsernameSuggestion(user: Pick<IUser, 'name' | 'ema
 
 	if (Array.isArray(user.services)) {
 		const services = [
+			// eslint-disable-next-line @typescript-eslint/no-unsafe-return -- value comes from an untyped source
 			...new Set(user.services.flatMap(({ name, username, firstName, lastName }) => [name, username, firstName, lastName])),
 		];
 		usernames.push(...services.map(name));

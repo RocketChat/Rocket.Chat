@@ -48,7 +48,7 @@ export class AppPersistenceBridge extends PersistenceBridge {
 
 		const record = await this.orch.getPersistenceModel().findOneById(id);
 
-		return record?.data;
+		return record?.data as object;
 	}
 
 	protected async readByAssociations(associations: Array<RocketChatAssociationRecord>, appId: string): Promise<Array<object>> {
@@ -133,6 +133,6 @@ export class AppPersistenceBridge extends PersistenceBridge {
 		return this.orch
 			.getPersistenceModel()
 			.update(query, { $set: { data } }, { upsert })
-			.then(({ upsertedId }: any) => upsertedId || '');
+			.then(({ upsertedId }) => (upsertedId as string | null) || '');
 	}
 }

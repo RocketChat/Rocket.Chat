@@ -228,6 +228,7 @@ export class Callbacks<
 		return {
 			add: (callback, priority, id) => callbacks.add(hook as any, callback, priority, id),
 			remove: (id) => callbacks.remove(hook as any, id),
+			// eslint-disable-next-line @typescript-eslint/no-unsafe-return -- value comes from an untyped source
 			run: (item, constant) => callbacks.run(hook as any, item, constant) as any,
 		};
 	}

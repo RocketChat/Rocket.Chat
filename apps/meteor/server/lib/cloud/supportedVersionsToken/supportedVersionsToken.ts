@@ -52,7 +52,7 @@ export const handleResponse = async <T>(promise: Promise<Response>) => {
 				throw new Error(request.statusText);
 			}
 
-			return request.json();
+			return request.json() as Promise<T>;
 		})(),
 	);
 };

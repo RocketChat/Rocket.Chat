@@ -12,6 +12,7 @@ export const templateVarHandler = function (variable: string, object: Record<str
 			logger?.debug({ msg: 'User does not have attribute', attribute: variable });
 			return;
 		}
+		// eslint-disable-next-line @typescript-eslint/no-unsafe-return -- value comes from an untyped source
 		return object[variable];
 	}
 	logger?.debug('template found. replacing values');

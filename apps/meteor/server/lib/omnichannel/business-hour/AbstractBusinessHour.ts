@@ -87,6 +87,7 @@ export abstract class AbstractBusinessHourType {
 			return businessHourData._id;
 		}
 		const { insertedId } = await this.BusinessHourRepository.insertOne(businessHourData);
+		// eslint-disable-next-line @typescript-eslint/no-unsafe-return -- value comes from an untyped source
 		return insertedId;
 	}
 

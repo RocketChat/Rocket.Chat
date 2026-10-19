@@ -35,6 +35,7 @@ export const validators: OmnichannelRoomAccessValidator[] = [
 			}
 		}
 
+		// eslint-disable-next-line @typescript-eslint/no-unsafe-return -- value comes from an untyped source
 		return extraData?.visitorToken && room.v && room.v.token === extraData.visitorToken && room.open === true;
 	},
 	async function (room, user) {

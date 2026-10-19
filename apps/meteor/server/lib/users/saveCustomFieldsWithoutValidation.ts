@@ -11,6 +11,7 @@ import { notifyOnSubscriptionChangedByUserIdAndRoomType } from '../notifyListene
 
 const getCustomFieldsMeta = function (customFieldsMeta: string) {
 	try {
+		// eslint-disable-next-line @typescript-eslint/no-unsafe-return -- value comes from an untyped source
 		return JSON.parse(customFieldsMeta);
 	} catch (e) {
 		throw new Meteor.Error('error-invalid-customfield-json', 'Invalid JSON for Custom Fields');

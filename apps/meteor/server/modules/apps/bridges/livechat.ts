@@ -75,6 +75,7 @@ export class AppLivechatBridge extends LivechatBridge {
 			},
 		});
 
+		// eslint-disable-next-line @typescript-eslint/no-unsafe-return -- sendMessage returns an untyped message; typing it exposes its false/undefined results to every caller
 		return msg._id;
 	}
 

@@ -110,6 +110,7 @@ export async function executeSendMessage(
 		metrics.messagesSent.inc();
 		metrics.messagesSentTotal.inc();
 
+		// eslint-disable-next-line @typescript-eslint/no-unsafe-return -- sendMessage returns an untyped message; typing it exposes its false/undefined results to every caller
 		return result;
 	} catch (err: any) {
 		SystemLogger.error({ msg: 'Error sending message:', err });
@@ -169,6 +170,7 @@ Meteor.methods<ServerMethods>({
 		}
 
 		try {
+			// eslint-disable-next-line @typescript-eslint/no-unsafe-return -- sendMessage returns an untyped message; typing it exposes its false/undefined results to every caller
 			return await applyAirGappedRestrictionsValidation(() => executeSendMessage(user, message, { previewUrls }));
 		} catch (error: any) {
 			if (['error-not-allowed', 'restricted-workspace'].includes(error.error || error.message)) {

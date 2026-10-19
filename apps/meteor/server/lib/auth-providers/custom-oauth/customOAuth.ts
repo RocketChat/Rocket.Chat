@@ -194,7 +194,7 @@ export class CustomOAuthStrategy extends Strategy {
 		return name;
 	}
 
-	normalizeIdentity(identity: Record<string, any>) {
+	normalizeIdentity(identity: Record<string, any>): any {
 		if (identity) {
 			for (const normalizer of Object.values(normalizers)) {
 				const result = normalizer(identity);

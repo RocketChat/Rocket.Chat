@@ -41,7 +41,7 @@ export const getCheckoutUrl = async (): Promise<{
 			throw new Error(await response.json());
 		}
 
-		return response.json();
+		return response.json() as Promise<{ url: string }>;
 	} catch (err: any) {
 		SystemLogger.error({
 			msg: 'Failed to get Checkout URL with Rocket.Chat Billing Service',

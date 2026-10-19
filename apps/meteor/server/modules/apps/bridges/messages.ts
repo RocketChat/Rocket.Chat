@@ -26,6 +26,7 @@ export class AppMessageBridge extends MessageBridge {
 		const definedMessage = convertedMessage as IMessage;
 
 		const sentMessage = await executeSendMessage(definedMessage.u._id, definedMessage);
+		// eslint-disable-next-line @typescript-eslint/no-unsafe-return -- sendMessage returns an untyped message; typing it exposes its false/undefined results to every caller
 		return sentMessage._id;
 	}
 

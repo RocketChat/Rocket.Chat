@@ -125,5 +125,6 @@ export const processDirectEmail = async function (email: ParsedMail): Promise<vo
 	metrics.messagesSent.inc();
 	metrics.messagesSentTotal.inc();
 
+	// eslint-disable-next-line @typescript-eslint/no-unsafe-return -- sendMessage returns an untyped message; typing it exposes its false/undefined results to every caller
 	return result;
 };

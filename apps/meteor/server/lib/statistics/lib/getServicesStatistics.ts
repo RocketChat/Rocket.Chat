@@ -19,6 +19,7 @@ async function getCustomOAuthServices(): Promise<
 	const readPreference = readSecondaryPreferred(db);
 
 	const customOauth = settings.getByRegexp(/Accounts_OAuth_Custom-[^-]+$/im);
+	// eslint-disable-next-line @typescript-eslint/no-unsafe-return -- statistics documents are untyped at this layer
 	return Object.fromEntries(
 		await Promise.all(
 			Object.entries(customOauth).map(async ([key, value]) => {

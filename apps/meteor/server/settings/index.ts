@@ -14,10 +14,12 @@ export { settings };
 export const settingsRegistry = new SettingsRegistry({ store: settings, model: Settings });
 
 settingsRegistry.add = use(settingsRegistry.add, async (context, next) => {
+	// eslint-disable-next-line @typescript-eslint/no-unsafe-return -- setting values are untyped at this layer
 	return next(...context) as any;
 });
 
 settingsRegistry.addGroup = use(settingsRegistry.addGroup, async (context, next) => {
+	// eslint-disable-next-line @typescript-eslint/no-unsafe-return -- setting values are untyped at this layer
 	return next(...context) as any;
 });
 

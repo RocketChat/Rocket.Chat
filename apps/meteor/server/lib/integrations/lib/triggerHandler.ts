@@ -105,7 +105,8 @@ class RocketChatIntegrationHandler {
 	isTriggerEnabled(trigger: IOutgoingIntegration): boolean {
 		for (const trig of Object.values(this.triggers)) {
 			if (trig[trigger._id]) {
-				return trig[trigger._id].enabled;
+				const { enabled }: { enabled: boolean } = trig[trigger._id];
+				return enabled;
 			}
 		}
 
@@ -488,6 +489,7 @@ class RocketChatIntegrationHandler {
 
 	// Ensure that any errors thrown by the script engine will contibue to be compatible with Meteor.Error
 	async wrapScriptEngineCall(getter: () => Promise<any>) {
+		// eslint-disable-next-line @typescript-eslint/no-unsafe-return -- integration scripts exchange untyped payloads
 		return wrapExceptions(getter).catch((error) => {
 			if (error instanceof Error) {
 				throw new Meteor.Error(error.message);
@@ -640,6 +642,7 @@ class RocketChatIntegrationHandler {
 					}
 
 					try {
+						// eslint-disable-next-line @typescript-eslint/no-unsafe-return -- integration scripts exchange untyped payloads
 						return JSON.parse(content);
 					} catch (_error) {
 						return null;

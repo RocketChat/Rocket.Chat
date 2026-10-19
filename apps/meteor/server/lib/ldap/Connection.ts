@@ -94,7 +94,7 @@ export class LDAPConnection {
 
 		this._variableMap =
 			(this.options.useVariables &&
-				wrapExceptions(() => JSON.parse(this.options.variableMap)).suppress(() => {
+				wrapExceptions(() => JSON.parse(this.options.variableMap) as LDAPVariableMap).suppress(() => {
 					mapLogger.error({ msg: 'Failed to parse LDAP Variable Map', map: this.options.variableMap });
 				})) ||
 			{};

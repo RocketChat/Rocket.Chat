@@ -19,6 +19,7 @@ export const getMethodArgs =
 				}
 
 				return {
+					// eslint-disable-next-line @typescript-eslint/no-unsafe-return -- value comes from an untyped source
 					arguments: params.map((arg) => (typeof arg !== 'object' ? arg : omit(arg, 'password', 'msg', 'pass', 'username', 'message'))),
 				};
 			};

@@ -5,6 +5,7 @@ type Middleware<T extends (...args: any[]) => any> = (context: Parameters<T>, ne
 const pipe =
 	<T extends (...args: any[]) => any>(fn: T) =>
 	(...args: Parameters<T>): ReturnType<T> =>
+		// eslint-disable-next-line @typescript-eslint/no-unsafe-return -- setting values are untyped at this layer
 		fn(...args);
 
 export const use = <T extends (...args: any[]) => any>(fn: T, middleware: Middleware<T>): T =>

@@ -21,6 +21,7 @@ export const getValue = async (_id: string) => {
 		return setFromDB(_id);
 	}
 
+	// eslint-disable-next-line @typescript-eslint/no-unsafe-return -- setting values are untyped at this layer
 	return cache.get(_id);
 };
 
