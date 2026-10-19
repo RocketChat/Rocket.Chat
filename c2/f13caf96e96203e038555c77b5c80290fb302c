@@ -1,0 +1,19 @@
+.changeset/federation-edit-redaction-permissions.md
+  s_fe61c599670dc7::t_eda3ebdf9dace3 1-7
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "c2f13caf96e96203e038555c77b5c80290fb302c",
+  "prompts": {},
+  "sessions": {
+    "s_fe61c599670dc7": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "f22c58e1-da94-4add-9582-6f19542a569b",
+        "model": "claude-opus-5-5"
+      },
+      "human_author": "Diego Sampaio <chinello@gmail.com>"
+    }
+  }
+}
