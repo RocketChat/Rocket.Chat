@@ -121,7 +121,13 @@ callbacks.add(
 		if (!isXMPPServerEnabled() || !isRoomXMPPHostedMuc(room)) {
 			return;
 		}
-		await XMPPServer.registerHostedRoom(room);
+		try {
+			await XMPPServer.registerHostedRoom(room);
+		} catch (error) {
+			// The service registers every hosted room again when it starts
+			logger.error({ msg: 'Failed to register hosted XMPP room', err: error });
+			return;
+		}
 
 		// Members added at creation time never go through addUserToRoom, so afterAddedToRoom does not fire for them
 		const members = await Subscriptions.findByRoomId(room._id, { projection: { 'u._id': 1 } }).toArray();
