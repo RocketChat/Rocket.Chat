@@ -424,9 +424,10 @@ export class LDAPManager {
 
 		const key = uniqueIdentifierField.find((field) => !_.isEmpty(ldapUser._raw[field]));
 		if (key) {
+			const rawValue: Buffer = ldapUser._raw[key];
 			return {
 				attribute: key,
-				value: ldapUser._raw[key].toString('hex'),
+				value: rawValue.toString('hex'),
 			};
 		}
 
@@ -466,7 +467,7 @@ export class LDAPManager {
 			return [`${username}@${settings.get('LDAP_Default_Domain')}`];
 		}
 
-		if (ldapUser.mail?.includes('@')) {
+		if (typeof ldapUser.mail === 'string' && ldapUser.mail.includes('@')) {
 			return [ldapUser.mail];
 		}
 
@@ -554,7 +555,7 @@ export class LDAPManager {
 		return Accounts._runLoginHandlers(this, loginRequest);
 	}
 
-	private static getAvatarFromUser(ldapUser: ILDAPEntry): any | undefined {
+	private static getAvatarFromUser(ldapUser: ILDAPEntry): Buffer | undefined {
 		const avatarField = String(settings.get('LDAP_Avatar_Field') || '').trim();
 		if (avatarField && ldapUser._raw[avatarField]) {
 			return ldapUser._raw[avatarField];

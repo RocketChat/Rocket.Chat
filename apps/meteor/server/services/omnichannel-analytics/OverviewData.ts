@@ -89,7 +89,7 @@ export class OverviewData {
 		t = (v: string): string => v,
 		extraQuery: Filter<IOmnichannelRoom> = {},
 	) {
-		const analyticsMap = new Map();
+		const analyticsMap = new Map<string, Map<string, number>>();
 		let openConversations = 0; // open conversations
 		let totalMessages = 0; // total msgs
 		let totalConversations = 0; // Total conversations
@@ -112,17 +112,13 @@ export class OverviewData {
 			const creationDay = moment.tz(room.ts, timezone).format('DD-MM-YYYY'); // @string: 01-01-2021
 			const creationHour = moment.tz(room.ts, timezone).format('H'); // @int : 0, 1, ... 23
 
-			if (!analyticsMap.has(creationDay)) {
-				analyticsMap.set(creationDay, new Map());
+			let dayMap = analyticsMap.get(creationDay);
+			if (!dayMap) {
+				dayMap = new Map();
+				analyticsMap.set(creationDay, dayMap);
 			}
 
-			const dayMap = analyticsMap.get(creationDay);
-
-			if (!dayMap.has(creationHour)) {
-				dayMap.set(creationHour, 0);
-			}
-
-			dayMap.set(creationHour, dayMap.get(creationHour) ? dayMap.get(creationHour) + room.msgs : room.msgs);
+			dayMap.set(creationHour, (dayMap.get(creationHour) || 0) + room.msgs);
 			totalMessages += room.msgs;
 		}
 

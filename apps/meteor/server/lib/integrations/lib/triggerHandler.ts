@@ -592,7 +592,8 @@ class RocketChatIntegrationHandler {
 
 		// based on HTTP.call implementation
 		if (opts.auth) {
-			if (opts.auth.indexOf(':') < 0) {
+			const { auth }: { auth: string } = opts;
+			if (auth.indexOf(':') < 0) {
 				throw new Error('auth option should be of the form "username:password"');
 			}
 

@@ -180,7 +180,7 @@ export class ResponseParser {
 			SAMLUtils.log('No Attribute Statement found in SAML response.');
 		}
 
-		if (!profile.email && profile.nameID && profile.nameIDFormat && profile.nameIDFormat.indexOf('emailAddress') >= 0) {
+		if (!profile.email && profile.nameID && profile.nameIDFormat && (profile.nameIDFormat as string).indexOf('emailAddress') >= 0) {
 			profile.email = profile.nameID;
 		}
 

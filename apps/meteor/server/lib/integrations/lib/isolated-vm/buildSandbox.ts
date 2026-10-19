@@ -17,7 +17,7 @@ const proxyObject = (obj: Record<string, any>, forbiddenKeys: string[] = []): Re
 
 			if (typeof value === 'function') {
 				return new ivm.Reference(async (...args: any[]) => {
-					const result = (obj[key] as any)(...args);
+					const result = (obj[key] as (...args: any[]) => unknown)(...args);
 
 					if (result && result instanceof Promise) {
 						return new Promise(async (resolve, reject) => {
@@ -68,7 +68,7 @@ const copyObject = (obj: Record<string, any> | any[]): Record<string, any> | any
 				const data = obj[key];
 
 				if (typeof data === 'function') {
-					return [key, new ivm.Callback((...args: any[]) => obj[key](...args))];
+					return [key, new ivm.Callback((...args: any[]) => (obj[key] as (...args: any[]) => unknown)(...args))];
 				}
 
 				return [key, copyData(data)];

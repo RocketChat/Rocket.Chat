@@ -24,13 +24,21 @@ type WithDepartment = {
 	departmentId: any;
 };
 
-type WithOnlyCount = {
-	onlyCount?: boolean;
-};
-
 type WithOptions = {
 	options?: any;
 };
+
+type CountableAggregation<TParams, TRow> = {
+	(params: TParams & { onlyCount: true }): AggregationCursor<{ total: number }>;
+	(params: TParams & { onlyCount?: false }): AggregationCursor<TRow>;
+};
+
+type AsyncCountableAggregation<TParams, TRow> = {
+	(params: TParams & { onlyCount: true }): Promise<AggregationCursor<{ total: number }>>;
+	(params: TParams & { onlyCount?: false }): Promise<AggregationCursor<TRow>>;
+};
+
+type DepartmentRow<T> = { _id: string | null } & T;
 
 // TODO: Fix types of model
 export interface ILivechatRoomsModel extends IBaseModel<IOmnichannelRoom> {
@@ -38,21 +46,32 @@ export interface ILivechatRoomsModel extends IBaseModel<IOmnichannelRoom> {
 
 	getQueueMetrics(params: { departmentId: any; agentId: any; includeOfflineAgents: any; options?: any }): any;
 
-	findAllNumberOfAbandonedRooms(
-		params: Period & WithDepartment & WithOnlyCount & WithOptions & { inactivityTimeout: number },
-	): Promise<any>;
+	findAllNumberOfAbandonedRooms: AsyncCountableAggregation<
+		Period & WithDepartment & WithOptions & { inactivityTimeout: number },
+		DepartmentRow<{ abandonedRooms: number }>
+	>;
 
-	findPercentageOfAbandonedRooms(
-		params: Period & WithDepartment & WithOnlyCount & WithOptions & { inactivityTimeout: number },
-	): Promise<any>;
+	findPercentageOfAbandonedRooms: AsyncCountableAggregation<
+		Period & WithDepartment & WithOptions & { inactivityTimeout: number },
+		DepartmentRow<{ percentageOfAbandonedChats: number }>
+	>;
 
-	findAllAverageOfChatDurationTime(params: Period & WithDepartment & WithOnlyCount & WithOptions): any;
+	findAllAverageOfChatDurationTime: CountableAggregation<
+		Period & WithDepartment & WithOptions,
+		DepartmentRow<{ averageChatDurationTimeInSeconds: number }>
+	>;
 
-	findAllAverageWaitingTime(params: Period & WithDepartment & WithOnlyCount & WithOptions): any;
+	findAllAverageWaitingTime: CountableAggregation<
+		Period & WithDepartment & WithOptions,
+		DepartmentRow<{ averageWaitingTimeInSeconds: number }>
+	>;
 
-	findAllRooms(params: Period & WithDepartment & WithOnlyCount & WithOptions & { answered: any }): any;
+	findAllRooms: CountableAggregation<Period & WithDepartment & WithOptions & { answered?: boolean }, DepartmentRow<{ rooms: number }>>;
 
-	findAllServiceTime(params: Period & WithDepartment & WithOnlyCount & WithOptions): any;
+	findAllServiceTime: CountableAggregation<
+		Period & WithDepartment & WithOptions,
+		DepartmentRow<{ chats: number; serviceTimeDuration: number }>
+	>;
 
 	findAllNumberOfTransferredRooms(params: Period & WithDepartment & WithOptions): any;
 
@@ -62,15 +81,15 @@ export interface ILivechatRoomsModel extends IBaseModel<IOmnichannelRoom> {
 
 	countAllQueuedChatsBetweenDate(params: Period & WithDepartment): any;
 
-	countAllOpenChatsByAgentBetweenDate(params: Period & WithDepartment): any;
+	countAllOpenChatsByAgentBetweenDate(params: Period & WithDepartment): Promise<{ _id: string; chats: number }[]>;
 
-	countAllOnHoldChatsByAgentBetweenDate(params: Period & WithDepartment): any;
+	countAllOnHoldChatsByAgentBetweenDate(params: Period & WithDepartment): Promise<{ _id: string; chats: number }[]>;
 
-	countAllClosedChatsByAgentBetweenDate(params: Period & WithDepartment): any;
+	countAllClosedChatsByAgentBetweenDate(params: Period & WithDepartment): Promise<{ _id: string; chats: number }[]>;
 
-	countAllOpenChatsByDepartmentBetweenDate(params: Period & WithDepartment): any;
+	countAllOpenChatsByDepartmentBetweenDate(params: Period & WithDepartment): Promise<{ _id: string; name: string; chats: number }[]>;
 
-	countAllClosedChatsByDepartmentBetweenDate(params: Period & WithDepartment): any;
+	countAllClosedChatsByDepartmentBetweenDate(params: Period & WithDepartment): Promise<{ _id: string; name: string; chats: number }[]>;
 
 	calculateResponseTimingsBetweenDates(params: Period & WithDepartment): any;
 
@@ -78,11 +97,14 @@ export interface ILivechatRoomsModel extends IBaseModel<IOmnichannelRoom> {
 
 	calculateDurationTimingsBetweenDates(params: Period & WithDepartment): any;
 
-	findAllAverageOfServiceTime(params: Period & WithDepartment & WithOnlyCount & WithOptions): any;
+	findAllAverageOfServiceTime: CountableAggregation<
+		Period & WithDepartment & WithOptions,
+		DepartmentRow<{ averageServiceTimeInSeconds: number }>
+	>;
 
-	findByVisitorId(visitorId: any, options: any, extraQuery?: any): any;
+	findByVisitorId(visitorId: any, options: any, extraQuery?: any): FindCursor<IOmnichannelRoom>;
 
-	findPaginatedByVisitorId(visitorId: any, options: any, extraQuery?: any): any;
+	findPaginatedByVisitorId(visitorId: any, options: any, extraQuery?: any): FindPaginated<FindCursor<IOmnichannelRoom>>;
 
 	findRoomsByVisitorIdAndMessageWithCriteria(params: {
 		visitorId: any;
@@ -92,7 +114,7 @@ export interface ILivechatRoomsModel extends IBaseModel<IOmnichannelRoom> {
 		onlyCount?: boolean;
 		options?: any;
 		source?: string;
-	}): any;
+	}): AggregationCursor<Document>;
 
 	findRoomsWithCriteria(params: {
 		agents: any;
@@ -114,9 +136,15 @@ export interface ILivechatRoomsModel extends IBaseModel<IOmnichannelRoom> {
 
 	getOnHoldConversationsBetweenDate(from: any, to: any, departmentId: any): any;
 
-	findAllServiceTimeByAgent(params: Period & WithOptions & WithOnlyCount): any;
+	findAllServiceTimeByAgent: CountableAggregation<
+		Period & WithOptions,
+		{ _id: string; username: string; chats: number; serviceTimeDuration: number }
+	>;
 
-	findAllAverageServiceTimeByAgents(params: Period & WithOptions & WithOnlyCount): any;
+	findAllAverageServiceTimeByAgents: CountableAggregation<
+		Period & WithOptions,
+		{ _id: string; username: string; averageServiceTimeInSeconds: number }
+	>;
 
 	setDepartmentByRoomId(roomId: any, departmentId: any): any;
 

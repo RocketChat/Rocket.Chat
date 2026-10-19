@@ -36,7 +36,7 @@ class WebdavStore extends UploadFS.Store {
 			return options.uploadFolderPath + file._id;
 		};
 
-		client.stat(options.uploadFolderPath).catch((err) => {
+		client.stat(options.uploadFolderPath).catch((err: Error) => {
 			if (err.message.toLowerCase() === 'not found') {
 				void client.createDirectory(options.uploadFolderPath);
 			} else if (err.message.toLowerCase() === 'unauthorized') {

@@ -61,7 +61,7 @@ export const loginHandlerCAS = async (options: any): Promise<undefined | Account
 		});
 
 		for await (const [internalName, source] of Object.entries(attributeMap)) {
-			if (!source || typeof source.valueOf() !== 'string') {
+			if (!source || typeof source !== 'string') {
 				continue;
 			}
 

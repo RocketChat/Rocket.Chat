@@ -37,7 +37,7 @@ export const UserTypeCodec = z.codec(z.any(), z.any(), {
 				return UserType.UNKNOWN;
 			default:
 				console.warn(`A new user type has been added that the Apps don't know about? "${type}"`);
-				return type.toUpperCase();
+				return (type as string).toUpperCase();
 		}
 	},
 	// The reverse converter assigns `user.type` straight back onto the document.
@@ -65,7 +65,7 @@ export const UserStatusConnectionCodec = z.codec(z.any(), z.any(), {
 				// This is needed for Livechat guests and Rocket.Cat user.
 				return UserStatusConnection.UNDEFINED;
 			default:
-				return !status ? UserStatusConnection.OFFLINE : status.toUpperCase();
+				return !status ? UserStatusConnection.OFFLINE : (status as string).toUpperCase();
 		}
 	},
 	encode: (status): string => status,

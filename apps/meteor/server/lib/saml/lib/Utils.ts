@@ -311,7 +311,7 @@ export class SAMLUtils {
 			// If it's a complex type, let's check what's in it
 			if (typeof attribute === 'object') {
 				// A fieldName is mandatory for complex fields. If it's missing, let's skip this one.
-				if (!attribute.hasOwnProperty('fieldName') && !attribute.hasOwnProperty('fieldNames')) {
+				if (!Object.hasOwn(attribute, 'fieldName') && !Object.hasOwn(attribute, 'fieldNames')) {
 					continue;
 				}
 
@@ -414,7 +414,7 @@ export class SAMLUtils {
 
 		if (mapping.regex && mainValue?.match) {
 			let regexValue;
-			const match = mainValue.match(new RegExp(mapping.regex));
+			const match = (mainValue as string).match(new RegExp(mapping.regex));
 			if (match?.length) {
 				if (match.length >= 2) {
 					regexValue = match[1];
@@ -506,7 +506,7 @@ export class SAMLUtils {
 			if (Array.isArray(profile.channels)) {
 				userObject.channels = profile.channels;
 			} else {
-				userObject.channels = profile.channels.split(',');
+				userObject.channels = (profile.channels as string).split(',');
 			}
 		}
 

@@ -107,7 +107,7 @@ export class IMAPInterceptor extends EventEmitter {
 		return !!(this.imap?.state && this.imap.state !== 'disconnected');
 	}
 
-	stop(callback = new Function()): void {
+	stop(callback?: () => void): void {
 		if (this.backoff) {
 			clearTimeout(this.backoff);
 			this.backoffDurationMS = 3000;
@@ -115,7 +115,7 @@ export class IMAPInterceptor extends EventEmitter {
 		this.stopWithNoStopBackoff(callback);
 	}
 
-	private stopWithNoStopBackoff(callback = new Function()): void {
+	private stopWithNoStopBackoff(callback?: () => void): void {
 		logger.debug('IMAP stop called');
 		this.imap.removeAllListeners();
 		this.imap.once('end', () => {

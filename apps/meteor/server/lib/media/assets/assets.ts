@@ -1,7 +1,7 @@
 import crypto from 'node:crypto';
 import type { ServerResponse, IncomingMessage } from 'node:http';
 
-import type { IRocketChatAssets, IRocketChatAsset, ISetting } from '@rocket.chat/core-typings';
+import type { IRocketChatAssets, IRocketChatAsset, ISetting, SettingValue } from '@rocket.chat/core-typings';
 import { Settings } from '@rocket.chat/models';
 import type { NextHandleFunction } from 'connect';
 import sizeOf from 'image-size';
@@ -307,7 +307,7 @@ class RocketChatAssetsClass {
 		});
 	}
 
-	public async processAsset(settingKey: string, settingValue: any): Promise<Record<string, any> | undefined> {
+	public async processAsset(settingKey: string, settingValue: SettingValue): Promise<Record<string, any> | undefined> {
 		if (settingKey.indexOf('Assets_') !== 0) {
 			return;
 		}
@@ -319,7 +319,7 @@ class RocketChatAssetsClass {
 			return;
 		}
 
-		if (!settingValue?.url) {
+		if (!settingValue || typeof settingValue !== 'object' || !('url' in settingValue) || !settingValue.url) {
 			assetValue.cache = undefined;
 			return;
 		}

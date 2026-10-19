@@ -3,6 +3,7 @@ import { Meteor } from 'meteor/meteor';
 import { settings } from '../../../settings';
 import { RocketChatFile } from '../../media/file';
 
+/** @type {InstanceType<typeof import("../../media/file/file.server").RocketChatFile.FileSystem>} */
 export let RocketChatImportFileInstance;
 
 Meteor.startup(() => {

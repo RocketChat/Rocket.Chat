@@ -140,7 +140,7 @@ class MsAutoTranslate extends AutoTranslate {
 		if (!request.ok) {
 			throw new Error(request.statusText);
 		}
-		const result = await request.json();
+		const result: { translations: { to: string; text: string }[] }[] = await request.json();
 
 		if (request.status === 200 && result.length > 0) {
 			// store translation only when the source and target language are different.

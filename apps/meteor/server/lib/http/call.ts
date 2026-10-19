@@ -42,7 +42,8 @@ function populateData(response: Record<string, any>): void {
 	// Read Content-Type header, up to a ';' if there is one.
 	// A typical header might be "application/json; charset=utf-8"
 	// or just "application/json".
-	const contentType = (response.headers['content-type'] || ';').split(';')[0];
+	const contentTypeHeader: string = response.headers['content-type'] || ';';
+	const contentType = contentTypeHeader.split(';')[0];
 
 	// Only try to parse data as JSON if server sets correct content type.
 	if (['application/json', 'text/javascript', 'application/javascript', 'application/x-javascript'].indexOf(contentType) >= 0) {
@@ -162,7 +163,7 @@ function _call(httpMethod: string, url: string, options: HttpCallOptions, callba
 			// fetch headers don't allow simple read using bracket notation
 			// so we iterate their entries and assign them to a new Object
 			response.headers = {};
-			for (const entry of (res.headers as any).entries()) {
+			for (const entry of res.headers.entries()) {
 				const [key, val] = entry;
 				response.headers[key] = val;
 			}

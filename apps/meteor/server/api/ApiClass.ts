@@ -764,7 +764,9 @@ export class APIClass<TBasePath extends string = '', TOperations extends Record<
 					Object.assign(_options, extraOptions);
 				}
 				// Add a try/catch for each endpoint
-				const originalAction = (operations[method as keyof Operations<TPathPattern, TOptions>] as Record<string, any>).action;
+				const originalAction = (
+					operations[method as keyof Operations<TPathPattern, TOptions>] as { action: (this: unknown) => Promise<any> }
+				).action;
 
 				if (options.deprecation && shouldBreakInVersion(options.deprecation.version)) {
 					throw new Meteor.Error('error-deprecated', `The endpoint ${route} should be removed`);

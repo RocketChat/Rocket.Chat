@@ -11,7 +11,7 @@ export const getMethodArgs =
 				const params = method === 'ufsWrite' ? args.slice(1) : args;
 
 				if (method === 'saveSettings') {
-					return { arguments: [args[0].map((arg: any) => omit(arg, 'value'))] };
+					return { arguments: [(args[0] as any[]).map((arg) => omit(arg, 'value'))] };
 				}
 
 				if (method === 'saveSetting') {

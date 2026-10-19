@@ -233,6 +233,24 @@ export class LivechatRoomsRaw extends BaseRaw<IOmnichannelRoom> implements ILive
 		return this.col.aggregate(params, { readPreference: readSecondaryPreferred(), allowDiskUse: true }).toArray();
 	}
 
+	findAllNumberOfAbandonedRooms(params: {
+		start: Date;
+		end: Date;
+		options?: { offset?: number; count?: number; sort?: { [k: string]: number } };
+		departmentId?: string;
+		inactivityTimeout: number;
+		onlyCount: true;
+	}): Promise<AggregationCursor<{ total: number }>>;
+
+	findAllNumberOfAbandonedRooms(params: {
+		start: Date;
+		end: Date;
+		options?: { offset?: number; count?: number; sort?: { [k: string]: number } };
+		departmentId?: string;
+		inactivityTimeout: number;
+		onlyCount?: false;
+	}): Promise<AggregationCursor<{ _id: string | null; abandonedRooms: number }>>;
+
 	async findAllNumberOfAbandonedRooms({
 		start,
 		end,
@@ -290,6 +308,24 @@ export class LivechatRoomsRaw extends BaseRaw<IOmnichannelRoom> implements ILive
 		}
 		return this.col.aggregate(params, { readPreference: readSecondaryPreferred() });
 	}
+
+	findPercentageOfAbandonedRooms(params: {
+		start: Date;
+		end: Date;
+		options?: { offset?: number; count?: number; sort?: { [k: string]: number } };
+		departmentId?: string;
+		inactivityTimeout: number;
+		onlyCount: true;
+	}): Promise<AggregationCursor<{ total: number }>>;
+
+	findPercentageOfAbandonedRooms(params: {
+		start: Date;
+		end: Date;
+		options?: { offset?: number; count?: number; sort?: { [k: string]: number } };
+		departmentId?: string;
+		inactivityTimeout: number;
+		onlyCount?: false;
+	}): Promise<AggregationCursor<{ _id: string | null; percentageOfAbandonedChats: number }>>;
 
 	async findPercentageOfAbandonedRooms({
 		start,
@@ -365,6 +401,22 @@ export class LivechatRoomsRaw extends BaseRaw<IOmnichannelRoom> implements ILive
 		return this.col.aggregate(params, { readPreference: readSecondaryPreferred() });
 	}
 
+	findAllAverageOfChatDurationTime(params: {
+		start: Date;
+		end: Date;
+		options?: { offset?: number; count?: number; sort?: { [k: string]: number } };
+		departmentId?: string;
+		onlyCount: true;
+	}): AggregationCursor<{ total: number }>;
+
+	findAllAverageOfChatDurationTime(params: {
+		start: Date;
+		end: Date;
+		options?: { offset?: number; count?: number; sort?: { [k: string]: number } };
+		departmentId?: string;
+		onlyCount?: false;
+	}): AggregationCursor<{ _id: string | null; averageChatDurationTimeInSeconds: number }>;
+
 	findAllAverageOfChatDurationTime({
 		start,
 		end,
@@ -420,6 +472,22 @@ export class LivechatRoomsRaw extends BaseRaw<IOmnichannelRoom> implements ILive
 		}
 		return this.col.aggregate(params, { readPreference: readSecondaryPreferred() });
 	}
+
+	findAllAverageWaitingTime(params: {
+		start: Date;
+		end: Date;
+		options?: { offset?: number; count?: number; sort?: { [k: string]: number } };
+		departmentId?: string;
+		onlyCount: true;
+	}): AggregationCursor<{ total: number }>;
+
+	findAllAverageWaitingTime(params: {
+		start: Date;
+		end: Date;
+		options?: { offset?: number; count?: number; sort?: { [k: string]: number } };
+		departmentId?: string;
+		onlyCount?: false;
+	}): AggregationCursor<{ _id: string | null; averageWaitingTimeInSeconds: number }>;
 
 	findAllAverageWaitingTime({
 		start,
@@ -479,6 +547,24 @@ export class LivechatRoomsRaw extends BaseRaw<IOmnichannelRoom> implements ILive
 		return this.col.aggregate(params, { readPreference: readSecondaryPreferred() });
 	}
 
+	findAllRooms(params: {
+		start: Date;
+		end: Date;
+		options?: { offset?: number; count?: number; sort?: { [k: string]: number } };
+		departmentId?: string;
+		answered?: boolean;
+		onlyCount: true;
+	}): AggregationCursor<{ total: number }>;
+
+	findAllRooms(params: {
+		start: Date;
+		end: Date;
+		options?: { offset?: number; count?: number; sort?: { [k: string]: number } };
+		departmentId?: string;
+		answered?: boolean;
+		onlyCount?: false;
+	}): AggregationCursor<{ _id: string | null; rooms: number }>;
+
 	findAllRooms({
 		start,
 		end,
@@ -535,6 +621,22 @@ export class LivechatRoomsRaw extends BaseRaw<IOmnichannelRoom> implements ILive
 		}
 		return this.col.aggregate(params, { readPreference: readSecondaryPreferred() });
 	}
+
+	findAllServiceTime(params: {
+		start: Date;
+		end: Date;
+		options?: { offset?: number; count?: number; sort?: { [k: string]: number } };
+		departmentId?: string;
+		onlyCount: true;
+	}): AggregationCursor<{ total: number }>;
+
+	findAllServiceTime(params: {
+		start: Date;
+		end: Date;
+		options?: { offset?: number; count?: number; sort?: { [k: string]: number } };
+		departmentId?: string;
+		onlyCount?: false;
+	}): AggregationCursor<{ _id: string | null; chats: number; serviceTimeDuration: number }>;
 
 	findAllServiceTime({
 		start,
@@ -807,7 +909,7 @@ export class LivechatRoomsRaw extends BaseRaw<IOmnichannelRoom> implements ILive
 		if (departmentId && departmentId !== 'undefined') {
 			match.$match.departmentId = departmentId;
 		}
-		return this.col.aggregate([match, group], { readPreference: readSecondaryPreferred() }).toArray();
+		return this.col.aggregate<{ _id: string; chats: number }>([match, group], { readPreference: readSecondaryPreferred() }).toArray();
 	}
 
 	countAllOnHoldChatsByAgentBetweenDate({ start, end, departmentId }: { start: Date; end: Date; departmentId?: string }) {
@@ -832,7 +934,7 @@ export class LivechatRoomsRaw extends BaseRaw<IOmnichannelRoom> implements ILive
 		if (departmentId && departmentId !== 'undefined') {
 			match.$match.departmentId = departmentId;
 		}
-		return this.col.aggregate([match, group], { readPreference: readSecondaryPreferred() }).toArray();
+		return this.col.aggregate<{ _id: string; chats: number }>([match, group], { readPreference: readSecondaryPreferred() }).toArray();
 	}
 
 	countAllClosedChatsByAgentBetweenDate({ start, end, departmentId }: { start: Date; end: Date; departmentId?: string }) {
@@ -854,7 +956,7 @@ export class LivechatRoomsRaw extends BaseRaw<IOmnichannelRoom> implements ILive
 		if (departmentId && departmentId !== 'undefined') {
 			match.$match.departmentId = departmentId;
 		}
-		return this.col.aggregate([match, group], { readPreference: readSecondaryPreferred() }).toArray();
+		return this.col.aggregate<{ _id: string; chats: number }>([match, group], { readPreference: readSecondaryPreferred() }).toArray();
 	}
 
 	countAllOpenChatsByDepartmentBetweenDate({ start, end, departmentId }: { start: Date; end: Date; departmentId?: string }) {
@@ -900,7 +1002,7 @@ export class LivechatRoomsRaw extends BaseRaw<IOmnichannelRoom> implements ILive
 			match.$match.departmentId = departmentId;
 		}
 		const params = [match, lookup, unwind, group, project];
-		return this.col.aggregate(params, { readPreference: readSecondaryPreferred() }).toArray();
+		return this.col.aggregate<{ _id: string; name: string; chats: number }>(params, { readPreference: readSecondaryPreferred() }).toArray();
 	}
 
 	countAllClosedChatsByDepartmentBetweenDate({ start, end, departmentId }: { start: Date; end: Date; departmentId?: string }) {
@@ -946,7 +1048,7 @@ export class LivechatRoomsRaw extends BaseRaw<IOmnichannelRoom> implements ILive
 			match.$match.departmentId = departmentId;
 		}
 		const params = [match, lookup, unwind, group, project];
-		return this.col.aggregate(params, { readPreference: readSecondaryPreferred() }).toArray();
+		return this.col.aggregate<{ _id: string; name: string; chats: number }>(params, { readPreference: readSecondaryPreferred() }).toArray();
 	}
 
 	calculateResponseTimingsBetweenDates({ start, end, departmentId }: { start: Date; end: Date; departmentId?: string }) {
@@ -1078,6 +1180,22 @@ export class LivechatRoomsRaw extends BaseRaw<IOmnichannelRoom> implements ILive
 		}
 		return this.col.aggregate([match, group, project], { readPreference: readSecondaryPreferred() }).toArray();
 	}
+
+	findAllAverageOfServiceTime(params: {
+		start: Date;
+		end: Date;
+		options?: { offset?: number; count?: number; sort?: { [k: string]: number } };
+		departmentId?: string;
+		onlyCount: true;
+	}): AggregationCursor<{ total: number }>;
+
+	findAllAverageOfServiceTime(params: {
+		start: Date;
+		end: Date;
+		options?: { offset?: number; count?: number; sort?: { [k: string]: number } };
+		departmentId?: string;
+		onlyCount?: false;
+	}): AggregationCursor<{ _id: string | null; averageServiceTimeInSeconds: number }>;
 
 	findAllAverageOfServiceTime({
 		start,
@@ -1386,6 +1504,20 @@ export class LivechatRoomsRaw extends BaseRaw<IOmnichannelRoom> implements ILive
 		return this.countDocuments(query);
 	}
 
+	findAllServiceTimeByAgent(params: {
+		start: Date;
+		end: Date;
+		options?: { offset?: number; count?: number; sort?: { [k: string]: number } };
+		onlyCount: true;
+	}): AggregationCursor<{ total: number }>;
+
+	findAllServiceTimeByAgent(params: {
+		start: Date;
+		end: Date;
+		options?: { offset?: number; count?: number; sort?: { [k: string]: number } };
+		onlyCount?: false;
+	}): AggregationCursor<{ _id: string; username: string; chats: number; serviceTimeDuration: number }>;
+
 	findAllServiceTimeByAgent({
 		start,
 		end,
@@ -1437,6 +1569,20 @@ export class LivechatRoomsRaw extends BaseRaw<IOmnichannelRoom> implements ILive
 		}
 		return this.col.aggregate(params, { readPreference: readSecondaryPreferred() });
 	}
+
+	findAllAverageServiceTimeByAgents(params: {
+		start: Date;
+		end: Date;
+		options?: { offset?: number; count?: number; sort?: { [k: string]: number } };
+		onlyCount: true;
+	}): AggregationCursor<{ total: number }>;
+
+	findAllAverageServiceTimeByAgents(params: {
+		start: Date;
+		end: Date;
+		options?: { offset?: number; count?: number; sort?: { [k: string]: number } };
+		onlyCount?: false;
+	}): AggregationCursor<{ _id: string; username: string; averageServiceTimeInSeconds: number }>;
 
 	findAllAverageServiceTimeByAgents({
 		start,

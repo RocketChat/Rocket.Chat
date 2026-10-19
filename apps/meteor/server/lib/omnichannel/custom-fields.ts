@@ -37,7 +37,7 @@ export async function updateContactsCustomFields(
 				return prev;
 			}
 			prev.conflictingFields ??= contact.conflictingFields || [];
-			prev.conflictingFields.push({ field: `customFields.${curr.key}`, value: curr.value });
+			(prev.conflictingFields as unknown[]).push({ field: `customFields.${curr.key}`, value: curr.value });
 			return prev;
 		},
 		{} as Record<string, any>,

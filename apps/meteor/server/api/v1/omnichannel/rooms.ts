@@ -1,5 +1,6 @@
 import { LivechatRooms } from '@rocket.chat/models';
 import { isGETLivechatRoomsParams } from '@rocket.chat/rest-typings';
+import type { GETLivechatRoomsParams } from '@rocket.chat/rest-typings';
 
 import { API } from '../..';
 import { findRooms } from './lib/rooms';
@@ -30,7 +31,8 @@ API.v1.addRoute(
 		async get() {
 			const { offset, count } = await getPaginationItems(this.queryParams);
 			const { sort, fields, query } = await this.parseJsonQuery();
-			const { agents, departmentId, open, tags, roomName, onhold, queued, units } = this.queryParams;
+			const { departmentId, open, tags, roomName, onhold, queued, units } = this.queryParams;
+			const { agents }: Pick<GETLivechatRoomsParams, 'agents'> = this.queryParams;
 			const { createdAt, customFields, closedAt } = this.queryParams;
 
 			const createdAtParam = validateDateParams('createdAt', createdAt);

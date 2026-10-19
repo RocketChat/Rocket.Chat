@@ -54,7 +54,7 @@ Accounts.registerLoginHandler('saml', async (loginRequest) => {
 	} catch (err: any) {
 		SystemLogger.error({ err });
 
-		let message = err.toString();
+		let message = String(err);
 		let errorCode = '';
 
 		if (err instanceof Meteor.Error) {

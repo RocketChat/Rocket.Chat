@@ -47,7 +47,7 @@ export class AppOAuthAppsBridge extends OAuthAppsBridge {
 			return {
 				...rest,
 				id: _id,
-				createdAt: _createdAt.toDateString(),
+				createdAt: (_createdAt as Date).toDateString(),
 				createdBy: {
 					id: _createdBy._id,
 					username: _createdBy.username,

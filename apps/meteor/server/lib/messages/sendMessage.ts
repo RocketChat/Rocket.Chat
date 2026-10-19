@@ -139,11 +139,11 @@ const validateAttachment = (attachment: any) => {
 	);
 
 	if (attachment.fields?.length) {
-		attachment.fields.map(validateAttachmentsFields);
+		(attachment.fields as any[]).map(validateAttachmentsFields);
 	}
 
 	if (attachment.actions?.length) {
-		attachment.actions.map(validateAttachmentsActions);
+		(attachment.actions as any[]).map(validateAttachmentsActions);
 	}
 };
 

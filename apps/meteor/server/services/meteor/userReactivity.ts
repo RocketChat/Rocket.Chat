@@ -54,7 +54,7 @@ type Callbacks = {
 export const serviceConfigCallbacks = new Set<Callbacks>();
 
 // Stores the callbacks for the disconnection reactivity bellow
-const userCallbacks = new Map();
+const userCallbacks = new Map<string, Set<{ hashedToken: string; callbacks: Callbacks }>>();
 
 // Overrides the native observe changes to prevent database polling and stores the callbacks
 // for the users' tokens to re-implement the reactivity based on our database listeners

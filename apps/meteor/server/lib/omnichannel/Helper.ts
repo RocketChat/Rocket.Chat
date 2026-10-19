@@ -877,7 +877,7 @@ export const updateDepartmentAgents = async (
 	const { upsert = [], remove = [] } = agents;
 
 	const agentsUpdated = [];
-	const agentsRemoved = remove.map(({ agentId }: { agentId: string }) => agentId);
+	const agentsRemoved = (remove as { agentId: string }[]).map(({ agentId }) => agentId);
 	const agentsAdded = [];
 
 	if (agentsRemoved.length > 0) {

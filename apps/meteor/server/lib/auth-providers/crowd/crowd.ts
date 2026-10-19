@@ -39,7 +39,7 @@ function fallbackDefaultAccountSystem(bind: typeof Accounts, username: string | 
 }
 
 export class CROWD {
-	private crowdClient: any;
+	private crowdClient: AtlassianCrowd;
 
 	private options: {
 		crowd: {

@@ -156,7 +156,7 @@ class DeeplAutoTranslate extends AutoTranslate {
 					throw new Error(result.statusText);
 				}
 
-				const body = await result.json();
+				const body: { translations?: IDeepLTranslation[] } = await result.json();
 
 				if (result.status === 200 && body.translations && Array.isArray(body.translations) && body.translations.length > 0) {
 					// store translation only when the source and target language are different.
@@ -202,9 +202,10 @@ class DeeplAutoTranslate extends AutoTranslate {
 				if (!result.ok) {
 					throw new Error(result.statusText);
 				}
-				const body = await result.json();
+				const body: { translations?: IDeepLTranslation[] } = await result.json();
 				if (result.status === 200 && body.translations && Array.isArray(body.translations) && body.translations.length > 0) {
 					if (body.translations.map((translation: IDeepLTranslation) => translation.detected_source_language).join() !== language) {
+						// @ts-expect-error stores the array of translated lines where a string is declared; kept as-is to avoid changing persisted data
 						translations[language] = body.translations.map((translation: IDeepLTranslation) => translation.text);
 					}
 				}

@@ -153,7 +153,7 @@ class GoogleAutoTranslate extends AutoTranslate {
 				if (!result.ok) {
 					throw new Error(result.statusText);
 				}
-				const body = await result.json();
+				const body: { data?: { translations?: IGoogleTranslation[] } } = await result.json();
 
 				if (
 					result.status === 200 &&
@@ -201,7 +201,7 @@ class GoogleAutoTranslate extends AutoTranslate {
 				if (!result.ok) {
 					throw new Error(result.statusText);
 				}
-				const body = await result.json();
+				const body: { data?: { translations?: IGoogleTranslation[] } } = await result.json();
 
 				if (
 					result.status === 200 &&

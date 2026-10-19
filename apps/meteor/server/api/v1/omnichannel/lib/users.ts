@@ -1,7 +1,8 @@
-import type { ILivechatAgent, IRole } from '@rocket.chat/core-typings';
+import { ILivechatAgentStatus, UserStatus } from '@rocket.chat/core-typings';
+import type { ILivechatAgent, IRole, IUser } from '@rocket.chat/core-typings';
 import { Users } from '@rocket.chat/models';
 import { escapeRegExp } from '@rocket.chat/tools';
-import type { FilterOperators } from 'mongodb';
+import type { Filter } from 'mongodb';
 
 /**
  * @param {IRole['_id']} role the role id
@@ -23,15 +24,15 @@ async function findUsers({
 	showIdleAgents?: boolean;
 	pagination: { offset: number; count: number; sort: any };
 }): Promise<{ users: ILivechatAgent[]; count: number; offset: number; total: number }> {
-	const query: FilterOperators<ILivechatAgent> = {};
-	const orConditions: FilterOperators<ILivechatAgent>['$or'] = [];
+	const query: Filter<IUser> = {};
+	const orConditions: Filter<IUser>[] = [];
 	if (text) {
 		const filterReg = new RegExp(escapeRegExp(text), 'i');
 		orConditions.push({ $or: [{ username: filterReg }, { name: filterReg }, { 'emails.address': filterReg }] });
 	}
 
 	if (onlyAvailable) {
-		query.statusLivechat = 'available';
+		query.statusLivechat = ILivechatAgentStatus.AVAILABLE;
 	}
 
 	if (excludeId) {
@@ -39,7 +40,7 @@ async function findUsers({
 	}
 
 	if (!showIdleAgents) {
-		orConditions.push({ $or: [{ status: { $exists: true, $ne: 'offline' }, roles: { $ne: 'bot' } }, { roles: 'bot' }] });
+		orConditions.push({ $or: [{ status: { $exists: true, $ne: UserStatus.OFFLINE }, roles: { $ne: 'bot' } }, { roles: 'bot' }] });
 	}
 
 	if (orConditions.length) {

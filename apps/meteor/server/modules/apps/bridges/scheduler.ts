@@ -38,7 +38,7 @@ export class AppSchedulerBridge extends SchedulerBridge {
 	constructor(private readonly orch: IAppServerOrchestrator) {
 		super();
 		this.scheduler = new Agenda({
-			mongo: (MongoInternals.defaultRemoteCollectionDriver().mongo as any).client.db(),
+			mongo: MongoInternals.defaultRemoteCollectionDriver().mongo.client.db(),
 			db: { collection: 'rocketchat_apps_scheduler' },
 			// this ensures the same job doesn't get executed multiple times in a cluster
 			defaultConcurrency: 1,

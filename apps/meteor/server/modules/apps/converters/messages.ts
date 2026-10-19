@@ -1,4 +1,11 @@
-import type { IAppMessagesConverter, IAppServerOrchestrator, IAppsMessage, IAppsMesssageRaw } from '@rocket.chat/apps';
+import type {
+	IAppMessagesConverter,
+	IAppRoomsConverter,
+	IAppServerOrchestrator,
+	IAppsMessage,
+	IAppsMesssageRaw,
+	IAppUsersConverter,
+} from '@rocket.chat/apps';
 import { isMessageFromVisitor } from '@rocket.chat/core-typings';
 import type { IMessage } from '@rocket.chat/core-typings';
 import { Messages, Rooms, Users } from '@rocket.chat/models';
@@ -15,8 +22,14 @@ import { convertMessageFiles } from './convertMessageFiles';
 // loosely-typed records to preserve that behaviour verbatim.
 type MessageData = Record<string, any>;
 
+type ConverterCache = {
+	room: IAppRoomsConverter['convertById'];
+	userConvertById: IAppUsersConverter['convertById'];
+	userConvertToApp: IAppUsersConverter['convertToApp'];
+};
+
 export class AppMessagesConverter implements IAppMessagesConverter {
-	private mem = new WeakMap<object, Map<string, any>>();
+	private mem = new WeakMap<object, ConverterCache>();
 
 	constructor(protected readonly orch: IAppServerOrchestrator) {
 		this.orch = orch;
@@ -85,17 +98,11 @@ export class AppMessagesConverter implements IAppMessagesConverter {
 
 		const cache =
 			this.mem.get(cacheObj as object) ??
-			new Map<string, any>([
-				['room', cachedFunction(this.orch.getConverters().get('rooms').convertById.bind(this.orch.getConverters().get('rooms')))],
-				[
-					'user.convertById',
-					cachedFunction(this.orch.getConverters().get('users').convertById.bind(this.orch.getConverters().get('users'))),
-				],
-				[
-					'user.convertToApp',
-					cachedFunction(this.orch.getConverters().get('users').convertToApp.bind(this.orch.getConverters().get('users'))),
-				],
-			]);
+			({
+				room: cachedFunction(this.orch.getConverters().get('rooms').convertById.bind(this.orch.getConverters().get('rooms'))),
+				userConvertById: cachedFunction(this.orch.getConverters().get('users').convertById.bind(this.orch.getConverters().get('users'))),
+				userConvertToApp: cachedFunction(this.orch.getConverters().get('users').convertToApp.bind(this.orch.getConverters().get('users'))),
+			} satisfies ConverterCache);
 
 		this.mem.set(cacheObj as object, cache);
 
@@ -121,7 +128,7 @@ export class AppMessagesConverter implements IAppMessagesConverter {
 			type: 't',
 			files: async (message: MessageData) => convertMessageFiles(message.files, attachments),
 			room: async (message: MessageData) => {
-				const result = await cache.get('room')(message.rid);
+				const result = await cache.room(message.rid);
 				delete message.rid;
 				return result;
 			},
@@ -133,7 +140,7 @@ export class AppMessagesConverter implements IAppMessagesConverter {
 					return undefined;
 				}
 
-				return cache.get('user.convertById')(editedBy._id);
+				return cache.userConvertById(editedBy._id);
 			},
 			attachments: async (message: MessageData) => {
 				const result = await this._convertAttachmentsToApp(message.attachments, mainFile);
@@ -149,9 +156,7 @@ export class AppMessagesConverter implements IAppMessagesConverter {
 				const sender = message.u;
 
 				// When the message contains token, means the message is from the visitor(omnichannel)
-				const user = await (isMessageFromVisitor(msgObj)
-					? cache.get('user.convertToApp')(sender)
-					: cache.get('user.convertById')(sender._id));
+				const user = await (isMessageFromVisitor(msgObj) ? cache.userConvertToApp(sender) : cache.userConvertById(sender._id));
 
 				delete message.u;
 
@@ -160,7 +165,7 @@ export class AppMessagesConverter implements IAppMessagesConverter {
 				 * `sender` as undefined, so we need to add this fallback here.
 				 */
 
-				return user || cache.get('user.convertToApp')(sender);
+				return user || cache.userConvertToApp(sender);
 			},
 		} as const;
 
@@ -283,7 +288,7 @@ export class AppMessagesConverter implements IAppMessagesConverter {
 				collapsed: attachment.collapsed,
 				color: attachment.color,
 				text: attachment.text,
-				ts: attachment.timestamp ? attachment.timestamp.toJSON() : attachment.timestamp,
+				ts: attachment.timestamp ? (attachment.timestamp as Date).toJSON() : attachment.timestamp,
 				message_link: attachment.timestampLink,
 				thumb_url: attachment.thumbnailUrl,
 				author_name: attachment.author ? attachment.author.name : undefined,

@@ -6,6 +6,7 @@ import { settings } from '../../../../settings';
 import { SystemLogger } from '../../../logger/system';
 import { RocketChatFile } from '../../file';
 
+/** @type {import("../../file/file.server").IRocketChatFileStore} */
 export let RocketChatFileCustomSoundsInstance;
 
 const initializeCustomSoundsStorage = () => {

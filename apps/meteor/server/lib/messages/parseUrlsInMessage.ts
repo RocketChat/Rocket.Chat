@@ -35,6 +35,6 @@ export const parseUrlsInMessage = (
 		html: message.msg,
 		msg: message.msg,
 	});
-	const htmlUrls = result.html?.match(getMessageUrlRegex()) || [];
+	const htmlUrls = (result.html as string | undefined)?.match(getMessageUrlRegex()) || [];
 	return prepareUrls(htmlUrls, previewUrls);
 };

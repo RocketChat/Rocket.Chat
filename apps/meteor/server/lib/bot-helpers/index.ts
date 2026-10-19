@@ -57,7 +57,7 @@ class BotHelpers {
 			return null;
 		}
 		if (typeof p === 'function') {
-			return p(...params);
+			return (p as (...args: unknown[]) => unknown)(...params);
 		}
 
 		return p;
