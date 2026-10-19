@@ -1,0 +1,30 @@
+apps/meteor/package.json
+  s_8f96cf7974859c::t_7e827a16783615 454
+apps/meteor/server/lib/migrations.spec.ts
+  s_8f96cf7974859c::t_ab376892b98ab1 1-60,66-128,178-253,256-258,260-324,326-351
+  s_8f96cf7974859c::t_b19cec68276003 61
+  s_8f96cf7974859c::t_076868bcc6970c 129-150,175-176
+  s_8f96cf7974859c::t_5bf8fe1e9ec639 156-167
+  s_8f96cf7974859c::t_7fecaaa76a00cd 254-255,259
+  s_8f96cf7974859c::t_68742adad01c6b 62-65,151-155,168-174,177,325
+apps/meteor/jest.config.ts
+  s_8f96cf7974859c::t_10b74e3cbfda04 61
+yarn.lock
+  ai_agent 11029
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.2",
+  "base_commit_sha": "53fdaaebcd9e9011e52b9c3552f12348a8571f8f",
+  "prompts": {},
+  "sessions": {
+    "s_8f96cf7974859c": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "23a82f7c-d42d-4c52-a5fc-a251ad29b5a5",
+        "model": "claude-opus-5-5"
+      },
+      "human_author": "Ricardo Garim <rswarovsky@gmail.com>"
+    }
+  }
+}
