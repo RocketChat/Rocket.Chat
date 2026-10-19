@@ -1,6 +1,6 @@
 import type { UseQueryOptions, UseQueryResult } from '@tanstack/react-query';
 import { useQueries, useQueryClient } from '@tanstack/react-query';
-import { useCallback } from 'react';
+import { useCallback, useMemo } from 'react';
 
 type QueryPagination = { offset: number; count: number };
 
@@ -22,9 +22,17 @@ type UsePaginatedQueryOptions<TQuery, TData extends { total: number }> = Omit<Us
 		queryKey: readonly unknown[];
 		queryFn: (query: TQuery & QueryPagination) => Promise<TData>;
 		itemsKey: keyof TData;
+		combineData?: (acc: TData, current: TData) => TData;
 	};
 
 const getItems = <TData>(data: TData, itemsKey: keyof TData) => data[itemsKey] as unknown[];
+
+export const getCombineFn =
+	<TData>(itemsKey: keyof TData) =>
+	(acc: TData, current: TData): TData => {
+		const items = [...getItems(acc, itemsKey), ...getItems(current, itemsKey)];
+		return Object.assign({}, acc, { [itemsKey]: items, count: items.length });
+	};
 
 const getOffsets = (start: number, itemsPerPage: number, returned: number | undefined, total: number) => {
 	const offsets = [start];
@@ -45,6 +53,7 @@ export const usePaginatedQuery = <TQuery, TData extends { total: number }>({
 	queryKey,
 	queryFn,
 	itemsKey,
+	combineData,
 	offset: start,
 	count: itemsPerPage,
 	...queryOptions
@@ -54,11 +63,12 @@ export const usePaginatedQuery = <TQuery, TData extends { total: number }>({
 	const firstData = queryClient.getQueryData<TData>([...queryKey, { offset: start, count: itemsPerPage }]);
 	const offsets = getOffsets(start, itemsPerPage, firstData && getItems(firstData, itemsKey).length, firstData?.total ?? 0);
 
+	const reducer = useMemo(() => combineData ?? getCombineFn(itemsKey), [combineData, itemsKey]);
+
 	const combine = useCallback(
 		(results: UseQueryResult<TData>[]): PaginatedQueryResult<TData> => {
 			const pages = results.flatMap((result) => (result.data ? [result.data] : []));
-			const items = pages.flatMap((data) => getItems(data, itemsKey));
-			const data = pages.length === results.length ? Object.assign({}, pages[0], { [itemsKey]: items, count: items.length }) : undefined;
+			const data = pages.length === results.length ? pages.reduce(reducer) : undefined;
 			const error = results.find((result) => result.error)?.error;
 
 			const state = {
@@ -80,7 +90,7 @@ export const usePaginatedQuery = <TQuery, TData extends { total: number }>({
 
 			return { ...state, status: 'pending', data, error: null, isPending: true, isSuccess: false, isError: false };
 		},
-		[itemsKey],
+		[reducer],
 	);
 
 	return useQueries({
