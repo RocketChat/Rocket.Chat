@@ -246,7 +246,15 @@ export class XMPPServer {
 				}),
 		});
 		this.remoteMucSessions.set(key, session);
-		await session.join();
+		try {
+			await session.join();
+		} catch (error) {
+			// A join that never reached the room holds no place in it, so the next attempt starts over
+			if (this.remoteMucSessions.get(key) === session) {
+				this.remoteMucSessions.delete(key);
+			}
+			throw error;
+		}
 	}
 
 	async mucLeaveRemoteRoom(params: { localJid: string; roomJid: string }): Promise<void> {

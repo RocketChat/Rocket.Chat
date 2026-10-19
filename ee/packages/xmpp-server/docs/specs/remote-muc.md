@@ -17,6 +17,7 @@ code:
 tests:
   [
     src/muc/RemoteMucSession.spec.ts,
+    src/XMPPServer.spec.ts,
     src/muc/MucService.spec.ts,
     src/muc/stanzas.spec.ts,
     src/jid/normalize.spec.ts,
@@ -65,6 +66,7 @@ network already uses. Entry is by invitation only ([ADR 0008](../adr/0008-only-d
   leave one channel, with each invitee a member once: invitations for several local users,
   and the second invitation Openfire sends when the inviter grants membership before
   inviting.
+
 - **R2** The invitee is then joined into the remote room with their own session: occupant
   JID `<username>@<domain>/rocketchat`, nick `<username>`
   ([ADR 0009](../adr/0009-one-remote-muc-session-per-local-member.md)).
@@ -72,7 +74,9 @@ network already uses. Entry is by invitation only ([ADR 0008](../adr/0008-only-d
   member who leaves or is removed leaves the remote room.
 - **R4** On service start every member of every mirrored channel is rejoined.
 - **R5** A join the room refuses (an error presence while joining) drops the session and
-  emits `muc.remoteJoinFailed` with the error condition. Nothing is retried.
+  emits `muc.remoteJoinFailed` with the error condition. Nothing is retried. A join that
+  cannot be sent at all (the server is stopped, the domain unreachable or not allowed)
+  leaves no session either, so the member's next message joins again.
 
 **Messages**
 

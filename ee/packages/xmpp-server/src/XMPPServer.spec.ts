@@ -65,3 +65,15 @@ describe('XMPPServer lifecycle', () => {
 		expect(() => new XMPPServer({ domain: 'x.localhost', requireTls: false, logger: silentLogger })).not.toThrow();
 	});
 });
+
+describe('XMPPServer remote rooms', () => {
+	const join = { localJid: 'alice@a.localhost', roomJid: 'team@conference.remote.tld', nick: 'alice' };
+
+	it('keeps no session when the join cannot be sent, so the next join tries again (remote-muc R5)', async () => {
+		const server = makeServer();
+
+		await expect(server.mucJoinRemoteRoom(join)).rejects.toThrow();
+		expect(server.hasRemoteMucSession(join)).toBe(false);
+		await expect(server.mucJoinRemoteRoom(join)).rejects.toThrow();
+	});
+});
