@@ -46,10 +46,16 @@ class RawPeer {
 		});
 	}
 
-	static async open(port: number, from: string, to: string): Promise<{ peer: RawPeer; streamId: string }> {
+	/** A connected peer that has sent nothing yet. */
+	static async connect(port: number): Promise<RawPeer> {
 		const socket = net.connect(port, '127.0.0.1');
+		socket.setNoDelay(true);
 		await new Promise<void>((resolve, reject) => socket.once('connect', resolve).once('error', reject));
-		const peer = new RawPeer(socket);
+		return new RawPeer(socket);
+	}
+
+	static async open(port: number, from: string, to: string): Promise<{ peer: RawPeer; streamId: string }> {
+		const peer = await RawPeer.connect(port);
 		peer.write(
 			`<?xml version='1.0'?><stream:stream xmlns='jabber:server' xmlns:stream='http://etherx.jabber.org/streams' xmlns:db='jabber:server:dialback' from='${from}' to='${to}' version='1.0'>`,
 		);
@@ -195,5 +201,18 @@ describe('Inbound stanza addressing (s2s-connectivity R6)', () => {
 		peer.write(`<message from='alice@a.localhost' to='bob@b.localhost'><body>x</body></message>`);
 		await waitUntil(() => dispatched.length > 0);
 		expect(dispatched[0].attrs.from).toBe('alice@a.localhost');
+	});
+
+	// Known defect: ../../docs/specs/s2s-connectivity.md#d1-an-xml-declaration-split-across-reads-closes-the-stream
+	it.skip('opens a stream whose XML declaration arrives split across reads (R7, D1)', async () => {
+		const peer = await RawPeer.connect(ports.get('b.localhost') as number);
+		peers.push(peer);
+		peer.write('<?xm');
+		await new Promise((resolve) => setTimeout(resolve, 100));
+		peer.write(
+			"l version='1.0'?><stream:stream xmlns='jabber:server' xmlns:stream='http://etherx.jabber.org/streams' xmlns:db='jabber:server:dialback' from='a.localhost' to='b.localhost' version='1.0'>",
+		);
+		const [features] = await peer.waitFor(/<stream:features>[\s\S]*<\/stream:features>/);
+		expect(features).not.toContain('stream:error');
 	});
 });
