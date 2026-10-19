@@ -1,12 +1,9 @@
 @use '../../styles/lengths.scss';
 
+// Tamagui has no font smoothing style props
 .rcx-field-group {
-	display: flex;
-	flex-flow: column nowrap;
-	justify-content: center;
-	align-items: stretch;
-
-	min-width: lengths.size(none);
+	-webkit-font-smoothing: antialiased;
+	-moz-osx-font-smoothing: grayscale;
 }
 
 .rcx-field-group__item {
