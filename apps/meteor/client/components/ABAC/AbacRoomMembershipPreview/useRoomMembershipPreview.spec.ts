@@ -2,7 +2,7 @@ import type { AbacRoomPreviewMember, IAbacRoomMembershipPreview } from '@rocket.
 import { mockAppRoot } from '@rocket.chat/mock-providers';
 import { act, renderHook, waitFor } from '@testing-library/react';
 
-import { PREVIEW_AUTO_FETCH_PAGES, PREVIEW_MIN_SHOWN, useRoomMembershipPreview } from './useRoomMembershipPreview';
+import { PREVIEW_AUTO_FETCH_PAGES, PREVIEW_LOAD_MORE_PAGES, PREVIEW_MIN_SHOWN, useRoomMembershipPreview } from './useRoomMembershipPreview';
 
 const attributes = { dept: ['eng'] };
 
@@ -63,17 +63,58 @@ describe('useRoomMembershipPreview', () => {
 		expect(result.current.isPartial).toBe(false);
 	});
 
-	it('should keep checking past the cap after Load more, until the target is met', async () => {
+	it('should check a bounded number of pages per Load more, then offer it again', async () => {
 		const endpoint = pagesOf(2);
 		const { result } = renderPreview(endpoint);
 
 		await waitFor(() => expect(result.current.isPartial).toBe(true));
 		act(() => result.current.loadMore());
-		await waitFor(() => expect(endpoint).toHaveBeenCalledTimes(1 + PREVIEW_AUTO_FETCH_PAGES + Math.ceil(PREVIEW_MIN_SHOWN / 2)));
+		await waitFor(() => expect(endpoint).toHaveBeenCalledTimes(1 + PREVIEW_AUTO_FETCH_PAGES + PREVIEW_LOAD_MORE_PAGES));
+		await waitFor(() => expect(result.current.isPartial).toBe(true));
+
+		expect(endpoint).toHaveBeenCalledTimes(1 + PREVIEW_AUTO_FETCH_PAGES + PREVIEW_LOAD_MORE_PAGES);
+		expect(result.current.isChecking).toBe(false);
+	});
+
+	it('should stop checking after Load more once the target is met', async () => {
+		let served = 0;
+		const endpoint = jest.fn(async (_body: unknown): Promise<IAbacRoomMembershipPreview> => {
+			served += 1;
+			const members = membersFrom(served * 100, served <= 1 + PREVIEW_AUTO_FETCH_PAGES ? 1 : 10);
+			return { members, count: members.length, checked: 20, total: 1000, next: { _id: `c${served}`, username: `c${served}` } };
+		});
+		const { result } = renderPreview(endpoint);
+
+		await waitFor(() => expect(result.current.isPartial).toBe(true));
+		act(() => result.current.loadMore());
+		await waitFor(() => expect(result.current.members.length).toBeGreaterThanOrEqual(1 + PREVIEW_AUTO_FETCH_PAGES + PREVIEW_MIN_SHOWN));
 		await waitFor(() => expect(result.current.isChecking).toBe(false));
 
-		expect(endpoint).toHaveBeenCalledTimes(1 + PREVIEW_AUTO_FETCH_PAGES + Math.ceil(PREVIEW_MIN_SHOWN / 2));
+		expect(endpoint).toHaveBeenCalledTimes(1 + PREVIEW_AUTO_FETCH_PAGES + 3);
 		expect(result.current.isPartial).toBe(false);
+	});
+
+	it('should retry only the page that failed', async () => {
+		let served = 0;
+		const endpoint = jest.fn(async (_body: unknown): Promise<IAbacRoomMembershipPreview> => {
+			served += 1;
+			if (served === 2) {
+				throw new Error('error-too-many-requests');
+			}
+			const members = membersFrom(served * 100, PREVIEW_MIN_SHOWN);
+			return { members, count: members.length, checked: 20, total: 1000, next: { _id: `c${served}`, username: `c${served}` } };
+		});
+		const { result } = renderPreview(endpoint);
+
+		await waitFor(() => expect(result.current.members).toHaveLength(PREVIEW_MIN_SHOWN));
+		act(() => result.current.onEndReached());
+		await waitFor(() => expect(result.current.isError).toBe(true));
+		act(() => result.current.retry());
+		await waitFor(() => expect(result.current.members).toHaveLength(2 * PREVIEW_MIN_SHOWN));
+
+		expect(endpoint).toHaveBeenCalledTimes(3);
+		expect(endpoint).toHaveBeenNthCalledWith(3, expect.objectContaining({ after: { _id: 'c1', username: 'c1' } }));
+		expect(result.current.isError).toBe(false);
 	});
 
 	it('should keep the cap when the end of the list asks for more', async () => {
@@ -139,7 +180,7 @@ describe('useRoomMembershipPreview', () => {
 		expect(result.current.isPartial).toBe(false);
 	});
 
-	it('should send the group, the search text and the cursor of the last page', async () => {
+	it('should send the group, the search text and the cursor of the last page, and leave the page size to the server', async () => {
 		const endpoint = pagesOf(PREVIEW_MIN_SHOWN, { pages: 2 });
 		const { result } = renderPreview(endpoint, 'ali');
 
@@ -149,6 +190,7 @@ describe('useRoomMembershipPreview', () => {
 
 		expect(endpoint).toHaveBeenNthCalledWith(1, expect.objectContaining({ rid: 'rid', attributes, group: 'loses', filter: 'ali' }));
 		expect(endpoint.mock.calls[0][0]).not.toHaveProperty('after');
+		expect(endpoint.mock.calls[0][0]).not.toHaveProperty('count');
 		expect(endpoint).toHaveBeenNthCalledWith(2, expect.objectContaining({ after: { _id: 'c1', username: 'c1' } }));
 	});
 });

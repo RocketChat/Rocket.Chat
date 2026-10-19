@@ -369,6 +369,72 @@ describe('AbacRoomMembershipPreview', () => {
 		expect(saveButton()).toBeDisabled();
 	});
 
+	it('should load the preview again and enable Save when Retry is pressed after a failure', async () => {
+		let failing = true;
+		const { endpoint } = renderPreview(() => {
+			if (failing) {
+				throw new Error('unavailable');
+			}
+			return page({ members: [bob], editor: 'compliant' });
+		});
+
+		expect(await screen.findByText('ABAC_Preview_Unavailable')).toBeInTheDocument();
+		expect(saveButton()).toBeDisabled();
+
+		failing = false;
+		await userEvent.click(screen.getByRole('button', { name: 'Retry' }));
+
+		expect(await screen.findByText('Bob')).toBeInTheDocument();
+		expect(screen.queryByText('ABAC_Preview_Unavailable')).not.toBeInTheDocument();
+		await waitFor(() => expect(saveButton()).toBeEnabled());
+		expect(endpoint).toHaveBeenCalledTimes(2);
+	});
+
+	it('should fetch only the failed page again on Retry, and show Retry as busy meanwhile', async () => {
+		let failing = true;
+		const { endpoint } = renderPreview(({ after }) => {
+			if (!after) {
+				return page({ members: [bob], editor: 'compliant', total: 1000, next: { _id: 'bob', username: 'bob' } });
+			}
+			if (failing) {
+				throw new Error('unavailable');
+			}
+			return new Promise<never>(() => undefined);
+		});
+
+		expect(await screen.findByText('ABAC_Preview_Unavailable')).toBeInTheDocument();
+		const retryButton = screen.getByRole('button', { name: 'Retry' });
+
+		failing = false;
+		await userEvent.click(retryButton);
+
+		await waitFor(() => expect(endpoint).toHaveBeenCalledTimes(3));
+		expect(endpoint).toHaveBeenNthCalledWith(3, expect.objectContaining({ after: { _id: 'bob', username: 'bob' } }));
+		expect(retryButton).toBeDisabled();
+	});
+
+	it('should stop showing the error after switching away from a group whose later page failed', async () => {
+		const dave: AbacRoomPreviewMember = { _id: 'dave', username: 'dave', name: 'Dave', verdict: 'compliant' };
+		renderPreview(({ group, after }) => {
+			if (group === 'retains') {
+				return page({ members: [dave], editor: 'compliant' });
+			}
+			if (after) {
+				throw new Error('unavailable');
+			}
+			return page({ members: [bob], editor: 'compliant', total: 1000, next: { _id: 'bob', username: 'bob' } });
+		});
+
+		expect(await screen.findByText('ABAC_Preview_Unavailable')).toBeInTheDocument();
+
+		await userEvent.click(screen.getByRole('button', { name: 'ABAC_Preview_Loses_access' }));
+		await userEvent.click(screen.getByRole('option', { name: 'ABAC_Preview_Retains_access' }));
+
+		expect(await screen.findByText('Dave')).toBeInTheDocument();
+		expect(screen.queryByText('ABAC_Preview_Unavailable')).not.toBeInTheDocument();
+		expect(saveButton()).toBeEnabled();
+	});
+
 	it("should keep explaining a failed editor's verdict after switching group", async () => {
 		renderPreview(({ group, filter }) => {
 			if (group === 'loses' && !filter) {
