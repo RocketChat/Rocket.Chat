@@ -6,6 +6,7 @@ import {
 	GenericTableHeaderCell,
 	GenericTableHeader,
 	GenericTableLoadingRow,
+	getCombineFn,
 	usePaginatedQuery,
 	usePagination,
 	GenericNoResults,
@@ -44,7 +45,7 @@ const BusinessHoursTable = () => {
 		query,
 		queryKey,
 		queryFn: getBusinessHours,
-		itemsKey: 'businessHours',
+		combineData: getCombineFn('businessHours'),
 		offset: current,
 		count: itemsPerPage,
 	});

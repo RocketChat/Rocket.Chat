@@ -1,6 +1,6 @@
 import type { IUser, Serialized } from '@rocket.chat/core-typings';
 import type { OperationResult } from '@rocket.chat/rest-typings';
-import { usePaginatedQuery } from '@rocket.chat/ui-client';
+import { getCombineFn, usePaginatedQuery } from '@rocket.chat/ui-client';
 import { useEndpoint } from '@rocket.chat/ui-contexts';
 import { useQuery } from '@tanstack/react-query';
 
@@ -36,7 +36,7 @@ export const useManagedPresenceUsers = ({ searchTerm, count, offset }: { searchT
 		query: { searchTerm },
 		queryKey: managedPresenceQueryKeys.list({ searchTerm }),
 		queryFn: listStatusVisibility,
-		itemsKey: 'users',
+		combineData: getCombineFn('users'),
 		offset,
 		count,
 		meta: {

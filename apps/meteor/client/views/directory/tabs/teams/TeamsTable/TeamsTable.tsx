@@ -7,6 +7,7 @@ import {
 	GenericTableHeaderCell,
 	GenericTableBody,
 	GenericTableLoadingTable,
+	getCombineFn,
 	usePaginatedQuery,
 	usePagination,
 	useSort,
@@ -70,7 +71,7 @@ const TeamsTable = () => {
 		query,
 		queryKey,
 		queryFn: getDirectoryData,
-		itemsKey: 'result',
+		combineData: getCombineFn('result'),
 		offset: current,
 		count: itemsPerPage,
 	});

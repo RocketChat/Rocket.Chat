@@ -7,6 +7,7 @@ import {
 	GenericTableHeaderCell,
 	GenericTableBody,
 	GenericTableHeader,
+	getCombineFn,
 	usePaginatedQuery,
 	usePagination,
 	useSort,
@@ -65,7 +66,7 @@ const ModerationConsoleTable = () => {
 		query,
 		queryKey,
 		queryFn: getReports,
-		itemsKey: 'reports',
+		combineData: getCombineFn('reports'),
 		offset: current,
 		count: itemsPerPage,
 		meta: {

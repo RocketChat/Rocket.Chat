@@ -7,6 +7,7 @@ import {
 	GenericTableHeader,
 	GenericTableHeaderCell,
 	GenericTableLoadingTable,
+	getCombineFn,
 	usePaginatedQuery,
 	usePagination,
 	useSort,
@@ -59,7 +60,7 @@ const RoomsTable = ({ reload }: { reload: MutableRefObject<() => void> }) => {
 		query,
 		queryKey,
 		queryFn: getAdminRooms,
-		itemsKey: 'rooms',
+		combineData: getCombineFn('rooms'),
 		offset: current,
 		count: itemsPerPage,
 	});
