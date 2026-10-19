@@ -4,7 +4,7 @@ exports[`renders Date without crashing 1`] = `
 <body>
   <div>
     <label
-      class="rcx-box rcx-box--full rcx-label rcx-box rcx-box--full rcx-box--animated rcx-input-box__wrapper"
+      class="is_Text _b-650654186 _os-249893454 _ff-409630021 _fvn-1977619713 _ws-311910413 _ww-408434756 _fs-347291933 _fw-289166179 _lh-1925956564 _ls-1782815796 _d-341075704 _c-1922521888 _c-1063453128 rcx-label rcx-box rcx-box--full rcx-box--animated rcx-input-box__wrapper"
     >
       <input
         aria-label="Value"
@@ -18,7 +18,7 @@ exports[`renders Date without crashing 1`] = `
       >
         <i
           aria-hidden="true"
-          class="rcx-box rcx-box--full rcx-icon--name-calendar rcx-icon rcx-css-4pvxx3"
+          class="is_Text _d-1409515928 _ws-311910413 _ww-408434756 _us-601212022 _va-1101652081 _ls-1720078126 _ff-1916555734 _fs-1279428672 _fw-289165218 _fs-477064150 _fv-1578983722 _lh-2067209205 _tr-1510281189 rcx-icon--name-calendar rcx-icon rcx-css-4pvxx3"
         >
           
         </i>
@@ -75,10 +75,10 @@ exports[`renders Skeleton without crashing 1`] = `
 <body>
   <div>
     <div
-      class="rcx-box rcx-box--full rcx-skeleton__input"
+      class="is_View _d-1985012034 _f-1293449022 _mw-355829151 _mh-1675067943 _p-1212535695 _va-1675321343 _o-1119039191 _to-1727917045 _o-1106425799 _c-277036852 _b-1668497011 _br-1531773755 _b-730625357 _ff-409630021 _fs-347291933 _fw-289166179 _lh-1925956564 _ls-1782815796 rcx-skeleton__input"
     >
       <span
-        class="rcx-skeleton rcx-skeleton--text rcx-css-1qcz93u"
+        class="is_View _d-1987097250 _f-571455214 _o-1106425799 _fvn-1977619713 _a-119288947 _o-1083158629 _br-1682169757 _b-326940086 _h-568431264 _m-93279763 _to-611310301 _t-1660003422 rcx-skeleton rcx-skeleton--text rcx-css-1qcz93u"
       />
     </div>
   </div>
@@ -100,7 +100,7 @@ exports[`renders SmallVariants without crashing 1`] = `
         type="text"
       />
       <label
-        class="rcx-box rcx-box--full rcx-label rcx-box rcx-box--full rcx-box--animated rcx-input-box__wrapper"
+        class="is_Text _b-650654186 _os-249893454 _ff-409630021 _fvn-1977619713 _ws-311910413 _ww-408434756 _fs-347291933 _fw-289166179 _lh-1925956564 _ls-1782815796 _d-341075704 _c-1922521888 _c-1063453128 rcx-label rcx-box rcx-box--full rcx-box--animated rcx-input-box__wrapper"
       >
         <input
           aria-label="Search"
@@ -114,7 +114,7 @@ exports[`renders SmallVariants without crashing 1`] = `
         >
           <i
             aria-hidden="true"
-            class="rcx-box rcx-box--full rcx-icon--name-magnifier rcx-icon rcx-css-4pvxx3"
+            class="is_Text _d-1409515928 _ws-311910413 _ww-408434756 _us-601212022 _va-1101652081 _ls-1720078126 _ff-1916555734 _fs-1279428672 _fw-289165218 _fs-477064150 _fv-1578983722 _lh-2067209205 _tr-1510281189 rcx-icon--name-magnifier rcx-icon rcx-css-4pvxx3"
           >
             
           </i>
@@ -129,7 +129,7 @@ exports[`renders Time without crashing 1`] = `
 <body>
   <div>
     <label
-      class="rcx-box rcx-box--full rcx-label rcx-box rcx-box--full rcx-box--animated rcx-input-box__wrapper"
+      class="is_Text _b-650654186 _os-249893454 _ff-409630021 _fvn-1977619713 _ws-311910413 _ww-408434756 _fs-347291933 _fw-289166179 _lh-1925956564 _ls-1782815796 _d-341075704 _c-1922521888 _c-1063453128 rcx-label rcx-box rcx-box--full rcx-box--animated rcx-input-box__wrapper"
     >
       <input
         aria-label="Value"
@@ -143,7 +143,7 @@ exports[`renders Time without crashing 1`] = `
       >
         <i
           aria-hidden="true"
-          class="rcx-box rcx-box--full rcx-icon--name-clock rcx-icon rcx-css-4pvxx3"
+          class="is_Text _d-1409515928 _ws-311910413 _ww-408434756 _us-601212022 _va-1101652081 _ls-1720078126 _ff-1916555734 _fs-1279428672 _fw-289165218 _fs-477064150 _fv-1578983722 _lh-2067209205 _tr-1510281189 rcx-icon--name-clock rcx-icon rcx-css-4pvxx3"
         >
           
         </i>
@@ -157,7 +157,7 @@ exports[`renders WithAddon without crashing 1`] = `
 <body>
   <div>
     <label
-      class="rcx-box rcx-box--full rcx-label rcx-box rcx-box--full rcx-box--animated rcx-input-box__wrapper"
+      class="is_Text _b-650654186 _os-249893454 _ff-409630021 _fvn-1977619713 _ws-311910413 _ww-408434756 _fs-347291933 _fw-289166179 _lh-1925956564 _ls-1782815796 _d-341075704 _c-1922521888 _c-1063453128 rcx-label rcx-box rcx-box--full rcx-box--animated rcx-input-box__wrapper"
     >
       <input
         aria-label="Value"
@@ -170,7 +170,7 @@ exports[`renders WithAddon without crashing 1`] = `
       >
         <i
           aria-hidden="true"
-          class="rcx-box rcx-box--full rcx-icon--name-send rcx-icon rcx-css-4pvxx3"
+          class="is_Text _d-1409515928 _ws-311910413 _ww-408434756 _us-601212022 _va-1101652081 _ls-1720078126 _ff-1916555734 _fs-1279428672 _fw-289165218 _fs-477064150 _fv-1578983722 _lh-2067209205 _tr-1510281189 rcx-icon--name-send rcx-icon rcx-css-4pvxx3"
         >
           〈
         </i>
@@ -198,14 +198,14 @@ exports[`renders WithStartAddon without crashing 1`] = `
 <body>
   <div>
     <label
-      class="rcx-box rcx-box--full rcx-label rcx-box rcx-box--full rcx-box--animated rcx-input-box__wrapper"
+      class="is_Text _b-650654186 _os-249893454 _ff-409630021 _fvn-1977619713 _ws-311910413 _ww-408434756 _fs-347291933 _fw-289166179 _lh-1925956564 _ls-1782815796 _d-341075704 _c-1922521888 _c-1063453128 rcx-label rcx-box rcx-box--full rcx-box--animated rcx-input-box__wrapper"
     >
       <span
         class="rcx-box rcx-box--full rcx-input-box__addon"
       >
         <i
           aria-hidden="true"
-          class="rcx-box rcx-box--full rcx-icon--name-send rcx-icon rcx-css-4pvxx3"
+          class="is_Text _d-1409515928 _ws-311910413 _ww-408434756 _us-601212022 _va-1101652081 _ls-1720078126 _ff-1916555734 _fs-1279428672 _fw-289165218 _fs-477064150 _fv-1578983722 _lh-2067209205 _tr-1510281189 rcx-icon--name-send rcx-icon rcx-css-4pvxx3"
         >
           〈
         </i>
