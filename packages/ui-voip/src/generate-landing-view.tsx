@@ -19,6 +19,8 @@ const g = globalThis as Record<string, unknown>;
 g.self = jsdomWindow;
 g.window = jsdomWindow;
 g.document = jsdomWindow.document;
+// Tamagui registers global pointer listeners at module init whenever `window` exists.
+g.addEventListener = jsdomWindow.addEventListener.bind(jsdomWindow);
 
 // 2. Redirect all React-family CJS requires to this repo's copy.
 //    When @rocket.chat/fuselage is symlinked from a separate dev repo it has its own
