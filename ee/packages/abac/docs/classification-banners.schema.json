@@ -28,7 +28,11 @@
       "type": "array",
       "minItems": 1,
       "items": { "$ref": "#/$defs/nonAbacBanner" },
-      "contains": { "properties": { "enabled": { "const": true } }, "not": { "required": ["match"] } }
+      "contains": {
+        "type": "object",
+        "properties": { "enabled": { "const": true } },
+        "not": { "type": "object", "required": ["match"] }
+      }
     },
     "attributes": {
       "type": "array",
