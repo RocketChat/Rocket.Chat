@@ -23,6 +23,10 @@ import { useCallback } from 'react';
 export const useButtonPattern = (onPress: (e: MouseEvent<Element> | KeyboardEvent<Element>) => void) => {
 	const handleKeyDown = useCallback(
 		(event: KeyboardEvent<Element>) => {
+			if (event.target !== event.currentTarget) {
+				return;
+			}
+
 			if (event.code === 'Space' || event.code === 'Enter') {
 				event.preventDefault();
 				onPress(event);
