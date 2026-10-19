@@ -55,6 +55,9 @@ const withPreview = (respond: (page: PreviewPage) => IAbacRoomMembershipPreview 
 		.withJohnDoe()
 		.withTranslations('en', 'core', {
 			ABAC_Preview_Access_filter: 'Access',
+			ABAC_Preview_Empty_room: 'Empty ABAC room',
+			ABAC_Preview_Empty_room_content: 'All members will be removed from {{roomName}}.',
+			ABAC_Preview_Empty_room_warning: 'Re-populating an empty ABAC room may require technical expertise.',
 			ABAC_Preview_Inconclusive_Removed: 'Access could not be determined. This member will be removed.',
 			ABAC_Preview_Loses_access: 'Loses access',
 			ABAC_Preview_No_members_lose_access: 'No members lose access',
@@ -82,11 +85,16 @@ const withPreview = (respond: (page: PreviewPage) => IAbacRoomMembershipPreview 
 			ABAC_Preview_Search_members: 'Search members',
 			ABAC_Preview_Self_lockout_warning: 'You will lose access to {{roomName}} and will not be able to open it again.',
 			ABAC_Preview_Unavailable: 'Could not check who will have access. Try again later.',
+			ABAC_Preview_Update_room: 'Update ABAC room',
+			ABAC_Preview_Update_room_none: 'No members will be removed from {{roomName}}.',
+			ABAC_Preview_Update_room_unknown:
+				'Members who do not meet the new attributes will be removed from {{roomName}}. Not every member was checked, so how many is not yet known.',
 			Are_you_sure: 'Are you sure?',
 			Back: 'Back',
 			Cancel: 'Cancel',
 			Load_more: 'Load more',
 			No_members_found: 'No members found',
+			Proceed_with_caution: 'Proceed with caution',
 			Retry: 'Retry',
 			Save: 'Save',
 		})
