@@ -18,11 +18,7 @@ type IMAPOptions = {
 	maxRetries: number;
 };
 
-export declare interface IMAPInterceptor {
-	on(event: 'email', listener: (email: ParsedMail) => void): this;
-}
-
-export class IMAPInterceptor extends EventEmitter {
+export class IMAPInterceptor extends EventEmitter<{ email: [email: ParsedMail] }> {
 	private imap: IMAP;
 
 	private config: IMAP.Config;
