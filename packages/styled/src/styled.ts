@@ -14,9 +14,11 @@ const styled =
 	(
 		slices: TemplateStringsArray,
 		...values: readonly (string | ((props: P) => string))[]
+		// eslint-disable-next-line @typescript-eslint/no-restricted-types -- public return type of styled(); the component carries a displayName
 	): FunctionComponent<JSX.IntrinsicElements[K] & P> => {
 		const cssFn = css(slices, ...values);
 
+		// eslint-disable-next-line @typescript-eslint/no-restricted-types -- public return type of styled(); the component carries a displayName
 		const StyledComponent: FunctionComponent<JSX.IntrinsicElements[K] & P> =
 			typeof window === 'undefined'
 				? (props) => {
