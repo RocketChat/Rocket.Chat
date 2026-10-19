@@ -33,5 +33,8 @@ EOF
 issue rocketchat rc.test
 issue openfire openfire.test
 
+# Only the issuing above needs the CA key; the containers that mount this folder never see it
+rm "$out/ca-key.pem"
+
 # Rocket.Chat and Openfire read these as unprivileged users
 chmod 644 "$out"/*.pem
