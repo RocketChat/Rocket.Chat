@@ -52,7 +52,7 @@ function MultiSelect({
 	error,
 	disabled,
 	anchor: Anchor = MultiSelectAnchor,
-	onChange = () => {},
+	onChange = () => undefined,
 	getLabel = ([, label] = ['', '']) => label,
 	getValue = ([value]) => value,
 	placeholder,

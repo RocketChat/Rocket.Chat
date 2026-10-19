@@ -70,7 +70,7 @@ const PaginatedMultiSelect = ({
 	error,
 	disabled,
 	anchor: Anchor = SelectFocus,
-	onChange = () => {},
+	onChange = () => undefined,
 	placeholder,
 	renderOptions: OptionsComponent = OptionsPaginated,
 	renderItem = Option,

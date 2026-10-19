@@ -54,7 +54,7 @@ function SelectLegacy({
 	disabled,
 	options = [],
 	anchor: Anchor = SelectFocus,
-	onChange = () => {},
+	onChange = () => undefined,
 	getValue = ([value] = ['', '']) => value,
 	getLabel = ([, label] = ['', '']) => label,
 	placeholder = '',

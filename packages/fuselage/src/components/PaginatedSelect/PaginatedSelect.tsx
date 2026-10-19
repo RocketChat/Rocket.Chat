@@ -37,7 +37,7 @@ export const PaginatedSelect = ({
 	disabled,
 	options = [],
 	anchor: Anchor = SelectFocus,
-	onChange = () => {},
+	onChange = () => undefined,
 	placeholder,
 	renderOptions: _Options = OptionsPaginated,
 	renderItem = Option,

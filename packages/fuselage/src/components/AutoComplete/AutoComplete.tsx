@@ -93,7 +93,7 @@ function AutoComplete<TLabel = ReactNode>({
 	error,
 	disabled,
 	multiple,
-	onBlur: onBlurAction = () => {},
+	onBlur: onBlurAction = () => undefined,
 	...props
 }: AutoCompleteProps<TLabel>) {
 	const innerRef = useRef<HTMLInputElement>(null);
