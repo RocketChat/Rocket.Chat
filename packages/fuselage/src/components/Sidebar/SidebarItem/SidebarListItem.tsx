@@ -1,14 +1,29 @@
+import { styled, View, type GetProps } from '@tamagui/web';
 import type { HTMLAttributes, RefAttributes } from 'react';
+
+import { withFuselageProvider } from '../../FuselageProvider/FuselageProvider';
+import { boxFull } from '../sidebarStyles';
+
+const SidebarListItemFrame = styled(View, {
+	...boxFull,
+	display: 'block',
+});
 
 type SidebarListItemProps = HTMLAttributes<HTMLDivElement> &
 	RefAttributes<HTMLDivElement> & {
 		selected?: boolean;
 	};
 
-export function SidebarListItem({ className, children, ...props }: SidebarListItemProps) {
+function SidebarListItemBase({ className, children, ...props }: SidebarListItemProps) {
 	return (
-		<div role='listitem' className={['rcx-box rcx-box--full rcx-sidebar-item__list-item', className].filter(Boolean).join(' ')} {...props}>
+		<SidebarListItemFrame
+			role='listitem'
+			className={['rcx-sidebar-item__list-item', className].filter(Boolean).join(' ')}
+			{...(props as GetProps<typeof SidebarListItemFrame>)}
+		>
 			{children}
-		</div>
+		</SidebarListItemFrame>
 	);
 }
+
+export const SidebarListItem = withFuselageProvider(SidebarListItemBase);
