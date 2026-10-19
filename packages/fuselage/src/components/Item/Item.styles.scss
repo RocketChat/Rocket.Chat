@@ -557,7 +557,7 @@ $item-group-narrow-width: 320px;
 .rcx-item-drop-line,
 .rcx-item-drop-box {
 	position: fixed;
-	z-index: 9998;
+	z-index: 10000;
 
 	box-sizing: border-box;
 
@@ -591,7 +591,7 @@ $item-group-narrow-width: 320px;
 	cursor: grabbing;
 	pointer-events: none;
 
-	opacity: 1;
+	opacity: 0.92;
 	border-radius: lengths.border-radius(small);
 	background-color: $item-drag-preview-color-surface;
 
