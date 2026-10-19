@@ -73,12 +73,12 @@ exports[`renders Default without crashing 1`] = `
           </svg>
         </div>
         <div
-          class="rcx-box rcx-box--full rcx-css-19q34us"
+          class="rcx-box rcx-box--full rcx-css-q9v6ob"
         >
           Title
         </div>
         <div
-          class="rcx-box rcx-box--full rcx-css-5zteh6"
+          class="rcx-box rcx-box--full rcx-css-1ipudou"
         >
           Subtitle
         </div>

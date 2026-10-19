@@ -49,6 +49,9 @@ const PushGetPropsSchema = {
 
 export const isPushGetProps = ajvQuery.compile<PushGetProps>(PushGetPropsSchema);
 
+// Public mirror of the implementation-derived routes (apps/meteor/server/api/v1/push.ts,
+// `ExtractRoutesFromAPI<typeof ...>`). Kept identical so the two declarations merge without
+// TS2320, and so SDK/external consumers that don't compile apps/meteor keep these routes.
 export type PushEndpoints = {
 	'/v1/push.get': {
 		GET: (params: PushGetProps) => {
@@ -59,10 +62,9 @@ export type PushEndpoints = {
 		};
 	};
 	'/v1/push.info': {
-		GET: () => {
+		GET: (params?: never) => {
 			pushGatewayEnabled: boolean;
 			defaultPushGateway: boolean;
-			success: true;
 		};
 	};
 };

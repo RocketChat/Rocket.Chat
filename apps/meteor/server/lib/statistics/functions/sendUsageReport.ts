@@ -6,7 +6,7 @@ import { serverFetch as fetch } from '@rocket.chat/server-fetch';
 import { tracerSpan } from '@rocket.chat/tracing';
 import { Meteor } from 'meteor/meteor';
 
-import { Info } from '../../../../app/utils/rocketchat.info';
+import { Info } from '../../../../rocketchat.info';
 import { shouldReportStatistics } from '../../../cron/usageReport';
 import { getWorkspaceAccessToken } from '../../cloud';
 import { statistics } from '../index';

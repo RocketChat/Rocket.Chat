@@ -2,7 +2,7 @@ import type { IMessage, SlashCommand } from '@rocket.chat/core-typings';
 import { Random } from '@rocket.chat/random';
 import { escapeHTML } from '@rocket.chat/tools';
 
-import { t } from '../../../../app/utils/lib/i18n';
+import { t } from '../../../../lib/i18n';
 import { sdk } from '../../SDKClient';
 import { hasAtLeastOnePermission } from '../../authorization';
 import { settings } from '../../settings';

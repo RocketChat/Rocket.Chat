@@ -44,7 +44,6 @@
   "__usernames__joined": "{{usernames}} beigetreten",
   "__usersCount__joined": "{{count}} beigetreten",
   "__usersCount__people_will_be_invited": "{{usersCount}} Mitglieder werden eingeladen",
-  "_joined.comment": "Benutzer A und Benutzer B sind einem Videoanruf beigetreten",
   "@username": "@Benutzername",
   "@username_message": "@Benutzername <message>",
   "#channel": "#Kanal",

@@ -4,7 +4,7 @@ import { expect } from 'chai';
 import { before, after, describe, it } from 'mocha';
 import { MongoClient } from 'mongodb';
 
-import { api, getCredentials, request, credentials, methodCall } from '../../data/api-data';
+import { api, getCredentials, request, credentials } from '../../data/api-data';
 import { sleep } from '../../data/livechat/utils';
 import {
 	mockServerHealthy,
@@ -17,7 +17,7 @@ import {
 	seedGetEntitlements,
 } from '../../data/mock-server.helper';
 import { updatePermission, updateSetting } from '../../data/permissions.helper';
-import { createRoom, deleteRoom } from '../../data/rooms.helper';
+import { createRoom, deleteRoom, getRoomInfo } from '../../data/rooms.helper';
 import { deleteTeam } from '../../data/teams.helper';
 import { adminEmail, adminUsername, password } from '../../data/user';
 import { createUser, deleteUser, login } from '../../data/users.helper';
@@ -501,30 +501,20 @@ const addAbacAttributesToUserDirectly = async (userId: string, abacAttributes: I
 
 		it('should throw an error when trying to audit the messages of an abac managed room', async () => {
 			await request
-				.post(methodCall('auditGetMessages'))
+				.post(api('audit.messages'))
 				.set(credentials)
 				.send({
-					message: JSON.stringify({
-						method: 'auditGetMessages',
-						params: [
-							{
-								type: '',
-								msg: 'test1234',
-								startDate: { $date: new Date() },
-								endDate: { $date: new Date() },
-								rid: testRoom._id,
-								users: [],
-							},
-						],
-						id: '14',
-						msg: 'method',
-					}),
+					type: '',
+					msg: 'test1234',
+					startDate: new Date().toISOString(),
+					endDate: new Date().toISOString(),
+					rid: testRoom._id,
+					users: [],
 				})
 				.expect(400)
 				.expect((res) => {
-					const result = JSON.parse(res.body.message);
-					expect(result).to.have.property('error');
-					expect(result.error).to.have.property('error', `Room doesn't exist`);
+					expect(res.body).to.have.property('success', false);
+					expect(res.body).to.have.property('errorType', `Room doesn't exist`);
 				});
 		});
 
@@ -575,32 +565,22 @@ const addAbacAttributesToUserDirectly = async (userId: string, abacAttributes: I
 					.expect(200);
 
 				await request
-					.post(methodCall('auditGetMessages'))
+					.post(api('audit.messages'))
 					.set(credentials)
 					.send({
-						message: JSON.stringify({
-							method: 'auditGetMessages',
-							params: [
-								{
-									type: 'u',
-									msg: 'audit message in abac room',
-									startDate: { $date: startDate },
-									endDate: { $date: endDate },
-									rid: '',
-									users: [auditUser.username],
-									visitor: '',
-									agent: '',
-								},
-							],
-							id: 'abac-audit-1',
-							msg: 'method',
-						}),
+						type: 'u',
+						msg: 'audit message in abac room',
+						startDate: startDate.toISOString(),
+						endDate: endDate.toISOString(),
+						rid: '',
+						users: [auditUser.username!],
+						visitor: '',
+						agent: '',
 					})
 					.expect(200)
 					.expect((res) => {
-						const parsed = JSON.parse(res.body.message);
-						expect(parsed).to.have.property('result');
-						expect(parsed.result).to.be.an('array').that.is.empty;
+						expect(res.body).to.have.property('success', true);
+						expect(res.body).to.have.property('messages').that.is.an('array').that.is.empty;
 					});
 			});
 
@@ -614,32 +594,22 @@ const addAbacAttributesToUserDirectly = async (userId: string, abacAttributes: I
 				await request.post(`${v1}/groups.kick`).set(credentials).send({ roomId: auditRoom._id, username: auditUser.username }).expect(200);
 
 				await request
-					.post(methodCall('auditGetMessages'))
+					.post(api('audit.messages'))
 					.set(credentials)
 					.send({
-						message: JSON.stringify({
-							method: 'auditGetMessages',
-							params: [
-								{
-									type: 'u',
-									msg: 'audit message before removal',
-									startDate: { $date: startDate },
-									endDate: { $date: endDate },
-									rid: '',
-									users: [auditUser.username],
-									visitor: '',
-									agent: '',
-								},
-							],
-							id: 'abac-audit-2',
-							msg: 'method',
-						}),
+						type: 'u',
+						msg: 'audit message before removal',
+						startDate: startDate.toISOString(),
+						endDate: endDate.toISOString(),
+						rid: '',
+						users: [auditUser.username!],
+						visitor: '',
+						agent: '',
 					})
 					.expect(200)
 					.expect((res) => {
-						const parsed = JSON.parse(res.body.message);
-						expect(parsed).to.have.property('result');
-						expect(parsed.result).to.be.an('array').that.is.empty;
+						expect(res.body).to.have.property('success', true);
+						expect(res.body).to.have.property('messages').that.is.an('array').that.is.empty;
 					});
 			});
 
@@ -659,32 +629,22 @@ const addAbacAttributesToUserDirectly = async (userId: string, abacAttributes: I
 					.expect(200);
 
 				await request
-					.post(methodCall('auditGetMessages'))
+					.post(api('audit.messages'))
 					.set(credentials)
 					.send({
-						message: JSON.stringify({
-							method: 'auditGetMessages',
-							params: [
-								{
-									type: 'u',
-									msg: 'audit message after room no longer abac',
-									startDate: { $date: startDate },
-									endDate: { $date: endDate },
-									rid: '',
-									users: [auditUser.username],
-									visitor: '',
-									agent: '',
-								},
-							],
-							id: 'abac-audit-3',
-							msg: 'method',
-						}),
+						type: 'u',
+						msg: 'audit message after room no longer abac',
+						startDate: startDate.toISOString(),
+						endDate: endDate.toISOString(),
+						rid: '',
+						users: [auditUser.username!],
+						visitor: '',
+						agent: '',
 					})
 					.expect(200)
 					.expect((res) => {
-						const parsed = JSON.parse(res.body.message);
-						expect(parsed).to.have.property('result');
-						expect(parsed.result).to.be.an('array').with.lengthOf.greaterThan(0);
+						expect(res.body).to.have.property('success', true);
+						expect(res.body).to.have.property('messages').that.is.an('array').with.lengthOf.greaterThan(0);
 					});
 			});
 		});
@@ -2221,6 +2181,105 @@ const addAbacAttributesToUserDirectly = async (userId: string, abacAttributes: I
 					expect(res.body).to.have.property('success', false);
 					expect(res.body).to.have.property('errorType', 'error-room-not-found');
 				});
+		});
+	});
+
+	describe('Classification banner in rooms.info', () => {
+		let bannerRoom: IRoom;
+		let plainRoom: IRoom;
+		const bannerAttrKey = `banner_level_${Date.now()}`;
+		const bannersConfig = {
+			version: 1,
+			enabled: true,
+			banner: {
+				style: 'classic',
+				uppercase: true,
+				monospace: false,
+				delimiter: ' // ',
+				colorMode: 'highest',
+				fallbackText: 'NO CLASSIFICATION DATA',
+				fallbackColor: '#6C727A',
+			},
+			attributes: [
+				{
+					id: 'classification',
+					source: bannerAttrKey,
+					label: 'Classification level',
+					showInBanner: true,
+					showLabel: false,
+					bannerLabel: '',
+					labelSeparator: '',
+					valueSeparator: '/',
+					sortAlpha: false,
+					groupThreshold: 0,
+					multipleLabel: '',
+					drivesColor: true,
+					values: [
+						{ source: 'TS', label: 'TOP SECRET', color: '#ff8c00' },
+						{ source: 'U', label: 'UNCLASSIFIED', color: '#007a33' },
+					],
+				},
+			],
+		};
+
+		before(async () => {
+			await request
+				.post(`${v1}/abac/attributes`)
+				.set(credentials)
+				.send({ key: bannerAttrKey, values: ['TS', 'U'] })
+				.expect(200);
+			await addAbacAttributesToUserDirectly(credentials['X-User-Id'], [{ key: bannerAttrKey, values: ['TS'] }]);
+
+			bannerRoom = (await createRoom({ type: 'p', name: `abac-banner-room-${Date.now()}` })).body.group;
+			plainRoom = (await createRoom({ type: 'p', name: `abac-plain-room-${Date.now()}` })).body.group;
+
+			await request
+				.post(`${v1}/abac/rooms/${bannerRoom._id}/attributes/${bannerAttrKey}`)
+				.set(credentials)
+				.send({ values: ['TS'] })
+				.expect(200);
+
+			await updateSetting('ABAC_Classification_Banners_Enabled', true);
+			await updateSetting('ABAC_Classification_Banners_Config', JSON.stringify(bannersConfig));
+		});
+
+		after(async () => {
+			await updateSetting('ABAC_Classification_Banners_Config', '');
+			await updateSetting('ABAC_Classification_Banners_Enabled', false);
+			await deleteRoom({ type: 'p', roomId: bannerRoom._id });
+			await deleteRoom({ type: 'p', roomId: plainRoom._id });
+		});
+
+		it('should not expose the banner config publicly', async () => {
+			await request
+				.get(`${v1}/settings.public`)
+				.query({ _id: 'ABAC_Classification_Banners_Config' })
+				.expect(200)
+				.expect((res) => {
+					expect(res.body.settings).to.be.an('array').that.is.empty;
+				});
+		});
+
+		it('should return the banner computed for an ABAC managed room', async () => {
+			expect((await getRoomInfo(bannerRoom._id)).classificationBanner).to.deep.equal({
+				style: 'classic',
+				uppercase: true,
+				monospace: false,
+				text: 'TOP SECRET',
+				segments: [{ attrId: 'classification', text: 'TOP SECRET' }],
+				backgroundColor: '#ff8c00',
+				color: '#1F2329',
+			});
+		});
+
+		it('should not return a banner for a room that is not ABAC managed', async () => {
+			expect(await getRoomInfo(plainRoom._id)).to.not.have.property('classificationBanner');
+		});
+
+		it('should not return a banner when banners are disabled', async () => {
+			await updateSetting('ABAC_Classification_Banners_Enabled', false);
+
+			expect(await getRoomInfo(bannerRoom._id)).to.not.have.property('classificationBanner');
 		});
 	});
 

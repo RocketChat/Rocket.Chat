@@ -34,7 +34,7 @@ exports[`RoomInvite renders Default without crashing 1`] = `
             type="button"
           >
             <span
-              class="rcx-box rcx-chip__text rcx-css-trljwa"
+              class="rcx-box rcx-chip__text rcx-css-i9v8z4"
             >
               <figure
                 class="rcx-box rcx-box--full rcx-avatar rcx-avatar--x16"
@@ -118,7 +118,7 @@ exports[`RoomInvite renders Loading without crashing 1`] = `
             type="button"
           >
             <span
-              class="rcx-box rcx-chip__text rcx-css-trljwa"
+              class="rcx-box rcx-chip__text rcx-css-i9v8z4"
             >
               <figure
                 class="rcx-box rcx-box--full rcx-avatar rcx-avatar--x16"
@@ -216,7 +216,7 @@ exports[`RoomInvite renders WithInfoLink without crashing 1`] = `
             type="button"
           >
             <span
-              class="rcx-box rcx-chip__text rcx-css-trljwa"
+              class="rcx-box rcx-chip__text rcx-css-i9v8z4"
             >
               <figure
                 class="rcx-box rcx-box--full rcx-avatar rcx-avatar--x16"

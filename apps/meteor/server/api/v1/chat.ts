@@ -1,34 +1,35 @@
 import { Message } from '@rocket.chat/core-services';
-import type { IMessage, IThreadMainMessage } from '@rocket.chat/core-typings';
+import type { IMessage, IThreadMainMessage, MessageUrl } from '@rocket.chat/core-typings';
 import { MessageTypes } from '@rocket.chat/message-types';
 import { Messages, Users, Rooms, Subscriptions } from '@rocket.chat/models';
 import {
 	ajv,
-	isChatReportMessageProps,
-	isChatGetURLPreviewProps,
-	isChatUpdateProps,
-	isChatGetThreadsListProps,
 	isChatDeleteProps,
-	isChatSyncMessagesProps,
+	isChatGetDeletedMessagesProps,
+	isChatGetDiscussionsProps,
+	isChatGetMentionedMessagesProps,
 	isChatGetMessageProps,
 	isChatGetMessagesProps,
+	isChatGetPinnedMessagesProps,
+	isChatGetStarredMessagesProps,
+	isChatGetThreadMessagesProps,
+	isChatGetThreadsListProps,
+	isChatGetURLPreviewProps,
+	isChatIgnoreUserProps,
 	isChatPostMessageProps,
+	isChatReactProps,
+	isChatReportMessageProps,
 	isChatSearchProps,
 	isChatSendMessageProps,
-	isChatIgnoreUserProps,
-	isChatGetPinnedMessagesProps,
-	isChatGetMentionedMessagesProps,
-	isChatReactProps,
-	isChatGetDeletedMessagesProps,
-	isChatSyncThreadsListProps,
-	isChatGetThreadMessagesProps,
+	isChatSyncMessagesProps,
 	isChatSyncThreadMessagesProps,
-	isChatGetStarredMessagesProps,
-	isChatGetDiscussionsProps,
+	isChatSyncThreadsListProps,
+	isChatUpdateProps,
+	paginatedResponseProperties,
 	validateBadRequestErrorResponse,
+	validateForbiddenErrorResponse,
 	validateNotFoundErrorResponse,
 	validateUnauthorizedErrorResponse,
-	validateForbiddenErrorResponse,
 } from '@rocket.chat/rest-typings';
 import { escapeRegExp } from '@rocket.chat/tools';
 import { Meteor } from 'meteor/meteor';
@@ -979,9 +980,7 @@ const chatEndpoints = API.v1
 					type: 'object',
 					properties: {
 						messages: { type: 'array', items: { type: 'object' } }, // relaxed: only _id is projected,
-						count: { type: 'number' },
-						offset: { type: 'number' },
-						total: { type: 'number' },
+						...paginatedResponseProperties,
 						success: { type: 'boolean', enum: [true] },
 					},
 					required: ['messages', 'count', 'offset', 'total', 'success'],
@@ -1025,9 +1024,7 @@ const chatEndpoints = API.v1
 					type: 'object',
 					properties: {
 						messages: { type: 'array', items: { $ref: '#/components/schemas/IMessage' } },
-						count: { type: 'number' },
-						offset: { type: 'number' },
-						total: { type: 'number' },
+						...paginatedResponseProperties,
 						success: { type: 'boolean', enum: [true] },
 					},
 					required: ['messages', 'count', 'offset', 'total', 'success'],
@@ -1071,9 +1068,7 @@ const chatEndpoints = API.v1
 					type: 'object',
 					properties: {
 						threads: { type: 'array', items: { type: 'object' } }, // relaxed: IThreadMainMessage not in OpenAPI schemas,
-						count: { type: 'number' },
-						offset: { type: 'number' },
-						total: { type: 'number' },
+						...paginatedResponseProperties,
 						success: { type: 'boolean', enum: [true] },
 					},
 					required: ['threads', 'count', 'offset', 'total', 'success'],
@@ -1200,9 +1195,7 @@ const chatEndpoints = API.v1
 					type: 'object',
 					properties: {
 						messages: { type: 'array', items: { $ref: '#/components/schemas/IMessage' } },
-						count: { type: 'number' },
-						offset: { type: 'number' },
-						total: { type: 'number' },
+						...paginatedResponseProperties,
 						success: { type: 'boolean', enum: [true] },
 					},
 					required: ['messages', 'count', 'offset', 'total', 'success'],
@@ -1338,9 +1331,7 @@ const chatEndpoints = API.v1
 					type: 'object',
 					properties: {
 						messages: { type: 'array', items: { $ref: '#/components/schemas/IMessage' } },
-						count: { type: 'number' },
-						offset: { type: 'number' },
-						total: { type: 'number' },
+						...paginatedResponseProperties,
 						success: { type: 'boolean', enum: [true] },
 					},
 					required: ['messages', 'count', 'offset', 'total', 'success'],
@@ -1378,9 +1369,7 @@ const chatEndpoints = API.v1
 					type: 'object',
 					properties: {
 						messages: { type: 'array', items: { $ref: '#/components/schemas/IMessage' } },
-						count: { type: 'number' },
-						offset: { type: 'number' },
-						total: { type: 'number' },
+						...paginatedResponseProperties,
 						success: { type: 'boolean', enum: [true] },
 					},
 					required: ['messages', 'count', 'offset', 'total', 'success'],
@@ -1454,10 +1443,10 @@ const chatEndpoints = API.v1
 			authRequired: true,
 			query: isChatGetURLPreviewProps,
 			response: {
-				200: ajv.compile<{ urlPreview: object }>({
+				200: ajv.compile<{ urlPreview: MessageUrl }>({
 					type: 'object',
 					properties: {
-						urlPreview: { type: 'object' }, // relaxed: opaque preview shape,
+						urlPreview: { type: 'object' }, // schema stays permissive; the handler always returns a MessageUrl,
 						success: { type: 'boolean', enum: [true] },
 					},
 					required: ['urlPreview', 'success'],

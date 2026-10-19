@@ -1,30 +1,31 @@
 import { Team } from '@rocket.chat/core-services';
-import type { ITeamAutocompleteResult } from '@rocket.chat/core-services';
-import type { ITeam, UserStatus } from '@rocket.chat/core-typings';
+import type { ITeamAutocompleteResult, ITeamMemberInfo } from '@rocket.chat/core-services';
+import type { IRoom, ITeam, UserStatus } from '@rocket.chat/core-typings';
 import { Users, Rooms } from '@rocket.chat/models';
 import {
 	ajv,
+	isTeamsAddMembersProps,
 	isTeamsAddRoomsProps,
 	isTeamsAutocompleteProps,
 	isTeamsConvertToChannelProps,
 	isTeamsCreateProps,
+	isTeamsDeleteProps,
 	isTeamsInfoProps,
-	isTeamsListRoomsProps,
+	isTeamsLeaveProps,
+	isTeamsListChildrenProps,
 	isTeamsListRoomsOfUserProps,
+	isTeamsListRoomsProps,
 	isTeamsMembersProps,
+	isTeamsRemoveMemberProps,
 	isTeamsRemoveRoomProps,
 	isTeamsUpdateMemberProps,
-	isTeamsUpdateRoomProps,
-	isTeamsRemoveMemberProps,
-	isTeamsAddMembersProps,
-	isTeamsDeleteProps,
-	isTeamsLeaveProps,
 	isTeamsUpdateProps,
-	isTeamsListChildrenProps,
+	isTeamsUpdateRoomProps,
+	paginatedResponseProperties,
 	validateBadRequestErrorResponse,
-	validateUnauthorizedErrorResponse,
 	validateForbiddenErrorResponse,
 	validateNotFoundErrorResponse,
+	validateUnauthorizedErrorResponse,
 } from '@rocket.chat/rest-typings';
 import { escapeRegExp } from '@rocket.chat/tools';
 
@@ -44,9 +45,7 @@ const paginatedTeamsResponseSchema = ajv.compile<{ teams: ITeam[]; total: number
 	type: 'object',
 	properties: {
 		teams: { type: 'array', items: { type: 'object' } },
-		total: { type: 'number' },
-		count: { type: 'number' },
-		offset: { type: 'number' },
+		...paginatedResponseProperties,
 		success: { type: 'boolean', enum: [true] },
 	},
 	required: ['teams', 'total', 'count', 'offset', 'success'],
@@ -204,7 +203,7 @@ API.v1.post(
 	},
 );
 
-const roomResponseSchema = ajv.compile<{ room: object }>({
+const roomResponseSchema = ajv.compile<{ room: IRoom }>({
 	type: 'object',
 	properties: {
 		room: { type: 'object' },
@@ -214,7 +213,7 @@ const roomResponseSchema = ajv.compile<{ room: object }>({
 	additionalProperties: false,
 });
 
-const roomsResponseSchema = ajv.compile<{ rooms: object[] }>({
+const roomsResponseSchema = ajv.compile<{ rooms: IRoom[] }>({
 	type: 'object',
 	properties: {
 		rooms: { type: 'array', items: { type: 'object' } },
@@ -324,13 +323,11 @@ API.v1.post(
 	},
 );
 
-const paginatedRoomsResponseSchema = ajv.compile<{ rooms: object[]; total: number; count: number; offset: number }>({
+const paginatedRoomsResponseSchema = ajv.compile<{ rooms: IRoom[]; total: number; count: number; offset: number }>({
 	type: 'object',
 	properties: {
 		rooms: { type: 'array', items: { type: 'object' } },
-		total: { type: 'number' },
-		count: { type: 'number' },
-		offset: { type: 'number' },
+		...paginatedResponseProperties,
 		success: { type: 'boolean', enum: [true] },
 	},
 	required: ['rooms', 'total', 'count', 'offset', 'success'],
@@ -448,13 +445,11 @@ API.v1.get(
 		authRequired: true,
 		query: isTeamsListChildrenProps,
 		response: {
-			200: ajv.compile<{ data: object[]; total: number; offset: number; count: number }>({
+			200: ajv.compile<{ data: IRoom[]; total: number; offset: number; count: number }>({
 				type: 'object',
 				properties: {
 					data: { type: 'array', items: { type: 'object' } },
-					total: { type: 'number' },
-					offset: { type: 'number' },
-					count: { type: 'number' },
+					...paginatedResponseProperties,
 					success: { type: 'boolean', enum: [true] },
 				},
 				required: ['data', 'total', 'offset', 'count', 'success'],
@@ -487,13 +482,11 @@ API.v1.get(
 		authRequired: true,
 		query: isTeamsMembersProps,
 		response: {
-			200: ajv.compile<{ members: object[]; total: number; count: number; offset: number }>({
+			200: ajv.compile<{ members: ITeamMemberInfo[]; total: number; count: number; offset: number }>({
 				type: 'object',
 				properties: {
 					members: { type: 'array', items: { type: 'object' } },
-					total: { type: 'number' },
-					count: { type: 'number' },
-					offset: { type: 'number' },
+					...paginatedResponseProperties,
 					success: { type: 'boolean', enum: [true] },
 				},
 				required: ['members', 'total', 'count', 'offset', 'success'],

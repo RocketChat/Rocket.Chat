@@ -54,7 +54,7 @@ const { SlackImporter } = proxyquire.noCallThru().load('../../../../../server/li
 		ImporterWebsocket: { progressUpdated: sinon.stub() },
 	},
 	'../../notifyListener': { notifyOnSettingChanged: sinon.stub() },
-	'../../../../app/mentions/lib/MentionsParser': {
+	'../../../../lib/MentionsParser': {
 		MentionsParser: class {
 			getUserMentions() {
 				return [];

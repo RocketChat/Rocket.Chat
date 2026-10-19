@@ -282,16 +282,16 @@ exports[`renders Default without crashing 1`] = `
                     tabindex="0"
                   >
                     <td
-                      class="rcx-box rcx-box--full rcx-table__cell rcx-css-117bfyn"
+                      class="rcx-box rcx-box--full rcx-table__cell rcx-css-fjsx1r"
                       title="0_description"
                     >
                       0
                     </td>
                     <td
-                      class="rcx-box rcx-box--full rcx-table__cell rcx-css-1te28na"
+                      class="rcx-box rcx-box--full rcx-table__cell rcx-css-1oii38d"
                     >
                       <label
-                        class="rcx-box rcx-box--full rcx-check-box rcx-css-17ztjgq rcx-css-wcp0mp"
+                        class="rcx-box rcx-box--full rcx-check-box rcx-css-xm5li9 rcx-css-wcp0mp"
                       >
                         <input
                           aria-label="0 - Owner of the workspace"
@@ -304,16 +304,16 @@ exports[`renders Default without crashing 1`] = `
                         />
                       </label>
                       <div
-                        class="rcx-box rcx-box--full rcx-css-17ztjgq rcx-css-jc9wu4"
+                        class="rcx-box rcx-box--full rcx-css-xm5li9 rcx-css-3i0okg"
                       >
                         Owner of the workspace
                       </div>
                     </td>
                     <td
-                      class="rcx-box rcx-box--full rcx-table__cell rcx-css-1te28na"
+                      class="rcx-box rcx-box--full rcx-table__cell rcx-css-1oii38d"
                     >
                       <label
-                        class="rcx-box rcx-box--full rcx-check-box rcx-css-17ztjgq rcx-css-wcp0mp"
+                        class="rcx-box rcx-box--full rcx-check-box rcx-css-xm5li9 rcx-css-wcp0mp"
                       >
                         <input
                           aria-label="0 - Administrator"
@@ -327,16 +327,16 @@ exports[`renders Default without crashing 1`] = `
                         />
                       </label>
                       <div
-                        class="rcx-box rcx-box--full rcx-css-17ztjgq rcx-css-jc9wu4"
+                        class="rcx-box rcx-box--full rcx-css-xm5li9 rcx-css-3i0okg"
                       >
                         Administrator
                       </div>
                     </td>
                     <td
-                      class="rcx-box rcx-box--full rcx-table__cell rcx-css-1te28na"
+                      class="rcx-box rcx-box--full rcx-table__cell rcx-css-1oii38d"
                     >
                       <label
-                        class="rcx-box rcx-box--full rcx-check-box rcx-css-17ztjgq rcx-css-wcp0mp"
+                        class="rcx-box rcx-box--full rcx-check-box rcx-css-xm5li9 rcx-css-wcp0mp"
                       >
                         <input
                           aria-label="0 - Leader"
@@ -349,16 +349,16 @@ exports[`renders Default without crashing 1`] = `
                         />
                       </label>
                       <div
-                        class="rcx-box rcx-box--full rcx-css-17ztjgq rcx-css-jc9wu4"
+                        class="rcx-box rcx-box--full rcx-css-xm5li9 rcx-css-3i0okg"
                       >
                         Leader
                       </div>
                     </td>
                     <td
-                      class="rcx-box rcx-box--full rcx-table__cell rcx-css-1te28na"
+                      class="rcx-box rcx-box--full rcx-table__cell rcx-css-1oii38d"
                     >
                       <label
-                        class="rcx-box rcx-box--full rcx-check-box rcx-css-17ztjgq rcx-css-wcp0mp"
+                        class="rcx-box rcx-box--full rcx-check-box rcx-css-xm5li9 rcx-css-wcp0mp"
                       >
                         <input
                           aria-label="0 - Moderator"
@@ -371,16 +371,16 @@ exports[`renders Default without crashing 1`] = `
                         />
                       </label>
                       <div
-                        class="rcx-box rcx-box--full rcx-css-17ztjgq rcx-css-jc9wu4"
+                        class="rcx-box rcx-box--full rcx-css-xm5li9 rcx-css-3i0okg"
                       >
                         Moderator
                       </div>
                     </td>
                     <td
-                      class="rcx-box rcx-box--full rcx-table__cell rcx-css-1te28na"
+                      class="rcx-box rcx-box--full rcx-table__cell rcx-css-1oii38d"
                     >
                       <label
-                        class="rcx-box rcx-box--full rcx-check-box rcx-css-17ztjgq rcx-css-wcp0mp"
+                        class="rcx-box rcx-box--full rcx-check-box rcx-css-xm5li9 rcx-css-wcp0mp"
                       >
                         <input
                           aria-label="0 - User"
@@ -393,16 +393,16 @@ exports[`renders Default without crashing 1`] = `
                         />
                       </label>
                       <div
-                        class="rcx-box rcx-box--full rcx-css-17ztjgq rcx-css-jc9wu4"
+                        class="rcx-box rcx-box--full rcx-css-xm5li9 rcx-css-3i0okg"
                       >
                         User
                       </div>
                     </td>
                     <td
-                      class="rcx-box rcx-box--full rcx-table__cell rcx-css-1te28na"
+                      class="rcx-box rcx-box--full rcx-table__cell rcx-css-1oii38d"
                     >
                       <label
-                        class="rcx-box rcx-box--full rcx-check-box rcx-css-17ztjgq rcx-css-wcp0mp"
+                        class="rcx-box rcx-box--full rcx-check-box rcx-css-xm5li9 rcx-css-wcp0mp"
                       >
                         <input
                           aria-label="0 - Guest"
@@ -415,16 +415,16 @@ exports[`renders Default without crashing 1`] = `
                         />
                       </label>
                       <div
-                        class="rcx-box rcx-box--full rcx-css-17ztjgq rcx-css-jc9wu4"
+                        class="rcx-box rcx-box--full rcx-css-xm5li9 rcx-css-3i0okg"
                       >
                         Guest
                       </div>
                     </td>
                     <td
-                      class="rcx-box rcx-box--full rcx-table__cell rcx-css-1te28na"
+                      class="rcx-box rcx-box--full rcx-table__cell rcx-css-1oii38d"
                     >
                       <label
-                        class="rcx-box rcx-box--full rcx-check-box rcx-css-17ztjgq rcx-css-wcp0mp"
+                        class="rcx-box rcx-box--full rcx-check-box rcx-css-xm5li9 rcx-css-wcp0mp"
                       >
                         <input
                           aria-label="0 - Bot"
@@ -437,16 +437,16 @@ exports[`renders Default without crashing 1`] = `
                         />
                       </label>
                       <div
-                        class="rcx-box rcx-box--full rcx-css-17ztjgq rcx-css-jc9wu4"
+                        class="rcx-box rcx-box--full rcx-css-xm5li9 rcx-css-3i0okg"
                       >
                         Bot
                       </div>
                     </td>
                     <td
-                      class="rcx-box rcx-box--full rcx-table__cell rcx-css-1te28na"
+                      class="rcx-box rcx-box--full rcx-table__cell rcx-css-1oii38d"
                     >
                       <label
-                        class="rcx-box rcx-box--full rcx-check-box rcx-css-17ztjgq rcx-css-wcp0mp"
+                        class="rcx-box rcx-box--full rcx-check-box rcx-css-xm5li9 rcx-css-wcp0mp"
                       >
                         <input
                           aria-label="0 - App"
@@ -459,7 +459,7 @@ exports[`renders Default without crashing 1`] = `
                         />
                       </label>
                       <div
-                        class="rcx-box rcx-box--full rcx-css-17ztjgq rcx-css-jc9wu4"
+                        class="rcx-box rcx-box--full rcx-css-xm5li9 rcx-css-3i0okg"
                       >
                         App
                       </div>
@@ -471,16 +471,16 @@ exports[`renders Default without crashing 1`] = `
                     tabindex="0"
                   >
                     <td
-                      class="rcx-box rcx-box--full rcx-table__cell rcx-css-117bfyn"
+                      class="rcx-box rcx-box--full rcx-table__cell rcx-css-fjsx1r"
                       title="1_description"
                     >
                       1
                     </td>
                     <td
-                      class="rcx-box rcx-box--full rcx-table__cell rcx-css-1te28na"
+                      class="rcx-box rcx-box--full rcx-table__cell rcx-css-1oii38d"
                     >
                       <label
-                        class="rcx-box rcx-box--full rcx-check-box rcx-css-17ztjgq rcx-css-wcp0mp"
+                        class="rcx-box rcx-box--full rcx-check-box rcx-css-xm5li9 rcx-css-wcp0mp"
                       >
                         <input
                           aria-label="1 - Owner of the workspace"
@@ -493,16 +493,16 @@ exports[`renders Default without crashing 1`] = `
                         />
                       </label>
                       <div
-                        class="rcx-box rcx-box--full rcx-css-17ztjgq rcx-css-jc9wu4"
+                        class="rcx-box rcx-box--full rcx-css-xm5li9 rcx-css-3i0okg"
                       >
                         Owner of the workspace
                       </div>
                     </td>
                     <td
-                      class="rcx-box rcx-box--full rcx-table__cell rcx-css-1te28na"
+                      class="rcx-box rcx-box--full rcx-table__cell rcx-css-1oii38d"
                     >
                       <label
-                        class="rcx-box rcx-box--full rcx-check-box rcx-css-17ztjgq rcx-css-wcp0mp"
+                        class="rcx-box rcx-box--full rcx-check-box rcx-css-xm5li9 rcx-css-wcp0mp"
                       >
                         <input
                           aria-label="1 - Administrator"
@@ -515,16 +515,16 @@ exports[`renders Default without crashing 1`] = `
                         />
                       </label>
                       <div
-                        class="rcx-box rcx-box--full rcx-css-17ztjgq rcx-css-jc9wu4"
+                        class="rcx-box rcx-box--full rcx-css-xm5li9 rcx-css-3i0okg"
                       >
                         Administrator
                       </div>
                     </td>
                     <td
-                      class="rcx-box rcx-box--full rcx-table__cell rcx-css-1te28na"
+                      class="rcx-box rcx-box--full rcx-table__cell rcx-css-1oii38d"
                     >
                       <label
-                        class="rcx-box rcx-box--full rcx-check-box rcx-css-17ztjgq rcx-css-wcp0mp"
+                        class="rcx-box rcx-box--full rcx-check-box rcx-css-xm5li9 rcx-css-wcp0mp"
                       >
                         <input
                           aria-label="1 - Leader"
@@ -537,16 +537,16 @@ exports[`renders Default without crashing 1`] = `
                         />
                       </label>
                       <div
-                        class="rcx-box rcx-box--full rcx-css-17ztjgq rcx-css-jc9wu4"
+                        class="rcx-box rcx-box--full rcx-css-xm5li9 rcx-css-3i0okg"
                       >
                         Leader
                       </div>
                     </td>
                     <td
-                      class="rcx-box rcx-box--full rcx-table__cell rcx-css-1te28na"
+                      class="rcx-box rcx-box--full rcx-table__cell rcx-css-1oii38d"
                     >
                       <label
-                        class="rcx-box rcx-box--full rcx-check-box rcx-css-17ztjgq rcx-css-wcp0mp"
+                        class="rcx-box rcx-box--full rcx-check-box rcx-css-xm5li9 rcx-css-wcp0mp"
                       >
                         <input
                           aria-label="1 - Moderator"
@@ -559,16 +559,16 @@ exports[`renders Default without crashing 1`] = `
                         />
                       </label>
                       <div
-                        class="rcx-box rcx-box--full rcx-css-17ztjgq rcx-css-jc9wu4"
+                        class="rcx-box rcx-box--full rcx-css-xm5li9 rcx-css-3i0okg"
                       >
                         Moderator
                       </div>
                     </td>
                     <td
-                      class="rcx-box rcx-box--full rcx-table__cell rcx-css-1te28na"
+                      class="rcx-box rcx-box--full rcx-table__cell rcx-css-1oii38d"
                     >
                       <label
-                        class="rcx-box rcx-box--full rcx-check-box rcx-css-17ztjgq rcx-css-wcp0mp"
+                        class="rcx-box rcx-box--full rcx-check-box rcx-css-xm5li9 rcx-css-wcp0mp"
                       >
                         <input
                           aria-label="1 - User"
@@ -582,16 +582,16 @@ exports[`renders Default without crashing 1`] = `
                         />
                       </label>
                       <div
-                        class="rcx-box rcx-box--full rcx-css-17ztjgq rcx-css-jc9wu4"
+                        class="rcx-box rcx-box--full rcx-css-xm5li9 rcx-css-3i0okg"
                       >
                         User
                       </div>
                     </td>
                     <td
-                      class="rcx-box rcx-box--full rcx-table__cell rcx-css-1te28na"
+                      class="rcx-box rcx-box--full rcx-table__cell rcx-css-1oii38d"
                     >
                       <label
-                        class="rcx-box rcx-box--full rcx-check-box rcx-css-17ztjgq rcx-css-wcp0mp"
+                        class="rcx-box rcx-box--full rcx-check-box rcx-css-xm5li9 rcx-css-wcp0mp"
                       >
                         <input
                           aria-label="1 - Guest"
@@ -604,16 +604,16 @@ exports[`renders Default without crashing 1`] = `
                         />
                       </label>
                       <div
-                        class="rcx-box rcx-box--full rcx-css-17ztjgq rcx-css-jc9wu4"
+                        class="rcx-box rcx-box--full rcx-css-xm5li9 rcx-css-3i0okg"
                       >
                         Guest
                       </div>
                     </td>
                     <td
-                      class="rcx-box rcx-box--full rcx-table__cell rcx-css-1te28na"
+                      class="rcx-box rcx-box--full rcx-table__cell rcx-css-1oii38d"
                     >
                       <label
-                        class="rcx-box rcx-box--full rcx-check-box rcx-css-17ztjgq rcx-css-wcp0mp"
+                        class="rcx-box rcx-box--full rcx-check-box rcx-css-xm5li9 rcx-css-wcp0mp"
                       >
                         <input
                           aria-label="1 - Bot"
@@ -626,16 +626,16 @@ exports[`renders Default without crashing 1`] = `
                         />
                       </label>
                       <div
-                        class="rcx-box rcx-box--full rcx-css-17ztjgq rcx-css-jc9wu4"
+                        class="rcx-box rcx-box--full rcx-css-xm5li9 rcx-css-3i0okg"
                       >
                         Bot
                       </div>
                     </td>
                     <td
-                      class="rcx-box rcx-box--full rcx-table__cell rcx-css-1te28na"
+                      class="rcx-box rcx-box--full rcx-table__cell rcx-css-1oii38d"
                     >
                       <label
-                        class="rcx-box rcx-box--full rcx-check-box rcx-css-17ztjgq rcx-css-wcp0mp"
+                        class="rcx-box rcx-box--full rcx-check-box rcx-css-xm5li9 rcx-css-wcp0mp"
                       >
                         <input
                           aria-label="1 - App"
@@ -648,7 +648,7 @@ exports[`renders Default without crashing 1`] = `
                         />
                       </label>
                       <div
-                        class="rcx-box rcx-box--full rcx-css-17ztjgq rcx-css-jc9wu4"
+                        class="rcx-box rcx-box--full rcx-css-xm5li9 rcx-css-3i0okg"
                       >
                         App
                       </div>
@@ -660,16 +660,16 @@ exports[`renders Default without crashing 1`] = `
                     tabindex="0"
                   >
                     <td
-                      class="rcx-box rcx-box--full rcx-table__cell rcx-css-117bfyn"
+                      class="rcx-box rcx-box--full rcx-table__cell rcx-css-fjsx1r"
                       title="2_description"
                     >
                       2
                     </td>
                     <td
-                      class="rcx-box rcx-box--full rcx-table__cell rcx-css-1te28na"
+                      class="rcx-box rcx-box--full rcx-table__cell rcx-css-1oii38d"
                     >
                       <label
-                        class="rcx-box rcx-box--full rcx-check-box rcx-css-17ztjgq rcx-css-wcp0mp"
+                        class="rcx-box rcx-box--full rcx-check-box rcx-css-xm5li9 rcx-css-wcp0mp"
                       >
                         <input
                           aria-label="2 - Owner of the workspace"
@@ -682,16 +682,16 @@ exports[`renders Default without crashing 1`] = `
                         />
                       </label>
                       <div
-                        class="rcx-box rcx-box--full rcx-css-17ztjgq rcx-css-jc9wu4"
+                        class="rcx-box rcx-box--full rcx-css-xm5li9 rcx-css-3i0okg"
                       >
                         Owner of the workspace
                       </div>
                     </td>
                     <td
-                      class="rcx-box rcx-box--full rcx-table__cell rcx-css-1te28na"
+                      class="rcx-box rcx-box--full rcx-table__cell rcx-css-1oii38d"
                     >
                       <label
-                        class="rcx-box rcx-box--full rcx-check-box rcx-css-17ztjgq rcx-css-wcp0mp"
+                        class="rcx-box rcx-box--full rcx-check-box rcx-css-xm5li9 rcx-css-wcp0mp"
                       >
                         <input
                           aria-label="2 - Administrator"
@@ -704,16 +704,16 @@ exports[`renders Default without crashing 1`] = `
                         />
                       </label>
                       <div
-                        class="rcx-box rcx-box--full rcx-css-17ztjgq rcx-css-jc9wu4"
+                        class="rcx-box rcx-box--full rcx-css-xm5li9 rcx-css-3i0okg"
                       >
                         Administrator
                       </div>
                     </td>
                     <td
-                      class="rcx-box rcx-box--full rcx-table__cell rcx-css-1te28na"
+                      class="rcx-box rcx-box--full rcx-table__cell rcx-css-1oii38d"
                     >
                       <label
-                        class="rcx-box rcx-box--full rcx-check-box rcx-css-17ztjgq rcx-css-wcp0mp"
+                        class="rcx-box rcx-box--full rcx-check-box rcx-css-xm5li9 rcx-css-wcp0mp"
                       >
                         <input
                           aria-label="2 - Leader"
@@ -726,16 +726,16 @@ exports[`renders Default without crashing 1`] = `
                         />
                       </label>
                       <div
-                        class="rcx-box rcx-box--full rcx-css-17ztjgq rcx-css-jc9wu4"
+                        class="rcx-box rcx-box--full rcx-css-xm5li9 rcx-css-3i0okg"
                       >
                         Leader
                       </div>
                     </td>
                     <td
-                      class="rcx-box rcx-box--full rcx-table__cell rcx-css-1te28na"
+                      class="rcx-box rcx-box--full rcx-table__cell rcx-css-1oii38d"
                     >
                       <label
-                        class="rcx-box rcx-box--full rcx-check-box rcx-css-17ztjgq rcx-css-wcp0mp"
+                        class="rcx-box rcx-box--full rcx-check-box rcx-css-xm5li9 rcx-css-wcp0mp"
                       >
                         <input
                           aria-label="2 - Moderator"
@@ -748,16 +748,16 @@ exports[`renders Default without crashing 1`] = `
                         />
                       </label>
                       <div
-                        class="rcx-box rcx-box--full rcx-css-17ztjgq rcx-css-jc9wu4"
+                        class="rcx-box rcx-box--full rcx-css-xm5li9 rcx-css-3i0okg"
                       >
                         Moderator
                       </div>
                     </td>
                     <td
-                      class="rcx-box rcx-box--full rcx-table__cell rcx-css-1te28na"
+                      class="rcx-box rcx-box--full rcx-table__cell rcx-css-1oii38d"
                     >
                       <label
-                        class="rcx-box rcx-box--full rcx-check-box rcx-css-17ztjgq rcx-css-wcp0mp"
+                        class="rcx-box rcx-box--full rcx-check-box rcx-css-xm5li9 rcx-css-wcp0mp"
                       >
                         <input
                           aria-label="2 - User"
@@ -771,16 +771,16 @@ exports[`renders Default without crashing 1`] = `
                         />
                       </label>
                       <div
-                        class="rcx-box rcx-box--full rcx-css-17ztjgq rcx-css-jc9wu4"
+                        class="rcx-box rcx-box--full rcx-css-xm5li9 rcx-css-3i0okg"
                       >
                         User
                       </div>
                     </td>
                     <td
-                      class="rcx-box rcx-box--full rcx-table__cell rcx-css-1te28na"
+                      class="rcx-box rcx-box--full rcx-table__cell rcx-css-1oii38d"
                     >
                       <label
-                        class="rcx-box rcx-box--full rcx-check-box rcx-css-17ztjgq rcx-css-wcp0mp"
+                        class="rcx-box rcx-box--full rcx-check-box rcx-css-xm5li9 rcx-css-wcp0mp"
                       >
                         <input
                           aria-label="2 - Guest"
@@ -793,16 +793,16 @@ exports[`renders Default without crashing 1`] = `
                         />
                       </label>
                       <div
-                        class="rcx-box rcx-box--full rcx-css-17ztjgq rcx-css-jc9wu4"
+                        class="rcx-box rcx-box--full rcx-css-xm5li9 rcx-css-3i0okg"
                       >
                         Guest
                       </div>
                     </td>
                     <td
-                      class="rcx-box rcx-box--full rcx-table__cell rcx-css-1te28na"
+                      class="rcx-box rcx-box--full rcx-table__cell rcx-css-1oii38d"
                     >
                       <label
-                        class="rcx-box rcx-box--full rcx-check-box rcx-css-17ztjgq rcx-css-wcp0mp"
+                        class="rcx-box rcx-box--full rcx-check-box rcx-css-xm5li9 rcx-css-wcp0mp"
                       >
                         <input
                           aria-label="2 - Bot"
@@ -815,16 +815,16 @@ exports[`renders Default without crashing 1`] = `
                         />
                       </label>
                       <div
-                        class="rcx-box rcx-box--full rcx-css-17ztjgq rcx-css-jc9wu4"
+                        class="rcx-box rcx-box--full rcx-css-xm5li9 rcx-css-3i0okg"
                       >
                         Bot
                       </div>
                     </td>
                     <td
-                      class="rcx-box rcx-box--full rcx-table__cell rcx-css-1te28na"
+                      class="rcx-box rcx-box--full rcx-table__cell rcx-css-1oii38d"
                     >
                       <label
-                        class="rcx-box rcx-box--full rcx-check-box rcx-css-17ztjgq rcx-css-wcp0mp"
+                        class="rcx-box rcx-box--full rcx-check-box rcx-css-xm5li9 rcx-css-wcp0mp"
                       >
                         <input
                           aria-label="2 - App"
@@ -837,7 +837,7 @@ exports[`renders Default without crashing 1`] = `
                         />
                       </label>
                       <div
-                        class="rcx-box rcx-box--full rcx-css-17ztjgq rcx-css-jc9wu4"
+                        class="rcx-box rcx-box--full rcx-css-xm5li9 rcx-css-3i0okg"
                       >
                         App
                       </div>
@@ -849,16 +849,16 @@ exports[`renders Default without crashing 1`] = `
                     tabindex="0"
                   >
                     <td
-                      class="rcx-box rcx-box--full rcx-table__cell rcx-css-117bfyn"
+                      class="rcx-box rcx-box--full rcx-table__cell rcx-css-fjsx1r"
                       title="3_description"
                     >
                       3
                     </td>
                     <td
-                      class="rcx-box rcx-box--full rcx-table__cell rcx-css-1te28na"
+                      class="rcx-box rcx-box--full rcx-table__cell rcx-css-1oii38d"
                     >
                       <label
-                        class="rcx-box rcx-box--full rcx-check-box rcx-css-17ztjgq rcx-css-wcp0mp"
+                        class="rcx-box rcx-box--full rcx-check-box rcx-css-xm5li9 rcx-css-wcp0mp"
                       >
                         <input
                           aria-label="3 - Owner of the workspace"
@@ -871,16 +871,16 @@ exports[`renders Default without crashing 1`] = `
                         />
                       </label>
                       <div
-                        class="rcx-box rcx-box--full rcx-css-17ztjgq rcx-css-jc9wu4"
+                        class="rcx-box rcx-box--full rcx-css-xm5li9 rcx-css-3i0okg"
                       >
                         Owner of the workspace
                       </div>
                     </td>
                     <td
-                      class="rcx-box rcx-box--full rcx-table__cell rcx-css-1te28na"
+                      class="rcx-box rcx-box--full rcx-table__cell rcx-css-1oii38d"
                     >
                       <label
-                        class="rcx-box rcx-box--full rcx-check-box rcx-css-17ztjgq rcx-css-wcp0mp"
+                        class="rcx-box rcx-box--full rcx-check-box rcx-css-xm5li9 rcx-css-wcp0mp"
                       >
                         <input
                           aria-label="3 - Administrator"
@@ -893,16 +893,16 @@ exports[`renders Default without crashing 1`] = `
                         />
                       </label>
                       <div
-                        class="rcx-box rcx-box--full rcx-css-17ztjgq rcx-css-jc9wu4"
+                        class="rcx-box rcx-box--full rcx-css-xm5li9 rcx-css-3i0okg"
                       >
                         Administrator
                       </div>
                     </td>
                     <td
-                      class="rcx-box rcx-box--full rcx-table__cell rcx-css-1te28na"
+                      class="rcx-box rcx-box--full rcx-table__cell rcx-css-1oii38d"
                     >
                       <label
-                        class="rcx-box rcx-box--full rcx-check-box rcx-css-17ztjgq rcx-css-wcp0mp"
+                        class="rcx-box rcx-box--full rcx-check-box rcx-css-xm5li9 rcx-css-wcp0mp"
                       >
                         <input
                           aria-label="3 - Leader"
@@ -915,16 +915,16 @@ exports[`renders Default without crashing 1`] = `
                         />
                       </label>
                       <div
-                        class="rcx-box rcx-box--full rcx-css-17ztjgq rcx-css-jc9wu4"
+                        class="rcx-box rcx-box--full rcx-css-xm5li9 rcx-css-3i0okg"
                       >
                         Leader
                       </div>
                     </td>
                     <td
-                      class="rcx-box rcx-box--full rcx-table__cell rcx-css-1te28na"
+                      class="rcx-box rcx-box--full rcx-table__cell rcx-css-1oii38d"
                     >
                       <label
-                        class="rcx-box rcx-box--full rcx-check-box rcx-css-17ztjgq rcx-css-wcp0mp"
+                        class="rcx-box rcx-box--full rcx-check-box rcx-css-xm5li9 rcx-css-wcp0mp"
                       >
                         <input
                           aria-label="3 - Moderator"
@@ -937,16 +937,16 @@ exports[`renders Default without crashing 1`] = `
                         />
                       </label>
                       <div
-                        class="rcx-box rcx-box--full rcx-css-17ztjgq rcx-css-jc9wu4"
+                        class="rcx-box rcx-box--full rcx-css-xm5li9 rcx-css-3i0okg"
                       >
                         Moderator
                       </div>
                     </td>
                     <td
-                      class="rcx-box rcx-box--full rcx-table__cell rcx-css-1te28na"
+                      class="rcx-box rcx-box--full rcx-table__cell rcx-css-1oii38d"
                     >
                       <label
-                        class="rcx-box rcx-box--full rcx-check-box rcx-css-17ztjgq rcx-css-wcp0mp"
+                        class="rcx-box rcx-box--full rcx-check-box rcx-css-xm5li9 rcx-css-wcp0mp"
                       >
                         <input
                           aria-label="3 - User"
@@ -960,16 +960,16 @@ exports[`renders Default without crashing 1`] = `
                         />
                       </label>
                       <div
-                        class="rcx-box rcx-box--full rcx-css-17ztjgq rcx-css-jc9wu4"
+                        class="rcx-box rcx-box--full rcx-css-xm5li9 rcx-css-3i0okg"
                       >
                         User
                       </div>
                     </td>
                     <td
-                      class="rcx-box rcx-box--full rcx-table__cell rcx-css-1te28na"
+                      class="rcx-box rcx-box--full rcx-table__cell rcx-css-1oii38d"
                     >
                       <label
-                        class="rcx-box rcx-box--full rcx-check-box rcx-css-17ztjgq rcx-css-wcp0mp"
+                        class="rcx-box rcx-box--full rcx-check-box rcx-css-xm5li9 rcx-css-wcp0mp"
                       >
                         <input
                           aria-label="3 - Guest"
@@ -982,16 +982,16 @@ exports[`renders Default without crashing 1`] = `
                         />
                       </label>
                       <div
-                        class="rcx-box rcx-box--full rcx-css-17ztjgq rcx-css-jc9wu4"
+                        class="rcx-box rcx-box--full rcx-css-xm5li9 rcx-css-3i0okg"
                       >
                         Guest
                       </div>
                     </td>
                     <td
-                      class="rcx-box rcx-box--full rcx-table__cell rcx-css-1te28na"
+                      class="rcx-box rcx-box--full rcx-table__cell rcx-css-1oii38d"
                     >
                       <label
-                        class="rcx-box rcx-box--full rcx-check-box rcx-css-17ztjgq rcx-css-wcp0mp"
+                        class="rcx-box rcx-box--full rcx-check-box rcx-css-xm5li9 rcx-css-wcp0mp"
                       >
                         <input
                           aria-label="3 - Bot"
@@ -1004,16 +1004,16 @@ exports[`renders Default without crashing 1`] = `
                         />
                       </label>
                       <div
-                        class="rcx-box rcx-box--full rcx-css-17ztjgq rcx-css-jc9wu4"
+                        class="rcx-box rcx-box--full rcx-css-xm5li9 rcx-css-3i0okg"
                       >
                         Bot
                       </div>
                     </td>
                     <td
-                      class="rcx-box rcx-box--full rcx-table__cell rcx-css-1te28na"
+                      class="rcx-box rcx-box--full rcx-table__cell rcx-css-1oii38d"
                     >
                       <label
-                        class="rcx-box rcx-box--full rcx-check-box rcx-css-17ztjgq rcx-css-wcp0mp"
+                        class="rcx-box rcx-box--full rcx-check-box rcx-css-xm5li9 rcx-css-wcp0mp"
                       >
                         <input
                           aria-label="3 - App"
@@ -1026,7 +1026,7 @@ exports[`renders Default without crashing 1`] = `
                         />
                       </label>
                       <div
-                        class="rcx-box rcx-box--full rcx-css-17ztjgq rcx-css-jc9wu4"
+                        class="rcx-box rcx-box--full rcx-css-xm5li9 rcx-css-3i0okg"
                       >
                         App
                       </div>

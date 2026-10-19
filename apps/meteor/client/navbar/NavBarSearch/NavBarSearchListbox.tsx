@@ -1,6 +1,6 @@
 import type { OverlayTriggerAria } from '@react-aria/overlays';
 import type { OverlayTriggerState } from '@react-stately/overlays';
-import { Box, Tile } from '@rocket.chat/fuselage';
+import { ItemGroupHeader, ItemGroupTitle, Tile } from '@rocket.chat/fuselage';
 import { useStableCallback, useOutsideClick } from '@rocket.chat/fuselage-hooks';
 import { CustomScrollbars } from '@rocket.chat/ui-client';
 import { useRef } from 'react';
@@ -10,8 +10,8 @@ import { useTranslation } from 'react-i18next';
 import NavBarSearchItemSkeleton from './NavBarSearchItemSkeleton';
 import NavBarSearchNoResults from './NavBarSearchNoResults';
 import NavBarSearchRow from './NavBarSearchRow';
+import { useSyncSearchOptions } from './hooks/useSearchActiveOption';
 import { useSearchItems } from './hooks/useSearchItems';
-import { useListboxNavigation } from './hooks/useSearchNavigation';
 import ResultsLiveRegion from '../../components/ResultsLiveRegion';
 
 export type NavBarSearchListBoxProps = {
@@ -23,7 +23,6 @@ const NavBarSearchListBox = ({ state, overlayProps }: NavBarSearchListBoxProps) 
 	const { t } = useTranslation();
 	const containerRef = useRef<HTMLElement>(null);
 
-	const handleKeyDown = useListboxNavigation(state);
 	useOutsideClick([containerRef], state.close);
 
 	const { resetField, watch } = useFormContext();
@@ -35,6 +34,7 @@ const NavBarSearchListBox = ({ state, overlayProps }: NavBarSearchListBoxProps) 
 	});
 
 	const { items, isLoading } = useSearchItems(filterText);
+	useSyncSearchOptions(items);
 
 	return (
 		<Tile
@@ -52,20 +52,19 @@ const NavBarSearchListBox = ({ state, overlayProps }: NavBarSearchListBoxProps) 
 		>
 			<ResultsLiveRegion shouldAnnounce={!isLoading} itemCount={items.length} isLoading={isLoading} />
 			<CustomScrollbars>
-				<div {...overlayProps} role='listbox' aria-label={t('Channels')} aria-busy={isLoading} tabIndex={-1} onKeyDown={handleKeyDown}>
+				<div
+					{...overlayProps}
+					role='listbox'
+					aria-label={t('Channels')}
+					aria-busy={isLoading}
+					tabIndex={-1}
+					onMouseDown={(event) => event.preventDefault()}
+				>
 					{items.length === 0 && !isLoading && <NavBarSearchNoResults />}
 					{items.length > 0 && (
-						<Box
-							color='titles-labels'
-							fontScale='c1'
-							fontWeight='bold'
-							paddingInline={12}
-							marginBlockEnd={4}
-							role='presentation'
-							aria-hidden
-						>
-							{filterText ? t('Results') : t('Recent')}
-						</Box>
+						<ItemGroupHeader inset='md' aria-hidden>
+							<ItemGroupTitle>{filterText ? t('Results') : t('Recent')}</ItemGroupTitle>
+						</ItemGroupHeader>
 					)}
 					{items.map((item) => (
 						<NavBarSearchRow key={item._id} room={item} onClick={handleSelect} />

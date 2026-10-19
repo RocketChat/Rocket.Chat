@@ -10,7 +10,7 @@ exports[`GenericUpsellModal renders Default without crashing 1`] = `
       open=""
     >
       <div
-        class="rcx-box rcx-box--full rcx-modal__inner rcx-css-qtwduz"
+        class="rcx-box rcx-box--full rcx-modal__inner rcx-css-hb8b2e"
       >
         <header
           class="rcx-box rcx-box--full rcx-modal__header"
@@ -19,7 +19,7 @@ exports[`GenericUpsellModal renders Default without crashing 1`] = `
             class="rcx-box rcx-box--full rcx-modal__header-inner"
           >
             <div
-              class="rcx-box rcx-box--full rcx-modal__header-text rcx-css-trljwa rcx-css-lma364"
+              class="rcx-box rcx-box--full rcx-modal__header-text rcx-css-i9v8z4 rcx-css-lma364"
             >
               <div
                 class="rcx-box rcx-box--full rcx-modal__tagline rcx-css-1ozohik"
@@ -35,7 +35,7 @@ exports[`GenericUpsellModal renders Default without crashing 1`] = `
             </div>
             <button
               aria-label="Close"
-              class="rcx-box rcx-box--full rcx-button--small-square rcx-button--square rcx-button--icon rcx-button rcx-css-trljwa rcx-css-lma364"
+              class="rcx-box rcx-box--full rcx-button--small-square rcx-button--square rcx-button--icon rcx-button rcx-css-i9v8z4 rcx-css-lma364"
               tabindex="-1"
               type="button"
             >
@@ -49,10 +49,10 @@ exports[`GenericUpsellModal renders Default without crashing 1`] = `
           </div>
         </header>
         <div
-          class="rcx-box rcx-box--full rcx-modal__content rcx-css-1vw7itl"
+          class="rcx-box rcx-box--full rcx-modal__content rcx-css-cnr5de"
         >
           <div
-            class="rcx-box rcx-box--full rcx-modal__content-wrapper rcx-css-r1bpeb"
+            class="rcx-box rcx-box--full rcx-modal__content-wrapper rcx-css-lg273t"
           >
             <figure
               class="rcx-modal__hero-image-wrapper"
@@ -64,12 +64,12 @@ exports[`GenericUpsellModal renders Default without crashing 1`] = `
               />
             </figure>
             <h3
-              class="rcx-box rcx-box--full rcx-css-1sfto34"
+              class="rcx-box rcx-box--full rcx-css-66ptyf"
             >
               This is a subtitle
             </h3>
             <div
-              class="rcx-box rcx-box--full rcx-css-1s3t8yc"
+              class="rcx-box rcx-box--full rcx-css-133i0df"
               style="white-space: break-spaces;"
             >
               Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
@@ -121,7 +121,7 @@ exports[`GenericUpsellModal renders WithAnnotation without crashing 1`] = `
       open=""
     >
       <div
-        class="rcx-box rcx-box--full rcx-modal__inner rcx-css-qtwduz"
+        class="rcx-box rcx-box--full rcx-modal__inner rcx-css-hb8b2e"
       >
         <header
           class="rcx-box rcx-box--full rcx-modal__header"
@@ -130,7 +130,7 @@ exports[`GenericUpsellModal renders WithAnnotation without crashing 1`] = `
             class="rcx-box rcx-box--full rcx-modal__header-inner"
           >
             <div
-              class="rcx-box rcx-box--full rcx-modal__header-text rcx-css-trljwa rcx-css-lma364"
+              class="rcx-box rcx-box--full rcx-modal__header-text rcx-css-i9v8z4 rcx-css-lma364"
             >
               <div
                 class="rcx-box rcx-box--full rcx-modal__tagline rcx-css-1ozohik"
@@ -146,7 +146,7 @@ exports[`GenericUpsellModal renders WithAnnotation without crashing 1`] = `
             </div>
             <button
               aria-label="Close"
-              class="rcx-box rcx-box--full rcx-button--small-square rcx-button--square rcx-button--icon rcx-button rcx-css-trljwa rcx-css-lma364"
+              class="rcx-box rcx-box--full rcx-button--small-square rcx-button--square rcx-button--icon rcx-button rcx-css-i9v8z4 rcx-css-lma364"
               tabindex="-1"
               type="button"
             >
@@ -160,10 +160,10 @@ exports[`GenericUpsellModal renders WithAnnotation without crashing 1`] = `
           </div>
         </header>
         <div
-          class="rcx-box rcx-box--full rcx-modal__content rcx-css-1vw7itl"
+          class="rcx-box rcx-box--full rcx-modal__content rcx-css-cnr5de"
         >
           <div
-            class="rcx-box rcx-box--full rcx-modal__content-wrapper rcx-css-r1bpeb"
+            class="rcx-box rcx-box--full rcx-modal__content-wrapper rcx-css-lg273t"
           >
             <figure
               class="rcx-modal__hero-image-wrapper"
@@ -175,12 +175,12 @@ exports[`GenericUpsellModal renders WithAnnotation without crashing 1`] = `
               />
             </figure>
             <h3
-              class="rcx-box rcx-box--full rcx-css-1sfto34"
+              class="rcx-box rcx-box--full rcx-css-66ptyf"
             >
               This is a subtitle
             </h3>
             <div
-              class="rcx-box rcx-box--full rcx-css-1s3t8yc"
+              class="rcx-box rcx-box--full rcx-css-133i0df"
               style="white-space: break-spaces;"
             >
               Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
@@ -237,7 +237,7 @@ exports[`GenericUpsellModal renders WithCustomButtons without crashing 1`] = `
       open=""
     >
       <div
-        class="rcx-box rcx-box--full rcx-modal__inner rcx-css-qtwduz"
+        class="rcx-box rcx-box--full rcx-modal__inner rcx-css-hb8b2e"
       >
         <header
           class="rcx-box rcx-box--full rcx-modal__header"
@@ -246,7 +246,7 @@ exports[`GenericUpsellModal renders WithCustomButtons without crashing 1`] = `
             class="rcx-box rcx-box--full rcx-modal__header-inner"
           >
             <div
-              class="rcx-box rcx-box--full rcx-modal__header-text rcx-css-trljwa rcx-css-lma364"
+              class="rcx-box rcx-box--full rcx-modal__header-text rcx-css-i9v8z4 rcx-css-lma364"
             >
               <div
                 class="rcx-box rcx-box--full rcx-modal__tagline rcx-css-1ozohik"
@@ -262,7 +262,7 @@ exports[`GenericUpsellModal renders WithCustomButtons without crashing 1`] = `
             </div>
             <button
               aria-label="Close"
-              class="rcx-box rcx-box--full rcx-button--small-square rcx-button--square rcx-button--icon rcx-button rcx-css-trljwa rcx-css-lma364"
+              class="rcx-box rcx-box--full rcx-button--small-square rcx-button--square rcx-button--icon rcx-button rcx-css-i9v8z4 rcx-css-lma364"
               tabindex="-1"
               type="button"
             >
@@ -276,10 +276,10 @@ exports[`GenericUpsellModal renders WithCustomButtons without crashing 1`] = `
           </div>
         </header>
         <div
-          class="rcx-box rcx-box--full rcx-modal__content rcx-css-1vw7itl"
+          class="rcx-box rcx-box--full rcx-modal__content rcx-css-cnr5de"
         >
           <div
-            class="rcx-box rcx-box--full rcx-modal__content-wrapper rcx-css-r1bpeb"
+            class="rcx-box rcx-box--full rcx-modal__content-wrapper rcx-css-lg273t"
           >
             <figure
               class="rcx-modal__hero-image-wrapper"
@@ -291,12 +291,12 @@ exports[`GenericUpsellModal renders WithCustomButtons without crashing 1`] = `
               />
             </figure>
             <h3
-              class="rcx-box rcx-box--full rcx-css-1sfto34"
+              class="rcx-box rcx-box--full rcx-css-66ptyf"
             >
               This is a subtitle
             </h3>
             <div
-              class="rcx-box rcx-box--full rcx-css-1s3t8yc"
+              class="rcx-box rcx-box--full rcx-css-133i0df"
               style="white-space: break-spaces;"
             >
               Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
@@ -348,7 +348,7 @@ exports[`GenericUpsellModal renders WithCustomTagLine without crashing 1`] = `
       open=""
     >
       <div
-        class="rcx-box rcx-box--full rcx-modal__inner rcx-css-qtwduz"
+        class="rcx-box rcx-box--full rcx-modal__inner rcx-css-hb8b2e"
       >
         <header
           class="rcx-box rcx-box--full rcx-modal__header"
@@ -357,7 +357,7 @@ exports[`GenericUpsellModal renders WithCustomTagLine without crashing 1`] = `
             class="rcx-box rcx-box--full rcx-modal__header-inner"
           >
             <div
-              class="rcx-box rcx-box--full rcx-modal__header-text rcx-css-trljwa rcx-css-lma364"
+              class="rcx-box rcx-box--full rcx-modal__header-text rcx-css-i9v8z4 rcx-css-lma364"
             >
               <div
                 class="rcx-box rcx-box--full rcx-modal__tagline rcx-css-1ozohik"
@@ -373,7 +373,7 @@ exports[`GenericUpsellModal renders WithCustomTagLine without crashing 1`] = `
             </div>
             <button
               aria-label="Close"
-              class="rcx-box rcx-box--full rcx-button--small-square rcx-button--square rcx-button--icon rcx-button rcx-css-trljwa rcx-css-lma364"
+              class="rcx-box rcx-box--full rcx-button--small-square rcx-button--square rcx-button--icon rcx-button rcx-css-i9v8z4 rcx-css-lma364"
               tabindex="-1"
               type="button"
             >
@@ -387,10 +387,10 @@ exports[`GenericUpsellModal renders WithCustomTagLine without crashing 1`] = `
           </div>
         </header>
         <div
-          class="rcx-box rcx-box--full rcx-modal__content rcx-css-1vw7itl"
+          class="rcx-box rcx-box--full rcx-modal__content rcx-css-cnr5de"
         >
           <div
-            class="rcx-box rcx-box--full rcx-modal__content-wrapper rcx-css-r1bpeb"
+            class="rcx-box rcx-box--full rcx-modal__content-wrapper rcx-css-lg273t"
           >
             <figure
               class="rcx-modal__hero-image-wrapper"
@@ -402,12 +402,12 @@ exports[`GenericUpsellModal renders WithCustomTagLine without crashing 1`] = `
               />
             </figure>
             <h3
-              class="rcx-box rcx-box--full rcx-css-1sfto34"
+              class="rcx-box rcx-box--full rcx-css-66ptyf"
             >
               This is a subtitle
             </h3>
             <div
-              class="rcx-box rcx-box--full rcx-css-1s3t8yc"
+              class="rcx-box rcx-box--full rcx-css-133i0df"
               style="white-space: break-spaces;"
             >
               Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
@@ -459,7 +459,7 @@ exports[`GenericUpsellModal renders WithFixedWidthAndHeight without crashing 1`]
       open=""
     >
       <div
-        class="rcx-box rcx-box--full rcx-modal__inner rcx-css-qtwduz"
+        class="rcx-box rcx-box--full rcx-modal__inner rcx-css-hb8b2e"
       >
         <header
           class="rcx-box rcx-box--full rcx-modal__header"
@@ -468,7 +468,7 @@ exports[`GenericUpsellModal renders WithFixedWidthAndHeight without crashing 1`]
             class="rcx-box rcx-box--full rcx-modal__header-inner"
           >
             <div
-              class="rcx-box rcx-box--full rcx-modal__header-text rcx-css-trljwa rcx-css-lma364"
+              class="rcx-box rcx-box--full rcx-modal__header-text rcx-css-i9v8z4 rcx-css-lma364"
             >
               <div
                 class="rcx-box rcx-box--full rcx-modal__tagline rcx-css-1ozohik"
@@ -484,7 +484,7 @@ exports[`GenericUpsellModal renders WithFixedWidthAndHeight without crashing 1`]
             </div>
             <button
               aria-label="Close"
-              class="rcx-box rcx-box--full rcx-button--small-square rcx-button--square rcx-button--icon rcx-button rcx-css-trljwa rcx-css-lma364"
+              class="rcx-box rcx-box--full rcx-button--small-square rcx-button--square rcx-button--icon rcx-button rcx-css-i9v8z4 rcx-css-lma364"
               tabindex="-1"
               type="button"
             >
@@ -498,10 +498,10 @@ exports[`GenericUpsellModal renders WithFixedWidthAndHeight without crashing 1`]
           </div>
         </header>
         <div
-          class="rcx-box rcx-box--full rcx-modal__content rcx-css-1vw7itl"
+          class="rcx-box rcx-box--full rcx-modal__content rcx-css-cnr5de"
         >
           <div
-            class="rcx-box rcx-box--full rcx-modal__content-wrapper rcx-css-r1bpeb"
+            class="rcx-box rcx-box--full rcx-modal__content-wrapper rcx-css-lg273t"
           >
             <figure
               class="rcx-modal__hero-image-wrapper"
@@ -513,12 +513,12 @@ exports[`GenericUpsellModal renders WithFixedWidthAndHeight without crashing 1`]
               />
             </figure>
             <h3
-              class="rcx-box rcx-box--full rcx-css-1sfto34"
+              class="rcx-box rcx-box--full rcx-css-66ptyf"
             >
               This is a subtitle
             </h3>
             <div
-              class="rcx-box rcx-box--full rcx-css-1s3t8yc"
+              class="rcx-box rcx-box--full rcx-css-133i0df"
               style="white-space: break-spaces;"
             >
               Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.

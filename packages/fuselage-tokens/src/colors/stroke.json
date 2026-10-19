@@ -1,0 +1,37 @@
+{
+  "stroke": {
+    "light": {
+      "extraLight": { "value": "{colors.n250}" },
+      "light": { "value": "{colors.n500}" },
+      "medium": { "value": "{colors.n600}" },
+      "dark": { "value": "{colors.n700}" },
+      "extraDark": { "value": "{colors.n800}" },
+      "extraLightHighlight": { "value": "{colors.b200}" },
+      "highlight": { "value": "{colors.b500}" },
+      "extraLightError": { "value": "{colors.r200}" },
+      "error": { "value": "{colors.r500}" }
+    },
+    "high-contrast": {
+      "extraLight": { "value": "{colors.n250}" },
+      "light": { "value": "{colors.n500}" },
+      "medium": { "value": "{colors.n600}" },
+      "dark": { "value": "{colors.n700}" },
+      "extraDark": { "value": "{colors.n800}" },
+      "extraLightHighlight": { "value": "{colors.b200}" },
+      "highlight": { "value": "{colors.b500}" },
+      "extraLightError": { "value": "{colors.r200}" },
+      "error": { "value": "{colors.r500}" }
+    },
+    "dark": {
+      "extraLight": { "value": "#333842", "type": "color" },
+      "light": { "value": "#404754", "type": "color" },
+      "medium": { "value": "#4B5362", "type": "color" },
+      "dark": { "value": "#9EA2A8", "type": "color" },
+      "extraDark": { "value": "#CBCED1", "type": "color" },
+      "extraLightHighlight": { "value": "#D1EBFE", "type": "color" },
+      "highlight": { "value": "#6292DA", "type": "color" },
+      "extraLightError": { "value": "#F49AA6", "type": "color" },
+      "error": { "value": "#BB3E4E", "type": "color" }
+    }
+  }
+}

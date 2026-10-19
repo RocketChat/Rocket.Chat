@@ -1,4 +1,5 @@
 import type { RemoteParticipantInfo } from '../context';
+import type { TileReaction } from './reactions';
 import { TILE_GAP_PX } from './tileGrid';
 
 /** The reader as the stage draws them. */
@@ -26,6 +27,8 @@ export type TileParticipant = {
 	audioStream?: MediaStream | null;
 	/** Their place in the raised-hand queue, from 1, while their hand is up. */
 	handPosition?: number;
+	/** Their latest reaction, while it is still rising over the call. */
+	reaction?: TileReaction;
 };
 
 /** The reader's tile says what it sends; nobody else's can. */
@@ -56,6 +59,7 @@ export const buildStageTiles = (
 	self: StageSelf,
 	remoteParticipants: RemoteParticipantInfo[],
 	handPositions: Record<string, number> | undefined,
+	reactions?: Record<string, TileReaction>,
 ): StageTile[] => [
 	{
 		id: self.id,
@@ -67,6 +71,7 @@ export const buildStageTiles = (
 		audioStream: self.audioStream,
 		kind: 'self',
 		handPosition: handPositions?.[self.id],
+		reaction: reactions?.[self.id],
 		sendHeight: self.sendHeight,
 	},
 	...remoteParticipants.map((p): StageTile => ({
@@ -79,6 +84,7 @@ export const buildStageTiles = (
 		cameraStream: p.cameraStream,
 		audioStream: p.audioStream,
 		handPosition: handPositions?.[p.id],
+		reaction: reactions?.[p.id],
 	})),
 ];
 

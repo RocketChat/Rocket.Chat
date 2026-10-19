@@ -29,3 +29,10 @@ it('renders the custom status it is given', () => {
 
 	expect(screen.getByText('Out of office').tagName).toBe('EM');
 });
+
+it('leaves out the details list when there is nothing to list', () => {
+	render(<UserCard user={{ name: 'bruno.admin', username: 'bruno.admin' }} />, { wrapper: mockAppRoot().build() });
+
+	const dialog = screen.getByRole('dialog');
+	expect(dialog.querySelector('dl')).toBeNull();
+});

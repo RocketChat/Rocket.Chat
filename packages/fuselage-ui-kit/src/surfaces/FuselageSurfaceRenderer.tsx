@@ -5,9 +5,11 @@ import ActionsBlock from '../blocks/ActionsBlock';
 import CalloutBlock from '../blocks/CalloutBlock';
 import ContextBlock from '../blocks/ContextBlock';
 import DividerBlock from '../blocks/DividerBlock';
+import HeaderBlock from '../blocks/HeaderBlock';
 import ImageBlock from '../blocks/ImageBlock';
 import InfoCard from '../blocks/InfoCard';
 import InputBlock from '../blocks/InputBlock';
+import MarkdownBlock from '../blocks/MarkdownBlock';
 import PreviewBlock from '../blocks/PreviewBlock';
 import SectionBlock from '../blocks/SectionBlock';
 import { AppIdProvider } from '../contexts/AppIdContext';
@@ -16,6 +18,8 @@ import ChannelsSelectElement from '../elements/ChannelsSelectElement/ChannelsSel
 import MultiChannelsSelectElement from '../elements/ChannelsSelectElement/MultiChannelsSelectElement';
 import CheckboxElement from '../elements/CheckboxElement';
 import DatePickerElement from '../elements/DatePickerElement';
+import DateTimePickerElement from '../elements/DateTimePickerElement';
+import FormattedTextInputElement from '../elements/FormattedTextInputElement';
 import IconButtonElement from '../elements/IconButtonElement';
 import IconElement from '../elements/IconElement';
 import ImageElement from '../elements/ImageElement';
@@ -186,6 +190,18 @@ export abstract class FuselageSurfaceRenderer extends UiKit.SurfaceRenderer<Reac
 		);
 	}
 
+	datetimepicker(block: UiKit.DateTimePickerElement, context: UiKit.BlockContext, index: number): ReactElement<any> | null {
+		if (context === UiKit.BlockContext.BLOCK) {
+			return null;
+		}
+
+		return (
+			<AppIdProvider key={block.actionId || index} appId={block.appId}>
+				<DateTimePickerElement block={block} context={context} index={index} surfaceRenderer={this} />
+			</AppIdProvider>
+		);
+	}
+
 	static_select(block: UiKit.StaticSelectElement, context: UiKit.BlockContext, index: number): ReactElement<any> | null {
 		if (context === UiKit.BlockContext.BLOCK) {
 			return null;
@@ -218,6 +234,34 @@ export abstract class FuselageSurfaceRenderer extends UiKit.SurfaceRenderer<Reac
 		return (
 			<AppIdProvider key={index} appId={block.appId}>
 				<OverflowElement block={block} context={context} index={index} surfaceRenderer={this} />
+			</AppIdProvider>
+		);
+	}
+
+	number_input(block: UiKit.NumberInputElement, context: UiKit.BlockContext, index: number): ReactElement<any> | null {
+		return this.formattedTextInput(block, context, index);
+	}
+
+	email_text_input(block: UiKit.EmailTextInputElement, context: UiKit.BlockContext, index: number): ReactElement<any> | null {
+		return this.formattedTextInput(block, context, index);
+	}
+
+	url_text_input(block: UiKit.UrlTextInputElement, context: UiKit.BlockContext, index: number): ReactElement<any> | null {
+		return this.formattedTextInput(block, context, index);
+	}
+
+	private formattedTextInput(
+		block: UiKit.NumberInputElement | UiKit.EmailTextInputElement | UiKit.UrlTextInputElement,
+		context: UiKit.BlockContext,
+		index: number,
+	): ReactElement<any> | null {
+		if (context === UiKit.BlockContext.BLOCK) {
+			return null;
+		}
+
+		return (
+			<AppIdProvider key={block.actionId || index} appId={block.appId}>
+				<FormattedTextInputElement block={block} context={context} index={index} surfaceRenderer={this} />
 			</AppIdProvider>
 		);
 	}
@@ -282,6 +326,30 @@ export abstract class FuselageSurfaceRenderer extends UiKit.SurfaceRenderer<Reac
 		);
 	}
 
+	markdown(block: UiKit.MarkdownBlock, context: UiKit.BlockContext, index: number): ReactElement<any> | null {
+		if (context === UiKit.BlockContext.BLOCK) {
+			return (
+				<AppIdProvider key={index} appId={block.appId}>
+					<MarkdownBlock block={block} context={context} index={index} surfaceRenderer={this} />
+				</AppIdProvider>
+			);
+		}
+
+		return null;
+	}
+
+	header(block: UiKit.HeaderBlock, context: UiKit.BlockContext, index: number): ReactElement<any> | null {
+		if (context === UiKit.BlockContext.BLOCK) {
+			return (
+				<AppIdProvider key={index} appId={block.appId}>
+					<HeaderBlock block={block} context={context} index={index} surfaceRenderer={this} />
+				</AppIdProvider>
+			);
+		}
+
+		return null;
+	}
+
 	callout(block: UiKit.CalloutBlock, context: UiKit.BlockContext, index: number): ReactElement<any> | null {
 		if (context === UiKit.BlockContext.BLOCK) {
 			return (
@@ -307,35 +375,55 @@ export abstract class FuselageSurfaceRenderer extends UiKit.SurfaceRenderer<Reac
 	}
 
 	users_select(block: UiKit.UsersSelectElement, context: UiKit.BlockContext, index: number): ReactElement<any> | null {
-		if (context === UiKit.BlockContext.FORM) {
-			return <UsersSelectElement block={block} context={context} index={index} surfaceRenderer={this} />;
+		if (context === UiKit.BlockContext.BLOCK) {
+			return null;
 		}
 
-		return null;
+		return <UsersSelectElement block={block} context={context} index={index} surfaceRenderer={this} />;
 	}
 
 	channels_select(block: UiKit.ChannelsSelectElement, context: UiKit.BlockContext, index: number): ReactElement<any> | null {
-		if (context === UiKit.BlockContext.FORM) {
-			return <ChannelsSelectElement block={block} context={context} index={index} surfaceRenderer={this} />;
+		if (context === UiKit.BlockContext.BLOCK) {
+			return null;
 		}
 
-		return null;
+		return <ChannelsSelectElement block={block} context={context} index={index} surfaceRenderer={this} />;
+	}
+
+	conversations_select(block: UiKit.ConversationsSelectElement, context: UiKit.BlockContext, index: number): ReactElement<any> | null {
+		if (context === UiKit.BlockContext.BLOCK) {
+			return null;
+		}
+
+		return <ChannelsSelectElement block={block} context={context} index={index} surfaceRenderer={this} />;
+	}
+
+	multi_conversations_select(
+		block: UiKit.MultiConversationsSelectElement,
+		context: UiKit.BlockContext,
+		index: number,
+	): ReactElement<any> | null {
+		if (context === UiKit.BlockContext.BLOCK) {
+			return null;
+		}
+
+		return <MultiChannelsSelectElement block={block} context={context} index={index} surfaceRenderer={this} />;
 	}
 
 	multi_users_select(block: UiKit.MultiUsersSelectElement, context: UiKit.BlockContext, index: number): ReactElement<any> | null {
-		if (context === UiKit.BlockContext.FORM) {
-			return <MultiUsersSelectElement block={block} context={context} index={index} surfaceRenderer={this} />;
+		if (context === UiKit.BlockContext.BLOCK) {
+			return null;
 		}
 
-		return null;
+		return <MultiUsersSelectElement block={block} context={context} index={index} surfaceRenderer={this} />;
 	}
 
 	multi_channels_select(block: UiKit.MultiChannelsSelectElement, context: UiKit.BlockContext, index: number): ReactElement<any> | null {
-		if (context === UiKit.BlockContext.FORM) {
-			return <MultiChannelsSelectElement block={block} context={context} index={index} surfaceRenderer={this} />;
+		if (context === UiKit.BlockContext.BLOCK) {
+			return null;
 		}
 
-		return null;
+		return <MultiChannelsSelectElement block={block} context={context} index={index} surfaceRenderer={this} />;
 	}
 
 	info_card(block: UiKit.InfoCardBlock, context: UiKit.BlockContext, index: number): ReactElement<any> | null {

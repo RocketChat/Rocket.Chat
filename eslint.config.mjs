@@ -494,6 +494,32 @@ export default [
 			'storybook/no-renderer-packages': 'off',
 		},
 	},
+	// FIXME: violations carried over from the Fuselage monorepo, which linted with a different config
+	{
+		files: ['packages/fuselage/src/**/*.@(ts|tsx)'],
+		rules: {
+			'@typescript-eslint/naming-convention': 'warn',
+			'@typescript-eslint/no-empty-function': 'warn',
+			'react-hooks/exhaustive-deps': 'warn',
+			'react/display-name': 'warn',
+			'react/jsx-key': 'warn',
+			'react/no-children-prop': 'warn',
+			'react/no-multi-comp': 'warn',
+		},
+	},
+	// FIXME: existing imports that reach into another package's files; new ones are rejected everywhere else
+	{
+		files: [
+			'apps/meteor/client/views/room/ClassificationBanner/lib/schema.spec.ts',
+			'ee/packages/federation-matrix/tests/end-to-end/@(ban|dms|first-contact|messaging|permissions|presence|room|typing).spec.ts',
+			'ee/packages/federation-matrix/tests/helper/ddp-listener.ts',
+			'ee/packages/pdf-worker/.storybook/preview.tsx',
+			'packages/gazzodown/.storybook/preview.tsx',
+		],
+		rules: {
+			'import-x/no-relative-packages': 'off',
+		},
+	},
 	// FIXME
 	{
 		files: ['ee/packages/federation-matrix/src/api/.well-known/server.ts'],

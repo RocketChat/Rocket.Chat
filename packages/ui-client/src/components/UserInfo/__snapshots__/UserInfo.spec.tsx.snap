@@ -59,10 +59,10 @@ exports[`renders Default without crashing 1`] = `
                       />
                     </figure>
                     <div
-                      class="rcx-box rcx-box--full rcx-css-1m8fkkm"
+                      class="rcx-box rcx-box--full rcx-css-50kohy"
                     >
                       <h2
-                        class="rcx-box rcx-box--full rcx-css-15fvg6f"
+                        class="rcx-box rcx-box--full rcx-css-qvq3gw"
                         title="guilherme.gazzo"
                       >
                         <svg
@@ -83,13 +83,13 @@ exports[`renders Default without crashing 1`] = `
                           />
                         </svg>
                         <div
-                          class="rcx-box rcx-box--full rcx-css-tipo14"
+                          class="rcx-box rcx-box--full rcx-css-psa12r"
                         >
                           guilherme.gazzo
                         </div>
                       </h2>
                       <div
-                        class="rcx-box rcx-box--full rcx-css-1cn83xx"
+                        class="rcx-box rcx-box--full rcx-css-1c0bvev"
                       >
                         🛴 currently working on User Card
                       </div>
@@ -102,17 +102,17 @@ exports[`renders Default without crashing 1`] = `
                       class="rcx-box rcx-box--full rcx-css-1jagyun"
                     >
                       <dt
-                        class="rcx-box rcx-box--full rcx-css-1po16l8"
+                        class="rcx-box rcx-box--full rcx-css-clshan"
                         id="_r_1_"
                       >
                         Username
                       </dt>
                       <dd
                         aria-labelledby="_r_1_"
-                        class="rcx-box rcx-box--full rcx-css-16e3mll rcx-css-6p9plk"
+                        class="rcx-box rcx-box--full rcx-css-16e3mll rcx-css-1uarkle"
                       >
                         <div
-                          class="rcx-box rcx-box--full rcx-css-1aewkgk"
+                          class="rcx-box rcx-box--full rcx-css-tm5a3s"
                         >
                           guilherme.gazzo
                         </div>
@@ -135,15 +135,15 @@ exports[`renders Default without crashing 1`] = `
                       class="rcx-box rcx-box--full rcx-css-1jagyun"
                     >
                       <div
-                        class="rcx-box rcx-box--full rcx-css-1po16l8"
+                        class="rcx-box rcx-box--full rcx-css-clshan"
                       >
                         Nickname
                       </div>
                       <div
-                        class="rcx-box rcx-box--full rcx-css-16e3mll rcx-css-6p9plk"
+                        class="rcx-box rcx-box--full rcx-css-16e3mll rcx-css-1uarkle"
                       >
                         <div
-                          class="rcx-box rcx-box--full rcx-css-1aewkgk"
+                          class="rcx-box rcx-box--full rcx-css-tm5a3s"
                         >
                           gazzo
                         </div>
@@ -166,9 +166,9 @@ exports[`renders Default without crashing 1`] = `
                       class="rcx-box rcx-box--full rcx-css-1jagyun"
                     >
                       <div
-                        class="rcx-box rcx-box--full rcx-css-1po16l8"
+                        class="rcx-box rcx-box--full rcx-css-clshan"
                       >
-                        Roles
+                        Workspace_roles
                       </div>
                       <div
                         class="rcx-box rcx-box--full rcx-css-1fksvtu"
@@ -205,12 +205,12 @@ exports[`renders Default without crashing 1`] = `
                       class="rcx-box rcx-box--full rcx-css-1jagyun"
                     >
                       <div
-                        class="rcx-box rcx-box--full rcx-css-1po16l8"
+                        class="rcx-box rcx-box--full rcx-css-clshan"
                       >
                         Bio
                       </div>
                       <div
-                        class="rcx-box rcx-box--full rcx-css-16e3mll rcx-css-6p9plk"
+                        class="rcx-box rcx-box--full rcx-css-16e3mll rcx-css-1uarkle"
                       >
                         <div
                           class="rcx-box rcx-box--full rcx-css-1y6rh01"
@@ -236,24 +236,24 @@ exports[`renders Default without crashing 1`] = `
                       class="rcx-box rcx-box--full rcx-css-1jagyun"
                     >
                       <div
-                        class="rcx-box rcx-box--full rcx-css-1po16l8"
+                        class="rcx-box rcx-box--full rcx-css-clshan"
                       >
                         Email
                       </div>
                       <div
-                        class="rcx-box rcx-box--full rcx-css-16e3mll rcx-css-6p9plk"
+                        class="rcx-box rcx-box--full rcx-css-16e3mll rcx-css-1uarkle"
                       >
                         <div
-                          class="rcx-box rcx-box--full rcx-css-1aewkgk"
+                          class="rcx-box rcx-box--full rcx-css-tm5a3s"
                         >
                           <a
-                            class="rcx-box rcx-box--full rcx-css-1te28na"
+                            class="rcx-box rcx-box--full rcx-css-1oii38d"
                             href="mailto:rocketchat@rocket.chat"
                           >
                             rocketchat@rocket.chat
                           </a>
                           <span
-                            class="rcx-box rcx-box--full rcx-tag  rcx-css-1dtwr38 rcx-css-1eogw2f"
+                            class="rcx-box rcx-box--full rcx-tag  rcx-css-4ye06d rcx-css-1eogw2f"
                           >
                             <span
                               class="rcx-tag__inner"
@@ -406,10 +406,10 @@ exports[`renders InvitedUser without crashing 1`] = `
                       />
                     </figure>
                     <div
-                      class="rcx-box rcx-box--full rcx-css-1m8fkkm"
+                      class="rcx-box rcx-box--full rcx-css-50kohy"
                     >
                       <h2
-                        class="rcx-box rcx-box--full rcx-css-15fvg6f"
+                        class="rcx-box rcx-box--full rcx-css-qvq3gw"
                         title="guilherme.gazzo"
                       >
                         <svg
@@ -430,13 +430,13 @@ exports[`renders InvitedUser without crashing 1`] = `
                           />
                         </svg>
                         <div
-                          class="rcx-box rcx-box--full rcx-css-tipo14"
+                          class="rcx-box rcx-box--full rcx-css-psa12r"
                         >
                           guilherme.gazzo
                         </div>
                       </h2>
                       <div
-                        class="rcx-box rcx-box--full rcx-css-1cn83xx"
+                        class="rcx-box rcx-box--full rcx-css-1c0bvev"
                       >
                         🛴 currently working on User Card
                       </div>
@@ -449,17 +449,17 @@ exports[`renders InvitedUser without crashing 1`] = `
                       class="rcx-box rcx-box--full rcx-css-1jagyun"
                     >
                       <dt
-                        class="rcx-box rcx-box--full rcx-css-1po16l8"
+                        class="rcx-box rcx-box--full rcx-css-clshan"
                         id="_r_3_"
                       >
                         Username
                       </dt>
                       <dd
                         aria-labelledby="_r_3_"
-                        class="rcx-box rcx-box--full rcx-css-16e3mll rcx-css-6p9plk"
+                        class="rcx-box rcx-box--full rcx-css-16e3mll rcx-css-1uarkle"
                       >
                         <div
-                          class="rcx-box rcx-box--full rcx-css-1aewkgk"
+                          class="rcx-box rcx-box--full rcx-css-tm5a3s"
                         >
                           guilherme.gazzo
                         </div>
@@ -482,15 +482,15 @@ exports[`renders InvitedUser without crashing 1`] = `
                       class="rcx-box rcx-box--full rcx-css-1jagyun"
                     >
                       <div
-                        class="rcx-box rcx-box--full rcx-css-1po16l8"
+                        class="rcx-box rcx-box--full rcx-css-clshan"
                       >
                         Nickname
                       </div>
                       <div
-                        class="rcx-box rcx-box--full rcx-css-16e3mll rcx-css-6p9plk"
+                        class="rcx-box rcx-box--full rcx-css-16e3mll rcx-css-1uarkle"
                       >
                         <div
-                          class="rcx-box rcx-box--full rcx-css-1aewkgk"
+                          class="rcx-box rcx-box--full rcx-css-tm5a3s"
                         >
                           gazzo
                         </div>
@@ -513,9 +513,9 @@ exports[`renders InvitedUser without crashing 1`] = `
                       class="rcx-box rcx-box--full rcx-css-1jagyun"
                     >
                       <div
-                        class="rcx-box rcx-box--full rcx-css-1po16l8"
+                        class="rcx-box rcx-box--full rcx-css-clshan"
                       >
-                        Roles
+                        Workspace_roles
                       </div>
                       <div
                         class="rcx-box rcx-box--full rcx-css-1fksvtu"
@@ -552,12 +552,12 @@ exports[`renders InvitedUser without crashing 1`] = `
                       class="rcx-box rcx-box--full rcx-css-1jagyun"
                     >
                       <div
-                        class="rcx-box rcx-box--full rcx-css-1po16l8"
+                        class="rcx-box rcx-box--full rcx-css-clshan"
                       >
                         Bio
                       </div>
                       <div
-                        class="rcx-box rcx-box--full rcx-css-16e3mll rcx-css-6p9plk"
+                        class="rcx-box rcx-box--full rcx-css-16e3mll rcx-css-1uarkle"
                       >
                         <div
                           class="rcx-box rcx-box--full rcx-css-1y6rh01"
@@ -583,24 +583,24 @@ exports[`renders InvitedUser without crashing 1`] = `
                       class="rcx-box rcx-box--full rcx-css-1jagyun"
                     >
                       <div
-                        class="rcx-box rcx-box--full rcx-css-1po16l8"
+                        class="rcx-box rcx-box--full rcx-css-clshan"
                       >
                         Email
                       </div>
                       <div
-                        class="rcx-box rcx-box--full rcx-css-16e3mll rcx-css-6p9plk"
+                        class="rcx-box rcx-box--full rcx-css-16e3mll rcx-css-1uarkle"
                       >
                         <div
-                          class="rcx-box rcx-box--full rcx-css-1aewkgk"
+                          class="rcx-box rcx-box--full rcx-css-tm5a3s"
                         >
                           <a
-                            class="rcx-box rcx-box--full rcx-css-1te28na"
+                            class="rcx-box rcx-box--full rcx-css-1oii38d"
                             href="mailto:rocketchat@rocket.chat"
                           >
                             rocketchat@rocket.chat
                           </a>
                           <span
-                            class="rcx-box rcx-box--full rcx-tag  rcx-css-1dtwr38 rcx-css-1eogw2f"
+                            class="rcx-box rcx-box--full rcx-tag  rcx-css-4ye06d rcx-css-1eogw2f"
                           >
                             <span
                               class="rcx-tag__inner"
@@ -628,12 +628,12 @@ exports[`renders InvitedUser without crashing 1`] = `
                       class="rcx-box rcx-box--full rcx-css-1jagyun"
                     >
                       <div
-                        class="rcx-box rcx-box--full rcx-css-1po16l8"
+                        class="rcx-box rcx-box--full rcx-css-clshan"
                       >
                         Invitation_date
                       </div>
                       <div
-                        class="rcx-box rcx-box--full rcx-css-6hwe8l rcx-css-wto7m1"
+                        class="rcx-box rcx-box--full rcx-css-6hwe8l rcx-css-1bttmoy"
                       >
                         January 1st, 2025
                       </div>
@@ -767,10 +767,10 @@ exports[`renders WithABACAttributes without crashing 1`] = `
                       />
                     </figure>
                     <div
-                      class="rcx-box rcx-box--full rcx-css-1m8fkkm"
+                      class="rcx-box rcx-box--full rcx-css-50kohy"
                     >
                       <h2
-                        class="rcx-box rcx-box--full rcx-css-15fvg6f"
+                        class="rcx-box rcx-box--full rcx-css-qvq3gw"
                         title="guilherme.gazzo"
                       >
                         <svg
@@ -791,13 +791,13 @@ exports[`renders WithABACAttributes without crashing 1`] = `
                           />
                         </svg>
                         <div
-                          class="rcx-box rcx-box--full rcx-css-tipo14"
+                          class="rcx-box rcx-box--full rcx-css-psa12r"
                         >
                           guilherme.gazzo
                         </div>
                       </h2>
                       <div
-                        class="rcx-box rcx-box--full rcx-css-1cn83xx"
+                        class="rcx-box rcx-box--full rcx-css-1c0bvev"
                       >
                         🛴 currently working on User Card
                       </div>
@@ -810,17 +810,17 @@ exports[`renders WithABACAttributes without crashing 1`] = `
                       class="rcx-box rcx-box--full rcx-css-1jagyun"
                     >
                       <dt
-                        class="rcx-box rcx-box--full rcx-css-1po16l8"
+                        class="rcx-box rcx-box--full rcx-css-clshan"
                         id="_r_5_"
                       >
                         Username
                       </dt>
                       <dd
                         aria-labelledby="_r_5_"
-                        class="rcx-box rcx-box--full rcx-css-16e3mll rcx-css-6p9plk"
+                        class="rcx-box rcx-box--full rcx-css-16e3mll rcx-css-1uarkle"
                       >
                         <div
-                          class="rcx-box rcx-box--full rcx-css-1aewkgk"
+                          class="rcx-box rcx-box--full rcx-css-tm5a3s"
                         >
                           guilherme.gazzo
                         </div>
@@ -843,15 +843,15 @@ exports[`renders WithABACAttributes without crashing 1`] = `
                       class="rcx-box rcx-box--full rcx-css-1jagyun"
                     >
                       <div
-                        class="rcx-box rcx-box--full rcx-css-1po16l8"
+                        class="rcx-box rcx-box--full rcx-css-clshan"
                       >
                         Nickname
                       </div>
                       <div
-                        class="rcx-box rcx-box--full rcx-css-16e3mll rcx-css-6p9plk"
+                        class="rcx-box rcx-box--full rcx-css-16e3mll rcx-css-1uarkle"
                       >
                         <div
-                          class="rcx-box rcx-box--full rcx-css-1aewkgk"
+                          class="rcx-box rcx-box--full rcx-css-tm5a3s"
                         >
                           gazzo
                         </div>
@@ -874,9 +874,9 @@ exports[`renders WithABACAttributes without crashing 1`] = `
                       class="rcx-box rcx-box--full rcx-css-1jagyun"
                     >
                       <div
-                        class="rcx-box rcx-box--full rcx-css-1po16l8"
+                        class="rcx-box rcx-box--full rcx-css-clshan"
                       >
-                        Roles
+                        Workspace_roles
                       </div>
                       <div
                         class="rcx-box rcx-box--full rcx-css-1fksvtu"
@@ -913,12 +913,12 @@ exports[`renders WithABACAttributes without crashing 1`] = `
                       class="rcx-box rcx-box--full rcx-css-1jagyun"
                     >
                       <div
-                        class="rcx-box rcx-box--full rcx-css-1po16l8"
+                        class="rcx-box rcx-box--full rcx-css-clshan"
                       >
                         Bio
                       </div>
                       <div
-                        class="rcx-box rcx-box--full rcx-css-16e3mll rcx-css-6p9plk"
+                        class="rcx-box rcx-box--full rcx-css-16e3mll rcx-css-1uarkle"
                       >
                         <div
                           class="rcx-box rcx-box--full rcx-css-1y6rh01"
@@ -944,24 +944,24 @@ exports[`renders WithABACAttributes without crashing 1`] = `
                       class="rcx-box rcx-box--full rcx-css-1jagyun"
                     >
                       <div
-                        class="rcx-box rcx-box--full rcx-css-1po16l8"
+                        class="rcx-box rcx-box--full rcx-css-clshan"
                       >
                         Email
                       </div>
                       <div
-                        class="rcx-box rcx-box--full rcx-css-16e3mll rcx-css-6p9plk"
+                        class="rcx-box rcx-box--full rcx-css-16e3mll rcx-css-1uarkle"
                       >
                         <div
-                          class="rcx-box rcx-box--full rcx-css-1aewkgk"
+                          class="rcx-box rcx-box--full rcx-css-tm5a3s"
                         >
                           <a
-                            class="rcx-box rcx-box--full rcx-css-1te28na"
+                            class="rcx-box rcx-box--full rcx-css-1oii38d"
                             href="mailto:rocketchat@rocket.chat"
                           >
                             rocketchat@rocket.chat
                           </a>
                           <span
-                            class="rcx-box rcx-box--full rcx-tag  rcx-css-1dtwr38 rcx-css-1eogw2f"
+                            class="rcx-box rcx-box--full rcx-tag  rcx-css-4ye06d rcx-css-1eogw2f"
                           >
                             <span
                               class="rcx-tag__inner"
@@ -989,7 +989,7 @@ exports[`renders WithABACAttributes without crashing 1`] = `
                       class="rcx-box rcx-box--full rcx-css-1jagyun"
                     >
                       <div
-                        class="rcx-box rcx-box--full rcx-css-1po16l8"
+                        class="rcx-box rcx-box--full rcx-css-clshan"
                       >
                         ABAC_Attributes
                         <i
@@ -1174,10 +1174,10 @@ exports[`renders WithVoiceCallExtension without crashing 1`] = `
                       />
                     </figure>
                     <div
-                      class="rcx-box rcx-box--full rcx-css-1m8fkkm"
+                      class="rcx-box rcx-box--full rcx-css-50kohy"
                     >
                       <h2
-                        class="rcx-box rcx-box--full rcx-css-15fvg6f"
+                        class="rcx-box rcx-box--full rcx-css-qvq3gw"
                         title="guilherme.gazzo"
                       >
                         <svg
@@ -1198,13 +1198,13 @@ exports[`renders WithVoiceCallExtension without crashing 1`] = `
                           />
                         </svg>
                         <div
-                          class="rcx-box rcx-box--full rcx-css-tipo14"
+                          class="rcx-box rcx-box--full rcx-css-psa12r"
                         >
                           guilherme.gazzo
                         </div>
                       </h2>
                       <div
-                        class="rcx-box rcx-box--full rcx-css-1cn83xx"
+                        class="rcx-box rcx-box--full rcx-css-1c0bvev"
                       >
                         🛴 currently working on User Card
                       </div>
@@ -1217,17 +1217,17 @@ exports[`renders WithVoiceCallExtension without crashing 1`] = `
                       class="rcx-box rcx-box--full rcx-css-1jagyun"
                     >
                       <dt
-                        class="rcx-box rcx-box--full rcx-css-1po16l8"
+                        class="rcx-box rcx-box--full rcx-css-clshan"
                         id="_r_7_"
                       >
                         Username
                       </dt>
                       <dd
                         aria-labelledby="_r_7_"
-                        class="rcx-box rcx-box--full rcx-css-16e3mll rcx-css-6p9plk"
+                        class="rcx-box rcx-box--full rcx-css-16e3mll rcx-css-1uarkle"
                       >
                         <div
-                          class="rcx-box rcx-box--full rcx-css-1aewkgk"
+                          class="rcx-box rcx-box--full rcx-css-tm5a3s"
                         >
                           guilherme.gazzo
                         </div>
@@ -1250,15 +1250,15 @@ exports[`renders WithVoiceCallExtension without crashing 1`] = `
                       class="rcx-box rcx-box--full rcx-css-1jagyun"
                     >
                       <div
-                        class="rcx-box rcx-box--full rcx-css-1po16l8"
+                        class="rcx-box rcx-box--full rcx-css-clshan"
                       >
                         Nickname
                       </div>
                       <div
-                        class="rcx-box rcx-box--full rcx-css-16e3mll rcx-css-6p9plk"
+                        class="rcx-box rcx-box--full rcx-css-16e3mll rcx-css-1uarkle"
                       >
                         <div
-                          class="rcx-box rcx-box--full rcx-css-1aewkgk"
+                          class="rcx-box rcx-box--full rcx-css-tm5a3s"
                         >
                           gazzo
                         </div>
@@ -1281,9 +1281,9 @@ exports[`renders WithVoiceCallExtension without crashing 1`] = `
                       class="rcx-box rcx-box--full rcx-css-1jagyun"
                     >
                       <div
-                        class="rcx-box rcx-box--full rcx-css-1po16l8"
+                        class="rcx-box rcx-box--full rcx-css-clshan"
                       >
-                        Roles
+                        Workspace_roles
                       </div>
                       <div
                         class="rcx-box rcx-box--full rcx-css-1fksvtu"
@@ -1320,12 +1320,12 @@ exports[`renders WithVoiceCallExtension without crashing 1`] = `
                       class="rcx-box rcx-box--full rcx-css-1jagyun"
                     >
                       <div
-                        class="rcx-box rcx-box--full rcx-css-1po16l8"
+                        class="rcx-box rcx-box--full rcx-css-clshan"
                       >
                         Bio
                       </div>
                       <div
-                        class="rcx-box rcx-box--full rcx-css-16e3mll rcx-css-6p9plk"
+                        class="rcx-box rcx-box--full rcx-css-16e3mll rcx-css-1uarkle"
                       >
                         <div
                           class="rcx-box rcx-box--full rcx-css-1y6rh01"
@@ -1351,24 +1351,24 @@ exports[`renders WithVoiceCallExtension without crashing 1`] = `
                       class="rcx-box rcx-box--full rcx-css-1jagyun"
                     >
                       <div
-                        class="rcx-box rcx-box--full rcx-css-1po16l8"
+                        class="rcx-box rcx-box--full rcx-css-clshan"
                       >
                         Email
                       </div>
                       <div
-                        class="rcx-box rcx-box--full rcx-css-16e3mll rcx-css-6p9plk"
+                        class="rcx-box rcx-box--full rcx-css-16e3mll rcx-css-1uarkle"
                       >
                         <div
-                          class="rcx-box rcx-box--full rcx-css-1aewkgk"
+                          class="rcx-box rcx-box--full rcx-css-tm5a3s"
                         >
                           <a
-                            class="rcx-box rcx-box--full rcx-css-1te28na"
+                            class="rcx-box rcx-box--full rcx-css-1oii38d"
                             href="mailto:rocketchat@rocket.chat"
                           >
                             rocketchat@rocket.chat
                           </a>
                           <span
-                            class="rcx-box rcx-box--full rcx-tag  rcx-css-1dtwr38 rcx-css-1eogw2f"
+                            class="rcx-box rcx-box--full rcx-tag  rcx-css-4ye06d rcx-css-1eogw2f"
                           >
                             <span
                               class="rcx-tag__inner"
@@ -1396,15 +1396,15 @@ exports[`renders WithVoiceCallExtension without crashing 1`] = `
                       class="rcx-box rcx-box--full rcx-css-1jagyun"
                     >
                       <div
-                        class="rcx-box rcx-box--full rcx-css-1po16l8"
+                        class="rcx-box rcx-box--full rcx-css-clshan"
                       >
                         Voice_call_extension
                       </div>
                       <div
-                        class="rcx-box rcx-box--full rcx-css-16e3mll rcx-css-6p9plk"
+                        class="rcx-box rcx-box--full rcx-css-16e3mll rcx-css-1uarkle"
                       >
                         <div
-                          class="rcx-box rcx-box--full rcx-css-1aewkgk"
+                          class="rcx-box rcx-box--full rcx-css-tm5a3s"
                         >
                           1234567890
                         </div>

@@ -25,7 +25,7 @@ import sharp from 'sharp';
 import type { WritableStreamBuffer } from 'stream-buffers';
 import streamBuffers from 'stream-buffers';
 
-import { mime } from '../../../../../app/utils/lib/mimeTypes';
+import { mime } from '../../../../../lib/mimeTypes';
 import { isRenderableImageType } from '../../../../../lib/renderableImageTypes';
 import { MultipartUploadHandler } from '../../../../api/lib/MultipartUploadHandler';
 import { settings } from '../../../../settings';

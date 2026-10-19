@@ -156,7 +156,7 @@ export const invokeTwoFactorModal = async (
 					isClosed = true;
 					imperativeModal.close();
 					if (!isResolved) {
-						Promise.all([import('../../../app/utils/lib/i18n'), import('../toast')]).then(([{ t }, { dispatchToastMessage }]) => {
+						Promise.all([import('../../../lib/i18n'), import('../toast')]).then(([{ t }, { dispatchToastMessage }]) => {
 							dispatchToastMessage({
 								type: 'error',
 								message: t('Two-factor_authentication_cancelled'),

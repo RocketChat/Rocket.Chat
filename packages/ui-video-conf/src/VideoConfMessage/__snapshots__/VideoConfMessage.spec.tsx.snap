@@ -105,7 +105,7 @@ exports[`renders CallEnded without crashing 1`] = `
                   class="rcx-box rcx-box--full rcx-css-127j9mz"
                 >
                   <div
-                    class="rcx-box rcx-box--full rcx-css-1gl6eu2"
+                    class="rcx-box rcx-box--full rcx-css-mfuwqv"
                   >
                     <i
                       aria-hidden="true"
@@ -115,7 +115,7 @@ exports[`renders CallEnded without crashing 1`] = `
                     </i>
                   </div>
                   <p
-                    class="rcx-box rcx-box--full rcx-css-hmgb4y"
+                    class="rcx-box rcx-box--full rcx-css-18sv1w5"
                   >
                     Call ended
                   </p>
@@ -155,7 +155,7 @@ exports[`renders CallEnded without crashing 1`] = `
                     </i>
                   </div>
                   <p
-                    class="rcx-box rcx-box--full rcx-css-weo5d9"
+                    class="rcx-box rcx-box--full rcx-css-zbgscs"
                   >
                     joined
                   </p>
@@ -275,7 +275,7 @@ exports[`renders CallEndedDM without crashing 1`] = `
                   class="rcx-box rcx-box--full rcx-css-127j9mz"
                 >
                   <div
-                    class="rcx-box rcx-box--full rcx-css-1gl6eu2"
+                    class="rcx-box rcx-box--full rcx-css-mfuwqv"
                   >
                     <i
                       aria-hidden="true"
@@ -285,7 +285,7 @@ exports[`renders CallEndedDM without crashing 1`] = `
                     </i>
                   </div>
                   <p
-                    class="rcx-box rcx-box--full rcx-css-hmgb4y"
+                    class="rcx-box rcx-box--full rcx-css-18sv1w5"
                   >
                     Call ended
                   </p>
@@ -325,7 +325,7 @@ exports[`renders CallEndedDM without crashing 1`] = `
                     </span>
                   </button>
                   <p
-                    class="rcx-box rcx-box--full rcx-css-weo5d9"
+                    class="rcx-box rcx-box--full rcx-css-zbgscs"
                   >
                     Call was not answered
                   </p>
@@ -445,7 +445,7 @@ exports[`renders CallOngoing without crashing 1`] = `
                   class="rcx-box rcx-box--full rcx-css-127j9mz"
                 >
                   <div
-                    class="rcx-box rcx-box--full rcx-css-ehyzbd"
+                    class="rcx-box rcx-box--full rcx-css-tdrehl"
                   >
                     <i
                       aria-hidden="true"
@@ -455,7 +455,7 @@ exports[`renders CallOngoing without crashing 1`] = `
                     </i>
                   </div>
                   <p
-                    class="rcx-box rcx-box--full rcx-css-hmgb4y"
+                    class="rcx-box rcx-box--full rcx-css-18sv1w5"
                   >
                     Call ongoing
                   </p>
@@ -505,7 +505,7 @@ exports[`renders CallOngoing without crashing 1`] = `
                     </i>
                   </div>
                   <p
-                    class="rcx-box rcx-box--full rcx-css-weo5d9"
+                    class="rcx-box rcx-box--full rcx-css-zbgscs"
                   >
                     joined
                   </p>
@@ -625,7 +625,7 @@ exports[`renders CallingDM without crashing 1`] = `
                   class="rcx-box rcx-box--full rcx-css-127j9mz"
                 >
                   <div
-                    class="rcx-box rcx-box--full rcx-css-1xqpvsb"
+                    class="rcx-box rcx-box--full rcx-css-c66to1"
                   >
                     <i
                       aria-hidden="true"
@@ -635,7 +635,7 @@ exports[`renders CallingDM without crashing 1`] = `
                     </i>
                   </div>
                   <p
-                    class="rcx-box rcx-box--full rcx-css-hmgb4y"
+                    class="rcx-box rcx-box--full rcx-css-18sv1w5"
                   >
                     Calling...
                   </p>
@@ -675,7 +675,7 @@ exports[`renders CallingDM without crashing 1`] = `
                     </span>
                   </button>
                   <p
-                    class="rcx-box rcx-box--full rcx-css-weo5d9"
+                    class="rcx-box rcx-box--full rcx-css-zbgscs"
                   >
                     Waiting for answer
                   </p>
@@ -916,7 +916,7 @@ exports[`renders NoAvatars without crashing 1`] = `
                   class="rcx-box rcx-box--full rcx-css-127j9mz"
                 >
                   <div
-                    class="rcx-box rcx-box--full rcx-css-ehyzbd"
+                    class="rcx-box rcx-box--full rcx-css-tdrehl"
                   >
                     <i
                       aria-hidden="true"
@@ -926,7 +926,7 @@ exports[`renders NoAvatars without crashing 1`] = `
                     </i>
                   </div>
                   <p
-                    class="rcx-box rcx-box--full rcx-css-hmgb4y"
+                    class="rcx-box rcx-box--full rcx-css-18sv1w5"
                   >
                     Call ongoing
                   </p>
@@ -976,7 +976,7 @@ exports[`renders NoAvatars without crashing 1`] = `
                     </i>
                   </div>
                   <p
-                    class="rcx-box rcx-box--full rcx-css-weo5d9"
+                    class="rcx-box rcx-box--full rcx-css-zbgscs"
                   >
                     10
                      joined

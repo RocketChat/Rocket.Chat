@@ -54,7 +54,7 @@ exports[`renders WithAutoComplete without crashing 1`] = `
               aria-describedby="react-aria-_r_0_-description react-aria-_r_0_-error react-aria-_r_0_-hint"
               aria-invalid="true"
               aria-labelledby="react-aria-_r_0_-label"
-              class="rcx-box rcx-box--full rcx-box--animated rcx-input-box--undecorated rcx-input-box rcx-css-trljwa rcx-css-rcil7k"
+              class="rcx-box rcx-box--full rcx-box--animated rcx-input-box--undecorated rcx-input-box rcx-css-i9v8z4 rcx-css-rcil7k"
               id="react-aria-_r_0_"
               placeholder="Search..."
               value=""
@@ -154,41 +154,41 @@ exports[`renders WithAutoCompleteMultiple without crashing 1`] = `
               aria-describedby="react-aria-_r_1_-description react-aria-_r_1_-error react-aria-_r_1_-hint"
               aria-invalid="true"
               aria-labelledby="react-aria-_r_1_-label"
-              class="rcx-box rcx-box--full rcx-box--animated rcx-input-box--undecorated rcx-input-box rcx-css-trljwa rcx-css-rcil7k"
+              class="rcx-box rcx-box--full rcx-box--animated rcx-input-box--undecorated rcx-input-box rcx-css-i9v8z4 rcx-css-rcil7k"
               id="react-aria-_r_1_"
               placeholder="Search..."
               value=""
             />
             <button
-              class="rcx-box rcx-chip rcx-css-trljwa"
+              class="rcx-box rcx-chip rcx-css-i9v8z4"
               type="button"
               value="1"
             >
               <span
-                class="rcx-box rcx-chip__text rcx-css-trljwa"
+                class="rcx-box rcx-chip__text rcx-css-i9v8z4"
               >
                 Option 1
               </span>
               <i
                 aria-hidden="true"
-                class="rcx-box rcx-box--full rcx-icon--name-cross rcx-icon rcx-css-trljwa rcx-css-1wv1vf9"
+                class="rcx-box rcx-box--full rcx-icon--name-cross rcx-icon rcx-css-i9v8z4 rcx-css-1wv1vf9"
               >
                 
               </i>
             </button>
             <button
-              class="rcx-box rcx-chip rcx-css-trljwa"
+              class="rcx-box rcx-chip rcx-css-i9v8z4"
               type="button"
               value="3"
             >
               <span
-                class="rcx-box rcx-chip__text rcx-css-trljwa"
+                class="rcx-box rcx-chip__text rcx-css-i9v8z4"
               >
                 Option 3
               </span>
               <i
                 aria-hidden="true"
-                class="rcx-box rcx-box--full rcx-icon--name-cross rcx-icon rcx-css-trljwa rcx-css-1wv1vf9"
+                class="rcx-box rcx-box--full rcx-icon--name-cross rcx-icon rcx-css-i9v8z4 rcx-css-1wv1vf9"
               >
                 
               </i>
@@ -464,41 +464,41 @@ exports[`renders WithMultiSelect without crashing 1`] = `
                 aria-haspopup="listbox"
                 aria-invalid="true"
                 aria-labelledby="react-aria-_r_4_-label"
-                class="rcx-box rcx-box--full rcx-input-box--undecorated rcx-select__focus rcx-css-trljwa rcx-css-l5gd0a"
+                class="rcx-box rcx-box--full rcx-input-box--undecorated rcx-select__focus rcx-css-i9v8z4 rcx-css-jzl7vl"
                 id="react-aria-_r_4_"
                 role="combobox"
                 type="button"
               />
               <button
-                class="rcx-box rcx-chip rcx-css-trljwa"
+                class="rcx-box rcx-chip rcx-css-i9v8z4"
                 tabindex="-1"
                 type="button"
               >
                 <span
-                  class="rcx-box rcx-chip__text rcx-css-trljwa"
+                  class="rcx-box rcx-chip__text rcx-css-i9v8z4"
                 >
                   item 1
                 </span>
                 <i
                   aria-hidden="true"
-                  class="rcx-box rcx-box--full rcx-icon--name-cross rcx-icon rcx-css-trljwa rcx-css-1wv1vf9"
+                  class="rcx-box rcx-box--full rcx-icon--name-cross rcx-icon rcx-css-i9v8z4 rcx-css-1wv1vf9"
                 >
                   
                 </i>
               </button>
               <button
-                class="rcx-box rcx-chip rcx-css-trljwa"
+                class="rcx-box rcx-chip rcx-css-i9v8z4"
                 tabindex="-1"
                 type="button"
               >
                 <span
-                  class="rcx-box rcx-chip__text rcx-css-trljwa"
+                  class="rcx-box rcx-chip__text rcx-css-i9v8z4"
                 >
                   item 3
                 </span>
                 <i
                   aria-hidden="true"
-                  class="rcx-box rcx-box--full rcx-icon--name-cross rcx-icon rcx-css-trljwa rcx-css-1wv1vf9"
+                  class="rcx-box rcx-box--full rcx-icon--name-cross rcx-icon rcx-css-i9v8z4 rcx-css-1wv1vf9"
                 >
                   
                 </i>
@@ -506,7 +506,7 @@ exports[`renders WithMultiSelect without crashing 1`] = `
             </div>
           </div>
           <div
-            class="rcx-box rcx-box--full rcx-select__addon rcx-css-x7bl3q rcx-css-1bprq55"
+            class="rcx-box rcx-box--full rcx-select__addon rcx-css-1jtklz9 rcx-css-1bprq55"
           >
             <i
               aria-hidden="true"
@@ -934,7 +934,7 @@ exports[`renders WithSelect without crashing 1`] = `
         class="rcx-box rcx-box--full rcx-field__row"
       >
         <div
-          class="rcx-box rcx-box--full rcx-css-1mbgoc8"
+          class="rcx-box rcx-box--full rcx-css-1ds37nf"
         >
           <div
             aria-hidden="true"
@@ -1007,7 +1007,7 @@ exports[`renders WithSelect without crashing 1`] = `
           aria-expanded="false"
           aria-haspopup="listbox"
           aria-labelledby="react-aria-_r_h_ react-aria-_r_9_-label"
-          class="rcx-box rcx-box--full rcx-box--animated rcx-select rcx-css-1vw6rc6"
+          class="rcx-box rcx-box--full rcx-box--animated rcx-select rcx-css-3ejkxj"
           type="button"
         >
           <span
@@ -1095,7 +1095,7 @@ exports[`renders WithSlider without crashing 1`] = `
       >
         <div
           aria-labelledby="react-aria-_r_i_-label"
-          class="rcx-css-146twpt"
+          class="rcx-css-1w00u9"
           id="react-aria-_r_j_"
           role="group"
         >
@@ -1114,11 +1114,11 @@ exports[`renders WithSlider without crashing 1`] = `
             </span>
           </label>
           <div
-            class="rcx-css-7w2yw5"
+            class="rcx-css-yf5z5b"
             style="position: relative;"
           >
             <div
-              class="rcx-css-5ps27r"
+              class="rcx-css-1e4hr11"
               style="position: absolute; left: 20%; transform: translate(-50%, -50%);"
             >
               <div
