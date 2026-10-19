@@ -3,57 +3,55 @@ import { License } from '@rocket.chat/license';
 import { Accounts } from 'meteor/accounts-base';
 
 import { callbacks } from '../../../server/lib/callbacks';
-import type { ICachedSettings } from '../../../server/settings/CachedSettings';
+import { settings } from '../../../server/settings';
 
-export async function configureLDAP(settings: ICachedSettings): Promise<void> {
-	// Register ldap login handler
-	Accounts.registerLoginHandler('ldap', async (loginRequest: Record<string, any>) => {
-		if (!loginRequest.ldap || !loginRequest.ldapOptions) {
-			return undefined;
-		}
+// Register ldap login handler
+Accounts.registerLoginHandler('ldap', async (loginRequest: Record<string, any>) => {
+	if (!loginRequest.ldap || !loginRequest.ldapOptions) {
+		return undefined;
+	}
 
-		// `LDAP_Enable` already falls back to `false` without the module, this only
-		// keeps the handler from running if the setting is read from another source
-		if (!License.hasModule('ldap-enterprise')) {
-			return undefined;
-		}
+	// `LDAP_Enable` is only forced to `false` after the async settings update runs, so this check
+	// covers logins during startup and right after a license is removed
+	if (!License.hasModule('ldap-enterprise')) {
+		return undefined;
+	}
 
-		return LDAP.loginRequest(loginRequest.username, loginRequest.ldapPass);
-	});
+	return LDAP.loginRequest(loginRequest.username, loginRequest.ldapPass);
+});
 
-	// Prevent password logins by LDAP users when LDAP is enabled
-	let ldapEnabled: boolean;
-	settings.watch('LDAP_Enable', (value) => {
-		if (ldapEnabled === value) {
-			return;
-		}
-		ldapEnabled = value as boolean;
+// Prevent password logins by LDAP users when LDAP is enabled
+let ldapEnabled: boolean;
+settings.watch('LDAP_Enable', (value) => {
+	if (ldapEnabled === value) {
+		return;
+	}
+	ldapEnabled = value as boolean;
 
-		if (!value) {
-			return callbacks.remove('beforeValidateLogin', 'validateLdapLoginFallback');
-		}
+	if (!value) {
+		return callbacks.remove('beforeValidateLogin', 'validateLdapLoginFallback');
+	}
 
-		callbacks.add(
-			'beforeValidateLogin',
-			(login: Record<string, any>) => {
-				if (!login.allowed) {
-					return login;
-				}
-
-				// The fallback setting should only block password logins, so users that have other login services can continue using them
-				if (login.type !== 'password') {
-					return login;
-				}
-
-				// LDAP users can still login locally when login fallback is enabled
-				if (login.user.services?.ldap?.id) {
-					login.allowed = settings.get<boolean>('LDAP_Login_Fallback') ?? false;
-				}
-
+	callbacks.add(
+		'beforeValidateLogin',
+		(login: Record<string, any>) => {
+			if (!login.allowed) {
 				return login;
-			},
-			callbacks.priority.MEDIUM,
-			'validateLdapLoginFallback',
-		);
-	});
-}
+			}
+
+			// The fallback setting should only block password logins, so users that have other login services can continue using them
+			if (login.type !== 'password') {
+				return login;
+			}
+
+			// LDAP users can still login locally when login fallback is enabled
+			if (login.user.services?.ldap?.id) {
+				login.allowed = settings.get<boolean>('LDAP_Login_Fallback') ?? false;
+			}
+
+			return login;
+		},
+		callbacks.priority.MEDIUM,
+		'validateLdapLoginFallback',
+	);
+});

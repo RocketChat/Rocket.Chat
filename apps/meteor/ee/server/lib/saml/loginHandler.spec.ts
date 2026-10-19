@@ -24,10 +24,12 @@ const samlUtilsMock = {
 	events: { emit: sinon.stub() },
 };
 
+const hasModule = sinon.stub().returns(true);
+
 const handler = sinon.stub();
-proxyquire.noCallThru().load('../../../../../ee/server/lib/saml/loginHandler', {
+proxyquire.noCallThru().load('./loginHandler', {
 	'@rocket.chat/license': {
-		License: { hasModule: () => true },
+		License: { hasModule },
 	},
 	'@rocket.chat/models': {
 		CredentialTokens: { removeById },
@@ -68,6 +70,15 @@ describe('SAML loginHandler', () => {
 		doesUserRequire2FA.reset();
 		doesUserRequire2FA.returns(false);
 		samlUtilsMock.serviceProviders = [{ provider: 'test-saml' }];
+		hasModule.reset();
+		hasModule.returns(true);
+	});
+
+	it('should return undefined without the saml-enterprise module', async () => {
+		hasModule.withArgs('saml-enterprise').returns(false);
+
+		expect(await handler({ saml: true, credentialToken: 'token' })).to.be.undefined;
+		expect(retrieveCredential.called).to.be.false;
 	});
 
 	it('should reject non-string credentialToken and never query the database (NoSQL injection prevention)', async () => {

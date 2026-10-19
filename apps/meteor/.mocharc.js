@@ -23,6 +23,7 @@ module.exports = {
 		'ee/server/lib/ldap/*.spec.ts',
 		'ee/server/lib/ldap/**/*.spec.ts',
 		'ee/server/lib/livekit/*.spec.ts',
+		'ee/server/lib/saml/**/*.spec.ts',
 		'ee/tests/**/*.tests.ts',
 		'ee/tests/**/*.spec.ts',
 		'tests/unit/app/**/*.spec.ts',

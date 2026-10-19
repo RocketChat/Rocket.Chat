@@ -1,4 +1,5 @@
 import type { ServerMethods } from '@rocket.chat/ddp-client';
+import { License } from '@rocket.chat/license';
 import { Users } from '@rocket.chat/models';
 import { Meteor } from 'meteor/meteor';
 
@@ -34,6 +35,10 @@ declare module '@rocket.chat/ddp-client' {
 
 Meteor.methods<ServerMethods>({
 	async samlLogout(provider: string) {
+		if (!License.hasModule('saml-enterprise')) {
+			throw new Meteor.Error('error-action-not-allowed', 'This is an enterprise feature', { method: 'samlLogout' });
+		}
+
 		const userId = Meteor.userId();
 		// Make sure the user is logged in before we initiate SAML Logout
 		if (!userId) {

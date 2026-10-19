@@ -9,16 +9,17 @@ import {
 } from '@rocket.chat/rest-typings';
 import { FetchError, serverFetch as fetch } from '@rocket.chat/server-fetch';
 
-import { parseIdpMetadata } from '../../../ee/server/lib/saml/lib/parsers/IdpMetadata';
-import { settings } from '../../settings';
-import type { ExtractRoutesFromAPI } from '../ApiClass';
-import { API } from '../api';
+import type { ExtractRoutesFromAPI } from '../../../server/api/ApiClass';
+import { API } from '../../../server/api/api';
+import { settings } from '../../../server/settings';
+import { parseIdpMetadata } from '../lib/saml/lib/parsers/IdpMetadata';
 
 const samlEndpoints = API.v1.post(
 	'saml.parseMetadata',
 	{
 		authRequired: true,
 		permissionsRequired: ['test-admin-options'],
+		license: ['saml-enterprise'],
 		body: isSamlParseMetadata,
 		response: {
 			200: validateSamlParseMetadataSuccessResponse,

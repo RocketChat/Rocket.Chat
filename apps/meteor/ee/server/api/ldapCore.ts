@@ -7,10 +7,10 @@ import {
 	validateForbiddenErrorResponse,
 } from '@rocket.chat/rest-typings';
 
-import { getLdapErrorReason } from '../lib/ldap/getLdapErrorReason';
+import { API } from '../../../server/api/api';
 import { SystemLogger } from '../../../server/lib/logger/system';
 import { settings } from '../../../server/settings';
-import { API } from '../../../server/api/api';
+import { getLdapErrorReason } from '../lib/ldap/getLdapErrorReason';
 
 const messageResponseSchema = {
 	type: 'object' as const,
