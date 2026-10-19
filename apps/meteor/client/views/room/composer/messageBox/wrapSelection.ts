@@ -15,6 +15,13 @@ const wrapSelectionPatterns: Record<string, string> = {
 	'˜': '~{{text}}~',
 };
 
+const deadKeyEquivalents: Record<string, string[]> = {
+	"'": ['´', '’', '‘'],
+	'"': ['¨', '”', '“'],
+	'`': ['ˋ'],
+	'~': ['˜'],
+};
+
 const once = (target: EventTarget, eventName: string, callback: (event: Event) => void) => {
 	const handleEvent = (e: Event) => {
 		callback(e);
@@ -40,7 +47,7 @@ const wrapSelectionWith = (event: InputEvent, chat: ChatAPI, target: WrapSelecti
 
 	const testSelection = target.getText().slice(selectionStart, selectionEnd);
 	// if the selection is the same of the data, return false
-	if (testSelection === event.data) {
+	if (testSelection === event.data || (event.data && deadKeyEquivalents[event.data]?.includes(testSelection))) {
 		return false;
 	}
 	if (event.data === composer.text) {
