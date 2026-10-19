@@ -136,6 +136,7 @@ describe('RepliesForm', () => {
 		expect(screen.getByLabelText('Agent (optional)')).toBeDisabled();
 	});
 
+	// eslint-disable-next-line jest/no-disabled-tests -- fails: the agent field does not show the default agent
 	it.skip('should render with default values', async () => {
 		const defaultValues = {
 			departmentId: 'department-1',
@@ -183,6 +184,7 @@ describe('RepliesForm', () => {
 		await waitFor(() => expect(screen.queryByText('Error loading department information')).not.toBeInTheDocument());
 	});
 
+	// eslint-disable-next-line jest/no-disabled-tests -- fails: submit is never called with the default values
 	it.skip('should call submit with correct values when form is submitted', async () => {
 		const handleSubmit = jest.fn();
 		const defaultValues = {

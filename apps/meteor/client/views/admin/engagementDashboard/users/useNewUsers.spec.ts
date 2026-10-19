@@ -69,9 +69,7 @@ it('should return utc time', async () => {
 	expect(result.current.data).toEqual(expectedResult);
 });
 
-// CI is currently running in UTC, so no local time is returned
-// TODO: find a way to simulate local time properly in tests
-it.skip('should return local time', async () => {
+it('should return local time', async () => {
 	const expectedResult = {
 		days: [
 			{

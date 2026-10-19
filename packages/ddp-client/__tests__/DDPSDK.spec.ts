@@ -228,7 +228,7 @@ it('should reconnect after a heartbeat timeout', async () => {
 	sdk.connection.close();
 });
 
-it.skip('should try to loginWithToken after reconnection', async () => {
+it('should try to loginWithToken after reconnection', async () => {
 	const sdk = DDPSDK.create('ws://localhost:1234');
 
 	await handleConnection(server, sdk.connection.connect());
@@ -301,6 +301,7 @@ describe('Method call and Disconnection cases', () => {
 		jest.useRealTimers();
 	});
 
+	// eslint-disable-next-line jest/no-disabled-tests -- times out: the call pending across the reconnection never resolves
 	it.skip('should handle properly if the message was sent before disconnection but got disconnected before receiving the response', async () => {
 		const sdk = DDPSDK.create('ws://localhost:1234');
 

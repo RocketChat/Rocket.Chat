@@ -38,6 +38,7 @@ it('should return utc time', async () => {
 
 // CI is currently running in UTC, so no local time is returned
 // TODO: find a way to simulate local time properly in tests
+// eslint-disable-next-line jest/no-disabled-tests -- expectations depend on the machine timezone
 it.skip('should return local time', async () => {
 	const receivedData = {
 		hours: [

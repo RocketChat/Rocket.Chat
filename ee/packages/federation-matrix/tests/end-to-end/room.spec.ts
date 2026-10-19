@@ -1903,6 +1903,7 @@ import { SynapseClient } from '../helper/synapse-client';
 			});
 		});
 
+		// eslint-disable-next-line jest/no-disabled-tests -- skipped since it was added; needs the federation e2e environment to re-enable
 		describe.skip('Synchronizing user names across federated servers', () => {
 			const ts = Date.now();
 
