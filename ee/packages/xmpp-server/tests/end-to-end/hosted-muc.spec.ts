@@ -394,6 +394,32 @@ describe('XMPP federation: rooms hosted by Rocket.Chat', () => {
 			await alice.waitFor(isRoomSubject({ roomJid: muc, subject: topic }), 'the new subject');
 		});
 
+		// Known defect: ../../docs/specs/hosted-muc.md#d5-a-rocketchat-member-takes-the-nick-of-an-xmpp-occupant
+		it.skip('never leaves an XMPP occupant unaware that a Rocket.Chat member took their nick (D5)', async () => {
+			const member = await createLocalUser(rc, 'nick');
+			const room = await createHostedRoom(rc, owner, { type: 'c', name: `xe2e-nick-${uniqueSuffix()}` });
+			const muc = mucJidOf(room);
+			// Refusing the nick up front settles the clash as well as telling her later does
+			try {
+				await alice.joinRoom(muc, member.username);
+			} catch (error) {
+				assert.ok(error instanceof StanzaError && error.condition === 'conflict', `unexpected join error: ${error}`);
+				return;
+			}
+			await waitForMember(owner, room, alice.bareJid);
+
+			const after = alice.cursor();
+			await inviteToRoom(owner, room, member.username);
+			const text = `after the clash ${uniqueSuffix()}`;
+			await sendMessage(owner, room._id, text);
+			await alice.waitFor(
+				(stanza) =>
+					isGroupchat({ roomJid: muc, body: text })(stanza) || isOccupantPresence(muc, member.username, { type: 'unavailable' })(stanza),
+				'the next message, or word that she was removed',
+				{ after },
+			);
+		});
+
 		// Known defect: ../../docs/specs/hosted-muc.md#d4-a-deleted-room-keeps-running-until-the-service-restarts
 		it.skip('closes the room when it is deleted in Rocket.Chat (D4)', async () => {
 			const room = await createHostedRoom(rc, owner, { type: 'c', name: `xe2e-deleted-${uniqueSuffix()}` });

@@ -174,12 +174,27 @@ from the registry: the fix must also send each occupant the unavailable presence
 `<destroy/>` (XEP-0045 §10.9), or their clients keep a dead room. Test: `hosted-muc.spec.ts`,
 "closes the room when it is deleted in Rocket.Chat".
 
+### D5 A Rocket.Chat member takes the nick of an XMPP occupant
+
+Rocket.Chat members occupy the room under their username (R2). When a Rocket.Chat user is
+added to a room where an XMPP occupant already holds that name as nick, the member replaces
+the occupant in the roster without a word: the XMPP user stops receiving the room's messages
+and presence, their own messages are dropped as coming from a non-occupant, and their client
+takes the newcomer's messages for reflections of its own. R5's conflict check only guards
+XMPP joins. Where: `MucRoom.addLocalOccupant`. How to settle the clash is Q3. Test:
+`hosted-muc.spec.ts`, "never leaves an XMPP occupant unaware that a Rocket.Chat member took
+their nick".
+
 ## Open questions
 
 - **Q1** Should a kick carry the reason given in Rocket.Chat? `MucRoom.kick` accepts one and
   ignores it.
 - **Q2** Should the room send history on join from Rocket.Chat's message history, or is that
   a job for MAM (pending triage)?
+- **Q3** How is a nick clash between an XMPP occupant and a Rocket.Chat member settled
+  (D5)? Either an XMPP join is refused with `conflict` under any Rocket.Chat username, which
+  costs a user lookup per join, or the occupant is removed with status 307 when the member
+  arrives.
 
 ## References
 
