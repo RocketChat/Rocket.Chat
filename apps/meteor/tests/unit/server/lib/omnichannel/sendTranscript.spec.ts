@@ -13,6 +13,9 @@ const modelsMock = {
 	Users: {
 		findOneById: sinon.stub(),
 	},
+	Uploads: {
+		findOneByIdAndRoomId: sinon.stub(),
+	},
 };
 
 const checkMock = sinon.stub();
@@ -49,6 +52,8 @@ const getTimezoneMock = sinon.stub();
 
 const mailerMock = sinon.stub();
 
+const getBufferMock = sinon.stub();
+
 const tStub = sinon.stub();
 
 const { sendTranscript } = p.noCallThru().load('../../../../../server/lib/omnichannel/sendTranscript', {
@@ -74,8 +79,7 @@ const { sendTranscript } = p.noCallThru().load('../../../../../server/lib/omnich
 	'../notifications/email/api': { send: mailerMock },
 	'../../settings': { settings: { get: settingsMock } },
 	'../utils/lib/getTimezone': { getTimezone: getTimezoneMock },
-	// TODO: add tests for file handling on transcripts
-	'../media/file-upload': { FileUpload: {} },
+	'../media/file-upload': { FileUpload: { getBuffer: getBufferMock } },
 });
 
 describe('Send transcript', () => {
@@ -85,9 +89,95 @@ describe('Send transcript', () => {
 		modelsMock.Messages.findLivechatClosingMessage.reset();
 		modelsMock.Messages.findVisibleByRoomIdNotContainingTypesBeforeTs.reset();
 		modelsMock.Users.findOneById.reset();
+		modelsMock.Uploads.findOneByIdAndRoomId.reset();
+		getBufferMock.reset();
 		mailerMock.reset();
 		tStub.reset();
 	});
+	describe('file attachments', () => {
+		const params = { rid: 'room-id', token: 'visitor-token', email: 'visitor@example.com' };
+		const room = {
+			_id: params.rid,
+			t: 'l',
+			v: { _id: 'visitor-id', token: params.token },
+			servedBy: { _id: 'agent-id' },
+		};
+		const createMessage = (fileId: unknown, authorId = room.v._id) => ({
+			_id: 'message-id',
+			rid: room._id,
+			u: { _id: authorId, username: authorId },
+			msg: '',
+			ts: new Date('2026-01-01T12:00:00Z'),
+			files: [{ _id: fileId, name: 'image.png' }],
+			attachments: [{ type: 'file', title: 'image.png', image_url: '/file-upload/image.png', image_type: 'image/png' }],
+		});
+		const uploads: { _id: string; rid?: string; userId?: string; visitorToken?: string }[] = [];
+
+		beforeEach(() => {
+			uploads.length = 0;
+			modelsMock.LivechatRooms.findOneById.resolves(room);
+			modelsMock.Users.findOneById.resolves({ _id: 'rocket.cat', username: 'rocket.cat' });
+			modelsMock.Uploads.findOneByIdAndRoomId.callsFake(
+				async (fileId, rid) => uploads.find((upload) => upload._id === fileId && upload.rid === rid) ?? null,
+			);
+			getBufferMock.resolves(Buffer.from('file contents'));
+			tStub.callsFake((key) => key);
+			getTimezoneMock.returns('UTC');
+		});
+
+		for (const fileId of [{ $gt: '' }, { $ne: null }, { $regex: '.*' }, null, 42]) {
+			it(`should skip stored non-string file ID ${JSON.stringify(fileId)} without querying uploads`, async () => {
+				modelsMock.Messages.findVisibleByRoomIdNotContainingTypesBeforeTs.returns([createMessage(fileId)]);
+
+				await sendTranscript(params);
+
+				expect(modelsMock.Uploads.findOneByIdAndRoomId.called).to.be.false;
+				expect(getBufferMock.called).to.be.false;
+				expect(mailerMock.calledOnce).to.be.true;
+				expect(mailerMock.firstCall.args[0].html).to.include('This_attachment_is_not_supported');
+				expect(mailerMock.firstCall.args[0].html).not.to.include('base64,');
+			});
+		}
+
+		for (const rid of ['private-room-id', undefined]) {
+			it(`should not read or email an upload with room ID ${rid}`, async () => {
+				uploads.push({ _id: 'private-file-id', rid });
+				modelsMock.Messages.findVisibleByRoomIdNotContainingTypesBeforeTs.returns([createMessage('private-file-id')]);
+
+				await sendTranscript(params);
+
+				expect(getBufferMock.called).to.be.false;
+				expect(mailerMock.calledOnce).to.be.true;
+				expect(mailerMock.firstCall.args[0].html).to.include('This_attachment_is_not_supported');
+				expect(mailerMock.firstCall.args[0].html).not.to.include('base64,');
+			});
+		}
+
+		it('should include visitor and agent images from the room before and after an agent transfer', async () => {
+			const visitorUpload = { _id: 'visitor-file-id', rid: room._id, visitorToken: params.token };
+			const agentUpload = { _id: 'agent-file-id', rid: room._id, userId: 'agent-id' };
+			uploads.push(visitorUpload, agentUpload);
+			modelsMock.Messages.findVisibleByRoomIdNotContainingTypesBeforeTs.returns([
+				createMessage(visitorUpload._id),
+				createMessage(agentUpload._id, agentUpload.userId),
+			]);
+			getBufferMock.withArgs(visitorUpload).resolves(Buffer.from('visitor image'));
+			getBufferMock.withArgs(agentUpload).resolves(Buffer.from('agent image'));
+
+			await sendTranscript(params);
+			modelsMock.LivechatRooms.findOneById.resolves({ ...room, servedBy: { _id: 'new-agent-id' } });
+			await sendTranscript(params);
+
+			expect(getBufferMock.callCount).to.equal(4);
+			expect(mailerMock.calledTwice).to.be.true;
+			for (const call of mailerMock.getCalls()) {
+				expect(call.args[0].html).to.include(`data:image/png;base64,${Buffer.from('visitor image').toString('base64')}`);
+				expect(call.args[0].html).to.include(`data:image/png;base64,${Buffer.from('agent image').toString('base64')}`);
+				expect(call.args[0].html).not.to.include('This_attachment_is_not_supported');
+			}
+		});
+	});
+
 	it('should throw error when rid or email are invalid params', async () => {
 		checkMock.throws(new Error('Invalid params'));
 		await expect(sendTranscript({})).to.be.rejectedWith(Error);

@@ -102,7 +102,7 @@ export async function createDirectMessage(
 		});
 	}
 
-	if (excludeSelf && (await hasPermissionAsync(userId, 'view-room-administration'))) {
+	if (excludeSelf && (await hasPermissionAsync(userId, 'create-d-other-users'))) {
 		options.subscriptionExtra = { open: true };
 	}
 
