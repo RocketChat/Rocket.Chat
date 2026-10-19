@@ -104,6 +104,15 @@ describe('StanzaParser', () => {
 		expect(events.some((e) => e.type === 'error')).toBe(true);
 	});
 
+	it('rejects an oversized stanza that arrives in the same read as the stream header (R7)', () => {
+		const parser = new StanzaParser({ maxStanzaSize: 256 });
+		const events = collect(parser);
+
+		parser.write(`${STREAM_HEADER}<message><body>${'x'.repeat(300)}</body></message>`);
+
+		expect(events.map((e) => e.type)).toEqual(['error']);
+	});
+
 	it('rejects excessive nesting depth', () => {
 		const parser = new StanzaParser();
 		const events = collect(parser);

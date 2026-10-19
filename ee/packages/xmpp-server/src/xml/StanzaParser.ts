@@ -147,11 +147,10 @@ export class StanzaParser extends Emitter<StanzaParserEvents> {
 		}
 		this.lastChar = text.charAt(text.length - 1);
 
-		if (this.depth >= 1) {
-			this.stanzaBytes += Buffer.byteLength(toParse);
-			if (this.stanzaBytes > this.maxStanzaSize) {
-				return this.fail(new Error('Stanza size limit exceeded'));
-			}
+		// Counted per read, before parsing: the header and the first stanza can share one
+		this.stanzaBytes += Buffer.byteLength(toParse);
+		if (this.stanzaBytes > this.maxStanzaSize) {
+			return this.fail(new Error('Stanza size limit exceeded'));
 		}
 
 		try {
