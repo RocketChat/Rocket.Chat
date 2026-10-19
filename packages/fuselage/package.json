@@ -66,6 +66,7 @@
 		"@storybook/addon-styling-webpack": "~2.0.0",
 		"@storybook/addon-webpack5-compiler-swc": "~4.0.3",
 		"@storybook/react-webpack5": "^9.1.21",
+		"@tamagui/web": "~3.0.18",
 		"@testing-library/dom": "~10.4.2",
 		"@testing-library/react": "~16.3.3",
 		"@testing-library/user-event": "~14.6.7",

@@ -1,45 +1,94 @@
-import type { ReactNode } from 'react';
+import { styled, View, type GetProps } from '@tamagui/web';
+import { createElement, type ReactNode } from 'react';
 
-import type { ElementProps } from '../../types/ElementProps';
-import { Box } from '../Box';
+import { strokeColors } from '../../Theme';
+import { prependClassName } from '../../helpers/prependClassName';
+import { prependRcxClassNames } from '../../helpers/prependRcxClassNames';
+import { toCSSValue } from '../../helpers/toCSSValue';
+import { useArrayLikeClassNameProp } from '../../hooks/useArrayLikeClassNameProp';
+import { borderWidth, size, spacing } from '../../styleTokens';
+import { Box, type BoxProps } from '../Box';
+import { useStylingProps } from '../Box/useStylingProps';
+import { withFuselageProvider } from '../FuselageProvider/FuselageProvider';
 
-export type DividerProps = ElementProps<HTMLElement> & {
-	/** Colors the rule. Ignored when the divider has `children`. */
-	variation?: 'danger' | 'light';
-	/** Labels the divider, which then renders as a horizontal separator; `vertical`, `variation`, `flush`, `small` and `stretch` do not apply. */
+const dividerSize = toCSSValue('--rcx-divider-size', borderWidth('default')!);
+const dividerColor = toCSSValue('--rcx-divider-color', strokeColors['stroke-extra-light']);
+
+const DividerLine = styled(View, {
+	render: 'hr',
+	marginBlock: spacing('x8'),
+	marginInline: 0,
+	borderWidth: 0,
+	borderTopWidth: dividerSize,
+	borderStyle: 'solid',
+	borderColor: dividerColor,
+
+	variants: {
+		vertical: {
+			true: {
+				width: 0,
+				height: size('x20'),
+				marginBlock: 0,
+				marginInline: spacing('x8'),
+				borderTopWidth: 0,
+				borderLeftWidth: dividerSize,
+			},
+		},
+		danger: {
+			true: {
+				borderColor: String(strokeColors['stroke-error']),
+			},
+		},
+	} as const,
+});
+
+const DividerBar = styled(View, {
+	flexGrow: 1,
+	borderWidth: dividerSize,
+	borderStyle: 'solid',
+	borderColor: dividerColor,
+});
+
+const DividerWrapper = styled(View, {
+	marginBlock: spacing('x8'),
+	paddingInline: spacing('x8'),
+});
+
+export type DividerProps = BoxProps & {
+	variation?: 'danger';
 	children?: ReactNode;
 	vertical?: boolean;
-	/** Removes the divider's own margin, leaving the spacing to its container. */
-	flush?: boolean;
-	/** Uses a 4px inline margin on a vertical divider instead of 8px. */
-	small?: boolean;
-	/** Makes a vertical divider as tall as its container instead of 20px. */
-	stretch?: boolean;
 };
 
-const Divider = ({ variation, children, vertical, flush, small, stretch, ...props }: DividerProps) => {
-	if (!children) {
-		return (
-			<Box
-				is='hr'
-				rcx-divider
-				rcx-divider--vertical={vertical}
-				rcx-divider--small={vertical && small}
-				rcx-divider--stretch={vertical && stretch}
-				rcx-divider--flush={flush}
-				rcx-divider--danger={variation === 'danger'}
-				rcx-divider--light={variation === 'light'}
-				{...props}
-			/>
-		);
-	}
+const PlainDivider = ({ variation, vertical, ...props }: Omit<DividerProps, 'children'>) => {
+	const { is = 'hr', ...lineProps } = useStylingProps(prependRcxClassNames(useArrayLikeClassNameProp(props)));
+	lineProps.className = prependClassName(
+		lineProps.className,
+		['rcx-divider', vertical && 'rcx-divider--vertical', variation === 'danger' && 'rcx-divider--danger'].filter(Boolean).join(' '),
+	);
+
 	return (
-		<Box rcx-message-divider rcx-divider--labelled role='separator' {...props}>
-			<div className='rcx-divider__bar' />
-			<div className='rcx-divider__wrapper'>{children}</div>
-			<div className='rcx-divider__bar' />
+		<DividerLine
+			render={typeof is === 'string' ? is : (renderProps: Record<string, unknown>) => createElement(is, renderProps)}
+			vertical={vertical}
+			danger={variation === 'danger'}
+			{...(lineProps as GetProps<typeof DividerLine>)}
+		/>
+	);
+};
+
+const Divider = ({ variation, children, vertical, ...props }: DividerProps) => {
+	if (!children) {
+		return <PlainDivider variation={variation} vertical={vertical} {...props} />;
+	}
+
+	return (
+		<Box rcx-message-divider role='separator' {...props}>
+			<DividerBar className='rcx-divider__bar' />
+			<DividerWrapper className='rcx-divider__wrapper'>{children}</DividerWrapper>
+			<DividerBar className='rcx-divider__bar' />
 		</Box>
 	);
 };
 
-export default Divider;
+export default withFuselageProvider(Divider);

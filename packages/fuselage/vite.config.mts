@@ -62,6 +62,29 @@ const stripViteHashMarker = (): Plugin => ({
 	},
 });
 
+/**
+ * `@tamagui/web` is bundled and reads its settings from `process.env` at
+ * runtime, which consumers' bundlers don't define. Pinning them here also puts
+ * every Tamagui rule in the `fuselage` cascade layer, below the unlayered
+ * stylesheets -- `fuselage.css`, css-in-js, app and admin custom CSS -- that
+ * used to override component styles by source order.
+ */
+const pinTamaguiEnv = (): Plugin => ({
+	name: 'fuselage-pin-tamagui-env',
+	transform(code, id) {
+		if (!id.includes('/node_modules/@tamagui/')) {
+			return null;
+		}
+
+		return {
+			code: code.replace(/process\.env\.(?!NODE_ENV\b)(\w+)/g, (_match, name: string) =>
+				name === 'TAMAGUI_CSS_LAYER' ? '"fuselage"' : 'undefined',
+			),
+			map: null,
+		};
+	},
+});
+
 const external = [...Object.keys(pkg.dependencies ?? {}), ...Object.keys(pkg.peerDependencies ?? {})].map(
 	(dep) => new RegExp(`^${dep}(/.+)?$`),
 );
@@ -70,7 +93,10 @@ export default defineConfig(({ mode }) => {
 	const production = mode === 'production';
 
 	return {
-		plugins: [stripViteHashMarker()],
+		plugins: [pinTamaguiEnv(), stripViteHashMarker()],
+		// `index.js` only loads the production bundle under `NODE_ENV=production`,
+		// so pinning it drops the development-only branches from that bundle.
+		define: production ? { 'process.env.NODE_ENV': JSON.stringify('production') } : {},
 		// Without this the emitted url is root-absolute (`/fonts/...`), which only
 		// resolves for consumers serving the stylesheet from the domain root.
 		base: './',
