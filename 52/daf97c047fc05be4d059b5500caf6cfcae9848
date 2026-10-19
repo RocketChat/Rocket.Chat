@@ -1,0 +1,29 @@
+apps/meteor/server/api/v1/users.ts
+  s_fa071eba6d901d::t_bf14de43bdb427 1616-1618
+packages/i18n/src/locales/en.i18n.json
+  s_fa071eba6d901d::t_ec65fb9b37eefd 6922
+apps/meteor/client/components/TwoFactorModal/TwoFactorEmailModal.spec.tsx
+  s_fa071eba6d901d::t_9600b6b8053698 7-23,25,27,29-30
+apps/meteor/server/api/v1/twoFactorChallenges.ts
+  s_fa071eba6d901d::t_bf14de43bdb427 45-47
+apps/meteor/tests/end-to-end/api/users.ts
+  s_fa071eba6d901d::t_9600b6b8053698 6667-6707
+apps/meteor/client/components/TwoFactorModal/TwoFactorEmailModal.tsx
+  s_fa071eba6d901d::t_bf14de43bdb427 4,32-37,75,78
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.2",
+  "base_commit_sha": "52daf97c047fc05be4d059b5500caf6cfcae9848",
+  "prompts": {},
+  "sessions": {
+    "s_fa071eba6d901d": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "26a82a4b-8d4e-48c9-97a7-fb8623a6de49",
+        "model": "claude-opus-5-5"
+      },
+      "human_author": "Ricardo Garim <rswarovsky@gmail.com>"
+    }
+  }
+}
