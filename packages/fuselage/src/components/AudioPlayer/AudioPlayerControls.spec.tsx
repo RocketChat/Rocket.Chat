@@ -1,9 +1,13 @@
 import { screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
+import { createRef } from 'react';
 
 import AudioPlayer from './AudioPlayer';
 import AudioPlayerControls, { getMaskTime } from './AudioPlayerControls';
+import { withResizeObserverMock } from '../../../mocks/withResizeObserverMock';
 import { render } from '../../testing';
+
+withResizeObserverMock();
 
 describe('AudioPlayerControls', () => {
 	describe('getMaskTime', () => {
@@ -108,13 +112,15 @@ describe('AudioPlayerControls', () => {
 
 	describe('AudioPlayer speed cycle integration', () => {
 		it('renders AudioPlayer with initial 1x speed and changes rate on click', async () => {
-			render(<AudioPlayer src='https://example.com/audio.mp3' />);
+			const audioRef = createRef<HTMLAudioElement>();
+			render(<AudioPlayer ref={audioRef} src='https://example.com/audio.mp3' />);
 
 			const speedButton = screen.getByRole('button', { name: /change playback speed/i });
 			expect(speedButton).toHaveTextContent('1x');
+			expect(audioRef.current?.playbackRate).toBe(1);
 
 			await userEvent.click(speedButton);
-			expect(speedButton).toBeInTheDocument();
+			expect(audioRef.current?.playbackRate).toBe(1.25);
 		});
 	});
 });
