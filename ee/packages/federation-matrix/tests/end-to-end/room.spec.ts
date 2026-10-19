@@ -1,3 +1,4 @@
+/* eslint-disable jest/no-standalone-expect -- setup hooks assert their fixtures so a broken setup fails the suite early */
 import type { IMessage, IUser } from '@rocket.chat/core-typings';
 import type { Room } from 'matrix-js-sdk';
 import { EventTimeline } from 'matrix-js-sdk';
