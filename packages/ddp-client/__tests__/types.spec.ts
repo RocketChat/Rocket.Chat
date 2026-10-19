@@ -8,6 +8,8 @@ const typeAssertions = (sdk: DDPSDK) => {
 	const untyped: Promise<any> = sdk.client.callAsync('not-a-typed-method', 1, 2);
 	// @ts-expect-error checkRegistrationSecretURL takes a string hash
 	const wrongParams = sdk.client.callAsync('checkRegistrationSecretURL', 123);
+	// @ts-expect-error sdk.call is typed like callAsync
+	const wrongCall: Promise<number> = sdk.call('checkRegistrationSecretURL', 'hash');
 
 	const received: [string, boolean][] = [];
 	sdk.stream('notify-room', 'rid/typing', (username, typing) => {
@@ -16,7 +18,7 @@ const typeAssertions = (sdk: DDPSDK) => {
 		received.push([typing, username]);
 	});
 
-	return [number, boolean, untyped, wrongParams, received];
+	return [number, boolean, untyped, wrongParams, wrongCall, received];
 };
 
 it('keeps the type assertions in the typecheck', () => {

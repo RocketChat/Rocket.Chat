@@ -11,6 +11,7 @@ import type { ClientStream } from './types/ClientStream';
 import type { OutgoingPayload } from './types/OutgoingPayload';
 import type { SDK } from './types/SDK';
 import type { Subscription } from './types/Subscription';
+import type { ServerMethodName, ServerMethodParameters, ServerMethodReturn } from './types/methods';
 import type { ChangedPayload, PublicationPayloads } from './types/publicationPayloads';
 import type { StreamKeys, StreamNames, StreamerCallbackArgs } from './types/streams';
 
@@ -70,8 +71,27 @@ export class DDPSDK implements SDK {
 		readonly rest: RestClient,
 	) {}
 
+	call<MethodName extends ServerMethodName>(
+		method: MethodName,
+		...params: ServerMethodParameters<MethodName>
+	): Promise<ServerMethodReturn<MethodName>> & { id: string };
+
+	call<MethodName extends string>(
+		method: MethodName extends ServerMethodName ? never : MethodName,
+		...params: unknown[]
+	): Promise<any> & { id: string };
+
 	call(method: string, ...params: unknown[]) {
 		return this.client.callAsync(method, ...params);
+	}
+
+	/** Emits an event on a stream that accepts client events, such as `notify-room` typing activity. */
+	publish<N extends StreamNames, K extends StreamKeys<N>>(name: N, key: K, ...args: StreamerCallbackArgs<N, K>): Promise<unknown>;
+
+	publish(name: string, key: string, ...args: unknown[]): Promise<unknown>;
+
+	publish(name: string, key: string, ...args: unknown[]): Promise<unknown> {
+		return this.client.callAsync(`stream-${name}`, key, ...args);
 	}
 
 	stream<N extends StreamNames, K extends StreamKeys<N>>(

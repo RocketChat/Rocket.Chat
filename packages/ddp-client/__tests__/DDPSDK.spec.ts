@@ -349,6 +349,22 @@ it('should build instances of the subclass it is called on, with the subclass de
 	expect((livechat.connection as ConnectionImpl).retryOptions).toMatchObject({ retryCount: 3, retryTime: 10000 });
 });
 
+it('should publish an event on a stream', async () => {
+	const sdk = DDPSDK.create('ws://localhost:1234');
+	await handleConnection(server, sdk.connection.connect());
+
+	const [result] = await handleMethod(
+		server,
+		'stream-notify-room',
+		['rid/user-activity', 'alice', ['user-typing']],
+		'true',
+		sdk.publish('notify-room', 'rid/user-activity', 'alice', ['user-typing']),
+	);
+
+	expect(result).toBe(true);
+	sdk.connection.close();
+});
+
 it('should stop the heartbeat when the connection is closed', async () => {
 	const sdk = DDPSDK.create('ws://localhost:1234');
 
