@@ -1,6 +1,10 @@
+import type { GetProps } from '@tamagui/web';
 import type { AllHTMLAttributes, CSSProperties, ReactNode } from 'react';
 
-import { Box, type BoxProps } from '../Box';
+import { useTamaguiBoxProps } from '../../hooks/useTamaguiBoxProps';
+import type { BoxProps } from '../Box';
+import { CardText } from './CardFrames';
+import { withFuselageProvider } from '../FuselageProvider/FuselageProvider';
 
 export type CardBodyProps = {
 	flexDirection?: CSSProperties['flexDirection'];
@@ -8,10 +12,18 @@ export type CardBodyProps = {
 	children: ReactNode;
 } & Omit<AllHTMLAttributes<HTMLElement>, 'is'>;
 
-const CardBody = ({ children, flexDirection = 'row', height, ...props }: CardBodyProps) => (
-	<Box fontScale='p2m' display='flex' flexDirection={flexDirection} flexGrow={1} height={height} rcx-card__body {...props}>
-		{children}
-	</Box>
-);
+const CardBody = ({ children, flexDirection = 'row', height, ...props }: CardBodyProps) => {
+	const bodyProps = useTamaguiBoxProps({
+		'fontScale': 'p2m',
+		'display': 'flex',
+		flexDirection,
+		'flexGrow': 1,
+		height,
+		'rcx-card__body': true,
+		...props,
+	});
 
-export default CardBody;
+	return <CardText {...(bodyProps as GetProps<typeof CardText>)}>{children}</CardText>;
+};
+
+export default withFuselageProvider(CardBody);
