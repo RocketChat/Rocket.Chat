@@ -7,7 +7,7 @@ const warned = new Set<LicenseModule>();
 
 // Checked on login instead of on startup so the license is already loaded and
 // workspaces that do have the module never see the warning.
-export function warnUnlicensedAuthService(service: 'LDAP' | 'SAML' | 'Custom OAuth', module: LicenseModule): void {
+export function warnUnlicensedAuthService(service: 'LDAP' | 'SAML', module: LicenseModule): void {
 	if (warned.has(module) || License.hasModule(module)) {
 		return;
 	}
