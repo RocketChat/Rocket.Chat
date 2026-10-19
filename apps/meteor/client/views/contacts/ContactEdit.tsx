@@ -16,6 +16,7 @@ import { useId } from 'react';
 import { useFieldArray, useForm } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 
+import { isContactNotFoundError } from './lib/isContactNotFoundError';
 import { getErrorMessage } from '../../lib/errorHandling';
 import { contactsQueryKeys } from '../../lib/queryKeys';
 
@@ -103,7 +104,18 @@ const ContactEdit = ({ contact, onSaved, onClose }: ContactEditProps) => {
 
 			onSaved(saved);
 		},
-		onError: (error) => dispatchToastMessage({ type: 'error', message: getErrorMessage(error, 'Failed_to_save_settings') }),
+		onError: async (error) => {
+			if (!isContactNotFoundError(error)) {
+				dispatchToastMessage({ type: 'error', message: getErrorMessage(error, 'Failed_to_save_settings') });
+				return;
+			}
+
+			dispatchToastMessage({ type: 'error', message: t('Contact_not_found') });
+
+			onClose();
+
+			await queryClient.invalidateQueries({ queryKey: contactsQueryKeys.all });
+		},
 	});
 
 	return (
