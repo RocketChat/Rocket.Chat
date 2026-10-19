@@ -8,7 +8,7 @@ import { DDPSDK } from '../src/DDPSDK';
 
 (global as any).WebSocket = (global as any).WebSocket || WebSocket;
 
-export let server: WS;
+let server: WS;
 
 const callXTimes = <F extends (...args: any) => any>(fn: F, times: number): F => {
 	return (async (...args) => {

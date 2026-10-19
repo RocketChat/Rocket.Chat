@@ -18,7 +18,7 @@ const template1 = createFakeOutboundTemplate({
 	components: [component.body],
 });
 
-export const template2 = createFakeOutboundTemplate({
+const template2 = createFakeOutboundTemplate({
 	id: 'template-2',
 	name: 'Template Two',
 	components: [component.header, component.body],
