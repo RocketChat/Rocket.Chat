@@ -6,23 +6,11 @@
 @use '../../styles/functions.scss' as *;
 @use '../../styles/mixins/link.scss' as *;
 @use './variables.scss' as *;
-@use './SidebarFooter/SidebarFooter.styles.scss';
 @use './SidebarItem/SidebarItem.styles.scss';
-@use './SidebarMedia/SidebarMedia.styles.scss';
 
 $sidebar-color-stroke-extra-light: theme('sidebar-color-stroke-extra-light', colors.stroke(light));
 
 .rcx-sidebar {
-	position: relative;
-
-	display: flex;
-	flex-direction: column;
-
-	height: lengths.size(full);
-
-	color: $sidebar-color-font-default;
-	background-color: $sidebar-color-surface-default;
-
 	&--divider {
 		border-color: $sidebar-color-stroke-extra-light;
 
@@ -31,38 +19,7 @@ $sidebar-color-stroke-extra-light: theme('sidebar-color-stroke-extra-light', col
 		}
 	}
 
-	&-section {
-		display: flex;
-		align-items: center;
-
-		height: lengths.size(44);
-
-		padding-inline: lengths.padding(16);
-
-		gap: lengths.padding(8);
-	}
-
-	&-accordion {
-		display: flex;
-		overflow: hidden;
-		flex-flow: column nowrap;
-		justify-content: stretch;
-		flex: 0 1 auto;
-
-		height: lengths.size(full);
-
-		&__wrapper {
-			display: flex;
-			overflow: scroll;
-			flex-direction: column;
-		}
-	}
-
-	&-collapse-group,
-	&-accordion-item {
-		display: flex;
-		flex-flow: column nowrap;
-
+	&-collapse-group {
 		&__bar:not(.rcx-item-group-header) {
 			display: flex;
 			flex-flow: row nowrap;
@@ -76,28 +33,6 @@ $sidebar-color-stroke-extra-light: theme('sidebar-color-stroke-extra-light', col
 
 			background-color: $sidebar-color-surface-default;
 			column-gap: lengths.padding(4);
-		}
-
-		&__heading {
-			display: flex;
-			align-items: center;
-
-			flex: 1 1 0;
-
-			min-width: 0;
-
-			column-gap: lengths.padding(4);
-		}
-
-		&__title {
-			flex: 0 1 auto;
-
-			margin: lengths.margin(none);
-
-			white-space: nowrap;
-
-			@include use-text-ellipsis;
-			@include use-font-scale(c1);
 		}
 
 		&__menu-wrapper:not(.rcx-item__actions) {
@@ -142,9 +77,7 @@ $sidebar-color-stroke-extra-light: theme('sidebar-color-stroke-extra-light', col
 				padding-block: lengths.padding(4) lengths.padding(8);
 			}
 		}
-	}
 
-	&-collapse-group {
 		&__bar {
 			color: colors.font(secondary-info);
 
@@ -192,58 +125,27 @@ $sidebar-color-stroke-extra-light: theme('sidebar-color-stroke-extra-light', col
 		}
 	}
 
-	&-accordion-item {
-		flex: 0 1 0;
+	&-accordion-item__bar {
+		&[tabindex] {
+			@include clickable;
+			@include focus-state($shadow: false);
 
-		border: 2px solid transparent;
-		border-bottom: lengths.border-width(default) solid $sidebar-accordion-border-color;
-
-		&__bar {
-			position: sticky;
-
-			z-index: 1;
-			top: 0;
-
-			padding: lengths.padding(12) lengths.padding(16) lengths.padding(12) lengths.padding(none);
-
-			color: colors.font(default);
-
-			border-radius: lengths.border-radius(small);
-
-			background-color: colors.surface(sidebar);
-
-			&[tabindex] {
-				@include clickable;
-				@include focus-state($shadow: false);
-
-				&.hover,
-				&:hover {
-					background-color: colors.surface(tint);
-				}
-			}
-
-			&--disabled {
-				cursor: not-allowed;
-
-				color: colors.font(disabled);
-				background-color: colors.surface(disabled);
-			}
-
-			.rcx-sidebar-accordion-item__chevron {
-				visibility: hidden;
-			}
-
-			&:focus-visible,
 			&.hover,
 			&:hover {
-				.rcx-sidebar-accordion-item__chevron {
-					visibility: visible;
-				}
+				background-color: colors.surface(tint);
 			}
 		}
 
-		&__title {
-			@include use-font-scale(h5);
+		.rcx-sidebar-accordion-item__chevron {
+			visibility: hidden;
+		}
+
+		&:focus-visible,
+		&.hover,
+		&:hover {
+			.rcx-sidebar-accordion-item__chevron {
+				visibility: visible;
+			}
 		}
 	}
 
@@ -251,77 +153,17 @@ $sidebar-color-stroke-extra-light: theme('sidebar-color-stroke-extra-light', col
 		@include use-link-colors($color: $sidebar-link-color);
 	}
 
-	&-banner {
-		display: flex;
-		justify-content: space-between;
-		align-items: center;
-
-		padding: lengths.padding(16);
-
-		color: $sidebar-banner-color-default;
-		border-bottom: lengths.border-width(default) solid $sidebar-accordion-border-color;
-		background-color: $sidebar-banner-background-default;
-		gap: lengths.padding(12);
-
-		&__addon {
-			display: flex;
-			align-items: center;
+	&--collapsed:not(:hover) {
+		.rcx-sidebar-item.rcx-sidebar-link > .rcx-sidebar-item__title,
+		.rcx-sidebar-banner__content {
+			display: none;
 		}
 
-		&__title {
-			margin: 0;
-			padding: 0;
+		.rcx-sidebar-media__title,
+		.rcx-sidebar-footer {
+			visibility: hidden;
 
-			@include use-font-scale(h5);
-		}
-
-		&__link {
-			@include use-font-scale(p2m);
-			@include clickable;
-
-			display: inline-block;
-
-			text-decoration: underline;
-		}
-
-		&--info {
-			color: $sidebar-banner-color-info;
-			background-color: $sidebar-banner-background-info;
-		}
-
-		&--success {
-			color: $sidebar-banner-color-success;
-			background-color: $sidebar-banner-background-success;
-		}
-
-		&--warning {
-			color: $sidebar-banner-color-warning;
-			background-color: $sidebar-banner-background-warning;
-		}
-
-		&--danger {
-			color: $sidebar-banner-color-danger;
-			background-color: $sidebar-banner-background-danger;
-		}
-	}
-
-	&--collapsed {
-		overflow: hidden;
-
-		width: lengths.size(48);
-
-		&:not(:hover) {
-			.rcx-sidebar-item.rcx-sidebar-link > .rcx-sidebar-item__title,
-			.rcx-sidebar-banner__content {
-				display: none;
-			}
-
-			.rcx-sidebar-media__title,
-			.rcx-sidebar-footer {
-				visibility: hidden;
-
-				white-space: nowrap;
-			}
+			white-space: nowrap;
 		}
 	}
 }

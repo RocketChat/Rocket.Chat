@@ -1,8 +1,33 @@
+import { styled, Text, View } from '@tamagui/web';
 import type { AriaAttributes, HTMLAttributes, ReactNode } from 'react';
 
 import { cx } from '../../helpers/composeClassNames';
+import { spacing } from '../../styleTokens';
 import { Chevron } from '../Chevron';
+import { withFuselageProvider } from '../FuselageProvider/FuselageProvider';
 import { ItemGroupHeader, ItemGroupTitle } from '../Item';
+import { plainElement, textEllipsis, typography } from './sidebarStyles';
+
+const SidebarGroupTitleHeading = styled(View, {
+	...plainElement,
+	flexDirection: 'row',
+	alignItems: 'center',
+	flexGrow: 1,
+	flexBasis: 0,
+	minWidth: 0,
+	columnGap: spacing('x4'),
+});
+
+// The unread bar's heavier scale stays in SCSS
+const SidebarGroupTitleTitle = styled(Text, {
+	render: 'h4',
+	...plainElement,
+	display: 'block',
+	margin: 0,
+	whiteSpace: 'nowrap',
+	...textEllipsis,
+	...typography('c1'),
+});
 
 export type SidebarGroupTitleProps = {
 	expanded?: boolean;
@@ -17,7 +42,7 @@ export type SidebarGroupTitleProps = {
 /**
  * The header of a sidebar group. It renders an `ItemGroupHeader`, so its menu reveals on hover like a row's.
  */
-export const SidebarGroupTitle = ({
+const SidebarGroupTitleBase = ({
 	title,
 	titleId,
 	badge,
@@ -40,16 +65,18 @@ export const SidebarGroupTitle = ({
 		)}
 	>
 		<ItemGroupTitle role={role} {...barProps} className='rcx-sidebar-collapse-group__bar-button'>
-			<div className='rcx-sidebar-collapse-group__heading'>
+			<SidebarGroupTitleHeading className='rcx-sidebar-collapse-group__heading'>
 				{title && (
-					<h4 className='rcx-sidebar-collapse-group__title' id={titleId}>
+					<SidebarGroupTitleTitle className='rcx-sidebar-collapse-group__title' id={titleId}>
 						{title}
-					</h4>
+					</SidebarGroupTitleTitle>
 				)}
 				{expanded !== undefined && <Chevron size='x20' right={!expanded} />}
-			</div>
+			</SidebarGroupTitleHeading>
 			{!expanded && badge && badge}
 		</ItemGroupTitle>
 		{menu}
 	</ItemGroupHeader>
 );
+
+export const SidebarGroupTitle = withFuselageProvider(SidebarGroupTitleBase);
