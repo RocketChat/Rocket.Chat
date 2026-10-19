@@ -136,7 +136,7 @@ describe('RepliesForm', () => {
 		expect(screen.getByLabelText('Agent (optional)')).toBeDisabled();
 	});
 
-	xit('should render with default values', async () => {
+	it.skip('should render with default values', async () => {
 		const defaultValues = {
 			departmentId: 'department-1',
 			agentId: 'agent-1',
@@ -183,7 +183,7 @@ describe('RepliesForm', () => {
 		await waitFor(() => expect(screen.queryByText('Error loading department information')).not.toBeInTheDocument());
 	});
 
-	xit('should call submit with correct values when form is submitted', async () => {
+	it.skip('should call submit with correct values when form is submitted', async () => {
 		const handleSubmit = jest.fn();
 		const defaultValues = {
 			departmentId: 'department-1',
