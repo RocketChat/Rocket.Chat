@@ -1,41 +1,12 @@
 @use '../../styles/lengths.scss';
 
+// Tamagui has no style key for font smoothing
 .rcx-card-group {
-	display: flex;
-
-	flex-flow: row nowrap;
-	justify-content: flex-start;
-
-	align-items: center;
-
-	&--wrap {
-		flex-wrap: wrap;
-
-		margin-block-end: lengths.margin(-16);
-	}
-
-	&--stretch {
-		justify-content: stretch;
-		align-items: stretch;
-	}
-
-	&--vertical {
-		flex-direction: column;
-	}
-
-	&--align-start {
-		justify-content: flex-start;
-	}
-
-	&--align-center {
-		justify-content: center;
-	}
-
-	&--align-end {
-		justify-content: flex-end;
-	}
+	-webkit-font-smoothing: antialiased;
+	-moz-osx-font-smoothing: grayscale;
 }
 
+// Reaches into the grouped components
 .rcx-card-group__item {
 	margin-inline: lengths.margin(8);
 
