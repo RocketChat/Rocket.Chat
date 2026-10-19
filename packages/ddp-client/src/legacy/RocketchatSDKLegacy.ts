@@ -248,7 +248,7 @@ export class RocketchatSdkLegacyImpl extends DDPSDK implements RocketchatSDKLega
 	}
 
 	unsubscribeAll(): Promise<unknown> {
-		return Promise.all(Object.entries(this.client.subscriptions).map(([, subscription]) => this.client.unsubscribe(subscription)));
+		return Promise.all([...this.client.subscriptions.keys()].map((id) => this.client.unsubscribe(id)));
 	}
 
 	static override create(url: string, retryOptions = { retryCount: 1, retryTime: 100 }): RocketchatSdkLegacyImpl {
@@ -279,7 +279,7 @@ export class RocketchatSdkLegacyImpl extends DDPSDK implements RocketchatSDKLega
 		rejectInFlightOnConnectionLoss(connection, stream);
 
 		connection.on('connected', () => {
-			Object.entries(stream.subscriptions).forEach(([, sub]) => {
+			stream.subscriptions.forEach((sub) => {
 				ddp.subscribeWithId(sub.id, sub.name, sub.params);
 			});
 		});
