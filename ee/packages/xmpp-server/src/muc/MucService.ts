@@ -9,6 +9,7 @@ import type { Logger } from '../logger';
 import { MucRoom } from './MucRoom';
 import { parseMucInvite, splitOccupantJid } from './stanzas';
 import { buildStanzaError } from '../xml/errors';
+import { NS_MUC } from '../xml/namespaces';
 
 export type MucServiceDeps = {
 	config: ResolvedXMPPServerConfig;
@@ -115,7 +116,7 @@ export class MucService {
 			room?.handleLeave(stanza);
 		} else if (type === undefined && room) {
 			void room.handleJoin(stanza).catch((err) => this.logger.error({ err }, 'MUC join failed'));
-		} else if (type === undefined && namesRoom) {
+		} else if (type === undefined && namesRoom && stanza.getChild('x', NS_MUC)) {
 			this.deps.send(buildStanzaError(stanza, 'forbidden', 'auth'));
 		}
 	}

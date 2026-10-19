@@ -126,8 +126,19 @@ describe('MucService.handleStanza (hosted-muc R17)', () => {
 	it('refuses a join to a room that does not exist with forbidden (R4)', () => {
 		const { muc, sent } = setup();
 
-		expect(muc.handleStanza(p(`<presence from='alice@remote.tld/pc' to='ghost@conference.rc.tld/alice'/>`))).toBe(true);
+		expect(
+			muc.handleStanza(
+				p(`<presence from='alice@remote.tld/pc' to='ghost@conference.rc.tld/alice'><x xmlns='http://jabber.org/protocol/muc'/></presence>`),
+			),
+		).toBe(true);
 		expect(sent.map(errorConditionOf)).toEqual(['forbidden']);
+	});
+
+	it('answers nothing to a plain presence to a room that does not exist, which is no join', () => {
+		const { muc, sent } = setup();
+
+		expect(muc.handleStanza(p(`<presence from='alice@remote.tld/pc' to='ghost@conference.rc.tld/alice'/>`))).toBe(true);
+		expect(sent).toEqual([]);
 	});
 
 	it.each([['subscribe'], ['probe'], ['subscribed'], ['unsubscribe']])(
