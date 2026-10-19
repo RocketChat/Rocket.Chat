@@ -7,8 +7,6 @@
 @use '../../styles/primitives/traits.scss';
 @use './mixins.scss' as *;
 
-$input-border-radius: theme('input-border-radius', lengths.border-radius(medium));
-
 .rcx-input-box__wrapper,
 %rcx-input-box {
 	position: relative;
@@ -35,28 +33,21 @@ $input-border-radius: theme('input-border-radius', lengths.border-radius(medium)
 	@extend %input;
 
 	&:invalid,
-	&:has(> .rcx-input-box:invalid) {
+	&.invalid {
 		@extend %input--invalid;
 	}
 
 	*:disabled &,
-	&:disabled {
+	&:disabled,
+	&.disabled {
 		cursor: not-allowed;
 		pointer-events: none;
 	}
 }
 
-.rcx-input-box__wrapper:has(> .rcx-input-box:disabled) {
-	cursor: not-allowed;
-	pointer-events: none;
-
-	border-color: $input-colors-disabled-border-color;
-	background-color: $input-colors-disabled-background-color;
-}
-
-.rcx-input-box__wrapper--end-addon-flush {
-	padding-block: lengths.padding(4);
-	padding-inline-end: lengths.padding(4);
+// The wrapper renders as `Label`, whose `display: flex` used to win over `inline-flex` by cascade order
+.rcx-input-box__wrapper {
+	display: flex;
 }
 
 .rcx-input-box__addon {
@@ -130,26 +121,9 @@ $input-border-radius: theme('input-border-radius', lengths.border-radius(medium)
 		-webkit-text-fill-color: $input-colors-color;
 
 		*:disabled &,
-		&:disabled {
+		&:disabled,
+		&.disabled {
 			-webkit-text-fill-color: $input-colors-disabled-color;
-		}
-	}
-
-	// Browsers pad the date and time fields vertically, which makes the input taller than its line height.
-	&--type-date,
-	&--type-time,
-	&--type-datetime-local {
-		&::-webkit-datetime-edit,
-		&::-webkit-datetime-edit-fields-wrapper,
-		&::-webkit-datetime-edit-year-field,
-		&::-webkit-datetime-edit-month-field,
-		&::-webkit-datetime-edit-day-field,
-		&::-webkit-datetime-edit-hour-field,
-		&::-webkit-datetime-edit-minute-field,
-		&::-webkit-datetime-edit-second-field,
-		&::-webkit-datetime-edit-millisecond-field,
-		&::-webkit-datetime-edit-meridiem-field {
-			padding-block: 0;
 		}
 	}
 
@@ -182,26 +156,16 @@ $input-border-radius: theme('input-border-radius', lengths.border-radius(medium)
 
 		@extend %input;
 
-		&:invalid {
+		&:invalid,
+		&.invalid {
 			@extend %input--invalid;
 		}
-	}
-
-	&__wrapper:has(> .rcx-input-box) {
-		align-items: center;
-
-		min-height: lengths.size(40);
-	}
-
-	&__wrapper:has(> .rcx-input-box--type-textarea) {
-		align-items: flex-start;
 	}
 
 	&__wrapper:has(.rcx-input-box--small) {
 		align-items: center;
 
 		min-width: lengths.size(112);
-		min-height: lengths.size(28);
 		max-height: lengths.size(28);
 		padding: lengths.padding(4) lengths.padding(8);
 	}
@@ -216,7 +180,8 @@ $input-border-radius: theme('input-border-radius', lengths.border-radius(medium)
 			min-height: lengths.size(28);
 			padding: lengths.padding(4) lengths.padding(8);
 
-			&:invalid {
+			&:invalid,
+			&.invalid {
 				@extend %input--invalid;
 			}
 		}
@@ -230,7 +195,8 @@ $input-border-radius: theme('input-border-radius', lengths.border-radius(medium)
 		$disabled-color: $input-colors-disabled-color
 	);
 
-	&:invalid {
+	&:invalid,
+	&.invalid {
 		@include with-colors(
 			$color: $input-colors-invalid-color,
 			$placeholder-color: $input-colors-invalid-placeholder-color,
@@ -248,7 +214,8 @@ $input-border-radius: theme('input-border-radius', lengths.border-radius(medium)
 	}
 
 	*:disabled &,
-	&:disabled {
+	&:disabled,
+	&.disabled {
 		cursor: not-allowed;
 	}
 
@@ -260,7 +227,8 @@ $input-border-radius: theme('input-border-radius', lengths.border-radius(medium)
 	);
 
 	*:disabled & + .rcx-input-box__addon,
-	&:disabled + .rcx-input-box__addon {
+	&:disabled + .rcx-input-box__addon,
+	&.disabled + .rcx-input-box__addon {
 		pointer-events: none;
 	}
 
@@ -288,27 +256,4 @@ $input-border-radius: theme('input-border-radius', lengths.border-radius(medium)
 
 	@include use-font-scale(p2m);
 	color: $input-colors-color;
-}
-
-.rcx-skeleton__input {
-	display: inline-flex;
-
-	flex: 1 0 lengths.size(none);
-
-	min-width: lengths.size(128);
-	min-height: lengths.size(40);
-
-	padding: calc(lengths.padding(12) - lengths.border-width(default)) calc(lengths.padding(16) - lengths.border-width(default));
-
-	vertical-align: baseline;
-
-	color: $input-colors-color;
-
-	border-width: lengths.border-width(default);
-	border-color: $input-colors-border-color;
-	border-radius: $input-border-radius;
-	background-color: $input-colors-background-color;
-
-	@include use-font-scale(p2m);
-	@include use-text-ellipsis;
 }
