@@ -4,27 +4,27 @@ exports[`[CheckBox Rendering] renders CustomIcon without crashing 1`] = `
 <body>
   <div>
     <section
-      class="rcx-box rcx-box--full rcx-callout"
+      class="is_View _f-1069814357 _mw-354604370 _mh-1241200853 _p-783907936 _c-1921852598 _b-1071518678 _br-1465795989 _b-1831105240 _ff-409630021 _fvn-1977619713 rcx-callout"
     >
       <i
         aria-hidden="true"
-        class="rcx-box rcx-box--full rcx-icon--name-hash rcx-icon rcx-callout__icon rcx-css-4pvxx3"
+        class="is_Text _d-1409515928 _ws-311910413 _ww-408434756 _us-601212022 _va-1101652081 _ls-1720078126 _ff-1916555734 _fs-1279428672 _fw-289165218 _fs-477064150 _fv-1578983722 _lh-2067209205 _tr-1510281189 rcx-icon--name-hash rcx-icon rcx-callout__icon rcx-css-4pvxx3"
       >
         
       </i>
       <div
-        class="rcx-box rcx-box--full rcx-callout__wrapper"
+        class="is_View _d-1987097250 _o-1119039191 _jc-281817805 _f-1641582120 _mw-354604370 _mh-1241200853 _m-1343990794 rcx-callout__wrapper"
       >
         <div
-          class="rcx-box rcx-box--full rcx-callout__wrapper-content"
+          class="is_View _o-1119039191 _f-1246374076 rcx-callout__wrapper-content"
         >
           <div
-            class="rcx-box rcx-box--full rcx-callout__title"
+            class="is_Text _d-1987097250 _ws-973912173 _ww-1531368954 _o-1119039191 _to-1727917045 _fs-347291933 _fw-289168101 _lh-1925956564 _ls-1782815796 rcx-callout__title"
           >
             This is a message with custom icon
           </div>
           <div
-            class="rcx-box rcx-box--full rcx-callout__content"
+            class="is_Text _d-1987097250 _ws-974065937 _ww-1531368954 _fs-347291933 _fw-289165218 _lh-1925956564 _ls-1782815796 rcx-callout__content"
           >
             This is a generic description.
           </div>
@@ -39,27 +39,27 @@ exports[`[CheckBox Rendering] renders Danger without crashing 1`] = `
 <body>
   <div>
     <section
-      class="rcx-box rcx-box--full rcx-callout rcx-callout--danger"
+      class="is_View _f-1069814357 _mw-354604370 _mh-1241200853 _p-783907936 _c-1921852598 _b-1671784581 _br-1465795989 _b-1831105240 _ff-409630021 _fvn-1977619713 rcx-callout rcx-callout--danger"
     >
       <i
         aria-hidden="true"
-        class="rcx-box rcx-box--full rcx-icon--name-ban rcx-icon rcx-callout__icon rcx-css-4pvxx3"
+        class="is_Text _d-1409515928 _ws-311910413 _ww-408434756 _us-601212022 _va-1101652081 _ls-1720078126 _ff-1916555734 _fs-1279428672 _fw-289165218 _fs-477064150 _fv-1578983722 _lh-2067209205 _tr-1510281189 rcx-icon--name-ban rcx-icon rcx-callout__icon rcx-css-4pvxx3"
       >
         
       </i>
       <div
-        class="rcx-box rcx-box--full rcx-callout__wrapper"
+        class="is_View _d-1987097250 _o-1119039191 _jc-281817805 _f-1641582120 _mw-354604370 _mh-1241200853 _m-1343990794 rcx-callout__wrapper"
       >
         <div
-          class="rcx-box rcx-box--full rcx-callout__wrapper-content"
+          class="is_View _o-1119039191 _f-1246374076 rcx-callout__wrapper-content"
         >
           <div
-            class="rcx-box rcx-box--full rcx-callout__title"
+            class="is_Text _d-1987097250 _ws-973912173 _ww-1531368954 _o-1119039191 _to-1727917045 _fs-347291933 _fw-289168101 _lh-1925956564 _ls-1782815796 rcx-callout__title"
           >
             This is a danger message
           </div>
           <div
-            class="rcx-box rcx-box--full rcx-callout__content"
+            class="is_Text _d-1987097250 _ws-974065937 _ww-1531368954 _fs-347291933 _fw-289165218 _lh-1925956564 _ls-1782815796 rcx-callout__content"
           >
             This is a generic description.
           </div>
@@ -74,27 +74,27 @@ exports[`[CheckBox Rendering] renders Default without crashing 1`] = `
 <body>
   <div>
     <section
-      class="rcx-box rcx-box--full rcx-callout"
+      class="is_View _f-1069814357 _mw-354604370 _mh-1241200853 _p-783907936 _c-1921852598 _b-1071518678 _br-1465795989 _b-1831105240 _ff-409630021 _fvn-1977619713 rcx-callout"
     >
       <i
         aria-hidden="true"
-        class="rcx-box rcx-box--full rcx-icon--name-info-circled rcx-icon rcx-callout__icon rcx-css-4pvxx3"
+        class="is_Text _d-1409515928 _ws-311910413 _ww-408434756 _us-601212022 _va-1101652081 _ls-1720078126 _ff-1916555734 _fs-1279428672 _fw-289165218 _fs-477064150 _fv-1578983722 _lh-2067209205 _tr-1510281189 rcx-icon--name-info-circled rcx-icon rcx-callout__icon rcx-css-4pvxx3"
       >
         
       </i>
       <div
-        class="rcx-box rcx-box--full rcx-callout__wrapper"
+        class="is_View _d-1987097250 _o-1119039191 _jc-281817805 _f-1641582120 _mw-354604370 _mh-1241200853 _m-1343990794 rcx-callout__wrapper"
       >
         <div
-          class="rcx-box rcx-box--full rcx-callout__wrapper-content"
+          class="is_View _o-1119039191 _f-1246374076 rcx-callout__wrapper-content"
         >
           <div
-            class="rcx-box rcx-box--full rcx-callout__title"
+            class="is_Text _d-1987097250 _ws-973912173 _ww-1531368954 _o-1119039191 _to-1727917045 _fs-347291933 _fw-289168101 _lh-1925956564 _ls-1782815796 rcx-callout__title"
           >
             This is a generic title
           </div>
           <div
-            class="rcx-box rcx-box--full rcx-callout__content"
+            class="is_Text _d-1987097250 _ws-974065937 _ww-1531368954 _fs-347291933 _fw-289165218 _lh-1925956564 _ls-1782815796 rcx-callout__content"
           >
             This is a generic description.
           </div>
@@ -109,27 +109,27 @@ exports[`[CheckBox Rendering] renders Info without crashing 1`] = `
 <body>
   <div>
     <section
-      class="rcx-box rcx-box--full rcx-callout rcx-callout--info"
+      class="is_View _f-1069814357 _mw-354604370 _mh-1241200853 _p-783907936 _c-1921852598 _b-51166672 _br-1465795989 _b-1831105240 _ff-409630021 _fvn-1977619713 rcx-callout rcx-callout--info"
     >
       <i
         aria-hidden="true"
-        class="rcx-box rcx-box--full rcx-icon--name-info-circled rcx-icon rcx-callout__icon rcx-css-4pvxx3"
+        class="is_Text _d-1409515928 _ws-311910413 _ww-408434756 _us-601212022 _va-1101652081 _ls-1720078126 _ff-1916555734 _fs-1279428672 _fw-289165218 _fs-477064150 _fv-1578983722 _lh-2067209205 _tr-1510281189 rcx-icon--name-info-circled rcx-icon rcx-callout__icon rcx-css-4pvxx3"
       >
         
       </i>
       <div
-        class="rcx-box rcx-box--full rcx-callout__wrapper"
+        class="is_View _d-1987097250 _o-1119039191 _jc-281817805 _f-1641582120 _mw-354604370 _mh-1241200853 _m-1343990794 rcx-callout__wrapper"
       >
         <div
-          class="rcx-box rcx-box--full rcx-callout__wrapper-content"
+          class="is_View _o-1119039191 _f-1246374076 rcx-callout__wrapper-content"
         >
           <div
-            class="rcx-box rcx-box--full rcx-callout__title"
+            class="is_Text _d-1987097250 _ws-973912173 _ww-1531368954 _o-1119039191 _to-1727917045 _fs-347291933 _fw-289168101 _lh-1925956564 _ls-1782815796 rcx-callout__title"
           >
             This is a info message
           </div>
           <div
-            class="rcx-box rcx-box--full rcx-callout__content"
+            class="is_Text _d-1987097250 _ws-974065937 _ww-1531368954 _fs-347291933 _fw-289165218 _lh-1925956564 _ls-1782815796 rcx-callout__content"
           >
             This is a generic description.
           </div>
@@ -144,27 +144,27 @@ exports[`[CheckBox Rendering] renders Success without crashing 1`] = `
 <body>
   <div>
     <section
-      class="rcx-box rcx-box--full rcx-callout rcx-callout--success"
+      class="is_View _f-1069814357 _mw-354604370 _mh-1241200853 _p-783907936 _c-1921852598 _b-643294114 _br-1465795989 _b-1831105240 _ff-409630021 _fvn-1977619713 rcx-callout rcx-callout--success"
     >
       <i
         aria-hidden="true"
-        class="rcx-box rcx-box--full rcx-icon--name-checkmark-circled rcx-icon rcx-callout__icon rcx-css-4pvxx3"
+        class="is_Text _d-1409515928 _ws-311910413 _ww-408434756 _us-601212022 _va-1101652081 _ls-1720078126 _ff-1916555734 _fs-1279428672 _fw-289165218 _fs-477064150 _fv-1578983722 _lh-2067209205 _tr-1510281189 rcx-icon--name-checkmark-circled rcx-icon rcx-callout__icon rcx-css-4pvxx3"
       >
         
       </i>
       <div
-        class="rcx-box rcx-box--full rcx-callout__wrapper"
+        class="is_View _d-1987097250 _o-1119039191 _jc-281817805 _f-1641582120 _mw-354604370 _mh-1241200853 _m-1343990794 rcx-callout__wrapper"
       >
         <div
-          class="rcx-box rcx-box--full rcx-callout__wrapper-content"
+          class="is_View _o-1119039191 _f-1246374076 rcx-callout__wrapper-content"
         >
           <div
-            class="rcx-box rcx-box--full rcx-callout__title"
+            class="is_Text _d-1987097250 _ws-973912173 _ww-1531368954 _o-1119039191 _to-1727917045 _fs-347291933 _fw-289168101 _lh-1925956564 _ls-1782815796 rcx-callout__title"
           >
             This is a success message
           </div>
           <div
-            class="rcx-box rcx-box--full rcx-callout__content"
+            class="is_Text _d-1987097250 _ws-974065937 _ww-1531368954 _fs-347291933 _fw-289165218 _lh-1925956564 _ls-1782815796 rcx-callout__content"
           >
             This is a generic description.
           </div>
@@ -179,27 +179,27 @@ exports[`[CheckBox Rendering] renders Warning without crashing 1`] = `
 <body>
   <div>
     <section
-      class="rcx-box rcx-box--full rcx-callout rcx-callout--warning"
+      class="is_View _f-1069814357 _mw-354604370 _mh-1241200853 _p-783907936 _c-1921852598 _b-763081575 _br-1465795989 _b-1831105240 _ff-409630021 _fvn-1977619713 rcx-callout rcx-callout--warning"
     >
       <i
         aria-hidden="true"
-        class="rcx-box rcx-box--full rcx-icon--name-warning rcx-icon rcx-callout__icon rcx-css-4pvxx3"
+        class="is_Text _d-1409515928 _ws-311910413 _ww-408434756 _us-601212022 _va-1101652081 _ls-1720078126 _ff-1916555734 _fs-1279428672 _fw-289165218 _fs-477064150 _fv-1578983722 _lh-2067209205 _tr-1510281189 rcx-icon--name-warning rcx-icon rcx-callout__icon rcx-css-4pvxx3"
       >
         
       </i>
       <div
-        class="rcx-box rcx-box--full rcx-callout__wrapper"
+        class="is_View _d-1987097250 _o-1119039191 _jc-281817805 _f-1641582120 _mw-354604370 _mh-1241200853 _m-1343990794 rcx-callout__wrapper"
       >
         <div
-          class="rcx-box rcx-box--full rcx-callout__wrapper-content"
+          class="is_View _o-1119039191 _f-1246374076 rcx-callout__wrapper-content"
         >
           <div
-            class="rcx-box rcx-box--full rcx-callout__title"
+            class="is_Text _d-1987097250 _ws-973912173 _ww-1531368954 _o-1119039191 _to-1727917045 _fs-347291933 _fw-289168101 _lh-1925956564 _ls-1782815796 rcx-callout__title"
           >
             This is a warning message
           </div>
           <div
-            class="rcx-box rcx-box--full rcx-callout__content"
+            class="is_Text _d-1987097250 _ws-974065937 _ww-1531368954 _fs-347291933 _fw-289165218 _lh-1925956564 _ls-1782815796 rcx-callout__content"
           >
             This is a generic description.
           </div>
@@ -214,54 +214,54 @@ exports[`[CheckBox Rendering] renders WithActions without crashing 1`] = `
 <body>
   <div>
     <section
-      class="rcx-box rcx-box--full rcx-callout"
+      class="is_View _f-1069814357 _mw-354604370 _mh-1241200853 _p-783907936 _c-1921852598 _b-1071518678 _br-1465795989 _b-1831105240 _ff-409630021 _fvn-1977619713 rcx-callout"
     >
       <i
         aria-hidden="true"
-        class="rcx-box rcx-box--full rcx-icon--name-info-circled rcx-icon rcx-callout__icon rcx-css-4pvxx3"
+        class="is_Text _d-1409515928 _ws-311910413 _ww-408434756 _us-601212022 _va-1101652081 _ls-1720078126 _ff-1916555734 _fs-1279428672 _fw-289165218 _fs-477064150 _fv-1578983722 _lh-2067209205 _tr-1510281189 rcx-icon--name-info-circled rcx-icon rcx-callout__icon rcx-css-4pvxx3"
       >
         
       </i>
       <div
-        class="rcx-box rcx-box--full rcx-callout__wrapper"
+        class="is_View _d-1987097250 _o-1119039191 _jc-281817805 _f-1641582120 _mw-354604370 _mh-1241200853 _m-1343990794 rcx-callout__wrapper"
       >
         <div
-          class="rcx-box rcx-box--full rcx-callout__wrapper-content"
+          class="is_View _o-1119039191 _f-1246374076 rcx-callout__wrapper-content"
         >
           <div
-            class="rcx-box rcx-box--full rcx-callout__title"
+            class="is_Text _d-1987097250 _ws-973912173 _ww-1531368954 _o-1119039191 _to-1727917045 _fs-347291933 _fw-289168101 _lh-1925956564 _ls-1782815796 rcx-callout__title"
           >
             This is a generic title
           </div>
           <div
-            class="rcx-box rcx-box--full rcx-callout__content"
+            class="is_Text _d-1987097250 _ws-974065937 _ww-1531368954 _fs-347291933 _fw-289165218 _lh-1925956564 _ls-1782815796 rcx-callout__content"
           >
             This is a generic description.
           </div>
         </div>
         <div
-          class="rcx-box rcx-box--full rcx-callout__actions"
+          class="is_View _d-1987097250 _f-1246374076 _mw-354604370 _mh-1241200853 rcx-callout__actions"
         >
           <div
-            class="rcx-button-group rcx-button-group--align-start"
+            class="is_View _d-341075704 _f-1923654442 _mw-354604370 _mh-1241200853 _ai-121763387 _g-1051447770 _jc-281162209 rcx-button-group rcx-button-group--align-start"
             role="group"
           >
             <button
-              class="rcx-box rcx-box--full rcx-button--small rcx-button"
+              class="is_View _d-1409515928 _f-1069814357 _mh-1241200853 _ta-1906144518 _ws-973912173 _td-211436768 _c-22887652 _os-249893454 _o-1119039191 _to-1727917045 _ff-409630021 _fvn-1977619713 _p-1560025842 _fs-281033604 _fw-290091622 _lh-1335373134 _ls-1811444947 _mw-1071928195 _h-1633581678 rcx-button--small rcx-button"
               type="button"
             >
               <span
-                class="rcx-button--content"
+                class="is_Text _d-1409515928 _w-1560934055 _va-615128551 _o-1119039191 _to-1727917045 _ws-973912173 _ww-408434756 rcx-button--content"
               >
                 Button
               </span>
             </button>
             <button
-              class="rcx-box rcx-box--full rcx-button--small rcx-button"
+              class="is_View _d-1409515928 _f-1069814357 _mh-1241200853 _ta-1906144518 _ws-973912173 _td-211436768 _c-22887652 _os-249893454 _o-1119039191 _to-1727917045 _ff-409630021 _fvn-1977619713 _p-1560025842 _fs-281033604 _fw-290091622 _lh-1335373134 _ls-1811444947 _mw-1071928195 _h-1633581678 rcx-button--small rcx-button"
               type="button"
             >
               <span
-                class="rcx-button--content"
+                class="is_Text _d-1409515928 _w-1560934055 _va-615128551 _o-1119039191 _to-1727917045 _ws-973912173 _ww-408434756 rcx-button--content"
               >
                 Button
               </span>
@@ -278,22 +278,22 @@ exports[`[CheckBox Rendering] renders WithDescriptionOnly without crashing 1`] =
 <body>
   <div>
     <section
-      class="rcx-box rcx-box--full rcx-callout"
+      class="is_View _f-1069814357 _mw-354604370 _mh-1241200853 _p-783907936 _c-1921852598 _b-1071518678 _br-1465795989 _b-1831105240 _ff-409630021 _fvn-1977619713 rcx-callout"
     >
       <i
         aria-hidden="true"
-        class="rcx-box rcx-box--full rcx-icon--name-info-circled rcx-icon rcx-callout__icon rcx-css-4pvxx3"
+        class="is_Text _d-1409515928 _ws-311910413 _ww-408434756 _us-601212022 _va-1101652081 _ls-1720078126 _ff-1916555734 _fs-1279428672 _fw-289165218 _fs-477064150 _fv-1578983722 _lh-2067209205 _tr-1510281189 rcx-icon--name-info-circled rcx-icon rcx-callout__icon rcx-css-4pvxx3"
       >
         
       </i>
       <div
-        class="rcx-box rcx-box--full rcx-callout__wrapper"
+        class="is_View _d-1987097250 _o-1119039191 _jc-281817805 _f-1641582120 _mw-354604370 _mh-1241200853 _m-1343990794 rcx-callout__wrapper"
       >
         <div
-          class="rcx-box rcx-box--full rcx-callout__wrapper-content"
+          class="is_View _o-1119039191 _f-1246374076 rcx-callout__wrapper-content"
         >
           <div
-            class="rcx-box rcx-box--full rcx-callout__content"
+            class="is_Text _d-1987097250 _ws-974065937 _ww-1531368954 _fs-347291933 _fw-289165218 _lh-1925956564 _ls-1782815796 rcx-callout__content"
           >
             This is a generic description.
           </div>
