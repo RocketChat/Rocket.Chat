@@ -1,4 +1,4 @@
-import type { ButtonHTMLAttributes, ReactNode } from 'react';
+import type { ButtonHTMLAttributes, MouseEventHandler, ReactNode } from 'react';
 
 import { prependClassName } from '../../helpers/prependClassName';
 import { Avatar } from '../Avatar';
@@ -32,12 +32,22 @@ const Chip = ({
 }: ChipProps) => {
 	const dismissable = Boolean(onClick || onMouseDown);
 
+	// Keeps chips that only handle mousedown dismissable from the keyboard
+	const handleKeyboardActivation: MouseEventHandler<HTMLButtonElement> | undefined =
+		!onClick && onMouseDown
+			? (event) => {
+					if (event.detail === 0) {
+						onMouseDown(event);
+					}
+				}
+			: undefined;
+
 	return (
 		<button
 			type='button'
 			className={prependClassName(className, 'rcx-box rcx-chip')}
 			disabled={!dismissable}
-			onClick={onClick}
+			onClick={onClick ?? handleKeyboardActivation}
 			onMouseDown={onMouseDown}
 			{...rest}
 		>

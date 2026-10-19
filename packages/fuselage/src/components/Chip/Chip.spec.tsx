@@ -14,14 +14,23 @@ describe('[Chevron Component]', () => {
 });
 
 describe('[Chip events]', () => {
-	it('calls onMouseDown on mousedown, not on click', () => {
+	it('calls onMouseDown on mousedown, not on a mouse click', () => {
 		const onMouseDown = jest.fn();
 		render(<Chip onMouseDown={onMouseDown}>Chip</Chip>);
 
-		fireEvent.click(screen.getByRole('button'));
+		fireEvent.click(screen.getByRole('button'), { detail: 1 });
 		expect(onMouseDown).not.toHaveBeenCalled();
 
 		fireEvent.mouseDown(screen.getByRole('button'));
+		expect(onMouseDown).toHaveBeenCalledTimes(1);
+	});
+
+	it('calls onMouseDown on keyboard activation when there is no onClick', () => {
+		const onMouseDown = jest.fn();
+		render(<Chip onMouseDown={onMouseDown}>Chip</Chip>);
+
+		// Enter or Space on the focused chip
+		fireEvent.click(screen.getByRole('button'), { detail: 0 });
 		expect(onMouseDown).toHaveBeenCalledTimes(1);
 	});
 
@@ -38,8 +47,12 @@ describe('[Chip events]', () => {
 		expect(onMouseDown).toHaveBeenCalledTimes(1);
 		expect(onClick).not.toHaveBeenCalled();
 
-		fireEvent.click(screen.getByRole('button'));
+		fireEvent.click(screen.getByRole('button'), { detail: 1 });
 		expect(onClick).toHaveBeenCalledTimes(1);
+		expect(onMouseDown).toHaveBeenCalledTimes(1);
+
+		fireEvent.click(screen.getByRole('button'), { detail: 0 });
+		expect(onClick).toHaveBeenCalledTimes(2);
 		expect(onMouseDown).toHaveBeenCalledTimes(1);
 	});
 
