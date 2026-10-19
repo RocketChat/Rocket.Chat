@@ -246,8 +246,6 @@ defect or as out of scope; the spec has the details.
 Presence works one way only. A contact's XMPP presence sets their Rocket.Chat status, but
 Rocket.Chat status changes do not reach XMPP contacts
 ([presence D2](specs/presence.md#d2-rocketchat-status-changes-do-not-reach-xmpp-contacts)).
-Subscription requests are still answered as described above, even with **Exchange Presence**
-off.
 
 ### Hosted rooms
 
