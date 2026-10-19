@@ -66,7 +66,7 @@ const AbacAttributesManage = ({ room, requiredKeys, onBack, onClose, onSaved }: 
 
 	const [previewAttributes, setPreviewAttributes] = useState<Record<string, string[]>>();
 
-	const assignable = useAssignableAttributes(true, (data) => data.attributes, room._id);
+	const assignable = useAssignableAttributes({ select: (data) => data.attributes, rid: room._id });
 	const saveRoomAttributes = useEndpoint('POST', '/v1/abac/rooms/:rid/attributes', { rid: room._id });
 
 	const saveMutation = useMutation({

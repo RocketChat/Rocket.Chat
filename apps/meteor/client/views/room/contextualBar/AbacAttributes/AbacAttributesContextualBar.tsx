@@ -1,6 +1,5 @@
 import { ContextualbarDialog, ContextualbarSkeleton } from '@rocket.chat/ui-client';
 import { useRoomToolbox } from '@rocket.chat/ui-contexts';
-import { useMemo } from 'react';
 
 import AbacAttributesInfo from './AbacAttributesInfo';
 import AbacAttributesManage from './AbacAttributesManage';
@@ -11,12 +10,7 @@ import { useRoom } from '../../contexts/RoomContext';
 const AbacAttributesContextualBar = () => {
 	const room = useRoom();
 	const { context, openTab, closeTab } = useRoomToolbox();
-	const { data: requiredAttributeKeys, isPending } = useAssignableAttributes(true, (data) => data.requiredKeys, room._id);
-
-	const requiredKeys = useMemo(
-		() => (requiredAttributeKeys ?? []).map((key) => key.trim()).filter((key) => key.length > 0),
-		[requiredAttributeKeys],
-	);
+	const { data: requiredKeys = [], isPending } = useAssignableAttributes({ select: (data) => data.requiredKeys, rid: room._id });
 
 	if (isPending) {
 		return <ContextualbarSkeleton onClose={closeTab} />;
