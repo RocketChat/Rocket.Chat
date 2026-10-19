@@ -1,14 +1,28 @@
 import { useMergedRefs } from '@rocket.chat/fuselage-hooks';
-import type { ChangeEvent, InputHTMLAttributes, ReactNode } from 'react';
+import { styled, type GetProps } from '@tamagui/web';
+import type { AllHTMLAttributes, ChangeEvent, ReactNode, RefAttributes } from 'react';
 import { useLayoutEffect, useRef, useCallback } from 'react';
 
-import type { ElementProps } from '../../types/ElementProps';
-import { Box } from '../Box';
+import { SelectionButtonFake, SelectionButtonInput, SelectionButtonLabel } from './SelectionButtonFrames';
+import { toCSSValue } from '../../helpers/toCSSValue';
+import { useTamaguiBoxProps } from '../../hooks/useTamaguiBoxProps';
+import { borderRadius, size } from '../../styleTokens';
+import type { BoxProps } from '../Box';
+import { withFuselageProvider } from '../FuselageProvider/FuselageProvider';
 
-export type CheckBoxProps = ElementProps<HTMLInputElement, InputHTMLAttributes<HTMLInputElement>> & {
-	indeterminate?: boolean;
-	labelChildren?: ReactNode;
-};
+const CheckBoxFake = styled(SelectionButtonFake, {
+	display: 'flex',
+	justifyContent: 'center',
+	alignItems: 'center',
+	borderRadius: toCSSValue('--rcx-check-box-border-radius', toCSSValue('--rcx-border-radius-small', borderRadius('small')!)),
+	width: size('x20'),
+});
+
+export type CheckBoxProps = Omit<BoxProps, 'ref'> &
+	RefAttributes<HTMLInputElement> & {
+		indeterminate?: boolean;
+		labelChildren?: ReactNode;
+	} & AllHTMLAttributes<HTMLInputElement>;
 
 function CheckBox({ ref, indeterminate, onChange, className, labelChildren, ...props }: CheckBoxProps) {
 	const innerRef = useRef<HTMLInputElement>(null);
@@ -30,13 +44,18 @@ function CheckBox({ ref, indeterminate, onChange, className, labelChildren, ...p
 		[innerRef, indeterminate, onChange],
 	);
 
+	const labelProps = useTamaguiBoxProps({ className }, 'rcx-check-box');
+	const inputProps = useTamaguiBoxProps(props, 'rcx-check-box__input');
+
 	return (
-		<Box is='label' className={className} rcx-check-box>
+		<SelectionButtonLabel {...labelProps}>
 			{labelChildren}
-			<Box is='input' type='checkbox' rcx-check-box__input ref={mergedRef} onChange={handleChange} {...props} />
-			<Box is='i' rcx-check-box__fake aria-hidden='true' />
-		</Box>
+			<SelectionButtonInput
+				{...({ type: 'checkbox', ref: mergedRef, onChange: handleChange, ...inputProps } as GetProps<typeof SelectionButtonInput>)}
+			/>
+			<CheckBoxFake className='rcx-check-box__fake' aria-hidden />
+		</SelectionButtonLabel>
 	);
 }
 
-export default CheckBox;
+export default withFuselageProvider(CheckBox);
