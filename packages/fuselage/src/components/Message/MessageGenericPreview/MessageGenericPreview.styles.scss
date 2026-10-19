@@ -1,55 +1,10 @@
 @use '../../../styles/colors.scss';
-@use '../../../styles/functions.scss' as *;
-@use '../../../styles/lengths.scss';
 @use '../../../styles/mixins/link.scss' as *;
-@use '../../../styles/mixins/size.scss';
 @use '../../../styles/primitives/link.scss';
-@use '../../../styles/primitives/rich-text.scss';
 @use '../../../styles/typography.scss' as *;
 
-$message-generic-preview-border-color: theme('message-generic-preview-border-color', colors.stroke(extra-light));
-
-$message-generic-preview-title-color: theme('message-generic-preview-title-color', colors.font(default));
-
-$message-generic-preview-context-color: theme('message-generic-preview-context-color', colors.font(secondary-info));
-
-$message-generic-preview-description-color: theme('message-generic-preview-description-color', colors.font(default));
-
-$message-generic-preview-content-background-color: theme('message-generic-preview-content-background-color', colors.surface(tint));
-
-$message-generic-preview-icon-background-color: theme('message-generic-preview-icon-background-color', colors.surface(neutral));
-
 .rcx-message-generic-preview {
-	display: flex;
-	overflow: hidden;
-	flex-direction: column;
-
-	color: $message-generic-preview-context-color;
-
-	border: lengths.border-width(default) solid $message-generic-preview-border-color;
-	border-radius: lengths.border-radius(medium);
-	background-color: $message-generic-preview-content-background-color;
-
-	font-size: 0;
-
-	&__content {
-		display: flex;
-		flex-direction: row;
-
-		font-size: 0;
-
-		&-wrapper {
-			@include use-with-truncated-text();
-			display: flex;
-			flex-direction: column;
-			justify-content: center;
-			flex-grow: 1;
-
-			padding-block: lengths.margin(8);
-			padding-inline: lengths.margin(16);
-		}
-	}
-
+	// `text-indent` has no Tamagui equivalent, and the element carries inline styles of its own.
 	&__preview {
 		display: inline-block;
 		overflow: hidden;
@@ -65,91 +20,28 @@ $message-generic-preview-icon-background-color: theme('message-generic-preview-i
 		background-size: cover;
 	}
 
-	&__title {
-		@include use-with-truncated-text();
-		@include use-font-scale(p2);
-		display: block;
-
-		margin-block-end: lengths.margin(4);
-
-		color: $message-generic-preview-title-color;
-
-		&-link {
-			@include use-link-colors;
-		}
+	// Link colors carry `:visited`, `:active` and focus states.
+	&__title-link {
+		@include use-link-colors;
 	}
 
-	&__description {
-		@include use-font-scale(c1);
-		margin-block-end: lengths.margin(4);
-
-		white-space: normal;
-
-		color: $message-generic-preview-description-color;
-
-		&:not(&--clamp) {
-			@include use-with-truncated-text();
-		}
-
-		&--clamp {
-			display: -webkit-box;
-			overflow: hidden;
-			-webkit-box-orient: vertical;
-			-webkit-line-clamp: 2;
-		}
+	&__description--clamp {
+		display: -webkit-box;
+		overflow: hidden;
+		-webkit-box-orient: vertical;
+		-webkit-line-clamp: 2;
 	}
 
-	&__footer {
-		@include use-with-truncated-text();
-		@include use-font-scale(c1);
-		width: 100%;
-
-		color: $message-generic-preview-context-color;
-
-		a {
-			@include use-link-colors($color: colors.font(secondary-info));
-		}
+	&__footer a {
+		@include use-link-colors($color: colors.font(secondary-info));
 	}
 
-	&__thumb {
-		@include size.square(lengths.size(96));
-		flex-shrink: 0;
-	}
-
+	// A replaced element; `inherit` sizes come from the surrounding markup.
 	&__image {
 		width: fit-content;
 		max-width: inherit;
 		max-height: inherit;
 
 		cursor: pointer;
-	}
-
-	&__icon {
-		display: flex;
-		flex-direction: column;
-		justify-content: center;
-		align-items: center;
-		flex-shrink: 0;
-		align-self: center;
-
-		width: lengths.size(48);
-		height: lengths.size(52);
-		margin-block: lengths.margin(12);
-
-		margin-inline-start: lengths.margin(16);
-
-		color: colors.font(default);
-		border-radius: lengths.border-radius(medium);
-
-		background-color: $message-generic-preview-icon-background-color;
-
-		&-title {
-			@include use-with-truncated-text();
-			@include use-font-scale(micro);
-
-			max-width: lengths.size(40);
-
-			color: $message-generic-preview-title-color;
-		}
 	}
 }

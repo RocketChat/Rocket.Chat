@@ -1,11 +1,24 @@
+import { styled, Text, type GetProps } from '@tamagui/web';
 import type { HTMLAttributes } from 'react';
 
-import { cx } from '../../../helpers/composeClassNames';
+import { size } from '../../../styleTokens';
+import { withFuselageProvider } from '../../FuselageProvider/FuselageProvider';
+import { plainDiv } from '../messageStyles';
+
+const MessageGenericPreviewThumbFrame = styled(Text, {
+	...plainDiv,
+	width: size('x96'),
+	height: size('x96'),
+	flexShrink: 0,
+});
 
 export type MessageGenericPreviewThumbProps = HTMLAttributes<HTMLDivElement>;
 
-const MessageGenericPreviewThumb = ({ className, ...props }: MessageGenericPreviewThumbProps) => (
-	<div {...props} className={cx('rcx-message-generic-preview__thumb', className)} />
+const MessageGenericPreviewThumb = (props: MessageGenericPreviewThumbProps) => (
+	<MessageGenericPreviewThumbFrame
+		className='rcx-message-generic-preview__thumb'
+		{...(props as GetProps<typeof MessageGenericPreviewThumbFrame>)}
+	/>
 );
 
-export default MessageGenericPreviewThumb;
+export default withFuselageProvider(MessageGenericPreviewThumb);

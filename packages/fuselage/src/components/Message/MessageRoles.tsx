@@ -1,11 +1,21 @@
+import { styled, View, type GetProps } from '@tamagui/web';
 import type { HTMLAttributes } from 'react';
 
-import { cx } from '../../helpers/composeClassNames';
+import { boxText, truncatedText } from './messageStyles';
+import { withFuselageProvider } from '../FuselageProvider/FuselageProvider';
+
+const MessageRolesFrame = styled(View, {
+	render: 'div',
+	...boxText,
+	...truncatedText,
+	flexDirection: 'row',
+	flexShrink: 1,
+});
 
 export type MessageRolesProps = HTMLAttributes<HTMLDivElement>;
 
-const MessageRoles = ({ className, ...props }: MessageRolesProps) => (
-	<div {...props} className={cx('rcx-box rcx-box--full rcx-message-header__roles', className)} />
+const MessageRoles = (props: MessageRolesProps) => (
+	<MessageRolesFrame className='rcx-message-header__roles' {...(props as GetProps<typeof MessageRolesFrame>)} />
 );
 
-export default MessageRoles;
+export default withFuselageProvider(MessageRoles);

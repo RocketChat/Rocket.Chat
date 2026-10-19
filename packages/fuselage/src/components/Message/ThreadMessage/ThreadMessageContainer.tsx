@@ -1,13 +1,26 @@
-import type { HTMLAttributes, ReactNode } from 'react';
+import { styled, View } from '@tamagui/web';
+import type { ReactNode } from 'react';
 
-import { cx } from '../../../helpers/composeClassNames';
+import { size, spacing } from '../../../styleTokens';
+import { withFuselageProvider } from '../../FuselageProvider/FuselageProvider';
+import { boxText, truncatedText } from '../messageStyles';
+
+const ThreadMessageContainerFrame = styled(View, {
+	render: 'div',
+	...boxText,
+	...truncatedText,
+	flexDirection: 'row',
+	flexShrink: 1,
+	width: size('full'),
+	margin: spacing('x4'),
+});
 
 export type ThreadMessageContainerProps = {
 	children?: ReactNode;
-} & HTMLAttributes<HTMLDivElement>;
+};
 
-const ThreadMessageContainer = ({ className, ...props }: ThreadMessageContainerProps) => (
-	<div {...props} className={cx('rcx-box rcx-box--full rcx-message-thread__container', className)} />
+const ThreadMessageContainer = (props: ThreadMessageContainerProps) => (
+	<ThreadMessageContainerFrame className='rcx-message-thread__container' {...props} />
 );
 
-export default ThreadMessageContainer;
+export default withFuselageProvider(ThreadMessageContainer);

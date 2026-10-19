@@ -1,29 +1,20 @@
 @use '../../../styles/colors.scss';
 @use '../../../styles/functions.scss' as *;
-@use '../../../styles/lengths.scss';
-@use '../../../styles/typography.scss' as *;
 
 $message-status-variant-color-success: theme('message-status-variant-color-success', colors.status-font(on-success));
+
 $message-status-variant-color-danger: theme('message-status-variant-color-danger', colors.status-font(on-danger));
+
 $message-status-variant-color-warning: theme('message-status-variant-color-warning', colors.status-font(on-warning));
+
 $message-status-variant-color-primary: theme('message-status-variant-color-primary', colors.status-font(on-primary));
 
 .rcx-message-status-indicator {
-	margin-block: lengths.margin(2);
-
-	user-select: none;
-
 	&:empty {
 		display: none;
 	}
 
-	&__text {
-		white-space: nowrap;
-
-		color: colors.font(secondary-info);
-		@include use-font-scale(c1);
-	}
-
+	// The items are `Icon` elements.
 	&__item {
 		color: colors.font(secondary-info);
 

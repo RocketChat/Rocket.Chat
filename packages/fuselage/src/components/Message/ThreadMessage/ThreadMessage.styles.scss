@@ -2,8 +2,8 @@
 @use '../../../styles/colors.scss';
 @use '../../../styles/typography.scss' as *;
 @use '../../../styles/mixins/size.scss';
-@use '../mixins.scss';
 
+// Overrides the `Message` frame it renders, so it stays an unlayered rule.
 .rcx-message.rcx-message-thread {
 	@include use-font-scale(c1);
 	@include use-with-truncated-text();
@@ -16,50 +16,11 @@
 }
 
 .rcx-message-thread {
-	&__container {
-		@include use-with-truncated-text();
-		display: flex;
-		flex-shrink: 1;
-
-		width: 100%;
-		margin: lengths.margin(4);
+	&__origin--system::first-letter {
+		text-transform: uppercase;
 	}
 
-	&__row {
-		@include use-with-truncated-text();
-		display: flex;
-		flex-direction: row;
-		align-items: center;
-		flex-shrink: 1;
-
-		width: 100%;
-
-		cursor: pointer;
-	}
-
-	&__message {
-		color: colors.font(default);
-		@include use-with-truncated-text();
-	}
-
-	&__origin {
-		@include use-font-scale(c1);
-		@include use-with-truncated-text();
-		flex-shrink: 1;
-
-		cursor: pointer;
-
-		color: colors.font(info);
-
-		&--system {
-			color: colors.font(default);
-
-			&::first-letter {
-				text-transform: uppercase;
-			}
-		}
-	}
-
+	// The icons are `Icon` elements and the emoji competes with app emoji sprite classes.
 	&__icon {
 		color: colors.font(info);
 

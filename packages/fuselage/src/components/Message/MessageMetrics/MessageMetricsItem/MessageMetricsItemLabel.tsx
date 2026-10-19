@@ -1,11 +1,19 @@
+import { styled, Text, type GetProps } from '@tamagui/web';
 import type { HTMLAttributes } from 'react';
 
-import { cx } from '../../../../helpers/composeClassNames';
+import { spacing } from '../../../../styleTokens';
+import { withFuselageProvider } from '../../../FuselageProvider/FuselageProvider';
+import { plainDiv } from '../../messageStyles';
+
+const MessageMetricsItemLabelFrame = styled(Text, {
+	...plainDiv,
+	marginInlineStart: spacing('x4'),
+});
 
 export type MessageMetricsItemLabelProps = HTMLAttributes<HTMLDivElement>;
 
-const MessageMetricsItemLabel = ({ className, ...props }: MessageMetricsItemLabelProps) => (
-	<div {...props} className={cx('rcx-message-metrics__item-label', className)} />
+const MessageMetricsItemLabel = (props: MessageMetricsItemLabelProps) => (
+	<MessageMetricsItemLabelFrame className='rcx-message-metrics__item-label' {...(props as GetProps<typeof MessageMetricsItemLabelFrame>)} />
 );
 
-export default MessageMetricsItemLabel;
+export default withFuselageProvider(MessageMetricsItemLabel);

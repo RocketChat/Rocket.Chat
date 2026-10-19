@@ -1,13 +1,21 @@
-import type { HTMLAttributes, ReactNode } from 'react';
+import { styled, View } from '@tamagui/web';
+import type { ReactNode } from 'react';
 
-import { cx } from '../../../helpers/composeClassNames';
+import { withFuselageProvider } from '../../FuselageProvider/FuselageProvider';
+
+const MessageSystemBlockFrame = styled(View, {
+	render: 'div',
+	flexDirection: 'row',
+	alignItems: 'center',
+	flexShrink: 1,
+	minWidth: 'auto',
+	minHeight: 'auto',
+});
 
 export type MessageSystemBlockProps = {
 	children?: ReactNode;
-} & HTMLAttributes<HTMLDivElement>;
+};
 
-const MessageSystemBlock = ({ className, ...props }: MessageSystemBlockProps) => (
-	<div {...props} className={cx('rcx-message-system__block', className)} />
-);
+const MessageSystemBlock = (props: MessageSystemBlockProps) => <MessageSystemBlockFrame className='rcx-message-system__block' {...props} />;
 
-export default MessageSystemBlock;
+export default withFuselageProvider(MessageSystemBlock);

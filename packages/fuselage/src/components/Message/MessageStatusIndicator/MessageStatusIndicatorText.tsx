@@ -1,15 +1,26 @@
-import type { HTMLAttributes, ReactNode } from 'react';
+import { styled, Text } from '@tamagui/web';
+import type { ReactNode } from 'react';
 
-import { cx } from '../../../helpers/composeClassNames';
+import { textIconColors } from '../../../Theme';
+import { withFuselageProvider } from '../../FuselageProvider/FuselageProvider';
+import { textScale } from '../messageStyles';
+
+const MessageStatusIndicatorTextFrame = styled(Text, {
+	render: 'span',
+	whiteSpace: 'nowrap',
+	wordWrap: 'inherit',
+	color: String(textIconColors['font-secondary-info']),
+	...textScale('c1'),
+});
 
 export type MessageStatusIndicatorTextProps = {
 	children: ReactNode;
-} & HTMLAttributes<HTMLSpanElement>;
+};
 
-const MessageStatusIndicatorText = ({ children, className, ...props }: MessageStatusIndicatorTextProps) => (
-	<span aria-hidden {...props} className={cx('rcx-message-status-indicator__text', className)}>
+const MessageStatusIndicatorText = ({ children }: MessageStatusIndicatorTextProps) => (
+	<MessageStatusIndicatorTextFrame className='rcx-message-status-indicator__text' aria-hidden>
 		{children}
-	</span>
+	</MessageStatusIndicatorTextFrame>
 );
 
-export default MessageStatusIndicatorText;
+export default withFuselageProvider(MessageStatusIndicatorText);

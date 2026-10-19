@@ -1,11 +1,28 @@
+import { styled, Text, type GetProps } from '@tamagui/web';
 import type { HTMLAttributes, RefAttributes } from 'react';
 
-import { cx } from '../../helpers/composeClassNames';
+import { boxText, focusState, truncatedText } from './messageStyles';
+import { textIconColors } from '../../Theme';
+import { spacing } from '../../styleTokens';
+import { withFuselageProvider } from '../FuselageProvider/FuselageProvider';
+
+const MessageNameContainerFrame = styled(Text, {
+	render: 'span',
+	...boxText,
+	...truncatedText,
+	...focusState,
+	flexShrink: 0,
+	marginInline: spacing('x2'),
+	// Must match `MessageName`'s color, or the hover underline mismatches the text under it.
+	color: String(textIconColors['font-titles-labels']),
+});
 
 export type MessageNameContainerProps = HTMLAttributes<HTMLSpanElement> & RefAttributes<HTMLSpanElement>;
 
-function MessageNameContainer({ className, ...props }: MessageNameContainerProps) {
-	return <span {...props} className={cx('rcx-box rcx-box--full rcx-message-header__name-container', className)} />;
+function MessageNameContainer(props: MessageNameContainerProps) {
+	return (
+		<MessageNameContainerFrame className='rcx-message-header__name-container' {...(props as GetProps<typeof MessageNameContainerFrame>)} />
+	);
 }
 
-export default MessageNameContainer;
+export default withFuselageProvider(MessageNameContainer);

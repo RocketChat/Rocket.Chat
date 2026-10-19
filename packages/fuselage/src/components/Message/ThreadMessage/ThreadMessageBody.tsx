@@ -1,13 +1,23 @@
-import type { HTMLAttributes, ReactNode } from 'react';
+import { styled, Text } from '@tamagui/web';
+import type { ReactNode } from 'react';
 
-import { cx } from '../../../helpers/composeClassNames';
+import { textIconColors } from '../../../Theme';
+import { withFuselageProvider } from '../../FuselageProvider/FuselageProvider';
+import { boxText, truncatedText } from '../messageStyles';
+
+const ThreadMessageBodyFrame = styled(Text, {
+	render: 'div',
+	display: 'block',
+	...boxText,
+	...truncatedText,
+	flexShrink: 1,
+	color: String(textIconColors['font-default']),
+});
 
 export type ThreadMessageBodyProps = {
 	children?: ReactNode;
-} & HTMLAttributes<HTMLDivElement>;
+};
 
-const ThreadMessageBody = ({ className, ...props }: ThreadMessageBodyProps) => (
-	<div {...props} className={cx('rcx-box rcx-box--full rcx-message-thread__message', className)} />
-);
+const ThreadMessageBody = (props: ThreadMessageBodyProps) => <ThreadMessageBodyFrame className='rcx-message-thread__message' {...props} />;
 
-export default ThreadMessageBody;
+export default withFuselageProvider(ThreadMessageBody);

@@ -1,11 +1,17 @@
+import type { GetProps } from '@tamagui/web';
 import type { HTMLAttributes } from 'react';
 
-import { cx } from '../../helpers/composeClassNames';
+import { MessageContainerFrame } from './MessageContainer';
+import { withFuselageProvider } from '../FuselageProvider/FuselageProvider';
 
 export type MessageContainerFixedProps = HTMLAttributes<HTMLDivElement>;
 
-const MessageContainerFixed = ({ className, ...props }: MessageContainerFixedProps) => (
-	<div {...props} className={cx('rcx-box rcx-box--full rcx-message-container rcx-message-container--fixed', className)} />
+const MessageContainerFixed = (props: MessageContainerFixedProps) => (
+	<MessageContainerFrame
+		fixed
+		className='rcx-message-container rcx-message-container--fixed'
+		{...(props as GetProps<typeof MessageContainerFrame>)}
+	/>
 );
 
-export default MessageContainerFixed;
+export default withFuselageProvider(MessageContainerFixed);

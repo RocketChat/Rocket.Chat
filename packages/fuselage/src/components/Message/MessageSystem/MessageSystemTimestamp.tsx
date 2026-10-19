@@ -1,14 +1,28 @@
-import type { HTMLAttributes, ReactNode } from 'react';
+import { styled, Text } from '@tamagui/web';
+import type { ReactNode } from 'react';
 
-import { cx } from '../../../helpers/composeClassNames';
+import { textIconColors } from '../../../Theme';
+import { spacing } from '../../../styleTokens';
+import { withFuselageProvider } from '../../FuselageProvider/FuselageProvider';
+import { boxText, textScale, truncatedText } from '../messageStyles';
+
+const MessageSystemTimestampFrame = styled(Text, {
+	render: 'span',
+	...boxText,
+	...textScale('c1'),
+	...truncatedText,
+	flexShrink: 0,
+	marginInline: spacing('x2'),
+	color: String(textIconColors['font-secondary-info']),
+});
 
 export type MessageSystemTimestampProps = {
 	children: ReactNode;
 	title?: string;
-} & HTMLAttributes<HTMLSpanElement>;
+};
 
-const MessageSystemTimestamp = ({ className, ...props }: MessageSystemTimestampProps) => (
-	<span {...props} className={cx('rcx-box rcx-box--full rcx-message-system__time', className)} />
+const MessageSystemTimestamp = (props: MessageSystemTimestampProps) => (
+	<MessageSystemTimestampFrame className='rcx-message-system__time' {...props} />
 );
 
-export default MessageSystemTimestamp;
+export default withFuselageProvider(MessageSystemTimestamp);
