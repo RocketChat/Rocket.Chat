@@ -1,4 +1,5 @@
 import { composeStories } from '@storybook/react-webpack5';
+import { screen } from '@testing-library/react';
 import { axe } from 'jest-axe';
 
 import * as stories from './Sidepanel.stories';
@@ -23,19 +24,19 @@ test.each(testCases)('%s should have no a11y violations', async (_storyname, Sto
 
 describe('[Sidepanel bridges]', () => {
 	it('should render `SidepanelList` as an `ItemGroup` list', () => {
-		const { getByRole } = render(
+		render(
 			<SidepanelList aria-label='Rooms'>
 				<div role='listitem'>general</div>
 			</SidepanelList>,
 		);
 
-		expect(getByRole('list', { name: 'Rooms' })).toHaveClass('rcx-item-group', 'rcx-sidepanel-list');
+		expect(screen.getByRole('list', { name: 'Rooms' })).toHaveClass('rcx-item-group', 'rcx-sidepanel-list');
 	});
 
 	it('should render `SidepanelDivider` as an `ItemDivider` separator', () => {
-		const { getByRole } = render(<SidepanelDivider />);
+		render(<SidepanelDivider />);
 
-		expect(getByRole('separator')).toHaveClass('rcx-item-divider', 'rcx-sidepanel--divider');
+		expect(screen.getByRole('separator')).toHaveClass('rcx-item-divider', 'rcx-sidepanel--divider');
 	});
 
 	it('should keep the full-width panel line under `SidepanelHeader`', () => {

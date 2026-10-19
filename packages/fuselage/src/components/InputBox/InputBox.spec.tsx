@@ -1,5 +1,5 @@
 import { composeStories } from '@storybook/react-webpack5';
-import { waitFor } from '@testing-library/react';
+import { screen, waitFor } from '@testing-library/react';
 import { axe } from 'jest-axe';
 import { useEffect, useState } from 'react';
 
@@ -35,10 +35,10 @@ it('should update error class when error changes asynchronously', async () => {
 		return <WithAddon aria-label='test-input' error={error} />;
 	};
 
-	const { getByRole } = render(<TestComponent />);
+	render(<TestComponent />);
 
 	await waitFor(() => {
-		const input = getByRole('textbox', { name: /test-input/i }).parentElement as HTMLElement;
+		const input = screen.getByRole('textbox', { name: /test-input/i }).parentElement as HTMLElement;
 		expect(input).toHaveClass('invalid');
 	});
 });

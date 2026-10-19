@@ -1,4 +1,5 @@
 import { composeStories } from '@storybook/react-webpack5';
+import { screen } from '@testing-library/react';
 import { axe } from 'jest-axe';
 
 import CheckOption from './CheckOption';
@@ -37,9 +38,9 @@ describe('Option', () => {
 	});
 
 	it('should render an `Item` row that keeps the `Option` classes, value and states', () => {
-		const { getByRole } = render(<Option role='option' value='1' label='Lorem' focus selected />);
+		render(<Option role='option' value='1' label='Lorem' focus selected />);
 
-		const option = getByRole('option', { name: 'Lorem' });
+		const option = screen.getByRole('option', { name: 'Lorem' });
 
 		expect(option.tagName).toBe('LI');
 		expect(option).toHaveClass(
@@ -57,15 +58,15 @@ describe('Option', () => {
 	});
 
 	it('should keep the `rcx-option__content` class on the label', () => {
-		const { getByText } = render(<Option label='Empty' />);
+		render(<Option label='Empty' />);
 
-		expect(getByText('Empty').closest('div.rcx-option__content')).not.toBe(null);
+		expect(screen.getByText('Empty').closest('div.rcx-option__content')).not.toBe(null);
 	});
 
 	it('should name the icon with `iconLabel` and hide it otherwise', () => {
-		const { getByRole, rerender, container } = render(<Option label='rocket.cat' icon='globe' iconLabel='Federated' />);
+		const { rerender, container } = render(<Option label='rocket.cat' icon='globe' iconLabel='Federated' />);
 
-		expect(getByRole('img', { name: 'Federated' })).toBeInTheDocument();
+		expect(screen.getByRole('img', { name: 'Federated' })).toBeInTheDocument();
 
 		rerender(<Option label='rocket.cat' icon='globe' />);
 
@@ -75,13 +76,13 @@ describe('Option', () => {
 	it('should call onClick when click', () => {
 		const click = jest.fn();
 
-		const { getByText } = render(
+		render(
 			<Option onClick={click}>
 				<OptionContent>Option</OptionContent>
 			</Option>,
 		);
 
-		getByText('Option').click();
+		screen.getByText('Option').click();
 
 		expect(click).toHaveBeenCalledTimes(1);
 	});
@@ -89,13 +90,13 @@ describe('Option', () => {
 	it('should call prevent when click on disabled', () => {
 		const click = jest.fn();
 
-		const { getByText } = render(
+		render(
 			<Option disabled onClick={click}>
 				<OptionContent>Option</OptionContent>
 			</Option>,
 		);
 
-		getByText('Option').click();
+		screen.getByText('Option').click();
 
 		expect(click).toHaveBeenCalledTimes(0);
 		expect(prevent).toHaveBeenCalledTimes(1);
@@ -104,13 +105,13 @@ describe('Option', () => {
 
 describe('CheckOption', () => {
 	it('should announce selection through `aria-selected` and hide the checkbox', () => {
-		const { getByRole } = render(
+		render(
 			<CheckOption role='option' selected>
 				Lorem
 			</CheckOption>,
 		);
 
-		const option = getByRole('option', { name: 'Lorem' });
+		const option = screen.getByRole('option', { name: 'Lorem' });
 
 		expect(option).toHaveAttribute('aria-selected', 'true');
 		expect(option.querySelector('input[type="checkbox"]')).toHaveAttribute('aria-hidden', 'true');

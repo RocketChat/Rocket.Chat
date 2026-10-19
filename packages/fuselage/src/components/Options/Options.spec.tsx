@@ -1,4 +1,5 @@
 import { composeStories } from '@storybook/react-webpack5';
+import { screen } from '@testing-library/react';
 import { axe } from 'jest-axe';
 
 import { render } from '../../testing';
@@ -30,11 +31,11 @@ describe('[Options Component]', () => {
 	});
 
 	it('should render headings and dividers with `Item` group parts', () => {
-		const { getByRole, getByText } = render(<Grouped />);
+		render(<Grouped />);
 
-		const listbox = getByRole('listbox');
-		expect(getByText('Recent').closest('li')).toHaveClass('rcx-item-group-header', 'rcx-option__header');
-		expect(getByText('Recent').closest('li')).toHaveAttribute('role', 'presentation');
+		const listbox = screen.getByRole('listbox');
+		expect(screen.getByText('Recent').closest('li')).toHaveClass('rcx-item-group-header', 'rcx-option__header');
+		expect(screen.getByText('Recent').closest('li')).toHaveAttribute('role', 'presentation');
 		expect(listbox.querySelector('li.rcx-item-divider')).toHaveAttribute('aria-hidden', 'true');
 	});
 });
@@ -49,7 +50,7 @@ describe('[Options]', () => {
 			return this.getAttribute('role') === 'listbox' ? 120 : 40;
 		});
 
-		const { getByRole } = render(
+		render(
 			<Options
 				options={options}
 				cursor={8}
@@ -64,7 +65,7 @@ describe('[Options]', () => {
 			/>,
 		);
 
-		expect(getByRole('listbox').scrollTop).toBe(320);
+		expect(screen.getByRole('listbox').scrollTop).toBe(320);
 
 		offsetTop.mockRestore();
 		clientHeight.mockRestore();

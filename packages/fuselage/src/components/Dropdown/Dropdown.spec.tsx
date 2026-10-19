@@ -15,15 +15,15 @@ describe('[Dropdown Component]', () => {
 	});
 
 	it('should show dropdown when anchor is clicked once', async () => {
-		const { getByTestId } = render(<Default {...Default.args} />);
-		const anchor = getByTestId('dropdown-anchor');
+		render(<Default {...Default.args} />);
+		const anchor = screen.getByTestId('dropdown-anchor');
 		await userEvent.click(anchor);
 		expect(await screen.findByTestId('dropdown')).toBeInTheDocument();
 	});
 
 	it('should hide dropdown when anchor is clicked twice', async () => {
-		const { getByTestId } = render(<Default {...Default.args} />);
-		const anchor = getByTestId('dropdown-anchor');
+		render(<Default {...Default.args} />);
+		const anchor = screen.getByTestId('dropdown-anchor');
 		await userEvent.click(anchor);
 		await userEvent.click(anchor);
 		expect(dropdownOption).toBeNull();

@@ -24,13 +24,13 @@ describe('[SidebarItem Component]', () => {
 	});
 
 	it('should render an `Item` link that keeps the `SidebarItem` classes', () => {
-		const { getByRole } = render(
+		render(
 			<SidebarItem href='#general' selected level={2}>
 				<SidebarItemTitle unread>general</SidebarItemTitle>
 			</SidebarItem>,
 		);
 
-		const link = getByRole('link', { name: 'general' });
+		const link = screen.getByRole('link', { name: 'general' });
 		expect(link).toHaveClass(
 			'rcx-item',
 			'rcx-item--selected',
@@ -42,7 +42,7 @@ describe('[SidebarItem Component]', () => {
 	});
 
 	it('should name the icon by its label, and hide it without one', () => {
-		const { getByRole, container } = render(
+		const { container } = render(
 			<SidebarItem href='#general'>
 				<SidebarItemIcon icon='lock' label='Private channel' />
 				<SidebarItemIcon icon='star' />
@@ -50,7 +50,7 @@ describe('[SidebarItem Component]', () => {
 			</SidebarItem>,
 		);
 
-		expect(getByRole('img', { name: 'Private channel' })).toHaveClass('rcx-item__icon', 'rcx-sidebar-item__icon');
+		expect(screen.getByRole('img', { name: 'Private channel' })).toHaveClass('rcx-item__icon', 'rcx-sidebar-item__icon');
 		expect(container.querySelectorAll('.rcx-item__icon[aria-hidden="true"]')).toHaveLength(1);
 	});
 
@@ -69,13 +69,13 @@ describe('[SidebarItem Component]', () => {
 	});
 
 	it('should keep the `SidebarLink` title a direct child of the link', () => {
-		const { getByRole } = render(
+		render(
 			<SidebarLink href='#home' icon='home'>
 				Home
 			</SidebarLink>,
 		);
 
-		const link = getByRole('link', { name: 'Home' });
+		const link = screen.getByRole('link', { name: 'Home' });
 		expect(link).toHaveClass('rcx-item', 'rcx-sidebar-link');
 		expect(link.querySelector(':scope > .rcx-sidebar-item__title')).not.toBe(null);
 	});

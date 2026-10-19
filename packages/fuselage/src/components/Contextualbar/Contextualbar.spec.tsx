@@ -1,4 +1,5 @@
 import { composeStories } from '@storybook/react-webpack5';
+import { screen } from '@testing-library/react';
 import { axe, toHaveNoViolations } from 'jest-axe';
 
 import * as stories from './Contextualbar.stories';
@@ -24,8 +25,8 @@ describe('[Contextualbar Rendering]', () => {
 	});
 
 	test('WithLongTitle should truncate long titles', () => {
-		const { getByRole } = render(<WithLongTitle />);
-		const titleElement = getByRole('heading');
+		render(<WithLongTitle />);
+		const titleElement = screen.getByRole('heading');
 
 		const titleStyle = window.getComputedStyle(titleElement);
 		expect(titleStyle.overflow).toBe('hidden');
