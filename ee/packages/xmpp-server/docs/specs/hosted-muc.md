@@ -171,8 +171,8 @@ still describes it instead of answering `item-not-found` ([service-discovery R6]
 New joins are refused, since no Rocket.Chat room hosts the JID. Where: nothing calls
 `mucDestroyRoom` when a room is deleted, and `MucService.destroyRoom` only drops the room
 from the registry: the fix must also send each occupant the unavailable presence carrying
-`<destroy/>` (XEP-0045 §10.9), or their clients keep a dead room. Test: `hosted-muc.spec.ts`, "closes the room when it
-is deleted in Rocket.Chat".
+`<destroy/>` (XEP-0045 §10.9), or their clients keep a dead room. Test: `hosted-muc.spec.ts`,
+"closes the room when it is deleted in Rocket.Chat".
 
 ## Open questions
 
