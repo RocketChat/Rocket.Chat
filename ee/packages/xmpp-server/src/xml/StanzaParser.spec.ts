@@ -144,6 +144,6 @@ describe('StanzaParser', () => {
 		parser.write('<!DOCTYPE x>');
 		parser.write(`${STREAM_HEADER}<message/>`);
 
-		expect(events.filter((e) => e.type !== 'error')).toHaveLength(0);
+		expect(events.map((e) => e.type)).toEqual(['error']);
 	});
 });
