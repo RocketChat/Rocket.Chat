@@ -64,6 +64,7 @@ describe('classification banners JSON schema (v1 enforcement contract)', () => {
 			],
 		],
 		['a disabled entry without a match next to an enabled default', [{ ...defaultEntry, enabled: false }, defaultEntry]],
+		['an enabled default before a matched entry', [defaultEntry, { ...defaultEntry, text: 'PERSONAL', match: { type: ['direct'] } }]],
 	])('accepts a document with %s', (_name, nonAbacBanner) => {
 		expect(validate({ ...validConfig, nonAbacBanner })).toBe(true);
 	});
