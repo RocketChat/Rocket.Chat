@@ -1,14 +1,8 @@
 @use '../../styles/lengths.scss';
 @use '../../styles/colors.scss';
-@use '../../styles/typography.scss' as *;
-@use '../../styles/mixins/interactivity.scss' as *;
 @use '../../styles/mixins/shadows.scss' as *;
 @use '../../styles/mixins/states.scss' as *;
 @use '../../styles/functions.scss' as *;
-
-$tabs-background-color: theme('tabs-background-color', transparent);
-$tabs-border-color: theme('tabs-border-color', transparent);
-$tabs-color: theme('tabs-color', colors.font(hint));
 
 $tabs-hover-color: theme('tabs-hover-border-color', colors.font(default));
 
@@ -28,11 +22,6 @@ $tabs-disabled-selected-border-color: theme('tabs-disabled-selected-border-color
 $tabs-border-radius: theme('tabs-border-radius', lengths.border-radius(medium));
 
 .rcx-tabs__scroll-box {
-	position: relative;
-
-	overflow: auto;
-
-	margin-block: lengths.margin(-4);
 	-ms-overflow-style: none;
 
 	&::-webkit-scrollbar {
@@ -40,37 +29,13 @@ $tabs-border-radius: theme('tabs-border-radius', lengths.border-radius(medium));
 	}
 }
 
-.rcx-tabs__wrapper {
-	display: flex;
-
-	flex-wrap: nowrap;
-
-	margin: lengths.margin(none) lengths.margin(12);
-
-	padding: lengths.padding(4) lengths.padding(none);
-}
-
+// The states and the selected modifier stay together: the selected rules must keep outranking the hover and active
+// ones, and the divider rule must keep outranking all of them, as they did by specificity and source order
 .rcx-tabs__item {
-	position: relative;
-
-	align-items: center;
-
-	flex: 0 0 auto;
-
-	min-height: lengths.size(40);
-
-	margin: lengths.margin(none) lengths.margin(12);
-	padding: calc(lengths.padding(4) + lengths.border-width(default)) lengths.padding(none);
-
-	color: $tabs-color;
-	border-width: lengths.border-width(default);
-
-	border-style: solid;
-	border-color: transparent;
-	background-color: transparent;
-
-	@include clickable;
-	@include use-font-scale(h4);
+	&.disabled,
+	&:disabled {
+		cursor: not-allowed;
+	}
 
 	&:hover {
 		color: $tabs-hover-color;
@@ -91,14 +56,8 @@ $tabs-border-radius: theme('tabs-border-radius', lengths.border-radius(medium));
 		@include use-focus-shadow($tabs-focus-shadow-color);
 	}
 
-	&--disabled {
-		cursor: not-allowed;
-
+	&--disabled:hover {
 		color: $tabs-disabled-color;
-
-		&:hover {
-			color: $tabs-disabled-color;
-		}
 	}
 
 	&--selected.rcx-tabs__item {
@@ -133,28 +92,16 @@ $tabs-border-radius: theme('tabs-border-radius', lengths.border-radius(medium));
 	}
 }
 
-// TODO: Indication that there are more tab__items left to scroll (some sort of shadow maybe)
-.rcx-tabs {
-	position: relative;
+.rcx-tabs--with-divider .rcx-tabs__item {
+	margin-block-end: lengths.margin(-1);
+	border-block-width: lengths.border-width(default);
+}
 
-	display: flex;
-
-	&--with-divider {
-		border-block-end: lengths.border-width(default) solid colors.stroke(light);
-
-		.rcx-tabs__item {
-			margin-block-end: lengths.margin(-1);
-			border-block-width: lengths.border-width(default);
-		}
-	}
-
-	&--stretch {
-		flex-direction: column;
-
-		.rcx-tabs__item {
-			flex-grow: 1;
-
-			text-align: center;
-		}
-	}
+// Tamagui has no style key for font smoothing
+.rcx-tabs,
+.rcx-tabs__scroll-box,
+.rcx-tabs__wrapper,
+.rcx-tabs__item {
+	-webkit-font-smoothing: antialiased;
+	-moz-osx-font-smoothing: grayscale;
 }
