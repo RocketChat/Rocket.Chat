@@ -12,6 +12,8 @@
 		"dev": "tsc -p tsconfig.json --watch --preserveWatchOutput",
 		"lint": "yarn run -T oxlint",
 		"lint:fix": "yarn run -T oxlint --fix",
+		"test": "jest",
+		"testunit": "jest",
 		"typecheck": "tsc --noEmit"
 	},
 	"dependencies": {

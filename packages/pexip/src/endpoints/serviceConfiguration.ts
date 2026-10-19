@@ -1,15 +1,9 @@
-import { VideoConference as VideoConferenceModel } from '@rocket.chat/models';
-
-import type { Pexip } from '../Pexip';
 import type { ServiceConfiguration } from '../definition/ServiceConfiguration';
 import type { SerializedServiceConfigurationRequest } from '../definition/ServiceConfigurationRequest';
 import { logger } from '../logger';
+import { PexipEndpoint } from './endpoint';
 
-export class ServerConfigurationEndpoint {
-	constructor(public readonly pexip: Pexip) {
-		//
-	}
-
+export class ServerConfigurationEndpoint extends PexipEndpoint {
 	public async get(serviceRequest: SerializedServiceConfigurationRequest): Promise<ServiceConfiguration | null> {
 		const { local_alias: alias } = serviceRequest;
 		if (!alias) {
@@ -22,16 +16,8 @@ export class ServerConfigurationEndpoint {
 		return this.getServiceConfigurationForIdentification(identification);
 	}
 
-	private getIdentificationFromAlias(alias: string): string {
-		if (!alias.startsWith('sip:') || !alias.includes('@')) {
-			return alias;
-		}
-
-		return alias.substring(0, alias.indexOf('@')).replace('sip:', '');
-	}
-
 	private async getServiceConfigurationForIdentification(identification: string): Promise<ServiceConfiguration | null> {
-		const call = await VideoConferenceModel.findOneById(identification);
+		const call = await this.getCallByIdentification(identification);
 		if (!call) {
 			logger.error({ msg: 'Invalid call identification', identification });
 			return null;
