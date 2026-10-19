@@ -1,5 +1,6 @@
 import type { AllHTMLAttributes } from 'react';
 
+import { withFuselageProvider } from '../FuselageProvider/FuselageProvider';
 import Away from './icons/Away';
 import Busy from './icons/Busy';
 import Disabled from './icons/Disabled';
@@ -33,4 +34,4 @@ const StatusBullet = ({ status = 'loading', ...props }: StatusBulletProps) => {
 	}
 };
 
-export default StatusBullet;
+export default withFuselageProvider(StatusBullet);
