@@ -1,6 +1,6 @@
 import { RestClient } from '@rocket.chat/api-client';
 
-import { ClientStreamImpl } from './ClientStream';
+import { ClientStreamImpl, ConnectionLostError } from './ClientStream';
 import type { Connection } from './Connection';
 import { ConnectionImpl } from './Connection';
 import { DDPDispatcher } from './DDPDispatcher';
@@ -129,10 +129,19 @@ export class DDPSDK implements SDK {
 
 		rejectInFlightOnConnectionLoss(connection, stream);
 
-		connection.on('connected', () => {
-			if (account.user?.token) {
-				void account.loginWithToken(account.user.token);
+		connection.on('connected', async () => {
+			const token = account.user?.token;
+			if (token) {
+				try {
+					await account.loginWithToken(token);
+				} catch (error) {
+					// The next connection retries with the same token.
+					if (error instanceof ConnectionLostError) return;
+					account.user = undefined;
+					account.uid = undefined;
+				}
 			}
+			// Restored only after the re-login so subscriptions that need a user aren't refused.
 			[...stream.subscriptions.entries()].forEach(([, sub]) => {
 				ddp.subscribeWithId(sub.id, sub.name, sub.params);
 			});

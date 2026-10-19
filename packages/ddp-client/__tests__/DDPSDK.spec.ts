@@ -243,42 +243,65 @@ it('should stop the heartbeat when the connection is closed', async () => {
 	expect(stop).toHaveBeenCalled();
 });
 
-it.skip('should try to loginWithToken after reconnection', async () => {
-	const sdk = DDPSDK.create('ws://localhost:1234');
-
+const loginAndReconnect = async (sdk: DDPSDK) => {
 	await handleConnection(server, sdk.connection.connect());
+	await handleMethod(
+		server,
+		'login',
+		[{ resume: 'token' }],
+		JSON.stringify({ id: 'uid', token: 'token', tokenExpires: { $date: 99999999 } }),
+		sdk.account.loginWithToken('token'),
+	);
 
-	const messageResult = {
-		id: 123,
-		token: 'token1234',
-		tokenExpires: { $date: 99999999 },
-	};
-
-	const { loginWithToken } = sdk.account;
-	const loginFn = jest.fn((token: string) => loginWithToken.apply(sdk.account, [token]));
-	sdk.account.loginWithToken = loginFn;
-
-	await handleMethod(server, 'login', [{ resume: 'token' }], JSON.stringify(messageResult), sdk.account.loginWithToken('token'));
-
-	expect(sdk.account.user?.token).toBe(messageResult.token);
-	expect(loginFn).toHaveBeenCalledTimes(1);
+	const subscription = sdk.client.subscribe('publication');
+	await server.nextMessage;
 
 	// Fake timers are used to avoid waiting for the reconnect timeout
 	jest.useFakeTimers();
-
 	server.close();
 	WS.clean();
 	server = new WS('ws://localhost:1234/websocket');
-
-	const reconnect = new Promise((resolve) => sdk.connection.once('reconnecting', () => resolve(undefined)));
-	const connecting = new Promise((resolve) => sdk.connection.once('connecting', () => resolve(undefined)));
 	const connected = new Promise((resolve) => sdk.connection.once('connected', () => resolve(undefined)));
-	await handleConnection(server, jest.advanceTimersByTimeAsync(1000), reconnect, connecting, connected);
-
-	jest.advanceTimersByTimeAsync(1000);
-	expect(loginFn).toHaveBeenCalledTimes(2);
-
+	await handleConnection(server, jest.advanceTimersByTimeAsync(1000), connected);
 	jest.useRealTimers();
+
+	return subscription;
+};
+
+it('should log in again before restoring subscriptions after a reconnection', async () => {
+	const sdk = DDPSDK.create('ws://localhost:1234');
+	const subscription = await loginAndReconnect(sdk);
+
+	const login = JSON.parse((await server.nextMessage) as string);
+	expect(login).toMatchObject({ msg: 'method', method: 'login', params: [{ resume: 'token' }] });
+
+	server.send(JSON.stringify({ msg: 'result', id: login.id, result: { id: 'uid', token: 'token', tokenExpires: { $date: 99999999 } } }));
+
+	await expect(server.nextMessage.then((message) => JSON.parse(message as string))).resolves.toMatchObject({
+		msg: 'sub',
+		id: subscription.id,
+		name: 'publication',
+	});
+	expect(sdk.account.uid).toBe('uid');
+	sdk.connection.close();
+});
+
+it('should drop the credentials when the server refuses the token after a reconnection', async () => {
+	const sdk = DDPSDK.create('ws://localhost:1234');
+	const subscription = await loginAndReconnect(sdk);
+	const onLogout = jest.fn();
+	sdk.account.onLogout(onLogout);
+
+	const login = JSON.parse((await server.nextMessage) as string);
+	server.send(JSON.stringify({ msg: 'result', id: login.id, error: { error: 403, reason: 'You are not allowed to use this token' } }));
+
+	await expect(server.nextMessage.then((message) => JSON.parse(message as string))).resolves.toMatchObject({
+		msg: 'sub',
+		id: subscription.id,
+	});
+	expect(sdk.account.uid).toBeUndefined();
+	expect(sdk.account.user).toBeUndefined();
+	expect(onLogout).toHaveBeenCalledTimes(1);
 	sdk.connection.close();
 });
 
