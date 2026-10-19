@@ -230,12 +230,16 @@ export interface IUsersModel extends IBaseModel<IUser> {
 	): FindCursor<DocumentWithProjection<T, O>>;
 	findActiveByRoomIdAfterUsername<T extends Document = IUser>(
 		roomId: IRoom['_id'],
-		range: { search?: string; after?: Required<Pick<IUser, '_id' | 'username'>>; limit: number },
+		range: { search?: string; after?: Required<Pick<IUser, '_id' | 'username'>>; match?: Filter<IUser>; limit: number },
 		options?: FindOptions<IUser>,
 	): FindCursor<T>;
 	countActiveByRoomIdAfterUsername(
 		roomId: IRoom['_id'],
-		range?: { search?: string; after?: Required<Pick<IUser, '_id' | 'username'>> },
+		range?: {
+			search?: string;
+			after?: Required<Pick<IUser, '_id' | 'username'>>;
+			until?: Required<Pick<IUser, '_id' | 'username'>>;
+		},
 	): Promise<number>;
 	findOneByIdAndRoomId<T extends Document = IUser>(
 		userId: IUser['_id'],
