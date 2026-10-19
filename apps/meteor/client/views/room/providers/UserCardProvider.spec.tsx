@@ -56,7 +56,7 @@ it('consumes Escape while the card is open so an underlying handler does not als
 	);
 
 	fireEvent.click(screen.getByText('open'));
-	await screen.findByTestId('user-card');
+	expect(await screen.findByTestId('user-card')).toBeInTheDocument();
 
 	fireEvent.keyDown(screen.getByText('open'), { key: 'Escape' });
 
@@ -79,7 +79,7 @@ it('does not consume Escape while a menu is open, leaving the card as it is', as
 	);
 
 	fireEvent.click(screen.getByText('open'));
-	await screen.findByTestId('user-card');
+	expect(await screen.findByTestId('user-card')).toBeInTheDocument();
 
 	fireEvent.keyDown(screen.getByText('open'), { key: 'Escape' });
 

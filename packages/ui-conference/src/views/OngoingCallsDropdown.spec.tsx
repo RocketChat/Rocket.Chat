@@ -118,7 +118,7 @@ describe('OngoingCallsDropdown', () => {
 
 		const button = await screen.findByRole('button', { name: /ongoing call/i });
 		await userEvent.click(button);
-		await screen.findByRole('list', { name: 'Ongoing calls' });
+		expect(await screen.findByRole('list', { name: 'Ongoing calls' })).toBeInTheDocument();
 
 		await userEvent.keyboard('{Escape}');
 
