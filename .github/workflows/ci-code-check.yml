@@ -18,12 +18,29 @@ jobs:
     permissions:
       contents: read
 
-    name: ${{ matrix.check == 'ts' && 'TypeScript' || 'Code Lint' }}
+    name: ${{ matrix.name }}
 
     strategy:
       fail-fast: false
       matrix:
-        check: ['ts', 'lint']
+        include:
+          - check: ts
+            name: TypeScript
+          - check: lint
+            name: Code Lint
+          # apps/meteor ESLint is split by directory; the last shard lints everything the others ignore
+          - check: eslint-meteor
+            name: 'ESLint meteor (client views)'
+            eslint-args: client/views/room client/views/admin client/views/omnichannel
+          - check: eslint-meteor
+            name: 'ESLint meteor (client)'
+            eslint-args: client --ignore-pattern 'client/views/room/' --ignore-pattern 'client/views/admin/' --ignore-pattern 'client/views/omnichannel/'
+          - check: eslint-meteor
+            name: 'ESLint meteor (server)'
+            eslint-args: server ee
+          - check: eslint-meteor
+            name: 'ESLint meteor (rest)'
+            eslint-args: . --ignore-pattern 'client/' --ignore-pattern 'server/' --ignore-pattern 'ee/'
 
     steps:
       - name: Set Swap Space
@@ -46,6 +63,7 @@ jobs:
       - uses: ./.github/actions/restore-packages
 
       - name: Install Meteor
+        if: matrix.check != 'lint'
         shell: bash
         run: |
           # Restore bin from cache
@@ -71,5 +89,14 @@ jobs:
 
       - name: Lint
         if: matrix.check == 'lint'
-        run: yarn lint
+        run: |
+          yarn turbo run lint --filter='!@rocket.chat/meteor'
+          yarn workspace @rocket.chat/meteor stylelint
+
+      - name: ESLint (apps/meteor shard)
+        if: matrix.check == 'eslint-meteor'
+        working-directory: ./apps/meteor
+        run: |
+          meteor lint
+          yarn eslint ${{ matrix.eslint-args }}
 
