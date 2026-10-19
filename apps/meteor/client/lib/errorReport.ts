@@ -13,9 +13,16 @@ const describeError = (error: unknown, depth = 0): string[] => {
 
 	const lines = [`${error.name}: ${error.message}`, error.stack ?? '(no stack trace)'];
 
-	if (error.cause !== undefined && depth < 3) {
-		lines.push('', 'Caused by:', ...describeError(error.cause, depth + 1));
+	if (error.cause === undefined) {
+		return lines;
 	}
+
+	if (depth >= 3) {
+		lines.push('', '(further causes omitted)');
+		return lines;
+	}
+
+	lines.push('', 'Caused by:', ...describeError(error.cause, depth + 1));
 
 	return lines;
 };
