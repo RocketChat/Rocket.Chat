@@ -1,6 +1,6 @@
 export const DEFAULT_INTERVAL_HOURS = 1;
 
-const DEFAULT_WINDOW_DAYS = 2;
+export const DEFAULT_WINDOW_DAYS = 2;
 const MIN_WINDOW_DAYS = 1;
 const MAX_WINDOW_DAYS = 7;
 
