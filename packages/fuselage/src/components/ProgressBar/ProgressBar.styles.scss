@@ -3,43 +3,21 @@
 @use '../../styles/functions.scss' as *;
 
 $progress-bar-color-shine: theme('progress-bar-color-shine', colors.surface(light));
-$progress-bar-color-background: theme('progress-bar-color-background', colors.surface(neutral));
 
 $progress-bar-border-radius: theme('progress-bar-border-radius', lengths.border-radius(large));
 
-.rcx-progress-bar {
-	display: block;
+.rcx-progress-bar__fill--animated::before {
+	position: absolute;
+	inset: 0;
 
-	overflow: hidden;
+	width: inherit;
 
-	width: 100%;
+	content: '';
+	animation: rcx-progress-bar__animation 2s ease-out infinite;
 
-	height: 8px;
-
+	opacity: 0;
 	border-radius: $progress-bar-border-radius;
-	background-color: $progress-bar-color-background;
-}
-
-.rcx-progress-bar__fill {
-	display: block;
-
-	height: 8px;
-
-	border-radius: $progress-bar-border-radius;
-
-	&--animated::before {
-		position: absolute;
-		inset: 0;
-
-		width: inherit;
-
-		content: '';
-		animation: rcx-progress-bar__animation 2s ease-out infinite;
-
-		opacity: 0;
-		border-radius: $progress-bar-border-radius;
-		background: $progress-bar-color-shine;
-	}
+	background: $progress-bar-color-shine;
 }
 
 @keyframes rcx-progress-bar__animation {
