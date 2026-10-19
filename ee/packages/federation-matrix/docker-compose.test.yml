@@ -131,6 +131,9 @@ services:
     restart: on-failure
     ports:
       - '27017:27017'
+    environment:
+      # MongoDB 8.0 refuses to start on Linux kernel 6.19+; see https://jira.mongodb.org/browse/SERVER-121912
+      GLIBC_TUNABLES: glibc.pthread.rseq=1
     entrypoint: |
       bash -c
         "mongod --replSet rs0 --bind_ip_all &

@@ -204,6 +204,9 @@ services:
       MONGODB_REPLICA_SET_NAME: ${MONGODB_REPLICA_SET_NAME:-rs0}
       MONGODB_PORT_NUMBER: ${MONGODB_PORT_NUMBER:-27017}
       MONGODB_INITIAL_PRIMARY_HOST: ${MONGODB_INITIAL_PRIMARY_HOST:-mongo}
+      # MongoDB 8.0's bundled TCMalloc refuses to start on Linux kernel 6.19+ (GitHub runners now ship 7.0);
+      # see https://jira.mongodb.org/browse/SERVER-121912. Drop once a fixed MongoDB release is used.
+      GLIBC_TUNABLES: glibc.pthread.rseq=1
     entrypoint: |
       bash -c
         "mongod --replSet $$MONGODB_REPLICA_SET_NAME --bind_ip_all &
