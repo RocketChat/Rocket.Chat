@@ -3561,6 +3561,7 @@
   "join-without-join-code": "Join without join code",
   "join-without-join-code_description": "Permission to bypass the join code in channels with join code enabled",
   "joined": "joined",
+  "_joined.comment": "user a and user b joined a video call",
   "Joined_at": "Joined at",
   "JSON": "JSON",
   "Jump": "Jump",
