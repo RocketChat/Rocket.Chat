@@ -2,7 +2,7 @@ import type { UserStatus } from '@rocket.chat/core-typings';
 import type { CallFeature } from '@rocket.chat/media-signaling';
 
 export type InternalPeerInfo = {
-	type: 'user';
+	type: 'sip' | 'user';
 	displayName: string;
 	userId: string;
 	username?: string;
