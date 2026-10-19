@@ -30,7 +30,13 @@ export const useAbacCreationFlow = ({ abac, isAbacManaged, members, attributes }
 	const previewMembership = useEndpoint('POST', '/v1/abac/rooms.evaluateMembership');
 	const preview = useQuery({
 		queryKey: ABACQueryKeys.membershipPreview(members, attributeMap),
-		queryFn: () => previewMembership({ members, attributes: attributeMap }),
+		queryFn: async () => {
+			const result = await previewMembership({ members, attributes: attributeMap });
+			if (!('compliant' in result)) {
+				throw new Error('Unexpected membership preview response');
+			}
+			return result;
+		},
 		enabled: isManaged && step === 'preview' && Object.keys(attributeMap).length > 0,
 		refetchOnWindowFocus: false,
 	});
