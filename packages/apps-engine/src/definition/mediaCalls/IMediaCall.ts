@@ -1,6 +1,11 @@
 import type { MediaCallHangupReason } from './MediaCallHangupReason';
 
 /** A media-call capability, e.g. `'audio'`, `'video'`, `'screen-share'`. */
+/**
+ * Known values: `audio`, `screen-share`, `transfer`, `hold`, `conference-escalation`, and the widget
+ * controls `mute`, `dialpad`, `direct-message` and `device-picker`. On a `cti` call the widget shows
+ * a control only if it is listed; on other calls the controls are always shown.
+ */
 export type MediaCallFeature = string;
 
 /** Media calls happen between workspace users and/or external SIP endpoints. */

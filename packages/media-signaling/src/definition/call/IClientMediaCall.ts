@@ -15,9 +15,13 @@ export const callServiceList = [
 
 export type CallService = (typeof callServiceList)[number];
 
-export const callFeatureList = ['audio', 'screen-share', 'transfer', 'hold', 'conference-escalation'] as const;
+export const callControlFeatureList = ['mute', 'dialpad', 'direct-message', 'device-picker'] as const;
+
+export const callFeatureList = ['audio', 'screen-share', 'transfer', 'hold', 'conference-escalation', ...callControlFeatureList] as const;
 
 export type CallFeature = (typeof callFeatureList)[number];
+
+export type CallControlFeature = (typeof callControlFeatureList)[number];
 
 export const callStateList = [
 	'none', // trying to call with no idea if it'll reach anyone

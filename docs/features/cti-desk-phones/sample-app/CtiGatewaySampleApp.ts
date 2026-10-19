@@ -30,6 +30,10 @@ import type { SlashCommandContext } from '@rocket.chat/apps-engine/definition/sl
 /** How long the far end "rings" before answering, in this simulation. */
 const RING_SECONDS = 3;
 
+// What the widget offers for these calls: the capabilities this gateway supports plus the control
+// buttons it wants shown. Hangup is always shown. There is no local audio, so no device picker.
+const SAMPLE_FEATURES = ['audio', 'hold', 'transfer', 'mute', 'dialpad', 'direct-message'];
+
 /**
  * Where a user's phone number is kept. A real integration has no equivalent of this: it asks the
  * gateway which endpoints are registered to the user, rather than having the user type a number in.
@@ -160,7 +164,7 @@ class InboundCallEndpoint extends ApiEndpoint {
 			userId,
 			from: { type: 'sip', id: from.id, ...(from.displayName && { displayName: from.displayName }) },
 			device,
-			features: ['audio', 'hold', 'transfer'],
+			features: SAMPLE_FEATURES,
 		});
 
 		return { status: 200, content: { ok: true } };
@@ -367,7 +371,7 @@ export class CtiGatewaySampleApp extends App implements IMediaCallHandler {
 		await new Promise((resolve) => setTimeout(resolve, RING_SECONDS * 1000));
 
 		const mediaCalls = modify.getMediaCallModifier();
-		await mediaCalls.reportAnswered(callId, ['audio', 'hold', 'transfer']);
+		await mediaCalls.reportAnswered(callId, SAMPLE_FEATURES);
 		await mediaCalls.reportActive(callId);
 	}
 

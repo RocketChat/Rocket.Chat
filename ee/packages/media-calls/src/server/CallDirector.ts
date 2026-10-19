@@ -9,12 +9,12 @@ import type {
 	ServerActor,
 	MediaCallNegotiationStream,
 } from '@rocket.chat/core-typings';
-import type { CallFeature, CallHangupReason, CallRole } from '@rocket.chat/media-signaling';
+import type { CallFeature, CallHangupReason, CallRole, CallService } from '@rocket.chat/media-signaling';
 import type { InsertionModel } from '@rocket.chat/model-typings';
 import { MediaCallNegotiations, MediaCalls } from '@rocket.chat/models';
 
 import { getCastDirector, getMediaCallServer } from './injection';
-import { SIP_CALL_FEATURES } from '../constants';
+import { CTI_CALL_FEATURES, SIP_CALL_FEATURES } from '../constants';
 import type { IMediaCallAgent } from '../definition/IMediaCallAgent';
 import type { IMediaCallCastDirector } from '../definition/IMediaCallCastDirector';
 import { CallRejectedError } from '../definition/common';
@@ -77,7 +77,16 @@ function getCallIdentity(params: CallIdentityParams) {
 	};
 }
 
-function getFeaturesSupportedByTransport(caller: MediaCallContact, callee: MediaCallContact, features: CallFeature[]): CallFeature[] {
+function getFeaturesSupportedByTransport(
+	service: CallService,
+	caller: MediaCallContact,
+	callee: MediaCallContact,
+	features: CallFeature[],
+): CallFeature[] {
+	if (service === 'cti') {
+		return features.filter((feature) => CTI_CALL_FEATURES.includes(feature));
+	}
+
 	if (caller.type !== 'sip' && callee.type !== 'sip') {
 		return features;
 	}
@@ -344,7 +353,7 @@ class MediaCallDirector {
 			throw new CallRejectedError('prevented', hookResult.reason);
 		}
 
-		const requestedFeatures = getFeaturesSupportedByTransport(caller, callee, hookResult.features || features);
+		const requestedFeatures = getFeaturesSupportedByTransport(service, caller, callee, hookResult.features || features);
 
 		const forbiddenFeatures: CallFeature[] = [];
 		if (parentCallId) {

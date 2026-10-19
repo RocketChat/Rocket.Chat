@@ -52,6 +52,25 @@ has to reload before the change reaches the picker.
 A call does not progress on its own. Rocket.Chat does not know whether the line is ringing, up or
 cleared — only the gateway does — so the widget moves when the app reports it and not before.
 
+## Choosing the widget's buttons
+
+The `features` an app reports for a call — on `createIncomingCall`, on `reportAnswered`, or patched in by the
+pre-create event — decide which buttons the widget shows. `hold`, `transfer`, `screen-share` and
+`conference-escalation` already worked this way; these control features cover the rest:
+
+| Feature | Button |
+| --- | --- |
+| `mute` | Mute / unmute |
+| `dialpad` | DTMF dialpad |
+| `direct-message` | Open the direct message with the peer |
+| `device-picker` | Audio device picker |
+
+Hangup is always shown. Switch call and complete transfer follow the state of the call rather than a
+capability, so they are not listed.
+
+On a `cti` call an unlisted control is hidden, so an app that wants the full layout lists all of them. On a
+`webrtc` call the client treats them as always listed, which leaves those calls unchanged.
+
 ## Enabling it
 
 - **Setting:** `VoIP_TeamCollab_CTI_Enabled` (Admin → Voice Calls (VoIP) → Desk phones), off by default.
