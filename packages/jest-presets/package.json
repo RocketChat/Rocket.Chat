@@ -24,8 +24,7 @@
 	"scripts": {
 		"build": "tsc",
 		"clean": "rm -rf ./dist",
-		"lint": "eslint .",
-		"typecheck": "tsc --noEmit"
+		"lint": "eslint ."
 	},
 	"dependencies": {
 		"@swc/core": "1.15.47",

@@ -14,7 +14,6 @@
 		"lint:fix": "eslint --fix .",
 		"test": "jest",
 		"testunit": "jest",
-		"typecheck": "tsc --noEmit",
 		"unit": "jest"
 	},
 	"dependencies": {
