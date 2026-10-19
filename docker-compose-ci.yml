@@ -31,8 +31,10 @@ services:
       # the proxy always closes pooled conns first and never reuses a dead one
       - HTTP_SOCKET_TIMEOUT_MS=120000
     depends_on:
-      - traefik
-      - mongo
+      traefik:
+        condition: service_started
+      mongo:
+        condition: service_healthy
     labels:
       traefik.enable: true
       traefik.http.services.rocketchat.loadbalancer.server.port: 3000
@@ -214,6 +216,15 @@ services:
           mongosh --eval \"rs.initiate({_id: '$$MONGODB_REPLICA_SET_NAME', members: [{ _id: 0, host: '$$MONGODB_INITIAL_PRIMARY_HOST:$$MONGODB_PORT_NUMBER' }]})\";
           echo '=====> Initiating ReplSet done...';
         wait"
+    healthcheck:
+      # Ready only once the replica set has an elected primary — the app connects
+      # with ?replicaSet=rs0 and a too-early connect closes the topology.
+      test:
+        ['CMD', 'mongosh', '--quiet', '--eval', 'try { rs.status().myState === 1 ? quit(0) : quit(1) } catch (e) { quit(1) }']
+      interval: 2s
+      timeout: 5s
+      retries: 60
+      start_period: 5s
 
   httpbin:
     image: kong/httpbin
