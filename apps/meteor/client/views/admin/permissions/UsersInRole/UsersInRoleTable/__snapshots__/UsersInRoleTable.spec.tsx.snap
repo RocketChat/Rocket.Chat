@@ -542,7 +542,7 @@ exports[`renders Default without crashing 1`] = `
 </body>
 `;
 
-exports[`renders withError without crashing 1`] = `
+exports[`renders WithError without crashing 1`] = `
 <body>
   <div>
     <div
@@ -587,7 +587,7 @@ exports[`renders withError without crashing 1`] = `
 </body>
 `;
 
-exports[`renders withLoading without crashing 1`] = `
+exports[`renders WithLoading without crashing 1`] = `
 <body>
   <div>
     <div
@@ -1085,7 +1085,7 @@ exports[`renders withLoading without crashing 1`] = `
 </body>
 `;
 
-exports[`renders withNoResults without crashing 1`] = `
+exports[`renders WithNoResults without crashing 1`] = `
 <body>
   <div>
     <div
