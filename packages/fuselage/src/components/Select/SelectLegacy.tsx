@@ -11,12 +11,9 @@ import { Options, useCursor } from '../Options';
 import { PositionAnimated } from '../PositionAnimated';
 import SelectAddon from './SelectAddon';
 import SelectFocus from './SelectFocus';
+import SelectWrapper from './SelectWrapper';
 
 export type SelectOption = readonly [value: string, label: string, selected?: boolean];
-
-type WrapperProps = BoxProps;
-
-const Wrapper = (props: WrapperProps) => <Box is='div' rcx-select__wrapper {...props} />;
 
 const useDidUpdate = (func: () => void, deps: DependencyList | undefined) => {
 	const didMount = useRef(false);
@@ -135,7 +132,7 @@ function SelectLegacy({
 			className={useMemo(() => [error && 'invalid', disabled && 'disabled'], [error, disabled])}
 			{...props}
 		>
-			<Wrapper display='flex' marginInline='neg-x4' rcx-select__wrapper--hidden={!!visibleText}>
+			<SelectWrapper display='flex' marginInline='neg-x4' rcx-select__wrapper--hidden={!!visibleText}>
 				{visibleText &&
 					(RenderSelectedComponent ? (
 						<RenderSelectedComponent
@@ -165,7 +162,7 @@ function SelectLegacy({
 						<Icon name={visible === AnimatedVisibility.VISIBLE ? 'chevron-up' : addonIcon || 'chevron-down'} size='x20' />
 					</SelectAddon>
 				</Margins>
-			</Wrapper>
+			</SelectWrapper>
 			<PositionAnimated visible={visible} anchor={containerRef}>
 				<OptionsComponent
 					width={borderBoxSize.inlineSize}

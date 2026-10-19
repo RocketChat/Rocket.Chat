@@ -1,6 +1,5 @@
 import { useStableCallback, useDebouncedState } from '@rocket.chat/fuselage-hooks';
 import type { ComponentType, ElementType, MouseEvent, ReactNode, RefAttributes } from 'react';
-import { memo } from 'react';
 import { Virtuoso } from 'react-virtuoso';
 
 import { prevent } from '../../helpers/prevent';
@@ -8,6 +7,7 @@ import { AnimatedVisibility } from '../AnimatedVisibility';
 import { Box, type BoxProps } from '../Box';
 import { CheckOption, Option } from '../Option';
 import { Tile } from '../Tile';
+import Empty from './OptionsPaginatedEmpty';
 
 export type OptionsPaginatedProps = Omit<BoxProps, 'ref' | 'onSelect'> &
 	RefAttributes<Element> & {
@@ -30,11 +30,7 @@ export type OptionsPaginatedProps = Omit<BoxProps, 'ref' | 'onSelect'> &
 		endReached?: (start?: number, end?: number) => void;
 	};
 
-export const Empty = memo(function Empty() {
-	return <Option label='Empty' />;
-});
-
-export { CheckOption };
+export { CheckOption, Empty };
 
 /**
  * An input for selection of options.
@@ -51,6 +47,7 @@ export function OptionsPaginated({
 	endReached,
 	...props
 }: OptionsPaginatedProps) {
+	// eslint-disable-next-line react/no-multi-comp -- defined in render to close over the props; hoisting it would stop remounting rows
 	const OptionsComponentWithData = ({ index, data }: { index: number; data: OptionsPaginatedProps['options'][0] }) => {
 		const { value, label, selected } = data;
 		return (

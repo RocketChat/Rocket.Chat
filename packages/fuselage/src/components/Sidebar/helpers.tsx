@@ -1,3 +1,4 @@
+/* eslint-disable react/no-multi-comp -- story fixtures shared by the Sidebar stories */
 import type { Decorator } from '@storybook/react-webpack5';
 
 import {
