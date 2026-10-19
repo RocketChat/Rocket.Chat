@@ -11,37 +11,37 @@ exports[`[Options Component] renders CheckOptionStory without crashing 1`] = `
         value="1"
       >
         <div
-          class="rcx-box rcx-box--full rcx-tile--elevation-2 rcx-tile rcx-css-2lacg2"
+          class="is_Text _d-1987097250 _ws-311910413 _ww-408434756 _f-571455214 _o-1106425799 _ff-409630021 _fvn-1977619713 _b-740265684 _c-1063453128 _br-1937162231 _b-1090939261 _fs-347291933 _fw-289165218 _lh-1925956564 _ls-1782815796 _bs-445519413 rcx-tile rcx-tile--elevation-2 rcx-css-2lacg2"
         >
           <ol
             aria-activedescendant="1"
             aria-multiselectable="true"
-            class="rcx-box rcx-box--full rcx-tile--elevation-0 rcx-tile rcx-css-jwwqyf rcx-css-1u2ujs0"
+            class="is_Text _d-1987097250 _ws-311910413 _ww-408434756 _f-571455214 _o-1106425799 _ff-409630021 _fvn-1977619713 _b-650654186 _c-1063453128 _br-1937162231 _b-1090939261 _fs-347291933 _fw-289165218 _lh-1925956564 _ls-1782815796 _bs-1895067217 rcx-tile rcx-tile--elevation-0 rcx-css-jwwqyf rcx-css-1u2ujs0"
             role="listbox"
           >
             <li
               aria-disabled="false"
               aria-selected="false"
-              class="rcx-item rcx-item--inset-md rcx-item--clickable rcx-item--focused rcx-option rcx-option--focus"
+              class="is_Text _p-1021290656 _d-341075704 _f-1069814357 _ai-121763387 _mw-842770087 _mh-1241200853 _m-2017216831 _p-788525541 _ls-1251843592 _ws-311910413 _ww-408434756 _br-1718100884 _ff-409630021 _g-479842563 _ta-507911453 _td-1861836084 _c-727749181 _fs-347291933 _lh-1925956564 _ls-1782815796 _fw-289165218 rcx-item rcx-item--inset-md rcx-item--clickable rcx-item--focused rcx-option rcx-option--focus"
               role="option"
               value="1"
             >
               <div
-                class="rcx-item__content rcx-option__content"
+                class="is_Text _d-341075704 _f-1448532840 _mw-842770087 _ws-311910413 _ww-408434756 rcx-item__content rcx-option__content"
               >
                 <div
-                  class="rcx-item__title"
-                  id="_r_0_"
+                  class="is_Text _o-1119039191 _f-649097281 _mw-842770087 _ws-973912173 _ww-408434756 _to-1727917045 _d-1987097250 rcx-item__title"
+                  id="_r_5_"
                 >
                   a teste 1
                 </div>
               </div>
               <label
-                class="rcx-box rcx-box--full rcx-check-box"
+                class="is_Text _b-1639159466 _os-249893454 _ff-409630021 _fvn-1977619713 _ws-311910413 _ww-408434756 rcx-check-box"
               >
                 <input
                   aria-hidden="true"
-                  class="rcx-box rcx-box--full rcx-check-box__input"
+                  class="is_View _b-1639159466 _os-249893454 _ff-409630021 _fvn-1977619713 _p-1261267467 _o-1119039191 _c-588872556 _cp-2129451690 _w-226739898 _h-1922295961 _m-1890937723 _p-1943363302 _ws-973912173 _f-1246374076 rcx-check-box__input"
                   inert=""
                   readonly=""
                   tabindex="-1"
@@ -49,33 +49,33 @@ exports[`[Options Component] renders CheckOptionStory without crashing 1`] = `
                 />
                 <i
                   aria-hidden="true"
-                  class="rcx-box rcx-box--full rcx-check-box__fake"
+                  class="is_View _b-1639160427 _os-249893454 _ff-409630021 _fvn-1977619713 _p-1021290656 _h-858548760 _f-1069814357 _mw-354604370 _mh-1241200853 _d-341075704 _jc-1099843255 _ai-121763387 _br-761515502 _w-120696903 rcx-check-box__fake"
                 />
               </label>
             </li>
             <li
               aria-disabled="false"
               aria-selected="false"
-              class="rcx-item rcx-item--inset-md rcx-item--clickable rcx-option"
+              class="is_Text _p-1021290656 _d-341075704 _f-1069814357 _ai-121763387 _mw-842770087 _mh-1241200853 _m-2017216831 _p-788525541 _ls-1251843592 _ws-311910413 _ww-408434756 _br-1718100884 _ff-409630021 _g-479842563 _ta-507911453 _td-1861836084 _c-727749181 _fs-347291933 _lh-1925956564 _ls-1782815796 _fw-289165218 rcx-item rcx-item--inset-md rcx-item--clickable rcx-option"
               role="option"
               value="2"
             >
               <div
-                class="rcx-item__content rcx-option__content"
+                class="is_Text _d-341075704 _f-1448532840 _mw-842770087 _ws-311910413 _ww-408434756 rcx-item__content rcx-option__content"
               >
                 <div
-                  class="rcx-item__title"
-                  id="_r_1_"
+                  class="is_Text _o-1119039191 _f-649097281 _mw-842770087 _ws-973912173 _ww-408434756 _to-1727917045 _d-1987097250 rcx-item__title"
+                  id="_r_c_"
                 >
                   b teste 2
                 </div>
               </div>
               <label
-                class="rcx-box rcx-box--full rcx-check-box"
+                class="is_Text _b-1639159466 _os-249893454 _ff-409630021 _fvn-1977619713 _ws-311910413 _ww-408434756 rcx-check-box"
               >
                 <input
                   aria-hidden="true"
-                  class="rcx-box rcx-box--full rcx-check-box__input"
+                  class="is_View _b-1639159466 _os-249893454 _ff-409630021 _fvn-1977619713 _p-1261267467 _o-1119039191 _c-588872556 _cp-2129451690 _w-226739898 _h-1922295961 _m-1890937723 _p-1943363302 _ws-973912173 _f-1246374076 rcx-check-box__input"
                   inert=""
                   readonly=""
                   tabindex="-1"
@@ -83,34 +83,34 @@ exports[`[Options Component] renders CheckOptionStory without crashing 1`] = `
                 />
                 <i
                   aria-hidden="true"
-                  class="rcx-box rcx-box--full rcx-check-box__fake"
+                  class="is_View _b-1639160427 _os-249893454 _ff-409630021 _fvn-1977619713 _p-1021290656 _h-858548760 _f-1069814357 _mw-354604370 _mh-1241200853 _d-341075704 _jc-1099843255 _ai-121763387 _br-761515502 _w-120696903 rcx-check-box__fake"
                 />
               </label>
             </li>
             <li
               aria-disabled="false"
               aria-selected="true"
-              class="rcx-item rcx-item--inset-md rcx-item--clickable rcx-item--selected rcx-option rcx-option--selected"
+              class="is_Text _p-1021290656 _d-341075704 _f-1069814357 _ai-121763387 _mw-842770087 _mh-1241200853 _m-2017216831 _p-788525541 _ls-1251843592 _ws-311910413 _ww-408434756 _br-1718100884 _ff-409630021 _g-479842563 _ta-507911453 _td-1861836084 _c-727749181 _fs-347291933 _lh-1925956564 _ls-1782815796 _fw-289165218 rcx-item rcx-item--inset-md rcx-item--clickable rcx-item--selected rcx-option rcx-option--selected"
               role="option"
               value="3"
             >
               <div
-                class="rcx-item__content rcx-option__content"
+                class="is_Text _d-341075704 _f-1448532840 _mw-842770087 _ws-311910413 _ww-408434756 rcx-item__content rcx-option__content"
               >
                 <div
-                  class="rcx-item__title"
-                  id="_r_2_"
+                  class="is_Text _o-1119039191 _f-649097281 _mw-842770087 _ws-973912173 _ww-408434756 _to-1727917045 _d-1987097250 rcx-item__title"
+                  id="_r_j_"
                 >
                   c teste 3
                 </div>
               </div>
               <label
-                class="rcx-box rcx-box--full rcx-check-box"
+                class="is_Text _b-1639159466 _os-249893454 _ff-409630021 _fvn-1977619713 _ws-311910413 _ww-408434756 rcx-check-box"
               >
                 <input
                   aria-hidden="true"
                   checked=""
-                  class="rcx-box rcx-box--full rcx-check-box__input"
+                  class="is_View _b-1639159466 _os-249893454 _ff-409630021 _fvn-1977619713 _p-1261267467 _o-1119039191 _c-588872556 _cp-2129451690 _w-226739898 _h-1922295961 _m-1890937723 _p-1943363302 _ws-973912173 _f-1246374076 rcx-check-box__input"
                   inert=""
                   readonly=""
                   tabindex="-1"
@@ -118,33 +118,33 @@ exports[`[Options Component] renders CheckOptionStory without crashing 1`] = `
                 />
                 <i
                   aria-hidden="true"
-                  class="rcx-box rcx-box--full rcx-check-box__fake"
+                  class="is_View _b-1639160427 _os-249893454 _ff-409630021 _fvn-1977619713 _p-1021290656 _h-858548760 _f-1069814357 _mw-354604370 _mh-1241200853 _d-341075704 _jc-1099843255 _ai-121763387 _br-761515502 _w-120696903 rcx-check-box__fake"
                 />
               </label>
             </li>
             <li
               aria-disabled="false"
               aria-selected="false"
-              class="rcx-item rcx-item--inset-md rcx-item--clickable rcx-option"
+              class="is_Text _p-1021290656 _d-341075704 _f-1069814357 _ai-121763387 _mw-842770087 _mh-1241200853 _m-2017216831 _p-788525541 _ls-1251843592 _ws-311910413 _ww-408434756 _br-1718100884 _ff-409630021 _g-479842563 _ta-507911453 _td-1861836084 _c-727749181 _fs-347291933 _lh-1925956564 _ls-1782815796 _fw-289165218 rcx-item rcx-item--inset-md rcx-item--clickable rcx-option"
               role="option"
               value="4"
             >
               <div
-                class="rcx-item__content rcx-option__content"
+                class="is_Text _d-341075704 _f-1448532840 _mw-842770087 _ws-311910413 _ww-408434756 rcx-item__content rcx-option__content"
               >
                 <div
-                  class="rcx-item__title"
-                  id="_r_3_"
+                  class="is_Text _o-1119039191 _f-649097281 _mw-842770087 _ws-973912173 _ww-408434756 _to-1727917045 _d-1987097250 rcx-item__title"
+                  id="_r_q_"
                 >
                   d testeadsasdasdasdasdjhasjfhasdkjfhaskdfjhkasjdfhkasjdhfkasjdhfkasjdhfkasjdhfkasdjhfkasdjhfaksjdfhkasjdh 4
                 </div>
               </div>
               <label
-                class="rcx-box rcx-box--full rcx-check-box"
+                class="is_Text _b-1639159466 _os-249893454 _ff-409630021 _fvn-1977619713 _ws-311910413 _ww-408434756 rcx-check-box"
               >
                 <input
                   aria-hidden="true"
-                  class="rcx-box rcx-box--full rcx-check-box__input"
+                  class="is_View _b-1639159466 _os-249893454 _ff-409630021 _fvn-1977619713 _p-1261267467 _o-1119039191 _c-588872556 _cp-2129451690 _w-226739898 _h-1922295961 _m-1890937723 _p-1943363302 _ws-973912173 _f-1246374076 rcx-check-box__input"
                   inert=""
                   readonly=""
                   tabindex="-1"
@@ -152,7 +152,7 @@ exports[`[Options Component] renders CheckOptionStory without crashing 1`] = `
                 />
                 <i
                   aria-hidden="true"
-                  class="rcx-box rcx-box--full rcx-check-box__fake"
+                  class="is_View _b-1639160427 _os-249893454 _ff-409630021 _fvn-1977619713 _p-1021290656 _h-858548760 _f-1069814357 _mw-354604370 _mh-1241200853 _d-341075704 _jc-1099843255 _ai-121763387 _br-761515502 _w-120696903 rcx-check-box__fake"
                 />
               </label>
             </li>
@@ -174,25 +174,25 @@ exports[`[Options Component] renders CustomEmpty without crashing 1`] = `
         class="rcx-box rcx-box--full rcx-options"
       >
         <div
-          class="rcx-box rcx-box--full rcx-tile--elevation-2 rcx-tile rcx-css-2lacg2"
+          class="is_Text _d-1987097250 _ws-311910413 _ww-408434756 _f-571455214 _o-1106425799 _ff-409630021 _fvn-1977619713 _b-740265684 _c-1063453128 _br-1937162231 _b-1090939261 _fs-347291933 _fw-289165218 _lh-1925956564 _ls-1782815796 _bs-445519413 rcx-tile rcx-tile--elevation-2 rcx-css-2lacg2"
         >
           <ol
             aria-multiselectable="true"
-            class="rcx-box rcx-box--full rcx-tile--elevation-0 rcx-tile rcx-css-jwwqyf rcx-css-1u2ujs0"
+            class="is_Text _d-1987097250 _ws-311910413 _ww-408434756 _f-571455214 _o-1106425799 _ff-409630021 _fvn-1977619713 _b-650654186 _c-1063453128 _br-1937162231 _b-1090939261 _fs-347291933 _fw-289165218 _lh-1925956564 _ls-1782815796 _bs-1895067217 rcx-tile rcx-tile--elevation-0 rcx-css-jwwqyf rcx-css-1u2ujs0"
             role="listbox"
           >
             <li
               aria-disabled="true"
               aria-selected="false"
-              class="rcx-item rcx-item--inset-md rcx-item--clickable rcx-item--disabled rcx-option rcx-option--disabled"
+              class="is_Text _p-1021290656 _d-341075704 _f-1069814357 _ai-121763387 _mw-842770087 _mh-1241200853 _m-2017216831 _p-788525541 _ls-1251843592 _ws-311910413 _ww-408434756 _br-1718100884 _ff-409630021 _g-479842563 _ta-507911453 _td-1861836084 _c-727749181 _fs-347291933 _lh-1925956564 _ls-1782815796 _fw-289165218 rcx-item rcx-item--inset-md rcx-item--clickable rcx-item--disabled rcx-option rcx-option--disabled"
               role="option"
             >
               <div
-                class="rcx-item__content rcx-option__content"
+                class="is_Text _d-341075704 _f-1448532840 _mw-842770087 _ws-311910413 _ww-408434756 rcx-item__content rcx-option__content"
               >
                 <div
-                  class="rcx-item__title"
-                  id="_r_4_"
+                  class="is_Text _o-1119039191 _f-649097281 _mw-842770087 _ws-973912173 _ww-408434756 _to-1727917045 _d-1987097250 rcx-item__title"
+                  id="_r_14_"
                 >
                   Custom empty placeholder
                 </div>
@@ -216,27 +216,27 @@ exports[`[Options Component] renders Default without crashing 1`] = `
         class="rcx-box rcx-box--full rcx-options"
       >
         <div
-          class="rcx-box rcx-box--full rcx-tile--elevation-2 rcx-tile rcx-css-2lacg2"
+          class="is_Text _d-1987097250 _ws-311910413 _ww-408434756 _f-571455214 _o-1106425799 _ff-409630021 _fvn-1977619713 _b-740265684 _c-1063453128 _br-1937162231 _b-1090939261 _fs-347291933 _fw-289165218 _lh-1925956564 _ls-1782815796 _bs-445519413 rcx-tile rcx-tile--elevation-2 rcx-css-2lacg2"
         >
           <ol
             aria-activedescendant="2"
             aria-multiselectable="true"
-            class="rcx-box rcx-box--full rcx-tile--elevation-0 rcx-tile rcx-css-jwwqyf rcx-css-1u2ujs0"
+            class="is_Text _d-1987097250 _ws-311910413 _ww-408434756 _f-571455214 _o-1106425799 _ff-409630021 _fvn-1977619713 _b-650654186 _c-1063453128 _br-1937162231 _b-1090939261 _fs-347291933 _fw-289165218 _lh-1925956564 _ls-1782815796 _bs-1895067217 rcx-tile rcx-tile--elevation-0 rcx-css-jwwqyf rcx-css-1u2ujs0"
             role="listbox"
           >
             <li
               aria-disabled="false"
               aria-selected="false"
-              class="rcx-item rcx-item--inset-md rcx-item--clickable rcx-option"
+              class="is_Text _p-1021290656 _d-341075704 _f-1069814357 _ai-121763387 _mw-842770087 _mh-1241200853 _m-2017216831 _p-788525541 _ls-1251843592 _ws-311910413 _ww-408434756 _br-1718100884 _ff-409630021 _g-479842563 _ta-507911453 _td-1861836084 _c-727749181 _fs-347291933 _lh-1925956564 _ls-1782815796 _fw-289165218 rcx-item rcx-item--inset-md rcx-item--clickable rcx-option"
               role="option"
               value="1"
             >
               <div
-                class="rcx-item__content rcx-option__content"
+                class="is_Text _d-341075704 _f-1448532840 _mw-842770087 _ws-311910413 _ww-408434756 rcx-item__content rcx-option__content"
               >
                 <div
-                  class="rcx-item__title"
-                  id="_r_5_"
+                  class="is_Text _o-1119039191 _f-649097281 _mw-842770087 _ws-973912173 _ww-408434756 _to-1727917045 _d-1987097250 rcx-item__title"
+                  id="_r_1b_"
                 >
                   a teste 1
                 </div>
@@ -245,16 +245,16 @@ exports[`[Options Component] renders Default without crashing 1`] = `
             <li
               aria-disabled="false"
               aria-selected="false"
-              class="rcx-item rcx-item--inset-md rcx-item--clickable rcx-item--focused rcx-option rcx-option--focus"
+              class="is_Text _p-1021290656 _d-341075704 _f-1069814357 _ai-121763387 _mw-842770087 _mh-1241200853 _m-2017216831 _p-788525541 _ls-1251843592 _ws-311910413 _ww-408434756 _br-1718100884 _ff-409630021 _g-479842563 _ta-507911453 _td-1861836084 _c-727749181 _fs-347291933 _lh-1925956564 _ls-1782815796 _fw-289165218 rcx-item rcx-item--inset-md rcx-item--clickable rcx-item--focused rcx-option rcx-option--focus"
               role="option"
               value="2"
             >
               <div
-                class="rcx-item__content rcx-option__content"
+                class="is_Text _d-341075704 _f-1448532840 _mw-842770087 _ws-311910413 _ww-408434756 rcx-item__content rcx-option__content"
               >
                 <div
-                  class="rcx-item__title"
-                  id="_r_6_"
+                  class="is_Text _o-1119039191 _f-649097281 _mw-842770087 _ws-973912173 _ww-408434756 _to-1727917045 _d-1987097250 rcx-item__title"
+                  id="_r_1f_"
                 >
                   b teste 2
                 </div>
@@ -263,16 +263,16 @@ exports[`[Options Component] renders Default without crashing 1`] = `
             <li
               aria-disabled="false"
               aria-selected="true"
-              class="rcx-item rcx-item--inset-md rcx-item--clickable rcx-item--selected rcx-option rcx-option--selected"
+              class="is_Text _p-1021290656 _d-341075704 _f-1069814357 _ai-121763387 _mw-842770087 _mh-1241200853 _m-2017216831 _p-788525541 _ls-1251843592 _ws-311910413 _ww-408434756 _br-1718100884 _ff-409630021 _g-479842563 _ta-507911453 _td-1861836084 _c-727749181 _fs-347291933 _lh-1925956564 _ls-1782815796 _fw-289165218 rcx-item rcx-item--inset-md rcx-item--clickable rcx-item--selected rcx-option rcx-option--selected"
               role="option"
               value="3"
             >
               <div
-                class="rcx-item__content rcx-option__content"
+                class="is_Text _d-341075704 _f-1448532840 _mw-842770087 _ws-311910413 _ww-408434756 rcx-item__content rcx-option__content"
               >
                 <div
-                  class="rcx-item__title"
-                  id="_r_7_"
+                  class="is_Text _o-1119039191 _f-649097281 _mw-842770087 _ws-973912173 _ww-408434756 _to-1727917045 _d-1987097250 rcx-item__title"
+                  id="_r_1j_"
                 >
                   c teste 3
                 </div>
@@ -281,16 +281,16 @@ exports[`[Options Component] renders Default without crashing 1`] = `
             <li
               aria-disabled="false"
               aria-selected="false"
-              class="rcx-item rcx-item--inset-md rcx-item--clickable rcx-option"
+              class="is_Text _p-1021290656 _d-341075704 _f-1069814357 _ai-121763387 _mw-842770087 _mh-1241200853 _m-2017216831 _p-788525541 _ls-1251843592 _ws-311910413 _ww-408434756 _br-1718100884 _ff-409630021 _g-479842563 _ta-507911453 _td-1861836084 _c-727749181 _fs-347291933 _lh-1925956564 _ls-1782815796 _fw-289165218 rcx-item rcx-item--inset-md rcx-item--clickable rcx-option"
               role="option"
               value="4"
             >
               <div
-                class="rcx-item__content rcx-option__content"
+                class="is_Text _d-341075704 _f-1448532840 _mw-842770087 _ws-311910413 _ww-408434756 rcx-item__content rcx-option__content"
               >
                 <div
-                  class="rcx-item__title"
-                  id="_r_8_"
+                  class="is_Text _o-1119039191 _f-649097281 _mw-842770087 _ws-973912173 _ww-408434756 _to-1727917045 _d-1987097250 rcx-item__title"
+                  id="_r_1n_"
                 >
                   d testeadsasdasdasdasdjhasjfhasdkjfhaskdfjhkasjdfhkasjdhfkasjdhfkasjdhfkasjdhfkasdjhfkasdjhfaksjdfhkasjdh 4
                 </div>
@@ -314,25 +314,25 @@ exports[`[Options Component] renders EmptyOptions without crashing 1`] = `
         class="rcx-box rcx-box--full rcx-options"
       >
         <div
-          class="rcx-box rcx-box--full rcx-tile--elevation-2 rcx-tile rcx-css-2lacg2"
+          class="is_Text _d-1987097250 _ws-311910413 _ww-408434756 _f-571455214 _o-1106425799 _ff-409630021 _fvn-1977619713 _b-740265684 _c-1063453128 _br-1937162231 _b-1090939261 _fs-347291933 _fw-289165218 _lh-1925956564 _ls-1782815796 _bs-445519413 rcx-tile rcx-tile--elevation-2 rcx-css-2lacg2"
         >
           <ol
             aria-multiselectable="true"
-            class="rcx-box rcx-box--full rcx-tile--elevation-0 rcx-tile rcx-css-jwwqyf rcx-css-1u2ujs0"
+            class="is_Text _d-1987097250 _ws-311910413 _ww-408434756 _f-571455214 _o-1106425799 _ff-409630021 _fvn-1977619713 _b-650654186 _c-1063453128 _br-1937162231 _b-1090939261 _fs-347291933 _fw-289165218 _lh-1925956564 _ls-1782815796 _bs-1895067217 rcx-tile rcx-tile--elevation-0 rcx-css-jwwqyf rcx-css-1u2ujs0"
             role="listbox"
           >
             <li
               aria-disabled="true"
               aria-selected="false"
-              class="rcx-item rcx-item--inset-md rcx-item--clickable rcx-item--disabled rcx-option rcx-option--disabled"
+              class="is_Text _p-1021290656 _d-341075704 _f-1069814357 _ai-121763387 _mw-842770087 _mh-1241200853 _m-2017216831 _p-788525541 _ls-1251843592 _ws-311910413 _ww-408434756 _br-1718100884 _ff-409630021 _g-479842563 _ta-507911453 _td-1861836084 _c-727749181 _fs-347291933 _lh-1925956564 _ls-1782815796 _fw-289165218 rcx-item rcx-item--inset-md rcx-item--clickable rcx-item--disabled rcx-option rcx-option--disabled"
               role="option"
             >
               <div
-                class="rcx-item__content rcx-option__content"
+                class="is_Text _d-341075704 _f-1448532840 _mw-842770087 _ws-311910413 _ww-408434756 rcx-item__content rcx-option__content"
               >
                 <div
-                  class="rcx-item__title"
-                  id="_r_9_"
+                  class="is_Text _o-1119039191 _f-649097281 _mw-842770087 _ws-973912173 _ww-408434756 _to-1727917045 _d-1987097250 rcx-item__title"
+                  id="_r_1u_"
                 >
                   Empty
                 </div>
@@ -356,21 +356,21 @@ exports[`[Options Component] renders Grouped without crashing 1`] = `
         class="rcx-box rcx-box--full rcx-options"
       >
         <div
-          class="rcx-box rcx-box--full rcx-tile--elevation-2 rcx-tile rcx-css-2lacg2"
+          class="is_Text _d-1987097250 _ws-311910413 _ww-408434756 _f-571455214 _o-1106425799 _ff-409630021 _fvn-1977619713 _b-740265684 _c-1063453128 _br-1937162231 _b-1090939261 _fs-347291933 _fw-289165218 _lh-1925956564 _ls-1782815796 _bs-445519413 rcx-tile rcx-tile--elevation-2 rcx-css-2lacg2"
         >
           <ol
             aria-activedescendant="1"
             aria-multiselectable="true"
-            class="rcx-box rcx-box--full rcx-tile--elevation-0 rcx-tile rcx-css-jwwqyf rcx-css-1u2ujs0"
+            class="is_Text _d-1987097250 _ws-311910413 _ww-408434756 _f-571455214 _o-1106425799 _ff-409630021 _fvn-1977619713 _b-650654186 _c-1063453128 _br-1937162231 _b-1090939261 _fs-347291933 _fw-289165218 _lh-1925956564 _ls-1782815796 _bs-1895067217 rcx-tile rcx-tile--elevation-0 rcx-css-jwwqyf rcx-css-1u2ujs0"
             role="listbox"
           >
             <li
-              class="rcx-item-group-header rcx-item-group-header--inset-md rcx-option__header"
+              class="is_Text _p-1021290656 _d-341075704 _f-1069814357 _ai-121763387 _mw-842770087 _mh-499962855 _m-2017216831 _p-788525541 _ls-1251843592 _ws-311910413 _ww-408434756 _br-1718100884 _ff-409630021 _g-479842563 _c-341093563 _fs-2088488067 _lh-1306743983 _ls-1782815796 _fw-289168101 rcx-item-group-header rcx-item-group-header--inset-md rcx-option__header"
               role="presentation"
             >
               <div
                 class="rcx-item-group-title"
-                id="_r_a_"
+                id="_r_24_"
               >
                 Recent
               </div>
@@ -378,16 +378,16 @@ exports[`[Options Component] renders Grouped without crashing 1`] = `
             <li
               aria-disabled="false"
               aria-selected="false"
-              class="rcx-item rcx-item--inset-md rcx-item--clickable rcx-item--focused rcx-option rcx-option--focus"
+              class="is_Text _p-1021290656 _d-341075704 _f-1069814357 _ai-121763387 _mw-842770087 _mh-1241200853 _m-2017216831 _p-788525541 _ls-1251843592 _ws-311910413 _ww-408434756 _br-1718100884 _ff-409630021 _g-479842563 _ta-507911453 _td-1861836084 _c-727749181 _fs-347291933 _lh-1925956564 _ls-1782815796 _fw-289165218 rcx-item rcx-item--inset-md rcx-item--clickable rcx-item--focused rcx-option rcx-option--focus"
               role="option"
               value="1"
             >
               <div
-                class="rcx-item__content rcx-option__content"
+                class="is_Text _d-341075704 _f-1448532840 _mw-842770087 _ws-311910413 _ww-408434756 rcx-item__content rcx-option__content"
               >
                 <div
-                  class="rcx-item__title"
-                  id="_r_b_"
+                  class="is_Text _o-1119039191 _f-649097281 _mw-842770087 _ws-973912173 _ww-408434756 _to-1727917045 _d-1987097250 rcx-item__title"
+                  id="_r_27_"
                 >
                   a teste 1
                 </div>
@@ -396,16 +396,16 @@ exports[`[Options Component] renders Grouped without crashing 1`] = `
             <li
               aria-disabled="false"
               aria-selected="false"
-              class="rcx-item rcx-item--inset-md rcx-item--clickable rcx-option"
+              class="is_Text _p-1021290656 _d-341075704 _f-1069814357 _ai-121763387 _mw-842770087 _mh-1241200853 _m-2017216831 _p-788525541 _ls-1251843592 _ws-311910413 _ww-408434756 _br-1718100884 _ff-409630021 _g-479842563 _ta-507911453 _td-1861836084 _c-727749181 _fs-347291933 _lh-1925956564 _ls-1782815796 _fw-289165218 rcx-item rcx-item--inset-md rcx-item--clickable rcx-option"
               role="option"
               value="2"
             >
               <div
-                class="rcx-item__content rcx-option__content"
+                class="is_Text _d-341075704 _f-1448532840 _mw-842770087 _ws-311910413 _ww-408434756 rcx-item__content rcx-option__content"
               >
                 <div
-                  class="rcx-item__title"
-                  id="_r_c_"
+                  class="is_Text _o-1119039191 _f-649097281 _mw-842770087 _ws-973912173 _ww-408434756 _to-1727917045 _d-1987097250 rcx-item__title"
+                  id="_r_2b_"
                 >
                   b teste 2
                 </div>
@@ -413,15 +413,15 @@ exports[`[Options Component] renders Grouped without crashing 1`] = `
             </li>
             <li
               aria-hidden="true"
-              class="rcx-item-divider"
+              class="is_View _d-1987097250 _f-1246374076 _mw-354604370 _mh-1241200853 _m-2017216831 _p-1671535631 _ls-1251843592 _b-10838200 rcx-item-divider"
             />
             <li
-              class="rcx-item-group-header rcx-item-group-header--inset-md rcx-option__header"
+              class="is_Text _p-1021290656 _d-341075704 _f-1069814357 _ai-121763387 _mw-842770087 _mh-499962855 _m-2017216831 _p-788525541 _ls-1251843592 _ws-311910413 _ww-408434756 _br-1718100884 _ff-409630021 _g-479842563 _c-341093563 _fs-2088488067 _lh-1306743983 _ls-1782815796 _fw-289168101 rcx-item-group-header rcx-item-group-header--inset-md rcx-option__header"
               role="presentation"
             >
               <div
                 class="rcx-item-group-title"
-                id="_r_d_"
+                id="_r_2f_"
               >
                 All
               </div>
@@ -429,16 +429,16 @@ exports[`[Options Component] renders Grouped without crashing 1`] = `
             <li
               aria-disabled="false"
               aria-selected="true"
-              class="rcx-item rcx-item--inset-md rcx-item--clickable rcx-item--selected rcx-option rcx-option--selected"
+              class="is_Text _p-1021290656 _d-341075704 _f-1069814357 _ai-121763387 _mw-842770087 _mh-1241200853 _m-2017216831 _p-788525541 _ls-1251843592 _ws-311910413 _ww-408434756 _br-1718100884 _ff-409630021 _g-479842563 _ta-507911453 _td-1861836084 _c-727749181 _fs-347291933 _lh-1925956564 _ls-1782815796 _fw-289165218 rcx-item rcx-item--inset-md rcx-item--clickable rcx-item--selected rcx-option rcx-option--selected"
               role="option"
               value="3"
             >
               <div
-                class="rcx-item__content rcx-option__content"
+                class="is_Text _d-341075704 _f-1448532840 _mw-842770087 _ws-311910413 _ww-408434756 rcx-item__content rcx-option__content"
               >
                 <div
-                  class="rcx-item__title"
-                  id="_r_e_"
+                  class="is_Text _o-1119039191 _f-649097281 _mw-842770087 _ws-973912173 _ww-408434756 _to-1727917045 _d-1987097250 rcx-item__title"
+                  id="_r_2i_"
                 >
                   c teste 3
                 </div>
@@ -447,16 +447,16 @@ exports[`[Options Component] renders Grouped without crashing 1`] = `
             <li
               aria-disabled="false"
               aria-selected="false"
-              class="rcx-item rcx-item--inset-md rcx-item--clickable rcx-option"
+              class="is_Text _p-1021290656 _d-341075704 _f-1069814357 _ai-121763387 _mw-842770087 _mh-1241200853 _m-2017216831 _p-788525541 _ls-1251843592 _ws-311910413 _ww-408434756 _br-1718100884 _ff-409630021 _g-479842563 _ta-507911453 _td-1861836084 _c-727749181 _fs-347291933 _lh-1925956564 _ls-1782815796 _fw-289165218 rcx-item rcx-item--inset-md rcx-item--clickable rcx-option"
               role="option"
               value="4"
             >
               <div
-                class="rcx-item__content rcx-option__content"
+                class="is_Text _d-341075704 _f-1448532840 _mw-842770087 _ws-311910413 _ww-408434756 rcx-item__content rcx-option__content"
               >
                 <div
-                  class="rcx-item__title"
-                  id="_r_f_"
+                  class="is_Text _o-1119039191 _f-649097281 _mw-842770087 _ws-973912173 _ww-408434756 _to-1727917045 _d-1987097250 rcx-item__title"
+                  id="_r_2m_"
                 >
                   d teste 4
                 </div>
@@ -480,27 +480,27 @@ exports[`[Options Component] renders OptionStory without crashing 1`] = `
         class="rcx-box rcx-box--full rcx-options"
       >
         <div
-          class="rcx-box rcx-box--full rcx-tile--elevation-2 rcx-tile rcx-css-2lacg2"
+          class="is_Text _d-1987097250 _ws-311910413 _ww-408434756 _f-571455214 _o-1106425799 _ff-409630021 _fvn-1977619713 _b-740265684 _c-1063453128 _br-1937162231 _b-1090939261 _fs-347291933 _fw-289165218 _lh-1925956564 _ls-1782815796 _bs-445519413 rcx-tile rcx-tile--elevation-2 rcx-css-2lacg2"
         >
           <ol
             aria-activedescendant="2"
             aria-multiselectable="true"
-            class="rcx-box rcx-box--full rcx-tile--elevation-0 rcx-tile rcx-css-jwwqyf rcx-css-1u2ujs0"
+            class="is_Text _d-1987097250 _ws-311910413 _ww-408434756 _f-571455214 _o-1106425799 _ff-409630021 _fvn-1977619713 _b-650654186 _c-1063453128 _br-1937162231 _b-1090939261 _fs-347291933 _fw-289165218 _lh-1925956564 _ls-1782815796 _bs-1895067217 rcx-tile rcx-tile--elevation-0 rcx-css-jwwqyf rcx-css-1u2ujs0"
             role="listbox"
           >
             <li
               aria-disabled="false"
               aria-selected="false"
-              class="rcx-item rcx-item--inset-md rcx-item--clickable rcx-option"
+              class="is_Text _p-1021290656 _d-341075704 _f-1069814357 _ai-121763387 _mw-842770087 _mh-1241200853 _m-2017216831 _p-788525541 _ls-1251843592 _ws-311910413 _ww-408434756 _br-1718100884 _ff-409630021 _g-479842563 _ta-507911453 _td-1861836084 _c-727749181 _fs-347291933 _lh-1925956564 _ls-1782815796 _fw-289165218 rcx-item rcx-item--inset-md rcx-item--clickable rcx-option"
               role="option"
               value="1"
             >
               <div
-                class="rcx-item__content rcx-option__content"
+                class="is_Text _d-341075704 _f-1448532840 _mw-842770087 _ws-311910413 _ww-408434756 rcx-item__content rcx-option__content"
               >
                 <div
-                  class="rcx-item__title"
-                  id="_r_g_"
+                  class="is_Text _o-1119039191 _f-649097281 _mw-842770087 _ws-973912173 _ww-408434756 _to-1727917045 _d-1987097250 rcx-item__title"
+                  id="_r_2t_"
                 >
                   a teste 1
                 </div>
@@ -509,16 +509,16 @@ exports[`[Options Component] renders OptionStory without crashing 1`] = `
             <li
               aria-disabled="false"
               aria-selected="false"
-              class="rcx-item rcx-item--inset-md rcx-item--clickable rcx-item--focused rcx-option rcx-option--focus"
+              class="is_Text _p-1021290656 _d-341075704 _f-1069814357 _ai-121763387 _mw-842770087 _mh-1241200853 _m-2017216831 _p-788525541 _ls-1251843592 _ws-311910413 _ww-408434756 _br-1718100884 _ff-409630021 _g-479842563 _ta-507911453 _td-1861836084 _c-727749181 _fs-347291933 _lh-1925956564 _ls-1782815796 _fw-289165218 rcx-item rcx-item--inset-md rcx-item--clickable rcx-item--focused rcx-option rcx-option--focus"
               role="option"
               value="2"
             >
               <div
-                class="rcx-item__content rcx-option__content"
+                class="is_Text _d-341075704 _f-1448532840 _mw-842770087 _ws-311910413 _ww-408434756 rcx-item__content rcx-option__content"
               >
                 <div
-                  class="rcx-item__title"
-                  id="_r_h_"
+                  class="is_Text _o-1119039191 _f-649097281 _mw-842770087 _ws-973912173 _ww-408434756 _to-1727917045 _d-1987097250 rcx-item__title"
+                  id="_r_31_"
                 >
                   b teste 2
                 </div>
@@ -527,16 +527,16 @@ exports[`[Options Component] renders OptionStory without crashing 1`] = `
             <li
               aria-disabled="false"
               aria-selected="true"
-              class="rcx-item rcx-item--inset-md rcx-item--clickable rcx-item--selected rcx-option rcx-option--selected"
+              class="is_Text _p-1021290656 _d-341075704 _f-1069814357 _ai-121763387 _mw-842770087 _mh-1241200853 _m-2017216831 _p-788525541 _ls-1251843592 _ws-311910413 _ww-408434756 _br-1718100884 _ff-409630021 _g-479842563 _ta-507911453 _td-1861836084 _c-727749181 _fs-347291933 _lh-1925956564 _ls-1782815796 _fw-289165218 rcx-item rcx-item--inset-md rcx-item--clickable rcx-item--selected rcx-option rcx-option--selected"
               role="option"
               value="3"
             >
               <div
-                class="rcx-item__content rcx-option__content"
+                class="is_Text _d-341075704 _f-1448532840 _mw-842770087 _ws-311910413 _ww-408434756 rcx-item__content rcx-option__content"
               >
                 <div
-                  class="rcx-item__title"
-                  id="_r_i_"
+                  class="is_Text _o-1119039191 _f-649097281 _mw-842770087 _ws-973912173 _ww-408434756 _to-1727917045 _d-1987097250 rcx-item__title"
+                  id="_r_35_"
                 >
                   c teste 3
                 </div>
@@ -545,16 +545,16 @@ exports[`[Options Component] renders OptionStory without crashing 1`] = `
             <li
               aria-disabled="false"
               aria-selected="false"
-              class="rcx-item rcx-item--inset-md rcx-item--clickable rcx-option"
+              class="is_Text _p-1021290656 _d-341075704 _f-1069814357 _ai-121763387 _mw-842770087 _mh-1241200853 _m-2017216831 _p-788525541 _ls-1251843592 _ws-311910413 _ww-408434756 _br-1718100884 _ff-409630021 _g-479842563 _ta-507911453 _td-1861836084 _c-727749181 _fs-347291933 _lh-1925956564 _ls-1782815796 _fw-289165218 rcx-item rcx-item--inset-md rcx-item--clickable rcx-option"
               role="option"
               value="4"
             >
               <div
-                class="rcx-item__content rcx-option__content"
+                class="is_Text _d-341075704 _f-1448532840 _mw-842770087 _ws-311910413 _ww-408434756 rcx-item__content rcx-option__content"
               >
                 <div
-                  class="rcx-item__title"
-                  id="_r_j_"
+                  class="is_Text _o-1119039191 _f-649097281 _mw-842770087 _ws-973912173 _ww-408434756 _to-1727917045 _d-1987097250 rcx-item__title"
+                  id="_r_39_"
                 >
                   d testeadsasdasdasdasdjhasjfhasdkjfhaskdfjhkasjdfhkasjdhfkasjdhfkasjdhfkasjdhfkasdjhfkasdjhfaksjdfhkasjdh 4
                 </div>
