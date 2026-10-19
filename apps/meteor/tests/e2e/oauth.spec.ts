@@ -1,6 +1,6 @@
 import type { LoginServiceConfiguration } from '@rocket.chat/core-typings';
 
-import { BASE_URL } from './config/constants';
+import { BASE_URL, IS_EE } from './config/constants';
 import { Registration } from './page-objects';
 import { setSettingValueById } from './utils/setSettingValueById';
 import type { BaseTest } from './utils/test';
@@ -30,6 +30,9 @@ const getOAuthServiceLoginStyle = async (api: BaseTest['api'], serviceName: stri
 };
 
 test.describe('OAuth', () => {
+	// Custom OAuth requires the `oauth-enterprise` module since 9.0.0
+	test.skip(!IS_EE);
+
 	let poRegistration: Registration;
 
 	test.beforeEach(async ({ page }) => {
