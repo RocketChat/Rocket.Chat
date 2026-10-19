@@ -2,6 +2,7 @@
 @use '../../styles/lengths.scss';
 @use '../../styles/functions.scss' as *;
 @use '../../styles/mixins/selection-button.scss' as *;
+// Holds the placeholders the mixin extends
 @use '../../styles/primitives/selection-button.scss';
 
 $toggle-switch-border-radius: theme('toggle-switch-border-radius', lengths.border-radius(full));
@@ -9,18 +10,8 @@ $toggle-switch-border-radius: theme('toggle-switch-border-radius', lengths.borde
 .rcx-toggle-switch {
 	@include is-selection-button($checked: 'primary', $unchecked: 'off');
 
-	&__input {
-		@extend %selection-button__input;
-	}
-
-	&__fake {
-		@extend %selection-button__fake;
-
-		width: lengths.size(2 * 18);
-		height: calc(lengths.size(20) - 2 * lengths.border-width(default));
-
-		border-radius: $toggle-switch-border-radius;
-	}
+	-webkit-font-smoothing: antialiased;
+	-moz-osx-font-smoothing: grayscale;
 
 	&__input + &__fake::before {
 		position: absolute;
