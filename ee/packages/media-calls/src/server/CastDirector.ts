@@ -139,6 +139,7 @@ export class MediaCallCastDirector implements IMediaCallCastDirector {
 
 		const data: Partial<MediaCallContact> = {
 			...defaultContactInfo,
+			uid: id,
 			...(displayName && { displayName }),
 			...(username && { username }),
 			...(sipExtension && { sipExtension }),

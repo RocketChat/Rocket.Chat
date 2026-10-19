@@ -20,6 +20,7 @@ export type ServerActor = {
 };
 
 export type MediaCallContactInformation = {
+	uid?: string;
 	displayName?: string;
 	username?: string;
 	sipExtension?: string;

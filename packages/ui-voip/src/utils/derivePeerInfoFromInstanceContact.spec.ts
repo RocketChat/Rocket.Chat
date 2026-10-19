@@ -107,7 +107,7 @@ describe('derivePeerInfoFromInstanceContact', () => {
 	});
 
 	describe('contact without identity', () => {
-		it('returns unknown peer info when contact has no type or id', () => {
+		it('returns unknown peer info when contact has no type, id or uid', () => {
 			const contact = {} as CallContact;
 			expect(derivePeerInfoFromInstanceContact(contact)).toEqual({
 				type: 'unknown',
