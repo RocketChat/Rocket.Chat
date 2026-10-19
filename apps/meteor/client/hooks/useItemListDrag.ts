@@ -118,6 +118,7 @@ export const useItemListDrag = ({ disabled = false, dragHandle = 'none', canDrag
 				let pointerY = startY;
 				let preview: HTMLElement | undefined;
 				let indicator: HTMLElement | undefined;
+				let shield: HTMLElement | undefined;
 				let target: ItemListDropTarget | undefined;
 				let frame = 0;
 
@@ -125,6 +126,8 @@ export const useItemListDrag = ({ disabled = false, dragHandle = 'none', canDrag
 					if (!indicator) {
 						return;
 					}
+
+					shield?.classList.toggle('rcx-item-drag-shield--no-drop', !target);
 
 					const listRect = list.getBoundingClientRect();
 					const scrollerRect = scroller.getBoundingClientRect();
@@ -157,7 +160,10 @@ export const useItemListDrag = ({ disabled = false, dragHandle = 'none', canDrag
 				};
 
 				const updateTarget = () => {
-					const hovered = document.elementFromPoint(pointerX, pointerY)?.closest('[data-drag-group]');
+					const hovered = document
+						.elementsFromPoint(pointerX, pointerY)
+						.find((element) => element !== shield)
+						?.closest('[data-drag-group]');
 					const hover = hovered && list.contains(hovered) ? readSource(hovered) : undefined;
 
 					if (!hover) {
@@ -197,7 +203,19 @@ export const useItemListDrag = ({ disabled = false, dragHandle = 'none', canDrag
 					indicator.hidden = true;
 					document.body.append(indicator);
 
-					document.body.style.cursor = 'grabbing';
+					// The page under the shield sees no pointer while dragging: no hover, no tooltips, one cursor.
+					shield = document.createElement('div');
+					shield.className = 'rcx-item-drag-shield';
+					shield.addEventListener(
+						'wheel',
+						(event) => {
+							scroller.scrollTop += event.deltaY;
+							updateTarget();
+						},
+						{ passive: true },
+					);
+					document.body.append(shield);
+
 					setSource(dragSource);
 					frame = requestAnimationFrame(autoScroll);
 				};
@@ -244,7 +262,7 @@ export const useItemListDrag = ({ disabled = false, dragHandle = 'none', canDrag
 
 					preview.remove();
 					indicator?.remove();
-					document.body.style.cursor = '';
+					shield?.remove();
 					setSource(undefined);
 
 					// After Escape the button is still down; its release would otherwise click the row or toggle the group.
