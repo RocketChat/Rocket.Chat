@@ -248,6 +248,6 @@ const permissionsEndpoints = API.v1
 export type PermissionsEndpoints = ExtractRoutesFromAPI<typeof permissionsEndpoints>;
 
 declare module '@rocket.chat/rest-typings' {
-	// eslint-disable-next-line @typescript-eslint/naming-convention, @typescript-eslint/no-empty-interface
+	// eslint-disable-next-line @typescript-eslint/naming-convention, @typescript-eslint/no-empty-interface, @typescript-eslint/no-empty-object-type -- module augmentation must stay an interface to merge
 	interface Endpoints extends PermissionsEndpoints {}
 }

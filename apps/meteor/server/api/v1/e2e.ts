@@ -528,6 +528,6 @@ const e2eEndpoints = API.v1
 type E2eEndpoints = ExtractRoutesFromAPI<typeof e2eEndpoints>;
 
 declare module '@rocket.chat/rest-typings' {
-	// eslint-disable-next-line @typescript-eslint/naming-convention, @typescript-eslint/no-empty-interface
+	// eslint-disable-next-line @typescript-eslint/naming-convention, @typescript-eslint/no-empty-interface, @typescript-eslint/no-empty-object-type -- module augmentation must stay an interface to merge
 	interface Endpoints extends E2eEndpoints {}
 }
