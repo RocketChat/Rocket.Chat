@@ -1,79 +1,9 @@
-@use 'sass:map';
-@use '../../styles/colors.scss';
 @use '../../styles/lengths.scss';
-@use '../../styles/functions.scss' as *;
-@use '../../styles/mixins/size.scss' as *;
 
-$avatar-stack-background-color: theme('avatar-background-color', colors.surface(light));
+.rcx-avatar-stack > .rcx-avatar {
+	margin: auto lengths.margin(-2);
 
-$sizes: 16, 18, 20, 24, 28, 32, 36, 40, 48, 124, 200, 332;
-$object-fit-values: contain, cover, fill, none, scale-down;
-
-$avatar-border-radius-rounded: theme('avatar-border-radius-rounded', lengths.border-radius(full));
-
-$avatar-border-radii: (
-	16: theme('avatar-border-radius-16', lengths.border-radius(small)),
-	18: theme('avatar-border-radius-18', lengths.border-radius(small)),
-	20: theme('avatar-border-radius-20', lengths.border-radius(medium)),
-	24: theme('avatar-border-radius-24', lengths.border-radius(medium)),
-	28: theme('avatar-border-radius-28', lengths.border-radius(medium)),
-	32: theme('avatar-border-radius-32', lengths.border-radius(medium)),
-	36: theme('avatar-border-radius-36', lengths.border-radius(medium)),
-	40: theme('avatar-border-radius-40', lengths.border-radius(medium)),
-	48: theme('avatar-border-radius-48', lengths.border-radius(medium)),
-	124: theme('avatar-border-radius-124', lengths.border-radius(medium)),
-	200: theme('avatar-border-radius-200', lengths.border-radius(medium)),
-	332: theme('avatar-border-radius-332', lengths.border-radius(large)),
-);
-
-.rcx-avatar {
-	display: inline-flex;
-
-	vertical-align: middle;
-
-	@each $size in $sizes {
-		&--x#{$size} {
-			@include square(to-rem($size));
-		}
-	}
-
-	&__element {
-		position: relative;
-
-		width: 100%;
-		height: 100%;
-		@each $size in $sizes {
-			&--x#{$size} {
-				border-radius: map.get($avatar-border-radii, $size);
-			}
-		}
-
-		&--object-fit {
-			@each $value in $object-fit-values {
-				&-#{$value} {
-					object-fit: $value;
-				}
-			}
-		}
-
-		&--rounded {
-			border-radius: $avatar-border-radius-rounded;
-		}
-	}
-
-	&-stack {
-		display: flex;
-		flex-direction: row-reverse;
-		justify-content: center;
-
-		background-color: $avatar-stack-background-color;
-
-		& > .rcx-avatar {
-			margin: auto lengths.margin(-2);
-
-			& > .rcx-avatar__element {
-				border: lengths.border-width(default) solid transparent;
-			}
-		}
+	& > .rcx-avatar__element {
+		border: lengths.border-width(default) solid transparent;
 	}
 }
