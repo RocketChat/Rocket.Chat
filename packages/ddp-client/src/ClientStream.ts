@@ -102,12 +102,7 @@ export class ClientStreamImpl extends Emitter implements ClientStream {
 	}
 
 	callWithOptions(method: string, options: DDPDispatchOptions, ...params: any[]): string {
-		// get the last argument
-		const callback = params.pop();
-		// if it's not a function, then push it back
-		if (typeof callback !== 'function') {
-			params.push(callback);
-		}
+		const callback = typeof params[params.length - 1] === 'function' ? params.pop() : undefined;
 
 		const payload = this.ddp.call(method, params);
 

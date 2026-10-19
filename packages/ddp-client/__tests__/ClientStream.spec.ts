@@ -21,6 +21,21 @@ describe('call procedures', () => {
 		expect(callback).toHaveBeenCalledWith(null, ['arg1', 'arg2']);
 	});
 
+	it.each([
+		[[], []],
+		[['arg'], ['arg']],
+		[['arg', () => undefined], ['arg']],
+	])('should send %j as params %j', (params, expected) => {
+		const ws = new DDPDispatcher();
+		const client = new ClientStreamImpl(ws, ws);
+		const sent: { params: unknown[] }[] = [];
+		ws.onDispatchMessage((message) => sent.push(JSON.parse(message)));
+
+		client.call('test', ...params);
+
+		expect(sent[0].params).toEqual(expected);
+	});
+
 	it('should be able to handle errors thrown by the method call', async () => {
 		const callback = jest.fn();
 		const ws = new MinimalDDPClient(() => undefined);
