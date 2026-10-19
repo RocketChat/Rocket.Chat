@@ -1,4 +1,5 @@
 import { mockAppRoot } from '@rocket.chat/mock-providers';
+import { QueryClient } from '@tanstack/react-query';
 import { render, screen, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 
@@ -21,20 +22,24 @@ const attributesData = [
 	{ key: 'Location', values: ['US'] },
 ];
 
-const renderBar = () => {
+const renderBar = (queryClient = new QueryClient({ defaultOptions: { queries: { retry: false } } })) => {
 	const preview = jest.fn(async (_body: unknown) => ({ members: [], count: 0, checked: 2, total: 2, editor: 'compliant' as const }));
 	const save = jest.fn(async (_body: unknown) => null);
 	const onClose = jest.fn();
 
-	render(<RoomsContextualBar roomInfo={{ rid: 'rid', name: 'alpha' }} attributesData={attributesData} onClose={onClose} />, {
-		wrapper: mockAppRoot()
-			.withSetting('ABAC_Attribute_Store', 'local')
-			.withEndpoint('POST', '/v1/abac/rooms.evaluateMembership', preview)
-			.withEndpoint('POST', '/v1/abac/rooms/:rid/attributes', save)
-			.build(),
-	});
+	const { unmount } = render(
+		<RoomsContextualBar roomInfo={{ rid: 'rid', name: 'alpha' }} attributesData={attributesData} onClose={onClose} />,
+		{
+			wrapper: mockAppRoot()
+				.withSetting('ABAC_Attribute_Store', 'local')
+				.withEndpoint('POST', '/v1/abac/rooms.evaluateMembership', preview)
+				.withEndpoint('POST', '/v1/abac/rooms/:rid/attributes', save)
+				.withQueryClient(queryClient)
+				.build(),
+		},
+	);
 
-	return { preview, save, onClose };
+	return { preview, save, onClose, unmount };
 };
 
 const reviewButton = () => screen.getByRole('button', { name: 'ABAC_Review_changes' });
@@ -67,6 +72,42 @@ describe('RoomsContextualBar, editing a room', () => {
 		await waitFor(() => expect(screen.queryByText('ABAC_Members_preview')).not.toBeInTheDocument());
 		expect(screen.queryByRole('button', { name: 'Remove' })).not.toBeInTheDocument();
 		expect(reviewButton()).toBeEnabled();
+	});
+
+	it('should reuse the preview when the same attributes are previewed again after Back', async () => {
+		const { preview } = renderBar();
+
+		await userEvent.click(screen.getByRole('button', { name: 'Remove' }));
+		await waitFor(() => expect(reviewButton()).toBeEnabled());
+		await userEvent.click(reviewButton());
+		await waitFor(() => expect(screen.getByRole('button', { name: 'Save' })).toBeEnabled());
+		const requests = preview.mock.calls.length;
+
+		await userEvent.click(screen.getAllByRole('button', { name: 'Back' })[0]);
+		await waitFor(() => expect(reviewButton()).toBeEnabled());
+		await userEvent.click(reviewButton());
+
+		await waitFor(() => expect(screen.getByRole('button', { name: 'Save' })).toBeEnabled());
+		expect(preview).toHaveBeenCalledTimes(requests);
+	});
+
+	it('should preview again once the bar was closed and opened', async () => {
+		const queryClient = new QueryClient({ defaultOptions: { queries: { retry: false } } });
+		const { unmount } = renderBar(queryClient);
+
+		await userEvent.click(screen.getByRole('button', { name: 'Remove' }));
+		await waitFor(() => expect(reviewButton()).toBeEnabled());
+		await userEvent.click(reviewButton());
+		await waitFor(() => expect(screen.getByRole('button', { name: 'Save' })).toBeEnabled());
+		unmount();
+
+		const { preview } = renderBar(queryClient);
+		await userEvent.click(screen.getByRole('button', { name: 'Remove' }));
+		await waitFor(() => expect(reviewButton()).toBeEnabled());
+		await userEvent.click(reviewButton());
+
+		await waitFor(() => expect(screen.getByRole('button', { name: 'Save' })).toBeEnabled());
+		expect(preview).toHaveBeenCalled();
 	});
 
 	it('should ask for a confirmation, then commit the previewed attributes and close', async () => {
