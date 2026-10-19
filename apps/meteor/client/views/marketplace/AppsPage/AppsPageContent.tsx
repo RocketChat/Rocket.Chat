@@ -87,6 +87,7 @@ const AppsPageContent = () => {
 			label: t('Sort_By'),
 			items: createFilterStructureItems(),
 		});
+		// eslint-disable-next-line react-hooks/exhaustive-deps -- rebuilds the sort items only when isRequested toggles
 	}, [isRequested]);
 
 	const sortFilterOnSelected = useRadioToggle(setSortFilterStructure);

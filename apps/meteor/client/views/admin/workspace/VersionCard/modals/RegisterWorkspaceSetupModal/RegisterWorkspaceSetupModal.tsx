@@ -33,6 +33,7 @@ const RegisterWorkspaceSetupModal = ({ onClose }: RegisterWorkspaceSetupModalPro
 		if (step === 1) {
 			setValidInfo(validateEmail(email) && terms);
 		}
+		// eslint-disable-next-line react-hooks/exhaustive-deps -- revalidates on input changes only; step is a guard
 	}, [email, terms]);
 
 	const onSuccess = () => {

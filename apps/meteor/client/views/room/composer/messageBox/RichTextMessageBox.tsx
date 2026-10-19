@@ -442,14 +442,17 @@ const RichTextMessageBox = ({
 	const popupOptions = useComposerPopupOptions();
 	const popup = useComposerBoxPopup(popupOptions);
 
-	const keyDownHandlerCallbackRef = useCallback((node: HTMLDivElement) => {
-		const eventHandler = (e: KeyboardEvent) => keyboardEventHandler(e);
-		node.addEventListener('keydown', eventHandler);
+	const keyDownHandlerCallbackRef = useCallback(
+		(node: HTMLDivElement) => {
+			const eventHandler = (e: KeyboardEvent) => keyboardEventHandler(e);
+			node.addEventListener('keydown', eventHandler);
 
-		return () => {
-			node.removeEventListener('keydown', eventHandler);
-		};
-	}, []);
+			return () => {
+				node.removeEventListener('keydown', eventHandler);
+			};
+		},
+		[keyboardEventHandler],
+	);
 
 	const beforeInputHandlerCallbackRef = useCallback(
 		(node: HTMLDivElement) => {

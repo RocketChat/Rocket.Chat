@@ -111,6 +111,7 @@ export const useExportMessagesAsPDFMutation = () => {
 			withVariationSelectors: true,
 			builder: renderEmojiToDataURL,
 		});
+		// eslint-disable-next-line react-hooks/exhaustive-deps -- registers the fonts once on mount
 	}, []);
 
 	return useMutation({

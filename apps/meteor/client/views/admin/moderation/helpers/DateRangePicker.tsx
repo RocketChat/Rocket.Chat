@@ -82,6 +82,7 @@ const DateRangePicker = ({ onChange, defaultSelectedKey = 'alldates' }: DateRang
 
 	useEffect(() => {
 		handleOptionClick(defaultSelectedKey);
+		// eslint-disable-next-line react-hooks/exhaustive-deps -- applies the initial key on mount only
 	}, []);
 
 	return (

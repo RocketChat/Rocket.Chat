@@ -52,7 +52,7 @@ const NewUsersSection = ({ timezone }: NewUsersSectionProps) => {
 		}
 
 		return [data.period.count, data.period.variation, data.yesterday.count, data.yesterday.variation, values];
-	}, [data, utc]);
+	}, [data]);
 
 	return (
 		<>

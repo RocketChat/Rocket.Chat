@@ -27,6 +27,7 @@ const useDidUpdate = (func: () => void, deps: DependencyList | undefined) => {
 			fn();
 		}
 		didMount.current = true;
+		// eslint-disable-next-line react-hooks/exhaustive-deps -- deps are forwarded from the caller; fn is stable
 	}, deps || []);
 };
 
