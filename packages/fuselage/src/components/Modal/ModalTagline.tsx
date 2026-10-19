@@ -1,15 +1,28 @@
-import type { ElementProps } from '../../types/ElementProps';
-import { Box } from '../Box';
+import { styled, Text, type GetProps } from '@tamagui/web';
 
-export type ModalTaglineProps = ElementProps<HTMLDivElement> & {
-	/** Mutes the tagline, so it reads as a category above the title. */
-	subtle?: boolean;
+import { modalBoxFont } from './Modal';
+import { textIconColors } from '../../Theme';
+import { useTamaguiBoxProps } from '../../hooks/useTamaguiBoxProps';
+import { fontScale } from '../../styleTokens';
+import type { BoxProps } from '../Box';
+import { withFuselageProvider } from '../FuselageProvider/FuselageProvider';
+
+export type ModalTaglineProps = BoxProps;
+
+const ModalTaglineFrame = styled(Text, {
+	render: 'div',
+	display: 'block',
+	whiteSpace: 'inherit',
+	wordWrap: 'inherit',
+	color: String(textIconColors['font-default']),
+	...modalBoxFont,
+	...(fontScale('c2') as object),
+});
+
+const ModalTagline = ({ children, ...props }: ModalTaglineProps) => {
+	const frameProps = useTamaguiBoxProps(props, 'rcx-modal__tagline');
+
+	return <ModalTaglineFrame {...(frameProps as GetProps<typeof ModalTaglineFrame>)}>{children}</ModalTaglineFrame>;
 };
 
-const ModalTagline = ({ subtle, children, ...props }: ModalTaglineProps) => (
-	<Box rcx-modal__tagline color={subtle ? 'annotation' : undefined} {...props}>
-		{children}
-	</Box>
-);
-
-export default ModalTagline;
+export default withFuselageProvider(ModalTagline);
