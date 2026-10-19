@@ -162,10 +162,16 @@ export class ClientStreamImpl extends Emitter implements ClientStream {
 			result.isReady = false;
 			result.error = payload.error ?? new Error(`Subscription ${name} was stopped by the server`);
 			this.subscriptions.delete(id);
+			stopListeners.forEach((listener) => listener(result.error));
 		});
+
+		const stopListeners = new Set<(error: unknown) => void>();
+
+		const changeListenerRemovers = new Set<() => void>();
 
 		const stop = () => {
 			stopListening();
+			changeListenerRemovers.forEach((remove) => remove());
 			self.subscriptions.delete(id);
 			self.ddp.unsubscribe(id);
 		};
@@ -199,7 +205,21 @@ export class ClientStreamImpl extends Emitter implements ClientStream {
 			},
 			isReady: false,
 			onChange: (cb) => {
-				self.ddp.onPublish(id, cb);
+				// Gone once the subscription ends: on stop(), or right after delivering the server's nosub.
+				const remove = self.ddp.onPublish(id, (payload) => {
+					cb(payload);
+					if (payload.msg === 'nosub') {
+						remove();
+						changeListenerRemovers.delete(remove);
+					}
+				});
+				changeListenerRemovers.add(remove);
+			},
+			onStop: (listener) => {
+				stopListeners.add(listener);
+				return () => {
+					stopListeners.delete(listener);
+				};
 			},
 
 			stop,

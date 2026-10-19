@@ -230,6 +230,46 @@ describe('subscribe procedures', () => {
 		await expect(subscription.ready()).rejects.toEqual({ error: 'not-allowed' });
 	});
 
+	it('should call onStop listeners when the server stops the subscription, not on stop()', () => {
+		const ws = new MinimalDDPClient(() => undefined);
+		const client = new ClientStreamImpl(ws);
+		const serverStopped = client.subscribe('test');
+		const locallyStopped = client.subscribe('test');
+		const onServerStop = jest.fn();
+		const onLocalStop = jest.fn();
+		const removed = jest.fn();
+		serverStopped.onStop(onServerStop);
+		serverStopped.onStop(removed)();
+		locallyStopped.onStop(onLocalStop);
+
+		ws.handleMessage(JSON.stringify({ msg: 'nosub', id: serverStopped.id, error: { error: 'not-allowed' } }));
+		locallyStopped.stop();
+
+		expect(onServerStop).toHaveBeenCalledWith({ error: 'not-allowed' });
+		expect(removed).not.toHaveBeenCalled();
+		expect(onLocalStop).not.toHaveBeenCalled();
+	});
+
+	it('should drop onChange listeners once the subscription ends', () => {
+		const ws = new MinimalDDPClient(() => undefined);
+		const client = new ClientStreamImpl(ws);
+		const stopped = client.subscribe('test');
+		const ended = client.subscribe('test');
+		const onStoppedChange = jest.fn();
+		const onEndedChange = jest.fn();
+		stopped.onChange(onStoppedChange);
+		ended.onChange(onEndedChange);
+
+		stopped.stop();
+		ws.handleMessage(JSON.stringify({ msg: 'ready', subs: [stopped.id] }));
+		ws.handleMessage(JSON.stringify({ msg: 'nosub', id: ended.id }));
+		ws.handleMessage(JSON.stringify({ msg: 'ready', subs: [ended.id] }));
+
+		expect(onStoppedChange).not.toHaveBeenCalled();
+		expect(onEndedChange).toHaveBeenCalledTimes(1);
+		expect(onEndedChange).toHaveBeenCalledWith({ msg: 'nosub', id: ended.id });
+	});
+
 	it('should notify onChange on every ready, including after a resubscription', async () => {
 		const ws = new MinimalDDPClient(() => undefined);
 		const client = new ClientStreamImpl(ws);

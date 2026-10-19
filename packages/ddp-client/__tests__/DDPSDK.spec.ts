@@ -131,6 +131,27 @@ it('should share one server subscription between listeners of the same stream ke
 	sdk.connection.close();
 });
 
+it('should tell stream listeners still active that the server stopped their stream', async () => {
+	const sdk = DDPSDK.create('ws://localhost:1234');
+	await handleConnection(server, sdk.connection.connect());
+
+	const active = sdk.stream('stream', 'key', () => undefined);
+	const stopped = sdk.stream('stream', 'key', () => undefined);
+	const onActiveStop = jest.fn();
+	const onStoppedStop = jest.fn();
+	active.onStop(onActiveStop);
+	stopped.onStop(onStoppedStop);
+	await server.nextMessage;
+
+	stopped.stop();
+	server.send(JSON.stringify({ msg: 'nosub', id: active.id }));
+	await new Promise((resolve) => setTimeout(resolve, 10));
+
+	expect(onActiveStop).toHaveBeenCalledWith(new Error('Subscription stream-stream was stopped by the server'));
+	expect(onStoppedStop).not.toHaveBeenCalled();
+	sdk.connection.close();
+});
+
 it('should open a new server subscription once the shared one was stopped by the server', async () => {
 	const sdk = DDPSDK.create('ws://localhost:1234');
 	await handleConnection(server, sdk.connection.connect());

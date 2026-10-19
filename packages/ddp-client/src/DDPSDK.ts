@@ -106,6 +106,7 @@ export class DDPSDK implements SDK {
 		callbacks.add(callback);
 
 		let stopped = false;
+		const stopListenerRemovers = new Set<() => void>();
 		return {
 			id: subscription.id,
 			name: subscription.name,
@@ -118,9 +119,15 @@ export class DDPSDK implements SDK {
 			},
 			ready: () => subscription.ready(),
 			onChange: (fn) => subscription.onChange(fn),
+			onStop: (listener) => {
+				const remove = subscription.onStop(listener);
+				stopListenerRemovers.add(remove);
+				return remove;
+			},
 			stop: () => {
 				if (stopped) return;
 				stopped = true;
+				stopListenerRemovers.forEach((remove) => remove());
 				callbacks.delete(callback);
 				if (callbacks.size > 0 || this.streams.get(id)?.subscription !== subscription) return;
 				this.streams.delete(id);
