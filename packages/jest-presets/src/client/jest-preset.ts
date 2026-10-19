@@ -27,7 +27,11 @@ export default {
 			} satisfies SWC.Config,
 		],
 	},
-	transformIgnorePatterns: ['<rootDir>/node_modules/@babel', '<rootDir>/node_modules/@jest', '/node_modules/(?!@testing-library/)'],
+	transformIgnorePatterns: [
+		'<rootDir>/node_modules/@babel',
+		'<rootDir>/node_modules/@jest',
+		'/node_modules/(?!@testing-library/|@tamagui/)',
+	],
 	moduleFileExtensions: ['ts', 'tsx', 'js', 'jsx', 'json', 'node', 'mjs'],
 
 	moduleNameMapper: {
