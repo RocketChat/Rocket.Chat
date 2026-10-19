@@ -352,7 +352,7 @@ const rocketUrlParser = async function (message: IMessage): Promise<IMessage> {
 	}
 
 	let changed = false;
-	for await (const item of message.urls) {
+	for (const item of message.urls) {
 		if (item.ignoreParse === true) {
 			log.debug({ msg: 'URL ignored for OEmbed', url: item.url });
 			continue;

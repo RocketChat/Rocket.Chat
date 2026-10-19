@@ -274,7 +274,7 @@ export const exportRoomMessagesToFile = async function (
 
 	const limit =
 		settings.get<number>('UserData_MessageLimitPerRequest') > 0 ? settings.get<number>('UserData_MessageLimitPerRequest') : 1000;
-	for await (const exportOpRoomData of roomList) {
+	for (const exportOpRoomData of roomList) {
 		if (!('targetFile' in exportOpRoomData)) {
 			continue;
 		}

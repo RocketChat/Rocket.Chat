@@ -21,7 +21,7 @@ export const TriggerMessage = (_: TriggerMessageProps) => {
 	const handleStartChatClick = async () => {
 		parentCall('setFullScreenDocumentMobile');
 		parentCall('openWidget');
-		await onRestore();
+		onRestore();
 		route('/');
 	};
 

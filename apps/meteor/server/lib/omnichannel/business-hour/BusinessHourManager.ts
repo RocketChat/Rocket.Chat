@@ -60,7 +60,7 @@ export class BusinessHourManager {
 			return;
 		}
 
-		for await (const { _id: businessHourId, validDepartments, invalidDepartments } of bhWithDepartments) {
+		for (const { _id: businessHourId, validDepartments, invalidDepartments } of bhWithDepartments) {
 			if (!invalidDepartments.length) {
 				continue;
 			}
@@ -278,7 +278,7 @@ export class BusinessHourManager {
 			return;
 		}
 		const result = await Promise.allSettled(
-			timezonesNeedingAdjustment.map((businessHour) => {
+			timezonesNeedingAdjustment.map(async (businessHour) => {
 				const businessHourType = this.getBusinessHourType(businessHour.type);
 				if (!businessHourType) {
 					return;

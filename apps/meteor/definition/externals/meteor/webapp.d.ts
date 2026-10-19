@@ -12,4 +12,8 @@ declare module 'meteor/webapp' {
 
 		function categorizeRequest(req: IncomingMessage): { arch: string; path: string; url: UrlWithParsedQuery } & Record<string, unknown>;
 	}
+
+	namespace WebAppInternals {
+		function generateBoilerplate(): Promise<void>;
+	}
 }

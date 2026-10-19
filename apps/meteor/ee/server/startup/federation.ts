@@ -14,7 +14,7 @@ import { registerFederationRoutes } from '../api/federation';
 const logger = new Logger('Federation');
 
 const configureFederation = async () => {
-	const serviceEnabled = (await License.hasModule('federation')) && settings.get('Federation_Service_Enabled');
+	const serviceEnabled = License.hasModule('federation') && settings.get('Federation_Service_Enabled');
 	if (!serviceEnabled) {
 		return;
 	}

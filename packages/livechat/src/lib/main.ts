@@ -27,13 +27,13 @@ export const updateBusinessUnit = async (newBusinessUnit?: string) => {
 		});
 	}
 
-	await store.setState({
+	store.setState({
 		config: {
 			...existingConfig,
 			departments,
 		},
 	});
-	await store.unsetSinglePropInStateByName('businessUnit');
+	store.unsetSinglePropInStateByName('businessUnit');
 };
 
 export const loadConfig = async () => {
@@ -54,7 +54,7 @@ export const loadConfig = async () => {
 		...(department && { department }),
 	})) as any;
 
-	await store.setState({
+	store.setState({
 		config,
 		agent: agent?.hiddenInfo ? { hiddenInfo: true } : agent, // TODO: revert it when the API is updated
 		room,
@@ -103,7 +103,7 @@ export const getUnreadMessages = () => {
 export const processUnread = async () => {
 	const unreadMessages = getUnreadMessages();
 	if (unreadMessages <= 0) {
-		await store.setState({ unread: 0 });
+		store.setState({ unread: 0 });
 		return;
 	}
 
@@ -124,5 +124,5 @@ export const processUnread = async () => {
 	const alert = { id: constants.unreadMessagesAlertId, children: alertMessage, success: true, timeout: 0 };
 	const newAlerts = alerts.filter((item) => item.id !== constants.unreadMessagesAlertId);
 
-	await store.setState({ alerts: (newAlerts.push(alert), newAlerts), unread: unreadMessages });
+	store.setState({ alerts: (newAlerts.push(alert), newAlerts), unread: unreadMessages });
 };

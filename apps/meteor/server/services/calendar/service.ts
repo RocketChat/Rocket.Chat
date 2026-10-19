@@ -235,7 +235,7 @@ export class CalendarService extends ServiceClassInternal implements ICalendarSe
 
 		try {
 			const eventsStartingNow = await CalendarEvent.findEventsStartingNow({ now: processTime, offset: 5000 }).toArray();
-			for await (const event of eventsStartingNow) {
+			for (const event of eventsStartingNow) {
 				await this.processEventStart(event);
 			}
 		} catch (err) {
@@ -305,7 +305,7 @@ export class CalendarService extends ServiceClassInternal implements ICalendarSe
 
 	private async sendCurrentNotifications(date: Date): Promise<void> {
 		const events = await CalendarEvent.findEventsToNotify(date, 1).toArray();
-		for await (const event of events) {
+		for (const event of events) {
 			await this.sendEventNotification(event);
 			await CalendarEvent.flagNotificationSent(event._id);
 		}

@@ -192,7 +192,7 @@ export class RocketchatSdkLegacyImpl extends DDPSDK implements RocketchatSDKLega
 	}
 
 	subscribeRoom(rid: string): Promise<unknown> {
-		return Promise.all([
+		return Promise.resolve([
 			this.stream('room-messages', rid, (...args) => this.ev.emit('message', args)),
 			this.stream('notify-room', `${rid}/typing`, (...args) => this.ev.emit('typing', args)),
 			this.stream('notify-room', `${rid}/deleteMessage`, (...args) => this.ev.emit('deleteMessage', args)),
@@ -200,7 +200,7 @@ export class RocketchatSdkLegacyImpl extends DDPSDK implements RocketchatSDKLega
 	}
 
 	subscribeNotifyAll(): Promise<any> {
-		return Promise.all([
+		return Promise.resolve([
 			// this.stream('notify-all', 'roles-change', (...args) => this.ev.emit('roles-change', args)),
 			// this.stream('notify-all', 'updateEmojiCustom', (...args) => this.ev.emit('updateEmojiCustom', args)),
 			// this.stream('notify-all', 'deleteEmojiCustom', (...args) => this.ev.emit('deleteEmojiCustom', args)),
@@ -210,7 +210,7 @@ export class RocketchatSdkLegacyImpl extends DDPSDK implements RocketchatSDKLega
 	}
 
 	subscribeLoggedNotify(): Promise<any> {
-		return Promise.all([
+		return Promise.resolve([
 			this.stream('notify-logged', 'Users:NameChanged', (...args) => this.ev.emit('Users:NameChanged', args)),
 			this.stream('notify-logged', 'Users:Deleted', (...args) => this.ev.emit('Users:Deleted', args)),
 			this.stream('notify-logged', 'updateAvatar', (...args) => this.ev.emit('updateAvatar', args)),
@@ -222,7 +222,7 @@ export class RocketchatSdkLegacyImpl extends DDPSDK implements RocketchatSDKLega
 	}
 
 	subscribeNotifyUser = (): Promise<any> => {
-		return Promise.all([
+		return Promise.resolve([
 			this.stream('notify-user', `${this.account.uid}/message`, (...args) => this.ev.emit('user-message', args)),
 			this.stream('notify-user', `${this.account.uid}/notification`, (...args) => this.ev.emit('notification', args)),
 			this.stream('notify-user', `${this.account.uid}/rooms-changed`, (...args) => this.ev.emit('rooms-changed', args)),

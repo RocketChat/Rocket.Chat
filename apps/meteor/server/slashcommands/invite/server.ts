@@ -73,7 +73,7 @@ slashCommands.add({
 
 		const usersFiltered: IUser[] = [];
 
-		for await (const user of users) {
+		for (const user of users) {
 			const subscription = await Subscriptions.findOneByRoomIdAndUserId(message.rid, user._id, {
 				projection: { _id: 1, status: 1 },
 			});

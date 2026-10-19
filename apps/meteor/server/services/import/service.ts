@@ -120,7 +120,7 @@ export class ImportService extends ServiceClassInternal implements IImportServic
 
 		const defaultRoles = getNewUserRoles();
 		const userRoles = new Set<string>(defaultRoles);
-		for await (const user of users) {
+		for (const user of users) {
 			if (!user.emails?.some((value) => value) || !user.importIds?.some((value) => value)) {
 				throw new Error('Users are missing required data.');
 			}

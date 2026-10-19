@@ -9,7 +9,7 @@ const addParentMessage = async (parentMessage: any) => {
 	const { tmid } = parentMessage;
 
 	if (!parentMessages.find((msg) => msg._id === tmid)) {
-		await store.setState({
+		store.setState({
 			parentMessages: upsert(
 				parentMessages,
 				parentMessage,
@@ -44,7 +44,7 @@ const findParentMessage = async (tmid: string) => {
 				data: { error: reason },
 			} = error;
 			const alert = { id: createToken(), children: reason, error: true, timeout: 5000 };
-			await store.setState({ alerts: (alerts.push(alert), alerts) });
+			store.setState({ alerts: (alerts.push(alert), alerts) });
 		}
 	}
 

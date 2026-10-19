@@ -97,7 +97,7 @@ export const upsertPermissions = async (): Promise<void> => {
 		const previousSettingPermissions = await getPreviousPermissions();
 
 		const settings = await Settings.findNotHidden().toArray();
-		for await (const setting of settings) {
+		for (const setting of settings) {
 			await createSettingPermission(setting, previousSettingPermissions);
 		}
 

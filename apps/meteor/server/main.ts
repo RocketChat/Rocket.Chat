@@ -38,4 +38,4 @@ setImmediate(() => {
 });
 
 await startupApp();
-await startRestAPI();
+startRestAPI();

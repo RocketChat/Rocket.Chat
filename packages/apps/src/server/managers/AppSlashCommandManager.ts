@@ -266,7 +266,7 @@ export class AppSlashCommandManager {
 		}
 
 		const commands = this.providedCommands.get(appId);
-		for await (const [, appSlashCommand] of commands) {
+		for (const [, appSlashCommand] of commands) {
 			if (appSlashCommand.isDisabled) {
 				continue;
 			}
@@ -283,7 +283,7 @@ export class AppSlashCommandManager {
 	public async unregisterCommands(appId: string): Promise<void> {
 		if (this.providedCommands.has(appId)) {
 			const commands = this.providedCommands.get(appId);
-			for await (const [, appSlashCommand] of commands) {
+			for (const [, appSlashCommand] of commands) {
 				const cmd = appSlashCommand.slashCommand.command;
 				await this.bridge.doUnregisterCommand(cmd, appId);
 				this.touchedCommandsToApps.delete(cmd);

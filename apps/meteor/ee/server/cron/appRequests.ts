@@ -39,7 +39,7 @@ const appsNotifyAppRequests = async function _appsNotifyAppRequests() {
 		const { data } = (await result.json()) as { data: string[] };
 		const filtered = installedApps.filter((app) => data.indexOf(app.getID()) !== -1);
 
-		for await (const app of filtered) {
+		for (const app of filtered) {
 			const appId = app.getID();
 			const appName = app.getName();
 

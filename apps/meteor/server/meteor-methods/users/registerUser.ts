@@ -50,7 +50,7 @@ export const registerUser = async (
 			},
 		);
 
-		const stampedLoginToken = await Accounts._generateStampedLoginToken();
+		const stampedLoginToken = Accounts._generateStampedLoginToken();
 
 		await Accounts._insertLoginToken(userId, stampedLoginToken);
 		return stampedLoginToken;

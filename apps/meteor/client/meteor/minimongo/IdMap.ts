@@ -48,7 +48,7 @@ export class IdMap<TId, TValue> implements IIdMap<TId, TValue> {
 	}
 
 	async forEachAsync(callback: (value: TValue, id: TId) => Promise<boolean | void>): Promise<void> {
-		for await (const [key, value] of this._map) {
+		for (const [key, value] of this._map) {
 			if ((await callback.call(null, value, key)) === false) {
 				return;
 			}

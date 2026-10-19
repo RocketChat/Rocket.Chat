@@ -12,7 +12,7 @@ export async function getMomentLocale(locale: string): Promise<string | undefine
 		`moment-locales/${String(localeLower.split('-').shift())}.js`,
 		`moment-locales/${mapLocaleToMomentLocale[localeLower]}.js`,
 	];
-	for await (const localePath of localesPaths) {
+	for (const localePath of localesPaths) {
 		try {
 			return await Assets.getTextAsync(localePath);
 		} catch (error) {

@@ -186,7 +186,7 @@ const EditRoomInfo = ({ room, onClickClose, onClickBack }: EditRoomInfoProps) =>
 	);
 
 	const handleSave = useStableCallback((data: EditRoomInfoFormData) =>
-		Promise.all([isDirty && handleUpdateRoomData(data), changeArchiving && handleArchive()].filter(Boolean)),
+		Promise.all([isDirty && handleUpdateRoomData(data), changeArchiving && handleArchive()].filter((promise) => promise !== false)),
 	);
 
 	const validateName = async (name: string): Promise<string | undefined> => {

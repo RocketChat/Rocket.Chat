@@ -82,7 +82,7 @@ export const appRequestNotififyForUsers = async (
 
 		// Batch requests
 		// eslint-disable-next-line @typescript-eslint/no-unused-vars
-		for await (const _i of Array.from({ length: loops })) {
+		for (const _i of Array.from({ length: loops })) {
 			pagination.offset += pagination.limit;
 
 			// SECURITY: the URL is a default hardcoded value or an envvar/setting set by an admin. It's safe to disable this check.

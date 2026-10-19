@@ -3,7 +3,7 @@ import { createContext } from 'preact';
 import { memo, useContext } from 'preact/compat';
 
 type SurfaceContextValue = {
-	dispatchAction: (args: { appId: any; actionId: any; payload: any }) => void;
+	dispatchAction: (args: { appId: any; actionId: any; payload: any }) => Promise<unknown> | void;
 };
 
 const SurfaceContext = createContext<SurfaceContextValue>({
@@ -12,7 +12,7 @@ const SurfaceContext = createContext<SurfaceContextValue>({
 
 export type SurfaceProps = {
 	children: ComponentChildren;
-	dispatchAction: (action: any) => void;
+	dispatchAction: (action: any) => Promise<unknown> | void;
 };
 
 const Surface = ({ children, dispatchAction }: SurfaceProps) => (

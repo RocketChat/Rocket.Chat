@@ -51,7 +51,7 @@ export class LivechatClientImpl extends DDPSDK implements LivechatStream, Livech
 	}>();
 
 	subscribeRoom(rid: string) {
-		return Promise.all([
+		return Promise.resolve([
 			this.onRoomMessage(rid, (...args) => this.ev.emit('message', args)),
 			this.onRoomUserActivity(rid, (...args) => this.ev.emit('userActivity', args)),
 			this.onRoomDeleteMessage(rid, (...args) => this.ev.emit('delete', args)),

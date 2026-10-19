@@ -33,8 +33,8 @@ const isRequestFromOwner = async (req: IIncomingMessage, ownerUID: IUser['_id'])
 		return true;
 	}
 
-	for await (const uid of [req.headers['x-user-id']].flat()) {
-		for await (const token of [req.headers['x-auth-token']].flat()) {
+	for (const uid of [req.headers['x-user-id']].flat()) {
+		for (const token of [req.headers['x-auth-token']].flat()) {
 			if (await matchUID(uid, token, ownerUID)) {
 				return true;
 			}

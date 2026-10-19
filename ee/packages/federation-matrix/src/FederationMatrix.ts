@@ -175,7 +175,7 @@ export class FederationMatrix extends ServiceClass implements IFederationMatrixS
 			// if no avatarETag is provided, it means the user removed his avatar, so we need to send an empty string to Matrix to remove the avatar from their side as well
 			const avatarUrl = avatarETag ? `mxc://${this.serverName}/${avatarETag}` : null;
 
-			const roomsUserIsMemberOf = await Subscriptions.findUserFederatedRoomIds(localUser._id);
+			const roomsUserIsMemberOf = Subscriptions.findUserFederatedRoomIds(localUser._id);
 
 			// TODO add user avatar update events to a fanout queue
 			for await (const { externalRoomId } of roomsUserIsMemberOf) {

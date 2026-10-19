@@ -11,7 +11,7 @@ import { encodeNosub, encodeResult, encodeUpdated } from './codec';
 
 const logger = new Logger('DDP-Streamer');
 
-type SubscriptionFn = (this: Publication, eventName: string, options: object) => void;
+type SubscriptionFn = (this: Publication, eventName: string, options: object) => Promise<void> | void;
 type MethodFn = (this: Session, ...args: any[]) => any;
 type Methods = {
 	[k: string]: MethodFn;

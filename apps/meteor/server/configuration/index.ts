@@ -15,7 +15,7 @@ import { configurePushNotifications } from './pushNotification';
 import type { ICachedSettings } from '../settings/CachedSettings';
 
 export async function configureServer(settings: ICachedSettings) {
-	await Promise.all([
+	const configured = Promise.all([
 		configureLogLevel(settings),
 		configureAccounts(),
 		configureCAS(settings),
@@ -25,10 +25,11 @@ export async function configureServer(settings: ICachedSettings) {
 		configureCORS(settings),
 		configureCDN(settings),
 		configurePushNotifications(settings),
-		configureBoilerplate(settings),
 		configureDirectReply(settings),
-		configureSMTP(settings),
 		configureIRC(settings),
-		configurePassport(settings),
 	]);
+	configureBoilerplate(settings);
+	configureSMTP(settings);
+	configurePassport(settings);
+	await configured;
 }

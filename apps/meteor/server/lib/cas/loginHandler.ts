@@ -44,7 +44,7 @@ export const loginHandlerCAS = async (options: any): Promise<undefined | Account
 	// Import response attributes
 	if (casVersion >= 2.0) {
 		// Clean & import external attributes
-		for await (const [externalName, value] of Object.entries(credentialsAttributes)) {
+		for (const [externalName, value] of Object.entries(credentialsAttributes)) {
 			if (value) {
 				externalAttributes[externalName] = value[0];
 			}
@@ -60,13 +60,13 @@ export const loginHandlerCAS = async (options: any): Promise<undefined | Account
 			throw err;
 		});
 
-		for await (const [internalName, source] of Object.entries(attributeMap)) {
+		for (const [internalName, source] of Object.entries(attributeMap)) {
 			if (!source || typeof source !== 'string') {
 				continue;
 			}
 
 			let replacedValue = source as string;
-			for await (const externalName of getObjectKeys(externalAttributes)) {
+			for (const externalName of getObjectKeys(externalAttributes)) {
 				replacedValue = replacedValue.replace(`%${externalName}%`, externalAttributes[externalName]);
 			}
 

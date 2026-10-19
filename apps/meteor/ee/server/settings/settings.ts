@@ -51,7 +51,7 @@ SettingsEvents.on('fetch-settings', (settings): void => {
 });
 
 async function updateSettings(): Promise<void> {
-	const enterpriseSettings = await Settings.findEnterpriseSettings();
+	const enterpriseSettings = Settings.findEnterpriseSettings();
 
 	void enterpriseSettings.forEach((record: ISetting) => settings.set(record));
 }

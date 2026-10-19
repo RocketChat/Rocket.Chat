@@ -57,7 +57,7 @@ const WebdavFilePickerModal = ({ onUpload, onClose, account }: WebdavFilePickerM
 					})
 					.catch((e: unknown) => e);
 			})
-			.filter(Boolean);
+			.filter((promise) => promise !== undefined);
 
 		return Promise.all(promises)
 			.then(() => nodes)

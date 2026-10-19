@@ -179,7 +179,7 @@ export class AppRoomBridge extends RoomBridge {
 
 	protected async getMembers(roomId: string, appId: string): Promise<Array<IUser>> {
 		this.orch.debugLog(`The App ${appId} is getting the room's members by room id: "${roomId}"`);
-		const subscriptions = await Subscriptions.findByRoomId(roomId, {});
+		const subscriptions = Subscriptions.findByRoomId(roomId, {});
 		// #TODO: #AppsEngineTypes - Remove explicit types and typecasts once the apps-engine definition/implementation mismatch is fixed.
 		const promises: Promise<(IUser | undefined)[]> = Promise.all(
 			(await subscriptions.toArray()).map((sub: ISubscription) => this.orch.getConverters()?.get('users').convertById(sub.u?._id)),

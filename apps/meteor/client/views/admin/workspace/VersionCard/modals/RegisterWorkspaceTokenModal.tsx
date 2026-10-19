@@ -24,7 +24,7 @@ import WorkspaceRegistrationModal from './RegisterWorkspaceModal';
 
 export type RegisterWorkspaceTokenModalProps = {
 	onClose: () => void;
-	onStatusChange?: () => void;
+	onStatusChange?: () => Promise<unknown> | void;
 };
 
 const RegisterWorkspaceTokenModal = ({ onClose, onStatusChange, ...props }: RegisterWorkspaceTokenModalProps) => {

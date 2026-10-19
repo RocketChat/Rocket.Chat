@@ -590,7 +590,7 @@ API.v1.get(
 			...(onlyConfirmed && { expiresAt: { $exists: false } }),
 		};
 
-		const { cursor, totalCount } = await Uploads.findPaginatedWithoutThumbs(filter, {
+		const { cursor, totalCount } = Uploads.findPaginatedWithoutThumbs(filter, {
 			sort: sort || { name: 1 },
 			skip: offset,
 			limit: count,
@@ -704,7 +704,7 @@ API.v1.get(
 			{ channel: { $in: channelsToSearch } },
 			await mountIntegrationQueryBasedOnPermissions(this.userId),
 		) as Filter<IIntegration>;
-		const { cursor, totalCount } = await Integrations.findPaginated(ourQuery, {
+		const { cursor, totalCount } = Integrations.findPaginated(ourQuery, {
 			sort: sort || { _createdAt: 1 },
 			skip: offset,
 			limit: count,
@@ -975,7 +975,7 @@ API.v1.get(
 			});
 		}
 
-		const { cursor, totalCount } = await Rooms.findPaginatedByTypeAndIds('p', rids, {
+		const { cursor, totalCount } = Rooms.findPaginatedByTypeAndIds('p', rids, {
 			sort: sort || { name: 1 },
 			skip: offset,
 			limit: count,
@@ -1011,7 +1011,7 @@ API.v1.get(
 		const { sort, fields, query } = await this.parseJsonQuery();
 		const ourQuery = Object.assign({}, query, { t: 'p' as RoomType });
 
-		const { cursor, totalCount } = await Rooms.findPaginated(ourQuery, {
+		const { cursor, totalCount } = Rooms.findPaginated(ourQuery, {
 			sort: sort || { name: 1 },
 			skip: offset,
 			limit: count,

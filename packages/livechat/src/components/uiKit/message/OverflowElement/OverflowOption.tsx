@@ -8,7 +8,7 @@ import { MenuItem } from '../../../Menu';
 export type OverflowOptionProps = uikit.Option & {
 	confirm: boolean;
 	parser: uikit.SurfaceRenderer<ComponentChild>;
-	onClick: (value: string) => void;
+	onClick: (value: string) => Promise<void>;
 };
 
 const OverflowOption = ({ confirm, text, value, url, parser, onClick }: OverflowOptionProps) => {

@@ -158,7 +158,7 @@ class CustomBusinessHour extends AbstractBusinessHourType implements IBusinessHo
 			return;
 		}
 
-		const agentsConnectedToDefaultBH = await (
+		const agentsConnectedToDefaultBH = (
 			await LivechatDepartmentAgents.findByDepartmentIds(departmentIds, {
 				projection: { agentId: 1 },
 			}).toArray()

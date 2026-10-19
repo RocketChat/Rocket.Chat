@@ -117,7 +117,7 @@ const EditRoom = ({ room, onChange, onDelete, onClose }: EditRoomProps) => {
 	});
 
 	const handleSave = useStableCallback((data: EditRoomFormData) =>
-		Promise.all([isDirty && handleUpdateRoomData(data), changeArchiving && handleArchive()].filter(Boolean)),
+		Promise.all([isDirty && handleUpdateRoomData(data), changeArchiving && handleArchive()].filter((promise) => promise !== false)),
 	);
 
 	const formId = useId();

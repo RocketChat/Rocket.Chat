@@ -105,7 +105,7 @@ export class UploadService extends ServiceClassInternal implements IUploadServic
 		// The main file is already deleted; From here forward we'll return a success response even if some sub-process fails
 		const deletedFiles: IUpload['_id'][] = [fileId];
 		// Delete them one by one as the store may include requests to external services
-		for await (const id of additionalFiles) {
+		for (const id of additionalFiles) {
 			try {
 				await store.deleteById(id);
 				deletedFiles.push(id);

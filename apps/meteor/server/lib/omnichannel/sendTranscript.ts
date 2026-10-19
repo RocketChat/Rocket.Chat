@@ -119,7 +119,7 @@ export async function sendTranscript({
 			messageContent = message.attachments[0].description || '';
 			escapeHtml(messageContent);
 
-			for await (const attachment of message.attachments) {
+			for (const attachment of message.attachments) {
 				if (!isFileAttachment(attachment)) {
 					continue;
 				}

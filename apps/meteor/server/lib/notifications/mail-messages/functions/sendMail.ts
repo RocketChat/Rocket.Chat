@@ -71,7 +71,7 @@ export const sendMail = async function ({
 
 	const users = await Users.find(userQuery).toArray();
 
-	for await (const u of users) {
+	for (const u of users) {
 		const user: Partial<IUser> & Pick<IUser, '_id'> = u;
 		if (user?.emails && Array.isArray(user.emails) && user.emails.length) {
 			const email = `${user.name} <${user.emails[0].address}>`;

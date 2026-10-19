@@ -34,7 +34,7 @@ const sendResetNotification = async function (uid: string): Promise<void> {
 	const from = settings.get('From_Email');
 	const subject = t('E2E_key_reset_email');
 
-	for await (const address of addresses) {
+	for (const address of addresses) {
 		try {
 			await Mailer.send({
 				to: address,

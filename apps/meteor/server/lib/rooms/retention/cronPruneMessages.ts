@@ -52,7 +52,7 @@ async function job(): Promise<void> {
 			{ projection: { _id: 1 } },
 		).toArray();
 
-		for await (const { _id: rid } of rooms) {
+		for (const { _id: rid } of rooms) {
 			await cleanRoomHistory({
 				rid,
 				latest,
@@ -75,7 +75,7 @@ async function job(): Promise<void> {
 		{ projection: { _id: 1, retention: 1 } },
 	).toArray();
 
-	for await (const { _id: rid, retention } of rooms) {
+	for (const { _id: rid, retention } of rooms) {
 		const { maxAge = 30, filesOnly, excludePinned, ignoreThreads } = retention;
 		const latest = new Date(now.getTime() - toDays(maxAge));
 		await cleanRoomHistory({

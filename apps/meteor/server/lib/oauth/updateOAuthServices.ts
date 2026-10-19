@@ -16,7 +16,7 @@ import { notifyOnLoginServiceConfigurationChanged, notifyOnLoginServiceConfigura
 export async function updateOAuthServices(): Promise<void> {
 	const services = settings.getByRegexp(/^(Accounts_OAuth_|Accounts_OAuth_Custom-)[a-z0-9_]+$/i);
 	const filteredServices = services.filter(([, value]) => typeof value === 'boolean');
-	for await (const [key, value] of filteredServices) {
+	for (const [key, value] of filteredServices) {
 		if (key === 'Accounts_OAuth_Use_Modern_Flow') {
 			continue;
 		}

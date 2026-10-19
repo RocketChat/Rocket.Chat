@@ -250,7 +250,7 @@ export class TeamService extends ServiceClassInternal implements ITeamService {
 		const [records, total] = await Promise.all([cursor.toArray(), totalCount]);
 
 		const results: ITeamInfo[] = [];
-		for await (const record of records) {
+		for (const record of records) {
 			results.push({
 				...record,
 				rooms: await Rooms.countByTeamId(record._id),
@@ -276,7 +276,7 @@ export class TeamService extends ServiceClassInternal implements ITeamService {
 		const [records, total] = await Promise.all([cursor.toArray(), totalCount]);
 
 		const results: ITeamInfo[] = [];
-		for await (const record of records) {
+		for (const record of records) {
 			results.push({
 				...record,
 				rooms: await Rooms.countByTeamId(record._id),
@@ -340,14 +340,14 @@ export class TeamService extends ServiceClassInternal implements ITeamService {
 		}
 
 		// validate access for every room first
-		for await (const room of validRooms) {
+		for (const room of validRooms) {
 			const canSeeRoom = await Authorization.canAccessRoom(room, user);
 			if (!canSeeRoom) {
 				throw new Error('invalid-room');
 			}
 		}
 
-		for await (const room of validRooms) {
+		for (const room of validRooms) {
 			if (room.teamId) {
 				throw new Error('room-already-on-team');
 			}
@@ -476,7 +476,7 @@ export class TeamService extends ServiceClassInternal implements ITeamService {
 				{ _id: { $ne: room.u._id } },
 			);
 
-			for await (const m of teamMembers.records) {
+			for (const m of teamMembers.records) {
 				if (await addUserToRoom(room._id, m.user, user)) {
 					room.usersCount++;
 				}
@@ -585,7 +585,7 @@ export class TeamService extends ServiceClassInternal implements ITeamService {
 		if (showCanDeleteOnly) {
 			const canDeleteTeamChannel = await Authorization.hasPermission(userId, 'delete-team-channel', team.roomId);
 			const canDeleteTeamGroup = await Authorization.hasPermission(userId, 'delete-team-group', team.roomId);
-			for await (const room of teamRooms) {
+			for (const room of teamRooms) {
 				const isPublicRoom = room.t === 'c';
 				const canDeleteTeamRoom = isPublicRoom ? canDeleteTeamChannel : canDeleteTeamGroup;
 				const canDeleteRoom =
@@ -712,7 +712,7 @@ export class TeamService extends ServiceClassInternal implements ITeamService {
 			throw new Error('team-does-not-exist');
 		}
 
-		for await (const member of members) {
+		for (const member of members) {
 			const user = (await Users.findOneById(member.userId, { projection: { username: 1 } })) as Pick<IUser, '_id' | 'username'>;
 			await addUserToRoom(team.roomId, user, createdBy, { skipSystemMessage: false });
 
@@ -785,7 +785,7 @@ export class TeamService extends ServiceClassInternal implements ITeamService {
 		const usersToRemove = await Users.findByIds(membersIds).toArray();
 		const byUser = await Users.findOneById(uid);
 
-		for await (const member of members) {
+		for (const member of members) {
 			if (!member.userId) {
 				throw new Error('invalid-user');
 			}

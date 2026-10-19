@@ -381,14 +381,14 @@ export class LDAPEEManager extends LDAPManager {
 			const ldapUserGroups = await this.getLdapGroupsByUsername(ldap, username, dn, syncUserRolesBaseDN, syncUserRolesFilter);
 			roleList.push(...this.getDataMappedByLdapGroups(groupsToRolesMap, ldapUserGroups));
 		} else if (searchStrategy === 'each_group') {
-			for await (const ldapGroup of ldapGroups) {
+			for (const ldapGroup of ldapGroups) {
 				if (await this.isUserInGroup(ldap, syncUserRolesBaseDN, syncUserRolesFilter, { dn, username }, ldapGroup)) {
 					roleList.push(...ensureArray<string>(groupsToRolesMap[ldapGroup]));
 				}
 			}
 		}
 
-		for await (const nonValidatedRole of roleList) {
+		for (const nonValidatedRole of roleList) {
 			const [roleIdOrName] = nonValidatedRole.split(/\.(.+)/);
 
 			const role = roles.find((role) => role._id === roleIdOrName) ?? roles.find((role) => role.name === roleIdOrName);
@@ -460,7 +460,7 @@ export class LDAPEEManager extends LDAPManager {
 			ldapUserGroups.push(...(await this.getLdapGroupsByUsername(ldap, username, dn, syncUserChannelsBaseDN, syncUserChannelsFilter)));
 			userChannelsNames.push(...this.getDataMappedByLdapGroups(groupsToRoomsMap, ldapUserGroups));
 		} else if (searchStrategy === 'each_group') {
-			for await (const ldapGroup of ldapGroups) {
+			for (const ldapGroup of ldapGroups) {
 				if (await this.isUserInGroup(ldap, syncUserChannelsBaseDN, syncUserChannelsFilter, { dn, username }, ldapGroup)) {
 					userChannelsNames.push(...ensureArray<string>(groupsToRoomsMap[ldapGroup]));
 					ldapUserGroups.push(ldapGroup);
@@ -468,7 +468,7 @@ export class LDAPEEManager extends LDAPManager {
 			}
 		}
 
-		for await (const userChannelName of userChannelsNames) {
+		for (const userChannelName of userChannelsNames) {
 			try {
 				const name = await getValidRoomName(userChannelName.trim(), undefined, { allowDuplicates: true });
 				const room = (await Rooms.findOneByNonValidatedName(name)) || (await this.createRoomForSync(userChannelName));
@@ -500,7 +500,7 @@ export class LDAPEEManager extends LDAPManager {
 			const notMappedRooms = this.getDataMappedByLdapGroups(groupsToRoomsMap, notInUserGroups);
 
 			const roomsToRemove = new Set<string>(notMappedRooms);
-			for await (const roomName of roomsToRemove) {
+			for (const roomName of roomsToRemove) {
 				const name = await getValidRoomName(roomName.trim(), undefined, { allowDuplicates: true });
 				const room = await Rooms.findOneByNonValidatedName(name);
 				if (!room || room.teamMain || channelsToAdd.has(room._id)) {
@@ -731,7 +731,7 @@ export class LDAPEEManager extends LDAPManager {
 
 	private static async updateExistingUsers(ldap: LDAPConnection, converter: LDAPUserConverter, disableMissingUsers = false): Promise<void> {
 		const users = await Users.findLDAPUsers().toArray();
-		for await (const user of users) {
+		for (const user of users) {
 			const ldapUser = await this.findLDAPUser(ldap, user);
 
 			if (ldapUser) {
@@ -763,7 +763,7 @@ export class LDAPEEManager extends LDAPManager {
 
 	private static async updateUserAvatars(ldap: LDAPConnection): Promise<void> {
 		const users = await Users.findLDAPUsers().toArray();
-		for await (const user of users) {
+		for (const user of users) {
 			const ldapUser = await this.findLDAPUser(ldap, user);
 			if (!ldapUser) {
 				continue;
@@ -825,7 +825,7 @@ export class LDAPEEManager extends LDAPManager {
 	private static async logoutDeactivatedUsers(ldap: LDAPConnection): Promise<void> {
 		const users = await Users.findConnectedLDAPUsers().toArray();
 
-		for await (const user of users) {
+		for (const user of users) {
 			const ldapUser = await this.findLDAPUser(ldap, user);
 			if (!ldapUser) {
 				continue;

@@ -21,7 +21,7 @@ export async function compareUserPasswordHistory(user: IUser, pass: IPassword): 
 	const currentPassword = user.services.password.bcrypt;
 	const passwordHistory = user.services.passwordHistory.slice(-Number(settings.get('Accounts_Password_History_Amount')));
 
-	for await (const password of passwordHistory) {
+	for (const password of passwordHistory) {
 		if (!password.trim()) {
 			user.services.password.bcrypt = currentPassword;
 			return false;

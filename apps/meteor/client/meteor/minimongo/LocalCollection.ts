@@ -107,7 +107,7 @@ export class LocalCollection<T extends { _id: string }> {
 		const id = this.prepareInsert(doc);
 		const queriesToRecompute = new Set<Query<T>>();
 
-		for await (const query of this.queries) {
+		for (const query of this.queries) {
 			if (query.dirty) continue;
 
 			if (query.predicate(doc)) {
@@ -275,7 +275,7 @@ export class LocalCollection<T extends { _id: string }> {
 
 		const { queriesToRecompute, queryRemove, count } = this.prepareRemove(selector);
 
-		for await (const remove of queryRemove) {
+		for (const remove of queryRemove) {
 			await this._removeFromResultsAsync(remove.query, remove.doc);
 		}
 		for (const query of queriesToRecompute) {
@@ -625,7 +625,7 @@ export class LocalCollection<T extends { _id: string }> {
 		const specificIds = this._idsMatchedBySelector(selector);
 
 		if (specificIds) {
-			for await (const id of specificIds) {
+			for (const id of specificIds) {
 				const doc = this.store.getState().records.get(id);
 
 				if (doc && (await fn(doc, id)) === false) {
@@ -633,7 +633,7 @@ export class LocalCollection<T extends { _id: string }> {
 				}
 			}
 		} else {
-			for await (const doc of this.store.getState().records.values()) {
+			for (const doc of this.store.getState().records.values()) {
 				if ((await fn(doc, doc._id)) === false) {
 					break;
 				}
@@ -725,7 +725,7 @@ export class LocalCollection<T extends { _id: string }> {
 		});
 
 		const recomputeQueries = new Set<Query<T>>();
-		for await (const query of this.queries) {
+		for (const query of this.queries) {
 			if (query.dirty) continue;
 
 			const after = query.predicate(doc);

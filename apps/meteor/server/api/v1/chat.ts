@@ -1102,7 +1102,7 @@ const chatEndpoints = API.v1
 			};
 
 			const threadQuery = { ...query, ...typeThread, rid: room._id, tcount: { $exists: true } };
-			const { cursor, totalCount } = await Messages.findPaginated<IThreadMainMessage>(threadQuery, {
+			const { cursor, totalCount } = Messages.findPaginated<IThreadMainMessage>(threadQuery, {
 				sort: sort || { tlm: -1 },
 				skip: offset,
 				limit: count,

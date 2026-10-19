@@ -43,7 +43,7 @@ export async function sendMessagesToAdmins({
 
 	const notifyAdmins: string[] = [];
 
-	for await (const adminUser of users) {
+	for (const adminUser of users) {
 		if (fromUser) {
 			try {
 				const { rid } = await createDirectMessage([adminUser.username], fromId);

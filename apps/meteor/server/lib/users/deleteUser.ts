@@ -75,7 +75,7 @@ export async function deleteUser(userId: string, confirmRelinquish = false, dele
 
 				for await (const { file, files } of cursor) {
 					const fileIds = files?.map(({ _id }) => _id) || [];
-					for await (const fileId of fileIds) {
+					for (const fileId of fileIds) {
 						if (fileId) {
 							await store.deleteById(fileId);
 						}

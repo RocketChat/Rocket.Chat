@@ -58,7 +58,7 @@ export const addAllUserToRoomFn = async (userId: string, rid: IRoom['_id'], acti
 	);
 
 	const now = new Date();
-	for await (const user of users) {
+	for (const user of users) {
 		const subscription = await Subscriptions.findOneByRoomIdAndUserId(rid, user._id);
 		if (subscription != null) {
 			continue;

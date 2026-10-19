@@ -107,7 +107,7 @@ export class OmnichannelAnalyticsService extends ServiceClassInternal implements
 		if (isSameDay) {
 			// data for single day
 			const m = moment(from);
-			for await (const currentHour of Array.from({ length: HOURS_IN_DAY }, (_, i) => i)) {
+			for (const currentHour of Array.from({ length: HOURS_IN_DAY }, (_, i) => i)) {
 				const hour = parseInt(m.add(currentHour ? 1 : 0, 'hour').format('H'));
 				const label = {
 					from: moment.utc().set({ hour }).tz(timezone).format('hA'),

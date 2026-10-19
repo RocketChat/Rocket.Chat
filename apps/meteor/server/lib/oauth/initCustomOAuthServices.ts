@@ -3,7 +3,7 @@ import { addOAuthService } from './addOAuthService';
 export async function initCustomOAuthServices(): Promise<void> {
 	// Add settings for custom OAuth providers to the settings so they get
 	// automatically added when they are defined in ENV variables
-	for await (const key of Object.keys(process.env)) {
+	for (const key of Object.keys(process.env)) {
 		if (/Accounts_OAuth_Custom_[a-zA-Z0-9_-]+$/.test(key)) {
 			// Most all shells actually prohibit the usage of - in environment variables
 			// So this will allow replacing - with _ and translate it back to the setting name

@@ -808,7 +808,7 @@ export class RoomsRaw extends BaseRaw<IRoom> implements IRoomsModel {
 			federated: true,
 		};
 
-		const room = await (
+		const room = (
 			await this.find(query, options)
 				.sort({ usersCount: asc ? 1 : -1 })
 				.limit(1)
