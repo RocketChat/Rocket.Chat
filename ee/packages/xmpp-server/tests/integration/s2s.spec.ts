@@ -146,12 +146,15 @@ describe('S2S integration: two servers over localhost', () => {
 	it.skip('delivers every stanza already sent when the server stops (s2s-connectivity R18, D2)', async () => {
 		const fresh = await startServer('a.localhost', { routable: false });
 		const ids = ['s1', 's2', 's3'];
-		await Promise.all(
-			ids.map((id) =>
-				fresh.manager.sendStanza(xml('message', { from: 'alice@a.localhost', to: `bob@b.localhost`, id }, xml('body', {}, id))),
-			),
-		);
-		await fresh.manager.stopAll();
+		try {
+			await Promise.all(
+				ids.map((id) =>
+					fresh.manager.sendStanza(xml('message', { from: 'alice@a.localhost', to: `bob@b.localhost`, id }, xml('body', {}, id))),
+				),
+			);
+		} finally {
+			await fresh.manager.stopAll();
+		}
 
 		await expect(waitFor(() => (ids.every((id) => serverB.received.some((el) => el.attrs.id === id)) ? true : undefined))).resolves.toBe(
 			true,
