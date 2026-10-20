@@ -14867,6 +14867,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@tamagui/compose-refs@patch:@tamagui/compose-refs@npm%3A3.0.18#~/.yarn/patches/@tamagui-compose-refs-npm-3.0.18-59cbb88350.patch":
+  version: 3.0.18
+  resolution: "@tamagui/compose-refs@patch:@tamagui/compose-refs@npm%3A3.0.18#~/.yarn/patches/@tamagui-compose-refs-npm-3.0.18-59cbb88350.patch::version=3.0.18&hash=748c11"
+  peerDependencies:
+    react: ">=19"
+  checksum: 10/b7a0ed1cbf00237202f2a9dc39ff6707ed689c46aa5d40a159726ce161a558d7f2a00f4072f3f8d8569e4f995fce779ea5ed14e35c2c208015f4dd3fe75831b0
+  languageName: node
+  linkType: hard
+
 "@tamagui/constants@npm:3.0.18":
   version: 3.0.18
   resolution: "@tamagui/constants@npm:3.0.18"
@@ -15019,7 +15028,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@tamagui/web@npm:~3.0.18":
+"@tamagui/web@npm:3.0.18":
   version: 3.0.18
   resolution: "@tamagui/web@npm:3.0.18"
   dependencies:
@@ -15041,6 +15050,31 @@ __metadata:
     react: ">=19"
     react-dom: "*"
   checksum: 10/9d519805ae512bcb0c84e1134d7db917cf16771f3f4e0af03ea6aafe2f597fc803057d5748e632b2291ab4578b547249489c429aa63328f0d4ed5626ec65227b
+  languageName: node
+  linkType: hard
+
+"@tamagui/web@patch:@tamagui/web@npm%3A3.0.18#~/.yarn/patches/@tamagui-web-npm-3.0.18-f8fb3ca22a.patch":
+  version: 3.0.18
+  resolution: "@tamagui/web@patch:@tamagui/web@npm%3A3.0.18#~/.yarn/patches/@tamagui-web-npm-3.0.18-f8fb3ca22a.patch::version=3.0.18&hash=f547c0"
+  dependencies:
+    "@tamagui/animation-helpers": "npm:3.0.18"
+    "@tamagui/compose-refs": "npm:3.0.18"
+    "@tamagui/constants": "npm:3.0.18"
+    "@tamagui/dom": "npm:3.0.18"
+    "@tamagui/helpers": "npm:3.0.18"
+    "@tamagui/is-equal-shallow": "npm:3.0.18"
+    "@tamagui/native": "npm:3.0.18"
+    "@tamagui/normalize-css-color": "npm:3.0.18"
+    "@tamagui/react-native-types": "npm:3.0.18"
+    "@tamagui/style-grammar": "npm:3.0.18"
+    "@tamagui/types": "npm:3.0.18"
+    "@tamagui/use-did-finish-ssr": "npm:3.0.18"
+    "@tamagui/use-event": "npm:3.0.18"
+    "@tamagui/use-force-update": "npm:3.0.18"
+  peerDependencies:
+    react: ">=19"
+    react-dom: "*"
+  checksum: 10/167ee43dd6478070d548e320f24dc2b8deb8bfc49b7874fc377222839e8b1d9295d2e89b0bf9df55b593ca7f2ec811fd172d0bc8edfcc8977ea2ec847d550f7d
   languageName: node
   linkType: hard
 

@@ -1,0 +1,100 @@
+diff --git a/dist/cjs/createComponent.cjs b/dist/cjs/createComponent.cjs
+index 83989943c050330991749f27d17eb6a05a76ba7e..16087381e217fdbbfa15694697e066f983a424ed 100644
+--- a/dist/cjs/createComponent.cjs
++++ b/dist/cjs/createComponent.cjs
+@@ -646,19 +646,39 @@ ${banner}
+ 		});
+ 		viewProps = import_setupHooks.hooks.usePropsTransform?.(elementType, nonTamaguiProps, stateRef, stateRef.current.willHydrate) || nonTamaguiProps;
+ 		stateRef.current.composedForwardedRef = forwardedRef;
++		// A React 19 ref callback may return a cleanup, which then runs instead of a call with null
++		const attachForwardedRef = (ref, node) => {
++			stateRef.current.attachedForwardedRef = ref;
++			const cleanup = (0, import_compose_refs.setRef)(ref, node);
++			stateRef.current.forwardedRefCleanup = typeof cleanup === "function" ? cleanup : void 0;
++		};
++		const detachForwardedRef = () => {
++			const attached = stateRef.current.attachedForwardedRef;
++			const cleanup = stateRef.current.forwardedRefCleanup;
++			stateRef.current.attachedForwardedRef = void 0;
++			stateRef.current.forwardedRefCleanup = void 0;
++			if (cleanup) cleanup();
++			else if (attached) (0, import_compose_refs.setRef)(attached, null);
++		};
+ 		if (!stateRef.current.composedRef) stateRef.current.composedRef = (0, import_compose_refs.composeRefs)((x) => {
+ 			stateRef.current.host = x;
+-			const current = stateRef.current.composedForwardedRef;
+-			stateRef.current.attachedForwardedRef = x ? current : void 0;
+-			(0, import_compose_refs.setRef)(current, x);
++			if (!x) {
++				detachForwardedRef();
++				return;
++			}
++			attachForwardedRef(stateRef.current.composedForwardedRef, x);
++			return () => {
++				stateRef.current.host = null;
++				detachForwardedRef();
++			};
+ 		}, import_setElementProps.setElementProps, animatedRef);
+ 		viewProps.ref = stateRef.current.composedRef;
+ 		(0, import_constants.useIsomorphicLayoutEffect)(() => {
+ 			const attached = stateRef.current.attachedForwardedRef;
+ 			if (attached === forwardedRef) return;
+-			if (attached) (0, import_compose_refs.setRef)(attached, null);
+-			stateRef.current.attachedForwardedRef = forwardedRef;
+-			if (stateRef.current.host) (0, import_compose_refs.setRef)(forwardedRef, stateRef.current.host);
++			if (attached) detachForwardedRef();
++			if (stateRef.current.host) attachForwardedRef(forwardedRef, stateRef.current.host);
++			else stateRef.current.attachedForwardedRef = forwardedRef;
+ 		}, [forwardedRef]);
+ 		(0, import_pointerEvents.usePointerEvents)(props, viewProps);
+ 		if (process.env.NODE_ENV === "development") {
+diff --git a/dist/esm/createComponent.mjs b/dist/esm/createComponent.mjs
+index db5dce2ed326125abc738ed7be58ea983e36e35d..ae227d6a661e44ef2dae61b6ec3a8d2c41c7a3fd 100644
+--- a/dist/esm/createComponent.mjs
++++ b/dist/esm/createComponent.mjs
+@@ -608,19 +608,39 @@ ${banner}
+ 		});
+ 		viewProps = hooks.usePropsTransform?.(elementType, nonTamaguiProps, stateRef, stateRef.current.willHydrate) || nonTamaguiProps;
+ 		stateRef.current.composedForwardedRef = forwardedRef;
++		// A React 19 ref callback may return a cleanup, which then runs instead of a call with null
++		const attachForwardedRef = (ref, node) => {
++			stateRef.current.attachedForwardedRef = ref;
++			const cleanup = setRef(ref, node);
++			stateRef.current.forwardedRefCleanup = typeof cleanup === "function" ? cleanup : void 0;
++		};
++		const detachForwardedRef = () => {
++			const attached = stateRef.current.attachedForwardedRef;
++			const cleanup = stateRef.current.forwardedRefCleanup;
++			stateRef.current.attachedForwardedRef = void 0;
++			stateRef.current.forwardedRefCleanup = void 0;
++			if (cleanup) cleanup();
++			else if (attached) setRef(attached, null);
++		};
+ 		if (!stateRef.current.composedRef) stateRef.current.composedRef = composeRefs((x) => {
+ 			stateRef.current.host = x;
+-			const current = stateRef.current.composedForwardedRef;
+-			stateRef.current.attachedForwardedRef = x ? current : void 0;
+-			setRef(current, x);
++			if (!x) {
++				detachForwardedRef();
++				return;
++			}
++			attachForwardedRef(stateRef.current.composedForwardedRef, x);
++			return () => {
++				stateRef.current.host = null;
++				detachForwardedRef();
++			};
+ 		}, setElementProps, animatedRef);
+ 		viewProps.ref = stateRef.current.composedRef;
+ 		useIsomorphicLayoutEffect(() => {
+ 			const attached = stateRef.current.attachedForwardedRef;
+ 			if (attached === forwardedRef) return;
+-			if (attached) setRef(attached, null);
+-			stateRef.current.attachedForwardedRef = forwardedRef;
+-			if (stateRef.current.host) setRef(forwardedRef, stateRef.current.host);
++			if (attached) detachForwardedRef();
++			if (stateRef.current.host) attachForwardedRef(forwardedRef, stateRef.current.host);
++			else stateRef.current.attachedForwardedRef = forwardedRef;
+ 		}, [forwardedRef]);
+ 		usePointerEvents(props, viewProps);
+ 		if (process.env.NODE_ENV === "development") {
