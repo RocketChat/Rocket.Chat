@@ -13,6 +13,8 @@
 $sidebar-color-stroke-extra-light: theme('sidebar-color-stroke-extra-light', colors.stroke(light));
 
 .rcx-sidebar {
+	--rcx-item-color-stroke-divider: #{$sidebar-color-stroke-extra-light};
+
 	position: relative;
 
 	display: flex;
