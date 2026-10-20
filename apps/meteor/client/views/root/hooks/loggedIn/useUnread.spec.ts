@@ -76,6 +76,37 @@ describe('useUnread', () => {
 		});
 	});
 
+	describe('when the desktop app call throws', () => {
+		let warn: jest.SpyInstance;
+
+		beforeEach(() => {
+			warn = jest.spyOn(console, 'warn').mockImplementation(() => undefined);
+			Object.assign(window, {
+				RocketChatDesktop: {
+					setBadge: () => {
+						throw new Error('desktop failure');
+					},
+				},
+			});
+		});
+
+		afterEach(() => {
+			delete (window as { RocketChatDesktop?: unknown }).RocketChatDesktop;
+			warn.mockRestore();
+		});
+
+		it('should log the error and not crash', () => {
+			expect(() =>
+				renderHook(() => useUnread(), {
+					wrapper: mockAppRoot()
+						.withSubscriptions([unreadRoom(1)])
+						.build(),
+				}),
+			).not.toThrow();
+			expect(warn).toHaveBeenCalled();
+		});
+	});
+
 	describe('when the desktop app is absent', () => {
 		it('should not throw', () => {
 			expect(() =>
