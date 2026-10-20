@@ -66,7 +66,7 @@ const disabledBackground = toCSSValue('--rcx-tag-colors-disabled-background-colo
 const focusBorderRadius = toCSSValue('--rcx-border-radius-medium', borderRadius('medium')!);
 const focusShadow = `0 0 0 ${borderWidth('medium')} ${strokeColors['stroke-extra-light-highlight']}`;
 
-// A clickable tag takes the disabled background but not the disabled color; its colors and focus ring are in `Tag.styles.scss`
+// A clickable tag takes the disabled background but not the disabled color; its colors and focus ring are in `Tag.styles.css`
 const schemeStyle = (variant: Variant, clickable: boolean, disabled: boolean) => {
 	const { color, background, hoverBackground } = tagColors(variant);
 
@@ -84,6 +84,8 @@ const schemeStyle = (variant: Variant, clickable: boolean, disabled: boolean) =>
 		backgroundColor: { default: disabled ? disabledBackground : background, hover: hoverBackground },
 	};
 };
+
+const hasClassName = (className: unknown, name: string) => typeof className === 'string' && className.split(/\s+/).includes(name);
 
 const variants = Object.keys(palette) as Variant[];
 
@@ -128,6 +130,14 @@ const TagFrame = styled(Text, {
 
 	variants: {
 		scheme: schemes,
+		pill: {
+			true: {
+				borderRadius: {
+					'default': toCSSValue('--rcx-border-radius-full', borderRadius('full')!),
+					'focus-visible': focusBorderRadius,
+				},
+			},
+		},
 		size: {
 			default: {},
 			medium: fontScale('c2') as { fontWeight: 700 },
@@ -174,6 +184,8 @@ const Tag = ({ large, medium, pill, className, disabled, onClick, variant, child
 		.map((modifier) => `rcx-tag--${modifier}`)
 		.join(' ');
 
+	const clickable = !!(onClick || href);
+
 	const frameProps = useTamaguiBoxProps({
 		is: href ? 'a' : 'span',
 		className: prependClassName(className as string, `rcx-tag ${modifiers}`),
@@ -184,11 +196,14 @@ const Tag = ({ large, medium, pill, className, disabled, onClick, variant, child
 
 	return (
 		<TagFrame
-			{...({
-				scheme: `${variant ?? 'default'}:${!!(onClick || href)}:${!!disabled}`,
+			{...{
+				scheme: `${variant ?? 'default'}:${clickable}:${!!disabled}`,
 				size: (large && 'large') || (medium && 'medium') || 'default',
-			} as Record<string, unknown>)}
+				pill,
+			}}
 			{...(frameProps as GetProps<typeof TagFrame>)}
+			{...(clickable && hasClassName(className, 'disabled') && { cursor: 'not-allowed' })}
+			{...(hasClassName(className, 'focus-visible') && hasClassName(className, 'focus') && { forceStyle: 'focusVisible' as const })}
 		>
 			{icon}
 			<TagInner className='rcx-tag__inner'>{children}</TagInner>
