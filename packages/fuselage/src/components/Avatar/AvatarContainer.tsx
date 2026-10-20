@@ -12,6 +12,9 @@ const AvatarContainerFrame = styled(View, {
 	display: 'inline-flex',
 	flexDirection: 'row',
 	flex: '0 1 auto',
+	// As a `Box` it kept the automatic minimum size, so a flex parent never shrinks it below its square
+	minWidth: 'auto',
+	minHeight: 'auto',
 	verticalAlign: 'middle',
 	margin: 0,
 	padding: 0,
