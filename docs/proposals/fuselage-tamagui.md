@@ -52,6 +52,11 @@ The other side of that rule: an unlayered **element** selector beats a layered c
 - `fuselage.css` declares the order `@layer reset, fuselage;`.
 - Rocket.Chat's `reset.css` moves into `@layer reset`.
 
+A layer's place is fixed by its first appearance anywhere in the document, so the order statement has to come first:
+
+- `src/index.css` opens with it, ahead of the `@import`s, because an imported stylesheet that opens a `fuselage` block would otherwise register `fuselage` before `reset`.
+- `styles/layerOrder.ts`, loaded with the Tamagui config, prepends it to `<head>` before any frame inserts Tamagui's runtime sheet. Pages that inject their CSS from JavaScript (Storybook's style-loader) would otherwise see Tamagui's `fuselage` sheet before their `reset` stylesheet. That let normalize's `button { font-family: inherit; appearance: button; overflow: visible }` beat every Button and input.
+
 Among the stylesheets in `main.css` and `fuselage.css`, layering the reset changes no existing rule. Only zero-specificity rules used to lose to it, and the ones that exist (`*` and `:where()` rules) set none of the properties the reset sets. Stylesheets loaded before `main.css` were not audited. Any consumer that loads its own reset (normalize, for example) has to put it in the `reset` layer too. Fuselage's Storybook does this in `.storybook/normalize.css`.
 
 ### `@tamagui/web` is bundled into `dist`
@@ -65,9 +70,14 @@ Fuselage's own Jest and Storybook run on `src`. For those:
 
 ### `FuselageProvider` is optional
 
-Tamagui throws without a theme context. A Tamagui-based component is exported through `withFuselageProvider`, which mounts a `FuselageProvider` when none is above it.
+Tamagui throws "Missing theme" without a theme context. Fuselage removes both reasons a provider was required:
 
-`FuselageProvider` is a bare `ThemeProvider` (with `addThemeClassName: false`), plus the layered base stylesheet as a React 19 `<style precedence>`. It adds no DOM element, so mounting it per component changes no selector.
+- **Theme context:** the `@tamagui/web` patch lets a frame with no `ThemeProvider` above act as its own theme root. Fuselage has a single empty theme, so nothing depends on which root a frame uses.
+- **Base stylesheet:** Tamagui's base stylesheet (`:where(.is_View)`, `:where(.is_Text)`, the `@scope` rule) ships in `fuselage.css`.
+  - `scripts/build-tamagui-css.mjs` (`yarn tamagui-css`) writes it from `tamagui.config.ts` into `src/styles/tamagui-base.css`.
+  - `yarn lint` fails when the file is stale.
+
+`FuselageProvider` is a bare `ThemeProvider` (with `addThemeClassName: false`) that lets the components under it share one root. It adds no DOM element. `withFuselageProvider` mounts nothing: it registers the component for `isTamaguiComponent` and adds `BoxTransforms` handling where asked.
 
 `TamaguiProvider` was rejected for two reasons:
 
@@ -76,7 +86,7 @@ Tamagui throws without a theme context. A Tamagui-based component is exported th
 
 Either one would have changed every snapshot.
 
-Rocket.Chat mounts one `FuselageProvider` at the app root, so components share it. Tests, Storybooks and other roots need nothing.
+Rocket.Chat mounts one `FuselageProvider` at the app root, so components share it. Tests, Storybooks and other roots need nothing; each frame there is its own root.
 
 ### Props, class names and `is` stay the same
 
@@ -114,8 +124,7 @@ The Rocket.Chat login page (`yarn dev:next` against open.rocket.chat) is also pi
 - **React DOM attribute types are not Tamagui prop types**, for example `aria-*` typed `Booleanish` against `boolean`. Each component needs one typed cast at the boundary (`GetProps<typeof Frame>`).
 - **Static rendering:**
   - `packages/ui-voip/src/generate-landing-view.tsx` sets up a partial DOM. Tamagui registers global listeners at import whenever `window` exists, so the shim now also exposes `addEventListener`.
-  - Once components rendered there move to Tamagui, the generator must also append `tamaguiConfig.getCSS()`, since those rules are not in `fuselage.css`.
-- **jsdom cannot parse `@scope`**, which Tamagui's base stylesheet uses, so `FuselageProvider` skips the base stylesheet under `NODE_ENV=test`.
+- **jsdom cannot parse `@scope`**, which Tamagui's base stylesheet uses. Jest maps `.css` imports to stubs, so `tamagui-base.css` never reaches it.
 - **Element rules in the app:** Rocket.Chat's `button`, `input`, `code`, `pre`, `blockquote` and `:focus` rules now sit in the `reset` layer. The Storybook A/B cannot see these rules, because it does not load the app's CSS.
   - The universal `box-sizing: border-box` rule stays unlayered on purpose. It keeps app elements `border-box` as before, even where a frame restates the `content-box` a plain element had in Storybook.
 - **React 19 ref cleanups:** Tamagui 3.0.18 drops the cleanup a callback ref returns. It calls the ref again with `null` instead, so a ref such as `useIsVisible`'s hands `null` to `IntersectionObserver.observe` and never disconnects.
@@ -217,7 +226,14 @@ The goal is no SCSS, and as little CSS as Tamagui allows. Each component's resid
 
 Plain CSS has no Sass: flat selectors, no nesting, values written as `var(--rcx-…, <fallback>)`. It lives in `<Name>.styles.css` and is loaded from `components/index.css` with `@import`, in the order the SCSS `@use`s had. Rules that used to win over frames stay unlayered.
 
-The entry is `src/index.css`: the `@font-face`, the global link colors (`styles/link.css`), `components/index.css`, the `@layer reset, fuselage;` statement and the font-smoothing rule. Vite inlines the `@import`s into `fuselage.css`, and Storybook's `css-loader` does the same. `.storybook/normalize.css` puts normalize in the `reset` layer with `@import … layer(reset)`. `css-loader` drops that layer when it inlines the import, so Storybook runs `postcss-import`, limited to `normalize.css`, which keeps it. Without it, normalize's unlayered `button { font-family: inherit }` beats every frame's font. `yarn stylelint` lints `**/*.css`.
+The entry is `src/index.css`:
+
+1. the `@layer reset, fuselage;` statement, first;
+2. Tamagui's base stylesheet (`styles/tamagui-base.css`);
+3. the `@font-face`;
+4. the global link colors (`styles/link.css`);
+5. `components/index.css`;
+6. the font-smoothing rule. Vite inlines the `@import`s into `fuselage.css`, and Storybook's `css-loader` does the same. `.storybook/normalize.css` puts normalize in the `reset` layer with `@import … layer(reset)`. `css-loader` drops that layer when it inlines the import, so Storybook runs `postcss-import`, limited to `normalize.css`, which keeps it. Without it, normalize's unlayered `button { font-family: inherit }` beats every frame's font. `yarn stylelint` lints `**/*.css`.
 
 ### Lessons from consumers
 
@@ -227,7 +243,8 @@ The entry is `src/index.css`: the `@font-face`, the global link colors (`styles/
 - Tamagui 3.0.18 is patched (`.yarn/patches`):
   - React 19 ref cleanups;
   - `forceStyle` no longer leaks to the DOM;
-  - the container `onLayout` measurer no longer leaks to the DOM.
+  - the container `onLayout` measurer no longer leaks to the DOM;
+  - a frame with no `ThemeProvider` above acts as its own root instead of throwing.
 - Run `yarn exec eslint --fix <paths>`, never `yarn eslint --fix <paths>`: the package script is `eslint .` and fixes the whole package.
 - The Fuselage Storybook A/B is not enough. The apps/meteor and ui-client Storybooks catch what Fuselage stories never exercise, so compare them against `develop` too.
 - Pixel A/B can't see behavior. Run the Rocket.Chat client and package unit tests after every batch, and treat any failure that isn't a snapshot as a regression. Examples:
