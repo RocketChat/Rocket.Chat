@@ -16,11 +16,13 @@ export const useVisibleAppActions = (): VisibleAppAction[] => {
 	} = useMediaCallView();
 	const appActions = useMediaCallAppActions();
 	const { openRoomId } = useMediaCallInstance();
-	const { overrides, setOverride } = useAppActionOverrides();
+	const { getOverrides, setOverride } = useAppActionOverrides();
 
 	if (currentCallState !== 'ringing' && currentCallState !== 'calling' && currentCallState !== 'ongoing') {
 		return [];
 	}
+
+	const overrides = getOverrides(callId);
 
 	// Merge persisted overrides into the base action descriptors so that
 	// AppActionButton is always initialised with the latest label/variant/actionId,
@@ -31,7 +33,7 @@ export const useVisibleAppActions = (): VisibleAppAction[] => {
 			const { appId, actionId, ...overridden } = { ...action, ...overrides[action.key] };
 
 			const onClick = async () => {
-				setOverride(action.key, { disabled: true });
+				setOverride(callId, action.key, { disabled: true });
 
 				const interaction = {
 					button: { appId, actionId },
@@ -44,7 +46,8 @@ export const useVisibleAppActions = (): VisibleAppAction[] => {
 
 				const disabled = result?.update?.disabled ?? false;
 
-				setOverride(action.key, { ...result?.update, disabled });
+				// Scoped to the call that started the interaction, so a late result never touches another call's buttons.
+				setOverride(callId, action.key, { ...result?.update, disabled });
 			};
 
 			return {
