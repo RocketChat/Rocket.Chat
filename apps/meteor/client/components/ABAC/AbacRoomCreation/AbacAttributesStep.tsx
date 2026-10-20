@@ -1,7 +1,7 @@
 import type { IAbacAttributeDefinition } from '@rocket.chat/core-typings';
 import { Box, Button, Callout, Field, FieldGroup, FieldLabel, InputBoxSkeleton } from '@rocket.chat/fuselage';
-import { useMemo } from 'react';
-import { useFieldArray, useFormContext } from 'react-hook-form';
+import { useEffect, useMemo } from 'react';
+import { useFieldArray, useFormContext, useWatch } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 
 import RoomFormAttributeField from '../../../views/admin/ABAC/ABACRoomsTab/RoomFormAttributeField';
@@ -9,7 +9,7 @@ import AbacErrorCallout from '../AbacErrorCallout';
 
 const MAX_ATTRIBUTES = 10;
 
-type AbacAttributesFormData = {
+export type AbacAttributesFormData = {
 	attributes: IAbacAttributeDefinition[];
 };
 
@@ -24,12 +24,23 @@ type AbacAttributesStepProps = {
 	assignable?: IAbacAttributeDefinition[];
 	isPending: boolean;
 	error: unknown;
+	showTitle?: boolean;
 };
 
-const AbacAttributesStep = ({ requiredKeys, assignable, isPending, error }: AbacAttributesStepProps) => {
+const AbacAttributesStep = ({ requiredKeys, assignable, isPending, error, showTitle = true }: AbacAttributesStepProps) => {
 	const { t } = useTranslation();
-	const { control } = useFormContext<AbacAttributesFormData>();
-	const { fields, append, remove } = useFieldArray({ control, name: 'attributes' });
+	const { control, getValues } = useFormContext<AbacAttributesFormData>();
+	const { fields, append, prepend, remove } = useFieldArray({ control, name: 'attributes' });
+	const attributes = useWatch({ control, name: 'attributes' });
+
+	useEffect(() => {
+		const keys = getValues('attributes').map(({ key }) => key);
+		const missingRows = requiredKeys.filter((key) => !keys.includes(key)).map((key) => ({ key, values: [] }));
+
+		if (missingRows.length > 0) {
+			prepend(missingRows, { shouldFocus: false });
+		}
+	}, [requiredKeys, getValues, prepend]);
 
 	const attributeList = useMemo(
 		() => (assignable ?? []).map(({ key, values }) => ({ value: key, label: key, attributeValues: values })),
@@ -48,16 +59,19 @@ const AbacAttributesStep = ({ requiredKeys, assignable, isPending, error }: Abac
 
 	return (
 		<FieldGroup>
-			<Box is='h5' fontScale='h5' color='titles-labels'>
-				{t('ABAC_Room_Attributes')}
-			</Box>
+			{showTitle && (
+				<Box is='h5' fontScale='h5' color='titles-labels'>
+					{t('ABAC_Room_Attributes')}
+				</Box>
+			)}
 			{missingRequiredKeys.length > 0 && (
 				<Callout type='danger' role='alert'>
 					{t('ABAC_Required_Attributes_Not_Held', { attributes: missingRequiredKeys.join(', ') })}
 				</Callout>
 			)}
 			{fields.map((field, index) => {
-				const isRequiredRow = index < requiredKeys.length;
+				const rowKey = attributes?.[index]?.key ?? field.key;
+				const isRequiredRow = requiredKeys.includes(rowKey) && (attributes ?? []).findIndex(({ key }) => key === rowKey) === index;
 
 				return (
 					<Field key={field.id}>
