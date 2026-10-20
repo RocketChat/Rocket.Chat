@@ -148,6 +148,37 @@ describe('RemoteMucSession', () => {
 		expect(onMessage.mock.calls.map(([message]) => message.id)).toEqual(['room-id', undefined]);
 	});
 
+	it("ignores a stanza-id naming an occupant's address in the room (message-deduplication R2)", () => {
+		const onMessage = jest.fn();
+		const { session } = createSession({ onMessage });
+
+		session.handleMessage(
+			p(
+				"<message from='team@conference.remote.tld/bob' type='groupchat' id='m1'><body>hi</body><stanza-id xmlns='urn:xmpp:sid:0' id='forged' by='team@conference.remote.tld/bob'/><stanza-id xmlns='urn:xmpp:sid:0' id='room-id' by='team@conference.remote.tld'/></message>",
+			),
+		);
+		session.handleMessage(
+			p(
+				"<message from='team@conference.remote.tld/bob' type='groupchat' id='m2'><body>hi</body><stanza-id xmlns='urn:xmpp:sid:0' id='forged' by='team@conference.remote.tld/bob'/></message>",
+			),
+		);
+
+		expect(onMessage.mock.calls.map(([message]) => message.id)).toEqual(['room-id', undefined]);
+	});
+
+	it('skips a room stanza-id without an id for a later one that has it (message-deduplication R2)', () => {
+		const onMessage = jest.fn();
+		const { session } = createSession({ onMessage });
+
+		session.handleMessage(
+			p(
+				"<message from='team@conference.remote.tld/bob' type='groupchat' id='m1'><body>hi</body><stanza-id xmlns='urn:xmpp:sid:0' by='team@conference.remote.tld'/><stanza-id xmlns='urn:xmpp:sid:0' id='' by='team@conference.remote.tld'/><stanza-id xmlns='urn:xmpp:sid:0' id='room-id' by='team@conference.remote.tld'/></message>",
+			),
+		);
+
+		expect(onMessage.mock.calls.map(([message]) => message.id)).toEqual(['room-id']);
+	});
+
 	it('prefers the XEP-0359 origin id over the stanza id as the sender id', () => {
 		const onMessage = jest.fn();
 		const { session } = createSession({ onMessage });

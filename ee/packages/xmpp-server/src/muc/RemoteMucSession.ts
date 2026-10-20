@@ -145,16 +145,16 @@ export class RemoteMucSession {
 		});
 	}
 
-	/** The XEP-0359 id the room itself stamped; one naming anyone else may come from an occupant (XEP-0359 §6). */
+	/** The XEP-0359 id the room itself stamped, by its bare JID; one naming anyone else may come from an occupant (XEP-0359 §3, §6). */
 	private roomStanzaId(message: Element): string | undefined {
 		const isRoom = (by: string | undefined): boolean => {
 			try {
-				return !!by && normalizeRoomJid(by) === normalizeRoomJid(this.deps.roomJid);
+				return !!by && !by.includes('/') && normalizeRoomJid(by) === normalizeRoomJid(this.deps.roomJid);
 			} catch {
 				return false;
 			}
 		};
-		return message.getChildren('stanza-id', NS_SID).find((stanzaId) => isRoom(stanzaId.attrs.by))?.attrs.id;
+		return message.getChildren('stanza-id', NS_SID).find((stanzaId) => !!stanzaId.attrs.id && isRoom(stanzaId.attrs.by))?.attrs.id;
 	}
 
 	markStale(): void {
