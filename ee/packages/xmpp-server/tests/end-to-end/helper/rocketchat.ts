@@ -117,8 +117,13 @@ export async function teardown(rc: RocketChat | undefined): Promise<void> {
 export type LocalUser = { _id: string; username: string; jid: string; config: IRequestConfig };
 
 /** A fresh Rocket.Chat user, logged in and deleted on cleanup; its email stays unverified so email 2FA cannot block the login. */
-export async function createLocalUser(rc: RocketChat, label: string, username = `xe2e-${label}-${uniqueSuffix()}`): Promise<LocalUser> {
-	const user = await createUser({ username, joinDefaultChannels: false }, rc.admin);
+export async function createLocalUser(
+	rc: RocketChat,
+	label: string,
+	username = `xe2e-${label}-${uniqueSuffix()}`,
+	email?: string,
+): Promise<LocalUser> {
+	const user = await createUser({ username, ...(email && { email }), joinDefaultChannels: false }, rc.admin);
 	rc.cleanup.add(() => deleteUser(user, { confirmRelinquish: true }, rc.admin));
 	return { _id: user._id, username, jid: `${username}@${rc.domain}`, config: await getRequestConfig(apiUrl, username, password) };
 }

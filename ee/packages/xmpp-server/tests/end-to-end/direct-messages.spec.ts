@@ -143,7 +143,9 @@ describe('XMPP federation: direct messages', () => {
 	// Known defect: ../../docs/specs/addressing.md#d1-a-local-username-shaped-like-a-bare-jid-is-taken-for-an-xmpp-account
 	it.skip('treats a local user whose username looks like a JID as that local user (addressing D1)', async () => {
 		await overrideSetting(rc, 'UTF8_User_Names_Validation', WIDENED_USERNAMES);
-		const lookalike = await createLocalUser(rc, 'lookalike', `xe2e-lookalike-${uniqueSuffix()}@corp.example`);
+		const username = `xe2e-lookalike-${uniqueSuffix()}@corp.example`;
+		// The username doubles as the email, as when a SAML or LDAP sync copies one into the other.
+		const lookalike = await createLocalUser(rc, 'lookalike', username, username);
 
 		const room = await createDirectMessage(rc, lookalike, alice.bareJid);
 		assert.ok(room.xmppFederation?.role === 'dm', `expected a dm room, got ${room.xmppFederation?.role}`);
