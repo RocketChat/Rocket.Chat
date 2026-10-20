@@ -1,7 +1,3 @@
-.rcx-skeleton--text:empty::before {
-	content: '\00a0';
-}
-
 @keyframes rcx-skeleton__animation {
 	0% {
 		background-position: 0 0;
