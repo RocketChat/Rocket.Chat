@@ -2627,6 +2627,7 @@
   "error-abac-decision-inconclusive": "The access decision for these attributes could not be made.",
   "error-abac-decision-unavailable": "Access decisions are unavailable right now. Please try again later.",
   "error-abac-discussion-creation-blocked": "Discussions cannot be created while ABAC enforcement is on.",
+  "error-abac-discussion-room-attributes": "Discussions cannot carry ABAC attributes.",
   "error-abac-federated-room-attributes": "Federated rooms cannot carry ABAC attributes.",
   "error-abac-invalid-attributes": "One or more of the provided ABAC attributes are invalid.",
   "error-abac-not-authorized-to-modify-room": "You are not authorized to modify the ABAC attributes of this room.",
