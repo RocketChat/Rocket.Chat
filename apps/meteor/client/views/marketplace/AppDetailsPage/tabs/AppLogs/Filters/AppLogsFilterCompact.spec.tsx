@@ -1,6 +1,6 @@
 import { mockAppRoot } from '@rocket.chat/mock-providers';
 import { composeStories } from '@storybook/react';
-import { render, screen } from '@testing-library/react';
+import { render, screen, waitFor } from '@testing-library/react';
 import { axe } from 'jest-axe';
 
 import * as stories from './AppLogsFilter.stories';
@@ -11,6 +11,8 @@ const testCases = Object.values(composeStories(stories)).map((Story) => [Story.s
 
 test.each(testCases)('AppLogsItem should have no a11y violations', async (_storyname, Story) => {
 	const { container } = render(<Story />, { wrapper: mockAppRoot().build() });
+	// Audit the loaded filters, not their loading skeletons.
+	await waitFor(() => expect(container.querySelector('[aria-busy="true"]')).not.toBeInTheDocument());
 
 	/**
 	 ** Disable 'nested-interactive' rule because our `Select` component is still not a11y compliant
