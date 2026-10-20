@@ -1,8 +1,11 @@
 import { statusBackgroundColors, statusColors, strokeColors, surfaceColors, textIconColors } from '../../Theme';
 import { toCSSValue } from '../../helpers/toCSSValue';
-import { fontFamily, fontScale } from '../../styleTokens';
+import { borderRadius, borderWidth, fontFamily, fontScale } from '../../styleTokens';
 
 export const sidebarColorSurfaceDefault = toCSSValue('--rcx-sidebar-color-surface-default', surfaceColors['surface-sidebar']);
+export const sidebarColorSurfaceHover = toCSSValue('--rcx-sidebar-color-surface-hover', surfaceColors['surface-hover']);
+export const sidebarColorFontActive = toCSSValue('--rcx-sidebar-color-font-active', textIconColors['font-titles-labels']);
+export const sidebarColorStrokeExtraLight = toCSSValue('--rcx-sidebar-color-stroke-extra-light', strokeColors['stroke-light']);
 export const sidebarColorFontDefault = toCSSValue('--rcx-sidebar-color-font-default', textIconColors['font-default']);
 export const sidebarAccordionBorderColor = toCSSValue('--rcx-sidebar-accordion-border-color', strokeColors['stroke-light']);
 
@@ -56,6 +59,29 @@ export const textEllipsis = {
 	overflow: 'hidden',
 	textOverflow: 'ellipsis',
 } as const;
+
+/** A collapsed sidebar keeps this text out of sight, on one line, until it is hovered. */
+export const hiddenWhileCollapsed = {
+	visibility: { 'default': 'hidden', 'group-hover/rcx-sidebar': 'visible' },
+	whiteSpace: { 'default': 'nowrap', 'group-hover/rcx-sidebar': 'inherit' },
+} as const;
+
+/**
+ * Style props for the frame of another component the sidebar renders, such as an `Item` part or a `Chevron`. Those hand the
+ * props they don't use to their Tamagui frame, where props win over the frame's own styles, as the sidebar's stylesheet used to.
+ */
+export const frameStyle = (style: Record<string, unknown>) => style as Record<never, never>;
+
+/** The keyboard focus look of the sidebar's own clickable bars: a highlighted border instead of a ring. */
+export const focusBorder = {
+	borderWidth: borderWidth('default'),
+	borderStyle: 'solid',
+	borderColor: { 'default': 'transparent', 'focus-visible': strokeColors['stroke-highlight'].toString() },
+	outlineStyle: 'none',
+	boxShadow: { 'focus-visible': 'none' },
+} as const;
+
+export const focusBorderRadius = toCSSValue('--rcx-border-radius-medium', borderRadius('medium')!);
 
 export const typography = (name: string) => {
 	const { fontSize, fontWeight, lineHeight, letterSpacing } = fontScale(name)!;
