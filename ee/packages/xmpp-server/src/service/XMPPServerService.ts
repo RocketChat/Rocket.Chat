@@ -1,6 +1,7 @@
 import { api, License, Message, Room, ServiceClass, Settings } from '@rocket.chat/core-services';
 import type { IXMPPServerService } from '@rocket.chat/core-services';
 import {
+	isBannedSubscription,
 	isEditedMessage,
 	isRoomXMPPFederated,
 	isRoomXMPPHostedMuc,
@@ -532,7 +533,8 @@ export class XMPPServerService extends ServiceClass implements IXMPPServerServic
 
 	/**
 	 * Hosted-room join policy: public channels are open to any federated domain,
-	 * private groups only to remote users who already hold a subscription (i.e. were invited).
+	 * private groups only to remote users who already hold a subscription (i.e. were invited),
+	 * and neither to a user banned from the room.
 	 */
 	private async authorizeMucJoin(mucDomain: string, params: { roomId: string; occupantJid: string }): Promise<MucJoinDecision> {
 		const mucJid = `${params.roomId}@${mucDomain}`;
@@ -541,12 +543,16 @@ export class XMPPServerService extends ServiceClass implements IXMPPServerServic
 			this.logger.warn({ msg: 'MUC join refused: no room hosts this JID', muc: mucJid, from: params.occupantJid });
 			return { allow: false, reason: 'forbidden' };
 		}
+
+		const user = await Users.findOneByUsername(toBareJid(params.occupantJid), { projection: { _id: 1 } });
+		const subscription = user && (await Subscriptions.findOneByRoomIdAndUserId(room._id, user._id, { projection: { status: 1 } }));
+		if (subscription && isBannedSubscription(subscription)) {
+			this.logger.warn({ msg: 'MUC join refused: banned from this room', muc: mucJid, from: params.occupantJid });
+			return { allow: false, reason: 'banned' };
+		}
 		if (room.t === 'c') {
 			return { allow: true };
 		}
-
-		const user = await Users.findOneByUsername(toBareJid(params.occupantJid), { projection: { _id: 1 } });
-		const subscription = user && (await Subscriptions.findOneByRoomIdAndUserId(room._id, user._id, { projection: { _id: 1 } }));
 		if (!subscription) {
 			this.logger.warn({ msg: 'MUC join refused: not a member of this private room', muc: mucJid, from: params.occupantJid });
 			return { allow: false, reason: 'members-only' };

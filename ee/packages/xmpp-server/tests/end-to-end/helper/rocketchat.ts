@@ -233,6 +233,10 @@ export async function kickFromRoom(user: LocalUser, room: RoomRef, userId: strin
 	await post(user.config, `${endpointPrefix[room.t]}.kick`, { roomId: room._id, userId });
 }
 
+export async function banFromRoom(user: LocalUser, room: RoomRef, userId: string): Promise<void> {
+	await post(user.config, 'rooms.banUser', { roomId: room._id, userId });
+}
+
 export async function leaveRoom(user: LocalUser, room: RoomRef): Promise<void> {
 	await post(user.config, `${endpointPrefix[room.t]}.leave`, { roomId: room._id });
 }

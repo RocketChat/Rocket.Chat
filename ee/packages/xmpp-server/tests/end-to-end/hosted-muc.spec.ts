@@ -6,6 +6,7 @@ import type { IRoom } from '@rocket.chat/core-typings';
 import { federationPolling, uniqueSuffix, withUppercaseDomain } from './helper/config';
 import { isGroupchat, isOccupantPresence, isRoomInvite, isRoomSubject, replacedId, statusCodes } from './helper/predicates';
 import {
+	banFromRoom,
 	createHostedRoom,
 	createLocalUser,
 	deleteRoom,
@@ -160,6 +161,16 @@ describe('XMPP federation: rooms hosted by Rocket.Chat', () => {
 			await alice.leaveRoom(muc);
 			await waitForMember(owner, room, alice.bareJid, false);
 		});
+
+		it('refuses a join from an XMPP user banned from the channel (R4)', async () => {
+			await inviteToRoom(owner, room, alice.bareJid);
+			await waitForMember(owner, room, alice.bareJid);
+			const aliceUser = await findUser(rc, alice.bareJid);
+			assert.ok(aliceUser);
+			await banFromRoom(owner, room, aliceUser._id);
+
+			await assert.rejects(alice.joinRoom(muc), (error: unknown) => error instanceof StanzaError && error.condition === 'forbidden');
+		});
 	});
 
 	describe('private group', () => {
@@ -193,6 +204,16 @@ describe('XMPP federation: rooms hosted by Rocket.Chat', () => {
 
 		it('admits the invitee (R4, R11)', async () => {
 			await alice.joinRoom(muc);
+		});
+
+		it('refuses a join from an invitee banned from the group (R4)', async () => {
+			await inviteToRoom(owner, room, carol.bareJid);
+			await waitForMember(owner, room, carol.bareJid);
+			const carolUser = await findUser(rc, carol.bareJid);
+			assert.ok(carolUser);
+			await banFromRoom(owner, room, carolUser._id);
+
+			await assert.rejects(carol.joinRoom(muc), (error: unknown) => error instanceof StanzaError && error.condition === 'forbidden');
 		});
 
 		it('invites an XMPP user added after creation (R11)', async () => {

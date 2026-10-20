@@ -178,6 +178,15 @@ describe('MucRoom', () => {
 		expect(allowed.room.listOccupants()[0].role).toBe('moderator');
 	});
 
+	it('refuses a banned occupant with forbidden (hosted-muc R4)', async () => {
+		const { room, sent } = setup(async () => ({ allow: false, reason: 'banned' }));
+		await room.handleJoin(join('alice@remote.tld/pc', 'alice'));
+
+		expect(sent[0].getChild('error')?.attrs.type).toBe('auth');
+		expect(sent[0].getChild('error')?.getChild('forbidden')).toBeDefined();
+		expect(room.listOccupants()).toHaveLength(0);
+	});
+
 	it('finds an occupant by bare JID regardless of resource', async () => {
 		const { room } = setup();
 		await room.handleJoin(join('alice@remote.tld/pc', 'alice'));
