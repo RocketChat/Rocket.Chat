@@ -4,11 +4,17 @@
 
 Pilot. 40 Fuselage components render with Tamagui (`@tamagui/web` 3.x), each through its own `feat(fuselage): render … with Tamagui` commit:
 
-- Fully on Tamagui, with no SCSS left: `Badge`, `Chip`, `CodeSnippet`, `Divider`, `FramedIcon`, `StatusBullet` and `Tile`.
-- Partially migrated: every other component keeps a residual SCSS file for what Tamagui cannot express (see recipe step 7).
+- No SCSS is left in the package, and Sass is no longer a dependency. `src/index.css` is the stylesheet entry.
+- 24 components keep a flat plain-CSS file (`<Name>.styles.css`) for what Tamagui cannot express (see "What stays plain CSS"). The others are styled by Tamagui alone.
 - Untouched: `Box` itself, `Dropdown`, `Select`, `AutoComplete` and the components that were already plain compositions, such as `Flex`, `Margins` and the inputs. They are not migrated.
 
-Component SCSS went from 5,923 lines to 3,367.
+Component SCSS went from 5,923 lines to none, and about 2,650 lines of plain CSS remain. The biggest pieces:
+
+- `InputBox` (512): native `:invalid`, and the class names consumers put on their own elements;
+- `Box` (463): `rcx-box` base classes and `withRichContent`;
+- `Message` (315);
+- `Select` (267);
+- `Field` (251): rich text inside hints and descriptions.
 
 ## Problem
 
@@ -46,7 +52,7 @@ The other side of that rule: an unlayered **element** selector beats a layered c
 - `fuselage.css` declares the order `@layer reset, fuselage;`.
 - Rocket.Chat's `reset.css` moves into `@layer reset`.
 
-Among the stylesheets in `main.css` and `fuselage.css`, layering the reset changes no existing rule. Only zero-specificity rules used to lose to it, and the ones that exist (`*` and `:where()` rules) set none of the properties the reset sets. Stylesheets loaded before `main.css` were not audited. Any consumer that loads its own reset (normalize, for example) has to put it in the `reset` layer too. Fuselage's Storybook does this in `.storybook/normalize.scss`.
+Among the stylesheets in `main.css` and `fuselage.css`, layering the reset changes no existing rule. Only zero-specificity rules used to lose to it, and the ones that exist (`*` and `:where()` rules) set none of the properties the reset sets. Stylesheets loaded before `main.css` were not audited. Any consumer that loads its own reset (normalize, for example) has to put it in the `reset` layer too. Fuselage's Storybook does this in `.storybook/normalize.css`.
 
 ### `@tamagui/web` is bundled into `dist`
 
@@ -85,10 +91,10 @@ The component must not get `rcx-box--full`. It is an unlayered reset of margin, 
 
 | | `develop` | Pilot |
 |---|---|---|
-| `fuselage.production.js` | 130.6 kB (34.4 kB gzip) | 295.5 kB (87.4 kB gzip) |
-| `fuselage.css` | 255.0 kB (26.7 kB gzip) | 199.1 kB (19.9 kB gzip) |
+| `fuselage.production.js` | 130.6 kB (34.4 kB gzip) | 333.0 kB (96.5 kB gzip) |
+| `fuselage.css` | 255.0 kB (26.7 kB gzip) | 73.8 kB (8.7 kB gzip) |
 
-JavaScript and CSS together grow by about **+46 kB gzip**:
+JavaScript and CSS together grow by about **+44 kB gzip**:
 
 - The Tamagui runtime alone accounted for +41 kB gzip, measured when only `Divider` had moved. That figure already includes pinning `NODE_ENV=production` in the production bundle, which removed Tamagui's development branches (about 12.5 kB gzip).
 - The component definitions move from CSS into JavaScript.
@@ -116,7 +122,7 @@ The Rocket.Chat login page (`yarn dev:next` against open.rocket.chat) is also pi
   - `.yarn/patches` patches `@tamagui/web` (forwarded refs) and `@tamagui/compose-refs` (composed refs) to keep the cleanup.
   - Drop both patches once upstream handles it; `FuselageProvider.spec.tsx` checks the behavior.
 - **`render` functions:** Tamagui adds the frame's `className` to the element a `render` function returns. Use `renderAs`, which drops it, or the class names render twice.
-- **Vendor-prefixed properties** (`-webkit-font-smoothing`, `-moz-osx-font-smoothing`) have no Tamagui prop. They stay in SCSS where they matter.
+- **Vendor-prefixed properties** (`-webkit-font-smoothing`, `-moz-osx-font-smoothing`) have no Tamagui prop. One `:where(.is_View, .is_Text)` rule in `src/index.css` sets them for every frame.
 - **Collapsed `ItemGroup`s** rely on normalize's `[hidden] { display: none }` beating `.rcx-item-group { display: flex }`. The Rocket.Chat app loads no normalize, which suggests collapsed groups show there today. This is independent of Tamagui.
 - **Still to decide:**
   - Bundle size: the compiler (`@tamagui/static`) and `TAMAGUI_RUNTIME=island` could remove most of the runtime.
@@ -142,14 +148,14 @@ Follow `Divider` (`components/Divider/Divider.tsx`).
    - States are per-property objects in Tamagui 3, for example `backgroundColor: { default: …, hover: …, focus: … }`. Version 3 does not type `hoverStyle`, `pressStyle` and `focusVisibleStyle`.
    - Use a `disabled` variant for `:disabled`.
    - Keep the modifier class names anyway.
-7. **What stays in SCSS:** some rules keep living in the component's SCSS file, which is unlayered and so wins over the frame exactly as before:
+7. **What stays in CSS:** some rules keep living in the component's plain CSS file, which is unlayered and so wins over the frame exactly as before (see "Removing the remaining SCSS" for which):
    - `::before` and `::after`;
    - keyframes;
    - `@media` and `@container`;
    - attribute and descendant selectors;
    - any selector that reaches into another component.
 
-   Delete each SCSS rule you move, and the whole file once it is empty.
+   Delete each CSS rule you move, and the whole file once it is empty.
 8. **Export:** export the public component through `withFuselageProvider`.
 9. **Verify:**
    - `yarn tsc --noEmit -p tsconfig.json` and the component's Jest specs.
@@ -163,26 +169,48 @@ The goal is no SCSS, and as little CSS as Tamagui allows. Each component's resid
 ### Tamagui 3 techniques
 
 - **States** are per-property clauses, for example `backgroundColor: { default, hover, press, focus, 'focus-visible', 'focus-within' }`. Version 3 removed `hoverStyle`, `pressStyle`, `focusStyle` and the `$sm` media props.
-  - The `disabled` clause targets `[aria-disabled="true"]`. Don't add `aria-disabled` where `develop` didn't render it; use a variant driven by the `disabled` prop instead.
+  - The `disabled` clause targets `[aria-disabled="true"]`. Don't add `aria-disabled` where `develop` didn't render it; use a variant driven by the `disabled` prop instead. A variant *named* `disabled` also adds `aria-disabled`, so name it something else (`inactive`).
+  - Tamagui orders states its own way: `press` above `focus-visible` above `hover`. SCSS often had hover last, so a hovered, keyboard-focused element now keeps its focus look.
+  - Hover clauses, `group-hover` included, are wrapped in `@media (hover: hover)`, so touch-only devices no longer get sticky hover.
+- **Variants:**
+  - When several variants set the same property, the one whose prop comes last in the JSX wins. Per-state clauses merge across variants.
+  - Style props passed where the frame is used beat every variant, whatever the prop order.
+  - Never name a variant after a CSS style prop (`position`, `direction`): it swallows that base style without a warning. Use `side`, `align` and the like.
+  - `':string'` function variants are not supported; use a keyed variant instead.
+  - Clause objects (`{ default: …, md: … }`) also work as plain props, not only in `styled()` and variants.
+  - A variant with a plain value replaces the base clause object for that property, so restate the states it needs.
 - **Media**: the config holds the Fuselage breakpoints (`sm`, `md`, `lg`, `xl`, `xxl`, `xxxl`, `min-width` in `em`, as the SCSS `on-breakpoint` mixin used). Write them as clauses, for example `padding: { default: …, md: … }`.
 - **Parent state → child style**: put `group="<name>"` on the parent frame, then use `'group-hover/<name>'` or `'group-focus-within/<name>'` clauses on child frames. They emit real CSS.
+  - They are not CSS only: each child with a group clause subscribes to the group, and the parent attaches mouse and press handlers that re-render those children. Specs that click outside `act()` then fail the console error check.
+  - `forceStyle` on the group parent does not reach its children's group clauses.
+  - `group` works in the `styled()` config; `container` only works as a JSX prop.
 - **Container queries**: `container="<name>"` on the parent sets `container-type: inline-size`, and children use `'@md/<name>'` clauses. Only use them where `develop` already had a container.
 - **Cross-component styles** (one component styling another's parts): pass a variant from the parent, or share one with `createStyledContext`. Don't reach into other components with selectors.
+  - A styled frame with `context` hands its variant props to descendant frames that use the same context, with no Provider.
+  - A frame takes one `context`, and a nested Provider resets the other keys to their defaults. Use separate contexts and read them with `useStyledContext()` when several values travel.
+  - When the other component has no variant for it, a css-in-js class (`useStyle`) on it is the fallback. Avoid inline `style`: it adds an attribute to the DOM.
 - **`:has()`**: let the child register in a parent context (for example "has an addon"), then style through a variant.
 - **Attribute selectors** (`[aria-selected]`, `[tabindex]`): the component already knows the prop, so map it to a variant.
 - **Pseudo-elements**: decorative `::before`/`::after` become real `aria-hidden` elements, keeping the class name of the element that held them. Snapshots change; pixels must not.
 - **Forced state classes** (`hover`/`is-hovered`, `active`/`is-active`, `focus`/`is-focused`, `focus focus-visible`): pass `forceStyle={getForcedState(className)}` to the frame.
   - Only do this once *all* of the frame's state styles are clauses. Under `forceStyle`, Tamagui renders the whole frame with inline styles, which beat any SCSS still styling that state.
-  - Forced `disabled`/`is-disabled` maps to the component's `disabled` variant.
-- **Vendor-prefixed font smoothing** comes from one `:where(.is_View, .is_Text)` rule in `index.scss`. Drop the per-component copies.
+  - Forced `disabled`/`is-disabled` maps to the component's disabled variant; `isForcedDisabled(className)` reads it.
+  - `!important` values survive in atomic CSS but are dropped from the inline styles `forceStyle` renders.
+- **Vendor-prefixed font smoothing** comes from one `:where(.is_View, .is_Text)` rule in `index.css`. Drop the per-component copies.
+- **Typing gaps:** `WebkitLineClamp`, `WebkitBoxOrient` and `display: '-webkit-box'` emit CSS but are typed `never` on `Text`; cast them in one helper. `animationName`, `transition`, `wordBreak` and `textIndent` emit real CSS.
+- **Fonts:** a frame that replaces `font: inherit` also needs `fontVariantNumeric: 'inherit'`, or a `<button>` loses `tabular-nums` and text shifts by a fraction of a pixel.
 
 ### What stays plain CSS
 
 - `:checked`, `:indeterminate` and `:invalid` on native inputs (sibling rules such as `input:checked + .fake`), so uncontrolled inputs work without React state.
 - Rich text and links inside text (`withRichContent`, links inside field hints): they style arbitrary HTML no component renders.
+- States of a native input styled through a sibling (`input:hover + .fake`, `:focus`, `:active`, `:disabled`): `group-*` clauses would make every hover re-render.
+- Colors and focus rings of a component that can render as `<a>`: the global link rules in `styles/link.css` are unlayered, so layered frame styles lose to them.
 - `@keyframes`, referenced through the `animationName` style prop, and `@font-face`.
 
-Plain CSS has no Sass: flat selectors, no nesting, values written as `var(--rcx-…, <fallback>)`. It lives in `<Name>.styles.css` and is loaded from `components/index.scss` as `@use './<Dir>/<Name>.styles'`, with no extension, so the stylesheet order is unchanged. Rules that used to win over frames stay unlayered.
+Plain CSS has no Sass: flat selectors, no nesting, values written as `var(--rcx-…, <fallback>)`. It lives in `<Name>.styles.css` and is loaded from `components/index.css` with `@import`, in the order the SCSS `@use`s had. Rules that used to win over frames stay unlayered.
+
+The entry is `src/index.css`: the `@font-face`, the global link colors (`styles/link.css`), `components/index.css`, the `@layer reset, fuselage;` statement and the font-smoothing rule. Vite inlines the `@import`s into `fuselage.css`, and Storybook's `css-loader` does the same. `.storybook/normalize.css` puts normalize in the `reset` layer with `@import … layer(reset)`. `css-loader` drops that layer when it inlines the import, so Storybook runs `postcss-import`, limited to `normalize.css`, which keeps it. Without it, normalize's unlayered `button { font-family: inherit }` beats every frame's font. `yarn stylelint` lints `**/*.css`.
 
 ### Lessons from consumers
 
@@ -193,4 +221,18 @@ Plain CSS has no Sass: flat selectors, no nesting, values written as `var(--rcx-
   - React 19 ref cleanups;
   - `forceStyle` no longer leaks to the DOM;
   - the container `onLayout` measurer no longer leaks to the DOM.
+- Run `yarn exec eslint --fix <paths>`, never `yarn eslint --fix <paths>`: the package script is `eslint .` and fixes the whole package.
 - The Fuselage Storybook A/B is not enough. The apps/meteor and ui-client Storybooks catch what Fuselage stories never exercise, so compare them against `develop` too.
+- Pixel A/B can't see behavior. Run the Rocket.Chat client and package unit tests after every batch, and treat any failure that isn't a snapshot as a regression. Examples:
+  - an `onChange` firing twice;
+  - a click that no longer reaches a header button.
+- Watch for React's unknown-DOM-prop warnings. A variant name that also travels outside Tamagui leaks to the element, as `pressed` did.
+- Consumers style raw elements with Fuselage class names (`rcx-input-box`, `rcx-input-box__wrapper`, `rcx-modal__backdrop`, `rcx-sidebar`, `rcx-card__header`, `rcx-card__row`).
+  - Keep those classes styled in plain CSS for as long as consumers render them on non-Fuselage elements.
+  - `styles/consumer-classes.css` restores develop's rules for them, restricted to non-Tamagui elements.
+  - Audit by listing every `rcx-*` class that code outside Fuselage writes in a `className` or as a `Box` prop, then checking it is still in `fuselage.css`.
+- A Tamagui `render` *function* receives the frame's props, and Tamagui then merges the same props into the element it returns. Every handler runs twice: `onChange` fired twice per keystroke. Pass an element instead; `renderAs` returns one.
+- Tamagui 3.0.18 calls `stopPropagation()` after a frame's `onClick`, which `Box` never did. Clicks stopped reaching parent handlers, such as the room list group header. The patch removes that call.
+- Update package snapshots through the `testunit` script, never with a bare `jest -u`. Packages pin `TZ=UTC` there, and a bare run writes local-time dates into the snapshots.
+- `yarn dev:next` pre-bundles the Fuselage `dist` JavaScript into `apps/meteor/node_modules/.vite`, while the CSS reloads live. After rebuilding Fuselage, restart it with that directory removed, or the app shows a broken mix of old JS and new CSS.
+- Pixel A/B of the real app is part of verification: home, a room, a user panel, a modal, preferences, the marketplace. Run it against a `develop` build on the same server, logged in with a personal access token.
