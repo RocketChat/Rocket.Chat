@@ -12,7 +12,7 @@ exports[`renders Default without crashing 1`] = `
         <div
           aria-controls="_r_3_"
           aria-expanded="false"
-          class="is_View _f-85860445 _mw-354604370 _mh-1760955396 _os-249893454 _ff-409630021 _fvn-1977619713 _p-615618451 _ta-507911453 _c-1866435217 _b-1683371345 rcx-box--animated rcx-accordion-item__bar"
+          class="is_View _f-85860445 _mw-354604370 _mh-1760955396 _os-249893454 _ff-409630021 _fvn-1977619713 _p-615618451 _ta-507911453 _c-1866435217 _b-1117022352 _c-1830342115 _ow-484670902 _b-503981535 _bs-1918316648 rcx-box--animated rcx-accordion-item__bar"
           role="button"
           tabindex="0"
         >
@@ -50,7 +50,7 @@ exports[`renders Default without crashing 1`] = `
         <div
           aria-controls="_r_b_"
           aria-expanded="false"
-          class="is_View _f-85860445 _mw-354604370 _mh-1760955396 _os-249893454 _ff-409630021 _fvn-1977619713 _p-615618451 _ta-507911453 _c-1866435217 _b-1683371345 rcx-box--animated rcx-accordion-item__bar"
+          class="is_View _f-85860445 _mw-354604370 _mh-1760955396 _os-249893454 _ff-409630021 _fvn-1977619713 _p-615618451 _ta-507911453 _c-1866435217 _b-1117022352 _c-1830342115 _ow-484670902 _b-503981535 _bs-1918316648 rcx-box--animated rcx-accordion-item__bar"
           role="button"
           tabindex="0"
         >
@@ -88,7 +88,7 @@ exports[`renders Default without crashing 1`] = `
         <div
           aria-controls="_r_j_"
           aria-expanded="false"
-          class="is_View _f-85860445 _mw-354604370 _mh-1760955396 _os-249893454 _ff-409630021 _fvn-1977619713 _p-615618451 _ta-507911453 _c-1866435217 _b-1683371345 rcx-box--animated rcx-accordion-item__bar"
+          class="is_View _f-85860445 _mw-354604370 _mh-1760955396 _os-249893454 _ff-409630021 _fvn-1977619713 _p-615618451 _ta-507911453 _c-1866435217 _b-1117022352 _c-1830342115 _ow-484670902 _b-503981535 _bs-1918316648 rcx-box--animated rcx-accordion-item__bar"
           role="button"
           tabindex="0"
         >
@@ -137,7 +137,7 @@ exports[`renders DisabledItem without crashing 1`] = `
         <div
           aria-controls="_r_t_"
           aria-expanded="false"
-          class="is_View _f-85860445 _mw-354604370 _mh-1760955396 _os-249893454 _ff-409630021 _fvn-1977619713 _p-615618451 _ta-507911453 _c-1866435217 _b-1683371345 rcx-box--animated rcx-accordion-item__bar"
+          class="is_View _f-85860445 _mw-354604370 _mh-1760955396 _os-249893454 _ff-409630021 _fvn-1977619713 _p-615618451 _ta-507911453 _c-1866435217 _b-1117022352 _c-1830342115 _ow-484670902 _b-503981535 _bs-1918316648 rcx-box--animated rcx-accordion-item__bar"
           role="button"
           tabindex="0"
         >
@@ -212,7 +212,7 @@ exports[`renders DisabledItem without crashing 1`] = `
         <div
           aria-controls="_r_1d_"
           aria-expanded="false"
-          class="is_View _f-85860445 _mw-354604370 _mh-1760955396 _os-249893454 _ff-409630021 _fvn-1977619713 _p-615618451 _ta-507911453 _c-1866435217 _b-1683371345 rcx-box--animated rcx-accordion-item__bar"
+          class="is_View _f-85860445 _mw-354604370 _mh-1760955396 _os-249893454 _ff-409630021 _fvn-1977619713 _p-615618451 _ta-507911453 _c-1866435217 _b-1117022352 _c-1830342115 _ow-484670902 _b-503981535 _bs-1918316648 rcx-box--animated rcx-accordion-item__bar"
           role="button"
           tabindex="0"
         >
@@ -261,7 +261,7 @@ exports[`renders ExpandedItemByDefault without crashing 1`] = `
         <div
           aria-controls="_r_1n_"
           aria-expanded="false"
-          class="is_View _f-85860445 _mw-354604370 _mh-1760955396 _os-249893454 _ff-409630021 _fvn-1977619713 _p-615618451 _ta-507911453 _c-1866435217 _b-1683371345 rcx-box--animated rcx-accordion-item__bar"
+          class="is_View _f-85860445 _mw-354604370 _mh-1760955396 _os-249893454 _ff-409630021 _fvn-1977619713 _p-615618451 _ta-507911453 _c-1866435217 _b-1117022352 _c-1830342115 _ow-484670902 _b-503981535 _bs-1918316648 rcx-box--animated rcx-accordion-item__bar"
           role="button"
           tabindex="0"
         >
@@ -299,7 +299,7 @@ exports[`renders ExpandedItemByDefault without crashing 1`] = `
         <div
           aria-controls="_r_1v_"
           aria-expanded="true"
-          class="is_View _f-85860445 _mw-354604370 _mh-1760955396 _os-249893454 _ff-409630021 _fvn-1977619713 _p-615618451 _ta-507911453 _c-1866435217 _b-1683371345 rcx-box--animated rcx-accordion-item__bar"
+          class="is_View _f-85860445 _mw-354604370 _mh-1760955396 _os-249893454 _ff-409630021 _fvn-1977619713 _p-615618451 _ta-507911453 _c-1866435217 _b-1117022352 _c-1830342115 _ow-484670902 _b-503981535 _bs-1918316648 rcx-box--animated rcx-accordion-item__bar"
           role="button"
           tabindex="0"
         >
@@ -337,7 +337,7 @@ exports[`renders ExpandedItemByDefault without crashing 1`] = `
         <div
           aria-controls="_r_27_"
           aria-expanded="false"
-          class="is_View _f-85860445 _mw-354604370 _mh-1760955396 _os-249893454 _ff-409630021 _fvn-1977619713 _p-615618451 _ta-507911453 _c-1866435217 _b-1683371345 rcx-box--animated rcx-accordion-item__bar"
+          class="is_View _f-85860445 _mw-354604370 _mh-1760955396 _os-249893454 _ff-409630021 _fvn-1977619713 _p-615618451 _ta-507911453 _c-1866435217 _b-1117022352 _c-1830342115 _ow-484670902 _b-503981535 _bs-1918316648 rcx-box--animated rcx-accordion-item__bar"
           role="button"
           tabindex="0"
         >
@@ -386,7 +386,7 @@ exports[`renders LeadingIcon without crashing 1`] = `
         <div
           aria-controls="_r_2h_"
           aria-expanded="false"
-          class="is_View _f-85860445 _mw-354604370 _mh-1760955396 _os-249893454 _ff-409630021 _fvn-1977619713 _p-615618451 _ta-507911453 _c-1866435217 _b-1683371345 rcx-box--animated rcx-accordion-item__bar"
+          class="is_View _f-85860445 _mw-354604370 _mh-1760955396 _os-249893454 _ff-409630021 _fvn-1977619713 _p-615618451 _ta-507911453 _c-1866435217 _b-1117022352 _c-1830342115 _ow-484670902 _b-503981535 _bs-1918316648 rcx-box--animated rcx-accordion-item__bar"
           role="button"
           tabindex="0"
         >
@@ -439,7 +439,7 @@ exports[`renders LeadingIcon without crashing 1`] = `
         <div
           aria-controls="_r_2q_"
           aria-expanded="false"
-          class="is_View _f-85860445 _mw-354604370 _mh-1760955396 _os-249893454 _ff-409630021 _fvn-1977619713 _p-615618451 _ta-507911453 _c-1866435217 _b-1683371345 rcx-box--animated rcx-accordion-item__bar"
+          class="is_View _f-85860445 _mw-354604370 _mh-1760955396 _os-249893454 _ff-409630021 _fvn-1977619713 _p-615618451 _ta-507911453 _c-1866435217 _b-1117022352 _c-1830342115 _ow-484670902 _b-503981535 _bs-1918316648 rcx-box--animated rcx-accordion-item__bar"
           role="button"
           tabindex="0"
         >
@@ -492,7 +492,7 @@ exports[`renders LeadingIcon without crashing 1`] = `
         <div
           aria-controls="_r_33_"
           aria-expanded="false"
-          class="is_View _f-85860445 _mw-354604370 _mh-1760955396 _os-249893454 _ff-409630021 _fvn-1977619713 _p-615618451 _ta-507911453 _c-1866435217 _b-1683371345 rcx-box--animated rcx-accordion-item__bar"
+          class="is_View _f-85860445 _mw-354604370 _mh-1760955396 _os-249893454 _ff-409630021 _fvn-1977619713 _p-615618451 _ta-507911453 _c-1866435217 _b-1117022352 _c-1830342115 _ow-484670902 _b-503981535 _bs-1918316648 rcx-box--animated rcx-accordion-item__bar"
           role="button"
           tabindex="0"
         >
@@ -556,7 +556,7 @@ exports[`renders SecondaryTitle without crashing 1`] = `
         <div
           aria-controls="_r_3e_"
           aria-expanded="false"
-          class="is_View _f-85860445 _mw-354604370 _mh-1760955396 _os-249893454 _ff-409630021 _fvn-1977619713 _p-615618451 _ta-507911453 _c-1866435217 _b-1683371345 rcx-box--animated rcx-accordion-item__bar"
+          class="is_View _f-85860445 _mw-354604370 _mh-1760955396 _os-249893454 _ff-409630021 _fvn-1977619713 _p-615618451 _ta-507911453 _c-1866435217 _b-1117022352 _c-1830342115 _ow-484670902 _b-503981535 _bs-1918316648 rcx-box--animated rcx-accordion-item__bar"
           role="button"
           tabindex="0"
         >
@@ -608,7 +608,7 @@ exports[`renders SecondaryTitle without crashing 1`] = `
         <div
           aria-controls="_r_3m_"
           aria-expanded="false"
-          class="is_View _f-85860445 _mw-354604370 _mh-1760955396 _os-249893454 _ff-409630021 _fvn-1977619713 _p-615618451 _ta-507911453 _c-1866435217 _b-1683371345 rcx-box--animated rcx-accordion-item__bar"
+          class="is_View _f-85860445 _mw-354604370 _mh-1760955396 _os-249893454 _ff-409630021 _fvn-1977619713 _p-615618451 _ta-507911453 _c-1866435217 _b-1117022352 _c-1830342115 _ow-484670902 _b-503981535 _bs-1918316648 rcx-box--animated rcx-accordion-item__bar"
           role="button"
           tabindex="0"
         >
@@ -660,7 +660,7 @@ exports[`renders SecondaryTitle without crashing 1`] = `
         <div
           aria-controls="_r_3u_"
           aria-expanded="false"
-          class="is_View _f-85860445 _mw-354604370 _mh-1760955396 _os-249893454 _ff-409630021 _fvn-1977619713 _p-615618451 _ta-507911453 _c-1866435217 _b-1683371345 rcx-box--animated rcx-accordion-item__bar"
+          class="is_View _f-85860445 _mw-354604370 _mh-1760955396 _os-249893454 _ff-409630021 _fvn-1977619713 _p-615618451 _ta-507911453 _c-1866435217 _b-1117022352 _c-1830342115 _ow-484670902 _b-503981535 _bs-1918316648 rcx-box--animated rcx-accordion-item__bar"
           role="button"
           tabindex="0"
         >
