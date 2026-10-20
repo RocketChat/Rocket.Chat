@@ -1,0 +1,71 @@
+/*
+ * A clickable tag can be an `a`: its colors and focus rings stay unlayered to keep beating the global link rules in
+ * `styles/link.css`. The `focus` and `is-focused` state classes still get the link ring.
+ */
+.rcx-tag--clickable {
+	--rcx-tag-link-color: var(--rcx-tag-colors-default-color, var(--rcx-color-button-font-on-secondary, #1f2329));
+}
+
+.rcx-tag--primary {
+	--rcx-tag-link-color: var(--rcx-tag-colors-primary-color, var(--rcx-color-button-font-on-primary, #ffffff));
+}
+
+.rcx-tag--secondary {
+	--rcx-tag-link-color: var(--rcx-tag-colors-secondary-color, var(--rcx-color-button-font-on-secondary, #1f2329));
+}
+
+.rcx-tag--danger {
+	--rcx-tag-link-color: var(--rcx-tag-colors-danger-color, var(--rcx-color-button-font-on-danger, #ffffff));
+}
+
+.rcx-tag--warning {
+	--rcx-tag-link-color: var(--rcx-tag-colors-warning-color, var(--rcx-color-button-font-on-warning, #1f2329));
+}
+
+.rcx-tag--featured {
+	--rcx-tag-link-color: var(--rcx-tag-colors-featured-color, var(--rcx-color-button-font-on-primary, #ffffff));
+}
+
+.rcx-tag--secondary-danger {
+	--rcx-tag-link-color: var(--rcx-tag-colors-secondary-danger-color, var(--rcx-color-button-font-on-secondary-danger, #bb0b21));
+}
+
+.rcx-tag--secondary-warning {
+	--rcx-tag-link-color: var(--rcx-tag-colors-secondary-warning-color, var(--rcx-color-status-font-on-warning, #895f00));
+}
+
+.rcx-tag--secondary-info {
+	--rcx-tag-link-color: var(--rcx-tag-colors-secondary-info-color, var(--rcx-color-status-font-on-info, #095ad2));
+}
+
+.rcx-tag--clickable.rcx-tag--clickable {
+	color: var(--rcx-link-color, var(--rcx-tag-link-color));
+}
+
+.rcx-tag--clickable.rcx-tag--clickable:is(:focus, :focus-within, .focus, .is-focused) {
+	color: var(--rcx-link-focus-color, var(--rcx-tag-link-color));
+}
+
+.rcx-tag--clickable.rcx-tag--clickable:where(:visited, .is-visited) {
+	color: var(--rcx-link-visited-color, var(--rcx-tag-link-color));
+}
+
+.rcx-tag--clickable.rcx-tag--clickable:where(:active, .active, .is-active) {
+	color: var(--rcx-link-active-color, var(--rcx-tag-link-color));
+}
+
+.rcx-tag--clickable:is(.is-focused, .focus) {
+	text-decoration: none;
+
+	border-radius: var(--rcx-border-radius-small, 0.125rem);
+	outline: var(--rcx-link-focus-outline-color, var(--rcx-color-stroke-highlight, #156ff5)) solid 1px;
+	outline-offset: 0;
+	box-shadow: 0 0 0 2px var(--rcx-link-focus-box-shadow-color, var(--rcx-color-stroke-extra-light-highlight, #d1ebfe));
+}
+
+.rcx-tag--clickable:is(:focus-visible, .focus.focus-visible) {
+	border-color: var(--rcx-color-stroke-highlight, #156ff5);
+	border-radius: var(--rcx-border-radius-medium, 0.25rem);
+	outline: 0;
+	box-shadow: 0 0 0 2px var(--rcx-color-stroke-extra-light-highlight, #d1ebfe);
+}
