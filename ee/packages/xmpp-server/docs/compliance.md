@@ -27,7 +27,7 @@ requirements open), `not-planned` (reason in Notes).
 | --- | --- | --- | --- | --- |
 | [XEP-0030](https://xmpp.org/extensions/xep-0030.html) | Service Discovery | implemented | [service-discovery](specs/service-discovery.md) | |
 | [XEP-0045](https://xmpp.org/extensions/xep-0045.html) | Multi-User Chat | partial | [hosted-muc](specs/hosted-muc.md), [remote-muc](specs/remote-muc.md) | no configuration, admin IQ, history on join, passwords, nick changes |
-| [XEP-0106](https://xmpp.org/extensions/xep-0106.html) | JID Escaping | implemented | [addressing](specs/addressing.md) | |
+| [XEP-0106](https://xmpp.org/extensions/xep-0106.html) | JID Escaping | implemented | [addressing](specs/addressing.md) | Local JIDs are not escaped yet (addressing D2) |
 | [XEP-0185](https://xmpp.org/extensions/xep-0185.html) | Dialback Key Generation and Validation | implemented | [s2s-connectivity](specs/s2s-connectivity.md) | |
 | [XEP-0199](https://xmpp.org/extensions/xep-0199.html) | XMPP Ping | implemented | [ping](specs/ping.md) | answers only; never sends |
 | [XEP-0220](https://xmpp.org/extensions/xep-0220.html) | Server Dialback | implemented | [s2s-connectivity](specs/s2s-connectivity.md) | all three roles |

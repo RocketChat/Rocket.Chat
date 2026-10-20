@@ -117,8 +117,7 @@ export async function teardown(rc: RocketChat | undefined): Promise<void> {
 export type LocalUser = { _id: string; username: string; jid: string; config: IRequestConfig };
 
 /** A fresh Rocket.Chat user, logged in and deleted on cleanup; its email stays unverified so email 2FA cannot block the login. */
-export async function createLocalUser(rc: RocketChat, label: string): Promise<LocalUser> {
-	const username = `xe2e-${label}-${uniqueSuffix()}`;
+export async function createLocalUser(rc: RocketChat, label: string, username = `xe2e-${label}-${uniqueSuffix()}`): Promise<LocalUser> {
 	const user = await createUser({ username, joinDefaultChannels: false }, rc.admin);
 	rc.cleanup.add(() => deleteUser(user, { confirmRelinquish: true }, rc.admin));
 	return { _id: user._id, username, jid: `${username}@${rc.domain}`, config: await getRequestConfig(apiUrl, username, password) };
@@ -162,6 +161,14 @@ export async function createHostedRoom(
 	const roomId = (channel ?? group)?._id as string;
 	deleteRoomOnCleanup(rc, roomId);
 	return getRoom(owner, roomId);
+}
+
+/** A private group that is not XMPP federated, deleted with the suite. */
+export async function createPlainGroup(rc: RocketChat, user: LocalUser): Promise<RoomRef> {
+	const res = await createRoom({ type: 'p', name: `xe2e-plain-${uniqueSuffix()}`, config: user.config });
+	const { _id } = (res.body as { group: IRoom }).group;
+	deleteRoomOnCleanup(rc, _id);
+	return { _id, t: 'p' };
 }
 
 export async function getRoom(user: Pick<LocalUser, 'config'>, roomId: string): Promise<IRoom> {

@@ -109,7 +109,28 @@ the unique index instead of that user (R11).
 
 ## Known defects
 
-None.
+### D1 A local username shaped like a bare JID is taken for an XMPP account
+
+Rocket.Chat decides a username names an XMPP account by its shape alone. A local username
+can look like `alice@corp.example` when a SAML or LDAP sync copies an email address into it,
+or an admin widens `UTF8_User_Names_Validation`. Adding such a user to a room that is not
+XMPP federated is refused with `error-xmpp-users-in-non-xmpp-rooms`, XMPP on or off. Opening
+a DM between them and an XMPP user, or adding them to a hosted room, tries to create an XMPP
+record under their own username; the unique index refuses it (R11), so the DM or the room
+fails. Where: `isBareJid` filters in `apps/meteor/ee/server/hooks/xmpp/index.ts` and
+`apps/meteor/server/lib/rooms/createRoom.ts`. A fix asks who holds each username and treats
+a JID-shaped one as XMPP only when no local user does. Test: `direct-messages.spec.ts`,
+"treats a local user whose username looks like a JID as that local user".
+
+### D2 Local JIDs are not escaped
+
+R1 is not implemented: a local user's JID is built as `<username>@<domain>` with no
+XEP-0106 escaping, and inbound localparts are looked up without unescaping. A username that
+holds a character a localpart cannot carry, which needs a widened
+`UTF8_User_Names_Validation`, sends from an invalid JID and cannot be reached. Where: every
+`` `${user.username}@${this.server.domain}` `` in `XMPPServerService`, and the username
+lookups in its inbound handlers. Test: `direct-messages.spec.ts`, "sends from the escaped
+JID of a local user whose username needs escaping".
 
 ## Open questions
 
