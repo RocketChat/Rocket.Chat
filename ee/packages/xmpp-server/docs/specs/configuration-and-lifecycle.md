@@ -9,8 +9,15 @@ code:
     src/service/XMPPServerService.ts,
     ee/apps/xmpp-server-service/src/service.ts,
     apps/meteor/server/settings/federation-service.ts,
+    apps/meteor/server/services/federation/utils.ts,
   ]
-tests: [src/XMPPServer.spec.ts, tests/integration/service-observer.spec.ts, tests/end-to-end/connectivity.spec.ts]
+tests:
+  [
+    src/XMPPServer.spec.ts,
+    tests/integration/service-observer.spec.ts,
+    tests/end-to-end/connectivity.spec.ts,
+    apps/meteor/server/services/federation/utils.test.ts,
+  ]
 ---
 
 # Spec: Configuration and lifecycle
@@ -34,7 +41,9 @@ under load.
 - **R1** The configuration is read from the `XMPP_Server_*` settings listed in
   [operations.md](../operations.md#admin-settings) and from the license.
 - **R2** The server is enabled only when the license has the `federation` module and
-  `XMPP_Server_Enabled` is on and `XMPP_Server_Domain` is set. Otherwise it is stopped.
+  `XMPP_Server_Enabled` is on and `XMPP_Server_Domain` is a valid domain; a blank or
+  malformed one counts as unset. Otherwise it is stopped, and Rocket.Chat treats XMPP as
+  off: it neither offers XMPP rooms nor takes typed JIDs as XMPP users.
 - **R3** TLS is required when both certificate and key are set. With either missing, the
   server starts without STARTTLS ([ADR 0004](../adr/0004-starttls-required-sasl-external-preferred-dialback-fallback.md)).
 - **R4** The allow list is the comma-separated setting, entries trimmed, empty entries

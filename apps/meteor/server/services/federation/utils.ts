@@ -1,3 +1,5 @@
+import { normalizeDomain } from '@rocket.chat/xmpp-server';
+
 import { settings } from '../../settings';
 
 export function isFederationEnabled(): boolean {
@@ -5,7 +7,17 @@ export function isFederationEnabled(): boolean {
 }
 
 export function isXMPPServerEnabled(): boolean {
-	return settings.get<boolean>('XMPP_Server_Enabled') && settings.get<string>('XMPP_Server_Domain') !== '';
+	return settings.get<boolean>('XMPP_Server_Enabled') && isServableDomain(settings.get<string>('XMPP_Server_Domain'));
+}
+
+/** Whether the XMPP server would start with `domain`, so a blank or malformed one counts as unset. */
+function isServableDomain(domain: string): boolean {
+	try {
+		normalizeDomain(domain);
+		return true;
+	} catch {
+		return false;
+	}
 }
 
 export function throwIfFederationNotEnabled(): void {
