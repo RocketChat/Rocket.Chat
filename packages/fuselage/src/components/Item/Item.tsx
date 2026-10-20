@@ -2,7 +2,7 @@ import { styled, Text, type GetProps } from '@tamagui/web';
 import type { AllHTMLAttributes, ElementType, MouseEvent, RefAttributes } from 'react';
 import { useMemo } from 'react';
 
-import { ItemContext, ItemHighlightContext, ItemParentContext, type ItemParent } from './ItemContext';
+import { ItemContext, skipRegistration, ItemHighlightContext, ItemParentContext, type ItemParent } from './ItemContext';
 import {
 	focusRing,
 	inState,
@@ -88,10 +88,18 @@ export type ItemProps = {
 	 */
 	disabled?: boolean;
 	variant?: 'danger';
+	/**
+	 * Whether the content takes two lines, which widens the gap. Left out, the row counts its content's lines after it
+	 * mounts, at the cost of a second render.
+	 */
+	multiline?: boolean;
+	/**
+	 * Whether the row reacts to the pointer. Left out, the row is interactive when it is a link, a button, an option or a
+	 * menu item, has `onClick`, or holds an `ItemLink`, which it only learns after it mounts, at the cost of a second render.
+	 */
+	interactive?: boolean;
 } & Omit<AllHTMLAttributes<HTMLElement>, 'is' | 'selected' | 'disabled'> &
 	RefAttributes<HTMLElement>;
-
-const skipRegistration = () => () => undefined;
 
 type StateVariants = Pick<GetProps<typeof ItemFrame>, 'surface' | 'pointer' | 'tone' | 'focusRing'>;
 
@@ -131,6 +139,8 @@ const Item = ({
 	focusVisible,
 	disabled,
 	variant,
+	multiline,
+	interactive: interactiveProp,
 	className,
 	onClick,
 	children,
@@ -142,7 +152,7 @@ const Item = ({
 	const [multilineIds, registerMultiline] = useIdRegistry();
 
 	// Two lines of content get a wider gap, so the media and actions breathe beside them
-	const gap = multilineIds.length > 0 ? 'x8' : 'x4';
+	const gap = (multiline ?? multilineIds.length > 0) ? 'x8' : 'x4';
 	const parentValue = useMemo<ItemParent>(() => ({ kind: 'item', gap }), [gap]);
 
 	// A menu item is named by its titles and described by its labelled icons, as an `ItemLink` is.
@@ -154,10 +164,11 @@ const Item = ({
 			descriptionIds,
 			registerDescription,
 			registerTitle: isMenuItem ? registerTitle : skipRegistration,
-			registerLink,
-			registerMultiline,
+			// What the row declares it doesn't need to find out
+			registerLink: interactiveProp === undefined ? registerLink : skipRegistration,
+			registerMultiline: multiline === undefined ? registerMultiline : skipRegistration,
 		}),
-		[descriptionIds, registerDescription, registerTitle, isMenuItem, registerLink, registerMultiline],
+		[descriptionIds, registerDescription, registerTitle, isMenuItem, registerLink, registerMultiline, interactiveProp, multiline],
 	);
 
 	const ariaLabelledBy = isMenuItem ? (props['aria-labelledby'] ?? (titleIds.join(' ') || undefined)) : props['aria-labelledby'];
@@ -175,7 +186,8 @@ const Item = ({
 			}
 		: undefined;
 
-	const interactive = !!onClick || Tag === 'a' || Tag === 'button' || props.role === 'option' || isMenuItem || linkIds.length > 0;
+	const interactive =
+		interactiveProp ?? (!!onClick || Tag === 'a' || Tag === 'button' || props.role === 'option' || isMenuItem || linkIds.length > 0);
 
 	return (
 		<ItemContext.Provider value={contextValue}>

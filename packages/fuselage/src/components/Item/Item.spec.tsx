@@ -17,6 +17,7 @@ import {
 	ItemLink,
 	ItemMedia,
 	ItemMeta,
+	ItemRow,
 	ItemSkeleton,
 	ItemTitle,
 } from '.';
@@ -126,6 +127,52 @@ describe('Item', () => {
 		);
 
 		expect(screen.getByTestId('item')).toHaveAttribute('aria-labelledby', 'title');
+	});
+
+	it('renders once on mount when it declares what it would find out', () => {
+		const onRender = jest.fn();
+
+		render(
+			<Profiler id='item' onRender={onRender}>
+				<Item multiline interactive>
+					<ItemContent>
+						<ItemRow>
+							<ItemTitle>
+								<ItemLink href='#'>Title</ItemLink>
+							</ItemTitle>
+						</ItemRow>
+						<ItemRow>
+							<ItemDescription>Description</ItemDescription>
+						</ItemRow>
+					</ItemContent>
+				</Item>
+			</Profiler>,
+		);
+
+		expect(onRender).toHaveBeenCalledTimes(1);
+	});
+
+	it('finds out its lines and link after it mounts when it declares neither', () => {
+		const onRender = jest.fn();
+
+		render(
+			<Profiler id='item' onRender={onRender}>
+				<Item>
+					<ItemContent>
+						<ItemRow>
+							<ItemTitle>
+								<ItemLink href='#'>Title</ItemLink>
+							</ItemTitle>
+						</ItemRow>
+						<ItemRow>
+							<ItemDescription>Description</ItemDescription>
+						</ItemRow>
+					</ItemContent>
+				</Item>
+			</Profiler>,
+		);
+
+		expect(onRender.mock.calls.length).toBeGreaterThan(1);
 	});
 
 	it('renders once on mount when it is not a menu item', () => {
