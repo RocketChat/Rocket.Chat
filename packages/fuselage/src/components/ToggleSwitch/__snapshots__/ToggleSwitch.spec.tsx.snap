@@ -4,7 +4,7 @@ exports[`[ToggleSwitch Rendering] renders Checked without crashing 1`] = `
 <body>
   <div>
     <label
-      class="is_Text _b-1639159466 _os-249893454 _ff-409630021 _fvn-1977619713 _ws-311910413 _ww-408434756 rcx-toggle-switch"
+      class="is_Text _b-1639159466 _os-249893454 _ff-409630021 _fvn-1977619713 _ws-311910413 _ww-408434756 _p-1021290656 _d-1985012034 _va-1124586065 _c-22887652 _ow-485594423 rcx-toggle-switch"
     >
       <input
         aria-label="Decorator Label"
@@ -14,8 +14,12 @@ exports[`[ToggleSwitch Rendering] renders Checked without crashing 1`] = `
       />
       <i
         aria-hidden="true"
-        class="is_View _b-1639160427 _os-249893454 _ff-409630021 _fvn-1977619713 _p-1021290656 _f-1069814357 _mw-354604370 _mh-1241200853 _w-1008200584 _h-749995598 _br-153849585 rcx-toggle-switch__fake"
-      />
+        class="is_View _b-352265661 _os-249893454 _ff-409630021 _fvn-1977619713 _p-1021290656 _f-1069814357 _mw-354604370 _mh-1241200853 _c-1043001278 _b-939182290 _w-1008200584 _h-749995598 _br-153849585 rcx-toggle-switch__fake"
+      >
+        <span
+          class="is_View _t-1281204763 _p-1261267467 _i-933132292 _w-386687234 _h-2100713731 _br-153849585 _b-798159804"
+        />
+      </i>
     </label>
   </div>
 </body>
@@ -25,7 +29,7 @@ exports[`[ToggleSwitch Rendering] renders Default without crashing 1`] = `
 <body>
   <div>
     <label
-      class="is_Text _b-1639159466 _os-249893454 _ff-409630021 _fvn-1977619713 _ws-311910413 _ww-408434756 rcx-toggle-switch"
+      class="is_Text _b-1639159466 _os-249893454 _ff-409630021 _fvn-1977619713 _ws-311910413 _ww-408434756 _p-1021290656 _d-1985012034 _va-1124586065 _c-22887652 _ow-485594423 rcx-toggle-switch"
     >
       <input
         aria-label="Decorator Label"
@@ -34,8 +38,12 @@ exports[`[ToggleSwitch Rendering] renders Default without crashing 1`] = `
       />
       <i
         aria-hidden="true"
-        class="is_View _b-1639160427 _os-249893454 _ff-409630021 _fvn-1977619713 _p-1021290656 _f-1069814357 _mw-354604370 _mh-1241200853 _w-1008200584 _h-749995598 _br-153849585 rcx-toggle-switch__fake"
-      />
+        class="is_View _b-352265661 _os-249893454 _ff-409630021 _fvn-1977619713 _p-1021290656 _f-1069814357 _mw-354604370 _mh-1241200853 _c-1043001278 _b-939182290 _w-1008200584 _h-749995598 _br-153849585 rcx-toggle-switch__fake"
+      >
+        <span
+          class="is_View _t-1281204763 _p-1261267467 _i-933132292 _w-386687234 _h-2100713731 _br-153849585 _b-798159804"
+        />
+      </i>
     </label>
   </div>
 </body>
@@ -45,7 +53,7 @@ exports[`[ToggleSwitch Rendering] renders Disabled without crashing 1`] = `
 <body>
   <div>
     <label
-      class="is_Text _b-1639159466 _os-249893454 _ff-409630021 _fvn-1977619713 _ws-311910413 _ww-408434756 rcx-toggle-switch"
+      class="is_Text _b-1639159466 _os-249893454 _ff-409630021 _fvn-1977619713 _ws-311910413 _ww-408434756 _p-1021290656 _d-1985012034 _va-1124586065 _c-22887652 _ow-485594423 rcx-toggle-switch"
     >
       <input
         aria-label="Decorator Label"
@@ -55,8 +63,12 @@ exports[`[ToggleSwitch Rendering] renders Disabled without crashing 1`] = `
       />
       <i
         aria-hidden="true"
-        class="is_View _b-1639160427 _os-249893454 _ff-409630021 _fvn-1977619713 _p-1021290656 _f-1069814357 _mw-354604370 _mh-1241200853 _w-1008200584 _h-749995598 _br-153849585 rcx-toggle-switch__fake"
-      />
+        class="is_View _b-352265661 _os-249893454 _ff-409630021 _fvn-1977619713 _p-1021290656 _f-1069814357 _mw-354604370 _mh-1241200853 _c-1043001278 _b-939182290 _w-1008200584 _h-749995598 _br-153849585 rcx-toggle-switch__fake"
+      >
+        <span
+          class="is_View _t-1281204763 _p-1261267467 _i-933132292 _w-386687234 _h-2100713731 _br-153849585 _b-1183636006"
+        />
+      </i>
     </label>
   </div>
 </body>
@@ -109,7 +121,7 @@ exports[`[ToggleSwitch Rendering] renders States without crashing 1`] = `
               class="rcx-box rcx-box--full rcx-css-7rd89h"
             >
               <label
-                class="is_Text _b-1639159466 _os-249893454 _ff-409630021 _fvn-1977619713 _ws-311910413 _ww-408434756 rcx-toggle-switch"
+                class="is_Text _b-1639159466 _os-249893454 _ff-409630021 _fvn-1977619713 _ws-311910413 _ww-408434756 _p-1021290656 _d-1985012034 _va-1124586065 _c-22887652 _ow-485594423 rcx-toggle-switch"
               >
                 <input
                   aria-label="Decorator Label"
@@ -119,8 +131,12 @@ exports[`[ToggleSwitch Rendering] renders States without crashing 1`] = `
                 />
                 <i
                   aria-hidden="true"
-                  class="is_View _b-1639160427 _os-249893454 _ff-409630021 _fvn-1977619713 _p-1021290656 _f-1069814357 _mw-354604370 _mh-1241200853 _w-1008200584 _h-749995598 _br-153849585 rcx-toggle-switch__fake"
-                />
+                  class="is_View _b-352265661 _os-249893454 _ff-409630021 _fvn-1977619713 _p-1021290656 _f-1069814357 _mw-354604370 _mh-1241200853 _c-1043001278 _b-939182290 _w-1008200584 _h-749995598 _br-153849585 rcx-toggle-switch__fake"
+                >
+                  <span
+                    class="is_View _t-1281204763 _p-1261267467 _i-933132292 _w-386687234 _h-2100713731 _br-153849585 _b-798159804"
+                  />
+                </i>
               </label>
             </div>
           </td>
@@ -131,7 +147,7 @@ exports[`[ToggleSwitch Rendering] renders States without crashing 1`] = `
               class="rcx-box rcx-box--full rcx-css-7rd89h"
             >
               <label
-                class="is_Text _b-1639159466 _os-249893454 _ff-409630021 _fvn-1977619713 _ws-311910413 _ww-408434756 rcx-toggle-switch"
+                class="is_Text _b-1639159466 _os-249893454 _ff-409630021 _fvn-1977619713 _ws-311910413 _ww-408434756 _p-1021290656 _d-1985012034 _va-1124586065 _c-22887652 _ow-485594423 rcx-toggle-switch"
               >
                 <input
                   aria-label="Decorator Label"
@@ -140,8 +156,12 @@ exports[`[ToggleSwitch Rendering] renders States without crashing 1`] = `
                 />
                 <i
                   aria-hidden="true"
-                  class="is_View _b-1639160427 _os-249893454 _ff-409630021 _fvn-1977619713 _p-1021290656 _f-1069814357 _mw-354604370 _mh-1241200853 _w-1008200584 _h-749995598 _br-153849585 rcx-toggle-switch__fake"
-                />
+                  class="is_View _b-352265661 _os-249893454 _ff-409630021 _fvn-1977619713 _p-1021290656 _f-1069814357 _mw-354604370 _mh-1241200853 _c-1043001278 _b-939182290 _w-1008200584 _h-749995598 _br-153849585 rcx-toggle-switch__fake"
+                >
+                  <span
+                    class="is_View _t-1281204763 _p-1261267467 _i-933132292 _w-386687234 _h-2100713731 _br-153849585 _b-798159804"
+                  />
+                </i>
               </label>
             </div>
           </td>
@@ -161,7 +181,7 @@ exports[`[ToggleSwitch Rendering] renders States without crashing 1`] = `
               class="rcx-box rcx-box--full rcx-css-7rd89h"
             >
               <label
-                class="is_Text _b-1639159466 _os-249893454 _ff-409630021 _fvn-1977619713 _ws-311910413 _ww-408434756 rcx-toggle-switch is-hovered"
+                class="is_Text _b-1639159466 _os-249893454 _ff-409630021 _fvn-1977619713 _ws-311910413 _ww-408434756 _p-1021290656 _d-1985012034 _va-1124586065 _c-22887652 _ow-485594423 rcx-toggle-switch is-hovered"
               >
                 <input
                   aria-label="Decorator Label"
@@ -171,8 +191,12 @@ exports[`[ToggleSwitch Rendering] renders States without crashing 1`] = `
                 />
                 <i
                   aria-hidden="true"
-                  class="is_View _b-1639160427 _os-249893454 _ff-409630021 _fvn-1977619713 _p-1021290656 _f-1069814357 _mw-354604370 _mh-1241200853 _w-1008200584 _h-749995598 _br-153849585 rcx-toggle-switch__fake"
-                />
+                  class="is_View _b-352265661 _os-249893454 _ff-409630021 _fvn-1977619713 _p-1021290656 _f-1069814357 _mw-354604370 _mh-1241200853 _c-1043001278 _b-939182290 _w-1008200584 _h-749995598 _br-153849585 rcx-toggle-switch__fake"
+                >
+                  <span
+                    class="is_View _t-1281204763 _p-1261267467 _i-933132292 _w-386687234 _h-2100713731 _br-153849585 _b-798159804"
+                  />
+                </i>
               </label>
             </div>
           </td>
@@ -183,7 +207,7 @@ exports[`[ToggleSwitch Rendering] renders States without crashing 1`] = `
               class="rcx-box rcx-box--full rcx-css-7rd89h"
             >
               <label
-                class="is_Text _b-1639159466 _os-249893454 _ff-409630021 _fvn-1977619713 _ws-311910413 _ww-408434756 rcx-toggle-switch is-hovered"
+                class="is_Text _b-1639159466 _os-249893454 _ff-409630021 _fvn-1977619713 _ws-311910413 _ww-408434756 _p-1021290656 _d-1985012034 _va-1124586065 _c-22887652 _ow-485594423 rcx-toggle-switch is-hovered"
               >
                 <input
                   aria-label="Decorator Label"
@@ -192,8 +216,12 @@ exports[`[ToggleSwitch Rendering] renders States without crashing 1`] = `
                 />
                 <i
                   aria-hidden="true"
-                  class="is_View _b-1639160427 _os-249893454 _ff-409630021 _fvn-1977619713 _p-1021290656 _f-1069814357 _mw-354604370 _mh-1241200853 _w-1008200584 _h-749995598 _br-153849585 rcx-toggle-switch__fake"
-                />
+                  class="is_View _b-352265661 _os-249893454 _ff-409630021 _fvn-1977619713 _p-1021290656 _f-1069814357 _mw-354604370 _mh-1241200853 _c-1043001278 _b-939182290 _w-1008200584 _h-749995598 _br-153849585 rcx-toggle-switch__fake"
+                >
+                  <span
+                    class="is_View _t-1281204763 _p-1261267467 _i-933132292 _w-386687234 _h-2100713731 _br-153849585 _b-798159804"
+                  />
+                </i>
               </label>
             </div>
           </td>
@@ -213,7 +241,7 @@ exports[`[ToggleSwitch Rendering] renders States without crashing 1`] = `
               class="rcx-box rcx-box--full rcx-css-7rd89h"
             >
               <label
-                class="is_Text _b-1639159466 _os-249893454 _ff-409630021 _fvn-1977619713 _ws-311910413 _ww-408434756 rcx-toggle-switch is-active"
+                class="is_Text _b-1639159466 _os-249893454 _ff-409630021 _fvn-1977619713 _ws-311910413 _ww-408434756 _p-1021290656 _d-1985012034 _va-1124586065 _c-22887652 _ow-485594423 rcx-toggle-switch is-active"
               >
                 <input
                   aria-label="Decorator Label"
@@ -223,8 +251,12 @@ exports[`[ToggleSwitch Rendering] renders States without crashing 1`] = `
                 />
                 <i
                   aria-hidden="true"
-                  class="is_View _b-1639160427 _os-249893454 _ff-409630021 _fvn-1977619713 _p-1021290656 _f-1069814357 _mw-354604370 _mh-1241200853 _w-1008200584 _h-749995598 _br-153849585 rcx-toggle-switch__fake"
-                />
+                  class="is_View _b-352265661 _os-249893454 _ff-409630021 _fvn-1977619713 _p-1021290656 _f-1069814357 _mw-354604370 _mh-1241200853 _c-1043001278 _b-939182290 _w-1008200584 _h-749995598 _br-153849585 rcx-toggle-switch__fake"
+                >
+                  <span
+                    class="is_View _t-1281204763 _p-1261267467 _i-933132292 _w-386687234 _h-2100713731 _br-153849585 _b-798159804"
+                  />
+                </i>
               </label>
             </div>
           </td>
@@ -235,7 +267,7 @@ exports[`[ToggleSwitch Rendering] renders States without crashing 1`] = `
               class="rcx-box rcx-box--full rcx-css-7rd89h"
             >
               <label
-                class="is_Text _b-1639159466 _os-249893454 _ff-409630021 _fvn-1977619713 _ws-311910413 _ww-408434756 rcx-toggle-switch is-active"
+                class="is_Text _b-1639159466 _os-249893454 _ff-409630021 _fvn-1977619713 _ws-311910413 _ww-408434756 _p-1021290656 _d-1985012034 _va-1124586065 _c-22887652 _ow-485594423 rcx-toggle-switch is-active"
               >
                 <input
                   aria-label="Decorator Label"
@@ -244,8 +276,12 @@ exports[`[ToggleSwitch Rendering] renders States without crashing 1`] = `
                 />
                 <i
                   aria-hidden="true"
-                  class="is_View _b-1639160427 _os-249893454 _ff-409630021 _fvn-1977619713 _p-1021290656 _f-1069814357 _mw-354604370 _mh-1241200853 _w-1008200584 _h-749995598 _br-153849585 rcx-toggle-switch__fake"
-                />
+                  class="is_View _b-352265661 _os-249893454 _ff-409630021 _fvn-1977619713 _p-1021290656 _f-1069814357 _mw-354604370 _mh-1241200853 _c-1043001278 _b-939182290 _w-1008200584 _h-749995598 _br-153849585 rcx-toggle-switch__fake"
+                >
+                  <span
+                    class="is_View _t-1281204763 _p-1261267467 _i-933132292 _w-386687234 _h-2100713731 _br-153849585 _b-798159804"
+                  />
+                </i>
               </label>
             </div>
           </td>
@@ -265,7 +301,7 @@ exports[`[ToggleSwitch Rendering] renders States without crashing 1`] = `
               class="rcx-box rcx-box--full rcx-css-7rd89h"
             >
               <label
-                class="is_Text _b-1639159466 _os-249893454 _ff-409630021 _fvn-1977619713 _ws-311910413 _ww-408434756 rcx-toggle-switch is-focused"
+                class="is_Text _b-1639159466 _os-249893454 _ff-409630021 _fvn-1977619713 _ws-311910413 _ww-408434756 _p-1021290656 _d-1985012034 _va-1124586065 _c-22887652 _ow-485594423 rcx-toggle-switch is-focused"
               >
                 <input
                   aria-label="Decorator Label"
@@ -275,8 +311,12 @@ exports[`[ToggleSwitch Rendering] renders States without crashing 1`] = `
                 />
                 <i
                   aria-hidden="true"
-                  class="is_View _b-1639160427 _os-249893454 _ff-409630021 _fvn-1977619713 _p-1021290656 _f-1069814357 _mw-354604370 _mh-1241200853 _w-1008200584 _h-749995598 _br-153849585 rcx-toggle-switch__fake"
-                />
+                  class="is_View _b-352265661 _os-249893454 _ff-409630021 _fvn-1977619713 _p-1021290656 _f-1069814357 _mw-354604370 _mh-1241200853 _c-1043001278 _b-939182290 _w-1008200584 _h-749995598 _br-153849585 rcx-toggle-switch__fake"
+                >
+                  <span
+                    class="is_View _t-1281204763 _p-1261267467 _i-933132292 _w-386687234 _h-2100713731 _br-153849585 _b-798159804"
+                  />
+                </i>
               </label>
             </div>
           </td>
@@ -287,7 +327,7 @@ exports[`[ToggleSwitch Rendering] renders States without crashing 1`] = `
               class="rcx-box rcx-box--full rcx-css-7rd89h"
             >
               <label
-                class="is_Text _b-1639159466 _os-249893454 _ff-409630021 _fvn-1977619713 _ws-311910413 _ww-408434756 rcx-toggle-switch is-focused"
+                class="is_Text _b-1639159466 _os-249893454 _ff-409630021 _fvn-1977619713 _ws-311910413 _ww-408434756 _p-1021290656 _d-1985012034 _va-1124586065 _c-22887652 _ow-485594423 rcx-toggle-switch is-focused"
               >
                 <input
                   aria-label="Decorator Label"
@@ -296,8 +336,12 @@ exports[`[ToggleSwitch Rendering] renders States without crashing 1`] = `
                 />
                 <i
                   aria-hidden="true"
-                  class="is_View _b-1639160427 _os-249893454 _ff-409630021 _fvn-1977619713 _p-1021290656 _f-1069814357 _mw-354604370 _mh-1241200853 _w-1008200584 _h-749995598 _br-153849585 rcx-toggle-switch__fake"
-                />
+                  class="is_View _b-352265661 _os-249893454 _ff-409630021 _fvn-1977619713 _p-1021290656 _f-1069814357 _mw-354604370 _mh-1241200853 _c-1043001278 _b-939182290 _w-1008200584 _h-749995598 _br-153849585 rcx-toggle-switch__fake"
+                >
+                  <span
+                    class="is_View _t-1281204763 _p-1261267467 _i-933132292 _w-386687234 _h-2100713731 _br-153849585 _b-798159804"
+                  />
+                </i>
               </label>
             </div>
           </td>
@@ -317,7 +361,7 @@ exports[`[ToggleSwitch Rendering] renders States without crashing 1`] = `
               class="rcx-box rcx-box--full rcx-css-7rd89h"
             >
               <label
-                class="is_Text _b-1639159466 _os-249893454 _ff-409630021 _fvn-1977619713 _ws-311910413 _ww-408434756 rcx-toggle-switch"
+                class="is_Text _b-1639159466 _os-249893454 _ff-409630021 _fvn-1977619713 _ws-311910413 _ww-408434756 _p-1021290656 _d-1985012034 _va-1124586065 _c-22887652 _ow-485594423 rcx-toggle-switch"
               >
                 <input
                   aria-label="Decorator Label"
@@ -328,8 +372,12 @@ exports[`[ToggleSwitch Rendering] renders States without crashing 1`] = `
                 />
                 <i
                   aria-hidden="true"
-                  class="is_View _b-1639160427 _os-249893454 _ff-409630021 _fvn-1977619713 _p-1021290656 _f-1069814357 _mw-354604370 _mh-1241200853 _w-1008200584 _h-749995598 _br-153849585 rcx-toggle-switch__fake"
-                />
+                  class="is_View _b-352265661 _os-249893454 _ff-409630021 _fvn-1977619713 _p-1021290656 _f-1069814357 _mw-354604370 _mh-1241200853 _c-1043001278 _b-939182290 _w-1008200584 _h-749995598 _br-153849585 rcx-toggle-switch__fake"
+                >
+                  <span
+                    class="is_View _t-1281204763 _p-1261267467 _i-933132292 _w-386687234 _h-2100713731 _br-153849585 _b-1183636006"
+                  />
+                </i>
               </label>
             </div>
           </td>
@@ -340,7 +388,7 @@ exports[`[ToggleSwitch Rendering] renders States without crashing 1`] = `
               class="rcx-box rcx-box--full rcx-css-7rd89h"
             >
               <label
-                class="is_Text _b-1639159466 _os-249893454 _ff-409630021 _fvn-1977619713 _ws-311910413 _ww-408434756 rcx-toggle-switch"
+                class="is_Text _b-1639159466 _os-249893454 _ff-409630021 _fvn-1977619713 _ws-311910413 _ww-408434756 _p-1021290656 _d-1985012034 _va-1124586065 _c-22887652 _ow-485594423 rcx-toggle-switch"
               >
                 <input
                   aria-label="Decorator Label"
@@ -350,8 +398,12 @@ exports[`[ToggleSwitch Rendering] renders States without crashing 1`] = `
                 />
                 <i
                   aria-hidden="true"
-                  class="is_View _b-1639160427 _os-249893454 _ff-409630021 _fvn-1977619713 _p-1021290656 _f-1069814357 _mw-354604370 _mh-1241200853 _w-1008200584 _h-749995598 _br-153849585 rcx-toggle-switch__fake"
-                />
+                  class="is_View _b-352265661 _os-249893454 _ff-409630021 _fvn-1977619713 _p-1021290656 _f-1069814357 _mw-354604370 _mh-1241200853 _c-1043001278 _b-939182290 _w-1008200584 _h-749995598 _br-153849585 rcx-toggle-switch__fake"
+                >
+                  <span
+                    class="is_View _t-1281204763 _p-1261267467 _i-933132292 _w-386687234 _h-2100713731 _br-153849585 _b-1183636006"
+                  />
+                </i>
               </label>
             </div>
           </td>
