@@ -53,6 +53,11 @@ describe('[IconButton Component]', () => {
 		expect(screen.getByRole('button', { name: 'balloon' })).not.toHaveAttribute('aria-pressed');
 	});
 
+	it('should not expose a pressed state when the button takes another role', () => {
+		render(<IconButton icon='balloon' aria-label='balloon' role='tab' aria-selected pressed />);
+		expect(screen.getByRole('tab', { name: 'balloon', selected: true })).not.toHaveAttribute('aria-pressed');
+	});
+
 	it('should let the caller override aria-pressed', () => {
 		render(<IconButton icon='balloon' aria-label='balloon' pressed aria-pressed='mixed' />);
 		expect(screen.getByRole('button', { name: 'balloon' })).toHaveAttribute('aria-pressed', 'mixed');
