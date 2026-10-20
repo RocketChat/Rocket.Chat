@@ -22,7 +22,7 @@ exports[`[Options Component] renders CheckOptionStory without crashing 1`] = `
             <li
               aria-disabled="false"
               aria-selected="false"
-              class="is_Text _p-1021290656 _d-341075704 _f-1069814357 _ai-121763387 _mw-842770087 _mh-1241200853 _m-2017216831 _p-788525541 _ls-1251843592 _ws-311910413 _ww-408434756 _br-1718100884 _ff-409630021 _g-479842563 _ta-507911453 _td-1861836084 _c-727749181 _fs-347291933 _lh-1925956564 _ls-1782815796 _fw-289165218 rcx-item rcx-item--inset-md rcx-item--clickable rcx-item--focused rcx-option rcx-option--focus"
+              class="is_Text _p-1021290656 _d-341075704 _f-1069814357 _ai-121763387 _mw-842770087 _mh-1241200853 _m-2017216831 _p-788525541 _ls-1251843592 _ws-311910413 _ww-408434756 _br-1718100884 _ff-409630021 _ta-507911453 _td-1861836084 _c-727749181 _fs-347291933 _lh-1925956564 _ls-1782815796 _fw-289165218 _g-47172425 _b-612395584 _c-1830342115 _ow-1994474385 _os-1885772691 _oc-1422281658 _oo-245994692 _bs-1638756697 t_group_rcx-item rcx-item rcx-item--inset-md rcx-item--clickable rcx-item--focused rcx-option rcx-option--focus"
               role="option"
               value="1"
             >
@@ -31,13 +31,13 @@ exports[`[Options Component] renders CheckOptionStory without crashing 1`] = `
               >
                 <div
                   class="is_Text _o-1119039191 _f-649097281 _mw-842770087 _ws-973912173 _ww-408434756 _to-1727917045 _d-1987097250 rcx-item__title"
-                  id="_r_5_"
+                  id="_r_6_"
                 >
                   a teste 1
                 </div>
               </div>
               <label
-                class="is_Text _b-1639159466 _os-249893454 _ff-409630021 _fvn-1977619713 _ws-311910413 _ww-408434756 rcx-check-box"
+                class="is_Text _b-1639159466 _os-249893454 _ff-409630021 _fvn-1977619713 _ws-311910413 _ww-408434756 _p-1021290656 _d-1985012034 _va-1124586065 _c-22887652 _ow-485594423 rcx-check-box"
               >
                 <input
                   aria-hidden="true"
@@ -49,14 +49,24 @@ exports[`[Options Component] renders CheckOptionStory without crashing 1`] = `
                 />
                 <i
                   aria-hidden="true"
-                  class="is_View _b-1639160427 _os-249893454 _ff-409630021 _fvn-1977619713 _p-1021290656 _h-858548760 _f-1069814357 _mw-354604370 _mh-1241200853 _d-341075704 _jc-1099843255 _ai-121763387 _br-761515502 _w-120696903 rcx-check-box__fake"
-                />
+                  class="is_View _b-523511517 _os-249893454 _ff-409630021 _fvn-1977619713 _p-1021290656 _h-858548760 _f-1069814357 _mw-354604370 _mh-1241200853 _c-991369120 _b-886492876 _d-341075704 _jc-1099843255 _ai-121763387 _br-761515502 _w-120696903 rcx-check-box__fake"
+                >
+                  <span
+                    class="is_View _p-1261267467 _d-1987097250 _v-46649817 _o-1507270696 _b-156244340 _br-971297206 _w-762189173 _h-1673744566"
+                  />
+                  <span
+                    class="is_View _p-1261267467 _d-1987097250 _v-46649817 _o-1507270696 _b-156244340 _br-971297206 _w-762189173 _h-1673744566 _t-1011287905"
+                  />
+                  <span
+                    class="is_View _p-1261267467 _d-1987097250 _v-46649817 _o-1507270696 _b-156244340 _br-971297206 _w-1769075542 _h-1539106968 _t-663727601"
+                  />
+                </i>
               </label>
             </li>
             <li
               aria-disabled="false"
               aria-selected="false"
-              class="is_Text _p-1021290656 _d-341075704 _f-1069814357 _ai-121763387 _mw-842770087 _mh-1241200853 _m-2017216831 _p-788525541 _ls-1251843592 _ws-311910413 _ww-408434756 _br-1718100884 _ff-409630021 _g-479842563 _ta-507911453 _td-1861836084 _c-727749181 _fs-347291933 _lh-1925956564 _ls-1782815796 _fw-289165218 rcx-item rcx-item--inset-md rcx-item--clickable rcx-option"
+              class="is_Text _p-1021290656 _d-341075704 _f-1069814357 _ai-121763387 _mw-842770087 _mh-1241200853 _m-2017216831 _p-788525541 _ls-1251843592 _ws-311910413 _ww-408434756 _br-1718100884 _ff-409630021 _ta-507911453 _td-1861836084 _c-727749181 _fs-347291933 _lh-1925956564 _ls-1782815796 _fw-289165218 _g-47172425 _b-944971190 _c-1830342115 _ow-1994474385 _os-1885772691 _oc-1422281658 _oo-245994692 _bs-1638756697 t_group_rcx-item rcx-item rcx-item--inset-md rcx-item--clickable rcx-option"
               role="option"
               value="2"
             >
@@ -65,13 +75,13 @@ exports[`[Options Component] renders CheckOptionStory without crashing 1`] = `
               >
                 <div
                   class="is_Text _o-1119039191 _f-649097281 _mw-842770087 _ws-973912173 _ww-408434756 _to-1727917045 _d-1987097250 rcx-item__title"
-                  id="_r_c_"
+                  id="_r_h_"
                 >
                   b teste 2
                 </div>
               </div>
               <label
-                class="is_Text _b-1639159466 _os-249893454 _ff-409630021 _fvn-1977619713 _ws-311910413 _ww-408434756 rcx-check-box"
+                class="is_Text _b-1639159466 _os-249893454 _ff-409630021 _fvn-1977619713 _ws-311910413 _ww-408434756 _p-1021290656 _d-1985012034 _va-1124586065 _c-22887652 _ow-485594423 rcx-check-box"
               >
                 <input
                   aria-hidden="true"
@@ -83,14 +93,24 @@ exports[`[Options Component] renders CheckOptionStory without crashing 1`] = `
                 />
                 <i
                   aria-hidden="true"
-                  class="is_View _b-1639160427 _os-249893454 _ff-409630021 _fvn-1977619713 _p-1021290656 _h-858548760 _f-1069814357 _mw-354604370 _mh-1241200853 _d-341075704 _jc-1099843255 _ai-121763387 _br-761515502 _w-120696903 rcx-check-box__fake"
-                />
+                  class="is_View _b-523511517 _os-249893454 _ff-409630021 _fvn-1977619713 _p-1021290656 _h-858548760 _f-1069814357 _mw-354604370 _mh-1241200853 _c-991369120 _b-886492876 _d-341075704 _jc-1099843255 _ai-121763387 _br-761515502 _w-120696903 rcx-check-box__fake"
+                >
+                  <span
+                    class="is_View _p-1261267467 _d-1987097250 _v-46649817 _o-1507270696 _b-156244340 _br-971297206 _w-762189173 _h-1673744566"
+                  />
+                  <span
+                    class="is_View _p-1261267467 _d-1987097250 _v-46649817 _o-1507270696 _b-156244340 _br-971297206 _w-762189173 _h-1673744566 _t-1011287905"
+                  />
+                  <span
+                    class="is_View _p-1261267467 _d-1987097250 _v-46649817 _o-1507270696 _b-156244340 _br-971297206 _w-1769075542 _h-1539106968 _t-663727601"
+                  />
+                </i>
               </label>
             </li>
             <li
               aria-disabled="false"
               aria-selected="true"
-              class="is_Text _p-1021290656 _d-341075704 _f-1069814357 _ai-121763387 _mw-842770087 _mh-1241200853 _m-2017216831 _p-788525541 _ls-1251843592 _ws-311910413 _ww-408434756 _br-1718100884 _ff-409630021 _g-479842563 _ta-507911453 _td-1861836084 _c-727749181 _fs-347291933 _lh-1925956564 _ls-1782815796 _fw-289165218 rcx-item rcx-item--inset-md rcx-item--clickable rcx-item--selected rcx-option rcx-option--selected"
+              class="is_Text _p-1021290656 _d-341075704 _f-1069814357 _ai-121763387 _mw-842770087 _mh-1241200853 _m-2017216831 _p-788525541 _ls-1251843592 _ws-311910413 _ww-408434756 _br-1718100884 _ff-409630021 _ta-507911453 _td-1861836084 _c-727749181 _fs-347291933 _lh-1925956564 _ls-1782815796 _fw-289165218 _g-47172425 _b-2012676596 _c-1830342115 _ow-1994474385 _os-1885772691 _oc-1422281658 _oo-245994692 _bs-1638756697 t_group_rcx-item rcx-item rcx-item--inset-md rcx-item--clickable rcx-item--selected rcx-option rcx-option--selected"
               role="option"
               value="3"
             >
@@ -99,13 +119,13 @@ exports[`[Options Component] renders CheckOptionStory without crashing 1`] = `
               >
                 <div
                   class="is_Text _o-1119039191 _f-649097281 _mw-842770087 _ws-973912173 _ww-408434756 _to-1727917045 _d-1987097250 rcx-item__title"
-                  id="_r_j_"
+                  id="_r_s_"
                 >
                   c teste 3
                 </div>
               </div>
               <label
-                class="is_Text _b-1639159466 _os-249893454 _ff-409630021 _fvn-1977619713 _ws-311910413 _ww-408434756 rcx-check-box"
+                class="is_Text _b-1639159466 _os-249893454 _ff-409630021 _fvn-1977619713 _ws-311910413 _ww-408434756 _p-1021290656 _d-1985012034 _va-1124586065 _c-22887652 _ow-485594423 rcx-check-box"
               >
                 <input
                   aria-hidden="true"
@@ -118,14 +138,24 @@ exports[`[Options Component] renders CheckOptionStory without crashing 1`] = `
                 />
                 <i
                   aria-hidden="true"
-                  class="is_View _b-1639160427 _os-249893454 _ff-409630021 _fvn-1977619713 _p-1021290656 _h-858548760 _f-1069814357 _mw-354604370 _mh-1241200853 _d-341075704 _jc-1099843255 _ai-121763387 _br-761515502 _w-120696903 rcx-check-box__fake"
-                />
+                  class="is_View _b-523511517 _os-249893454 _ff-409630021 _fvn-1977619713 _p-1021290656 _h-858548760 _f-1069814357 _mw-354604370 _mh-1241200853 _c-991369120 _b-886492876 _d-341075704 _jc-1099843255 _ai-121763387 _br-761515502 _w-120696903 rcx-check-box__fake"
+                >
+                  <span
+                    class="is_View _p-1261267467 _d-1987097250 _v-46649817 _o-1507270696 _b-156244340 _br-971297206 _w-762189173 _h-1673744566"
+                  />
+                  <span
+                    class="is_View _p-1261267467 _d-1987097250 _v-46649817 _o-1507270696 _b-156244340 _br-971297206 _w-762189173 _h-1673744566 _t-1011287905"
+                  />
+                  <span
+                    class="is_View _p-1261267467 _d-1987097250 _v-46649817 _o-1507270696 _b-156244340 _br-971297206 _w-1769075542 _h-1539106968 _t-663727601"
+                  />
+                </i>
               </label>
             </li>
             <li
               aria-disabled="false"
               aria-selected="false"
-              class="is_Text _p-1021290656 _d-341075704 _f-1069814357 _ai-121763387 _mw-842770087 _mh-1241200853 _m-2017216831 _p-788525541 _ls-1251843592 _ws-311910413 _ww-408434756 _br-1718100884 _ff-409630021 _g-479842563 _ta-507911453 _td-1861836084 _c-727749181 _fs-347291933 _lh-1925956564 _ls-1782815796 _fw-289165218 rcx-item rcx-item--inset-md rcx-item--clickable rcx-option"
+              class="is_Text _p-1021290656 _d-341075704 _f-1069814357 _ai-121763387 _mw-842770087 _mh-1241200853 _m-2017216831 _p-788525541 _ls-1251843592 _ws-311910413 _ww-408434756 _br-1718100884 _ff-409630021 _ta-507911453 _td-1861836084 _c-727749181 _fs-347291933 _lh-1925956564 _ls-1782815796 _fw-289165218 _g-47172425 _b-944971190 _c-1830342115 _ow-1994474385 _os-1885772691 _oc-1422281658 _oo-245994692 _bs-1638756697 t_group_rcx-item rcx-item rcx-item--inset-md rcx-item--clickable rcx-option"
               role="option"
               value="4"
             >
@@ -134,13 +164,13 @@ exports[`[Options Component] renders CheckOptionStory without crashing 1`] = `
               >
                 <div
                   class="is_Text _o-1119039191 _f-649097281 _mw-842770087 _ws-973912173 _ww-408434756 _to-1727917045 _d-1987097250 rcx-item__title"
-                  id="_r_q_"
+                  id="_r_17_"
                 >
                   d testeadsasdasdasdasdjhasjfhasdkjfhaskdfjhkasjdfhkasjdhfkasjdhfkasjdhfkasjdhfkasdjhfkasdjhfaksjdfhkasjdh 4
                 </div>
               </div>
               <label
-                class="is_Text _b-1639159466 _os-249893454 _ff-409630021 _fvn-1977619713 _ws-311910413 _ww-408434756 rcx-check-box"
+                class="is_Text _b-1639159466 _os-249893454 _ff-409630021 _fvn-1977619713 _ws-311910413 _ww-408434756 _p-1021290656 _d-1985012034 _va-1124586065 _c-22887652 _ow-485594423 rcx-check-box"
               >
                 <input
                   aria-hidden="true"
@@ -152,8 +182,18 @@ exports[`[Options Component] renders CheckOptionStory without crashing 1`] = `
                 />
                 <i
                   aria-hidden="true"
-                  class="is_View _b-1639160427 _os-249893454 _ff-409630021 _fvn-1977619713 _p-1021290656 _h-858548760 _f-1069814357 _mw-354604370 _mh-1241200853 _d-341075704 _jc-1099843255 _ai-121763387 _br-761515502 _w-120696903 rcx-check-box__fake"
-                />
+                  class="is_View _b-523511517 _os-249893454 _ff-409630021 _fvn-1977619713 _p-1021290656 _h-858548760 _f-1069814357 _mw-354604370 _mh-1241200853 _c-991369120 _b-886492876 _d-341075704 _jc-1099843255 _ai-121763387 _br-761515502 _w-120696903 rcx-check-box__fake"
+                >
+                  <span
+                    class="is_View _p-1261267467 _d-1987097250 _v-46649817 _o-1507270696 _b-156244340 _br-971297206 _w-762189173 _h-1673744566"
+                  />
+                  <span
+                    class="is_View _p-1261267467 _d-1987097250 _v-46649817 _o-1507270696 _b-156244340 _br-971297206 _w-762189173 _h-1673744566 _t-1011287905"
+                  />
+                  <span
+                    class="is_View _p-1261267467 _d-1987097250 _v-46649817 _o-1507270696 _b-156244340 _br-971297206 _w-1769075542 _h-1539106968 _t-663727601"
+                  />
+                </i>
               </label>
             </li>
           </ol>
@@ -184,7 +224,7 @@ exports[`[Options Component] renders CustomEmpty without crashing 1`] = `
             <li
               aria-disabled="true"
               aria-selected="false"
-              class="is_Text _p-1021290656 _d-341075704 _f-1069814357 _ai-121763387 _mw-842770087 _mh-1241200853 _m-2017216831 _p-788525541 _ls-1251843592 _ws-311910413 _ww-408434756 _br-1718100884 _ff-409630021 _g-479842563 _ta-507911453 _td-1861836084 _c-727749181 _fs-347291933 _lh-1925956564 _ls-1782815796 _fw-289165218 rcx-item rcx-item--inset-md rcx-item--clickable rcx-item--disabled rcx-option rcx-option--disabled"
+              class="is_Text _p-1021290656 _d-341075704 _f-1069814357 _ai-121763387 _mw-842770087 _mh-1241200853 _m-2017216831 _p-788525541 _ls-1251843592 _ws-311910413 _ww-408434756 _br-1718100884 _ff-409630021 _ta-507911453 _td-1861836084 _fs-347291933 _lh-1925956564 _ls-1782815796 _fw-289165218 _g-47172425 _b-824256911 _c-2102202510 _c-943859316 _ow-1994474385 _os-1885772691 _oc-1422281658 _oo-245994692 _bs-1638756697 t_group_rcx-item rcx-item rcx-item--inset-md rcx-item--clickable rcx-item--disabled rcx-option rcx-option--disabled"
               role="option"
             >
               <div
@@ -192,7 +232,7 @@ exports[`[Options Component] renders CustomEmpty without crashing 1`] = `
               >
                 <div
                   class="is_Text _o-1119039191 _f-649097281 _mw-842770087 _ws-973912173 _ww-408434756 _to-1727917045 _d-1987097250 rcx-item__title"
-                  id="_r_14_"
+                  id="_r_1l_"
                 >
                   Custom empty placeholder
                 </div>
@@ -227,7 +267,7 @@ exports[`[Options Component] renders Default without crashing 1`] = `
             <li
               aria-disabled="false"
               aria-selected="false"
-              class="is_Text _p-1021290656 _d-341075704 _f-1069814357 _ai-121763387 _mw-842770087 _mh-1241200853 _m-2017216831 _p-788525541 _ls-1251843592 _ws-311910413 _ww-408434756 _br-1718100884 _ff-409630021 _g-479842563 _ta-507911453 _td-1861836084 _c-727749181 _fs-347291933 _lh-1925956564 _ls-1782815796 _fw-289165218 rcx-item rcx-item--inset-md rcx-item--clickable rcx-option"
+              class="is_Text _p-1021290656 _d-341075704 _f-1069814357 _ai-121763387 _mw-842770087 _mh-1241200853 _m-2017216831 _p-788525541 _ls-1251843592 _ws-311910413 _ww-408434756 _br-1718100884 _ff-409630021 _ta-507911453 _td-1861836084 _c-727749181 _fs-347291933 _lh-1925956564 _ls-1782815796 _fw-289165218 _g-47172425 _b-944971190 _c-1830342115 _ow-1994474385 _os-1885772691 _oc-1422281658 _oo-245994692 _bs-1638756697 t_group_rcx-item rcx-item rcx-item--inset-md rcx-item--clickable rcx-option"
               role="option"
               value="1"
             >
@@ -236,7 +276,7 @@ exports[`[Options Component] renders Default without crashing 1`] = `
               >
                 <div
                   class="is_Text _o-1119039191 _f-649097281 _mw-842770087 _ws-973912173 _ww-408434756 _to-1727917045 _d-1987097250 rcx-item__title"
-                  id="_r_1b_"
+                  id="_r_1t_"
                 >
                   a teste 1
                 </div>
@@ -245,7 +285,7 @@ exports[`[Options Component] renders Default without crashing 1`] = `
             <li
               aria-disabled="false"
               aria-selected="false"
-              class="is_Text _p-1021290656 _d-341075704 _f-1069814357 _ai-121763387 _mw-842770087 _mh-1241200853 _m-2017216831 _p-788525541 _ls-1251843592 _ws-311910413 _ww-408434756 _br-1718100884 _ff-409630021 _g-479842563 _ta-507911453 _td-1861836084 _c-727749181 _fs-347291933 _lh-1925956564 _ls-1782815796 _fw-289165218 rcx-item rcx-item--inset-md rcx-item--clickable rcx-item--focused rcx-option rcx-option--focus"
+              class="is_Text _p-1021290656 _d-341075704 _f-1069814357 _ai-121763387 _mw-842770087 _mh-1241200853 _m-2017216831 _p-788525541 _ls-1251843592 _ws-311910413 _ww-408434756 _br-1718100884 _ff-409630021 _ta-507911453 _td-1861836084 _c-727749181 _fs-347291933 _lh-1925956564 _ls-1782815796 _fw-289165218 _g-47172425 _b-612395584 _c-1830342115 _ow-1994474385 _os-1885772691 _oc-1422281658 _oo-245994692 _bs-1638756697 t_group_rcx-item rcx-item rcx-item--inset-md rcx-item--clickable rcx-item--focused rcx-option rcx-option--focus"
               role="option"
               value="2"
             >
@@ -254,7 +294,7 @@ exports[`[Options Component] renders Default without crashing 1`] = `
               >
                 <div
                   class="is_Text _o-1119039191 _f-649097281 _mw-842770087 _ws-973912173 _ww-408434756 _to-1727917045 _d-1987097250 rcx-item__title"
-                  id="_r_1f_"
+                  id="_r_22_"
                 >
                   b teste 2
                 </div>
@@ -263,7 +303,7 @@ exports[`[Options Component] renders Default without crashing 1`] = `
             <li
               aria-disabled="false"
               aria-selected="true"
-              class="is_Text _p-1021290656 _d-341075704 _f-1069814357 _ai-121763387 _mw-842770087 _mh-1241200853 _m-2017216831 _p-788525541 _ls-1251843592 _ws-311910413 _ww-408434756 _br-1718100884 _ff-409630021 _g-479842563 _ta-507911453 _td-1861836084 _c-727749181 _fs-347291933 _lh-1925956564 _ls-1782815796 _fw-289165218 rcx-item rcx-item--inset-md rcx-item--clickable rcx-item--selected rcx-option rcx-option--selected"
+              class="is_Text _p-1021290656 _d-341075704 _f-1069814357 _ai-121763387 _mw-842770087 _mh-1241200853 _m-2017216831 _p-788525541 _ls-1251843592 _ws-311910413 _ww-408434756 _br-1718100884 _ff-409630021 _ta-507911453 _td-1861836084 _c-727749181 _fs-347291933 _lh-1925956564 _ls-1782815796 _fw-289165218 _g-47172425 _b-2012676596 _c-1830342115 _ow-1994474385 _os-1885772691 _oc-1422281658 _oo-245994692 _bs-1638756697 t_group_rcx-item rcx-item rcx-item--inset-md rcx-item--clickable rcx-item--selected rcx-option rcx-option--selected"
               role="option"
               value="3"
             >
@@ -272,7 +312,7 @@ exports[`[Options Component] renders Default without crashing 1`] = `
               >
                 <div
                   class="is_Text _o-1119039191 _f-649097281 _mw-842770087 _ws-973912173 _ww-408434756 _to-1727917045 _d-1987097250 rcx-item__title"
-                  id="_r_1j_"
+                  id="_r_27_"
                 >
                   c teste 3
                 </div>
@@ -281,7 +321,7 @@ exports[`[Options Component] renders Default without crashing 1`] = `
             <li
               aria-disabled="false"
               aria-selected="false"
-              class="is_Text _p-1021290656 _d-341075704 _f-1069814357 _ai-121763387 _mw-842770087 _mh-1241200853 _m-2017216831 _p-788525541 _ls-1251843592 _ws-311910413 _ww-408434756 _br-1718100884 _ff-409630021 _g-479842563 _ta-507911453 _td-1861836084 _c-727749181 _fs-347291933 _lh-1925956564 _ls-1782815796 _fw-289165218 rcx-item rcx-item--inset-md rcx-item--clickable rcx-option"
+              class="is_Text _p-1021290656 _d-341075704 _f-1069814357 _ai-121763387 _mw-842770087 _mh-1241200853 _m-2017216831 _p-788525541 _ls-1251843592 _ws-311910413 _ww-408434756 _br-1718100884 _ff-409630021 _ta-507911453 _td-1861836084 _c-727749181 _fs-347291933 _lh-1925956564 _ls-1782815796 _fw-289165218 _g-47172425 _b-944971190 _c-1830342115 _ow-1994474385 _os-1885772691 _oc-1422281658 _oo-245994692 _bs-1638756697 t_group_rcx-item rcx-item rcx-item--inset-md rcx-item--clickable rcx-option"
               role="option"
               value="4"
             >
@@ -290,7 +330,7 @@ exports[`[Options Component] renders Default without crashing 1`] = `
               >
                 <div
                   class="is_Text _o-1119039191 _f-649097281 _mw-842770087 _ws-973912173 _ww-408434756 _to-1727917045 _d-1987097250 rcx-item__title"
-                  id="_r_1n_"
+                  id="_r_2c_"
                 >
                   d testeadsasdasdasdasdjhasjfhasdkjfhaskdfjhkasjdfhkasjdhfkasjdhfkasjdhfkasjdhfkasdjhfkasdjhfaksjdfhkasjdh 4
                 </div>
@@ -324,7 +364,7 @@ exports[`[Options Component] renders EmptyOptions without crashing 1`] = `
             <li
               aria-disabled="true"
               aria-selected="false"
-              class="is_Text _p-1021290656 _d-341075704 _f-1069814357 _ai-121763387 _mw-842770087 _mh-1241200853 _m-2017216831 _p-788525541 _ls-1251843592 _ws-311910413 _ww-408434756 _br-1718100884 _ff-409630021 _g-479842563 _ta-507911453 _td-1861836084 _c-727749181 _fs-347291933 _lh-1925956564 _ls-1782815796 _fw-289165218 rcx-item rcx-item--inset-md rcx-item--clickable rcx-item--disabled rcx-option rcx-option--disabled"
+              class="is_Text _p-1021290656 _d-341075704 _f-1069814357 _ai-121763387 _mw-842770087 _mh-1241200853 _m-2017216831 _p-788525541 _ls-1251843592 _ws-311910413 _ww-408434756 _br-1718100884 _ff-409630021 _ta-507911453 _td-1861836084 _fs-347291933 _lh-1925956564 _ls-1782815796 _fw-289165218 _g-47172425 _b-824256911 _c-2102202510 _c-943859316 _ow-1994474385 _os-1885772691 _oc-1422281658 _oo-245994692 _bs-1638756697 t_group_rcx-item rcx-item rcx-item--inset-md rcx-item--clickable rcx-item--disabled rcx-option rcx-option--disabled"
               role="option"
             >
               <div
@@ -332,7 +372,7 @@ exports[`[Options Component] renders EmptyOptions without crashing 1`] = `
               >
                 <div
                   class="is_Text _o-1119039191 _f-649097281 _mw-842770087 _ws-973912173 _ww-408434756 _to-1727917045 _d-1987097250 rcx-item__title"
-                  id="_r_1u_"
+                  id="_r_2k_"
                 >
                   Empty
                 </div>
@@ -365,12 +405,12 @@ exports[`[Options Component] renders Grouped without crashing 1`] = `
             role="listbox"
           >
             <li
-              class="is_Text _p-1021290656 _d-341075704 _f-1069814357 _ai-121763387 _mw-842770087 _mh-499962855 _m-2017216831 _p-788525541 _ls-1251843592 _ws-311910413 _ww-408434756 _br-1718100884 _ff-409630021 _g-479842563 _c-341093563 _fs-2088488067 _lh-1306743983 _ls-1782815796 _fw-289168101 rcx-item-group-header rcx-item-group-header--inset-md rcx-option__header"
+              class="is_Text _p-1021290656 _d-341075704 _f-1069814357 _ai-121763387 _mw-842770087 _mh-499962855 _m-2017216831 _p-788525541 _ls-1251843592 _ws-311910413 _ww-408434756 _br-1718100884 _ff-409630021 _c-341093563 _fs-2088488067 _lh-1306743983 _ls-1782815796 _fw-289168101 _g-1760282038 t_group_rcx-item-group-header rcx-item-group-header rcx-item-group-header--inset-md rcx-option__header"
               role="presentation"
             >
               <div
-                class="rcx-item-group-title"
-                id="_r_24_"
+                class="is_Text _d-1987097250 _o-1119039191 _f-649097281 _mw-842770087 _m-2017216831 _ws-973912173 _ww-408434756 _to-1727917045 _c-954359819 _ff-4295677 _fs-1279428672 _fw-702336919 _fs-1723449324 _lh-1970121045 _ls-763972879 _fvn-882811879 rcx-item-group-title"
+                id="_r_2q_"
               >
                 Recent
               </div>
@@ -378,7 +418,7 @@ exports[`[Options Component] renders Grouped without crashing 1`] = `
             <li
               aria-disabled="false"
               aria-selected="false"
-              class="is_Text _p-1021290656 _d-341075704 _f-1069814357 _ai-121763387 _mw-842770087 _mh-1241200853 _m-2017216831 _p-788525541 _ls-1251843592 _ws-311910413 _ww-408434756 _br-1718100884 _ff-409630021 _g-479842563 _ta-507911453 _td-1861836084 _c-727749181 _fs-347291933 _lh-1925956564 _ls-1782815796 _fw-289165218 rcx-item rcx-item--inset-md rcx-item--clickable rcx-item--focused rcx-option rcx-option--focus"
+              class="is_Text _p-1021290656 _d-341075704 _f-1069814357 _ai-121763387 _mw-842770087 _mh-1241200853 _m-2017216831 _p-788525541 _ls-1251843592 _ws-311910413 _ww-408434756 _br-1718100884 _ff-409630021 _ta-507911453 _td-1861836084 _c-727749181 _fs-347291933 _lh-1925956564 _ls-1782815796 _fw-289165218 _g-47172425 _b-612395584 _c-1830342115 _ow-1994474385 _os-1885772691 _oc-1422281658 _oo-245994692 _bs-1638756697 t_group_rcx-item rcx-item rcx-item--inset-md rcx-item--clickable rcx-item--focused rcx-option rcx-option--focus"
               role="option"
               value="1"
             >
@@ -387,7 +427,7 @@ exports[`[Options Component] renders Grouped without crashing 1`] = `
               >
                 <div
                   class="is_Text _o-1119039191 _f-649097281 _mw-842770087 _ws-973912173 _ww-408434756 _to-1727917045 _d-1987097250 rcx-item__title"
-                  id="_r_27_"
+                  id="_r_2v_"
                 >
                   a teste 1
                 </div>
@@ -396,7 +436,7 @@ exports[`[Options Component] renders Grouped without crashing 1`] = `
             <li
               aria-disabled="false"
               aria-selected="false"
-              class="is_Text _p-1021290656 _d-341075704 _f-1069814357 _ai-121763387 _mw-842770087 _mh-1241200853 _m-2017216831 _p-788525541 _ls-1251843592 _ws-311910413 _ww-408434756 _br-1718100884 _ff-409630021 _g-479842563 _ta-507911453 _td-1861836084 _c-727749181 _fs-347291933 _lh-1925956564 _ls-1782815796 _fw-289165218 rcx-item rcx-item--inset-md rcx-item--clickable rcx-option"
+              class="is_Text _p-1021290656 _d-341075704 _f-1069814357 _ai-121763387 _mw-842770087 _mh-1241200853 _m-2017216831 _p-788525541 _ls-1251843592 _ws-311910413 _ww-408434756 _br-1718100884 _ff-409630021 _ta-507911453 _td-1861836084 _c-727749181 _fs-347291933 _lh-1925956564 _ls-1782815796 _fw-289165218 _g-47172425 _b-944971190 _c-1830342115 _ow-1994474385 _os-1885772691 _oc-1422281658 _oo-245994692 _bs-1638756697 t_group_rcx-item rcx-item rcx-item--inset-md rcx-item--clickable rcx-option"
               role="option"
               value="2"
             >
@@ -405,7 +445,7 @@ exports[`[Options Component] renders Grouped without crashing 1`] = `
               >
                 <div
                   class="is_Text _o-1119039191 _f-649097281 _mw-842770087 _ws-973912173 _ww-408434756 _to-1727917045 _d-1987097250 rcx-item__title"
-                  id="_r_2b_"
+                  id="_r_34_"
                 >
                   b teste 2
                 </div>
@@ -413,15 +453,20 @@ exports[`[Options Component] renders Grouped without crashing 1`] = `
             </li>
             <li
               aria-hidden="true"
-              class="is_View _d-1987097250 _f-1246374076 _mw-354604370 _mh-1241200853 _m-2017216831 _p-1671535631 _ls-1251843592 _b-10838200 rcx-item-divider"
-            />
+              class="is_View _d-1987097250 _f-1246374076 _mw-354604370 _mh-1241200853 _m-2017216831 _p-1671535631 _ls-1251843592 _b-37393443 rcx-item-divider"
+            >
+              <span
+                aria-hidden="true"
+                class="is_View _d-1987097250 _b-2046691489 rcx-item-divider__line"
+              />
+            </li>
             <li
-              class="is_Text _p-1021290656 _d-341075704 _f-1069814357 _ai-121763387 _mw-842770087 _mh-499962855 _m-2017216831 _p-788525541 _ls-1251843592 _ws-311910413 _ww-408434756 _br-1718100884 _ff-409630021 _g-479842563 _c-341093563 _fs-2088488067 _lh-1306743983 _ls-1782815796 _fw-289168101 rcx-item-group-header rcx-item-group-header--inset-md rcx-option__header"
+              class="is_Text _p-1021290656 _d-341075704 _f-1069814357 _ai-121763387 _mw-842770087 _mh-499962855 _m-2017216831 _p-788525541 _ls-1251843592 _ws-311910413 _ww-408434756 _br-1718100884 _ff-409630021 _c-341093563 _fs-2088488067 _lh-1306743983 _ls-1782815796 _fw-289168101 _g-1760282038 t_group_rcx-item-group-header rcx-item-group-header rcx-item-group-header--inset-md rcx-option__header"
               role="presentation"
             >
               <div
-                class="rcx-item-group-title"
-                id="_r_2f_"
+                class="is_Text _d-1987097250 _o-1119039191 _f-649097281 _mw-842770087 _m-2017216831 _ws-973912173 _ww-408434756 _to-1727917045 _c-954359819 _ff-4295677 _fs-1279428672 _fw-702336919 _fs-1723449324 _lh-1970121045 _ls-763972879 _fvn-882811879 rcx-item-group-title"
+                id="_r_39_"
               >
                 All
               </div>
@@ -429,7 +474,7 @@ exports[`[Options Component] renders Grouped without crashing 1`] = `
             <li
               aria-disabled="false"
               aria-selected="true"
-              class="is_Text _p-1021290656 _d-341075704 _f-1069814357 _ai-121763387 _mw-842770087 _mh-1241200853 _m-2017216831 _p-788525541 _ls-1251843592 _ws-311910413 _ww-408434756 _br-1718100884 _ff-409630021 _g-479842563 _ta-507911453 _td-1861836084 _c-727749181 _fs-347291933 _lh-1925956564 _ls-1782815796 _fw-289165218 rcx-item rcx-item--inset-md rcx-item--clickable rcx-item--selected rcx-option rcx-option--selected"
+              class="is_Text _p-1021290656 _d-341075704 _f-1069814357 _ai-121763387 _mw-842770087 _mh-1241200853 _m-2017216831 _p-788525541 _ls-1251843592 _ws-311910413 _ww-408434756 _br-1718100884 _ff-409630021 _ta-507911453 _td-1861836084 _c-727749181 _fs-347291933 _lh-1925956564 _ls-1782815796 _fw-289165218 _g-47172425 _b-2012676596 _c-1830342115 _ow-1994474385 _os-1885772691 _oc-1422281658 _oo-245994692 _bs-1638756697 t_group_rcx-item rcx-item rcx-item--inset-md rcx-item--clickable rcx-item--selected rcx-option rcx-option--selected"
               role="option"
               value="3"
             >
@@ -438,7 +483,7 @@ exports[`[Options Component] renders Grouped without crashing 1`] = `
               >
                 <div
                   class="is_Text _o-1119039191 _f-649097281 _mw-842770087 _ws-973912173 _ww-408434756 _to-1727917045 _d-1987097250 rcx-item__title"
-                  id="_r_2i_"
+                  id="_r_3e_"
                 >
                   c teste 3
                 </div>
@@ -447,7 +492,7 @@ exports[`[Options Component] renders Grouped without crashing 1`] = `
             <li
               aria-disabled="false"
               aria-selected="false"
-              class="is_Text _p-1021290656 _d-341075704 _f-1069814357 _ai-121763387 _mw-842770087 _mh-1241200853 _m-2017216831 _p-788525541 _ls-1251843592 _ws-311910413 _ww-408434756 _br-1718100884 _ff-409630021 _g-479842563 _ta-507911453 _td-1861836084 _c-727749181 _fs-347291933 _lh-1925956564 _ls-1782815796 _fw-289165218 rcx-item rcx-item--inset-md rcx-item--clickable rcx-option"
+              class="is_Text _p-1021290656 _d-341075704 _f-1069814357 _ai-121763387 _mw-842770087 _mh-1241200853 _m-2017216831 _p-788525541 _ls-1251843592 _ws-311910413 _ww-408434756 _br-1718100884 _ff-409630021 _ta-507911453 _td-1861836084 _c-727749181 _fs-347291933 _lh-1925956564 _ls-1782815796 _fw-289165218 _g-47172425 _b-944971190 _c-1830342115 _ow-1994474385 _os-1885772691 _oc-1422281658 _oo-245994692 _bs-1638756697 t_group_rcx-item rcx-item rcx-item--inset-md rcx-item--clickable rcx-option"
               role="option"
               value="4"
             >
@@ -456,7 +501,7 @@ exports[`[Options Component] renders Grouped without crashing 1`] = `
               >
                 <div
                   class="is_Text _o-1119039191 _f-649097281 _mw-842770087 _ws-973912173 _ww-408434756 _to-1727917045 _d-1987097250 rcx-item__title"
-                  id="_r_2m_"
+                  id="_r_3j_"
                 >
                   d teste 4
                 </div>
@@ -491,7 +536,7 @@ exports[`[Options Component] renders OptionStory without crashing 1`] = `
             <li
               aria-disabled="false"
               aria-selected="false"
-              class="is_Text _p-1021290656 _d-341075704 _f-1069814357 _ai-121763387 _mw-842770087 _mh-1241200853 _m-2017216831 _p-788525541 _ls-1251843592 _ws-311910413 _ww-408434756 _br-1718100884 _ff-409630021 _g-479842563 _ta-507911453 _td-1861836084 _c-727749181 _fs-347291933 _lh-1925956564 _ls-1782815796 _fw-289165218 rcx-item rcx-item--inset-md rcx-item--clickable rcx-option"
+              class="is_Text _p-1021290656 _d-341075704 _f-1069814357 _ai-121763387 _mw-842770087 _mh-1241200853 _m-2017216831 _p-788525541 _ls-1251843592 _ws-311910413 _ww-408434756 _br-1718100884 _ff-409630021 _ta-507911453 _td-1861836084 _c-727749181 _fs-347291933 _lh-1925956564 _ls-1782815796 _fw-289165218 _g-47172425 _b-944971190 _c-1830342115 _ow-1994474385 _os-1885772691 _oc-1422281658 _oo-245994692 _bs-1638756697 t_group_rcx-item rcx-item rcx-item--inset-md rcx-item--clickable rcx-option"
               role="option"
               value="1"
             >
@@ -500,7 +545,7 @@ exports[`[Options Component] renders OptionStory without crashing 1`] = `
               >
                 <div
                   class="is_Text _o-1119039191 _f-649097281 _mw-842770087 _ws-973912173 _ww-408434756 _to-1727917045 _d-1987097250 rcx-item__title"
-                  id="_r_2t_"
+                  id="_r_3r_"
                 >
                   a teste 1
                 </div>
@@ -509,7 +554,7 @@ exports[`[Options Component] renders OptionStory without crashing 1`] = `
             <li
               aria-disabled="false"
               aria-selected="false"
-              class="is_Text _p-1021290656 _d-341075704 _f-1069814357 _ai-121763387 _mw-842770087 _mh-1241200853 _m-2017216831 _p-788525541 _ls-1251843592 _ws-311910413 _ww-408434756 _br-1718100884 _ff-409630021 _g-479842563 _ta-507911453 _td-1861836084 _c-727749181 _fs-347291933 _lh-1925956564 _ls-1782815796 _fw-289165218 rcx-item rcx-item--inset-md rcx-item--clickable rcx-item--focused rcx-option rcx-option--focus"
+              class="is_Text _p-1021290656 _d-341075704 _f-1069814357 _ai-121763387 _mw-842770087 _mh-1241200853 _m-2017216831 _p-788525541 _ls-1251843592 _ws-311910413 _ww-408434756 _br-1718100884 _ff-409630021 _ta-507911453 _td-1861836084 _c-727749181 _fs-347291933 _lh-1925956564 _ls-1782815796 _fw-289165218 _g-47172425 _b-612395584 _c-1830342115 _ow-1994474385 _os-1885772691 _oc-1422281658 _oo-245994692 _bs-1638756697 t_group_rcx-item rcx-item rcx-item--inset-md rcx-item--clickable rcx-item--focused rcx-option rcx-option--focus"
               role="option"
               value="2"
             >
@@ -518,7 +563,7 @@ exports[`[Options Component] renders OptionStory without crashing 1`] = `
               >
                 <div
                   class="is_Text _o-1119039191 _f-649097281 _mw-842770087 _ws-973912173 _ww-408434756 _to-1727917045 _d-1987097250 rcx-item__title"
-                  id="_r_31_"
+                  id="_r_40_"
                 >
                   b teste 2
                 </div>
@@ -527,7 +572,7 @@ exports[`[Options Component] renders OptionStory without crashing 1`] = `
             <li
               aria-disabled="false"
               aria-selected="true"
-              class="is_Text _p-1021290656 _d-341075704 _f-1069814357 _ai-121763387 _mw-842770087 _mh-1241200853 _m-2017216831 _p-788525541 _ls-1251843592 _ws-311910413 _ww-408434756 _br-1718100884 _ff-409630021 _g-479842563 _ta-507911453 _td-1861836084 _c-727749181 _fs-347291933 _lh-1925956564 _ls-1782815796 _fw-289165218 rcx-item rcx-item--inset-md rcx-item--clickable rcx-item--selected rcx-option rcx-option--selected"
+              class="is_Text _p-1021290656 _d-341075704 _f-1069814357 _ai-121763387 _mw-842770087 _mh-1241200853 _m-2017216831 _p-788525541 _ls-1251843592 _ws-311910413 _ww-408434756 _br-1718100884 _ff-409630021 _ta-507911453 _td-1861836084 _c-727749181 _fs-347291933 _lh-1925956564 _ls-1782815796 _fw-289165218 _g-47172425 _b-2012676596 _c-1830342115 _ow-1994474385 _os-1885772691 _oc-1422281658 _oo-245994692 _bs-1638756697 t_group_rcx-item rcx-item rcx-item--inset-md rcx-item--clickable rcx-item--selected rcx-option rcx-option--selected"
               role="option"
               value="3"
             >
@@ -536,7 +581,7 @@ exports[`[Options Component] renders OptionStory without crashing 1`] = `
               >
                 <div
                   class="is_Text _o-1119039191 _f-649097281 _mw-842770087 _ws-973912173 _ww-408434756 _to-1727917045 _d-1987097250 rcx-item__title"
-                  id="_r_35_"
+                  id="_r_45_"
                 >
                   c teste 3
                 </div>
@@ -545,7 +590,7 @@ exports[`[Options Component] renders OptionStory without crashing 1`] = `
             <li
               aria-disabled="false"
               aria-selected="false"
-              class="is_Text _p-1021290656 _d-341075704 _f-1069814357 _ai-121763387 _mw-842770087 _mh-1241200853 _m-2017216831 _p-788525541 _ls-1251843592 _ws-311910413 _ww-408434756 _br-1718100884 _ff-409630021 _g-479842563 _ta-507911453 _td-1861836084 _c-727749181 _fs-347291933 _lh-1925956564 _ls-1782815796 _fw-289165218 rcx-item rcx-item--inset-md rcx-item--clickable rcx-option"
+              class="is_Text _p-1021290656 _d-341075704 _f-1069814357 _ai-121763387 _mw-842770087 _mh-1241200853 _m-2017216831 _p-788525541 _ls-1251843592 _ws-311910413 _ww-408434756 _br-1718100884 _ff-409630021 _ta-507911453 _td-1861836084 _c-727749181 _fs-347291933 _lh-1925956564 _ls-1782815796 _fw-289165218 _g-47172425 _b-944971190 _c-1830342115 _ow-1994474385 _os-1885772691 _oc-1422281658 _oo-245994692 _bs-1638756697 t_group_rcx-item rcx-item rcx-item--inset-md rcx-item--clickable rcx-option"
               role="option"
               value="4"
             >
@@ -554,7 +599,7 @@ exports[`[Options Component] renders OptionStory without crashing 1`] = `
               >
                 <div
                   class="is_Text _o-1119039191 _f-649097281 _mw-842770087 _ws-973912173 _ww-408434756 _to-1727917045 _d-1987097250 rcx-item__title"
-                  id="_r_39_"
+                  id="_r_4a_"
                 >
                   d testeadsasdasdasdasdjhasjfhasdkjfhaskdfjhkasjdfhkasjdhfkasjdhfkasjdhfkasjdhfkasdjhfkasdjhfaksjdfhkasjdh 4
                 </div>
