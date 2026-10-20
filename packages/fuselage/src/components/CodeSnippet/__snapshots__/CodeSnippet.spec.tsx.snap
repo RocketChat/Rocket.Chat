@@ -16,7 +16,7 @@ exports[`[CodeSnippet Rendering] renders CopyButton without crashing 1`] = `
         class="rcx-box rcx-box--full"
       >
         <button
-          class="is_View _d-1409515928 _f-1069814357 _mh-1241200853 _ta-1906144518 _ws-973912173 _td-211436768 _c-22887652 _os-249893454 _o-1119039191 _to-1727917045 _ff-409630021 _fvn-1977619713 _p-1560025842 _fs-281033604 _fw-290091622 _lh-1335373134 _ls-1811444947 _mw-1071928195 _h-1633581678 rcx-button--small rcx-button--primary rcx-button"
+          class="is_View _d-1409515928 _f-1069814357 _mh-1241200853 _ta-1906144518 _ws-973912173 _td-211436768 _c-22887652 _os-249893454 _o-1119039191 _to-1727917045 _ff-409630021 _fvn-1977619713 _p-1560025842 _a-1578443335 _b-1895627589 _br-1397394445 _bs-2123073523 _fs-281033604 _fw-290091622 _lh-1335373134 _ls-1811444947 _mw-1071928195 _h-1633581678 _c-1353765184 _b-1658181062 rcx-button--small rcx-button--primary rcx-button"
           type="button"
         >
           <span
@@ -47,7 +47,7 @@ exports[`[CodeSnippet Rendering] renders CustomButtonName without crashing 1`] =
         class="rcx-box rcx-box--full"
       >
         <button
-          class="is_View _d-1409515928 _f-1069814357 _mh-1241200853 _ta-1906144518 _ws-973912173 _td-211436768 _c-22887652 _os-249893454 _o-1119039191 _to-1727917045 _ff-409630021 _fvn-1977619713 _p-1560025842 _fs-281033604 _fw-290091622 _lh-1335373134 _ls-1811444947 _mw-1071928195 _h-1633581678 rcx-button--small rcx-button--primary rcx-button"
+          class="is_View _d-1409515928 _f-1069814357 _mh-1241200853 _ta-1906144518 _ws-973912173 _td-211436768 _c-22887652 _os-249893454 _o-1119039191 _to-1727917045 _ff-409630021 _fvn-1977619713 _p-1560025842 _a-1578443335 _b-1895627589 _br-1397394445 _bs-2123073523 _fs-281033604 _fw-290091622 _lh-1335373134 _ls-1811444947 _mw-1071928195 _h-1633581678 _c-1353765184 _b-1658181062 rcx-button--small rcx-button--primary rcx-button"
           type="button"
         >
           <span
@@ -95,7 +95,7 @@ exports[`[CodeSnippet Rendering] renders DisabledButton without crashing 1`] = `
         class="rcx-box rcx-box--full"
       >
         <button
-          class="is_View _d-1409515928 _f-1069814357 _mh-1241200853 _ta-1906144518 _ws-973912173 _td-211436768 _c-22887652 _os-249893454 _o-1119039191 _to-1727917045 _ff-409630021 _fvn-1977619713 _p-1560025842 _fs-281033604 _fw-290091622 _lh-1335373134 _ls-1811444947 _mw-1071928195 _h-1633581678 rcx-button--small rcx-button--primary rcx-button"
+          class="is_View _d-1409515928 _f-1069814357 _mh-1241200853 _ta-1906144518 _ws-973912173 _td-211436768 _os-249893454 _o-1119039191 _to-1727917045 _ff-409630021 _fvn-1977619713 _p-1560025842 _a-1578443335 _b-1239149485 _br-1397394445 _bs-2123073523 _fs-281033604 _fw-290091622 _lh-1335373134 _ls-1811444947 _mw-1071928195 _h-1633581678 _c-1718234884 _b-1181624406 _c-2102202510 rcx-button--small rcx-button--primary rcx-button"
           disabled=""
           type="button"
         >
@@ -121,7 +121,13 @@ exports[`[CodeSnippet Rendering] renders LoadingCode without crashing 1`] = `
         aria-busy="true"
         aria-hidden="true"
         class="is_View _d-1987097250 _f-571455214 _o-1106425799 _fvn-1977619713 _a-119288947 _o-1083158629 _br-1682169757 _b-326940086 _h-568431264 _m-93279763 _to-611310301 _t-1660003422 rcx-skeleton rcx-skeleton--text rcx-css-1qcz93u"
-      />
+      >
+        <span
+          aria-hidden="true"
+        >
+           
+        </span>
+      </span>
     </pre>
   </div>
 </body>
