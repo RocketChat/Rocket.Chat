@@ -124,6 +124,13 @@ The Rocket.Chat login page (`yarn dev:next` against open.rocket.chat) is also pi
 - **`render` functions:** Tamagui adds the frame's `className` to the element a `render` function returns. Use `renderAs`, which drops it, or the class names render twice.
 - **Vendor-prefixed properties** (`-webkit-font-smoothing`, `-moz-osx-font-smoothing`) have no Tamagui prop. One `:where(.is_View, .is_Text)` rule in `src/index.css` sets them for every frame.
 - **Collapsed `ItemGroup`s** rely on normalize's `[hidden] { display: none }` beating `.rcx-item-group { display: flex }`. The Rocket.Chat app loads no normalize, which suggests collapsed groups show there today. This is independent of Tamagui.
+- **Static extraction (spike, 2026-10-20): not worth it yet.** We tried `@tamagui/vite-plugin` 3.0.18 on Divider, Tag and Button.
+  - **The compiler only flattens literals.** It reads code without running it, so any style value computed by a function call (`toCSSValue`, `spacing`, `fontScale`, `String(...)`) is skipped silently.
+  - **Few frames qualify.** Neither are frames that spread `useTamaguiBoxProps`, use `context`, or use `forceStyle`/`group`. Only 23 of 227 definitions flattened.
+  - **Size went up, not down.** Extraction added about 1.9 kB gzip: the runtime stays, and each flattened element inlines its class string. Zero-runtime mode reports 293 violations, mostly `ThemeProvider` and live frame references.
+  - **The extracted CSS needs fixes.** It is unlayered by default (an internal `wrapExtractedCSS` option layers it) and is not deduplicated across modules.
+  - **The usual checks miss it.** The compiled code only exists in `dist`, while Jest and Storybook run `src`.
+  - **What it would take:** generating literal value modules from `Theme`/`styleTokens`, and removing the props spreads from root frames. Even then, `Box`-driven roots would keep the runtime.
 - **Still to decide:**
   - Bundle size: the compiler (`@tamagui/static`) and `TAMAGUI_RUNTIME=island` could remove most of the runtime.
   - `Box` itself is still css-in-js, and how to migrate it is undecided.
