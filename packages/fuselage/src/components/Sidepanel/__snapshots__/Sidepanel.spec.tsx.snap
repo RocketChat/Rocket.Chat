@@ -21,7 +21,7 @@ exports[`renders Default without crashing 1`] = `
               Title Lorem Ipsum Indolor Ipsum Dolor Ipsum Ipsum
             </div>
             <button
-              class="is_View _f-1069813397 _mh-1241200853 _ta-1906144518 _ws-973912173 _td-211436768 _c-22887652 _os-249893454 _o-1119039191 _to-1727917045 _ff-409630021 _fvn-1977619713 _fs-347291933 _fw-289166179 _ls-1782815796 _p-230374000 _w-1411108109 _mw-1142583649 _h-611412686 _d-312446553 _jc-642967080 _ai-1864573722 _lh-2067208245 rcx-button--large-square rcx-button--square rcx-button--icon rcx-button rcx-css-t80ymp"
+              class="is_View _f-1069813397 _mh-1241200853 _ta-1906144518 _ws-973912173 _td-211436768 _c-22887652 _os-249893454 _o-1119039191 _to-1727917045 _ff-409630021 _fvn-1977619713 _fs-347291933 _fw-289166179 _ls-1782815796 _p-230374000 _a-1578443335 _b-1628331993 _br-1397394445 _bs-1225725885 _w-1411108109 _mw-1142583649 _h-611412686 _d-312446553 _jc-642967080 _ai-1864573722 _lh-2067208245 _c-1139941473 _b-1242743842 rcx-button--large-square rcx-button--square rcx-button--icon rcx-button rcx-css-t80ymp"
               title="menu"
               type="button"
             >
@@ -34,17 +34,17 @@ exports[`renders Default without crashing 1`] = `
             </button>
           </div>
           <hr
-            class="is_View _m-1833294645 _b-721425160 rcx-divider rcx-sidepanel--divider rcx-css-emj6cu"
+            class="is_View _m-1833294645 _b-721425160 rcx-divider rcx-sidepanel--divider rcx-css-qwi835"
           />
         </div>
         <div
           class="is_View _bs-652081535 _mw-354604370 _mh-1241200853 _f-1069814357 _jc-281817805 _ai-121763387 _g-1051447770 _p-114688985 rcx-sidepanel-section"
         >
           <label
-            class="is_Text _b-650654186 _os-249893454 _ff-409630021 _fvn-1977619713 _ws-311910413 _ww-408434756 _fs-347291933 _fw-289166179 _lh-1925956564 _ls-1782815796 _d-341075704 _c-1922521888 _c-1063453128 rcx-label rcx-box--animated rcx-input-box__wrapper"
+            class="is_Text _b-1714693756 _os-249893454 _ff-409630021 _fvn-1977619713 _ws-311910413 _ww-408434756 _ls-1782815796 _fs-347291933 _fw-289166179 _lh-1925956564 _c-1922521888 _c-1063453128 _br-1531773755 _b-730625357 _bs-581064853 _p-1021290656 _d-341075704 _f-1922759564 _ai-994770828 _mw-355799360 _p-1823912888 _va-1675321343 _wb-1577688049 _ow-485594423 rcx-label rcx-input-box__wrapper rcx-box--animated"
           >
             <input
-              class="rcx-box rcx-box--full rcx-box--animated rcx-input-box--undecorated rcx-input-box--type-text rcx-input-box"
+              class="is_View _m-2017216831 _p-1943363302 _b-650654186 _os-249893454 _ow-485594423 _ff-409630021 _fvn-1977619713 _p-1021290656 _d-1985012034 _f-1440749467 _w-226740859 _mh-1241200853 _va-1675321343 _ws-973912173 _wb-1577688049 _o-1119039191 _to-1727917045 _b-530853904 _ls-1782815796 _fs-347291933 _fw-289166179 _lh-1925956564 _c-277036852 _cc-365372135 _mw-841846566 rcx-box--animated rcx-input-box--undecorated rcx-input-box--type-text rcx-box--full rcx-input-box"
               placeholder="Search"
               size="1"
               type="text"
@@ -65,7 +65,7 @@ exports[`renders Default without crashing 1`] = `
           class="rcx-box rcx-box--full rcx-css-1aw2eor"
         >
           <div
-            class="rcx-item-group rcx-sidepanel-list"
+            class="is_View _bs-652081535 _f-1246374076 _mw-354604370 _mh-1241200853 _m-2017216831 _p-1943363302 _ls-1251843592 _c-1176677446 rcx-item-group rcx-sidepanel-list rcx-css-pdenyn"
             role="list"
           >
             <div
@@ -73,14 +73,14 @@ exports[`renders Default without crashing 1`] = `
               role="listitem"
             >
               <a
-                class="is_Text _p-1021290656 _d-341075704 _f-1069814357 _ai-121763387 _mw-842770087 _mh-1241200853 _m-2017216831 _p-788525541 _ls-1251843592 _ws-311910413 _ww-408434756 _br-1718100884 _ff-409630021 _g-479842563 _ta-507911453 _td-1861836084 _c-727749181 _fs-347291933 _lh-1925956564 _ls-1782815796 _fw-289165218 rcx-item rcx-item--inset-md rcx-sidebar-item rcx-sidebar-item--level-2"
+                class="is_Text _p-1021290656 _d-341075704 _f-1069814357 _ai-121763387 _mw-842770087 _mh-1241200853 _m-2017216831 _p-536964724 _ls-1251843592 _ws-311910413 _ww-408434756 _br-1718100884 _ff-409630021 _ta-507911453 _td-1861836084 _c-727749181 _fs-347291933 _lh-1925956564 _ls-1782815796 _fw-289165218 _g-691362565 _b-944971190 _c-1830342115 _ow-1994474385 _os-1885772691 _oc-1422281658 _oo-245994692 _bs-1638756697 t_group_rcx-item rcx-item rcx-item--inset-md rcx-sidebar-item rcx-sidebar-item--level-2"
                 href="#"
               >
                 <div
                   class="is_Text _d-341075704 _f-1448532840 _mw-842770087 _ws-311910413 _ww-408434756 rcx-item__content rcx-sidebar-item__col"
                 >
                   <div
-                    class="is_Text _d-341075704 _f-1841970073 _ai-121763387 _mw-842770087 _ws-311910413 _ww-408434756 _g-479842563 rcx-item__row rcx-sidebar-item__row"
+                    class="is_Text _d-341075704 _f-1841970073 _ai-121763387 _mw-842770087 _ws-311910413 _ww-408434756 _g-1760282038 rcx-item__row rcx-sidebar-item__row"
                   >
                     <div
                       class="is_Text _d-341075704 _f-1128736932 _jc-1099843255 _ai-121763387 _mw-354604370 _ws-311910413 _ww-408434756 rcx-item__media rcx-sidebar-item__avatar"
@@ -97,8 +97,8 @@ exports[`renders Default without crashing 1`] = `
                     </div>
                     <div
                       aria-hidden="true"
-                      class="is_Text _d-341075704 _f-1128736932 _jc-1099843255 _ai-121763387 _mw-354604370 _ws-311910413 _ww-408434756 _w-120696903 _h-858548760 rcx-item__icon rcx-sidebar-item__icon rcx-sidebar-item__icon--highlighted"
-                      id="_r_g_"
+                      class="is_Text _d-341075704 _f-1128736932 _jc-1099843255 _ai-121763387 _mw-354604370 _ws-311910413 _ww-408434756 _w-120696903 _h-858548760 _c-2001590654 _fw-290089700 rcx-item__icon rcx-sidebar-item__icon rcx-sidebar-item__icon--highlighted"
+                      id="_r_j_"
                     >
                       <i
                         aria-hidden="true"
@@ -108,8 +108,8 @@ exports[`renders Default without crashing 1`] = `
                       </i>
                     </div>
                     <div
-                      class="is_Text _o-1119039191 _f-649097281 _mw-842770087 _ws-973912173 _ww-408434756 _to-1727917045 _d-1987097250 rcx-item__title rcx-sidebar-item__title rcx-sidebar-item__title--highlighted"
-                      id="_r_j_"
+                      class="is_Text _o-1119039191 _f-649097281 _mw-842770087 _ws-973912173 _ww-408434756 _to-1727917045 _d-1987097250 _c-2001590654 _fw-290089700 rcx-item__title rcx-sidebar-item__title rcx-sidebar-item__title--highlighted"
+                      id="_r_m_"
                     >
                       Marvin Black
                     </div>
@@ -120,10 +120,10 @@ exports[`renders Default without crashing 1`] = `
                     </div>
                   </div>
                   <div
-                    class="is_Text _d-341075704 _f-1841970073 _ai-121763387 _mw-842770087 _ws-311910413 _ww-408434756 _g-479842563 rcx-item__row rcx-sidebar-item__row"
+                    class="is_Text _d-341075704 _f-1841970073 _ai-121763387 _mw-842770087 _ws-311910413 _ww-408434756 _g-1760282038 rcx-item__row rcx-sidebar-item__row"
                   >
                     <div
-                      class="is_Text _o-1119039191 _f-649097281 _mw-842770087 _ws-973912173 _ww-408434756 _to-1727917045 _d-1987097250 _c-341093563 _fs-2088488067 _lh-1306743983 _ls-1782815796 _fw-289165218 rcx-item__description rcx-sidebar-item__subtitle rcx-sidebar-item__subtitle--highlighted"
+                      class="is_Text _o-1119039191 _f-649097281 _mw-842770087 _ws-973912173 _ww-408434756 _to-1727917045 _d-1987097250 _fs-2088488067 _lh-1306743983 _ls-1782815796 _c-2001590654 _fw-290089700 rcx-item__description rcx-sidebar-item__subtitle rcx-sidebar-item__subtitle--highlighted"
                     >
                       Lorem Ipsum Indolor Dolor Ipsum Ipsum
                     </div>
@@ -150,10 +150,10 @@ exports[`renders Default without crashing 1`] = `
                       3
                     </span>
                     <div
-                      class="is_View _p-1021290656 _zi-2094244754 _d-341075704 _f-1841970073 _ai-121763387 _mw-354604370 _mh-1241200853 _g-1299036281 rcx-item__actions rcx-item__actions--reveal-hover rcx-sidebar-item__menu-wrapper"
+                      class="is_View _p-1021290656 _zi-2094244754 _f-1841970073 _ai-121763387 _mw-354604370 _mh-1241200853 _g-1299036281 _d-312410892 _t-1193045479 _o-1780556163 _gtc-370223739 _m-449670226 _ac-1617022483 _h-1921373401 rcx-item__actions rcx-item__actions--reveal-hover rcx-sidebar-item__menu-wrapper"
                     >
                       <div
-                        class="is_View _d-341075704 _f-1069814357 _o-1119039191 _ai-121763387 _mh-1241200853 _g-1299036281 rcx-item__actions-inner"
+                        class="is_View _d-341075704 _f-1069814357 _o-1838365900 _ai-121763387 _mh-1241200853 _g-1299036281 rcx-item__actions-inner"
                       >
                         <span
                           class="rcx-box rcx-box--full rcx-sidebar-item__menu rcx-sidebar-item__menu"
@@ -162,8 +162,8 @@ exports[`renders Default without crashing 1`] = `
                             aria-expanded="false"
                             aria-haspopup="true"
                             aria-label="Options"
-                            class="is_View _f-1069813397 _mh-1241200853 _ta-1906144518 _ws-973912173 _td-211436768 _c-22887652 _os-249893454 _o-1119039191 _to-1727917045 _ff-409630021 _fvn-1977619713 _fs-347291933 _fw-289166179 _ls-1782815796 _p-230374000 _w-1686757560 _mw-1952433892 _h-1628964073 _d-312446553 _jc-642967080 _ai-1864573722 _lh-2067208245 rcx-button--mini-square rcx-button--square rcx-button--icon rcx-button"
-                            id="react-aria-_r_u_"
+                            class="is_View _f-1069813397 _mh-1241200853 _ta-1906144518 _ws-973912173 _td-211436768 _c-22887652 _os-249893454 _o-1119039191 _to-1727917045 _ff-409630021 _fvn-1977619713 _fs-347291933 _fw-289166179 _ls-1782815796 _p-230374000 _a-1578443335 _b-1628331993 _br-1397394445 _bs-1225725885 _w-1686757560 _mw-1952433892 _h-1628964073 _d-312446553 _jc-642967080 _ai-1864573722 _lh-2067208245 _c-1139941473 _b-1242743842 rcx-button--mini-square rcx-button--square rcx-button--icon rcx-button"
+                            id="react-aria-_r_11_"
                             title="Options"
                             type="button"
                           >
@@ -186,14 +186,14 @@ exports[`renders Default without crashing 1`] = `
               role="listitem"
             >
               <a
-                class="is_Text _p-1021290656 _d-341075704 _f-1069814357 _ai-121763387 _mw-842770087 _mh-1241200853 _m-2017216831 _p-788525541 _ls-1251843592 _ws-311910413 _ww-408434756 _br-1718100884 _ff-409630021 _g-479842563 _ta-507911453 _td-1861836084 _c-727749181 _fs-347291933 _lh-1925956564 _ls-1782815796 _fw-289165218 rcx-item rcx-item--inset-md rcx-sidebar-item rcx-sidebar-item--level-2"
+                class="is_Text _p-1021290656 _d-341075704 _f-1069814357 _ai-121763387 _mw-842770087 _mh-1241200853 _m-2017216831 _p-536964724 _ls-1251843592 _ws-311910413 _ww-408434756 _br-1718100884 _ff-409630021 _ta-507911453 _td-1861836084 _c-727749181 _fs-347291933 _lh-1925956564 _ls-1782815796 _fw-289165218 _g-691362565 _b-944971190 _c-1830342115 _ow-1994474385 _os-1885772691 _oc-1422281658 _oo-245994692 _bs-1638756697 t_group_rcx-item rcx-item rcx-item--inset-md rcx-sidebar-item rcx-sidebar-item--level-2"
                 href="#"
               >
                 <div
                   class="is_Text _d-341075704 _f-1448532840 _mw-842770087 _ws-311910413 _ww-408434756 rcx-item__content rcx-sidebar-item__col"
                 >
                   <div
-                    class="is_Text _d-341075704 _f-1841970073 _ai-121763387 _mw-842770087 _ws-311910413 _ww-408434756 _g-479842563 rcx-item__row rcx-sidebar-item__row"
+                    class="is_Text _d-341075704 _f-1841970073 _ai-121763387 _mw-842770087 _ws-311910413 _ww-408434756 _g-1760282038 rcx-item__row rcx-sidebar-item__row"
                   >
                     <div
                       class="is_Text _d-341075704 _f-1128736932 _jc-1099843255 _ai-121763387 _mw-354604370 _ws-311910413 _ww-408434756 rcx-item__media rcx-sidebar-item__avatar"
@@ -211,7 +211,7 @@ exports[`renders Default without crashing 1`] = `
                     <div
                       aria-hidden="true"
                       class="is_Text _d-341075704 _f-1128736932 _jc-1099843255 _ai-121763387 _mw-354604370 _ws-311910413 _ww-408434756 _w-120696903 _h-858548760 rcx-item__icon rcx-sidebar-item__icon"
-                      id="_r_18_"
+                      id="_r_1c_"
                     >
                       <i
                         aria-hidden="true"
@@ -222,7 +222,7 @@ exports[`renders Default without crashing 1`] = `
                     </div>
                     <div
                       class="is_Text _o-1119039191 _f-649097281 _mw-842770087 _ws-973912173 _ww-408434756 _to-1727917045 _d-1987097250 rcx-item__title rcx-sidebar-item__title"
-                      id="_r_1b_"
+                      id="_r_1f_"
                     >
                       Esther Miles
                     </div>
@@ -233,7 +233,7 @@ exports[`renders Default without crashing 1`] = `
                     </div>
                   </div>
                   <div
-                    class="is_Text _d-341075704 _f-1841970073 _ai-121763387 _mw-842770087 _ws-311910413 _ww-408434756 _g-479842563 rcx-item__row rcx-sidebar-item__row"
+                    class="is_Text _d-341075704 _f-1841970073 _ai-121763387 _mw-842770087 _ws-311910413 _ww-408434756 _g-1760282038 rcx-item__row rcx-sidebar-item__row"
                   >
                     <div
                       class="is_Text _o-1119039191 _f-649097281 _mw-842770087 _ws-973912173 _ww-408434756 _to-1727917045 _d-1987097250 _c-341093563 _fs-2088488067 _lh-1306743983 _ls-1782815796 _fw-289165218 rcx-item__description rcx-sidebar-item__subtitle"
@@ -263,10 +263,10 @@ exports[`renders Default without crashing 1`] = `
                       4
                     </span>
                     <div
-                      class="is_View _p-1021290656 _zi-2094244754 _d-341075704 _f-1841970073 _ai-121763387 _mw-354604370 _mh-1241200853 _g-1299036281 rcx-item__actions rcx-item__actions--reveal-hover rcx-sidebar-item__menu-wrapper"
+                      class="is_View _p-1021290656 _zi-2094244754 _f-1841970073 _ai-121763387 _mw-354604370 _mh-1241200853 _g-1299036281 _d-312410892 _t-1193045479 _o-1780556163 _gtc-370223739 _m-449670226 _ac-1617022483 _h-1921373401 rcx-item__actions rcx-item__actions--reveal-hover rcx-sidebar-item__menu-wrapper"
                     >
                       <div
-                        class="is_View _d-341075704 _f-1069814357 _o-1119039191 _ai-121763387 _mh-1241200853 _g-1299036281 rcx-item__actions-inner"
+                        class="is_View _d-341075704 _f-1069814357 _o-1838365900 _ai-121763387 _mh-1241200853 _g-1299036281 rcx-item__actions-inner"
                       >
                         <span
                           class="rcx-box rcx-box--full rcx-sidebar-item__menu rcx-sidebar-item__menu"
@@ -275,8 +275,8 @@ exports[`renders Default without crashing 1`] = `
                             aria-expanded="false"
                             aria-haspopup="true"
                             aria-label="Options"
-                            class="is_View _f-1069813397 _mh-1241200853 _ta-1906144518 _ws-973912173 _td-211436768 _c-22887652 _os-249893454 _o-1119039191 _to-1727917045 _ff-409630021 _fvn-1977619713 _fs-347291933 _fw-289166179 _ls-1782815796 _p-230374000 _w-1686757560 _mw-1952433892 _h-1628964073 _d-312446553 _jc-642967080 _ai-1864573722 _lh-2067208245 rcx-button--mini-square rcx-button--square rcx-button--icon rcx-button"
-                            id="react-aria-_r_1m_"
+                            class="is_View _f-1069813397 _mh-1241200853 _ta-1906144518 _ws-973912173 _td-211436768 _c-22887652 _os-249893454 _o-1119039191 _to-1727917045 _ff-409630021 _fvn-1977619713 _fs-347291933 _fw-289166179 _ls-1782815796 _p-230374000 _a-1578443335 _b-1628331993 _br-1397394445 _bs-1225725885 _w-1686757560 _mw-1952433892 _h-1628964073 _d-312446553 _jc-642967080 _ai-1864573722 _lh-2067208245 _c-1139941473 _b-1242743842 rcx-button--mini-square rcx-button--square rcx-button--icon rcx-button"
+                            id="react-aria-_r_1q_"
                             title="Options"
                             type="button"
                           >
@@ -299,14 +299,14 @@ exports[`renders Default without crashing 1`] = `
               role="listitem"
             >
               <a
-                class="is_Text _p-1021290656 _d-341075704 _f-1069814357 _ai-121763387 _mw-842770087 _mh-1241200853 _m-2017216831 _p-788525541 _ls-1251843592 _ws-311910413 _ww-408434756 _br-1718100884 _ff-409630021 _g-479842563 _ta-507911453 _td-1861836084 _c-727749181 _fs-347291933 _lh-1925956564 _ls-1782815796 _fw-289165218 rcx-item rcx-item--inset-md rcx-sidebar-item rcx-sidebar-item--level-2"
+                class="is_Text _p-1021290656 _d-341075704 _f-1069814357 _ai-121763387 _mw-842770087 _mh-1241200853 _m-2017216831 _p-536964724 _ls-1251843592 _ws-311910413 _ww-408434756 _br-1718100884 _ff-409630021 _ta-507911453 _td-1861836084 _c-727749181 _fs-347291933 _lh-1925956564 _ls-1782815796 _fw-289165218 _g-691362565 _b-944971190 _c-1830342115 _ow-1994474385 _os-1885772691 _oc-1422281658 _oo-245994692 _bs-1638756697 t_group_rcx-item rcx-item rcx-item--inset-md rcx-sidebar-item rcx-sidebar-item--level-2"
                 href="#"
               >
                 <div
                   class="is_Text _d-341075704 _f-1448532840 _mw-842770087 _ws-311910413 _ww-408434756 rcx-item__content rcx-sidebar-item__col"
                 >
                   <div
-                    class="is_Text _d-341075704 _f-1841970073 _ai-121763387 _mw-842770087 _ws-311910413 _ww-408434756 _g-479842563 rcx-item__row rcx-sidebar-item__row"
+                    class="is_Text _d-341075704 _f-1841970073 _ai-121763387 _mw-842770087 _ws-311910413 _ww-408434756 _g-1760282038 rcx-item__row rcx-sidebar-item__row"
                   >
                     <div
                       class="is_Text _d-341075704 _f-1128736932 _jc-1099843255 _ai-121763387 _mw-354604370 _ws-311910413 _ww-408434756 rcx-item__media rcx-sidebar-item__avatar"
@@ -324,7 +324,7 @@ exports[`renders Default without crashing 1`] = `
                     <div
                       aria-hidden="true"
                       class="is_Text _d-341075704 _f-1128736932 _jc-1099843255 _ai-121763387 _mw-354604370 _ws-311910413 _ww-408434756 _w-120696903 _h-858548760 rcx-item__icon rcx-sidebar-item__icon"
-                      id="_r_20_"
+                      id="_r_25_"
                     >
                       <i
                         aria-hidden="true"
@@ -335,7 +335,7 @@ exports[`renders Default without crashing 1`] = `
                     </div>
                     <div
                       class="is_Text _o-1119039191 _f-649097281 _mw-842770087 _ws-973912173 _ww-408434756 _to-1727917045 _d-1987097250 rcx-item__title rcx-sidebar-item__title"
-                      id="_r_23_"
+                      id="_r_28_"
                     >
                       Leroy Jenkins
                     </div>
@@ -346,7 +346,7 @@ exports[`renders Default without crashing 1`] = `
                     </div>
                   </div>
                   <div
-                    class="is_Text _d-341075704 _f-1841970073 _ai-121763387 _mw-842770087 _ws-311910413 _ww-408434756 _g-479842563 rcx-item__row rcx-sidebar-item__row"
+                    class="is_Text _d-341075704 _f-1841970073 _ai-121763387 _mw-842770087 _ws-311910413 _ww-408434756 _g-1760282038 rcx-item__row rcx-sidebar-item__row"
                   >
                     <div
                       class="is_Text _o-1119039191 _f-649097281 _mw-842770087 _ws-973912173 _ww-408434756 _to-1727917045 _d-1987097250 _c-341093563 _fs-2088488067 _lh-1306743983 _ls-1782815796 _fw-289165218 rcx-item__description rcx-sidebar-item__subtitle"
@@ -376,10 +376,10 @@ exports[`renders Default without crashing 1`] = `
                       5
                     </span>
                     <div
-                      class="is_View _p-1021290656 _zi-2094244754 _d-341075704 _f-1841970073 _ai-121763387 _mw-354604370 _mh-1241200853 _g-1299036281 rcx-item__actions rcx-item__actions--reveal-hover rcx-sidebar-item__menu-wrapper"
+                      class="is_View _p-1021290656 _zi-2094244754 _f-1841970073 _ai-121763387 _mw-354604370 _mh-1241200853 _g-1299036281 _d-312410892 _t-1193045479 _o-1780556163 _gtc-370223739 _m-449670226 _ac-1617022483 _h-1921373401 rcx-item__actions rcx-item__actions--reveal-hover rcx-sidebar-item__menu-wrapper"
                     >
                       <div
-                        class="is_View _d-341075704 _f-1069814357 _o-1119039191 _ai-121763387 _mh-1241200853 _g-1299036281 rcx-item__actions-inner"
+                        class="is_View _d-341075704 _f-1069814357 _o-1838365900 _ai-121763387 _mh-1241200853 _g-1299036281 rcx-item__actions-inner"
                       >
                         <span
                           class="rcx-box rcx-box--full rcx-sidebar-item__menu rcx-sidebar-item__menu"
@@ -388,8 +388,8 @@ exports[`renders Default without crashing 1`] = `
                             aria-expanded="false"
                             aria-haspopup="true"
                             aria-label="Options"
-                            class="is_View _f-1069813397 _mh-1241200853 _ta-1906144518 _ws-973912173 _td-211436768 _c-22887652 _os-249893454 _o-1119039191 _to-1727917045 _ff-409630021 _fvn-1977619713 _fs-347291933 _fw-289166179 _ls-1782815796 _p-230374000 _w-1686757560 _mw-1952433892 _h-1628964073 _d-312446553 _jc-642967080 _ai-1864573722 _lh-2067208245 rcx-button--mini-square rcx-button--square rcx-button--icon rcx-button"
-                            id="react-aria-_r_2e_"
+                            class="is_View _f-1069813397 _mh-1241200853 _ta-1906144518 _ws-973912173 _td-211436768 _c-22887652 _os-249893454 _o-1119039191 _to-1727917045 _ff-409630021 _fvn-1977619713 _fs-347291933 _fw-289166179 _ls-1782815796 _p-230374000 _a-1578443335 _b-1628331993 _br-1397394445 _bs-1225725885 _w-1686757560 _mw-1952433892 _h-1628964073 _d-312446553 _jc-642967080 _ai-1864573722 _lh-2067208245 _c-1139941473 _b-1242743842 rcx-button--mini-square rcx-button--square rcx-button--icon rcx-button"
+                            id="react-aria-_r_2j_"
                             title="Options"
                             type="button"
                           >
@@ -412,14 +412,14 @@ exports[`renders Default without crashing 1`] = `
               role="listitem"
             >
               <a
-                class="is_Text _p-1021290656 _d-341075704 _f-1069814357 _ai-121763387 _mw-842770087 _mh-1241200853 _m-2017216831 _p-788525541 _ls-1251843592 _ws-311910413 _ww-408434756 _br-1718100884 _ff-409630021 _g-479842563 _ta-507911453 _td-1861836084 _c-727749181 _fs-347291933 _lh-1925956564 _ls-1782815796 _fw-289165218 rcx-item rcx-item--inset-md rcx-sidebar-item rcx-sidebar-item--level-2"
+                class="is_Text _p-1021290656 _d-341075704 _f-1069814357 _ai-121763387 _mw-842770087 _mh-1241200853 _m-2017216831 _p-536964724 _ls-1251843592 _ws-311910413 _ww-408434756 _br-1718100884 _ff-409630021 _ta-507911453 _td-1861836084 _c-727749181 _fs-347291933 _lh-1925956564 _ls-1782815796 _fw-289165218 _g-691362565 _b-944971190 _c-1830342115 _ow-1994474385 _os-1885772691 _oc-1422281658 _oo-245994692 _bs-1638756697 t_group_rcx-item rcx-item rcx-item--inset-md rcx-sidebar-item rcx-sidebar-item--level-2"
                 href="#"
               >
                 <div
                   class="is_Text _d-341075704 _f-1448532840 _mw-842770087 _ws-311910413 _ww-408434756 rcx-item__content rcx-sidebar-item__col"
                 >
                   <div
-                    class="is_Text _d-341075704 _f-1841970073 _ai-121763387 _mw-842770087 _ws-311910413 _ww-408434756 _g-479842563 rcx-item__row rcx-sidebar-item__row"
+                    class="is_Text _d-341075704 _f-1841970073 _ai-121763387 _mw-842770087 _ws-311910413 _ww-408434756 _g-1760282038 rcx-item__row rcx-sidebar-item__row"
                   >
                     <div
                       class="is_Text _d-341075704 _f-1128736932 _jc-1099843255 _ai-121763387 _mw-354604370 _ws-311910413 _ww-408434756 rcx-item__media rcx-sidebar-item__avatar"
@@ -437,7 +437,7 @@ exports[`renders Default without crashing 1`] = `
                     <div
                       aria-hidden="true"
                       class="is_Text _d-341075704 _f-1128736932 _jc-1099843255 _ai-121763387 _mw-354604370 _ws-311910413 _ww-408434756 _w-120696903 _h-858548760 rcx-item__icon rcx-sidebar-item__icon"
-                      id="_r_2o_"
+                      id="_r_2u_"
                     >
                       <i
                         aria-hidden="true"
@@ -448,7 +448,7 @@ exports[`renders Default without crashing 1`] = `
                     </div>
                     <div
                       class="is_Text _o-1119039191 _f-649097281 _mw-842770087 _ws-973912173 _ww-408434756 _to-1727917045 _d-1987097250 rcx-item__title rcx-sidebar-item__title"
-                      id="_r_2r_"
+                      id="_r_31_"
                     >
                       Morgan Freeman looooooooooong looooooooooong looooooooooong name
                     </div>
@@ -459,7 +459,7 @@ exports[`renders Default without crashing 1`] = `
                     </div>
                   </div>
                   <div
-                    class="is_Text _d-341075704 _f-1841970073 _ai-121763387 _mw-842770087 _ws-311910413 _ww-408434756 _g-479842563 rcx-item__row rcx-sidebar-item__row"
+                    class="is_Text _d-341075704 _f-1841970073 _ai-121763387 _mw-842770087 _ws-311910413 _ww-408434756 _g-1760282038 rcx-item__row rcx-sidebar-item__row"
                   >
                     <div
                       class="is_Text _o-1119039191 _f-649097281 _mw-842770087 _ws-973912173 _ww-408434756 _to-1727917045 _d-1987097250 _c-341093563 _fs-2088488067 _lh-1306743983 _ls-1782815796 _fw-289165218 rcx-item__description rcx-sidebar-item__subtitle"
@@ -489,10 +489,10 @@ exports[`renders Default without crashing 1`] = `
                       6
                     </span>
                     <div
-                      class="is_View _p-1021290656 _zi-2094244754 _d-341075704 _f-1841970073 _ai-121763387 _mw-354604370 _mh-1241200853 _g-1299036281 rcx-item__actions rcx-item__actions--reveal-hover rcx-sidebar-item__menu-wrapper"
+                      class="is_View _p-1021290656 _zi-2094244754 _f-1841970073 _ai-121763387 _mw-354604370 _mh-1241200853 _g-1299036281 _d-312410892 _t-1193045479 _o-1780556163 _gtc-370223739 _m-449670226 _ac-1617022483 _h-1921373401 rcx-item__actions rcx-item__actions--reveal-hover rcx-sidebar-item__menu-wrapper"
                     >
                       <div
-                        class="is_View _d-341075704 _f-1069814357 _o-1119039191 _ai-121763387 _mh-1241200853 _g-1299036281 rcx-item__actions-inner"
+                        class="is_View _d-341075704 _f-1069814357 _o-1838365900 _ai-121763387 _mh-1241200853 _g-1299036281 rcx-item__actions-inner"
                       >
                         <span
                           class="rcx-box rcx-box--full rcx-sidebar-item__menu rcx-sidebar-item__menu"
@@ -501,8 +501,8 @@ exports[`renders Default without crashing 1`] = `
                             aria-expanded="false"
                             aria-haspopup="true"
                             aria-label="Options"
-                            class="is_View _f-1069813397 _mh-1241200853 _ta-1906144518 _ws-973912173 _td-211436768 _c-22887652 _os-249893454 _o-1119039191 _to-1727917045 _ff-409630021 _fvn-1977619713 _fs-347291933 _fw-289166179 _ls-1782815796 _p-230374000 _w-1686757560 _mw-1952433892 _h-1628964073 _d-312446553 _jc-642967080 _ai-1864573722 _lh-2067208245 rcx-button--mini-square rcx-button--square rcx-button--icon rcx-button"
-                            id="react-aria-_r_36_"
+                            class="is_View _f-1069813397 _mh-1241200853 _ta-1906144518 _ws-973912173 _td-211436768 _c-22887652 _os-249893454 _o-1119039191 _to-1727917045 _ff-409630021 _fvn-1977619713 _fs-347291933 _fw-289166179 _ls-1782815796 _p-230374000 _a-1578443335 _b-1628331993 _br-1397394445 _bs-1225725885 _w-1686757560 _mw-1952433892 _h-1628964073 _d-312446553 _jc-642967080 _ai-1864573722 _lh-2067208245 _c-1139941473 _b-1242743842 rcx-button--mini-square rcx-button--square rcx-button--icon rcx-button"
+                            id="react-aria-_r_3c_"
                             title="Options"
                             type="button"
                           >
@@ -525,14 +525,14 @@ exports[`renders Default without crashing 1`] = `
               role="listitem"
             >
               <a
-                class="is_Text _p-1021290656 _d-341075704 _f-1069814357 _ai-121763387 _mw-842770087 _mh-1241200853 _m-2017216831 _p-788525541 _ls-1251843592 _ws-311910413 _ww-408434756 _br-1718100884 _ff-409630021 _g-479842563 _ta-507911453 _td-1861836084 _c-727749181 _fs-347291933 _lh-1925956564 _ls-1782815796 _fw-289165218 rcx-item rcx-item--inset-md rcx-sidebar-item rcx-sidebar-item--level-2"
+                class="is_Text _p-1021290656 _d-341075704 _f-1069814357 _ai-121763387 _mw-842770087 _mh-1241200853 _m-2017216831 _p-536964724 _ls-1251843592 _ws-311910413 _ww-408434756 _br-1718100884 _ff-409630021 _ta-507911453 _td-1861836084 _c-727749181 _fs-347291933 _lh-1925956564 _ls-1782815796 _fw-289165218 _g-691362565 _b-944971190 _c-1830342115 _ow-1994474385 _os-1885772691 _oc-1422281658 _oo-245994692 _bs-1638756697 t_group_rcx-item rcx-item rcx-item--inset-md rcx-sidebar-item rcx-sidebar-item--level-2"
                 href="#"
               >
                 <div
                   class="is_Text _d-341075704 _f-1448532840 _mw-842770087 _ws-311910413 _ww-408434756 rcx-item__content rcx-sidebar-item__col"
                 >
                   <div
-                    class="is_Text _d-341075704 _f-1841970073 _ai-121763387 _mw-842770087 _ws-311910413 _ww-408434756 _g-479842563 rcx-item__row rcx-sidebar-item__row"
+                    class="is_Text _d-341075704 _f-1841970073 _ai-121763387 _mw-842770087 _ws-311910413 _ww-408434756 _g-1760282038 rcx-item__row rcx-sidebar-item__row"
                   >
                     <div
                       class="is_Text _d-341075704 _f-1128736932 _jc-1099843255 _ai-121763387 _mw-354604370 _ws-311910413 _ww-408434756 rcx-item__media rcx-sidebar-item__avatar"
@@ -550,7 +550,7 @@ exports[`renders Default without crashing 1`] = `
                     <div
                       aria-hidden="true"
                       class="is_Text _d-341075704 _f-1128736932 _jc-1099843255 _ai-121763387 _mw-354604370 _ws-311910413 _ww-408434756 _w-120696903 _h-858548760 rcx-item__icon rcx-sidebar-item__icon"
-                      id="_r_3g_"
+                      id="_r_3n_"
                     >
                       <i
                         aria-hidden="true"
@@ -561,7 +561,7 @@ exports[`renders Default without crashing 1`] = `
                     </div>
                     <div
                       class="is_Text _o-1119039191 _f-649097281 _mw-842770087 _ws-973912173 _ww-408434756 _to-1727917045 _d-1987097250 rcx-item__title rcx-sidebar-item__title"
-                      id="_r_3j_"
+                      id="_r_3q_"
                     >
                       John Doe
                     </div>
@@ -572,7 +572,7 @@ exports[`renders Default without crashing 1`] = `
                     </div>
                   </div>
                   <div
-                    class="is_Text _d-341075704 _f-1841970073 _ai-121763387 _mw-842770087 _ws-311910413 _ww-408434756 _g-479842563 rcx-item__row rcx-sidebar-item__row"
+                    class="is_Text _d-341075704 _f-1841970073 _ai-121763387 _mw-842770087 _ws-311910413 _ww-408434756 _g-1760282038 rcx-item__row rcx-sidebar-item__row"
                   >
                     <div
                       class="is_Text _o-1119039191 _f-649097281 _mw-842770087 _ws-973912173 _ww-408434756 _to-1727917045 _d-1987097250 _c-341093563 _fs-2088488067 _lh-1306743983 _ls-1782815796 _fw-289165218 rcx-item__description rcx-sidebar-item__subtitle"
@@ -602,10 +602,10 @@ exports[`renders Default without crashing 1`] = `
                       7
                     </span>
                     <div
-                      class="is_View _p-1021290656 _zi-2094244754 _d-341075704 _f-1841970073 _ai-121763387 _mw-354604370 _mh-1241200853 _g-1299036281 rcx-item__actions rcx-item__actions--reveal-hover rcx-sidebar-item__menu-wrapper"
+                      class="is_View _p-1021290656 _zi-2094244754 _f-1841970073 _ai-121763387 _mw-354604370 _mh-1241200853 _g-1299036281 _d-312410892 _t-1193045479 _o-1780556163 _gtc-370223739 _m-449670226 _ac-1617022483 _h-1921373401 rcx-item__actions rcx-item__actions--reveal-hover rcx-sidebar-item__menu-wrapper"
                     >
                       <div
-                        class="is_View _d-341075704 _f-1069814357 _o-1119039191 _ai-121763387 _mh-1241200853 _g-1299036281 rcx-item__actions-inner"
+                        class="is_View _d-341075704 _f-1069814357 _o-1838365900 _ai-121763387 _mh-1241200853 _g-1299036281 rcx-item__actions-inner"
                       >
                         <span
                           class="rcx-box rcx-box--full rcx-sidebar-item__menu rcx-sidebar-item__menu"
@@ -614,8 +614,8 @@ exports[`renders Default without crashing 1`] = `
                             aria-expanded="false"
                             aria-haspopup="true"
                             aria-label="Options"
-                            class="is_View _f-1069813397 _mh-1241200853 _ta-1906144518 _ws-973912173 _td-211436768 _c-22887652 _os-249893454 _o-1119039191 _to-1727917045 _ff-409630021 _fvn-1977619713 _fs-347291933 _fw-289166179 _ls-1782815796 _p-230374000 _w-1686757560 _mw-1952433892 _h-1628964073 _d-312446553 _jc-642967080 _ai-1864573722 _lh-2067208245 rcx-button--mini-square rcx-button--square rcx-button--icon rcx-button"
-                            id="react-aria-_r_3u_"
+                            class="is_View _f-1069813397 _mh-1241200853 _ta-1906144518 _ws-973912173 _td-211436768 _c-22887652 _os-249893454 _o-1119039191 _to-1727917045 _ff-409630021 _fvn-1977619713 _fs-347291933 _fw-289166179 _ls-1782815796 _p-230374000 _a-1578443335 _b-1628331993 _br-1397394445 _bs-1225725885 _w-1686757560 _mw-1952433892 _h-1628964073 _d-312446553 _jc-642967080 _ai-1864573722 _lh-2067208245 _c-1139941473 _b-1242743842 rcx-button--mini-square rcx-button--square rcx-button--icon rcx-button"
+                            id="react-aria-_r_45_"
                             title="Options"
                             type="button"
                           >
@@ -638,14 +638,14 @@ exports[`renders Default without crashing 1`] = `
               role="listitem"
             >
               <a
-                class="is_Text _p-1021290656 _d-341075704 _f-1069814357 _ai-121763387 _mw-842770087 _mh-1241200853 _m-2017216831 _p-788525541 _ls-1251843592 _ws-311910413 _ww-408434756 _br-1718100884 _ff-409630021 _g-479842563 _ta-507911453 _td-1861836084 _c-727749181 _fs-347291933 _lh-1925956564 _ls-1782815796 _fw-289165218 rcx-item rcx-item--inset-md rcx-sidebar-item rcx-sidebar-item--level-2"
+                class="is_Text _p-1021290656 _d-341075704 _f-1069814357 _ai-121763387 _mw-842770087 _mh-1241200853 _m-2017216831 _p-536964724 _ls-1251843592 _ws-311910413 _ww-408434756 _br-1718100884 _ff-409630021 _ta-507911453 _td-1861836084 _c-727749181 _fs-347291933 _lh-1925956564 _ls-1782815796 _fw-289165218 _g-691362565 _b-944971190 _c-1830342115 _ow-1994474385 _os-1885772691 _oc-1422281658 _oo-245994692 _bs-1638756697 t_group_rcx-item rcx-item rcx-item--inset-md rcx-sidebar-item rcx-sidebar-item--level-2"
                 href="#"
               >
                 <div
                   class="is_Text _d-341075704 _f-1448532840 _mw-842770087 _ws-311910413 _ww-408434756 rcx-item__content rcx-sidebar-item__col"
                 >
                   <div
-                    class="is_Text _d-341075704 _f-1841970073 _ai-121763387 _mw-842770087 _ws-311910413 _ww-408434756 _g-479842563 rcx-item__row rcx-sidebar-item__row"
+                    class="is_Text _d-341075704 _f-1841970073 _ai-121763387 _mw-842770087 _ws-311910413 _ww-408434756 _g-1760282038 rcx-item__row rcx-sidebar-item__row"
                   >
                     <div
                       class="is_Text _d-341075704 _f-1128736932 _jc-1099843255 _ai-121763387 _mw-354604370 _ws-311910413 _ww-408434756 rcx-item__media rcx-sidebar-item__avatar"
@@ -663,7 +663,7 @@ exports[`renders Default without crashing 1`] = `
                     <div
                       aria-hidden="true"
                       class="is_Text _d-341075704 _f-1128736932 _jc-1099843255 _ai-121763387 _mw-354604370 _ws-311910413 _ww-408434756 _w-120696903 _h-858548760 rcx-item__icon rcx-sidebar-item__icon"
-                      id="_r_48_"
+                      id="_r_4g_"
                     >
                       <i
                         aria-hidden="true"
@@ -674,7 +674,7 @@ exports[`renders Default without crashing 1`] = `
                     </div>
                     <div
                       class="is_Text _o-1119039191 _f-649097281 _mw-842770087 _ws-973912173 _ww-408434756 _to-1727917045 _d-1987097250 rcx-item__title rcx-sidebar-item__title"
-                      id="_r_4b_"
+                      id="_r_4j_"
                     >
                       Jane Doe
                     </div>
@@ -685,7 +685,7 @@ exports[`renders Default without crashing 1`] = `
                     </div>
                   </div>
                   <div
-                    class="is_Text _d-341075704 _f-1841970073 _ai-121763387 _mw-842770087 _ws-311910413 _ww-408434756 _g-479842563 rcx-item__row rcx-sidebar-item__row"
+                    class="is_Text _d-341075704 _f-1841970073 _ai-121763387 _mw-842770087 _ws-311910413 _ww-408434756 _g-1760282038 rcx-item__row rcx-sidebar-item__row"
                   >
                     <div
                       class="is_Text _o-1119039191 _f-649097281 _mw-842770087 _ws-973912173 _ww-408434756 _to-1727917045 _d-1987097250 _c-341093563 _fs-2088488067 _lh-1306743983 _ls-1782815796 _fw-289165218 rcx-item__description rcx-sidebar-item__subtitle"
@@ -715,10 +715,10 @@ exports[`renders Default without crashing 1`] = `
                       8
                     </span>
                     <div
-                      class="is_View _p-1021290656 _zi-2094244754 _d-341075704 _f-1841970073 _ai-121763387 _mw-354604370 _mh-1241200853 _g-1299036281 rcx-item__actions rcx-item__actions--reveal-hover rcx-sidebar-item__menu-wrapper"
+                      class="is_View _p-1021290656 _zi-2094244754 _f-1841970073 _ai-121763387 _mw-354604370 _mh-1241200853 _g-1299036281 _d-312410892 _t-1193045479 _o-1780556163 _gtc-370223739 _m-449670226 _ac-1617022483 _h-1921373401 rcx-item__actions rcx-item__actions--reveal-hover rcx-sidebar-item__menu-wrapper"
                     >
                       <div
-                        class="is_View _d-341075704 _f-1069814357 _o-1119039191 _ai-121763387 _mh-1241200853 _g-1299036281 rcx-item__actions-inner"
+                        class="is_View _d-341075704 _f-1069814357 _o-1838365900 _ai-121763387 _mh-1241200853 _g-1299036281 rcx-item__actions-inner"
                       >
                         <span
                           class="rcx-box rcx-box--full rcx-sidebar-item__menu rcx-sidebar-item__menu"
@@ -727,8 +727,8 @@ exports[`renders Default without crashing 1`] = `
                             aria-expanded="false"
                             aria-haspopup="true"
                             aria-label="Options"
-                            class="is_View _f-1069813397 _mh-1241200853 _ta-1906144518 _ws-973912173 _td-211436768 _c-22887652 _os-249893454 _o-1119039191 _to-1727917045 _ff-409630021 _fvn-1977619713 _fs-347291933 _fw-289166179 _ls-1782815796 _p-230374000 _w-1686757560 _mw-1952433892 _h-1628964073 _d-312446553 _jc-642967080 _ai-1864573722 _lh-2067208245 rcx-button--mini-square rcx-button--square rcx-button--icon rcx-button"
-                            id="react-aria-_r_4m_"
+                            class="is_View _f-1069813397 _mh-1241200853 _ta-1906144518 _ws-973912173 _td-211436768 _c-22887652 _os-249893454 _o-1119039191 _to-1727917045 _ff-409630021 _fvn-1977619713 _fs-347291933 _fw-289166179 _ls-1782815796 _p-230374000 _a-1578443335 _b-1628331993 _br-1397394445 _bs-1225725885 _w-1686757560 _mw-1952433892 _h-1628964073 _d-312446553 _jc-642967080 _ai-1864573722 _lh-2067208245 _c-1139941473 _b-1242743842 rcx-button--mini-square rcx-button--square rcx-button--icon rcx-button"
+                            id="react-aria-_r_4u_"
                             title="Options"
                             type="button"
                           >
@@ -751,14 +751,14 @@ exports[`renders Default without crashing 1`] = `
               role="listitem"
             >
               <a
-                class="is_Text _p-1021290656 _d-341075704 _f-1069814357 _ai-121763387 _mw-842770087 _mh-1241200853 _m-2017216831 _p-788525541 _ls-1251843592 _ws-311910413 _ww-408434756 _br-1718100884 _ff-409630021 _g-479842563 _ta-507911453 _td-1861836084 _c-727749181 _fs-347291933 _lh-1925956564 _ls-1782815796 _fw-289165218 rcx-item rcx-item--inset-md rcx-sidebar-item rcx-sidebar-item--level-2"
+                class="is_Text _p-1021290656 _d-341075704 _f-1069814357 _ai-121763387 _mw-842770087 _mh-1241200853 _m-2017216831 _p-536964724 _ls-1251843592 _ws-311910413 _ww-408434756 _br-1718100884 _ff-409630021 _ta-507911453 _td-1861836084 _c-727749181 _fs-347291933 _lh-1925956564 _ls-1782815796 _fw-289165218 _g-691362565 _b-944971190 _c-1830342115 _ow-1994474385 _os-1885772691 _oc-1422281658 _oo-245994692 _bs-1638756697 t_group_rcx-item rcx-item rcx-item--inset-md rcx-sidebar-item rcx-sidebar-item--level-2"
                 href="#"
               >
                 <div
                   class="is_Text _d-341075704 _f-1448532840 _mw-842770087 _ws-311910413 _ww-408434756 rcx-item__content rcx-sidebar-item__col"
                 >
                   <div
-                    class="is_Text _d-341075704 _f-1841970073 _ai-121763387 _mw-842770087 _ws-311910413 _ww-408434756 _g-479842563 rcx-item__row rcx-sidebar-item__row"
+                    class="is_Text _d-341075704 _f-1841970073 _ai-121763387 _mw-842770087 _ws-311910413 _ww-408434756 _g-1760282038 rcx-item__row rcx-sidebar-item__row"
                   >
                     <div
                       class="is_Text _d-341075704 _f-1128736932 _jc-1099843255 _ai-121763387 _mw-354604370 _ws-311910413 _ww-408434756 rcx-item__media rcx-sidebar-item__avatar"
@@ -776,7 +776,7 @@ exports[`renders Default without crashing 1`] = `
                     <div
                       aria-hidden="true"
                       class="is_Text _d-341075704 _f-1128736932 _jc-1099843255 _ai-121763387 _mw-354604370 _ws-311910413 _ww-408434756 _w-120696903 _h-858548760 rcx-item__icon rcx-sidebar-item__icon"
-                      id="_r_50_"
+                      id="_r_59_"
                     >
                       <i
                         aria-hidden="true"
@@ -787,7 +787,7 @@ exports[`renders Default without crashing 1`] = `
                     </div>
                     <div
                       class="is_Text _o-1119039191 _f-649097281 _mw-842770087 _ws-973912173 _ww-408434756 _to-1727917045 _d-1987097250 rcx-item__title rcx-sidebar-item__title"
-                      id="_r_53_"
+                      id="_r_5c_"
                     >
                       Baz Qux
                     </div>
@@ -798,7 +798,7 @@ exports[`renders Default without crashing 1`] = `
                     </div>
                   </div>
                   <div
-                    class="is_Text _d-341075704 _f-1841970073 _ai-121763387 _mw-842770087 _ws-311910413 _ww-408434756 _g-479842563 rcx-item__row rcx-sidebar-item__row"
+                    class="is_Text _d-341075704 _f-1841970073 _ai-121763387 _mw-842770087 _ws-311910413 _ww-408434756 _g-1760282038 rcx-item__row rcx-sidebar-item__row"
                   >
                     <div
                       class="is_Text _o-1119039191 _f-649097281 _mw-842770087 _ws-973912173 _ww-408434756 _to-1727917045 _d-1987097250 _c-341093563 _fs-2088488067 _lh-1306743983 _ls-1782815796 _fw-289165218 rcx-item__description rcx-sidebar-item__subtitle"
@@ -828,10 +828,10 @@ exports[`renders Default without crashing 1`] = `
                       9
                     </span>
                     <div
-                      class="is_View _p-1021290656 _zi-2094244754 _d-341075704 _f-1841970073 _ai-121763387 _mw-354604370 _mh-1241200853 _g-1299036281 rcx-item__actions rcx-item__actions--reveal-hover rcx-sidebar-item__menu-wrapper"
+                      class="is_View _p-1021290656 _zi-2094244754 _f-1841970073 _ai-121763387 _mw-354604370 _mh-1241200853 _g-1299036281 _d-312410892 _t-1193045479 _o-1780556163 _gtc-370223739 _m-449670226 _ac-1617022483 _h-1921373401 rcx-item__actions rcx-item__actions--reveal-hover rcx-sidebar-item__menu-wrapper"
                     >
                       <div
-                        class="is_View _d-341075704 _f-1069814357 _o-1119039191 _ai-121763387 _mh-1241200853 _g-1299036281 rcx-item__actions-inner"
+                        class="is_View _d-341075704 _f-1069814357 _o-1838365900 _ai-121763387 _mh-1241200853 _g-1299036281 rcx-item__actions-inner"
                       >
                         <span
                           class="rcx-box rcx-box--full rcx-sidebar-item__menu rcx-sidebar-item__menu"
@@ -840,8 +840,8 @@ exports[`renders Default without crashing 1`] = `
                             aria-expanded="false"
                             aria-haspopup="true"
                             aria-label="Options"
-                            class="is_View _f-1069813397 _mh-1241200853 _ta-1906144518 _ws-973912173 _td-211436768 _c-22887652 _os-249893454 _o-1119039191 _to-1727917045 _ff-409630021 _fvn-1977619713 _fs-347291933 _fw-289166179 _ls-1782815796 _p-230374000 _w-1686757560 _mw-1952433892 _h-1628964073 _d-312446553 _jc-642967080 _ai-1864573722 _lh-2067208245 rcx-button--mini-square rcx-button--square rcx-button--icon rcx-button"
-                            id="react-aria-_r_5e_"
+                            class="is_View _f-1069813397 _mh-1241200853 _ta-1906144518 _ws-973912173 _td-211436768 _c-22887652 _os-249893454 _o-1119039191 _to-1727917045 _ff-409630021 _fvn-1977619713 _fs-347291933 _fw-289166179 _ls-1782815796 _p-230374000 _a-1578443335 _b-1628331993 _br-1397394445 _bs-1225725885 _w-1686757560 _mw-1952433892 _h-1628964073 _d-312446553 _jc-642967080 _ai-1864573722 _lh-2067208245 _c-1139941473 _b-1242743842 rcx-button--mini-square rcx-button--square rcx-button--icon rcx-button"
+                            id="react-aria-_r_5n_"
                             title="Options"
                             type="button"
                           >
@@ -864,14 +864,14 @@ exports[`renders Default without crashing 1`] = `
               role="listitem"
             >
               <a
-                class="is_Text _p-1021290656 _d-341075704 _f-1069814357 _ai-121763387 _mw-842770087 _mh-1241200853 _m-2017216831 _p-788525541 _ls-1251843592 _ws-311910413 _ww-408434756 _br-1718100884 _ff-409630021 _g-479842563 _ta-507911453 _td-1861836084 _c-727749181 _fs-347291933 _lh-1925956564 _ls-1782815796 _fw-289165218 rcx-item rcx-item--inset-md rcx-sidebar-item rcx-sidebar-item--level-2"
+                class="is_Text _p-1021290656 _d-341075704 _f-1069814357 _ai-121763387 _mw-842770087 _mh-1241200853 _m-2017216831 _p-536964724 _ls-1251843592 _ws-311910413 _ww-408434756 _br-1718100884 _ff-409630021 _ta-507911453 _td-1861836084 _c-727749181 _fs-347291933 _lh-1925956564 _ls-1782815796 _fw-289165218 _g-691362565 _b-944971190 _c-1830342115 _ow-1994474385 _os-1885772691 _oc-1422281658 _oo-245994692 _bs-1638756697 t_group_rcx-item rcx-item rcx-item--inset-md rcx-sidebar-item rcx-sidebar-item--level-2"
                 href="#"
               >
                 <div
                   class="is_Text _d-341075704 _f-1448532840 _mw-842770087 _ws-311910413 _ww-408434756 rcx-item__content rcx-sidebar-item__col"
                 >
                   <div
-                    class="is_Text _d-341075704 _f-1841970073 _ai-121763387 _mw-842770087 _ws-311910413 _ww-408434756 _g-479842563 rcx-item__row rcx-sidebar-item__row"
+                    class="is_Text _d-341075704 _f-1841970073 _ai-121763387 _mw-842770087 _ws-311910413 _ww-408434756 _g-1760282038 rcx-item__row rcx-sidebar-item__row"
                   >
                     <div
                       class="is_Text _d-341075704 _f-1128736932 _jc-1099843255 _ai-121763387 _mw-354604370 _ws-311910413 _ww-408434756 rcx-item__media rcx-sidebar-item__avatar"
@@ -889,7 +889,7 @@ exports[`renders Default without crashing 1`] = `
                     <div
                       aria-hidden="true"
                       class="is_Text _d-341075704 _f-1128736932 _jc-1099843255 _ai-121763387 _mw-354604370 _ws-311910413 _ww-408434756 _w-120696903 _h-858548760 rcx-item__icon rcx-sidebar-item__icon"
-                      id="_r_5o_"
+                      id="_r_62_"
                     >
                       <i
                         aria-hidden="true"
@@ -900,7 +900,7 @@ exports[`renders Default without crashing 1`] = `
                     </div>
                     <div
                       class="is_Text _o-1119039191 _f-649097281 _mw-842770087 _ws-973912173 _ww-408434756 _to-1727917045 _d-1987097250 rcx-item__title rcx-sidebar-item__title"
-                      id="_r_5r_"
+                      id="_r_65_"
                     >
                       Alice Bob
                     </div>
@@ -911,7 +911,7 @@ exports[`renders Default without crashing 1`] = `
                     </div>
                   </div>
                   <div
-                    class="is_Text _d-341075704 _f-1841970073 _ai-121763387 _mw-842770087 _ws-311910413 _ww-408434756 _g-479842563 rcx-item__row rcx-sidebar-item__row"
+                    class="is_Text _d-341075704 _f-1841970073 _ai-121763387 _mw-842770087 _ws-311910413 _ww-408434756 _g-1760282038 rcx-item__row rcx-sidebar-item__row"
                   >
                     <div
                       class="is_Text _o-1119039191 _f-649097281 _mw-842770087 _ws-973912173 _ww-408434756 _to-1727917045 _d-1987097250 _c-341093563 _fs-2088488067 _lh-1306743983 _ls-1782815796 _fw-289165218 rcx-item__description rcx-sidebar-item__subtitle"
@@ -941,10 +941,10 @@ exports[`renders Default without crashing 1`] = `
                       10
                     </span>
                     <div
-                      class="is_View _p-1021290656 _zi-2094244754 _d-341075704 _f-1841970073 _ai-121763387 _mw-354604370 _mh-1241200853 _g-1299036281 rcx-item__actions rcx-item__actions--reveal-hover rcx-sidebar-item__menu-wrapper"
+                      class="is_View _p-1021290656 _zi-2094244754 _f-1841970073 _ai-121763387 _mw-354604370 _mh-1241200853 _g-1299036281 _d-312410892 _t-1193045479 _o-1780556163 _gtc-370223739 _m-449670226 _ac-1617022483 _h-1921373401 rcx-item__actions rcx-item__actions--reveal-hover rcx-sidebar-item__menu-wrapper"
                     >
                       <div
-                        class="is_View _d-341075704 _f-1069814357 _o-1119039191 _ai-121763387 _mh-1241200853 _g-1299036281 rcx-item__actions-inner"
+                        class="is_View _d-341075704 _f-1069814357 _o-1838365900 _ai-121763387 _mh-1241200853 _g-1299036281 rcx-item__actions-inner"
                       >
                         <span
                           class="rcx-box rcx-box--full rcx-sidebar-item__menu rcx-sidebar-item__menu"
@@ -953,8 +953,8 @@ exports[`renders Default without crashing 1`] = `
                             aria-expanded="false"
                             aria-haspopup="true"
                             aria-label="Options"
-                            class="is_View _f-1069813397 _mh-1241200853 _ta-1906144518 _ws-973912173 _td-211436768 _c-22887652 _os-249893454 _o-1119039191 _to-1727917045 _ff-409630021 _fvn-1977619713 _fs-347291933 _fw-289166179 _ls-1782815796 _p-230374000 _w-1686757560 _mw-1952433892 _h-1628964073 _d-312446553 _jc-642967080 _ai-1864573722 _lh-2067208245 rcx-button--mini-square rcx-button--square rcx-button--icon rcx-button"
-                            id="react-aria-_r_66_"
+                            class="is_View _f-1069813397 _mh-1241200853 _ta-1906144518 _ws-973912173 _td-211436768 _c-22887652 _os-249893454 _o-1119039191 _to-1727917045 _ff-409630021 _fvn-1977619713 _fs-347291933 _fw-289166179 _ls-1782815796 _p-230374000 _a-1578443335 _b-1628331993 _br-1397394445 _bs-1225725885 _w-1686757560 _mw-1952433892 _h-1628964073 _d-312446553 _jc-642967080 _ai-1864573722 _lh-2067208245 _c-1139941473 _b-1242743842 rcx-button--mini-square rcx-button--square rcx-button--icon rcx-button"
+                            id="react-aria-_r_6g_"
                             title="Options"
                             type="button"
                           >
@@ -977,14 +977,14 @@ exports[`renders Default without crashing 1`] = `
               role="listitem"
             >
               <a
-                class="is_Text _p-1021290656 _d-341075704 _f-1069814357 _ai-121763387 _mw-842770087 _mh-1241200853 _m-2017216831 _p-788525541 _ls-1251843592 _ws-311910413 _ww-408434756 _br-1718100884 _ff-409630021 _g-479842563 _ta-507911453 _td-1861836084 _c-727749181 _fs-347291933 _lh-1925956564 _ls-1782815796 _fw-289165218 rcx-item rcx-item--inset-md rcx-sidebar-item rcx-sidebar-item--level-2"
+                class="is_Text _p-1021290656 _d-341075704 _f-1069814357 _ai-121763387 _mw-842770087 _mh-1241200853 _m-2017216831 _p-536964724 _ls-1251843592 _ws-311910413 _ww-408434756 _br-1718100884 _ff-409630021 _ta-507911453 _td-1861836084 _c-727749181 _fs-347291933 _lh-1925956564 _ls-1782815796 _fw-289165218 _g-691362565 _b-944971190 _c-1830342115 _ow-1994474385 _os-1885772691 _oc-1422281658 _oo-245994692 _bs-1638756697 t_group_rcx-item rcx-item rcx-item--inset-md rcx-sidebar-item rcx-sidebar-item--level-2"
                 href="#"
               >
                 <div
                   class="is_Text _d-341075704 _f-1448532840 _mw-842770087 _ws-311910413 _ww-408434756 rcx-item__content rcx-sidebar-item__col"
                 >
                   <div
-                    class="is_Text _d-341075704 _f-1841970073 _ai-121763387 _mw-842770087 _ws-311910413 _ww-408434756 _g-479842563 rcx-item__row rcx-sidebar-item__row"
+                    class="is_Text _d-341075704 _f-1841970073 _ai-121763387 _mw-842770087 _ws-311910413 _ww-408434756 _g-1760282038 rcx-item__row rcx-sidebar-item__row"
                   >
                     <div
                       class="is_Text _d-341075704 _f-1128736932 _jc-1099843255 _ai-121763387 _mw-354604370 _ws-311910413 _ww-408434756 rcx-item__media rcx-sidebar-item__avatar"
@@ -1002,7 +1002,7 @@ exports[`renders Default without crashing 1`] = `
                     <div
                       aria-hidden="true"
                       class="is_Text _d-341075704 _f-1128736932 _jc-1099843255 _ai-121763387 _mw-354604370 _ws-311910413 _ww-408434756 _w-120696903 _h-858548760 rcx-item__icon rcx-sidebar-item__icon"
-                      id="_r_6g_"
+                      id="_r_6r_"
                     >
                       <i
                         aria-hidden="true"
@@ -1013,7 +1013,7 @@ exports[`renders Default without crashing 1`] = `
                     </div>
                     <div
                       class="is_Text _o-1119039191 _f-649097281 _mw-842770087 _ws-973912173 _ww-408434756 _to-1727917045 _d-1987097250 rcx-item__title rcx-sidebar-item__title"
-                      id="_r_6j_"
+                      id="_r_6u_"
                     >
                       Charlie Delta
                     </div>
@@ -1024,7 +1024,7 @@ exports[`renders Default without crashing 1`] = `
                     </div>
                   </div>
                   <div
-                    class="is_Text _d-341075704 _f-1841970073 _ai-121763387 _mw-842770087 _ws-311910413 _ww-408434756 _g-479842563 rcx-item__row rcx-sidebar-item__row"
+                    class="is_Text _d-341075704 _f-1841970073 _ai-121763387 _mw-842770087 _ws-311910413 _ww-408434756 _g-1760282038 rcx-item__row rcx-sidebar-item__row"
                   >
                     <div
                       class="is_Text _o-1119039191 _f-649097281 _mw-842770087 _ws-973912173 _ww-408434756 _to-1727917045 _d-1987097250 _c-341093563 _fs-2088488067 _lh-1306743983 _ls-1782815796 _fw-289165218 rcx-item__description rcx-sidebar-item__subtitle"
@@ -1054,10 +1054,10 @@ exports[`renders Default without crashing 1`] = `
                       11
                     </span>
                     <div
-                      class="is_View _p-1021290656 _zi-2094244754 _d-341075704 _f-1841970073 _ai-121763387 _mw-354604370 _mh-1241200853 _g-1299036281 rcx-item__actions rcx-item__actions--reveal-hover rcx-sidebar-item__menu-wrapper"
+                      class="is_View _p-1021290656 _zi-2094244754 _f-1841970073 _ai-121763387 _mw-354604370 _mh-1241200853 _g-1299036281 _d-312410892 _t-1193045479 _o-1780556163 _gtc-370223739 _m-449670226 _ac-1617022483 _h-1921373401 rcx-item__actions rcx-item__actions--reveal-hover rcx-sidebar-item__menu-wrapper"
                     >
                       <div
-                        class="is_View _d-341075704 _f-1069814357 _o-1119039191 _ai-121763387 _mh-1241200853 _g-1299036281 rcx-item__actions-inner"
+                        class="is_View _d-341075704 _f-1069814357 _o-1838365900 _ai-121763387 _mh-1241200853 _g-1299036281 rcx-item__actions-inner"
                       >
                         <span
                           class="rcx-box rcx-box--full rcx-sidebar-item__menu rcx-sidebar-item__menu"
@@ -1066,8 +1066,8 @@ exports[`renders Default without crashing 1`] = `
                             aria-expanded="false"
                             aria-haspopup="true"
                             aria-label="Options"
-                            class="is_View _f-1069813397 _mh-1241200853 _ta-1906144518 _ws-973912173 _td-211436768 _c-22887652 _os-249893454 _o-1119039191 _to-1727917045 _ff-409630021 _fvn-1977619713 _fs-347291933 _fw-289166179 _ls-1782815796 _p-230374000 _w-1686757560 _mw-1952433892 _h-1628964073 _d-312446553 _jc-642967080 _ai-1864573722 _lh-2067208245 rcx-button--mini-square rcx-button--square rcx-button--icon rcx-button"
-                            id="react-aria-_r_6u_"
+                            class="is_View _f-1069813397 _mh-1241200853 _ta-1906144518 _ws-973912173 _td-211436768 _c-22887652 _os-249893454 _o-1119039191 _to-1727917045 _ff-409630021 _fvn-1977619713 _fs-347291933 _fw-289166179 _ls-1782815796 _p-230374000 _a-1578443335 _b-1628331993 _br-1397394445 _bs-1225725885 _w-1686757560 _mw-1952433892 _h-1628964073 _d-312446553 _jc-642967080 _ai-1864573722 _lh-2067208245 _c-1139941473 _b-1242743842 rcx-button--mini-square rcx-button--square rcx-button--icon rcx-button"
+                            id="react-aria-_r_79_"
                             title="Options"
                             type="button"
                           >
@@ -1090,14 +1090,14 @@ exports[`renders Default without crashing 1`] = `
               role="listitem"
             >
               <a
-                class="is_Text _p-1021290656 _d-341075704 _f-1069814357 _ai-121763387 _mw-842770087 _mh-1241200853 _m-2017216831 _p-788525541 _ls-1251843592 _ws-311910413 _ww-408434756 _br-1718100884 _ff-409630021 _g-479842563 _ta-507911453 _td-1861836084 _c-727749181 _fs-347291933 _lh-1925956564 _ls-1782815796 _fw-289165218 rcx-item rcx-item--inset-md rcx-sidebar-item rcx-sidebar-item--level-2"
+                class="is_Text _p-1021290656 _d-341075704 _f-1069814357 _ai-121763387 _mw-842770087 _mh-1241200853 _m-2017216831 _p-536964724 _ls-1251843592 _ws-311910413 _ww-408434756 _br-1718100884 _ff-409630021 _ta-507911453 _td-1861836084 _c-727749181 _fs-347291933 _lh-1925956564 _ls-1782815796 _fw-289165218 _g-691362565 _b-944971190 _c-1830342115 _ow-1994474385 _os-1885772691 _oc-1422281658 _oo-245994692 _bs-1638756697 t_group_rcx-item rcx-item rcx-item--inset-md rcx-sidebar-item rcx-sidebar-item--level-2"
                 href="#"
               >
                 <div
                   class="is_Text _d-341075704 _f-1448532840 _mw-842770087 _ws-311910413 _ww-408434756 rcx-item__content rcx-sidebar-item__col"
                 >
                   <div
-                    class="is_Text _d-341075704 _f-1841970073 _ai-121763387 _mw-842770087 _ws-311910413 _ww-408434756 _g-479842563 rcx-item__row rcx-sidebar-item__row"
+                    class="is_Text _d-341075704 _f-1841970073 _ai-121763387 _mw-842770087 _ws-311910413 _ww-408434756 _g-1760282038 rcx-item__row rcx-sidebar-item__row"
                   >
                     <div
                       class="is_Text _d-341075704 _f-1128736932 _jc-1099843255 _ai-121763387 _mw-354604370 _ws-311910413 _ww-408434756 rcx-item__media rcx-sidebar-item__avatar"
@@ -1115,7 +1115,7 @@ exports[`renders Default without crashing 1`] = `
                     <div
                       aria-hidden="true"
                       class="is_Text _d-341075704 _f-1128736932 _jc-1099843255 _ai-121763387 _mw-354604370 _ws-311910413 _ww-408434756 _w-120696903 _h-858548760 rcx-item__icon rcx-sidebar-item__icon"
-                      id="_r_78_"
+                      id="_r_7k_"
                     >
                       <i
                         aria-hidden="true"
@@ -1126,7 +1126,7 @@ exports[`renders Default without crashing 1`] = `
                     </div>
                     <div
                       class="is_Text _o-1119039191 _f-649097281 _mw-842770087 _ws-973912173 _ww-408434756 _to-1727917045 _d-1987097250 rcx-item__title rcx-sidebar-item__title"
-                      id="_r_7b_"
+                      id="_r_7n_"
                     >
                       Eve Mallory
                     </div>
@@ -1137,7 +1137,7 @@ exports[`renders Default without crashing 1`] = `
                     </div>
                   </div>
                   <div
-                    class="is_Text _d-341075704 _f-1841970073 _ai-121763387 _mw-842770087 _ws-311910413 _ww-408434756 _g-479842563 rcx-item__row rcx-sidebar-item__row"
+                    class="is_Text _d-341075704 _f-1841970073 _ai-121763387 _mw-842770087 _ws-311910413 _ww-408434756 _g-1760282038 rcx-item__row rcx-sidebar-item__row"
                   >
                     <div
                       class="is_Text _o-1119039191 _f-649097281 _mw-842770087 _ws-973912173 _ww-408434756 _to-1727917045 _d-1987097250 _c-341093563 _fs-2088488067 _lh-1306743983 _ls-1782815796 _fw-289165218 rcx-item__description rcx-sidebar-item__subtitle"
@@ -1167,10 +1167,10 @@ exports[`renders Default without crashing 1`] = `
                       12
                     </span>
                     <div
-                      class="is_View _p-1021290656 _zi-2094244754 _d-341075704 _f-1841970073 _ai-121763387 _mw-354604370 _mh-1241200853 _g-1299036281 rcx-item__actions rcx-item__actions--reveal-hover rcx-sidebar-item__menu-wrapper"
+                      class="is_View _p-1021290656 _zi-2094244754 _f-1841970073 _ai-121763387 _mw-354604370 _mh-1241200853 _g-1299036281 _d-312410892 _t-1193045479 _o-1780556163 _gtc-370223739 _m-449670226 _ac-1617022483 _h-1921373401 rcx-item__actions rcx-item__actions--reveal-hover rcx-sidebar-item__menu-wrapper"
                     >
                       <div
-                        class="is_View _d-341075704 _f-1069814357 _o-1119039191 _ai-121763387 _mh-1241200853 _g-1299036281 rcx-item__actions-inner"
+                        class="is_View _d-341075704 _f-1069814357 _o-1838365900 _ai-121763387 _mh-1241200853 _g-1299036281 rcx-item__actions-inner"
                       >
                         <span
                           class="rcx-box rcx-box--full rcx-sidebar-item__menu rcx-sidebar-item__menu"
@@ -1179,8 +1179,8 @@ exports[`renders Default without crashing 1`] = `
                             aria-expanded="false"
                             aria-haspopup="true"
                             aria-label="Options"
-                            class="is_View _f-1069813397 _mh-1241200853 _ta-1906144518 _ws-973912173 _td-211436768 _c-22887652 _os-249893454 _o-1119039191 _to-1727917045 _ff-409630021 _fvn-1977619713 _fs-347291933 _fw-289166179 _ls-1782815796 _p-230374000 _w-1686757560 _mw-1952433892 _h-1628964073 _d-312446553 _jc-642967080 _ai-1864573722 _lh-2067208245 rcx-button--mini-square rcx-button--square rcx-button--icon rcx-button"
-                            id="react-aria-_r_7m_"
+                            class="is_View _f-1069813397 _mh-1241200853 _ta-1906144518 _ws-973912173 _td-211436768 _c-22887652 _os-249893454 _o-1119039191 _to-1727917045 _ff-409630021 _fvn-1977619713 _fs-347291933 _fw-289166179 _ls-1782815796 _p-230374000 _a-1578443335 _b-1628331993 _br-1397394445 _bs-1225725885 _w-1686757560 _mw-1952433892 _h-1628964073 _d-312446553 _jc-642967080 _ai-1864573722 _lh-2067208245 _c-1139941473 _b-1242743842 rcx-button--mini-square rcx-button--square rcx-button--icon rcx-button"
+                            id="react-aria-_r_82_"
                             title="Options"
                             type="button"
                           >
@@ -1203,14 +1203,14 @@ exports[`renders Default without crashing 1`] = `
               role="listitem"
             >
               <a
-                class="is_Text _p-1021290656 _d-341075704 _f-1069814357 _ai-121763387 _mw-842770087 _mh-1241200853 _m-2017216831 _p-788525541 _ls-1251843592 _ws-311910413 _ww-408434756 _br-1718100884 _ff-409630021 _g-479842563 _ta-507911453 _td-1861836084 _c-727749181 _fs-347291933 _lh-1925956564 _ls-1782815796 _fw-289165218 rcx-item rcx-item--inset-md rcx-sidebar-item rcx-sidebar-item--level-2"
+                class="is_Text _p-1021290656 _d-341075704 _f-1069814357 _ai-121763387 _mw-842770087 _mh-1241200853 _m-2017216831 _p-536964724 _ls-1251843592 _ws-311910413 _ww-408434756 _br-1718100884 _ff-409630021 _ta-507911453 _td-1861836084 _c-727749181 _fs-347291933 _lh-1925956564 _ls-1782815796 _fw-289165218 _g-691362565 _b-944971190 _c-1830342115 _ow-1994474385 _os-1885772691 _oc-1422281658 _oo-245994692 _bs-1638756697 t_group_rcx-item rcx-item rcx-item--inset-md rcx-sidebar-item rcx-sidebar-item--level-2"
                 href="#"
               >
                 <div
                   class="is_Text _d-341075704 _f-1448532840 _mw-842770087 _ws-311910413 _ww-408434756 rcx-item__content rcx-sidebar-item__col"
                 >
                   <div
-                    class="is_Text _d-341075704 _f-1841970073 _ai-121763387 _mw-842770087 _ws-311910413 _ww-408434756 _g-479842563 rcx-item__row rcx-sidebar-item__row"
+                    class="is_Text _d-341075704 _f-1841970073 _ai-121763387 _mw-842770087 _ws-311910413 _ww-408434756 _g-1760282038 rcx-item__row rcx-sidebar-item__row"
                   >
                     <div
                       class="is_Text _d-341075704 _f-1128736932 _jc-1099843255 _ai-121763387 _mw-354604370 _ws-311910413 _ww-408434756 rcx-item__media rcx-sidebar-item__avatar"
@@ -1228,7 +1228,7 @@ exports[`renders Default without crashing 1`] = `
                     <div
                       aria-hidden="true"
                       class="is_Text _d-341075704 _f-1128736932 _jc-1099843255 _ai-121763387 _mw-354604370 _ws-311910413 _ww-408434756 _w-120696903 _h-858548760 rcx-item__icon rcx-sidebar-item__icon"
-                      id="_r_80_"
+                      id="_r_8d_"
                     >
                       <i
                         aria-hidden="true"
@@ -1239,7 +1239,7 @@ exports[`renders Default without crashing 1`] = `
                     </div>
                     <div
                       class="is_Text _o-1119039191 _f-649097281 _mw-842770087 _ws-973912173 _ww-408434756 _to-1727917045 _d-1987097250 rcx-item__title rcx-sidebar-item__title"
-                      id="_r_83_"
+                      id="_r_8g_"
                     >
                       Marvin Black
                     </div>
@@ -1250,7 +1250,7 @@ exports[`renders Default without crashing 1`] = `
                     </div>
                   </div>
                   <div
-                    class="is_Text _d-341075704 _f-1841970073 _ai-121763387 _mw-842770087 _ws-311910413 _ww-408434756 _g-479842563 rcx-item__row rcx-sidebar-item__row"
+                    class="is_Text _d-341075704 _f-1841970073 _ai-121763387 _mw-842770087 _ws-311910413 _ww-408434756 _g-1760282038 rcx-item__row rcx-sidebar-item__row"
                   >
                     <div
                       class="is_Text _o-1119039191 _f-649097281 _mw-842770087 _ws-973912173 _ww-408434756 _to-1727917045 _d-1987097250 _c-341093563 _fs-2088488067 _lh-1306743983 _ls-1782815796 _fw-289165218 rcx-item__description rcx-sidebar-item__subtitle"
@@ -1280,10 +1280,10 @@ exports[`renders Default without crashing 1`] = `
                       13
                     </span>
                     <div
-                      class="is_View _p-1021290656 _zi-2094244754 _d-341075704 _f-1841970073 _ai-121763387 _mw-354604370 _mh-1241200853 _g-1299036281 rcx-item__actions rcx-item__actions--reveal-hover rcx-sidebar-item__menu-wrapper"
+                      class="is_View _p-1021290656 _zi-2094244754 _f-1841970073 _ai-121763387 _mw-354604370 _mh-1241200853 _g-1299036281 _d-312410892 _t-1193045479 _o-1780556163 _gtc-370223739 _m-449670226 _ac-1617022483 _h-1921373401 rcx-item__actions rcx-item__actions--reveal-hover rcx-sidebar-item__menu-wrapper"
                     >
                       <div
-                        class="is_View _d-341075704 _f-1069814357 _o-1119039191 _ai-121763387 _mh-1241200853 _g-1299036281 rcx-item__actions-inner"
+                        class="is_View _d-341075704 _f-1069814357 _o-1838365900 _ai-121763387 _mh-1241200853 _g-1299036281 rcx-item__actions-inner"
                       >
                         <span
                           class="rcx-box rcx-box--full rcx-sidebar-item__menu rcx-sidebar-item__menu"
@@ -1292,8 +1292,8 @@ exports[`renders Default without crashing 1`] = `
                             aria-expanded="false"
                             aria-haspopup="true"
                             aria-label="Options"
-                            class="is_View _f-1069813397 _mh-1241200853 _ta-1906144518 _ws-973912173 _td-211436768 _c-22887652 _os-249893454 _o-1119039191 _to-1727917045 _ff-409630021 _fvn-1977619713 _fs-347291933 _fw-289166179 _ls-1782815796 _p-230374000 _w-1686757560 _mw-1952433892 _h-1628964073 _d-312446553 _jc-642967080 _ai-1864573722 _lh-2067208245 rcx-button--mini-square rcx-button--square rcx-button--icon rcx-button"
-                            id="react-aria-_r_8e_"
+                            class="is_View _f-1069813397 _mh-1241200853 _ta-1906144518 _ws-973912173 _td-211436768 _c-22887652 _os-249893454 _o-1119039191 _to-1727917045 _ff-409630021 _fvn-1977619713 _fs-347291933 _fw-289166179 _ls-1782815796 _p-230374000 _a-1578443335 _b-1628331993 _br-1397394445 _bs-1225725885 _w-1686757560 _mw-1952433892 _h-1628964073 _d-312446553 _jc-642967080 _ai-1864573722 _lh-2067208245 _c-1139941473 _b-1242743842 rcx-button--mini-square rcx-button--square rcx-button--icon rcx-button"
+                            id="react-aria-_r_8r_"
                             title="Options"
                             type="button"
                           >
@@ -1316,14 +1316,14 @@ exports[`renders Default without crashing 1`] = `
               role="listitem"
             >
               <a
-                class="is_Text _p-1021290656 _d-341075704 _f-1069814357 _ai-121763387 _mw-842770087 _mh-1241200853 _m-2017216831 _p-788525541 _ls-1251843592 _ws-311910413 _ww-408434756 _br-1718100884 _ff-409630021 _g-479842563 _ta-507911453 _td-1861836084 _c-727749181 _fs-347291933 _lh-1925956564 _ls-1782815796 _fw-289165218 rcx-item rcx-item--inset-md rcx-sidebar-item rcx-sidebar-item--level-2"
+                class="is_Text _p-1021290656 _d-341075704 _f-1069814357 _ai-121763387 _mw-842770087 _mh-1241200853 _m-2017216831 _p-536964724 _ls-1251843592 _ws-311910413 _ww-408434756 _br-1718100884 _ff-409630021 _ta-507911453 _td-1861836084 _c-727749181 _fs-347291933 _lh-1925956564 _ls-1782815796 _fw-289165218 _g-691362565 _b-944971190 _c-1830342115 _ow-1994474385 _os-1885772691 _oc-1422281658 _oo-245994692 _bs-1638756697 t_group_rcx-item rcx-item rcx-item--inset-md rcx-sidebar-item rcx-sidebar-item--level-2"
                 href="#"
               >
                 <div
                   class="is_Text _d-341075704 _f-1448532840 _mw-842770087 _ws-311910413 _ww-408434756 rcx-item__content rcx-sidebar-item__col"
                 >
                   <div
-                    class="is_Text _d-341075704 _f-1841970073 _ai-121763387 _mw-842770087 _ws-311910413 _ww-408434756 _g-479842563 rcx-item__row rcx-sidebar-item__row"
+                    class="is_Text _d-341075704 _f-1841970073 _ai-121763387 _mw-842770087 _ws-311910413 _ww-408434756 _g-1760282038 rcx-item__row rcx-sidebar-item__row"
                   >
                     <div
                       class="is_Text _d-341075704 _f-1128736932 _jc-1099843255 _ai-121763387 _mw-354604370 _ws-311910413 _ww-408434756 rcx-item__media rcx-sidebar-item__avatar"
@@ -1341,7 +1341,7 @@ exports[`renders Default without crashing 1`] = `
                     <div
                       aria-hidden="true"
                       class="is_Text _d-341075704 _f-1128736932 _jc-1099843255 _ai-121763387 _mw-354604370 _ws-311910413 _ww-408434756 _w-120696903 _h-858548760 rcx-item__icon rcx-sidebar-item__icon"
-                      id="_r_8o_"
+                      id="_r_96_"
                     >
                       <i
                         aria-hidden="true"
@@ -1352,7 +1352,7 @@ exports[`renders Default without crashing 1`] = `
                     </div>
                     <div
                       class="is_Text _o-1119039191 _f-649097281 _mw-842770087 _ws-973912173 _ww-408434756 _to-1727917045 _d-1987097250 rcx-item__title rcx-sidebar-item__title"
-                      id="_r_8r_"
+                      id="_r_99_"
                     >
                       Esther Miles
                     </div>
@@ -1363,7 +1363,7 @@ exports[`renders Default without crashing 1`] = `
                     </div>
                   </div>
                   <div
-                    class="is_Text _d-341075704 _f-1841970073 _ai-121763387 _mw-842770087 _ws-311910413 _ww-408434756 _g-479842563 rcx-item__row rcx-sidebar-item__row"
+                    class="is_Text _d-341075704 _f-1841970073 _ai-121763387 _mw-842770087 _ws-311910413 _ww-408434756 _g-1760282038 rcx-item__row rcx-sidebar-item__row"
                   >
                     <div
                       class="is_Text _o-1119039191 _f-649097281 _mw-842770087 _ws-973912173 _ww-408434756 _to-1727917045 _d-1987097250 _c-341093563 _fs-2088488067 _lh-1306743983 _ls-1782815796 _fw-289165218 rcx-item__description rcx-sidebar-item__subtitle"
@@ -1393,10 +1393,10 @@ exports[`renders Default without crashing 1`] = `
                       14
                     </span>
                     <div
-                      class="is_View _p-1021290656 _zi-2094244754 _d-341075704 _f-1841970073 _ai-121763387 _mw-354604370 _mh-1241200853 _g-1299036281 rcx-item__actions rcx-item__actions--reveal-hover rcx-sidebar-item__menu-wrapper"
+                      class="is_View _p-1021290656 _zi-2094244754 _f-1841970073 _ai-121763387 _mw-354604370 _mh-1241200853 _g-1299036281 _d-312410892 _t-1193045479 _o-1780556163 _gtc-370223739 _m-449670226 _ac-1617022483 _h-1921373401 rcx-item__actions rcx-item__actions--reveal-hover rcx-sidebar-item__menu-wrapper"
                     >
                       <div
-                        class="is_View _d-341075704 _f-1069814357 _o-1119039191 _ai-121763387 _mh-1241200853 _g-1299036281 rcx-item__actions-inner"
+                        class="is_View _d-341075704 _f-1069814357 _o-1838365900 _ai-121763387 _mh-1241200853 _g-1299036281 rcx-item__actions-inner"
                       >
                         <span
                           class="rcx-box rcx-box--full rcx-sidebar-item__menu rcx-sidebar-item__menu"
@@ -1405,8 +1405,8 @@ exports[`renders Default without crashing 1`] = `
                             aria-expanded="false"
                             aria-haspopup="true"
                             aria-label="Options"
-                            class="is_View _f-1069813397 _mh-1241200853 _ta-1906144518 _ws-973912173 _td-211436768 _c-22887652 _os-249893454 _o-1119039191 _to-1727917045 _ff-409630021 _fvn-1977619713 _fs-347291933 _fw-289166179 _ls-1782815796 _p-230374000 _w-1686757560 _mw-1952433892 _h-1628964073 _d-312446553 _jc-642967080 _ai-1864573722 _lh-2067208245 rcx-button--mini-square rcx-button--square rcx-button--icon rcx-button"
-                            id="react-aria-_r_96_"
+                            class="is_View _f-1069813397 _mh-1241200853 _ta-1906144518 _ws-973912173 _td-211436768 _c-22887652 _os-249893454 _o-1119039191 _to-1727917045 _ff-409630021 _fvn-1977619713 _fs-347291933 _fw-289166179 _ls-1782815796 _p-230374000 _a-1578443335 _b-1628331993 _br-1397394445 _bs-1225725885 _w-1686757560 _mw-1952433892 _h-1628964073 _d-312446553 _jc-642967080 _ai-1864573722 _lh-2067208245 _c-1139941473 _b-1242743842 rcx-button--mini-square rcx-button--square rcx-button--icon rcx-button"
+                            id="react-aria-_r_9k_"
                             title="Options"
                             type="button"
                           >
@@ -1429,14 +1429,14 @@ exports[`renders Default without crashing 1`] = `
               role="listitem"
             >
               <a
-                class="is_Text _p-1021290656 _d-341075704 _f-1069814357 _ai-121763387 _mw-842770087 _mh-1241200853 _m-2017216831 _p-788525541 _ls-1251843592 _ws-311910413 _ww-408434756 _br-1718100884 _ff-409630021 _g-479842563 _ta-507911453 _td-1861836084 _c-727749181 _fs-347291933 _lh-1925956564 _ls-1782815796 _fw-289165218 rcx-item rcx-item--inset-md rcx-sidebar-item rcx-sidebar-item--level-2"
+                class="is_Text _p-1021290656 _d-341075704 _f-1069814357 _ai-121763387 _mw-842770087 _mh-1241200853 _m-2017216831 _p-536964724 _ls-1251843592 _ws-311910413 _ww-408434756 _br-1718100884 _ff-409630021 _ta-507911453 _td-1861836084 _c-727749181 _fs-347291933 _lh-1925956564 _ls-1782815796 _fw-289165218 _g-691362565 _b-944971190 _c-1830342115 _ow-1994474385 _os-1885772691 _oc-1422281658 _oo-245994692 _bs-1638756697 t_group_rcx-item rcx-item rcx-item--inset-md rcx-sidebar-item rcx-sidebar-item--level-2"
                 href="#"
               >
                 <div
                   class="is_Text _d-341075704 _f-1448532840 _mw-842770087 _ws-311910413 _ww-408434756 rcx-item__content rcx-sidebar-item__col"
                 >
                   <div
-                    class="is_Text _d-341075704 _f-1841970073 _ai-121763387 _mw-842770087 _ws-311910413 _ww-408434756 _g-479842563 rcx-item__row rcx-sidebar-item__row"
+                    class="is_Text _d-341075704 _f-1841970073 _ai-121763387 _mw-842770087 _ws-311910413 _ww-408434756 _g-1760282038 rcx-item__row rcx-sidebar-item__row"
                   >
                     <div
                       class="is_Text _d-341075704 _f-1128736932 _jc-1099843255 _ai-121763387 _mw-354604370 _ws-311910413 _ww-408434756 rcx-item__media rcx-sidebar-item__avatar"
@@ -1454,7 +1454,7 @@ exports[`renders Default without crashing 1`] = `
                     <div
                       aria-hidden="true"
                       class="is_Text _d-341075704 _f-1128736932 _jc-1099843255 _ai-121763387 _mw-354604370 _ws-311910413 _ww-408434756 _w-120696903 _h-858548760 rcx-item__icon rcx-sidebar-item__icon"
-                      id="_r_9g_"
+                      id="_r_9v_"
                     >
                       <i
                         aria-hidden="true"
@@ -1465,7 +1465,7 @@ exports[`renders Default without crashing 1`] = `
                     </div>
                     <div
                       class="is_Text _o-1119039191 _f-649097281 _mw-842770087 _ws-973912173 _ww-408434756 _to-1727917045 _d-1987097250 rcx-item__title rcx-sidebar-item__title"
-                      id="_r_9j_"
+                      id="_r_a2_"
                     >
                       Leroy Jenkins
                     </div>
@@ -1476,7 +1476,7 @@ exports[`renders Default without crashing 1`] = `
                     </div>
                   </div>
                   <div
-                    class="is_Text _d-341075704 _f-1841970073 _ai-121763387 _mw-842770087 _ws-311910413 _ww-408434756 _g-479842563 rcx-item__row rcx-sidebar-item__row"
+                    class="is_Text _d-341075704 _f-1841970073 _ai-121763387 _mw-842770087 _ws-311910413 _ww-408434756 _g-1760282038 rcx-item__row rcx-sidebar-item__row"
                   >
                     <div
                       class="is_Text _o-1119039191 _f-649097281 _mw-842770087 _ws-973912173 _ww-408434756 _to-1727917045 _d-1987097250 _c-341093563 _fs-2088488067 _lh-1306743983 _ls-1782815796 _fw-289165218 rcx-item__description rcx-sidebar-item__subtitle"
@@ -1506,10 +1506,10 @@ exports[`renders Default without crashing 1`] = `
                       15
                     </span>
                     <div
-                      class="is_View _p-1021290656 _zi-2094244754 _d-341075704 _f-1841970073 _ai-121763387 _mw-354604370 _mh-1241200853 _g-1299036281 rcx-item__actions rcx-item__actions--reveal-hover rcx-sidebar-item__menu-wrapper"
+                      class="is_View _p-1021290656 _zi-2094244754 _f-1841970073 _ai-121763387 _mw-354604370 _mh-1241200853 _g-1299036281 _d-312410892 _t-1193045479 _o-1780556163 _gtc-370223739 _m-449670226 _ac-1617022483 _h-1921373401 rcx-item__actions rcx-item__actions--reveal-hover rcx-sidebar-item__menu-wrapper"
                     >
                       <div
-                        class="is_View _d-341075704 _f-1069814357 _o-1119039191 _ai-121763387 _mh-1241200853 _g-1299036281 rcx-item__actions-inner"
+                        class="is_View _d-341075704 _f-1069814357 _o-1838365900 _ai-121763387 _mh-1241200853 _g-1299036281 rcx-item__actions-inner"
                       >
                         <span
                           class="rcx-box rcx-box--full rcx-sidebar-item__menu rcx-sidebar-item__menu"
@@ -1518,8 +1518,8 @@ exports[`renders Default without crashing 1`] = `
                             aria-expanded="false"
                             aria-haspopup="true"
                             aria-label="Options"
-                            class="is_View _f-1069813397 _mh-1241200853 _ta-1906144518 _ws-973912173 _td-211436768 _c-22887652 _os-249893454 _o-1119039191 _to-1727917045 _ff-409630021 _fvn-1977619713 _fs-347291933 _fw-289166179 _ls-1782815796 _p-230374000 _w-1686757560 _mw-1952433892 _h-1628964073 _d-312446553 _jc-642967080 _ai-1864573722 _lh-2067208245 rcx-button--mini-square rcx-button--square rcx-button--icon rcx-button"
-                            id="react-aria-_r_9u_"
+                            class="is_View _f-1069813397 _mh-1241200853 _ta-1906144518 _ws-973912173 _td-211436768 _c-22887652 _os-249893454 _o-1119039191 _to-1727917045 _ff-409630021 _fvn-1977619713 _fs-347291933 _fw-289166179 _ls-1782815796 _p-230374000 _a-1578443335 _b-1628331993 _br-1397394445 _bs-1225725885 _w-1686757560 _mw-1952433892 _h-1628964073 _d-312446553 _jc-642967080 _ai-1864573722 _lh-2067208245 _c-1139941473 _b-1242743842 rcx-button--mini-square rcx-button--square rcx-button--icon rcx-button"
+                            id="react-aria-_r_ad_"
                             title="Options"
                             type="button"
                           >
@@ -1542,14 +1542,14 @@ exports[`renders Default without crashing 1`] = `
               role="listitem"
             >
               <a
-                class="is_Text _p-1021290656 _d-341075704 _f-1069814357 _ai-121763387 _mw-842770087 _mh-1241200853 _m-2017216831 _p-788525541 _ls-1251843592 _ws-311910413 _ww-408434756 _br-1718100884 _ff-409630021 _g-479842563 _ta-507911453 _td-1861836084 _c-727749181 _fs-347291933 _lh-1925956564 _ls-1782815796 _fw-289165218 rcx-item rcx-item--inset-md rcx-sidebar-item rcx-sidebar-item--level-2"
+                class="is_Text _p-1021290656 _d-341075704 _f-1069814357 _ai-121763387 _mw-842770087 _mh-1241200853 _m-2017216831 _p-536964724 _ls-1251843592 _ws-311910413 _ww-408434756 _br-1718100884 _ff-409630021 _ta-507911453 _td-1861836084 _c-727749181 _fs-347291933 _lh-1925956564 _ls-1782815796 _fw-289165218 _g-691362565 _b-944971190 _c-1830342115 _ow-1994474385 _os-1885772691 _oc-1422281658 _oo-245994692 _bs-1638756697 t_group_rcx-item rcx-item rcx-item--inset-md rcx-sidebar-item rcx-sidebar-item--level-2"
                 href="#"
               >
                 <div
                   class="is_Text _d-341075704 _f-1448532840 _mw-842770087 _ws-311910413 _ww-408434756 rcx-item__content rcx-sidebar-item__col"
                 >
                   <div
-                    class="is_Text _d-341075704 _f-1841970073 _ai-121763387 _mw-842770087 _ws-311910413 _ww-408434756 _g-479842563 rcx-item__row rcx-sidebar-item__row"
+                    class="is_Text _d-341075704 _f-1841970073 _ai-121763387 _mw-842770087 _ws-311910413 _ww-408434756 _g-1760282038 rcx-item__row rcx-sidebar-item__row"
                   >
                     <div
                       class="is_Text _d-341075704 _f-1128736932 _jc-1099843255 _ai-121763387 _mw-354604370 _ws-311910413 _ww-408434756 rcx-item__media rcx-sidebar-item__avatar"
@@ -1567,7 +1567,7 @@ exports[`renders Default without crashing 1`] = `
                     <div
                       aria-hidden="true"
                       class="is_Text _d-341075704 _f-1128736932 _jc-1099843255 _ai-121763387 _mw-354604370 _ws-311910413 _ww-408434756 _w-120696903 _h-858548760 rcx-item__icon rcx-sidebar-item__icon"
-                      id="_r_a8_"
+                      id="_r_ao_"
                     >
                       <i
                         aria-hidden="true"
@@ -1578,7 +1578,7 @@ exports[`renders Default without crashing 1`] = `
                     </div>
                     <div
                       class="is_Text _o-1119039191 _f-649097281 _mw-842770087 _ws-973912173 _ww-408434756 _to-1727917045 _d-1987097250 rcx-item__title rcx-sidebar-item__title"
-                      id="_r_ab_"
+                      id="_r_ar_"
                     >
                       Morgan Freeman looooooooooong looooooooooong looooooooooong name
                     </div>
@@ -1589,7 +1589,7 @@ exports[`renders Default without crashing 1`] = `
                     </div>
                   </div>
                   <div
-                    class="is_Text _d-341075704 _f-1841970073 _ai-121763387 _mw-842770087 _ws-311910413 _ww-408434756 _g-479842563 rcx-item__row rcx-sidebar-item__row"
+                    class="is_Text _d-341075704 _f-1841970073 _ai-121763387 _mw-842770087 _ws-311910413 _ww-408434756 _g-1760282038 rcx-item__row rcx-sidebar-item__row"
                   >
                     <div
                       class="is_Text _o-1119039191 _f-649097281 _mw-842770087 _ws-973912173 _ww-408434756 _to-1727917045 _d-1987097250 _c-341093563 _fs-2088488067 _lh-1306743983 _ls-1782815796 _fw-289165218 rcx-item__description rcx-sidebar-item__subtitle"
@@ -1619,10 +1619,10 @@ exports[`renders Default without crashing 1`] = `
                       16
                     </span>
                     <div
-                      class="is_View _p-1021290656 _zi-2094244754 _d-341075704 _f-1841970073 _ai-121763387 _mw-354604370 _mh-1241200853 _g-1299036281 rcx-item__actions rcx-item__actions--reveal-hover rcx-sidebar-item__menu-wrapper"
+                      class="is_View _p-1021290656 _zi-2094244754 _f-1841970073 _ai-121763387 _mw-354604370 _mh-1241200853 _g-1299036281 _d-312410892 _t-1193045479 _o-1780556163 _gtc-370223739 _m-449670226 _ac-1617022483 _h-1921373401 rcx-item__actions rcx-item__actions--reveal-hover rcx-sidebar-item__menu-wrapper"
                     >
                       <div
-                        class="is_View _d-341075704 _f-1069814357 _o-1119039191 _ai-121763387 _mh-1241200853 _g-1299036281 rcx-item__actions-inner"
+                        class="is_View _d-341075704 _f-1069814357 _o-1838365900 _ai-121763387 _mh-1241200853 _g-1299036281 rcx-item__actions-inner"
                       >
                         <span
                           class="rcx-box rcx-box--full rcx-sidebar-item__menu rcx-sidebar-item__menu"
@@ -1631,8 +1631,8 @@ exports[`renders Default without crashing 1`] = `
                             aria-expanded="false"
                             aria-haspopup="true"
                             aria-label="Options"
-                            class="is_View _f-1069813397 _mh-1241200853 _ta-1906144518 _ws-973912173 _td-211436768 _c-22887652 _os-249893454 _o-1119039191 _to-1727917045 _ff-409630021 _fvn-1977619713 _fs-347291933 _fw-289166179 _ls-1782815796 _p-230374000 _w-1686757560 _mw-1952433892 _h-1628964073 _d-312446553 _jc-642967080 _ai-1864573722 _lh-2067208245 rcx-button--mini-square rcx-button--square rcx-button--icon rcx-button"
-                            id="react-aria-_r_am_"
+                            class="is_View _f-1069813397 _mh-1241200853 _ta-1906144518 _ws-973912173 _td-211436768 _c-22887652 _os-249893454 _o-1119039191 _to-1727917045 _ff-409630021 _fvn-1977619713 _fs-347291933 _fw-289166179 _ls-1782815796 _p-230374000 _a-1578443335 _b-1628331993 _br-1397394445 _bs-1225725885 _w-1686757560 _mw-1952433892 _h-1628964073 _d-312446553 _jc-642967080 _ai-1864573722 _lh-2067208245 _c-1139941473 _b-1242743842 rcx-button--mini-square rcx-button--square rcx-button--icon rcx-button"
+                            id="react-aria-_r_b6_"
                             title="Options"
                             type="button"
                           >
@@ -1655,14 +1655,14 @@ exports[`renders Default without crashing 1`] = `
               role="listitem"
             >
               <a
-                class="is_Text _p-1021290656 _d-341075704 _f-1069814357 _ai-121763387 _mw-842770087 _mh-1241200853 _m-2017216831 _p-788525541 _ls-1251843592 _ws-311910413 _ww-408434756 _br-1718100884 _ff-409630021 _g-479842563 _ta-507911453 _td-1861836084 _c-727749181 _fs-347291933 _lh-1925956564 _ls-1782815796 _fw-289165218 rcx-item rcx-item--inset-md rcx-sidebar-item rcx-sidebar-item--level-2"
+                class="is_Text _p-1021290656 _d-341075704 _f-1069814357 _ai-121763387 _mw-842770087 _mh-1241200853 _m-2017216831 _p-536964724 _ls-1251843592 _ws-311910413 _ww-408434756 _br-1718100884 _ff-409630021 _ta-507911453 _td-1861836084 _c-727749181 _fs-347291933 _lh-1925956564 _ls-1782815796 _fw-289165218 _g-691362565 _b-944971190 _c-1830342115 _ow-1994474385 _os-1885772691 _oc-1422281658 _oo-245994692 _bs-1638756697 t_group_rcx-item rcx-item rcx-item--inset-md rcx-sidebar-item rcx-sidebar-item--level-2"
                 href="#"
               >
                 <div
                   class="is_Text _d-341075704 _f-1448532840 _mw-842770087 _ws-311910413 _ww-408434756 rcx-item__content rcx-sidebar-item__col"
                 >
                   <div
-                    class="is_Text _d-341075704 _f-1841970073 _ai-121763387 _mw-842770087 _ws-311910413 _ww-408434756 _g-479842563 rcx-item__row rcx-sidebar-item__row"
+                    class="is_Text _d-341075704 _f-1841970073 _ai-121763387 _mw-842770087 _ws-311910413 _ww-408434756 _g-1760282038 rcx-item__row rcx-sidebar-item__row"
                   >
                     <div
                       class="is_Text _d-341075704 _f-1128736932 _jc-1099843255 _ai-121763387 _mw-354604370 _ws-311910413 _ww-408434756 rcx-item__media rcx-sidebar-item__avatar"
@@ -1680,7 +1680,7 @@ exports[`renders Default without crashing 1`] = `
                     <div
                       aria-hidden="true"
                       class="is_Text _d-341075704 _f-1128736932 _jc-1099843255 _ai-121763387 _mw-354604370 _ws-311910413 _ww-408434756 _w-120696903 _h-858548760 rcx-item__icon rcx-sidebar-item__icon"
-                      id="_r_b0_"
+                      id="_r_bh_"
                     >
                       <i
                         aria-hidden="true"
@@ -1691,7 +1691,7 @@ exports[`renders Default without crashing 1`] = `
                     </div>
                     <div
                       class="is_Text _o-1119039191 _f-649097281 _mw-842770087 _ws-973912173 _ww-408434756 _to-1727917045 _d-1987097250 rcx-item__title rcx-sidebar-item__title"
-                      id="_r_b3_"
+                      id="_r_bk_"
                     >
                       John Doe
                     </div>
@@ -1702,7 +1702,7 @@ exports[`renders Default without crashing 1`] = `
                     </div>
                   </div>
                   <div
-                    class="is_Text _d-341075704 _f-1841970073 _ai-121763387 _mw-842770087 _ws-311910413 _ww-408434756 _g-479842563 rcx-item__row rcx-sidebar-item__row"
+                    class="is_Text _d-341075704 _f-1841970073 _ai-121763387 _mw-842770087 _ws-311910413 _ww-408434756 _g-1760282038 rcx-item__row rcx-sidebar-item__row"
                   >
                     <div
                       class="is_Text _o-1119039191 _f-649097281 _mw-842770087 _ws-973912173 _ww-408434756 _to-1727917045 _d-1987097250 _c-341093563 _fs-2088488067 _lh-1306743983 _ls-1782815796 _fw-289165218 rcx-item__description rcx-sidebar-item__subtitle"
@@ -1732,10 +1732,10 @@ exports[`renders Default without crashing 1`] = `
                       17
                     </span>
                     <div
-                      class="is_View _p-1021290656 _zi-2094244754 _d-341075704 _f-1841970073 _ai-121763387 _mw-354604370 _mh-1241200853 _g-1299036281 rcx-item__actions rcx-item__actions--reveal-hover rcx-sidebar-item__menu-wrapper"
+                      class="is_View _p-1021290656 _zi-2094244754 _f-1841970073 _ai-121763387 _mw-354604370 _mh-1241200853 _g-1299036281 _d-312410892 _t-1193045479 _o-1780556163 _gtc-370223739 _m-449670226 _ac-1617022483 _h-1921373401 rcx-item__actions rcx-item__actions--reveal-hover rcx-sidebar-item__menu-wrapper"
                     >
                       <div
-                        class="is_View _d-341075704 _f-1069814357 _o-1119039191 _ai-121763387 _mh-1241200853 _g-1299036281 rcx-item__actions-inner"
+                        class="is_View _d-341075704 _f-1069814357 _o-1838365900 _ai-121763387 _mh-1241200853 _g-1299036281 rcx-item__actions-inner"
                       >
                         <span
                           class="rcx-box rcx-box--full rcx-sidebar-item__menu rcx-sidebar-item__menu"
@@ -1744,8 +1744,8 @@ exports[`renders Default without crashing 1`] = `
                             aria-expanded="false"
                             aria-haspopup="true"
                             aria-label="Options"
-                            class="is_View _f-1069813397 _mh-1241200853 _ta-1906144518 _ws-973912173 _td-211436768 _c-22887652 _os-249893454 _o-1119039191 _to-1727917045 _ff-409630021 _fvn-1977619713 _fs-347291933 _fw-289166179 _ls-1782815796 _p-230374000 _w-1686757560 _mw-1952433892 _h-1628964073 _d-312446553 _jc-642967080 _ai-1864573722 _lh-2067208245 rcx-button--mini-square rcx-button--square rcx-button--icon rcx-button"
-                            id="react-aria-_r_be_"
+                            class="is_View _f-1069813397 _mh-1241200853 _ta-1906144518 _ws-973912173 _td-211436768 _c-22887652 _os-249893454 _o-1119039191 _to-1727917045 _ff-409630021 _fvn-1977619713 _fs-347291933 _fw-289166179 _ls-1782815796 _p-230374000 _a-1578443335 _b-1628331993 _br-1397394445 _bs-1225725885 _w-1686757560 _mw-1952433892 _h-1628964073 _d-312446553 _jc-642967080 _ai-1864573722 _lh-2067208245 _c-1139941473 _b-1242743842 rcx-button--mini-square rcx-button--square rcx-button--icon rcx-button"
+                            id="react-aria-_r_bv_"
                             title="Options"
                             type="button"
                           >
@@ -1768,14 +1768,14 @@ exports[`renders Default without crashing 1`] = `
               role="listitem"
             >
               <a
-                class="is_Text _p-1021290656 _d-341075704 _f-1069814357 _ai-121763387 _mw-842770087 _mh-1241200853 _m-2017216831 _p-788525541 _ls-1251843592 _ws-311910413 _ww-408434756 _br-1718100884 _ff-409630021 _g-479842563 _ta-507911453 _td-1861836084 _c-727749181 _fs-347291933 _lh-1925956564 _ls-1782815796 _fw-289165218 rcx-item rcx-item--inset-md rcx-sidebar-item rcx-sidebar-item--level-2"
+                class="is_Text _p-1021290656 _d-341075704 _f-1069814357 _ai-121763387 _mw-842770087 _mh-1241200853 _m-2017216831 _p-536964724 _ls-1251843592 _ws-311910413 _ww-408434756 _br-1718100884 _ff-409630021 _ta-507911453 _td-1861836084 _c-727749181 _fs-347291933 _lh-1925956564 _ls-1782815796 _fw-289165218 _g-691362565 _b-944971190 _c-1830342115 _ow-1994474385 _os-1885772691 _oc-1422281658 _oo-245994692 _bs-1638756697 t_group_rcx-item rcx-item rcx-item--inset-md rcx-sidebar-item rcx-sidebar-item--level-2"
                 href="#"
               >
                 <div
                   class="is_Text _d-341075704 _f-1448532840 _mw-842770087 _ws-311910413 _ww-408434756 rcx-item__content rcx-sidebar-item__col"
                 >
                   <div
-                    class="is_Text _d-341075704 _f-1841970073 _ai-121763387 _mw-842770087 _ws-311910413 _ww-408434756 _g-479842563 rcx-item__row rcx-sidebar-item__row"
+                    class="is_Text _d-341075704 _f-1841970073 _ai-121763387 _mw-842770087 _ws-311910413 _ww-408434756 _g-1760282038 rcx-item__row rcx-sidebar-item__row"
                   >
                     <div
                       class="is_Text _d-341075704 _f-1128736932 _jc-1099843255 _ai-121763387 _mw-354604370 _ws-311910413 _ww-408434756 rcx-item__media rcx-sidebar-item__avatar"
@@ -1793,7 +1793,7 @@ exports[`renders Default without crashing 1`] = `
                     <div
                       aria-hidden="true"
                       class="is_Text _d-341075704 _f-1128736932 _jc-1099843255 _ai-121763387 _mw-354604370 _ws-311910413 _ww-408434756 _w-120696903 _h-858548760 rcx-item__icon rcx-sidebar-item__icon"
-                      id="_r_bo_"
+                      id="_r_ca_"
                     >
                       <i
                         aria-hidden="true"
@@ -1804,7 +1804,7 @@ exports[`renders Default without crashing 1`] = `
                     </div>
                     <div
                       class="is_Text _o-1119039191 _f-649097281 _mw-842770087 _ws-973912173 _ww-408434756 _to-1727917045 _d-1987097250 rcx-item__title rcx-sidebar-item__title"
-                      id="_r_br_"
+                      id="_r_cd_"
                     >
                       Jane Doe
                     </div>
@@ -1815,7 +1815,7 @@ exports[`renders Default without crashing 1`] = `
                     </div>
                   </div>
                   <div
-                    class="is_Text _d-341075704 _f-1841970073 _ai-121763387 _mw-842770087 _ws-311910413 _ww-408434756 _g-479842563 rcx-item__row rcx-sidebar-item__row"
+                    class="is_Text _d-341075704 _f-1841970073 _ai-121763387 _mw-842770087 _ws-311910413 _ww-408434756 _g-1760282038 rcx-item__row rcx-sidebar-item__row"
                   >
                     <div
                       class="is_Text _o-1119039191 _f-649097281 _mw-842770087 _ws-973912173 _ww-408434756 _to-1727917045 _d-1987097250 _c-341093563 _fs-2088488067 _lh-1306743983 _ls-1782815796 _fw-289165218 rcx-item__description rcx-sidebar-item__subtitle"
@@ -1845,10 +1845,10 @@ exports[`renders Default without crashing 1`] = `
                       18
                     </span>
                     <div
-                      class="is_View _p-1021290656 _zi-2094244754 _d-341075704 _f-1841970073 _ai-121763387 _mw-354604370 _mh-1241200853 _g-1299036281 rcx-item__actions rcx-item__actions--reveal-hover rcx-sidebar-item__menu-wrapper"
+                      class="is_View _p-1021290656 _zi-2094244754 _f-1841970073 _ai-121763387 _mw-354604370 _mh-1241200853 _g-1299036281 _d-312410892 _t-1193045479 _o-1780556163 _gtc-370223739 _m-449670226 _ac-1617022483 _h-1921373401 rcx-item__actions rcx-item__actions--reveal-hover rcx-sidebar-item__menu-wrapper"
                     >
                       <div
-                        class="is_View _d-341075704 _f-1069814357 _o-1119039191 _ai-121763387 _mh-1241200853 _g-1299036281 rcx-item__actions-inner"
+                        class="is_View _d-341075704 _f-1069814357 _o-1838365900 _ai-121763387 _mh-1241200853 _g-1299036281 rcx-item__actions-inner"
                       >
                         <span
                           class="rcx-box rcx-box--full rcx-sidebar-item__menu rcx-sidebar-item__menu"
@@ -1857,8 +1857,8 @@ exports[`renders Default without crashing 1`] = `
                             aria-expanded="false"
                             aria-haspopup="true"
                             aria-label="Options"
-                            class="is_View _f-1069813397 _mh-1241200853 _ta-1906144518 _ws-973912173 _td-211436768 _c-22887652 _os-249893454 _o-1119039191 _to-1727917045 _ff-409630021 _fvn-1977619713 _fs-347291933 _fw-289166179 _ls-1782815796 _p-230374000 _w-1686757560 _mw-1952433892 _h-1628964073 _d-312446553 _jc-642967080 _ai-1864573722 _lh-2067208245 rcx-button--mini-square rcx-button--square rcx-button--icon rcx-button"
-                            id="react-aria-_r_c6_"
+                            class="is_View _f-1069813397 _mh-1241200853 _ta-1906144518 _ws-973912173 _td-211436768 _c-22887652 _os-249893454 _o-1119039191 _to-1727917045 _ff-409630021 _fvn-1977619713 _fs-347291933 _fw-289166179 _ls-1782815796 _p-230374000 _a-1578443335 _b-1628331993 _br-1397394445 _bs-1225725885 _w-1686757560 _mw-1952433892 _h-1628964073 _d-312446553 _jc-642967080 _ai-1864573722 _lh-2067208245 _c-1139941473 _b-1242743842 rcx-button--mini-square rcx-button--square rcx-button--icon rcx-button"
+                            id="react-aria-_r_co_"
                             title="Options"
                             type="button"
                           >
@@ -1881,14 +1881,14 @@ exports[`renders Default without crashing 1`] = `
               role="listitem"
             >
               <a
-                class="is_Text _p-1021290656 _d-341075704 _f-1069814357 _ai-121763387 _mw-842770087 _mh-1241200853 _m-2017216831 _p-788525541 _ls-1251843592 _ws-311910413 _ww-408434756 _br-1718100884 _ff-409630021 _g-479842563 _ta-507911453 _td-1861836084 _c-727749181 _fs-347291933 _lh-1925956564 _ls-1782815796 _fw-289165218 rcx-item rcx-item--inset-md rcx-sidebar-item rcx-sidebar-item--level-2"
+                class="is_Text _p-1021290656 _d-341075704 _f-1069814357 _ai-121763387 _mw-842770087 _mh-1241200853 _m-2017216831 _p-536964724 _ls-1251843592 _ws-311910413 _ww-408434756 _br-1718100884 _ff-409630021 _ta-507911453 _td-1861836084 _c-727749181 _fs-347291933 _lh-1925956564 _ls-1782815796 _fw-289165218 _g-691362565 _b-944971190 _c-1830342115 _ow-1994474385 _os-1885772691 _oc-1422281658 _oo-245994692 _bs-1638756697 t_group_rcx-item rcx-item rcx-item--inset-md rcx-sidebar-item rcx-sidebar-item--level-2"
                 href="#"
               >
                 <div
                   class="is_Text _d-341075704 _f-1448532840 _mw-842770087 _ws-311910413 _ww-408434756 rcx-item__content rcx-sidebar-item__col"
                 >
                   <div
-                    class="is_Text _d-341075704 _f-1841970073 _ai-121763387 _mw-842770087 _ws-311910413 _ww-408434756 _g-479842563 rcx-item__row rcx-sidebar-item__row"
+                    class="is_Text _d-341075704 _f-1841970073 _ai-121763387 _mw-842770087 _ws-311910413 _ww-408434756 _g-1760282038 rcx-item__row rcx-sidebar-item__row"
                   >
                     <div
                       class="is_Text _d-341075704 _f-1128736932 _jc-1099843255 _ai-121763387 _mw-354604370 _ws-311910413 _ww-408434756 rcx-item__media rcx-sidebar-item__avatar"
@@ -1906,7 +1906,7 @@ exports[`renders Default without crashing 1`] = `
                     <div
                       aria-hidden="true"
                       class="is_Text _d-341075704 _f-1128736932 _jc-1099843255 _ai-121763387 _mw-354604370 _ws-311910413 _ww-408434756 _w-120696903 _h-858548760 rcx-item__icon rcx-sidebar-item__icon"
-                      id="_r_cg_"
+                      id="_r_d3_"
                     >
                       <i
                         aria-hidden="true"
@@ -1917,7 +1917,7 @@ exports[`renders Default without crashing 1`] = `
                     </div>
                     <div
                       class="is_Text _o-1119039191 _f-649097281 _mw-842770087 _ws-973912173 _ww-408434756 _to-1727917045 _d-1987097250 rcx-item__title rcx-sidebar-item__title"
-                      id="_r_cj_"
+                      id="_r_d6_"
                     >
                       Baz Qux
                     </div>
@@ -1928,7 +1928,7 @@ exports[`renders Default without crashing 1`] = `
                     </div>
                   </div>
                   <div
-                    class="is_Text _d-341075704 _f-1841970073 _ai-121763387 _mw-842770087 _ws-311910413 _ww-408434756 _g-479842563 rcx-item__row rcx-sidebar-item__row"
+                    class="is_Text _d-341075704 _f-1841970073 _ai-121763387 _mw-842770087 _ws-311910413 _ww-408434756 _g-1760282038 rcx-item__row rcx-sidebar-item__row"
                   >
                     <div
                       class="is_Text _o-1119039191 _f-649097281 _mw-842770087 _ws-973912173 _ww-408434756 _to-1727917045 _d-1987097250 _c-341093563 _fs-2088488067 _lh-1306743983 _ls-1782815796 _fw-289165218 rcx-item__description rcx-sidebar-item__subtitle"
@@ -1958,10 +1958,10 @@ exports[`renders Default without crashing 1`] = `
                       19
                     </span>
                     <div
-                      class="is_View _p-1021290656 _zi-2094244754 _d-341075704 _f-1841970073 _ai-121763387 _mw-354604370 _mh-1241200853 _g-1299036281 rcx-item__actions rcx-item__actions--reveal-hover rcx-sidebar-item__menu-wrapper"
+                      class="is_View _p-1021290656 _zi-2094244754 _f-1841970073 _ai-121763387 _mw-354604370 _mh-1241200853 _g-1299036281 _d-312410892 _t-1193045479 _o-1780556163 _gtc-370223739 _m-449670226 _ac-1617022483 _h-1921373401 rcx-item__actions rcx-item__actions--reveal-hover rcx-sidebar-item__menu-wrapper"
                     >
                       <div
-                        class="is_View _d-341075704 _f-1069814357 _o-1119039191 _ai-121763387 _mh-1241200853 _g-1299036281 rcx-item__actions-inner"
+                        class="is_View _d-341075704 _f-1069814357 _o-1838365900 _ai-121763387 _mh-1241200853 _g-1299036281 rcx-item__actions-inner"
                       >
                         <span
                           class="rcx-box rcx-box--full rcx-sidebar-item__menu rcx-sidebar-item__menu"
@@ -1970,8 +1970,8 @@ exports[`renders Default without crashing 1`] = `
                             aria-expanded="false"
                             aria-haspopup="true"
                             aria-label="Options"
-                            class="is_View _f-1069813397 _mh-1241200853 _ta-1906144518 _ws-973912173 _td-211436768 _c-22887652 _os-249893454 _o-1119039191 _to-1727917045 _ff-409630021 _fvn-1977619713 _fs-347291933 _fw-289166179 _ls-1782815796 _p-230374000 _w-1686757560 _mw-1952433892 _h-1628964073 _d-312446553 _jc-642967080 _ai-1864573722 _lh-2067208245 rcx-button--mini-square rcx-button--square rcx-button--icon rcx-button"
-                            id="react-aria-_r_cu_"
+                            class="is_View _f-1069813397 _mh-1241200853 _ta-1906144518 _ws-973912173 _td-211436768 _c-22887652 _os-249893454 _o-1119039191 _to-1727917045 _ff-409630021 _fvn-1977619713 _fs-347291933 _fw-289166179 _ls-1782815796 _p-230374000 _a-1578443335 _b-1628331993 _br-1397394445 _bs-1225725885 _w-1686757560 _mw-1952433892 _h-1628964073 _d-312446553 _jc-642967080 _ai-1864573722 _lh-2067208245 _c-1139941473 _b-1242743842 rcx-button--mini-square rcx-button--square rcx-button--icon rcx-button"
+                            id="react-aria-_r_dh_"
                             title="Options"
                             type="button"
                           >
@@ -1994,14 +1994,14 @@ exports[`renders Default without crashing 1`] = `
               role="listitem"
             >
               <a
-                class="is_Text _p-1021290656 _d-341075704 _f-1069814357 _ai-121763387 _mw-842770087 _mh-1241200853 _m-2017216831 _p-788525541 _ls-1251843592 _ws-311910413 _ww-408434756 _br-1718100884 _ff-409630021 _g-479842563 _ta-507911453 _td-1861836084 _c-727749181 _fs-347291933 _lh-1925956564 _ls-1782815796 _fw-289165218 rcx-item rcx-item--inset-md rcx-sidebar-item rcx-sidebar-item--level-2"
+                class="is_Text _p-1021290656 _d-341075704 _f-1069814357 _ai-121763387 _mw-842770087 _mh-1241200853 _m-2017216831 _p-536964724 _ls-1251843592 _ws-311910413 _ww-408434756 _br-1718100884 _ff-409630021 _ta-507911453 _td-1861836084 _c-727749181 _fs-347291933 _lh-1925956564 _ls-1782815796 _fw-289165218 _g-691362565 _b-944971190 _c-1830342115 _ow-1994474385 _os-1885772691 _oc-1422281658 _oo-245994692 _bs-1638756697 t_group_rcx-item rcx-item rcx-item--inset-md rcx-sidebar-item rcx-sidebar-item--level-2"
                 href="#"
               >
                 <div
                   class="is_Text _d-341075704 _f-1448532840 _mw-842770087 _ws-311910413 _ww-408434756 rcx-item__content rcx-sidebar-item__col"
                 >
                   <div
-                    class="is_Text _d-341075704 _f-1841970073 _ai-121763387 _mw-842770087 _ws-311910413 _ww-408434756 _g-479842563 rcx-item__row rcx-sidebar-item__row"
+                    class="is_Text _d-341075704 _f-1841970073 _ai-121763387 _mw-842770087 _ws-311910413 _ww-408434756 _g-1760282038 rcx-item__row rcx-sidebar-item__row"
                   >
                     <div
                       class="is_Text _d-341075704 _f-1128736932 _jc-1099843255 _ai-121763387 _mw-354604370 _ws-311910413 _ww-408434756 rcx-item__media rcx-sidebar-item__avatar"
@@ -2019,7 +2019,7 @@ exports[`renders Default without crashing 1`] = `
                     <div
                       aria-hidden="true"
                       class="is_Text _d-341075704 _f-1128736932 _jc-1099843255 _ai-121763387 _mw-354604370 _ws-311910413 _ww-408434756 _w-120696903 _h-858548760 rcx-item__icon rcx-sidebar-item__icon"
-                      id="_r_d8_"
+                      id="_r_ds_"
                     >
                       <i
                         aria-hidden="true"
@@ -2030,7 +2030,7 @@ exports[`renders Default without crashing 1`] = `
                     </div>
                     <div
                       class="is_Text _o-1119039191 _f-649097281 _mw-842770087 _ws-973912173 _ww-408434756 _to-1727917045 _d-1987097250 rcx-item__title rcx-sidebar-item__title"
-                      id="_r_db_"
+                      id="_r_dv_"
                     >
                       Alice Bob
                     </div>
@@ -2041,7 +2041,7 @@ exports[`renders Default without crashing 1`] = `
                     </div>
                   </div>
                   <div
-                    class="is_Text _d-341075704 _f-1841970073 _ai-121763387 _mw-842770087 _ws-311910413 _ww-408434756 _g-479842563 rcx-item__row rcx-sidebar-item__row"
+                    class="is_Text _d-341075704 _f-1841970073 _ai-121763387 _mw-842770087 _ws-311910413 _ww-408434756 _g-1760282038 rcx-item__row rcx-sidebar-item__row"
                   >
                     <div
                       class="is_Text _o-1119039191 _f-649097281 _mw-842770087 _ws-973912173 _ww-408434756 _to-1727917045 _d-1987097250 _c-341093563 _fs-2088488067 _lh-1306743983 _ls-1782815796 _fw-289165218 rcx-item__description rcx-sidebar-item__subtitle"
@@ -2071,10 +2071,10 @@ exports[`renders Default without crashing 1`] = `
                       20
                     </span>
                     <div
-                      class="is_View _p-1021290656 _zi-2094244754 _d-341075704 _f-1841970073 _ai-121763387 _mw-354604370 _mh-1241200853 _g-1299036281 rcx-item__actions rcx-item__actions--reveal-hover rcx-sidebar-item__menu-wrapper"
+                      class="is_View _p-1021290656 _zi-2094244754 _f-1841970073 _ai-121763387 _mw-354604370 _mh-1241200853 _g-1299036281 _d-312410892 _t-1193045479 _o-1780556163 _gtc-370223739 _m-449670226 _ac-1617022483 _h-1921373401 rcx-item__actions rcx-item__actions--reveal-hover rcx-sidebar-item__menu-wrapper"
                     >
                       <div
-                        class="is_View _d-341075704 _f-1069814357 _o-1119039191 _ai-121763387 _mh-1241200853 _g-1299036281 rcx-item__actions-inner"
+                        class="is_View _d-341075704 _f-1069814357 _o-1838365900 _ai-121763387 _mh-1241200853 _g-1299036281 rcx-item__actions-inner"
                       >
                         <span
                           class="rcx-box rcx-box--full rcx-sidebar-item__menu rcx-sidebar-item__menu"
@@ -2083,8 +2083,8 @@ exports[`renders Default without crashing 1`] = `
                             aria-expanded="false"
                             aria-haspopup="true"
                             aria-label="Options"
-                            class="is_View _f-1069813397 _mh-1241200853 _ta-1906144518 _ws-973912173 _td-211436768 _c-22887652 _os-249893454 _o-1119039191 _to-1727917045 _ff-409630021 _fvn-1977619713 _fs-347291933 _fw-289166179 _ls-1782815796 _p-230374000 _w-1686757560 _mw-1952433892 _h-1628964073 _d-312446553 _jc-642967080 _ai-1864573722 _lh-2067208245 rcx-button--mini-square rcx-button--square rcx-button--icon rcx-button"
-                            id="react-aria-_r_dm_"
+                            class="is_View _f-1069813397 _mh-1241200853 _ta-1906144518 _ws-973912173 _td-211436768 _c-22887652 _os-249893454 _o-1119039191 _to-1727917045 _ff-409630021 _fvn-1977619713 _fs-347291933 _fw-289166179 _ls-1782815796 _p-230374000 _a-1578443335 _b-1628331993 _br-1397394445 _bs-1225725885 _w-1686757560 _mw-1952433892 _h-1628964073 _d-312446553 _jc-642967080 _ai-1864573722 _lh-2067208245 _c-1139941473 _b-1242743842 rcx-button--mini-square rcx-button--square rcx-button--icon rcx-button"
+                            id="react-aria-_r_ea_"
                             title="Options"
                             type="button"
                           >
@@ -2107,14 +2107,14 @@ exports[`renders Default without crashing 1`] = `
               role="listitem"
             >
               <a
-                class="is_Text _p-1021290656 _d-341075704 _f-1069814357 _ai-121763387 _mw-842770087 _mh-1241200853 _m-2017216831 _p-788525541 _ls-1251843592 _ws-311910413 _ww-408434756 _br-1718100884 _ff-409630021 _g-479842563 _ta-507911453 _td-1861836084 _c-727749181 _fs-347291933 _lh-1925956564 _ls-1782815796 _fw-289165218 rcx-item rcx-item--inset-md rcx-sidebar-item rcx-sidebar-item--level-2"
+                class="is_Text _p-1021290656 _d-341075704 _f-1069814357 _ai-121763387 _mw-842770087 _mh-1241200853 _m-2017216831 _p-536964724 _ls-1251843592 _ws-311910413 _ww-408434756 _br-1718100884 _ff-409630021 _ta-507911453 _td-1861836084 _c-727749181 _fs-347291933 _lh-1925956564 _ls-1782815796 _fw-289165218 _g-691362565 _b-944971190 _c-1830342115 _ow-1994474385 _os-1885772691 _oc-1422281658 _oo-245994692 _bs-1638756697 t_group_rcx-item rcx-item rcx-item--inset-md rcx-sidebar-item rcx-sidebar-item--level-2"
                 href="#"
               >
                 <div
                   class="is_Text _d-341075704 _f-1448532840 _mw-842770087 _ws-311910413 _ww-408434756 rcx-item__content rcx-sidebar-item__col"
                 >
                   <div
-                    class="is_Text _d-341075704 _f-1841970073 _ai-121763387 _mw-842770087 _ws-311910413 _ww-408434756 _g-479842563 rcx-item__row rcx-sidebar-item__row"
+                    class="is_Text _d-341075704 _f-1841970073 _ai-121763387 _mw-842770087 _ws-311910413 _ww-408434756 _g-1760282038 rcx-item__row rcx-sidebar-item__row"
                   >
                     <div
                       class="is_Text _d-341075704 _f-1128736932 _jc-1099843255 _ai-121763387 _mw-354604370 _ws-311910413 _ww-408434756 rcx-item__media rcx-sidebar-item__avatar"
@@ -2132,7 +2132,7 @@ exports[`renders Default without crashing 1`] = `
                     <div
                       aria-hidden="true"
                       class="is_Text _d-341075704 _f-1128736932 _jc-1099843255 _ai-121763387 _mw-354604370 _ws-311910413 _ww-408434756 _w-120696903 _h-858548760 rcx-item__icon rcx-sidebar-item__icon"
-                      id="_r_e0_"
+                      id="_r_el_"
                     >
                       <i
                         aria-hidden="true"
@@ -2143,7 +2143,7 @@ exports[`renders Default without crashing 1`] = `
                     </div>
                     <div
                       class="is_Text _o-1119039191 _f-649097281 _mw-842770087 _ws-973912173 _ww-408434756 _to-1727917045 _d-1987097250 rcx-item__title rcx-sidebar-item__title"
-                      id="_r_e3_"
+                      id="_r_eo_"
                     >
                       Charlie Delta
                     </div>
@@ -2154,7 +2154,7 @@ exports[`renders Default without crashing 1`] = `
                     </div>
                   </div>
                   <div
-                    class="is_Text _d-341075704 _f-1841970073 _ai-121763387 _mw-842770087 _ws-311910413 _ww-408434756 _g-479842563 rcx-item__row rcx-sidebar-item__row"
+                    class="is_Text _d-341075704 _f-1841970073 _ai-121763387 _mw-842770087 _ws-311910413 _ww-408434756 _g-1760282038 rcx-item__row rcx-sidebar-item__row"
                   >
                     <div
                       class="is_Text _o-1119039191 _f-649097281 _mw-842770087 _ws-973912173 _ww-408434756 _to-1727917045 _d-1987097250 _c-341093563 _fs-2088488067 _lh-1306743983 _ls-1782815796 _fw-289165218 rcx-item__description rcx-sidebar-item__subtitle"
@@ -2184,10 +2184,10 @@ exports[`renders Default without crashing 1`] = `
                       21
                     </span>
                     <div
-                      class="is_View _p-1021290656 _zi-2094244754 _d-341075704 _f-1841970073 _ai-121763387 _mw-354604370 _mh-1241200853 _g-1299036281 rcx-item__actions rcx-item__actions--reveal-hover rcx-sidebar-item__menu-wrapper"
+                      class="is_View _p-1021290656 _zi-2094244754 _f-1841970073 _ai-121763387 _mw-354604370 _mh-1241200853 _g-1299036281 _d-312410892 _t-1193045479 _o-1780556163 _gtc-370223739 _m-449670226 _ac-1617022483 _h-1921373401 rcx-item__actions rcx-item__actions--reveal-hover rcx-sidebar-item__menu-wrapper"
                     >
                       <div
-                        class="is_View _d-341075704 _f-1069814357 _o-1119039191 _ai-121763387 _mh-1241200853 _g-1299036281 rcx-item__actions-inner"
+                        class="is_View _d-341075704 _f-1069814357 _o-1838365900 _ai-121763387 _mh-1241200853 _g-1299036281 rcx-item__actions-inner"
                       >
                         <span
                           class="rcx-box rcx-box--full rcx-sidebar-item__menu rcx-sidebar-item__menu"
@@ -2196,8 +2196,8 @@ exports[`renders Default without crashing 1`] = `
                             aria-expanded="false"
                             aria-haspopup="true"
                             aria-label="Options"
-                            class="is_View _f-1069813397 _mh-1241200853 _ta-1906144518 _ws-973912173 _td-211436768 _c-22887652 _os-249893454 _o-1119039191 _to-1727917045 _ff-409630021 _fvn-1977619713 _fs-347291933 _fw-289166179 _ls-1782815796 _p-230374000 _w-1686757560 _mw-1952433892 _h-1628964073 _d-312446553 _jc-642967080 _ai-1864573722 _lh-2067208245 rcx-button--mini-square rcx-button--square rcx-button--icon rcx-button"
-                            id="react-aria-_r_ee_"
+                            class="is_View _f-1069813397 _mh-1241200853 _ta-1906144518 _ws-973912173 _td-211436768 _c-22887652 _os-249893454 _o-1119039191 _to-1727917045 _ff-409630021 _fvn-1977619713 _fs-347291933 _fw-289166179 _ls-1782815796 _p-230374000 _a-1578443335 _b-1628331993 _br-1397394445 _bs-1225725885 _w-1686757560 _mw-1952433892 _h-1628964073 _d-312446553 _jc-642967080 _ai-1864573722 _lh-2067208245 _c-1139941473 _b-1242743842 rcx-button--mini-square rcx-button--square rcx-button--icon rcx-button"
+                            id="react-aria-_r_f3_"
                             title="Options"
                             type="button"
                           >
@@ -2220,14 +2220,14 @@ exports[`renders Default without crashing 1`] = `
               role="listitem"
             >
               <a
-                class="is_Text _p-1021290656 _d-341075704 _f-1069814357 _ai-121763387 _mw-842770087 _mh-1241200853 _m-2017216831 _p-788525541 _ls-1251843592 _ws-311910413 _ww-408434756 _br-1718100884 _ff-409630021 _g-479842563 _ta-507911453 _td-1861836084 _c-727749181 _fs-347291933 _lh-1925956564 _ls-1782815796 _fw-289165218 rcx-item rcx-item--inset-md rcx-sidebar-item rcx-sidebar-item--level-2"
+                class="is_Text _p-1021290656 _d-341075704 _f-1069814357 _ai-121763387 _mw-842770087 _mh-1241200853 _m-2017216831 _p-536964724 _ls-1251843592 _ws-311910413 _ww-408434756 _br-1718100884 _ff-409630021 _ta-507911453 _td-1861836084 _c-727749181 _fs-347291933 _lh-1925956564 _ls-1782815796 _fw-289165218 _g-691362565 _b-944971190 _c-1830342115 _ow-1994474385 _os-1885772691 _oc-1422281658 _oo-245994692 _bs-1638756697 t_group_rcx-item rcx-item rcx-item--inset-md rcx-sidebar-item rcx-sidebar-item--level-2"
                 href="#"
               >
                 <div
                   class="is_Text _d-341075704 _f-1448532840 _mw-842770087 _ws-311910413 _ww-408434756 rcx-item__content rcx-sidebar-item__col"
                 >
                   <div
-                    class="is_Text _d-341075704 _f-1841970073 _ai-121763387 _mw-842770087 _ws-311910413 _ww-408434756 _g-479842563 rcx-item__row rcx-sidebar-item__row"
+                    class="is_Text _d-341075704 _f-1841970073 _ai-121763387 _mw-842770087 _ws-311910413 _ww-408434756 _g-1760282038 rcx-item__row rcx-sidebar-item__row"
                   >
                     <div
                       class="is_Text _d-341075704 _f-1128736932 _jc-1099843255 _ai-121763387 _mw-354604370 _ws-311910413 _ww-408434756 rcx-item__media rcx-sidebar-item__avatar"
@@ -2245,7 +2245,7 @@ exports[`renders Default without crashing 1`] = `
                     <div
                       aria-hidden="true"
                       class="is_Text _d-341075704 _f-1128736932 _jc-1099843255 _ai-121763387 _mw-354604370 _ws-311910413 _ww-408434756 _w-120696903 _h-858548760 rcx-item__icon rcx-sidebar-item__icon"
-                      id="_r_eo_"
+                      id="_r_fe_"
                     >
                       <i
                         aria-hidden="true"
@@ -2256,7 +2256,7 @@ exports[`renders Default without crashing 1`] = `
                     </div>
                     <div
                       class="is_Text _o-1119039191 _f-649097281 _mw-842770087 _ws-973912173 _ww-408434756 _to-1727917045 _d-1987097250 rcx-item__title rcx-sidebar-item__title"
-                      id="_r_er_"
+                      id="_r_fh_"
                     >
                       Eve Mallory
                     </div>
@@ -2267,7 +2267,7 @@ exports[`renders Default without crashing 1`] = `
                     </div>
                   </div>
                   <div
-                    class="is_Text _d-341075704 _f-1841970073 _ai-121763387 _mw-842770087 _ws-311910413 _ww-408434756 _g-479842563 rcx-item__row rcx-sidebar-item__row"
+                    class="is_Text _d-341075704 _f-1841970073 _ai-121763387 _mw-842770087 _ws-311910413 _ww-408434756 _g-1760282038 rcx-item__row rcx-sidebar-item__row"
                   >
                     <div
                       class="is_Text _o-1119039191 _f-649097281 _mw-842770087 _ws-973912173 _ww-408434756 _to-1727917045 _d-1987097250 _c-341093563 _fs-2088488067 _lh-1306743983 _ls-1782815796 _fw-289165218 rcx-item__description rcx-sidebar-item__subtitle"
@@ -2297,10 +2297,10 @@ exports[`renders Default without crashing 1`] = `
                       22
                     </span>
                     <div
-                      class="is_View _p-1021290656 _zi-2094244754 _d-341075704 _f-1841970073 _ai-121763387 _mw-354604370 _mh-1241200853 _g-1299036281 rcx-item__actions rcx-item__actions--reveal-hover rcx-sidebar-item__menu-wrapper"
+                      class="is_View _p-1021290656 _zi-2094244754 _f-1841970073 _ai-121763387 _mw-354604370 _mh-1241200853 _g-1299036281 _d-312410892 _t-1193045479 _o-1780556163 _gtc-370223739 _m-449670226 _ac-1617022483 _h-1921373401 rcx-item__actions rcx-item__actions--reveal-hover rcx-sidebar-item__menu-wrapper"
                     >
                       <div
-                        class="is_View _d-341075704 _f-1069814357 _o-1119039191 _ai-121763387 _mh-1241200853 _g-1299036281 rcx-item__actions-inner"
+                        class="is_View _d-341075704 _f-1069814357 _o-1838365900 _ai-121763387 _mh-1241200853 _g-1299036281 rcx-item__actions-inner"
                       >
                         <span
                           class="rcx-box rcx-box--full rcx-sidebar-item__menu rcx-sidebar-item__menu"
@@ -2309,8 +2309,8 @@ exports[`renders Default without crashing 1`] = `
                             aria-expanded="false"
                             aria-haspopup="true"
                             aria-label="Options"
-                            class="is_View _f-1069813397 _mh-1241200853 _ta-1906144518 _ws-973912173 _td-211436768 _c-22887652 _os-249893454 _o-1119039191 _to-1727917045 _ff-409630021 _fvn-1977619713 _fs-347291933 _fw-289166179 _ls-1782815796 _p-230374000 _w-1686757560 _mw-1952433892 _h-1628964073 _d-312446553 _jc-642967080 _ai-1864573722 _lh-2067208245 rcx-button--mini-square rcx-button--square rcx-button--icon rcx-button"
-                            id="react-aria-_r_f6_"
+                            class="is_View _f-1069813397 _mh-1241200853 _ta-1906144518 _ws-973912173 _td-211436768 _c-22887652 _os-249893454 _o-1119039191 _to-1727917045 _ff-409630021 _fvn-1977619713 _fs-347291933 _fw-289166179 _ls-1782815796 _p-230374000 _a-1578443335 _b-1628331993 _br-1397394445 _bs-1225725885 _w-1686757560 _mw-1952433892 _h-1628964073 _d-312446553 _jc-642967080 _ai-1864573722 _lh-2067208245 _c-1139941473 _b-1242743842 rcx-button--mini-square rcx-button--square rcx-button--icon rcx-button"
+                            id="react-aria-_r_fs_"
                             title="Options"
                             type="button"
                           >
