@@ -73,11 +73,18 @@ const withPreview = (respond: (page: PreviewPage) => IAbacRoomMembershipPreview 
 				'Checked {{checked}} of {{total}} matching members. {{count}} keep access to {{roomName}} so far.',
 			ABAC_Preview_Progress_Kept_so_far_one: 'Checked {{checked}} of {{total}} members. {{count}} keeps access to {{roomName}} so far.',
 			ABAC_Preview_Progress_Kept_so_far_other: 'Checked {{checked}} of {{total}} members. {{count}} keep access to {{roomName}} so far.',
-			ABAC_Preview_Progress_Removed: '{{count}} of {{total}} members will be removed from {{roomName}}.',
-			ABAC_Preview_Progress_Removed_matching: '{{count}} of {{total}} matching members will be removed from {{roomName}}.',
-			ABAC_Preview_Progress_Removed_matching_so_far:
+			ABAC_Preview_Progress_Removed_one: '{{count}} of {{total}} members will be removed from {{roomName}}.',
+			ABAC_Preview_Progress_Removed_other: '{{count}} of {{total}} members will be removed from {{roomName}}.',
+			ABAC_Preview_Progress_Removed_matching_one: '{{count}} of {{total}} matching members will be removed from {{roomName}}.',
+			ABAC_Preview_Progress_Removed_matching_other: '{{count}} of {{total}} matching members will be removed from {{roomName}}.',
+			ABAC_Preview_Progress_Removed_matching_so_far_one:
 				'Checked {{checked}} of {{total}} matching members. {{count}} will be removed from {{roomName}} so far.',
-			ABAC_Preview_Progress_Removed_so_far: 'Checked {{checked}} of {{total}} members. {{count}} will be removed from {{roomName}} so far.',
+			ABAC_Preview_Progress_Removed_matching_so_far_other:
+				'Checked {{checked}} of {{total}} matching members. {{count}} will be removed from {{roomName}} so far.',
+			ABAC_Preview_Progress_Removed_so_far_one:
+				'Checked {{checked}} of {{total}} members. {{count}} will be removed from {{roomName}} so far.',
+			ABAC_Preview_Progress_Removed_so_far_other:
+				'Checked {{checked}} of {{total}} members. {{count}} will be removed from {{roomName}} so far.',
 			ABAC_Preview_Retains_access: 'Retains access',
 			ABAC_Preview_Role_Leader: 'Leader',
 			ABAC_Preview_Role_Moderator: 'Moderator',
