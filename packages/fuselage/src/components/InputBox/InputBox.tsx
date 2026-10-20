@@ -1,6 +1,6 @@
 import { useMergedRefs } from '@rocket.chat/fuselage-hooks';
 import type { ChangeEvent, ReactNode, RefAttributes } from 'react';
-import { useCallback, useLayoutEffect, useRef } from 'react';
+import { useCallback, useLayoutEffect, useRef, useState } from 'react';
 
 import type { BoxProps } from '../Box';
 import { Icon } from '../Icon';
@@ -70,6 +70,7 @@ function InputBox<T extends HTMLInputElement | HTMLSelectElement | HTMLTextAreaE
 }: InputBoxProps<T>) {
 	const innerRef = useRef<T>(null);
 	const mergedRef = useMergedRefs(ref, innerRef);
+	const [invalid, setInvalid] = useState(false);
 	let defaultAddon = endAddon;
 
 	useLayoutEffect(() => {
@@ -79,15 +80,15 @@ function InputBox<T extends HTMLInputElement | HTMLSelectElement | HTMLTextAreaE
 	}, [error]);
 
 	useLayoutEffect(() => {
-		if (defaultAddon && innerRef.current && innerRef.current.parentElement) {
-			innerRef.current.parentElement.classList.toggle('invalid', !innerRef.current.checkValidity());
+		if (defaultAddon && innerRef.current) {
+			setInvalid(!innerRef.current.checkValidity());
 		}
 	}, [defaultAddon, error]);
 
 	const handleChange = useCallback(
 		(event: ChangeEvent<HTMLElement>) => {
-			if (defaultAddon && innerRef.current && innerRef.current.parentElement) {
-				innerRef.current.parentElement.classList.toggle('invalid', !innerRef.current.checkValidity());
+			if (defaultAddon && innerRef.current) {
+				setInvalid(!innerRef.current.checkValidity());
 			}
 
 			onChange?.call(event.currentTarget, event);
@@ -128,9 +129,10 @@ function InputBox<T extends HTMLInputElement | HTMLSelectElement | HTMLTextAreaE
 
 	return (
 		<InputBoxWrapper
-			className={[props.disabled && 'disabled', ...(Array.isArray(className) ? className : [className])]}
+			className={[props.disabled && 'disabled', invalid && 'invalid', ...(Array.isArray(className) ? className : [className])]}
 			hidden={hidden}
 			invisible={invisible}
+			small={small}
 		>
 			{startAddon && <InputBoxAddon>{startAddon}</InputBoxAddon>}
 			<Input
