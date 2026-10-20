@@ -65,6 +65,15 @@ const ContactsTab = ({ tab, onChangeTab }: ContactsTabProps) => {
 			}),
 	});
 
+	const isPastLastPage = !!data && paginationProps.current > 0 && paginationProps.current >= data.total;
+	const lastPageOffset = Math.max(0, Math.ceil((data?.total ?? 0) / paginationProps.itemsPerPage) - 1) * paginationProps.itemsPerPage;
+
+	useEffect(() => {
+		if (isPastLastPage) {
+			setCurrent((offset) => Math.min(offset, lastPageOffset));
+		}
+	}, [isPastLastPage, lastPageOffset, setCurrent]);
+
 	const contactFilters = (
 		<ContactsPageFilters
 			searchText={searchText}
@@ -82,7 +91,7 @@ const ContactsTab = ({ tab, onChangeTab }: ContactsTabProps) => {
 		<Pagination divider count={data?.total || 0} onSetItemsPerPage={setItemsPerPage} onSetCurrent={setCurrent} {...paginationProps} />
 	);
 
-	if (isPending) {
+	if (isPending || isPastLastPage) {
 		return (
 			<CallHistoryPageLayout filters={contactFilters} contextualBar={contextualBar} tab={tab} onChangeTab={onChangeTab}>
 				<ContactsTable sort={sortProps} columns={columns}>
