@@ -122,4 +122,5 @@ const Chip = (props: ChipProps) => {
 	);
 };
 
-export default withBoxStyling(withFuselageProvider(Chip, { takesBoxTransforms: true }));
+// `develop` rendered a plain `button`, which no `Margins`/`Scrollable` transform reached
+export default withBoxStyling(withFuselageProvider(Chip));
