@@ -1,0 +1,16 @@
+/* Tamagui styles live in `fuselage`; element resets go in `reset` so they stay below them. First, since a layer's
+   place is fixed by its first appearance and an imported stylesheet may open a `fuselage` block */
+@layer reset, fuselage;
+
+@import './fonts/inter.css';
+@import './styles/link.css';
+@import './components/index.css';
+@import './styles/consumer-classes.css';
+
+/* Every component used to get this from `rcx-box`; Tamagui has no prop for vendor-prefixed properties */
+@layer fuselage {
+	:where(.is_View, .is_Text) {
+		-webkit-font-smoothing: antialiased;
+		-moz-osx-font-smoothing: grayscale;
+	}
+}
