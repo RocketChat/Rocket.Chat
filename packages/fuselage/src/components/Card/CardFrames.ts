@@ -1,6 +1,9 @@
-import { styled, Text, View } from '@tamagui/web';
+import { createStyledContext, styled, Text, View } from '@tamagui/web';
 
 import { fontFamily, spacing } from '../../styleTokens';
+
+/** Tells the parts of a Card whether it is laid out horizontally. */
+export const CardContext = createStyledContext({ horizontal: false });
 
 /** Replaces a text-holding `Box` laid out as a flex row; its font scale stays a `Box` styling prop. */
 export const CardText = styled(Text, {
@@ -27,6 +30,17 @@ export const CardBlock = styled(View, {
 				flexDirection: 'row',
 				alignItems: 'center',
 			},
+		},
+	} as const,
+});
+
+export const CardColFrame = styled(CardBlock, {
+	context: CardContext,
+
+	variants: {
+		horizontal: {
+			true: { rowGap: spacing('x4') },
+			false: {},
 		},
 	} as const,
 });
