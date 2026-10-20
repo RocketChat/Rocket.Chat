@@ -139,7 +139,6 @@
   "ABAC_room_membership": "Rumsmedlemskap",
   "ABAC_Room_removed": "Rum {{roomName}} borttaget från ABAC-hantering",
   "ABAC_Room_to_be_managed": "Rum som ska hanteras av ABAC",
-  "ABAC_Room_updated": "{{roomName}} ABAC-rum uppdaterat",
   "ABAC_Rooms_Affected": {
     "one": "{{count}} rum påverkat",
     "other": "{{count}} rum påverkade"
@@ -150,9 +149,6 @@
   "ABAC_Select_Attribute_Values": "Välj attributvärden",
   "ABAC_ShowAttributesInRooms": "Visa ABAC-attribut i rum",
   "ABAC_ShowAttributesInRooms_Description": "Visa ABAC-attributen tilldelade till rummet i det sammanhangsberoende fältet",
-  "ABAC_Update_room_confirmation_modal_annotation": "Fortsätt med försiktighet",
-  "ABAC_Update_room_confirmation_modal_title": "Uppdatera ABAC-rum",
-  "ABAC_Update_room_content": "{{roomName}} hanteras för närvarande av ABAC. Ändringar kan påverka vem som kan komma åt detta rum.",
   "ABAC_Value_removed": "Värde borttaget",
   "ABAC_Virtru_Attribute_Namespace": "Attributnamnsrymd",
   "ABAC_Virtru_Attribute_Namespace_Description": "Namnrymden som används för att bygga attribut-FQN:er (t.ex. opentdf.io producerar https://opentdf.io/attr/{key}/value/{value}).",
