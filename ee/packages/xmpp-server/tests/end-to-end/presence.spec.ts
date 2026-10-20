@@ -23,6 +23,7 @@ import { retry } from '../../../../../apps/meteor/tests/end-to-end/api/helpers/r
 
 const SETTING_PROPAGATION_MS = 2000;
 const DELIVERY_WINDOW_MS = 4000;
+const PROBE_REPLY_MS = 1000;
 
 const isSubscriptionReply =
 	(from: string, type: 'subscribe' | 'subscribed' | 'unsubscribed'): Predicate =>
@@ -34,6 +35,21 @@ describe('XMPP federation: presence', () => {
 	let alice: XmppUser;
 	let bob: XmppUser;
 	let local: LocalUser;
+
+	/** Resolves once the service answers alice's subscription request again, i.e. presence is back on. */
+	const waitForPresenceEnabled = () =>
+		retry(
+			'presence to be enabled',
+			async () => {
+				const after = alice.cursor();
+				await alice.sendPresence({ to: local.jid, type: 'subscribe' });
+				await alice.waitFor(isSubscriptionReply(local.jid, 'subscribed'), 'the subscription approval', {
+					after,
+					timeoutMs: PROBE_REPLY_MS,
+				});
+			},
+			federationPolling,
+		);
 
 	before(async () => {
 		rc = await setupSuite();
@@ -81,7 +97,7 @@ describe('XMPP federation: presence', () => {
 			assert.equal(answers.length, 0);
 		} finally {
 			await setSetting(rc, 'XMPP_Server_Presence_Enabled', true);
-			await sleep(SETTING_PROPAGATION_MS);
+			await waitForPresenceEnabled();
 		}
 	});
 
