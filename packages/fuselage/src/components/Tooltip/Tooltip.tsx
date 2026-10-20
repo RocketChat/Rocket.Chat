@@ -1,4 +1,4 @@
-import { styled, Text, type GetProps } from '@tamagui/web';
+import { styled, Text, View, type GetProps } from '@tamagui/web';
 import type { RefAttributes } from 'react';
 
 import { surfaceColors, textIconColors } from '../../Theme';
@@ -41,6 +41,44 @@ const TooltipFrame = styled(Text, {
 	} as const,
 });
 
+// Physical until `usePosition` resolves placements against the writing direction;
+// its coordinates are physical today, so logical offsets would flip away from the anchor in RTL.
+const TooltipArrow = styled(View, {
+	render: 'span',
+	display: 'inline',
+	position: 'absolute',
+	boxSizing: 'border-box',
+	width: 0,
+	height: 0,
+	borderWidth: 4,
+	borderStyle: 'solid',
+	borderTopColor: 'transparent',
+	borderRightColor: 'transparent',
+	borderBottomColor: darkBackgroundColor,
+	borderLeftColor: darkBackgroundColor,
+	borderBottomLeftRadius: 2,
+
+	variants: {
+		side: {
+			top: { bottom: -4, transform: 'rotate(-45deg)' },
+			bottom: { top: -4, transform: 'rotate(135deg)' },
+			left: { top: '50%', right: -4, marginTop: -4, transform: 'rotate(-135deg)' },
+			right: { top: '50%', left: -4, marginTop: -4, transform: 'rotate(45deg)' },
+		},
+		align: {
+			middle: { left: '50%', marginLeft: -4 },
+			start: { left: 8, margin: 0 },
+			end: { left: 'initial', right: 8, margin: 0 },
+		},
+	} as const,
+});
+
+const isArrowDirection = (direction: string | undefined): direction is 'top' | 'bottom' | 'left' | 'right' =>
+	direction === 'top' || direction === 'bottom' || direction === 'left' || direction === 'right';
+
+const isArrowPosition = (position: string | undefined): position is 'middle' | 'start' | 'end' =>
+	position === 'middle' || position === 'start' || position === 'end';
+
 const parsePlacement = (placement: string | null | undefined) => {
 	const [direction, position] = placement ? placement.split('-') : [undefined, undefined];
 
@@ -58,7 +96,7 @@ export type TooltipProps = Omit<BoxProps, 'ref'> &
 			'top-start' | 'top-middle' | 'top-end' | 'bottom-start' | 'bottom-middle' | 'bottom-end' | 'top' | 'left' | 'bottom' | 'right' | null;
 	};
 
-function Tooltip({ variation = 'dark', placement, ...props }: TooltipProps) {
+function Tooltip({ variation = 'dark', placement, children, ...props }: TooltipProps) {
 	const [direction, position] = parsePlacement(placement);
 
 	const frameProps = useTamaguiBoxProps({
@@ -70,7 +108,14 @@ function Tooltip({ variation = 'dark', placement, ...props }: TooltipProps) {
 		...props,
 	});
 
-	return <TooltipFrame light={variation === 'light'} {...(frameProps as GetProps<typeof TooltipFrame>)} />;
+	return (
+		<TooltipFrame light={variation === 'light'} {...(frameProps as GetProps<typeof TooltipFrame>)}>
+			{children}
+			{isArrowDirection(direction) && (
+				<TooltipArrow aria-hidden side={direction} align={isArrowPosition(position) ? position : undefined} />
+			)}
+		</TooltipFrame>
+	);
 }
 
 export default withFuselageProvider(Tooltip, { takesBoxTransforms: true });
