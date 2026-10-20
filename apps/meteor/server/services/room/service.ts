@@ -8,8 +8,8 @@ import {
 	type ISubscription,
 	isOmnichannelRoom,
 	isRoomWithJoinCode,
+	isUserNativeFederated,
 } from '@rocket.chat/core-typings';
-import { isUserNativeFederated } from '@rocket.chat/core-typings';
 import { Rooms, Subscriptions, Users } from '@rocket.chat/models';
 
 import { getNameForDMs } from './getNameForDMs';
