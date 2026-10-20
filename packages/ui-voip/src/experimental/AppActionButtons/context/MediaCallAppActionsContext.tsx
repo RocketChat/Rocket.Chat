@@ -19,7 +19,7 @@ export type MediaCallAppActionDescriptor = {
 };
 
 export const brandMediaCallAppAction = (appId: string, actionId: string): MediaCallAppAction['key'] =>
-	`${appId}-${actionId}` as MediaCallAppAction['key'];
+	JSON.stringify([appId, actionId]) as MediaCallAppAction['key'];
 
 export type MediaCallAppAction = {
 	key: Branded<string, 'MediaCallAppAction'>;
