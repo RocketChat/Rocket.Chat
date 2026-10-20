@@ -848,7 +848,7 @@ export class AbacService extends ServiceClass implements IAbacService {
 	}
 
 	private async assertKeepsRequiredAttributes(room: IRoom, next: IAbacAttributeDefinition[]): Promise<void> {
-		if (!this.enforceAllRooms) {
+		if (!this.enforceAllRooms || !this.requiredAttributeKeys.size) {
 			return;
 		}
 
