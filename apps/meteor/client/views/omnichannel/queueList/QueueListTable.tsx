@@ -10,7 +10,6 @@ import {
 	GenericTableRow,
 	GenericTableCell,
 	GenericTableLoadingRow,
-	getCombineFn,
 	usePaginatedQuery,
 	usePagination,
 	useSort,
@@ -118,7 +117,7 @@ const QueueListTable = () => {
 		query,
 		queryKey,
 		queryFn: getLivechatQueue,
-		combineData: getCombineFn('queue'),
+		itemsKey: 'queue',
 		offset: current,
 		count: itemsPerPage,
 	});

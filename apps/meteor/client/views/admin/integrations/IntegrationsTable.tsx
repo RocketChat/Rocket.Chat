@@ -7,7 +7,6 @@ import {
 	GenericTableHeader,
 	GenericTableHeaderCell,
 	GenericTableLoadingTable,
-	getCombineFn,
 	usePaginatedQuery,
 	usePagination,
 	useSort,
@@ -55,7 +54,7 @@ const IntegrationsTable = ({ type }: IntegrationsTableProps) => {
 		query,
 		queryKey,
 		queryFn: getIntegrations,
-		combineData: getCombineFn('integrations'),
+		itemsKey: 'integrations',
 		offset: current,
 		count: itemsPerPage,
 	});

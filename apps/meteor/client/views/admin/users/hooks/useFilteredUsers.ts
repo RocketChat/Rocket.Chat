@@ -1,6 +1,6 @@
 import type { UsersListStatusParamsGET } from '@rocket.chat/rest-typings';
 import type { useSort } from '@rocket.chat/ui-client';
-import { getCombineFn, usePaginatedQuery, usePagination } from '@rocket.chat/ui-client';
+import { usePaginatedQuery, usePagination } from '@rocket.chat/ui-client';
 import { useEndpoint } from '@rocket.chat/ui-contexts';
 import { useMemo } from 'react';
 
@@ -49,7 +49,7 @@ const useFilteredUsers = ({ searchTerm, sortData, tab, selectedRoles, statusMana
 		query: payload,
 		queryKey,
 		queryFn: getUsers,
-		combineData: getCombineFn('users'),
+		itemsKey: 'users',
 		offset: paginationData.current,
 		count: paginationData.itemsPerPage,
 		meta: {

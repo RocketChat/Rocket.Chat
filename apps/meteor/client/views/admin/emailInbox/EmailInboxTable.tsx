@@ -7,7 +7,6 @@ import {
 	GenericTableHeaderCell,
 	GenericTableLoadingTable,
 	GenericTableRow,
-	getCombineFn,
 	usePaginatedQuery,
 	usePagination,
 	useSort,
@@ -52,7 +51,7 @@ const EmailInboxTable = () => {
 		query,
 		queryKey,
 		queryFn: endpoint,
-		combineData: getCombineFn('emailInboxes'),
+		itemsKey: 'emailInboxes',
 		offset: current,
 		count: itemsPerPage,
 	});

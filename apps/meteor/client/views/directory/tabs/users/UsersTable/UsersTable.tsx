@@ -7,7 +7,6 @@ import {
 	GenericTableHeaderCell,
 	GenericTableBody,
 	GenericTableLoadingTable,
-	getCombineFn,
 	usePaginatedQuery,
 	usePagination,
 	useSort,
@@ -99,7 +98,7 @@ const UsersTable = ({ workspace = 'local' }: UsersTableProps) => {
 		query,
 		queryKey,
 		queryFn: getDirectoryData,
-		combineData: getCombineFn('result'),
+		itemsKey: 'result',
 		offset: current,
 		count: itemsPerPage,
 	});

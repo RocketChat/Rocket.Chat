@@ -1,7 +1,7 @@
 import { mockAppRoot } from '@rocket.chat/mock-providers';
 import { renderHook, waitFor } from '@testing-library/react';
 
-import { getCombineFn, usePaginatedQuery } from './usePaginatedQuery';
+import { usePaginatedQuery } from './usePaginatedQuery';
 
 type Pagination = { offset: number; count: number };
 
@@ -50,8 +50,7 @@ it.each([
 	const getSounds = createGetSounds({ total, limit });
 
 	const { result } = renderHook(
-		() =>
-			usePaginatedQuery({ query: {}, queryKey: ['sounds'], queryFn: getSounds, combineData: getCombineFn('sounds'), offset, count: 25 }),
+		() => usePaginatedQuery({ query: {}, queryKey: ['sounds'], queryFn: getSounds, itemsKey: 'sounds', offset, count: 25 }),
 		{ wrapper: mockAppRoot().build() },
 	);
 
@@ -77,7 +76,7 @@ it('should report an error when one of the requests fails', async () => {
 				query: {},
 				queryKey: ['sounds'],
 				queryFn: getSounds,
-				combineData: getCombineFn('sounds'),
+				itemsKey: 'sounds',
 				offset: 0,
 				count: 25,
 			}),
