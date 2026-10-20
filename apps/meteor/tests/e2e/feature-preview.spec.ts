@@ -168,8 +168,10 @@ test.describe.serial('feature preview', () => {
 			test('should keep the main room on the top even if child has unread messages', async ({ page }) => {
 				const user1Channel = new HomeChannel(user1Page);
 
-				const teamMainRoomLink = poHomeTeam.sidepanel.getTeamItemByName(sidepanelTeam);
-				const childChannelLink = poHomeTeam.sidepanel.getTeamItemByName(targetChannel);
+				const teamMainRoomItem = poHomeTeam.sidepanel.getItemByName(sidepanelTeam);
+				const teamMainRoomLink = poHomeTeam.sidepanel.getItemLinkByName(sidepanelTeam);
+				const childChannelItem = poHomeTeam.sidepanel.getItemByName(targetChannel);
+				const childChannelLink = poHomeTeam.sidepanel.getItemLinkByName(targetChannel);
 
 				await test.step('add the channel to the team', async () => {
 					await poHomeTeam.gotoGroup(sidepanelTeam);
@@ -203,9 +205,9 @@ test.describe.serial('feature preview', () => {
 				});
 
 				await test.step('team main room should stay above the channel with newer unread activity', async () => {
-					await expect(childChannelLink.getByRole('status', { name: '1 unread threaded message' })).toBeVisible();
-					await expect(teamMainRoomLink.locator('..')).toHaveAttribute('data-item-index', '0');
-					await expect(childChannelLink.locator('..')).toHaveAttribute('data-item-index', '1');
+					await expect(childChannelItem.getByRole('status', { name: '1 unread threaded message' })).toBeVisible();
+					await expect(teamMainRoomItem).toHaveAttribute('data-item-index', '0');
+					await expect(childChannelItem).toHaveAttribute('data-item-index', '1');
 				});
 			});
 		});
@@ -218,7 +220,7 @@ test.describe.serial('feature preview', () => {
 
 			await expect(page).toHaveURL(`/group/${sidepanelTeam}`);
 			await expect(poHomeChannel.sidepanel.getSidepanelHeader(sidepanelTeam)).toBeVisible();
-			await expect(poHomeChannel.sidepanel.getItemByName(sidepanelTeam)).toHaveAttribute('aria-current', 'page');
+			await expect(poHomeChannel.sidepanel.getItemLinkByName(sidepanelTeam)).toHaveAttribute('aria-current', 'page');
 		});
 
 		test('sidepanel should not open the respective parent room filter if its not a room filter', async ({ page }) => {
@@ -253,11 +255,11 @@ test.describe.serial('feature preview', () => {
 			await poHomeChannel.gotoGroup(sidepanelTeam);
 			await poHomeChannel.sidebar.favoritesTeamCollabFilter.click();
 
-			await expect(poHomeChannel.sidepanel.getTeamItemByName(sidepanelTeam)).not.toBeVisible();
+			await expect(poHomeChannel.sidepanel.getItemByName(sidepanelTeam)).not.toBeVisible();
 
 			await poHomeChannel.getRoomHeaderFavoriteBtn(IS_EE).click();
 
-			await expect(poHomeChannel.sidepanel.getTeamItemByName(sidepanelTeam)).toBeVisible();
+			await expect(poHomeChannel.sidepanel.getItemByName(sidepanelTeam)).toBeVisible();
 		});
 
 		test('should show discussion in discussions and all sidepanel filter, should remove after deleting discussion', async ({ page }) => {
@@ -333,7 +335,7 @@ test.describe.serial('feature preview', () => {
 				poHomeChannel.sidepanel.getItemByName(targetChannel).getByRole('status', { name: '1 unread threaded message' }),
 			).toBeVisible();
 
-			await poHomeChannel.sidepanel.getItemByName(targetChannel).click();
+			await poHomeChannel.sidepanel.getItemLinkByName(targetChannel).click();
 			await poHomeChannel.content.waitForChannel();
 
 			await expect(poHomeChannel.sidepanel.getItemByName(targetChannel)).toBeVisible();
@@ -401,7 +403,7 @@ test.describe.serial('feature preview', () => {
 			});
 
 			await test.step('read the room', async () => {
-				await poHomeChannel.sidepanel.getItemByName(targetChannel).click();
+				await poHomeChannel.sidepanel.getItemLinkByName(targetChannel).click();
 				await poHomeChannel.content.waitForChannel();
 			});
 
@@ -500,7 +502,7 @@ test.describe.serial('feature preview', () => {
 
 				await expect(poHomeChannel.sidepanel.sidepanel).toBeVisible();
 
-				await poHomeChannel.sidepanel.getItemByName(targetChannel).click();
+				await poHomeChannel.sidepanel.getItemLinkByName(targetChannel).click();
 				await poHomeChannel.content.waitForChannel();
 				await expect(poHomeChannel.content.channelHeader).toContainText(targetChannel);
 
@@ -554,7 +556,7 @@ test.describe.serial('feature preview', () => {
 			await expect(poHomeChannel.sidepanel.sidepanel).toBeVisible();
 			await expect(poHomeChannel.sidepanel.getSidepanelHeader(sidepanelTeam)).toBeVisible();
 
-			await expect(poHomeChannel.sidepanel.getTeamItemByName(sidepanelTeam)).toBeVisible();
+			await expect(poHomeChannel.sidepanel.getItemByName(sidepanelTeam)).toBeVisible();
 			await expect(page).toHaveURL(`/group/${sidepanelTeam}`);
 		});
 
@@ -565,7 +567,7 @@ test.describe.serial('feature preview', () => {
 			await expect(poHomeChannel.sidepanel.sidepanel).toBeVisible();
 			await expect(poHomeChannel.sidepanel.getSidepanelHeader(sidepanelTeam)).toBeVisible();
 
-			await poHomeChannel.sidepanel.getTeamItemByName(sidepanelTeam).click();
+			await poHomeChannel.sidepanel.getItemLinkByName(sidepanelTeam).click();
 			await poHomeChannel.content.waitForChannel();
 			await expect(page).toHaveURL(`/group/${sidepanelTeam}`);
 		});
@@ -605,28 +607,28 @@ test.describe.serial('feature preview', () => {
 
 				await expect(poHomeChannel.sidepanel.sidepanel).toBeVisible();
 				await expect(poHomeChannel.sidepanel.getSidepanelHeader(Users.user1.data.username)).toBeVisible();
-				await expect(poHomeChannel.sidepanel.getMainRoomByName(Users.user1.data.username)).toBeVisible();
+				await expect(poHomeChannel.sidepanel.getItemByName(Users.user1.data.username)).toBeVisible();
 				await expect(poHomeChannel.sidepanel.getItemByName(discussionName)).toBeVisible();
 				await expect(poHomeChannel.sidepanel.getItemByName(discussionName)).toContainText('hello');
 
-				await poHomeChannel.sidepanel.getMainRoomByName(Users.user1.data.username).click();
+				await poHomeChannel.sidepanel.getItemLinkByName(Users.user1.data.username).click();
 				await poHomeChannel.content.waitForChannel();
 				await poHomeChannel.content.sendMessage('hello DM');
 
 				await expect(poHomeChannel.content.channelHeader).toContainText(Users.user1.data.username);
 				await expect(page).toHaveURL(/direct/);
-				await expect(poHomeChannel.sidepanel.getMainRoomByName(Users.user1.data.username)).toHaveAttribute('aria-current', 'page');
-				await expect(poHomeChannel.sidepanel.getMainRoomByName(Users.user1.data.username)).toContainText('hello DM');
-				await expect(poHomeChannel.sidepanel.getItemByName(discussionName)).not.toHaveAttribute('aria-current');
+				await expect(poHomeChannel.sidepanel.getItemLinkByName(Users.user1.data.username)).toHaveAttribute('aria-current', 'page');
+				await expect(poHomeChannel.sidepanel.getItemByName(Users.user1.data.username)).toContainText('hello DM');
+				await expect(poHomeChannel.sidepanel.getItemLinkByName(discussionName)).not.toHaveAttribute('aria-current');
 				await expect(poHomeChannel.sidepanel.getItemByName(discussionName)).toContainText('hello');
 
-				await poHomeChannel.sidepanel.getItemByName(discussionName).click();
+				await poHomeChannel.sidepanel.getItemLinkByName(discussionName).click();
 				await poHomeChannel.content.waitForChannel();
 
 				await expect(page).toHaveURL(/group/);
-				await expect(poHomeChannel.sidepanel.getMainRoomByName(Users.user1.data.username)).not.toHaveAttribute('aria-current');
-				await expect(poHomeChannel.sidepanel.getMainRoomByName(Users.user1.data.username)).toContainText('hello DM');
-				await expect(poHomeChannel.sidepanel.getItemByName(discussionName)).toHaveAttribute('aria-current', 'page');
+				await expect(poHomeChannel.sidepanel.getItemLinkByName(Users.user1.data.username)).not.toHaveAttribute('aria-current');
+				await expect(poHomeChannel.sidepanel.getItemByName(Users.user1.data.username)).toContainText('hello DM');
+				await expect(poHomeChannel.sidepanel.getItemLinkByName(discussionName)).toHaveAttribute('aria-current', 'page');
 				await expect(poHomeChannel.sidepanel.getItemByName(discussionName)).toContainText('hello');
 				await expect(poHomeChannel.sidepanel.getSidepanelHeader(Users.user1.data.username)).toBeVisible();
 			});
