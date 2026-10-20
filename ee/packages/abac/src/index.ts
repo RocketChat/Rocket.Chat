@@ -46,6 +46,7 @@ import {
 } from './errors';
 import {
 	getAbacRoom,
+	assertRoomAcceptsAttributes,
 	diffAttributes,
 	extractAttribute,
 	diffAttributeSets,
@@ -883,6 +884,7 @@ export class AbacService extends ServiceClass implements IAbacService {
 	): Promise<IAbacRoomMembershipPreview> {
 		await this.ensurePdpAvailable();
 		const room = await getAbacRoom(rid);
+		assertRoomAcceptsAttributes(room);
 		const store = await this.resolveAttributeStore();
 		const normalized = await this.assertRoomAttributesAssignable(store, room, attributes, actor, grant);
 
@@ -942,6 +944,7 @@ export class AbacService extends ServiceClass implements IAbacService {
 			return;
 		}
 
+		assertRoomAcceptsAttributes(room);
 		const normalized = await this.assertRoomAttributesAssignable(store, room, attributes, actor, grant);
 
 		const updated = await Rooms.setAbacAttributesById(rid, normalized);
@@ -960,6 +963,7 @@ export class AbacService extends ServiceClass implements IAbacService {
 	async updateRoomAbacAttributeValues(rid: string, key: string, values: string[], actor: AbacActor): Promise<void> {
 		await this.ensurePdpAvailable();
 		const room = await getAbacRoom(rid);
+		assertRoomAcceptsAttributes(room);
 		const store = await this.resolveAttributeStore();
 
 		await this.enforceCanModifyRoom(store, room, actor);
@@ -1055,6 +1059,7 @@ export class AbacService extends ServiceClass implements IAbacService {
 		await this.ensurePdpAvailable();
 
 		const room = await getAbacRoom(rid);
+		assertRoomAcceptsAttributes(room);
 		const store = await this.resolveAttributeStore();
 
 		await this.enforceCanModifyRoom(store, room, actor);
@@ -1084,6 +1089,7 @@ export class AbacService extends ServiceClass implements IAbacService {
 		await this.ensurePdpAvailable();
 
 		const room = await getAbacRoom(rid);
+		assertRoomAcceptsAttributes(room);
 		const store = await this.resolveAttributeStore();
 
 		await this.enforceCanModifyRoom(store, room, actor);
