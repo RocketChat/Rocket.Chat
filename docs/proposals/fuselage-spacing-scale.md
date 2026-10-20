@@ -47,6 +47,38 @@ Also seen, but not counted:
 - **False positives excluded:** `ResponsiveBar padding={0.25}` is a nivo chart prop.
 - **Not covered by the scan:** values computed at runtime, css-in-js templates, inline `style` and app SCSS.
 
+## Token families
+
+Spacing, rounding and stroke are separate families, each a closed set:
+
+| Family | Tokens | Status |
+|---|---|---|
+| Space | `x4`, `x8`, `x12`, `x16`, `x20`, `x24`, `x32`, `x40`, and their negatives | missing; this proposal adds it |
+| Radius | `none`, `default` (1px), `small` (2px), `medium` (4px), `large` (8px), `extra-large` (20px), `full` | `fuselage-tokens/border.json`, already typed as `BorderRadius` on the `borderRadius*` props |
+| Border width | `none`, `default` (1px), `medium` (2px), `large` (4px), `extra-large` (8px) | `fuselage-tokens/border.json`, already typed as `BorderWidth` |
+
+**Radius** already works the way spacing should:
+
+- Props use the names: `medium` 34 times, `large` 11, `small` 7, `full` 7, `none` 1. Only one `borderRadius={4}` escapes.
+- Raw CSS keeps about 30 literal radii: `50%` ×10, `4px` ×10, `2px` ×4, `100%` ×2, `5px` ×2 and `3px` ×1, mostly in app css-in-js and Fuselage SCSS.
+- `50%`/`100%` map to `full`, `4px` to `medium` and `2px` to `small`. `5px` and `3px` have no token and need design.
+
+## Where `x2` is used, and why it stays out of the scale
+
+None of the 2px spacing values is a scale step. Each one is something else:
+
+| What it is | Sites | Examples | Fix |
+|---|---|---|---|
+| **Gap emulation.** Siblings each take 2px so 4px separates them, or a parent takes −2px and its children +2px. | about 22 in apps; most of Fuselage's own (`Messages`, `MessageReactions`, `MessageMetrics`, `Avatar`, `Field`, `Item`) | `RoomAutoComplete.tsx:81/84`, `RoleCell.tsx:60`, `RoomTags.tsx:14`, `AnalyticsPage.tsx:81` (`Margins inline={2}`), `BusinessHoursForm.tsx:105/112`, `RealTimeMonitoringPage.tsx:88-107`, `AttachmentRow.tsx:7` with `AttachmentText`/`AttachmentTitle`, `LinearScaleElement.tsx:38` | `gap='x4'` on the parent. Same pixels, and the negative margins go away. |
+| **Room for the focus ring**, so a scroll container doesn't clip it | 6 | `FieldGroup paddingInline={2}` inside `Scrollable` in the three outbound-message forms; `ModalContent marginBlockEnd={2}` in the three create modals | It is the focus ring's width (`borderWidth: medium`). `Scrollable`/`ModalContent` should reserve it themselves, so callers drop the prop. |
+| **Optical nudges** | about 7 | `GenericPreview.tsx:9` (icon −2px), `SidebarItemBadges.tsx` ×2 (`InvitationBadge` +2px), `AppRequestItem.tsx:20`/`AppRequestsLoading.tsx:6`, `TemplatePreview.tsx:38`, `AgentInfo.tsx:72` | Alignment (`alignItems`, baseline) instead of a margin; needs a screenshot review. |
+| **Icon-to-text gap inside a `Tag`** | 3 | `AppStatus.tsx:171`, `RoomInfoABACSection.tsx:37`, `FeaturesCard.tsx:73` | `x4`, or let `Tag` space its icon itself. |
+| **Compact padding inside small components** | Fuselage only | `Tag` and `Badge` (`2px 4px`), `MessageReactions`, `MessageToolbar`, `Table` `border-spacing` | Component internals that follow the spec. Not public spacing. |
+| **Stroke compensation** | Fuselage only | `Button` padding `calc(… - 2px)`, `Sidebar` 2px border, `Banner` −2px | `borderWidth('medium')`, so the subtraction follows the border token. |
+| **Other families** | Fuselage only | `Tooltip` `border-radius: 2px`, elevation shadow blur 2px | radius `small`; the elevation shadow token. |
+
+So the public space scale stays at the eight steps. Every 2px either becomes `x4` through `gap` with no visual change, moves to the border or radius family, or stays an internal value of a component.
+
 ## Plan
 
 Each step is its own pull request and can be reverted alone. Steps 1 and 3 change no pixels.
@@ -58,7 +90,7 @@ Each step is its own pull request and can be reverted alone. Steps 1 and 3 chang
 
    Runtime behavior is unchanged.
 2. **Fix the 115 off-scale call sites.** This step needs design sign-off, because rounding moves pixels.
-   - **2px (40 sites):** the scale has no 2px step, yet Fuselage's own components use it in about 40 places. Decide first: either `x2` joins the scale for tight gaps, or the sites go to `0`/`x4`.
+   - **2px (40 sites):** handled as described in "Where `x2` is used". Gap emulation becomes `gap='x4'` (same pixels), focus-ring room moves into `Scrollable`/`ModalContent`, and optical nudges get a screenshot review.
    - **Values a step off** (10, 6, 14, 5, 15, 19, 30, 36, 38, 28): round to the nearest step. Proposed: 10→x8 or x12 per site, 6→x4 or x8, 5→x4, 14→x12 or x16, 15→x16, 19→x20, 28→x24 or x32, 30→x32, 36→x32 or x40, 38→x40.
    - **Values above the scale** (56, 60, 64, 96, 144): these are layout offsets, not spacing (`ImageGallery` swiper breakpoints, empty-state offsets). Move them to explicit CSS (css-in-js or a class), outside the spacing props.
    - **Verification:** a screenshot A/B of each changed view.
@@ -71,9 +103,14 @@ Each step is its own pull request and can be reverted alone. Steps 1 and 3 chang
    - **Changeset:** major for `@rocket.chat/fuselage`, since it narrows public prop types.
 6. **Tamagui pilot:** rebase on top. Its `space` tokens become the eight steps plus their negatives, and its `size` tokens go away.
 
+7. **Radius cleanup:**
+   - the one `borderRadius={4}` becomes `'medium'`;
+   - the about 30 raw CSS radii move to `borderRadius()` / `lengths.border-radius()` (`50%`/`100%` → `full`, `4px` → `medium`, `2px` → `small`);
+   - `5px` and `3px` go to design.
+8. **Stroke compensations** in Fuselage (`Button`, `Banner`, `Sidebar`) read `borderWidth('medium')` instead of a literal `2px`.
+
 ## Decisions needed
 
-- Does `x2` join the scale?
 - Rounding direction for 10px, 14px, 28px and 36px (per site, or one rule)?
 - Should numbers equal to a step (`8`) stay accepted as an alias of the token? Accepting them keeps step 3 optional, but leaves two spellings of the same value.
 
