@@ -2,6 +2,7 @@
    place is fixed by its first appearance and an imported stylesheet may open a `fuselage` block */
 @layer reset, fuselage;
 
+@import './styles/tamagui-base.css';
 @import './fonts/inter.css';
 @import './styles/link.css';
 @import './components/index.css';

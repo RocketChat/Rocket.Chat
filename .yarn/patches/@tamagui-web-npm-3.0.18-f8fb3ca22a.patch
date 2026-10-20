@@ -76,6 +76,22 @@ index 83989943c050330991749f27d17eb6a05a76ba7e..85982b5bbaa2e7c4d551420527131349
  				onPress?.(e);
  				onLongPress?.(e);
  			} : void 0,
+diff --git a/dist/cjs/hooks/useThemeState.cjs b/dist/cjs/hooks/useThemeState.cjs
+index 2059de4ec121fbf77cb468c3b4dbffab342ff7b9..d47d1c9536e539878c54807397222f9bc517eecf 100644
+--- a/dist/cjs/hooks/useThemeState.cjs
++++ b/dist/cjs/hooks/useThemeState.cjs
+@@ -86,9 +86,8 @@ const useThemeState = (props, isRoot = false, keys, schemeKeys, cascadeOnChange
+ 	"use no memo";
+ 	const { disable } = props;
+ 	const parentId = (0, import_react.useContext)(ThemeStateContext);
+-	if (!parentId && !isRoot) throw new Error(process.env.NODE_ENV === "development" ? `${import_constants2.MISSING_THEME_MESSAGE}
+-
+-Looked for theme${props.name ? ` "${props.name}"` : ""}, but no parent theme context was found (parentId: ${parentId}).` : import_constants2.MISSING_THEME_MESSAGE);
++	// Rocket.Chat: a frame with no ThemeProvider above acts as its own root instead of throwing
++	if (!parentId && !isRoot) isRoot = true;
+ 	if (disable) return states.get(parentId) || {
+ 		id: "",
+ 		name: "light",
 diff --git a/dist/esm/createComponent.mjs b/dist/esm/createComponent.mjs
 index db5dce2ed326125abc738ed7be58ea983e36e35d..fbfd70c4c2c978d509a443e4b5aa1356bbf06e28 100644
 --- a/dist/esm/createComponent.mjs
@@ -154,3 +170,19 @@ index db5dce2ed326125abc738ed7be58ea983e36e35d..fbfd70c4c2c978d509a443e4b5aa1356
  				onPress?.(e);
  				onLongPress?.(e);
  			} : void 0,
+diff --git a/dist/esm/hooks/useThemeState.mjs b/dist/esm/hooks/useThemeState.mjs
+index a9f1ee343940f8677a9967d514e8db8e7abbe937..93d9dfefa8aef2bb2e95bf8d2e607b43305be24e 100644
+--- a/dist/esm/hooks/useThemeState.mjs
++++ b/dist/esm/hooks/useThemeState.mjs
+@@ -50,9 +50,8 @@ const useThemeState = (props, isRoot = false, keys, schemeKeys, cascadeOnChange
+ 	"use no memo";
+ 	const { disable } = props;
+ 	const parentId = useContext(ThemeStateContext);
+-	if (!parentId && !isRoot) throw new Error(process.env.NODE_ENV === "development" ? `${MISSING_THEME_MESSAGE}
+-
+-Looked for theme${props.name ? ` "${props.name}"` : ""}, but no parent theme context was found (parentId: ${parentId}).` : MISSING_THEME_MESSAGE);
++	// Rocket.Chat: a frame with no ThemeProvider above acts as its own root instead of throwing
++	if (!parentId && !isRoot) isRoot = true;
+ 	if (disable) return states.get(parentId) || {
+ 		id: "",
+ 		name: "light",
