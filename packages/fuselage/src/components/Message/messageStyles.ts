@@ -36,3 +36,12 @@ export const textScale = (name: string) => {
 	const { fontWeight, ...scale } = fontScale(name)!;
 	return { ...scale, fontWeight: fontWeight as 400 };
 };
+
+/** Clamps text to `lines` lines; Tamagui emits the `-webkit-` props but doesn't type them, hence the cast. */
+export const lineClamp = (lines: number) =>
+	({
+		display: '-webkit-box',
+		overflow: 'hidden',
+		WebkitBoxOrient: 'vertical',
+		WebkitLineClamp: lines,
+	}) as unknown as { overflow: 'hidden' };

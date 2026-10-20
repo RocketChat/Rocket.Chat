@@ -1,10 +1,7 @@
-import { cx } from '../../../helpers/composeClassNames';
-import Message, { type MessageProps } from '../Message';
+import { ThreadMessageBase, type MessageProps } from '../Message';
 
 export type ThreadMessageProps = MessageProps;
 
-const ThreadMessage = ({ className, ...props }: ThreadMessageProps) => (
-	<Message {...props} className={cx('rcx-message-thread', className)} />
-);
+const ThreadMessage = (props: ThreadMessageProps) => <ThreadMessageBase className='rcx-message-thread' {...props} />;
 
 export default ThreadMessage;
