@@ -188,7 +188,7 @@ describe('Export - exportRoomMessages', () => {
 	const userData = {
 		_id: faker.database.mongodbObjectId(),
 		name: faker.person.fullName(),
-		username: faker.internet.userName(),
+		username: faker.internet.username(),
 	};
 
 	before(() => {

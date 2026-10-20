@@ -33,7 +33,7 @@ test.describe.serial('settings-account-profile', () => {
 		// FIXME: solve test intermitencies
 		test.skip('expect update profile with new name/username', async () => {
 			const newName = faker.person.fullName();
-			const newUsername = faker.internet.userName({ firstName: newName });
+			const newUsername = faker.internet.username({ firstName: newName });
 
 			await poAccountProfile.inputName.fill(newName);
 			await poAccountProfile.inputUsername.fill(newUsername);
