@@ -82,10 +82,10 @@ window.RocketChatDesktop?.setUserPresenceState?.({
 | ------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `loggedIn`          | `true` when a user session exists.                                                                                                                                     |
 | `connection`        | The state of the connection: `'connected'`, `'connecting'` or `'disconnected'`.                                                                                        |
-| `status`            | The status of the user: `'online'`, `'away'`, `'busy'` or `'offline'`. The field is absent when no user session exists.                                                |
+| `status`            | The status of the user: `'online'`, `'away'`, `'busy'` or `'offline'`. The field is absent when no user session exists, or while the web client loads the user record. |
 | `statusText`        | The custom status text. The field is absent when the user has no text.                                                                                                 |
 | `statusExpiresAt`   | The date and time when the current status ends, in ISO 8601 format. The field is absent when the status has no end.                                                    |
-| `availableStatuses` | The statuses that the user can select now. The list is empty when the workspace or an administrator disabled presence.                                                 |
+| `availableStatuses` | The statuses that the user can select now. The list is empty when the workspace or an administrator disabled presence, or while the web client loads the user record.  |
 | `customStatuses`    | The custom statuses that the workspace administrator created. Each item has an `id`, a `name` and a base `status`. The list is empty when the user cannot select them. |
 
 The handler receives a `DesktopUserStatusChangeRequest` (`{ status, customStatusId? }`). To select one of the `customStatuses`, send its `id` in `customStatusId`.

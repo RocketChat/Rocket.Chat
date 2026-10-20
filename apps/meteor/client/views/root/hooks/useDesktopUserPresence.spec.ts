@@ -3,8 +3,11 @@ import type { IUser } from '@rocket.chat/core-typings';
 import type { IRocketChatDesktop } from '@rocket.chat/desktop-api';
 import { mockAppRoot } from '@rocket.chat/mock-providers';
 import { clientCallbacks } from '@rocket.chat/ui-client';
+import { UserContext } from '@rocket.chat/ui-contexts';
 import { QueryClient } from '@tanstack/react-query';
 import { act, renderHook, waitFor } from '@testing-library/react';
+import { createElement, useContext } from 'react';
+import type { ReactNode } from 'react';
 
 import { useDesktopUserPresence } from './useDesktopUserPresence';
 
@@ -53,6 +56,25 @@ const renderWithStatusesLoaded = async (root: ReturnType<typeof mockAppRoot>) =>
 	await act(async () => undefined);
 };
 
+// Keeps the user id of a session and serves the user record from `record`, as the client does while it resumes a session.
+const renderWithUserRecord = (initialRecord: IUser | null) => {
+	let record = initialRecord;
+	const AppRoot = mockAppRoot().withAnonymous().build();
+	const Session = ({ children }: { children: ReactNode }) =>
+		createElement(UserContext.Provider, { value: { ...useContext(UserContext), userId: user._id, user: record } }, children);
+
+	const { rerender } = renderHook(() => useDesktopUserPresence(), {
+		wrapper: ({ children }) => createElement(AppRoot, null, createElement(Session, null, children)),
+	});
+
+	return {
+		setRecord: (nextRecord: IUser | null) => {
+			record = nextRecord;
+			rerender();
+		},
+	};
+};
+
 describe('useDesktopUserPresence', () => {
 	it('sends the status, custom text, expiration and the statuses the user can select', async () => {
 		renderHook(() => useDesktopUserPresence(), {
@@ -80,6 +102,17 @@ describe('useDesktopUserPresence', () => {
 		renderHook(() => useDesktopUserPresence(), { wrapper: mockAppRoot().withAnonymous().build() });
 
 		expect(lastPresence()).toEqual({ loggedIn: false, connection: 'connected', availableStatuses: [], customStatuses: [] });
+	});
+
+	it('stays logged in while a resumed session loads the user record', () => {
+		const { setRecord } = renderWithUserRecord(null);
+
+		expect(lastPresence()).toEqual({ loggedIn: true, connection: 'connected', availableStatuses: [], customStatuses: [] });
+
+		setRecord(user);
+
+		expect(lastPresence()).toMatchObject({ loggedIn: true, status: 'busy', statusText: 'In a meeting' });
+		expect(setUserPresenceState.mock.calls.map(([presence]) => presence.loggedIn)).not.toContain(false);
 	});
 
 	it.each([

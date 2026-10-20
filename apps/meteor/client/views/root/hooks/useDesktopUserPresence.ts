@@ -1,6 +1,6 @@
 import { UserStatus } from '@rocket.chat/core-typings';
 import type { DesktopCustomUserStatus, DesktopUserPresence, DesktopUserStatus } from '@rocket.chat/desktop-api';
-import { useConnectionStatus, useSetting, useUser } from '@rocket.chat/ui-contexts';
+import { useConnectionStatus, useSetting, useUser, useUserId } from '@rocket.chat/ui-contexts';
 import { useEffect, useMemo } from 'react';
 
 import { useSetUserStatus } from '../../../hooks/useSetUserStatus';
@@ -24,6 +24,7 @@ const toDesktopConnection = (status: ReturnType<typeof useConnectionStatus>['sta
 };
 
 export const useDesktopUserPresence = () => {
+	const userId = useUserId();
 	const user = useUser();
 	const { status: connectionStatus } = useConnectionStatus();
 	const invisibleAllowed = useSetting('Accounts_AllowInvisibleStatusOption', true);
@@ -33,7 +34,10 @@ export const useDesktopUserPresence = () => {
 	const allowUserStatusMessageChange = useSetting('Accounts_AllowUserStatusMessageChange', true);
 	const { mutateAsync: setUserStatus } = useSetUserStatus();
 
-	const loggedIn = Boolean(user);
+	// A resumed session sets the user id before the user record arrives. Read the login state from the id, so the
+	// desktop app does not see a logout in between.
+	const loggedIn = Boolean(userId);
+	const userLoaded = Boolean(user);
 	const statuses = useUserStatuses({ enabled: loggedIn });
 	const connection = toDesktopConnection(connectionStatus);
 	const status = isDesktopStatus(user?.status) ? user.status : undefined;
@@ -43,12 +47,12 @@ export const useDesktopUserPresence = () => {
 		presenceBroadcastDisabled || workspacePresenceDisabled || (user?.presenceDisabledByAdmin === true && adminStatusHidingEnabled);
 
 	const availableStatuses = useMemo<DesktopUserStatus[]>(
-		() => (!loggedIn || presenceDisabled ? [] : desktopStatuses.filter((status) => invisibleAllowed || status !== 'offline')),
-		[loggedIn, presenceDisabled, invisibleAllowed],
+		() => (!userLoaded || presenceDisabled ? [] : desktopStatuses.filter((status) => invisibleAllowed || status !== 'offline')),
+		[userLoaded, presenceDisabled, invisibleAllowed],
 	);
 
 	const customStatuses = useMemo<DesktopCustomUserStatus[]>(() => {
-		if (!loggedIn || presenceDisabled || !allowUserStatusMessageChange) {
+		if (!userLoaded || presenceDisabled || !allowUserStatusMessageChange) {
 			return [];
 		}
 
@@ -57,7 +61,7 @@ export const useDesktopUserPresence = () => {
 				? [{ id, name, status: statusType }]
 				: [],
 		);
-	}, [loggedIn, presenceDisabled, allowUserStatusMessageChange, statuses, invisibleAllowed]);
+	}, [userLoaded, presenceDisabled, allowUserStatusMessageChange, statuses, invisibleAllowed]);
 
 	useEffect(() => {
 		window.RocketChatDesktop?.setUserStatusChangeHandler?.(async ({ status, customStatusId }) => {
