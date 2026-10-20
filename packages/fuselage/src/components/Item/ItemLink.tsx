@@ -1,7 +1,40 @@
+import { styled, Text, View, type GetProps } from '@tamagui/web';
 import type { AnchorHTMLAttributes, ButtonHTMLAttributes, RefAttributes } from 'react';
+import { useEffect, useId } from 'react';
 
 import { useItemContext } from './ItemContext';
+import { overlayStyle } from './itemStyles';
 import { cx } from '../../helpers/composeClassNames';
+import { withFuselageProvider } from '../FuselageProvider/FuselageProvider';
+
+const ItemLinkFrame = styled(Text, {
+	display: 'block',
+	overflow: 'hidden',
+	width: '100%',
+	margin: 0,
+	padding: 0,
+	cursor: 'pointer',
+	textAlign: 'start',
+	whiteSpace: 'nowrap',
+	wordWrap: 'inherit',
+	textDecorationLine: 'none',
+	textOverflow: 'ellipsis',
+	color: 'inherit',
+	borderWidth: 0,
+	outlineWidth: 0,
+	outlineStyle: 'none',
+	backgroundColor: 'transparent',
+	backgroundImage: 'none',
+	fontFamily: 'inherit',
+	fontSize: 'inherit',
+	fontWeight: 'inherit',
+	fontStyle: 'inherit',
+	lineHeight: 'inherit',
+	letterSpacing: 'inherit',
+	fontVariantNumeric: 'inherit',
+});
+
+const ItemLinkOverlay = styled(View, overlayStyle);
 
 type ItemLinkAnchorProps = {
 	is?: 'a';
@@ -20,23 +53,28 @@ export type ItemLinkProps = ItemLinkAnchorProps | ItemLinkButtonProps;
  * The primary target of an `Item`. It covers the whole row, so actions sit beside it instead of inside it.
  */
 const ItemLink = (props: ItemLinkProps) => {
-	const { descriptionIds } = useItemContext();
+	const id = useId();
+	const { descriptionIds, registerLink } = useItemContext();
+
+	useEffect(() => registerLink(id), [id, registerLink]);
 
 	const ariaDescribedBy = [props['aria-describedby'], ...descriptionIds].filter(Boolean).join(' ') || undefined;
 
-	if (props.is === 'button') {
-		const { is: _is, className, type = 'button', ...rest } = props;
-
-		return <button {...rest} type={type} aria-describedby={ariaDescribedBy} className={cx('rcx-item__link', className)} />;
-	}
-
-	const { is: _is, className, children, ...rest } = props;
+	const { is: Tag = 'a', className, children, ...rest } = props;
+	const type = Tag === 'button' ? ((rest as ButtonHTMLAttributes<HTMLButtonElement>).type ?? 'button') : undefined;
 
 	return (
-		<a {...rest} aria-describedby={ariaDescribedBy} className={cx('rcx-item__link', className)}>
+		<ItemLinkFrame
+			{...(rest as GetProps<typeof ItemLinkFrame>)}
+			{...(type && ({ type } as GetProps<typeof ItemLinkFrame>))}
+			render={Tag}
+			aria-describedby={ariaDescribedBy}
+			className={cx('rcx-item__link', className)}
+		>
 			{children}
-		</a>
+			<ItemLinkOverlay aria-hidden className='rcx-item__link-overlay' />
+		</ItemLinkFrame>
 	);
 };
 
-export default ItemLink;
+export default withFuselageProvider(ItemLink);
