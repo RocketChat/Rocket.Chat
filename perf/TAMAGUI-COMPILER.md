@@ -156,6 +156,13 @@ The gain is structural rather than speed.
 
 ## `Box` styling props as Tamagui tokens
 
+**Superseded by draft PR #42974.** Fuselage components will take no styling props: only DOM and ARIA attributes and the variations they declare. That work lands on `develop`; the pilot is then rebased on it.
+
+- Step 5 of that plan removes `BoxProps`, `Margins` and `BoxTransforms`, which makes the token routing in `useTamaguiBoxProps` below moot.
+- Step 6 of that plan drops `useTamaguiBoxProps` and `takesBoxTransforms` and turns components into exported frames with the pattern in "Exported frames without a provider" (`variantClass`, `asPublicFrame`). Every component root that spreads `useTamaguiBoxProps` today (55 of them) then stops blocking flattening.
+
+The token configuration below is still useful for the frames' own styles (the space scale of #42973). Don't extend the routing to more props.
+
 Tamagui v3 tokens take no `$` prefix (the runtime even warns about `$x8`), and they resolve per category (`space`, `size`, `radius`). That matches the `x<n>` grammar of `Box` styling props, so `marginBlockEnd='x8'` can be a Tamagui prop as is.
 
 **Prototype:**
