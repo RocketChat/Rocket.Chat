@@ -115,6 +115,20 @@ Tamagui v3 tokens take no `$` prefix (the runtime even warns about `$x8`), and t
 - **`none` is a reserved CSS keyword, and Tamagui rejects it as a token name.** `Box` reads `none` as `0px`, so props set to `none` stay on css-in-js.
 - **`!important` is lost.** css-in-js emitted `!important` and unlayered rules. Equal computed styles in every check here, but an unlayered app rule on the same property would now win.
 
+**Depends on the spacing scale (draft PR #42973):**
+
+- The official space scale is `x4`, `x8`, `x12`, `x16`, `x20`, `x24`, `x32` and `x40`, plus their negatives, `0`, `none` and `auto`.
+- Sizes (width, height, `size`, min/max, inset) are not tokens. Their `x<n>` becomes plain px numbers.
+
+Once that lands, this prototype gets simpler:
+
+- the `space` tokens shrink from about 400 to the 8 steps and their negatives;
+- the `size` tokens and the hand-picked `largeMeasures` list go away;
+- so does the off-token fallback in `useTamaguiBoxProps`;
+- so do most of the injected `:root` properties (about 3-4 kB today).
+
+Rebase this prototype onto it rather than keeping its own token list.
+
 **Results:**
 
 | | pilot | tokens |
