@@ -13,7 +13,6 @@ import { withFuselageProvider } from '../FuselageProvider/FuselageProvider';
 
 const ItemGroupHeaderFrame = styled(Text, {
 	...itemRowStyle,
-	group: 'rcx-item-group-header' as never,
 	minHeight: size('x28'),
 	color: itemColorFontSecondary,
 	...textStyle('c2'),

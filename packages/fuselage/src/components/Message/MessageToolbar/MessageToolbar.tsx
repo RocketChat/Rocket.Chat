@@ -21,7 +21,8 @@ const MessageToolbarFrame = styled(View, {
 	borderColor: String(strokeColors['stroke-extra-light']),
 	borderRadius: toCSSValue('--rcx-message-toolbar-border-radius', toCSSValue('--rcx-border-radius-medium', borderRadius('medium')!)),
 	backgroundColor: String(surfaceColors['surface-room']),
-	opacity: { 'default': 0, 'group-hover/message': 1, 'group-focus-visible/message': 1 },
+	// Revealed by its message's hover or focus in `Messages.styles.css`
+	opacity: 0,
 
 	variants: {
 		inMessage: {

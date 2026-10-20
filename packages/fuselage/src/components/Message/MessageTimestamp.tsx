@@ -13,8 +13,8 @@ const MessageTimestampFrame = styled(Text, {
 	...truncatedText,
 	flexShrink: 0,
 	marginInline: spacing('x2'),
-	// secondary-info fails contrast against the hover surface
-	color: { 'default': String(textIconColors['font-secondary-info']), 'group-hover/message': String(textIconColors['font-default']) },
+	// The hover color is in `Messages.styles.css`: a group clause would subscribe every timestamp to its message's hover
+	color: String(textIconColors['font-secondary-info']),
 });
 
 export type MessageTimestampProps = HTMLAttributes<HTMLSpanElement>;
