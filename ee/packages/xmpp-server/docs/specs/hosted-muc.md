@@ -196,6 +196,19 @@ not include the XMPP check, which runs only in `beforeAddUsersToRoom`. Test:
 `hosted-muc.spec.ts`, "refuses JIDs listed when creating a group that is not
 XMPP-federated".
 
+### D7 Banning an XMPP occupant neither removes them nor keeps them out
+
+A ban in Rocket.Chat keeps the subscription with status `BANNED`, which R4 refuses on the
+next join. An XMPP user who is an occupant when banned stays in the room: their messages
+are still stored and relayed, and they keep receiving the room's. When they later leave,
+the leave removes their membership as R8 asks, which deletes the banned subscription with
+it, so their next join is admitted. Where: the XMPP hooks in
+`apps/meteor/ee/server/hooks/xmpp/index.ts` act on removals but not on
+`afterBanFromRoomCallback`, and `XMPPServerService.onHostedOccupantLeft` removes any
+subscription. A fix removes the occupant on a ban, with status 301 (XEP-0045 §9.1), and
+leaves a banned subscription in place when they leave. Test: `hosted-muc.spec.ts`, "removes
+a banned XMPP occupant and keeps them out after they leave".
+
 ## Open questions
 
 - **Q1** Should a kick carry the reason given in Rocket.Chat? `MucRoom.kick` accepts one and

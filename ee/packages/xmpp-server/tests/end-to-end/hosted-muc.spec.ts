@@ -1,9 +1,10 @@
 import assert from 'node:assert/strict';
 import { after, before, describe, it } from 'node:test';
+import { setTimeout as sleep } from 'node:timers/promises';
 
 import type { IRoom } from '@rocket.chat/core-typings';
 
-import { federationPolling, uniqueSuffix, withUppercaseDomain } from './helper/config';
+import { DUPLICATE_SETTLE_MS, federationPolling, uniqueSuffix, withUppercaseDomain } from './helper/config';
 import { isGroupchat, isOccupantPresence, isRoomInvite, isRoomSubject, replacedId, statusCodes } from './helper/predicates';
 import {
 	banFromRoom,
@@ -18,6 +19,7 @@ import {
 	kickFromRoom,
 	leaveRoom,
 	listMemberUsernames,
+	messagesWithText,
 	sendMessage,
 	setRoomTopic,
 	setSetting,
@@ -170,6 +172,25 @@ describe('XMPP federation: rooms hosted by Rocket.Chat', () => {
 			await banFromRoom(owner, room, aliceUser._id);
 
 			await assert.rejects(alice.joinRoom(muc), (error: unknown) => error instanceof StanzaError && error.condition === 'forbidden');
+		});
+
+		// Known defect: ../../docs/specs/hosted-muc.md#d7-banning-an-xmpp-occupant-neither-removes-them-nor-keeps-them-out
+		it.skip('removes a banned XMPP occupant and keeps them out after they leave (D7)', async () => {
+			const banned = await createHostedRoom(rc, owner, { type: 'c', name: `xe2e-ban-${uniqueSuffix()}` });
+			const bannedMuc = mucJidOf(banned);
+			await alice.joinRoom(bannedMuc);
+			await waitForMember(owner, banned, alice.bareJid);
+			const aliceUser = await findUser(rc, alice.bareJid);
+			assert.ok(aliceUser);
+			await banFromRoom(owner, banned, aliceUser._id);
+
+			const text = `after the ban ${uniqueSuffix()}`;
+			await alice.sendGroupchat(bannedMuc, text);
+			await alice.leaveRoom(bannedMuc);
+			await sleep(DUPLICATE_SETTLE_MS);
+
+			assert.deepEqual(await messagesWithText(owner, banned, text), []);
+			await assert.rejects(alice.joinRoom(bannedMuc), (error: unknown) => error instanceof StanzaError && error.condition === 'forbidden');
 		});
 	});
 
