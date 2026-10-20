@@ -35,6 +35,16 @@ const ProgressBarFrame = styled(View, {
 
 const ProgressBarFill = styled(View, resetBox);
 
+const ProgressBarShine = styled(View, {
+	position: 'absolute',
+	inset: 0,
+	width: 'inherit',
+	animation: 'rcx-progress-bar__animation 2s ease-out infinite',
+	opacity: 0,
+	borderRadius: progressBarBorderRadius,
+	background: toCSSValue('--rcx-progress-bar-color-shine', `${surfaceColors['surface-light']}`),
+});
+
 const getWidth = (percentage: number): string => `${Math.min(Math.max(0, percentage), 100).toFixed(1)}%`;
 
 const colors = {
@@ -79,7 +89,7 @@ function ProgressBar({ percentage, variant = 'info', error, animated, light = fa
 
 	return (
 		<ProgressBarFrame {...(frameProps as GetProps<typeof ProgressBarFrame>)}>
-			<ProgressBarFill {...(fillProps as GetProps<typeof ProgressBarFill>)} />
+			<ProgressBarFill {...(fillProps as GetProps<typeof ProgressBarFill>)}>{animated && <ProgressBarShine aria-hidden />}</ProgressBarFill>
 		</ProgressBarFrame>
 	);
 }
