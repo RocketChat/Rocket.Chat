@@ -28,13 +28,15 @@ const serve = (dir) =>
 		server.listen(0, '127.0.0.1', () => ok({ url: `http://127.0.0.1:${server.address().port}`, close: () => server.close() }));
 	});
 
-const variants = [
-	{ name: 'develop', dir: 'out-base', root: 0 },
-	{ name: 'branch, provider per component', dir: 'out-head', root: 0 },
-	{ name: 'branch, root provider', dir: 'out-head', root: 1 },
-];
+const variants = (process.env.VARIANTS ?? 'develop:out-base:0,branch provider per component:out-head:0,branch root provider:out-head:1')
+	.split(',')
+	.map((v) => {
+		const [name, dir, root] = v.split(':');
+		return { name, dir, root: Number(root) };
+	});
 
-const servers = Object.fromEntries(await Promise.all(['out-base', 'out-head'].map(async (d) => [d, await serve(join(here, d))])));
+const dirs = [...new Set(variants.map((v) => v.dir))];
+const servers = Object.fromEntries(await Promise.all(dirs.map(async (d) => [d, await serve(join(here, d))])));
 const browser = await chromium.launch();
 
 const once = async (variant, scenario) => {
