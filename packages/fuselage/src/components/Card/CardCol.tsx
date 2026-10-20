@@ -1,7 +1,7 @@
 import type { GetProps } from '@tamagui/web';
 import type { AllHTMLAttributes, ReactNode } from 'react';
 
-import { CardBlock } from './CardFrames';
+import { CardColFrame } from './CardFrames';
 import { withFuselageProvider } from '../FuselageProvider/FuselageProvider';
 
 export type CardColProps = {
@@ -9,9 +9,9 @@ export type CardColProps = {
 } & AllHTMLAttributes<HTMLElement>;
 
 const CardCol = ({ children, ...props }: CardColProps) => (
-	<CardBlock className='rcx-card__col' {...(props as GetProps<typeof CardBlock>)}>
+	<CardColFrame className='rcx-card__col' {...(props as GetProps<typeof CardColFrame>)}>
 		{children}
-	</CardBlock>
+	</CardColFrame>
 );
 
 export default withFuselageProvider(CardCol);
