@@ -57,6 +57,13 @@ describe('normalizeDomain', () => {
 		expect(() => normalizeDomain(domain)).toThrow(InvalidJidError);
 	});
 
+	it.each(['good.com/evil.net', 'good.com?x', 'good.com#x', 'good.com\\x', 'go\tod.com', 'good.com\nx', 'good%2Ecom'])(
+		'throws on %j instead of reading it as a URL host (R4)',
+		(domain) => {
+			expect(() => normalizeDomain(domain)).toThrow(InvalidJidError);
+		},
+	);
+
 	it('strips a trailing ideographic full stop as it does an ASCII dot (R4)', () => {
 		expect(normalizeDomain('example.com。')).toBe('example.com');
 	});

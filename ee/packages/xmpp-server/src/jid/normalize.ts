@@ -2,12 +2,15 @@ import { domainToASCII } from 'node:url';
 
 import { InvalidJidError } from '../errors';
 
+const URL_SYNTAX = /[\s/?#\\%]/;
+
 /**
  * Normalizes an XMPP domain for trust comparisons (dialback, spoof checks, allow lists).
  * Applies IDNA ASCII conversion and lowercasing. Full stringprep/PRECIS is out of scope.
  */
 export function normalizeDomain(domain: string): string {
-	const ascii = domainToASCII(domain.trim()).replace(/\.$/, '');
+	const trimmed = domain.trim();
+	const ascii = URL_SYNTAX.test(trimmed) ? '' : domainToASCII(trimmed).replace(/\.$/, '');
 	if (!ascii || ascii.split('.').includes('')) {
 		throw new InvalidJidError(domain);
 	}

@@ -56,14 +56,16 @@ localparts, and compare domains the way DNS does.
   inbound stanza, and the bare JID is the local username of their record
   ([ADR 0006](../adr/0006-remote-users-are-local-users-keyed-by-bare-jid.md)).
 - **R4** Domains are normalized before any comparison: trimmed, IDNA converted to ASCII, one
-  trailing dot removed, lowercased. A domain that does not survive the conversion, or is
-  left with an empty label (`a..b`, `.a`, `a..`), raises `InvalidJidError` and the stanza or
-  stream carrying it is rejected. Normalizing a normalized domain changes nothing. An accepted inbound
-  stanza's `from` and `to` carry their domains in normalized form, so a remote account has
-  one record and a message one event id however the peer spells its domain. A JID a
-  Rocket.Chat user types, opening a DM or adding a member to an XMPP room, is taken with its
-  domain normalized the same way, internationalized domains included, so it names the record
-  a stanza from that account does.
+  trailing dot removed, lowercased. A domain that does not survive the conversion, holds a
+  character a URL host parser would cut at, drop or decode (`/`, `?`, `#`, `\`, `%`,
+  inner whitespace), or is left with an empty label (`a..b`, `.a`, `a..`), raises
+  `InvalidJidError` and the stanza or stream carrying it is rejected. Normalizing a
+  normalized domain changes nothing. An accepted inbound stanza's `from` and `to` carry
+  their domains in normalized form, so a remote account has one record and a message one
+  event id however the peer spells its domain. A JID a Rocket.Chat user types, opening a DM
+  or adding a member to an XMPP room, is taken with its domain normalized the same way,
+  internationalized domains included, so it names the record a stanza from that account
+  does.
 - **R5** Allow and deny lists are evaluated on normalized domains. A domain on the deny list
   is refused regardless of the allow list; an empty allow list allows every domain.
 - **R6** The MUC service domain is `<subdomain>.<domain>`, normalized the same way.
