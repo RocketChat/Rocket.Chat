@@ -909,6 +909,31 @@ describe('AbacService (unit)', () => {
 		});
 	});
 
+	describe.each([
+		['a federated room', { _id: 'r1', federated: true }, 'error-abac-federated-room-attributes'],
+		['a discussion', { _id: 'r1', prid: 'parent' }, 'error-abac-discussion-room-attributes'],
+	])('attribute writes on %s', (_, room, code) => {
+		beforeEach(() => {
+			mockFindOneByIdAndType.mockReset();
+			mockFindOneByIdAndType.mockResolvedValue(room);
+		});
+
+		it.each([
+			['setRoomAbacAttributes', () => service.setRoomAbacAttributes('r1', { dept: ['eng'] }, fakeActor, 'manage-abac-admin-rooms')],
+			['addRoomAbacAttributeByKey', () => service.addRoomAbacAttributeByKey('r1', 'dept', ['eng'], fakeActor)],
+			['replaceRoomAbacAttributeByKey', () => service.replaceRoomAbacAttributeByKey('r1', 'dept', ['eng'], fakeActor)],
+			['updateRoomAbacAttributeValues', () => service.updateRoomAbacAttributeValues('r1', 'dept', ['eng'], fakeActor)],
+			['previewRoomMembers', () => service.previewRoomMembers('r1', { dept: ['eng'] }, fakeActor, {}, 'manage-abac-admin-rooms')],
+		])('refuses %s', async (_, write) => {
+			await expect(write()).rejects.toThrow(code);
+
+			expect(mockSetAbacAttributesById).not.toHaveBeenCalled();
+			expect(mockInsertAbacAttributeIfNotExistsById).not.toHaveBeenCalled();
+			expect(mockUpdateAbacAttributeValuesArrayFilteredById).not.toHaveBeenCalled();
+			expect(mockUpdateSingleAbacAttributeValuesById).not.toHaveBeenCalled();
+		});
+	});
+
 	describe('isAbacAttributeInUseByKey', () => {
 		beforeEach(() => {
 			mockAbacFindOne.mockReset();

@@ -97,6 +97,7 @@ import { IS_EE, URL_MONGODB } from '../../e2e/config/constants';
 		await setSetting('ABAC_Enabled', true);
 		await setSetting('ABAC_Restrict_To_Owned_Attributes', true);
 		await setSetting('ABAC_Enforce_All_Rooms', false);
+		await setSetting('ABAC_Required_Attributes', []);
 		await request
 			.post(`${v1}/abac/attributes`)
 			.set(credentials)
@@ -195,8 +196,9 @@ import { IS_EE, URL_MONGODB } from '../../e2e/config/constants';
 			expect(res.body.room).to.not.have.property('abacAttributes');
 		});
 
-		it('refuses an owner removing every attribute while enforcement is on', async () => {
+		it('refuses an owner removing every attribute while enforcement is on and an attribute is required', async () => {
 			const rid = await ownedFreshRoom();
+			await setSetting('ABAC_Required_Attributes', [dept]);
 			await setSetting('ABAC_Enforce_All_Rooms', true);
 
 			try {
@@ -205,6 +207,21 @@ import { IS_EE, URL_MONGODB } from '../../e2e/config/constants';
 					.expect((res) => {
 						expect(res.body).to.include({ error: 'error-abac-room-attributes-cleared', errorType: 'error-abac-room-attributes-cleared' });
 					});
+			} finally {
+				await setSetting('ABAC_Enforce_All_Rooms', false);
+				await setSetting('ABAC_Required_Attributes', []);
+			}
+		});
+
+		it('lets an owner remove every attribute while enforcement is on and no attribute is required', async () => {
+			const rid = await ownedFreshRoom();
+			await setSetting('ABAC_Enforce_All_Rooms', true);
+
+			try {
+				await writeAttributes(rid, {}, ownerCredentials).expect(200);
+
+				const res = await request.get(api('rooms.info')).set(credentials).query({ roomId: rid }).expect(200);
+				expect(res.body.room).to.not.have.property('abacAttributes');
 			} finally {
 				await setSetting('ABAC_Enforce_All_Rooms', false);
 			}
