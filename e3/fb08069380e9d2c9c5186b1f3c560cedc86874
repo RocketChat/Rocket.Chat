@@ -1,0 +1,97 @@
+ee/packages/xmpp-server/src/xml/build.ts
+  s_22158ff20cd246::t_478505f35281cd 1-29
+ee/packages/xmpp-server/.gitignore
+  s_22158ff20cd246::t_478505f35281cd 1-2
+ee/packages/xmpp-server/src/xml/StanzaParser.ts
+  s_22158ff20cd246::t_478505f35281cd 1-176
+ee/packages/xmpp-server/src/stream/OutboundSession.ts
+  s_22158ff20cd246::t_478505f35281cd 1-370
+ee/packages/xmpp-server/src/types/ltx.d.ts
+  s_22158ff20cd246::t_478505f35281cd 1-118
+ee/packages/xmpp-server/tests/fixtures/a.localhost.cert.pem
+  s_22158ff20cd246::t_478505f35281cd 1-20
+ee/packages/xmpp-server/src/xml/correction.ts
+  s_22158ff20cd246::t_478505f35281cd 1-13
+ee/packages/xmpp-server/tests/fixtures/b.localhost.cert.pem
+  s_22158ff20cd246::t_478505f35281cd 1-20
+.gitignore
+  s_22158ff20cd246::t_478505f35281cd 19
+ee/packages/xmpp-server/src/s2s/saslExternal.ts
+  s_22158ff20cd246::t_478505f35281cd 1-27
+ee/packages/xmpp-server/src/xml/resolve.ts
+  s_22158ff20cd246::t_478505f35281cd 1-30
+ee/packages/xmpp-server/src/xml/StanzaParser.spec.ts
+  s_22158ff20cd246::t_478505f35281cd 1-127
+ee/packages/xmpp-server/tests/integration/s2s.spec.ts
+  s_22158ff20cd246::t_478505f35281cd 1-147
+ee/packages/xmpp-server/tsconfig.json
+  s_22158ff20cd246::t_478505f35281cd 1-7
+ee/packages/xmpp-server/src/s2s/dnsResolver.ts
+  s_22158ff20cd246::t_478505f35281cd 1-69
+ee/packages/xmpp-server/src/stream/XmppStream.ts
+  s_22158ff20cd246::t_478505f35281cd 1-210
+ee/packages/xmpp-server/package.json
+  s_22158ff20cd246::t_478505f35281cd 1-45
+ee/packages/xmpp-server/src/s2s/dialback.ts
+  s_22158ff20cd246::t_478505f35281cd 1-34
+ee/packages/xmpp-server/src/jid/escaping.ts
+  s_22158ff20cd246::t_478505f35281cd 1-20
+ee/packages/xmpp-server/tests/fixtures/b.localhost.key.pem
+  s_22158ff20cd246::t_478505f35281cd 1-28
+ee/packages/xmpp-server/tests/fixtures/a.localhost.key.pem
+  s_22158ff20cd246::t_478505f35281cd 1-28
+ee/packages/xmpp-server/src/s2s/S2SManager.ts
+  s_22158ff20cd246::t_478505f35281cd 1-393
+ee/packages/xmpp-server/src/xml/namespaces.ts
+  s_22158ff20cd246::t_478505f35281cd 1-20
+ee/packages/xmpp-server/tests/integration/inbound-addressing.spec.ts
+  s_22158ff20cd246::t_478505f35281cd 1-160
+ee/packages/xmpp-server/src/events.ts
+  s_22158ff20cd246::t_478505f35281cd 1-78
+ee/packages/xmpp-server/src/s2s/backoff.ts
+  s_22158ff20cd246::t_478505f35281cd 1-21
+ee/packages/xmpp-server/src/jid/normalize.ts
+  s_22158ff20cd246::t_478505f35281cd 1-54
+ee/packages/xmpp-server/jest.config.ts
+  s_22158ff20cd246::t_478505f35281cd 1-7
+ee/packages/xmpp-server/tsconfig.build.json
+  s_22158ff20cd246::t_478505f35281cd 1-10
+ee/packages/xmpp-server/src/stream/InboundSession.ts
+  s_22158ff20cd246::t_478505f35281cd 1-349
+ee/packages/xmpp-server/src/s2s/S2SManager.spec.ts
+  s_22158ff20cd246::t_478505f35281cd 1-56
+ee/packages/xmpp-server/src/jid/escaping.spec.ts
+  s_22158ff20cd246::t_478505f35281cd 1-14
+ee/packages/xmpp-server/src/xml/errors.ts
+  s_22158ff20cd246::t_478505f35281cd 1-25
+ee/packages/xmpp-server/src/s2s/dialback.spec.ts
+  s_22158ff20cd246::t_478505f35281cd 1-38
+ee/packages/xmpp-server/src/errors.ts
+  s_22158ff20cd246::t_478505f35281cd 1-51
+ee/packages/xmpp-server/src/logger.ts
+  s_22158ff20cd246::t_478505f35281cd 1-8
+ee/packages/xmpp-server/src/config.ts
+  s_22158ff20cd246::t_478505f35281cd 1-107
+ee/packages/xmpp-server/src/jid/normalize.spec.ts
+  s_22158ff20cd246::t_478505f35281cd 1-61
+ee/packages/xmpp-server/src/s2s/dnsResolver.spec.ts
+  s_22158ff20cd246::t_478505f35281cd 1-40
+yarn.lock
+  s_22158ff20cd246::t_bb4fc97a0f1ccb 12462-12485,15025-15033,15239-15245,15269-15280,15698,15831-15837,15845-15851,16013-16044,16118-16126,16580-16586,16918-17092,18205-18501,29688-29694,30548-30563,36892-36919
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "e3fb08069380e9d2c9c5186b1f3c560cedc86874",
+  "prompts": {},
+  "sessions": {
+    "s_22158ff20cd246": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "e3bc8f7d-2ca9-481d-9c88-43497a3e53ec",
+        "model": "claude-opus-5-5"
+      },
+      "human_author": "Diego Sampaio <chinello@gmail.com>"
+    }
+  }
+}
