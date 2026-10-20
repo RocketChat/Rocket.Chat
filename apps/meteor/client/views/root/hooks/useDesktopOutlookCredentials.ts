@@ -10,8 +10,9 @@ import { STORAGE_KEYS } from '../../../lib/sdk/storage';
  * only when the user turned on the Outlook calendar and set an Exchange URL.
  * It runs again when the token, the user or the URL changes. On the Meteor
  * build the desktop's injected script may push the same values too: the
- * desktop app replaces its sync timer on each push, so a repeat push does not
- * start a second sync loop. The members are called optionally.
+ * desktop app replaces its recurring sync timer on each push, so a repeat
+ * push does not start a second sync loop, but it can run one extra initial
+ * sync. The members are called optionally.
  */
 export const useDesktopOutlookCredentials = () => {
 	const user = useUser();

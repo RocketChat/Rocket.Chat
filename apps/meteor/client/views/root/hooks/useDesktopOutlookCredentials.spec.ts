@@ -1,8 +1,16 @@
+import type { IUser } from '@rocket.chat/core-typings';
 import { mockAppRoot } from '@rocket.chat/mock-providers';
 import { act, renderHook } from '@testing-library/react';
 
 import { useDesktopOutlookCredentials } from './useDesktopOutlookCredentials';
 import { STORAGE_KEYS, setStoredItem } from '../../../lib/sdk/storage';
+
+let mockUser: Partial<IUser> | undefined;
+
+jest.mock('@rocket.chat/ui-contexts', () => {
+	const actual = jest.requireActual('@rocket.chat/ui-contexts');
+	return { ...actual, useUser: () => mockUser ?? actual.useUser() };
+});
 
 const setUserToken = jest.fn();
 const setOutlookExchangeUrl = jest.fn();
@@ -22,6 +30,7 @@ describe('useDesktopOutlookCredentials', () => {
 	afterEach(() => {
 		delete (window as { RocketChatDesktop?: unknown }).RocketChatDesktop;
 		localStorage.clear();
+		mockUser = undefined;
 		setUserToken.mockClear();
 		setOutlookExchangeUrl.mockClear();
 	});
@@ -55,6 +64,39 @@ describe('useDesktopOutlookCredentials', () => {
 		});
 
 		expect(setUserToken).toHaveBeenLastCalledWith('a-fresh-token', 'john.doe');
+	});
+
+	it('should push again, URL first, when the user changes', () => {
+		mockUser = { _id: 'user-a', ...outlookUser(enabled) };
+		const { rerender } = renderHook(() => useDesktopOutlookCredentials(), { wrapper: mockAppRoot().build() });
+
+		mockUser = { _id: 'user-b', ...outlookUser(enabled) };
+		rerender();
+
+		expect(setOutlookExchangeUrl).toHaveBeenLastCalledWith('https://mail.example.com/', 'user-b');
+		expect(setUserToken).toHaveBeenLastCalledWith('a-login-token', 'user-b');
+		expect(setOutlookExchangeUrl.mock.invocationCallOrder[1]).toBeLessThan(setUserToken.mock.invocationCallOrder[1]);
+	});
+
+	it('should push again when the Exchange URL changes', () => {
+		mockUser = { _id: 'user-a', ...outlookUser(enabled) };
+		const { rerender } = renderHook(() => useDesktopOutlookCredentials(), { wrapper: mockAppRoot().build() });
+
+		mockUser = { _id: 'user-a', ...outlookUser({ ...enabled, Exchange_Url: 'https://exchange.example.org/' }) };
+		rerender();
+
+		expect(setOutlookExchangeUrl).toHaveBeenCalledTimes(2);
+		expect(setOutlookExchangeUrl).toHaveBeenLastCalledWith('https://exchange.example.org/', 'user-a');
+	});
+
+	it('should not push again when a new user object carries the same values', () => {
+		mockUser = { _id: 'user-a', ...outlookUser(enabled) };
+		const { rerender } = renderHook(() => useDesktopOutlookCredentials(), { wrapper: mockAppRoot().build() });
+
+		mockUser = { _id: 'user-a', ...outlookUser({ ...enabled }) };
+		rerender();
+
+		expect(setUserToken).toHaveBeenCalledTimes(1);
 	});
 
 	it('should push nothing when the Outlook calendar is off', () => {
