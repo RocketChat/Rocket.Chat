@@ -22,6 +22,7 @@ import type {
 	AbacAttributeStoreType,
 	AbacPdpType,
 	AbacUserIdentifiers,
+	MinimalApp,
 } from '@rocket.chat/core-typings';
 import { Rooms, AbacAttributes, Users, Subscriptions } from '@rocket.chat/models';
 import { escapeRegExp, isTruthy } from '@rocket.chat/tools';
@@ -723,6 +724,7 @@ export class AbacService extends ServiceClass implements IAbacService {
 	async auditRoomAttributesAtCreation(
 		room: Pick<IRoom, '_id' | 'name'> & Required<Pick<IRoom, 'abacAttributes'>>,
 		actor: AbacActor,
+		app?: MinimalApp,
 	): Promise<void> {
 		const bypassed = await Authorization.hasPermission(actor._id, 'bypass-abac-store-validation');
 		await Audit.objectAttributeChanged(
@@ -732,6 +734,7 @@ export class AbacService extends ServiceClass implements IAbacService {
 			'created',
 			actor,
 			bypassed ? 'store-validation-bypassed' : 'api',
+			app,
 		);
 	}
 

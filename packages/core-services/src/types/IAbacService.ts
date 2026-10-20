@@ -12,6 +12,7 @@ import type {
 	AbacObjectType,
 	ILDAPEntry,
 	AbacUserIdentifiers,
+	MinimalApp,
 } from '@rocket.chat/core-typings';
 
 export type AbacActor = Pick<IUser, '_id' | 'username' | 'name'>;
@@ -71,6 +72,7 @@ export interface IAbacService {
 	auditRoomAttributesAtCreation(
 		room: Pick<IRoom, '_id' | 'name'> & Required<Pick<IRoom, 'abacAttributes'>>,
 		actor: AbacActor,
+		app?: MinimalApp,
 	): Promise<void>;
 	auditRoomAttributesRemoved(room: Pick<IRoom, '_id' | 'name' | 'abacAttributes'>, actor: AbacActor): Promise<void>;
 	previewCreationMembers(
