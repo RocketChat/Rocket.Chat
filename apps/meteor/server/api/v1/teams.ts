@@ -1,3 +1,4 @@
+import { AbacContractError, AbacErrorCode } from '@rocket.chat/abac';
 import { Team } from '@rocket.chat/core-services';
 import type { ITeamAutocompleteResult, ITeamMemberInfo } from '@rocket.chat/core-services';
 import type { IRoom, ITeam, UserStatus } from '@rocket.chat/core-typings';
@@ -32,6 +33,7 @@ import { escapeRegExp } from '@rocket.chat/tools';
 import { canAccessRoomAsync } from '../../lib/authorization';
 import { hasPermissionAsync, hasAtLeastOnePermissionAsync, hasAllPermissionAsync } from '../../lib/authorization/hasPermission';
 import { eraseRoom } from '../../lib/eraseRoom';
+import { assertCanRemoveRoomAbacAttributes, removeRoomAbacAttributes } from '../../lib/rooms/removeRoomAbacAttributes';
 import { removeUserFromRoom } from '../../lib/rooms/removeUserFromRoom';
 import { toAbacAttributeDefinitions } from '../../lib/rooms/toAbacAttributeDefinitions';
 import { effectiveStatusFilter } from '../../lib/statusVisibility/effectiveStatus';
@@ -140,13 +142,13 @@ const teamsEndpoints = API.v1
 
 			if (abacAttributes) {
 				if (!settings.get('ABAC_Enabled')) {
-					return API.v1.failure('error-abac-not-enabled');
+					throw new AbacContractError(AbacErrorCode.NotEnabled);
 				}
 				if (room?.id) {
-					return API.v1.failure('error-abac-attributes-room-conversion');
+					throw new AbacContractError(AbacErrorCode.AttributesRoomConversion);
 				}
 				if (owner && owner !== this.userId) {
-					return API.v1.failure('error-abac-attributes-owner-must-be-caller');
+					throw new AbacContractError(AbacErrorCode.AttributesOwnerMustBeCaller);
 				}
 			}
 
@@ -202,6 +204,13 @@ API.v1.post(
 			return API.v1.forbidden();
 		}
 
+		const teamRoom = await Rooms.findOneById<Pick<IRoom, '_id' | 'name' | 'abacAttributes'>>(team.roomId, {
+			projection: { name: 1, abacAttributes: 1 },
+		});
+		if (teamRoom) {
+			await assertCanRemoveRoomAbacAttributes(teamRoom, this.user);
+		}
+
 		const rooms = await Team.getMatchingTeamRooms(team._id, roomsToRemove);
 
 		if (rooms.length) {
@@ -211,6 +220,10 @@ API.v1.post(
 		}
 
 		await Promise.all([Team.unsetTeamIdOfRooms(this.user, team), Team.removeAllMembersFromTeam(team._id)]);
+
+		if (teamRoom) {
+			await removeRoomAbacAttributes(teamRoom, this.user);
+		}
 
 		await Team.deleteById(team._id);
 
