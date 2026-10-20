@@ -73,15 +73,11 @@ describe('AI Search client helpers', () => {
 			});
 		});
 
-		it('supports quoted filter values with spaces', () => {
-			expect(parseSearchInput('mongo in:"team room" from:"rocket user"')).toEqual({
+		it('supports quoted filter values with spaces and does not split them on commas', () => {
+			expect(parseSearchInput('mongo in:"team room" from:"rocket user" in:"a,b"')).toEqual({
 				text: 'mongo',
-				filters: [appliedFilter('in', 'team room'), appliedFilter('from', 'rocket user')],
+				filters: [appliedFilter('in', 'team room'), appliedFilter('from', 'rocket user'), appliedFilter('in', 'a,b')],
 			});
-		});
-
-		it('leaves quoted name filter values containing commas in the text', () => {
-			expect(parseSearchInput('mongo in:"a,b" from:"c, d"')).toEqual({ text: 'mongo in:"a,b" from:"c, d"', filters: [] });
 		});
 
 		it('keeps a quoted filter value in the text until its closing quote is typed', () => {
@@ -220,7 +216,7 @@ describe('AI Search client helpers', () => {
 		it('round-trips through parseSearchInput', () => {
 			const query = {
 				text: 'fruit colors',
-				filters: [appliedFilter('in', 'team room'), appliedFilter('in', 'dev'), appliedFilter('before', '2026-01-31')],
+				filters: [appliedFilter('in', 'team room'), appliedFilter('in', 'a,b'), appliedFilter('before', '2026-01-31')],
 			};
 
 			expect(parseSearchInput(serializeSearchQuery(query))).toEqual(query);
