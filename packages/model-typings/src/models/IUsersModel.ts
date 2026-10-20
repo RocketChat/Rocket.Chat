@@ -403,7 +403,7 @@ export interface IUsersModel extends IBaseModel<IUser> {
 	resetE2EKey(userId: string): Promise<UpdateResult>;
 	removeExpiredEmailCodeOfUserId(userId: string): Promise<UpdateResult>;
 	maxInvalidEmailCodeAttemptsReached(userId: string, maxAttemtps: number): Promise<boolean>;
-	addEmailCodeByUserId(userId: string, code: string, expire: Date): Promise<UpdateResult>;
+	addEmailCodeByUserId(userId: string, code: string, expire: Date, notSentSince: Date): Promise<UpdateResult>;
 	findActiveUsersInRoles<T extends Document = IUser, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(
 		roles: string[],
 		options?: O,
