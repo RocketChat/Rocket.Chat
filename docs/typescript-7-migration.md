@@ -1,10 +1,12 @@
 # TypeScript 7 migration
 
 The workspace default compiler is `typescript@~7.0.2` (the native `tsgo`
-binary). This document tracks **what remains** — the packages still on TS5.9,
+binary). This document tracks **what remains** — the packages still below TS7,
 the constraints that keep them there, and the follow-ups to finish the move.
 
-## Still pinned to `typescript@~5.9.3`
+## Still pinned below TS7
+
+All on `typescript@~5.9.3` unless the row says otherwise.
 
 Their build/lint toolchain still links the TS compiler JS API, which
 `typescript@7` no longer ships. Unpinning each is a version bump once its tool
@@ -13,7 +15,7 @@ supports TS7.
 | Package | Blocker |
 | --- | --- |
 | `@rocket.chat/core-typings`, `@rocket.chat/ui-kit` | typia toolchain — they build with `ttsc`/`tsgo` but keep TS5.9 for the editor/`typecheck` path until typia settles on a released TS7 binary. |
-| `@rocket.chat/eslint-config` | `typescript-eslint` peer range `<6.1.0`; typed linting needs the JS compiler API. `installConfig.hoistingLimits: workspaces` nests the lint toolchain beside the pinned TS. |
+| `@rocket.chat/eslint-config` | On `typescript@~6.0.3`, the newest `typescript-eslint` peer range (`<6.1.0`) allows; typed linting needs the JS compiler API. `installConfig.hoistingLimits: workspaces` nests the lint toolchain beside the pinned TS. |
 | `@rocket.chat/message-parser`, `@rocket.chat/livechat` | webpack configs load `webpack.config.ts` through ts-node. |
 | `@rocket.chat/emitter`, `@rocket.chat/mp3-encoder`, `@rocket.chat/css-in-js`, `@rocket.chat/fuselage-hooks`, `@rocket.chat/styled` | `@rollup/plugin-typescript` links the JS compiler API. |
 | `@rocket.chat/apps` | `node --test` suites load TS through ts-node (extensionless CJS relative imports rule out native type stripping). |
