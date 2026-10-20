@@ -14,11 +14,7 @@ const liveDeps: AuthorizationDeps = {
 	getUserRoles: (userId) => Users.use.getState().get(userId)?.roles,
 	getPermission: (permissionId) => Permissions.use.getState().get(permissionId),
 	getRoleScope: (roleId) => Roles.use.getState().get(roleId)?.scope,
-	hasSubscriptionRole: (rid, roleId) =>
-		Subscriptions.use
-			.getState()
-			.find((s) => s.rid === rid)
-			?.roles?.includes(roleId) ?? false,
+	getSubscriptionRoles: (rid) => Subscriptions.use.getState().find((s) => s.rid === rid)?.roles ?? [],
 	isReady: () => PermissionsCachedStore.useReady.getState(),
 };
 

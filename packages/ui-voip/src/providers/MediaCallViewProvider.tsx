@@ -24,6 +24,7 @@ import MediaCallViewContext from '../context/MediaCallViewContext';
 import type { PeerInfo } from '../context/definitions';
 import { isValidTone, useTonePlayer } from '../hooks/useTonePlayer';
 import { isExternalPeer } from '../utils/isExternalPeer';
+import { isInternalPeer } from '../utils/isInternalPeer';
 import TransferModal from '../views/TransferModal';
 
 export type MediaCallViewProviderProps = {
@@ -90,18 +91,17 @@ const MediaCallViewProvider = ({ children }: MediaCallViewProviderProps) => {
 			return;
 		}
 
+		if (!isInternalPeer(targetPeer) && !isExternalPeer(targetPeer)) {
+			console.error('MediaCall - New call - something went wrong when trying to call. PeerInfo is missing userId and/or number.');
+			return;
+		}
+
 		const startCall = (micless: boolean) => {
-			if ('userId' in targetPeer) {
+			if (isInternalPeer(targetPeer)) {
 				void controls.startCall(targetPeer.userId, 'user', micless);
-				return;
-			}
-
-			if (isExternalPeer(targetPeer)) {
+			} else {
 				void controls.startCall(targetPeer.number, 'sip', micless);
-				return;
 			}
-
-			throw new Error('MediaCall - New call - something went wrong when trying to call. PeerInfo is missing userId and/or number.');
 		};
 
 		try {
