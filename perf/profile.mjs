@@ -34,10 +34,18 @@ const page = await browser.newPage();
 const cdp = await page.context().newCDPSession(page);
 await cdp.send('Profiler.enable');
 await cdp.send('Profiler.setSamplingInterval', { interval: 100 });
-await cdp.send('Profiler.start');
-await page.goto(`http://127.0.0.1:${server.address().port}/?scenario=${scenario}&n=${n}&root=${root}`);
-await page.waitForFunction(() => window.__result, null, { timeout: 120000 });
+const onlyUpdate = process.env.PHASE === 'update';
+if (!onlyUpdate) await cdp.send('Profiler.start');
+await page.goto(`http://127.0.0.1:${server.address().port}/?scenario=${scenario}&n=${n}&root=${root}${onlyUpdate ? '&pause=update' : ''}`);
+if (onlyUpdate) {
+	await page.waitForFunction(() => window.__paused === 'before-update', null, { timeout: 120000 });
+	await cdp.send('Profiler.start');
+	await page.evaluate(() => window.__resume());
+	await page.waitForFunction(() => window.__paused === 'after-update', null, { timeout: 120000 });
+}
 const { profile } = await cdp.send('Profiler.stop');
+if (onlyUpdate) await page.evaluate(() => window.__resume());
+await page.waitForFunction(() => window.__result, null, { timeout: 120000 });
 const result = await page.evaluate(() => window.__result);
 await browser.close();
 server.close();

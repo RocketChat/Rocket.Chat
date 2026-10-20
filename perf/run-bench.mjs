@@ -12,7 +12,7 @@ const require = createRequire(join(here, '..', 'package.json'));
 const { chromium } = require('playwright-core');
 
 const runs = Number(process.argv[2] ?? 7);
-const sizes = { box: 300, button: 300, buttonStyled: 300, messageStyled: 300, tag: 300, item: 200, message: 150 };
+const sizes = { box: 300, button: 300, buttonStyled: 300, messageStyled: 300, messageFull: 150, tag: 300, item: 200, message: 150 };
 const scenarios = (process.argv[3] ?? Object.keys(sizes).join(',')).split(',');
 
 const MIME = { '.html': 'text/html', '.js': 'text/javascript', '.css': 'text/css', '.woff2': 'font/woff2', '.svg': 'image/svg+xml' };
@@ -43,7 +43,7 @@ const once = async (variant, scenario) => {
 	const page = await browser.newPage();
 	const errors = [];
 	page.on('pageerror', (e) => errors.push(e.message));
-	await page.goto(`${servers[variant.dir].url}/?scenario=${scenario}&n=${sizes[scenario]}&root=${variant.root}`);
+	await page.goto(`${servers[variant.dir].url}/?scenario=${scenario}&n=${Number(process.env.N) || sizes[scenario]}&root=${variant.root}`);
 	await page.waitForFunction(() => window.__result, null, { timeout: 60000 });
 	const result = await page.evaluate(() => window.__result);
 	await page.close();

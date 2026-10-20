@@ -143,9 +143,66 @@ Checks:
 
 ## The runtime that stays
 
-Most frames in a room view keep the runtime, so its per-frame cost still matters. The earlier profile ([REPORT.md](REPORT.md)) puts 24-32% of the JavaScript in `getSplitStyles`. Remaining levers, none of them measured here:
+Most frames in a room view keep the runtime, so its per-frame cost still matters.
 
-- **Merge nested frames:** `MessageHeader` + wrapper, `ItemRow`s.
-- **Fewer per-leaf `withFuselageProvider` wrappers:** a context read plus an extra component per element.
-- **Fewer `group` subscriptions:** every child with a `group-*` clause re-renders on the parent's hover.
-- **Upstream: memoize `getSplitStyles`** by (static config, props signature, theme, media).
+### What a frame costs
+
+`perf/micro` mounts 2,000 elements of one shape with `@tamagui/web` alone. Warm mount, median of 7 ([bench-micro-7runs.md](bench-micro-7runs.md)):
+
+| Shape | µs per element |
+|---|---|
+| `div` with a class | 1.0 |
+| empty frame | 6.8: a **fixed ~5.7 µs per frame** |
+| 4 style props / 16 style props | 8.7 / 13.0: **~0.5 µs per prop** |
+| 16 props, 3 of them with state clauses | 18.2: **~1.7 µs per prop with states** |
+| 4 props and 2 active variants | 10.9: ~1.1 µs per variant |
+| parent + child | 18.8 |
+| parent with `group` + plain child | 18.7: declaring a group costs nothing |
+| parent with `group` + child with a `group-hover` clause | **44.9: +28 µs per subscribing child** |
+| 16 props, 11 of them moved to one static class | 9.4: −30% against 16 props |
+
+So the levers, by size:
+
+1. **Group subscriptions.** A runtime frame with a `group-*` clause costs about 5 frames. Compiled frames turn the clause into CSS and pay nothing.
+2. **Frames per row:** a fixed 5.7 µs each.
+3. **Style props per frame.** About 34% of the declarations are the restated `rcx-box--full` reset.
+
+### Group clauses in the message row
+
+Every message rendered three subscribers to the `message` group: the timestamp, the always-mounted toolbar wrapper, and the toolbar or reaction action once shown.
+
+**Change:** those clauses became layered rules in `Messages.styles.css`. They are `.rcx-message:hover .x` inside `@media (hover: hover)`, plus `:focus-within` and `:focus-visible`, all in the `fuselage` layer where the clauses were. `Message` no longer declares a group.
+
+**Results** (150 rows, median of 15 runs, [bench-nogroup-7runs.md](bench-nogroup-7runs.md)):
+
+| | with group | without |
+|---|---|---|
+| Message row as the app renders it, warm mount | 29.4 ms | **20.9 ms (−29%)** |
+| … cold mount | 53.7 ms | 39.9 ms (−26%) |
+| … update | 20.0 ms | 23.1 ms (**+16%**) |
+| Message row without toolbar, warm mount | 27.1 ms | 20.6 ms (−24%) |
+
+Checks:
+
+- **Computed styles:** identical, with and without hover; the toolbar wrapper shows and the timestamp color changes.
+- **Fuselage tests:** 669 of 669 pass. 4 snapshots changed: `t_group_message` is gone and some atomic hashes moved.
+
+**The update cost is not explained yet:**
+
+- It is not the new CSS: removing those rules leaves it at +18%.
+- It is not DOM work: both variants make the same 6 text mutations.
+- An update-only profile shows +7% JavaScript, in `applyStylePieceClasses`, `contributeProp` and React's `updateProperties`.
+- Removing only the timestamp clause or only the toolbar clause changes neither mount nor update much. Removing both gives the whole effect. That looks like a Tamagui path that differs depending on whether a group has subscribers.
+
+Mounting is what a room switch and scrolling pay for, and it saves more than the update loses (−8.5 ms against +3.1 ms per 150 rows). Still, the update cost needs a Tamagui-side look before this ships.
+
+The same change applies to `Item` (the `ItemActions` clauses on `rcx-item` and `rcx-item-group-header`) and to the Sidebar frames that subscribe.
+
+### Ruled out, or still open
+
+- **Ruled out:**
+  - **`withFuselageProvider` per leaf:** 0.3% of the JavaScript in the Item profile.
+  - **`ItemContent`'s `setState` on every layout effect:** 0.7%. Still worth fixing, but not for speed.
+- **Open:**
+  - **Moving static declarations to CSS.** −30% per frame in the microbench, but CSS doesn't exist on React Native. The RN-safe version is a web build step that moves each `styled()` base declaration into a generated layered class. That requires attaching a class Tamagui keeps: the string `baseClassName` is treated as style input, not as a DOM class.
+  - **Upstream: memoize `getSplitStyles`** by (static config, props signature, theme, media).

@@ -10,3 +10,7 @@ out-*/
 stats-app.json
 .tamagui/
 tokens-dist/
+group-dist*/
+nogroup*-dist*/
+only-*-dist/
+head-dist-nomin/

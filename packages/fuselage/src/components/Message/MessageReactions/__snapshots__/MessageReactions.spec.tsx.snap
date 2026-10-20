@@ -34,7 +34,7 @@ exports[`[MessageReactions Rendering] renders Default without crashing 1`] = `
         </div>
       </div>
       <div
-        class="is_View _p-1021290656 _f-1841970073 _ai-994770828 _m-211896778 _p-1260242245 _b-1182826059 _br-1105657738 _ow-1993548942 _bs-1333539716 _b-1741968088 _c-1830342115 t_group_message rcx-message rcx-message--clickable customclass"
+        class="is_View _p-1021290656 _f-1841970073 _ai-994770828 _m-211896778 _p-1260242245 _b-1182826059 _br-1105657738 _ow-1993548942 _bs-1333539716 _b-1741968088 _c-1830342115 rcx-message rcx-message--clickable customclass"
         tabindex="0"
       >
         <div
@@ -106,7 +106,7 @@ exports[`[MessageReactions Rendering] renders Default without crashing 1`] = `
                 </span>
               </div>
               <span
-                class="is_Text _ff-409630021 _fv-607544992 _fs-2088488067 _lh-1306743983 _ls-1782815796 _fw-289165218 _o-1119039191 _to-1727917045 _ws-973912173 _f-1246374077 _m-211896778 _c-191671261 rcx-message-header__time"
+                class="is_Text _ff-409630021 _fv-607544992 _fs-2088488067 _lh-1306743983 _ls-1782815796 _fw-289165218 _o-1119039191 _to-1727917045 _ws-973912173 _f-1246374077 _m-211896778 _c-1756781803 rcx-message-header__time"
               >
                 12:00 PM
               </span>
@@ -194,7 +194,7 @@ exports[`[MessageReactions Rendering] renders Default without crashing 1`] = `
                 </div>
               </div>
               <div
-                class="is_Text _d-1985012034 _ws-311910413 _ww-408434756 _bs-652081535 _fs-2088488067 _lh-1306743983 _ls-1782815796 _fw-289165218 _ai-121763387 _m-820097725 _p-1292307394 _c-22887652 _c-1870018997 _b-1780283939 _br-1533070432 _ow-1993548942 _bs-1333539716 _b-523277046 _o-794694322 rcx-message-reactions__reaction rcx-message-reactions__reaction--action"
+                class="is_Text _d-1985012034 _ws-311910413 _ww-408434756 _bs-652081535 _fs-2088488067 _lh-1306743983 _ls-1782815796 _fw-289165218 _ai-121763387 _m-820097725 _p-1292307394 _c-22887652 _c-1870018997 _b-1780283939 _br-1533070432 _ow-1993548942 _bs-1333539716 _b-523277046 _o-1507269735 rcx-message-reactions__reaction rcx-message-reactions__reaction--action"
                 role="button"
                 tabindex="0"
                 title="action"

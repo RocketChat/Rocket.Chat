@@ -1,5 +1,5 @@
 import * as F from 'fuselage-under-test';
-import { Message, MessageBody, MessageContainer, MessageHeader, MessageName, MessageNameContainer, MessageTimestamp, MessageUsername } from 'fuselage-under-test';
+import { Message, MessageBody, MessageContainer, MessageHeader, MessageName, MessageNameContainer, MessageTimestamp, MessageToolbarWrapper, MessageUsername } from 'fuselage-under-test';
 import 'fuselage-under-test-css';
 import { Profiler } from 'react';
 import { flushSync } from 'react-dom';
@@ -27,6 +27,22 @@ const rows = {
 		<F.Button key={i} primary={v % 2 === 0} small marginInlineEnd='x8' marginBlock={4} paddingInline='x12' width='x120'>
 			{`Label ${i}`}
 		</F.Button>
+	),
+	// As the app renders it: the toolbar wrapper is always mounted, the toolbar itself only once visible
+	messageFull: (i, v) => (
+		<Message key={i}>
+			<MessageContainer>
+				<MessageHeader>
+					<MessageNameContainer>
+						<MessageName>{`User ${i}`}</MessageName>
+						<MessageUsername>{`@user${i}`}</MessageUsername>
+					</MessageNameContainer>
+					<MessageTimestamp>{`12:0${v}`}</MessageTimestamp>
+				</MessageHeader>
+				<MessageBody>{`Hello world ${i} ${v}`}</MessageBody>
+			</MessageContainer>
+			<MessageToolbarWrapper />
+		</Message>
 	),
 	messageStyled: (i, v) => (
 		<MessageContainer key={i} marginBlockEnd='x8'>
@@ -102,7 +118,11 @@ const run = async () => {
 	const container = document.getElementById('root');
 	let root = createRoot(container);
 	const cold = await measure(() => root.render(tree(0)));
+	// `pause=update` lets a profiler record the update alone
+	const pause = (name) => params.get('pause') === 'update' && new Promise((resolve) => { window.__paused = name; window.__resume = resolve; });
+	await pause('before-update');
 	const update = await measure(() => root.render(tree(1)));
+	await pause('after-update');
 	const dom = container.querySelectorAll('*').length;
 	const tamagui = container.querySelectorAll('.is_View, .is_Text').length;
 	flushSync(() => root.unmount());
