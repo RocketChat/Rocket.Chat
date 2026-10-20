@@ -4,7 +4,7 @@ exports[`[CheckBox Rendering] renders Checked without crashing 1`] = `
 <body>
   <div>
     <label
-      class="is_Text _b-1639159466 _os-249893454 _ff-409630021 _fvn-1977619713 _ws-311910413 _ww-408434756 rcx-check-box"
+      class="is_Text _b-1639159466 _os-249893454 _ff-409630021 _fvn-1977619713 _ws-311910413 _ww-408434756 _p-1021290656 _d-1985012034 _va-1124586065 _c-22887652 _ow-485594423 rcx-check-box"
     >
       <input
         aria-label="Decorator Label"
@@ -14,8 +14,18 @@ exports[`[CheckBox Rendering] renders Checked without crashing 1`] = `
       />
       <i
         aria-hidden="true"
-        class="is_View _b-1639160427 _os-249893454 _ff-409630021 _fvn-1977619713 _p-1021290656 _h-858548760 _f-1069814357 _mw-354604370 _mh-1241200853 _d-341075704 _jc-1099843255 _ai-121763387 _br-761515502 _w-120696903 rcx-check-box__fake"
-      />
+        class="is_View _b-523511517 _os-249893454 _ff-409630021 _fvn-1977619713 _p-1021290656 _h-858548760 _f-1069814357 _mw-354604370 _mh-1241200853 _c-991369120 _b-886492876 _d-341075704 _jc-1099843255 _ai-121763387 _br-761515502 _w-120696903 rcx-check-box__fake"
+      >
+        <span
+          class="is_View _p-1261267467 _d-1987097250 _v-46649817 _o-1507270696 _b-156244340 _br-971297206 _w-762189173 _h-1673744566"
+        />
+        <span
+          class="is_View _p-1261267467 _d-1987097250 _v-46649817 _o-1507270696 _b-156244340 _br-971297206 _w-762189173 _h-1673744566 _t-1011287905"
+        />
+        <span
+          class="is_View _p-1261267467 _d-1987097250 _v-46649817 _o-1507270696 _b-156244340 _br-971297206 _w-1769075542 _h-1539106968 _t-663727601"
+        />
+      </i>
     </label>
   </div>
 </body>
@@ -25,7 +35,7 @@ exports[`[CheckBox Rendering] renders Default without crashing 1`] = `
 <body>
   <div>
     <label
-      class="is_Text _b-1639159466 _os-249893454 _ff-409630021 _fvn-1977619713 _ws-311910413 _ww-408434756 rcx-check-box"
+      class="is_Text _b-1639159466 _os-249893454 _ff-409630021 _fvn-1977619713 _ws-311910413 _ww-408434756 _p-1021290656 _d-1985012034 _va-1124586065 _c-22887652 _ow-485594423 rcx-check-box"
     >
       <input
         aria-label="Decorator Label"
@@ -34,8 +44,18 @@ exports[`[CheckBox Rendering] renders Default without crashing 1`] = `
       />
       <i
         aria-hidden="true"
-        class="is_View _b-1639160427 _os-249893454 _ff-409630021 _fvn-1977619713 _p-1021290656 _h-858548760 _f-1069814357 _mw-354604370 _mh-1241200853 _d-341075704 _jc-1099843255 _ai-121763387 _br-761515502 _w-120696903 rcx-check-box__fake"
-      />
+        class="is_View _b-523511517 _os-249893454 _ff-409630021 _fvn-1977619713 _p-1021290656 _h-858548760 _f-1069814357 _mw-354604370 _mh-1241200853 _c-991369120 _b-886492876 _d-341075704 _jc-1099843255 _ai-121763387 _br-761515502 _w-120696903 rcx-check-box__fake"
+      >
+        <span
+          class="is_View _p-1261267467 _d-1987097250 _v-46649817 _o-1507270696 _b-156244340 _br-971297206 _w-762189173 _h-1673744566"
+        />
+        <span
+          class="is_View _p-1261267467 _d-1987097250 _v-46649817 _o-1507270696 _b-156244340 _br-971297206 _w-762189173 _h-1673744566 _t-1011287905"
+        />
+        <span
+          class="is_View _p-1261267467 _d-1987097250 _v-46649817 _o-1507270696 _b-156244340 _br-971297206 _w-1769075542 _h-1539106968 _t-663727601"
+        />
+      </i>
     </label>
   </div>
 </body>
@@ -45,7 +65,7 @@ exports[`[CheckBox Rendering] renders DefaultChecked without crashing 1`] = `
 <body>
   <div>
     <label
-      class="is_Text _b-1639159466 _os-249893454 _ff-409630021 _fvn-1977619713 _ws-311910413 _ww-408434756 rcx-check-box"
+      class="is_Text _b-1639159466 _os-249893454 _ff-409630021 _fvn-1977619713 _ws-311910413 _ww-408434756 _p-1021290656 _d-1985012034 _va-1124586065 _c-22887652 _ow-485594423 rcx-check-box"
     >
       <input
         aria-label="Decorator Label"
@@ -55,8 +75,18 @@ exports[`[CheckBox Rendering] renders DefaultChecked without crashing 1`] = `
       />
       <i
         aria-hidden="true"
-        class="is_View _b-1639160427 _os-249893454 _ff-409630021 _fvn-1977619713 _p-1021290656 _h-858548760 _f-1069814357 _mw-354604370 _mh-1241200853 _d-341075704 _jc-1099843255 _ai-121763387 _br-761515502 _w-120696903 rcx-check-box__fake"
-      />
+        class="is_View _b-523511517 _os-249893454 _ff-409630021 _fvn-1977619713 _p-1021290656 _h-858548760 _f-1069814357 _mw-354604370 _mh-1241200853 _c-991369120 _b-886492876 _d-341075704 _jc-1099843255 _ai-121763387 _br-761515502 _w-120696903 rcx-check-box__fake"
+      >
+        <span
+          class="is_View _p-1261267467 _d-1987097250 _v-46649817 _o-1507270696 _b-156244340 _br-971297206 _w-762189173 _h-1673744566"
+        />
+        <span
+          class="is_View _p-1261267467 _d-1987097250 _v-46649817 _o-1507270696 _b-156244340 _br-971297206 _w-762189173 _h-1673744566 _t-1011287905"
+        />
+        <span
+          class="is_View _p-1261267467 _d-1987097250 _v-46649817 _o-1507270696 _b-156244340 _br-971297206 _w-1769075542 _h-1539106968 _t-663727601"
+        />
+      </i>
     </label>
   </div>
 </body>
@@ -66,7 +96,7 @@ exports[`[CheckBox Rendering] renders Disabled without crashing 1`] = `
 <body>
   <div>
     <label
-      class="is_Text _b-1639159466 _os-249893454 _ff-409630021 _fvn-1977619713 _ws-311910413 _ww-408434756 rcx-check-box"
+      class="is_Text _b-1639159466 _os-249893454 _ff-409630021 _fvn-1977619713 _ws-311910413 _ww-408434756 _p-1021290656 _d-1985012034 _va-1124586065 _c-22887652 _ow-485594423 rcx-check-box"
     >
       <input
         aria-label="Decorator Label"
@@ -76,8 +106,18 @@ exports[`[CheckBox Rendering] renders Disabled without crashing 1`] = `
       />
       <i
         aria-hidden="true"
-        class="is_View _b-1639160427 _os-249893454 _ff-409630021 _fvn-1977619713 _p-1021290656 _h-858548760 _f-1069814357 _mw-354604370 _mh-1241200853 _d-341075704 _jc-1099843255 _ai-121763387 _br-761515502 _w-120696903 rcx-check-box__fake"
-      />
+        class="is_View _b-523511517 _os-249893454 _ff-409630021 _fvn-1977619713 _p-1021290656 _h-858548760 _f-1069814357 _mw-354604370 _mh-1241200853 _c-991369120 _b-886492876 _d-341075704 _jc-1099843255 _ai-121763387 _br-761515502 _w-120696903 rcx-check-box__fake"
+      >
+        <span
+          class="is_View _p-1261267467 _d-1987097250 _v-46649817 _o-1507270696 _b-156244340 _br-971297206 _w-762189173 _h-1673744566"
+        />
+        <span
+          class="is_View _p-1261267467 _d-1987097250 _v-46649817 _o-1507270696 _b-156244340 _br-971297206 _w-762189173 _h-1673744566 _t-1011287905"
+        />
+        <span
+          class="is_View _p-1261267467 _d-1987097250 _v-46649817 _o-1507270696 _b-156244340 _br-971297206 _w-1769075542 _h-1539106968 _t-663727601"
+        />
+      </i>
     </label>
   </div>
 </body>
@@ -87,7 +127,7 @@ exports[`[CheckBox Rendering] renders Indeterminate without crashing 1`] = `
 <body>
   <div>
     <label
-      class="is_Text _b-1639159466 _os-249893454 _ff-409630021 _fvn-1977619713 _ws-311910413 _ww-408434756 rcx-check-box"
+      class="is_Text _b-1639159466 _os-249893454 _ff-409630021 _fvn-1977619713 _ws-311910413 _ww-408434756 _p-1021290656 _d-1985012034 _va-1124586065 _c-22887652 _ow-485594423 rcx-check-box"
     >
       <input
         aria-label="Decorator Label"
@@ -96,8 +136,18 @@ exports[`[CheckBox Rendering] renders Indeterminate without crashing 1`] = `
       />
       <i
         aria-hidden="true"
-        class="is_View _b-1639160427 _os-249893454 _ff-409630021 _fvn-1977619713 _p-1021290656 _h-858548760 _f-1069814357 _mw-354604370 _mh-1241200853 _d-341075704 _jc-1099843255 _ai-121763387 _br-761515502 _w-120696903 rcx-check-box__fake"
-      />
+        class="is_View _b-523511517 _os-249893454 _ff-409630021 _fvn-1977619713 _p-1021290656 _h-858548760 _f-1069814357 _mw-354604370 _mh-1241200853 _c-991369120 _b-886492876 _d-341075704 _jc-1099843255 _ai-121763387 _br-761515502 _w-120696903 rcx-check-box__fake"
+      >
+        <span
+          class="is_View _p-1261267467 _d-1987097250 _v-46649817 _o-1507270696 _b-156244340 _br-971297206 _w-762189173 _h-1673744566"
+        />
+        <span
+          class="is_View _p-1261267467 _d-1987097250 _v-46649817 _o-1507270696 _b-156244340 _br-971297206 _w-762189173 _h-1673744566 _t-1011287905"
+        />
+        <span
+          class="is_View _p-1261267467 _d-1987097250 _v-46649817 _o-1507270696 _b-156244340 _br-971297206 _w-1769075542 _h-1539106968 _t-663727601"
+        />
+      </i>
     </label>
   </div>
 </body>
@@ -150,7 +200,7 @@ exports[`[CheckBox Rendering] renders States without crashing 1`] = `
               class="rcx-box rcx-box--full rcx-css-7rd89h"
             >
               <label
-                class="is_Text _b-1639159466 _os-249893454 _ff-409630021 _fvn-1977619713 _ws-311910413 _ww-408434756 rcx-check-box"
+                class="is_Text _b-1639159466 _os-249893454 _ff-409630021 _fvn-1977619713 _ws-311910413 _ww-408434756 _p-1021290656 _d-1985012034 _va-1124586065 _c-22887652 _ow-485594423 rcx-check-box"
               >
                 <input
                   aria-label="Decorator Label"
@@ -160,8 +210,18 @@ exports[`[CheckBox Rendering] renders States without crashing 1`] = `
                 />
                 <i
                   aria-hidden="true"
-                  class="is_View _b-1639160427 _os-249893454 _ff-409630021 _fvn-1977619713 _p-1021290656 _h-858548760 _f-1069814357 _mw-354604370 _mh-1241200853 _d-341075704 _jc-1099843255 _ai-121763387 _br-761515502 _w-120696903 rcx-check-box__fake"
-                />
+                  class="is_View _b-523511517 _os-249893454 _ff-409630021 _fvn-1977619713 _p-1021290656 _h-858548760 _f-1069814357 _mw-354604370 _mh-1241200853 _c-991369120 _b-886492876 _d-341075704 _jc-1099843255 _ai-121763387 _br-761515502 _w-120696903 rcx-check-box__fake"
+                >
+                  <span
+                    class="is_View _p-1261267467 _d-1987097250 _v-46649817 _o-1507270696 _b-156244340 _br-971297206 _w-762189173 _h-1673744566"
+                  />
+                  <span
+                    class="is_View _p-1261267467 _d-1987097250 _v-46649817 _o-1507270696 _b-156244340 _br-971297206 _w-762189173 _h-1673744566 _t-1011287905"
+                  />
+                  <span
+                    class="is_View _p-1261267467 _d-1987097250 _v-46649817 _o-1507270696 _b-156244340 _br-971297206 _w-1769075542 _h-1539106968 _t-663727601"
+                  />
+                </i>
               </label>
             </div>
           </td>
@@ -172,7 +232,7 @@ exports[`[CheckBox Rendering] renders States without crashing 1`] = `
               class="rcx-box rcx-box--full rcx-css-7rd89h"
             >
               <label
-                class="is_Text _b-1639159466 _os-249893454 _ff-409630021 _fvn-1977619713 _ws-311910413 _ww-408434756 rcx-check-box"
+                class="is_Text _b-1639159466 _os-249893454 _ff-409630021 _fvn-1977619713 _ws-311910413 _ww-408434756 _p-1021290656 _d-1985012034 _va-1124586065 _c-22887652 _ow-485594423 rcx-check-box"
               >
                 <input
                   aria-label="Decorator Label"
@@ -181,8 +241,18 @@ exports[`[CheckBox Rendering] renders States without crashing 1`] = `
                 />
                 <i
                   aria-hidden="true"
-                  class="is_View _b-1639160427 _os-249893454 _ff-409630021 _fvn-1977619713 _p-1021290656 _h-858548760 _f-1069814357 _mw-354604370 _mh-1241200853 _d-341075704 _jc-1099843255 _ai-121763387 _br-761515502 _w-120696903 rcx-check-box__fake"
-                />
+                  class="is_View _b-523511517 _os-249893454 _ff-409630021 _fvn-1977619713 _p-1021290656 _h-858548760 _f-1069814357 _mw-354604370 _mh-1241200853 _c-991369120 _b-886492876 _d-341075704 _jc-1099843255 _ai-121763387 _br-761515502 _w-120696903 rcx-check-box__fake"
+                >
+                  <span
+                    class="is_View _p-1261267467 _d-1987097250 _v-46649817 _o-1507270696 _b-156244340 _br-971297206 _w-762189173 _h-1673744566"
+                  />
+                  <span
+                    class="is_View _p-1261267467 _d-1987097250 _v-46649817 _o-1507270696 _b-156244340 _br-971297206 _w-762189173 _h-1673744566 _t-1011287905"
+                  />
+                  <span
+                    class="is_View _p-1261267467 _d-1987097250 _v-46649817 _o-1507270696 _b-156244340 _br-971297206 _w-1769075542 _h-1539106968 _t-663727601"
+                  />
+                </i>
               </label>
             </div>
           </td>
@@ -202,7 +272,7 @@ exports[`[CheckBox Rendering] renders States without crashing 1`] = `
               class="rcx-box rcx-box--full rcx-css-7rd89h"
             >
               <label
-                class="is_Text _b-1639159466 _os-249893454 _ff-409630021 _fvn-1977619713 _ws-311910413 _ww-408434756 rcx-check-box is-hovered"
+                class="is_Text _b-1639159466 _os-249893454 _ff-409630021 _fvn-1977619713 _ws-311910413 _ww-408434756 _p-1021290656 _d-1985012034 _va-1124586065 _c-22887652 _ow-485594423 rcx-check-box is-hovered"
               >
                 <input
                   aria-label="Decorator Label"
@@ -212,8 +282,18 @@ exports[`[CheckBox Rendering] renders States without crashing 1`] = `
                 />
                 <i
                   aria-hidden="true"
-                  class="is_View _b-1639160427 _os-249893454 _ff-409630021 _fvn-1977619713 _p-1021290656 _h-858548760 _f-1069814357 _mw-354604370 _mh-1241200853 _d-341075704 _jc-1099843255 _ai-121763387 _br-761515502 _w-120696903 rcx-check-box__fake"
-                />
+                  class="is_View _b-523511517 _os-249893454 _ff-409630021 _fvn-1977619713 _p-1021290656 _h-858548760 _f-1069814357 _mw-354604370 _mh-1241200853 _c-991369120 _b-886492876 _d-341075704 _jc-1099843255 _ai-121763387 _br-761515502 _w-120696903 rcx-check-box__fake"
+                >
+                  <span
+                    class="is_View _p-1261267467 _d-1987097250 _v-46649817 _o-1507270696 _b-156244340 _br-971297206 _w-762189173 _h-1673744566"
+                  />
+                  <span
+                    class="is_View _p-1261267467 _d-1987097250 _v-46649817 _o-1507270696 _b-156244340 _br-971297206 _w-762189173 _h-1673744566 _t-1011287905"
+                  />
+                  <span
+                    class="is_View _p-1261267467 _d-1987097250 _v-46649817 _o-1507270696 _b-156244340 _br-971297206 _w-1769075542 _h-1539106968 _t-663727601"
+                  />
+                </i>
               </label>
             </div>
           </td>
@@ -224,7 +304,7 @@ exports[`[CheckBox Rendering] renders States without crashing 1`] = `
               class="rcx-box rcx-box--full rcx-css-7rd89h"
             >
               <label
-                class="is_Text _b-1639159466 _os-249893454 _ff-409630021 _fvn-1977619713 _ws-311910413 _ww-408434756 rcx-check-box is-hovered"
+                class="is_Text _b-1639159466 _os-249893454 _ff-409630021 _fvn-1977619713 _ws-311910413 _ww-408434756 _p-1021290656 _d-1985012034 _va-1124586065 _c-22887652 _ow-485594423 rcx-check-box is-hovered"
               >
                 <input
                   aria-label="Decorator Label"
@@ -233,8 +313,18 @@ exports[`[CheckBox Rendering] renders States without crashing 1`] = `
                 />
                 <i
                   aria-hidden="true"
-                  class="is_View _b-1639160427 _os-249893454 _ff-409630021 _fvn-1977619713 _p-1021290656 _h-858548760 _f-1069814357 _mw-354604370 _mh-1241200853 _d-341075704 _jc-1099843255 _ai-121763387 _br-761515502 _w-120696903 rcx-check-box__fake"
-                />
+                  class="is_View _b-523511517 _os-249893454 _ff-409630021 _fvn-1977619713 _p-1021290656 _h-858548760 _f-1069814357 _mw-354604370 _mh-1241200853 _c-991369120 _b-886492876 _d-341075704 _jc-1099843255 _ai-121763387 _br-761515502 _w-120696903 rcx-check-box__fake"
+                >
+                  <span
+                    class="is_View _p-1261267467 _d-1987097250 _v-46649817 _o-1507270696 _b-156244340 _br-971297206 _w-762189173 _h-1673744566"
+                  />
+                  <span
+                    class="is_View _p-1261267467 _d-1987097250 _v-46649817 _o-1507270696 _b-156244340 _br-971297206 _w-762189173 _h-1673744566 _t-1011287905"
+                  />
+                  <span
+                    class="is_View _p-1261267467 _d-1987097250 _v-46649817 _o-1507270696 _b-156244340 _br-971297206 _w-1769075542 _h-1539106968 _t-663727601"
+                  />
+                </i>
               </label>
             </div>
           </td>
@@ -254,7 +344,7 @@ exports[`[CheckBox Rendering] renders States without crashing 1`] = `
               class="rcx-box rcx-box--full rcx-css-7rd89h"
             >
               <label
-                class="is_Text _b-1639159466 _os-249893454 _ff-409630021 _fvn-1977619713 _ws-311910413 _ww-408434756 rcx-check-box is-active"
+                class="is_Text _b-1639159466 _os-249893454 _ff-409630021 _fvn-1977619713 _ws-311910413 _ww-408434756 _p-1021290656 _d-1985012034 _va-1124586065 _c-22887652 _ow-485594423 rcx-check-box is-active"
               >
                 <input
                   aria-label="Decorator Label"
@@ -264,8 +354,18 @@ exports[`[CheckBox Rendering] renders States without crashing 1`] = `
                 />
                 <i
                   aria-hidden="true"
-                  class="is_View _b-1639160427 _os-249893454 _ff-409630021 _fvn-1977619713 _p-1021290656 _h-858548760 _f-1069814357 _mw-354604370 _mh-1241200853 _d-341075704 _jc-1099843255 _ai-121763387 _br-761515502 _w-120696903 rcx-check-box__fake"
-                />
+                  class="is_View _b-523511517 _os-249893454 _ff-409630021 _fvn-1977619713 _p-1021290656 _h-858548760 _f-1069814357 _mw-354604370 _mh-1241200853 _c-991369120 _b-886492876 _d-341075704 _jc-1099843255 _ai-121763387 _br-761515502 _w-120696903 rcx-check-box__fake"
+                >
+                  <span
+                    class="is_View _p-1261267467 _d-1987097250 _v-46649817 _o-1507270696 _b-156244340 _br-971297206 _w-762189173 _h-1673744566"
+                  />
+                  <span
+                    class="is_View _p-1261267467 _d-1987097250 _v-46649817 _o-1507270696 _b-156244340 _br-971297206 _w-762189173 _h-1673744566 _t-1011287905"
+                  />
+                  <span
+                    class="is_View _p-1261267467 _d-1987097250 _v-46649817 _o-1507270696 _b-156244340 _br-971297206 _w-1769075542 _h-1539106968 _t-663727601"
+                  />
+                </i>
               </label>
             </div>
           </td>
@@ -276,7 +376,7 @@ exports[`[CheckBox Rendering] renders States without crashing 1`] = `
               class="rcx-box rcx-box--full rcx-css-7rd89h"
             >
               <label
-                class="is_Text _b-1639159466 _os-249893454 _ff-409630021 _fvn-1977619713 _ws-311910413 _ww-408434756 rcx-check-box is-active"
+                class="is_Text _b-1639159466 _os-249893454 _ff-409630021 _fvn-1977619713 _ws-311910413 _ww-408434756 _p-1021290656 _d-1985012034 _va-1124586065 _c-22887652 _ow-485594423 rcx-check-box is-active"
               >
                 <input
                   aria-label="Decorator Label"
@@ -285,8 +385,18 @@ exports[`[CheckBox Rendering] renders States without crashing 1`] = `
                 />
                 <i
                   aria-hidden="true"
-                  class="is_View _b-1639160427 _os-249893454 _ff-409630021 _fvn-1977619713 _p-1021290656 _h-858548760 _f-1069814357 _mw-354604370 _mh-1241200853 _d-341075704 _jc-1099843255 _ai-121763387 _br-761515502 _w-120696903 rcx-check-box__fake"
-                />
+                  class="is_View _b-523511517 _os-249893454 _ff-409630021 _fvn-1977619713 _p-1021290656 _h-858548760 _f-1069814357 _mw-354604370 _mh-1241200853 _c-991369120 _b-886492876 _d-341075704 _jc-1099843255 _ai-121763387 _br-761515502 _w-120696903 rcx-check-box__fake"
+                >
+                  <span
+                    class="is_View _p-1261267467 _d-1987097250 _v-46649817 _o-1507270696 _b-156244340 _br-971297206 _w-762189173 _h-1673744566"
+                  />
+                  <span
+                    class="is_View _p-1261267467 _d-1987097250 _v-46649817 _o-1507270696 _b-156244340 _br-971297206 _w-762189173 _h-1673744566 _t-1011287905"
+                  />
+                  <span
+                    class="is_View _p-1261267467 _d-1987097250 _v-46649817 _o-1507270696 _b-156244340 _br-971297206 _w-1769075542 _h-1539106968 _t-663727601"
+                  />
+                </i>
               </label>
             </div>
           </td>
@@ -306,7 +416,7 @@ exports[`[CheckBox Rendering] renders States without crashing 1`] = `
               class="rcx-box rcx-box--full rcx-css-7rd89h"
             >
               <label
-                class="is_Text _b-1639159466 _os-249893454 _ff-409630021 _fvn-1977619713 _ws-311910413 _ww-408434756 rcx-check-box is-focused"
+                class="is_Text _b-1639159466 _os-249893454 _ff-409630021 _fvn-1977619713 _ws-311910413 _ww-408434756 _p-1021290656 _d-1985012034 _va-1124586065 _c-22887652 _ow-485594423 rcx-check-box is-focused"
               >
                 <input
                   aria-label="Decorator Label"
@@ -316,8 +426,18 @@ exports[`[CheckBox Rendering] renders States without crashing 1`] = `
                 />
                 <i
                   aria-hidden="true"
-                  class="is_View _b-1639160427 _os-249893454 _ff-409630021 _fvn-1977619713 _p-1021290656 _h-858548760 _f-1069814357 _mw-354604370 _mh-1241200853 _d-341075704 _jc-1099843255 _ai-121763387 _br-761515502 _w-120696903 rcx-check-box__fake"
-                />
+                  class="is_View _b-523511517 _os-249893454 _ff-409630021 _fvn-1977619713 _p-1021290656 _h-858548760 _f-1069814357 _mw-354604370 _mh-1241200853 _c-991369120 _b-886492876 _d-341075704 _jc-1099843255 _ai-121763387 _br-761515502 _w-120696903 rcx-check-box__fake"
+                >
+                  <span
+                    class="is_View _p-1261267467 _d-1987097250 _v-46649817 _o-1507270696 _b-156244340 _br-971297206 _w-762189173 _h-1673744566"
+                  />
+                  <span
+                    class="is_View _p-1261267467 _d-1987097250 _v-46649817 _o-1507270696 _b-156244340 _br-971297206 _w-762189173 _h-1673744566 _t-1011287905"
+                  />
+                  <span
+                    class="is_View _p-1261267467 _d-1987097250 _v-46649817 _o-1507270696 _b-156244340 _br-971297206 _w-1769075542 _h-1539106968 _t-663727601"
+                  />
+                </i>
               </label>
             </div>
           </td>
@@ -328,7 +448,7 @@ exports[`[CheckBox Rendering] renders States without crashing 1`] = `
               class="rcx-box rcx-box--full rcx-css-7rd89h"
             >
               <label
-                class="is_Text _b-1639159466 _os-249893454 _ff-409630021 _fvn-1977619713 _ws-311910413 _ww-408434756 rcx-check-box is-focused"
+                class="is_Text _b-1639159466 _os-249893454 _ff-409630021 _fvn-1977619713 _ws-311910413 _ww-408434756 _p-1021290656 _d-1985012034 _va-1124586065 _c-22887652 _ow-485594423 rcx-check-box is-focused"
               >
                 <input
                   aria-label="Decorator Label"
@@ -337,8 +457,18 @@ exports[`[CheckBox Rendering] renders States without crashing 1`] = `
                 />
                 <i
                   aria-hidden="true"
-                  class="is_View _b-1639160427 _os-249893454 _ff-409630021 _fvn-1977619713 _p-1021290656 _h-858548760 _f-1069814357 _mw-354604370 _mh-1241200853 _d-341075704 _jc-1099843255 _ai-121763387 _br-761515502 _w-120696903 rcx-check-box__fake"
-                />
+                  class="is_View _b-523511517 _os-249893454 _ff-409630021 _fvn-1977619713 _p-1021290656 _h-858548760 _f-1069814357 _mw-354604370 _mh-1241200853 _c-991369120 _b-886492876 _d-341075704 _jc-1099843255 _ai-121763387 _br-761515502 _w-120696903 rcx-check-box__fake"
+                >
+                  <span
+                    class="is_View _p-1261267467 _d-1987097250 _v-46649817 _o-1507270696 _b-156244340 _br-971297206 _w-762189173 _h-1673744566"
+                  />
+                  <span
+                    class="is_View _p-1261267467 _d-1987097250 _v-46649817 _o-1507270696 _b-156244340 _br-971297206 _w-762189173 _h-1673744566 _t-1011287905"
+                  />
+                  <span
+                    class="is_View _p-1261267467 _d-1987097250 _v-46649817 _o-1507270696 _b-156244340 _br-971297206 _w-1769075542 _h-1539106968 _t-663727601"
+                  />
+                </i>
               </label>
             </div>
           </td>
@@ -358,7 +488,7 @@ exports[`[CheckBox Rendering] renders States without crashing 1`] = `
               class="rcx-box rcx-box--full rcx-css-7rd89h"
             >
               <label
-                class="is_Text _b-1639159466 _os-249893454 _ff-409630021 _fvn-1977619713 _ws-311910413 _ww-408434756 rcx-check-box"
+                class="is_Text _b-1639159466 _os-249893454 _ff-409630021 _fvn-1977619713 _ws-311910413 _ww-408434756 _p-1021290656 _d-1985012034 _va-1124586065 _c-22887652 _ow-485594423 rcx-check-box"
               >
                 <input
                   aria-label="Decorator Label"
@@ -369,8 +499,18 @@ exports[`[CheckBox Rendering] renders States without crashing 1`] = `
                 />
                 <i
                   aria-hidden="true"
-                  class="is_View _b-1639160427 _os-249893454 _ff-409630021 _fvn-1977619713 _p-1021290656 _h-858548760 _f-1069814357 _mw-354604370 _mh-1241200853 _d-341075704 _jc-1099843255 _ai-121763387 _br-761515502 _w-120696903 rcx-check-box__fake"
-                />
+                  class="is_View _b-523511517 _os-249893454 _ff-409630021 _fvn-1977619713 _p-1021290656 _h-858548760 _f-1069814357 _mw-354604370 _mh-1241200853 _c-991369120 _b-886492876 _d-341075704 _jc-1099843255 _ai-121763387 _br-761515502 _w-120696903 rcx-check-box__fake"
+                >
+                  <span
+                    class="is_View _p-1261267467 _d-1987097250 _v-46649817 _o-1507270696 _b-156244340 _br-971297206 _w-762189173 _h-1673744566"
+                  />
+                  <span
+                    class="is_View _p-1261267467 _d-1987097250 _v-46649817 _o-1507270696 _b-156244340 _br-971297206 _w-762189173 _h-1673744566 _t-1011287905"
+                  />
+                  <span
+                    class="is_View _p-1261267467 _d-1987097250 _v-46649817 _o-1507270696 _b-156244340 _br-971297206 _w-1769075542 _h-1539106968 _t-663727601"
+                  />
+                </i>
               </label>
             </div>
           </td>
@@ -381,7 +521,7 @@ exports[`[CheckBox Rendering] renders States without crashing 1`] = `
               class="rcx-box rcx-box--full rcx-css-7rd89h"
             >
               <label
-                class="is_Text _b-1639159466 _os-249893454 _ff-409630021 _fvn-1977619713 _ws-311910413 _ww-408434756 rcx-check-box"
+                class="is_Text _b-1639159466 _os-249893454 _ff-409630021 _fvn-1977619713 _ws-311910413 _ww-408434756 _p-1021290656 _d-1985012034 _va-1124586065 _c-22887652 _ow-485594423 rcx-check-box"
               >
                 <input
                   aria-label="Decorator Label"
@@ -391,8 +531,18 @@ exports[`[CheckBox Rendering] renders States without crashing 1`] = `
                 />
                 <i
                   aria-hidden="true"
-                  class="is_View _b-1639160427 _os-249893454 _ff-409630021 _fvn-1977619713 _p-1021290656 _h-858548760 _f-1069814357 _mw-354604370 _mh-1241200853 _d-341075704 _jc-1099843255 _ai-121763387 _br-761515502 _w-120696903 rcx-check-box__fake"
-                />
+                  class="is_View _b-523511517 _os-249893454 _ff-409630021 _fvn-1977619713 _p-1021290656 _h-858548760 _f-1069814357 _mw-354604370 _mh-1241200853 _c-991369120 _b-886492876 _d-341075704 _jc-1099843255 _ai-121763387 _br-761515502 _w-120696903 rcx-check-box__fake"
+                >
+                  <span
+                    class="is_View _p-1261267467 _d-1987097250 _v-46649817 _o-1507270696 _b-156244340 _br-971297206 _w-762189173 _h-1673744566"
+                  />
+                  <span
+                    class="is_View _p-1261267467 _d-1987097250 _v-46649817 _o-1507270696 _b-156244340 _br-971297206 _w-762189173 _h-1673744566 _t-1011287905"
+                  />
+                  <span
+                    class="is_View _p-1261267467 _d-1987097250 _v-46649817 _o-1507270696 _b-156244340 _br-971297206 _w-1769075542 _h-1539106968 _t-663727601"
+                  />
+                </i>
               </label>
             </div>
           </td>
