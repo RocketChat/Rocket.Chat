@@ -1,0 +1,463 @@
+/* `withRichContent` styles arbitrary HTML no component renders, so it stays plain CSS */
+.rcx-box--with-inline-elements a {
+	letter-spacing: inherit;
+
+	color: var(--rcx-link-color, var(--rcx-color-font-info, #095ad2));
+
+	font: inherit;
+}
+
+.rcx-box--with-inline-elements a:focus-visible,
+.rcx-box--with-inline-elements a.is-focused,
+.rcx-box--with-inline-elements a.focus {
+	text-decoration: none;
+
+	color: var(--rcx-link-focus-color, var(--rcx-color-font-info, #095ad2));
+	border-radius: var(--rcx-border-radius-small, 0.125rem);
+	outline: var(--rcx-link-focus-outline-color, var(--rcx-color-stroke-highlight, #156ff5)) solid 1px;
+	outline-offset: 0;
+	box-shadow: 0 0 0 2px var(--rcx-link-focus-box-shadow-color, var(--rcx-color-stroke-extra-light-highlight, #d1ebfe));
+}
+
+.rcx-box--with-inline-elements a:where(:visited),
+.rcx-box--with-inline-elements a:where(.is-visited) {
+	color: var(--rcx-link-visited-color, var(--rcx-color-font-info, #095ad2));
+}
+
+.rcx-box--with-inline-elements a:where(:active),
+.rcx-box--with-inline-elements a:where(.active),
+.rcx-box--with-inline-elements a:where(.is-active) {
+	color: var(--rcx-link-active-color, var(--rcx-color-font-info, #095ad2));
+}
+
+.rcx-box--with-inline-elements abbr,
+.rcx-box--with-inline-elements b,
+.rcx-box--with-inline-elements cite,
+.rcx-box--with-inline-elements code,
+.rcx-box--with-inline-elements del,
+.rcx-box--with-inline-elements dfn,
+.rcx-box--with-inline-elements em,
+.rcx-box--with-inline-elements i,
+.rcx-box--with-inline-elements ins,
+.rcx-box--with-inline-elements kbd,
+.rcx-box--with-inline-elements q,
+.rcx-box--with-inline-elements samp,
+.rcx-box--with-inline-elements small,
+.rcx-box--with-inline-elements strong,
+.rcx-box--with-inline-elements sub,
+.rcx-box--with-inline-elements sup,
+.rcx-box--with-inline-elements time,
+.rcx-box--with-inline-elements var {
+	letter-spacing: inherit;
+
+	color: inherit;
+
+	font: inherit;
+}
+
+.rcx-box--with-inline-elements strong {
+	letter-spacing: inherit;
+
+	font: inherit;
+	font-weight: bolder;
+}
+
+.rcx-box--with-inline-elements em {
+	letter-spacing: inherit;
+
+	font: inherit;
+	font-style: italic;
+}
+
+.rcx-box--with-inline-elements b {
+	letter-spacing: inherit;
+
+	font: inherit;
+	font-weight: bolder;
+}
+
+.rcx-box--with-inline-elements i {
+	letter-spacing: inherit;
+
+	font: inherit;
+	font-style: italic;
+}
+
+.rcx-box--with-inline-elements q {
+	letter-spacing: inherit;
+
+	font: inherit;
+}
+
+.rcx-box--with-inline-elements q::before {
+	content: open-quote;
+}
+
+.rcx-box--with-inline-elements q::after {
+	content: close-quote;
+}
+
+.rcx-box--with-inline-elements q cite {
+	letter-spacing: inherit;
+
+	font: inherit;
+	font-style: italic;
+}
+
+.rcx-box--with-inline-elements ul,
+.rcx-box--with-inline-elements ol {
+	display: inline-flex;
+}
+
+.rcx-box--with-inline-elements li {
+	display: list-item;
+
+	margin-inline: 1.5rem 0.5rem;
+}
+
+.rcx-box--with-inline-elements li:first-child {
+	margin-inline-start: 1rem;
+}
+
+.rcx-box--with-inline-elements ul {
+	list-style-type: disc;
+}
+
+.rcx-box--with-inline-elements ul span {
+	margin-inline-end: 0.5rem;
+}
+
+.rcx-box--with-inline-elements ul input {
+	vertical-align: middle;
+}
+
+.rcx-box--with-inline-elements ol {
+	list-style-type: decimal;
+}
+
+.rcx-box--with-inline-elements code {
+	display: inline;
+
+	padding: 0.0625rem 0.25rem;
+
+	vertical-align: middle;
+	white-space: pre-wrap;
+	letter-spacing: 0;
+	word-wrap: break-word;
+
+	color: var(--rcx-color-font-default, #2f343d);
+	border-width: 1px;
+	border-color: var(--rcx-color-stroke-light, #cbced1);
+	border-radius: var(--rcx-border-radius-medium, 0.25rem);
+	background-color: var(--rcx-color-surface-tint, #f7f8fa);
+
+	font: inherit;
+	font-family: var(--rcx-font-family-mono, Menlo, Monaco, Consolas, 'Liberation Mono', 'Courier New', monospace);
+	font-size: 0.75rem;
+	font-weight: 700;
+	line-height: 1rem;
+	direction: ltr;
+	-webkit-font-smoothing: auto;
+	unicode-bidi: embed;
+}
+
+.rcx-box--with-inline-elements time {
+	letter-spacing: inherit;
+
+	color: var(--rcx-color-font-secondary-info, #6c737a);
+
+	font: inherit;
+}
+
+.rcx-box--with-inline-elements dfn {
+	letter-spacing: inherit;
+
+	color: var(--rcx-color-font-secondary-info, #6c737a);
+
+	font: inherit;
+	font-style: italic;
+}
+
+.rcx-box--with-inline-elements abbr {
+	letter-spacing: inherit;
+
+	font: inherit;
+}
+
+.rcx-box--with-inline-elements abbr[title] {
+	text-decoration: underline dashed;
+	border-block-end-width: 0;
+}
+
+.rcx-box--with-inline-elements del {
+	text-decoration: line-through solid;
+	letter-spacing: inherit;
+
+	font: inherit;
+}
+
+.rcx-box--with-inline-elements ins {
+	text-decoration: underline solid;
+	letter-spacing: inherit;
+
+	font: inherit;
+}
+
+.rcx-box--with-inline-elements sup,
+.rcx-box--with-inline-elements sub {
+	position: relative;
+
+	vertical-align: baseline;
+
+	font-size: 75%;
+	line-height: 0;
+}
+
+.rcx-box--with-inline-elements sup {
+	inset-block-start: -0.5em;
+}
+
+.rcx-box--with-inline-elements sub {
+	inset-block-end: -0.25em;
+}
+
+.rcx-box--with-inline-elements kbd {
+	padding: 0.25rem 0.5rem;
+
+	letter-spacing: inherit;
+
+	border-width: 1px;
+	border-style: solid;
+	border-color: currentColor;
+	border-radius: var(--rcx-border-radius-small, 0.125rem);
+
+	font: inherit;
+	font-family: var(--rcx-font-family-mono, Menlo, Monaco, Consolas, 'Liberation Mono', 'Courier New', monospace);
+	-webkit-font-smoothing: auto;
+}
+
+.rcx-box--with-inline-elements var {
+	letter-spacing: inherit;
+
+	font: inherit;
+	font-style: italic;
+}
+
+.rcx-box--with-inline-elements small {
+	letter-spacing: inherit;
+
+	font: inherit;
+	font-size: 80%;
+}
+
+.rcx-box--with-block-elements {
+	font: inherit;
+}
+
+.rcx-box--with-block-elements h1 {
+	letter-spacing: 0;
+
+	font-size: 1.5rem;
+	font-weight: 700;
+	line-height: 2rem;
+}
+
+.rcx-box--with-block-elements h2 {
+	letter-spacing: 0;
+
+	font-size: 1rem;
+	font-weight: 700;
+	line-height: 1.5rem;
+}
+
+.rcx-box--with-block-elements h3 {
+	letter-spacing: 0;
+
+	font-size: 0.875rem;
+	font-weight: 500;
+	line-height: 1.25rem;
+}
+
+.rcx-box--with-block-elements h4 {
+	letter-spacing: 0;
+
+	font-size: 0.75rem;
+	font-weight: 700;
+	line-height: 1rem;
+}
+
+.rcx-box--with-block-elements h5 {
+	letter-spacing: 0;
+
+	font-size: 0.625rem;
+	font-weight: 700;
+	line-height: 0.75rem;
+}
+
+.rcx-box--with-block-elements h6 {
+	letter-spacing: 0;
+
+	font-size: 0.625rem;
+	font-weight: 700;
+	line-height: 0.75rem;
+}
+
+.rcx-box--with-block-elements h1,
+.rcx-box--with-block-elements h2,
+.rcx-box--with-block-elements h3,
+.rcx-box--with-block-elements h4,
+.rcx-box--with-block-elements h5,
+.rcx-box--with-block-elements h6 {
+	display: block;
+
+	margin: 1rem 0;
+}
+
+.rcx-box--with-block-elements p {
+	display: block;
+
+	margin: 1rem 0;
+
+	letter-spacing: 0;
+
+	color: inherit;
+
+	font-size: 0.875rem;
+	font-weight: 400;
+	line-height: 1.25rem;
+}
+
+.rcx-box--with-block-elements ul,
+.rcx-box--with-block-elements ol {
+	display: block;
+
+	margin: 1rem 0;
+	padding-inline-start: 2.5rem;
+}
+
+.rcx-box--with-block-elements ul {
+	list-style-type: disc;
+
+	letter-spacing: 0;
+
+	font-size: 0.875rem;
+	font-weight: 400;
+	line-height: 1.25rem;
+}
+
+.rcx-box--with-block-elements ol {
+	list-style-type: decimal;
+
+	letter-spacing: 0;
+
+	font-size: 0.875rem;
+	font-weight: 400;
+	line-height: 1.25rem;
+}
+
+.rcx-box--with-block-elements li {
+	display: list-item;
+
+	margin-inline-start: 0;
+
+	text-align: inherit;
+
+	color: inherit;
+
+	font: inherit;
+}
+
+.rcx-box--with-block-elements li:first-child {
+	margin-inline-start: 0;
+}
+
+.rcx-box--with-block-elements pre {
+	letter-spacing: inherit;
+
+	font: inherit;
+	font-family: var(--rcx-font-family-mono, Menlo, Monaco, Consolas, 'Liberation Mono', 'Courier New', monospace);
+}
+
+.rcx-box--with-block-elements pre code {
+	display: block;
+	overflow-y: hidden;
+
+	margin: 0.5rem 0;
+	padding: 0.5rem;
+
+	letter-spacing: inherit;
+}
+
+.rcx-box--full::before,
+.rcx-box--full::after,
+.rcx-box {
+	flex: 0 1 auto;
+
+	box-sizing: border-box;
+
+	outline: none;
+
+	font-variant-numeric: tabular-nums;
+	-webkit-font-smoothing: antialiased;
+	-moz-osx-font-smoothing: grayscale;
+}
+
+.rcx-box--animated::before,
+.rcx-box--animated::after,
+.rcx-box--animated {
+	transition: all 0.18s;
+}
+@media (prefers-reduced-motion) {
+	.rcx-box--animated::before,
+	.rcx-box--animated::after,
+	.rcx-box--animated {
+		transition: none;
+	}
+}
+
+.rcx-box--full::before,
+.rcx-box--full::after,
+.rcx-box--full {
+	margin: 0;
+	padding: 0;
+
+	border-width: 0;
+	border-style: solid;
+	border-color: currentColor;
+	outline: none;
+
+	font-family: var(
+		--rcx-font-family-sans,
+		Inter,
+		-apple-system,
+		BlinkMacSystemFont,
+		'Segoe UI',
+		Roboto,
+		Oxygen,
+		Ubuntu,
+		Cantarell,
+		'Helvetica Neue',
+		'Apple Color Emoji',
+		'Segoe UI Emoji',
+		'Segoe UI Symbol',
+		'Meiryo UI',
+		Arial,
+		sans-serif
+	);
+	-webkit-font-smoothing: antialiased;
+	-moz-osx-font-smoothing: grayscale;
+}
+
+.rcx-box--focusable {
+	border-width: 1px;
+	border-style: solid;
+	border-color: transparent;
+}
+
+.rcx-box--focusable:focus-visible,
+.rcx-box--focusable.focus.focus-visible {
+	border-color: var(--rcx-color-stroke-highlight, #156ff5);
+	border-radius: var(--rcx-border-radius-medium, 0.25rem);
+	outline: 0;
+	box-shadow: 0 0 0 2px var(--rcx-color-stroke-extra-light-highlight, #d1ebfe);
+}

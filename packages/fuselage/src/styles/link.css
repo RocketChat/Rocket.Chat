@@ -1,0 +1,27 @@
+/* Anchors outside Fuselage components; `withRichContent` repeats these colors in `Box.styles.css` */
+a:where(:not(.rcx-button, .rcx-item, .rcx-item__link)) {
+	color: var(--rcx-link-color, var(--rcx-color-font-info, #095ad2));
+}
+
+a:focus-visible:where(:not(.rcx-button, .rcx-item, .rcx-item__link)),
+a.is-focused:where(:not(.rcx-button, .rcx-item, .rcx-item__link)),
+a.focus:where(:not(.rcx-button, .rcx-item, .rcx-item__link)) {
+	text-decoration: none;
+
+	color: var(--rcx-link-focus-color, var(--rcx-color-font-info, #095ad2));
+	border-radius: var(--rcx-border-radius-small, 0.125rem);
+	outline: var(--rcx-link-focus-outline-color, var(--rcx-color-stroke-highlight, #156ff5)) solid 1px;
+	outline-offset: 0;
+	box-shadow: 0 0 0 2px var(--rcx-link-focus-box-shadow-color, var(--rcx-color-stroke-extra-light-highlight, #d1ebfe));
+}
+
+a:where(:visited):where(:not(.rcx-button, .rcx-item, .rcx-item__link)),
+a:where(.is-visited):where(:not(.rcx-button, .rcx-item, .rcx-item__link)) {
+	color: var(--rcx-link-visited-color, var(--rcx-color-font-info, #095ad2));
+}
+
+a:where(:active):where(:not(.rcx-button, .rcx-item, .rcx-item__link)),
+a:where(.active):where(:not(.rcx-button, .rcx-item, .rcx-item__link)),
+a:where(.is-active):where(:not(.rcx-button, .rcx-item, .rcx-item__link)) {
+	color: var(--rcx-link-active-color, var(--rcx-color-font-info, #095ad2));
+}
