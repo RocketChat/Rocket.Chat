@@ -223,6 +223,7 @@ const AbacRoomMembershipPreview = ({ rid, roomName, attributes, isSaving, onBack
 										endReached={() => !isSaving && preview.onEndReached()}
 										components={{ List: AbacRoomPreviewList, Footer: getListFooter() }}
 										context={{ ...loadMoreContext, label: t(groupLabels[group]) }}
+										computeItemKey={(_index, member) => member._id}
 										itemContent={(_index, member) => <AbacRoomPreviewMemberRow member={member} />}
 									/>
 								</VirtualizedScrollbars>
