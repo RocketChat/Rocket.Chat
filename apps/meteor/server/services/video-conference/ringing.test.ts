@@ -60,7 +60,7 @@ const broadcastStub = sinon.stub().resolves();
 
 // Deliberately NOT overriding '../../../lib/videoConference/constants' — an add rings through
 // `shouldRingRecipients`, so stubbing it would quietly suppress the ring the add tests below assert. Where the
-// limit itself falls is pinned on the guard in tests/unit/lib/videoConference/memberStatus.spec.ts.
+// limit itself falls is pinned on the guard in lib/videoConference/memberStatus.test.ts.
 const VideoConfService = createService({
 	broadcast: broadcastStub,
 	models: { VideoConference: VideoConferenceModelMock, Users: UsersMock },
