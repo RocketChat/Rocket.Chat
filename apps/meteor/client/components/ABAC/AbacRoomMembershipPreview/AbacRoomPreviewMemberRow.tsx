@@ -35,8 +35,8 @@ const AbacRoomPreviewMemberRow = ({ member: { username, name, verdict, roles = [
 					<UserAvatar username={username} size='x28' />
 				</Box>
 			)}
-			<Box display='flex' alignItems='center' flexGrow={1} flexShrink={1} minWidth={0} marginInlineStart={8}>
-				<Box withTruncatedText flexShrink={1} title={fullName}>
+			<Box display='flex' alignItems='center' flexGrow={1} minWidth={0} marginInlineStart={8}>
+				<Box withTruncatedText title={fullName}>
 					<Box is='span' fontScale='p2m' color='default'>
 						{name || username}
 					</Box>
@@ -52,7 +52,7 @@ const AbacRoomPreviewMemberRow = ({ member: { username, name, verdict, roles = [
 					</Box>
 				)}
 			</Box>
-			<Icon {...icon} size='x20' flexShrink={0} marginInlineStart={8} title={t(label)} />
+			<Icon {...icon} size='x20' marginInlineStart={8} title={t(label)} />
 		</Box>
 	);
 };
