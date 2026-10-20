@@ -6,6 +6,6 @@
 		"stripInternal": true,
 		"outDir": "./dist"
 	},
-	"include": ["src", "mocks", ".storybook", "jest.config.ts", "jest-setup.ts", "vite.config.mts"],
+	"include": ["src", "mocks", ".storybook", "jest.config.ts", "jest-setup.ts", "vite.config.mts", "prevalStyled.ts"],
 	"exclude": ["dist", "node_modules", "storybook-static"]
 }
