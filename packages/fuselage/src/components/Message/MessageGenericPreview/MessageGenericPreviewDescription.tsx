@@ -5,7 +5,7 @@ import { textIconColors } from '../../../Theme';
 import { toCSSValue } from '../../../helpers/toCSSValue';
 import { spacing } from '../../../styleTokens';
 import { withFuselageProvider } from '../../FuselageProvider/FuselageProvider';
-import { plainDiv, textScale, truncatedText } from '../messageStyles';
+import { lineClamp, plainDiv, textScale, truncatedText } from '../messageStyles';
 
 const MessageGenericPreviewDescriptionFrame = styled(Text, {
 	...plainDiv,
@@ -18,6 +18,9 @@ const MessageGenericPreviewDescriptionFrame = styled(Text, {
 		truncated: {
 			true: truncatedText,
 		},
+		clamp: {
+			true: lineClamp(2),
+		},
 	} as const,
 });
 
@@ -29,6 +32,7 @@ export type MessageGenericPreviewDescriptionProps = {
 const MessageGenericPreviewDescription = ({ children, clamp = false }: MessageGenericPreviewDescriptionProps) => (
 	<MessageGenericPreviewDescriptionFrame
 		truncated={!clamp}
+		clamp={clamp}
 		className={['rcx-message-generic-preview__description', clamp && 'rcx-message-generic-preview__description--clamp']
 			.filter(Boolean)
 			.join(' ')}

@@ -1,9 +1,0 @@
-@use '../../../styles/colors.scss';
-@use '../../../styles/functions.scss' as *;
-
-$message-system-background-color-selected: theme('message-system-background-color-selected', colors.surface(selected));
-
-// `!important` has no Tamagui equivalent.
-.rcx-message-system--selected {
-	background: $message-system-background-color-selected !important;
-}

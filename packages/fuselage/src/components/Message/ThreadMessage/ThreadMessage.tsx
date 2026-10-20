@@ -1,7 +1,7 @@
-import Message, { type MessageProps } from '../Message';
+import { ThreadMessageBase, type MessageProps } from '../Message';
 
 export type ThreadMessageProps = MessageProps;
 
-const ThreadMessage = (props: ThreadMessageProps) => <Message className='rcx-message-thread' {...props} />;
+const ThreadMessage = (props: ThreadMessageProps) => <ThreadMessageBase className='rcx-message-thread' {...props} />;
 
 export default ThreadMessage;
