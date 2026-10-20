@@ -10,6 +10,7 @@ import { createDirectRoom } from './createDirectRoom';
 import { filterUsersAllowedInRoom } from './filterUsersAllowedInRoom';
 import { calculateRoomRolePriorityFromRoles } from '../../../lib/roles/calculateRoomRolePriorityFromRoles';
 import { callbacks } from '../callbacks';
+import { afterCreateRoomCallback } from '../callbacks/afterCreateRoomCallback';
 import { beforeAddUserToRoom } from '../callbacks/beforeAddUserToRoom';
 import { beforeCreateRoomCallback, prepareCreateRoomCallback } from '../callbacks/beforeCreateRoomCallback';
 import { getSubscriptionAutotranslateDefaultConfig } from '../getSubscriptionAutotranslateDefaultConfig';
@@ -345,6 +346,7 @@ export const createRoom = async <T extends RoomType>(
 		callbacks.runAsync('afterCreatePrivateGroup', owner, room);
 	}
 	callbacks.runAsync('afterCreateRoom', owner, room);
+	void afterCreateRoomCallback.run({ owner, room, app: options?.app });
 
 	void Apps.self?.triggerEvent(AppEvents.IPostRoomCreate, room);
 	return {

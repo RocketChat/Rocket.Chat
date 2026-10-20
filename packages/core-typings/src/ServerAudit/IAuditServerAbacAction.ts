@@ -2,6 +2,7 @@ import type { IUser, IRoom, IAuditServerEventType, IAbacAttributeDefinition, ISe
 
 export type MinimalUser = Pick<IUser, 'username'> & Optional<Pick<IUser, '_id'>, '_id'>;
 export type MinimalRoom = Pick<IRoom, '_id' | 'name'>;
+export type MinimalApp = { _id: string; name?: string };
 
 export type AbacAuditReason =
 	| 'ldap-sync'
@@ -35,6 +36,7 @@ export interface IServerEventAbacObjectAttributeChanged extends IAuditServerEven
 	| { key: 'previous'; value: IAbacAttributeDefinition[] }
 	| { key: 'current'; value: IAbacAttributeDefinition[] | null }
 	| { key: 'change'; value: AbacAttributeDefinitionChangeType }
+	| { key: 'app'; value: MinimalApp | null }
 > {
 	t: 'abac.object.attribute.changed';
 }

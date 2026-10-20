@@ -99,13 +99,14 @@ export class TeamService extends ServiceClassInternal implements ITeamService {
 		};
 
 		const { abacAttributes: _untrustedAbacAttributes, ...roomExtraData } = room.extraData ?? {};
+		const { options: _untrustedOptions, ...roomProps } = room as typeof room & { options?: unknown };
 
 		try {
 			let roomId = room.id;
 			let skippedMembers: string[] | undefined;
 			if (!roomId) {
 				const createdRoom = await Room.create(owner || uid, {
-					...room,
+					...roomProps,
 					type: team.type === TeamType.PRIVATE ? 'p' : 'c',
 					name: team.name,
 					members: memberUsernames as string[],

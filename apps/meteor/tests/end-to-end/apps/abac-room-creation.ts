@@ -15,6 +15,7 @@ import { getSettingValueById, updatePermission, updateSetting } from '../../data
 import { password } from '../../data/user';
 import { createUser, deleteUser, login } from '../../data/users.helper';
 import { IS_EE, URL_MONGODB } from '../../e2e/config/constants';
+import { retry } from '../api/helpers/retry';
 
 type CreateRoomBody = {
 	type: 'p' | 'c';
@@ -177,6 +178,35 @@ type CreateRoomBody = {
 
 			expect(res.status).to.equal(200);
 			expect((await getRoom(res.body.roomId)).abacAttributes).to.deep.equal([{ key: clearance, values: ['secret'] }]);
+		});
+
+		it('records the app and the creator in the audit of the attributes the room was created with', async () => {
+			const { res } = await createRoomThroughApp({
+				type: 'p',
+				creatorUsername: creator.username,
+				abacAttributes: [{ key: clearance, values: ['secret'] }],
+			});
+			const { roomId } = res.body;
+
+			type AuditEvent = { t: string; actor?: { _id?: string }; data: Array<{ key: string; value: any }> };
+			let entry: AuditEvent | undefined;
+			await retry(
+				'the creation audit entry is written',
+				async () => {
+					const audit = await request.get('/api/v1/abac/audit').set(credentials).query({ count: 100 }).expect(200);
+					entry = (audit.body.events as AuditEvent[]).find(
+						(event) =>
+							event.t === 'abac.object.attribute.changed' &&
+							event.data.some(({ key, value }) => key === 'room' && value?._id === roomId) &&
+							event.data.some(({ key, value }) => key === 'change' && value === 'created'),
+					);
+					expect(entry, 'audit entry').to.exist;
+				},
+				{ retries: 10, delayMs: 200 },
+			);
+
+			expect(entry?.actor?._id).to.equal(creator._id);
+			expect(entry?.data.find(({ key }) => key === 'app')?.value).to.include({ _id: app.id });
 		});
 
 		it('is refused a value its creator does not hold', async () => {

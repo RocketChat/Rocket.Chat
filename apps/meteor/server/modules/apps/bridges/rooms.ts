@@ -12,6 +12,7 @@ import type {
 	IUser as ICoreUser,
 	IRoom as ICoreRoom,
 	IMessage as ICoreMessage,
+	MinimalApp,
 } from '@rocket.chat/core-typings';
 import { Subscriptions, Users, Rooms, Messages } from '@rocket.chat/models';
 import { ajv } from '@rocket.chat/rest-typings';
@@ -105,7 +106,10 @@ export class AppRoomBridge extends RoomBridge {
 			case RoomType.CHANNEL:
 				return this.createChannel(room.creator.id, rcRoom, members);
 			case RoomType.PRIVATE_GROUP:
-				return this.createPrivateGroup(room.creator.id, rcRoom, members, abacAttributes);
+				return this.createPrivateGroup(room.creator.id, rcRoom, members, abacAttributes, {
+					_id: appId,
+					name: this.orch.getManager()?.getOneById(appId)?.getName(),
+				});
 			case RoomType.DIRECT_MESSAGE:
 				return this.createDirectMessage(room.creator.id, members);
 			default:
@@ -135,7 +139,8 @@ export class AppRoomBridge extends RoomBridge {
 		userId: string,
 		room: ICoreRoom,
 		members: string[],
-		abacAttributes?: IAbacAttributeDefinition[],
+		abacAttributes: IAbacAttributeDefinition[] | undefined,
+		app: MinimalApp,
 	): Promise<string> {
 		const user = await Users.findOneById(userId);
 		if (!user) {
@@ -151,6 +156,7 @@ export class AppRoomBridge extends RoomBridge {
 				this.prepareExtraData(room),
 				false,
 				abacAttributes,
+				{ creator: user._id, app },
 			)
 		).rid;
 	}
