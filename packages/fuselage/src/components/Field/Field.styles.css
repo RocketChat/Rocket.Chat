@@ -1,0 +1,251 @@
+/* Styles the arbitrary rich text callers put inside descriptions, hints, errors and links */
+:is(.rcx-field__description, .rcx-field__hint, .rcx-field__error, .rcx-field__link) a {
+	letter-spacing: inherit;
+
+	color: var(--rcx-link-color, var(--rcx-color-font-info, #095ad2));
+
+	font: inherit;
+}
+
+:is(.rcx-field__description, .rcx-field__hint, .rcx-field__error, .rcx-field__link) a:focus-visible,
+:is(.rcx-field__description, .rcx-field__hint, .rcx-field__error, .rcx-field__link) a.is-focused,
+:is(.rcx-field__description, .rcx-field__hint, .rcx-field__error, .rcx-field__link) a.focus {
+	text-decoration: none;
+
+	color: var(--rcx-link-focus-color, var(--rcx-color-font-info, #095ad2));
+	border-radius: var(--rcx-border-radius-small, 0.125rem);
+	outline: var(--rcx-link-focus-outline-color, var(--rcx-color-stroke-highlight, #156ff5)) solid 1px;
+	outline-offset: 0;
+	box-shadow: 0 0 0 2px var(--rcx-link-focus-box-shadow-color, var(--rcx-color-stroke-extra-light-highlight, #d1ebfe));
+}
+
+:is(.rcx-field__description, .rcx-field__hint, .rcx-field__error, .rcx-field__link) a:where(:visited),
+:is(.rcx-field__description, .rcx-field__hint, .rcx-field__error, .rcx-field__link) a:where(.is-visited) {
+	color: var(--rcx-link-visited-color, var(--rcx-color-font-info, #095ad2));
+}
+
+:is(.rcx-field__description, .rcx-field__hint, .rcx-field__error, .rcx-field__link) a:where(:active),
+:is(.rcx-field__description, .rcx-field__hint, .rcx-field__error, .rcx-field__link) a:where(.active),
+:is(.rcx-field__description, .rcx-field__hint, .rcx-field__error, .rcx-field__link) a:where(.is-active) {
+	color: var(--rcx-link-active-color, var(--rcx-color-font-info, #095ad2));
+}
+
+:is(.rcx-field__description, .rcx-field__hint, .rcx-field__error, .rcx-field__link) abbr,
+:is(.rcx-field__description, .rcx-field__hint, .rcx-field__error, .rcx-field__link) b,
+:is(.rcx-field__description, .rcx-field__hint, .rcx-field__error, .rcx-field__link) cite,
+:is(.rcx-field__description, .rcx-field__hint, .rcx-field__error, .rcx-field__link) code,
+:is(.rcx-field__description, .rcx-field__hint, .rcx-field__error, .rcx-field__link) del,
+:is(.rcx-field__description, .rcx-field__hint, .rcx-field__error, .rcx-field__link) dfn,
+:is(.rcx-field__description, .rcx-field__hint, .rcx-field__error, .rcx-field__link) em,
+:is(.rcx-field__description, .rcx-field__hint, .rcx-field__error, .rcx-field__link) i,
+:is(.rcx-field__description, .rcx-field__hint, .rcx-field__error, .rcx-field__link) ins,
+:is(.rcx-field__description, .rcx-field__hint, .rcx-field__error, .rcx-field__link) kbd,
+:is(.rcx-field__description, .rcx-field__hint, .rcx-field__error, .rcx-field__link) q,
+:is(.rcx-field__description, .rcx-field__hint, .rcx-field__error, .rcx-field__link) samp,
+:is(.rcx-field__description, .rcx-field__hint, .rcx-field__error, .rcx-field__link) small,
+:is(.rcx-field__description, .rcx-field__hint, .rcx-field__error, .rcx-field__link) strong,
+:is(.rcx-field__description, .rcx-field__hint, .rcx-field__error, .rcx-field__link) sub,
+:is(.rcx-field__description, .rcx-field__hint, .rcx-field__error, .rcx-field__link) sup,
+:is(.rcx-field__description, .rcx-field__hint, .rcx-field__error, .rcx-field__link) time,
+:is(.rcx-field__description, .rcx-field__hint, .rcx-field__error, .rcx-field__link) var {
+	letter-spacing: inherit;
+
+	color: inherit;
+
+	font: inherit;
+}
+
+:is(.rcx-field__description, .rcx-field__hint, .rcx-field__error, .rcx-field__link) strong {
+	letter-spacing: inherit;
+
+	font: inherit;
+	font-weight: bolder;
+}
+
+:is(.rcx-field__description, .rcx-field__hint, .rcx-field__error, .rcx-field__link) em {
+	letter-spacing: inherit;
+
+	font: inherit;
+	font-style: italic;
+}
+
+:is(.rcx-field__description, .rcx-field__hint, .rcx-field__error, .rcx-field__link) b {
+	letter-spacing: inherit;
+
+	font: inherit;
+	font-weight: bolder;
+}
+
+:is(.rcx-field__description, .rcx-field__hint, .rcx-field__error, .rcx-field__link) i {
+	letter-spacing: inherit;
+
+	font: inherit;
+	font-style: italic;
+}
+
+:is(.rcx-field__description, .rcx-field__hint, .rcx-field__error, .rcx-field__link) q {
+	letter-spacing: inherit;
+
+	font: inherit;
+}
+
+:is(.rcx-field__description, .rcx-field__hint, .rcx-field__error, .rcx-field__link) q::before {
+	content: open-quote;
+}
+
+:is(.rcx-field__description, .rcx-field__hint, .rcx-field__error, .rcx-field__link) q::after {
+	content: close-quote;
+}
+
+:is(.rcx-field__description, .rcx-field__hint, .rcx-field__error, .rcx-field__link) q cite {
+	letter-spacing: inherit;
+
+	font: inherit;
+	font-style: italic;
+}
+
+:is(.rcx-field__description, .rcx-field__hint, .rcx-field__error, .rcx-field__link) ul,
+:is(.rcx-field__description, .rcx-field__hint, .rcx-field__error, .rcx-field__link) ol {
+	display: inline-flex;
+}
+
+:is(.rcx-field__description, .rcx-field__hint, .rcx-field__error, .rcx-field__link) li {
+	display: list-item;
+
+	margin-inline: 1.5rem 0.5rem;
+}
+
+:is(.rcx-field__description, .rcx-field__hint, .rcx-field__error, .rcx-field__link) li:first-child {
+	margin-inline-start: 1rem;
+}
+
+:is(.rcx-field__description, .rcx-field__hint, .rcx-field__error, .rcx-field__link) ul {
+	list-style-type: disc;
+}
+
+:is(.rcx-field__description, .rcx-field__hint, .rcx-field__error, .rcx-field__link) ul span {
+	margin-inline-end: 0.5rem;
+}
+
+:is(.rcx-field__description, .rcx-field__hint, .rcx-field__error, .rcx-field__link) ul input {
+	vertical-align: middle;
+}
+
+:is(.rcx-field__description, .rcx-field__hint, .rcx-field__error, .rcx-field__link) ol {
+	list-style-type: decimal;
+}
+
+:is(.rcx-field__description, .rcx-field__hint, .rcx-field__error, .rcx-field__link) code {
+	display: inline;
+
+	padding: 0.0625rem 0.25rem;
+
+	vertical-align: middle;
+	white-space: pre-wrap;
+	letter-spacing: 0;
+	word-wrap: break-word;
+
+	color: var(--rcx-color-font-default, #2f343d);
+	border-width: 1px;
+	border-color: var(--rcx-color-stroke-light, #cbced1);
+	border-radius: var(--rcx-border-radius-medium, 0.25rem);
+	background-color: var(--rcx-color-surface-tint, #f7f8fa);
+
+	font: inherit;
+	font-family: var(--rcx-font-family-mono, Menlo, Monaco, Consolas, 'Liberation Mono', 'Courier New', monospace);
+	font-size: 0.75rem;
+	font-weight: 700;
+	line-height: 1rem;
+	direction: ltr;
+	-webkit-font-smoothing: auto;
+	unicode-bidi: embed;
+}
+
+:is(.rcx-field__description, .rcx-field__hint, .rcx-field__error, .rcx-field__link) time {
+	letter-spacing: inherit;
+
+	color: var(--rcx-color-font-secondary-info, #6c737a);
+
+	font: inherit;
+}
+
+:is(.rcx-field__description, .rcx-field__hint, .rcx-field__error, .rcx-field__link) dfn {
+	letter-spacing: inherit;
+
+	color: var(--rcx-color-font-secondary-info, #6c737a);
+
+	font: inherit;
+	font-style: italic;
+}
+
+:is(.rcx-field__description, .rcx-field__hint, .rcx-field__error, .rcx-field__link) abbr {
+	letter-spacing: inherit;
+
+	font: inherit;
+}
+
+:is(.rcx-field__description, .rcx-field__hint, .rcx-field__error, .rcx-field__link) abbr[title] {
+	text-decoration: underline dashed;
+	border-block-end-width: 0;
+}
+
+:is(.rcx-field__description, .rcx-field__hint, .rcx-field__error, .rcx-field__link) del {
+	text-decoration: line-through solid;
+	letter-spacing: inherit;
+
+	font: inherit;
+}
+
+:is(.rcx-field__description, .rcx-field__hint, .rcx-field__error, .rcx-field__link) ins {
+	text-decoration: underline solid;
+	letter-spacing: inherit;
+
+	font: inherit;
+}
+
+:is(.rcx-field__description, .rcx-field__hint, .rcx-field__error, .rcx-field__link) sup,
+:is(.rcx-field__description, .rcx-field__hint, .rcx-field__error, .rcx-field__link) sub {
+	position: relative;
+
+	vertical-align: baseline;
+
+	font-size: 75%;
+	line-height: 0;
+}
+
+:is(.rcx-field__description, .rcx-field__hint, .rcx-field__error, .rcx-field__link) sup {
+	inset-block-start: -0.5em;
+}
+
+:is(.rcx-field__description, .rcx-field__hint, .rcx-field__error, .rcx-field__link) sub {
+	inset-block-end: -0.25em;
+}
+
+:is(.rcx-field__description, .rcx-field__hint, .rcx-field__error, .rcx-field__link) kbd {
+	padding: 0.25rem 0.5rem;
+
+	letter-spacing: inherit;
+
+	border-width: 1px;
+	border-style: solid;
+	border-color: currentColor;
+	border-radius: var(--rcx-border-radius-small, 0.125rem);
+
+	font: inherit;
+	font-family: var(--rcx-font-family-mono, Menlo, Monaco, Consolas, 'Liberation Mono', 'Courier New', monospace);
+	-webkit-font-smoothing: auto;
+}
+
+:is(.rcx-field__description, .rcx-field__hint, .rcx-field__error, .rcx-field__link) var {
+	letter-spacing: inherit;
+
+	font: inherit;
+	font-style: italic;
+}
+
+:is(.rcx-field__description, .rcx-field__hint, .rcx-field__error, .rcx-field__link) small {
+	letter-spacing: inherit;
+
+	font: inherit;
+	font-size: 80%;
+}
