@@ -31,6 +31,7 @@ import type {
 	ServerMediaSignalNotification,
 	ServerMediaSignalRemoteSDP,
 	ServerMediaSignalRequestOffer,
+	ServerMediaSignalUpdateCall,
 } from '../definition/signals/server';
 
 export interface IClientMediaCallConfig {
@@ -120,7 +121,7 @@ export class ClientMediaCall implements IClientMediaCall {
 		 *    Since the Call instance is only created when we receive "something" from the server, this would mean we received signals out of order, or missed one.
 		 */
 
-		return this.ignored || this.contractState === 'ignored' || !this.initialized;
+		return this.ignored || this.contractState === 'ignored' || !this._initialized;
 	}
 
 	public get muted(): boolean {
@@ -247,6 +248,8 @@ export class ClientMediaCall implements IClientMediaCall {
 
 	private enabledFeatures: CallFeature[] | null;
 
+	private escalated: boolean;
+
 	private hangupReason: CallHangupReason | null;
 
 	private _flags: CallFlag[];
@@ -302,6 +305,7 @@ export class ClientMediaCall implements IClientMediaCall {
 			activeTimestamp: this.activeTimestamp,
 			tempCallId: this.tempCallId,
 			hidden: this.hidden,
+			escalated: this.escalated,
 			ringing: this.ringing,
 
 			localParticipant: this.localParticipant,
@@ -338,6 +342,7 @@ export class ClientMediaCall implements IClientMediaCall {
 		this.sentLocalSdp = false;
 		this.receivedRemoteSdp = false;
 		this.enabledFeatures = null;
+		this.escalated = false;
 		this.hangupReason = null;
 
 		this.earlySignals = new Set();
@@ -394,7 +399,7 @@ export class ClientMediaCall implements IClientMediaCall {
 		supportedFeatures: CallFeature[],
 		contactInfo?: CallContact,
 	): Promise<void> {
-		if (this.initialized) {
+		if (this._initialized) {
 			return;
 		}
 
@@ -688,6 +693,8 @@ export class ClientMediaCall implements IClientMediaCall {
 				return this.processOfferRequest(signal);
 			case 'notification':
 				return this.processNotification(signal);
+			case 'update':
+				return this.processCallUpdate(signal);
 		}
 	}
 
@@ -1217,6 +1224,20 @@ export class ClientMediaCall implements IClientMediaCall {
 
 			case 'hangup':
 				return this.flagAsEnded('remote', signal.hangupReason);
+			case 'escalated':
+				return this.flagAsEscalated(signal.features);
+		}
+	}
+
+	private async processCallUpdate(signal: ServerMediaSignalUpdateCall) {
+		this.config.logger?.debug('ClientMediaCall.processCallUpdate');
+
+		if (signal.features) {
+			this.enabledFeatures = signal.features;
+		}
+
+		if (signal.contact) {
+			this.changeContact(signal.contact);
 		}
 	}
 
@@ -1270,6 +1291,20 @@ export class ClientMediaCall implements IClientMediaCall {
 			this.config.logger?.debug('Hangup Reason:', reason);
 		}
 		this.changeState('hangup');
+	}
+
+	private flagAsEscalated(overrideFeatures?: CallFeature[]): void {
+		if (this.escalated) {
+			return;
+		}
+
+		this.config.logger?.debug('ClientMediaCall.flagAsEscalated', overrideFeatures || '');
+		if (overrideFeatures) {
+			this.enabledFeatures = overrideFeatures;
+		}
+
+		this.escalated = true;
+		this.emitter.emit('escalated');
 	}
 
 	private addStateTimeout(state: ClientState, timeout: number, callback?: () => void): void {

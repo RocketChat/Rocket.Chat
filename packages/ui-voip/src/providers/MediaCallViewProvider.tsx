@@ -23,6 +23,7 @@ import { useMediaCallInstance } from '../context/MediaCallInstanceContext';
 import MediaCallViewContext from '../context/MediaCallViewContext';
 import type { PeerInfo } from '../context/definitions';
 import { isValidTone, useTonePlayer } from '../hooks/useTonePlayer';
+import { useVoiceToVideoEscalation } from '../hooks/useVoiceToVideoEscalation';
 import { isExternalPeer } from '../utils/isExternalPeer';
 import { isInternalPeer } from '../utils/isInternalPeer';
 import TransferModal from '../views/TransferModal';
@@ -42,6 +43,8 @@ const MediaCallViewProvider = ({ children }: MediaCallViewProviderProps) => {
 	const sessionState = useMediaSession(instance);
 	const allowedFeatures = useAllowedFeatures(sessionState.supportedFeatures);
 	const controls = useMediaSessionControls(instance);
+
+	const { onRequestVideoCall, isRequestingVideoCall } = useVoiceToVideoEscalation(sessionState);
 
 	useDesktopNotifications(sessionState);
 
@@ -223,10 +226,35 @@ const MediaCallViewProvider = ({ children }: MediaCallViewProviderProps) => {
 		});
 	}, [instance, onChangePosition]);
 
+	useEffect(() => {
+		if (!sessionState.escalated) {
+			return;
+		}
+
+		const state = instance?.getState();
+
+		if (!state?.confirmed) {
+			return;
+		}
+
+		if (!state?.call.hasScreenVideoTrack()) {
+			return;
+		}
+
+		try {
+			state.call.requestScreenShare(false);
+			dispatchToastMessage({ type: 'info', message: t('Screen_sharing_stopped_video_escalation') });
+		} catch (error) {
+			console.error('Error stopping screen share', error);
+		}
+	}, [sessionState.escalated, dispatchToastMessage, t, instance]);
+
 	const contextValue = {
 		sessionState,
 		allowedFeatures,
 		targetPeer,
+		isRequestingVideoCall,
+		onRequestVideoCall,
 		onClickDirectMessage,
 		onMute,
 		onHold,

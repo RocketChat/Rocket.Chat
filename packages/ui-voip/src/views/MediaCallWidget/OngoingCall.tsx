@@ -1,4 +1,4 @@
-import { ButtonGroup } from '@rocket.chat/fuselage';
+import { ButtonGroup, Divider } from '@rocket.chat/fuselage';
 import { ActionButton, ToggleButton } from '@rocket.chat/ui-media';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -17,15 +17,28 @@ import {
 	useInfoSlots,
 	useDraggableWidget,
 	getPeerDisplayName,
+	VideoCallWidgetAction,
 } from '../../components';
 import { useMediaCallView } from '../../context/MediaCallViewContext';
+import AppActions from '../../experimental/AppActionButtons/components/AppActions';
+import { useVisibleAppActions } from '../../experimental/AppActionButtons/hooks/useVisibleAppActions';
 import { isUnknownPeer } from '../../utils/isUnknownPeer';
 
 const OngoingCall = () => {
 	const { t } = useTranslation();
 
-	const { sessionState, allowedFeatures, onMute, onHold, onForward, onEndCall, onClickDirectMessage } = useMediaCallView();
-	const { muted, held, remoteMuted, remoteHeld, peerInfo, connectionState, startedAt } = sessionState;
+	const {
+		sessionState,
+		allowedFeatures,
+		isRequestingVideoCall,
+		onRequestVideoCall,
+		onMute,
+		onHold,
+		onForward,
+		onEndCall,
+		onClickDirectMessage,
+	} = useMediaCallView();
+	const { muted, held, remoteMuted, remoteHeld, peerInfo, connectionState, supportedFeatures, startedAt, escalated } = sessionState;
 	const isInline = !useDraggableWidget();
 
 	// The floating widget keeps a collapsible DTMF dialpad in the footer.
@@ -41,6 +54,9 @@ const OngoingCall = () => {
 
 	const holdAvailable = allowedFeatures.includes('hold');
 	const transferAvailable = allowedFeatures.includes('transfer');
+	const videoConfAvailable = supportedFeatures.includes('conference-escalation');
+
+	const appActions = useVisibleAppActions();
 
 	const isSip = peerInfo?.type === 'sip';
 
@@ -56,10 +72,13 @@ const OngoingCall = () => {
 			<WidgetContent>
 				{peerInfo && !isUnknownPeer(peerInfo) && <PeerInfo {...peerInfo} slots={remoteSlots} remoteMuted={remoteMuted} />}
 				{isInline && isSip && <Dialpad autoFocus={false} />}
+				{videoConfAvailable && <VideoCallWidgetAction escalated={escalated} loading={isRequestingVideoCall} onClick={onRequestVideoCall} />}
 			</WidgetContent>
 			<WidgetInfo slots={slots} />
 			<WidgetFooter>
 				{!isInline && dialpadOpen && <Dialpad />}
+				<AppActions actions={appActions} vertical />
+				{appActions.length > 0 && <Divider />}
 				<ButtonGroup large>
 					{!isInline && (
 						<ActionButton

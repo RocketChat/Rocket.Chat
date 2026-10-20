@@ -1,4 +1,4 @@
-import { Box, Button, ButtonGroup } from '@rocket.chat/fuselage';
+import { Box, Button, ButtonGroup, Divider } from '@rocket.chat/fuselage';
 import { ActionButton, StreamVideo, ToggleButton } from '@rocket.chat/ui-media';
 import { useTranslation } from 'react-i18next';
 
@@ -18,9 +18,12 @@ import {
 	CardWidgetContainer,
 	StreamCard,
 	getPeerDisplayName,
+	VideoCallWidgetAction,
 } from '../../components';
 import { useMediaCallInstance } from '../../context';
 import { useMediaCallView } from '../../context/MediaCallViewContext';
+import AppActions from '../../experimental/AppActionButtons/components/AppActions';
+import { useVisibleAppActions } from '../../experimental/AppActionButtons/hooks/useVisibleAppActions';
 import { isUnknownPeer } from '../../utils/isUnknownPeer';
 
 const OngoingCall = () => {
@@ -28,7 +31,8 @@ const OngoingCall = () => {
 
 	const {
 		sessionState,
-		allowedFeatures,
+		isRequestingVideoCall,
+		onRequestVideoCall,
 		onMute,
 		onHold,
 		onForward,
@@ -39,14 +43,15 @@ const OngoingCall = () => {
 		onToggleScreenSharing,
 		onClosePopout,
 	} = useMediaCallView();
-	const { muted, held, remoteMuted, remoteHeld, peerInfo, connectionState, startedAt } = sessionState;
+	const { muted, held, remoteMuted, remoteHeld, peerInfo, connectionState, startedAt, escalated, supportedFeatures } = sessionState;
 	const { currentViews } = useMediaCallInstance();
 	const isPopout = currentViews.has('popout');
 	const isInline = !useDraggableWidget();
 
-	const screenShareAvailable = allowedFeatures.includes('screen-share');
-	const holdAvailable = allowedFeatures.includes('hold');
-	const transferAvailable = allowedFeatures.includes('transfer');
+	const screenShareAvailable = supportedFeatures.includes('screen-share');
+	const holdAvailable = supportedFeatures.includes('hold');
+	const transferAvailable = supportedFeatures.includes('transfer');
+	const videoConfAvailable = supportedFeatures.includes('conference-escalation');
 
 	const { localScreen, remoteScreen } = streams;
 
@@ -55,6 +60,8 @@ const OngoingCall = () => {
 
 	const connecting = connectionState === 'CONNECTING';
 	const reconnecting = connectionState === 'RECONNECTING';
+
+	const appActions = useVisibleAppActions();
 
 	const isSip = peerInfo?.type === 'sip';
 
@@ -113,10 +120,16 @@ const OngoingCall = () => {
 							)}
 						</>
 					)}
+
+					{videoConfAvailable && (
+						<VideoCallWidgetAction escalated={escalated} loading={isRequestingVideoCall} onClick={onRequestVideoCall} />
+					)}
 				</CardWidgetContainer>
 			</WidgetContent>
 			<WidgetInfo slots={slots} />
 			<WidgetFooter>
+				<AppActions actions={appActions} vertical />
+				{appActions.length > 0 && <Divider />}
 				<ButtonGroup large align='center'>
 					<ToggleButton label={t('Mute')} icons={['mic', 'mic-off']} titles={[t('Mute'), t('Unmute')]} pressed={muted} onToggle={onMute} />
 
