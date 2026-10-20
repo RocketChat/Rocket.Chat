@@ -114,7 +114,9 @@ jobs:
 
       - name: Lint
         if: matrix.check == 'lint'
-        run: yarn lint
+        run: |
+          time yarn lint:oxlint || true
+          time yarn lint
 
       - name: Save ESLint cache
         if: matrix.check == 'lint' && github.ref == 'refs/heads/develop' && github.event_name == 'push'
