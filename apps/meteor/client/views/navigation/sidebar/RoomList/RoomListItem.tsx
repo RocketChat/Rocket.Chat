@@ -1,15 +1,15 @@
 import {
 	IconButton,
-	SidebarItem,
-	SidebarItemAvatarWrapper,
-	SidebarItemCol,
-	SidebarItemContent,
-	SidebarItemIcon,
-	SidebarItemLink,
-	SidebarItemMenu,
-	SidebarItemRow,
-	SidebarItemTimestamp,
-	SidebarItemTitle,
+	Item,
+	ItemActions,
+	ItemContent,
+	ItemDescription,
+	ItemIcon,
+	ItemLink,
+	ItemMedia,
+	ItemMeta,
+	ItemRow,
+	ItemTitle,
 } from '@rocket.chat/fuselage';
 import { ITEM_MEDIA_SIZE, RoomAvatar } from '@rocket.chat/ui-avatar';
 import type { ItemMediaSizeName } from '@rocket.chat/ui-avatar';
@@ -78,63 +78,63 @@ const RoomListItem = ({
 
 	const isExtended = viewMode === 'extended';
 
-	const itemIcon = icon && <SidebarItemIcon icon={icon} label={iconLabel} />;
+	const itemIcon = icon && <ItemIcon label={iconLabel}>{icon}</ItemIcon>;
 
 	const itemTitle = (
-		<SidebarItemTitle>
+		<ItemTitle>
 			{href !== undefined ? (
-				<SidebarItemLink href={href} onClick={onClick} aria-label={ariaLabel} aria-current={ariaCurrent}>
+				<ItemLink href={href} onClick={onClick} aria-label={ariaLabel} aria-current={ariaCurrent}>
 					{title}
-				</SidebarItemLink>
+				</ItemLink>
 			) : (
-				<SidebarItemLink is='button' onClick={onClick} aria-label={ariaLabel} aria-current={ariaCurrent}>
+				<ItemLink is='button' onClick={onClick} aria-label={ariaLabel} aria-current={ariaCurrent}>
 					{title}
-				</SidebarItemLink>
+				</ItemLink>
 			)}
-		</SidebarItemTitle>
+		</ItemTitle>
 	);
 
 	const itemMenu = menu && (
-		<SidebarItemMenu>
+		<ItemActions reveal='hover'>
 			{menuVisibility ? menu : <IconButton tabIndex={-1} aria-hidden mini icon='kebab' onPointerDown={mountNow} />}
-		</SidebarItemMenu>
+		</ItemActions>
 	);
 
 	return (
-		<SidebarItem {...props} is='div' selected={selected} highlighted={highlighted} onFocus={mountNow} onPointerEnter={requestMount}>
+		<Item {...props} inset='md' selected={selected} highlighted={highlighted} onFocus={mountNow} onPointerEnter={requestMount}>
 			{showAvatar && (
-				<SidebarItemAvatarWrapper>
+				<ItemMedia>
 					<RoomAvatar size={ITEM_MEDIA_SIZE[viewMode]} room={{ ...room, _id: room.rid || room._id, type: room.t }} />
-				</SidebarItemAvatarWrapper>
+				</ItemMedia>
 			)}
 			{isExtended ? (
-				<SidebarItemCol>
-					<SidebarItemRow>
+				<ItemContent>
+					<ItemRow>
 						{itemIcon}
 						{itemTitle}
-						{time && <SidebarItemTimestamp>{formatDate(time)}</SidebarItemTimestamp>}
-					</SidebarItemRow>
-					<SidebarItemRow>
-						<SidebarItemContent>{subtitle}</SidebarItemContent>
+						{time && <ItemMeta>{formatDate(time)}</ItemMeta>}
+					</ItemRow>
+					<ItemRow>
+						<ItemDescription>{subtitle}</ItemDescription>
 						{titleIcon}
 						{badges}
 						{itemMenu}
 						{actions}
-					</SidebarItemRow>
-				</SidebarItemCol>
+					</ItemRow>
+				</ItemContent>
 			) : (
-				<SidebarItemCol>
-					<SidebarItemRow>
+				<ItemContent>
+					<ItemRow>
 						{itemIcon}
 						{itemTitle}
 						{titleIcon}
 						{badges}
 						{itemMenu}
 						{actions}
-					</SidebarItemRow>
-				</SidebarItemCol>
+					</ItemRow>
+				</ItemContent>
 			)}
-		</SidebarItem>
+		</Item>
 	);
 };
 
