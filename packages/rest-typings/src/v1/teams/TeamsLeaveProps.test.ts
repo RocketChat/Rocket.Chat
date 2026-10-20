@@ -1,64 +1,64 @@
+import assert from 'node:assert';
 import { describe, it } from 'node:test';
 
-import { isTeamsLeaveProps } from '@rocket.chat/rest-typings';
-import { assert } from 'chai';
+import { isTeamsLeaveProps } from './TeamsLeaveProps';
 
 describe('TeamsLeaveProps (definition/rest/v1)', () => {
 	describe('isTeamsLeaveProps', () => {
 		it('should be a function', () => {
-			assert.isFunction(isTeamsLeaveProps);
+			assert.equal(typeof isTeamsLeaveProps, 'function');
 		});
 
 		it('should return false if neither teamName or teamId is provided', () => {
-			assert.isFalse(isTeamsLeaveProps({}));
+			assert.equal(isTeamsLeaveProps({}), false);
 		});
 
 		it('should return true if teamId is provided', () => {
-			assert.isTrue(isTeamsLeaveProps({ teamId: 'teamId' }));
+			assert.equal(isTeamsLeaveProps({ teamId: 'teamId' }), true);
 		});
 
 		it('should return true if teamName is provided', () => {
-			assert.isTrue(isTeamsLeaveProps({ teamName: 'teamName' }));
+			assert.equal(isTeamsLeaveProps({ teamName: 'teamName' }), true);
 		});
 
 		it('should return false if teamId and roomsToRemove are provided, but roomsToRemove is empty', () => {
-			assert.isFalse(isTeamsLeaveProps({ teamId: 'teamId', rooms: [] }));
+			assert.equal(isTeamsLeaveProps({ teamId: 'teamId', rooms: [] }), false);
 		});
 
 		it('should return true if teamId are provided, but rooms are undefined', () => {
-			assert.isTrue(isTeamsLeaveProps({ teamId: 'teamId', rooms: undefined }));
+			assert.equal(isTeamsLeaveProps({ teamId: 'teamId', rooms: undefined }), true);
 		});
 
 		it('should return false if teamName and rooms are provided, but rooms is empty', () => {
-			assert.isFalse(isTeamsLeaveProps({ teamName: 'teamName', rooms: [] }));
+			assert.equal(isTeamsLeaveProps({ teamName: 'teamName', rooms: [] }), false);
 		});
 
 		it('should return true if teamName are provided, but rooms are undefined', () => {
-			assert.isTrue(isTeamsLeaveProps({ teamName: 'teamName', rooms: undefined }));
+			assert.equal(isTeamsLeaveProps({ teamName: 'teamName', rooms: undefined }), true);
 		});
 
 		it('should return true if teamId and rooms are provided', () => {
-			assert.isTrue(isTeamsLeaveProps({ teamId: 'teamId', rooms: ['roomId'] }));
+			assert.equal(isTeamsLeaveProps({ teamId: 'teamId', rooms: ['roomId'] }), true);
 		});
 
 		it('should return true if teamName and rooms are provided', () => {
-			assert.isTrue(isTeamsLeaveProps({ teamName: 'teamName', rooms: ['roomId'] }));
+			assert.equal(isTeamsLeaveProps({ teamName: 'teamName', rooms: ['roomId'] }), true);
 		});
 
 		it('should return false if teamId and rooms are provided, but rooms is not an array', () => {
-			assert.isFalse(isTeamsLeaveProps({ teamId: 'teamId', rooms: {} }));
+			assert.equal(isTeamsLeaveProps({ teamId: 'teamId', rooms: {} }), false);
 		});
 
 		it('should return false if teamName and rooms are provided, but rooms is not an array', () => {
-			assert.isFalse(isTeamsLeaveProps({ teamName: 'teamName', rooms: {} }));
+			assert.equal(isTeamsLeaveProps({ teamName: 'teamName', rooms: {} }), false);
 		});
 
 		it('should return false if teamName and rooms are provided but an extra property is provided', () => {
-			assert.isFalse(isTeamsLeaveProps({ teamName: 'teamName', rooms: ['rooms'], extra: 'extra' }));
+			assert.equal(isTeamsLeaveProps({ teamName: 'teamName', rooms: ['rooms'], extra: 'extra' }), false);
 		});
 
 		it('should return false if teamId and rooms are provided but an extra property is provided', () => {
-			assert.isFalse(isTeamsLeaveProps({ teamId: 'teamId', rooms: ['rooms'], extra: 'extra' }));
+			assert.equal(isTeamsLeaveProps({ teamId: 'teamId', rooms: ['rooms'], extra: 'extra' }), false);
 		});
 	});
 });

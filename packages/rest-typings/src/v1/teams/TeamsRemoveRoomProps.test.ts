@@ -1,27 +1,27 @@
+import assert from 'node:assert';
 import { describe, it } from 'node:test';
 
-import { isTeamsRemoveRoomProps } from '@rocket.chat/rest-typings';
-import { assert } from 'chai';
+import { isTeamsRemoveRoomProps } from './TeamsRemoveRoomProps';
 
 describe('TeamsRemoveRoomProps (definition/rest/v1)', () => {
 	describe('isTeamsRemoveRoomProps', () => {
 		it('should be a function', () => {
-			assert.isFunction(isTeamsRemoveRoomProps);
+			assert.equal(typeof isTeamsRemoveRoomProps, 'function');
 		});
 		it('should return false if roomId is not provided', () => {
-			assert.isFalse(isTeamsRemoveRoomProps({}));
+			assert.equal(isTeamsRemoveRoomProps({}), false);
 		});
 		it('should return false if roomId is provided but no teamId or teamName were provided', () => {
-			assert.isFalse(isTeamsRemoveRoomProps({ roomId: 'roomId' }));
+			assert.equal(isTeamsRemoveRoomProps({ roomId: 'roomId' }), false);
 		});
 		it('should return false if roomId is provided and teamId is provided', () => {
-			assert.isTrue(isTeamsRemoveRoomProps({ roomId: 'roomId', teamId: 'teamId' }));
+			assert.equal(isTeamsRemoveRoomProps({ roomId: 'roomId', teamId: 'teamId' }), true);
 		});
 		it('should return true if roomId is provided and teamName is provided', () => {
-			assert.isTrue(isTeamsRemoveRoomProps({ roomId: 'roomId', teamName: 'teamName' }));
+			assert.equal(isTeamsRemoveRoomProps({ roomId: 'roomId', teamName: 'teamName' }), true);
 		});
 		it('should return false if roomId and teamName are provided but an additional property is provided', () => {
-			assert.isFalse(isTeamsRemoveRoomProps({ roomId: 'roomId', teamName: 'teamName', foo: 'bar' }));
+			assert.equal(isTeamsRemoveRoomProps({ roomId: 'roomId', teamName: 'teamName', foo: 'bar' }), false);
 		});
 	});
 });

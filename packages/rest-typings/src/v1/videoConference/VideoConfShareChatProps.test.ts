@@ -1,7 +1,7 @@
+import assert from 'node:assert';
 import { describe, it } from 'node:test';
 
-import { isVideoConfShareChatProps } from '@rocket.chat/rest-typings';
-import { assert } from 'chai';
+import { isVideoConfShareChatProps } from './VideoConfShareChatProps';
 
 /**
  * What this schema says that the others don't: a `mode` is required, and has to be one this server can actually
@@ -12,17 +12,17 @@ describe('isVideoConfShareChatProps', () => {
 	// The caller shows which way it is sharing rather than letting the endpoint pick, so a body without one is
 	// an incomplete request, not a request for the default.
 	it('rejects a callId with no mode', () => {
-		assert.isFalse(isVideoConfShareChatProps({ callId: 'callId' }));
+		assert.equal(isVideoConfShareChatProps({ callId: 'callId' }), false);
 	});
 
 	it('accepts either way of sharing the chat', () => {
-		assert.isTrue(isVideoConfShareChatProps({ callId: 'callId', mode: 'invite' }));
-		assert.isTrue(isVideoConfShareChatProps({ callId: 'callId', mode: 'discussion' }));
+		assert.equal(isVideoConfShareChatProps({ callId: 'callId', mode: 'invite' }), true);
+		assert.equal(isVideoConfShareChatProps({ callId: 'callId', mode: 'discussion' }), true);
 	});
 
 	// Silently doing the other thing would give away history nobody agreed to give away.
 	it('rejects a mode it cannot act on', () => {
-		assert.isFalse(isVideoConfShareChatProps({ callId: 'callId', mode: 'whatever' }));
-		assert.isFalse(isVideoConfShareChatProps({ callId: 'callId', mode: '' }));
+		assert.equal(isVideoConfShareChatProps({ callId: 'callId', mode: 'whatever' }), false);
+		assert.equal(isVideoConfShareChatProps({ callId: 'callId', mode: '' }), false);
 	});
 });
