@@ -9,14 +9,17 @@ import type {
 	ISubscription,
 	IUser,
 } from '@rocket.chat/core-typings';
+import { isDiscussion, isRoomFederated } from '@rocket.chat/core-typings';
 import { AbacAttributes, Rooms, Subscriptions, Users } from '@rocket.chat/models';
 import mem from 'mem';
 
 import {
 	AbacAttributeDefinitionNotFoundError,
 	AbacAttributeStoreExternalError,
+	AbacContractError,
 	AbacEntityResolutionFailedError,
 	AbacError,
+	AbacErrorCode,
 	AbacInvalidAttributeKeyError,
 	AbacInvalidAttributeValuesError,
 	AbacRoomNotFoundError,
@@ -404,6 +407,16 @@ export async function getAbacRoom(rid: string): Promise<IRoom> {
 	}
 
 	return room;
+}
+
+export function assertRoomAcceptsAttributes(room: IRoom): void {
+	if (isRoomFederated(room)) {
+		throw new AbacContractError(AbacErrorCode.FederatedRoomAttributes);
+	}
+
+	if (isDiscussion(room)) {
+		throw new AbacContractError(AbacErrorCode.DiscussionRoomAttributes);
+	}
 }
 
 export function diffAttributeSets(

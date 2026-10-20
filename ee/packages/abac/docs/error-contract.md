@@ -34,8 +34,9 @@ Returned by `groups.create`, `teams.create` and every other path that creates a 
 |---|---|---|
 | `error-abac-not-enabled` | Attributes were sent while ABAC is disabled or unlicensed | |
 | `error-abac-attributes-not-allowed` | The creator lacks the `create-abac-managed-room` permission | |
-| `error-abac-attributes-private-rooms-only` | Attributes were sent for a public room or a discussion | |
+| `error-abac-attributes-private-rooms-only` | Attributes were sent for a public room | |
 | `error-abac-federated-room-attributes` | Attributes were sent for a federated room | |
+| `error-abac-discussion-room-attributes` | Attributes were sent for a discussion | |
 | `error-abac-attributes-room-conversion` | `teams.create` was converting an existing room and was sent attributes | |
 | `error-abac-attributes-owner-must-be-caller` | `teams.create` was sent attributes with an `owner` other than the caller | |
 | `error-abac-invalid-attributes` | The attributes are malformed or empty, an app sent attributes that are not a list of attributes, or an attribute or value is not defined in the workspace. With the Local PDP, a creator without `bypass-abac-store-validation` gets `error-abac-attribute-not-assignable` for an undefined attribute instead, so they cannot learn which attributes exist | `cause`; `key` when one attribute is at fault |
@@ -64,7 +65,16 @@ administration permissions is never refused with these keys.
 |---|---|---|
 | `error-abac-attribute-not-assignable` | The edit adds a value the editor does not hold, while restricting to owned attributes is on | `attributes`, the values that were refused |
 | `error-abac-required-attributes-removed` | The edit removes an attribute every ABAC room requires, while enforcement is on | `keys`, the required attributes removed |
-| `error-abac-room-attributes-cleared` | The edit removes every attribute while enforcement is on | |
+| `error-abac-room-attributes-cleared` | The edit removes every attribute while enforcement is on and at least one attribute is required | |
+
+Adding or changing attributes on a federated room or a discussion is refused to every editor, ABAC
+administrators included, by `abac/rooms/:rid/attributes`, `abac/rooms/:rid/attributes/:key` and
+`abac/rooms.evaluateMembership` with a `rid`. Removing attributes is not refused.
+
+| Key | Returned when |
+|---|---|
+| `error-abac-federated-room-attributes` | The room is federated |
+| `error-abac-discussion-room-attributes` | The room is a discussion |
 
 `abac/attributes.listAssignable` and `abac/rooms.evaluateMembership` return `error-abac-not-enabled`
 in this shape too. The ABAC administration endpoints, `abac/rooms/:rid/attributes` included, return
