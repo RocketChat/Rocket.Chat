@@ -1,0 +1,39 @@
+/* The header paints the hover surface of its title button, which is a child */
+.rcx-sidebar-collapse-group__bar:has(.rcx-sidebar-collapse-group__bar-button:hover) {
+	background-color: var(--rcx-sidebar-color-surface-hover, var(--rcx-color-surface-hover, #f2f3f5));
+}
+
+/* A link row keeps the link colors, including `:visited`, which no frame state covers */
+.rcx-sidebar-link {
+	color: var(--rcx-link-color, var(--rcx-sidebar-link-color, var(--rcx-color-font-titles-labels, #1f2329)));
+}
+
+.rcx-sidebar-link.focus,
+.rcx-sidebar-link.is-focused {
+	outline: var(--rcx-link-focus-outline-color, var(--rcx-color-stroke-highlight, #156ff5)) solid 1px;
+	outline-offset: 0;
+	box-shadow: 0 0 0 2px var(--rcx-link-focus-box-shadow-color, var(--rcx-color-stroke-extra-light-highlight, #d1ebfe));
+}
+
+.rcx-sidebar-link:focus,
+.rcx-sidebar-link:focus-within,
+.rcx-sidebar-link.focus,
+.rcx-sidebar-link.is-focused {
+	color: var(--rcx-link-focus-color, var(--rcx-sidebar-link-color, var(--rcx-color-font-titles-labels, #1f2329)));
+}
+
+.rcx-sidebar-link:where(:visited),
+.rcx-sidebar-link:where(.is-visited) {
+	color: var(--rcx-link-visited-color, var(--rcx-sidebar-link-color, var(--rcx-color-font-titles-labels, #1f2329)));
+}
+
+.rcx-sidebar-link:where(:active),
+.rcx-sidebar-link:where(.active),
+.rcx-sidebar-link:where(.is-active) {
+	color: var(--rcx-link-active-color, var(--rcx-sidebar-link-color, var(--rcx-color-font-titles-labels, #1f2329)));
+}
+
+/* A subtitle in an `ItemRow` shares the line with the title instead of claiming its own content width */
+.rcx-item__row > .rcx-sidebar-item__subtitle.rcx-item__description {
+	flex-basis: 0;
+}
