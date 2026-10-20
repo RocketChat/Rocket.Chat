@@ -1,5 +1,5 @@
 import { isOmnichannelRoom } from '@rocket.chat/core-typings';
-import { Icon, IconButton, SidebarItemActions } from '@rocket.chat/fuselage';
+import { Icon, IconButton, ItemActions } from '@rocket.chat/fuselage';
 import type { SubscriptionWithRoom } from '@rocket.chat/ui-contexts';
 import { useLayout } from '@rocket.chat/ui-contexts';
 import type { TFunction } from 'i18next';
@@ -74,7 +74,7 @@ const SidebarItemTemplateWithData = ({
 	const actions = useMemo(
 		() =>
 			videoConfActions && (
-				<SidebarItemActions>
+				<ItemActions>
 					<IconButton
 						onClick={videoConfActions.acceptCall}
 						size='mini'
@@ -89,7 +89,7 @@ const SidebarItemTemplateWithData = ({
 						icon='phone-off'
 						aria-label={t('Reject_call')}
 					/>
-				</SidebarItemActions>
+				</ItemActions>
 			),
 		[t, videoConfActions],
 	);
