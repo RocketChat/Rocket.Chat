@@ -39,34 +39,10 @@ const config: StorybookConfig = {
 								loader: require.resolve('postcss-loader'),
 								options: {
 									implementation: require.resolve('postcss'),
-								},
-							},
-						],
-					},
-					{
-						test: /\.s[ac]ss$/,
-						sideEffects: true,
-						use: [
-							require.resolve('style-loader'),
-							{
-								loader: require.resolve('css-loader'),
-								options: {
-									importLoaders: 3,
-								},
-							},
-							{
-								loader: require.resolve('postcss-loader'),
-								options: {
-									implementation: require.resolve('postcss'),
-								},
-							},
-							require.resolve('resolve-url-loader'),
-							{
-								loader: require.resolve('sass-loader'),
-								options: {
-									// Want to add more Sass options? Read more here: https://webpack.js.org/loaders/sass-loader/#options
-									sourceMap: true,
-									sassOptions: {},
+									// Inlines normalize's `@import … layer(reset)` keeping the layer, which css-loader drops
+									postcssOptions: {
+										plugins: [[require.resolve('postcss-import'), { filter: (path: string) => path.startsWith('normalize.css/') }]],
+									},
 								},
 							},
 						],

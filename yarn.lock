@@ -10441,8 +10441,8 @@ __metadata:
     jest-axe: "npm:~11.0.0"
     normalize.css: "npm:^8.0.1"
     postcss: "npm:8.5.26"
+    postcss-import: "npm:~16.1.0"
     postcss-loader: "npm:~8.2.1"
-    postcss-scss: "npm:~4.0.9"
     react: "npm:~19.2.8"
     react-aria: "npm:~3.37.0"
     react-dom: "npm:~19.2.8"
@@ -15055,7 +15055,7 @@ __metadata:
 
 "@tamagui/web@patch:@tamagui/web@npm%3A3.0.18#~/.yarn/patches/@tamagui-web-npm-3.0.18-f8fb3ca22a.patch":
   version: 3.0.18
-  resolution: "@tamagui/web@patch:@tamagui/web@npm%3A3.0.18#~/.yarn/patches/@tamagui-web-npm-3.0.18-f8fb3ca22a.patch::version=3.0.18&hash=d595df"
+  resolution: "@tamagui/web@patch:@tamagui/web@npm%3A3.0.18#~/.yarn/patches/@tamagui-web-npm-3.0.18-f8fb3ca22a.patch::version=3.0.18&hash=9805e2"
   dependencies:
     "@tamagui/animation-helpers": "npm:3.0.18"
     "@tamagui/compose-refs": "npm:3.0.18"
@@ -15074,7 +15074,7 @@ __metadata:
   peerDependencies:
     react: ">=19"
     react-dom: "*"
-  checksum: 10/2df6c91c0635cd80043b688a5171b4f67bc7f58dd0af38d5de743634d8e9b65cadf72bd0c421d44c8ced42596a5582ff7f841b0b2b5f97524fd515196e416ac1
+  checksum: 10/6e214769d653924a67f105d692207690325ceb84ebae80a0d5c9e541952bb5d2131e7c87fe7f74fd786746d4298ea2b971d0167c24462f6ea7d7bec490110c55
   languageName: node
   linkType: hard
 
@@ -33794,6 +33794,19 @@ __metadata:
   languageName: node
   linkType: hard
 
+"postcss-import@npm:~16.1.0":
+  version: 16.1.1
+  resolution: "postcss-import@npm:16.1.1"
+  dependencies:
+    postcss-value-parser: "npm:^4.0.0"
+    read-cache: "npm:^1.0.0"
+    resolve: "npm:^1.1.7"
+  peerDependencies:
+    postcss: ^8.0.0
+  checksum: 10/2afac2b6e25f263f45ac2168c5f5e4b2e49e3d44c620338138fe89cf81bd83e6056784a26d54c58611d05dda18bc56069212484ec750bbf6d2e29b623460a7f9
+  languageName: node
+  linkType: hard
+
 "postcss-lit@npm:^1.1.1":
   version: 1.1.1
   resolution: "postcss-lit@npm:1.1.1"
@@ -34396,7 +34409,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"postcss-scss@npm:^4.0.9, postcss-scss@npm:~4.0.9":
+"postcss-scss@npm:^4.0.9":
   version: 4.0.9
   resolution: "postcss-scss@npm:4.0.9"
   peerDependencies:

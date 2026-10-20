@@ -6,6 +6,6 @@ export default {
 	testMatch: ['<rootDir>/src/**/*.spec.{ts,tsx}'],
 	setupFilesAfterEnv: [...client.setupFilesAfterEnv, '<rootDir>/jest-setup.ts'],
 	moduleNameMapper: {
-		'\\.scss$': 'identity-obj-proxy',
+		'\\.css$': 'identity-obj-proxy',
 	},
 } satisfies Config;
