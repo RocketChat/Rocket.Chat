@@ -8,6 +8,7 @@ exports[`[Bubble Rendering] renders Dismissable without crashing 1`] = `
     >
       <button
         class="rcx-box rcx-box--full rcx-bubble__button rcx-bubble__button--primary"
+        type="button"
       >
         <i
           aria-hidden="true"
@@ -22,6 +23,7 @@ exports[`[Bubble Rendering] renders Dismissable without crashing 1`] = `
       <button
         aria-label="Dismiss New messages"
         class="rcx-box rcx-box--full rcx-bubble__button rcx-bubble__button--primary"
+        type="button"
       >
         <i
           aria-hidden="true"
@@ -43,6 +45,7 @@ exports[`[Bubble Rendering] renders IconAndLabel without crashing 1`] = `
     >
       <button
         class="rcx-box rcx-box--full rcx-bubble__button rcx-bubble__button--primary"
+        type="button"
       >
         <i
           aria-hidden="true"
@@ -67,6 +70,7 @@ exports[`[Bubble Rendering] renders LabelOnly without crashing 1`] = `
     >
       <button
         class="rcx-box rcx-box--full rcx-bubble__button rcx-bubble__button--primary"
+        type="button"
       >
         <span>
           See new messages
@@ -85,6 +89,7 @@ exports[`[Bubble Rendering] renders Secondary without crashing 1`] = `
     >
       <button
         class="rcx-box rcx-box--full rcx-bubble__button rcx-bubble__button--secondary"
+        type="button"
       >
         <span>
           See new messages
@@ -111,6 +116,7 @@ exports[`[Bubble Rendering] renders SecondaryDismissable without crashing 1`] = 
       <button
         aria-label="Dismiss New messages"
         class="rcx-box rcx-box--full rcx-bubble__button rcx-bubble__button--secondary"
+        type="button"
       >
         <i
           aria-hidden="true"
@@ -150,6 +156,7 @@ exports[`[Bubble Rendering] renders WithLargeText without crashing 1`] = `
     >
       <button
         class="rcx-box rcx-box--full rcx-bubble__button rcx-bubble__button--secondary"
+        type="button"
       >
         <span>
           Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec vestibulum libero viverra nulla varius, a consequat ante malesuada. Fusce bibendum, lacus sed fermentum sagittis, urna erat viverra lacus, eu pellentesque neque est nec nisl. Morbi in lobortis dui, ac consectetur mi.
