@@ -33,14 +33,24 @@ const Bubble = ({ secondary, children, onClick, icon, onDismiss, small, contentP
 		{...(props as GetProps<typeof BubbleFrame>)}
 	>
 		{onClick ? (
-			<BubbleButton onClick={onClick} secondary={secondary} icon={icon} label={children} {...contentProps} />
+			<BubbleButton
+				onClick={onClick}
+				secondary={secondary}
+				small={small}
+				segment={onDismiss && 'first'}
+				icon={icon}
+				label={children}
+				{...contentProps}
+			/>
 		) : (
-			<BubbleItem secondary={secondary} small={small} icon={icon} label={children} {...contentProps} />
+			<BubbleItem secondary={secondary} small={small} segment={onDismiss && 'first'} icon={icon} label={children} {...contentProps} />
 		)}
 		{onDismiss && (
 			<BubbleButton
 				onClick={onDismiss}
 				secondary={secondary}
+				small={small}
+				segment='last'
 				icon='cross-small'
 				{...{ 'aria-label': `Dismiss ${children}`, ...dismissProps }}
 			/>

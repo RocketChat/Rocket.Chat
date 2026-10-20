@@ -7,7 +7,7 @@ exports[`[Bubble Rendering] renders Dismissable without crashing 1`] = `
       class="is_View _f-1069814357 _ai-121763387 _o-1119039191 _ff-409630021 _fvn-1977619713 rcx-bubble rcx-bubble__group"
     >
       <button
-        class="rcx-box rcx-box--full rcx-bubble__button rcx-bubble__button--primary"
+        class="is_View _d-341075704 _f-284265061 _jc-1099843255 _ai-121763387 _mw-354604370 _mh-1241200853 _h-853931155 _m-2017216831 _p-2082124683 _cg-86881132 _o-1119039191 _to-1727917045 _ws-973912173 _c-22887652 _os-249893454 _a-1578443335 _ff-409630021 _fvn-1977619713 _fs-2088488067 _fw-289168101 _lh-1306743983 _ls-1782815796 _b-1705715319 _br-2124739179 _c-1456146561 _b-525025994 _bs-1969162100 rcx-bubble__button rcx-bubble__button--primary"
       >
         <i
           aria-hidden="true"
@@ -15,13 +15,15 @@ exports[`[Bubble Rendering] renders Dismissable without crashing 1`] = `
         >
           
         </i>
-        <span>
+        <span
+          class="is_Text _o-1119039191 _to-1727917045 _ws-973912173"
+        >
           New messages
         </span>
       </button>
       <button
         aria-label="Dismiss New messages"
-        class="rcx-box rcx-box--full rcx-bubble__button rcx-bubble__button--primary"
+        class="is_View _d-341075704 _f-284265061 _jc-1099843255 _ai-121763387 _mw-354604370 _mh-1241200853 _h-853931155 _m-2017216831 _p-2082124683 _cg-86881132 _o-1119039191 _to-1727917045 _ws-973912173 _c-22887652 _os-249893454 _a-1578443335 _ff-409630021 _fvn-1977619713 _fs-2088488067 _fw-289168101 _lh-1306743983 _ls-1782815796 _b-1705715319 _br-1592732849 _c-1456146561 _b-525025994 _bs-1969162100 rcx-bubble__button rcx-bubble__button--primary"
       >
         <i
           aria-hidden="true"
@@ -42,7 +44,7 @@ exports[`[Bubble Rendering] renders IconAndLabel without crashing 1`] = `
       class="is_View _f-1069814357 _ai-121763387 _o-1119039191 _ff-409630021 _fvn-1977619713 rcx-bubble"
     >
       <button
-        class="rcx-box rcx-box--full rcx-bubble__button rcx-bubble__button--primary"
+        class="is_View _d-341075704 _f-284265061 _jc-1099843255 _ai-121763387 _mw-354604370 _mh-1241200853 _h-853931155 _m-2017216831 _p-104258706 _cg-86881132 _o-1119039191 _to-1727917045 _ws-973912173 _c-22887652 _os-249893454 _a-1578443335 _ff-409630021 _fvn-1977619713 _fs-2088488067 _fw-289168101 _lh-1306743983 _ls-1782815796 _b-1705715319 _br-162699959 _c-1456146561 _b-525025994 _bs-1969162100 rcx-bubble__button rcx-bubble__button--primary"
       >
         <i
           aria-hidden="true"
@@ -50,7 +52,9 @@ exports[`[Bubble Rendering] renders IconAndLabel without crashing 1`] = `
         >
           
         </i>
-        <span>
+        <span
+          class="is_Text _o-1119039191 _to-1727917045 _ws-973912173"
+        >
           New messages
         </span>
       </button>
@@ -66,9 +70,11 @@ exports[`[Bubble Rendering] renders LabelOnly without crashing 1`] = `
       class="is_View _f-1069814357 _ai-121763387 _o-1119039191 _ff-409630021 _fvn-1977619713 rcx-bubble"
     >
       <button
-        class="rcx-box rcx-box--full rcx-bubble__button rcx-bubble__button--primary"
+        class="is_View _d-341075704 _f-284265061 _jc-1099843255 _ai-121763387 _mw-354604370 _mh-1241200853 _h-853931155 _m-2017216831 _p-2082124683 _cg-86881132 _o-1119039191 _to-1727917045 _ws-973912173 _c-22887652 _os-249893454 _a-1578443335 _ff-409630021 _fvn-1977619713 _fs-2088488067 _fw-289168101 _lh-1306743983 _ls-1782815796 _b-1705715319 _br-162699959 _c-1456146561 _b-525025994 _bs-1969162100 rcx-bubble__button rcx-bubble__button--primary"
       >
-        <span>
+        <span
+          class="is_Text _o-1119039191 _to-1727917045 _ws-973912173"
+        >
           See new messages
         </span>
       </button>
@@ -84,9 +90,11 @@ exports[`[Bubble Rendering] renders Secondary without crashing 1`] = `
       class="is_View _f-1069814357 _ai-121763387 _o-1119039191 _ff-409630021 _fvn-1977619713 rcx-bubble"
     >
       <button
-        class="rcx-box rcx-box--full rcx-bubble__button rcx-bubble__button--secondary"
+        class="is_View _d-341075704 _f-284265061 _jc-1099843255 _ai-121763387 _mw-354604370 _mh-1241200853 _h-853931155 _m-2017216831 _p-2082124683 _cg-86881132 _o-1119039191 _to-1727917045 _ws-973912173 _c-22887652 _os-249893454 _a-1578443335 _ff-409630021 _fvn-1977619713 _fs-2088488067 _fw-289168101 _lh-1306743983 _ls-1782815796 _b-490095930 _br-162699959 _bs-958948735 _c-836305799 _b-1331573151 rcx-bubble__button rcx-bubble__button--secondary"
       >
-        <span>
+        <span
+          class="is_Text _o-1119039191 _to-1727917045 _ws-973912173"
+        >
           See new messages
         </span>
       </button>
@@ -102,15 +110,17 @@ exports[`[Bubble Rendering] renders SecondaryDismissable without crashing 1`] = 
       class="is_View _f-1069814357 _ai-121763387 _o-1119039191 _ff-409630021 _fvn-1977619713 rcx-bubble rcx-bubble__group"
     >
       <span
-        class="is_View _f-1069814357 _jc-1099843255 _ai-121763387 _h-853931155 _p-445762330 _br-162699959 _cg-86881132 _o-1119039191 _to-1727917045 _ws-973912173 _fs-2088488067 _fw-289168101 _lh-1306743983 _ls-1782815796 _c-1604315960 _b-1913696028 rcx-bubble__item rcx-bubble__item--secondary"
+        class="is_View _f-1069814357 _jc-1099843255 _ai-121763387 _h-853931155 _p-445762330 _br-2124739179 _cg-86881132 _o-1119039191 _to-1727917045 _ws-973912173 _fs-2088488067 _fw-289168101 _lh-1306743983 _ls-1782815796 _c-1604315960 _b-1913696028 rcx-bubble__item rcx-bubble__item--secondary"
       >
-        <span>
+        <span
+          class="is_Text _o-1119039191 _to-1727917045 _ws-973912173"
+        >
           New messages
         </span>
       </span>
       <button
         aria-label="Dismiss New messages"
-        class="rcx-box rcx-box--full rcx-bubble__button rcx-bubble__button--secondary"
+        class="is_View _d-341075704 _f-284265061 _jc-1099843255 _ai-121763387 _mw-354604370 _mh-1241200853 _h-853931155 _m-2017216831 _p-2082124683 _cg-86881132 _o-1119039191 _to-1727917045 _ws-973912173 _c-22887652 _os-249893454 _a-1578443335 _ff-409630021 _fvn-1977619713 _fs-2088488067 _fw-289168101 _lh-1306743983 _ls-1782815796 _b-490095930 _br-1592732849 _bs-958948735 _c-836305799 _b-1331573151 rcx-bubble__button rcx-bubble__button--secondary"
       >
         <i
           aria-hidden="true"
@@ -133,7 +143,9 @@ exports[`[Bubble Rendering] renders Small without crashing 1`] = `
       <span
         class="is_View _f-1069814357 _jc-1099843255 _ai-121763387 _p-445762330 _br-162699959 _cg-86881132 _o-1119039191 _to-1727917045 _ws-973912173 _c-1604315960 _b-1913696028 _fs-88902521 _fw-290091622 _lh-764383975 _ls-1811444947 _h-1628964073 rcx-bubble__item rcx-bubble__item--secondary"
       >
-        <span>
+        <span
+          class="is_Text _o-1119039191 _to-1727917045 _ws-973912173"
+        >
           22 Nov 2023
         </span>
       </span>
@@ -149,9 +161,11 @@ exports[`[Bubble Rendering] renders WithLargeText without crashing 1`] = `
       class="is_View _f-1069814357 _ai-121763387 _o-1119039191 _ff-409630021 _fvn-1977619713 rcx-bubble"
     >
       <button
-        class="rcx-box rcx-box--full rcx-bubble__button rcx-bubble__button--secondary"
+        class="is_View _d-341075704 _f-284265061 _jc-1099843255 _ai-121763387 _mw-354604370 _mh-1241200853 _h-853931155 _m-2017216831 _p-2082124683 _cg-86881132 _o-1119039191 _to-1727917045 _ws-973912173 _c-22887652 _os-249893454 _a-1578443335 _ff-409630021 _fvn-1977619713 _fs-2088488067 _fw-289168101 _lh-1306743983 _ls-1782815796 _b-490095930 _br-162699959 _bs-958948735 _c-836305799 _b-1331573151 rcx-bubble__button rcx-bubble__button--secondary"
       >
-        <span>
+        <span
+          class="is_Text _o-1119039191 _to-1727917045 _ws-973912173"
+        >
           Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec vestibulum libero viverra nulla varius, a consequat ante malesuada. Fusce bibendum, lacus sed fermentum sagittis, urna erat viverra lacus, eu pellentesque neque est nec nisl. Morbi in lobortis dui, ac consectetur mi.
         </span>
       </button>
@@ -169,7 +183,9 @@ exports[`[Bubble Rendering] renders WithoutAction without crashing 1`] = `
       <span
         class="is_View _f-1069814357 _jc-1099843255 _ai-121763387 _h-853931155 _p-445762330 _br-162699959 _cg-86881132 _o-1119039191 _to-1727917045 _ws-973912173 _fs-2088488067 _fw-289168101 _lh-1306743983 _ls-1782815796 _c-1604315960 _b-1913696028 rcx-bubble__item rcx-bubble__item--secondary"
       >
-        <span>
+        <span
+          class="is_Text _o-1119039191 _to-1727917045 _ws-973912173"
+        >
           22 Nov 2023
         </span>
       </span>
