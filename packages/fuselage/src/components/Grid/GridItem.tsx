@@ -1,4 +1,6 @@
+import breakpoints from '@rocket.chat/fuselage-tokens/dist/breakpoints.json';
 import { styled, View, type GetProps } from '@tamagui/web';
+import { createContext, useContext } from 'react';
 
 import { useTamaguiBoxProps } from '../../hooks/useTamaguiBoxProps';
 import { fontFamily } from '../../styleTokens';
@@ -15,12 +17,69 @@ export const gridBoxStyle = {
 	fontVariantNumeric: 'tabular-nums',
 } as const;
 
+type Breakpoint = keyof typeof breakpoints;
+
+const breakpointNames = Object.keys(breakpoints) as Breakpoint[];
+
+/** One value per breakpoint as a Tamagui media clause; `xs` has no query, so its value is the default. */
+const perBreakpoint = (value: (breakpoint: Breakpoint) => string | number | undefined) =>
+	Object.fromEntries(
+		breakpointNames.flatMap((breakpoint) => {
+			const v = value(breakpoint);
+			return v === undefined ? [] : [[breakpoint === 'xs' ? 'default' : breakpoint, v]];
+		}),
+	);
+
+export const gutter = (breakpoint: Breakpoint, factor: number) => `${(breakpoints[breakpoint].gutterWidth * factor) / 16}rem`;
+
+/** The breakpoints a `Grid` pins its items to, whatever the viewport width. */
+export const GridContext = createContext<Partial<Record<Breakpoint, boolean>>>({});
+
 const GridItemFrame = styled(View, {
 	...gridBoxStyle,
 	display: 'block',
 	flexGrow: 1,
 	flexBasis: 0,
+	paddingBlock: perBreakpoint((breakpoint) => gutter(breakpoint, 1 / 2)),
+	paddingInline: perBreakpoint((breakpoint) => gutter(breakpoint, 1 / 2)),
 });
+
+const width = (breakpoint: Breakpoint, columns: number) => `${(columns / breakpoints[breakpoint].columns) * 100}%`;
+
+// A pinned breakpoint beats the viewport, and the widest one pinned wins, as the stylesheet's child selectors did
+const useItemStyle = (columnsByBreakpoint: Partial<Record<Breakpoint, number>>) => {
+	const pinned = useContext(GridContext);
+	const pinnedPadding = breakpointNames.findLast((breakpoint) => pinned[breakpoint]);
+	const pinnedColumns = breakpointNames.findLast((breakpoint) => pinned[breakpoint] && columnsByBreakpoint[breakpoint]);
+
+	const padding = pinnedPadding && gutter(pinnedPadding, 1 / 2);
+
+	if (pinnedColumns) {
+		const w = width(pinnedColumns, columnsByBreakpoint[pinnedColumns]!);
+		return { flexGrow: 0, flexBasis: w, maxWidth: w, ...(padding && { paddingBlock: padding, paddingInline: padding }) };
+	}
+
+	if (!breakpointNames.some((breakpoint) => columnsByBreakpoint[breakpoint])) {
+		return padding ? { paddingBlock: padding, paddingInline: padding } : {};
+	}
+
+	// Breakpoints the item sets no columns for keep the value of the narrower one before them
+	const sized = (sizedValue: (breakpoint: Breakpoint, columns: number) => string | number, baseValue: string | number) =>
+		perBreakpoint((breakpoint) => {
+			const columns = columnsByBreakpoint[breakpoint];
+			if (columns) {
+				return sizedValue(breakpoint, columns);
+			}
+			return breakpoint === 'xs' ? baseValue : undefined;
+		});
+
+	return {
+		flexGrow: sized(() => 0, 1),
+		flexBasis: sized(width, 0),
+		maxWidth: sized(width, 'none'),
+		...(padding && { paddingBlock: padding, paddingInline: padding }),
+	};
+};
 
 export type GridItemProps = BoxProps & {
 	xs?: 1 | 2 | 3 | 4;
@@ -31,6 +90,7 @@ export type GridItemProps = BoxProps & {
 };
 
 const GridItem = ({ xs, sm, md, lg, xl, ...props }: GridItemProps) => {
+	const itemStyle = useItemStyle({ xs, sm, md, lg, xl });
 	const itemProps = useTamaguiBoxProps({
 		'rcx-grid__item': true,
 		'rcx-grid__item--xs': xs,
@@ -41,7 +101,7 @@ const GridItem = ({ xs, sm, md, lg, xl, ...props }: GridItemProps) => {
 		...props,
 	});
 
-	return <GridItemFrame {...(itemProps as GetProps<typeof GridItemFrame>)} />;
+	return <GridItemFrame {...itemStyle} {...(itemProps as GetProps<typeof GridItemFrame>)} />;
 };
 
 export default withFuselageProvider(GridItem, { takesBoxTransforms: true });

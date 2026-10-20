@@ -1,8 +1,9 @@
 import { styled, View, type GetProps } from '@tamagui/web';
+import { useMemo } from 'react';
 
 import { useTamaguiBoxProps } from '../../hooks/useTamaguiBoxProps';
 import type { BoxProps } from '../Box';
-import GridItem, { gridBoxStyle } from './GridItem';
+import GridItem, { gridBoxStyle, GridContext, gutter } from './GridItem';
 import { withFuselageProvider } from '../FuselageProvider/FuselageProvider';
 
 const GridWrapper = styled(View, {
@@ -16,6 +17,8 @@ const GridFrame = styled(View, {
 	flexDirection: 'row',
 	flexWrap: 'wrap',
 	flexShrink: 1,
+	marginBlock: { default: gutter('xs', -1 / 2), sm: gutter('sm', -1 / 2), md: gutter('md', -1 / 2) },
+	marginInline: { default: gutter('xs', -1 / 2), sm: gutter('sm', -1 / 2), md: gutter('md', -1 / 2) },
 });
 
 export type GridProps = BoxProps & {
@@ -37,10 +40,14 @@ const Grid = ({ xs, sm, md, lg, xl, ...props }: GridProps) => {
 		...props,
 	});
 
+	const pinned = useMemo(() => ({ xs, sm, md, lg, xl }), [xs, sm, md, lg, xl]);
+
 	return (
-		<GridWrapper className='rcx-grid__wrapper'>
-			<GridFrame {...(gridProps as GetProps<typeof GridFrame>)} />
-		</GridWrapper>
+		<GridContext.Provider value={pinned}>
+			<GridWrapper className='rcx-grid__wrapper'>
+				<GridFrame {...(gridProps as GetProps<typeof GridFrame>)} />
+			</GridWrapper>
+		</GridContext.Provider>
 	);
 };
 
