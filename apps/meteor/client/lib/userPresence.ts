@@ -6,6 +6,7 @@ import { useEffect } from 'react';
 
 import { withDebouncing } from '../../lib/utils/highOrderFunctions';
 import { Users } from '../stores';
+import { callDesktopBridge } from './utils/callDesktopBridge';
 
 // TODO: merge this with the current React-based implementation of idle detection
 
@@ -125,22 +126,26 @@ export class UserPresence {
 		useEffect(() => {
 			if (!RocketChatDesktop) return;
 
-			RocketChatDesktop.setUserPresenceDetection({
-				isAutoAwayEnabled: enableAutoAway ?? false,
-				idleThreshold: idleTimeLimit,
-				setUserOnline: (online) => {
-					this.idle = !online;
-					this.setStatus.cancel();
-					this.setStatus(online ? UserStatus.ONLINE : UserStatus.AWAY, { force: true });
-				},
-			});
+			callDesktopBridge((desktop) =>
+				desktop.setUserPresenceDetection({
+					isAutoAwayEnabled: enableAutoAway ?? false,
+					idleThreshold: idleTimeLimit,
+					setUserOnline: (online) => {
+						this.idle = !online;
+						this.setStatus.cancel();
+						this.setStatus(online ? UserStatus.ONLINE : UserStatus.AWAY, { force: true });
+					},
+				}),
+			);
 
 			return () => {
-				RocketChatDesktop.setUserPresenceDetection({
-					isAutoAwayEnabled: false,
-					idleThreshold: null,
-					setUserOnline: () => undefined,
-				});
+				callDesktopBridge((desktop) =>
+					desktop.setUserPresenceDetection({
+						isAutoAwayEnabled: false,
+						idleThreshold: null,
+						setUserOnline: () => undefined,
+					}),
+				);
 			};
 		}, [RocketChatDesktop, enableAutoAway, idleTimeLimit]);
 
