@@ -207,7 +207,8 @@
 		"@react-pdf/layout@npm:^4.6.1": "patch:@react-pdf/layout@npm%3A4.6.1#~/.yarn/patches/@react-pdf-layout-npm-4.6.1-b12fdb71f4.patch",
 		"cookie@npm:^2.0.1": "patch:cookie@npm%3A2.0.1#~/.yarn/patches/cookie-npm-2.0.1-2aea16e44e.patch",
 		"@tamagui/web@npm:~3.0.18": "patch:@tamagui/web@npm%3A3.0.18#~/.yarn/patches/@tamagui-web-npm-3.0.18-f8fb3ca22a.patch",
-		"@tamagui/compose-refs@npm:3.0.18": "patch:@tamagui/compose-refs@npm%3A3.0.18#~/.yarn/patches/@tamagui-compose-refs-npm-3.0.18-59cbb88350.patch"
+		"@tamagui/compose-refs@npm:3.0.18": "patch:@tamagui/compose-refs@npm%3A3.0.18#~/.yarn/patches/@tamagui-compose-refs-npm-3.0.18-59cbb88350.patch",
+		"@tamagui/static@npm:3.0.18": "patch:@tamagui/static@npm%3A3.0.18#~/.yarn/patches/@tamagui-static-npm-3.0.18-189ad8b0b3.patch"
 	},
 	"dependencies": {
 		"@types/stream-buffers": "^3.0.8",
