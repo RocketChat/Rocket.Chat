@@ -34,7 +34,7 @@ exports[`renders CallEnded without crashing 1`] = `
         </div>
       </div>
       <div
-        class="is_View _p-1021290656 _f-1841970073 _ai-994770828 _m-211896778 _p-1260242245 _b-1182826059 _br-1105657738 _ow-1993548942 _bs-1333539716 _b-1741968088 t_group_message rcx-message customclass"
+        class="is_View _p-1021290656 _f-1841970073 _ai-994770828 _m-211896778 _p-1260242245 _b-1182826059 _br-1105657738 _ow-1993548942 _bs-1333539716 _b-1741968088 rcx-message customclass"
       >
         <div
           class="is_View _ff-409630021 _fv-607544992 _f-866739262 _mw-842769126 _m-1515180012 _ai-845606260 _w-799253879 rcx-message-container rcx-message-container--left"
@@ -96,7 +96,7 @@ exports[`renders CallEnded without crashing 1`] = `
                 </span>
               </span>
               <span
-                class="is_Text _ff-409630021 _fv-607544992 _fs-2088488067 _lh-1306743983 _ls-1782815796 _fw-289165218 _o-1119039191 _to-1727917045 _ws-973912173 _f-1246374077 _m-211896778 _c-191671261 rcx-message-header__time"
+                class="is_Text _ff-409630021 _fv-607544992 _fs-2088488067 _lh-1306743983 _ls-1782815796 _fw-289165218 _o-1119039191 _to-1727917045 _ws-973912173 _f-1246374077 _m-211896778 _c-1756781803 rcx-message-header__time"
               >
                 12:00 PM
               </span>
@@ -214,7 +214,7 @@ exports[`renders CallEndedDM without crashing 1`] = `
         </div>
       </div>
       <div
-        class="is_View _p-1021290656 _f-1841970073 _ai-994770828 _m-211896778 _p-1260242245 _b-1182826059 _br-1105657738 _ow-1993548942 _bs-1333539716 _b-1741968088 t_group_message rcx-message customclass"
+        class="is_View _p-1021290656 _f-1841970073 _ai-994770828 _m-211896778 _p-1260242245 _b-1182826059 _br-1105657738 _ow-1993548942 _bs-1333539716 _b-1741968088 rcx-message customclass"
       >
         <div
           class="is_View _ff-409630021 _fv-607544992 _f-866739262 _mw-842769126 _m-1515180012 _ai-845606260 _w-799253879 rcx-message-container rcx-message-container--left"
@@ -276,7 +276,7 @@ exports[`renders CallEndedDM without crashing 1`] = `
                 </span>
               </span>
               <span
-                class="is_Text _ff-409630021 _fv-607544992 _fs-2088488067 _lh-1306743983 _ls-1782815796 _fw-289165218 _o-1119039191 _to-1727917045 _ws-973912173 _f-1246374077 _m-211896778 _c-191671261 rcx-message-header__time"
+                class="is_Text _ff-409630021 _fv-607544992 _fs-2088488067 _lh-1306743983 _ls-1782815796 _fw-289165218 _o-1119039191 _to-1727917045 _ws-973912173 _f-1246374077 _m-211896778 _c-1756781803 rcx-message-header__time"
               >
                 12:00 PM
               </span>
@@ -394,7 +394,7 @@ exports[`renders CallOngoing without crashing 1`] = `
         </div>
       </div>
       <div
-        class="is_View _p-1021290656 _f-1841970073 _ai-994770828 _m-211896778 _p-1260242245 _b-1182826059 _br-1105657738 _ow-1993548942 _bs-1333539716 _b-1741968088 t_group_message rcx-message customclass"
+        class="is_View _p-1021290656 _f-1841970073 _ai-994770828 _m-211896778 _p-1260242245 _b-1182826059 _br-1105657738 _ow-1993548942 _bs-1333539716 _b-1741968088 rcx-message customclass"
       >
         <div
           class="is_View _ff-409630021 _fv-607544992 _f-866739262 _mw-842769126 _m-1515180012 _ai-845606260 _w-799253879 rcx-message-container rcx-message-container--left"
@@ -456,7 +456,7 @@ exports[`renders CallOngoing without crashing 1`] = `
                 </span>
               </span>
               <span
-                class="is_Text _ff-409630021 _fv-607544992 _fs-2088488067 _lh-1306743983 _ls-1782815796 _fw-289165218 _o-1119039191 _to-1727917045 _ws-973912173 _f-1246374077 _m-211896778 _c-191671261 rcx-message-header__time"
+                class="is_Text _ff-409630021 _fv-607544992 _fs-2088488067 _lh-1306743983 _ls-1782815796 _fw-289165218 _o-1119039191 _to-1727917045 _ws-973912173 _f-1246374077 _m-211896778 _c-1756781803 rcx-message-header__time"
               >
                 12:00 PM
               </span>
@@ -584,7 +584,7 @@ exports[`renders CallingDM without crashing 1`] = `
         </div>
       </div>
       <div
-        class="is_View _p-1021290656 _f-1841970073 _ai-994770828 _m-211896778 _p-1260242245 _b-1182826059 _br-1105657738 _ow-1993548942 _bs-1333539716 _b-1741968088 t_group_message rcx-message customclass"
+        class="is_View _p-1021290656 _f-1841970073 _ai-994770828 _m-211896778 _p-1260242245 _b-1182826059 _br-1105657738 _ow-1993548942 _bs-1333539716 _b-1741968088 rcx-message customclass"
       >
         <div
           class="is_View _ff-409630021 _fv-607544992 _f-866739262 _mw-842769126 _m-1515180012 _ai-845606260 _w-799253879 rcx-message-container rcx-message-container--left"
@@ -646,7 +646,7 @@ exports[`renders CallingDM without crashing 1`] = `
                 </span>
               </span>
               <span
-                class="is_Text _ff-409630021 _fv-607544992 _fs-2088488067 _lh-1306743983 _ls-1782815796 _fw-289165218 _o-1119039191 _to-1727917045 _ws-973912173 _f-1246374077 _m-211896778 _c-191671261 rcx-message-header__time"
+                class="is_Text _ff-409630021 _fv-607544992 _fs-2088488067 _lh-1306743983 _ls-1782815796 _fw-289165218 _o-1119039191 _to-1727917045 _ws-973912173 _f-1246374077 _m-211896778 _c-1756781803 rcx-message-header__time"
               >
                 12:00 PM
               </span>
@@ -764,7 +764,7 @@ exports[`renders Loading without crashing 1`] = `
         </div>
       </div>
       <div
-        class="is_View _p-1021290656 _f-1841970073 _ai-994770828 _m-211896778 _p-1260242245 _b-1182826059 _br-1105657738 _ow-1993548942 _bs-1333539716 _b-1741968088 t_group_message rcx-message customclass"
+        class="is_View _p-1021290656 _f-1841970073 _ai-994770828 _m-211896778 _p-1260242245 _b-1182826059 _br-1105657738 _ow-1993548942 _bs-1333539716 _b-1741968088 rcx-message customclass"
       >
         <div
           class="is_View _ff-409630021 _fv-607544992 _f-866739262 _mw-842769126 _m-1515180012 _ai-845606260 _w-799253879 rcx-message-container rcx-message-container--left"
@@ -826,7 +826,7 @@ exports[`renders Loading without crashing 1`] = `
                 </span>
               </span>
               <span
-                class="is_Text _ff-409630021 _fv-607544992 _fs-2088488067 _lh-1306743983 _ls-1782815796 _fw-289165218 _o-1119039191 _to-1727917045 _ws-973912173 _f-1246374077 _m-211896778 _c-191671261 rcx-message-header__time"
+                class="is_Text _ff-409630021 _fv-607544992 _fs-2088488067 _lh-1306743983 _ls-1782815796 _fw-289165218 _o-1119039191 _to-1727917045 _ws-973912173 _f-1246374077 _m-211896778 _c-1756781803 rcx-message-header__time"
               >
                 12:00 PM
               </span>
@@ -907,7 +907,7 @@ exports[`renders NoAvatars without crashing 1`] = `
         </div>
       </div>
       <div
-        class="is_View _p-1021290656 _f-1841970073 _ai-994770828 _m-211896778 _p-1260242245 _b-1182826059 _br-1105657738 _ow-1993548942 _bs-1333539716 _b-1741968088 t_group_message rcx-message customclass"
+        class="is_View _p-1021290656 _f-1841970073 _ai-994770828 _m-211896778 _p-1260242245 _b-1182826059 _br-1105657738 _ow-1993548942 _bs-1333539716 _b-1741968088 rcx-message customclass"
       >
         <div
           class="is_View _ff-409630021 _fv-607544992 _f-866739262 _mw-842769126 _m-1515180012 _ai-845606260 _w-799253879 rcx-message-container rcx-message-container--left"
@@ -969,7 +969,7 @@ exports[`renders NoAvatars without crashing 1`] = `
                 </span>
               </span>
               <span
-                class="is_Text _ff-409630021 _fv-607544992 _fs-2088488067 _lh-1306743983 _ls-1782815796 _fw-289165218 _o-1119039191 _to-1727917045 _ws-973912173 _f-1246374077 _m-211896778 _c-191671261 rcx-message-header__time"
+                class="is_Text _ff-409630021 _fv-607544992 _fs-2088488067 _lh-1306743983 _ls-1782815796 _fw-289165218 _o-1119039191 _to-1727917045 _ws-973912173 _f-1246374077 _m-211896778 _c-1756781803 rcx-message-header__time"
               >
                 12:00 PM
               </span>
