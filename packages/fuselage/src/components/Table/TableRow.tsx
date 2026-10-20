@@ -17,7 +17,16 @@ const TableRow = ({ action, selected, ...props }: TableRowProps) => {
 		...props,
 	});
 
-	return <TableRowFrame selected={selected} {...(rowProps as GetProps<typeof TableRowFrame>)} />;
+	const scheme = [selected && 'selected', action && 'action'].filter(Boolean).join('-') || undefined;
+	const disabled = action && typeof rowProps.className === 'string' && rowProps.className.split(/\s+/).includes('disabled');
+
+	return (
+		<TableRowFrame
+			{...{ scheme }}
+			{...(disabled && { cursor: { hover: 'not-allowed', focus: 'not-allowed' } })}
+			{...(rowProps as GetProps<typeof TableRowFrame>)}
+		/>
+	);
 };
 
 export default withFuselageProvider(TableRow, { takesBoxTransforms: true });
