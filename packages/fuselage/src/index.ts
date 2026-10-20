@@ -1,6 +1,6 @@
 /// <reference types="vite/client" />
 /** @internal */
-import './index.scss';
+import './index.css';
 
 export * from './components';
 export * from './styleTokens';
