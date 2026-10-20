@@ -11,10 +11,13 @@
 	"type": "module",
 	"main": "./index.js",
 	"exports": {
-		".": "./index.js"
+		".": "./index.js",
+		"./oxlint.json": "./oxlint.json"
 	},
 	"files": [
-		"/index.js"
+		"/index.js",
+		"/oxlint.json",
+		"/oxlint-eslint-rules.js"
 	],
 	"scripts": {
 		"lint": "eslint .",
