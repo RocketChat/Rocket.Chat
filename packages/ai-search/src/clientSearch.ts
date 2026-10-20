@@ -63,7 +63,11 @@ const escapeRegExp = (value: string): string => value.replace(/[.*+?^${}()|[\]\\
 
 const stripSigil = (value: string): string => value.replace(/^[@#]/, '').trim();
 
-const normalizeName = (rawValue: string): string | undefined => stripSigil(rawValue) || undefined;
+const normalizeName = (rawValue: string): string | undefined => {
+	const value = stripSigil(rawValue);
+
+	return value && !value.includes('"') ? value : undefined;
+};
 
 const normalizeDate = (rawValue: string): string | undefined => {
 	const value = rawValue.trim();

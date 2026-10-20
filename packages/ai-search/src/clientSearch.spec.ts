@@ -80,6 +80,11 @@ describe('AI Search client helpers', () => {
 			});
 		});
 
+		it('keeps a quoted filter value in the text until its closing quote is typed', () => {
+			expect(parseSearchInput('mongo in:"team ', { keepDraft: true })).toEqual({ text: 'mongo in:"team ', filters: [] });
+			expect(parseSearchInput('mongo from:"rocket user ')).toEqual({ text: 'mongo from:"rocket user', filters: [] });
+		});
+
 		it('matches filter keys case-insensitively', () => {
 			expect(parseSearchInput('IN:general From:alice')).toEqual({
 				text: '',
