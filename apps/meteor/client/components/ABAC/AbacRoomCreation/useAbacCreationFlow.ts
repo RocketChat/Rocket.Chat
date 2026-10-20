@@ -24,7 +24,7 @@ export const useAbacCreationFlow = ({ abac, isAbacManaged, members, attributes }
 	const steps = useCreateRoomSteps(Boolean(abac), isManaged);
 	const { step } = steps;
 
-	const assignable = useAssignableAttributes(isManaged, (data) => data.attributes);
+	const assignable = useAssignableAttributes({ enabled: isManaged, select: (data) => data.attributes });
 	const missingRequiredKeys = findMissingRequiredKeys(abac?.requiredAttributes ?? [], assignable.data);
 
 	const previewMembership = useEndpoint('POST', '/v1/abac/rooms.evaluateMembership');

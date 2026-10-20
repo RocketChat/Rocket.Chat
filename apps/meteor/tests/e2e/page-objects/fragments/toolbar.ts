@@ -126,6 +126,24 @@ export class RoomToolbar extends Toolbar {
 		await this.menuItemCalls.click();
 	}
 
+	get btnABACAttributes(): Locator {
+		return this.root.getByRole('button', { name: 'Attribute-based access control' });
+	}
+
+	get menuItemABACAttributes(): Locator {
+		return this.menu.getMenuItem('Attribute-based access control');
+	}
+
+	async openABACAttributes(): Promise<void> {
+		if (await this.btnABACAttributes.isVisible()) {
+			await this.btnABACAttributes.click();
+			return;
+		}
+
+		await this.openMoreOptions();
+		await this.menuItemABACAttributes.click();
+	}
+
 	async openRoomInfo() {
 		await this.btnRoomInfo.click();
 	}

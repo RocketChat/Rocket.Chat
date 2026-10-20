@@ -6,9 +6,9 @@ import { FormProvider, useForm, useWatch } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 
 import RoomForm from './RoomForm';
-import { hasAttributeChanges } from './hasAttributeChanges';
 import { toAttributeMap } from '../../../../components/ABAC/AbacRoomCreation/AbacAttributesStep';
 import AbacRoomMembershipPreview from '../../../../components/ABAC/AbacRoomMembershipPreview/AbacRoomMembershipPreview';
+import { hasAttributeChanges } from '../../../../components/ABAC/hasAttributeChanges';
 import { ABACQueryKeys } from '../../../../lib/queryKeys';
 
 export type RoomsContextualBarProps = {
