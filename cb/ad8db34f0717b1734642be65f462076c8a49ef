@@ -1,0 +1,23 @@
+packages/desktop-api/README.md
+  s_6c3ed16cc29ab0::t_47141636a20466 70
+apps/meteor/client/hooks/useUserStatuses.ts
+  s_6c3ed16cc29ab0::t_47141636a20466 27-35
+.changeset/desktop-user-presence-contract.md
+  s_6c3ed16cc29ab0::t_47141636a20466 6
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.2",
+  "base_commit_sha": "cbad8db34f0717b1734642be65f462076c8a49ef",
+  "prompts": {},
+  "sessions": {
+    "s_6c3ed16cc29ab0": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "22e04f78-f6a3-4049-ab45-40472cecafa9",
+        "model": "claude-opus-5-5"
+      },
+      "human_author": "Ricardo Garim <rswarovsky@gmail.com>"
+    }
+  }
+}
