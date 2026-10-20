@@ -155,3 +155,42 @@ Follow `Divider` (`components/Divider/Divider.tsx`).
    - `yarn tsc --noEmit -p tsconfig.json` and the component's Jest specs.
    - Snapshot diffs may show only Tamagui class names (`is_View`, `_m-…`), removed `rcx-box rcx-box--full`, and shifted `_r_N_` ids.
    - The A/B screenshot comparison with `develop` must stay pixel-identical.
+
+## Removing the remaining SCSS
+
+The goal is no SCSS, and as little CSS as Tamagui allows. Each component's residual SCSS moves into its Tamagui frames with the techniques below. Only rules no technique covers become plain CSS.
+
+### Tamagui 3 techniques
+
+- **States** are per-property clauses, for example `backgroundColor: { default, hover, press, focus, 'focus-visible', 'focus-within' }`. Version 3 removed `hoverStyle`, `pressStyle`, `focusStyle` and the `$sm` media props.
+  - The `disabled` clause targets `[aria-disabled="true"]`. Don't add `aria-disabled` where `develop` didn't render it; use a variant driven by the `disabled` prop instead.
+- **Media**: the config holds the Fuselage breakpoints (`sm`, `md`, `lg`, `xl`, `xxl`, `xxxl`, `min-width` in `em`, as the SCSS `on-breakpoint` mixin used). Write them as clauses, for example `padding: { default: …, md: … }`.
+- **Parent state → child style**: put `group="<name>"` on the parent frame, then use `'group-hover/<name>'` or `'group-focus-within/<name>'` clauses on child frames. They emit real CSS.
+- **Container queries**: `container="<name>"` on the parent sets `container-type: inline-size`, and children use `'@md/<name>'` clauses. Only use them where `develop` already had a container.
+- **Cross-component styles** (one component styling another's parts): pass a variant from the parent, or share one with `createStyledContext`. Don't reach into other components with selectors.
+- **`:has()`**: let the child register in a parent context (for example "has an addon"), then style through a variant.
+- **Attribute selectors** (`[aria-selected]`, `[tabindex]`): the component already knows the prop, so map it to a variant.
+- **Pseudo-elements**: decorative `::before`/`::after` become real `aria-hidden` elements, keeping the class name of the element that held them. Snapshots change; pixels must not.
+- **Forced state classes** (`hover`/`is-hovered`, `active`/`is-active`, `focus`/`is-focused`, `focus focus-visible`): pass `forceStyle={getForcedState(className)}` to the frame.
+  - Only do this once *all* of the frame's state styles are clauses. Under `forceStyle`, Tamagui renders the whole frame with inline styles, which beat any SCSS still styling that state.
+  - Forced `disabled`/`is-disabled` maps to the component's `disabled` variant.
+- **Vendor-prefixed font smoothing** comes from one `:where(.is_View, .is_Text)` rule in `index.scss`. Drop the per-component copies.
+
+### What stays plain CSS
+
+- `:checked`, `:indeterminate` and `:invalid` on native inputs (sibling rules such as `input:checked + .fake`), so uncontrolled inputs work without React state.
+- Rich text and links inside text (`withRichContent`, links inside field hints): they style arbitrary HTML no component renders.
+- `@keyframes`, referenced through the `animationName` style prop, and `@font-face`.
+
+Plain CSS has no Sass: flat selectors, no nesting, values written as `var(--rcx-…, <fallback>)`. It lives in `<Name>.styles.css` and is loaded from `components/index.scss` as `@use './<Dir>/<Name>.styles'`, with no extension, so the stylesheet order is unchanged. Rules that used to win over frames stay unlayered.
+
+### Lessons from consumers
+
+- `<Box is={TamaguiComponent}>` drops the `rcx-box` base classes, and `isTamaguiComponent` tells which components are Tamagui.
+- Components whose `develop` root was a `Box` take `Margins`/`Scrollable` transforms through `withFuselageProvider(X, { takesBoxTransforms: true })`.
+- Tamagui's base `min-height: 0` lets frames shrink where `Box` didn't. Restate `minHeight: 'auto'`.
+- Tamagui 3.0.18 is patched (`.yarn/patches`):
+  - React 19 ref cleanups;
+  - `forceStyle` no longer leaks to the DOM;
+  - the container `onLayout` measurer no longer leaks to the DOM.
+- The Fuselage Storybook A/B is not enough. The apps/meteor and ui-client Storybooks catch what Fuselage stories never exercise, so compare them against `develop` too.
