@@ -1,0 +1,267 @@
+/* The select roots are `Box` elements, so their input chrome and states stay here; `AutoComplete` shares them. */
+.rcx-select,
+.rcx-autocomplete {
+	position: relative;
+
+	display: inline-flex;
+	flex-flow: row nowrap;
+	align-items: center;
+	flex-grow: 1;
+
+	min-width: 9rem;
+	min-height: 2.5rem;
+	padding-block: 0.5rem;
+	padding-inline: calc(1rem - 1px);
+
+	vertical-align: baseline;
+	word-break: break-all;
+
+	border-width: 1px;
+	border-color: var(--rcx-input-colors-border-color, var(--rcx-color-stroke-light, #cbced1));
+	border-radius: var(--rcx-input-border-radius, var(--rcx-border-radius-medium, 0.25rem));
+	outline: 0;
+	background-color: var(--rcx-input-colors-background-color, var(--rcx-color-surface-light, #ffffff));
+	box-shadow: none;
+}
+
+.rcx-select:hover,
+.rcx-autocomplete:hover,
+.rcx-select.hover,
+.rcx-autocomplete.hover,
+.rcx-select.is-hovered,
+.rcx-autocomplete.is-hovered {
+	border-color: var(--rcx-input-colors-hover-border-color, var(--rcx-color-stroke-dark, #6c737a));
+}
+
+.rcx-select:focus,
+.rcx-autocomplete:focus,
+.rcx-select:focus-within,
+.rcx-autocomplete:focus-within,
+.rcx-select.focus,
+.rcx-autocomplete.focus,
+.rcx-select.is-focused,
+.rcx-autocomplete.is-focused {
+	border-color: var(--rcx-input-colors-focus-border-color, var(--rcx-color-stroke-highlight, #156ff5));
+	box-shadow: 0 0 0 2px var(--rcx-input-colors-focus-shadow-color, var(--rcx-color-shadow-highlight, #d1ebfe));
+}
+
+.rcx-select:active,
+.rcx-autocomplete:active,
+.rcx-select.active,
+.rcx-autocomplete.active,
+.rcx-select.is-active,
+.rcx-autocomplete.is-active {
+	border-color: var(--rcx-input-colors-active-border-color, var(--rcx-color-stroke-dark, #6c737a));
+	box-shadow: none;
+}
+
+*:disabled .rcx-select,
+*:disabled .rcx-autocomplete,
+.rcx-select:disabled,
+.rcx-autocomplete:disabled,
+.rcx-select.disabled,
+.rcx-autocomplete.disabled,
+.rcx-select.is-disabled,
+.rcx-autocomplete.is-disabled {
+	border-color: var(--rcx-input-colors-disabled-border-color, var(--rcx-color-stroke-light, #cbced1));
+	background-color: var(--rcx-input-colors-disabled-background-color, var(--rcx-color-surface-disabled, #f7f8fa));
+}
+
+*:disabled .rcx-select,
+*:disabled .rcx-autocomplete,
+.rcx-select:disabled,
+.rcx-autocomplete:disabled,
+.rcx-select.disabled,
+.rcx-autocomplete.disabled {
+	cursor: not-allowed;
+	pointer-events: none;
+}
+
+.rcx-select:invalid,
+.rcx-autocomplete:invalid,
+.rcx-select.invalid,
+.rcx-autocomplete.invalid {
+	color: var(--rcx-input-colors-invalid-color, var(--rcx-color-font-titles-labels, #1f2329));
+	border-color: var(--rcx-input-colors-invalid-border-color, var(--rcx-color-stroke-error, #ec0d2a));
+	background-color: var(--rcx-input-colors-invalid-background-color, var(--rcx-color-surface-light, #ffffff));
+	box-shadow: none;
+}
+
+.rcx-select:invalid:hover,
+.rcx-autocomplete:invalid:hover,
+.rcx-select.invalid:hover,
+.rcx-autocomplete.invalid:hover,
+.rcx-select:invalid.hover,
+.rcx-autocomplete:invalid.hover,
+.rcx-select.invalid.hover,
+.rcx-autocomplete.invalid.hover,
+.rcx-select:invalid.is-hovered,
+.rcx-autocomplete:invalid.is-hovered,
+.rcx-select.invalid.is-hovered,
+.rcx-autocomplete.invalid.is-hovered {
+	border-color: var(--rcx-input-colors-invalid-hover-border-color, var(--rcx-color-stroke-error, #ec0d2a));
+}
+
+.rcx-select:invalid:focus,
+.rcx-autocomplete:invalid:focus,
+.rcx-select.invalid:focus,
+.rcx-autocomplete.invalid:focus,
+.rcx-select:invalid:focus-within,
+.rcx-autocomplete:invalid:focus-within,
+.rcx-select.invalid:focus-within,
+.rcx-autocomplete.invalid:focus-within,
+.rcx-select:invalid.focus,
+.rcx-autocomplete:invalid.focus,
+.rcx-select.invalid.focus,
+.rcx-autocomplete.invalid.focus,
+.rcx-select:invalid.is-focused,
+.rcx-autocomplete:invalid.is-focused,
+.rcx-select.invalid.is-focused,
+.rcx-autocomplete.invalid.is-focused {
+	border-color: var(--rcx-input-colors-invalid-focus-border-color, var(--rcx-color-stroke-error, #ec0d2a));
+	box-shadow: 0 0 0 2px var(--rcx-input-colors-invalid-focus-shadow-color, var(--rcx-color-shadow-danger, #ffe9ec));
+}
+
+.rcx-select:invalid:active,
+.rcx-autocomplete:invalid:active,
+.rcx-select.invalid:active,
+.rcx-autocomplete.invalid:active,
+.rcx-select:invalid.active,
+.rcx-autocomplete:invalid.active,
+.rcx-select.invalid.active,
+.rcx-autocomplete.invalid.active,
+.rcx-select:invalid.is-active,
+.rcx-autocomplete:invalid.is-active,
+.rcx-select.invalid.is-active,
+.rcx-autocomplete.invalid.is-active {
+	border-color: var(--rcx-input-colors-invalid-active-border-color, var(--rcx-color-stroke-error, #ec0d2a));
+	box-shadow: none;
+}
+
+*:disabled .rcx-select:invalid,
+*:disabled .rcx-autocomplete:invalid,
+*:disabled .rcx-select.invalid,
+*:disabled .rcx-autocomplete.invalid,
+.rcx-select:invalid:disabled,
+.rcx-autocomplete:invalid:disabled,
+.rcx-select.invalid:disabled,
+.rcx-autocomplete.invalid:disabled,
+.rcx-select:invalid.disabled,
+.rcx-autocomplete:invalid.disabled,
+.rcx-select.invalid.disabled,
+.rcx-autocomplete.invalid.disabled,
+.rcx-select:invalid.is-disabled,
+.rcx-autocomplete:invalid.is-disabled,
+.rcx-select.invalid.is-disabled,
+.rcx-autocomplete.invalid.is-disabled {
+	border-color: var(--rcx-input-colors-invalid-disabled-border-color, var(--rcx-color-stroke-light, #cbced1));
+	background-color: var(--rcx-input-colors-invalid-disabled-background-color, var(--rcx-color-surface-disabled, #f7f8fa));
+}
+
+*:disabled .rcx-select:invalid,
+*:disabled .rcx-autocomplete:invalid,
+*:disabled .rcx-select.invalid,
+*:disabled .rcx-autocomplete.invalid,
+.rcx-select:invalid:disabled,
+.rcx-autocomplete:invalid:disabled,
+.rcx-select.invalid:disabled,
+.rcx-autocomplete.invalid:disabled,
+.rcx-select:invalid.disabled,
+.rcx-autocomplete:invalid.disabled,
+.rcx-select.invalid.disabled,
+.rcx-autocomplete.invalid.disabled {
+	color: var(--rcx-input-colors-invalid-disabled-color, var(--rcx-color-font-disabled, #cbced1));
+}
+
+.rcx-select__item {
+	overflow: hidden;
+
+	text-overflow: ellipsis;
+}
+
+.rcx-select__focus,
+.rcx-select__placeholder {
+	display: inline-block;
+	overflow: hidden;
+
+	min-width: auto;
+
+	cursor: pointer;
+	user-select: none;
+	text-align: start;
+	vertical-align: middle;
+	white-space: nowrap;
+	text-decoration: none;
+	text-overflow: ellipsis;
+
+	outline: 0;
+	background: inherit;
+	appearance: none;
+}
+
+.rcx-select__focus.disabled,
+.rcx-select__focus:disabled,
+.rcx-select__placeholder.disabled,
+.rcx-select__placeholder:disabled,
+.rcx-select__addon.disabled,
+.rcx-select__addon:disabled {
+	cursor: not-allowed;
+}
+
+.rcx-select__addon {
+	display: flex;
+	flex-flow: row nowrap;
+	align-items: flex-start;
+	flex: 0 0 auto;
+
+	padding: initial;
+
+	cursor: pointer;
+
+	outline: 0;
+}
+
+/* The filter input of the filtered selects precedes the addon. */
+.rcx-input-box + .rcx-select__addon {
+	margin-inline-start: 0.5rem;
+
+	color: var(--rcx-input-colors-color, var(--rcx-color-font-titles-labels, #1f2329));
+}
+
+.rcx-input-box:focus + .rcx-select__addon,
+.rcx-input-box.focus + .rcx-select__addon {
+	color: var(--rcx-input-colors-focus-icon-color, var(--rcx-color-font-titles-labels, #1f2329));
+}
+
+*:disabled .rcx-input-box + .rcx-select__addon,
+.rcx-input-box:disabled + .rcx-select__addon,
+.rcx-input-box.disabled + .rcx-select__addon {
+	pointer-events: none;
+
+	color: var(--rcx-input-colors-disabled-color, var(--rcx-color-font-disabled, #cbced1));
+}
+
+.rcx-select__wrapper {
+	align-items: center;
+	flex-grow: 1;
+	flex-shrink: 1;
+
+	min-width: 0;
+
+	user-select: none;
+	white-space: nowrap;
+
+	opacity: 1;
+}
+
+.rcx-select__wrapper > .rcx-select__focus {
+	flex-shrink: 1;
+}
+
+.rcx-select__wrapper--hidden > .rcx-select__focus {
+	width: 0;
+
+	transition: none;
+
+	opacity: 0;
+}
