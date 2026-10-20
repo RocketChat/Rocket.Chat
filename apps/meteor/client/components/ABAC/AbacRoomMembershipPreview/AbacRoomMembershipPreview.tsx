@@ -20,9 +20,10 @@ import { Virtuoso } from 'react-virtuoso';
 import AbacRoomPreviewGroupHeader from './AbacRoomPreviewGroupHeader';
 import type { AbacRoomPreviewListContext } from './AbacRoomPreviewList';
 import AbacRoomPreviewList from './AbacRoomPreviewList';
-import AbacRoomPreviewListFooter from './AbacRoomPreviewListFooter';
+import AbacRoomPreviewLoadMore from './AbacRoomPreviewLoadMore';
 import AbacRoomPreviewMemberRow from './AbacRoomPreviewMemberRow';
 import AbacRoomPreviewProgress from './AbacRoomPreviewProgress';
+import AbacRoomPreviewSkeleton from './AbacRoomPreviewSkeleton';
 import { useRoomMembershipPreview } from './useRoomMembershipPreview';
 import { useRoomMembershipPreviewEditor } from './useRoomMembershipPreviewEditor';
 import { useRoomMembershipPreviewRemoved } from './useRoomMembershipPreviewRemoved';
@@ -143,7 +144,16 @@ const AbacRoomMembershipPreview = ({ rid, roomName, attributes, isSaving, onBack
 			retryEditor();
 		}
 	};
-	const footerContext = { isPartial, canLoadMore: !isSaving, onLoadMore: preview.loadMore };
+	const loadMoreContext = { canLoadMore: !isSaving, onLoadMore: preview.loadMore };
+	const getListFooter = () => {
+		if (isChecking) {
+			return AbacRoomPreviewSkeleton;
+		}
+		if (isPartial) {
+			return AbacRoomPreviewLoadMore;
+		}
+		return undefined;
+	};
 
 	return (
 		<>
@@ -199,7 +209,8 @@ const AbacRoomMembershipPreview = ({ rid, roomName, attributes, isSaving, onBack
 							</Box>
 						)}
 						<AbacRoomPreviewGroupHeader title={t(groupLabels[group])} />
-						{members.length === 0 && <AbacRoomPreviewListFooter context={{ ...footerContext, loading: isPending || isChecking }} />}
+						{members.length === 0 &&
+							(isPending || isChecking ? <AbacRoomPreviewSkeleton /> : isPartial && <AbacRoomPreviewLoadMore context={loadMoreContext} />)}
 						{isExhausted && members.length === 0 && (
 							<ContextualbarEmptyContent title={filter ? t('No_members_found') : t(emptyLabels[group])} />
 						)}
@@ -210,8 +221,8 @@ const AbacRoomMembershipPreview = ({ rid, roomName, attributes, isSaving, onBack
 										style={{ height: '100%', width: '100%' }}
 										data={members}
 										endReached={() => !isSaving && preview.onEndReached()}
-										components={{ List: AbacRoomPreviewList, Footer: AbacRoomPreviewListFooter }}
-										context={{ ...footerContext, label: t(groupLabels[group]), loading: isChecking }}
+										components={{ List: AbacRoomPreviewList, Footer: getListFooter() }}
+										context={{ ...loadMoreContext, label: t(groupLabels[group]) }}
 										itemContent={(_index, member) => <AbacRoomPreviewMemberRow member={member} />}
 									/>
 								</VirtualizedScrollbars>
