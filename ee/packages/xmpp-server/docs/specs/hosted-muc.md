@@ -200,10 +200,11 @@ XMPP-federated".
 
 A ban in Rocket.Chat keeps the subscription with status `BANNED`, which R4 refuses on the
 next join. An XMPP user who is an occupant when banned stays in the room: their messages
-are still stored and relayed, and they keep receiving the room's. When they later leave,
-the leave removes their membership as R8 asks, which deletes the banned subscription with
-it, so their next join is admitted. Where: the XMPP hooks in
-`apps/meteor/ee/server/hooks/xmpp/index.ts` act on removals but not on
+are still stored and relayed, and they keep receiving the room's messages. When they later
+leave, the leave removes their membership as R8 asks, which deletes the banned subscription
+with it, so their next join is judged as a non-member's: a public channel admits it and a
+private group refuses it with `registration-required` rather than `forbidden`. Where: the
+XMPP hooks in `apps/meteor/ee/server/hooks/xmpp/index.ts` act on removals but not on
 `afterBanFromRoomCallback`, and `XMPPServerService.onHostedOccupantLeft` removes any
 subscription. A fix removes the occupant on a ban, with status 301 (XEP-0045 §9.1), and
 leaves a banned subscription in place when they leave. Test: `hosted-muc.spec.ts`, "removes
