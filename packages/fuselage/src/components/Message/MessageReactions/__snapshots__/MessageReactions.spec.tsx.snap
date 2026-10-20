@@ -12,7 +12,12 @@ exports[`[MessageReactions Rendering] renders Default without crashing 1`] = `
       >
         <div
           class="is_Text _d-341075704 _ws-311910413 _ww-408434756 _bs-652081535 _jc-2087003909 _ai-121763387 _f-7259782 rcx-message-divider__bar"
-        />
+        >
+          <span
+            aria-hidden="true"
+            class="is_View _f-7259782 _h-1921779784 _b-849286363"
+          />
+        </div>
         <div
           class="is_Text _d-1987097250 _ws-311910413 _ww-408434756 _bs-652081535 _m-1859224945 _p-445762330 _b-558166684 rcx-message-divider__wrapper"
         >
@@ -21,10 +26,15 @@ exports[`[MessageReactions Rendering] renders Default without crashing 1`] = `
          
         <div
           class="is_Text _d-341075704 _ws-311910413 _ww-408434756 _bs-652081535 _jc-2087003909 _ai-121763387 _f-7259782 rcx-message-divider__bar"
-        />
+        >
+          <span
+            aria-hidden="true"
+            class="is_View _f-7259782 _h-1921779784 _b-849286363"
+          />
+        </div>
       </div>
       <div
-        class="is_View _p-1021290656 _f-1841970073 _ai-994770828 _m-211896778 _p-1260242245 _b-1182826059 _br-1105657738 _ow-1993548942 _bs-1333539716 _b-1741968088 _c-1830342115 rcx-message rcx-message--clickable customclass"
+        class="is_View _p-1021290656 _f-1841970073 _ai-994770828 _m-211896778 _p-1260242245 _b-1182826059 _br-1105657738 _ow-1993548942 _bs-1333539716 _b-1741968088 _c-1830342115 t_group_message rcx-message rcx-message--clickable customclass"
         tabindex="0"
       >
         <div
@@ -68,7 +78,7 @@ exports[`[MessageReactions Rendering] renders Default without crashing 1`] = `
                 class="is_View _ff-409630021 _fv-607544992 _o-1119039191 _to-1727917045 _ws-973912173 _f-1069814357 rcx-message-header__roles"
               >
                 <span
-                  class="is_Text _d-341075704 _f-606928779 _mw-354604370 _mh-1241200853 _o-1119039191 _jc-1099843255 _ai-121763387 _m-2017216831 _p-1139150377 _ws-973912173 _ww-408434756 _td-1861836084 _to-1727917045 _wb-499914885 _ff-409630021 _fvn-1977619713 _b-1182826059 _br-511985764 _os-249893454 _bs-1333539716 _fs-285416026 _fw-289168101 _lh-1043070488 _ls-1782815796 _c-244381275 _b-504152703 rcx-tag rcx-message-header__role"
+                  class="is_Text _d-341075704 _f-606928779 _mw-354604370 _mh-1241200853 _o-1119039191 _jc-1099843255 _ai-121763387 _m-2017216831 _p-1139150377 _ws-973912173 _ww-408434756 _td-1861836084 _to-1727917045 _wb-499914885 _ff-409630021 _fvn-1977619713 _b-1182826059 _br-511985764 _os-249893454 _bs-1333539716 _fs-285416026 _fw-289168101 _lh-1043070488 _ls-1782815796 _c-244381275 _b-504152703 rcx-tag rcx-message-header__role rcx-css-mb6loq"
                 >
                   <span
                     class="is_Text _o-1119039191 _mw-842770087 _ws-973912173 _ww-408434756 _to-1727917045 rcx-tag__inner"
@@ -77,7 +87,7 @@ exports[`[MessageReactions Rendering] renders Default without crashing 1`] = `
                   </span>
                 </span>
                 <span
-                  class="is_Text _d-341075704 _f-606928779 _mw-354604370 _mh-1241200853 _o-1119039191 _jc-1099843255 _ai-121763387 _m-2017216831 _p-1139150377 _ws-973912173 _ww-408434756 _td-1861836084 _to-1727917045 _wb-499914885 _ff-409630021 _fvn-1977619713 _b-1182826059 _br-511985764 _os-249893454 _bs-1333539716 _fs-285416026 _fw-289168101 _lh-1043070488 _ls-1782815796 _c-244381275 _b-504152703 rcx-tag rcx-message-header__role"
+                  class="is_Text _d-341075704 _f-606928779 _mw-354604370 _mh-1241200853 _o-1119039191 _jc-1099843255 _ai-121763387 _m-2017216831 _p-1139150377 _ws-973912173 _ww-408434756 _td-1861836084 _to-1727917045 _wb-499914885 _ff-409630021 _fvn-1977619713 _b-1182826059 _br-511985764 _os-249893454 _bs-1333539716 _fs-285416026 _fw-289168101 _lh-1043070488 _ls-1782815796 _c-244381275 _b-504152703 rcx-tag rcx-message-header__role rcx-css-mb6loq"
                 >
                   <span
                     class="is_Text _o-1119039191 _mw-842770087 _ws-973912173 _ww-408434756 _to-1727917045 rcx-tag__inner"
@@ -86,7 +96,7 @@ exports[`[MessageReactions Rendering] renders Default without crashing 1`] = `
                   </span>
                 </span>
                 <span
-                  class="is_Text _d-341075704 _f-606928779 _mw-354604370 _mh-1241200853 _o-1119039191 _jc-1099843255 _ai-121763387 _m-2017216831 _p-1139150377 _ws-973912173 _ww-408434756 _td-1861836084 _to-1727917045 _wb-499914885 _ff-409630021 _fvn-1977619713 _b-1182826059 _br-511985764 _os-249893454 _bs-1333539716 _fs-285416026 _fw-289168101 _lh-1043070488 _ls-1782815796 _c-244381275 _b-504152703 rcx-tag rcx-message-header__role"
+                  class="is_Text _d-341075704 _f-606928779 _mw-354604370 _mh-1241200853 _o-1119039191 _jc-1099843255 _ai-121763387 _m-2017216831 _p-1139150377 _ws-973912173 _ww-408434756 _td-1861836084 _to-1727917045 _wb-499914885 _ff-409630021 _fvn-1977619713 _b-1182826059 _br-511985764 _os-249893454 _bs-1333539716 _fs-285416026 _fw-289168101 _lh-1043070488 _ls-1782815796 _c-244381275 _b-504152703 rcx-tag rcx-message-header__role rcx-css-mb6loq"
                 >
                   <span
                     class="is_Text _o-1119039191 _mw-842770087 _ws-973912173 _ww-408434756 _to-1727917045 rcx-tag__inner"
@@ -96,14 +106,14 @@ exports[`[MessageReactions Rendering] renders Default without crashing 1`] = `
                 </span>
               </div>
               <span
-                class="is_Text _ff-409630021 _fv-607544992 _fs-2088488067 _lh-1306743983 _ls-1782815796 _fw-289165218 _o-1119039191 _to-1727917045 _ws-973912173 _f-1246374077 _m-211896778 _c-1756781803 rcx-message-header__time"
+                class="is_Text _ff-409630021 _fv-607544992 _fs-2088488067 _lh-1306743983 _ls-1782815796 _fw-289165218 _o-1119039191 _to-1727917045 _ws-973912173 _f-1246374077 _m-211896778 _c-191671261 rcx-message-header__time"
               >
                 12:00 PM
               </span>
             </div>
           </div>
           <div
-            class="is_Text _d-1987097250 _ws-311910413 _fs-347291933 _lh-1925956564 _ls-1782815796 _fw-289165218 _o-1119039191 _f-1246374076 _m-183820880 _o-1507270695 _c-1063453128 rcx-message-body"
+            class="is_Text _d-1987097250 _ws-311910413 _fs-347291933 _lh-1925956564 _ls-1782815796 _fw-289165218 _o-1119039191 _f-1246374076 _m-183820880 _o-1507270695 _wb-1664347834 _c-1063453128 _t-255057237 rcx-message-body"
           >
             Ut enim ad minim veniam
           </div>
@@ -184,7 +194,7 @@ exports[`[MessageReactions Rendering] renders Default without crashing 1`] = `
                 </div>
               </div>
               <div
-                class="is_Text _d-1985012034 _ws-311910413 _ww-408434756 _bs-652081535 _fs-2088488067 _lh-1306743983 _ls-1782815796 _fw-289165218 _ai-121763387 _m-820097725 _p-1292307394 _c-22887652 _c-1870018997 _b-1780283939 _br-1533070432 _ow-1993548942 _bs-1333539716 _b-523277046 _o-1507269735 rcx-message-reactions__reaction rcx-message-reactions__reaction--action"
+                class="is_Text _d-1985012034 _ws-311910413 _ww-408434756 _bs-652081535 _fs-2088488067 _lh-1306743983 _ls-1782815796 _fw-289165218 _ai-121763387 _m-820097725 _p-1292307394 _c-22887652 _c-1870018997 _b-1780283939 _br-1533070432 _ow-1993548942 _bs-1333539716 _b-523277046 _o-794694322 rcx-message-reactions__reaction rcx-message-reactions__reaction--action"
                 role="button"
                 tabindex="0"
                 title="action"
