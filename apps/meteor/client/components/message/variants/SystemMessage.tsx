@@ -26,6 +26,8 @@ import {
 	useIsSelectedMessage,
 	useCountSelected,
 } from '../../../views/room/MessageList/contexts/SelectedMessagesContext';
+import { withErrorBoundary } from '../../withErrorBoundary';
+import MessageContentFallback from '../MessageContentFallback';
 import Attachments from '../content/Attachments';
 import MessageActions from '../content/MessageActions';
 import { getCheckboxLabel } from '../helpers/getCheckboxLabel';
@@ -129,4 +131,4 @@ const SystemMessage = ({ message, showUserAvatar, ...props }: SystemMessageProps
 	);
 };
 
-export default memo(SystemMessage);
+export default memo(withErrorBoundary(SystemMessage, <MessageContentFallback />));

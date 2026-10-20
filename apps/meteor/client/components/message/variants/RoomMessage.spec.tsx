@@ -162,3 +162,26 @@ it('should not show read receipt if receipt is disabled', () => {
 
 	expect(screen.queryByRole('status', { name: 'Message_viewed' })).not.toBeInTheDocument();
 });
+
+it('should show a placeholder instead of failing when the message content cannot be rendered', () => {
+	jest.spyOn(console, 'error').mockImplementation(() => undefined);
+	const malformed = { ...message, actionLinks: [null] } as unknown as IMessage;
+
+	render(
+		<RoomMessage
+			message={malformed}
+			sequential={false}
+			all={false}
+			mention={false}
+			unread={false}
+			ignoredUser={false}
+			showUserAvatar={true}
+		/>,
+		{
+			wrapper: mockAppRoot().build(),
+		},
+	);
+
+	expect(screen.getByRole('figure')).toBeInTheDocument();
+	expect(screen.getByText('Message_could_not_be_displayed')).toBeInTheDocument();
+});
