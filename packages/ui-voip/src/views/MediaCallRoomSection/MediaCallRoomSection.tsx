@@ -58,8 +58,6 @@ const MediaCallRoomSection = ({ showChat, onToggleChat, user, containerHeight }:
 
 	const { muted, held, peerInfo, connectionState, startedAt } = sessionState;
 
-	const shouldWrapCards = useShouldWrapCards(showChat, containerHeight);
-
 	const connecting = connectionState === 'CONNECTING';
 	const reconnecting = connectionState === 'RECONNECTING';
 
@@ -71,6 +69,8 @@ const MediaCallRoomSection = ({ showChat, onToggleChat, user, containerHeight }:
 	const appActions = useVisibleAppActions();
 
 	const showHeaderActions = appActions.length > 0;
+
+	const shouldWrapCards = useShouldWrapCards(showChat, containerHeight, showHeaderActions ? 2 : 1);
 
 	if (!peerInfo || !isInternalPeer(peerInfo)) {
 		return null;
