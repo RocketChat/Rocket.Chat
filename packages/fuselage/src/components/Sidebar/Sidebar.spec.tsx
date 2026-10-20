@@ -69,6 +69,26 @@ describe('[SidebarCollapseGroup]', () => {
 		const results = await axe(container);
 		expect(results).toHaveNoViolations();
 	});
+
+	it('should let clicks and keys on the toggle reach the group handlers', async () => {
+		const onClick = jest.fn();
+		const onKeyDown = jest.fn();
+		render(
+			<SidebarCollapseGroup title='Favorites' expanded={false} onClick={onClick} onKeyDown={onKeyDown}>
+				<div />
+			</SidebarCollapseGroup>,
+		);
+
+		const toggle = screen.getByRole('button', { name: 'Favorites' });
+
+		await userEvent.click(toggle);
+		await userEvent.tab();
+		expect(toggle).toHaveFocus();
+		await userEvent.keyboard('{Enter}');
+
+		expect(onClick).toHaveBeenCalledTimes(1);
+		expect(onKeyDown).toHaveBeenCalledTimes(1);
+	});
 });
 
 describe('[SidebarDivider]', () => {

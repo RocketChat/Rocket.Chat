@@ -1,13 +1,23 @@
 import { styled, Text, View, type GetProps } from '@tamagui/web';
 import type { HTMLAttributes, ReactNode } from 'react';
 
-import { textIconColors } from '../../Theme';
+import { surfaceColors, textIconColors } from '../../Theme';
 import { toCSSValue } from '../../helpers/toCSSValue';
 import { borderRadius, borderWidth, size, spacing } from '../../styleTokens';
 import { Chevron } from '../Chevron';
 import { withFuselageProvider } from '../FuselageProvider/FuselageProvider';
 import { useCollapse } from './hooks/useCollapse';
-import { boxFull, plainElement, sidebarAccordionBorderColor, sidebarColorSurfaceDefault, textEllipsis, typography } from './sidebarStyles';
+import {
+	boxFull,
+	focusBorder,
+	focusBorderRadius,
+	frameStyle,
+	plainElement,
+	sidebarAccordionBorderColor,
+	sidebarColorSurfaceDefault,
+	textEllipsis,
+	typography,
+} from './sidebarStyles';
 
 const SidebarAccordionItemFrame = styled(View, {
 	render: 'section',
@@ -20,9 +30,11 @@ const SidebarAccordionItemFrame = styled(View, {
 	borderBottomColor: sidebarAccordionBorderColor,
 });
 
-// The `[tabindex]` states stay in SCSS
+const barRadius = toCSSValue('--rcx-border-radius-small', borderRadius('small')!);
+
 const SidebarAccordionItemBar = styled(View, {
 	...boxFull,
+	group: 'rcx-sidebar-accordion-item-bar' as never,
 	position: 'sticky',
 	zIndex: 1,
 	top: 0,
@@ -34,11 +46,20 @@ const SidebarAccordionItemBar = styled(View, {
 	paddingInline: `calc(${spacing('x16')} - ${borderWidth('default')})`,
 	textAlign: 'start',
 	color: textIconColors['font-default'].toString(),
-	borderRadius: toCSSValue('--rcx-border-radius-small', borderRadius('small')!),
+	borderRadius: barRadius,
 	backgroundColor: sidebarColorSurfaceDefault,
 	columnGap: spacing('x4'),
 
 	variants: {
+		// Only a bar that takes focus toggles its panel
+		clickable: {
+			true: {
+				...focusBorder,
+				cursor: 'pointer',
+				borderRadius: { 'default': barRadius, 'focus-visible': focusBorderRadius },
+				backgroundColor: { default: sidebarColorSurfaceDefault, hover: surfaceColors['surface-tint'].toString() },
+			},
+		},
 		isDisabled: {
 			true: {
 				cursor: 'not-allowed',
@@ -46,6 +67,15 @@ const SidebarAccordionItemBar = styled(View, {
 			},
 		},
 	} as const,
+});
+
+// The chevron only shows while its bar is hovered or holds keyboard focus
+const chevronStyle = frameStyle({
+	visibility: {
+		'default': 'hidden',
+		'group-hover/rcx-sidebar-accordion-item-bar': 'visible',
+		'group-focus-visible/rcx-sidebar-accordion-item-bar': 'visible',
+	},
 });
 
 const SidebarAccordionItemTitle = styled(Text, {
@@ -119,13 +149,14 @@ const SidebarAccordionItem = ({
 		>
 			<SidebarAccordionItemBar
 				role='button'
+				clickable={'tabIndex' in barProps && barProps.tabIndex !== undefined}
 				isDisabled={!!disabled}
 				className={['rcx-sidebar-accordion-item__bar rcx-box--animated', disabled && 'rcx-sidebar-accordion-item__bar--disabled']
 					.filter(Boolean)
 					.join(' ')}
 				{...(barProps as unknown as GetProps<typeof SidebarAccordionItemBar>)}
 			>
-				{!noncollapsible && <Chevron className='rcx-sidebar-accordion-item__chevron' size='x16' right={!expanded} />}
+				{!noncollapsible && <Chevron className='rcx-sidebar-accordion-item__chevron' size='x16' right={!expanded} {...chevronStyle} />}
 				{title && (
 					<SidebarAccordionItemTitle className='rcx-sidebar-accordion-item__title' id={titleId}>
 						{title}
