@@ -40,14 +40,14 @@ const MediaCallPopoutView = ({ user, onClickClosePopout }: MediaCallPopoutViewPr
 
 	const { ref, borderBoxSize } = useResizeObserver<HTMLDivElement>();
 
-	const shouldWrapCards = useShouldWrapCards(false, borderBoxSize?.blockSize || 0);
-
 	const connecting = connectionState === 'CONNECTING';
 	const reconnecting = connectionState === 'RECONNECTING';
 
 	const appActions = useVisibleAppActions();
 
 	const showHeaderActions = appActions.length > 0;
+
+	const shouldWrapCards = useShouldWrapCards(false, borderBoxSize?.blockSize || 0, showHeaderActions ? 2 : 1);
 
 	if (!peerInfo || !isInternalPeer(peerInfo)) {
 		return null;
