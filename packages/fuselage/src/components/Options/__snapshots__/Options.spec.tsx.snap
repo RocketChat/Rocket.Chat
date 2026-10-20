@@ -22,7 +22,7 @@ exports[`[Options Component] renders CheckOptionStory without crashing 1`] = `
             <li
               aria-disabled="false"
               aria-selected="false"
-              class="is_Text _p-1021290656 _d-341075704 _f-1069814357 _ai-121763387 _mw-842770087 _mh-1241200853 _m-2017216831 _p-788525541 _ls-1251843592 _ws-311910413 _ww-408434756 _br-1718100884 _ff-409630021 _ta-507911453 _td-1861836084 _c-727749181 _fs-347291933 _lh-1925956564 _ls-1782815796 _fw-289165218 _g-47172425 _b-612395584 _c-1830342115 _ow-1994474385 _os-1885772691 _oc-1422281658 _oo-245994692 _bs-1638756697 t_group_rcx-item rcx-item rcx-item--inset-md rcx-item--clickable rcx-item--focused rcx-option rcx-option--focus"
+              class="is_Text _p-1021290656 _d-341075704 _f-1069814357 _ai-121763387 _mw-842770087 _mh-1241200853 _m-2017216831 _p-788525541 _ls-1251843592 _ws-311910413 _ww-408434756 _br-1718100884 _ff-409630021 _ta-507911453 _td-1861836084 _c-727749181 _fs-347291933 _lh-1925956564 _ls-1782815796 _fw-289165218 _g-47172425 _b-612395584 _c-1830342115 _ow-1994474385 _os-1885772691 _oc-1422281658 _oo-245994692 _bs-1638756697 rcx-item rcx-item--inset-md rcx-item--clickable rcx-item--focused rcx-option rcx-option--focus"
               role="option"
               value="1"
             >
@@ -66,7 +66,7 @@ exports[`[Options Component] renders CheckOptionStory without crashing 1`] = `
             <li
               aria-disabled="false"
               aria-selected="false"
-              class="is_Text _p-1021290656 _d-341075704 _f-1069814357 _ai-121763387 _mw-842770087 _mh-1241200853 _m-2017216831 _p-788525541 _ls-1251843592 _ws-311910413 _ww-408434756 _br-1718100884 _ff-409630021 _ta-507911453 _td-1861836084 _c-727749181 _fs-347291933 _lh-1925956564 _ls-1782815796 _fw-289165218 _g-47172425 _b-944971190 _c-1830342115 _ow-1994474385 _os-1885772691 _oc-1422281658 _oo-245994692 _bs-1638756697 t_group_rcx-item rcx-item rcx-item--inset-md rcx-item--clickable rcx-option"
+              class="is_Text _p-1021290656 _d-341075704 _f-1069814357 _ai-121763387 _mw-842770087 _mh-1241200853 _m-2017216831 _p-788525541 _ls-1251843592 _ws-311910413 _ww-408434756 _br-1718100884 _ff-409630021 _ta-507911453 _td-1861836084 _c-727749181 _fs-347291933 _lh-1925956564 _ls-1782815796 _fw-289165218 _g-47172425 _b-944971190 _c-1830342115 _ow-1994474385 _os-1885772691 _oc-1422281658 _oo-245994692 _bs-1638756697 rcx-item rcx-item--inset-md rcx-item--clickable rcx-option"
               role="option"
               value="2"
             >
@@ -110,7 +110,7 @@ exports[`[Options Component] renders CheckOptionStory without crashing 1`] = `
             <li
               aria-disabled="false"
               aria-selected="true"
-              class="is_Text _p-1021290656 _d-341075704 _f-1069814357 _ai-121763387 _mw-842770087 _mh-1241200853 _m-2017216831 _p-788525541 _ls-1251843592 _ws-311910413 _ww-408434756 _br-1718100884 _ff-409630021 _ta-507911453 _td-1861836084 _c-727749181 _fs-347291933 _lh-1925956564 _ls-1782815796 _fw-289165218 _g-47172425 _b-2012676596 _c-1830342115 _ow-1994474385 _os-1885772691 _oc-1422281658 _oo-245994692 _bs-1638756697 t_group_rcx-item rcx-item rcx-item--inset-md rcx-item--clickable rcx-item--selected rcx-option rcx-option--selected"
+              class="is_Text _p-1021290656 _d-341075704 _f-1069814357 _ai-121763387 _mw-842770087 _mh-1241200853 _m-2017216831 _p-788525541 _ls-1251843592 _ws-311910413 _ww-408434756 _br-1718100884 _ff-409630021 _ta-507911453 _td-1861836084 _c-727749181 _fs-347291933 _lh-1925956564 _ls-1782815796 _fw-289165218 _g-47172425 _b-2012676596 _c-1830342115 _ow-1994474385 _os-1885772691 _oc-1422281658 _oo-245994692 _bs-1638756697 rcx-item rcx-item--inset-md rcx-item--clickable rcx-item--selected rcx-option rcx-option--selected"
               role="option"
               value="3"
             >
@@ -155,7 +155,7 @@ exports[`[Options Component] renders CheckOptionStory without crashing 1`] = `
             <li
               aria-disabled="false"
               aria-selected="false"
-              class="is_Text _p-1021290656 _d-341075704 _f-1069814357 _ai-121763387 _mw-842770087 _mh-1241200853 _m-2017216831 _p-788525541 _ls-1251843592 _ws-311910413 _ww-408434756 _br-1718100884 _ff-409630021 _ta-507911453 _td-1861836084 _c-727749181 _fs-347291933 _lh-1925956564 _ls-1782815796 _fw-289165218 _g-47172425 _b-944971190 _c-1830342115 _ow-1994474385 _os-1885772691 _oc-1422281658 _oo-245994692 _bs-1638756697 t_group_rcx-item rcx-item rcx-item--inset-md rcx-item--clickable rcx-option"
+              class="is_Text _p-1021290656 _d-341075704 _f-1069814357 _ai-121763387 _mw-842770087 _mh-1241200853 _m-2017216831 _p-788525541 _ls-1251843592 _ws-311910413 _ww-408434756 _br-1718100884 _ff-409630021 _ta-507911453 _td-1861836084 _c-727749181 _fs-347291933 _lh-1925956564 _ls-1782815796 _fw-289165218 _g-47172425 _b-944971190 _c-1830342115 _ow-1994474385 _os-1885772691 _oc-1422281658 _oo-245994692 _bs-1638756697 rcx-item rcx-item--inset-md rcx-item--clickable rcx-option"
               role="option"
               value="4"
             >
@@ -224,7 +224,7 @@ exports[`[Options Component] renders CustomEmpty without crashing 1`] = `
             <li
               aria-disabled="true"
               aria-selected="false"
-              class="is_Text _p-1021290656 _d-341075704 _f-1069814357 _ai-121763387 _mw-842770087 _mh-1241200853 _m-2017216831 _p-788525541 _ls-1251843592 _ws-311910413 _ww-408434756 _br-1718100884 _ff-409630021 _ta-507911453 _td-1861836084 _fs-347291933 _lh-1925956564 _ls-1782815796 _fw-289165218 _g-47172425 _b-824256911 _c-2102202510 _c-943859316 _ow-1994474385 _os-1885772691 _oc-1422281658 _oo-245994692 _bs-1638756697 t_group_rcx-item rcx-item rcx-item--inset-md rcx-item--clickable rcx-item--disabled rcx-option rcx-option--disabled"
+              class="is_Text _p-1021290656 _d-341075704 _f-1069814357 _ai-121763387 _mw-842770087 _mh-1241200853 _m-2017216831 _p-788525541 _ls-1251843592 _ws-311910413 _ww-408434756 _br-1718100884 _ff-409630021 _ta-507911453 _td-1861836084 _fs-347291933 _lh-1925956564 _ls-1782815796 _fw-289165218 _g-47172425 _b-824256911 _c-2102202510 _c-943859316 _ow-1994474385 _os-1885772691 _oc-1422281658 _oo-245994692 _bs-1638756697 rcx-item rcx-item--inset-md rcx-item--clickable rcx-item--disabled rcx-option rcx-option--disabled"
               role="option"
             >
               <div
@@ -267,7 +267,7 @@ exports[`[Options Component] renders Default without crashing 1`] = `
             <li
               aria-disabled="false"
               aria-selected="false"
-              class="is_Text _p-1021290656 _d-341075704 _f-1069814357 _ai-121763387 _mw-842770087 _mh-1241200853 _m-2017216831 _p-788525541 _ls-1251843592 _ws-311910413 _ww-408434756 _br-1718100884 _ff-409630021 _ta-507911453 _td-1861836084 _c-727749181 _fs-347291933 _lh-1925956564 _ls-1782815796 _fw-289165218 _g-47172425 _b-944971190 _c-1830342115 _ow-1994474385 _os-1885772691 _oc-1422281658 _oo-245994692 _bs-1638756697 t_group_rcx-item rcx-item rcx-item--inset-md rcx-item--clickable rcx-option"
+              class="is_Text _p-1021290656 _d-341075704 _f-1069814357 _ai-121763387 _mw-842770087 _mh-1241200853 _m-2017216831 _p-788525541 _ls-1251843592 _ws-311910413 _ww-408434756 _br-1718100884 _ff-409630021 _ta-507911453 _td-1861836084 _c-727749181 _fs-347291933 _lh-1925956564 _ls-1782815796 _fw-289165218 _g-47172425 _b-944971190 _c-1830342115 _ow-1994474385 _os-1885772691 _oc-1422281658 _oo-245994692 _bs-1638756697 rcx-item rcx-item--inset-md rcx-item--clickable rcx-option"
               role="option"
               value="1"
             >
@@ -285,7 +285,7 @@ exports[`[Options Component] renders Default without crashing 1`] = `
             <li
               aria-disabled="false"
               aria-selected="false"
-              class="is_Text _p-1021290656 _d-341075704 _f-1069814357 _ai-121763387 _mw-842770087 _mh-1241200853 _m-2017216831 _p-788525541 _ls-1251843592 _ws-311910413 _ww-408434756 _br-1718100884 _ff-409630021 _ta-507911453 _td-1861836084 _c-727749181 _fs-347291933 _lh-1925956564 _ls-1782815796 _fw-289165218 _g-47172425 _b-612395584 _c-1830342115 _ow-1994474385 _os-1885772691 _oc-1422281658 _oo-245994692 _bs-1638756697 t_group_rcx-item rcx-item rcx-item--inset-md rcx-item--clickable rcx-item--focused rcx-option rcx-option--focus"
+              class="is_Text _p-1021290656 _d-341075704 _f-1069814357 _ai-121763387 _mw-842770087 _mh-1241200853 _m-2017216831 _p-788525541 _ls-1251843592 _ws-311910413 _ww-408434756 _br-1718100884 _ff-409630021 _ta-507911453 _td-1861836084 _c-727749181 _fs-347291933 _lh-1925956564 _ls-1782815796 _fw-289165218 _g-47172425 _b-612395584 _c-1830342115 _ow-1994474385 _os-1885772691 _oc-1422281658 _oo-245994692 _bs-1638756697 rcx-item rcx-item--inset-md rcx-item--clickable rcx-item--focused rcx-option rcx-option--focus"
               role="option"
               value="2"
             >
@@ -303,7 +303,7 @@ exports[`[Options Component] renders Default without crashing 1`] = `
             <li
               aria-disabled="false"
               aria-selected="true"
-              class="is_Text _p-1021290656 _d-341075704 _f-1069814357 _ai-121763387 _mw-842770087 _mh-1241200853 _m-2017216831 _p-788525541 _ls-1251843592 _ws-311910413 _ww-408434756 _br-1718100884 _ff-409630021 _ta-507911453 _td-1861836084 _c-727749181 _fs-347291933 _lh-1925956564 _ls-1782815796 _fw-289165218 _g-47172425 _b-2012676596 _c-1830342115 _ow-1994474385 _os-1885772691 _oc-1422281658 _oo-245994692 _bs-1638756697 t_group_rcx-item rcx-item rcx-item--inset-md rcx-item--clickable rcx-item--selected rcx-option rcx-option--selected"
+              class="is_Text _p-1021290656 _d-341075704 _f-1069814357 _ai-121763387 _mw-842770087 _mh-1241200853 _m-2017216831 _p-788525541 _ls-1251843592 _ws-311910413 _ww-408434756 _br-1718100884 _ff-409630021 _ta-507911453 _td-1861836084 _c-727749181 _fs-347291933 _lh-1925956564 _ls-1782815796 _fw-289165218 _g-47172425 _b-2012676596 _c-1830342115 _ow-1994474385 _os-1885772691 _oc-1422281658 _oo-245994692 _bs-1638756697 rcx-item rcx-item--inset-md rcx-item--clickable rcx-item--selected rcx-option rcx-option--selected"
               role="option"
               value="3"
             >
@@ -321,7 +321,7 @@ exports[`[Options Component] renders Default without crashing 1`] = `
             <li
               aria-disabled="false"
               aria-selected="false"
-              class="is_Text _p-1021290656 _d-341075704 _f-1069814357 _ai-121763387 _mw-842770087 _mh-1241200853 _m-2017216831 _p-788525541 _ls-1251843592 _ws-311910413 _ww-408434756 _br-1718100884 _ff-409630021 _ta-507911453 _td-1861836084 _c-727749181 _fs-347291933 _lh-1925956564 _ls-1782815796 _fw-289165218 _g-47172425 _b-944971190 _c-1830342115 _ow-1994474385 _os-1885772691 _oc-1422281658 _oo-245994692 _bs-1638756697 t_group_rcx-item rcx-item rcx-item--inset-md rcx-item--clickable rcx-option"
+              class="is_Text _p-1021290656 _d-341075704 _f-1069814357 _ai-121763387 _mw-842770087 _mh-1241200853 _m-2017216831 _p-788525541 _ls-1251843592 _ws-311910413 _ww-408434756 _br-1718100884 _ff-409630021 _ta-507911453 _td-1861836084 _c-727749181 _fs-347291933 _lh-1925956564 _ls-1782815796 _fw-289165218 _g-47172425 _b-944971190 _c-1830342115 _ow-1994474385 _os-1885772691 _oc-1422281658 _oo-245994692 _bs-1638756697 rcx-item rcx-item--inset-md rcx-item--clickable rcx-option"
               role="option"
               value="4"
             >
@@ -364,7 +364,7 @@ exports[`[Options Component] renders EmptyOptions without crashing 1`] = `
             <li
               aria-disabled="true"
               aria-selected="false"
-              class="is_Text _p-1021290656 _d-341075704 _f-1069814357 _ai-121763387 _mw-842770087 _mh-1241200853 _m-2017216831 _p-788525541 _ls-1251843592 _ws-311910413 _ww-408434756 _br-1718100884 _ff-409630021 _ta-507911453 _td-1861836084 _fs-347291933 _lh-1925956564 _ls-1782815796 _fw-289165218 _g-47172425 _b-824256911 _c-2102202510 _c-943859316 _ow-1994474385 _os-1885772691 _oc-1422281658 _oo-245994692 _bs-1638756697 t_group_rcx-item rcx-item rcx-item--inset-md rcx-item--clickable rcx-item--disabled rcx-option rcx-option--disabled"
+              class="is_Text _p-1021290656 _d-341075704 _f-1069814357 _ai-121763387 _mw-842770087 _mh-1241200853 _m-2017216831 _p-788525541 _ls-1251843592 _ws-311910413 _ww-408434756 _br-1718100884 _ff-409630021 _ta-507911453 _td-1861836084 _fs-347291933 _lh-1925956564 _ls-1782815796 _fw-289165218 _g-47172425 _b-824256911 _c-2102202510 _c-943859316 _ow-1994474385 _os-1885772691 _oc-1422281658 _oo-245994692 _bs-1638756697 rcx-item rcx-item--inset-md rcx-item--clickable rcx-item--disabled rcx-option rcx-option--disabled"
               role="option"
             >
               <div
@@ -405,7 +405,7 @@ exports[`[Options Component] renders Grouped without crashing 1`] = `
             role="listbox"
           >
             <li
-              class="is_Text _p-1021290656 _d-341075704 _f-1069814357 _ai-121763387 _mw-842770087 _mh-499962855 _m-2017216831 _p-788525541 _ls-1251843592 _ws-311910413 _ww-408434756 _br-1718100884 _ff-409630021 _c-341093563 _fs-2088488067 _lh-1306743983 _ls-1782815796 _fw-289168101 _g-1760282038 t_group_rcx-item-group-header rcx-item-group-header rcx-item-group-header--inset-md rcx-option__header"
+              class="is_Text _p-1021290656 _d-341075704 _f-1069814357 _ai-121763387 _mw-842770087 _mh-499962855 _m-2017216831 _p-788525541 _ls-1251843592 _ws-311910413 _ww-408434756 _br-1718100884 _ff-409630021 _c-341093563 _fs-2088488067 _lh-1306743983 _ls-1782815796 _fw-289168101 _g-1760282038 rcx-item-group-header rcx-item-group-header--inset-md rcx-option__header"
               role="presentation"
             >
               <div
@@ -418,7 +418,7 @@ exports[`[Options Component] renders Grouped without crashing 1`] = `
             <li
               aria-disabled="false"
               aria-selected="false"
-              class="is_Text _p-1021290656 _d-341075704 _f-1069814357 _ai-121763387 _mw-842770087 _mh-1241200853 _m-2017216831 _p-788525541 _ls-1251843592 _ws-311910413 _ww-408434756 _br-1718100884 _ff-409630021 _ta-507911453 _td-1861836084 _c-727749181 _fs-347291933 _lh-1925956564 _ls-1782815796 _fw-289165218 _g-47172425 _b-612395584 _c-1830342115 _ow-1994474385 _os-1885772691 _oc-1422281658 _oo-245994692 _bs-1638756697 t_group_rcx-item rcx-item rcx-item--inset-md rcx-item--clickable rcx-item--focused rcx-option rcx-option--focus"
+              class="is_Text _p-1021290656 _d-341075704 _f-1069814357 _ai-121763387 _mw-842770087 _mh-1241200853 _m-2017216831 _p-788525541 _ls-1251843592 _ws-311910413 _ww-408434756 _br-1718100884 _ff-409630021 _ta-507911453 _td-1861836084 _c-727749181 _fs-347291933 _lh-1925956564 _ls-1782815796 _fw-289165218 _g-47172425 _b-612395584 _c-1830342115 _ow-1994474385 _os-1885772691 _oc-1422281658 _oo-245994692 _bs-1638756697 rcx-item rcx-item--inset-md rcx-item--clickable rcx-item--focused rcx-option rcx-option--focus"
               role="option"
               value="1"
             >
@@ -436,7 +436,7 @@ exports[`[Options Component] renders Grouped without crashing 1`] = `
             <li
               aria-disabled="false"
               aria-selected="false"
-              class="is_Text _p-1021290656 _d-341075704 _f-1069814357 _ai-121763387 _mw-842770087 _mh-1241200853 _m-2017216831 _p-788525541 _ls-1251843592 _ws-311910413 _ww-408434756 _br-1718100884 _ff-409630021 _ta-507911453 _td-1861836084 _c-727749181 _fs-347291933 _lh-1925956564 _ls-1782815796 _fw-289165218 _g-47172425 _b-944971190 _c-1830342115 _ow-1994474385 _os-1885772691 _oc-1422281658 _oo-245994692 _bs-1638756697 t_group_rcx-item rcx-item rcx-item--inset-md rcx-item--clickable rcx-option"
+              class="is_Text _p-1021290656 _d-341075704 _f-1069814357 _ai-121763387 _mw-842770087 _mh-1241200853 _m-2017216831 _p-788525541 _ls-1251843592 _ws-311910413 _ww-408434756 _br-1718100884 _ff-409630021 _ta-507911453 _td-1861836084 _c-727749181 _fs-347291933 _lh-1925956564 _ls-1782815796 _fw-289165218 _g-47172425 _b-944971190 _c-1830342115 _ow-1994474385 _os-1885772691 _oc-1422281658 _oo-245994692 _bs-1638756697 rcx-item rcx-item--inset-md rcx-item--clickable rcx-option"
               role="option"
               value="2"
             >
@@ -461,7 +461,7 @@ exports[`[Options Component] renders Grouped without crashing 1`] = `
               />
             </li>
             <li
-              class="is_Text _p-1021290656 _d-341075704 _f-1069814357 _ai-121763387 _mw-842770087 _mh-499962855 _m-2017216831 _p-788525541 _ls-1251843592 _ws-311910413 _ww-408434756 _br-1718100884 _ff-409630021 _c-341093563 _fs-2088488067 _lh-1306743983 _ls-1782815796 _fw-289168101 _g-1760282038 t_group_rcx-item-group-header rcx-item-group-header rcx-item-group-header--inset-md rcx-option__header"
+              class="is_Text _p-1021290656 _d-341075704 _f-1069814357 _ai-121763387 _mw-842770087 _mh-499962855 _m-2017216831 _p-788525541 _ls-1251843592 _ws-311910413 _ww-408434756 _br-1718100884 _ff-409630021 _c-341093563 _fs-2088488067 _lh-1306743983 _ls-1782815796 _fw-289168101 _g-1760282038 rcx-item-group-header rcx-item-group-header--inset-md rcx-option__header"
               role="presentation"
             >
               <div
@@ -474,7 +474,7 @@ exports[`[Options Component] renders Grouped without crashing 1`] = `
             <li
               aria-disabled="false"
               aria-selected="true"
-              class="is_Text _p-1021290656 _d-341075704 _f-1069814357 _ai-121763387 _mw-842770087 _mh-1241200853 _m-2017216831 _p-788525541 _ls-1251843592 _ws-311910413 _ww-408434756 _br-1718100884 _ff-409630021 _ta-507911453 _td-1861836084 _c-727749181 _fs-347291933 _lh-1925956564 _ls-1782815796 _fw-289165218 _g-47172425 _b-2012676596 _c-1830342115 _ow-1994474385 _os-1885772691 _oc-1422281658 _oo-245994692 _bs-1638756697 t_group_rcx-item rcx-item rcx-item--inset-md rcx-item--clickable rcx-item--selected rcx-option rcx-option--selected"
+              class="is_Text _p-1021290656 _d-341075704 _f-1069814357 _ai-121763387 _mw-842770087 _mh-1241200853 _m-2017216831 _p-788525541 _ls-1251843592 _ws-311910413 _ww-408434756 _br-1718100884 _ff-409630021 _ta-507911453 _td-1861836084 _c-727749181 _fs-347291933 _lh-1925956564 _ls-1782815796 _fw-289165218 _g-47172425 _b-2012676596 _c-1830342115 _ow-1994474385 _os-1885772691 _oc-1422281658 _oo-245994692 _bs-1638756697 rcx-item rcx-item--inset-md rcx-item--clickable rcx-item--selected rcx-option rcx-option--selected"
               role="option"
               value="3"
             >
@@ -492,7 +492,7 @@ exports[`[Options Component] renders Grouped without crashing 1`] = `
             <li
               aria-disabled="false"
               aria-selected="false"
-              class="is_Text _p-1021290656 _d-341075704 _f-1069814357 _ai-121763387 _mw-842770087 _mh-1241200853 _m-2017216831 _p-788525541 _ls-1251843592 _ws-311910413 _ww-408434756 _br-1718100884 _ff-409630021 _ta-507911453 _td-1861836084 _c-727749181 _fs-347291933 _lh-1925956564 _ls-1782815796 _fw-289165218 _g-47172425 _b-944971190 _c-1830342115 _ow-1994474385 _os-1885772691 _oc-1422281658 _oo-245994692 _bs-1638756697 t_group_rcx-item rcx-item rcx-item--inset-md rcx-item--clickable rcx-option"
+              class="is_Text _p-1021290656 _d-341075704 _f-1069814357 _ai-121763387 _mw-842770087 _mh-1241200853 _m-2017216831 _p-788525541 _ls-1251843592 _ws-311910413 _ww-408434756 _br-1718100884 _ff-409630021 _ta-507911453 _td-1861836084 _c-727749181 _fs-347291933 _lh-1925956564 _ls-1782815796 _fw-289165218 _g-47172425 _b-944971190 _c-1830342115 _ow-1994474385 _os-1885772691 _oc-1422281658 _oo-245994692 _bs-1638756697 rcx-item rcx-item--inset-md rcx-item--clickable rcx-option"
               role="option"
               value="4"
             >
@@ -536,7 +536,7 @@ exports[`[Options Component] renders OptionStory without crashing 1`] = `
             <li
               aria-disabled="false"
               aria-selected="false"
-              class="is_Text _p-1021290656 _d-341075704 _f-1069814357 _ai-121763387 _mw-842770087 _mh-1241200853 _m-2017216831 _p-788525541 _ls-1251843592 _ws-311910413 _ww-408434756 _br-1718100884 _ff-409630021 _ta-507911453 _td-1861836084 _c-727749181 _fs-347291933 _lh-1925956564 _ls-1782815796 _fw-289165218 _g-47172425 _b-944971190 _c-1830342115 _ow-1994474385 _os-1885772691 _oc-1422281658 _oo-245994692 _bs-1638756697 t_group_rcx-item rcx-item rcx-item--inset-md rcx-item--clickable rcx-option"
+              class="is_Text _p-1021290656 _d-341075704 _f-1069814357 _ai-121763387 _mw-842770087 _mh-1241200853 _m-2017216831 _p-788525541 _ls-1251843592 _ws-311910413 _ww-408434756 _br-1718100884 _ff-409630021 _ta-507911453 _td-1861836084 _c-727749181 _fs-347291933 _lh-1925956564 _ls-1782815796 _fw-289165218 _g-47172425 _b-944971190 _c-1830342115 _ow-1994474385 _os-1885772691 _oc-1422281658 _oo-245994692 _bs-1638756697 rcx-item rcx-item--inset-md rcx-item--clickable rcx-option"
               role="option"
               value="1"
             >
@@ -554,7 +554,7 @@ exports[`[Options Component] renders OptionStory without crashing 1`] = `
             <li
               aria-disabled="false"
               aria-selected="false"
-              class="is_Text _p-1021290656 _d-341075704 _f-1069814357 _ai-121763387 _mw-842770087 _mh-1241200853 _m-2017216831 _p-788525541 _ls-1251843592 _ws-311910413 _ww-408434756 _br-1718100884 _ff-409630021 _ta-507911453 _td-1861836084 _c-727749181 _fs-347291933 _lh-1925956564 _ls-1782815796 _fw-289165218 _g-47172425 _b-612395584 _c-1830342115 _ow-1994474385 _os-1885772691 _oc-1422281658 _oo-245994692 _bs-1638756697 t_group_rcx-item rcx-item rcx-item--inset-md rcx-item--clickable rcx-item--focused rcx-option rcx-option--focus"
+              class="is_Text _p-1021290656 _d-341075704 _f-1069814357 _ai-121763387 _mw-842770087 _mh-1241200853 _m-2017216831 _p-788525541 _ls-1251843592 _ws-311910413 _ww-408434756 _br-1718100884 _ff-409630021 _ta-507911453 _td-1861836084 _c-727749181 _fs-347291933 _lh-1925956564 _ls-1782815796 _fw-289165218 _g-47172425 _b-612395584 _c-1830342115 _ow-1994474385 _os-1885772691 _oc-1422281658 _oo-245994692 _bs-1638756697 rcx-item rcx-item--inset-md rcx-item--clickable rcx-item--focused rcx-option rcx-option--focus"
               role="option"
               value="2"
             >
@@ -572,7 +572,7 @@ exports[`[Options Component] renders OptionStory without crashing 1`] = `
             <li
               aria-disabled="false"
               aria-selected="true"
-              class="is_Text _p-1021290656 _d-341075704 _f-1069814357 _ai-121763387 _mw-842770087 _mh-1241200853 _m-2017216831 _p-788525541 _ls-1251843592 _ws-311910413 _ww-408434756 _br-1718100884 _ff-409630021 _ta-507911453 _td-1861836084 _c-727749181 _fs-347291933 _lh-1925956564 _ls-1782815796 _fw-289165218 _g-47172425 _b-2012676596 _c-1830342115 _ow-1994474385 _os-1885772691 _oc-1422281658 _oo-245994692 _bs-1638756697 t_group_rcx-item rcx-item rcx-item--inset-md rcx-item--clickable rcx-item--selected rcx-option rcx-option--selected"
+              class="is_Text _p-1021290656 _d-341075704 _f-1069814357 _ai-121763387 _mw-842770087 _mh-1241200853 _m-2017216831 _p-788525541 _ls-1251843592 _ws-311910413 _ww-408434756 _br-1718100884 _ff-409630021 _ta-507911453 _td-1861836084 _c-727749181 _fs-347291933 _lh-1925956564 _ls-1782815796 _fw-289165218 _g-47172425 _b-2012676596 _c-1830342115 _ow-1994474385 _os-1885772691 _oc-1422281658 _oo-245994692 _bs-1638756697 rcx-item rcx-item--inset-md rcx-item--clickable rcx-item--selected rcx-option rcx-option--selected"
               role="option"
               value="3"
             >
@@ -590,7 +590,7 @@ exports[`[Options Component] renders OptionStory without crashing 1`] = `
             <li
               aria-disabled="false"
               aria-selected="false"
-              class="is_Text _p-1021290656 _d-341075704 _f-1069814357 _ai-121763387 _mw-842770087 _mh-1241200853 _m-2017216831 _p-788525541 _ls-1251843592 _ws-311910413 _ww-408434756 _br-1718100884 _ff-409630021 _ta-507911453 _td-1861836084 _c-727749181 _fs-347291933 _lh-1925956564 _ls-1782815796 _fw-289165218 _g-47172425 _b-944971190 _c-1830342115 _ow-1994474385 _os-1885772691 _oc-1422281658 _oo-245994692 _bs-1638756697 t_group_rcx-item rcx-item rcx-item--inset-md rcx-item--clickable rcx-option"
+              class="is_Text _p-1021290656 _d-341075704 _f-1069814357 _ai-121763387 _mw-842770087 _mh-1241200853 _m-2017216831 _p-788525541 _ls-1251843592 _ws-311910413 _ww-408434756 _br-1718100884 _ff-409630021 _ta-507911453 _td-1861836084 _c-727749181 _fs-347291933 _lh-1925956564 _ls-1782815796 _fw-289165218 _g-47172425 _b-944971190 _c-1830342115 _ow-1994474385 _os-1885772691 _oc-1422281658 _oo-245994692 _bs-1638756697 rcx-item rcx-item--inset-md rcx-item--clickable rcx-option"
               role="option"
               value="4"
             >

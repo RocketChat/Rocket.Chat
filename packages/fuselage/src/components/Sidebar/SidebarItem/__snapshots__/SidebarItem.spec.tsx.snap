@@ -52,7 +52,7 @@ exports[`[SidebarItem Component] renders Condensed without crashing 1`] = `
                   role="group"
                 >
                   <div
-                    class="is_Text _p-1021290656 _d-341075704 _f-1069814357 _ai-121763387 _mw-842770087 _mh-499962855 _m-2017216831 _p-536964724 _ls-1251843592 _ws-311910413 _ww-408434756 _br-1718100884 _ff-409630021 _fs-2088488067 _lh-1306743983 _ls-1782815796 _fw-289168101 _g-1760282038 _c-920334418 t_group_rcx-item-group-header rcx-item-group-header rcx-item-group-header--inset-md rcx-sidebar-collapse-group__bar"
+                    class="is_Text _p-1021290656 _d-341075704 _f-1069814357 _ai-121763387 _mw-842770087 _mh-499962855 _m-2017216831 _p-536964724 _ls-1251843592 _ws-311910413 _ww-408434756 _br-1718100884 _ff-409630021 _fs-2088488067 _lh-1306743983 _ls-1782815796 _fw-289168101 _g-1760282038 _c-920334418 rcx-item-group-header rcx-item-group-header--inset-md rcx-sidebar-collapse-group__bar"
                   >
                     <div
                       aria-controls="_r_c_"
@@ -84,10 +84,10 @@ exports[`[SidebarItem Component] renders Condensed without crashing 1`] = `
                       </div>
                     </div>
                     <div
-                      class="is_View _p-1021290656 _zi-2094244754 _f-1841970073 _ai-121763387 _mw-354604370 _mh-1241200853 _g-1299036281 _d-312410892 _t-1193045479 _o-1780556163 _gtc-370223739 _m-449670226 rcx-item__actions rcx-item__actions--reveal-hover rcx-sidebar-collapse-group__menu-wrapper"
+                      class="is_View _p-1021290656 _zi-2094244754 _f-1841970073 _ai-121763387 _mw-354604370 _mh-1241200853 _g-1299036281 _d-312410892 _t-1193045479 _o-1507269735 _gtc-1790180973 _m-190079740 rcx-item__actions rcx-item__actions--reveal-hover rcx-sidebar-collapse-group__menu-wrapper"
                     >
                       <div
-                        class="is_View _d-341075704 _f-1069814357 _o-1838365900 _ai-121763387 _mh-1241200853 _g-1299036281 rcx-item__actions-inner"
+                        class="is_View _d-341075704 _f-1069814357 _o-1119039191 _ai-121763387 _mh-1241200853 _g-1299036281 rcx-item__actions-inner"
                       >
                         <span
                           class="rcx-box rcx-box--full rcx-sidebar-collapse-group__menu rcx-sidebar-collapse-group__menu"
@@ -123,7 +123,7 @@ exports[`[SidebarItem Component] renders Condensed without crashing 1`] = `
                       role="listitem"
                     >
                       <a
-                        class="is_Text _p-1021290656 _d-341075704 _f-1069814357 _ai-121763387 _mw-842770087 _mh-1241200853 _m-2017216831 _p-788525541 _ls-1251843592 _ws-311910413 _ww-408434756 _br-1718100884 _ff-409630021 _ta-507911453 _td-1861836084 _c-727749181 _fs-347291933 _lh-1925956564 _ls-1782815796 _fw-289165218 _g-47172425 _b-944971190 _c-1830342115 _ow-1994474385 _os-1885772691 _oc-1422281658 _oo-245994692 _bs-1638756697 t_group_rcx-item rcx-item rcx-item--inset-md rcx-sidebar-item rcx-sidebar-item--level-1"
+                        class="is_Text _p-1021290656 _d-341075704 _f-1069814357 _ai-121763387 _mw-842770087 _mh-1241200853 _m-2017216831 _p-788525541 _ls-1251843592 _ws-311910413 _ww-408434756 _br-1718100884 _ff-409630021 _ta-507911453 _td-1861836084 _c-727749181 _fs-347291933 _lh-1925956564 _ls-1782815796 _fw-289165218 _g-47172425 _b-944971190 _c-1830342115 _ow-1994474385 _os-1885772691 _oc-1422281658 _oo-245994692 _bs-1638756697 rcx-item rcx-item--inset-md rcx-sidebar-item rcx-sidebar-item--level-1"
                         href="#"
                       >
                         <div
@@ -187,10 +187,10 @@ exports[`[SidebarItem Component] renders Condensed without crashing 1`] = `
                           </button>
                         </div>
                         <div
-                          class="is_View _p-1021290656 _zi-2094244754 _f-1841970073 _ai-121763387 _mw-354604370 _mh-1241200853 _g-1299036281 _d-312410892 _t-1193045479 _o-1780556163 _gtc-370223739 _m-449670226 rcx-item__actions rcx-item__actions--reveal-hover rcx-sidebar-item__menu-wrapper"
+                          class="is_View _p-1021290656 _zi-2094244754 _f-1841970073 _ai-121763387 _mw-354604370 _mh-1241200853 _g-1299036281 _d-312410892 _t-1193045479 _o-1507269735 _gtc-1790180973 _m-190079740 rcx-item__actions rcx-item__actions--reveal-hover rcx-sidebar-item__menu-wrapper"
                         >
                           <div
-                            class="is_View _d-341075704 _f-1069814357 _o-1838365900 _ai-121763387 _mh-1241200853 _g-1299036281 rcx-item__actions-inner"
+                            class="is_View _d-341075704 _f-1069814357 _o-1119039191 _ai-121763387 _mh-1241200853 _g-1299036281 rcx-item__actions-inner"
                           >
                             <span
                               class="rcx-box rcx-box--full rcx-sidebar-item__menu rcx-sidebar-item__menu"
@@ -221,7 +221,7 @@ exports[`[SidebarItem Component] renders Condensed without crashing 1`] = `
                       role="listitem"
                     >
                       <a
-                        class="is_Text _p-1021290656 _d-341075704 _f-1069814357 _ai-121763387 _mw-842770087 _mh-1241200853 _m-2017216831 _p-788525541 _ls-1251843592 _ws-311910413 _ww-408434756 _br-1718100884 _ff-409630021 _ta-507911453 _td-1861836084 _c-727749181 _fs-347291933 _lh-1925956564 _ls-1782815796 _fw-289165218 _g-47172425 _b-944971190 _c-1830342115 _ow-1994474385 _os-1885772691 _oc-1422281658 _oo-245994692 _bs-1638756697 t_group_rcx-item rcx-item rcx-item--inset-md rcx-sidebar-item rcx-sidebar-item--level-1"
+                        class="is_Text _p-1021290656 _d-341075704 _f-1069814357 _ai-121763387 _mw-842770087 _mh-1241200853 _m-2017216831 _p-788525541 _ls-1251843592 _ws-311910413 _ww-408434756 _br-1718100884 _ff-409630021 _ta-507911453 _td-1861836084 _c-727749181 _fs-347291933 _lh-1925956564 _ls-1782815796 _fw-289165218 _g-47172425 _b-944971190 _c-1830342115 _ow-1994474385 _os-1885772691 _oc-1422281658 _oo-245994692 _bs-1638756697 rcx-item rcx-item--inset-md rcx-sidebar-item rcx-sidebar-item--level-1"
                         href="#"
                       >
                         <div
@@ -262,10 +262,10 @@ exports[`[SidebarItem Component] renders Condensed without crashing 1`] = `
                           5
                         </span>
                         <div
-                          class="is_View _p-1021290656 _zi-2094244754 _f-1841970073 _ai-121763387 _mw-354604370 _mh-1241200853 _g-1299036281 _d-312410892 _t-1193045479 _o-1780556163 _gtc-370223739 _m-449670226 rcx-item__actions rcx-item__actions--reveal-hover rcx-sidebar-item__menu-wrapper"
+                          class="is_View _p-1021290656 _zi-2094244754 _f-1841970073 _ai-121763387 _mw-354604370 _mh-1241200853 _g-1299036281 _d-312410892 _t-1193045479 _o-1507269735 _gtc-1790180973 _m-190079740 rcx-item__actions rcx-item__actions--reveal-hover rcx-sidebar-item__menu-wrapper"
                         >
                           <div
-                            class="is_View _d-341075704 _f-1069814357 _o-1838365900 _ai-121763387 _mh-1241200853 _g-1299036281 rcx-item__actions-inner"
+                            class="is_View _d-341075704 _f-1069814357 _o-1119039191 _ai-121763387 _mh-1241200853 _g-1299036281 rcx-item__actions-inner"
                           >
                             <span
                               class="rcx-box rcx-box--full rcx-sidebar-item__menu rcx-sidebar-item__menu"
@@ -296,7 +296,7 @@ exports[`[SidebarItem Component] renders Condensed without crashing 1`] = `
                       role="listitem"
                     >
                       <a
-                        class="is_Text _p-1021290656 _d-341075704 _f-1069814357 _ai-121763387 _mw-842770087 _mh-1241200853 _m-2017216831 _p-788525541 _ls-1251843592 _ws-311910413 _ww-408434756 _br-1718100884 _ff-409630021 _ta-507911453 _td-1861836084 _c-727749181 _fs-347291933 _lh-1925956564 _ls-1782815796 _fw-289165218 _g-47172425 _b-2012676596 _c-1830342115 _ow-1994474385 _os-1885772691 _oc-1422281658 _oo-245994692 _bs-1638756697 t_group_rcx-item rcx-item rcx-item--inset-md rcx-item--selected rcx-sidebar-item rcx-sidebar-item--selected rcx-sidebar-item--level-1"
+                        class="is_Text _p-1021290656 _d-341075704 _f-1069814357 _ai-121763387 _mw-842770087 _mh-1241200853 _m-2017216831 _p-788525541 _ls-1251843592 _ws-311910413 _ww-408434756 _br-1718100884 _ff-409630021 _ta-507911453 _td-1861836084 _c-727749181 _fs-347291933 _lh-1925956564 _ls-1782815796 _fw-289165218 _g-47172425 _b-2012676596 _c-1830342115 _ow-1994474385 _os-1885772691 _oc-1422281658 _oo-245994692 _bs-1638756697 rcx-item rcx-item--inset-md rcx-item--selected rcx-sidebar-item rcx-sidebar-item--selected rcx-sidebar-item--level-1"
                         href="#"
                       >
                         <div
@@ -331,10 +331,10 @@ exports[`[SidebarItem Component] renders Condensed without crashing 1`] = `
                           Leroy Jenkins
                         </div>
                         <div
-                          class="is_View _p-1021290656 _zi-2094244754 _f-1841970073 _ai-121763387 _mw-354604370 _mh-1241200853 _g-1299036281 _d-312410892 _t-1193045479 _o-1780556163 _gtc-370223739 _m-449670226 rcx-item__actions rcx-item__actions--reveal-hover rcx-sidebar-item__menu-wrapper"
+                          class="is_View _p-1021290656 _zi-2094244754 _f-1841970073 _ai-121763387 _mw-354604370 _mh-1241200853 _g-1299036281 _d-312410892 _t-1193045479 _o-1507269735 _gtc-1790180973 _m-190079740 rcx-item__actions rcx-item__actions--reveal-hover rcx-sidebar-item__menu-wrapper"
                         >
                           <div
-                            class="is_View _d-341075704 _f-1069814357 _o-1838365900 _ai-121763387 _mh-1241200853 _g-1299036281 rcx-item__actions-inner"
+                            class="is_View _d-341075704 _f-1069814357 _o-1119039191 _ai-121763387 _mh-1241200853 _g-1299036281 rcx-item__actions-inner"
                           >
                             <span
                               class="rcx-box rcx-box--full rcx-sidebar-item__menu rcx-sidebar-item__menu"
@@ -365,7 +365,7 @@ exports[`[SidebarItem Component] renders Condensed without crashing 1`] = `
                       role="listitem"
                     >
                       <a
-                        class="is_Text _p-1021290656 _d-341075704 _f-1069814357 _ai-121763387 _mw-842770087 _mh-1241200853 _m-2017216831 _p-788525541 _ls-1251843592 _ws-311910413 _ww-408434756 _br-1718100884 _ff-409630021 _ta-507911453 _td-1861836084 _c-727749181 _fs-347291933 _lh-1925956564 _ls-1782815796 _fw-289165218 _g-47172425 _b-944971190 _c-1830342115 _ow-1994474385 _os-1885772691 _oc-1422281658 _oo-245994692 _bs-1638756697 t_group_rcx-item rcx-item rcx-item--inset-md rcx-sidebar-item rcx-sidebar-item--level-1"
+                        class="is_Text _p-1021290656 _d-341075704 _f-1069814357 _ai-121763387 _mw-842770087 _mh-1241200853 _m-2017216831 _p-788525541 _ls-1251843592 _ws-311910413 _ww-408434756 _br-1718100884 _ff-409630021 _ta-507911453 _td-1861836084 _c-727749181 _fs-347291933 _lh-1925956564 _ls-1782815796 _fw-289165218 _g-47172425 _b-944971190 _c-1830342115 _ow-1994474385 _os-1885772691 _oc-1422281658 _oo-245994692 _bs-1638756697 rcx-item rcx-item--inset-md rcx-sidebar-item rcx-sidebar-item--level-1"
                         href="#"
                       >
                         <div
@@ -406,10 +406,10 @@ exports[`[SidebarItem Component] renders Condensed without crashing 1`] = `
                           5
                         </span>
                         <div
-                          class="is_View _p-1021290656 _zi-2094244754 _f-1841970073 _ai-121763387 _mw-354604370 _mh-1241200853 _g-1299036281 _d-312410892 _t-1193045479 _o-1780556163 _gtc-370223739 _m-449670226 rcx-item__actions rcx-item__actions--reveal-hover rcx-sidebar-item__menu-wrapper"
+                          class="is_View _p-1021290656 _zi-2094244754 _f-1841970073 _ai-121763387 _mw-354604370 _mh-1241200853 _g-1299036281 _d-312410892 _t-1193045479 _o-1507269735 _gtc-1790180973 _m-190079740 rcx-item__actions rcx-item__actions--reveal-hover rcx-sidebar-item__menu-wrapper"
                         >
                           <div
-                            class="is_View _d-341075704 _f-1069814357 _o-1838365900 _ai-121763387 _mh-1241200853 _g-1299036281 rcx-item__actions-inner"
+                            class="is_View _d-341075704 _f-1069814357 _o-1119039191 _ai-121763387 _mh-1241200853 _g-1299036281 rcx-item__actions-inner"
                           >
                             <span
                               class="rcx-box rcx-box--full rcx-sidebar-item__menu rcx-sidebar-item__menu"
@@ -440,7 +440,7 @@ exports[`[SidebarItem Component] renders Condensed without crashing 1`] = `
                       role="listitem"
                     >
                       <a
-                        class="is_Text _p-1021290656 _d-341075704 _f-1069814357 _ai-121763387 _mw-842770087 _mh-1241200853 _m-2017216831 _p-788525541 _ls-1251843592 _ws-311910413 _ww-408434756 _br-1718100884 _ff-409630021 _ta-507911453 _td-1861836084 _c-727749181 _fs-347291933 _lh-1925956564 _ls-1782815796 _fw-289165218 _g-47172425 _b-944971190 _c-1830342115 _ow-1994474385 _os-1885772691 _oc-1422281658 _oo-245994692 _bs-1638756697 t_group_rcx-item rcx-item rcx-item--inset-md rcx-sidebar-item rcx-sidebar-item--level-1"
+                        class="is_Text _p-1021290656 _d-341075704 _f-1069814357 _ai-121763387 _mw-842770087 _mh-1241200853 _m-2017216831 _p-788525541 _ls-1251843592 _ws-311910413 _ww-408434756 _br-1718100884 _ff-409630021 _ta-507911453 _td-1861836084 _c-727749181 _fs-347291933 _lh-1925956564 _ls-1782815796 _fw-289165218 _g-47172425 _b-944971190 _c-1830342115 _ow-1994474385 _os-1885772691 _oc-1422281658 _oo-245994692 _bs-1638756697 rcx-item rcx-item--inset-md rcx-sidebar-item rcx-sidebar-item--level-1"
                         href="#"
                       >
                         <div
@@ -475,10 +475,10 @@ exports[`[SidebarItem Component] renders Condensed without crashing 1`] = `
                           John Doe
                         </div>
                         <div
-                          class="is_View _p-1021290656 _zi-2094244754 _f-1841970073 _ai-121763387 _mw-354604370 _mh-1241200853 _g-1299036281 _d-312410892 _t-1193045479 _o-1780556163 _gtc-370223739 _m-449670226 rcx-item__actions rcx-item__actions--reveal-hover rcx-sidebar-item__menu-wrapper"
+                          class="is_View _p-1021290656 _zi-2094244754 _f-1841970073 _ai-121763387 _mw-354604370 _mh-1241200853 _g-1299036281 _d-312410892 _t-1193045479 _o-1507269735 _gtc-1790180973 _m-190079740 rcx-item__actions rcx-item__actions--reveal-hover rcx-sidebar-item__menu-wrapper"
                         >
                           <div
-                            class="is_View _d-341075704 _f-1069814357 _o-1838365900 _ai-121763387 _mh-1241200853 _g-1299036281 rcx-item__actions-inner"
+                            class="is_View _d-341075704 _f-1069814357 _o-1119039191 _ai-121763387 _mh-1241200853 _g-1299036281 rcx-item__actions-inner"
                           >
                             <span
                               class="rcx-box rcx-box--full rcx-sidebar-item__menu rcx-sidebar-item__menu"
@@ -509,7 +509,7 @@ exports[`[SidebarItem Component] renders Condensed without crashing 1`] = `
                       role="listitem"
                     >
                       <a
-                        class="is_Text _p-1021290656 _d-341075704 _f-1069814357 _ai-121763387 _mw-842770087 _mh-1241200853 _m-2017216831 _p-788525541 _ls-1251843592 _ws-311910413 _ww-408434756 _br-1718100884 _ff-409630021 _ta-507911453 _td-1861836084 _c-727749181 _fs-347291933 _lh-1925956564 _ls-1782815796 _fw-289165218 _g-47172425 _b-944971190 _c-1830342115 _ow-1994474385 _os-1885772691 _oc-1422281658 _oo-245994692 _bs-1638756697 t_group_rcx-item rcx-item rcx-item--inset-md rcx-sidebar-item rcx-sidebar-item--level-1"
+                        class="is_Text _p-1021290656 _d-341075704 _f-1069814357 _ai-121763387 _mw-842770087 _mh-1241200853 _m-2017216831 _p-788525541 _ls-1251843592 _ws-311910413 _ww-408434756 _br-1718100884 _ff-409630021 _ta-507911453 _td-1861836084 _c-727749181 _fs-347291933 _lh-1925956564 _ls-1782815796 _fw-289165218 _g-47172425 _b-944971190 _c-1830342115 _ow-1994474385 _os-1885772691 _oc-1422281658 _oo-245994692 _bs-1638756697 rcx-item rcx-item--inset-md rcx-sidebar-item rcx-sidebar-item--level-1"
                         href="#"
                       >
                         <div
@@ -550,10 +550,10 @@ exports[`[SidebarItem Component] renders Condensed without crashing 1`] = `
                           5
                         </span>
                         <div
-                          class="is_View _p-1021290656 _zi-2094244754 _f-1841970073 _ai-121763387 _mw-354604370 _mh-1241200853 _g-1299036281 _d-312410892 _t-1193045479 _o-1780556163 _gtc-370223739 _m-449670226 rcx-item__actions rcx-item__actions--reveal-hover rcx-sidebar-item__menu-wrapper"
+                          class="is_View _p-1021290656 _zi-2094244754 _f-1841970073 _ai-121763387 _mw-354604370 _mh-1241200853 _g-1299036281 _d-312410892 _t-1193045479 _o-1507269735 _gtc-1790180973 _m-190079740 rcx-item__actions rcx-item__actions--reveal-hover rcx-sidebar-item__menu-wrapper"
                         >
                           <div
-                            class="is_View _d-341075704 _f-1069814357 _o-1838365900 _ai-121763387 _mh-1241200853 _g-1299036281 rcx-item__actions-inner"
+                            class="is_View _d-341075704 _f-1069814357 _o-1119039191 _ai-121763387 _mh-1241200853 _g-1299036281 rcx-item__actions-inner"
                           >
                             <span
                               class="rcx-box rcx-box--full rcx-sidebar-item__menu rcx-sidebar-item__menu"
@@ -584,7 +584,7 @@ exports[`[SidebarItem Component] renders Condensed without crashing 1`] = `
                       role="listitem"
                     >
                       <a
-                        class="is_Text _p-1021290656 _d-341075704 _f-1069814357 _ai-121763387 _mw-842770087 _mh-1241200853 _m-2017216831 _p-788525541 _ls-1251843592 _ws-311910413 _ww-408434756 _br-1718100884 _ff-409630021 _ta-507911453 _td-1861836084 _c-727749181 _fs-347291933 _lh-1925956564 _ls-1782815796 _fw-289165218 _g-47172425 _b-944971190 _c-1830342115 _ow-1994474385 _os-1885772691 _oc-1422281658 _oo-245994692 _bs-1638756697 t_group_rcx-item rcx-item rcx-item--inset-md rcx-sidebar-item rcx-sidebar-item--level-1"
+                        class="is_Text _p-1021290656 _d-341075704 _f-1069814357 _ai-121763387 _mw-842770087 _mh-1241200853 _m-2017216831 _p-788525541 _ls-1251843592 _ws-311910413 _ww-408434756 _br-1718100884 _ff-409630021 _ta-507911453 _td-1861836084 _c-727749181 _fs-347291933 _lh-1925956564 _ls-1782815796 _fw-289165218 _g-47172425 _b-944971190 _c-1830342115 _ow-1994474385 _os-1885772691 _oc-1422281658 _oo-245994692 _bs-1638756697 rcx-item rcx-item--inset-md rcx-sidebar-item rcx-sidebar-item--level-1"
                         href="#"
                       >
                         <div
@@ -619,10 +619,10 @@ exports[`[SidebarItem Component] renders Condensed without crashing 1`] = `
                           Baz Qux
                         </div>
                         <div
-                          class="is_View _p-1021290656 _zi-2094244754 _f-1841970073 _ai-121763387 _mw-354604370 _mh-1241200853 _g-1299036281 _d-312410892 _t-1193045479 _o-1780556163 _gtc-370223739 _m-449670226 rcx-item__actions rcx-item__actions--reveal-hover rcx-sidebar-item__menu-wrapper"
+                          class="is_View _p-1021290656 _zi-2094244754 _f-1841970073 _ai-121763387 _mw-354604370 _mh-1241200853 _g-1299036281 _d-312410892 _t-1193045479 _o-1507269735 _gtc-1790180973 _m-190079740 rcx-item__actions rcx-item__actions--reveal-hover rcx-sidebar-item__menu-wrapper"
                         >
                           <div
-                            class="is_View _d-341075704 _f-1069814357 _o-1838365900 _ai-121763387 _mh-1241200853 _g-1299036281 rcx-item__actions-inner"
+                            class="is_View _d-341075704 _f-1069814357 _o-1119039191 _ai-121763387 _mh-1241200853 _g-1299036281 rcx-item__actions-inner"
                           >
                             <span
                               class="rcx-box rcx-box--full rcx-sidebar-item__menu rcx-sidebar-item__menu"
@@ -653,7 +653,7 @@ exports[`[SidebarItem Component] renders Condensed without crashing 1`] = `
                       role="listitem"
                     >
                       <a
-                        class="is_Text _p-1021290656 _d-341075704 _f-1069814357 _ai-121763387 _mw-842770087 _mh-1241200853 _m-2017216831 _p-788525541 _ls-1251843592 _ws-311910413 _ww-408434756 _br-1718100884 _ff-409630021 _ta-507911453 _td-1861836084 _c-727749181 _fs-347291933 _lh-1925956564 _ls-1782815796 _fw-289165218 _g-47172425 _b-944971190 _c-1830342115 _ow-1994474385 _os-1885772691 _oc-1422281658 _oo-245994692 _bs-1638756697 t_group_rcx-item rcx-item rcx-item--inset-md rcx-sidebar-item rcx-sidebar-item--level-1"
+                        class="is_Text _p-1021290656 _d-341075704 _f-1069814357 _ai-121763387 _mw-842770087 _mh-1241200853 _m-2017216831 _p-788525541 _ls-1251843592 _ws-311910413 _ww-408434756 _br-1718100884 _ff-409630021 _ta-507911453 _td-1861836084 _c-727749181 _fs-347291933 _lh-1925956564 _ls-1782815796 _fw-289165218 _g-47172425 _b-944971190 _c-1830342115 _ow-1994474385 _os-1885772691 _oc-1422281658 _oo-245994692 _bs-1638756697 rcx-item rcx-item--inset-md rcx-sidebar-item rcx-sidebar-item--level-1"
                         href="#"
                       >
                         <div
@@ -694,10 +694,10 @@ exports[`[SidebarItem Component] renders Condensed without crashing 1`] = `
                           5
                         </span>
                         <div
-                          class="is_View _p-1021290656 _zi-2094244754 _f-1841970073 _ai-121763387 _mw-354604370 _mh-1241200853 _g-1299036281 _d-312410892 _t-1193045479 _o-1780556163 _gtc-370223739 _m-449670226 rcx-item__actions rcx-item__actions--reveal-hover rcx-sidebar-item__menu-wrapper"
+                          class="is_View _p-1021290656 _zi-2094244754 _f-1841970073 _ai-121763387 _mw-354604370 _mh-1241200853 _g-1299036281 _d-312410892 _t-1193045479 _o-1507269735 _gtc-1790180973 _m-190079740 rcx-item__actions rcx-item__actions--reveal-hover rcx-sidebar-item__menu-wrapper"
                         >
                           <div
-                            class="is_View _d-341075704 _f-1069814357 _o-1838365900 _ai-121763387 _mh-1241200853 _g-1299036281 rcx-item__actions-inner"
+                            class="is_View _d-341075704 _f-1069814357 _o-1119039191 _ai-121763387 _mh-1241200853 _g-1299036281 rcx-item__actions-inner"
                           >
                             <span
                               class="rcx-box rcx-box--full rcx-sidebar-item__menu rcx-sidebar-item__menu"
@@ -801,7 +801,7 @@ exports[`[SidebarItem Component] renders CondensedItems without crashing 1`] = `
                   role="group"
                 >
                   <div
-                    class="is_Text _p-1021290656 _d-341075704 _f-1069814357 _ai-121763387 _mw-842770087 _mh-499962855 _m-2017216831 _p-536964724 _ls-1251843592 _ws-311910413 _ww-408434756 _br-1718100884 _ff-409630021 _fs-2088488067 _lh-1306743983 _ls-1782815796 _fw-289168101 _g-1760282038 _c-920334418 t_group_rcx-item-group-header rcx-item-group-header rcx-item-group-header--inset-md rcx-sidebar-collapse-group__bar"
+                    class="is_Text _p-1021290656 _d-341075704 _f-1069814357 _ai-121763387 _mw-842770087 _mh-499962855 _m-2017216831 _p-536964724 _ls-1251843592 _ws-311910413 _ww-408434756 _br-1718100884 _ff-409630021 _fs-2088488067 _lh-1306743983 _ls-1782815796 _fw-289168101 _g-1760282038 _c-920334418 rcx-item-group-header rcx-item-group-header--inset-md rcx-sidebar-collapse-group__bar"
                   >
                     <div
                       aria-controls="_r_5k_"
@@ -833,10 +833,10 @@ exports[`[SidebarItem Component] renders CondensedItems without crashing 1`] = `
                       </div>
                     </div>
                     <div
-                      class="is_View _p-1021290656 _zi-2094244754 _f-1841970073 _ai-121763387 _mw-354604370 _mh-1241200853 _g-1299036281 _d-312410892 _t-1193045479 _o-1780556163 _gtc-370223739 _m-449670226 rcx-item__actions rcx-item__actions--reveal-hover rcx-sidebar-collapse-group__menu-wrapper"
+                      class="is_View _p-1021290656 _zi-2094244754 _f-1841970073 _ai-121763387 _mw-354604370 _mh-1241200853 _g-1299036281 _d-312410892 _t-1193045479 _o-1507269735 _gtc-1790180973 _m-190079740 rcx-item__actions rcx-item__actions--reveal-hover rcx-sidebar-collapse-group__menu-wrapper"
                     >
                       <div
-                        class="is_View _d-341075704 _f-1069814357 _o-1838365900 _ai-121763387 _mh-1241200853 _g-1299036281 rcx-item__actions-inner"
+                        class="is_View _d-341075704 _f-1069814357 _o-1119039191 _ai-121763387 _mh-1241200853 _g-1299036281 rcx-item__actions-inner"
                       >
                         <span
                           class="rcx-box rcx-box--full rcx-sidebar-collapse-group__menu rcx-sidebar-collapse-group__menu"
@@ -872,7 +872,7 @@ exports[`[SidebarItem Component] renders CondensedItems without crashing 1`] = `
                       role="listitem"
                     >
                       <a
-                        class="is_Text _p-1021290656 _d-341075704 _f-1069814357 _ai-121763387 _mw-842770087 _mh-1241200853 _m-2017216831 _p-788525541 _ls-1251843592 _ws-311910413 _ww-408434756 _br-1718100884 _ff-409630021 _ta-507911453 _td-1861836084 _c-727749181 _fs-347291933 _lh-1925956564 _ls-1782815796 _fw-289165218 _g-47172425 _b-944971190 _c-1830342115 _ow-1994474385 _os-1885772691 _oc-1422281658 _oo-245994692 _bs-1638756697 t_group_rcx-item rcx-item rcx-item--inset-md rcx-sidebar-item rcx-sidebar-item--level-1"
+                        class="is_Text _p-1021290656 _d-341075704 _f-1069814357 _ai-121763387 _mw-842770087 _mh-1241200853 _m-2017216831 _p-788525541 _ls-1251843592 _ws-311910413 _ww-408434756 _br-1718100884 _ff-409630021 _ta-507911453 _td-1861836084 _c-727749181 _fs-347291933 _lh-1925956564 _ls-1782815796 _fw-289165218 _g-47172425 _b-944971190 _c-1830342115 _ow-1994474385 _os-1885772691 _oc-1422281658 _oo-245994692 _bs-1638756697 rcx-item rcx-item--inset-md rcx-sidebar-item rcx-sidebar-item--level-1"
                         href="#"
                       >
                         <div
@@ -936,10 +936,10 @@ exports[`[SidebarItem Component] renders CondensedItems without crashing 1`] = `
                           </button>
                         </div>
                         <div
-                          class="is_View _p-1021290656 _zi-2094244754 _f-1841970073 _ai-121763387 _mw-354604370 _mh-1241200853 _g-1299036281 _d-312410892 _t-1193045479 _o-1780556163 _gtc-370223739 _m-449670226 rcx-item__actions rcx-item__actions--reveal-hover rcx-sidebar-item__menu-wrapper"
+                          class="is_View _p-1021290656 _zi-2094244754 _f-1841970073 _ai-121763387 _mw-354604370 _mh-1241200853 _g-1299036281 _d-312410892 _t-1193045479 _o-1507269735 _gtc-1790180973 _m-190079740 rcx-item__actions rcx-item__actions--reveal-hover rcx-sidebar-item__menu-wrapper"
                         >
                           <div
-                            class="is_View _d-341075704 _f-1069814357 _o-1838365900 _ai-121763387 _mh-1241200853 _g-1299036281 rcx-item__actions-inner"
+                            class="is_View _d-341075704 _f-1069814357 _o-1119039191 _ai-121763387 _mh-1241200853 _g-1299036281 rcx-item__actions-inner"
                           >
                             <span
                               class="rcx-box rcx-box--full rcx-sidebar-item__menu rcx-sidebar-item__menu"
@@ -970,7 +970,7 @@ exports[`[SidebarItem Component] renders CondensedItems without crashing 1`] = `
                       role="listitem"
                     >
                       <a
-                        class="is_Text _p-1021290656 _d-341075704 _f-1069814357 _ai-121763387 _mw-842770087 _mh-1241200853 _m-2017216831 _p-788525541 _ls-1251843592 _ws-311910413 _ww-408434756 _br-1718100884 _ff-409630021 _ta-507911453 _td-1861836084 _c-727749181 _fs-347291933 _lh-1925956564 _ls-1782815796 _fw-289165218 _g-47172425 _b-944971190 _c-1830342115 _ow-1994474385 _os-1885772691 _oc-1422281658 _oo-245994692 _bs-1638756697 t_group_rcx-item rcx-item rcx-item--inset-md rcx-sidebar-item rcx-sidebar-item--level-1"
+                        class="is_Text _p-1021290656 _d-341075704 _f-1069814357 _ai-121763387 _mw-842770087 _mh-1241200853 _m-2017216831 _p-788525541 _ls-1251843592 _ws-311910413 _ww-408434756 _br-1718100884 _ff-409630021 _ta-507911453 _td-1861836084 _c-727749181 _fs-347291933 _lh-1925956564 _ls-1782815796 _fw-289165218 _g-47172425 _b-944971190 _c-1830342115 _ow-1994474385 _os-1885772691 _oc-1422281658 _oo-245994692 _bs-1638756697 rcx-item rcx-item--inset-md rcx-sidebar-item rcx-sidebar-item--level-1"
                         href="#"
                       >
                         <div
@@ -1011,10 +1011,10 @@ exports[`[SidebarItem Component] renders CondensedItems without crashing 1`] = `
                           5
                         </span>
                         <div
-                          class="is_View _p-1021290656 _zi-2094244754 _f-1841970073 _ai-121763387 _mw-354604370 _mh-1241200853 _g-1299036281 _d-312410892 _t-1193045479 _o-1780556163 _gtc-370223739 _m-449670226 rcx-item__actions rcx-item__actions--reveal-hover rcx-sidebar-item__menu-wrapper"
+                          class="is_View _p-1021290656 _zi-2094244754 _f-1841970073 _ai-121763387 _mw-354604370 _mh-1241200853 _g-1299036281 _d-312410892 _t-1193045479 _o-1507269735 _gtc-1790180973 _m-190079740 rcx-item__actions rcx-item__actions--reveal-hover rcx-sidebar-item__menu-wrapper"
                         >
                           <div
-                            class="is_View _d-341075704 _f-1069814357 _o-1838365900 _ai-121763387 _mh-1241200853 _g-1299036281 rcx-item__actions-inner"
+                            class="is_View _d-341075704 _f-1069814357 _o-1119039191 _ai-121763387 _mh-1241200853 _g-1299036281 rcx-item__actions-inner"
                           >
                             <span
                               class="rcx-box rcx-box--full rcx-sidebar-item__menu rcx-sidebar-item__menu"
@@ -1045,7 +1045,7 @@ exports[`[SidebarItem Component] renders CondensedItems without crashing 1`] = `
                       role="listitem"
                     >
                       <a
-                        class="is_Text _p-1021290656 _d-341075704 _f-1069814357 _ai-121763387 _mw-842770087 _mh-1241200853 _m-2017216831 _p-788525541 _ls-1251843592 _ws-311910413 _ww-408434756 _br-1718100884 _ff-409630021 _ta-507911453 _td-1861836084 _c-727749181 _fs-347291933 _lh-1925956564 _ls-1782815796 _fw-289165218 _g-47172425 _b-2012676596 _c-1830342115 _ow-1994474385 _os-1885772691 _oc-1422281658 _oo-245994692 _bs-1638756697 t_group_rcx-item rcx-item rcx-item--inset-md rcx-item--selected rcx-sidebar-item rcx-sidebar-item--selected rcx-sidebar-item--level-1"
+                        class="is_Text _p-1021290656 _d-341075704 _f-1069814357 _ai-121763387 _mw-842770087 _mh-1241200853 _m-2017216831 _p-788525541 _ls-1251843592 _ws-311910413 _ww-408434756 _br-1718100884 _ff-409630021 _ta-507911453 _td-1861836084 _c-727749181 _fs-347291933 _lh-1925956564 _ls-1782815796 _fw-289165218 _g-47172425 _b-2012676596 _c-1830342115 _ow-1994474385 _os-1885772691 _oc-1422281658 _oo-245994692 _bs-1638756697 rcx-item rcx-item--inset-md rcx-item--selected rcx-sidebar-item rcx-sidebar-item--selected rcx-sidebar-item--level-1"
                         href="#"
                       >
                         <div
@@ -1080,10 +1080,10 @@ exports[`[SidebarItem Component] renders CondensedItems without crashing 1`] = `
                           Leroy Jenkins
                         </div>
                         <div
-                          class="is_View _p-1021290656 _zi-2094244754 _f-1841970073 _ai-121763387 _mw-354604370 _mh-1241200853 _g-1299036281 _d-312410892 _t-1193045479 _o-1780556163 _gtc-370223739 _m-449670226 rcx-item__actions rcx-item__actions--reveal-hover rcx-sidebar-item__menu-wrapper"
+                          class="is_View _p-1021290656 _zi-2094244754 _f-1841970073 _ai-121763387 _mw-354604370 _mh-1241200853 _g-1299036281 _d-312410892 _t-1193045479 _o-1507269735 _gtc-1790180973 _m-190079740 rcx-item__actions rcx-item__actions--reveal-hover rcx-sidebar-item__menu-wrapper"
                         >
                           <div
-                            class="is_View _d-341075704 _f-1069814357 _o-1838365900 _ai-121763387 _mh-1241200853 _g-1299036281 rcx-item__actions-inner"
+                            class="is_View _d-341075704 _f-1069814357 _o-1119039191 _ai-121763387 _mh-1241200853 _g-1299036281 rcx-item__actions-inner"
                           >
                             <span
                               class="rcx-box rcx-box--full rcx-sidebar-item__menu rcx-sidebar-item__menu"
@@ -1114,7 +1114,7 @@ exports[`[SidebarItem Component] renders CondensedItems without crashing 1`] = `
                       role="listitem"
                     >
                       <a
-                        class="is_Text _p-1021290656 _d-341075704 _f-1069814357 _ai-121763387 _mw-842770087 _mh-1241200853 _m-2017216831 _p-788525541 _ls-1251843592 _ws-311910413 _ww-408434756 _br-1718100884 _ff-409630021 _ta-507911453 _td-1861836084 _c-727749181 _fs-347291933 _lh-1925956564 _ls-1782815796 _fw-289165218 _g-47172425 _b-944971190 _c-1830342115 _ow-1994474385 _os-1885772691 _oc-1422281658 _oo-245994692 _bs-1638756697 t_group_rcx-item rcx-item rcx-item--inset-md rcx-sidebar-item rcx-sidebar-item--level-1"
+                        class="is_Text _p-1021290656 _d-341075704 _f-1069814357 _ai-121763387 _mw-842770087 _mh-1241200853 _m-2017216831 _p-788525541 _ls-1251843592 _ws-311910413 _ww-408434756 _br-1718100884 _ff-409630021 _ta-507911453 _td-1861836084 _c-727749181 _fs-347291933 _lh-1925956564 _ls-1782815796 _fw-289165218 _g-47172425 _b-944971190 _c-1830342115 _ow-1994474385 _os-1885772691 _oc-1422281658 _oo-245994692 _bs-1638756697 rcx-item rcx-item--inset-md rcx-sidebar-item rcx-sidebar-item--level-1"
                         href="#"
                       >
                         <div
@@ -1155,10 +1155,10 @@ exports[`[SidebarItem Component] renders CondensedItems without crashing 1`] = `
                           5
                         </span>
                         <div
-                          class="is_View _p-1021290656 _zi-2094244754 _f-1841970073 _ai-121763387 _mw-354604370 _mh-1241200853 _g-1299036281 _d-312410892 _t-1193045479 _o-1780556163 _gtc-370223739 _m-449670226 rcx-item__actions rcx-item__actions--reveal-hover rcx-sidebar-item__menu-wrapper"
+                          class="is_View _p-1021290656 _zi-2094244754 _f-1841970073 _ai-121763387 _mw-354604370 _mh-1241200853 _g-1299036281 _d-312410892 _t-1193045479 _o-1507269735 _gtc-1790180973 _m-190079740 rcx-item__actions rcx-item__actions--reveal-hover rcx-sidebar-item__menu-wrapper"
                         >
                           <div
-                            class="is_View _d-341075704 _f-1069814357 _o-1838365900 _ai-121763387 _mh-1241200853 _g-1299036281 rcx-item__actions-inner"
+                            class="is_View _d-341075704 _f-1069814357 _o-1119039191 _ai-121763387 _mh-1241200853 _g-1299036281 rcx-item__actions-inner"
                           >
                             <span
                               class="rcx-box rcx-box--full rcx-sidebar-item__menu rcx-sidebar-item__menu"
@@ -1189,7 +1189,7 @@ exports[`[SidebarItem Component] renders CondensedItems without crashing 1`] = `
                       role="listitem"
                     >
                       <a
-                        class="is_Text _p-1021290656 _d-341075704 _f-1069814357 _ai-121763387 _mw-842770087 _mh-1241200853 _m-2017216831 _p-788525541 _ls-1251843592 _ws-311910413 _ww-408434756 _br-1718100884 _ff-409630021 _ta-507911453 _td-1861836084 _c-727749181 _fs-347291933 _lh-1925956564 _ls-1782815796 _fw-289165218 _g-47172425 _b-944971190 _c-1830342115 _ow-1994474385 _os-1885772691 _oc-1422281658 _oo-245994692 _bs-1638756697 t_group_rcx-item rcx-item rcx-item--inset-md rcx-sidebar-item rcx-sidebar-item--level-1"
+                        class="is_Text _p-1021290656 _d-341075704 _f-1069814357 _ai-121763387 _mw-842770087 _mh-1241200853 _m-2017216831 _p-788525541 _ls-1251843592 _ws-311910413 _ww-408434756 _br-1718100884 _ff-409630021 _ta-507911453 _td-1861836084 _c-727749181 _fs-347291933 _lh-1925956564 _ls-1782815796 _fw-289165218 _g-47172425 _b-944971190 _c-1830342115 _ow-1994474385 _os-1885772691 _oc-1422281658 _oo-245994692 _bs-1638756697 rcx-item rcx-item--inset-md rcx-sidebar-item rcx-sidebar-item--level-1"
                         href="#"
                       >
                         <div
@@ -1224,10 +1224,10 @@ exports[`[SidebarItem Component] renders CondensedItems without crashing 1`] = `
                           John Doe
                         </div>
                         <div
-                          class="is_View _p-1021290656 _zi-2094244754 _f-1841970073 _ai-121763387 _mw-354604370 _mh-1241200853 _g-1299036281 _d-312410892 _t-1193045479 _o-1780556163 _gtc-370223739 _m-449670226 rcx-item__actions rcx-item__actions--reveal-hover rcx-sidebar-item__menu-wrapper"
+                          class="is_View _p-1021290656 _zi-2094244754 _f-1841970073 _ai-121763387 _mw-354604370 _mh-1241200853 _g-1299036281 _d-312410892 _t-1193045479 _o-1507269735 _gtc-1790180973 _m-190079740 rcx-item__actions rcx-item__actions--reveal-hover rcx-sidebar-item__menu-wrapper"
                         >
                           <div
-                            class="is_View _d-341075704 _f-1069814357 _o-1838365900 _ai-121763387 _mh-1241200853 _g-1299036281 rcx-item__actions-inner"
+                            class="is_View _d-341075704 _f-1069814357 _o-1119039191 _ai-121763387 _mh-1241200853 _g-1299036281 rcx-item__actions-inner"
                           >
                             <span
                               class="rcx-box rcx-box--full rcx-sidebar-item__menu rcx-sidebar-item__menu"
@@ -1258,7 +1258,7 @@ exports[`[SidebarItem Component] renders CondensedItems without crashing 1`] = `
                       role="listitem"
                     >
                       <a
-                        class="is_Text _p-1021290656 _d-341075704 _f-1069814357 _ai-121763387 _mw-842770087 _mh-1241200853 _m-2017216831 _p-788525541 _ls-1251843592 _ws-311910413 _ww-408434756 _br-1718100884 _ff-409630021 _ta-507911453 _td-1861836084 _c-727749181 _fs-347291933 _lh-1925956564 _ls-1782815796 _fw-289165218 _g-47172425 _b-944971190 _c-1830342115 _ow-1994474385 _os-1885772691 _oc-1422281658 _oo-245994692 _bs-1638756697 t_group_rcx-item rcx-item rcx-item--inset-md rcx-sidebar-item rcx-sidebar-item--level-1"
+                        class="is_Text _p-1021290656 _d-341075704 _f-1069814357 _ai-121763387 _mw-842770087 _mh-1241200853 _m-2017216831 _p-788525541 _ls-1251843592 _ws-311910413 _ww-408434756 _br-1718100884 _ff-409630021 _ta-507911453 _td-1861836084 _c-727749181 _fs-347291933 _lh-1925956564 _ls-1782815796 _fw-289165218 _g-47172425 _b-944971190 _c-1830342115 _ow-1994474385 _os-1885772691 _oc-1422281658 _oo-245994692 _bs-1638756697 rcx-item rcx-item--inset-md rcx-sidebar-item rcx-sidebar-item--level-1"
                         href="#"
                       >
                         <div
@@ -1299,10 +1299,10 @@ exports[`[SidebarItem Component] renders CondensedItems without crashing 1`] = `
                           5
                         </span>
                         <div
-                          class="is_View _p-1021290656 _zi-2094244754 _f-1841970073 _ai-121763387 _mw-354604370 _mh-1241200853 _g-1299036281 _d-312410892 _t-1193045479 _o-1780556163 _gtc-370223739 _m-449670226 rcx-item__actions rcx-item__actions--reveal-hover rcx-sidebar-item__menu-wrapper"
+                          class="is_View _p-1021290656 _zi-2094244754 _f-1841970073 _ai-121763387 _mw-354604370 _mh-1241200853 _g-1299036281 _d-312410892 _t-1193045479 _o-1507269735 _gtc-1790180973 _m-190079740 rcx-item__actions rcx-item__actions--reveal-hover rcx-sidebar-item__menu-wrapper"
                         >
                           <div
-                            class="is_View _d-341075704 _f-1069814357 _o-1838365900 _ai-121763387 _mh-1241200853 _g-1299036281 rcx-item__actions-inner"
+                            class="is_View _d-341075704 _f-1069814357 _o-1119039191 _ai-121763387 _mh-1241200853 _g-1299036281 rcx-item__actions-inner"
                           >
                             <span
                               class="rcx-box rcx-box--full rcx-sidebar-item__menu rcx-sidebar-item__menu"
@@ -1333,7 +1333,7 @@ exports[`[SidebarItem Component] renders CondensedItems without crashing 1`] = `
                       role="listitem"
                     >
                       <a
-                        class="is_Text _p-1021290656 _d-341075704 _f-1069814357 _ai-121763387 _mw-842770087 _mh-1241200853 _m-2017216831 _p-788525541 _ls-1251843592 _ws-311910413 _ww-408434756 _br-1718100884 _ff-409630021 _ta-507911453 _td-1861836084 _c-727749181 _fs-347291933 _lh-1925956564 _ls-1782815796 _fw-289165218 _g-47172425 _b-944971190 _c-1830342115 _ow-1994474385 _os-1885772691 _oc-1422281658 _oo-245994692 _bs-1638756697 t_group_rcx-item rcx-item rcx-item--inset-md rcx-sidebar-item rcx-sidebar-item--level-1"
+                        class="is_Text _p-1021290656 _d-341075704 _f-1069814357 _ai-121763387 _mw-842770087 _mh-1241200853 _m-2017216831 _p-788525541 _ls-1251843592 _ws-311910413 _ww-408434756 _br-1718100884 _ff-409630021 _ta-507911453 _td-1861836084 _c-727749181 _fs-347291933 _lh-1925956564 _ls-1782815796 _fw-289165218 _g-47172425 _b-944971190 _c-1830342115 _ow-1994474385 _os-1885772691 _oc-1422281658 _oo-245994692 _bs-1638756697 rcx-item rcx-item--inset-md rcx-sidebar-item rcx-sidebar-item--level-1"
                         href="#"
                       >
                         <div
@@ -1368,10 +1368,10 @@ exports[`[SidebarItem Component] renders CondensedItems without crashing 1`] = `
                           Baz Qux
                         </div>
                         <div
-                          class="is_View _p-1021290656 _zi-2094244754 _f-1841970073 _ai-121763387 _mw-354604370 _mh-1241200853 _g-1299036281 _d-312410892 _t-1193045479 _o-1780556163 _gtc-370223739 _m-449670226 rcx-item__actions rcx-item__actions--reveal-hover rcx-sidebar-item__menu-wrapper"
+                          class="is_View _p-1021290656 _zi-2094244754 _f-1841970073 _ai-121763387 _mw-354604370 _mh-1241200853 _g-1299036281 _d-312410892 _t-1193045479 _o-1507269735 _gtc-1790180973 _m-190079740 rcx-item__actions rcx-item__actions--reveal-hover rcx-sidebar-item__menu-wrapper"
                         >
                           <div
-                            class="is_View _d-341075704 _f-1069814357 _o-1838365900 _ai-121763387 _mh-1241200853 _g-1299036281 rcx-item__actions-inner"
+                            class="is_View _d-341075704 _f-1069814357 _o-1119039191 _ai-121763387 _mh-1241200853 _g-1299036281 rcx-item__actions-inner"
                           >
                             <span
                               class="rcx-box rcx-box--full rcx-sidebar-item__menu rcx-sidebar-item__menu"
@@ -1402,7 +1402,7 @@ exports[`[SidebarItem Component] renders CondensedItems without crashing 1`] = `
                       role="listitem"
                     >
                       <a
-                        class="is_Text _p-1021290656 _d-341075704 _f-1069814357 _ai-121763387 _mw-842770087 _mh-1241200853 _m-2017216831 _p-788525541 _ls-1251843592 _ws-311910413 _ww-408434756 _br-1718100884 _ff-409630021 _ta-507911453 _td-1861836084 _c-727749181 _fs-347291933 _lh-1925956564 _ls-1782815796 _fw-289165218 _g-47172425 _b-944971190 _c-1830342115 _ow-1994474385 _os-1885772691 _oc-1422281658 _oo-245994692 _bs-1638756697 t_group_rcx-item rcx-item rcx-item--inset-md rcx-sidebar-item rcx-sidebar-item--level-1"
+                        class="is_Text _p-1021290656 _d-341075704 _f-1069814357 _ai-121763387 _mw-842770087 _mh-1241200853 _m-2017216831 _p-788525541 _ls-1251843592 _ws-311910413 _ww-408434756 _br-1718100884 _ff-409630021 _ta-507911453 _td-1861836084 _c-727749181 _fs-347291933 _lh-1925956564 _ls-1782815796 _fw-289165218 _g-47172425 _b-944971190 _c-1830342115 _ow-1994474385 _os-1885772691 _oc-1422281658 _oo-245994692 _bs-1638756697 rcx-item rcx-item--inset-md rcx-sidebar-item rcx-sidebar-item--level-1"
                         href="#"
                       >
                         <div
@@ -1443,10 +1443,10 @@ exports[`[SidebarItem Component] renders CondensedItems without crashing 1`] = `
                           5
                         </span>
                         <div
-                          class="is_View _p-1021290656 _zi-2094244754 _f-1841970073 _ai-121763387 _mw-354604370 _mh-1241200853 _g-1299036281 _d-312410892 _t-1193045479 _o-1780556163 _gtc-370223739 _m-449670226 rcx-item__actions rcx-item__actions--reveal-hover rcx-sidebar-item__menu-wrapper"
+                          class="is_View _p-1021290656 _zi-2094244754 _f-1841970073 _ai-121763387 _mw-354604370 _mh-1241200853 _g-1299036281 _d-312410892 _t-1193045479 _o-1507269735 _gtc-1790180973 _m-190079740 rcx-item__actions rcx-item__actions--reveal-hover rcx-sidebar-item__menu-wrapper"
                         >
                           <div
-                            class="is_View _d-341075704 _f-1069814357 _o-1838365900 _ai-121763387 _mh-1241200853 _g-1299036281 rcx-item__actions-inner"
+                            class="is_View _d-341075704 _f-1069814357 _o-1119039191 _ai-121763387 _mh-1241200853 _g-1299036281 rcx-item__actions-inner"
                           >
                             <span
                               class="rcx-box rcx-box--full rcx-sidebar-item__menu rcx-sidebar-item__menu"
@@ -1550,7 +1550,7 @@ exports[`[SidebarItem Component] renders Extended without crashing 1`] = `
                   role="group"
                 >
                   <div
-                    class="is_Text _p-1021290656 _d-341075704 _f-1069814357 _ai-121763387 _mw-842770087 _mh-499962855 _m-2017216831 _p-536964724 _ls-1251843592 _ws-311910413 _ww-408434756 _br-1718100884 _ff-409630021 _fs-2088488067 _lh-1306743983 _ls-1782815796 _fw-289168101 _g-1760282038 _c-920334418 t_group_rcx-item-group-header rcx-item-group-header rcx-item-group-header--inset-md rcx-sidebar-collapse-group__bar"
+                    class="is_Text _p-1021290656 _d-341075704 _f-1069814357 _ai-121763387 _mw-842770087 _mh-499962855 _m-2017216831 _p-536964724 _ls-1251843592 _ws-311910413 _ww-408434756 _br-1718100884 _ff-409630021 _fs-2088488067 _lh-1306743983 _ls-1782815796 _fw-289168101 _g-1760282038 _c-920334418 rcx-item-group-header rcx-item-group-header--inset-md rcx-sidebar-collapse-group__bar"
                   >
                     <div
                       aria-controls="_r_as_"
@@ -1582,10 +1582,10 @@ exports[`[SidebarItem Component] renders Extended without crashing 1`] = `
                       </div>
                     </div>
                     <div
-                      class="is_View _p-1021290656 _zi-2094244754 _f-1841970073 _ai-121763387 _mw-354604370 _mh-1241200853 _g-1299036281 _d-312410892 _t-1193045479 _o-1780556163 _gtc-370223739 _m-449670226 rcx-item__actions rcx-item__actions--reveal-hover rcx-sidebar-collapse-group__menu-wrapper"
+                      class="is_View _p-1021290656 _zi-2094244754 _f-1841970073 _ai-121763387 _mw-354604370 _mh-1241200853 _g-1299036281 _d-312410892 _t-1193045479 _o-1507269735 _gtc-1790180973 _m-190079740 rcx-item__actions rcx-item__actions--reveal-hover rcx-sidebar-collapse-group__menu-wrapper"
                     >
                       <div
-                        class="is_View _d-341075704 _f-1069814357 _o-1838365900 _ai-121763387 _mh-1241200853 _g-1299036281 rcx-item__actions-inner"
+                        class="is_View _d-341075704 _f-1069814357 _o-1119039191 _ai-121763387 _mh-1241200853 _g-1299036281 rcx-item__actions-inner"
                       >
                         <span
                           class="rcx-box rcx-box--full rcx-sidebar-collapse-group__menu rcx-sidebar-collapse-group__menu"
@@ -1621,7 +1621,7 @@ exports[`[SidebarItem Component] renders Extended without crashing 1`] = `
                       role="listitem"
                     >
                       <a
-                        class="is_Text _p-1021290656 _d-341075704 _f-1069814357 _ai-121763387 _mw-842770087 _mh-1241200853 _m-2017216831 _p-788525541 _ls-1251843592 _ws-311910413 _ww-408434756 _br-1718100884 _ff-409630021 _ta-507911453 _td-1861836084 _c-727749181 _fs-347291933 _lh-1925956564 _ls-1782815796 _fw-289165218 _g-691362565 _b-944971190 _c-1830342115 _ow-1994474385 _os-1885772691 _oc-1422281658 _oo-245994692 _bs-1638756697 t_group_rcx-item rcx-item rcx-item--inset-md rcx-sidebar-item rcx-sidebar-item--level-1"
+                        class="is_Text _p-1021290656 _d-341075704 _f-1069814357 _ai-121763387 _mw-842770087 _mh-1241200853 _m-2017216831 _p-788525541 _ls-1251843592 _ws-311910413 _ww-408434756 _br-1718100884 _ff-409630021 _ta-507911453 _td-1861836084 _c-727749181 _fs-347291933 _lh-1925956564 _ls-1782815796 _fw-289165218 _g-691362565 _b-944971190 _c-1830342115 _ow-1994474385 _os-1885772691 _oc-1422281658 _oo-245994692 _bs-1638756697 rcx-item rcx-item--inset-md rcx-sidebar-item rcx-sidebar-item--level-1"
                         href="#"
                       >
                         <div
@@ -1682,10 +1682,10 @@ exports[`[SidebarItem Component] renders Extended without crashing 1`] = `
                               5
                             </span>
                             <div
-                              class="is_View _p-1021290656 _zi-2094244754 _f-1841970073 _ai-121763387 _mw-354604370 _mh-1241200853 _g-1299036281 _d-312410892 _t-1193045479 _o-1780556163 _gtc-370223739 _m-449670226 _ac-1617022483 _h-1921373401 rcx-item__actions rcx-item__actions--reveal-hover rcx-sidebar-item__menu-wrapper"
+                              class="is_View _p-1021290656 _zi-2094244754 _f-1841970073 _ai-121763387 _mw-354604370 _mh-1241200853 _g-1299036281 _d-312410892 _t-1193045479 _o-1507269735 _gtc-1790180973 _m-190079740 _ac-1617022483 _h-1921373401 rcx-item__actions rcx-item__actions--reveal-hover rcx-sidebar-item__menu-wrapper"
                             >
                               <div
-                                class="is_View _d-341075704 _f-1069814357 _o-1838365900 _ai-121763387 _mh-1241200853 _g-1299036281 rcx-item__actions-inner"
+                                class="is_View _d-341075704 _f-1069814357 _o-1119039191 _ai-121763387 _mh-1241200853 _g-1299036281 rcx-item__actions-inner"
                               >
                                 <span
                                   class="rcx-box rcx-box--full rcx-sidebar-item__menu rcx-sidebar-item__menu"
@@ -1718,7 +1718,7 @@ exports[`[SidebarItem Component] renders Extended without crashing 1`] = `
                       role="listitem"
                     >
                       <a
-                        class="is_Text _p-1021290656 _d-341075704 _f-1069814357 _ai-121763387 _mw-842770087 _mh-1241200853 _m-2017216831 _p-788525541 _ls-1251843592 _ws-311910413 _ww-408434756 _br-1718100884 _ff-409630021 _ta-507911453 _td-1861836084 _c-727749181 _fs-347291933 _lh-1925956564 _ls-1782815796 _fw-289165218 _g-691362565 _b-944971190 _c-1830342115 _ow-1994474385 _os-1885772691 _oc-1422281658 _oo-245994692 _bs-1638756697 t_group_rcx-item rcx-item rcx-item--inset-md rcx-sidebar-item rcx-sidebar-item--level-1"
+                        class="is_Text _p-1021290656 _d-341075704 _f-1069814357 _ai-121763387 _mw-842770087 _mh-1241200853 _m-2017216831 _p-788525541 _ls-1251843592 _ws-311910413 _ww-408434756 _br-1718100884 _ff-409630021 _ta-507911453 _td-1861836084 _c-727749181 _fs-347291933 _lh-1925956564 _ls-1782815796 _fw-289165218 _g-691362565 _b-944971190 _c-1830342115 _ow-1994474385 _os-1885772691 _oc-1422281658 _oo-245994692 _bs-1638756697 rcx-item rcx-item--inset-md rcx-sidebar-item rcx-sidebar-item--level-1"
                         href="#"
                       >
                         <div
@@ -1779,10 +1779,10 @@ exports[`[SidebarItem Component] renders Extended without crashing 1`] = `
                               5
                             </span>
                             <div
-                              class="is_View _p-1021290656 _zi-2094244754 _f-1841970073 _ai-121763387 _mw-354604370 _mh-1241200853 _g-1299036281 _d-312410892 _t-1193045479 _o-1780556163 _gtc-370223739 _m-449670226 _ac-1617022483 _h-1921373401 rcx-item__actions rcx-item__actions--reveal-hover rcx-sidebar-item__menu-wrapper"
+                              class="is_View _p-1021290656 _zi-2094244754 _f-1841970073 _ai-121763387 _mw-354604370 _mh-1241200853 _g-1299036281 _d-312410892 _t-1193045479 _o-1507269735 _gtc-1790180973 _m-190079740 _ac-1617022483 _h-1921373401 rcx-item__actions rcx-item__actions--reveal-hover rcx-sidebar-item__menu-wrapper"
                             >
                               <div
-                                class="is_View _d-341075704 _f-1069814357 _o-1838365900 _ai-121763387 _mh-1241200853 _g-1299036281 rcx-item__actions-inner"
+                                class="is_View _d-341075704 _f-1069814357 _o-1119039191 _ai-121763387 _mh-1241200853 _g-1299036281 rcx-item__actions-inner"
                               >
                                 <span
                                   class="rcx-box rcx-box--full rcx-sidebar-item__menu rcx-sidebar-item__menu"
@@ -1815,7 +1815,7 @@ exports[`[SidebarItem Component] renders Extended without crashing 1`] = `
                       role="listitem"
                     >
                       <a
-                        class="is_Text _p-1021290656 _d-341075704 _f-1069814357 _ai-121763387 _mw-842770087 _mh-1241200853 _m-2017216831 _p-788525541 _ls-1251843592 _ws-311910413 _ww-408434756 _br-1718100884 _ff-409630021 _ta-507911453 _td-1861836084 _c-727749181 _fs-347291933 _lh-1925956564 _ls-1782815796 _fw-289165218 _g-691362565 _b-944971190 _c-1830342115 _ow-1994474385 _os-1885772691 _oc-1422281658 _oo-245994692 _bs-1638756697 t_group_rcx-item rcx-item rcx-item--inset-md rcx-sidebar-item rcx-sidebar-item--level-1"
+                        class="is_Text _p-1021290656 _d-341075704 _f-1069814357 _ai-121763387 _mw-842770087 _mh-1241200853 _m-2017216831 _p-788525541 _ls-1251843592 _ws-311910413 _ww-408434756 _br-1718100884 _ff-409630021 _ta-507911453 _td-1861836084 _c-727749181 _fs-347291933 _lh-1925956564 _ls-1782815796 _fw-289165218 _g-691362565 _b-944971190 _c-1830342115 _ow-1994474385 _os-1885772691 _oc-1422281658 _oo-245994692 _bs-1638756697 rcx-item rcx-item--inset-md rcx-sidebar-item rcx-sidebar-item--level-1"
                         href="#"
                       >
                         <div
@@ -1876,10 +1876,10 @@ exports[`[SidebarItem Component] renders Extended without crashing 1`] = `
                               5
                             </span>
                             <div
-                              class="is_View _p-1021290656 _zi-2094244754 _f-1841970073 _ai-121763387 _mw-354604370 _mh-1241200853 _g-1299036281 _d-312410892 _t-1193045479 _o-1780556163 _gtc-370223739 _m-449670226 _ac-1617022483 _h-1921373401 rcx-item__actions rcx-item__actions--reveal-hover rcx-sidebar-item__menu-wrapper"
+                              class="is_View _p-1021290656 _zi-2094244754 _f-1841970073 _ai-121763387 _mw-354604370 _mh-1241200853 _g-1299036281 _d-312410892 _t-1193045479 _o-1507269735 _gtc-1790180973 _m-190079740 _ac-1617022483 _h-1921373401 rcx-item__actions rcx-item__actions--reveal-hover rcx-sidebar-item__menu-wrapper"
                             >
                               <div
-                                class="is_View _d-341075704 _f-1069814357 _o-1838365900 _ai-121763387 _mh-1241200853 _g-1299036281 rcx-item__actions-inner"
+                                class="is_View _d-341075704 _f-1069814357 _o-1119039191 _ai-121763387 _mh-1241200853 _g-1299036281 rcx-item__actions-inner"
                               >
                                 <span
                                   class="rcx-box rcx-box--full rcx-sidebar-item__menu rcx-sidebar-item__menu"
@@ -1912,7 +1912,7 @@ exports[`[SidebarItem Component] renders Extended without crashing 1`] = `
                       role="listitem"
                     >
                       <a
-                        class="is_Text _p-1021290656 _d-341075704 _f-1069814357 _ai-121763387 _mw-842770087 _mh-1241200853 _m-2017216831 _p-788525541 _ls-1251843592 _ws-311910413 _ww-408434756 _br-1718100884 _ff-409630021 _ta-507911453 _td-1861836084 _c-727749181 _fs-347291933 _lh-1925956564 _ls-1782815796 _fw-289165218 _g-691362565 _b-944971190 _c-1830342115 _ow-1994474385 _os-1885772691 _oc-1422281658 _oo-245994692 _bs-1638756697 t_group_rcx-item rcx-item rcx-item--inset-md rcx-sidebar-item rcx-sidebar-item--level-1"
+                        class="is_Text _p-1021290656 _d-341075704 _f-1069814357 _ai-121763387 _mw-842770087 _mh-1241200853 _m-2017216831 _p-788525541 _ls-1251843592 _ws-311910413 _ww-408434756 _br-1718100884 _ff-409630021 _ta-507911453 _td-1861836084 _c-727749181 _fs-347291933 _lh-1925956564 _ls-1782815796 _fw-289165218 _g-691362565 _b-944971190 _c-1830342115 _ow-1994474385 _os-1885772691 _oc-1422281658 _oo-245994692 _bs-1638756697 rcx-item rcx-item--inset-md rcx-sidebar-item rcx-sidebar-item--level-1"
                         href="#"
                       >
                         <div
@@ -1973,10 +1973,10 @@ exports[`[SidebarItem Component] renders Extended without crashing 1`] = `
                               5
                             </span>
                             <div
-                              class="is_View _p-1021290656 _zi-2094244754 _f-1841970073 _ai-121763387 _mw-354604370 _mh-1241200853 _g-1299036281 _d-312410892 _t-1193045479 _o-1780556163 _gtc-370223739 _m-449670226 _ac-1617022483 _h-1921373401 rcx-item__actions rcx-item__actions--reveal-hover rcx-sidebar-item__menu-wrapper"
+                              class="is_View _p-1021290656 _zi-2094244754 _f-1841970073 _ai-121763387 _mw-354604370 _mh-1241200853 _g-1299036281 _d-312410892 _t-1193045479 _o-1507269735 _gtc-1790180973 _m-190079740 _ac-1617022483 _h-1921373401 rcx-item__actions rcx-item__actions--reveal-hover rcx-sidebar-item__menu-wrapper"
                             >
                               <div
-                                class="is_View _d-341075704 _f-1069814357 _o-1838365900 _ai-121763387 _mh-1241200853 _g-1299036281 rcx-item__actions-inner"
+                                class="is_View _d-341075704 _f-1069814357 _o-1119039191 _ai-121763387 _mh-1241200853 _g-1299036281 rcx-item__actions-inner"
                               >
                                 <span
                                   class="rcx-box rcx-box--full rcx-sidebar-item__menu rcx-sidebar-item__menu"
@@ -2009,7 +2009,7 @@ exports[`[SidebarItem Component] renders Extended without crashing 1`] = `
                       role="listitem"
                     >
                       <a
-                        class="is_Text _p-1021290656 _d-341075704 _f-1069814357 _ai-121763387 _mw-842770087 _mh-1241200853 _m-2017216831 _p-788525541 _ls-1251843592 _ws-311910413 _ww-408434756 _br-1718100884 _ff-409630021 _ta-507911453 _td-1861836084 _c-727749181 _fs-347291933 _lh-1925956564 _ls-1782815796 _fw-289165218 _g-691362565 _b-944971190 _c-1830342115 _ow-1994474385 _os-1885772691 _oc-1422281658 _oo-245994692 _bs-1638756697 t_group_rcx-item rcx-item rcx-item--inset-md rcx-sidebar-item rcx-sidebar-item--level-1"
+                        class="is_Text _p-1021290656 _d-341075704 _f-1069814357 _ai-121763387 _mw-842770087 _mh-1241200853 _m-2017216831 _p-788525541 _ls-1251843592 _ws-311910413 _ww-408434756 _br-1718100884 _ff-409630021 _ta-507911453 _td-1861836084 _c-727749181 _fs-347291933 _lh-1925956564 _ls-1782815796 _fw-289165218 _g-691362565 _b-944971190 _c-1830342115 _ow-1994474385 _os-1885772691 _oc-1422281658 _oo-245994692 _bs-1638756697 rcx-item rcx-item--inset-md rcx-sidebar-item rcx-sidebar-item--level-1"
                         href="#"
                       >
                         <div
@@ -2070,10 +2070,10 @@ exports[`[SidebarItem Component] renders Extended without crashing 1`] = `
                               5
                             </span>
                             <div
-                              class="is_View _p-1021290656 _zi-2094244754 _f-1841970073 _ai-121763387 _mw-354604370 _mh-1241200853 _g-1299036281 _d-312410892 _t-1193045479 _o-1780556163 _gtc-370223739 _m-449670226 _ac-1617022483 _h-1921373401 rcx-item__actions rcx-item__actions--reveal-hover rcx-sidebar-item__menu-wrapper"
+                              class="is_View _p-1021290656 _zi-2094244754 _f-1841970073 _ai-121763387 _mw-354604370 _mh-1241200853 _g-1299036281 _d-312410892 _t-1193045479 _o-1507269735 _gtc-1790180973 _m-190079740 _ac-1617022483 _h-1921373401 rcx-item__actions rcx-item__actions--reveal-hover rcx-sidebar-item__menu-wrapper"
                             >
                               <div
-                                class="is_View _d-341075704 _f-1069814357 _o-1838365900 _ai-121763387 _mh-1241200853 _g-1299036281 rcx-item__actions-inner"
+                                class="is_View _d-341075704 _f-1069814357 _o-1119039191 _ai-121763387 _mh-1241200853 _g-1299036281 rcx-item__actions-inner"
                               >
                                 <span
                                   class="rcx-box rcx-box--full rcx-sidebar-item__menu rcx-sidebar-item__menu"
@@ -2106,7 +2106,7 @@ exports[`[SidebarItem Component] renders Extended without crashing 1`] = `
                       role="listitem"
                     >
                       <a
-                        class="is_Text _p-1021290656 _d-341075704 _f-1069814357 _ai-121763387 _mw-842770087 _mh-1241200853 _m-2017216831 _p-788525541 _ls-1251843592 _ws-311910413 _ww-408434756 _br-1718100884 _ff-409630021 _ta-507911453 _td-1861836084 _c-727749181 _fs-347291933 _lh-1925956564 _ls-1782815796 _fw-289165218 _g-691362565 _b-944971190 _c-1830342115 _ow-1994474385 _os-1885772691 _oc-1422281658 _oo-245994692 _bs-1638756697 t_group_rcx-item rcx-item rcx-item--inset-md rcx-sidebar-item rcx-sidebar-item--level-1"
+                        class="is_Text _p-1021290656 _d-341075704 _f-1069814357 _ai-121763387 _mw-842770087 _mh-1241200853 _m-2017216831 _p-788525541 _ls-1251843592 _ws-311910413 _ww-408434756 _br-1718100884 _ff-409630021 _ta-507911453 _td-1861836084 _c-727749181 _fs-347291933 _lh-1925956564 _ls-1782815796 _fw-289165218 _g-691362565 _b-944971190 _c-1830342115 _ow-1994474385 _os-1885772691 _oc-1422281658 _oo-245994692 _bs-1638756697 rcx-item rcx-item--inset-md rcx-sidebar-item rcx-sidebar-item--level-1"
                         href="#"
                       >
                         <div
@@ -2167,10 +2167,10 @@ exports[`[SidebarItem Component] renders Extended without crashing 1`] = `
                               5
                             </span>
                             <div
-                              class="is_View _p-1021290656 _zi-2094244754 _f-1841970073 _ai-121763387 _mw-354604370 _mh-1241200853 _g-1299036281 _d-312410892 _t-1193045479 _o-1780556163 _gtc-370223739 _m-449670226 _ac-1617022483 _h-1921373401 rcx-item__actions rcx-item__actions--reveal-hover rcx-sidebar-item__menu-wrapper"
+                              class="is_View _p-1021290656 _zi-2094244754 _f-1841970073 _ai-121763387 _mw-354604370 _mh-1241200853 _g-1299036281 _d-312410892 _t-1193045479 _o-1507269735 _gtc-1790180973 _m-190079740 _ac-1617022483 _h-1921373401 rcx-item__actions rcx-item__actions--reveal-hover rcx-sidebar-item__menu-wrapper"
                             >
                               <div
-                                class="is_View _d-341075704 _f-1069814357 _o-1838365900 _ai-121763387 _mh-1241200853 _g-1299036281 rcx-item__actions-inner"
+                                class="is_View _d-341075704 _f-1069814357 _o-1119039191 _ai-121763387 _mh-1241200853 _g-1299036281 rcx-item__actions-inner"
                               >
                                 <span
                                   class="rcx-box rcx-box--full rcx-sidebar-item__menu rcx-sidebar-item__menu"
@@ -2203,7 +2203,7 @@ exports[`[SidebarItem Component] renders Extended without crashing 1`] = `
                       role="listitem"
                     >
                       <a
-                        class="is_Text _p-1021290656 _d-341075704 _f-1069814357 _ai-121763387 _mw-842770087 _mh-1241200853 _m-2017216831 _p-788525541 _ls-1251843592 _ws-311910413 _ww-408434756 _br-1718100884 _ff-409630021 _ta-507911453 _td-1861836084 _c-727749181 _fs-347291933 _lh-1925956564 _ls-1782815796 _fw-289165218 _g-691362565 _b-944971190 _c-1830342115 _ow-1994474385 _os-1885772691 _oc-1422281658 _oo-245994692 _bs-1638756697 t_group_rcx-item rcx-item rcx-item--inset-md rcx-sidebar-item rcx-sidebar-item--level-1"
+                        class="is_Text _p-1021290656 _d-341075704 _f-1069814357 _ai-121763387 _mw-842770087 _mh-1241200853 _m-2017216831 _p-788525541 _ls-1251843592 _ws-311910413 _ww-408434756 _br-1718100884 _ff-409630021 _ta-507911453 _td-1861836084 _c-727749181 _fs-347291933 _lh-1925956564 _ls-1782815796 _fw-289165218 _g-691362565 _b-944971190 _c-1830342115 _ow-1994474385 _os-1885772691 _oc-1422281658 _oo-245994692 _bs-1638756697 rcx-item rcx-item--inset-md rcx-sidebar-item rcx-sidebar-item--level-1"
                         href="#"
                       >
                         <div
@@ -2264,10 +2264,10 @@ exports[`[SidebarItem Component] renders Extended without crashing 1`] = `
                               5
                             </span>
                             <div
-                              class="is_View _p-1021290656 _zi-2094244754 _f-1841970073 _ai-121763387 _mw-354604370 _mh-1241200853 _g-1299036281 _d-312410892 _t-1193045479 _o-1780556163 _gtc-370223739 _m-449670226 _ac-1617022483 _h-1921373401 rcx-item__actions rcx-item__actions--reveal-hover rcx-sidebar-item__menu-wrapper"
+                              class="is_View _p-1021290656 _zi-2094244754 _f-1841970073 _ai-121763387 _mw-354604370 _mh-1241200853 _g-1299036281 _d-312410892 _t-1193045479 _o-1507269735 _gtc-1790180973 _m-190079740 _ac-1617022483 _h-1921373401 rcx-item__actions rcx-item__actions--reveal-hover rcx-sidebar-item__menu-wrapper"
                             >
                               <div
-                                class="is_View _d-341075704 _f-1069814357 _o-1838365900 _ai-121763387 _mh-1241200853 _g-1299036281 rcx-item__actions-inner"
+                                class="is_View _d-341075704 _f-1069814357 _o-1119039191 _ai-121763387 _mh-1241200853 _g-1299036281 rcx-item__actions-inner"
                               >
                                 <span
                                   class="rcx-box rcx-box--full rcx-sidebar-item__menu rcx-sidebar-item__menu"
@@ -2300,7 +2300,7 @@ exports[`[SidebarItem Component] renders Extended without crashing 1`] = `
                       role="listitem"
                     >
                       <a
-                        class="is_Text _p-1021290656 _d-341075704 _f-1069814357 _ai-121763387 _mw-842770087 _mh-1241200853 _m-2017216831 _p-788525541 _ls-1251843592 _ws-311910413 _ww-408434756 _br-1718100884 _ff-409630021 _ta-507911453 _td-1861836084 _c-727749181 _fs-347291933 _lh-1925956564 _ls-1782815796 _fw-289165218 _g-691362565 _b-944971190 _c-1830342115 _ow-1994474385 _os-1885772691 _oc-1422281658 _oo-245994692 _bs-1638756697 t_group_rcx-item rcx-item rcx-item--inset-md rcx-sidebar-item rcx-sidebar-item--level-1"
+                        class="is_Text _p-1021290656 _d-341075704 _f-1069814357 _ai-121763387 _mw-842770087 _mh-1241200853 _m-2017216831 _p-788525541 _ls-1251843592 _ws-311910413 _ww-408434756 _br-1718100884 _ff-409630021 _ta-507911453 _td-1861836084 _c-727749181 _fs-347291933 _lh-1925956564 _ls-1782815796 _fw-289165218 _g-691362565 _b-944971190 _c-1830342115 _ow-1994474385 _os-1885772691 _oc-1422281658 _oo-245994692 _bs-1638756697 rcx-item rcx-item--inset-md rcx-sidebar-item rcx-sidebar-item--level-1"
                         href="#"
                       >
                         <div
@@ -2361,10 +2361,10 @@ exports[`[SidebarItem Component] renders Extended without crashing 1`] = `
                               5
                             </span>
                             <div
-                              class="is_View _p-1021290656 _zi-2094244754 _f-1841970073 _ai-121763387 _mw-354604370 _mh-1241200853 _g-1299036281 _d-312410892 _t-1193045479 _o-1780556163 _gtc-370223739 _m-449670226 _ac-1617022483 _h-1921373401 rcx-item__actions rcx-item__actions--reveal-hover rcx-sidebar-item__menu-wrapper"
+                              class="is_View _p-1021290656 _zi-2094244754 _f-1841970073 _ai-121763387 _mw-354604370 _mh-1241200853 _g-1299036281 _d-312410892 _t-1193045479 _o-1507269735 _gtc-1790180973 _m-190079740 _ac-1617022483 _h-1921373401 rcx-item__actions rcx-item__actions--reveal-hover rcx-sidebar-item__menu-wrapper"
                             >
                               <div
-                                class="is_View _d-341075704 _f-1069814357 _o-1838365900 _ai-121763387 _mh-1241200853 _g-1299036281 rcx-item__actions-inner"
+                                class="is_View _d-341075704 _f-1069814357 _o-1119039191 _ai-121763387 _mh-1241200853 _g-1299036281 rcx-item__actions-inner"
                               >
                                 <span
                                   class="rcx-box rcx-box--full rcx-sidebar-item__menu rcx-sidebar-item__menu"
@@ -2470,7 +2470,7 @@ exports[`[SidebarItem Component] renders Medium without crashing 1`] = `
                   role="group"
                 >
                   <div
-                    class="is_Text _p-1021290656 _d-341075704 _f-1069814357 _ai-121763387 _mw-842770087 _mh-499962855 _m-2017216831 _p-536964724 _ls-1251843592 _ws-311910413 _ww-408434756 _br-1718100884 _ff-409630021 _fs-2088488067 _lh-1306743983 _ls-1782815796 _fw-289168101 _g-1760282038 _c-920334418 t_group_rcx-item-group-header rcx-item-group-header rcx-item-group-header--inset-md rcx-sidebar-collapse-group__bar"
+                    class="is_Text _p-1021290656 _d-341075704 _f-1069814357 _ai-121763387 _mw-842770087 _mh-499962855 _m-2017216831 _p-536964724 _ls-1251843592 _ws-311910413 _ww-408434756 _br-1718100884 _ff-409630021 _fs-2088488067 _lh-1306743983 _ls-1782815796 _fw-289168101 _g-1760282038 _c-920334418 rcx-item-group-header rcx-item-group-header--inset-md rcx-sidebar-collapse-group__bar"
                   >
                     <div
                       aria-controls="_r_hj_"
@@ -2502,10 +2502,10 @@ exports[`[SidebarItem Component] renders Medium without crashing 1`] = `
                       </div>
                     </div>
                     <div
-                      class="is_View _p-1021290656 _zi-2094244754 _f-1841970073 _ai-121763387 _mw-354604370 _mh-1241200853 _g-1299036281 _d-312410892 _t-1193045479 _o-1780556163 _gtc-370223739 _m-449670226 rcx-item__actions rcx-item__actions--reveal-hover rcx-sidebar-collapse-group__menu-wrapper"
+                      class="is_View _p-1021290656 _zi-2094244754 _f-1841970073 _ai-121763387 _mw-354604370 _mh-1241200853 _g-1299036281 _d-312410892 _t-1193045479 _o-1507269735 _gtc-1790180973 _m-190079740 rcx-item__actions rcx-item__actions--reveal-hover rcx-sidebar-collapse-group__menu-wrapper"
                     >
                       <div
-                        class="is_View _d-341075704 _f-1069814357 _o-1838365900 _ai-121763387 _mh-1241200853 _g-1299036281 rcx-item__actions-inner"
+                        class="is_View _d-341075704 _f-1069814357 _o-1119039191 _ai-121763387 _mh-1241200853 _g-1299036281 rcx-item__actions-inner"
                       >
                         <span
                           class="rcx-box rcx-box--full rcx-sidebar-collapse-group__menu rcx-sidebar-collapse-group__menu"
@@ -2541,7 +2541,7 @@ exports[`[SidebarItem Component] renders Medium without crashing 1`] = `
                       role="listitem"
                     >
                       <a
-                        class="is_Text _p-1021290656 _d-341075704 _f-1069814357 _ai-121763387 _mw-842770087 _mh-1241200853 _m-2017216831 _p-788525541 _ls-1251843592 _ws-311910413 _ww-408434756 _br-1718100884 _ff-409630021 _ta-507911453 _td-1861836084 _c-727749181 _fs-347291933 _lh-1925956564 _ls-1782815796 _fw-289165218 _g-47172425 _b-944971190 _c-1830342115 _ow-1994474385 _os-1885772691 _oc-1422281658 _oo-245994692 _bs-1638756697 t_group_rcx-item rcx-item rcx-item--inset-md rcx-sidebar-item rcx-sidebar-item--level-1"
+                        class="is_Text _p-1021290656 _d-341075704 _f-1069814357 _ai-121763387 _mw-842770087 _mh-1241200853 _m-2017216831 _p-788525541 _ls-1251843592 _ws-311910413 _ww-408434756 _br-1718100884 _ff-409630021 _ta-507911453 _td-1861836084 _c-727749181 _fs-347291933 _lh-1925956564 _ls-1782815796 _fw-289165218 _g-47172425 _b-944971190 _c-1830342115 _ow-1994474385 _os-1885772691 _oc-1422281658 _oo-245994692 _bs-1638756697 rcx-item rcx-item--inset-md rcx-sidebar-item rcx-sidebar-item--level-1"
                         href="#"
                       >
                         <div
@@ -2582,10 +2582,10 @@ exports[`[SidebarItem Component] renders Medium without crashing 1`] = `
                           5
                         </span>
                         <div
-                          class="is_View _p-1021290656 _zi-2094244754 _f-1841970073 _ai-121763387 _mw-354604370 _mh-1241200853 _g-1299036281 _d-312410892 _t-1193045479 _o-1780556163 _gtc-370223739 _m-449670226 rcx-item__actions rcx-item__actions--reveal-hover rcx-sidebar-item__menu-wrapper"
+                          class="is_View _p-1021290656 _zi-2094244754 _f-1841970073 _ai-121763387 _mw-354604370 _mh-1241200853 _g-1299036281 _d-312410892 _t-1193045479 _o-1507269735 _gtc-1790180973 _m-190079740 rcx-item__actions rcx-item__actions--reveal-hover rcx-sidebar-item__menu-wrapper"
                         >
                           <div
-                            class="is_View _d-341075704 _f-1069814357 _o-1838365900 _ai-121763387 _mh-1241200853 _g-1299036281 rcx-item__actions-inner"
+                            class="is_View _d-341075704 _f-1069814357 _o-1119039191 _ai-121763387 _mh-1241200853 _g-1299036281 rcx-item__actions-inner"
                           >
                             <span
                               class="rcx-box rcx-box--full rcx-sidebar-item__menu rcx-sidebar-item__menu"
@@ -2616,7 +2616,7 @@ exports[`[SidebarItem Component] renders Medium without crashing 1`] = `
                       role="listitem"
                     >
                       <a
-                        class="is_Text _p-1021290656 _d-341075704 _f-1069814357 _ai-121763387 _mw-842770087 _mh-1241200853 _m-2017216831 _p-788525541 _ls-1251843592 _ws-311910413 _ww-408434756 _br-1718100884 _ff-409630021 _ta-507911453 _td-1861836084 _c-727749181 _fs-347291933 _lh-1925956564 _ls-1782815796 _fw-289165218 _g-47172425 _b-944971190 _c-1830342115 _ow-1994474385 _os-1885772691 _oc-1422281658 _oo-245994692 _bs-1638756697 t_group_rcx-item rcx-item rcx-item--inset-md rcx-sidebar-item rcx-sidebar-item--level-1"
+                        class="is_Text _p-1021290656 _d-341075704 _f-1069814357 _ai-121763387 _mw-842770087 _mh-1241200853 _m-2017216831 _p-788525541 _ls-1251843592 _ws-311910413 _ww-408434756 _br-1718100884 _ff-409630021 _ta-507911453 _td-1861836084 _c-727749181 _fs-347291933 _lh-1925956564 _ls-1782815796 _fw-289165218 _g-47172425 _b-944971190 _c-1830342115 _ow-1994474385 _os-1885772691 _oc-1422281658 _oo-245994692 _bs-1638756697 rcx-item rcx-item--inset-md rcx-sidebar-item rcx-sidebar-item--level-1"
                         href="#"
                       >
                         <div
@@ -2657,10 +2657,10 @@ exports[`[SidebarItem Component] renders Medium without crashing 1`] = `
                           5
                         </span>
                         <div
-                          class="is_View _p-1021290656 _zi-2094244754 _f-1841970073 _ai-121763387 _mw-354604370 _mh-1241200853 _g-1299036281 _d-312410892 _t-1193045479 _o-1780556163 _gtc-370223739 _m-449670226 rcx-item__actions rcx-item__actions--reveal-hover rcx-sidebar-item__menu-wrapper"
+                          class="is_View _p-1021290656 _zi-2094244754 _f-1841970073 _ai-121763387 _mw-354604370 _mh-1241200853 _g-1299036281 _d-312410892 _t-1193045479 _o-1507269735 _gtc-1790180973 _m-190079740 rcx-item__actions rcx-item__actions--reveal-hover rcx-sidebar-item__menu-wrapper"
                         >
                           <div
-                            class="is_View _d-341075704 _f-1069814357 _o-1838365900 _ai-121763387 _mh-1241200853 _g-1299036281 rcx-item__actions-inner"
+                            class="is_View _d-341075704 _f-1069814357 _o-1119039191 _ai-121763387 _mh-1241200853 _g-1299036281 rcx-item__actions-inner"
                           >
                             <span
                               class="rcx-box rcx-box--full rcx-sidebar-item__menu rcx-sidebar-item__menu"
@@ -2691,7 +2691,7 @@ exports[`[SidebarItem Component] renders Medium without crashing 1`] = `
                       role="listitem"
                     >
                       <a
-                        class="is_Text _p-1021290656 _d-341075704 _f-1069814357 _ai-121763387 _mw-842770087 _mh-1241200853 _m-2017216831 _p-788525541 _ls-1251843592 _ws-311910413 _ww-408434756 _br-1718100884 _ff-409630021 _ta-507911453 _td-1861836084 _c-727749181 _fs-347291933 _lh-1925956564 _ls-1782815796 _fw-289165218 _g-47172425 _b-944971190 _c-1830342115 _ow-1994474385 _os-1885772691 _oc-1422281658 _oo-245994692 _bs-1638756697 t_group_rcx-item rcx-item rcx-item--inset-md rcx-sidebar-item rcx-sidebar-item--level-1"
+                        class="is_Text _p-1021290656 _d-341075704 _f-1069814357 _ai-121763387 _mw-842770087 _mh-1241200853 _m-2017216831 _p-788525541 _ls-1251843592 _ws-311910413 _ww-408434756 _br-1718100884 _ff-409630021 _ta-507911453 _td-1861836084 _c-727749181 _fs-347291933 _lh-1925956564 _ls-1782815796 _fw-289165218 _g-47172425 _b-944971190 _c-1830342115 _ow-1994474385 _os-1885772691 _oc-1422281658 _oo-245994692 _bs-1638756697 rcx-item rcx-item--inset-md rcx-sidebar-item rcx-sidebar-item--level-1"
                         href="#"
                       >
                         <div
@@ -2732,10 +2732,10 @@ exports[`[SidebarItem Component] renders Medium without crashing 1`] = `
                           5
                         </span>
                         <div
-                          class="is_View _p-1021290656 _zi-2094244754 _f-1841970073 _ai-121763387 _mw-354604370 _mh-1241200853 _g-1299036281 _d-312410892 _t-1193045479 _o-1780556163 _gtc-370223739 _m-449670226 rcx-item__actions rcx-item__actions--reveal-hover rcx-sidebar-item__menu-wrapper"
+                          class="is_View _p-1021290656 _zi-2094244754 _f-1841970073 _ai-121763387 _mw-354604370 _mh-1241200853 _g-1299036281 _d-312410892 _t-1193045479 _o-1507269735 _gtc-1790180973 _m-190079740 rcx-item__actions rcx-item__actions--reveal-hover rcx-sidebar-item__menu-wrapper"
                         >
                           <div
-                            class="is_View _d-341075704 _f-1069814357 _o-1838365900 _ai-121763387 _mh-1241200853 _g-1299036281 rcx-item__actions-inner"
+                            class="is_View _d-341075704 _f-1069814357 _o-1119039191 _ai-121763387 _mh-1241200853 _g-1299036281 rcx-item__actions-inner"
                           >
                             <span
                               class="rcx-box rcx-box--full rcx-sidebar-item__menu rcx-sidebar-item__menu"
@@ -2766,7 +2766,7 @@ exports[`[SidebarItem Component] renders Medium without crashing 1`] = `
                       role="listitem"
                     >
                       <a
-                        class="is_Text _p-1021290656 _d-341075704 _f-1069814357 _ai-121763387 _mw-842770087 _mh-1241200853 _m-2017216831 _p-788525541 _ls-1251843592 _ws-311910413 _ww-408434756 _br-1718100884 _ff-409630021 _ta-507911453 _td-1861836084 _c-727749181 _fs-347291933 _lh-1925956564 _ls-1782815796 _fw-289165218 _g-47172425 _b-944971190 _c-1830342115 _ow-1994474385 _os-1885772691 _oc-1422281658 _oo-245994692 _bs-1638756697 t_group_rcx-item rcx-item rcx-item--inset-md rcx-sidebar-item rcx-sidebar-item--level-1"
+                        class="is_Text _p-1021290656 _d-341075704 _f-1069814357 _ai-121763387 _mw-842770087 _mh-1241200853 _m-2017216831 _p-788525541 _ls-1251843592 _ws-311910413 _ww-408434756 _br-1718100884 _ff-409630021 _ta-507911453 _td-1861836084 _c-727749181 _fs-347291933 _lh-1925956564 _ls-1782815796 _fw-289165218 _g-47172425 _b-944971190 _c-1830342115 _ow-1994474385 _os-1885772691 _oc-1422281658 _oo-245994692 _bs-1638756697 rcx-item rcx-item--inset-md rcx-sidebar-item rcx-sidebar-item--level-1"
                         href="#"
                       >
                         <div
@@ -2807,10 +2807,10 @@ exports[`[SidebarItem Component] renders Medium without crashing 1`] = `
                           5
                         </span>
                         <div
-                          class="is_View _p-1021290656 _zi-2094244754 _f-1841970073 _ai-121763387 _mw-354604370 _mh-1241200853 _g-1299036281 _d-312410892 _t-1193045479 _o-1780556163 _gtc-370223739 _m-449670226 rcx-item__actions rcx-item__actions--reveal-hover rcx-sidebar-item__menu-wrapper"
+                          class="is_View _p-1021290656 _zi-2094244754 _f-1841970073 _ai-121763387 _mw-354604370 _mh-1241200853 _g-1299036281 _d-312410892 _t-1193045479 _o-1507269735 _gtc-1790180973 _m-190079740 rcx-item__actions rcx-item__actions--reveal-hover rcx-sidebar-item__menu-wrapper"
                         >
                           <div
-                            class="is_View _d-341075704 _f-1069814357 _o-1838365900 _ai-121763387 _mh-1241200853 _g-1299036281 rcx-item__actions-inner"
+                            class="is_View _d-341075704 _f-1069814357 _o-1119039191 _ai-121763387 _mh-1241200853 _g-1299036281 rcx-item__actions-inner"
                           >
                             <span
                               class="rcx-box rcx-box--full rcx-sidebar-item__menu rcx-sidebar-item__menu"
@@ -2841,7 +2841,7 @@ exports[`[SidebarItem Component] renders Medium without crashing 1`] = `
                       role="listitem"
                     >
                       <a
-                        class="is_Text _p-1021290656 _d-341075704 _f-1069814357 _ai-121763387 _mw-842770087 _mh-1241200853 _m-2017216831 _p-788525541 _ls-1251843592 _ws-311910413 _ww-408434756 _br-1718100884 _ff-409630021 _ta-507911453 _td-1861836084 _c-727749181 _fs-347291933 _lh-1925956564 _ls-1782815796 _fw-289165218 _g-47172425 _b-944971190 _c-1830342115 _ow-1994474385 _os-1885772691 _oc-1422281658 _oo-245994692 _bs-1638756697 t_group_rcx-item rcx-item rcx-item--inset-md rcx-sidebar-item rcx-sidebar-item--level-1"
+                        class="is_Text _p-1021290656 _d-341075704 _f-1069814357 _ai-121763387 _mw-842770087 _mh-1241200853 _m-2017216831 _p-788525541 _ls-1251843592 _ws-311910413 _ww-408434756 _br-1718100884 _ff-409630021 _ta-507911453 _td-1861836084 _c-727749181 _fs-347291933 _lh-1925956564 _ls-1782815796 _fw-289165218 _g-47172425 _b-944971190 _c-1830342115 _ow-1994474385 _os-1885772691 _oc-1422281658 _oo-245994692 _bs-1638756697 rcx-item rcx-item--inset-md rcx-sidebar-item rcx-sidebar-item--level-1"
                         href="#"
                       >
                         <div
@@ -2882,10 +2882,10 @@ exports[`[SidebarItem Component] renders Medium without crashing 1`] = `
                           5
                         </span>
                         <div
-                          class="is_View _p-1021290656 _zi-2094244754 _f-1841970073 _ai-121763387 _mw-354604370 _mh-1241200853 _g-1299036281 _d-312410892 _t-1193045479 _o-1780556163 _gtc-370223739 _m-449670226 rcx-item__actions rcx-item__actions--reveal-hover rcx-sidebar-item__menu-wrapper"
+                          class="is_View _p-1021290656 _zi-2094244754 _f-1841970073 _ai-121763387 _mw-354604370 _mh-1241200853 _g-1299036281 _d-312410892 _t-1193045479 _o-1507269735 _gtc-1790180973 _m-190079740 rcx-item__actions rcx-item__actions--reveal-hover rcx-sidebar-item__menu-wrapper"
                         >
                           <div
-                            class="is_View _d-341075704 _f-1069814357 _o-1838365900 _ai-121763387 _mh-1241200853 _g-1299036281 rcx-item__actions-inner"
+                            class="is_View _d-341075704 _f-1069814357 _o-1119039191 _ai-121763387 _mh-1241200853 _g-1299036281 rcx-item__actions-inner"
                           >
                             <span
                               class="rcx-box rcx-box--full rcx-sidebar-item__menu rcx-sidebar-item__menu"
@@ -2916,7 +2916,7 @@ exports[`[SidebarItem Component] renders Medium without crashing 1`] = `
                       role="listitem"
                     >
                       <a
-                        class="is_Text _p-1021290656 _d-341075704 _f-1069814357 _ai-121763387 _mw-842770087 _mh-1241200853 _m-2017216831 _p-788525541 _ls-1251843592 _ws-311910413 _ww-408434756 _br-1718100884 _ff-409630021 _ta-507911453 _td-1861836084 _c-727749181 _fs-347291933 _lh-1925956564 _ls-1782815796 _fw-289165218 _g-47172425 _b-944971190 _c-1830342115 _ow-1994474385 _os-1885772691 _oc-1422281658 _oo-245994692 _bs-1638756697 t_group_rcx-item rcx-item rcx-item--inset-md rcx-sidebar-item rcx-sidebar-item--level-1"
+                        class="is_Text _p-1021290656 _d-341075704 _f-1069814357 _ai-121763387 _mw-842770087 _mh-1241200853 _m-2017216831 _p-788525541 _ls-1251843592 _ws-311910413 _ww-408434756 _br-1718100884 _ff-409630021 _ta-507911453 _td-1861836084 _c-727749181 _fs-347291933 _lh-1925956564 _ls-1782815796 _fw-289165218 _g-47172425 _b-944971190 _c-1830342115 _ow-1994474385 _os-1885772691 _oc-1422281658 _oo-245994692 _bs-1638756697 rcx-item rcx-item--inset-md rcx-sidebar-item rcx-sidebar-item--level-1"
                         href="#"
                       >
                         <div
@@ -2957,10 +2957,10 @@ exports[`[SidebarItem Component] renders Medium without crashing 1`] = `
                           5
                         </span>
                         <div
-                          class="is_View _p-1021290656 _zi-2094244754 _f-1841970073 _ai-121763387 _mw-354604370 _mh-1241200853 _g-1299036281 _d-312410892 _t-1193045479 _o-1780556163 _gtc-370223739 _m-449670226 rcx-item__actions rcx-item__actions--reveal-hover rcx-sidebar-item__menu-wrapper"
+                          class="is_View _p-1021290656 _zi-2094244754 _f-1841970073 _ai-121763387 _mw-354604370 _mh-1241200853 _g-1299036281 _d-312410892 _t-1193045479 _o-1507269735 _gtc-1790180973 _m-190079740 rcx-item__actions rcx-item__actions--reveal-hover rcx-sidebar-item__menu-wrapper"
                         >
                           <div
-                            class="is_View _d-341075704 _f-1069814357 _o-1838365900 _ai-121763387 _mh-1241200853 _g-1299036281 rcx-item__actions-inner"
+                            class="is_View _d-341075704 _f-1069814357 _o-1119039191 _ai-121763387 _mh-1241200853 _g-1299036281 rcx-item__actions-inner"
                           >
                             <span
                               class="rcx-box rcx-box--full rcx-sidebar-item__menu rcx-sidebar-item__menu"
@@ -2991,7 +2991,7 @@ exports[`[SidebarItem Component] renders Medium without crashing 1`] = `
                       role="listitem"
                     >
                       <a
-                        class="is_Text _p-1021290656 _d-341075704 _f-1069814357 _ai-121763387 _mw-842770087 _mh-1241200853 _m-2017216831 _p-788525541 _ls-1251843592 _ws-311910413 _ww-408434756 _br-1718100884 _ff-409630021 _ta-507911453 _td-1861836084 _c-727749181 _fs-347291933 _lh-1925956564 _ls-1782815796 _fw-289165218 _g-47172425 _b-944971190 _c-1830342115 _ow-1994474385 _os-1885772691 _oc-1422281658 _oo-245994692 _bs-1638756697 t_group_rcx-item rcx-item rcx-item--inset-md rcx-sidebar-item rcx-sidebar-item--level-1"
+                        class="is_Text _p-1021290656 _d-341075704 _f-1069814357 _ai-121763387 _mw-842770087 _mh-1241200853 _m-2017216831 _p-788525541 _ls-1251843592 _ws-311910413 _ww-408434756 _br-1718100884 _ff-409630021 _ta-507911453 _td-1861836084 _c-727749181 _fs-347291933 _lh-1925956564 _ls-1782815796 _fw-289165218 _g-47172425 _b-944971190 _c-1830342115 _ow-1994474385 _os-1885772691 _oc-1422281658 _oo-245994692 _bs-1638756697 rcx-item rcx-item--inset-md rcx-sidebar-item rcx-sidebar-item--level-1"
                         href="#"
                       >
                         <div
@@ -3032,10 +3032,10 @@ exports[`[SidebarItem Component] renders Medium without crashing 1`] = `
                           5
                         </span>
                         <div
-                          class="is_View _p-1021290656 _zi-2094244754 _f-1841970073 _ai-121763387 _mw-354604370 _mh-1241200853 _g-1299036281 _d-312410892 _t-1193045479 _o-1780556163 _gtc-370223739 _m-449670226 rcx-item__actions rcx-item__actions--reveal-hover rcx-sidebar-item__menu-wrapper"
+                          class="is_View _p-1021290656 _zi-2094244754 _f-1841970073 _ai-121763387 _mw-354604370 _mh-1241200853 _g-1299036281 _d-312410892 _t-1193045479 _o-1507269735 _gtc-1790180973 _m-190079740 rcx-item__actions rcx-item__actions--reveal-hover rcx-sidebar-item__menu-wrapper"
                         >
                           <div
-                            class="is_View _d-341075704 _f-1069814357 _o-1838365900 _ai-121763387 _mh-1241200853 _g-1299036281 rcx-item__actions-inner"
+                            class="is_View _d-341075704 _f-1069814357 _o-1119039191 _ai-121763387 _mh-1241200853 _g-1299036281 rcx-item__actions-inner"
                           >
                             <span
                               class="rcx-box rcx-box--full rcx-sidebar-item__menu rcx-sidebar-item__menu"
@@ -3066,7 +3066,7 @@ exports[`[SidebarItem Component] renders Medium without crashing 1`] = `
                       role="listitem"
                     >
                       <a
-                        class="is_Text _p-1021290656 _d-341075704 _f-1069814357 _ai-121763387 _mw-842770087 _mh-1241200853 _m-2017216831 _p-788525541 _ls-1251843592 _ws-311910413 _ww-408434756 _br-1718100884 _ff-409630021 _ta-507911453 _td-1861836084 _c-727749181 _fs-347291933 _lh-1925956564 _ls-1782815796 _fw-289165218 _g-47172425 _b-944971190 _c-1830342115 _ow-1994474385 _os-1885772691 _oc-1422281658 _oo-245994692 _bs-1638756697 t_group_rcx-item rcx-item rcx-item--inset-md rcx-sidebar-item rcx-sidebar-item--level-1"
+                        class="is_Text _p-1021290656 _d-341075704 _f-1069814357 _ai-121763387 _mw-842770087 _mh-1241200853 _m-2017216831 _p-788525541 _ls-1251843592 _ws-311910413 _ww-408434756 _br-1718100884 _ff-409630021 _ta-507911453 _td-1861836084 _c-727749181 _fs-347291933 _lh-1925956564 _ls-1782815796 _fw-289165218 _g-47172425 _b-944971190 _c-1830342115 _ow-1994474385 _os-1885772691 _oc-1422281658 _oo-245994692 _bs-1638756697 rcx-item rcx-item--inset-md rcx-sidebar-item rcx-sidebar-item--level-1"
                         href="#"
                       >
                         <div
@@ -3107,10 +3107,10 @@ exports[`[SidebarItem Component] renders Medium without crashing 1`] = `
                           5
                         </span>
                         <div
-                          class="is_View _p-1021290656 _zi-2094244754 _f-1841970073 _ai-121763387 _mw-354604370 _mh-1241200853 _g-1299036281 _d-312410892 _t-1193045479 _o-1780556163 _gtc-370223739 _m-449670226 rcx-item__actions rcx-item__actions--reveal-hover rcx-sidebar-item__menu-wrapper"
+                          class="is_View _p-1021290656 _zi-2094244754 _f-1841970073 _ai-121763387 _mw-354604370 _mh-1241200853 _g-1299036281 _d-312410892 _t-1193045479 _o-1507269735 _gtc-1790180973 _m-190079740 rcx-item__actions rcx-item__actions--reveal-hover rcx-sidebar-item__menu-wrapper"
                         >
                           <div
-                            class="is_View _d-341075704 _f-1069814357 _o-1838365900 _ai-121763387 _mh-1241200853 _g-1299036281 rcx-item__actions-inner"
+                            class="is_View _d-341075704 _f-1069814357 _o-1119039191 _ai-121763387 _mh-1241200853 _g-1299036281 rcx-item__actions-inner"
                           >
                             <span
                               class="rcx-box rcx-box--full rcx-sidebar-item__menu rcx-sidebar-item__menu"
@@ -3214,7 +3214,7 @@ exports[`[SidebarItem Component] renders RoomRowCondensed without crashing 1`] =
                   role="group"
                 >
                   <div
-                    class="is_Text _p-1021290656 _d-341075704 _f-1069814357 _ai-121763387 _mw-842770087 _mh-499962855 _m-2017216831 _p-536964724 _ls-1251843592 _ws-311910413 _ww-408434756 _br-1718100884 _ff-409630021 _fs-2088488067 _lh-1306743983 _ls-1782815796 _fw-289168101 _g-1760282038 _c-920334418 t_group_rcx-item-group-header rcx-item-group-header rcx-item-group-header--inset-md rcx-sidebar-collapse-group__bar"
+                    class="is_Text _p-1021290656 _d-341075704 _f-1069814357 _ai-121763387 _mw-842770087 _mh-499962855 _m-2017216831 _p-536964724 _ls-1251843592 _ws-311910413 _ww-408434756 _br-1718100884 _ff-409630021 _fs-2088488067 _lh-1306743983 _ls-1782815796 _fw-289168101 _g-1760282038 _c-920334418 rcx-item-group-header rcx-item-group-header--inset-md rcx-sidebar-collapse-group__bar"
                   >
                     <div
                       aria-controls="_r_mq_"
@@ -3246,10 +3246,10 @@ exports[`[SidebarItem Component] renders RoomRowCondensed without crashing 1`] =
                       </div>
                     </div>
                     <div
-                      class="is_View _p-1021290656 _zi-2094244754 _f-1841970073 _ai-121763387 _mw-354604370 _mh-1241200853 _g-1299036281 _d-312410892 _t-1193045479 _o-1780556163 _gtc-370223739 _m-449670226 rcx-item__actions rcx-item__actions--reveal-hover rcx-sidebar-collapse-group__menu-wrapper"
+                      class="is_View _p-1021290656 _zi-2094244754 _f-1841970073 _ai-121763387 _mw-354604370 _mh-1241200853 _g-1299036281 _d-312410892 _t-1193045479 _o-1507269735 _gtc-1790180973 _m-190079740 rcx-item__actions rcx-item__actions--reveal-hover rcx-sidebar-collapse-group__menu-wrapper"
                     >
                       <div
-                        class="is_View _d-341075704 _f-1069814357 _o-1838365900 _ai-121763387 _mh-1241200853 _g-1299036281 rcx-item__actions-inner"
+                        class="is_View _d-341075704 _f-1069814357 _o-1119039191 _ai-121763387 _mh-1241200853 _g-1299036281 rcx-item__actions-inner"
                       >
                         <span
                           class="rcx-box rcx-box--full rcx-sidebar-collapse-group__menu rcx-sidebar-collapse-group__menu"
@@ -3285,7 +3285,7 @@ exports[`[SidebarItem Component] renders RoomRowCondensed without crashing 1`] =
                       role="listitem"
                     >
                       <div
-                        class="is_Text _p-1021290656 _d-341075704 _f-1069814357 _ai-121763387 _mw-842770087 _mh-1241200853 _m-2017216831 _p-788525541 _ls-1251843592 _ws-311910413 _ww-408434756 _br-1718100884 _ff-409630021 _ta-507911453 _td-1861836084 _c-727749181 _fs-347291933 _lh-1925956564 _ls-1782815796 _fw-289165218 _g-47172425 _b-944971190 _c-1830342115 _ow-1994474385 _os-1885772691 _oc-1422281658 _oo-245994692 _bs-1638756697 t_group_rcx-item rcx-item rcx-item--inset-md rcx-sidebar-item rcx-sidebar-item--level-1"
+                        class="is_Text _p-1021290656 _d-341075704 _f-1069814357 _ai-121763387 _mw-842770087 _mh-1241200853 _m-2017216831 _p-788525541 _ls-1251843592 _ws-311910413 _ww-408434756 _br-1718100884 _ff-409630021 _ta-507911453 _td-1861836084 _c-727749181 _fs-347291933 _lh-1925956564 _ls-1782815796 _fw-289165218 _g-47172425 _b-944971190 _c-1830342115 _ow-1994474385 _os-1885772691 _oc-1422281658 _oo-245994692 _bs-1638756697 rcx-item rcx-item--inset-md rcx-sidebar-item rcx-sidebar-item--level-1"
                       >
                         <div
                           class="is_Text _d-341075704 _f-1128736932 _jc-1099843255 _ai-121763387 _mw-354604370 _ws-311910413 _ww-408434756 rcx-item__media rcx-sidebar-item__avatar"
@@ -3330,10 +3330,10 @@ exports[`[SidebarItem Component] renders RoomRowCondensed without crashing 1`] =
                           </a>
                         </div>
                         <div
-                          class="is_View _p-1021290656 _zi-2094244754 _f-1841970073 _ai-121763387 _mw-354604370 _mh-1241200853 _g-1299036281 _d-312410892 _t-1193045479 _o-1780556163 _gtc-370223739 _m-449670226 rcx-item__actions rcx-item__actions--reveal-hover rcx-sidebar-item__menu-wrapper"
+                          class="is_View _p-1021290656 _zi-2094244754 _f-1841970073 _ai-121763387 _mw-354604370 _mh-1241200853 _g-1299036281 _d-312410892 _t-1193045479 _o-1507269735 _gtc-1790180973 _m-190079740 rcx-item__actions rcx-item__actions--reveal-hover rcx-sidebar-item__menu-wrapper"
                         >
                           <div
-                            class="is_View _d-341075704 _f-1069814357 _o-1838365900 _ai-121763387 _mh-1241200853 _g-1299036281 rcx-item__actions-inner"
+                            class="is_View _d-341075704 _f-1069814357 _o-1119039191 _ai-121763387 _mh-1241200853 _g-1299036281 rcx-item__actions-inner"
                           >
                             <span
                               class="rcx-box rcx-box--full rcx-sidebar-item__menu rcx-sidebar-item__menu"
@@ -3364,7 +3364,7 @@ exports[`[SidebarItem Component] renders RoomRowCondensed without crashing 1`] =
                       role="listitem"
                     >
                       <div
-                        class="is_Text _p-1021290656 _d-341075704 _f-1069814357 _ai-121763387 _mw-842770087 _mh-1241200853 _m-2017216831 _p-788525541 _ls-1251843592 _ws-311910413 _ww-408434756 _br-1718100884 _ff-409630021 _ta-507911453 _td-1861836084 _c-727749181 _fs-347291933 _lh-1925956564 _ls-1782815796 _fw-289165218 _g-47172425 _b-944971190 _c-1830342115 _ow-1994474385 _os-1885772691 _oc-1422281658 _oo-245994692 _bs-1638756697 t_group_rcx-item rcx-item rcx-item--inset-md rcx-item--highlighted rcx-sidebar-item rcx-sidebar-item--level-1"
+                        class="is_Text _p-1021290656 _d-341075704 _f-1069814357 _ai-121763387 _mw-842770087 _mh-1241200853 _m-2017216831 _p-788525541 _ls-1251843592 _ws-311910413 _ww-408434756 _br-1718100884 _ff-409630021 _ta-507911453 _td-1861836084 _c-727749181 _fs-347291933 _lh-1925956564 _ls-1782815796 _fw-289165218 _g-47172425 _b-944971190 _c-1830342115 _ow-1994474385 _os-1885772691 _oc-1422281658 _oo-245994692 _bs-1638756697 rcx-item rcx-item--inset-md rcx-item--highlighted rcx-sidebar-item rcx-sidebar-item--level-1"
                       >
                         <div
                           class="is_Text _d-341075704 _f-1128736932 _jc-1099843255 _ai-121763387 _mw-354604370 _ws-311910413 _ww-408434756 rcx-item__media rcx-sidebar-item__avatar"
@@ -3415,10 +3415,10 @@ exports[`[SidebarItem Component] renders RoomRowCondensed without crashing 1`] =
                           3
                         </span>
                         <div
-                          class="is_View _p-1021290656 _zi-2094244754 _f-1841970073 _ai-121763387 _mw-354604370 _mh-1241200853 _g-1299036281 _d-312410892 _t-1193045479 _o-1780556163 _gtc-370223739 _m-449670226 rcx-item__actions rcx-item__actions--reveal-hover rcx-sidebar-item__menu-wrapper"
+                          class="is_View _p-1021290656 _zi-2094244754 _f-1841970073 _ai-121763387 _mw-354604370 _mh-1241200853 _g-1299036281 _d-312410892 _t-1193045479 _o-1507269735 _gtc-1790180973 _m-190079740 rcx-item__actions rcx-item__actions--reveal-hover rcx-sidebar-item__menu-wrapper"
                         >
                           <div
-                            class="is_View _d-341075704 _f-1069814357 _o-1838365900 _ai-121763387 _mh-1241200853 _g-1299036281 rcx-item__actions-inner"
+                            class="is_View _d-341075704 _f-1069814357 _o-1119039191 _ai-121763387 _mh-1241200853 _g-1299036281 rcx-item__actions-inner"
                           >
                             <span
                               class="rcx-box rcx-box--full rcx-sidebar-item__menu rcx-sidebar-item__menu"
@@ -3449,7 +3449,7 @@ exports[`[SidebarItem Component] renders RoomRowCondensed without crashing 1`] =
                       role="listitem"
                     >
                       <div
-                        class="is_Text _p-1021290656 _d-341075704 _f-1069814357 _ai-121763387 _mw-842770087 _mh-1241200853 _m-2017216831 _p-788525541 _ls-1251843592 _ws-311910413 _ww-408434756 _br-1718100884 _ff-409630021 _ta-507911453 _td-1861836084 _c-727749181 _fs-347291933 _lh-1925956564 _ls-1782815796 _fw-289165218 _g-47172425 _b-2012676596 _c-1830342115 _ow-1994474385 _os-1885772691 _oc-1422281658 _oo-245994692 _bs-1638756697 t_group_rcx-item rcx-item rcx-item--inset-md rcx-item--selected rcx-sidebar-item rcx-sidebar-item--selected rcx-sidebar-item--level-1"
+                        class="is_Text _p-1021290656 _d-341075704 _f-1069814357 _ai-121763387 _mw-842770087 _mh-1241200853 _m-2017216831 _p-788525541 _ls-1251843592 _ws-311910413 _ww-408434756 _br-1718100884 _ff-409630021 _ta-507911453 _td-1861836084 _c-727749181 _fs-347291933 _lh-1925956564 _ls-1782815796 _fw-289165218 _g-47172425 _b-2012676596 _c-1830342115 _ow-1994474385 _os-1885772691 _oc-1422281658 _oo-245994692 _bs-1638756697 rcx-item rcx-item--inset-md rcx-item--selected rcx-sidebar-item rcx-sidebar-item--selected rcx-sidebar-item--level-1"
                       >
                         <div
                           class="is_Text _d-341075704 _f-1128736932 _jc-1099843255 _ai-121763387 _mw-354604370 _ws-311910413 _ww-408434756 rcx-item__media rcx-sidebar-item__avatar"
@@ -3495,10 +3495,10 @@ exports[`[SidebarItem Component] renders RoomRowCondensed without crashing 1`] =
                           </a>
                         </div>
                         <div
-                          class="is_View _p-1021290656 _zi-2094244754 _f-1841970073 _ai-121763387 _mw-354604370 _mh-1241200853 _g-1299036281 _d-312410892 _t-1193045479 _o-1780556163 _gtc-370223739 _m-449670226 rcx-item__actions rcx-item__actions--reveal-hover rcx-sidebar-item__menu-wrapper"
+                          class="is_View _p-1021290656 _zi-2094244754 _f-1841970073 _ai-121763387 _mw-354604370 _mh-1241200853 _g-1299036281 _d-312410892 _t-1193045479 _o-1507269735 _gtc-1790180973 _m-190079740 rcx-item__actions rcx-item__actions--reveal-hover rcx-sidebar-item__menu-wrapper"
                         >
                           <div
-                            class="is_View _d-341075704 _f-1069814357 _o-1838365900 _ai-121763387 _mh-1241200853 _g-1299036281 rcx-item__actions-inner"
+                            class="is_View _d-341075704 _f-1069814357 _o-1119039191 _ai-121763387 _mh-1241200853 _g-1299036281 rcx-item__actions-inner"
                           >
                             <span
                               class="rcx-box rcx-box--full rcx-sidebar-item__menu rcx-sidebar-item__menu"
@@ -3529,7 +3529,7 @@ exports[`[SidebarItem Component] renders RoomRowCondensed without crashing 1`] =
                       role="listitem"
                     >
                       <div
-                        class="is_Text _p-1021290656 _d-341075704 _f-1069814357 _ai-121763387 _mw-842770087 _mh-1241200853 _m-2017216831 _p-788525541 _ls-1251843592 _ws-311910413 _ww-408434756 _br-1718100884 _ff-409630021 _ta-507911453 _td-1861836084 _c-727749181 _fs-347291933 _lh-1925956564 _ls-1782815796 _fw-289165218 _g-47172425 _b-944971190 _c-1830342115 _ow-1994474385 _os-1885772691 _oc-1422281658 _oo-245994692 _bs-1638756697 t_group_rcx-item rcx-item rcx-item--inset-md rcx-sidebar-item rcx-sidebar-item--level-1"
+                        class="is_Text _p-1021290656 _d-341075704 _f-1069814357 _ai-121763387 _mw-842770087 _mh-1241200853 _m-2017216831 _p-788525541 _ls-1251843592 _ws-311910413 _ww-408434756 _br-1718100884 _ff-409630021 _ta-507911453 _td-1861836084 _c-727749181 _fs-347291933 _lh-1925956564 _ls-1782815796 _fw-289165218 _g-47172425 _b-944971190 _c-1830342115 _ow-1994474385 _os-1885772691 _oc-1422281658 _oo-245994692 _bs-1638756697 rcx-item rcx-item--inset-md rcx-sidebar-item rcx-sidebar-item--level-1"
                       >
                         <div
                           class="is_Text _d-341075704 _f-1128736932 _jc-1099843255 _ai-121763387 _mw-354604370 _ws-311910413 _ww-408434756 rcx-item__media rcx-sidebar-item__avatar"
@@ -3602,10 +3602,10 @@ exports[`[SidebarItem Component] renders RoomRowCondensed without crashing 1`] =
                           </button>
                         </div>
                         <div
-                          class="is_View _p-1021290656 _zi-2094244754 _f-1841970073 _ai-121763387 _mw-354604370 _mh-1241200853 _g-1299036281 _d-312410892 _t-1193045479 _o-1780556163 _gtc-370223739 _m-449670226 rcx-item__actions rcx-item__actions--reveal-hover rcx-sidebar-item__menu-wrapper"
+                          class="is_View _p-1021290656 _zi-2094244754 _f-1841970073 _ai-121763387 _mw-354604370 _mh-1241200853 _g-1299036281 _d-312410892 _t-1193045479 _o-1507269735 _gtc-1790180973 _m-190079740 rcx-item__actions rcx-item__actions--reveal-hover rcx-sidebar-item__menu-wrapper"
                         >
                           <div
-                            class="is_View _d-341075704 _f-1069814357 _o-1838365900 _ai-121763387 _mh-1241200853 _g-1299036281 rcx-item__actions-inner"
+                            class="is_View _d-341075704 _f-1069814357 _o-1119039191 _ai-121763387 _mh-1241200853 _g-1299036281 rcx-item__actions-inner"
                           >
                             <span
                               class="rcx-box rcx-box--full rcx-sidebar-item__menu rcx-sidebar-item__menu"
@@ -3709,7 +3709,7 @@ exports[`[SidebarItem Component] renders RoomRowExtended without crashing 1`] = 
                   role="group"
                 >
                   <div
-                    class="is_Text _p-1021290656 _d-341075704 _f-1069814357 _ai-121763387 _mw-842770087 _mh-499962855 _m-2017216831 _p-536964724 _ls-1251843592 _ws-311910413 _ww-408434756 _br-1718100884 _ff-409630021 _fs-2088488067 _lh-1306743983 _ls-1782815796 _fw-289168101 _g-1760282038 _c-920334418 t_group_rcx-item-group-header rcx-item-group-header rcx-item-group-header--inset-md rcx-sidebar-collapse-group__bar"
+                    class="is_Text _p-1021290656 _d-341075704 _f-1069814357 _ai-121763387 _mw-842770087 _mh-499962855 _m-2017216831 _p-536964724 _ls-1251843592 _ws-311910413 _ww-408434756 _br-1718100884 _ff-409630021 _fs-2088488067 _lh-1306743983 _ls-1782815796 _fw-289168101 _g-1760282038 _c-920334418 rcx-item-group-header rcx-item-group-header--inset-md rcx-sidebar-collapse-group__bar"
                   >
                     <div
                       aria-controls="_r_qb_"
@@ -3741,10 +3741,10 @@ exports[`[SidebarItem Component] renders RoomRowExtended without crashing 1`] = 
                       </div>
                     </div>
                     <div
-                      class="is_View _p-1021290656 _zi-2094244754 _f-1841970073 _ai-121763387 _mw-354604370 _mh-1241200853 _g-1299036281 _d-312410892 _t-1193045479 _o-1780556163 _gtc-370223739 _m-449670226 rcx-item__actions rcx-item__actions--reveal-hover rcx-sidebar-collapse-group__menu-wrapper"
+                      class="is_View _p-1021290656 _zi-2094244754 _f-1841970073 _ai-121763387 _mw-354604370 _mh-1241200853 _g-1299036281 _d-312410892 _t-1193045479 _o-1507269735 _gtc-1790180973 _m-190079740 rcx-item__actions rcx-item__actions--reveal-hover rcx-sidebar-collapse-group__menu-wrapper"
                     >
                       <div
-                        class="is_View _d-341075704 _f-1069814357 _o-1838365900 _ai-121763387 _mh-1241200853 _g-1299036281 rcx-item__actions-inner"
+                        class="is_View _d-341075704 _f-1069814357 _o-1119039191 _ai-121763387 _mh-1241200853 _g-1299036281 rcx-item__actions-inner"
                       >
                         <span
                           class="rcx-box rcx-box--full rcx-sidebar-collapse-group__menu rcx-sidebar-collapse-group__menu"
@@ -3780,7 +3780,7 @@ exports[`[SidebarItem Component] renders RoomRowExtended without crashing 1`] = 
                       role="listitem"
                     >
                       <div
-                        class="is_Text _p-1021290656 _d-341075704 _f-1069814357 _ai-121763387 _mw-842770087 _mh-1241200853 _m-2017216831 _p-788525541 _ls-1251843592 _ws-311910413 _ww-408434756 _br-1718100884 _ff-409630021 _ta-507911453 _td-1861836084 _c-727749181 _fs-347291933 _lh-1925956564 _ls-1782815796 _fw-289165218 _g-691362565 _b-944971190 _c-1830342115 _ow-1994474385 _os-1885772691 _oc-1422281658 _oo-245994692 _bs-1638756697 t_group_rcx-item rcx-item rcx-item--inset-md rcx-sidebar-item rcx-sidebar-item--level-1"
+                        class="is_Text _p-1021290656 _d-341075704 _f-1069814357 _ai-121763387 _mw-842770087 _mh-1241200853 _m-2017216831 _p-788525541 _ls-1251843592 _ws-311910413 _ww-408434756 _br-1718100884 _ff-409630021 _ta-507911453 _td-1861836084 _c-727749181 _fs-347291933 _lh-1925956564 _ls-1782815796 _fw-289165218 _g-691362565 _b-944971190 _c-1830342115 _ow-1994474385 _os-1885772691 _oc-1422281658 _oo-245994692 _bs-1638756697 rcx-item rcx-item--inset-md rcx-sidebar-item rcx-sidebar-item--level-1"
                       >
                         <div
                           class="is_Text _d-341075704 _f-1128736932 _jc-1099843255 _ai-121763387 _mw-354604370 _ws-311910413 _ww-408434756 rcx-item__media rcx-sidebar-item__avatar"
@@ -3845,10 +3845,10 @@ exports[`[SidebarItem Component] renders RoomRowExtended without crashing 1`] = 
                               Mockups are ready for review
                             </div>
                             <div
-                              class="is_View _p-1021290656 _zi-2094244754 _f-1841970073 _ai-121763387 _mw-354604370 _mh-1241200853 _g-1299036281 _d-312410892 _t-1193045479 _o-1780556163 _gtc-370223739 _m-449670226 _ac-1617022483 _h-1921373401 rcx-item__actions rcx-item__actions--reveal-hover rcx-sidebar-item__menu-wrapper"
+                              class="is_View _p-1021290656 _zi-2094244754 _f-1841970073 _ai-121763387 _mw-354604370 _mh-1241200853 _g-1299036281 _d-312410892 _t-1193045479 _o-1507269735 _gtc-1790180973 _m-190079740 _ac-1617022483 _h-1921373401 rcx-item__actions rcx-item__actions--reveal-hover rcx-sidebar-item__menu-wrapper"
                             >
                               <div
-                                class="is_View _d-341075704 _f-1069814357 _o-1838365900 _ai-121763387 _mh-1241200853 _g-1299036281 rcx-item__actions-inner"
+                                class="is_View _d-341075704 _f-1069814357 _o-1119039191 _ai-121763387 _mh-1241200853 _g-1299036281 rcx-item__actions-inner"
                               >
                                 <span
                                   class="rcx-box rcx-box--full rcx-sidebar-item__menu rcx-sidebar-item__menu"
@@ -3881,7 +3881,7 @@ exports[`[SidebarItem Component] renders RoomRowExtended without crashing 1`] = 
                       role="listitem"
                     >
                       <div
-                        class="is_Text _p-1021290656 _d-341075704 _f-1069814357 _ai-121763387 _mw-842770087 _mh-1241200853 _m-2017216831 _p-788525541 _ls-1251843592 _ws-311910413 _ww-408434756 _br-1718100884 _ff-409630021 _ta-507911453 _td-1861836084 _c-727749181 _fs-347291933 _lh-1925956564 _ls-1782815796 _fw-289165218 _g-691362565 _b-944971190 _c-1830342115 _ow-1994474385 _os-1885772691 _oc-1422281658 _oo-245994692 _bs-1638756697 t_group_rcx-item rcx-item rcx-item--inset-md rcx-item--highlighted rcx-sidebar-item rcx-sidebar-item--level-1"
+                        class="is_Text _p-1021290656 _d-341075704 _f-1069814357 _ai-121763387 _mw-842770087 _mh-1241200853 _m-2017216831 _p-788525541 _ls-1251843592 _ws-311910413 _ww-408434756 _br-1718100884 _ff-409630021 _ta-507911453 _td-1861836084 _c-727749181 _fs-347291933 _lh-1925956564 _ls-1782815796 _fw-289165218 _g-691362565 _b-944971190 _c-1830342115 _ow-1994474385 _os-1885772691 _oc-1422281658 _oo-245994692 _bs-1638756697 rcx-item rcx-item--inset-md rcx-item--highlighted rcx-sidebar-item rcx-sidebar-item--level-1"
                       >
                         <div
                           class="is_Text _d-341075704 _f-1128736932 _jc-1099843255 _ai-121763387 _mw-354604370 _ws-311910413 _ww-408434756 rcx-item__media rcx-sidebar-item__avatar"
@@ -3952,10 +3952,10 @@ exports[`[SidebarItem Component] renders RoomRowExtended without crashing 1`] = 
                               3
                             </span>
                             <div
-                              class="is_View _p-1021290656 _zi-2094244754 _f-1841970073 _ai-121763387 _mw-354604370 _mh-1241200853 _g-1299036281 _d-312410892 _t-1193045479 _o-1780556163 _gtc-370223739 _m-449670226 _ac-1617022483 _h-1921373401 rcx-item__actions rcx-item__actions--reveal-hover rcx-sidebar-item__menu-wrapper"
+                              class="is_View _p-1021290656 _zi-2094244754 _f-1841970073 _ai-121763387 _mw-354604370 _mh-1241200853 _g-1299036281 _d-312410892 _t-1193045479 _o-1507269735 _gtc-1790180973 _m-190079740 _ac-1617022483 _h-1921373401 rcx-item__actions rcx-item__actions--reveal-hover rcx-sidebar-item__menu-wrapper"
                             >
                               <div
-                                class="is_View _d-341075704 _f-1069814357 _o-1838365900 _ai-121763387 _mh-1241200853 _g-1299036281 rcx-item__actions-inner"
+                                class="is_View _d-341075704 _f-1069814357 _o-1119039191 _ai-121763387 _mh-1241200853 _g-1299036281 rcx-item__actions-inner"
                               >
                                 <span
                                   class="rcx-box rcx-box--full rcx-sidebar-item__menu rcx-sidebar-item__menu"
@@ -3988,7 +3988,7 @@ exports[`[SidebarItem Component] renders RoomRowExtended without crashing 1`] = 
                       role="listitem"
                     >
                       <div
-                        class="is_Text _p-1021290656 _d-341075704 _f-1069814357 _ai-121763387 _mw-842770087 _mh-1241200853 _m-2017216831 _p-788525541 _ls-1251843592 _ws-311910413 _ww-408434756 _br-1718100884 _ff-409630021 _ta-507911453 _td-1861836084 _c-727749181 _fs-347291933 _lh-1925956564 _ls-1782815796 _fw-289165218 _g-691362565 _b-2012676596 _c-1830342115 _ow-1994474385 _os-1885772691 _oc-1422281658 _oo-245994692 _bs-1638756697 t_group_rcx-item rcx-item rcx-item--inset-md rcx-item--selected rcx-sidebar-item rcx-sidebar-item--selected rcx-sidebar-item--level-1"
+                        class="is_Text _p-1021290656 _d-341075704 _f-1069814357 _ai-121763387 _mw-842770087 _mh-1241200853 _m-2017216831 _p-788525541 _ls-1251843592 _ws-311910413 _ww-408434756 _br-1718100884 _ff-409630021 _ta-507911453 _td-1861836084 _c-727749181 _fs-347291933 _lh-1925956564 _ls-1782815796 _fw-289165218 _g-691362565 _b-2012676596 _c-1830342115 _ow-1994474385 _os-1885772691 _oc-1422281658 _oo-245994692 _bs-1638756697 rcx-item rcx-item--inset-md rcx-item--selected rcx-sidebar-item rcx-sidebar-item--selected rcx-sidebar-item--level-1"
                       >
                         <div
                           class="is_Text _d-341075704 _f-1128736932 _jc-1099843255 _ai-121763387 _mw-354604370 _ws-311910413 _ww-408434756 rcx-item__media rcx-sidebar-item__avatar"
@@ -4054,10 +4054,10 @@ exports[`[SidebarItem Component] renders RoomRowExtended without crashing 1`] = 
                               Mockups are ready for review
                             </div>
                             <div
-                              class="is_View _p-1021290656 _zi-2094244754 _f-1841970073 _ai-121763387 _mw-354604370 _mh-1241200853 _g-1299036281 _d-312410892 _t-1193045479 _o-1780556163 _gtc-370223739 _m-449670226 _ac-1617022483 _h-1921373401 rcx-item__actions rcx-item__actions--reveal-hover rcx-sidebar-item__menu-wrapper"
+                              class="is_View _p-1021290656 _zi-2094244754 _f-1841970073 _ai-121763387 _mw-354604370 _mh-1241200853 _g-1299036281 _d-312410892 _t-1193045479 _o-1507269735 _gtc-1790180973 _m-190079740 _ac-1617022483 _h-1921373401 rcx-item__actions rcx-item__actions--reveal-hover rcx-sidebar-item__menu-wrapper"
                             >
                               <div
-                                class="is_View _d-341075704 _f-1069814357 _o-1838365900 _ai-121763387 _mh-1241200853 _g-1299036281 rcx-item__actions-inner"
+                                class="is_View _d-341075704 _f-1069814357 _o-1119039191 _ai-121763387 _mh-1241200853 _g-1299036281 rcx-item__actions-inner"
                               >
                                 <span
                                   class="rcx-box rcx-box--full rcx-sidebar-item__menu rcx-sidebar-item__menu"
@@ -4090,7 +4090,7 @@ exports[`[SidebarItem Component] renders RoomRowExtended without crashing 1`] = 
                       role="listitem"
                     >
                       <div
-                        class="is_Text _p-1021290656 _d-341075704 _f-1069814357 _ai-121763387 _mw-842770087 _mh-1241200853 _m-2017216831 _p-788525541 _ls-1251843592 _ws-311910413 _ww-408434756 _br-1718100884 _ff-409630021 _ta-507911453 _td-1861836084 _c-727749181 _fs-347291933 _lh-1925956564 _ls-1782815796 _fw-289165218 _g-691362565 _b-944971190 _c-1830342115 _ow-1994474385 _os-1885772691 _oc-1422281658 _oo-245994692 _bs-1638756697 t_group_rcx-item rcx-item rcx-item--inset-md rcx-sidebar-item rcx-sidebar-item--level-1"
+                        class="is_Text _p-1021290656 _d-341075704 _f-1069814357 _ai-121763387 _mw-842770087 _mh-1241200853 _m-2017216831 _p-788525541 _ls-1251843592 _ws-311910413 _ww-408434756 _br-1718100884 _ff-409630021 _ta-507911453 _td-1861836084 _c-727749181 _fs-347291933 _lh-1925956564 _ls-1782815796 _fw-289165218 _g-691362565 _b-944971190 _c-1830342115 _ow-1994474385 _os-1885772691 _oc-1422281658 _oo-245994692 _bs-1638756697 rcx-item rcx-item--inset-md rcx-sidebar-item rcx-sidebar-item--level-1"
                       >
                         <div
                           class="is_Text _d-341075704 _f-1128736932 _jc-1099843255 _ai-121763387 _mw-354604370 _ws-311910413 _ww-408434756 rcx-item__media rcx-sidebar-item__avatar"
@@ -4183,10 +4183,10 @@ exports[`[SidebarItem Component] renders RoomRowExtended without crashing 1`] = 
                               </button>
                             </div>
                             <div
-                              class="is_View _p-1021290656 _zi-2094244754 _f-1841970073 _ai-121763387 _mw-354604370 _mh-1241200853 _g-1299036281 _d-312410892 _t-1193045479 _o-1780556163 _gtc-370223739 _m-449670226 _ac-1617022483 _h-1921373401 rcx-item__actions rcx-item__actions--reveal-hover rcx-sidebar-item__menu-wrapper"
+                              class="is_View _p-1021290656 _zi-2094244754 _f-1841970073 _ai-121763387 _mw-354604370 _mh-1241200853 _g-1299036281 _d-312410892 _t-1193045479 _o-1507269735 _gtc-1790180973 _m-190079740 _ac-1617022483 _h-1921373401 rcx-item__actions rcx-item__actions--reveal-hover rcx-sidebar-item__menu-wrapper"
                             >
                               <div
-                                class="is_View _d-341075704 _f-1069814357 _o-1838365900 _ai-121763387 _mh-1241200853 _g-1299036281 rcx-item__actions-inner"
+                                class="is_View _d-341075704 _f-1069814357 _o-1119039191 _ai-121763387 _mh-1241200853 _g-1299036281 rcx-item__actions-inner"
                               >
                                 <span
                                   class="rcx-box rcx-box--full rcx-sidebar-item__menu rcx-sidebar-item__menu"
@@ -4292,7 +4292,7 @@ exports[`[SidebarItem Component] renders RoomRowMedium without crashing 1`] = `
                   role="group"
                 >
                   <div
-                    class="is_Text _p-1021290656 _d-341075704 _f-1069814357 _ai-121763387 _mw-842770087 _mh-499962855 _m-2017216831 _p-536964724 _ls-1251843592 _ws-311910413 _ww-408434756 _br-1718100884 _ff-409630021 _fs-2088488067 _lh-1306743983 _ls-1782815796 _fw-289168101 _g-1760282038 _c-920334418 t_group_rcx-item-group-header rcx-item-group-header rcx-item-group-header--inset-md rcx-sidebar-collapse-group__bar"
+                    class="is_Text _p-1021290656 _d-341075704 _f-1069814357 _ai-121763387 _mw-842770087 _mh-499962855 _m-2017216831 _p-536964724 _ls-1251843592 _ws-311910413 _ww-408434756 _br-1718100884 _ff-409630021 _fs-2088488067 _lh-1306743983 _ls-1782815796 _fw-289168101 _g-1760282038 _c-920334418 rcx-item-group-header rcx-item-group-header--inset-md rcx-sidebar-collapse-group__bar"
                   >
                     <div
                       aria-controls="_r_uk_"
@@ -4324,10 +4324,10 @@ exports[`[SidebarItem Component] renders RoomRowMedium without crashing 1`] = `
                       </div>
                     </div>
                     <div
-                      class="is_View _p-1021290656 _zi-2094244754 _f-1841970073 _ai-121763387 _mw-354604370 _mh-1241200853 _g-1299036281 _d-312410892 _t-1193045479 _o-1780556163 _gtc-370223739 _m-449670226 rcx-item__actions rcx-item__actions--reveal-hover rcx-sidebar-collapse-group__menu-wrapper"
+                      class="is_View _p-1021290656 _zi-2094244754 _f-1841970073 _ai-121763387 _mw-354604370 _mh-1241200853 _g-1299036281 _d-312410892 _t-1193045479 _o-1507269735 _gtc-1790180973 _m-190079740 rcx-item__actions rcx-item__actions--reveal-hover rcx-sidebar-collapse-group__menu-wrapper"
                     >
                       <div
-                        class="is_View _d-341075704 _f-1069814357 _o-1838365900 _ai-121763387 _mh-1241200853 _g-1299036281 rcx-item__actions-inner"
+                        class="is_View _d-341075704 _f-1069814357 _o-1119039191 _ai-121763387 _mh-1241200853 _g-1299036281 rcx-item__actions-inner"
                       >
                         <span
                           class="rcx-box rcx-box--full rcx-sidebar-collapse-group__menu rcx-sidebar-collapse-group__menu"
@@ -4363,7 +4363,7 @@ exports[`[SidebarItem Component] renders RoomRowMedium without crashing 1`] = `
                       role="listitem"
                     >
                       <div
-                        class="is_Text _p-1021290656 _d-341075704 _f-1069814357 _ai-121763387 _mw-842770087 _mh-1241200853 _m-2017216831 _p-788525541 _ls-1251843592 _ws-311910413 _ww-408434756 _br-1718100884 _ff-409630021 _ta-507911453 _td-1861836084 _c-727749181 _fs-347291933 _lh-1925956564 _ls-1782815796 _fw-289165218 _g-47172425 _b-944971190 _c-1830342115 _ow-1994474385 _os-1885772691 _oc-1422281658 _oo-245994692 _bs-1638756697 t_group_rcx-item rcx-item rcx-item--inset-md rcx-sidebar-item rcx-sidebar-item--level-1"
+                        class="is_Text _p-1021290656 _d-341075704 _f-1069814357 _ai-121763387 _mw-842770087 _mh-1241200853 _m-2017216831 _p-788525541 _ls-1251843592 _ws-311910413 _ww-408434756 _br-1718100884 _ff-409630021 _ta-507911453 _td-1861836084 _c-727749181 _fs-347291933 _lh-1925956564 _ls-1782815796 _fw-289165218 _g-47172425 _b-944971190 _c-1830342115 _ow-1994474385 _os-1885772691 _oc-1422281658 _oo-245994692 _bs-1638756697 rcx-item rcx-item--inset-md rcx-sidebar-item rcx-sidebar-item--level-1"
                       >
                         <div
                           class="is_Text _d-341075704 _f-1128736932 _jc-1099843255 _ai-121763387 _mw-354604370 _ws-311910413 _ww-408434756 rcx-item__media rcx-sidebar-item__avatar"
@@ -4408,10 +4408,10 @@ exports[`[SidebarItem Component] renders RoomRowMedium without crashing 1`] = `
                           </a>
                         </div>
                         <div
-                          class="is_View _p-1021290656 _zi-2094244754 _f-1841970073 _ai-121763387 _mw-354604370 _mh-1241200853 _g-1299036281 _d-312410892 _t-1193045479 _o-1780556163 _gtc-370223739 _m-449670226 rcx-item__actions rcx-item__actions--reveal-hover rcx-sidebar-item__menu-wrapper"
+                          class="is_View _p-1021290656 _zi-2094244754 _f-1841970073 _ai-121763387 _mw-354604370 _mh-1241200853 _g-1299036281 _d-312410892 _t-1193045479 _o-1507269735 _gtc-1790180973 _m-190079740 rcx-item__actions rcx-item__actions--reveal-hover rcx-sidebar-item__menu-wrapper"
                         >
                           <div
-                            class="is_View _d-341075704 _f-1069814357 _o-1838365900 _ai-121763387 _mh-1241200853 _g-1299036281 rcx-item__actions-inner"
+                            class="is_View _d-341075704 _f-1069814357 _o-1119039191 _ai-121763387 _mh-1241200853 _g-1299036281 rcx-item__actions-inner"
                           >
                             <span
                               class="rcx-box rcx-box--full rcx-sidebar-item__menu rcx-sidebar-item__menu"
@@ -4442,7 +4442,7 @@ exports[`[SidebarItem Component] renders RoomRowMedium without crashing 1`] = `
                       role="listitem"
                     >
                       <div
-                        class="is_Text _p-1021290656 _d-341075704 _f-1069814357 _ai-121763387 _mw-842770087 _mh-1241200853 _m-2017216831 _p-788525541 _ls-1251843592 _ws-311910413 _ww-408434756 _br-1718100884 _ff-409630021 _ta-507911453 _td-1861836084 _c-727749181 _fs-347291933 _lh-1925956564 _ls-1782815796 _fw-289165218 _g-47172425 _b-944971190 _c-1830342115 _ow-1994474385 _os-1885772691 _oc-1422281658 _oo-245994692 _bs-1638756697 t_group_rcx-item rcx-item rcx-item--inset-md rcx-item--highlighted rcx-sidebar-item rcx-sidebar-item--level-1"
+                        class="is_Text _p-1021290656 _d-341075704 _f-1069814357 _ai-121763387 _mw-842770087 _mh-1241200853 _m-2017216831 _p-788525541 _ls-1251843592 _ws-311910413 _ww-408434756 _br-1718100884 _ff-409630021 _ta-507911453 _td-1861836084 _c-727749181 _fs-347291933 _lh-1925956564 _ls-1782815796 _fw-289165218 _g-47172425 _b-944971190 _c-1830342115 _ow-1994474385 _os-1885772691 _oc-1422281658 _oo-245994692 _bs-1638756697 rcx-item rcx-item--inset-md rcx-item--highlighted rcx-sidebar-item rcx-sidebar-item--level-1"
                       >
                         <div
                           class="is_Text _d-341075704 _f-1128736932 _jc-1099843255 _ai-121763387 _mw-354604370 _ws-311910413 _ww-408434756 rcx-item__media rcx-sidebar-item__avatar"
@@ -4493,10 +4493,10 @@ exports[`[SidebarItem Component] renders RoomRowMedium without crashing 1`] = `
                           3
                         </span>
                         <div
-                          class="is_View _p-1021290656 _zi-2094244754 _f-1841970073 _ai-121763387 _mw-354604370 _mh-1241200853 _g-1299036281 _d-312410892 _t-1193045479 _o-1780556163 _gtc-370223739 _m-449670226 rcx-item__actions rcx-item__actions--reveal-hover rcx-sidebar-item__menu-wrapper"
+                          class="is_View _p-1021290656 _zi-2094244754 _f-1841970073 _ai-121763387 _mw-354604370 _mh-1241200853 _g-1299036281 _d-312410892 _t-1193045479 _o-1507269735 _gtc-1790180973 _m-190079740 rcx-item__actions rcx-item__actions--reveal-hover rcx-sidebar-item__menu-wrapper"
                         >
                           <div
-                            class="is_View _d-341075704 _f-1069814357 _o-1838365900 _ai-121763387 _mh-1241200853 _g-1299036281 rcx-item__actions-inner"
+                            class="is_View _d-341075704 _f-1069814357 _o-1119039191 _ai-121763387 _mh-1241200853 _g-1299036281 rcx-item__actions-inner"
                           >
                             <span
                               class="rcx-box rcx-box--full rcx-sidebar-item__menu rcx-sidebar-item__menu"
@@ -4527,7 +4527,7 @@ exports[`[SidebarItem Component] renders RoomRowMedium without crashing 1`] = `
                       role="listitem"
                     >
                       <div
-                        class="is_Text _p-1021290656 _d-341075704 _f-1069814357 _ai-121763387 _mw-842770087 _mh-1241200853 _m-2017216831 _p-788525541 _ls-1251843592 _ws-311910413 _ww-408434756 _br-1718100884 _ff-409630021 _ta-507911453 _td-1861836084 _c-727749181 _fs-347291933 _lh-1925956564 _ls-1782815796 _fw-289165218 _g-47172425 _b-2012676596 _c-1830342115 _ow-1994474385 _os-1885772691 _oc-1422281658 _oo-245994692 _bs-1638756697 t_group_rcx-item rcx-item rcx-item--inset-md rcx-item--selected rcx-sidebar-item rcx-sidebar-item--selected rcx-sidebar-item--level-1"
+                        class="is_Text _p-1021290656 _d-341075704 _f-1069814357 _ai-121763387 _mw-842770087 _mh-1241200853 _m-2017216831 _p-788525541 _ls-1251843592 _ws-311910413 _ww-408434756 _br-1718100884 _ff-409630021 _ta-507911453 _td-1861836084 _c-727749181 _fs-347291933 _lh-1925956564 _ls-1782815796 _fw-289165218 _g-47172425 _b-2012676596 _c-1830342115 _ow-1994474385 _os-1885772691 _oc-1422281658 _oo-245994692 _bs-1638756697 rcx-item rcx-item--inset-md rcx-item--selected rcx-sidebar-item rcx-sidebar-item--selected rcx-sidebar-item--level-1"
                       >
                         <div
                           class="is_Text _d-341075704 _f-1128736932 _jc-1099843255 _ai-121763387 _mw-354604370 _ws-311910413 _ww-408434756 rcx-item__media rcx-sidebar-item__avatar"
@@ -4573,10 +4573,10 @@ exports[`[SidebarItem Component] renders RoomRowMedium without crashing 1`] = `
                           </a>
                         </div>
                         <div
-                          class="is_View _p-1021290656 _zi-2094244754 _f-1841970073 _ai-121763387 _mw-354604370 _mh-1241200853 _g-1299036281 _d-312410892 _t-1193045479 _o-1780556163 _gtc-370223739 _m-449670226 rcx-item__actions rcx-item__actions--reveal-hover rcx-sidebar-item__menu-wrapper"
+                          class="is_View _p-1021290656 _zi-2094244754 _f-1841970073 _ai-121763387 _mw-354604370 _mh-1241200853 _g-1299036281 _d-312410892 _t-1193045479 _o-1507269735 _gtc-1790180973 _m-190079740 rcx-item__actions rcx-item__actions--reveal-hover rcx-sidebar-item__menu-wrapper"
                         >
                           <div
-                            class="is_View _d-341075704 _f-1069814357 _o-1838365900 _ai-121763387 _mh-1241200853 _g-1299036281 rcx-item__actions-inner"
+                            class="is_View _d-341075704 _f-1069814357 _o-1119039191 _ai-121763387 _mh-1241200853 _g-1299036281 rcx-item__actions-inner"
                           >
                             <span
                               class="rcx-box rcx-box--full rcx-sidebar-item__menu rcx-sidebar-item__menu"
@@ -4607,7 +4607,7 @@ exports[`[SidebarItem Component] renders RoomRowMedium without crashing 1`] = `
                       role="listitem"
                     >
                       <div
-                        class="is_Text _p-1021290656 _d-341075704 _f-1069814357 _ai-121763387 _mw-842770087 _mh-1241200853 _m-2017216831 _p-788525541 _ls-1251843592 _ws-311910413 _ww-408434756 _br-1718100884 _ff-409630021 _ta-507911453 _td-1861836084 _c-727749181 _fs-347291933 _lh-1925956564 _ls-1782815796 _fw-289165218 _g-47172425 _b-944971190 _c-1830342115 _ow-1994474385 _os-1885772691 _oc-1422281658 _oo-245994692 _bs-1638756697 t_group_rcx-item rcx-item rcx-item--inset-md rcx-sidebar-item rcx-sidebar-item--level-1"
+                        class="is_Text _p-1021290656 _d-341075704 _f-1069814357 _ai-121763387 _mw-842770087 _mh-1241200853 _m-2017216831 _p-788525541 _ls-1251843592 _ws-311910413 _ww-408434756 _br-1718100884 _ff-409630021 _ta-507911453 _td-1861836084 _c-727749181 _fs-347291933 _lh-1925956564 _ls-1782815796 _fw-289165218 _g-47172425 _b-944971190 _c-1830342115 _ow-1994474385 _os-1885772691 _oc-1422281658 _oo-245994692 _bs-1638756697 rcx-item rcx-item--inset-md rcx-sidebar-item rcx-sidebar-item--level-1"
                       >
                         <div
                           class="is_Text _d-341075704 _f-1128736932 _jc-1099843255 _ai-121763387 _mw-354604370 _ws-311910413 _ww-408434756 rcx-item__media rcx-sidebar-item__avatar"
@@ -4680,10 +4680,10 @@ exports[`[SidebarItem Component] renders RoomRowMedium without crashing 1`] = `
                           </button>
                         </div>
                         <div
-                          class="is_View _p-1021290656 _zi-2094244754 _f-1841970073 _ai-121763387 _mw-354604370 _mh-1241200853 _g-1299036281 _d-312410892 _t-1193045479 _o-1780556163 _gtc-370223739 _m-449670226 rcx-item__actions rcx-item__actions--reveal-hover rcx-sidebar-item__menu-wrapper"
+                          class="is_View _p-1021290656 _zi-2094244754 _f-1841970073 _ai-121763387 _mw-354604370 _mh-1241200853 _g-1299036281 _d-312410892 _t-1193045479 _o-1507269735 _gtc-1790180973 _m-190079740 rcx-item__actions rcx-item__actions--reveal-hover rcx-sidebar-item__menu-wrapper"
                         >
                           <div
-                            class="is_View _d-341075704 _f-1069814357 _o-1838365900 _ai-121763387 _mh-1241200853 _g-1299036281 rcx-item__actions-inner"
+                            class="is_View _d-341075704 _f-1069814357 _o-1119039191 _ai-121763387 _mh-1241200853 _g-1299036281 rcx-item__actions-inner"
                           >
                             <span
                               class="rcx-box rcx-box--full rcx-sidebar-item__menu rcx-sidebar-item__menu"

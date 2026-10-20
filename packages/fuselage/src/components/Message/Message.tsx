@@ -15,7 +15,6 @@ const important = (value: string) => `${value} !important`;
 
 const MessageFrame = styled(View, {
 	render: 'div',
-	group: 'message',
 	position: 'relative',
 	flexDirection: 'row',
 	alignItems: 'flex-start',
