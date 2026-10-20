@@ -1,9 +1,9 @@
 import type { ForwardedRef, HTMLAttributes } from 'react';
 import { forwardRef } from 'react';
 
-import type { AbacRoomPreviewListFooterContext } from './AbacRoomPreviewListFooter';
+import type { AbacRoomPreviewLoadMoreContext } from './AbacRoomPreviewLoadMore';
 
-export type AbacRoomPreviewListContext = AbacRoomPreviewListFooterContext & { label: string };
+export type AbacRoomPreviewListContext = AbacRoomPreviewLoadMoreContext & { label: string };
 
 const AbacRoomPreviewList = forwardRef(function AbacRoomPreviewList(
 	{ context, ...props }: HTMLAttributes<HTMLDivElement> & { context?: AbacRoomPreviewListContext },

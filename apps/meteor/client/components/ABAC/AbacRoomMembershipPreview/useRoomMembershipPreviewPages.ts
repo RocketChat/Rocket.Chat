@@ -5,7 +5,7 @@ import { useInfiniteQuery } from '@tanstack/react-query';
 
 import { ABACQueryKeys } from '../../../lib/queryKeys';
 
-export const usePreviewPages = (
+export const useRoomMembershipPreviewPages = (
 	rid: string,
 	attributes: Record<string, string[]>,
 	filter: string,
