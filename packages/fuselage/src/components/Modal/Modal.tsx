@@ -1,10 +1,13 @@
+import { css } from '@rocket.chat/css-in-js';
 import { styled, View, type GetProps } from '@tamagui/web';
 import type { ElementType, ReactNode, RefAttributes } from 'react';
 import { createElement } from 'react';
 
+import { surfaceColors, textIconColors } from '../../Theme';
 import { toCSSValue } from '../../helpers/toCSSValue';
+import { useStyle } from '../../hooks/useStyle';
 import { useTamaguiBoxProps } from '../../hooks/useTamaguiBoxProps';
-import { fontFamily, size } from '../../styleTokens';
+import { borderRadius, fontFamily, fontScale, size } from '../../styleTokens';
 import { Box, type BoxProps } from '../Box';
 import { withFuselageProvider } from '../FuselageProvider/FuselageProvider';
 
@@ -37,9 +40,10 @@ const ModalFrame = styled(View, {
 	minWidth: 'auto',
 	minHeight: 'auto',
 	width: '100%',
+	maxWidth: { sm: '40rem' },
 	maxHeight: '100%',
 	margin: toCSSValue('--rcx-modal-margin', 'auto'),
-	padding: 0,
+	padding: { default: 0, sm: '1rem' },
 	borderWidth: 0,
 	borderStyle: 'solid',
 	borderColor: 'currentColor',
@@ -49,10 +53,27 @@ const ModalFrame = styled(View, {
 	...modalBoxFont,
 });
 
+// The wrapper is any element a consumer renders, so its look travels as a class name
+const innerStyle = css`
+	display: flex;
+	flex-direction: column;
+	flex-grow: 1;
+	width: 100%;
+	min-width: 0;
+	padding: 0;
+	color: ${textIconColors['font-default']};
+	border-radius: ${toCSSValue('--rcx-modal-border-radius', toCSSValue('--rcx-border-radius-large', borderRadius('large')!))};
+	background-color: ${surfaceColors['surface-light']};
+	letter-spacing: ${fontScale('p2')!.letterSpacing};
+	font-size: ${fontScale('p2')!.fontSize};
+	font-weight: ${fontScale('p2')!.fontWeight};
+	line-height: ${fontScale('p2')!.lineHeight};
+`;
+
 const Modal = ({ children, wrapper = Box, wrapperFunction, ...props }: ModalProps) => {
 	const wrapperProps = {
 		children,
-		className: 'rcx-modal__inner',
+		className: `rcx-modal__inner ${useStyle(innerStyle, undefined)}`,
 		elevation: '2',
 	} as const;
 
