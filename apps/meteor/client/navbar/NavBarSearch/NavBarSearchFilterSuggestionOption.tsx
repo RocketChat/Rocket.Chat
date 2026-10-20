@@ -1,5 +1,5 @@
 import type { SearchFilterSuggestion } from '@rocket.chat/ai-search';
-import { ItemMeta, SidebarItem, SidebarItemIcon, SidebarItemTitle } from '@rocket.chat/fuselage';
+import { Item, ItemIcon, ItemMeta, ItemTitle } from '@rocket.chat/fuselage';
 import type { SyntheticEvent } from 'react';
 
 import NavBarSearchFilterSuggestionIcon from './NavBarSearchFilterSuggestionIcon';
@@ -14,15 +14,17 @@ const NavBarSearchFilterSuggestionOption = ({ item, onSelect }: NavBarSearchFilt
 	const optionProps = useSearchOptionProps(`search-filter-${item.key}`);
 
 	return (
-		<SidebarItem role='option' {...optionProps} onClick={(event) => onSelect(event, item)}>
-			<SidebarItemIcon icon={<NavBarSearchFilterSuggestionIcon suggestion={item} />} />
-			<SidebarItemTitle>{item.title}</SidebarItemTitle>
+		<Item is='a' role='option' inset='md' {...optionProps} onClick={(event) => onSelect(event, item)}>
+			<ItemIcon>
+				<NavBarSearchFilterSuggestionIcon suggestion={item} />
+			</ItemIcon>
+			<ItemTitle>{item.title}</ItemTitle>
 			{item.description && (
 				<ItemMeta truncate title={item.description}>
 					{item.description}
 				</ItemMeta>
 			)}
-		</SidebarItem>
+		</Item>
 	);
 };
 
