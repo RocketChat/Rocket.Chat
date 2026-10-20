@@ -54,11 +54,11 @@ exports[`renders Default without crashing 1`] = `
                     Welcome to the features preview page! Here, you can enable the latest cutting-edge features that are currently under development and not yet officially released.
                   </div>
                   <section
-                    class="is_View _f-1069814357 _mw-354604370 _mh-1241200853 _p-783907936 _c-1921852598 _b-1071518678 _br-1465795989 _b-1831105240 _ff-409630021 _fvn-1977619713 rcx-callout rcx-css-13pwzu2"
+                    class="is_View _f-1069814357 _mw-354604370 _mh-1241200853 _p-783907936 _c-1921852598 _b-1071518678 _br-1465795989 _b-1831105240 _ff-409630021 _fvn-1977619713 rcx-callout rcx-css-13pwzu2 rcx-css-6jv9ad"
                   >
                     <i
                       aria-hidden="true"
-                      class="is_Text _d-1409515928 _ws-311910413 _ww-408434756 _us-601212022 _va-1101652081 _ls-1720078126 _ff-1916555734 _fs-1279428672 _fw-289165218 _fs-477064150 _fv-1578983722 _lh-2067209205 _tr-1510281189 rcx-icon--name-info-circled rcx-icon rcx-callout__icon rcx-css-bqnef6"
+                      class="is_Text _d-1409515928 _ws-311910413 _ww-408434756 _us-601212022 _va-1101652081 _ls-1720078126 _ff-1916555734 _fs-1279428672 _fw-289165218 _fs-477064150 _fv-1578983722 _lh-2067209205 _tr-1510281189 rcx-icon--name-info-circled rcx-icon rcx-callout__icon rcx-css-4pvxx3"
                     >
                       
                     </i>
