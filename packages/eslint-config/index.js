@@ -10,7 +10,6 @@ import reactPlugin from 'eslint-plugin-react';
 import reactHooksPlugin from 'eslint-plugin-react-hooks';
 import storybookPlugin from 'eslint-plugin-storybook';
 import testingLibraryPlugin from 'eslint-plugin-testing-library';
-import globals from 'globals';
 import tseslint from 'typescript-eslint';
 
 export default defineConfig(
@@ -242,15 +241,6 @@ export default defineConfig(
 			'no-useless-assignment': 'warn',
 			'require-atomic-updates': 'off',
 			'valid-typeof': ['error', { requireStringLiterals: true }],
-		},
-	},
-	// TODO: disable, as they are not available in all environments
-	{
-		name: 'rocket.chat/node-globals',
-		languageOptions: {
-			globals: {
-				...globals.node,
-			},
 		},
 	},
 	{
