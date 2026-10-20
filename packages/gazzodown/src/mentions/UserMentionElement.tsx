@@ -42,13 +42,9 @@ const UserMentionElement = ({ mention }: UserMentionElementProps) => {
 		return <>@{mention}</>;
 	}
 
-	const isOwnUser = resolved._id === ownUserId;
-
 	return (
 		<MessageHighlight
-			variant={isOwnUser ? 'critical' : 'other'}
-			// the user card answers the hover, so a native tooltip would only cover it
-			title={handleMouseEnter ? undefined : t(isOwnUser ? 'Mentions_you' : 'Mentions_user')}
+			variant={resolved._id === ownUserId ? 'critical' : 'other'}
 			clickable
 			{...(handleClick && buttonProps)}
 			onMouseEnter={handleMouseEnter}
