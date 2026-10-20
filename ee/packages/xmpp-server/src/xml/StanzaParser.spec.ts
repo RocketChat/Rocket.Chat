@@ -153,7 +153,7 @@ describe('StanzaParser', () => {
 		const events = collect(parser);
 
 		parser.write(STREAM_HEADER);
-		parser.write(`<message id='</message><message>'><body>${'x'.repeat(600)}`);
+		parser.write(`<message id='${'x'.repeat(600)}</message><message>'><body>`);
 		parser.write(`${'x'.repeat(600)}</body></message>`);
 
 		expect(events.map((e) => e.type)).toEqual(['streamStart', 'error']);
