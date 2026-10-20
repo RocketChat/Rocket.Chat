@@ -200,6 +200,9 @@ The goal is no SCSS, and as little CSS as Tamagui allows. Each component's resid
   - They are not CSS only: each child with a group clause subscribes to the group, and the parent attaches mouse and press handlers that re-render those children. Specs that click outside `act()` then fail the console error check.
   - `forceStyle` on the group parent does not reach its children's group clauses.
   - `group` works in the `styled()` config; `container` only works as a JSX prop.
+  - **Not for parts rendered once per row.** The first subscriber makes the parent render again on mount, and each subscriber costs about 28 µs per mount (`perf/micro`). Message and Item reveal their parts with plain rules in the `fuselage` layer instead (`.rcx-message:hover .rcx-message-header__time`, `.rcx-item:focus-within .rcx-item__actions--reveal-hover`), with hover inside `@media (hover: hover)` as Tamagui does. That made mounting 26% faster for message rows and 43% faster for item rows with actions.
+  - Declaring a group with no subscriber costs nothing.
+  - Removing the subscribers moves the cache warm-up to the first update, which gets about 17% slower; later updates are unchanged.
 - **Container queries**: `container="<name>"` on the parent sets `container-type: inline-size`, and children use `'@md/<name>'` clauses. Only use them where `develop` already had a container.
 - **Cross-component styles** (one component styling another's parts): pass a variant from the parent, or share one with `createStyledContext`. Don't reach into other components with selectors.
   - A styled frame with `context` hands its variant props to descendant frames that use the same context, with no Provider.
