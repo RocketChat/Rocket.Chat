@@ -1,9 +1,0 @@
-@use '../../styles/lengths.scss';
-
-.rcx-avatar-stack > .rcx-avatar {
-	margin: auto lengths.margin(-2);
-
-	& > .rcx-avatar__element {
-		border: lengths.border-width(default) solid transparent;
-	}
-}
