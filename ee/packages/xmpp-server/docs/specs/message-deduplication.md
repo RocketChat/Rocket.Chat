@@ -93,6 +93,19 @@ content hashing is lossy, and accepting room messages from only one member sessi
 would change the session model. Test: `remote-muc.spec.ts`, "stores a message sent without
 an id once".
 
+### D4 A room without XEP-0359 passes an occupant's stanza id on
+
+A room that does not assign stanza ids does not remove a `<stanza-id by="<room JID>"/>` an
+occupant adds, so that occupant chooses the message's event id (R2). The id can only match
+another message in the same mirrored room, and it suppresses that message only if its key
+was predictable before it was sent, such as a sender-id digest whose sender numbers its
+ids. XEP-0359 §6 asks the receiver to check the room's `disco#info` for `urn:xmpp:sid:0`
+before trusting the id, and the service sends no IQ requests yet. A fix needs an IQ client,
+one answer per room shared by every member session so their copies keep one key, and a
+spec for what happens when that answer changes. Where: `RemoteMucSession.roomStanzaId`.
+Test: `RemoteMucSession.spec.ts`, "takes no room stanza-id from a room that has not
+advertised XEP-0359".
+
 ## Open questions
 
 - **Q1** Should Rocket.Chat stamp its outbound room messages with `<origin-id/>` (R7), so

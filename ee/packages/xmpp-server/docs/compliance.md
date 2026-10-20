@@ -34,7 +34,7 @@ requirements open), `not-planned` (reason in Notes).
 | [XEP-0249](https://xmpp.org/extensions/xep-0249.html) | Direct MUC Invitations | partial | [remote-muc](specs/remote-muc.md) | inbound only; hosted rooms send mediated invites |
 | [XEP-0308](https://xmpp.org/extensions/xep-0308.html) | Last Message Correction | partial | [message-corrections](specs/message-corrections.md) | both ways; hosted rooms strip corrections they relay between XMPP users |
 | [XEP-0421](https://xmpp.org/extensions/xep-0421.html) | Occupant identifiers for semi-anonymous MUCs | partial | [message-corrections](specs/message-corrections.md) | read in remote rooms to tell apart occupants who held the same nick; hosted rooms do not stamp it |
-| [XEP-0359](https://xmpp.org/extensions/xep-0359.html) | Unique and Stable Stanza IDs | partial | [message-deduplication](specs/message-deduplication.md) | inbound only; nothing stamped outbound |
+| [XEP-0359](https://xmpp.org/extensions/xep-0359.html) | Unique and Stable Stanza IDs | partial | [message-deduplication](specs/message-deduplication.md) | inbound only; nothing stamped outbound; a room's ids are trusted without a disco check (message-deduplication D4) |
 | [XEP-0184](https://xmpp.org/extensions/xep-0184.html) | Message Delivery Receipts | draft | [delivery-receipts](specs/delivery-receipts.md) | required for the end product |
 | [XEP-0066](https://xmpp.org/extensions/xep-0066.html) | Out of Band Data | draft | [file-transfer](specs/file-transfer.md) | file URLs both ways; the only file path |
 | [XEP-0363](https://xmpp.org/extensions/xep-0363.html) | HTTP File Upload | draft | [file-transfer](specs/file-transfer.md) | the URLs its clients produce are accepted; the upload slot service itself is C2S and is not implemented |

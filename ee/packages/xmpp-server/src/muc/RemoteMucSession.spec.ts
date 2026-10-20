@@ -166,6 +166,20 @@ describe('RemoteMucSession', () => {
 		expect(onMessage.mock.calls.map(([message]) => message.id)).toEqual(['room-id', undefined]);
 	});
 
+	// Known defect: ../../docs/specs/message-deduplication.md#d4-a-room-without-xep-0359-passes-an-occupants-stanza-id-on
+	it.skip('takes no room stanza-id from a room that has not advertised XEP-0359 (message-deduplication D4)', () => {
+		const onMessage = jest.fn();
+		const { session } = createSession({ onMessage });
+
+		session.handleMessage(
+			p(
+				"<message from='team@conference.remote.tld/bob' type='groupchat' id='m1'><body>hi</body><stanza-id xmlns='urn:xmpp:sid:0' id='chosen-by-bob' by='team@conference.remote.tld'/></message>",
+			),
+		);
+
+		expect(onMessage.mock.calls.map(([message]) => message.id)).toEqual([undefined]);
+	});
+
 	it('skips a room stanza-id without an id for a later one that has it (message-deduplication R2)', () => {
 		const onMessage = jest.fn();
 		const { session } = createSession({ onMessage });
