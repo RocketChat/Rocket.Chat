@@ -1,0 +1,138 @@
+diff --git a/dist/cjs/createComponent.cjs b/dist/cjs/createComponent.cjs
+index 83989943c050330991749f27d17eb6a05a76ba7e..5d8d96cf7eea09f78e9d01d9855eba6640897724 100644
+--- a/dist/cjs/createComponent.cjs
++++ b/dist/cjs/createComponent.cjs
+@@ -593,8 +593,8 @@ ${banner}
+ 		const propsWithAnimation = props;
+ 		const { asChild, children, themeShallow, onPress, onLongPress, onPressIn, onPressOut, onHoverIn, onHoverOut, onMouseUp, onMouseDown, onMouseEnter, onMouseLeave, onFocus, onBlur, onTransition, separator, passThrough, forceStyle: _forceStyle, onClick, theme: _themeProp, ...nonTamaguiProps } = viewPropsIn || {};
+ 		let viewProps = nonTamaguiProps;
+-		if (props.forceStyle) viewProps.forceStyle = props.forceStyle;
+ 		if (isHOC) {
++			if (props.forceStyle) viewProps.forceStyle = props.forceStyle;
+ 			if (typeof _themeProp !== "undefined" && true) viewProps.theme = _themeProp;
+ 			if (typeof passThrough !== "undefined") viewProps.passThrough = passThrough;
+ 			if (typeof asChild !== "undefined") viewProps.asChild = asChild;
+@@ -637,7 +637,7 @@ ${banner}
+ 		if (import_constants.isWeb && isExiting) viewProps.className = `t_exiting ${viewProps.className || ""}`;
+ 		if (process.env.NODE_ENV === "development" && props.untilMeasured && !isContainer) console.warn(`You set untilMeasured without establishing a container. Set it on the parent with container or container="name", not on the child using a container clause.`);
+ 		if (process.env.NODE_ENV === "development" && time) time`destructure`;
+-		if (!isPassthrough && groupContext && isContainer) nonTamaguiProps.onLayout = (0, import_helpers.composeEventHandlers)(nonTamaguiProps.onLayout, (e) => {
++		if (!import_constants.isWeb && !isPassthrough && groupContext && isContainer) nonTamaguiProps.onLayout = (0, import_helpers.composeEventHandlers)(nonTamaguiProps.onLayout, (e) => {
+ 			const layout = e.nativeEvent.layout;
+ 			groupContext.state.layout = layout;
+ 			stateRef.current.group?.emit({ layout });
+@@ -646,19 +646,39 @@ ${banner}
+ 		});
+ 		viewProps = import_setupHooks.hooks.usePropsTransform?.(elementType, nonTamaguiProps, stateRef, stateRef.current.willHydrate) || nonTamaguiProps;
+ 		stateRef.current.composedForwardedRef = forwardedRef;
++		// A React 19 ref callback may return a cleanup, which then runs instead of a call with null
++		const attachForwardedRef = (ref, node) => {
++			stateRef.current.attachedForwardedRef = ref;
++			const cleanup = (0, import_compose_refs.setRef)(ref, node);
++			stateRef.current.forwardedRefCleanup = typeof cleanup === "function" ? cleanup : void 0;
++		};
++		const detachForwardedRef = () => {
++			const attached = stateRef.current.attachedForwardedRef;
++			const cleanup = stateRef.current.forwardedRefCleanup;
++			stateRef.current.attachedForwardedRef = void 0;
++			stateRef.current.forwardedRefCleanup = void 0;
++			if (cleanup) cleanup();
++			else if (attached) (0, import_compose_refs.setRef)(attached, null);
++		};
+ 		if (!stateRef.current.composedRef) stateRef.current.composedRef = (0, import_compose_refs.composeRefs)((x) => {
+ 			stateRef.current.host = x;
+-			const current = stateRef.current.composedForwardedRef;
+-			stateRef.current.attachedForwardedRef = x ? current : void 0;
+-			(0, import_compose_refs.setRef)(current, x);
++			if (!x) {
++				detachForwardedRef();
++				return;
++			}
++			attachForwardedRef(stateRef.current.composedForwardedRef, x);
++			return () => {
++				stateRef.current.host = null;
++				detachForwardedRef();
++			};
+ 		}, import_setElementProps.setElementProps, animatedRef);
+ 		viewProps.ref = stateRef.current.composedRef;
+ 		(0, import_constants.useIsomorphicLayoutEffect)(() => {
+ 			const attached = stateRef.current.attachedForwardedRef;
+ 			if (attached === forwardedRef) return;
+-			if (attached) (0, import_compose_refs.setRef)(attached, null);
+-			stateRef.current.attachedForwardedRef = forwardedRef;
+-			if (stateRef.current.host) (0, import_compose_refs.setRef)(forwardedRef, stateRef.current.host);
++			if (attached) detachForwardedRef();
++			if (stateRef.current.host) attachForwardedRef(forwardedRef, stateRef.current.host);
++			else stateRef.current.attachedForwardedRef = forwardedRef;
+ 		}, [forwardedRef]);
+ 		(0, import_pointerEvents.usePointerEvents)(props, viewProps);
+ 		if (process.env.NODE_ENV === "development") {
+diff --git a/dist/esm/createComponent.mjs b/dist/esm/createComponent.mjs
+index db5dce2ed326125abc738ed7be58ea983e36e35d..7a0a6c896d0da54f9081e7372c468eef360b3bd6 100644
+--- a/dist/esm/createComponent.mjs
++++ b/dist/esm/createComponent.mjs
+@@ -555,8 +555,8 @@ ${banner}
+ 		const propsWithAnimation = props;
+ 		const { asChild, children, themeShallow, onPress, onLongPress, onPressIn, onPressOut, onHoverIn, onHoverOut, onMouseUp, onMouseDown, onMouseEnter, onMouseLeave, onFocus, onBlur, onTransition, separator, passThrough, forceStyle: _forceStyle, onClick, theme: _themeProp, ...nonTamaguiProps } = viewPropsIn || {};
+ 		let viewProps = nonTamaguiProps;
+-		if (props.forceStyle) viewProps.forceStyle = props.forceStyle;
+ 		if (isHOC) {
++			if (props.forceStyle) viewProps.forceStyle = props.forceStyle;
+ 			if (typeof _themeProp !== "undefined" && true) viewProps.theme = _themeProp;
+ 			if (typeof passThrough !== "undefined") viewProps.passThrough = passThrough;
+ 			if (typeof asChild !== "undefined") viewProps.asChild = asChild;
+@@ -599,7 +599,7 @@ ${banner}
+ 		if (isWeb && isExiting) viewProps.className = `t_exiting ${viewProps.className || ""}`;
+ 		if (process.env.NODE_ENV === "development" && props.untilMeasured && !isContainer) console.warn(`You set untilMeasured without establishing a container. Set it on the parent with container or container="name", not on the child using a container clause.`);
+ 		if (process.env.NODE_ENV === "development" && time) time`destructure`;
+-		if (!isPassthrough && groupContext && isContainer) nonTamaguiProps.onLayout = composeEventHandlers(nonTamaguiProps.onLayout, (e) => {
++		if (!isWeb && !isPassthrough && groupContext && isContainer) nonTamaguiProps.onLayout = composeEventHandlers(nonTamaguiProps.onLayout, (e) => {
+ 			const layout = e.nativeEvent.layout;
+ 			groupContext.state.layout = layout;
+ 			stateRef.current.group?.emit({ layout });
+@@ -608,19 +608,39 @@ ${banner}
+ 		});
+ 		viewProps = hooks.usePropsTransform?.(elementType, nonTamaguiProps, stateRef, stateRef.current.willHydrate) || nonTamaguiProps;
+ 		stateRef.current.composedForwardedRef = forwardedRef;
++		// A React 19 ref callback may return a cleanup, which then runs instead of a call with null
++		const attachForwardedRef = (ref, node) => {
++			stateRef.current.attachedForwardedRef = ref;
++			const cleanup = setRef(ref, node);
++			stateRef.current.forwardedRefCleanup = typeof cleanup === "function" ? cleanup : void 0;
++		};
++		const detachForwardedRef = () => {
++			const attached = stateRef.current.attachedForwardedRef;
++			const cleanup = stateRef.current.forwardedRefCleanup;
++			stateRef.current.attachedForwardedRef = void 0;
++			stateRef.current.forwardedRefCleanup = void 0;
++			if (cleanup) cleanup();
++			else if (attached) setRef(attached, null);
++		};
+ 		if (!stateRef.current.composedRef) stateRef.current.composedRef = composeRefs((x) => {
+ 			stateRef.current.host = x;
+-			const current = stateRef.current.composedForwardedRef;
+-			stateRef.current.attachedForwardedRef = x ? current : void 0;
+-			setRef(current, x);
++			if (!x) {
++				detachForwardedRef();
++				return;
++			}
++			attachForwardedRef(stateRef.current.composedForwardedRef, x);
++			return () => {
++				stateRef.current.host = null;
++				detachForwardedRef();
++			};
+ 		}, setElementProps, animatedRef);
+ 		viewProps.ref = stateRef.current.composedRef;
+ 		useIsomorphicLayoutEffect(() => {
+ 			const attached = stateRef.current.attachedForwardedRef;
+ 			if (attached === forwardedRef) return;
+-			if (attached) setRef(attached, null);
+-			stateRef.current.attachedForwardedRef = forwardedRef;
+-			if (stateRef.current.host) setRef(forwardedRef, stateRef.current.host);
++			if (attached) detachForwardedRef();
++			if (stateRef.current.host) attachForwardedRef(forwardedRef, stateRef.current.host);
++			else stateRef.current.attachedForwardedRef = forwardedRef;
+ 		}, [forwardedRef]);
+ 		usePointerEvents(props, viewProps);
+ 		if (process.env.NODE_ENV === "development") {
