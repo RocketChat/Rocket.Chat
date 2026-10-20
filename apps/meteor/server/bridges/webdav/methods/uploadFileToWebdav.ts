@@ -1,4 +1,4 @@
-import { MeteorError } from '@rocket.chat/core-services';
+import { ClientSafeError } from '@rocket.chat/core-services';
 import type { IWebdavAccount } from '@rocket.chat/core-typings';
 import type { ServerMethods } from '@rocket.chat/ddp-client';
 import { Logger } from '@rocket.chat/logger';
@@ -24,13 +24,13 @@ declare module '@rocket.chat/ddp-client' {
 Meteor.methods<ServerMethods>({
 	async uploadFileToWebdav(accountId, fileData, name) {
 		if (!Meteor.userId()) {
-			throw new MeteorError('error-invalid-user', 'Invalid User', {
+			throw new ClientSafeError('error-invalid-user', 'Invalid User', {
 				method: 'uploadFileToWebdav',
 			});
 		}
 
 		if (!settings.get('Webdav_Integration_Enabled')) {
-			throw new MeteorError('error-not-allowed', 'WebDAV Integration Not Allowed', {
+			throw new ClientSafeError('error-not-allowed', 'WebDAV Integration Not Allowed', {
 				method: 'uploadFileToWebdav',
 			});
 		}
@@ -40,7 +40,7 @@ Meteor.methods<ServerMethods>({
 			return { success: true };
 		} catch (err: any) {
 			if (typeof err === 'object' && err instanceof Error && err.name === 'error-invalid-account') {
-				throw new MeteorError(err.name, 'Invalid WebDAV Account', {
+				throw new ClientSafeError(err.name, 'Invalid WebDAV Account', {
 					method: 'uploadFileToWebdav',
 				});
 			}

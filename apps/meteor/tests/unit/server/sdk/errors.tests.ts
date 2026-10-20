@@ -1,9 +1,9 @@
-import { MeteorError } from '@rocket.chat/core-services';
+import { ClientSafeError } from '@rocket.chat/core-services';
 import { expect } from 'chai';
 
-describe('MeteorError', () => {
+describe('ClientSafeError', () => {
 	it('should create an error with no reason like Meteor.Error', () => {
-		const error = new MeteorError('no reason');
+		const error = new ClientSafeError('no reason');
 
 		const stringfiedError = { isClientSafe: true, errorType: 'Meteor.Error', error: 'no reason', message: '[no reason]' };
 
@@ -16,7 +16,7 @@ describe('MeteorError', () => {
 		expect(JSON.parse(JSON.stringify(error))).to.deep.equal(stringfiedError);
 	});
 	it('should create an error with reason like Meteor.Error', () => {
-		const error = new MeteorError('some message', 'some reason');
+		const error = new ClientSafeError('some message', 'some reason');
 
 		const stringfiedError = {
 			isClientSafe: true,
@@ -35,7 +35,7 @@ describe('MeteorError', () => {
 		expect(JSON.parse(JSON.stringify(error))).to.deep.equal(stringfiedError);
 	});
 	it('should create an error with reason and details like Meteor.Error', () => {
-		const error = new MeteorError('some message', 'some reason', { some: 'details' });
+		const error = new ClientSafeError('some message', 'some reason', { some: 'details' });
 
 		const stringfiedError = {
 			isClientSafe: true,

@@ -1,4 +1,4 @@
-import { api, MeteorError } from '@rocket.chat/core-services';
+import { api, ClientSafeError } from '@rocket.chat/core-services';
 import { expect } from 'chai';
 import { before, describe } from 'mocha';
 
@@ -84,7 +84,7 @@ describe('Check MAC', () => {
 				message: createMessage('hey'),
 				room: createRoom({ t: 'l' }),
 			}),
-		).to.be.rejectedWith(MeteorError, 'error-mac-limit-reached');
+		).to.be.rejectedWith(ClientSafeError, 'error-mac-limit-reached');
 	});
 
 	it('should work if MAC within limits', async () => {

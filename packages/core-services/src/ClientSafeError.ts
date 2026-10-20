@@ -1,4 +1,8 @@
-export class MeteorError extends Error {
+/**
+ * An error whose code, reason and details may be sent to callers instead of a generic internal error.
+ * It keeps Meteor.Error's wire shape, including `errorType: 'Meteor.Error'`, because clients recognize errors by it.
+ */
+export class ClientSafeError extends Error {
 	public isClientSafe = true;
 
 	public readonly errorType = 'Meteor.Error';
@@ -23,4 +27,4 @@ export class MeteorError extends Error {
 	}
 }
 
-export const isMeteorError = (error: any): error is MeteorError => error?.errorType === 'Meteor.Error';
+export const isClientSafeError = (error: any): error is ClientSafeError => error?.errorType === 'Meteor.Error';

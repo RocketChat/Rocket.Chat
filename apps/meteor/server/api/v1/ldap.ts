@@ -1,4 +1,4 @@
-import { LDAP, isMeteorError } from '@rocket.chat/core-services';
+import { LDAP, isClientSafeError } from '@rocket.chat/core-services';
 import {
 	ajv,
 	isLdapTestSearch,
@@ -50,7 +50,7 @@ API.v1.post(
 			await LDAP.testConnection();
 		} catch (err) {
 			SystemLogger.error({ err });
-			if (isMeteorError(err)) {
+			if (isClientSafeError(err)) {
 				return API.v1.failure({ error: String(err.error), details: err.details });
 			}
 
@@ -93,7 +93,7 @@ API.v1.post(
 			await LDAP.testSearch(this.bodyParams.username);
 		} catch (err) {
 			SystemLogger.error({ err });
-			if (isMeteorError(err)) {
+			if (isClientSafeError(err)) {
 				return API.v1.failure({ error: String(err.error), details: err.details });
 			}
 

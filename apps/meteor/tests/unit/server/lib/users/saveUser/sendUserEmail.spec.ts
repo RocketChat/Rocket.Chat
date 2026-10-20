@@ -1,4 +1,4 @@
-import { MeteorError } from '@rocket.chat/core-services';
+import { ClientSafeError } from '@rocket.chat/core-services';
 import { expect } from 'chai';
 import { describe, it, beforeEach, afterEach } from 'mocha';
 import mock from 'proxyquire';
@@ -95,7 +95,7 @@ describe('sendUserEmail (Mocha + TS)', () => {
 			});
 		});
 
-		it('should throw MeteorError if Mailer.send fails', async () => {
+		it('should throw ClientSafeError if Mailer.send fails', async () => {
 			MailerStub.send.throws(new Error('fail'));
 
 			let thrown = false;
@@ -103,7 +103,7 @@ describe('sendUserEmail (Mocha + TS)', () => {
 				await sendUserEmail('subject', '<p>html</p>', userData);
 			} catch (err) {
 				thrown = true;
-				expect(err).to.be.instanceOf(MeteorError);
+				expect(err).to.be.instanceOf(ClientSafeError);
 			}
 			expect(thrown).to.equal(true);
 		});

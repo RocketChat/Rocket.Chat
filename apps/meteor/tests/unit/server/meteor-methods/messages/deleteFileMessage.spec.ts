@@ -1,4 +1,4 @@
-import { MeteorError } from '@rocket.chat/core-services';
+import { ClientSafeError } from '@rocket.chat/core-services';
 import { expect } from 'chai';
 import { beforeEach, describe, it } from 'mocha';
 import p from 'proxyquire';
@@ -28,7 +28,7 @@ p.noCallThru().load('../../../../../server/meteor-methods/messages/deleteFileMes
 	'meteor/meteor': {
 		Meteor: {
 			userId: meteorUserIdMock,
-			Error: MeteorError,
+			Error: ClientSafeError,
 			methods: meteorMethodsMock,
 		},
 	},

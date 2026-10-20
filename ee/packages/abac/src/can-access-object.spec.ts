@@ -33,8 +33,8 @@ jest.mock('@rocket.chat/core-services', () => ({
 	Settings: {
 		get: (...args: any[]) => mockSettingsGetValueById(...args),
 	},
-	MeteorError: class extends Error {},
-	isMeteorError: () => false,
+	ClientSafeError: class extends Error {},
+	isClientSafeError: () => false,
 }));
 
 describe('AbacService.canAccessObject (unit)', () => {

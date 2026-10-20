@@ -1,4 +1,4 @@
-import { MeteorError, Presence, Team } from '@rocket.chat/core-services';
+import { ClientSafeError, Presence, Team } from '@rocket.chat/core-services';
 import type { IExportOperation, ILoginToken, IPersonalAccessToken, IUser, UserStatus } from '@rocket.chat/core-typings';
 import { Users, Subscriptions, Sessions, OAuthAccessTokens, OAuthRefreshTokens, OAuthAuthCodes } from '@rocket.chat/models';
 import {
@@ -975,7 +975,7 @@ API.v1.post(
 		const { email } = this.bodyParams;
 
 		if (!isSMTPConfigured()) {
-			throw new MeteorError('error-email-send-failed', 'SMTP is not configured', {
+			throw new ClientSafeError('error-email-send-failed', 'SMTP is not configured', {
 				method: 'sendWelcomeEmail',
 			});
 		}
@@ -983,7 +983,7 @@ API.v1.post(
 		const user = await Users.findOneByEmailAddress(email.trim(), { projection: { name: 1 } });
 
 		if (!user) {
-			throw new MeteorError('error-invalid-user', 'Invalid user', {
+			throw new ClientSafeError('error-invalid-user', 'Invalid user', {
 				method: 'sendWelcomeEmail',
 			});
 		}
@@ -1510,7 +1510,7 @@ API.v1
 		async function action() {
 			const hasUnverifiedEmail = this.user.emails?.some((email) => !email.verified);
 			if (hasUnverifiedEmail) {
-				throw new MeteorError('error-invalid-user', 'You need to verify your emails before setting up 2FA');
+				throw new ClientSafeError('error-invalid-user', 'You need to verify your emails before setting up 2FA');
 			}
 
 			await Users.enableEmail2FAByUserId(this.userId);
@@ -1524,7 +1524,7 @@ API.v1
 			const hashedToken = Accounts._hashLoginToken(xAuthToken);
 
 			if (!(await Users.removeNonPATLoginTokensExcept(this.userId, hashedToken))) {
-				throw new MeteorError('error-logging-out-other-clients', 'Error logging out other clients');
+				throw new ClientSafeError('error-logging-out-other-clients', 'Error logging out other clients');
 			}
 
 			// TODO this can be optmized so places that care about loginTokens being removed are invoked directly
