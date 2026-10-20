@@ -7,7 +7,7 @@ import {
 	appMessageMock,
 	appMessageInvalidRoomMock,
 	appPartialMessageMock,
-} from '../../../../tests/mocks/server/modules/apps/data/messages.data';
+} from '../../../../tests/mocks/server/modules/apps/messages.data';
 import { MessagesMock } from '../../../../tests/mocks/server/modules/apps/models/Messages.mock';
 import { RoomsMock } from '../../../../tests/mocks/server/modules/apps/models/Rooms.mock';
 import { UsersMock } from '../../../../tests/mocks/server/modules/apps/models/Users.mock';
