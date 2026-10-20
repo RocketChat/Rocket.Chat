@@ -52,6 +52,21 @@ describe('normalizeDomain', () => {
 		expect(() => normalizeDomain('   ')).toThrow(InvalidJidError);
 		expect(() => normalizeDomain('example .com')).toThrow(InvalidJidError);
 	});
+
+	it.each(['remote..tld', 'remote.tld..', '.remote.tld', '.', 'remote。。tld'])('throws on the empty label in %s (R4)', (domain) => {
+		expect(() => normalizeDomain(domain)).toThrow(InvalidJidError);
+	});
+
+	it('strips a trailing ideographic full stop as it does an ASCII dot (R4)', () => {
+		expect(normalizeDomain('example.com。')).toBe('example.com');
+	});
+
+	it.each(['  Example.COM ', 'example.com.', 'müller.example', 'example.com。'])(
+		'changes nothing when %s is normalized twice (R4)',
+		(domain) => {
+			expect(normalizeDomain(normalizeDomain(domain))).toBe(normalizeDomain(domain));
+		},
+	);
 });
 
 describe('isDomainAllowed', () => {
@@ -66,5 +81,9 @@ describe('isDomainAllowed', () => {
 
 	it('deny list wins over allow list', () => {
 		expect(isDomainAllowed('remote.tld', ['remote.tld'], ['remote.tld'])).toBe(false);
+	});
+
+	it.each(['evil.tld...', 'evil.tld。。'])('never lets %s past a deny list naming evil.tld (R5)', (domain) => {
+		expect(() => isDomainAllowed(domain, undefined, ['evil.tld'])).toThrow(InvalidJidError);
 	});
 });

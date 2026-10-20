@@ -7,13 +7,8 @@ import { InvalidJidError } from '../errors';
  * Applies IDNA ASCII conversion and lowercasing. Full stringprep/PRECIS is out of scope.
  */
 export function normalizeDomain(domain: string): string {
-	const trimmed = domain.trim().replace(/\.$/, '');
-	if (!trimmed) {
-		throw new InvalidJidError(domain);
-	}
-
-	const ascii = domainToASCII(trimmed);
-	if (!ascii) {
+	const ascii = domainToASCII(domain.trim()).replace(/\.$/, '');
+	if (!ascii || ascii.split('.').includes('')) {
 		throw new InvalidJidError(domain);
 	}
 
