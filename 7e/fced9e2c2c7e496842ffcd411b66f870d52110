@@ -1,0 +1,37 @@
+packages/core-services/src/types/IXMPPServerService.ts
+  s_22158ff20cd246::t_1c209e322c0fc3 1-20
+packages/core-services/src/index.ts
+  s_22158ff20cd246::t_1c209e322c0fc3 69,94,235
+packages/models/src/models/Users.ts
+  s_22158ff20cd246::t_1c209e322c0fc3 33,1662-1692
+  s_22158ff20cd246::t_06f06babb27ac0 1693
+packages/model-typings/src/models/IRoomsModel.ts
+  s_22158ff20cd246::t_1c209e322c0fc3 224-249
+packages/core-typings/src/IRoom.ts
+  s_22158ff20cd246::t_1c209e322c0fc3 76,138-170
+  s_22158ff20cd246::t_5e47e5535300a0 171
+packages/models/src/models/Rooms.ts
+  s_22158ff20cd246::t_1c209e322c0fc3 101-108,808-857
+  s_22158ff20cd246::t_700383c2ed9f44 858
+packages/model-typings/src/models/IUsersModel.ts
+  s_22158ff20cd246::t_1c209e322c0fc3 322-330
+packages/core-typings/src/IUser.ts
+  s_22158ff20cd246::t_1c209e322c0fc3 264,313-326
+  s_22158ff20cd246::t_614f5c773af4ab 327
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "7efced9e2c2c7e496842ffcd411b66f870d52110",
+  "prompts": {},
+  "sessions": {
+    "s_22158ff20cd246": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "e3bc8f7d-2ca9-481d-9c88-43497a3e53ec",
+        "model": "claude-opus-5-5"
+      },
+      "human_author": "Diego Sampaio <chinello@gmail.com>"
+    }
+  }
+}

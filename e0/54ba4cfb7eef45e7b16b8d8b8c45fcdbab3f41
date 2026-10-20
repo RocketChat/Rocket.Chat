@@ -1,0 +1,19 @@
+.changeset/federation-default-room-version-11.md
+  s_fe61c599670dc7::t_e75d72700a8794 1-7
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "e054ba4cfb7eef45e7b16b8d8b8c45fcdbab3f41",
+  "prompts": {},
+  "sessions": {
+    "s_fe61c599670dc7": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "f22c58e1-da94-4add-9582-6f19542a569b",
+        "model": "claude-opus-5-5"
+      },
+      "human_author": "Diego Sampaio <chinello@gmail.com>"
+    }
+  }
+}

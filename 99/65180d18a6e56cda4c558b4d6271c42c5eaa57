@@ -1,0 +1,22 @@
+ee/packages/xmpp-server/src/s2s/S2SManager.spec.ts
+  s_bf193bee63afbe::t_3fd58acddcfc4f 70,79-80
+  s_bf193bee63afbe::t_faf225eb78d1e8 57-69,71-78,81-88
+ee/packages/xmpp-server/src/s2s/S2SManager.ts
+  s_bf193bee63afbe::t_faf225eb78d1e8 31-32,201,248,259,272,275,281
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "9965180d18a6e56cda4c558b4d6271c42c5eaa57",
+  "prompts": {},
+  "sessions": {
+    "s_bf193bee63afbe": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "0f126c7e-b9e6-435d-856c-ef1cd07242d5",
+        "model": "claude-opus-5-5"
+      },
+      "human_author": "Diego Sampaio <chinello@gmail.com>"
+    }
+  }
+}

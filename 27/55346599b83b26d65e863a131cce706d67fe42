@@ -1,0 +1,21 @@
+ee/packages/xmpp-server/tests/end-to-end/hosted-muc.spec.ts
+  s_bf193bee63afbe::t_ed57e3ddd844ce 405
+ee/packages/xmpp-server/tests/end-to-end/helper/xmpp-client.ts
+  s_bf193bee63afbe::t_ed57e3ddd844ce 135
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "2755346599b83b26d65e863a131cce706d67fe42",
+  "prompts": {},
+  "sessions": {
+    "s_bf193bee63afbe": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "0f126c7e-b9e6-435d-856c-ef1cd07242d5",
+        "model": "claude-opus-5-5"
+      },
+      "human_author": "Diego Sampaio <chinello@gmail.com>"
+    }
+  }
+}

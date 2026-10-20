@@ -1,0 +1,25 @@
+apps/meteor/package.json
+  s_699c21f8808612::t_fd01cd45d19600 116
+ee/packages/federation-matrix/package.json
+  s_699c21f8808612::t_c1b713c4b5cbfc 25
+packages/core-services/package.json
+  s_699c21f8808612::t_a27dc8161e0b0b 21
+yarn.lock
+  s_699c21f8808612::t_bd58a03c30ad96 9780,10007,10036-10038,10052,10780
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "9771afeb57a6d3a19e665d58db899f29690aa735",
+  "prompts": {},
+  "sessions": {
+    "s_699c21f8808612": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "bc613666-12e8-4cb3-840a-00452e745c7b",
+        "model": "unknown"
+      },
+      "human_author": "Diego Sampaio <chinello@gmail.com>"
+    }
+  }
+}
