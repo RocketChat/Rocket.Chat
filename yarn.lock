@@ -12664,7 +12664,7 @@ __metadata:
     ltx: "npm:^2.10.0"
     pino: "npm:10.3.1"
     tsx: "npm:~4.22.5"
-    typescript: "npm:~5.9.3"
+    typescript: "npm:~7.0.2"
   languageName: unknown
   linkType: soft
 
