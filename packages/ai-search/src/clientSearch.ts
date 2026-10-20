@@ -66,7 +66,7 @@ const stripSigil = (value: string): string => value.replace(/^[@#]/, '').trim();
 const normalizeName = (rawValue: string): string | undefined => {
 	const value = stripSigil(rawValue);
 
-	return value && !value.includes('"') ? value : undefined;
+	return value && !/[",]/.test(value) ? value : undefined;
 };
 
 const normalizeDate = (rawValue: string): string | undefined => {
