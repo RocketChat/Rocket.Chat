@@ -1,3 +1,5 @@
+import crypto from 'node:crypto';
+
 import { apiUrl } from '../../../../../../apps/meteor/tests/data/api-data';
 
 const optional = (name: string, fallback: string): string => process.env[name]?.trim() || fallback;
@@ -33,7 +35,7 @@ export const federationPolling = { delayMs: POLL_INTERVAL_MS, retries: FEDERATIO
 export const DUPLICATE_SETTLE_MS = 3000;
 
 /** Suffix that keeps names unique across runs, so leftovers of an aborted run never collide. */
-export const uniqueSuffix = (): string => `${Date.now().toString(36)}${Math.random().toString(36).slice(2, 6)}`;
+export const uniqueSuffix = (): string => `${Date.now().toString(36)}${crypto.randomBytes(2).toString('hex')}`;
 
 /** The same JID with its domain in upper case, as a user might type it. */
 export const withUppercaseDomain = (jid: string): string => {
