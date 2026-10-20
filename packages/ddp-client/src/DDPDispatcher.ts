@@ -91,6 +91,22 @@ export class DDPDispatcher extends MinimalDDPClient {
 		this.sendOutstandingBlocks();
 	}
 
+	/**
+	 * Fails the wait block already on the wire when its socket is gone: the server will never answer it,
+	 * and every later method would otherwise stay queued behind it.
+	 */
+	failOutstandingWaitBlock(error: unknown) {
+		const block = this.queue[0];
+
+		if (!block?.wait) {
+			return;
+		}
+
+		block.items.slice().forEach(({ id }) => {
+			this.emit(`result/${id}`, { msg: 'result', id, error });
+		});
+	}
+
 	removeItem(item: MethodPayload) {
 		const block = this.queue[0];
 
