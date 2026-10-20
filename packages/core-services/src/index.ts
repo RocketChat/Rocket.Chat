@@ -75,6 +75,7 @@ export type {
 	AbacMembershipPreviewResult,
 	AbacRoomAttributesGrant,
 	AbacRoomMembershipPreviewPage,
+	AbacUsersAllowedInRoomResult,
 } from './types/IAbacService';
 export type { PresenceScope } from './types/IStatusVisibilityService';
 export { asyncLocalStorage } from './lib/asyncLocalStorage';

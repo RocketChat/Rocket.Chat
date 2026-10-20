@@ -1,3 +1,4 @@
+import { AbacContractError } from '@rocket.chat/abac';
 import { Message } from '@rocket.chat/core-services';
 import type { IMessage, IRoom, IUser, MessageAttachmentDefault } from '@rocket.chat/core-typings';
 import { Messages, Rooms, Users } from '@rocket.chat/models';
@@ -101,6 +102,9 @@ const create = async ({
 	try {
 		parentRoom = await canSendMessageAsync(prid, { uid: user._id, username: user.username, type: user.type });
 	} catch (error) {
+		if (error instanceof AbacContractError) {
+			throw error;
+		}
 		throw new Meteor.Error((error as Error).message);
 	}
 
