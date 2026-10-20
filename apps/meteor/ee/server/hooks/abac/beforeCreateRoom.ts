@@ -29,7 +29,11 @@ const assignCreationAttributes = async (owner: IUser, room: RoomToCreate, member
 		throw new AbacContractError(AbacErrorCode.FederatedRoomAttributes);
 	}
 
-	if (isDiscussion(room) || !isPrivateRoom(room)) {
+	if (isDiscussion(room)) {
+		throw new AbacContractError(AbacErrorCode.DiscussionRoomAttributes);
+	}
+
+	if (!isPrivateRoom(room)) {
 		throw new AbacContractError(AbacErrorCode.AttributesPrivateRoomsOnly);
 	}
 

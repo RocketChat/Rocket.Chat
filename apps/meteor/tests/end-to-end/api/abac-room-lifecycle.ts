@@ -384,4 +384,75 @@ import { IS_EE, URL_MONGODB } from '../../e2e/config/constants';
 			await setAbacEnabled(true);
 		});
 	});
+
+	describe('removing attributes while enforcement requires them', () => {
+		let owner: IUser;
+		let ownerCredentials: Credentials;
+		let team: ITeam;
+		let toTeamRoomId: IRoom['_id'];
+		let moveInRoomId: IRoom['_id'];
+
+		const createOwnedAbacGroup = async (name: string): Promise<IRoom['_id']> => {
+			const room = await createRoom({ type: 'p', name, credentials: ownerCredentials });
+			const roomId: IRoom['_id'] = room.body.group._id;
+			await setRoomAbacAttributesDirectly(connection, roomId, attributes);
+			return roomId;
+		};
+
+		const expectAttributesCleared = (res: { body: Record<string, unknown> }) => {
+			expect(res.body).to.include({ errorType: 'error-abac-room-attributes-cleared' });
+		};
+
+		before(async () => {
+			owner = await createUser();
+			ownerCredentials = await login(owner.username, password);
+			await addAbacAttributesToUserDirectly(connection, owner._id, attributes);
+
+			toTeamRoomId = await createOwnedAbacGroup(`abac-lifecycle-required-to-team-${Date.now()}`);
+			moveInRoomId = await createOwnedAbacGroup(`abac-lifecycle-required-move-in-${Date.now()}`);
+			team = await createTeam(ownerCredentials, `abac-lifecycle-required-team-${Date.now()}`, TeamType.PRIVATE);
+			await setRoomAbacAttributesDirectly(connection, team.roomId, attributes);
+
+			await updateSetting('ABAC_Required_Attributes', [attributes[0].key]);
+			await setEnforcement(true);
+		});
+
+		after(async () => {
+			await setEnforcement(false);
+			await updateSetting('ABAC_Required_Attributes', []);
+			await Promise.all(
+				[toTeamRoomId, moveInRoomId].map((roomId) =>
+					actionRoom({ action: 'delete', type: 'p', roomId, overrideCredentials: ownerCredentials }),
+				),
+			);
+			await deleteTeam(credentials, team.name);
+			await deleteUser(owner);
+		});
+
+		it('refuses an owner converting the room to a team', async () => {
+			await request
+				.post(api('groups.convertToTeam'))
+				.set(ownerCredentials)
+				.send({ roomId: toTeamRoomId })
+				.expect(400)
+				.expect(expectAttributesCleared);
+
+			const room = await findRoom(toTeamRoomId);
+			expect(room).to.have.deep.property('abacAttributes', attributes);
+			expect(room).to.not.have.property('teamMain');
+		});
+
+		it('refuses an owner moving the room into a team', async () => {
+			await request
+				.post(api('teams.addRooms'))
+				.set(ownerCredentials)
+				.send({ teamId: team._id, rooms: [moveInRoomId] })
+				.expect(400)
+				.expect(expectAttributesCleared);
+
+			const room = await findRoom(moveInRoomId);
+			expect(room).to.have.deep.property('abacAttributes', attributes);
+			expect(room).to.not.have.property('teamId');
+		});
+	});
 });

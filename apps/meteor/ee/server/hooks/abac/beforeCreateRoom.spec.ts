@@ -80,7 +80,7 @@ describe('beforeCreateRoom (ABAC)', () => {
 
 		it('should be refused unless it is a private room', async () => {
 			await expect(run(privateRoom({ abacAttributes, t: 'c' }))).to.be.rejectedWith('error-abac-attributes-private-rooms-only');
-			await expect(run(privateRoom({ abacAttributes, prid: 'parent' }))).to.be.rejectedWith('error-abac-attributes-private-rooms-only');
+			await expect(run(privateRoom({ abacAttributes, prid: 'parent' }))).to.be.rejectedWith('error-abac-discussion-room-attributes');
 		});
 
 		it('should be refused to a creator without the permission, before the PDP is asked', async () => {
