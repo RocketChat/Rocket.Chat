@@ -1,8 +1,35 @@
 diff --git a/dist/cjs/compilerHost.cjs b/dist/cjs/compilerHost.cjs
-index 53270b93d46417dc87519c0edc9b50a5559f0ce7..5abd56e308b41d499db37d3e9de5dfa76d09c47e 100644
+index 53270b93d46417dc87519c0edc9b50a5559f0ce7..dcb6bee5bb3b76d63189d218e143e537af233641 100644
 --- a/dist/cjs/compilerHost.cjs
 +++ b/dist/cjs/compilerHost.cjs
-@@ -1884,6 +1884,14 @@ function createTamaguiCompilerHost(options) {
+@@ -1220,6 +1220,17 @@ function createTamaguiCompilerHost(options) {
+ 	const isFrontendClassName = (name, component) => name === "className" && !!component.staticConfig.styleFrontend;
+ 	const canLowerConditionalStyleProp = (name, component) => isStyleProp(name, component) && (!runtimeOnlyStyleProps.has(name) || isFrontendClassName(name, component));
+ 	const frontendClassDomain = (entry, component) => {
++		// Rocket.Chat: an opaque value for a variant can only take one of the variant's keys, or none of them, so it lowers
++		// like a finite domain: each value resolves at compile time and the runtime value picks its classes
++		const variant = platform === "web" && entry.kind === "prop" && entry.value.kind === "bailout" ? component.staticConfig.variants?.[entry.name] : void 0;
++		if (variant && typeof variant === "object") {
++			const keys = Object.keys(variant);
++			if (!keys.length || keys.some((key) => key.startsWith(":") || key === "...")) return null;
++			const values = keys.map((key) => key === "true" ? true : key === "false" ? false : key);
++			if (values.includes(true) && !values.includes(false)) values.push(false);
++			values.push(void 0);
++			return values;
++		}
+ 		if (entry.kind !== "prop" || entry.value.kind !== "bailout" || !isFrontendClassName(entry.name, component)) {
+ 			return null;
+ 		}
+@@ -1388,6 +1399,8 @@ function createTamaguiCompilerHost(options) {
+ 			if (component.staticConfig.resolvers?.length) {
+ 				return false;
+ 			}
++			// Rocket.Chat: a variant's finite domain lowers to a class table (see frontendClassDomain)
++			if (!options.disablePartialExtraction && platform === "web" && valueKind === "bailout" && typeof component.staticConfig.variants?.[name] === "object") return true;
+ 			if (!options.disablePartialExtraction && platform === "web" && isFrontendClassName(name, component)) {
+ 				return true;
+ 			}
+@@ -1884,6 +1897,14 @@ function createTamaguiCompilerHost(options) {
  				additions: []
  			};
  			webPropEdits.push(...webDOMResult.edits);
@@ -18,10 +45,37 @@ index 53270b93d46417dc87519c0edc9b50a5559f0ce7..5abd56e308b41d499db37d3e9de5dfa7
  				const nativeStyleResolved = split.viewProps?.style;
  				let themedStyleKeys = null;
 diff --git a/dist/esm/compilerHost.mjs b/dist/esm/compilerHost.mjs
-index 6caef09479c8534cf2b3040a7af14777e909e2b3..4df01269ce4b26c562c931f782005dd0590c14a3 100644
+index 6caef09479c8534cf2b3040a7af14777e909e2b3..6ac8c09a38338d9cf6c399f1283c706ca34aabad 100644
 --- a/dist/esm/compilerHost.mjs
 +++ b/dist/esm/compilerHost.mjs
-@@ -1859,6 +1859,14 @@ function createTamaguiCompilerHost(options) {
+@@ -1195,6 +1195,17 @@ function createTamaguiCompilerHost(options) {
+ 	const isFrontendClassName = (name, component) => name === "className" && !!component.staticConfig.styleFrontend;
+ 	const canLowerConditionalStyleProp = (name, component) => isStyleProp(name, component) && (!runtimeOnlyStyleProps.has(name) || isFrontendClassName(name, component));
+ 	const frontendClassDomain = (entry, component) => {
++		// Rocket.Chat: an opaque value for a variant can only take one of the variant's keys, or none of them, so it lowers
++		// like a finite domain: each value resolves at compile time and the runtime value picks its classes
++		const variant = platform === "web" && entry.kind === "prop" && entry.value.kind === "bailout" ? component.staticConfig.variants?.[entry.name] : void 0;
++		if (variant && typeof variant === "object") {
++			const keys = Object.keys(variant);
++			if (!keys.length || keys.some((key) => key.startsWith(":") || key === "...")) return null;
++			const values = keys.map((key) => key === "true" ? true : key === "false" ? false : key);
++			if (values.includes(true) && !values.includes(false)) values.push(false);
++			values.push(void 0);
++			return values;
++		}
+ 		if (entry.kind !== "prop" || entry.value.kind !== "bailout" || !isFrontendClassName(entry.name, component)) {
+ 			return null;
+ 		}
+@@ -1363,6 +1374,8 @@ function createTamaguiCompilerHost(options) {
+ 			if (component.staticConfig.resolvers?.length) {
+ 				return false;
+ 			}
++			// Rocket.Chat: a variant's finite domain lowers to a class table (see frontendClassDomain)
++			if (!options.disablePartialExtraction && platform === "web" && valueKind === "bailout" && typeof component.staticConfig.variants?.[name] === "object") return true;
+ 			if (!options.disablePartialExtraction && platform === "web" && isFrontendClassName(name, component)) {
+ 				return true;
+ 			}
+@@ -1859,6 +1872,14 @@ function createTamaguiCompilerHost(options) {
  				additions: []
  			};
  			webPropEdits.push(...webDOMResult.edits);
