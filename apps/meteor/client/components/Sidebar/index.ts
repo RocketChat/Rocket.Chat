@@ -1,6 +1,5 @@
 import Content from './Content';
 import Header from './Header';
-import ListItem from './ListItem';
 import Sidebar from './Sidebar';
 import GenericItem from './SidebarGenericItem';
 import SidebarItemsAssembler from './SidebarItemsAssembler';
@@ -12,5 +11,4 @@ export default Object.assign(Sidebar, {
 	GenericItem,
 	NavigationItem,
 	ItemsAssembler: SidebarItemsAssembler,
-	ListItem,
 });
