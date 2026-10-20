@@ -1,0 +1,164 @@
+ee/packages/presence/src/Presence.spec.ts
+  s_699c21f8808612::t_4f11dd2743bafc 2,184
+apps/meteor/server/api/v1/users.ts
+  s_699c21f8808612::t_4f11dd2743bafc 1,978,986,1513,1527
+apps/meteor/server/lib/users/saveUser/sendUserEmail.ts
+  s_699c21f8808612::t_4f11dd2743bafc 1,42
+apps/meteor/server/services/messages/hooks/BeforeSaveMentions.ts
+  s_699c21f8808612::t_4f11dd2743bafc 1,82
+apps/meteor/server/lib/utils/slashCommand.ts
+  s_699c21f8808612::t_4f11dd2743bafc 1,30,83,102,134,139
+ee/packages/network-broker/src/moleculer.ts
+  s_699c21f8808612::t_4f11dd2743bafc 1,41,51,54
+apps/meteor/server/api/lib/eraseTeam.ts
+  s_699c21f8808612::t_4f11dd2743bafc 2,23
+ee/apps/ddp-streamer/src/ddp/codec.spec.ts
+  s_699c21f8808612::t_4f11dd2743bafc 1,41,51
+apps/meteor/ee/server/hooks/federation/index.ts
+  s_699c21f8808612::t_4f11dd2743bafc 1,46,105,145,393
+ee/packages/presence/src/Presence.ts
+  s_699c21f8808612::t_4f11dd2743bafc 4,305
+ee/apps/ddp-streamer/src/methods/accounts.spec.ts
+  s_699c21f8808612::t_4f11dd2743bafc 1,79
+apps/meteor/tests/unit/server/services/messages/hooks/BeforeSavePreventMention.tests.ts
+  s_699c21f8808612::t_4f11dd2743bafc 8,15,112
+apps/meteor/server/lib/users/saveUser/validateUserEditing.ts
+  s_699c21f8808612::t_4f11dd2743bafc 2,22,42,49,56,63,74,85,96,108,119,129
+apps/meteor/server/lib/auth-providers/apple/applePassportOAuth.ts
+  s_699c21f8808612::t_4f11dd2743bafc 1,138
+ee/packages/abac/src/errors.ts
+  s_699c21f8808612::t_4f11dd2743bafc 1,125,135
+apps/meteor/tests/unit/server/slashcommands/inviteall.spec.ts
+  s_699c21f8808612::t_4f11dd2743bafc 1,132,161
+ee/apps/ddp-streamer/src/methods/accounts.ts
+  s_699c21f8808612::t_4f11dd2743bafc 1,12
+apps/meteor/server/api/v1/ldap.ts
+  s_699c21f8808612::t_4f11dd2743bafc 1,53,96
+apps/meteor/tests/unit/server/lib/users/saveUser/sendUserEmail.spec.ts
+  s_699c21f8808612::t_4f11dd2743bafc 1,98,106
+apps/meteor/server/services/messages/hooks/BeforeSavePreventMention.ts
+  s_699c21f8808612::t_4f11dd2743bafc 1,34
+apps/meteor/tests/unit/server/meteor-methods/messages/deleteFileMessage.spec.ts
+  s_699c21f8808612::t_4f11dd2743bafc 1,31
+apps/meteor/server/bridges/webdav/methods/uploadFileToWebdav.ts
+  s_699c21f8808612::t_4f11dd2743bafc 1,27,33,43
+ee/packages/abac/src/service.spec.ts
+  s_699c21f8808612::t_4f11dd2743bafc 107
+apps/meteor/server/api/v1/rooms.ts
+  s_699c21f8808612::t_4f11dd2743bafc 1,209,1778
+ee/apps/ddp-streamer/src/ddp/Server.spec.ts
+  s_699c21f8808612::t_4f11dd2743bafc 2,114-115,117-118,207,215-216,218,233,240,249,262,267
+apps/meteor/server/slashcommands/invite/server.ts
+  s_699c21f8808612::t_4f11dd2743bafc 1,115
+apps/meteor/tests/unit/server/slashcommands/helpers.ts
+  s_699c21f8808612::t_4f11dd2743bafc 1,30
+apps/meteor/server/api/lib/MultipartUploadHandler.ts
+  s_699c21f8808612::t_4f11dd2743bafc 7,98,115,120,142,161,167,177,181,185,189,196
+docs/service-brokers.md
+  s_699c21f8808612::t_4f11dd2743bafc 74
+apps/meteor/server/lib/users/saveUser/saveUser.ts
+  s_699c21f8808612::t_4f11dd2743bafc 2,139
+apps/meteor/server/lib/auth/ILoginAttempt.ts
+  s_699c21f8808612::t_4f11dd2743bafc 1,26
+apps/meteor/tests/unit/server/services/room/service.spec.ts
+  s_699c21f8808612::t_4f11dd2743bafc 1,57,305,315,325,340,389,398
+apps/meteor/server/lib/users/saveUser/handleBio.ts
+  s_699c21f8808612::t_4f11dd2743bafc 1,12
+apps/meteor/tests/unit/server/meteor-methods/messages/loadSurroundingMessages.spec.ts
+  s_699c21f8808612::t_4f11dd2743bafc 1,29
+packages/core-services/src/index.ts
+  s_699c21f8808612::t_4f11dd2743bafc 74
+apps/meteor/ee/server/lib/authorization/validateUserRoles.spec.ts
+  s_699c21f8808612::t_4f11dd2743bafc 1,46,91,112,148,168,181
+apps/meteor/server/meteor-methods/platform/resetOwnE2EKey.ts
+  s_699c21f8808612::t_4f11dd2743bafc 1,22,28
+ee/packages/abac/src/can-access-object.spec.ts
+  s_699c21f8808612::t_4f11dd2743bafc 36-37
+apps/meteor/server/lib/roles/removeUserFromRoles.ts
+  s_699c21f8808612::t_4f11dd2743bafc 1,16,20
+apps/meteor/tests/unit/server/meteor-methods/auth/createToken.spec.ts
+  s_699c21f8808612::t_4f11dd2743bafc 33
+apps/meteor/server/lib/roles/addUserRoles.ts
+  s_699c21f8808612::t_4f11dd2743bafc 1,15
+apps/meteor/server/lib/ldap/Manager.ts
+  s_699c21f8808612::t_4f11dd2743bafc 1,111,134,137
+apps/meteor/tests/unit/server/slashcommands/leave.spec.ts
+  s_699c21f8808612::t_4f11dd2743bafc 1,57,59
+packages/streamer/src/streamer.module.ts
+  s_699c21f8808612::t_4f11dd2743bafc 1,179,183,191
+apps/meteor/ee/server/lib/omnichannel/LivechatEnterprise.ts
+  s_699c21f8808612::t_4f11dd2743bafc 1,21,27
+apps/meteor/ee/server/lib/authorization/validateUserRoles.ts
+  s_699c21f8808612::t_4f11dd2743bafc 1,26,50
+apps/meteor/server/lib/users/saveUser/handleNickname.ts
+  s_699c21f8808612::t_4f11dd2743bafc 1,12
+apps/meteor/server/api/lib/eraseTeam.spec.ts
+  s_699c21f8808612::t_4f11dd2743bafc 58-59,70,82,169,190,227,250,280
+apps/meteor/server/meteor-methods/auth/createToken.ts
+  s_699c21f8808612::t_4f11dd2743bafc 1,16,20
+apps/meteor/server/services/room/service.ts
+  s_699c21f8808612::t_4f11dd2743bafc 1,186,190,194,202,207,215
+ee/apps/ddp-streamer/src/ddp/codec.ts
+  s_699c21f8808612::t_4f11dd2743bafc 1,17,25,33,43
+ee/apps/ddp-streamer/src/ddp/Session.spec.ts
+  s_699c21f8808612::t_4f11dd2743bafc 4,127
+apps/meteor/server/api/lib/getUploadFormData.ts
+  s_699c21f8808612::t_4f11dd2743bafc 4,70,99,102,106,119,130
+ee/apps/ddp-streamer/src/ddp/Server.ts
+  s_699c21f8808612::t_4f11dd2743bafc 2,24,27-28,36,66,93,97,121
+apps/meteor/tests/unit/server/slashcommands/status.spec.ts
+  s_699c21f8808612::t_4f11dd2743bafc 1,57
+packages/core-services/src/ClientSafeError.ts
+  s_699c21f8808612::t_d09fd59e30c3fa 1-4
+  s_699c21f8808612::t_4f11dd2743bafc 5-30
+ee/packages/abac/src/user-auto-removal.spec.ts
+  s_699c21f8808612::t_4f11dd2743bafc 29-30
+apps/meteor/server/lib/omnichannel/contacts/registerContact.ts
+  s_699c21f8808612::t_4f11dd2743bafc 1,29,38,41
+ee/apps/account-service/src/lib/loginViaResume.ts
+  s_699c21f8808612::t_4f11dd2743bafc 2,30
+apps/meteor/server/lib/auth-providers/apple/AppleCustomOAuth.ts
+  s_699c21f8808612::t_4f11dd2743bafc 1,34
+apps/meteor/tests/unit/server/sdk/errors.tests.ts
+  s_699c21f8808612::t_4f11dd2743bafc 1,4,6,19,38
+apps/meteor/ee/server/lib/roles/updateRole.ts
+  s_699c21f8808612::t_4f11dd2743bafc 1,20,24,30,38,58
+apps/meteor/ee/server/hooks/auth/callback.ts
+  s_699c21f8808612::t_4f11dd2743bafc 1,50
+apps/meteor/server/api/v1/groups.ts
+  s_699c21f8808612::t_4f11dd2743bafc 1,508
+apps/meteor/tests/unit/server/meteor-methods/messages/createDirectMessage.spec.ts
+  s_699c21f8808612::t_4f11dd2743bafc 1,29
+apps/meteor/tests/unit/server/slashcommands/invite.spec.ts
+  s_699c21f8808612::t_4f11dd2743bafc 1,45,161,183
+ee/packages/abac/src/subject-attributes-validations.spec.ts
+  s_699c21f8808612::t_4f11dd2743bafc 15-16
+apps/meteor/server/lib/messages/loadRoomHistory.ts
+  s_699c21f8808612::t_4f11dd2743bafc 1,31,37,69
+apps/meteor/ee/server/lib/roles/insertRole.ts
+  s_699c21f8808612::t_4f11dd2743bafc 1,16,20
+apps/meteor/server/lib/e2e/beforeCreateRoom.ts
+  s_699c21f8808612::t_4f11dd2743bafc 1,19
+apps/meteor/server/lib/users/saveUser/validateUserData.ts
+  s_699c21f8808612::t_4f11dd2743bafc 1,20,27,34,45,54,62,69,76,91,99,107,114
+apps/meteor/tests/unit/server/services/messages/hooks/BeforeSaveCheckMAC.tests.ts
+  s_699c21f8808612::t_4f11dd2743bafc 1,87
+apps/meteor/server/services/messages/hooks/BeforeSaveCheckMAC.ts
+  s_699c21f8808612::t_4f11dd2743bafc 1,21
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "07dbd47d5d3ab91cca58eae70758158ade3ddf09",
+  "prompts": {},
+  "sessions": {
+    "s_699c21f8808612": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "bc613666-12e8-4cb3-840a-00452e745c7b",
+        "model": "unknown"
+      },
+      "human_author": "Diego Sampaio <chinello@gmail.com>"
+    }
+  }
+}
