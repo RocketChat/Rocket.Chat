@@ -177,7 +177,7 @@ describe('AssetSettingInput', () => {
 		const { getFileInput, upload, dispatchToast } = setup({ disabled: true });
 
 		expect(getFileInput()).toBeDisabled();
-		expect(screen.getByText('Select file')).toHaveClass('is-disabled');
+		expect(screen.getByText('Select file').closest('.rcx-button')).toHaveAttribute('disabled');
 		await userEvent.upload(getFileInput(), new File(['image'], 'logo.png', { type: 'image/png' }));
 		expect(upload).not.toHaveBeenCalled();
 		expect(dispatchToast).not.toHaveBeenCalled();
