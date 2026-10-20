@@ -66,7 +66,7 @@ const OutlookEventsList = ({ onClose, changeRoute }: OutlookEventsListProps) => 
 							<StatesSubtitle>{getErrorMessage(calendarListResult.error)}</StatesSubtitle>
 						</States>
 					)}
-					{!calendarListResult.isPending && total === 0 && (
+					{calendarListResult.isSuccess && total === 0 && (
 						<States>
 							<StatesIcon name='calendar' />
 							<StatesTitle>{t('No_history')}</StatesTitle>
