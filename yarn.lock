@@ -15055,7 +15055,7 @@ __metadata:
 
 "@tamagui/web@patch:@tamagui/web@npm%3A3.0.18#~/.yarn/patches/@tamagui-web-npm-3.0.18-f8fb3ca22a.patch":
   version: 3.0.18
-  resolution: "@tamagui/web@patch:@tamagui/web@npm%3A3.0.18#~/.yarn/patches/@tamagui-web-npm-3.0.18-f8fb3ca22a.patch::version=3.0.18&hash=9805e2"
+  resolution: "@tamagui/web@patch:@tamagui/web@npm%3A3.0.18#~/.yarn/patches/@tamagui-web-npm-3.0.18-f8fb3ca22a.patch::version=3.0.18&hash=b40c31"
   dependencies:
     "@tamagui/animation-helpers": "npm:3.0.18"
     "@tamagui/compose-refs": "npm:3.0.18"
@@ -15074,7 +15074,7 @@ __metadata:
   peerDependencies:
     react: ">=19"
     react-dom: "*"
-  checksum: 10/6e214769d653924a67f105d692207690325ceb84ebae80a0d5c9e541952bb5d2131e7c87fe7f74fd786746d4298ea2b971d0167c24462f6ea7d7bec490110c55
+  checksum: 10/5a9d5a9ad5b324f1d87dfd4be4080e6c74d25dd1630c8673bf13a47647ee172e77e1f2d7e8ef5147bb914c847ab134e5c1b2339815a1f60d4a264141c13f2fae
   languageName: node
   linkType: hard
 

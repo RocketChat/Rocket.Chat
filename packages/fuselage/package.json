@@ -32,10 +32,11 @@
 	"scripts": {
 		"build": "rm -rf dist && vite build --mode development && vite build --mode production && tsc -p tsconfig.build.json --emitDeclarationOnly",
 		"build-storybook": "NODE_ENV=production storybook build",
-		"lint": "yarn run -T oxlint && yarn run stylelint",
+		"lint": "yarn run -T oxlint && yarn run stylelint && yarn run tamagui-css --check",
 		"lint:fix": "yarn run -T oxlint --fix && stylelint --fix '**/*.scss'",
 		"eslint": "eslint .",
 		"stylelint": "stylelint --allow-empty-input '**/*.scss'",
+		"tamagui-css": "node scripts/build-tamagui-css.mjs",
 		"start": "vite build --watch --mode development",
 		"storybook": "storybook dev -p 6006 --no-version-updates",
 		"test": "jest",
