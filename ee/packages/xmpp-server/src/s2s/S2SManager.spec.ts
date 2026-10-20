@@ -79,8 +79,11 @@ describe('S2SManager reconnection', () => {
 
 		await manager.startListener();
 
-		await expect(manager.sendStanza(message(1))).rejects.toThrow();
-		await manager.stopAll();
+		try {
+			await expect(manager.sendStanza(message(1))).rejects.toThrow();
+		} finally {
+			await manager.stopAll();
+		}
 
 		expect(attempts).toBe(3);
 		expect(failed.map((event) => event.attempts)).toEqual([3]);
