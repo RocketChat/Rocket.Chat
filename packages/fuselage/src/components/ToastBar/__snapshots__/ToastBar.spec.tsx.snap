@@ -7,6 +7,10 @@ exports[`[ToastBar Rendering] renders Default without crashing 1`] = `
       class="is_View _d-1987097250 _p-1021290656 _f-1246374076 _mw-23101393 _mh-1241200853 _mw-468162999 _c-816721172 _br-260577241 _b-1878799727 _ff-409630021 _fvn-1977619713 _fs-347291933 _fw-289165218 _lh-1925956564 _ls-1782815796 rcx-toastbar rcx-toastbar--info rcx-css-fnyeze rcx-css-1eq1m0d"
     >
       <div
+        aria-hidden="true"
+        class="is_View _d-1987097250 _p-1261267467 _i-288960214 _w-1560934055 _h-1746052441 _br-968028750 _b-530853904"
+      />
+      <div
         class="is_View _f-1841970073 _bs-652081535 _p-114688985 rcx-toastbar_inner"
       >
         <i
@@ -25,8 +29,13 @@ exports[`[ToastBar Rendering] renders Default without crashing 1`] = `
         </div>
       </div>
       <div
-        class="is_View _d-1987097250 _p-1261267467 _i-1200594466 _o-1119039191 _w-1560934055 _h-1746052441 _br-2122611718 rcx-toastbar_progressbar rcx-css-qmy5jh"
-      />
+        class="is_View _d-1987097250 _p-1261267467 _i-1200594466 _o-1119039191 _w-1560934055 _h-1746052441 _br-2122611718 rcx-toastbar_progressbar"
+      >
+        <div
+          aria-hidden="true"
+          class="is_View _d-1987097250 _h-538303654 _b-1445666067 rcx-css-af7xx1"
+        />
+      </div>
     </div>
   </div>
 </body>
@@ -39,11 +48,15 @@ exports[`[ToastBar Rendering] renders Error without crashing 1`] = `
       class="is_View _d-1987097250 _p-1021290656 _f-1246374076 _mw-23101393 _mh-1241200853 _mw-468162999 _c-816721172 _br-260577241 _b-1878799727 _ff-409630021 _fvn-1977619713 _fs-347291933 _fw-289165218 _lh-1925956564 _ls-1782815796 rcx-toastbar rcx-toastbar--error rcx-css-fnyeze rcx-css-1eq1m0d"
     >
       <div
+        aria-hidden="true"
+        class="is_View _d-1987097250 _p-1261267467 _i-288960214 _w-1560934055 _h-1746052441 _br-968028750 _b-907889721"
+      />
+      <div
         class="is_View _f-1841970073 _bs-652081535 _p-114688985 rcx-toastbar_inner"
       >
         <i
           aria-hidden="true"
-          class="is_Text _d-1409515928 _ws-311910413 _ww-408434756 _us-601212022 _va-1101652081 _ls-1720078126 _ff-1916555734 _fs-1279428672 _fw-289165218 _fs-477064150 _fv-1578983722 _lh-2067209205 _tr-1510281189 rcx-icon--name-ban rcx-icon rcx-toastbar_icon--error rcx-css-4pvxx3"
+          class="is_Text _d-1409515928 _ws-311910413 _ww-408434756 _us-601212022 _va-1101652081 _ls-1720078126 _ff-1916555734 _fs-1279428672 _fw-289165218 _fs-477064150 _fv-1578983722 _lh-2067209205 _tr-1510281189 rcx-icon--name-ban rcx-icon rcx-css-xzen13 rcx-toastbar_icon--error rcx-css-4pvxx3"
         >
           
         </i>
@@ -57,8 +70,13 @@ exports[`[ToastBar Rendering] renders Error without crashing 1`] = `
         </div>
       </div>
       <div
-        class="is_View _d-1987097250 _p-1261267467 _i-1200594466 _o-1119039191 _w-1560934055 _h-1746052441 _br-2122611718 rcx-toastbar_progressbar rcx-css-qmy5jh"
-      />
+        class="is_View _d-1987097250 _p-1261267467 _i-1200594466 _o-1119039191 _w-1560934055 _h-1746052441 _br-2122611718 rcx-toastbar_progressbar"
+      >
+        <div
+          aria-hidden="true"
+          class="is_View _d-1987097250 _h-538303654 _b-1445666067 rcx-css-af7xx1"
+        />
+      </div>
     </div>
   </div>
 </body>
@@ -71,11 +89,15 @@ exports[`[ToastBar Rendering] renders Success without crashing 1`] = `
       class="is_View _d-1987097250 _p-1021290656 _f-1246374076 _mw-23101393 _mh-1241200853 _mw-468162999 _c-816721172 _br-260577241 _b-1878799727 _ff-409630021 _fvn-1977619713 _fs-347291933 _fw-289165218 _lh-1925956564 _ls-1782815796 rcx-toastbar rcx-toastbar--success rcx-css-fnyeze rcx-css-1eq1m0d"
     >
       <div
+        aria-hidden="true"
+        class="is_View _d-1987097250 _p-1261267467 _i-288960214 _w-1560934055 _h-1746052441 _br-968028750 _b-1370001357"
+      />
+      <div
         class="is_View _f-1841970073 _bs-652081535 _p-114688985 rcx-toastbar_inner"
       >
         <i
           aria-hidden="true"
-          class="is_Text _d-1409515928 _ws-311910413 _ww-408434756 _us-601212022 _va-1101652081 _ls-1720078126 _ff-1916555734 _fs-1279428672 _fw-289165218 _fs-477064150 _fv-1578983722 _lh-2067209205 _tr-1510281189 rcx-icon--name-circle-check rcx-icon rcx-toastbar_icon--success rcx-css-4pvxx3"
+          class="is_Text _d-1409515928 _ws-311910413 _ww-408434756 _us-601212022 _va-1101652081 _ls-1720078126 _ff-1916555734 _fs-1279428672 _fw-289165218 _fs-477064150 _fv-1578983722 _lh-2067209205 _tr-1510281189 rcx-icon--name-circle-check rcx-icon rcx-css-2hz3ey rcx-toastbar_icon--success rcx-css-4pvxx3"
         >
           
         </i>
@@ -89,8 +111,13 @@ exports[`[ToastBar Rendering] renders Success without crashing 1`] = `
         </div>
       </div>
       <div
-        class="is_View _d-1987097250 _p-1261267467 _i-1200594466 _o-1119039191 _w-1560934055 _h-1746052441 _br-2122611718 rcx-toastbar_progressbar rcx-css-qmy5jh"
-      />
+        class="is_View _d-1987097250 _p-1261267467 _i-1200594466 _o-1119039191 _w-1560934055 _h-1746052441 _br-2122611718 rcx-toastbar_progressbar"
+      >
+        <div
+          aria-hidden="true"
+          class="is_View _d-1987097250 _h-538303654 _b-1445666067 rcx-css-af7xx1"
+        />
+      </div>
     </div>
   </div>
 </body>
@@ -102,6 +129,10 @@ exports[`[ToastBar Rendering] renders TinyText without crashing 1`] = `
     <div
       class="is_View _d-1987097250 _p-1021290656 _f-1246374076 _mw-23101393 _mh-1241200853 _mw-468162999 _c-816721172 _br-260577241 _b-1878799727 _ff-409630021 _fvn-1977619713 _fs-347291933 _fw-289165218 _lh-1925956564 _ls-1782815796 rcx-toastbar rcx-toastbar--info rcx-css-fnyeze rcx-css-1eq1m0d"
     >
+      <div
+        aria-hidden="true"
+        class="is_View _d-1987097250 _p-1261267467 _i-288960214 _w-1560934055 _h-1746052441 _br-968028750 _b-530853904"
+      />
       <div
         class="is_View _f-1841970073 _bs-652081535 _p-114688985 rcx-toastbar_inner"
       >
@@ -119,8 +150,13 @@ exports[`[ToastBar Rendering] renders TinyText without crashing 1`] = `
         </div>
       </div>
       <div
-        class="is_View _d-1987097250 _p-1261267467 _i-1200594466 _o-1119039191 _w-1560934055 _h-1746052441 _br-2122611718 rcx-toastbar_progressbar rcx-css-qmy5jh"
-      />
+        class="is_View _d-1987097250 _p-1261267467 _i-1200594466 _o-1119039191 _w-1560934055 _h-1746052441 _br-2122611718 rcx-toastbar_progressbar"
+      >
+        <div
+          aria-hidden="true"
+          class="is_View _d-1987097250 _h-538303654 _b-1445666067 rcx-css-af7xx1"
+        />
+      </div>
     </div>
   </div>
 </body>
@@ -132,6 +168,10 @@ exports[`[ToastBar Rendering] renders WithCloseButton without crashing 1`] = `
     <div
       class="is_View _d-1987097250 _p-1021290656 _f-1246374076 _mw-23101393 _mh-1241200853 _mw-468162999 _c-816721172 _br-260577241 _b-1878799727 _ff-409630021 _fvn-1977619713 _fs-347291933 _fw-289165218 _lh-1925956564 _ls-1782815796 rcx-toastbar rcx-toastbar--info rcx-css-fnyeze rcx-css-1eq1m0d"
     >
+      <div
+        aria-hidden="true"
+        class="is_View _d-1987097250 _p-1261267467 _i-288960214 _w-1560934055 _h-1746052441 _br-968028750 _b-530853904"
+      />
       <div
         class="is_View _f-1841970073 _bs-652081535 _p-114688985 rcx-toastbar_inner"
       >
@@ -154,7 +194,7 @@ exports[`[ToastBar Rendering] renders WithCloseButton without crashing 1`] = `
         >
           <button
             aria-label="Dismiss alert"
-            class="is_View _f-1069813397 _mh-1241200853 _ta-1906144518 _ws-973912173 _td-211436768 _c-22887652 _os-249893454 _o-1119039191 _to-1727917045 _ff-409630021 _fvn-1977619713 _fs-347291933 _fw-289166179 _ls-1782815796 _p-230374000 _w-1439737260 _mw-1171212800 _h-640041837 _d-312446553 _jc-642967080 _ai-1864573722 _lh-2067208245 rcx-button--tiny-square rcx-button--square rcx-button--icon rcx-button"
+            class="is_View _f-1069813397 _mh-1241200853 _ta-1906144518 _ws-973912173 _td-211436768 _c-22887652 _os-249893454 _o-1119039191 _to-1727917045 _ff-409630021 _fvn-1977619713 _fs-347291933 _fw-289166179 _ls-1782815796 _p-230374000 _a-1578443335 _b-1628331993 _br-1397394445 _bs-1225725885 _w-1439737260 _mw-1171212800 _h-640041837 _d-312446553 _jc-642967080 _ai-1864573722 _lh-2067208245 _c-1139941473 _b-1242743842 rcx-button--tiny-square rcx-button--square rcx-button--icon rcx-button"
             type="button"
           >
             <i
@@ -167,8 +207,13 @@ exports[`[ToastBar Rendering] renders WithCloseButton without crashing 1`] = `
         </div>
       </div>
       <div
-        class="is_View _d-1987097250 _p-1261267467 _i-1200594466 _o-1119039191 _w-1560934055 _h-1746052441 _br-2122611718 rcx-toastbar_progressbar rcx-css-qmy5jh"
-      />
+        class="is_View _d-1987097250 _p-1261267467 _i-1200594466 _o-1119039191 _w-1560934055 _h-1746052441 _br-2122611718 rcx-toastbar_progressbar"
+      >
+        <div
+          aria-hidden="true"
+          class="is_View _d-1987097250 _h-538303654 _b-1445666067 rcx-css-af7xx1"
+        />
+      </div>
     </div>
   </div>
 </body>
