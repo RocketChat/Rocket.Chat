@@ -32,4 +32,10 @@ describe('perRoomOccupantJid', () => {
 		expect(perRoomOccupantJid('admin/x', 'dev@conference.a.example')).toBe('admin\\2fx#dev@conference.a.example');
 		expect(perRoomOccupantJid('a@b', 'dev@conference.a.example')).toBe('a\\40b#dev@conference.a.example');
 	});
+
+	it('gives distinct keys to nick and room pairs that would join to the same text (addressing R9)', () => {
+		expect(perRoomOccupantJid('a#b', 'c@conference.a.example')).toBe('a\\23b#c@conference.a.example');
+		expect(perRoomOccupantJid('a#b', 'c@conference.a.example')).not.toBe(perRoomOccupantJid('a', 'b#c@conference.a.example'));
+		expect(perRoomOccupantJid('a\\23b', 'c@conference.a.example')).not.toBe(perRoomOccupantJid('a#b', 'c@conference.a.example'));
+	});
 });

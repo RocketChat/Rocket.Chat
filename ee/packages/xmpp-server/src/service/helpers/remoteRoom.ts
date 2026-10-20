@@ -16,5 +16,5 @@ export function mirroredRoomDisplayName(roomJid: string): string {
 
 /** The address standing for a remote-room occupant whose real JID the room never disclosed; one per nick and room. */
 export function perRoomOccupantJid(nick: string, roomJid: string): string {
-	return `${escapeLocalpart(nick)}#${roomJid}`;
+	return `${escapeLocalpart(nick).replaceAll('#', '\\23')}#${roomJid}`;
 }
