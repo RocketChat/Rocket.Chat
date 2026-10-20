@@ -250,7 +250,7 @@ exports[`[Card Rendering] renders HorizontalCustom without crashing 1`] = `
           class="is_View _bs-652081535 _mw-354604370 _mh-1241200853 _f-1246374076 _g-1051447770 rcx-card__col"
         >
           <figure
-            class="is_View _d-1985012034 _f-606928779 _va-1124586065 _m-2017216831 _p-1943363302 _b-650654186 _o-1106425799 _ff-409630021 _fvn-1977619713 _w-799253879 _h-1778499542 rcx-box rcx-box--full rcx-avatar rcx-avatar--x36"
+            class="is_View _d-1985012034 _f-606928779 _mw-354604370 _mh-1241200853 _va-1124586065 _m-2017216831 _p-1943363302 _b-650654186 _o-1106425799 _ff-409630021 _fvn-1977619713 _w-799253879 _h-1778499542 rcx-box rcx-box--full rcx-avatar rcx-avatar--x36"
           >
             <img
               alt="avatar"
@@ -551,7 +551,7 @@ exports[`[Card Rendering] renders VerticalCustom without crashing 1`] = `
         class="is_View _bs-652081535 _mw-354604370 _mh-1241200853 _f-84936924 _g-1051447770 _ai-1864573722 rcx-card__header"
       >
         <figure
-          class="is_View _d-1985012034 _f-606928779 _va-1124586065 _m-2017216831 _p-1943363302 _b-650654186 _o-1106425799 _ff-409630021 _fvn-1977619713 _w-799253879 _h-1778499542 rcx-box rcx-box--full rcx-avatar rcx-avatar--x36"
+          class="is_View _d-1985012034 _f-606928779 _mw-354604370 _mh-1241200853 _va-1124586065 _m-2017216831 _p-1943363302 _b-650654186 _o-1106425799 _ff-409630021 _fvn-1977619713 _w-799253879 _h-1778499542 rcx-box rcx-box--full rcx-avatar rcx-avatar--x36"
         >
           <img
             alt="avatar"

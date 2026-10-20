@@ -83,4 +83,4 @@ const Divider = ({ variation, children, vertical, ...props }: DividerProps) => {
 	);
 };
 
-export default withFuselageProvider(Divider);
+export default withFuselageProvider(Divider, { takesBoxTransforms: true });
