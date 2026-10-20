@@ -108,7 +108,7 @@ jest.mock('../hooks/useCollapsedGroups', () => ({
 	}),
 }));
 
-jest.mock('../hooks/usePreventDefault', () => ({
+jest.mock('../../views/navigation/sidebar/hooks/usePreventDefault', () => ({
 	usePreventDefault: (ref: unknown) => mockUsePreventDefault(ref),
 }));
 
@@ -137,7 +137,7 @@ jest.mock('./RoomListRow', () => ({
 	default: ({ item }: { item: (typeof rooms)[number] }) => <div data-testid='room-row'>{item.name}</div>,
 }));
 
-jest.mock('./RoomListRowWrapper', () => ({
+jest.mock('../../views/navigation/sidebar/RoomList/RoomListRowWrapper', () => ({
 	__esModule: true,
 	default: ({ children, ...props }: { children: ReactNode } & HTMLAttributes<HTMLDivElement>) => (
 		<div data-testid='room-row-wrapper' {...props}>
