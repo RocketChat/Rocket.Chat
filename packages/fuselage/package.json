@@ -92,7 +92,7 @@
 		"sass": "~1.102.0",
 		"sass-loader": "~17.0.1",
 		"storybook": "~9.1.20",
-		"stylelint": "~17.14.1",
+		"stylelint": "~17.16.0",
 		"stylelint-order": "~8.1.1",
 		"stylelint-prettier": "~5.0.3",
 		"stylelint-scss": "~7.2.0",
