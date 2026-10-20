@@ -296,7 +296,7 @@ describe('in a row matched as a whole, as a sidebar row is', () => {
 	it('takes the focusable link as the row target', () => {
 		const list = document.createElement('div');
 		const row = document.createElement('div');
-		row.className = 'rcx-item rcx-sidebar-item';
+		row.className = 'rcx-item';
 		const link = document.createElement('a');
 		link.href = '#general';
 		link.className = 'rcx-item__link';
@@ -305,7 +305,7 @@ describe('in a row matched as a whole, as a sidebar row is', () => {
 		list.appendChild(row);
 		document.body.appendChild(list);
 
-		const isSidebarRow = (node: Element) => node.classList.contains('rcx-sidebar-item') || node.classList.contains('rcx-item__link');
+		const isSidebarRow = (node: Element) => node.classList.contains('rcx-item') || node.classList.contains('rcx-item__link');
 		const { result } = renderHook(() => useItemListNavigation({ isItem: isSidebarRow }));
 		act(() => result.current(list));
 		detachers.push(() => act(() => result.current(null)));
