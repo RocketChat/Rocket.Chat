@@ -29,6 +29,10 @@ export type IconButtonProps = {
 	danger?: boolean;
 	warning?: boolean;
 	success?: boolean;
+	/**
+	 * Whether the button is toggled on. Leave it out for a button that does not toggle, so it is not announced as a
+	 * toggle button.
+	 */
 	pressed?: boolean;
 } & IconButtonSize &
 	BoxProps;
@@ -111,6 +115,7 @@ function IconButton({
 			{...getSizeClass()}
 			rcx-button--icon-pressed={pressed}
 			rcx-button--with-badge={Boolean(badge)}
+			aria-pressed={pressed}
 			{...props}
 		>
 			{isValidElement<any>(icon) ? icon : <Icon name={icon} size={getIconSize()} />}

@@ -37,4 +37,24 @@ describe('[IconButton Component]', () => {
 		expect(screen.getByRole('button', { name: 'balloon, 2 unread messages' })).toBeInTheDocument();
 		expect(container.querySelector('.rcx-button__badge')).toHaveAttribute('aria-hidden', 'true');
 	});
+
+	it('should expose a pressed state to assistive technology', () => {
+		render(<IconButton icon='balloon' aria-label='balloon' pressed />);
+		expect(screen.getByRole('button', { name: 'balloon', pressed: true })).toBeInTheDocument();
+	});
+
+	it('should expose a released state to assistive technology', () => {
+		render(<IconButton icon='balloon' aria-label='balloon' pressed={false} />);
+		expect(screen.getByRole('button', { name: 'balloon', pressed: false })).toBeInTheDocument();
+	});
+
+	it('should not expose a toggle state when pressed is omitted', () => {
+		render(<IconButton icon='balloon' aria-label='balloon' />);
+		expect(screen.getByRole('button', { name: 'balloon' })).not.toHaveAttribute('aria-pressed');
+	});
+
+	it('should let the caller override aria-pressed', () => {
+		render(<IconButton icon='balloon' aria-label='balloon' pressed aria-pressed='mixed' />);
+		expect(screen.getByRole('button', { name: 'balloon' })).toHaveAttribute('aria-pressed', 'mixed');
+	});
 });
