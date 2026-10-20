@@ -3,7 +3,7 @@ import type { IUser } from '@rocket.chat/core-typings';
 import type { IRocketChatDesktop } from '@rocket.chat/desktop-api';
 import { mockAppRoot } from '@rocket.chat/mock-providers';
 import { clientCallbacks } from '@rocket.chat/ui-client';
-import { UserContext } from '@rocket.chat/ui-contexts';
+import { AuthenticationContext, UserContext } from '@rocket.chat/ui-contexts';
 import { QueryClient } from '@tanstack/react-query';
 import { act, renderHook, waitFor } from '@testing-library/react';
 import { createElement, useContext } from 'react';
@@ -113,6 +113,24 @@ describe('useDesktopUserPresence', () => {
 
 		expect(lastPresence()).toMatchObject({ loggedIn: true, status: 'busy', statusText: 'In a meeting' });
 		expect(setUserPresenceState.mock.calls.map(([presence]) => presence.loggedIn)).not.toContain(false);
+	});
+
+	it('reports no logout while a stored session resumes', () => {
+		let isLoggingIn = true;
+		const AppRoot = mockAppRoot().withAnonymous().build();
+		const Authentication = ({ children }: { children: ReactNode }) =>
+			createElement(AuthenticationContext.Provider, { value: { ...useContext(AuthenticationContext), isLoggingIn } }, children);
+
+		const { rerender } = renderHook(() => useDesktopUserPresence(), {
+			wrapper: ({ children }) => createElement(AppRoot, null, createElement(Authentication, null, children)),
+		});
+
+		expect(setUserPresenceState.mock.calls.map(([presence]) => presence.loggedIn)).not.toContain(false);
+
+		isLoggingIn = false;
+		rerender();
+
+		expect(lastPresence()).toMatchObject({ loggedIn: false });
 	});
 
 	it.each([

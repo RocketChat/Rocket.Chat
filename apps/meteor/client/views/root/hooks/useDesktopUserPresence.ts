@@ -1,6 +1,6 @@
 import { UserStatus } from '@rocket.chat/core-typings';
 import type { DesktopCustomUserStatus, DesktopUserPresence, DesktopUserStatus } from '@rocket.chat/desktop-api';
-import { useConnectionStatus, useSetting, useUser, useUserId } from '@rocket.chat/ui-contexts';
+import { useConnectionStatus, useIsLoggingIn, useSetting, useUser, useUserId } from '@rocket.chat/ui-contexts';
 import { useEffect, useMemo } from 'react';
 
 import { useSetUserStatus } from '../../../hooks/useSetUserStatus';
@@ -26,6 +26,7 @@ const toDesktopConnection = (status: ReturnType<typeof useConnectionStatus>['sta
 export const useDesktopUserPresence = () => {
 	const userId = useUserId();
 	const user = useUser();
+	const isLoggingIn = useIsLoggingIn();
 	const { status: connectionStatus } = useConnectionStatus();
 	const invisibleAllowed = useSetting('Accounts_AllowInvisibleStatusOption', true);
 	const presenceBroadcastDisabled = useSetting('Presence_broadcast_disabled', false);
@@ -75,6 +76,12 @@ export const useDesktopUserPresence = () => {
 	}, [setUserStatus]);
 
 	useEffect(() => {
+		// The user id is not known until a stored session resumes. The desktop app deletes the login data of the workspace
+		// when it sees a logout, so a logout reported before the resume ends logs the user out.
+		if (!loggedIn && isLoggingIn) {
+			return;
+		}
+
 		window.RocketChatDesktop?.setUserPresenceState?.({
 			loggedIn,
 			connection,
@@ -84,5 +91,5 @@ export const useDesktopUserPresence = () => {
 			availableStatuses,
 			customStatuses,
 		});
-	}, [loggedIn, connection, status, statusText, statusExpiresAt, availableStatuses, customStatuses]);
+	}, [loggedIn, isLoggingIn, connection, status, statusText, statusExpiresAt, availableStatuses, customStatuses]);
 };
