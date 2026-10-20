@@ -1,6 +1,4 @@
-import { createRequire } from 'node:module';
 import { resolve } from 'node:path';
-import { pathToFileURL } from 'node:url';
 
 import autoprefixer from 'autoprefixer';
 import cssnanoPlugin from 'cssnano';
@@ -8,25 +6,12 @@ import { defineConfig, type Plugin } from 'vite';
 
 import pkg from './package.json' with { type: 'json' };
 
-const require = createRequire(import.meta.url);
-
-/** `sass-loader` resolved `~pkg/file` through webpack; dart-sass needs help. */
-const tildeImporter = {
-	findFileUrl(url: string) {
-		if (!url.startsWith('~')) {
-			return null;
-		}
-
-		return pathToFileURL(require.resolve(url.slice(1)));
-	},
-};
-
 /**
  * Library mode inlines every asset unconditionally -- `shouldInline` returns
  * true for `build.lib` before it ever looks at `assetsInlineLimit` -- and the
  * only escape hatch checked earlier is a `?no-inline` query. Tagging the url
- * here rather than in `inter.scss` keeps the sources usable by Storybook's
- * webpack sass chain.
+ * here rather than in `inter.css` keeps the sources usable by Storybook's
+ * webpack css chain.
  */
 const markAssetsNoInline = () => ({
 	postcssPlugin: 'fuselage-no-inline-assets',
@@ -141,14 +126,6 @@ export default defineConfig(({ mode }) => {
 			},
 		},
 		css: {
-			preprocessorOptions: {
-				scss: {
-					importers: [tildeImporter],
-					// `css-loader` used to drop this; a stray `@charset` is meaningless
-					// in a stylesheet consumers concatenate.
-					charset: false,
-				},
-			},
 			postcss: {
 				plugins: [markAssetsNoInline(), autoprefixer(), ...(production ? [cssnanoPlugin()] : [])],
 			},
