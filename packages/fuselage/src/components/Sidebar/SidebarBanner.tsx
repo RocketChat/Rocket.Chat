@@ -1,8 +1,9 @@
 import { styled, Text, View, type GetProps } from '@tamagui/web';
-import type { AllHTMLAttributes, ReactNode } from 'react';
+import { useContext, type AllHTMLAttributes, type ReactNode } from 'react';
 
 import { borderWidth, spacing } from '../../styleTokens';
 import { IconButton } from '../Button';
+import { SidebarCollapsedContext } from './Sidebar';
 import { boxFull, sidebarAccordionBorderColor, sidebarBannerColors, typography } from './sidebarStyles';
 import { withFuselageProvider } from '../FuselageProvider/FuselageProvider';
 
@@ -33,6 +34,12 @@ const SidebarBannerContent = styled(Text, {
 	render: 'div',
 	display: 'block',
 	whiteSpace: 'inherit',
+
+	variants: {
+		collapsed: {
+			true: { display: { 'default': 'none', 'group-hover/rcx-sidebar': 'block' } },
+		},
+	} as const,
 });
 
 const SidebarBannerTitle = styled(Text, {
@@ -72,25 +79,29 @@ export type SidebarBannerProps = {
 	addon?: ReactNode;
 };
 
-const SidebarBannerBase = ({ title, linkText, linkProps, variant = 'default', addon, onClose, children, ...props }: SidebarBannerProps) => (
-	<SidebarBannerFrame variant={variant} className={`rcx-sidebar-banner rcx-sidebar-banner--${variant}`} {...props}>
-		<SidebarBannerContent className='rcx-sidebar-banner__content'>
-			{title && <SidebarBannerTitle className='rcx-sidebar-banner__title'>{title}</SidebarBannerTitle>}
-			{linkText && (
-				<SidebarBannerLink
-					{...(linkProps as GetProps<typeof SidebarBannerLink>)}
-					className={['rcx-sidebar-banner__link', linkProps?.className].filter(Boolean).join(' ')}
-				>
-					{linkText}
-				</SidebarBannerLink>
-			)}
-			{children}
-		</SidebarBannerContent>
-		<SidebarBannerAddon className='rcx-sidebar-banner__addon'>
-			{addon}
-			{onClose && <IconButton onClick={onClose} tiny icon='cross' />}
-		</SidebarBannerAddon>
-	</SidebarBannerFrame>
-);
+const SidebarBannerBase = ({ title, linkText, linkProps, variant = 'default', addon, onClose, children, ...props }: SidebarBannerProps) => {
+	const collapsed = useContext(SidebarCollapsedContext);
+
+	return (
+		<SidebarBannerFrame variant={variant} className={`rcx-sidebar-banner rcx-sidebar-banner--${variant}`} {...props}>
+			<SidebarBannerContent className='rcx-sidebar-banner__content' collapsed={collapsed}>
+				{title && <SidebarBannerTitle className='rcx-sidebar-banner__title'>{title}</SidebarBannerTitle>}
+				{linkText && (
+					<SidebarBannerLink
+						{...(linkProps as GetProps<typeof SidebarBannerLink>)}
+						className={['rcx-sidebar-banner__link', linkProps?.className].filter(Boolean).join(' ')}
+					>
+						{linkText}
+					</SidebarBannerLink>
+				)}
+				{children}
+			</SidebarBannerContent>
+			<SidebarBannerAddon className='rcx-sidebar-banner__addon'>
+				{addon}
+				{onClose && <IconButton onClick={onClose} tiny icon='cross' />}
+			</SidebarBannerAddon>
+		</SidebarBannerFrame>
+	);
+};
 
 export const SidebarBanner = withFuselageProvider(SidebarBannerBase);

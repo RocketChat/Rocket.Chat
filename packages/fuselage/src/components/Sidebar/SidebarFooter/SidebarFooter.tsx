@@ -1,10 +1,11 @@
 import { styled, View, type GetProps } from '@tamagui/web';
-import type { HTMLAttributes } from 'react';
+import { useContext, type HTMLAttributes } from 'react';
 
 import { surfaceColors, textIconColors } from '../../../Theme';
 import { size, spacing } from '../../../styleTokens';
 import { withFuselageProvider } from '../../FuselageProvider/FuselageProvider';
-import { plainElement } from '../sidebarStyles';
+import { SidebarCollapsedContext } from '../Sidebar';
+import { hiddenWhileCollapsed, plainElement } from '../sidebarStyles';
 
 const SidebarFooterFrame = styled(View, {
 	render: 'footer',
@@ -17,10 +18,20 @@ const SidebarFooterFrame = styled(View, {
 	color: textIconColors['font-default'].toString(),
 	backgroundColor: surfaceColors['surface-sidebar'].toString(),
 	gap: spacing('x4'),
+
+	variants: {
+		collapsed: {
+			true: hiddenWhileCollapsed,
+		},
+	} as const,
 });
 
 const SidebarFooterBase = ({ children, ...props }: HTMLAttributes<HTMLElement>) => (
-	<SidebarFooterFrame className='rcx-sidebar-footer' {...(props as GetProps<typeof SidebarFooterFrame>)}>
+	<SidebarFooterFrame
+		className='rcx-sidebar-footer'
+		collapsed={useContext(SidebarCollapsedContext)}
+		{...(props as GetProps<typeof SidebarFooterFrame>)}
+	>
 		{children}
 	</SidebarFooterFrame>
 );
