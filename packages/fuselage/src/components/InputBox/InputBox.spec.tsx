@@ -1,8 +1,10 @@
 import { composeStories } from '@storybook/react-webpack5';
-import { waitFor } from '@testing-library/react';
+import { screen, waitFor } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
 import { axe } from 'jest-axe';
 import { useEffect, useState } from 'react';
 
+import InputBox from './InputBox';
 import * as stories from './InputBox.stories';
 import { render } from '../../testing';
 
@@ -41,4 +43,16 @@ it('should update error class when error changes asynchronously', async () => {
 		const input = getByRole('textbox', { name: /test-input/i }).parentElement as HTMLElement;
 		expect(input).toHaveClass('invalid');
 	});
+});
+
+it.each([
+	['bare', {}],
+	['with addon', { endAddon: 'x' }],
+])('calls onChange once per keystroke (%s)', async (_name, extraProps) => {
+	const onChange = jest.fn();
+	render(<InputBox type='text' aria-label='test-input' onChange={onChange} {...extraProps} />);
+
+	await userEvent.type(screen.getByRole('textbox', { name: 'test-input' }), 'Hi');
+
+	expect(onChange).toHaveBeenCalledTimes(2);
 });
