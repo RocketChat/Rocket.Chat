@@ -122,4 +122,4 @@ const Chip = (props: ChipProps) => {
 	);
 };
 
-export default withBoxStyling(withFuselageProvider(Chip));
+export default withBoxStyling(withFuselageProvider(Chip, { takesBoxTransforms: true }));

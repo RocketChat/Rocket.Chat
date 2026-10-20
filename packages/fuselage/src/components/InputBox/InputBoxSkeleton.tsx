@@ -40,4 +40,4 @@ const InputBoxSkeleton = (props: InputBoxSkeletonProps) => (
 	</InputBoxSkeletonFrame>
 );
 
-export default withFuselageProvider(InputBoxSkeleton);
+export default withFuselageProvider(InputBoxSkeleton, { takesBoxTransforms: true });

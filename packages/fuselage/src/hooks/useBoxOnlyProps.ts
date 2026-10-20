@@ -57,10 +57,13 @@ export const useBoxOnlyProps = <
 	},
 >(
 	props: T & BoxOnlyProps,
+	withBaseClassNames = true,
 ): T => {
 	applyBoxOnlyProps(props);
 
-	props.className = prependClassName(props.className, 'rcx-box rcx-box--full');
+	if (withBaseClassNames) {
+		props.className = prependClassName(props.className, 'rcx-box rcx-box--full');
+	}
 
 	return props;
 };

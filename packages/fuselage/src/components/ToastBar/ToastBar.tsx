@@ -145,4 +145,4 @@ function ToastBar({
 	);
 }
 
-export default withFuselageProvider(ToastBar);
+export default withFuselageProvider(ToastBar, { takesBoxTransforms: true });

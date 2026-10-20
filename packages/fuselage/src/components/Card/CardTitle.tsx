@@ -23,4 +23,4 @@ const CardTitle = ({ children, info, variant = 'h4', ...props }: CardTitleProps)
 	);
 };
 
-export default withFuselageProvider(CardTitle);
+export default withFuselageProvider(CardTitle, { takesBoxTransforms: true });

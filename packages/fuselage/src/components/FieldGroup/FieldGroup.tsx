@@ -37,4 +37,4 @@ const FieldGroup = ({ children, ...props }: FieldGroupProps) => {
 	);
 };
 
-export default withFuselageProvider(FieldGroup);
+export default withFuselageProvider(FieldGroup, { takesBoxTransforms: true });

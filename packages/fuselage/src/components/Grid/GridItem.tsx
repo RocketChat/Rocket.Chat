@@ -44,4 +44,4 @@ const GridItem = ({ xs, sm, md, lg, xl, ...props }: GridItemProps) => {
 	return <GridItemFrame {...(itemProps as GetProps<typeof GridItemFrame>)} />;
 };
 
-export default withFuselageProvider(GridItem);
+export default withFuselageProvider(GridItem, { takesBoxTransforms: true });

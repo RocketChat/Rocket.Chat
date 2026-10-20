@@ -20,4 +20,4 @@ const TableRow = ({ action, selected, ...props }: TableRowProps) => {
 	return <TableRowFrame selected={selected} {...(rowProps as GetProps<typeof TableRowFrame>)} />;
 };
 
-export default withFuselageProvider(TableRow);
+export default withFuselageProvider(TableRow, { takesBoxTransforms: true });

@@ -24,4 +24,4 @@ const FieldError = (props: FieldErrorProps) => {
 	return component;
 };
 
-export default withFuselageProvider(FieldError);
+export default withFuselageProvider(FieldError, { takesBoxTransforms: true });

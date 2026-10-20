@@ -8,6 +8,7 @@ import { useStylingProps } from './useStylingProps';
 import { useArrayLikeClassNameProp } from '../../hooks/useArrayLikeClassNameProp';
 import { useBoxOnlyProps } from '../../hooks/useBoxOnlyProps';
 import type { Falsy } from '../../types/Falsy';
+import { isTamaguiComponent } from '../FuselageProvider/FuselageProvider';
 
 export type BoxProps = Partial<StylingProps> &
 	Omit<AllHTMLAttributes<HTMLElement>, 'ref' | 'is' | 'className' | 'size' | 'elevation' | keyof StylingProps> &
@@ -33,7 +34,7 @@ function Box({ is = 'div', ...props }: BoxProps) {
 	}
 
 	const propsWithoutStylingProps = useStylingProps(propsWithStringClassName);
-	const propsWithoutBoxOnlyProps = useBoxOnlyProps(propsWithoutStylingProps);
+	const propsWithoutBoxOnlyProps = useBoxOnlyProps(propsWithoutStylingProps, !isTamaguiComponent(is));
 
 	const element = createElement(is, propsWithoutBoxOnlyProps);
 

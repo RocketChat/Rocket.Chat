@@ -196,4 +196,4 @@ const Tag = ({ large, medium, pill, className, disabled, onClick, variant, child
 	);
 };
 
-export default withFuselageProvider(Tag);
+export default withFuselageProvider(Tag, { takesBoxTransforms: true });

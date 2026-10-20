@@ -26,4 +26,4 @@ const CardBody = ({ children, flexDirection = 'row', height, ...props }: CardBod
 	return <CardText {...(bodyProps as GetProps<typeof CardText>)}>{children}</CardText>;
 };
 
-export default withFuselageProvider(CardBody);
+export default withFuselageProvider(CardBody, { takesBoxTransforms: true });

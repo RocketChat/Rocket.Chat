@@ -19,4 +19,4 @@ const SidebarFooterContentBase = ({ children, ...props }: BoxProps) => {
 	return <SidebarFooterContentFrame {...(frameProps as GetProps<typeof SidebarFooterContentFrame>)}>{children}</SidebarFooterContentFrame>;
 };
 
-export const SidebarFooterContent = withFuselageProvider(SidebarFooterContentBase);
+export const SidebarFooterContent = withFuselageProvider(SidebarFooterContentBase, { takesBoxTransforms: true });

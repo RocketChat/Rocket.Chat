@@ -39,4 +39,4 @@ const ModalHeader = ({ children, ...props }: ModalHeaderProps) => {
 	);
 };
 
-export default withFuselageProvider(ModalHeader);
+export default withFuselageProvider(ModalHeader, { takesBoxTransforms: true });
