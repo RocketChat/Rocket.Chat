@@ -75,9 +75,10 @@ localparts, and compare domains the way DNS does.
 - **R9** A remote account has one user record, however many DMs, hosted rooms and remote
   rooms it appears in: every path that knows the sender's real JID upserts the record of
   that bare JID. A remote room that does not tell us an occupant's real JID gets a record of
-  its own for them, keyed `<nick>#<room JID>` with the nick escaped per XEP-0106 and each
-  `#` in it written `\23`, so no two nick and room pairs share a key: a room's localpart may
-  hold `#` too, and XEP-0106 escapes every `\`, so `\23` can only stand for a `#`
+  its own for them, keyed `<nick>#<room JID>` with the nick escaped per XEP-0106, every `\`
+  written `\5c` and not only one that starts an escape sequence, and each `#` written `\23`.
+  No two nick and room pairs share a key: a room's localpart may hold `#` too, but the first
+  `#` is always the separator, and `\23` in a nick can only stand for a `#`
   ([remote-muc R6](remote-muc.md), [ADR 0015](../adr/0015-remote-room-occupants-are-the-user-their-disclosed-jid-names.md)).
 - **R10** A remote user's display name is the nick they were last seen under: the nick they
   joined a hosted room with, or the one they last spoke under in any room. A record created without a nick (a DM, an invitation, a typed JID)
