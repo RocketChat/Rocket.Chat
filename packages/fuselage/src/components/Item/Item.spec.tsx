@@ -3,6 +3,7 @@ import { screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { axe } from 'jest-axe';
 import { createRef } from 'react';
+import { renderToString } from 'react-dom/server';
 
 import {
 	Item,
@@ -239,6 +240,130 @@ describe('ItemGroup', () => {
 		render(<ItemGroup is='ul' data-testid='group' />);
 
 		expect(screen.getByTestId('group')).not.toHaveAttribute('aria-labelledby');
+	});
+
+	it('includes aria-labelledby in server-rendered markup matching ItemGroupTitle id', () => {
+		const html = renderToString(
+			<ItemGroup is='ul'>
+				<ItemGroupHeader is='li' aria-hidden>
+					<ItemGroupTitle>Moderators</ItemGroupTitle>
+				</ItemGroupHeader>
+				<Item is='li'>Gabriel</Item>
+			</ItemGroup>,
+		);
+
+		const match = html.match(/<ul[^>]*aria-labelledby="([^"]+)"[^>]*>/);
+		expect(match).not.toBeNull();
+		const labelledBy = match?.[1];
+
+		expect(html).toContain(`id="${labelledBy}"`);
+		expect(html).toContain('Moderators');
+	});
+
+	it('respects an explicit titleId prop on ItemGroup during SSR', () => {
+		const html = renderToString(
+			<ItemGroup is='ul' titleId='custom-title-id'>
+				<ItemGroupHeader is='li' aria-hidden>
+					<ItemGroupTitle>Moderators</ItemGroupTitle>
+				</ItemGroupHeader>
+			</ItemGroup>,
+		);
+
+		expect(html).toContain('aria-labelledby="custom-title-id"');
+		expect(html).toContain('id="custom-title-id"');
+	});
+
+	it('matches a custom id passed directly to ItemGroupTitle during SSR', () => {
+		const html = renderToString(
+			<ItemGroup is='ul'>
+				<ItemGroupHeader is='li' aria-hidden>
+					<ItemGroupTitle id='custom-title-id'>Moderators</ItemGroupTitle>
+				</ItemGroupHeader>
+			</ItemGroup>,
+		);
+
+		expect(html).toContain('aria-labelledby="custom-title-id"');
+		expect(html).toContain('id="custom-title-id"');
+	});
+
+	it('does not label an outer group when only an inner nested group has a title', () => {
+		render(
+			<ItemGroup is='ul' data-testid='outer-group'>
+				<ItemGroup is='ul' data-testid='inner-group'>
+					<ItemGroupHeader is='li' aria-hidden>
+						<ItemGroupTitle>Inner Title</ItemGroupTitle>
+					</ItemGroupHeader>
+					<Item is='li'>Inner Item</Item>
+				</ItemGroup>
+			</ItemGroup>,
+		);
+
+		expect(screen.getByTestId('outer-group')).not.toHaveAttribute('aria-labelledby');
+		expect(screen.getByRole('list', { name: 'Inner Title' })).toBe(screen.getByTestId('inner-group'));
+	});
+
+	it('does not label an outer group in SSR when only an inner nested group has a title', () => {
+		const html = renderToString(
+			<ItemGroup is='ul' data-testid='outer-group'>
+				<ItemGroup is='ul' data-testid='inner-group'>
+					<ItemGroupHeader is='li' aria-hidden>
+						<ItemGroupTitle>Inner Title</ItemGroupTitle>
+					</ItemGroupHeader>
+				</ItemGroup>
+			</ItemGroup>,
+		);
+
+		const outerTag = html.match(/<ul[^>]*data-testid="outer-group"[^>]*>/)?.[0];
+		expect(outerTag).toBeDefined();
+		expect(outerTag).not.toContain('aria-labelledby');
+
+		const innerTag = html.match(/<ul[^>]*data-testid="inner-group"[^>]*>/)?.[0];
+		expect(innerTag).toContain('aria-labelledby');
+	});
+
+	it('keeps IDs unique and labels group by the first title when multiple titles exist', () => {
+		render(
+			<ItemGroup is='ul' data-testid='group'>
+				<ItemGroupHeader is='li' aria-hidden>
+					<ItemGroupTitle data-testid='title-1'>First Title</ItemGroupTitle>
+					<ItemGroupTitle data-testid='title-2'>Second Title</ItemGroupTitle>
+				</ItemGroupHeader>
+				<Item is='li'>Item</Item>
+			</ItemGroup>,
+		);
+
+		const group = screen.getByTestId('group');
+		const title1 = screen.getByTestId('title-1');
+		const title2 = screen.getByTestId('title-2');
+
+		expect(title1.id).toBeTruthy();
+		expect(title2.id).toBeTruthy();
+		expect(title1.id).not.toBe(title2.id);
+		expect(group).toHaveAttribute('aria-labelledby', title1.id);
+	});
+
+	it('keeps IDs unique and labels group by the first title in SSR output', () => {
+		const html = renderToString(
+			<ItemGroup is='ul' data-testid='group'>
+				<ItemGroupHeader is='li' aria-hidden>
+					<ItemGroupTitle data-testid='title-1'>First Title</ItemGroupTitle>
+					<ItemGroupTitle data-testid='title-2'>Second Title</ItemGroupTitle>
+				</ItemGroupHeader>
+			</ItemGroup>,
+		);
+
+		const ulMatch = html.match(/<ul[^>]*>/)?.[0];
+		expect(ulMatch).toBeDefined();
+		expect(ulMatch).toContain('data-testid="group"');
+
+		const labelledBy = ulMatch?.match(/aria-labelledby="([^"]+)"/)?.[1];
+		const title1Id = html.match(/data-testid="title-1"[^>]*id="([^"]+)"/)?.[1];
+		const title2Id = html.match(/data-testid="title-2"[^>]*id="([^"]+)"/)?.[1];
+
+		expect(title1Id).toBeDefined();
+		expect(title2Id).toBeDefined();
+		expect(title1Id).toBe(labelledBy);
+		expect(title1Id).not.toBe(title2Id);
 	});
 });
 
