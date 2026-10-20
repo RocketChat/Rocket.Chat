@@ -127,8 +127,8 @@ test.describe.serial('abac-room-attributes-panel', () => {
 		await abacManageAttributes.selectValues(['high']);
 		await abacManageAttributes.reviewChanges();
 
-		await expect(preview.losesAccess).toContainText(Users.user2.data.username);
-		await expect(preview.losesAccess).not.toContainText(Users.user1.data.username);
+		await expect(preview.listLosesAccess).toContainText(Users.user2.data.username);
+		await expect(preview.listLosesAccess).not.toContainText(Users.user1.data.username);
 
 		await preview.save();
 		await preview.updateRoomModal.save();

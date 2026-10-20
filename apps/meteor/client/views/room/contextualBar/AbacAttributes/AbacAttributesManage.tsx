@@ -11,7 +11,7 @@ import {
 import { useEndpoint, useRouter, useToastMessageDispatch } from '@rocket.chat/ui-contexts';
 import type { InfiniteData } from '@tanstack/react-query';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { useId, useState } from 'react';
+import { useEffect, useId, useState } from 'react';
 import { FormProvider, useForm, useWatch } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 
@@ -86,6 +86,11 @@ const AbacAttributesManage = ({ room, requiredKeys, onBack, onClose, onSaved }: 
 			dispatchToastMessage({ type: 'error', message: error });
 		},
 	});
+
+	useEffect(
+		() => () => queryClient.removeQueries({ queryKey: ABACQueryKeys.roomMembershipPreview.all(room._id) }),
+		[queryClient, room._id],
+	);
 
 	if (previewAttributes) {
 		return (

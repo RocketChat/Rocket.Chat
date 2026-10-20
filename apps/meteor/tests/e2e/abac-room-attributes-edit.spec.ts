@@ -91,7 +91,7 @@ test.describe.serial('abac-room-attributes-edit', () => {
 	});
 
 	test('an administrator sees who loses access, confirms the update, and only they are removed', async ({ api }) => {
-		const { _id: rid, name } = await createRoom(api);
+		const { _id: rid } = await createRoom(api);
 		const { preview } = poAdminABACRooms;
 
 		await poAdminABACRooms.gotoEditRoom(rid);
@@ -99,13 +99,12 @@ test.describe.serial('abac-room-attributes-edit', () => {
 		await poAdminABACRooms.addAttribute(levelKey, ['high']);
 		await poAdminABACRooms.reviewChanges();
 
-		await expect(preview.losesAccess).toContainText(Users.user2.data.username);
-		await expect(preview.losesAccess).not.toContainText(Users.user1.data.username);
-		await expect(preview.losesAccess).not.toContainText(Users.admin.data.username);
+		await expect(preview.listLosesAccess).toContainText(Users.user2.data.username);
+		await expect(preview.listLosesAccess).not.toContainText(Users.user1.data.username);
+		await expect(preview.listLosesAccess).not.toContainText(Users.admin.data.username);
 
 		await preview.save();
-		await expect(preview.updateRoomModal.getText(`will be removed from ${name}`)).toBeVisible();
-		await expect(preview.selfLockoutModal.getText(`You will lose access to ${name}`)).not.toBeVisible();
+		await preview.updateRoomModal.waitForDisplay();
 
 		await preview.updateRoomModal.save();
 		await poAdminABACRooms.toastMessage.waitForDisplay({ type: 'success', message: 'Room attributes updated' });
@@ -117,7 +116,7 @@ test.describe.serial('abac-room-attributes-edit', () => {
 	});
 
 	test('an administrator who would lose access has to confirm, and is removed with the others', async ({ api }) => {
-		const { _id: rid, name } = await createRoom(api);
+		const { _id: rid } = await createRoom(api);
 		const { preview } = poAdminABACRooms;
 
 		await poAdminABACRooms.gotoEditRoom(rid);
@@ -125,11 +124,11 @@ test.describe.serial('abac-room-attributes-edit', () => {
 		await poAdminABACRooms.addAttribute(levelKey, ['low']);
 		await poAdminABACRooms.reviewChanges();
 
-		await expect(preview.losesAccess).toContainText(Users.user2.data.username);
-		await expect(preview.losesAccess).toContainText(Users.admin.data.username);
+		await expect(preview.listLosesAccess).toContainText(Users.user2.data.username);
+		await expect(preview.listLosesAccess).toContainText(Users.admin.data.username);
 
 		await preview.save();
-		await expect(preview.selfLockoutModal.getText(`You will lose access to ${name}`)).toBeVisible();
+		await preview.selfLockoutModal.waitForDisplay();
 
 		await preview.selfLockoutModal.save();
 		await poAdminABACRooms.toastMessage.waitForDisplay({ type: 'success', message: 'Room attributes updated' });

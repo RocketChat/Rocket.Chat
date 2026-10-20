@@ -127,7 +127,7 @@ export class RoomToolbar extends Toolbar {
 	}
 
 	get btnABACAttributes(): Locator {
-		return this.root.getByRole('button', { name: 'Attribute-based access control' });
+		return this.root.getByRole('button', { name: 'Attribute-based access control', exact: true });
 	}
 
 	get menuItemABACAttributes(): Locator {
