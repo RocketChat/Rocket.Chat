@@ -38,4 +38,13 @@ describe('perRoomOccupantJid', () => {
 		expect(perRoomOccupantJid('a#b', 'c@conference.a.example')).not.toBe(perRoomOccupantJid('a', 'b#c@conference.a.example'));
 		expect(perRoomOccupantJid('a\\23b', 'c@conference.a.example')).not.toBe(perRoomOccupantJid('a#b', 'c@conference.a.example'));
 	});
+
+	it('gives distinct keys to nicks that differ only in outer whitespace (addressing R9)', () => {
+		const keys = ['alice', 'alice ', ' alice', '\talice'].map((nick) => perRoomOccupantJid(nick, 'dev@conference.a.example'));
+		expect(new Set(keys).size).toBe(keys.length);
+	});
+
+	it('keys a nick made only of whitespace instead of refusing it (addressing R9)', () => {
+		expect(perRoomOccupantJid(' ', 'dev@conference.a.example')).toBe('\\20#dev@conference.a.example');
+	});
 });

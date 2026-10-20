@@ -76,7 +76,8 @@ localparts, and compare domains the way DNS does.
   rooms it appears in: every path that knows the sender's real JID upserts the record of
   that bare JID. A remote room that does not tell us an occupant's real JID gets a record of
   its own for them, keyed `<nick>#<room JID>` with the nick escaped per XEP-0106, every `\`
-  written `\5c` and not only one that starts an escape sequence, and each `#` written `\23`.
+  written `\5c` and not only one that starts an escape sequence, each `#` written `\23`, and
+  no whitespace trimmed, since nicks that differ only in it belong to different occupants.
   No two nick and room pairs share a key: a room's localpart may hold `#` too, but the first
   `#` is always the separator, and `\23` in a nick can only stand for a `#`
   ([remote-muc R6](remote-muc.md), [ADR 0015](../adr/0015-remote-room-occupants-are-the-user-their-disclosed-jid-names.md)).
