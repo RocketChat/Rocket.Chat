@@ -73,7 +73,8 @@ permissions: {}
 
 jobs:
   test:
-    runs-on: ubuntu-24.04
+    # MongoDB cannot start on kernels >= 6.19: https://jira.mongodb.org/browse/SERVER-121912
+    runs-on: ubuntu-22.04
     permissions:
       actions: read
       contents: read
@@ -95,6 +96,15 @@ jobs:
     name: MongoDB ${{ matrix.mongodb-version }}${{ inputs.coverage == matrix.mongodb-version && ' coverage' || '' }} (${{ matrix.shard }}/${{ inputs.total-shard }})
 
     steps:
+      - name: Check MongoDB kernel compatibility
+        run: |
+          kernel_version="$(uname -r)"
+          echo "Runner kernel: $kernel_version"
+          if dpkg --compare-versions "${kernel_version%%-*}" ge 6.19; then
+            echo "::error::MongoDB requires a kernel older than 6.19 until SERVER-121912 is resolved."
+            exit 1
+          fi
+
       - name: Setup kernel limits
         run: |
           echo "500 65535" > sudo tee -a /proc/sys/net/ipv4/ip_local_port_range
