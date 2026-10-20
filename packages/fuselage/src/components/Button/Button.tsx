@@ -1,13 +1,14 @@
 import type { GetProps } from '@tamagui/web';
 import type { AllHTMLAttributes, RefAttributes } from 'react';
-import { useMemo } from 'react';
+import { useContext } from 'react';
 
 import { useTamaguiBoxProps } from '../../hooks/useTamaguiBoxProps';
 import type { BoxProps } from '../Box';
+import { ButtonContent, ButtonFrame, getButtonStates, renderButtonElement } from './ButtonFrame';
 import { BoxTransforms, useBoxTransform } from '../Box/BoxTransforms';
 import { withFuselageProvider } from '../FuselageProvider/FuselageProvider';
 import { Icon, type IconProps } from '../Icon';
-import { ButtonContent, ButtonFrame, renderButtonElement } from './ButtonFrame';
+import { ButtonSegmentContext } from './ButtonSegmentContext';
 
 export type ButtonProps = Omit<BoxProps, 'ref'> & {
 	variant?: 'primary' | 'secondary' | 'danger' | 'warning' | 'success' | 'secondary-danger' | 'secondary-warning' | 'secondary-success';
@@ -77,31 +78,23 @@ function Button({
 		}) ||
 		{};
 
-	const kindAndVariantProps = useMemo(() => {
-		const kind =
-			variant ||
-			(primary && 'primary') ||
-			(secondary && success && 'secondary-success') ||
-			(secondary && warning && 'secondary-warning') ||
-			(secondary && danger && 'secondary-danger') ||
-			(success && 'success') ||
-			(warning && 'warning') ||
-			(danger && 'danger') ||
-			(secondary && 'secondary');
-
-		if (kind) {
-			return {
-				[`rcx-button--${kind}`]: true,
-			};
-		}
-
-		return {};
-	}, [variant, primary, secondary, danger, warning, success]);
+	const kind =
+		variant ||
+		(primary && 'primary') ||
+		(secondary && success && 'secondary-success') ||
+		(secondary && warning && 'secondary-warning') ||
+		(secondary && danger && 'secondary-danger') ||
+		(success && 'success') ||
+		(warning && 'warning') ||
+		(danger && 'danger') ||
+		(secondary && 'secondary') ||
+		undefined;
 
 	const effectiveSize =
 		size || (mini && 'mini') || (tiny && 'tiny') || (small && 'small') || (medium && 'medium') || (large && 'large') || undefined;
 
 	const transform = useBoxTransform();
+	const segment = useContext(ButtonSegmentContext);
 
 	// `<Box is={Button}>` hands over `rcx-box--full`, whose unlayered reset would beat the frame's padding
 	if (typeof props.className === 'string') {
@@ -112,7 +105,7 @@ function Button({
 		(transform ?? ((props) => props))({
 			'type': 'button',
 			'rcx-button': true,
-			...kindAndVariantProps,
+			...(kind && { [`rcx-button--${kind}`]: true }),
 			'rcx-button--small': effectiveSize === 'small',
 			'rcx-button--medium': effectiveSize === 'medium',
 			'rcx-button--large': effectiveSize === 'large',
@@ -138,6 +131,7 @@ function Button({
 			squareSize={squareSize}
 			render={renderButtonElement(is, disabled || loading)}
 			{...(frameProps as GetProps<typeof ButtonFrame>)}
+			{...getButtonStates(frameProps.className, kind ?? 'secondary', disabled || loading, segment)}
 		>
 			<ButtonContent className='rcx-button--content'>
 				{icon && !loading && <Icon size='x16' name={icon} marginInlineEnd={4} />}
