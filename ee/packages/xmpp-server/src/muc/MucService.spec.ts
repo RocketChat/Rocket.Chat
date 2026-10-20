@@ -80,6 +80,17 @@ describe('MucService.handlePossibleInvite', () => {
 
 		expect(invites).toEqual([expect.objectContaining({ fromJid: 'team@conference.remote.tld' })]);
 	});
+
+	it('emits the room in its normalized spelling when the invitation carries no inviter (remote-muc R1)', () => {
+		const { muc, invites } = setup();
+		const mediated = p(
+			`<message from='Team@Conference.Remote.TLD' to='bob@rc.tld'><x xmlns='http://jabber.org/protocol/muc#user'><invite/></x></message>`,
+		);
+
+		muc.handlePossibleInvite(mediated, 'bob@rc.tld');
+
+		expect(invites).toEqual([expect.objectContaining({ roomJid: 'team@conference.remote.tld', fromJid: 'team@conference.remote.tld' })]);
+	});
 });
 
 describe('MucService.listPublicRooms (service-discovery R4)', () => {

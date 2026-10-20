@@ -150,7 +150,8 @@ export class MucService {
 			return roomJid;
 		}
 		const domain = inviter.slice(inviter.lastIndexOf('@') + 1);
-		return domain === this.deps.config.domain || domain === this.deps.config.mucDomain ? roomJid : inviter;
+		const isOurs = domain === this.deps.config.domain || domain === this.deps.config.mucDomain;
+		return isOurs || normalizeRoomJid(inviter) === roomJid ? roomJid : inviter;
 	}
 
 	private forwardRoomEvent(roomId: string, event: string, args: unknown[]): void {
