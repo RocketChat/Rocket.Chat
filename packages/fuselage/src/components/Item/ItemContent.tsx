@@ -3,7 +3,7 @@ import { styled, Text, type GetProps } from '@tamagui/web';
 import type { AllHTMLAttributes, ElementType, RefAttributes } from 'react';
 import { useId, useLayoutEffect, useRef, useState } from 'react';
 
-import { ItemParentContext, useItemContext } from './ItemContext';
+import { ItemParentContext, skipRegistration, useItemContext } from './ItemContext';
 import { toRender } from './itemStyles';
 import { cx } from '../../helpers/composeClassNames';
 import { withFuselageProvider } from '../FuselageProvider/FuselageProvider';
@@ -34,9 +34,13 @@ const ItemContent = ({ is: Tag = 'div', className, ref, ...props }: ItemContentP
 	const mergedRef = useMergedRefs(ownRef, ref);
 	const [multiline, setMultiline] = useState(false);
 
-	// Counts rendered elements, not React children, so a part that renders nothing is no line
+	// Counts rendered elements, not React children, so a part that renders nothing is no line. A row that declares
+	// `multiline` doesn't ask, which spares the render a measured second line causes on mount
+	const measuresLines = registerMultiline !== skipRegistration;
 	useLayoutEffect(() => {
-		setMultiline((ownRef.current?.children.length ?? 0) > 1);
+		if (measuresLines) {
+			setMultiline((ownRef.current?.children.length ?? 0) > 1);
+		}
 	});
 
 	useLayoutEffect(() => (multiline ? registerMultiline(id) : undefined), [id, multiline, registerMultiline]);
