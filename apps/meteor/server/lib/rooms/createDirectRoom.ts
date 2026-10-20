@@ -89,7 +89,7 @@ export async function createDirectRoom(
 	const roomInfo = {
 		t: 'd',
 		usernames,
-		usersCount: members.length,
+		usersCount: roomMembers.length,
 		msgs: 0,
 		ts: new Date(),
 		uids,
@@ -186,7 +186,7 @@ export async function createDirectRoom(
 					...(options?.creator === member._id && { $set: { open: true } }),
 					$setOnInsert: generateSubscription(fname, name, member, {
 						...options?.subscriptionExtra,
-						...(options?.creator !== member._id && { open: members.length > 2 }),
+						...(options?.creator !== member._id && { open: roomMembers.length > 2 }),
 						...subscriptionStatus,
 						...(roomExtraData.federated && member._id === options?.creator && { roles: ['owner'] }),
 					}),
