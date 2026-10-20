@@ -10,17 +10,12 @@ import { withFuselageProvider } from '../FuselageProvider/FuselageProvider';
 
 const revealDuration = '0.18s';
 
-// Shown while its row or group header is hovered or holds focus; touch screens and open menus reveal it from `Item.styles.css`
-const revealed = <T,>(value: T) => ({
-	'group-hover/rcx-item': value,
-	'group-focus-within/rcx-item': value,
-	'group-hover/rcx-item-group-header': value,
-	'group-focus-within/rcx-item-group-header': value,
-});
+// Hidden until its row or group header is hovered, holds focus, has an open menu or sits on a touch screen, all of which
+// `Item.styles.css` handles: a group clause would subscribe every row's actions to the row's state
 
 // While hidden it takes no room, so it also cancels the gap in front of it
 const cancelGap = (gap: 'x4' | 'x8') => ({
-	marginInlineStart: { default: `calc(${spacing(gap)} * -1)`, ...revealed(0) },
+	marginInlineStart: `calc(${spacing(gap)} * -1)`,
 });
 
 const ItemActionsFrame = styled(View, {
@@ -41,8 +36,8 @@ const ItemActionsFrame = styled(View, {
 				transitionProperty: 'grid-template-columns, margin-inline-start, opacity',
 				transitionDuration: revealDuration,
 				transitionTimingFunction: 'ease',
-				opacity: { default: 0, ...revealed(1) },
-				gridTemplateColumns: { default: '0fr', ...revealed('1fr') },
+				opacity: 0,
+				gridTemplateColumns: '0fr',
 			},
 		},
 		gapOffset: {
@@ -63,7 +58,7 @@ const ItemActionsFrame = styled(View, {
 const ItemActionsInner = styled(View, {
 	display: 'flex',
 	flexDirection: 'row',
-	overflow: { 'default': 'hidden', 'group-focus-within/rcx-item': 'visible' },
+	overflow: 'hidden',
 	alignItems: 'center',
 	flexShrink: 1,
 	minHeight: 'auto',
