@@ -1,0 +1,5 @@
+*-dist/
+*-dist-esm/
+*-dist-nomin/
+out-*/
+.tamagui/

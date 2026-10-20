@@ -9,7 +9,7 @@ import { spacing } from '../../styleTokens';
 import { withFuselageProvider } from '../FuselageProvider/FuselageProvider';
 
 // The narrow-list layout of `inline` stays in `Item.styles.css`, as a container query
-const ItemDescriptionFrame = styled(Text, {
+export const ItemDescriptionFrame = styled(Text, {
 	...truncatedTextStyle,
 	display: 'block',
 	color: itemColorFontSecondary,

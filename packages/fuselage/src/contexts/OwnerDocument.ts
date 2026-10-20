@@ -2,7 +2,8 @@ import { createContext, useContext } from 'react';
 
 export const OwnerDocument = createContext<{
 	document: Document;
-}>({ document: window.document });
+	// Build-time evaluation (the Tamagui compiler) and SSR import this with no `window`
+}>({ document: typeof window === 'undefined' ? (undefined as unknown as Document) : window.document });
 
 export const useOwnerDocument = () => {
 	return useContext(OwnerDocument);

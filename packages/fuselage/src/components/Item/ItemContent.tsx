@@ -8,7 +8,7 @@ import { toRender } from './itemStyles';
 import { cx } from '../../helpers/composeClassNames';
 import { withFuselageProvider } from '../FuselageProvider/FuselageProvider';
 
-const ItemContentFrame = styled(Text, {
+export const ItemContentFrame = styled(Text, {
 	display: 'flex',
 	flexDirection: 'column',
 	flexGrow: 1,

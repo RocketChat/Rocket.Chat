@@ -7,7 +7,7 @@ import { cx } from '../../helpers/composeClassNames';
 import { spacing } from '../../styleTokens';
 import { withFuselageProvider } from '../FuselageProvider/FuselageProvider';
 
-const ItemRowFrame = styled(Text, {
+export const ItemRowFrame = styled(Text, {
 	display: 'flex',
 	flexDirection: 'row',
 	alignItems: 'center',
