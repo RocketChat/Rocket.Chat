@@ -15087,7 +15087,7 @@ __metadata:
 
 "@tamagui/static@patch:@tamagui/static@npm%3A3.0.18#~/.yarn/patches/@tamagui-static-npm-3.0.18-189ad8b0b3.patch":
   version: 3.0.18
-  resolution: "@tamagui/static@patch:@tamagui/static@npm%3A3.0.18#~/.yarn/patches/@tamagui-static-npm-3.0.18-189ad8b0b3.patch::version=3.0.18&hash=8d0d3f"
+  resolution: "@tamagui/static@patch:@tamagui/static@npm%3A3.0.18#~/.yarn/patches/@tamagui-static-npm-3.0.18-189ad8b0b3.patch::version=3.0.18&hash=925be1"
   dependencies:
     "@tamagui/animation-helpers": "npm:3.0.18"
     "@tamagui/cli-color": "npm:3.0.18"
@@ -15117,7 +15117,7 @@ __metadata:
     react-native-web: "npm:~0.21.0"
   peerDependencies:
     react: ">=19"
-  checksum: 10/bda15b859b004a33b49420340bb075c46a16f21d6d28b9c79abf443cf7d0044909900fc409a3885c654e2d2f29d1a863d8293b20a0ff0c333757fbb6358eee4c
+  checksum: 10/b0a1012907d705a0c494f1189082a5ab3be77db2e6b7e00e1944e436d227f31d16c6fabcd53dfc33a533c46d8d095b5c8bd26841d34fdae36751371b9ca9780f
   languageName: node
   linkType: hard
 
