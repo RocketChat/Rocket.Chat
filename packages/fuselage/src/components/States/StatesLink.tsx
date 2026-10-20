@@ -22,7 +22,7 @@ const StatesLinkFrame = styled(Text, {
 });
 
 const StatesLink = ({ ...props }: StatesLinkProps) => {
-	const linkProps = useTamaguiBoxProps(props, 'rcx-states__link');
+	const linkProps = useTamaguiBoxProps({ withRichContent: 'inlineWithoutBreaks', ...props }, 'rcx-states__link');
 
 	return <StatesLinkFrame {...(linkProps as GetProps<typeof StatesLinkFrame>)} />;
 };
