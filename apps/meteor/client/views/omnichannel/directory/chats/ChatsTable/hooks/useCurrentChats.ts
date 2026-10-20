@@ -1,5 +1,5 @@
 import type { GETLivechatRoomsParams, OperationResult } from '@rocket.chat/rest-typings';
-import { getCombineFn, usePaginatedQuery } from '@rocket.chat/ui-client';
+import { usePaginatedQuery } from '@rocket.chat/ui-client';
 import { useEndpoint } from '@rocket.chat/ui-contexts';
 
 type CurrentChatsResult = OperationResult<'GET', '/v1/livechat/rooms'>;
@@ -11,7 +11,7 @@ export const useCurrentChats = (query: GETLivechatRoomsParams, { offset, count }
 		query,
 		queryKey: ['current-chats', query],
 		queryFn: (query) => currentChats(query) as unknown as Promise<CurrentChatsResult>,
-		combineData: getCombineFn('rooms'),
+		itemsKey: 'rooms',
 		offset,
 		count,
 

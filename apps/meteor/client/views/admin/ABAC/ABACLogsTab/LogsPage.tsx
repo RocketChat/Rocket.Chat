@@ -8,7 +8,6 @@ import {
 	GenericTableHeader,
 	GenericTableHeaderCell,
 	GenericTableRow,
-	getCombineFn,
 	usePaginatedQuery,
 	usePagination,
 	GenericNoResults,
@@ -75,7 +74,7 @@ const LogsPage = () => {
 		query,
 		queryKey,
 		queryFn: getLogs,
-		combineData: getCombineFn('events'),
+		itemsKey: 'events',
 		offset: current,
 		count: itemsPerPage,
 	});
