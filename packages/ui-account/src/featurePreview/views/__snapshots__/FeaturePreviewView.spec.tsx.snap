@@ -84,7 +84,7 @@ exports[`renders Default without crashing 1`] = `
                     class="is_View _f-1246374076 _mw-354604370 _mh-1241200853 _os-249893454 _ff-409630021 _fvn-1977619713 rcx-accordion-item"
                   >
                     <div
-                      aria-controls="_r_9_"
+                      aria-controls="_r_7_"
                       aria-expanded="true"
                       class="is_View _f-85860445 _mw-354604370 _mh-1760955396 _os-249893454 _ff-409630021 _fvn-1977619713 _p-615618451 _ta-507911453 _c-1866435217 _b-1117022352 _c-1830342115 _ow-484670902 _b-503981535 _bs-1918316648 rcx-box--animated rcx-accordion-item__bar"
                       role="button"
@@ -92,7 +92,7 @@ exports[`renders Default without crashing 1`] = `
                     >
                       <h2
                         class="is_Text _f-1417019688 _mw-354604370 _mh-1241200853 _os-249893454 _ff-409630021 _fvn-1977619713 _d-1987097250 _o-1119039191 _to-1727917045 _ws-973912173 _ww-408434756 _fs-467998244 _fw-289168101 _lh-1586295880 _ls-1782815796 rcx-accordion-item__title"
-                        id="_r_8_"
+                        id="_r_6_"
                       >
                         Navigation
                       </h2>
@@ -109,7 +109,7 @@ exports[`renders Default without crashing 1`] = `
                     </div>
                     <div
                       class="is_View _f-1246374076 _mw-354604370 _mh-1241200853 _os-249893454 _ff-409630021 _fvn-1977619713 _d-1987097250 _o-1119039191 _p-1254838996 _v-595517078 _h-568431264 rcx-box--animated rcx-accordion-item__panel rcx-accordion-item__panel--expanded"
-                      id="_r_9_"
+                      id="_r_7_"
                     >
                       <fieldset
                         class="is_Text _b-650654186 _os-249893454 _ff-409630021 _fvn-1977619713 _ws-311910413 _ww-408434756 _d-341075704 _f-1180446992 _jc-1099843255 _ai-1227553247 _mw-842770087 _m-2017216831 _p-1943363302 rcx-field-group"
@@ -198,7 +198,7 @@ exports[`renders Default without crashing 1`] = `
                     class="is_View _f-1246374076 _mw-354604370 _mh-1241200853 _os-249893454 _ff-409630021 _fvn-1977619713 rcx-accordion-item"
                   >
                     <div
-                      aria-controls="_r_12_"
+                      aria-controls="_r_10_"
                       aria-expanded="false"
                       class="is_View _f-85860445 _mw-354604370 _mh-1760955396 _os-249893454 _ff-409630021 _fvn-1977619713 _p-615618451 _ta-507911453 _c-1866435217 _b-1117022352 _c-1830342115 _ow-484670902 _b-503981535 _bs-1918316648 rcx-box--animated rcx-accordion-item__bar"
                       role="button"
@@ -206,7 +206,7 @@ exports[`renders Default without crashing 1`] = `
                     >
                       <h2
                         class="is_Text _f-1417019688 _mw-354604370 _mh-1241200853 _os-249893454 _ff-409630021 _fvn-1977619713 _d-1987097250 _o-1119039191 _to-1727917045 _ws-973912173 _ww-408434756 _fs-467998244 _fw-289168101 _lh-1586295880 _ls-1782815796 rcx-accordion-item__title"
-                        id="_r_11_"
+                        id="_r_v_"
                       >
                         Room
                       </h2>
@@ -223,7 +223,7 @@ exports[`renders Default without crashing 1`] = `
                     </div>
                     <div
                       class="is_View _f-1246374076 _mw-354604370 _mh-1241200853 _os-249893454 _ff-409630021 _fvn-1977619713 _d-1987097250 _v-46649817 _o-1119039191 _h-1922296922 _p-2082124683 rcx-box--animated rcx-accordion-item__panel"
-                      id="_r_12_"
+                      id="_r_10_"
                     >
                       <fieldset
                         class="is_Text _b-650654186 _os-249893454 _ff-409630021 _fvn-1977619713 _ws-311910413 _ww-408434756 _d-341075704 _f-1180446992 _jc-1099843255 _ai-1227553247 _mw-842770087 _m-2017216831 _p-1943363302 rcx-field-group"

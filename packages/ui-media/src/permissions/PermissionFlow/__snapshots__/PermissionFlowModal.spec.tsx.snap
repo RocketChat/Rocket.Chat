@@ -88,7 +88,7 @@ exports[`renders PermissionFlowModalDeviceChangePrompt without crashing 1`] = `
 <body>
   <div>
     <dialog
-      aria-labelledby="_r_d_"
+      aria-labelledby="_r_c_"
       aria-modal="true"
       class="is_View _p-1708146690 _f-1069814357 _mw-354604370 _mh-1241200853 _w-1560934055 _mw-1502687253 _mh-1075342580 _m-827969624 _p-1264618087 _b-650654186 _os-249893454 _b-1654379586 _ff-409630021 _fvn-1977619713 rcx-modal"
       open=""
@@ -104,7 +104,7 @@ exports[`renders PermissionFlowModalDeviceChangePrompt without crashing 1`] = `
           >
             <h2
               class="is_Text _d-1987097250 _f-1230447426 _ws-973912173 _ww-408434756 _o-1119039191 _to-1727917045 _c-1063453128 _ff-409630021 _fvn-1977619713 _fs-1289474947 _fw-289168101 _lh-1306773774 _ls-1782815796 rcx-modal__title rcx-css-i9v8z4 rcx-css-lma364"
-              id="_r_d_"
+              id="_r_c_"
             >
               Mic/speaker access required
             </h2>
@@ -176,7 +176,7 @@ exports[`renders PermissionFlowModalIncomingPrompt without crashing 1`] = `
 <body>
   <div>
     <dialog
-      aria-labelledby="_r_r_"
+      aria-labelledby="_r_p_"
       aria-modal="true"
       class="is_View _p-1708146690 _f-1069814357 _mw-354604370 _mh-1241200853 _w-1560934055 _mw-1502687253 _mh-1075342580 _m-827969624 _p-1264618087 _b-650654186 _os-249893454 _b-1654379586 _ff-409630021 _fvn-1977619713 rcx-modal"
       open=""
@@ -192,7 +192,7 @@ exports[`renders PermissionFlowModalIncomingPrompt without crashing 1`] = `
           >
             <h2
               class="is_Text _d-1987097250 _f-1230447426 _ws-973912173 _ww-408434756 _o-1119039191 _to-1727917045 _c-1063453128 _ff-409630021 _fvn-1977619713 _fs-1289474947 _fw-289168101 _lh-1306773774 _ls-1782815796 rcx-modal__title rcx-css-i9v8z4 rcx-css-lma364"
-              id="_r_r_"
+              id="_r_p_"
             >
               Mic/speaker access required
             </h2>
@@ -276,7 +276,7 @@ exports[`renders PermissionFlowModalNoDevices without crashing 1`] = `
 <body>
   <div>
     <dialog
-      aria-labelledby="_r_1b_"
+      aria-labelledby="_r_18_"
       aria-modal="true"
       class="is_View _p-1708146690 _f-1069814357 _mw-354604370 _mh-1241200853 _w-1560934055 _mw-1502687253 _mh-1075342580 _m-827969624 _p-1264618087 _b-650654186 _os-249893454 _b-1654379586 _ff-409630021 _fvn-1977619713 rcx-modal"
       open=""
@@ -292,7 +292,7 @@ exports[`renders PermissionFlowModalNoDevices without crashing 1`] = `
           >
             <h2
               class="is_Text _d-1987097250 _f-1230447426 _ws-973912173 _ww-408434756 _o-1119039191 _to-1727917045 _c-1063453128 _ff-409630021 _fvn-1977619713 _fs-1289474947 _fw-289168101 _lh-1306773774 _ls-1782815796 rcx-modal__title rcx-css-i9v8z4 rcx-css-lma364"
-              id="_r_1b_"
+              id="_r_18_"
             >
               Microphone not detected
             </h2>
@@ -358,7 +358,7 @@ exports[`renders PermissionFlowModalOutgoingPrompt without crashing 1`] = `
 <body>
   <div>
     <dialog
-      aria-labelledby="_r_1o_"
+      aria-labelledby="_r_1k_"
       aria-modal="true"
       class="is_View _p-1708146690 _f-1069814357 _mw-354604370 _mh-1241200853 _w-1560934055 _mw-1502687253 _mh-1075342580 _m-827969624 _p-1264618087 _b-650654186 _os-249893454 _b-1654379586 _ff-409630021 _fvn-1977619713 rcx-modal"
       open=""
@@ -374,7 +374,7 @@ exports[`renders PermissionFlowModalOutgoingPrompt without crashing 1`] = `
           >
             <h2
               class="is_Text _d-1987097250 _f-1230447426 _ws-973912173 _ww-408434756 _o-1119039191 _to-1727917045 _c-1063453128 _ff-409630021 _fvn-1977619713 _fs-1289474947 _fw-289168101 _lh-1306773774 _ls-1782815796 rcx-modal__title rcx-css-i9v8z4 rcx-css-lma364"
-              id="_r_1o_"
+              id="_r_1k_"
             >
               Mic/speaker access required
             </h2>

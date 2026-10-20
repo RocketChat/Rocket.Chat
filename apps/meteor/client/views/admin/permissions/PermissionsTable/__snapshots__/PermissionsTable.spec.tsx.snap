@@ -1431,12 +1431,12 @@ exports[`renders Default without crashing 1`] = `
         >
           <span
             class="is_Text _ws-311910413 _ww-408434756 _bs-652081535 _fs-2088488067 _fw-289165218 _lh-1306743983 _ls-1782815796 _c-1620789682 rcx-pagination__label"
-            id="_r_8u_"
+            id="_r_8r_"
           >
             Items per page:
           </span>
           <ol
-            aria-labelledby="_r_8u_"
+            aria-labelledby="_r_8r_"
             class="is_View _f-619631402 _mw-354604370 _mh-1241200853 _os-249893454 _ff-409630021 _fvn-1977619713 _m-1856209254 _p-1943363302 _b-650654186 _ai-121763387 rcx-pagination__list"
           >
             <li
@@ -1480,12 +1480,12 @@ exports[`renders Default without crashing 1`] = `
         >
           <span
             class="is_Text _ws-311910413 _ww-408434756 _bs-652081535 _fs-2088488067 _fw-289165218 _lh-1306743983 _ls-1782815796 _c-1620789682 rcx-pagination__label"
-            id="_r_8t_"
+            id="_r_8q_"
           >
             Showing results 1 - 4 of 10
           </span>
           <ol
-            aria-labelledby="_r_8t_"
+            aria-labelledby="_r_8q_"
             class="is_View _f-619631402 _mw-354604370 _mh-1241200853 _os-249893454 _ff-409630021 _fvn-1977619713 _m-1856209254 _p-1943363302 _b-650654186 _ai-121763387 rcx-pagination__list"
           >
             <li

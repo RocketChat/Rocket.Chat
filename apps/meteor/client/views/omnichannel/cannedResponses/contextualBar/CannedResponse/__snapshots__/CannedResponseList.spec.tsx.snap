@@ -110,13 +110,13 @@ exports[`CannedResponseList Storybook Stories renders Default without crashing 1
                 aria-expanded="false"
                 aria-haspopup="listbox"
                 aria-label="Type"
-                aria-labelledby="react-aria-_r_f_ react-aria-_r_a_"
+                aria-labelledby="react-aria-_r_d_ react-aria-_r_8_"
                 class="rcx-box rcx-box--full rcx-box--animated rcx-select rcx-css-3ejkxj"
                 type="button"
               >
                 <span
                   class="rcx-box rcx-box--full rcx-css-az37y0"
-                  id="react-aria-_r_f_"
+                  id="react-aria-_r_d_"
                 />
                 <i
                   aria-hidden="true"

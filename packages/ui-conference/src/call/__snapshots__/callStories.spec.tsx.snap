@@ -61,7 +61,7 @@ exports[`call stories renders AudioDevicePicker Muted without crashing 1`] = `
           aria-haspopup="true"
           aria-label="Device options"
           class="is_View _f-1069813397 _mh-1241200853 _ta-1906144518 _ws-973912173 _td-211436768 _c-22887652 _os-249893454 _o-1119039191 _to-1727917045 _ff-409630021 _fvn-1977619713 _fs-347291933 _fw-289166179 _ls-1782815796 _p-230374000 _a-1578443335 _b-375831307 _br-1397394445 _bs-1608124823 _w-1411108109 _mw-1142583649 _h-611412686 _d-312446553 _jc-642967080 _ai-1864573722 _lh-2067208245 _c-734907076 _b-515744151 rcx-split-button__trigger rcx-button--large-square rcx-button--icon-secondary-danger rcx-button--square rcx-button--icon rcx-button rcx-css-1wk08i8"
-          id="react-aria-_r_4_"
+          id="react-aria-_r_3_"
           label="Device options"
           title="Device settings"
           type="button"
@@ -107,7 +107,7 @@ exports[`call stories renders CallBar Default without crashing 1`] = `
                 aria-haspopup="true"
                 aria-label="Device options"
                 class="is_View _f-1069813397 _mh-1241200853 _ta-1906144518 _ws-973912173 _td-211436768 _c-22887652 _os-249893454 _o-1119039191 _to-1727917045 _ff-409630021 _fvn-1977619713 _fs-347291933 _fw-289166179 _ls-1782815796 _p-230374000 _a-1578443335 _b-440972405 _br-1556260923 _bs-958948735 _w-1411108109 _mw-1142583649 _h-611412686 _d-312446553 _jc-642967080 _ai-1864573722 _lh-2067208245 _c-125515430 _b-500059732 _p-1041908496 _zi-121450460 rcx-split-button__trigger rcx-button--large-square rcx-button--icon-secondary rcx-button--square rcx-button--icon rcx-button rcx-css-1wk08i8"
-                id="react-aria-_r_c_"
+                id="react-aria-_r_9_"
                 label="Device options"
                 title="Device settings"
                 type="button"
@@ -160,7 +160,7 @@ exports[`call stories renders CallBar Default without crashing 1`] = `
                 aria-haspopup="true"
                 aria-label="Camera options"
                 class="is_View _f-1069813397 _mh-1241200853 _ta-1906144518 _ws-973912173 _td-211436768 _c-22887652 _os-249893454 _o-1119039191 _to-1727917045 _ff-409630021 _fvn-1977619713 _fs-347291933 _fw-289166179 _ls-1782815796 _p-230374000 _a-1578443335 _b-440972405 _br-1556260923 _bs-1608124823 _w-1411108109 _mw-1142583649 _h-611412686 _d-312446553 _jc-642967080 _ai-1864573722 _lh-2067208245 _c-395139375 _b-777121711 _p-1041908496 _zi-121450460 rcx-split-button__trigger rcx-button--large-square rcx-button--icon-secondary-danger rcx-button--square rcx-button--icon rcx-button rcx-css-1wk08i8"
-                id="react-aria-_r_i_"
+                id="react-aria-_r_f_"
                 label="Camera options"
                 title="Camera"
                 type="button"
@@ -242,7 +242,7 @@ exports[`call stories renders CallBar Default without crashing 1`] = `
               aria-haspopup="true"
               aria-label="More"
               class="is_View _f-1069813397 _mh-1241200853 _ta-1906144518 _ws-973912173 _td-211436768 _c-22887652 _os-249893454 _o-1119039191 _to-1727917045 _ff-409630021 _fvn-1977619713 _fs-347291933 _fw-289166179 _ls-1782815796 _p-230374000 _a-1578443335 _b-490095930 _br-1397394445 _bs-958948735 _w-1411108109 _mw-1142583649 _h-611412686 _d-312446553 _jc-642967080 _ai-1864573722 _lh-2067208245 _c-836305799 _b-1331573151 rcx-button--large-square rcx-button--icon-secondary rcx-button--square rcx-button--icon rcx-button"
-              id="react-aria-_r_u_"
+              id="react-aria-_r_r_"
               label="More"
               title="More"
               type="button"
@@ -300,7 +300,7 @@ exports[`call stories renders CallControls CameraOnAndSharing without crashing 1
               aria-haspopup="true"
               aria-label="Device options"
               class="is_View _f-1069813397 _mh-1241200853 _ta-1906144518 _ws-973912173 _td-211436768 _c-22887652 _os-249893454 _o-1119039191 _to-1727917045 _ff-409630021 _fvn-1977619713 _fs-347291933 _fw-289166179 _ls-1782815796 _p-230374000 _a-1578443335 _b-440972405 _br-1556260923 _bs-958948735 _w-1411108109 _mw-1142583649 _h-611412686 _d-312446553 _jc-642967080 _ai-1864573722 _lh-2067208245 _c-125515430 _b-500059732 _p-1041908496 _zi-121450460 rcx-split-button__trigger rcx-button--large-square rcx-button--icon-secondary rcx-button--square rcx-button--icon rcx-button rcx-css-1wk08i8"
-              id="react-aria-_r_17_"
+              id="react-aria-_r_13_"
               label="Device options"
               title="Device settings"
               type="button"
@@ -353,7 +353,7 @@ exports[`call stories renders CallControls CameraOnAndSharing without crashing 1
               aria-haspopup="true"
               aria-label="Camera options"
               class="is_View _f-1069813397 _mh-1241200853 _ta-1906144518 _ws-973912173 _td-211436768 _c-22887652 _os-249893454 _o-1119039191 _to-1727917045 _ff-409630021 _fvn-1977619713 _fs-347291933 _fw-289166179 _ls-1782815796 _p-230374000 _a-1578443335 _b-440972405 _br-1556260923 _bs-958948735 _w-1411108109 _mw-1142583649 _h-611412686 _d-312446553 _jc-642967080 _ai-1864573722 _lh-2067208245 _c-125515430 _b-500059732 _p-1041908496 _zi-121450460 rcx-split-button__trigger rcx-button--large-square rcx-button--icon-secondary rcx-button--square rcx-button--icon rcx-button rcx-css-1wk08i8"
-              id="react-aria-_r_1d_"
+              id="react-aria-_r_19_"
               label="Camera options"
               title="Camera"
               type="button"
@@ -435,7 +435,7 @@ exports[`call stories renders CallControls CameraOnAndSharing without crashing 1
             aria-haspopup="true"
             aria-label="More"
             class="is_View _f-1069813397 _mh-1241200853 _ta-1906144518 _ws-973912173 _td-211436768 _c-22887652 _os-249893454 _o-1119039191 _to-1727917045 _ff-409630021 _fvn-1977619713 _fs-347291933 _fw-289166179 _ls-1782815796 _p-230374000 _a-1578443335 _b-490095930 _br-1397394445 _bs-958948735 _w-1411108109 _mw-1142583649 _h-611412686 _d-312446553 _jc-642967080 _ai-1864573722 _lh-2067208245 _c-836305799 _b-1331573151 rcx-button--large-square rcx-button--icon-secondary rcx-button--square rcx-button--icon rcx-button"
-            id="react-aria-_r_1p_"
+            id="react-aria-_r_1l_"
             label="More"
             title="More"
             type="button"
@@ -492,7 +492,7 @@ exports[`call stories renders CallControls Default without crashing 1`] = `
               aria-haspopup="true"
               aria-label="Device options"
               class="is_View _f-1069813397 _mh-1241200853 _ta-1906144518 _ws-973912173 _td-211436768 _c-22887652 _os-249893454 _o-1119039191 _to-1727917045 _ff-409630021 _fvn-1977619713 _fs-347291933 _fw-289166179 _ls-1782815796 _p-230374000 _a-1578443335 _b-440972405 _br-1556260923 _bs-958948735 _w-1411108109 _mw-1142583649 _h-611412686 _d-312446553 _jc-642967080 _ai-1864573722 _lh-2067208245 _c-125515430 _b-500059732 _p-1041908496 _zi-121450460 rcx-split-button__trigger rcx-button--large-square rcx-button--icon-secondary rcx-button--square rcx-button--icon rcx-button rcx-css-1wk08i8"
-              id="react-aria-_r_22_"
+              id="react-aria-_r_1t_"
               label="Device options"
               title="Device settings"
               type="button"
@@ -545,7 +545,7 @@ exports[`call stories renders CallControls Default without crashing 1`] = `
               aria-haspopup="true"
               aria-label="Camera options"
               class="is_View _f-1069813397 _mh-1241200853 _ta-1906144518 _ws-973912173 _td-211436768 _c-22887652 _os-249893454 _o-1119039191 _to-1727917045 _ff-409630021 _fvn-1977619713 _fs-347291933 _fw-289166179 _ls-1782815796 _p-230374000 _a-1578443335 _b-440972405 _br-1556260923 _bs-1608124823 _w-1411108109 _mw-1142583649 _h-611412686 _d-312446553 _jc-642967080 _ai-1864573722 _lh-2067208245 _c-395139375 _b-777121711 _p-1041908496 _zi-121450460 rcx-split-button__trigger rcx-button--large-square rcx-button--icon-secondary-danger rcx-button--square rcx-button--icon rcx-button rcx-css-1wk08i8"
-              id="react-aria-_r_28_"
+              id="react-aria-_r_23_"
               label="Camera options"
               title="Camera"
               type="button"
@@ -627,7 +627,7 @@ exports[`call stories renders CallControls Default without crashing 1`] = `
             aria-haspopup="true"
             aria-label="More"
             class="is_View _f-1069813397 _mh-1241200853 _ta-1906144518 _ws-973912173 _td-211436768 _c-22887652 _os-249893454 _o-1119039191 _to-1727917045 _ff-409630021 _fvn-1977619713 _fs-347291933 _fw-289166179 _ls-1782815796 _p-230374000 _a-1578443335 _b-490095930 _br-1397394445 _bs-958948735 _w-1411108109 _mw-1142583649 _h-611412686 _d-312446553 _jc-642967080 _ai-1864573722 _lh-2067208245 _c-836305799 _b-1331573151 rcx-button--large-square rcx-button--icon-secondary rcx-button--square rcx-button--icon rcx-button"
-            id="react-aria-_r_2k_"
+            id="react-aria-_r_2f_"
             label="More"
             title="More"
             type="button"
@@ -684,7 +684,7 @@ exports[`call stories renders CallControls HandRaised without crashing 1`] = `
               aria-haspopup="true"
               aria-label="Device options"
               class="is_View _f-1069813397 _mh-1241200853 _ta-1906144518 _ws-973912173 _td-211436768 _c-22887652 _os-249893454 _o-1119039191 _to-1727917045 _ff-409630021 _fvn-1977619713 _fs-347291933 _fw-289166179 _ls-1782815796 _p-230374000 _a-1578443335 _b-440972405 _br-1556260923 _bs-958948735 _w-1411108109 _mw-1142583649 _h-611412686 _d-312446553 _jc-642967080 _ai-1864573722 _lh-2067208245 _c-125515430 _b-500059732 _p-1041908496 _zi-121450460 rcx-split-button__trigger rcx-button--large-square rcx-button--icon-secondary rcx-button--square rcx-button--icon rcx-button rcx-css-1wk08i8"
-              id="react-aria-_r_2t_"
+              id="react-aria-_r_2n_"
               label="Device options"
               title="Device settings"
               type="button"
@@ -737,7 +737,7 @@ exports[`call stories renders CallControls HandRaised without crashing 1`] = `
               aria-haspopup="true"
               aria-label="Camera options"
               class="is_View _f-1069813397 _mh-1241200853 _ta-1906144518 _ws-973912173 _td-211436768 _c-22887652 _os-249893454 _o-1119039191 _to-1727917045 _ff-409630021 _fvn-1977619713 _fs-347291933 _fw-289166179 _ls-1782815796 _p-230374000 _a-1578443335 _b-440972405 _br-1556260923 _bs-1608124823 _w-1411108109 _mw-1142583649 _h-611412686 _d-312446553 _jc-642967080 _ai-1864573722 _lh-2067208245 _c-395139375 _b-777121711 _p-1041908496 _zi-121450460 rcx-split-button__trigger rcx-button--large-square rcx-button--icon-secondary-danger rcx-button--square rcx-button--icon rcx-button rcx-css-1wk08i8"
-              id="react-aria-_r_33_"
+              id="react-aria-_r_2t_"
               label="Camera options"
               title="Camera"
               type="button"
@@ -819,7 +819,7 @@ exports[`call stories renders CallControls HandRaised without crashing 1`] = `
             aria-haspopup="true"
             aria-label="More"
             class="is_View _f-1069813397 _mh-1241200853 _ta-1906144518 _ws-973912173 _td-211436768 _c-22887652 _os-249893454 _o-1119039191 _to-1727917045 _ff-409630021 _fvn-1977619713 _fs-347291933 _fw-289166179 _ls-1782815796 _p-230374000 _a-1578443335 _b-490095930 _br-1397394445 _bs-958948735 _w-1411108109 _mw-1142583649 _h-611412686 _d-312446553 _jc-642967080 _ai-1864573722 _lh-2067208245 _c-836305799 _b-1331573151 rcx-button--large-square rcx-button--icon-secondary rcx-button--square rcx-button--icon rcx-button"
-            id="react-aria-_r_3f_"
+            id="react-aria-_r_39_"
             label="More"
             title="More"
             type="button"
@@ -876,7 +876,7 @@ exports[`call stories renders CallControls Muted without crashing 1`] = `
               aria-haspopup="true"
               aria-label="Device options"
               class="is_View _f-1069813397 _mh-1241200853 _ta-1906144518 _ws-973912173 _td-211436768 _c-22887652 _os-249893454 _o-1119039191 _to-1727917045 _ff-409630021 _fvn-1977619713 _fs-347291933 _fw-289166179 _ls-1782815796 _p-230374000 _a-1578443335 _b-440972405 _br-1556260923 _bs-1608124823 _w-1411108109 _mw-1142583649 _h-611412686 _d-312446553 _jc-642967080 _ai-1864573722 _lh-2067208245 _c-395139375 _b-777121711 _p-1041908496 _zi-121450460 rcx-split-button__trigger rcx-button--large-square rcx-button--icon-secondary-danger rcx-button--square rcx-button--icon rcx-button rcx-css-1wk08i8"
-              id="react-aria-_r_3o_"
+              id="react-aria-_r_3h_"
               label="Device options"
               title="Device settings"
               type="button"
@@ -914,7 +914,7 @@ exports[`call stories renders CallControls Muted without crashing 1`] = `
               aria-haspopup="true"
               aria-label="Camera options"
               class="is_View _f-1069813397 _mh-1241200853 _ta-1906144518 _ws-973912173 _td-211436768 _c-22887652 _os-249893454 _o-1119039191 _to-1727917045 _ff-409630021 _fvn-1977619713 _fs-347291933 _fw-289166179 _ls-1782815796 _p-230374000 _a-1578443335 _b-440972405 _br-1556260923 _bs-1608124823 _w-1411108109 _mw-1142583649 _h-611412686 _d-312446553 _jc-642967080 _ai-1864573722 _lh-2067208245 _c-395139375 _b-777121711 _p-1041908496 _zi-121450460 rcx-split-button__trigger rcx-button--large-square rcx-button--icon-secondary-danger rcx-button--square rcx-button--icon rcx-button rcx-css-1wk08i8"
-              id="react-aria-_r_3v_"
+              id="react-aria-_r_3o_"
               label="Camera options"
               title="Camera"
               type="button"
@@ -996,7 +996,7 @@ exports[`call stories renders CallControls Muted without crashing 1`] = `
             aria-haspopup="true"
             aria-label="More"
             class="is_View _f-1069813397 _mh-1241200853 _ta-1906144518 _ws-973912173 _td-211436768 _c-22887652 _os-249893454 _o-1119039191 _to-1727917045 _ff-409630021 _fvn-1977619713 _fs-347291933 _fw-289166179 _ls-1782815796 _p-230374000 _a-1578443335 _b-490095930 _br-1397394445 _bs-958948735 _w-1411108109 _mw-1142583649 _h-611412686 _d-312446553 _jc-642967080 _ai-1864573722 _lh-2067208245 _c-836305799 _b-1331573151 rcx-button--large-square rcx-button--icon-secondary rcx-button--square rcx-button--icon rcx-button"
-            id="react-aria-_r_4b_"
+            id="react-aria-_r_44_"
             label="More"
             title="More"
             type="button"
@@ -1053,7 +1053,7 @@ exports[`call stories renders CallControls OneOnOne without crashing 1`] = `
               aria-haspopup="true"
               aria-label="Device options"
               class="is_View _f-1069813397 _mh-1241200853 _ta-1906144518 _ws-973912173 _td-211436768 _c-22887652 _os-249893454 _o-1119039191 _to-1727917045 _ff-409630021 _fvn-1977619713 _fs-347291933 _fw-289166179 _ls-1782815796 _p-230374000 _a-1578443335 _b-440972405 _br-1556260923 _bs-958948735 _w-1411108109 _mw-1142583649 _h-611412686 _d-312446553 _jc-642967080 _ai-1864573722 _lh-2067208245 _c-125515430 _b-500059732 _p-1041908496 _zi-121450460 rcx-split-button__trigger rcx-button--large-square rcx-button--icon-secondary rcx-button--square rcx-button--icon rcx-button rcx-css-1wk08i8"
-              id="react-aria-_r_4k_"
+              id="react-aria-_r_4c_"
               label="Device options"
               title="Device settings"
               type="button"
@@ -1106,7 +1106,7 @@ exports[`call stories renders CallControls OneOnOne without crashing 1`] = `
               aria-haspopup="true"
               aria-label="Camera options"
               class="is_View _f-1069813397 _mh-1241200853 _ta-1906144518 _ws-973912173 _td-211436768 _c-22887652 _os-249893454 _o-1119039191 _to-1727917045 _ff-409630021 _fvn-1977619713 _fs-347291933 _fw-289166179 _ls-1782815796 _p-230374000 _a-1578443335 _b-440972405 _br-1556260923 _bs-1608124823 _w-1411108109 _mw-1142583649 _h-611412686 _d-312446553 _jc-642967080 _ai-1864573722 _lh-2067208245 _c-395139375 _b-777121711 _p-1041908496 _zi-121450460 rcx-split-button__trigger rcx-button--large-square rcx-button--icon-secondary-danger rcx-button--square rcx-button--icon rcx-button rcx-css-1wk08i8"
-              id="react-aria-_r_4q_"
+              id="react-aria-_r_4i_"
               label="Camera options"
               title="Camera"
               type="button"
@@ -1188,7 +1188,7 @@ exports[`call stories renders CallControls OneOnOne without crashing 1`] = `
             aria-haspopup="true"
             aria-label="More"
             class="is_View _f-1069813397 _mh-1241200853 _ta-1906144518 _ws-973912173 _td-211436768 _c-22887652 _os-249893454 _o-1119039191 _to-1727917045 _ff-409630021 _fvn-1977619713 _fs-347291933 _fw-289166179 _ls-1782815796 _p-230374000 _a-1578443335 _b-490095930 _br-1397394445 _bs-958948735 _w-1411108109 _mw-1142583649 _h-611412686 _d-312446553 _jc-642967080 _ai-1864573722 _lh-2067208245 _c-836305799 _b-1331573151 rcx-button--large-square rcx-button--icon-secondary rcx-button--square rcx-button--icon rcx-button"
-            id="react-aria-_r_56_"
+            id="react-aria-_r_4u_"
             label="More"
             title="More"
             type="button"
@@ -1245,7 +1245,7 @@ exports[`call stories renders CallControls SpeakingWhileMuted without crashing 1
               aria-haspopup="true"
               aria-label="Device options"
               class="is_View _f-1069813397 _mh-1241200853 _ta-1906144518 _ws-973912173 _td-211436768 _c-22887652 _os-249893454 _o-1119039191 _to-1727917045 _ff-409630021 _fvn-1977619713 _fs-347291933 _fw-289166179 _ls-1782815796 _p-230374000 _a-1578443335 _b-440972405 _br-1556260923 _bs-1608124823 _w-1411108109 _mw-1142583649 _h-611412686 _d-312446553 _jc-642967080 _ai-1864573722 _lh-2067208245 _c-395139375 _b-777121711 _p-1041908496 _zi-121450460 rcx-split-button__trigger rcx-button--large-square rcx-button--icon-secondary-danger rcx-button--square rcx-button--icon rcx-button rcx-css-1wk08i8"
-              id="react-aria-_r_5f_"
+              id="react-aria-_r_56_"
               label="Device options"
               title="Device settings"
               type="button"
@@ -1283,7 +1283,7 @@ exports[`call stories renders CallControls SpeakingWhileMuted without crashing 1
               aria-haspopup="true"
               aria-label="Camera options"
               class="is_View _f-1069813397 _mh-1241200853 _ta-1906144518 _ws-973912173 _td-211436768 _c-22887652 _os-249893454 _o-1119039191 _to-1727917045 _ff-409630021 _fvn-1977619713 _fs-347291933 _fw-289166179 _ls-1782815796 _p-230374000 _a-1578443335 _b-440972405 _br-1556260923 _bs-1608124823 _w-1411108109 _mw-1142583649 _h-611412686 _d-312446553 _jc-642967080 _ai-1864573722 _lh-2067208245 _c-395139375 _b-777121711 _p-1041908496 _zi-121450460 rcx-split-button__trigger rcx-button--large-square rcx-button--icon-secondary-danger rcx-button--square rcx-button--icon rcx-button rcx-css-1wk08i8"
-              id="react-aria-_r_5m_"
+              id="react-aria-_r_5d_"
               label="Camera options"
               title="Camera"
               type="button"
@@ -1365,7 +1365,7 @@ exports[`call stories renders CallControls SpeakingWhileMuted without crashing 1
             aria-haspopup="true"
             aria-label="More"
             class="is_View _f-1069813397 _mh-1241200853 _ta-1906144518 _ws-973912173 _td-211436768 _c-22887652 _os-249893454 _o-1119039191 _to-1727917045 _ff-409630021 _fvn-1977619713 _fs-347291933 _fw-289166179 _ls-1782815796 _p-230374000 _a-1578443335 _b-490095930 _br-1397394445 _bs-958948735 _w-1411108109 _mw-1142583649 _h-611412686 _d-312446553 _jc-642967080 _ai-1864573722 _lh-2067208245 _c-836305799 _b-1331573151 rcx-button--large-square rcx-button--icon-secondary rcx-button--square rcx-button--icon rcx-button"
-            id="react-aria-_r_62_"
+            id="react-aria-_r_5p_"
             label="More"
             title="More"
             type="button"
@@ -2026,7 +2026,7 @@ exports[`call stories renders CallRaisedHands OneHand without crashing 1`] = `
           aria-haspopup="true"
           aria-label="Alan Turing raised their hand"
           class="rcx-box rcx-box--full rcx-css-1gu65r7 rcx-css-klqn1p"
-          id="react-aria-_r_6s_"
+          id="react-aria-_r_6b_"
           title="Alan Turing raised their hand"
           type="button"
         >
@@ -2062,7 +2062,7 @@ exports[`call stories renders CallRaisedHands OwnHandNext without crashing 1`] =
           aria-haspopup="true"
           aria-label="You raised your hand"
           class="rcx-box rcx-box--full rcx-css-1gu65r7 rcx-css-klqn1p"
-          id="react-aria-_r_70_"
+          id="react-aria-_r_6e_"
           title="You raised your hand"
           type="button"
         >
@@ -2104,7 +2104,7 @@ exports[`call stories renders CallRaisedHands Queue without crashing 1`] = `
           aria-haspopup="true"
           aria-label="Alan Turing raised their hand"
           class="rcx-box rcx-box--full rcx-css-1gu65r7 rcx-css-klqn1p"
-          id="react-aria-_r_74_"
+          id="react-aria-_r_6h_"
           title="Alan Turing raised their hand"
           type="button"
         >
@@ -2144,12 +2144,12 @@ exports[`call stories renders CallRaisedHands QueueOpen without crashing 1`] = `
         style="background-color: rgb(31, 35, 41); border-radius: 4px; display: flex; flex-direction: column; height: auto; overflow: hidden;"
       >
         <button
-          aria-controls="react-aria-_r_79_"
+          aria-controls="react-aria-_r_6l_"
           aria-expanded="true"
           aria-haspopup="true"
           aria-label="Alan Turing raised their hand"
           class="rcx-box rcx-box--full rcx-css-1gu65r7 rcx-css-klqn1p"
-          id="react-aria-_r_78_"
+          id="react-aria-_r_6k_"
           title="Alan Turing raised their hand"
           type="button"
         >
@@ -2190,7 +2190,7 @@ exports[`call stories renders CallRaisedHands QueueOpen without crashing 1`] = `
     >
       <button
         aria-label="Dismiss"
-        id="react-aria-_r_7c_"
+        id="react-aria-_r_6n_"
         style="width: 1px; height: 1px;"
         tabindex="-1"
       />
@@ -2204,8 +2204,8 @@ exports[`call stories renders CallRaisedHands QueueOpen without crashing 1`] = `
         class="rcx-box rcx-box--full rcx-css-xvdgy9"
       >
         <div
-          aria-labelledby="react-aria-_r_78_"
-          id="react-aria-_r_79_"
+          aria-labelledby="react-aria-_r_6k_"
+          id="react-aria-_r_6l_"
           role="menu"
           tabindex="0"
         >
@@ -2217,21 +2217,21 @@ exports[`call stories renders CallRaisedHands QueueOpen without crashing 1`] = `
             >
               <div
                 class="is_Text _d-1987097250 _o-1119039191 _f-649097281 _mw-842770087 _m-2017216831 _ws-973912173 _ww-408434756 _to-1727917045 _c-954359819 _ff-4295677 _fs-1279428672 _fw-702336919 _fs-1723449324 _lh-1970121045 _ls-763972879 _fvn-882811879 rcx-item-group-title"
-                id="react-aria-_r_7f_"
+                id="react-aria-_r_6p_"
                 role="presentation"
               >
                 Raised hands
               </div>
             </div>
             <div
-              aria-labelledby="react-aria-_r_7f_"
+              aria-labelledby="react-aria-_r_6p_"
               role="group"
             >
               <label
-                aria-labelledby="_r_7q_"
+                aria-labelledby="_r_74_"
                 class="is_Text _p-1021290656 _d-341075704 _f-1069814357 _ai-121763387 _mw-842770087 _mh-1241200853 _m-2017216831 _p-788525541 _ls-1251843592 _ws-311910413 _ww-408434756 _br-1718100884 _ff-409630021 _ta-507911453 _td-1861836084 _c-727749181 _fs-347291933 _lh-1925956564 _ls-1782815796 _fw-289165218 _g-47172425 _b-944971190 _c-1830342115 _os-1831542405 t_group_rcx-item rcx-item rcx-item--inset-md rcx-item--clickable rcx-item--focus-managed"
                 data-key="alan"
-                id="react-aria-_r_7m_"
+                id="react-aria-_r_70_"
                 role="menuitem"
                 tabindex="-1"
               >
@@ -2240,7 +2240,7 @@ exports[`call stories renders CallRaisedHands QueueOpen without crashing 1`] = `
                 >
                   <div
                     class="is_Text _o-1119039191 _f-649097281 _mw-842770087 _ws-973912173 _ww-408434756 _to-1727917045 _d-1987097250 rcx-item__title"
-                    id="_r_7q_"
+                    id="_r_74_"
                   >
                     <div
                       class="rcx-box rcx-box--full rcx-css-14a3adr"
@@ -2262,10 +2262,10 @@ exports[`call stories renders CallRaisedHands QueueOpen without crashing 1`] = `
                 </div>
               </label>
               <label
-                aria-labelledby="_r_83_"
+                aria-labelledby="_r_7d_"
                 class="is_Text _p-1021290656 _d-341075704 _f-1069814357 _ai-121763387 _mw-842770087 _mh-1241200853 _m-2017216831 _p-788525541 _ls-1251843592 _ws-311910413 _ww-408434756 _br-1718100884 _ff-409630021 _ta-507911453 _td-1861836084 _c-727749181 _fs-347291933 _lh-1925956564 _ls-1782815796 _fw-289165218 _g-47172425 _b-944971190 _c-1830342115 _os-1831542405 t_group_rcx-item rcx-item rcx-item--inset-md rcx-item--clickable rcx-item--focus-managed"
                 data-key="ada"
-                id="react-aria-_r_7v_"
+                id="react-aria-_r_79_"
                 role="menuitem"
                 tabindex="-1"
               >
@@ -2274,7 +2274,7 @@ exports[`call stories renders CallRaisedHands QueueOpen without crashing 1`] = `
                 >
                   <div
                     class="is_Text _o-1119039191 _f-649097281 _mw-842770087 _ws-973912173 _ww-408434756 _to-1727917045 _d-1987097250 rcx-item__title"
-                    id="_r_83_"
+                    id="_r_7d_"
                   >
                     <div
                       class="rcx-box rcx-box--full rcx-css-14a3adr"
@@ -2296,10 +2296,10 @@ exports[`call stories renders CallRaisedHands QueueOpen without crashing 1`] = `
                 </div>
               </label>
               <label
-                aria-labelledby="_r_8c_"
+                aria-labelledby="_r_7m_"
                 class="is_Text _p-1021290656 _d-341075704 _f-1069814357 _ai-121763387 _mw-842770087 _mh-1241200853 _m-2017216831 _p-788525541 _ls-1251843592 _ws-311910413 _ww-408434756 _br-1718100884 _ff-409630021 _ta-507911453 _td-1861836084 _c-727749181 _fs-347291933 _lh-1925956564 _ls-1782815796 _fw-289165218 _g-47172425 _b-944971190 _c-1830342115 _os-1831542405 t_group_rcx-item rcx-item rcx-item--inset-md rcx-item--clickable rcx-item--focus-managed"
                 data-key="grace"
-                id="react-aria-_r_88_"
+                id="react-aria-_r_7i_"
                 role="menuitem"
                 tabindex="-1"
               >
@@ -2308,7 +2308,7 @@ exports[`call stories renders CallRaisedHands QueueOpen without crashing 1`] = `
                 >
                   <div
                     class="is_Text _o-1119039191 _f-649097281 _mw-842770087 _ws-973912173 _ww-408434756 _to-1727917045 _d-1987097250 rcx-item__title"
-                    id="_r_8c_"
+                    id="_r_7m_"
                   >
                     <div
                       class="rcx-box rcx-box--full rcx-css-14a3adr"
@@ -2342,7 +2342,7 @@ exports[`call stories renders CallRaisedHands QueueOpen without crashing 1`] = `
     >
       <button
         aria-label="Dismiss"
-        id="react-aria-_r_8e_"
+        id="react-aria-_r_7o_"
         style="width: 1px; height: 1px;"
         tabindex="-1"
       />
@@ -3808,7 +3808,7 @@ exports[`call stories renders CameraPicker CameraOff without crashing 1`] = `
           aria-haspopup="true"
           aria-label="Camera options"
           class="is_View _f-1069813397 _mh-1241200853 _ta-1906144518 _ws-973912173 _td-211436768 _c-22887652 _os-249893454 _o-1119039191 _to-1727917045 _ff-409630021 _fvn-1977619713 _fs-347291933 _fw-289166179 _ls-1782815796 _p-230374000 _a-1578443335 _b-375831307 _br-1397394445 _bs-1608124823 _w-1411108109 _mw-1142583649 _h-611412686 _d-312446553 _jc-642967080 _ai-1864573722 _lh-2067208245 _c-734907076 _b-515744151 rcx-split-button__trigger rcx-button--large-square rcx-button--icon-secondary-danger rcx-button--square rcx-button--icon rcx-button rcx-css-1wk08i8"
-          id="react-aria-_r_a3_"
+          id="react-aria-_r_8j_"
           label="Camera options"
           title="Camera"
           type="button"
@@ -3840,7 +3840,7 @@ exports[`call stories renders CameraPicker CameraOn without crashing 1`] = `
           aria-haspopup="true"
           aria-label="Camera options"
           class="is_View _f-1069813397 _mh-1241200853 _ta-1906144518 _ws-973912173 _td-211436768 _c-22887652 _os-249893454 _o-1119039191 _to-1727917045 _ff-409630021 _fvn-1977619713 _fs-347291933 _fw-289166179 _ls-1782815796 _p-230374000 _a-1578443335 _b-490095930 _br-1397394445 _bs-958948735 _w-1411108109 _mw-1142583649 _h-611412686 _d-312446553 _jc-642967080 _ai-1864573722 _lh-2067208245 _c-836305799 _b-1331573151 rcx-split-button__trigger rcx-button--large-square rcx-button--icon-secondary rcx-button--square rcx-button--icon rcx-button rcx-css-1wk08i8"
-          id="react-aria-_r_a8_"
+          id="react-aria-_r_8n_"
           label="Camera options"
           title="Camera"
           type="button"
@@ -3900,12 +3900,12 @@ exports[`call stories renders CameraPicker Open without crashing 1`] = `
         style="background-color: rgb(31, 35, 41); border-radius: 4px; display: flex; flex-direction: column; height: auto; overflow: hidden;"
       >
         <button
-          aria-controls="react-aria-_r_ah_"
+          aria-controls="react-aria-_r_8u_"
           aria-expanded="true"
           aria-haspopup="true"
           aria-label="Camera options"
           class="is_View _f-1069813397 _mh-1241200853 _ta-1906144518 _ws-973912173 _td-211436768 _c-22887652 _os-249893454 _o-1119039191 _to-1727917045 _ff-409630021 _fvn-1977619713 _fs-347291933 _fw-289166179 _ls-1782815796 _p-230374000 _a-1578443335 _b-490095930 _br-1397394445 _bs-958948735 _w-1411108109 _mw-1142583649 _h-611412686 _d-312446553 _jc-642967080 _ai-1864573722 _lh-2067208245 _c-836305799 _b-1331573151 rcx-split-button__trigger rcx-button--icon-pressed rcx-button--large-square rcx-button--icon-secondary-pressed rcx-button--icon-secondary rcx-button--square rcx-button--icon rcx-button rcx-css-1wk08i8"
-          id="react-aria-_r_ag_"
+          id="react-aria-_r_8t_"
           label="Camera options"
           title="Camera"
           type="button"
@@ -3936,7 +3936,7 @@ exports[`call stories renders CameraPicker Open without crashing 1`] = `
     >
       <button
         aria-label="Dismiss"
-        id="react-aria-_r_al_"
+        id="react-aria-_r_91_"
         style="width: 1px; height: 1px;"
         tabindex="-1"
       />
@@ -3950,8 +3950,8 @@ exports[`call stories renders CameraPicker Open without crashing 1`] = `
         class="rcx-box rcx-box--full rcx-css-xvdgy9"
       >
         <div
-          aria-labelledby="react-aria-_r_ag_"
-          id="react-aria-_r_ah_"
+          aria-labelledby="react-aria-_r_8t_"
+          id="react-aria-_r_8u_"
           role="menu"
           tabindex="0"
         >
@@ -3963,22 +3963,22 @@ exports[`call stories renders CameraPicker Open without crashing 1`] = `
             >
               <div
                 class="is_Text _d-1987097250 _o-1119039191 _f-649097281 _mw-842770087 _m-2017216831 _ws-973912173 _ww-408434756 _to-1727917045 _c-954359819 _ff-4295677 _fs-1279428672 _fw-702336919 _fs-1723449324 _lh-1970121045 _ls-763972879 _fvn-882811879 rcx-item-group-title"
-                id="react-aria-_r_ao_"
+                id="react-aria-_r_93_"
                 role="presentation"
               >
                 Camera
               </div>
             </div>
             <div
-              aria-labelledby="react-aria-_r_ao_"
+              aria-labelledby="react-aria-_r_93_"
               role="group"
             >
               <label
                 aria-checked="false"
-                aria-labelledby="_r_b3_"
+                aria-labelledby="_r_9e_"
                 class="is_Text _p-1021290656 _d-341075704 _f-1069814357 _ai-121763387 _mw-842770087 _mh-1241200853 _m-2017216831 _p-788525541 _ls-1251843592 _ws-311910413 _ww-408434756 _br-1718100884 _ff-409630021 _ta-507911453 _td-1861836084 _c-727749181 _fs-347291933 _lh-1925956564 _ls-1782815796 _fw-289165218 _g-47172425 _b-944971190 _c-1830342115 _os-1831542405 t_group_rcx-item rcx-item rcx-item--inset-md rcx-item--clickable rcx-item--focus-managed"
                 data-key="facetime-videoinput"
-                id="react-aria-_r_av_"
+                id="react-aria-_r_9a_"
                 role="menuitemradio"
                 tabindex="-1"
               >
@@ -3987,7 +3987,7 @@ exports[`call stories renders CameraPicker Open without crashing 1`] = `
                 >
                   <div
                     class="is_Text _o-1119039191 _f-649097281 _mw-842770087 _ws-973912173 _ww-408434756 _to-1727917045 _d-1987097250 rcx-item__title"
-                    id="_r_b3_"
+                    id="_r_9e_"
                   >
                     <div
                       class="rcx-box rcx-box--full rcx-css-f39bd5"
@@ -4025,10 +4025,10 @@ exports[`call stories renders CameraPicker Open without crashing 1`] = `
               </label>
               <label
                 aria-checked="false"
-                aria-labelledby="_r_bh_"
+                aria-labelledby="_r_9s_"
                 class="is_Text _p-1021290656 _d-341075704 _f-1069814357 _ai-121763387 _mw-842770087 _mh-1241200853 _m-2017216831 _p-788525541 _ls-1251843592 _ws-311910413 _ww-408434756 _br-1718100884 _ff-409630021 _ta-507911453 _td-1861836084 _c-727749181 _fs-347291933 _lh-1925956564 _ls-1782815796 _fw-289165218 _g-47172425 _b-944971190 _c-1830342115 _os-1831542405 t_group_rcx-item rcx-item rcx-item--inset-md rcx-item--clickable rcx-item--focus-managed"
                 data-key="brio-videoinput"
-                id="react-aria-_r_bd_"
+                id="react-aria-_r_9o_"
                 role="menuitemradio"
                 tabindex="-1"
               >
@@ -4037,7 +4037,7 @@ exports[`call stories renders CameraPicker Open without crashing 1`] = `
                 >
                   <div
                     class="is_Text _o-1119039191 _f-649097281 _mw-842770087 _ws-973912173 _ww-408434756 _to-1727917045 _d-1987097250 rcx-item__title"
-                    id="_r_bh_"
+                    id="_r_9s_"
                   >
                     <div
                       class="rcx-box rcx-box--full rcx-css-f39bd5"
@@ -4091,22 +4091,22 @@ exports[`call stories renders CameraPicker Open without crashing 1`] = `
             >
               <div
                 class="is_Text _d-1987097250 _o-1119039191 _f-649097281 _mw-842770087 _m-2017216831 _ws-973912173 _ww-408434756 _to-1727917045 _c-954359819 _ff-4295677 _fs-1279428672 _fw-702336919 _fs-1723449324 _lh-1970121045 _ls-763972879 _fvn-882811879 rcx-item-group-title"
-                id="react-aria-_r_bo_"
+                id="react-aria-_r_a3_"
                 role="presentation"
               >
                 Send resolution (maximum)
               </div>
             </div>
             <div
-              aria-labelledby="react-aria-_r_bo_"
+              aria-labelledby="react-aria-_r_a3_"
               role="group"
             >
               <label
                 aria-checked="false"
-                aria-labelledby="_r_c5_"
+                aria-labelledby="_r_ag_"
                 class="is_Text _p-1021290656 _d-341075704 _f-1069814357 _ai-121763387 _mw-842770087 _mh-1241200853 _m-2017216831 _p-788525541 _ls-1251843592 _ws-311910413 _ww-408434756 _br-1718100884 _ff-409630021 _ta-507911453 _td-1861836084 _c-727749181 _fs-347291933 _lh-1925956564 _ls-1782815796 _fw-289165218 _g-47172425 _b-944971190 _c-1830342115 _os-1831542405 t_group_rcx-item rcx-item rcx-item--inset-md rcx-item--clickable rcx-item--focus-managed"
                 data-key="choice:0:auto"
-                id="react-aria-_r_c1_"
+                id="react-aria-_r_ac_"
                 role="menuitemradio"
                 tabindex="-1"
               >
@@ -4115,7 +4115,7 @@ exports[`call stories renders CameraPicker Open without crashing 1`] = `
                 >
                   <div
                     class="is_Text _o-1119039191 _f-649097281 _mw-842770087 _ws-973912173 _ww-408434756 _to-1727917045 _d-1987097250 rcx-item__title"
-                    id="_r_c5_"
+                    id="_r_ag_"
                   >
                     <div
                       class="rcx-box rcx-box--full rcx-css-f39bd5"
@@ -4158,10 +4158,10 @@ exports[`call stories renders CameraPicker Open without crashing 1`] = `
               </label>
               <label
                 aria-checked="false"
-                aria-labelledby="_r_cj_"
+                aria-labelledby="_r_au_"
                 class="is_Text _p-1021290656 _d-341075704 _f-1069814357 _ai-121763387 _mw-842770087 _mh-1241200853 _m-2017216831 _p-788525541 _ls-1251843592 _ws-311910413 _ww-408434756 _br-1718100884 _ff-409630021 _ta-507911453 _td-1861836084 _c-727749181 _fs-347291933 _lh-1925956564 _ls-1782815796 _fw-289165218 _g-47172425 _b-944971190 _c-1830342115 _os-1831542405 t_group_rcx-item rcx-item rcx-item--inset-md rcx-item--clickable rcx-item--focus-managed"
                 data-key="choice:0:h1080"
-                id="react-aria-_r_cf_"
+                id="react-aria-_r_aq_"
                 role="menuitemradio"
                 tabindex="-1"
               >
@@ -4170,7 +4170,7 @@ exports[`call stories renders CameraPicker Open without crashing 1`] = `
                 >
                   <div
                     class="is_Text _o-1119039191 _f-649097281 _mw-842770087 _ws-973912173 _ww-408434756 _to-1727917045 _d-1987097250 rcx-item__title"
-                    id="_r_cj_"
+                    id="_r_au_"
                   >
                     <div
                       class="rcx-box rcx-box--full rcx-css-f39bd5"
@@ -4207,10 +4207,10 @@ exports[`call stories renders CameraPicker Open without crashing 1`] = `
               </label>
               <label
                 aria-checked="false"
-                aria-labelledby="_r_d1_"
+                aria-labelledby="_r_bc_"
                 class="is_Text _p-1021290656 _d-341075704 _f-1069814357 _ai-121763387 _mw-842770087 _mh-1241200853 _m-2017216831 _p-788525541 _ls-1251843592 _ws-311910413 _ww-408434756 _br-1718100884 _ff-409630021 _ta-507911453 _td-1861836084 _c-727749181 _fs-347291933 _lh-1925956564 _ls-1782815796 _fw-289165218 _g-47172425 _b-944971190 _c-1830342115 _os-1831542405 t_group_rcx-item rcx-item rcx-item--inset-md rcx-item--clickable rcx-item--focus-managed"
                 data-key="choice:0:h720"
-                id="react-aria-_r_ct_"
+                id="react-aria-_r_b8_"
                 role="menuitemradio"
                 tabindex="-1"
               >
@@ -4219,7 +4219,7 @@ exports[`call stories renders CameraPicker Open without crashing 1`] = `
                 >
                   <div
                     class="is_Text _o-1119039191 _f-649097281 _mw-842770087 _ws-973912173 _ww-408434756 _to-1727917045 _d-1987097250 rcx-item__title"
-                    id="_r_d1_"
+                    id="_r_bc_"
                   >
                     <div
                       class="rcx-box rcx-box--full rcx-css-f39bd5"
@@ -4256,10 +4256,10 @@ exports[`call stories renders CameraPicker Open without crashing 1`] = `
               </label>
               <label
                 aria-checked="false"
-                aria-labelledby="_r_df_"
+                aria-labelledby="_r_bq_"
                 class="is_Text _p-1021290656 _d-341075704 _f-1069814357 _ai-121763387 _mw-842770087 _mh-1241200853 _m-2017216831 _p-788525541 _ls-1251843592 _ws-311910413 _ww-408434756 _br-1718100884 _ff-409630021 _ta-507911453 _td-1861836084 _c-727749181 _fs-347291933 _lh-1925956564 _ls-1782815796 _fw-289165218 _g-47172425 _b-944971190 _c-1830342115 _os-1831542405 t_group_rcx-item rcx-item rcx-item--inset-md rcx-item--clickable rcx-item--focus-managed"
                 data-key="choice:0:h360"
-                id="react-aria-_r_db_"
+                id="react-aria-_r_bm_"
                 role="menuitemradio"
                 tabindex="-1"
               >
@@ -4268,7 +4268,7 @@ exports[`call stories renders CameraPicker Open without crashing 1`] = `
                 >
                   <div
                     class="is_Text _o-1119039191 _f-649097281 _mw-842770087 _ws-973912173 _ww-408434756 _to-1727917045 _d-1987097250 rcx-item__title"
-                    id="_r_df_"
+                    id="_r_bq_"
                   >
                     <div
                       class="rcx-box rcx-box--full rcx-css-f39bd5"
@@ -4305,10 +4305,10 @@ exports[`call stories renders CameraPicker Open without crashing 1`] = `
               </label>
               <label
                 aria-checked="false"
-                aria-labelledby="_r_dt_"
+                aria-labelledby="_r_c8_"
                 class="is_Text _p-1021290656 _d-341075704 _f-1069814357 _ai-121763387 _mw-842770087 _mh-1241200853 _m-2017216831 _p-788525541 _ls-1251843592 _ws-311910413 _ww-408434756 _br-1718100884 _ff-409630021 _ta-507911453 _td-1861836084 _c-727749181 _fs-347291933 _lh-1925956564 _ls-1782815796 _fw-289165218 _g-47172425 _b-944971190 _c-1830342115 _os-1831542405 t_group_rcx-item rcx-item rcx-item--inset-md rcx-item--clickable rcx-item--focus-managed"
                 data-key="choice:0:h180"
-                id="react-aria-_r_dp_"
+                id="react-aria-_r_c4_"
                 role="menuitemradio"
                 tabindex="-1"
               >
@@ -4317,7 +4317,7 @@ exports[`call stories renders CameraPicker Open without crashing 1`] = `
                 >
                   <div
                     class="is_Text _o-1119039191 _f-649097281 _mw-842770087 _ws-973912173 _ww-408434756 _to-1727917045 _d-1987097250 rcx-item__title"
-                    id="_r_dt_"
+                    id="_r_c8_"
                   >
                     <div
                       class="rcx-box rcx-box--full rcx-css-f39bd5"
@@ -4365,7 +4365,7 @@ exports[`call stories renders CameraPicker Open without crashing 1`] = `
     >
       <button
         aria-label="Dismiss"
-        id="react-aria-_r_e4_"
+        id="react-aria-_r_cf_"
         style="width: 1px; height: 1px;"
         tabindex="-1"
       />

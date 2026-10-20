@@ -454,12 +454,12 @@ exports[`renders InvitedUser without crashing 1`] = `
                     >
                       <dt
                         class="rcx-box rcx-box--full rcx-css-clshan"
-                        id="_r_t_"
+                        id="_r_k_"
                       >
                         Username
                       </dt>
                       <dd
-                        aria-labelledby="_r_t_"
+                        aria-labelledby="_r_k_"
                         class="rcx-box rcx-box--full rcx-css-16e3mll rcx-css-1uarkle"
                       >
                         <div
@@ -819,12 +819,12 @@ exports[`renders WithABACAttributes without crashing 1`] = `
                     >
                       <dt
                         class="rcx-box rcx-box--full rcx-css-clshan"
-                        id="_r_1p_"
+                        id="_r_17_"
                       >
                         Username
                       </dt>
                       <dd
-                        aria-labelledby="_r_1p_"
+                        aria-labelledby="_r_17_"
                         class="rcx-box rcx-box--full rcx-css-16e3mll rcx-css-1uarkle"
                       >
                         <div
@@ -1230,12 +1230,12 @@ exports[`renders WithVoiceCallExtension without crashing 1`] = `
                     >
                       <dt
                         class="rcx-box rcx-box--full rcx-css-clshan"
-                        id="_r_33_"
+                        id="_r_23_"
                       >
                         Username
                       </dt>
                       <dd
-                        aria-labelledby="_r_33_"
+                        aria-labelledby="_r_23_"
                         class="rcx-box rcx-box--full rcx-css-16e3mll rcx-css-1uarkle"
                       >
                         <div
