@@ -70,7 +70,7 @@ const ContactsTab = ({ tab, onChangeTab }: ContactsTabProps) => {
 
 	useEffect(() => {
 		if (isPastLastPage) {
-			setCurrent(lastPageOffset);
+			setCurrent((offset) => Math.min(offset, lastPageOffset));
 		}
 	}, [isPastLastPage, lastPageOffset, setCurrent]);
 
