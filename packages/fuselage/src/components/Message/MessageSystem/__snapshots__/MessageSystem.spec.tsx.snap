@@ -12,7 +12,12 @@ exports[`renders Default without crashing 1`] = `
       >
         <div
           class="is_Text _d-341075704 _ws-311910413 _ww-408434756 _bs-652081535 _jc-2087003909 _ai-121763387 _f-7259782 rcx-message-divider__bar"
-        />
+        >
+          <span
+            aria-hidden="true"
+            class="is_View _f-7259782 _h-1921779784 _b-849286363"
+          />
+        </div>
         <div
           class="is_Text _d-1987097250 _ws-311910413 _ww-408434756 _bs-652081535 _m-1859224945 _p-445762330 _b-558166684 rcx-message-divider__wrapper"
         >
@@ -21,7 +26,12 @@ exports[`renders Default without crashing 1`] = `
          
         <div
           class="is_Text _d-341075704 _ws-311910413 _ww-408434756 _bs-652081535 _jc-2087003909 _ai-121763387 _f-7259782 rcx-message-divider__bar"
-        />
+        >
+          <span
+            aria-hidden="true"
+            class="is_View _f-7259782 _h-1921779784 _b-849286363"
+          />
+        </div>
       </div>
       <div
         class="is_Text _d-341075704 _f-1069814357 _ai-994770828 _ff-409630021 _fv-607544992 _fs-2088488067 _lh-1306743983 _ls-1782815796 _fw-289165218 _o-1119039191 _to-1727917045 _ws-973912173 _m-211896778 _p-1015121497 _c-1063453128 _b-1182826059 _br-1105657738 _ow-1993548942 _bs-1333539716 rcx-message-system"
@@ -83,7 +93,12 @@ exports[`renders Default without crashing 1`] = `
       >
         <div
           class="is_Text _d-341075704 _ws-311910413 _ww-408434756 _bs-652081535 _jc-2087003909 _ai-121763387 _f-7259782 rcx-message-divider__bar"
-        />
+        >
+          <span
+            aria-hidden="true"
+            class="is_View _f-7259782 _h-1921779784 _b-1983843042"
+          />
+        </div>
         <div
           class="is_Text _d-1987097250 _ws-311910413 _ww-408434756 _bs-652081535 _m-1859224945 _p-445762330 _b-558166684 rcx-message-divider__wrapper"
         >
@@ -98,6 +113,10 @@ exports[`renders Default without crashing 1`] = `
           >
             Unread
           </div>
+          <span
+            aria-hidden="true"
+            class="is_View _f-7259782 _h-1921779784 _b-1983843042"
+          />
         </div>
       </div>
       <div
@@ -269,7 +288,7 @@ exports[`renders Default without crashing 1`] = `
         </div>
       </div>
       <div
-        class="is_Text _d-341075704 _f-1069814357 _ai-994770828 _ff-409630021 _fv-607544992 _fs-2088488067 _lh-1306743983 _ls-1782815796 _fw-289165218 _o-1119039191 _to-1727917045 _ws-973912173 _m-211896778 _p-1015121497 _c-1063453128 _b-1182826059 _br-1105657738 _ow-1993548942 _bs-1333539716 rcx-message-system rcx-message-system--selected"
+        class="is_Text _d-341075704 _f-1069814357 _ai-994770828 _ff-409630021 _fv-607544992 _fs-2088488067 _lh-1306743983 _ls-1782815796 _fw-289165218 _o-1119039191 _to-1727917045 _ws-973912173 _m-211896778 _p-1015121497 _c-1063453128 _b-1182826059 _br-1105657738 _ow-1993548942 _bs-1333539716 _b-57526250 rcx-message-system rcx-message-system--selected"
       >
         <div
           class="is_View _ff-409630021 _fv-607544992 _f-866739262 _mw-842769126 _m-1515180012 _ai-845606260 _w-799253879 rcx-message-container rcx-message-container--left"
@@ -366,7 +385,7 @@ exports[`renders WithClickableAuthorName without crashing 1`] = `
             class="is_View _f-1069814357 _ai-121763387 _mw-354604370 _mh-1241200853 rcx-message-system__block"
           >
             <span
-              class="is_Text _ff-409630021 _fv-607544992 _o-1119039191 _to-1727917045 _ws-973912173 _b-1182826059 _br-1105657738 _ow-1993548942 _bs-1333539716 _f-1246374077 _m-211896778 _c-1866435217 rcx-message-header__name-container"
+              class="is_Text _ff-409630021 _fv-607544992 _o-1119039191 _to-1727917045 _ws-973912173 _b-1182826059 _br-1105657738 _ow-1993548942 _bs-1333539716 _f-1246374077 _m-211896778 _c-1866435217 _c-1830342115 _td-1213466161 rcx-message-header__name-container"
               role="button"
               tabindex="0"
             >
