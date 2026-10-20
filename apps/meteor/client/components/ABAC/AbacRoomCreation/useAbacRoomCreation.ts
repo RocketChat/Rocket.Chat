@@ -14,12 +14,22 @@ export type AbacRoomCreation = {
 
 type AssignableAttributes = Serialized<OperationResult<'GET', '/v1/abac/attributes.listAssignable'>>;
 
-export const useAssignableAttributes = <TData = AssignableAttributes>(enabled: boolean, select?: (data: AssignableAttributes) => TData) => {
+type UseAssignableAttributesOptions<TData> = {
+	enabled?: boolean;
+	select?: (data: AssignableAttributes) => TData;
+	rid?: string;
+};
+
+export const useAssignableAttributes = <TData = AssignableAttributes>({
+	enabled = true,
+	select,
+	rid,
+}: UseAssignableAttributesOptions<TData> = {}) => {
 	const getAssignableAttributes = useEndpoint('GET', '/v1/abac/attributes.listAssignable');
 
 	return useQuery({
-		queryKey: ABACQueryKeys.assignableAttributes(),
-		queryFn: () => getAssignableAttributes({}),
+		queryKey: ABACQueryKeys.assignableAttributes(rid),
+		queryFn: () => getAssignableAttributes(rid ? { rid } : {}),
 		enabled,
 		select,
 		staleTime: 15_000,
@@ -35,10 +45,10 @@ export const useAbacRoomCreation = (): { isLoading: boolean; abac?: AbacRoomCrea
 	const enforceAllRooms = useSetting('ABAC_Enforce_All_Rooms', false);
 	const canCreateManaged = usePermission('create-abac-managed-room');
 	const { data: hasAbacModule = false, isLoading: isLicenseLoading } = useHasLicenseModule('abac');
-	const { data: requiredAttributes = [], isPending: isRequiredAttributesPending } = useAssignableAttributes(
-		abacEnabled && hasAbacModule && canCreateManaged,
-		(data) => data.requiredKeys,
-	);
+	const { data: requiredAttributes = [], isPending: isRequiredAttributesPending } = useAssignableAttributes({
+		enabled: abacEnabled && hasAbacModule && canCreateManaged,
+		select: (data) => data.requiredKeys,
+	});
 
 	if (!abacEnabled) {
 		return { isLoading: false };
