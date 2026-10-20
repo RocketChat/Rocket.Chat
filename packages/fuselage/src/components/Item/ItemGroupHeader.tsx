@@ -1,20 +1,23 @@
 import { styled, Text, type GetProps } from '@tamagui/web';
 import type { AllHTMLAttributes, ElementType, RefAttributes } from 'react';
 
-import { itemColorFontSecondary, itemRowStyle, toRender, textStyle } from './itemStyles';
+import { ItemGroupHeaderContext, ItemHighlightContext, ItemParentContext, type ItemParent } from './ItemContext';
+import { itemColorFontSecondary, itemColorSurfaceHover, itemRowStyle, toRender, textStyle } from './itemStyles';
 import type { ItemInset } from './types';
+import { useIdRegistry } from './useIdRegistry';
 import { surfaceColors } from '../../Theme';
 import { cx, cxx } from '../../helpers/composeClassNames';
 import { toCSSValue } from '../../helpers/toCSSValue';
-import { size } from '../../styleTokens';
+import { size, spacing } from '../../styleTokens';
 import { withFuselageProvider } from '../FuselageProvider/FuselageProvider';
 
-// Hover and focus follow the title through `:has`, so they stay in SCSS.
 const ItemGroupHeaderFrame = styled(Text, {
 	...itemRowStyle,
+	group: 'rcx-item-group-header' as never,
 	minHeight: size('x28'),
 	color: itemColorFontSecondary,
 	...textStyle('c2'),
+	gap: spacing('x4'),
 
 	variants: {
 		sticky: {
@@ -22,11 +25,17 @@ const ItemGroupHeaderFrame = styled(Text, {
 				position: 'sticky',
 				zIndex: 2,
 				top: 0,
-				backgroundColor: toCSSValue('--rcx-item-group-header-color-surface', surfaceColors['surface-light']),
+				backgroundColor: { default: toCSSValue('--rcx-item-group-header-color-surface', surfaceColors['surface-light']) },
 			},
+		},
+		// A button title makes the whole header a target
+		interactive: {
+			true: { backgroundColor: { hover: itemColorSurfaceHover } },
 		},
 	} as const,
 });
+
+const headerParent: ItemParent = { kind: 'header', gap: 'x4' };
 
 export type ItemGroupHeaderProps = {
 	/**
@@ -49,19 +58,30 @@ export type ItemGroupHeaderProps = {
 /**
  * The label row of a group, such as Favorites, Recent or Moderators. It holds an `ItemGroupTitle` and optional trailing content.
  */
-const ItemGroupHeader = ({ is: Tag = 'div', inset = 'none', sticky, className, ...props }: ItemGroupHeaderProps) => (
-	<ItemGroupHeaderFrame
-		{...(props as GetProps<typeof ItemGroupHeaderFrame>)}
-		render={toRender(Tag)}
-		sticky={!!sticky}
-		className={cx(
-			cxx('rcx-item-group-header')({
-				[`inset-${inset}`]: inset !== 'none',
-				sticky: !!sticky,
-			}),
-			className,
-		)}
-	/>
-);
+const ItemGroupHeader = ({ is: Tag = 'div', inset = 'none', sticky, className, ...props }: ItemGroupHeaderProps) => {
+	const [buttonTitleIds, registerButtonTitle] = useIdRegistry();
+
+	return (
+		<ItemGroupHeaderContext.Provider value={registerButtonTitle}>
+			<ItemParentContext.Provider value={headerParent}>
+				<ItemHighlightContext.Provider value={undefined}>
+					<ItemGroupHeaderFrame
+						{...(props as GetProps<typeof ItemGroupHeaderFrame>)}
+						render={toRender(Tag)}
+						sticky={!!sticky}
+						interactive={buttonTitleIds.length > 0}
+						className={cx(
+							cxx('rcx-item-group-header')({
+								[`inset-${inset}`]: inset !== 'none',
+								sticky: !!sticky,
+							}),
+							className,
+						)}
+					/>
+				</ItemHighlightContext.Provider>
+			</ItemParentContext.Provider>
+		</ItemGroupHeaderContext.Provider>
+	);
+};
 
 export default withFuselageProvider(ItemGroupHeader);
