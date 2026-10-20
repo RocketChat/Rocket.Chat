@@ -32,9 +32,10 @@ import { addUserToRoom } from '../../lib/rooms/addUserToRoom';
 import { filterDefaultChannelsForUser } from '../../lib/rooms/filterDefaultChannelsForUser';
 import { filterUsersAllowedInRoom } from '../../lib/rooms/filterUsersAllowedInRoom';
 import { getSubscribedRoomsForUserWithDetails } from '../../lib/rooms/getRoomsWithSingleOwner';
+import { assertCanRemoveRoomAbacAttributes, removeRoomAbacAttributes } from '../../lib/rooms/removeRoomAbacAttributes';
 import { removeUserFromRoom } from '../../lib/rooms/removeUserFromRoom';
 import { saveRoomName } from '../../lib/rooms/settings';
-import { saveRoomType } from '../../lib/rooms/settings/saveRoomType';
+import { assertAbacRoomStaysPrivate, saveRoomType } from '../../lib/rooms/settings/saveRoomType';
 import { omitStatusVisibilityConfig } from '../../lib/statusVisibility/redactStatus';
 import { checkUsernameAvailability } from '../../lib/users/checkUsernameAvailability';
 import { settings } from '../../settings';
@@ -67,6 +68,15 @@ export class TeamService extends ServiceClassInternal implements ITeamService {
 		});
 		if (!createdBy) {
 			throw new Error('invalid-user');
+		}
+
+		const convertedRoom = room.id
+			? await Rooms.findOneById<Pick<IRoom, '_id' | 'name' | 'abacAttributes'>>(room.id, {
+					projection: { name: 1, abacAttributes: 1 },
+				})
+			: null;
+		if (convertedRoom) {
+			await assertCanRemoveRoomAbacAttributes(convertedRoom, createdBy);
 		}
 
 		// TODO add validations to `data` and `members`
@@ -139,6 +149,10 @@ export class TeamService extends ServiceClassInternal implements ITeamService {
 
 			await TeamMember.insertMany(membersList.filter(({ userId }) => !skippedIds.has(userId)));
 
+			if (convertedRoom) {
+				await removeRoomAbacAttributes(convertedRoom, createdBy);
+			}
+
 			await Rooms.setTeamMainById(roomId, teamId);
 			await Team.updateMainRoomForTeam(teamId, roomId);
 			teamData.roomId = roomId;
@@ -176,13 +190,23 @@ export class TeamService extends ServiceClassInternal implements ITeamService {
 		}
 
 		const { name, type, updateRoom = true } = updateData;
+		const roomType = type === TeamType.PRIVATE ? 'p' : 'c';
+
+		if (updateRoom && typeof type !== 'undefined') {
+			const room = await Rooms.findOneById<Pick<IRoom, 't' | 'abacAttributes'>>(team.roomId, {
+				projection: { t: 1, abacAttributes: 1 },
+			});
+			if (room) {
+				assertAbacRoomStaysPrivate(room, roomType);
+			}
+		}
 
 		if (updateRoom && name) {
 			await saveRoomName(team.roomId, name, user);
 		}
 
 		if (updateRoom && typeof type !== 'undefined') {
-			await saveRoomType(team.roomId, type === TeamType.PRIVATE ? 'p' : 'c', user);
+			await saveRoomType(team.roomId, roomType, user);
 		}
 
 		await Team.updateNameAndType(teamId, updateData);
@@ -368,6 +392,8 @@ export class TeamService extends ServiceClassInternal implements ITeamService {
 			if (!canSeeRoom) {
 				throw new Error('invalid-room');
 			}
+
+			await assertCanRemoveRoomAbacAttributes(room, user);
 		}
 
 		for await (const room of validRooms) {
@@ -384,6 +410,11 @@ export class TeamService extends ServiceClassInternal implements ITeamService {
 			}
 
 			room.teamId = teamId;
+		}
+
+		for await (const room of validRooms) {
+			await removeRoomAbacAttributes(room, user);
+			delete room.abacAttributes;
 		}
 
 		await Rooms.setTeamByIds(rids, teamId);
