@@ -23,6 +23,7 @@ export const useRoomMembershipPreview = (rid: string, attributes: Record<string,
 	const pageCount = pages?.length ?? 0;
 	const canFetchMore = !!hasNextPage && !isFetching && !isError;
 	const isFilling = !!hasNextPage && !isError && members.length < FILL_MEMBERS && pageCount < FILL_PAGES;
+	const isScrollable = members.length >= FILL_MEMBERS;
 
 	useEffect(() => {
 		if (canFetchMore && isFilling) {
@@ -43,8 +44,7 @@ export const useRoomMembershipPreview = (rid: string, attributes: Record<string,
 		isChecking: isFetchingNextPage || isFilling,
 		isPartial: !isPending && !isError && !!hasNextPage && !isFilling,
 		isExhausted: !isPending && !isError && !hasNextPage,
-		// Virtuoso keeps firing endReached while every row fits on screen, so only a list long enough to scroll loads on its own.
-		onEndReached: () => members.length >= FILL_MEMBERS && loadMore(),
+		onEndReached: () => isScrollable && loadMore(),
 		loadMore,
 		retry: () => void (isFetchNextPageError ? fetchNextPage({ cancelRefetch: false }) : refetch({ cancelRefetch: false })),
 	};
