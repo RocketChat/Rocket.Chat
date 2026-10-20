@@ -1,3 +1,4 @@
+import { css } from '@rocket.chat/css-in-js';
 import { useResizeObserver } from '@rocket.chat/fuselage-hooks';
 import { styled, Text, View, type GetProps, type TamaguiElement } from '@tamagui/web';
 import type { ReactNode, RefObject } from 'react';
@@ -97,6 +98,12 @@ const CalloutContent = styled(Text, {
 	whiteSpace: 'normal',
 	wordWrap: 'normal',
 	...(fontScale('p2') as object),
+
+	variants: {
+		afterTitle: {
+			true: { marginBlockStart: spacing('x4') },
+		},
+	} as const,
 });
 
 const CalloutActions = styled(View, {
@@ -104,6 +111,13 @@ const CalloutActions = styled(View, {
 	flexShrink: 1,
 	minWidth: 'auto',
 	minHeight: 'auto',
+	marginBlockStart: spacing('x12'),
+
+	variants: {
+		large: {
+			true: { marginBlockStart: 0 },
+		},
+	} as const,
 });
 
 /**
@@ -124,13 +138,31 @@ const Callout = ({ type, title, children, icon, actions, ...props }: CalloutProp
 
 	return (
 		<CalloutFrame ref={ref as RefObject<TamaguiElement>} type={type} {...(frameProps as GetProps<typeof CalloutFrame>)}>
-			<Icon className='rcx-callout__icon' name={icon || defaultIcon} size='x20' />
+			<Icon
+				className={[
+					'rcx-callout__icon',
+					type &&
+						css`
+							color: ${calloutColors[type]};
+						`,
+				]}
+				name={icon || defaultIcon}
+				size='x20'
+			/>
 			<CalloutWrapper large={isLarge} className={isLarge ? 'rcx-callout__wrapper rcx-callout__wrapper--large' : 'rcx-callout__wrapper'}>
 				<CalloutWrapperContent className='rcx-callout__wrapper-content'>
 					{title && <CalloutTitle className='rcx-callout__title'>{title}</CalloutTitle>}
-					{children && <CalloutContent className='rcx-callout__content'>{children}</CalloutContent>}
+					{children && (
+						<CalloutContent afterTitle={!!title} className='rcx-callout__content'>
+							{children}
+						</CalloutContent>
+					)}
 				</CalloutWrapperContent>
-				{actions && <CalloutActions className='rcx-callout__actions'>{actions}</CalloutActions>}
+				{actions && (
+					<CalloutActions large={isLarge} className='rcx-callout__actions'>
+						{actions}
+					</CalloutActions>
+				)}
 			</CalloutWrapper>
 		</CalloutFrame>
 	);
