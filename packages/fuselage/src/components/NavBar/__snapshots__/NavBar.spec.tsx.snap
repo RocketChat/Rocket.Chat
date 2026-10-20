@@ -13,7 +13,7 @@ exports[`[NavBar Component] renders Default without crashing 1`] = `
           class="is_View _bs-652081535 _mw-354604370 _mh-1241200853 _f-1069814357 _ai-121763387 rcx-navbar-section"
         >
           <div
-            class="is_View _d-341075704 _f-1923654442 _mw-354604370 _mh-1241200853 _ai-121763387 _g-1051447770 _jc-281162209 rcx-button-group rcx-button-group--align-start rcx-navbar-group"
+            class="is_View _d-341075704 _f-1923654442 _mw-354604370 _mh-1241200853 _jc-152079490 _ai-121763387 _g-1051447770 rcx-button-group rcx-button-group--align-start rcx-navbar-group"
             role="toolbar"
           >
             <button
@@ -81,7 +81,7 @@ exports[`[NavBar Component] renders Default without crashing 1`] = `
             class="is_View _m-1230101273 _b-810495792 _w-225817338 _h-1628964073 rcx-divider rcx-divider--vertical rcx-navbar-divider rcx-css-1ia8agp"
           />
           <div
-            class="is_View _d-341075704 _f-1923654442 _mw-354604370 _mh-1241200853 _ai-121763387 _g-1051447770 _jc-281162209 rcx-button-group rcx-button-group--align-start rcx-navbar-group"
+            class="is_View _d-341075704 _f-1923654442 _mw-354604370 _mh-1241200853 _jc-152079490 _ai-121763387 _g-1051447770 rcx-button-group rcx-button-group--align-start rcx-navbar-group"
             role="toolbar"
           >
             <button
@@ -89,7 +89,7 @@ exports[`[NavBar Component] renders Default without crashing 1`] = `
               aria-haspopup="true"
               aria-label="sort"
               class="is_View _f-1069813397 _mh-1241200853 _ta-1906144518 _ws-973912173 _td-211436768 _c-22887652 _os-249893454 _o-1119039191 _to-1727917045 _ff-409630021 _fvn-1977619713 _fs-347291933 _fw-289166179 _ls-1782815796 _p-230374000 _a-1578443335 _b-1628331993 _br-1397394445 _bs-1225725885 _w-1682139955 _mw-1947816287 _h-1633581678 _d-312446553 _jc-642967080 _ai-1864573722 _lh-2067208245 _c-1139941473 _b-1242743842 rcx-button--small-square rcx-button--square rcx-button--icon rcx-button rcx-navbar-item"
-              id="react-aria-_r_g_"
+              id="react-aria-_r_f_"
               title="sort"
               type="button"
             >
@@ -117,7 +117,7 @@ exports[`[NavBar Component] renders Default without crashing 1`] = `
               aria-haspopup="true"
               aria-label="create new"
               class="is_View _f-1069813397 _mh-1241200853 _ta-1906144518 _ws-973912173 _td-211436768 _c-22887652 _os-249893454 _o-1119039191 _to-1727917045 _ff-409630021 _fvn-1977619713 _fs-347291933 _fw-289166179 _ls-1782815796 _p-230374000 _a-1578443335 _b-1628331993 _br-1397394445 _bs-1225725885 _w-1682139955 _mw-1947816287 _h-1633581678 _d-312446553 _jc-642967080 _ai-1864573722 _lh-2067208245 _c-1139941473 _b-1242743842 rcx-button--small-square rcx-button--square rcx-button--icon rcx-button"
-              id="react-aria-_r_m_"
+              id="react-aria-_r_l_"
               title="create new"
               type="button"
             >
@@ -133,7 +133,7 @@ exports[`[NavBar Component] renders Default without crashing 1`] = `
             class="is_View _m-1230101273 _b-810495792 _w-225817338 _h-1628964073 rcx-divider rcx-divider--vertical rcx-navbar-divider rcx-css-1ia8agp"
           />
           <div
-            class="is_View _d-341075704 _f-1923654442 _mw-354604370 _mh-1241200853 _ai-121763387 _g-1051447770 _jc-281162209 rcx-button-group rcx-button-group--align-start rcx-navbar-group"
+            class="is_View _d-341075704 _f-1923654442 _mw-354604370 _mh-1241200853 _jc-152079490 _ai-121763387 _g-1051447770 rcx-button-group rcx-button-group--align-start rcx-navbar-group"
             role="toolbar"
           >
             <button
@@ -190,7 +190,7 @@ exports[`[NavBar Component] renders Default without crashing 1`] = `
           class="is_View _bs-652081535 _mw-354604370 _mh-1241200853 _f-1069814357 _ai-121763387 rcx-navbar-section"
         >
           <div
-            class="is_View _d-341075704 _f-1923654442 _mw-354604370 _mh-1241200853 _ai-121763387 _g-1051447770 _jc-281162209 rcx-button-group rcx-button-group--align-start rcx-navbar-group"
+            class="is_View _d-341075704 _f-1923654442 _mw-354604370 _mh-1241200853 _jc-152079490 _ai-121763387 _g-1051447770 rcx-button-group rcx-button-group--align-start rcx-navbar-group"
             role="group"
           >
             <button
@@ -210,7 +210,7 @@ exports[`[NavBar Component] renders Default without crashing 1`] = `
               aria-haspopup="true"
               aria-label="profile"
               class="is_View _f-1069813397 _mh-1241200853 _ta-1906144518 _ws-973912173 _td-211436768 _c-22887652 _os-249893454 _o-1119039191 _to-1727917045 _ff-409630021 _fvn-1977619713 _fs-347291933 _fw-289166179 _ls-1782815796 _p-230374000 _a-1578443335 _b-1628331993 _br-1397394445 _bs-1225725885 _w-1682139955 _mw-1947816287 _h-1633581678 _d-312446553 _jc-642967080 _ai-1864573722 _lh-2067208245 _c-1139941473 _b-1242743842 rcx-button--small-square rcx-button--square rcx-button--icon rcx-button rcx-navbar-item"
-              id="react-aria-_r_18_"
+              id="react-aria-_r_17_"
               title="profile"
               type="button"
             >

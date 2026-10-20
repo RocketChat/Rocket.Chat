@@ -58,7 +58,7 @@ exports[`[Modal Component] _WithAnnotation should match the snapshot 1`] = `
             Anototation
           </div>
           <div
-            class="is_View _d-341075704 _f-1923654442 _mw-354604370 _mh-1241200853 _ai-121763387 _g-1051447770 _jc-2011449882 rcx-button-group rcx-button-group--align-end"
+            class="is_View _d-341075704 _f-1923654442 _mw-354604370 _mh-1241200853 _jc-2087003909 _ai-121763387 _g-1051447770 rcx-button-group rcx-button-group--align-end"
             role="group"
           >
             <button
@@ -165,7 +165,7 @@ exports[`[Modal Component] _WithForm should match the snapshot 1`] = `
           class="is_View _f-1069814357 _ai-121763387 _mw-354604370 _mh-1241200853 _m-258138183 _ff-409630021 _fvn-1977619713 _jc-1427711722 rcx-modal__footer"
         >
           <div
-            class="is_View _d-341075704 _f-1923654442 _mw-354604370 _mh-1241200853 _ai-121763387 _g-1051447770 _jc-2011449882 rcx-button-group rcx-button-group--align-end"
+            class="is_View _d-341075704 _f-1923654442 _mw-354604370 _mh-1241200853 _jc-2087003909 _ai-121763387 _g-1051447770 rcx-button-group rcx-button-group--align-end"
             role="group"
           >
             <button
@@ -257,7 +257,7 @@ exports[`[Modal Component] _WithHeroImage should match the snapshot 1`] = `
           class="is_View _f-1069814357 _ai-121763387 _mw-354604370 _mh-1241200853 _m-258138183 _ff-409630021 _fvn-1977619713 _jc-1427711722 rcx-modal__footer"
         >
           <div
-            class="is_View _d-341075704 _f-1923654442 _mw-354604370 _mh-1241200853 _ai-121763387 _g-1051447770 _jc-2011449882 rcx-button-group rcx-button-group--align-end"
+            class="is_View _d-341075704 _f-1923654442 _mw-354604370 _mh-1241200853 _jc-2087003909 _ai-121763387 _g-1051447770 rcx-button-group rcx-button-group--align-end"
             role="group"
           >
             <button
@@ -351,7 +351,7 @@ exports[`[Modal Component] _WithIcon should match the snapshot 1`] = `
           class="is_View _f-1069814357 _ai-121763387 _mw-354604370 _mh-1241200853 _m-258138183 _ff-409630021 _fvn-1977619713 _jc-1427711722 rcx-modal__footer"
         >
           <div
-            class="is_View _d-341075704 _f-1923654442 _mw-354604370 _mh-1241200853 _ai-121763387 _g-1051447770 _jc-2011449882 rcx-button-group rcx-button-group--align-end"
+            class="is_View _d-341075704 _f-1923654442 _mw-354604370 _mh-1241200853 _jc-2087003909 _ai-121763387 _g-1051447770 rcx-button-group rcx-button-group--align-end"
             role="group"
           >
             <button
@@ -450,7 +450,7 @@ exports[`[Modal Component] _WithIconAndTagline should match the snapshot 1`] = `
           class="is_View _f-1069814357 _ai-121763387 _mw-354604370 _mh-1241200853 _m-258138183 _ff-409630021 _fvn-1977619713 _jc-1427711722 rcx-modal__footer"
         >
           <div
-            class="is_View _d-341075704 _f-1923654442 _mw-354604370 _mh-1241200853 _ai-121763387 _g-1051447770 _jc-2011449882 rcx-button-group rcx-button-group--align-end"
+            class="is_View _d-341075704 _f-1923654442 _mw-354604370 _mh-1241200853 _jc-2087003909 _ai-121763387 _g-1051447770 rcx-button-group rcx-button-group--align-end"
             role="group"
           >
             <button
@@ -539,7 +539,7 @@ exports[`[Modal Component] _WithTagline should match the snapshot 1`] = `
           class="is_View _f-1069814357 _ai-121763387 _mw-354604370 _mh-1241200853 _m-258138183 _ff-409630021 _fvn-1977619713 _jc-1427711722 rcx-modal__footer"
         >
           <div
-            class="is_View _d-341075704 _f-1923654442 _mw-354604370 _mh-1241200853 _ai-121763387 _g-1051447770 _jc-2011449882 rcx-button-group rcx-button-group--align-end"
+            class="is_View _d-341075704 _f-1923654442 _mw-354604370 _mh-1241200853 _jc-2087003909 _ai-121763387 _g-1051447770 rcx-button-group rcx-button-group--align-end"
             role="group"
           >
             <button
@@ -636,7 +636,7 @@ exports[`[Modal Component] _WithThumb should match the snapshot 1`] = `
           class="is_View _f-1069814357 _ai-121763387 _mw-354604370 _mh-1241200853 _m-258138183 _ff-409630021 _fvn-1977619713 _jc-1427711722 rcx-modal__footer"
         >
           <div
-            class="is_View _d-341075704 _f-1923654442 _mw-354604370 _mh-1241200853 _ai-121763387 _g-1051447770 _jc-2011449882 rcx-button-group rcx-button-group--align-end"
+            class="is_View _d-341075704 _f-1923654442 _mw-354604370 _mh-1241200853 _jc-2087003909 _ai-121763387 _g-1051447770 rcx-button-group rcx-button-group--align-end"
             role="group"
           >
             <button
@@ -720,7 +720,7 @@ exports[`[Modal Component] Default should match the snapshot 1`] = `
           class="is_View _f-1069814357 _ai-121763387 _mw-354604370 _mh-1241200853 _m-258138183 _ff-409630021 _fvn-1977619713 _jc-1427711722 rcx-modal__footer"
         >
           <div
-            class="is_View _d-341075704 _f-1923654442 _mw-354604370 _mh-1241200853 _ai-121763387 _g-1051447770 _jc-2011449882 rcx-button-group rcx-button-group--align-end"
+            class="is_View _d-341075704 _f-1923654442 _mw-354604370 _mh-1241200853 _jc-2087003909 _ai-121763387 _g-1051447770 rcx-button-group rcx-button-group--align-end"
             role="group"
           >
             <button

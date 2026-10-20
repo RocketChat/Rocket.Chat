@@ -243,7 +243,7 @@ exports[`[CheckBox Rendering] renders WithActions without crashing 1`] = `
           class="is_View _d-1987097250 _f-1246374076 _mw-354604370 _mh-1241200853 _m-1380159888 rcx-callout__actions"
         >
           <div
-            class="is_View _d-341075704 _f-1923654442 _mw-354604370 _mh-1241200853 _ai-121763387 _g-1051447770 _jc-281162209 rcx-button-group rcx-button-group--align-start"
+            class="is_View _d-341075704 _f-1923654442 _mw-354604370 _mh-1241200853 _jc-152079490 _ai-121763387 _g-1051447770 rcx-button-group rcx-button-group--align-start"
             role="group"
           >
             <button

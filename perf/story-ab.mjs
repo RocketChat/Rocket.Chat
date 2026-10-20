@@ -34,7 +34,7 @@ const page = await browser.newPage({ viewport: { width: 1024, height: 768 } });
 
 const shot = async (base, id) => {
 	await page.goto(`${base}/iframe.html?id=${id}&viewMode=story`);
-	await page.waitForSelector('#storybook-root > *', { timeout: 15000 });
+	await page.waitForSelector('#storybook-root > *', { timeout: 15000, state: 'attached' });
 	await page.evaluate(() => document.fonts.ready);
 	return (await page.screenshot({ fullPage: true, animations: 'disabled' })).toString('base64');
 };
@@ -57,12 +57,20 @@ const diff = (pngA, pngB) =>
 	}, [pngA, pngB]);
 
 let identical = 0;
+let failed = 0;
 for (const id of ids) {
-	const result = await diff(await shot(a.url, id), await shot(b.url, id));
+	let result;
+	try {
+		result = await diff(await shot(a.url, id), await shot(b.url, id));
+	} catch (error) {
+		failed++;
+		console.log(`ERROR ${id}: ${error.message.split('\n')[0]}`);
+		continue;
+	}
 	if (result === 0) identical++;
 	else console.log(`DIFF ${id}: ${result}`);
 }
-console.log(`${identical} of ${ids.length} pixel-identical`);
+console.log(`${identical} of ${ids.length} pixel-identical, ${failed} could not be captured`);
 
 await browser.close();
 a.close();

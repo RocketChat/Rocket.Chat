@@ -89,16 +89,70 @@ Warm mount, root provider, median of 7 runs ([bench-compiler-7runs.md](bench-com
    - `prevalStyled.mts` plus `tamaguiPlugin` in `vite.config.mts`, both prototyped here;
    - the Storybook A/B, which must run against the compiled `dist` because Storybook and Jest run `src`;
    - extracted CSS that lands in the `fuselage` layer (to check: the spike saw it unlayered by default).
-2. **Exported frames:**
-   - the 40 pure wrappers become `styled()` exports with a default `className`;
-   - a typed helper for the `className` default, since `styled`'s string overload is untyped;
-   - `isTamaguiComponent` accepts `staticConfig` (done here);
-   - these lose the `withFuselageProvider` fallback, so tests, Storybooks and other roots need a `FuselageProvider` when one renders on the runtime path.
+2. **Exported frames** (the pattern is worked out in "Exported frames without a provider" below):
+   - the 40 pure wrappers and the 13 variant wrappers become `styled()` exports;
+   - `rcx-*` classes come from variants;
+   - exports are typed through `asPublicFrame`;
+   - `isTamaguiComponent` accepts `staticConfig` (done here).
 3. **App compile:**
    - an ESM Fuselage build whose whole dependency graph loads under Node (ESM `@rocket.chat/icons`, `fuselage-hooks`, …; `OwnerDocument` is fixed here);
    - the compiler in Rocket.Chat's bundler (`tamagui-loader` 3.0.18 exists for webpack/rspack; the Meteor rspack migration is the entry point);
    - named imports at use-sites.
 4. **For React Native:** the same `styled()` sources compile natively, but the web-only parts need platform files: `rcx-*` classes, cascade layers, css-in-js `BoxProps`, `render` tags.
+
+## Exported frames without a provider
+
+Exporting a frame as the public component (so app use-sites can flatten) ran into four problems. Each has a fix, prototyped on `ButtonGroup` and the Message leaves.
+
+| Problem | Fix |
+|---|---|
+| **A consumer's `className` replaces a `className` default**, so `rcx-button-group` disappeared under `<ButtonGroup className='x'>`. The pilot's wrappers had the same flaw: they spread `{...props}` after their own `className`. | **Variant class names add up** with the consumer's, so every `rcx-*` class comes from a variant: an always-on `rcx: { true }` variant with `defaultVariants: { rcx: true }`, plus one variant per modifier class (`rcx-button-group--small`, `--align-end`, …). This also makes the 13 variant wrappers convertible. |
+| Tamagui types `className` inside variants as `never`. | `helpers/variantClass.ts`. |
+| React's DOM attribute types don't match Tamagui's (`aria-*` as `Booleanish`), so consumers that spread `HTMLAttributes` failed typecheck. | `helpers/asPublicFrame.ts` exports the frame with its old public props type. The runtime value is still the frame the compiler sees. |
+| **A frame with no `ThemeProvider` above throws "Missing theme".** That is why every component went through `withFuselageProvider`, which mounted a fallback provider. Tests, Storybooks and app roots without a provider all relied on it. | `@tamagui/web` is patched so that a frame with no provider acts as its own theme root. Fuselage has a single empty theme, so nothing depends on which root it is. |
+
+**The stylesheet the provider injected now ships in `fuselage.css`:**
+
+- It covers the `:where(.is_View)` and `:where(.is_Text)` bases, the `@scope` rule and the token custom properties.
+- `scripts/build-tamagui-css.mjs` writes it from `tamagui.config.ts` into `src/styles/tamagui-base.css`; `--check` fails when the file is stale.
+- So `FuselageProvider` is now an optional `ThemeProvider`, and `withFuselageProvider` mounts nothing: with no `takesBoxTransforms`, it returns the component itself.
+
+**Effects:**
+
+- One fewer component per element.
+- No runtime `<style>` injection.
+- Any component can become an exported frame.
+- The CSS grows from 8.7 to 12.0 kB gzip (the base rules plus about 3 kB of token properties, until the spacing scale trims them).
+
+**Layer order bug, introduced by the group change and fixed here.** The layer order is set by each layer's first appearance. `Messages.styles.css` opens a `@layer fuselage` block and was imported before `index.css` declared `@layer reset, fuselage;`, so `reset` would have outranked `fuselage` in the app. The declaration now opens `index.css`, ahead of the imports.
+
+**Second layer order bug, caught by the Storybook A/B: the provider was also what put the order first.**
+
+- **What happened:** the pilot's `FuselageProvider` rendered `@layer reset, fuselage;` as a hoisted `<style>`. Without it, Tamagui's runtime sheet opened `@layer fuselage` before Storybook's style-loader injected normalize in `reset`.
+- **Effect:** normalize's `button { font-family: inherit; appearance: button; overflow: visible }` then beat every Button and input frame (53 stories off).
+- **Fix:** `styles/layerOrder.ts`, imported by `tamagui.config.ts`, prepends the order statement to `<head>` before any frame renders.
+- **The rule:** any page that injects CSS from JavaScript needs the order declared before Tamagui's sheet. Pages that load `fuselage.css` in `<head>` (the app) already had it.
+
+**Compiled `ButtonGroup` at an app use-site:**
+
+- **Flattened:** 14 of 14 bench use-sites.
+- **Classes:** variant classes and a consumer's `className` survive as one static class string, and computed styles match the pilot. Only the class order changes.
+- **Blocker:** the compiler drops the frame's non-style defaults. `role="group"` (a `role` default) is missing from flattened elements, while the runtime path keeps it.
+  - Variants can't carry it; they only apply styles and `className`.
+  - So a frame with default attributes (`role`, `type`, `aria-*`) needs a patch to `@tamagui/static` before it can be flattened in apps, or an upstream fix. Its defaults reach `completeProps` but only attributes written at the use-site are emitted.
+
+**Performance** (median of 9, [bench-provfree-9runs.md](bench-provfree-9runs.md)):
+
+- With a root provider: 0-3% faster (one fewer component per element).
+- Without one, as in tests and Storybooks: 7-17% faster than the old per-component fallback.
+
+The gain is structural rather than speed.
+
+**Checks:**
+
+- **Fuselage tests:** 669 of 669 pass. 78 snapshots changed, on class names and shifted `_r_N_` ids only.
+- **Storybook pixel A/B against the pilot:** all 531 stories are identical, except `tooltip--arrow-positioning-rtl`, which also differs between two runs of the pilot itself. `perf/story-ab.mjs` now waits for an attached root, so Select stories, whose root starts hidden, get captured too.
+- **Typecheck:** `tsc` is clean.
 
 ## `Box` styling props as Tamagui tokens
 

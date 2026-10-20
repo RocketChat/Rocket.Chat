@@ -125,7 +125,7 @@ exports[`[MessageToolbar Rendering] renders Default without crashing 1`] = `
             class="is_View _ff-409630021 _fv-607544992 _d-1409515928 _f-1246374076 _m-780828568 _p-1292307394 _b-1578316446 _br-1615728208 _b-2098288312 _o-1507270696 _p-1064753962 _zi-497048095 _i-1587801879 rcx-message-toolbar"
           >
             <div
-              class="is_View _d-341075704 _f-1923654442 _mw-354604370 _mh-1241200853 _ai-121763387 _g-47172425 _jc-281162209 rcx-button-group rcx-button-group--align-start rcx-button-group--small"
+              class="is_View _d-341075704 _f-1923654442 _mw-354604370 _mh-1241200853 _jc-152079490 _ai-121763387 _g-47172425 rcx-button-group rcx-button-group--align-start rcx-button-group--small"
               role="toolbar"
             >
               <button

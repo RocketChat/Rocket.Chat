@@ -19,7 +19,7 @@ exports[`[SidebarItem Component] renders Condensed without crashing 1`] = `
               class="is_View _bs-568394592 _f-172495823 _mw-354604370 _mh-1241200853 _m-2017216831 _p-1943363302 _b-2033297122 _os-249893454 _ff-409630021 _fvn-1977619713 rcx-sidebar-accordion-item"
             >
               <div
-                aria-controls="_r_5_"
+                aria-controls="_r_4_"
                 aria-expanded="true"
                 class="is_View _bs-568394592 _f-619631402 _mw-354604370 _mh-1646438792 _m-2017216831 _p-1916530296 _b-466862125 _ff-409630021 _fvn-1977619713 _p-1708368765 _zi-2094244754 _i-288960214 _ai-121763387 _ta-507911453 _c-1063453128 _cg-86881132 _os-221264303 _bs-49721704 _c-1830342115 _br-1585832732 _b-313882764 t_group_rcx-sidebar-accordion-item-bar rcx-sidebar-accordion-item__bar rcx-box--animated"
                 role="button"
@@ -37,17 +37,17 @@ exports[`[SidebarItem Component] renders Condensed without crashing 1`] = `
                 </span>
                 <h5
                   class="is_Text _bs-652081535 _f-1246374076 _mw-354604370 _mh-1241200853 _d-1987097250 _m-2017216831 _ws-973912173 _o-1119039191 _to-1727917045 _fs-347291933 _fw-289168101 _lh-1925956564 _ls-1782815796 rcx-sidebar-accordion-item__title"
-                  id="_r_4_"
+                  id="_r_3_"
                 >
                   Label
                 </h5>
               </div>
               <div
                 class="is_View _bs-652081535 _f-957025663 _mw-354604370 _mh-1241200853 _d-1987097250 _o-1119039191 _m-2017216831 _p-460328368 _ls-1251843592 _v-595517078 _h-566932805 rcx-sidebar-accordion-item__panel rcx-box--animated rcx-sidebar-accordion-item__panel--expanded"
-                id="_r_5_"
+                id="_r_4_"
               >
                 <div
-                  aria-labelledby="_r_c_"
+                  aria-labelledby="_r_b_"
                   class="is_View _bs-568394592 _f-1677436821 _mw-354604370 _mh-1241200853 _m-2017216831 _p-1943363302 _b-650654186 _os-249893454 _ff-409630021 _fvn-1977619713 rcx-sidebar-collapse-group"
                   role="group"
                 >
@@ -55,10 +55,10 @@ exports[`[SidebarItem Component] renders Condensed without crashing 1`] = `
                     class="is_Text _p-1021290656 _d-341075704 _f-1069814357 _ai-121763387 _mw-842770087 _mh-499962855 _m-2017216831 _p-536964724 _ls-1251843592 _ws-311910413 _ww-408434756 _br-1718100884 _ff-409630021 _fs-2088488067 _lh-1306743983 _ls-1782815796 _fw-289168101 _g-1760282038 _c-920334418 t_group_rcx-item-group-header rcx-item-group-header rcx-item-group-header--inset-md rcx-sidebar-collapse-group__bar"
                   >
                     <div
-                      aria-controls="_r_d_"
+                      aria-controls="_r_c_"
                       aria-expanded="true"
                       class="is_Text _o-1119039191 _f-1973813477 _m-2017216831 _ws-973912173 _ww-408434756 _to-1727917045 _c-954359819 _ff-4295677 _fs-1279428672 _fw-702336919 _fs-1723449324 _lh-1970121045 _ls-763972879 _fvn-882811879 _d-255188251 _ai-1055227096 _mw-839999524 _ta-1124544800 _cg-1040514961 _b-965065743 _os-164006001 _bs-7536598 _c-1150283745 _br-1477877479 rcx-item-group-title rcx-sidebar-collapse-group__bar-button"
-                      id="_r_g_"
+                      id="_r_f_"
                       role="button"
                       tabindex="0"
                     >
@@ -67,7 +67,7 @@ exports[`[SidebarItem Component] renders Condensed without crashing 1`] = `
                       >
                         <h4
                           class="is_Text _bs-652081535 _f-1246374076 _mw-354604370 _mh-1241200853 _d-1987097250 _m-2017216831 _ws-973912173 _o-1119039191 _to-1727917045 _fs-2088488067 _fw-289165218 _lh-1306743983 _ls-1782815796 rcx-sidebar-collapse-group__title"
-                          id="_r_c_"
+                          id="_r_b_"
                         >
                           Label
                         </h4>
@@ -97,7 +97,7 @@ exports[`[SidebarItem Component] renders Condensed without crashing 1`] = `
                             aria-haspopup="true"
                             aria-label="Options"
                             class="is_View _f-1069813397 _mh-1241200853 _ta-1906144518 _ws-973912173 _td-211436768 _c-22887652 _os-249893454 _o-1119039191 _to-1727917045 _ff-409630021 _fvn-1977619713 _fs-347291933 _fw-289166179 _ls-1782815796 _p-230374000 _a-1578443335 _b-1628331993 _br-1397394445 _bs-1225725885 _w-1686757560 _mw-1952433892 _h-1628964073 _d-312446553 _jc-642967080 _ai-1864573722 _lh-2067208245 _c-1139941473 _b-1242743842 rcx-button--mini-square rcx-button--square rcx-button--icon rcx-button"
-                            id="react-aria-_r_o_"
+                            id="react-aria-_r_n_"
                             title="Options"
                             type="button"
                           >
@@ -113,9 +113,9 @@ exports[`[SidebarItem Component] renders Condensed without crashing 1`] = `
                     </div>
                   </div>
                   <div
-                    aria-labelledby="_r_c_"
+                    aria-labelledby="_r_b_"
                     class="is_View _bs-652081535 _f-957027585 _mw-354604370 _mh-1241200853 _v-1275575448 _o-2052502900 _h-624191107 _m-2019987394 _p-1940592739 _ls-1165956139 _c-1176677446 rcx-item-group rcx-sidebar-collapse-group__panel rcx-box--animated rcx-sidebar-collapse-group__panel--expanded"
-                    id="_r_d_"
+                    id="_r_c_"
                     role="list"
                   >
                     <div
@@ -142,7 +142,7 @@ exports[`[SidebarItem Component] renders Condensed without crashing 1`] = `
                         <div
                           aria-hidden="true"
                           class="is_Text _d-341075704 _f-1128736932 _jc-1099843255 _ai-121763387 _mw-354604370 _ws-311910413 _ww-408434756 _w-120696903 _h-858548760 rcx-item__icon rcx-sidebar-item__icon"
-                          id="_r_12_"
+                          id="_r_11_"
                         >
                           <i
                             aria-hidden="true"
@@ -153,12 +153,12 @@ exports[`[SidebarItem Component] renders Condensed without crashing 1`] = `
                         </div>
                         <div
                           class="is_Text _o-1119039191 _f-649097281 _mw-842770087 _ws-973912173 _ww-408434756 _to-1727917045 _d-1987097250 rcx-item__title rcx-sidebar-item__title"
-                          id="_r_15_"
+                          id="_r_14_"
                         >
                           Marvin Black
                         </div>
                         <div
-                          class="is_View _d-341075704 _f-1923654442 _mw-354604370 _mh-1241200853 _ai-121763387 _g-1051447770 _jc-281162209 rcx-button-group rcx-button-group--align-start"
+                          class="is_View _d-341075704 _f-1923654442 _mw-354604370 _mh-1241200853 _jc-152079490 _ai-121763387 _g-1051447770 rcx-button-group rcx-button-group--align-start"
                           role="group"
                         >
                           <button
@@ -200,7 +200,7 @@ exports[`[SidebarItem Component] renders Condensed without crashing 1`] = `
                                 aria-haspopup="true"
                                 aria-label="Options"
                                 class="is_View _f-1069813397 _mh-1241200853 _ta-1906144518 _ws-973912173 _td-211436768 _c-22887652 _os-249893454 _o-1119039191 _to-1727917045 _ff-409630021 _fvn-1977619713 _fs-347291933 _fw-289166179 _ls-1782815796 _p-230374000 _a-1578443335 _b-1628331993 _br-1397394445 _bs-1225725885 _w-1686757560 _mw-1952433892 _h-1628964073 _d-312446553 _jc-642967080 _ai-1864573722 _lh-2067208245 _c-1139941473 _b-1242743842 rcx-button--mini-square rcx-button--square rcx-button--icon rcx-button"
-                                id="react-aria-_r_1e_"
+                                id="react-aria-_r_1d_"
                                 title="Options"
                                 type="button"
                               >
@@ -240,7 +240,7 @@ exports[`[SidebarItem Component] renders Condensed without crashing 1`] = `
                         <div
                           aria-hidden="true"
                           class="is_Text _d-341075704 _f-1128736932 _jc-1099843255 _ai-121763387 _mw-354604370 _ws-311910413 _ww-408434756 _w-120696903 _h-858548760 _c-2001590654 _fw-290089700 rcx-item__icon rcx-sidebar-item__icon rcx-sidebar-item__icon--highlighted"
-                          id="_r_1n_"
+                          id="_r_1m_"
                         >
                           <i
                             aria-hidden="true"
@@ -251,7 +251,7 @@ exports[`[SidebarItem Component] renders Condensed without crashing 1`] = `
                         </div>
                         <div
                           class="is_Text _o-1119039191 _f-649097281 _mw-842770087 _ws-973912173 _ww-408434756 _to-1727917045 _d-1987097250 _c-2001590654 _fw-290089700 rcx-item__title rcx-sidebar-item__title rcx-sidebar-item__title--highlighted"
-                          id="_r_1q_"
+                          id="_r_1p_"
                         >
                           Esther Miles
                         </div>
@@ -275,7 +275,7 @@ exports[`[SidebarItem Component] renders Condensed without crashing 1`] = `
                                 aria-haspopup="true"
                                 aria-label="Options"
                                 class="is_View _f-1069813397 _mh-1241200853 _ta-1906144518 _ws-973912173 _td-211436768 _c-22887652 _os-249893454 _o-1119039191 _to-1727917045 _ff-409630021 _fvn-1977619713 _fs-347291933 _fw-289166179 _ls-1782815796 _p-230374000 _a-1578443335 _b-1628331993 _br-1397394445 _bs-1225725885 _w-1686757560 _mw-1952433892 _h-1628964073 _d-312446553 _jc-642967080 _ai-1864573722 _lh-2067208245 _c-1139941473 _b-1242743842 rcx-button--mini-square rcx-button--square rcx-button--icon rcx-button"
-                                id="react-aria-_r_1v_"
+                                id="react-aria-_r_1u_"
                                 title="Options"
                                 type="button"
                               >
@@ -315,7 +315,7 @@ exports[`[SidebarItem Component] renders Condensed without crashing 1`] = `
                         <div
                           aria-hidden="true"
                           class="is_Text _d-341075704 _f-1128736932 _jc-1099843255 _ai-121763387 _mw-354604370 _ws-311910413 _ww-408434756 _w-120696903 _h-858548760 rcx-item__icon rcx-sidebar-item__icon"
-                          id="_r_28_"
+                          id="_r_27_"
                         >
                           <i
                             aria-hidden="true"
@@ -326,7 +326,7 @@ exports[`[SidebarItem Component] renders Condensed without crashing 1`] = `
                         </div>
                         <div
                           class="is_Text _o-1119039191 _f-649097281 _mw-842770087 _ws-973912173 _ww-408434756 _to-1727917045 _d-1987097250 rcx-item__title rcx-sidebar-item__title"
-                          id="_r_2b_"
+                          id="_r_2a_"
                         >
                           Leroy Jenkins
                         </div>
@@ -344,7 +344,7 @@ exports[`[SidebarItem Component] renders Condensed without crashing 1`] = `
                                 aria-haspopup="true"
                                 aria-label="Options"
                                 class="is_View _f-1069813397 _mh-1241200853 _ta-1906144518 _ws-973912173 _td-211436768 _c-22887652 _os-249893454 _o-1119039191 _to-1727917045 _ff-409630021 _fvn-1977619713 _fs-347291933 _fw-289166179 _ls-1782815796 _p-230374000 _a-1578443335 _b-1628331993 _br-1397394445 _bs-1225725885 _w-1686757560 _mw-1952433892 _h-1628964073 _d-312446553 _jc-642967080 _ai-1864573722 _lh-2067208245 _c-1139941473 _b-1242743842 rcx-button--mini-square rcx-button--square rcx-button--icon rcx-button"
-                                id="react-aria-_r_2f_"
+                                id="react-aria-_r_2e_"
                                 title="Options"
                                 type="button"
                               >
@@ -384,7 +384,7 @@ exports[`[SidebarItem Component] renders Condensed without crashing 1`] = `
                         <div
                           aria-hidden="true"
                           class="is_Text _d-341075704 _f-1128736932 _jc-1099843255 _ai-121763387 _mw-354604370 _ws-311910413 _ww-408434756 _w-120696903 _h-858548760 _c-2001590654 _fw-290089700 rcx-item__icon rcx-sidebar-item__icon rcx-sidebar-item__icon--highlighted"
-                          id="_r_2o_"
+                          id="_r_2n_"
                         >
                           <i
                             aria-hidden="true"
@@ -395,7 +395,7 @@ exports[`[SidebarItem Component] renders Condensed without crashing 1`] = `
                         </div>
                         <div
                           class="is_Text _o-1119039191 _f-649097281 _mw-842770087 _ws-973912173 _ww-408434756 _to-1727917045 _d-1987097250 _c-2001590654 _fw-290089700 rcx-item__title rcx-sidebar-item__title rcx-sidebar-item__title--highlighted"
-                          id="_r_2r_"
+                          id="_r_2q_"
                         >
                           Morgan Freeman looooooooooong looooooooooong looooooooooong name
                         </div>
@@ -419,7 +419,7 @@ exports[`[SidebarItem Component] renders Condensed without crashing 1`] = `
                                 aria-haspopup="true"
                                 aria-label="Options"
                                 class="is_View _f-1069813397 _mh-1241200853 _ta-1906144518 _ws-973912173 _td-211436768 _c-22887652 _os-249893454 _o-1119039191 _to-1727917045 _ff-409630021 _fvn-1977619713 _fs-347291933 _fw-289166179 _ls-1782815796 _p-230374000 _a-1578443335 _b-1628331993 _br-1397394445 _bs-1225725885 _w-1686757560 _mw-1952433892 _h-1628964073 _d-312446553 _jc-642967080 _ai-1864573722 _lh-2067208245 _c-1139941473 _b-1242743842 rcx-button--mini-square rcx-button--square rcx-button--icon rcx-button"
-                                id="react-aria-_r_30_"
+                                id="react-aria-_r_2v_"
                                 title="Options"
                                 type="button"
                               >
@@ -459,7 +459,7 @@ exports[`[SidebarItem Component] renders Condensed without crashing 1`] = `
                         <div
                           aria-hidden="true"
                           class="is_Text _d-341075704 _f-1128736932 _jc-1099843255 _ai-121763387 _mw-354604370 _ws-311910413 _ww-408434756 _w-120696903 _h-858548760 rcx-item__icon rcx-sidebar-item__icon"
-                          id="_r_39_"
+                          id="_r_38_"
                         >
                           <i
                             aria-hidden="true"
@@ -470,7 +470,7 @@ exports[`[SidebarItem Component] renders Condensed without crashing 1`] = `
                         </div>
                         <div
                           class="is_Text _o-1119039191 _f-649097281 _mw-842770087 _ws-973912173 _ww-408434756 _to-1727917045 _d-1987097250 rcx-item__title rcx-sidebar-item__title"
-                          id="_r_3c_"
+                          id="_r_3b_"
                         >
                           John Doe
                         </div>
@@ -488,7 +488,7 @@ exports[`[SidebarItem Component] renders Condensed without crashing 1`] = `
                                 aria-haspopup="true"
                                 aria-label="Options"
                                 class="is_View _f-1069813397 _mh-1241200853 _ta-1906144518 _ws-973912173 _td-211436768 _c-22887652 _os-249893454 _o-1119039191 _to-1727917045 _ff-409630021 _fvn-1977619713 _fs-347291933 _fw-289166179 _ls-1782815796 _p-230374000 _a-1578443335 _b-1628331993 _br-1397394445 _bs-1225725885 _w-1686757560 _mw-1952433892 _h-1628964073 _d-312446553 _jc-642967080 _ai-1864573722 _lh-2067208245 _c-1139941473 _b-1242743842 rcx-button--mini-square rcx-button--square rcx-button--icon rcx-button"
-                                id="react-aria-_r_3g_"
+                                id="react-aria-_r_3f_"
                                 title="Options"
                                 type="button"
                               >
@@ -528,7 +528,7 @@ exports[`[SidebarItem Component] renders Condensed without crashing 1`] = `
                         <div
                           aria-hidden="true"
                           class="is_Text _d-341075704 _f-1128736932 _jc-1099843255 _ai-121763387 _mw-354604370 _ws-311910413 _ww-408434756 _w-120696903 _h-858548760 _c-2001590654 _fw-290089700 rcx-item__icon rcx-sidebar-item__icon rcx-sidebar-item__icon--highlighted"
-                          id="_r_3p_"
+                          id="_r_3o_"
                         >
                           <i
                             aria-hidden="true"
@@ -539,7 +539,7 @@ exports[`[SidebarItem Component] renders Condensed without crashing 1`] = `
                         </div>
                         <div
                           class="is_Text _o-1119039191 _f-649097281 _mw-842770087 _ws-973912173 _ww-408434756 _to-1727917045 _d-1987097250 _c-2001590654 _fw-290089700 rcx-item__title rcx-sidebar-item__title rcx-sidebar-item__title--highlighted"
-                          id="_r_3s_"
+                          id="_r_3r_"
                         >
                           Jane Doe
                         </div>
@@ -563,7 +563,7 @@ exports[`[SidebarItem Component] renders Condensed without crashing 1`] = `
                                 aria-haspopup="true"
                                 aria-label="Options"
                                 class="is_View _f-1069813397 _mh-1241200853 _ta-1906144518 _ws-973912173 _td-211436768 _c-22887652 _os-249893454 _o-1119039191 _to-1727917045 _ff-409630021 _fvn-1977619713 _fs-347291933 _fw-289166179 _ls-1782815796 _p-230374000 _a-1578443335 _b-1628331993 _br-1397394445 _bs-1225725885 _w-1686757560 _mw-1952433892 _h-1628964073 _d-312446553 _jc-642967080 _ai-1864573722 _lh-2067208245 _c-1139941473 _b-1242743842 rcx-button--mini-square rcx-button--square rcx-button--icon rcx-button"
-                                id="react-aria-_r_41_"
+                                id="react-aria-_r_40_"
                                 title="Options"
                                 type="button"
                               >
@@ -603,7 +603,7 @@ exports[`[SidebarItem Component] renders Condensed without crashing 1`] = `
                         <div
                           aria-hidden="true"
                           class="is_Text _d-341075704 _f-1128736932 _jc-1099843255 _ai-121763387 _mw-354604370 _ws-311910413 _ww-408434756 _w-120696903 _h-858548760 rcx-item__icon rcx-sidebar-item__icon"
-                          id="_r_4a_"
+                          id="_r_49_"
                         >
                           <i
                             aria-hidden="true"
@@ -614,7 +614,7 @@ exports[`[SidebarItem Component] renders Condensed without crashing 1`] = `
                         </div>
                         <div
                           class="is_Text _o-1119039191 _f-649097281 _mw-842770087 _ws-973912173 _ww-408434756 _to-1727917045 _d-1987097250 rcx-item__title rcx-sidebar-item__title"
-                          id="_r_4d_"
+                          id="_r_4c_"
                         >
                           Baz Qux
                         </div>
@@ -632,7 +632,7 @@ exports[`[SidebarItem Component] renders Condensed without crashing 1`] = `
                                 aria-haspopup="true"
                                 aria-label="Options"
                                 class="is_View _f-1069813397 _mh-1241200853 _ta-1906144518 _ws-973912173 _td-211436768 _c-22887652 _os-249893454 _o-1119039191 _to-1727917045 _ff-409630021 _fvn-1977619713 _fs-347291933 _fw-289166179 _ls-1782815796 _p-230374000 _a-1578443335 _b-1628331993 _br-1397394445 _bs-1225725885 _w-1686757560 _mw-1952433892 _h-1628964073 _d-312446553 _jc-642967080 _ai-1864573722 _lh-2067208245 _c-1139941473 _b-1242743842 rcx-button--mini-square rcx-button--square rcx-button--icon rcx-button"
-                                id="react-aria-_r_4h_"
+                                id="react-aria-_r_4g_"
                                 title="Options"
                                 type="button"
                               >
@@ -672,7 +672,7 @@ exports[`[SidebarItem Component] renders Condensed without crashing 1`] = `
                         <div
                           aria-hidden="true"
                           class="is_Text _d-341075704 _f-1128736932 _jc-1099843255 _ai-121763387 _mw-354604370 _ws-311910413 _ww-408434756 _w-120696903 _h-858548760 _c-2001590654 _fw-290089700 rcx-item__icon rcx-sidebar-item__icon rcx-sidebar-item__icon--highlighted"
-                          id="_r_4q_"
+                          id="_r_4p_"
                         >
                           <i
                             aria-hidden="true"
@@ -683,7 +683,7 @@ exports[`[SidebarItem Component] renders Condensed without crashing 1`] = `
                         </div>
                         <div
                           class="is_Text _o-1119039191 _f-649097281 _mw-842770087 _ws-973912173 _ww-408434756 _to-1727917045 _d-1987097250 _c-2001590654 _fw-290089700 rcx-item__title rcx-sidebar-item__title rcx-sidebar-item__title--highlighted"
-                          id="_r_4t_"
+                          id="_r_4s_"
                         >
                           Alice Bob
                         </div>
@@ -707,7 +707,7 @@ exports[`[SidebarItem Component] renders Condensed without crashing 1`] = `
                                 aria-haspopup="true"
                                 aria-label="Options"
                                 class="is_View _f-1069813397 _mh-1241200853 _ta-1906144518 _ws-973912173 _td-211436768 _c-22887652 _os-249893454 _o-1119039191 _to-1727917045 _ff-409630021 _fvn-1977619713 _fs-347291933 _fw-289166179 _ls-1782815796 _p-230374000 _a-1578443335 _b-1628331993 _br-1397394445 _bs-1225725885 _w-1686757560 _mw-1952433892 _h-1628964073 _d-312446553 _jc-642967080 _ai-1864573722 _lh-2067208245 _c-1139941473 _b-1242743842 rcx-button--mini-square rcx-button--square rcx-button--icon rcx-button"
-                                id="react-aria-_r_52_"
+                                id="react-aria-_r_51_"
                                 title="Options"
                                 type="button"
                               >
@@ -768,7 +768,7 @@ exports[`[SidebarItem Component] renders CondensedItems without crashing 1`] = `
               class="is_View _bs-568394592 _f-172495823 _mw-354604370 _mh-1241200853 _m-2017216831 _p-1943363302 _b-2033297122 _os-249893454 _ff-409630021 _fvn-1977619713 rcx-sidebar-accordion-item"
             >
               <div
-                aria-controls="_r_5e_"
+                aria-controls="_r_5c_"
                 aria-expanded="true"
                 class="is_View _bs-568394592 _f-619631402 _mw-354604370 _mh-1646438792 _m-2017216831 _p-1916530296 _b-466862125 _ff-409630021 _fvn-1977619713 _p-1708368765 _zi-2094244754 _i-288960214 _ai-121763387 _ta-507911453 _c-1063453128 _cg-86881132 _os-221264303 _bs-49721704 _c-1830342115 _br-1585832732 _b-313882764 t_group_rcx-sidebar-accordion-item-bar rcx-sidebar-accordion-item__bar rcx-box--animated"
                 role="button"
@@ -786,17 +786,17 @@ exports[`[SidebarItem Component] renders CondensedItems without crashing 1`] = `
                 </span>
                 <h5
                   class="is_Text _bs-652081535 _f-1246374076 _mw-354604370 _mh-1241200853 _d-1987097250 _m-2017216831 _ws-973912173 _o-1119039191 _to-1727917045 _fs-347291933 _fw-289168101 _lh-1925956564 _ls-1782815796 rcx-sidebar-accordion-item__title"
-                  id="_r_5d_"
+                  id="_r_5b_"
                 >
                   Label
                 </h5>
               </div>
               <div
                 class="is_View _bs-652081535 _f-957025663 _mw-354604370 _mh-1241200853 _d-1987097250 _o-1119039191 _m-2017216831 _p-460328368 _ls-1251843592 _v-595517078 _h-566932805 rcx-sidebar-accordion-item__panel rcx-box--animated rcx-sidebar-accordion-item__panel--expanded"
-                id="_r_5e_"
+                id="_r_5c_"
               >
                 <div
-                  aria-labelledby="_r_5l_"
+                  aria-labelledby="_r_5j_"
                   class="is_View _bs-568394592 _f-1677436821 _mw-354604370 _mh-1241200853 _m-2017216831 _p-1943363302 _b-650654186 _os-249893454 _ff-409630021 _fvn-1977619713 rcx-sidebar-collapse-group"
                   role="group"
                 >
@@ -804,10 +804,10 @@ exports[`[SidebarItem Component] renders CondensedItems without crashing 1`] = `
                     class="is_Text _p-1021290656 _d-341075704 _f-1069814357 _ai-121763387 _mw-842770087 _mh-499962855 _m-2017216831 _p-536964724 _ls-1251843592 _ws-311910413 _ww-408434756 _br-1718100884 _ff-409630021 _fs-2088488067 _lh-1306743983 _ls-1782815796 _fw-289168101 _g-1760282038 _c-920334418 t_group_rcx-item-group-header rcx-item-group-header rcx-item-group-header--inset-md rcx-sidebar-collapse-group__bar"
                   >
                     <div
-                      aria-controls="_r_5m_"
+                      aria-controls="_r_5k_"
                       aria-expanded="true"
                       class="is_Text _o-1119039191 _f-1973813477 _m-2017216831 _ws-973912173 _ww-408434756 _to-1727917045 _c-954359819 _ff-4295677 _fs-1279428672 _fw-702336919 _fs-1723449324 _lh-1970121045 _ls-763972879 _fvn-882811879 _d-255188251 _ai-1055227096 _mw-839999524 _ta-1124544800 _cg-1040514961 _b-965065743 _os-164006001 _bs-7536598 _c-1150283745 _br-1477877479 rcx-item-group-title rcx-sidebar-collapse-group__bar-button"
-                      id="_r_5p_"
+                      id="_r_5n_"
                       role="button"
                       tabindex="0"
                     >
@@ -816,7 +816,7 @@ exports[`[SidebarItem Component] renders CondensedItems without crashing 1`] = `
                       >
                         <h4
                           class="is_Text _bs-652081535 _f-1246374076 _mw-354604370 _mh-1241200853 _d-1987097250 _m-2017216831 _ws-973912173 _o-1119039191 _to-1727917045 _fs-2088488067 _fw-289165218 _lh-1306743983 _ls-1782815796 rcx-sidebar-collapse-group__title"
-                          id="_r_5l_"
+                          id="_r_5j_"
                         >
                           Label
                         </h4>
@@ -846,7 +846,7 @@ exports[`[SidebarItem Component] renders CondensedItems without crashing 1`] = `
                             aria-haspopup="true"
                             aria-label="Options"
                             class="is_View _f-1069813397 _mh-1241200853 _ta-1906144518 _ws-973912173 _td-211436768 _c-22887652 _os-249893454 _o-1119039191 _to-1727917045 _ff-409630021 _fvn-1977619713 _fs-347291933 _fw-289166179 _ls-1782815796 _p-230374000 _a-1578443335 _b-1628331993 _br-1397394445 _bs-1225725885 _w-1686757560 _mw-1952433892 _h-1628964073 _d-312446553 _jc-642967080 _ai-1864573722 _lh-2067208245 _c-1139941473 _b-1242743842 rcx-button--mini-square rcx-button--square rcx-button--icon rcx-button"
-                            id="react-aria-_r_61_"
+                            id="react-aria-_r_5v_"
                             title="Options"
                             type="button"
                           >
@@ -862,9 +862,9 @@ exports[`[SidebarItem Component] renders CondensedItems without crashing 1`] = `
                     </div>
                   </div>
                   <div
-                    aria-labelledby="_r_5l_"
+                    aria-labelledby="_r_5j_"
                     class="is_View _bs-652081535 _f-957027585 _mw-354604370 _mh-1241200853 _v-1275575448 _o-2052502900 _h-624191107 _m-2019987394 _p-1940592739 _ls-1165956139 _c-1176677446 rcx-item-group rcx-sidebar-collapse-group__panel rcx-box--animated rcx-sidebar-collapse-group__panel--expanded"
-                    id="_r_5m_"
+                    id="_r_5k_"
                     role="list"
                   >
                     <div
@@ -891,7 +891,7 @@ exports[`[SidebarItem Component] renders CondensedItems without crashing 1`] = `
                         <div
                           aria-hidden="true"
                           class="is_Text _d-341075704 _f-1128736932 _jc-1099843255 _ai-121763387 _mw-354604370 _ws-311910413 _ww-408434756 _w-120696903 _h-858548760 rcx-item__icon rcx-sidebar-item__icon"
-                          id="_r_6b_"
+                          id="_r_69_"
                         >
                           <i
                             aria-hidden="true"
@@ -902,12 +902,12 @@ exports[`[SidebarItem Component] renders CondensedItems without crashing 1`] = `
                         </div>
                         <div
                           class="is_Text _o-1119039191 _f-649097281 _mw-842770087 _ws-973912173 _ww-408434756 _to-1727917045 _d-1987097250 rcx-item__title rcx-sidebar-item__title"
-                          id="_r_6e_"
+                          id="_r_6c_"
                         >
                           Marvin Black
                         </div>
                         <div
-                          class="is_View _d-341075704 _f-1923654442 _mw-354604370 _mh-1241200853 _ai-121763387 _g-1051447770 _jc-281162209 rcx-button-group rcx-button-group--align-start"
+                          class="is_View _d-341075704 _f-1923654442 _mw-354604370 _mh-1241200853 _jc-152079490 _ai-121763387 _g-1051447770 rcx-button-group rcx-button-group--align-start"
                           role="group"
                         >
                           <button
@@ -949,7 +949,7 @@ exports[`[SidebarItem Component] renders CondensedItems without crashing 1`] = `
                                 aria-haspopup="true"
                                 aria-label="Options"
                                 class="is_View _f-1069813397 _mh-1241200853 _ta-1906144518 _ws-973912173 _td-211436768 _c-22887652 _os-249893454 _o-1119039191 _to-1727917045 _ff-409630021 _fvn-1977619713 _fs-347291933 _fw-289166179 _ls-1782815796 _p-230374000 _a-1578443335 _b-1628331993 _br-1397394445 _bs-1225725885 _w-1686757560 _mw-1952433892 _h-1628964073 _d-312446553 _jc-642967080 _ai-1864573722 _lh-2067208245 _c-1139941473 _b-1242743842 rcx-button--mini-square rcx-button--square rcx-button--icon rcx-button"
-                                id="react-aria-_r_6n_"
+                                id="react-aria-_r_6l_"
                                 title="Options"
                                 type="button"
                               >
@@ -989,7 +989,7 @@ exports[`[SidebarItem Component] renders CondensedItems without crashing 1`] = `
                         <div
                           aria-hidden="true"
                           class="is_Text _d-341075704 _f-1128736932 _jc-1099843255 _ai-121763387 _mw-354604370 _ws-311910413 _ww-408434756 _w-120696903 _h-858548760 _c-2001590654 _fw-290089700 rcx-item__icon rcx-sidebar-item__icon rcx-sidebar-item__icon--highlighted"
-                          id="_r_70_"
+                          id="_r_6u_"
                         >
                           <i
                             aria-hidden="true"
@@ -1000,7 +1000,7 @@ exports[`[SidebarItem Component] renders CondensedItems without crashing 1`] = `
                         </div>
                         <div
                           class="is_Text _o-1119039191 _f-649097281 _mw-842770087 _ws-973912173 _ww-408434756 _to-1727917045 _d-1987097250 _c-2001590654 _fw-290089700 rcx-item__title rcx-sidebar-item__title rcx-sidebar-item__title--highlighted"
-                          id="_r_73_"
+                          id="_r_71_"
                         >
                           Esther Miles
                         </div>
@@ -1024,7 +1024,7 @@ exports[`[SidebarItem Component] renders CondensedItems without crashing 1`] = `
                                 aria-haspopup="true"
                                 aria-label="Options"
                                 class="is_View _f-1069813397 _mh-1241200853 _ta-1906144518 _ws-973912173 _td-211436768 _c-22887652 _os-249893454 _o-1119039191 _to-1727917045 _ff-409630021 _fvn-1977619713 _fs-347291933 _fw-289166179 _ls-1782815796 _p-230374000 _a-1578443335 _b-1628331993 _br-1397394445 _bs-1225725885 _w-1686757560 _mw-1952433892 _h-1628964073 _d-312446553 _jc-642967080 _ai-1864573722 _lh-2067208245 _c-1139941473 _b-1242743842 rcx-button--mini-square rcx-button--square rcx-button--icon rcx-button"
-                                id="react-aria-_r_78_"
+                                id="react-aria-_r_76_"
                                 title="Options"
                                 type="button"
                               >
@@ -1064,7 +1064,7 @@ exports[`[SidebarItem Component] renders CondensedItems without crashing 1`] = `
                         <div
                           aria-hidden="true"
                           class="is_Text _d-341075704 _f-1128736932 _jc-1099843255 _ai-121763387 _mw-354604370 _ws-311910413 _ww-408434756 _w-120696903 _h-858548760 rcx-item__icon rcx-sidebar-item__icon"
-                          id="_r_7h_"
+                          id="_r_7f_"
                         >
                           <i
                             aria-hidden="true"
@@ -1075,7 +1075,7 @@ exports[`[SidebarItem Component] renders CondensedItems without crashing 1`] = `
                         </div>
                         <div
                           class="is_Text _o-1119039191 _f-649097281 _mw-842770087 _ws-973912173 _ww-408434756 _to-1727917045 _d-1987097250 rcx-item__title rcx-sidebar-item__title"
-                          id="_r_7k_"
+                          id="_r_7i_"
                         >
                           Leroy Jenkins
                         </div>
@@ -1093,7 +1093,7 @@ exports[`[SidebarItem Component] renders CondensedItems without crashing 1`] = `
                                 aria-haspopup="true"
                                 aria-label="Options"
                                 class="is_View _f-1069813397 _mh-1241200853 _ta-1906144518 _ws-973912173 _td-211436768 _c-22887652 _os-249893454 _o-1119039191 _to-1727917045 _ff-409630021 _fvn-1977619713 _fs-347291933 _fw-289166179 _ls-1782815796 _p-230374000 _a-1578443335 _b-1628331993 _br-1397394445 _bs-1225725885 _w-1686757560 _mw-1952433892 _h-1628964073 _d-312446553 _jc-642967080 _ai-1864573722 _lh-2067208245 _c-1139941473 _b-1242743842 rcx-button--mini-square rcx-button--square rcx-button--icon rcx-button"
-                                id="react-aria-_r_7o_"
+                                id="react-aria-_r_7m_"
                                 title="Options"
                                 type="button"
                               >
@@ -1133,7 +1133,7 @@ exports[`[SidebarItem Component] renders CondensedItems without crashing 1`] = `
                         <div
                           aria-hidden="true"
                           class="is_Text _d-341075704 _f-1128736932 _jc-1099843255 _ai-121763387 _mw-354604370 _ws-311910413 _ww-408434756 _w-120696903 _h-858548760 _c-2001590654 _fw-290089700 rcx-item__icon rcx-sidebar-item__icon rcx-sidebar-item__icon--highlighted"
-                          id="_r_81_"
+                          id="_r_7v_"
                         >
                           <i
                             aria-hidden="true"
@@ -1144,7 +1144,7 @@ exports[`[SidebarItem Component] renders CondensedItems without crashing 1`] = `
                         </div>
                         <div
                           class="is_Text _o-1119039191 _f-649097281 _mw-842770087 _ws-973912173 _ww-408434756 _to-1727917045 _d-1987097250 _c-2001590654 _fw-290089700 rcx-item__title rcx-sidebar-item__title rcx-sidebar-item__title--highlighted"
-                          id="_r_84_"
+                          id="_r_82_"
                         >
                           Morgan Freeman looooooooooong looooooooooong looooooooooong name
                         </div>
@@ -1168,7 +1168,7 @@ exports[`[SidebarItem Component] renders CondensedItems without crashing 1`] = `
                                 aria-haspopup="true"
                                 aria-label="Options"
                                 class="is_View _f-1069813397 _mh-1241200853 _ta-1906144518 _ws-973912173 _td-211436768 _c-22887652 _os-249893454 _o-1119039191 _to-1727917045 _ff-409630021 _fvn-1977619713 _fs-347291933 _fw-289166179 _ls-1782815796 _p-230374000 _a-1578443335 _b-1628331993 _br-1397394445 _bs-1225725885 _w-1686757560 _mw-1952433892 _h-1628964073 _d-312446553 _jc-642967080 _ai-1864573722 _lh-2067208245 _c-1139941473 _b-1242743842 rcx-button--mini-square rcx-button--square rcx-button--icon rcx-button"
-                                id="react-aria-_r_89_"
+                                id="react-aria-_r_87_"
                                 title="Options"
                                 type="button"
                               >
@@ -1208,7 +1208,7 @@ exports[`[SidebarItem Component] renders CondensedItems without crashing 1`] = `
                         <div
                           aria-hidden="true"
                           class="is_Text _d-341075704 _f-1128736932 _jc-1099843255 _ai-121763387 _mw-354604370 _ws-311910413 _ww-408434756 _w-120696903 _h-858548760 rcx-item__icon rcx-sidebar-item__icon"
-                          id="_r_8i_"
+                          id="_r_8g_"
                         >
                           <i
                             aria-hidden="true"
@@ -1219,7 +1219,7 @@ exports[`[SidebarItem Component] renders CondensedItems without crashing 1`] = `
                         </div>
                         <div
                           class="is_Text _o-1119039191 _f-649097281 _mw-842770087 _ws-973912173 _ww-408434756 _to-1727917045 _d-1987097250 rcx-item__title rcx-sidebar-item__title"
-                          id="_r_8l_"
+                          id="_r_8j_"
                         >
                           John Doe
                         </div>
@@ -1237,7 +1237,7 @@ exports[`[SidebarItem Component] renders CondensedItems without crashing 1`] = `
                                 aria-haspopup="true"
                                 aria-label="Options"
                                 class="is_View _f-1069813397 _mh-1241200853 _ta-1906144518 _ws-973912173 _td-211436768 _c-22887652 _os-249893454 _o-1119039191 _to-1727917045 _ff-409630021 _fvn-1977619713 _fs-347291933 _fw-289166179 _ls-1782815796 _p-230374000 _a-1578443335 _b-1628331993 _br-1397394445 _bs-1225725885 _w-1686757560 _mw-1952433892 _h-1628964073 _d-312446553 _jc-642967080 _ai-1864573722 _lh-2067208245 _c-1139941473 _b-1242743842 rcx-button--mini-square rcx-button--square rcx-button--icon rcx-button"
-                                id="react-aria-_r_8p_"
+                                id="react-aria-_r_8n_"
                                 title="Options"
                                 type="button"
                               >
@@ -1277,7 +1277,7 @@ exports[`[SidebarItem Component] renders CondensedItems without crashing 1`] = `
                         <div
                           aria-hidden="true"
                           class="is_Text _d-341075704 _f-1128736932 _jc-1099843255 _ai-121763387 _mw-354604370 _ws-311910413 _ww-408434756 _w-120696903 _h-858548760 _c-2001590654 _fw-290089700 rcx-item__icon rcx-sidebar-item__icon rcx-sidebar-item__icon--highlighted"
-                          id="_r_92_"
+                          id="_r_90_"
                         >
                           <i
                             aria-hidden="true"
@@ -1288,7 +1288,7 @@ exports[`[SidebarItem Component] renders CondensedItems without crashing 1`] = `
                         </div>
                         <div
                           class="is_Text _o-1119039191 _f-649097281 _mw-842770087 _ws-973912173 _ww-408434756 _to-1727917045 _d-1987097250 _c-2001590654 _fw-290089700 rcx-item__title rcx-sidebar-item__title rcx-sidebar-item__title--highlighted"
-                          id="_r_95_"
+                          id="_r_93_"
                         >
                           Jane Doe
                         </div>
@@ -1312,7 +1312,7 @@ exports[`[SidebarItem Component] renders CondensedItems without crashing 1`] = `
                                 aria-haspopup="true"
                                 aria-label="Options"
                                 class="is_View _f-1069813397 _mh-1241200853 _ta-1906144518 _ws-973912173 _td-211436768 _c-22887652 _os-249893454 _o-1119039191 _to-1727917045 _ff-409630021 _fvn-1977619713 _fs-347291933 _fw-289166179 _ls-1782815796 _p-230374000 _a-1578443335 _b-1628331993 _br-1397394445 _bs-1225725885 _w-1686757560 _mw-1952433892 _h-1628964073 _d-312446553 _jc-642967080 _ai-1864573722 _lh-2067208245 _c-1139941473 _b-1242743842 rcx-button--mini-square rcx-button--square rcx-button--icon rcx-button"
-                                id="react-aria-_r_9a_"
+                                id="react-aria-_r_98_"
                                 title="Options"
                                 type="button"
                               >
@@ -1352,7 +1352,7 @@ exports[`[SidebarItem Component] renders CondensedItems without crashing 1`] = `
                         <div
                           aria-hidden="true"
                           class="is_Text _d-341075704 _f-1128736932 _jc-1099843255 _ai-121763387 _mw-354604370 _ws-311910413 _ww-408434756 _w-120696903 _h-858548760 rcx-item__icon rcx-sidebar-item__icon"
-                          id="_r_9j_"
+                          id="_r_9h_"
                         >
                           <i
                             aria-hidden="true"
@@ -1363,7 +1363,7 @@ exports[`[SidebarItem Component] renders CondensedItems without crashing 1`] = `
                         </div>
                         <div
                           class="is_Text _o-1119039191 _f-649097281 _mw-842770087 _ws-973912173 _ww-408434756 _to-1727917045 _d-1987097250 rcx-item__title rcx-sidebar-item__title"
-                          id="_r_9m_"
+                          id="_r_9k_"
                         >
                           Baz Qux
                         </div>
@@ -1381,7 +1381,7 @@ exports[`[SidebarItem Component] renders CondensedItems without crashing 1`] = `
                                 aria-haspopup="true"
                                 aria-label="Options"
                                 class="is_View _f-1069813397 _mh-1241200853 _ta-1906144518 _ws-973912173 _td-211436768 _c-22887652 _os-249893454 _o-1119039191 _to-1727917045 _ff-409630021 _fvn-1977619713 _fs-347291933 _fw-289166179 _ls-1782815796 _p-230374000 _a-1578443335 _b-1628331993 _br-1397394445 _bs-1225725885 _w-1686757560 _mw-1952433892 _h-1628964073 _d-312446553 _jc-642967080 _ai-1864573722 _lh-2067208245 _c-1139941473 _b-1242743842 rcx-button--mini-square rcx-button--square rcx-button--icon rcx-button"
-                                id="react-aria-_r_9q_"
+                                id="react-aria-_r_9o_"
                                 title="Options"
                                 type="button"
                               >
@@ -1421,7 +1421,7 @@ exports[`[SidebarItem Component] renders CondensedItems without crashing 1`] = `
                         <div
                           aria-hidden="true"
                           class="is_Text _d-341075704 _f-1128736932 _jc-1099843255 _ai-121763387 _mw-354604370 _ws-311910413 _ww-408434756 _w-120696903 _h-858548760 _c-2001590654 _fw-290089700 rcx-item__icon rcx-sidebar-item__icon rcx-sidebar-item__icon--highlighted"
-                          id="_r_a3_"
+                          id="_r_a1_"
                         >
                           <i
                             aria-hidden="true"
@@ -1432,7 +1432,7 @@ exports[`[SidebarItem Component] renders CondensedItems without crashing 1`] = `
                         </div>
                         <div
                           class="is_Text _o-1119039191 _f-649097281 _mw-842770087 _ws-973912173 _ww-408434756 _to-1727917045 _d-1987097250 _c-2001590654 _fw-290089700 rcx-item__title rcx-sidebar-item__title rcx-sidebar-item__title--highlighted"
-                          id="_r_a6_"
+                          id="_r_a4_"
                         >
                           Alice Bob
                         </div>
@@ -1456,7 +1456,7 @@ exports[`[SidebarItem Component] renders CondensedItems without crashing 1`] = `
                                 aria-haspopup="true"
                                 aria-label="Options"
                                 class="is_View _f-1069813397 _mh-1241200853 _ta-1906144518 _ws-973912173 _td-211436768 _c-22887652 _os-249893454 _o-1119039191 _to-1727917045 _ff-409630021 _fvn-1977619713 _fs-347291933 _fw-289166179 _ls-1782815796 _p-230374000 _a-1578443335 _b-1628331993 _br-1397394445 _bs-1225725885 _w-1686757560 _mw-1952433892 _h-1628964073 _d-312446553 _jc-642967080 _ai-1864573722 _lh-2067208245 _c-1139941473 _b-1242743842 rcx-button--mini-square rcx-button--square rcx-button--icon rcx-button"
-                                id="react-aria-_r_ab_"
+                                id="react-aria-_r_a9_"
                                 title="Options"
                                 type="button"
                               >
@@ -1517,7 +1517,7 @@ exports[`[SidebarItem Component] renders Extended without crashing 1`] = `
               class="is_View _bs-568394592 _f-172495823 _mw-354604370 _mh-1241200853 _m-2017216831 _p-1943363302 _b-2033297122 _os-249893454 _ff-409630021 _fvn-1977619713 rcx-sidebar-accordion-item"
             >
               <div
-                aria-controls="_r_an_"
+                aria-controls="_r_ak_"
                 aria-expanded="true"
                 class="is_View _bs-568394592 _f-619631402 _mw-354604370 _mh-1646438792 _m-2017216831 _p-1916530296 _b-466862125 _ff-409630021 _fvn-1977619713 _p-1708368765 _zi-2094244754 _i-288960214 _ai-121763387 _ta-507911453 _c-1063453128 _cg-86881132 _os-221264303 _bs-49721704 _c-1830342115 _br-1585832732 _b-313882764 t_group_rcx-sidebar-accordion-item-bar rcx-sidebar-accordion-item__bar rcx-box--animated"
                 role="button"
@@ -1535,17 +1535,17 @@ exports[`[SidebarItem Component] renders Extended without crashing 1`] = `
                 </span>
                 <h5
                   class="is_Text _bs-652081535 _f-1246374076 _mw-354604370 _mh-1241200853 _d-1987097250 _m-2017216831 _ws-973912173 _o-1119039191 _to-1727917045 _fs-347291933 _fw-289168101 _lh-1925956564 _ls-1782815796 rcx-sidebar-accordion-item__title"
-                  id="_r_am_"
+                  id="_r_aj_"
                 >
                   Label
                 </h5>
               </div>
               <div
                 class="is_View _bs-652081535 _f-957025663 _mw-354604370 _mh-1241200853 _d-1987097250 _o-1119039191 _m-2017216831 _p-460328368 _ls-1251843592 _v-595517078 _h-566932805 rcx-sidebar-accordion-item__panel rcx-box--animated rcx-sidebar-accordion-item__panel--expanded"
-                id="_r_an_"
+                id="_r_ak_"
               >
                 <div
-                  aria-labelledby="_r_au_"
+                  aria-labelledby="_r_ar_"
                   class="is_View _bs-568394592 _f-1677436821 _mw-354604370 _mh-1241200853 _m-2017216831 _p-1943363302 _b-650654186 _os-249893454 _ff-409630021 _fvn-1977619713 rcx-sidebar-collapse-group"
                   role="group"
                 >
@@ -1553,10 +1553,10 @@ exports[`[SidebarItem Component] renders Extended without crashing 1`] = `
                     class="is_Text _p-1021290656 _d-341075704 _f-1069814357 _ai-121763387 _mw-842770087 _mh-499962855 _m-2017216831 _p-536964724 _ls-1251843592 _ws-311910413 _ww-408434756 _br-1718100884 _ff-409630021 _fs-2088488067 _lh-1306743983 _ls-1782815796 _fw-289168101 _g-1760282038 _c-920334418 t_group_rcx-item-group-header rcx-item-group-header rcx-item-group-header--inset-md rcx-sidebar-collapse-group__bar"
                   >
                     <div
-                      aria-controls="_r_av_"
+                      aria-controls="_r_as_"
                       aria-expanded="true"
                       class="is_Text _o-1119039191 _f-1973813477 _m-2017216831 _ws-973912173 _ww-408434756 _to-1727917045 _c-954359819 _ff-4295677 _fs-1279428672 _fw-702336919 _fs-1723449324 _lh-1970121045 _ls-763972879 _fvn-882811879 _d-255188251 _ai-1055227096 _mw-839999524 _ta-1124544800 _cg-1040514961 _b-965065743 _os-164006001 _bs-7536598 _c-1150283745 _br-1477877479 rcx-item-group-title rcx-sidebar-collapse-group__bar-button"
-                      id="_r_b2_"
+                      id="_r_av_"
                       role="button"
                       tabindex="0"
                     >
@@ -1565,7 +1565,7 @@ exports[`[SidebarItem Component] renders Extended without crashing 1`] = `
                       >
                         <h4
                           class="is_Text _bs-652081535 _f-1246374076 _mw-354604370 _mh-1241200853 _d-1987097250 _m-2017216831 _ws-973912173 _o-1119039191 _to-1727917045 _fs-2088488067 _fw-289165218 _lh-1306743983 _ls-1782815796 rcx-sidebar-collapse-group__title"
-                          id="_r_au_"
+                          id="_r_ar_"
                         >
                           Label
                         </h4>
@@ -1595,7 +1595,7 @@ exports[`[SidebarItem Component] renders Extended without crashing 1`] = `
                             aria-haspopup="true"
                             aria-label="Options"
                             class="is_View _f-1069813397 _mh-1241200853 _ta-1906144518 _ws-973912173 _td-211436768 _c-22887652 _os-249893454 _o-1119039191 _to-1727917045 _ff-409630021 _fvn-1977619713 _fs-347291933 _fw-289166179 _ls-1782815796 _p-230374000 _a-1578443335 _b-1628331993 _br-1397394445 _bs-1225725885 _w-1686757560 _mw-1952433892 _h-1628964073 _d-312446553 _jc-642967080 _ai-1864573722 _lh-2067208245 _c-1139941473 _b-1242743842 rcx-button--mini-square rcx-button--square rcx-button--icon rcx-button"
-                            id="react-aria-_r_ba_"
+                            id="react-aria-_r_b7_"
                             title="Options"
                             type="button"
                           >
@@ -1611,9 +1611,9 @@ exports[`[SidebarItem Component] renders Extended without crashing 1`] = `
                     </div>
                   </div>
                   <div
-                    aria-labelledby="_r_au_"
+                    aria-labelledby="_r_ar_"
                     class="is_View _bs-652081535 _f-957027585 _mw-354604370 _mh-1241200853 _v-1275575448 _o-2052502900 _h-624191107 _m-2019987394 _p-1940592739 _ls-1165956139 _c-1176677446 rcx-item-group rcx-sidebar-collapse-group__panel rcx-box--animated rcx-sidebar-collapse-group__panel--expanded"
-                    id="_r_av_"
+                    id="_r_as_"
                     role="list"
                   >
                     <div
@@ -1646,7 +1646,7 @@ exports[`[SidebarItem Component] renders Extended without crashing 1`] = `
                             <div
                               aria-hidden="true"
                               class="is_Text _d-341075704 _f-1128736932 _jc-1099843255 _ai-121763387 _mw-354604370 _ws-311910413 _ww-408434756 _w-120696903 _h-858548760 rcx-item__icon rcx-sidebar-item__icon"
-                              id="_r_bn_"
+                              id="_r_bk_"
                             >
                               <i
                                 aria-hidden="true"
@@ -1657,7 +1657,7 @@ exports[`[SidebarItem Component] renders Extended without crashing 1`] = `
                             </div>
                             <div
                               class="is_Text _o-1119039191 _f-649097281 _mw-842770087 _ws-973912173 _ww-408434756 _to-1727917045 _d-1987097250 rcx-item__title rcx-sidebar-item__title"
-                              id="_r_bq_"
+                              id="_r_bn_"
                             >
                               Marvin Black
                             </div>
@@ -1695,7 +1695,7 @@ exports[`[SidebarItem Component] renders Extended without crashing 1`] = `
                                     aria-haspopup="true"
                                     aria-label="Options"
                                     class="is_View _f-1069813397 _mh-1241200853 _ta-1906144518 _ws-973912173 _td-211436768 _c-22887652 _os-249893454 _o-1119039191 _to-1727917045 _ff-409630021 _fvn-1977619713 _fs-347291933 _fw-289166179 _ls-1782815796 _p-230374000 _a-1578443335 _b-1628331993 _br-1397394445 _bs-1225725885 _w-1686757560 _mw-1952433892 _h-1628964073 _d-312446553 _jc-642967080 _ai-1864573722 _lh-2067208245 _c-1139941473 _b-1242743842 rcx-button--mini-square rcx-button--square rcx-button--icon rcx-button"
-                                    id="react-aria-_r_c2_"
+                                    id="react-aria-_r_bv_"
                                     title="Options"
                                     type="button"
                                   >
@@ -1743,7 +1743,7 @@ exports[`[SidebarItem Component] renders Extended without crashing 1`] = `
                             <div
                               aria-hidden="true"
                               class="is_Text _d-341075704 _f-1128736932 _jc-1099843255 _ai-121763387 _mw-354604370 _ws-311910413 _ww-408434756 _w-120696903 _h-858548760 rcx-item__icon rcx-sidebar-item__icon"
-                              id="_r_ce_"
+                              id="_r_cb_"
                             >
                               <i
                                 aria-hidden="true"
@@ -1754,7 +1754,7 @@ exports[`[SidebarItem Component] renders Extended without crashing 1`] = `
                             </div>
                             <div
                               class="is_Text _o-1119039191 _f-649097281 _mw-842770087 _ws-973912173 _ww-408434756 _to-1727917045 _d-1987097250 rcx-item__title rcx-sidebar-item__title"
-                              id="_r_ch_"
+                              id="_r_ce_"
                             >
                               Esther Miles
                             </div>
@@ -1792,7 +1792,7 @@ exports[`[SidebarItem Component] renders Extended without crashing 1`] = `
                                     aria-haspopup="true"
                                     aria-label="Options"
                                     class="is_View _f-1069813397 _mh-1241200853 _ta-1906144518 _ws-973912173 _td-211436768 _c-22887652 _os-249893454 _o-1119039191 _to-1727917045 _ff-409630021 _fvn-1977619713 _fs-347291933 _fw-289166179 _ls-1782815796 _p-230374000 _a-1578443335 _b-1628331993 _br-1397394445 _bs-1225725885 _w-1686757560 _mw-1952433892 _h-1628964073 _d-312446553 _jc-642967080 _ai-1864573722 _lh-2067208245 _c-1139941473 _b-1242743842 rcx-button--mini-square rcx-button--square rcx-button--icon rcx-button"
-                                    id="react-aria-_r_cp_"
+                                    id="react-aria-_r_cm_"
                                     title="Options"
                                     type="button"
                                   >
@@ -1840,7 +1840,7 @@ exports[`[SidebarItem Component] renders Extended without crashing 1`] = `
                             <div
                               aria-hidden="true"
                               class="is_Text _d-341075704 _f-1128736932 _jc-1099843255 _ai-121763387 _mw-354604370 _ws-311910413 _ww-408434756 _w-120696903 _h-858548760 rcx-item__icon rcx-sidebar-item__icon"
-                              id="_r_d5_"
+                              id="_r_d2_"
                             >
                               <i
                                 aria-hidden="true"
@@ -1851,7 +1851,7 @@ exports[`[SidebarItem Component] renders Extended without crashing 1`] = `
                             </div>
                             <div
                               class="is_Text _o-1119039191 _f-649097281 _mw-842770087 _ws-973912173 _ww-408434756 _to-1727917045 _d-1987097250 rcx-item__title rcx-sidebar-item__title"
-                              id="_r_d8_"
+                              id="_r_d5_"
                             >
                               Leroy Jenkins
                             </div>
@@ -1889,7 +1889,7 @@ exports[`[SidebarItem Component] renders Extended without crashing 1`] = `
                                     aria-haspopup="true"
                                     aria-label="Options"
                                     class="is_View _f-1069813397 _mh-1241200853 _ta-1906144518 _ws-973912173 _td-211436768 _c-22887652 _os-249893454 _o-1119039191 _to-1727917045 _ff-409630021 _fvn-1977619713 _fs-347291933 _fw-289166179 _ls-1782815796 _p-230374000 _a-1578443335 _b-1628331993 _br-1397394445 _bs-1225725885 _w-1686757560 _mw-1952433892 _h-1628964073 _d-312446553 _jc-642967080 _ai-1864573722 _lh-2067208245 _c-1139941473 _b-1242743842 rcx-button--mini-square rcx-button--square rcx-button--icon rcx-button"
-                                    id="react-aria-_r_dg_"
+                                    id="react-aria-_r_dd_"
                                     title="Options"
                                     type="button"
                                   >
@@ -1937,7 +1937,7 @@ exports[`[SidebarItem Component] renders Extended without crashing 1`] = `
                             <div
                               aria-hidden="true"
                               class="is_Text _d-341075704 _f-1128736932 _jc-1099843255 _ai-121763387 _mw-354604370 _ws-311910413 _ww-408434756 _w-120696903 _h-858548760 rcx-item__icon rcx-sidebar-item__icon"
-                              id="_r_ds_"
+                              id="_r_dp_"
                             >
                               <i
                                 aria-hidden="true"
@@ -1948,7 +1948,7 @@ exports[`[SidebarItem Component] renders Extended without crashing 1`] = `
                             </div>
                             <div
                               class="is_Text _o-1119039191 _f-649097281 _mw-842770087 _ws-973912173 _ww-408434756 _to-1727917045 _d-1987097250 rcx-item__title rcx-sidebar-item__title"
-                              id="_r_dv_"
+                              id="_r_ds_"
                             >
                               Morgan Freeman looooooooooong looooooooooong looooooooooong name
                             </div>
@@ -1986,7 +1986,7 @@ exports[`[SidebarItem Component] renders Extended without crashing 1`] = `
                                     aria-haspopup="true"
                                     aria-label="Options"
                                     class="is_View _f-1069813397 _mh-1241200853 _ta-1906144518 _ws-973912173 _td-211436768 _c-22887652 _os-249893454 _o-1119039191 _to-1727917045 _ff-409630021 _fvn-1977619713 _fs-347291933 _fw-289166179 _ls-1782815796 _p-230374000 _a-1578443335 _b-1628331993 _br-1397394445 _bs-1225725885 _w-1686757560 _mw-1952433892 _h-1628964073 _d-312446553 _jc-642967080 _ai-1864573722 _lh-2067208245 _c-1139941473 _b-1242743842 rcx-button--mini-square rcx-button--square rcx-button--icon rcx-button"
-                                    id="react-aria-_r_e7_"
+                                    id="react-aria-_r_e4_"
                                     title="Options"
                                     type="button"
                                   >
@@ -2034,7 +2034,7 @@ exports[`[SidebarItem Component] renders Extended without crashing 1`] = `
                             <div
                               aria-hidden="true"
                               class="is_Text _d-341075704 _f-1128736932 _jc-1099843255 _ai-121763387 _mw-354604370 _ws-311910413 _ww-408434756 _w-120696903 _h-858548760 rcx-item__icon rcx-sidebar-item__icon"
-                              id="_r_ej_"
+                              id="_r_eg_"
                             >
                               <i
                                 aria-hidden="true"
@@ -2045,7 +2045,7 @@ exports[`[SidebarItem Component] renders Extended without crashing 1`] = `
                             </div>
                             <div
                               class="is_Text _o-1119039191 _f-649097281 _mw-842770087 _ws-973912173 _ww-408434756 _to-1727917045 _d-1987097250 rcx-item__title rcx-sidebar-item__title"
-                              id="_r_em_"
+                              id="_r_ej_"
                             >
                               John Doe
                             </div>
@@ -2083,7 +2083,7 @@ exports[`[SidebarItem Component] renders Extended without crashing 1`] = `
                                     aria-haspopup="true"
                                     aria-label="Options"
                                     class="is_View _f-1069813397 _mh-1241200853 _ta-1906144518 _ws-973912173 _td-211436768 _c-22887652 _os-249893454 _o-1119039191 _to-1727917045 _ff-409630021 _fvn-1977619713 _fs-347291933 _fw-289166179 _ls-1782815796 _p-230374000 _a-1578443335 _b-1628331993 _br-1397394445 _bs-1225725885 _w-1686757560 _mw-1952433892 _h-1628964073 _d-312446553 _jc-642967080 _ai-1864573722 _lh-2067208245 _c-1139941473 _b-1242743842 rcx-button--mini-square rcx-button--square rcx-button--icon rcx-button"
-                                    id="react-aria-_r_eu_"
+                                    id="react-aria-_r_er_"
                                     title="Options"
                                     type="button"
                                   >
@@ -2131,7 +2131,7 @@ exports[`[SidebarItem Component] renders Extended without crashing 1`] = `
                             <div
                               aria-hidden="true"
                               class="is_Text _d-341075704 _f-1128736932 _jc-1099843255 _ai-121763387 _mw-354604370 _ws-311910413 _ww-408434756 _w-120696903 _h-858548760 rcx-item__icon rcx-sidebar-item__icon"
-                              id="_r_fa_"
+                              id="_r_f7_"
                             >
                               <i
                                 aria-hidden="true"
@@ -2142,7 +2142,7 @@ exports[`[SidebarItem Component] renders Extended without crashing 1`] = `
                             </div>
                             <div
                               class="is_Text _o-1119039191 _f-649097281 _mw-842770087 _ws-973912173 _ww-408434756 _to-1727917045 _d-1987097250 rcx-item__title rcx-sidebar-item__title"
-                              id="_r_fd_"
+                              id="_r_fa_"
                             >
                               Jane Doe
                             </div>
@@ -2180,7 +2180,7 @@ exports[`[SidebarItem Component] renders Extended without crashing 1`] = `
                                     aria-haspopup="true"
                                     aria-label="Options"
                                     class="is_View _f-1069813397 _mh-1241200853 _ta-1906144518 _ws-973912173 _td-211436768 _c-22887652 _os-249893454 _o-1119039191 _to-1727917045 _ff-409630021 _fvn-1977619713 _fs-347291933 _fw-289166179 _ls-1782815796 _p-230374000 _a-1578443335 _b-1628331993 _br-1397394445 _bs-1225725885 _w-1686757560 _mw-1952433892 _h-1628964073 _d-312446553 _jc-642967080 _ai-1864573722 _lh-2067208245 _c-1139941473 _b-1242743842 rcx-button--mini-square rcx-button--square rcx-button--icon rcx-button"
-                                    id="react-aria-_r_fl_"
+                                    id="react-aria-_r_fi_"
                                     title="Options"
                                     type="button"
                                   >
@@ -2228,7 +2228,7 @@ exports[`[SidebarItem Component] renders Extended without crashing 1`] = `
                             <div
                               aria-hidden="true"
                               class="is_Text _d-341075704 _f-1128736932 _jc-1099843255 _ai-121763387 _mw-354604370 _ws-311910413 _ww-408434756 _w-120696903 _h-858548760 rcx-item__icon rcx-sidebar-item__icon"
-                              id="_r_g1_"
+                              id="_r_fu_"
                             >
                               <i
                                 aria-hidden="true"
@@ -2239,7 +2239,7 @@ exports[`[SidebarItem Component] renders Extended without crashing 1`] = `
                             </div>
                             <div
                               class="is_Text _o-1119039191 _f-649097281 _mw-842770087 _ws-973912173 _ww-408434756 _to-1727917045 _d-1987097250 rcx-item__title rcx-sidebar-item__title"
-                              id="_r_g4_"
+                              id="_r_g1_"
                             >
                               Baz Qux
                             </div>
@@ -2277,7 +2277,7 @@ exports[`[SidebarItem Component] renders Extended without crashing 1`] = `
                                     aria-haspopup="true"
                                     aria-label="Options"
                                     class="is_View _f-1069813397 _mh-1241200853 _ta-1906144518 _ws-973912173 _td-211436768 _c-22887652 _os-249893454 _o-1119039191 _to-1727917045 _ff-409630021 _fvn-1977619713 _fs-347291933 _fw-289166179 _ls-1782815796 _p-230374000 _a-1578443335 _b-1628331993 _br-1397394445 _bs-1225725885 _w-1686757560 _mw-1952433892 _h-1628964073 _d-312446553 _jc-642967080 _ai-1864573722 _lh-2067208245 _c-1139941473 _b-1242743842 rcx-button--mini-square rcx-button--square rcx-button--icon rcx-button"
-                                    id="react-aria-_r_gc_"
+                                    id="react-aria-_r_g9_"
                                     title="Options"
                                     type="button"
                                   >
@@ -2325,7 +2325,7 @@ exports[`[SidebarItem Component] renders Extended without crashing 1`] = `
                             <div
                               aria-hidden="true"
                               class="is_Text _d-341075704 _f-1128736932 _jc-1099843255 _ai-121763387 _mw-354604370 _ws-311910413 _ww-408434756 _w-120696903 _h-858548760 rcx-item__icon rcx-sidebar-item__icon"
-                              id="_r_go_"
+                              id="_r_gl_"
                             >
                               <i
                                 aria-hidden="true"
@@ -2336,7 +2336,7 @@ exports[`[SidebarItem Component] renders Extended without crashing 1`] = `
                             </div>
                             <div
                               class="is_Text _o-1119039191 _f-649097281 _mw-842770087 _ws-973912173 _ww-408434756 _to-1727917045 _d-1987097250 rcx-item__title rcx-sidebar-item__title"
-                              id="_r_gr_"
+                              id="_r_go_"
                             >
                               Alice Bob
                             </div>
@@ -2374,7 +2374,7 @@ exports[`[SidebarItem Component] renders Extended without crashing 1`] = `
                                     aria-haspopup="true"
                                     aria-label="Options"
                                     class="is_View _f-1069813397 _mh-1241200853 _ta-1906144518 _ws-973912173 _td-211436768 _c-22887652 _os-249893454 _o-1119039191 _to-1727917045 _ff-409630021 _fvn-1977619713 _fs-347291933 _fw-289166179 _ls-1782815796 _p-230374000 _a-1578443335 _b-1628331993 _br-1397394445 _bs-1225725885 _w-1686757560 _mw-1952433892 _h-1628964073 _d-312446553 _jc-642967080 _ai-1864573722 _lh-2067208245 _c-1139941473 _b-1242743842 rcx-button--mini-square rcx-button--square rcx-button--icon rcx-button"
-                                    id="react-aria-_r_h3_"
+                                    id="react-aria-_r_h0_"
                                     title="Options"
                                     type="button"
                                   >
@@ -2437,7 +2437,7 @@ exports[`[SidebarItem Component] renders Medium without crashing 1`] = `
               class="is_View _bs-568394592 _f-172495823 _mw-354604370 _mh-1241200853 _m-2017216831 _p-1943363302 _b-2033297122 _os-249893454 _ff-409630021 _fvn-1977619713 rcx-sidebar-accordion-item"
             >
               <div
-                aria-controls="_r_hf_"
+                aria-controls="_r_hb_"
                 aria-expanded="true"
                 class="is_View _bs-568394592 _f-619631402 _mw-354604370 _mh-1646438792 _m-2017216831 _p-1916530296 _b-466862125 _ff-409630021 _fvn-1977619713 _p-1708368765 _zi-2094244754 _i-288960214 _ai-121763387 _ta-507911453 _c-1063453128 _cg-86881132 _os-221264303 _bs-49721704 _c-1830342115 _br-1585832732 _b-313882764 t_group_rcx-sidebar-accordion-item-bar rcx-sidebar-accordion-item__bar rcx-box--animated"
                 role="button"
@@ -2455,17 +2455,17 @@ exports[`[SidebarItem Component] renders Medium without crashing 1`] = `
                 </span>
                 <h5
                   class="is_Text _bs-652081535 _f-1246374076 _mw-354604370 _mh-1241200853 _d-1987097250 _m-2017216831 _ws-973912173 _o-1119039191 _to-1727917045 _fs-347291933 _fw-289168101 _lh-1925956564 _ls-1782815796 rcx-sidebar-accordion-item__title"
-                  id="_r_he_"
+                  id="_r_ha_"
                 >
                   Label
                 </h5>
               </div>
               <div
                 class="is_View _bs-652081535 _f-957025663 _mw-354604370 _mh-1241200853 _d-1987097250 _o-1119039191 _m-2017216831 _p-460328368 _ls-1251843592 _v-595517078 _h-566932805 rcx-sidebar-accordion-item__panel rcx-box--animated rcx-sidebar-accordion-item__panel--expanded"
-                id="_r_hf_"
+                id="_r_hb_"
               >
                 <div
-                  aria-labelledby="_r_hm_"
+                  aria-labelledby="_r_hi_"
                   class="is_View _bs-568394592 _f-1677436821 _mw-354604370 _mh-1241200853 _m-2017216831 _p-1943363302 _b-650654186 _os-249893454 _ff-409630021 _fvn-1977619713 rcx-sidebar-collapse-group"
                   role="group"
                 >
@@ -2473,10 +2473,10 @@ exports[`[SidebarItem Component] renders Medium without crashing 1`] = `
                     class="is_Text _p-1021290656 _d-341075704 _f-1069814357 _ai-121763387 _mw-842770087 _mh-499962855 _m-2017216831 _p-536964724 _ls-1251843592 _ws-311910413 _ww-408434756 _br-1718100884 _ff-409630021 _fs-2088488067 _lh-1306743983 _ls-1782815796 _fw-289168101 _g-1760282038 _c-920334418 t_group_rcx-item-group-header rcx-item-group-header rcx-item-group-header--inset-md rcx-sidebar-collapse-group__bar"
                   >
                     <div
-                      aria-controls="_r_hn_"
+                      aria-controls="_r_hj_"
                       aria-expanded="true"
                       class="is_Text _o-1119039191 _f-1973813477 _m-2017216831 _ws-973912173 _ww-408434756 _to-1727917045 _c-954359819 _ff-4295677 _fs-1279428672 _fw-702336919 _fs-1723449324 _lh-1970121045 _ls-763972879 _fvn-882811879 _d-255188251 _ai-1055227096 _mw-839999524 _ta-1124544800 _cg-1040514961 _b-965065743 _os-164006001 _bs-7536598 _c-1150283745 _br-1477877479 rcx-item-group-title rcx-sidebar-collapse-group__bar-button"
-                      id="_r_hq_"
+                      id="_r_hm_"
                       role="button"
                       tabindex="0"
                     >
@@ -2485,7 +2485,7 @@ exports[`[SidebarItem Component] renders Medium without crashing 1`] = `
                       >
                         <h4
                           class="is_Text _bs-652081535 _f-1246374076 _mw-354604370 _mh-1241200853 _d-1987097250 _m-2017216831 _ws-973912173 _o-1119039191 _to-1727917045 _fs-2088488067 _fw-289165218 _lh-1306743983 _ls-1782815796 rcx-sidebar-collapse-group__title"
-                          id="_r_hm_"
+                          id="_r_hi_"
                         >
                           Label
                         </h4>
@@ -2515,7 +2515,7 @@ exports[`[SidebarItem Component] renders Medium without crashing 1`] = `
                             aria-haspopup="true"
                             aria-label="Options"
                             class="is_View _f-1069813397 _mh-1241200853 _ta-1906144518 _ws-973912173 _td-211436768 _c-22887652 _os-249893454 _o-1119039191 _to-1727917045 _ff-409630021 _fvn-1977619713 _fs-347291933 _fw-289166179 _ls-1782815796 _p-230374000 _a-1578443335 _b-1628331993 _br-1397394445 _bs-1225725885 _w-1686757560 _mw-1952433892 _h-1628964073 _d-312446553 _jc-642967080 _ai-1864573722 _lh-2067208245 _c-1139941473 _b-1242743842 rcx-button--mini-square rcx-button--square rcx-button--icon rcx-button"
-                            id="react-aria-_r_i2_"
+                            id="react-aria-_r_hu_"
                             title="Options"
                             type="button"
                           >
@@ -2531,9 +2531,9 @@ exports[`[SidebarItem Component] renders Medium without crashing 1`] = `
                     </div>
                   </div>
                   <div
-                    aria-labelledby="_r_hm_"
+                    aria-labelledby="_r_hi_"
                     class="is_View _bs-652081535 _f-957027585 _mw-354604370 _mh-1241200853 _v-1275575448 _o-2052502900 _h-624191107 _m-2019987394 _p-1940592739 _ls-1165956139 _c-1176677446 rcx-item-group rcx-sidebar-collapse-group__panel rcx-box--animated rcx-sidebar-collapse-group__panel--expanded"
-                    id="_r_hn_"
+                    id="_r_hj_"
                     role="list"
                   >
                     <div
@@ -2560,7 +2560,7 @@ exports[`[SidebarItem Component] renders Medium without crashing 1`] = `
                         <div
                           aria-hidden="true"
                           class="is_Text _d-341075704 _f-1128736932 _jc-1099843255 _ai-121763387 _mw-354604370 _ws-311910413 _ww-408434756 _w-120696903 _h-858548760 rcx-item__icon rcx-sidebar-item__icon"
-                          id="_r_ic_"
+                          id="_r_i8_"
                         >
                           <i
                             aria-hidden="true"
@@ -2571,7 +2571,7 @@ exports[`[SidebarItem Component] renders Medium without crashing 1`] = `
                         </div>
                         <div
                           class="is_Text _o-1119039191 _f-649097281 _mw-842770087 _ws-973912173 _ww-408434756 _to-1727917045 _d-1987097250 rcx-item__title rcx-sidebar-item__title"
-                          id="_r_if_"
+                          id="_r_ib_"
                         >
                           Marvin Black
                         </div>
@@ -2595,7 +2595,7 @@ exports[`[SidebarItem Component] renders Medium without crashing 1`] = `
                                 aria-haspopup="true"
                                 aria-label="Options"
                                 class="is_View _f-1069813397 _mh-1241200853 _ta-1906144518 _ws-973912173 _td-211436768 _c-22887652 _os-249893454 _o-1119039191 _to-1727917045 _ff-409630021 _fvn-1977619713 _fs-347291933 _fw-289166179 _ls-1782815796 _p-230374000 _a-1578443335 _b-1628331993 _br-1397394445 _bs-1225725885 _w-1686757560 _mw-1952433892 _h-1628964073 _d-312446553 _jc-642967080 _ai-1864573722 _lh-2067208245 _c-1139941473 _b-1242743842 rcx-button--mini-square rcx-button--square rcx-button--icon rcx-button"
-                                id="react-aria-_r_ik_"
+                                id="react-aria-_r_ig_"
                                 title="Options"
                                 type="button"
                               >
@@ -2635,7 +2635,7 @@ exports[`[SidebarItem Component] renders Medium without crashing 1`] = `
                         <div
                           aria-hidden="true"
                           class="is_Text _d-341075704 _f-1128736932 _jc-1099843255 _ai-121763387 _mw-354604370 _ws-311910413 _ww-408434756 _w-120696903 _h-858548760 rcx-item__icon rcx-sidebar-item__icon"
-                          id="_r_it_"
+                          id="_r_ip_"
                         >
                           <i
                             aria-hidden="true"
@@ -2646,7 +2646,7 @@ exports[`[SidebarItem Component] renders Medium without crashing 1`] = `
                         </div>
                         <div
                           class="is_Text _o-1119039191 _f-649097281 _mw-842770087 _ws-973912173 _ww-408434756 _to-1727917045 _d-1987097250 rcx-item__title rcx-sidebar-item__title"
-                          id="_r_j0_"
+                          id="_r_is_"
                         >
                           Esther Miles
                         </div>
@@ -2670,7 +2670,7 @@ exports[`[SidebarItem Component] renders Medium without crashing 1`] = `
                                 aria-haspopup="true"
                                 aria-label="Options"
                                 class="is_View _f-1069813397 _mh-1241200853 _ta-1906144518 _ws-973912173 _td-211436768 _c-22887652 _os-249893454 _o-1119039191 _to-1727917045 _ff-409630021 _fvn-1977619713 _fs-347291933 _fw-289166179 _ls-1782815796 _p-230374000 _a-1578443335 _b-1628331993 _br-1397394445 _bs-1225725885 _w-1686757560 _mw-1952433892 _h-1628964073 _d-312446553 _jc-642967080 _ai-1864573722 _lh-2067208245 _c-1139941473 _b-1242743842 rcx-button--mini-square rcx-button--square rcx-button--icon rcx-button"
-                                id="react-aria-_r_j5_"
+                                id="react-aria-_r_j1_"
                                 title="Options"
                                 type="button"
                               >
@@ -2710,7 +2710,7 @@ exports[`[SidebarItem Component] renders Medium without crashing 1`] = `
                         <div
                           aria-hidden="true"
                           class="is_Text _d-341075704 _f-1128736932 _jc-1099843255 _ai-121763387 _mw-354604370 _ws-311910413 _ww-408434756 _w-120696903 _h-858548760 rcx-item__icon rcx-sidebar-item__icon"
-                          id="_r_je_"
+                          id="_r_ja_"
                         >
                           <i
                             aria-hidden="true"
@@ -2721,7 +2721,7 @@ exports[`[SidebarItem Component] renders Medium without crashing 1`] = `
                         </div>
                         <div
                           class="is_Text _o-1119039191 _f-649097281 _mw-842770087 _ws-973912173 _ww-408434756 _to-1727917045 _d-1987097250 rcx-item__title rcx-sidebar-item__title"
-                          id="_r_jh_"
+                          id="_r_jd_"
                         >
                           Leroy Jenkins
                         </div>
@@ -2745,7 +2745,7 @@ exports[`[SidebarItem Component] renders Medium without crashing 1`] = `
                                 aria-haspopup="true"
                                 aria-label="Options"
                                 class="is_View _f-1069813397 _mh-1241200853 _ta-1906144518 _ws-973912173 _td-211436768 _c-22887652 _os-249893454 _o-1119039191 _to-1727917045 _ff-409630021 _fvn-1977619713 _fs-347291933 _fw-289166179 _ls-1782815796 _p-230374000 _a-1578443335 _b-1628331993 _br-1397394445 _bs-1225725885 _w-1686757560 _mw-1952433892 _h-1628964073 _d-312446553 _jc-642967080 _ai-1864573722 _lh-2067208245 _c-1139941473 _b-1242743842 rcx-button--mini-square rcx-button--square rcx-button--icon rcx-button"
-                                id="react-aria-_r_jm_"
+                                id="react-aria-_r_ji_"
                                 title="Options"
                                 type="button"
                               >
@@ -2785,7 +2785,7 @@ exports[`[SidebarItem Component] renders Medium without crashing 1`] = `
                         <div
                           aria-hidden="true"
                           class="is_Text _d-341075704 _f-1128736932 _jc-1099843255 _ai-121763387 _mw-354604370 _ws-311910413 _ww-408434756 _w-120696903 _h-858548760 rcx-item__icon rcx-sidebar-item__icon"
-                          id="_r_jv_"
+                          id="_r_jr_"
                         >
                           <i
                             aria-hidden="true"
@@ -2796,7 +2796,7 @@ exports[`[SidebarItem Component] renders Medium without crashing 1`] = `
                         </div>
                         <div
                           class="is_Text _o-1119039191 _f-649097281 _mw-842770087 _ws-973912173 _ww-408434756 _to-1727917045 _d-1987097250 rcx-item__title rcx-sidebar-item__title"
-                          id="_r_k2_"
+                          id="_r_ju_"
                         >
                           Morgan Freeman looooooooooong looooooooooong looooooooooong name
                         </div>
@@ -2820,7 +2820,7 @@ exports[`[SidebarItem Component] renders Medium without crashing 1`] = `
                                 aria-haspopup="true"
                                 aria-label="Options"
                                 class="is_View _f-1069813397 _mh-1241200853 _ta-1906144518 _ws-973912173 _td-211436768 _c-22887652 _os-249893454 _o-1119039191 _to-1727917045 _ff-409630021 _fvn-1977619713 _fs-347291933 _fw-289166179 _ls-1782815796 _p-230374000 _a-1578443335 _b-1628331993 _br-1397394445 _bs-1225725885 _w-1686757560 _mw-1952433892 _h-1628964073 _d-312446553 _jc-642967080 _ai-1864573722 _lh-2067208245 _c-1139941473 _b-1242743842 rcx-button--mini-square rcx-button--square rcx-button--icon rcx-button"
-                                id="react-aria-_r_k7_"
+                                id="react-aria-_r_k3_"
                                 title="Options"
                                 type="button"
                               >
@@ -2860,7 +2860,7 @@ exports[`[SidebarItem Component] renders Medium without crashing 1`] = `
                         <div
                           aria-hidden="true"
                           class="is_Text _d-341075704 _f-1128736932 _jc-1099843255 _ai-121763387 _mw-354604370 _ws-311910413 _ww-408434756 _w-120696903 _h-858548760 rcx-item__icon rcx-sidebar-item__icon"
-                          id="_r_kg_"
+                          id="_r_kc_"
                         >
                           <i
                             aria-hidden="true"
@@ -2871,7 +2871,7 @@ exports[`[SidebarItem Component] renders Medium without crashing 1`] = `
                         </div>
                         <div
                           class="is_Text _o-1119039191 _f-649097281 _mw-842770087 _ws-973912173 _ww-408434756 _to-1727917045 _d-1987097250 rcx-item__title rcx-sidebar-item__title"
-                          id="_r_kj_"
+                          id="_r_kf_"
                         >
                           John Doe
                         </div>
@@ -2895,7 +2895,7 @@ exports[`[SidebarItem Component] renders Medium without crashing 1`] = `
                                 aria-haspopup="true"
                                 aria-label="Options"
                                 class="is_View _f-1069813397 _mh-1241200853 _ta-1906144518 _ws-973912173 _td-211436768 _c-22887652 _os-249893454 _o-1119039191 _to-1727917045 _ff-409630021 _fvn-1977619713 _fs-347291933 _fw-289166179 _ls-1782815796 _p-230374000 _a-1578443335 _b-1628331993 _br-1397394445 _bs-1225725885 _w-1686757560 _mw-1952433892 _h-1628964073 _d-312446553 _jc-642967080 _ai-1864573722 _lh-2067208245 _c-1139941473 _b-1242743842 rcx-button--mini-square rcx-button--square rcx-button--icon rcx-button"
-                                id="react-aria-_r_ko_"
+                                id="react-aria-_r_kk_"
                                 title="Options"
                                 type="button"
                               >
@@ -2935,7 +2935,7 @@ exports[`[SidebarItem Component] renders Medium without crashing 1`] = `
                         <div
                           aria-hidden="true"
                           class="is_Text _d-341075704 _f-1128736932 _jc-1099843255 _ai-121763387 _mw-354604370 _ws-311910413 _ww-408434756 _w-120696903 _h-858548760 rcx-item__icon rcx-sidebar-item__icon"
-                          id="_r_l1_"
+                          id="_r_kt_"
                         >
                           <i
                             aria-hidden="true"
@@ -2946,7 +2946,7 @@ exports[`[SidebarItem Component] renders Medium without crashing 1`] = `
                         </div>
                         <div
                           class="is_Text _o-1119039191 _f-649097281 _mw-842770087 _ws-973912173 _ww-408434756 _to-1727917045 _d-1987097250 rcx-item__title rcx-sidebar-item__title"
-                          id="_r_l4_"
+                          id="_r_l0_"
                         >
                           Jane Doe
                         </div>
@@ -2970,7 +2970,7 @@ exports[`[SidebarItem Component] renders Medium without crashing 1`] = `
                                 aria-haspopup="true"
                                 aria-label="Options"
                                 class="is_View _f-1069813397 _mh-1241200853 _ta-1906144518 _ws-973912173 _td-211436768 _c-22887652 _os-249893454 _o-1119039191 _to-1727917045 _ff-409630021 _fvn-1977619713 _fs-347291933 _fw-289166179 _ls-1782815796 _p-230374000 _a-1578443335 _b-1628331993 _br-1397394445 _bs-1225725885 _w-1686757560 _mw-1952433892 _h-1628964073 _d-312446553 _jc-642967080 _ai-1864573722 _lh-2067208245 _c-1139941473 _b-1242743842 rcx-button--mini-square rcx-button--square rcx-button--icon rcx-button"
-                                id="react-aria-_r_l9_"
+                                id="react-aria-_r_l5_"
                                 title="Options"
                                 type="button"
                               >
@@ -3010,7 +3010,7 @@ exports[`[SidebarItem Component] renders Medium without crashing 1`] = `
                         <div
                           aria-hidden="true"
                           class="is_Text _d-341075704 _f-1128736932 _jc-1099843255 _ai-121763387 _mw-354604370 _ws-311910413 _ww-408434756 _w-120696903 _h-858548760 rcx-item__icon rcx-sidebar-item__icon"
-                          id="_r_li_"
+                          id="_r_le_"
                         >
                           <i
                             aria-hidden="true"
@@ -3021,7 +3021,7 @@ exports[`[SidebarItem Component] renders Medium without crashing 1`] = `
                         </div>
                         <div
                           class="is_Text _o-1119039191 _f-649097281 _mw-842770087 _ws-973912173 _ww-408434756 _to-1727917045 _d-1987097250 rcx-item__title rcx-sidebar-item__title"
-                          id="_r_ll_"
+                          id="_r_lh_"
                         >
                           Baz Qux
                         </div>
@@ -3045,7 +3045,7 @@ exports[`[SidebarItem Component] renders Medium without crashing 1`] = `
                                 aria-haspopup="true"
                                 aria-label="Options"
                                 class="is_View _f-1069813397 _mh-1241200853 _ta-1906144518 _ws-973912173 _td-211436768 _c-22887652 _os-249893454 _o-1119039191 _to-1727917045 _ff-409630021 _fvn-1977619713 _fs-347291933 _fw-289166179 _ls-1782815796 _p-230374000 _a-1578443335 _b-1628331993 _br-1397394445 _bs-1225725885 _w-1686757560 _mw-1952433892 _h-1628964073 _d-312446553 _jc-642967080 _ai-1864573722 _lh-2067208245 _c-1139941473 _b-1242743842 rcx-button--mini-square rcx-button--square rcx-button--icon rcx-button"
-                                id="react-aria-_r_lq_"
+                                id="react-aria-_r_lm_"
                                 title="Options"
                                 type="button"
                               >
@@ -3085,7 +3085,7 @@ exports[`[SidebarItem Component] renders Medium without crashing 1`] = `
                         <div
                           aria-hidden="true"
                           class="is_Text _d-341075704 _f-1128736932 _jc-1099843255 _ai-121763387 _mw-354604370 _ws-311910413 _ww-408434756 _w-120696903 _h-858548760 rcx-item__icon rcx-sidebar-item__icon"
-                          id="_r_m3_"
+                          id="_r_lv_"
                         >
                           <i
                             aria-hidden="true"
@@ -3096,7 +3096,7 @@ exports[`[SidebarItem Component] renders Medium without crashing 1`] = `
                         </div>
                         <div
                           class="is_Text _o-1119039191 _f-649097281 _mw-842770087 _ws-973912173 _ww-408434756 _to-1727917045 _d-1987097250 rcx-item__title rcx-sidebar-item__title"
-                          id="_r_m6_"
+                          id="_r_m2_"
                         >
                           Alice Bob
                         </div>
@@ -3120,7 +3120,7 @@ exports[`[SidebarItem Component] renders Medium without crashing 1`] = `
                                 aria-haspopup="true"
                                 aria-label="Options"
                                 class="is_View _f-1069813397 _mh-1241200853 _ta-1906144518 _ws-973912173 _td-211436768 _c-22887652 _os-249893454 _o-1119039191 _to-1727917045 _ff-409630021 _fvn-1977619713 _fs-347291933 _fw-289166179 _ls-1782815796 _p-230374000 _a-1578443335 _b-1628331993 _br-1397394445 _bs-1225725885 _w-1686757560 _mw-1952433892 _h-1628964073 _d-312446553 _jc-642967080 _ai-1864573722 _lh-2067208245 _c-1139941473 _b-1242743842 rcx-button--mini-square rcx-button--square rcx-button--icon rcx-button"
-                                id="react-aria-_r_mb_"
+                                id="react-aria-_r_m7_"
                                 title="Options"
                                 type="button"
                               >
@@ -3181,7 +3181,7 @@ exports[`[SidebarItem Component] renders RoomRowCondensed without crashing 1`] =
               class="is_View _bs-568394592 _f-172495823 _mw-354604370 _mh-1241200853 _m-2017216831 _p-1943363302 _b-2033297122 _os-249893454 _ff-409630021 _fvn-1977619713 rcx-sidebar-accordion-item"
             >
               <div
-                aria-controls="_r_mn_"
+                aria-controls="_r_mi_"
                 aria-expanded="true"
                 class="is_View _bs-568394592 _f-619631402 _mw-354604370 _mh-1646438792 _m-2017216831 _p-1916530296 _b-466862125 _ff-409630021 _fvn-1977619713 _p-1708368765 _zi-2094244754 _i-288960214 _ai-121763387 _ta-507911453 _c-1063453128 _cg-86881132 _os-221264303 _bs-49721704 _c-1830342115 _br-1585832732 _b-313882764 t_group_rcx-sidebar-accordion-item-bar rcx-sidebar-accordion-item__bar rcx-box--animated"
                 role="button"
@@ -3199,17 +3199,17 @@ exports[`[SidebarItem Component] renders RoomRowCondensed without crashing 1`] =
                 </span>
                 <h5
                   class="is_Text _bs-652081535 _f-1246374076 _mw-354604370 _mh-1241200853 _d-1987097250 _m-2017216831 _ws-973912173 _o-1119039191 _to-1727917045 _fs-347291933 _fw-289168101 _lh-1925956564 _ls-1782815796 rcx-sidebar-accordion-item__title"
-                  id="_r_mm_"
+                  id="_r_mh_"
                 >
                   Label
                 </h5>
               </div>
               <div
                 class="is_View _bs-652081535 _f-957025663 _mw-354604370 _mh-1241200853 _d-1987097250 _o-1119039191 _m-2017216831 _p-460328368 _ls-1251843592 _v-595517078 _h-566932805 rcx-sidebar-accordion-item__panel rcx-box--animated rcx-sidebar-accordion-item__panel--expanded"
-                id="_r_mn_"
+                id="_r_mi_"
               >
                 <div
-                  aria-labelledby="_r_mu_"
+                  aria-labelledby="_r_mp_"
                   class="is_View _bs-568394592 _f-1677436821 _mw-354604370 _mh-1241200853 _m-2017216831 _p-1943363302 _b-650654186 _os-249893454 _ff-409630021 _fvn-1977619713 rcx-sidebar-collapse-group"
                   role="group"
                 >
@@ -3217,10 +3217,10 @@ exports[`[SidebarItem Component] renders RoomRowCondensed without crashing 1`] =
                     class="is_Text _p-1021290656 _d-341075704 _f-1069814357 _ai-121763387 _mw-842770087 _mh-499962855 _m-2017216831 _p-536964724 _ls-1251843592 _ws-311910413 _ww-408434756 _br-1718100884 _ff-409630021 _fs-2088488067 _lh-1306743983 _ls-1782815796 _fw-289168101 _g-1760282038 _c-920334418 t_group_rcx-item-group-header rcx-item-group-header rcx-item-group-header--inset-md rcx-sidebar-collapse-group__bar"
                   >
                     <div
-                      aria-controls="_r_mv_"
+                      aria-controls="_r_mq_"
                       aria-expanded="true"
                       class="is_Text _o-1119039191 _f-1973813477 _m-2017216831 _ws-973912173 _ww-408434756 _to-1727917045 _c-954359819 _ff-4295677 _fs-1279428672 _fw-702336919 _fs-1723449324 _lh-1970121045 _ls-763972879 _fvn-882811879 _d-255188251 _ai-1055227096 _mw-839999524 _ta-1124544800 _cg-1040514961 _b-965065743 _os-164006001 _bs-7536598 _c-1150283745 _br-1477877479 rcx-item-group-title rcx-sidebar-collapse-group__bar-button"
-                      id="_r_n2_"
+                      id="_r_mt_"
                       role="button"
                       tabindex="0"
                     >
@@ -3229,7 +3229,7 @@ exports[`[SidebarItem Component] renders RoomRowCondensed without crashing 1`] =
                       >
                         <h4
                           class="is_Text _bs-652081535 _f-1246374076 _mw-354604370 _mh-1241200853 _d-1987097250 _m-2017216831 _ws-973912173 _o-1119039191 _to-1727917045 _fs-2088488067 _fw-289165218 _lh-1306743983 _ls-1782815796 rcx-sidebar-collapse-group__title"
-                          id="_r_mu_"
+                          id="_r_mp_"
                         >
                           Label
                         </h4>
@@ -3259,7 +3259,7 @@ exports[`[SidebarItem Component] renders RoomRowCondensed without crashing 1`] =
                             aria-haspopup="true"
                             aria-label="Options"
                             class="is_View _f-1069813397 _mh-1241200853 _ta-1906144518 _ws-973912173 _td-211436768 _c-22887652 _os-249893454 _o-1119039191 _to-1727917045 _ff-409630021 _fvn-1977619713 _fs-347291933 _fw-289166179 _ls-1782815796 _p-230374000 _a-1578443335 _b-1628331993 _br-1397394445 _bs-1225725885 _w-1686757560 _mw-1952433892 _h-1628964073 _d-312446553 _jc-642967080 _ai-1864573722 _lh-2067208245 _c-1139941473 _b-1242743842 rcx-button--mini-square rcx-button--square rcx-button--icon rcx-button"
-                            id="react-aria-_r_na_"
+                            id="react-aria-_r_n5_"
                             title="Options"
                             type="button"
                           >
@@ -3275,9 +3275,9 @@ exports[`[SidebarItem Component] renders RoomRowCondensed without crashing 1`] =
                     </div>
                   </div>
                   <div
-                    aria-labelledby="_r_mu_"
+                    aria-labelledby="_r_mp_"
                     class="is_View _bs-652081535 _f-957027585 _mw-354604370 _mh-1241200853 _v-1275575448 _o-2052502900 _h-624191107 _m-2019987394 _p-1940592739 _ls-1165956139 _c-1176677446 rcx-item-group rcx-sidebar-collapse-group__panel rcx-box--animated rcx-sidebar-collapse-group__panel--expanded"
-                    id="_r_mv_"
+                    id="_r_mq_"
                     role="list"
                   >
                     <div
@@ -3303,7 +3303,7 @@ exports[`[SidebarItem Component] renders RoomRowCondensed without crashing 1`] =
                         <div
                           aria-label="Private channel"
                           class="is_Text _d-341075704 _f-1128736932 _jc-1099843255 _ai-121763387 _mw-354604370 _ws-311910413 _ww-408434756 _w-120696903 _h-858548760 rcx-item__icon rcx-sidebar-item__icon"
-                          id="_r_nk_"
+                          id="_r_nf_"
                           role="img"
                         >
                           <i
@@ -3315,10 +3315,10 @@ exports[`[SidebarItem Component] renders RoomRowCondensed without crashing 1`] =
                         </div>
                         <div
                           class="is_Text _o-1119039191 _f-649097281 _mw-842770087 _ws-973912173 _ww-408434756 _to-1727917045 _d-1987097250 rcx-item__title rcx-sidebar-item__title"
-                          id="_r_nn_"
+                          id="_r_ni_"
                         >
                           <a
-                            aria-describedby="_r_nk_"
+                            aria-describedby="_r_nf_"
                             class="is_Text _d-1987097250 _o-1119039191 _w-1560934055 _m-2017216831 _p-1943363302 _c-22887652 _ta-507911453 _ws-973912173 _ww-408434756 _td-1861836084 _to-1727917045 _c-954359819 _b-10838200 _ow-485594423 _os-249893454 _b-1654379586 _ff-4295677 _fs-1279428672 _fw-702336919 _fs-1723449324 _lh-1970121045 _ls-763972879 _fvn-882811879 rcx-item__link rcx-sidebar-item__link"
                             href="#design-team"
                           >
@@ -3343,7 +3343,7 @@ exports[`[SidebarItem Component] renders RoomRowCondensed without crashing 1`] =
                                 aria-haspopup="true"
                                 aria-label="Options"
                                 class="is_View _f-1069813397 _mh-1241200853 _ta-1906144518 _ws-973912173 _td-211436768 _c-22887652 _os-249893454 _o-1119039191 _to-1727917045 _ff-409630021 _fvn-1977619713 _fs-347291933 _fw-289166179 _ls-1782815796 _p-230374000 _a-1578443335 _b-1628331993 _br-1397394445 _bs-1225725885 _w-1686757560 _mw-1952433892 _h-1628964073 _d-312446553 _jc-642967080 _ai-1864573722 _lh-2067208245 _c-1139941473 _b-1242743842 rcx-button--mini-square rcx-button--square rcx-button--icon rcx-button"
-                                id="react-aria-_r_nu_"
+                                id="react-aria-_r_np_"
                                 title="Options"
                                 type="button"
                               >
@@ -3382,7 +3382,7 @@ exports[`[SidebarItem Component] renders RoomRowCondensed without crashing 1`] =
                         <div
                           aria-label="Private channel"
                           class="is_Text _d-341075704 _f-1128736932 _jc-1099843255 _ai-121763387 _mw-354604370 _ws-311910413 _ww-408434756 _w-120696903 _h-858548760 _c-2023807535 _fw-290089700 rcx-item__icon rcx-sidebar-item__icon"
-                          id="_r_o7_"
+                          id="_r_o2_"
                           role="img"
                         >
                           <i
@@ -3394,10 +3394,10 @@ exports[`[SidebarItem Component] renders RoomRowCondensed without crashing 1`] =
                         </div>
                         <div
                           class="is_Text _o-1119039191 _f-649097281 _mw-842770087 _ws-973912173 _ww-408434756 _to-1727917045 _d-1987097250 _c-2023807535 _fw-290089700 rcx-item__title rcx-sidebar-item__title rcx-sidebar-item__title--highlighted"
-                          id="_r_oa_"
+                          id="_r_o5_"
                         >
                           <a
-                            aria-describedby="_r_o7_"
+                            aria-describedby="_r_o2_"
                             class="is_Text _d-1987097250 _o-1119039191 _w-1560934055 _m-2017216831 _p-1943363302 _c-22887652 _ta-507911453 _ws-973912173 _ww-408434756 _td-1861836084 _to-1727917045 _c-954359819 _b-10838200 _ow-485594423 _os-249893454 _b-1654379586 _ff-4295677 _fs-1279428672 _fw-702336919 _fs-1723449324 _lh-1970121045 _ls-763972879 _fvn-882811879 rcx-item__link rcx-sidebar-item__link"
                             href="#product"
                           >
@@ -3428,7 +3428,7 @@ exports[`[SidebarItem Component] renders RoomRowCondensed without crashing 1`] =
                                 aria-haspopup="true"
                                 aria-label="Options"
                                 class="is_View _f-1069813397 _mh-1241200853 _ta-1906144518 _ws-973912173 _td-211436768 _c-22887652 _os-249893454 _o-1119039191 _to-1727917045 _ff-409630021 _fvn-1977619713 _fs-347291933 _fw-289166179 _ls-1782815796 _p-230374000 _a-1578443335 _b-1628331993 _br-1397394445 _bs-1225725885 _w-1686757560 _mw-1952433892 _h-1628964073 _d-312446553 _jc-642967080 _ai-1864573722 _lh-2067208245 _c-1139941473 _b-1242743842 rcx-button--mini-square rcx-button--square rcx-button--icon rcx-button"
-                                id="react-aria-_r_oi_"
+                                id="react-aria-_r_od_"
                                 title="Options"
                                 type="button"
                               >
@@ -3467,7 +3467,7 @@ exports[`[SidebarItem Component] renders RoomRowCondensed without crashing 1`] =
                         <div
                           aria-label="Private channel"
                           class="is_Text _d-341075704 _f-1128736932 _jc-1099843255 _ai-121763387 _mw-354604370 _ws-311910413 _ww-408434756 _w-120696903 _h-858548760 rcx-item__icon rcx-sidebar-item__icon"
-                          id="_r_or_"
+                          id="_r_om_"
                           role="img"
                         >
                           <i
@@ -3479,11 +3479,11 @@ exports[`[SidebarItem Component] renders RoomRowCondensed without crashing 1`] =
                         </div>
                         <div
                           class="is_Text _o-1119039191 _f-649097281 _mw-842770087 _ws-973912173 _ww-408434756 _to-1727917045 _d-1987097250 rcx-item__title rcx-sidebar-item__title"
-                          id="_r_ou_"
+                          id="_r_op_"
                         >
                           <a
                             aria-current="page"
-                            aria-describedby="_r_or_"
+                            aria-describedby="_r_om_"
                             class="is_Text _d-1987097250 _o-1119039191 _w-1560934055 _m-2017216831 _p-1943363302 _c-22887652 _ta-507911453 _ws-973912173 _ww-408434756 _td-1861836084 _to-1727917045 _c-954359819 _b-10838200 _ow-485594423 _os-249893454 _b-1654379586 _ff-4295677 _fs-1279428672 _fw-702336919 _fs-1723449324 _lh-1970121045 _ls-763972879 _fvn-882811879 rcx-item__link rcx-sidebar-item__link"
                             href="#marketing"
                           >
@@ -3508,7 +3508,7 @@ exports[`[SidebarItem Component] renders RoomRowCondensed without crashing 1`] =
                                 aria-haspopup="true"
                                 aria-label="Options"
                                 class="is_View _f-1069813397 _mh-1241200853 _ta-1906144518 _ws-973912173 _td-211436768 _c-22887652 _os-249893454 _o-1119039191 _to-1727917045 _ff-409630021 _fvn-1977619713 _fs-347291933 _fw-289166179 _ls-1782815796 _p-230374000 _a-1578443335 _b-1628331993 _br-1397394445 _bs-1225725885 _w-1686757560 _mw-1952433892 _h-1628964073 _d-312446553 _jc-642967080 _ai-1864573722 _lh-2067208245 _c-1139941473 _b-1242743842 rcx-button--mini-square rcx-button--square rcx-button--icon rcx-button"
-                                id="react-aria-_r_p5_"
+                                id="react-aria-_r_p0_"
                                 title="Options"
                                 type="button"
                               >
@@ -3547,7 +3547,7 @@ exports[`[SidebarItem Component] renders RoomRowCondensed without crashing 1`] =
                         <div
                           aria-label="Private channel"
                           class="is_Text _d-341075704 _f-1128736932 _jc-1099843255 _ai-121763387 _mw-354604370 _ws-311910413 _ww-408434756 _w-120696903 _h-858548760 rcx-item__icon rcx-sidebar-item__icon"
-                          id="_r_pe_"
+                          id="_r_p9_"
                           role="img"
                         >
                           <i
@@ -3559,10 +3559,10 @@ exports[`[SidebarItem Component] renders RoomRowCondensed without crashing 1`] =
                         </div>
                         <div
                           class="is_Text _o-1119039191 _f-649097281 _mw-842770087 _ws-973912173 _ww-408434756 _to-1727917045 _d-1987097250 rcx-item__title rcx-sidebar-item__title"
-                          id="_r_ph_"
+                          id="_r_pc_"
                         >
                           <a
-                            aria-describedby="_r_pe_"
+                            aria-describedby="_r_p9_"
                             class="is_Text _d-1987097250 _o-1119039191 _w-1560934055 _m-2017216831 _p-1943363302 _c-22887652 _ta-507911453 _ws-973912173 _ww-408434756 _td-1861836084 _to-1727917045 _c-954359819 _b-10838200 _ow-485594423 _os-249893454 _b-1654379586 _ff-4295677 _fs-1279428672 _fw-702336919 _fs-1723449324 _lh-1970121045 _ls-763972879 _fvn-882811879 rcx-item__link rcx-sidebar-item__link"
                             href="#support"
                           >
@@ -3615,7 +3615,7 @@ exports[`[SidebarItem Component] renders RoomRowCondensed without crashing 1`] =
                                 aria-haspopup="true"
                                 aria-label="Options"
                                 class="is_View _f-1069813397 _mh-1241200853 _ta-1906144518 _ws-973912173 _td-211436768 _c-22887652 _os-249893454 _o-1119039191 _to-1727917045 _ff-409630021 _fvn-1977619713 _fs-347291933 _fw-289166179 _ls-1782815796 _p-230374000 _a-1578443335 _b-1628331993 _br-1397394445 _bs-1225725885 _w-1686757560 _mw-1952433892 _h-1628964073 _d-312446553 _jc-642967080 _ai-1864573722 _lh-2067208245 _c-1139941473 _b-1242743842 rcx-button--mini-square rcx-button--square rcx-button--icon rcx-button"
-                                id="react-aria-_r_pt_"
+                                id="react-aria-_r_po_"
                                 title="Options"
                                 type="button"
                               >
@@ -3676,7 +3676,7 @@ exports[`[SidebarItem Component] renders RoomRowExtended without crashing 1`] = 
               class="is_View _bs-568394592 _f-172495823 _mw-354604370 _mh-1241200853 _m-2017216831 _p-1943363302 _b-2033297122 _os-249893454 _ff-409630021 _fvn-1977619713 rcx-sidebar-accordion-item"
             >
               <div
-                aria-controls="_r_q9_"
+                aria-controls="_r_q3_"
                 aria-expanded="true"
                 class="is_View _bs-568394592 _f-619631402 _mw-354604370 _mh-1646438792 _m-2017216831 _p-1916530296 _b-466862125 _ff-409630021 _fvn-1977619713 _p-1708368765 _zi-2094244754 _i-288960214 _ai-121763387 _ta-507911453 _c-1063453128 _cg-86881132 _os-221264303 _bs-49721704 _c-1830342115 _br-1585832732 _b-313882764 t_group_rcx-sidebar-accordion-item-bar rcx-sidebar-accordion-item__bar rcx-box--animated"
                 role="button"
@@ -3694,17 +3694,17 @@ exports[`[SidebarItem Component] renders RoomRowExtended without crashing 1`] = 
                 </span>
                 <h5
                   class="is_Text _bs-652081535 _f-1246374076 _mw-354604370 _mh-1241200853 _d-1987097250 _m-2017216831 _ws-973912173 _o-1119039191 _to-1727917045 _fs-347291933 _fw-289168101 _lh-1925956564 _ls-1782815796 rcx-sidebar-accordion-item__title"
-                  id="_r_q8_"
+                  id="_r_q2_"
                 >
                   Label
                 </h5>
               </div>
               <div
                 class="is_View _bs-652081535 _f-957025663 _mw-354604370 _mh-1241200853 _d-1987097250 _o-1119039191 _m-2017216831 _p-460328368 _ls-1251843592 _v-595517078 _h-566932805 rcx-sidebar-accordion-item__panel rcx-box--animated rcx-sidebar-accordion-item__panel--expanded"
-                id="_r_q9_"
+                id="_r_q3_"
               >
                 <div
-                  aria-labelledby="_r_qg_"
+                  aria-labelledby="_r_qa_"
                   class="is_View _bs-568394592 _f-1677436821 _mw-354604370 _mh-1241200853 _m-2017216831 _p-1943363302 _b-650654186 _os-249893454 _ff-409630021 _fvn-1977619713 rcx-sidebar-collapse-group"
                   role="group"
                 >
@@ -3712,10 +3712,10 @@ exports[`[SidebarItem Component] renders RoomRowExtended without crashing 1`] = 
                     class="is_Text _p-1021290656 _d-341075704 _f-1069814357 _ai-121763387 _mw-842770087 _mh-499962855 _m-2017216831 _p-536964724 _ls-1251843592 _ws-311910413 _ww-408434756 _br-1718100884 _ff-409630021 _fs-2088488067 _lh-1306743983 _ls-1782815796 _fw-289168101 _g-1760282038 _c-920334418 t_group_rcx-item-group-header rcx-item-group-header rcx-item-group-header--inset-md rcx-sidebar-collapse-group__bar"
                   >
                     <div
-                      aria-controls="_r_qh_"
+                      aria-controls="_r_qb_"
                       aria-expanded="true"
                       class="is_Text _o-1119039191 _f-1973813477 _m-2017216831 _ws-973912173 _ww-408434756 _to-1727917045 _c-954359819 _ff-4295677 _fs-1279428672 _fw-702336919 _fs-1723449324 _lh-1970121045 _ls-763972879 _fvn-882811879 _d-255188251 _ai-1055227096 _mw-839999524 _ta-1124544800 _cg-1040514961 _b-965065743 _os-164006001 _bs-7536598 _c-1150283745 _br-1477877479 rcx-item-group-title rcx-sidebar-collapse-group__bar-button"
-                      id="_r_qk_"
+                      id="_r_qe_"
                       role="button"
                       tabindex="0"
                     >
@@ -3724,7 +3724,7 @@ exports[`[SidebarItem Component] renders RoomRowExtended without crashing 1`] = 
                       >
                         <h4
                           class="is_Text _bs-652081535 _f-1246374076 _mw-354604370 _mh-1241200853 _d-1987097250 _m-2017216831 _ws-973912173 _o-1119039191 _to-1727917045 _fs-2088488067 _fw-289165218 _lh-1306743983 _ls-1782815796 rcx-sidebar-collapse-group__title"
-                          id="_r_qg_"
+                          id="_r_qa_"
                         >
                           Label
                         </h4>
@@ -3754,7 +3754,7 @@ exports[`[SidebarItem Component] renders RoomRowExtended without crashing 1`] = 
                             aria-haspopup="true"
                             aria-label="Options"
                             class="is_View _f-1069813397 _mh-1241200853 _ta-1906144518 _ws-973912173 _td-211436768 _c-22887652 _os-249893454 _o-1119039191 _to-1727917045 _ff-409630021 _fvn-1977619713 _fs-347291933 _fw-289166179 _ls-1782815796 _p-230374000 _a-1578443335 _b-1628331993 _br-1397394445 _bs-1225725885 _w-1686757560 _mw-1952433892 _h-1628964073 _d-312446553 _jc-642967080 _ai-1864573722 _lh-2067208245 _c-1139941473 _b-1242743842 rcx-button--mini-square rcx-button--square rcx-button--icon rcx-button"
-                            id="react-aria-_r_qs_"
+                            id="react-aria-_r_qm_"
                             title="Options"
                             type="button"
                           >
@@ -3770,9 +3770,9 @@ exports[`[SidebarItem Component] renders RoomRowExtended without crashing 1`] = 
                     </div>
                   </div>
                   <div
-                    aria-labelledby="_r_qg_"
+                    aria-labelledby="_r_qa_"
                     class="is_View _bs-652081535 _f-957027585 _mw-354604370 _mh-1241200853 _v-1275575448 _o-2052502900 _h-624191107 _m-2019987394 _p-1940592739 _ls-1165956139 _c-1176677446 rcx-item-group rcx-sidebar-collapse-group__panel rcx-box--animated rcx-sidebar-collapse-group__panel--expanded"
-                    id="_r_qh_"
+                    id="_r_qb_"
                     role="list"
                   >
                     <div
@@ -3804,7 +3804,7 @@ exports[`[SidebarItem Component] renders RoomRowExtended without crashing 1`] = 
                             <div
                               aria-label="Private channel"
                               class="is_Text _d-341075704 _f-1128736932 _jc-1099843255 _ai-121763387 _mw-354604370 _ws-311910413 _ww-408434756 _w-120696903 _h-858548760 rcx-item__icon rcx-sidebar-item__icon"
-                              id="_r_r9_"
+                              id="_r_r3_"
                               role="img"
                             >
                               <i
@@ -3816,10 +3816,10 @@ exports[`[SidebarItem Component] renders RoomRowExtended without crashing 1`] = 
                             </div>
                             <div
                               class="is_Text _o-1119039191 _f-649097281 _mw-842770087 _ws-973912173 _ww-408434756 _to-1727917045 _d-1987097250 rcx-item__title rcx-sidebar-item__title"
-                              id="_r_rc_"
+                              id="_r_r6_"
                             >
                               <a
-                                aria-describedby="_r_r9_"
+                                aria-describedby="_r_r3_"
                                 class="is_Text _d-1987097250 _o-1119039191 _w-1560934055 _m-2017216831 _p-1943363302 _c-22887652 _ta-507911453 _ws-973912173 _ww-408434756 _td-1861836084 _to-1727917045 _c-954359819 _b-10838200 _ow-485594423 _os-249893454 _b-1654379586 _ff-4295677 _fs-1279428672 _fw-702336919 _fs-1723449324 _lh-1970121045 _ls-763972879 _fvn-882811879 rcx-item__link rcx-sidebar-item__link"
                                 href="#design-team"
                               >
@@ -3858,7 +3858,7 @@ exports[`[SidebarItem Component] renders RoomRowExtended without crashing 1`] = 
                                     aria-haspopup="true"
                                     aria-label="Options"
                                     class="is_View _f-1069813397 _mh-1241200853 _ta-1906144518 _ws-973912173 _td-211436768 _c-22887652 _os-249893454 _o-1119039191 _to-1727917045 _ff-409630021 _fvn-1977619713 _fs-347291933 _fw-289166179 _ls-1782815796 _p-230374000 _a-1578443335 _b-1628331993 _br-1397394445 _bs-1225725885 _w-1686757560 _mw-1952433892 _h-1628964073 _d-312446553 _jc-642967080 _ai-1864573722 _lh-2067208245 _c-1139941473 _b-1242743842 rcx-button--mini-square rcx-button--square rcx-button--icon rcx-button"
-                                    id="react-aria-_r_rm_"
+                                    id="react-aria-_r_rg_"
                                     title="Options"
                                     type="button"
                                   >
@@ -3905,7 +3905,7 @@ exports[`[SidebarItem Component] renders RoomRowExtended without crashing 1`] = 
                             <div
                               aria-label="Private channel"
                               class="is_Text _d-341075704 _f-1128736932 _jc-1099843255 _ai-121763387 _mw-354604370 _ws-311910413 _ww-408434756 _w-120696903 _h-858548760 _c-2023807535 _fw-290089700 rcx-item__icon rcx-sidebar-item__icon"
-                              id="_r_s2_"
+                              id="_r_rs_"
                               role="img"
                             >
                               <i
@@ -3917,10 +3917,10 @@ exports[`[SidebarItem Component] renders RoomRowExtended without crashing 1`] = 
                             </div>
                             <div
                               class="is_Text _o-1119039191 _f-649097281 _mw-842770087 _ws-973912173 _ww-408434756 _to-1727917045 _d-1987097250 _c-2023807535 _fw-290089700 rcx-item__title rcx-sidebar-item__title rcx-sidebar-item__title--highlighted"
-                              id="_r_s5_"
+                              id="_r_rv_"
                             >
                               <a
-                                aria-describedby="_r_s2_"
+                                aria-describedby="_r_rs_"
                                 class="is_Text _d-1987097250 _o-1119039191 _w-1560934055 _m-2017216831 _p-1943363302 _c-22887652 _ta-507911453 _ws-973912173 _ww-408434756 _td-1861836084 _to-1727917045 _c-954359819 _b-10838200 _ow-485594423 _os-249893454 _b-1654379586 _ff-4295677 _fs-1279428672 _fw-702336919 _fs-1723449324 _lh-1970121045 _ls-763972879 _fvn-882811879 rcx-item__link rcx-sidebar-item__link"
                                 href="#product"
                               >
@@ -3965,7 +3965,7 @@ exports[`[SidebarItem Component] renders RoomRowExtended without crashing 1`] = 
                                     aria-haspopup="true"
                                     aria-label="Options"
                                     class="is_View _f-1069813397 _mh-1241200853 _ta-1906144518 _ws-973912173 _td-211436768 _c-22887652 _os-249893454 _o-1119039191 _to-1727917045 _ff-409630021 _fvn-1977619713 _fs-347291933 _fw-289166179 _ls-1782815796 _p-230374000 _a-1578443335 _b-1628331993 _br-1397394445 _bs-1225725885 _w-1686757560 _mw-1952433892 _h-1628964073 _d-312446553 _jc-642967080 _ai-1864573722 _lh-2067208245 _c-1139941473 _b-1242743842 rcx-button--mini-square rcx-button--square rcx-button--icon rcx-button"
-                                    id="react-aria-_r_sg_"
+                                    id="react-aria-_r_sa_"
                                     title="Options"
                                     type="button"
                                   >
@@ -4012,7 +4012,7 @@ exports[`[SidebarItem Component] renders RoomRowExtended without crashing 1`] = 
                             <div
                               aria-label="Private channel"
                               class="is_Text _d-341075704 _f-1128736932 _jc-1099843255 _ai-121763387 _mw-354604370 _ws-311910413 _ww-408434756 _w-120696903 _h-858548760 rcx-item__icon rcx-sidebar-item__icon"
-                              id="_r_ss_"
+                              id="_r_sm_"
                               role="img"
                             >
                               <i
@@ -4024,11 +4024,11 @@ exports[`[SidebarItem Component] renders RoomRowExtended without crashing 1`] = 
                             </div>
                             <div
                               class="is_Text _o-1119039191 _f-649097281 _mw-842770087 _ws-973912173 _ww-408434756 _to-1727917045 _d-1987097250 rcx-item__title rcx-sidebar-item__title"
-                              id="_r_sv_"
+                              id="_r_sp_"
                             >
                               <a
                                 aria-current="page"
-                                aria-describedby="_r_ss_"
+                                aria-describedby="_r_sm_"
                                 class="is_Text _d-1987097250 _o-1119039191 _w-1560934055 _m-2017216831 _p-1943363302 _c-22887652 _ta-507911453 _ws-973912173 _ww-408434756 _td-1861836084 _to-1727917045 _c-954359819 _b-10838200 _ow-485594423 _os-249893454 _b-1654379586 _ff-4295677 _fs-1279428672 _fw-702336919 _fs-1723449324 _lh-1970121045 _ls-763972879 _fvn-882811879 rcx-item__link rcx-sidebar-item__link"
                                 href="#marketing"
                               >
@@ -4067,7 +4067,7 @@ exports[`[SidebarItem Component] renders RoomRowExtended without crashing 1`] = 
                                     aria-haspopup="true"
                                     aria-label="Options"
                                     class="is_View _f-1069813397 _mh-1241200853 _ta-1906144518 _ws-973912173 _td-211436768 _c-22887652 _os-249893454 _o-1119039191 _to-1727917045 _ff-409630021 _fvn-1977619713 _fs-347291933 _fw-289166179 _ls-1782815796 _p-230374000 _a-1578443335 _b-1628331993 _br-1397394445 _bs-1225725885 _w-1686757560 _mw-1952433892 _h-1628964073 _d-312446553 _jc-642967080 _ai-1864573722 _lh-2067208245 _c-1139941473 _b-1242743842 rcx-button--mini-square rcx-button--square rcx-button--icon rcx-button"
-                                    id="react-aria-_r_t9_"
+                                    id="react-aria-_r_t3_"
                                     title="Options"
                                     type="button"
                                   >
@@ -4114,7 +4114,7 @@ exports[`[SidebarItem Component] renders RoomRowExtended without crashing 1`] = 
                             <div
                               aria-label="Private channel"
                               class="is_Text _d-341075704 _f-1128736932 _jc-1099843255 _ai-121763387 _mw-354604370 _ws-311910413 _ww-408434756 _w-120696903 _h-858548760 rcx-item__icon rcx-sidebar-item__icon"
-                              id="_r_tl_"
+                              id="_r_tf_"
                               role="img"
                             >
                               <i
@@ -4126,10 +4126,10 @@ exports[`[SidebarItem Component] renders RoomRowExtended without crashing 1`] = 
                             </div>
                             <div
                               class="is_Text _o-1119039191 _f-649097281 _mw-842770087 _ws-973912173 _ww-408434756 _to-1727917045 _d-1987097250 rcx-item__title rcx-sidebar-item__title"
-                              id="_r_to_"
+                              id="_r_ti_"
                             >
                               <a
-                                aria-describedby="_r_tl_"
+                                aria-describedby="_r_tf_"
                                 class="is_Text _d-1987097250 _o-1119039191 _w-1560934055 _m-2017216831 _p-1943363302 _c-22887652 _ta-507911453 _ws-973912173 _ww-408434756 _td-1861836084 _to-1727917045 _c-954359819 _b-10838200 _ow-485594423 _os-249893454 _b-1654379586 _ff-4295677 _fs-1279428672 _fw-702336919 _fs-1723449324 _lh-1970121045 _ls-763972879 _fvn-882811879 rcx-item__link rcx-sidebar-item__link"
                                 href="#support"
                               >
@@ -4196,7 +4196,7 @@ exports[`[SidebarItem Component] renders RoomRowExtended without crashing 1`] = 
                                     aria-haspopup="true"
                                     aria-label="Options"
                                     class="is_View _f-1069813397 _mh-1241200853 _ta-1906144518 _ws-973912173 _td-211436768 _c-22887652 _os-249893454 _o-1119039191 _to-1727917045 _ff-409630021 _fvn-1977619713 _fs-347291933 _fw-289166179 _ls-1782815796 _p-230374000 _a-1578443335 _b-1628331993 _br-1397394445 _bs-1225725885 _w-1686757560 _mw-1952433892 _h-1628964073 _d-312446553 _jc-642967080 _ai-1864573722 _lh-2067208245 _c-1139941473 _b-1242743842 rcx-button--mini-square rcx-button--square rcx-button--icon rcx-button"
-                                    id="react-aria-_r_u7_"
+                                    id="react-aria-_r_u1_"
                                     title="Options"
                                     type="button"
                                   >
@@ -4259,7 +4259,7 @@ exports[`[SidebarItem Component] renders RoomRowMedium without crashing 1`] = `
               class="is_View _bs-568394592 _f-172495823 _mw-354604370 _mh-1241200853 _m-2017216831 _p-1943363302 _b-2033297122 _os-249893454 _ff-409630021 _fvn-1977619713 rcx-sidebar-accordion-item"
             >
               <div
-                aria-controls="_r_uj_"
+                aria-controls="_r_uc_"
                 aria-expanded="true"
                 class="is_View _bs-568394592 _f-619631402 _mw-354604370 _mh-1646438792 _m-2017216831 _p-1916530296 _b-466862125 _ff-409630021 _fvn-1977619713 _p-1708368765 _zi-2094244754 _i-288960214 _ai-121763387 _ta-507911453 _c-1063453128 _cg-86881132 _os-221264303 _bs-49721704 _c-1830342115 _br-1585832732 _b-313882764 t_group_rcx-sidebar-accordion-item-bar rcx-sidebar-accordion-item__bar rcx-box--animated"
                 role="button"
@@ -4277,17 +4277,17 @@ exports[`[SidebarItem Component] renders RoomRowMedium without crashing 1`] = `
                 </span>
                 <h5
                   class="is_Text _bs-652081535 _f-1246374076 _mw-354604370 _mh-1241200853 _d-1987097250 _m-2017216831 _ws-973912173 _o-1119039191 _to-1727917045 _fs-347291933 _fw-289168101 _lh-1925956564 _ls-1782815796 rcx-sidebar-accordion-item__title"
-                  id="_r_ui_"
+                  id="_r_ub_"
                 >
                   Label
                 </h5>
               </div>
               <div
                 class="is_View _bs-652081535 _f-957025663 _mw-354604370 _mh-1241200853 _d-1987097250 _o-1119039191 _m-2017216831 _p-460328368 _ls-1251843592 _v-595517078 _h-566932805 rcx-sidebar-accordion-item__panel rcx-box--animated rcx-sidebar-accordion-item__panel--expanded"
-                id="_r_uj_"
+                id="_r_uc_"
               >
                 <div
-                  aria-labelledby="_r_uq_"
+                  aria-labelledby="_r_uj_"
                   class="is_View _bs-568394592 _f-1677436821 _mw-354604370 _mh-1241200853 _m-2017216831 _p-1943363302 _b-650654186 _os-249893454 _ff-409630021 _fvn-1977619713 rcx-sidebar-collapse-group"
                   role="group"
                 >
@@ -4295,10 +4295,10 @@ exports[`[SidebarItem Component] renders RoomRowMedium without crashing 1`] = `
                     class="is_Text _p-1021290656 _d-341075704 _f-1069814357 _ai-121763387 _mw-842770087 _mh-499962855 _m-2017216831 _p-536964724 _ls-1251843592 _ws-311910413 _ww-408434756 _br-1718100884 _ff-409630021 _fs-2088488067 _lh-1306743983 _ls-1782815796 _fw-289168101 _g-1760282038 _c-920334418 t_group_rcx-item-group-header rcx-item-group-header rcx-item-group-header--inset-md rcx-sidebar-collapse-group__bar"
                   >
                     <div
-                      aria-controls="_r_ur_"
+                      aria-controls="_r_uk_"
                       aria-expanded="true"
                       class="is_Text _o-1119039191 _f-1973813477 _m-2017216831 _ws-973912173 _ww-408434756 _to-1727917045 _c-954359819 _ff-4295677 _fs-1279428672 _fw-702336919 _fs-1723449324 _lh-1970121045 _ls-763972879 _fvn-882811879 _d-255188251 _ai-1055227096 _mw-839999524 _ta-1124544800 _cg-1040514961 _b-965065743 _os-164006001 _bs-7536598 _c-1150283745 _br-1477877479 rcx-item-group-title rcx-sidebar-collapse-group__bar-button"
-                      id="_r_uu_"
+                      id="_r_un_"
                       role="button"
                       tabindex="0"
                     >
@@ -4307,7 +4307,7 @@ exports[`[SidebarItem Component] renders RoomRowMedium without crashing 1`] = `
                       >
                         <h4
                           class="is_Text _bs-652081535 _f-1246374076 _mw-354604370 _mh-1241200853 _d-1987097250 _m-2017216831 _ws-973912173 _o-1119039191 _to-1727917045 _fs-2088488067 _fw-289165218 _lh-1306743983 _ls-1782815796 rcx-sidebar-collapse-group__title"
-                          id="_r_uq_"
+                          id="_r_uj_"
                         >
                           Label
                         </h4>
@@ -4337,7 +4337,7 @@ exports[`[SidebarItem Component] renders RoomRowMedium without crashing 1`] = `
                             aria-haspopup="true"
                             aria-label="Options"
                             class="is_View _f-1069813397 _mh-1241200853 _ta-1906144518 _ws-973912173 _td-211436768 _c-22887652 _os-249893454 _o-1119039191 _to-1727917045 _ff-409630021 _fvn-1977619713 _fs-347291933 _fw-289166179 _ls-1782815796 _p-230374000 _a-1578443335 _b-1628331993 _br-1397394445 _bs-1225725885 _w-1686757560 _mw-1952433892 _h-1628964073 _d-312446553 _jc-642967080 _ai-1864573722 _lh-2067208245 _c-1139941473 _b-1242743842 rcx-button--mini-square rcx-button--square rcx-button--icon rcx-button"
-                            id="react-aria-_r_v6_"
+                            id="react-aria-_r_uv_"
                             title="Options"
                             type="button"
                           >
@@ -4353,9 +4353,9 @@ exports[`[SidebarItem Component] renders RoomRowMedium without crashing 1`] = `
                     </div>
                   </div>
                   <div
-                    aria-labelledby="_r_uq_"
+                    aria-labelledby="_r_uj_"
                     class="is_View _bs-652081535 _f-957027585 _mw-354604370 _mh-1241200853 _v-1275575448 _o-2052502900 _h-624191107 _m-2019987394 _p-1940592739 _ls-1165956139 _c-1176677446 rcx-item-group rcx-sidebar-collapse-group__panel rcx-box--animated rcx-sidebar-collapse-group__panel--expanded"
-                    id="_r_ur_"
+                    id="_r_uk_"
                     role="list"
                   >
                     <div
@@ -4381,7 +4381,7 @@ exports[`[SidebarItem Component] renders RoomRowMedium without crashing 1`] = `
                         <div
                           aria-label="Private channel"
                           class="is_Text _d-341075704 _f-1128736932 _jc-1099843255 _ai-121763387 _mw-354604370 _ws-311910413 _ww-408434756 _w-120696903 _h-858548760 rcx-item__icon rcx-sidebar-item__icon"
-                          id="_r_vg_"
+                          id="_r_v9_"
                           role="img"
                         >
                           <i
@@ -4393,10 +4393,10 @@ exports[`[SidebarItem Component] renders RoomRowMedium without crashing 1`] = `
                         </div>
                         <div
                           class="is_Text _o-1119039191 _f-649097281 _mw-842770087 _ws-973912173 _ww-408434756 _to-1727917045 _d-1987097250 rcx-item__title rcx-sidebar-item__title"
-                          id="_r_vj_"
+                          id="_r_vc_"
                         >
                           <a
-                            aria-describedby="_r_vg_"
+                            aria-describedby="_r_v9_"
                             class="is_Text _d-1987097250 _o-1119039191 _w-1560934055 _m-2017216831 _p-1943363302 _c-22887652 _ta-507911453 _ws-973912173 _ww-408434756 _td-1861836084 _to-1727917045 _c-954359819 _b-10838200 _ow-485594423 _os-249893454 _b-1654379586 _ff-4295677 _fs-1279428672 _fw-702336919 _fs-1723449324 _lh-1970121045 _ls-763972879 _fvn-882811879 rcx-item__link rcx-sidebar-item__link"
                             href="#design-team"
                           >
@@ -4421,7 +4421,7 @@ exports[`[SidebarItem Component] renders RoomRowMedium without crashing 1`] = `
                                 aria-haspopup="true"
                                 aria-label="Options"
                                 class="is_View _f-1069813397 _mh-1241200853 _ta-1906144518 _ws-973912173 _td-211436768 _c-22887652 _os-249893454 _o-1119039191 _to-1727917045 _ff-409630021 _fvn-1977619713 _fs-347291933 _fw-289166179 _ls-1782815796 _p-230374000 _a-1578443335 _b-1628331993 _br-1397394445 _bs-1225725885 _w-1686757560 _mw-1952433892 _h-1628964073 _d-312446553 _jc-642967080 _ai-1864573722 _lh-2067208245 _c-1139941473 _b-1242743842 rcx-button--mini-square rcx-button--square rcx-button--icon rcx-button"
-                                id="react-aria-_r_vq_"
+                                id="react-aria-_r_vj_"
                                 title="Options"
                                 type="button"
                               >
@@ -4460,7 +4460,7 @@ exports[`[SidebarItem Component] renders RoomRowMedium without crashing 1`] = `
                         <div
                           aria-label="Private channel"
                           class="is_Text _d-341075704 _f-1128736932 _jc-1099843255 _ai-121763387 _mw-354604370 _ws-311910413 _ww-408434756 _w-120696903 _h-858548760 _c-2023807535 _fw-290089700 rcx-item__icon rcx-sidebar-item__icon"
-                          id="_r_103_"
+                          id="_r_vs_"
                           role="img"
                         >
                           <i
@@ -4472,10 +4472,10 @@ exports[`[SidebarItem Component] renders RoomRowMedium without crashing 1`] = `
                         </div>
                         <div
                           class="is_Text _o-1119039191 _f-649097281 _mw-842770087 _ws-973912173 _ww-408434756 _to-1727917045 _d-1987097250 _c-2023807535 _fw-290089700 rcx-item__title rcx-sidebar-item__title rcx-sidebar-item__title--highlighted"
-                          id="_r_106_"
+                          id="_r_vv_"
                         >
                           <a
-                            aria-describedby="_r_103_"
+                            aria-describedby="_r_vs_"
                             class="is_Text _d-1987097250 _o-1119039191 _w-1560934055 _m-2017216831 _p-1943363302 _c-22887652 _ta-507911453 _ws-973912173 _ww-408434756 _td-1861836084 _to-1727917045 _c-954359819 _b-10838200 _ow-485594423 _os-249893454 _b-1654379586 _ff-4295677 _fs-1279428672 _fw-702336919 _fs-1723449324 _lh-1970121045 _ls-763972879 _fvn-882811879 rcx-item__link rcx-sidebar-item__link"
                             href="#product"
                           >
@@ -4506,7 +4506,7 @@ exports[`[SidebarItem Component] renders RoomRowMedium without crashing 1`] = `
                                 aria-haspopup="true"
                                 aria-label="Options"
                                 class="is_View _f-1069813397 _mh-1241200853 _ta-1906144518 _ws-973912173 _td-211436768 _c-22887652 _os-249893454 _o-1119039191 _to-1727917045 _ff-409630021 _fvn-1977619713 _fs-347291933 _fw-289166179 _ls-1782815796 _p-230374000 _a-1578443335 _b-1628331993 _br-1397394445 _bs-1225725885 _w-1686757560 _mw-1952433892 _h-1628964073 _d-312446553 _jc-642967080 _ai-1864573722 _lh-2067208245 _c-1139941473 _b-1242743842 rcx-button--mini-square rcx-button--square rcx-button--icon rcx-button"
-                                id="react-aria-_r_10e_"
+                                id="react-aria-_r_107_"
                                 title="Options"
                                 type="button"
                               >
@@ -4545,7 +4545,7 @@ exports[`[SidebarItem Component] renders RoomRowMedium without crashing 1`] = `
                         <div
                           aria-label="Private channel"
                           class="is_Text _d-341075704 _f-1128736932 _jc-1099843255 _ai-121763387 _mw-354604370 _ws-311910413 _ww-408434756 _w-120696903 _h-858548760 rcx-item__icon rcx-sidebar-item__icon"
-                          id="_r_10n_"
+                          id="_r_10g_"
                           role="img"
                         >
                           <i
@@ -4557,11 +4557,11 @@ exports[`[SidebarItem Component] renders RoomRowMedium without crashing 1`] = `
                         </div>
                         <div
                           class="is_Text _o-1119039191 _f-649097281 _mw-842770087 _ws-973912173 _ww-408434756 _to-1727917045 _d-1987097250 rcx-item__title rcx-sidebar-item__title"
-                          id="_r_10q_"
+                          id="_r_10j_"
                         >
                           <a
                             aria-current="page"
-                            aria-describedby="_r_10n_"
+                            aria-describedby="_r_10g_"
                             class="is_Text _d-1987097250 _o-1119039191 _w-1560934055 _m-2017216831 _p-1943363302 _c-22887652 _ta-507911453 _ws-973912173 _ww-408434756 _td-1861836084 _to-1727917045 _c-954359819 _b-10838200 _ow-485594423 _os-249893454 _b-1654379586 _ff-4295677 _fs-1279428672 _fw-702336919 _fs-1723449324 _lh-1970121045 _ls-763972879 _fvn-882811879 rcx-item__link rcx-sidebar-item__link"
                             href="#marketing"
                           >
@@ -4586,7 +4586,7 @@ exports[`[SidebarItem Component] renders RoomRowMedium without crashing 1`] = `
                                 aria-haspopup="true"
                                 aria-label="Options"
                                 class="is_View _f-1069813397 _mh-1241200853 _ta-1906144518 _ws-973912173 _td-211436768 _c-22887652 _os-249893454 _o-1119039191 _to-1727917045 _ff-409630021 _fvn-1977619713 _fs-347291933 _fw-289166179 _ls-1782815796 _p-230374000 _a-1578443335 _b-1628331993 _br-1397394445 _bs-1225725885 _w-1686757560 _mw-1952433892 _h-1628964073 _d-312446553 _jc-642967080 _ai-1864573722 _lh-2067208245 _c-1139941473 _b-1242743842 rcx-button--mini-square rcx-button--square rcx-button--icon rcx-button"
-                                id="react-aria-_r_111_"
+                                id="react-aria-_r_10q_"
                                 title="Options"
                                 type="button"
                               >
@@ -4625,7 +4625,7 @@ exports[`[SidebarItem Component] renders RoomRowMedium without crashing 1`] = `
                         <div
                           aria-label="Private channel"
                           class="is_Text _d-341075704 _f-1128736932 _jc-1099843255 _ai-121763387 _mw-354604370 _ws-311910413 _ww-408434756 _w-120696903 _h-858548760 rcx-item__icon rcx-sidebar-item__icon"
-                          id="_r_11a_"
+                          id="_r_113_"
                           role="img"
                         >
                           <i
@@ -4637,10 +4637,10 @@ exports[`[SidebarItem Component] renders RoomRowMedium without crashing 1`] = `
                         </div>
                         <div
                           class="is_Text _o-1119039191 _f-649097281 _mw-842770087 _ws-973912173 _ww-408434756 _to-1727917045 _d-1987097250 rcx-item__title rcx-sidebar-item__title"
-                          id="_r_11d_"
+                          id="_r_116_"
                         >
                           <a
-                            aria-describedby="_r_11a_"
+                            aria-describedby="_r_113_"
                             class="is_Text _d-1987097250 _o-1119039191 _w-1560934055 _m-2017216831 _p-1943363302 _c-22887652 _ta-507911453 _ws-973912173 _ww-408434756 _td-1861836084 _to-1727917045 _c-954359819 _b-10838200 _ow-485594423 _os-249893454 _b-1654379586 _ff-4295677 _fs-1279428672 _fw-702336919 _fs-1723449324 _lh-1970121045 _ls-763972879 _fvn-882811879 rcx-item__link rcx-sidebar-item__link"
                             href="#support"
                           >
@@ -4693,7 +4693,7 @@ exports[`[SidebarItem Component] renders RoomRowMedium without crashing 1`] = `
                                 aria-haspopup="true"
                                 aria-label="Options"
                                 class="is_View _f-1069813397 _mh-1241200853 _ta-1906144518 _ws-973912173 _td-211436768 _c-22887652 _os-249893454 _o-1119039191 _to-1727917045 _ff-409630021 _fvn-1977619713 _fs-347291933 _fw-289166179 _ls-1782815796 _p-230374000 _a-1578443335 _b-1628331993 _br-1397394445 _bs-1225725885 _w-1686757560 _mw-1952433892 _h-1628964073 _d-312446553 _jc-642967080 _ai-1864573722 _lh-2067208245 _c-1139941473 _b-1242743842 rcx-button--mini-square rcx-button--square rcx-button--icon rcx-button"
-                                id="react-aria-_r_11p_"
+                                id="react-aria-_r_11i_"
                                 title="Options"
                                 type="button"
                               >

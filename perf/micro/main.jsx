@@ -60,7 +60,23 @@ const PlainChild = styled(Text, { render: 'span', color: '#333' });
 const { position, display, flexDirection, alignItems, color } = props16;
 const FiveWithClass = styled(View, { render: 'div', position, display, flexDirection, alignItems, color });
 
+// Does a variant reach the DOM as a class name, the way `rcx-x--small` modifier classes need?
+const WithVariantClass = styled(View, {
+	render: 'div',
+	variants: {
+		// The base class as an always-on variant, so a consumer's `className` adds to it instead of replacing it
+		rcx: { true: { className: 'rcx-x' } },
+		small: { true: { className: 'rcx-x--small', padding: '0.125rem' } },
+	},
+	defaultVariants: { rcx: true },
+});
+
 const rows = {
+	variantClass: (i, v) => (
+		<WithVariantClass key={i} small={i % 2 === 0} className={i % 2 === 0 ? 'consumer' : undefined}>
+			{`row ${i} ${v}`}
+		</WithVariantClass>
+	),
 	div: (i, v) => <div key={i} className='row'>{`row ${i} ${v}`}</div>,
 	empty: (i, v) => <Empty key={i}>{`row ${i} ${v}`}</Empty>,
 	four: (i, v) => <Four key={i}>{`row ${i} ${v}`}</Four>,

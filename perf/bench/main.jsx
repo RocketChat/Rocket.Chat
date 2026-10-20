@@ -1,5 +1,5 @@
 import * as F from 'fuselage-under-test';
-import { Message, MessageBody, MessageContainer, MessageHeader, MessageName, MessageNameContainer, MessageTimestamp, MessageToolbarWrapper, MessageUsername } from 'fuselage-under-test';
+import { ButtonGroup, Message, MessageBody, MessageContainer, MessageHeader, MessageName, MessageNameContainer, MessageTimestamp, MessageToolbarWrapper, MessageUsername } from 'fuselage-under-test';
 import 'fuselage-under-test-css';
 import { Profiler } from 'react';
 import { flushSync } from 'react-dom';
@@ -43,6 +43,19 @@ const rows = {
 			</MessageContainer>
 			<MessageToolbarWrapper />
 		</Message>
+	),
+	buttonGroup: (i, v) => (
+		<div key={i}>
+			<ButtonGroup small align='end'>
+				<span>{`a ${i} ${v}`}</span>
+			</ButtonGroup>
+			<ButtonGroup vertical className='consumer'>
+				<span>{`b ${i}`}</span>
+			</ButtonGroup>
+			<ButtonGroup>
+				<span>{`c ${i}`}</span>
+			</ButtonGroup>
+		</div>
 	),
 	messageStyled: (i, v) => (
 		<MessageContainer key={i} marginBlockEnd='x8'>

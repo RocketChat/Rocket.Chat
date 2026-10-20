@@ -3,6 +3,8 @@ import breakpoints from '@rocket.chat/fuselage-tokens/dist/breakpoints.json';
 import { createTamagui, createTokens } from '@tamagui/web';
 
 import { borderRadius, size, spacing } from './styleTokens';
+// Before any frame inserts its `fuselage` sheet
+import './styles/layerOrder';
 
 // Same queries the SCSS `on-breakpoint` mixin emitted, so `sm:`-style clauses switch at the same widths
 const media = Object.fromEntries(

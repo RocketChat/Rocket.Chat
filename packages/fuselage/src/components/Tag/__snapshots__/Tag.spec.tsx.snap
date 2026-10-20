@@ -296,7 +296,7 @@ exports[`[Tag Rendering] renders Variants without crashing 1`] = `
           Default radius · Default size · Without icon
         </div>
         <div
-          class="is_View _d-341075704 _f-1894439404 _mw-354604370 _mh-1241200853 _ai-121763387 _g-1051447770 _jc-281162209 rcx-button-group rcx-button-group--align-start rcx-button-group--wrap"
+          class="is_View _d-341075704 _f-1894439404 _mw-354604370 _mh-1241200853 _jc-152079490 _ai-121763387 _g-1051447770 rcx-button-group rcx-button-group--align-start rcx-button-group--wrap"
           role="group"
         >
           <span
@@ -391,7 +391,7 @@ exports[`[Tag Rendering] renders Variants without crashing 1`] = `
           Default radius · Default size · With icon
         </div>
         <div
-          class="is_View _d-341075704 _f-1894439404 _mw-354604370 _mh-1241200853 _ai-121763387 _g-1051447770 _jc-281162209 rcx-button-group rcx-button-group--align-start rcx-button-group--wrap"
+          class="is_View _d-341075704 _f-1894439404 _mw-354604370 _mh-1241200853 _jc-152079490 _ai-121763387 _g-1051447770 rcx-button-group rcx-button-group--align-start rcx-button-group--wrap"
           role="group"
         >
           <span
@@ -540,7 +540,7 @@ exports[`[Tag Rendering] renders Variants without crashing 1`] = `
           Default radius · Medium · Without icon
         </div>
         <div
-          class="is_View _d-341075704 _f-1894439404 _mw-354604370 _mh-1241200853 _ai-121763387 _g-1051447770 _jc-281162209 rcx-button-group rcx-button-group--align-start rcx-button-group--wrap"
+          class="is_View _d-341075704 _f-1894439404 _mw-354604370 _mh-1241200853 _jc-152079490 _ai-121763387 _g-1051447770 rcx-button-group rcx-button-group--align-start rcx-button-group--wrap"
           role="group"
         >
           <span
@@ -635,7 +635,7 @@ exports[`[Tag Rendering] renders Variants without crashing 1`] = `
           Default radius · Medium · With icon
         </div>
         <div
-          class="is_View _d-341075704 _f-1894439404 _mw-354604370 _mh-1241200853 _ai-121763387 _g-1051447770 _jc-281162209 rcx-button-group rcx-button-group--align-start rcx-button-group--wrap"
+          class="is_View _d-341075704 _f-1894439404 _mw-354604370 _mh-1241200853 _jc-152079490 _ai-121763387 _g-1051447770 rcx-button-group rcx-button-group--align-start rcx-button-group--wrap"
           role="group"
         >
           <span
@@ -784,7 +784,7 @@ exports[`[Tag Rendering] renders Variants without crashing 1`] = `
           Default radius · Large · Without icon
         </div>
         <div
-          class="is_View _d-341075704 _f-1894439404 _mw-354604370 _mh-1241200853 _ai-121763387 _g-1051447770 _jc-281162209 rcx-button-group rcx-button-group--align-start rcx-button-group--wrap"
+          class="is_View _d-341075704 _f-1894439404 _mw-354604370 _mh-1241200853 _jc-152079490 _ai-121763387 _g-1051447770 rcx-button-group rcx-button-group--align-start rcx-button-group--wrap"
           role="group"
         >
           <span
@@ -879,7 +879,7 @@ exports[`[Tag Rendering] renders Variants without crashing 1`] = `
           Default radius · Large · With icon
         </div>
         <div
-          class="is_View _d-341075704 _f-1894439404 _mw-354604370 _mh-1241200853 _ai-121763387 _g-1051447770 _jc-281162209 rcx-button-group rcx-button-group--align-start rcx-button-group--wrap"
+          class="is_View _d-341075704 _f-1894439404 _mw-354604370 _mh-1241200853 _jc-152079490 _ai-121763387 _g-1051447770 rcx-button-group rcx-button-group--align-start rcx-button-group--wrap"
           role="group"
         >
           <span
@@ -1028,7 +1028,7 @@ exports[`[Tag Rendering] renders Variants without crashing 1`] = `
           Pill · Default size · Without icon
         </div>
         <div
-          class="is_View _d-341075704 _f-1894439404 _mw-354604370 _mh-1241200853 _ai-121763387 _g-1051447770 _jc-281162209 rcx-button-group rcx-button-group--align-start rcx-button-group--wrap"
+          class="is_View _d-341075704 _f-1894439404 _mw-354604370 _mh-1241200853 _jc-152079490 _ai-121763387 _g-1051447770 rcx-button-group rcx-button-group--align-start rcx-button-group--wrap"
           role="group"
         >
           <span
@@ -1123,7 +1123,7 @@ exports[`[Tag Rendering] renders Variants without crashing 1`] = `
           Pill · Default size · With icon
         </div>
         <div
-          class="is_View _d-341075704 _f-1894439404 _mw-354604370 _mh-1241200853 _ai-121763387 _g-1051447770 _jc-281162209 rcx-button-group rcx-button-group--align-start rcx-button-group--wrap"
+          class="is_View _d-341075704 _f-1894439404 _mw-354604370 _mh-1241200853 _jc-152079490 _ai-121763387 _g-1051447770 rcx-button-group rcx-button-group--align-start rcx-button-group--wrap"
           role="group"
         >
           <span
@@ -1272,7 +1272,7 @@ exports[`[Tag Rendering] renders Variants without crashing 1`] = `
           Pill · Medium · Without icon
         </div>
         <div
-          class="is_View _d-341075704 _f-1894439404 _mw-354604370 _mh-1241200853 _ai-121763387 _g-1051447770 _jc-281162209 rcx-button-group rcx-button-group--align-start rcx-button-group--wrap"
+          class="is_View _d-341075704 _f-1894439404 _mw-354604370 _mh-1241200853 _jc-152079490 _ai-121763387 _g-1051447770 rcx-button-group rcx-button-group--align-start rcx-button-group--wrap"
           role="group"
         >
           <span
@@ -1367,7 +1367,7 @@ exports[`[Tag Rendering] renders Variants without crashing 1`] = `
           Pill · Medium · With icon
         </div>
         <div
-          class="is_View _d-341075704 _f-1894439404 _mw-354604370 _mh-1241200853 _ai-121763387 _g-1051447770 _jc-281162209 rcx-button-group rcx-button-group--align-start rcx-button-group--wrap"
+          class="is_View _d-341075704 _f-1894439404 _mw-354604370 _mh-1241200853 _jc-152079490 _ai-121763387 _g-1051447770 rcx-button-group rcx-button-group--align-start rcx-button-group--wrap"
           role="group"
         >
           <span
@@ -1516,7 +1516,7 @@ exports[`[Tag Rendering] renders Variants without crashing 1`] = `
           Pill · Large · Without icon
         </div>
         <div
-          class="is_View _d-341075704 _f-1894439404 _mw-354604370 _mh-1241200853 _ai-121763387 _g-1051447770 _jc-281162209 rcx-button-group rcx-button-group--align-start rcx-button-group--wrap"
+          class="is_View _d-341075704 _f-1894439404 _mw-354604370 _mh-1241200853 _jc-152079490 _ai-121763387 _g-1051447770 rcx-button-group rcx-button-group--align-start rcx-button-group--wrap"
           role="group"
         >
           <span
@@ -1611,7 +1611,7 @@ exports[`[Tag Rendering] renders Variants without crashing 1`] = `
           Pill · Large · With icon
         </div>
         <div
-          class="is_View _d-341075704 _f-1894439404 _mw-354604370 _mh-1241200853 _ai-121763387 _g-1051447770 _jc-281162209 rcx-button-group rcx-button-group--align-start rcx-button-group--wrap"
+          class="is_View _d-341075704 _f-1894439404 _mw-354604370 _mh-1241200853 _jc-152079490 _ai-121763387 _g-1051447770 rcx-button-group rcx-button-group--align-start rcx-button-group--wrap"
           role="group"
         >
           <span
@@ -1760,7 +1760,7 @@ exports[`[Tag Rendering] renders VariantsAsLinks without crashing 1`] = `
 <body>
   <div>
     <div
-      class="is_View _d-341075704 _f-1923654442 _mw-354604370 _mh-1241200853 _ai-121763387 _g-1051447770 _jc-281162209 rcx-button-group rcx-button-group--align-start"
+      class="is_View _d-341075704 _f-1923654442 _mw-354604370 _mh-1241200853 _jc-152079490 _ai-121763387 _g-1051447770 rcx-button-group rcx-button-group--align-start"
       role="group"
     >
       <a
