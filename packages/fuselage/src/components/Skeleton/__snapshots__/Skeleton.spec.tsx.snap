@@ -15,7 +15,13 @@ exports[`renders Default without crashing 1`] = `
   <div>
     <span
       class="is_View _d-1987097250 _f-571455214 _o-1106425799 _fvn-1977619713 _a-119288947 _o-1083158629 _br-1682169757 _b-326940086 _h-568431264 _m-93279763 _to-611310301 _t-1660003422 rcx-skeleton rcx-skeleton--text"
-    />
+    >
+      <span
+        aria-hidden="true"
+      >
+         
+      </span>
+    </span>
   </div>
 </body>
 `;
@@ -35,7 +41,13 @@ exports[`renders TextVariant without crashing 1`] = `
   <div>
     <span
       class="is_View _d-1987097250 _f-571455214 _o-1106425799 _fvn-1977619713 _a-119288947 _o-1083158629 _br-1682169757 _b-326940086 _h-568431264 _m-93279763 _to-611310301 _t-1660003422 rcx-skeleton rcx-skeleton--text"
-    />
+    >
+      <span
+        aria-hidden="true"
+      >
+         
+      </span>
+    </span>
   </div>
 </body>
 `;
