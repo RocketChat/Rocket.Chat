@@ -24,13 +24,15 @@ export const useUserStatuses = ({ enabled = true }: { enabled?: boolean } = {}) 
 		return all;
 	}, [listCustomUserStatusEndpoint]);
 
-	useEffect(
-		() =>
-			userStatuses.watch(stream, () => {
-				queryClient.setQueryData(['user-statuses'], Array.from(userStatuses));
-			}),
-		[queryClient, stream],
-	);
+	useEffect(() => {
+		if (!enabled) {
+			return;
+		}
+
+		return userStatuses.watch(stream, () => {
+			queryClient.setQueryData(['user-statuses'], Array.from(userStatuses));
+		});
+	}, [enabled, queryClient, stream]);
 
 	const { data } = useQuery({
 		queryKey: ['user-statuses'],

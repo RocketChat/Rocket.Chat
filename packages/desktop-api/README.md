@@ -67,7 +67,7 @@ The web client calls `setUserPresenceState` when it starts and again after each 
 Desktop 4.18 already has a `setUserPresence` member with a different payload. Do not use that name for these members. If you do, a new server sends the wrong payload to a released desktop app.
 
 ```ts
-window.RocketChatDesktop.setUserPresenceState({
+window.RocketChatDesktop?.setUserPresenceState?.({
 	loggedIn: true,
 	connection: 'connected',
 	status: 'busy',
