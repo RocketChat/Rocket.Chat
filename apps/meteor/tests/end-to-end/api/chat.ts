@@ -955,6 +955,86 @@ describe('[Chat]', () => {
 			expect(res.body).to.have.property('error', "The 'rid' property on the message object is missing.");
 		});
 
+		describe('message fields owned by the server', () => {
+			const send = (message: Record<string, unknown>) => request.post(api('chat.sendMessage')).set(credentials).send({ message });
+
+			it('should ignore the fields a caller cannot set', async () => {
+				const res = await send({
+					rid: testChannel._id,
+					msg: 'message with forged fields',
+					md: 'forged',
+					reactions: { ':smile:': {} },
+					actionLinks: [null],
+					starred: [{ _id: 'someone' }],
+					pinned: true,
+					pinnedAt: '2026-08-28T10:00:00.000Z',
+					pinnedBy: { _id: 'fake-admin-id', username: 'administrator' },
+					editedAt: '2026-08-28T09:15:00.000Z',
+					editedBy: { _id: 'fake-user-id', username: 'someone' },
+					urls: [{ url: 'https://example.com/', ignoreParse: true, meta: { oembedHtml: '<iframe src="https://example.com/"></iframe>' } }],
+					parseUrls: false,
+				}).expect(200);
+
+				const { message: sent } = res.body;
+				expect(sent).to.have.property('msg', 'message with forged fields');
+				['reactions', 'actionLinks', 'starred', 'pinned', 'pinnedAt', 'pinnedBy', 'editedAt', 'editedBy'].forEach((field) => {
+					expect(sent).to.not.have.property(field);
+				});
+				expect(sent.md).to.not.equal('forged');
+				expect(JSON.stringify(sent.urls ?? [])).to.not.include('oembedHtml');
+
+				const pinned = await request.get(api('chat.getPinnedMessages')).set(credentials).query({ roomId: testChannel._id }).expect(200);
+				expect(pinned.body.messages.map((pinnedMessage: IMessage) => pinnedMessage._id)).to.not.include(sent._id);
+			});
+
+			it('should not keep a forged md tree on a message with no text', async () => {
+				const res = await send({
+					rid: testChannel._id,
+					msg: '',
+					md: [{ type: 'HIDDEN_BLOCK', value: [{ type: 'MENTION_USER', value: { type: 'PLAIN_TEXT', value: 'rocket.cat' } }] }],
+				}).expect(200);
+
+				expect(JSON.stringify(res.body.message.md ?? [])).to.not.include('HIDDEN_BLOCK');
+				expect(res.body.message.mentions ?? []).to.have.lengthOf(0);
+			});
+
+			it('should keep accepting the fields that callers use', async () => {
+				const parent = await sendSimpleMessage({ roomId: testChannel._id });
+
+				await send({ rid: testChannel._id, msg: 'with parseUrls', parseUrls: false }).expect(200);
+				await send({ rid: testChannel._id, text: 'with text' }).expect(200);
+				await send({ rid: testChannel._id, msg: 'with attachments', attachments: [{ text: 'attachment text' }] }).expect(200);
+				await send({ tmid: parent.body.message._id, msg: 'thread reply that sends only the tmid' }).expect(200);
+
+				const location = { type: 'Point', coordinates: [-46.633, -23.55] };
+				const res = await send({ rid: testChannel._id, location }).expect(200);
+				expect(res.body.message.location).to.deep.equal(location);
+			});
+
+			describe('blocks', () => {
+				const text = { type: 'plain_text', text: 'hi' };
+
+				it('should accept blocks that the renderer can walk', async () => {
+					await send({ rid: testChannel._id, blocks: [{ type: 'section', text }] }).expect(200);
+				});
+
+				[
+					['actions without elements', [{ type: 'actions' }]],
+					['context without elements', [{ type: 'context' }]],
+					['an input without an element', [{ type: 'input' }]],
+					['a section with null fields', [{ type: 'section', fields: [null] }]],
+					['a linear scale with too many points', [{ type: 'actions', elements: [{ type: 'linear_scale', maxValue: 4294967295 }] }]],
+				].forEach(([name, blocks]) => {
+					it(`should reject ${name as string}`, async () => {
+						const res = await send({ rid: testChannel._id, blocks }).expect(400);
+
+						expect(res.body).to.have.property('success', false);
+						expect(res.body.error).to.match(/^Invalid blocks: /);
+					});
+				});
+			});
+		});
+
 		describe('should throw an error when the sensitive properties contain malicious XSS values', () => {
 			it('attachment.message_link', () =>
 				void request

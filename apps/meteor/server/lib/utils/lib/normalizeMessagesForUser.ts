@@ -44,7 +44,7 @@ export const normalizeMessagesForUser = async <T extends NormalizableMessage = I
 			}
 		});
 
-		Object.values(message.reactions || {}).forEach((reaction) => reaction.usernames.forEach((username) => usernames.add(username)));
+		Object.values(message.reactions || {}).forEach((reaction) => (reaction.usernames ?? []).forEach((username) => usernames.add(username)));
 	});
 
 	const names = new Map();
@@ -78,7 +78,7 @@ export const normalizeMessagesForUser = async <T extends NormalizableMessage = I
 
 		message.reactions = Object.fromEntries(
 			Object.entries(message.reactions).map(([keys, reaction]) => {
-				reaction.names = reaction.usernames.map((username) => getNameOfUsername(names, username));
+				reaction.names = (reaction.usernames ?? []).map((username) => getNameOfUsername(names, username));
 				return [keys, reaction];
 			}),
 		);
