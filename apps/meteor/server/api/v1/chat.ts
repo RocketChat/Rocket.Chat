@@ -39,6 +39,7 @@ import { canAccessRoomAsync, canAccessRoomIdAsync, canAccessRoomIdsAsync } from 
 import { hasPermissionAsync } from '../../lib/authorization/hasPermission';
 import { callbacks } from '../../lib/callbacks';
 import { applyAirGappedRestrictionsValidation } from '../../lib/cloud/license/airGappedRestrictionsWrapper';
+import { apiDeprecationLogger } from '../../lib/deprecationWarningLogger';
 import { deleteMessageValidatingPermission } from '../../lib/messages/deleteMessage';
 import { processWebhookMessage } from '../../lib/messages/processWebhookMessage';
 import { pinMessage, unpinMessage } from '../../lib/messaging/pins/pinMessage';
@@ -56,10 +57,15 @@ import { executeUpdateMessage } from '../../meteor-methods/messages/updateMessag
 import { ignoreUser } from '../../meteor-methods/users/ignoreUser';
 import { getMessageHistory } from '../../publications/messages';
 import { settings } from '../../settings';
-import type { ExtractRoutesFromAPI } from '../ApiClass';
+import { applyBreakingChanges, type ExtractRoutesFromAPI } from '../ApiClass';
 import { API } from '../api';
+import { assertValidMessageBlocks } from '../lib/assertValidMessageBlocks';
 import { getPaginationItems } from '../lib/getPaginationItems';
 import { findDiscussionsFromRoom, findMentionedMessages, findStarredMessages } from '../lib/messages';
+import { splitSendMessageFields } from '../lib/splitSendMessageFields';
+
+const MAX_REPORTED_UNSUPPORTED_FIELDS = 10;
+const MAX_REPORTED_FIELD_NAME_LENGTH = 64;
 
 type ChatStarMessageLocal = {
 	messageId: IMessage['_id'];
@@ -919,12 +925,35 @@ const chatEndpoints = API.v1
 			},
 		},
 		async function action() {
-			if (MessageTypes.isSystemMessage(this.bodyParams.message)) {
+			const { supported: messageFields, unsupportedNames } = splitSendMessageFields(this.bodyParams.message);
+
+			if (unsupportedNames.length) {
+				const names = unsupportedNames
+					.slice(0, MAX_REPORTED_UNSUPPORTED_FIELDS)
+					.map((name) => name.slice(0, MAX_REPORTED_FIELD_NAME_LENGTH));
+
+				if (applyBreakingChanges) {
+					throw new Error(`The message fields cannot be set through 'chat.sendMessage': ${names.join(', ')}`);
+				}
+
+				apiDeprecationLogger.parameter(
+					this.route,
+					'message.<unsupported fields>',
+					'9.0.0',
+					this.response,
+					({ endpoint, version }) =>
+						`The message fields [${names.join(', ')}] sent to "${endpoint}" are ignored and will be rejected from version ${version}.`,
+				);
+			}
+
+			assertValidMessageBlocks(messageFields.blocks);
+
+			if (MessageTypes.isSystemMessage(messageFields)) {
 				throw new Error("Cannot send system messages using 'chat.sendMessage'");
 			}
 
 			const sent = await applyAirGappedRestrictionsValidation(() =>
-				executeSendMessage(this.user, this.bodyParams.message as Pick<IMessage, 'rid'>, { previewUrls: this.bodyParams.previewUrls }),
+				executeSendMessage(this.user, messageFields as Pick<IMessage, 'rid'>, { previewUrls: this.bodyParams.previewUrls }),
 			);
 			const [message] = await normalizeMessagesForUser([sent], this.userId);
 
