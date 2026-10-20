@@ -61,6 +61,10 @@ export const useUnread = () => {
 		}
 
 		fireEventUnreadChanged(unreadCount);
+
+		// The desktop app cannot read the `unreadAlert` preference from the global events above,
+		// so push the resolved badge to it directly. The desktop ignores repeated values.
+		window.RocketChatDesktop?.setBadge(unreadCount > 0 ? unreadCount : badgeIndicator || 0);
 	}, [setUnread, subscriptions, unreadAlertEnabled, fireEventUnreadChangedBySubscription, fireEventUnreadChanged]);
 
 	useEffect(() => {
