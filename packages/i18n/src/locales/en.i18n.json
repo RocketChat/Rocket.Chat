@@ -1903,6 +1903,8 @@
   "create-c_description": "Permission to create public channels",
   "create-d": "Create direct messages",
   "create-d_description": "Permission to start direct messages",
+  "create-d-other-users": "Create direct messages for other users",
+  "create-d-other-users_description": "Permission to create a direct message between other users, without being a participant, using the excludeSelf option of the direct message creation API",
   "create-invite-links": "Create invite links",
   "create-invite-links_description": "Permission to create invite links to channels",
   "create-livechat-contact": "Create omnichannel contacts",

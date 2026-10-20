@@ -746,10 +746,20 @@ const dmHistoryAction = <Path extends string>(_path: Path): TypedAction<typeof d
 		return API.v1.success(result as { messages: IMessage[]; firstUnread?: IMessage; unreadNotLoaded?: number });
 	};
 
-const dmCreateResponseSchema = ajv.compile<{ room: IRoom & { rid: string } }>({
+const dmCreateResponseSchema = ajv.compile<{ room: Pick<IRoom, '_id' | 't' | 'usernames'> & { rid: string } }>({
 	type: 'object',
 	properties: {
-		room: { type: 'object' }, // relaxed: IRoom shape varies,
+		room: {
+			type: 'object',
+			properties: {
+				_id: { type: 'string' },
+				rid: { type: 'string' },
+				t: { type: 'string', enum: ['d'] },
+				usernames: { type: 'array', items: { type: 'string' } },
+			},
+			required: ['_id', 'rid', 't', 'usernames'],
+			additionalProperties: false,
+		},
 		success: { type: 'boolean', enum: [true] },
 	},
 	required: ['room', 'success'],
@@ -925,10 +935,21 @@ const dmCreateAction = <Path extends string>(_path: Path): TypedAction<typeof dm
 				? [this.bodyParams.username]
 				: this.bodyParams.usernames.split(',').map((username: string) => username.trim());
 
+		if (this.bodyParams.excludeSelf && !(await hasPermissionAsync(this.userId, 'create-d-other-users'))) {
+			throw new Meteor.Error('error-not-allowed', 'Not allowed', {
+				method: 'createDirectMessage',
+			});
+		}
+
 		const room = await createDirectMessage(users, this.userId, this.bodyParams.excludeSelf);
 
 		return API.v1.success({
-			room: { ...room, _id: room.rid },
+			room: {
+				_id: room.rid,
+				rid: room.rid,
+				t: 'd' as const,
+				usernames: room.usernames,
+			},
 		});
 	};
 
