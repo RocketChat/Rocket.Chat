@@ -1,4 +1,5 @@
 import * as F from 'fuselage-under-test';
+import { Message, MessageBody, MessageContainer, MessageHeader, MessageName, MessageNameContainer, MessageTimestamp, MessageUsername } from 'fuselage-under-test';
 import 'fuselage-under-test-css';
 import { Profiler } from 'react';
 import { flushSync } from 'react-dom';
@@ -46,18 +47,18 @@ const rows = {
 		</F.Item>
 	),
 	message: (i, v) => (
-		<F.Message key={i}>
-			<F.MessageContainer>
-				<F.MessageHeader>
-					<F.MessageNameContainer>
-						<F.MessageName>{`User ${i}`}</F.MessageName>
-						<F.MessageUsername>{`@user${i}`}</F.MessageUsername>
-					</F.MessageNameContainer>
-					<F.MessageTimestamp>{`12:0${v}`}</F.MessageTimestamp>
-				</F.MessageHeader>
-				<F.MessageBody>{`Hello world ${i} ${v}`}</F.MessageBody>
-			</F.MessageContainer>
-		</F.Message>
+		<Message key={i}>
+			<MessageContainer>
+				<MessageHeader>
+					<MessageNameContainer>
+						<MessageName>{`User ${i}`}</MessageName>
+						<MessageUsername>{`@user${i}`}</MessageUsername>
+					</MessageNameContainer>
+					<MessageTimestamp>{`12:0${v}`}</MessageTimestamp>
+				</MessageHeader>
+				<MessageBody>{`Hello world ${i} ${v}`}</MessageBody>
+			</MessageContainer>
+		</Message>
 	),
 };
 

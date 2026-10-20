@@ -1,12 +1,12 @@
 import { styled, Text, type GetProps } from '@tamagui/web';
-import type { HTMLAttributes } from 'react';
 
 import { boxText, textScale, truncatedText } from './messageStyles';
 import { textIconColors } from '../../Theme';
 import { spacing } from '../../styleTokens';
-import { withFuselageProvider } from '../FuselageProvider/FuselageProvider';
 
-const MessageTimestampFrame = styled(Text, {
+const MessageTimestamp = styled(Text, {
+	className: 'rcx-message-header__time',
+	displayName: 'MessageTimestamp',
 	render: 'span',
 	...boxText,
 	...textScale('c1'),
@@ -17,10 +17,6 @@ const MessageTimestampFrame = styled(Text, {
 	color: { 'default': String(textIconColors['font-secondary-info']), 'group-hover/message': String(textIconColors['font-default']) },
 });
 
-export type MessageTimestampProps = HTMLAttributes<HTMLSpanElement>;
+export type MessageTimestampProps = GetProps<typeof MessageTimestamp>;
 
-const MessageTimestamp = (props: MessageTimestampProps) => (
-	<MessageTimestampFrame className='rcx-message-header__time' {...(props as GetProps<typeof MessageTimestampFrame>)} />
-);
-
-export default withFuselageProvider(MessageTimestamp);
+export default MessageTimestamp;

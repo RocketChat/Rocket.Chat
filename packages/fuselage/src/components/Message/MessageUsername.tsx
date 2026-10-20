@@ -1,11 +1,11 @@
 import { styled, Text, type GetProps } from '@tamagui/web';
-import type { HTMLAttributes } from 'react';
 
 import { boxText, textScale, truncatedText } from './messageStyles';
 import { textIconColors } from '../../Theme';
-import { withFuselageProvider } from '../FuselageProvider/FuselageProvider';
 
-const MessageUsernameFrame = styled(Text, {
+const MessageUsername = styled(Text, {
+	className: 'rcx-message-header__username',
+	displayName: 'MessageUsername',
 	render: 'span',
 	...boxText,
 	...textScale('p2'),
@@ -14,10 +14,6 @@ const MessageUsernameFrame = styled(Text, {
 	color: String(textIconColors['font-default']),
 });
 
-export type MessageUsernameProps = HTMLAttributes<HTMLSpanElement>;
+export type MessageUsernameProps = GetProps<typeof MessageUsername>;
 
-const MessageUsername = (props: MessageUsernameProps) => (
-	<MessageUsernameFrame className='rcx-message-header__username' {...(props as GetProps<typeof MessageUsernameFrame>)} />
-);
-
-export default withFuselageProvider(MessageUsername);
+export default MessageUsername;

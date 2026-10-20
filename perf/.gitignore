@@ -1,4 +1,11 @@
 base-dist/
 head-dist/
 head-dist-nomin/
+proto-dist/
+preval-dist/
+frames-dist/
+frames-dist-esm/
+combined-dist-esm/
 out-*/
+stats-app.json
+.tamagui/

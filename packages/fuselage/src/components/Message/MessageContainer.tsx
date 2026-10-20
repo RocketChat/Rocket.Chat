@@ -1,11 +1,11 @@
 import { styled, View, type GetProps } from '@tamagui/web';
-import type { HTMLAttributes } from 'react';
 
 import { boxText } from './messageStyles';
 import { size, spacing } from '../../styleTokens';
-import { withFuselageProvider } from '../FuselageProvider/FuselageProvider';
 
-export const MessageContainerFrame = styled(View, {
+const MessageContainer = styled(View, {
+	className: 'rcx-message-container',
+	displayName: 'MessageContainer',
 	render: 'div',
 	...boxText,
 	flexGrow: 1,
@@ -33,10 +33,6 @@ export const MessageContainerFrame = styled(View, {
 	} as const,
 });
 
-export type MessageContainerProps = HTMLAttributes<HTMLDivElement>;
+export type MessageContainerProps = GetProps<typeof MessageContainer>;
 
-const MessageContainer = (props: MessageContainerProps) => (
-	<MessageContainerFrame className='rcx-message-container' {...(props as GetProps<typeof MessageContainerFrame>)} />
-);
-
-export default withFuselageProvider(MessageContainer);
+export default MessageContainer;

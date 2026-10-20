@@ -1,5 +1,9 @@
+import { writeFileSync } from 'node:fs';
 import { resolve } from 'node:path';
 
+import { tamaguiPlugin } from '@tamagui/vite-plugin';
+
+import { prevalStyled } from './prevalStyled.mts';
 import autoprefixer from 'autoprefixer';
 import cssnanoPlugin from 'cssnano';
 import { defineConfig, type Plugin } from 'vite';
@@ -78,7 +82,34 @@ export default defineConfig(({ mode }) => {
 	const production = mode === 'production';
 
 	return {
-		plugins: [pinTamaguiEnv(), stripViteHashMarker()],
+		plugins: [
+			...(process.env.TAMAGUI_PREVAL ? [prevalStyled()] : []),
+			...(process.env.TAMAGUI_EXTRACT
+				? [
+						tamaguiPlugin({
+							config: './src/tamagui.config.ts',
+							components: [],
+							optimize: true,
+							...(process.env.TAMAGUI_ZERO ? { experimental: { zeroRuntime: 'report' as const } } : {}),
+						}),
+					]
+				: []),
+			...(process.env.TAMAGUI_DUMP
+				? [
+						{
+							name: 'dump-transformed',
+							transform(code: string, id: string) {
+								if (process.env.TAMAGUI_DUMP!.split(',').some((f) => id.endsWith(f))) {
+									writeFileSync(`${process.env.TAMAGUI_DUMP_DIR}/${id.split('/').pop()}`, code);
+								}
+								return null;
+							},
+						} as Plugin,
+					]
+				: []),
+			pinTamaguiEnv(),
+			stripViteHashMarker(),
+		],
 		// `index.js` only loads the production bundle under `NODE_ENV=production`,
 		// so pinning it drops the development-only branches from that bundle.
 		define: production ? { 'process.env.NODE_ENV': JSON.stringify('production') } : {},
@@ -97,11 +128,11 @@ export default defineConfig(({ mode }) => {
 			cssMinify: false,
 			lib: {
 				entry: resolve(import.meta.dirname, 'src/index.ts'),
-				formats: ['cjs'],
-				fileName: () => `fuselage.${mode}.js`,
+				formats: [process.env.FUSELAGE_ESM ? 'es' : 'cjs'],
+				fileName: () => `fuselage.${mode}.${process.env.FUSELAGE_ESM ? 'mjs' : 'js'}`,
 			},
 			rollupOptions: {
-				external,
+				external: process.env.FUSELAGE_ESM ? [/^react(-dom)?(\/.+)?$/] : external,
 				output: {
 					// Rollup's default (`if-default-prop`) omits `exports.__esModule`
 					// for a module with no default export; webpack always set it, and
