@@ -1,0 +1,4 @@
+/* Has to beat the unlayered `rcx-box--full` margin reset the avatar keeps */
+.rcx-avatar-stack > .rcx-avatar {
+	margin: auto -0.125rem;
+}
