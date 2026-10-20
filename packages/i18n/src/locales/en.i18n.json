@@ -639,6 +639,8 @@
   "AI_Search_error_request_failed_title": "AI search couldn't load results",
   "AI_Search_error_try_again_description": "Try again in a moment.",
   "AI_Search_error_unavailable_title": "AI search is unavailable",
+  "AI_Search_error_url_blocked_description": "SSRF protection blocked the pipeline URL. If the pipeline runs on a private network, add its host to the SSRF allowlist in admin > general > SSRF protection.",
+  "AI_Search_error_url_blocked_title": "Search pipeline URL is blocked",
   "AI_Search_feature_disabled_description": "Turn on AI search in feature preview before using the dedicated AI search page.",
   "AI_Search_feature_disabled_title": "AI search experience is off",
   "AI_Search_license_required_tooltip": "AI search requires the Rocket.Chat AI add-on. Contact sales to enable it.",

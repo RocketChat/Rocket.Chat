@@ -465,5 +465,13 @@ describe('AI Search intelligent search helpers', () => {
 				}),
 			).rejects.toThrow('error-ai-search-unreachable');
 		});
+
+		it('rejects a request blocked by SSRF protection as a blocked URL', async () => {
+			await expect(
+				searchWith(async () => {
+					throw new Error('error-ssrf-validation-failed');
+				}),
+			).rejects.toThrow('error-ai-search-url-blocked');
+		});
 	});
 });

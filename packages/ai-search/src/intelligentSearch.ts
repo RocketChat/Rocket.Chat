@@ -15,6 +15,7 @@ export const INTELLIGENT_SEARCH_ERROR_CODES = [
 	'error-ai-search-pipeline-not-found',
 	'error-ai-search-timeout',
 	'error-ai-search-unreachable',
+	'error-ai-search-url-blocked',
 	'error-ai-search-unavailable',
 	'error-ai-search-request-failed',
 ] as const;
@@ -37,8 +38,15 @@ const getPipelineResponseErrorCode = (status: number): IntelligentSearchErrorCod
 	return 'error-ai-search-request-failed';
 };
 
-const getPipelineFetchErrorCode = (error: unknown): IntelligentSearchErrorCode =>
-	error instanceof Error && error.name === 'AbortError' ? 'error-ai-search-timeout' : 'error-ai-search-unreachable';
+const getPipelineFetchErrorCode = (error: unknown): IntelligentSearchErrorCode => {
+	if (error instanceof Error && error.name === 'AbortError') {
+		return 'error-ai-search-timeout';
+	}
+	if (error instanceof Error && error.message === 'error-ssrf-validation-failed') {
+		return 'error-ai-search-url-blocked';
+	}
+	return 'error-ai-search-unreachable';
+};
 
 const buildEndpointUrl = (baseUrl: string, path: string): string =>
 	new URL(path, baseUrl.endsWith('/') ? baseUrl : `${baseUrl}/`).toString();

@@ -39,6 +39,12 @@ const adminMessages: Record<IntelligentSearchErrorCode, ErrorMessage> = {
 		description: 'AI_Search_error_not_responding_description',
 		action: 'settings',
 	},
+	'error-ai-search-url-blocked': {
+		type: 'danger',
+		title: 'AI_Search_error_url_blocked_title',
+		description: 'AI_Search_error_url_blocked_description',
+		action: 'settings',
+	},
 	'error-ai-search-timeout': {
 		type: 'warning',
 		title: 'AI_Search_error_not_responding_title',

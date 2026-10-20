@@ -16,6 +16,7 @@ const renderCallout = (props: ComponentProps<typeof AISearchErrorCallout>, permi
 			AI_Search_error_not_responding_title: 'AI search is not responding',
 			AI_Search_error_not_responding_description: 'Check the server status and connection URL.',
 			AI_Search_error_unavailable_title: 'AI search is unavailable',
+			AI_Search_error_url_blocked_title: 'Search pipeline URL is blocked',
 			AI_Search_error_request_failed_title: 'AI search could not load results',
 			AI_Search_error_try_again_description: 'Try again in a moment.',
 			AI_Search_error_not_configured_title: 'AI search is not configured',
@@ -72,6 +73,13 @@ describe('AISearchErrorCallout', () => {
 
 		expect(screen.getByText('AI search is not responding')).toBeInTheDocument();
 		expect(screen.getByRole('button', { name: 'Try again' })).toBeInTheDocument();
+	});
+
+	it('tells admins when SSRF protection blocked the pipeline URL', () => {
+		renderCallout({ error: { errorType: 'error-ai-search-url-blocked' } }, ['view-privileged-setting']);
+
+		expect(screen.getByText('Search pipeline URL is blocked')).toBeInTheDocument();
+		expect(screen.queryByText('AI search is not responding')).not.toBeInTheDocument();
 	});
 
 	it('treats unrecognized errors as a failed request', () => {
