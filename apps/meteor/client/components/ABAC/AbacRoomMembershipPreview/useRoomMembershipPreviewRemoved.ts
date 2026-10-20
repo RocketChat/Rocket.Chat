@@ -1,7 +1,7 @@
 import type { AbacPreviewCursor, IAbacRoomMembershipPreview } from '@rocket.chat/core-typings';
 import type { InfiniteData } from '@tanstack/react-query';
 
-import { usePreviewPages } from './usePreviewPages';
+import { useRoomMembershipPreviewPages } from './useRoomMembershipPreviewPages';
 
 const countAllMembers = (data?: InfiniteData<IAbacRoomMembershipPreview, AbacPreviewCursor | undefined>) => {
 	const pages = data?.pages;
@@ -25,8 +25,8 @@ const getRemoved = (total: number | undefined, lost: number | undefined, kept: n
 };
 
 export const useRoomMembershipPreviewRemoved = (rid: string, attributes: Record<string, string[]>) => {
-	const { data: loses } = usePreviewPages(rid, attributes, '', 'loses');
-	const { data: retains } = usePreviewPages(rid, attributes, '', 'retains', { enabled: false });
+	const { data: loses } = useRoomMembershipPreviewPages(rid, attributes, '', 'loses');
+	const { data: retains } = useRoomMembershipPreviewPages(rid, attributes, '', 'retains', { enabled: false });
 
 	const total = loses?.pages[0]?.total ?? retains?.pages[0]?.total;
 	const removed = getRemoved(total, countAllMembers(loses), countAllMembers(retains));

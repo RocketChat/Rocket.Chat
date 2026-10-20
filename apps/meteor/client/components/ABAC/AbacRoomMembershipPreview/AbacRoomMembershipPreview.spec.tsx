@@ -78,7 +78,7 @@ describe('AbacRoomMembershipPreview', () => {
 
 		const list = await screen.findByRole('list', { name: 'ABAC_Preview_Loses_access' });
 		expect(within(list).getByText('Bob')).toBeInTheDocument();
-		expect(within(list).getByRole('img', { name: 'ABAC_Preview_Loses_access' })).toBeInTheDocument();
+		expect(within(list).getByTitle('ABAC_Preview_Loses_access')).toBeInTheDocument();
 		expect(screen.queryByText('ABAC_Preview_No_members_lose_access')).not.toBeInTheDocument();
 
 		const dialog = await pressSave();
@@ -290,7 +290,7 @@ describe('AbacRoomMembershipPreview', () => {
 		renderPreview(() => page({ members: [carol], editor: 'compliant' }));
 
 		const list = await screen.findByRole('list', { name: 'ABAC_Preview_Loses_access' });
-		expect(within(list).getByRole('img', { name: 'ABAC_Preview_Inconclusive_Removed' })).toBeInTheDocument();
+		expect(within(list).getByTitle('ABAC_Preview_Inconclusive_Removed')).toBeInTheDocument();
 	});
 
 	it('should mark a member who keeps access', async () => {
@@ -303,7 +303,7 @@ describe('AbacRoomMembershipPreview', () => {
 		const list = await screen.findByRole('list', { name: 'ABAC_Preview_Retains_access' });
 		const row = await within(list).findByRole('listitem');
 
-		expect(within(row).getByRole('img', { name: 'ABAC_Preview_Retains_access' })).toBeInTheDocument();
+		expect(within(row).getByTitle('ABAC_Preview_Retains_access')).toBeInTheDocument();
 	});
 
 	it('should tag a member with their highest room role', async () => {

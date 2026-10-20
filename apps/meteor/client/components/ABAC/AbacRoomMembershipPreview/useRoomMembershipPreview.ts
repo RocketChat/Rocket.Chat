@@ -2,14 +2,14 @@ import type { AbacMembershipGroup } from '@rocket.chat/core-typings';
 import { useUserId } from '@rocket.chat/ui-contexts';
 import { useEffect, useMemo } from 'react';
 
-import { usePreviewPages } from './usePreviewPages';
+import { useRoomMembershipPreviewPages } from './useRoomMembershipPreviewPages';
 
 const FILL_MEMBERS = 25;
 const FILL_PAGES = 3;
 
 export const useRoomMembershipPreview = (rid: string, attributes: Record<string, string[]>, filter: string, group: AbacMembershipGroup) => {
 	const { data, isPending, isError, error, isFetching, isFetchingNextPage, isFetchNextPageError, hasNextPage, fetchNextPage, refetch } =
-		usePreviewPages(rid, attributes, filter, group);
+		useRoomMembershipPreviewPages(rid, attributes, filter, group);
 
 	const userId = useUserId();
 	const pages = data?.pages;

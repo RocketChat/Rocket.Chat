@@ -52,16 +52,7 @@ const AbacRoomPreviewMemberRow = ({ member: { username, name, verdict, roles = [
 					</Box>
 				)}
 			</Box>
-			<Icon
-				{...icon}
-				size='x20'
-				flexShrink={0}
-				marginInlineStart={8}
-				role='img'
-				aria-hidden={false}
-				aria-label={t(label)}
-				title={t(label)}
-			/>
+			<Icon {...icon} size='x20' flexShrink={0} marginInlineStart={8} title={t(label)} />
 		</Box>
 	);
 };
