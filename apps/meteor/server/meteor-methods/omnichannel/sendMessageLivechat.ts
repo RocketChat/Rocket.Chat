@@ -43,6 +43,9 @@ export const sendMessageLivechat = async ({
 		}),
 	);
 
+	check(file, Match.Maybe(Match.ObjectIncluding({ _id: String })));
+	check(files, Match.Maybe([Match.ObjectIncluding({ _id: String })]));
+
 	// No projection: the guest is forwarded into the message-sending pipeline, which expects a full visitor.
 	const guest = await LivechatVisitors.getVisitorByToken(token);
 

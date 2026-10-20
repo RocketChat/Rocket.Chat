@@ -136,7 +136,7 @@ export async function sendTranscript({
 					continue;
 				}
 
-				const uploadedFile = await Uploads.findOneById(file._id);
+				const uploadedFile = typeof file._id === 'string' ? await Uploads.findOneByIdAndRoomId(file._id, room._id) : null;
 
 				if (!uploadedFile) {
 					filesHTML += `<div>${escapeHtml(file.name)}${InvalidFileMessage}</div>`;
