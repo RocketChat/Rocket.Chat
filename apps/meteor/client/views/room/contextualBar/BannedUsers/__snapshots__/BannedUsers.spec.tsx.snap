@@ -106,7 +106,7 @@ exports[`renders Default without crashing 1`] = `
                           <div
                             aria-hidden="true"
                             class="is_Text _d-341075704 _f-1128736932 _jc-1099843255 _ai-121763387 _mw-354604370 _ws-311910413 _ww-408434756 _w-120696903 _h-858548760 rcx-item__icon"
-                            id="_r_b_"
+                            id="_r_8_"
                           >
                             <svg
                               aria-hidden="true"
@@ -133,7 +133,7 @@ exports[`renders Default without crashing 1`] = `
                           >
                             <div
                               class="is_Text _o-1119039191 _f-649097281 _mw-842770087 _ws-973912173 _ww-408434756 _to-1727917045 _d-1987097250 rcx-item__title"
-                              id="_r_g_"
+                              id="_r_d_"
                             >
                               john.doe
                                
@@ -150,7 +150,7 @@ exports[`renders Default without crashing 1`] = `
                                 aria-haspopup="true"
                                 aria-label="More"
                                 class="is_View _f-1069813397 _mh-1241200853 _ta-1906144518 _ws-973912173 _td-211436768 _c-22887652 _os-249893454 _o-1119039191 _to-1727917045 _ff-409630021 _fvn-1977619713 _fs-347291933 _fw-289166179 _ls-1782815796 _p-230374000 _a-1578443335 _b-1628331993 _br-1397394445 _bs-1225725885 _w-1682139955 _mw-1947816287 _h-1633581678 _d-312446553 _jc-642967080 _ai-1864573722 _lh-2067208245 _c-1139941473 _b-1242743842 rcx-button--small-square rcx-button--square rcx-button--icon rcx-button"
-                                id="react-aria-_r_k_"
+                                id="react-aria-_r_h_"
                                 title="More"
                                 type="button"
                               >
@@ -194,7 +194,7 @@ exports[`renders Default without crashing 1`] = `
                           <div
                             aria-label="Federated"
                             class="is_Text _d-341075704 _f-1128736932 _jc-1099843255 _ai-121763387 _mw-354604370 _ws-311910413 _ww-408434756 _w-120696903 _h-858548760 rcx-item__icon"
-                            id="_r_t_"
+                            id="_r_p_"
                             role="img"
                           >
                             <i
@@ -209,7 +209,7 @@ exports[`renders Default without crashing 1`] = `
                           >
                             <div
                               class="is_Text _o-1119039191 _f-649097281 _mw-842770087 _ws-973912173 _ww-408434756 _to-1727917045 _d-1987097250 rcx-item__title"
-                              id="_r_12_"
+                              id="_r_u_"
                             >
                               jane.smith:matrix.org
                                
@@ -226,7 +226,7 @@ exports[`renders Default without crashing 1`] = `
                                 aria-haspopup="true"
                                 aria-label="More"
                                 class="is_View _f-1069813397 _mh-1241200853 _ta-1906144518 _ws-973912173 _td-211436768 _c-22887652 _os-249893454 _o-1119039191 _to-1727917045 _ff-409630021 _fvn-1977619713 _fs-347291933 _fw-289166179 _ls-1782815796 _p-230374000 _a-1578443335 _b-1628331993 _br-1397394445 _bs-1225725885 _w-1682139955 _mw-1947816287 _h-1633581678 _d-312446553 _jc-642967080 _ai-1864573722 _lh-2067208245 _c-1139941473 _b-1242743842 rcx-button--small-square rcx-button--square rcx-button--icon rcx-button"
-                                id="react-aria-_r_16_"
+                                id="react-aria-_r_12_"
                                 title="More"
                                 type="button"
                               >
@@ -270,7 +270,7 @@ exports[`renders Default without crashing 1`] = `
                           <div
                             aria-hidden="true"
                             class="is_Text _d-341075704 _f-1128736932 _jc-1099843255 _ai-121763387 _mw-354604370 _ws-311910413 _ww-408434756 _w-120696903 _h-858548760 rcx-item__icon"
-                            id="_r_1f_"
+                            id="_r_1a_"
                           >
                             <svg
                               aria-hidden="true"
@@ -297,7 +297,7 @@ exports[`renders Default without crashing 1`] = `
                           >
                             <div
                               class="is_Text _o-1119039191 _f-649097281 _mw-842770087 _ws-973912173 _ww-408434756 _to-1727917045 _d-1987097250 rcx-item__title"
-                              id="_r_1k_"
+                              id="_r_1f_"
                             >
                               rocket.cat
                                
@@ -314,7 +314,7 @@ exports[`renders Default without crashing 1`] = `
                                 aria-haspopup="true"
                                 aria-label="More"
                                 class="is_View _f-1069813397 _mh-1241200853 _ta-1906144518 _ws-973912173 _td-211436768 _c-22887652 _os-249893454 _o-1119039191 _to-1727917045 _ff-409630021 _fvn-1977619713 _fs-347291933 _fw-289166179 _ls-1782815796 _p-230374000 _a-1578443335 _b-1628331993 _br-1397394445 _bs-1225725885 _w-1682139955 _mw-1947816287 _h-1633581678 _d-312446553 _jc-642967080 _ai-1864573722 _lh-2067208245 _c-1139941473 _b-1242743842 rcx-button--small-square rcx-button--square rcx-button--icon rcx-button"
-                                id="react-aria-_r_1o_"
+                                id="react-aria-_r_1j_"
                                 title="More"
                                 type="button"
                               >
@@ -838,7 +838,7 @@ exports[`renders WithRealNames without crashing 1`] = `
                           <div
                             aria-hidden="true"
                             class="is_Text _d-341075704 _f-1128736932 _jc-1099843255 _ai-121763387 _mw-354604370 _ws-311910413 _ww-408434756 _w-120696903 _h-858548760 rcx-item__icon"
-                            id="_r_38_"
+                            id="_r_2n_"
                           >
                             <svg
                               aria-hidden="true"
@@ -865,7 +865,7 @@ exports[`renders WithRealNames without crashing 1`] = `
                           >
                             <div
                               class="is_Text _o-1119039191 _f-649097281 _mw-842770087 _ws-973912173 _ww-408434756 _to-1727917045 _d-1987097250 rcx-item__title"
-                              id="_r_3d_"
+                              id="_r_2s_"
                             >
                               John Doe
                                
@@ -888,7 +888,7 @@ exports[`renders WithRealNames without crashing 1`] = `
                                 aria-haspopup="true"
                                 aria-label="More"
                                 class="is_View _f-1069813397 _mh-1241200853 _ta-1906144518 _ws-973912173 _td-211436768 _c-22887652 _os-249893454 _o-1119039191 _to-1727917045 _ff-409630021 _fvn-1977619713 _fs-347291933 _fw-289166179 _ls-1782815796 _p-230374000 _a-1578443335 _b-1628331993 _br-1397394445 _bs-1225725885 _w-1682139955 _mw-1947816287 _h-1633581678 _d-312446553 _jc-642967080 _ai-1864573722 _lh-2067208245 _c-1139941473 _b-1242743842 rcx-button--small-square rcx-button--square rcx-button--icon rcx-button"
-                                id="react-aria-_r_3i_"
+                                id="react-aria-_r_31_"
                                 title="More"
                                 type="button"
                               >
@@ -932,7 +932,7 @@ exports[`renders WithRealNames without crashing 1`] = `
                           <div
                             aria-label="Federated"
                             class="is_Text _d-341075704 _f-1128736932 _jc-1099843255 _ai-121763387 _mw-354604370 _ws-311910413 _ww-408434756 _w-120696903 _h-858548760 rcx-item__icon"
-                            id="_r_3r_"
+                            id="_r_39_"
                             role="img"
                           >
                             <i
@@ -947,7 +947,7 @@ exports[`renders WithRealNames without crashing 1`] = `
                           >
                             <div
                               class="is_Text _o-1119039191 _f-649097281 _mw-842770087 _ws-973912173 _ww-408434756 _to-1727917045 _d-1987097250 rcx-item__title"
-                              id="_r_40_"
+                              id="_r_3e_"
                             >
                               Jane Smith
                                
@@ -970,7 +970,7 @@ exports[`renders WithRealNames without crashing 1`] = `
                                 aria-haspopup="true"
                                 aria-label="More"
                                 class="is_View _f-1069813397 _mh-1241200853 _ta-1906144518 _ws-973912173 _td-211436768 _c-22887652 _os-249893454 _o-1119039191 _to-1727917045 _ff-409630021 _fvn-1977619713 _fs-347291933 _fw-289166179 _ls-1782815796 _p-230374000 _a-1578443335 _b-1628331993 _br-1397394445 _bs-1225725885 _w-1682139955 _mw-1947816287 _h-1633581678 _d-312446553 _jc-642967080 _ai-1864573722 _lh-2067208245 _c-1139941473 _b-1242743842 rcx-button--small-square rcx-button--square rcx-button--icon rcx-button"
-                                id="react-aria-_r_45_"
+                                id="react-aria-_r_3j_"
                                 title="More"
                                 type="button"
                               >
@@ -1014,7 +1014,7 @@ exports[`renders WithRealNames without crashing 1`] = `
                           <div
                             aria-hidden="true"
                             class="is_Text _d-341075704 _f-1128736932 _jc-1099843255 _ai-121763387 _mw-354604370 _ws-311910413 _ww-408434756 _w-120696903 _h-858548760 rcx-item__icon"
-                            id="_r_4e_"
+                            id="_r_3r_"
                           >
                             <svg
                               aria-hidden="true"
@@ -1041,7 +1041,7 @@ exports[`renders WithRealNames without crashing 1`] = `
                           >
                             <div
                               class="is_Text _o-1119039191 _f-649097281 _mw-842770087 _ws-973912173 _ww-408434756 _to-1727917045 _d-1987097250 rcx-item__title"
-                              id="_r_4j_"
+                              id="_r_40_"
                             >
                               Rocket.Cat
                                
@@ -1064,7 +1064,7 @@ exports[`renders WithRealNames without crashing 1`] = `
                                 aria-haspopup="true"
                                 aria-label="More"
                                 class="is_View _f-1069813397 _mh-1241200853 _ta-1906144518 _ws-973912173 _td-211436768 _c-22887652 _os-249893454 _o-1119039191 _to-1727917045 _ff-409630021 _fvn-1977619713 _fs-347291933 _fw-289166179 _ls-1782815796 _p-230374000 _a-1578443335 _b-1628331993 _br-1397394445 _bs-1225725885 _w-1682139955 _mw-1947816287 _h-1633581678 _d-312446553 _jc-642967080 _ai-1864573722 _lh-2067208245 _c-1139941473 _b-1242743842 rcx-button--small-square rcx-button--square rcx-button--icon rcx-button"
-                                id="react-aria-_r_4o_"
+                                id="react-aria-_r_45_"
                                 title="More"
                                 type="button"
                               >

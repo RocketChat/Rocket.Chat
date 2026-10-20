@@ -86,7 +86,7 @@ exports[`renders Default without crashing 1`] = `
                   >
                     <label
                       class="is_Text _b-650654186 _os-249893454 _ff-409630021 _fvn-1977619713 _ws-311910413 _ww-408434756 _fs-347291933 _fw-289166179 _lh-1925956564 _ls-1782815796 _d-341075704 _c-1922521888 _c-1063453128 _as-361308821 _m-1067104434 rcx-label rcx-field__label rcx-css-irxdij"
-                      for="_r_7_"
+                      for="_r_5_"
                     >
                       Invite link
                     </label>
@@ -98,7 +98,7 @@ exports[`renders Default without crashing 1`] = `
                       >
                         <input
                           class="is_View _m-2017216831 _p-1943363302 _b-650654186 _os-249893454 _ow-485594423 _ff-409630021 _fvn-1977619713 _p-1021290656 _d-1985012034 _f-1440749467 _w-226740859 _mh-1241200853 _va-1675321343 _ws-973912173 _wb-1577688049 _o-1119039191 _to-1727917045 _b-530853904 _ls-1782815796 _fs-347291933 _fw-289166179 _lh-1925956564 _c-277036852 _cc-365372135 _mw-841846566 rcx-box--animated rcx-input-box--undecorated rcx-input-box--type-url rcx-box--full rcx-input-box"
-                          id="_r_7_"
+                          id="_r_5_"
                           size="1"
                           type="url"
                           value="https://go.rocket.chat/invite?host=open.rocket.chat&path=invite%2F5sBs3a"
@@ -276,7 +276,7 @@ exports[`renders InviteEdit without crashing 1`] = `
                   >
                     <label
                       class="is_Text _b-650654186 _os-249893454 _ff-409630021 _fvn-1977619713 _ws-311910413 _ww-408434756 _fs-347291933 _fw-289166179 _lh-1925956564 _ls-1782815796 _d-341075704 _c-1922521888 _c-1063453128 _as-361308821 _m-1067104434 rcx-label rcx-field__label rcx-css-irxdij"
-                      for="_r_m_"
+                      for="_r_h_"
                     >
                       Expiration (Days)
                     </label>
@@ -331,14 +331,14 @@ exports[`renders InviteEdit without crashing 1`] = `
                       <button
                         aria-expanded="false"
                         aria-haspopup="listbox"
-                        aria-labelledby="react-aria-_r_13_"
+                        aria-labelledby="react-aria-_r_t_"
                         class="rcx-box rcx-box--full rcx-box--animated rcx-select rcx-css-3ejkxj"
-                        id="_r_m_"
+                        id="_r_h_"
                         type="button"
                       >
                         <span
                           class="rcx-box rcx-box--full rcx-css-1ah8hdc"
-                          id="react-aria-_r_13_"
+                          id="react-aria-_r_t_"
                         >
                           1
                         </span>
@@ -356,7 +356,7 @@ exports[`renders InviteEdit without crashing 1`] = `
                   >
                     <label
                       class="is_Text _b-650654186 _os-249893454 _ff-409630021 _fvn-1977619713 _ws-311910413 _ww-408434756 _fs-347291933 _fw-289166179 _lh-1925956564 _ls-1782815796 _d-341075704 _c-1922521888 _c-1063453128 _as-361308821 _m-1067104434 rcx-label rcx-field__label rcx-css-irxdij"
-                      for="_r_n_"
+                      for="_r_i_"
                     >
                       Max number of uses
                     </label>
@@ -416,14 +416,14 @@ exports[`renders InviteEdit without crashing 1`] = `
                       <button
                         aria-expanded="false"
                         aria-haspopup="listbox"
-                        aria-labelledby="react-aria-_r_1g_"
+                        aria-labelledby="react-aria-_r_19_"
                         class="rcx-box rcx-box--full rcx-box--animated rcx-select rcx-css-3ejkxj"
-                        id="_r_n_"
+                        id="_r_i_"
                         type="button"
                       >
                         <span
                           class="rcx-box rcx-box--full rcx-css-1ah8hdc"
-                          id="react-aria-_r_1g_"
+                          id="react-aria-_r_19_"
                         >
                           5
                         </span>

@@ -60,7 +60,7 @@ exports[`OngoingCallsDropdown renders OnlyDeclined without crashing 1`] = `
         class="rcx-box rcx-box--full rcx-css-8i0p31"
       >
         <button
-          aria-controls="_r_7_"
+          aria-controls="_r_6_"
           aria-expanded="false"
           aria-label="Ongoing calls"
           class="is_View _f-1069813397 _mh-1241200853 _ta-1906144518 _ws-973912173 _td-211436768 _c-22887652 _os-249893454 _o-1119039191 _to-1727917045 _ff-409630021 _fvn-1977619713 _fs-347291933 _fw-289166179 _ls-1782815796 _p-230374000 _a-1578443335 _b-1628331993 _br-1397394445 _bs-1225725885 _w-1682139955 _mw-1947816287 _h-1633581678 _d-312446553 _jc-642967080 _ai-1864573722 _lh-2067208245 _c-1139941473 _b-1242743842 rcx-button--small-square rcx-button--square rcx-button--icon rcx-button"
@@ -90,7 +90,7 @@ exports[`OngoingCallsDropdown renders Ringing without crashing 1`] = `
         class="rcx-box rcx-box--full rcx-css-8i0p31"
       >
         <button
-          aria-controls="_r_b_"
+          aria-controls="_r_9_"
           aria-expanded="true"
           aria-label="1 ongoing call"
           class="is_View _f-1069813397 _mh-1241200853 _ta-1906144518 _ws-973912173 _td-211436768 _c-22887652 _os-249893454 _to-1727917045 _ff-409630021 _fvn-1977619713 _fs-347291933 _fw-289166179 _ls-1782815796 _p-230374000 _a-1578443335 _b-375831307 _br-1397394445 _bs-1608124823 _w-1682139955 _mw-1947816287 _h-1633581678 _d-312446553 _jc-642967080 _ai-1864573722 _lh-2067208245 _p-1217804161 _o-1922829338 _c-734907076 _b-515744151 rcx-button--with-badge rcx-button--small-square rcx-button--icon-secondary-danger rcx-button--square rcx-button--icon rcx-button"
@@ -129,7 +129,7 @@ exports[`OngoingCallsDropdown renders Ringing without crashing 1`] = `
           />
           <div
             class="rcx-box rcx-box--full rcx-css-rbegs8"
-            id="_r_b_"
+            id="_r_9_"
           >
             <div
               class="rcx-box rcx-box--full rcx-css-1tbw8nv"
@@ -158,7 +158,7 @@ exports[`OngoingCallsDropdown renders Ringing without crashing 1`] = `
                         </i>
                         <div
                           class="is_Text _o-1119039191 _f-649097281 _mw-842770087 _ws-973912173 _ww-408434756 _to-1727917045 _d-1987097250 rcx-item__title"
-                          id="_r_o_"
+                          id="_r_k_"
                         >
                           <a
                             class="is_Text _d-1987097250 _o-1119039191 _w-1560934055 _m-2017216831 _p-1943363302 _c-22887652 _ta-507911453 _ws-973912173 _ww-408434756 _td-1861836084 _to-1727917045 _c-954359819 _b-10838200 _ow-485594423 _os-249893454 _b-1654379586 _ff-4295677 _fs-1279428672 _fw-702336919 _fs-1723449324 _lh-1970121045 _ls-763972879 _fvn-882811879 rcx-item__link"
@@ -252,7 +252,7 @@ exports[`OngoingCallsDropdown renders SeveralOngoing without crashing 1`] = `
         class="rcx-box rcx-box--full rcx-css-8i0p31"
       >
         <button
-          aria-controls="_r_15_"
+          aria-controls="_r_11_"
           aria-expanded="false"
           aria-label="3 ongoing calls"
           class="is_View _f-1069813397 _mh-1241200853 _ta-1906144518 _ws-973912173 _td-211436768 _c-22887652 _os-249893454 _to-1727917045 _ff-409630021 _fvn-1977619713 _fs-347291933 _fw-289166179 _ls-1782815796 _p-230374000 _a-1578443335 _b-1895627589 _br-1397394445 _bs-2123073523 _w-1682139955 _mw-1947816287 _h-1633581678 _d-312446553 _jc-642967080 _ai-1864573722 _lh-2067208245 _p-1217804161 _o-1922829338 _c-1353765184 _b-1658181062 rcx-button--with-badge rcx-button--small-square rcx-button--icon-secondary-info rcx-button--square rcx-button--icon rcx-button"

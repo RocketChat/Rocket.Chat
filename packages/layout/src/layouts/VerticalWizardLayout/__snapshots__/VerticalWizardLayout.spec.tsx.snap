@@ -180,7 +180,7 @@ exports[`renders WithScroll without crashing 1`] = `
             class="rcx-box rcx-box--full rcx-css-11fczu4"
           >
             <svg
-              aria-labelledby="_r_c_"
+              aria-labelledby="_r_b_"
               fill="#f5455c"
               height="100%"
               viewBox="0 0 180 30"
@@ -188,7 +188,7 @@ exports[`renders WithScroll without crashing 1`] = `
               xmlns="http://www.w3.org/2000/svg"
             >
               <title
-                id="_r_c_"
+                id="_r_b_"
               >
                 Rocket.Chat
               </title>
