@@ -4,6 +4,7 @@ export * from './account-omnichannel';
 export * from './account-profile';
 export * from './account-tokens';
 export * from './account-security';
+export * from './admin-abac-rooms';
 export * from './admin-email-inboxes';
 export * from './admin-rooms';
 export * from './admin-users';
