@@ -8,11 +8,15 @@ import { memo } from 'react';
 import type { MessageActionContext } from '../../../lib/MessageAction';
 import { useIsMessageHighlight } from '../../../views/room/MessageList/contexts/MessageHighlightContext';
 import Emoji from '../../Emoji';
+import { withErrorBoundary } from '../../withErrorBoundary';
 import IgnoredContent from '../IgnoredContent';
+import MessageContentFallback from '../MessageContentFallback';
 import MessageHeader from '../MessageHeader';
 import MessageToolbarHolder from '../MessageToolbarHolder';
 import StatusIndicators from '../StatusIndicators';
 import ThreadMessageContent from './thread/ThreadMessageContent';
+
+const GuardedThreadMessageContent = withErrorBoundary(ThreadMessageContent, <MessageContentFallback />);
 
 export type ThreadMessageProps = {
 	message: IThreadMessage | IThreadMainMessage;
@@ -72,7 +76,7 @@ const ThreadMessage = ({ message, sequential, unread, showUserAvatar, ignoredUse
 				{ignored ? (
 					<IgnoredContent messageId={message._id} onShowMessageIgnored={toggleDisplayIgnoredMessage} />
 				) : (
-					<ThreadMessageContent message={message} />
+					<GuardedThreadMessageContent message={message} />
 				)}
 			</MessageContainer>
 			{!message.private && <MessageToolbarHolder message={message} context={messageContext} />}

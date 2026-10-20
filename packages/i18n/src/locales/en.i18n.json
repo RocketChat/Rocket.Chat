@@ -4352,6 +4352,7 @@
   "Message_composer": "Message composer",
   "Message_composer_toolbox_primary_actions": "Composer primary actions",
   "Message_composer_toolbox_secondary_actions": "Composer secondary actions",
+  "Message_could_not_be_displayed": "This message could not be displayed",
   "message_counter": {
     "one": "{{count}} message",
     "other": "{{count}} messages"

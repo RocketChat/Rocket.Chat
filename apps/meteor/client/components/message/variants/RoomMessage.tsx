@@ -16,13 +16,17 @@ import {
 	useCountSelected,
 } from '../../../views/room/MessageList/contexts/SelectedMessagesContext';
 import Emoji from '../../Emoji';
+import { withErrorBoundary } from '../../withErrorBoundary';
 import IgnoredContent from '../IgnoredContent';
+import MessageContentFallback from '../MessageContentFallback';
 import MessageHeader from '../MessageHeader';
 import MessageToolbarHolder from '../MessageToolbarHolder';
 import StatusIndicators from '../StatusIndicators';
 import RoomMessageContent from './room/RoomMessageContent';
 import { getCheckboxLabel } from '../helpers/getCheckboxLabel';
 import { useMessageListReadReceipts } from '../list/MessageListContext';
+
+const GuardedRoomMessageContent = withErrorBoundary(RoomMessageContent, <MessageContentFallback />);
 
 export type RoomMessageProps = {
 	message: IMessage & { ignored?: boolean };
@@ -143,7 +147,7 @@ const RoomMessage = ({
 				{ignored ? (
 					<IgnoredContent messageId={message._id} onShowMessageIgnored={toggleDisplayIgnoredMessage} />
 				) : (
-					<RoomMessageContent message={message} unread={unread} mention={mention} all={all} searchText={searchText} />
+					<GuardedRoomMessageContent message={message} unread={unread} mention={mention} all={all} searchText={searchText} />
 				)}
 			</MessageContainer>
 			{!message.private && message?.e2e !== 'pending' && !selecting && <MessageToolbarHolder message={message} context={context} />}
