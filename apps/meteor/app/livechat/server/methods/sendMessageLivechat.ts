@@ -42,14 +42,11 @@ export const sendMessageLivechat = async ({
 		}),
 	);
 
-	const guest = await LivechatVisitors.getVisitorByToken(token, {
-		projection: {
-			name: 1,
-			username: 1,
-			department: 1,
-			token: 1,
-		},
-	});
+	check(file, Match.Maybe(Match.ObjectIncluding({ _id: String })));
+	check(files, Match.Maybe([Match.ObjectIncluding({ _id: String })]));
+
+	// No projection: the guest is forwarded into the message-sending pipeline, which expects a full visitor.
+	const guest = await LivechatVisitors.getVisitorByToken(token);
 
 	if (!guest) {
 		throw new Meteor.Error('invalid-token');
