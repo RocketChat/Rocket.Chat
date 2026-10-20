@@ -7,13 +7,13 @@ exports[`CallListItem renders Declined without crashing 1`] = `
       class="rcx-box rcx-box--full rcx-css-hcwdiu"
     >
       <div
-        class="is_Text _p-1021290656 _d-341075704 _f-1069814357 _ai-121763387 _mw-842770087 _mh-1241200853 _m-2017216831 _p-788525541 _ls-1251843592 _ws-311910413 _ww-408434756 _br-1718100884 _ff-409630021 _g-479842563 _ta-507911453 _td-1861836084 _c-727749181 _fs-347291933 _lh-1925956564 _ls-1782815796 _fw-289165218 rcx-item rcx-item--inset-md"
+        class="is_Text _p-1021290656 _d-341075704 _f-1069814357 _ai-121763387 _mw-842770087 _mh-1241200853 _m-2017216831 _p-788525541 _ls-1251843592 _ws-311910413 _ww-408434756 _br-1718100884 _ff-409630021 _ta-507911453 _td-1861836084 _c-727749181 _fs-347291933 _lh-1925956564 _ls-1782815796 _fw-289165218 _g-691362565 _b-944971190 _c-1830342115 _ow-1994474385 _os-1885772691 _oc-1422281658 _oo-245994692 _bs-1638756697 t_group_rcx-item rcx-item rcx-item--inset-md"
       >
         <div
           class="is_Text _d-341075704 _f-1448532840 _mw-842770087 _ws-311910413 _ww-408434756 rcx-item__content"
         >
           <div
-            class="is_Text _d-341075704 _f-1841970073 _ai-121763387 _mw-842770087 _ws-311910413 _ww-408434756 _g-479842563 rcx-item__row"
+            class="is_Text _d-341075704 _f-1841970073 _ai-121763387 _mw-842770087 _ws-311910413 _ww-408434756 _g-1760282038 rcx-item__row"
           >
             <i
               aria-hidden="true"
@@ -23,13 +23,17 @@ exports[`CallListItem renders Declined without crashing 1`] = `
             </i>
             <div
               class="is_Text _o-1119039191 _f-649097281 _mw-842770087 _ws-973912173 _ww-408434756 _to-1727917045 _d-1987097250 rcx-item__title"
-              id="_r_5_"
+              id="_r_6_"
             >
               <a
-                class="rcx-item__link"
+                class="is_Text _d-1987097250 _o-1119039191 _w-1560934055 _m-2017216831 _p-1943363302 _c-22887652 _ta-507911453 _ws-973912173 _ww-408434756 _td-1861836084 _to-1727917045 _c-954359819 _b-10838200 _ow-485594423 _os-249893454 _b-1654379586 _ff-4295677 _fs-1279428672 _fw-702336919 _fs-1723449324 _lh-1970121045 _ls-763972879 _fvn-882811879 rcx-item__link"
                 href="/conference/refused"
               >
                 Design review
+                <span
+                  aria-hidden="true"
+                  class="is_View _p-1261267467 _i-300555698 _d-1987097250 _br-1476398190 rcx-item__link-overlay"
+                />
               </a>
             </div>
             <div
@@ -39,7 +43,7 @@ exports[`CallListItem renders Declined without crashing 1`] = `
             </div>
           </div>
           <div
-            class="is_Text _d-341075704 _f-1841970073 _ai-121763387 _mw-842770087 _ws-311910413 _ww-408434756 _g-479842563 rcx-item__row"
+            class="is_Text _d-341075704 _f-1841970073 _ai-121763387 _mw-842770087 _ws-311910413 _ww-408434756 _g-1760282038 rcx-item__row"
           >
             <div
               class="is_Text _o-1119039191 _f-649097281 _mw-842770087 _ws-973912173 _ww-408434756 _to-1727917045 _d-1987097250 _c-341093563 _fs-2088488067 _lh-1306743983 _ls-1782815796 _fw-289165218 rcx-item__description"
@@ -51,7 +55,7 @@ exports[`CallListItem renders Declined without crashing 1`] = `
               </div>
             </div>
             <div
-              class="is_View _p-1021290656 _zi-2094244754 _d-341075704 _f-1841970073 _ai-121763387 _mw-354604370 _mh-1241200853 _g-1299036281 rcx-item__actions"
+              class="is_View _p-1021290656 _zi-2094244754 _d-341075704 _f-1841970073 _ai-121763387 _mw-354604370 _mh-1241200853 _g-1299036281 _ac-1617022483 _h-1921373401 rcx-item__actions"
             >
               <div
                 class="rcx-box rcx-box--full rcx-css-15iirka"
@@ -76,13 +80,13 @@ exports[`CallListItem renders Joinable without crashing 1`] = `
       class="rcx-box rcx-box--full rcx-css-hcwdiu"
     >
       <div
-        class="is_Text _p-1021290656 _d-341075704 _f-1069814357 _ai-121763387 _mw-842770087 _mh-1241200853 _m-2017216831 _p-788525541 _ls-1251843592 _ws-311910413 _ww-408434756 _br-1718100884 _ff-409630021 _g-479842563 _ta-507911453 _td-1861836084 _c-727749181 _fs-347291933 _lh-1925956564 _ls-1782815796 _fw-289165218 rcx-item rcx-item--inset-md"
+        class="is_Text _p-1021290656 _d-341075704 _f-1069814357 _ai-121763387 _mw-842770087 _mh-1241200853 _m-2017216831 _p-788525541 _ls-1251843592 _ws-311910413 _ww-408434756 _br-1718100884 _ff-409630021 _ta-507911453 _td-1861836084 _c-727749181 _fs-347291933 _lh-1925956564 _ls-1782815796 _fw-289165218 _g-691362565 _b-944971190 _c-1830342115 _ow-1994474385 _os-1885772691 _oc-1422281658 _oo-245994692 _bs-1638756697 t_group_rcx-item rcx-item rcx-item--inset-md"
       >
         <div
           class="is_Text _d-341075704 _f-1448532840 _mw-842770087 _ws-311910413 _ww-408434756 rcx-item__content"
         >
           <div
-            class="is_Text _d-341075704 _f-1841970073 _ai-121763387 _mw-842770087 _ws-311910413 _ww-408434756 _g-479842563 rcx-item__row"
+            class="is_Text _d-341075704 _f-1841970073 _ai-121763387 _mw-842770087 _ws-311910413 _ww-408434756 _g-1760282038 rcx-item__row"
           >
             <i
               aria-hidden="true"
@@ -92,13 +96,17 @@ exports[`CallListItem renders Joinable without crashing 1`] = `
             </i>
             <div
               class="is_Text _o-1119039191 _f-649097281 _mw-842770087 _ws-973912173 _ww-408434756 _to-1727917045 _d-1987097250 rcx-item__title"
-              id="_r_g_"
+              id="_r_l_"
             >
               <a
-                class="rcx-item__link"
+                class="is_Text _d-1987097250 _o-1119039191 _w-1560934055 _m-2017216831 _p-1943363302 _c-22887652 _ta-507911453 _ws-973912173 _ww-408434756 _td-1861836084 _to-1727917045 _c-954359819 _b-10838200 _ow-485594423 _os-249893454 _b-1654379586 _ff-4295677 _fs-1279428672 _fw-702336919 _fs-1723449324 _lh-1970121045 _ls-763972879 _fvn-882811879 rcx-item__link"
                 href="/conference/standup"
               >
                 Daily standup
+                <span
+                  aria-hidden="true"
+                  class="is_View _p-1261267467 _i-300555698 _d-1987097250 _br-1476398190 rcx-item__link-overlay"
+                />
               </a>
             </div>
             <div
@@ -108,7 +116,7 @@ exports[`CallListItem renders Joinable without crashing 1`] = `
             </div>
           </div>
           <div
-            class="is_Text _d-341075704 _f-1841970073 _ai-121763387 _mw-842770087 _ws-311910413 _ww-408434756 _g-479842563 rcx-item__row"
+            class="is_Text _d-341075704 _f-1841970073 _ai-121763387 _mw-842770087 _ws-311910413 _ww-408434756 _g-1760282038 rcx-item__row"
           >
             <div
               class="is_Text _o-1119039191 _f-649097281 _mw-842770087 _ws-973912173 _ww-408434756 _to-1727917045 _d-1987097250 _c-341093563 _fs-2088488067 _lh-1306743983 _ls-1782815796 _fw-289165218 rcx-item__description"
@@ -120,11 +128,11 @@ exports[`CallListItem renders Joinable without crashing 1`] = `
               </div>
             </div>
             <div
-              class="is_View _p-1021290656 _zi-2094244754 _d-341075704 _f-1841970073 _ai-121763387 _mw-354604370 _mh-1241200853 _g-1299036281 rcx-item__actions"
+              class="is_View _p-1021290656 _zi-2094244754 _d-341075704 _f-1841970073 _ai-121763387 _mw-354604370 _mh-1241200853 _g-1299036281 _ac-1617022483 _h-1921373401 rcx-item__actions"
             >
               <button
                 aria-label="Decline"
-                class="is_View _f-1069813397 _mh-1241200853 _ta-1906144518 _ws-973912173 _td-211436768 _c-22887652 _os-249893454 _o-1119039191 _to-1727917045 _ff-409630021 _fvn-1977619713 _fs-347291933 _fw-289166179 _ls-1782815796 _p-230374000 _w-1686757560 _mw-1952433892 _h-1628964073 _d-312446553 _jc-642967080 _ai-1864573722 _lh-2067208245 rcx-button--mini-square rcx-button--icon-secondary rcx-button--square rcx-button--icon rcx-button"
+                class="is_View _f-1069813397 _mh-1241200853 _ta-1906144518 _ws-973912173 _td-211436768 _c-22887652 _os-249893454 _o-1119039191 _to-1727917045 _ff-409630021 _fvn-1977619713 _fs-347291933 _fw-289166179 _ls-1782815796 _p-230374000 _a-1578443335 _b-490095930 _br-1397394445 _bs-958948735 _w-1686757560 _mw-1952433892 _h-1628964073 _d-312446553 _jc-642967080 _ai-1864573722 _lh-2067208245 _c-836305799 _b-1331573151 rcx-button--mini-square rcx-button--icon-secondary rcx-button--square rcx-button--icon rcx-button"
                 title="Decline"
                 type="button"
               >
@@ -151,13 +159,13 @@ exports[`CallListItem renders Joined without crashing 1`] = `
       class="rcx-box rcx-box--full rcx-css-hcwdiu"
     >
       <div
-        class="is_Text _p-1021290656 _d-341075704 _f-1069814357 _ai-121763387 _mw-842770087 _mh-1241200853 _m-2017216831 _p-788525541 _ls-1251843592 _ws-311910413 _ww-408434756 _br-1718100884 _ff-409630021 _g-479842563 _ta-507911453 _td-1861836084 _c-727749181 _fs-347291933 _lh-1925956564 _ls-1782815796 _fw-289165218 rcx-item rcx-item--inset-md"
+        class="is_Text _p-1021290656 _d-341075704 _f-1069814357 _ai-121763387 _mw-842770087 _mh-1241200853 _m-2017216831 _p-788525541 _ls-1251843592 _ws-311910413 _ww-408434756 _br-1718100884 _ff-409630021 _ta-507911453 _td-1861836084 _c-727749181 _fs-347291933 _lh-1925956564 _ls-1782815796 _fw-289165218 _g-691362565 _b-944971190 _c-1830342115 _ow-1994474385 _os-1885772691 _oc-1422281658 _oo-245994692 _bs-1638756697 t_group_rcx-item rcx-item rcx-item--inset-md"
       >
         <div
           class="is_Text _d-341075704 _f-1448532840 _mw-842770087 _ws-311910413 _ww-408434756 rcx-item__content"
         >
           <div
-            class="is_Text _d-341075704 _f-1841970073 _ai-121763387 _mw-842770087 _ws-311910413 _ww-408434756 _g-479842563 rcx-item__row"
+            class="is_Text _d-341075704 _f-1841970073 _ai-121763387 _mw-842770087 _ws-311910413 _ww-408434756 _g-1760282038 rcx-item__row"
           >
             <i
               aria-hidden="true"
@@ -167,13 +175,17 @@ exports[`CallListItem renders Joined without crashing 1`] = `
             </i>
             <div
               class="is_Text _o-1119039191 _f-649097281 _mw-842770087 _ws-973912173 _ww-408434756 _to-1727917045 _d-1987097250 rcx-item__title"
-              id="_r_t_"
+              id="_r_16_"
             >
               <a
-                class="rcx-item__link"
+                class="is_Text _d-1987097250 _o-1119039191 _w-1560934055 _m-2017216831 _p-1943363302 _c-22887652 _ta-507911453 _ws-973912173 _ww-408434756 _td-1861836084 _to-1727917045 _c-954359819 _b-10838200 _ow-485594423 _os-249893454 _b-1654379586 _ff-4295677 _fs-1279428672 _fw-702336919 _fs-1723449324 _lh-1970121045 _ls-763972879 _fvn-882811879 rcx-item__link"
                 href="/conference/joined"
               >
                 Pairing session
+                <span
+                  aria-hidden="true"
+                  class="is_View _p-1261267467 _i-300555698 _d-1987097250 _br-1476398190 rcx-item__link-overlay"
+                />
               </a>
             </div>
             <div
@@ -183,7 +195,7 @@ exports[`CallListItem renders Joined without crashing 1`] = `
             </div>
           </div>
           <div
-            class="is_Text _d-341075704 _f-1841970073 _ai-121763387 _mw-842770087 _ws-311910413 _ww-408434756 _g-479842563 rcx-item__row"
+            class="is_Text _d-341075704 _f-1841970073 _ai-121763387 _mw-842770087 _ws-311910413 _ww-408434756 _g-1760282038 rcx-item__row"
           >
             <div
               class="is_Text _o-1119039191 _f-649097281 _mw-842770087 _ws-973912173 _ww-408434756 _to-1727917045 _d-1987097250 _c-341093563 _fs-2088488067 _lh-1306743983 _ls-1782815796 _fw-289165218 rcx-item__description"
@@ -209,13 +221,13 @@ exports[`CallListItem renders Ringing without crashing 1`] = `
       class="rcx-box rcx-box--full rcx-css-hcwdiu"
     >
       <div
-        class="is_Text _p-1021290656 _d-341075704 _f-1069814357 _ai-121763387 _mw-842770087 _mh-1241200853 _m-2017216831 _p-788525541 _ls-1251843592 _ws-311910413 _ww-408434756 _br-1718100884 _ff-409630021 _g-479842563 _ta-507911453 _td-1861836084 _c-727749181 _fs-347291933 _lh-1925956564 _ls-1782815796 _fw-289165218 rcx-item rcx-item--inset-md"
+        class="is_Text _p-1021290656 _d-341075704 _f-1069814357 _ai-121763387 _mw-842770087 _mh-1241200853 _m-2017216831 _p-788525541 _ls-1251843592 _ws-311910413 _ww-408434756 _br-1718100884 _ff-409630021 _ta-507911453 _td-1861836084 _c-727749181 _fs-347291933 _lh-1925956564 _ls-1782815796 _fw-289165218 _g-691362565 _b-944971190 _c-1830342115 _ow-1994474385 _os-1885772691 _oc-1422281658 _oo-245994692 _bs-1638756697 t_group_rcx-item rcx-item rcx-item--inset-md"
       >
         <div
           class="is_Text _d-341075704 _f-1448532840 _mw-842770087 _ws-311910413 _ww-408434756 rcx-item__content"
         >
           <div
-            class="is_Text _d-341075704 _f-1841970073 _ai-121763387 _mw-842770087 _ws-311910413 _ww-408434756 _g-479842563 rcx-item__row"
+            class="is_Text _d-341075704 _f-1841970073 _ai-121763387 _mw-842770087 _ws-311910413 _ww-408434756 _g-1760282038 rcx-item__row"
           >
             <i
               aria-hidden="true"
@@ -225,13 +237,17 @@ exports[`CallListItem renders Ringing without crashing 1`] = `
             </i>
             <div
               class="is_Text _o-1119039191 _f-649097281 _mw-842770087 _ws-973912173 _ww-408434756 _to-1727917045 _d-1987097250 rcx-item__title"
-              id="_r_17_"
+              id="_r_1k_"
             >
               <a
-                class="rcx-item__link"
+                class="is_Text _d-1987097250 _o-1119039191 _w-1560934055 _m-2017216831 _p-1943363302 _c-22887652 _ta-507911453 _ws-973912173 _ww-408434756 _td-1861836084 _to-1727917045 _c-954359819 _b-10838200 _ow-485594423 _os-249893454 _b-1654379586 _ff-4295677 _fs-1279428672 _fw-702336919 _fs-1723449324 _lh-1970121045 _ls-763972879 _fvn-882811879 rcx-item__link"
                 href="/conference/ringing"
               >
                 Ada Lovelace
+                <span
+                  aria-hidden="true"
+                  class="is_View _p-1261267467 _i-300555698 _d-1987097250 _br-1476398190 rcx-item__link-overlay"
+                />
               </a>
             </div>
             <div
@@ -246,7 +262,7 @@ exports[`CallListItem renders Ringing without crashing 1`] = `
             </div>
           </div>
           <div
-            class="is_Text _d-341075704 _f-1841970073 _ai-121763387 _mw-842770087 _ws-311910413 _ww-408434756 _g-479842563 rcx-item__row"
+            class="is_Text _d-341075704 _f-1841970073 _ai-121763387 _mw-842770087 _ws-311910413 _ww-408434756 _g-1760282038 rcx-item__row"
           >
             <div
               class="is_Text _o-1119039191 _f-649097281 _mw-842770087 _ws-973912173 _ww-408434756 _to-1727917045 _d-1987097250 _c-341093563 _fs-2088488067 _lh-1306743983 _ls-1782815796 _fw-289165218 rcx-item__description"
@@ -258,11 +274,11 @@ exports[`CallListItem renders Ringing without crashing 1`] = `
               </div>
             </div>
             <div
-              class="is_View _p-1021290656 _zi-2094244754 _d-341075704 _f-1841970073 _ai-121763387 _mw-354604370 _mh-1241200853 _g-1299036281 rcx-item__actions"
+              class="is_View _p-1021290656 _zi-2094244754 _d-341075704 _f-1841970073 _ai-121763387 _mw-354604370 _mh-1241200853 _g-1299036281 _ac-1617022483 _h-1921373401 rcx-item__actions"
             >
               <button
                 aria-label="Silence"
-                class="is_View _f-1069813397 _mh-1241200853 _ta-1906144518 _ws-973912173 _td-211436768 _c-22887652 _os-249893454 _o-1119039191 _to-1727917045 _ff-409630021 _fvn-1977619713 _fs-347291933 _fw-289166179 _ls-1782815796 _p-230374000 _w-1686757560 _mw-1952433892 _h-1628964073 _d-312446553 _jc-642967080 _ai-1864573722 _lh-2067208245 rcx-button--mini-square rcx-button--icon-secondary rcx-button--square rcx-button--icon rcx-button"
+                class="is_View _f-1069813397 _mh-1241200853 _ta-1906144518 _ws-973912173 _td-211436768 _c-22887652 _os-249893454 _o-1119039191 _to-1727917045 _ff-409630021 _fvn-1977619713 _fs-347291933 _fw-289166179 _ls-1782815796 _p-230374000 _a-1578443335 _b-490095930 _br-1397394445 _bs-958948735 _w-1686757560 _mw-1952433892 _h-1628964073 _d-312446553 _jc-642967080 _ai-1864573722 _lh-2067208245 _c-836305799 _b-1331573151 rcx-button--mini-square rcx-button--icon-secondary rcx-button--square rcx-button--icon rcx-button"
                 title="Silence"
                 type="button"
               >
@@ -275,7 +291,7 @@ exports[`CallListItem renders Ringing without crashing 1`] = `
               </button>
               <button
                 aria-label="Decline"
-                class="is_View _f-1069813397 _mh-1241200853 _ta-1906144518 _ws-973912173 _td-211436768 _c-22887652 _os-249893454 _o-1119039191 _to-1727917045 _ff-409630021 _fvn-1977619713 _fs-347291933 _fw-289166179 _ls-1782815796 _p-230374000 _w-1686757560 _mw-1952433892 _h-1628964073 _d-312446553 _jc-642967080 _ai-1864573722 _lh-2067208245 rcx-button--mini-square rcx-button--icon-secondary rcx-button--square rcx-button--icon rcx-button"
+                class="is_View _f-1069813397 _mh-1241200853 _ta-1906144518 _ws-973912173 _td-211436768 _c-22887652 _os-249893454 _o-1119039191 _to-1727917045 _ff-409630021 _fvn-1977619713 _fs-347291933 _fw-289166179 _ls-1782815796 _p-230374000 _a-1578443335 _b-490095930 _br-1397394445 _bs-958948735 _w-1686757560 _mw-1952433892 _h-1628964073 _d-312446553 _jc-642967080 _ai-1864573722 _lh-2067208245 _c-836305799 _b-1331573151 rcx-button--mini-square rcx-button--icon-secondary rcx-button--square rcx-button--icon rcx-button"
                 title="Decline"
                 type="button"
               >
@@ -302,13 +318,13 @@ exports[`CallListItem renders RingingButDeclined without crashing 1`] = `
       class="rcx-box rcx-box--full rcx-css-hcwdiu"
     >
       <div
-        class="is_Text _p-1021290656 _d-341075704 _f-1069814357 _ai-121763387 _mw-842770087 _mh-1241200853 _m-2017216831 _p-788525541 _ls-1251843592 _ws-311910413 _ww-408434756 _br-1718100884 _ff-409630021 _g-479842563 _ta-507911453 _td-1861836084 _c-727749181 _fs-347291933 _lh-1925956564 _ls-1782815796 _fw-289165218 rcx-item rcx-item--inset-md"
+        class="is_Text _p-1021290656 _d-341075704 _f-1069814357 _ai-121763387 _mw-842770087 _mh-1241200853 _m-2017216831 _p-788525541 _ls-1251843592 _ws-311910413 _ww-408434756 _br-1718100884 _ff-409630021 _ta-507911453 _td-1861836084 _c-727749181 _fs-347291933 _lh-1925956564 _ls-1782815796 _fw-289165218 _g-691362565 _b-944971190 _c-1830342115 _ow-1994474385 _os-1885772691 _oc-1422281658 _oo-245994692 _bs-1638756697 t_group_rcx-item rcx-item rcx-item--inset-md"
       >
         <div
           class="is_Text _d-341075704 _f-1448532840 _mw-842770087 _ws-311910413 _ww-408434756 rcx-item__content"
         >
           <div
-            class="is_Text _d-341075704 _f-1841970073 _ai-121763387 _mw-842770087 _ws-311910413 _ww-408434756 _g-479842563 rcx-item__row"
+            class="is_Text _d-341075704 _f-1841970073 _ai-121763387 _mw-842770087 _ws-311910413 _ww-408434756 _g-1760282038 rcx-item__row"
           >
             <i
               aria-hidden="true"
@@ -318,13 +334,17 @@ exports[`CallListItem renders RingingButDeclined without crashing 1`] = `
             </i>
             <div
               class="is_Text _o-1119039191 _f-649097281 _mw-842770087 _ws-973912173 _ww-408434756 _to-1727917045 _d-1987097250 rcx-item__title"
-              id="_r_1m_"
+              id="_r_27_"
             >
               <a
-                class="rcx-item__link"
+                class="is_Text _d-1987097250 _o-1119039191 _w-1560934055 _m-2017216831 _p-1943363302 _c-22887652 _ta-507911453 _ws-973912173 _ww-408434756 _td-1861836084 _to-1727917045 _c-954359819 _b-10838200 _ow-485594423 _os-249893454 _b-1654379586 _ff-4295677 _fs-1279428672 _fw-702336919 _fs-1723449324 _lh-1970121045 _ls-763972879 _fvn-882811879 rcx-item__link"
                 href="/conference/refused"
               >
                 Design review
+                <span
+                  aria-hidden="true"
+                  class="is_View _p-1261267467 _i-300555698 _d-1987097250 _br-1476398190 rcx-item__link-overlay"
+                />
               </a>
             </div>
             <div
@@ -334,7 +354,7 @@ exports[`CallListItem renders RingingButDeclined without crashing 1`] = `
             </div>
           </div>
           <div
-            class="is_Text _d-341075704 _f-1841970073 _ai-121763387 _mw-842770087 _ws-311910413 _ww-408434756 _g-479842563 rcx-item__row"
+            class="is_Text _d-341075704 _f-1841970073 _ai-121763387 _mw-842770087 _ws-311910413 _ww-408434756 _g-1760282038 rcx-item__row"
           >
             <div
               class="is_Text _o-1119039191 _f-649097281 _mw-842770087 _ws-973912173 _ww-408434756 _to-1727917045 _d-1987097250 _c-341093563 _fs-2088488067 _lh-1306743983 _ls-1782815796 _fw-289165218 rcx-item__description"
@@ -346,7 +366,7 @@ exports[`CallListItem renders RingingButDeclined without crashing 1`] = `
               </div>
             </div>
             <div
-              class="is_View _p-1021290656 _zi-2094244754 _d-341075704 _f-1841970073 _ai-121763387 _mw-354604370 _mh-1241200853 _g-1299036281 rcx-item__actions"
+              class="is_View _p-1021290656 _zi-2094244754 _d-341075704 _f-1841970073 _ai-121763387 _mw-354604370 _mh-1241200853 _g-1299036281 _ac-1617022483 _h-1921373401 rcx-item__actions"
             >
               <div
                 class="rcx-box rcx-box--full rcx-css-15iirka"
@@ -371,13 +391,13 @@ exports[`CallListItem renders RingingButJoined without crashing 1`] = `
       class="rcx-box rcx-box--full rcx-css-hcwdiu"
     >
       <div
-        class="is_Text _p-1021290656 _d-341075704 _f-1069814357 _ai-121763387 _mw-842770087 _mh-1241200853 _m-2017216831 _p-788525541 _ls-1251843592 _ws-311910413 _ww-408434756 _br-1718100884 _ff-409630021 _g-479842563 _ta-507911453 _td-1861836084 _c-727749181 _fs-347291933 _lh-1925956564 _ls-1782815796 _fw-289165218 rcx-item rcx-item--inset-md"
+        class="is_Text _p-1021290656 _d-341075704 _f-1069814357 _ai-121763387 _mw-842770087 _mh-1241200853 _m-2017216831 _p-788525541 _ls-1251843592 _ws-311910413 _ww-408434756 _br-1718100884 _ff-409630021 _ta-507911453 _td-1861836084 _c-727749181 _fs-347291933 _lh-1925956564 _ls-1782815796 _fw-289165218 _g-691362565 _b-944971190 _c-1830342115 _ow-1994474385 _os-1885772691 _oc-1422281658 _oo-245994692 _bs-1638756697 t_group_rcx-item rcx-item rcx-item--inset-md"
       >
         <div
           class="is_Text _d-341075704 _f-1448532840 _mw-842770087 _ws-311910413 _ww-408434756 rcx-item__content"
         >
           <div
-            class="is_Text _d-341075704 _f-1841970073 _ai-121763387 _mw-842770087 _ws-311910413 _ww-408434756 _g-479842563 rcx-item__row"
+            class="is_Text _d-341075704 _f-1841970073 _ai-121763387 _mw-842770087 _ws-311910413 _ww-408434756 _g-1760282038 rcx-item__row"
           >
             <i
               aria-hidden="true"
@@ -387,13 +407,17 @@ exports[`CallListItem renders RingingButJoined without crashing 1`] = `
             </i>
             <div
               class="is_Text _o-1119039191 _f-649097281 _mw-842770087 _ws-973912173 _ww-408434756 _to-1727917045 _d-1987097250 rcx-item__title"
-              id="_r_21_"
+              id="_r_2m_"
             >
               <a
-                class="rcx-item__link"
+                class="is_Text _d-1987097250 _o-1119039191 _w-1560934055 _m-2017216831 _p-1943363302 _c-22887652 _ta-507911453 _ws-973912173 _ww-408434756 _td-1861836084 _to-1727917045 _c-954359819 _b-10838200 _ow-485594423 _os-249893454 _b-1654379586 _ff-4295677 _fs-1279428672 _fw-702336919 _fs-1723449324 _lh-1970121045 _ls-763972879 _fvn-882811879 rcx-item__link"
                 href="/conference/answered"
               >
                 Standup
+                <span
+                  aria-hidden="true"
+                  class="is_View _p-1261267467 _i-300555698 _d-1987097250 _br-1476398190 rcx-item__link-overlay"
+                />
               </a>
             </div>
             <div
@@ -403,7 +427,7 @@ exports[`CallListItem renders RingingButJoined without crashing 1`] = `
             </div>
           </div>
           <div
-            class="is_Text _d-341075704 _f-1841970073 _ai-121763387 _mw-842770087 _ws-311910413 _ww-408434756 _g-479842563 rcx-item__row"
+            class="is_Text _d-341075704 _f-1841970073 _ai-121763387 _mw-842770087 _ws-311910413 _ww-408434756 _g-1760282038 rcx-item__row"
           >
             <div
               class="is_Text _o-1119039191 _f-649097281 _mw-842770087 _ws-973912173 _ww-408434756 _to-1727917045 _d-1987097250 _c-341093563 _fs-2088488067 _lh-1306743983 _ls-1782815796 _fw-289165218 rcx-item__description"
@@ -429,13 +453,13 @@ exports[`CallListItem renders RingingNotHeardHere without crashing 1`] = `
       class="rcx-box rcx-box--full rcx-css-hcwdiu"
     >
       <div
-        class="is_Text _p-1021290656 _d-341075704 _f-1069814357 _ai-121763387 _mw-842770087 _mh-1241200853 _m-2017216831 _p-788525541 _ls-1251843592 _ws-311910413 _ww-408434756 _br-1718100884 _ff-409630021 _g-479842563 _ta-507911453 _td-1861836084 _c-727749181 _fs-347291933 _lh-1925956564 _ls-1782815796 _fw-289165218 rcx-item rcx-item--inset-md"
+        class="is_Text _p-1021290656 _d-341075704 _f-1069814357 _ai-121763387 _mw-842770087 _mh-1241200853 _m-2017216831 _p-788525541 _ls-1251843592 _ws-311910413 _ww-408434756 _br-1718100884 _ff-409630021 _ta-507911453 _td-1861836084 _c-727749181 _fs-347291933 _lh-1925956564 _ls-1782815796 _fw-289165218 _g-691362565 _b-944971190 _c-1830342115 _ow-1994474385 _os-1885772691 _oc-1422281658 _oo-245994692 _bs-1638756697 t_group_rcx-item rcx-item rcx-item--inset-md"
       >
         <div
           class="is_Text _d-341075704 _f-1448532840 _mw-842770087 _ws-311910413 _ww-408434756 rcx-item__content"
         >
           <div
-            class="is_Text _d-341075704 _f-1841970073 _ai-121763387 _mw-842770087 _ws-311910413 _ww-408434756 _g-479842563 rcx-item__row"
+            class="is_Text _d-341075704 _f-1841970073 _ai-121763387 _mw-842770087 _ws-311910413 _ww-408434756 _g-1760282038 rcx-item__row"
           >
             <i
               aria-hidden="true"
@@ -445,13 +469,17 @@ exports[`CallListItem renders RingingNotHeardHere without crashing 1`] = `
             </i>
             <div
               class="is_Text _o-1119039191 _f-649097281 _mw-842770087 _ws-973912173 _ww-408434756 _to-1727917045 _d-1987097250 rcx-item__title"
-              id="_r_2b_"
+              id="_r_34_"
             >
               <a
-                class="rcx-item__link"
+                class="is_Text _d-1987097250 _o-1119039191 _w-1560934055 _m-2017216831 _p-1943363302 _c-22887652 _ta-507911453 _ws-973912173 _ww-408434756 _td-1861836084 _to-1727917045 _c-954359819 _b-10838200 _ow-485594423 _os-249893454 _b-1654379586 _ff-4295677 _fs-1279428672 _fw-702336919 _fs-1723449324 _lh-1970121045 _ls-763972879 _fvn-882811879 rcx-item__link"
                 href="/conference/ringing"
               >
                 Ada Lovelace
+                <span
+                  aria-hidden="true"
+                  class="is_View _p-1261267467 _i-300555698 _d-1987097250 _br-1476398190 rcx-item__link-overlay"
+                />
               </a>
             </div>
             <div
@@ -466,7 +494,7 @@ exports[`CallListItem renders RingingNotHeardHere without crashing 1`] = `
             </div>
           </div>
           <div
-            class="is_Text _d-341075704 _f-1841970073 _ai-121763387 _mw-842770087 _ws-311910413 _ww-408434756 _g-479842563 rcx-item__row"
+            class="is_Text _d-341075704 _f-1841970073 _ai-121763387 _mw-842770087 _ws-311910413 _ww-408434756 _g-1760282038 rcx-item__row"
           >
             <div
               class="is_Text _o-1119039191 _f-649097281 _mw-842770087 _ws-973912173 _ww-408434756 _to-1727917045 _d-1987097250 _c-341093563 _fs-2088488067 _lh-1306743983 _ls-1782815796 _fw-289165218 rcx-item__description"
@@ -478,11 +506,11 @@ exports[`CallListItem renders RingingNotHeardHere without crashing 1`] = `
               </div>
             </div>
             <div
-              class="is_View _p-1021290656 _zi-2094244754 _d-341075704 _f-1841970073 _ai-121763387 _mw-354604370 _mh-1241200853 _g-1299036281 rcx-item__actions"
+              class="is_View _p-1021290656 _zi-2094244754 _d-341075704 _f-1841970073 _ai-121763387 _mw-354604370 _mh-1241200853 _g-1299036281 _ac-1617022483 _h-1921373401 rcx-item__actions"
             >
               <button
                 aria-label="Decline"
-                class="is_View _f-1069813397 _mh-1241200853 _ta-1906144518 _ws-973912173 _td-211436768 _c-22887652 _os-249893454 _o-1119039191 _to-1727917045 _ff-409630021 _fvn-1977619713 _fs-347291933 _fw-289166179 _ls-1782815796 _p-230374000 _w-1686757560 _mw-1952433892 _h-1628964073 _d-312446553 _jc-642967080 _ai-1864573722 _lh-2067208245 rcx-button--mini-square rcx-button--icon-secondary rcx-button--square rcx-button--icon rcx-button"
+                class="is_View _f-1069813397 _mh-1241200853 _ta-1906144518 _ws-973912173 _td-211436768 _c-22887652 _os-249893454 _o-1119039191 _to-1727917045 _ff-409630021 _fvn-1977619713 _fs-347291933 _fw-289166179 _ls-1782815796 _p-230374000 _a-1578443335 _b-490095930 _br-1397394445 _bs-958948735 _w-1686757560 _mw-1952433892 _h-1628964073 _d-312446553 _jc-642967080 _ai-1864573722 _lh-2067208245 _c-836305799 _b-1331573151 rcx-button--mini-square rcx-button--icon-secondary rcx-button--square rcx-button--icon rcx-button"
                 title="Decline"
                 type="button"
               >
@@ -509,13 +537,13 @@ exports[`CallListItem renders RingingSilenced without crashing 1`] = `
       class="rcx-box rcx-box--full rcx-css-hcwdiu"
     >
       <div
-        class="is_Text _p-1021290656 _d-341075704 _f-1069814357 _ai-121763387 _mw-842770087 _mh-1241200853 _m-2017216831 _p-788525541 _ls-1251843592 _ws-311910413 _ww-408434756 _br-1718100884 _ff-409630021 _g-479842563 _ta-507911453 _td-1861836084 _c-727749181 _fs-347291933 _lh-1925956564 _ls-1782815796 _fw-289165218 rcx-item rcx-item--inset-md"
+        class="is_Text _p-1021290656 _d-341075704 _f-1069814357 _ai-121763387 _mw-842770087 _mh-1241200853 _m-2017216831 _p-788525541 _ls-1251843592 _ws-311910413 _ww-408434756 _br-1718100884 _ff-409630021 _ta-507911453 _td-1861836084 _c-727749181 _fs-347291933 _lh-1925956564 _ls-1782815796 _fw-289165218 _g-691362565 _b-944971190 _c-1830342115 _ow-1994474385 _os-1885772691 _oc-1422281658 _oo-245994692 _bs-1638756697 t_group_rcx-item rcx-item rcx-item--inset-md"
       >
         <div
           class="is_Text _d-341075704 _f-1448532840 _mw-842770087 _ws-311910413 _ww-408434756 rcx-item__content"
         >
           <div
-            class="is_Text _d-341075704 _f-1841970073 _ai-121763387 _mw-842770087 _ws-311910413 _ww-408434756 _g-479842563 rcx-item__row"
+            class="is_Text _d-341075704 _f-1841970073 _ai-121763387 _mw-842770087 _ws-311910413 _ww-408434756 _g-1760282038 rcx-item__row"
           >
             <i
               aria-hidden="true"
@@ -525,13 +553,17 @@ exports[`CallListItem renders RingingSilenced without crashing 1`] = `
             </i>
             <div
               class="is_Text _o-1119039191 _f-649097281 _mw-842770087 _ws-973912173 _ww-408434756 _to-1727917045 _d-1987097250 rcx-item__title"
-              id="_r_2o_"
+              id="_r_3l_"
             >
               <a
-                class="rcx-item__link"
+                class="is_Text _d-1987097250 _o-1119039191 _w-1560934055 _m-2017216831 _p-1943363302 _c-22887652 _ta-507911453 _ws-973912173 _ww-408434756 _td-1861836084 _to-1727917045 _c-954359819 _b-10838200 _ow-485594423 _os-249893454 _b-1654379586 _ff-4295677 _fs-1279428672 _fw-702336919 _fs-1723449324 _lh-1970121045 _ls-763972879 _fvn-882811879 rcx-item__link"
                 href="/conference/ringing"
               >
                 Ada Lovelace
+                <span
+                  aria-hidden="true"
+                  class="is_View _p-1261267467 _i-300555698 _d-1987097250 _br-1476398190 rcx-item__link-overlay"
+                />
               </a>
             </div>
             <div
@@ -546,7 +578,7 @@ exports[`CallListItem renders RingingSilenced without crashing 1`] = `
             </div>
           </div>
           <div
-            class="is_Text _d-341075704 _f-1841970073 _ai-121763387 _mw-842770087 _ws-311910413 _ww-408434756 _g-479842563 rcx-item__row"
+            class="is_Text _d-341075704 _f-1841970073 _ai-121763387 _mw-842770087 _ws-311910413 _ww-408434756 _g-1760282038 rcx-item__row"
           >
             <div
               class="is_Text _o-1119039191 _f-649097281 _mw-842770087 _ws-973912173 _ww-408434756 _to-1727917045 _d-1987097250 _c-341093563 _fs-2088488067 _lh-1306743983 _ls-1782815796 _fw-289165218 rcx-item__description"
@@ -558,7 +590,7 @@ exports[`CallListItem renders RingingSilenced without crashing 1`] = `
               </div>
             </div>
             <div
-              class="is_View _p-1021290656 _zi-2094244754 _d-341075704 _f-1841970073 _ai-121763387 _mw-354604370 _mh-1241200853 _g-1299036281 rcx-item__actions"
+              class="is_View _p-1021290656 _zi-2094244754 _d-341075704 _f-1841970073 _ai-121763387 _mw-354604370 _mh-1241200853 _g-1299036281 _ac-1617022483 _h-1921373401 rcx-item__actions"
             >
               <i
                 aria-hidden="true"
@@ -569,7 +601,7 @@ exports[`CallListItem renders RingingSilenced without crashing 1`] = `
               </i>
               <button
                 aria-label="Decline"
-                class="is_View _f-1069813397 _mh-1241200853 _ta-1906144518 _ws-973912173 _td-211436768 _c-22887652 _os-249893454 _o-1119039191 _to-1727917045 _ff-409630021 _fvn-1977619713 _fs-347291933 _fw-289166179 _ls-1782815796 _p-230374000 _w-1686757560 _mw-1952433892 _h-1628964073 _d-312446553 _jc-642967080 _ai-1864573722 _lh-2067208245 rcx-button--mini-square rcx-button--icon-secondary rcx-button--square rcx-button--icon rcx-button"
+                class="is_View _f-1069813397 _mh-1241200853 _ta-1906144518 _ws-973912173 _td-211436768 _c-22887652 _os-249893454 _o-1119039191 _to-1727917045 _ff-409630021 _fvn-1977619713 _fs-347291933 _fw-289166179 _ls-1782815796 _p-230374000 _a-1578443335 _b-490095930 _br-1397394445 _bs-958948735 _w-1686757560 _mw-1952433892 _h-1628964073 _d-312446553 _jc-642967080 _ai-1864573722 _lh-2067208245 _c-836305799 _b-1331573151 rcx-button--mini-square rcx-button--icon-secondary rcx-button--square rcx-button--icon rcx-button"
                 title="Decline"
                 type="button"
               >
@@ -596,13 +628,13 @@ exports[`CallListItem renders SinglePerson without crashing 1`] = `
       class="rcx-box rcx-box--full rcx-css-hcwdiu"
     >
       <div
-        class="is_Text _p-1021290656 _d-341075704 _f-1069814357 _ai-121763387 _mw-842770087 _mh-1241200853 _m-2017216831 _p-788525541 _ls-1251843592 _ws-311910413 _ww-408434756 _br-1718100884 _ff-409630021 _g-479842563 _ta-507911453 _td-1861836084 _c-727749181 _fs-347291933 _lh-1925956564 _ls-1782815796 _fw-289165218 rcx-item rcx-item--inset-md"
+        class="is_Text _p-1021290656 _d-341075704 _f-1069814357 _ai-121763387 _mw-842770087 _mh-1241200853 _m-2017216831 _p-788525541 _ls-1251843592 _ws-311910413 _ww-408434756 _br-1718100884 _ff-409630021 _ta-507911453 _td-1861836084 _c-727749181 _fs-347291933 _lh-1925956564 _ls-1782815796 _fw-289165218 _g-691362565 _b-944971190 _c-1830342115 _ow-1994474385 _os-1885772691 _oc-1422281658 _oo-245994692 _bs-1638756697 t_group_rcx-item rcx-item rcx-item--inset-md"
       >
         <div
           class="is_Text _d-341075704 _f-1448532840 _mw-842770087 _ws-311910413 _ww-408434756 rcx-item__content"
         >
           <div
-            class="is_Text _d-341075704 _f-1841970073 _ai-121763387 _mw-842770087 _ws-311910413 _ww-408434756 _g-479842563 rcx-item__row"
+            class="is_Text _d-341075704 _f-1841970073 _ai-121763387 _mw-842770087 _ws-311910413 _ww-408434756 _g-1760282038 rcx-item__row"
           >
             <i
               aria-hidden="true"
@@ -612,13 +644,17 @@ exports[`CallListItem renders SinglePerson without crashing 1`] = `
             </i>
             <div
               class="is_Text _o-1119039191 _f-649097281 _mw-842770087 _ws-973912173 _ww-408434756 _to-1727917045 _d-1987097250 rcx-item__title"
-              id="_r_36_"
+              id="_r_47_"
             >
               <a
-                class="rcx-item__link"
+                class="is_Text _d-1987097250 _o-1119039191 _w-1560934055 _m-2017216831 _p-1943363302 _c-22887652 _ta-507911453 _ws-973912173 _ww-408434756 _td-1861836084 _to-1727917045 _c-954359819 _b-10838200 _ow-485594423 _os-249893454 _b-1654379586 _ff-4295677 _fs-1279428672 _fw-702336919 _fs-1723449324 _lh-1970121045 _ls-763972879 _fvn-882811879 rcx-item__link"
                 href="/conference/alone"
               >
                 Ada Lovelace
+                <span
+                  aria-hidden="true"
+                  class="is_View _p-1261267467 _i-300555698 _d-1987097250 _br-1476398190 rcx-item__link-overlay"
+                />
               </a>
             </div>
             <div
@@ -628,7 +664,7 @@ exports[`CallListItem renders SinglePerson without crashing 1`] = `
             </div>
           </div>
           <div
-            class="is_Text _d-341075704 _f-1841970073 _ai-121763387 _mw-842770087 _ws-311910413 _ww-408434756 _g-479842563 rcx-item__row"
+            class="is_Text _d-341075704 _f-1841970073 _ai-121763387 _mw-842770087 _ws-311910413 _ww-408434756 _g-1760282038 rcx-item__row"
           >
             <div
               class="is_Text _o-1119039191 _f-649097281 _mw-842770087 _ws-973912173 _ww-408434756 _to-1727917045 _d-1987097250 _c-341093563 _fs-2088488067 _lh-1306743983 _ls-1782815796 _fw-289165218 rcx-item__description"
@@ -640,11 +676,11 @@ exports[`CallListItem renders SinglePerson without crashing 1`] = `
               </div>
             </div>
             <div
-              class="is_View _p-1021290656 _zi-2094244754 _d-341075704 _f-1841970073 _ai-121763387 _mw-354604370 _mh-1241200853 _g-1299036281 rcx-item__actions"
+              class="is_View _p-1021290656 _zi-2094244754 _d-341075704 _f-1841970073 _ai-121763387 _mw-354604370 _mh-1241200853 _g-1299036281 _ac-1617022483 _h-1921373401 rcx-item__actions"
             >
               <button
                 aria-label="Decline"
-                class="is_View _f-1069813397 _mh-1241200853 _ta-1906144518 _ws-973912173 _td-211436768 _c-22887652 _os-249893454 _o-1119039191 _to-1727917045 _ff-409630021 _fvn-1977619713 _fs-347291933 _fw-289166179 _ls-1782815796 _p-230374000 _w-1686757560 _mw-1952433892 _h-1628964073 _d-312446553 _jc-642967080 _ai-1864573722 _lh-2067208245 rcx-button--mini-square rcx-button--icon-secondary rcx-button--square rcx-button--icon rcx-button"
+                class="is_View _f-1069813397 _mh-1241200853 _ta-1906144518 _ws-973912173 _td-211436768 _c-22887652 _os-249893454 _o-1119039191 _to-1727917045 _ff-409630021 _fvn-1977619713 _fs-347291933 _fw-289166179 _ls-1782815796 _p-230374000 _a-1578443335 _b-490095930 _br-1397394445 _bs-958948735 _w-1686757560 _mw-1952433892 _h-1628964073 _d-312446553 _jc-642967080 _ai-1864573722 _lh-2067208245 _c-836305799 _b-1331573151 rcx-button--mini-square rcx-button--icon-secondary rcx-button--square rcx-button--icon rcx-button"
                 title="Decline"
                 type="button"
               >

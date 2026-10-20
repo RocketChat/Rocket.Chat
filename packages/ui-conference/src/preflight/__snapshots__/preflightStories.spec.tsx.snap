@@ -20,7 +20,7 @@ exports[`preflight stories renders PreflightDevices AllDevices without crashing 
               aria-expanded="false"
               aria-haspopup="true"
               aria-label="Microphone: MacBook Pro Microphone"
-              class="is_View _d-1409515928 _f-1069814357 _mh-1241200853 _ta-1906144518 _ws-973912173 _td-211436768 _c-22887652 _os-249893454 _o-1119039191 _to-1727917045 _ff-409630021 _fvn-1977619713 _p-1560025842 _fs-281033604 _fw-290091622 _lh-1335373134 _ls-1811444947 _mw-1071928195 _h-1633581678 rcx-button--small rcx-button rcx-css-1avkjfy"
+              class="is_View _d-1409515928 _f-1069814357 _mh-1241200853 _ta-1906144518 _ws-973912173 _td-211436768 _c-22887652 _os-249893454 _o-1119039191 _to-1727917045 _ff-409630021 _fvn-1977619713 _p-1560025842 _a-1578443335 _b-490095930 _br-1397394445 _bs-958948735 _fs-281033604 _fw-290091622 _lh-1335373134 _ls-1811444947 _mw-1071928195 _h-1633581678 _c-836305799 _b-1331573151 rcx-button--small rcx-button rcx-css-1avkjfy"
               id="react-aria-_r_0_"
               title="MacBook Pro Microphone"
               type="button"
@@ -55,7 +55,7 @@ exports[`preflight stories renders PreflightDevices AllDevices without crashing 
               aria-expanded="false"
               aria-haspopup="true"
               aria-label="Speaker: MacBook Pro Speakers"
-              class="is_View _d-1409515928 _f-1069814357 _mh-1241200853 _ta-1906144518 _ws-973912173 _td-211436768 _c-22887652 _os-249893454 _o-1119039191 _to-1727917045 _ff-409630021 _fvn-1977619713 _p-1560025842 _fs-281033604 _fw-290091622 _lh-1335373134 _ls-1811444947 _mw-1071928195 _h-1633581678 rcx-button--small rcx-button rcx-css-1avkjfy"
+              class="is_View _d-1409515928 _f-1069814357 _mh-1241200853 _ta-1906144518 _ws-973912173 _td-211436768 _c-22887652 _os-249893454 _o-1119039191 _to-1727917045 _ff-409630021 _fvn-1977619713 _p-1560025842 _a-1578443335 _b-490095930 _br-1397394445 _bs-958948735 _fs-281033604 _fw-290091622 _lh-1335373134 _ls-1811444947 _mw-1071928195 _h-1633581678 _c-836305799 _b-1331573151 rcx-button--small rcx-button rcx-css-1avkjfy"
               id="react-aria-_r_7_"
               title="MacBook Pro Speakers"
               type="button"
@@ -90,7 +90,7 @@ exports[`preflight stories renders PreflightDevices AllDevices without crashing 
               aria-expanded="false"
               aria-haspopup="true"
               aria-label="Camera: FaceTime HD Camera"
-              class="is_View _d-1409515928 _f-1069814357 _mh-1241200853 _ta-1906144518 _ws-973912173 _td-211436768 _c-22887652 _os-249893454 _o-1119039191 _to-1727917045 _ff-409630021 _fvn-1977619713 _p-1560025842 _fs-281033604 _fw-290091622 _lh-1335373134 _ls-1811444947 _mw-1071928195 _h-1633581678 rcx-button--small rcx-button rcx-css-1avkjfy"
+              class="is_View _d-1409515928 _f-1069814357 _mh-1241200853 _ta-1906144518 _ws-973912173 _td-211436768 _c-22887652 _os-249893454 _o-1119039191 _to-1727917045 _ff-409630021 _fvn-1977619713 _p-1560025842 _a-1578443335 _b-490095930 _br-1397394445 _bs-958948735 _fs-281033604 _fw-290091622 _lh-1335373134 _ls-1811444947 _mw-1071928195 _h-1633581678 _c-836305799 _b-1331573151 rcx-button--small rcx-button rcx-css-1avkjfy"
               id="react-aria-_r_e_"
               title="FaceTime HD Camera"
               type="button"
@@ -147,7 +147,7 @@ exports[`preflight stories renders PreflightDevices CameraMenuOpen without crash
               aria-expanded="false"
               aria-haspopup="true"
               aria-label="Microphone: MacBook Pro Microphone"
-              class="is_View _d-1409515928 _f-1069814357 _mh-1241200853 _ta-1906144518 _ws-973912173 _td-211436768 _c-22887652 _os-249893454 _o-1119039191 _to-1727917045 _ff-409630021 _fvn-1977619713 _p-1560025842 _fs-281033604 _fw-290091622 _lh-1335373134 _ls-1811444947 _mw-1071928195 _h-1633581678 rcx-button--small rcx-button rcx-css-1avkjfy"
+              class="is_View _d-1409515928 _f-1069814357 _mh-1241200853 _ta-1906144518 _ws-973912173 _td-211436768 _c-22887652 _os-249893454 _o-1119039191 _to-1727917045 _ff-409630021 _fvn-1977619713 _p-1560025842 _a-1578443335 _b-490095930 _br-1397394445 _bs-958948735 _fs-281033604 _fw-290091622 _lh-1335373134 _ls-1811444947 _mw-1071928195 _h-1633581678 _c-836305799 _b-1331573151 rcx-button--small rcx-button rcx-css-1avkjfy"
               id="react-aria-_r_l_"
               title="MacBook Pro Microphone"
               type="button"
@@ -182,7 +182,7 @@ exports[`preflight stories renders PreflightDevices CameraMenuOpen without crash
               aria-expanded="false"
               aria-haspopup="true"
               aria-label="Speaker: MacBook Pro Speakers"
-              class="is_View _d-1409515928 _f-1069814357 _mh-1241200853 _ta-1906144518 _ws-973912173 _td-211436768 _c-22887652 _os-249893454 _o-1119039191 _to-1727917045 _ff-409630021 _fvn-1977619713 _p-1560025842 _fs-281033604 _fw-290091622 _lh-1335373134 _ls-1811444947 _mw-1071928195 _h-1633581678 rcx-button--small rcx-button rcx-css-1avkjfy"
+              class="is_View _d-1409515928 _f-1069814357 _mh-1241200853 _ta-1906144518 _ws-973912173 _td-211436768 _c-22887652 _os-249893454 _o-1119039191 _to-1727917045 _ff-409630021 _fvn-1977619713 _p-1560025842 _a-1578443335 _b-490095930 _br-1397394445 _bs-958948735 _fs-281033604 _fw-290091622 _lh-1335373134 _ls-1811444947 _mw-1071928195 _h-1633581678 _c-836305799 _b-1331573151 rcx-button--small rcx-button rcx-css-1avkjfy"
               id="react-aria-_r_s_"
               title="MacBook Pro Speakers"
               type="button"
@@ -218,7 +218,7 @@ exports[`preflight stories renders PreflightDevices CameraMenuOpen without crash
               aria-expanded="true"
               aria-haspopup="true"
               aria-label="Camera: FaceTime HD Camera"
-              class="is_View _d-1409515928 _f-1069814357 _mh-1241200853 _ta-1906144518 _ws-973912173 _td-211436768 _c-22887652 _os-249893454 _o-1119039191 _to-1727917045 _ff-409630021 _fvn-1977619713 _p-1560025842 _fs-281033604 _fw-290091622 _lh-1335373134 _ls-1811444947 _mw-1071928195 _h-1633581678 rcx-button--small rcx-button rcx-css-1avkjfy"
+              class="is_View _d-1409515928 _f-1069814357 _mh-1241200853 _ta-1906144518 _ws-973912173 _td-211436768 _c-22887652 _os-249893454 _o-1119039191 _to-1727917045 _ff-409630021 _fvn-1977619713 _p-1560025842 _a-1578443335 _b-490095930 _br-1397394445 _bs-958948735 _fs-281033604 _fw-290091622 _lh-1335373134 _ls-1811444947 _mw-1071928195 _h-1633581678 _c-836305799 _b-1331573151 rcx-button--small rcx-button rcx-css-1avkjfy"
               id="react-aria-_r_13_"
               title="FaceTime HD Camera"
               type="button"
@@ -289,10 +289,10 @@ exports[`preflight stories renders PreflightDevices CameraMenuOpen without crash
             role="presentation"
           >
             <div
-              class="is_Text _p-1021290656 _d-341075704 _f-1069814357 _ai-121763387 _mw-842770087 _mh-499962855 _m-2017216831 _p-788525541 _ls-1251843592 _ws-311910413 _ww-408434756 _br-1718100884 _ff-409630021 _g-479842563 _c-341093563 _fs-2088488067 _lh-1306743983 _ls-1782815796 _fw-289168101 rcx-item-group-header rcx-item-group-header--inset-md"
+              class="is_Text _p-1021290656 _d-341075704 _f-1069814357 _ai-121763387 _mw-842770087 _mh-499962855 _m-2017216831 _p-788525541 _ls-1251843592 _ws-311910413 _ww-408434756 _br-1718100884 _ff-409630021 _c-341093563 _fs-2088488067 _lh-1306743983 _ls-1782815796 _fw-289168101 _g-1760282038 t_group_rcx-item-group-header rcx-item-group-header rcx-item-group-header--inset-md"
             >
               <div
-                class="rcx-item-group-title"
+                class="is_Text _d-1987097250 _o-1119039191 _f-649097281 _mw-842770087 _m-2017216831 _ws-973912173 _ww-408434756 _to-1727917045 _c-954359819 _ff-4295677 _fs-1279428672 _fw-702336919 _fs-1723449324 _lh-1970121045 _ls-763972879 _fvn-882811879 rcx-item-group-title"
                 id="react-aria-_r_1d_"
                 role="presentation"
               >
@@ -305,10 +305,10 @@ exports[`preflight stories renders PreflightDevices CameraMenuOpen without crash
             >
               <label
                 aria-checked="false"
-                aria-labelledby="_r_1m_"
-                class="is_Text _p-1021290656 _d-341075704 _f-1069814357 _ai-121763387 _mw-842770087 _mh-1241200853 _m-2017216831 _p-788525541 _ls-1251843592 _ws-311910413 _ww-408434756 _br-1718100884 _ff-409630021 _g-479842563 _ta-507911453 _td-1861836084 _c-727749181 _fs-347291933 _lh-1925956564 _ls-1782815796 _fw-289165218 rcx-item rcx-item--inset-md rcx-item--clickable rcx-item--focus-managed"
+                aria-labelledby="_r_1o_"
+                class="is_Text _p-1021290656 _d-341075704 _f-1069814357 _ai-121763387 _mw-842770087 _mh-1241200853 _m-2017216831 _p-788525541 _ls-1251843592 _ws-311910413 _ww-408434756 _br-1718100884 _ff-409630021 _ta-507911453 _td-1861836084 _c-727749181 _fs-347291933 _lh-1925956564 _ls-1782815796 _fw-289165218 _g-47172425 _b-944971190 _c-1830342115 _os-1831542405 t_group_rcx-item rcx-item rcx-item--inset-md rcx-item--clickable rcx-item--focus-managed"
                 data-key="facetime-videoinput"
-                id="react-aria-_r_1j_"
+                id="react-aria-_r_1k_"
                 role="menuitemradio"
                 tabindex="-1"
               >
@@ -317,7 +317,7 @@ exports[`preflight stories renders PreflightDevices CameraMenuOpen without crash
                 >
                   <div
                     class="is_Text _o-1119039191 _f-649097281 _mw-842770087 _ws-973912173 _ww-408434756 _to-1727917045 _d-1987097250 rcx-item__title"
-                    id="_r_1m_"
+                    id="_r_1o_"
                   >
                     <div
                       class="rcx-box rcx-box--full rcx-css-f39bd5"
@@ -335,7 +335,7 @@ exports[`preflight stories renders PreflightDevices CameraMenuOpen without crash
                   class="is_View _p-1021290656 _zi-2094244754 _d-341075704 _f-1841970073 _ai-121763387 _mw-354604370 _mh-1241200853 _g-1299036281 rcx-item__actions rcx-option__input"
                 >
                   <label
-                    class="is_Text _b-1639159466 _os-249893454 _ff-409630021 _fvn-1977619713 _ws-311910413 _ww-408434756 rcx-radio-button"
+                    class="is_Text _b-1639159466 _os-249893454 _ff-409630021 _fvn-1977619713 _ws-311910413 _ww-408434756 _p-1021290656 _d-1985012034 _va-1124586065 _c-22887652 _ow-485594423 rcx-radio-button"
                   >
                     <input
                       checked=""
@@ -344,17 +344,21 @@ exports[`preflight stories renders PreflightDevices CameraMenuOpen without crash
                     />
                     <i
                       aria-hidden="true"
-                      class="is_View _b-1639160427 _os-249893454 _ff-409630021 _fvn-1977619713 _p-1021290656 _h-858548760 _f-1069814357 _mw-354604370 _mh-1241200853 _d-341075704 _jc-1099843255 _ai-121763387 _br-662213014 _w-120696903 rcx-radio-button__fake"
-                    />
+                      class="is_View _b-523511517 _os-249893454 _ff-409630021 _fvn-1977619713 _p-1021290656 _h-858548760 _f-1069814357 _mw-354604370 _mh-1241200853 _c-991369120 _b-886492876 _d-341075704 _jc-1099843255 _ai-121763387 _br-662213014 _w-120696903 rcx-radio-button__fake"
+                    >
+                      <span
+                        class="is_View _d-1987097250 _v-46649817 _w-2027464954 _h-1735620473 _br-662213014 _b-156244340"
+                      />
+                    </i>
                   </label>
                 </div>
               </label>
               <label
                 aria-checked="false"
-                aria-labelledby="_r_22_"
-                class="is_Text _p-1021290656 _d-341075704 _f-1069814357 _ai-121763387 _mw-842770087 _mh-1241200853 _m-2017216831 _p-788525541 _ls-1251843592 _ws-311910413 _ww-408434756 _br-1718100884 _ff-409630021 _g-479842563 _ta-507911453 _td-1861836084 _c-727749181 _fs-347291933 _lh-1925956564 _ls-1782815796 _fw-289165218 rcx-item rcx-item--inset-md rcx-item--clickable rcx-item--focus-managed"
+                aria-labelledby="_r_26_"
+                class="is_Text _p-1021290656 _d-341075704 _f-1069814357 _ai-121763387 _mw-842770087 _mh-1241200853 _m-2017216831 _p-788525541 _ls-1251843592 _ws-311910413 _ww-408434756 _br-1718100884 _ff-409630021 _ta-507911453 _td-1861836084 _c-727749181 _fs-347291933 _lh-1925956564 _ls-1782815796 _fw-289165218 _g-47172425 _b-944971190 _c-1830342115 _os-1831542405 t_group_rcx-item rcx-item rcx-item--inset-md rcx-item--clickable rcx-item--focus-managed"
                 data-key="brio-videoinput"
-                id="react-aria-_r_1v_"
+                id="react-aria-_r_22_"
                 role="menuitemradio"
                 tabindex="-1"
               >
@@ -363,7 +367,7 @@ exports[`preflight stories renders PreflightDevices CameraMenuOpen without crash
                 >
                   <div
                     class="is_Text _o-1119039191 _f-649097281 _mw-842770087 _ws-973912173 _ww-408434756 _to-1727917045 _d-1987097250 rcx-item__title"
-                    id="_r_22_"
+                    id="_r_26_"
                   >
                     <div
                       class="rcx-box rcx-box--full rcx-css-f39bd5"
@@ -381,7 +385,7 @@ exports[`preflight stories renders PreflightDevices CameraMenuOpen without crash
                   class="is_View _p-1021290656 _zi-2094244754 _d-341075704 _f-1841970073 _ai-121763387 _mw-354604370 _mh-1241200853 _g-1299036281 rcx-item__actions rcx-option__input"
                 >
                   <label
-                    class="is_Text _b-1639159466 _os-249893454 _ff-409630021 _fvn-1977619713 _ws-311910413 _ww-408434756 rcx-radio-button"
+                    class="is_Text _b-1639159466 _os-249893454 _ff-409630021 _fvn-1977619713 _ws-311910413 _ww-408434756 _p-1021290656 _d-1985012034 _va-1124586065 _c-22887652 _ow-485594423 rcx-radio-button"
                   >
                     <input
                       class="is_View _b-1639159466 _os-249893454 _ff-409630021 _fvn-1977619713 _p-1261267467 _o-1119039191 _c-588872556 _cp-2129451690 _w-226739898 _h-1922295961 _m-1890937723 _p-1943363302 _ws-973912173 _f-1246374076 rcx-radio-button__input"
@@ -389,41 +393,50 @@ exports[`preflight stories renders PreflightDevices CameraMenuOpen without crash
                     />
                     <i
                       aria-hidden="true"
-                      class="is_View _b-1639160427 _os-249893454 _ff-409630021 _fvn-1977619713 _p-1021290656 _h-858548760 _f-1069814357 _mw-354604370 _mh-1241200853 _d-341075704 _jc-1099843255 _ai-121763387 _br-662213014 _w-120696903 rcx-radio-button__fake"
-                    />
+                      class="is_View _b-523511517 _os-249893454 _ff-409630021 _fvn-1977619713 _p-1021290656 _h-858548760 _f-1069814357 _mw-354604370 _mh-1241200853 _c-991369120 _b-886492876 _d-341075704 _jc-1099843255 _ai-121763387 _br-662213014 _w-120696903 rcx-radio-button__fake"
+                    >
+                      <span
+                        class="is_View _d-1987097250 _v-46649817 _w-2027464954 _h-1735620473 _br-662213014 _b-156244340"
+                      />
+                    </i>
                   </label>
                 </div>
               </label>
             </div>
           </div>
           <div
-            class="is_View _d-1987097250 _f-1246374076 _mw-354604370 _mh-1241200853 _m-2017216831 _p-1671535631 _ls-1251843592 _b-10838200 rcx-item-divider"
+            class="is_View _d-1987097250 _f-1246374076 _mw-354604370 _mh-1241200853 _m-2017216831 _p-1671535631 _ls-1251843592 _b-37393443 rcx-item-divider"
             role="separator"
-          />
+          >
+            <span
+              aria-hidden="true"
+              class="is_View _d-1987097250 _b-2046691489 rcx-item-divider__line"
+            />
+          </div>
           <div
             role="presentation"
           >
             <div
-              class="is_Text _p-1021290656 _d-341075704 _f-1069814357 _ai-121763387 _mw-842770087 _mh-499962855 _m-2017216831 _p-788525541 _ls-1251843592 _ws-311910413 _ww-408434756 _br-1718100884 _ff-409630021 _g-479842563 _c-341093563 _fs-2088488067 _lh-1306743983 _ls-1782815796 _fw-289168101 rcx-item-group-header rcx-item-group-header--inset-md"
+              class="is_Text _p-1021290656 _d-341075704 _f-1069814357 _ai-121763387 _mw-842770087 _mh-499962855 _m-2017216831 _p-788525541 _ls-1251843592 _ws-311910413 _ww-408434756 _br-1718100884 _ff-409630021 _c-341093563 _fs-2088488067 _lh-1306743983 _ls-1782815796 _fw-289168101 _g-1760282038 t_group_rcx-item-group-header rcx-item-group-header rcx-item-group-header--inset-md"
             >
               <div
-                class="rcx-item-group-title"
-                id="react-aria-_r_28_"
+                class="is_Text _d-1987097250 _o-1119039191 _f-649097281 _mw-842770087 _m-2017216831 _ws-973912173 _ww-408434756 _to-1727917045 _c-954359819 _ff-4295677 _fs-1279428672 _fw-702336919 _fs-1723449324 _lh-1970121045 _ls-763972879 _fvn-882811879 rcx-item-group-title"
+                id="react-aria-_r_2d_"
                 role="presentation"
               >
                 Send resolution (maximum)
               </div>
             </div>
             <div
-              aria-labelledby="react-aria-_r_28_"
+              aria-labelledby="react-aria-_r_2d_"
               role="group"
             >
               <label
                 aria-checked="false"
-                aria-labelledby="_r_2i_"
-                class="is_Text _p-1021290656 _d-341075704 _f-1069814357 _ai-121763387 _mw-842770087 _mh-1241200853 _m-2017216831 _p-788525541 _ls-1251843592 _ws-311910413 _ww-408434756 _br-1718100884 _ff-409630021 _g-479842563 _ta-507911453 _td-1861836084 _c-727749181 _fs-347291933 _lh-1925956564 _ls-1782815796 _fw-289165218 rcx-item rcx-item--inset-md rcx-item--clickable rcx-item--focus-managed"
+                aria-labelledby="_r_2q_"
+                class="is_Text _p-1021290656 _d-341075704 _f-1069814357 _ai-121763387 _mw-842770087 _mh-1241200853 _m-2017216831 _p-788525541 _ls-1251843592 _ws-311910413 _ww-408434756 _br-1718100884 _ff-409630021 _ta-507911453 _td-1861836084 _c-727749181 _fs-347291933 _lh-1925956564 _ls-1782815796 _fw-289165218 _g-47172425 _b-944971190 _c-1830342115 _os-1831542405 t_group_rcx-item rcx-item rcx-item--inset-md rcx-item--clickable rcx-item--focus-managed"
                 data-key="choice:0:auto"
-                id="react-aria-_r_2f_"
+                id="react-aria-_r_2m_"
                 role="menuitemradio"
                 tabindex="-1"
               >
@@ -432,7 +445,7 @@ exports[`preflight stories renders PreflightDevices CameraMenuOpen without crash
                 >
                   <div
                     class="is_Text _o-1119039191 _f-649097281 _mw-842770087 _ws-973912173 _ww-408434756 _to-1727917045 _d-1987097250 rcx-item__title"
-                    id="_r_2i_"
+                    id="_r_2q_"
                   >
                     <div
                       class="rcx-box rcx-box--full rcx-css-f39bd5"
@@ -450,7 +463,7 @@ exports[`preflight stories renders PreflightDevices CameraMenuOpen without crash
                   class="is_View _p-1021290656 _zi-2094244754 _d-341075704 _f-1841970073 _ai-121763387 _mw-354604370 _mh-1241200853 _g-1299036281 rcx-item__actions rcx-option__input"
                 >
                   <label
-                    class="is_Text _b-1639159466 _os-249893454 _ff-409630021 _fvn-1977619713 _ws-311910413 _ww-408434756 rcx-radio-button"
+                    class="is_Text _b-1639159466 _os-249893454 _ff-409630021 _fvn-1977619713 _ws-311910413 _ww-408434756 _p-1021290656 _d-1985012034 _va-1124586065 _c-22887652 _ow-485594423 rcx-radio-button"
                   >
                     <input
                       checked=""
@@ -459,17 +472,21 @@ exports[`preflight stories renders PreflightDevices CameraMenuOpen without crash
                     />
                     <i
                       aria-hidden="true"
-                      class="is_View _b-1639160427 _os-249893454 _ff-409630021 _fvn-1977619713 _p-1021290656 _h-858548760 _f-1069814357 _mw-354604370 _mh-1241200853 _d-341075704 _jc-1099843255 _ai-121763387 _br-662213014 _w-120696903 rcx-radio-button__fake"
-                    />
+                      class="is_View _b-523511517 _os-249893454 _ff-409630021 _fvn-1977619713 _p-1021290656 _h-858548760 _f-1069814357 _mw-354604370 _mh-1241200853 _c-991369120 _b-886492876 _d-341075704 _jc-1099843255 _ai-121763387 _br-662213014 _w-120696903 rcx-radio-button__fake"
+                    >
+                      <span
+                        class="is_View _d-1987097250 _v-46649817 _w-2027464954 _h-1735620473 _br-662213014 _b-156244340"
+                      />
+                    </i>
                   </label>
                 </div>
               </label>
               <label
                 aria-checked="false"
-                aria-labelledby="_r_2u_"
-                class="is_Text _p-1021290656 _d-341075704 _f-1069814357 _ai-121763387 _mw-842770087 _mh-1241200853 _m-2017216831 _p-788525541 _ls-1251843592 _ws-311910413 _ww-408434756 _br-1718100884 _ff-409630021 _g-479842563 _ta-507911453 _td-1861836084 _c-727749181 _fs-347291933 _lh-1925956564 _ls-1782815796 _fw-289165218 rcx-item rcx-item--inset-md rcx-item--clickable rcx-item--focus-managed"
+                aria-labelledby="_r_38_"
+                class="is_Text _p-1021290656 _d-341075704 _f-1069814357 _ai-121763387 _mw-842770087 _mh-1241200853 _m-2017216831 _p-788525541 _ls-1251843592 _ws-311910413 _ww-408434756 _br-1718100884 _ff-409630021 _ta-507911453 _td-1861836084 _c-727749181 _fs-347291933 _lh-1925956564 _ls-1782815796 _fw-289165218 _g-47172425 _b-944971190 _c-1830342115 _os-1831542405 t_group_rcx-item rcx-item rcx-item--inset-md rcx-item--clickable rcx-item--focus-managed"
                 data-key="choice:0:h1080"
-                id="react-aria-_r_2r_"
+                id="react-aria-_r_34_"
                 role="menuitemradio"
                 tabindex="-1"
               >
@@ -478,7 +495,7 @@ exports[`preflight stories renders PreflightDevices CameraMenuOpen without crash
                 >
                   <div
                     class="is_Text _o-1119039191 _f-649097281 _mw-842770087 _ws-973912173 _ww-408434756 _to-1727917045 _d-1987097250 rcx-item__title"
-                    id="_r_2u_"
+                    id="_r_38_"
                   >
                     <div
                       class="rcx-box rcx-box--full rcx-css-f39bd5"
@@ -496,7 +513,7 @@ exports[`preflight stories renders PreflightDevices CameraMenuOpen without crash
                   class="is_View _p-1021290656 _zi-2094244754 _d-341075704 _f-1841970073 _ai-121763387 _mw-354604370 _mh-1241200853 _g-1299036281 rcx-item__actions rcx-option__input"
                 >
                   <label
-                    class="is_Text _b-1639159466 _os-249893454 _ff-409630021 _fvn-1977619713 _ws-311910413 _ww-408434756 rcx-radio-button"
+                    class="is_Text _b-1639159466 _os-249893454 _ff-409630021 _fvn-1977619713 _ws-311910413 _ww-408434756 _p-1021290656 _d-1985012034 _va-1124586065 _c-22887652 _ow-485594423 rcx-radio-button"
                   >
                     <input
                       class="is_View _b-1639159466 _os-249893454 _ff-409630021 _fvn-1977619713 _p-1261267467 _o-1119039191 _c-588872556 _cp-2129451690 _w-226739898 _h-1922295961 _m-1890937723 _p-1943363302 _ws-973912173 _f-1246374076 rcx-radio-button__input"
@@ -504,17 +521,21 @@ exports[`preflight stories renders PreflightDevices CameraMenuOpen without crash
                     />
                     <i
                       aria-hidden="true"
-                      class="is_View _b-1639160427 _os-249893454 _ff-409630021 _fvn-1977619713 _p-1021290656 _h-858548760 _f-1069814357 _mw-354604370 _mh-1241200853 _d-341075704 _jc-1099843255 _ai-121763387 _br-662213014 _w-120696903 rcx-radio-button__fake"
-                    />
+                      class="is_View _b-523511517 _os-249893454 _ff-409630021 _fvn-1977619713 _p-1021290656 _h-858548760 _f-1069814357 _mw-354604370 _mh-1241200853 _c-991369120 _b-886492876 _d-341075704 _jc-1099843255 _ai-121763387 _br-662213014 _w-120696903 rcx-radio-button__fake"
+                    >
+                      <span
+                        class="is_View _d-1987097250 _v-46649817 _w-2027464954 _h-1735620473 _br-662213014 _b-156244340"
+                      />
+                    </i>
                   </label>
                 </div>
               </label>
               <label
                 aria-checked="false"
-                aria-labelledby="_r_3a_"
-                class="is_Text _p-1021290656 _d-341075704 _f-1069814357 _ai-121763387 _mw-842770087 _mh-1241200853 _m-2017216831 _p-788525541 _ls-1251843592 _ws-311910413 _ww-408434756 _br-1718100884 _ff-409630021 _g-479842563 _ta-507911453 _td-1861836084 _c-727749181 _fs-347291933 _lh-1925956564 _ls-1782815796 _fw-289165218 rcx-item rcx-item--inset-md rcx-item--clickable rcx-item--focus-managed"
+                aria-labelledby="_r_3m_"
+                class="is_Text _p-1021290656 _d-341075704 _f-1069814357 _ai-121763387 _mw-842770087 _mh-1241200853 _m-2017216831 _p-788525541 _ls-1251843592 _ws-311910413 _ww-408434756 _br-1718100884 _ff-409630021 _ta-507911453 _td-1861836084 _c-727749181 _fs-347291933 _lh-1925956564 _ls-1782815796 _fw-289165218 _g-47172425 _b-944971190 _c-1830342115 _os-1831542405 t_group_rcx-item rcx-item rcx-item--inset-md rcx-item--clickable rcx-item--focus-managed"
                 data-key="choice:0:h720"
-                id="react-aria-_r_37_"
+                id="react-aria-_r_3i_"
                 role="menuitemradio"
                 tabindex="-1"
               >
@@ -523,7 +544,7 @@ exports[`preflight stories renders PreflightDevices CameraMenuOpen without crash
                 >
                   <div
                     class="is_Text _o-1119039191 _f-649097281 _mw-842770087 _ws-973912173 _ww-408434756 _to-1727917045 _d-1987097250 rcx-item__title"
-                    id="_r_3a_"
+                    id="_r_3m_"
                   >
                     <div
                       class="rcx-box rcx-box--full rcx-css-f39bd5"
@@ -541,7 +562,7 @@ exports[`preflight stories renders PreflightDevices CameraMenuOpen without crash
                   class="is_View _p-1021290656 _zi-2094244754 _d-341075704 _f-1841970073 _ai-121763387 _mw-354604370 _mh-1241200853 _g-1299036281 rcx-item__actions rcx-option__input"
                 >
                   <label
-                    class="is_Text _b-1639159466 _os-249893454 _ff-409630021 _fvn-1977619713 _ws-311910413 _ww-408434756 rcx-radio-button"
+                    class="is_Text _b-1639159466 _os-249893454 _ff-409630021 _fvn-1977619713 _ws-311910413 _ww-408434756 _p-1021290656 _d-1985012034 _va-1124586065 _c-22887652 _ow-485594423 rcx-radio-button"
                   >
                     <input
                       class="is_View _b-1639159466 _os-249893454 _ff-409630021 _fvn-1977619713 _p-1261267467 _o-1119039191 _c-588872556 _cp-2129451690 _w-226739898 _h-1922295961 _m-1890937723 _p-1943363302 _ws-973912173 _f-1246374076 rcx-radio-button__input"
@@ -549,17 +570,21 @@ exports[`preflight stories renders PreflightDevices CameraMenuOpen without crash
                     />
                     <i
                       aria-hidden="true"
-                      class="is_View _b-1639160427 _os-249893454 _ff-409630021 _fvn-1977619713 _p-1021290656 _h-858548760 _f-1069814357 _mw-354604370 _mh-1241200853 _d-341075704 _jc-1099843255 _ai-121763387 _br-662213014 _w-120696903 rcx-radio-button__fake"
-                    />
+                      class="is_View _b-523511517 _os-249893454 _ff-409630021 _fvn-1977619713 _p-1021290656 _h-858548760 _f-1069814357 _mw-354604370 _mh-1241200853 _c-991369120 _b-886492876 _d-341075704 _jc-1099843255 _ai-121763387 _br-662213014 _w-120696903 rcx-radio-button__fake"
+                    >
+                      <span
+                        class="is_View _d-1987097250 _v-46649817 _w-2027464954 _h-1735620473 _br-662213014 _b-156244340"
+                      />
+                    </i>
                   </label>
                 </div>
               </label>
               <label
                 aria-checked="false"
-                aria-labelledby="_r_3m_"
-                class="is_Text _p-1021290656 _d-341075704 _f-1069814357 _ai-121763387 _mw-842770087 _mh-1241200853 _m-2017216831 _p-788525541 _ls-1251843592 _ws-311910413 _ww-408434756 _br-1718100884 _ff-409630021 _g-479842563 _ta-507911453 _td-1861836084 _c-727749181 _fs-347291933 _lh-1925956564 _ls-1782815796 _fw-289165218 rcx-item rcx-item--inset-md rcx-item--clickable rcx-item--focus-managed"
+                aria-labelledby="_r_44_"
+                class="is_Text _p-1021290656 _d-341075704 _f-1069814357 _ai-121763387 _mw-842770087 _mh-1241200853 _m-2017216831 _p-788525541 _ls-1251843592 _ws-311910413 _ww-408434756 _br-1718100884 _ff-409630021 _ta-507911453 _td-1861836084 _c-727749181 _fs-347291933 _lh-1925956564 _ls-1782815796 _fw-289165218 _g-47172425 _b-944971190 _c-1830342115 _os-1831542405 t_group_rcx-item rcx-item rcx-item--inset-md rcx-item--clickable rcx-item--focus-managed"
                 data-key="choice:0:h360"
-                id="react-aria-_r_3j_"
+                id="react-aria-_r_40_"
                 role="menuitemradio"
                 tabindex="-1"
               >
@@ -568,7 +593,7 @@ exports[`preflight stories renders PreflightDevices CameraMenuOpen without crash
                 >
                   <div
                     class="is_Text _o-1119039191 _f-649097281 _mw-842770087 _ws-973912173 _ww-408434756 _to-1727917045 _d-1987097250 rcx-item__title"
-                    id="_r_3m_"
+                    id="_r_44_"
                   >
                     <div
                       class="rcx-box rcx-box--full rcx-css-f39bd5"
@@ -586,7 +611,7 @@ exports[`preflight stories renders PreflightDevices CameraMenuOpen without crash
                   class="is_View _p-1021290656 _zi-2094244754 _d-341075704 _f-1841970073 _ai-121763387 _mw-354604370 _mh-1241200853 _g-1299036281 rcx-item__actions rcx-option__input"
                 >
                   <label
-                    class="is_Text _b-1639159466 _os-249893454 _ff-409630021 _fvn-1977619713 _ws-311910413 _ww-408434756 rcx-radio-button"
+                    class="is_Text _b-1639159466 _os-249893454 _ff-409630021 _fvn-1977619713 _ws-311910413 _ww-408434756 _p-1021290656 _d-1985012034 _va-1124586065 _c-22887652 _ow-485594423 rcx-radio-button"
                   >
                     <input
                       class="is_View _b-1639159466 _os-249893454 _ff-409630021 _fvn-1977619713 _p-1261267467 _o-1119039191 _c-588872556 _cp-2129451690 _w-226739898 _h-1922295961 _m-1890937723 _p-1943363302 _ws-973912173 _f-1246374076 rcx-radio-button__input"
@@ -594,17 +619,21 @@ exports[`preflight stories renders PreflightDevices CameraMenuOpen without crash
                     />
                     <i
                       aria-hidden="true"
-                      class="is_View _b-1639160427 _os-249893454 _ff-409630021 _fvn-1977619713 _p-1021290656 _h-858548760 _f-1069814357 _mw-354604370 _mh-1241200853 _d-341075704 _jc-1099843255 _ai-121763387 _br-662213014 _w-120696903 rcx-radio-button__fake"
-                    />
+                      class="is_View _b-523511517 _os-249893454 _ff-409630021 _fvn-1977619713 _p-1021290656 _h-858548760 _f-1069814357 _mw-354604370 _mh-1241200853 _c-991369120 _b-886492876 _d-341075704 _jc-1099843255 _ai-121763387 _br-662213014 _w-120696903 rcx-radio-button__fake"
+                    >
+                      <span
+                        class="is_View _d-1987097250 _v-46649817 _w-2027464954 _h-1735620473 _br-662213014 _b-156244340"
+                      />
+                    </i>
                   </label>
                 </div>
               </label>
               <label
                 aria-checked="false"
-                aria-labelledby="_r_42_"
-                class="is_Text _p-1021290656 _d-341075704 _f-1069814357 _ai-121763387 _mw-842770087 _mh-1241200853 _m-2017216831 _p-788525541 _ls-1251843592 _ws-311910413 _ww-408434756 _br-1718100884 _ff-409630021 _g-479842563 _ta-507911453 _td-1861836084 _c-727749181 _fs-347291933 _lh-1925956564 _ls-1782815796 _fw-289165218 rcx-item rcx-item--inset-md rcx-item--clickable rcx-item--focus-managed"
+                aria-labelledby="_r_4i_"
+                class="is_Text _p-1021290656 _d-341075704 _f-1069814357 _ai-121763387 _mw-842770087 _mh-1241200853 _m-2017216831 _p-788525541 _ls-1251843592 _ws-311910413 _ww-408434756 _br-1718100884 _ff-409630021 _ta-507911453 _td-1861836084 _c-727749181 _fs-347291933 _lh-1925956564 _ls-1782815796 _fw-289165218 _g-47172425 _b-944971190 _c-1830342115 _os-1831542405 t_group_rcx-item rcx-item rcx-item--inset-md rcx-item--clickable rcx-item--focus-managed"
                 data-key="choice:0:h180"
-                id="react-aria-_r_3v_"
+                id="react-aria-_r_4e_"
                 role="menuitemradio"
                 tabindex="-1"
               >
@@ -613,7 +642,7 @@ exports[`preflight stories renders PreflightDevices CameraMenuOpen without crash
                 >
                   <div
                     class="is_Text _o-1119039191 _f-649097281 _mw-842770087 _ws-973912173 _ww-408434756 _to-1727917045 _d-1987097250 rcx-item__title"
-                    id="_r_42_"
+                    id="_r_4i_"
                   >
                     <div
                       class="rcx-box rcx-box--full rcx-css-f39bd5"
@@ -631,7 +660,7 @@ exports[`preflight stories renders PreflightDevices CameraMenuOpen without crash
                   class="is_View _p-1021290656 _zi-2094244754 _d-341075704 _f-1841970073 _ai-121763387 _mw-354604370 _mh-1241200853 _g-1299036281 rcx-item__actions rcx-option__input"
                 >
                   <label
-                    class="is_Text _b-1639159466 _os-249893454 _ff-409630021 _fvn-1977619713 _ws-311910413 _ww-408434756 rcx-radio-button"
+                    class="is_Text _b-1639159466 _os-249893454 _ff-409630021 _fvn-1977619713 _ws-311910413 _ww-408434756 _p-1021290656 _d-1985012034 _va-1124586065 _c-22887652 _ow-485594423 rcx-radio-button"
                   >
                     <input
                       class="is_View _b-1639159466 _os-249893454 _ff-409630021 _fvn-1977619713 _p-1261267467 _o-1119039191 _c-588872556 _cp-2129451690 _w-226739898 _h-1922295961 _m-1890937723 _p-1943363302 _ws-973912173 _f-1246374076 rcx-radio-button__input"
@@ -639,8 +668,12 @@ exports[`preflight stories renders PreflightDevices CameraMenuOpen without crash
                     />
                     <i
                       aria-hidden="true"
-                      class="is_View _b-1639160427 _os-249893454 _ff-409630021 _fvn-1977619713 _p-1021290656 _h-858548760 _f-1069814357 _mw-354604370 _mh-1241200853 _d-341075704 _jc-1099843255 _ai-121763387 _br-662213014 _w-120696903 rcx-radio-button__fake"
-                    />
+                      class="is_View _b-523511517 _os-249893454 _ff-409630021 _fvn-1977619713 _p-1021290656 _h-858548760 _f-1069814357 _mw-354604370 _mh-1241200853 _c-991369120 _b-886492876 _d-341075704 _jc-1099843255 _ai-121763387 _br-662213014 _w-120696903 rcx-radio-button__fake"
+                    >
+                      <span
+                        class="is_View _d-1987097250 _v-46649817 _w-2027464954 _h-1735620473 _br-662213014 _b-156244340"
+                      />
+                    </i>
                   </label>
                 </div>
               </label>
@@ -657,7 +690,7 @@ exports[`preflight stories renders PreflightDevices CameraMenuOpen without crash
     >
       <button
         aria-label="Dismiss"
-        id="react-aria-_r_48_"
+        id="react-aria-_r_4p_"
         style="width: 1px; height: 1px;"
         tabindex="-1"
       />
@@ -691,8 +724,8 @@ exports[`preflight stories renders PreflightDevices MicOnlyProvider without cras
               aria-expanded="false"
               aria-haspopup="true"
               aria-label="Microphone: MacBook Pro Microphone"
-              class="is_View _d-1409515928 _f-1069814357 _mh-1241200853 _ta-1906144518 _ws-973912173 _td-211436768 _c-22887652 _os-249893454 _o-1119039191 _to-1727917045 _ff-409630021 _fvn-1977619713 _p-1560025842 _fs-281033604 _fw-290091622 _lh-1335373134 _ls-1811444947 _mw-1071928195 _h-1633581678 rcx-button--small rcx-button rcx-css-1avkjfy"
-              id="react-aria-_r_49_"
+              class="is_View _d-1409515928 _f-1069814357 _mh-1241200853 _ta-1906144518 _ws-973912173 _td-211436768 _c-22887652 _os-249893454 _o-1119039191 _to-1727917045 _ff-409630021 _fvn-1977619713 _p-1560025842 _a-1578443335 _b-490095930 _br-1397394445 _bs-958948735 _fs-281033604 _fw-290091622 _lh-1335373134 _ls-1811444947 _mw-1071928195 _h-1633581678 _c-836305799 _b-1331573151 rcx-button--small rcx-button rcx-css-1avkjfy"
+              id="react-aria-_r_4q_"
               title="MacBook Pro Microphone"
               type="button"
             >
@@ -726,8 +759,8 @@ exports[`preflight stories renders PreflightDevices MicOnlyProvider without cras
               aria-expanded="false"
               aria-haspopup="true"
               aria-label="Speaker: MacBook Pro Speakers"
-              class="is_View _d-1409515928 _f-1069814357 _mh-1241200853 _ta-1906144518 _ws-973912173 _td-211436768 _c-22887652 _os-249893454 _o-1119039191 _to-1727917045 _ff-409630021 _fvn-1977619713 _p-1560025842 _fs-281033604 _fw-290091622 _lh-1335373134 _ls-1811444947 _mw-1071928195 _h-1633581678 rcx-button--small rcx-button rcx-css-1avkjfy"
-              id="react-aria-_r_4g_"
+              class="is_View _d-1409515928 _f-1069814357 _mh-1241200853 _ta-1906144518 _ws-973912173 _td-211436768 _c-22887652 _os-249893454 _o-1119039191 _to-1727917045 _ff-409630021 _fvn-1977619713 _p-1560025842 _a-1578443335 _b-490095930 _br-1397394445 _bs-958948735 _fs-281033604 _fw-290091622 _lh-1335373134 _ls-1811444947 _mw-1071928195 _h-1633581678 _c-836305799 _b-1331573151 rcx-button--small rcx-button rcx-css-1avkjfy"
+              id="react-aria-_r_51_"
               title="MacBook Pro Speakers"
               type="button"
             >
@@ -779,7 +812,7 @@ exports[`preflight stories renders PreflightDevices NoDevices without crashing 1
           >
             <button
               aria-label="Microphone"
-              class="is_View _d-1409515928 _f-1069814357 _mh-1241200853 _ta-1906144518 _ws-973912173 _td-211436768 _c-22887652 _os-249893454 _o-1119039191 _to-1727917045 _ff-409630021 _fvn-1977619713 _p-1560025842 _fs-281033604 _fw-290091622 _lh-1335373134 _ls-1811444947 _mw-1071928195 _h-1633581678 rcx-button--small rcx-button rcx-css-1avkjfy"
+              class="is_View _d-1409515928 _f-1069814357 _mh-1241200853 _ta-1906144518 _ws-973912173 _td-211436768 _os-249893454 _o-1119039191 _to-1727917045 _ff-409630021 _fvn-1977619713 _p-1560025842 _a-1578443335 _b-1504388127 _br-1397394445 _bs-958948735 _fs-281033604 _fw-290091622 _lh-1335373134 _ls-1811444947 _mw-1071928195 _h-1633581678 _c-131824210 _b-802538122 _c-2102202510 rcx-button--small rcx-button rcx-css-1avkjfy"
               disabled=""
               title="Microphone"
               type="button"
@@ -812,7 +845,7 @@ exports[`preflight stories renders PreflightDevices NoDevices without crashing 1
           >
             <button
               aria-label="Speaker"
-              class="is_View _d-1409515928 _f-1069814357 _mh-1241200853 _ta-1906144518 _ws-973912173 _td-211436768 _c-22887652 _os-249893454 _o-1119039191 _to-1727917045 _ff-409630021 _fvn-1977619713 _p-1560025842 _fs-281033604 _fw-290091622 _lh-1335373134 _ls-1811444947 _mw-1071928195 _h-1633581678 rcx-button--small rcx-button rcx-css-1avkjfy"
+              class="is_View _d-1409515928 _f-1069814357 _mh-1241200853 _ta-1906144518 _ws-973912173 _td-211436768 _os-249893454 _o-1119039191 _to-1727917045 _ff-409630021 _fvn-1977619713 _p-1560025842 _a-1578443335 _b-1504388127 _br-1397394445 _bs-958948735 _fs-281033604 _fw-290091622 _lh-1335373134 _ls-1811444947 _mw-1071928195 _h-1633581678 _c-131824210 _b-802538122 _c-2102202510 rcx-button--small rcx-button rcx-css-1avkjfy"
               disabled=""
               title="Speaker"
               type="button"
@@ -845,7 +878,7 @@ exports[`preflight stories renders PreflightDevices NoDevices without crashing 1
           >
             <button
               aria-label="Camera"
-              class="is_View _d-1409515928 _f-1069814357 _mh-1241200853 _ta-1906144518 _ws-973912173 _td-211436768 _c-22887652 _os-249893454 _o-1119039191 _to-1727917045 _ff-409630021 _fvn-1977619713 _p-1560025842 _fs-281033604 _fw-290091622 _lh-1335373134 _ls-1811444947 _mw-1071928195 _h-1633581678 rcx-button--small rcx-button rcx-css-1avkjfy"
+              class="is_View _d-1409515928 _f-1069814357 _mh-1241200853 _ta-1906144518 _ws-973912173 _td-211436768 _os-249893454 _o-1119039191 _to-1727917045 _ff-409630021 _fvn-1977619713 _p-1560025842 _a-1578443335 _b-1504388127 _br-1397394445 _bs-958948735 _fs-281033604 _fw-290091622 _lh-1335373134 _ls-1811444947 _mw-1071928195 _h-1633581678 _c-131824210 _b-802538122 _c-2102202510 rcx-button--small rcx-button rcx-css-1avkjfy"
               disabled=""
               title="Camera"
               type="button"

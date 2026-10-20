@@ -103,7 +103,7 @@ exports[`renders DarkThemeCustomized without crashing 1`] = `
                     <div
                       aria-controls="_r_5_"
                       aria-expanded="true"
-                      class="is_View _f-85860445 _mw-354604370 _mh-1760955396 _os-249893454 _ff-409630021 _fvn-1977619713 _p-615618451 _ta-507911453 _c-1866435217 _b-1683371345 rcx-box--animated rcx-accordion-item__bar"
+                      class="is_View _f-85860445 _mw-354604370 _mh-1760955396 _os-249893454 _ff-409630021 _fvn-1977619713 _p-615618451 _ta-507911453 _c-1866435217 _b-1117022352 _c-1830342115 _ow-484670902 _b-503981535 _bs-1918316648 rcx-box--animated rcx-accordion-item__bar"
                       role="button"
                       tabindex="0"
                     >
@@ -135,12 +135,12 @@ exports[`renders DarkThemeCustomized without crashing 1`] = `
                           class="is_Text _b-650654186 _os-249893454 _ff-409630021 _fvn-1977619713 _ws-311910413 _ww-408434756 _d-341075704 _f-541922926 _jc-281817805 _ai-121763387 _m-2017978848 _c-1756781803 rcx-field__row"
                         >
                           <span
-                            class="is_Text _b-650654186 _os-249893454 _ff-409630021 _fvn-1977619713 _ws-311910413 _ww-408434756 _fs-347291933 _fw-289166179 _lh-1925956564 _ls-1782815796 _d-341075704 _c-1922521888 _c-1063453128 rcx-label rcx-field__label rcx-css-127j9mz"
+                            class="is_Text _b-650654186 _os-249893454 _ff-409630021 _fvn-1977619713 _ws-311910413 _ww-408434756 _fs-347291933 _fw-289166179 _lh-1925956564 _ls-1782815796 _d-341075704 _c-1922521888 _c-1063453128 _as-361308821 _m-1067104434 rcx-label rcx-field__label rcx-css-127j9mz"
                           >
                             Light
                           </span>
                           <label
-                            class="is_Text _b-1639159466 _os-249893454 _ff-409630021 _fvn-1977619713 _ws-311910413 _ww-408434756 rcx-radio-button"
+                            class="is_Text _b-1639159466 _os-249893454 _ff-409630021 _fvn-1977619713 _ws-311910413 _ww-408434756 _p-1021290656 _d-1985012034 _va-1124586065 _c-22887652 _ow-485594423 rcx-radio-button"
                           >
                             <div
                               style="border: 0px; clip-path: inset(50%); height: 1px; margin: -1px; overflow: hidden; padding: 0px; position: absolute; width: 1px; white-space: nowrap;"
@@ -157,8 +157,12 @@ exports[`renders DarkThemeCustomized without crashing 1`] = `
                             />
                             <i
                               aria-hidden="true"
-                              class="is_View _b-1639160427 _os-249893454 _ff-409630021 _fvn-1977619713 _p-1021290656 _h-858548760 _f-1069814357 _mw-354604370 _mh-1241200853 _d-341075704 _jc-1099843255 _ai-121763387 _br-662213014 _w-120696903 rcx-radio-button__fake"
-                            />
+                              class="is_View _b-523511517 _os-249893454 _ff-409630021 _fvn-1977619713 _p-1021290656 _h-858548760 _f-1069814357 _mw-354604370 _mh-1241200853 _c-991369120 _b-886492876 _d-341075704 _jc-1099843255 _ai-121763387 _br-662213014 _w-120696903 rcx-radio-button__fake"
+                            >
+                              <span
+                                class="is_View _d-1987097250 _v-46649817 _w-2027464954 _h-1735620473 _br-662213014 _b-156244340"
+                              />
+                            </i>
                           </label>
                         </span>
                         <span
@@ -176,12 +180,12 @@ exports[`renders DarkThemeCustomized without crashing 1`] = `
                           class="is_Text _b-650654186 _os-249893454 _ff-409630021 _fvn-1977619713 _ws-311910413 _ww-408434756 _d-341075704 _f-541922926 _jc-281817805 _ai-121763387 _m-2017978848 _c-1756781803 rcx-field__row"
                         >
                           <span
-                            class="is_Text _b-650654186 _os-249893454 _ff-409630021 _fvn-1977619713 _ws-311910413 _ww-408434756 _fs-347291933 _fw-289166179 _lh-1925956564 _ls-1782815796 _d-341075704 _c-1922521888 _c-1063453128 rcx-label rcx-field__label rcx-css-127j9mz"
+                            class="is_Text _b-650654186 _os-249893454 _ff-409630021 _fvn-1977619713 _ws-311910413 _ww-408434756 _fs-347291933 _fw-289166179 _lh-1925956564 _ls-1782815796 _d-341075704 _c-1922521888 _c-1063453128 _as-361308821 _m-1067104434 rcx-label rcx-field__label rcx-css-127j9mz"
                           >
                             Dark
                           </span>
                           <label
-                            class="is_Text _b-1639159466 _os-249893454 _ff-409630021 _fvn-1977619713 _ws-311910413 _ww-408434756 rcx-radio-button"
+                            class="is_Text _b-1639159466 _os-249893454 _ff-409630021 _fvn-1977619713 _ws-311910413 _ww-408434756 _p-1021290656 _d-1985012034 _va-1124586065 _c-22887652 _ow-485594423 rcx-radio-button"
                           >
                             <div
                               style="border: 0px; clip-path: inset(50%); height: 1px; margin: -1px; overflow: hidden; padding: 0px; position: absolute; width: 1px; white-space: nowrap;"
@@ -189,23 +193,27 @@ exports[`renders DarkThemeCustomized without crashing 1`] = `
                               Dark
                             </div>
                             <input
-                              aria-describedby="react-aria-_r_k_-hint"
+                              aria-describedby="react-aria-_r_l_-hint"
                               aria-invalid="false"
                               checked=""
                               class="is_View _b-1639159466 _os-249893454 _ff-409630021 _fvn-1977619713 _p-1261267467 _o-1119039191 _c-588872556 _cp-2129451690 _w-226739898 _h-1922295961 _m-1890937723 _p-1943363302 _ws-973912173 _f-1246374076 rcx-radio-button__input"
-                              id="react-aria-_r_k_-label"
+                              id="react-aria-_r_l_-label"
                               name="themeAppearence"
                               type="radio"
                             />
                             <i
                               aria-hidden="true"
-                              class="is_View _b-1639160427 _os-249893454 _ff-409630021 _fvn-1977619713 _p-1021290656 _h-858548760 _f-1069814357 _mw-354604370 _mh-1241200853 _d-341075704 _jc-1099843255 _ai-121763387 _br-662213014 _w-120696903 rcx-radio-button__fake"
-                            />
+                              class="is_View _b-523511517 _os-249893454 _ff-409630021 _fvn-1977619713 _p-1021290656 _h-858548760 _f-1069814357 _mw-354604370 _mh-1241200853 _c-991369120 _b-886492876 _d-341075704 _jc-1099843255 _ai-121763387 _br-662213014 _w-120696903 rcx-radio-button__fake"
+                            >
+                              <span
+                                class="is_View _d-1987097250 _v-46649817 _w-2027464954 _h-1735620473 _br-662213014 _b-156244340"
+                              />
+                            </i>
                           </label>
                         </span>
                         <span
                           class="is_Text _b-650654186 _os-249893454 _ff-409630021 _fvn-1977619713 _ww-408434756 _fs-2088488067 _fw-289165218 _lh-1306743983 _ls-1782815796 _m-183820880 _c-1756781803 rcx-field__hint rcx-css-9o2t94"
-                          id="react-aria-_r_k_-hint"
+                          id="react-aria-_r_l_-hint"
                           style="white-space: break-spaces;"
                         >
                           Reduce eye strain and fatigue in low-light conditions by minimizing the amount of light emitted by the screen.
@@ -218,12 +226,12 @@ exports[`renders DarkThemeCustomized without crashing 1`] = `
                           class="is_Text _b-650654186 _os-249893454 _ff-409630021 _fvn-1977619713 _ws-311910413 _ww-408434756 _d-341075704 _f-541922926 _jc-281817805 _ai-121763387 _m-2017978848 _c-1756781803 rcx-field__row"
                         >
                           <span
-                            class="is_Text _b-650654186 _os-249893454 _ff-409630021 _fvn-1977619713 _ws-311910413 _ww-408434756 _fs-347291933 _fw-289166179 _lh-1925956564 _ls-1782815796 _d-341075704 _c-1922521888 _c-1063453128 rcx-label rcx-field__label rcx-css-127j9mz"
+                            class="is_Text _b-650654186 _os-249893454 _ff-409630021 _fvn-1977619713 _ws-311910413 _ww-408434756 _fs-347291933 _fw-289166179 _lh-1925956564 _ls-1782815796 _d-341075704 _c-1922521888 _c-1063453128 _as-361308821 _m-1067104434 rcx-label rcx-field__label rcx-css-127j9mz"
                           >
                             High contrast
                           </span>
                           <label
-                            class="is_Text _b-1639159466 _os-249893454 _ff-409630021 _fvn-1977619713 _ws-311910413 _ww-408434756 rcx-radio-button"
+                            class="is_Text _b-1639159466 _os-249893454 _ff-409630021 _fvn-1977619713 _ws-311910413 _ww-408434756 _p-1021290656 _d-1985012034 _va-1124586065 _c-22887652 _ow-485594423 rcx-radio-button"
                           >
                             <div
                               style="border: 0px; clip-path: inset(50%); height: 1px; margin: -1px; overflow: hidden; padding: 0px; position: absolute; width: 1px; white-space: nowrap;"
@@ -231,22 +239,26 @@ exports[`renders DarkThemeCustomized without crashing 1`] = `
                               High contrast
                             </div>
                             <input
-                              aria-describedby="react-aria-_r_s_-hint"
+                              aria-describedby="react-aria-_r_u_-hint"
                               aria-invalid="false"
                               class="is_View _b-1639159466 _os-249893454 _ff-409630021 _fvn-1977619713 _p-1261267467 _o-1119039191 _c-588872556 _cp-2129451690 _w-226739898 _h-1922295961 _m-1890937723 _p-1943363302 _ws-973912173 _f-1246374076 rcx-radio-button__input"
-                              id="react-aria-_r_s_-label"
+                              id="react-aria-_r_u_-label"
                               name="themeAppearence"
                               type="radio"
                             />
                             <i
                               aria-hidden="true"
-                              class="is_View _b-1639160427 _os-249893454 _ff-409630021 _fvn-1977619713 _p-1021290656 _h-858548760 _f-1069814357 _mw-354604370 _mh-1241200853 _d-341075704 _jc-1099843255 _ai-121763387 _br-662213014 _w-120696903 rcx-radio-button__fake"
-                            />
+                              class="is_View _b-523511517 _os-249893454 _ff-409630021 _fvn-1977619713 _p-1021290656 _h-858548760 _f-1069814357 _mw-354604370 _mh-1241200853 _c-991369120 _b-886492876 _d-341075704 _jc-1099843255 _ai-121763387 _br-662213014 _w-120696903 rcx-radio-button__fake"
+                            >
+                              <span
+                                class="is_View _d-1987097250 _v-46649817 _w-2027464954 _h-1735620473 _br-662213014 _b-156244340"
+                              />
+                            </i>
                           </label>
                         </span>
                         <span
                           class="is_Text _b-650654186 _os-249893454 _ff-409630021 _fvn-1977619713 _ww-408434756 _fs-2088488067 _fw-289165218 _lh-1306743983 _ls-1782815796 _m-183820880 _c-1756781803 rcx-field__hint rcx-css-9o2t94"
-                          id="react-aria-_r_s_-hint"
+                          id="react-aria-_r_u_-hint"
                           style="white-space: break-spaces;"
                         >
                           Maximum tonal differentiation with bold colors and sharp contrasts provide enhanced accessibility.
@@ -259,12 +271,12 @@ exports[`renders DarkThemeCustomized without crashing 1`] = `
                           class="is_Text _b-650654186 _os-249893454 _ff-409630021 _fvn-1977619713 _ws-311910413 _ww-408434756 _d-341075704 _f-541922926 _jc-281817805 _ai-121763387 _m-2017978848 _c-1756781803 rcx-field__row"
                         >
                           <span
-                            class="is_Text _b-650654186 _os-249893454 _ff-409630021 _fvn-1977619713 _ws-311910413 _ww-408434756 _fs-347291933 _fw-289166179 _lh-1925956564 _ls-1782815796 _d-341075704 _c-1922521888 _c-1063453128 rcx-label rcx-field__label rcx-css-127j9mz"
+                            class="is_Text _b-650654186 _os-249893454 _ff-409630021 _fvn-1977619713 _ws-311910413 _ww-408434756 _fs-347291933 _fw-289166179 _lh-1925956564 _ls-1782815796 _d-341075704 _c-1922521888 _c-1063453128 _as-361308821 _m-1067104434 rcx-label rcx-field__label rcx-css-127j9mz"
                           >
                             Match system
                           </span>
                           <label
-                            class="is_Text _b-1639159466 _os-249893454 _ff-409630021 _fvn-1977619713 _ws-311910413 _ww-408434756 rcx-radio-button"
+                            class="is_Text _b-1639159466 _os-249893454 _ff-409630021 _fvn-1977619713 _ws-311910413 _ww-408434756 _p-1021290656 _d-1985012034 _va-1124586065 _c-22887652 _ow-485594423 rcx-radio-button"
                           >
                             <div
                               style="border: 0px; clip-path: inset(50%); height: 1px; margin: -1px; overflow: hidden; padding: 0px; position: absolute; width: 1px; white-space: nowrap;"
@@ -272,22 +284,26 @@ exports[`renders DarkThemeCustomized without crashing 1`] = `
                               Match system
                             </div>
                             <input
-                              aria-describedby="react-aria-_r_14_-hint"
+                              aria-describedby="react-aria-_r_17_-hint"
                               aria-invalid="false"
                               class="is_View _b-1639159466 _os-249893454 _ff-409630021 _fvn-1977619713 _p-1261267467 _o-1119039191 _c-588872556 _cp-2129451690 _w-226739898 _h-1922295961 _m-1890937723 _p-1943363302 _ws-973912173 _f-1246374076 rcx-radio-button__input"
-                              id="react-aria-_r_14_-label"
+                              id="react-aria-_r_17_-label"
                               name="themeAppearence"
                               type="radio"
                             />
                             <i
                               aria-hidden="true"
-                              class="is_View _b-1639160427 _os-249893454 _ff-409630021 _fvn-1977619713 _p-1021290656 _h-858548760 _f-1069814357 _mw-354604370 _mh-1241200853 _d-341075704 _jc-1099843255 _ai-121763387 _br-662213014 _w-120696903 rcx-radio-button__fake"
-                            />
+                              class="is_View _b-523511517 _os-249893454 _ff-409630021 _fvn-1977619713 _p-1021290656 _h-858548760 _f-1069814357 _mw-354604370 _mh-1241200853 _c-991369120 _b-886492876 _d-341075704 _jc-1099843255 _ai-121763387 _br-662213014 _w-120696903 rcx-radio-button__fake"
+                            >
+                              <span
+                                class="is_View _d-1987097250 _v-46649817 _w-2027464954 _h-1735620473 _br-662213014 _b-156244340"
+                              />
+                            </i>
                           </label>
                         </span>
                         <span
                           class="is_Text _b-650654186 _os-249893454 _ff-409630021 _fvn-1977619713 _ww-408434756 _fs-2088488067 _fw-289165218 _lh-1306743983 _ls-1782815796 _m-183820880 _c-1756781803 rcx-field__hint rcx-css-9o2t94"
-                          id="react-aria-_r_14_-hint"
+                          id="react-aria-_r_17_-hint"
                           style="white-space: break-spaces;"
                         >
                           Automatically match the appearance of your system.
@@ -299,15 +315,15 @@ exports[`renders DarkThemeCustomized without crashing 1`] = `
                     class="is_View _f-1246374076 _mw-354604370 _mh-1241200853 _os-249893454 _ff-409630021 _fvn-1977619713 rcx-accordion-item"
                   >
                     <div
-                      aria-controls="_r_1d_"
+                      aria-controls="_r_1h_"
                       aria-expanded="false"
-                      class="is_View _f-85860445 _mw-354604370 _mh-1760955396 _os-249893454 _ff-409630021 _fvn-1977619713 _p-615618451 _ta-507911453 _c-1866435217 _b-1683371345 rcx-box--animated rcx-accordion-item__bar"
+                      class="is_View _f-85860445 _mw-354604370 _mh-1760955396 _os-249893454 _ff-409630021 _fvn-1977619713 _p-615618451 _ta-507911453 _c-1866435217 _b-1117022352 _c-1830342115 _ow-484670902 _b-503981535 _bs-1918316648 rcx-box--animated rcx-accordion-item__bar"
                       role="button"
                       tabindex="0"
                     >
                       <h2
                         class="is_Text _f-1417019688 _mw-354604370 _mh-1241200853 _os-249893454 _ff-409630021 _fvn-1977619713 _d-1987097250 _o-1119039191 _to-1727917045 _ws-973912173 _ww-408434756 _fs-467998244 _fw-289168101 _lh-1586295880 _ls-1782815796 rcx-accordion-item__title"
-                        id="_r_1c_"
+                        id="_r_1g_"
                       >
                         Adjustable layout
                       </h2>
@@ -324,7 +340,7 @@ exports[`renders DarkThemeCustomized without crashing 1`] = `
                     </div>
                     <div
                       class="is_View _f-1246374076 _mw-354604370 _mh-1241200853 _os-249893454 _ff-409630021 _fvn-1977619713 _d-1987097250 _v-46649817 _o-1119039191 _h-1922296922 _p-2082124683 rcx-box--animated rcx-accordion-item__panel"
-                      id="_r_1d_"
+                      id="_r_1h_"
                     >
                       <fieldset
                         class="is_Text _b-650654186 _os-249893454 _ff-409630021 _fvn-1977619713 _ws-311910413 _ww-408434756 _d-341075704 _f-1180446992 _jc-1099843255 _ai-1227553247 _mw-842770087 _m-2017216831 _p-1943363302 rcx-field-group"
@@ -342,8 +358,8 @@ exports[`renders DarkThemeCustomized without crashing 1`] = `
                           class="is_Text _b-650654186 _os-249893454 _ff-409630021 _fvn-1977619713 _ws-311910413 _ww-408434756 _d-341075704 _f-1378740307 _ai-1227553247 _w-1560934055 rcx-field rcx-field-group__item"
                         >
                           <span
-                            class="is_Text _b-650654186 _os-249893454 _ff-409630021 _fvn-1977619713 _ws-311910413 _ww-408434756 _fs-347291933 _fw-289166179 _lh-1925956564 _ls-1782815796 _d-341075704 _c-1922521888 _c-1063453128 rcx-label rcx-field__label rcx-css-vtsp67"
-                            id="react-aria-_r_1l_-label"
+                            class="is_Text _b-650654186 _os-249893454 _ff-409630021 _fvn-1977619713 _ws-311910413 _ww-408434756 _fs-347291933 _fw-289166179 _lh-1925956564 _ls-1782815796 _d-341075704 _c-1922521888 _c-1063453128 _as-361308821 _m-1067104434 rcx-label rcx-field__label rcx-css-vtsp67"
+                            id="react-aria-_r_1p_-label"
                           >
                             Font size
                           </span>
@@ -396,16 +412,16 @@ exports[`renders DarkThemeCustomized without crashing 1`] = `
                               </div>
                             </div>
                             <button
-                              aria-describedby="react-aria-_r_1l_-description"
+                              aria-describedby="react-aria-_r_1p_-description"
                               aria-expanded="false"
                               aria-haspopup="listbox"
-                              aria-labelledby="react-aria-_r_20_ react-aria-_r_1l_-label"
+                              aria-labelledby="react-aria-_r_24_ react-aria-_r_1p_-label"
                               class="rcx-box rcx-box--full rcx-box--animated rcx-select rcx-css-3ejkxj"
                               type="button"
                             >
                               <span
                                 class="rcx-box rcx-box--full rcx-css-1ah8hdc"
-                                id="react-aria-_r_20_"
+                                id="react-aria-_r_24_"
                               >
                                 Default
                               </span>
@@ -419,7 +435,7 @@ exports[`renders DarkThemeCustomized without crashing 1`] = `
                           </span>
                           <span
                             class="is_Text _b-650654186 _os-249893454 _ff-409630021 _fvn-1977619713 _ws-311910413 _ww-408434756 _fs-347291933 _fw-289165218 _lh-1925956564 _ls-1782815796 _m-183820880 _c-1756781803 rcx-field__description rcx-css-op9h3g"
-                            id="react-aria-_r_1l_-description"
+                            id="react-aria-_r_1p_-description"
                           >
                             Designed for those who prefer larger or smaller text for improved readability. This flexibility promotes inclusivity by empowering users to tailor the software interface to their specific needs.
                           </span>
@@ -431,12 +447,12 @@ exports[`renders DarkThemeCustomized without crashing 1`] = `
                             class="is_Text _b-650654186 _os-249893454 _ff-409630021 _fvn-1977619713 _ws-311910413 _ww-408434756 _d-341075704 _f-541922926 _jc-281817805 _ai-121763387 _m-2017978848 _c-1756781803 rcx-field__row"
                           >
                             <span
-                              class="is_Text _b-650654186 _os-249893454 _ff-409630021 _fvn-1977619713 _ws-311910413 _ww-408434756 _fs-347291933 _fw-289166179 _lh-1925956564 _ls-1782815796 _d-341075704 _c-1922521888 _c-1063453128 rcx-label rcx-field__label"
+                              class="is_Text _b-650654186 _os-249893454 _ff-409630021 _fvn-1977619713 _ws-311910413 _ww-408434756 _fs-347291933 _fw-289166179 _lh-1925956564 _ls-1782815796 _d-341075704 _c-1922521888 _c-1063453128 _as-361308821 _m-1067104434 rcx-label rcx-field__label"
                             >
                               Mentions with @ symbol
                             </span>
                             <label
-                              class="is_Text _b-1639159466 _os-249893454 _ff-409630021 _fvn-1977619713 _ws-311910413 _ww-408434756 rcx-toggle-switch"
+                              class="is_Text _b-1639159466 _os-249893454 _ff-409630021 _fvn-1977619713 _ws-311910413 _ww-408434756 _p-1021290656 _d-1985012034 _va-1124586065 _c-22887652 _ow-485594423 rcx-toggle-switch"
                             >
                               <div
                                 style="border: 0px; clip-path: inset(50%); height: 1px; margin: -1px; overflow: hidden; padding: 0px; position: absolute; width: 1px; white-space: nowrap;"
@@ -444,23 +460,27 @@ exports[`renders DarkThemeCustomized without crashing 1`] = `
                                 Mentions with @ symbol
                               </div>
                               <input
-                                aria-describedby="react-aria-_r_23_-description"
+                                aria-describedby="react-aria-_r_27_-description"
                                 aria-invalid="false"
                                 checked=""
                                 class="is_View _b-1639159466 _os-249893454 _ff-409630021 _fvn-1977619713 _p-1261267467 _o-1119039191 _c-588872556 _cp-2129451690 _w-226739898 _h-1922295961 _m-1890937723 _p-1943363302 _ws-973912173 _f-1246374076 rcx-toggle-switch__input"
-                                id="react-aria-_r_23_-label"
+                                id="react-aria-_r_27_-label"
                                 name="mentionsWithSymbol"
                                 type="checkbox"
                               />
                               <i
                                 aria-hidden="true"
-                                class="is_View _b-1639160427 _os-249893454 _ff-409630021 _fvn-1977619713 _p-1021290656 _f-1069814357 _mw-354604370 _mh-1241200853 _w-1008200584 _h-749995598 _br-153849585 rcx-toggle-switch__fake"
-                              />
+                                class="is_View _b-352265661 _os-249893454 _ff-409630021 _fvn-1977619713 _p-1021290656 _f-1069814357 _mw-354604370 _mh-1241200853 _c-1043001278 _b-939182290 _w-1008200584 _h-749995598 _br-153849585 rcx-toggle-switch__fake"
+                              >
+                                <span
+                                  class="is_View _t-1281204763 _p-1261267467 _i-933132292 _w-386687234 _h-2100713731 _br-153849585 _b-798159804"
+                                />
+                              </i>
                             </label>
                           </span>
                           <span
                             class="is_Text _b-650654186 _os-249893454 _ff-409630021 _fvn-1977619713 _ws-311910413 _ww-408434756 _fs-347291933 _fw-289165218 _lh-1925956564 _ls-1782815796 _m-183820880 _c-1756781803 rcx-field__description rcx-css-1ntdv01 rcx-css-op9h3g"
-                            id="react-aria-_r_23_-description"
+                            id="react-aria-_r_27_-description"
                           >
                             Mentions notify and highlight messages for groups or specific users, facilitating targeted communication.
 
@@ -472,8 +492,8 @@ The screen reader functionality is optimized when the "@" symbol is employed in 
                           id="clockMode"
                         >
                           <span
-                            class="is_Text _b-650654186 _os-249893454 _ff-409630021 _fvn-1977619713 _ws-311910413 _ww-408434756 _fs-347291933 _fw-289166179 _lh-1925956564 _ls-1782815796 _d-341075704 _c-1922521888 _c-1063453128 rcx-label rcx-field__label"
-                            id="react-aria-_r_2b_-label"
+                            class="is_Text _b-650654186 _os-249893454 _ff-409630021 _fvn-1977619713 _ws-311910413 _ww-408434756 _fs-347291933 _fw-289166179 _lh-1925956564 _ls-1782815796 _d-341075704 _c-1922521888 _c-1063453128 _as-361308821 _m-1067104434 rcx-label rcx-field__label"
+                            id="react-aria-_r_2g_-label"
                           >
                             Time format
                           </span>
@@ -519,13 +539,13 @@ The screen reader functionality is optimized when the "@" symbol is employed in 
                               aria-describedby=""
                               aria-expanded="false"
                               aria-haspopup="listbox"
-                              aria-labelledby="react-aria-_r_2m_ react-aria-_r_2b_-label"
+                              aria-labelledby="react-aria-_r_2r_ react-aria-_r_2g_-label"
                               class="rcx-box rcx-box--full rcx-box--animated rcx-select rcx-css-3ejkxj"
                               type="button"
                             >
                               <span
                                 class="rcx-box rcx-box--full rcx-css-1ah8hdc"
-                                id="react-aria-_r_2m_"
+                                id="react-aria-_r_2r_"
                               >
                                 24-hour clock
                               </span>
@@ -546,12 +566,12 @@ The screen reader functionality is optimized when the "@" symbol is employed in 
                             class="is_Text _b-650654186 _os-249893454 _ff-409630021 _fvn-1977619713 _ws-311910413 _ww-408434756 _d-341075704 _f-541922926 _jc-281817805 _ai-121763387 _m-2017978848 _c-1756781803 rcx-field__row"
                           >
                             <span
-                              class="is_Text _b-650654186 _os-249893454 _ff-409630021 _fvn-1977619713 _ws-311910413 _ww-408434756 _fs-347291933 _fw-289166179 _lh-1925956564 _ls-1782815796 _d-341075704 _c-1922521888 _c-1063453128 rcx-label rcx-field__label"
+                              class="is_Text _b-650654186 _os-249893454 _ff-409630021 _fvn-1977619713 _ws-311910413 _ww-408434756 _fs-347291933 _fw-289166179 _lh-1925956564 _ls-1782815796 _d-341075704 _c-1922521888 _c-1063453128 _as-361308821 _m-1067104434 rcx-label rcx-field__label"
                             >
                               Show usernames
                             </span>
                             <label
-                              class="is_Text _b-1639159466 _os-249893454 _ff-409630021 _fvn-1977619713 _ws-311910413 _ww-408434756 rcx-toggle-switch"
+                              class="is_Text _b-1639159466 _os-249893454 _ff-409630021 _fvn-1977619713 _ws-311910413 _ww-408434756 _p-1021290656 _d-1985012034 _va-1124586065 _c-22887652 _ow-485594423 rcx-toggle-switch"
                             >
                               <div
                                 style="border: 0px; clip-path: inset(50%); height: 1px; margin: -1px; overflow: hidden; padding: 0px; position: absolute; width: 1px; white-space: nowrap;"
@@ -559,22 +579,26 @@ The screen reader functionality is optimized when the "@" symbol is employed in 
                                 Show usernames
                               </div>
                               <input
-                                aria-describedby="react-aria-_r_2o_-description"
+                                aria-describedby="react-aria-_r_2t_-description"
                                 aria-invalid="false"
                                 class="is_View _b-1639159466 _os-249893454 _ff-409630021 _fvn-1977619713 _p-1261267467 _o-1119039191 _c-588872556 _cp-2129451690 _w-226739898 _h-1922295961 _m-1890937723 _p-1943363302 _ws-973912173 _f-1246374076 rcx-toggle-switch__input"
-                                id="react-aria-_r_2o_-label"
+                                id="react-aria-_r_2t_-label"
                                 name="hideUsernames"
                                 type="checkbox"
                               />
                               <i
                                 aria-hidden="true"
-                                class="is_View _b-1639160427 _os-249893454 _ff-409630021 _fvn-1977619713 _p-1021290656 _f-1069814357 _mw-354604370 _mh-1241200853 _w-1008200584 _h-749995598 _br-153849585 rcx-toggle-switch__fake"
-                              />
+                                class="is_View _b-352265661 _os-249893454 _ff-409630021 _fvn-1977619713 _p-1021290656 _f-1069814357 _mw-354604370 _mh-1241200853 _c-1043001278 _b-939182290 _w-1008200584 _h-749995598 _br-153849585 rcx-toggle-switch__fake"
+                              >
+                                <span
+                                  class="is_View _t-1281204763 _p-1261267467 _i-933132292 _w-386687234 _h-2100713731 _br-153849585 _b-798159804"
+                                />
+                              </i>
                             </label>
                           </span>
                           <span
                             class="is_Text _b-650654186 _os-249893454 _ff-409630021 _fvn-1977619713 _ws-311910413 _ww-408434756 _fs-347291933 _fw-289165218 _lh-1925956564 _ls-1782815796 _m-183820880 _c-1756781803 rcx-field__description"
-                            id="react-aria-_r_2o_-description"
+                            id="react-aria-_r_2t_-description"
                           >
                             Show or hide the username of message authors.
                           </span>
@@ -587,12 +611,12 @@ The screen reader functionality is optimized when the "@" symbol is employed in 
                             class="is_Text _b-650654186 _os-249893454 _ff-409630021 _fvn-1977619713 _ws-311910413 _ww-408434756 _d-341075704 _f-541922926 _jc-281817805 _ai-121763387 _m-2017978848 _c-1756781803 rcx-field__row"
                           >
                             <span
-                              class="is_Text _b-650654186 _os-249893454 _ff-409630021 _fvn-1977619713 _ws-311910413 _ww-408434756 _fs-347291933 _fw-289166179 _lh-1925956564 _ls-1782815796 _d-341075704 _c-1922521888 _c-1063453128 rcx-label rcx-field__label"
+                              class="is_Text _b-650654186 _os-249893454 _ff-409630021 _fvn-1977619713 _ws-311910413 _ww-408434756 _fs-347291933 _fw-289166179 _lh-1925956564 _ls-1782815796 _d-341075704 _c-1922521888 _c-1063453128 _as-361308821 _m-1067104434 rcx-label rcx-field__label"
                             >
                               Show roles
                             </span>
                             <label
-                              class="is_Text _b-1639159466 _os-249893454 _ff-409630021 _fvn-1977619713 _ws-311910413 _ww-408434756 rcx-toggle-switch"
+                              class="is_Text _b-1639159466 _os-249893454 _ff-409630021 _fvn-1977619713 _ws-311910413 _ww-408434756 _p-1021290656 _d-1985012034 _va-1124586065 _c-22887652 _ow-485594423 rcx-toggle-switch"
                             >
                               <div
                                 style="border: 0px; clip-path: inset(50%); height: 1px; margin: -1px; overflow: hidden; padding: 0px; position: absolute; width: 1px; white-space: nowrap;"
@@ -600,22 +624,26 @@ The screen reader functionality is optimized when the "@" symbol is employed in 
                                 Show roles
                               </div>
                               <input
-                                aria-describedby="react-aria-_r_30_-description"
+                                aria-describedby="react-aria-_r_36_-description"
                                 aria-invalid="false"
                                 class="is_View _b-1639159466 _os-249893454 _ff-409630021 _fvn-1977619713 _p-1261267467 _o-1119039191 _c-588872556 _cp-2129451690 _w-226739898 _h-1922295961 _m-1890937723 _p-1943363302 _ws-973912173 _f-1246374076 rcx-toggle-switch__input"
-                                id="react-aria-_r_30_-label"
+                                id="react-aria-_r_36_-label"
                                 name="hideRoles"
                                 type="checkbox"
                               />
                               <i
                                 aria-hidden="true"
-                                class="is_View _b-1639160427 _os-249893454 _ff-409630021 _fvn-1977619713 _p-1021290656 _f-1069814357 _mw-354604370 _mh-1241200853 _w-1008200584 _h-749995598 _br-153849585 rcx-toggle-switch__fake"
-                              />
+                                class="is_View _b-352265661 _os-249893454 _ff-409630021 _fvn-1977619713 _p-1021290656 _f-1069814357 _mw-354604370 _mh-1241200853 _c-1043001278 _b-939182290 _w-1008200584 _h-749995598 _br-153849585 rcx-toggle-switch__fake"
+                              >
+                                <span
+                                  class="is_View _t-1281204763 _p-1261267467 _i-933132292 _w-386687234 _h-2100713731 _br-153849585 _b-798159804"
+                                />
+                              </i>
                             </label>
                           </span>
                           <span
                             class="is_Text _b-650654186 _os-249893454 _ff-409630021 _fvn-1977619713 _ws-311910413 _ww-408434756 _fs-347291933 _fw-289165218 _lh-1925956564 _ls-1782815796 _m-183820880 _c-1756781803 rcx-field__description"
-                            id="react-aria-_r_30_-description"
+                            id="react-aria-_r_36_-description"
                           >
                             Show or hide the user roles of message authors.
                           </span>
@@ -702,7 +730,7 @@ exports[`renders Default without crashing 1`] = `
             >
               <form
                 class="rcx-box rcx-box--full rcx-css-1xqc09s"
-                id="_r_3h_"
+                id="_r_3o_"
               >
                 <div
                   class="rcx-box rcx-box--full rcx-css-1191gx0"
@@ -713,12 +741,12 @@ exports[`renders Default without crashing 1`] = `
                     Here you can activate a range of features to enhance your browsing experience.
                   </p>
                   <p
-                    id="_r_3i_"
+                    id="_r_3p_"
                   >
                     Learn more about our commitment with accessibility here:
                   </p>
                   <ul
-                    aria-labelledby="_r_3i_"
+                    aria-labelledby="_r_3p_"
                   >
                     <li>
                       <a
@@ -759,15 +787,15 @@ exports[`renders Default without crashing 1`] = `
                     class="is_View _f-1246374076 _mw-354604370 _mh-1241200853 _os-249893454 _ff-409630021 _fvn-1977619713 rcx-accordion-item"
                   >
                     <div
-                      aria-controls="_r_3m_"
+                      aria-controls="_r_3t_"
                       aria-expanded="true"
-                      class="is_View _f-85860445 _mw-354604370 _mh-1760955396 _os-249893454 _ff-409630021 _fvn-1977619713 _p-615618451 _ta-507911453 _c-1866435217 _b-1683371345 rcx-box--animated rcx-accordion-item__bar"
+                      class="is_View _f-85860445 _mw-354604370 _mh-1760955396 _os-249893454 _ff-409630021 _fvn-1977619713 _p-615618451 _ta-507911453 _c-1866435217 _b-1117022352 _c-1830342115 _ow-484670902 _b-503981535 _bs-1918316648 rcx-box--animated rcx-accordion-item__bar"
                       role="button"
                       tabindex="0"
                     >
                       <h2
                         class="is_Text _f-1417019688 _mw-354604370 _mh-1241200853 _os-249893454 _ff-409630021 _fvn-1977619713 _d-1987097250 _o-1119039191 _to-1727917045 _ws-973912173 _ww-408434756 _fs-467998244 _fw-289168101 _lh-1586295880 _ls-1782815796 rcx-accordion-item__title"
-                        id="_r_3l_"
+                        id="_r_3s_"
                       >
                         Theme
                       </h2>
@@ -784,7 +812,7 @@ exports[`renders Default without crashing 1`] = `
                     </div>
                     <div
                       class="is_View _f-1246374076 _mw-354604370 _mh-1241200853 _os-249893454 _ff-409630021 _fvn-1977619713 _d-1987097250 _o-1119039191 _p-1254838996 _v-595517078 _h-568431264 rcx-box--animated rcx-accordion-item__panel rcx-accordion-item__panel--expanded"
-                      id="_r_3m_"
+                      id="_r_3t_"
                     >
                       <div
                         class="is_Text _b-650654186 _os-249893454 _ff-409630021 _fvn-1977619713 _ws-311910413 _ww-408434756 _d-341075704 _f-1378740307 _ai-1227553247 _w-1560934055 rcx-field"
@@ -793,12 +821,12 @@ exports[`renders Default without crashing 1`] = `
                           class="is_Text _b-650654186 _os-249893454 _ff-409630021 _fvn-1977619713 _ws-311910413 _ww-408434756 _d-341075704 _f-541922926 _jc-281817805 _ai-121763387 _m-2017978848 _c-1756781803 rcx-field__row"
                         >
                           <span
-                            class="is_Text _b-650654186 _os-249893454 _ff-409630021 _fvn-1977619713 _ws-311910413 _ww-408434756 _fs-347291933 _fw-289166179 _lh-1925956564 _ls-1782815796 _d-341075704 _c-1922521888 _c-1063453128 rcx-label rcx-field__label rcx-css-127j9mz"
+                            class="is_Text _b-650654186 _os-249893454 _ff-409630021 _fvn-1977619713 _ws-311910413 _ww-408434756 _fs-347291933 _fw-289166179 _lh-1925956564 _ls-1782815796 _d-341075704 _c-1922521888 _c-1063453128 _as-361308821 _m-1067104434 rcx-label rcx-field__label rcx-css-127j9mz"
                           >
                             Light
                           </span>
                           <label
-                            class="is_Text _b-1639159466 _os-249893454 _ff-409630021 _fvn-1977619713 _ws-311910413 _ww-408434756 rcx-radio-button"
+                            class="is_Text _b-1639159466 _os-249893454 _ff-409630021 _fvn-1977619713 _ws-311910413 _ww-408434756 _p-1021290656 _d-1985012034 _va-1124586065 _c-22887652 _ow-485594423 rcx-radio-button"
                           >
                             <div
                               style="border: 0px; clip-path: inset(50%); height: 1px; margin: -1px; overflow: hidden; padding: 0px; position: absolute; width: 1px; white-space: nowrap;"
@@ -806,22 +834,26 @@ exports[`renders Default without crashing 1`] = `
                               Light
                             </div>
                             <input
-                              aria-describedby="react-aria-_r_3t_-hint"
+                              aria-describedby="react-aria-_r_44_-hint"
                               aria-invalid="false"
                               class="is_View _b-1639159466 _os-249893454 _ff-409630021 _fvn-1977619713 _p-1261267467 _o-1119039191 _c-588872556 _cp-2129451690 _w-226739898 _h-1922295961 _m-1890937723 _p-1943363302 _ws-973912173 _f-1246374076 rcx-radio-button__input"
-                              id="react-aria-_r_3t_-label"
+                              id="react-aria-_r_44_-label"
                               name="themeAppearence"
                               type="radio"
                             />
                             <i
                               aria-hidden="true"
-                              class="is_View _b-1639160427 _os-249893454 _ff-409630021 _fvn-1977619713 _p-1021290656 _h-858548760 _f-1069814357 _mw-354604370 _mh-1241200853 _d-341075704 _jc-1099843255 _ai-121763387 _br-662213014 _w-120696903 rcx-radio-button__fake"
-                            />
+                              class="is_View _b-523511517 _os-249893454 _ff-409630021 _fvn-1977619713 _p-1021290656 _h-858548760 _f-1069814357 _mw-354604370 _mh-1241200853 _c-991369120 _b-886492876 _d-341075704 _jc-1099843255 _ai-121763387 _br-662213014 _w-120696903 rcx-radio-button__fake"
+                            >
+                              <span
+                                class="is_View _d-1987097250 _v-46649817 _w-2027464954 _h-1735620473 _br-662213014 _b-156244340"
+                              />
+                            </i>
                           </label>
                         </span>
                         <span
                           class="is_Text _b-650654186 _os-249893454 _ff-409630021 _fvn-1977619713 _ww-408434756 _fs-2088488067 _fw-289165218 _lh-1306743983 _ls-1782815796 _m-183820880 _c-1756781803 rcx-field__hint rcx-css-9o2t94"
-                          id="react-aria-_r_3t_-hint"
+                          id="react-aria-_r_44_-hint"
                           style="white-space: break-spaces;"
                         >
                           More accessible for individuals with visual impairments and a good choice for well-lit environments.
@@ -834,12 +866,12 @@ exports[`renders Default without crashing 1`] = `
                           class="is_Text _b-650654186 _os-249893454 _ff-409630021 _fvn-1977619713 _ws-311910413 _ww-408434756 _d-341075704 _f-541922926 _jc-281817805 _ai-121763387 _m-2017978848 _c-1756781803 rcx-field__row"
                         >
                           <span
-                            class="is_Text _b-650654186 _os-249893454 _ff-409630021 _fvn-1977619713 _ws-311910413 _ww-408434756 _fs-347291933 _fw-289166179 _lh-1925956564 _ls-1782815796 _d-341075704 _c-1922521888 _c-1063453128 rcx-label rcx-field__label rcx-css-127j9mz"
+                            class="is_Text _b-650654186 _os-249893454 _ff-409630021 _fvn-1977619713 _ws-311910413 _ww-408434756 _fs-347291933 _fw-289166179 _lh-1925956564 _ls-1782815796 _d-341075704 _c-1922521888 _c-1063453128 _as-361308821 _m-1067104434 rcx-label rcx-field__label rcx-css-127j9mz"
                           >
                             Dark
                           </span>
                           <label
-                            class="is_Text _b-1639159466 _os-249893454 _ff-409630021 _fvn-1977619713 _ws-311910413 _ww-408434756 rcx-radio-button"
+                            class="is_Text _b-1639159466 _os-249893454 _ff-409630021 _fvn-1977619713 _ws-311910413 _ww-408434756 _p-1021290656 _d-1985012034 _va-1124586065 _c-22887652 _ow-485594423 rcx-radio-button"
                           >
                             <div
                               style="border: 0px; clip-path: inset(50%); height: 1px; margin: -1px; overflow: hidden; padding: 0px; position: absolute; width: 1px; white-space: nowrap;"
@@ -847,22 +879,26 @@ exports[`renders Default without crashing 1`] = `
                               Dark
                             </div>
                             <input
-                              aria-describedby="react-aria-_r_45_-hint"
+                              aria-describedby="react-aria-_r_4d_-hint"
                               aria-invalid="false"
                               class="is_View _b-1639159466 _os-249893454 _ff-409630021 _fvn-1977619713 _p-1261267467 _o-1119039191 _c-588872556 _cp-2129451690 _w-226739898 _h-1922295961 _m-1890937723 _p-1943363302 _ws-973912173 _f-1246374076 rcx-radio-button__input"
-                              id="react-aria-_r_45_-label"
+                              id="react-aria-_r_4d_-label"
                               name="themeAppearence"
                               type="radio"
                             />
                             <i
                               aria-hidden="true"
-                              class="is_View _b-1639160427 _os-249893454 _ff-409630021 _fvn-1977619713 _p-1021290656 _h-858548760 _f-1069814357 _mw-354604370 _mh-1241200853 _d-341075704 _jc-1099843255 _ai-121763387 _br-662213014 _w-120696903 rcx-radio-button__fake"
-                            />
+                              class="is_View _b-523511517 _os-249893454 _ff-409630021 _fvn-1977619713 _p-1021290656 _h-858548760 _f-1069814357 _mw-354604370 _mh-1241200853 _c-991369120 _b-886492876 _d-341075704 _jc-1099843255 _ai-121763387 _br-662213014 _w-120696903 rcx-radio-button__fake"
+                            >
+                              <span
+                                class="is_View _d-1987097250 _v-46649817 _w-2027464954 _h-1735620473 _br-662213014 _b-156244340"
+                              />
+                            </i>
                           </label>
                         </span>
                         <span
                           class="is_Text _b-650654186 _os-249893454 _ff-409630021 _fvn-1977619713 _ww-408434756 _fs-2088488067 _fw-289165218 _lh-1306743983 _ls-1782815796 _m-183820880 _c-1756781803 rcx-field__hint rcx-css-9o2t94"
-                          id="react-aria-_r_45_-hint"
+                          id="react-aria-_r_4d_-hint"
                           style="white-space: break-spaces;"
                         >
                           Reduce eye strain and fatigue in low-light conditions by minimizing the amount of light emitted by the screen.
@@ -875,12 +911,12 @@ exports[`renders Default without crashing 1`] = `
                           class="is_Text _b-650654186 _os-249893454 _ff-409630021 _fvn-1977619713 _ws-311910413 _ww-408434756 _d-341075704 _f-541922926 _jc-281817805 _ai-121763387 _m-2017978848 _c-1756781803 rcx-field__row"
                         >
                           <span
-                            class="is_Text _b-650654186 _os-249893454 _ff-409630021 _fvn-1977619713 _ws-311910413 _ww-408434756 _fs-347291933 _fw-289166179 _lh-1925956564 _ls-1782815796 _d-341075704 _c-1922521888 _c-1063453128 rcx-label rcx-field__label rcx-css-127j9mz"
+                            class="is_Text _b-650654186 _os-249893454 _ff-409630021 _fvn-1977619713 _ws-311910413 _ww-408434756 _fs-347291933 _fw-289166179 _lh-1925956564 _ls-1782815796 _d-341075704 _c-1922521888 _c-1063453128 _as-361308821 _m-1067104434 rcx-label rcx-field__label rcx-css-127j9mz"
                           >
                             High contrast
                           </span>
                           <label
-                            class="is_Text _b-1639159466 _os-249893454 _ff-409630021 _fvn-1977619713 _ws-311910413 _ww-408434756 rcx-radio-button"
+                            class="is_Text _b-1639159466 _os-249893454 _ff-409630021 _fvn-1977619713 _ws-311910413 _ww-408434756 _p-1021290656 _d-1985012034 _va-1124586065 _c-22887652 _ow-485594423 rcx-radio-button"
                           >
                             <div
                               style="border: 0px; clip-path: inset(50%); height: 1px; margin: -1px; overflow: hidden; padding: 0px; position: absolute; width: 1px; white-space: nowrap;"
@@ -888,22 +924,26 @@ exports[`renders Default without crashing 1`] = `
                               High contrast
                             </div>
                             <input
-                              aria-describedby="react-aria-_r_4d_-hint"
+                              aria-describedby="react-aria-_r_4m_-hint"
                               aria-invalid="false"
                               class="is_View _b-1639159466 _os-249893454 _ff-409630021 _fvn-1977619713 _p-1261267467 _o-1119039191 _c-588872556 _cp-2129451690 _w-226739898 _h-1922295961 _m-1890937723 _p-1943363302 _ws-973912173 _f-1246374076 rcx-radio-button__input"
-                              id="react-aria-_r_4d_-label"
+                              id="react-aria-_r_4m_-label"
                               name="themeAppearence"
                               type="radio"
                             />
                             <i
                               aria-hidden="true"
-                              class="is_View _b-1639160427 _os-249893454 _ff-409630021 _fvn-1977619713 _p-1021290656 _h-858548760 _f-1069814357 _mw-354604370 _mh-1241200853 _d-341075704 _jc-1099843255 _ai-121763387 _br-662213014 _w-120696903 rcx-radio-button__fake"
-                            />
+                              class="is_View _b-523511517 _os-249893454 _ff-409630021 _fvn-1977619713 _p-1021290656 _h-858548760 _f-1069814357 _mw-354604370 _mh-1241200853 _c-991369120 _b-886492876 _d-341075704 _jc-1099843255 _ai-121763387 _br-662213014 _w-120696903 rcx-radio-button__fake"
+                            >
+                              <span
+                                class="is_View _d-1987097250 _v-46649817 _w-2027464954 _h-1735620473 _br-662213014 _b-156244340"
+                              />
+                            </i>
                           </label>
                         </span>
                         <span
                           class="is_Text _b-650654186 _os-249893454 _ff-409630021 _fvn-1977619713 _ww-408434756 _fs-2088488067 _fw-289165218 _lh-1306743983 _ls-1782815796 _m-183820880 _c-1756781803 rcx-field__hint rcx-css-9o2t94"
-                          id="react-aria-_r_4d_-hint"
+                          id="react-aria-_r_4m_-hint"
                           style="white-space: break-spaces;"
                         >
                           Maximum tonal differentiation with bold colors and sharp contrasts provide enhanced accessibility.
@@ -916,12 +956,12 @@ exports[`renders Default without crashing 1`] = `
                           class="is_Text _b-650654186 _os-249893454 _ff-409630021 _fvn-1977619713 _ws-311910413 _ww-408434756 _d-341075704 _f-541922926 _jc-281817805 _ai-121763387 _m-2017978848 _c-1756781803 rcx-field__row"
                         >
                           <span
-                            class="is_Text _b-650654186 _os-249893454 _ff-409630021 _fvn-1977619713 _ws-311910413 _ww-408434756 _fs-347291933 _fw-289166179 _lh-1925956564 _ls-1782815796 _d-341075704 _c-1922521888 _c-1063453128 rcx-label rcx-field__label rcx-css-127j9mz"
+                            class="is_Text _b-650654186 _os-249893454 _ff-409630021 _fvn-1977619713 _ws-311910413 _ww-408434756 _fs-347291933 _fw-289166179 _lh-1925956564 _ls-1782815796 _d-341075704 _c-1922521888 _c-1063453128 _as-361308821 _m-1067104434 rcx-label rcx-field__label rcx-css-127j9mz"
                           >
                             Match system
                           </span>
                           <label
-                            class="is_Text _b-1639159466 _os-249893454 _ff-409630021 _fvn-1977619713 _ws-311910413 _ww-408434756 rcx-radio-button"
+                            class="is_Text _b-1639159466 _os-249893454 _ff-409630021 _fvn-1977619713 _ws-311910413 _ww-408434756 _p-1021290656 _d-1985012034 _va-1124586065 _c-22887652 _ow-485594423 rcx-radio-button"
                           >
                             <div
                               style="border: 0px; clip-path: inset(50%); height: 1px; margin: -1px; overflow: hidden; padding: 0px; position: absolute; width: 1px; white-space: nowrap;"
@@ -929,23 +969,27 @@ exports[`renders Default without crashing 1`] = `
                               Match system
                             </div>
                             <input
-                              aria-describedby="react-aria-_r_4l_-hint"
+                              aria-describedby="react-aria-_r_4v_-hint"
                               aria-invalid="false"
                               checked=""
                               class="is_View _b-1639159466 _os-249893454 _ff-409630021 _fvn-1977619713 _p-1261267467 _o-1119039191 _c-588872556 _cp-2129451690 _w-226739898 _h-1922295961 _m-1890937723 _p-1943363302 _ws-973912173 _f-1246374076 rcx-radio-button__input"
-                              id="react-aria-_r_4l_-label"
+                              id="react-aria-_r_4v_-label"
                               name="themeAppearence"
                               type="radio"
                             />
                             <i
                               aria-hidden="true"
-                              class="is_View _b-1639160427 _os-249893454 _ff-409630021 _fvn-1977619713 _p-1021290656 _h-858548760 _f-1069814357 _mw-354604370 _mh-1241200853 _d-341075704 _jc-1099843255 _ai-121763387 _br-662213014 _w-120696903 rcx-radio-button__fake"
-                            />
+                              class="is_View _b-523511517 _os-249893454 _ff-409630021 _fvn-1977619713 _p-1021290656 _h-858548760 _f-1069814357 _mw-354604370 _mh-1241200853 _c-991369120 _b-886492876 _d-341075704 _jc-1099843255 _ai-121763387 _br-662213014 _w-120696903 rcx-radio-button__fake"
+                            >
+                              <span
+                                class="is_View _d-1987097250 _v-46649817 _w-2027464954 _h-1735620473 _br-662213014 _b-156244340"
+                              />
+                            </i>
                           </label>
                         </span>
                         <span
                           class="is_Text _b-650654186 _os-249893454 _ff-409630021 _fvn-1977619713 _ww-408434756 _fs-2088488067 _fw-289165218 _lh-1306743983 _ls-1782815796 _m-183820880 _c-1756781803 rcx-field__hint rcx-css-9o2t94"
-                          id="react-aria-_r_4l_-hint"
+                          id="react-aria-_r_4v_-hint"
                           style="white-space: break-spaces;"
                         >
                           Automatically match the appearance of your system.
@@ -957,15 +1001,15 @@ exports[`renders Default without crashing 1`] = `
                     class="is_View _f-1246374076 _mw-354604370 _mh-1241200853 _os-249893454 _ff-409630021 _fvn-1977619713 rcx-accordion-item"
                   >
                     <div
-                      aria-controls="_r_4u_"
+                      aria-controls="_r_59_"
                       aria-expanded="false"
-                      class="is_View _f-85860445 _mw-354604370 _mh-1760955396 _os-249893454 _ff-409630021 _fvn-1977619713 _p-615618451 _ta-507911453 _c-1866435217 _b-1683371345 rcx-box--animated rcx-accordion-item__bar"
+                      class="is_View _f-85860445 _mw-354604370 _mh-1760955396 _os-249893454 _ff-409630021 _fvn-1977619713 _p-615618451 _ta-507911453 _c-1866435217 _b-1117022352 _c-1830342115 _ow-484670902 _b-503981535 _bs-1918316648 rcx-box--animated rcx-accordion-item__bar"
                       role="button"
                       tabindex="0"
                     >
                       <h2
                         class="is_Text _f-1417019688 _mw-354604370 _mh-1241200853 _os-249893454 _ff-409630021 _fvn-1977619713 _d-1987097250 _o-1119039191 _to-1727917045 _ws-973912173 _ww-408434756 _fs-467998244 _fw-289168101 _lh-1586295880 _ls-1782815796 rcx-accordion-item__title"
-                        id="_r_4t_"
+                        id="_r_58_"
                       >
                         Adjustable layout
                       </h2>
@@ -982,7 +1026,7 @@ exports[`renders Default without crashing 1`] = `
                     </div>
                     <div
                       class="is_View _f-1246374076 _mw-354604370 _mh-1241200853 _os-249893454 _ff-409630021 _fvn-1977619713 _d-1987097250 _v-46649817 _o-1119039191 _h-1922296922 _p-2082124683 rcx-box--animated rcx-accordion-item__panel"
-                      id="_r_4u_"
+                      id="_r_59_"
                     >
                       <fieldset
                         class="is_Text _b-650654186 _os-249893454 _ff-409630021 _fvn-1977619713 _ws-311910413 _ww-408434756 _d-341075704 _f-1180446992 _jc-1099843255 _ai-1227553247 _mw-842770087 _m-2017216831 _p-1943363302 rcx-field-group"
@@ -1000,8 +1044,8 @@ exports[`renders Default without crashing 1`] = `
                           class="is_Text _b-650654186 _os-249893454 _ff-409630021 _fvn-1977619713 _ws-311910413 _ww-408434756 _d-341075704 _f-1378740307 _ai-1227553247 _w-1560934055 rcx-field rcx-field-group__item"
                         >
                           <span
-                            class="is_Text _b-650654186 _os-249893454 _ff-409630021 _fvn-1977619713 _ws-311910413 _ww-408434756 _fs-347291933 _fw-289166179 _lh-1925956564 _ls-1782815796 _d-341075704 _c-1922521888 _c-1063453128 rcx-label rcx-field__label rcx-css-vtsp67"
-                            id="react-aria-_r_56_-label"
+                            class="is_Text _b-650654186 _os-249893454 _ff-409630021 _fvn-1977619713 _ws-311910413 _ww-408434756 _fs-347291933 _fw-289166179 _lh-1925956564 _ls-1782815796 _d-341075704 _c-1922521888 _c-1063453128 _as-361308821 _m-1067104434 rcx-label rcx-field__label rcx-css-vtsp67"
+                            id="react-aria-_r_5h_-label"
                           >
                             Font size
                           </span>
@@ -1054,16 +1098,16 @@ exports[`renders Default without crashing 1`] = `
                               </div>
                             </div>
                             <button
-                              aria-describedby="react-aria-_r_56_-description"
+                              aria-describedby="react-aria-_r_5h_-description"
                               aria-expanded="false"
                               aria-haspopup="listbox"
-                              aria-labelledby="react-aria-_r_5h_ react-aria-_r_56_-label"
+                              aria-labelledby="react-aria-_r_5s_ react-aria-_r_5h_-label"
                               class="rcx-box rcx-box--full rcx-box--animated rcx-select rcx-css-3ejkxj"
                               type="button"
                             >
                               <span
                                 class="rcx-box rcx-box--full rcx-css-1ah8hdc"
-                                id="react-aria-_r_5h_"
+                                id="react-aria-_r_5s_"
                               >
                                 Default
                               </span>
@@ -1077,7 +1121,7 @@ exports[`renders Default without crashing 1`] = `
                           </span>
                           <span
                             class="is_Text _b-650654186 _os-249893454 _ff-409630021 _fvn-1977619713 _ws-311910413 _ww-408434756 _fs-347291933 _fw-289165218 _lh-1925956564 _ls-1782815796 _m-183820880 _c-1756781803 rcx-field__description rcx-css-op9h3g"
-                            id="react-aria-_r_56_-description"
+                            id="react-aria-_r_5h_-description"
                           >
                             Designed for those who prefer larger or smaller text for improved readability. This flexibility promotes inclusivity by empowering users to tailor the software interface to their specific needs.
                           </span>
@@ -1089,12 +1133,12 @@ exports[`renders Default without crashing 1`] = `
                             class="is_Text _b-650654186 _os-249893454 _ff-409630021 _fvn-1977619713 _ws-311910413 _ww-408434756 _d-341075704 _f-541922926 _jc-281817805 _ai-121763387 _m-2017978848 _c-1756781803 rcx-field__row"
                           >
                             <span
-                              class="is_Text _b-650654186 _os-249893454 _ff-409630021 _fvn-1977619713 _ws-311910413 _ww-408434756 _fs-347291933 _fw-289166179 _lh-1925956564 _ls-1782815796 _d-341075704 _c-1922521888 _c-1063453128 rcx-label rcx-field__label"
+                              class="is_Text _b-650654186 _os-249893454 _ff-409630021 _fvn-1977619713 _ws-311910413 _ww-408434756 _fs-347291933 _fw-289166179 _lh-1925956564 _ls-1782815796 _d-341075704 _c-1922521888 _c-1063453128 _as-361308821 _m-1067104434 rcx-label rcx-field__label"
                             >
                               Mentions with @ symbol
                             </span>
                             <label
-                              class="is_Text _b-1639159466 _os-249893454 _ff-409630021 _fvn-1977619713 _ws-311910413 _ww-408434756 rcx-toggle-switch"
+                              class="is_Text _b-1639159466 _os-249893454 _ff-409630021 _fvn-1977619713 _ws-311910413 _ww-408434756 _p-1021290656 _d-1985012034 _va-1124586065 _c-22887652 _ow-485594423 rcx-toggle-switch"
                             >
                               <div
                                 style="border: 0px; clip-path: inset(50%); height: 1px; margin: -1px; overflow: hidden; padding: 0px; position: absolute; width: 1px; white-space: nowrap;"
@@ -1102,22 +1146,26 @@ exports[`renders Default without crashing 1`] = `
                                 Mentions with @ symbol
                               </div>
                               <input
-                                aria-describedby="react-aria-_r_5k_-description"
+                                aria-describedby="react-aria-_r_5v_-description"
                                 aria-invalid="false"
                                 class="is_View _b-1639159466 _os-249893454 _ff-409630021 _fvn-1977619713 _p-1261267467 _o-1119039191 _c-588872556 _cp-2129451690 _w-226739898 _h-1922295961 _m-1890937723 _p-1943363302 _ws-973912173 _f-1246374076 rcx-toggle-switch__input"
-                                id="react-aria-_r_5k_-label"
+                                id="react-aria-_r_5v_-label"
                                 name="mentionsWithSymbol"
                                 type="checkbox"
                               />
                               <i
                                 aria-hidden="true"
-                                class="is_View _b-1639160427 _os-249893454 _ff-409630021 _fvn-1977619713 _p-1021290656 _f-1069814357 _mw-354604370 _mh-1241200853 _w-1008200584 _h-749995598 _br-153849585 rcx-toggle-switch__fake"
-                              />
+                                class="is_View _b-352265661 _os-249893454 _ff-409630021 _fvn-1977619713 _p-1021290656 _f-1069814357 _mw-354604370 _mh-1241200853 _c-1043001278 _b-939182290 _w-1008200584 _h-749995598 _br-153849585 rcx-toggle-switch__fake"
+                              >
+                                <span
+                                  class="is_View _t-1281204763 _p-1261267467 _i-933132292 _w-386687234 _h-2100713731 _br-153849585 _b-798159804"
+                                />
+                              </i>
                             </label>
                           </span>
                           <span
                             class="is_Text _b-650654186 _os-249893454 _ff-409630021 _fvn-1977619713 _ws-311910413 _ww-408434756 _fs-347291933 _fw-289165218 _lh-1925956564 _ls-1782815796 _m-183820880 _c-1756781803 rcx-field__description rcx-css-1ntdv01 rcx-css-op9h3g"
-                            id="react-aria-_r_5k_-description"
+                            id="react-aria-_r_5v_-description"
                           >
                             Mentions notify and highlight messages for groups or specific users, facilitating targeted communication.
 
@@ -1129,8 +1177,8 @@ The screen reader functionality is optimized when the "@" symbol is employed in 
                           id="clockMode"
                         >
                           <span
-                            class="is_Text _b-650654186 _os-249893454 _ff-409630021 _fvn-1977619713 _ws-311910413 _ww-408434756 _fs-347291933 _fw-289166179 _lh-1925956564 _ls-1782815796 _d-341075704 _c-1922521888 _c-1063453128 rcx-label rcx-field__label"
-                            id="react-aria-_r_5s_-label"
+                            class="is_Text _b-650654186 _os-249893454 _ff-409630021 _fvn-1977619713 _ws-311910413 _ww-408434756 _fs-347291933 _fw-289166179 _lh-1925956564 _ls-1782815796 _d-341075704 _c-1922521888 _c-1063453128 _as-361308821 _m-1067104434 rcx-label rcx-field__label"
+                            id="react-aria-_r_68_-label"
                           >
                             Time format
                           </span>
@@ -1176,13 +1224,13 @@ The screen reader functionality is optimized when the "@" symbol is employed in 
                               aria-describedby=""
                               aria-expanded="false"
                               aria-haspopup="listbox"
-                              aria-labelledby="react-aria-_r_67_ react-aria-_r_5s_-label"
+                              aria-labelledby="react-aria-_r_6j_ react-aria-_r_68_-label"
                               class="rcx-box rcx-box--full rcx-box--animated rcx-select rcx-css-3ejkxj"
                               type="button"
                             >
                               <span
                                 class="rcx-box rcx-box--full rcx-css-1ah8hdc"
-                                id="react-aria-_r_67_"
+                                id="react-aria-_r_6j_"
                               >
                                 Default
                               </span>
@@ -1203,12 +1251,12 @@ The screen reader functionality is optimized when the "@" symbol is employed in 
                             class="is_Text _b-650654186 _os-249893454 _ff-409630021 _fvn-1977619713 _ws-311910413 _ww-408434756 _d-341075704 _f-541922926 _jc-281817805 _ai-121763387 _m-2017978848 _c-1756781803 rcx-field__row"
                           >
                             <span
-                              class="is_Text _b-650654186 _os-249893454 _ff-409630021 _fvn-1977619713 _ws-311910413 _ww-408434756 _fs-347291933 _fw-289166179 _lh-1925956564 _ls-1782815796 _d-341075704 _c-1922521888 _c-1063453128 rcx-label rcx-field__label"
+                              class="is_Text _b-650654186 _os-249893454 _ff-409630021 _fvn-1977619713 _ws-311910413 _ww-408434756 _fs-347291933 _fw-289166179 _lh-1925956564 _ls-1782815796 _d-341075704 _c-1922521888 _c-1063453128 _as-361308821 _m-1067104434 rcx-label rcx-field__label"
                             >
                               Show usernames
                             </span>
                             <label
-                              class="is_Text _b-1639159466 _os-249893454 _ff-409630021 _fvn-1977619713 _ws-311910413 _ww-408434756 rcx-toggle-switch"
+                              class="is_Text _b-1639159466 _os-249893454 _ff-409630021 _fvn-1977619713 _ws-311910413 _ww-408434756 _p-1021290656 _d-1985012034 _va-1124586065 _c-22887652 _ow-485594423 rcx-toggle-switch"
                             >
                               <div
                                 style="border: 0px; clip-path: inset(50%); height: 1px; margin: -1px; overflow: hidden; padding: 0px; position: absolute; width: 1px; white-space: nowrap;"
@@ -1216,23 +1264,27 @@ The screen reader functionality is optimized when the "@" symbol is employed in 
                                 Show usernames
                               </div>
                               <input
-                                aria-describedby="react-aria-_r_69_-description"
+                                aria-describedby="react-aria-_r_6l_-description"
                                 aria-invalid="false"
                                 checked=""
                                 class="is_View _b-1639159466 _os-249893454 _ff-409630021 _fvn-1977619713 _p-1261267467 _o-1119039191 _c-588872556 _cp-2129451690 _w-226739898 _h-1922295961 _m-1890937723 _p-1943363302 _ws-973912173 _f-1246374076 rcx-toggle-switch__input"
-                                id="react-aria-_r_69_-label"
+                                id="react-aria-_r_6l_-label"
                                 name="hideUsernames"
                                 type="checkbox"
                               />
                               <i
                                 aria-hidden="true"
-                                class="is_View _b-1639160427 _os-249893454 _ff-409630021 _fvn-1977619713 _p-1021290656 _f-1069814357 _mw-354604370 _mh-1241200853 _w-1008200584 _h-749995598 _br-153849585 rcx-toggle-switch__fake"
-                              />
+                                class="is_View _b-352265661 _os-249893454 _ff-409630021 _fvn-1977619713 _p-1021290656 _f-1069814357 _mw-354604370 _mh-1241200853 _c-1043001278 _b-939182290 _w-1008200584 _h-749995598 _br-153849585 rcx-toggle-switch__fake"
+                              >
+                                <span
+                                  class="is_View _t-1281204763 _p-1261267467 _i-933132292 _w-386687234 _h-2100713731 _br-153849585 _b-798159804"
+                                />
+                              </i>
                             </label>
                           </span>
                           <span
                             class="is_Text _b-650654186 _os-249893454 _ff-409630021 _fvn-1977619713 _ws-311910413 _ww-408434756 _fs-347291933 _fw-289165218 _lh-1925956564 _ls-1782815796 _m-183820880 _c-1756781803 rcx-field__description"
-                            id="react-aria-_r_69_-description"
+                            id="react-aria-_r_6l_-description"
                           >
                             Show or hide the username of message authors.
                           </span>
@@ -1245,12 +1297,12 @@ The screen reader functionality is optimized when the "@" symbol is employed in 
                             class="is_Text _b-650654186 _os-249893454 _ff-409630021 _fvn-1977619713 _ws-311910413 _ww-408434756 _d-341075704 _f-541922926 _jc-281817805 _ai-121763387 _m-2017978848 _c-1756781803 rcx-field__row"
                           >
                             <span
-                              class="is_Text _b-650654186 _os-249893454 _ff-409630021 _fvn-1977619713 _ws-311910413 _ww-408434756 _fs-347291933 _fw-289166179 _lh-1925956564 _ls-1782815796 _d-341075704 _c-1922521888 _c-1063453128 rcx-label rcx-field__label"
+                              class="is_Text _b-650654186 _os-249893454 _ff-409630021 _fvn-1977619713 _ws-311910413 _ww-408434756 _fs-347291933 _fw-289166179 _lh-1925956564 _ls-1782815796 _d-341075704 _c-1922521888 _c-1063453128 _as-361308821 _m-1067104434 rcx-label rcx-field__label"
                             >
                               Show roles
                             </span>
                             <label
-                              class="is_Text _b-1639159466 _os-249893454 _ff-409630021 _fvn-1977619713 _ws-311910413 _ww-408434756 rcx-toggle-switch"
+                              class="is_Text _b-1639159466 _os-249893454 _ff-409630021 _fvn-1977619713 _ws-311910413 _ww-408434756 _p-1021290656 _d-1985012034 _va-1124586065 _c-22887652 _ow-485594423 rcx-toggle-switch"
                             >
                               <div
                                 style="border: 0px; clip-path: inset(50%); height: 1px; margin: -1px; overflow: hidden; padding: 0px; position: absolute; width: 1px; white-space: nowrap;"
@@ -1258,23 +1310,27 @@ The screen reader functionality is optimized when the "@" symbol is employed in 
                                 Show roles
                               </div>
                               <input
-                                aria-describedby="react-aria-_r_6h_-description"
+                                aria-describedby="react-aria-_r_6u_-description"
                                 aria-invalid="false"
                                 checked=""
                                 class="is_View _b-1639159466 _os-249893454 _ff-409630021 _fvn-1977619713 _p-1261267467 _o-1119039191 _c-588872556 _cp-2129451690 _w-226739898 _h-1922295961 _m-1890937723 _p-1943363302 _ws-973912173 _f-1246374076 rcx-toggle-switch__input"
-                                id="react-aria-_r_6h_-label"
+                                id="react-aria-_r_6u_-label"
                                 name="hideRoles"
                                 type="checkbox"
                               />
                               <i
                                 aria-hidden="true"
-                                class="is_View _b-1639160427 _os-249893454 _ff-409630021 _fvn-1977619713 _p-1021290656 _f-1069814357 _mw-354604370 _mh-1241200853 _w-1008200584 _h-749995598 _br-153849585 rcx-toggle-switch__fake"
-                              />
+                                class="is_View _b-352265661 _os-249893454 _ff-409630021 _fvn-1977619713 _p-1021290656 _f-1069814357 _mw-354604370 _mh-1241200853 _c-1043001278 _b-939182290 _w-1008200584 _h-749995598 _br-153849585 rcx-toggle-switch__fake"
+                              >
+                                <span
+                                  class="is_View _t-1281204763 _p-1261267467 _i-933132292 _w-386687234 _h-2100713731 _br-153849585 _b-798159804"
+                                />
+                              </i>
                             </label>
                           </span>
                           <span
                             class="is_Text _b-650654186 _os-249893454 _ff-409630021 _fvn-1977619713 _ws-311910413 _ww-408434756 _fs-347291933 _fw-289165218 _lh-1925956564 _ls-1782815796 _m-183820880 _c-1756781803 rcx-field__description"
-                            id="react-aria-_r_6h_-description"
+                            id="react-aria-_r_6u_-description"
                           >
                             Show or hide the user roles of message authors.
                           </span>
@@ -1361,7 +1417,7 @@ exports[`renders RolesDisabled without crashing 1`] = `
             >
               <form
                 class="rcx-box rcx-box--full rcx-css-1xqc09s"
-                id="_r_72_"
+                id="_r_7g_"
               >
                 <div
                   class="rcx-box rcx-box--full rcx-css-1191gx0"
@@ -1372,12 +1428,12 @@ exports[`renders RolesDisabled without crashing 1`] = `
                     Here you can activate a range of features to enhance your browsing experience.
                   </p>
                   <p
-                    id="_r_73_"
+                    id="_r_7h_"
                   >
                     Learn more about our commitment with accessibility here:
                   </p>
                   <ul
-                    aria-labelledby="_r_73_"
+                    aria-labelledby="_r_7h_"
                   >
                     <li>
                       <a
@@ -1418,15 +1474,15 @@ exports[`renders RolesDisabled without crashing 1`] = `
                     class="is_View _f-1246374076 _mw-354604370 _mh-1241200853 _os-249893454 _ff-409630021 _fvn-1977619713 rcx-accordion-item"
                   >
                     <div
-                      aria-controls="_r_77_"
+                      aria-controls="_r_7l_"
                       aria-expanded="true"
-                      class="is_View _f-85860445 _mw-354604370 _mh-1760955396 _os-249893454 _ff-409630021 _fvn-1977619713 _p-615618451 _ta-507911453 _c-1866435217 _b-1683371345 rcx-box--animated rcx-accordion-item__bar"
+                      class="is_View _f-85860445 _mw-354604370 _mh-1760955396 _os-249893454 _ff-409630021 _fvn-1977619713 _p-615618451 _ta-507911453 _c-1866435217 _b-1117022352 _c-1830342115 _ow-484670902 _b-503981535 _bs-1918316648 rcx-box--animated rcx-accordion-item__bar"
                       role="button"
                       tabindex="0"
                     >
                       <h2
                         class="is_Text _f-1417019688 _mw-354604370 _mh-1241200853 _os-249893454 _ff-409630021 _fvn-1977619713 _d-1987097250 _o-1119039191 _to-1727917045 _ws-973912173 _ww-408434756 _fs-467998244 _fw-289168101 _lh-1586295880 _ls-1782815796 rcx-accordion-item__title"
-                        id="_r_76_"
+                        id="_r_7k_"
                       >
                         Theme
                       </h2>
@@ -1443,7 +1499,7 @@ exports[`renders RolesDisabled without crashing 1`] = `
                     </div>
                     <div
                       class="is_View _f-1246374076 _mw-354604370 _mh-1241200853 _os-249893454 _ff-409630021 _fvn-1977619713 _d-1987097250 _o-1119039191 _p-1254838996 _v-595517078 _h-568431264 rcx-box--animated rcx-accordion-item__panel rcx-accordion-item__panel--expanded"
-                      id="_r_77_"
+                      id="_r_7l_"
                     >
                       <div
                         class="is_Text _b-650654186 _os-249893454 _ff-409630021 _fvn-1977619713 _ws-311910413 _ww-408434756 _d-341075704 _f-1378740307 _ai-1227553247 _w-1560934055 rcx-field"
@@ -1452,12 +1508,12 @@ exports[`renders RolesDisabled without crashing 1`] = `
                           class="is_Text _b-650654186 _os-249893454 _ff-409630021 _fvn-1977619713 _ws-311910413 _ww-408434756 _d-341075704 _f-541922926 _jc-281817805 _ai-121763387 _m-2017978848 _c-1756781803 rcx-field__row"
                         >
                           <span
-                            class="is_Text _b-650654186 _os-249893454 _ff-409630021 _fvn-1977619713 _ws-311910413 _ww-408434756 _fs-347291933 _fw-289166179 _lh-1925956564 _ls-1782815796 _d-341075704 _c-1922521888 _c-1063453128 rcx-label rcx-field__label rcx-css-127j9mz"
+                            class="is_Text _b-650654186 _os-249893454 _ff-409630021 _fvn-1977619713 _ws-311910413 _ww-408434756 _fs-347291933 _fw-289166179 _lh-1925956564 _ls-1782815796 _d-341075704 _c-1922521888 _c-1063453128 _as-361308821 _m-1067104434 rcx-label rcx-field__label rcx-css-127j9mz"
                           >
                             Light
                           </span>
                           <label
-                            class="is_Text _b-1639159466 _os-249893454 _ff-409630021 _fvn-1977619713 _ws-311910413 _ww-408434756 rcx-radio-button"
+                            class="is_Text _b-1639159466 _os-249893454 _ff-409630021 _fvn-1977619713 _ws-311910413 _ww-408434756 _p-1021290656 _d-1985012034 _va-1124586065 _c-22887652 _ow-485594423 rcx-radio-button"
                           >
                             <div
                               style="border: 0px; clip-path: inset(50%); height: 1px; margin: -1px; overflow: hidden; padding: 0px; position: absolute; width: 1px; white-space: nowrap;"
@@ -1465,22 +1521,26 @@ exports[`renders RolesDisabled without crashing 1`] = `
                               Light
                             </div>
                             <input
-                              aria-describedby="react-aria-_r_7e_-hint"
+                              aria-describedby="react-aria-_r_7s_-hint"
                               aria-invalid="false"
                               class="is_View _b-1639159466 _os-249893454 _ff-409630021 _fvn-1977619713 _p-1261267467 _o-1119039191 _c-588872556 _cp-2129451690 _w-226739898 _h-1922295961 _m-1890937723 _p-1943363302 _ws-973912173 _f-1246374076 rcx-radio-button__input"
-                              id="react-aria-_r_7e_-label"
+                              id="react-aria-_r_7s_-label"
                               name="themeAppearence"
                               type="radio"
                             />
                             <i
                               aria-hidden="true"
-                              class="is_View _b-1639160427 _os-249893454 _ff-409630021 _fvn-1977619713 _p-1021290656 _h-858548760 _f-1069814357 _mw-354604370 _mh-1241200853 _d-341075704 _jc-1099843255 _ai-121763387 _br-662213014 _w-120696903 rcx-radio-button__fake"
-                            />
+                              class="is_View _b-523511517 _os-249893454 _ff-409630021 _fvn-1977619713 _p-1021290656 _h-858548760 _f-1069814357 _mw-354604370 _mh-1241200853 _c-991369120 _b-886492876 _d-341075704 _jc-1099843255 _ai-121763387 _br-662213014 _w-120696903 rcx-radio-button__fake"
+                            >
+                              <span
+                                class="is_View _d-1987097250 _v-46649817 _w-2027464954 _h-1735620473 _br-662213014 _b-156244340"
+                              />
+                            </i>
                           </label>
                         </span>
                         <span
                           class="is_Text _b-650654186 _os-249893454 _ff-409630021 _fvn-1977619713 _ww-408434756 _fs-2088488067 _fw-289165218 _lh-1306743983 _ls-1782815796 _m-183820880 _c-1756781803 rcx-field__hint rcx-css-9o2t94"
-                          id="react-aria-_r_7e_-hint"
+                          id="react-aria-_r_7s_-hint"
                           style="white-space: break-spaces;"
                         >
                           More accessible for individuals with visual impairments and a good choice for well-lit environments.
@@ -1493,12 +1553,12 @@ exports[`renders RolesDisabled without crashing 1`] = `
                           class="is_Text _b-650654186 _os-249893454 _ff-409630021 _fvn-1977619713 _ws-311910413 _ww-408434756 _d-341075704 _f-541922926 _jc-281817805 _ai-121763387 _m-2017978848 _c-1756781803 rcx-field__row"
                         >
                           <span
-                            class="is_Text _b-650654186 _os-249893454 _ff-409630021 _fvn-1977619713 _ws-311910413 _ww-408434756 _fs-347291933 _fw-289166179 _lh-1925956564 _ls-1782815796 _d-341075704 _c-1922521888 _c-1063453128 rcx-label rcx-field__label rcx-css-127j9mz"
+                            class="is_Text _b-650654186 _os-249893454 _ff-409630021 _fvn-1977619713 _ws-311910413 _ww-408434756 _fs-347291933 _fw-289166179 _lh-1925956564 _ls-1782815796 _d-341075704 _c-1922521888 _c-1063453128 _as-361308821 _m-1067104434 rcx-label rcx-field__label rcx-css-127j9mz"
                           >
                             Dark
                           </span>
                           <label
-                            class="is_Text _b-1639159466 _os-249893454 _ff-409630021 _fvn-1977619713 _ws-311910413 _ww-408434756 rcx-radio-button"
+                            class="is_Text _b-1639159466 _os-249893454 _ff-409630021 _fvn-1977619713 _ws-311910413 _ww-408434756 _p-1021290656 _d-1985012034 _va-1124586065 _c-22887652 _ow-485594423 rcx-radio-button"
                           >
                             <div
                               style="border: 0px; clip-path: inset(50%); height: 1px; margin: -1px; overflow: hidden; padding: 0px; position: absolute; width: 1px; white-space: nowrap;"
@@ -1506,22 +1566,26 @@ exports[`renders RolesDisabled without crashing 1`] = `
                               Dark
                             </div>
                             <input
-                              aria-describedby="react-aria-_r_7m_-hint"
+                              aria-describedby="react-aria-_r_85_-hint"
                               aria-invalid="false"
                               class="is_View _b-1639159466 _os-249893454 _ff-409630021 _fvn-1977619713 _p-1261267467 _o-1119039191 _c-588872556 _cp-2129451690 _w-226739898 _h-1922295961 _m-1890937723 _p-1943363302 _ws-973912173 _f-1246374076 rcx-radio-button__input"
-                              id="react-aria-_r_7m_-label"
+                              id="react-aria-_r_85_-label"
                               name="themeAppearence"
                               type="radio"
                             />
                             <i
                               aria-hidden="true"
-                              class="is_View _b-1639160427 _os-249893454 _ff-409630021 _fvn-1977619713 _p-1021290656 _h-858548760 _f-1069814357 _mw-354604370 _mh-1241200853 _d-341075704 _jc-1099843255 _ai-121763387 _br-662213014 _w-120696903 rcx-radio-button__fake"
-                            />
+                              class="is_View _b-523511517 _os-249893454 _ff-409630021 _fvn-1977619713 _p-1021290656 _h-858548760 _f-1069814357 _mw-354604370 _mh-1241200853 _c-991369120 _b-886492876 _d-341075704 _jc-1099843255 _ai-121763387 _br-662213014 _w-120696903 rcx-radio-button__fake"
+                            >
+                              <span
+                                class="is_View _d-1987097250 _v-46649817 _w-2027464954 _h-1735620473 _br-662213014 _b-156244340"
+                              />
+                            </i>
                           </label>
                         </span>
                         <span
                           class="is_Text _b-650654186 _os-249893454 _ff-409630021 _fvn-1977619713 _ww-408434756 _fs-2088488067 _fw-289165218 _lh-1306743983 _ls-1782815796 _m-183820880 _c-1756781803 rcx-field__hint rcx-css-9o2t94"
-                          id="react-aria-_r_7m_-hint"
+                          id="react-aria-_r_85_-hint"
                           style="white-space: break-spaces;"
                         >
                           Reduce eye strain and fatigue in low-light conditions by minimizing the amount of light emitted by the screen.
@@ -1534,12 +1598,12 @@ exports[`renders RolesDisabled without crashing 1`] = `
                           class="is_Text _b-650654186 _os-249893454 _ff-409630021 _fvn-1977619713 _ws-311910413 _ww-408434756 _d-341075704 _f-541922926 _jc-281817805 _ai-121763387 _m-2017978848 _c-1756781803 rcx-field__row"
                         >
                           <span
-                            class="is_Text _b-650654186 _os-249893454 _ff-409630021 _fvn-1977619713 _ws-311910413 _ww-408434756 _fs-347291933 _fw-289166179 _lh-1925956564 _ls-1782815796 _d-341075704 _c-1922521888 _c-1063453128 rcx-label rcx-field__label rcx-css-127j9mz"
+                            class="is_Text _b-650654186 _os-249893454 _ff-409630021 _fvn-1977619713 _ws-311910413 _ww-408434756 _fs-347291933 _fw-289166179 _lh-1925956564 _ls-1782815796 _d-341075704 _c-1922521888 _c-1063453128 _as-361308821 _m-1067104434 rcx-label rcx-field__label rcx-css-127j9mz"
                           >
                             High contrast
                           </span>
                           <label
-                            class="is_Text _b-1639159466 _os-249893454 _ff-409630021 _fvn-1977619713 _ws-311910413 _ww-408434756 rcx-radio-button"
+                            class="is_Text _b-1639159466 _os-249893454 _ff-409630021 _fvn-1977619713 _ws-311910413 _ww-408434756 _p-1021290656 _d-1985012034 _va-1124586065 _c-22887652 _ow-485594423 rcx-radio-button"
                           >
                             <div
                               style="border: 0px; clip-path: inset(50%); height: 1px; margin: -1px; overflow: hidden; padding: 0px; position: absolute; width: 1px; white-space: nowrap;"
@@ -1547,22 +1611,26 @@ exports[`renders RolesDisabled without crashing 1`] = `
                               High contrast
                             </div>
                             <input
-                              aria-describedby="react-aria-_r_7u_-hint"
+                              aria-describedby="react-aria-_r_8e_-hint"
                               aria-invalid="false"
                               class="is_View _b-1639159466 _os-249893454 _ff-409630021 _fvn-1977619713 _p-1261267467 _o-1119039191 _c-588872556 _cp-2129451690 _w-226739898 _h-1922295961 _m-1890937723 _p-1943363302 _ws-973912173 _f-1246374076 rcx-radio-button__input"
-                              id="react-aria-_r_7u_-label"
+                              id="react-aria-_r_8e_-label"
                               name="themeAppearence"
                               type="radio"
                             />
                             <i
                               aria-hidden="true"
-                              class="is_View _b-1639160427 _os-249893454 _ff-409630021 _fvn-1977619713 _p-1021290656 _h-858548760 _f-1069814357 _mw-354604370 _mh-1241200853 _d-341075704 _jc-1099843255 _ai-121763387 _br-662213014 _w-120696903 rcx-radio-button__fake"
-                            />
+                              class="is_View _b-523511517 _os-249893454 _ff-409630021 _fvn-1977619713 _p-1021290656 _h-858548760 _f-1069814357 _mw-354604370 _mh-1241200853 _c-991369120 _b-886492876 _d-341075704 _jc-1099843255 _ai-121763387 _br-662213014 _w-120696903 rcx-radio-button__fake"
+                            >
+                              <span
+                                class="is_View _d-1987097250 _v-46649817 _w-2027464954 _h-1735620473 _br-662213014 _b-156244340"
+                              />
+                            </i>
                           </label>
                         </span>
                         <span
                           class="is_Text _b-650654186 _os-249893454 _ff-409630021 _fvn-1977619713 _ww-408434756 _fs-2088488067 _fw-289165218 _lh-1306743983 _ls-1782815796 _m-183820880 _c-1756781803 rcx-field__hint rcx-css-9o2t94"
-                          id="react-aria-_r_7u_-hint"
+                          id="react-aria-_r_8e_-hint"
                           style="white-space: break-spaces;"
                         >
                           Maximum tonal differentiation with bold colors and sharp contrasts provide enhanced accessibility.
@@ -1575,12 +1643,12 @@ exports[`renders RolesDisabled without crashing 1`] = `
                           class="is_Text _b-650654186 _os-249893454 _ff-409630021 _fvn-1977619713 _ws-311910413 _ww-408434756 _d-341075704 _f-541922926 _jc-281817805 _ai-121763387 _m-2017978848 _c-1756781803 rcx-field__row"
                         >
                           <span
-                            class="is_Text _b-650654186 _os-249893454 _ff-409630021 _fvn-1977619713 _ws-311910413 _ww-408434756 _fs-347291933 _fw-289166179 _lh-1925956564 _ls-1782815796 _d-341075704 _c-1922521888 _c-1063453128 rcx-label rcx-field__label rcx-css-127j9mz"
+                            class="is_Text _b-650654186 _os-249893454 _ff-409630021 _fvn-1977619713 _ws-311910413 _ww-408434756 _fs-347291933 _fw-289166179 _lh-1925956564 _ls-1782815796 _d-341075704 _c-1922521888 _c-1063453128 _as-361308821 _m-1067104434 rcx-label rcx-field__label rcx-css-127j9mz"
                           >
                             Match system
                           </span>
                           <label
-                            class="is_Text _b-1639159466 _os-249893454 _ff-409630021 _fvn-1977619713 _ws-311910413 _ww-408434756 rcx-radio-button"
+                            class="is_Text _b-1639159466 _os-249893454 _ff-409630021 _fvn-1977619713 _ws-311910413 _ww-408434756 _p-1021290656 _d-1985012034 _va-1124586065 _c-22887652 _ow-485594423 rcx-radio-button"
                           >
                             <div
                               style="border: 0px; clip-path: inset(50%); height: 1px; margin: -1px; overflow: hidden; padding: 0px; position: absolute; width: 1px; white-space: nowrap;"
@@ -1588,23 +1656,27 @@ exports[`renders RolesDisabled without crashing 1`] = `
                               Match system
                             </div>
                             <input
-                              aria-describedby="react-aria-_r_86_-hint"
+                              aria-describedby="react-aria-_r_8n_-hint"
                               aria-invalid="false"
                               checked=""
                               class="is_View _b-1639159466 _os-249893454 _ff-409630021 _fvn-1977619713 _p-1261267467 _o-1119039191 _c-588872556 _cp-2129451690 _w-226739898 _h-1922295961 _m-1890937723 _p-1943363302 _ws-973912173 _f-1246374076 rcx-radio-button__input"
-                              id="react-aria-_r_86_-label"
+                              id="react-aria-_r_8n_-label"
                               name="themeAppearence"
                               type="radio"
                             />
                             <i
                               aria-hidden="true"
-                              class="is_View _b-1639160427 _os-249893454 _ff-409630021 _fvn-1977619713 _p-1021290656 _h-858548760 _f-1069814357 _mw-354604370 _mh-1241200853 _d-341075704 _jc-1099843255 _ai-121763387 _br-662213014 _w-120696903 rcx-radio-button__fake"
-                            />
+                              class="is_View _b-523511517 _os-249893454 _ff-409630021 _fvn-1977619713 _p-1021290656 _h-858548760 _f-1069814357 _mw-354604370 _mh-1241200853 _c-991369120 _b-886492876 _d-341075704 _jc-1099843255 _ai-121763387 _br-662213014 _w-120696903 rcx-radio-button__fake"
+                            >
+                              <span
+                                class="is_View _d-1987097250 _v-46649817 _w-2027464954 _h-1735620473 _br-662213014 _b-156244340"
+                              />
+                            </i>
                           </label>
                         </span>
                         <span
                           class="is_Text _b-650654186 _os-249893454 _ff-409630021 _fvn-1977619713 _ww-408434756 _fs-2088488067 _fw-289165218 _lh-1306743983 _ls-1782815796 _m-183820880 _c-1756781803 rcx-field__hint rcx-css-9o2t94"
-                          id="react-aria-_r_86_-hint"
+                          id="react-aria-_r_8n_-hint"
                           style="white-space: break-spaces;"
                         >
                           Automatically match the appearance of your system.
@@ -1616,15 +1688,15 @@ exports[`renders RolesDisabled without crashing 1`] = `
                     class="is_View _f-1246374076 _mw-354604370 _mh-1241200853 _os-249893454 _ff-409630021 _fvn-1977619713 rcx-accordion-item"
                   >
                     <div
-                      aria-controls="_r_8f_"
+                      aria-controls="_r_91_"
                       aria-expanded="false"
-                      class="is_View _f-85860445 _mw-354604370 _mh-1760955396 _os-249893454 _ff-409630021 _fvn-1977619713 _p-615618451 _ta-507911453 _c-1866435217 _b-1683371345 rcx-box--animated rcx-accordion-item__bar"
+                      class="is_View _f-85860445 _mw-354604370 _mh-1760955396 _os-249893454 _ff-409630021 _fvn-1977619713 _p-615618451 _ta-507911453 _c-1866435217 _b-1117022352 _c-1830342115 _ow-484670902 _b-503981535 _bs-1918316648 rcx-box--animated rcx-accordion-item__bar"
                       role="button"
                       tabindex="0"
                     >
                       <h2
                         class="is_Text _f-1417019688 _mw-354604370 _mh-1241200853 _os-249893454 _ff-409630021 _fvn-1977619713 _d-1987097250 _o-1119039191 _to-1727917045 _ws-973912173 _ww-408434756 _fs-467998244 _fw-289168101 _lh-1586295880 _ls-1782815796 rcx-accordion-item__title"
-                        id="_r_8e_"
+                        id="_r_90_"
                       >
                         Adjustable layout
                       </h2>
@@ -1641,7 +1713,7 @@ exports[`renders RolesDisabled without crashing 1`] = `
                     </div>
                     <div
                       class="is_View _f-1246374076 _mw-354604370 _mh-1241200853 _os-249893454 _ff-409630021 _fvn-1977619713 _d-1987097250 _v-46649817 _o-1119039191 _h-1922296922 _p-2082124683 rcx-box--animated rcx-accordion-item__panel"
-                      id="_r_8f_"
+                      id="_r_91_"
                     >
                       <fieldset
                         class="is_Text _b-650654186 _os-249893454 _ff-409630021 _fvn-1977619713 _ws-311910413 _ww-408434756 _d-341075704 _f-1180446992 _jc-1099843255 _ai-1227553247 _mw-842770087 _m-2017216831 _p-1943363302 rcx-field-group"
@@ -1659,8 +1731,8 @@ exports[`renders RolesDisabled without crashing 1`] = `
                           class="is_Text _b-650654186 _os-249893454 _ff-409630021 _fvn-1977619713 _ws-311910413 _ww-408434756 _d-341075704 _f-1378740307 _ai-1227553247 _w-1560934055 rcx-field rcx-field-group__item"
                         >
                           <span
-                            class="is_Text _b-650654186 _os-249893454 _ff-409630021 _fvn-1977619713 _ws-311910413 _ww-408434756 _fs-347291933 _fw-289166179 _lh-1925956564 _ls-1782815796 _d-341075704 _c-1922521888 _c-1063453128 rcx-label rcx-field__label rcx-css-vtsp67"
-                            id="react-aria-_r_8n_-label"
+                            class="is_Text _b-650654186 _os-249893454 _ff-409630021 _fvn-1977619713 _ws-311910413 _ww-408434756 _fs-347291933 _fw-289166179 _lh-1925956564 _ls-1782815796 _d-341075704 _c-1922521888 _c-1063453128 _as-361308821 _m-1067104434 rcx-label rcx-field__label rcx-css-vtsp67"
+                            id="react-aria-_r_99_-label"
                           >
                             Font size
                           </span>
@@ -1713,16 +1785,16 @@ exports[`renders RolesDisabled without crashing 1`] = `
                               </div>
                             </div>
                             <button
-                              aria-describedby="react-aria-_r_8n_-description"
+                              aria-describedby="react-aria-_r_99_-description"
                               aria-expanded="false"
                               aria-haspopup="listbox"
-                              aria-labelledby="react-aria-_r_92_ react-aria-_r_8n_-label"
+                              aria-labelledby="react-aria-_r_9k_ react-aria-_r_99_-label"
                               class="rcx-box rcx-box--full rcx-box--animated rcx-select rcx-css-3ejkxj"
                               type="button"
                             >
                               <span
                                 class="rcx-box rcx-box--full rcx-css-1ah8hdc"
-                                id="react-aria-_r_92_"
+                                id="react-aria-_r_9k_"
                               >
                                 Default
                               </span>
@@ -1736,7 +1808,7 @@ exports[`renders RolesDisabled without crashing 1`] = `
                           </span>
                           <span
                             class="is_Text _b-650654186 _os-249893454 _ff-409630021 _fvn-1977619713 _ws-311910413 _ww-408434756 _fs-347291933 _fw-289165218 _lh-1925956564 _ls-1782815796 _m-183820880 _c-1756781803 rcx-field__description rcx-css-op9h3g"
-                            id="react-aria-_r_8n_-description"
+                            id="react-aria-_r_99_-description"
                           >
                             Designed for those who prefer larger or smaller text for improved readability. This flexibility promotes inclusivity by empowering users to tailor the software interface to their specific needs.
                           </span>
@@ -1748,12 +1820,12 @@ exports[`renders RolesDisabled without crashing 1`] = `
                             class="is_Text _b-650654186 _os-249893454 _ff-409630021 _fvn-1977619713 _ws-311910413 _ww-408434756 _d-341075704 _f-541922926 _jc-281817805 _ai-121763387 _m-2017978848 _c-1756781803 rcx-field__row"
                           >
                             <span
-                              class="is_Text _b-650654186 _os-249893454 _ff-409630021 _fvn-1977619713 _ws-311910413 _ww-408434756 _fs-347291933 _fw-289166179 _lh-1925956564 _ls-1782815796 _d-341075704 _c-1922521888 _c-1063453128 rcx-label rcx-field__label"
+                              class="is_Text _b-650654186 _os-249893454 _ff-409630021 _fvn-1977619713 _ws-311910413 _ww-408434756 _fs-347291933 _fw-289166179 _lh-1925956564 _ls-1782815796 _d-341075704 _c-1922521888 _c-1063453128 _as-361308821 _m-1067104434 rcx-label rcx-field__label"
                             >
                               Mentions with @ symbol
                             </span>
                             <label
-                              class="is_Text _b-1639159466 _os-249893454 _ff-409630021 _fvn-1977619713 _ws-311910413 _ww-408434756 rcx-toggle-switch"
+                              class="is_Text _b-1639159466 _os-249893454 _ff-409630021 _fvn-1977619713 _ws-311910413 _ww-408434756 _p-1021290656 _d-1985012034 _va-1124586065 _c-22887652 _ow-485594423 rcx-toggle-switch"
                             >
                               <div
                                 style="border: 0px; clip-path: inset(50%); height: 1px; margin: -1px; overflow: hidden; padding: 0px; position: absolute; width: 1px; white-space: nowrap;"
@@ -1761,22 +1833,26 @@ exports[`renders RolesDisabled without crashing 1`] = `
                                 Mentions with @ symbol
                               </div>
                               <input
-                                aria-describedby="react-aria-_r_95_-description"
+                                aria-describedby="react-aria-_r_9n_-description"
                                 aria-invalid="false"
                                 class="is_View _b-1639159466 _os-249893454 _ff-409630021 _fvn-1977619713 _p-1261267467 _o-1119039191 _c-588872556 _cp-2129451690 _w-226739898 _h-1922295961 _m-1890937723 _p-1943363302 _ws-973912173 _f-1246374076 rcx-toggle-switch__input"
-                                id="react-aria-_r_95_-label"
+                                id="react-aria-_r_9n_-label"
                                 name="mentionsWithSymbol"
                                 type="checkbox"
                               />
                               <i
                                 aria-hidden="true"
-                                class="is_View _b-1639160427 _os-249893454 _ff-409630021 _fvn-1977619713 _p-1021290656 _f-1069814357 _mw-354604370 _mh-1241200853 _w-1008200584 _h-749995598 _br-153849585 rcx-toggle-switch__fake"
-                              />
+                                class="is_View _b-352265661 _os-249893454 _ff-409630021 _fvn-1977619713 _p-1021290656 _f-1069814357 _mw-354604370 _mh-1241200853 _c-1043001278 _b-939182290 _w-1008200584 _h-749995598 _br-153849585 rcx-toggle-switch__fake"
+                              >
+                                <span
+                                  class="is_View _t-1281204763 _p-1261267467 _i-933132292 _w-386687234 _h-2100713731 _br-153849585 _b-798159804"
+                                />
+                              </i>
                             </label>
                           </span>
                           <span
                             class="is_Text _b-650654186 _os-249893454 _ff-409630021 _fvn-1977619713 _ws-311910413 _ww-408434756 _fs-347291933 _fw-289165218 _lh-1925956564 _ls-1782815796 _m-183820880 _c-1756781803 rcx-field__description rcx-css-1ntdv01 rcx-css-op9h3g"
-                            id="react-aria-_r_95_-description"
+                            id="react-aria-_r_9n_-description"
                           >
                             Mentions notify and highlight messages for groups or specific users, facilitating targeted communication.
 
@@ -1788,8 +1864,8 @@ The screen reader functionality is optimized when the "@" symbol is employed in 
                           id="clockMode"
                         >
                           <span
-                            class="is_Text _b-650654186 _os-249893454 _ff-409630021 _fvn-1977619713 _ws-311910413 _ww-408434756 _fs-347291933 _fw-289166179 _lh-1925956564 _ls-1782815796 _d-341075704 _c-1922521888 _c-1063453128 rcx-label rcx-field__label"
-                            id="react-aria-_r_9d_-label"
+                            class="is_Text _b-650654186 _os-249893454 _ff-409630021 _fvn-1977619713 _ws-311910413 _ww-408434756 _fs-347291933 _fw-289166179 _lh-1925956564 _ls-1782815796 _d-341075704 _c-1922521888 _c-1063453128 _as-361308821 _m-1067104434 rcx-label rcx-field__label"
+                            id="react-aria-_r_a0_-label"
                           >
                             Time format
                           </span>
@@ -1835,13 +1911,13 @@ The screen reader functionality is optimized when the "@" symbol is employed in 
                               aria-describedby=""
                               aria-expanded="false"
                               aria-haspopup="listbox"
-                              aria-labelledby="react-aria-_r_9o_ react-aria-_r_9d_-label"
+                              aria-labelledby="react-aria-_r_ab_ react-aria-_r_a0_-label"
                               class="rcx-box rcx-box--full rcx-box--animated rcx-select rcx-css-3ejkxj"
                               type="button"
                             >
                               <span
                                 class="rcx-box rcx-box--full rcx-css-1ah8hdc"
-                                id="react-aria-_r_9o_"
+                                id="react-aria-_r_ab_"
                               >
                                 Default
                               </span>
@@ -1862,12 +1938,12 @@ The screen reader functionality is optimized when the "@" symbol is employed in 
                             class="is_Text _b-650654186 _os-249893454 _ff-409630021 _fvn-1977619713 _ws-311910413 _ww-408434756 _d-341075704 _f-541922926 _jc-281817805 _ai-121763387 _m-2017978848 _c-1756781803 rcx-field__row"
                           >
                             <span
-                              class="is_Text _b-650654186 _os-249893454 _ff-409630021 _fvn-1977619713 _ws-311910413 _ww-408434756 _fs-347291933 _fw-289166179 _lh-1925956564 _ls-1782815796 _d-341075704 _c-1922521888 _c-1063453128 rcx-label rcx-field__label"
+                              class="is_Text _b-650654186 _os-249893454 _ff-409630021 _fvn-1977619713 _ws-311910413 _ww-408434756 _fs-347291933 _fw-289166179 _lh-1925956564 _ls-1782815796 _d-341075704 _c-1922521888 _c-1063453128 _as-361308821 _m-1067104434 rcx-label rcx-field__label"
                             >
                               Show usernames
                             </span>
                             <label
-                              class="is_Text _b-1639159466 _os-249893454 _ff-409630021 _fvn-1977619713 _ws-311910413 _ww-408434756 rcx-toggle-switch"
+                              class="is_Text _b-1639159466 _os-249893454 _ff-409630021 _fvn-1977619713 _ws-311910413 _ww-408434756 _p-1021290656 _d-1985012034 _va-1124586065 _c-22887652 _ow-485594423 rcx-toggle-switch"
                             >
                               <div
                                 style="border: 0px; clip-path: inset(50%); height: 1px; margin: -1px; overflow: hidden; padding: 0px; position: absolute; width: 1px; white-space: nowrap;"
@@ -1875,23 +1951,27 @@ The screen reader functionality is optimized when the "@" symbol is employed in 
                                 Show usernames
                               </div>
                               <input
-                                aria-describedby="react-aria-_r_9q_-description"
+                                aria-describedby="react-aria-_r_ad_-description"
                                 aria-invalid="false"
                                 checked=""
                                 class="is_View _b-1639159466 _os-249893454 _ff-409630021 _fvn-1977619713 _p-1261267467 _o-1119039191 _c-588872556 _cp-2129451690 _w-226739898 _h-1922295961 _m-1890937723 _p-1943363302 _ws-973912173 _f-1246374076 rcx-toggle-switch__input"
-                                id="react-aria-_r_9q_-label"
+                                id="react-aria-_r_ad_-label"
                                 name="hideUsernames"
                                 type="checkbox"
                               />
                               <i
                                 aria-hidden="true"
-                                class="is_View _b-1639160427 _os-249893454 _ff-409630021 _fvn-1977619713 _p-1021290656 _f-1069814357 _mw-354604370 _mh-1241200853 _w-1008200584 _h-749995598 _br-153849585 rcx-toggle-switch__fake"
-                              />
+                                class="is_View _b-352265661 _os-249893454 _ff-409630021 _fvn-1977619713 _p-1021290656 _f-1069814357 _mw-354604370 _mh-1241200853 _c-1043001278 _b-939182290 _w-1008200584 _h-749995598 _br-153849585 rcx-toggle-switch__fake"
+                              >
+                                <span
+                                  class="is_View _t-1281204763 _p-1261267467 _i-933132292 _w-386687234 _h-2100713731 _br-153849585 _b-798159804"
+                                />
+                              </i>
                             </label>
                           </span>
                           <span
                             class="is_Text _b-650654186 _os-249893454 _ff-409630021 _fvn-1977619713 _ws-311910413 _ww-408434756 _fs-347291933 _fw-289165218 _lh-1925956564 _ls-1782815796 _m-183820880 _c-1756781803 rcx-field__description"
-                            id="react-aria-_r_9q_-description"
+                            id="react-aria-_r_ad_-description"
                           >
                             Show or hide the username of message authors.
                           </span>

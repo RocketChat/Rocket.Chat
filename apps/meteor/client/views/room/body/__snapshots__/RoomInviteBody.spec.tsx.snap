@@ -11,7 +11,7 @@ exports[`RoomInvite renders Default without crashing 1`] = `
       >
         <i
           aria-hidden="true"
-          class="is_Text _d-1409515928 _ws-311910413 _ww-408434756 _us-601212022 _va-1101652081 _ls-1720078126 _ff-1916555734 _fs-1279428672 _fw-289165218 _fs-477064150 _fv-1578983722 _lh-2067209205 _tr-1510281189 rcx-states__icon rcx-icon--name-mail rcx-icon rcx-css-d884y5"
+          class="is_Text _d-1409515928 _ws-311910413 _ww-408434756 _us-601212022 _va-1101652081 _ls-1720078126 _ff-1916555734 _fs-1279428672 _fw-289165218 _fs-477064150 _fv-1578983722 _lh-2067209205 _tr-1510281189 rcx-states__icon rcx-icon--name-mail rcx-icon rcx-css-2h9i9l rcx-css-d884y5"
         >
           
         </i>
@@ -58,7 +58,7 @@ exports[`RoomInvite renders Default without crashing 1`] = `
           role="group"
         >
           <button
-            class="is_View _d-1409515928 _f-1069814357 _mh-1241200853 _ta-1906144518 _ws-973912173 _td-211436768 _c-22887652 _os-249893454 _o-1119039191 _to-1727917045 _ff-409630021 _fvn-1977619713 _fs-347291933 _fw-289166179 _lh-1925956564 _ls-1782815796 _mw-1629853272 _h-1940744275 _p-1801169607 rcx-button--secondary-danger rcx-button"
+            class="is_View _d-1409515928 _f-1069814357 _mh-1241200853 _ta-1906144518 _ws-973912173 _td-211436768 _c-22887652 _os-249893454 _o-1119039191 _to-1727917045 _ff-409630021 _fvn-1977619713 _fs-347291933 _fw-289166179 _lh-1925956564 _ls-1782815796 _mw-1629853272 _h-1940744275 _p-1801169607 _a-1578443335 _b-711491970 _br-1397394445 _bs-443598448 _c-817053611 _b-849140905 rcx-button--secondary-danger rcx-button"
             type="button"
           >
             <span
@@ -68,7 +68,7 @@ exports[`RoomInvite renders Default without crashing 1`] = `
             </span>
           </button>
           <button
-            class="is_View _d-1409515928 _f-1069814357 _mh-1241200853 _ta-1906144518 _ws-973912173 _td-211436768 _c-22887652 _os-249893454 _o-1119039191 _to-1727917045 _ff-409630021 _fvn-1977619713 _fs-347291933 _fw-289166179 _lh-1925956564 _ls-1782815796 _mw-1629853272 _h-1940744275 _p-1801169607 rcx-button"
+            class="is_View _d-1409515928 _f-1069814357 _mh-1241200853 _ta-1906144518 _ws-973912173 _td-211436768 _c-22887652 _os-249893454 _o-1119039191 _to-1727917045 _ff-409630021 _fvn-1977619713 _fs-347291933 _fw-289166179 _lh-1925956564 _ls-1782815796 _mw-1629853272 _h-1940744275 _p-1801169607 _a-1578443335 _b-490095930 _br-1397394445 _bs-958948735 _c-836305799 _b-1331573151 rcx-button"
             type="button"
           >
             <span
@@ -95,7 +95,7 @@ exports[`RoomInvite renders Loading without crashing 1`] = `
       >
         <i
           aria-hidden="true"
-          class="is_Text _d-1409515928 _ws-311910413 _ww-408434756 _us-601212022 _va-1101652081 _ls-1720078126 _ff-1916555734 _fs-1279428672 _fw-289165218 _fs-477064150 _fv-1578983722 _lh-2067209205 _tr-1510281189 rcx-states__icon rcx-icon--name-mail rcx-icon rcx-css-d884y5"
+          class="is_Text _d-1409515928 _ws-311910413 _ww-408434756 _us-601212022 _va-1101652081 _ls-1720078126 _ff-1916555734 _fs-1279428672 _fw-289165218 _fs-477064150 _fv-1578983722 _lh-2067209205 _tr-1510281189 rcx-states__icon rcx-icon--name-mail rcx-icon rcx-css-2h9i9l rcx-css-d884y5"
         >
           
         </i>
@@ -142,7 +142,7 @@ exports[`RoomInvite renders Loading without crashing 1`] = `
           role="group"
         >
           <button
-            class="is_View _d-1409515928 _f-1069814357 _mh-1241200853 _ta-1906144518 _ws-973912173 _td-211436768 _c-22887652 _os-249893454 _o-1119039191 _to-1727917045 _ff-409630021 _fvn-1977619713 _fs-347291933 _fw-289166179 _lh-1925956564 _ls-1782815796 _mw-1629853272 _h-1940744275 _p-1801169607 rcx-button--loading rcx-button--secondary-danger rcx-button"
+            class="is_View _d-1409515928 _f-1069814357 _mh-1241200853 _ta-1906144518 _ws-973912173 _td-211436768 _os-249893454 _o-1119039191 _to-1727917045 _ff-409630021 _fvn-1977619713 _fs-347291933 _fw-289166179 _lh-1925956564 _ls-1782815796 _mw-1629853272 _h-1940744275 _p-1801169607 _a-1578443335 _b-1321355575 _br-1397394445 _bs-443598448 _c-1625192138 _b-757628062 _c-2102202510 rcx-button--loading rcx-button--secondary-danger rcx-button"
             disabled=""
             type="button"
           >
@@ -159,7 +159,7 @@ exports[`RoomInvite renders Loading without crashing 1`] = `
             </span>
           </button>
           <button
-            class="is_View _d-1409515928 _f-1069814357 _mh-1241200853 _ta-1906144518 _ws-973912173 _td-211436768 _c-22887652 _os-249893454 _o-1119039191 _to-1727917045 _ff-409630021 _fvn-1977619713 _fs-347291933 _fw-289166179 _lh-1925956564 _ls-1782815796 _mw-1629853272 _h-1940744275 _p-1801169607 rcx-button--loading rcx-button"
+            class="is_View _d-1409515928 _f-1069814357 _mh-1241200853 _ta-1906144518 _ws-973912173 _td-211436768 _os-249893454 _o-1119039191 _to-1727917045 _ff-409630021 _fvn-1977619713 _fs-347291933 _fw-289166179 _lh-1925956564 _ls-1782815796 _mw-1629853272 _h-1940744275 _p-1801169607 _a-1578443335 _b-1504388127 _br-1397394445 _bs-958948735 _c-131824210 _b-802538122 _c-2102202510 rcx-button--loading rcx-button"
             disabled=""
             type="button"
           >
@@ -193,7 +193,7 @@ exports[`RoomInvite renders WithInfoLink without crashing 1`] = `
       >
         <i
           aria-hidden="true"
-          class="is_Text _d-1409515928 _ws-311910413 _ww-408434756 _us-601212022 _va-1101652081 _ls-1720078126 _ff-1916555734 _fs-1279428672 _fw-289165218 _fs-477064150 _fv-1578983722 _lh-2067209205 _tr-1510281189 rcx-states__icon rcx-icon--name-mail rcx-icon rcx-css-d884y5"
+          class="is_Text _d-1409515928 _ws-311910413 _ww-408434756 _us-601212022 _va-1101652081 _ls-1720078126 _ff-1916555734 _fs-1279428672 _fw-289165218 _fs-477064150 _fv-1578983722 _lh-2067209205 _tr-1510281189 rcx-states__icon rcx-icon--name-mail rcx-icon rcx-css-2h9i9l rcx-css-d884y5"
         >
           
         </i>
@@ -240,7 +240,7 @@ exports[`RoomInvite renders WithInfoLink without crashing 1`] = `
           role="group"
         >
           <button
-            class="is_View _d-1409515928 _f-1069814357 _mh-1241200853 _ta-1906144518 _ws-973912173 _td-211436768 _c-22887652 _os-249893454 _o-1119039191 _to-1727917045 _ff-409630021 _fvn-1977619713 _fs-347291933 _fw-289166179 _lh-1925956564 _ls-1782815796 _mw-1629853272 _h-1940744275 _p-1801169607 rcx-button--secondary-danger rcx-button"
+            class="is_View _d-1409515928 _f-1069814357 _mh-1241200853 _ta-1906144518 _ws-973912173 _td-211436768 _c-22887652 _os-249893454 _o-1119039191 _to-1727917045 _ff-409630021 _fvn-1977619713 _fs-347291933 _fw-289166179 _lh-1925956564 _ls-1782815796 _mw-1629853272 _h-1940744275 _p-1801169607 _a-1578443335 _b-711491970 _br-1397394445 _bs-443598448 _c-817053611 _b-849140905 rcx-button--secondary-danger rcx-button"
             type="button"
           >
             <span
@@ -250,7 +250,7 @@ exports[`RoomInvite renders WithInfoLink without crashing 1`] = `
             </span>
           </button>
           <button
-            class="is_View _d-1409515928 _f-1069814357 _mh-1241200853 _ta-1906144518 _ws-973912173 _td-211436768 _c-22887652 _os-249893454 _o-1119039191 _to-1727917045 _ff-409630021 _fvn-1977619713 _fs-347291933 _fw-289166179 _lh-1925956564 _ls-1782815796 _mw-1629853272 _h-1940744275 _p-1801169607 rcx-button"
+            class="is_View _d-1409515928 _f-1069814357 _mh-1241200853 _ta-1906144518 _ws-973912173 _td-211436768 _c-22887652 _os-249893454 _o-1119039191 _to-1727917045 _ff-409630021 _fvn-1977619713 _fs-347291933 _fw-289166179 _lh-1925956564 _ls-1782815796 _mw-1629853272 _h-1940744275 _p-1801169607 _a-1578443335 _b-490095930 _br-1397394445 _bs-958948735 _c-836305799 _b-1331573151 rcx-button"
             type="button"
           >
             <span
@@ -261,7 +261,7 @@ exports[`RoomInvite renders WithInfoLink without crashing 1`] = `
           </button>
         </div>
         <a
-          class="is_Text _ws-974065937 _ww-1531368954 _m-1374696725 _os-249893454 _c-1876588386 _ff-409630021 _fvn-1977619713 _fs-347291933 _fw-289165218 _lh-1925956564 _ls-1782815796 rcx-states__link"
+          class="is_Text _ws-974065937 _ww-1531368954 _m-1374696725 _os-249893454 _c-1876588386 _ff-409630021 _fvn-1977619713 _fs-347291933 _fw-289165218 _lh-1925956564 _ls-1782815796 rcx-states__link rcx-box--with-inline-elements"
           href="https://rocket.chat"
         >
           Learn more
