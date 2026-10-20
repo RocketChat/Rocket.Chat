@@ -18,7 +18,7 @@ exports[`CallParticipants renders AllShown without crashing 1`] = `
           style="gap: 4px;"
         >
           <figure
-            class="is_View _d-1985012034 _f-606928779 _va-1124586065 _m-2017216831 _p-1943363302 _b-650654186 _o-1106425799 _ff-409630021 _fvn-1977619713 _w-783081419 _h-1074925900 rcx-box rcx-box--full rcx-avatar rcx-avatar--x18"
+            class="is_View _d-1985012034 _f-606928779 _mw-354604370 _mh-1241200853 _va-1124586065 _m-2017216831 _p-1943363302 _b-650654186 _o-1106425799 _ff-409630021 _fvn-1977619713 _w-783081419 _h-1074925900 rcx-box rcx-box--full rcx-avatar rcx-avatar--x18"
           >
             <img
               alt="Avatar"
@@ -30,7 +30,7 @@ exports[`CallParticipants renders AllShown without crashing 1`] = `
             />
           </figure>
           <figure
-            class="is_View _d-1985012034 _f-606928779 _va-1124586065 _m-2017216831 _p-1943363302 _b-650654186 _o-1106425799 _ff-409630021 _fvn-1977619713 _w-783081419 _h-1074925900 rcx-box rcx-box--full rcx-avatar rcx-avatar--x18"
+            class="is_View _d-1985012034 _f-606928779 _mw-354604370 _mh-1241200853 _va-1124586065 _m-2017216831 _p-1943363302 _b-650654186 _o-1106425799 _ff-409630021 _fvn-1977619713 _w-783081419 _h-1074925900 rcx-box rcx-box--full rcx-avatar rcx-avatar--x18"
           >
             <img
               alt="Avatar"
@@ -42,7 +42,7 @@ exports[`CallParticipants renders AllShown without crashing 1`] = `
             />
           </figure>
           <figure
-            class="is_View _d-1985012034 _f-606928779 _va-1124586065 _m-2017216831 _p-1943363302 _b-650654186 _o-1106425799 _ff-409630021 _fvn-1977619713 _w-783081419 _h-1074925900 rcx-box rcx-box--full rcx-avatar rcx-avatar--x18"
+            class="is_View _d-1985012034 _f-606928779 _mw-354604370 _mh-1241200853 _va-1124586065 _m-2017216831 _p-1943363302 _b-650654186 _o-1106425799 _ff-409630021 _fvn-1977619713 _w-783081419 _h-1074925900 rcx-box rcx-box--full rcx-avatar rcx-avatar--x18"
           >
             <img
               alt="Avatar"
@@ -99,7 +99,7 @@ exports[`CallParticipants renders LargerAvatars without crashing 1`] = `
           style="gap: 4px;"
         >
           <figure
-            class="is_View _d-1985012034 _f-606928779 _va-1124586065 _m-2017216831 _p-1943363302 _b-650654186 _o-1106425799 _ff-409630021 _fvn-1977619713 _w-1439737260 _h-640041837 rcx-box rcx-box--full rcx-avatar rcx-avatar--x24"
+            class="is_View _d-1985012034 _f-606928779 _mw-354604370 _mh-1241200853 _va-1124586065 _m-2017216831 _p-1943363302 _b-650654186 _o-1106425799 _ff-409630021 _fvn-1977619713 _w-1439737260 _h-640041837 rcx-box rcx-box--full rcx-avatar rcx-avatar--x24"
           >
             <img
               alt="Avatar"
@@ -111,7 +111,7 @@ exports[`CallParticipants renders LargerAvatars without crashing 1`] = `
             />
           </figure>
           <figure
-            class="is_View _d-1985012034 _f-606928779 _va-1124586065 _m-2017216831 _p-1943363302 _b-650654186 _o-1106425799 _ff-409630021 _fvn-1977619713 _w-1439737260 _h-640041837 rcx-box rcx-box--full rcx-avatar rcx-avatar--x24"
+            class="is_View _d-1985012034 _f-606928779 _mw-354604370 _mh-1241200853 _va-1124586065 _m-2017216831 _p-1943363302 _b-650654186 _o-1106425799 _ff-409630021 _fvn-1977619713 _w-1439737260 _h-640041837 rcx-box rcx-box--full rcx-avatar rcx-avatar--x24"
           >
             <img
               alt="Avatar"
@@ -123,7 +123,7 @@ exports[`CallParticipants renders LargerAvatars without crashing 1`] = `
             />
           </figure>
           <figure
-            class="is_View _d-1985012034 _f-606928779 _va-1124586065 _m-2017216831 _p-1943363302 _b-650654186 _o-1106425799 _ff-409630021 _fvn-1977619713 _w-1439737260 _h-640041837 rcx-box rcx-box--full rcx-avatar rcx-avatar--x24"
+            class="is_View _d-1985012034 _f-606928779 _mw-354604370 _mh-1241200853 _va-1124586065 _m-2017216831 _p-1943363302 _b-650654186 _o-1106425799 _ff-409630021 _fvn-1977619713 _w-1439737260 _h-640041837 rcx-box rcx-box--full rcx-avatar rcx-avatar--x24"
           >
             <img
               alt="Avatar"
@@ -180,7 +180,7 @@ exports[`CallParticipants renders SinglePerson without crashing 1`] = `
           style="gap: 4px;"
         >
           <figure
-            class="is_View _d-1985012034 _f-606928779 _va-1124586065 _m-2017216831 _p-1943363302 _b-650654186 _o-1106425799 _ff-409630021 _fvn-1977619713 _w-783081419 _h-1074925900 rcx-box rcx-box--full rcx-avatar rcx-avatar--x18"
+            class="is_View _d-1985012034 _f-606928779 _mw-354604370 _mh-1241200853 _va-1124586065 _m-2017216831 _p-1943363302 _b-650654186 _o-1106425799 _ff-409630021 _fvn-1977619713 _w-783081419 _h-1074925900 rcx-box rcx-box--full rcx-avatar rcx-avatar--x18"
           >
             <img
               alt="Avatar"
@@ -221,7 +221,7 @@ exports[`CallParticipants renders WithOverflow without crashing 1`] = `
           style="gap: 4px;"
         >
           <figure
-            class="is_View _d-1985012034 _f-606928779 _va-1124586065 _m-2017216831 _p-1943363302 _b-650654186 _o-1106425799 _ff-409630021 _fvn-1977619713 _w-783081419 _h-1074925900 rcx-box rcx-box--full rcx-avatar rcx-avatar--x18"
+            class="is_View _d-1985012034 _f-606928779 _mw-354604370 _mh-1241200853 _va-1124586065 _m-2017216831 _p-1943363302 _b-650654186 _o-1106425799 _ff-409630021 _fvn-1977619713 _w-783081419 _h-1074925900 rcx-box rcx-box--full rcx-avatar rcx-avatar--x18"
           >
             <img
               alt="Avatar"
@@ -233,7 +233,7 @@ exports[`CallParticipants renders WithOverflow without crashing 1`] = `
             />
           </figure>
           <figure
-            class="is_View _d-1985012034 _f-606928779 _va-1124586065 _m-2017216831 _p-1943363302 _b-650654186 _o-1106425799 _ff-409630021 _fvn-1977619713 _w-783081419 _h-1074925900 rcx-box rcx-box--full rcx-avatar rcx-avatar--x18"
+            class="is_View _d-1985012034 _f-606928779 _mw-354604370 _mh-1241200853 _va-1124586065 _m-2017216831 _p-1943363302 _b-650654186 _o-1106425799 _ff-409630021 _fvn-1977619713 _w-783081419 _h-1074925900 rcx-box rcx-box--full rcx-avatar rcx-avatar--x18"
           >
             <img
               alt="Avatar"
@@ -245,7 +245,7 @@ exports[`CallParticipants renders WithOverflow without crashing 1`] = `
             />
           </figure>
           <figure
-            class="is_View _d-1985012034 _f-606928779 _va-1124586065 _m-2017216831 _p-1943363302 _b-650654186 _o-1106425799 _ff-409630021 _fvn-1977619713 _w-783081419 _h-1074925900 rcx-box rcx-box--full rcx-avatar rcx-avatar--x18"
+            class="is_View _d-1985012034 _f-606928779 _mw-354604370 _mh-1241200853 _va-1124586065 _m-2017216831 _p-1943363302 _b-650654186 _o-1106425799 _ff-409630021 _fvn-1977619713 _w-783081419 _h-1074925900 rcx-box rcx-box--full rcx-avatar rcx-avatar--x18"
           >
             <img
               alt="Avatar"

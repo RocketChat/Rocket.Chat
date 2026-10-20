@@ -7,7 +7,7 @@ exports[`renders Default without crashing 1`] = `
       class="rcx-box rcx-box--full rcx-css-99h06u"
     >
       <label
-        class="is_Text _b-650654186 _os-249893454 _ff-409630021 _fvn-1977619713 _ws-311910413 _ww-408434756 _fs-347291933 _fw-289166179 _lh-1925956564 _ls-1782815796 _d-341075704 _c-1922521888 _c-1063453128 rcx-label rcx-box rcx-box--full rcx-box--animated rcx-input-box__wrapper rcx-css-abfvq rcx-css-fvbcso"
+        class="is_Text _b-650654186 _os-249893454 _ff-409630021 _fvn-1977619713 _ws-311910413 _ww-408434756 _fs-347291933 _fw-289166179 _lh-1925956564 _ls-1782815796 _d-341075704 _c-1922521888 _c-1063453128 rcx-label rcx-box--animated rcx-input-box__wrapper rcx-css-abfvq rcx-css-fvbcso"
       >
         <input
           aria-label="Search_Users"
@@ -172,7 +172,7 @@ exports[`renders Default without crashing 1`] = `
                       class="rcx-box rcx-box--full rcx-css-127j9mz"
                     >
                       <figure
-                        class="is_View _d-1985012034 _f-606928779 _va-1124586065 _m-2017216831 _p-1943363302 _b-650654186 _o-1106425799 _ff-409630021 _fvn-1977619713 _w-1682139955 _h-1633581678 rcx-box rcx-box--full rcx-avatar rcx-avatar--x28"
+                        class="is_View _d-1985012034 _f-606928779 _mw-354604370 _mh-1241200853 _va-1124586065 _m-2017216831 _p-1943363302 _b-650654186 _o-1106425799 _ff-409630021 _fvn-1977619713 _w-1682139955 _h-1633581678 rcx-box rcx-box--full rcx-avatar rcx-avatar--x28"
                       >
                         <img
                           alt="Avatar"
@@ -257,7 +257,7 @@ exports[`renders Default without crashing 1`] = `
                       class="rcx-box rcx-box--full rcx-css-127j9mz"
                     >
                       <figure
-                        class="is_View _d-1985012034 _f-606928779 _va-1124586065 _m-2017216831 _p-1943363302 _b-650654186 _o-1106425799 _ff-409630021 _fvn-1977619713 _w-1682139955 _h-1633581678 rcx-box rcx-box--full rcx-avatar rcx-avatar--x28"
+                        class="is_View _d-1985012034 _f-606928779 _mw-354604370 _mh-1241200853 _va-1124586065 _m-2017216831 _p-1943363302 _b-650654186 _o-1106425799 _ff-409630021 _fvn-1977619713 _w-1682139955 _h-1633581678 rcx-box rcx-box--full rcx-avatar rcx-avatar--x28"
                       >
                         <img
                           alt="Avatar"
@@ -347,7 +347,7 @@ exports[`renders Default without crashing 1`] = `
                       class="rcx-box rcx-box--full rcx-css-127j9mz"
                     >
                       <figure
-                        class="is_View _d-1985012034 _f-606928779 _va-1124586065 _m-2017216831 _p-1943363302 _b-650654186 _o-1106425799 _ff-409630021 _fvn-1977619713 _w-1682139955 _h-1633581678 rcx-box rcx-box--full rcx-avatar rcx-avatar--x28"
+                        class="is_View _d-1985012034 _f-606928779 _mw-354604370 _mh-1241200853 _va-1124586065 _m-2017216831 _p-1943363302 _b-650654186 _o-1106425799 _ff-409630021 _fvn-1977619713 _w-1682139955 _h-1633581678 rcx-box rcx-box--full rcx-avatar rcx-avatar--x28"
                       >
                         <img
                           alt="Avatar"
@@ -434,7 +434,7 @@ exports[`renders Default without crashing 1`] = `
                       class="rcx-box rcx-box--full rcx-css-127j9mz"
                     >
                       <figure
-                        class="is_View _d-1985012034 _f-606928779 _va-1124586065 _m-2017216831 _p-1943363302 _b-650654186 _o-1106425799 _ff-409630021 _fvn-1977619713 _w-1682139955 _h-1633581678 rcx-box rcx-box--full rcx-avatar rcx-avatar--x28"
+                        class="is_View _d-1985012034 _f-606928779 _mw-354604370 _mh-1241200853 _va-1124586065 _m-2017216831 _p-1943363302 _b-650654186 _o-1106425799 _ff-409630021 _fvn-1977619713 _w-1682139955 _h-1633581678 rcx-box rcx-box--full rcx-avatar rcx-avatar--x28"
                       >
                         <img
                           alt="Avatar"
@@ -521,7 +521,7 @@ exports[`renders Default without crashing 1`] = `
                       class="rcx-box rcx-box--full rcx-css-127j9mz"
                     >
                       <figure
-                        class="is_View _d-1985012034 _f-606928779 _va-1124586065 _m-2017216831 _p-1943363302 _b-650654186 _o-1106425799 _ff-409630021 _fvn-1977619713 _w-1682139955 _h-1633581678 rcx-box rcx-box--full rcx-avatar rcx-avatar--x28"
+                        class="is_View _d-1985012034 _f-606928779 _mw-354604370 _mh-1241200853 _va-1124586065 _m-2017216831 _p-1943363302 _b-650654186 _o-1106425799 _ff-409630021 _fvn-1977619713 _w-1682139955 _h-1633581678 rcx-box rcx-box--full rcx-avatar rcx-avatar--x28"
                       >
                         <img
                           alt="Avatar"
@@ -754,7 +754,7 @@ exports[`renders Loading without crashing 1`] = `
       class="rcx-box rcx-box--full rcx-css-99h06u"
     >
       <label
-        class="is_Text _b-650654186 _os-249893454 _ff-409630021 _fvn-1977619713 _ws-311910413 _ww-408434756 _fs-347291933 _fw-289166179 _lh-1925956564 _ls-1782815796 _d-341075704 _c-1922521888 _c-1063453128 rcx-label rcx-box rcx-box--full rcx-box--animated rcx-input-box__wrapper rcx-css-abfvq rcx-css-fvbcso"
+        class="is_Text _b-650654186 _os-249893454 _ff-409630021 _fvn-1977619713 _ws-311910413 _ww-408434756 _fs-347291933 _fw-289166179 _lh-1925956564 _ls-1782815796 _d-341075704 _c-1922521888 _c-1063453128 rcx-label rcx-box--animated rcx-input-box__wrapper rcx-css-abfvq rcx-css-fvbcso"
       >
         <input
           aria-label="Search_Users"
@@ -1477,7 +1477,7 @@ exports[`renders NoResults without crashing 1`] = `
       class="rcx-box rcx-box--full rcx-css-99h06u"
     >
       <label
-        class="is_Text _b-650654186 _os-249893454 _ff-409630021 _fvn-1977619713 _ws-311910413 _ww-408434756 _fs-347291933 _fw-289166179 _lh-1925956564 _ls-1782815796 _d-341075704 _c-1922521888 _c-1063453128 rcx-label rcx-box rcx-box--full rcx-box--animated rcx-input-box__wrapper rcx-css-abfvq rcx-css-fvbcso"
+        class="is_Text _b-650654186 _os-249893454 _ff-409630021 _fvn-1977619713 _ws-311910413 _ww-408434756 _fs-347291933 _fw-289166179 _lh-1925956564 _ls-1782815796 _d-341075704 _c-1922521888 _c-1063453128 rcx-label rcx-box--animated rcx-input-box__wrapper rcx-css-abfvq rcx-css-fvbcso"
       >
         <input
           aria-label="Search_Users"
