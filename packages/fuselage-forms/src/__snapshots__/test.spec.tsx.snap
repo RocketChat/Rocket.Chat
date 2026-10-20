@@ -160,7 +160,7 @@ exports[`renders WithAutoCompleteMultiple without crashing 1`] = `
               value=""
             />
             <button
-              class="is_View _d-341075704 _f-1841970073 _o-1119039191 _ai-121763387 _mw-354604370 _mh-499962855 _m-2017216831 _p-1943363302 _b-863864549 _br-1397394445 _o-1106425799 _c-22887652 _a-1578443335 _ff-409630021 _fs-347291933 _fw-289165218 _lh-1925956564 _ls-1782815796 _c-282297947 _b-1394375569 _bs-1465656659 rcx-box rcx-chip rcx-css-i9v8z4"
+              class="is_View _d-341075704 _f-1841970073 _o-1119039191 _ai-121763387 _mw-354604370 _mh-499962855 _m-2017216831 _p-1943363302 _b-863864549 _br-1397394445 _o-1106425799 _c-22887652 _a-1578443335 _ff-409630021 _fs-347291933 _fw-289165218 _lh-1925956564 _ls-1782815796 _c-282297947 _b-1394375569 _bs-1465656659 rcx-box rcx-chip rcx-css-i9v8z4 rcx-css-lma364"
               type="button"
               value="1"
             >
@@ -177,7 +177,7 @@ exports[`renders WithAutoCompleteMultiple without crashing 1`] = `
               </i>
             </button>
             <button
-              class="is_View _d-341075704 _f-1841970073 _o-1119039191 _ai-121763387 _mw-354604370 _mh-499962855 _m-2017216831 _p-1943363302 _b-863864549 _br-1397394445 _o-1106425799 _c-22887652 _a-1578443335 _ff-409630021 _fs-347291933 _fw-289165218 _lh-1925956564 _ls-1782815796 _c-282297947 _b-1394375569 _bs-1465656659 rcx-box rcx-chip rcx-css-i9v8z4"
+              class="is_View _d-341075704 _f-1841970073 _o-1119039191 _ai-121763387 _mw-354604370 _mh-499962855 _m-2017216831 _p-1943363302 _b-863864549 _br-1397394445 _o-1106425799 _c-22887652 _a-1578443335 _ff-409630021 _fs-347291933 _fw-289165218 _lh-1925956564 _ls-1782815796 _c-282297947 _b-1394375569 _bs-1465656659 rcx-box rcx-chip rcx-css-i9v8z4 rcx-css-lma364"
               type="button"
               value="3"
             >
@@ -470,7 +470,7 @@ exports[`renders WithMultiSelect without crashing 1`] = `
                 type="button"
               />
               <button
-                class="is_View _d-341075704 _f-1841970073 _o-1119039191 _ai-121763387 _mw-354604370 _mh-499962855 _m-2017216831 _p-1943363302 _b-863864549 _br-1397394445 _o-1106425799 _c-22887652 _a-1578443335 _ff-409630021 _fs-347291933 _fw-289165218 _lh-1925956564 _ls-1782815796 _c-282297947 _b-1394375569 _bs-1465656659 rcx-box rcx-chip rcx-css-i9v8z4"
+                class="is_View _d-341075704 _f-1841970073 _o-1119039191 _ai-121763387 _mw-354604370 _mh-499962855 _m-2017216831 _p-1943363302 _b-863864549 _br-1397394445 _o-1106425799 _c-22887652 _a-1578443335 _ff-409630021 _fs-347291933 _fw-289165218 _lh-1925956564 _ls-1782815796 _c-282297947 _b-1394375569 _bs-1465656659 rcx-box rcx-chip rcx-css-i9v8z4 rcx-css-lma364"
                 tabindex="-1"
                 type="button"
               >
@@ -487,7 +487,7 @@ exports[`renders WithMultiSelect without crashing 1`] = `
                 </i>
               </button>
               <button
-                class="is_View _d-341075704 _f-1841970073 _o-1119039191 _ai-121763387 _mw-354604370 _mh-499962855 _m-2017216831 _p-1943363302 _b-863864549 _br-1397394445 _o-1106425799 _c-22887652 _a-1578443335 _ff-409630021 _fs-347291933 _fw-289165218 _lh-1925956564 _ls-1782815796 _c-282297947 _b-1394375569 _bs-1465656659 rcx-box rcx-chip rcx-css-i9v8z4"
+                class="is_View _d-341075704 _f-1841970073 _o-1119039191 _ai-121763387 _mw-354604370 _mh-499962855 _m-2017216831 _p-1943363302 _b-863864549 _br-1397394445 _o-1106425799 _c-22887652 _a-1578443335 _ff-409630021 _fs-347291933 _fw-289165218 _lh-1925956564 _ls-1782815796 _c-282297947 _b-1394375569 _bs-1465656659 rcx-box rcx-chip rcx-css-i9v8z4 rcx-css-lma364"
                 tabindex="-1"
                 type="button"
               >
@@ -669,7 +669,7 @@ exports[`renders WithPasswordInput without crashing 1`] = `
         class="is_Text _b-650654186 _os-249893454 _ff-409630021 _fvn-1977619713 _ws-311910413 _ww-408434756 _d-341075704 _f-541922926 _jc-281817805 _ai-121763387 _m-2017978848 _c-1756781803 rcx-field__row"
       >
         <label
-          class="is_Text _b-650654186 _os-249893454 _ff-409630021 _fvn-1977619713 _ws-311910413 _ww-408434756 _fs-347291933 _fw-289166179 _lh-1925956564 _ls-1782815796 _d-341075704 _c-1922521888 _c-1063453128 rcx-label rcx-box rcx-box--full rcx-box--animated rcx-input-box__wrapper"
+          class="is_Text _b-650654186 _os-249893454 _ff-409630021 _fvn-1977619713 _ws-311910413 _ww-408434756 _fs-347291933 _fw-289166179 _lh-1925956564 _ls-1782815796 _d-341075704 _c-1922521888 _c-1063453128 rcx-label rcx-box--animated rcx-input-box__wrapper"
         >
           <input
             aria-describedby="react-aria-_r_3g_-description react-aria-_r_3g_-error react-aria-_r_3g_-hint"

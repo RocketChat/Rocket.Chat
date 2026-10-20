@@ -69,7 +69,7 @@ exports[`renders IncomingCall without crashing 1`] = `
             class="rcx-box rcx-box--full rcx-css-1rtu0k9"
           >
             <figure
-              class="is_View _d-1985012034 _f-606928779 _va-1124586065 _m-2017216831 _p-1943363302 _b-650654186 _o-1106425799 _ff-409630021 _fvn-1977619713 _w-1686757560 _h-1628964073 rcx-box rcx-box--full rcx-avatar rcx-avatar--x20"
+              class="is_View _d-1985012034 _f-606928779 _mw-354604370 _mh-1241200853 _va-1124586065 _m-2017216831 _p-1943363302 _b-650654186 _o-1106425799 _ff-409630021 _fvn-1977619713 _w-1686757560 _h-1628964073 rcx-box rcx-box--full rcx-avatar rcx-avatar--x20"
             >
               <img
                 alt=""
@@ -235,7 +235,7 @@ exports[`renders IncomingCallConnecting without crashing 1`] = `
             class="rcx-box rcx-box--full rcx-css-1rtu0k9"
           >
             <figure
-              class="is_View _d-1985012034 _f-606928779 _va-1124586065 _m-2017216831 _p-1943363302 _b-650654186 _o-1106425799 _ff-409630021 _fvn-1977619713 _w-1686757560 _h-1628964073 rcx-box rcx-box--full rcx-avatar rcx-avatar--x20"
+              class="is_View _d-1985012034 _f-606928779 _mw-354604370 _mh-1241200853 _va-1124586065 _m-2017216831 _p-1943363302 _b-650654186 _o-1106425799 _ff-409630021 _fvn-1977619713 _w-1686757560 _h-1628964073 rcx-box rcx-box--full rcx-avatar rcx-avatar--x20"
             >
               <img
                 alt=""
@@ -394,7 +394,7 @@ exports[`renders IncomingCallTransfer without crashing 1`] = `
             class="rcx-box rcx-box--full rcx-css-1rtu0k9"
           >
             <figure
-              class="is_View _d-1985012034 _f-606928779 _va-1124586065 _m-2017216831 _p-1943363302 _b-650654186 _o-1106425799 _ff-409630021 _fvn-1977619713 _w-1686757560 _h-1628964073 rcx-box rcx-box--full rcx-avatar rcx-avatar--x20"
+              class="is_View _d-1985012034 _f-606928779 _mw-354604370 _mh-1241200853 _va-1124586065 _m-2017216831 _p-1943363302 _b-650654186 _o-1106425799 _ff-409630021 _fvn-1977619713 _w-1686757560 _h-1628964073 rcx-box rcx-box--full rcx-avatar rcx-avatar--x20"
             >
               <img
                 alt=""
@@ -570,7 +570,7 @@ exports[`renders IncomingCallTransferConnecting without crashing 1`] = `
             class="rcx-box rcx-box--full rcx-css-1rtu0k9"
           >
             <figure
-              class="is_View _d-1985012034 _f-606928779 _va-1124586065 _m-2017216831 _p-1943363302 _b-650654186 _o-1106425799 _ff-409630021 _fvn-1977619713 _w-1686757560 _h-1628964073 rcx-box rcx-box--full rcx-avatar rcx-avatar--x20"
+              class="is_View _d-1985012034 _f-606928779 _mw-354604370 _mh-1241200853 _va-1124586065 _m-2017216831 _p-1943363302 _b-650654186 _o-1106425799 _ff-409630021 _fvn-1977619713 _w-1686757560 _h-1628964073 rcx-box rcx-box--full rcx-avatar rcx-avatar--x20"
             >
               <img
                 alt=""
@@ -787,7 +787,7 @@ exports[`renders NewCall without crashing 1`] = `
               class="rcx-box rcx-box--full rcx-css-1rtu0k9"
             >
               <figure
-                class="is_View _d-1985012034 _f-606928779 _va-1124586065 _m-2017216831 _p-1943363302 _b-650654186 _o-1106425799 _ff-409630021 _fvn-1977619713 _w-1686757560 _h-1628964073 rcx-box rcx-box--full rcx-avatar rcx-avatar--x20"
+                class="is_View _d-1985012034 _f-606928779 _mw-354604370 _mh-1241200853 _va-1124586065 _m-2017216831 _p-1943363302 _b-650654186 _o-1106425799 _ff-409630021 _fvn-1977619713 _w-1686757560 _h-1628964073 rcx-box rcx-box--full rcx-avatar rcx-avatar--x20"
               >
                 <img
                   alt=""
@@ -977,7 +977,7 @@ exports[`renders OngoingCall without crashing 1`] = `
               class="rcx-box rcx-box--full rcx-css-1rtu0k9"
             >
               <figure
-                class="is_View _d-1985012034 _f-606928779 _va-1124586065 _m-2017216831 _p-1943363302 _b-650654186 _o-1106425799 _ff-409630021 _fvn-1977619713 _w-1686757560 _h-1628964073 rcx-box rcx-box--full rcx-avatar rcx-avatar--x20"
+                class="is_View _d-1985012034 _f-606928779 _mw-354604370 _mh-1241200853 _va-1124586065 _m-2017216831 _p-1943363302 _b-650654186 _o-1106425799 _ff-409630021 _fvn-1977619713 _w-1686757560 _h-1628964073 rcx-box rcx-box--full rcx-avatar rcx-avatar--x20"
               >
                 <img
                   alt=""
@@ -1197,7 +1197,7 @@ exports[`renders OngoingCallConnecting without crashing 1`] = `
               class="rcx-box rcx-box--full rcx-css-1rtu0k9"
             >
               <figure
-                class="is_View _d-1985012034 _f-606928779 _va-1124586065 _m-2017216831 _p-1943363302 _b-650654186 _o-1106425799 _ff-409630021 _fvn-1977619713 _w-1686757560 _h-1628964073 rcx-box rcx-box--full rcx-avatar rcx-avatar--x20"
+                class="is_View _d-1985012034 _f-606928779 _mw-354604370 _mh-1241200853 _va-1124586065 _m-2017216831 _p-1943363302 _b-650654186 _o-1106425799 _ff-409630021 _fvn-1977619713 _w-1686757560 _h-1628964073 rcx-box rcx-box--full rcx-avatar rcx-avatar--x20"
               >
                 <img
                   alt=""
@@ -1427,7 +1427,7 @@ exports[`renders OngoingCallDisabledAllButScreenshare without crashing 1`] = `
               class="rcx-box rcx-box--full rcx-css-1rtu0k9"
             >
               <figure
-                class="is_View _d-1985012034 _f-606928779 _va-1124586065 _m-2017216831 _p-1943363302 _b-650654186 _o-1106425799 _ff-409630021 _fvn-1977619713 _w-1686757560 _h-1628964073 rcx-box rcx-box--full rcx-avatar rcx-avatar--x20"
+                class="is_View _d-1985012034 _f-606928779 _mw-354604370 _mh-1241200853 _va-1124586065 _m-2017216831 _p-1943363302 _b-650654186 _o-1106425799 _ff-409630021 _fvn-1977619713 _w-1686757560 _h-1628964073 rcx-box rcx-box--full rcx-avatar rcx-avatar--x20"
               >
                 <img
                   alt=""
@@ -1611,7 +1611,7 @@ exports[`renders OngoingCallDisabledAllFeatures without crashing 1`] = `
             class="rcx-box rcx-box--full rcx-css-1rtu0k9"
           >
             <figure
-              class="is_View _d-1985012034 _f-606928779 _va-1124586065 _m-2017216831 _p-1943363302 _b-650654186 _o-1106425799 _ff-409630021 _fvn-1977619713 _w-1686757560 _h-1628964073 rcx-box rcx-box--full rcx-avatar rcx-avatar--x20"
+              class="is_View _d-1985012034 _f-606928779 _mw-354604370 _mh-1241200853 _va-1124586065 _m-2017216831 _p-1943363302 _b-650654186 _o-1106425799 _ff-409630021 _fvn-1977619713 _w-1686757560 _h-1628964073 rcx-box rcx-box--full rcx-avatar rcx-avatar--x20"
             >
               <img
                 alt=""
@@ -1811,7 +1811,7 @@ exports[`renders OngoingCallNoScreenSharingPermission without crashing 1`] = `
               class="rcx-box rcx-box--full rcx-css-1rtu0k9"
             >
               <figure
-                class="is_View _d-1985012034 _f-606928779 _va-1124586065 _m-2017216831 _p-1943363302 _b-650654186 _o-1106425799 _ff-409630021 _fvn-1977619713 _w-1686757560 _h-1628964073 rcx-box rcx-box--full rcx-avatar rcx-avatar--x20"
+                class="is_View _d-1985012034 _f-606928779 _mw-354604370 _mh-1241200853 _va-1124586065 _m-2017216831 _p-1943363302 _b-650654186 _o-1106425799 _ff-409630021 _fvn-1977619713 _w-1686757560 _h-1628964073 rcx-box rcx-box--full rcx-avatar rcx-avatar--x20"
               >
                 <img
                   alt=""
@@ -2000,7 +2000,7 @@ exports[`renders OutgoingCall without crashing 1`] = `
             class="rcx-box rcx-box--full rcx-css-1rtu0k9"
           >
             <figure
-              class="is_View _d-1985012034 _f-606928779 _va-1124586065 _m-2017216831 _p-1943363302 _b-650654186 _o-1106425799 _ff-409630021 _fvn-1977619713 _w-1686757560 _h-1628964073 rcx-box rcx-box--full rcx-avatar rcx-avatar--x20"
+              class="is_View _d-1985012034 _f-606928779 _mw-354604370 _mh-1241200853 _va-1124586065 _m-2017216831 _p-1943363302 _b-650654186 _o-1106425799 _ff-409630021 _fvn-1977619713 _w-1686757560 _h-1628964073 rcx-box rcx-box--full rcx-avatar rcx-avatar--x20"
             >
               <img
                 alt=""
@@ -2149,7 +2149,7 @@ exports[`renders OutgoingCallConnecting without crashing 1`] = `
             class="rcx-box rcx-box--full rcx-css-1rtu0k9"
           >
             <figure
-              class="is_View _d-1985012034 _f-606928779 _va-1124586065 _m-2017216831 _p-1943363302 _b-650654186 _o-1106425799 _ff-409630021 _fvn-1977619713 _w-1686757560 _h-1628964073 rcx-box rcx-box--full rcx-avatar rcx-avatar--x20"
+              class="is_View _d-1985012034 _f-606928779 _mw-354604370 _mh-1241200853 _va-1124586065 _m-2017216831 _p-1943363302 _b-650654186 _o-1106425799 _ff-409630021 _fvn-1977619713 _w-1686757560 _h-1628964073 rcx-box rcx-box--full rcx-avatar rcx-avatar--x20"
             >
               <img
                 alt=""
@@ -2308,7 +2308,7 @@ exports[`renders OutgoingCallTransfer without crashing 1`] = `
             class="rcx-box rcx-box--full rcx-css-1rtu0k9"
           >
             <figure
-              class="is_View _d-1985012034 _f-606928779 _va-1124586065 _m-2017216831 _p-1943363302 _b-650654186 _o-1106425799 _ff-409630021 _fvn-1977619713 _w-1686757560 _h-1628964073 rcx-box rcx-box--full rcx-avatar rcx-avatar--x20"
+              class="is_View _d-1985012034 _f-606928779 _mw-354604370 _mh-1241200853 _va-1124586065 _m-2017216831 _p-1943363302 _b-650654186 _o-1106425799 _ff-409630021 _fvn-1977619713 _w-1686757560 _h-1628964073 rcx-box rcx-box--full rcx-avatar rcx-avatar--x20"
             >
               <img
                 alt=""
@@ -2467,7 +2467,7 @@ exports[`renders OutgoingCallTransferConnecting without crashing 1`] = `
             class="rcx-box rcx-box--full rcx-css-1rtu0k9"
           >
             <figure
-              class="is_View _d-1985012034 _f-606928779 _va-1124586065 _m-2017216831 _p-1943363302 _b-650654186 _o-1106425799 _ff-409630021 _fvn-1977619713 _w-1686757560 _h-1628964073 rcx-box rcx-box--full rcx-avatar rcx-avatar--x20"
+              class="is_View _d-1985012034 _f-606928779 _mw-354604370 _mh-1241200853 _va-1124586065 _m-2017216831 _p-1943363302 _b-650654186 _o-1106425799 _ff-409630021 _fvn-1977619713 _w-1686757560 _h-1628964073 rcx-box rcx-box--full rcx-avatar rcx-avatar--x20"
             >
               <img
                 alt=""
