@@ -37,6 +37,8 @@ export type ItemProps = {
 } & Omit<AllHTMLAttributes<HTMLElement>, 'is' | 'selected' | 'disabled'> &
 	RefAttributes<HTMLElement>;
 
+const skipRegistration = () => () => undefined;
+
 /**
  * A list row composed from slots: media, icon, content and actions.
  */
@@ -57,13 +59,14 @@ const Item = ({
 	const [descriptionIds, registerDescription] = useIdRegistry();
 	const [titleIds, registerTitle] = useIdRegistry();
 
-	const contextValue = useMemo(
-		() => ({ descriptionIds, registerDescription, registerTitle }),
-		[descriptionIds, registerDescription, registerTitle],
-	);
-
 	// A menu item is named by its titles and described by its labelled icons, as an `ItemLink` is.
 	const isMenuItem = !!props.role?.startsWith('menuitem');
+
+	// Only a menu item reads its titles' ids, so any other row skips the render a title's registration causes on mount
+	const contextValue = useMemo(
+		() => ({ descriptionIds, registerDescription, registerTitle: isMenuItem ? registerTitle : skipRegistration }),
+		[descriptionIds, registerDescription, registerTitle, isMenuItem],
+	);
 
 	const ariaLabelledBy = isMenuItem ? (props['aria-labelledby'] ?? (titleIds.join(' ') || undefined)) : props['aria-labelledby'];
 

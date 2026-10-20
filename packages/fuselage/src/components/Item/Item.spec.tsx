@@ -2,7 +2,7 @@ import { composeStories } from '@storybook/react-webpack5';
 import { screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { axe } from 'jest-axe';
-import { createRef } from 'react';
+import { createRef, Profiler } from 'react';
 
 import {
 	Item,
@@ -114,6 +114,34 @@ describe('Item', () => {
 		expect(item).not.toHaveAttribute('role');
 		expect(item).not.toHaveAttribute('aria-selected');
 		expect(item).not.toHaveAttribute('aria-disabled');
+	});
+
+	it('is labelled by its titles as a menu item', () => {
+		render(
+			<Item role='menuitem' data-testid='item'>
+				<ItemContent>
+					<ItemTitle id='title'>Title</ItemTitle>
+				</ItemContent>
+			</Item>,
+		);
+
+		expect(screen.getByTestId('item')).toHaveAttribute('aria-labelledby', 'title');
+	});
+
+	it('renders once on mount when it is not a menu item', () => {
+		const onRender = jest.fn();
+
+		render(
+			<Profiler id='item' onRender={onRender}>
+				<Item>
+					<ItemContent>
+						<ItemTitle>Title</ItemTitle>
+					</ItemContent>
+				</Item>
+			</Profiler>,
+		);
+
+		expect(onRender).toHaveBeenCalledTimes(1);
 	});
 });
 
