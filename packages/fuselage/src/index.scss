@@ -4,3 +4,11 @@
 
 // Tamagui styles live in `fuselage`; element resets go in `reset` so they stay below them
 @layer reset, fuselage;
+
+// Every component used to get this from `rcx-box`; Tamagui has no prop for vendor-prefixed properties
+@layer fuselage {
+	:where(.is_View, .is_Text) {
+		-webkit-font-smoothing: antialiased;
+		-moz-osx-font-smoothing: grayscale;
+	}
+}
