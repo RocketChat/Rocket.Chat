@@ -8,7 +8,6 @@ import {
 	GenericTableBody,
 	GenericTableRow,
 	GenericTableCell,
-	getCombineFn,
 	usePaginatedQuery,
 	usePagination,
 	useSort,
@@ -56,7 +55,7 @@ const SlaTable = ({ reload }: { reload: MutableRefObject<() => void> }) => {
 		query,
 		queryKey,
 		queryFn: getSlaData,
-		combineData: getCombineFn('sla'),
+		itemsKey: 'sla',
 		offset: current,
 		count: itemsPerPage,
 	});

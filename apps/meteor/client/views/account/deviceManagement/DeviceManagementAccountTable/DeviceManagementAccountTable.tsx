@@ -1,5 +1,5 @@
 import { useMediaQuery } from '@rocket.chat/fuselage-hooks';
-import { GenericTableHeaderCell, getCombineFn, usePaginatedQuery, usePagination, useSort } from '@rocket.chat/ui-client';
+import { GenericTableHeaderCell, usePaginatedQuery, usePagination, useSort } from '@rocket.chat/ui-client';
 import { useEndpoint } from '@rocket.chat/ui-contexts';
 import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -33,7 +33,7 @@ const DeviceManagementAccountTable = () => {
 		query,
 		queryKey,
 		queryFn: listSessions,
-		combineData: getCombineFn('sessions'),
+		itemsKey: 'sessions',
 		offset: current,
 		count: itemsPerPage,
 	});

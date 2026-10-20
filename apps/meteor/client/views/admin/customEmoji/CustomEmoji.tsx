@@ -17,7 +17,6 @@ import {
 	GenericTableHeaderCell,
 	GenericTableLoadingTable,
 	GenericTableRow,
-	getCombineFn,
 	usePaginatedQuery,
 	usePagination,
 	useSort,
@@ -77,7 +76,7 @@ const CustomEmoji = ({ onClick, reload }: CustomEmojiProps) => {
 		query,
 		queryKey,
 		queryFn: getEmojiList,
-		combineData: getCombineFn('emojis'),
+		itemsKey: 'emojis',
 		offset: current,
 		count: itemsPerPage,
 	});

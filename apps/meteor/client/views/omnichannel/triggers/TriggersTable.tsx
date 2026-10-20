@@ -6,7 +6,6 @@ import {
 	GenericTableBody,
 	GenericTableHeaderCell,
 	GenericTableLoadingRow,
-	getCombineFn,
 	usePaginatedQuery,
 	usePagination,
 	GenericNoResults,
@@ -37,7 +36,7 @@ const TriggersTable = () => {
 		query,
 		queryKey,
 		queryFn: getTriggers,
-		combineData: getCombineFn('triggers'),
+		itemsKey: 'triggers',
 		offset: current,
 		count: itemsPerPage,
 	});
