@@ -733,6 +733,76 @@ import { IS_EE, URL_MONGODB } from '../../e2e/config/constants';
 			});
 		});
 
+		describe('rooms that cannot carry attributes', () => {
+			let parentRoomId: IRoom['_id'];
+			let federatedRoomId: IRoom['_id'];
+			let discussionId: IRoom['_id'];
+
+			const rooms = () => connection.db().collection<Pick<IRoom, '_id' | 'federated' | 'abacAttributes'>>('rocketchat_room');
+
+			before(async () => {
+				parentRoomId = (await createRoom({ type: 'p', name: `abac-parent-${Date.now()}` })).body.group._id;
+				federatedRoomId = (await createRoom({ type: 'p', name: `abac-federated-${Date.now()}` })).body.group._id;
+				await rooms().updateOne({ _id: federatedRoomId }, { $set: { federated: true } });
+				discussionId = (
+					await request
+						.post(`${v1}/rooms.createDiscussion`)
+						.set(credentials)
+						.send({ prid: parentRoomId, t_name: `abac-discussion-${Date.now()}` })
+						.expect(200)
+				).body.discussion._id;
+			});
+
+			after(async () => {
+				await rooms().updateOne({ _id: federatedRoomId }, { $unset: { federated: 1 } });
+				await deleteRoom({ type: 'p', roomId: federatedRoomId });
+				await deleteRoom({ type: 'p', roomId: discussionId });
+				await deleteRoom({ type: 'p', roomId: parentRoomId });
+			});
+
+			[
+				{ label: 'a federated room', roomId: () => federatedRoomId, code: 'error-abac-federated-room-attributes' },
+				{ label: 'a discussion', roomId: () => discussionId, code: 'error-abac-discussion-room-attributes' },
+			].forEach(({ label, roomId, code }) => {
+				describe(label, () => {
+					const expectRefused = (res: { body: Record<string, unknown> }) => {
+						expect(res.body).to.include({ success: false, errorType: code });
+					};
+
+					it('refuses POST /abac/rooms/:rid/attributes/:key', async () => {
+						await request
+							.post(`${v1}/abac/rooms/${roomId()}/attributes/${updatedKey}`)
+							.set(credentials)
+							.send({ values: ['cyan'] })
+							.expect(400)
+							.expect(expectRefused);
+					});
+
+					it('refuses PUT /abac/rooms/:rid/attributes/:key', async () => {
+						await request
+							.put(`${v1}/abac/rooms/${roomId()}/attributes/${updatedKey}`)
+							.set(credentials)
+							.send({ values: ['cyan'] })
+							.expect(400)
+							.expect(expectRefused);
+					});
+
+					it('refuses POST /abac/rooms/:rid/attributes', async () => {
+						await request
+							.post(`${v1}/abac/rooms/${roomId()}/attributes`)
+							.set(credentials)
+							.send({ attributes: { [updatedKey]: ['cyan'] } })
+							.expect(400)
+							.expect(expectRefused);
+					});
+
+					it('leaves the room without attributes', async () => {
+						expect(await rooms().findOne({ _id: roomId() })).to.not.have.property('abacAttributes');
+					});
+				});
+			});
+		});
+
 		it('DELETE room attribute key should succeed and clear usage/inUse=false', async () => {
 			await request
 				.delete(`${v1}/abac/rooms/${testRoom._id}/attributes/${updatedKey}`)

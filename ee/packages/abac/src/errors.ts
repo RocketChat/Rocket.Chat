@@ -26,6 +26,7 @@ export enum AbacErrorCode {
 	AttributesRoomConversion = 'error-abac-attributes-room-conversion',
 	AttributesOwnerMustBeCaller = 'error-abac-attributes-owner-must-be-caller',
 	FederatedRoomAttributes = 'error-abac-federated-room-attributes',
+	DiscussionRoomAttributes = 'error-abac-discussion-room-attributes',
 	DecisionUnavailable = 'error-abac-decision-unavailable',
 	DecisionInconclusive = 'error-abac-decision-inconclusive',
 	PublicRoomCreationBlocked = 'error-abac-public-room-creation-blocked',
