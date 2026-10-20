@@ -10,12 +10,15 @@ export type ItemContextValue = {
 	registerMultiline: (id: string) => () => void;
 };
 
+/** What a part gets when nothing reads what it would register, so it can skip the work that finds it out. */
+export const skipRegistration = () => () => undefined;
+
 export const ItemContext = createContext<ItemContextValue>({
 	descriptionIds: [],
-	registerDescription: () => () => undefined,
-	registerTitle: () => () => undefined,
-	registerLink: () => () => undefined,
-	registerMultiline: () => () => undefined,
+	registerDescription: skipRegistration,
+	registerTitle: skipRegistration,
+	registerLink: skipRegistration,
+	registerMultiline: skipRegistration,
 });
 
 export const useItemContext = () => useContext(ItemContext);
