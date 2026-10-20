@@ -145,6 +145,16 @@ describe('useDesktopUserPresence', () => {
 		expect(olderDesktopSetUserPresence).not.toHaveBeenCalled();
 	});
 
+	it('runs in a browser without the desktop bridge', () => {
+		delete window.RocketChatDesktop;
+
+		let session: ReturnType<typeof renderWithUserRecord> | undefined;
+		expect(() => {
+			session = renderWithUserRecord(user);
+		}).not.toThrow();
+		expect(() => session?.setRecord({ ...user, status: UserStatus.AWAY, statusText: '' })).not.toThrow();
+	});
+
 	it.each([
 		['connecting', 'connecting'],
 		['waiting', 'connecting'],
